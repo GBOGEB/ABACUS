@@ -30,8 +30,10 @@ jobs:
       - name: Validate catalog, style, paths and negative controls
         run: |
           set -euo pipefail
-          python -m unittest discover -s tests -p test_mcw_artifact_explorer.py -v
-          python scripts/validate_ssot_style.py --output /tmp/mcw-style-status.json
+          python -m unittest discover -s tests \
+            -p test_mcw_artifact_explorer.py -v
+          python scripts/validate_ssot_style.py \
+            --output /tmp/mcw-style-status.json
       - name: Build twice from current SSOT and compare
         env:
           EXPECTED_SHA: ${{ github.event.pull_request.head.sha || github.sha }}

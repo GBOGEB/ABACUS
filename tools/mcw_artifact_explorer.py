@@ -62,7 +62,8 @@ def classify(root, node):
         raw = target.read_bytes()
         require(raw, "empty source: " + path)
         return {"state": "LOCAL_BYTES_VERIFIED", "sha256": digest(raw),
-                "bytes": len(raw), "source_path": path}
+                "bytes": len(raw), "source_path": path,
+                "preview": raw[:420].decode("utf-8", "replace")}
     if role == "controlled_input":
         if path is None:
             return {"state": "CONTROLLED_EXTERNAL_UNKNOWN", "sha256": None,
@@ -158,6 +159,9 @@ def render(report, style):
         ref = "https://github.com/" + REPO + "/blob/" + report["source_sha"] + "/" + quote(local, safe="/") if local else ""
         link = ('<a href="' + esc(ref) + '" target="_blank" rel="noopener noreferrer">Open source ↗</a>') if ref else "<span>Controlled input — no public link</span>"
         hashtext = evidence["sha256"] or "UNKNOWN — no output bytes"
+        preview = evidence.get("preview")
+        leaf = ('<details class="leaf"><summary>Inspect source excerpt</summary>'
+                '<pre>' + esc(preview) + '</pre></details>') if preview else ""
         cards.append(
             '<article class="artifact" data-search="' + esc((" ".join([item["title"], item["format"], item["role"], state])).lower()) +
             '" data-type="' + esc(item["format"]) + '" id="' + esc(item["id"]) + '">'
@@ -167,7 +171,7 @@ def render(report, style):
             '</p><div class="facts"><span>Role</span><strong>' + esc(item["role"].replace("_", " ")) +
             '</strong><span>SHA-256</span><code title="' + esc(hashtext) + '">' + esc(hashtext) +
             '</code><span>Inputs</span><strong>' + esc(", ".join(item.get("depends_on", [])) or "No declared upstream") +
-            '</strong></div><div class="card-foot">' + link +
+            '</strong></div>' + leaf + '<div class="card-foot">' + link +
             '<a href="#process">View build sequence ↓</a></div></article>'
         )
     stages = "".join('<li><span class="step-index">' + str(i + 1) + '</span><span>' +
@@ -205,7 +209,7 @@ input,select{border:1px solid #958ca3;padding:10px 12px;border-radius:8px;backgr
 .type{background:#eee5f5;color:var(--purple)}.state{background:#fef1e6;color:#85450c}.state.ok{background:#e1f4ec;color:#145940}
 .artifact h3{font-size:1.09rem;margin:0}.artifact p{color:var(--muted);margin:0;flex:1}
 .facts{display:grid;grid-template-columns:62px minmax(0,1fr);gap:5px;font-size:12px;border-top:1px solid var(--border);padding-top:9px}
-.facts span{color:var(--muted)}.facts code{overflow-wrap:anywhere;font-size:11px}
+.facts span{color:var(--muted)}.facts code{overflow-wrap:anywhere;font-size:11px}.leaf summary{cursor:pointer;font-weight:700;font-size:12px;color:var(--purple)}.leaf pre{white-space:pre-wrap;overflow-wrap:anywhere;max-height:160px;overflow:auto;font:11px/1.45 Consolas,monospace;border:1px solid var(--border);padding:8px;border-radius:7px}
 .card-foot{border-top:1px solid var(--border);padding-top:12px;font-size:12px}
 section{margin:32px 0}h2{font-size:1.35rem;margin:0 0 12px}
 .spine{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(5,1fr);gap:9px}
