@@ -30,6 +30,7 @@ def mcl():
 def ldab():
     return {"schema": "mip.ldab.telemetry.v1", "repository": "GBOGEB/ABACUS",
             "source_sha": SHA, "merge_admission": "HOLD", "authority_transfer": False,
+            "security_waiver": False,
             "source_census": {"root": {"candidate_file_count": 104,
                 "sample_count": 20, "evidence_level": "SOURCE_DISCOVERY_ONLY",
                 "live_runtime_inferred": False},
@@ -40,9 +41,19 @@ def ldab():
             "runtime": {"abacus_native_debug_sessions": None,
                         "authenticated_port_leases": None,
                         "active_runner_workers": None, "ldab_verified_repairs": None,
+                        "debug_probe_steps": None,
                         "proof_state": "UNKNOWN_NO_RUNTIME_RECEIPT"},
             "diagnostic_execution": {"diagnostic_scope": "FEDERATION_CONTRACT_ONLY",
-                                     "state": "EXECUTED_PASS"}}
+                                     "diagnostic": "nested_debug_ldab",
+                                     "state": "EXECUTED_PASS",
+                                     "contract_checks_total": 3,
+                                     "contract_checks_passed": 3,
+                                     "contract_checks_failed": 0,
+                                     "source_contract": (
+                                         "integration/codespace_jyperter/"
+                                         "tests/test_smoke_federation.py"
+                                     ),
+                                     "source_contract_sha256": "f" * 64}}
 
 
 def bd():
