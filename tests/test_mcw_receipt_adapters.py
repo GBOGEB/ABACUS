@@ -151,6 +151,7 @@ class ReceiptAdaptersTests(unittest.TestCase):
     def test_nested_absent_retains_unknown_combined_count(self):
         observation = ldab()
         observation["source_census"]["nested"] = None
+        observation["diagnostic_execution"]["state"] = "NOT_EXECUTED"
         result = A._ldab(observation)
         self.assertIsNone(result["nested_candidate_files"])
         self.assertIsNone(result["deduplicated_candidate_files"])
