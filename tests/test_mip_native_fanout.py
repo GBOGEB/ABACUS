@@ -146,6 +146,11 @@ class NativeFanoutTests(unittest.TestCase):
                 (folder / "out" / "mip_native_fanout.json").read_text()
             )
             self.assertEqual(report["delta"]["idle_gap_seconds"], 10)
+            self.assertEqual(len(report["api_input_sha256"]), 4)
+            self.assertTrue(all(len(digest) == 64 for digest in
+                                report["api_input_sha256"].values()))
+            self.assertEqual(report["api_input_integrity"],
+                             "HASHED_LOCAL_INPUT_NOT_SIGNED_AUTHORITY")
 
 
 if __name__ == "__main__":
