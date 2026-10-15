@@ -61,6 +61,13 @@ jobs:
             -p test_mission_control_lite_timing.py -v \
             > evidence/timing-tests.log 2>&1
           python -m mission_control_lite.timing_pulse measure \
+            --output evidence/phase-times.json --phase telemetry-tests -- \
+            python -m coverage run --append --branch \
+            --source=mission_control_lite \
+            -m unittest discover -s tests \
+            -p test_bd_telemetry.py -v \
+            > evidence/telemetry-tests.log 2>&1
+          python -m mission_control_lite.timing_pulse measure \
             --output evidence/phase-times.json --phase coverage-json -- \
             python -m coverage json -o evidence/coverage.json
           python -m mission_control_lite.timing_pulse measure \
@@ -71,8 +78,6 @@ jobs:
         run: |
           python -m unittest discover -s tests \
             -p test_validate_changed_docs_selector.py -v
-          python -m unittest discover -s tests \
-            -p test_bd_telemetry.py -v
       - name: Emit exact-head pulse telemetry
         env:
           PR_HEAD_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
@@ -157,6 +162,7 @@ jobs:
             evidence/rex-tests.log
             evidence/metrics-tests.log
             evidence/timing-tests.log
+            evidence/telemetry-tests.log
             evidence/phase-times.json
           include-hidden-files: false
           if-no-files-found: error
