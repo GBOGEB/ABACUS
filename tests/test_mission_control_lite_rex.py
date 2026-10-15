@@ -119,6 +119,46 @@ class TestRexWave(unittest.TestCase):
         with self.assertRaises(ValueError):
             wave_delta(base, dict(base))
 
+    def test_index_without_root_keeps_observation_only(self):
+        event = dict(self.event)
+        event.pop("root_candidate_id")
+        result = build_index([event], [], [])
+        self.assertIsNone(result["events"][0]["root_candidate"])
+        self.assertIsNone(result["events"][0]["rex"])
+        self.assertEqual(result["verified_root_closures"], 0)
+
+    def test_index_rejects_missing_required_fields(self):
+        for field in ("repository", "source_sha", "run_id", "job_id",
+                      "topic_id", "fingerprint", "manifestation"):
+            with self.subTest(field=field):
+                event = dict(self.event)
+                event.pop(field)
+                with self.assertRaises(ValueError):
+                    build_index([event], [self.root], [self.rex])
+
+    def test_wave_branch_coverage_delta(self):
+        base = {"repository": "A", "scanner_config_sha256": "x",
+                "coverage_scope": "changed", "fingerprints": [],
+                "covered_branches": 3, "total_branches": 10}
+        after = dict(base, covered_branches=8)
+        result = wave_delta(base, after)
+        self.assertAlmostEqual(result["branch_coverage_delta_pp"], 50)
+        self.assertIsNone(result["line_coverage_delta_pp"])
+
+    def test_wave_rejects_negative_coverage(self):
+        base = {"repository": "A", "scanner_config_sha256": "x",
+                "coverage_scope": "changed", "fingerprints": [],
+                "covered_lines": -1, "total_lines": 10}
+        with self.assertRaises(ValueError):
+            wave_delta(base, dict(base))
+
+    def test_wave_rejects_noninteger_coverage(self):
+        base = {"repository": "A", "scanner_config_sha256": "x",
+                "coverage_scope": "changed", "fingerprints": [],
+                "covered_lines": 2.5, "total_lines": 10}
+        with self.assertRaises(ValueError):
+            wave_delta(base, dict(base))
+
     def test_unknown_coverage_not_zero(self):
         base = {"repository": "A", "scanner_config_sha256": "x",
                 "coverage_scope": "changed", "fingerprints": []}
