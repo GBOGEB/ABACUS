@@ -1,4 +1,5 @@
 """Negative, provenance and comparability controls for W70 pulse receipts."""
+
 from __future__ import annotations
 
 import copy
@@ -19,29 +20,48 @@ def sample():
     lanes = {}
     for i, lane in enumerate(p.LANES):
         lanes[lane] = {
-            "source_sha": HEAD, "lane": lane,
-            "totals": {"total_population": 10 + i,
-                       "backlog_open": i + 1,
-                       "backlog_closed": 9},
+            "source_sha": HEAD,
+            "lane": lane,
+            "totals": {
+                "total_population": 10 + i,
+                "backlog_open": i + 1,
+                "backlog_closed": 9,
+            },
         }
-    feature = {"source_sha": HEAD,
-               "total_population": sum(10+i for i in range(5)),
-               "total_open_backlog": sum(i+1 for i in range(5))}
+    feature = {
+        "source_sha": HEAD,
+        "total_population": sum(10 + i for i in range(5)),
+        "total_open_backlog": sum(i + 1 for i in range(5)),
+    }
     coverage = {
         "meta": {"version": "7.13.3"},
-        "files": {"tools/w70_wave_pulse_metrics.py": {
-            "summary": {"num_statements": 100, "covered_lines": 88,
-                        "num_branches": 30, "covered_branches": 24}
-        }},
+        "files": {
+            "tools/w70_wave_pulse_metrics.py": {
+                "summary": {
+                    "num_statements": 100,
+                    "covered_lines": 88,
+                    "num_branches": 30,
+                    "covered_branches": 24,
+                }
+            }
+        },
     }
     return feature, lanes, coverage
 
 
 def make(**kwargs):
     feature, lanes, coverage = sample()
-    return p.build(feature, lanes, coverage,
-                   repo="GBOGEB/ABACUS", sha=HEAD,
-                   run_id=17, attempt=1, scope_digest=SCOPE, **kwargs)
+    return p.build(
+        feature,
+        lanes,
+        coverage,
+        repo="GBOGEB/ABACUS",
+        sha=HEAD,
+        run_id=17,
+        attempt=1,
+        scope_digest=SCOPE,
+        **kwargs,
+    )
 
 
 class W70PulseTests(unittest.TestCase):
@@ -59,9 +79,12 @@ class W70PulseTests(unittest.TestCase):
     def test_deterministic_and_digest(self):
         self.assertEqual(make(), make())
         r = make()
-        self.assertEqual(r["receipt_sha256"],
-                         p.sha256(p.stable({k:v for k,v in r.items()
-                                           if k != "receipt_sha256"}).encode()))
+        self.assertEqual(
+            r["receipt_sha256"],
+            p.sha256(
+                p.stable({k: v for k, v in r.items() if k != "receipt_sha256"}).encode()
+            ),
+        )
 
     def test_missing_baseline_is_null_not_zero(self):
         result = make()["coverage_delta"]
@@ -73,12 +96,22 @@ class W70PulseTests(unittest.TestCase):
         old = make()
         feature, lanes, coverage = sample()
         coverage["files"]["tools/w70_wave_pulse_metrics.py"]["summary"][
-            "covered_lines"] = 92
+            "covered_lines"
+        ] = 92
         coverage["files"]["tools/w70_wave_pulse_metrics.py"]["summary"][
-            "covered_branches"] = 27
-        new = p.build(feature, lanes, coverage,
-                      repo="GBOGEB/ABACUS", sha=HEAD, run_id=18,
-                      attempt=1, scope_digest=SCOPE, previous=old)
+            "covered_branches"
+        ] = 27
+        new = p.build(
+            feature,
+            lanes,
+            coverage,
+            repo="GBOGEB/ABACUS",
+            sha=HEAD,
+            run_id=18,
+            attempt=1,
+            scope_digest=SCOPE,
+            previous=old,
+        )
         self.assertTrue(new["coverage_delta"]["comparable"])
         self.assertEqual(4.0, new["coverage_delta"]["line_delta_pp"])
         self.assertEqual(10.0, new["coverage_delta"]["branch_delta_pp"])
@@ -87,22 +120,32 @@ class W70PulseTests(unittest.TestCase):
     def test_changed_source_withholds_delta(self):
         old = make()
         feature, lanes, coverage = sample()
-        new = p.build(feature, lanes, coverage, repo="GBOGEB/ABACUS",
-                      sha=HEAD, run_id=18, attempt=1,
-                      scope_digest="c"*64, previous=old)
-        self.assertEqual("INSTRUMENTED_SCOPE_OR_TOOL_CHANGED",
-                         new["coverage_delta"]["reason"])
+        new = p.build(
+            feature,
+            lanes,
+            coverage,
+            repo="GBOGEB/ABACUS",
+            sha=HEAD,
+            run_id=18,
+            attempt=1,
+            scope_digest="c" * 64,
+            previous=old,
+        )
+        self.assertEqual(
+            "INSTRUMENTED_SCOPE_OR_TOOL_CHANGED", new["coverage_delta"]["reason"]
+        )
         self.assertIsNone(new["coverage_delta"]["line_delta_pp"])
 
     def test_mismatched_population_not_same_scope(self):
         old = make()
         old["coverage"]["line"]["eligible"] = 101
-        old["receipt_sha256"] = p.sha256(p.stable({
-            k:v for k,v in old.items() if k != "receipt_sha256"
-        }).encode())
+        old["receipt_sha256"] = p.sha256(
+            p.stable({k: v for k, v in old.items() if k != "receipt_sha256"}).encode()
+        )
         res = make(previous=old)
-        self.assertEqual("ELIGIBLE_DENOMINATOR_CHANGED",
-                         res["coverage_delta"]["reason"])
+        self.assertEqual(
+            "ELIGIBLE_DENOMINATOR_CHANGED", res["coverage_delta"]["reason"]
+        )
 
     def test_baseline_tampering_is_blocked(self):
         old = make()
@@ -113,11 +156,12 @@ class W70PulseTests(unittest.TestCase):
     def test_baseline_repo_not_comparable(self):
         old = make()
         old["repository"] = "GBOGEB/CODEX"
-        old["receipt_sha256"] = p.sha256(p.stable({
-            k:v for k,v in old.items() if k != "receipt_sha256"
-        }).encode())
-        self.assertEqual("DIFFERENT_REPOSITORY",
-                         make(previous=old)["coverage_delta"]["reason"])
+        old["receipt_sha256"] = p.sha256(
+            p.stable({k: v for k, v in old.items() if k != "receipt_sha256"}).encode()
+        )
+        self.assertEqual(
+            "DIFFERENT_REPOSITORY", make(previous=old)["coverage_delta"]["reason"]
+        )
 
     def test_reject_invalid_baseline_schema(self):
         with self.assertRaisesRegex(ValueError, "schema"):
@@ -126,17 +170,34 @@ class W70PulseTests(unittest.TestCase):
     def test_reject_nonfinite_raw_numerators(self):
         feature, lanes, coverage = sample()
         coverage["files"]["tools/w70_wave_pulse_metrics.py"]["summary"][
-            "covered_lines"] = float("nan")
+            "covered_lines"
+        ] = float("nan")
         with self.assertRaisesRegex(ValueError, "invalid line"):
-            p.build(feature, lanes, coverage, repo="GBOGEB/ABACUS",
-                    sha=HEAD, run_id=17, attempt=1, scope_digest=SCOPE)
+            p.build(
+                feature,
+                lanes,
+                coverage,
+                repo="GBOGEB/ABACUS",
+                sha=HEAD,
+                run_id=17,
+                attempt=1,
+                scope_digest=SCOPE,
+            )
 
     def test_reject_boolean_counts(self):
         feature, lanes, coverage = sample()
         lanes[p.LANES[0]]["totals"]["backlog_open"] = True
         with self.assertRaisesRegex(ValueError, "invalid debt"):
-            p.build(feature, lanes, coverage, repo="GBOGEB/ABACUS",
-                    sha=HEAD, run_id=17, attempt=1, scope_digest=SCOPE)
+            p.build(
+                feature,
+                lanes,
+                coverage,
+                repo="GBOGEB/ABACUS",
+                sha=HEAD,
+                run_id=17,
+                attempt=1,
+                scope_digest=SCOPE,
+            )
 
     def test_reject_missing_lane(self):
         feature, lanes, coverage = sample()
@@ -146,7 +207,7 @@ class W70PulseTests(unittest.TestCase):
 
     def test_reject_forged_lane_sha(self):
         feature, lanes, coverage = sample()
-        lanes[p.LANES[1]]["source_sha"] = "b"*40
+        lanes[p.LANES[1]]["source_sha"] = "b" * 40
         with self.assertRaisesRegex(ValueError, "SHA"):
             p.verify_lanes(feature, lanes, HEAD)
 
@@ -191,9 +252,16 @@ class W70PulseTests(unittest.TestCase):
         ):
             with self.subTest(repo=repo, run_id=run_id, attempt=attempt):
                 with self.assertRaises(ValueError):
-                    p.build(feature, lanes, coverage, repo=repo,
-                            sha=HEAD, run_id=run_id, attempt=attempt,
-                            scope_digest=SCOPE)
+                    p.build(
+                        feature,
+                        lanes,
+                        coverage,
+                        repo=repo,
+                        sha=HEAD,
+                        run_id=run_id,
+                        attempt=attempt,
+                        scope_digest=SCOPE,
+                    )
 
     def test_text_summary_distinguishes_root_and_manifestations(self):
         text = p.summary(make())
@@ -208,9 +276,7 @@ class W70PulseTests(unittest.TestCase):
             gitdir.mkdir()
             (gitdir / "HEAD").write_text(HEAD, encoding="utf-8")
             self.assertEqual(p.checked_out_head(root), HEAD)
-            (gitdir / "HEAD").write_text(
-                "ref: refs/heads/main", encoding="utf-8"
-            )
+            (gitdir / "HEAD").write_text("ref: refs/heads/main", encoding="utf-8")
             with self.assertRaisesRegex(ValueError, "detached exact-SHA"):
                 p.checked_out_head(root)
             (gitdir / "HEAD").unlink()
@@ -231,25 +297,42 @@ class W70PulseTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as folder:
             root = Path(folder)
             for lane, obj in lanes.items():
-                (root / (lane+".json")).write_text(json.dumps(obj))
+                (root / (lane + ".json")).write_text(json.dumps(obj))
             (root / "FEATURE_ROW.json").write_text(json.dumps(feature))
             cov = root / "cov.json"
             cov.write_text(json.dumps(coverage))
             source = root / "source.py"
             source.write_text("print('hello')")
             target = root / "pulse.json"
-            args = ["w70", "--lane-dir", str(root),
-                    "--coverage", str(cov), "--source-path", str(source),
-                    "--sha", HEAD, "--run-id", "17", "--attempt", "1",
-                    "--out", str(target), "--summary", str(root/"summary.md")]
-            with patch.object(sys, "argv", args), patch.object(
-                p, "checked_out_head", return_value=HEAD
+            args = [
+                "w70",
+                "--lane-dir",
+                str(root),
+                "--coverage",
+                str(cov),
+                "--source-path",
+                str(source),
+                "--sha",
+                HEAD,
+                "--run-id",
+                "17",
+                "--attempt",
+                "1",
+                "--out",
+                str(target),
+                "--summary",
+                str(root / "summary.md"),
+            ]
+            with (
+                patch.object(sys, "argv", args),
+                patch.object(p, "checked_out_head", return_value=HEAD),
             ):
                 self.assertEqual(0, p.main())
             self.assertTrue(target.exists())
-            self.assertIn("W70 exact-SHA", (root/"summary.md").read_text())
-            with patch.object(sys, "argv", args), patch.object(
-                p, "checked_out_head", return_value="c"*40
+            self.assertIn("W70 exact-SHA", (root / "summary.md").read_text())
+            with (
+                patch.object(sys, "argv", args),
+                patch.object(p, "checked_out_head", return_value="c" * 40),
             ):
                 with self.assertRaisesRegex(ValueError, "HEAD differs"):
                     p.main()
