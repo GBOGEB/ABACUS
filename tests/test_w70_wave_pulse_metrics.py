@@ -201,6 +201,31 @@ class W70PulseTests(unittest.TestCase):
         self.assertIn("UNKNOWN / HOLD / ZERO", text)
         self.assertIn("80.0%", text)
 
+    def test_git_checkout_identity_is_fail_closed(self):
+        with tempfile.TemporaryDirectory() as folder:
+            root = Path(folder)
+            gitdir = root / ".git"
+            gitdir.mkdir()
+            (gitdir / "HEAD").write_text(HEAD, encoding="utf-8")
+            self.assertEqual(p.checked_out_head(root), HEAD)
+            (gitdir / "HEAD").write_text(
+                "ref: refs/heads/main", encoding="utf-8"
+            )
+            with self.assertRaisesRegex(ValueError, "detached exact-SHA"):
+                p.checked_out_head(root)
+            (gitdir / "HEAD").unlink()
+            with self.assertRaisesRegex(ValueError, "unavailable"):
+                p.checked_out_head(root)
+
+    def test_git_worktree_pointer_reader(self):
+        with tempfile.TemporaryDirectory() as folder:
+            root = Path(folder)
+            gitdir = root / "tracked"
+            gitdir.mkdir()
+            (gitdir / "HEAD").write_text(HEAD, encoding="utf-8")
+            (root / ".git").write_text("gitdir: tracked\n", encoding="utf-8")
+            self.assertEqual(p.checked_out_head(root), HEAD)
+
     def test_file_output_main_and_exact_checkout_rejection(self):
         feature, lanes, coverage = sample()
         with tempfile.TemporaryDirectory() as folder:
@@ -218,13 +243,13 @@ class W70PulseTests(unittest.TestCase):
                     "--sha", HEAD, "--run-id", "17", "--attempt", "1",
                     "--out", str(target), "--summary", str(root/"summary.md")]
             with patch.object(sys, "argv", args), patch.object(
-                p.subprocess, "check_output", return_value=HEAD+"\n"
+                p, "checked_out_head", return_value=HEAD
             ):
                 self.assertEqual(0, p.main())
             self.assertTrue(target.exists())
             self.assertIn("W70 exact-SHA", (root/"summary.md").read_text())
             with patch.object(sys, "argv", args), patch.object(
-                p.subprocess, "check_output", return_value="c"*40+"\n"
+                p, "checked_out_head", return_value="c"*40
             ):
                 with self.assertRaisesRegex(ValueError, "HEAD differs"):
                     p.main()
