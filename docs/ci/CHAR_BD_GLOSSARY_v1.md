@@ -23,27 +23,34 @@ permission transfer.
 
 | Token | Meaning | Required distinction |
 |---|---|---|
-- **Char_BD / CBD!** — Full governed burn-down charter from census through closure and recensus.
+- **Char_BD / CBD!** — Full governed burn-down charter from census through
+  closure and recensus.
   Not just next five actions
 - **CBD<!>** — Human-readable emphatic alias for CBD!.
   Avoid treating punctuation as code
-- **CENSUS** — Bounded enumerated inventory, population, paging, missingness and evidence provenance.
+- **CENSUS** — Bounded enumerated inventory, population, paging, missingness
+  and evidence provenance.
   Listed ≠ complete
-- **BD queue** — Root-owned, dependency-ranked work items with state and proof links.
+- **BD queue** — Root-owned, dependency-ranked work items with state and
+  proof links.
   Work items ≠ unique roots
-- **Root** — Normalized source/config/producer cause signature independently attributed.
+- **Root** — Normalized source/config/producer cause signature independently
+  attributed.
   Different job failures may share root
-- **Manifestation** — Check failure or observation propagated from an originating root.
+- **Manifestation** — Check failure or observation propagated from an
+  originating root.
   Don't double-count
 - **First-red** — Earliest actionable, materially blocking native failure.
   Derived from run/job log, not PR summary
 - **Inherited** — Failure carried from ancestor or canonical owner.
   No competing repair
-- **Pulse** — Immutable observation at exact repo/head/run/attempt with receipts.
+- **Pulse** — Immutable observation at exact repo/head/run/attempt with
+  receipts.
   Receipt ≠ fix
 - **Wave** — Related pulses with shared objective and explicit comparator.
   Different cohorts never produce gains
-- **LDAB / LLDB** — Linked debugger-analysis evidence / native debugger execution.
+- **LDAB / LLDB** — Linked debugger-analysis evidence / native debugger
+  execution.
   Assessment ≠ launch
 - **REX** — Independently accepted execution-return receipt.
   Proposed return ≠ accepted
@@ -53,12 +60,15 @@ permission transfer.
   Preserve before and control baseline
 - **PCA/BT** — Evidence-qualified multivariate / Bradley–Terry prioritization.
   Not a promotion authority
-- **3P*** — Programme's typed proof/provenance/progression family; use native authoritative definition for expansion.
+- **3P*** — Programme's typed proof/provenance/progression family; use
+  native authoritative definition for expansion.
   Don't invent authority
 | A10 | Confidentiality adjudication gate | No automatic waiver or leak |
-- **P0 admission** — Effective checks, security, eligible review and exact-head proof.
+- **P0 admission** — Effective checks, security, eligible review and
+  exact-head proof.
   Green CI alone insufficient
-- **ASH_QUALIFIED** — Root closed under matched source/config and independent disposition.
+- **ASH_QUALIFIED** — Root closed under matched source/config and
+  independent disposition.
   Not merely synthetic PASS
 - **UNKNOWN** — Unmeasured, unverified, inaccessible or incomparable.
   Null, not zero
