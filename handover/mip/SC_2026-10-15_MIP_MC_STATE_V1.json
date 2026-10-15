@@ -371,5 +371,15 @@
     "handover/mc2/SESSION_CLOSE_CURRENT.json",
     "deepagent-handover-package/handover/04_handover_manifest.yaml",
     "GBOGEB/CODEX/docs/handover/RECURSIVE_IDEMPOTENT_METHOD_HANDOVER_v1.md"
-  ]
+  ],
+  "user_supplied_source": {
+    "filename": "Pasted text(20261015-125710).txt",
+    "scope": "MissionControl GOGREEN N+2 nine-track prior snapshot",
+    "sha256": "c3bf8a8eb52402dcce94565f199777bd3c49745ff10e81bce465c5723807835a",
+    "byte_length": 15923,
+    "line_count": 131,
+    "ingress": "user-attached unmodified source; no implied live GitHub authority",
+    "preserved_copy_for_user": "GOGREEN_N2_original_exact_20261015.txt",
+    "git_commit_of_original_bytes": null
+  }
 }
