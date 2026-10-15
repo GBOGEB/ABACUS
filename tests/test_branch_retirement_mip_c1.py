@@ -67,20 +67,34 @@ def test_default_base_fails_conservatively(monkeypatch):
 
 def _pr(state="OPEN", number=24):
     return brr.PullRequest(
-        number, "test", state, "topic", "main",
-        "https://github.com/GBOGEB/ABACUS/pull/24", "", None
+        number,
+        "test",
+        state,
+        "topic",
+        "main",
+        "https://github.com/GBOGEB/ABACUS/pull/24",
+        "",
+        None,
     )
 
 
 def _classify(monkeypatch, pr, *, merged=False, age=None, force=False, protected=()):
     monkeypatch.setattr(
-        brr, "run", lambda *args, **kwargs: SimpleNamespace(
-            returncode=0 if merged else 1
-        ),
+        brr,
+        "run",
+        lambda *args, **kwargs: SimpleNamespace(returncode=0 if merged else 1),
     )
     return brr.classify(
-        "topic", "origin/topic", "main", "refs/remotes/origin/main",
-        Path("."), pr, set(protected), 60, age, force
+        "topic",
+        "origin/topic",
+        "main",
+        "refs/remotes/origin/main",
+        Path("."),
+        pr,
+        set(protected),
+        60,
+        age,
+        force,
     )
 
 
@@ -91,9 +105,7 @@ def test_open_pr_is_never_deleted_even_when_reachable(monkeypatch):
 
 
 def test_operator_protected_pr_is_kept(monkeypatch):
-    result, reason = _classify(
-        monkeypatch, _pr("MERGED"), merged=True, protected=(24,)
-    )
+    result, reason = _classify(monkeypatch, _pr("MERGED"), merged=True, protected=(24,))
     assert result == "KEEP"
     assert "explicitly protected" in reason
 
@@ -136,9 +148,9 @@ def test_active_unmerged_pr_classified_for_merge_not_delete(monkeypatch):
 
 def test_invalid_commit_time_carries_unknown_age(monkeypatch):
     monkeypatch.setattr(brr, "optional_git", lambda *args, **kwargs: "invalid")
-    value, age = brr.commit_age(Path("."), "origin/topic", brr.datetime.now(
-        brr.timezone.utc
-    ))
+    value, age = brr.commit_age(
+        Path("."), "origin/topic", brr.datetime.now(brr.timezone.utc)
+    )
     assert value == "invalid"
     assert age is None
 
@@ -152,9 +164,9 @@ def test_missing_commit_time_carries_unknown_age(monkeypatch):
 
 def test_optional_git_returns_empty_after_failed_command(monkeypatch):
     monkeypatch.setattr(
-        brr, "run", lambda *args, **kwargs: SimpleNamespace(
-            stdout="unsafe", returncode=1
-        ),
+        brr,
+        "run",
+        lambda *args, **kwargs: SimpleNamespace(stdout="unsafe", returncode=1),
     )
     assert brr.optional_git(Path("."), "status") == ""
 
@@ -173,5 +185,6 @@ def test_remote_branches_ignore_head_and_empty_lines(monkeypatch):
         ),
     )
     assert brr.remote_branches(Path(".")) == [
-        ("origin/main", "bbb"), ("origin/topic", "ccc")
+        ("origin/main", "bbb"),
+        ("origin/topic", "ccc"),
     ]
