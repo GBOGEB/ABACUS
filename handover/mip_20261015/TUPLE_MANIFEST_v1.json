@@ -4,5 +4,7 @@
     "GOLDEN_THREAD.md": "7ec0a5689b43d42afa463c61c86b29365ff2c534bd26b3946d9a27c74008eaed"
   },
   "tuple_chain_tip_sha256": "2adb346533940bf7394c4be07e7b157bc9a88c6d4f505b80956027f043104c3a",
-  "certification": "SEMANTIC_ONLY"
+  "certification": "SEMANTIC_ONLY",
+  "tuple_count": 8,
+  "todo_count": 15
 }
