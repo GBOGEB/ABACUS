@@ -3,13 +3,12 @@
 Measurements never grant root closure or merge admission.
 """
 import argparse
-import hashlib
 import json
 import re
 from pathlib import Path
 
 SHA = re.compile(r"^[0-9a-f]{40}$")
-COUNT = re.compile(r"Ran (\\d+) tests? in ")
+COUNT = re.compile(r"Ran (\d+) tests? in ")
 SOURCE_PREFIX = "mission_control_lite/"
 SCHEMA = "mcl.coverage.pulse.v1"
 
@@ -96,7 +95,7 @@ def build(report, test_logs, source_sha, event_sha, run_id, previous=None):
     counts = {}
     for name, text in test_logs.items():
         matches = COUNT.findall(text)
-        if len(matches) != 1 or not re.search(r"(?m)^OK\\s*$", text):
+        if len(matches) != 1 or not re.search(r"(?m)^OK\s*$", text):
             raise ValueError("missing native passing test summary: " + name)
         counts[name] = int(matches[0])
         if counts[name] <= 0:
