@@ -310,6 +310,12 @@
       "disposition": "keep"
     },
     {
+      "pattern": "^(code-purple-dashboard-v31|code-purple-sut-gui)\\.yml$",
+      "cluster": "runtime_governance",
+      "lifecycle": "pr_domain",
+      "disposition": "keep"
+    },
+    {
       "pattern": "^leg5-federation-dashboard-proof\\.yml$",
       "cluster": "runtime_governance",
       "lifecycle": "pr_domain",
