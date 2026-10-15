@@ -10,12 +10,12 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v7
-      - uses: actions/setup-python@v7
+      - uses: actions/setup-python@v7.0.0
         with:
           python-version: '3.11'
       - run: pip install CoolProp==7.2.0
       - run: python -m models.qps_line_b.run_measured_sensitivity | tee p05f_receipt.json
-      - uses: actions/upload-artifact@v7
+      - uses: actions/upload-artifact@v7.0.2
         with:
           name: p05f-measured-vlp-sensitivity
           path: |
