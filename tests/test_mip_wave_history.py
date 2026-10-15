@@ -72,6 +72,62 @@ class HistoryTests(unittest.TestCase):
         source.write_text(json.dumps(self.receipt), encoding="utf-8")
         self.entry["receipt_sha256"] = hashlib.sha256(source.read_bytes()).hexdigest()
 
+    def test_native_coverage_accepts_exact_one_module(self):
+        report = {
+            "meta": {"branch_coverage": True},
+            "files": {
+                "tools/mip2/mip_wave_history.py": {
+                    "summary": {
+                        "covered_lines": 111, "num_statements": 111,
+                        "covered_branches": 18, "num_branches": 18,
+                    },
+                },
+            },
+            "totals": {
+                "covered_lines": 111, "num_statements": 111,
+                "covered_branches": 18, "num_branches": 18,
+            },
+        }
+        summary = MODULE.validate_native_module_coverage(
+            report, "tools/mip2/mip_wave_history.py"
+        )
+        self.assertEqual(summary, {"covered": 129, "eligible": 129})
+
+    def test_native_coverage_rejects_repo_wide_denominator(self):
+        report = {
+            "meta": {"branch_coverage": True},
+            "files": {
+                "tools/mip2/mip_wave_history.py": {
+                    "summary": {
+                        "covered_lines": 111, "num_statements": 111,
+                        "covered_branches": 18, "num_branches": 18,
+                    },
+                },
+            },
+            "totals": {
+                "covered_lines": 111, "num_statements": 19666,
+                "covered_branches": 18, "num_branches": 4534,
+            },
+        }
+        with self.assertRaisesRegex(ValueError, "scope/denominator"):
+            MODULE.validate_native_module_coverage(
+                report, "tools/mip2/mip_wave_history.py"
+            )
+
+    def test_native_coverage_rejects_extra_module(self):
+        report = {
+            "meta": {"branch_coverage": True},
+            "files": {
+                "tools/mip2/mip_wave_history.py": {"summary": {}},
+                "another.py": {"summary": {}},
+            },
+            "totals": {},
+        }
+        with self.assertRaisesRegex(ValueError, "coverage scope mismatch"):
+            MODULE.validate_native_module_coverage(
+                report, "tools/mip2/mip_wave_history.py"
+            )
+
     def test_single_synthetic_is_not_formal_progress(self):
         result = self.run_history()
         self.assertEqual(result["synthetic_count"], 1)
