@@ -71,6 +71,41 @@ class SourceObligations(unittest.TestCase):
         )
         self.assertEqual(r["families"]["branches"]["eligible_net_delta"], 0)
 
+    def test_stable_obligation_denominator_excludes_new_scope(self):
+        before = observed()
+        after = observed(
+            B,
+            {
+                "x.py": module([1, 2], [], [[1, 2], [2, 3]], []),
+                "new.py": module([1, 2, 3, 4], [], [[1, 2]], []),
+            },
+        )
+        result = compare(before, after)
+        statements = result["families"]["statements"]
+        branches = result["families"]["branches"]
+        self.assertEqual(statements["source_matched_eligible_obligations"], 2)
+        self.assertEqual(branches["source_matched_eligible_obligations"], 2)
+        self.assertEqual(statements["eligible_after"], 6)
+        self.assertEqual(statements["source_matched_scope_percent_after"], 33.3333)
+        self.assertEqual(branches["source_matched_scope_percent_after"], 66.6667)
+
+        changed = observed(
+            B,
+            {"x.py": module([1, 2], [], [[1, 2], [2, 3]], [])},
+            blobs={"x.py": B},
+        )
+        self.assertEqual(
+            compare(before, changed)["families"]["statements"][
+                "source_matched_eligible_obligations"
+            ], 0
+        )
+        unmatched = observed(B, config="changed")
+        self.assertIsNone(
+            compare(before, unmatched)["families"]["statements"][
+                "source_matched_eligible_obligations"
+            ]
+        )
+
     def test_new_fully_covered_file_cannot_fake_old_debt(self):
         a = observed()
         files = {
