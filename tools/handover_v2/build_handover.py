@@ -350,7 +350,7 @@ def comparability(before: dict, after: dict, label: str, cid: str) -> dict:
         row["reasons"].append("Ratio comparison required")
         return row
     a, b = before["basis"], after["basis"]
-    for k in ("scope_id", "paths", "unit_definition", "instrumentor"):
+    for k in ("scope_id", "paths", "unit_definition", "instrumentor", "selection"):
         if a[k] != b[k]:
             row["reasons"].append("Different " + k)
     for k in ("instrumentor_version", "configuration_sha256"):
