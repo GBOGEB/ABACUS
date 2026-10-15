@@ -1,7 +1,7 @@
 import argparse
 import json
 from pathlib import Path
-from .core import receipt, ingest, census, verify
+from .core import receipt, ingest, census
 def main():
     p=argparse.ArgumentParser()
     sub=p.add_subparsers(dest="cmd",required=True)
@@ -18,8 +18,6 @@ def main():
         Path(x.receipt).write_text(json.dumps(r,indent=2)+"\n")
     elif x.cmd=="ingest":
         data = json.loads(Path(x.receipt).read_text())
-        if not verify(data, x.artifact_root):
-            raise ValueError("artifact content does not match receipt")
-        ingest(x.db, data)
+        ingest(x.db, data, x.artifact_root)
     else:print(json.dumps(census(x.db),indent=2))
 if __name__=="__main__":main()
