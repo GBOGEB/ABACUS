@@ -1,0 +1,13 @@
+schema: abacus.everred.federation-policy.v1
+version: '3.1.0-alpha'
+mesh_reference: .mesh/MESH_DOCK.yaml
+consumer_authority: independent
+bindings:
+  - producer: GBOGEB/CODEX
+    consumer: GBOGEB/ABACUS
+    domain: lldb-dap
+    action: OBSERVATION_ONLY
+  - producer: GBOGEB/ABACUS
+    consumer: GBOGEB/cryoplant-project
+    domain: derived-diagnostics
+    action: OBSERVATION_ONLY

@@ -23,21 +23,81 @@ jobs:
         run: docker compose config --quiet
       - name: Build exact-head root image
         run: docker build --pull -t abacus-w93:${GITHUB_SHA} .
-      - name: Execute root service shell
+      - name: Execute root service shell with bounded diagnostics
+        shell: bash
         run: |
-          cid=$(docker run -d -p 18000:8000 abacus-w93:${GITHUB_SHA})
-          trap 'docker logs "$cid" || true; docker rm -f "$cid" || true' EXIT
+          set -Eeuo pipefail
+          out=.artifacts/w93/root
+          mkdir -p "$out"
+          image="abacus-w93:${GITHUB_SHA}"
+          cid=""
+          finish() {
+            rc=$?
+            trap - EXIT
+            if [ -n "$cid" ]; then
+              docker logs --tail 100 "$cid" > "$out/container.log" \
+                2>&1 || true
+              docker inspect --format '{{json .State}}' "$cid" \
+                > "$out/container-state.json" 2>/dev/null || true
+              docker rm -f "$cid" >/dev/null 2>&1 || true
+            fi
+            printf 'exit_code=%s\n' "$rc" > "$out/exit-code.txt"
+            (
+              cd "$out"
+              sha256sum ./*.txt ./*.log ./*.json \
+                2>/dev/null > SHA256SUMS
+            ) || true
+            exit "$rc"
+          }
+          trap finish EXIT
+          docker image inspect "$image" --format '{{.Id}}' \
+            > "$out/image-id.txt"
+          # Preserve loopback-only host publication.
+          cid=$(docker run -d -p 127.0.0.1:18000:8000 "$image")
+          docker port "$cid" 8000/tcp > "$out/port.txt"
+          grep -Fxq '127.0.0.1:18000' "$out/port.txt"
+          http_status=000
           for i in $(seq 1 20); do
-            if curl --fail --silent http://127.0.0.1:18000/ >/dev/null; then break; fi
+            http_status=$(
+              curl -sS -o /dev/null -w '%{http_code}' \
+                --connect-timeout 2 --max-time 3 \
+                http://127.0.0.1:18000/ || true
+            )
+            if [ "$http_status" = 200 ]; then break; fi
             sleep 1
           done
-          curl --fail --silent http://127.0.0.1:18000/ >/dev/null
-          test "$(docker inspect -f '{{.State.Health.Status}}' "$cid")" = healthy
-          printf 'source_sha=%s\nruntime_role=SERVICE_SHELL\ncontainer_execution=PASS\nengineering_credit_delta=0\n' "$GITHUB_SHA" | tee w93_root_docker_receipt.txt
-      - uses: actions/upload-artifact@v7
+          printf '%s\n' "$http_status" > "$out/http-status.txt"
+          test "$http_status" = 200
+          # Dockerfile has a 30-second HEALTHCHECK interval.
+          # Do not treat its initial 'starting' state as healthy.
+          health=unknown
+          for i in $(seq 1 60); do
+            health=$(docker inspect \
+              --format '{{.State.Health.Status}}' "$cid")
+            if [ "$health" = healthy ]; then break; fi
+            if [ "$health" = unhealthy ]; then break; fi
+            sleep 1
+          done
+          printf '%s\n' "$health" > "$out/health.txt"
+          test "$health" = healthy
+          {
+            printf 'source_sha=%s\n' "$GITHUB_SHA"
+            printf 'runtime_role=SERVICE_SHELL\n'
+            printf 'container_execution=PASS\n'
+            printf 'host_bind=127.0.0.1:18000\n'
+            printf 'container_port=8000/tcp\n'
+            printf 'http_status=%s\n' "$http_status"
+            printf 'health=%s\n' "$health"
+            printf 'engineering_credit_delta=0\n'
+          } > "$out/receipt.txt"
+      - name: Upload root service port, health, and debug evidence
+        if: always()
+        uses: actions/upload-artifact@v7.0.2
         with:
           name: w93-abacus-root-docker-${{ github.sha }}
-          path: w93_root_docker_receipt.txt
+          path: .artifacts/w93/root/
+          retention-days: 7
+          if-no-files-found: warn
 
   qplant-application:
     runs-on: ubuntu-latest
@@ -46,15 +106,28 @@ jobs:
       - uses: actions/checkout@v7
       - name: Validate QPLANT compose surfaces
         run: |
-          docker compose -f qplant/deployment/docker-compose.yml config --quiet
-          docker compose -f qplant/deployment/docker-compose.yml -f qplant/deployment/docker-compose.staging.yml config --quiet
-          docker compose -f qplant/deployment/docker-compose.yml -f qplant/deployment/docker-compose.production.yml config --quiet
+          docker compose -f qplant/deployment/docker-compose.yml \
+            config --quiet
+          docker compose -f qplant/deployment/docker-compose.yml \
+            -f qplant/deployment/docker-compose.staging.yml \
+            config --quiet
+          docker compose -f qplant/deployment/docker-compose.yml \
+            -f qplant/deployment/docker-compose.production.yml \
+            config --quiet
       - name: Build exact-head QPLANT application image
-        run: docker build --pull -t qplant-w93:${GITHUB_SHA} -f qplant/deployment/Dockerfile qplant
+        run: |
+          docker build --pull -t qplant-w93:${GITHUB_SHA} \
+            -f qplant/deployment/Dockerfile qplant
       - name: Record build receipt
         run: |
-          printf 'source_sha=%s\nruntime_role=QPLANT_APPLICATION\nimage_build=PASS\ncompose_validation=PASS\nengineering_credit_delta=0\n' "$GITHUB_SHA" | tee w93_qplant_docker_receipt.txt
-      - uses: actions/upload-artifact@v7
+          {
+            printf 'source_sha=%s\n' "$GITHUB_SHA"
+            printf 'runtime_role=QPLANT_APPLICATION\n'
+            printf 'image_build=PASS\n'
+            printf 'compose_validation=PASS\n'
+            printf 'engineering_credit_delta=0\n'
+          } | tee w93_qplant_docker_receipt.txt
+      - uses: actions/upload-artifact@v7.0.2
         with:
           name: w93-qplant-docker-${{ github.sha }}
           path: w93_qplant_docker_receipt.txt

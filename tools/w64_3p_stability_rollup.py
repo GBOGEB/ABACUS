@@ -4,8 +4,63 @@ from __future__ import annotations
 
 import argparse
 import json
+import math
 import statistics
 from pathlib import Path
+
+
+
+# A stable result requires actual, source-identifiable measurements, not defaults.
+POSITIVE_METRICS = (
+    "wall_ms_per_root_item",
+    "AHT_ms_per_root_item",
+    "terminal_items_per_worker_hour",
+    "evidence_yield_per_worker_minute",
+)
+
+
+def measurement_errors(run: dict[str, object]) -> list[str]:
+    """Reject incomplete or nonfinite evidence before comparative stability claims."""
+    errors = []
+    if run.get("valid") is not True:
+        errors.append("explicit_valid_true_required")
+    for field in ("run_id", "stratum", "measurement_contract", "source_sha"):
+        value = run.get(field)
+        if not isinstance(value, str) or not value.strip():
+            errors.append("missing_" + field)
+    for field in POSITIVE_METRICS:
+        value = run.get(field)
+        if (
+            isinstance(value, bool)
+            or not isinstance(value, (int, float))
+            or not math.isfinite(value)
+            or value <= 0
+        ):
+            errors.append("invalid_" + field)
+    for field in ("rework_rate", "DoV_gap_after"):
+        value = run.get(field)
+        if (
+            isinstance(value, bool)
+            or not isinstance(value, (int, float))
+            or not math.isfinite(value)
+            or value < 0
+            or (field == "rework_rate" and value > 1)
+        ):
+            errors.append("invalid_" + field)
+    losses = run.get("information_loss_failures")
+    if isinstance(losses, bool) or not isinstance(losses, int) or losses < 0:
+        errors.append("invalid_information_loss_failures")
+    return errors
+
+
+def unknown_speed_view() -> dict[str, None]:
+    return {
+        "wall_speedup_x": None,
+        "AHT_speedup_x": None,
+        "throughput_gain_fraction": None,
+        "evidence_yield_change_fraction": None,
+        "rework_change_absolute": None,
+    }
 
 
 def ratio(base: float, current: float) -> float | None:
@@ -29,7 +84,9 @@ def run_metric(run: dict[str, object], key: str) -> float:
 
 def comparable(a: dict[str, object], b: dict[str, object]) -> bool:
     return (
-        a.get("stratum") == b.get("stratum")
+        bool(a.get("stratum"))
+        and bool(a.get("measurement_contract"))
+        and a.get("stratum") == b.get("stratum")
         and a.get("measurement_contract") == b.get("measurement_contract")
     )
 
@@ -45,6 +102,8 @@ def speed_view(base: dict[str, object], current: dict[str, object]) -> dict[str,
 
 
 def classify(comparable_runs: list[dict[str, object]], current: dict[str, object]) -> tuple[str, list[str]]:
+    if measurement_errors(current) or any(measurement_errors(r) for r in comparable_runs):
+        return "INSUFFICIENT_EVIDENCE", ["incomplete_or_invalid_run_metrics"]
     if len(comparable_runs) < 3:
         return "INSUFFICIENT_EVIDENCE", ["fewer_than_3_comparable_valid_runs"]
     baseline = comparable_runs[0]
@@ -86,35 +145,48 @@ def main() -> int:
         line = line.strip()
         if line:
             row = json.loads(line)
-            if isinstance(row, dict) and row.get("valid", True):
+            if isinstance(row, dict):
                 rows.append(row)
     if not rows:
-        raise ValueError("history contains no valid runs")
+        raise ValueError("history contains no runs")
     current = rows[-1]
-    comp = [r for r in rows if comparable(r, current)]
-    if not comp:
-        comp = [current]
-    baseline = comp[0]
-    previous = comp[-2] if len(comp) > 1 else baseline
-    prior = comp[:-1][-5:]
-    if prior:
-        rolling_reference = {
-            "wall_ms_per_root_item": statistics.median(run_metric(r, "wall_ms_per_root_item") for r in prior),
-            "AHT_ms_per_root_item": statistics.median(run_metric(r, "AHT_ms_per_root_item") for r in prior),
-            "terminal_items_per_worker_hour": statistics.median(run_metric(r, "terminal_items_per_worker_hour") for r in prior),
-            "evidence_yield_per_worker_minute": statistics.median(run_metric(r, "evidence_yield_per_worker_minute") for r in prior),
-            "rework_rate": statistics.median(run_metric(r, "rework_rate") for r in prior),
-        }
+    invalid_current = measurement_errors(current)
+    comp = [
+        row for row in rows
+        if not measurement_errors(row) and comparable(row, current)
+    ]
+    if invalid_current or not comp:
+        stability = "INSUFFICIENT_EVIDENCE"
+        reasons = invalid_current or ["no_complete_comparable_runs"]
+        baseline_view = previous_view = rolling_view = unknown_speed_view()
     else:
-        rolling_reference = baseline
-    stability, reasons = classify(comp, current)
+        baseline = comp[0]
+        previous = comp[-2] if len(comp) > 1 else baseline
+        prior = comp[:-1][-5:]
+        if prior:
+            rolling_reference = {
+                "wall_ms_per_root_item": statistics.median(run_metric(r, "wall_ms_per_root_item") for r in prior),
+                "AHT_ms_per_root_item": statistics.median(run_metric(r, "AHT_ms_per_root_item") for r in prior),
+                "terminal_items_per_worker_hour": statistics.median(run_metric(r, "terminal_items_per_worker_hour") for r in prior),
+                "evidence_yield_per_worker_minute": statistics.median(run_metric(r, "evidence_yield_per_worker_minute") for r in prior),
+                "rework_rate": statistics.median(run_metric(r, "rework_rate") for r in prior),
+            }
+        else:
+            rolling_reference = baseline
+        stability, reasons = classify(comp, current)
+        baseline_view = speed_view(baseline, current)
+        previous_view = speed_view(previous, current)
+        rolling_view = speed_view(rolling_reference, current)
     result = {
         "schema_version": "TRIAGE-3P-STABILITY-ROLLUP-1.0.0",
         "current_run_id": current.get("run_id"),
         "comparable_valid_run_count": len(comp),
-        "speed_vs_fixed_baseline": speed_view(baseline, current),
-        "speed_vs_previous_valid": speed_view(previous, current),
-        "speed_vs_rolling_5_reference": speed_view(rolling_reference, current),
+        "history_record_count": len(rows),
+        "incomplete_run_count": sum(bool(measurement_errors(row)) for row in rows),
+        "latest_run_measurement_errors": invalid_current,
+        "speed_vs_fixed_baseline": baseline_view,
+        "speed_vs_previous_valid": previous_view,
+        "speed_vs_rolling_5_reference": rolling_view,
         "stability_class": stability,
         "stability_reasons": reasons,
         "claim_guard": "Do not call a speed increase stable unless stability_class is STABLE_IMPROVEMENT.",

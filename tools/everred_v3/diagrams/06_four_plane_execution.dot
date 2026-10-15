@@ -1,0 +1,30 @@
+digraph F {
+  graph [rankdir=TB, bgcolor="transparent", pad="0.28", nodesep="0.44", ranksep="0.70", fontname="DejaVu Sans", splines=ortho];
+  node [fontname="DejaVu Sans", fontsize=11, shape=box, style="rounded,filled", penwidth=1.3, margin="0.22,0.16"];
+  edge [color="#728499", arrowsize=.65, penwidth=1.3];
+  subgraph cluster_cfg { label="01  ORCHESTRATION"; labeljust=l; color="#B3C7EE"; bgcolor="#F0F6FF"; style=rounded;
+    config [label="YAML schema & format\nconfig + execution groups", fillcolor="#DBEAFE", color="#2563EB"];
+    dag [label="Dependency DAG\nCAS leases · no writes", fillcolor="#DBEAFE", color="#2563EB"];
+    config->dag;
+  }
+  subgraph cluster_probe { label="02  DIAGNOSTIC + RUNTIME"; labeljust=l; color="#C6B8F0"; bgcolor="#F7F3FF"; style=rounded;
+    dbg [label="LLDB / DAP · LDAB\nbacktraces · root candidates", fillcolor="#EDE9FE", color="#7C3AED"];
+    runtime [label="RHEL / UBI / Docker\nOS · ports · logs", fillcolor="#EDE9FE", color="#7C3AED"];
+    ci [label="GitHub Actions\nBandit · Coverage · JUnit", fillcolor="#EDE9FE", color="#7C3AED"];
+    {rank=same;dbg;runtime;ci;}
+  }
+  subgraph cluster_evid { label="03  FEDERATED EVIDENCE"; labeljust=l; color="#A6DCD1"; bgcolor="#F0FAF7"; style=rounded;
+    bind [label="Exact source and run binding\nSHA · job · artifact hash", fillcolor="#D4F5E8", color="#008577"];
+    join [label="Joined census + LDAB\nprovenance-aware metrics", fillcolor="#D4F5E8", color="#008577"];
+    pulse [label="KPI history · recurrence\nimmutable integration preview", fillcolor="#D4F5E8", color="#008577"];
+    bind->join->pulse;
+  }
+  subgraph cluster_adm { label="04  GOVERNED ADMISSION"; labeljust=l; color="#F5CDA5"; bgcolor="#FFF8F0"; style=rounded;
+    gate [label="Independent security / review\nbranch protection",fillcolor="#FFF1DD",color="#DD7B14"];
+    hold [label="HOLD\nUnknowns never become PASS",fillcolor="#FEE2E2",color="#B91C1C"];
+    gate->hold [label="red / unknown",fontcolor="#B91C1C"];
+  }
+  dag->dbg;dag->runtime;dag->ci;
+  dbg->bind;runtime->bind;ci->bind;
+  pulse->gate;
+}

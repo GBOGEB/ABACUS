@@ -21,7 +21,7 @@ jobs:
           ref: ${{ github.event.workflow_run.head_sha }}
 
       - name: Set up Python
-        uses: actions/setup-python@v7
+        uses: actions/setup-python@v7.0.0
         with:
           python-version: "3.12"
 
@@ -37,7 +37,8 @@ jobs:
           set -o pipefail
           start_ts="$(date -u +"%Y-%m-%dT%H:%M:%SZ")"
           echo "debug_start_time=${start_ts}" >> "$GITHUB_OUTPUT"
-          python -m pytest DMAIC_V3/tests -vv --tb=long --maxfail=1 2>&1 | tee debug_pytest.log
+          python -m pytest DMAIC_V3/tests -vv --tb=long --maxfail=1 \
+            2>&1 | tee debug_pytest.log
           echo "pytest_exit=${PIPESTATUS[0]}" >> "$GITHUB_OUTPUT"
 
       - name: Extract failure location
@@ -48,20 +49,32 @@ jobs:
           import re
           from pathlib import Path
 
-          log = Path("debug_pytest.log").read_text(encoding="utf-8", errors="replace")
+          log = Path("debug_pytest.log").read_text(
+              encoding="utf-8", errors="replace"
+          )
 
-          nodeid_match = re.search(r"FAILED\\s+([\\w\\-/.:\\[\\]]+)", log)
-          file_line_match = re.search(r'File "([^"]+)", line (\\d+)', log)
-          longrepr_match = re.search(r"E\\s+(.+)", log)
+          nodeid_match = re.search(r"(?m)^FAILED\s+(\S+)", log)
+          file_line_match = re.search(r'File "([^"]+)", line (\d+)', log)
+          longrepr_match = re.search(r"(?m)^E\s+(.+)", log)
 
           result = {
-              "failed_test": nodeid_match.group(1) if nodeid_match else "not-detected",
-              "file": file_line_match.group(1) if file_line_match else "not-detected",
+              "failed_test": (
+                  nodeid_match.group(1) if nodeid_match else "not-detected"
+              ),
+              "file": (
+                  file_line_match.group(1)
+                  if file_line_match else "not-detected"
+              ),
               "line": int(file_line_match.group(2)) if file_line_match else -1,
-              "error_excerpt": longrepr_match.group(1).strip() if longrepr_match else "not-detected",
+              "error_excerpt": (
+                  longrepr_match.group(1).strip()
+                  if longrepr_match else "not-detected"
+              ),
           }
 
-          Path("debug_failure_summary.json").write_text(json.dumps(result, indent=2), encoding="utf-8")
+          Path("debug_failure_summary.json").write_text(
+              json.dumps(result, indent=2), encoding="utf-8"
+          )
           print(json.dumps(result, indent=2))
           PYEOF
 
@@ -78,7 +91,9 @@ jobs:
             const runId = context.payload.workflow_run.id;
             const workflowId = context.payload.workflow_run.workflow_id;
 
-            const failure = JSON.parse(fs.readFileSync('debug_failure_summary.json', 'utf8'));
+            const failure = JSON.parse(
+              fs.readFileSync('debug_failure_summary.json', 'utf8')
+            );
             const jobsResp = await github.rest.actions.listJobsForWorkflowRun({
               owner,
               repo,
@@ -95,11 +110,16 @@ jobs:
               .filter(r => r.status === 'completed');
             const executions = recentRuns.length;
             const failRuns = recentRuns.filter(r =>
-              ['failure', 'timed_out', 'cancelled', 'action_required', 'startup_failure'].includes(r.conclusion)
+              [
+                'failure', 'timed_out', 'cancelled',
+                'action_required', 'startup_failure'
+              ].includes(r.conclusion)
             );
             const passRuns = recentRuns.filter(r => r.conclusion === 'success');
-            const successRate = executions > 0 ? ((passRuns.length / executions) * 100) : 0;
-            const failureRate = executions > 0 ? ((failRuns.length / executions) * 100) : 0;
+            const successRate = executions > 0
+              ? ((passRuns.length / executions) * 100) : 0;
+            const failureRate = executions > 0
+              ? ((failRuns.length / executions) * 100) : 0;
 
             const stepFrequency = new Map();
             const failDurations = [];
@@ -117,23 +137,34 @@ jobs:
                     const key = `${j.name} :: ${s.name}`;
                     stepFrequency.set(key, (stepFrequency.get(key) || 0) + 1);
                     if (s.started_at && s.completed_at) {
-                      const sec = (Date.parse(s.completed_at) - Date.parse(s.started_at)) / 1000;
-                      if (!Number.isNaN(sec) && sec >= 0 && (firstFailSeconds === null || sec < firstFailSeconds)) {
+                      const sec = (
+                        Date.parse(s.completed_at) - Date.parse(s.started_at)
+                      ) / 1000;
+                      if (
+                        !Number.isNaN(sec) && sec >= 0 &&
+                        (firstFailSeconds === null || sec < firstFailSeconds)
+                      ) {
                         firstFailSeconds = sec;
                       }
                     }
                   }
                 }
               }
-              if (firstFailSeconds !== null) failDurations.push(firstFailSeconds);
+              if (firstFailSeconds !== null) {
+                failDurations.push(firstFailSeconds);
+              }
             }
 
-            const modeStep = [...stepFrequency.entries()].sort((a, b) => b[1] - a[1])[0];
+            const modeStep = [...stepFrequency.entries()]
+              .sort((a, b) => b[1] - a[1])[0];
             failDurations.sort((a, b) => a - b);
             const medianFailSeconds = failDurations.length
               ? (failDurations.length % 2
                   ? failDurations[(failDurations.length - 1) / 2]
-                  : (failDurations[failDurations.length / 2 - 1] + failDurations[failDurations.length / 2]) / 2)
+                  : (
+                    failDurations[failDurations.length / 2 - 1] +
+                    failDurations[failDurations.length / 2]
+                  ) / 2)
               : null;
 
             const failedSteps = [];
@@ -152,22 +183,36 @@ jobs:
 
             const topStep = failedSteps[0];
             const failedStepBlock = topStep
-              ? `- Step: **${topStep.step}**\n- Job: **${topStep.job}**\n- Start: \`${topStep.started_at}\`\n- End: \`${topStep.completed_at}\``
-              : '- Step details could not be determined from the originating run.';
+              ? [
+                  `- Step: **${topStep.step}**`,
+                  `- Job: **${topStep.job}**`,
+                  `- Start: \`${topStep.started_at}\``,
+                  `- End: \`${topStep.completed_at}\``
+                ].join('\n')
+              : '- Step details could not be determined '
+                + 'from the originating run.';
 
             const body = [
               '## 🧰 Automatic Debug Rerun Report',
               '',
-              `Original failed run: [#${runId}](${context.serverUrl}/${owner}/${repo}/actions/runs/${runId})`,
-              `Debug rerun status: **${process.env.DEBUG_EXIT === '0' ? 'PASS on rerun ✅' : 'FAIL on rerun ❌'}**`,
+              `Original failed run: [#${runId}](` +
+                `${context.serverUrl}/${owner}/${repo}/actions/runs/${runId})`,
+              'Debug rerun status: **' +
+                (process.env.DEBUG_EXIT === '0'
+                  ? 'PASS on rerun ✅' : 'FAIL on rerun ❌') +
+                '**',
               `Debug start time: \`${process.env.DEBUG_START || 'n/a'}\``,
               '',
               '### Frequency / Mode / Median / Percentile',
               `- Executions sampled: **${executions}**`,
               `- Success: **${passRuns.length}** (${successRate.toFixed(1)}%)`,
               `- Fail: **${failRuns.length}** (${failureRate.toFixed(1)}%)`,
-              `- Mode failing step: **${modeStep ? modeStep[0] : 'n/a'}** (${modeStep ? modeStep[1] : 0} occurrences)`,
-              `- Median fail-step duration: **${medianFailSeconds !== null ? medianFailSeconds.toFixed(1) + 's' : 'n/a'}**`,
+              `- Mode failing step: **${modeStep ? modeStep[0] : 'n/a'}** ` +
+                `(${modeStep ? modeStep[1] : 0} occurrences)`,
+              '- Median fail-step duration: **' +
+                (medianFailSeconds !== null
+                  ? medianFailSeconds.toFixed(1) + 's' : 'n/a') +
+                '**',
               `- Failure percentile (recent): **${failureRate.toFixed(1)}th**`,
               '',
               '### Failure step/time (originating run)',
@@ -189,7 +234,7 @@ jobs:
 
       - name: Upload debug artifacts
         if: always()
-        uses: actions/upload-artifact@v7
+        uses: actions/upload-artifact@v7.0.2
         with:
           name: debug-rerun-${{ github.run_id }}
           path: |

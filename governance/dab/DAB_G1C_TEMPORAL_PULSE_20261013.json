@@ -1,0 +1,54 @@
+{
+  "schema": "abacus-dab-temporal-pulse/1.0.0",
+  "mission": "DAB-G1-C",
+  "evidence_kind": "READ_ONLY_MAIN_CENSUS_COMPARISON",
+  "baseline": {
+    "sha": "efdd1ec49ae5dacd9db1a68e9faf944fc5a81239",
+    "run_id": 38381405952,
+    "artifact_id": 11802689708,
+    "full_red": 2973,
+    "proposals": 890,
+    "files": 369
+  },
+  "current": {
+    "sha": "577f8d4760179b445d42a9b243b6669f286edb96",
+    "run_id": 38395143113,
+    "artifact_id": 11810839860,
+    "full_red": 2973,
+    "proposals": 890,
+    "files": 369
+  },
+  "delta": {
+    "full_red": 0,
+    "proposals": 0,
+    "files": 0,
+    "protected_e999": 0,
+    "per_family": "ALL_IDENTICAL"
+  },
+  "pilot": {
+    "branch": "work/dab-g1c-pilot-20261013",
+    "exact_head": "b43fa4a6f2a4c76a24490c90331543086fdb4631",
+    "matched_proposal_family": "F401",
+    "matched_finding": "tools/generic_3pm_burndown.py:8",
+    "source_finding_count": 1,
+    "after_exact_branch_census": null,
+    "accepted_net_reduction": null,
+    "syntax_tests": null,
+    "crew_launch_receipt": null
+  },
+  "gates": {
+    "G1_numeric": "PASS",
+    "G1_companion": "PENDING",
+    "G2": "HOLD",
+    "main_protection": "ABSENT"
+  },
+  "notes": [
+    "Both snapshots use same DAB census schema and command; main source SHA differs.",
+    "The source finding persists on newer main; separate pilot branch has no execution evidence.",
+    "null denotes missing evidence and is not zero.",
+    "No authenticated crew launch, merge, or coverage delta inferred."
+  ],
+  "authority_transfer": false,
+  "security_waiver": false,
+  "engineering_credit_delta": 0
+}

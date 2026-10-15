@@ -1,0 +1,21 @@
+flowchart TD
+    A["L01: exact SHA and producer version"] --> B["L02: enumerate root debug candidate files"]
+    A --> C["L03: enumerate nested debug candidate files"]
+    B --> D["L04: retained counts, samples, truncation flag"]
+    C --> D
+    A --> E["L05: execute nested federation contract diagnostic"]
+    E --> F{"13 contract checks and source digest valid?"}
+    F -- No --> G["FAIL source-bound evidence"]
+    F -- Yes --> H["L06: test negative paths and identity rejection"]
+    D --> H
+    H --> I["L07: two normalized repeatability passes"]
+    I --> J["L08: sanitized LDAB telemetry summary"]
+    J --> K{"Native LLDB session receipt supplied?"}
+    K -- No --> L["Runtime UNKNOWN, not zero or PASS"]
+    K -- Yes --> M["L09: independent runtime validation and port lease"]
+    M --> N["Observation-only LDAB join / root ledger"]
+    L --> N
+    N --> O["L10: review root repair and replay evidence"]
+    O --> P{"Review + protected main + required CI?"}
+    P -- No --> Q["HOLD / do not promote"]
+    P -- Yes --> R["Separate owner-authorized admission"]

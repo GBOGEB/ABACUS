@@ -1,0 +1,247 @@
+name: Bandit Disjoint Census
+on:
+  workflow_dispatch:
+  pull_request:
+    paths:
+      - 'scripts/bandit_disjoint_census.py'
+      - 'tests/test_bandit_disjoint_census.py'
+      - 'scripts/bandit_comparable_delta.py'
+      - 'tests/test_bandit_comparable_delta.py'
+      - 'ci/governance/workflow_policy.json'
+      - 'docs/ci/WORKFLOW_RATIONALIZATION.md'
+      - '.github/workflows/bandit-disjoint-census.yml'
+permissions:
+  contents: read
+jobs:
+  census:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-python@v7.0.0
+        with:
+          python-version: '3.12'
+      - name: Install scanner and test runner
+        run: python -m pip install 'bandit[toml]' pytest pytest-cov numpy
+      - name: Regression contracts
+        run: |
+          mkdir -p bandit-evidence
+          python -m pytest --noconftest -q \
+            tests/test_bandit_disjoint_census.py \
+            tests/test_bandit_comparable_delta.py \
+            --cov=scripts \
+            --cov-branch \
+            --cov-report=xml:bandit-evidence/coverage.xml \
+            --cov-report=json:bandit-evidence/coverage.json \
+            --cov-report=term-missing \
+            --junitxml=bandit-evidence/junit.xml
+      - name: Generate governance inventory as evidence
+        if: always()
+        run: |
+          mkdir -p bandit-evidence
+          python -m pip install PyYAML
+          python ci/governance/audit_ci_workflows.py \
+            --markdown-output bandit-evidence/WORKFLOW_RATIONALIZATION.md \
+            --json-output bandit-evidence/workflow-audit.json
+      - name: Verify deterministic second-pass governance generation
+        if: always()
+        run: |
+          python ci/governance/audit_ci_workflows.py \
+            --markdown-output \
+              bandit-evidence/WORKFLOW_RATIONALIZATION.second.md \
+            --json-output bandit-evidence/workflow-audit.second.json
+          cmp bandit-evidence/WORKFLOW_RATIONALIZATION.md \
+              bandit-evidence/WORKFLOW_RATIONALIZATION.second.md
+          cmp bandit-evidence/workflow-audit.json \
+              bandit-evidence/workflow-audit.second.json
+      - name: Check committed governance inventory
+        if: always()
+        run: |
+          python ci/governance/audit_ci_workflows.py \
+            --markdown-output docs/ci/WORKFLOW_RATIONALIZATION.md \
+            --check
+      - name: Validate coverage and JUnit receipts
+        if: always()
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          from xml.etree import ElementTree as ET
+          import json
+          root = Path("bandit-evidence")
+          junit = ET.parse(root / "junit.xml").getroot()
+          coverage = ET.parse(root / "coverage.xml").getroot()
+          suites = [junit] if junit.tag == "testsuite" else list(junit)
+          tests = sum(int(s.get("tests", "0")) for s in suites)
+          failures = sum(int(s.get("failures", "0")) for s in suites)
+          errors = sum(int(s.get("errors", "0")) for s in suites)
+          if tests < 1 or failures or errors:
+              raise SystemExit("JUnit missing tests or contains failures")
+          covered = int(coverage.get("lines-covered", "-1"))
+          valid = int(coverage.get("lines-valid", "-1"))
+          if valid < 1 or covered < 0 or covered > valid:
+              raise SystemExit("Invalid coverage numerator/denominator")
+          branch_covered = int(coverage.get("branches-covered", "-1"))
+          branch_valid = int(coverage.get("branches-valid", "-1"))
+          if (branch_valid < 1 or branch_covered < 0
+                  or branch_covered > branch_valid):
+              raise SystemExit("Missing or invalid branch coverage denominator")
+          receipt = {
+              "schema": "bandit.coverage.receipt.v1",
+              "tests": tests,
+              "failures": failures,
+              "errors": errors,
+              "covered_lines": covered,
+              "eligible_lines": valid,
+              "line_coverage_percent": round(100 * covered / valid, 2),
+              "covered_branches": branch_covered,
+              "eligible_branches": branch_valid,
+              "branch_coverage_percent": round(
+                  100 * branch_covered / branch_valid, 2),
+              "changed_line_coverage_percent": None,
+          }
+          detailed = json.loads(
+              (root / "coverage.json").read_text(encoding="utf-8"))
+          selected = {}
+          for filename in ("scripts/bandit_disjoint_census.py",
+                           "scripts/bandit_comparable_delta.py"):
+              files = detailed.get("files", {})
+              matches = [v for k, v in files.items()
+                         if k.replace("\\\\", "/").lstrip("./") == filename]
+              if len(matches) != 1:
+                  raise SystemExit(
+                      f"Missing/ambiguous module coverage: {filename}")
+              summary = matches[0].get("summary", {})
+              statements = int(summary.get("num_statements", -1))
+              missing = int(summary.get("missing_lines", -1))
+              branches = int(summary.get("num_branches", -1))
+              partial = int(summary.get("num_partial_branches", -1))
+              if (statements < 1 or not 0 <= missing <= statements
+                      or branches < 1):
+                  raise SystemExit(f"Invalid module coverage: {filename}")
+              covered_statements = statements - missing
+              # coverage.py summary reports missing_branches directly.
+              missing_branches = int(summary.get("missing_branches", -1))
+              if not 0 <= missing_branches <= branches:
+                  raise SystemExit(f"Invalid branch numerator: {filename}")
+              selected[filename] = {
+                  "covered_lines": covered_statements,
+                  "eligible_lines": statements,
+                  "covered_branches": branches - missing_branches,
+                  "eligible_branches": branches,
+              }
+          # Retain uncovered arc coordinates for successive bounded test waves.
+          for filename in selected:
+              filedata = next(v for k, v in detailed["files"].items()
+                              if k.replace(chr(92), "/").removeprefix("./")
+                              == filename)
+              missing_lines = filedata.get("missing_lines")
+              missing_arcs = filedata.get("missing_branches")
+              if (not isinstance(missing_lines, list)
+                      or not isinstance(missing_arcs, list)):
+                  raise SystemExit(
+                      f"Missing uncovered-line/arc telemetry: {filename}")
+              selected[filename]["uncovered_lines"] = missing_lines
+              selected[filename]["uncovered_arcs"] = missing_arcs
+          receipt["junit"] = {
+              "tests": tests, "failures": failures, "errors": errors,
+              "skipped": sum(int(s.get("skipped", "0")) for s in suites),
+          }
+          receipt["historical_reference"] = {
+              "status": "REFERENCE_ONLY_NOT_COMPARABLE_UNTIL_CONFIG_VERIFIED",
+              "source": "PR1923 coverage artifact 11852621313",
+              "source_sha": "bcf7766119355734655a184b1ae8b2fd7bab5131",
+              "covered_lines": 68, "eligible_lines": 94,
+              "covered_branches": 35, "eligible_branches": 46,
+          }
+          receipt["selected_modules"] = selected
+          selected_totals = {
+              key: sum(values[key] for values in selected.values())
+              for key in ("covered_lines", "eligible_lines",
+                          "covered_branches", "eligible_branches")
+          }
+          if (selected_totals["eligible_lines"] < 1
+                  or selected_totals["eligible_branches"] < 1):
+              raise SystemExit("Empty focused coverage denominator")
+          receipt["exact_head_sha"] = (
+              "${{ github.event.pull_request.head.sha || github.sha }}"
+          )
+          receipt["producer_run_id"] = "${{ github.run_id }}"
+          receipt["producer_run_attempt"] = "${{ github.run_attempt }}"
+          receipt["source_scope"] = sorted(selected)
+          receipt["selected_modules_totals"] = {
+              **selected_totals,
+              "line_coverage_percent": round(
+                  100 * selected_totals["covered_lines"] /
+                  selected_totals["eligible_lines"], 2),
+              "branch_coverage_percent": round(
+                  100 * selected_totals["covered_branches"] /
+                  selected_totals["eligible_branches"], 2),
+              "target_branch_coverage_percent": 90.0,
+              "target_reached": (
+                  10 * selected_totals["covered_branches"] >=
+                  9 * selected_totals["eligible_branches"]),
+          }
+          receipt["comparability"] = {
+              "status": "UNVERIFIED",
+              "required": ["same source module scope",
+                           "same coverage instrumentation and configuration",
+                           "previous and current source SHA"],
+              "main_coverage_uplift": None,
+              "changed_line_coverage": None,
+          }
+          (root / "coverage-receipt.json").write_text(
+              json.dumps(receipt, indent=2) + chr(10), encoding="utf-8"
+          )
+          PY
+      - name: Run full and configured scans with separate denominators
+        shell: bash
+        run: |
+          mkdir -p bandit-evidence
+          python - <<'PY'
+          import json
+          import subprocess
+          import sys
+          from pathlib import Path
+          scans = {
+              "full": ["-r", ".", "--exclude", ".git,.venv,venv,node_modules"],
+              "configured": [
+                  "-r", "DMAIC_V3", "--exclude",
+                  "DMAIC_V3/tests,DMAIC_V3/generators/"
+                  "test_integration_pipeline.py",
+                  "--skip", "B101,B603", "--severity-level", "medium",
+                  "--confidence-level", "medium",
+              ],
+          }
+          for name, flags in scans.items():
+              output = Path("bandit-evidence") / f"{name}.json"
+              cmd = [sys.executable, "-m", "bandit", *flags,
+                     "-f", "json", "-o", str(output)]
+              run = subprocess.run(
+                  cmd, capture_output=True, text=True, check=False
+              )
+              if run.returncode not in (0, 1) or not output.is_file():
+                  print(run.stdout, run.stderr, file=sys.stderr)
+                  raise SystemExit(
+                      f"Bandit {name} scan failed ({run.returncode})"
+                  )
+              data = json.loads(output.read_text(encoding="utf-8"))
+              if not isinstance(data.get("results"), list):
+                  raise SystemExit(f"Bandit {name} produced invalid report")
+              print(f"{name}: {len(data['results'])} findings")
+          PY
+      - name: Partition full scan by exclusive file owner
+        run: |
+          SCAN_SHA="${{ github.event.pull_request.head.sha || github.sha }}"
+          python scripts/bandit_disjoint_census.py \
+            --report bandit-evidence/full.json \
+            --exact-sha "$SCAN_SHA" \
+            --out bandit-evidence/disjoint.json
+          sha256sum bandit-evidence/*.json > bandit-evidence/SHA256SUMS
+      - name: Upload evidence regardless of scan findings
+        if: always()
+        uses: actions/upload-artifact@v7.0.2
+        with:
+          name: bandit-disjoint-${{ github.run_id }}
+          path: bandit-evidence/
+          if-no-files-found: error
+          retention-days: 30

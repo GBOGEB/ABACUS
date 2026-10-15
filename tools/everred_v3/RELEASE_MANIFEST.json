@@ -1,0 +1,278 @@
+{
+  "schema": "abacus.everred.release.v3",
+  "version": "3.0.0-alpha.2",
+  "status": "GOVERNED_DRAFT_PR_1933_UNMERGED",
+  "baseline_pr": 1933,
+  "baseline_revision": "3441b60df3cb88ef31280578a708f8689cb87f67",
+  "tested_unittests": 85,
+  "tests_status": "PASS_LOCAL",
+  "python_scope": "all src/*.py; branch=True",
+  "python_statement_covered": 702,
+  "python_statement_eligible": 829,
+  "python_branch_covered": 203,
+  "python_branch_eligible": 276,
+  "python_combined_coverage_percent": 81.9,
+  "browser_qa": "PASS_DESKTOP_MOBILE_INLINE_DOCUMENT",
+  "native_ci": "PENDING_NEW_EXACT_HEAD",
+  "merge_admission": "HOLD",
+  "evidence_note": "Historical data are not a live census; no security waiver or authority transfer.",
+  "files": [
+    {
+      "path": "README.md",
+      "size": 4875,
+      "sha256": "a4fb9a2441a564a321292080ecd2539449463d3cae7d728f166ea05576d1fc3c"
+    },
+    {
+      "path": "dashboard/index.html",
+      "size": 126577,
+      "sha256": "d6c14c9127811adcd8c85c6c30b63719b28232050fbafaf6953b40073552513a"
+    },
+    {
+      "path": "dashboard/template.html",
+      "size": 31769,
+      "sha256": "0218348d1d4247361dad8c02417a4f41912b8d81c5e3c7dddea3aab44435645d"
+    },
+    {
+      "path": "data/alerts.json",
+      "size": 59,
+      "sha256": "dd293408deb82f0128c9db9da85912872271e9a8545e03dfb7caff59320cbcbc"
+    },
+    {
+      "path": "data/joined_native.json",
+      "size": 366,
+      "sha256": "a0e7efc886a4400fab355bbf60bbb9fff48918326b3e59b2cfb7b3326afaa135"
+    },
+    {
+      "path": "data/kpi_history.jsonl",
+      "size": 1018,
+      "sha256": "d7d6a89335e0c6c3a1bd66967bf1085624a40c495311f8214a628e0e543df998"
+    },
+    {
+      "path": "data/ledger.jsonl",
+      "size": 7790,
+      "sha256": "1cb7964c8728665aadaa9141990d7468f51fd8d8f4dcfbb73bed22c87b06fbb7"
+    },
+    {
+      "path": "data/snapshot.json",
+      "size": 8040,
+      "sha256": "59fda69cff1b0b5e4107921081b9236d66019b26d3eae022f4fef8b187ccf718"
+    },
+    {
+      "path": "diagrams/01_execution_dag.dot",
+      "size": 3006,
+      "sha256": "de53960dd1f4279d5f552471119bab3e85e4ed03c01409dd5944d7a9dbf176a6"
+    },
+    {
+      "path": "diagrams/01_execution_dag.mmd",
+      "size": 1510,
+      "sha256": "3d0baf7ad70acb842c51bb068870c51690d2a129523f25023a9586ef7bf4501b"
+    },
+    {
+      "path": "diagrams/01_execution_dag.svg",
+      "size": 26401,
+      "sha256": "7064f2c7c07a93ac106870fc449fa3144555bad62fb245008ae10adeaf25d9c9"
+    },
+    {
+      "path": "diagrams/01_execution_dag_preview.png",
+      "size": 194940,
+      "sha256": "6bf6ad9270e985ff224231edb11cff7b085fdb3a620741c0fe4a5cf1c8423bdc"
+    },
+    {
+      "path": "diagrams/02_sipoc.dot",
+      "size": 1681,
+      "sha256": "c144a5ea176f47c39369e3334d21a8e071bb4fbb5918f022729dc5fdbc69fb1b"
+    },
+    {
+      "path": "diagrams/02_sipoc.mmd",
+      "size": 735,
+      "sha256": "2ec84e8b87023e5dadc52f665bba10969c8a5b7f78db3c93f3ca02a495b682c8"
+    },
+    {
+      "path": "diagrams/02_sipoc.svg",
+      "size": 11121,
+      "sha256": "d57d2a27f2395c144686a5633a9d671ce72b2571e2e569c4f15fb6fa8ca96de5"
+    },
+    {
+      "path": "diagrams/02_sipoc_preview.png",
+      "size": 94070,
+      "sha256": "bb394401e5988cd05c6f68a799d8e07aff089a2c78dbf1e549400e5a8686b707"
+    },
+    {
+      "path": "diagrams/03_causal_evidence.dot",
+      "size": 1843,
+      "sha256": "6391f4fa1fe4ccb5f0a7e2dcd5afcb1571185efd45c96ddd768ea47b3af7560e"
+    },
+    {
+      "path": "diagrams/03_causal_evidence.mmd",
+      "size": 713,
+      "sha256": "16616ccafe892c726e18501abdce578bc534a676c3ed3bab9e52f6b130614653"
+    },
+    {
+      "path": "diagrams/03_causal_evidence.svg",
+      "size": 17543,
+      "sha256": "ff81fc8eded3e56a34e71c497235fa0fd6595336f71c4f3f861da366f53db239"
+    },
+    {
+      "path": "diagrams/04_preflight_gates.dot",
+      "size": 1278,
+      "sha256": "7ce10e013b5c0375be28b2f698435bf53bc91022d1960b5f6e4c06f1b463bf59"
+    },
+    {
+      "path": "diagrams/04_preflight_gates.mmd",
+      "size": 445,
+      "sha256": "25017db59f03c8ddf59bcdbac1e467061bc8ab47b106625c11a616c70d02e5dd"
+    },
+    {
+      "path": "diagrams/04_preflight_gates.svg",
+      "size": 10149,
+      "sha256": "f4ac4f87e2f776a8e21eb388984ac578dcede2867e05871d5357438eb935644f"
+    },
+    {
+      "path": "diagrams/05_native_control.dot",
+      "size": 2371,
+      "sha256": "b6500575a81bbfce7b2ac8eaeff5d1ce117118bf340e03f7c1c6ca3a8c866b3f"
+    },
+    {
+      "path": "diagrams/05_native_control.mmd",
+      "size": 1693,
+      "sha256": "5cf4f3f65d61f522e40807a789e706c54e6acf6558d3c5a1e5e685c0b0d8cbd4"
+    },
+    {
+      "path": "diagrams/05_native_control.svg",
+      "size": 15871,
+      "sha256": "78bb331078558b22384ceaa824d3177d3b6d730c1497c8a3fa5510643c47b1bb"
+    },
+    {
+      "path": "docs/IMPLEMENTATION_PLAN.md",
+      "size": 4021,
+      "sha256": "56df6a43656cb15d194f1aa12bb49c059234ff197e6b9af6e4be8b07e394af25"
+    },
+    {
+      "path": "docs/NATIVE_EVIDENCE_CONTRACT.md",
+      "size": 3778,
+      "sha256": "42763341db2ceefd4ac35b8efdd8279b9459fe7f920c1d22f033bb4655325ba2"
+    },
+    {
+      "path": "docs/QA_REPORT_20261014.md",
+      "size": 1597,
+      "sha256": "32e216b65be5b0326ae833d7b278b48b1ecff36e23a2f179e007bc4ec5d011d4"
+    },
+    {
+      "path": "samples/new_event.json",
+      "size": 331,
+      "sha256": "4e36820987ce4ed4ff33bf717649ad7e720ade920849b5f10766dbb3858d555f"
+    },
+    {
+      "path": "scripts/build_dashboard.py",
+      "size": 1090,
+      "sha256": "809f444579bd767a716e3987b7fc561d2816a0d25a51697ca0ad0bb5df9a76a4"
+    },
+    {
+      "path": "scripts/build_joined_census.py",
+      "size": 357,
+      "sha256": "cd8666dfac7e0b7dc827de431697460ec01beefbdc8bb4a768996996463749b9"
+    },
+    {
+      "path": "scripts/collect_native.py",
+      "size": 1627,
+      "sha256": "4e52c6588d9d7bcf54dc00ab637a0f1bfd5d63c4ff7d345a5edbb6f2e92d158e"
+    },
+    {
+      "path": "scripts/ingest_bd_ldab_join.py",
+      "size": 3242,
+      "sha256": "fbe531e2f693436ecbbe6f5e7bc87db29953e39790aed66ebefed3b9edf4be21"
+    },
+    {
+      "path": "scripts/seed.py",
+      "size": 3557,
+      "sha256": "9adc0cdf72e29e30d860afc9073ac02dab977211d4495a10ecf302a971681103"
+    },
+    {
+      "path": "scripts/upgrade_dashboard.py",
+      "size": 3521,
+      "sha256": "08fc4261ba11c3934c170649c771b74c131d2c6b871cc623be8e3b886d0501f4"
+    },
+    {
+      "path": "src/admission.py",
+      "size": 6834,
+      "sha256": "7432c8a273c5901854f44a410791efc6981507a05e57214954e90aadf43b2216"
+    },
+    {
+      "path": "src/control.py",
+      "size": 5062,
+      "sha256": "0d0a6d0d9f6ff9d09a7decf5f0395288dd463b0f39cbdfcbe250a808641c724b"
+    },
+    {
+      "path": "src/coordination.py",
+      "size": 6993,
+      "sha256": "184aa4f120142dc1bd95b04d373a963eed39b744b4fb6e91f37503d5c2afd909"
+    },
+    {
+      "path": "src/everred.py",
+      "size": 13456,
+      "sha256": "58f04c77e1fb7e85b7f3bba05997742fbf0ba33ee34d853c3132d4eb3cda709f"
+    },
+    {
+      "path": "src/joined_census.py",
+      "size": 3696,
+      "sha256": "43a0096b80b3f98087d3dc420835ff8809a20268533208aba5d4521368161a09"
+    },
+    {
+      "path": "src/metrics.py",
+      "size": 4917,
+      "sha256": "3f5af8399a39fd41fed2c89861019d49d192dcf98177ed2d8342b2702f0ac0e2"
+    },
+    {
+      "path": "src/native_ingest.py",
+      "size": 20344,
+      "sha256": "a7f4d145d2dff38405420383a6775feba0f14d540528f8785bab51c88f6f4d83"
+    },
+    {
+      "path": "src/replay.py",
+      "size": 6186,
+      "sha256": "1591be0c76d7c21a603e660d1c4ff21659ce9a9e6cf42a68cf30d1ac74fe52f8"
+    },
+    {
+      "path": "tests/qa_browser.py",
+      "size": 2581,
+      "sha256": "b0f88466ac8ed1abd7361c8cb2a95c9adb450b6ac8b667c80aea56dbdd982a8b"
+    },
+    {
+      "path": "tests/test_everred.py",
+      "size": 5933,
+      "sha256": "242c0e12836b2480f27447eda370b626f8e3ee8c1dfec9bef9f40866b79ff3c6"
+    },
+    {
+      "path": "tests/test_git_transactions.py",
+      "size": 5139,
+      "sha256": "6e27a978397e40390fd1b53ece3a81c1a661d14daab04258a211c61da7d094d5"
+    },
+    {
+      "path": "tests/test_join_adapter.py",
+      "size": 1549,
+      "sha256": "dc18e77d4f2228ffd7a8742c077b32ca85b5a64d3199cc46030a24885aaf2f53"
+    },
+    {
+      "path": "tests/test_joined_census.py",
+      "size": 1407,
+      "sha256": "89e949568aa5ea5e62ebbce014a3477bff616edec4e6e66e8b3eb00570cdb0cd"
+    },
+    {
+      "path": "tests/test_metrics.py",
+      "size": 2773,
+      "sha256": "8481c4dc01a86bb2a9bdbe4f0dc137c20e86855d2dcf95ac4a84780c7ce9782f"
+    },
+    {
+      "path": "tests/test_v3_pipeline.py",
+      "size": 14977,
+      "sha256": "07147e719ec6adebc2bd4cbffea103d0eeb2b8744553448290b49958ad623c60"
+    }
+  ],
+  "external_repository_files": [
+    {
+      "repository_path": ".github/workflows/everred-v3-validation.yml",
+      "local_source": "workflows/everred-v3-validation.yml",
+      "sha256": "c401e01def0b8fb908ee47ac0e78b5d713644df4b42eee5dd801cf21b3c429da"
+    }
+  ]
+}

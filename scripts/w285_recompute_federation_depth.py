@@ -13,7 +13,7 @@ EXPECTED_TOPO = "df0ee845697578cd644691b81eafb2465249d772"
 
 def git_blob(path):
     b = path.read_bytes()
-    return hashlib.sha1(f"blob {len(b)}\0".encode()+b).hexdigest()
+    return hashlib.sha1(f"blob {len(b)}\0".encode()+b, usedforsecurity=False).hexdigest()
 
 
 def current_use(text):

@@ -1,0 +1,321 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="generator" content="EVERRED V3.1 four-plane dashboard"><meta name="source-digest" content="9536129857840441320dcb63e0025068766fd3752c532775ef34f62696872952">
+<title>EVERRED V3.1 | Four-plane runtime evidence</title>
+<style>
+:root{font-family:Inter,system-ui,Segoe UI,Arial,sans-serif;color:#1d2b42;background:#f5f8fc;font-synthesis:none}
+*{box-sizing:border-box}body{margin:0}header{background:#10223d;color:#fff;padding:34px max(25px,calc((100vw - 1350px)/2)) 44px}
+.eyebrow{font-size:12px;letter-spacing:.17em;font-weight:750;text-transform:uppercase;color:#a7c6ed}
+h1{font-size:clamp(27px,4vw,42px);font-weight:800;letter-spacing:-.035em;margin:8px 0}
+.lead{color:#bed0e9;max-width:900px;line-height:1.6}.line{display:flex;flex-wrap:wrap;gap:9px;margin-top:20px}
+.pill{border:1px solid #5c7999;border-radius:30px;padding:6px 12px;font-size:12px;color:#f2f7ff}
+.pill.hold{background:#553b25;color:#ffdda5;border-color:#b78142}
+main{max-width:1415px;margin:auto;padding:24px}section{margin-bottom:25px}
+.metrics{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:13px;margin-top:-47px;position:relative}
+.metric,.panel,.diagram{background:white;border:1px solid #dbe4f2;border-radius:14px;box-shadow:0 8px 24px #17294208}
+.metric{padding:20px;min-width:0}.metric strong{display:block;font-size:29px;letter-spacing:-.03em;color:#174b89;margin:5px 0}
+.label{font-size:12px;color:#5b6a7a;font-weight:700;letter-spacing:.05em;text-transform:uppercase}
+.metric small{color:#67778c}.panel{padding:21px;overflow:hidden}h2{font-size:20px;letter-spacing:-.02em;margin:1px 0 15px}h3{font-size:15px;color:#344860;margin:0 0 12px}
+.controls{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-bottom:15px}
+button,label.upload{font:inherit;border-radius:8px;border:1px solid #bfd1ea;padding:9px 13px;background:#f3f8ff;color:#174b89;cursor:pointer;font-size:13px;font-weight:650}
+button[aria-pressed=true]{background:#174b89;color:white;border-color:#174b89}button:focus-visible,label.upload:focus-within{outline:3px solid #77a5ff}
+input[type=file]{position:absolute;left:-99999px}.diagram-grid{display:grid;grid-template-columns:minmax(0,1.3fr) minmax(0,1fr);gap:16px}
+.diagram{padding:18px;min-width:0;overflow:hidden}.diagram svg{width:100%;height:auto;max-height:720px;display:block}
+.table-scroll{width:100%;overflow-x:auto}table{width:100%;border-collapse:collapse;text-align:left;min-width:650px}th,td{border-bottom:1px solid #e7eef6;padding:10px 12px;font-size:13px}th{font-size:11px;color:#627387;text-transform:uppercase;letter-spacing:.05em}tbody tr:hover{background:#f4f8ff}
+.status{font-size:11px;font-weight:750;border-radius:20px;padding:4px 10px;white-space:nowrap}
+.status.READY_TO_REQUEST{background:#e7f6ec;color:#1e7747}.status.WAITING_FOR_EVIDENCE{background:#fff5df;color:#8e5e09}
+.status.HOLD_REVIEW,.status.BLOCKED_UPSTREAM_RED{background:#ffe8e8;color:#963b3b}
+.note{font-size:13px;color:#5c6b7d;line-height:1.65}.provenance{font-size:12px;color:#54637b;overflow-wrap:anywhere}
+footer{max-width:1415px;margin:auto;padding:5px 24px 35px;color:#627387;font-size:12px}
+@media(max-width:950px){.metrics{grid-template-columns:repeat(2,minmax(0,1fr))}.diagram-grid{grid-template-columns:1fr}}
+@media(max-width:500px){header{padding:26px 19px 52px}main{padding:17px}.metrics{gap:8px;margin-top:-42px}.metric{padding:13px}.metric strong{font-size:24px}.panel{padding:15px}}
+</style></head><body>
+<header><div class="eyebrow">ABACUS / Governed recovery / V3.1 Alpha</div><h1>Four-plane operational evidence</h1>
+<p class="lead">Native diagnostic and runtime observations, YAML execution topology, LDAB correlation and independent admission. No historical, imported or local result is an automatic merge approval.</p>
+<div class="line"><span class="pill hold">Admission: HOLD</span><span class="pill">Local reproducibility only</span><span class="pill">GitHub exact-run corroboration pending</span></div></header>
+<main><section class="metrics" aria-label="Current counters">
+<article class="metric"><span class="label">Joined observations</span><strong id="metricObservations">1</strong><small>Local source-bound declarations</small></article>
+<article class="metric"><span class="label">DAG tasks</span><strong id="metricTasks">8</strong><small>Dependency validated</small></article>
+<article class="metric"><span class="label">Confirmed LDAB causes</span><strong id="metricRoots">UNKNOWN</strong><small>No causal acceptance implied</small></article>
+<article class="metric"><span class="label">RHEL / Docker proof</span><strong id="metricRuntime">UNKNOWN</strong><small>Native remote proof required</small></article>
+</section><section class="panel"><h2>Source provenance and interactive execution plan</h2>
+<p class="provenance">Snapshot digest: <code id="digest">9536129857840441320dcb63e0025068766fd3752c532775ef34f62696872952</code> · Declared source SHA: <code id="sha">57f66a7b62e07c26c5b18ca21f8b27e2f62b480f</code></p>
+<div class="controls" role="group" aria-label="Filter execution tasks"><button data-plane="all" aria-pressed="true">All planes</button>
+<button data-plane="diagnostic" aria-pressed="false">Diagnostic</button><button data-plane="runtime" aria-pressed="false">Runtime</button>
+<button data-plane="orchestration" aria-pressed="false">Orchestration</button><button data-plane="evidence" aria-pressed="false">Evidence</button>
+<label class="upload">Import JSON snapshot (unverified)<input type="file" id="importJson" accept=".json,application/json"></label></div>
+<div class="table-scroll"><table><thead><tr><th>Task / work package</th><th>Plane</th><th>Owner</th><th>Dependencies</th><th>Readiness</th></tr></thead><tbody id="taskRows"></tbody></table></div>
+<p class="note" id="importStatus">Snapshots are operator review aids. Imports never change trust, governance, branch protection or admission state.</p></section>
+<section><h2>Architecture and SIPOC</h2><div class="diagram-grid"><article class="diagram"><h3>Execution DAG</h3><svg width="636pt" height="892pt"
+ viewBox="0.00 0.00 636.32 892.32" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+<g id="graph0" class="graph" transform="scale(1 1) rotate(0) translate(20.16 872.16)">
+<title>F</title>
+<g id="clust1" class="cluster">
+<title>cluster_cfg</title>
+<path fill="#f0f6ff" stroke="#b3c7ee" d="M225,-658C225,-658 393,-658 393,-658 399,-658 405,-664 405,-670 405,-670 405,-832 405,-832 405,-838 399,-844 393,-844 393,-844 225,-844 225,-844 219,-844 213,-838 213,-832 213,-832 213,-670 213,-670 213,-664 219,-658 225,-658"/>
+<text text-anchor="middle" x="294" y="-828.8" font-family="DejaVu Sans" font-size="14.00">01 &#160;ORCHESTRATION</text>
+</g>
+<g id="clust2" class="cluster">
+<title>cluster_probe</title>
+<path fill="#f7f3ff" stroke="#c6b8f0" d="M20,-545C20,-545 576,-545 576,-545 582,-545 588,-551 588,-557 588,-557 588,-620 588,-620 588,-626 582,-632 576,-632 576,-632 20,-632 20,-632 14,-632 8,-626 8,-620 8,-620 8,-557 8,-557 8,-551 14,-545 20,-545"/>
+<text text-anchor="middle" x="116.5" y="-616.8" font-family="DejaVu Sans" font-size="14.00">02 &#160;DIAGNOSTIC + RUNTIME</text>
+</g>
+<g id="clust4" class="cluster">
+<title>cluster_evid</title>
+<path fill="#f0faf7" stroke="#a6dcd1" d="M212,-234C212,-234 406,-234 406,-234 412,-234 418,-240 418,-246 418,-246 418,-507 418,-507 418,-513 412,-519 406,-519 406,-519 212,-519 212,-519 206,-519 200,-513 200,-507 200,-507 200,-246 200,-246 200,-240 206,-234 212,-234"/>
+<text text-anchor="middle" x="301" y="-503.8" font-family="DejaVu Sans" font-size="14.00">03 &#160;FEDERATED EVIDENCE</text>
+</g>
+<g id="clust5" class="cluster">
+<title>cluster_adm</title>
+<path fill="#fff8f0" stroke="#f5cda5" d="M214,-8C214,-8 408,-8 408,-8 414,-8 420,-14 420,-20 420,-20 420,-196 420,-196 420,-202 414,-208 408,-208 408,-208 214,-208 214,-208 208,-208 202,-202 202,-196 202,-196 202,-20 202,-20 202,-14 208,-8 214,-8"/>
+<text text-anchor="middle" x="306.5" y="-192.8" font-family="DejaVu Sans" font-size="14.00">04 &#160;GOVERNED ADMISSION</text>
+</g>
+<!-- config -->
+<g id="node1" class="node">
+<title>config</title>
+<path fill="#dbeafe" stroke="#2563eb" stroke-width="1.3" d="M385.5,-813C385.5,-813 232.5,-813 232.5,-813 226.5,-813 220.5,-807 220.5,-801 220.5,-801 220.5,-777 220.5,-777 220.5,-771 226.5,-765 232.5,-765 232.5,-765 385.5,-765 385.5,-765 391.5,-765 397.5,-771 397.5,-777 397.5,-777 397.5,-801 397.5,-801 397.5,-807 391.5,-813 385.5,-813"/>
+<text text-anchor="middle" x="309" y="-792.2" font-family="DejaVu Sans" font-size="11.00">YAML schema &amp; format</text>
+<text text-anchor="middle" x="309" y="-780.2" font-family="DejaVu Sans" font-size="11.00">config + execution groups</text>
+</g>
+<!-- dag -->
+<g id="node2" class="node">
+<title>dag</title>
+<path fill="#dbeafe" stroke="#2563eb" stroke-width="1.3" d="M375,-714C375,-714 243,-714 243,-714 237,-714 231,-708 231,-702 231,-702 231,-678 231,-678 231,-672 237,-666 243,-666 243,-666 375,-666 375,-666 381,-666 387,-672 387,-678 387,-678 387,-702 387,-702 387,-708 381,-714 375,-714"/>
+<text text-anchor="middle" x="309" y="-693.2" font-family="DejaVu Sans" font-size="11.00">Dependency DAG</text>
+<text text-anchor="middle" x="309" y="-681.2" font-family="DejaVu Sans" font-size="11.00">CAS leases · no writes</text>
+</g>
+<!-- config&#45;&gt;dag -->
+<g id="edge1" class="edge">
+<title>config&#45;&gt;dag</title>
+<path fill="none" stroke="#728499" stroke-width="1.3" d="M309,-764.78C309,-764.78 309,-720.81 309,-720.81"/>
+<polygon fill="#728499" stroke="#728499" stroke-width="1.3" points="311.28,-720.81 309,-714.31 306.73,-720.81 311.28,-720.81"/>
+</g>
+<!-- dbg -->
+<g id="node3" class="node">
+<title>dbg</title>
+<path fill="#ede9fe" stroke="#7c3aed" stroke-width="1.3" d="M194,-601C194,-601 28,-601 28,-601 22,-601 16,-595 16,-589 16,-589 16,-565 16,-565 16,-559 22,-553 28,-553 28,-553 194,-553 194,-553 200,-553 206,-559 206,-565 206,-565 206,-589 206,-589 206,-595 200,-601 194,-601"/>
+<text text-anchor="middle" x="111" y="-580.2" font-family="DejaVu Sans" font-size="11.00">LLDB / DAP · LDAB</text>
+<text text-anchor="middle" x="111" y="-568.2" font-family="DejaVu Sans" font-size="11.00">backtraces · root candidates</text>
+</g>
+<!-- dag&#45;&gt;dbg -->
+<g id="edge5" class="edge">
+<title>dag&#45;&gt;dbg</title>
+<path fill="none" stroke="#728499" stroke-width="1.3" d="M234.75,-665.91C234.75,-634.91 234.75,-585 234.75,-585 234.75,-585 212.55,-585 212.55,-585"/>
+<polygon fill="#728499" stroke="#728499" stroke-width="1.3" points="212.55,-582.73 206.05,-585 212.55,-587.28 212.55,-582.73"/>
+</g>
+<!-- runtime -->
+<g id="node4" class="node">
+<title>runtime</title>
+<path fill="#ede9fe" stroke="#7c3aed" stroke-width="1.3" d="M367.5,-601C367.5,-601 250.5,-601 250.5,-601 244.5,-601 238.5,-595 238.5,-589 238.5,-589 238.5,-565 238.5,-565 238.5,-559 244.5,-553 250.5,-553 250.5,-553 367.5,-553 367.5,-553 373.5,-553 379.5,-559 379.5,-565 379.5,-565 379.5,-589 379.5,-589 379.5,-595 373.5,-601 367.5,-601"/>
+<text text-anchor="middle" x="309" y="-580.2" font-family="DejaVu Sans" font-size="11.00">RHEL / UBI / Docker</text>
+<text text-anchor="middle" x="309" y="-568.2" font-family="DejaVu Sans" font-size="11.00">OS · ports · logs</text>
+</g>
+<!-- dag&#45;&gt;runtime -->
+<g id="edge6" class="edge">
+<title>dag&#45;&gt;runtime</title>
+<path fill="none" stroke="#728499" stroke-width="1.3" d="M309,-665.76C309,-665.76 309,-607.7 309,-607.7"/>
+<polygon fill="#728499" stroke="#728499" stroke-width="1.3" points="311.28,-607.7 309,-601.2 306.73,-607.7 311.28,-607.7"/>
+</g>
+<!-- ci -->
+<g id="node5" class="node">
+<title>ci</title>
+<path fill="#ede9fe" stroke="#7c3aed" stroke-width="1.3" d="M568,-601C568,-601 424,-601 424,-601 418,-601 412,-595 412,-589 412,-589 412,-565 412,-565 412,-559 418,-553 424,-553 424,-553 568,-553 568,-553 574,-553 580,-559 580,-565 580,-565 580,-589 580,-589 580,-595 574,-601 568,-601"/>
+<text text-anchor="middle" x="496" y="-580.2" font-family="DejaVu Sans" font-size="11.00">GitHub Actions</text>
+<text text-anchor="middle" x="496" y="-568.2" font-family="DejaVu Sans" font-size="11.00">Bandit · Coverage · JUnit</text>
+</g>
+<!-- dag&#45;&gt;ci -->
+<g id="edge7" class="edge">
+<title>dag&#45;&gt;ci</title>
+<path fill="none" stroke="#728499" stroke-width="1.3" d="M383.25,-665.91C383.25,-634.91 383.25,-585 383.25,-585 383.25,-585 405.49,-585 405.49,-585"/>
+<polygon fill="#728499" stroke="#728499" stroke-width="1.3" points="405.49,-587.28 411.99,-585 405.49,-582.73 405.49,-587.28"/>
+</g>
+<!-- bind -->
+<g id="node6" class="node">
+<title>bind</title>
+<path fill="#d4f5e8" stroke="#008577" stroke-width="1.3" d="M393.5,-488C393.5,-488 224.5,-488 224.5,-488 218.5,-488 212.5,-482 212.5,-476 212.5,-476 212.5,-452 212.5,-452 212.5,-446 218.5,-440 224.5,-440 224.5,-440 393.5,-440 393.5,-440 399.5,-440 405.5,-446 405.5,-452 405.5,-452 405.5,-476 405.5,-476 405.5,-482 399.5,-488 393.5,-488"/>
+<text text-anchor="middle" x="309" y="-467.2" font-family="DejaVu Sans" font-size="11.00">Exact source and run binding</text>
+<text text-anchor="middle" x="309" y="-455.2" font-family="DejaVu Sans" font-size="11.00">SHA · job · artifact hash</text>
+</g>
+<!-- dbg&#45;&gt;bind -->
+<g id="edge8" class="edge">
+<title>dbg&#45;&gt;bind</title>
+<path fill="none" stroke="#728499" stroke-width="1.3" d="M206.38,-569C212.63,-569 216.5,-569 216.5,-569 216.5,-569 216.5,-494.59 216.5,-494.59"/>
+<polygon fill="#728499" stroke="#728499" stroke-width="1.3" points="218.78,-494.59 216.5,-488.09 214.23,-494.59 218.78,-494.59"/>
+</g>
+<!-- runtime&#45;&gt;bind -->
+<g id="edge9" class="edge">
+<title>runtime&#45;&gt;bind</title>
+<path fill="none" stroke="#728499" stroke-width="1.3" d="M309,-552.76C309,-552.76 309,-494.7 309,-494.7"/>
+<polygon fill="#728499" stroke="#728499" stroke-width="1.3" points="311.28,-494.7 309,-488.2 306.73,-494.7 311.28,-494.7"/>
+</g>
+<!-- ci&#45;&gt;bind -->
+<g id="edge10" class="edge">
+<title>ci&#45;&gt;bind</title>
+<path fill="none" stroke="#728499" stroke-width="1.3" d="M411.97,-569C405.55,-569 401.5,-569 401.5,-569 401.5,-569 401.5,-494.59 401.5,-494.59"/>
+<polygon fill="#728499" stroke="#728499" stroke-width="1.3" points="403.78,-494.59 401.5,-488.09 399.23,-494.59 403.78,-494.59"/>
+</g>
+<!-- join -->
+<g id="node7" class="node">
+<title>join</title>
+<path fill="#d4f5e8" stroke="#008577" stroke-width="1.3" d="M387,-389C387,-389 231,-389 231,-389 225,-389 219,-383 219,-377 219,-377 219,-353 219,-353 219,-347 225,-341 231,-341 231,-341 387,-341 387,-341 393,-341 399,-347 399,-353 399,-353 399,-377 399,-377 399,-383 393,-389 387,-389"/>
+<text text-anchor="middle" x="309" y="-368.2" font-family="DejaVu Sans" font-size="11.00">Joined census + LDAB</text>
+<text text-anchor="middle" x="309" y="-356.2" font-family="DejaVu Sans" font-size="11.00">provenance&#45;aware metrics</text>
+</g>
+<!-- bind&#45;&gt;join -->
+<g id="edge2" class="edge">
+<title>bind&#45;&gt;join</title>
+<path fill="none" stroke="#728499" stroke-width="1.3" d="M309,-439.78C309,-439.78 309,-395.81 309,-395.81"/>
+<polygon fill="#728499" stroke="#728499" stroke-width="1.3" points="311.28,-395.81 309,-389.31 306.73,-395.81 311.28,-395.81"/>
+</g>
+<!-- pulse -->
+<g id="node8" class="node">
+<title>pulse</title>
+<path fill="#d4f5e8" stroke="#008577" stroke-width="1.3" d="M398,-290C398,-290 220,-290 220,-290 214,-290 208,-284 208,-278 208,-278 208,-254 208,-254 208,-248 214,-242 220,-242 220,-242 398,-242 398,-242 404,-242 410,-248 410,-254 410,-254 410,-278 410,-278 410,-284 404,-290 398,-290"/>
+<text text-anchor="middle" x="309" y="-269.2" font-family="DejaVu Sans" font-size="11.00">KPI history · recurrence</text>
+<text text-anchor="middle" x="309" y="-257.2" font-family="DejaVu Sans" font-size="11.00">immutable integration preview</text>
+</g>
+<!-- join&#45;&gt;pulse -->
+<g id="edge3" class="edge">
+<title>join&#45;&gt;pulse</title>
+<path fill="none" stroke="#728499" stroke-width="1.3" d="M309,-340.78C309,-340.78 309,-296.81 309,-296.81"/>
+<polygon fill="#728499" stroke="#728499" stroke-width="1.3" points="311.28,-296.81 309,-290.31 306.73,-296.81 311.28,-296.81"/>
+</g>
+<!-- gate -->
+<g id="node9" class="node">
+<title>gate</title>
+<path fill="#fff1dd" stroke="#dd7b14" stroke-width="1.3" d="M395.5,-177C395.5,-177 222.5,-177 222.5,-177 216.5,-177 210.5,-171 210.5,-165 210.5,-165 210.5,-141 210.5,-141 210.5,-135 216.5,-129 222.5,-129 222.5,-129 395.5,-129 395.5,-129 401.5,-129 407.5,-135 407.5,-141 407.5,-141 407.5,-165 407.5,-165 407.5,-171 401.5,-177 395.5,-177"/>
+<text text-anchor="middle" x="309" y="-156.2" font-family="DejaVu Sans" font-size="11.00">Independent security / review</text>
+<text text-anchor="middle" x="309" y="-144.2" font-family="DejaVu Sans" font-size="11.00">branch protection</text>
+</g>
+<!-- pulse&#45;&gt;gate -->
+<g id="edge11" class="edge">
+<title>pulse&#45;&gt;gate</title>
+<path fill="none" stroke="#728499" stroke-width="1.3" d="M309,-241.76C309,-241.76 309,-183.7 309,-183.7"/>
+<polygon fill="#728499" stroke="#728499" stroke-width="1.3" points="311.28,-183.7 309,-177.2 306.73,-183.7 311.28,-183.7"/>
+</g>
+<!-- hold -->
+<g id="node10" class="node">
+<title>hold</title>
+<path fill="#fee2e2" stroke="#b91c1c" stroke-width="1.3" d="M400,-64C400,-64 222,-64 222,-64 216,-64 210,-58 210,-52 210,-52 210,-28 210,-28 210,-22 216,-16 222,-16 222,-16 400,-16 400,-16 406,-16 412,-22 412,-28 412,-28 412,-52 412,-52 412,-58 406,-64 400,-64"/>
+<text text-anchor="middle" x="311" y="-43.2" font-family="DejaVu Sans" font-size="11.00">HOLD</text>
+<text text-anchor="middle" x="311" y="-31.2" font-family="DejaVu Sans" font-size="11.00">Unknowns never become PASS</text>
+</g>
+<!-- gate&#45;&gt;hold -->
+<g id="edge4" class="edge">
+<title>gate&#45;&gt;hold</title>
+<path fill="none" stroke="#728499" stroke-width="1.3" d="M309,-128.76C309,-128.76 309,-70.7 309,-70.7"/>
+<polygon fill="#728499" stroke="#728499" stroke-width="1.3" points="311.28,-70.7 309,-64.2 306.73,-70.7 311.28,-70.7"/>
+<text text-anchor="middle" x="360.5" y="-92.8" font-family="Times,serif" font-size="14.00" fill="#b91c1c">red / unknown</text>
+</g>
+</g>
+</svg>
+</article><article class="diagram"><h3>SIPOC ownership and evidence flow</h3><svg width="941pt" height="101pt"
+ viewBox="0.00 0.00 941.12 101.12" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+<g id="graph0" class="graph" transform="scale(1 1) rotate(0) translate(16.56 84.56)">
+<title>S</title>
+<!-- s -->
+<g id="node1" class="node">
+<title>s</title>
+<path fill="#e0edff" stroke="#3372c8" stroke-width="1.3" d="M138,-68C138,-68 12,-68 12,-68 6,-68 0,-62 0,-56 0,-56 0,-12 0,-12 0,-6 6,0 12,0 12,0 138,0 138,0 144,0 150,-6 150,-12 150,-12 150,-56 150,-56 150,-62 144,-68 138,-68"/>
+<text text-anchor="middle" x="75" y="-43.2" font-family="DejaVu Sans" font-size="11.00">SUPPLIERS</text>
+<text text-anchor="middle" x="75" y="-31.2" font-family="DejaVu Sans" font-size="11.00">GitHub · CODEX</text>
+<text text-anchor="middle" x="75" y="-19.2" font-family="DejaVu Sans" font-size="11.00">RHEL / Docker owners</text>
+</g>
+<!-- i -->
+<g id="node2" class="node">
+<title>i</title>
+<path fill="#ede9fe" stroke="#7c3aed" stroke-width="1.3" d="M314,-68C314,-68 195,-68 195,-68 189,-68 183,-62 183,-56 183,-56 183,-12 183,-12 183,-6 189,0 195,0 195,0 314,0 314,0 320,0 326,-6 326,-12 326,-12 326,-56 326,-56 326,-62 320,-68 314,-68"/>
+<text text-anchor="middle" x="254.5" y="-43.2" font-family="DejaVu Sans" font-size="11.00">INPUTS</text>
+<text text-anchor="middle" x="254.5" y="-31.2" font-family="DejaVu Sans" font-size="11.00">Exact SHA · job/run</text>
+<text text-anchor="middle" x="254.5" y="-19.2" font-family="DejaVu Sans" font-size="11.00">YAML · logs · digests</text>
+</g>
+<!-- s&#45;&gt;i -->
+<g id="edge1" class="edge">
+<title>s&#45;&gt;i</title>
+<path fill="none" stroke="#5c7087" stroke-width="1.7" d="M150.25,-34C158.71,-34 167.35,-34 175.85,-34"/>
+<polygon fill="#5c7087" stroke="#5c7087" stroke-width="1.7" points="175.96,-36.45 182.96,-34 175.96,-31.55 175.96,-36.45"/>
+</g>
+<!-- p -->
+<g id="node3" class="node">
+<title>p</title>
+<path fill="#e3f8ec" stroke="#00836d" stroke-width="1.3" d="M505,-68C505,-68 371,-68 371,-68 365,-68 359,-62 359,-56 359,-56 359,-12 359,-12 359,-6 365,0 371,0 371,0 505,0 505,0 511,0 517,-6 517,-12 517,-12 517,-56 517,-56 517,-62 511,-68 505,-68"/>
+<text text-anchor="middle" x="438" y="-43.2" font-family="DejaVu Sans" font-size="11.00">PROCESS</text>
+<text text-anchor="middle" x="438" y="-31.2" font-family="DejaVu Sans" font-size="11.00">Validate → Ingest</text>
+<text text-anchor="middle" x="438" y="-19.2" font-family="DejaVu Sans" font-size="11.00">Join → Replay → Review</text>
+</g>
+<!-- i&#45;&gt;p -->
+<g id="edge2" class="edge">
+<title>i&#45;&gt;p</title>
+<path fill="none" stroke="#5c7087" stroke-width="1.7" d="M326.19,-34C334.59,-34 343.23,-34 351.8,-34"/>
+<polygon fill="#5c7087" stroke="#5c7087" stroke-width="1.7" points="351.98,-36.45 358.98,-34 351.98,-31.55 351.98,-36.45"/>
+</g>
+<!-- o -->
+<g id="node4" class="node">
+<title>o</title>
+<path fill="#fff2da" stroke="#d97706" stroke-width="1.3" d="M708,-68C708,-68 562,-68 562,-68 556,-68 550,-62 550,-56 550,-56 550,-12 550,-12 550,-6 556,0 562,0 562,0 708,0 708,0 714,0 720,-6 720,-12 720,-12 720,-56 720,-56 720,-62 714,-68 708,-68"/>
+<text text-anchor="middle" x="635" y="-43.2" font-family="DejaVu Sans" font-size="11.00">OUTPUTS</text>
+<text text-anchor="middle" x="635" y="-31.2" font-family="DejaVu Sans" font-size="11.00">Census · root hypotheses</text>
+<text text-anchor="middle" x="635" y="-19.2" font-family="DejaVu Sans" font-size="11.00">KPIs · HOLD</text>
+</g>
+<!-- p&#45;&gt;o -->
+<g id="edge3" class="edge">
+<title>p&#45;&gt;o</title>
+<path fill="none" stroke="#5c7087" stroke-width="1.7" d="M517.19,-34C525.55,-34 534.11,-34 542.61,-34"/>
+<polygon fill="#5c7087" stroke="#5c7087" stroke-width="1.7" points="542.72,-36.45 549.72,-34 542.72,-31.55 542.72,-36.45"/>
+</g>
+<!-- c -->
+<g id="node5" class="node">
+<title>c</title>
+<path fill="#e0edff" stroke="#3372c8" stroke-width="1.3" d="M896,-68C896,-68 765,-68 765,-68 759,-68 753,-62 753,-56 753,-56 753,-12 753,-12 753,-6 759,0 765,0 765,0 896,0 896,0 902,0 908,-6 908,-12 908,-12 908,-56 908,-56 908,-62 902,-68 896,-68"/>
+<text text-anchor="middle" x="830.5" y="-43.2" font-family="DejaVu Sans" font-size="11.00">CUSTOMERS</text>
+<text text-anchor="middle" x="830.5" y="-31.2" font-family="DejaVu Sans" font-size="11.00">DOW · Mission Control</text>
+<text text-anchor="middle" x="830.5" y="-19.2" font-family="DejaVu Sans" font-size="11.00">Independent reviewers</text>
+</g>
+<!-- o&#45;&gt;c -->
+<g id="edge4" class="edge">
+<title>o&#45;&gt;c</title>
+<path fill="none" stroke="#5c7087" stroke-width="1.7" d="M720.03,-34C728.55,-34 737.21,-34 745.74,-34"/>
+<polygon fill="#5c7087" stroke="#5c7087" stroke-width="1.7" points="745.86,-36.45 752.86,-34 745.86,-31.55 745.86,-36.45"/>
+</g>
+</g>
+</svg>
+</article></div></section>
+<section class="panel"><h2>Acceptance boundaries</h2><p class="note">Source and executed SHA are independent fields. A CLI installation is not an executing debug session; a Docker file is not a running container; a port observed during a temporary probe is not a persistent listener. RHEL is UNKNOWN unless an authenticated RHEL runner receipt arrives. The existing ABACUS policy JSON and mesh YAML remain their respective authorities.</p>
+<p class="note">Only an external eligible reviewer plus protected-branch security and CI controls may authorize merge. <strong>This dashboard cannot.</strong></p></section></main>
+<footer>EVERRED V3.1 · Review-only visualization · Generated from one four-plane preflight JSON · No live polling or credentials.</footer>
+<script type="application/json" id="embeddedSnapshot">{"claims": {"admission": "HOLD", "current_healthy_ports": null, "debugger_sessions_verified": null, "docker_running_verified": null, "ldab_roots_confirmed": null, "remote_worker_count": null, "self_hosted_rhel_verified": null}, "debugger_availability": {"lldb_cli": "ERROR", "real_step_count": null, "session_status": "NOT_EXECUTED", "version_probe": {"exit_code": 127, "status": "EXECUTED", "stderr": {"excerpt": "/usr/local/swift/usr/bin/lldb: error while loading shared libraries: libpython3.11.so.1.0: cannot open shared object file: No such file or directory\n", "is_live": false, "raw_bytes": 149, "raw_sha256": "a39ee7952b60a76be0988fcc5941075a906778fdceff8b31297f86b1fb077a63", "redacted": true, "truncated": false}, "stdout": {"excerpt": "", "is_live": false, "raw_bytes": 0, "raw_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855", "redacted": true, "truncated": false}}}, "debugger_execution": {"real_step_count": null, "status": "NOT_REQUESTED"}, "dispatch_preview": {"admission": "HOLD", "executed": false, "mutations": false, "plan_digest": "9c8d86b426fc92bba9da933e346def046877e7ee9ff632b30d695bbf6278f7a5", "schema": "abacus.everred.dispatch-preview.v1", "tasks": [{"actor": "ABACUS", "id": "YAML_PREFLIGHT", "needs": [], "plane": "orchestration", "state": "READY_TO_REQUEST"}, {"actor": "CODEX", "id": "DEBUG_LLDB", "needs": ["YAML_PREFLIGHT"], "plane": "diagnostic", "state": "READY_TO_REQUEST"}, {"actor": "ABACUS", "id": "GITHUB_RECEIPT", "needs": ["YAML_PREFLIGHT"], "plane": "evidence", "state": "READY_TO_REQUEST"}, {"actor": "ABACUS", "id": "LDAB_CORRELATION", "needs": ["GITHUB_RECEIPT", "DEBUG_LLDB"], "plane": "diagnostic", "state": "WAITING_FOR_EVIDENCE"}, {"actor": "ABACUS", "id": "RUNTIME_HOST", "needs": ["YAML_PREFLIGHT"], "plane": "runtime", "state": "READY_TO_REQUEST"}, {"actor": "ABACUS", "id": "JOINED_CENSUS", "needs": ["GITHUB_RECEIPT", "LDAB_CORRELATION", "RUNTIME_HOST"], "plane": "evidence", "state": "WAITING_FOR_EVIDENCE"}, {"actor": "ABACUS", "id": "KPI_PULSE", "needs": ["JOINED_CENSUS"], "plane": "evidence", "state": "WAITING_FOR_EVIDENCE"}, {"actor": "ELIGIBLE_REVIEWER", "id": "CONTROLLED_MUTATION", "needs": ["KPI_PULSE"], "plane": "orchestration", "state": "HOLD_REVIEW"}]}, "docker_availability": {"containers": null, "daemon": "UNKNOWN", "docker_cli": "UNAVAILABLE"}, "federation": {"authority_transfer": false, "binding_count": 2, "policy_digest": "4759b570b5430b6f0eee741d354ab1cc13182c8869481a33aadc1ed13bf8c91f"}, "joined_census": {"authority_transfer": false, "global_admission": "HOLD", "group_count": 1, "groups": [{"admission": "HOLD", "confirmed_causes": null, "job_ids": [], "observations": 1, "planes": {"diagnostic": [], "evidence": [], "orchestration": [], "runtime": ["FP-3097ae8be1cd756bdc61bb2d173a"]}, "repository": "GBOGEB/ABACUS", "run_id": 999001, "source_sha": "57f66a7b62e07c26c5b18ca21f8b27e2f62b480f"}], "observation_count": 1, "schema": "abacus.everred.four_plane.census.v1", "unknown_is_zero": false, "worker_sessions_verified": null}, "plan": {"dispatch_authority": false, "mutating_tasks": ["CONTROLLED_MUTATION"], "plan_digest": "9c8d86b426fc92bba9da933e346def046877e7ee9ff632b30d695bbf6278f7a5", "schema": "abacus.everred.execution-plan.v1", "source_leases_required": true, "task_count": 8, "topological_order": ["YAML_PREFLIGHT", "DEBUG_LLDB", "GITHUB_RECEIPT", "LDAB_CORRELATION", "RUNTIME_HOST", "JOINED_CENSUS", "KPI_PULSE", "CONTROLLED_MUTATION"]}, "receipts": [{"artifact_sha256": null, "causal_disposition": "UNCLASSIFIED", "data": {"architecture": "x86_64", "container_health": null, "container_id": null, "container_runtime": "none", "evidence_status": "LOCAL_HOST_OBSERVED_NOT_REMOTE_RHEL_PROOF", "exit_code": null, "fips_mode": 0, "image_digest": null, "kernel": "6.18.44", "logs": [], "os_family": "Debian", "os_release": "Debian GNU/Linux 13 (trixie)", "ports": [{"host": "127.0.0.1", "note": "ephemeral socket closed; not evidence of a running service", "port": 46637, "probe_id": "loopback-self-test", "state": "OBSERVED_CLOSED", "tested_at": "2026-10-14T12:32:59.220315Z"}], "runner_id": null}, "domain": "host_container", "merge_authority": false, "plane": "runtime", "receipt_id": "FP-3097ae8be1cd756bdc61bb2d173a", "schema": "abacus.everred.four_plane.receipt.v1", "source_binding": {"executed_sha": null, "job_id": null, "repository": "GBOGEB/ABACUS", "run_id": 999001, "source_sha": "57f66a7b62e07c26c5b18ca21f8b27e2f62b480f"}, "trust": "LOCAL_OBSERVED"}], "result_digest": "767cd63d7458011752682d4680a31b67dd2ec8d3fe566b0dc9f512acc77e5991", "schema": "abacus.everred.four_plane.preflight.v1", "source_binding": {"executed_sha": null, "job_id": null, "repository": "GBOGEB/ABACUS", "run_id": 999001, "source_sha": "57f66a7b62e07c26c5b18ca21f8b27e2f62b480f"}}</script>
+<script>
+"use strict";
+let current=JSON.parse(document.getElementById('embeddedSnapshot').textContent);
+let filter='all';const rows=document.getElementById('taskRows');
+function node(tag, text){let el=document.createElement(tag);el.textContent=String(text??'UNKNOWN');return el;}
+function render(){
+ const tasks=current.dispatch_preview.tasks;
+ document.getElementById('metricObservations').textContent=current.joined_census.observation_count;
+ document.getElementById('metricTasks').textContent=tasks.length;
+ document.getElementById('metricRoots').textContent='UNKNOWN';
+ document.getElementById('metricRuntime').textContent='UNKNOWN';
+ document.getElementById('sha').textContent=current.source_binding.source_sha;
+ rows.replaceChildren();
+ for(const row of tasks){if(filter!=='all'&&row.plane!==filter)continue;
+   const tr=document.createElement('tr');
+   for(const v of [row.id,row.plane,row.actor,row.needs.join(' · ')||'None'])tr.appendChild(node('td',v));
+   const cell=node('td','');let badge=node('span',row.state);badge.className='status '+row.state;cell.appendChild(badge);tr.appendChild(cell);rows.appendChild(tr);
+ }
+}
+for(const btn of document.querySelectorAll('button[data-plane]')){
+ btn.addEventListener('click',()=>{filter=btn.dataset.plane;for(const b of document.querySelectorAll('button[data-plane]'))b.setAttribute('aria-pressed',String(b===btn));render();});
+}
+document.getElementById('importJson').addEventListener('change',async e=>{
+ const file=e.target.files[0];if(!file)return;
+ try {if(file.size>2e6)throw Error('Snapshot too large');let d=JSON.parse(await file.text());
+  if(d.schema!=='abacus.everred.four_plane.preflight.v1'||!Array.isArray(d.dispatch_preview?.tasks)||
+     !Array.isArray(d.receipts)||!d.source_binding?.source_sha||d.claims?.admission!=='HOLD'||
+     d.joined_census?.observation_count!==d.receipts.length)throw Error('Invalid/untrusted snapshot contract');
+  current=d;filter='all';for(const b of document.querySelectorAll('button[data-plane]'))b.setAttribute('aria-pressed',String(b.dataset.plane==='all'));
+  document.getElementById('importStatus').textContent='Imported locally for review — MANUAL_UNVERIFIED. No admission credit.';render();
+ }catch(err){document.getElementById('importStatus').textContent='Import rejected: '+err.message;}
+ e.target.value='';
+});
+render();
+</script></body></html>

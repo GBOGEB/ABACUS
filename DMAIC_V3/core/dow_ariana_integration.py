@@ -290,9 +290,14 @@ class DOWArianaIntegration:
 
         results = self.test_bridge.run_tests_parallel(test_configs, max_workers=2)
 
-        all_passed = all(r.success for r in results.values())
+        # Missing or unexpected bridge results shall not be a false green.
+        expected_tests = {test['name'] for test in test_configs}
+        results_complete = set(results) == expected_tests
+        all_passed = results_complete and all(r.success for r in results.values())
 
         test_summary = {
+            'expected_tests': len(expected_tests),
+            'results_complete': results_complete,
             'total_tests': len(results),
             'passed': sum(1 for r in results.values() if r.success),
             'failed': sum(1 for r in results.values() if not r.success),
@@ -301,7 +306,7 @@ class DOWArianaIntegration:
                        for name, r in results.items()}
         }
 
-        print(f"  ✅ Integration tests: {test_summary['passed']}/{test_summary['total']} passed")
+        print(f"  ✅ Integration tests: {test_summary['passed']}/{test_summary['total_tests']} passed")
 
         return test_summary
 

@@ -1,8 +1,6 @@
 name: Security Dashboard — REX Telemetry
 
-# Aggregation is deliberately scheduled/manual. Scanner results remain authoritative
-# in their own workflows; rebuilding a dashboard after every scanner completion
-# creates workflow_run fan-out without adding evidence authority.
+# Scheduled, aggregate-only observation. No bot commit or direct main push.
 on:
   schedule:
     - cron: '0 8 * * 1'
@@ -13,7 +11,7 @@ concurrency:
   cancel-in-progress: true
 
 permissions:
-  contents: write
+  contents: read
   security-events: read
 
 jobs:
@@ -24,24 +22,29 @@ jobs:
     steps:
       - uses: actions/checkout@v7
         with:
-          fetch-depth: 0
-          token: ${{ secrets.GITHUB_TOKEN }}
-      - uses: actions/setup-python@v7
+          persist-credentials: false
+      - uses: actions/setup-python@v7.0.0
         with:
           python-version: '3.10'
-      - name: Generate dashboard
+      - name: Generate aggregate-only dashboard
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           GITHUB_REPO: ${{ github.repository }}
         run: python .github/scripts/security_dashboard.py
-      - name: Commit dashboard if changed
+      - name: Stage source-bound artifact receipt
+        shell: bash
         run: |
-          git config user.name "ABACUS Security Bot"
-          git config user.email "abacus-security@noreply"
-          git add .github/security/dashboard.md .github/security/alerts.yaml
-          if git diff --cached --quiet; then
-            echo "No changes to dashboard - skipping commit"
-          else
-            git commit -m "security(dashboard): auto-update REX telemetry [skip ci]"
-            git push
-          fi
+          set -euo pipefail
+          out="$RUNNER_TEMP/security-dashboard"
+          mkdir -p "$out"
+          cp .github/security/dashboard.md "$out/dashboard.md"
+          ( cd "$out" && sha256sum dashboard.md > dashboard.sha256 )
+          printf 'repository=%s\nsource_sha=%s\nrun_id=%s\n' \
+            "$GITHUB_REPOSITORY" "$GITHUB_SHA" "$GITHUB_RUN_ID" \
+            > "$out/source.txt"
+      - uses: actions/upload-artifact@v7.0.2
+        with:
+          name: security-dashboard-aggregate-${{ github.run_id }}
+          path: ${{ runner.temp }}/security-dashboard/
+          if-no-files-found: error
+          retention-days: 30

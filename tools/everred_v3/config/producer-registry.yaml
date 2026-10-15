@@ -1,0 +1,27 @@
+schema: abacus.everred.producers.v1
+version: '3.1.0-alpha'
+producer_types:
+  - id: github-actions
+    plane: evidence
+    artifact: run_job_json
+    native_identity_required: true
+  - id: bandit
+    plane: evidence
+    artifact: bandit_json
+    native_identity_required: true
+  - id: lldb-dap
+    plane: diagnostic
+    artifact: debugger_session_json
+    native_identity_required: true
+  - id: ldab
+    plane: diagnostic
+    artifact: causal_root_link_json
+    native_identity_required: true
+  - id: docker
+    plane: runtime
+    artifact: host_container_snapshot_json
+    native_identity_required: true
+  - id: rhel
+    plane: runtime
+    artifact: os_kernel_runner_receipt_json
+    native_identity_required: true

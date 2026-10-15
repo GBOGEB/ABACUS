@@ -536,3 +536,75 @@ def main(argv: list[str] | None = None) -> int:  # pragma: no cover - workflow i
 
 if __name__ == "__main__":  # pragma: no cover
     raise SystemExit(main())
+
+
+# Wave 1: deterministic, overlapping test taxonomy; never use as admission proof.
+TEST_CATEGORY_RULES = (
+    ("C0_SECURITY", ("bandit", "security", "unsafe_path", "traversal")),
+    ("C1_GOVERNANCE", ("governance", "feedback_gate", "authority", "admission")),
+    ("C2_CORE", ("dmaic", "algorithm", "validation", "calculation")),
+    ("C3_INTEGRATION", ("integration", "bridge", "pipeline")),
+    ("C4_RUNTIME", ("runtime", "docker", "rhel", "ldab")),
+    ("C5_COMPATIBILITY", ("compat", "python_matrix", "dependency")),
+    ("C6_DATA", ("schema", "yaml", "document", "json")),
+    ("C7_REGRESSION", ("regression", "first_red", "repair")),
+    ("C8_END_TO_END", ("end_to_end", "e2e", "mip")),
+)
+
+
+def classify_test_nodeid(nodeid: str) -> tuple[str, ...]:
+    """Return stable, non-exclusive categories without inflating test totals."""
+    if not isinstance(nodeid, str) or not nodeid.strip():
+        raise ValueError("Nonempty pytest nodeid required")
+    lowered = nodeid.lower()
+    matched = tuple(name for name, tokens in TEST_CATEGORY_RULES
+                    if any(token in lowered for token in tokens))
+    return matched or ("C2_CORE",)
+
+
+def summarize_test_nodeids(nodeids: list[str]) -> dict[str, object]:
+    """Count each collected nodeid once; retain overlapping category membership."""
+    if not isinstance(nodeids, list):
+        raise ValueError("Nodeids must be a list")
+    if any(not isinstance(n, str) or not n.strip() for n in nodeids):
+        raise ValueError("Invalid pytest nodeid")
+    unique = sorted(set(nodeids))
+    categories = {name: 0 for name, _ in TEST_CATEGORY_RULES}
+    for nodeid in unique:
+        for category in classify_test_nodeid(nodeid):
+            categories[category] += 1
+    return {"schema": "abacus-test-taxonomy/1.0", "collected_unique": len(unique),
+            "duplicate_entries": len(nodeids) - len(unique),
+            "categories": categories, "source": "provided-nodeids",
+            "admission_proof": False}
+
+
+# Wave 2: advisory execution planning. Never substitutes for required CI gates.
+def plan_test_execution(changed_paths: list[str], failed_categories: list[str] | None = None) -> dict[str, object]:
+    """Fail closed to thorough proof when change classification is uncertain."""
+    if not isinstance(changed_paths, list) or not changed_paths or any(
+        not isinstance(p, str) or not p.strip() for p in changed_paths
+    ):
+        raise ValueError("Nonempty changed-path list required")
+    failures = failed_categories or []
+    known = {name for name, _ in TEST_CATEGORY_RULES}
+    if not isinstance(failures, list) or any(f not in known for f in failures):
+        raise ValueError("Unknown failing test category")
+    normalized = [p.replace("\\", "/").lower() for p in changed_paths]
+    critical = any(p.startswith((".github/", "governance/", "ci/")) or
+                   p.endswith(("pyproject.toml", "requirements.txt", "setup.py", "tox.ini")) or
+                   "security" in p or "bandit" in p for p in normalized)
+    escalation = sorted(set(failures) & {"C0_SECURITY", "C1_GOVERNANCE", "C4_RUNTIME", "C5_COMPATIBILITY"})
+    thorough = critical or bool(escalation)
+    return {
+        "schema": "abacus-test-execution-plan/1.0",
+        "mode": "thorough" if thorough else "fast-advisory",
+        "python_versions": ["3.9", "3.10", "3.11", "3.12"] if thorough else ["3.12"],
+        "python_3_9_role": "source-compatibility-only",
+        "triggered_categories": escalation,
+        "required_checks_preserved": True,
+        "admission_proof": False,
+        "estimated_seconds": None,
+        "duration_measurement": "required",
+        "complexity": "high" if thorough else "unmeasured",
+    }

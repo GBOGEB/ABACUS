@@ -269,8 +269,14 @@ def classify(files: list[Path], health_probe: dict | None) -> dict:
             "status": "green" if debug else "red",
             "signals": len(debug),
             "sample_paths": sample(debug),
+            "all_candidate_paths": sample(debug, limit=len(debug)),
+            "sample_is_complete": len(debug) <= 20,
+            "evidence_level": "SOURCE_DISCOVERY_ONLY",
+            "native_debug_sessions": None,
+            "authenticated_port_leases": None,
+            "accepted_remediations": None,
             "next_action": (
-                "Bind debug/LDAB signals to an executable diagnostic receipt."
+                "Paths only: attach exact-SHA executed diagnostic and native debugger receipt."
                 if debug
                 else "Add minimal debug/LDAB diagnostic surface."
             ),

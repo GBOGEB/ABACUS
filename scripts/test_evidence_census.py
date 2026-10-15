@@ -6,6 +6,7 @@ from __future__ import annotations
 import argparse
 import json
 import os
+import re
 import xml.etree.ElementTree as ET
 from collections import Counter
 from pathlib import Path
@@ -58,7 +59,9 @@ def _outcome(case: ET.Element) -> str:
     return "pass"
 
 
-def build_census(junit_xml: Path) -> dict[str, Any]:
+def build_census(
+    junit_xml: Path, *, exact_sha: str | None = None
+) -> dict[str, Any]:
     root = ET.parse(junit_xml).getroot()
     rows: list[dict[str, Any]] = []
     outcomes: Counter[str] = Counter()
@@ -107,7 +110,7 @@ def build_census(junit_xml: Path) -> dict[str, Any]:
 
     return {
         "schema": "abacus-test-evidence-census/1.0.0",
-        "exact_sha": os.environ.get("GITHUB_SHA", "WITHHELD"),
+        "exact_sha": exact_sha or os.environ.get("GITHUB_SHA", "WITHHELD"),
         "outcomes": dict(sorted(outcomes.items())),
         "states": dict(sorted(states.items())),
         "skip_count": outcomes["skip"],
@@ -125,11 +128,15 @@ def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--junit", type=Path, required=True)
     parser.add_argument("--out", type=Path, required=True)
+    parser.add_argument("--exact-sha", type=str, default=None)
     parser.add_argument("--max-skips", type=int, default=None)
     parser.add_argument("--max-xfails", type=int, default=None)
     args = parser.parse_args(argv)
 
-    census = build_census(args.junit)
+    if args.exact_sha is not None and not re.fullmatch(r"[0-9a-f]{40}", args.exact_sha):
+        parser.error("--exact-sha shall be a lowercase 40-character Git SHA")
+
+    census = build_census(args.junit, exact_sha=args.exact_sha)
     errors: list[str] = []
     if census["uncategorized_skips"]:
         errors.append(

@@ -1,0 +1,24 @@
+schema: abacus.everred.runtime-profiles.v1
+version: '3.1.0-alpha'
+profiles:
+  - id: linux-github
+    platform: Ubuntu
+    producer: github-actions
+    probe: local-host-only
+    requires_self_hosted: false
+  - id: rhel-8
+    platform: RHEL8
+    producer: self-hosted
+    required_labels: [self-hosted, linux, x64, rhel-8]
+    requires_self_hosted: true
+  - id: rhel-9
+    platform: RHEL9
+    producer: self-hosted
+    required_labels: [self-hosted, linux, x64, rhel-9]
+    requires_self_hosted: true
+  - id: container-observation
+    platform: OTHER
+    producer: local-engine
+    probe: read-only-inspect
+    image_digest_required_for_running_claims: true
+    requires_self_hosted: false

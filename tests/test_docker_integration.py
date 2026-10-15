@@ -327,6 +327,17 @@ class TestDockerContainerIntegration:
     @pytest.mark.asyncio
     async def test_docker_network_connectivity_async(self):
         """Test container network connectivity in an isolated Docker network."""
+        # xdist may schedule this test before the separate image-build test.
+        build_proc = await asyncio.create_subprocess_exec(
+            "docker", "build", "-t", "test-app:latest", ".",
+            stdout=asyncio.subprocess.PIPE,
+            stderr=asyncio.subprocess.PIPE,
+        )
+        _, build_stderr = await build_proc.communicate()
+        assert build_proc.returncode == 0, (
+            f"Docker prerequisite image build failed: {build_stderr.decode()}"
+        )
+
         suffix = time.time_ns()
         network_name = f"test-network-{suffix}"
         container1_name = f"test-app1-{suffix}"

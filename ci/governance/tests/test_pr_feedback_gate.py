@@ -551,12 +551,15 @@ class FeedbackGateTests(unittest.TestCase):
                 }]
             def pull_files(self, number):
                 return ["README.md"]
+
+            def pull_file_records(self, number):
+                return [{"filename": "README.md"}]
             def issue(self, number):
                 return {"state": "open"}
         self_outer = self
         pull = {
             "state": "open", "base": {"ref": "main"},
-            "head": {"sha": self.HEAD}
+            "head": {"sha": self.HEAD}, "changed_files": 1,
         }
         evidence = gate.evaluate(FakeGitHub(), 1, pull)
         self.assertEqual(evidence.review_source, "codex")
@@ -758,10 +761,16 @@ class FeedbackGateTests(unittest.TestCase):
             def pull_files(self, number):
                 return ["README.md"]
 
+            def pull_file_records(self, number):
+                return [{"filename": "README.md"}]
+
             def issue(self, number):
                 return {"state": "open"}
 
-        pull = {"state": "open", "base": {"ref": "main"}, "head": {"sha": self.HEAD}}
+        pull = {
+            "state": "open", "base": {"ref": "main"},
+            "head": {"sha": self.HEAD}, "changed_files": 1,
+        }
         attested = self.owner_comment(self.valid_payload())
 
         FakeGitHub._runs = [

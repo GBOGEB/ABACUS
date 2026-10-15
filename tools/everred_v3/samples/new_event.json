@@ -1,0 +1,12 @@
+{
+  "schema": "abacus.everred.event.v3",
+  "id": "REPLACE-WITH-UNIQUE-ID",
+  "kind": "note",
+  "occurred_at": "2026-10-14T10:47:00+02:00",
+  "repo": "GBOGEB/ABACUS",
+  "provenance": "manual",
+  "evidence": {
+    "note": "REPLACE WITH TRACEABLE NEW OBSERVATION; do not claim PASS without native receipt",
+    "url": "UNKNOWN"
+  }
+}

@@ -1,5 +1,5 @@
 {
-  "schema_version": "1.0.7",
+  "schema_version": "1.0.8",
   "policy_id": "ABACUS-CI-SSOT-001",
   "purpose": "Single source of truth for GitHub Actions grouping, lifecycle ordering, canonical ownership and consolidation decisions.",
   "baseline_snapshot": {
@@ -164,6 +164,12 @@
       "disposition": "keep"
     },
     {
+      "pattern": "^everred-v3-validation\\.yml$",
+      "cluster": "runtime_governance",
+      "lifecycle": "pr_domain",
+      "disposition": "keep"
+    },
+    {
       "pattern": "^pr-feedback-gate\\.yml$",
       "cluster": "runtime_governance",
       "lifecycle": "pr_domain",
@@ -182,6 +188,12 @@
       "lifecycle": "manual",
       "disposition": "consolidate",
       "replacement": "bridge-ci.yml"
+    },
+    {
+      "pattern": "^bandit-disjoint-census\\.yml$",
+      "cluster": "security",
+      "lifecycle": "pr_domain",
+      "disposition": "keep"
     },
     {
       "pattern": "^bandit\\.yml$",
@@ -281,6 +293,12 @@
     },
     {
       "pattern": "^gg-math-temporal-pca-exact-live-dow\\.yml$",
+      "cluster": "dow",
+      "lifecycle": "pr_domain",
+      "disposition": "keep"
+    },
+    {
+      "pattern": "^qps-math-wormhole-dow\\.yml$",
       "cluster": "dow",
       "lifecycle": "pr_domain",
       "disposition": "keep"

@@ -198,7 +198,7 @@ def func3(): pass
             assert data1['phase'] == data2['phase']
             assert data1['iteration'] == data2['iteration']
 
-    def test_execute_delegates_to_run(self, phase2, mocker):
+    def test_execute_delegates_to_run(self, phase2, monkeypatch):
         expected = {
             'phase': 'MEASURE',
             'iteration': 1,
@@ -207,14 +207,14 @@ def func3(): pass
             'file_metrics': {},
             'measurements': []
         }
-        mocker.patch.object(phase2, 'run', return_value=(True, expected))
+        monkeypatch.setattr(phase2, 'run', lambda iteration: (True, expected))
 
         success, result = phase2.execute(iteration=1)
 
         assert success is True
         assert result == expected
 
-    def test_execute_normalizes_nested_tuple_result(self, phase2, mocker):
+    def test_execute_normalizes_nested_tuple_result(self, phase2, monkeypatch):
         nested_result = (
             True,
             {
@@ -226,7 +226,7 @@ def func3(): pass
                 'measurements': []
             }
         )
-        mocker.patch.object(phase2, 'run', return_value=(True, nested_result))
+        monkeypatch.setattr(phase2, 'run', lambda iteration: (True, nested_result))
 
         success, result = phase2.execute(iteration=1)
 

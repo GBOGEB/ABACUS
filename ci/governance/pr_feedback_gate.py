@@ -183,6 +183,10 @@ class Evidence:
     ci_failed: tuple[str, ...]
     ci_seen: int
     deferred_comments: tuple[str, ...]
+    review_deferral_valid: bool = False
+    security_sensitive: bool = False
+    blocking_review_items: tuple[str, ...] = ()
+    review_deferral_details: tuple[str, ...] = ()
     review_source: str = "codex"
 
     @property
@@ -1418,24 +1422,80 @@ def evaluate(
         )
     deferred = deferred_comment_evidence(github, comments)
     unresolved = sum(1 for thread in threads if not thread.get("isResolved"))
-    code_ok = codex_code_review_complete(comments, head_sha)
-    security_ok = codex_security_review_complete(comments, head_sha)
-    review_source = "codex"
-    # Security hard stop: do not substitute mutable owner-attestation evidence
-    # for independent code and security review. A previously green SHA-bound
-    # check may be reused during A->B->A before async reevaluation starts.
-    # Only the normal exact-head reviews can satisfy admission here.
-    # Retain helper functions for forensic/backward-compatible tests only.
+    # Security hard stop (1558c3d): never substitute owner-attestation
+    # evidence for independent exact-head code and security review.
+    # The fallback helpers remain for forensic/compat tests only.
+    code_review_complete = codex_code_review_complete(comments, head_sha)
+    security_review_complete = codex_security_review_complete(
+        comments,
+        head_sha,
+    )
+    deferral_valid, blocking_items, deferral_details = (
+        review_deferral_evidence(
+            github,
+            number,
+            head_sha,
+            comments,
+            threads,
+            code_review_complete,
+            security_review_complete,
+        )
+    )
     return Evidence(
         head_sha=head_sha,
-        code_review_complete=code_ok,
-        security_review_complete=security_ok,
+        code_review_complete=code_review_complete,
+        security_review_complete=security_review_complete,
         unresolved_threads=unresolved,
         ci_pending=pending,
         ci_failed=failed,
         ci_seen=seen,
         deferred_comments=deferred,
-        review_source=review_source,
+        review_deferral_valid=deferral_valid,
+        # Fail closed: an incomplete file census is treated as sensitive, so
+        # no Codex review can be waived for it.
+        security_sensitive=(
+            not census_complete or security_sensitive_change(changed_paths)
+        ),
+        blocking_review_items=blocking_items,
+        review_deferral_details=deferral_details,
+        review_source="codex",
+    )
+
+
+DEFERRAL_RECHECKS = 3
+
+
+def revalidated_evidence(
+    github: GitHub,
+    number: int,
+    evidence: Evidence | None,
+) -> Evidence | None:
+    """Re-census a deferral-backed success just before it is published.
+
+    A tracking-issue close or edit re-censuses the PR in a run that queues
+    behind this one. The workflow's invalidate job marks the check pending
+    outside that queue with a newer census stamp, which this run will not
+    publish over; this re-census narrows the window before that job lands.
+    Deferral evidence is mutable, so a success that rests on it is only
+    published if an immediate re-census reproduces it exactly.
+    """
+    for _ in range(DEFERRAL_RECHECKS):
+        if (
+            evidence is None
+            or evidence.state != "success"
+            or not evidence.review_deferral_valid
+        ):
+            return evidence
+        fresh = evaluate(github, number)
+        if fresh == evidence:
+            return evidence
+        evidence = fresh
+    if evidence is None or evidence.state != "success":
+        return evidence
+    return replace(
+        evidence,
+        ci_pending=evidence.ci_pending
+        + ("review deferral evidence changed during the census",),
     )
 
 

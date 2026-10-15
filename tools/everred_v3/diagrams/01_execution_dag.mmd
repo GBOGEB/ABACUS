@@ -1,0 +1,39 @@
+flowchart LR
+  subgraph S0["A · OBSERVE / DEFINE"]
+    G["GitHub CI · RHEL · Docker · LDAB"] --> L["Append-only evidence ledger"]
+    L --> F["Versioned signature fingerprint"]
+  end
+  subgraph S1["B · ANALYZE / OWN"]
+    F --> X{"Confirmed cause exists?"}
+    X -->|Yes| E["Link to existing root"]
+    X -->|No| R["Counterfactual main/PR/runner RCA"]
+    R --> Q{"Causal proof?"}
+    Q -->|No| U["UNKNOWN · Evidence backlog"]
+    Q -->|Yes| C["Confirm one persistent root ID"]
+    E --> O["Single owner · path lease · idempotency"]
+    C --> O
+  end
+  subgraph S2["C · IMPROVE / VERIFY"]
+    O --> P["Canonical producer repair"]
+    P --> V["P0–P2 focused and negative tests"]
+    V --> T{"Exact-SHA producer PASS?"}
+    T -->|No| A["RED · New attempt, same root"]
+    T -->|Yes| W["P3 isolated consumer fan-out"]
+    W --> N["P4 native consumer heads"]
+  end
+  subgraph S3["D · CONTROL / ADMIT"]
+    N --> K["Scope-matched coverage / security"]
+    K --> I["Independent review and protection"]
+    I --> Z{"P5 full admission green?"}
+    Z -->|No| H["HOLD · Engineering continues"]
+    Z -->|Yes| M["Authorized merge"]
+    M --> J["P6 exact-main validation"]
+    J --> S["P7 recurrence sentinel / consumer closure"]
+  end
+  L -.-> D["Unrelated WIP continues"]
+  classDef hold fill:#3d1b35,stroke:#ed738f,color:#ffe9ef
+  classDef pass fill:#123b39,stroke:#33c9b4,color:#d8fffa
+  classDef active fill:#29234e,stroke:#a88bff,color:#fff
+  class U,A,H hold
+  class M,J,S pass
+  class O,P,W,D active

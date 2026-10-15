@@ -122,7 +122,7 @@ class FullDMAICOrchestrator:
         self.temporal_db_path = workspace_root / ".dmaic" / "temporal_metadata.db"
         self.temporal_db_path.parent.mkdir(exist_ok=True)
 
-        print(f"[DEPLOY] ABACUS v033 - Full DMAIC Orchestrator Initialized")
+        print("[DEPLOY] ABACUS v033 - Full DMAIC Orchestrator Initialized")
         print(f"   Workspace: {workspace_root}")
         print(f"   Output: {output_dir}")
         print(f"   Execution ID: {self.execution_id}")
@@ -158,7 +158,7 @@ class FullDMAICOrchestrator:
 
             print("[Step 4/5] Setting up output directories...")
             self._setup_output_directories()
-            print(f"   [OK] Output directories ready")
+            print("   [OK] Output directories ready")
 
             print("[Step 5/5] Initializing orchestrators...")
             orchestrators = self._initialize_orchestrators()
@@ -205,7 +205,7 @@ class FullDMAICOrchestrator:
 
             print("[Step 3/3] Updating temporal metadata...")
             self._update_temporal_metadata(artifacts, "phase1")
-            print(f"   [OK] Temporal metadata updated")
+            print("   [OK] Temporal metadata updated")
 
             phase.status = "completed"
             phase.end_time = datetime.now().isoformat()
@@ -455,7 +455,7 @@ class FullDMAICOrchestrator:
 
             print("[Step 3/7] Building knowledge index...")
             knowledge_index = self._build_knowledge_index(knowledge_packs)
-            print(f"   [OK] Knowledge index built")
+            print("   [OK] Knowledge index built")
 
             print("[Step 4/7] Establishing recall mechanisms...")
             recall_keys = self._establish_recall_mechanisms(knowledge_packs)
@@ -568,7 +568,7 @@ class FullDMAICOrchestrator:
         try:
             print("[Step 1/6] Generating execution summary...")
             self._generate_execution_summary()
-            print(f"   [OK] Summary generated")
+            print("   [OK] Summary generated")
 
             print("[Step 2/6] Creating agent involvement report...")
             agent_report = self._create_agent_involvement_report()
@@ -1029,7 +1029,7 @@ class FullDMAICOrchestrator:
         phase_num = 9
 
         print(f"\n{'='*80}")
-        print(f"PHASE 9: RECURSIVE LOOP - Convergence Tracking & Continuous Improvement")
+        print("PHASE 9: RECURSIVE LOOP - Convergence Tracking & Continuous Improvement")
         print(f"{'='*80}")
 
         start_time = datetime.now()
@@ -1042,42 +1042,42 @@ class FullDMAICOrchestrator:
 
         try:
             # Step 1: Calculate convergence metrics
-            print(f"[Step 1/8] Calculating convergence metrics...")
+            print("[Step 1/8] Calculating convergence metrics...")
             convergence_metrics = self._calculate_convergence_metrics(all_iterations)
             print(f"   [OK] Convergence score: {convergence_metrics['convergence_score']:.1f}%")
 
             # Step 2: Analyze improvement deltas
-            print(f"[Step 2/8] Analyzing improvement deltas...")
+            print("[Step 2/8] Analyzing improvement deltas...")
             improvement_deltas = self._analyze_improvement_deltas(all_iterations)
             print(f"   [OK] Average improvement: {improvement_deltas['average_improvement']:.1f}%")
 
             # Step 3: Track knowledge accumulation
-            print(f"[Step 3/8] Tracking knowledge accumulation...")
+            print("[Step 3/8] Tracking knowledge accumulation...")
             knowledge_growth = self._track_knowledge_accumulation(all_iterations)
             print(f"   [OK] Knowledge items: {knowledge_growth['total_items']}")
 
             # Step 4: Detect convergence
-            print(f"[Step 4/8] Detecting convergence...")
+            print("[Step 4/8] Detecting convergence...")
             convergence_status = self._detect_convergence(convergence_metrics, improvement_deltas)
             print(f"   [OK] Convergence: {'✅ Achieved' if convergence_status['converged'] else '⏳ In Progress'}")
 
             # Step 5: Generate iteration comparison
-            print(f"[Step 5/8] Generating iteration comparison...")
+            print("[Step 5/8] Generating iteration comparison...")
             comparison_report = self._generate_iteration_comparison(all_iterations)
             print(f"   [OK] Comparison report: {comparison_report}")
 
             # Step 6: Update convergence tracking
-            print(f"[Step 6/8] Updating convergence tracking...")
+            print("[Step 6/8] Updating convergence tracking...")
             tracking_file = self._update_convergence_tracking(iteration_num, convergence_metrics, convergence_status)
             print(f"   [OK] Tracking file: {tracking_file}")
 
             # Step 7: Generate recommendations
-            print(f"[Step 7/8] Generating recommendations...")
+            print("[Step 7/8] Generating recommendations...")
             recommendations = self._generate_convergence_recommendations(convergence_status, improvement_deltas)
             print(f"   [OK] Generated {len(recommendations)} recommendations")
 
             # Step 8: Generate Phase 9 report
-            print(f"[Step 8/8] Generating Phase 9 report...")
+            print("[Step 8/8] Generating Phase 9 report...")
             report_file = self._generate_phase_9_report(
                 iteration_num,
                 convergence_metrics,
@@ -1446,13 +1446,13 @@ class FullDMAICOrchestrator:
         tweaks_applied = []
         for rec in quality_check.get('recommendations', []):
             if "errors" in rec.lower():
-                print(f"   - Adjusting error handling")
+                print("   - Adjusting error handling")
                 tweaks_applied.append("error_handling_improved")
             if "optimize" in rec.lower():
-                print(f"   - Optimizing execution parameters")
+                print("   - Optimizing execution parameters")
                 tweaks_applied.append("execution_optimized")
             if "phases" in rec.lower():
-                print(f"   - Reconfiguring phase dependencies")
+                print("   - Reconfiguring phase dependencies")
                 tweaks_applied.append("dependencies_reconfigured")
 
         tweak_file = self.output_dir / f"tweaks_iteration_{iteration_num}.json"
@@ -1539,7 +1539,7 @@ class FullDMAICOrchestrator:
         return next_steps
 
     def _create_global_task_tracker(self, all_iterations: List[Dict]):
-        print(f"\n[TRACKER] Creating global task tracker...")
+        print("\n[TRACKER] Creating global task tracker...")
 
         tracker_file = self.output_dir / "GLOBAL_TASK_TRACKER.md"
 
@@ -1583,7 +1583,7 @@ class FullDMAICOrchestrator:
 
     def _generate_final_report(self, all_iterations: List[Dict]) -> Path:
         """Generate final comprehensive report"""
-        print(f"\n[REPORT] Generating final comprehensive report...")
+        print("\n[REPORT] Generating final comprehensive report...")
 
         report_file = self.reports_dir / f"FINAL_REPORT_{self.execution_id}.md"
 
@@ -1714,7 +1714,7 @@ class FullDMAICOrchestrator:
                 print(f"\n[SUCCESS] Quality gates passed in iteration {iteration}")
                 # Continue one more iteration to confirm convergence
                 if iteration < max_iterations:
-                    print(f"[INFO] Running one more iteration to confirm convergence...")
+                    print("[INFO] Running one more iteration to confirm convergence...")
                     continue
                 else:
                     break

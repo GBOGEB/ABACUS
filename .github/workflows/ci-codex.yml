@@ -6,7 +6,7 @@ on:
 jobs:
   codex:
     name: CODEX - ${{ matrix.os }} - Python ${{ matrix.python-version }}
-    if: github.repository == 'GBOBEB/CODEX'
+    if: github.repository == 'GBOGEB/CODEX'
     runs-on: ${{ matrix.os }}
     strategy:
       fail-fast: false
@@ -18,7 +18,7 @@ jobs:
         uses: actions/checkout@v7
 
       - name: Setup Python ${{ matrix.python-version }}
-        uses: actions/setup-python@v7
+        uses: actions/setup-python@v7.0.0
         with:
           python-version: ${{ matrix.python-version }}
 
@@ -52,7 +52,7 @@ jobs:
         shell: bash
 
       - name: Upload artifacts
-        uses: actions/upload-artifact@v7
+        uses: actions/upload-artifact@v7.0.2
         with:
           name: codex-${{ matrix.os }}-py${{ matrix.python-version }}
           path: |

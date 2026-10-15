@@ -1,0 +1,30 @@
+name: gg_MATH QPS Wormhole DOW Evidence
+on:
+  pull_request:
+    paths:
+      - 'runtime/federation/qps_math_wormhole_dow.py'
+      - 'tests/test_qps_math_wormhole_dow.py'
+      - 'docs/ci/QPS_MATH_WORMHOLE_DOW_V1.md'
+      - '.github/workflows/qps-math-wormhole-dow.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  dow-observer:
+    runs-on: ubuntu-24.04
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: ['3.10', '3.12']
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+      - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97
+        with:
+          python-version: ${{ matrix.python-version }}
+      - name: Source-bound DOW observer negative controls
+        run: >-
+          python -m unittest discover -s tests
+          -p test_qps_math_wormhole_dow.py -v

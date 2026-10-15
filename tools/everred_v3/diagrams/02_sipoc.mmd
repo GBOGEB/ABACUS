@@ -1,0 +1,9 @@
+flowchart LR
+ S["SUPPLIERS\nCI / pytest / scanners\nRHEL / Docker / LDAB\nDevelopers / Mission Control"] --> I["INPUTS\nExact SHA / run / job IDs\nJUnit / coverage / security JSON\nPolicy / source / config hashes"]
+ I --> P1["PROCESS 01\nIngest & fingerprint"]
+ P1 --> P2["PROCESS 02\nCounterfactual RCA & ownership"]
+ P2 --> P3["PROCESS 03\nCanonical repair & producer proof"]
+ P3 --> P4["PROCESS 04\nConsumer replay & independent gates"]
+ P4 --> P5["PROCESS 05\nIntegrate / observe / reopen"]
+ P5 --> O["OUTPUTS\nPersistent root and receipts\nComparable deltas & verified replay\nFail-closed admission disposition"]
+ O --> C["CUSTOMERS\nEngineers / security reviewers\nABACUS admin / release owner\nCODEX / REX read-only consumers"]

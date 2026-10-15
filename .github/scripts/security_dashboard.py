@@ -4,7 +4,7 @@ ABACUS Security Dashboard Generator
 Fetches all code-scanning alerts from GitHub, groups them by tool and REX
 category, and writes:
   - .github/security/dashboard.md   (human-readable, committed to repo)
-  - .github/security/alerts.yaml    (machine-readable telemetry)
+  - aggregates only, without per-alert file paths or messages
 
 Run locally:  GITHUB_TOKEN=<pat> GITHUB_REPO=GBOGEB/ABACUS python security_dashboard.py
 Run in CI:    Called by .github/workflows/security-dashboard.yml
@@ -16,8 +16,8 @@ import sys
 from collections import defaultdict
 from datetime import datetime, timezone
 from pathlib import Path
-from urllib.request import Request, urlopen
-from urllib.error import HTTPError
+from http.client import HTTPSConnection
+from urllib.parse import urlsplit
 
 REPO     = os.environ.get("GITHUB_REPO", "GBOGEB/ABACUS")
 TOKEN    = os.environ.get("GITHUB_TOKEN", "")
@@ -72,29 +72,64 @@ SEVERITY_ORDER = {"critical": 0, "high": 1, "error": 1,
 
 
 def gh_get(path: str) -> list:
-    """Paginate through GitHub API and collect all results."""
+    """Fetch code-scanning pages from one HTTPS origin, without redirects.
+
+    An untrusted GitHub Link header must never receive the bearer token on
+    another host or change the API resource being read.
+    """
     results = []
+    expected_path = path.split("?", 1)[0]
+    allowed_paths = {expected_path}
+    # GitHub may canonicalize this public repository's code-scanning route
+    # to its stable numeric repository ID in the Link header.
+    if REPO == "GBOGEB/ABACUS" and expected_path == (
+        "/repos/GBOGEB/ABACUS/code-scanning/alerts"
+    ):
+        allowed_paths.add("/repositories/1054507184/code-scanning/alerts")
     url = f"{API_BASE}{path}"
     while url:
-        req = Request(url, headers={
-            "Authorization": f"Bearer {TOKEN}",
-            "Accept": "application/vnd.github+json",
-            "X-GitHub-Api-Version": "2022-11-28",
-        })
-        try:
-            with urlopen(req) as r:
-                data = json.loads(r.read())
-                results.extend(data if isinstance(data, list) else [data])
-                link = r.headers.get("Link", "")
-                url = None
-                for part in link.split(","):
-                    if 'rel="next"' in part:
-                        url = part.split(";")[0].strip().strip("<>")
-        except HTTPError as e:
-            print(f"GitHub API error {e.code}: {e.reason} — {path}", file=sys.stderr)
-            break
-    return results
+        parsed = urlsplit(url)
+        if (
+            parsed.scheme != "https"
+            or parsed.netloc != "api.github.com"
+            or parsed.path not in allowed_paths
+            or parsed.fragment
+        ):
+            raise ValueError("Unsafe GitHub pagination URL")
 
+        target = parsed.path
+        if parsed.query:
+            target += "?" + parsed.query
+        connection = HTTPSConnection("api.github.com", timeout=20)
+        try:
+            connection.request(
+                "GET",
+                target,
+                headers={
+                    "Authorization": f"Bearer {TOKEN}",
+                    "Accept": "application/vnd.github+json",
+                    "X-GitHub-Api-Version": "2022-11-28",
+                },
+            )
+            response = connection.getresponse()
+            if response.status != 200:
+                raise RuntimeError(
+                    f"GitHub code-scanning API returned HTTP {response.status}"
+                )
+            data = json.loads(response.read())
+            if not isinstance(data, list):
+                raise ValueError("Expected list of code-scanning alerts")
+            results.extend(data)
+            link = response.getheader("Link", "")
+        finally:
+            connection.close()
+
+        url = None
+        for part in link.split(","):
+            if 'rel="next"' in part:
+                url = part.split(";", 1)[0].strip().strip("<>")
+                break
+    return results
 
 def classify_rex(rule_id: str) -> str:
     """Map a rule ID to a REX group name."""
@@ -168,107 +203,50 @@ def build_telemetry(alerts: list) -> dict:
 
 
 def render_markdown(tel: dict) -> str:
-    ts    = tel["generated_at"]
-    total = tel["total_open"]
-    lines = []
-
-    lines.append(f"# ABACUS Security Dashboard")
-    lines.append(f"> Auto-generated {ts} · repo: `{tel['repo']}`  ")
-    lines.append(f"> **{total} open alerts** across {len(tel['by_tool'])} tools")
-    lines.append("")
-
-    # ── Severity summary ──────────────────────────────────────────────────────
-    lines.append("## Severity Overview")
-    lines.append("")
-    lines.append("| Severity | Count |")
-    lines.append("|----------|------:|")
-    for sev in ["critical", "high", "error", "medium", "warning", "low", "note", "none"]:
-        c = tel["by_severity"].get(sev, 0)
-        if c:
-            lines.append(f"| {sev.capitalize()} | {c} |")
-    lines.append("")
-
-    # ── Per-tool counts ───────────────────────────────────────────────────────
-    lines.append("## Alerts by Tool")
-    lines.append("")
-    lines.append("| Tool | Open Alerts |")
-    lines.append("|------|------------:|")
-    for tool, cnt in sorted(tel["by_tool"].items(), key=lambda x: -x[1]):
-        lines.append(f"| {tool} | {cnt} |")
-    lines.append("")
-
-    # ── REX group summary ─────────────────────────────────────────────────────
-    lines.append("## REX Group Summary")
-    lines.append("_Groups are defined in [security.toml](security.toml)_")
-    lines.append("")
-    lines.append("| REX Group | Risk | Count | Fix Priority |")
-    lines.append("|-----------|------|------:|-------------|")
-    risk_order = {"HIGH": 0, "MEDIUM": 1, "LOW": 2, "INFO": 3}
-    sorted_groups = sorted(
-        tel["by_rex_group"].items(),
-        key=lambda x: (risk_order.get(REX_META.get(x[0], {}).get("risk", "INFO"), 9), -x[1])
-    )
-    for rex, cnt in sorted_groups:
-        meta  = REX_META.get(rex, REX_META["OTHER"])
-        emoji = meta["emoji"]
-        risk  = meta["risk"]
-        pri   = "Fix now" if risk == "HIGH" else ("Fix next sprint" if risk == "MEDIUM" else "Suppress / defer")
-        lines.append(f"| {emoji} {rex} | {risk} | {cnt} | {pri} |")
-    lines.append("")
-
-    # ── Hot files ─────────────────────────────────────────────────────────────
-    lines.append("## Hottest Files (most alerts)")
-    lines.append("")
-    lines.append("| File | Alert Count |")
-    lines.append("|------|------------:|")
-    for entry in tel["hot_files"]:
-        lines.append(f"| `{entry['file']}` | {entry['count']} |")
-    lines.append("")
-
-    # ── Per-group detail ──────────────────────────────────────────────────────
-    lines.append("## Alert Detail by REX Group")
-    lines.append("")
-    for rex, cnt in sorted_groups:
-        if cnt == 0:
-            continue
-        meta  = REX_META.get(rex, REX_META["OTHER"])
-        items = tel["groups"].get(rex, [])
-        lines.append(f"### {meta['emoji']} {rex} ({cnt} alerts)")
-        lines.append("")
-        lines.append("| # | Tool | Rule | File | Line | Severity |")
-        lines.append("|---|------|------|------|-----:|---------:|")
-        for it in items[:30]:   # cap at 30 rows per group in the MD
-            num  = f"[{it['number']}]({it['url']})" if it.get("url") else str(it["number"])
-            tool = it["tool"].replace("CodeQL", "CodeQL").replace("Bandit", "Bandit")
-            lines.append(
-                f"| {num} | {tool} | `{it['rule_id']}` "
-                f"| `{it['file'].split('/')[-1]}` | {it['line']} | {it['severity']} |"
-            )
-        if len(items) > 30:
-            lines.append(f"| … | _{len(items) - 30} more — see alerts.yaml_ | | | | |")
-        lines.append("")
-
-    # ── Quick-win table ───────────────────────────────────────────────────────
-    lines.append("## Quick-Win Fix Order")
-    lines.append("")
-    lines.append("| Priority | REX Group | Est. Alerts | Action |")
-    lines.append("|----------|-----------|------------:|--------|")
-    quick_wins = [
-        (1, "SEC_SUBPROCESS",       "~40", "Add `# noqa: S603` — all calls use list-form args"),
-        (2, "SEC_PATH_TRAVERSAL",   "~20", "`pathlib.Path(p).resolve(); assert is_relative_to(BASE)`"),
-        (3, "SEC_COMPILE_EXEC",     "~10", "Replace `compile+exec` with `ast.parse()` (syntax-only)"),
-        (4, "SEC_TEMPFILE",         "~15", "Remove `delete=False` from `NamedTemporaryFile`"),
-        (5, "SEC_ASSERT",           "~10", "Add `# noqa: S101` in pytest files, raise in prod"),
-        (6, "QUAL_DEAD_CODE",       "~30", "`ruff check --fix --select F401,F841 DMAIC_V3/`"),
+    """Render aggregate-only Markdown; never publish alert-level source data."""
+    lines = [
+        "# ABACUS Security Dashboard",
+        "",
+        f"> Auto-generated {tel['generated_at']} from GitHub code scanning",
+        f"> **{tel['total_open']} open alerts** across "
+        f"{len(tel['by_tool'])} tools",
+        "",
+        "## Severity counts",
+        "",
     ]
-    for pri, rex, est, action in quick_wins:
-        cnt = tel["by_rex_group"].get(rex, 0)
-        lines.append(f"| {pri} | {rex} | {cnt} live / {est} est. | {action} |")
-    lines.append("")
-    lines.append(f"_Dashboard last updated: {ts}_")
+    for sev, count in sorted(
+        tel["by_severity"].items(),
+        key=lambda item: (SEVERITY_ORDER.get(item[0], 9), item[0]),
+    ):
+        lines.append(f"- {sev}: {count}")
 
+    lines.extend(["", "## Scanner counts", ""])
+    for tool, count in sorted(
+        tel["by_tool"].items(), key=lambda item: (-item[1], item[0])
+    ):
+        lines.append(f"- {tool}: {count}")
+
+    lines.extend(["", "## REX group counts", ""])
+    for group, count in sorted(
+        tel["by_rex_group"].items(), key=lambda item: (-item[1], item[0])
+    ):
+        risk = REX_META.get(group, REX_META["OTHER"])["risk"]
+        lines.append(f"- {group} ({risk}): {count}")
+
+    lines.extend(
+        [
+            "",
+            "## Source and limitations",
+            "",
+            "Individual findings, source file paths and evidence belong in the",
+            "repository Security code-scanning interface. These aggregate",
+            "counts do not constitute acceptance or formal engineering credit.",
+            "",
+            f"_Dashboard last updated: {tel['generated_at']}_",
+            "",
+        ]
+    )
     return "\n".join(lines)
-
 
 def render_yaml(tel: dict) -> str:
     """Minimal YAML serializer (no external deps)."""
@@ -305,7 +283,9 @@ def render_yaml(tel: dict) -> str:
     for k, v in tel.items():
         if k == "groups":
             continue   # groups go in separate block to keep yaml readable
-        lines.append(f"{k}:{_val(v)}")
+        rendered = _val(v)
+        sep = "" if rendered.startswith("\n") else " "
+        lines.append(f"{k}:{sep}{rendered}")
     lines.append("")
     lines.append("groups:")
     for rex, items in tel["groups"].items():
@@ -317,7 +297,7 @@ def render_yaml(tel: dict) -> str:
             lines.append(f"      severity: {it['severity']}")
             lines.append(f"      file: \"{it['file']}\"")
             lines.append(f"      line: {it['line']}")
-    return "\n".join(lines)
+    return "\n".join(lines) + "\n"
 
 
 def main():
@@ -334,14 +314,12 @@ def main():
     out_dir = Path(".github/security")
     out_dir.mkdir(parents=True, exist_ok=True)
 
-    md_path   = out_dir / "dashboard.md"
-    yaml_path = out_dir / "alerts.yaml"
+    md_path = out_dir / "dashboard.md"
 
+    # Per-alert details stay in the authoritative code-scanning service.
+    # No raw alert snapshot is published into this public worktree.
     md_path.write_text(render_markdown(tel), encoding="utf-8")
-    yaml_path.write_text(render_yaml(tel),   encoding="utf-8")
-
     print(f"  → Wrote {md_path}")
-    print(f"  → Wrote {yaml_path}")
     print(f"\nSummary:")
     print(f"  Total open : {tel['total_open']}")
     for tool, cnt in sorted(tel["by_tool"].items(), key=lambda x: -x[1]):

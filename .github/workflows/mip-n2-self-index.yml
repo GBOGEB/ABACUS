@@ -27,9 +27,14 @@ jobs:
           fetch-depth: 1
 
       - name: Set up Python
-        uses: actions/setup-python@v7
+        uses: actions/setup-python@v7.0.0
         with:
           python-version: "3.12"
+
+      - name: Test LDAB telemetry fail-closed contracts
+        run: |
+          python -m unittest discover -s tests \
+            -p 'test_mip_ldab_telemetry.py' -v
 
       - name: Verify exact-SHA binding and repeatability
         run: |
@@ -50,7 +55,7 @@ jobs:
           } >> "${GITHUB_STEP_SUMMARY}"
 
       - name: Upload sanitized evidence only
-        uses: actions/upload-artifact@v7
+        uses: actions/upload-artifact@v7.0.2
         with:
           name: mip-n2-self-index-sanitized-${{ env.EXPECTED_SHA }}
           path: ${{ runner.temp }}/mip-n2-self-index-summary.json
@@ -65,7 +70,7 @@ jobs:
       EXPECTED_REPOSITORY: ${{ github.repository }}
     steps:
       - name: Set up Python
-        uses: actions/setup-python@v7
+        uses: actions/setup-python@v7.0.0
         with:
           python-version: "3.12"
 
@@ -206,6 +211,90 @@ jobs:
               }
           )
 
+          ldab = data.get("ldab_telemetry")
+          discovery = (
+              ldab.get("source_census", {})
+              if isinstance(ldab, dict) else {}
+          )
+          root_debug = discovery.get("root", {})
+          nested_debug = discovery.get("nested")
+          execution = (
+              ldab.get("diagnostic_execution", {})
+              if isinstance(ldab, dict) else {}
+          )
+          runtime = (
+              ldab.get("runtime", {})
+              if isinstance(ldab, dict) else {}
+          )
+          checks.update(
+              {
+                  "ldab_receipt_present": isinstance(ldab, dict),
+                  "ldab_schema": isinstance(ldab, dict)
+                  and ldab.get("schema") == "mip.ldab.telemetry.v1",
+                  "ldab_exact_sha": isinstance(ldab, dict)
+                  and ldab.get("source_sha") == expected_sha,
+                  "ldab_repo": isinstance(ldab, dict)
+                  and ldab.get("repository") == expected_repo,
+                  "ldab_root_census_count": isinstance(root_debug, dict)
+                  and type(root_debug.get("candidate_file_count")) is int,
+                  "ldab_root_discovery_only": isinstance(root_debug, dict)
+                  and root_debug.get("evidence_level")
+                  == "SOURCE_DISCOVERY_ONLY"
+                  and root_debug.get("live_runtime_inferred") is False,
+                  "ldab_root_complete_inventory":
+                  isinstance(root_debug, dict)
+                  and root_debug.get("inventory_complete") is True
+                  and isinstance(root_debug.get("full_source_inventory"), list)
+                  and len(root_debug["full_source_inventory"])
+                  == root_debug.get("candidate_file_count"),
+                  "ldab_root_lexical_triage":
+                  isinstance(root_debug, dict)
+                  and isinstance(root_debug.get("source_class_counts"), dict)
+                  and sum(root_debug["source_class_counts"].values())
+                  == root_debug.get("candidate_file_count")
+                  and root_debug.get("source_taxonomy") == "ldab.lexical.v1",
+                  "ldab_nested_inventory_complete":
+                  not isinstance(nested, dict)
+                  or (isinstance(nested_debug, dict)
+                      and nested_debug.get("inventory_complete") is True),
+                  "ldab_nested_count": not isinstance(nested, dict)
+                  or (
+                      isinstance(nested_debug, dict)
+                      and type(nested_debug.get("candidate_file_count")) is int
+                      and nested_debug.get("evidence_level")
+                      == "SOURCE_DISCOVERY_ONLY"
+                  ),
+                  "ldab_contract_execution": (
+                      not isinstance(nested, dict)
+                      or (
+                          execution.get("state") == "EXECUTED_PASS"
+                          and type(execution.get(
+                              "contract_checks_total"
+                          )) is int
+                          and execution["contract_checks_total"] > 0
+                          and execution.get("contract_checks_passed")
+                          == execution["contract_checks_total"]
+                          and execution.get("contract_checks_failed") == 0
+                          and execution.get("diagnostic_scope")
+                          == "FEDERATION_CONTRACT_ONLY"
+                      )
+                  ),
+                  "ldab_native_session_unknown":
+                  runtime.get("abacus_native_debug_sessions") is None,
+                  "ldab_port_lease_unknown":
+                  runtime.get("authenticated_port_leases") is None,
+                  "ldab_repairs_unknown":
+                  runtime.get("ldab_verified_repairs") is None,
+                  "ldab_runtime_truth":
+                  runtime.get("proof_state") == "UNKNOWN_NO_RUNTIME_RECEIPT",
+                  "ldab_no_authority":
+                  isinstance(ldab, dict)
+                  and ldab.get("authority_transfer") is False
+                  and ldab.get("security_waiver") is False
+                  and ldab.get("merge_admission") == "HOLD",
+              }
+          )
+
           failed = sorted(
               name for name, passed in checks.items() if not passed
           )
@@ -244,7 +333,7 @@ jobs:
           } >> "${GITHUB_STEP_SUMMARY}"
 
       - name: Upload sanitized consumer evidence
-        uses: actions/upload-artifact@v7
+        uses: actions/upload-artifact@v7.0.2
         with:
           name: mip-n2-self-index-consumer-${{ env.EXPECTED_SHA }}
           path: ${{ runner.temp }}/mip-n2-consumer-summary.json

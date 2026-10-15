@@ -96,9 +96,9 @@ class TestPhase3Analyze:
         assert success is True
         assert result.get('summary') is not None
 
-    def test_execute_normalizes_nested_tuple_result(self, phase3, mocker):
+    def test_execute_normalizes_nested_tuple_result(self, phase3, monkeypatch):
         nested_result = (True, {'summary': {}, 'root_causes': []})
-        mocker.patch.object(phase3, 'run', return_value=(True, nested_result))
+        monkeypatch.setattr(phase3, "run", lambda iteration: (True, nested_result))
 
         success, result = phase3.execute(iteration=1)
 
@@ -106,15 +106,49 @@ class TestPhase3Analyze:
         assert isinstance(result, dict)
         assert result.get('summary') is not None
 
-    def test_execute_normalizes_dict_result(self, phase3, mocker):
+    def test_execute_normalizes_dict_result(self, phase3, monkeypatch):
         legacy_result = {'success': True, 'summary': {}, 'root_causes': []}
-        mocker.patch.object(phase3, 'run', return_value=legacy_result)
+        monkeypatch.setattr(phase3, "run", lambda iteration: legacy_result)
 
         success, result = phase3.execute(iteration=1)
 
         assert success is True
         assert isinstance(result, dict)
         assert result.get('summary') is not None
+
+    def test_execute_rejects_non_dict_payload(self, phase3, monkeypatch):
+        monkeypatch.setattr(phase3, "run", lambda iteration: (True, ["bad"]))
+
+        success, result = phase3.execute(iteration=1)
+
+        assert success is False
+        assert result["raw_payload_type"] == "list"
+
+    def test_execute_rejects_empty_tuple(self, phase3, monkeypatch):
+        monkeypatch.setattr(phase3, "run", lambda iteration: ())
+
+        success, result = phase3.execute(iteration=1)
+
+        assert success is False
+        assert result["error"] == "Unexpected empty tuple returned from run()"
+
+    def test_execute_rejects_scalar(self, phase3, monkeypatch):
+        monkeypatch.setattr(phase3, "run", lambda iteration: None)
+
+        success, result = phase3.execute(iteration=1)
+
+        assert success is False
+        assert result["raw_result_type"] == "NoneType"
+
+    def test_execute_preserves_failure(self, phase3, monkeypatch):
+        monkeypatch.setattr(
+            phase3, "run", lambda iteration: (False, {"error": "injected"})
+        )
+
+        success, result = phase3.execute(iteration=1)
+
+        assert success is False
+        assert result["error"] == "injected"
 
     def test_calculate_statistics(self, phase3, phase2_output):
         success, result = phase3.execute(iteration=1)

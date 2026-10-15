@@ -1,0 +1,43 @@
+{
+  "authority": {
+    "authority_transfer": false,
+    "engineering_acceptance": false,
+    "formal_credit_delta": 0,
+    "hard_gate_compensation_allowed": false,
+    "release_credit": false
+  },
+  "completed_hops": [],
+  "execution": {
+    "job_id": null,
+    "positive_steps": null,
+    "run_id": null,
+    "state": "PROPOSED_UNVERIFIED"
+  },
+  "lineage": {
+    "pulse": "P4",
+    "qps_child_state": "UNKNOWN",
+    "wave": "W259"
+  },
+  "method": {
+    "data_class": "SYNTHETIC_REFERENCE",
+    "id": "M04_PCA",
+    "observed_pairwise_fitted": false,
+    "population_id": "SYNTHETIC_METHOD_GRAPH",
+    "threshold_authority": "QPS_ONLY"
+  },
+  "producer": {
+    "artifact_path": "research/MATH_METHOD_DEPENDENCY_GRAPH_v1.yaml",
+    "artifact_sha256": "114e9fa0ded6adc8d1020bef1826c45bb63417a851efac9f2ed35aef7e501759",
+    "repo": "GBOGEB/gg_MATH",
+    "source_sha": "2f84623180bafbd582f90febb542381ed9ce679e"
+  },
+  "receipt_sha256": "0513da70dd8f8865dba9231b74c12952c2daa4664a8d431cdd615ecfaa80e871",
+  "route": [
+    "GBOGEB/gg_MATH",
+    "GBOGEB/CODEX",
+    "GBOGEB/ABACUS",
+    "GBOGEB/cryoplant-project"
+  ],
+  "route_id": "QPS-MATH-P4-3P3-V1",
+  "schema": "gg-math-qps-wormhole/v1"
+}

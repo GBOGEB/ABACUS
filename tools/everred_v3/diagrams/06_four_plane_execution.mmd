@@ -1,0 +1,16 @@
+flowchart TB
+  CONFIG["YAML semantic lint / JSON Schema"] --> DAG["Dependency DAG + non-overlapping leases"]
+  DAG --> GA["GitHub Actions source-bound producer"]
+  DAG --> DBG["LLDB / DAP bounded debugger probe"]
+  DAG --> HOST["RHEL / UBI OS runner & Docker host probes"]
+  GA --> BIND["Exact source+executed SHA / run+job / artifact digest"]
+  DBG --> BIND
+  HOST --> BIND
+  BIND --> LDAB["LDAB root hypotheses + first-red signatures"]
+  LDAB --> JOIN["Four-plane joined evidence census"]
+  JOIN --> KPI["KPI history / recurrence / reverse pressure"]
+  JOIN --> REPLAY["Immutable testflight / consumer replay"]
+  KPI --> GATE{"Independent security + review + protection"}
+  REPLAY --> GATE
+  GATE -->|Unknown or red| HOLD["HOLD — no automatic merge"]
+  GATE -->|All verified| ELIGIBLE["Eligible for external authorization"]

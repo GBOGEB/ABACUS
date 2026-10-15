@@ -119,7 +119,7 @@ class TestPhase4Improve:
         assert 'input_source' in result
         assert 'improvements' in result
 
-    def test_execute_flattens_nested_tuple_result(self, phase4, mocker):
+    def test_execute_flattens_nested_tuple_result(self, phase4, monkeypatch):
         nested_result = (
             True,
             (
@@ -133,7 +133,7 @@ class TestPhase4Improve:
                 }
             )
         )
-        mocker.patch.object(phase4, 'run', return_value=nested_result)
+        monkeypatch.setattr(phase4, "run", lambda iteration: nested_result)
 
         success, result = phase4.execute(iteration=1)
 
@@ -141,7 +141,7 @@ class TestPhase4Improve:
         assert isinstance(result, dict)
         assert result['phase'] == 'IMPROVE'
 
-    def test_execute_flattens_nested_tuple_result_preserves_failure(self, phase4, mocker):
+    def test_execute_flattens_nested_tuple_result_preserves_failure(self, phase4, monkeypatch):
         nested_result = (
             False,
             (
@@ -155,7 +155,7 @@ class TestPhase4Improve:
                 }
             )
         )
-        mocker.patch.object(phase4, 'run', return_value=nested_result)
+        monkeypatch.setattr(phase4, "run", lambda iteration: nested_result)
 
         success, result = phase4.execute(iteration=1)
 

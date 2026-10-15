@@ -127,6 +127,34 @@ class DMAICTestOrchestrator:
         self._save_phase_data(DMAICPhase.DEFINE, objectives)
         return objectives
 
+    # Explicit measurement contracts: suites are never allowed to shrink
+    # the global CI coverage denominator by inference or arbitrary input.
+    # Each registered suite has one directly exercised production module.
+    _COMPONENT_COVERAGE_SOURCES = {
+        "tests/test_master_doc_manager.py": "master_doc_manager",
+        "tests/test_user_library_rag.py": "user_library_rag",
+        "tests/test_action_tracker.py": "action_tracker",
+        # The Week 3 integration exercises these three production modules.
+        "tests/test_week3_integration.py": (
+            "master_doc_manager", "user_library_rag", "action_tracker"
+        ),
+    }
+
+    @classmethod
+    def _coverage_options_for_suite(cls, test_suite: str) -> List[str]:
+        """Choose a declared production module for a focused suite.
+
+        Unregistered suites retain the broad source contract; neither tests
+        nor callers can supply an arbitrary coverage source through this API.
+        """
+        suite_path = test_suite.replace(chr(92), "/").split("::", 1)[0]
+        sources = cls._COMPONENT_COVERAGE_SOURCES.get(suite_path)
+        if not sources:
+            return ["--cov"]
+        if isinstance(sources, str):
+            sources = (sources,)
+        return [f"--cov={source}" for source in sources]
+
     # MEASURE Phase
     async def measure_test_performance(self, test_suite: str = "tests/") -> DMAICMetrics:
         """
@@ -142,7 +170,7 @@ class DMAICTestOrchestrator:
         cmd = [
             sys.executable, "-m", "pytest",
             test_suite,
-            "--cov=.",
+            *self._coverage_options_for_suite(test_suite),
             f"--cov-report=json:{coverage_file}",
             "--json-report",
             f"--json-report-file={report_file}",
@@ -152,7 +180,11 @@ class DMAICTestOrchestrator:
         start_time = time.time()
         env = dict(os.environ)
         for key in list(env):
-            if key.startswith("COV_CORE_") or key == "COVERAGE_PROCESS_START":
+            # Nested pytest shall discover the SUT-local coverage configuration.
+            # Inherited CI config may omit the entire temporary workspace.
+            if key.startswith("COV_CORE_") or key in (
+                "COVERAGE_PROCESS_START", "COVERAGE_RCFILE"
+            ):
                 env.pop(key, None)
         env["COVERAGE_FILE"] = str(run_dir / ".coverage")
         result = subprocess.run(
@@ -169,7 +201,13 @@ class DMAICTestOrchestrator:
 
         # Parse results
         if not report_file.is_file() or not coverage_file.is_file():
-            raise RuntimeError(f"Measurement reports missing; evidence: {run_dir}")
+            raise RuntimeError(
+                "Measurement reports missing; "
+                f"exit_code={result.returncode}; "
+                f"test_report_present={report_file.is_file()}; "
+                f"coverage_report_present={coverage_file.is_file()}; "
+                f"evidence: {run_dir}"
+            )
 
         test_data = self._parse_test_report(report_file)
         coverage_data = self._parse_coverage_report(coverage_file)

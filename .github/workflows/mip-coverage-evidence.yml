@@ -91,7 +91,7 @@ jobs:
           test "$actual_sha" = "$EXACT_SHA"
 
       - name: Setup Python 3.12
-        uses: actions/setup-python@v7
+        uses: actions/setup-python@v7.0.0
         with:
           python-version: "3.12"
           cache: "pip"
@@ -125,6 +125,7 @@ jobs:
           python scripts/test_evidence_census.py \
             --junit test_reports/post-b0/canonical-junit.xml \
             --out test_reports/post-b0/canonical-test-evidence.json \
+            --exact-sha "$EXACT_SHA" \
             --max-skips 5 \
             --max-xfails 0
 
@@ -134,7 +135,7 @@ jobs:
 
       - name: Upload canonical coverage producer evidence
         if: always()
-        uses: actions/upload-artifact@v7
+        uses: actions/upload-artifact@v7.0.2
         with:
           name: b0-canonical-${{ env.EXACT_SHA }}
           path: |
@@ -160,7 +161,7 @@ jobs:
           test "$actual_sha" = "$EXACT_SHA"
 
       - name: Setup Python 3.12
-        uses: actions/setup-python@v7
+        uses: actions/setup-python@v7.0.0
         with:
           python-version: "3.12"
           cache: "pip"
@@ -199,7 +200,7 @@ jobs:
             --out test_reports/b0/coverage-dab.json
 
       - name: Upload report-only producer evidence
-        uses: actions/upload-artifact@v7
+        uses: actions/upload-artifact@v7.0.2
         with:
           name: b0-report-only-producer-${{ env.EXACT_SHA }}
           path: test_reports/b0/
@@ -222,7 +223,7 @@ jobs:
           test "$actual_sha" = "$EXACT_SHA"
 
       - name: Setup Python
-        uses: actions/setup-python@v7
+        uses: actions/setup-python@v7.0.0
         with:
           python-version: "3.12"
 
@@ -237,7 +238,7 @@ jobs:
             --out test_reports/b1/false-green-census.json
 
       - name: Upload B1 census
-        uses: actions/upload-artifact@v7
+        uses: actions/upload-artifact@v7.0.2
         with:
           name: b1-false-green-census-${{ env.EXACT_SHA }}
           path: test_reports/b1/
@@ -263,7 +264,7 @@ jobs:
           test "$actual_sha" = "$EXACT_SHA"
 
       - name: Setup Python 3.12
-        uses: actions/setup-python@v7
+        uses: actions/setup-python@v7.0.0
         with:
           python-version: "3.12"
           cache: "pip"
@@ -333,7 +334,7 @@ jobs:
           PY
 
       - name: Upload static/DAB producer evidence
-        uses: actions/upload-artifact@v7
+        uses: actions/upload-artifact@v7.0.2
         with:
           name: b0-static-dab-${{ env.EXACT_SHA }}
           path: |
@@ -365,7 +366,7 @@ jobs:
           test "$actual_sha" = "$EXACT_SHA"
 
       - name: Setup Python 3.12
-        uses: actions/setup-python@v7
+        uses: actions/setup-python@v7.0.0
         with:
           python-version: "3.12"
 
@@ -436,7 +437,7 @@ jobs:
           PY
 
       - name: Upload proposal worker receipt
-        uses: actions/upload-artifact@v7
+        uses: actions/upload-artifact@v7.0.2
         with:
           name: dab-proposal-worker-${{ matrix.proposal_id }}
           path: |
@@ -480,7 +481,7 @@ jobs:
           test "$actual_sha" = "$EXACT_SHA"
 
       - name: Setup Python 3.12
-        uses: actions/setup-python@v7
+        uses: actions/setup-python@v7.0.0
         with:
           python-version: "3.12"
 
@@ -557,7 +558,7 @@ jobs:
 
       - name: Upload B0 report-only evidence
         if: always()
-        uses: actions/upload-artifact@v7
+        uses: actions/upload-artifact@v7.0.2
         with:
           name: b0-test-admission-${{ env.EXACT_SHA }}
           path: |

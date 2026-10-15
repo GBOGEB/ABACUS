@@ -1,10 +1,12 @@
 import os
 import shutil
 import subprocess
+import sys
 import tempfile
+
 import pytest
 
-pytestmark = [pytest.mark.integration]
+pytestmark = [pytest.mark.integration, pytest.mark.TEST_BLOCKED_CONFIG]
 
 
 def git_available():
@@ -13,7 +15,10 @@ def git_available():
 
 
 @pytest.mark.skipif(not git_available(), reason="git not available in PATH")
-@pytest.mark.xfail(reason="Git tests may fail on Windows with long paths")
+@pytest.mark.skipif(
+    sys.platform.startswith("win"),
+    reason="TEST_BLOCKED_CONFIG: git long-path limits on Windows",
+)
 def test_local_git_roundtrip_init_commit_log():
     """
     Local-only git roundtrip:
@@ -56,7 +61,10 @@ def test_local_git_roundtrip_init_commit_log():
 
 
 @pytest.mark.skipif(not git_available(), reason="git not available in PATH")
-@pytest.mark.xfail(reason="Git tests may fail on Windows with long paths")
+@pytest.mark.skipif(
+    sys.platform.startswith("win"),
+    reason="TEST_BLOCKED_CONFIG: git long-path limits on Windows",
+)
 def test_git_branch_and_merge():
     """Test git branching and merging workflow."""
     with tempfile.TemporaryDirectory() as tmpdir:
@@ -105,7 +113,10 @@ def test_git_branch_and_merge():
 
 
 @pytest.mark.skipif(not git_available(), reason="git not available in PATH")
-@pytest.mark.xfail(reason="Git tests may fail on Windows with long paths")
+@pytest.mark.skipif(
+    sys.platform.startswith("win"),
+    reason="TEST_BLOCKED_CONFIG: git long-path limits on Windows",
+)
 def test_git_status_shows_changes():
     """Test git status detects file changes."""
     with tempfile.TemporaryDirectory() as tmpdir:
