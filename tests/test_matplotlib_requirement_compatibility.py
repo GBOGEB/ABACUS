@@ -48,9 +48,7 @@ def classify(lines, minor):
             continue
         applies = True
         for clause in marker.strip().split(" and "):
-            parsed = re.fullmatch(
-                r"python_version (>=|<) '3\.(\d+)'", clause.strip()
-            )
+            parsed = re.fullmatch(r"python_version (>=|<) '3\.(\d+)'", clause.strip())
             if parsed is None:
                 raise ValueError("unsupported Python marker")
             bound = int(parsed.group(2))
