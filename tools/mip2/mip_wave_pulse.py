@@ -17,19 +17,28 @@ def valid_sha(value):
     return isinstance(value, str) and len(value) == SHA_LEN and all(c in "0123456789abcdef" for c in value)
 
 
+def valid_digest(value):
+    return isinstance(value, str) and len(value) == 64 and all(
+        char in "0123456789abcdef" for char in value
+    )
+
+
 def coverage_delta(before, after):
     if before is None or after is None:
         return {"status": "UNKNOWN", "reason": "missing comparable evidence"}
-    required = ("scope", "config_id", "source_sha", "covered_lines", "total_lines",
-                "covered_branches", "total_branches")
+    required = ("scope", "config_id", "source_sha", "scope_manifest_sha256",
+                "covered_lines", "total_lines", "covered_branches", "total_branches")
     for record in (before, after):
         require(all(k in record for k in required), "incomplete coverage evidence")
         require(valid_sha(record["source_sha"]), "coverage SHA invalid")
-        for key in required[3:]:
+        require(valid_digest(record["scope_manifest_sha256"]),
+                "missing or invalid eligibility scope fingerprint")
+        for key in required[4:]:
             require(type(record[key]) is int and record[key] >= 0, "invalid coverage count")
         require(record["covered_lines"] <= record["total_lines"] and
                 record["covered_branches"] <= record["total_branches"], "coverage exceeds denominator")
-    if any(before[k] != after[k] for k in ("scope", "config_id", "total_lines", "total_branches")):
+    if any(before[k] != after[k] for k in ("scope", "config_id", "scope_manifest_sha256",
+                                                 "total_lines", "total_branches")):
         return {"status": "INCOMPARABLE", "reason": "scope/config/denominator mismatch"}
     denominator = after["total_lines"] + after["total_branches"]
     require(denominator > 0, "zero coverage denominator")
@@ -37,7 +46,11 @@ def coverage_delta(before, after):
     added_branches = after["covered_branches"] - before["covered_branches"]
     return {"status": "COMPARABLE", "before_sha": before["source_sha"],
             "after_sha": after["source_sha"], "scope": after["scope"],
-            "config_id": after["config_id"], "delta_lines": added_lines,
+            "config_id": after["config_id"],
+            "scope_manifest_sha256": after["scope_manifest_sha256"],
+            "before_covered": before["covered_lines"] + before["covered_branches"],
+            "after_covered": after["covered_lines"] + after["covered_branches"],
+            "eligible": denominator, "delta_lines": added_lines,
             "delta_branches": added_branches,
             "before_percent": round(100 * (before["covered_lines"] + before["covered_branches"]) / denominator, 8),
             "after_percent": round(100 * (after["covered_lines"] + after["covered_branches"]) / denominator, 8),
@@ -83,6 +96,12 @@ def pulse(data):
                 "worker must bind to root and native run/job")
     before = data.get("coverage", {}).get("before")
     after = data.get("coverage", {}).get("after")
+    if before is not None:
+        require(isinstance(before, dict) and before.get("source_sha") == data["base_sha"],
+                "coverage baseline SHA does not match wave base")
+    if after is not None:
+        require(isinstance(after, dict) and after.get("source_sha") == data["head_sha"],
+                "coverage candidate SHA does not match wave head")
     measured = coverage_delta(before, after)
     hours = data.get("worker_hours")
     yield_metric = {"status": "UNKNOWN"}
