@@ -171,7 +171,7 @@ def summary(record):
     cov = record["coverage"]
     delta = record["coverage_delta"]
     return ("## W70 exact-SHA measured pulse\n\n"
-            f"- Head: \`{record['source_sha']}\` · Run: {record['run_id']} "
+            f"- Head: `{record['source_sha']}` · Run: {record['run_id']} "
             f"attempt {record['run_attempt']}\n"
             f"- A–E measured population sum: {record['debt']['measured_lane_population_sum']} "
             f"(**not distinct root count**)\n"
