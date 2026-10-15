@@ -3,6 +3,8 @@ on:
   pull_request:
     paths:
       - 'tools/mip2/mip_wave_pulse.py'
+      - 'tools/mip2/mip_wave_history.py'
+      - 'tests/test_mip_wave_history.py'
       - 'tests/test_mip_wave_pulse.py'
       - '.github/workflows/mip-wave-pulse-testflight.yml'
   workflow_dispatch:
@@ -73,7 +75,7 @@ jobs:
               "## MIP wave/pulse — SYNTHETIC CONTROL (not operational)",
               "",
               "> Synthetic fixture. No worker launch or accepted REX receipt.",
-              "> root closure, coverage gain or merge approval is implied.",
+              "> No verified closure, coverage gain or merge approval.",
               "",
               "| Signal | Value |",
               "| --- | --- |",
@@ -104,6 +106,65 @@ jobs:
           ) as output:
               output.write(summary)
           PY
+      - name: Test and display separate synthetic pulse iterations
+        env:
+          SOURCE_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+        run: |
+          python -m unittest discover -s tests \
+            -p test_mip_wave_history.py -v
+          python - <<'PY'
+          import hashlib
+          import json
+          import os
+          import subprocess
+          import sys
+          from pathlib import Path
+
+          root = Path("wave-output")
+          source = json.loads(Path("wave-input.json").read_text())
+          source["roots"][0]["status"] = "DEFERRED"
+          second_input = root / "pulse02-input.json"
+          second_input.write_text(json.dumps(source))
+          subprocess.run([
+              sys.executable, "tools/mip2/mip_wave_pulse.py",
+              "--input", str(second_input),
+              "--output-dir", str(root / "p02"),
+          ], check=True)
+          records = []
+          paths = [
+              root / "mip_wave_pulse.json",
+              root / "p02" / "mip_wave_pulse.json",
+          ]
+          for index, path in enumerate(paths, 1):
+              records.append({
+                  "wave_id": "CI-NEGATIVE-CONTROL",
+                  "iteration_id": "I01",
+                  "pulse_id": f"P{index:02d}",
+                  "sequence": index,
+                  "source_kind": "SYNTHETIC_CONTROL",
+                  "run_id": int(os.environ["GITHUB_RUN_ID"]),
+                  "job_id": None,
+                  "head_sha": os.environ["SOURCE_SHA"],
+                  "receipt_path": str(path.relative_to(root)),
+                  "receipt_sha256": hashlib.sha256(
+                      path.read_bytes()
+                  ).hexdigest(),
+              })
+          manifest = {
+              "schema": "abacus.mip.pulse-history-input.v1",
+              "repository": "GBOGEB/ABACUS",
+              "records": records,
+          }
+          (root / "pulse-history-manifest.json").write_text(
+              json.dumps(manifest, sort_keys=True, indent=2)
+          )
+          PY
+          python tools/mip2/mip_wave_history.py \
+            --manifest wave-output/pulse-history-manifest.json \
+            --artifact-root wave-output \
+            --output-dir wave-output/history
+          cat wave-output/history/mip_wave_history.md \
+            >> "$GITHUB_STEP_SUMMARY"
       - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         with:
           name: mip-wave-pulse-synthetic-control
