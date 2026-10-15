@@ -4,6 +4,7 @@ The federation manifest nominates repository candidates. It does not prove a
 21-item ranking, a verified deployment, live workers or merge authority.
 Operator-supplied receipts are validated for shape, never authenticated here.
 """
+
 from __future__ import annotations
 
 import hashlib
@@ -34,8 +35,13 @@ def need(condition, message):
 
 
 def stable_json(value):
-    return json.dumps(value, sort_keys=True, separators=(",", ":"),
-                      ensure_ascii=False, allow_nan=False)
+    return json.dumps(
+        value,
+        sort_keys=True,
+        separators=(",", ":"),
+        ensure_ascii=False,
+        allow_nan=False,
+    )
 
 
 def hash_payload(value):
@@ -63,14 +69,21 @@ def percent(n, d):
 
 
 def validate_contract(contract):
-    need(isinstance(contract, dict) and contract.get("schema_version") == "1.0.0",
-         "unsupported federation contract")
+    need(
+        isinstance(contract, dict) and contract.get("schema_version") == "1.0.0",
+        "unsupported federation contract",
+    )
     need(contract.get("security_waiver") is not True, "security waiver forbidden")
     authority = contract.get("authority")
-    need(isinstance(authority, dict) and authority.get("authority_transfer") is False
-         and type(authority.get("formal_credit_delta")) is int and authority["formal_credit_delta"] == 0
-         and type(authority.get("engineering_credit_delta")) is int and authority["engineering_credit_delta"] == 0,
-         "source federation authority cannot be promoted")
+    need(
+        isinstance(authority, dict)
+        and authority.get("authority_transfer") is False
+        and type(authority.get("formal_credit_delta")) is int
+        and authority["formal_credit_delta"] == 0
+        and type(authority.get("engineering_credit_delta")) is int
+        and authority["engineering_credit_delta"] == 0,
+        "source federation authority cannot be promoted",
+    )
     rollout = contract.get("rollout")
     need(isinstance(rollout, dict), "federation rollout missing")
     repos = rollout.get("repository_candidates")
@@ -85,28 +98,47 @@ def validate_contract(contract):
 def validate_ranking(ranking, repo_set):
     if ranking is None:
         return []
-    need(isinstance(ranking, dict) and ranking.get("schema") == RANK_SCHEMA,
-         "unsupported ranking schema")
+    need(
+        isinstance(ranking, dict) and ranking.get("schema") == RANK_SCHEMA,
+        "unsupported ranking schema",
+    )
     items = ranking.get("items")
     need(isinstance(items, list) and len(items) <= CAPACITY, "TOP21 capacity exceeded")
     seen_rank, seen_root = set(), set()
     clean = []
     for item in items:
-        need(isinstance(item, dict)
-             and set(item) == {"rank", "root_candidate_id", "origin_repository"},
-             "ranking item has missing/unrecognized keys")
-        rank, root_id, repo = (item[k] for k in
-                               ("rank", "root_candidate_id", "origin_repository"))
-        need(positive(rank) and rank <= CAPACITY and rank not in seen_rank,
-             "invalid or duplicate TOP21 rank")
-        need(isinstance(root_id, str) and ROOT.fullmatch(root_id)
-             and root_id not in seen_root, "invalid or duplicate root candidate")
-        need(valid_repo(repo) and repo.lower() in repo_set,
-             "rank refers to repository outside candidate inventory")
+        need(
+            isinstance(item, dict)
+            and set(item) == {"rank", "root_candidate_id", "origin_repository"},
+            "ranking item has missing/unrecognized keys",
+        )
+        rank, root_id, repo = (
+            item[k] for k in ("rank", "root_candidate_id", "origin_repository")
+        )
+        need(
+            positive(rank) and rank <= CAPACITY and rank not in seen_rank,
+            "invalid or duplicate TOP21 rank",
+        )
+        need(
+            isinstance(root_id, str)
+            and ROOT.fullmatch(root_id)
+            and root_id not in seen_root,
+            "invalid or duplicate root candidate",
+        )
+        need(
+            valid_repo(repo) and repo.lower() in repo_set,
+            "rank refers to repository outside candidate inventory",
+        )
         seen_rank.add(rank)
         seen_root.add(root_id)
-        clean.append({"rank": rank, "root_candidate_id": root_id,
-                      "origin_repository": repo, "causal_confirmation": "UNKNOWN"})
+        clean.append(
+            {
+                "rank": rank,
+                "root_candidate_id": root_id,
+                "origin_repository": repo,
+                "causal_confirmation": "UNKNOWN",
+            }
+        )
     return sorted(clean, key=lambda x: x["rank"])
 
 
@@ -115,81 +147,164 @@ def _check_run_url(value, repo, run_id, job_id):
     u = urlsplit(value)
     stem = f"/{repo}/actions/runs/{run_id}"
     allowed = {stem, stem + "/", stem + f"/job/{job_id}"}
-    need(u.scheme == "https" and u.netloc == "github.com" and u.path in allowed
-         and not u.query and not u.fragment and not u.username,
-         "evidence URL is not bound to the declared repository/run/job")
+    need(
+        u.scheme == "https"
+        and u.netloc == "github.com"
+        and u.path in allowed
+        and not u.query
+        and not u.fragment
+        and not u.username,
+        "evidence URL is not bound to the declared repository/run/job",
+    )
 
 
 def _validate_coverage(value):
-    need(isinstance(value, dict) and set(value) == {
-        "scope", "unit", "covered", "eligible", "config_digest", "tool_version",
-        "test_selection"}, "incomplete coverage measurement contract")
+    need(
+        isinstance(value, dict)
+        and set(value)
+        == {
+            "scope",
+            "unit",
+            "covered",
+            "eligible",
+            "config_digest",
+            "tool_version",
+            "test_selection",
+        },
+        "incomplete coverage measurement contract",
+    )
     n, d = value["covered"], value["eligible"]
-    need(isinstance(value["scope"], str) and value["scope"] in SCOPES
-         and isinstance(value["unit"], str) and value["unit"] in UNITS,
-         "invalid coverage scope/unit")
-    need(type(n) is int and type(d) is int and 0 <= n <= d,
-         "invalid coverage numerator/denominator")
-    need(d > 0 or value["scope"] == "changed_lines",
-         "zero eligible lines only valid for changed-line N/A")
-    need(valid_digest(value["config_digest"])
-         and nonblank(value["tool_version"])
-         and nonblank(value["test_selection"]),
-         "unbound coverage tool/configuration")
-    return {"scope": value["scope"], "unit": value["unit"],
-            "covered": n, "eligible": d,
-            "reported_pct": percent(n, d),
-            "config_digest": value["config_digest"],
-            "tool_version": value["tool_version"],
-            "test_selection": value["test_selection"],
-            "authenticity": "UNVERIFIED_OPERATOR_INPUT"}
+    need(
+        isinstance(value["scope"], str)
+        and value["scope"] in SCOPES
+        and isinstance(value["unit"], str)
+        and value["unit"] in UNITS,
+        "invalid coverage scope/unit",
+    )
+    need(
+        type(n) is int and type(d) is int and 0 <= n <= d,
+        "invalid coverage numerator/denominator",
+    )
+    need(
+        d > 0 or value["scope"] == "changed_lines",
+        "zero eligible lines only valid for changed-line N/A",
+    )
+    need(
+        valid_digest(value["config_digest"])
+        and nonblank(value["tool_version"])
+        and nonblank(value["test_selection"]),
+        "unbound coverage tool/configuration",
+    )
+    return {
+        "scope": value["scope"],
+        "unit": value["unit"],
+        "covered": n,
+        "eligible": d,
+        "reported_pct": percent(n, d),
+        "config_digest": value["config_digest"],
+        "tool_version": value["tool_version"],
+        "test_selection": value["test_selection"],
+        "authenticity": "UNVERIFIED_OPERATOR_INPUT",
+    }
 
 
 def validate_receipts(receipts, repos):
     if receipts is None:
         return []
-    need(isinstance(receipts, dict) and receipts.get("schema") == RECEIPT_SCHEMA,
-         "unsupported receipts schema")
+    need(
+        isinstance(receipts, dict) and receipts.get("schema") == RECEIPT_SCHEMA,
+        "unsupported receipts schema",
+    )
     items = receipts.get("items")
     need(isinstance(items, list), "receipts must be an array")
     known = {r.lower() for r in repos}
     seen, heads = set(), {}
     out = []
     for x in items:
-        need(isinstance(x, dict) and set(x) in (
-            {"repository", "source_sha", "run_id", "job_id", "evidence_url", "kind"},
-            {"repository", "source_sha", "run_id", "job_id", "evidence_url",
-             "kind", "measurement", "artifact_sha256"},
-        ), "receipt has missing/unrecognized fields")
-        repo, sha, run, job = [x[k] for k in
-                               ("repository", "source_sha", "run_id", "job_id")]
-        need(valid_repo(repo) and repo.lower() in known, "receipt for unknown repository")
+        need(
+            isinstance(x, dict)
+            and set(x)
+            in (
+                {
+                    "repository",
+                    "source_sha",
+                    "run_id",
+                    "job_id",
+                    "evidence_url",
+                    "kind",
+                },
+                {
+                    "repository",
+                    "source_sha",
+                    "run_id",
+                    "job_id",
+                    "evidence_url",
+                    "kind",
+                    "measurement",
+                    "artifact_sha256",
+                },
+            ),
+            "receipt has missing/unrecognized fields",
+        )
+        repo, sha, run, job = [
+            x[k] for k in ("repository", "source_sha", "run_id", "job_id")
+        ]
+        need(
+            valid_repo(repo) and repo.lower() in known, "receipt for unknown repository"
+        )
         need(valid_digest(sha, SHA), "receipt exact SHA missing")
-        need(positive(run) and positive(job), "receipt run/job must be positive integers")
-        need(isinstance(x["kind"], str) and x["kind"] in KINDS,
-             "unsupported receipt type")
+        need(
+            positive(run) and positive(job), "receipt run/job must be positive integers"
+        )
+        need(
+            isinstance(x["kind"], str) and x["kind"] in KINDS,
+            "unsupported receipt type",
+        )
         _check_run_url(x["evidence_url"], repo, run, job)
         ident = (repo.lower(), sha, run, job, x["kind"])
         need(ident not in seen, "duplicate source-bound receipt")
         seen.add(ident)
-        need(repo.lower() not in heads or heads[repo.lower()] == sha,
-             "multiple repository heads in one census snapshot")
+        need(
+            repo.lower() not in heads or heads[repo.lower()] == sha,
+            "multiple repository heads in one census snapshot",
+        )
         heads[repo.lower()] = sha
         if x["kind"] == "COVERAGE":
-            need("measurement" in x and "artifact_sha256" in x,
-                 "coverage receipt lacks artifact and measurement")
+            need(
+                "measurement" in x and "artifact_sha256" in x,
+                "coverage receipt lacks artifact and measurement",
+            )
             need(valid_digest(x["artifact_sha256"]), "artifact digest invalid")
             cov = _validate_coverage(x["measurement"])
         else:
-            need("measurement" not in x and "artifact_sha256" not in x,
-                 "non-coverage receipt cannot claim coverage")
+            need(
+                "measurement" not in x and "artifact_sha256" not in x,
+                "non-coverage receipt cannot claim coverage",
+            )
             cov = None
-        out.append({"repository": repo, "source_sha": sha, "run_id": run,
-                    "job_id": job, "kind": x["kind"], "evidence_url": x["evidence_url"],
-                    "measurement": cov, "native_verified": None,
-                    "trust": "OPERATOR_SUPPLIED_NOT_AUTHENTICATED"})
-    return sorted(out, key=lambda x: (x["repository"].lower(), x["source_sha"],
-                                      x["run_id"], x["job_id"], x["kind"]))
+        out.append(
+            {
+                "repository": repo,
+                "source_sha": sha,
+                "run_id": run,
+                "job_id": job,
+                "kind": x["kind"],
+                "evidence_url": x["evidence_url"],
+                "measurement": cov,
+                "native_verified": None,
+                "trust": "OPERATOR_SUPPLIED_NOT_AUTHENTICATED",
+            }
+        )
+    return sorted(
+        out,
+        key=lambda x: (
+            x["repository"].lower(),
+            x["source_sha"],
+            x["run_id"],
+            x["job_id"],
+            x["kind"],
+        ),
+    )
 
 
 def rollout_census(contract, receipts=None, ranking=None):
@@ -203,18 +318,25 @@ def rollout_census(contract, receipts=None, ranking=None):
     inventory = []
     for repo in repos:
         rows = sources.get(repo.lower(), [])
-        inventory.append({"repository": repo, "submitted_receipts": len(rows),
-                          "source_sha": rows[0]["source_sha"] if rows else None,
-                          "assessment": "SOURCE_BOUND_UNVERIFIED" if rows else "NOT_ASSESSED",
-                          "authenticated_deployment": None,
-                          "coverage_by_scope": [x["measurement"] for x in rows
-                                                if x["measurement"] is not None]})
+        inventory.append(
+            {
+                "repository": repo,
+                "submitted_receipts": len(rows),
+                "source_sha": rows[0]["source_sha"] if rows else None,
+                "assessment": "SOURCE_BOUND_UNVERIFIED" if rows else "NOT_ASSESSED",
+                "authenticated_deployment": None,
+                "coverage_by_scope": [
+                    x["measurement"] for x in rows if x["measurement"] is not None
+                ],
+            }
+        )
     assessed = sum(bool(x["submitted_receipts"]) for x in inventory)
     return {
         "schema": OUTPUT_SCHEMA,
         "source_contract_sha256": hash_payload(contract),
-        "input_sha256": hash_payload({"contract": contract, "receipts": receipts,
-                                     "ranking": ranking}),
+        "input_sha256": hash_payload(
+            {"contract": contract, "receipts": receipts, "ranking": ranking}
+        ),
         "source_contract_schema": contract["schema_version"],
         "root_ranking": {
             "capacity": CAPACITY,

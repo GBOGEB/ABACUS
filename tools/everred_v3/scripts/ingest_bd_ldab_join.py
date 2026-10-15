@@ -85,8 +85,11 @@ def to_event(obj):
         "evidence": {
             "producer_schema": obj["schema"],
             "source_binding": {
-                "repository": repo, "source_sha": sha, "run_id": run,
-                "job_id": job, "run_url": url,
+                "repository": repo,
+                "source_sha": sha,
+                "run_id": run,
+                "job_id": job,
+                "run_url": url,
             },
             "ingested_at": ingestion_time,
             "evidence_trust": "MANUAL_UNVERIFIED",

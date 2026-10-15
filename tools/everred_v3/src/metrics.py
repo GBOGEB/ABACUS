@@ -214,7 +214,9 @@ def compute_metrics(events: list[dict], roots: dict) -> dict:
         "queue_wait_mean_seconds": round(sum(waits) / len(waits), 1) if waits else None,
         "security_comparable_pairs": burndown,
         "coverage_comparable_pairs": deltas,
-        "known_consumer_denominator": len(expected) if complete_registry and expected else None,
+        "known_consumer_denominator": (
+            len(expected) if complete_registry and expected else None
+        ),
         "queue_wait_samples": len(waits),
         "method": "Exact consumer-head, source-bound native PASS claims only; incomplete registries remain null. Source claims are not admission authority.",
     }
