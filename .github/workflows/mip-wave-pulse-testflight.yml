@@ -229,9 +229,13 @@ jobs:
       - name: Federation breadth contract and read-only census
         env:
           SOURCE_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+          GH_TOKEN: ${{ github.token }}
         run: |
           python -m unittest discover -s tests \
             -p test_mip_federation_census.py -v
+          export CODEX_SHA
+          CODEX_SHA="$(gh api repos/GBOGEB/CODEX/branches/main \
+            --jq .commit.sha)"
           python - <<'PY'
           import json
           import os
@@ -239,11 +243,14 @@ jobs:
 
           manifest = {
               "schema": "abacus.mip.federation-manifest.v1",
-              "repositories": [{
-                  "repository": "GBOGEB/ABACUS",
-                  "head_sha": os.environ["SOURCE_SHA"],
-                  "evidence": [],
-              }],
+              "repositories": [
+                  {"repository": "GBOGEB/ABACUS",
+                   "head_sha": os.environ["SOURCE_SHA"],
+                   "evidence": []},
+                  {"repository": "GBOGEB/CODEX",
+                   "head_sha": os.environ["CODEX_SHA"],
+                   "evidence": []},
+              ],
           }
           Path("wave-output/federation-input.json").write_text(
               json.dumps(manifest, sort_keys=True, indent=2)
@@ -285,7 +292,7 @@ jobs:
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         with:
           name: mip-wave-retained-native-github-api-metadata
-          path: test_reports/native-fanout/report/
+          path: test_reports/native-fanout/
           if-no-files-found: error
       - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         with:
