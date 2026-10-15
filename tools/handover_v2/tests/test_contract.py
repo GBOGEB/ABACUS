@@ -39,6 +39,31 @@ class HandoverV2Smoke(unittest.TestCase):
         with self.assertRaises(ValueError):
             core.validate_graph(actions)
 
+    def test_comparability_rejects_changed_test_selection(self):
+        def metric(selection, source):
+            return {
+                "id": "coverage", "state": "MEASURED",
+                "measure_type": "RATIO",
+                "numerator": 8, "denominator": 10,
+                "basis": {
+                    "scope_id": "sample", "paths": ["source.py"],
+                    "unit_definition": "statements",
+                    "instrumentor": "coverage.py",
+                    "instrumentor_version": "7.16.2",
+                    "configuration_sha256": "a" * 64,
+                    "selection": selection,
+                },
+            }
+        old = metric("tests/test_a.py", "a" * 40)
+        new = metric("tests/test_b.py", "b" * 40)
+        comparison = core.comparability(old, new, "coverage", "C1")
+        self.assertEqual(comparison["status"], "INELIGIBLE")
+        self.assertIn("Different selection", comparison["reasons"])
+        self.assertIsNone(comparison["delta_percentage_points"])
+        new["basis"]["selection"] = old["basis"]["selection"]
+        self.assertEqual(
+            core.comparability(old, new, "coverage", "C1")["status"], "COMPARABLE")
+
     def test_noncausal_pct(self):
         self.assertEqual(core.pct(49, 50), "98.00%")
 
