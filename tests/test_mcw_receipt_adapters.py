@@ -193,5 +193,56 @@ class ReceiptAdaptersTests(unittest.TestCase):
             self.assertEqual(len(produced["edges"]), 0)
 
 
+    def test_source_schema_family_mapping_is_exact(self):
+        self.assertEqual(A.SOURCES, R.SOURCE_OBSERVATION_SCHEMAS)
+        for family in ("MCL", "LDAB", "CENSUS"):
+            forged = {
+                "schema": R.INPUT_SCHEMA, "wave_id": "W1", "edges": [],
+                "nodes": [{
+                    "id": "foreign", "repository": "GBOGEB/ABACUS",
+                    "source_sha": SHA, "family": family,
+                    "source_observation": {
+                        "schema": "other.contract.v1",
+                        "local_sha256": "f" * 64,
+                        "evidence_grade": "UNAUTHENTICATED_SOURCE_BYTES",
+                        "metrics": {},
+                    },
+                }],
+            }
+            with tempfile.TemporaryDirectory() as d:
+                with self.assertRaises(ValueError):
+                    R.rollup(forged, d)
+
+    def test_ldab_rejects_claimed_waiver_or_runtime_steps(self):
+        for change in ("waiver", "debug"):
+            obj = ldab()
+            if change == "waiver":
+                obj["security_waiver"] = True
+            else:
+                obj["runtime"]["debug_probe_steps"] = 4
+            with self.assertRaises(ValueError):
+                A._ldab(obj)
+
+    def test_ldab_rejects_forged_executed_contract(self):
+        for key, value in (
+            ("contract_checks_total", None),
+            ("contract_checks_passed", 0),
+            ("contract_checks_failed", 1),
+            ("source_contract_sha256", "invalid"),
+            ("source_contract", "incorrect.py"),
+        ):
+            obj = ldab()
+            obj["diagnostic_execution"][key] = value
+            with self.subTest(key=key):
+                with self.assertRaises(ValueError):
+                    A._ldab(obj)
+
+    def test_ldab_rejects_executed_without_nested_census(self):
+        obj = ldab()
+        obj["source_census"]["nested"] = None
+        with self.assertRaises(ValueError):
+            A._ldab(obj)
+
+
 if __name__ == "__main__":
     unittest.main()
