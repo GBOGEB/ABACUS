@@ -1,6 +1,6 @@
 import unittest
 
-from mission_control_lite.coverage_pulse import build, compare
+from mission_control_lite.coverage_pulse import build, compare, render_summary
 
 SHA = "a" * 40
 OTHER = "b" * 40
@@ -83,6 +83,37 @@ class CoveragePulseTests(unittest.TestCase):
             "mission_control_lite/core.py")
         with self.assertRaises(ValueError):
             self.make(bad)
+
+    def test_timed_phases_summary_and_unknown_queue(self):
+        phases = [
+            {"phase": "coverage-install", "duration_seconds": 1.5,
+             "exit_code": 0},
+            {"phase": "tests", "duration_seconds": 2.5, "exit_code": 0},
+        ]
+        report = build(coverage(), {"core": OK, "rex": OK, "metrics": OK},
+                       SHA, OTHER, 123, phases=phases)
+        self.assertEqual(report["timed_execution_seconds"], 4)
+        self.assertEqual(report["job_queue_seconds"], None)
+        self.assertEqual(report["wheel_unpack_seconds"], None)
+        self.assertEqual(report["tests_per_timed_second"], 2.25)
+        markdown = render_summary(report)
+        self.assertIn("UNKNOWN (external run metadata needed)", markdown)
+        self.assertIn("Merge admission | HOLD", markdown)
+        self.assertIn("coverage-install", markdown)
+
+    def test_timing_phase_fails_closed(self):
+        good = {"phase": "install", "duration_seconds": 1.0,
+                "exit_code": 0}
+        bad_cases = [
+            [],
+            [good, good],
+            [{"phase": "bad", "duration_seconds": -1, "exit_code": 0}],
+            [{"phase": "bad", "duration_seconds": 1, "exit_code": 1}],
+        ]
+        for phases in bad_cases:
+            with self.subTest(phases=phases), self.assertRaises(ValueError):
+                build(coverage(), {"core": OK}, SHA, OTHER, 123,
+                      phases=phases)
 
     def test_rejects_invalid_sha_and_baseline(self):
         with self.assertRaises(ValueError):
