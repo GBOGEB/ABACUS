@@ -4,6 +4,7 @@ import sys
 
 sys.path.insert(0, str(pathlib.Path(__file__).resolve().parents[1] / "src"))
 from control import read_history
+from build_bd_queue import main as regenerate_bd_queue
 
 P = pathlib.Path(__file__).resolve().parents[1]
 snapshot = json.loads((P / "data/snapshot.json").read_text(encoding="utf-8"))
@@ -38,3 +39,5 @@ html = html.replace("@@PULSES@@", embedded(history)).replace(
 )
 (P / "dashboard/index.html").write_text(html, encoding="utf-8")
 print("Wrote", P / "dashboard/index.html", len(html), "chars")
+# Same canonical dashboard build also refreshes the read-only BD queue.
+regenerate_bd_queue()
