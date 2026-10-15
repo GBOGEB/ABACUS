@@ -40,8 +40,10 @@ def init(db):
         c.execute("CREATE TABLE IF NOT EXISTS receipts (mission TEXT, task TEXT, root TEXT, source_sha TEXT, run TEXT, payload TEXT, PRIMARY KEY(mission,task,run))")
         c.execute("CREATE TABLE IF NOT EXISTS events (id INTEGER PRIMARY KEY, mission TEXT, task TEXT, kind TEXT, payload TEXT, created TEXT DEFAULT CURRENT_TIMESTAMP)")
 
-def ingest(db, r):
-    if not verify(r):
+def ingest(db, r, artifact_root=None):
+    if artifact_root is None:
+        raise ValueError("trusted artifact root is required")
+    if not verify(r, artifact_root):
         raise ValueError("invalid receipt")
     init(db)
     with closing(sqlite3.connect(db)) as c, c:
