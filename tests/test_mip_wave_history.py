@@ -6,8 +6,8 @@ import json
 import sys
 import tempfile
 import unittest
-from unittest import mock
 from pathlib import Path
+from unittest import mock
 
 SOURCE = Path(__file__).resolve().parents[1] / "tools/mip2/mip_wave_history.py"
 SPEC = importlib.util.spec_from_file_location("mip_wave_history", SOURCE)
