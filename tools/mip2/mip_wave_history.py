@@ -35,6 +35,29 @@ def scoped_file(root: Path, name: object) -> Path:
     return path
 
 
+
+def validate_native_module_coverage(report: dict, module_path: str) -> dict:
+    """Fail closed if coverage totals include anything beyond the module."""
+    require(isinstance(report, dict), "coverage report must be an object")
+    require(report.get("meta", {}).get("branch_coverage") is True, "branch coverage missing")
+    files = report.get("files")
+    require(isinstance(files, dict) and set(files) == {module_path}, "coverage scope mismatch")
+    file_summary = files[module_path].get("summary")
+    totals = report.get("totals")
+    require(isinstance(file_summary, dict) and isinstance(totals, dict), "coverage totals missing")
+    fields = ("covered_lines", "num_statements", "covered_branches", "num_branches")
+    for key in fields:
+        require(
+            type(totals.get(key)) is int
+            and totals[key] == file_summary.get(key),
+            "coverage scope/denominator mismatch",
+        )
+    eligible = totals["num_statements"] + totals["num_branches"]
+    covered = totals["covered_lines"] + totals["covered_branches"]
+    require(eligible > 0 and covered <= eligible, "invalid scoped coverage")
+    return {"covered": covered, "eligible": eligible}
+
+
 def parse_metrics(entry: dict, receipt: dict) -> dict:
     """Extract displayed metrics without treating the input as attestation."""
     coverage = receipt.get("coverage")
