@@ -37,18 +37,24 @@ jobs:
             > evidence/core-tests.log 2>&1
           python -m mission_control_lite.timing_pulse measure \
             --output evidence/phase-times.json --phase rex-tests -- \
-            python -m coverage run --append --branch --source=mission_control_lite \
-            -m unittest discover -s tests -p test_mission_control_lite_rex.py -v \
+            python -m coverage run --append --branch \
+            --source=mission_control_lite \
+            -m unittest discover -s tests \
+            -p test_mission_control_lite_rex.py -v \
             > evidence/rex-tests.log 2>&1
           python -m mission_control_lite.timing_pulse measure \
             --output evidence/phase-times.json --phase metrics-tests -- \
-            python -m coverage run --append --branch --source=mission_control_lite \
-            -m unittest discover -s tests -p test_mission_control_lite_coverage.py -v \
+            python -m coverage run --append --branch \
+            --source=mission_control_lite \
+            -m unittest discover -s tests \
+            -p test_mission_control_lite_coverage.py -v \
             > evidence/metrics-tests.log 2>&1
           python -m mission_control_lite.timing_pulse measure \
             --output evidence/phase-times.json --phase timing-tests -- \
-            python -m coverage run --append --branch --source=mission_control_lite \
-            -m unittest discover -s tests -p test_mission_control_lite_timing.py -v \
+            python -m coverage run --append --branch \
+            --source=mission_control_lite \
+            -m unittest discover -s tests \
+            -p test_mission_control_lite_timing.py -v \
             > evidence/timing-tests.log 2>&1
           python -m mission_control_lite.timing_pulse measure \
             --output evidence/phase-times.json --phase coverage-json -- \
@@ -99,7 +105,9 @@ jobs:
               "executed_sha": source,
               "pull_head_sha": head,
               "event_sha": event,
-              "checkout_kind": "pull_head" if source == head else "merge_or_other",
+              "checkout_kind": (
+                  "pull_head" if source == head else "merge_or_other"
+              ),
           }))
           PY
           python - <<'PY'
