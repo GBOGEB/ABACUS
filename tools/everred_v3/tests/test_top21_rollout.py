@@ -1,17 +1,17 @@
 """TOP21 census: denominator separation, provenance rejection, deterministic replay."""
 
 import copy
+import json
 import pathlib
 import sys
 import tempfile
 import unittest
-import json
 
 ROOT = pathlib.Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "src"))
 sys.path.insert(0, str(ROOT / "scripts"))
-from top21_rollout import rollout_census, InvalidCensus, RANK_SCHEMA, RECEIPT_SCHEMA
 from build_top21_rollout import main
+from top21_rollout import RANK_SCHEMA, RECEIPT_SCHEMA, InvalidCensus, rollout_census
 
 REPOS = [
     "GBOGEB/ABACUS",
