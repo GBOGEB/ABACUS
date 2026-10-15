@@ -209,7 +209,8 @@ def as_markdown(payload):
         "Read-only telemetry. Counts below are **workflow runs**, not test cases.",
         "Unknown or incomparable evidence is not a measured zero.",
         "",
-        "| Wave | Repos | Dimensions | PASS | Terminal non-success | Pending | Jobs sampled | Coverage |",
+        "| Wave | Repos | Dimensions | PASS | Terminal non-success | Pending | "
+        "Jobs sampled | Coverage |",
         "|---|---:|---:|---:|---:|---:|---:|---|",
     ]
     for wave in payload["waves"]:
@@ -233,7 +234,8 @@ def as_markdown(payload):
             coverage + " |"
         )
     rows.extend(["", "## Matched workflow-set comparisons", "",
-                 "| From -> To | Repo | Status | Delta success | Delta terminal non-success |",
+                 "| From -> To | Repo | Status | Delta success | "
+                 "Delta terminal non-success |",
                  "|---|---|---|---:|---:|"])
     for pair in payload["wave_comparisons"]:
         for repo, change in pair["by_repo"].items():

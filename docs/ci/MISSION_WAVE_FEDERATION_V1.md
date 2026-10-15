@@ -7,16 +7,16 @@ acceleration from a synthetic test fixture.
 
 ## Reuse instead of reinvention
 
-| Existing producer/contract | Observation routed to roll-up |
+| Source | Observation |
 | --- | --- |
-| PR #1990 \`mip_wave_pulse.json\` | MIP roots, first-red and source-cohort coverage |
-| PR #1990 \`mip_backlog_delta.json\` | Per-root fingerprints, no cross-PR closure promotion |
-| Main \`scripts/bd_ldab_join_census.py\` | BD/Bandit/LDAB/LLDB read-only fingerprint evidence |
-| Main \`tools/gate_rollup.py\` | Existing dashboard gate roll-up (non-authoritative) |
-| Main MIP B0 coverage workflow | Exact-SHA JUnit/coverage/contexts if receipt exists |
-| REX contract in CODEX | Accepted returns only after authority and signature proof |
-| 3P* contract \`docs/ci/MIP_SIPOC_DAG.md\` | 3PR and 3PC as repeatability/qualification, not a green default |
-| Solo AMBER \`ci/governance/solo_amber.py\` | Per-check explicit exception **requests**, no bypass power |
+| PR #1990 wave pulse | MIP roots and cohort-matched coverage |
+| PR #1990 backlog delta | Repeated failure fingerprints |
+| Main BD/LDAB join | Read-only Bandit/LLDB joins |
+| Main CI gate roll-up | Dashboard-only CI states |
+| MIP B0 | Native JUnit and coverage receipts |
+| CODEX REX | Accepted, signed returns only |
+| 3P* SIPOC-DAG | 3PR/3PC qualification stages |
+| Solo AMBER | Per-check carryover requests, not bypasses |
 
 The current telemetry producer provides **GitHub API read-only run and job
 timestamps**, categorized by *workflow name hint*. Workflow names cannot
@@ -24,38 +24,38 @@ prove actual MIP, DMAIC, PCA/BT, 3P, LDAB, LLDB or REX completion.
 
 ## Native read-only telemetry
 
-\`\`\`bash
+```bash
 export GITHUB_TOKEN="$(gh auth token)"
 python ci/governance/mission_ci_telemetry.py \
   --target "GBOGEB/ABACUS@$(git rev-parse HEAD)" \
   --output-dir test_reports/mission-control
-\`\`\`
+```
 
-Emits \`mission_ci_snapshot.json\`, \`mission_ci_snapshot.sha256\` and
-\`mission_ci_summary.md\`. The hash is an integrity checksum, not a signed
+Emits `mission_ci_snapshot.json`, `mission_ci_snapshot.sha256` and
+`mission_ci_summary.md`. The hash is an integrity checksum, not a signed
 third-party attestation. This is an **operator-executed collector**: a
 repository-wide workflow has deliberately NOT been added because the canonical
 workflow-policy inventory requires separate governance reconciliation.
 
-For federation, repeat \`--target GBOGEB/CODEX@<exact-40hex>\` or another
-explicit GBOGEB repo/SHA. The GitHub token needs \`actions:read\` on each
+For federation, repeat `--target GBOGEB/CODEX@<exact-40hex>` or another
+explicit GBOGEB repo/SHA. The GitHub token needs `actions:read` on each
 target; unauthorized or unavailable federation targets produce UNKNOWN
 rather than a zero count. Never store the token in repository artifacts.
 
 Run-status census is one page (max 100). A partial page is flagged. Only up to
 15 completed runs are sampled for job timings by default (bound: 0..40); do
 not interpret partial job samples as full-repo runtime. Queue time is
-\`job.started_at-job.created_at\`; runtime is
-\`job.completed_at-job.started_at\`. Missing timestamps remain null. Parallel
+`job.started_at-job.created_at`; runtime is
+`job.completed_at-job.started_at`. Missing timestamps remain null. Parallel
 job times are **not** summed as elapsed wall time. p50/p95 require >=5
 terminal observations. Dependency download, install, test body and upload
 require native step telemetry before attribution.
 
 ## Wave-by-wave federation history
 
-The history input is \`mission.wave.history.input.v1\`:
+The history input is `mission.wave.history.input.v1`:
 
-\`\`\`json
+```json
 {
   "schema": "mission.wave.history.input.v1",
   "waves": [
@@ -67,17 +67,17 @@ The history input is \`mission.wave.history.input.v1\`:
     }
   ]
 }
-\`\`\`
+```
 
 The string in the example **must be replaced with the object** from the
 actual native collector, never used as evidence. Subsequent waves carry unique
 IDs and snapshots bound to exact source SHAs.
 
-\`\`\`bash
+```bash
 python ci/governance/mission_wave_history.py \
   --input test_reports/mission-control/wave-history-input.json \
   --output test_reports/mission-control/wave-history.json
-\`\`\`
+```
 
 The command emits both JSON and Markdown next to the chosen output path.
 No synthetic numbers are assigned to missing fields.
@@ -91,19 +91,19 @@ reauthenticated, and never summed across different denominators.
 
 ## Metrics after every pulse and wave
 
-| Axis | Exact measurement | Reason to withhold |
+| Axis | Observation | Withhold when |
 | --- | --- | --- |
-| Depth | Number of evidenced dimensions (CI, sampled jobs, MIP pulse, exception ledger) | Maturity or closure not implied |
-| Breadth | Unique repositories with API-derived run snapshot | Inaccessible repo is UNKNOWN |
-| Fan-out | Native completed job sample and overlap-derived peak concurrency | Incomplete jobs or timing |
-| Root burndown | Distinct root IDs and evidence-bound closure proof from MIP | No exact-main/native closure |
-| Coverage | Scope/config/denominator matched line + branch delta in pp | Different cohort/config |
-| CI throughput | Terminal run outcomes for matched workflow set | Different set or pending |
-| Latency | Job queue p50/p95 and runtime p50/p95, by repo | Fewer than five observations |
-| Recovery | AMBER requests/carryover expiry and follow-up issue evidence | No owner authorization |
-| 3PR/3PC | New repeatability and qualification outputs | No bounded repeated trials |
-| PCA / Bradley-Terry | M1 validity, M2 stability, M3 capability, observed pairwise outcomes | Nonindependent/insufficient evidence |
-| REX | Signed accepted return tied to causal fingerprint | No accepted producer receipt |
+| Depth | Evidence dimensions | Not method maturity |
+| Breadth | Repositories with API snapshots | API unavailable |
+| Fan-out | Sampled job concurrency | Sample incomplete |
+| Root BD | Exact-main native closure proof | Proof missing |
+| Coverage | Matched line/branch delta pp | Cohort changed |
+| CI throughput | Matched terminal check results | Pending/different |
+| Latency | Per-repo queue/runtime p50/p95 | Fewer than 5 |
+| Recovery | AMBER request plus issue/expiry | Not authorized |
+| 3PR/3PC | Repeatability qualification | No native trials |
+| PCA/BT | M1-M3 and observed pairwise outcomes | Insufficient data |
+| REX | Signed accepted return | Missing authority |
 
 ## Scaling gates
 

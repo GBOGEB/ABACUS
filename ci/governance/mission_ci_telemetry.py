@@ -20,6 +20,7 @@ REPO = re.compile(r"^GBOGEB/[A-Za-z0-9_.-]+$")
 FAMILIES = {
     "MIP": ("mip", "test admission"),
     "DMAIC": ("dmaic",),
+    "PCA_BT": ("pca", "bradley-terry", "bt-rank"),
     "REX": ("rex",),
     "LDAB_LLDB": ("ldab", "lldb", "debug"),
     "CENSUS": ("census", "inventory"),
@@ -112,7 +113,9 @@ def job_metrics(jobs):
         "execution_total_s_sample": round(sum(active), 3) if active else None,
         "queue_p50_s": round(statistics.median(queue), 3) if len(queue) >= 5 else None,
         "queue_p95_s": percentile(queue, .95),
-        "execution_p50_s": round(statistics.median(active), 3) if len(active) >= 5 else None,
+        "execution_p50_s": (
+            round(statistics.median(active), 3) if len(active) >= 5 else None
+        ),
         "execution_p95_s": percentile(active, .95),
         "peak_concurrent_jobs_sample": peak if intervals else None,
         "timing_class": "JOB_API_OBSERVED_SAMPLE",

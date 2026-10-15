@@ -131,11 +131,13 @@ class SoloAmberTests(unittest.TestCase):
         x = fixture()
         x["pulses"] = [
             {"wave_id": "W1", "head_sha": SHA, "coverage": {"status": "UNKNOWN"},
-             "tests": {"passed": 8, "failed": 0, "skipped": 0}, "root_counts": {"open": 2},
+             "tests": {"passed": 8, "failed": 0, "skipped": 0},
+             "root_counts": {"open": 2},
              "first_reds": []},
             {"wave_id": "W2", "head_sha": SHA,
              "coverage": {"status": "COMPARABLE", "delta_pp": 0.25},
-             "tests": {"passed": 10, "failed": 0, "skipped": 0}, "root_counts": {"open": 1},
+             "tests": {"passed": 10, "failed": 0, "skipped": 0},
+             "root_counts": {"open": 1},
              "first_reds": []},
         ]
         r = M.assess(x)
