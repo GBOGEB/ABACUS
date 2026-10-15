@@ -10,7 +10,6 @@ import argparse
 import datetime as dt
 import hashlib
 import json
-import math
 import os
 import re
 import statistics
@@ -192,7 +191,6 @@ def normalize(repo,sha,workflows,runs,jobs,*,expected_runs=None,pair_records=Non
     classified=workflow_taxonomy(workflows)
     fam_config=Counter(x['family'] for x in classified)
     complete= type(expected_runs) is int and expected_runs==observed
-    hasjobs=bool(scopedjobs)
     fact={'schema':SCHEMA,'repo':repo,'source_sha':sha,'observed_at':observed_at or dt.datetime.now(dt.timezone.utc).isoformat(),
           'provenance':'DECLARED_SOURCE_SCOPE_UNVERIFIED',
           'catalog':{'workflows_count':len(classified),'families':dict(fam_config),'scope':'workflow definitions, not successful executions',
