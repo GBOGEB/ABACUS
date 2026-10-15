@@ -14,11 +14,20 @@ def payload(rows):
 
 
 def row(family="coverage", metric="statement_coverage", **changes):
-    v = {"family": family, "metric": metric, "repository": "GBOGEB/ABACUS",
-         "exact_sha": "a" * 40, "run_id": 1, "job_id": 2,
-         "observed_at": "2026-10-14T20:00:00Z", "status": "PASS",
-         "evidence_url": "https://github.com/GBOGEB/ABACUS/actions/runs/1",
-         "numerator": 2, "denominator": 4, "verified_native": True}
+    v = {
+        "family": family,
+        "metric": metric,
+        "repository": "GBOGEB/ABACUS",
+        "exact_sha": "a" * 40,
+        "run_id": 1,
+        "job_id": 2,
+        "observed_at": "2026-10-14T20:00:00Z",
+        "status": "PASS",
+        "evidence_url": "https://github.com/GBOGEB/ABACUS/actions/runs/1",
+        "numerator": 2,
+        "denominator": 4,
+        "verified_native": True,
+    }
     v.update(changes)
     return v
 
@@ -30,8 +39,9 @@ class NativeIngestTests(unittest.TestCase):
         self.assertEqual("NATIVE", result[0]["collection_quality"])
 
     def test_unknown_preserved(self):
-        result = mod.convert(payload([row(numerator=None, denominator=None,
-                                          verified_native=False)]))
+        result = mod.convert(
+            payload([row(numerator=None, denominator=None, verified_native=False)])
+        )
         self.assertEqual("UNKNOWN", result[0]["status"])
         self.assertIsNone(result[0]["numerator"])
 
@@ -47,8 +57,9 @@ class NativeIngestTests(unittest.TestCase):
             mod.convert(payload([row("bd_burndown", "root_transitions")]))
 
     def test_valid_attributed_session(self):
-        result = mod.convert(payload([row("debug_ldab", "attributed_session_rate",
-                                         root_fingerprint="b" * 64)]))
+        result = mod.convert(
+            payload([row("debug_ldab", "attributed_session_rate", root_fingerprint="b" * 64)])
+        )
         self.assertEqual("NATIVE", result[0]["collection_quality"])
 
     def test_denominator_rejected(self):
