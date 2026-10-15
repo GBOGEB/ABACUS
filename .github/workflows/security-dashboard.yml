@@ -42,7 +42,7 @@ jobs:
           printf 'repository=%s\nsource_sha=%s\nrun_id=%s\n' \
             "$GITHUB_REPOSITORY" "$GITHUB_SHA" "$GITHUB_RUN_ID" \
             > "$out/source.txt"
-      - uses: actions/upload-artifact@v7
+      - uses: actions/upload-artifact@v7.0.2
         with:
           name: security-dashboard-aggregate-${{ github.run_id }}
           path: ${{ runner.temp }}/security-dashboard/

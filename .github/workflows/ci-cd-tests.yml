@@ -253,7 +253,7 @@ jobs:
           pytest tests/ -m "not integration" -v --tb=short \
             --junitxml="${junit_path}"
       - name: Upload Test Results
-        uses: actions/upload-artifact@v7
+        uses: actions/upload-artifact@v7.0.2
         if: always()
         with:
           name: test-results-${{ matrix.os }}-${{ matrix.python-version }}
@@ -415,7 +415,7 @@ jobs:
 
       - name: Upload broad coverage campaign evidence
         if: always()
-        uses: actions/upload-artifact@v7
+        uses: actions/upload-artifact@v7.0.2
         with:
           name: broad-coverage-ranking-${{ github.sha }}
           path: |
@@ -433,7 +433,7 @@ jobs:
 
       - name: Upload Coverage HTML
         if: always()
-        uses: actions/upload-artifact@v7
+        uses: actions/upload-artifact@v7.0.2
         with:
           name: coverage-report
           path: |
@@ -568,7 +568,7 @@ jobs:
           pytest -m benchmark --benchmark-only --benchmark-json=benchmark.json
 
       - name: Upload Benchmark Results
-        uses: actions/upload-artifact@v7
+        uses: actions/upload-artifact@v7.0.2
         with:
           name: benchmark-results
           path: benchmark.json
@@ -631,14 +631,14 @@ jobs:
 
       - name: Upload Test Output
         if: always()
-        uses: actions/upload-artifact@v7
+        uses: actions/upload-artifact@v7.0.2
         with:
           name: comprehensive-test-output
           path: test_output.log
           if-no-files-found: error
 
       - name: Upload Dashboard
-        uses: actions/upload-artifact@v7
+        uses: actions/upload-artifact@v7.0.2
         with:
           name: test-dashboard
           path: dashboard/
@@ -694,7 +694,7 @@ jobs:
 
       - name: Upload Security Reports
         if: always()
-        uses: actions/upload-artifact@v7
+        uses: actions/upload-artifact@v7.0.2
         with:
           name: security-reports
           path: |
@@ -839,7 +839,7 @@ jobs:
 
       - name: Upload full-red summary
         if: always()
-        uses: actions/upload-artifact@v7
+        uses: actions/upload-artifact@v7.0.2
         with:
           name: full-red-summary-${{ github.sha }}
           path: test_reports/full-red/summary.json
