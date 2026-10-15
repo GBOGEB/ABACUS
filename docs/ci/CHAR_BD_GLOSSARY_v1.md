@@ -12,6 +12,7 @@ closure has an authorized disposition; it does not mean burying reds,
 suppressing scanners, or closing tickets without proof.
 
 ## Existing authority and compatibility
+
 This is a descriptive overlay, not a competing SSOT. Preserve ABACUS #1860
 admission governance, #1929 BD–LDAB joined census
 (`bd.ldab.joined.census.v1`), #1991 coverage, CODEX #977 remote-dispatch
@@ -21,8 +22,6 @@ permission transfer.
 
 ## Taxonomy and glossary
 
-| Token | Meaning | Required distinction |
-|---|---|---|
 - **Char_BD / CBD!** — Full governed burn-down charter from census through
   closure and recensus.
   Not just next five actions
@@ -63,7 +62,8 @@ permission transfer.
 - **3P*** — Programme's typed proof/provenance/progression family; use
   native authoritative definition for expansion.
   Don't invent authority
-| A10 | Confidentiality adjudication gate | No automatic waiver or leak |
+- **A10** — Confidentiality adjudication gate.
+  No automatic waiver or leak
 - **P0 admission** — Effective checks, security, eligible review and
   exact-head proof.
   Green CI alone insufficient
