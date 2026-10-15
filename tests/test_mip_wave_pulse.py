@@ -57,7 +57,9 @@ class WavePulseTests(unittest.TestCase):
         x["roots"][0]["closure_proof"] = {"main_sha": S, "native_run_url": "https://github.com/example/run/1",
                                           "artifact_sha256": "c" * 64}
         _, backlog = MOD.pulse(x)
-        self.assertEqual(backlog["formal_verified_closures"], 1)
+        self.assertEqual(backlog["formal_verified_closures"], 0)
+        self.assertEqual(backlog["declared_root_closures"], 1)
+        self.assertEqual(backlog["closure_disposition"], "UNVERIFIED_DECLARED_CLOSURE")
 
     def test_coverage_comparability_and_yield(self):
         x = record()
@@ -194,6 +196,94 @@ class WavePulseTests(unittest.TestCase):
         with self.assertRaises(ValueError):
             MOD.pulse(x)
 
+
+    def test_forged_admission_cannot_promote_wave(self):
+        payload = record("ROOT_CLOSED")
+        payload["admission"] = {
+            "merge_admitted": True,
+            "verified_main_sha": S,
+        }
+        payload["roots"][0]["closure_proof"] = {
+            "main_sha": S,
+            "native_run_url": "https://github.com/example/not-authenticated",
+            "artifact_sha256": "c" * 64,
+        }
+        result, backlog = MOD.pulse(payload)
+        self.assertEqual(backlog["formal_verified_closures"], 0)
+        self.assertEqual(result["disposition"], "P0_HOLD")
+        self.assertFalse(result["merge_admitted"])
+        self.assertTrue(result["declared_merge_admitted"])
+        self.assertEqual(result["tests_receipt_trust"], "INPUT_DECLARED_NOT_JUNIT")
+
+    def test_negative_bool_worker_ids_rejected(self):
+        for field in ("run_id", "job_id"):
+            with self.subTest(field=field):
+                data = record()
+                data["workers"][0][field] = True
+                with self.assertRaisesRegex(ValueError, "positive native"):
+                    MOD.pulse(data)
+
+    def test_duplicate_worker_receipt_rejected(self):
+        data = record()
+        data["workers"].append(dict(data["workers"][0]))
+        with self.assertRaisesRegex(ValueError, "duplicate worker"):
+            MOD.pulse(data)
+
+    def test_cross_head_worker_receipt_rejected(self):
+        data = record()
+        data["workers"][0]["source_sha"] = S
+        with self.assertRaisesRegex(ValueError, "SHA not bound"):
+            MOD.pulse(data)
+
+    def test_forged_first_red_fingerprint_rejected(self):
+        data = record()
+        data["first_reds"][0]["fingerprint"] = "NOT_IN_ROOT"
+        with self.assertRaisesRegex(ValueError, "unattributed first-red"):
+            MOD.pulse(data)
+
+    def test_coverage_denominator_growth_not_gain(self):
+        data = record()
+        start = {
+            "scope": "matched",
+            "config_id": "same",
+            "source_sha": S,
+            "covered_lines": 4,
+            "total_lines": 10,
+            "covered_branches": 2,
+            "total_branches": 4,
+        }
+        end = dict(
+            start,
+            source_sha=T,
+            covered_lines=14,
+            total_lines=20,
+            covered_branches=5,
+            total_branches=7,
+        )
+        data["coverage"] = {"before": start, "after": end}
+        report, backlog = MOD.pulse(data)
+        self.assertEqual(report["coverage"]["status"], "INCOMPARABLE")
+        self.assertEqual(report["coverage_yield"]["status"], "UNKNOWN")
+        self.assertEqual(backlog["formal_verified_closures"], 0)
+
+    def test_large_root_stress_deterministic(self):
+        data = record()
+        data["roots"] = [
+            {
+                "root_id": f"R{i:04d}",
+                "owner": "STRESS",
+                "status": "OPEN",
+                "fingerprints": [f"F{i:04d}"],
+            }
+            for i in range(800)
+        ]
+        data["workers"] = []
+        data["first_reds"] = []
+        before = MOD.pulse(data)
+        after = MOD.pulse(data)
+        self.assertEqual(before, after)
+        self.assertEqual(before[1]["distinct_root_counts"]["open"], 800)
+        self.assertEqual(before[1]["formal_verified_closures"], 0)
 
     def test_cli_emits_source_bound_repeatable_receipts(self):
         payload = record()

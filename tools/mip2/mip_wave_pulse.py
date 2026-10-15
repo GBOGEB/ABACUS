@@ -157,9 +157,19 @@ def pulse(data):
         counts[state.lower()] += 1
     workers = data.get("workers", [])
     require(isinstance(workers, list), "invalid workers")
+    worker_keys = set()
     for worker in workers:
-        require(worker.get("root_id") in seen and worker.get("job_id") and worker.get("run_id"),
-                "worker must bind to root and native run/job")
+        require(isinstance(worker, dict), "worker must be an object")
+        require(worker.get("root_id") in seen, "worker root not registered")
+        require(type(worker.get("job_id")) is int and worker["job_id"] > 0
+                and type(worker.get("run_id")) is int and worker["run_id"] > 0,
+                "worker requires positive native run/job IDs")
+        key = (worker["root_id"], worker["run_id"], worker["job_id"])
+        require(key not in worker_keys, "duplicate worker receipt")
+        worker_keys.add(key)
+        if "source_sha" in worker:
+            require(worker["source_sha"] == data["head_sha"],
+                    "worker SHA not bound to current head")
     before = data.get("coverage", {}).get("before")
     after = data.get("coverage", {}).get("after")
     if before is not None:
@@ -180,22 +190,37 @@ def pulse(data):
         require(type(tests.get(key)) is int and tests[key] >= 0, "invalid test count")
     findings = data.get("first_reds", [])
     require(isinstance(findings, list), "first_reds not a list")
+    root_fingerprints = {
+        root["root_id"]: set(root.get("fingerprints", [])) for root in roots
+    }
     for item in findings:
-        require(item.get("root_id") in seen and item.get("fingerprint") and
-                item.get("classification") in ("new", "inherited", "repaired"),
+        require(isinstance(item, dict), "first-red must be an object")
+        rid = item.get("root_id")
+        require(rid in seen and item.get("fingerprint")
+                and item["fingerprint"] in root_fingerprints[rid]
+                and item.get("classification") in ("new", "inherited", "repaired"),
                 "unattributed first-red")
     backlog = {"schema": "abacus.mip.backlog-delta.v1",
                "repository": data["repository"], "head_sha": data["head_sha"],
                "wave_id": data["wave_id"], "distinct_root_counts": counts,
                "fingerprint_manifestations": occurrences,
-               "formal_verified_closures": counts["root_closed"],
-               "closure_disposition": "EXACT_MAIN_PROVEN" if counts["root_closed"] else "NO_CLOSURE_CREDIT"}
+               "declared_root_closures": counts["root_closed"],
+               "formal_verified_closures": 0,
+               "closure_disposition": (
+                   "UNVERIFIED_DECLARED_CLOSURE"
+                   if counts["root_closed"] else "NO_CLOSURE_CREDIT"
+               ),
+               "closure_authority": "UNAUTHENTICATED_INPUT_NEVER_COUNTS_AS_NATIVE_PROOF"}
     report = {"schema": SCHEMA, "repository": data["repository"], "base_sha": data["base_sha"],
               "head_sha": data["head_sha"], "wave_id": data["wave_id"],
               "coverage": measured, "coverage_yield": yield_metric, "tests": tests,
               "worker_count": len(workers), "first_reds": findings,
-              "root_counts": counts, "merge_admitted": data.get("admission", {}).get("merge_admitted") is True,
-              "disposition": "P0_HOLD" if not data.get("admission", {}).get("merge_admitted") else "POST_ADMISSION_RECHECK"}
+              "root_counts": counts, "merge_admitted": False,
+              "declared_merge_admitted": data.get("admission", {}).get("merge_admitted") is True,
+              "worker_receipt_trust": "INPUT_DECLARED_NOT_NATIVE",
+              "tests_receipt_trust": "INPUT_DECLARED_NOT_JUNIT",
+              "coverage_causal_proof": "UNKNOWN_NO_STABLE_OBLIGATION_MAP",
+              "disposition": "P0_HOLD"}
     return report, backlog
 
 
