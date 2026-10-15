@@ -60,6 +60,20 @@ class ColdBuildTests(unittest.TestCase):
             self.assertIn("Merge admission: HOLD", page)
             self.assertNotIn("<script src=", page)
 
+    def test_missing_style_probes_visible_without_false_release(self):
+        with tempfile.TemporaryDirectory() as d:
+            root = Path(d)
+            catalog = self.setup(root)
+            result = M.evaluate(root, catalog, STYLE, SHA)
+            result["missing_style_probes"] = ["qps_style_manifest"]
+            result["style_file_sha256"] = "f" * 64
+            result["catalog_file_sha256"] = "e" * 64
+            page = M.render(result, STYLE)
+            self.assertIn("Missing style probes: qps_style_manifest", page)
+            self.assertIn("Style file SHA-256", page)
+            self.assertIn("Catalog file SHA-256", page)
+            self.assertIn("Merge admission: HOLD", page)
+
     def test_cold_reproducibility_and_no_binary_outputs(self):
         with tempfile.TemporaryDirectory() as d:
             root = Path(d)

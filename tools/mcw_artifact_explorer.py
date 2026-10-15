@@ -182,7 +182,11 @@ def render(report, style):
                        esc(item.get("action", "")) + '</td></tr>'
                        for item in report["triggers"])
     count = report["role_counts"]
-    warning = "This is a cold-build snapshot. Generated binaries and remote attestation are NOT proven."
+    warning = ("This is a cold-build snapshot. Generated binaries and remote "
+               "attestation are NOT proven.")
+    missing = report.get("missing_style_probes")
+    if missing:
+        warning += " Missing style probes: " + ", ".join(missing) + "."
     # HTML is self contained: no network reads, no unsafe interpolation into JavaScript.
     return """<!doctype html>
 <html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
@@ -246,7 +250,7 @@ th{background:#3d304b}.state{background:#53351f;color:#ffd9a5}.state.ok{backgrou
 <section><h2>Event and stage triggers</h2><div class="tablewrap"><table><thead><tr><th>Trigger</th><th>Stage</th><th>Admissible action</th></tr></thead><tbody>%s</tbody></table></div></section>
 <section><h2>Provenance and limitations</h2><div class="tablewrap"><table><tbody>
 <tr><th>Repository</th><td>%s</td></tr><tr><th>Git source</th><td class="mono">%s</td></tr>
-<tr><th>Style version</th><td>%s</td></tr><tr><th>Canonical style SHA-256</th><td class="mono">%s</td></tr>
+<tr><th>Style version</th><td>%s</td></tr><tr><th>Canonical style semantic SHA-256</th><td class="mono">%s</td></tr><tr><th>Style file SHA-256</th><td class="mono">%s</td></tr><tr><th>Catalog file SHA-256</th><td class="mono">%s</td></tr>
 <tr><th>Evidence</th><td>%s</td></tr><tr><th>Release authority</th><td>None — native CI, independent QA and release approval required.</td></tr>
 </tbody></table></div></section>
 <footer>Rendered from a typed catalog and SSOT style. No external scripts, fonts or live API required. Static source visibility is not authentication.</footer>
@@ -265,7 +269,9 @@ document.getElementById("format").addEventListener("change",filter);filter();
        "".join('<option value="' + esc(fmt) + '">' + esc(fmt.upper()) + "</option>"
                for fmt in sorted({x["format"] for x in report["artifacts"]})),
        "".join(cards), stages, triggers, esc(report["repository"]), esc(report["source_sha"]),
-       esc(report["style_version"]), esc(report["style_sha256"]), esc(report["evidence_grade"])
+       esc(report["style_version"]), esc(report["style_sha256"]),
+       esc(report.get("style_file_sha256") or "UNKNOWN"),
+       esc(report.get("catalog_file_sha256") or "UNKNOWN"), esc(report["evidence_grade"])
     )
 
 
@@ -274,6 +280,7 @@ def main():
     p.add_argument("--root", type=Path, default=Path("."))
     p.add_argument("--catalog", type=Path, required=True)
     p.add_argument("--style", type=Path, required=True)
+    p.add_argument("--style-status", type=Path)
     p.add_argument("--sha", help="Exact Git SHA, defaults to HEAD")
     p.add_argument("--html", type=Path, required=True)
     p.add_argument("--receipt", type=Path, required=True)
@@ -281,6 +288,17 @@ def main():
     root = a.root.resolve()
     report = evaluate(root, json.loads(a.catalog.read_text()),
                       json.loads(a.style.read_text()), a.sha or git_head(root))
+    report["style_file_sha256"] = digest(a.style.read_bytes())
+    report["catalog_file_sha256"] = digest(a.catalog.read_bytes())
+    if a.style_status:
+        status = json.loads(a.style_status.read_text())
+        require(status.get("valid") is True, "invalid style contract receipt")
+        probes = status.get("awake", {}).get("probes", [])
+        require(isinstance(probes, list), "missing style probes array")
+        report["missing_style_probes"] = sorted(
+            p["id"] for p in probes if p.get("awake") is False
+        )
+        report["style_awake_score"] = status.get("awake", {}).get("awake_score")
     content = render(report, json.loads(a.style.read_text()))
     a.html.parent.mkdir(parents=True, exist_ok=True)
     a.receipt.parent.mkdir(parents=True, exist_ok=True)

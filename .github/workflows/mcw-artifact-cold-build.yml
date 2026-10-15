@@ -44,7 +44,9 @@ jobs:
           for target in /tmp/mcw-a /tmp/mcw-b; do
             python tools/mcw_artifact_explorer.py --root . \
               --catalog docs/mcw/artifact_catalog.v1.json \
-              --style ssot/ssot_style.json --sha "$EXPECTED_SHA" \
+              --style ssot/ssot_style.json \
+              --style-status /tmp/mcw-style-status.json \
+              --sha "$EXPECTED_SHA" \
               --html "$target/artifacts.html" --receipt "$target/receipt.json"
           done
           cmp /tmp/mcw-a/artifacts.html /tmp/mcw-b/artifacts.html
