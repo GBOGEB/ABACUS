@@ -99,7 +99,11 @@ def evaluate(manifest: dict, artifact_root: Path) -> dict:
     for repo in REPOSITORIES:
         for domain in DOMAINS:
             source = sources.get(repo)
-            count = None if source is None else source["receipt_counts"].get(domain, 0)
+            count = (
+                source["receipt_counts"][domain]
+                if source and domain in source["receipt_counts"]
+                else "UNKNOWN"
+            )
             cells.append(
                 {
                     "repository": repo,
@@ -119,9 +123,9 @@ def evaluate(manifest: dict, artifact_root: Path) -> dict:
         "domain_breadth": len(DOMAINS),
         "total_domain_slots": len(REPOSITORIES) * len(DOMAINS),
         "filled_receipt_slots": sum(
-            bool(cell["locally_hash_verified_receipts"])
+            type(cell["locally_hash_verified_receipts"]) is int
+            and cell["locally_hash_verified_receipts"] > 0
             for cell in cells
-            if cell["locally_hash_verified_receipts"] is not None
         ),
         "authenticated_fanout": "UNKNOWN",
         "federation_main_coverage_delta": "UNKNOWN",
@@ -145,7 +149,7 @@ def markdown(data: dict) -> str:
         count = cell["locally_hash_verified_receipts"]
         lines.append(
             f"| {cell['repository']} | {cell['domain']} | "
-            f"{count if count is not None else 'UNKNOWN'} | "
+            f"{count} | "
             f"{cell['native_runner_authenticated']} | "
             f"{cell['accepted_rex']} | {cell['root_closure_verified']} |"
         )
