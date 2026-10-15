@@ -17,7 +17,7 @@ from packaging.markers import default_environment
 from packaging.requirements import InvalidRequirement, Requirement
 
 SCHEMA = "abacus.mip.python-dependency-guard.v1"
-PYTHON_LANES = ("3.10", "3.11", "3.12")
+PYTHON_LANES = ("3.9", "3.10", "3.11", "3.12")
 MATPLOTLIB_LINE = re.compile(r"^\s*matplotlib(?=\s|[<>=!~;@\[])", re.I)
 
 
@@ -61,7 +61,14 @@ def audit(source: str) -> dict:
             )
         else:
             spec = active[0].specifier
-            if lane == "3.10":
+            if lane == "3.9":
+                if not (
+                    spec.contains("3.9.4")
+                    and not spec.contains("3.9.3")
+                    and not spec.contains("3.10.0")
+                ):
+                    problems.append("Python 3.9 requires guarded 3.9.4..<3.10 range")
+            elif lane == "3.10":
                 if not (
                     spec.contains("3.10.9")
                     and not spec.contains("3.10.8")
@@ -84,7 +91,9 @@ def audit(source: str) -> dict:
     return {
         "schema": SCHEMA,
         "evidence_class": "STATIC_REQUIREMENT_POLICY_ONLY",
-        "matplotlib_policy": "py310: 3.10.9..<3.11; py311_plus: >=3.11.2",
+        "matplotlib_policy": (
+            "py39: 3.9.4..<3.10; py310: 3.10.9..<3.11; py311_plus: >=3.11.2"
+        ),
         "lanes": len(PYTHON_LANES),
         "static_pass": passed,
         "static_fail": failed,
