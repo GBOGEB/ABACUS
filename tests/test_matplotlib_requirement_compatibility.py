@@ -46,8 +46,12 @@ class MatplotlibCompatibilityRegression(unittest.TestCase):
 
     def test_negative_control_rejects_unconditional_regression(self):
         bad = ["matplotlib>=3.11.2,<4.0.0"]
-        for minor in (10, 11, 12):
-            self.assertNotEqual(1 if minor == 10 else 0, 0 if not classify(bad, minor) else 1)
+        self.assertEqual(["matplotlib>=3.11.2,<4.0.0"], classify(bad, 10))
+        # The old unguarded line must never appear in the canonical file.
+        self.assertNotIn(
+            "matplotlib>=3.11.2,<4.0.0",
+            matplotlib_lines(REQUIREMENTS.read_text(encoding="utf-8")),
+        )
 
 
 if __name__ == "__main__":
