@@ -61,6 +61,7 @@ class WavePulseTests(unittest.TestCase):
     def test_coverage_comparability_and_yield(self):
         x = record()
         base = {"scope": "combined-main", "config_id": "cfg1", "source_sha": S,
+                "scope_manifest_sha256": "c" * 64,
                 "covered_lines": 60, "total_lines": 100,
                 "covered_branches": 20, "total_branches": 50}
         head = dict(base, source_sha=T, covered_lines=65, covered_branches=22)
@@ -71,6 +72,57 @@ class WavePulseTests(unittest.TestCase):
         self.assertEqual(result["coverage_yield"]["new_lines_per_hour"], 2.5)
         head["config_id"] = "other"
         self.assertEqual(MOD.pulse(x)[0]["coverage"]["status"], "INCOMPARABLE")
+
+    def test_same_counts_different_eligible_cohort_withheld(self):
+        base = {
+            "scope": "combined-main", "config_id": "cfg1",
+            "source_sha": S, "scope_manifest_sha256": "c" * 64,
+            "covered_lines": 60, "total_lines": 100,
+            "covered_branches": 20, "total_branches": 50,
+        }
+        candidate = dict(
+            base, source_sha=T, scope_manifest_sha256="d" * 64,
+            covered_lines=90,
+        )
+        result = MOD.coverage_delta(base, candidate)
+        self.assertEqual(result["status"], "INCOMPARABLE")
+
+    def test_missing_or_malformed_cohort_digest_fails_closed(self):
+        baseline = {
+            "scope": "combined-main", "config_id": "cfg1",
+            "source_sha": S, "scope_manifest_sha256": "c" * 64,
+            "covered_lines": 60, "total_lines": 100,
+            "covered_branches": 20, "total_branches": 50,
+        }
+        candidate = dict(baseline, source_sha=T)
+        del candidate["scope_manifest_sha256"]
+        with self.assertRaisesRegex(ValueError, "incomplete coverage"):
+            MOD.coverage_delta(baseline, candidate)
+        candidate["scope_manifest_sha256"] = "bad"
+        with self.assertRaisesRegex(ValueError, "eligibility scope fingerprint"):
+            MOD.coverage_delta(baseline, candidate)
+
+    def test_coverage_source_shas_must_bind_to_wave(self):
+        base = {
+            "scope": "combined-main", "config_id": "cfg1",
+            "source_sha": S, "scope_manifest_sha256": "c" * 64,
+            "covered_lines": 60, "total_lines": 100,
+            "covered_branches": 20, "total_branches": 50,
+        }
+        candidate = dict(base, source_sha=T, covered_lines=62)
+        wave = record()
+        wave["coverage"] = {"before": base, "after": candidate}
+        report, _ = MOD.pulse(wave)
+        self.assertEqual(report["coverage"]["before_covered"], 80)
+        self.assertEqual(report["coverage"]["after_covered"], 82)
+        self.assertEqual(report["coverage"]["eligible"], 150)
+        candidate["source_sha"] = S
+        with self.assertRaisesRegex(ValueError, "candidate SHA"):
+            MOD.pulse(wave)
+        candidate["source_sha"] = T
+        base["source_sha"] = T
+        with self.assertRaisesRegex(ValueError, "baseline SHA"):
+            MOD.pulse(wave)
 
     def test_missing_tests_fail(self):
         x = record()
