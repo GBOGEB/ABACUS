@@ -72,6 +72,49 @@ class WaveHistoryTests(unittest.TestCase):
         c = M.rollup(x)["wave_comparisons"][0]["by_repo"]["GBOGEB/ABACUS"]
         self.assertEqual(c["status"], "INCOMPLETE_RUN_CENSUS")
 
+    def test_separate_skips_failures_and_cancellations(self):
+        result = M.tally_states({
+            "completed/success": 1, "completed/failure": 2,
+            "completed/skipped": 4, "completed/cancelled": 1,
+            "queued/none": 3,
+        })
+        self.assertEqual(result["failed"], 2)
+        self.assertEqual(result["skipped"], 4)
+        self.assertEqual(result["cancelled"], 1)
+        self.assertEqual(result["nonterminal"], 3)
+
+    def test_repeat_workflow_ids_preserve_cohort(self):
+        x = doc()
+        for wave in x["waves"]:
+            o = wave["observations"][0]
+            o["run_count"] = 2
+            o["terminal_run_count"] = 2
+            o["run_states"] = {"completed/success": 2}
+            o["run_manifest"].append({
+                "run_id": 2, "workflow_id": 500,
+                "name": "Repeat", "status": "completed",
+                "conclusion": "success",
+            })
+        compared = M.rollup(x)["wave_comparisons"][0]
+        self.assertEqual(
+            compared["by_repo"]["GBOGEB/ABACUS"]["status"],
+            "MATCHED_WORKFLOW_SET_ONLY",
+        )
+
+    def test_duplicate_run_id_withheld(self):
+        x = doc()
+        for wave in x["waves"]:
+            o = wave["observations"][0]
+            o["run_count"] = 2
+            o["terminal_run_count"] = 2
+            o["run_states"] = {"completed/success": 2}
+            o["run_manifest"].append(dict(o["run_manifest"][0]))
+        compared = M.rollup(x)["wave_comparisons"][0]
+        self.assertEqual(
+            compared["by_repo"]["GBOGEB/ABACUS"]["status"],
+            "INCOMPARABLE_WORKFLOW_SET",
+        )
+
     def test_duplicate_wave_rejected(self):
         x = doc()
         x["waves"][1]["wave_id"] = "W1"

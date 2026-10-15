@@ -45,6 +45,17 @@ class MissionTelemetryTests(unittest.TestCase):
         self.assertEqual(out["queue_p95_s"], 10)
         self.assertEqual(out["peak_concurrent_jobs_sample"], 5)
 
+    def test_skipped_job_does_not_pollute_latency(self):
+        item = job(ident=2)
+        item["conclusion"] = "skipped"
+        item["started_at"] = item["created_at"]
+        item["completed_at"] = item["created_at"]
+        report = M.job_metrics([job(), item])
+        self.assertEqual(report["skipped_jobs_excluded"], 1)
+        self.assertEqual(report["terminal_jobs_with_queue"], 1)
+        self.assertEqual(report["queue_total_s_sample"], 10)
+        self.assertEqual(report["execution_total_s_sample"], 30)
+
     def test_pending_is_not_terminal_time(self):
         j = job(status="queued")
         out = M.job_metrics([j])

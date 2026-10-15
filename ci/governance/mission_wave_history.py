@@ -22,27 +22,41 @@ def require(ok, message):
 
 def tally_states(states):
     require(isinstance(states, dict), "missing states")
-    passed = failed = unfinished = 0
-    for key, count in states.items():
-        require(type(count) is int and count >= 0, "invalid run count")
+    counts = {
+        "success": 0, "failed": 0, "skipped": 0,
+        "cancelled": 0, "terminal_other": 0, "nonterminal": 0,
+    }
+    for key, number in states.items():
+        require(type(number) is int and number >= 0, "invalid run count")
         if key == "completed/success":
-            passed += count
+            counts["success"] += number
+        elif key == "completed/skipped":
+            counts["skipped"] += number
+        elif key == "completed/cancelled":
+            counts["cancelled"] += number
+        elif key in {"completed/failure", "completed/timed_out",
+                     "completed/action_required", "completed/startup_failure"}:
+            counts["failed"] += number
         elif key.startswith("completed/"):
-            failed += count
+            counts["terminal_other"] += number
         else:
-            unfinished += count
-    return {"success": passed, "non_success_terminal": failed,
-            "nonterminal": unfinished}
+            counts["nonterminal"] += number
+    counts["non_success_terminal"] = sum(counts[k] for k in (
+        "failed", "skipped", "cancelled", "terminal_other"
+    ))
+    return counts
 
 
 def identities(snapshot):
     manifest = snapshot.get("run_manifest", [])
     require(isinstance(manifest, list), "run manifest malformed")
     ids = [item.get("workflow_id") for item in manifest]
-    if len(ids) != len(set(ids)) or not ids or any(
-        not isinstance(i, int) for i in ids
-    ):
+    run_ids = [item.get("run_id") for item in manifest]
+    if (not ids or len(run_ids) != len(set(run_ids)) or
+            len(manifest) != snapshot.get("run_count") or
+            any(type(i) is not int for i in ids + run_ids)):
         return None
+    # Repeated workflow IDs are valid when each execution has a distinct ID.
     return tuple(sorted(ids))
 
 
@@ -176,6 +190,9 @@ def compare(before, after):
             "delta_non_success_terminal": (
                 b["run_states"]["non_success_terminal"]
                 - a["run_states"]["non_success_terminal"]),
+            "delta_failed": b["run_states"]["failed"] - a["run_states"]["failed"],
+            "delta_skipped": (
+                b["run_states"]["skipped"] - a["run_states"]["skipped"]),
             "caveat": "Does not establish equal dependencies or root closure",
         }
     return comparison
@@ -209,9 +226,9 @@ def as_markdown(payload):
         "Read-only telemetry. Counts below are **workflow runs**, not test cases.",
         "Unknown or incomparable evidence is not a measured zero.",
         "",
-        "| Wave | Repos | Dimensions | PASS | Terminal non-success | Pending | "
-        "Jobs sampled | Coverage |",
-        "|---|---:|---:|---:|---:|---:|---:|---|",
+        "| Wave | Repos | Dimensions | Pass | Fail | Skipped | "
+        "Cancelled | Pending | Jobs sampled | Coverage |",
+        "|---|---:|---:|---:|---:|---:|---:|---:|---:|---|",
     ]
     for wave in payload["waves"]:
         count = wave["checks"]
@@ -228,22 +245,25 @@ def as_markdown(payload):
             str(wave["breadth_observed_repositories"]) + " | " +
             str(len(wave["depth_evidence_dimensions"])) + " | " +
             str(count["success"]) + " | " +
-            str(count["non_success_terminal"]) + " | " +
+            str(count["failed"]) + " | " +
+            str(count["skipped"]) + " | " +
+            str(count["cancelled"]) + " | " +
             str(count["nonterminal"]) + " | " +
             str(wave["job_sample_count"]) + " | " +
             coverage + " |"
         )
     rows.extend(["", "## Matched workflow-set comparisons", "",
                  "| From -> To | Repo | Status | Delta success | "
-                 "Delta terminal non-success |",
-                 "|---|---|---|---:|---:|"])
+                 "Delta failed | Delta skipped |",
+                 "|---|---|---|---:|---:|---:|"])
     for pair in payload["wave_comparisons"]:
         for repo, change in pair["by_repo"].items():
             rows.append(
                 "| " + pair["from"] + " -> " + pair["to"] +
                 " | " + repo + " | " + change["status"] +
                 " | " + str(change.get("delta_success", "UNKNOWN")) +
-                " | " + str(change.get("delta_non_success_terminal", "UNKNOWN")) +
+                " | " + str(change.get("delta_failed", "UNKNOWN")) +
+                " | " + str(change.get("delta_skipped", "UNKNOWN")) +
                 " |"
             )
     rows.extend([

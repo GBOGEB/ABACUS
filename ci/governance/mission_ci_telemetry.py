@@ -82,7 +82,7 @@ def job_metrics(jobs):
         unique.add(ident)
         status = job.get("status", "unknown")
         statuses[status] += 1
-        if status != "completed":
+        if status != "completed" or job.get("conclusion") == "skipped":
             continue
         q = elapsed(job.get("created_at"), job.get("started_at"))
         d = elapsed(job.get("started_at"), job.get("completed_at"))
@@ -107,6 +107,10 @@ def job_metrics(jobs):
     return {
         "sampled_jobs": len(jobs),
         "status_counts": dict(sorted(statuses.items())),
+        "skipped_jobs_excluded": sum(
+            j.get("status") == "completed" and j.get("conclusion") == "skipped"
+            for j in jobs
+        ),
         "terminal_jobs_with_queue": len(queue),
         "terminal_jobs_with_runtime": len(active),
         "queue_total_s_sample": round(sum(queue), 3) if queue else None,
