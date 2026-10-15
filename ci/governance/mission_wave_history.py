@@ -43,7 +43,7 @@ def identities(snapshot):
         not isinstance(i, int) for i in ids
     ):
         return None
-    return frozenset(ids)
+    return tuple(sorted(ids))
 
 
 def summarize_wave(entry):
@@ -201,6 +201,58 @@ def rollup(document):
             "global_merge_authority": False}
 
 
+
+def as_markdown(payload):
+    rows = [
+        "# Mission Control wave progression",
+        "",
+        "Read-only telemetry. Counts below are **workflow runs**, not test cases.",
+        "Unknown or incomparable evidence is not a measured zero.",
+        "",
+        "| Wave | Repos | Dimensions | PASS | Terminal non-success | Pending | Jobs sampled | Coverage |",
+        "|---|---:|---:|---:|---:|---:|---:|---|",
+    ]
+    for wave in payload["waves"]:
+        count = wave["checks"]
+        coverage = ", ".join(
+            repo + ": " + (
+                str(value["delta_pp"]) + " pp (producer-declared)"
+                if value["status"] == "COMPARABLE" and value["delta_pp"] is not None
+                else value["status"]
+            )
+            for repo, value in sorted(wave["coverage_by_repo"].items())
+        ) or "UNKNOWN"
+        rows.append(
+            "| " + wave["wave_id"] + " | " +
+            str(wave["breadth_observed_repositories"]) + " | " +
+            str(len(wave["depth_evidence_dimensions"])) + " | " +
+            str(count["success"]) + " | " +
+            str(count["non_success_terminal"]) + " | " +
+            str(count["nonterminal"]) + " | " +
+            str(wave["job_sample_count"]) + " | " +
+            coverage + " |"
+        )
+    rows.extend(["", "## Matched workflow-set comparisons", "",
+                 "| From -> To | Repo | Status | Delta success | Delta terminal non-success |",
+                 "|---|---|---|---:|---:|"])
+    for pair in payload["wave_comparisons"]:
+        for repo, change in pair["by_repo"].items():
+            rows.append(
+                "| " + pair["from"] + " -> " + pair["to"] +
+                " | " + repo + " | " + change["status"] +
+                " | " + str(change.get("delta_success", "UNKNOWN")) +
+                " | " + str(change.get("delta_non_success_terminal", "UNKNOWN")) +
+                " |"
+            )
+    rows.extend([
+        "", "Depth is observed data-dimension count, not method maturity.",
+        "Breadth counts observed repo snapshots, not admitted federation workers.",
+        "PCA/BT, REX acceptance, exact-main root closure and merge admission",
+        "remain uncredited without their independent native evidence.",
+        "",
+    ])
+    return "\n".join(rows)
+
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--input", required=True)
@@ -213,6 +265,7 @@ def main():
     path.parent.mkdir(parents=True, exist_ok=True)
     path.write_text(json.dumps(payload, indent=2, sort_keys=True, default=list) +
                     "\n", encoding="utf-8")
+    path.with_suffix(".md").write_text(as_markdown(payload), encoding="utf-8")
     print(json.dumps({"waves": len(payload["waves"]),
                       "comparisons": len(payload["wave_comparisons"]),
                       "merge_authority": False}))
