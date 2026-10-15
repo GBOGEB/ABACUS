@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 """Read-only MIP statistical evidence validator and M1/M2/M3 maturity evaluator."""
+
 from __future__ import annotations
 import argparse
 import datetime as dt
@@ -8,7 +9,15 @@ import statistics
 from collections import defaultdict
 from pathlib import Path
 
-FAMILIES = ("ci_reliability", "bd_burndown", "coverage", "debug_ldab", "evidence_quality", "repair_effectiveness", "throughput")
+FAMILIES = (
+    "ci_reliability",
+    "bd_burndown",
+    "coverage",
+    "debug_ldab",
+    "evidence_quality",
+    "repair_effectiveness",
+    "throughput",
+)
 SHA_CHARS = set("0123456789abcdef")
 
 
@@ -25,7 +34,11 @@ def check(row):
     if row["collection_quality"] not in ("NATIVE", "INCOMPLETE", "UNVERIFIED"):
         raise ValueError("invalid quality")
     sha = row.get("exact_sha")
-    if not isinstance(sha, str) or len(sha) != 40 or any(c not in SHA_CHARS for c in sha):
+    if (
+        not isinstance(sha, str)
+        or len(sha) != 40
+        or any(c not in SHA_CHARS for c in sha)
+    ):
         raise ValueError("invalid exact SHA")
     for key in ("run_id", "job_id"):
         if type(row.get(key)) is not int or row[key] <= 0:
@@ -57,8 +70,15 @@ def evaluate(rows, minimum=20, holdout=5):
     identities = set()
     for row in rows:
         check(row)
-        key = (row["repository"], row["exact_sha"], row["run_id"], row["job_id"],
-               row["family"], row["metric"], row["metric_version"])
+        key = (
+            row["repository"],
+            row["exact_sha"],
+            row["run_id"],
+            row["job_id"],
+            row["family"],
+            row["metric"],
+            row["metric_version"],
+        )
         if key in identities:
             raise ValueError("duplicate observation")
         identities.add(key)
@@ -69,8 +89,13 @@ def evaluate(rows, minimum=20, holdout=5):
             if f != family:
                 continue
             obs.sort(key=lambda x: (x["observed_at"], x["run_id"], x["job_id"]))
-            comparable = [x for x in obs if x["collection_quality"] == "NATIVE" and
-                          x["numerator"] is not None and x["status"] != "UNKNOWN"]
+            comparable = [
+                x
+                for x in obs
+                if x["collection_quality"] == "NATIVE"
+                and x["numerator"] is not None
+                and x["status"] != "UNKNOWN"
+            ]
             # Multiple jobs within one run are not independent observations.
             distinct = len({x["run_id"] for x in comparable})
             valid = len(comparable) == len(obs) and distinct == len(comparable)
@@ -80,40 +105,73 @@ def evaluate(rows, minimum=20, holdout=5):
             autocorr = None
             if enough and len(set(values)) > 1:
                 mean = statistics.fmean(values)
-                denom = sum((x - mean)**2 for x in values)
+                denom = sum((x - mean) ** 2 for x in values)
                 if denom:
-                    autocorr = sum((values[i]-mean)*(values[i-1]-mean)
-                                   for i in range(1,len(values))) / denom
-            denominator_stable = len({x["denominator"] for x in comparable}) == 1 if comparable else False
+                    autocorr = (
+                        sum(
+                            (values[i] - mean) * (values[i - 1] - mean)
+                            for i in range(1, len(values))
+                        )
+                        / denom
+                    )
+            denominator_stable = (
+                len({x["denominator"] for x in comparable}) == 1
+                if comparable
+                else False
+            )
             # Explicit conservative hold until adequate process-specific control chart / spec.
             process_stable = False
             cap = False
             # Forward-only previous-observation baseline scored on a reserved final window.
             bt = None
-            if enough and len(values) >= minimum + holdout and denominator_stable and not (
-                autocorr is not None and abs(autocorr) >= 0.3
+            if (
+                enough
+                and len(values) >= minimum + holdout
+                and denominator_stable
+                and not (autocorr is not None and abs(autocorr) >= 0.3)
             ):
                 train, test = values[:-holdout], values[-holdout:]
                 forecasts = [train[-1]] + test[:-1]
-                bt = {"holdout": len(test),
-                      "method": "walk_forward_last_observation",
-                      "mae": round(statistics.fmean(abs(a-b) for a,b in zip(forecasts,test)), 8),
-                      "forecast_count": len(test),
-                      "predictive_authority": "DIAGNOSTIC_ONLY"}
-            results.append({"family": f, "metric": metric, "metric_version": version,
-                            "observations": len(obs), "native_comparable": len(comparable),
-                            "independent_runs": distinct, "missing": len(obs)-len(comparable),
-                            "denominator_stable": denominator_stable, "lag1_autocorrelation": autocorr,
-                            "MEASUREMENT_VALID": valid and bool(obs),
-                            "STABILITY_ASSESSABLE": enough,
-                            "PROCESS_STABLE": process_stable,
-                            "CAPABILITY_ASSESSABLE": cap,
-                            "BACKTEST_ELIGIBLE": bt is not None,
-                            "backtest": bt})
-    return {"schema": "mip.statistical.readiness.v1", "repository": "GBOGEB/ABACUS",
-            "minimum_independent_observations": minimum, "holdout": holdout,
-            "series": results, "missing_families": [f for f in FAMILIES if f not in by_family_names(by_family)],
-            "merge_admission": "HOLD", "authority_transfer": False}
+                bt = {
+                    "holdout": len(test),
+                    "method": "walk_forward_last_observation",
+                    "mae": round(
+                        statistics.fmean(abs(a - b) for a, b in zip(forecasts, test)), 8
+                    ),
+                    "forecast_count": len(test),
+                    "predictive_authority": "DIAGNOSTIC_ONLY",
+                }
+            results.append(
+                {
+                    "family": f,
+                    "metric": metric,
+                    "metric_version": version,
+                    "observations": len(obs),
+                    "native_comparable": len(comparable),
+                    "independent_runs": distinct,
+                    "missing": len(obs) - len(comparable),
+                    "denominator_stable": denominator_stable,
+                    "lag1_autocorrelation": autocorr,
+                    "MEASUREMENT_VALID": valid and bool(obs),
+                    "STABILITY_ASSESSABLE": enough,
+                    "PROCESS_STABLE": process_stable,
+                    "CAPABILITY_ASSESSABLE": cap,
+                    "BACKTEST_ELIGIBLE": bt is not None,
+                    "backtest": bt,
+                }
+            )
+    return {
+        "schema": "mip.statistical.readiness.v1",
+        "repository": "GBOGEB/ABACUS",
+        "minimum_independent_observations": minimum,
+        "holdout": holdout,
+        "series": results,
+        "missing_families": [
+            f for f in FAMILIES if f not in by_family_names(by_family)
+        ],
+        "merge_admission": "HOLD",
+        "authority_transfer": False,
+    }
 
 
 def by_family_names(groups):
@@ -127,10 +185,16 @@ def main():
     p.add_argument("--minimum", type=int, default=20)
     p.add_argument("--holdout", type=int, default=5)
     a = p.parse_args()
-    rows = [json.loads(x) for x in a.input.read_text(encoding="utf-8").splitlines() if x.strip()]
+    rows = [
+        json.loads(x)
+        for x in a.input.read_text(encoding="utf-8").splitlines()
+        if x.strip()
+    ]
     result = evaluate(rows, a.minimum, a.holdout)
     a.output.parent.mkdir(parents=True, exist_ok=True)
-    a.output.write_text(json.dumps(result, indent=2, sort_keys=True) + "\n", encoding="utf-8")
+    a.output.write_text(
+        json.dumps(result, indent=2, sort_keys=True) + "\n", encoding="utf-8"
+    )
 
 
 if __name__ == "__main__":
