@@ -1,4 +1,5 @@
 """Native metric ingestion safety and UNKNOWN preservation."""
+
 import importlib.util
 import unittest
 from pathlib import Path
@@ -58,7 +59,15 @@ class NativeIngestTests(unittest.TestCase):
 
     def test_valid_attributed_session(self):
         result = mod.convert(
-            payload([row("debug_ldab", "attributed_session_rate", root_fingerprint="b" * 64)])
+            payload(
+                [
+                    row(
+                        "debug_ldab",
+                        "attributed_session_rate",
+                        root_fingerprint="b" * 64,
+                    )
+                ]
+            )
         )
         self.assertEqual("NATIVE", result[0]["collection_quality"])
 
