@@ -4,7 +4,6 @@ import importlib.util
 import unittest
 from pathlib import Path
 
-
 SOURCE = Path(__file__).resolve().parents[1] / "scripts/mip_statistical_readiness.py"
 SPEC = importlib.util.spec_from_file_location("mip_statistical_readiness_extra", SOURCE)
 MODULE = importlib.util.module_from_spec(SPEC)
