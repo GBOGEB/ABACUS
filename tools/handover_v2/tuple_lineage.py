@@ -68,6 +68,7 @@ def check(ledger_bytes: bytes, narrative_bytes: bytes, manifest_bytes: bytes) ->
         raise ValueError("Unsupported completeness certification")
     return {"result":"PASS","fidelity":"SEMANTIC_ONLY",
             "tuples":len(turns),"todos":len(todo),
+        "tuple_count":len(turns),"todo_count":len(todo),
             "operational_bd_opened":None,"operational_bd_closed":None,
             "chain_tip":prev}
 
