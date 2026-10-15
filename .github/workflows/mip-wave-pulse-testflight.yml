@@ -175,20 +175,24 @@ jobs:
             -m unittest discover -s tests \
             -p test_mip_wave_history.py -v
           python -m coverage json \
+            --include=tools/mip2/mip_wave_history.py \
             -o wave-output/history/native-history-coverage.json
           python - <<'PY'
           import json
           import os
           from pathlib import Path
+          from tools.mip2 import mip_wave_history as history
 
           report = json.loads(
               Path("wave-output/history/native-history-coverage.json")
               .read_text()
           )
+          counts = history.validate_native_module_coverage(
+              report, "tools/mip2/mip_wave_history.py"
+          )
           totals = report["totals"]
-          covered = totals["covered_lines"] + totals["covered_branches"]
-          eligible = totals["num_statements"] + totals["num_branches"]
-          assert eligible > 0
+          covered = counts["covered"]
+          eligible = counts["eligible"]
           receipt = {
               "schema": "abacus.mip.history-coverage.v1",
               "source_sha": os.environ["SOURCE_SHA"],
