@@ -124,6 +124,69 @@ class WavePulseTests(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, "baseline SHA"):
             MOD.pulse(wave)
 
+    def test_canonical_coverage_record(self):
+        report = {
+            "meta": {"branch_coverage": True},
+            "files": {
+                "src/a.py": {
+                    "executed_lines": [1],
+                    "missing_lines": [2],
+                    "executed_branches": [[1, 2]],
+                    "missing_branches": [[1, 3]],
+                    "summary": {
+                        "covered_lines": 1, "num_statements": 2,
+                        "covered_branches": 1, "num_branches": 2,
+                    },
+                }
+            },
+        }
+        before = MOD.canonical_coverage_record(report, S, "cohort", "cfg")
+        self.assertEqual(before["covered_lines"], 1)
+        self.assertEqual(before["total_branches"], 2)
+        after = MOD.canonical_coverage_record(report, T, "cohort", "cfg")
+        self.assertEqual(
+            before["scope_manifest_sha256"],
+            after["scope_manifest_sha256"],
+        )
+        self.assertEqual(
+            MOD.coverage_delta(before, after)["status"], "COMPARABLE"
+        )
+        report["files"]["src/a.py"]["missing_lines"] = [3]
+        changed = MOD.canonical_coverage_record(report, T, "cohort", "cfg")
+        self.assertEqual(
+            MOD.coverage_delta(before, changed)["status"], "INCOMPARABLE"
+        )
+        report["files"]["src/a.py"]["missing_lines"] = [2]
+        report["files"]["src/a.py"]["summary"]["num_statements"] = 3
+        with self.assertRaisesRegex(ValueError, "summary and eligible IDs"):
+            MOD.canonical_coverage_record(report, T, "cohort", "cfg")
+
+    def test_canonical_coverage_rejects_duplicate_arc_and_missing_source(self):
+        report = {
+            "meta": {"branch_coverage": True},
+            "files": {
+                "src/a.py": {
+                    "executed_lines": [1], "missing_lines": [],
+                    "executed_branches": [[1, 2]],
+                    "missing_branches": [[1, 2]],
+                    "summary": {
+                        "covered_lines": 1, "num_statements": 1,
+                        "covered_branches": 1, "num_branches": 2,
+                    },
+                }
+            },
+        }
+        with self.assertRaisesRegex(ValueError, "duplicate branch"):
+            MOD.canonical_coverage_record(report, S, "cohort", "cfg")
+        report["files"]["src/a.py"]["missing_branches"] = [[1, 3]]
+        with self.assertRaisesRegex(ValueError, "selected path missing"):
+            MOD.canonical_coverage_record(
+                report, S, "cohort", "cfg", selected_paths=["not-there.py"]
+            )
+        report["meta"]["branch_coverage"] = False
+        with self.assertRaisesRegex(ValueError, "branch coverage required"):
+            MOD.canonical_coverage_record(report, S, "cohort", "cfg")
+
     def test_missing_tests_fail(self):
         x = record()
         x["tests"].pop("passed")
