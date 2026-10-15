@@ -33,7 +33,10 @@ numpy>=2.5.3,<3.0.0; python_version >= '3.12'
 # ============================================================================
 
 # Plotting and visualization
-matplotlib>=3.11.2,<4.0.0
+# Matplotlib 3.11+ requires Python 3.11; CI still supports Python 3.10.
+# Keep the latest supported 3.10.x security-fix series on that interpreter.
+matplotlib>=3.10.9,<3.11.0; python_version < '3.11'
+matplotlib>=3.11.2,<4.0.0; python_version >= '3.11'
 seaborn>=0.11.0,<1.0.0
 
 # ============================================================================
