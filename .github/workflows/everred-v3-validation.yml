@@ -89,7 +89,7 @@ jobs:
           sha256sum "$RUNNER_TEMP/everred-v31-preflight.json"
       - name: Upload four-plane evidence, never push
         if: always()
-        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9
         with:
           name: everred-v31-native-${{ matrix.python-version }}
           path: ${{ runner.temp }}/everred-v31-preflight.json
@@ -150,7 +150,7 @@ jobs:
       - name: Publish source-bound review artifacts, never push
         if: always()
         # actions/upload-artifact v4.6.2, immutable SHA pin
-        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9
         with:
           name: everred-v3-observation-${{ github.run_id }}
           if-no-files-found: error

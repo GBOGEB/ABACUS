@@ -387,7 +387,7 @@ jobs:
 
       - name: Upload governed test evidence
         if: always()
-        uses: actions/upload-artifact@v7
+        uses: actions/upload-artifact@v7.0.2
         with:
           name: test-evidence-py${{ matrix.python-version }}-${{ github.sha }}
           path: test_reports/python-${{ matrix.python-version }}/
@@ -446,7 +446,7 @@ jobs:
       - name: Upload artifacts
         id: artifact_upload
         if: steps.artifact_payload.outputs.present == 'true'
-        uses: actions/upload-artifact@v7
+        uses: actions/upload-artifact@v7.0.2
         with:
           name: abacus-${{ matrix.os }}-py${{ matrix.python-version }}
           path: |
@@ -539,7 +539,7 @@ jobs:
 
       - name: Upload Python proof manifest
         if: always()
-        uses: actions/upload-artifact@v7
+        uses: actions/upload-artifact@v7.0.2
         with:
           name: proof-manifest-py${{ matrix.python-version }}-${{ github.sha }}
           path: test_reports/proof-manifests/
@@ -603,7 +603,7 @@ jobs:
           PY
 
       - name: Upload proof completeness receipt
-        uses: actions/upload-artifact@v7
+        uses: actions/upload-artifact@v7.0.2
         with:
           name: python-proof-audit-${{ github.sha }}
           path: test_reports/python-proof-audit.json
@@ -715,7 +715,7 @@ jobs:
           PY
 
       - name: Upload benchmark baseline
-        uses: actions/upload-artifact@v7
+        uses: actions/upload-artifact@v7.0.2
         with:
           name: benchmark-baseline-${{ github.sha }}
           path: test_reports/benchmark/
