@@ -8,6 +8,7 @@ from __future__ import annotations
 import argparse
 import datetime as dt
 import html
+import hashlib
 import json
 import re
 from pathlib import Path
@@ -242,13 +243,25 @@ def main() -> None:
     parser.add_argument("--output-dir", type=Path, required=True)
     args = parser.parse_args()
 
-    def read(path: Path) -> dict:
-        return json.loads(path.read_text(encoding="utf-8"))
-
+    inputs = {
+        "previous_run": args.previous_run,
+        "previous_jobs": args.previous_jobs,
+        "current_run": args.current_run,
+        "current_jobs": args.current_jobs,
+    }
+    sources = {}
+    hashes = {}
+    for name, path in inputs.items():
+        raw = path.read_bytes()
+        require(bool(raw), "empty API input")
+        sources[name] = json.loads(raw)
+        hashes[name] = hashlib.sha256(raw).hexdigest()
     report = compare(
-        observe(read(args.previous_run), read(args.previous_jobs)),
-        observe(read(args.current_run), read(args.current_jobs)),
+        observe(sources["previous_run"], sources["previous_jobs"]),
+        observe(sources["current_run"], sources["current_jobs"]),
     )
+    report["api_input_sha256"] = hashes
+    report["api_input_integrity"] = "HASHED_LOCAL_INPUT_NOT_SIGNED_AUTHORITY"
     args.output_dir.mkdir(parents=True, exist_ok=True)
     for name, body in (
         ("mip_native_fanout.json", json.dumps(report, indent=2, sort_keys=True) + "\n"),
