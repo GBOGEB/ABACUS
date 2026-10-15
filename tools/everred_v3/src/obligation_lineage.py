@@ -229,7 +229,27 @@ def compare(before, after):
             if new["eligible"]
             else None
         )
+        stable_eligible = (
+            sum(
+                len(_set(family, all_left[path], "executed"))
+                + len(_set(family, all_left[path], "missing"))
+                for path in unchanged
+            )
+            if profile_ok
+            else None
+        )
         families[family] = {
+            "source_matched_eligible_obligations": stable_eligible,
+            "source_matched_scope_percent_before": (
+                round(100 * stable_eligible / old["eligible"], 4)
+                if stable_eligible is not None and old["eligible"]
+                else None
+            ),
+            "source_matched_scope_percent_after": (
+                round(100 * stable_eligible / new["eligible"], 4)
+                if stable_eligible is not None and new["eligible"]
+                else None
+            ),
             "eligible_before": old["eligible"],
             "eligible_after": new["eligible"],
             "eligible_net_delta": new["eligible"] - old["eligible"],
