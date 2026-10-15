@@ -10,7 +10,6 @@ import argparse
 import hashlib
 import json
 import re
-import subprocess
 from pathlib import Path
 
 SCHEMA = "abacus.w70.pulse.metrics/v1"
@@ -187,6 +186,29 @@ def summary(record):
             "**UNKNOWN / HOLD / ZERO**\n")
 
 
+def checked_out_head(workspace=None):
+    """Read an exact detached Git checkout without executing a subprocess.
+
+    The native W70 workflow checks out a commit SHA, not a symbolic branch.
+    Git worktree pointers are supported; unresolved or symbolic heads fail closed.
+    """
+    root = workspace if workspace is not None else Path.cwd()
+    dotgit = root / ".git"
+    if dotgit.is_file():
+        pointer = dotgit.read_text(encoding="utf-8").strip()
+        insist(pointer.startswith("gitdir: "), "invalid Git worktree pointer")
+        location = Path(pointer[len("gitdir: "):])
+        gitdir = location if location.is_absolute() else root / location
+    else:
+        gitdir = dotgit
+    try:
+        actual = (gitdir / "HEAD").read_text(encoding="utf-8").strip()
+    except OSError as exc:
+        raise ValueError("checked-out Git HEAD unavailable") from exc
+    insist(bool(SHA.fullmatch(actual)), "detached exact-SHA checkout required")
+    return actual
+
+
 def main():
     p = argparse.ArgumentParser()
     p.add_argument("--lane-dir", required=True, type=Path)
@@ -200,8 +222,7 @@ def main():
     p.add_argument("--out", required=True, type=Path)
     p.add_argument("--summary", type=Path)
     args = p.parse_args()
-    actual = subprocess.check_output(["git", "rev-parse", "HEAD"],
-                                     text=True).strip()
+    actual = checked_out_head()
     insist(actual == args.sha, "checked-out HEAD differs from pulse SHA")
     read = lambda path: json.loads(path.read_text(encoding="utf-8"))
     rows = {lane: read(args.lane_dir / (lane + ".json")) for lane in LANES}
