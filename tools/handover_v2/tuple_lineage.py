@@ -71,6 +71,91 @@ def check(ledger_bytes: bytes, narrative_bytes: bytes, manifest_bytes: bytes) ->
             "operational_bd_opened":None,"operational_bd_closed":None,
             "chain_tip":prev}
 
+
+def pulse_metrics(ledger: dict, *, head_sha: str, observed_ci: dict) -> dict:
+    """Only count verified exact-head terminal CI; operational roots stay unknown.
+
+    observed_ci maps workflow run IDs to {source_sha, conclusion, url}.
+    A source-linked instrumented run is not proof of executed Crew workers.
+    """
+    if len(head_sha) != 40 or any(c not in "0123456789abcdef" for c in head_sha):
+        raise ValueError("A complete exact-head SHA is required")
+    allowed = {"success", "failure", "cancelled", "skipped"}
+    ci = {"success": 0, "failure": 0, "cancelled": 0, "skipped": 0}
+    observed = []
+    for run_id, item in sorted(observed_ci.items(), key=lambda kv: int(kv[0])):
+        if item["source_sha"] != head_sha:
+            raise ValueError("CI source SHA mismatch: " + str(run_id))
+        if item["conclusion"] not in allowed:
+            raise ValueError("Nonterminal run cannot be credited: " + str(run_id))
+        if not item["url"].startswith(
+            "https://github.com/GBOGEB/ABACUS/actions/runs/"
+        ):
+            raise ValueError("Untrusted CI URL")
+        ci[item["conclusion"]] += 1
+        observed.append({"id": int(run_id), **item})
+    states = {"BLOCKED": 0, "HOLD": 0, "VERIFY": 0, "UNKNOWN": 0}
+    for task in ledger["todo_records"]:
+        states[task["state"]] += 1
+    if sum(states.values()) != len(ledger["todo_records"]):
+        raise ValueError("TODO census is incomplete")
+    n = len(observed)
+    return {
+        "schema": "handover.bd_tuple_pulse.v1",
+        "head_sha": head_sha,
+        "metric_basis": "EXACT_HEAD_TERMINAL_WORKFLOW_RUN_CONCLUSIONS",
+        "workflow_terminal": n,
+        "workflow_pass": ci["success"],
+        "workflow_fail": ci["failure"],
+        "workflow_cancelled": ci["cancelled"],
+        "workflow_skipped": ci["skipped"],
+        "workflow_pass_pct": round(100 * ci["success"] / n, 4) if n else None,
+        "workflow_receipts": observed,
+        "tuple_population": len(ledger["tuples"]),
+        "todo_population": len(ledger["todo_records"]),
+        "todo_state_count": states,
+        "todo_closed": None,
+        "operational_roots_opened": None,
+        "operational_roots_closed": None,
+        "crew_launches": None,
+        "accepted_rex": None,
+        "canonical_coverage": None,
+        "changed_line_coverage": None,
+        "admission": "HOLD",
+    }
+
+
+def compare_pulses(before: dict, after: dict) -> dict:
+    """Compare only same-source-metric instruments and declared populations."""
+    if before["schema"] != after["schema"]:
+        raise ValueError("Different telemetry schema")
+    if before["metric_basis"] != after["metric_basis"]:
+        raise ValueError("Different CI metric basis")
+    scope_same = (
+        before["head_sha"] == after["head_sha"]
+        and {x["id"] for x in before["workflow_receipts"]} ==
+        {x["id"] for x in after["workflow_receipts"]}
+    )
+    return {
+        "schema": "handover.bd_tuple_pulse_delta.v1",
+        "same_exact_head_and_run_set": scope_same,
+        "workflow_pass_delta": (
+            after["workflow_pass"] - before["workflow_pass"] if scope_same else None
+        ),
+        "workflow_pass_pp": (
+            round(after["workflow_pass_pct"] - before["workflow_pass_pct"], 4)
+            if scope_same and before["workflow_pass_pct"] is not None
+            and after["workflow_pass_pct"] is not None else None
+        ),
+        "observed_run_set_growth": (
+            len(after["workflow_receipts"]) - len(before["workflow_receipts"])
+        ),
+        "new_terminal_scope_is_not_coverage_improvement": True,
+        "operational_root_closure_delta": None,
+        "coverage_delta": None,
+    }
+
+
 def main():
     p=argparse.ArgumentParser()
     p.add_argument("--folder",type=Path,default=Path(__file__).resolve().parents[2]/"handover/mip_20261015")
