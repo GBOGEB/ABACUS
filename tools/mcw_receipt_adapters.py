@@ -66,15 +66,33 @@ def _ldab(obj):
         require(sample <= total, "LDAB sample exceeds census")
         counts[location] = total
     for field in ("abacus_native_debug_sessions", "authenticated_port_leases",
-                  "active_runner_workers", "ldab_verified_repairs"):
+                  "active_runner_workers", "ldab_verified_repairs",
+                  "debug_probe_steps"):
         require(runtime.get(field) is None, "unauthorized runtime assertion")
     require(runtime.get("proof_state") == "UNKNOWN_NO_RUNTIME_RECEIPT",
             "unexpected runtime proof state")
+    require(obj.get("security_waiver") is False,
+            "LDAB security waiver asserted")
     diagnostic = obj.get("diagnostic_execution")
     require(isinstance(diagnostic, dict) and
             diagnostic.get("diagnostic_scope") == "FEDERATION_CONTRACT_ONLY" and
             diagnostic.get("state") in ("NOT_EXECUTED", "EXECUTED_PASS"),
             "invalid LDAB diagnostic scope")
+    if diagnostic["state"] == "EXECUTED_PASS":
+        require(counts["nested"] is not None and
+                diagnostic.get("diagnostic") == "nested_debug_ldab" and
+                diagnostic.get("contract_checks_total") is not None and
+                integer(diagnostic.get("contract_checks_total"),
+                        "LDAB diagnostic total") > 0 and
+                diagnostic.get("contract_checks_passed") ==
+                diagnostic["contract_checks_total"] and
+                diagnostic.get("contract_checks_failed") == 0 and
+                diagnostic.get("source_contract") ==
+                "integration/codespace_jyperter/tests/test_smoke_federation.py" and
+                isinstance(diagnostic.get("source_contract_sha256"), str) and
+                re.fullmatch(r"[0-9a-f]{64}",
+                             diagnostic["source_contract_sha256"]),
+                "forged LDAB executed contract diagnostic")
     return {"root_candidate_files": counts["root"],
             "nested_candidate_files": counts["nested"],
             "deduplicated_candidate_files": None,
