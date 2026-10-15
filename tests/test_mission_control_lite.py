@@ -44,7 +44,8 @@ class TestMissionControlLite(unittest.TestCase):
         scope = {"repository": "GBOGEB/ABACUS", "source_sha": "a" * 40,
                  "write": False, "actor": "untrusted-external"}
         for action in ("merge", "modify_ruleset", "shell", "patch", "ingest"):
-            self.assertFalse(authorize(action, scope))
+            self.assertFalse(authorize(action, scope, authenticated_actor="untrusted-external", trusted_actors={"GBOGEB"}))
+        self.assertFalse(authorize("test", scope, authenticated_actor="untrusted-external", trusted_actors={"GBOGEB"}))
 
     def test_empty_output_rejected(self):
         with tempfile.TemporaryDirectory() as d:
@@ -94,6 +95,8 @@ class TestMissionControlLite(unittest.TestCase):
         s={"repository":"GBOGEB/ABACUS","source_sha":"a"*40,"write":False}
         for action in ("merge","modify_ruleset","shell","patch"):
             self.assertFalse(authorize(action,s))
-        self.assertTrue(authorize("test",s))
-        self.assertFalse(authorize("test",{**s,"write":True}))
+        self.assertTrue(authorize("test",s, authenticated_actor="GBOGEB", trusted_actors={"GBOGEB"}))
+        self.assertFalse(authorize("test",{**s,"write":True}, authenticated_actor="GBOGEB", trusted_actors={"GBOGEB"}))
+        self.assertFalse(authorize("test",s))
+        self.assertFalse(authorize("test",s, authenticated_actor="external", trusted_actors={"GBOGEB"}))
 if __name__=="__main__":unittest.main()
