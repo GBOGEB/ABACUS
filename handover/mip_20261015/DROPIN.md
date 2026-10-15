@@ -19,31 +19,31 @@ values as readback anchors that expire after new commits.
 
 At snapshot:
 
--  ABACUS main `85dad8fbdab530d40e6ccf2f664c455f89454aad`; CODEX main
+- ABACUS main `85dad8fbdab530d40e6ccf2f664c455f89454aad`; CODEX main
   `9606b61365f4639c9df24961f2cf4ef598cb5d81`.
--  #1989 OPEN non-draft head `7c93c5d54e5e790f0066cfbe79e5416508262ebb`: native
+- #1989 OPEN non-draft head `7c93c5d54e5e790f0066cfbe79e5416508262ebb`: native
   Full CI quality **PASS**, Security **FAIL/Safety exit64**; B0, governance,
   statistical integration PASS; A10 FAIL. Do **not** repeat ten-file Black
   repair against this newer head without a fresh first-red.
--  #1988 OPEN head `aec5a438...` and #1990 OPEN head `e62f9ebd...` have
+- #1988 OPEN head `aec5a438...` and #1990 OPEN head `e62f9ebd...` have
   independent failing full CI + A10. #1987 MERGED into a **non-main** base
   branch, not main. #2006 was confirmed OPEN NON-DRAFT at 2026-10-15T13:23Z
   (GitHub mergeable_state=blocked); its V2 generator remains an unadmitted
   handover/tooling PR and its head changes after publishing this receiver; don't
   merge it without its own native pass.
--  Ruleset #24494381 ACTIVE, default-branch protections but
+- Ruleset #24494381 ACTIVE, default-branch protections but
   `required_approving_review_count=0`, `require_last_push_approval=true`,
   conversation resolution true, **no required_status_checks rule**. GitHub
   `mergeable=true` is not admitted merge. No eligible APPROVED review observed
   on sampled critical PRs.
--  Last established main combined coverage **21,391/39,139** on 299 files;
+- Last established main combined coverage **21,391/39,139** on 299 files;
   historic #1989 B9 **266/291** on an *older* head. New matched-scope
   improvement UNKNOWN; BD distinct roots opened/closed UNKNOWN; accepted
   REX/Crew/LDAB returns UNKNOWN.
--  Earlier downloaded Safety artifact reported `nltk==3.10.3` CVE-2026-81726 and
+- Earlier downloaded Safety artifact reported `nltk==3.10.3` CVE-2026-81726 and
   `setuptools==79.0.1` CVE-2026-59890; revalidate current-head report and
   fixed-version/source attribution before edits.
--  **User explicitly triggered reruns of failed jobs with debug enabled** and
+- **User explicitly triggered reruns of failed jobs with debug enabled** and
   supplied screenshots. This is operator-reported, not yet independently
   verified in GitHub: ten sampled old failed runs were still `run_attempt=1` at
   the readback. Enumerate ALL latest run/attempt/job identities and debug
@@ -75,7 +75,7 @@ existing #2006 handover lane.
 **Recovered historical BD 3-pulse appendix:** Section J of the full receiver
 binds old #1989 head `ff385c7e257a38b5b215764de17f7680e9c73e74` to six native
 workflow runs and issue receipt comments #1864–#1868. On that OLD head, Full CI
-#38690911565 reached terminal FAILURE **attempt 2** and A10 #38690911605 reached
+\#38690911565 reached terminal FAILURE **attempt 2** and A10 #38690911605 reached
 terminal FAILURE **attempt 3**; the user-requested debug setting is not
 independently verified. Format, B0, governance, Bandit PASS at attempt 1. These
 old failures do NOT supersede the later #1989 head's successful code-quality
