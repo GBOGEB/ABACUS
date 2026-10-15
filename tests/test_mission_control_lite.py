@@ -19,10 +19,33 @@ class TestMissionControlLite(unittest.TestCase):
             p.write_text('{"ok":true}')
             self.assertTrue(verify(r, d))
             db=Path(d)/"registry.sqlite"
-            ingest(db,r)
+            ingest(db,r,d)
             result=census(db)
             self.assertEqual(result["verified_roots_with_receipts"],1)
             self.assertFalse(result["roots"][0]["closed"])
+    def test_core_ingest_rejects_forgery_and_missing_trust_root(self):
+        with tempfile.TemporaryDirectory() as d:
+            p = Path(d) / "output.json"
+            p.write_text('{"ok":true}')
+            db = Path(d) / "registry.sqlite"
+            r = receipt("m", "t", "root", "a" * 40, "1", [p])
+            with self.assertRaises(ValueError):
+                ingest(db, r)
+            tampered = json.loads(json.dumps(r))
+            tampered["artifacts"][0]["sha256"] = "0" * 64
+            with self.assertRaises(ValueError):
+                ingest(db, tampered, d)
+            p.write_text('{"ok":false}')
+            with self.assertRaises(ValueError):
+                ingest(db, r, d)
+            self.assertEqual(census(db)["verified_roots_with_receipts"], 0)
+
+    def test_external_actor_authorization_negative(self):
+        scope = {"repository": "GBOGEB/ABACUS", "source_sha": "a" * 40,
+                 "write": False, "actor": "untrusted-external"}
+        for action in ("merge", "modify_ruleset", "shell", "patch", "ingest"):
+            self.assertFalse(authorize(action, scope))
+
     def test_empty_output_rejected(self):
         with tempfile.TemporaryDirectory() as d:
             p=Path(d)/"empty";p.write_bytes(b"")
