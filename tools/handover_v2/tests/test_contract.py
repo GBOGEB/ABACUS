@@ -42,6 +42,23 @@ class HandoverV2Smoke(unittest.TestCase):
     def test_noncausal_pct(self):
         self.assertEqual(core.pct(49, 50), "98.00%")
 
+    def test_admission_rejects_empty_required_gate_set(self):
+        authority = {"merge_decision": "APPROVED",
+                     "effective_branch_protection": "EFFECTIVE",
+                     "independent_approval": "ESTABLISHED"}
+        for gates in ({}, {"optional": {"required_for_admission": False,
+                                       "status": "PASS"}}):
+            with self.subTest(gates=gates):
+                with self.assertRaisesRegex(ValueError, "at least one required gate"):
+                    core.validate_admission_gates(authority, gates)
+        core.validate_admission_gates(authority, {
+            "native": {"required_for_admission": True, "status": "PASS"}})
+        with self.assertRaisesRegex(ValueError, "required PASS gates"):
+            core.validate_admission_gates(authority, {
+                "native": {"required_for_admission": True, "status": "FAIL"}})
+        authority["merge_decision"] = "HOLD"
+        core.validate_admission_gates(authority, {})
+
 
 if __name__ == "__main__":
     unittest.main()
