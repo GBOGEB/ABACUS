@@ -258,7 +258,7 @@ def coverage_transitions(previous, current):
     if not isinstance(previous, dict):
         return []
     old = previous.get("observations", [])
-    require(isinstance(old, list), "invalid previous observations")
+    demand(isinstance(old, list), "invalid previous observations")
     prior_by_pr = {x.get("pr_number"): x for x in old if isinstance(x, dict)}
     deltas = []
     for observation in current.get("observations", []):

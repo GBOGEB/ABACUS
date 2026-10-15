@@ -29,6 +29,7 @@ class FakeReader:
                     "head_sha": B,
                     "head_branch": "worker",
                     "name": "smoke-test",
+                    "event": "pull_request",
                     "status": "completed",
                     "conclusion": "success",
                     "created_at": "2026-10-15T00:00:00Z",
