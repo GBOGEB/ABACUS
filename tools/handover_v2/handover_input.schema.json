@@ -1,0 +1,1206 @@
+{
+  "$defs": {
+    "action": {
+      "additionalProperties": false,
+      "properties": {
+        "acceptance": {
+          "minLength": 1,
+          "type": "string"
+        },
+        "blocked_by": {
+          "items": {
+            "pattern": "^[A-Za-z][A-Za-z0-9._-]{0,80}$",
+            "type": "string"
+          },
+          "type": "array"
+        },
+        "depends_on": {
+          "items": {
+            "pattern": "^[A-Za-z][A-Za-z0-9._-]{0,80}$",
+            "type": "string"
+          },
+          "type": "array"
+        },
+        "evidence_required": {
+          "items": {
+            "minLength": 1,
+            "type": "string"
+          },
+          "type": "array"
+        },
+        "id": {
+          "pattern": "^[A-Za-z][A-Za-z0-9._-]{0,80}$",
+          "type": "string"
+        },
+        "instruction": {
+          "minLength": 1,
+          "type": "string"
+        },
+        "order": {
+          "minimum": 1,
+          "type": "integer"
+        },
+        "owner": {
+          "minLength": 1,
+          "type": "string"
+        },
+        "stop_condition": {
+          "anyOf": [
+            {
+              "minLength": 1,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "title": {
+          "minLength": 1,
+          "type": "string"
+        }
+      },
+      "required": [
+        "id",
+        "order",
+        "title",
+        "owner",
+        "instruction",
+        "acceptance",
+        "depends_on",
+        "blocked_by",
+        "evidence_required",
+        "stop_condition"
+      ],
+      "type": "object"
+    },
+    "basis": {
+      "additionalProperties": false,
+      "properties": {
+        "configuration_sha256": {
+          "anyOf": [
+            {
+              "pattern": "^[a-f0-9]{64}$",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "instrumentor": {
+          "minLength": 1,
+          "type": "string"
+        },
+        "instrumentor_version": {
+          "anyOf": [
+            {
+              "minLength": 1,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "paths": {
+          "items": {
+            "minLength": 1,
+            "type": "string"
+          },
+          "type": "array"
+        },
+        "scope_id": {
+          "pattern": "^[A-Za-z][A-Za-z0-9._-]{0,80}$",
+          "type": "string"
+        },
+        "selection": {
+          "minLength": 1,
+          "type": "string"
+        },
+        "unit_definition": {
+          "minLength": 1,
+          "type": "string"
+        }
+      },
+      "required": [
+        "scope_id",
+        "paths",
+        "instrumentor",
+        "instrumentor_version",
+        "configuration_sha256",
+        "unit_definition",
+        "selection"
+      ],
+      "type": "object"
+    },
+    "blocker": {
+      "additionalProperties": false,
+      "properties": {
+        "classification": {
+          "enum": [
+            "ROOT",
+            "PROPAGATED",
+            "ENVIRONMENT",
+            "GOVERNANCE",
+            "UNKNOWN"
+          ],
+          "type": "string"
+        },
+        "disposition": {
+          "enum": [
+            "OPEN",
+            "IN_PROGRESS",
+            "RESOLVED",
+            "REOPENED",
+            "UNKNOWN"
+          ],
+          "type": "string"
+        },
+        "evidence_ids": {
+          "items": {
+            "pattern": "^[A-Za-z][A-Za-z0-9._-]{0,80}$",
+            "type": "string"
+          },
+          "type": "array"
+        },
+        "gate_ids": {
+          "items": {
+            "pattern": "^[A-Za-z][A-Za-z0-9._-]{0,80}$",
+            "type": "string"
+          },
+          "type": "array"
+        },
+        "id": {
+          "pattern": "^[A-Za-z][A-Za-z0-9._-]{0,80}$",
+          "type": "string"
+        },
+        "next_action": {
+          "minLength": 1,
+          "type": "string"
+        },
+        "note": {
+          "type": "string"
+        },
+        "owner": {
+          "minLength": 1,
+          "type": "string"
+        },
+        "root_cause_fingerprint": {
+          "anyOf": [
+            {
+              "pattern": "^[a-f0-9]{64}$",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "runtime": {
+          "additionalProperties": false,
+          "properties": {
+            "debug_session_id": {
+              "anyOf": [
+                {
+                  "minLength": 1,
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "port_lease_id": {
+              "anyOf": [
+                {
+                  "minLength": 1,
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "rex_receipt_uri": {
+              "anyOf": [
+                {
+                  "minLength": 1,
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "worker_launch_id": {
+              "anyOf": [
+                {
+                  "minLength": 1,
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            }
+          },
+          "required": [
+            "debug_session_id",
+            "worker_launch_id",
+            "port_lease_id",
+            "rex_receipt_uri"
+          ],
+          "type": "object"
+        },
+        "signature": {
+          "minLength": 1,
+          "type": "string"
+        },
+        "source_path": {
+          "anyOf": [
+            {
+              "minLength": 1,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "source_sha": {
+          "anyOf": [
+            {
+              "pattern": "^[a-f0-9]{40}$",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "required": [
+        "id",
+        "classification",
+        "disposition",
+        "signature",
+        "owner",
+        "source_sha",
+        "source_path",
+        "runtime",
+        "evidence_ids",
+        "gate_ids",
+        "next_action",
+        "root_cause_fingerprint",
+        "note"
+      ],
+      "type": "object"
+    },
+    "byte_equality": {
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "pattern": "^[A-Za-z][A-Za-z0-9._-]{0,80}$",
+          "type": "string"
+        },
+        "left_path": {
+          "minLength": 1,
+          "type": "string"
+        },
+        "purpose": {
+          "minLength": 1,
+          "type": "string"
+        },
+        "right_path": {
+          "minLength": 1,
+          "type": "string"
+        }
+      },
+      "required": [
+        "id",
+        "left_path",
+        "right_path",
+        "purpose"
+      ],
+      "type": "object"
+    },
+    "comparison": {
+      "additionalProperties": false,
+      "properties": {
+        "after_metric_id": {
+          "pattern": "^[A-Za-z][A-Za-z0-9._-]{0,80}$",
+          "type": "string"
+        },
+        "before_metric_id": {
+          "pattern": "^[A-Za-z][A-Za-z0-9._-]{0,80}$",
+          "type": "string"
+        },
+        "id": {
+          "pattern": "^[A-Za-z][A-Za-z0-9._-]{0,80}$",
+          "type": "string"
+        },
+        "label": {
+          "minLength": 1,
+          "type": "string"
+        },
+        "required_comparability": {
+          "const": true
+        }
+      },
+      "required": [
+        "id",
+        "before_metric_id",
+        "after_metric_id",
+        "label",
+        "required_comparability"
+      ],
+      "type": "object"
+    },
+    "decision": {
+      "additionalProperties": false,
+      "properties": {
+        "evidence_ids": {
+          "items": {
+            "pattern": "^[A-Za-z][A-Za-z0-9._-]{0,80}$",
+            "type": "string"
+          },
+          "type": "array"
+        },
+        "id": {
+          "pattern": "^[A-Za-z][A-Za-z0-9._-]{0,80}$",
+          "type": "string"
+        },
+        "reason": {
+          "minLength": 1,
+          "type": "string"
+        },
+        "source_sha": {
+          "anyOf": [
+            {
+              "pattern": "^[a-f0-9]{40}$",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "status": {
+          "enum": [
+            "HOLD",
+            "ACCEPT",
+            "REJECT",
+            "INFORMATIONAL"
+          ],
+          "type": "string"
+        }
+      },
+      "required": [
+        "id",
+        "status",
+        "reason",
+        "source_sha",
+        "evidence_ids"
+      ],
+      "type": "object"
+    },
+    "evidence": {
+      "additionalProperties": false,
+      "properties": {
+        "artifact_id": {
+          "anyOf": [
+            {
+              "minimum": 1,
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "event": {
+          "enum": [
+            "pull_request",
+            "push",
+            "workflow_dispatch",
+            "workflow_run",
+            "issue_comment",
+            "unknown"
+          ],
+          "type": "string"
+        },
+        "id": {
+          "pattern": "^[A-Za-z][A-Za-z0-9._-]{0,80}$",
+          "type": "string"
+        },
+        "job_id": {
+          "anyOf": [
+            {
+              "minimum": 1,
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "kind": {
+          "enum": [
+            "WORKFLOW_RUN",
+            "WORKFLOW_JOB",
+            "ARTIFACT",
+            "FILE",
+            "ISSUE",
+            "PR",
+            "BRANCH",
+            "USER_NOTE",
+            "SOURCE_EXPORT"
+          ],
+          "type": "string"
+        },
+        "label": {
+          "minLength": 1,
+          "type": "string"
+        },
+        "note": {
+          "type": "string"
+        },
+        "observation": {
+          "enum": [
+            "REMOTE_OBSERVED",
+            "LOCAL_BYTES_VERIFIED",
+            "USER_REPORTED",
+            "REFERENCE_ONLY",
+            "UNVERIFIED"
+          ],
+          "type": "string"
+        },
+        "observed_at_utc": {
+          "format": "date-time",
+          "pattern": "Z$",
+          "type": "string"
+        },
+        "run_attempt": {
+          "anyOf": [
+            {
+              "minimum": 1,
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "run_id": {
+          "anyOf": [
+            {
+              "minimum": 1,
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "sha256": {
+          "anyOf": [
+            {
+              "pattern": "^[a-f0-9]{64}$",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "source_sha": {
+          "anyOf": [
+            {
+              "pattern": "^[a-f0-9]{40}$",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "uri": {
+          "anyOf": [
+            {
+              "minLength": 1,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "required": [
+        "id",
+        "label",
+        "kind",
+        "observation",
+        "uri",
+        "source_sha",
+        "observed_at_utc",
+        "run_id",
+        "job_id",
+        "artifact_id",
+        "run_attempt",
+        "event",
+        "sha256",
+        "note"
+      ],
+      "type": "object"
+    },
+    "gate": {
+      "additionalProperties": false,
+      "properties": {
+        "evidence_ids": {
+          "items": {
+            "pattern": "^[A-Za-z][A-Za-z0-9._-]{0,80}$",
+            "type": "string"
+          },
+          "type": "array"
+        },
+        "id": {
+          "pattern": "^[A-Za-z][A-Za-z0-9._-]{0,80}$",
+          "type": "string"
+        },
+        "label": {
+          "minLength": 1,
+          "type": "string"
+        },
+        "note": {
+          "type": "string"
+        },
+        "required_for_admission": {
+          "type": "boolean"
+        },
+        "run_id": {
+          "anyOf": [
+            {
+              "minimum": 1,
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "scope": {
+          "enum": [
+            "EXACT_HEAD",
+            "MAIN",
+            "HISTORICAL",
+            "INDEPENDENT_AUTHORITY"
+          ],
+          "type": "string"
+        },
+        "source_sha": {
+          "anyOf": [
+            {
+              "pattern": "^[a-f0-9]{40}$",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "status": {
+          "enum": [
+            "PASS",
+            "FAIL",
+            "PENDING",
+            "IN_PROGRESS",
+            "CANCELLED",
+            "UNKNOWN"
+          ],
+          "type": "string"
+        }
+      },
+      "required": [
+        "id",
+        "label",
+        "scope",
+        "status",
+        "required_for_admission",
+        "source_sha",
+        "evidence_ids",
+        "run_id",
+        "note"
+      ],
+      "type": "object"
+    },
+    "metric": {
+      "additionalProperties": false,
+      "properties": {
+        "basis": {
+          "$ref": "#/$defs/basis"
+        },
+        "denominator": {
+          "anyOf": [
+            {
+              "minimum": 1,
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "evidence_ids": {
+          "items": {
+            "pattern": "^[A-Za-z][A-Za-z0-9._-]{0,80}$",
+            "type": "string"
+          },
+          "type": "array"
+        },
+        "id": {
+          "pattern": "^[A-Za-z][A-Za-z0-9._-]{0,80}$",
+          "type": "string"
+        },
+        "label": {
+          "minLength": 1,
+          "type": "string"
+        },
+        "measure_type": {
+          "enum": [
+            "RATIO",
+            "COUNT"
+          ],
+          "type": "string"
+        },
+        "missing_reason": {
+          "anyOf": [
+            {
+              "minLength": 1,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "note": {
+          "type": "string"
+        },
+        "numerator": {
+          "anyOf": [
+            {
+              "minimum": 0,
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "source_sha": {
+          "anyOf": [
+            {
+              "pattern": "^[a-f0-9]{40}$",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "state": {
+          "enum": [
+            "MEASURED",
+            "HISTORICAL",
+            "UNKNOWN"
+          ],
+          "type": "string"
+        },
+        "unit": {
+          "minLength": 1,
+          "type": "string"
+        },
+        "value": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "required": [
+        "id",
+        "label",
+        "state",
+        "measure_type",
+        "unit",
+        "source_sha",
+        "evidence_ids",
+        "numerator",
+        "denominator",
+        "value",
+        "basis",
+        "missing_reason",
+        "note"
+      ],
+      "type": "object"
+    },
+    "numeric_binding": {
+      "additionalProperties": false,
+      "properties": {
+        "field": {
+          "enum": [
+            "numerator",
+            "denominator",
+            "value"
+          ],
+          "type": "string"
+        },
+        "id": {
+          "pattern": "^[A-Za-z][A-Za-z0-9._-]{0,80}$",
+          "type": "string"
+        },
+        "json_pointer": {
+          "minLength": 1,
+          "type": "string"
+        },
+        "metric_id": {
+          "pattern": "^[A-Za-z][A-Za-z0-9._-]{0,80}$",
+          "type": "string"
+        },
+        "operation": {
+          "enum": [
+            "IDENTITY",
+            "LIST_LENGTH"
+          ],
+          "type": "string"
+        },
+        "source_path": {
+          "minLength": 1,
+          "type": "string"
+        }
+      },
+      "required": [
+        "id",
+        "metric_id",
+        "field",
+        "source_path",
+        "json_pointer",
+        "operation"
+      ],
+      "type": "object"
+    },
+    "raw": {
+      "additionalProperties": false,
+      "properties": {
+        "description": {
+          "minLength": 1,
+          "type": "string"
+        },
+        "evidence_id": {
+          "pattern": "^[A-Za-z][A-Za-z0-9._-]{0,80}$",
+          "type": "string"
+        },
+        "path": {
+          "minLength": 1,
+          "type": "string"
+        },
+        "sha256": {
+          "pattern": "^[a-f0-9]{64}$",
+          "type": "string"
+        }
+      },
+      "required": [
+        "path",
+        "sha256",
+        "evidence_id",
+        "description"
+      ],
+      "type": "object"
+    },
+    "target": {
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "pattern": "^[A-Za-z][A-Za-z0-9._-]{0,80}$",
+          "type": "string"
+        },
+        "metric_id": {
+          "pattern": "^[A-Za-z][A-Za-z0-9._-]{0,80}$",
+          "type": "string"
+        },
+        "operator": {
+          "enum": [
+            ">=",
+            "<=",
+            "=="
+          ],
+          "type": "string"
+        },
+        "percent": {
+          "maximum": 100,
+          "minimum": 0,
+          "type": "number"
+        },
+        "reason": {          "minLength": 1,
+          "type": "string"
+        }
+      },
+      "required": [
+        "id",
+        "metric_id",
+        "operator",
+        "percent",
+        "reason"
+      ],
+      "type": "object"
+    },
+    "unknown": {
+      "additionalProperties": false,
+      "properties": {
+        "acquisition": {
+          "minLength": 1,
+          "type": "string"
+        },
+        "id": {
+          "pattern": "^[A-Za-z][A-Za-z0-9._-]{0,80}$",
+          "type": "string"
+        },
+        "needed_evidence": {
+          "minLength": 1,
+          "type": "string"
+        },
+        "owner": {
+          "minLength": 1,
+          "type": "string"
+        },
+        "priority": {
+          "maximum": 5,
+          "minimum": 1,
+          "type": "integer"
+        },
+        "question": {
+          "minLength": 1,
+          "type": "string"
+        },
+        "reason": {
+          "minLength": 1,
+          "type": "string"
+        }
+      },
+      "required": [
+        "id",
+        "question",
+        "reason",
+        "needed_evidence",
+        "acquisition",
+        "owner",
+        "priority"
+      ],
+      "type": "object"
+    }
+  },
+  "$id": "https://schemas.example.invalid/lossless-handover-v2/input.schema.json",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "properties": {
+    "actions": {
+      "items": {
+        "$ref": "#/$defs/action"
+      },
+      "type": "array"
+    },
+    "authority": {
+      "additionalProperties": false,
+      "properties": {
+        "authority_transfer": {
+          "type": "boolean"
+        },
+        "effective_branch_protection": {
+          "enum": [
+            "EFFECTIVE",
+            "NOT_EFFECTIVE",
+            "UNKNOWN"
+          ],
+          "type": "string"
+        },
+        "engineering_credit_delta": {
+          "type": "number"
+        },
+        "formal_credit_delta": {
+          "type": "number"
+        },
+        "independent_approval": {
+          "enum": [
+            "ESTABLISHED",
+            "NOT_ESTABLISHED",
+            "UNKNOWN"
+          ],
+          "type": "string"
+        },
+        "merge_decision": {
+          "enum": [
+            "HOLD",
+            "APPROVED",
+            "MERGED"
+          ],
+          "type": "string"
+        },
+        "merged": {
+          "type": "boolean"
+        },
+        "security_waiver": {
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "merge_decision",
+        "merged",
+        "effective_branch_protection",
+        "independent_approval",
+        "security_waiver",
+        "authority_transfer",
+        "formal_credit_delta",
+        "engineering_credit_delta"
+      ],
+      "type": "object"
+    },
+    "blockers": {
+      "items": {
+        "$ref": "#/$defs/blocker"
+      },
+      "type": "array"
+    },
+    "byte_equalities": {
+      "items": {
+        "$ref": "#/$defs/byte_equality"
+      },
+      "type": "array"
+    },
+    "comparisons": {
+      "items": {
+        "$ref": "#/$defs/comparison"
+      },
+      "type": "array"
+    },
+    "constraints": {
+      "items": {
+        "minLength": 1,
+        "type": "string"
+      },
+      "type": "array"
+    },
+    "decisions": {
+      "items": {
+        "$ref": "#/$defs/decision"
+      },
+      "type": "array"
+    },
+    "evidence": {
+      "items": {
+        "$ref": "#/$defs/evidence"
+      },
+      "type": "array"
+    },
+    "gates": {
+      "items": {
+        "$ref": "#/$defs/gate"
+      },
+      "type": "array"
+    },
+    "metrics": {
+      "items": {
+        "$ref": "#/$defs/metric"
+      },
+      "type": "array"
+    },
+    "numeric_bindings": {
+      "items": {
+        "$ref": "#/$defs/numeric_binding"
+      },
+      "type": "array"
+    },
+    "protocol": {
+      "const": "LOSSLESS_HANDOVER_V2"
+    },
+    "raw_sources": {
+      "items": {
+        "$ref": "#/$defs/raw"
+      },
+      "type": "array"
+    },
+    "schema_version": {
+      "const": "2.0.0"
+    },
+    "snapshot": {
+      "additionalProperties": false,
+      "properties": {
+        "captured_at_utc": {
+          "format": "date-time",
+          "pattern": "Z$",
+          "type": "string"
+        },
+        "fidelity_mode": {
+          "enum": [
+            "OPERATIONAL",
+            "EVIDENCE_ARCHIVE"
+          ],
+          "type": "string"
+        },
+        "objective": {
+          "minLength": 1,
+          "type": "string"
+        },
+        "parent_manifest_root_sha256": {
+          "anyOf": [
+            {
+              "pattern": "^[a-f0-9]{64}$",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "replay_boundary": {
+          "minLength": 1,
+          "type": "string"
+        },
+        "sensitivity": {
+          "enum": [
+            "PUBLIC",
+            "INTERNAL",
+            "RESTRICTED"
+          ],
+          "type": "string"
+        },
+        "title": {
+          "minLength": 1,
+          "type": "string"
+        },
+        "transcript_completeness": {
+          "enum": [
+            "NOT_ASSERTED",
+            "USER_ATTESTED_UNVERIFIED"
+          ],
+          "type": "string"
+        }
+      },
+      "required": [
+        "captured_at_utc",
+        "title",
+        "objective",
+        "fidelity_mode",
+        "transcript_completeness",
+        "parent_manifest_root_sha256",
+        "sensitivity",
+        "replay_boundary"
+      ],
+      "type": "object"
+    },
+    "subject": {
+      "additionalProperties": false,
+      "properties": {
+        "base_sha": {
+          "anyOf": [
+            {
+              "pattern": "^[a-f0-9]{40}$",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "branch": {
+          "minLength": 1,
+          "type": "string"
+        },
+        "default_branch_sha": {
+          "anyOf": [
+            {
+              "pattern": "^[a-f0-9]{40}$",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "head_sha": {
+          "pattern": "^[a-f0-9]{40}$",
+          "type": "string"
+        },
+        "repository": {
+          "minLength": 1,
+          "type": "string"
+        },
+        "url": {
+          "minLength": 1,
+          "type": "string"
+        },
+        "work_item": {
+          "minLength": 1,
+          "type": "string"
+        }
+      },
+      "required": [
+        "repository",
+        "work_item",
+        "url",
+        "branch",
+        "head_sha",
+        "base_sha",
+        "default_branch_sha"
+      ],
+      "type": "object"
+    },
+    "targets": {
+      "items": {
+        "$ref": "#/$defs/target"
+      },
+      "type": "array"
+    },
+    "tool_limitations": {
+      "items": {
+        "minLength": 1,
+        "type": "string"
+      },
+      "type": "array"
+    },
+    "unknowns": {
+      "items": {
+        "$ref": "#/$defs/unknown"
+      },
+      "type": "array"
+    }
+  },
+  "required": [
+    "protocol",
+    "schema_version",
+    "snapshot",
+    "subject",
+    "authority",
+    "evidence",
+    "metrics",
+    "targets",
+    "comparisons",
+    "gates",
+    "blockers",
+    "unknowns",
+    "actions",
+    "decisions",
+    "raw_sources",
+    "byte_equalities",
+    "numeric_bindings",
+    "constraints",
+    "tool_limitations"
+  ],
+  "title": "LOSSLESS_HANDOVER_V2 input (operational continuity, not complete transcript attestation)",
+  "type": "object"
+}

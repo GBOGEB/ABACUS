@@ -1,0 +1,29 @@
+{
+  "protocol": "LOSSLESS_HANDOVER_V2",
+  "version": "2.0.0",
+  "objective": "Deterministic, evidence-bound operational continuity across conversation and engineering-worker boundaries",
+  "source_of_truth": "handover_input.json",
+  "fidelity_contract": {
+    "operational": "Facts, source identifiers, controls, unknowns and action dependencies, to the extent supplied in validated input",
+    "evidence_archive": "Operational continuity plus copied and hashed source-evidence bytes declared in raw_sources",
+    "verbatim_conversation": "NOT_ATTESTED: complete raw chat export, omitted tool data and source completeness cannot be inferred from summaries",
+    "integrity_vs_authenticity": "SHA-256 detects byte changes relative to a trusted root, but an independently trusted signature or anchor would be required for authenticity"
+  },
+  "stages": [
+    {"id":"P0_CAPTURE", "requires":[],"inputs":["repo/work item","exact SHA","snapshot timestamp","evidence/source inventory"],"outputs":["handover_input.json"],"exit":"Input is a dated observation, not a live-authority claim"},
+    {"id":"P1_VALIDATE", "requires":["P0_CAPTURE"],"inputs":["handover_input.json","handover_input.schema.json"],"outputs":["schema and semantic checks"],"exit":"No fabricated UNKNOWN counts, source SHA mismatch, unsupported PASS or unauthorized merge"},
+    {"id":"P2_TRACE", "requires":["P1_VALIDATE"],"inputs":["evidence","metric/gate/blocker references","source files"],"outputs":["evidence identity graph","raw hashes"],"exit":"Every measured claim has traceable source-bound evidence"},
+    {"id":"P3_COMPARE", "requires":["P2_TRACE"],"inputs":["metric basis","previous snapshot (optional)"],"outputs":["comparisons.json","unknowns.json"],"exit":"Comparisons only accepted with identical verified instrumentor, scope, paths, method and configuration"},
+    {"id":"P4_DECIDE", "requires":["P3_COMPARE"],"inputs":["gates","authority","blockers","action DAG"],"outputs":["ordered restart decision"],"exit":"No authority inferred; first-red remains explicit; action dependencies acyclic"},
+    {"id":"P5_GENERATE", "requires":["P4_DECIDE"],"inputs":["normalized state"],"outputs":["state.json","handover.md","dropin.md","qa_report.json","protocol copies","raw source copies"],"exit":"All outputs generated solely from declared inputs without network/time randomness"},
+    {"id":"P6_SEAL", "requires":["P5_GENERATE"],"inputs":["all non-manifest bytes"],"outputs":["manifest.json"],"exit":"All files hashed and manifest root committed; no self-hash recursion"},
+    {"id":"P7_REPLAY_VERIFY", "requires":["P6_SEAL"],"inputs":["complete local capsule"],"outputs":["PASS/FAIL replay receipt"],"exit":"Independent byte-for-byte regeneration equals all files; unmanifested files rejected"},
+    {"id":"P8_HANDOFF", "requires":["P7_REPLAY_VERIFY"],"inputs":["verified capsule","dropin.md"],"outputs":["new-session resumption"],"exit":"Consumer refreshes live exact head, statuses and approval instead of trusting stale facts"},
+    {"id":"P9_ITERATE", "requires":["P8_HANDOFF"],"inputs":["new evidence","prior manifest root"],"outputs":["successor capsule","comparable delta or explicit INELIGIBLE"],"exit":"Forward change is measured under verified identical comparison basis"}
+  ],
+  "required_output_files": ["input.json","state.json","handover.md","dropin.md","comparisons.json","unknowns.json","qa_report.json","manifest.json"],
+  "admission_policy": "Engineering progress can continue independently. Merge and promotion are fail-closed on exact-head CI, full security, branch protection, independent review, and authorized decision.",
+  "stop_conditions": ["Missing authenticated source-run evidence", "No execution authority and no complete checkout", "False proof or source mismatch", "Missing branch/line denominators", "Unverified confidentiality of included raw files"],
+  "semantic_numerators": ["line_covered/line_eligible", "branch_covered/branch_eligible", "changed_executable_lines_covered/eligible", "scanner_opened/resolved/net with same scan config"],
+  "known_non_goals": ["Full transcript reconstruction from a summary", "Automatic GitHub dispatch", "Authorizing a security waiver", "Using artifacts from another SHA as exact-head proof", "Remote provider authentication solely from URLs"]
+}
