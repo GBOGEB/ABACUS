@@ -1,5 +1,4 @@
 """MIP3 positive/negative method telemetry and promotion controls."""
-import importlib.util
 import pathlib
 import sys
 
