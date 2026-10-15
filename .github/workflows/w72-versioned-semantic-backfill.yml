@@ -42,7 +42,7 @@ jobs:
           fetch-depth: 1
 
       - name: Set up Python
-        uses: actions/setup-python@v7
+        uses: actions/setup-python@v7.0.0
         with:
           python-version: "3.11"
 
@@ -183,7 +183,7 @@ jobs:
           PY
 
       - name: Upload W72/W73 exact-SHA pressure evidence
-        uses: actions/upload-artifact@v7
+        uses: actions/upload-artifact@v7.0.2
         with:
           name: w72-w73-semantic-pressure-${{ github.sha }}
           path: architecture/w72/runtime
@@ -217,7 +217,7 @@ jobs:
           fetch-depth: 1
 
       - name: Set up Python
-        uses: actions/setup-python@v7
+        uses: actions/setup-python@v7.0.0
         with:
           python-version: "3.11"
 
@@ -270,7 +270,7 @@ jobs:
           git worktree remove --force "${worktree}"
 
       - name: Upload W74 exact-SHA runtime probe
-        uses: actions/upload-artifact@v7
+        uses: actions/upload-artifact@v7.0.2
         with:
           name: w74-probe-${{ matrix.label }}-${{ github.sha }}
           path: architecture/w74/probe/PROBE_RECEIPT.json
@@ -290,7 +290,7 @@ jobs:
           fetch-depth: 1
 
       - name: Set up Python
-        uses: actions/setup-python@v7
+        uses: actions/setup-python@v7.0.0
         with:
           python-version: "3.11"
 
@@ -357,7 +357,7 @@ jobs:
           cat architecture/w74/runtime/W74_PAIRED_PRESSURE.json
 
       - name: Upload W74 paired pressure evidence
-        uses: actions/upload-artifact@v7
+        uses: actions/upload-artifact@v7.0.2
         with:
           name: w74-paired-pressure-${{ github.sha }}
           path: architecture/w74/runtime
