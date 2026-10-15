@@ -20,6 +20,15 @@ def matplotlib_lines(text):
     ]
 
 
+def pytest_asyncio_lines(text):
+    """Select active pytest-asyncio requirements, ignoring comments."""
+    return [
+        line.strip()
+        for line in text.splitlines()
+        if re.match(r"^pytest-asyncio[<>=!]", line.strip())
+    ]
+
+
 def classify(lines, minor):
     """Apply fail-closed Python-version markers for a minor version."""
     matches = []
@@ -69,6 +78,22 @@ class MatplotlibCompatibilityRegression(unittest.TestCase):
         for minor, requirement in expected.items():
             with self.subTest(python=f"3.{minor}"):
                 self.assertEqual([requirement], classify(lines, minor))
+
+    def test_pytest_asyncio_range_by_python_minor(self):
+        """Prevent incompatible pytest-asyncio floors on old CI lanes."""
+        lines = pytest_asyncio_lines(REQUIREMENTS.read_text(encoding="utf-8"))
+        expected = {
+            8: "pytest-asyncio>=0.23.8,<0.24",
+            9: "pytest-asyncio>=1.2.0,<1.3",
+            10: "pytest-asyncio>=1.4.0,<1.5",
+            11: "pytest-asyncio>=1.4.0,<1.5",
+            12: "pytest-asyncio>=1.4.0,<1.5",
+        }
+        self.assertEqual(3, len(lines))
+        for minor, requirement in expected.items():
+            with self.subTest(python=f"3.{minor}"):
+                self.assertEqual([requirement], classify(lines, minor))
+        self.assertNotIn("pytest-asyncio>=1.4.0,<1.5", lines)
 
     def test_negative_control_rejects_unconditional_regression(self):
         """Keep the pre-repair unconditional pin absent from source."""
