@@ -253,7 +253,7 @@ def as_markdown(payload):
             coverage + " |"
         )
     rows.extend(["", "## Matched workflow-set comparisons", "",
-                 "| From -> To | Repo | Status | Delta success | "
+                 "| From -> To | Repo | Status | Delta success | " +
                  "Delta failed | Delta skipped |",
                  "|---|---|---|---:|---:|---:|"])
     for pair in payload["wave_comparisons"]:
