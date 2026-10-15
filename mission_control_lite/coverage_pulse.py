@@ -13,15 +13,17 @@ SOURCE_PREFIX = "mission_control_lite/"
 SCHEMA = "mcl.coverage.pulse.v1"
 
 
-def _counts(summary):
+def _counts(summary, *, allow_empty=False):
     fields = ("covered_lines", "num_statements", "covered_branches", "num_branches")
     if not isinstance(summary, dict):
         raise ValueError("missing coverage totals")
     for field in fields:
         if type(summary.get(field)) is not int or summary[field] < 0:
             raise ValueError("invalid coverage " + field)
-    if summary["num_statements"] == 0 or summary["covered_lines"] > summary["num_statements"]:
+    if (summary["num_statements"] == 0 and not allow_empty) or summary["covered_lines"] > summary["num_statements"]:
         raise ValueError("invalid line denominator")
+    if summary["num_statements"] == 0 and summary["num_branches"] != 0:
+        raise ValueError("invalid empty module branch denominator")
     if summary["covered_branches"] > summary["num_branches"]:
         raise ValueError("invalid branch denominator")
     return summary
@@ -83,7 +85,7 @@ def build(report, test_logs, source_sha, event_sha, run_id, previous=None, phase
     totals = _counts(report.get("totals"))
     per_file = {}
     for name in names:
-        item = _counts(files[name].get("summary"))
+        item = _counts(files[name].get("summary"), allow_empty=True)
         per_file[name] = {
             "line_percent": _percent(item["covered_lines"], item["num_statements"]),
             "branch_percent": _percent(item["covered_branches"], item["num_branches"]),

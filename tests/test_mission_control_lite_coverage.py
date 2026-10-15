@@ -37,6 +37,37 @@ class CoveragePulseTests(unittest.TestCase):
                          "core": OK, "rex": OK, "metrics": OK
                      }, SHA, OTHER, 123, previous)
 
+    def test_valid_zero_statement_module_is_reported_without_failing(self):
+        data = coverage()
+        data["files"]["mission_control_lite/__init__.py"] = {
+            "summary": {
+                "covered_lines": 0, "num_statements": 0,
+                "covered_branches": 0, "num_branches": 0,
+            }
+        }
+        pulse = self.make(data)
+        empty = pulse["per_file"]["mission_control_lite/__init__.py"]
+        self.assertIsNone(empty["line_percent"])
+        self.assertIsNone(empty["branch_percent"])
+        self.assertEqual(empty["missing_lines"], 0)
+        self.assertEqual(pulse["line_percent"], 80)
+
+    def test_zero_denominator_aggregate_and_invalid_module_stay_red(self):
+        data = coverage()
+        data["totals"]["num_statements"] = 0
+        data["totals"]["covered_lines"] = 0
+        with self.assertRaisesRegex(ValueError, "invalid line denominator"):
+            self.make(data)
+        data = coverage()
+        data["files"]["mission_control_lite/__init__.py"] = {
+            "summary": {
+                "covered_lines": 0, "num_statements": 0,
+                "covered_branches": 0, "num_branches": 1,
+            }
+        }
+        with self.assertRaisesRegex(ValueError, "empty module"):
+            self.make(data)
+
     def test_snapshot_is_provenance_bound_and_nonadmitting(self):
         p = self.make()
         self.assertEqual(p["tests_passed"], 9)
