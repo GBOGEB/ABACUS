@@ -43,6 +43,14 @@ def create_wave(root, label, base, head, roots=None, fingerprints=None,
         "workers": [], "tests": tests, "coverage": coverage,
         "admission": {"merge_admitted": merge_admitted},
     }
+    if merge_admitted:
+        row["admission"]["verified_main_sha"] = head
+    for root_item in row["roots"]:
+        if root_item["status"] == "ROOT_CLOSED":
+            root_item["closure_proof"] = {
+                "main_sha": head, "native_run_url": "https://github.com/example/actions/runs/1",
+                "artifact_sha256": "f" * 64,
+            }
     raw = json.dumps(row, sort_keys=True).encode("utf-8")
     (target / "wave-input.json").write_bytes(raw)
     counts = {s.lower(): list(roots.values()).count(s) for s in STATES}
@@ -215,6 +223,22 @@ class WaveSeriesTests(unittest.TestCase):
                         roots={"R1": "ROOT_CLOSED"})
         with self.assertRaisesRegex(ValueError, "closure claimed"):
             MODULE.rollup([a], "SYNTHETIC")
+
+    def test_forged_root_closure_main_proof_rejected(self):
+        a = create_wave(self.root, "W1", SHA_A, SHA_B,
+                        roots={"R1": "ROOT_CLOSED"}, merge_admitted=True)
+        source = a / "wave-input.json"
+        payload = json.loads(source.read_text())
+        payload["roots"][0]["closure_proof"]["main_sha"] = SHA_D
+        source.write_text(json.dumps(payload))
+        change_file(
+            a, "mip_wave_pulse.json",
+            lambda x: x.update({
+                "input_sha256": hashlib.sha256(source.read_bytes()).hexdigest()
+            }),
+        )
+        with self.assertRaisesRegex(ValueError, "closure main SHA disagrees"):
+            MODULE.rollup([a], "OPERATIONAL_UNVERIFIED")
 
     def test_unsupported_repo_fails(self):
         a = create_wave(self.root, "W1", SHA_A, SHA_B)
