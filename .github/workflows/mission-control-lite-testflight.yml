@@ -63,6 +63,12 @@ jobs:
             --output evidence/phase-times.json --phase coverage-report -- \
             python -m coverage report --show-missing \
             > evidence/coverage-summary.txt
+      - name: Run selector and telemetry negative controls
+        run: |
+          python -m unittest discover -s tests \
+            -p test_validate_changed_docs_selector.py -v
+          python -m unittest discover -s tests \
+            -p test_bd_telemetry.py -v
       - name: Emit exact-head pulse telemetry
         env:
           PR_HEAD_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
