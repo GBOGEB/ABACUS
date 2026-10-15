@@ -3,6 +3,9 @@
 import hashlib
 import importlib.util
 import json
+import runpy
+import sys
+from unittest import mock
 import tempfile
 import unittest
 from pathlib import Path
@@ -122,6 +125,51 @@ class FederationCensusTests(unittest.TestCase):
         self.assertEqual(result["repository_breadth"], 2)
         self.assertEqual(result["authenticated_fanout"], "UNKNOWN")
         self.assertEqual(result["federation_main_coverage_delta"], "UNKNOWN")
+
+    def test_cli_emits_two_deterministic_text_receipts(self):
+        """Cover the executable entrypoint and verify its paired outputs."""
+        source = self.root / "manifest.json"
+        output = self.root / "federation-output"
+        source.write_text(json.dumps(self.manifest), encoding="utf-8")
+        argv = [
+            str(SOURCE),
+            "--input", str(source),
+            "--artifact-root", str(self.root),
+            "--output-dir", str(output),
+        ]
+        with mock.patch.object(sys, "argv", argv):
+            runpy.run_path(str(SOURCE), run_name="__main__")
+        json_path = output / "mip_federation_census.json"
+        markdown_path = output / "mip_federation_census.md"
+        data = json.loads(json_path.read_text(encoding="utf-8"))
+        markdown = markdown_path.read_text(encoding="utf-8")
+        self.assertEqual(data["total_domain_slots"], 16)
+        self.assertEqual(data["filled_receipt_slots"], 0)
+        self.assertEqual(data["merge_admission"], "HOLD")
+        self.assertIn("Mission Control-wide federation census", markdown)
+        self.assertIn("UNKNOWN", markdown)
+        before = (json_path.read_bytes(), markdown_path.read_bytes())
+        with mock.patch.object(sys, "argv", argv):
+            runpy.run_path(str(SOURCE), run_name="__main__")
+        self.assertEqual(
+            before, (json_path.read_bytes(), markdown_path.read_bytes())
+        )
+
+    def test_cli_invalid_manifest_creates_no_census(self):
+        """Refuse malformed evidence without emitting an apparent report."""
+        source = self.root / "invalid.json"
+        output = self.root / "invalid-output"
+        source.write_text(json.dumps({"schema": "forged"}), encoding="utf-8")
+        argv = [
+            str(SOURCE),
+            "--input", str(source),
+            "--artifact-root", str(self.root),
+            "--output-dir", str(output),
+        ]
+        with mock.patch.object(sys, "argv", argv):
+            with self.assertRaisesRegex(ValueError, "invalid federation schema"):
+                runpy.run_path(str(SOURCE), run_name="__main__")
+        self.assertFalse(output.exists())
 
     def test_wrong_payload_source_rejected(self):
         self.add_receipt()
