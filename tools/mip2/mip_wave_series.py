@@ -121,6 +121,18 @@ def load_wave(folder):
         fps = item.get("fingerprints", [])
         require(isinstance(fps, list) and all(isinstance(x, str) and x for x in fps),
                 "bad fingerprint list")
+        if state == "ROOT_CLOSED":
+            admission = source.get("admission", {})
+            proof = item.get("closure_proof", {})
+            require(isinstance(admission, dict) and admission.get("merge_admitted") is True,
+                    "root closure requires source-admitted state")
+            require(isinstance(proof, dict) and is_sha(proof.get("main_sha")),
+                    "root closure requires exact-main SHA")
+            require(proof["main_sha"] == admission.get("verified_main_sha"),
+                    "root closure main SHA disagrees with source admission")
+            require(bool(proof.get("native_run_url"))
+                    and is_sha(proof.get("artifact_sha256"), 64),
+                    "root closure needs native run and 64-hex digest")
         mapping[rid] = state
         counts[state.lower()] += 1
         manifestations += len(fps)
