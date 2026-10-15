@@ -55,7 +55,20 @@ jobs:
           python -m coverage run --branch \
             --include='*/tools/w70_wave_pulse_metrics.py' \
             -m unittest discover -s tests -p 'test_w70_wave_pulse_metrics.py' -v
-          python -m coverage json -o "$OUT/W70_COVERAGE.json"
+          # Apply the owned-module scope at reporting as well as instrumentation.
+          # Retain the producer's exactly-one-source fail-closed validation.
+          python -m coverage json \
+            --include='*/tools/w70_wave_pulse_metrics.py' \
+            -o "$OUT/W70_COVERAGE.json"
+          python - "$OUT/W70_COVERAGE.json" <<'PYCHECK'
+          import json, sys
+          data = json.load(open(sys.argv[1], encoding="utf-8"))
+          names = sorted(data.get("files", {}))
+          print("W70_COVERAGE_SCOPED_FILES:", names)
+          assert len(names) == 1 and names[0].replace("\\\\", "/").endswith(
+              "tools/w70_wave_pulse_metrics.py"
+          ), "W70 owned-module coverage scope unresolved"
+          PYCHECK
           python tools/w70_wave_pulse_metrics.py \
             --lane-dir "$OUT" --coverage "$OUT/W70_COVERAGE.json" \
             --sha "$SOURCE_SHA" --repo "$GITHUB_REPOSITORY" \
