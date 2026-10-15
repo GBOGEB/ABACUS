@@ -119,6 +119,27 @@ def evaluate(manifest: dict, evidence_dir: Path) -> dict:
         require(receipt.get("merge_admitted") is not True, "admitted claim needs independent verification")
         output.append(parse_metrics(record, receipt))
     output.sort(key=lambda value: (value["wave_id"], value["sequence"]))
+    waves = []
+    for wave_id in sorted({row["wave_id"] for row in output}):
+        group = [row for row in output if row["wave_id"] == wave_id]
+        waves.append({
+            "wave_id": wave_id,
+            "pulse_count": len(group),
+            "distinct_run_ids": len({row["run_id"] for row in group}),
+            "synthetic_pulses": sum(
+                row["source_kind"] == "SYNTHETIC_CONTROL" for row in group
+            ),
+            "coverage_gains_verified": "UNKNOWN",
+            "root_closures_verified": "UNKNOWN",
+            "latest_pulse_id": group[-1]["pulse_id"],
+            "open_root_observations": [
+                row["root_counts_from_receipt"].get("open", "UNKNOWN")
+                for row in group
+            ],
+            "first_red_manifestations": [
+                row["first_red_manifestations"] for row in group
+            ],
+        })
     return {
         "schema": "abacus.mip.pulse-history.v1",
         "repository": manifest["repository"],
@@ -132,6 +153,7 @@ def evaluate(manifest: dict, evidence_dir: Path) -> dict:
         "formal_root_closures": "UNKNOWN",
         "merge_admission": "HOLD",
         "pulses": output,
+        "waves": waves,
     }
 
 
@@ -155,6 +177,19 @@ def render_markdown(history: dict) -> str:
             f"{row['source_kind']} | {row['run_id']} | {row['coverage_status']} | "
             f"{row['coverage_delta_pp']} | {counts.get('open', 'UNKNOWN')} | "
             f"{row['first_red_manifestations']} | {summary} |"
+        )
+    lines.extend([
+        "",
+        "## Per-wave scale census (descriptive, not admitted)",
+        "",
+        "| Wave | Pulses | Distinct CI runs | Synthetic pulses | Latest pulse |",
+        "| --- | ---: | ---: | ---: | --- |",
+    ])
+    for wave in history["waves"]:
+        lines.append(
+            f"| {wave['wave_id']} | {wave['pulse_count']} | "
+            f"{wave['distinct_run_ids']} | {wave['synthetic_pulses']} | "
+            f"{wave['latest_pulse_id']} |"
         )
     lines.extend([
         "",
