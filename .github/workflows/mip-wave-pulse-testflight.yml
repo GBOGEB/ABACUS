@@ -165,6 +165,58 @@ jobs:
             --output-dir wave-output/history
           cat wave-output/history/mip_wave_history.md \
             >> "$GITHUB_STEP_SUMMARY"
+      - name: Measure SHA-bound history module branch coverage
+        env:
+          SOURCE_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+        run: |
+          python -m pip install coverage==7.16.2
+          python -m coverage run --branch \
+            --include=tools/mip2/mip_wave_history.py \
+            -m unittest discover -s tests \
+            -p test_mip_wave_history.py -v
+          python -m coverage json \
+            -o wave-output/history/native-history-coverage.json
+          python - <<'PY'
+          import json
+          import os
+          from pathlib import Path
+
+          report = json.loads(
+              Path("wave-output/history/native-history-coverage.json")
+              .read_text()
+          )
+          totals = report["totals"]
+          covered = totals["covered_lines"] + totals["covered_branches"]
+          eligible = totals["num_statements"] + totals["num_branches"]
+          assert eligible > 0
+          receipt = {
+              "schema": "abacus.mip.history-coverage.v1",
+              "source_sha": os.environ["SOURCE_SHA"],
+              "run_id": int(os.environ["GITHUB_RUN_ID"]),
+              "covered_statements": totals["covered_lines"],
+              "eligible_statements": totals["num_statements"],
+              "covered_branches": totals["covered_branches"],
+              "eligible_branches": totals["num_branches"],
+              "covered_combined": covered,
+              "eligible_combined": eligible,
+              "coverage_percent": round(100 * covered / eligible, 6),
+              "status": "MEASURED_PR_SCOPE_NOT_MAIN",
+          }
+          Path("wave-output/history/native-history-coverage-receipt.json"
+          ).write_text(json.dumps(receipt, sort_keys=True, indent=2))
+          with Path(os.environ["GITHUB_STEP_SUMMARY"]).open("a") as output:
+              output.write(
+                  "\\n### Native history-module coverage\\n"
+                  f"Source HEAD: {receipt['source_sha']}\\n\\n"
+                  f"Statements: {totals['covered_lines']}/"
+                  f"{totals['num_statements']}\\n\\n"
+                  f"Branches: {totals['covered_branches']}/"
+                  f"{totals['num_branches']}\\n\\n"
+                  f"Combined: {covered}/{eligible} "
+                  f"({receipt['coverage_percent']}%)\\n\\n"
+                  "This is producer scope, not main coverage.\\n"
+              )
+          PY
       - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         with:
           name: mip-wave-pulse-synthetic-control
