@@ -41,6 +41,32 @@ class PythonDependencyMIPTests(unittest.TestCase):
         self.assertEqual(receipt["distinct_bd_roots_closed"], "UNKNOWN")
         self.assertEqual(receipt["merge_admission"], "HOLD")
 
+    def test_py39_asyncio_requirement_is_exclusive_and_compatible(self):
+        source = (PATH.parents[2] / "DMAIC_V3/requirements.txt").read_text(
+            encoding="utf-8"
+        )
+        requirements = [
+            MOD.Requirement(line)
+            for line in source.splitlines()
+            if line.startswith("pytest-asyncio")
+        ]
+        self.assertEqual(len(requirements), 2)
+        for lane, valid, invalid in (
+            ("3.9", "1.2.0", "1.4.0"),
+            ("3.10", "1.4.0", "1.2.0"),
+        ):
+            with self.subTest(python=lane):
+                environment = MOD.default_environment()
+                environment["python_version"] = lane
+                active = [
+                    req
+                    for req in requirements
+                    if req.marker.evaluate(environment=environment)
+                ]
+                self.assertEqual(len(active), 1)
+                self.assertTrue(active[0].specifier.contains(valid))
+                self.assertFalse(active[0].specifier.contains(invalid))
+
     def test_original_20261015_regression_rejected(self):
         receipt = MOD.audit("matplotlib>=3.11.2,<4.0.0\n")
         self.assertEqual(receipt["static_fail"], 4)
