@@ -7,6 +7,7 @@ import runpy
 import sys
 import tempfile
 import unittest
+from unittest import mock
 from pathlib import Path
 
 SOURCE = Path(__file__).resolve().parents[1] / "tools/mip2/mip_federation_census.py"
