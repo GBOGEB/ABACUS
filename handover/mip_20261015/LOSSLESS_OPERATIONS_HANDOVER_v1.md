@@ -52,7 +52,7 @@ The listed source heads are immutable historical checkpoint anchors; each PR may
 | [#2003](https://github.com/GBOGEB/ABACUS/pull/2003) | Read-only federation MIP/REX/LDAB/3P | OPEN, non-draft | `735198b63e9efa137aa07eb382c65b34dab5b0f7` |
 | [#2004](https://github.com/GBOGEB/ABACUS/pull/2004) | Inherited formatter debt | OPEN, non-draft | `381a98e8d200214d6db4a60830e83981db88cb7d` |
 | [#2005](https://github.com/GBOGEB/ABACUS/pull/2005) | Root-closure stress negative controls | OPEN, **DRAFT**, base `feat/mip-wave-pulse-measured-20261014` | `349de249fddb98357f709219443a177643a401b4` |
-| [#2006](https://github.com/GBOGEB/ABACUS/pull/2006) | V2 handover capsule pilot | OPEN, **DRAFT**; **receiver published on this branch** | pre-receiver head `1694b1407e238824e05ba9fd2b784f053e4d5076`; refresh post-publication head |
+| [#2006](https://github.com/GBOGEB/ABACUS/pull/2006) | V2 handover capsule pilot | OPEN, **NON-DRAFT** at 2026-10-15T13:23Z, GitHub mergeable_state=blocked; receiver published on this branch | pre-receiver head `1694b1407e238824e05ba9fd2b784f053e4d5076`; refresh post-publication head |
 | [#2007](https://github.com/GBOGEB/ABACUS/pull/2007) | MCW SSOT artifact navigator / DAG | OPEN, **DRAFT** | `cdad1cbcb68490104277c87a1d2b63234a699e30` |
 | [#1979](https://github.com/GBOGEB/ABACUS/pull/1979) | SUT H1/governance repair | OPEN, non-draft | `5bcd24751e9a42a2716a91b77287f1b0aed991ad` |
 | [#1980](https://github.com/GBOGEB/ABACUS/pull/1980) | Mission Control Lite | OPEN, non-draft | `54bf3e171985c33ac326822f443fc5acd75a7082` |
