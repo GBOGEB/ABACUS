@@ -151,10 +151,13 @@
     {
       "number": 2006,
       "state": "OPEN",
-      "draft": true,
+      "draft": false,
       "base_branch": "main",
       "source_sha": "1694b1407e238824e05ba9fd2b784f053e4d5076",
-      "merge_admitted": false
+      "merge_admitted": false,
+      "source_sha_role": "PRE_RECEIVER_INPUT_SHA_HISTORICAL",
+      "live_status_readback": "2026-10-15T13:23:09Z",
+      "live_mergeable_state": "blocked"
     },
     {
       "number": 2007,
@@ -313,7 +316,8 @@
     "Snapshot collected over multiple calls, not atomic",
     "Publication commits move #2006 head after this snapshot; refresh branch",
     "Some PRs are technically mergeable but admission withheld",
-    "Source/pr status may move before next receiver opens"
+    "Source/pr status may move before next receiver opens",
+    "PR #2006 flipped from draft at initial census to OPEN NON-DRAFT at 13:23Z; live mergeable_state=blocked, no admission"
   ],
   "receiver_paths": {
     "handover": "handover/mip_20261015/LOSSLESS_OPERATIONS_HANDOVER_v1.md",
