@@ -1,4 +1,5 @@
 """MIP M1/M2/M3 native provenance and statistical maturity controls."""
+
 import importlib.util
 import unittest
 from pathlib import Path
@@ -10,14 +11,22 @@ spec.loader.exec_module(mod)
 
 
 def row(i=1, numerator=1, denominator=1, quality="NATIVE"):
-    return {"schema": "mip.stat.observation.v1",
-            "repository": "GBOGEB/ABACUS", "family": "ci_reliability",
-            "metric": "workflow_failure_rate", "metric_version": "1.0",
-            "exact_sha": f"{i:040x}", "run_id": i, "job_id": i+100,
-            "observed_at": f"2026-10-{(i % 28)+1:02d}T12:00:00Z",
-            "evidence_url": f"https://github.com/GBOGEB/ABACUS/actions/runs/{i}",
-            "collection_quality": quality, "status": "FAIL" if numerator else "PASS",
-            "numerator": numerator, "denominator": denominator}
+    return {
+        "schema": "mip.stat.observation.v1",
+        "repository": "GBOGEB/ABACUS",
+        "family": "ci_reliability",
+        "metric": "workflow_failure_rate",
+        "metric_version": "1.0",
+        "exact_sha": f"{i:040x}",
+        "run_id": i,
+        "job_id": i + 100,
+        "observed_at": f"2026-10-{(i % 28)+1:02d}T12:00:00Z",
+        "evidence_url": f"https://github.com/GBOGEB/ABACUS/actions/runs/{i}",
+        "collection_quality": quality,
+        "status": "FAIL" if numerator else "PASS",
+        "numerator": numerator,
+        "denominator": denominator,
+    }
 
 
 class ReadinessTests(unittest.TestCase):
@@ -60,7 +69,7 @@ class ReadinessTests(unittest.TestCase):
         self.assertFalse(result["series"][0]["MEASUREMENT_VALID"])
 
     def test_unequal_denominators_block_backtest(self):
-        rows = [row(i, numerator=0, denominator=i+1) for i in range(1, 31)]
+        rows = [row(i, numerator=0, denominator=i + 1) for i in range(1, 31)]
         result = mod.evaluate(rows, minimum=20, holdout=5)
         self.assertFalse(result["series"][0]["BACKTEST_ELIGIBLE"])
 
