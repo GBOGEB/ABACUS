@@ -1,9 +1,37 @@
-# DOW W169 + W74 side-load adapter (MIP P2)
+# DOW W169 and W74 side-load adapter (MIP P2)
 
-Purpose: provide a bounded **read-only producer descriptor** consumable by the CODEX KEB candidate contract and existing MissionControl Atlas, while maintaining qplant native Kubernetes ownership.
+This bounded, read-only producer descriptor can be consumed by the CODEX/KEB
+candidate contract and the existing MissionControl Atlas. QPLANT Kubernetes
+runtime ownership remains with ABACUS/DOW.
 
-Canonical static manifests: qplant/deployment/k8s; W74 contract validator and workflow. Real API creation and workload measurement: W169 workflow using temporary kind. Without a verified exact-head run/job/attempt and actual archive hash, do not present the W169 workflow source as executed cluster success. Never emit kubeconfig, tokens, raw logs or source evidence into the public adapter.
+## Existing Kubernetes assets
 
-Registry: triage/SIDELOAD_K8S_SURFACE_CURRENT_v1.json. Candidate envelope: federation/sideload/DOW_K8S_STATIC_CANDIDATE_v1.json. Existing Docker/compose products retain their own owners. This code adds no second cluster, no deployment, no second CI workflow and no new QPS engineering authority. KEB transport PR #1049 is an unmerged dependency until proven otherwise; rebind its exact SHA only after authorization and compatibility tests.
+Canonical static manifests are under qplant/deployment/k8s. The W74 contract
+validator and workflow verify manifest/security invariants. W169 owns real
+API creation and workload measurements using a temporary kind cluster.
 
-Tests: python -m pytest tests/test_dow_sideload_k8s_surface.py -q. Static native runtime proof remains governed by existing qplant validator, W74 and W169 jobs.
+Without an exact-head run, job, attempt and independently verified archive
+bytes, W169 workflow source is not proof of cluster success. Do not embed
+kubeconfig, access tokens, raw logs or sensitive evidence in this adapter.
+
+## Uniform side-load references
+
+- Registry: triage/SIDELOAD_K8S_SURFACE_CURRENT_v1.json
+- Candidate: federation/sideload/DOW_K8S_STATIC_CANDIDATE_v1.json
+- KEB transport: CODEX PR #1049; source-bound candidate until revalidated
+- Native runtime: existing W74 and W169 workflows, not a new workflow
+
+Docker/Compose products remain separately owned and do not prove Kubernetes
+readiness. This PR creates no new cluster, deployment or QPS authority.
+The upstream transport's exact SHA must be reviewed before rebinding.
+
+## Verification
+
+Run:
+
+```sh
+python -m pytest tests/test_dow_sideload_k8s_surface.py -q
+```
+
+The existing QPLANT static contract and W169 runtime work remain independent.
+No native acceptance, engineering credit, edge promotion or release is claimed.
