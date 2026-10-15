@@ -221,7 +221,7 @@ class WaveSeriesTests(unittest.TestCase):
     def test_no_closure_without_even_source_admission(self):
         a = create_wave(self.root, "W1", SHA_A, SHA_B,
                         roots={"R1": "ROOT_CLOSED"})
-        with self.assertRaisesRegex(ValueError, "closure claimed"):
+        with self.assertRaisesRegex(ValueError, "root closure requires source-admitted"):
             MODULE.rollup([a], "SYNTHETIC")
 
     def test_forged_root_closure_main_proof_rejected(self):
