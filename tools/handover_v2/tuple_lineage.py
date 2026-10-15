@@ -156,6 +156,44 @@ def compare_pulses(before: dict, after: dict) -> dict:
     }
 
 
+
+def workflow_lifecycle_census(head_sha: str, observations: dict) -> dict:
+    """Read-only exact-head census; pending workflows are not terminal failures."""
+    if len(head_sha) != 40 or any(c not in "0123456789abcdef" for c in head_sha):
+        raise ValueError("Full SHA required")
+    statuses = {"queued": 0, "pending": 0, "in_progress": 0, "completed": 0}
+    outcomes = {"success": 0, "failure": 0, "cancelled": 0, "skipped": 0}
+    for run_id, obs in observations.items():
+        if not str(run_id).isdigit() or obs["source_sha"] != head_sha:
+            raise ValueError("Run ID or source mismatch")
+        status = obs["status"]
+        conclusion = obs["conclusion"]
+        if status not in statuses:
+            raise ValueError("Unsupported workflow status")
+        if status == "completed":
+            if conclusion not in outcomes:
+                raise ValueError("Completed workflow lacks terminal conclusion")
+            outcomes[conclusion] += 1
+        elif conclusion is not None:
+            raise ValueError("Nonterminal workflow has conclusion")
+        statuses[status] += 1
+    terminal = statuses["completed"]
+    return {
+        "head_sha": head_sha,
+        "observed_workflow_count": len(observations),
+        "statuses": statuses,
+        "outcomes": outcomes,
+        "terminal_denominator": terminal if terminal else None,
+        "terminal_pass_fraction": (
+            {"numerator": outcomes["success"], "denominator": terminal}
+            if terminal else None
+        ),
+        "full_fleet_complete": None,
+        "root_closures": None,
+        "coverage_delta": None,
+    }
+
+
 def main():
     p=argparse.ArgumentParser()
     p.add_argument("--folder",type=Path,default=Path(__file__).resolve().parents[2]/"handover/mip_20261015")
