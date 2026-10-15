@@ -97,5 +97,31 @@ class TupleLineageTest(unittest.TestCase):
         self.assertIsNone(delta["workflow_pass_delta"])
         self.assertIsNone(delta["coverage_delta"])
 
+
+    def test_nonterminal_lifecycle_unknown_denominator(self):
+        head="5e5c166201b0e5d1c2d8e330b9ebc9d4abbd9237"
+        receipt=core.workflow_lifecycle_census(head,{
+            "100":{"source_sha":head,"status":"queued","conclusion":None},
+            "101":{"source_sha":head,"status":"pending","conclusion":None},
+        })
+        self.assertEqual(receipt["observed_workflow_count"],2)
+        self.assertIsNone(receipt["terminal_pass_fraction"])
+        self.assertIsNone(receipt["root_closures"])
+    def test_lifecycle_terminal_ratio_and_cross_sha_guard(self):
+        head="5e5c166201b0e5d1c2d8e330b9ebc9d4abbd9237"
+        receipt=core.workflow_lifecycle_census(head,{
+            "100":{"source_sha":head,"status":"completed","conclusion":"success"},
+            "101":{"source_sha":head,"status":"completed","conclusion":"failure"},
+            "102":{"source_sha":head,"status":"queued","conclusion":None},
+        })
+        self.assertEqual(receipt["terminal_pass_fraction"],
+                         {"numerator":1,"denominator":2})
+        with self.assertRaises(ValueError):
+            core.workflow_lifecycle_census(head,{"9":{
+                "source_sha":"0"*40,"status":"completed","conclusion":"success"}})
+        with self.assertRaises(ValueError):
+            core.workflow_lifecycle_census(head,{"9":{
+                "source_sha":head,"status":"queued","conclusion":"success"}})
+
 if __name__=="__main__":
     unittest.main()
