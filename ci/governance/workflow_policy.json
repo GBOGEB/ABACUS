@@ -310,12 +310,6 @@
       "disposition": "keep"
     },
     {
-      "pattern": "^(code-purple-dashboard-v31|code-purple-sut-gui)\\.yml$",
-      "cluster": "runtime_governance",
-      "lifecycle": "pr_domain",
-      "disposition": "keep"
-    },
-    {
       "pattern": "^leg5-federation-dashboard-proof\\.yml$",
       "cluster": "runtime_governance",
       "lifecycle": "pr_domain",
@@ -361,6 +355,18 @@
       "pattern": "^a10-guard\\.yml$",
       "cluster": "security",
       "lifecycle": "pr_fast",
+      "disposition": "keep"
+    },
+    {
+      "pattern": "^code-purple-dashboard-v31\\.yml$",
+      "cluster": "documentation",
+      "lifecycle": "pr_domain",
+      "disposition": "keep"
+    },
+    {
+      "pattern": "^code-purple-sut-gui\\.yml$",
+      "cluster": "core_test",
+      "lifecycle": "pr_domain",
       "disposition": "keep"
     },
     {
