@@ -39,7 +39,7 @@ jobs:
         with:
           persist-credentials: false
       # actions/setup-python v5.6.0, immutable SHA pin
-      - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065
+      - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97
         with:
           python-version: ${{ matrix.python-version }}
       - name: Install XML entity-safe parser
@@ -91,7 +91,7 @@ jobs:
           sha256sum "$RUNNER_TEMP/everred-v31-preflight.json"
       - name: Upload four-plane evidence, never push
         if: always()
-        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9
         with:
           name: everred-v31-native-${{ matrix.python-version }}
           path: ${{ runner.temp }}/everred-v31-preflight.json
@@ -121,7 +121,7 @@ jobs:
         with:
           persist-credentials: false
       # actions/setup-python v5.6.0, immutable SHA pin
-      - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065
+      - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97
         with:
           python-version: '3.12'
       - name: Read existing run; reject SHA mismatch
@@ -158,7 +158,7 @@ jobs:
       - name: Publish source-bound review artifacts, never push
         if: always()
         # actions/upload-artifact v4.6.2, immutable SHA pin
-        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9
         with:
           name: everred-v3-observation-${{ github.run_id }}
           if-no-files-found: error
