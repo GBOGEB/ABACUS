@@ -14,7 +14,7 @@ pathlib2>=2.3.7; python_version < '3.4'
 dataclasses>=0.6; python_version < '3.7'
 
 # Type hints
-typing-extensions>=4.15.0
+typing-extensions>=4.16.0
 
 # ============================================================================
 # DATA PROCESSING
@@ -33,7 +33,7 @@ numpy>=2.5.3,<3.0.0; python_version >= '3.12'
 # ============================================================================
 
 # Plotting and visualization
-matplotlib>=3.4.0,<4.0.0
+matplotlib>=3.11.2,<4.0.0
 seaborn>=0.11.0,<1.0.0
 
 # ============================================================================
