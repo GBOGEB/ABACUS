@@ -6,12 +6,15 @@ on:
       - 'tools/mip2/mip_wave_history.py'
       - 'tests/test_mip_wave_history.py'
       - 'tools/mip2/mip_federation_census.py'
+      - 'tools/mip2/mip_native_fanout.py'
+      - 'tests/test_mip_native_fanout.py'
       - 'tests/test_mip_federation_census.py'
       - 'tests/test_mip_wave_pulse.py'
       - '.github/workflows/mip-wave-pulse-testflight.yml'
   workflow_dispatch:
 permissions:
   contents: read
+  actions: read
 jobs:
   native-wave:
     runs-on: ubuntu-24.04
@@ -252,6 +255,38 @@ jobs:
             --output-dir wave-output/federation
           cat wave-output/federation/mip_federation_census.md \
             >> "$GITHUB_STEP_SUMMARY"
+      - name: Native fan-out negative-control tests
+        run: |
+          python -m py_compile tools/mip2/mip_native_fanout.py
+          python -m unittest discover -s tests \
+            -p test_mip_native_fanout.py -v
+      - name: Fetch retained native GitHub run/job metadata
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          mkdir -p test_reports/native-fanout/input
+          for id in 38703698730 38708850371; do
+            gh api "repos/GBOGEB/ABACUS/actions/runs/$id" \
+              > "test_reports/native-fanout/input/$id-run.json"
+            gh api "repos/GBOGEB/ABACUS/actions/runs/$id/jobs?per_page=100" \
+              > "test_reports/native-fanout/input/$id-jobs.json"
+          done
+      - name: Generate native metadata telemetry and HTML
+        run: |
+          python tools/mip2/mip_native_fanout.py \
+            --previous-run test_reports/native-fanout/input/38703698730-run.json \
+            --previous-jobs test_reports/native-fanout/input/38703698730-jobs.json \
+            --current-run test_reports/native-fanout/input/38708850371-run.json \
+            --current-jobs test_reports/native-fanout/input/38708850371-jobs.json \
+            --output-dir test_reports/native-fanout/report
+          cat test_reports/native-fanout/report/mip_native_fanout.md \
+            >> "$GITHUB_STEP_SUMMARY"
+      - name: Upload separately labeled retained-native wave telemetry
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: mip-wave-retained-native-github-api-metadata
+          path: test_reports/native-fanout/report/
+          if-no-files-found: error
       - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         with:
           name: mip-wave-pulse-synthetic-control
