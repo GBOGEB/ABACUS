@@ -1,6 +1,13 @@
+import hashlib
 import importlib.util
+import io
+import json
 import pathlib
+import sys
+import tempfile
 import unittest
+from contextlib import redirect_stdout
+from unittest import mock
 
 PATH = pathlib.Path(__file__).resolve().parents[1] / "tools/mip2/mip_wave_pulse.py"
 SPEC = importlib.util.spec_from_file_location("mip_wave_pulse", PATH)
@@ -72,6 +79,58 @@ class WavePulseTests(unittest.TestCase):
         with self.assertRaises(ValueError):
             MOD.pulse(x)
 
+
+    def test_cli_emits_source_bound_repeatable_receipts(self):
+        payload = record()
+        with tempfile.TemporaryDirectory() as work:
+            source = pathlib.Path(work) / "wave-input.json"
+            target = pathlib.Path(work) / "wave-output"
+            source.write_text(json.dumps(payload), encoding="utf-8")
+            argv = [
+                "mip_wave_pulse",
+                "--input",
+                str(source),
+                "--output-dir",
+                str(target),
+            ]
+            stdout = io.StringIO()
+            with mock.patch.object(sys, "argv", argv), redirect_stdout(stdout):
+                MOD.main()
+            report_path = target / "mip_wave_pulse.json"
+            backlog_path = target / "mip_backlog_delta.json"
+            report_bytes = report_path.read_bytes()
+            backlog_bytes = backlog_path.read_bytes()
+            report = json.loads(report_bytes)
+            backlog = json.loads(backlog_bytes)
+            self.assertEqual(
+                report["input_sha256"],
+                hashlib.sha256(source.read_bytes()).hexdigest(),
+            )
+            self.assertEqual(report["disposition"], "P0_HOLD")
+            self.assertEqual(report["coverage"]["status"], "UNKNOWN")
+            self.assertEqual(backlog["formal_verified_closures"], 0)
+            self.assertEqual(json.loads(stdout.getvalue())["result"], "P0_HOLD")
+            with mock.patch.object(sys, "argv", argv), redirect_stdout(io.StringIO()):
+                MOD.main()
+            self.assertEqual(report_path.read_bytes(), report_bytes)
+            self.assertEqual(backlog_path.read_bytes(), backlog_bytes)
+
+    def test_cli_rejects_malformed_input_without_receipt(self):
+        with tempfile.TemporaryDirectory() as work:
+            source = pathlib.Path(work) / "invalid.json"
+            target = pathlib.Path(work) / "wave-output"
+            source.write_text(json.dumps({"schema": MOD.SCHEMA}), encoding="utf-8")
+            argv = [
+                "mip_wave_pulse",
+                "--input",
+                str(source),
+                "--output-dir",
+                str(target),
+            ]
+            with mock.patch.object(sys, "argv", argv):
+                with self.assertRaisesRegex(ValueError, "missing repository"):
+                    MOD.main()
+            self.assertFalse(target.exists())
 
 if __name__ == "__main__":
     unittest.main()
