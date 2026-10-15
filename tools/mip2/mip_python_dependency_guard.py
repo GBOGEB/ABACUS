@@ -56,7 +56,9 @@ def audit(source: str) -> dict:
         ]
         problems = list(syntax_errors)
         if len(active) != 1:
-            problems.append(f"expected one active matplotlib requirement, got {len(active)}")
+            problems.append(
+                f"expected one active matplotlib requirement, got {len(active)}"
+            )
         else:
             spec = active[0].specifier
             if lane == "3.10":
