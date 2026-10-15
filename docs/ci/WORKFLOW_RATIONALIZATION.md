@@ -3,11 +3,11 @@
 # ABACUS CI workflow rationalisation
 
 Policy: `ABACUS-CI-SSOT-001`  
-Policy SHA-256: `1bdc5182b0c1282dbf7970818ec50fcc04cba9fe2b5bcc375415fb4e0a55387e`
+Policy SHA-256: `8dad06d5ea07181700c4f716714f7c11dc00c1b1c59c61b5676f964c3f196865`
 
 ## Outcome
 
-The repository currently contains **160 workflow definitions**. All **160** are assigned to one primary functional cluster and lifecycle stage.
+The repository currently contains **161 workflow definitions**. All **161** are assigned to one primary functional cluster and lifecycle stage.
 
 The observed baseline that motivated this control was PR #681 with 119 check runs (111 queued, 8 skipped) and main with 122 check runs.
 
@@ -32,7 +32,7 @@ The observed baseline that motivated this control was PR #681 with 119 check run
 | `bridge_federation` | `bridge-ci.yml` | 12 | CODEX/ABACUS bridge contract and federation smoke evidence. |
 | `dmaic` | `dmaic-enterprise-ci.yml` | 8 | DMAIC phase, convergence and maturity execution. |
 | `dow` | `dow-integration.yml` | 19 | DOW parent mechanics, integration, monitoring and warm-up. |
-| `runtime_governance` | `governance.yml` | 22 | Runtime evidence, governance, review artifacts and schema validation. |
+| `runtime_governance` | `governance.yml` | 23 | Runtime evidence, governance, review artifacts and schema validation. |
 | `security` | `security-scan.yml` | 11 | Ruff PR security, scheduled Bandit, CodeQL, dependency and supply-chain scanning. |
 | `delivery` | `cd-pipeline.yml` | 8 | Build, release, deployment and publication. |
 | `documentation` | `docs-build.yml` | 6 | Documentation validation, rendering, export and Pages. |
@@ -126,6 +126,7 @@ Make PR-triggered workflows with write-class GitHub token scopes explicit and re
 | 20 | `runtime_governance` | `inventory.yml` | schedule, workflow_dispatch | 1 | `keep` | — |
 | 20 | `runtime_governance` | `leg5-federation-dashboard-proof.yml` | pull_request, workflow_dispatch | 1 | `keep` | — |
 | 20 | `runtime_governance` | `mesh-status-runtime.yml` | push, workflow_dispatch | 1 | `keep` | — |
+| 20 | `runtime_governance` | `mip-bminus1-worker-contract.yml` | pull_request, workflow_dispatch | 1 | `keep` | — |
 | 20 | `runtime_governance` | `pr-feedback-gate.yml` | issue_comment, issues, pull_request_review, pull_request_review_comment, pull_request, workflow_run, schedule, workflow_dispatch | 3 | `keep` | — |
 | 20 | `runtime_governance` | `review-artifact-validation.yml` | push, pull_request | 1 | `keep` | — |
 | 20 | `runtime_governance` | `runtime-governance.yml` | workflow_dispatch | 1 | `keep` | — |
