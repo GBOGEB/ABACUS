@@ -16,6 +16,14 @@ governed exact-main admission → post-merge REX recurrence.
 A plain run URL or upload log does not fulfill the later stages. Null fields
 in BINDER.json mean UNKNOWN, not zero.
 
+## Closing #2046 intervening head
+
+Current C2 PR #2046 source advanced to
+67ad1b653370d0245aacebe9c95364a8327fd977,
+27 queued / 2 pending. W72 native 557/1/2 below is explicitly
+bound to earlier bf626ed5fb8372f91b859c20b7f0ffe3b373e460.
+No new source/test outcome or matched coverage uplift is credited.
+
 ## Exact native run/job and artifact references
 
 **ABACUS #2045 previous Enterprise**
