@@ -108,7 +108,11 @@ def _bd(obj):
             isinstance(unlinked, list), "invalid BD joins")
     require(obj.get("security_waiver") is False and
             obj.get("security_disposition") == "INDEPENDENT_REVIEW_REQUIRED" and
-            obj.get("formal_credit_delta") == 0,
+            type(obj.get("formal_credit_delta")) is int and
+            obj.get("formal_credit_delta") == 0 and
+            (obj.get("engineering_credit_delta") is None or
+             (type(obj.get("engineering_credit_delta")) is int and
+              obj["engineering_credit_delta"] == 0)),
             "BD guard unexpectedly promoted")
     unique = integer(metrics.get("full_bandit_unique"), "full Bandit unique")
     for item in roots:
