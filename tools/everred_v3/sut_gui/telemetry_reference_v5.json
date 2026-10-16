@@ -244,7 +244,41 @@
       "final": 0
     },
     "formal_root_closure_credit": 0,
-    "note": "Selected-state backlog movement is not formal root-closure credit."
+    "note": "Selected-state backlog movement is not formal root-closure credit.",
+    "consumer_penetration_sequence_pct": [
+      0,
+      0,
+      60,
+      100,
+      66.6667,
+      88.8889,
+      88.8889,
+      94.4444,
+      94.4444,
+      94.4444,
+      94.4444,
+      94.4444,
+      94.4444,
+      100,
+      100
+    ],
+    "open_backlog_sequence": [
+      12,
+      18,
+      13,
+      0,
+      24,
+      2,
+      2,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      0,
+      0
+    ]
   },
   "ownership": {
     "structural_telemetry": "#2033",
