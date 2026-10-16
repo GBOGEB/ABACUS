@@ -121,3 +121,103 @@ MIP2 exact head 2f8de7b: 4/4 seeded tests PASS in 0.93 s, JUnit artifact
   and PCA readiness.
 - MIP3-10: method promotion and rollback by independent repository proof.
 
+
+## 16 October 2026 — source-owned evidence-integrity hardening
+
+Canonical implementation and method registry remain in ABACUS PR #1988
+(`tools/mip2/`). Draft PR #2048 introduced a redundant top-level
+registry; retain #1988 as the sole method-qualification SSOT. Method
+qualification remains independent of admission and engineering-root closure.
+
+### Root-specific repair contract
+
+1. Source checkout **shall** match the GitHub event PR head, not the
+   synthetic merge ref. The workflow checks `git rev-parse HEAD`.
+2. Local receipts **shall** carry valid Git identity; absent Git,
+   mismatched expected head and incomplete tests are non-PASS.
+3. Diagnostic command stdout/stderr shall not appear in uploaded
+   local-flight JSON because those streams can contain sensitive values.
+4. JUnit parsing shall use `defusedxml`, reject DTD/entity input and
+   invalid/missing/contradictory counts, and cap input bytes.
+5. Registry validation shall retain its behavior under `python -O`
+   (plain `assert` statements are not enforcement).
+6. The method CI workflow shall publish actual branch-aware coverage JSON,
+   JUnit and pinned dependency versions. Coverage is a measured scope,
+   not implied repository-wide improvement.
+7. The proposed `method_effectiveness.py` computes TP/FP/FN/TN,
+   Wilson recall bounds, actual observed-case completeness, distinct
+   scanner signatures and runtime; malformed or incomplete evidence is
+   rejected or classified insufficient. Neither M3 repair nor M4–M6
+   qualification is self-awarded.
+
+### Canonical dependency DAG
+
+```mermaid
+flowchart TD
+    A["#1988 method registry / corpus"] --> B["Source SHA and toolchain pin"]
+    B --> C["F0/F1 preflight and TestPilot"]
+    C --> D["F3 seeded positive and negative tests"]
+    D --> E["Branch coverage / JUnit / safe JSON"]
+    E --> F{"Exact-head and integrity proof?"}
+    F -->|No| G["BD error / re-census"]
+    F -->|Yes| H["Per-method TP FP FN TN and Wilson"]
+    H --> I{"M4 regression proof?"}
+    I -->|No| G
+    I -->|Yes| J["Disjoint CODEX / QPS contract replay"]
+    J --> K["Independent owner review"]
+    K --> L["Admission HOLD or authorized integration"]
+    M["#2047 joined central census"] -.-> G
+    N["#2033 telemetry and #1998 wave rollup"] -.-> H
+    O["#1995 governance / #1738 security"] -.-> K
+```
+
+The diagram is a process proposal; neither a Crew dispatch nor a native
+federation receipt is inferred from its edges.
+
+### SIPOC — method development
+
+| Role | Controlled contribution |
+| --- | --- |
+| Supplier | Native CI, scanner owners, CodeQL, Bandit, LDAB, reviewer |
+| Input | Exact SHA, pinned tool, corpus bytes, labels, run/job/attempt |
+| Process | Define, measure, analyze, improve, prove, propagate, control |
+| Output | Fail-closed receipt, coverage counts, scanner confusion matrix |
+| Consumer | #1988 qualification owner, #1929 BD/LDAB, Mission Control |
+| Authority | ABACUS admission; CODEX/QPS retain independent boundaries |
+
+### Disjoint existing owners — do not duplicate
+
+- #2047 owns JOINED_CENSUS, disjoint recensus and orchestrator proposal.
+- #2033 owns exact-SHA CI queue and worker telemetry.
+- #1998 owns cross-wave root and coverage comparability.
+- #1997 owns the W70 producer and native measurements.
+- #1989 owns seven-family statistical-readiness contracts.
+- #1995 owns workflow-policy and generated inventory rules.
+- #2040 owns DOW coverage-mode repair; #2045 owns Python 3.9 and
+  Enterprise fail-closed CI compatibility.
+- #2027 and #1738 own Safety/Bandit security-debt investigation.
+- #1860 owns merge-admission HOLD; #1929 owns BD/LDAB joined evidence.
+
+### Quantitative interpretation
+
+Source-bound scanner precision and recall require complete labeled
+positive/negative fixture observations. A missing fixture result is
+INSUFFICIENT_EVIDENCE, not FN or PASS; absent fingerprints are not
+independent engineering roots. Paired method improvement requires the
+same source and corpus bytes. No counted method observation or generated
+coverage JSON grants merge permission.
+
+PCA, BT and control-chart claims remain deferred until independent,
+comparable multivariate series have sufficient observations and actual
+worker/repair outcome identities. Declare missing effort and latency
+fields UNKNOWN, never zero.
+
+### Required impact re-census after every change
+
+Refresh PR #1988 exact head, terminal native MIP2 job and artifact
+bytes, changed-file coverage and first-reds. Compare impacted open
+#2046 (C2), #2045, #2040, #2047, #2033, #1995 and #1998 owners by
+changed paths and accepted receipts, not by PR count. Record new or
+retired comments separately from engineering-root closures. Preserve
+security, A10, governance, required-check enforcement and independent
+review as separate P0 admission conditions.
