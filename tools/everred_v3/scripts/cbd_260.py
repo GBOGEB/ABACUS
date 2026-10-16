@@ -266,30 +266,48 @@ def wave_plan(proj):
     return {
         "schema": "abacus.everred.cbd.sipoc_wave_plan.v1",
         "source_projection_digest": evidence_digest(proj),
-        "s":"ABACUS source, native run/job/step APIs, BD/LDAB owner, scanner and test logs",
-        "i":"exact PR head, run/attempt/job, first material red, scan config and scope",
-        "p":[
-            {"wave":"N0", "kind":"DESCRIPTIVE_CENSUS",
-             "state":"SOURCE_OBSERVED",
-             "work":"PR-head and first-page run association capture"},
-            {"wave":"N1", "kind":"READ_ONLY_NATIVE_SCOUT",
-             "state":"CANDIDATE_UNTIL_NATIVE",
-             "work":"Exact-run paginated jobs and first failed step; no root credit"},
-            {"wave":"N2", "kind":"CAUSAL_FIRST_RED",
-             "state":"NOT_STARTED",
-             "work":"Retrieve failed-job logs; classify common predecessor vs downstream rollup"},
-            {"wave":"N3", "kind":"DISJOINT_SOURCE_REPAIR",
-             "state":"OWNER_PENDING",
-             "work":"Allocate non-overlapping paths and fix one canonical cause per owner"},
-            {"wave":"N4", "kind":"POSITIVE_NEGATIVE_COVERAGE",
-             "state":"NOT_STARTED",
-             "work":"Run matched regression, branch and diff coverage; do not lower gate"},
-            {"wave":"N5", "kind":"GOVERNED_FANIN",
-             "state":"HOLD",
-             "work":"A10/Safety/governance, reviewer, exact main, distinct SHA recurrence"},
+        "s": "ABACUS source, native run/job/step APIs, BD/LDAB owner, scanner and test logs",
+        "i": "exact PR head, run/attempt/job, first material red, scan config and scope",
+        "p": [
+            {
+                "wave": "N0",
+                "kind": "DESCRIPTIVE_CENSUS",
+                "state": "SOURCE_OBSERVED",
+                "work": "PR-head and first-page run association capture",
+            },
+            {
+                "wave": "N1",
+                "kind": "READ_ONLY_NATIVE_SCOUT",
+                "state": "CANDIDATE_UNTIL_NATIVE",
+                "work": "Exact-run paginated jobs and first failed step; no root credit",
+            },
+            {
+                "wave": "N2",
+                "kind": "CAUSAL_FIRST_RED",
+                "state": "NOT_STARTED",
+                "work": "Retrieve failed-job logs; classify common predecessor vs downstream rollup",
+            },
+            {
+                "wave": "N3",
+                "kind": "DISJOINT_SOURCE_REPAIR",
+                "state": "OWNER_PENDING",
+                "work": "Allocate non-overlapping paths and fix one canonical cause per owner",
+            },
+            {
+                "wave": "N4",
+                "kind": "POSITIVE_NEGATIVE_COVERAGE",
+                "state": "NOT_STARTED",
+                "work": "Run matched regression, branch and diff coverage; do not lower gate",
+            },
+            {
+                "wave": "N5",
+                "kind": "GOVERNED_FANIN",
+                "state": "HOLD",
+                "work": "A10/Safety/governance, reviewer, exact main, distinct SHA recurrence",
+            },
         ],
-        "o":"root candidates, negative tests, exact-head receipt, BD/REX and HTML projections",
-        "c":"DOW owner, KEB provenance, MissionControl viewer, QPS engineering consumer",
+        "o": "root candidates, negative tests, exact-head receipt, BD/REX and HTML projections",
+        "c": "DOW owner, KEB provenance, MissionControl viewer, QPS engineering consumer",
         "bounded_parallelism": {
             "read_only_scout_workers_max": 4,
             "source_mutation_workers_max_before_owner_lease": 0,
@@ -297,9 +315,11 @@ def wave_plan(proj):
             "authenticated_crew_launches": None,
         },
         "top4_workflow_associations": sum(
-            f["failed_associations"] for f in families[:4]),
+            f["failed_associations"] for f in families[:4]
+        ),
         "top6_workflow_associations": sum(
-            f["failed_associations"] for f in families[:6]),
+            f["failed_associations"] for f in families[:6]
+        ),
         "independent_root_closure_forecast": None,
         "causal_success_prediction": "WITHHELD_UNTIL_QUALIFIED_MATCHED_TRIALS",
     }
