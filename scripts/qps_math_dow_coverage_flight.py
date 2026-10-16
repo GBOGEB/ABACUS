@@ -108,9 +108,7 @@ def parse_coverage(obj: Any, *, tests: int) -> dict[str, Any]:
         "branches_covered": covered_branches,
         "branches_eligible": branch_total,
         "combined_percent": round(
-            100
-            * (covered_lines + covered_branches)
-            / (total_lines + branch_total),
+            100 * (covered_lines + covered_branches) / (total_lines + branch_total),
             4,
         ),
     }
@@ -189,9 +187,7 @@ def pulse(out: Path, *, expected_head: str | None) -> dict[str, Any]:
         "scope": "SAME_HEAD_DOW_MODULE_TEST_SELECTION_ONLY",
         "baseline": baseline,
         "expanded": expanded,
-        "additional_tests": (
-            expanded["tests_executed"] - baseline["tests_executed"]
-        ),
+        "additional_tests": (expanded["tests_executed"] - baseline["tests_executed"]),
         "additional_covered_lines": (
             expanded["lines_covered"] - baseline["lines_covered"]
         ),
