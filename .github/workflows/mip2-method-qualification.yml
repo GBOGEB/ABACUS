@@ -40,8 +40,11 @@ jobs:
         run: python tools/mip2/mip3_flight.py --phase preflight --output mip3-preflight.json
       - name: Validate method contracts
         run: python tools/mip2/validate_method_contracts.py
-      - name: Execute seeded qualification corpus
-        run: python -m pytest tools/mip2/tests -v -rs --junitxml=mip2-junit.xml
+      - name: Execute seeded qualification corpus with branch coverage
+        run: python -m coverage run --branch --source=tools/mip2 -m pytest tools/mip2/tests -v -rs --junitxml=mip2-junit.xml
+      - name: Publish method coverage
+        if: success()
+        run: python -m coverage json -o mip2-coverage.json
       - name: Create local-compatible flight receipt
         if: success()
         env:
@@ -59,6 +62,7 @@ jobs:
             mip2-junit.xml
             mip2-local-receipt.json
             mip2-local-junit.xml
+            mip2-coverage.json
             mip3-preflight.json
             mip3-postflight.json
             mip3-pip-freeze.txt
