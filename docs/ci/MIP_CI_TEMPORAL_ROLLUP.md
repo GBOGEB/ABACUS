@@ -27,20 +27,20 @@ authentication**.
 
 ## DMAIC and temporal qualification
 
--  **Define**: workflow-run manifestations are not causal engineering roots;
+- **Define**: workflow-run manifestations are not causal engineering roots;
   different PRs are different cohorts until scope matched.
--  **Measure**: terminal-vs-queued workflow outcomes and job queue p95 remain
+- **Measure**: terminal-vs-queued workflow outcomes and job queue p95 remain
   separate; absent samples are null, never zero. Exact `run_id:attempt`
   identities are required.
--  **Analyze**: success-rate comparison requires both terminal cohorts with
+- **Analyze**: success-rate comparison requires both terminal cohorts with
   equal workflow-run count; queue p95 comparison also requires at least 20
   measured jobs in each cohort and the same timing definition. Even then,
   repeated jobs are correlated and the difference is **descriptive, not
   inferential**.
--  **Improve**: line/branch gains are computed only for equal coverage file-set
+- **Improve**: line/branch gains are computed only for equal coverage file-set
   digest, configuration, tool version and denominators; resulting numbers are
   candidate source-reported, not accepted main coverage improvement.
--  **Control**: negative tests cover identity duplication, stale SHA, mixed
+- **Control**: negative tests cover identity duplication, stale SHA, mixed
   cohorts, reclassified pending jobs, invalid coverage, backdated forecasts and
   fake admission. A10, Safety, Bandit, reviewer eligibility and all required
   checks remain independent HOLD gates.
