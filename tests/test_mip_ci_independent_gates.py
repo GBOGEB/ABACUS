@@ -4,7 +4,7 @@ import copy
 
 import pytest
 
-from tools.mip_ci_wave_telemetry import GATE_DOMAINS, independent_gate_vector, summarize
+from tools.mip_ci_wave_telemetry import GATE_DOMAINS, summarize
 
 
 SHA = "a" * 40
@@ -169,6 +169,28 @@ def test_passing_a10_does_not_supply_security_or_review_proof():
     assert report["domains"]["safety"]["status"] == "UNKNOWN"
     assert report["domains"]["independent_review"]["status"] == "UNKNOWN"
     assert report["merge_authorized"] is False
+
+
+
+def test_observed_failing_step_is_red_even_when_run_and_job_claim_success():
+    payload = input_payload("success", "success")
+    first = payload["jobs"][0]
+    first["steps"][0]["conclusion"] = "failure"
+    row = gate(payload, "enterprise_ci")
+    assert row["status"] == "FAIL"
+    assert row["blocking_steps"] == [
+        "Test Python 3.9 on ubuntu-latest:Run pytest --benchmark-disable with coverage"
+    ]
+    assert gate(payload, "workflow_governance")["status"] == "PASS"
+
+
+def test_observation_fraction_differs_from_terminal_pass_fraction():
+    payload = input_payload("success", None)
+    result = summarize(payload)["independent_gates"]
+    assert result["domain_observation_fraction"] == pytest.approx(2 / 6)
+    assert result["domain_terminal_fraction"] == pytest.approx(1 / 6)
+    assert result["domain_counts"]["PENDING"] == 1
+    assert result["admission"] == "HOLD"
 
 
 def test_twelve_matrix_jobs_mandatory_not_one_successful_job():
