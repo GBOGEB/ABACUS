@@ -39,8 +39,10 @@
       "source": "PR review threads"
     },
     "ooxml": {
-      "configured": false,
-      "status": "CANDIDATE_IF_OOXML_ARTIFACTS_ENTER_SECURITY_SCOPE"
+      "configured": true,
+      "workflow": ".github/workflows/code-maroon.yml",
+      "scanner": "tools/code_maroon/ooxml_scan.py",
+      "status": "BOUNDED_DISCOVERY_HIGH_SEVERITY_BLOCK"
     }
   },
   "summary": {
