@@ -14,15 +14,22 @@ class ChangedDocsSelectionTests(unittest.TestCase):
         tmp = tempfile.TemporaryDirectory()
         root = Path(tmp.name)
         subprocess.run(["git", "init", "-q", str(root)], check=True)
+
         def git(*args):
             return subprocess.run(
                 ["git", "-C", str(root), *args],
-                check=True, capture_output=True, text=True,
-                env={**os.environ, "GIT_AUTHOR_NAME": "test",
-                     "GIT_AUTHOR_EMAIL": "test@example.invalid",
-                     "GIT_COMMITTER_NAME": "test",
-                     "GIT_COMMITTER_EMAIL": "test@example.invalid"},
+                check=True,
+                capture_output=True,
+                text=True,
+                env={
+                    **os.environ,
+                    "GIT_AUTHOR_NAME": "test",
+                    "GIT_AUTHOR_EMAIL": "test@example.invalid",
+                    "GIT_COMMITTER_NAME": "test",
+                    "GIT_COMMITTER_EMAIL": "test@example.invalid",
+                },
             ).stdout.strip()
+
         (root / "baseline.yml").write_text("base: true\n")
         git("add", ".")
         git("commit", "-qm", "common")
@@ -41,15 +48,22 @@ class ChangedDocsSelectionTests(unittest.TestCase):
     def _select(self, root, base, head):
         with patch.object(mod, "REPO_ROOT", root), patch.dict(
             os.environ,
-            {"GITHUB_EVENT_NAME": "pull_request",
-             "GITHUB_BASE_SHA": base, "GITHUB_SHA": head,
-             "GITHUB_BASE_REF": "main"}, clear=False,
+            {
+                "GITHUB_EVENT_NAME": "pull_request",
+                "GITHUB_BASE_SHA": base,
+                "GITHUB_SHA": head,
+                "GITHUB_BASE_REF": "main",
+            },
+            clear=False,
         ):
+            # Production resolves git merge-base against HEAD, so the fixture
+            # must execute in the same checked-out revision as the event.
             return [str(p) for p in mod.changed_files()]
 
     def test_normal_pr_head(self):
         tmp, root, git, ancestor, base, head = self._fixture()
         try:
+            git("checkout", "-q", head)
             self.assertEqual(self._select(root, base, head), ["feature.yml"])
         finally:
             tmp.cleanup()
@@ -60,13 +74,28 @@ class ChangedDocsSelectionTests(unittest.TestCase):
             git("checkout", "-qB", "integration", base)
             git("merge", "-q", "--no-ff", "feature", "-m", "synthetic")
             merged = git("rev-parse", "HEAD")
+            # Synthetic merge contains the base-only change; selection must not.
             self.assertEqual(self._select(root, base, merged), ["feature.yml"])
+        finally:
+            tmp.cleanup()
+
+    def test_missing_merge_base_fails_closed(self):
+        tmp, root, git, ancestor, base, head = self._fixture()
+        try:
+            git("checkout", "-q", "--orphan", "unrelated")
+            git("rm", "-q", "-rf", ".")
+            (root / "orphan.yml").write_text("isolated: true\n")
+            git("add", ".")
+            git("commit", "-qm", "unrelated root")
+            with self.assertRaisesRegex(RuntimeError, "Cannot resolve PR merge base"):
+                self._select(root, base, git("rev-parse", "HEAD"))
         finally:
             tmp.cleanup()
 
     def test_shallow_missing_base_fails_closed(self):
         tmp, root, git, ancestor, base, head = self._fixture()
         try:
+            git("checkout", "-q", head)
             with self.assertRaisesRegex(RuntimeError, "Cannot resolve PR base SHA"):
                 self._select(root, "a" * 40, head)
         finally:
