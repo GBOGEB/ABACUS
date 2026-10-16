@@ -11,6 +11,7 @@ on:
       - 'tools/everred_v3/sut_gui/DASHBOARD_V42_SIPOC_BRIDGE.md'
       - 'tools/everred_v3/sut_gui/telemetry_reference_v5.json'
       - 'tools/everred_v3/sut_gui/TELEMETRY_MEASUREMENT_DAG_V5.mmd'
+      - 'tools/everred_v3/sut_gui/DASHBOARD_V44_TELEMETRY_METHOD.md'
       - '.github/workflows/code-purple-dashboard-v31.yml'
   workflow_dispatch:
     inputs:
