@@ -114,6 +114,12 @@ def check_observation(obs, cohort):
             "queue p95 absent or invalid")
     require(isinstance(t.get("queue_basis"), str) and t["queue_basis"],
             "queue basis required")
+    queue_sources = t.get("queue_source_counts")
+    require(isinstance(queue_sources, dict) and set(queue_sources) == {
+        "job_created_at", "workflow_run_created_at_fallback"
+    } and all(integer(value) for value in queue_sources.values())
+            and sum(queue_sources.values()) == samples,
+            "queue provenance counts must reconcile to measured samples")
     coverage = check_coverage(obs.get("coverage"), sha)
     finished = pending == 0 and unclassified == 0
     return {
@@ -126,6 +132,14 @@ def check_observation(obs, cohort):
         "remaining_pending": pending + unclassified,
         "queue_samples": samples, "queue_p95_seconds": p95,
         "queue_basis": t["queue_basis"],
+        "queue_native_timestamp_samples": queue_sources["job_created_at"],
+        "queue_fallback_timestamp_samples": queue_sources[
+            "workflow_run_created_at_fallback"
+        ],
+        "queue_native_timestamp_fraction": (
+            round(queue_sources["job_created_at"] / samples, 6)
+            if samples else None
+        ),
         "coverage": coverage,
     }
 
@@ -155,6 +169,8 @@ def compare(before, after):
     queue_delta = None
     if (completed and same_workflows
             and before["queue_basis"] == after["queue_basis"]
+            and before["queue_fallback_timestamp_samples"] == 0
+            and after["queue_fallback_timestamp_samples"] == 0
             and min(before["queue_samples"], after["queue_samples"])
             >= MIN_QUEUE_SAMPLES):
         queue_delta = round(
@@ -172,7 +188,7 @@ def compare(before, after):
         "queue_p95_delta_seconds": queue_delta,
         "queue_comparability": (
             "descriptive_only_not_independent" if queue_delta is not None
-            else "nonterminal_or_small_or_mismatched_queue_cohort"
+            else "nonterminal_or_small_or_mismatched_queue_cohort_or_fallback_timing"
         ),
         "line_coverage_candidate_delta_pp": line_delta,
         "line_reason": line_reason,
