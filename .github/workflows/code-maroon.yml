@@ -19,21 +19,38 @@ on:
 permissions:
   contents: read
 
+env:
+  EVALUATED_SOURCE_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+
 jobs:
   reconcile:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout exact evaluated source
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+      - name: Verify exact checkout
+        shell: bash
+        run: test "$(git rev-parse HEAD)" = "$EVALUATED_SOURCE_SHA"
       - uses: actions/setup-python@v5
         with:
           python-version: "3.12"
+      - name: Preflight test discovery and runner
+        run: python tools/code_maroon/testflight_guard.py preflight
       - name: Install bounded pytest runner
         run: python -m pip install pytest==8.4.2
       - name: Validate CODE_MAROON ledger and OOXML negative controls
         run: |
           mkdir -p "$RUNNER_TEMP/code-maroon"
-          python -m pytest -q tests/test_code_maroon_reconcile.py tests/test_code_maroon_ooxml.py \
+          python -m pytest -q tests/test_code_maroon_reconcile.py tests/test_code_maroon_ooxml.py tests/test_code_maroon_testflight.py \
             --junitxml="$RUNNER_TEMP/code-maroon/pytest.xml"
+      - name: Verify JUnit counts and required cohorts
+        run: |
+          python tools/code_maroon/testflight_guard.py verify \
+            --junit "$RUNNER_TEMP/code-maroon/pytest.xml" \
+            --source-sha "$EVALUATED_SOURCE_SHA" \
+            --out "$RUNNER_TEMP/code-maroon/testflight_receipt.json"
       - name: Scan tracked OOXML packages
         run: |
           mkdir -p "$RUNNER_TEMP/code-maroon"
@@ -48,6 +65,7 @@ jobs:
             --out "$RUNNER_TEMP/code-maroon"
           cat "$RUNNER_TEMP/code-maroon/code_maroon_receipt.md" >> "$GITHUB_STEP_SUMMARY"
       - uses: actions/upload-artifact@v4
+        if: always()
         with:
           name: code-maroon-receipt
           path: ${{ runner.temp }}/code-maroon/

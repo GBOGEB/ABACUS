@@ -53,3 +53,24 @@ CODE_MAROON never authorizes merge, dismisses a genuine security finding,
 changes scanner severity, or converts UNKNOWN to PASS. Closing a thread means
 the exact source request is implemented or explicitly dispositioned; native CI
 and security gates remain independent.
+
+## Test-discovery preflight / fail-closed Testflight
+
+Canonical PR/push SHA is checked against actual checkout HEAD before evidence is run.
+Stdlib AST preflight verifies the presence of pytest functions in the required
+reconcile, OOXML and negative-control suites. Preflight is declarations-only and
+does not count as executed tests. Pinned pytest then emits JUnit. A separate
+stdlib verifier rejects zero, malformed, skipped, failing, duplicated or
+missing-cohort JUnit and writes source-labelled JSON and SHA-256 receipts.
+GitHub run/job identity, accepted REX and independent P0 admission remain
+independent requirements.
+
+Quick local commands on a trusted exact checkout:
+
+    python tools/code_maroon/testflight_guard.py preflight
+    python -m pytest -q tests/test_code_maroon_reconcile.py tests/test_code_maroon_ooxml.py tests/test_code_maroon_testflight.py --junitxml=maroon.xml
+    python tools/code_maroon/testflight_guard.py verify --junit maroon.xml --source-sha "$(git rev-parse HEAD)" --out maroon.json
+
+The existing EVERRED SUT GUI and W169 QPLANT Kubernetes workflow remain the
+canonical local quick-run and container-runtime surfaces. Do not duplicate
+dispatch authority in CODE_MAROON.
