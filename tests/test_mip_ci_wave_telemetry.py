@@ -66,6 +66,10 @@ def step(name, conclusion="success", status="completed"):
 def test_measured_duration_and_unknown_authority():
     """Fallback to run creation without manufacturing Crew evidence."""
     result = summarize({"source_sha": SHA, "runs": [run()], "jobs": [job()]})
+    assert result["schema"] == "abacus.mip.ci-wave-telemetry.v2"
+    assert result["authority_transfer"] is False
+    assert result["merge_authorized"] is False
+    assert result["security_waiver"] is False
     assert result["terminal_by_outcome"]["success"] == 1
     assert result["workflow_terminal_by_outcome"]["success"] == 1
     assert result["workflow_records_observed"] == 1
