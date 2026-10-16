@@ -76,3 +76,31 @@ JSON artifact. It never pushes back to the source branch.
 
 No team is credited for a registration without an authenticated
 session receipt. No successful preflight authorizes a merge.
+
+
+## CODE PURPLE / EVERRED CENSUS scaling contract
+
+The existing four-plane plan is the Mission Control-compatible control surface.
+It now separates one central joined CENSUS from three read-only disjoint CENSUS
+lanes: CI, governance and security. Their outputs converge only through
+RECENSUS, then KPI_PULSE. This is an adaptation of the existing EVERRED
+single-root-owner/disjoint-path method, not a second orchestration system.
+
+The sequence is:
+
+1. GITHUB_RECEIPT, LDAB_CORRELATION and RUNTIME_HOST feed JOINED_CENSUS.
+2. DISJOINT_CENSUS_CI, DISJOINT_CENSUS_GOVERNANCE and
+   DISJOINT_CENSUS_SECURITY inspect independent evidence families without
+   source mutation.
+3. RECENSUS reconciles their exact-head observations. Missing evidence remains
+   UNKNOWN; duplicated manifestations do not become new roots.
+4. KPI_PULSE reports source-bound deltas and queue health.
+5. CONTROLLED_MUTATION remains REVIEW_REQUIRED and cannot be dispatched by this
+   plan. A worker identity, launch ID or REX return is credited only from an
+   authenticated external receipt.
+
+Mission Control assets remain the existing ABACUS #1860 / CODEX #977 and #975
+authority references, EVERRED four-plane receipts, canonical BD/LDAB joins,
+Git leases, and REX return contracts. The plan never converts a GitHub Actions
+job into a Crew launch, never transfers authority, and never waives A10,
+Safety/Bandit, governance, required checks or independent approval.
