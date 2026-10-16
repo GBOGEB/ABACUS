@@ -1,7 +1,6 @@
 """C4 behavioral tests for fail-closed DMAIC test-system bridge admission."""
 
 import json
-import subprocess
 import sys
 import threading
 from types import SimpleNamespace
@@ -137,7 +136,7 @@ def test_required_artifact_is_not_hidden_by_zero_exit(bridge, monkeypatch, tmp_p
 
 def test_timeout_is_recorded_as_failed_and_not_dropped(bridge, monkeypatch):
     def time_out(*_args, **_kwargs):
-        raise subprocess.TimeoutExpired(cmd=["stub"], timeout=3)
+        raise bridge_module.subprocess.TimeoutExpired(cmd=["stub"], timeout=3)
 
     monkeypatch.setattr(bridge_module.subprocess, "run", time_out)
     result = bridge.run_test("timeout", ["stub"], timeout=3)
