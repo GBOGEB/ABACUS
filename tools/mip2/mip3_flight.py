@@ -10,7 +10,7 @@ import shutil
 import subprocess
 import sys
 import time
-import xml.etree.ElementTree as ET
+from defusedxml import ElementTree as ET
 from datetime import datetime, timezone
 
 ROOT = pathlib.Path(__file__).resolve().parents[2]
@@ -33,9 +33,12 @@ def cmd(argv):
                 "error": type(exc).__name__}
 
 def tool_inventory():
-    return [{"tool": name, "present_on_path": shutil.which(name) is not None,
-             "qualification": "DISCOVERED_ONLY" if shutil.which(name) else "NOT_FOUND_ON_PATH"}
-            for name in METHODS]
+    tools = []
+    for name in METHODS:
+        located = shutil.which(name)
+        tools.append({"tool": name, "present_on_path": located is not None,
+                      "qualification": "DISCOVERED_ONLY" if located else "NOT_FOUND_ON_PATH"})
+    return tools
 
 def junit(path):
     root = ET.parse(path).getroot()
@@ -75,7 +78,7 @@ def main():
         if p.is_file():
             try:
                 data["junit"] = junit(p)
-            except (ET.ParseError, ValueError) as exc:
+            except (ET.ParseError, ValueError, OSError) as exc:
                 data["junit_error"] = type(exc).__name__
         p = ROOT / args.receipt
         if p.is_file():
