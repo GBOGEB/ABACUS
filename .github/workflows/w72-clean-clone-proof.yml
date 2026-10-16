@@ -44,7 +44,8 @@ jobs:
       - name: Run package regression suite with testcase evidence
         run: |
           mkdir -p architecture/w72/receipts
-          python -m pytest DMAIC_V3/tests -q --junitxml=architecture/w72/receipts/W72_NATIVE_JUNIT.xml
+          python -m pytest DMAIC_V3/tests -q \
+            --junitxml=architecture/w72/receipts/W72_NATIVE_JUNIT.xml
       - name: Preserve testcase evidence on success or failure
         if: always()
         run: |
