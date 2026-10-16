@@ -174,6 +174,8 @@ def summarize(payload):
     jobs_by_run = {}
     runner_ids = set()
     runner_assignments = 0
+    runner_detail_jobs = 0
+    job_run_links_observed = 0
 
     step_counts = _outcome_counts()
     step_pending = 0
@@ -193,11 +195,14 @@ def summarize(payload):
 
         run_key = (job.get("run_id"), job.get("run_attempt"))
         jobs_by_run[run_key] = jobs_by_run.get(run_key, 0) + 1
+        job_run_links_observed += run_key in runs
 
-        runner_id = job.get("runner_id")
-        if runner_id is not None:
-            runner_assignments += 1
-            runner_ids.add(runner_id)
+        if "runner_id" in job:
+            runner_detail_jobs += 1
+            runner_id = job.get("runner_id")
+            if runner_id is not None:
+                runner_assignments += 1
+                runner_ids.add(runner_id)
 
         status = job.get("status")
         conclusion = job.get("conclusion")
@@ -284,14 +289,29 @@ def summarize(payload):
         "terminal_by_outcome": counts,
         "nonterminal": pending,
         "step_detail_jobs_observed": step_detail_jobs,
+        "step_detail_job_fraction": (
+            step_detail_jobs / len(jobs) if jobs else None
+        ),
         "steps_observed": observed_steps,
         "steps_per_job_p50": median(steps_per_job) if steps_per_job else None,
         "steps_per_job_p95": _percentile(steps_per_job, 95),
         "steps_per_job_max": max(steps_per_job) if steps_per_job else None,
         "step_terminal_by_outcome": step_outcomes,
         "step_nonterminal": step_nonterminal,
-        "native_runner_assignments_observed": runner_assignments,
-        "native_runner_ids_observed": len(runner_ids),
+        "job_run_links_observed": job_run_links_observed,
+        "job_run_link_fraction": (
+            job_run_links_observed / len(jobs) if jobs else None
+        ),
+        "native_runner_detail_jobs_observed": runner_detail_jobs,
+        "native_runner_detail_job_fraction": (
+            runner_detail_jobs / len(jobs) if jobs else None
+        ),
+        "native_runner_assignments_observed": (
+            runner_assignments if runner_detail_jobs else None
+        ),
+        "native_runner_ids_observed": (
+            len(runner_ids) if runner_detail_jobs else None
+        ),
         "queue_basis": (
             "job.created_at -> job.started_at; "
             "fallback workflow_run.created_at -> job.started_at"
@@ -305,6 +325,9 @@ def summarize(payload):
         "runtime_seconds_p95": _percentile(elapsed, 95),
         "runtime_samples": len(elapsed),
         "runtime_expected_samples": runtime_expected,
+        "runtime_sample_fraction": (
+            len(elapsed) / runtime_expected if runtime_expected else None
+        ),
         "runtime_wall_span_seconds": wall_span,
         "peak_runtime_concurrency_observed": _peak_overlap(intervals),
         "realized_parallelism_factor": parallelism_factor,
