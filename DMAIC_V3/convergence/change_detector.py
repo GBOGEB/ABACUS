@@ -109,7 +109,7 @@ class ChangeDetector:
                 print(f"  Progress: {processed}/{total_files} files analyzed...")
 
             try:
-                rel_path = str(file_path.relative_to(self.workspace_root))
+                rel_path = file_path.relative_to(self.workspace_root).as_posix()
                 stat = file_path.stat()
 
                 snapshot[rel_path] = {
@@ -136,7 +136,13 @@ class ChangeDetector:
 
         try:
             with open(self.snapshot_file, 'r', encoding='utf-8') as f:
-                return json.load(f)
+                loaded = json.load(f)
+            if not isinstance(loaded, dict):
+                return {}
+            return {
+                key.replace('\\\\', '/'): value
+                for key, value in loaded.items()
+            }
         except Exception as e:
             print(f"  [!] Error loading previous snapshot: {e}")
             return {}
@@ -177,7 +183,7 @@ class ChangeDetector:
                 continue
 
             try:
-                rel_path = str(file_path.relative_to(self.workspace_root))
+                rel_path = file_path.relative_to(self.workspace_root).as_posix()
                 current_paths.add(rel_path)
                 stat = file_path.stat()
 
