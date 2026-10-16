@@ -82,8 +82,13 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
+          # Match the DOW coverage-mode contract (#2040); never mix
+          # stale statement-only data with branch coverage fragments.
+          python -m coverage erase
           pytest --benchmark-disable DMAIC_V3/tests/ -v \
             --cov=DMAIC_V3 \
+            --cov-branch \
+            --cov-config=pyproject.toml \
             --cov-report=xml \
             --cov-report=term-missing \
             --cov-report=html \
