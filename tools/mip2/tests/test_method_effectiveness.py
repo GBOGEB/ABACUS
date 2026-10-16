@@ -11,6 +11,7 @@ sys.path.insert(0, str(HERE))
 from method_effectiveness import comparable_delta, evaluate, main
 
 CORPUS = (HERE / "method_regression_corpus.json").read_bytes()
+ARTIFACT = b"synthetic-bandit-scanner-output-v1"  # Fixture, not a native receipt.
 FINGERPRINT = "f" * 64
 
 
@@ -22,7 +23,7 @@ def fixture():
         "repository": "GBOGEB/ABACUS", "source_sha": "a" * 40,
         "method_id": "sast", "tool_name": "Bandit", "tool_version": "1.9.4",
         "config_sha256": "b" * 64, "corpus_sha256": hashlib.sha256(CORPUS).hexdigest(),
-        "artifact_sha256": "c" * 64, "run_id": 123, "run_attempt": 1, "job_id": 456,
+        "artifact_sha256": hashlib.sha256(ARTIFACT).hexdigest(), "run_id": 123, "run_attempt": 1, "job_id": 456,
         "observations": [
             {"case_id": cases[0], "detected": True, "runtime_ms": 9.0,
              "fingerprints": [FINGERPRINT]},
@@ -33,7 +34,7 @@ def fixture():
 
 
 def test_complete_scanner_confusion_is_corpus_only():
-    result = evaluate(fixture(), CORPUS)
+    result = evaluate(fixture(), CORPUS, ARTIFACT)
     assert result["state"] == "CORPUS_MEASURED_NOT_QUALIFIED"
     assert result["confusion"]["tp"] == 1 and result["confusion"]["tn"] == 1
     assert result["confusion"]["recall"] == 1.0
@@ -48,7 +49,7 @@ def test_complete_scanner_confusion_is_corpus_only():
 def test_missing_case_is_unknown_not_false_negative():
     e = fixture()
     e["observations"].pop()
-    result = evaluate(e, CORPUS)
+    result = evaluate(e, CORPUS, ARTIFACT)
     assert result["state"] == "INSUFFICIENT_EVIDENCE"
     assert result["confusion"] is None
     assert len(result["missing_cases"]) == 1
@@ -66,21 +67,21 @@ def test_invalid_identity_rejected(field, bad, error):
     e = fixture()
     e[field] = bad
     with pytest.raises(ValueError, match=error):
-        evaluate(e, CORPUS)
+        evaluate(e, CORPUS, ARTIFACT)
 
 
 def test_duplicate_occurrence_is_rejected():
     e = fixture()
     e["observations"].append(dict(e["observations"][0]))
     with pytest.raises(ValueError, match="UNKNOWN_OR_DUPLICATE_CASE_ID"):
-        evaluate(e, CORPUS)
+        evaluate(e, CORPUS, ARTIFACT)
 
 
 def test_unknown_case_id_rejected():
     e = fixture()
     e["observations"][0]["case_id"] = "UNKNOWN"
     with pytest.raises(ValueError, match="UNKNOWN_OR_DUPLICATE_CASE_ID"):
-        evaluate(e, CORPUS)
+        evaluate(e, CORPUS, ARTIFACT)
 
 
 def test_invalid_runtimes_are_rejected():
@@ -88,29 +89,29 @@ def test_invalid_runtimes_are_rejected():
         e = fixture()
         e["observations"][0]["runtime_ms"] = bad
         with pytest.raises(ValueError, match="RUNTIME_MS_INVALID"):
-            evaluate(e, CORPUS)
+            evaluate(e, CORPUS, ARTIFACT)
 
 
 def test_false_detection_cannot_claim_empty_fingerprint_set():
     e = fixture()
     e["observations"][1]["fingerprints"] = [FINGERPRINT]
     with pytest.raises(ValueError, match="FINDING_WITHOUT_DETECTION"):
-        evaluate(e, CORPUS)
+        evaluate(e, CORPUS, ARTIFACT)
 
 
 def test_fingerprint_duplicate_inside_case_rejected():
     e = fixture()
     e["observations"][0]["fingerprints"] = [FINGERPRINT, FINGERPRINT]
     with pytest.raises(ValueError, match="DUPLICATE_FINDING_IN_CASE"):
-        evaluate(e, CORPUS)
+        evaluate(e, CORPUS, ARTIFACT)
 
 
 def test_paired_method_improvement_never_credits_root_closure():
     before_e = fixture()
     before_e["observations"][0]["detected"] = False
     before_e["observations"][0]["fingerprints"] = []
-    before = evaluate(before_e, CORPUS)
-    after = evaluate(fixture(), CORPUS)
+    before = evaluate(before_e, CORPUS, ARTIFACT)
+    after = evaluate(fixture(), CORPUS, ARTIFACT)
     delta = comparable_delta(before, after)
     assert delta["comparable"] is True
     assert delta["delta_recall_pp"] == 100
@@ -119,7 +120,7 @@ def test_paired_method_improvement_never_credits_root_closure():
 
 
 def test_changed_source_never_has_matched_delta():
-    before = evaluate(fixture(), CORPUS)
+    before = evaluate(fixture(), CORPUS, ARTIFACT)
     after = dict(before)
     after["source_sha"] = "b" * 40
     assert comparable_delta(before, after)["delta_recall_pp"] is None
@@ -131,15 +132,25 @@ def test_runtime_family_without_negative_controls_remains_unknown():
     e["observations"] = [
         {"case_id": "RUNTIME_REPRODUCER", "detected": True,
          "runtime_ms": 2.0, "fingerprints": [FINGERPRINT]}]
-    result = evaluate(e, CORPUS)
+    result = evaluate(e, CORPUS, ARTIFACT)
     assert result["state"] == "INSUFFICIENT_EVIDENCE"
     assert result["confusion"] is None
 
 
 def test_cli_missing_receipt_fails_closed(tmp_path):
     out = tmp_path / "result.json"
-    code = main(["--observations", str(tmp_path / "missing.json"), "--output", str(out)])
+    code = main(["--observations", str(tmp_path / "missing.json"),
+                 "--artifact", str(tmp_path / "missing-artifact.json"), "--output", str(out)])
     assert code == 2
     receipt = json.loads(out.read_text(encoding="utf-8"))
     assert receipt["state"] == "INVALID"
     assert receipt["merge_authorized"] is False
+
+def test_missing_scanner_artifact_bytes_rejected():
+    with pytest.raises(ValueError, match="ARTIFACT_BYTES_MISSING"):
+        evaluate(fixture(), CORPUS)
+
+
+def test_modified_scanner_artifact_rejected():
+    with pytest.raises(ValueError, match="ARTIFACT_BYTES_MISMATCH"):
+        evaluate(fixture(), CORPUS, ARTIFACT + b"tamper")
