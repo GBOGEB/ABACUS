@@ -43,7 +43,10 @@ jobs:
       - name: Validate CODE_MAROON ledger and OOXML negative controls
         run: |
           mkdir -p "$RUNNER_TEMP/code-maroon"
-          python -m pytest -q tests/test_code_maroon_reconcile.py tests/test_code_maroon_ooxml.py tests/test_code_maroon_testflight.py \
+          python -m pytest -q --noconftest \
+            tests/test_code_maroon_reconcile.py \
+            tests/test_code_maroon_ooxml.py \
+            tests/test_code_maroon_testflight.py \
             --junitxml="$RUNNER_TEMP/code-maroon/pytest.xml"
       - name: Verify JUnit counts and required cohorts
         run: |
@@ -63,7 +66,8 @@ jobs:
           python tools/code_maroon/reconcile.py \
             --snapshot CODE_MAROON/snapshot_20261016.json \
             --out "$RUNNER_TEMP/code-maroon"
-          cat "$RUNNER_TEMP/code-maroon/code_maroon_receipt.md" >> "$GITHUB_STEP_SUMMARY"
+          cat "$RUNNER_TEMP/code-maroon/code_maroon_receipt.md" \
+            >> "$GITHUB_STEP_SUMMARY"
       - uses: actions/upload-artifact@v4
         if: always()
         with:

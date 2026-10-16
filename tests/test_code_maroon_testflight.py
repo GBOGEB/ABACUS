@@ -99,7 +99,23 @@ def test_no_pytest_functions_rejected(tmp_path):
     for name in M.COHORTS:
         (root / "tests" / (name + ".py")).write_text("# no tests\n")
     (root / ".github/workflows/code-maroon.yml").write_text(
-        "run: python -m pytest --junitxml=report.xml\n"
+        "run: python -m pytest --noconftest --junitxml=report.xml\n"
         "verify: testflight_guard.py verify\n")
     with pytest.raises(ValueError, match="no pytest tests"):
+        M.preflight(root)
+
+
+def test_missing_conftest_isolation_fails_closed(tmp_path):
+    root = tmp_path
+    (root / ".github/workflows").mkdir(parents=True)
+    (root / "tests").mkdir()
+    for name in M.COHORTS:
+        (root / "tests" / (name + ".py")).write_text(
+            "def test_case():\n    assert True\n"
+        )
+    (root / ".github/workflows/code-maroon.yml").write_text(
+        "run: python -m pytest --junitxml=report.xml\n"
+        "verify: testflight_guard.py verify\n"
+    )
+    with pytest.raises(ValueError, match="conftest isolation"):
         M.preflight(root)

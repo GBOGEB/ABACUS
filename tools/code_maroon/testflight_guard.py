@@ -18,6 +18,8 @@ def preflight(root: Path = ROOT) -> dict:
     workflow = (root / ".github/workflows/code-maroon.yml").read_text(encoding="utf-8")
     if "python -m pytest" not in workflow or "--junitxml" not in workflow:
         raise ValueError("missing pytest runner or JUnit evidence")
+    if "--noconftest" not in workflow:
+        raise ValueError("missing bounded pytest conftest isolation")
     if "testflight_guard.py verify" not in workflow:
         raise ValueError("missing independent post-test verification")
     if re.search(r"python\s+-m\s+unittest\s+tests/test_code_maroon", workflow):

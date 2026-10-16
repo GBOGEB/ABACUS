@@ -19,6 +19,7 @@ Review summary comments are metadata, not findings. Resolved findings remain
 in the historical total.
 
 Statuses:
+
 - CLOSED_IMPLEMENTED: source repair present and thread closed.
 - OPEN_ACTIVE: source/root work still required.
 - DEFERRED_OWNER: routed to a canonical owner rather than duplicated here.
@@ -29,6 +30,7 @@ deferred, outstanding, active failing, and total/closed/deferred/open roots.
 ## Security sources
 
 Existing native producers are reused:
+
 - Semgrep SARIF: .github/workflows/semgrep.yml
 - Bandit SARIF: .github/workflows/bandit.yml
 - OSV Scanner: .github/workflows/osv-scanner.yml
@@ -45,7 +47,8 @@ OOXML scanning is enabled as a bounded lane for tracked DOCX/XLSX/PPTX and
 macro-enabled OOXML packages. It inspects ZIP structure, external relationships,
 embedded objects/macros, path traversal, malformed packages and decompression
 limits without extracting package members. HIGH structural hazards fail the
-MAROON workflow; MEDIUM macro/external-link findings remain explicit review debt.
+MAROON workflow; MEDIUM macro/external-link findings remain explicit
+review debt.
 
 ## Control boundary
 
@@ -56,7 +59,8 @@ and security gates remain independent.
 
 ## Test-discovery preflight / fail-closed Testflight
 
-Canonical PR/push SHA is checked against actual checkout HEAD before evidence is run.
+Canonical PR/push SHA is checked against actual checkout HEAD before
+any evidence runs.
 Stdlib AST preflight verifies the presence of pytest functions in the required
 reconcile, OOXML and negative-control suites. Preflight is declarations-only and
 does not count as executed tests. Pinned pytest then emits JUnit. A separate
@@ -68,8 +72,20 @@ independent requirements.
 Quick local commands on a trusted exact checkout:
 
     python tools/code_maroon/testflight_guard.py preflight
-    python -m pytest -q tests/test_code_maroon_reconcile.py tests/test_code_maroon_ooxml.py tests/test_code_maroon_testflight.py --junitxml=maroon.xml
-    python tools/code_maroon/testflight_guard.py verify --junit maroon.xml --source-sha "$(git rev-parse HEAD)" --out maroon.json
+    python -m pytest -q --noconftest \
+      tests/test_code_maroon_reconcile.py \
+      tests/test_code_maroon_ooxml.py \
+      tests/test_code_maroon_testflight.py \
+      --junitxml=maroon.xml
+    python tools/code_maroon/testflight_guard.py verify \
+      --junit maroon.xml \
+      --source-sha "$(git rev-parse HEAD)" \
+      --out maroon.json
+
+The bounded CODE_MAROON tests use `--noconftest`: the repository-wide
+`tests/conftest.py` imports NumPy, which this stdlib-only test cohort does not
+require. The isolated suite still runs all three named modules; JUnit must
+prove nonzero execution. This does not waive broader CI.
 
 The existing EVERRED SUT GUI and W169 QPLANT Kubernetes workflow remain the
 canonical local quick-run and container-runtime surfaces. Do not duplicate
