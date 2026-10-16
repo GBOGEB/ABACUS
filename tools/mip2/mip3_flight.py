@@ -11,6 +11,7 @@ import subprocess
 import sys
 import time
 from defusedxml import ElementTree as ET
+from defusedxml.common import DefusedXmlException
 from datetime import datetime, timezone
 
 ROOT = pathlib.Path(__file__).resolve().parents[2]
@@ -41,12 +42,25 @@ def tool_inventory():
     return tools
 
 def junit(path):
+    # Limit input before parsing; reject DTD/entities using defusedxml.
+    if path.stat().st_size > 64 * 1024 * 1024:
+        raise ValueError("JUNIT_XML_TOO_LARGE")
     root = ET.parse(path).getroot()
+    if root.tag not in ("testsuite", "testsuites"):
+        raise ValueError("JUNIT_INVALID_ROOT")
     suites = [root] if root.tag == "testsuite" else list(root.iter("testsuite"))
-    return {"tests": sum(int(x.attrib.get("tests", 0)) for x in suites),
-            "failures": sum(int(x.attrib.get("failures", 0)) for x in suites),
-            "errors": sum(int(x.attrib.get("errors", 0)) for x in suites),
-            "skipped": sum(int(x.attrib.get("skipped", 0)) for x in suites)}
+    if not suites:
+        raise ValueError("JUNIT_MISSING_SUITES")
+    totals = dict.fromkeys(("tests", "failures", "errors", "skipped"), 0)
+    for suite in suites:
+        for key in totals:
+            raw = suite.attrib.get(key)
+            if raw is None or not raw.isdecimal():
+                raise ValueError("JUNIT_INVALID_" + key.upper())
+            totals[key] += int(raw)
+    if totals["failures"] + totals["errors"] + totals["skipped"] > totals["tests"]:
+        raise ValueError("JUNIT_INCONSISTENT_COUNTS")
+    return totals
 
 def main():
     ap = argparse.ArgumentParser()
@@ -78,7 +92,7 @@ def main():
         if p.is_file():
             try:
                 data["junit"] = junit(p)
-            except (ET.ParseError, ValueError, OSError) as exc:
+            except (ET.ParseError, DefusedXmlException, ValueError, OSError) as exc:
                 data["junit_error"] = type(exc).__name__
         p = ROOT / args.receipt
         if p.is_file():
