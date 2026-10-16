@@ -150,3 +150,19 @@ def test_legacy_windows_snapshot_keys_migrate_without_phantom_changes(tmp_path):
     checker._take_snapshot()
     assert not checker.changes_file.exists()
     assert list(json.loads(checker.snapshot_file.read_text())) == ["DMAIC_V3/old.txt"]
+
+
+def test_non_mapping_legacy_snapshot_is_ignored_safely(tmp_path):
+    workspace = tmp_path / "repo"
+    tracked = workspace / "DMAIC_V3"
+    tracked.mkdir(parents=True)
+    target = tracked / "current.txt"
+    target.write_text("current", encoding="utf-8")
+    checker = BackgroundChangeDetector(workspace, tmp_path / "state")
+    checker.snapshot_file.write_text(json.dumps(["legacy", "invalid"]), encoding="utf-8")
+
+    checker._take_snapshot()
+
+    assert json.loads(checker.changes_file.read_text(encoding="utf-8"))["changes"] == [
+        {"path": "DMAIC_V3/current.txt", "type": "added"}
+    ]
