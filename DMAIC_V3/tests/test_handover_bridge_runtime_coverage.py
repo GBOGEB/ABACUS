@@ -57,14 +57,15 @@ def test_idempotent_executor_uses_existing_action_and_metrics_ledgers():
     assert second[1]["metrics"]["score"] == 2
     assert calls == [1, 2]
 
-    actions = [
+    phases = [
         row for row in bridge.get_provenance_trail()
-        if row.get("event") == "action" and row.get("action") == "phase_execution"
+        if row.get("event") == "phase"
     ]
-    assert [row["details"]["iteration"] for row in actions] == [1, 2]
-    assert all(row["details"]["status"] == "success" for row in actions)
-    assert all(len(row["details"]["inputs_hash"]) == 64 for row in actions)
-    assert all(len(row["details"]["outputs_hash"]) == 64 for row in actions)
+    assert [row["iteration"] for row in phases] == [1, 2]
+    assert all(row["status"] == "success" for row in phases)
+    assert all(len(row["inputs_hash"]) == 64 for row in phases)
+    assert all(len(row["outputs_hash"]) == 64 for row in phases)
+    assert [row["metrics"]["score"] for row in phases] == [1, 2]
     assert [row["metrics"]["score"] for row in bridge.get_metrics_history()] == [1, 2]
 
 
@@ -79,9 +80,10 @@ def test_idempotent_executor_records_failed_tuple_without_false_green():
     result = IdempotentPhaseExecutor(Phase(), bridge, "measure").execute(iteration=3)
 
     assert result[0] is False
-    action = [row for row in bridge.get_provenance_trail() if row.get("event") == "action"][0]
-    assert action["details"]["status"] == "failed"
-    assert action["details"]["iteration"] == 3
+    phase = [row for row in bridge.get_provenance_trail() if row.get("event") == "phase"][0]
+    assert phase["status"] == "failed"
+    assert phase["iteration"] == 3
+    assert phase["metrics"] == {"errors": 1}
     assert bridge.get_metrics_history()[0]["metrics"] == {"errors": 1}
 
 
