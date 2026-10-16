@@ -78,6 +78,10 @@ def test_measured_duration_and_unknown_authority():
     assert result["runtime_wall_span_seconds"] == 120
     assert result["peak_runtime_concurrency_observed"] == 1
     assert result["realized_parallelism_factor"] == 1
+    assert result["runtime_sample_fraction"] == 1
+    assert result["job_run_link_fraction"] == 1
+    assert result["native_runner_assignments_observed"] is None
+    assert result["native_runner_ids_observed"] is None
     assert result["crew_dispatch_authenticated"] is None
     assert result["rex_receipts_accepted"] is None
     assert result["independent_process_observations"] is None
@@ -137,7 +141,12 @@ def test_width_depth_runner_and_parallelism_metrics():
     assert result["steps_per_job_max"] == 2
     assert result["step_terminal_by_outcome"]["success"] == 3
     assert result["step_terminal_by_outcome"]["failure"] == 1
+    assert result["step_detail_job_fraction"] == 1
 
+    assert result["job_run_links_observed"] == 2
+    assert result["job_run_link_fraction"] == 1
+    assert result["native_runner_detail_jobs_observed"] == 2
+    assert result["native_runner_detail_job_fraction"] == 1
     assert result["native_runner_assignments_observed"] == 2
     assert result["native_runner_ids_observed"] == 2
     assert result["runtime_seconds_sum"] == 180
@@ -155,6 +164,7 @@ def test_absent_step_detail_is_unknown_not_zero():
     assert result["steps_observed"] is None
     assert result["step_terminal_by_outcome"] is None
     assert result["step_nonterminal"] is None
+    assert result["step_detail_job_fraction"] == 0
 
 
 def test_native_job_without_joined_run_keeps_queue_unknown():
