@@ -66,6 +66,9 @@ class CBD260Tests(unittest.TestCase):
         p = cbd.project(self.snapshot)
         m = p["metrics"]
         self.assertEqual(75, m["prs_observed"])
+        self.assertEqual(74, m["prs_open_in_captured_readbacks"])
+        self.assertEqual(1, m["prs_closed_in_captured_readbacks"])
+        self.assertFalse(m["snapshot_atomic"])
         self.assertEqual(260, m["failed_workflow_associations"])
         self.assertEqual(253, m["distinct_failed_run_ids"])
         self.assertEqual(7, m["duplicated_pr_failure_associations"])
@@ -107,6 +110,10 @@ class CBD260Tests(unittest.TestCase):
     def test_negative_missing_failure_occurrence_rejected(self):
         with self.assertRaisesRegex(ValueError, "denominator"):
             self.mutate(lambda d: d["rows"][0]["failed_runs"].pop())
+
+    def test_negative_forged_state_rejected(self):
+        with self.assertRaisesRegex(ValueError, "head/state"):
+            self.mutate(lambda d: d["rows"][0].update(state="merged_and_admitted"))
 
     def test_negative_invalid_head_rejected(self):
         with self.assertRaisesRegex(ValueError, "head"):
