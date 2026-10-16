@@ -39,6 +39,10 @@ def wave(n, *, sha=None, success=20, failure=0, pending=0,
             "workflow_nonterminal": pending, "workflow_unclassified": 0,
             "queue_samples": queue_samples, "queue_seconds_p95": queue_p95,
             "queue_basis": QUEUE_BASIS, "jobs_observed": 30,
+            "queue_source_counts": {
+                "job_created_at": queue_samples,
+                "workflow_run_created_at_fallback": 0,
+            },
             "merge_authorized": False,
             "independent_gates": {"admission": "HOLD"},
         },
@@ -91,10 +95,40 @@ class TemporalPulseTests(unittest.TestCase):
     def test_queue_small_n_unqualified(self):
         data = fixture()
         data["observations"][0]["telemetry"]["queue_samples"] = 12
+        data["observations"][0]["telemetry"]["queue_source_counts"] = {
+            "job_created_at": 12, "workflow_run_created_at_fallback": 0,
+        }
         result = rollup(data)
         self.assertIsNone(result["comparisons"][0]["queue_p95_delta_seconds"])
         self.assertEqual(result["comparisons"][0]["queue_comparability"],
                          "nonterminal_or_small_or_mismatched_queue_cohort")
+
+    def test_mixed_queue_timestamp_basis_does_not_earn_p95_gain(self):
+        data = fixture()
+        data["observations"][1]["telemetry"]["queue_source_counts"] = {
+            "job_created_at": 24, "workflow_run_created_at_fallback": 1,
+        }
+        result = rollup(data)
+        self.assertIsNone(result["comparisons"][0]["queue_p95_delta_seconds"])
+        self.assertEqual(result["rows"][1]["queue_fallback_timestamp_samples"], 1)
+        self.assertEqual(result["rows"][1]["queue_native_timestamp_fraction"], 0.96)
+        self.assertIn("fallback_timing", result["comparisons"][0]["queue_comparability"])
+        self.assertEqual(result["pca_maturity"],
+                         "HOLD_UNQUALIFIED_INDEPENDENT_OBSERVATIONS")
+
+    def test_queue_provenance_must_reconcile_and_never_infer_zero(self):
+        for invalid in (
+            None,
+            {},
+            {"job_created_at": 24, "workflow_run_created_at_fallback": 0},
+            {"job_created_at": 25, "workflow_run_created_at_fallback": True},
+            {"job_created_at": 26, "workflow_run_created_at_fallback": -1},
+        ):
+            with self.subTest(invalid=invalid):
+                data = fixture()
+                data["observations"][1]["telemetry"]["queue_source_counts"] = invalid
+                with self.assertRaisesRegex(ValueError, "queue provenance"):
+                    rollup(data)
 
     def test_coverage_scope_changed_same_denominator_is_not_comparable(self):
         data = fixture()
@@ -234,10 +268,10 @@ class TemporalPulseTests(unittest.TestCase):
             "issued_source_sha": SHA_A,
             "issued_at": "2026-10-11T12:01:00Z",
             "method": "persistence-v1", "prediction": 1.0,
-            "untrusted_secret_field": "never republish",
+            "untrusted_projection_field": "not source-supported",
         }]
         observed = rollup(data)["persisted_forecasts"][0]
-        self.assertNotIn("untrusted_secret_field", observed)
+        self.assertNotIn("untrusted_projection_field", observed)
         self.assertEqual(observed["actual"], 1.0)
 
     def test_no_duplicate_persisted_forecast(self):
