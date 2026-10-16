@@ -128,6 +128,24 @@ class MatplotlibCompatibilityRegression(unittest.TestCase):
             matplotlib_lines(REQUIREMENTS.read_text(encoding="utf-8")),
         )
 
+    def test_negative_control_detects_duplicate_active_pin(self):
+        """A malformed extra pin must break the one-active-pin invariant."""
+        lines = matplotlib_lines(REQUIREMENTS.read_text(encoding="utf-8"))
+        duplicated = lines + ["matplotlib>=3.11.2,<4.0.0"]
+        for minor in (10, 11, 12):
+            with self.subTest(python=f"3.{minor}"):
+                self.assertNotEqual(1, len(classify(duplicated, minor)))
+
+    def test_reverse_boundary_marker_mutation_changes_lane_selection(self):
+        """An inverted boundary must not silently match the canonical lanes."""
+        lines = matplotlib_lines(REQUIREMENTS.read_text(encoding="utf-8"))
+        altered = [
+            line.replace("python_version >= '3.11'", "python_version < '3.11'")
+            for line in lines
+        ]
+        self.assertNotEqual(1, len(classify(altered, 10)))
+        self.assertEqual([], classify(altered, 11))
+
     def test_unrecognized_version_marker_fails_closed(self):
         """Do not mistake an unknown marker for a positive match."""
         with self.assertRaisesRegex(ValueError, "unsupported Python marker"):
