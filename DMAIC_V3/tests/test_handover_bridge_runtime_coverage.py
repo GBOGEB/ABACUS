@@ -118,7 +118,7 @@ def test_convergence_analysis_covers_boundaries_and_result_shape():
     assert converged["converged"] is True
     assert converged["iterations"] == 3
     assert converged["final_score"] == 0.91
-    assert converged["avg_change"] == 0.005
+    assert abs(converged["avg_change"] - 0.005) < 1e-12
 
     moving = b.analyze_convergence(
         [{"quality_score": 0.1}, {"quality_score": 0.5}, {"quality_score": 0.9}]
