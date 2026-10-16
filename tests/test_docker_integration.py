@@ -303,26 +303,45 @@ class TestDockerContainerIntegration:
 
     @pytest.mark.asyncio
     async def test_docker_volume_mounts_async(self):
-        """Test volume mounts work correctly"""
-        test_file = Path("test_volume_data.txt")
-        test_file.write_text("test data")
+        """Prove volume mounts without depending on another xdist worker's image."""
+        image_tag = f"abacus-volume-test:{time.time_ns()}"
+        test_file = Path(f"test_volume_data_{time.time_ns()}.txt")
+        test_file.write_text("test data", encoding="utf-8")
+        image_built = False
 
         try:
-            proc = await asyncio.create_subprocess_exec(
-                'docker', 'run', '--rm',
-                '-v', f'{test_file.absolute()}:/data/test.txt',
-                'test-app:latest',
-                'cat', '/data/test.txt',
-                stdout=asyncio.subprocess.PIPE
+            build_proc = await asyncio.create_subprocess_exec(
+                "docker", "build", "-t", image_tag, ".",
+                stdout=asyncio.subprocess.PIPE,
+                stderr=asyncio.subprocess.PIPE,
             )
+            _, build_stderr = await build_proc.communicate()
+            assert build_proc.returncode == 0, (
+                f"Docker prerequisite image build failed: {build_stderr.decode()}"
+            )
+            image_built = True
 
-            stdout, _ = await proc.communicate()
-            content = stdout.decode().strip()
-
-            assert content == "test data", "Volume mount failed"
-
+            run_proc = await asyncio.create_subprocess_exec(
+                "docker", "run", "--rm", "--pull=never",
+                "-v", f"{test_file.absolute()}:/data/test.txt",
+                image_tag, "cat", "/data/test.txt",
+                stdout=asyncio.subprocess.PIPE,
+                stderr=asyncio.subprocess.PIPE,
+            )
+            run_stdout, run_stderr = await run_proc.communicate()
+            assert run_proc.returncode == 0, (
+                f"Docker volume run failed: {run_stderr.decode()}"
+            )
+            assert run_stdout.decode().strip() == "test data", "Volume mount failed"
         finally:
             test_file.unlink(missing_ok=True)
+            if image_built:
+                cleanup_proc = await asyncio.create_subprocess_exec(
+                    "docker", "image", "rm", image_tag,
+                    stdout=asyncio.subprocess.PIPE,
+                    stderr=asyncio.subprocess.PIPE,
+                )
+                await cleanup_proc.communicate()
 
     @pytest.mark.asyncio
     async def test_docker_network_connectivity_async(self):
