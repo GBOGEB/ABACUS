@@ -16,6 +16,17 @@ class EVERREDPytestDependencies(unittest.TestCase):
             WORKFLOW.read_text(encoding="utf-8"),
         )
 
+    def test_black_and_isort_share_one_canonical_profile(self):
+        config = (ROOT / "tools" / "everred_v3" / "pyproject.toml").read_text(
+            encoding="utf-8"
+        )
+        self.assertIn('[tool.isort]\nprofile = "black"\n', config)
+        self.assertIn("line_length = 88", config)
+        workflow = WORKFLOW.read_text(encoding="utf-8")
+        self.assertIn("black==26.10.1 isort==9.0.2", workflow)
+        self.assertIn("python -m black --check src scripts tests", workflow)
+        self.assertIn("python -m isort --check-only src scripts tests", workflow)
+
     def test_all_python_versions_share_same_dependency_step(self):
         workflow = WORKFLOW.read_text(encoding="utf-8")
         self.assertIn("python-version: ['3.10', '3.12']", workflow)
