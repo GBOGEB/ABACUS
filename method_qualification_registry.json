@@ -1,0 +1,150 @@
+{
+  "schema": "abacus.method.registry.v1",
+  "status": "PROPOSED_NOT_QUALIFIED",
+  "merge_authorized": false,
+  "methods": [
+    {
+      "id": "formatter-convergence",
+      "family": "Black/isort/Ruff",
+      "level": "M0",
+      "native_evidence": null,
+      "owner": null,
+      "repair_root": null,
+      "rollout": [
+        "ABACUS",
+        "CODEX",
+        "cryoplant-project"
+      ]
+    },
+    {
+      "id": "lint-complexity",
+      "family": "Ruff/Flake8/Pylint/Radon",
+      "level": "M0",
+      "native_evidence": null,
+      "owner": null,
+      "repair_root": null,
+      "rollout": [
+        "ABACUS",
+        "CODEX",
+        "cryoplant-project"
+      ]
+    },
+    {
+      "id": "typing",
+      "family": "mypy/Pyright",
+      "level": "M0",
+      "native_evidence": null,
+      "owner": null,
+      "repair_root": null,
+      "rollout": [
+        "ABACUS",
+        "CODEX",
+        "cryoplant-project"
+      ]
+    },
+    {
+      "id": "pytest-matrix",
+      "family": "pytest/JUnit/matrix",
+      "level": "M0",
+      "native_evidence": null,
+      "owner": null,
+      "repair_root": null,
+      "rollout": [
+        "ABACUS",
+        "CODEX",
+        "cryoplant-project"
+      ]
+    },
+    {
+      "id": "coverage-yield",
+      "family": "coverage.py/pytest-cov/diff-cover",
+      "level": "M0",
+      "native_evidence": null,
+      "owner": null,
+      "repair_root": null,
+      "rollout": [
+        "ABACUS",
+        "CODEX",
+        "cryoplant-project"
+      ]
+    },
+    {
+      "id": "security-sast",
+      "family": "Bandit/CodeQL/Semgrep",
+      "level": "M0",
+      "native_evidence": null,
+      "owner": null,
+      "repair_root": null,
+      "rollout": [
+        "ABACUS",
+        "CODEX",
+        "cryoplant-project"
+      ]
+    },
+    {
+      "id": "dependency-audit",
+      "family": "pip-audit/OSV/Safety",
+      "level": "M0",
+      "native_evidence": null,
+      "owner": null,
+      "repair_root": null,
+      "rollout": [
+        "ABACUS",
+        "CODEX",
+        "cryoplant-project"
+      ]
+    },
+    {
+      "id": "secret-detection",
+      "family": "Gitleaks/detect-secrets/A10",
+      "level": "M0",
+      "native_evidence": null,
+      "owner": null,
+      "repair_root": null,
+      "rollout": [
+        "ABACUS",
+        "CODEX",
+        "cryoplant-project"
+      ]
+    },
+    {
+      "id": "container-runtime",
+      "family": "Trivy/Hadolint/Docker",
+      "level": "M0",
+      "native_evidence": null,
+      "owner": null,
+      "repair_root": null,
+      "rollout": [
+        "ABACUS",
+        "CODEX",
+        "cryoplant-project"
+      ]
+    },
+    {
+      "id": "debugger",
+      "family": "LLDB/GDB/faulthandler",
+      "level": "M0",
+      "native_evidence": null,
+      "owner": null,
+      "repair_root": null,
+      "rollout": [
+        "ABACUS",
+        "CODEX",
+        "cryoplant-project"
+      ]
+    },
+    {
+      "id": "memory-sanitizer",
+      "family": "Valgrind/ASan/UBSan/tracemalloc",
+      "level": "M0",
+      "native_evidence": null,
+      "owner": null,
+      "repair_root": null,
+      "rollout": [
+        "ABACUS",
+        "CODEX",
+        "cryoplant-project"
+      ]
+    }
+  ]
+}
