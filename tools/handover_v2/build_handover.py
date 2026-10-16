@@ -567,6 +567,11 @@ def capsule_verify(directory:Path,allow_previous:bool=True) -> tuple[dict,dict]:
         raise ValueError("Not a capsule: missing input.json")
     s=json.loads(inp.read_bytes())
     man=json.loads((base/"manifest.json").read_bytes())
+    # External symlink targets violate self-contained capsule replay, even
+    # when their current bytes happen to match the recorded digest.
+    for member in base.rglob("*"):
+        if member.is_symlink():
+            raise ValueError("Capsule contains symbolic link: " + str(member.relative_to(base)))
     # Independently check all stored hashes and forbid unrecorded file content.
     entries=man.get("file_hashes_sha256",{})
     present={p.relative_to(base).as_posix() for p in base.rglob("*") if p.is_file()}
