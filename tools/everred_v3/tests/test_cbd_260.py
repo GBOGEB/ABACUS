@@ -8,7 +8,9 @@ import unittest
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
-SPEC = importlib.util.spec_from_file_location("cbd_260", ROOT / "scripts" / "cbd_260.py")
+SPEC = importlib.util.spec_from_file_location(
+    "cbd_260", ROOT / "scripts" / "cbd_260.py"
+)
 cbd = importlib.util.module_from_spec(SPEC)
 SPEC.loader.exec_module(cbd)
 PATHS = sorted((ROOT / "data" / "cbd_260").glob("N0_*.json"))
