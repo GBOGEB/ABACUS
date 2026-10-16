@@ -1,7 +1,6 @@
 """MIP2 deterministic seeded method-qualification fixtures."""
 from __future__ import annotations
 
-import ast
 import json
 import pathlib
 import subprocess
@@ -21,7 +20,7 @@ def test_contracts_are_structurally_valid():
     assert receipt["cases"] >= 8
 
 
-def test_formatter_idempotence_and_semantics(tmp_path):
+def test_formatter_idempotence_and_semantics():
     black = pytest.importorskip("black")
     isort = pytest.importorskip("isort")
     original = "import sys\nimport os\n\ndef add( x,y ):\n return x+y\n"
@@ -44,7 +43,9 @@ def test_bandit_positive_and_negative(tmp_path):
     good.write_text("import subprocess\nsubprocess.run(['echo', 'test'], shell=False)\n", encoding="utf-8")
     def scan(path):
         out = tmp_path / (path.stem + ".json")
-        subprocess.run([sys.executable, "-m", "bandit", "-f", "json", "-o", str(out), str(path)], check=False, capture_output=True, text=True)
+        result = subprocess.run([sys.executable, "-m", "bandit", "-f", "json", "-o", str(out), str(path)], check=False, capture_output=True, text=True)
+        assert result.returncode in (0, 1), "Bandit scan did not finish normally"
+        assert out.is_file(), "Bandit JSON artifact missing"
         return json.loads(out.read_text(encoding="utf-8"))["results"]
     assert any(x["test_id"] == "B602" for x in scan(bad))
     assert not any(x["test_id"] == "B602" for x in scan(good))
