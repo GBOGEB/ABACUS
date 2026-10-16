@@ -52,12 +52,20 @@ def test_default_base_prefers_remote_head(monkeypatch):
 
 
 def test_default_base_uses_main_if_remote_head_unknown(monkeypatch):
-    monkeypatch.setattr(
-        brr,
-        "optional_git",
-        lambda repo, *args: "a" * 40 if "origin/main" in args else "",
-    )
+    calls = []
+
+    def remote_lookup(repo, *args):
+        calls.append(args)
+        if args == ("rev-parse", "--verify", "refs/remotes/origin/main"):
+            return "a" * 40
+        return ""
+
+    monkeypatch.setattr(brr, "optional_git", remote_lookup)
     assert brr.default_base(Path(".")) == "main"
+    assert calls == [
+        ("symbolic-ref", "--short", "refs/remotes/origin/HEAD"),
+        ("rev-parse", "--verify", "refs/remotes/origin/main"),
+    ]
 
 
 def test_default_base_fails_conservatively(monkeypatch):
