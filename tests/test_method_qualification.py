@@ -99,7 +99,7 @@ def test_federation_receipts_require_lineage_and_independence():
         negative_controls_pass=True,
         federation_receipts=["CODEX", "QPS"],
     )
-    assert m.qualify(e)["level"] == "M4"
+    assert m.qualify(e)["state"] == "INVALID"
 
     e["federation_receipts"] = [
         federation_receipt("r1", "GBOGEB/CODEX", "d" * 40),
@@ -125,7 +125,7 @@ def test_m6_requires_comparative_adaptive_receipt_and_is_not_admission():
         ],
         adaptive_receipt="trial",
     )
-    assert m.qualify(e)["level"] == "M5"
+    assert m.qualify(e)["state"] == "INVALID"
 
     e["adaptive_receipt"] = {
         "source_sha": e["source_sha"],
@@ -239,7 +239,19 @@ def test_receipt_only_claim_is_not_native_or_root_closure():
     e = sample()
     e.update(
         repair_receipt="root", negative_controls_pass=True,
-        federation_receipts=["CODEX", "QPS"], adaptive_receipt="trial",
+        federation_receipts=[
+            federation_receipt("r1", "GBOGEB/CODEX", "d" * 40),
+            federation_receipt("r2", "GBOGEB/cryoplant-project", "e" * 40),
+        ],
+        adaptive_receipt={
+            "source_sha": e["source_sha"],
+            "method_id": e["method_id"],
+            "baseline_receipt": "before",
+            "candidate_receipt": "after",
+            "metric": "false_negative_rate",
+            "delta": -0.1,
+            "improved": True,
+        },
     )
     result = m.qualify(e)
     assert result["level"] == "M6"
@@ -247,3 +259,46 @@ def test_receipt_only_claim_is_not_native_or_root_closure():
     assert result["native_verified"] is False
     assert result["root_closed"] is False
     assert result["merge_authorized"] is False
+
+
+
+def test_duplicate_receipt_ids_across_repositories_rejected():
+    e = sample()
+    e["federation_receipts"] = [
+        federation_receipt("same", "GBOGEB/CODEX", "d" * 40),
+        federation_receipt("same", "GBOGEB/cryoplant-project", "e" * 40),
+    ]
+    assert m.qualify(e)["state"] == "INVALID"
+
+
+def test_independence_and_method_binding_fail_closed():
+    e = sample()
+    r = federation_receipt("r1", "GBOGEB/CODEX", "d" * 40)
+    r["independent"] = "true"
+    e["federation_receipts"] = [r]
+    assert m.qualify(e)["state"] == "INVALID"
+    r["independent"] = True
+    r["method_id"] = "other-method"
+    assert m.qualify(e)["state"] == "INVALID"
+
+
+def test_adaptive_boolean_nonfinite_and_zero_delta_cannot_promote():
+    e = sample()
+    e.update(
+        repair_receipt="root", negative_controls_pass=True,
+        federation_receipts=[
+            federation_receipt("r1", "GBOGEB/CODEX", "d" * 40),
+            federation_receipt("r2", "GBOGEB/cryoplant-project", "e" * 40),
+        ],
+    )
+    for delta in (True, float("nan"), float("inf"), 0):
+        e["adaptive_receipt"] = {
+            "source_sha": e["source_sha"],
+            "method_id": e["method_id"],
+            "baseline_receipt": "before",
+            "candidate_receipt": "after",
+            "metric": "false_negative_rate",
+            "delta": delta,
+            "improved": True,
+        }
+        assert m.qualify(e)["level"] == "M5"
