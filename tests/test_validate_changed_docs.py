@@ -161,6 +161,20 @@ class ValidateChangedDocsTests(unittest.TestCase):
             self.assertEqual(rule["languages"], ["yaml"])
             self.assertIn("pattern-regex", rule)
             self.assertEqual(len(rule["paths"]["include"]), 2)
+        import re
+
+        rules = {rule["id"]: rule["pattern-regex"] for rule in parsed["rules"]}
+        samples = {
+            "abacus.github-actions-broad-write-all": "permissions: write-all",
+            "abacus.github-actions-untrusted-pr-target": "  pull_request_target:",
+            "abacus.github-actions-unpinned-action-tag": (
+                "  - uses: actions/checkout@v7"
+            ),
+        }
+        for rule_id, sample in samples.items():
+            with self.subTest(rule=rule_id):
+                self.assertIsNotNone(re.search(rules[rule_id], sample))
+                self.assertIsNone(re.search(rules[rule_id], "permissions: read"))
 
 if __name__ == "__main__":
     unittest.main()
