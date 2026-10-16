@@ -104,7 +104,6 @@ class CrossScannerTests(unittest.TestCase):
         with self.assertRaisesRegex(mod.InvalidCensus, "duplicate scanner"):
             mod.normalize(doc)
 
-
     def test_repeated_artifact_on_new_run_is_rejected(self):
         doc = payload()
         repeated = copy.deepcopy(doc["sources"][0])
@@ -115,8 +114,13 @@ class CrossScannerTests(unittest.TestCase):
             mod.normalize(doc)
 
     def test_noncanonical_repository_identities_rejected(self):
-        for repository in ("GBOGEB/", "GBOGEB/.", "GBOGEB/..",
-                           "GBOGEB/foo/bar", "GBOGEB/foo bar"):
+        for repository in (
+            "GBOGEB/",
+            "GBOGEB/.",
+            "GBOGEB/..",
+            "GBOGEB/foo/bar",
+            "GBOGEB/foo bar",
+        ):
             with self.subTest(repository=repository):
                 doc = payload()
                 doc["repository"] = repository
@@ -126,14 +130,21 @@ class CrossScannerTests(unittest.TestCase):
                     mod.normalize(doc)
 
     def test_native_terminal_conclusions_retained_without_promotion(self):
-        for conclusion in ("timed_out", "neutral", "skipped", "action_required",
-                           "stale", "startup_failure"):
+        for conclusion in (
+            "timed_out",
+            "neutral",
+            "skipped",
+            "action_required",
+            "stale",
+            "startup_failure",
+        ):
             with self.subTest(conclusion=conclusion):
                 doc = payload()
                 doc["sources"][0]["enforcement"]["workflow_conclusion"] = conclusion
                 result = mod.normalize(doc)
-                observed = next(e for e in result["enforcement"]
-                                if e["scanner"] == "bandit")
+                observed = next(
+                    e for e in result["enforcement"] if e["scanner"] == "bandit"
+                )
                 self.assertEqual(conclusion, observed["workflow_conclusion"])
                 self.assertEqual("HOLD", result["merge_admission"])
 
@@ -157,11 +168,20 @@ class CrossScannerTests(unittest.TestCase):
 
             for destination in targets:
                 with self.subTest(destination=destination):
-                    with patch.object(sys, "argv",
-                                      ["join", "--input", str(original),
-                                       "--output", str(destination)]):
+                    with patch.object(
+                        sys,
+                        "argv",
+                        [
+                            "join",
+                            "--input",
+                            str(original),
+                            "--output",
+                            str(destination),
+                        ],
+                    ):
                         with self.assertRaisesRegex(
-                                mod.InvalidCensus, "output aliases input"):
+                            mod.InvalidCensus, "output aliases input"
+                        ):
                             mod.main()
                     self.assertEqual(raw, original.read_bytes())
 
@@ -210,7 +230,7 @@ class CrossScannerTests(unittest.TestCase):
     def test_path_escape_and_abs_path_rejected(self):
         for path in (
             "../a.py",
-            "/tmp/a.py",
+            str(Path(tempfile.gettempdir()) / "a.py"),
             "a/../b.py",
             "C:/secret.py",
             "a\\b.py",
@@ -253,7 +273,6 @@ class CrossScannerTests(unittest.TestCase):
             self.assertEqual(64, len(report["input_sha256"]))
             self.assertEqual("HOLD", report["merge_admission"])
             self.assertFalse(report["authority_transfer"])
-
 
     def test_additional_cross_scanner_rule_families(self):
         expected = [

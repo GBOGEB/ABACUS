@@ -151,9 +151,17 @@ def normalize(payload):
             and type(policy.get("continue_on_error")) is bool
             and policy.get("workflow_conclusion")
             in {
-                "success", "failure", "cancelled", "neutral", "skipped",
-                "timed_out", "action_required", "stale", "startup_failure",
-                "pending", "unknown",
+                "success",
+                "failure",
+                "cancelled",
+                "neutral",
+                "skipped",
+                "timed_out",
+                "action_required",
+                "stale",
+                "startup_failure",
+                "pending",
+                "unknown",
             }
             and policy.get("required_check") in (None, True, False),
             "scanner enforcement semantics absent",
@@ -266,7 +274,9 @@ def main():
     projected = a.output.resolve(strict=False)
     require(original != projected, "output aliases input evidence")
     if a.output.exists():
-        require(not os.path.samefile(a.input, a.output), "output aliases input evidence")
+        require(
+            not os.path.samefile(a.input, a.output), "output aliases input evidence"
+        )
     raw = original.read_bytes()
     require(len(raw) <= 20_000_000, "unbounded scanner input")
     result = normalize(json.loads(raw))

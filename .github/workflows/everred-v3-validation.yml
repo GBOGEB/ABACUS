@@ -98,7 +98,9 @@ jobs:
       - name: Measure matched mass-signal behavioral coverage (advisory)
         working-directory: tools/everred_v3
         env:
-          SOURCE_HEAD_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+          SOURCE_HEAD_SHA: >-
+            ${{ github.event.pull_request.head.sha || github.sha }}
+          MATRIX_PYTHON_VERSION: ${{ matrix.python-version }}
         run: |
           set -eu
           checked_out_sha="$(git rev-parse HEAD)"
@@ -138,7 +140,10 @@ jobs:
               "source_head_claim": os.environ["SOURCE_HEAD_SHA"],
               "run_id": int(os.environ["GITHUB_RUN_ID"]),
               "run_attempt": int(os.environ["GITHUB_RUN_ATTEMPT"]),
-              "job_id": os.environ["GITHUB_JOB"],
+              "job_key": os.environ["GITHUB_JOB"],
+              "job_id": None,
+              "native_job_binding": "UNKNOWN_UNBOUND",
+              "python_version": os.environ["MATRIX_PYTHON_VERSION"],
               "report_sha256": hashlib.sha256(path.read_bytes()).hexdigest(),
               "totals": {k: totals[k] for k in required},
               "instrumented_files": list(files),
@@ -146,8 +151,10 @@ jobs:
               "qps_acceptance": "DEFER",
           }
           target = path.parent / "mass-signal-coverage-receipt.json"
-          target.write_text(json.dumps(receipt, indent=2, sort_keys=True) + "\n",
-                            encoding="utf-8")
+          target.write_text(
+              json.dumps(receipt, indent=2, sort_keys=True) + "\n",
+              encoding="utf-8",
+          )
           print(json.dumps(receipt, sort_keys=True))
           PY
       - name: Upload source-bound focused-coverage measurement
@@ -163,9 +170,11 @@ jobs:
         working-directory: tools/everred_v3
         run: |
           python -m pip install black==26.10.1 isort==9.0.2
-          # Diagnostics only: print new-source diffs without changing gate status.
-          python -m black --diff src/mass_signal_join.py tests/test_mass_signal_join.py
-          python -m isort --diff src/mass_signal_join.py tests/test_mass_signal_join.py
+          # Diagnostics only; preserve the existing gate.
+          python -m black --diff \
+            src/mass_signal_join.py tests/test_mass_signal_join.py
+          python -m isort --diff \
+            src/mass_signal_join.py tests/test_mass_signal_join.py
           python -m black --check src scripts tests
           python -m isort --check-only src scripts tests
   native-pulse:

@@ -61,17 +61,26 @@ repository owner before generating a native census.
 ## Next root-ranked expansion and consumer proof
 
 | Domain | Next producer/consumer | Expected evidence |
-|---|---|---|
-| Semgrep | Stable SARIF to normalized detailed occurrences | rule, sink, path, line, artifact SHA and enforcement |
-| Ruff | S607/S314/S110/S112 correlated with Bandit/Semgrep | candidate groups, not closed roots |
-| Flake8 | Existing DAB queue per disjoint owner | before/after same scope, G1 budget and ratchet |
-| Black | historical repo 741/889 vs bounded EVERRED 22/41 | separate base debt and changed-file mutation |
-| RHEL/UBI | authenticated container/host source | OS/image/arch/FIPS cells and actual runtime receipts |
-| Docker | cold/warm/negative image and port matrix | daemon, image digest, container and health proofs |
-| LLDB/LDAB | true debugger session and joined BD root | breakpoint/step/build ID/session bound to run/job |
-| YAML/JSON/TOML | false-schema, duplicate-ID and DAG corpus | fail-closed control-plane proof |
-| Logging | S110/S112 and redaction/exception lineage | observed exceptions, hash, truncation and root owner |
-| OSV | installed/identified/unscannable package denominator | new-vulnerability delta and scan semantics |
+- **Semgrep:** Stable SARIF to normalized detailed occurrences; capture rule,
+  sink, path, line, artifact SHA and enforcement.
+- **Ruff:** Correlate S607/S314/S110/S112 with Bandit/Semgrep; retain
+  candidates rather than claiming closed roots.
+- **Flake8:** Use the existing DAB queue by disjoint owner; compare matched
+  before/after scopes, G1 budget and ratchet.
+- **Black:** Distinguish historical repo 741/889 from EVERRED 22/41;
+  retain base debt separately from changed-file mutation.
+- **RHEL/UBI:** Capture authenticated container/host source and
+  OS/image/arch/FIPS cells with actual runtime receipts.
+- **Docker:** Run cold/warm/negative image and port matrices; include
+  daemon, image digest, container and health evidence.
+- **LLDB/LDAB:** Bind true debugger sessions and BD roots to
+  breakpoint, step, build ID, run and job.
+- **YAML/JSON/TOML:** Exercise false-schema, duplicate-ID and DAG cases
+  against fail-closed control-plane contracts.
+- **Logging:** Correlate S110/S112 with redaction, exception lineage,
+  observed hashes, truncation and root ownership.
+- **OSV:** Measure installed, identified and unscannable package
+  denominators, vulnerability deltas and scan enforcement semantics.
 
 **Global DoV** remains an owner-usable QPS engineering deliverable,
 accepted decision or externally usable release, not a reduced scanner
