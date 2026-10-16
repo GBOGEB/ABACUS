@@ -21,7 +21,11 @@ Manual browser imports are always classified as untrusted.
 
 ## CBD! 260 failed-workflow census — source-owned scale testflight
 
-[CBD 260 SIPOC / wave plan](docs/CBD_260_WAVES_SIPOC_20261016.md) is the bounded read-only N0–N5 implementation. The ten `data/cbd_260/N0_*.json` files retain 75 PR exact heads, 260 failed workflow associations and 253 unique failed run IDs, including seven PR aliases. No workflow-name grouping is an accepted causal root.
+[CBD 260 SIPOC / wave plan](docs/CBD_260_WAVES_SIPOC_20261016.md)
+is the bounded read-only N0–N5 implementation. The ten
+`data/cbd_260/N0_*.json` files retain 75 PR exact heads, 260 failed
+workflow associations and 253 unique failed run IDs, including seven PR
+aliases. No workflow-name grouping is an accepted causal root.
 
 ```bash
 cd tools/everred_v3
@@ -33,7 +37,11 @@ python scripts/cbd_260.py data/cbd_260/N0_*.json \
   --output-dir /tmp/cbd-260-native --enrich-native --workers 4
 ```
 
-The existing EVERRED V3 CI workflow now exercises a targeted test corpus and optional PR-scoped native job readback, with source SHA checkout assertion and artifact outputs. It does not rerun the 253 target workflows, mutate external repositories, dispatch Crew agents, approve A10/Safety, or create a second BD authority.
+The existing EVERRED V3 CI workflow now exercises a targeted test corpus
+and optional PR-scoped native job readback, with source SHA checkout
+assertion and artifact outputs. It does not rerun the 253 target workflows,
+mutate external repositories, dispatch Crew agents, approve A10/Safety,
+or create a second BD authority.
 
 ## New native evidence collectors
 
