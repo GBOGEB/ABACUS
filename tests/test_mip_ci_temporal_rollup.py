@@ -193,6 +193,30 @@ class TemporalPulseTests(unittest.TestCase):
             with self.assertRaises(ValueError):
                 rollup(data)
 
+    def test_invalid_utc_calendar_date_fails_closed(self):
+        """Exercise the native parser rejection, not merely the Z suffix guard."""
+        for bad in ("2026-13-12T12:00:00Z", "not-a-dateZ"):
+            with self.subTest(bad=bad):
+                data = fixture()
+                data["observations"][1]["observed_at"] = bad
+                with self.assertRaisesRegex(ValueError, "invalid observed UTC timestamp"):
+                    rollup(data)
+
+    def test_persisted_future_forecast_keeps_actual_unknown(self):
+        """An issued forecast may await a genuinely unobserved target wave."""
+        data = fixture()
+        data["forecasts"] = [{
+            "issued_wave": 2, "target_wave": 3,
+            "issued_source_sha": SHA_B,
+            "issued_at": "2026-10-12T12:01:00Z",
+            "method": "persistence-v1", "prediction": 1.0,
+        }]
+        result = rollup(data)
+        self.assertEqual(result["forecasts_scored"], 0)
+        self.assertIsNone(result["forecast_mae"])
+        self.assertIsNone(result["persisted_forecasts"][0]["actual"])
+        self.assertFalse(result["merge_authorized"])
+
     def test_no_pca_or_formal_root_credit_from_multiple_jobs(self):
         data = fixture()
         data["observations"].append(wave(3, success=20))
