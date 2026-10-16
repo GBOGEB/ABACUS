@@ -29,6 +29,7 @@ class ChangedDocsSelectionTests(unittest.TestCase):
                     "GIT_COMMITTER_EMAIL": "test@example.invalid",
                 },
             ).stdout.strip()
+
         (root / "baseline.yml").write_text("base: true\n")
         git("add", ".")
         git("commit", "-qm", "common")
@@ -55,11 +56,14 @@ class ChangedDocsSelectionTests(unittest.TestCase):
             },
             clear=False,
         ):
+            # Production resolves git merge-base against HEAD, so the fixture
+            # must execute in the same checked-out revision as the event.
             return [str(p) for p in mod.changed_files()]
 
     def test_normal_pr_head(self):
         tmp, root, git, ancestor, base, head = self._fixture()
         try:
+            git("checkout", "-q", head)
             self.assertEqual(self._select(root, base, head), ["feature.yml"])
         finally:
             tmp.cleanup()
@@ -75,9 +79,22 @@ class ChangedDocsSelectionTests(unittest.TestCase):
         finally:
             tmp.cleanup()
 
+    def test_missing_merge_base_fails_closed(self):
+        tmp, root, git, ancestor, base, head = self._fixture()
+        try:
+            git("checkout", "-q", "--orphan", "unrelated")
+            (root / "orphan.yml").write_text("isolated: true\n")
+            git("add", ".")
+            git("commit", "-qm", "unrelated root")
+            with self.assertRaisesRegex(RuntimeError, "Cannot resolve PR merge base"):
+                self._select(root, base, git("rev-parse", "HEAD"))
+        finally:
+            tmp.cleanup()
+
     def test_shallow_missing_base_fails_closed(self):
         tmp, root, git, ancestor, base, head = self._fixture()
         try:
+            git("checkout", "-q", head)
             with self.assertRaisesRegex(RuntimeError, "Cannot resolve PR base SHA"):
                 self._select(root, "a" * 40, head)
         finally:
