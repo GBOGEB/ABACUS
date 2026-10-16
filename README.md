@@ -1,5 +1,8 @@
 # ABACUS — 12-Cluster Analysis Framework
 
+
+> **CODE PURPLE P4 federation navigation (dated 16 Oct 2026):** This repository owns **first-red diagnosis, source-level repairs, CI and independent security**. [Mission Control](https://github.com/GBOGEB/pipeline-automation-hub) · [Local recursive SIPOC pilot](https://github.com/GBOGEB/pipeline-automation-hub/blob/master/mission-control/federation-atlas/flightdeck/pulses/federation_landing_p4.html) · [Current repository Actions](https://github.com/GBOGEB/ABACUS/actions) · [Open PRs](https://github.com/GBOGEB/ABACUS/pulls) · [Current source history](https://github.com/GBOGEB/ABACUS/commits). **Snapshot caution:** The README contains historical v4.4.0 completion/coverage badges; those are not present main admission evidence. This navigation link is not an assertion that the P4 pilot is merged or hosted; preserve UNKNOWN and independent owner gates.
+
 <!-- markdownlint-disable MD001 MD013 MD022 MD029 MD031 MD032 MD040 MD060 -->
 
 [![main version](https://img.shields.io/badge/dynamic/toml?url=https%3A%2F%2Fraw.githubusercontent.com%2FGBOGEB%2FABACUS%2Fmain%2Fpyproject.toml&query=%24.project.version&prefix=v&label=main%20version&color=blue&style=flat-square)](pyproject.toml)
