@@ -316,7 +316,7 @@ def render_html(proj):
             + ", ".join(
                 "<a href='https://github.com/GBOGEB/ABACUS/pull/"
                 + str(n) + "'>#" + str(n) + "</a>"
-                for n in f["affected_prs"])
+                for n in f["affected_prs"]
             ) + "</p><ul>" + cells + "</ul></details>")
     m = proj["metrics"]
     return (
