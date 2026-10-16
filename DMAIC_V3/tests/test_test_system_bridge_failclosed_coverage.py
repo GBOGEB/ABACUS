@@ -161,7 +161,7 @@ def test_pytest_suite_command_keeps_markers_and_exit_proof(bridge, monkeypatch):
     assert cmd[:3] == [sys.executable, "-m", "pytest"]
     assert "DMAIC_V3/tests" in cmd
     marker_index = cmd.index("DMAIC_V3/tests") + 1
-    assert cmd[marker_index:marker_index + 2] == ["-m", "unit"]
+    assert cmd[marker_index : marker_index + 2] == ["-m", "unit"]
     assert "--maxfail=5" in cmd
 
 
@@ -379,5 +379,8 @@ def test_phase_context_records_positive_and_negative_exit(bridge):
         for line in bridge.mcp.log_file.read_text(encoding="utf-8").splitlines()
     ]
     assert [entry["status"] for entry in records[-4:]] == [
-        "enter", "success", "enter", "failed"
+        "enter",
+        "success",
+        "enter",
+        "failed",
     ]
