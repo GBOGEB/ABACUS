@@ -14,14 +14,20 @@ class ChangedDocsSelectionTests(unittest.TestCase):
         tmp = tempfile.TemporaryDirectory()
         root = Path(tmp.name)
         subprocess.run(["git", "init", "-q", str(root)], check=True)
+
         def git(*args):
             return subprocess.run(
                 ["git", "-C", str(root), *args],
-                check=True, capture_output=True, text=True,
-                env={**os.environ, "GIT_AUTHOR_NAME": "test",
-                     "GIT_AUTHOR_EMAIL": "test@example.invalid",
-                     "GIT_COMMITTER_NAME": "test",
-                     "GIT_COMMITTER_EMAIL": "test@example.invalid"},
+                check=True,
+                capture_output=True,
+                text=True,
+                env={
+                    **os.environ,
+                    "GIT_AUTHOR_NAME": "test",
+                    "GIT_AUTHOR_EMAIL": "test@example.invalid",
+                    "GIT_COMMITTER_NAME": "test",
+                    "GIT_COMMITTER_EMAIL": "test@example.invalid",
+                },
             ).stdout.strip()
         (root / "baseline.yml").write_text("base: true\n")
         git("add", ".")
@@ -41,9 +47,13 @@ class ChangedDocsSelectionTests(unittest.TestCase):
     def _select(self, root, base, head):
         with patch.object(mod, "REPO_ROOT", root), patch.dict(
             os.environ,
-            {"GITHUB_EVENT_NAME": "pull_request",
-             "GITHUB_BASE_SHA": base, "GITHUB_SHA": head,
-             "GITHUB_BASE_REF": "main"}, clear=False,
+            {
+                "GITHUB_EVENT_NAME": "pull_request",
+                "GITHUB_BASE_SHA": base,
+                "GITHUB_SHA": head,
+                "GITHUB_BASE_REF": "main",
+            },
+            clear=False,
         ):
             return [str(p) for p in mod.changed_files()]
 
@@ -60,6 +70,7 @@ class ChangedDocsSelectionTests(unittest.TestCase):
             git("checkout", "-qB", "integration", base)
             git("merge", "-q", "--no-ff", "feature", "-m", "synthetic")
             merged = git("rev-parse", "HEAD")
+            # Synthetic merge contains the base-only change; selection must not.
             self.assertEqual(self._select(root, base, merged), ["feature.yml"])
         finally:
             tmp.cleanup()
