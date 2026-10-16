@@ -7,6 +7,7 @@ import hashlib
 import json
 import re
 from pathlib import Path
+from typing import Optional
 
 from mip3_metrics import metrics, wilson
 
@@ -15,7 +16,7 @@ SHA256 = re.compile(r"[0-9a-f]{64}\Z")
 SCHEMA = "mip2.method-observations.v1"
 
 
-def checked_identity(evidence: dict, raw_corpus: bytes, raw_artifact: bytes | None) -> None:
+def checked_identity(evidence: dict, raw_corpus: bytes, raw_artifact: Optional[bytes]) -> None:
     if not isinstance(evidence, dict) or evidence.get("schema") != SCHEMA:
         raise ValueError("OBSERVATION_SCHEMA_INVALID")
     required = ("repository", "source_sha", "method_id", "tool_name", "tool_version",
@@ -48,7 +49,7 @@ def checked_identity(evidence: dict, raw_corpus: bytes, raw_artifact: bytes | No
             raise ValueError(key.upper() + "_INVALID")
 
 
-def evaluate(evidence: dict, raw_corpus: bytes, raw_artifact: bytes | None = None) -> dict:
+def evaluate(evidence: dict, raw_corpus: bytes, raw_artifact: Optional[bytes] = None) -> dict:
     checked_identity(evidence, raw_corpus, raw_artifact)
     try:
         corpus = json.loads(raw_corpus)
