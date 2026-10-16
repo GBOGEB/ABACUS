@@ -60,7 +60,8 @@ repository owner before generating a native census.
 
 ## Next root-ranked expansion and consumer proof
 
-| Domain | Next producer/consumer | Expected evidence |
+**Next evidence producers and boundaries:**
+
 - **Semgrep:** Stable SARIF to normalized detailed occurrences; capture rule,
   sink, path, line, artifact SHA and enforcement.
 - **Ruff:** Correlate S607/S314/S110/S112 with Bandit/Semgrep; retain
