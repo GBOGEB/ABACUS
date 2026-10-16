@@ -60,6 +60,7 @@ def bd():
             "scope": {"repository": "GBOGEB/ABACUS", "head_sha": SHA},
             "merge_admission": "HOLD", "authority_transfer": False,
             "security_waiver": False, "formal_credit_delta": 0,
+            "engineering_credit_delta": 0,
             "security_disposition": "INDEPENDENT_REVIEW_REQUIRED",
             "metrics": {"full_bandit_unique": 9, "active_workers": None,
                         "changed_line_coverage": None},
@@ -128,6 +129,15 @@ class ReceiptAdaptersTests(unittest.TestCase):
     def test_bd_engineering_credit_and_boolean_formal_credit_rejected(self):
         source = bd()
         self.assertEqual(A._bd(source)["root_candidate_groups"], 1)
+        for missing in ("absent", "null"):
+            with self.subTest(missing=missing):
+                changed = json.loads(json.dumps(source))
+                if missing == "absent":
+                    del changed["engineering_credit_delta"]
+                else:
+                    changed["engineering_credit_delta"] = None
+                with self.assertRaises(ValueError):
+                    A._bd(changed)
         allowed = json.loads(json.dumps(source))
         allowed["engineering_credit_delta"] = 0
         self.assertEqual(A._bd(allowed)["verified_closed_roots"], None)
