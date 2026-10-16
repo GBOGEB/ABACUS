@@ -116,6 +116,19 @@
     "workflow_repetition": {
       "channel": "expandable grouped cohort with preserved native run links",
       "guard": "Roll-up affects presentation only; never removes runs from numerator/denominator."
+    },
+    "measurement_granularity": {
+      "channel": "explicit_level_label",
+      "mapping": {
+        "workflow": "RUN",
+        "job": "JOB",
+        "step": "STEP",
+        "test_case": "TEST",
+        "source_context": "CTX",
+        "root": "ROOT",
+        "independent_cycle": "CYCLE"
+      },
+      "guard": "Execution depth and repeated evidence describe granularity; they do not increase independent process sample size."
     }
   },
   "constraints": [
@@ -128,7 +141,9 @@
     "Repository test/coverage proof and physical plant safety colors are separate domains.",
     "Branch protected=true is not equivalent to admission PASS; show mandatory CI and review separately.",
     "Configuration colors, execution colors, and ownership/phase markings must not be used as interchangeable evidence.",
-    "Workflow roll-ups retain native individual run IDs and SHA links for audit."
+    "Workflow roll-ups retain native individual run IDs and SHA links for audit.",
+    "Telemetry family/granularity styling must not reuse native outcome colors as a semantic status code.",
+    "Workflow/job/step/test/root counts are nested or repeated evidence unless an independent-cycle producer proves otherwise."
   ],
   "authority_transfer": false
 }
