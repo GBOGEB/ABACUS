@@ -66,11 +66,11 @@
     {
       "number": 2046,
       "repo": "GBOGEB/ABACUS",
-      "sha": "bf626ed5fb8372f91b859c20b7f0ffe3b373e460",
+      "sha": "67ad1b653370d0245aacebe9c95364a8327fd977",
       "role": "C2/W72 coverage",
-      "checks": "19S/2F/1C/7 queued",
+      "checks": "27 queued/2 pending on current source; previous bf626ed5 head 19S/2F/1C",
       "url": "https://github.com/GBOGEB/ABACUS/pull/2046",
-      "action": "C2/W72 coverage; prior run breakdown: 19S/2F/1C/7 queued; native exact-head reread required."
+      "action": "C2/W72 coverage; new exact head native 27 queued / 2 pending. The prior W72 557/1/2 failure stays bound only to bf626ed5, not to new source."
     },
     {
       "number": 2041,
@@ -382,5 +382,14 @@
     "formal_credit_delta": 0,
     "engineering_credit_delta": 0,
     "merge_admission": "HOLD"
+  },
+  "intervening_history": {
+    "pr": 2046,
+    "previous_head": "bf626ed5fb8372f91b859c20b7f0ffe3b373e460",
+    "new_head": "67ad1b653370d0245aacebe9c95364a8327fd977",
+    "previous_run_id": 38871217334,
+    "previous_w72_job_id": 116875501551,
+    "new_head_native": "NONTERMINAL",
+    "matched_coverage_delta_pp": null
   }
 }
