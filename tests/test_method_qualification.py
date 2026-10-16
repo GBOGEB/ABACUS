@@ -30,14 +30,26 @@ def sample():
     )
 
 
-def federation_receipt(receipt_id, repository, sha):
+def federation_receipt(repo, rid):
     return {
-        "receipt_id": receipt_id,
-        "repository": repository,
-        "source_sha": sha,
+        "receipt_id": rid,
+        "repository": repo,
+        "source_sha": "d" * 40,
         "method_id": "security-sast",
         "applicable": True,
         "independent": True,
+    }
+
+
+def adaptive_receipt():
+    return {
+        "source_sha": "a" * 40,
+        "method_id": "security-sast",
+        "baseline_receipt": "base-1",
+        "candidate_receipt": "candidate-1",
+        "metric": "recall",
+        "delta": 0.05,
+        "improved": True,
     }
 
 
@@ -47,16 +59,16 @@ def test_unknown_fails_closed():
     assert m.qualify(e)["state"] == "UNKNOWN"
 
 
-def test_blank_or_malformed_identity_is_invalid():
+def test_blank_and_malformed_identity_stays_m0():
     for key, value in (
         ("repository", ""),
         ("source_sha", ""),
-        ("source_sha", "g" * 40),
+        ("source_sha", "not-a-sha"),
         ("method_id", ""),
-        ("method_id", "unregistered"),
+        ("method_id", "not-registered"),
         ("tool_version", ""),
         ("config_digest", "short"),
-        ("corpus_digest", "z" * 64),
+        ("corpus_digest", "short"),
         ("run_id", 0),
         ("job_id", -1),
         ("attempt", 0),
@@ -64,8 +76,9 @@ def test_blank_or_malformed_identity_is_invalid():
         e = sample()
         e[key] = value
         result = m.qualify(e)
-        assert result["state"] == "INVALID", (key, value, result)
+        assert result["state"] == "INVALID"
         assert result["level"] == "M0"
+        assert result["merge_authorized"] is False
 
 
 def test_m2_not_repair():
@@ -78,7 +91,13 @@ def test_m4_negative_and_repair():
     assert m.qualify(e)["level"] == "M4"
 
 
-def test_negative_control_must_be_actual_boolean():
+def test_false_negative_blocks_m4():
+    e = sample()
+    e.update(fn=1, repair_receipt="root", negative_controls_pass=True)
+    assert m.qualify(e)["level"] == "M3"
+
+
+def test_string_false_negative_control_is_invalid_not_truthy():
     e = sample()
     e.update(repair_receipt="root", negative_controls_pass="false")
     result = m.qualify(e)
@@ -86,84 +105,60 @@ def test_negative_control_must_be_actual_boolean():
     assert result["level"] == "M0"
 
 
-def test_false_negative_blocks_m4():
-    e = sample()
-    e.update(fn=1, repair_receipt="root", negative_controls_pass=True)
-    assert m.qualify(e)["level"] == "M3"
-
-
-def test_federation_receipts_require_lineage_and_independence():
+def test_malformed_federation_receipts_do_not_award_m5():
     e = sample()
     e.update(
         repair_receipt="root",
         negative_controls_pass=True,
-        federation_receipts=["CODEX", "QPS"],
+        federation_receipts=["x", "y"],
+        adaptive_receipt="trial",
     )
     assert m.qualify(e)["level"] == "M4"
 
     e["federation_receipts"] = [
-        federation_receipt("r1", "GBOGEB/CODEX", "d" * 40),
-        federation_receipt("r2", "GBOGEB/CODEX", "e" * 40),
+        federation_receipt("GBOGEB/CODEX", "same"),
+        federation_receipt("GBOGEB/CODEX", "same"),
     ]
     assert m.qualify(e)["level"] == "M4"
 
-    e["federation_receipts"] = [
-        federation_receipt("r1", "GBOGEB/CODEX", "d" * 40),
-        federation_receipt("r2", "GBOGEB/cryoplant-project", "e" * 40),
-    ]
-    assert m.qualify(e)["level"] == "M5"
 
-
-def test_m6_requires_comparative_adaptive_receipt_and_is_not_admission():
+def test_valid_independent_receipts_award_m5_but_not_m6_without_comparison():
     e = sample()
     e.update(
         repair_receipt="root",
         negative_controls_pass=True,
         federation_receipts=[
-            federation_receipt("r1", "GBOGEB/CODEX", "d" * 40),
-            federation_receipt("r2", "GBOGEB/cryoplant-project", "e" * 40),
+            federation_receipt("GBOGEB/CODEX", "codex-1"),
+            federation_receipt("GBOGEB/cryoplant-project", "qps-1"),
         ],
-        adaptive_receipt="trial",
+        adaptive_receipt={"trial": True},
     )
     assert m.qualify(e)["level"] == "M5"
 
-    e["adaptive_receipt"] = {
-        "source_sha": e["source_sha"],
-        "method_id": e["method_id"],
-        "baseline_receipt": "baseline-1",
-        "candidate_receipt": "candidate-1",
-        "metric": "false_negative_rate",
-        "delta": -0.1,
-        "improved": True,
-    }
+
+def test_m6_requires_source_bound_adaptive_improvement_receipt():
+    e = sample()
+    e.update(
+        repair_receipt="root",
+        negative_controls_pass=True,
+        federation_receipts=[
+            federation_receipt("GBOGEB/CODEX", "codex-1"),
+            federation_receipt("GBOGEB/cryoplant-project", "qps-1"),
+        ],
+        adaptive_receipt=adaptive_receipt(),
+    )
     result = m.qualify(e)
     assert result["level"] == "M6"
     assert result["merge_authorized"] is False
 
-
-def test_adaptive_receipt_wrong_source_or_no_improvement_stays_m5():
-    e = sample()
-    e.update(
+    bad = sample()
+    bad.update(
         repair_receipt="root",
         negative_controls_pass=True,
-        federation_receipts=[
-            federation_receipt("r1", "GBOGEB/CODEX", "d" * 40),
-            federation_receipt("r2", "GBOGEB/cryoplant-project", "e" * 40),
-        ],
-        adaptive_receipt={
-            "source_sha": "f" * 40,
-            "method_id": "security-sast",
-            "baseline_receipt": "b",
-            "candidate_receipt": "c",
-            "metric": "precision",
-            "delta": 0.1,
-            "improved": True,
-        },
+        federation_receipts=e["federation_receipts"],
+        adaptive_receipt={**adaptive_receipt(), "source_sha": "e" * 40},
     )
-    assert m.qualify(e)["level"] == "M5"
-    e["adaptive_receipt"]["source_sha"] = e["source_sha"]
-    e["adaptive_receipt"]["improved"] = False
-    assert m.qualify(e)["level"] == "M5"
+    assert m.qualify(bad)["level"] == "M5"
 
 
 def test_negative_count_invalid():
