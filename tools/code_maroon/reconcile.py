@@ -12,7 +12,10 @@ from collections import Counter, defaultdict
 from pathlib import Path
 
 SCHEMA = "code-maroon.snapshot.v1"
-STATUSES = {"OPEN_ACTIVE", "CLOSED_IMPLEMENTED", "DEFERRED_OWNER"}
+STATUSES = {"OPEN_ACTIVE", "CLOSED_IMPLEMENTED", "DEFERRED_OWNER", "IMPLEMENTED_UNRESOLVED"}
+IMPLEMENTATION_STATES = {"IMPLEMENTED", "NOT_IMPLEMENTED", "NOT_APPLICABLE"}
+THREAD_STATES = {"OPEN", "RESOLVED"}
+DISPOSITIONS = {"ACTIVE", "CLOSED", "DEFERRED"}
 
 
 def _load(path: Path) -> dict:
@@ -48,6 +51,23 @@ def _validate(snapshot: dict) -> None:
             raise ValueError("invalid manifestation status")
         if row.get("root_id") not in declared:
             raise ValueError("manifestation references undeclared root")
+        if row.get("implementation_state") not in IMPLEMENTATION_STATES:
+            raise ValueError("invalid implementation state")
+        if row.get("thread_state") not in THREAD_STATES:
+            raise ValueError("invalid thread state")
+        if row.get("disposition") not in DISPOSITIONS:
+            raise ValueError("invalid disposition")
+        if row.get("status") == "CLOSED_IMPLEMENTED" and (
+            row["implementation_state"] != "IMPLEMENTED"
+            or row["thread_state"] != "RESOLVED"
+            or row["disposition"] != "CLOSED"
+        ):
+            raise ValueError("closed implementation state mismatch")
+        if row.get("status") == "IMPLEMENTED_UNRESOLVED" and (
+            row["implementation_state"] != "IMPLEMENTED"
+            or row["thread_state"] != "OPEN"
+        ):
+            raise ValueError("implemented unresolved state mismatch")
         pair = (row.get("thread_id"), row.get("comment_id"))
         if pair in thread_comment_pairs:
             raise ValueError("duplicate manifestation identity")
@@ -66,11 +86,15 @@ def _summary(snapshot: dict) -> dict:
     roots = snapshot["roots"]
     return {
         "manifestations_total": len(manifestations),
-        "implemented": sum(row["status"] == "CLOSED_IMPLEMENTED" for row in manifestations),
-        "closed": sum(row["status"] == "CLOSED_IMPLEMENTED" for row in manifestations),
-        "deferred": sum(row["status"] == "DEFERRED_OWNER" for row in manifestations),
-        "outstanding": sum(row["status"] != "CLOSED_IMPLEMENTED" for row in manifestations),
-        "failing_active": sum(row["status"] == "OPEN_ACTIVE" for row in manifestations),
+        "implemented": sum(row["implementation_state"] == "IMPLEMENTED" for row in manifestations),
+        "closed": sum(row["thread_state"] == "RESOLVED" for row in manifestations),
+        "deferred": sum(row["disposition"] == "DEFERRED" for row in manifestations),
+        "outstanding": sum(row["thread_state"] != "RESOLVED" for row in manifestations),
+        "failing_active": sum(
+            row["disposition"] == "ACTIVE"
+            and row["implementation_state"] != "IMPLEMENTED"
+            for row in manifestations
+        ),
         "roots_total": len(roots),
         "roots_closed": sum(row["status"] == "CLOSED_IMPLEMENTED" for row in roots),
         "roots_deferred": sum(row["status"] == "DEFERRED_OWNER" for row in roots),
