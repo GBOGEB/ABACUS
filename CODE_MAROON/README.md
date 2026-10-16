@@ -41,11 +41,11 @@ become causal roots. CODE_MAROON root_id is the governed root identity.
 
 ## OOXML
 
-OOXML scanning is a candidate lane when DOCX/XLSX/PPTX or other OOXML packages
-enter the security scope. A bounded check should inspect ZIP structure,
-external relationships, embedded objects/macros, path traversal, malformed
-XML, and decompression limits. It should not be enabled merely to inflate
-scanner count when no OOXML artifacts are in scope.
+OOXML scanning is enabled as a bounded lane for tracked DOCX/XLSX/PPTX and
+macro-enabled OOXML packages. It inspects ZIP structure, external relationships,
+embedded objects/macros, path traversal, malformed packages and decompression
+limits without extracting package members. HIGH structural hazards fail the
+MAROON workflow; MEDIUM macro/external-link findings remain explicit review debt.
 
 ## Control boundary
 
