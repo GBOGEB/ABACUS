@@ -34,9 +34,15 @@ authentication**.
   identities are required.
 - **Analyze**: success-rate comparison requires both terminal cohorts with
   equal workflow-run count; queue p95 comparison also requires at least 20
-  measured jobs in each cohort and the same timing definition. Even then,
-  repeated jobs are correlated and the difference is **descriptive, not
-  inferential**.
+  measured jobs in each cohort, the same declared timing definition, and a
+  reconciled `queue_source_counts` for each observation. The fallback clock
+  (`workflow_run.created_at -> job.started_at`) is longer than the native
+  job-queue clock and changes the quantity measured. A mixed/fallback timing
+  population therefore **cannot earn a cross-wave p95 delta**, even when its
+  aggregate `queue_basis` label and nominal sample size match. The original
+  p95 remains visible, with the native/fallback numerator and denominator.
+  Even fully native job samples are correlated, and their delta is
+  **descriptive, not inferential**.
 - **Improve**: line/branch gains are computed only for equal coverage file-set
   digest, configuration, tool version and denominators; resulting numbers are
   candidate source-reported, not accepted main coverage improvement.
