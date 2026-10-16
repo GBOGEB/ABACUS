@@ -223,3 +223,161 @@ def test_success_requires_real_test_and_positive_static_result(bridge):
     assert metrics.tests_total == 1
     assert metrics.tests_failed == 0
     assert metrics.deployment_ready is True
+
+
+def test_scanner_success_and_error_returns_source_bound_result(bridge, monkeypatch):
+    calls = []
+
+    def successful_scanner(command, **kwargs):
+        calls.append((command, kwargs))
+        return SimpleNamespace(returncode=0, stdout="static ok", stderr="")
+
+    monkeypatch.setattr(bridge_module.subprocess, "run", successful_scanner)
+    green = bridge_module.TestSystemBridge.run_static_analysis(bridge)
+    assert green["flake8"] == {"returncode": 0, "output": "static ok"}
+    assert calls[0][0][1:3] == ["-m", "flake8"]
+
+    def missing_scanner(*_args, **_kwargs):
+        raise FileNotFoundError("scanner binary unavailable")
+
+    monkeypatch.setattr(bridge_module.subprocess, "run", missing_scanner)
+    red = bridge_module.TestSystemBridge.run_static_analysis(bridge)
+    assert "scanner binary unavailable" in red["flake8"]["error"]
+    assert "returncode" not in red["flake8"]
+
+
+def test_pytest_suite_with_no_optional_args_does_not_invent_filters(
+    bridge, monkeypatch
+):
+    calls = []
+
+    def record(name, command):
+        calls.append((name, command))
+        return successful_result(name)
+
+    monkeypatch.setattr(bridge, "run_test", record)
+    bridge.run_pytest_suite()
+    name, command = calls[0]
+    assert name == "pytest_suite"
+    assert command[:3] == [sys.executable, "-m", "pytest"]
+    assert "-m" not in command[3:]
+    assert "--maxfail=5" in command
+
+
+def test_failed_test_without_error_signature_is_not_runtime_traceback(bridge):
+    bridge.test_results["no-traceback"] = bridge_module.TestExecutionResult(
+        test_name="no-traceback",
+        returncode=5,
+        stdout="",
+        stderr="test failed without exception stack",
+        success=False,
+        duration_seconds=0.1,
+    )
+    assert bridge.detect_runtime_errors() == []
+    metrics = bridge.generate_deployment_metrics()
+    assert metrics.tests_failed == 1
+    assert metrics.deployment_ready is False
+
+
+def test_nonlist_action_history_is_not_appended_as_a_list(bridge):
+    bridge.actions_file.write_text('{"old": "wrong root type"}', encoding="utf-8")
+    bridge.log_action("safe-start", "one canonical action")
+    actions = json.loads(bridge.actions_file.read_text(encoding="utf-8"))
+    assert [action["type"] for action in actions] == ["safe-start"]
+
+
+def test_source_runner_without_declared_artifacts_does_not_forge_receipts(
+    bridge, monkeypatch
+):
+    monkeypatch.setattr(
+        bridge_module.subprocess,
+        "run",
+        lambda *_args, **_kwargs: SimpleNamespace(
+            returncode=0, stdout="no output", stderr=""
+        ),
+    )
+    measured = bridge.run_test("no_artifacts", ["stub"])
+    assert measured.success is True
+    assert measured.artifacts_expected == []
+    assert measured.artifacts_found == []
+    assert measured.artifacts_match is False
+
+
+def test_missing_report_and_metrics_are_generated_at_default_path(bridge):
+    bridge.test_results["good"] = successful_result("good")
+    report = bridge.save_deployment_report()
+    assert report == bridge.output_root / "deployment_report.json"
+    assert bridge.deployment_metrics is not None
+    stored = json.loads(report.read_text(encoding="utf-8"))
+    assert stored["deployment_metrics"]["tests_total"] == 1
+    assert stored["deployment_metrics"]["deployment_ready"] is True
+
+
+@pytest.mark.parametrize("failing_phase", [None, "integration"])
+def test_sequential_cycle_requires_every_independent_phase(
+    bridge, monkeypatch, failing_phase
+):
+    seen = []
+
+    def phase(test_path=None, markers=None):
+        seen.append(markers)
+        result = successful_result(markers)
+        if markers == failing_phase:
+            result.success = False
+            result.returncode = 2
+            result.stderr = "Error: seeded integration failure"
+        bridge.test_results[markers] = result
+        return result
+
+    monkeypatch.setattr(bridge, "run_pytest_suite", phase)
+    admitted = bridge.execute_full_test_cycle()
+    assert seen == ["unit", "integration", "smoke"]
+    assert admitted is (failing_phase is None)
+    assert bridge.deployment_metrics.tests_total == 3
+    assert bridge.deployment_metrics.tests_failed == (failing_phase is not None)
+    report = json.loads(
+        (bridge.output_root / "deployment_report.json").read_text(encoding="utf-8")
+    )
+    assert report["deployment_metrics"]["deployment_ready"] is admitted
+
+
+@pytest.mark.parametrize("failing_phase", [None, "integration_tests"])
+def test_parallel_cycle_preserves_all_three_worker_receipts(
+    bridge, monkeypatch, failing_phase
+):
+    names = []
+
+    def completed_batch(configs, max_workers):
+        assert max_workers == 3
+        for config in configs:
+            name = config["name"]
+            names.append(name)
+            result = successful_result(name)
+            if name == failing_phase:
+                result.success = False
+                result.returncode = 1
+                result.stderr = "Error: simulated negative worker"
+            bridge.test_results[name] = result
+        return dict(bridge.test_results)
+
+    monkeypatch.setattr(bridge, "run_tests_parallel", completed_batch)
+    admitted = bridge.execute_full_test_cycle_parallel(max_workers=3)
+    assert names == ["unit_tests", "integration_tests", "smoke_tests"]
+    assert admitted is (failing_phase is None)
+    assert bridge.deployment_metrics.tests_total == 3
+    assert bridge.deployment_metrics.tests_failed == (failing_phase is not None)
+
+
+def test_phase_context_records_positive_and_negative_exit(bridge):
+    with bridge_module.IdempotentPhase("test", bridge) as phase:
+        assert phase is not None
+    with pytest.raises(ValueError, match="seeded"):
+        with bridge_module.IdempotentPhase("test", bridge):
+            raise ValueError("seeded")
+    records = [
+        json.loads(line)
+        for line in bridge.mcp.log_file.read_text(encoding="utf-8").splitlines()
+    ]
+    assert [entry["status"] for entry in records[-4:]] == [
+        "enter", "success", "enter", "failed"
+    ]
