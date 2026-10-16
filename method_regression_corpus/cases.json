@@ -1,0 +1,35 @@
+{
+  "schema": "abacus.method.corpus.v1",
+  "cases": [
+    {
+      "id": "FMT-P1",
+      "method": "formatter-convergence",
+      "label": "positive",
+      "source": "x=1\n"
+    },
+    {
+      "id": "FMT-N1",
+      "method": "formatter-convergence",
+      "label": "negative",
+      "source": "x = 1\n"
+    },
+    {
+      "id": "SEC-P1",
+      "method": "security-sast",
+      "label": "positive",
+      "source": "exec(user_input)\n"
+    },
+    {
+      "id": "SEC-N1",
+      "method": "security-sast",
+      "label": "negative",
+      "source": "value = 1\n"
+    },
+    {
+      "id": "COV-N1",
+      "method": "coverage-yield",
+      "label": "invalid-evidence",
+      "source": "missing report"
+    }
+  ]
+}
