@@ -125,6 +125,23 @@ class ReceiptAdaptersTests(unittest.TestCase):
         with self.assertRaises(ValueError):
             A.adapt(changed, "CENSUS", "GBOGEB/ABACUS", SHA, "f" * 64, "W1")
 
+    def test_bd_engineering_credit_and_boolean_formal_credit_rejected(self):
+        source = bd()
+        self.assertEqual(A._bd(source)["root_candidate_groups"], 1)
+        allowed = json.loads(json.dumps(source))
+        allowed["engineering_credit_delta"] = 0
+        self.assertEqual(A._bd(allowed)["verified_closed_roots"], None)
+        for value in (1, -1, True, "0", {"credit": 1}):
+            with self.subTest(value=value):
+                changed = json.loads(json.dumps(source))
+                changed["engineering_credit_delta"] = value
+                with self.assertRaises(ValueError):
+                    A._bd(changed)
+        false_formal = json.loads(json.dumps(source))
+        false_formal["formal_credit_delta"] = False
+        with self.assertRaises(ValueError):
+            A._bd(false_formal)
+
     def test_mcl_numerators_and_guard(self):
         source = mcl()
         self.assertEqual(A._mcl(source)["branch_percent_reported"], 60)
