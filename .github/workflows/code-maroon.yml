@@ -6,6 +6,13 @@ on:
       - "CODE_MAROON/**"
       - "tools/code_maroon/**"
       - "tests/test_code_maroon_reconcile.py"
+      - "tests/test_code_maroon_ooxml.py"
+      - "**/*.docx"
+      - "**/*.docm"
+      - "**/*.xlsx"
+      - "**/*.xlsm"
+      - "**/*.pptx"
+      - "**/*.pptm"
       - ".github/workflows/code-maroon.yml"
   workflow_dispatch:
 
@@ -21,7 +28,14 @@ jobs:
         with:
           python-version: "3.12"
       - name: Validate CODE_MAROON ledger
-        run: python -m unittest tests/test_code_maroon_reconcile.py -v
+        run: python -m unittest tests/test_code_maroon_reconcile.py tests/test_code_maroon_ooxml.py -v
+      - name: Scan tracked OOXML packages
+        run: |
+          mkdir -p "$RUNNER_TEMP/code-maroon"
+          python tools/code_maroon/ooxml_scan.py \
+            --discover-git \
+            --output "$RUNNER_TEMP/code-maroon/ooxml_receipt.json" \
+            --fail-on high
       - name: Emit snapshot receipt
         run: |
           python tools/code_maroon/reconcile.py \
