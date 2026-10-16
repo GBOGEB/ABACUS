@@ -166,14 +166,24 @@ class TestSystemBridge:
                 duration_seconds=duration
             )
 
-            if expected_artifacts and cwd:
-                artifacts_found = []
-                for artifact in expected_artifacts:
-                    if (cwd / artifact).exists():
-                        artifacts_found.append(artifact)
+            if expected_artifacts:
+                # Required output is part of the test contract, not telemetry
+                # that may be ignored when a process happens to exit zero.
+                artifact_root = Path(cwd) if cwd is not None else self.workspace_root
+                artifacts_found = [
+                    artifact for artifact in expected_artifacts
+                    if (artifact_root / artifact).exists()
+                ]
                 test_result.artifacts_found = artifacts_found
                 test_result.artifacts_expected = expected_artifacts
                 test_result.artifacts_match = set(artifacts_found) == set(expected_artifacts)
+                if not test_result.artifacts_match:
+                    missing = sorted(set(expected_artifacts) - set(artifacts_found))
+                    test_result.success = False
+                    test_result.stderr = (
+                        test_result.stderr + "\nError: missing expected artifacts: "
+                        + ", ".join(missing)
+                    ).strip()
 
             with self.test_results_lock:
                 self.test_results[test_name] = test_result
@@ -281,13 +291,21 @@ class TestSystemBridge:
         runtime_errors = self.detect_runtime_errors()
 
         static_analysis = self.run_static_analysis()
-        static_passed = all(
-            r.get('returncode', 1) == 0
-            for r in static_analysis.values()
-            if r and 'returncode' in r
+        # A scan that raises, or returns no executed flake8 check, is UNKNOWN
+        # rather than a passing security/quality signal.
+        flake8_report = static_analysis.get('flake8')
+        static_passed = (
+            isinstance(flake8_report, dict)
+            and flake8_report.get('returncode') == 0
+            and all(
+                isinstance(report, dict) and report.get('returncode') == 0
+                for report in static_analysis.values()
+                if report is not None
+            )
         )
 
         deployment_ready = (
+            tests_total > 0 and
             tests_passed == tests_total and
             len(runtime_errors) == 0 and
             static_passed
@@ -392,6 +410,12 @@ class TestSystemBridge:
 
         results: Dict[str, Any] = {}
 
+        # Duplicate names collapse the ledger denominator; reject the batch
+        # before launching a worker so no completed result is overwritten.
+        names = [config.get('name', 'unnamed_test') for config in test_configs]
+        if len(names) != len(set(names)):
+            raise ValueError("Duplicate test names in parallel execution batch")
+
         def run_single_test(test_config):
             test_name = test_config.get('name', 'unnamed_test')
             command = test_config.get('command', [])
@@ -413,6 +437,19 @@ class TestSystemBridge:
                 except Exception as e:
                     test_config = future_to_test[future]
                     test_name = test_config.get('name', 'unknown')
+                    # A failed worker future must be a negative result, not
+                    # an omitted numerator/denominator that appears green.
+                    failure = TestExecutionResult(
+                        test_name=test_name,
+                        returncode=-1,
+                        stdout='',
+                        stderr=f"Error: parallel test raised {type(e).__name__}: {e}",
+                        success=False,
+                        duration_seconds=0.0,
+                    )
+                    with self.test_results_lock:
+                        self.test_results[test_name] = failure
+                    results[test_name] = failure
                     print(f"  ❌ {test_name} failed with exception: {str(e)}")
 
         self.mcp.log_point('run_tests_parallel', 'complete', {
