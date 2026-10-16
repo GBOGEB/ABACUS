@@ -9,7 +9,8 @@ on:
       - 'tools/everred_v3/sut_gui/visual_taxonomy_v4.json'
       - 'tools/everred_v3/sut_gui/mip_sipoc_adapter_v42.json'
       - 'tools/everred_v3/sut_gui/DASHBOARD_V42_SIPOC_BRIDGE.md'
-      - '.github/workflows/code-purple-dashboard-v31.yml'
+      - 'tools/everred_v3/sut_gui/telemetry_reference_v5.json'
+      - 'tools/everred_v3/sut_gui/TELEMETRY_MEASUREMENT_DAG_V5.mmd'
       - '.github/workflows/code-purple-dashboard-v31.yml'
   workflow_dispatch:
     inputs:
@@ -72,12 +73,15 @@ jobs:
               'mip-register', 'mip-grid', 'mip-overall',
               'sipoc-drawing','sipoc-canvas','sipoc-zoom','sipoc-dialog',
               'sipoc-reference','sipoc-dialog-content',
-              'model-proof-register', 'pca-checks', 'bt-checks', 'sipoc'
+              'model-proof-register', 'pca-checks', 'bt-checks', 'sipoc',
+              'telemetry', 'telemetry-leaves', 'telemetry-method-dag',
+              'tel-penetration-bars', 'tel-backlog-bars',
+              'load-telemetry-reference', 'telemetry-reference-state'
           }
           assert required.issubset(set(doc.ids))
           assert len(doc.ids) == len(set(doc.ids)), 'duplicate HTML ID'
           assert set(doc.links).issubset(set(doc.ids)), 'broken nav'
-          assert 'code-purple.sut-gui.v4.3' in html
+          assert 'code-purple.sut-gui.v4.4' in html
           assert 'architecture-legend' in doc.ids
           assert 'arch-loop feedback' in html
           assert 'arch-loop feedforward' in html
@@ -91,6 +95,10 @@ jobs:
           assert 'PCA-01' in html and 'PCA-04' in html
           assert 'BT-01' in html and 'BT-04' in html
           assert 'CODE PURPLE integrated SIPOC' in html
+          assert '31 workflows → 121 jobs → 1,065 steps ≠ 1,217 independent process observations' in html
+          assert '#2033' in html and '#1998' in html and '#1989' in html
+          assert 'Measurement method DAG' in html
+          assert 'M2 / M3 remain HOLD' in html
           assert 'SOURCE-BOUND' in html or 'source-bound' in html
           assert len(doc.scripts) == 1, 'expected inline JS'
           Path('/tmp/dashboard-v31.js').write_text(doc.scripts[0])
@@ -171,6 +179,63 @@ jobs:
                   assert row['id'] in html, row['id']
           assert 'id="sipoc"' in html
           print('MIP/SIPOC projection parity PASS; native evidence still separately required')
+          PY
+
+      - name: Validate telemetry reference, hierarchy and method DAG
+        run: |
+          python - <<'PY'
+          import json
+          import re
+          from pathlib import Path
+          root = Path('tools/everred_v3/sut_gui')
+          ref = json.loads((root / 'telemetry_reference_v5.json').read_text())
+          html = (root / 'dashboard_v3.html').read_text()
+          dag = (root / 'TELEMETRY_MEASUREMENT_DAG_V5.mmd').read_text()
+
+          assert ref['schema'] == 'code-purple.telemetry-reference.v5'
+          assert ref['classification'] == 'SOURCE_BOUND_REFERENCE_NOT_LIVE'
+          assert ref['authority_transfer'] is False
+          assert ref['merge_authorized'] is False
+          assert ref['security_waiver'] is False
+          assert ref['independent_process_observations'] is None
+
+          for sha in (
+              ref['producer']['head_sha'],
+              ref['ci_hierarchy']['source_sha'],
+              ref['native_b0']['source_sha'],
+              ref['pca']['source_sha'],
+              ref['three_p_star']['source_sha'],
+          ):
+              assert re.fullmatch(r'[a-f0-9]{40}', sha), sha
+
+          ci = ref['ci_hierarchy']
+          assert ci['workflows']['observed'] == 31
+          assert ci['jobs']['observed'] == 121
+          assert ci['steps']['observed'] == 1065
+          assert ci['steps']['failure'] == 10
+
+          tests = ref['test_penetration']
+          assert tests['b0']['tests'] == 560
+          assert tests['post_b0']['tests'] == 2255
+          assert tests['overlap_warning'] is True
+
+          cov = ref['coverage_penetration']
+          assert cov['b0_statements']['total'] == 21007
+          assert cov['union_statements']['total'] == 30153
+          assert cov['interpretation'] == 'MEASUREMENT_WIDTH_EXPANSION_NOT_MATCHED_COVERAGE_DELTA'
+
+          assert ref['pca']['small_sample_warning'] is True
+          assert ref['pca']['bradley_terry'].startswith('WITHHELD')
+          assert ref['three_p_star']['stability_class'] == 'INSUFFICIENT_EVIDENCE'
+          assert ref['burndown']['formal_root_closure_credit'] == 0
+
+          for token in ('#2033', '#1998', '#1989', 'M2 / M3 HOLD'):
+              assert token in html
+          for token in ('#2033 structural telemetry', '#1998 wave burndown', '#1989 cycle-level statistical maturity'):
+              assert token in dag
+          assert 'Independent governance' in dag
+          assert 'MERGE HOLD' in dag
+          print('Telemetry reference + measurement DAG PASS')
           PY
 
       - name: Test normalized evidence producer and empirical model qualifications
