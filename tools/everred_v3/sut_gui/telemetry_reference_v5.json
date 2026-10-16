@@ -1,0 +1,257 @@
+{
+  "schema": "code-purple.telemetry-reference.v5",
+  "classification": "SOURCE_BOUND_REFERENCE_NOT_LIVE",
+  "observed_date": "2026-10-16",
+  "repository": "GBOGEB/ABACUS",
+  "authority_transfer": false,
+  "merge_authorized": false,
+  "security_waiver": false,
+  "independent_process_observations": null,
+  "producer": {
+    "pr": 2033,
+    "head_sha": "c58a3848a1be459d18660741b2ae1dd933eab1c4",
+    "schema": "abacus.mip.ci-wave-telemetry.v2",
+    "qualification": "NATIVE_CI_PENDING",
+    "url": "https://github.com/GBOGEB/ABACUS/pull/2033"
+  },
+  "ci_hierarchy": {
+    "source_pr": 1989,
+    "source_sha": "79672200a0fb37b7538b996b03a1e82dceb83a2f",
+    "workflows": {
+      "observed": 31,
+      "success": 25,
+      "failure": 5,
+      "cancelled": 1,
+      "success_all_pct": 80.65,
+      "success_decisive_pct": 83.33
+    },
+    "jobs": {
+      "observed": 121,
+      "success": 103,
+      "failure": 9,
+      "skipped": 8,
+      "cancelled": 1,
+      "success_all_pct": 85.12,
+      "success_decisive_pct": 91.96
+    },
+    "steps": {
+      "observed": 1065,
+      "success": 1023,
+      "failure": 10,
+      "skipped": 32,
+      "success_all_pct": 96.06,
+      "success_decisive_pct": 99.03
+    },
+    "evidence_url": "https://github.com/GBOGEB/ABACUS/pull/1989"
+  },
+  "native_b0": {
+    "source_pr": 2033,
+    "source_sha": "42447d279cda0cf1a667e529e9deaf35f214bb31",
+    "run_id": 38870273917,
+    "jobs": {
+      "observed": 13,
+      "success": 13
+    },
+    "steps": {
+      "observed": 155,
+      "success": 155
+    },
+    "distinct_runner_ids": 13,
+    "queue_seconds": {
+      "p50": 46,
+      "p95": 248,
+      "mean": 54.6153846154,
+      "min": 6,
+      "max": 248,
+      "samples": 13
+    },
+    "runtime_seconds": {
+      "p50": 11,
+      "p95": 368,
+      "sum": 682,
+      "mean": 52.4615384615,
+      "wall_span": 637,
+      "peak_concurrency": 5,
+      "realized_parallelism": 1.0706436421
+    },
+    "run_url": "https://github.com/GBOGEB/ABACUS/actions/runs/38870273917",
+    "artifact_id": 12033228965,
+    "artifact_url": "https://github.com/GBOGEB/ABACUS/actions/runs/38870273917/artifacts/12033228965"
+  },
+  "test_penetration": {
+    "source_sha": "42447d279cda0cf1a667e529e9deaf35f214bb31",
+    "b0": {
+      "file_groups": 70,
+      "tests": 560,
+      "passed": 554,
+      "skipped": 6,
+      "failed": 0,
+      "errors": 0,
+      "reported_seconds": 38.948
+    },
+    "post_b0": {
+      "tests": 2255,
+      "passed": 2253,
+      "skipped": 2,
+      "failed": 0,
+      "errors": 0,
+      "reported_seconds": 311.862
+    },
+    "depth_factor": 4.0267857143,
+    "overlap_warning": true
+  },
+  "coverage_penetration": {
+    "source_sha": "42447d279cda0cf1a667e529e9deaf35f214bb31",
+    "b0_statements": {
+      "covered": 6592,
+      "total": 21007,
+      "pct": 31.38
+    },
+    "union_statements": {
+      "covered": 17067,
+      "total": 30153,
+      "pct": 56.6013
+    },
+    "b0_branches": {
+      "covered": 1318,
+      "total": 5096,
+      "pct": 25.86
+    },
+    "union_branches": {
+      "covered": 4280,
+      "total": 8370,
+      "pct": 51.14
+    },
+    "denominator_expansion_pct": 43.54,
+    "ranked_measured_paths": 40,
+    "zero_coverage_disposition_paths": 77,
+    "missed_statement_potential_ranked40": 5872,
+    "interpretation": "MEASUREMENT_WIDTH_EXPANSION_NOT_MATCHED_COVERAGE_DELTA"
+  },
+  "dab_cluster": {
+    "source_sha": "42447d279cda0cf1a667e529e9deaf35f214bb31",
+    "findings": 3719,
+    "families": 34,
+    "read_only_proposals": 1102,
+    "top5_share_pct": 75.8,
+    "top10_share_pct": 92.12,
+    "style_findings": 3107,
+    "style_share_pct": 83.54,
+    "family_hhi": 0.1478,
+    "effective_family_count": 6.77,
+    "top_families": [
+      {
+        "id": "E501",
+        "count": 1034,
+        "share_pct": 27.8
+      },
+      {
+        "id": "E402",
+        "count": 650,
+        "share_pct": 17.48
+      },
+      {
+        "id": "E231",
+        "count": 526,
+        "share_pct": 14.14
+      },
+      {
+        "id": "F401",
+        "count": 339,
+        "share_pct": 9.12
+      },
+      {
+        "id": "F541",
+        "count": 270,
+        "share_pct": 7.26
+      }
+    ]
+  },
+  "pca": {
+    "run_id": 38784927815,
+    "source_sha": "79672200a0fb37b7538b996b03a1e82dceb83a2f",
+    "target_states": 15,
+    "deterministic_observations": 30,
+    "distinct_full_work_states": 15,
+    "distinct_semantic_states": 10,
+    "semantic_state_uniqueness_pct": 66.67,
+    "semantic_effective_cluster_count": 8.33,
+    "semantic_panel": {
+      "features": 7,
+      "rank": 7,
+      "pc1_eigenvalue": 6.45992359,
+      "pa95_threshold": 2.5611881,
+      "pc1_evr_pct": 92.284623
+    },
+    "all_work_panel": {
+      "features": 10,
+      "pc1_eigenvalue": 8.97606963,
+      "pa95_threshold": 3.07236161,
+      "pc1_evr_pct": 89.760696
+    },
+    "pa_replicates": 2000,
+    "small_sample_warning": true,
+    "bradley_terry": "WITHHELD_NO_OBSERVED_PAIRWISE_OUTCOME_EVIDENCE",
+    "run_url": "https://github.com/GBOGEB/ABACUS/actions/runs/38784927815"
+  },
+  "three_p_star": {
+    "run_id": 38784927952,
+    "source_sha": "79672200a0fb37b7538b996b03a1e82dceb83a2f",
+    "sample_root_items": 5,
+    "discovery_workers": 5,
+    "discrimination_workers": 5,
+    "p3_writer": 0,
+    "wall_ms_total_arms": 47993.23,
+    "wall_ms_per_root_item": 9598.65,
+    "aht_ms_per_root_item": 47949.19,
+    "evidence_yield_total": 2428,
+    "evidence_yield_per_worker_minute": 607.09,
+    "terminal_items_per_worker_hour": 0,
+    "stability_class": "INSUFFICIENT_EVIDENCE",
+    "dov_gap_after": 1,
+    "run_url": "https://github.com/GBOGEB/ABACUS/actions/runs/38784927952"
+  },
+  "burndown": {
+    "selected_states": 15,
+    "consumer_penetration_pct": {
+      "mean": 78.07,
+      "median": 94.44,
+      "final": 100
+    },
+    "open_backlog": {
+      "initial": 12,
+      "max": 24,
+      "final": 0,
+      "median": 1,
+      "gross_up": 30,
+      "gross_down": 42,
+      "net": -12
+    },
+    "graph_drop_rate_pct": {
+      "mean": 12.42,
+      "final": 0
+    },
+    "lineage_gap_rate_pct": {
+      "mean": 14.22,
+      "final": 0
+    },
+    "registry_gap_rate_pct": {
+      "mean": 6.67,
+      "final": 0
+    },
+    "unresolved_reference_rate_pct": {
+      "mean": 1.21,
+      "final": 0
+    },
+    "formal_root_closure_credit": 0,
+    "note": "Selected-state backlog movement is not formal root-closure credit."
+  },
+  "ownership": {
+    "structural_telemetry": "#2033",
+    "wave_root_coverage_series": "#1998",
+    "statistical_maturity": "#1989",
+    "capacity_scaling": "W64 / 3P*",
+    "work_state_diversity": "W78",
+    "diagnostic_pca": "W79"
+  }
+}
