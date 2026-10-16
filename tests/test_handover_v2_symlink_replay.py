@@ -7,9 +7,9 @@ merge, remote source authentication or admission.
 from __future__ import annotations
 
 import importlib.util
+import unittest
 from pathlib import Path
 from tempfile import TemporaryDirectory
-import unittest
 from unittest.mock import patch
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -49,7 +49,9 @@ class TestV2SelfContainedReplay(unittest.TestCase):
             manifest_bytes = core.canonical(manifest)
             (capsule / "manifest.json").write_bytes(manifest_bytes)
             expected = {**contents, "manifest.json": manifest_bytes}
-            with patch.object(core, "expected_files", return_value=(expected, manifest_bytes)):
+            with patch.object(
+                core, "expected_files", return_value=(expected, manifest_bytes)
+            ):
                 with self.assertRaisesRegex(ValueError, "symbolic link"):
                     core.capsule_verify(capsule)
 
@@ -73,7 +75,9 @@ class TestV2SelfContainedReplay(unittest.TestCase):
             manifest_bytes = core.canonical(manifest)
             (capsule / "manifest.json").write_bytes(manifest_bytes)
             expected = {**contents, "manifest.json": manifest_bytes}
-            with patch.object(core, "expected_files", return_value=(expected, manifest_bytes)):
+            with patch.object(
+                core, "expected_files", return_value=(expected, manifest_bytes)
+            ):
                 data, saved = core.capsule_verify(capsule)
             self.assertEqual(data, {})
             self.assertEqual(saved["manifest_root_sha256"], manifest["manifest_root_sha256"])
