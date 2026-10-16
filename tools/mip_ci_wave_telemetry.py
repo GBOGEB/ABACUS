@@ -233,7 +233,9 @@ def independent_gate_vector(payload, run_index, jobs, source_sha):
                         or native.get("name") != spec["name"]
                         or native.get("html_url") != expected_url
                     ):
-                        raise ValueError("gate binding mismatches native workflow identity")
+                        raise ValueError(
+                            "gate binding mismatches native workflow identity"
+                        )
                     row["run_url"] = expected_url
                     row["evidence_class"] = "NATIVE_RUN_JOB_OBSERVATION"
                     selected_jobs = [
@@ -252,7 +254,9 @@ def independent_gate_vector(payload, run_index, jobs, source_sha):
                     ]
                     row["blocking_jobs"] = [
                         job["name"] for job in selected_jobs
-                        if job["conclusion"] in ("failure", "timed_out", "startup_failure")
+                        if job["conclusion"] in (
+                            "failure", "timed_out", "startup_failure"
+                        )
                     ]
                     status = native.get("status")
                     conclusion = native.get("conclusion")
