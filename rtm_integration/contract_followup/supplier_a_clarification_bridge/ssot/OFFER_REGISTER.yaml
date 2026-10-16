@@ -1,12 +1,12 @@
 offer_register:
-  bidder: ALaT
+  bidder: Supplier_a
   status: Open
   clarification_groups:
     - Q3
     - Q4
     - Q5
   review_state:
-    dsbt: Open
+    supplier_c: Open
     dbe: Open
     qcell: Open
     ped: Open

@@ -31,7 +31,7 @@
 - Status: `SOURCE_BOUND_PARTIAL_EXTRACTION`.
 - Work order: ABACUS #1313.
 - Source file: `D2_1_CRYOGENIC_SYSTEM_CONCEPTUAL_NATIVE.docx`.
-- Document reference: `DSBT-TN-24-37-3.0`.
+- Document reference: `SUPPLIER_C-TN-24-37-3.0`.
 - Issue / revision: `2-1`.
 - Document date: `2024-06-13`.
 - Source custody: user Library locked source; not committed to this repository.

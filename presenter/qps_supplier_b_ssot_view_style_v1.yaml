@@ -1,13 +1,13 @@
 schema_version: "1.0"
-document_id: QPS_LKT_SSOT_VIEW_STYLE
+document_id: QPS_SUPPLIER_B_SSOT_VIEW_STYLE
 status: REUSABLE_PARENT_PRESENTATION_CONTRACT
 authority: ABACUS_parent_outward_presentation
 applies_to:
-  child_ssot: QPS_LKT_NEGO_RFI_COMPLIANCE_SSOT_v1.0
+  child_ssot: QPS_SUPPLIER_B_NEGO_RFI_COMPLIANCE_SSOT_v1.0
   products: [XLSX, HTML, PDF]
 purpose: >-
   Provide a consistent reusable outward presentation and interaction standard for the canonical
-  QPS LKT negotiation/RFI/compliance SSOT. ABACUS owns view behaviour and presentation QA;
+  QPS SUPPLIER_B negotiation/RFI/compliance SSOT. ABACUS owns view behaviour and presentation QA;
   cryoplant-project retains engineering, evidence and compliance authority.
 authority_boundary:
   - style/view rules cannot change compliance, evidence maturity, RFI/NEG or closure state

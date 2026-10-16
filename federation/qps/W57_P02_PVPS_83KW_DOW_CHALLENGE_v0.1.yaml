@@ -42,7 +42,7 @@ physical_findings:
   - id: DOW-PVPS-04
     result: HISTORIC_DIAGNOSTIC_ONLY
     statement: >-
-      LKT MOL-STUDY22 / Leybold data for the different historic SV630BF
+      SUPPLIER_B MOL-STUDY22 / Leybold data for the different historic SV630BF
       gives about 15 kW per pump at 400 mbar.a versus 20 kW motor rated
       power. It is a plausibility prior only and cannot validate the
       current SV750BF point.

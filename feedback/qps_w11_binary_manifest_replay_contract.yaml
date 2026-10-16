@@ -18,10 +18,10 @@ source_policy:
 
 input_roles:
   - CONTRACT
-  - OFFER_ALAT
-  - OFFER_LKT
-  - PRESTUDY_ALAT
-  - PRESTUDY_LKT
+  - OFFER_SUPPLIER_A
+  - OFFER_SUPPLIER_B
+  - PRESTUDY_SUPPLIER_A
+  - PRESTUDY_SUPPLIER_B
   - RTM_V24
 
 formats:

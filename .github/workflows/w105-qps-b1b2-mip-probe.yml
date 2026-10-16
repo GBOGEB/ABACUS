@@ -24,10 +24,10 @@ jobs:
           python-version: '3.12'
       - run: python -m pip install --disable-pip-version-check openpyxl PyYAML
       - run: python qps/scripts/validate_mip_3p3.py
-      - run: python qps/scripts/qps_w85_materialize_alat_surfaces.py --out-dir out/pass1 --expected-head "$QPS_SHA"
-      - run: python qps/scripts/qps_w85_materialize_alat_surfaces.py --out-dir out/pass2 --expected-head "$QPS_SHA"
-      - run: cmp out/pass1/QPS_ALAT_NEGOTIATION_REVIEW_CURRENT.xlsx out/pass2/QPS_ALAT_NEGOTIATION_REVIEW_CURRENT.xlsx
-      - run: cmp out/pass1/QPS_ALAT_NEGOTIATION_REVIEW_CURRENT.html out/pass2/QPS_ALAT_NEGOTIATION_REVIEW_CURRENT.html
+      - run: python qps/scripts/qps_w85_materialize_supplier_a_surfaces.py --out-dir out/pass1 --expected-head "$QPS_SHA"
+      - run: python qps/scripts/qps_w85_materialize_supplier_a_surfaces.py --out-dir out/pass2 --expected-head "$QPS_SHA"
+      - run: cmp out/pass1/QPS_SUPPLIER_A_NEGOTIATION_REVIEW_CURRENT.xlsx out/pass2/QPS_SUPPLIER_A_NEGOTIATION_REVIEW_CURRENT.xlsx
+      - run: cmp out/pass1/QPS_SUPPLIER_A_NEGOTIATION_REVIEW_CURRENT.html out/pass2/QPS_SUPPLIER_A_NEGOTIATION_REVIEW_CURRENT.html
       - uses: actions/upload-artifact@v7.0.2
         with:
           name: w105-qps-b1b2-mip-probe

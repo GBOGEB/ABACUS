@@ -3,12 +3,12 @@ wave: W52
 pulse: P2J
 repository: GBOGEB/ABACUS
 plane: DOW_physics_runtime
-intent: run_one_real_LKT_2K_OP_case_end_to_end_and_score_system_accuracy
+intent: run_one_real_SUPPLIER_B_2K_OP_case_end_to_end_and_score_system_accuracy
 
 case:
-  id: LKT_2K_OP_NOMINAL
+  id: SUPPLIER_B_2K_OP_NOMINAL
   source_priority:
-    - LKT_current_offer
+    - SUPPLIER_B_current_offer
     - contract_RTM
     - merged_cryoplant_state_contracts
   required_boundaries:
@@ -73,7 +73,7 @@ report_required:
   - pass_fail_by_component
 
 victory:
-  real_lkt_case_executed: true
+  real_supplier_b_case_executed: true
   all_primary_boundaries_source_bound_or_explicitly_missing: true
   mass_residual_reported: true
   energy_residual_reported: true
