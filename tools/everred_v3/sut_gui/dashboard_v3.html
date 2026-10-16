@@ -228,8 +228,8 @@ tr.group-header.red th{border-left-color:var(--red)}tr.group-header.green th{bor
 .telemetry-banner{display:flex;gap:10px;align-items:center;flex-wrap:wrap;border:1px solid #557493;background:#13263a;border-radius:12px;padding:13px;margin-bottom:13px}
 .telemetry-banner strong{color:#fff}.telemetry-banner .guard{margin-left:auto;color:#ffdca0;font-size:12px}
 .telemetry-summary{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px}
-.telemetry-card{border:1px solid #405b76;border-top:4px solid #74c9ff;background:#152438;border-radius:12px;padding:15px;min-width:0}
-.telemetry-card.tests{border-top-color:#77e2b0}.telemetry-card.coverage{border-top-color:#ffda90}.telemetry-card.scale{border-top-color:#c2a2ff}
+.telemetry-card{border:1px solid #405b76;border-top:4px solid var(--phase);background:#152438;border-radius:12px;padding:15px;min-width:0}
+.telemetry-card.tests,.telemetry-card.coverage,.telemetry-card.scale{border-top-color:var(--phase)}
 .telemetry-card .big{font-size:25px;font-weight:800;letter-spacing:-.025em;font-variant-numeric:tabular-nums;color:#fff}
 .telemetry-card .metricline{display:flex;justify-content:space-between;gap:9px;padding:5px 0;border-bottom:1px solid #31465e;font-size:12px}
 .telemetry-card .metricline:last-child{border-bottom:0}.telemetry-card .metricline span{color:#b7c9dc}.telemetry-card .metricline b{color:#fff;font-variant-numeric:tabular-nums;text-align:right}
