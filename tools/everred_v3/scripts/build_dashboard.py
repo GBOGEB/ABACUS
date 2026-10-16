@@ -4,6 +4,7 @@ import sys
 
 sys.path.insert(0, str(pathlib.Path(__file__).resolve().parents[1] / "src"))
 from build_bd_queue import main as regenerate_bd_queue
+
 from control import read_history
 
 P = pathlib.Path(__file__).resolve().parents[1]
