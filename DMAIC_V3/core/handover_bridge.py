@@ -162,6 +162,31 @@ class HandoverBridge:
             'timestamp': datetime.now().isoformat()
         })
 
+    def record_phase(
+        self,
+        phase_name: str,
+        iteration: int,
+        status: str,
+        inputs_hash: str,
+        outputs_hash: str,
+        metrics: Dict[str, Any],
+    ):
+        """Record one phase execution in the bridge-local provenance ledger."""
+        phase_record = {
+            'event': 'phase',
+            'run_id': self.run_id,
+            'phase': phase_name,
+            'iteration': iteration,
+            'status': status,
+            'inputs_hash': inputs_hash,
+            'outputs_hash': outputs_hash,
+            'metrics': metrics,
+            'timestamp': datetime.now().isoformat()
+        }
+        self.provenance_log.append(phase_record)
+        self.record_metrics(phase_name, metrics)
+        return phase_record
+
     def get_provenance_trail(self) -> List[Dict[str, Any]]:
         """Get the complete provenance trail"""
         return self.provenance_log
