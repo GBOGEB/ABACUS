@@ -100,3 +100,24 @@ def test_sarif_groups_are_candidates_not_root_closures(tmp_path):
     assert receipt["sarif"]["exact_manifestations"] == 2
     assert receipt["sarif"]["stable_fingerprint_groups"] == 1
     assert receipt["summary"]["roots_total"] == 28
+
+
+def test_implemented_and_closed_are_independent_kpis():
+    data = load_snapshot()
+    row = next(x for x in data["manifestations"] if x["status"] == "CLOSED_IMPLEMENTED")
+    row["status"] = "IMPLEMENTED_UNRESOLVED"
+    row["implementation_state"] = "IMPLEMENTED"
+    row["thread_state"] = "OPEN"
+    row["disposition"] = "ACTIVE"
+
+    root = next(x for x in data["roots"] if x["root_id"] == row["root_id"])
+    # Root state is not automatically reopened by one stale UI thread; root closure
+    # and conversation closure are separate dimensions.
+    data["summary"]["closed"] -= 1
+    data["summary"]["outstanding"] += 1
+
+    receipt = M.reconcile(data)
+    assert receipt["summary"]["implemented"] == 34
+    assert receipt["summary"]["closed"] == 33
+    assert receipt["summary"]["outstanding"] == 4
+    assert root["status"] == "CLOSED_IMPLEMENTED"
