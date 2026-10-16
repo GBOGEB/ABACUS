@@ -160,7 +160,8 @@ def test_pytest_suite_command_keeps_markers_and_exit_proof(bridge, monkeypatch):
     cmd = captured[0][1]
     assert cmd[:3] == [sys.executable, "-m", "pytest"]
     assert "DMAIC_V3/tests" in cmd
-    assert cmd[cmd.index("-m") + 1] == "unit"
+    marker_index = cmd.index("DMAIC_V3/tests") + 1
+    assert cmd[marker_index:marker_index + 2] == ["-m", "unit"]
     assert "--maxfail=5" in cmd
 
 
