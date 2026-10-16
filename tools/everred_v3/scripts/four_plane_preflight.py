@@ -16,18 +16,18 @@ BASE = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(BASE / "src"))
 
 from four_planes import Source, federated_join, fingerprint  # noqa: E402
-from runtime_probe import (
+from runtime_probe import (  # noqa: E402
     observe_docker_availability,
     observe_host,
     observe_lldb_availability,
     probe_debug_target,
-)  # noqa: E402
-from yaml_control import (
+)
+from yaml_control import (  # noqa: E402
     evaluate_dispatch,
     load_yaml,
     validate_federation_policy,
     validate_plan,
-)  # noqa: E402
+)
 
 
 def execute(
