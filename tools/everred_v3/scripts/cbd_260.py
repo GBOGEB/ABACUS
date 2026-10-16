@@ -75,7 +75,8 @@ def read_n0(paths):
         for row in d["rows"]:
             fail(isinstance(row, dict), "bad PR row")
             fail(type(row.get("pr")) is int and row["pr"] > 0
-                 and row.get("state") == "open" and sha(row.get("head_sha")),
+                 and row.get("state") in ("open", "closed")
+                 and sha(row.get("head_sha")),
                  "PR head/state not bound")
             fail(isinstance(row.get("base"), str) and bool(row["base"]),
                  "missing base ref")
@@ -161,6 +162,11 @@ def project(snapshot, native=None):
         ),
         "metrics": {
             "prs_observed": len(rows),
+            "prs_open_in_captured_readbacks": sum(
+                r["state"] == "open" for r in rows),
+            "prs_closed_in_captured_readbacks": sum(
+                r["state"] == "closed" for r in rows),
+            "snapshot_atomic": False,
             "distinct_pr_source_shas": len(set(r["head_sha"] for r in rows)),
             "workflow_associations": sum(totals.values()),
             "failed_workflow_associations": totals["failure"],
