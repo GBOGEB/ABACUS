@@ -132,8 +132,10 @@ A10 restricted-content decision does not authorize security bypass.
 
 ABACUS #2046:
 https://github.com/GBOGEB/ABACUS/pull/2046
-Head bf626ed5fb8372f91b859c20b7f0ffe3b373e460,
-19 success, 2 failure, 1 cancelled, 7 queued at readback.
+Current head 67ad1b653370d0245aacebe9c95364a8327fd977,
+27 queued / 2 pending at closing recensus. The previous head
+bf626ed5fb8372f91b859c20b7f0ffe3b373e460 had 19 success,
+2 failure, 1 cancelled, 7 queued; its W72 receipt is historical.
 Sixteen source-disjoint behavioral tests were added; this is test
 inventory growth, not automatically a measured coverage gain.
 Native W72 clean-clone #38871217334 job #116875501551:
