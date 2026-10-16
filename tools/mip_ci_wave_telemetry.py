@@ -115,6 +115,8 @@ def _run_index(payload, source_sha):
         index[identity] = {
             "created_at": created_at,
             "name": run.get("name"),
+            "path": run.get("path"),
+            "html_url": run.get("html_url"),
             "status": run.get("status"),
             "conclusion": run.get("conclusion"),
         }
@@ -132,6 +134,193 @@ def _peak_overlap(intervals):
         )
         peak = max(peak, active)
     return peak if intervals else None
+
+
+
+# Exact workflow identities, not interchangeable green labels. Bandit, Safety,
+# and independent review require their own separately owned evidence; this
+# execution-structure producer deliberately cannot promote them.
+GATE_DOMAINS = (
+    "enterprise_ci",
+    "workflow_governance",
+    "a10_confidentiality",
+    "bandit",
+    "safety",
+    "independent_review",
+)
+_ENTERPRISE_JOBS = tuple(
+    f"Test Python {version} on {operating_system}"
+    for version in ("3.9", "3.10", "3.11", "3.12")
+    for operating_system in ("ubuntu-latest", "windows-latest", "macos-latest")
+)
+_WORKFLOW_GATE_SPECS = {
+    "enterprise_ci": {
+        "name": "DMAIC V3 Enterprise CI",
+        "path": ".github/workflows/dmaic-enterprise-ci.yml",
+        "jobs": _ENTERPRISE_JOBS + ("CI Summary",),
+        "steps": {"Test Python ": "Run pytest --benchmark-disable with coverage"},
+    },
+    "workflow_governance": {
+        "name": "CI Workflow Governance",
+        "path": ".github/workflows/ci-governance.yml",
+        "jobs": ("policy-and-inventory",),
+        "steps": {"policy-and-inventory": "Fail closed on governance red"},
+    },
+    "a10_confidentiality": {
+        "name": "a10-guard",
+        "path": ".github/workflows/a10-guard.yml",
+        "jobs": ("a10-guard",),
+        "steps": {},
+    },
+}
+
+
+def _binding_or_unknown(domain, bindings):
+    """Select exactly one native workflow run and attempt, never 'latest'."""
+    if domain not in bindings:
+        return None
+    selection = bindings[domain]
+    if not isinstance(selection, dict) or set(selection) != {"run_id", "run_attempt"}:
+        raise ValueError("gate binding must contain exact run_id and run_attempt")
+    for key in ("run_id", "run_attempt"):
+        if type(selection[key]) is not int or selection[key] <= 0:
+            raise ValueError("gate binding identity must be positive native integer")
+    return selection
+
+
+def independent_gate_vector(payload, run_index, jobs, source_sha):
+    """Observational gate vector; no boolean OR, implicit success, or merge authority.
+
+    A gate PASS requires the explicitly selected exact-head native run, expected
+    workflow identity and every mandatory job/step. The three remaining gate
+    domains are UNKNOWN until their independent authority supplies proof.
+    """
+    bindings = payload.get("gate_bindings", {})
+    if not isinstance(bindings, dict) or any(
+        domain not in _WORKFLOW_GATE_SPECS for domain in bindings
+    ):
+        raise ValueError("unsupported independent gate binding")
+    results = {}
+    counts = {key: 0 for key in ("PASS", "FAIL", "PENDING", "BLOCKED", "UNKNOWN")}
+
+    for domain in GATE_DOMAINS:
+        row = {
+            "status": "UNKNOWN",
+            "source_sha": source_sha,
+            "run_id": None,
+            "run_attempt": None,
+            "run_url": None,
+            "job_ids": [],
+            "blocking_jobs": [],
+            "missing_jobs": [],
+            "missing_steps": [],
+            "evidence_class": "UNOBSERVED",
+        }
+        if domain in _WORKFLOW_GATE_SPECS:
+            binding = _binding_or_unknown(domain, bindings)
+            if binding is not None:
+                rid, attempt = binding["run_id"], binding["run_attempt"]
+                row["run_id"], row["run_attempt"] = rid, attempt
+                native = run_index.get((rid, attempt))
+                if native is not None:
+                    spec = _WORKFLOW_GATE_SPECS[domain]
+                    expected_url = (
+                        f"https://github.com/GBOGEB/ABACUS/actions/runs/{rid}"
+                    )
+                    if (
+                        native.get("path") != spec["path"]
+                        or native.get("name") != spec["name"]
+                        or native.get("html_url") != expected_url
+                    ):
+                        raise ValueError("gate binding mismatches native workflow identity")
+                    row["run_url"] = expected_url
+                    row["evidence_class"] = "NATIVE_RUN_JOB_OBSERVATION"
+                    selected_jobs = [
+                        job for job in jobs
+                        if job["run_id"] == rid and job["run_attempt"] == attempt
+                    ]
+                    names = [job.get("name") for job in selected_jobs]
+                    if any(not isinstance(name, str) or not name for name in names):
+                        raise ValueError("gate job names required")
+                    if len(names) != len(set(names)):
+                        raise ValueError("duplicate job name in exact gate run")
+                    by_name = {job["name"]: job for job in selected_jobs}
+                    row["job_ids"] = sorted(job["id"] for job in selected_jobs)
+                    row["missing_jobs"] = [
+                        name for name in spec["jobs"] if name not in by_name
+                    ]
+                    row["blocking_jobs"] = [
+                        job["name"] for job in selected_jobs
+                        if job["conclusion"] in ("failure", "timed_out", "startup_failure")
+                    ]
+                    status = native.get("status")
+                    conclusion = native.get("conclusion")
+                    if status != "completed":
+                        row["status"] = "PENDING"
+                    elif conclusion in ("failure", "timed_out", "startup_failure"):
+                        row["status"] = "FAIL"
+                    elif conclusion != "success":
+                        row["status"] = "BLOCKED"
+                    elif row["missing_jobs"]:
+                        row["status"] = "UNKNOWN"
+                    else:
+                        required = [by_name[name] for name in spec["jobs"]]
+                        if any(job["status"] != "completed" for job in required):
+                            row["status"] = "PENDING"
+                        elif any(job["conclusion"] != "success" for job in required):
+                            row["status"] = "FAIL"
+                        else:
+                            for job in required:
+                                for prefix, step_name in spec["steps"].items():
+                                    if not job["name"].startswith(prefix):
+                                        continue
+                                    steps = job.get("steps")
+                                    if not isinstance(steps, list):
+                                        row["missing_steps"].append(
+                                            job["name"] + ":" + step_name
+                                        )
+                                        continue
+                                    observed = [
+                                        step for step in steps
+                                        if isinstance(step, dict)
+                                        and step.get("name") == step_name
+                                    ]
+                                    if len(observed) != 1 or (
+                                        observed[0].get("status") != "completed"
+                                        or observed[0].get("conclusion") != "success"
+                                    ):
+                                        row["missing_steps"].append(
+                                            job["name"] + ":" + step_name
+                                        )
+                            row["status"] = (
+                                "UNKNOWN" if row["missing_steps"] else "PASS"
+                            )
+        results[domain] = row
+        counts[row["status"]] += 1
+
+    return {
+        "schema": "abacus.mip.independent-gates.v1",
+        "source_sha": source_sha,
+        "domains": results,
+        "domain_counts": counts,
+        "domain_evidence_coverage": (
+            sum(row["status"] != "UNKNOWN" for row in results.values())
+            / len(GATE_DOMAINS)
+        ),
+        "red_domains": sorted(
+            name for name, row in results.items()
+            if row["status"] in ("FAIL", "BLOCKED")
+        ),
+        "unknown_domains": sorted(
+            name for name, row in results.items()
+            if row["status"] == "UNKNOWN"
+        ),
+        "admission": "HOLD",
+        "coverage_artifact_verified": None,
+        "merge_authorized": False,
+        "security_waiver": False,
+        "independent_review_admitted": None,
+    }
 
 
 def summarize(payload):
@@ -275,6 +464,7 @@ def summarize(payload):
     observed_steps = steps_observed if step_detail_jobs else None
 
     return {
+        "independent_gates": independent_gate_vector(payload, runs, jobs, sha),
         "schema": "abacus.mip.ci-wave-telemetry.v2",
         "repository": payload.get("repository") or "GBOGEB/ABACUS",
         "source_sha": sha,
