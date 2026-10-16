@@ -77,7 +77,6 @@ JSON artifact. It never pushes back to the source branch.
 No team is credited for a registration without an authenticated
 session receipt. No successful preflight authorizes a merge.
 
-
 ## CODE PURPLE / EVERRED CENSUS scaling contract
 
 The existing four-plane plan is the Mission Control-compatible control surface.
