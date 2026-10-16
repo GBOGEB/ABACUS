@@ -13,9 +13,10 @@ BASE = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(BASE / "src"))
 sys.path.insert(0, str(BASE / "scripts"))
 
-from federation_bridge import evaluate_exchange, release_candidate  # noqa: E402
 from four_plane_preflight import execute  # noqa: E402
-from four_planes import (
+
+from federation_bridge import evaluate_exchange, release_candidate  # noqa: E402
+from four_planes import (  # noqa: E402
     EvidenceError,
     Source,
     clean_log,
@@ -23,23 +24,23 @@ from four_planes import (
     federated_join,
     ldab_receipt,
     runtime_receipt,
-)  # noqa: E402
+)
 from ldab_adapter import consume_bd_ldab  # noqa: E402
-from runtime_probe import (
+from runtime_probe import (  # noqa: E402
     observe_docker_availability,
     observe_host,
     observe_lldb_availability,
     os_identity,
     transient_loopback_probe,
-)  # noqa: E402
-from yaml_control import (
+)
+from yaml_control import (  # noqa: E402
     evaluate_dispatch,
     load_yaml,
     normalize_yaml,
     semantic_diff,
     validate_federation_policy,
     validate_plan,
-)  # noqa: E402
+)
 
 SHA = "a" * 40
 OTHER = "b" * 40
