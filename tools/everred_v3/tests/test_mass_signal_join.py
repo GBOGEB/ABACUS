@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import copy
 import json
+import runpy
 import sys
 import tempfile
 import unittest
@@ -190,6 +191,41 @@ class CrossScannerTests(unittest.TestCase):
             self.assertEqual(64, len(report["input_sha256"]))
             self.assertEqual("HOLD", report["merge_admission"])
             self.assertFalse(report["authority_transfer"])
+
+
+    def test_additional_cross_scanner_rule_families(self):
+        expected = [
+            ("ruff", "S110", "ERROR_OBSERVABILITY"),
+            ("ruff", "S112", "ERROR_OBSERVABILITY"),
+            ("ruff", "S314", "UNSAFE_XML"),
+            ("ruff", "S324", "CRYPTOGRAPHIC_INTENT"),
+            ("bandit", "B303", "CRYPTOGRAPHIC_INTENT"),
+            ("bandit", "B324", "CRYPTOGRAPHIC_INTENT"),
+            ("semgrep", "python.unsafe-xml", "UNSAFE_XML"),
+            ("codeql", "python.weak-hash", "CRYPTOGRAPHIC_INTENT"),
+            ("flake8", "E722", "ERROR_OBSERVABILITY"),
+        ]
+        for scanner, rule, group in expected:
+            with self.subTest(scanner=scanner, rule=rule):
+                self.assertEqual(group, mod.family(scanner, rule))
+
+    def test_actual_cli_main_entrypoint(self):
+        with tempfile.TemporaryDirectory() as temp:
+            root = Path(temp)
+            input_path = root / "source.json"
+            output_path = root / "out" / "census.json"
+            input_path.write_text(json.dumps(payload()), encoding="utf-8")
+            from unittest.mock import patch
+
+            with patch.object(
+                sys,
+                "argv",
+                ["join", "--input", str(input_path), "--output", str(output_path)],
+            ):
+                runpy.run_path(str(Path(mod.__file__).resolve()), run_name="__main__")
+            receipt = json.loads(output_path.read_text(encoding="utf-8"))
+            self.assertEqual(SHA, receipt["source_sha"])
+            self.assertEqual(0, receipt["accepted_root_closures"])
 
 
 if __name__ == "__main__":
