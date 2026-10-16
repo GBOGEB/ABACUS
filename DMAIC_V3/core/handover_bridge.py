@@ -116,16 +116,25 @@ class HandoverBridge:
         Returns:
             Phase execution result
         """
-        # Check cache first
-        if phase_name in self._phase_cache:
-            return self._phase_cache[phase_name]
+        # Bind idempotency to phase plus behavioral inputs. Phase-name-only
+        # caching incorrectly reuses iteration N results for iteration N+1.
+        try:
+            input_hash = idempotency.hash_json({"args": args, "kwargs": kwargs})
+        except (TypeError, ValueError):
+            input_hash = idempotency.hash_json(
+                {
+                    "args": [repr(arg) for arg in args],
+                    "kwargs": {key: repr(value) for key, value in sorted(kwargs.items())},
+                }
+            )
+        cache_key = f"{phase_name}:{input_hash}"
 
-        # Execute phase
+        if cache_key in self._phase_cache:
+            return self._phase_cache[cache_key]
+
         idempotent_phase = IdempotentPhase(phase_name, self.state_manager)
         result = idempotent_phase.execute(phase_func, *args, **kwargs)
-
-        # Cache result
-        self._phase_cache[phase_name] = result
+        self._phase_cache[cache_key] = result
 
         return result
 
@@ -320,14 +329,18 @@ class IdempotentPhaseExecutor:
             inputs_hash = idempotency.hash_json({'iteration': iteration, **kwargs})
             outputs_hash = idempotency.hash_json(results if isinstance(results, dict) else str(results))
 
-            self.bridge.record_phase(
+            status = "success" if success else "failed"
+            self.bridge.log_action(
                 self.phase_name,
-                iteration,
-                "success" if success else "failed",
-                inputs_hash,
-                outputs_hash,
-                metrics
+                "phase_execution",
+                {
+                    "iteration": iteration,
+                    "status": status,
+                    "inputs_hash": inputs_hash,
+                    "outputs_hash": outputs_hash,
+                },
             )
+            self.bridge.record_metrics(self.phase_name, metrics)
 
             return result
 
