@@ -29,5 +29,5 @@ repos:
         entry: python -m compileall -q tools/mip2
         language: system
         pass_filenames: false
-        files: ^tools/mip2/.*\\.py$
+        files: ^tools/mip2/.*\.py$
         stages: [pre-commit]
