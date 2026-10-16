@@ -14,6 +14,7 @@ accept REX receipts, close BD roots, or grant merge/security authority.
 from __future__ import annotations
 
 import argparse
+import hashlib
 import json
 import re
 from datetime import datetime
@@ -393,6 +394,8 @@ def summarize(payload):
     step_detail_jobs = 0
     steps_observed = 0
     steps_per_job = []
+    first_red_events = []
+    red_job_count = 0
 
     for job in jobs:
         if not isinstance(job, dict):
@@ -443,6 +446,43 @@ def summarize(payload):
                 if step_state == "unclassified":
                     raise ValueError("native step status required")
 
+        if state == "terminal" and conclusion in (
+            "failure", "timed_out", "startup_failure"
+        ):
+            red_job_count += 1
+            native_run = runs.get(run_key, {})
+            native_steps = job.get("steps")
+            red_steps = []
+            if isinstance(native_steps, list) and all(
+                isinstance(step, dict)
+                and type(step.get("number")) is int
+                and step["number"] > 0
+                for step in native_steps
+            ) and len({step["number"] for step in native_steps}) == len(native_steps):
+                red_steps = [step for step in native_steps if step.get("conclusion")
+                             in ("failure", "timed_out", "startup_failure")]
+            if red_steps:
+                first = min(red_steps, key=lambda x: x["number"])
+                if all(isinstance(value, str) and value.strip() for value in (
+                    native_run.get("path"), job.get("name"), first.get("name")
+                )):
+                    semantic = {
+                        "workflow_path": native_run["path"],
+                        "job_name": job["name"],
+                        "step_name": first["name"],
+                        "step_number": first["number"],
+                    }
+                    fingerprint = hashlib.sha256(json.dumps(
+                        semantic, sort_keys=True, separators=(",", ":")
+                    ).encode("utf-8")).hexdigest()
+                    first_red_events.append({
+                        "fingerprint": fingerprint,
+                        "run_id": job["run_id"],
+                        "run_attempt": job["run_attempt"],
+                        "job_id": job["id"],
+                        **semantic,
+                    })
+
         if state != "terminal":
             continue
 
@@ -481,6 +521,19 @@ def summarize(payload):
             if span > 0:
                 parallelism_factor = runtime_sum / span
 
+    first_red_groups = {}
+    for event in first_red_events:
+        fingerprint = event["fingerprint"]
+        if fingerprint not in first_red_groups:
+            first_red_groups[fingerprint] = {
+                key: event[key] for key in (
+                    "fingerprint", "workflow_path", "job_name",
+                    "step_name", "step_number"
+                )
+            }
+            first_red_groups[fingerprint]["manifestations"] = 0
+        first_red_groups[fingerprint]["manifestations"] += 1
+
     step_outcomes = step_counts if step_detail_jobs else None
     step_nonterminal = step_pending if step_detail_jobs else None
     observed_steps = steps_observed if step_detail_jobs else None
@@ -507,6 +560,22 @@ def summarize(payload):
             step_detail_jobs / len(jobs) if jobs else None
         ),
         "steps_observed": observed_steps,
+        "first_red_manifestations": sorted(
+            first_red_events, key=lambda row: (
+                row["run_id"], row["run_attempt"], row["job_id"]
+            )
+        ),
+        "first_red_signatures": [
+            first_red_groups[key] for key in sorted(first_red_groups)
+        ],
+        "first_red_unique_signatures": len(first_red_groups),
+        "first_red_repeated_signatures": sum(
+            x["manifestations"] > 1 for x in first_red_groups.values()
+        ),
+        "red_jobs_without_attributed_first_step": (
+            red_job_count - len(first_red_events)
+        ),
+        "first_red_causal_roots_verified": None,
         "steps_per_job_p50": median(steps_per_job) if steps_per_job else None,
         "steps_per_job_p95": _percentile(steps_per_job, 95),
         "steps_per_job_max": max(steps_per_job) if steps_per_job else None,
