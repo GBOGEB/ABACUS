@@ -22,6 +22,7 @@ formal_credit_delta=0; engineering_credit_delta=0; merge_admission=HOLD.
 ## Canonical file binders and publication links
 
 This new binder (draft, not merged):
+
 - BINDER.json: repo/PR exact historical SHAs, causal roots, native run/job
   receipts, metrics, and machine-readable HOLD classifications.
 - binder.py: pure-standard-library read-only validation, local Markdown
