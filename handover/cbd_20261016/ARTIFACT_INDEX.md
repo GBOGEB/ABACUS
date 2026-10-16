@@ -54,7 +54,7 @@ No new source/test outcome or matched coverage uplift is credited.
   Job/result: FAIL. Evidence: 160 workflows vs 158 report, CODE PURPLE
   dashboard/SUT unclassified
 
-**ABACUS #2041 A10**
+### ABACUS #2041 A10
 
   https://github.com/GBOGEB/ABACUS/actions/runs/38824989937/job/116730248604
 
@@ -134,7 +134,7 @@ small Python verifier for the operational handover.
 
   https://github.com/GBOGEB/ABACUS/pull/2046
 
-**A10/governance regeneration**
+### A10/governance regeneration
 
   https://github.com/GBOGEB/ABACUS/pull/2041
 
