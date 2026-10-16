@@ -34,7 +34,9 @@ jobs:
           python -m pip install --upgrade pip
           python -m pip install -r DMAIC_V3/requirements.txt
       - name: Execute source-owned Python marker regression tests
-        run: python -m unittest discover -v -s tests -p test_matplotlib_requirement_compatibility.py
+        run: >-
+          python -m unittest discover -v -s tests
+          -p test_matplotlib_requirement_compatibility.py
       - name: Emit matched interpreter evidence
         run: |
           python - <<'PY'
