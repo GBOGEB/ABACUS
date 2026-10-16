@@ -1,5 +1,4 @@
 """Fail-closed canonical method contract tests, including optimized execution."""
-import copy
 import importlib.util
 import json
 import pathlib
