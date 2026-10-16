@@ -178,9 +178,7 @@ class DOWAdversarialTests(TestCase):
         self.check_mutation(
             "lineage", "qps_child_state", "ACCEPT", "PROJECT_DECISION_INJECTION"
         )
-        self.check_mutation(
-            "lineage", "wave", "", "PROJECT_DECISION_INJECTION"
-        )
+        self.check_mutation("lineage", "wave", "", "PROJECT_DECISION_INJECTION")
 
     def test_noncanonical_nan_is_rejected(self):
         item = synthetic()
@@ -208,9 +206,7 @@ class DOWAdversarialTests(TestCase):
         self.assertFalse(result["qps_acceptance"])
         self.assertEqual(0, result["formal_credit_delta"])
         self.assertEqual(
-            mod.sha256_json(
-                {k: v for k, v in result.items() if k != "receipt_sha256"}
-            ),
+            mod.sha256_json({k: v for k, v in result.items() if k != "receipt_sha256"}),
             result["receipt_sha256"],
         )
 
