@@ -231,7 +231,7 @@ class TestSystemBridge:
     def run_static_analysis(self) -> Dict[str, Any]:
         self.mcp.log_point('run_static_analysis', 'enter')
 
-        results = {
+        results: Dict[str, Any] = {
             'flake8': None,
             'mypy': None,
             'pylint': None
