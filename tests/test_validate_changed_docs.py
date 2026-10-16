@@ -99,8 +99,8 @@ class ValidateChangedDocsTests(unittest.TestCase):
             root = Path(d)
             path = root / "workflow.yml"
             path.write_text(
-                "on: pull_request\\njobs:\\n  build:\\n    runs-on: ubuntu\\n"
-                "    runs-on: windows\\n",
+                "on: pull_request\njobs:\n  build:\n    runs-on: ubuntu\n"
+                "    runs-on: windows\n",
                 encoding="utf-8",
             )
             with mock.patch.object(docs, "REPO_ROOT", root):
@@ -111,8 +111,8 @@ class ValidateChangedDocsTests(unittest.TestCase):
             root = Path(d)
             path = root / "workflow.yml"
             path.write_text(
-                "on: pull_request\\npaths: &paths\\n  - '**/*.yml'\\n"
-                "pull_request:\\n  paths: *paths\\n",
+                "on: pull_request\npaths: &paths\n  - '**/*.yml'\n"
+                "pull_request:\n  paths: *paths\n",
                 encoding="utf-8",
             )
             with mock.patch.object(docs, "REPO_ROOT", root):
@@ -122,7 +122,7 @@ class ValidateChangedDocsTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as d:
             root = Path(d)
             (root / "broken.yaml").write_text(
-                "config: [unclosed\\n", encoding="utf-8"
+                "config: [unclosed\n", encoding="utf-8"
             )
             with mock.patch.object(docs, "REPO_ROOT", root):
                 self.assertEqual(docs.validate_yaml_structure(["broken.yaml"]), 1)
@@ -132,7 +132,7 @@ class ValidateChangedDocsTests(unittest.TestCase):
             root = Path(d)
             workflow = root / ".github" / "workflows" / "x.yml"
             workflow.parent.mkdir(parents=True)
-            workflow.write_text("name: one\\n---\\nname: two\\n", encoding="utf-8")
+            workflow.write_text("name: one\n---\nname: two\n", encoding="utf-8")
             with mock.patch.object(docs, "REPO_ROOT", root):
                 self.assertEqual(
                     docs.validate_yaml_structure([".github/workflows/x.yml"]), 1
