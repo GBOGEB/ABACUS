@@ -362,6 +362,24 @@
       "cluster": "core_test",
       "lifecycle": "pr_fast",
       "disposition": "keep"
+    },
+    {
+      "pattern": "^code-purple-dashboard-v31\\.yml$",
+      "cluster": "runtime_governance",
+      "lifecycle": "pr_domain",
+      "disposition": "keep"
+    },
+    {
+      "pattern": "^code-purple-sut-gui\\.yml$",
+      "cluster": "runtime_governance",
+      "lifecycle": "pr_domain",
+      "disposition": "keep"
+    },
+    {
+      "pattern": "^mip-py310-combined-head-probe\\.yml$",
+      "cluster": "statistics",
+      "lifecycle": "pr_domain",
+      "disposition": "keep"
     }
   ],
   "quality_gates": {
