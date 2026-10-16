@@ -134,3 +134,14 @@ def test_file_logger_writes_evidence_to_selected_file(tmp_path):
         for handler in list(logger.handlers):
             handler.close()
             logger.removeHandler(handler)
+
+
+def test_copy_existing_destination_creates_backup_before_replace(tmp_path):
+    source = tmp_path / "source.txt"
+    destination = tmp_path / "out.txt"
+    source.write_text("new", encoding="utf-8")
+    destination.write_text("old", encoding="utf-8")
+
+    assert utils.copy_file_with_backup(source, destination)
+    assert destination.read_text(encoding="utf-8") == "new"
+    assert destination.with_suffix(".txt.bak").read_text(encoding="utf-8") == "old"
