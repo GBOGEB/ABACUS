@@ -27,7 +27,6 @@ security controls and release acceptance. `UNKNOWN` is not `PASS` or zero.
 
 <!-- code-purple-federation-w0:end -->
 
-
 [![main version](https://img.shields.io/badge/dynamic/toml?url=https%3A%2F%2Fraw.githubusercontent.com%2FGBOGEB%2FABACUS%2Fmain%2Fpyproject.toml&query=%24.project.version&prefix=v&label=main%20version&color=blue&style=flat-square)](pyproject.toml)
 [![last release](https://img.shields.io/github/v/release/GBOGEB/ABACUS?label=last%20release&style=flat-square)](https://github.com/GBOGEB/ABACUS/releases/latest)
 [![v4.4.0 completion](https://img.shields.io/badge/v4.4.0%20completion-95%25-brightgreen?style=flat-square)](FINAL_COMPLETION_REPORT_v4.4.0.md)
