@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
 <title>CODE PURPLE | LIVE MIP · DMAIC · KPI · RED | SUT</title>
-<meta name="code-purple-schema" content="code-purple.sut-gui.v4.3">
+<meta name="code-purple-schema" content="code-purple.sut-gui.v4.4">
 <style>
 :root{color-scheme:dark;--bg:#0a101b;--surface:#131d2b;--surface2:#1a2940;--stroke:#34455b;--text:#f2f7fd;--muted:#b8c8dc;--blue:#74c9ff;--purple:#c2a2ff;--green:#77e2b0;--red:#ff9f9f;--amber:#ffda90;font:15px/1.5 system-ui,-apple-system,Segoe UI,Roboto,sans-serif}
 *{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;background:var(--bg);color:var(--text)}a{color:var(--blue)}button,select,input{font:inherit}button{cursor:pointer;background:#263b57;border:1px solid #5d82ac;color:var(--text);padding:.7rem 1rem;border-radius:9px;font-weight:650}button:hover:not(:disabled){background:#355477}button:disabled{opacity:.55;cursor:not-allowed}button:focus-visible,input:focus-visible,select:focus-visible,a:focus-visible{outline:3px solid var(--amber);outline-offset:2px}.shell{display:grid;grid-template-columns:232px minmax(0,1fr);max-width:1800px;min-height:100vh;margin:auto}.sidebar{position:sticky;top:0;height:100vh;padding:26px 17px;border-right:1px solid var(--stroke);background:#111827}.brand{display:flex;align-items:center;gap:12px;margin-bottom:24px}.logo{display:grid;place-items:center;width:42px;height:42px;background:#6040a3;border-radius:12px;font-weight:850}.brand small{display:block;color:var(--muted);letter-spacing:.1em}.nav{display:grid;gap:6px}.nav a{display:block;padding:10px 12px;color:var(--muted);text-decoration:none;border-radius:8px}.nav a:hover{background:var(--surface2);color:var(--text)}.side-note{border-top:1px solid var(--stroke);margin-top:24px;padding-top:16px;font-size:12px;color:var(--muted)}main{min-width:0;padding:30px clamp(16px,3vw,54px) 70px}.top{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:12px}h1{font-size:clamp(27px,3vw,43px);margin:8px 0;font-weight:770;letter-spacing:-.03em}h2{font-size:22px;margin:0 0 12px}h3{font-size:15px;margin:0 0 9px}.eyebrow{color:var(--blue);text-transform:uppercase;font-size:11px;letter-spacing:.12em;font-weight:800}.sub{color:var(--muted);margin:4px 0 15px}.badge{display:inline-flex;padding:5px 9px;border-radius:8px;border:1px solid #526781;background:#24334a;font-weight:750;font-size:12px}.badge.red{color:var(--red);border-color:#ae5b66;background:#3a202a}.badge.green{color:var(--green);border-color:#438d70;background:#17362e}.badge.amber{color:var(--amber);border-color:#a88a47;background:#362f20}.badge.unknown{color:#d6dfef}.layout{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:13px}.card{border:1px solid var(--stroke);background:var(--surface);border-radius:12px;padding:18px;min-width:0}.stat-label{font-size:12px;color:var(--muted);font-weight:700}.stat-value{font-weight:780;font-size:clamp(20px,2vw,30px);margin:5px 0;overflow-wrap:anywhere}.small{font-size:12px;color:var(--muted)}.mono,code,pre{font-family:ui-monospace,SFMono-Regular,Consolas,monospace;overflow-wrap:anywhere}.mono{font-size:12px}.panel{margin-top:24px}.panel-head{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;margin-bottom:12px}.actions{display:flex;gap:9px;align-items:center;flex-wrap:wrap}.btn-secondary{background:#172436}.divider{border:0;border-top:1px solid var(--stroke);margin:21px 0}.table-wrap{max-width:100%;overflow-x:auto}table{border-collapse:collapse;width:100%;min-width:650px}th,td{padding:12px 9px;text-align:left;vertical-align:top;border-bottom:1px solid var(--stroke)}th{color:var(--muted);font-size:12px;font-weight:800;background:#1b293c}td{font-size:13px}p{color:var(--muted)}.stack{display:grid;gap:12px}.split{display:grid;grid-template-columns:minmax(0,1.15fr) minmax(300px,.85fr);gap:13px}.field{display:grid;gap:6px;margin:11px 0}.field label{font-size:12px;color:var(--muted);font-weight:700}input,select{min-width:0;width:100%;padding:11px;border:1px solid #5b7695;border-radius:9px;background:#0e1a2b;color:var(--text)}pre{background:#080e18;color:#d5e4f5;border:1px solid #40526a;border-radius:10px;padding:14px;white-space:pre-wrap;word-break:break-word;max-height:390px;overflow:auto;font-size:12px;line-height:1.5}.notice{border-left:4px solid var(--amber);padding:12px 16px;background:#302719;border-radius:0 10px 10px 0;color:#ffe7b6}.notice strong{color:#fff}.notice.red{border-color:var(--red);background:#341e29;color:#ffd5dc}.summary-row{display:flex;flex-wrap:wrap;gap:8px}.kpi-row{display:grid;grid-template-columns:1fr 1fr;gap:13px}.pill{border:1px solid #46566c;border-radius:7px;padding:4px 8px;font-size:11px;color:var(--muted)}.footer{font-size:12px;color:var(--muted);margin-top:36px}#live-meta{font-size:12px;color:var(--muted)}.hidden{display:none!important}
@@ -224,15 +224,48 @@ tr.group-header.red th{border-left-color:var(--red)}tr.group-header.green th{bor
 @media(max-width:780px){.sipoc-block-grid{grid-template-columns:1fr;gap:6px}.sipoc-block{min-height:0;gap:4px}.sipoc-block:not(:last-child)::after{position:static;content:'↓';height:13px;text-align:center;line-height:13px;font-size:16px}.sipoc-control-overlay{grid-template-columns:1fr}.sipoc-transfer{margin:0 6px;flex-wrap:wrap;gap:6px}.sipoc-visual{padding:11px}.sipoc-dialog-header{padding:10px 12px}.sipoc-dialog-content{padding:10px;height:calc(100% - 75px)}}
 @media(prefers-reduced-motion:reduce){.sipoc-dialog *{scroll-behavior:auto!important}}
 
+/* V4.4 telemetry leaves: nested execution depth is visible but never promoted to statistical independence. */
+.telemetry-banner{display:flex;gap:10px;align-items:center;flex-wrap:wrap;border:1px solid #557493;background:#13263a;border-radius:12px;padding:13px;margin-bottom:13px}
+.telemetry-banner strong{color:#fff}.telemetry-banner .guard{margin-left:auto;color:#ffdca0;font-size:12px}
+.telemetry-summary{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px}
+.telemetry-card{border:1px solid #405b76;border-top:4px solid #74c9ff;background:#152438;border-radius:12px;padding:15px;min-width:0}
+.telemetry-card.tests{border-top-color:#77e2b0}.telemetry-card.coverage{border-top-color:#ffda90}.telemetry-card.scale{border-top-color:#c2a2ff}
+.telemetry-card .big{font-size:25px;font-weight:800;letter-spacing:-.025em;font-variant-numeric:tabular-nums;color:#fff}
+.telemetry-card .metricline{display:flex;justify-content:space-between;gap:9px;padding:5px 0;border-bottom:1px solid #31465e;font-size:12px}
+.telemetry-card .metricline:last-child{border-bottom:0}.telemetry-card .metricline span{color:#b7c9dc}.telemetry-card .metricline b{color:#fff;font-variant-numeric:tabular-nums;text-align:right}
+.telemetry-leaves{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:11px;margin-top:13px}
+.telemetry-leaf{border:1px solid #405873;background:#101f31;border-radius:11px;padding:13px;min-width:0}
+.telemetry-leaf h3{display:flex;justify-content:space-between;gap:8px;align-items:start;font-size:13px}
+.telemetry-leaf .leaf-code{font-size:10px;border:1px solid #52718d;border-radius:5px;padding:2px 5px;color:#b9dcf4;white-space:nowrap}
+.telemetry-leaf .leaf-value{font-size:22px;font-weight:800;color:#fff;margin:6px 0;font-variant-numeric:tabular-nums}
+.telemetry-leaf .leaf-sub{font-size:11px;color:#b9cadd}.telemetry-leaf details{margin-top:9px;border-top:1px solid #334b63;padding-top:8px}
+.telemetry-leaf summary{cursor:pointer;color:#d8e7f5;font-size:11px;font-weight:700}.telemetry-leaf ul{padding-left:18px;margin:7px 0}.telemetry-leaf li{font-size:11px;color:#c4d6e6;margin:4px 0}
+.telemetry-split{display:grid;grid-template-columns:minmax(0,1.1fr) minmax(320px,.9fr);gap:13px;margin-top:13px}
+.burn-panel{border:1px solid #405873;background:#111f31;border-radius:11px;padding:14px}.burn-row{display:grid;grid-template-columns:150px 1fr;gap:10px;align-items:center;margin:10px 0}
+.burn-bars{height:84px;display:flex;gap:4px;align-items:flex-end;border-bottom:1px solid #496078;padding:5px 3px;background:#0c1726;border-radius:7px}
+.burn-bars i{flex:1;min-width:5px;border-radius:3px 3px 0 0;background:#74c9ff;position:relative}.burn-bars.backlog i{background:#ffbe6e}
+.burn-bars i:hover::after{content:attr(data-label);position:absolute;bottom:100%;left:50%;transform:translateX(-50%);background:#07111e;border:1px solid #59728d;border-radius:5px;padding:3px 5px;font-size:10px;color:#fff;white-space:nowrap;z-index:3}
+.method-dag{border:1px solid #435f79;background:#0f1d2d;border-radius:12px;padding:14px}
+.method-chain{display:grid;grid-template-columns:repeat(7,minmax(85px,1fr));gap:7px;align-items:stretch}
+.method-node{border:1px solid #5e7891;background:#183048;border-radius:8px;padding:10px 8px;font-size:11px;color:#dceaf7;display:flex;flex-direction:column;gap:4px}
+.method-node b{color:#fff;font-size:12px}.method-node small{color:#aac0d4}.method-node.analysis{border-color:#9b82d3;background:#272a43}.method-node.control{border-color:#58a783;background:#17332b}
+.method-side{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:9px;margin-top:10px}.method-side .method-node{min-height:83px}
+.method-owner{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:9px;margin-top:10px}.method-owner .method-node{border-style:dashed}
+.telemetry-warning{border-left:4px solid #ffda90;background:#302719;color:#ffe6b4;padding:10px 13px;border-radius:0 8px 8px 0;font-size:12px;margin-top:10px}
+.telemetry-source{font-size:11px;color:#adc5d9;margin-top:6px}.telemetry-source a{overflow-wrap:anywhere}
+@media(max-width:1200px){.telemetry-summary,.telemetry-leaves{grid-template-columns:repeat(2,minmax(0,1fr))}.method-chain{grid-template-columns:repeat(4,minmax(0,1fr))}}
+@media(max-width:850px){.telemetry-split,.method-side,.method-owner{grid-template-columns:1fr}.method-chain{grid-template-columns:repeat(2,minmax(0,1fr))}.burn-row{grid-template-columns:1fr}}
+@media(max-width:560px){.telemetry-summary,.telemetry-leaves,.method-chain{grid-template-columns:1fr}.telemetry-banner .guard{margin-left:0}}
+
 </style>
 </head>
 <body>
 <div class="shell">
 <aside class="sidebar"><div class="brand"><span class="logo" aria-hidden="true">CP</span><div><strong>CODE PURPLE</strong><small>SUT CONTROL</small></div></div>
-<nav class="nav" aria-label="Sections"><a href="#overview">Overview</a><a href="#ci">CI first-reds</a><a href="#measurement">DMAIC/KPI</a><a href="#mip-register">MIP actions</a><a href="#model">PCA/BT</a><a href="#sipoc">SIPOC</a><a href="#sut">SUT testflight</a><a href="#test-architecture">Test system</a><a href="#architecture">Architecture</a><a href="#evidence">Evidence</a></nav>
+<nav class="nav" aria-label="Sections"><a href="#overview">Overview</a><a href="#ci">CI first-reds</a><a href="#measurement">DMAIC/KPI</a><a href="#telemetry">Telemetry / stats</a><a href="#mip-register">MIP actions</a><a href="#model">PCA/BT</a><a href="#sipoc">SIPOC</a><a href="#sut">SUT testflight</a><a href="#test-architecture">Test system</a><a href="#architecture">Architecture</a><a href="#evidence">Evidence</a></nav>
 <div class="side-note">Live readback is advisory. The dashboard never authorizes merges or executes remote workflows without an independent authorized action.</div></aside>
 <main>
-<header id="overview"><div class="top"><div><div class="eyebrow">ABACUS × CODEX / EVERRED</div><h1>Engineering Control <span style="color:var(--purple)">/ LIVE 4.2</span></h1><p class="sub">Source-bound GitHub telemetry + local allowlisted SUT runner. Historical HTML is never silently presented as live.</p></div><div class="actions"><span class="badge unknown" id="connection">NOT REFRESHED</span><button id="refresh">Refresh GitHub</button></div></div><div class="notice" role="status"><strong>Admission is independent.</strong> Passing local tests, an HTML report or a preliminary model cannot replace server-side protection, mandatory CI, security and eligible review.</div><p id="live-meta" aria-live="polite">Not yet fetched. Initial values below are a labeled historical bootstrap only.</p></header>
+<header id="overview"><div class="top"><div><div class="eyebrow">ABACUS × CODEX / EVERRED</div><h1>Engineering Control <span style="color:var(--purple)">/ LIVE 4.4</span></h1><p class="sub">Source-bound GitHub telemetry + local allowlisted SUT runner. Historical HTML is never silently presented as live.</p></div><div class="actions"><span class="badge unknown" id="connection">NOT REFRESHED</span><button id="refresh">Refresh GitHub</button></div></div><div class="notice" role="status"><strong>Admission is independent.</strong> Passing local tests, an HTML report or a preliminary model cannot replace server-side protection, mandatory CI, security and eligible review.</div><p id="live-meta" aria-live="polite">Not yet fetched. Initial values below are a labeled historical bootstrap only.</p></header>
 <section class="panel"><div class="layout">
 <article class="card state-card unclear" id="abacus-card"><div class="stat-label">ABACUS · main</div><div class="state-headline"><span aria-hidden="true">🛡</span><div class="stat-value is-unknown" id="abacus-state">UNKNOWN</div></div><div class="mini-badges" id="abacus-badges"><span class="badge unknown">AWAITING READBACK</span></div><div class="mono" id="abacus-sha">SHA unavailable</div><div class="small"><a href="https://github.com/GBOGEB/ABACUS" target="_blank" rel="noopener noreferrer">Repository ↗</a></div></article>
 <article class="card state-card unclear" id="codex-card"><div class="stat-label">CODEX · main</div><div class="state-headline"><span aria-hidden="true">🛡</span><div class="stat-value is-unknown" id="codex-state">UNKNOWN</div></div><div class="mini-badges" id="codex-badges"><span class="badge unknown">AWAITING READBACK</span></div><div class="mono" id="codex-sha">SHA unavailable</div><div class="small"><a href="https://github.com/GBOGEB/CODEX" target="_blank" rel="noopener noreferrer">Repository ↗</a></div></article>
@@ -266,6 +299,78 @@ tr.group-header.red th{border-left-color:var(--red)}tr.group-header.green th{bor
 <div id="mip-grid" class="mip-grid" aria-live="polite"></div>
 <p class="small">MIP closure requires independently verified source artifacts and admission criteria, not a percentage invented from cards.</p></div>
 </section>
+
+<section class="panel" id="telemetry">
+ <div class="panel-head"><div><h2>Telemetry / DMAIC / MIP statistical measurement</h2><p class="small">User-facing source-bound reference + importable structural receipts. Depth is shown explicitly; statistical independence is not inferred.</p></div><div class="actions"><span class="badge amber" id="telemetry-reference-state">REFERENCE · 2026-10-16</span><button type="button" id="load-telemetry-reference" class="btn-secondary">Reload telemetry reference</button></div></div>
+ <div class="telemetry-banner"><span class="badge amber">HIERARCHICAL</span><strong>31 workflows → 121 jobs → 1,065 steps ≠ 1,217 independent process observations</strong><span class="guard">M2 / M3 remain HOLD until comparable independent cycles exist.</span></div>
+
+ <div class="telemetry-summary">
+  <article class="telemetry-card"><div class="stat-label">Execution hierarchy · #1989</div><div class="big" id="tel-hierarchy-big">31 → 121 → 1,065</div><div class="metricline"><span>Workflow decisive success</span><b id="tel-workflow-success">83.33%</b></div><div class="metricline"><span>Job decisive success</span><b id="tel-job-success">91.96%</b></div><div class="metricline"><span>Step decisive success</span><b id="tel-step-success">99.03%</b></div><div class="telemetry-source">Exact source <code>79672200a0fb…</code> · <a href="https://github.com/GBOGEB/ABACUS/pull/1989" target="_blank" rel="noopener noreferrer">#1989 ↗</a></div></article>
+  <article class="telemetry-card tests"><div class="stat-label">Test penetration · #2033 prior exact head</div><div class="big" id="tel-test-depth">560 → 2,255</div><div class="metricline"><span>B0 groups</span><b id="tel-test-groups">70</b></div><div class="metricline"><span>Depth factor</span><b id="tel-depth-factor">4.03×</b></div><div class="metricline"><span>Failures / errors</span><b>0 / 0</b></div><div class="telemetry-source">Overlapping surfaces; counts are not additive.</div></article>
+  <article class="telemetry-card coverage"><div class="stat-label">Coverage measurement breadth</div><div class="big" id="tel-coverage-pct">31.38% → 56.60%</div><div class="metricline"><span>Statement denominator</span><b id="tel-coverage-den">21,007 → 30,153</b></div><div class="metricline"><span>Denominator expansion</span><b id="tel-den-expansion">+43.54%</b></div><div class="metricline"><span>Zero-coverage disposition paths</span><b id="tel-zero-paths">77</b></div><div class="telemetry-warning">Changed denominator: this is measurement penetration, <b>not</b> a matched +25.22 pp coverage claim.</div></article>
+  <article class="telemetry-card scale"><div class="stat-label">Queue / runtime / scaling · native B0</div><div class="big" id="tel-queue-p95">queue p95 248 s</div><div class="metricline"><span>Queue p50</span><b id="tel-queue-p50">46 s</b></div><div class="metricline"><span>Runtime p95</span><b id="tel-runtime-p95">368 s</b></div><div class="metricline"><span>Peak observed concurrency</span><b id="tel-peak-concurrency">5</b></div><div class="metricline"><span>Realized parallelism</span><b id="tel-parallelism">1.071×</b></div><div class="telemetry-source"><a href="https://github.com/GBOGEB/ABACUS/actions/runs/38870273917" target="_blank" rel="noopener noreferrer">Native B0 run 38870273917 ↗</a></div></article>
+ </div>
+
+ <div class="telemetry-leaves" id="telemetry-leaves" aria-label="Telemetry measurement leaves">
+  <article class="telemetry-leaf"><h3>CI reliability <span class="leaf-code">REL</span></h3><div class="leaf-value">25 / 30</div><div class="leaf-sub">Workflow success among decisive outcomes; 5 workflow failures remain causal surfaces, not automatically five roots.</div><details><summary>Open hierarchy</summary><ul><li>31 workflows: 25 success, 5 failure, 1 cancelled.</li><li>121 jobs: 103 success, 9 failure, 8 skipped, 1 cancelled.</li><li>1,065 steps: 1,023 success, 10 failure, 32 skipped.</li></ul></details></article>
+  <article class="telemetry-leaf"><h3>Test penetration <span class="leaf-code">TEST</span></h3><div class="leaf-value">2,255 tests</div><div class="leaf-sub">Post-B0 canonical depth on the same exact source SHA; B0 reference = 560 tests / 70 file groups.</div><details><summary>What it means</summary><ul><li>560 B0 tests: 554 pass, 6 skip.</li><li>2,255 post-B0: 2,253 pass, 2 skip.</li><li>Depth expansion ≈ 4.03×; overlapping selections are not additive.</li></ul></details></article>
+  <article class="telemetry-leaf"><h3>Coverage penetration <span class="leaf-code">COV</span></h3><div class="leaf-value">30,153 stmts</div><div class="leaf-sub">Union measurement denominator on the prior #2033 exact head; 17,067 statements covered.</div><details><summary>Pressure surface</summary><ul><li>40 ranked measured source paths.</li><li>77 zero-coverage disposition paths.</li><li>5,872 missed statements in ranked-40 potential; realized gain WITHHELD.</li></ul></details></article>
+  <article class="telemetry-leaf"><h3>DAB / static clusters <span class="leaf-code">DAB</span></h3><div class="leaf-value">3,719</div><div class="leaf-sub">Measured findings across 34 families; 1,102 read-only proposals.</div><details><summary>Concentration</summary><ul><li>Top five families = 75.80%.</li><li>Top ten = 92.12%.</li><li>Family HHI ≈ 0.1478; effective count ≈ 6.77.</li><li>Style findings = 83.54%; do not let style mask security/root work.</li></ul></details></article>
+  <article class="telemetry-leaf"><h3>W78 / W79 PCA <span class="leaf-code">PCA</span></h3><div class="leaf-value">92.28% PC1</div><div class="leaf-sub">15 target states; 10 semantic states; one PA95 component retained in the semantic panel.</div><details><summary>Model geometry</summary><ul><li>30 deterministic observations; 15/15 replay consistency.</li><li>Semantic PC1 = 92.2846%; all-work PC1 = 89.7607%.</li><li>PA95 = 2,000 replicates; small-sample warning true.</li><li>Bradley–Terry remains WITHHELD.</li></ul></details></article>
+  <article class="telemetry-leaf"><h3>3P* capacity <span class="leaf-code">3P*</span></h3><div class="leaf-value">607.09</div><div class="leaf-sub">Evidence units / worker-minute in W64 R01 read-only sample; stability remains insufficient.</div><details><summary>Scaling baseline</summary><ul><li>5 sampled root items.</li><li>5 discovery + 5 discrimination workers; P3 writer = 0.</li><li>Wall/root = 9.60 s; AHT/root = 47.95 s.</li><li>Terminal items/worker-hour = 0 by read-only design.</li></ul></details></article>
+  <article class="telemetry-leaf"><h3>Burndown / penetration <span class="leaf-code">BURN</span></h3><div class="leaf-value">12 → 0</div><div class="leaf-sub">Selected-state open backlog movement; formal root-closure credit remains 0.</div><details><summary>Sequence summary</summary><ul><li>Backlog max 24, median 1, gross +30 / −42, net −12.</li><li>Consumer penetration mean 78.07%, median 94.44%, final 100%.</li><li>Graph-drop / lineage-gap / registry-gap / unresolved-reference final = 0% in selected state.</li></ul></details></article>
+  <article class="telemetry-leaf"><h3>Statistical maturity <span class="leaf-code">M1–M3</span></h3><div class="leaf-value">HOLD</div><div class="leaf-sub">Nested execution telemetry expands measurement richness but does not create independent cycles.</div><details><summary>Sampling boundary</summary><ul><li>#2033 = structural width/depth/timing.</li><li>#1998 = root transitions, matched wave cohorts and coverage.</li><li>#1989 = comparable cycle-level statistical maturity.</li><li>UNKNOWN ≠ zero; HTML never grants admission.</li></ul></details></article>
+ </div>
+
+ <div class="telemetry-split">
+  <div class="burn-panel"><h3>Pulse penetration and backlog shape · W78/W79 selected states</h3><div class="burn-row"><b>Consumer penetration</b><div class="burn-bars" id="tel-penetration-bars" aria-label="Consumer penetration by selected source state"></div></div><div class="burn-row"><b>Open backlog</b><div class="burn-bars backlog" id="tel-backlog-bars" aria-label="Open backlog by selected source state"></div></div><p class="small">Bars are descriptive historical state snapshots. They are not a control chart and do not imply equal time spacing or independent sampling.</p></div>
+  <div class="card"><h3>Producer / owner fan-in</h3><div class="stack"><div><span class="leaf-code">#2033</span> <b>Structural telemetry</b><p class="small">runs → jobs → steps → queue/runtime/concurrency + completeness.</p></div><div><span class="leaf-code">#1998</span> <b>Wave/root series</b><p class="small">root IDs, fingerprints, first-red transitions, matched coverage and burndown.</p></div><div><span class="leaf-code">#1989</span> <b>Statistical maturity</b><p class="small">only correctly sampled comparable cycles feed M1/M2/M3 inference.</p></div><div><span class="leaf-code">W64/W78/W79</span> <b>Capacity / diversity / PCA</b><p class="small">descriptive and experimental inputs with explicit maturity boundaries.</p></div></div><p class="telemetry-source" id="tel-reference-provenance">Static source-bound reference; reload the controlled JSON when served.</p></div>
+ </div>
+
+ <div class="card" style="margin-top:13px" id="telemetry-method-dag"><h3>Measurement method DAG · width → depth → root → maturity</h3>
+  <div class="method-dag">
+   <div class="method-chain">
+    <div class="method-node"><b>Exact SHA / pulse</b><small>source identity</small></div>
+    <div class="method-node"><b>Workflow runs</b><small>terminal + WIP</small></div>
+    <div class="method-node"><b>Jobs</b><small>runner / queue / runtime</small></div>
+    <div class="method-node"><b>Steps</b><small>first-red surfaces</small></div>
+    <div class="method-node"><b>JUnit tests</b><small>pass / fail / skip / error</small></div>
+    <div class="method-node"><b>Test→source contexts</b><small>penetration</small></div>
+    <div class="method-node"><b>Coverage</b><small>covered / eligible</small></div>
+   </div>
+   <div class="method-side">
+    <div class="method-node control"><b>Root / BD lane</b><small>step fingerprints → root transitions → #1998 wave burndown</small></div>
+    <div class="method-node control"><b>Scale lane</b><small>jobs / timing → #2033 → 3P* capacity experiments</small></div>
+    <div class="method-node analysis"><b>Diversity lane</b><small>test/source context → W78 vectors → W79 diagnostic PCA</small></div>
+   </div>
+   <div class="method-owner">
+    <div class="method-node analysis"><b>#1989 maturity fan-in</b><small>cycle-level comparable observations only</small></div>
+    <div class="method-node"><b>Independent gates</b><small>A10 + security + reviews + protected main</small></div>
+    <div class="method-node control"><b>Authorized outcome</b><small>eligible only after all independent gates pass</small></div>
+   </div>
+  </div>
+  <div class="telemetry-warning"><b>Sampling guard:</b> jobs, steps, test cases and deterministic replay states are nested or repeated evidence. They may explain a cycle; they do not multiply the number of independent process cycles.</div>
+  <details class="arch-code"><summary>Copyable Mermaid telemetry DAG source</summary><pre>flowchart TB
+ SHA["Exact repository + source SHA / pulse"] --&gt; RUN["Workflow runs"]
+ RUN --&gt; JOB["Jobs | runner + queue + runtime"]
+ JOB --&gt; STEP["Steps | first-red surfaces"]
+ STEP --&gt; JUNIT["JUnit / test cases"]
+ JUNIT --&gt; CTX["Dynamic test-to-source contexts"]
+ CTX --&gt; COV["Coverage numerator / denominator"]
+ STEP --&gt; FP["Failure fingerprints"] --&gt; ROOT["BD root transitions"] --&gt; WAVE["#1998 wave burndown"]
+ JOB --&gt; SCALE["#2033 structural telemetry"] --&gt; P3["3P* capacity"]
+ CTX --&gt; W78["W78 state vectors"] --&gt; W79["W79 diagnostic PCA"]
+ WAVE --&gt; MATURE["#1989 cycle-level maturity"]
+ P3 --&gt; MATURE
+ COV --&gt; MATURE
+ W79 -. "descriptive input only" .-&gt; MATURE
+ MATURE --&gt; DEC{"Comparable independent cycles sufficient?"}
+ DEC --&gt;|"NO / UNKNOWN"| HOLD["M2 / M3 HOLD"]
+ DEC --&gt;|"YES + verified"| CONTROL["Control / capability / uncertainty"]</pre></details>
+  <p class="small"><a href="https://github.com/GBOGEB/ABACUS/blob/code-purple/test-observability-v4-20261014/tools/everred_v3/sut_gui/TELEMETRY_MEASUREMENT_DAG_V5.mmd" target="_blank" rel="noopener noreferrer">Canonical Mermaid source on this dashboard branch ↗</a></p>
+ </div>
+</section>
+
 <section class="panel" id="model"><div class="panel-head"><h2>PCA / Bradley–Terry / reverse pressure</h2><span class="badge unknown" id="model-status">PRE-FIT QUALIFICATION</span></div>
 <div class="kpi-row"><article class="card"><h3>PCA — observed CI telemetry <span class="source-chip">EXPLORATORY</span></h3><div class="mini-note" id="pca-live">Live PCA panel: awaiting eligible run-level observations</div><div class="stat-value" id="pca-state">UNKNOWN</div><p class="small" id="pca-info">Requires n independent source-bound rows, p named finite variables, scaling, missingness and drift diagnostics.</p><div class="field"><label for="pca-n">Independent observations n</label><input id="pca-n" type="number" min="0" step="1" placeholder="Measured n"></div><div class="field"><label for="pca-p">Variables p</label><input id="pca-p" type="number" min="2" step="1" placeholder="Measured p"></div><button id="check-pca" type="button">Evaluate sample eligibility</button></article>
 <article class="card"><h3>Bradley–Terry — empirical paired evidence</h3><div class="mini-note" id="bt-live">Native pairwise observation producer: UNKNOWN; no win/loss dataset, no fit</div><div class="stat-value" id="bt-state">UNKNOWN</div><p class="small" id="bt-info">Requires independent real pairwise outcomes, finite-MLE win-graph connectivity and uncertainty.</p><div class="field"><label for="bt-n">Independent observed pairs</label><input id="bt-n" type="number" min="0" step="1" placeholder="Measured comparisons"></div><div class="field"><label for="bt-connected">Observed win graph</label><select id="bt-connected"><option value="unknown">Unverified connectivity</option><option value="yes">Strongly connected (verified)</option><option value="no">Not strongly connected</option></select></div><button id="check-bt" type="button">Evaluate BT eligibility</button></article></div>
@@ -448,7 +553,7 @@ Separate independent governance gates: native CI + security + coverage + reviews
 No gate bypass; no global single-owner assertion.</pre></details></div>
 </section>
 <section class="panel" id="evidence"><h2>Evidence and lineage</h2><div class="card"><div class="stack"><div><strong>Bootstrap snapshot</strong><p class="small">No current state is asserted from the HTML bootstrap. All source-dependent KPIs remain UNKNOWN until a new GitHub API receipt completes.</p></div><div><strong>Source reference</strong><p class="small">EVERRED V3 exists in <code>GBOGEB/ABACUS/tools/everred_v3</code>; the MIP improvement is PR #1951. Historical and native receipts remain distinct.</p></div><div><strong>GUI evidence contract</strong><p class="small" id="evidence-state">A refresh timestamps its readback. Any API failure must show UNKNOWN rather than preserve an apparently live old value. Local execution never claims current-main proof.</p></div></div></div></section>
-<footer class="footer">CODE PURPLE / SUT GUI v4.1 · Source-of-truth remains GitHub and governed native artefacts · No security waiver · No authority transfer.</footer>
+<footer class="footer">CODE PURPLE / SUT GUI v4.4 · Source-of-truth remains GitHub and governed native artefacts · No security waiver · No authority transfer.</footer>
 </main></div>
 
 <dialog id="trend-dialog" aria-labelledby="dialog-trend-title">
@@ -719,6 +824,53 @@ function populateNativeSnapshot(data, origin){
  // All file imports are unverified even if JSON fields claim otherwise.
  if(origin.startsWith('MANUAL'))badge('model-status','LOCAL IMPORT · UNVERIFIED','amber');
 }
+
+const TELEMETRY_REFERENCE_PATH='./telemetry_reference_v5.json';
+function barSeries(id,values,maxValue){
+ const root=$(id);if(!root||!Array.isArray(values))return;root.replaceChildren();
+ const max=Number.isFinite(maxValue)&&maxValue>0?maxValue:Math.max(...values.filter(Number.isFinite),1);
+ values.forEach((v,i)=>{const b=make('i');const n=Number(v);b.style.height=(Number.isFinite(n)?Math.max(2,Math.min(100,100*n/max)):2)+'%';b.dataset.label='s'+String(i+1).padStart(2,'0')+' · '+(Number.isFinite(n)?n.toFixed(n%1?1:0):'UNKNOWN');root.append(b)});
+}
+function applyTelemetryReference(data,origin){
+ if(!data||data.schema!=='code-purple.telemetry-reference.v5'||data.authority_transfer!==false||data.merge_authorized!==false||data.security_waiver!==false)throw Error('Invalid telemetry reference contract');
+ const ci=data.ci_hierarchy||{}, b0=data.native_b0||{}, test=data.test_penetration||{}, cov=data.coverage_penetration||{}, burn=data.burndown||{};
+ kv('tel-hierarchy-big',(ci.workflows?.observed??'UNKNOWN')+' → '+(ci.jobs?.observed??'UNKNOWN')+' → '+(ci.steps?.observed??'UNKNOWN'));
+ kv('tel-workflow-success',(ci.workflows?.success_decisive_pct??'UNKNOWN')+(Number.isFinite(ci.workflows?.success_decisive_pct)?'%':''));
+ kv('tel-job-success',(ci.jobs?.success_decisive_pct??'UNKNOWN')+(Number.isFinite(ci.jobs?.success_decisive_pct)?'%':''));
+ kv('tel-step-success',(ci.steps?.success_decisive_pct??'UNKNOWN')+(Number.isFinite(ci.steps?.success_decisive_pct)?'%':''));
+ kv('tel-test-depth',(test.b0?.tests??'UNKNOWN')+' → '+(test.post_b0?.tests??'UNKNOWN'));
+ kv('tel-test-groups',test.b0?.file_groups??'UNKNOWN');
+ kv('tel-depth-factor',Number.isFinite(test.depth_factor)?test.depth_factor.toFixed(2)+'×':'UNKNOWN');
+ kv('tel-coverage-pct',(cov.b0_statements?.pct??'UNKNOWN')+'% → '+(cov.union_statements?.pct??'UNKNOWN')+'%');
+ kv('tel-coverage-den',(cov.b0_statements?.total??'UNKNOWN').toLocaleString?.()+' → '+(cov.union_statements?.total??'UNKNOWN').toLocaleString?.());
+ kv('tel-den-expansion',Number.isFinite(cov.denominator_expansion_pct)?'+'+cov.denominator_expansion_pct.toFixed(2)+'%':'UNKNOWN');
+ kv('tel-zero-paths',cov.zero_coverage_disposition_paths??'UNKNOWN');
+ kv('tel-queue-p95','queue p95 '+(b0.queue_seconds?.p95??'UNKNOWN')+' s');
+ kv('tel-queue-p50',(b0.queue_seconds?.p50??'UNKNOWN')+' s');
+ kv('tel-runtime-p95',(b0.runtime_seconds?.p95??'UNKNOWN')+' s');
+ kv('tel-peak-concurrency',b0.runtime_seconds?.peak_concurrency??'UNKNOWN');
+ kv('tel-parallelism',Number.isFinite(b0.runtime_seconds?.realized_parallelism)?b0.runtime_seconds.realized_parallelism.toFixed(3)+'×':'UNKNOWN');
+ barSeries('tel-penetration-bars',burn.consumer_penetration_sequence_pct,100);
+ barSeries('tel-backlog-bars',burn.open_backlog_sequence,Math.max(...(burn.open_backlog_sequence||[1])));
+ kv('tel-reference-provenance',origin+' · '+data.classification+' · producer '+(data.producer?.head_sha?.slice(0,12)??'UNKNOWN')+' / '+(data.producer?.qualification??'UNKNOWN')+' · no authority transfer');
+ badge('telemetry-reference-state','REFERENCE LOADED','green');
+}
+function applyStructuralTelemetry(data,origin){
+ if(!data||data.schema!=='abacus.mip.ci-wave-telemetry.v2'||data.authority_transfer!==false||data.merge_authorized!==false||data.security_waiver!==false||!(/^[a-f0-9]{40}$/).test(data.source_sha))throw Error('Invalid structural telemetry receipt');
+ kv('tel-hierarchy-big',(data.workflow_records_observed??'UNKNOWN')+' → '+(data.jobs_observed??'UNKNOWN')+' → '+(data.steps_observed??'UNKNOWN'));
+ kv('tel-queue-p95','queue p95 '+(data.queue_seconds_p95??'UNKNOWN')+' s');
+ kv('tel-queue-p50',(data.queue_seconds_p50??'UNKNOWN')+' s');
+ kv('tel-runtime-p95',(data.runtime_seconds_p95??'UNKNOWN')+' s');
+ kv('tel-peak-concurrency',data.peak_runtime_concurrency_observed??'UNKNOWN');
+ kv('tel-parallelism',Number.isFinite(data.realized_parallelism_factor)?data.realized_parallelism_factor.toFixed(3)+'×':'UNKNOWN');
+ kv('tel-reference-provenance',origin+' · STRUCTURAL RECEIPT '+data.source_sha.slice(0,12)+' · jobs '+(data.jobs_observed??'UNKNOWN')+' · steps '+(data.steps_observed??'UNKNOWN')+' · independent cycles '+(data.independent_process_observations??'UNKNOWN'));
+ badge('telemetry-reference-state','STRUCTURAL RECEIPT · NO ADMISSION','amber');
+}
+async function loadTelemetryReference(){
+ try{const r=await fetch(TELEMETRY_REFERENCE_PATH,{cache:'no-store'});if(!r.ok)throw Error('HTTP '+r.status);applyTelemetryReference(await r.json(),'CONTROLLED REFERENCE JSON')}
+ catch(e){badge('telemetry-reference-state','STATIC REFERENCE · FETCH UNAVAILABLE','amber');kv('tel-reference-provenance','Static exact-SHA values remain visible; controlled JSON reload unavailable: '+e.message)}
+}
+
 const legendColor=k=>({success:'var(--green)',failure:'var(--red)',cancelled:'var(--cancel)',in_progress:'var(--running)',queued:'var(--queued)',skipped:'var(--skip)'}[k]||'#808c9b');
 function enlargeChronology(){
  const dlg=$('trend-dialog'),root=$('zoom-chart');root.replaceChildren();
@@ -744,12 +896,14 @@ $('trend').addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.pre
 $('close-trend').addEventListener('click',()=>{const x=$('trend-dialog');if(x.close)x.close();else x.removeAttribute('open')});
 $('trend-dialog').addEventListener('click',e=>{if(e.target===e.currentTarget)e.currentTarget.close()});
 $('producer-file').addEventListener('change',async e=>{const f=e.target.files?.[0];if(!f)return;
- try{if(f.size>4*1024*1024)throw Error('Maximum import 4 MiB');populateNativeSnapshot(JSON.parse(await f.text()),'MANUAL_UNVERIFIED '+f.name)}
+ try{if(f.size>4*1024*1024)throw Error('Maximum import 4 MiB');const data=JSON.parse(await f.text());if(data?.schema==='abacus.mip.ci-wave-telemetry.v2')applyStructuralTelemetry(data,'MANUAL_UNVERIFIED '+f.name);else if(data?.schema==='code-purple.telemetry-reference.v5')applyTelemetryReference(data,'MANUAL_UNVERIFIED '+f.name);else populateNativeSnapshot(data,'MANUAL_UNVERIFIED '+f.name)}
  catch(err){text('producer-provenance','REJECTED / '+err.message)}});
+$('load-telemetry-reference').addEventListener('click',loadTelemetryReference);
 $('load-local-evidence').addEventListener('click',async()=>{
  try{const r=await fetch('./evidence/latest.json',{cache:'no-store'});if(!r.ok)throw Error('HTTP '+r.status);populateNativeSnapshot(await r.json(),'LOCAL_SERVED_UNVERIFIED source file');}
  catch(e){text('producer-provenance','Local evidence unavailable: '+e.message+'; choose file manually.')}});
 updateTaxonomy();
+loadTelemetryReference();
 
 $('scope-target').addEventListener('change',refresh);for(const id of ['ci-filter','ci-family','ci-search','group-duplicates'])$(id).addEventListener('input',renderTable);for(const btn of document.querySelectorAll('.arch-tab'))btn.addEventListener('click',()=>{for(const panel of document.querySelectorAll('.arch-panel'))panel.classList.add('hidden');$('arch-'+btn.dataset.arch).classList.remove('hidden')});$('refresh').addEventListener('click',refresh);$('check-service').addEventListener('click',checkService);$('run').addEventListener('click',launch);setInterval(()=>{if(lastReadback&&Date.now()-lastReadback>120000)badge('connection','STALE READBACK','amber')},30000);renderDMAIC({sha:null,n:0,expected:null,protected:false});renderMIP({hasRuns:false,n:null,expected:null});modelGatePanels();document.getElementById('check-pca').addEventListener('click',()=>{const n=Number(document.getElementById('pca-n').value),p=Number(document.getElementById('pca-p').value);const ok=Number.isInteger(n)&&n>0&&Number.isInteger(p)&&p>=2&&n>=Math.max(30,5*p);kv('pca-state',ok?'SAMPLE SIZE ONLY':'NOT QUALIFIED');kv('pca-info',ok?'Heuristic sample-size gate met; raw matrix, independence, rank, scaling and uncertainty still unverified. NO FIT.':'Heuristic n ≥ max(30,5p) not demonstrated. NO FIT.');});document.getElementById('check-bt').addEventListener('click',()=>{const n=Number(document.getElementById('bt-n').value),g=document.getElementById('bt-connected').value;const ok=Number.isInteger(n)&&n>=30&&g==='yes';kv('bt-state',ok?'PRELIMINARY ONLY':'NOT QUALIFIED');kv('bt-info',ok?'Sample/count and claimed connectivity pass; outcomes, independence, empirical calibration and MLE fit not verified. NO RANKING.':'Need ≥30 independent observed comparisons and a strongly connected win graph. NO RANKING.');});setInterval(()=>{if(lastReadback&&Date.now()-lastReadback>60000)refresh()},60000);refresh();checkService();
 // Full-size SIPOC uses the exact same local blocks; no independent diagram content or model results.
