@@ -12,8 +12,9 @@ from __future__ import annotations
 import argparse
 import json
 import os
+import re
+from http.client import HTTPSConnection
 from pathlib import Path
-from urllib.request import Request, urlopen
 
 from tools.mip_ci_wave_telemetry import HEX40, summarize
 
@@ -49,7 +50,13 @@ def parse_selection(raw):
 
 def github_get(relative_url, *, token=None):
     """GET a fixed GitHub REST path only; no arbitrary user-supplied URL."""
-    if not relative_url.startswith(f"/repos/{REPO}/actions/"):
+    path_contract = (
+        rf"/repos/{REPO}/actions/runs/[1-9][0-9]*"
+        r"(?:/attempts/[1-9][0-9]*/jobs\?per_page=100&page=[1-9][0-9]*)?"
+    )
+    if not isinstance(relative_url, str) or not re.fullmatch(
+        path_contract, relative_url
+    ):
         raise ValueError("unsupported GitHub evidence endpoint")
     headers = {
         "Accept": "application/vnd.github+json",
@@ -58,9 +65,17 @@ def github_get(relative_url, *, token=None):
     }
     if token:
         headers["Authorization"] = f"Bearer {token}"
-    request = Request("https://api.github.com" + relative_url, headers=headers)
-    with urlopen(request, timeout=25) as response:
+    # Pinned HTTPS host, TLS validation, and no redirect-following: a GitHub
+    # response cannot transfer the authorization header to another origin.
+    connection = HTTPSConnection("api.github.com", timeout=25)
+    try:
+        connection.request("GET", relative_url, headers=headers)
+        response = connection.getresponse()
+        if response.status != 200:
+            raise ValueError(f"native GitHub API HTTP {response.status}")
         return json.load(response)
+    finally:
+        connection.close()
 
 
 def collect_gate_input(source_sha, selected, *, getter=github_get):
@@ -180,8 +195,9 @@ def collect_gate_input(source_sha, selected, *, getter=github_get):
     }
     # Validate join, statuses and gate IDs before writing any measurement.
     projection = summarize(payload)
-    assert projection["merge_authorized"] is False
-    assert projection["independent_gates"]["admission"] == "HOLD"
+    if (projection["merge_authorized"] is not False
+            or projection["independent_gates"]["admission"] != "HOLD"):
+        raise ValueError("collector projection must retain independent HOLD")
     return payload, projection
 
 
