@@ -139,6 +139,11 @@ class PipelineController:
                 if stop_after_each:
                     break
 
+                # Maintain the documented inter-iteration delay after a crash.
+                if i < n_iterations - 1 and not self.stop_requested:
+                    print(f"\nPausing 3 seconds before iteration {iteration + 1}...")
+                    time.sleep(3)
+
         # Final summary
         self._print_summary(results, start_iter, n_iterations)
 

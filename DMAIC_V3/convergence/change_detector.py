@@ -140,7 +140,7 @@ class ChangeDetector:
             if not isinstance(loaded, dict):
                 return {}
             return {
-                key.replace('\\\\', '/'): value
+                key.replace('\\', '/'): value
                 for key, value in loaded.items()
             }
         except Exception as e:
