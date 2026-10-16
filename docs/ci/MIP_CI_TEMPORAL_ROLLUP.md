@@ -58,6 +58,33 @@ Later observations score its absolute prediction error, without altering the
 earlier forecast. Prediction histories need external immutability and trusted
 timestamping before any audit credit.
 
+## First-red step recurrence is not causal root closure
+
+The canonical `mip_ci_wave_telemetry.v2` producer now exposes
+`first_red_manifestations` and `first_red_signatures` per exact source SHA.
+A signature is SHA-256 over native workflow path, job name, failing step name,
+and numeric step ordinal. Each occurrence retains run ID, attempt and job ID.
+Only terminal red jobs with complete native step numbers and workflow/job
+identities are attributable; missing or ambiguous step detail increases
+`red_jobs_without_attributed_first_step` instead of implying a clean run.
+
+Counts of repeated signatures are **correlated job manifestations**, not
+independent trials and not causal BD/LDAB roots. The projection retains
+`first_red_causal_roots_verified=null`; a canonical root owner must independently
+inspect source, runner log, configuration, recurrence and repaired-head proof.
+No scanner finding, first-red signature or synthetic replay grants A10, Safety,
+review, QPS acceptance or release authority.
+
+## Statistical provider and immutable inputs
+
+The canonical mathematical reference implementation resides in
+`GBOGEB/gg_MATH` (PCA, PCA alignment, Bradley-Terry and uncertainty kernels).
+Before PCA or temporal model admission, the consumer shall bind a matched
+workflow set, test selection, runner matrix, source/config digests, independently
+sampled waves and the provider's exact source SHA. Native artifact bytes and
+library/runtime binary identities remain separate evidence fields; absent
+identity or sample independence remains UNKNOWN, not zero or a fitted PC1.
+
 PCA requires independent, comparable, sufficiently populated observations
 across distinct metric families. Runs/jobs/steps and a few consecutive waves do
 not prove independence or process stability. M2/M3 process/PCA maturity remains
