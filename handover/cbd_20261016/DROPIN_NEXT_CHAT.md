@@ -27,6 +27,8 @@ This new binder (draft, not merged):
 - binder.py: pure-standard-library read-only validation, local Markdown
   readback, optional GitHub GET re-CENSUS, SHA drift check.
 - test_binder.py: positive/negative source, authority, and metric controls.
+- ARTIFACT_INDEX.md: native run/job, artifact IDs, uploaded digests,
+  evidence quality, reusable build dossier links and pulse definitions.
 - DROPIN_NEXT_CHAT.md (this file): complete no-ZIP continuation instructions.
 
 Established handover receiver (historical): ABACUS PR #1975
