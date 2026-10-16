@@ -205,7 +205,12 @@
       "job_id": null,
       "head_sha": "a752d15cab03dc6671fffce8df2048b93c0787ee",
       "note": "12/12 prior-head platform matrix green",
-      "url": "https://github.com/GBOGEB/ABACUS/actions/runs/38869180768"
+      "url": "https://github.com/GBOGEB/ABACUS/actions/runs/38869180768",
+      "run_attempt": null,
+      "artifact_id": null,
+      "zip_sha256_uploaded": null,
+      "downloaded_zip_verified": null,
+      "member_digest_verified": null
     },
     {
       "id": "W72_BACKUP",
@@ -214,7 +219,12 @@
       "job_id": 116875501551,
       "head_sha": "bf626ed5fb8372f91b859c20b7f0ffe3b373e460",
       "note": "557 PASS/1 FAIL/2 SKIP; backup old != new",
-      "url": "https://github.com/GBOGEB/ABACUS/actions/runs/38871217334"
+      "url": "https://github.com/GBOGEB/ABACUS/actions/runs/38871217334",
+      "run_attempt": null,
+      "artifact_id": null,
+      "zip_sha256_uploaded": null,
+      "downloaded_zip_verified": null,
+      "member_digest_verified": null
     },
     {
       "id": "W72_GOV",
@@ -223,7 +233,12 @@
       "job_id": 116875501737,
       "head_sha": "bf626ed5fb8372f91b859c20b7f0ffe3b373e460",
       "note": "unclassified code-purple dashboard+SUT GUI; report 158 vs 160",
-      "url": "https://github.com/GBOGEB/ABACUS/actions/runs/38871217342"
+      "url": "https://github.com/GBOGEB/ABACUS/actions/runs/38871217342",
+      "run_attempt": null,
+      "artifact_id": null,
+      "zip_sha256_uploaded": null,
+      "downloaded_zip_verified": null,
+      "member_digest_verified": null
     },
     {
       "id": "A10",
@@ -232,7 +247,12 @@
       "job_id": 116730248604,
       "head_sha": "60d2a5640c997fc916285580b6de8a3d86c27c38",
       "note": "restricted workflow_policy.json and WORKFLOW_RATIONALIZATION.md",
-      "url": "https://github.com/GBOGEB/ABACUS/actions/runs/38824989937"
+      "url": "https://github.com/GBOGEB/ABACUS/actions/runs/38824989937",
+      "run_attempt": null,
+      "artifact_id": null,
+      "zip_sha256_uploaded": null,
+      "downloaded_zip_verified": null,
+      "member_digest_verified": null
     },
     {
       "id": "BLACK_1998",
@@ -241,7 +261,12 @@
       "job_id": null,
       "head_sha": "e36f7543d4e002296725474a3bc0d57abf7d2d3b",
       "note": "2 Black new-debt files; independent security red",
-      "url": "https://github.com/GBOGEB/ABACUS/actions/runs/38749812262"
+      "url": "https://github.com/GBOGEB/ABACUS/actions/runs/38749812262",
+      "run_attempt": null,
+      "artifact_id": null,
+      "zip_sha256_uploaded": null,
+      "downloaded_zip_verified": null,
+      "member_digest_verified": null
     },
     {
       "id": "G4_FOCUSED",
@@ -250,7 +275,12 @@
       "job_id": 116331559228,
       "head_sha": "fd67b5905894cc714406605b74dedd717f051e8c",
       "note": "same-source 78/93→93/93 statements, 23/26→26/26 branches",
-      "url": "https://github.com/GBOGEB/pipeline-automation-hub/actions/runs/38707835880"
+      "url": "https://github.com/GBOGEB/pipeline-automation-hub/actions/runs/38707835880",
+      "run_attempt": null,
+      "artifact_id": 11959316498,
+      "zip_sha256_uploaded": "d64b946367de1ea4db571f4001b571dd9fdc82187b644fb5456e581881f4c938",
+      "downloaded_zip_verified": false,
+      "member_digest_verified": false
     },
     {
       "id": "W3_TELEMETRY",
@@ -259,7 +289,12 @@
       "job_id": null,
       "head_sha": null,
       "note": "six measured rows, not six admitted fleet cells",
-      "url": "https://github.com/GBOGEB/pipeline-automation-hub/actions/runs/38867981712"
+      "url": "https://github.com/GBOGEB/pipeline-automation-hub/actions/runs/38867981712",
+      "run_attempt": null,
+      "artifact_id": null,
+      "zip_sha256_uploaded": null,
+      "downloaded_zip_verified": null,
+      "member_digest_verified": null
     },
     {
       "id": "W3_PCA",
@@ -268,7 +303,12 @@
       "job_id": null,
       "head_sha": null,
       "note": "component identity not universally reliable",
-      "url": "https://github.com/GBOGEB/pipeline-automation-hub/actions/runs/38867981621"
+      "url": "https://github.com/GBOGEB/pipeline-automation-hub/actions/runs/38867981621",
+      "run_attempt": null,
+      "artifact_id": null,
+      "zip_sha256_uploaded": null,
+      "downloaded_zip_verified": null,
+      "member_digest_verified": null
     },
     {
       "id": "W3_CONTROL",
@@ -277,7 +317,12 @@
       "job_id": null,
       "head_sha": null,
       "note": "2 frontier tasks, 3 control classes, 0 promotions",
-      "url": "https://github.com/GBOGEB/pipeline-automation-hub/actions/runs/38869021242"
+      "url": "https://github.com/GBOGEB/pipeline-automation-hub/actions/runs/38869021242",
+      "run_attempt": null,
+      "artifact_id": null,
+      "zip_sha256_uploaded": null,
+      "downloaded_zip_verified": null,
+      "member_digest_verified": null
     }
   ],
   "references": {
@@ -289,7 +334,8 @@
     "methods": "https://github.com/GBOGEB/pipeline-automation-hub/blob/master/mission-control/federation-atlas/METHOD_OBSERVABILITY_v1.json",
     "beams": "https://github.com/GBOGEB/pipeline-automation-hub/blob/master/mission-control/federation-atlas/CODE_PURPLE_BEAMS_DAG_v1.json",
     "SIPOC": "https://github.com/GBOGEB/pipeline-automation-hub/blob/master/mission-control/federation-atlas/ATLAS_GRAPH_v1.yaml",
-    "KPI": "https://github.com/GBOGEB/pipeline-automation-hub/blob/master/mission-control/federation-atlas/PHASE02_KPI_TAXONOMY_v1.json"
+    "KPI": "https://github.com/GBOGEB/pipeline-automation-hub/blob/master/mission-control/federation-atlas/PHASE02_KPI_TAXONOMY_v1.json",
+    "artifact_dossier": "handover/cbd_20261016/ARTIFACT_INDEX.md in this draft PR; source-bound historical receipts"
   },
   "metrics": {
     "G4_status_breadth": {
