@@ -15,7 +15,7 @@ SHA256 = re.compile(r"[0-9a-f]{64}\Z")
 SCHEMA = "mip2.method-observations.v1"
 
 
-def checked_identity(evidence: dict, raw_corpus: bytes) -> None:
+def checked_identity(evidence: dict, raw_corpus: bytes, raw_artifact: bytes | None) -> None:
     if not isinstance(evidence, dict) or evidence.get("schema") != SCHEMA:
         raise ValueError("OBSERVATION_SCHEMA_INVALID")
     required = ("repository", "source_sha", "method_id", "tool_name", "tool_version",
@@ -34,6 +34,10 @@ def checked_identity(evidence: dict, raw_corpus: bytes) -> None:
             raise ValueError(key.upper() + "_INVALID")
     if evidence["corpus_sha256"] != hashlib.sha256(raw_corpus).hexdigest():
         raise ValueError("CORPUS_BYTES_MISMATCH")
+    if raw_artifact is None:
+        raise ValueError("ARTIFACT_BYTES_MISSING")
+    if evidence["artifact_sha256"] != hashlib.sha256(raw_artifact).hexdigest():
+        raise ValueError("ARTIFACT_BYTES_MISMATCH")
     for key in ("run_id", "job_id", "run_attempt"):
         value = evidence[key]
         if type(value) is not int or value <= 0:
@@ -44,8 +48,8 @@ def checked_identity(evidence: dict, raw_corpus: bytes) -> None:
             raise ValueError(key.upper() + "_INVALID")
 
 
-def evaluate(evidence: dict, raw_corpus: bytes) -> dict:
-    checked_identity(evidence, raw_corpus)
+def evaluate(evidence: dict, raw_corpus: bytes, raw_artifact: bytes | None = None) -> dict:
+    checked_identity(evidence, raw_corpus, raw_artifact)
     try:
         corpus = json.loads(raw_corpus)
     except (ValueError, UnicodeDecodeError) as exc:
@@ -148,11 +152,14 @@ def comparable_delta(before: dict, after: dict) -> dict:
 def main(argv=None):
     p = argparse.ArgumentParser()
     p.add_argument("--observations", type=Path, required=True)
+    p.add_argument("--artifact", type=Path, required=True,
+                   help="actual native scanner artifact bytes; path is independently supplied")
     p.add_argument("--corpus", type=Path, default=Path(__file__).with_name("method_regression_corpus.json"))
     p.add_argument("--output", type=Path)
     args = p.parse_args(argv)
     try:
-        value = evaluate(json.loads(args.observations.read_bytes()), args.corpus.read_bytes())
+        value = evaluate(json.loads(args.observations.read_bytes()),
+                         args.corpus.read_bytes(), args.artifact.read_bytes())
     except (OSError, UnicodeDecodeError, ValueError, TypeError) as exc:
         value = {"schema": "mip2.method-effectiveness.v1", "state": "INVALID",
                  "reason": str(exc), "merge_authorized": False, "root_closure_credited": False}
