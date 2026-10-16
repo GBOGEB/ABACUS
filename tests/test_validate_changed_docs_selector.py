@@ -83,6 +83,7 @@ class ChangedDocsSelectionTests(unittest.TestCase):
         tmp, root, git, ancestor, base, head = self._fixture()
         try:
             git("checkout", "-q", "--orphan", "unrelated")
+            git("rm", "-q", "-rf", ".")
             (root / "orphan.yml").write_text("isolated: true\n")
             git("add", ".")
             git("commit", "-qm", "unrelated root")
