@@ -1,6 +1,7 @@
 """Fail-closed, evidence-only qualification. Does not execute scanners or authorize merges."""
 
 import json
+import math
 import re
 import sys
 from pathlib import Path
@@ -9,6 +10,8 @@ ROOT = Path(__file__).resolve().parents[1]
 REGISTRY = ROOT / "method_qualification_registry.json"
 SHA40 = re.compile(r"^[0-9a-f]{40}$")
 DIGEST64 = re.compile(r"^[0-9a-f]{64}$")
+
+OPTIONAL_EVIDENCE = {"repair_receipt", "adaptive_receipt"}
 
 REQUIRED = (
     "repository",
@@ -83,13 +86,21 @@ def _valid_adaptive_receipt(receipt, source_sha, method_id):
         and _nonempty_string(candidate)
         and baseline != candidate
         and _nonempty_string(receipt.get("metric"))
-        and isinstance(receipt.get("delta"), (int, float))
+        and type(receipt.get("delta")) in (int, float)
+        and math.isfinite(receipt["delta"])
+        and receipt["delta"] != 0
         and receipt.get("improved") is True
     )
 
 
 def qualify(e):
-    missing = [key for key in REQUIRED if key not in e or e[key] is None]
+    """Provisional qualification only; never promotes native or admission proof."""
+    if not isinstance(e, dict):
+        return {"state": "INVALID", "level": "M0", "merge_authorized": False}
+    missing = [
+        key for key in REQUIRED
+        if key not in e or (key not in OPTIONAL_EVIDENCE and e[key] is None)
+    ]
     if missing:
         return {
             "state": "UNKNOWN",
@@ -109,7 +120,7 @@ def qualify(e):
     if any(type(e[key]) is not int or e[key] < 0 for key in ("tp", "fp", "fn", "tn")):
         return {"state": "INVALID", "level": "M0", "merge_authorized": False}
 
-    if not isinstance(e["runtime_seconds"], (int, float)) or e["runtime_seconds"] < 0:
+    if type(e["runtime_seconds"]) not in (int, float) or not math.isfinite(e["runtime_seconds"]) or e["runtime_seconds"] < 0:
         return {"state": "INVALID", "level": "M0", "merge_authorized": False}
 
     if type(e["negative_controls_pass"]) is not bool:
@@ -120,15 +131,23 @@ def qualify(e):
             "merge_authorized": False,
         }
 
-    if not isinstance(e["federation_receipts"], list):
-        return {
-            "state": "INVALID",
-            "level": "M0",
-            "reason": "federation_receipts must be a list",
-            "merge_authorized": False,
-        }
+    if e["repair_receipt"] is not None and not _nonempty_string(e["repair_receipt"]):
+        return {"state": "INVALID", "level": "M0", "merge_authorized": False}
+    if e["adaptive_receipt"] is not None and not isinstance(e["adaptive_receipt"], dict):
+        return {"state": "INVALID", "level": "M0", "merge_authorized": False}
+
+    federation = e["federation_receipts"]
+    if not isinstance(federation, list) or any(
+        not _valid_federation_receipt(item, e["method_id"]) for item in federation
+    ):
+        return {"state": "INVALID", "level": "M0", "merge_authorized": False}
+    receipt_ids = [item["receipt_id"] for item in federation]
+    if len(receipt_ids) != len(set(receipt_ids)):
+        return {"state": "INVALID", "level": "M0", "merge_authorized": False}
 
     tp, fp, fn, tn = (e[key] for key in ("tp", "fp", "fn", "tn"))
+    if tp + fp + fn + tn == 0:
+        return {"state": "UNKNOWN", "level": "M0", "merge_authorized": False}
     precision = tp / (tp + fp) if tp + fp else None
     recall = tp / (tp + fn) if tp + fn else None
 
@@ -156,6 +175,9 @@ def qualify(e):
     return {
         "state": "MEASURED",
         "level": level,
+        "qualification_status": "PROVISIONAL_NOT_NATIVE_VERIFIED",
+        "native_verified": False,
+        "root_closed": False,
         "precision": precision,
         "recall": recall,
         "runtime_seconds": e["runtime_seconds"],
