@@ -100,10 +100,12 @@ No new source/test outcome or matched coverage uplift is credited.
 
 - Producer source SHA:
   fd67b5905894cc714406605b74dedd717f051e8c.
+
 - Run 38707835880, job 116331559228.
 - Uploaded artifact ID: **11959316498**.
 - Upload-log ZIP SHA-256:
   **d64b946367de1ea4db571f4001b571dd9fdc82187b644fb5456e581881f4c938**.
+
 - Actual downloaded ZIP byte digest: **UNKNOWN**.
 - Internal member digest validation and receipt acceptance: **UNKNOWN**.
 - Any federation-wide engineering acceptance from this artifact: **NOT PROVEN**.
@@ -175,22 +177,29 @@ small Python verifier for the operational handover.
 - **Depth:** covered statements / eligible statements and covered branches /
   eligible branches, exact source-scope and config ID. Current 41.28%
   (12,038 statements) vs 41.31% (12,054) is **INCOMPARABLE**.
+
 - **Breadth:** authenticated repo × KPI-family source population. Historical
   G4 status-only census was 1/42→6/42 (+5 cells / +11.90 pp). Native byte
   verification not demonstrated by those status cells.
+
 - **Causal pressure:** distinct root IDs, manifestation count, distinct
   signatures, new/repeated fingerprint pairs, first-red disappearance
   and recurrence at exact-main. No raw security-count subtraction.
+
 - **Flow:** worker-hours, queue delay p50/p95, test yield per CPU-hour,
   accepted root closures per worker-hour. UNKNOWN until real traces.
+
 - **DMAIC/MIP:** Define owner, Measure source identity, Analyze causal root,
   Improve one source-owned repair, Control exact-main post-repair recurrence;
   increment MIP only when evidence quality warrants.
+
 - **Statistics:** M1 validity first; M2 time-series stability then M3 process
   capability; PCA only with comparable matched vectors, and Bradley–Terry
   only when connected real pairwise outcomes exist.
+
 - **3P*:** Refresh/Probe/Rank and Prepare/Prove/Commit are *advisory*
   transaction stages; cannot transfer repository or security authority.
+
 - **Safety and governance:** A10, Bandit, Safety, required status checks,
   independent approval and effective branch protection are independent gates.
 
