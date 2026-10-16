@@ -1,6 +1,6 @@
 {
   "schema": "code-maroon.snapshot.v1",
-  "observed_at": "2026-10-16T08:30:00+02:00",
+  "observed_at": "2026-10-16T08:36:00+02:00",
   "cohort": "ABACUS-review-security-active-slice-v1",
   "authority_transfer": false,
   "merge_authorized": false,
@@ -45,15 +45,15 @@
   },
   "summary": {
     "manifestations_total": 37,
-    "implemented": 33,
-    "closed": 33,
+    "implemented": 34,
+    "closed": 34,
     "deferred": 2,
-    "outstanding": 4,
-    "failing_active": 2,
+    "outstanding": 3,
+    "failing_active": 1,
     "roots_total": 28,
-    "roots_closed": 25,
+    "roots_closed": 26,
     "roots_deferred": 1,
-    "roots_open": 2
+    "roots_open": 1
   },
   "source_counts": {
     "codex-code-review": 17,
@@ -88,7 +88,7 @@
     },
     {
       "root_id": "CM-BANDIT-CANCEL-GUARD",
-      "status": "OPEN_ACTIVE",
+      "status": "CLOSED_IMPLEMENTED",
       "manifestations": 1,
       "prs": [
         2039
@@ -356,7 +356,7 @@
       "source": "codex-code-review",
       "severity": "P2",
       "root_id": "CM-BANDIT-CANCEL-GUARD",
-      "status": "OPEN_ACTIVE",
+      "status": "CLOSED_IMPLEMENTED",
       "path": ".github/workflows/bandit-disjoint-census.yml",
       "summary": "always() lets scans survive workflow cancellation.",
       "scanner": null
