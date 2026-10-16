@@ -73,6 +73,36 @@ jobs:
         run: |
           python -m unittest discover -s tests -p test_four_planes.py -q
           python -m pytest -q ../../tests/test_bd_ldab_join_census.py
+      - name: CBD 260 source corpus and adversarial branch-coverage testflight
+        working-directory: tools/everred_v3
+        run: |
+          python -m pip install coverage==7.10.7
+          python -m coverage run --rcfile=/dev/null --branch --include='*/cbd_260.py' \
+            -m unittest discover -s tests -p test_cbd_260.py -v
+          python -m coverage json --rcfile=/dev/null --include='*/cbd_260.py' \
+            -o "$RUNNER_TEMP/cbd-260-module-coverage.json"
+          python scripts/cbd_260.py data/cbd_260/N0_*.json \
+            --output-dir "$RUNNER_TEMP/cbd-260-static"
+          python - <<'PY'
+          import json, os
+          from pathlib import Path
+          d=json.loads((Path(os.environ['RUNNER_TEMP'])/'cbd-260-static/summary.json').read_text())
+          m=d['metrics']
+          assert (m['prs_observed'],m['failed_workflow_associations'],m['distinct_failed_run_ids'])==(75,260,253)
+          assert m['open_causal_roots'] is None
+          assert d['safety']['merge_admission']=='HOLD'
+          print('CBD_N0_INPUT_CENSUS=75_PR_260_ASSOC_253_UNIQUE_FAIL_RUN')
+          PY
+      - name: Upload CBD 260 local and branch coverage receipts
+        if: always()
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9
+        with:
+          name: cbd-260-static-${{ matrix.python-version }}
+          path: |
+            ${{ runner.temp }}/cbd-260-static/
+            ${{ runner.temp }}/cbd-260-module-coverage.json
+          if-no-files-found: warn
+
       - name: Execute bounded native host and LLDB preflight
         working-directory: tools/everred_v3
         env:
@@ -292,3 +322,51 @@ jobs:
           path: tools/everred_v3/everred-spine-state.json
           if-no-files-found: error
           retention-days: 14
+
+  cbd-260-native-readonly:
+    name: CBD 260 exact-run failure-job scout (no reruns)
+    if: github.event_name == 'pull_request' && startsWith(github.head_ref, 'feat/everred-cbd-')
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    permissions:
+      contents: read
+      actions: read
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+      - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97
+        with:
+          python-version: '3.12'
+      - name: Prove source checkout exact PR head
+        env:
+          EXPECTED_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+        run: test "$(git rev-parse HEAD)" = "$EXPECTED_SHA"
+      - name: Native paginated job-step readback of 253 unique failed runs
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          python -m pip install defusedxml==0.7.1
+          python tools/everred_v3/scripts/cbd_260.py \
+            tools/everred_v3/data/cbd_260/N0_*.json \
+            --output-dir "$RUNNER_TEMP/cbd-260-native" \
+            --enrich-native --workers 4 --max-native-runs 256
+          python - <<'PY'
+          import json, os
+          from pathlib import Path
+          d=json.loads((Path(os.environ['RUNNER_TEMP'])/'cbd-260-native/summary.json').read_text())
+          m=d['metrics']
+          assert m['failed_workflow_associations']==260
+          assert m['distinct_failed_run_ids']==253
+          assert m['job_readbacks_accepted']+m['job_readbacks_withheld']==253
+          assert d['safety']['merge_admission']=='HOLD'
+          print('CBD_NATIVE_METADATA_READBACK',m['job_readbacks_accepted'],m['job_readbacks_withheld'])
+          PY
+      - name: Upload native CBD run/job/first-step custody
+        if: always()
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9
+        with:
+          name: cbd-260-native-sourcebound-${{ github.run_id }}
+          path: ${{ runner.temp }}/cbd-260-native/
+          if-no-files-found: warn
