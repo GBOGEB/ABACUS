@@ -179,7 +179,10 @@ def test_no_jobs_is_unknown_even_for_green_workflow():
     _, metrics = collector.collect_gate_input(
         SHA, {"enterprise_ci": (10, 1)}, getter=getter
     )
-    assert metrics["independent_gates"]["domains"]["enterprise_ci"]["status"] == "UNKNOWN"
+    assert (
+        metrics["independent_gates"]["domains"]["enterprise_ci"]["status"]
+        == "UNKNOWN"
+    )
     assert metrics["independent_gates"]["admission"] == "HOLD"
 
 
@@ -191,7 +194,10 @@ def test_queued_run_preserves_pending_without_fabricating_fail():
     _, metrics = collector.collect_gate_input(
         SHA, {"enterprise_ci": (10, 1)}, getter=getter
     )
-    assert metrics["independent_gates"]["domains"]["enterprise_ci"]["status"] == "PENDING"
+    assert (
+        metrics["independent_gates"]["domains"]["enterprise_ci"]["status"]
+        == "PENDING"
+    )
     assert metrics["independent_gates"]["domain_counts"]["FAIL"] == 0
 
 
@@ -241,6 +247,9 @@ def test_collector_writes_scope_bound_artifacts(tmp_path, monkeypatch, capsys):
     assert source["gate_bindings"]["enterprise_ci"] == {
         "run_id": 10, "run_attempt": 1
     }
-    assert output["independent_gates"]["domains"]["workflow_governance"]["status"] == "FAIL"
+    assert (
+        output["independent_gates"]["domains"]["workflow_governance"]["status"]
+        == "FAIL"
+    )
     assert output["independent_gates"]["admission"] == "HOLD"
     assert "HOLD" in capsys.readouterr().out
