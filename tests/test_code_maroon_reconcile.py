@@ -121,3 +121,21 @@ def test_implemented_and_closed_are_independent_kpis():
     assert receipt["summary"]["closed"] == 33
     assert receipt["summary"]["outstanding"] == 4
     assert root["status"] == "CLOSED_IMPLEMENTED"
+
+
+def test_closed_root_cannot_hide_active_unimplemented_manifestation():
+    data = load_snapshot()
+    root = next(r for r in data["roots"] if r["status"] == "OPEN_ACTIVE")
+    assert any(
+        m["root_id"] == root["root_id"] and m["status"] == "OPEN_ACTIVE"
+        for m in data["manifestations"]
+    )
+    root["status"] = "CLOSED_IMPLEMENTED"
+    data["summary"]["roots_closed"] += 1
+    data["summary"]["roots_open"] -= 1
+    try:
+        M.reconcile(data)
+    except ValueError as exc:
+        assert "closed root contains active manifestation" in str(exc)
+    else:
+        raise AssertionError("closed root incorrectly hid an active failure")

@@ -150,7 +150,20 @@ def scan_package(path: Path) -> dict:
                         )
                     )
 
-                if lower.endswith(".rels") and info.file_size <= MAX_REL_BYTES:
+                if lower.endswith(".rels"):
+                    if info.file_size > MAX_REL_BYTES:
+                        findings.append(
+                            _finding(
+                                "OOXML_RELATIONSHIP_OVERSIZE",
+                                "HIGH",
+                                name,
+                                (
+                                    f"relationship part bytes {info.file_size} "
+                                    f"exceed bounded limit {MAX_REL_BYTES}"
+                                ),
+                            )
+                        )
+                        continue
                     try:
                         rel_bytes = archive.read(info)
                     except (OSError, RuntimeError, zipfile.BadZipFile):

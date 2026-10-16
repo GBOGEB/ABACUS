@@ -73,12 +73,28 @@ def _validate(snapshot: dict) -> None:
             raise ValueError("duplicate manifestation identity")
         thread_comment_pairs.add(pair)
 
+    # A completed implementation with an open review thread is allowed;
+    # an active, unimplemented failure within a CLOSED root is not.
+    active_failure_roots = {
+        row["root_id"]
+        for row in manifestations
+        if row["status"] == "OPEN_ACTIVE"
+        or (
+            row["disposition"] == "ACTIVE"
+            and row["implementation_state"] != "IMPLEMENTED"
+        )
+    }
     grouped = Counter(row["root_id"] for row in manifestations)
     for root in roots:
         if root.get("status") not in STATUSES:
             raise ValueError("invalid root status")
         if root.get("manifestations") != grouped[root["root_id"]]:
             raise ValueError("root manifestation count mismatch")
+        if (
+            root["status"] == "CLOSED_IMPLEMENTED"
+            and root["root_id"] in active_failure_roots
+        ):
+            raise ValueError("closed root contains active manifestation")
 
 
 def _summary(snapshot: dict) -> dict:

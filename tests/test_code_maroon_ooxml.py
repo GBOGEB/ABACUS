@@ -84,3 +84,32 @@ def test_malformed_ooxml_fails_closed(tmp_path):
     receipt = M.scan_package(path)
     assert rules(receipt) == {"OOXML_INVALID_PACKAGE"}
     assert receipt["findings"][0]["severity"] == "HIGH"
+
+
+def test_oversized_relationship_part_emits_high_not_silent_skip(tmp_path):
+    external = (
+        b'<Relationships><Relationship TargetMode="External" '
+        b'Target="https://example.invalid"/></Relationships>'
+    )
+    payload = external + b" " * (M.MAX_REL_BYTES + 1 - len(external))
+    path = make_zip(tmp_path / "oversize.docx", {"_rels/.rels": payload})
+    receipt = M.scan_package(path)
+    assert "OOXML_RELATIONSHIP_OVERSIZE" in rules(receipt)
+    assert any(
+        f["severity"] == "HIGH"
+        for f in receipt["findings"]
+        if f["rule_id"] == "OOXML_RELATIONSHIP_OVERSIZE"
+    )
+    assert receipt["entries"] == 1
+
+
+def test_bounded_relationship_exact_limit_is_inspected(tmp_path):
+    external = (
+        b'<Relationships><Relationship TargetMode="External" '
+        b'Target="https://example.invalid"/></Relationships>'
+    )
+    payload = external + b" " * (M.MAX_REL_BYTES - len(external))
+    path = make_zip(tmp_path / "limit.docx", {"_rels/.rels": payload})
+    receipt = M.scan_package(path)
+    assert "OOXML_EXTERNAL_RELATIONSHIP" in rules(receipt)
+    assert "OOXML_RELATIONSHIP_OVERSIZE" not in rules(receipt)

@@ -31,10 +31,11 @@ jobs:
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
         with:
           ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
       - name: Verify exact checkout
         shell: bash
         run: test "$(git rev-parse HEAD)" = "$EVALUATED_SOURCE_SHA"
-      - uses: actions/setup-python@v5
+      - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97
         with:
           python-version: "3.12"
       - name: Preflight test discovery and runner
@@ -69,7 +70,7 @@ jobs:
             --out "$RUNNER_TEMP/code-maroon"
           cat "$RUNNER_TEMP/code-maroon/code_maroon_receipt.md" \
             >> "$GITHUB_STEP_SUMMARY"
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         if: always()
         with:
           name: code-maroon-receipt
