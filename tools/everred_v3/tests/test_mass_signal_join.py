@@ -1,4 +1,5 @@
 """Negative and positive root-candidate tests without scanner suppression."""
+
 from __future__ import annotations
 
 import copy
@@ -33,9 +34,7 @@ def source(scanner, rule=None, *, mode="detailed", run=10):
         },
     }
     if mode == "detailed":
-        item["findings"] = [
-            {"rule_id": rule, "path": "src/process.py", "line": 12}
-        ]
+        item["findings"] = [{"rule_id": rule, "path": "src/process.py", "line": 12}]
     else:
         item["counts"] = {"E501": 3, "F401": 1}
         item["total"] = 4
@@ -76,8 +75,7 @@ class CrossScannerTests(unittest.TestCase):
 
     def test_advisory_green_does_not_grant_clean_scanner(self):
         report = mod.normalize(payload())
-        semgrep = next(x for x in report["enforcement"]
-                       if x["scanner"] == "semgrep")
+        semgrep = next(x for x in report["enforcement"] if x["scanner"] == "semgrep")
         self.assertTrue(semgrep["continue_on_error"])
         self.assertEqual("success", semgrep["workflow_conclusion"])
         self.assertEqual("UNKNOWN", semgrep["merge_admission"])
@@ -147,8 +145,14 @@ class CrossScannerTests(unittest.TestCase):
             mod.normalize(doc)
 
     def test_path_escape_and_abs_path_rejected(self):
-        for path in ("../a.py", "/tmp/a.py", "a/../b.py",
-                     "C:/secret.py", "a\\b.py", "a//b.py"):
+        for path in (
+            "../a.py",
+            "/tmp/a.py",
+            "a/../b.py",
+            "C:/secret.py",
+            "a\\b.py",
+            "a//b.py",
+        ):
             with self.subTest(path=path):
                 doc = payload()
                 doc["sources"][0]["findings"][0]["path"] = path
@@ -177,7 +181,8 @@ class CrossScannerTests(unittest.TestCase):
             from unittest.mock import patch
 
             with patch.object(
-                sys, "argv",
+                sys,
+                "argv",
                 ["join", "--input", str(input_path), "--output", str(output_path)],
             ):
                 mod.main()
