@@ -1,6 +1,7 @@
 """Native collector contract: exact source, attempt, pages and missing evidence."""
 
 import copy
+import io
 import json
 
 import pytest
@@ -99,6 +100,62 @@ def build_getter(*, e="success", g="failure"):
         raise AssertionError("unknown endpoint " + url)
 
     return get, run_data, job_data, calls
+
+
+def test_native_transport_fixed_https_origin_no_redirects(monkeypatch):
+    connections = []
+
+    class FakeResponse:
+        def __init__(self, status):
+            self.status = status
+
+        def read(self, size=-1):
+            return io.BytesIO(b'{"id":123}').read(size)
+
+    class FakeConnection:
+        def __init__(self, host, timeout):
+            self.host = host
+            self.timeout = timeout
+            self.status = 200
+            self.closed = False
+            connections.append(self)
+
+        def request(self, method, path, headers):
+            self.method, self.path, self.headers = method, path, headers
+
+        def getresponse(self):
+            return FakeResponse(self.status)
+
+        def close(self):
+            self.closed = True
+
+    monkeypatch.setattr(collector, "HTTPSConnection", FakeConnection)
+    result = collector.github_get("/repos/GBOGEB/ABACUS/actions/runs/123", token="fixture")
+    assert result == {"id": 123}
+    connection = connections[0]
+    assert connection.host == "api.github.com"
+    assert connection.method == "GET"
+    assert connection.path == "/repos/GBOGEB/ABACUS/actions/runs/123"
+    assert connection.closed
+
+    for forbidden in (
+        "http://not-github.example/actions/runs/123",
+        "/repos/GBOGEB/ABACUS/actions/../issues/123",
+        "/repos/GBOGEB/ABACUS/actions/runs/123/redirect",
+    ):
+        with pytest.raises(ValueError, match="unsupported GitHub evidence endpoint"):
+            collector.github_get(forbidden)
+    assert len(connections) == 1
+
+    def redirect_connection(host, timeout):
+        instance = FakeConnection(host, timeout)
+        instance.status = 302
+        return instance
+
+    monkeypatch.setattr(collector, "HTTPSConnection", redirect_connection)
+    with pytest.raises(ValueError, match="HTTP 302"):
+        collector.github_get("/repos/GBOGEB/ABACUS/actions/runs/123", token="fixture")
+    assert connections[-1].closed
 
 
 def test_true_native_enterprise_green_governance_red():
