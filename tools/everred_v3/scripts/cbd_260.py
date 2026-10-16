@@ -392,6 +392,9 @@ def main(argv=None):
     snapshot = read_n0(args.inputs)
     native = None
     if args.enrich_native:
+        import sys
+
+        sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "src"))
         from native_ingest import GitHubReadOnly
         native = enrich_native(snapshot, GitHubReadOnly(), workers=args.workers,
                                limit=args.max_native_runs)
