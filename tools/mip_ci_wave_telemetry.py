@@ -212,6 +212,7 @@ def independent_gate_vector(payload, run_index, jobs, source_sha):
             "run_url": None,
             "job_ids": [],
             "blocking_jobs": [],
+            "blocking_steps": [],
             "missing_jobs": [],
             "missing_steps": [],
             "evidence_class": "UNOBSERVED",
@@ -285,16 +286,28 @@ def independent_gate_vector(payload, run_index, jobs, source_sha):
                                         if isinstance(step, dict)
                                         and step.get("name") == step_name
                                     ]
-                                    if len(observed) != 1 or (
+                                    if len(observed) == 1 and (
+                                        observed[0].get("status") == "completed"
+                                        and observed[0].get("conclusion") in (
+                                            "failure", "timed_out", "startup_failure"
+                                        )
+                                    ):
+                                        row["blocking_steps"].append(
+                                            job["name"] + ":" + step_name
+                                        )
+                                    elif len(observed) != 1 or (
                                         observed[0].get("status") != "completed"
                                         or observed[0].get("conclusion") != "success"
                                     ):
                                         row["missing_steps"].append(
                                             job["name"] + ":" + step_name
                                         )
-                            row["status"] = (
-                                "UNKNOWN" if row["missing_steps"] else "PASS"
-                            )
+                            if row["blocking_steps"]:
+                                row["status"] = "FAIL"
+                            elif row["missing_steps"]:
+                                row["status"] = "UNKNOWN"
+                            else:
+                                row["status"] = "PASS"
         results[domain] = row
         counts[row["status"]] += 1
 
@@ -303,8 +316,13 @@ def independent_gate_vector(payload, run_index, jobs, source_sha):
         "source_sha": source_sha,
         "domains": results,
         "domain_counts": counts,
-        "domain_evidence_coverage": (
+        "domain_observation_fraction": (
             sum(row["status"] != "UNKNOWN" for row in results.values())
+            / len(GATE_DOMAINS)
+        ),
+        "domain_terminal_fraction": (
+            sum(row["status"] in ("PASS", "FAIL", "BLOCKED")
+                for row in results.values())
             / len(GATE_DOMAINS)
         ),
         "red_domains": sorted(
