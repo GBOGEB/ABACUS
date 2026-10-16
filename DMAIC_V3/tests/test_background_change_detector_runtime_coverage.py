@@ -134,3 +134,19 @@ def test_start_is_idempotent_and_stop_joins_worker(tmp_path, monkeypatch):
     assert checker.running and created[0].started
     checker.stop()
     assert not checker.running and created[0].joined
+
+
+def test_legacy_windows_snapshot_keys_migrate_without_phantom_changes(tmp_path):
+    workspace = tmp_path / "repo"
+    tracked = workspace / "DMAIC_V3"
+    tracked.mkdir(parents=True)
+    target = tracked / "old.txt"
+    target.write_text("same content", encoding="utf-8")
+    checker = BackgroundChangeDetector(workspace, tmp_path / "state")
+    checker.snapshot_file.write_text(
+        json.dumps({"DMAIC_V3\\\\old.txt": target.stat().st_mtime}),
+        encoding="utf-8",
+    )
+    checker._take_snapshot()
+    assert not checker.changes_file.exists()
+    assert list(json.loads(checker.snapshot_file.read_text())) == ["DMAIC_V3/old.txt"]
