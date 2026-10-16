@@ -227,6 +227,62 @@ jobs:
           # Source repair receipts: diagnostic diff, preserve the independent required isort gate.
           python -m isort --diff src scripts tests
           python -m isort --check-only src scripts tests
+      - name: Produce source-bound Black repair patch on style failure
+        if: failure()
+        working-directory: tools/everred_v3
+        env:
+          EXPECTED_HEAD_SHA: >-
+            ${{ github.event.pull_request.head.sha || github.sha }}
+        run: |
+          actual_sha="$(git rev-parse HEAD)"
+          test "$actual_sha" = "$EXPECTED_HEAD_SHA"
+          python -m black --version
+          python -m black src scripts tests
+          python -m black --check src scripts tests
+          git diff --check -- src scripts tests
+          git diff --binary -- src scripts tests > "$RUNNER_TEMP/black-repair.patch"
+          test -s "$RUNNER_TEMP/black-repair.patch"
+          python - <<'PY'
+          import hashlib
+          import json
+          import os
+          import subprocess
+          from pathlib import Path
+
+          base = Path(os.environ["RUNNER_TEMP"])
+          head = os.environ["EXPECTED_HEAD_SHA"]
+          names = subprocess.check_output(
+              ["git", "diff", "--name-only", "--", "src", "scripts", "tests"],
+              text=True,
+          ).splitlines()
+          patch = (base / "black-repair.patch").read_bytes()
+          receipt = {
+              "schema": "abacus.everred.black.repair_proposal.v1",
+              "source_head_sha": head,
+              "tool": "black",
+              "tool_version": "26.10.1",
+              "source_mutation": "RUNNER_ONLY_NO_PUSH",
+              "changed_file_count": len(names),
+              "changed_paths": sorted(names),
+              "patch_sha256": hashlib.sha256(patch).hexdigest(),
+              "root_closure_credit": 0,
+              "merge_admission": "HOLD",
+          }
+          (base / "black-repair-receipt.json").write_text(
+              json.dumps(receipt, sort_keys=True, indent=2) + "\n",
+              encoding="utf-8",
+          )
+          print(json.dumps(receipt, sort_keys=True))
+          PY
+      - name: Upload proposed Black patch and provenance
+        if: failure()
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9
+        with:
+          name: everred-black-repair-${{ matrix.python-version }}-${{ github.run_id }}
+          path: |
+            ${{ runner.temp }}/black-repair.patch
+            ${{ runner.temp }}/black-repair-receipt.json
+          if-no-files-found: warn
   native-pulse:
     name: Read-only native run / joined census pulse
     if: github.event_name == 'workflow_dispatch' && inputs.target_run_id != '' && inputs.target_sha != ''
