@@ -29,7 +29,7 @@ class LocalSUT(unittest.TestCase):
             result = manager.records[rid]
             # Status may become terminal before the receipt hash is finalized.
             # Require the signed-off receipt, never accept a partial result.
-            if result['status'] != 'RUNNING' and result['receipt_sha256']:
+            if result.get('status') != 'RUNNING' and result.get('receipt_sha256'):
                 return result.copy()
             time.sleep(.02)
         self.fail('execution not terminal')
