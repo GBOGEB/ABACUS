@@ -94,5 +94,50 @@ class ValidateChangedDocsTests(unittest.TestCase):
                 self.assertEqual(docs.changed_files(), [Path("docs/ok.md")])
 
 
+    def test_yaml_duplicate_nested_key_rejected(self) -> None:
+        with tempfile.TemporaryDirectory() as d:
+            root = Path(d)
+            path = root / "workflow.yml"
+            path.write_text(
+                "on: pull_request\\njobs:\\n  build:\\n    runs-on: ubuntu\\n"
+                "    runs-on: windows\\n",
+                encoding="utf-8",
+            )
+            with mock.patch.object(docs, "REPO_ROOT", root):
+                self.assertEqual(docs.validate_yaml_structure(["workflow.yml"]), 1)
+
+    def test_yaml_anchors_and_on_literal_are_valid(self) -> None:
+        with tempfile.TemporaryDirectory() as d:
+            root = Path(d)
+            path = root / "workflow.yml"
+            path.write_text(
+                "on: pull_request\\npaths: &paths\\n  - '**/*.yml'\\n"
+                "pull_request:\\n  paths: *paths\\n",
+                encoding="utf-8",
+            )
+            with mock.patch.object(docs, "REPO_ROOT", root):
+                self.assertEqual(docs.validate_yaml_structure(["workflow.yml"]), 0)
+
+    def test_yaml_invalid_syntax_rejected(self) -> None:
+        with tempfile.TemporaryDirectory() as d:
+            root = Path(d)
+            (root / "broken.yaml").write_text(
+                "config: [unclosed\\n", encoding="utf-8"
+            )
+            with mock.patch.object(docs, "REPO_ROOT", root):
+                self.assertEqual(docs.validate_yaml_structure(["broken.yaml"]), 1)
+
+    def test_workflow_multidocument_rejected(self) -> None:
+        with tempfile.TemporaryDirectory() as d:
+            root = Path(d)
+            workflow = root / ".github" / "workflows" / "x.yml"
+            workflow.parent.mkdir(parents=True)
+            workflow.write_text("name: one\\n---\\nname: two\\n", encoding="utf-8")
+            with mock.patch.object(docs, "REPO_ROOT", root):
+                self.assertEqual(
+                    docs.validate_yaml_structure([".github/workflows/x.yml"]), 1
+                )
+
+
 if __name__ == "__main__":
     unittest.main()
