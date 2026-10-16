@@ -6,7 +6,7 @@ Lightweight, non-blocking file change detection that runs continuously
 import json
 import time
 import threading
-from pathlib import Path
+from pathlib import Path, PureWindowsPath
 from datetime import datetime
 from typing import Dict, Any
 
@@ -76,7 +76,7 @@ class BackgroundChangeDetector:
                     # Upgrade legacy Windows keys without fabricating deletions.
                     if isinstance(loaded, dict):
                         prev_snapshot = {
-                            key.replace('\\', '/'): mtime
+                            PureWindowsPath(key).as_posix(): mtime
                             for key, mtime in loaded.items()
                         }
             except (OSError, json.JSONDecodeError):
