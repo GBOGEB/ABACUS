@@ -81,6 +81,7 @@ jobs:
       - name: Run pytest --benchmark-disable with coverage
         shell: bash
         run: |
+          set -euo pipefail
           pytest --benchmark-disable DMAIC_V3/tests/ -v \
             --cov=DMAIC_V3 \
             --cov-report=xml \
