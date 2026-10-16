@@ -1,7 +1,6 @@
 """Behavioral C5 coverage for Git and pipeline control boundaries."""
 
 import json
-import subprocess
 from types import SimpleNamespace
 
 import pytest
