@@ -19,6 +19,7 @@ def bridge(tmp_path, monkeypatch):
     instance.mcp = bridge_module.MCPControlPoint(tmp_path / ".mcp")
     instance.test_results = {}
     instance.test_results_lock = threading.Lock()
+    instance.deployment_metrics = None
     instance.version_file = tmp_path / "DMAIC_V3" / "VERSION"
     instance.version_file.parent.mkdir()
     instance.actions_file = tmp_path / "actions.json"
