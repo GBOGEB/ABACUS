@@ -43,6 +43,8 @@ class PipelineController:
 
     def run_single_iteration(self, iteration: int):
         """Run a single iteration"""
+        if iteration < 1:
+            raise ValueError("iteration must be >= 1")
         print(f"\n{'='*80}")
         print(f"RUNNING SINGLE ITERATION: {iteration}")
         print(f"{'='*80}\n")
@@ -64,6 +66,10 @@ class PipelineController:
 
     def run_n_iterations_with_stops(self, start_iter: int, n_iterations: int, stop_after_each: bool = False):
         """Run N iterations with optional stops between each"""
+        if start_iter < 1:
+            raise ValueError("start_iter must be >= 1")
+        if n_iterations < 1:
+            raise ValueError("n_iterations must be >= 1")
         print(f"\n{'='*80}")
         print(f"RUNNING {n_iterations} ITERATIONS (starting from {start_iter})")
         if stop_after_each:
