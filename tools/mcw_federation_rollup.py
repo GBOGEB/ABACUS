@@ -162,7 +162,27 @@ def rollup(bundle, artifact_root, previous=None):
     if previous is not None:
         require(isinstance(previous, dict) and previous.get("schema") == OUTPUT_SCHEMA,
                 "invalid previous wave")
-        former = {item["id"]: item for item in previous["nodes"]}
+        require(isinstance(previous.get("nodes"), list),
+                "invalid previous nodes")
+        former = {}
+        for item in previous["nodes"]:
+            require(isinstance(item, dict) and isinstance(item.get("id"), str)
+                    and bool(item["id"]) and item["id"] not in former,
+                    "invalid or duplicate previous node")
+            require(isinstance(item.get("repository"), str) and
+                    item.get("family") in FAMILIES,
+                    "invalid previous identity")
+            sha(item.get("source_sha"), 40, "previous source SHA")
+            older_proof = item.get("proof")
+            if older_proof is not None:
+                require(isinstance(older_proof, dict), "invalid previous proof")
+                prior_cov = older_proof.get("coverage")
+                if prior_cov is not None:
+                    require(isinstance(prior_cov, dict), "invalid previous coverage")
+                    normalized = coverage({"coverage": prior_cov})
+                    require(prior_cov == normalized,
+                            "tampered previous coverage percentages or scope")
+            former[item["id"]] = item
     deltas = {}
     for row in reports:
         old = former.get(row["id"])
