@@ -188,7 +188,10 @@ def compare(before, after):
         "queue_p95_delta_seconds": queue_delta,
         "queue_comparability": (
             "descriptive_only_not_independent" if queue_delta is not None
-            else "nonterminal_or_small_or_mismatched_queue_cohort_or_fallback_timing"
+            else ("unqualified_fallback_timing"
+                  if (before["queue_fallback_timestamp_samples"] > 0
+                      or after["queue_fallback_timestamp_samples"] > 0)
+                  else "nonterminal_or_small_or_mismatched_queue_cohort")
         ),
         "line_coverage_candidate_delta_pp": line_delta,
         "line_reason": line_reason,
