@@ -9,12 +9,15 @@ from __future__ import annotations
 import argparse
 import hashlib
 import json
+import os
 import re
+import tempfile
 from collections import Counter, defaultdict
 from pathlib import Path
 
 SCHEMA = "abacus.everred.mass-signals.input.v1"
 SCANNERS = {"bandit", "flake8", "ruff", "semgrep", "codeql", "black"}
+REPOSITORY = re.compile(r"GBOGEB/[A-Za-z0-9_.-]{1,100}\Z")
 SHA40 = re.compile(r"[a-f0-9]{40}\Z")
 SHA64 = re.compile(r"[a-f0-9]{64}\Z")
 RULE = re.compile(r"[A-Za-z0-9][A-Za-z0-9_./:@-]{0,200}\Z")
@@ -92,8 +95,8 @@ def normalize(payload):
     repo, head = payload.get("repository"), payload.get("head_sha")
     require(
         isinstance(repo, str)
-        and repo.startswith("GBOGEB/")
-        and "/" in repo
+        and REPOSITORY.fullmatch(repo)
+        and repo.split("/")[1] not in {".", ".."}
         and isinstance(head, str)
         and SHA40.fullmatch(head),
         "invalid exact repository identity",
@@ -101,6 +104,7 @@ def normalize(payload):
     sources = payload.get("sources")
     require(isinstance(sources, list) and sources, "missing scanner sources")
     observed = set()
+    observed_artifacts = set()
     totals = Counter()
     rules = defaultdict(Counter)
     fingerprints = defaultdict(set)
@@ -133,6 +137,10 @@ def normalize(payload):
             ),
             "invalid source/config byte identity",
         )
+        # Never count the same native scanner artifact twice across reruns.
+        artifact_id = (scanner, source["artifact_sha256"])
+        require(artifact_id not in observed_artifacts, "duplicate scanner artifact")
+        observed_artifacts.add(artifact_id)
         mode = source.get("mode")
         require(
             mode in {"aggregate", "detailed"}, "invalid scanner evidence granularity"
@@ -142,7 +150,11 @@ def normalize(payload):
             isinstance(policy, dict)
             and type(policy.get("continue_on_error")) is bool
             and policy.get("workflow_conclusion")
-            in {"success", "failure", "cancelled", "pending", "unknown"}
+            in {
+                "success", "failure", "cancelled", "neutral", "skipped",
+                "timed_out", "action_required", "stale", "startup_failure",
+                "pending", "unknown",
+            }
             and policy.get("required_check") in (None, True, False),
             "scanner enforcement semantics absent",
         )
@@ -250,14 +262,26 @@ def main():
     parser.add_argument("--input", type=Path, required=True)
     parser.add_argument("--output", type=Path, required=True)
     a = parser.parse_args()
-    raw = a.input.read_bytes()
+    original = a.input.resolve(strict=True)
+    projected = a.output.resolve(strict=False)
+    require(original != projected, "output aliases input evidence")
+    if a.output.exists():
+        require(not os.path.samefile(a.input, a.output), "output aliases input evidence")
+    raw = original.read_bytes()
     require(len(raw) <= 20_000_000, "unbounded scanner input")
     result = normalize(json.loads(raw))
     result["input_sha256"] = hashlib.sha256(raw).hexdigest()
     a.output.parent.mkdir(parents=True, exist_ok=True)
-    a.output.write_text(
-        json.dumps(result, indent=2, sort_keys=True) + "\n", encoding="utf-8"
+    descriptor, temporary = tempfile.mkstemp(
+        prefix=f".{a.output.name}.", suffix=".tmp", dir=a.output.parent
     )
+    try:
+        with os.fdopen(descriptor, "w", encoding="utf-8") as stream:
+            stream.write(json.dumps(result, indent=2, sort_keys=True) + "\n")
+        os.replace(temporary, a.output)
+    finally:
+        if os.path.exists(temporary):
+            os.unlink(temporary)
 
 
 if __name__ == "__main__":

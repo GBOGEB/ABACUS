@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import copy
 import json
+import os
 import runpy
 import sys
 import tempfile
@@ -102,6 +103,67 @@ class CrossScannerTests(unittest.TestCase):
         doc["sources"].append(copy.deepcopy(doc["sources"][0]))
         with self.assertRaisesRegex(mod.InvalidCensus, "duplicate scanner"):
             mod.normalize(doc)
+
+
+    def test_repeated_artifact_on_new_run_is_rejected(self):
+        doc = payload()
+        repeated = copy.deepcopy(doc["sources"][0])
+        repeated["run_id"] = 1001
+        repeated["job_id"] = 1002
+        doc["sources"].append(repeated)
+        with self.assertRaisesRegex(mod.InvalidCensus, "duplicate scanner artifact"):
+            mod.normalize(doc)
+
+    def test_noncanonical_repository_identities_rejected(self):
+        for repository in ("GBOGEB/", "GBOGEB/.", "GBOGEB/..",
+                           "GBOGEB/foo/bar", "GBOGEB/foo bar"):
+            with self.subTest(repository=repository):
+                doc = payload()
+                doc["repository"] = repository
+                for item in doc["sources"]:
+                    item["repository"] = repository
+                with self.assertRaisesRegex(mod.InvalidCensus, "repository identity"):
+                    mod.normalize(doc)
+
+    def test_native_terminal_conclusions_retained_without_promotion(self):
+        for conclusion in ("timed_out", "neutral", "skipped", "action_required",
+                           "stale", "startup_failure"):
+            with self.subTest(conclusion=conclusion):
+                doc = payload()
+                doc["sources"][0]["enforcement"]["workflow_conclusion"] = conclusion
+                result = mod.normalize(doc)
+                observed = next(e for e in result["enforcement"]
+                                if e["scanner"] == "bandit")
+                self.assertEqual(conclusion, observed["workflow_conclusion"])
+                self.assertEqual("HOLD", result["merge_admission"])
+
+    def test_input_aliases_rejected_and_evidence_bytes_unchanged(self):
+        with tempfile.TemporaryDirectory() as temp:
+            root = Path(temp)
+            original = root / "evidence.json"
+            raw = json.dumps(payload()).encode("utf-8")
+            original.write_bytes(raw)
+            alias = root / "hardlink.json"
+            os.link(original, alias)
+            targets = [original, alias]
+            symlink = root / "symlink.json"
+            try:
+                symlink.symlink_to(original)
+            except (OSError, NotImplementedError):
+                pass
+            else:
+                targets.append(symlink)
+            from unittest.mock import patch
+
+            for destination in targets:
+                with self.subTest(destination=destination):
+                    with patch.object(sys, "argv",
+                                      ["join", "--input", str(original),
+                                       "--output", str(destination)]):
+                        with self.assertRaisesRegex(
+                                mod.InvalidCensus, "output aliases input"):
+                            mod.main()
+                    self.assertEqual(raw, original.read_bytes())
 
     def test_invalid_artifact_hash_rejected(self):
         doc = payload()
