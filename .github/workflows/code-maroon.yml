@@ -1,0 +1,35 @@
+name: CODE_MAROON Snapshot
+
+on:
+  pull_request:
+    paths:
+      - "CODE_MAROON/**"
+      - "tools/code_maroon/**"
+      - "tests/test_code_maroon_reconcile.py"
+      - ".github/workflows/code-maroon.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  reconcile:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Validate CODE_MAROON ledger
+        run: python -m unittest tests/test_code_maroon_reconcile.py -v
+      - name: Emit snapshot receipt
+        run: |
+          python tools/code_maroon/reconcile.py \
+            --snapshot CODE_MAROON/snapshot_20261016.json \
+            --out "$RUNNER_TEMP/code-maroon"
+          cat "$RUNNER_TEMP/code-maroon/code_maroon_receipt.md" >> "$GITHUB_STEP_SUMMARY"
+      - uses: actions/upload-artifact@v4
+        with:
+          name: code-maroon-receipt
+          path: ${{ runner.temp }}/code-maroon/
+          if-no-files-found: error
