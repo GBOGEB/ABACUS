@@ -139,5 +139,28 @@ class ValidateChangedDocsTests(unittest.TestCase):
                 )
 
 
+
+    def test_yaml_security_semgrep_config_contract(self) -> None:
+        config_file = (
+            Path(__file__).resolve().parents[1]
+            / ".github" / "security" / "semgrep-yaml-workflows.yml"
+        )
+        import yaml
+
+        parsed = yaml.safe_load(config_file.read_text(encoding="utf-8"))
+        ids = {rule["id"] for rule in parsed["rules"]}
+        self.assertEqual(
+            ids,
+            {
+                "abacus.github-actions-broad-write-all",
+                "abacus.github-actions-untrusted-pr-target",
+                "abacus.github-actions-unpinned-action-tag",
+            },
+        )
+        for rule in parsed["rules"]:
+            self.assertEqual(rule["languages"], ["yaml"])
+            self.assertIn("pattern-regex", rule)
+            self.assertEqual(len(rule["paths"]["include"]), 2)
+
 if __name__ == "__main__":
     unittest.main()
