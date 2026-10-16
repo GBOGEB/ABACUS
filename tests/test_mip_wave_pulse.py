@@ -247,6 +247,7 @@ class WavePulseTests(unittest.TestCase):
             "scope": "matched",
             "config_id": "same",
             "source_sha": S,
+            "scope_manifest_sha256": "c" * 64,
             "covered_lines": 4,
             "total_lines": 10,
             "covered_branches": 2,
