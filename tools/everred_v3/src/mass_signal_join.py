@@ -3,6 +3,7 @@
 Matching scanner observations are hypotheses, never proven engineering roots.
 Aggregate scanner counts cannot be converted into path-level fingerprints.
 """
+
 from __future__ import annotations
 
 import argparse
@@ -30,8 +31,9 @@ def require(condition, reason):
 
 def digest(value):
     return hashlib.sha256(
-        json.dumps(value, sort_keys=True, separators=(",", ":"), allow_nan=False)
-        .encode("utf-8")
+        json.dumps(
+            value, sort_keys=True, separators=(",", ":"), allow_nan=False
+        ).encode("utf-8")
     ).hexdigest()
 
 
@@ -52,9 +54,14 @@ def family(scanner, rule):
         if rule in {"B303", "B324"}:
             return "CRYPTOGRAPHIC_INTENT"
     if scanner in {"semgrep", "codeql"}:
-        if any(word in text for word in (
-            "command-injection", "shell-injection", "subprocess",
-        )):
+        if any(
+            word in text
+            for word in (
+                "command-injection",
+                "shell-injection",
+                "subprocess",
+            )
+        ):
             return "COMMAND_EXECUTION"
         if "xml" in text and "unsafe" in text:
             return "UNSAFE_XML"
@@ -78,15 +85,21 @@ def path_ok(path):
 
 
 def normalize(payload):
-    require(isinstance(payload, dict) and payload.get("schema") == SCHEMA,
-            "invalid signal schema")
+    require(
+        isinstance(payload, dict) and payload.get("schema") == SCHEMA,
+        "invalid signal schema",
+    )
     repo, head = payload.get("repository"), payload.get("head_sha")
-    require(isinstance(repo, str) and repo.startswith("GBOGEB/")
-            and "/" in repo and isinstance(head, str)
-            and SHA40.fullmatch(head), "invalid exact repository identity")
+    require(
+        isinstance(repo, str)
+        and repo.startswith("GBOGEB/")
+        and "/" in repo
+        and isinstance(head, str)
+        and SHA40.fullmatch(head),
+        "invalid exact repository identity",
+    )
     sources = payload.get("sources")
-    require(isinstance(sources, list) and sources,
-            "missing scanner sources")
+    require(isinstance(sources, list) and sources, "missing scanner sources")
     observed = set()
     totals = Counter()
     rules = defaultdict(Counter)
@@ -97,67 +110,96 @@ def normalize(payload):
         require(isinstance(source, dict), "malformed scanner source")
         scanner = source.get("scanner")
         require(scanner in SCANNERS, "unsupported scanner")
-        require(source.get("repository") == repo
-                and source.get("head_sha") == head, "cross-head scanner join")
-        run, attempt, job = (
-            source.get("run_id"), source.get("attempt"), source.get("job_id")
+        require(
+            source.get("repository") == repo and source.get("head_sha") == head,
+            "cross-head scanner join",
         )
-        require(all(type(n) is int and n > 0 for n in (run, attempt, job)),
-                "missing native run/job/attempt")
+        run, attempt, job = (
+            source.get("run_id"),
+            source.get("attempt"),
+            source.get("job_id"),
+        )
+        require(
+            all(type(n) is int and n > 0 for n in (run, attempt, job)),
+            "missing native run/job/attempt",
+        )
         source_id = (scanner, run, attempt, job)
         require(source_id not in observed, "duplicate scanner source")
         observed.add(source_id)
-        require(all(isinstance(source.get(k), str)
-                    and SHA64.fullmatch(source[k])
-                    for k in ("artifact_sha256", "config_sha256")),
-                "invalid source/config byte identity")
+        require(
+            all(
+                isinstance(source.get(k), str) and SHA64.fullmatch(source[k])
+                for k in ("artifact_sha256", "config_sha256")
+            ),
+            "invalid source/config byte identity",
+        )
         mode = source.get("mode")
-        require(mode in {"aggregate", "detailed"},
-                "invalid scanner evidence granularity")
+        require(
+            mode in {"aggregate", "detailed"}, "invalid scanner evidence granularity"
+        )
         policy = source.get("enforcement")
-        require(isinstance(policy, dict)
-                and type(policy.get("continue_on_error")) is bool
-                and policy.get("workflow_conclusion")
-                in {"success", "failure", "cancelled", "pending", "unknown"}
-                and policy.get("required_check") in (None, True, False),
-                "scanner enforcement semantics absent")
+        require(
+            isinstance(policy, dict)
+            and type(policy.get("continue_on_error")) is bool
+            and policy.get("workflow_conclusion")
+            in {"success", "failure", "cancelled", "pending", "unknown"}
+            and policy.get("required_check") in (None, True, False),
+            "scanner enforcement semantics absent",
+        )
         # A scanner's 'blocking' label is not proof that merge is blocked.
-        enforcement.append({
-            "scanner": scanner,
-            "run_id": run,
-            "continue_on_error": policy["continue_on_error"],
-            "workflow_conclusion": policy["workflow_conclusion"],
-            "required_check": policy["required_check"],
-            "merge_admission": "UNKNOWN",
-        })
+        enforcement.append(
+            {
+                "scanner": scanner,
+                "run_id": run,
+                "continue_on_error": policy["continue_on_error"],
+                "workflow_conclusion": policy["workflow_conclusion"],
+                "required_check": policy["required_check"],
+                "merge_admission": "UNKNOWN",
+            }
+        )
         if mode == "aggregate":
             counts = source.get("counts")
-            require(isinstance(counts, dict) and counts,
-                    "missing aggregate counts")
-            require(all(isinstance(k, str) and RULE.fullmatch(k)
-                        and type(v) is int and v >= 0
-                        for k, v in counts.items()), "invalid aggregate finding")
+            require(isinstance(counts, dict) and counts, "missing aggregate counts")
+            require(
+                all(
+                    isinstance(k, str)
+                    and RULE.fullmatch(k)
+                    and type(v) is int
+                    and v >= 0
+                    for k, v in counts.items()
+                ),
+                "invalid aggregate finding",
+            )
             total = source.get("total")
-            require(type(total) is int and total >= 0
-                    and sum(counts.values()) == total, "aggregate denominator")
+            require(
+                type(total) is int and total >= 0 and sum(counts.values()) == total,
+                "aggregate denominator",
+            )
             require("findings" not in source, "aggregate cannot infer locations")
             totals[scanner] += total
             rules[scanner].update(counts)
         else:
             findings = source.get("findings")
             require(isinstance(findings, list), "missing detailed findings")
-            require("counts" not in source and "total" not in source,
-                    "details cannot silently mix aggregate population")
+            require(
+                "counts" not in source and "total" not in source,
+                "details cannot silently mix aggregate population",
+            )
             for finding in findings:
                 require(isinstance(finding, dict), "invalid finding")
                 rule, path, line = (
-                    finding.get("rule_id"), finding.get("path"),
-                    finding.get("line")
+                    finding.get("rule_id"),
+                    finding.get("path"),
+                    finding.get("line"),
                 )
-                require(isinstance(rule, str) and RULE.fullmatch(rule)
-                        and path_ok(path)
-                        and type(line) is int and line > 0,
-                        "invalid finding rule/location")
+                require(
+                    isinstance(rule, str)
+                    and RULE.fullmatch(rule)
+                    and path_ok(path)
+                    and type(line) is int
+                    and line > 0,
+                    "invalid finding rule/location",
+                )
                 totals[scanner] += 1
                 rules[scanner][rule] += 1
                 exact = (repo, head, scanner, rule, path, line)
@@ -190,9 +232,7 @@ def normalize(payload):
         "cross_scanner_candidates": cross,
         "candidate_count": len(cross),
         "source_observations": len(sources),
-        "enforcement": sorted(enforcement, key=lambda x: (
-            x["scanner"], x["run_id"]
-        )),
+        "enforcement": sorted(enforcement, key=lambda x: (x["scanner"], x["run_id"])),
         "verified_causal_roots": None,
         "accepted_root_closures": 0,
         "runtime_cells_verified": None,
