@@ -15,7 +15,7 @@ import os
 from pathlib import Path
 from urllib.request import Request, urlopen
 
-from tools.mip_ci_wave_telemetry import HEX40, independent_gate_vector, summarize
+from tools.mip_ci_wave_telemetry import HEX40, summarize
 
 REPO = "GBOGEB/ABACUS"
 RUN_TYPES = {
@@ -153,14 +153,21 @@ def collect_gate_input(source_sha, selected, *, getter=github_get):
             ):
                 raise ValueError("native job identity or duplicate mismatch")
             seen_ids.add(job_id)
-            jobs.append({
+            record = {
                 field: native_job.get(field)
                 for field in (
                     "id", "run_id", "run_attempt", "head_sha", "name",
                     "status", "conclusion", "created_at", "started_at",
-                    "completed_at", "runner_id", "steps",
+                    "completed_at",
                 )
-            })
+            }
+            if "runner_id" in native_job:
+                record["runner_id"] = native_job["runner_id"]
+            if native_job.get("steps") is not None:
+                if not isinstance(native_job["steps"], list):
+                    raise ValueError("native job steps are not a list")
+                record["steps"] = native_job["steps"]
+            jobs.append(record)
         bindings[domain] = {"run_id": run_id, "run_attempt": attempt}
 
     payload = {
