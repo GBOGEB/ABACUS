@@ -275,6 +275,8 @@ def summarize(payload):
     observed_steps = steps_observed if step_detail_jobs else None
 
     return {
+        "schema": "abacus.mip.ci-wave-telemetry.v2",
+        "repository": payload.get("repository") or "GBOGEB/ABACUS",
         "source_sha": sha,
         "workflow_records_observed": len(runs),
         "workflow_names_observed": len(workflow_names) if runs else None,
@@ -335,6 +337,9 @@ def summarize(payload):
         "rex_receipts_accepted": None,
         "distinct_bd_roots_closed": None,
         "independent_process_observations": None,
+        "authority_transfer": False,
+        "merge_authorized": False,
+        "security_waiver": False,
     }
 
 
