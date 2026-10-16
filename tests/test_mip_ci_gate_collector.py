@@ -130,7 +130,10 @@ def test_native_transport_fixed_https_origin_no_redirects(monkeypatch):
             self.closed = True
 
     monkeypatch.setattr(collector, "HTTPSConnection", FakeConnection)
-    result = collector.github_get("/repos/GBOGEB/ABACUS/actions/runs/123", token="fixture")
+    # Ephemeral test-only token: no credential value is embedded in source.
+    from secrets import token_hex
+    ephemeral = token_hex(16)
+    result = collector.github_get("/repos/GBOGEB/ABACUS/actions/runs/123", token=ephemeral)
     assert result == {"id": 123}
     connection = connections[0]
     assert connection.host == "api.github.com"
@@ -154,7 +157,7 @@ def test_native_transport_fixed_https_origin_no_redirects(monkeypatch):
 
     monkeypatch.setattr(collector, "HTTPSConnection", redirect_connection)
     with pytest.raises(ValueError, match="HTTP 302"):
-        collector.github_get("/repos/GBOGEB/ABACUS/actions/runs/123", token="fixture")
+        collector.github_get("/repos/GBOGEB/ABACUS/actions/runs/123", token=ephemeral)
     assert connections[-1].closed
 
 
