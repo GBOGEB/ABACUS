@@ -125,6 +125,9 @@ jobs:
           assert axes['edge_flow']['channel'] == 'line_style_plus_label'
           assert axes['repository_protection']['channel'] == 'card_border + explicit status text + scoped shield'
           assert axes['workflow_repetition']['channel'] == 'expandable grouped cohort with preserved native run links'
+          assert axes['measurement_granularity']['channel'] == 'explicit_level_label'
+          assert axes['measurement_granularity']['mapping']['independent_cycle'] == 'CYCLE'
+          assert 'do not increase independent process sample size' in axes['measurement_granularity']['guard']
           html = (root / 'dashboard_v3.html').read_text()
           for id in ('trend-dialog','zoom-chart','test-architecture','taxonomy-grid','producer-file','dmaic-list'):
               assert f'id="{id}"' in html
