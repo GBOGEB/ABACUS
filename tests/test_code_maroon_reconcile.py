@@ -20,15 +20,15 @@ def test_snapshot_totals_and_root_collapse():
     receipt = M.reconcile(load_snapshot())
     assert receipt["summary"] == {
         "manifestations_total": 37,
-        "implemented": 33,
-        "closed": 33,
+        "implemented": 34,
+        "closed": 34,
         "deferred": 2,
-        "outstanding": 4,
-        "failing_active": 2,
+        "outstanding": 3,
+        "failing_active": 1,
         "roots_total": 28,
-        "roots_closed": 25,
+        "roots_closed": 26,
         "roots_deferred": 1,
-        "roots_open": 2,
+        "roots_open": 1,
     }
     assert len(receipt["root_manifestations"]["CM-METHOD-QUALIFICATION-FAILOPEN"]) == 3
     assert len(receipt["root_manifestations"]["CM-ACTION-PINNING"]) == 3
