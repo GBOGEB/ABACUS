@@ -139,3 +139,24 @@ def test_closed_root_cannot_hide_active_unimplemented_manifestation():
         assert "closed root contains active manifestation" in str(exc)
     else:
         raise AssertionError("closed root incorrectly hid an active failure")
+
+
+def test_native_cli_writes_hash_verified_root_receipt(tmp_path, monkeypatch, capsys):
+    import hashlib
+    import sys
+    source = ROOT / "CODE_MAROON" / "snapshot_20261016.json"
+    target = tmp_path / "nested" / "receipt"
+    monkeypatch.setattr(sys, "argv", [
+        "code_maroon_reconcile", "--snapshot", str(source), "--out", str(target)
+    ])
+    M.main()
+    raw = (target / "code_maroon_receipt.json").read_bytes()
+    digest = hashlib.sha256(raw).hexdigest()
+    assert (target / "code_maroon_receipt.sha256").read_text().strip() == digest
+    data = json.loads(raw)
+    assert data["merge_authorized"] is False
+    assert data["summary"]["roots_total"] == 28
+    assert "CM-EVERRED-DASHBOARD-DRIFT" in (
+        target / "code_maroon_receipt.md"
+    ).read_text(encoding="utf-8")
+    assert json.loads(capsys.readouterr().out)["sha256"] == digest

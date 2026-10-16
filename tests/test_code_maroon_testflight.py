@@ -119,3 +119,48 @@ def test_missing_conftest_isolation_fails_closed(tmp_path):
     )
     with pytest.raises(ValueError, match="conftest isolation"):
         M.preflight(root)
+
+
+def test_cli_verify_emits_digest_and_exact_source_receipt(tmp_path, monkeypatch, capsys):
+    import hashlib
+    import json
+    import sys
+    source = junit(tmp_path)
+    target = tmp_path / "nested" / "verified.json"
+    monkeypatch.setattr(sys, "argv", [
+        "testflight_guard", "verify", "--junit", str(source),
+        "--source-sha", SHA, "--out", str(target),
+    ])
+    M.main()
+    raw = target.read_bytes()
+    receipt = json.loads(raw)
+    assert receipt["source_sha"] == SHA
+    assert receipt["tests_executed"] == 3
+    assert receipt["merge_authorized"] is False
+    assert target.with_suffix(".sha256").read_text().strip() == hashlib.sha256(raw).hexdigest()
+    assert json.loads(capsys.readouterr().out)["junit_sha256"] == receipt["junit_sha256"]
+
+
+def test_cli_preflight_does_not_claim_executed_tests(monkeypatch, capsys):
+    import json
+    import sys
+    monkeypatch.setattr(sys, "argv", ["testflight_guard", "preflight"])
+    M.main()
+    result = json.loads(capsys.readouterr().out)
+    assert result["collection_proved"] is False
+    assert all(n > 0 for n in result["declared_test_functions"].values())
+
+
+def test_cli_invalid_source_fails_closed_with_explicit_hold(tmp_path, monkeypatch, capsys):
+    import sys
+    source = junit(tmp_path)
+    target = tmp_path / "should-not-exist.json"
+    monkeypatch.setattr(sys, "argv", [
+        "testflight_guard", "verify", "--junit", str(source),
+        "--source-sha", "INVALID", "--out", str(target),
+    ])
+    with pytest.raises(SystemExit) as exc:
+        M.main()
+    assert exc.value.code == 2
+    assert "TESTFLIGHT HOLD" in capsys.readouterr().err
+    assert not target.exists()
