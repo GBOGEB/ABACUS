@@ -83,6 +83,19 @@ class WorkflowPolicyTests(unittest.TestCase):
         self.assertIn("`workflow_policy.json` is the workflow-policy SSOT", control_surface)
         self.assertIn("Queued checks are not counted as pass evidence", control_surface)
 
+    def test_rendered_report_documents_hash_basis_and_lifecycle_column(self):
+        report = MODULE.audit(ROOT / ".github/workflows", self.policy)
+        rendered = MODULE.render_markdown(report, self.policy)
+        self.assertIn(
+            "Policy SHA-256 (canonical sorted JSON bytes of `ci/governance/workflow_policy.json`):",
+            rendered,
+        )
+        self.assertIn(
+            "| Order | Lifecycle | Cluster | Workflow | Events | Jobs | Decision | Replacement |",
+            rendered,
+        )
+        self.assertIn("| `pr_fast` |", rendered)
+
 
 if __name__ == "__main__":
     unittest.main()
