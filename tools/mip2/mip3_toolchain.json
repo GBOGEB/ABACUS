@@ -7,7 +7,8 @@
     "coverage": "7.16.2",
     "black": "26.10.0",
     "isort": "7.0.0",
-    "bandit": "1.9.4"
+    "bandit": "1.9.4",
+    "defusedxml": "0.7.1"
   },
   "scope": "MIP3 seeded qualification only; transitive dependencies not fully locked",
   "requirements": "Verify installed versions at native runtime; use fully hashed lockfile for supply-chain reproducibility",
