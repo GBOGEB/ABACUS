@@ -1,0 +1,320 @@
+{
+  "schema": "code_purple.lossless_cbd_gitbinder.v1",
+  "observed_date": "2026-10-16",
+  "provenance": "READ_ONLY_SOURCE_SNAPSHOT_NOT_MERGE_AUTHORITY",
+  "repositories": [
+    {
+      "repo": "GBOGEB/ABACUS",
+      "branch": "main",
+      "sha": "54da377cf82a358ac97903ecde0270c975b8fcc1",
+      "protected": true,
+      "open_prs_visible": 59,
+      "required_status_checks": false
+    },
+    {
+      "repo": "GBOGEB/pipeline-automation-hub",
+      "branch": "master",
+      "sha": "929b970f97291c7b510004a6ad9b1af16932ec8a",
+      "protected": false,
+      "open_prs_visible": 2,
+      "required_status_checks": null
+    },
+    {
+      "repo": "GBOGEB/CODEX",
+      "branch": "main",
+      "sha": "ee5a06e6e2873dbfd4bf40f23e367a849d7650e1",
+      "protected": false,
+      "open_prs_visible": 0,
+      "required_status_checks": null
+    },
+    {
+      "repo": "GBOGEB/cryoplant-project",
+      "branch": "main",
+      "sha": "bd7d0156eb581f7803b73fe7158b6b49148d5229",
+      "protected": false,
+      "open_prs_visible": 0,
+      "required_status_checks": null
+    },
+    {
+      "repo": "GBOGEB/gg_MATH",
+      "branch": "main",
+      "sha": "c5cd3e30a8e241111fc9f15367f3b92ba0393ea7",
+      "protected": false,
+      "open_prs_visible": 0,
+      "required_status_checks": null
+    }
+  ],
+  "prs": [
+    {
+      "number": 1998,
+      "repo": "GBOGEB/ABACUS",
+      "sha": "e36f7543d4e002296725474a3bc0d57abf7d2d3b",
+      "role": "Black/new wave-series",
+      "checks": "17S/3F/1C",
+      "url": "https://github.com/GBOGEB/ABACUS/pull/1998"
+    },
+    {
+      "number": 2045,
+      "repo": "GBOGEB/ABACUS",
+      "sha": "094a0fe372045b3629696a4c413b41fa5b6833e4",
+      "role": "Python compatibility new head",
+      "checks": "25 queued/3 pending",
+      "url": "https://github.com/GBOGEB/ABACUS/pull/2045"
+    },
+    {
+      "number": 2046,
+      "repo": "GBOGEB/ABACUS",
+      "sha": "bf626ed5fb8372f91b859c20b7f0ffe3b373e460",
+      "role": "C2/W72 coverage",
+      "checks": "19S/2F/1C/7 queued",
+      "url": "https://github.com/GBOGEB/ABACUS/pull/2046"
+    },
+    {
+      "number": 2041,
+      "repo": "GBOGEB/ABACUS",
+      "sha": "60d2a5640c997fc916285580b6de8a3d86c27c38",
+      "role": "Governance inventory/A10",
+      "checks": "20S/3F/1C",
+      "url": "https://github.com/GBOGEB/ABACUS/pull/2041"
+    },
+    {
+      "number": 2027,
+      "repo": "GBOGEB/ABACUS",
+      "sha": "8cb4d742ad046ab688d691f4cc68c4171ad4308f",
+      "role": "Safety and Bandit",
+      "checks": "14S/4F",
+      "url": "https://github.com/GBOGEB/ABACUS/pull/2027"
+    },
+    {
+      "number": 2032,
+      "repo": "GBOGEB/ABACUS",
+      "sha": "60d288550424abe8f2368656b2c1f03274069733",
+      "role": "CBD fan-in/root ownership",
+      "checks": "14S/1F/1C",
+      "url": "https://github.com/GBOGEB/ABACUS/pull/2032"
+    },
+    {
+      "number": 2033,
+      "repo": "GBOGEB/ABACUS",
+      "sha": "42447d279cda0cf1a667e529e9deaf35f214bb31",
+      "role": "Worker telemetry",
+      "checks": "17S/1F",
+      "url": "https://github.com/GBOGEB/ABACUS/pull/2033"
+    },
+    {
+      "number": 1975,
+      "repo": "GBOGEB/ABACUS",
+      "sha": "69f03a994d3ceebfa40dce35470bc214c93bdd7d",
+      "role": "Historical handover receiver",
+      "checks": "OPEN",
+      "url": "https://github.com/GBOGEB/ABACUS/pull/1975"
+    }
+  ],
+  "roots": [
+    {
+      "id": "PYTHON_ABI",
+      "owner_pr": 2045,
+      "cause": "matplotlib Python 3.10 resolver incompatible",
+      "related_prs": [
+        2026,
+        2029,
+        2046,
+        2033,
+        1998
+      ],
+      "status": "HOLD",
+      "independently_closed": false
+    },
+    {
+      "id": "BLACK_1998",
+      "owner_pr": 1998,
+      "cause": "two touched Python files not Black compliant",
+      "related_prs": [
+        2032
+      ],
+      "status": "HOLD",
+      "independently_closed": false
+    },
+    {
+      "id": "GOV_160_VS_158",
+      "owner_pr": 2041,
+      "cause": "stale report plus two unclassified workflows; restricted A10 files",
+      "related_prs": [
+        1995,
+        2037,
+        2046
+      ],
+      "status": "HOLD",
+      "independently_closed": false
+    },
+    {
+      "id": "SECURITY",
+      "owner_pr": 2027,
+      "cause": "Safety and Bandit independent scanner first-reds",
+      "related_prs": [
+        2045,
+        1998
+      ],
+      "status": "HOLD",
+      "independently_closed": false
+    },
+    {
+      "id": "W72_BACKUP",
+      "owner_pr": 2046,
+      "cause": "backup-before-replace test expects old, observes new",
+      "related_prs": [
+        2045
+      ],
+      "status": "HOLD",
+      "independently_closed": false
+    },
+    {
+      "id": "FED_BYTE_TRUST",
+      "owner_pr": null,
+      "cause": "status observations != authenticated downloaded ZIP member bytes",
+      "related_prs": [],
+      "status": "HOLD",
+      "independently_closed": false
+    }
+  ],
+  "receipts": [
+    {
+      "id": "ENTERPRISE_OLD",
+      "repo": "GBOGEB/ABACUS",
+      "run_id": 38869180768,
+      "job_id": null,
+      "head_sha": "a752d15cab03dc6671fffce8df2048b93c0787ee",
+      "note": "12/12 prior-head platform matrix green",
+      "url": "https://github.com/GBOGEB/ABACUS/actions/runs/38869180768"
+    },
+    {
+      "id": "W72_BACKUP",
+      "repo": "GBOGEB/ABACUS",
+      "run_id": 38871217334,
+      "job_id": 116875501551,
+      "head_sha": "bf626ed5fb8372f91b859c20b7f0ffe3b373e460",
+      "note": "557 PASS/1 FAIL/2 SKIP; backup old != new",
+      "url": "https://github.com/GBOGEB/ABACUS/actions/runs/38871217334"
+    },
+    {
+      "id": "W72_GOV",
+      "repo": "GBOGEB/ABACUS",
+      "run_id": 38871217342,
+      "job_id": 116875501737,
+      "head_sha": "bf626ed5fb8372f91b859c20b7f0ffe3b373e460",
+      "note": "unclassified code-purple dashboard+SUT GUI; report 158 vs 160",
+      "url": "https://github.com/GBOGEB/ABACUS/actions/runs/38871217342"
+    },
+    {
+      "id": "A10",
+      "repo": "GBOGEB/ABACUS",
+      "run_id": 38824989937,
+      "job_id": 116730248604,
+      "head_sha": "60d2a5640c997fc916285580b6de8a3d86c27c38",
+      "note": "restricted workflow_policy.json and WORKFLOW_RATIONALIZATION.md",
+      "url": "https://github.com/GBOGEB/ABACUS/actions/runs/38824989937"
+    },
+    {
+      "id": "BLACK_1998",
+      "repo": "GBOGEB/ABACUS",
+      "run_id": 38749812262,
+      "job_id": null,
+      "head_sha": "e36f7543d4e002296725474a3bc0d57abf7d2d3b",
+      "note": "2 Black new-debt files; independent security red",
+      "url": "https://github.com/GBOGEB/ABACUS/actions/runs/38749812262"
+    },
+    {
+      "id": "G4_FOCUSED",
+      "repo": "GBOGEB/pipeline-automation-hub",
+      "run_id": 38707835880,
+      "job_id": 116331559228,
+      "head_sha": "fd67b5905894cc714406605b74dedd717f051e8c",
+      "note": "same-source 78/93→93/93 statements, 23/26→26/26 branches",
+      "url": "https://github.com/GBOGEB/pipeline-automation-hub/actions/runs/38707835880"
+    },
+    {
+      "id": "W3_TELEMETRY",
+      "repo": "GBOGEB/pipeline-automation-hub",
+      "run_id": 38867981712,
+      "job_id": null,
+      "head_sha": null,
+      "note": "six measured rows, not six admitted fleet cells",
+      "url": "https://github.com/GBOGEB/pipeline-automation-hub/actions/runs/38867981712"
+    },
+    {
+      "id": "W3_PCA",
+      "repo": "GBOGEB/pipeline-automation-hub",
+      "run_id": 38867981621,
+      "job_id": null,
+      "head_sha": null,
+      "note": "component identity not universally reliable",
+      "url": "https://github.com/GBOGEB/pipeline-automation-hub/actions/runs/38867981621"
+    },
+    {
+      "id": "W3_CONTROL",
+      "repo": "GBOGEB/pipeline-automation-hub",
+      "run_id": 38869021242,
+      "job_id": null,
+      "head_sha": null,
+      "note": "2 frontier tasks, 3 control classes, 0 promotions",
+      "url": "https://github.com/GBOGEB/pipeline-automation-hub/actions/runs/38869021242"
+    }
+  ],
+  "references": {
+    "handover_receiver": "https://github.com/GBOGEB/ABACUS/pull/1975",
+    "CBD_owner": "https://github.com/GBOGEB/ABACUS/pull/2032",
+    "CBD_initial": "https://github.com/GBOGEB/ABACUS/pull/2032#issuecomment-6211015610",
+    "CBD_impact": "https://github.com/GBOGEB/ABACUS/pull/2032#issuecomment-6211094196",
+    "atlas": "https://github.com/GBOGEB/pipeline-automation-hub/blob/master/mission-control/federation-atlas/PROCESS_LANES_v1.json",
+    "methods": "https://github.com/GBOGEB/pipeline-automation-hub/blob/master/mission-control/federation-atlas/METHOD_OBSERVABILITY_v1.json",
+    "beams": "https://github.com/GBOGEB/pipeline-automation-hub/blob/master/mission-control/federation-atlas/CODE_PURPLE_BEAMS_DAG_v1.json",
+    "SIPOC": "https://github.com/GBOGEB/pipeline-automation-hub/blob/master/mission-control/federation-atlas/ATLAS_GRAPH_v1.yaml",
+    "KPI": "https://github.com/GBOGEB/pipeline-automation-hub/blob/master/mission-control/federation-atlas/PHASE02_KPI_TAXONOMY_v1.json"
+  },
+  "metrics": {
+    "G4_status_breadth": {
+      "before": 1,
+      "after": 6,
+      "eligible": 42,
+      "verified_zip_members": 0
+    },
+    "G4_focused_statements": {
+      "before": 78,
+      "after": 93,
+      "eligible": 93
+    },
+    "G4_focused_branches": {
+      "before": 23,
+      "after": 26,
+      "eligible": 26
+    },
+    "DMAIC_broad_incomparable": [
+      {
+        "statements": 12038,
+        "percent": 41.28
+      },
+      {
+        "statements": 12054,
+        "percent": 41.31
+      }
+    ],
+    "W3_measured_rows": 6,
+    "PCA_components_all_reliable": false,
+    "M2_stable": null,
+    "M3_capable": null,
+    "BT_rank": null,
+    "matched_security_delta": null,
+    "REX_formal_root_closures": null,
+    "worker_hours": null,
+    "queue_p95": null,
+    "planned_scout_packets": 6,
+    "planned_max_concurrency": 2
+  },
+  "control": {
+    "security_waiver": false,
+    "authority_transfer": false,
+    "formal_credit_delta": 0,
+    "engineering_credit_delta": 0,
+    "merge_admission": "HOLD"
+  }
+}
