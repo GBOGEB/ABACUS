@@ -88,7 +88,7 @@ def build_getter(*, e="success", g="failure"):
     def get(url):
         calls.append(url)
         pieces = url.split("/")
-        run_id = int(pieces[5])
+        run_id = int(pieces[6])
         if url.endswith(f"/runs/{run_id}"):
             return copy.deepcopy(run_data[run_id])
         if "/jobs?" in url:
