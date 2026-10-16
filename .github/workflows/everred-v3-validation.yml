@@ -35,6 +35,7 @@ jobs:
       # actions/checkout v4.2.2, immutable SHA pin
       - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
         with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
           persist-credentials: false
       # actions/setup-python v5.6.0, immutable SHA pin
       - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97
@@ -96,8 +97,16 @@ jobs:
           if-no-files-found: warn
       - name: Measure matched mass-signal behavioral coverage (advisory)
         working-directory: tools/everred_v3
+        env:
+          SOURCE_HEAD_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
         run: |
           set -eu
+          checked_out_sha="$(git rev-parse HEAD)"
+          test "$checked_out_sha" = "$SOURCE_HEAD_SHA" || {
+            echo "Exact source checkout mismatch" >&2
+            exit 64
+          }
+          export CHECKED_OUT_SHA="$checked_out_sha"
           python -m pip install coverage==7.16.2
           python -m coverage run --branch --source=mass_signal_join \
             -m unittest discover -s tests -p test_mass_signal_join.py -v
@@ -124,7 +133,9 @@ jobs:
               raise SystemExit("coverage denominator is zero")
           receipt = {
               "schema": "abacus.mass_signal.focused_coverage.v1",
-              "source_sha": os.environ["GITHUB_SHA"],
+              "source_sha": os.environ["CHECKED_OUT_SHA"],
+              "event_sha": os.environ["GITHUB_SHA"],
+              "source_head_claim": os.environ["SOURCE_HEAD_SHA"],
               "run_id": int(os.environ["GITHUB_RUN_ID"]),
               "run_attempt": int(os.environ["GITHUB_RUN_ATTEMPT"]),
               "job_id": os.environ["GITHUB_JOB"],
