@@ -231,6 +231,51 @@ def check_forecast(row, by_wave):
     }
 
 
+def coverage_convergence(comparisons):
+    """Classify only trailing *matched* coverage pulses; never certify admission.
+
+    Three consecutive matched line AND branch comparisons are required.
+    This is descriptive plateau detection, not a confidence interval or an
+    assertion that main/PR-diff coverage has passed policy thresholds.
+    """
+    require(isinstance(comparisons, list), "comparisons must be a list")
+    trailing = []
+    for row in reversed(comparisons):
+        require(isinstance(row, dict), "comparison must be an object")
+        line = row.get("line_coverage_candidate_delta_pp")
+        branch = row.get("branch_coverage_candidate_delta_pp")
+        if line is None or branch is None:
+            break
+        require(type(line) in (int, float) and type(branch) in (int, float)
+                and abs(line) < float("inf") and abs(branch) < float("inf"),
+                "finite numeric coverage deltas required")
+        trailing.append((line, branch))
+        if len(trailing) == 3:
+            break
+    trailing.reverse()
+    comparable = len(trailing)
+    state = "INSUFFICIENT_MATCHED_TRAILING_PAIRS"
+    if comparable == 3:
+        if any(line < -0.5 or branch < -0.5 for line, branch in trailing):
+            state = "REGRESSION_OBSERVED"
+        elif all(abs(line) <= 0.5 and abs(branch) <= 0.5
+                 for line, branch in trailing):
+            state = "DESCRIPTIVE_PLATEAU_CANDIDATE"
+        else:
+            state = "CHANGE_ABOVE_PLATEAU_TOLERANCE"
+    return {
+        "state": state,
+        "required_consecutive_pairs": 3,
+        "matched_trailing_pairs": comparable,
+        "plateau_tolerance_pp": 0.5,
+        "line_deltas_pp": [line for line, _ in trailing],
+        "branch_deltas_pp": [branch for _, branch in trailing],
+        "accepted_main_coverage_improvement": None,
+        "independent_trial_or_significance_certified": False,
+        "merge_authorized": False,
+    }
+
+
 def rollup(payload):
     require(isinstance(payload, dict) and payload.get("schema") == INPUT_SCHEMA,
             "unsupported temporal input schema")
@@ -299,6 +344,7 @@ def rollup(payload):
                   if k not in ("timestamp", "attempts", "coverage")}
                  for row in parsed],
         "comparisons": comparisons,
+        "coverage_convergence": coverage_convergence(comparisons),
         "persisted_forecasts": validated_forecasts,
         "forecasts_scored": len(scored),
         "forecast_mae": round(sum(scored) / len(scored), 9) if scored else None,
