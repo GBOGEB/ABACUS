@@ -1,4 +1,5 @@
 """Mission-cycle readiness and unlock-yield negative controls (no native claims)."""
+
 import pathlib
 import sys
 import unittest
@@ -16,8 +17,11 @@ def graph(confirmed=True):
         "schema": "abacus.everred.blocking-dag.v1",
         "source_sha": AFTER,
         "nodes": [
-            {"id": ROOT, "type": "root",
-             "causal_status": "CONFIRMED" if confirmed else "CANDIDATE"},
+            {
+                "id": ROOT,
+                "type": "root",
+                "causal_status": "CONFIRMED" if confirmed else "CANDIDATE",
+            },
             {"id": "ci-A", "type": "gate", "mandatory": True},
             {"id": "ci-B", "type": "gate", "mandatory": True},
         ],
@@ -30,41 +34,63 @@ def graph(confirmed=True):
 
 def proof(gate, source, run, result):
     return {
-        "repository": REPO, "source_sha": source, "gate_id": gate,
-        "config_digest": "c" * 64, "run_id": run, "job_id": run + 1,
+        "repository": REPO,
+        "source_sha": source,
+        "gate_id": gate,
+        "config_digest": "c" * 64,
+        "run_id": run,
+        "job_id": run + 1,
         "result": result,
-        "evidence_url":
-            f"https://github.com/{REPO}/actions/runs/{run}/job/{run + 1}",
+        "evidence_url": f"https://github.com/{REPO}/actions/runs/{run}/job/{run + 1}",
     }
 
 
 def measurement():
     return {
         "schema": "abacus.everred.unlock-yield.v1",
-        "repository": REPO, "root_id": ROOT,
-        "before_sha": BEFORE, "after_sha": AFTER,
+        "repository": REPO,
+        "root_id": ROOT,
+        "before_sha": BEFORE,
+        "after_sha": AFTER,
         "config_digest": "c" * 64,
         "blocking_dag": graph(),
         "complete_denominator": True,
-        "security_waiver": False, "authority_transfer": False,
+        "security_waiver": False,
+        "authority_transfer": False,
         "dependencies": [
-            {"gate_id": "ci-A", "before": proof("ci-A", BEFORE, 10, "BLOCKED"),
-             "after": proof("ci-A", AFTER, 20, "READY")},
-            {"gate_id": "ci-B", "before": proof("ci-B", BEFORE, 30, "BLOCKED"),
-             "after": proof("ci-B", AFTER, 40, "BLOCKED")},
+            {
+                "gate_id": "ci-A",
+                "before": proof("ci-A", BEFORE, 10, "BLOCKED"),
+                "after": proof("ci-A", AFTER, 20, "READY"),
+            },
+            {
+                "gate_id": "ci-B",
+                "before": proof("ci-B", BEFORE, 30, "BLOCKED"),
+                "after": proof("ci-B", AFTER, 40, "BLOCKED"),
+            },
         ],
     }
 
 
 def queue():
-    return {"families": [
-        {"id": ROOT, "severity": "P1", "justification": "Native job reds",
-         "remediation": "Verify exact head", "dov": "Native terminal proof"},
-        {"id": "BD-SECURITY-001", "severity": "P0",
-         "justification": "Mandatory security gate",
-         "remediation": "Obtain authorized reviewer",
-         "dov": "Native security proof"},
-    ]}
+    return {
+        "families": [
+            {
+                "id": ROOT,
+                "severity": "P1",
+                "justification": "Native job reds",
+                "remediation": "Verify exact head",
+                "dov": "Native terminal proof",
+            },
+            {
+                "id": "BD-SECURITY-001",
+                "severity": "P0",
+                "justification": "Mandatory security gate",
+                "remediation": "Obtain authorized reviewer",
+                "dov": "Native security proof",
+            },
+        ]
+    }
 
 
 class MissionCycleTests(unittest.TestCase):
@@ -121,8 +147,10 @@ class MissionCycleTests(unittest.TestCase):
         decision = project(queue())
         self.assertEqual(len(STAGES), 6)
         self.assertEqual(decision["stages"][0], "Mission")
-        self.assertEqual(decision["cards"]["BD-SECURITY-001"]["priority_policy"],
-                         "P0_HARD_GATE_FIRST")
+        self.assertEqual(
+            decision["cards"]["BD-SECURITY-001"]["priority_policy"],
+            "P0_HARD_GATE_FIRST",
+        )
         self.assertIsNone(decision["cards"][ROOT]["bt_rank"])
         self.assertIsNone(decision["cards"][ROOT]["unlock_yield_pct"])
         self.assertFalse(decision["merge_authorized"])

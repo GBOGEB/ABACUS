@@ -121,10 +121,15 @@ def evaluate(x, *, authenticated=False, now=None):
             and isinstance(policy.get("status_contexts"), list)
             and len(policy["status_contexts"]) > 0
             and len(policy["status_contexts"]) == len(set(policy["status_contexts"]))
-            and all(isinstance(name, str) and name for name in policy["status_contexts"])
+            and all(
+                isinstance(name, str) and name for name in policy["status_contexts"]
+            )
             and "PR Feedback Gate" in policy["status_contexts"]
             and isinstance(needed, list)
-            and all(isinstance(name, str) and name in policy["status_contexts"] for name in needed)
+            and all(
+                isinstance(name, str) and name in policy["status_contexts"]
+                for name in needed
+            )
         ):
             gates["branch_protection"] = "PASS"
         elif not fresh:
@@ -218,7 +223,8 @@ def effective_policy_from_rules(
         "strict_checks": checks.get("strict_required_status_checks_policy") is True,
         "status_contexts": status_contexts,
         "require_last_push_approval": reviews.get("require_last_push_approval") is True,
-        "dismiss_stale_reviews_on_push": reviews.get("dismiss_stale_reviews_on_push") is True,
+        "dismiss_stale_reviews_on_push": reviews.get("dismiss_stale_reviews_on_push")
+        is True,
         "main_hard_gate_active": hard_gate_valid,
         "main_hard_gate_no_bypass": (
             hard_gate_valid and main_hard_gate.get("bypass_actors") == []

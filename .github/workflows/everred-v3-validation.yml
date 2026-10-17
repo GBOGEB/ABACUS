@@ -168,6 +168,22 @@ jobs:
             ${{ runner.temp }}/mass-signal-coverage.json
             ${{ runner.temp }}/mass-signal-coverage-receipt.json
           if-no-files-found: warn
+      - name: Emit pinned formatter proposal without changing the hard gates
+        working-directory: tools/everred_v3
+        run: |
+          python -m pip install black==26.10.1 isort==9.0.2
+          set +e
+          echo "CP_FORMATTER_BLACK_DIFF_BEGIN"
+          python -m black --diff src scripts tests
+          b=$?
+          echo "CP_FORMATTER_BLACK_DIFF_END rc=$b"
+          echo "CP_FORMATTER_ISORT_DIFF_BEGIN"
+          python -m isort --diff src scripts tests
+          i=$?
+          echo "CP_FORMATTER_ISORT_DIFF_END rc=$i"
+          # This is diagnostic only; the following mandatory hard gate
+          # independently enforces Black and isort failures.
+          exit 0
       - name: Verify committed Black and isort styles
         working-directory: tools/everred_v3
         run: |
