@@ -79,7 +79,7 @@ def test_runtime_error_line_and_context(marker, tmp_path):
 ])
 def test_classification_preserves_single_bucket(message, bucket):
     out = load().ErrorDetector().categorize_errors([
-        {"message": message, "type": "runtime_error"}
+        {"message": message, "type": "other" if bucket == "other" else "runtime_error"}
     ])
     assert len(out[bucket]) == 1
     assert sum(len(rows) for rows in out.values()) == 1
@@ -107,6 +107,25 @@ def test_type_fix_is_idempotent_and_receipted(tmp_path):
     assert "List[Dict[str, Any]]" in path.read_text()
     assert fixer.fix_type_hints(path) is False
     assert len(fixer.fixes_applied) == 1
+
+
+
+def test_type_fix_never_corrupts_already_parameterized_annotations(tmp_path):
+    fixer = load().QuickFixer()
+    path = tmp_path / "valid.py"
+    before = "mapped: Dict[str, Any] = {}\\nvalues: Dict[str, int] = {}\\n"
+    path.write_text(before)
+    assert fixer.fix_type_hints(path) is False
+    assert path.read_text() == before
+
+
+def test_type_fix_repairs_only_incomplete_dict_placeholder(tmp_path):
+    fixer = load().QuickFixer()
+    path = tmp_path / "partial.py"
+    path.write_text("mapped: Dict[str, ] = {}\\n")
+    assert fixer.fix_type_hints(path) is True
+    assert path.read_text() == "mapped: Dict[str, Any] = {}\\n"
+    assert fixer.fix_type_hints(path) is False
 
 
 def test_missing_type_source_is_not_reported_as_fixed(tmp_path):
