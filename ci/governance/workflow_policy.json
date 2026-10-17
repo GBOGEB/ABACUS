@@ -170,6 +170,12 @@
       "disposition": "keep"
     },
     {
+      "pattern": "^mission-control-lite-testflight\\.yml$",
+      "cluster": "runtime_governance",
+      "lifecycle": "pr_domain",
+      "disposition": "keep"
+    },
+    {
       "pattern": "^pr-feedback-gate\\.yml$",
       "cluster": "runtime_governance",
       "lifecycle": "pr_domain",
