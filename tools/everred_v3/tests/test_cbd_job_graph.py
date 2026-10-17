@@ -119,6 +119,7 @@ class CBDJobGraphTests(unittest.TestCase):
             d[rid].update(
                 status="READBACK_WITHHELD",
                 failed_jobs=None,
+                failed_job_count=None,
                 first_red_causal_root=None,
                 full_log_read=False,
             )
@@ -127,6 +128,21 @@ class CBDJobGraphTests(unittest.TestCase):
         self.assertEqual(252, dag["metrics"]["runs_bound"])
         self.assertEqual(252, dag["metrics"]["failed_job_observations"])
         self.assertIsNone(dag["metrics"]["confirmed_roots_open"])
+
+    def test_withheld_cannot_carry_failure_count(self):
+        rid = next(iter(self.native))
+        with self.assertRaisesRegex(ValueError, "withheld readback"):
+            self.mutated(lambda d: d[rid].update(
+                status="READBACK_WITHHELD", failed_jobs=None
+            ))
+
+    def test_measured_zero_and_unknown_have_separate_types(self):
+        dag = graph.analyze(self.snapshot, self.native)
+        self.assertEqual(0, dag["metrics"]["runs_withheld"])
+        self.assertEqual(0, dag["metrics"]["jobs_without_failed_step"])
+        self.assertEqual(0, dag["metrics"]["bound_runs_without_failure_job"])
+        self.assertIsNone(dag["metrics"]["confirmed_roots_closed"])
+        self.assertIsNone(dag["metrics"]["main_coverage"])
 
     def test_malformed_attempt_and_step_rejected(self):
         rid = next(iter(self.native))
