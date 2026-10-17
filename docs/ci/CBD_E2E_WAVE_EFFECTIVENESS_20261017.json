@@ -1,0 +1,298 @@
+{
+  "schema": "cbd.e2e.wave_effectiveness.v1",
+  "repository": "GBOGEB/ABACUS",
+  "input_graph": "docs/ci/CBD_E2E_EVIDENCE_GRAPH_ATLAS_20261017.json",
+  "source_scope": "NONATOMIC_20_PR_WORKFLOW_AND_16_NATIVE_JOB_SNAPSHOTS",
+  "source_authority": {
+    "merge_admission": "HOLD",
+    "security_waiver": false,
+    "causal_root_promoted": false
+  },
+  "observed": {
+    "pr_head_cohort": 20,
+    "failed_workflow_associations": 66,
+    "workflow_associations": 533,
+    "native_runs": 16,
+    "native_jobs": 303,
+    "failed_native_jobs": 40,
+    "failed_native_steps": 43,
+    "upstream_failed_job_manifestations": 26,
+    "downstream_failed_job_manifestations": 14,
+    "evidence_classes": {
+      "DECLARED": 6,
+      "SOURCE_BOUND": 102,
+      "OBSERVED": 494,
+      "ASSOCIATION": 89,
+      "TEMPORAL_ASSOCIATION": 6
+    },
+    "total_nodes": 499,
+    "total_edges": 697,
+    "measured_job_runtime": {
+      "native_jobs_source_matched": 303,
+      "measured_completed_job_durations": 293,
+      "censored_or_unmeasured_jobs": 10,
+      "inverted_timestamp_jobs": 10,
+      "duration_p50_ms_nearest_rank": 121000,
+      "duration_p95_ms_nearest_rank": 267000,
+      "rerun_attempt_run_count": 5,
+      "actual_runner_queue_wait_ms": null,
+      "cross_host_clock_drift_ms": null,
+      "matched_local_to_github_pre_push": null,
+      "timestamp_measurement_method": "native started_at to completed_at",
+      "quantile_estimator": "nearest-rank of non-null job durations",
+      "inverted_timestamp_cluster_count": 1,
+      "inverted_timestamp_cluster_reach_prs": 10
+    },
+    "main_coverage": null,
+    "changed_line_coverage": null,
+    "verified_unblocked_prs": null,
+    "verified_common_causal_roots": null
+  },
+  "candidate_job_families": [
+    {
+      "family": "DOWNSTREAM_SUMMARY",
+      "priority": "DEPENDENT",
+      "failed_job_manifestations": 14,
+      "affected_prs": [
+        2027,
+        2037,
+        2041,
+        2054,
+        2057,
+        2066,
+        2070,
+        2072,
+        2073,
+        2075,
+        2076,
+        2077,
+        2080,
+        2082
+      ],
+      "native_runs": [
+        "run:38774624178",
+        "run:38823726075",
+        "run:38824989857",
+        "run:38903707059",
+        "run:38913178667",
+        "run:38919194736",
+        "run:38920465584",
+        "run:38925992164",
+        "run:38931835928",
+        "run:38921507617",
+        "run:38955426428",
+        "run:38957128813",
+        "run:38961401543",
+        "run:38963803336"
+      ],
+      "measured_runtime_ms": 64000,
+      "unmeasured_duration_count": 0,
+      "failed_step_count": 14,
+      "causal_root_id": null,
+      "affected_pr_count": 14,
+      "potential_unblock_upper_bound_prs": null
+    },
+    {
+      "family": "SECURITY",
+      "priority": "P0",
+      "failed_job_manifestations": 15,
+      "affected_prs": [
+        2027,
+        2037,
+        2041,
+        2054,
+        2057,
+        2066,
+        2070,
+        2072,
+        2073,
+        2075,
+        2076,
+        2077,
+        2080,
+        2082,
+        2083
+      ],
+      "native_runs": [
+        "run:38774624178",
+        "run:38823726075",
+        "run:38824989857",
+        "run:38903707059",
+        "run:38913178667",
+        "run:38919194736",
+        "run:38920465584",
+        "run:38925992164",
+        "run:38931835928",
+        "run:38921507617",
+        "run:38955426428",
+        "run:38957128813",
+        "run:38961401543",
+        "run:38963803336",
+        "run:38958524460"
+      ],
+      "measured_runtime_ms": 588000,
+      "unmeasured_duration_count": 0,
+      "failed_step_count": 18,
+      "causal_root_id": null,
+      "affected_pr_count": 15,
+      "potential_unblock_upper_bound_prs": 15
+    },
+    {
+      "family": "QUALITY",
+      "priority": "P1",
+      "failed_job_manifestations": 10,
+      "affected_prs": [
+        2027,
+        2054,
+        2057,
+        2070,
+        2073,
+        2075,
+        2076,
+        2077,
+        2080,
+        2083
+      ],
+      "native_runs": [
+        "run:38774624178",
+        "run:38903707059",
+        "run:38919194736",
+        "run:38920465584",
+        "run:38925992164",
+        "run:38931835928",
+        "run:38955426428",
+        "run:38961401543",
+        "run:38963803336",
+        "run:38958524460"
+      ],
+      "measured_runtime_ms": 1291000,
+      "unmeasured_duration_count": 0,
+      "failed_step_count": 10,
+      "causal_root_id": null,
+      "affected_pr_count": 10,
+      "potential_unblock_upper_bound_prs": 10
+    },
+    {
+      "family": "COVERAGE",
+      "priority": "P1",
+      "failed_job_manifestations": 1,
+      "affected_prs": [
+        2054
+      ],
+      "native_runs": [
+        "run:38903707059"
+      ],
+      "measured_runtime_ms": 231000,
+      "unmeasured_duration_count": 0,
+      "failed_step_count": 1,
+      "causal_root_id": null,
+      "affected_pr_count": 1,
+      "potential_unblock_upper_bound_prs": 1
+    }
+  ],
+  "top_shared_symptom_edges": [
+    {
+      "workflow_a": "CI Workflow Governance",
+      "workflow_b": "CI/CD Test Suite",
+      "shared_prs": 9,
+      "jaccard": 0.5,
+      "confirmed_common_root": null
+    },
+    {
+      "workflow_a": "ABACUS v032 - CI/CD Pipeline",
+      "workflow_b": "CI/CD Test Suite",
+      "shared_prs": 7,
+      "jaccard": 0.38889,
+      "confirmed_common_root": null
+    },
+    {
+      "workflow_a": "ABACUS v032 - CI/CD Pipeline",
+      "workflow_b": "CI - ABACUS Matrix",
+      "shared_prs": 6,
+      "jaccard": 0.66667,
+      "confirmed_common_root": null
+    },
+    {
+      "workflow_a": "CI - ABACUS Matrix",
+      "workflow_b": "CI/CD Test Suite",
+      "shared_prs": 5,
+      "jaccard": 0.29412,
+      "confirmed_common_root": null
+    },
+    {
+      "workflow_a": "ABACUS v032 - CI/CD Pipeline",
+      "workflow_b": "CI Workflow Governance",
+      "shared_prs": 4,
+      "jaccard": 0.25,
+      "confirmed_common_root": null
+    },
+    {
+      "workflow_a": "ABACUS v032 - CI/CD Pipeline",
+      "workflow_b": "Bandit Disjoint Census",
+      "shared_prs": 3,
+      "jaccard": 0.33333,
+      "confirmed_common_root": null
+    },
+    {
+      "workflow_a": "ABACUS v032 - CI/CD Pipeline",
+      "workflow_b": "Validate Docs (Markdown/YAML/JSON)",
+      "shared_prs": 3,
+      "jaccard": 0.3,
+      "confirmed_common_root": null
+    },
+    {
+      "workflow_a": "Bandit Disjoint Census",
+      "workflow_b": "CI Workflow Governance",
+      "shared_prs": 3,
+      "jaccard": 0.27273,
+      "confirmed_common_root": null
+    },
+    {
+      "workflow_a": "CI - ABACUS Matrix",
+      "workflow_b": "CI Workflow Governance",
+      "shared_prs": 3,
+      "jaccard": 0.21429,
+      "confirmed_common_root": null
+    },
+    {
+      "workflow_a": "CI/CD Test Suite",
+      "workflow_b": "DMAIC V3 Enterprise CI",
+      "shared_prs": 3,
+      "jaccard": 0.1875,
+      "confirmed_common_root": null
+    },
+    {
+      "workflow_a": "CI/CD Test Suite",
+      "workflow_b": "Validate Docs (Markdown/YAML/JSON)",
+      "shared_prs": 3,
+      "jaccard": 0.17647,
+      "confirmed_common_root": null
+    },
+    {
+      "workflow_a": "DMAIC V3 Enterprise CI",
+      "workflow_b": "DMAIC V3 Test Suite - Continuous Integration",
+      "shared_prs": 2,
+      "jaccard": 0.66667,
+      "confirmed_common_root": null
+    }
+  ],
+  "stage_parity": {
+    "developer_precommit_verified": null,
+    "developer_prepush_verified": null,
+    "github_exact_head_testpilot_coverage": null,
+    "fresh_clone_equivalence": null,
+    "remote_authenticated_clone": null
+  },
+  "authority": {
+    "merge_admission": "HOLD",
+    "source_mutation_authorized": false,
+    "security_waiver": false
+  },
+  "interpretation": [
+    "failed job count is manifestation count, not distinct causal roots",
+    "shared symptom count and Jaccard are noncausal",
+    "observed runtime is not saved CI wall clock",
+    "sampled PRs are non-random; no fleet confidence interval",
+    "coverage statistics require validated exact-head numerators and denominators"
+  ]
+}
