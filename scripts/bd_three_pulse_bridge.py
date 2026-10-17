@@ -127,7 +127,7 @@ def _validate_root_census(roots, bandit_count, scope):
             if native[0].get(field) != expected:
                 raise ValueError("Bandit source mismatch: " + field)
     if bandit_roots != bandit_count:
-        raise ValueError("Bandit numerator does not reconcile with roots")
+        raise ValueError("Bandit numerator/denominator does not reconcile with roots")
 
 
 def rollup(pulses):
@@ -169,7 +169,7 @@ def rollup(pulses):
             or pulse.get("formal_credit_delta") != 0
             or pulse.get("engineering_credit_delta") != 0
         ):
-            raise ValueError("authority/admission contract must remain HOLD")
+            raise ValueError("authority/admission/security contract must remain HOLD")
         _validate_root_census(roots, bandit, scope)
         out.append(
             {

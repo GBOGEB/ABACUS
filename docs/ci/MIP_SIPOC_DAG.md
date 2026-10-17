@@ -91,20 +91,27 @@ For each pulse count planned vs executed tasks, current-head native tests, branc
 
 Authority transfer = false; engineering credit = 0 until independently accepted.
 
-## Execution-unit vocabulary for future instructions (G3A candidate)
+## GCA-3: wave/pulse terminology and governed N→N+3 advance
 
-The W1-W6 labels above are historical delivery waves, and existing 3P*
-experiment/stability contracts retain their prior meanings.
+Adopt [GCA-3 terminology and execution protocol](../../MIP/GCA3_GLOSSARY_AND_PROTOCOL.md) as an operational naming overlay without changing this canonical SIPOC/DAG or the historical W1–W6 list. **Wave** (`W[N+i]`) = independently receipted, bounded delivery increment; **pulse** (`Uj`) = observe/diagnose/change-or-no-change/verify loop *within* a wave; **3P\*** P1/P2/P3 = methodology stages, not a pulse count. `GCA-3` = three attempted waves, default ≤3 pulses per wave, accepted index advances only by contiguous engineering DoV PASS. Independent branch/reviewer/security/A10/governance gates never inherit PASS from engineering tests.
 
-- `3W`: three implementation waves with disjoint ownership, bounded fan-in
-  and source-bound testflight; does not guarantee three accepted advances.
-- `3MP`: three DMAIC/MIP measurement-and-improvement pulses; each cycle
-  records distinct immutable observation/metric/defer/Control evidence.
-- `G3A`: one kickoff and exactly three bounded **accepted engineering
-  checkpoints**, from N→N+1→N+2→N+3, or stop immediately and return actual N
-  with the first material blocker. Checkpoint advancement never substitutes
-  for a GitHub merge, reviewer approval, security waiver or child authority.
+```mermaid
+flowchart LR
+  A[Freeze accepted N and exact evidence] --> B[W N+1]
+  B --> U1[U1..U3 bounded pulses]
+  U1 --> G1{Engineering DoV?}
+  G1 -->|PASS| C[W N+2]
+  G1 -->|HOLD| X[Keep accepted index N; route safe disjoint lane]
+  C --> U2[U1..U3 bounded pulses]
+  U2 --> G2{Engineering DoV?}
+  G2 -->|PASS| D[W N+3]
+  G2 -->|HOLD| X
+  D --> U3[U1..U3 bounded pulses]
+  U3 --> G3{Engineering DoV?}
+  G3 -->|PASS| Z[Accepted N+3 engineering scope]
+  G3 -->|HOLD| X
+  Z --> R[Independent release admission remains separate]
+  X --> Q[Return attempted vs accepted and blocker receipts]
+```
 
-See [G3A mission input, glossary, receipt schema, SIPOC and DAG](G3A_GOVERNED_THREE_ADVANCE.md).
-The CODEX global semantic definitions are proposed in draft PR #1059;
-ABACUS is a consumer and retains its existing scheduler.
+The completed response shall return the wave receipts, first-red/BDQ root reconciliation, metrics before/after with matched scope, jobs/attempts, owner leases, and acceptance-vector/HOLD status. A source-head CI run that has merely been queued does not count as wave acceptance. No background execution is implied.
