@@ -12,16 +12,16 @@ m = importlib.util.module_from_spec(SPEC)
 SPEC.loader.exec_module(m)
 
 
-def pulse(i):
+def pulse(i, include_bandit=False):
     sha = str(i) * 40
     run_id, job_id = 100 + i, 200 + i
     scope = {
         "repository": "GBOGEB/ABACUS",
         "head_sha": sha,
-        "scan_configuration": "bandit-full-v1",
+        "scan_configuration": "config-v1",
         "run_id": run_id,
         "job_id": job_id,
-        "evidence_url": f"https://github.com/GBOGEB/ABACUS/actions/runs/{run_id}/job/{job_id}",
+        "evidence_url": f"https://github.com/GBOGEB/ABACUS/actions/runs/{run_id}",
     }
     roots = []
     for j in range(i):
@@ -58,10 +58,10 @@ def pulse(i):
             "scan_configuration": "config-v1",
             "evidence_url": f"https://github.com/GBOGEB/ABACUS/actions/runs/{100+i}",
         },
-        "metrics": {"full_bandit_unique": i, "comparable_delta": None},
-        "roots": [
+        "metrics": {"full_bandit_unique": len(roots) if include_bandit else 0, "comparable_delta": None},
+        "roots": roots if include_bandit else [
             {"root_id": f"CI-{i:024x}", "category": "CI", "fingerprint": None}
-        ] + roots,
+        ],
         "merge_admission": "HOLD",
         "security_disposition": "INDEPENDENT_REVIEW_REQUIRED",
         "authority_transfer": False,
@@ -97,7 +97,7 @@ def bandit_root(row):
 
 
 def test_three_pulses_preserve_unknown_and_are_deterministic():
-    inp = [pulse(i) for i in (1, 2, 3)]
+    inp = [pulse(i, include_bandit=True) for i in (1, 2, 3)]
     a = m.rollup(inp)
     assert a == m.rollup(inp)
     assert [p["bandit_observations"] for p in a["pulses"]] == [1, 2, 3]
@@ -131,6 +131,38 @@ def test_reject_forged_or_ambiguous_claims(change):
         m.rollup(rows)
 
 
+def test_zero_and_nonzero_bandit_populations_are_distinct():
+    zero = pulse(1)
+    positive = pulse(2, include_bandit=True)
+    third = pulse(3)
+    assert zero["metrics"]["full_bandit_unique"] == 0
+    assert positive["metrics"]["full_bandit_unique"] == 2
+    for root in positive["roots"]:
+        observation = root["observations"][0]
+        assert observation["source_sha"] == positive["scope"]["head_sha"]
+        assert observation["scan_configuration"] == positive["scope"]["scan_configuration"]
+        assert observation["evidence_url"] == positive["scope"]["evidence_url"]
+    result = m.rollup([zero, positive, third])
+    assert [p["bandit_observations"] for p in result["pulses"]] == [0, 2, 0]
+    assert result["formal_credit_delta"] == result["engineering_credit_delta"] == 0
+
+
+@pytest.mark.parametrize(
+    ("field", "forged"),
+    [
+        ("formal_credit_delta", 0.0),
+        ("formal_credit_delta", False),
+        ("engineering_credit_delta", 0.0),
+        ("engineering_credit_delta", False),
+    ],
+)
+def test_reject_noninteger_zero_credit_claims(field, forged):
+    rows = [pulse(i) for i in (1, 2, 3)]
+    rows[0][field] = forged
+    with pytest.raises(ValueError, match="authority/admission/security contract"):
+        m.rollup(rows)
+
+
 def test_reject_duplicate_sha_and_missing_pulse():
     rows = [pulse(i) for i in (1, 2, 3)]
     with pytest.raises(ValueError):
@@ -146,12 +178,10 @@ def test_same_denominator_cannot_promote_unverified_coverage():
         row["coverage"] = {
             "main_branch": {"covered": 10 + i, "eligible": 20, "config": "same"}
         }
-    result = m.rollup(rows)
-    assert result["pulses"][0]["coverage"] is None
-    candidate = result["pulses"][0]["coverage_candidates_unverified"]["main_branch"]
-    assert candidate["covered"] == 10
-    assert result["movements"][0]["coverage"]["main_branch"]["comparable"] is False
-    assert result["movements"][0]["coverage"]["main_branch"]["delta_covered"] is None
+    # A matched denominator does not independently authenticate a coverage receipt.
+    # The hardened producer rejects even quarantined user-provided enrichment.
+    with pytest.raises(ValueError, match="unverified coverage enrichment"):
+        m.rollup(rows)
 
 
 def test_reject_forged_coverage_verification_marker():
@@ -202,17 +232,17 @@ def test_bandit_denominator_999_with_empty_roots_rejected():
     ],
 )
 def test_reject_spoofed_bandit_root_claims(change):
-    rows = [pulse(i) for i in (1, 2, 3)]
+    rows = [pulse(i, include_bandit=True) for i in (1, 2, 3)]
     change(rows[1])
     with pytest.raises(ValueError):
         m.rollup(rows)
 
 
 def test_ci_root_does_not_inflate_bandit_denominator():
-    rows = [pulse(i) for i in (1, 2, 3)]
+    rows = [pulse(i, include_bandit=True) for i in (1, 2, 3)]
     rows[0]["roots"].append(
         {
-            "root_id": "CI-fake-but-distinct",
+            "root_id": "CI-" + "a" * 24,
             "category": "CI",
             "fingerprint": None,
             "observations": [{"repository": "GBOGEB/ABACUS", "source": "ci_failure"}],
