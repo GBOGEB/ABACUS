@@ -21,19 +21,27 @@ def produce_cohorts(sources: list[dict]) -> dict:
     if not isinstance(sources, (list, tuple)) or not sources:
         raise ValueError("at least one source snapshot is required")
 
-    rows_by_run: dict[tuple[int, int], dict] = {}
+    rows_by_run: dict[tuple[int, int | None], dict] = {}
     head_by_pr: dict[int, str] = {}
     source_digests: list[str] = []
     input_rows = 0
+    missing_attempts = 0
+    missing_manifests = 0
     for source in sources:
         if not isinstance(source, dict):
             raise ValueError("source snapshot must be an object")
         validate(source)
         source_digests.append(sha256(source))
+        if "sampled_pr_heads" not in source:
+            missing_manifests += 1
         for row in source["observations"]:
             # bool is an int subclass; it cannot identify a real GitHub run.
-            if type(row["run_id"]) is not int or type(row["attempt"]) is not int:
-                raise ValueError("run/attempt identities must be integers")
+            if type(row["run_id"]) is not int or (
+                row["attempt"] is not None and type(row["attempt"]) is not int
+            ):
+                raise ValueError("run/attempt identities must be integers or unknown")
+            if row["attempt"] is None:
+                missing_attempts += 1
             key = (row["run_id"], row["attempt"])
             if row["pr"] in head_by_pr and head_by_pr[row["pr"]] != row["sha"]:
                 raise ValueError("incompatible pull-head snapshots")
@@ -65,7 +73,12 @@ def produce_cohorts(sources: list[dict]) -> dict:
         "distinct_source_documents": len(set(source_digests)),
         "source_digests_sha256": sorted(source_digests),
         "declared_observation_rows": input_rows,
-        "distinct_run_attempts": len(rows_by_run),
+        "distinct_run_attempts": (
+            len(rows_by_run) if missing_attempts == 0 else None
+        ),
+        "distinct_declared_run_ids": len({key[0] for key in rows_by_run}),
+        "unknown_attempt_associations": missing_attempts,
+        "snapshots_without_head_manifests": missing_manifests,
         "cross_source_duplicate_rows": input_rows - len(rows_by_run),
         "distinct_declared_pr_heads": len(head_by_pr),
         "source_attempt_verification": "NOT_LIVE_VERIFIED",
