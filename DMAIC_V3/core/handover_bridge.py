@@ -79,6 +79,8 @@ class HandoverBridge:
         Returns:
             run_id: Unique run identifier (timestamp__git_sha)
         """
+        # Idempotency belongs to one run, not the lifetime of a reused bridge.
+        self._phase_cache.clear()
         self.run_id = f"{datetime.now().strftime('%Y%m%d_%H%M%S')}_{inputs_hash[:8]}"
         self.provenance_log.append({
             'event': 'run_started',
@@ -365,7 +367,9 @@ class IdempotentPhaseExecutor:
 
             return result
 
-        return _execute(iteration=iteration, params=kwargs)
+        # The wrapped phase receives only iteration; caller metadata is
+        # provenance for the first execution, not a new behavioral input.
+        return _execute(iteration=iteration)
 
 
 def integrate_phase4_opportunities(phase4_instance, opportunities_path: Path):
