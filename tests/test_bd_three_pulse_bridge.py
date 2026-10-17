@@ -202,7 +202,7 @@ def test_bandit_denominator_999_with_empty_roots_rejected():
     ],
 )
 def test_reject_spoofed_bandit_root_claims(change):
-    rows = [pulse(i) for i in (1, 2, 3)]
+    rows = [pulse(i, include_bandit=True) for i in (1, 2, 3)]
     change(rows[1])
     with pytest.raises(ValueError):
         m.rollup(rows)
