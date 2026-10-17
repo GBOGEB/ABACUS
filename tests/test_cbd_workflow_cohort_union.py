@@ -28,9 +28,13 @@ class CohortUnionTests(unittest.TestCase):
         rec = result["cohort_reconciliation"]
         self.assertEqual(rec["source_document_count"], 3)
         self.assertEqual(rec["declared_observation_rows"], 78)
-        self.assertEqual(rec["distinct_run_attempts"], 78)
+        self.assertIsNone(rec["distinct_run_attempts"])
+        self.assertEqual(rec["distinct_declared_run_ids"], 78)
+        self.assertEqual(rec["unknown_attempt_associations"], 78)
+        self.assertEqual(rec["snapshots_without_head_manifests"], 1)
         self.assertEqual(rec["distinct_declared_pr_heads"], 19)
-        self.assertEqual(result["observed"]["run_attempt_count"], 78)
+        self.assertIsNone(result["observed"]["run_attempt_count"])
+        self.assertEqual(result["observed"]["run_association_count"], 78)
         self.assertEqual(result["observed"]["conclusions"]["failure"], 78)
         self.assertIsNone(result["observed"]["confirmed_causal_root_count"])
         self.assertIsNone(rec["matched_coverage"])
@@ -47,7 +51,8 @@ class CohortUnionTests(unittest.TestCase):
         data = [data[0], copy.deepcopy(data[0]), copy.deepcopy(data[0])]
         result = produce_cohorts(data)
         self.assertEqual(result["cohort_reconciliation"]["declared_observation_rows"], 36)
-        self.assertEqual(result["cohort_reconciliation"]["distinct_run_attempts"], 12)
+        self.assertIsNone(result["cohort_reconciliation"]["distinct_run_attempts"])
+        self.assertEqual(result["cohort_reconciliation"]["distinct_declared_run_ids"], 12)
         self.assertEqual(result["cohort_reconciliation"]["cross_source_duplicate_rows"], 24)
         self.assertEqual(result["cohort_reconciliation"]["distinct_source_documents"], 1)
 
