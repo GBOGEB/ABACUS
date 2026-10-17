@@ -2,7 +2,6 @@
 
 from __future__ import annotations
 
-import copy
 import json
 import sys
 import tempfile
