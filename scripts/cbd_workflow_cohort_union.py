@@ -21,11 +21,26 @@ def produce_cohorts(sources: list[dict]) -> dict:
     if not isinstance(sources, (list, tuple)) or not sources:
         raise ValueError("at least one source snapshot is required")
 
+    # A frozen source may declare a native run without knowing its attempt.
+    # Reconcile a matching unknown/known pair only when exactly one known
+    # attempt exists; retain the raw unknown count and never authenticate it.
+    known_attempts_by_run: dict[int, set[int]] = {}
+    for source in sources:
+        if not isinstance(source, dict):
+            raise ValueError("source snapshot must be an object")
+        validate(source)
+        for item in source["observations"]:
+            if item["attempt"] is not None:
+                known_attempts_by_run.setdefault(item["run_id"], set()).add(
+                    item["attempt"]
+                )
+
     rows_by_run: dict[tuple[int, int | None], dict] = {}
     head_by_pr: dict[int, str] = {}
     source_digests: list[str] = []
     input_rows = 0
     missing_attempts = 0
+    joined_unknown_known_rows = 0
     missing_manifests = 0
     manifests_by_pr: dict[int, dict] = {}
     native_run_identity: dict[int, tuple[int, str, str, int | None]] = {}
@@ -51,24 +66,33 @@ def produce_cohorts(sources: list[dict]) -> dict:
             if row["attempt"] is None:
                 missing_attempts += 1
             rid = row["run_id"]
+            known = known_attempts_by_run.get(rid, set())
+            if row["attempt"] is None and len(known) > 1:
+                raise ValueError("ambiguous unknown/known run attempt")
+            canonical_attempt = (
+                row["attempt"] if row["attempt"] is not None else
+                (next(iter(known)) if known else None)
+            )
+            if row["attempt"] is None and canonical_attempt is not None:
+                joined_unknown_known_rows += 1
             native_identity = (
-                row["pr"], row["sha"], row["workflow"], row["attempt"]
+                row["pr"], row["sha"], row["workflow"], canonical_attempt
             )
             if rid in native_run_identity:
                 prior = native_run_identity[rid]
                 if prior[:3] != native_identity[:3]:
                     raise ValueError("conflicting cross-attempt run provenance")
-                if (prior[3] is None) != (row["attempt"] is None):
-                    raise ValueError("ambiguous unknown/known run attempt")
             else:
                 native_run_identity[rid] = native_identity
-            key = (row["run_id"], row["attempt"])
+            key = (rid, canonical_attempt)
             if row["pr"] in head_by_pr and head_by_pr[row["pr"]] != row["sha"]:
                 raise ValueError("incompatible pull-head snapshots")
             head_by_pr[row["pr"]] = row["sha"]
-            if key in rows_by_run and rows_by_run[key] != row:
+            canonical_row = deepcopy(row)
+            canonical_row["attempt"] = canonical_attempt
+            if key in rows_by_run and rows_by_run[key] != canonical_row:
                 raise ValueError("conflicting run-attempt provenance")
-            rows_by_run[key] = deepcopy(row)
+            rows_by_run[key] = canonical_row
             input_rows += 1
         ingestion_pulses.append(
             {
@@ -107,6 +131,11 @@ def produce_cohorts(sources: list[dict]) -> dict:
         ),
         "distinct_declared_run_ids": len({key[0] for key in rows_by_run}),
         "unknown_attempt_associations": missing_attempts,
+        "unknown_associations_joined_to_declared_known": joined_unknown_known_rows,
+        "unresolved_unknown_run_ids": sum(
+            1 for row in rows_by_run.values() if row["attempt"] is None
+        ),
+        "declared_known_attempts_not_native_authenticated": True,
         "snapshots_without_head_manifests": missing_manifests,
         "distinct_manifested_pr_heads": len(manifests_by_pr),
         "manifested_zero_failure_prs": sorted(
