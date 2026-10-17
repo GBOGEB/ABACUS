@@ -82,7 +82,7 @@ jobs:
           python-version: "3.12"
 
       - name: Download sanitized self-index evidence
-        uses: actions/download-artifact@v8
+        uses: actions/download-artifact@v8.0.2
         with:
           name: mip-n2-self-index-sanitized-${{ env.EXPECTED_SHA }}
           path: ${{ runner.temp }}/mip-n2-consumed

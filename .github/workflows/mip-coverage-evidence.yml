@@ -371,7 +371,7 @@ jobs:
           python-version: "3.12"
 
       - name: Download proposal queue
-        uses: actions/download-artifact@v8
+        uses: actions/download-artifact@v8.0.2
         with:
           name: b0-static-dab-${{ env.EXACT_SHA }}
           path: test_reports/post-b0
@@ -486,25 +486,25 @@ jobs:
           python-version: "3.12"
 
       - name: Download canonical coverage evidence
-        uses: actions/download-artifact@v8
+        uses: actions/download-artifact@v8.0.2
         with:
           name: b0-canonical-${{ env.EXACT_SHA }}
           path: test_reports/post-b0
 
       - name: Download report-only evidence
-        uses: actions/download-artifact@v8
+        uses: actions/download-artifact@v8.0.2
         with:
           name: b0-report-only-producer-${{ env.EXACT_SHA }}
           path: test_reports/b0
 
       - name: Download B1 false-green evidence
-        uses: actions/download-artifact@v8
+        uses: actions/download-artifact@v8.0.2
         with:
           name: b1-false-green-census-${{ env.EXACT_SHA }}
           path: test_reports/b1
 
       - name: Download static/DAB evidence
-        uses: actions/download-artifact@v8
+        uses: actions/download-artifact@v8.0.2
         with:
           name: b0-static-dab-${{ env.EXACT_SHA }}
           path: test_reports/post-b0

@@ -106,7 +106,7 @@ jobs:
           python-version: "3.11"
 
       - name: Download W77 phase probes
-        uses: actions/download-artifact@v8
+        uses: actions/download-artifact@v8.0.2
         with:
           pattern: r*-*
           path: architecture/w77/probes

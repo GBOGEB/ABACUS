@@ -411,7 +411,7 @@ jobs:
 
     steps:
       - name: Download all test results
-        uses: actions/download-artifact@v8
+        uses: actions/download-artifact@v8.0.2
         with:
           path: test-results/
 

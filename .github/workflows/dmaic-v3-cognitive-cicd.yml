@@ -324,7 +324,7 @@ jobs:
         uses: actions/checkout@v7.0.1
       
       - name: Download registry artifacts
-        uses: actions/download-artifact@v8
+        uses: actions/download-artifact@v8.0.2
         with:
           name: injection-registry
           path: .dow_cognitive
@@ -360,7 +360,7 @@ jobs:
         uses: actions/checkout@v7.0.1
       
       - name: Download registry artifacts
-        uses: actions/download-artifact@v8
+        uses: actions/download-artifact@v8.0.2
         with:
           name: injection-registry
           path: .dow_cognitive
