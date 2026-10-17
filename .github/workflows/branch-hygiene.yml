@@ -46,6 +46,75 @@ jobs:
           python -m pytest -q --noconftest -p no:cacheprovider
           tests/test_branch_hygiene_delete.py
 
+  bdq_sample:
+    name: BDQ W20 read-only W1/W2 sample
+    if: github.event_name == 'pull_request'
+    needs: unit
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pull-requests: read
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+          persist-credentials: false
+      - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97
+        with:
+          python-version: '3.12'
+      - name: Bound exact-head read-only census
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+          SOURCE_SHA: ${{ github.event.pull_request.head.sha }}
+          RUN_ID: ${{ github.run_id }}
+          JOB_ID: ${{ github.job }}
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$SOURCE_SHA"
+          python scripts/branch_hygiene_delete.py \
+            governance/branch_hygiene/W1_DELETE_MERGED_20261011.tsv \
+            --repo "${{ github.repository }}" --sample-limit 3 \
+            --receipt "$RUNNER_TEMP/bdq-w1.json" > /dev/null
+          python scripts/branch_hygiene_delete.py \
+            governance/branch_hygiene/W2_ARCHIVE_SUPERSEDED_20261011.tsv \
+            --repo "${{ github.repository }}" --sample-limit 3 \
+            --receipt "$RUNNER_TEMP/bdq-w2.json" > /dev/null
+          python - <<'PY'
+          import json
+          import os
+          from pathlib import Path
+          root = Path(os.environ["RUNNER_TEMP"])
+          receipts = [json.loads((root / x).read_text()) for x in ("bdq-w1.json", "bdq-w2.json")]
+          if any(r["mode"] != "dry_run" or r["deleted"] != 0 or r["listed"] != 3 for r in receipts):
+              raise SystemExit("read-only sample contract failed")
+          proof = {
+              "schema": "abacus.bdq.hygiene.readonly.sample.v1",
+              "source_sha": os.environ["SOURCE_SHA"],
+              "run_id": int(os.environ["RUN_ID"]),
+              "job": os.environ["JOB_ID"],
+              "authority": "observation_only",
+              "mutation_allowed": False,
+              "sampled": sum(r["listed"] for r in receipts),
+              "eligible": sum(r["eligible"] for r in receipts),
+              "skipped": sum(r["skipped"] for r in receipts),
+              "errors": sum(r["errors"] for r in receipts),
+              "deleted": 0,
+          }
+          (root / "bdq-sample-manifest.json").write_text(json.dumps(proof, sort_keys=True, indent=2) + "\n")
+          print(f"Sample {proof['sampled']}: eligible {proof['eligible']}, skipped {proof['skipped']}, errors {proof['errors']}; deleted 0")
+          PY
+      - if: always()
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9
+        with:
+          name: bdq-hygiene-sample-${{ github.run_id }}
+          path: |
+            ${{ runner.temp }}/bdq-w1.json
+            ${{ runner.temp }}/bdq-w2.json
+            ${{ runner.temp }}/bdq-sample-manifest.json
+          if-no-files-found: warn
+          retention-days: 90
+
   apply:
     if: github.event_name == 'workflow_dispatch'
     needs: unit
