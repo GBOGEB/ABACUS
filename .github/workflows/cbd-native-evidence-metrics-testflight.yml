@@ -1,0 +1,114 @@
+name: CBD Native Evidence Metrics Testflight
+
+on:
+  pull_request:
+    paths:
+      - "scripts/cbd_native_evidence_metrics.py"
+      - "tests/test_cbd_native_evidence_metrics.py"
+      - "docs/ci/CBD_W2_NATIVE_EVIDENCE_20261017.json"
+      - ".github/workflows/cbd-native-evidence-metrics-testflight.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  native-metrics:
+    name: Native evidence contracts (Python ${{ matrix.python-version }})
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: ["3.10", "3.12"]
+    env:
+      EXPECTED_PULL_HEAD: ${{ github.event.pull_request.head.sha }}
+      EVENT_SHA: ${{ github.sha }}
+    steps:
+      - name: Checkout exact PR merge context
+        uses: actions/checkout@v4
+      - name: Install Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+      - name: Install tested coverage runtime
+        run: python -m pip install "coverage[toml]>=7.7,<8"
+      - name: Execute 32 behavioral and adversarial contracts
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p test_reports/cbd-native
+          python -m coverage run --branch --source=cbd_native_evidence_metrics \
+            -m unittest discover -s tests -p "test_cbd_native_evidence_metrics.py" -v \
+            2>&1 | tee test_reports/cbd-native/tests.log
+      - name: Verify scope, line/branch denominator and test verdict
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -m coverage json -o test_reports/cbd-native/coverage.json
+          python scripts/cbd_native_evidence_metrics.py --output test_reports/cbd-native/pulse.json
+          python - <<'PY'
+          import hashlib
+          import json
+          import os
+          import pathlib
+          import re
+          import subprocess
+          import sys
+
+          folder = pathlib.Path("test_reports/cbd-native")
+          raw = (folder / "tests.log").read_bytes()
+          count = re.search(rb"Ran (\d+) tests?", raw)
+          passed = any(line.strip() == b"OK" or line.strip().startswith(b"OK (")
+                       for line in raw.splitlines())
+          if count is None or int(count.group(1)) != 32 or not passed:
+              raise SystemExit("32/32 native contracts have not passed")
+          totals = json.loads((folder / "coverage.json").read_text())["totals"]
+          lines = (totals["covered_lines"], totals["num_statements"])
+          branches = (totals["covered_branches"], totals["num_branches"])
+          if not all(d > 0 and 0 <= n <= d for n, d in (lines, branches)):
+              raise SystemExit("Invalid native coverage denominator")
+          pull_head = os.environ.get("EXPECTED_PULL_HEAD", "")
+          if not re.fullmatch(r"[0-9a-f]{40}", pull_head):
+              raise SystemExit("No source-bound pull-head SHA")
+          pulse = json.loads((folder / "pulse.json").read_text())
+          if pulse["admission"] != "HOLD" or pulse["accepted_closures"] != 0:
+              raise SystemExit("Forbidden admission promotion")
+          receipt = {
+              "schema": "cbd.native-metrics-testflight.v1",
+              "repo": os.environ.get("GITHUB_REPOSITORY"),
+              "pull_head_sha": pull_head,
+              "event_sha": os.environ.get("EVENT_SHA"),
+              "checkout_sha": subprocess.check_output(
+                  ["git", "rev-parse", "HEAD"], text=True).strip(),
+              "run_id": os.environ.get("GITHUB_RUN_ID"),
+              "attempt": os.environ.get("GITHUB_RUN_ATTEMPT"),
+              "python": sys.version.split()[0],
+              "passed_tests": int(count.group(1)),
+              "covered_statements": lines[0],
+              "statement_denominator": lines[1],
+              "covered_branches": branches[0],
+              "branch_denominator": branches[1],
+              "source_sha256": hashlib.sha256(
+                  pathlib.Path("scripts/cbd_native_evidence_metrics.py").read_bytes()
+              ).hexdigest(),
+              "pulse_sha256": hashlib.sha256(
+                  (folder / "pulse.json").read_bytes()
+              ).hexdigest(),
+              "tests_sha256": hashlib.sha256(raw).hexdigest(),
+              "admission": "HOLD",
+              "security_waiver": False,
+          }
+          (folder / "receipt.json").write_text(
+              json.dumps(receipt, sort_keys=True, indent=2) + "\n"
+          )
+          print(json.dumps(receipt, sort_keys=True))
+          if min(lines[0] / lines[1], branches[0] / branches[1]) < 0.8:
+              raise SystemExit("Native source line/branch coverage below 80 percent")
+          PY
+      - name: Preserve native receipts even on failure
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: cbd-native-metrics-${{ matrix.python-version }}-${{ github.run_id }}
+          path: test_reports/cbd-native
+          if-no-files-found: error
