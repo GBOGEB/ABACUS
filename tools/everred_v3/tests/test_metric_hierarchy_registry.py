@@ -4,11 +4,8 @@ import json
 import pathlib
 import unittest
 
-REGISTRY = (
-    pathlib.Path(__file__).resolve().parents[1]
-    / "config"
-    / "metric_hierarchy_registry.json"
-)
+ROOT = pathlib.Path(__file__).resolve().parents[1]
+REGISTRY = ROOT / "config" / "metric_hierarchy_registry.json"
 
 
 class MetricHierarchyRegistry(unittest.TestCase):
@@ -43,9 +40,7 @@ class MetricHierarchyRegistry(unittest.TestCase):
 
     def test_native_run_and_worker_credit_separated(self):
         sample = self.doc["observed_sample"]
-        self.assertEqual(
-            (sample["b0_success"], sample["b0_observed_runs"]), (13, 14)
-        )
+        self.assertEqual((sample["b0_success"], sample["b0_observed_runs"]), (13, 14))
         self.assertEqual(
             (sample["b0_jobs_success"], sample["b0_jobs_total"]), (180, 182)
         )
