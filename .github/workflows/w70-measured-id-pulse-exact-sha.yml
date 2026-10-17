@@ -14,11 +14,11 @@ jobs:
   measured-pulse:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v7
+      - uses: actions/checkout@v7.0.1
         with:
           ref: ${{ github.event.pull_request.head.sha || github.sha }}
           fetch-depth: 1
-      - uses: actions/setup-python@v7
+      - uses: actions/setup-python@v7.0.0
         with:
           python-version: '3.12'
       - name: Execute A-E census at exact SHA
@@ -26,21 +26,69 @@ jobs:
           OUT="architecture/w70/receipts/${SOURCE_SHA}"
           python tools/w66_id_burndown_measure.py --out "$OUT"
           test -s "$OUT/FEATURE_ROW.json"
-          for lane in A_registry_gap B_reference_gap C_consumer_penetration D_graph_orphan_drop E_lineage_evidence; do test -s "$OUT/${lane}.json"; done
+          for lane in A_registry_gap B_reference_gap C_consumer_penetration \
+            D_graph_orphan_drop E_lineage_evidence; do
+            test -s "$OUT/${lane}.json"
+          done
       - name: Validate numeric feature row
         run: |
           python - <<'PY'
           import json, os
           from pathlib import Path
-          p=Path('architecture/w70/receipts')/os.environ['SOURCE_SHA']/'FEATURE_ROW.json'
+          p=(Path('architecture/w70/receipts')
+             /os.environ['SOURCE_SHA']/'FEATURE_ROW.json')
           d=json.loads(p.read_text())
-          req=['registry_gap_rate','unresolved_reference_rate','consumer_penetration_rate','graph_drop_rate','lineage_gap_rate','total_population','total_open_backlog']
+          req=['registry_gap_rate','unresolved_reference_rate',
+               'consumer_penetration_rate','graph_drop_rate',
+               'lineage_gap_rate','total_population','total_open_backlog']
           assert all(isinstance(d.get(k),(int,float)) for k in req), d
           assert d['total_population'] >= d['total_open_backlog'] >= 0, d
           print(json.dumps(d, sort_keys=True))
           PY
+      - name: Measure W70 pulse coverage and fail-closed evidence
+        env:
+          SOURCE_SHA: ${{ env.SOURCE_SHA }}
+        run: |
+          set -euo pipefail
+          OUT="architecture/w70/receipts/${SOURCE_SHA}"
+          python -m pip install coverage==7.13.3
+          python -m coverage run --branch \
+            --include='*/tools/w70_wave_pulse_metrics.py' \
+            -m unittest discover -s tests -p 'test_w70_wave_pulse_metrics.py' -v
+          # Apply owned-module scope at both run time and reporting.
+          # Retain the producer's exactly-one-source fail-closed validation.
+          python -m coverage json \
+            --include='*/tools/w70_wave_pulse_metrics.py' \
+            -o "$OUT/W70_COVERAGE.json"
+          python - "$OUT/W70_COVERAGE.json" <<'PYCHECK'
+          import json, sys
+          data = json.load(open(sys.argv[1], encoding="utf-8"))
+          names = sorted(data.get("files", {}))
+          print("W70_COVERAGE_SCOPED_FILES:", names)
+          assert len(names) == 1 and names[0].replace("\\\\", "/").endswith(
+              "tools/w70_wave_pulse_metrics.py"
+          ), "W70 owned-module coverage scope unresolved"
+          PYCHECK
+          python tools/w70_wave_pulse_metrics.py \
+            --lane-dir "$OUT" --coverage "$OUT/W70_COVERAGE.json" \
+            --sha "$SOURCE_SHA" --repo "$GITHUB_REPOSITORY" \
+            --run-id "$GITHUB_RUN_ID" --attempt "$GITHUB_RUN_ATTEMPT" \
+            --out "$OUT/W70_METRICS.json" --summary "$GITHUB_STEP_SUMMARY"
+          python - <<'PY'
+          import json, os
+          from pathlib import Path
+          p=(Path("architecture/w70/receipts")
+             /os.environ["SOURCE_SHA"]/"W70_METRICS.json")
+          d=json.loads(p.read_text(encoding="utf-8"))
+          assert d["coverage"]["line"]["pct"] >= 80.0, "W70 line floor 80%"
+          assert d["coverage"]["branch"]["pct"] >= 75.0, "W70 branch floor 75%"
+          assert d["coverage_delta"]["line_delta_pp"] is None, (
+              "no baseline was supplied")
+          assert d["native_run_authenticated"] is None
+          assert d["admission"] == "HOLD"
+          PY
       - name: Upload exact-SHA measurement
-        uses: actions/upload-artifact@v7
+        uses: actions/upload-artifact@v7.0.2
         with:
           name: w70-measured-id-pulse-${{ env.SOURCE_SHA }}
           path: architecture/w70/receipts/${{ env.SOURCE_SHA }}/

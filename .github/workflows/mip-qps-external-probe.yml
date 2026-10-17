@@ -16,12 +16,12 @@ jobs:
       - name: Admit runner
         run: echo 'MIP external diagnostic runner admitted'
       - name: Checkout exact cryoplant child
-        uses: actions/checkout@v7
+        uses: actions/checkout@v7.0.1
         with:
           repository: GBOGEB/cryoplant-project
           ref: 00f4af0bcce7645eb71fcdbc832de14f6cfc4ad8
           path: cryoplant-project
-      - uses: actions/setup-python@v7
+      - uses: actions/setup-python@v7.0.0
         with:
           python-version: '3.12'
       - name: Install focused test dependencies
@@ -41,7 +41,7 @@ jobs:
             > mip-receipt/QPS_EXTERNAL_PROBE.txt
       - name: Upload diagnostic receipt
         if: always()
-        uses: actions/upload-artifact@v7
+        uses: actions/upload-artifact@v7.0.2
         with:
           name: mip-qps-external-probe-${{ github.sha }}
           path: mip-receipt/QPS_EXTERNAL_PROBE.txt

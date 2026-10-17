@@ -20,6 +20,11 @@ on:
   pull_request:
     branches: [main, develop]
     paths:
+      - 'scripts/code_purple_bootstrap_ldab_census.py'
+      - 'tests/test_code_purple_bootstrap_ldab_census.py'
+      - 'MIP/code_purple_unknown_backlog.json'
+      - 'scripts/code_purple_mip_unknown_rollup.py'
+      - 'tests/test_code_purple_mip_unknown_rollup.py'
       - 'bootstrap_eval.py'
       - 'deploy_integrated_tests.sh'
       - 'tests/test_bootstrap_eval.py'
@@ -57,12 +62,12 @@ jobs:
 
     steps:
       - name: Checkout Repository
-        uses: actions/checkout@v7
+        uses: actions/checkout@v7.0.1
         with:
           fetch-depth: 0
 
       - name: Set up Python ${{ env.PYTHON_VERSION }}
-        uses: actions/setup-python@v7
+        uses: actions/setup-python@v7.0.0
         with:
           python-version: ${{ env.PYTHON_VERSION }}
 
@@ -88,6 +93,17 @@ jobs:
           python -c "from tests.bootstrap_bridge import BootstrapBridge; print('✅ Bootstrap bridge importable')"
           ls -la bootstrap_eval.py tests/test_bootstrap_eval.py tests/bootstrap_bridge.py
 
+      - name: Validate CODE PURPLE native census contract
+        run: |
+          python -m unittest discover -s tests \
+            -p 'test_code_purple_bootstrap_ldab_census.py' -v
+          python -m unittest discover -s tests \
+            -p 'test_code_purple_mip_unknown_rollup.py' -v
+          python scripts/code_purple_mip_unknown_rollup.py \
+            --input MIP/code_purple_unknown_backlog.json \
+            --output test_reports/code-purple-unknown-kpi.json \
+            --as-of "$(date -u +%F)"
+
       - name: Run Bootstrap Statistics Tests (pytest)
         run: |
           echo "📊 Running 28 Bootstrap Statistical Tests"
@@ -103,7 +119,7 @@ jobs:
 
       - name: Upload Test Reports
         if: always()
-        uses: actions/upload-artifact@v7
+        uses: actions/upload-artifact@v7.0.2
         with:
           name: bootstrap-test-reports
           path: ${{ env.REPORTS_DIR }}
@@ -123,10 +139,10 @@ jobs:
 
     steps:
       - name: Checkout Repository
-        uses: actions/checkout@v7
+        uses: actions/checkout@v7.0.1
 
       - name: Set up Python ${{ env.PYTHON_VERSION }}
-        uses: actions/setup-python@v7
+        uses: actions/setup-python@v7.0.0
         with:
           python-version: ${{ env.PYTHON_VERSION }}
 
@@ -146,7 +162,7 @@ jobs:
 
       - name: Upload Integration Reports
         if: always()
-        uses: actions/upload-artifact@v7
+        uses: actions/upload-artifact@v7.0.2
         with:
           name: integration-test-reports
           path: ${{ env.REPORTS_DIR }}
@@ -160,10 +176,10 @@ jobs:
 
     steps:
       - name: Checkout Repository
-        uses: actions/checkout@v7
+        uses: actions/checkout@v7.0.1
 
       - name: Set up Python ${{ env.PYTHON_VERSION }}
-        uses: actions/setup-python@v7
+        uses: actions/setup-python@v7.0.0
         with:
           python-version: ${{ env.PYTHON_VERSION }}
 
@@ -191,7 +207,7 @@ jobs:
 
       - name: Upload DMAIC Reports
         if: always()
-        uses: actions/upload-artifact@v7
+        uses: actions/upload-artifact@v7.0.2
         with:
           name: dmaic-comprehensive-reports
           path: |
@@ -207,10 +223,10 @@ jobs:
 
     steps:
       - name: Checkout Repository
-        uses: actions/checkout@v7
+        uses: actions/checkout@v7.0.1
 
       - name: Set up Python ${{ env.PYTHON_VERSION }}
-        uses: actions/setup-python@v7
+        uses: actions/setup-python@v7.0.0
         with:
           python-version: ${{ env.PYTHON_VERSION }}
 
@@ -232,7 +248,7 @@ jobs:
 
     steps:
       - name: Checkout Repository
-        uses: actions/checkout@v7
+        uses: actions/checkout@v7.0.1
 
       - name: Validate Deployment Scripts
         run: |
