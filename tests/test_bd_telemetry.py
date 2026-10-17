@@ -199,6 +199,55 @@ class BdTelemetryTests(unittest.TestCase):
                     validate(record)
 
 
+    def test_e3_fail_retains_line_when_branch_coverage_unknown(self):
+        record = self.record()
+        record.update(result="FAIL", branch_covered=None, branch_total=None)
+        summary = summarize_series([record])
+        observation = summary["declared_native_coverage"][0]
+        self.assertEqual(observation["line_percent"], 75)
+        self.assertIsNone(observation["branch_percent"])
+        self.assertEqual(summary["e3_line_coverage_known"], 1)
+        self.assertEqual(summary["e3_branch_coverage_unknown"], 1)
+        self.assertEqual(summary["merge_admission"], "HOLD")
+
+    def test_e3_hold_retains_branch_when_line_coverage_unknown(self):
+        record = self.record()
+        record.update(result="HOLD", line_covered=None, line_total=None)
+        summary = summarize_series([record])
+        observation = summary["declared_native_coverage"][0]
+        self.assertIsNone(observation["line_percent"])
+        self.assertEqual(observation["branch_percent"], 65)
+        self.assertEqual(summary["e3_branch_coverage_known"], 1)
+        self.assertEqual(summary["e3_line_coverage_unknown"], 1)
+
+    def test_e3_both_dimensions_unknown_are_retained(self):
+        record = self.record()
+        record.update(result="FAIL", line_covered=None, line_total=None,
+                      branch_covered=None, branch_total=None)
+        summary = summarize_series([record])
+        observation = summary["declared_native_coverage"][0]
+        self.assertIsNone(observation["line_percent"])
+        self.assertIsNone(observation["branch_percent"])
+        self.assertEqual(summary["e3_line_coverage_unknown"], 1)
+        self.assertEqual(summary["e3_branch_coverage_unknown"], 1)
+        self.assertEqual(summary["externally_verified_artifact_count"], 0)
+
+    def test_e3_pass_still_requires_both_dimensions(self):
+        record = self.record()
+        record.update(branch_covered=None, branch_total=None)
+        with self.assertRaisesRegex(ValueError, "complete evidence"):
+            summarize_series([record])
+
+    def test_unhashable_mode_and_result_are_rejected_as_invalid(self):
+        for field in ("mode", "result"):
+            record = self.record()
+            record[field] = ["PASS"]
+            with self.subTest(field=field), self.assertRaisesRegex(
+                ValueError, "unsupported"
+            ):
+                summarize_series([record])
+
+
 
 if __name__ == "__main__":
     unittest.main()
