@@ -86,6 +86,25 @@ Increase capacity only after repeated accepted pulses and available reviewer/run
 
 Horizons count bounded pulses, not dates or promised completions. New work must not silently alter the closed denominator.
 
+
+### G3A notation clarification (17 October 2026; candidate)
+
+The historical N+1/N+5/N+10 horizons above retain their original
+**bounded-pulse** interpretation; they are not rewritten or retrospectively
+claimed as three accepted source changes.
+
+For new requests that explicitly require one uninterrupted N→N+3 mission,
+use **G3A (Governed Three-Advance Mission)** with a separate `g3a_n`
+accepted-checkpoint index. `3W` means three implementation waves,
+`3MP` means three DMAIC/MIP feedback pulses, and neither automatically
+increments `g3a_n`. The repository-local control method, exact-head input
+manifest, early-stop rule, source-bound receipts and SIPOC/DAG are defined in
+[`docs/ci/G3A_GOVERNED_THREE_ADVANCE.md`](../docs/ci/G3A_GOVERNED_THREE_ADVANCE.md).
+Global meaning remains CODEX-owned, proposed in CODEX draft PR #1059.
+Existing source-owner, safety, review, admission and child-domain gates remain
+unchanged.
+
+
 ## IMPROVE to CONTROL
 
 Promote individual components, never the whole mesh by inference.
