@@ -165,12 +165,10 @@ def test_same_denominator_cannot_promote_unverified_coverage():
         row["coverage"] = {
             "main_branch": {"covered": 10 + i, "eligible": 20, "config": "same"}
         }
-    result = m.rollup(rows)
-    assert result["pulses"][0]["coverage"] is None
-    candidate = result["pulses"][0]["coverage_candidates_unverified"]["main_branch"]
-    assert candidate["covered"] == 10
-    assert result["movements"][0]["coverage"]["main_branch"]["comparable"] is False
-    assert result["movements"][0]["coverage"]["main_branch"]["delta_covered"] is None
+    # The canonical consumer has no native source/run/job/artifact coverage proof.
+    # Reject a forged self-reported 10/20 candidate, rather than presenting it.
+    with pytest.raises(ValueError, match="unverified coverage enrichment"):
+        m.rollup(rows)
 
 
 def test_reject_forged_coverage_verification_marker():
@@ -204,7 +202,7 @@ def test_bandit_denominator_999_with_empty_roots_rejected():
     rows = [pulse(i) for i in (1, 2, 3)]
     rows[1]["metrics"]["full_bandit_unique"] = 999
     rows[1]["roots"] = []
-    with pytest.raises(ValueError, match="denominator"):
+    with pytest.raises(ValueError, match="Bandit numerator does not reconcile"):
         m.rollup(rows)
 
 
@@ -233,7 +231,7 @@ def test_ci_root_does_not_inflate_bandit_denominator():
     rows[0]["roots"].append(bandit_root(rows[0]))
     rows[0]["roots"].append(
         {
-            "root_id": "CI-fake-but-distinct",
+            "root_id": "CI-" + "e" * 24,
             "category": "CI",
             "fingerprint": None,
             "observations": [{"repository": "GBOGEB/ABACUS", "source": "ci_failure"}],
