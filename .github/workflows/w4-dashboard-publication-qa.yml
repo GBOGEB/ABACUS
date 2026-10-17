@@ -30,7 +30,7 @@ jobs:
           set -euo pipefail
           test "$(git rev-parse HEAD)" = "$EXACT_SOURCE_SHA"
       - name: Install focused test prerequisites
-        run: python -m pip install 'pytest>=7.4,<10'
+        run: python -m pip install 'pytest>=7.4,<10' 'numpy>=1.24,<3'
       - name: Run unpublished-status and static-link regression
         shell: bash
         run: |
