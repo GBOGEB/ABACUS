@@ -129,6 +129,9 @@ def project(g):
             rec["duration_sum_ms"] += runtime
         if name != "DOWNSTREAM_SUMMARY":
             upstream[pr] += 1
+    require(sum(x["jobs"] for x in groups.values()) ==
+            g["metrics"]["native_failed_jobs"],
+            "failed-job denominator inconsistent with native graph")
     for e in edges:
         if e["relationship"] == "failed_at_step":
             job = e["source"]
@@ -136,6 +139,9 @@ def project(g):
                 if job in group["job_ids"]:
                     group["failed_step_edges"] += 1
                     break
+    require(sum(x["failed_step_edges"] for x in groups.values()) ==
+            g["metrics"]["native_failed_steps"],
+            "failed-step denominator inconsistent with native graph")
     families = []
     for name, entry in groups.items():
         priority, owner = FAMILY_PRIORITY[name]
