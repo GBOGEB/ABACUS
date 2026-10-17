@@ -29,8 +29,8 @@
     "native_job_count": 303,
     "native_failed_jobs": 40,
     "native_failed_steps": 43,
-    "node_count": 498,
-    "edge_count": 687,
+    "node_count": 499,
+    "edge_count": 697,
     "cooccurrence_pairs": 89,
     "node_types": {
       "stage": 7,
@@ -41,12 +41,13 @@
       "attempt": 16,
       "job": 303,
       "job_family": 4,
-      "failed_step": 43
+      "failed_step": 43,
+      "temporal_anomaly": 1
     },
     "edge_evidence_classes": {
       "DECLARED": 6,
       "SOURCE_BOUND": 102,
-      "OBSERVED": 484,
+      "OBSERVED": 494,
       "ASSOCIATION": 89,
       "TEMPORAL_ASSOCIATION": 6
     },
@@ -65,10 +66,25 @@
       "cross_host_clock_drift_ms": null,
       "matched_local_to_github_pre_push": null,
       "timestamp_measurement_method": "native started_at to completed_at",
-      "quantile_estimator": "nearest-rank of non-null job durations"
+      "quantile_estimator": "nearest-rank of non-null job durations",
+      "inverted_timestamp_cluster_count": 1,
+      "inverted_timestamp_cluster_reach_prs": 10
     }
   },
   "nodes": [
+    {
+      "id": "anomaly:skipped-job-inverted-clock",
+      "kind": "temporal_anomaly",
+      "label": "Skipped job completion before start",
+      "rank": 8,
+      "attributes": {
+        "observed_count": 10,
+        "causal_root_id": null,
+        "classification": "NATIVE_TIMESTAMP_INCONSISTENCY"
+      },
+      "degree": 10,
+      "observed_weighted_degree": 10
+    },
     {
       "id": "attempt:38774624178:1",
       "kind": "attempt",
@@ -1182,8 +1198,8 @@
         "runtime_ms": null,
         "start_lag_from_run_start_ms": 1328000
       },
-      "degree": 1,
-      "observed_weighted_degree": 1
+      "degree": 2,
+      "observed_weighted_degree": 2
     },
     {
       "id": "job:116868296447",
@@ -1308,8 +1324,8 @@
         "runtime_ms": null,
         "start_lag_from_run_start_ms": 2000
       },
-      "degree": 1,
-      "observed_weighted_degree": 1
+      "degree": 2,
+      "observed_weighted_degree": 2
     },
     {
       "id": "job:116868300747",
@@ -2208,8 +2224,8 @@
         "runtime_ms": null,
         "start_lag_from_run_start_ms": 523000
       },
-      "degree": 1,
-      "observed_weighted_degree": 1
+      "degree": 2,
+      "observed_weighted_degree": 2
     },
     {
       "id": "job:117034408506",
@@ -2748,8 +2764,8 @@
         "runtime_ms": null,
         "start_lag_from_run_start_ms": 564000
       },
-      "degree": 1,
-      "observed_weighted_degree": 1
+      "degree": 2,
+      "observed_weighted_degree": 2
     },
     {
       "id": "job:117039718356",
@@ -3576,8 +3592,8 @@
         "runtime_ms": null,
         "start_lag_from_run_start_ms": 363000
       },
-      "degree": 1,
-      "observed_weighted_degree": 1
+      "degree": 2,
+      "observed_weighted_degree": 2
     },
     {
       "id": "job:117122265458",
@@ -3792,8 +3808,8 @@
         "runtime_ms": null,
         "start_lag_from_run_start_ms": 2000
       },
-      "degree": 1,
-      "observed_weighted_degree": 1
+      "degree": 2,
+      "observed_weighted_degree": 2
     },
     {
       "id": "job:117122312621",
@@ -4260,8 +4276,8 @@
         "runtime_ms": null,
         "start_lag_from_run_start_ms": 498000
       },
-      "degree": 1,
-      "observed_weighted_degree": 1
+      "degree": 2,
+      "observed_weighted_degree": 2
     },
     {
       "id": "job:117162695648",
@@ -5286,8 +5302,8 @@
         "runtime_ms": null,
         "start_lag_from_run_start_ms": 1108000
       },
-      "degree": 1,
-      "observed_weighted_degree": 1
+      "degree": 2,
+      "observed_weighted_degree": 2
     },
     {
       "id": "job:117364112610",
@@ -5538,8 +5554,8 @@
         "runtime_ms": null,
         "start_lag_from_run_start_ms": 2000
       },
-      "degree": 1,
-      "observed_weighted_degree": 1
+      "degree": 2,
+      "observed_weighted_degree": 2
     },
     {
       "id": "job:117364130357",
@@ -5790,8 +5806,8 @@
         "runtime_ms": null,
         "start_lag_from_run_start_ms": 2000
       },
-      "degree": 1,
-      "observed_weighted_degree": 1
+      "degree": 2,
+      "observed_weighted_degree": 2
     },
     {
       "id": "job:117364814093",
@@ -11454,6 +11470,15 @@
       "causal_confirmed": false
     },
     {
+      "source": "job:116733245242",
+      "target": "anomaly:skipped-job-inverted-clock",
+      "relationship": "skipped_job_clock_inversion_observed",
+      "evidence": "OBSERVED",
+      "support": 1,
+      "jaccard": null,
+      "causal_confirmed": false
+    },
+    {
       "source": "job:116868296447",
       "target": "jobfamily:SECURITY",
       "relationship": "failed_job_symptom",
@@ -11466,6 +11491,15 @@
       "source": "job:116868296447",
       "target": "step:116868296447:11",
       "relationship": "failed_at_step",
+      "evidence": "OBSERVED",
+      "support": 1,
+      "jaccard": null,
+      "causal_confirmed": false
+    },
+    {
+      "source": "job:116868300663",
+      "target": "anomaly:skipped-job-inverted-clock",
+      "relationship": "skipped_job_clock_inversion_observed",
       "evidence": "OBSERVED",
       "support": 1,
       "jaccard": null,
@@ -11598,6 +11632,15 @@
       "causal_confirmed": false
     },
     {
+      "source": "job:117017833229",
+      "target": "anomaly:skipped-job-inverted-clock",
+      "relationship": "skipped_job_clock_inversion_observed",
+      "evidence": "OBSERVED",
+      "support": 1,
+      "jaccard": null,
+      "causal_confirmed": false
+    },
+    {
       "source": "job:117034408506",
       "target": "job:117034408997",
       "relationship": "observed_failed_job_time_overlap",
@@ -11702,6 +11745,15 @@
       "source": "job:117038798220",
       "target": "step:117038798220:2",
       "relationship": "failed_at_step",
+      "evidence": "OBSERVED",
+      "support": 1,
+      "jaccard": null,
+      "causal_confirmed": false
+    },
+    {
+      "source": "job:117038800995",
+      "target": "anomaly:skipped-job-inverted-clock",
+      "relationship": "skipped_job_clock_inversion_observed",
       "evidence": "OBSERVED",
       "support": 1,
       "jaccard": null,
@@ -11862,6 +11914,15 @@
       "causal_confirmed": false
     },
     {
+      "source": "job:117110722568",
+      "target": "anomaly:skipped-job-inverted-clock",
+      "relationship": "skipped_job_clock_inversion_observed",
+      "evidence": "OBSERVED",
+      "support": 1,
+      "jaccard": null,
+      "causal_confirmed": false
+    },
+    {
       "source": "job:117122265458",
       "target": "jobfamily:SECURITY",
       "relationship": "failed_job_symptom",
@@ -11874,6 +11935,15 @@
       "source": "job:117122265458",
       "target": "step:117122265458:11",
       "relationship": "failed_at_step",
+      "evidence": "OBSERVED",
+      "support": 1,
+      "jaccard": null,
+      "causal_confirmed": false
+    },
+    {
+      "source": "job:117122271507",
+      "target": "anomaly:skipped-job-inverted-clock",
+      "relationship": "skipped_job_clock_inversion_observed",
       "evidence": "OBSERVED",
       "support": 1,
       "jaccard": null,
@@ -11956,6 +12026,15 @@
       "source": "job:117160371518",
       "target": "step:117160371518:2",
       "relationship": "failed_at_step",
+      "evidence": "OBSERVED",
+      "support": 1,
+      "jaccard": null,
+      "causal_confirmed": false
+    },
+    {
+      "source": "job:117160373900",
+      "target": "anomaly:skipped-job-inverted-clock",
+      "relationship": "skipped_job_clock_inversion_observed",
       "evidence": "OBSERVED",
       "support": 1,
       "jaccard": null,
@@ -12135,6 +12214,15 @@
       "causal_confirmed": false
     },
     {
+      "source": "job:117192532639",
+      "target": "anomaly:skipped-job-inverted-clock",
+      "relationship": "skipped_job_clock_inversion_observed",
+      "evidence": "OBSERVED",
+      "support": 1,
+      "jaccard": null,
+      "causal_confirmed": false
+    },
+    {
       "source": "job:117364112610",
       "target": "jobfamily:SECURITY",
       "relationship": "failed_job_symptom",
@@ -12165,6 +12253,24 @@
       "source": "job:117364113844",
       "target": "step:117364113844:12",
       "relationship": "failed_at_step",
+      "evidence": "OBSERVED",
+      "support": 1,
+      "jaccard": null,
+      "causal_confirmed": false
+    },
+    {
+      "source": "job:117364114795",
+      "target": "anomaly:skipped-job-inverted-clock",
+      "relationship": "skipped_job_clock_inversion_observed",
+      "evidence": "OBSERVED",
+      "support": 1,
+      "jaccard": null,
+      "causal_confirmed": false
+    },
+    {
+      "source": "job:117364813886",
+      "target": "anomaly:skipped-job-inverted-clock",
+      "relationship": "skipped_job_clock_inversion_observed",
       "evidence": "OBSERVED",
       "support": 1,
       "jaccard": null,
