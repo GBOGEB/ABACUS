@@ -3,12 +3,14 @@
 Measurements never grant root closure or merge admission.
 """
 import argparse
+import hashlib
 import json
 import re
 from pathlib import Path
 
 SHA = re.compile(r"^[0-9a-f]{40}$")
 COUNT = re.compile(r"Ran (\d+) tests? in ")
+CASE = re.compile(r"(?m)^(test\S+) \(([^()\s]+)\) \.\.\. ok$")
 SOURCE_PREFIX = "mission_control_lite/"
 SCHEMA = "mcl.coverage.pulse.v1"
 
@@ -46,8 +48,18 @@ def compare(previous, current):
     _counts(before)
     if any(before[name] != after[name] for name in ("num_statements", "num_branches")):
         return {"status": "INCOMPARABLE", "reason": "coverage denominator changed"}
+    suites_match = set(previous.get("tests_by_suite", {})) == set(
+        current.get("tests_by_suite", {}))
+    old_cases, new_cases = previous.get("test_case_ids"), current.get("test_case_ids")
     return {
         "status": "COMPARABLE",
+        "test_census_status": ("COMPARABLE" if suites_match else
+                               "INCOMPARABLE_SUITE_POPULATION"),
+        "new_unique_case_ids": (
+            len(set(new_cases) - set(old_cases))
+            if suites_match and old_cases is not None and new_cases is not None
+            else None
+        ),
         "baseline_sha": previous["source_sha"],
         "current_sha": current["source_sha"],
         "line_delta_pp": round(
@@ -59,7 +71,10 @@ def compare(previous, current):
         ),
         "new_covered_lines": after["covered_lines"] - before["covered_lines"],
         "new_covered_branches": after["covered_branches"] - before["covered_branches"],
-        "test_delta": current["tests_passed"] - previous["tests_passed"],
+        "test_delta": (
+            current["tests_passed"] - previous["tests_passed"]
+            if suites_match else None
+        ),
     }
 
 
@@ -95,6 +110,7 @@ def build(report, test_logs, source_sha, event_sha, run_id, previous=None, phase
     if not isinstance(test_logs, dict) or not test_logs:
         raise ValueError("test logs missing")
     counts = {}
+    identities = {}
     for name, text in test_logs.items():
         matches = COUNT.findall(text)
         if len(matches) != 1 or not re.search(r"(?m)^OK\s*$", text):
@@ -102,6 +118,16 @@ def build(report, test_logs, source_sha, event_sha, run_id, previous=None, phase
         counts[name] = int(matches[0])
         if counts[name] <= 0:
             raise ValueError("empty test suite: " + name)
+        pairs = CASE.findall(text)
+        if pairs and len(pairs) != counts[name]:
+            raise ValueError("case identity count differs from native summary: " + name)
+        if any(not qualified.endswith("." + method)
+               for method, qualified in pairs):
+            raise ValueError("malformed case identity: " + name)
+        identities[name] = [qualified for _method, qualified in pairs] or None
+    complete_ids = all(ids is not None for ids in identities.values())
+    all_ids = [case_id for ids in identities.values() if ids for case_id in ids]
+    unique_ids = sorted(set(all_ids)) if complete_ids else None
     obj = {
         "schema": SCHEMA,
         "repository": "GBOGEB/ABACUS",
@@ -119,6 +145,17 @@ def build(report, test_logs, source_sha, event_sha, run_id, previous=None, phase
         "branch_percent": _percent(totals["covered_branches"], totals["num_branches"]),
         "tests_by_suite": counts,
         "tests_passed": sum(counts.values()),
+        "test_execution_count": sum(counts.values()),
+        "test_id_status": "COMPLETE" if complete_ids else "SUMMARY_ONLY",
+        "test_case_ids": unique_ids,
+        "unique_test_cases": len(unique_ids) if complete_ids else None,
+        "duplicate_case_executions": (
+            len(all_ids) - len(unique_ids) if complete_ids else None
+        ),
+        "test_case_id_sha256": (
+            hashlib.sha256("\n".join(unique_ids).encode("utf-8")).hexdigest()
+            if complete_ids else None
+        ),
         "native_scope": "focused_unittest_only",
         "verified_root_closures": 0,
         "merge_admission": "HOLD",
@@ -171,6 +208,10 @@ def render_summary(pulse):
         "| Executed SHA | `" + pulse["source_sha"] + "` |",
         "| Run ID | " + pulse["run_id"] + " |",
         "| Passed focused tests | " + str(pulse["tests_passed"]) + " |",
+        "| Unique case IDs | " + display(pulse.get("unique_test_cases")) + " |",
+        "| Duplicate case executions | " + display(
+            pulse.get("duplicate_case_executions")) + " |",
+        "| Test ID evidence | " + pulse["test_id_status"] + " |",
         "| Line coverage | " + display(pulse["line_percent"], "%") + " |",
         "| Branch coverage | " + display(pulse["branch_percent"], "%") + " |",
         "| Comparable baseline | " + comparison["status"] + " |",
@@ -204,6 +245,8 @@ def main():
     parser.add_argument("--metrics-log", required=True, type=Path)
     parser.add_argument("--timing-log", type=Path)
     parser.add_argument("--timing-tests-log", type=Path)
+    parser.add_argument("--telemetry-tests-log", type=Path, required=True)
+    parser.add_argument("--require-case-ids", action="store_true")
     parser.add_argument("--source-sha", required=True)
     parser.add_argument("--event-sha", required=True)
     parser.add_argument("--run-id", required=True)
@@ -215,6 +258,7 @@ def main():
         "core": args.core_log.read_text(),
         "rex": args.rex_log.read_text(),
         "metrics": args.metrics_log.read_text(),
+        "telemetry": args.telemetry_tests_log.read_text(),
     }
     if args.timing_tests_log:
         logs["timing"] = args.timing_tests_log.read_text()
@@ -224,6 +268,8 @@ def main():
         json.loads(args.coverage_json.read_text()), logs,
         args.source_sha, args.event_sha, args.run_id, old, phases,
     )
+    if args.require_case_ids and pulse["test_id_status"] != "COMPLETE":
+        parser.error("native case identities missing; refuse to emit pulse")
     args.output.write_text(json.dumps(pulse, indent=2, sort_keys=True) + "\n")
     if args.summary:
         with args.summary.open("a") as summary:

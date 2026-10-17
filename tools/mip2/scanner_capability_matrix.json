@@ -1,0 +1,56 @@
+{
+  "schema": "mip2.scanner-capability-matrix.v1",
+  "observation": "Exact path presence only, not execution or verified scanner qualification",
+  "repositories": [
+    {
+      "repo": "GBOGEB/ABACUS",
+      "present": [
+        ".pre-commit-config.yaml",
+        "pyproject.toml",
+        ".github/workflows/bandit.yml",
+        ".github/workflows/codeql.yml",
+        ".github/workflows/ci.yml",
+        "Dockerfile",
+        "requirements.txt"
+      ]
+    },
+    {
+      "repo": "GBOGEB/CODEX",
+      "present": [
+        "pyproject.toml",
+        ".github/workflows/bandit.yml",
+        ".github/workflows/codeql.yml",
+        ".github/workflows/ci.yml",
+        "Dockerfile",
+        "requirements.txt"
+      ],
+      "not_found_exact_path": [
+        ".pre-commit-config.yaml"
+      ]
+    },
+    {
+      "repo": "GBOGEB/cryoplant-project",
+      "present": [],
+      "not_found_exact_path": [
+        ".pre-commit-config.yaml",
+        "pyproject.toml",
+        ".github/workflows/bandit.yml",
+        ".github/workflows/codeql.yml",
+        ".github/workflows/ci.yml",
+        "Dockerfile",
+        "requirements.txt"
+      ],
+      "stack": "UNKNOWN"
+    }
+  ],
+  "levels": [
+    "DISCOVERED",
+    "EXECUTABLE",
+    "MEASURED",
+    "REPAIR_CAPABLE",
+    "REGRESSION_CONTROLLED",
+    "FEDERATED",
+    "ADAPTIVE"
+  ],
+  "next": "Enumerate workflow and technology stack; verify native execution and artifacts before promotion"
+}

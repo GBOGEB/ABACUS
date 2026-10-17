@@ -1,0 +1,74 @@
+{
+  "schema": "char.bd.cbd11.native-reconciliation/v1",
+  "observed_at": "2026-10-16",
+  "class": "APPEND_ONLY_NONATOMIC_LIVE_GITHUB",
+  "authority": "diagnostic",
+  "admission": "HOLD",
+  "source": {
+    "previous_cbd10": "8b304399090450e14279762b7820bdf518971aa6"
+  },
+  "lanes": [
+    {
+      "root": "MATPLOTLIB_PY39",
+      "pr": 2029,
+      "repair_commit": "58f8f5d635cf517643b606398a165e7347f9c66e",
+      "latest_head": "050c76026a186adddd61381c8263265e000110a5",
+      "state": "SUPERSEDED_BY_NEW_HEAD",
+      "observed_native_job": 116725016420,
+      "pip_install_matplotlib_result": "NOT_ORIGINAL_FIRST_RED; dependency install completed",
+      "new_first_red": "five Python 3.9 collection errors with unsupported operand type(s) for |: type and NoneType",
+      "distinct_new_failure": "PY39_RUNTIME_TYPE_UNION",
+      "ash_qualified": false,
+      "next": "Inspect newer head exact native runs and assign Python3.9 union syntax owner; do not re-patch Matplotlib blindly"
+    },
+    {
+      "root": "COVERAGE_MIXED_MODE",
+      "pr": 2030,
+      "repair_commit": "907b96efd08d4b6121e8f5dec97e23af38e9f77f",
+      "latest_head": "907b96efd08d4b6121e8f5dec97e23af38e9f77f",
+      "canonical_b0_job": 116725018550,
+      "canonical_b0_status": "SUCCESS",
+      "b0_artifact_id": 12014295985,
+      "original_ubuntu_test_job": 116727169418,
+      "original_ubuntu_test_state": "QUEUED",
+      "ash_qualified": false,
+      "coverage_new_numerator": null,
+      "coverage_new_denominator": null,
+      "next": "Consume original Test-Ubuntu exact-head terminal verdict and artifact; no coverage uplift assertion"
+    }
+  ],
+  "other_failures": {
+    "pr2030": [
+      "PR Feedback Gate",
+      "policy-and-inventory",
+      "Security Scanning"
+    ],
+    "pr2027_safety": "UNRESOLVED",
+    "a10_security_disposition": "NOT_AUTHORIZED",
+    "required_checks": "MISSING"
+  },
+  "telemetry": {
+    "source_repairs_committed_prior_pulse": 2,
+    "new_source_repairs_this_pulse": 0,
+    "new_ash_qualified_roots": 0,
+    "verified_parallel_worker_sessions": 0,
+    "new_native_artifact_produced": 1,
+    "verified_artifact_bytes_hash": null,
+    "qualified_coverage_gain": null,
+    "queue_p95": null,
+    "root_renewal_detection": "Python 3.9 syntax collection first-red after package install"
+  },
+  "scale_decision": {
+    "proposal": "Three disjoint slots maximum, no concurrent writes to same root",
+    "eligible": [
+      "Python 3.9 runtime syntax owner",
+      "C1 Ubuntu coverage log consumer",
+      "Security/A10 independent reviewer"
+    ],
+    "blocked": [
+      "Automated merge",
+      "QPS engineering acceptance",
+      "Unique causal-root burndown credit"
+    ]
+  }
+}

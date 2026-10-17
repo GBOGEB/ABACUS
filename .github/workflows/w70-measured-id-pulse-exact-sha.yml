@@ -26,19 +26,149 @@ jobs:
           OUT="architecture/w70/receipts/${SOURCE_SHA}"
           python tools/w66_id_burndown_measure.py --out "$OUT"
           test -s "$OUT/FEATURE_ROW.json"
-          for lane in A_registry_gap B_reference_gap C_consumer_penetration D_graph_orphan_drop E_lineage_evidence; do test -s "$OUT/${lane}.json"; done
+          for lane in A_registry_gap B_reference_gap C_consumer_penetration \
+            D_graph_orphan_drop E_lineage_evidence; do
+            test -s "$OUT/${lane}.json"
+          done
       - name: Validate numeric feature row
         run: |
           python - <<'PY'
           import json, os
           from pathlib import Path
-          p=Path('architecture/w70/receipts')/os.environ['SOURCE_SHA']/'FEATURE_ROW.json'
+          p=(Path('architecture/w70/receipts')
+             /os.environ['SOURCE_SHA']/'FEATURE_ROW.json')
           d=json.loads(p.read_text())
-          req=['registry_gap_rate','unresolved_reference_rate','consumer_penetration_rate','graph_drop_rate','lineage_gap_rate','total_population','total_open_backlog']
+          req=['registry_gap_rate','unresolved_reference_rate',
+               'consumer_penetration_rate','graph_drop_rate',
+               'lineage_gap_rate','total_population','total_open_backlog']
           assert all(isinstance(d.get(k),(int,float)) for k in req), d
           assert d['total_population'] >= d['total_open_backlog'] >= 0, d
           print(json.dumps(d, sort_keys=True))
           PY
+      - name: Measure W70 pulse coverage and fail-closed evidence
+        env:
+          SOURCE_SHA: ${{ env.SOURCE_SHA }}
+        run: |
+          set -euo pipefail
+          OUT="architecture/w70/receipts/${SOURCE_SHA}"
+          python -m pip install coverage==7.13.3
+          python -m coverage run --branch \
+            --include='*/tools/w70_wave_pulse_metrics.py' \
+            -m unittest discover -s tests -p 'test_w70_wave_pulse_metrics.py' -v
+          # Apply owned-module scope at both run time and reporting.
+          # Retain the producer's exactly-one-source fail-closed validation.
+          python -m coverage json \
+            --include='*/tools/w70_wave_pulse_metrics.py' \
+            -o "$OUT/W70_COVERAGE.json"
+          python - "$OUT/W70_COVERAGE.json" <<'PYCHECK'
+          import json, sys
+          data = json.load(open(sys.argv[1], encoding="utf-8"))
+          names = sorted(data.get("files", {}))
+          print("W70_COVERAGE_SCOPED_FILES:", names)
+          assert len(names) == 1 and names[0].replace("\\\\", "/").endswith(
+              "tools/w70_wave_pulse_metrics.py"
+          ), "W70 owned-module coverage scope unresolved"
+          PYCHECK
+          python tools/w70_wave_pulse_metrics.py \
+            --lane-dir "$OUT" --coverage "$OUT/W70_COVERAGE.json" \
+            --sha "$SOURCE_SHA" --repo "$GITHUB_REPOSITORY" \
+            --run-id "$GITHUB_RUN_ID" --attempt "$GITHUB_RUN_ATTEMPT" \
+            --out "$OUT/W70_METRICS.json" --summary "$GITHUB_STEP_SUMMARY"
+          python - <<'PY'
+          import json, os
+          from pathlib import Path
+          p=(Path("architecture/w70/receipts")
+             /os.environ["SOURCE_SHA"]/"W70_METRICS.json")
+          d=json.loads(p.read_text(encoding="utf-8"))
+          assert d["coverage"]["line"]["pct"] >= 80.0, "W70 line floor 80%"
+          assert d["coverage"]["branch"]["pct"] >= 75.0, "W70 branch floor 75%"
+          assert d["coverage_delta"]["line_delta_pp"] is None, (
+              "no baseline was supplied")
+          assert d["native_run_authenticated"] is None
+          assert d["admission"] == "HOLD"
+          PY
+      - name: Measure transition-module coverage independently
+        env:
+          SOURCE_SHA: ${{ env.SOURCE_SHA }}
+        run: |
+          set -euo pipefail
+          OUT="architecture/w70/receipts/${SOURCE_SHA}"
+          export COVERAGE_FILE="$OUT/.coverage.workflow-transitions"
+          python -m coverage run --branch \
+            --include='*/tools/w70_workflow_transitions.py' \
+            -m unittest discover -s tests \
+            -p 'test_w70_workflow_transitions.py' -v
+          python -m coverage json \
+            --include='*/tools/w70_workflow_transitions.py' \
+            -o "$OUT/WORKFLOW_TRANSITIONS_COVERAGE.json"
+          python - \
+            "$OUT/WORKFLOW_TRANSITIONS_COVERAGE.json" \
+            "$OUT/WORKFLOW_TRANSITIONS_RECEIPT.json" <<'PYTRANS'
+          import hashlib
+          import json
+          import os
+          import subprocess
+          import sys
+          from pathlib import Path
+
+          report = json.loads(Path(sys.argv[1]).read_text(encoding="utf-8"))
+          files = report.get("files", {})
+          assert len(files) == 1, "transition coverage scope must be one file"
+          path, data = next(iter(files.items()))
+          assert path.replace("\\", "/").endswith(
+              "tools/w70_workflow_transitions.py"
+          ), "unexpected transition coverage source"
+          summary = data["summary"]
+          statements = summary["num_statements"]
+          covered = summary["covered_lines"]
+          branches = summary["num_branches"]
+          covered_branches = summary["covered_branches"]
+          assert statements > 0 and branches > 0, "empty coverage denominator"
+          assert 0 <= covered <= statements
+          assert 0 <= covered_branches <= branches
+          exact_sha = subprocess.check_output(
+              ["git", "rev-parse", "HEAD"], text=True
+          ).strip()
+          assert exact_sha == os.environ["SOURCE_SHA"], "source SHA mismatch"
+          source_digest = hashlib.sha256(Path(path).read_bytes()).hexdigest()
+          receipt = {
+              "schema": "abacus.mip.workflow-transition-coverage/v1",
+              "source_sha": exact_sha,
+              "repository": os.environ["GITHUB_REPOSITORY"],
+              "run_id": os.environ["GITHUB_RUN_ID"],
+              "attempt": int(os.environ["GITHUB_RUN_ATTEMPT"]),
+              "job_name": os.environ["GITHUB_JOB"],
+              "job_id": None,
+              "coverage_tool": report["meta"]["version"],
+              "test_selection": "test_w70_workflow_transitions.py",
+              "instrumented_source_sha256": source_digest,
+              "instrumented_path": path,
+              "lines": {"covered": covered, "eligible": statements},
+              "branches": {"covered": covered_branches, "eligible": branches},
+              "matched_baseline": None,
+              "line_delta_pp": None,
+              "branch_delta_pp": None,
+              "unique_bd_roots_closed": None,
+              "governance_admission": "HOLD",
+          }
+          Path(sys.argv[2]).write_text(
+              json.dumps(receipt, sort_keys=True, indent=2) + "\n",
+              encoding="utf-8",
+          )
+          print(
+              "TRANSITION_COVERAGE_RECEIPT",
+              json.dumps(receipt, sort_keys=True),
+          )
+          with open(
+              os.environ["GITHUB_STEP_SUMMARY"], "a", encoding="utf-8"
+          ) as fh:
+              fh.write(
+                  f"\n### Workflow-transition module (separate scope)\n"
+                  f"- Statements: {covered}/{statements}\n"
+                  f"- Branches: {covered_branches}/{branches}\n"
+                  "- Matched baseline: UNKNOWN; governance: HOLD\n"
+              )
+          PYTRANS
       - name: Upload exact-SHA measurement
         uses: actions/upload-artifact@v7.0.2
         with:

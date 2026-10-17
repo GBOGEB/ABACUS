@@ -1,0 +1,116 @@
+{
+  "schema": "code-purple.nplus3.pulse5-telemetry/v1",
+  "evidence_class": "NON_ATOMIC_EXACT_HEAD_OBSERVATIONS",
+  "date": "2026-10-15",
+  "admission": "HOLD",
+  "root_closure": "NOT_CERTIFIED",
+  "pulses": [
+    {
+      "id": "W70_previous",
+      "head": "e2d25f9a282c81b84a89727f529c2ca8e55f484f",
+      "line": [
+        119,
+        119
+      ],
+      "branch": [
+        15,
+        16
+      ],
+      "tests": [
+        21,
+        21
+      ]
+    },
+    {
+      "id": "W70_latest_terminal_before_new_head",
+      "head": "45ba302595f8c4b4e21d9896091b359d9a4630d0",
+      "line": [
+        133,
+        133
+      ],
+      "branch": [
+        17,
+        18
+      ],
+      "tests": [
+        23,
+        23
+      ]
+    },
+    {
+      "id": "W70_moving_head",
+      "head": "7b514a8fc2834f1cd6498dca6e81c49786524d4e",
+      "line": null,
+      "branch": null,
+      "tests": null,
+      "nonterminal_checks": 30
+    }
+  ],
+  "native_gate_progress": [
+    {
+      "pr": 2024,
+      "head": "4aae61e3cfd52061e1183db4b3281a77b22fd5c0",
+      "success": 79,
+      "fail": 1,
+      "pending": 13,
+      "py39_matrix_pass": 3,
+      "py310_matrix_pass": 3,
+      "py311_matrix_pass": 3,
+      "py312_matrix_pass": 3,
+      "security": "FAIL",
+      "release": "HOLD"
+    },
+    {
+      "pr": 2026,
+      "head": "884212de9cdf9b168a41d8ea254d006bc3421690",
+      "success": 69,
+      "fail": 1,
+      "pending": 13,
+      "python310_linux": "SUCCESS",
+      "security": "FAIL",
+      "release": "HOLD"
+    },
+    {
+      "pr": 2027,
+      "head": "8cb4d742ad046ab688d691f4cc68c4171ad4308f",
+      "success": 53,
+      "fail": 12,
+      "pending": 0,
+      "security": "FAIL",
+      "release": "HOLD"
+    }
+  ],
+  "bd_roots": [
+    {
+      "root": "MATPLOTLIB_PY310",
+      "evidence": "#2024 native matrix passed at exact head",
+      "status": "REPAIRED_IN_CANDIDATE_NOT_INTEGRATED",
+      "duplicate_candidates": [
+        2024,
+        2026
+      ]
+    },
+    {
+      "root": "W70_COVERAGE_SCOPE",
+      "evidence": "prior 133/133 and 17/18 at exact old head",
+      "status": "MEASUREMENT_VERIFIED_OLD_HEAD_NEW_HEAD_UNKNOWN"
+    },
+    {
+      "root": "SAFETY_SECURITY",
+      "evidence": "#2027 remaining Safety 64; security failures #2024 #2026",
+      "status": "OPEN"
+    },
+    {
+      "root": "REQUIRED_CHECKS_A10",
+      "evidence": "ruleset no status-check rule and 0 approvals in prior live read",
+      "status": "HOLD"
+    }
+  ],
+  "comparable_coverage_delta": null,
+  "unique_roots_closed_delta": null,
+  "queue_p95": null,
+  "crew_rex_authenticated": null,
+  "rerun_amplification": null,
+  "bt_pca_readiness": null,
+  "next": "Obtain terminal #2024 and #1997 new-head checks, independently reconcile source-owned compatibility without duplicate merges, remeasure scoped native coverages; attribute Safety and governance separately."
+}
