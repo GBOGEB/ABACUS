@@ -1,0 +1,11 @@
+{
+  "coverage_signed_error_vs_target": 0.1,
+  "coverage_target_met": true,
+  "false_admission_guard_met": true,
+  "forecast_is_statistical": false,
+  "observed_pulse": 3,
+  "prediction_sha256": "749c16e7e48410aa23a253f71a021d84d3e63d926355692d7d3e499fd68328af",
+  "schema": "codepurple.acceptance.forecast_score.v1",
+  "test_signed_error_vs_minimum": 16,
+  "tests_min_met": true
+}
