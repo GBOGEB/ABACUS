@@ -118,7 +118,7 @@ python scripts/g3a_bounded_mission.py \
 ```
 
 The example mission accepts three distinct **local control-verification**
-checkpoints (runner syntax, test-suite syntax, 24 real unit tests).
+checkpoints (runner syntax, test-suite syntax, 25 real unit tests).
 That local N=0→3 is not ABACUS PR/root closure or a merge.
 Native GitHub proof workflow:
 `.github/workflows/g3a-bounded-continuation-proof.yml`.
