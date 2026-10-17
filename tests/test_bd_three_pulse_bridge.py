@@ -131,6 +131,38 @@ def test_reject_forged_or_ambiguous_claims(change):
         m.rollup(rows)
 
 
+def test_zero_and_nonzero_bandit_populations_are_distinct():
+    zero = pulse(1)
+    positive = pulse(2, include_bandit=True)
+    third = pulse(3)
+    assert zero["metrics"]["full_bandit_unique"] == 0
+    assert positive["metrics"]["full_bandit_unique"] == 2
+    for root in positive["roots"]:
+        observation = root["observations"][0]
+        assert observation["source_sha"] == positive["scope"]["head_sha"]
+        assert observation["scan_configuration"] == positive["scope"]["scan_configuration"]
+        assert observation["evidence_url"] == positive["scope"]["evidence_url"]
+    result = m.rollup([zero, positive, third])
+    assert [p["bandit_observations"] for p in result["pulses"]] == [0, 2, 0]
+    assert result["formal_credit_delta"] == result["engineering_credit_delta"] == 0
+
+
+@pytest.mark.parametrize(
+    ("field", "forged"),
+    [
+        ("formal_credit_delta", 0.0),
+        ("formal_credit_delta", False),
+        ("engineering_credit_delta", 0.0),
+        ("engineering_credit_delta", False),
+    ],
+)
+def test_reject_noninteger_zero_credit_claims(field, forged):
+    rows = [pulse(i) for i in (1, 2, 3)]
+    rows[0][field] = forged
+    with pytest.raises(ValueError, match="authority/admission/security contract"):
+        m.rollup(rows)
+
+
 def test_reject_duplicate_sha_and_missing_pulse():
     rows = [pulse(i) for i in (1, 2, 3)]
     with pytest.raises(ValueError):
