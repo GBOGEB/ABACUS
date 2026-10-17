@@ -54,6 +54,9 @@ def test_zero_tests_cannot_report_deployment_ready(bridge):
     "scan",
     [
         {"flake8": {"error": "scanner crashed"}},
+        {"flake8": {"returncode": 1, "output": "E301"}, "mypy": None},
+        {"flake8": {"returncode": 2, "output": "fatal scanner error"}},
+        {"flake8": {"output": "unverified result"}},
         {"flake8": None, "mypy": None},
         {"flake8": {"returncode": 0}, "mypy": {"error": "incomplete"}},
         {},
