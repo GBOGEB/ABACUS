@@ -85,7 +85,9 @@ def test_git_branch_and_merge():
                 pytest.fail(f"git {' '.join(args)} failed: {result.stderr}")
             return result.stdout
 
-        run_git("init")
+        # Pin the initial branch: `checkout master` below must not depend on
+        # the host's init.defaultBranch setting.
+        run_git("init", "-b", "master")
         run_git("config", "user.email", "test@example.com")
         run_git("config", "user.name", "Test User")
 
