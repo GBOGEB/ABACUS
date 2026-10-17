@@ -57,7 +57,7 @@ def _validate_roots(roots, bandit, scope):
             or not observations
             or any(not isinstance(obs, dict) for obs in observations)
         ):
-            raise ValueError("invalid coverage denominator or config")
+            raise ValueError("unverified coverage: invalid denominator or config")
         result[scope] = dict(
             covered=k, eligible=d, config=row["config"], ratio_unverified=_ratio(k, d)
         )
@@ -165,6 +165,9 @@ def rollup(pulses):
             pulse.get("merge_admission") != "HOLD"
             or pulse.get("authority_transfer") is not False
             or pulse.get("security_waiver") is not False
+            or pulse.get("security_disposition") != "INDEPENDENT_REVIEW_REQUIRED"
+            or pulse.get("formal_credit_delta") != 0
+            or pulse.get("engineering_credit_delta") != 0
         ):
             raise ValueError("authority/admission contract must remain HOLD")
         _validate_root_census(roots, bandit, scope)
