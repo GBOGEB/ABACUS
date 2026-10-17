@@ -3,7 +3,9 @@ import sys
 import tempfile
 import unittest
 from pathlib import Path
+from unittest.mock import patch
 
+from mission_control_lite import timing_pulse as mod
 from mission_control_lite.timing_pulse import completed_run_metrics, measure
 
 SHA = "a" * 40
@@ -67,6 +69,63 @@ class TimingPulseTests(unittest.TestCase):
             self.assertTrue(all(row["duration_seconds"] >= 0 for row in rows))
             with self.assertRaises(ValueError):
                 measure(path, "ok", [sys.executable, "-c", "pass"])
+
+
+    def test_rejects_malformed_or_noncanonical_source_identity(self):
+        for bad_sha in ("g" * 40, "A" * 40, "f" * 39, 123, None):
+            run, job = sample()
+            run["head_sha"] = bad_sha
+            with self.subTest(bad_sha=bad_sha), self.assertRaisesRegex(
+                ValueError, "invalid run SHA"
+            ):
+                completed_run_metrics(run, job)
+
+    def test_valid_hex_source_identity_is_preserved(self):
+        run, job = sample()
+        run["head_sha"] = "f" * 40
+        self.assertEqual(completed_run_metrics(run, job)["source_sha"], "f" * 40)
+
+    def test_missing_executable_creates_failure_receipt(self):
+        with tempfile.TemporaryDirectory() as directory:
+            output = Path(directory) / "steps.json"
+            missing = str(Path(directory) / "does-not-exist")
+            self.assertEqual(measure(output, "missing", [missing]), 127)
+            self.assertEqual(json.loads(output.read_text())[0]["exit_code"], 127)
+
+    def test_duplicate_phase_cannot_reexecute_side_effect(self):
+        with tempfile.TemporaryDirectory() as directory:
+            output = Path(directory) / "steps.json"
+            output.write_text(json.dumps([
+                {"phase": "already", "duration_seconds": 0.1, "exit_code": 0}
+            ]))
+            with patch.object(mod.subprocess, "run") as runner:
+                with self.assertRaisesRegex(ValueError, "duplicate phase"):
+                    measure(output, "already", [sys.executable, "-c", "pass"])
+                runner.assert_not_called()
+
+    def test_nonlist_ledger_cannot_launch_native_process(self):
+        with tempfile.TemporaryDirectory() as directory:
+            output = Path(directory) / "steps.json"
+            output.write_text('{"malformed": "ledger"}')
+            with patch.object(mod.subprocess, "run") as runner:
+                with self.assertRaisesRegex(ValueError, "invalid metrics"):
+                    measure(output, "new", [sys.executable, "-c", "pass"])
+                runner.assert_not_called()
+
+    def test_metacharacter_argument_never_becomes_shell_command(self):
+        with tempfile.TemporaryDirectory() as directory:
+            marker = Path(directory) / "unexpected.txt"
+            literal = "; touch " + str(marker)
+            output = Path(directory) / "steps.json"
+            command = [
+                sys.executable, "-c",
+                "import sys; assert sys.argv[1].startswith('; touch ')",
+                literal,
+            ]
+            self.assertEqual(measure(output, "argv-literal", command), 0)
+            self.assertFalse(marker.exists())
+            self.assertEqual(json.loads(output.read_text())[0]["exit_code"], 0)
+
 
 
 if __name__ == "__main__":
