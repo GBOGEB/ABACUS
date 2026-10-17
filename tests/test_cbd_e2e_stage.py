@@ -81,6 +81,20 @@ def test_output_hashes_instead_of_raw_secret(tmp_path):
     assert len(evidence["stdout_sha256"]) == 64
 
 
+
+def test_secret_in_argv_cannot_enter_stage_receipt(tmp_path):
+    secret = "CREDENTIAL_NEVER_PRINT_THIS_VALUE"
+    raw = e2e.command(
+        [sys.executable, "-c", "print(1)", "--api-token", secret], tmp_path
+    )
+    evidence = e2e.project_check(raw, "compile")
+    serialized = json.dumps(evidence)
+    assert secret not in serialized
+    assert "argv" not in evidence
+    assert len(evidence["argv_sha256"]) == 64
+    assert evidence["program"] == Path(sys.executable).name
+
+
 def test_nonzero_command_fails_closed(tmp_path):
     value = e2e.command([sys.executable, "-c", "raise SystemExit(3)"], tmp_path)
     assert value["status"] == "FAIL"
