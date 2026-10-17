@@ -410,9 +410,12 @@ class Admission(unittest.TestCase):
     def test_programme_gate_requires_native_strict_controls(self):
         now = dt.datetime(2026, 10, 14, 8, tzinfo=dt.timezone.utc)
         keys = (
-            "strict_checks", "require_last_push_approval",
-            "dismiss_stale_reviews_on_push", "main_hard_gate_active",
-            "main_hard_gate_no_bypass", "require_resolved_conversations",
+            "strict_checks",
+            "require_last_push_approval",
+            "dismiss_stale_reviews_on_push",
+            "main_hard_gate_active",
+            "main_hard_gate_no_bypass",
+            "require_resolved_conversations",
         )
         for key in keys:
             with self.subTest(missing=key):
@@ -424,13 +427,20 @@ class Admission(unittest.TestCase):
 
     def test_unguarded_or_missing_contexts_fail_closed(self):
         now = dt.datetime(2026, 10, 14, 8, tzinfo=dt.timezone.utc)
-        for names in ([], None, ["CI"], ["PR Feedback Gate"],
-                      ["PR Feedback Gate", "CI", "CI"]):
+        for names in (
+            [],
+            None,
+            ["CI"],
+            ["PR Feedback Gate"],
+            ["PR Feedback Gate", "CI", "CI"],
+        ):
             with self.subTest(names=names):
                 x = self.bundle()
                 x["policy"]["status_contexts"] = names
                 self.assertEqual(
-                    evaluate(x, authenticated=True, now=now)["gates"]["branch_protection"],
+                    evaluate(x, authenticated=True, now=now)["gates"][
+                        "branch_protection"
+                    ],
                     "RED",
                 )
 
@@ -438,19 +448,29 @@ class Admission(unittest.TestCase):
         rules = [
             {"type": "deletion"},
             {"type": "non_fast_forward"},
-            {"type": "pull_request", "parameters": {
-                "required_approving_review_count": 0,
-                "required_review_thread_resolution": True,
-                "require_last_push_approval": True,
-                "dismiss_stale_reviews_on_push": True,
-            }},
+            {
+                "type": "pull_request",
+                "parameters": {
+                    "required_approving_review_count": 0,
+                    "required_review_thread_resolution": True,
+                    "require_last_push_approval": True,
+                    "dismiss_stale_reviews_on_push": True,
+                },
+            },
         ]
         hard_gate = {
-            "id": 24494381, "source": REPO, "target": "branch",
-            "enforcement": "active", "bypass_actors": [],
+            "id": 24494381,
+            "source": REPO,
+            "target": "branch",
+            "enforcement": "active",
+            "bypass_actors": [],
         }
         policy = effective_policy_from_rules(
-            REPO, SHA2, rules, {"protected": True}, TIME,
+            REPO,
+            SHA2,
+            rules,
+            {"protected": True},
+            TIME,
             main_hard_gate=hard_gate,
         )
         self.assertEqual(policy["min_approvals"], 0)
@@ -460,49 +480,81 @@ class Admission(unittest.TestCase):
         x["policy"] = policy
         now = dt.datetime(2026, 10, 14, 8, tzinfo=dt.timezone.utc)
         self.assertEqual(evaluate(x, authenticated=True, now=now)["decision"], "HOLD")
-        self.assertEqual(evaluate(x, authenticated=True, now=now)["gates"]["branch_protection"], "RED")
+        self.assertEqual(
+            evaluate(x, authenticated=True, now=now)["gates"]["branch_protection"],
+            "RED",
+        )
 
     def test_bypass_and_stale_ruleset_are_denied(self):
         good_rules = [
-            {"type": "deletion"}, {"type": "non_fast_forward"},
-            {"type": "pull_request", "parameters": {
-                "required_approving_review_count": 1,
-                "required_review_thread_resolution": True,
-                "require_last_push_approval": True,
-                "dismiss_stale_reviews_on_push": True,
-            }},
-            {"type": "required_status_checks", "parameters": {
-                "strict_required_status_checks_policy": True,
-                "required_status_checks": [
-                    {"context": "PR Feedback Gate"}, {"context": "CI"},
-                ],
-            }},
+            {"type": "deletion"},
+            {"type": "non_fast_forward"},
+            {
+                "type": "pull_request",
+                "parameters": {
+                    "required_approving_review_count": 1,
+                    "required_review_thread_resolution": True,
+                    "require_last_push_approval": True,
+                    "dismiss_stale_reviews_on_push": True,
+                },
+            },
+            {
+                "type": "required_status_checks",
+                "parameters": {
+                    "strict_required_status_checks_policy": True,
+                    "required_status_checks": [
+                        {"context": "PR Feedback Gate"},
+                        {"context": "CI"},
+                    ],
+                },
+            },
         ]
         now = dt.datetime(2026, 10, 14, 8, tzinfo=dt.timezone.utc)
         for bypass, enforced in [([{"actor_id": 1}], "active"), ([], "disabled")]:
             policy = effective_policy_from_rules(
-                REPO, SHA2, good_rules, {"protected": True}, TIME,
+                REPO,
+                SHA2,
+                good_rules,
+                {"protected": True},
+                TIME,
                 main_hard_gate={
-                    "id": 24494381, "source": REPO, "target": "branch",
-                    "enforcement": enforced, "bypass_actors": bypass,
+                    "id": 24494381,
+                    "source": REPO,
+                    "target": "branch",
+                    "enforcement": enforced,
+                    "bypass_actors": bypass,
                 },
             )
             x = self.bundle()
             x["policy"] = policy
-            self.assertEqual(evaluate(x, authenticated=True, now=now)["decision"], "HOLD")
-            self.assertEqual(evaluate(x, authenticated=True, now=now)["gates"]["branch_protection"], "RED")
+            self.assertEqual(
+                evaluate(x, authenticated=True, now=now)["decision"], "HOLD"
+            )
+            self.assertEqual(
+                evaluate(x, authenticated=True, now=now)["gates"]["branch_protection"],
+                "RED",
+            )
         policy = effective_policy_from_rules(
-            REPO, SHA2, good_rules, {"protected": True}, TIME,
+            REPO,
+            SHA2,
+            good_rules,
+            {"protected": True},
+            TIME,
             main_hard_gate={
-                "id": 24494381, "source": REPO, "target": "branch",
-                "enforcement": "active", "bypass_actors": [],
+                "id": 24494381,
+                "source": REPO,
+                "target": "branch",
+                "enforcement": "active",
+                "bypass_actors": [],
             },
         )
         x = self.bundle()
         x["policy"] = policy
-        self.assertEqual(evaluate(x, authenticated=True, now=now)["gates"]["branch_protection"], "PASS")
+        self.assertEqual(
+            evaluate(x, authenticated=True, now=now)["gates"]["branch_protection"],
+            "PASS",
+        )
         self.assertFalse(evaluate(x, authenticated=True, now=now)["merge_authorized"])
-
 
 
 class Control(unittest.TestCase):

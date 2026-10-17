@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 """Build the HTML-first mission cycle from the existing EVERRED BD evidence."""
+
 from __future__ import annotations
 
 import argparse
@@ -27,8 +28,13 @@ def build(data, template):
     if template.count(marker) != 1:
         raise ValueError("missing or duplicate data marker")
     guidance = project(data)
-    encoded = json.dumps(guidance, sort_keys=True, separators=(",", ":"),
-                         ensure_ascii=False, allow_nan=False).replace("</", "<\\/")
+    encoded = json.dumps(
+        guidance,
+        sort_keys=True,
+        separators=(",", ":"),
+        ensure_ascii=False,
+        allow_nan=False,
+    ).replace("</", "<\\/")
     return template.replace(marker, encoded)
 
 
@@ -39,10 +45,15 @@ def main(argv=None):
     parser.add_argument("--output", type=Path, default=OUTPUT)
     parser.add_argument("--check", action="store_true")
     args = parser.parse_args(argv)
-    result = build(json.loads(args.source.read_text(encoding="utf-8")),
-                   args.template.read_text(encoding="utf-8"))
+    result = build(
+        json.loads(args.source.read_text(encoding="utf-8")),
+        args.template.read_text(encoding="utf-8"),
+    )
     if args.check:
-        if not args.output.exists() or args.output.read_text(encoding="utf-8") != result:
+        if (
+            not args.output.exists()
+            or args.output.read_text(encoding="utf-8") != result
+        ):
             raise SystemExit("stale Mission Cycle HTML")
         return 0
     args.output.parent.mkdir(parents=True, exist_ok=True)
