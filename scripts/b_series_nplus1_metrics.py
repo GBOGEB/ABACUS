@@ -73,6 +73,10 @@ def extend(doc):
     med = statistics.median(durations)
     mad = statistics.median(abs(x - med) for x in durations)
     base_report = core.build(doc)
+    frozen_three = core.build({**doc, "observations": rows[:3]})
+    base_report["historical_engine_metrics"] = base_report.pop(
+        "three_pulse_metrics"
+    )
     base_report["schema"] = OUT_SCHEMA
     base_report["hierarchy"]["workflow"]["run_sample"] = 4
     base_report["four_pulse_metrics"] = {
@@ -92,7 +96,7 @@ def extend(doc):
         "test_count_population": "UNMATCHED_PR_HEADS",
         "duration_median_seconds": med,
         "duration_mad_seconds": round(mad, 3),
-        "duration_prior_three_median_seconds": base_report[
+        "duration_prior_three_median_seconds": frozen_three[
             "three_pulse_metrics"
         ]["duration_median_seconds"],
         "accepted_matched_coverage_uplift": None,
