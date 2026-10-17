@@ -72,6 +72,12 @@ class G3AContracts(unittest.TestCase):
             with self.subTest(qty=qty), self.assertRaises(m.ContractError):
                 m.validate(v)
 
+    def test_duplicate_proof_scope_not_three_advances(self):
+        v = mission()
+        v['steps'][1]['path'] = 's1.py'
+        with self.assertRaisesRegex(m.ContractError, 'duplicate checkpoint proof'):
+            m.validate(v)
+
     def test_out_of_order_step_rejected(self):
         v = mission()
         v['steps'][1]['id'] = 'A3'
