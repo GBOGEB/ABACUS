@@ -5,7 +5,7 @@
 - Repository: `GBOGEB/ABACUS`
 - Lane: `ABACUS`
 - Engineering/test scope: Python compatibility, CI first-red taxonomy, unit and branch coverage evidence
-- Toolkit reference: `GBOGEB/pipeline-automation-hub@52233b5b3209d2b0878c530adcb0d51d86cd4d87` (immutable pilot pin; renew after canonical promotion)
+- Toolkit reference: `GBOGEB/pipeline-automation-hub@dd606d8897c70fa797a3a585fa12850bacd1d9e1` (immutable pilot pin; renew after canonical promotion)
 - Receives manually approved `workflow_dispatch` or opt-in `repository_dispatch` event `qps-metric-census-v1`.
 - Routes: `native_checks`, `coverage_catalog`. Both are bounded read-only DAG jobs; never execute arbitrary dispatch payload commands.
 - Each request binds `wave + lane + repository + expected source SHA + selector` to an ID; stale or mismatched heads fail closed.
