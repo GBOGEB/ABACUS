@@ -172,7 +172,7 @@ class QuickFixer:
 
             original = content
 
-            content = content.replace('Dict[str, ', 'Dict[str, Any]')
+            content = content.replace('Dict[str, ]', 'Dict[str, Any]')
             content = content.replace('List[Dict]', 'List[Dict[str, Any]]')
             content = content.replace('Tuple[bool, Dict]', 'Tuple[bool, Dict[str, Any]]')
 
