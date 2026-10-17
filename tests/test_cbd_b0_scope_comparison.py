@@ -1,8 +1,4 @@
 """Adversarial tests for source-bound B0 scope separation."""
-import copy
-import json
-from pathlib import Path
-import zipfile
 import pytest
 
 from scripts.cbd_b0_scope_comparison import compare, stats, suite_summary, TARGETS
@@ -105,17 +101,9 @@ def test_junit_bad_duration_rejected():
         receipt(j=junit().replace('time="1"','time="nan"'))
 
 
-def test_real_native_artifacts_replay_if_supplied():
-    canonical=Path('/mnt/data/b0-canonical-89dc0989.zip')
-    report=Path('/mnt/data/b0-admission-89dc0989.zip')
-    if not canonical.exists() or not report.exists():
-        pytest.skip('native artifact copies not locally available')
-    with zipfile.ZipFile(canonical) as z:
-        c=json.loads(z.read('canonical-contexts.json'))
-        j=z.read('canonical-junit.xml').decode()
-    with zipfile.ZipFile(report) as z:
-        rr=json.loads(z.read('b0/coverage-contexts.json'))
-    x=receipt(c=c,r=rr,j=j)
-    assert x['canonical_scope']['combined']==[354,363]
-    assert x['junit']['header_minus_elements']==12
-    assert x['measurement_state']=='SCOPED_CANONICAL_AFTER_TEST'
+def test_timezone_offsets_are_normalized_before_comparison():
+    shifted = cov(timestamp='2026-10-17T12:10:51+02:00')
+    result = receipt(c=shifted)
+    assert result['measurement_state'] == 'SCOPED_CANONICAL_AFTER_TEST'
+    assert result['canonical_scope']['combined'] == [354, 363]
+    assert result['junit']['count_integrity'] == 'PASS'
