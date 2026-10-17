@@ -28,13 +28,15 @@ def coverage(lines=0, branches=0):
                                              "num_branches": 56}}}}
 
 
-def snap(lines=0, branches=0):
-    return metric.make_snapshot(coverage(lines, branches), manifest(), [PATH])
+def snap(lines=0, branches=0, *, attempt=2):
+    m = manifest()
+    m["run_attempt"] = attempt
+    return metric.make_snapshot(coverage(lines, branches), m, [PATH])
 
 
 class MatchedCoverage(unittest.TestCase):
     def test_zero_to_measured_improvement(self):
-        result = metric.compare(snap(), snap(120, 38))
+        result = metric.compare(snap(), snap(120, 38, attempt=3))
         self.assertEqual(result["status"], "IMPROVED")
         self.assertEqual(result["modules"][PATH]["statement"]["before"], [0, 165])
         self.assertEqual(result["modules"][PATH]["statement"]["after"], [120, 165])
@@ -46,7 +48,7 @@ class MatchedCoverage(unittest.TestCase):
         self.assertEqual(metric.compare(snap(99, 31), snap(99, 31))["status"], "UNCHANGED")
 
     def test_regression_not_hidden_by_other_improvement(self):
-        self.assertEqual(metric.compare(snap(85, 40), snap(90, 39))["status"], "REGRESSION")
+        self.assertEqual(metric.compare(snap(85, 40), snap(90, 39, attempt=3))["status"], "REGRESSION")
 
     def test_source_change_is_not_matched(self):
         other = snap(120, 38)
@@ -103,7 +105,7 @@ class MatchedCoverage(unittest.TestCase):
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp)
             (root / "a.json").write_text(json.dumps(snap(100, 40)))
-            (root / "b.json").write_text(json.dumps(snap(99, 40)))
+            (root / "b.json").write_text(json.dumps(snap(99, 40, attempt=3)))
             code = metric.main(["compare", "--before", str(root / "a.json"), "--after", str(root / "b.json"), "--out", str(root / "delta.json")])
             self.assertEqual(code, 1)
             self.assertEqual(json.loads((root / "delta.json").read_text())["status"], "REGRESSION")
@@ -160,6 +162,35 @@ class MatchedCoverage(unittest.TestCase):
         b["modules"]["other.py"] = b["modules"].pop(PATH)
         with self.assertRaises(metric.EvidenceError):
             metric.compare(a, b)
+
+    def test_same_run_attempt_cannot_forge_numerator_uplift(self):
+        with self.assertRaisesRegex(metric.EvidenceError, "same run/attempt"):
+            metric.compare(snap(), snap(100, 38))
+
+    def test_parallel_jobs_in_same_attempt_are_not_time_series(self):
+        other = snap(1, 1)
+        other["job_id"] += 1
+        with self.assertRaisesRegex(metric.EvidenceError, "same run/attempt"):
+            metric.compare(snap(), other)
+
+    def test_independent_declared_attempts_remain_provisional(self):
+        delta = metric.compare(snap(), snap(100, 38, attempt=3))
+        self.assertEqual(delta["status"], "IMPROVED")
+        self.assertEqual(
+            delta["declared_run_attempt_relation"],
+            "DISTINCT_DECLARED_RUN_ATTEMPTS_NOT_AUTHENTICATED",
+        )
+        self.assertIsNone(delta["accepted_matched_main_delta"])
+        self.assertEqual(delta["merge_admission"], "HOLD")
+
+    def test_sub_micro_percentage_gain_is_not_lost_to_rounding(self):
+        before, after = snap(), snap(1, 0, attempt=3)
+        for sample in (before, after):
+            sample["modules"][PATH]["num_statements"] = 1_000_000_000
+        delta = metric.compare(before, after)
+        self.assertEqual(delta["status"], "IMPROVED")
+        self.assertEqual(delta["modules"][PATH]["statement"]["delta_covered_items"], 1)
+        self.assertEqual(delta["modules"][PATH]["statement"]["delta_percentage_points"], 0)
 
     def test_cli_missing_files_fail_closed(self):
         with tempfile.TemporaryDirectory() as tmp:
