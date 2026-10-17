@@ -25,8 +25,11 @@ jobs:
       EXPECTED_PULL_HEAD: ${{ github.event.pull_request.head.sha }}
       GITHUB_EVENT_SHA: ${{ github.sha }}
     steps:
-      - name: Checkout source
+      - name: Checkout exact pull head
         uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
       - name: Setup Python
         uses: actions/setup-python@v5
         with:
@@ -70,14 +73,17 @@ jobs:
           pull_head = os.getenv("EXPECTED_PULL_HEAD", "")
           if not re.fullmatch(r"[0-9a-f]{40}", pull_head):
               raise SystemExit("Missing PR pull-head binding")
+          actual_head = subprocess.check_output(
+              ["git", "rev-parse", "HEAD"], text=True
+          ).strip()
+          if actual_head != pull_head:
+              raise SystemExit("Exact PR-head checkout mismatch; coverage WITHHELD")
           receipt = {
               "schema": "cbd.native-cohort-testflight.v1",
               "repository": os.getenv("GITHUB_REPOSITORY"),
               "pull_head_sha": pull_head,
               "event_sha": os.getenv("GITHUB_EVENT_SHA"),
-              "checkout_sha": subprocess.check_output(
-                  ["git", "rev-parse", "HEAD"], text=True
-              ).strip(),
+              "checkout_sha": actual_head,
               "run_id": os.getenv("GITHUB_RUN_ID"),
               "run_attempt": os.getenv("GITHUB_RUN_ATTEMPT"),
               "python": sys.version.split()[0],
