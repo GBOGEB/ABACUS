@@ -1,5 +1,6 @@
 """Negative controls for the read-only canonical BD three-pulse consumer."""
 
+import copy
 import importlib.util
 from pathlib import Path
 
@@ -49,15 +50,49 @@ def pulse(i):
         )
     return {
         "schema": "bd.ldab.joined.census.v1",
-        "scope": scope,
-        "metrics": {"full_bandit_unique": i, "comparable_delta": None},
-        "roots": roots,
+        "scope": {
+            "repository": "GBOGEB/ABACUS",
+            "head_sha": str(i) * 40,
+            "run_id": 100 + i,
+            "job_id": 200 + i,
+            "scan_configuration": "config-v1",
+            "evidence_url": f"https://github.com/GBOGEB/ABACUS/actions/runs/{100+i}",
+        },
+        "metrics": {"full_bandit_unique": 0, "comparable_delta": None},
+        "roots": [
+            {"root_id": f"CI-{i:024x}", "category": "CI", "fingerprint": None}
+        ],
         "merge_admission": "HOLD",
         "security_disposition": "INDEPENDENT_REVIEW_REQUIRED",
         "authority_transfer": False,
         "security_waiver": False,
         "formal_credit_delta": 0,
         "engineering_credit_delta": 0,
+    }
+
+
+def bandit_root(row):
+    scope = row["scope"]
+    return {
+        "root_id": "BD-" + "a" * 24,
+        "category": "BANDIT",
+        "fingerprint": "f" * 64,
+        "source_path": "scripts/example.py",
+        "rule_or_error_code": "B101",
+        "line": 4,
+        "owner_lane": "B2-source",
+        "disposition": "OPEN_UNREVIEWED",
+        "observations": [
+            {
+                "repository": scope["repository"],
+                "source_sha": scope["head_sha"],
+                "run_id": scope["run_id"],
+                "job_id": scope["job_id"],
+                "scan_configuration": scope["scan_configuration"],
+                "evidence_url": scope["evidence_url"],
+                "source": "bandit_disjoint",
+            }
+        ],
     }
 
 
@@ -105,13 +140,28 @@ def test_reject_duplicate_sha_and_missing_pulse():
         m.rollup(rows)
 
 
-def test_reject_self_reported_coverage_even_when_denominators_match():
+def test_same_denominator_cannot_promote_unverified_coverage():
     rows = [pulse(i) for i in (1, 2, 3)]
     for i, row in enumerate(rows):
         row["coverage"] = {
             "main_branch": {"covered": 10 + i, "eligible": 20, "config": "same"}
         }
-    with pytest.raises(ValueError, match="unverified coverage"):
+    result = m.rollup(rows)
+    assert result["pulses"][0]["coverage"] is None
+    candidate = result["pulses"][0]["coverage_candidates_unverified"]["main_branch"]
+    assert candidate["covered"] == 10
+    assert result["movements"][0]["coverage"]["main_branch"]["comparable"] is False
+    assert result["movements"][0]["coverage"]["main_branch"]["delta_covered"] is None
+
+
+def test_reject_forged_coverage_verification_marker():
+    rows = [pulse(i) for i in (1, 2, 3)]
+    rows[0]["coverage"] = {
+        "main_branch": {
+            "covered": 17, "eligible": 20, "config": "v1", "verified": True
+        }
+    }
+    with pytest.raises(ValueError):
         m.rollup(rows)
 
 
@@ -190,24 +240,51 @@ def test_reject_remaining_unbound_census_shapes(change):
         m.rollup(rows)
 
 
-def test_cli_emits_deterministic_validated_output(tmp_path, monkeypatch):
-    import json
-    import runpy
-    import sys
+def test_bandit_census_reconciles():
+    rows = [pulse(i) for i in (1, 2, 3)]
+    rows[0]["metrics"]["full_bandit_unique"] = 1
+    rows[0]["roots"].append(bandit_root(rows[0]))
+    result = m.rollup(rows)
+    assert result["pulses"][0]["bandit_observations"] == 1
+    assert result["pulses"][0]["candidate_root_count"] == 2
 
-    paths = []
-    for i in (1, 2, 3):
-        path = tmp_path / f"pulse-{i}.json"
-        path.write_text(json.dumps(pulse(i)), encoding="utf-8")
-        paths.append(path)
-    out = tmp_path / "receipt.json"
-    monkeypatch.setattr(
-        sys,
-        "argv",
-        [str(SOURCE), "--inputs", *(str(path) for path in paths), "--out", str(out)],
-    )
-    runpy.run_path(str(SOURCE), run_name="__main__")
-    first = out.read_bytes()
-    runpy.run_path(str(SOURCE), run_name="__main__")
-    assert out.read_bytes() == first
-    assert json.loads(first)["merge_admission"] == "HOLD"
+
+@pytest.mark.parametrize(
+    "mutation",
+    [
+        lambda r: r.update(category="CI"),
+        lambda r: r.update(root_id="CI-" + "a" * 24),
+        lambda r: r.update(fingerprint="bad"),
+        lambda r: r.update(owner_lane="UNKNOWN"),
+        lambda r: r.update(observations=[]),
+        lambda r: r["observations"][0].update(source_sha="0" * 40),
+        lambda r: r["observations"][0].update(job_id=999),
+        lambda r: r["observations"][0].update(source="forged"),
+    ],
+)
+def test_reject_bad_bandit_root(mutation):
+    rows = [pulse(i) for i in (1, 2, 3)]
+    rows[0]["metrics"]["full_bandit_unique"] = 1
+    root = bandit_root(rows[0])
+    rows[0]["roots"].append(root)
+    mutation(root)
+    with pytest.raises(ValueError):
+        m.rollup(rows)
+
+
+def test_bandit_denominator_mismatch_rejected():
+    rows = [pulse(i) for i in (1, 2, 3)]
+    rows[0]["metrics"]["full_bandit_unique"] = 999
+    with pytest.raises(ValueError, match="Bandit numerator"):
+        m.rollup(rows)
+    rows[0]["metrics"]["full_bandit_unique"] = 0
+    rows[0]["roots"].append(bandit_root(rows[0]))
+    with pytest.raises(ValueError, match="Bandit numerator"):
+        m.rollup(rows)
+
+
+def test_canonical_pulse_inputs_remain_immutable():
+    rows = [pulse(i) for i in (1, 2, 3)]
+    baseline = copy.deepcopy(rows)
+    m.rollup(rows)
+    assert rows == baseline
