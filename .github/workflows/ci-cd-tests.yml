@@ -234,7 +234,7 @@ jobs:
       - name: Install pinned ratchet tools and safe evidence reader
         run: |
           python -m pip install pytest==8.4.2 black==26.10.1 \
-            isort==9.0.2 flake8==7.3.0 bandit==1.8.6 defusedxml==0.7.1
+            isort==9.0.2 flake8==7.3.0 bandit==1.8.6 defusedxml==0.7.1 numpy==1.26.4
       - name: Prove all four scanners exist and emit exact source
         run: |
           git rev-parse HEAD
