@@ -1,0 +1,114 @@
+{
+  "schema": "qps.federation.sideload.owner-surface.v1",
+  "version": "1.0.0",
+  "snapshot_class": "FROZEN_DOW_SOURCE_DECLARATION_NOT_LIVE_EXECUTION",
+  "producer": {
+    "repo": "GBOGEB/ABACUS",
+    "role": "DOW_RUNTIME_ANALYSIS",
+    "captured_main_sha": "54da377cf82a358ac97903ecde0270c975b8fcc1"
+  },
+  "keb_transport": {
+    "repo": "GBOGEB/CODEX",
+    "pr": 1049,
+    "head_sha": "b70811774e7cd97e624c3ec16d5239d7244932df",
+    "contract_path": "federation/sideload/CONTRACT_V1.json",
+    "contract_git_blob": "0ba7799e4470b25125227e56eeb11b366afaf0dd",
+    "status": "CANDIDATE_EXTERNAL_PR_NOT_MERGED"
+  },
+  "canonical_products": [
+    {
+      "id": "DOW_QPLANT_K8S_STATIC",
+      "kind": "K8S_STATIC",
+      "owner": "GBOGEB/ABACUS",
+      "source": "qplant/deployment/k8s",
+      "validator": "qplant/deployment/scripts/validate_k8s_contract.py",
+      "workflow": ".github/workflows/w74-qplant-k8s-contract.yml",
+      "status": "STATIC_SOURCE_PRESENT_NATIVE_EXACT_HEAD_NOT_REQUALIFIED",
+      "image": "qplant/api-server:v4.4.0",
+      "namespace": "qplant-production",
+      "port": 8100,
+      "baseline_replicas": 3,
+      "max_replicas": 10
+    },
+    {
+      "id": "DOW_QPLANT_K8S_API",
+      "kind": "K8S_API",
+      "owner": "GBOGEB/ABACUS",
+      "source": ".github/workflows/w169-qplant-k8s-runtime.yml",
+      "validator": null,
+      "workflow": ".github/workflows/w169-qplant-k8s-runtime.yml",
+      "status": "RUNTIME_RECEIPT_NOT_INDEPENDENTLY_AUTHENTICATED_IN_THIS_PULSE",
+      "image": "qplant/api-server:v4.4.0",
+      "namespace": "qplant-production",
+      "port": 8100,
+      "baseline_replicas": null,
+      "max_replicas": null
+    },
+    {
+      "id": "DOW_QPLANT_K8S_WORKLOAD",
+      "kind": "K8S_WORKLOAD",
+      "owner": "GBOGEB/ABACUS",
+      "source": ".github/workflows/w169-qplant-k8s-runtime.yml",
+      "validator": null,
+      "workflow": ".github/workflows/w169-qplant-k8s-runtime.yml",
+      "status": "WORKLOAD_FIRST_RED_AND_METRICS_NEED_TERMINAL_RECEIPT",
+      "image": "qplant/api-server:v4.4.0",
+      "namespace": "qplant-production",
+      "port": 8100,
+      "baseline_replicas": null,
+      "max_replicas": null
+    },
+    {
+      "id": "DOW_DOCKER_COMPOSE",
+      "kind": "DOCKER_COMPOSE",
+      "owner": "GBOGEB/ABACUS",
+      "source": "triage/DEPLOYMENT_RUNTIME_REGISTRY_W92.yaml",
+      "validator": null,
+      "workflow": null,
+      "status": "SEPARATE_PRODUCT_CANONICAL_RUNTIME_NOT_K8S",
+      "image": null,
+      "namespace": null,
+      "port": null,
+      "baseline_replicas": null,
+      "max_replicas": null
+    }
+  ],
+  "sideload": {
+    "candidate_file": "federation/sideload/DOW_K8S_STATIC_CANDIDATE_v1.json",
+    "selection": "SANITIZED_METADATA_AND_OPTIONAL_FILE_HASH_ONLY",
+    "prohibited": [
+      "kubeconfig",
+      "raw_kubectl_logs",
+      "cluster_secret",
+      "token",
+      "private_key",
+      "bidder_source_bytes"
+    ],
+    "native_receipt_authentication": "REQUIRES_RUN_JOB_ATTEMPT_SOURCE_SHA_AND_ARCHIVE_BYTE_HASH",
+    "edge_parent": {
+      "state": "UNBOUND_PARENT_CANDIDATE",
+      "inherited_from_cloud_k8s": false
+    },
+    "runtime_metrics": {
+      "cold_start_p95_seconds": null,
+      "request_latency_p95_ms": null,
+      "restart_count": null,
+      "cpu_peak_millicores": null,
+      "memory_peak_mib": null
+    }
+  },
+  "authority": {
+    "authority_transfer": false,
+    "engineering_credit_delta": 0,
+    "formal_credit_delta": 0,
+    "merge_admission": "HOLD",
+    "qps_child_disposition": "DEFER"
+  },
+  "next": [
+    "reconcile W169 terminal exact SHA and run/job/attempt",
+    "verify original W169 artifact bytes and execution steps",
+    "bind normalized side-load receipt in KEB without secrets",
+    "QPS W165 independently reconsumes parent exact SHA",
+    "retain edge readiness HOLD absent concrete parent"
+  ]
+}

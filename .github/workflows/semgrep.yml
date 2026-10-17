@@ -5,6 +5,8 @@ on:
     branches: [main, develop]
     paths: &semgrep_paths
       - '**/*.py'
+      - '**/*.yaml'
+      - '**/*.yml'
       - 'requirements*.txt'
       - 'pyproject.toml'
       - 'setup.cfg'
@@ -33,7 +35,7 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 15
     steps:
-      - uses: actions/checkout@v7
+      - uses: actions/checkout@v7.0.1
       - name: Setup Python
         uses: actions/setup-python@v7.0.0
         with:
@@ -59,3 +61,24 @@ jobs:
         with:
           sarif_file: semgrep.sarif
           category: semgrep
+      - name: Run local YAML/YML security rules (advisory)
+        run: |
+          semgrep scan \
+            --config .github/security/semgrep-yaml-workflows.yml \
+            --sarif \
+            --output semgrep-yaml.sarif \
+            .github/workflows
+        continue-on-error: true
+      - name: Upload original YAML security SARIF evidence
+        if: always() && hashFiles('semgrep-yaml.sarif') != ''
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9
+        with:
+          name: semgrep-yaml-advisory-source
+          path: semgrep-yaml.sarif
+          if-no-files-found: error
+      - name: Upload YAML findings to GitHub Security tab
+        if: always() && hashFiles('semgrep-yaml.sarif') != ''
+        uses: github/codeql-action/upload-sarif@v4.38.3
+        with:
+          sarif_file: semgrep-yaml.sarif
+          category: semgrep-yaml-workflows

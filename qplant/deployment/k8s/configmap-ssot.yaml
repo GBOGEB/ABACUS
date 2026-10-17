@@ -31,7 +31,7 @@ data:
     
     system:
       name: "MYRRHA QPLANT Helium Refrigeration"
-      design_basis: "ALaT + LKT Pre-Study Baseline"
+      design_basis: "Supplier_a + SUPPLIER_B Pre-Study Baseline"
       facility: "SCK CEN — MYRRHA"
     
     # ── Flow Parameters ─────────────────────────────────────────────────────────
@@ -96,14 +96,14 @@ data:
     compressor_specifications:
       hp_compressors:
         count: 3                     # CORRECTED from 4 (v3.1.0 used 4)
-        model: "Kaeser FSD 575 SFC"
+        model: "Vendor_1 FSD 575 SFC"
         power_supply: "400V 3-phase"
         redundancy: "N+1 where N=3"
         configuration: "3 active compressors"
     
       fsd575:
         capacity_nm3h: 575
-        motor_power_kW: 315          # ALaT vendor sheet
+        motor_power_kW: 315          # Supplier_a vendor sheet
         package_power_kW: 348.54     # Package input (water-cooled)
         per_unit_flow_gs: 112.54     # Full point @ 72 Hz
         frequency_hz: 72

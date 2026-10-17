@@ -6,7 +6,7 @@
 <title>MYRRHA warm-compressor comparison &mdash; interactive mass-flow view</title>
 <!--
   Standalone interactive visualization for:
-  MYRRHA warm-compressor comparison: ALaT FSD 575 SFC vs LKT FSD 475 SFC
+  MYRRHA warm-compressor comparison: Supplier_a FSD 575 SFC vs SUPPLIER_B FSD 475 SFC
 
   This page was extracted from the analysis Markdown document so that the
   interactive chart can run in any browser. GitHub strips <script>/<style>
@@ -52,12 +52,12 @@
 <body>
 <div class="wrap">
   <h1>MYRRHA warm-compressor comparison</h1>
-  <div class="sub">Interactive mass-flow view &mdash; ALaT FSD 575 SFC vs LKT FSD 475 SFC. Frequency values are first-pass equal-load estimates using proportional flow-vs-speed scaling from the documented basis point.</div>
+  <div class="sub">Interactive mass-flow view &mdash; Supplier_a FSD 575 SFC vs SUPPLIER_B FSD 475 SFC. Frequency values are first-pass equal-load estimates using proportional flow-vs-speed scaling from the documented basis point.</div>
 
   <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px">
-    <button class="vbtn active" data-key="alat575">ALaT FSD575 full point</button>
-    <button class="vbtn" data-key="lkt475nom">LKT FSD475 actual nominal</button>
-    <button class="vbtn" data-key="lkt475max">LKT FSD475 documented max</button>
+    <button class="vbtn active" data-key="alat575">Supplier_a FSD575 full point</button>
+    <button class="vbtn" data-key="lkt475nom">SUPPLIER_B FSD475 actual nominal</button>
+    <button class="vbtn" data-key="lkt475max">SUPPLIER_B FSD475 documented max</button>
   </div>
 
   <div id="metrics" style="display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;margin-bottom:16px"></div>
@@ -85,7 +85,7 @@
 const targets=[350,344,336,304,275,250,200];
 const models={
   alat575:{
-    title:"ALaT FSD575 full point",
+    title:"Supplier_a FSD575 full point",
     perUnit:112.54,
     freq:72,
     units:3,
@@ -96,7 +96,7 @@ const models={
     airHeat:17.4
   },
   lkt475nom:{
-    title:"LKT FSD475 actual nominal",
+    title:"SUPPLIER_B FSD475 actual nominal",
     perUnit:88.0,
     freq:57,
     units:3,
@@ -107,7 +107,7 @@ const models={
     airHeat:13.1
   },
   lkt475max:{
-    title:"LKT FSD475 documented max",
+    title:"SUPPLIER_B FSD475 documented max",
     perUnit:96.1,
     freq:62,
     units:3,

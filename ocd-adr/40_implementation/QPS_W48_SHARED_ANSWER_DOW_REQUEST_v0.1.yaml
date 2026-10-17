@@ -10,7 +10,7 @@ metrics_to_validate:
   near_candidates: 13
   cross_item_sets: 69
   intra_item_fanout_sets: 71
-  exact_by_actor: {LKT: 6, ALAT: 116, SCK: 5}
+  exact_by_actor: {SUPPLIER_B: 6, SUPPLIER_A: 116, SCK: 5}
 checks:
   - repeated_response_text_may_render_once_with_member_count_and_expandable_members
   - filter_and_export_must_preserve_all_member_ids

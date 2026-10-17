@@ -170,6 +170,30 @@
       "disposition": "keep"
     },
     {
+      "pattern": "^code-purple-dashboard-v31\\.yml$",
+      "cluster": "runtime_governance",
+      "lifecycle": "pr_domain",
+      "disposition": "keep"
+    },
+    {
+      "pattern": "^code-purple-sut-gui\\.yml$",
+      "cluster": "runtime_governance",
+      "lifecycle": "pr_domain",
+      "disposition": "keep"
+    },
+    {
+      "pattern": "^everred-real-pipeline-proof\\.yml$",
+      "cluster": "runtime_governance",
+      "lifecycle": "pr_domain",
+      "disposition": "keep"
+    },
+    {
+      "pattern": "^recovery-action-value-evidence\\.yml$",
+      "cluster": "runtime_governance",
+      "lifecycle": "pr_domain",
+      "disposition": "keep"
+    },
+    {
       "pattern": "^pr-feedback-gate\\.yml$",
       "cluster": "runtime_governance",
       "lifecycle": "pr_domain",
@@ -274,7 +298,7 @@
       "disposition": "keep"
     },
     {
-      "pattern": "^(delta-1-baseline|qps-cost-roundtrip-contract|qps-v24-refresh-unresolved-selector|qps_line_s|reusable-ci|session_tuple_ci|v23-cicd|qps-canonicalization|qps-dow-w43-triage|qps-p05f-measured-sensitivity|qps-p05j-quantitative|qps-w111-power-utility-dow|w52-p2m-helium-proof|w52-p2r-alat-ts-strict-residual|w52-p2t-hp-power-residual|w52-p2t-ts-runtime-receipt|w53-p05t-qcell-jt-runtime)\\.yml$",
+      "pattern": "^(delta-1-baseline|qps-cost-roundtrip-contract|qps-v24-refresh-unresolved-selector|qps_line_s|reusable-ci|session_tuple_ci|v23-cicd|qps-canonicalization|qps-dow-w43-triage|qps-p05f-measured-sensitivity|qps-p05j-quantitative|qps-w111-power-utility-dow|w52-p2m-helium-proof|w52-p2r-supplier-a-ts-strict-residual|w52-p2t-hp-power-residual|w52-p2t-ts-runtime-receipt|w53-p05t-qcell-jt-runtime)\\.yml$",
       "cluster": "specialised",
       "lifecycle": "pr_domain",
       "disposition": "keep"
@@ -358,9 +382,33 @@
       "disposition": "keep"
     },
     {
-      "pattern": "^code-purple-quality-ratchet-proof\\.yml$",
-      "cluster": "core_test",
-      "lifecycle": "pr_fast",
+      "pattern": "^code-purple-dashboard-v31\\.yml$",
+      "cluster": "documentation",
+      "lifecycle": "pr_domain",
+      "disposition": "keep"
+    },
+    {
+      "pattern": "^code-purple-dashboard-v31\\.yml$",
+      "cluster": "runtime_governance",
+      "lifecycle": "pr_domain",
+      "disposition": "keep"
+    },
+    {
+      "pattern": "^code-purple-dashboard-v31\\.yml$",
+      "cluster": "runtime_governance",
+      "lifecycle": "pr_domain",
+      "disposition": "keep"
+    },
+    {
+      "pattern": "^code-purple-sut-gui\\.yml$",
+      "cluster": "runtime_governance",
+      "lifecycle": "pr_domain",
+      "disposition": "keep"
+    },
+    {
+      "pattern": "^mip-bminus1-worker-contract\\.yml$",
+      "cluster": "runtime_governance",
+      "lifecycle": "pr_domain",
       "disposition": "keep"
     },
     {

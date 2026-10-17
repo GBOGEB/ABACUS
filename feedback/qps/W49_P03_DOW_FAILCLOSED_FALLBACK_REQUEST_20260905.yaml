@@ -11,7 +11,7 @@ checks:
   rtm595:
     - confirm_no_authoritative_common_cause_non_overlap_source_is_bound
     - prohibit_zero_imputation
-    - keep_ALAT_independent_stage_candidate_separate
+    - keep_SUPPLIER_A_independent_stage_candidate_separate
     - preserve_Table10_gate_open
   hse026:
     - validate_exact_source_lineage

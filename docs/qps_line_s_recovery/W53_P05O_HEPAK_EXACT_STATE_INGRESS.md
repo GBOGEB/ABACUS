@@ -43,7 +43,7 @@ For orientation only, the maximum independent `delta_h` compatible with the 39 g
 
 NIST TN1334 provides an exact A row at 4.5 K / 300 kPa. The available 3.6 K / 10 kPa B-side row gives an independent pressure-bracket calculation of 41.280 g/s. That is supporting evidence only; it does not replace the exact 3.6 K / 2.2 kPa HEPAK row.
 
-The historic ALAT pre-study explicitly records its process stack as Aspen HYSYS v10.0 + MBWR with **Helium properties HEPAK v3.4**, establishing HEPAK v3.4 as project-era independent methodology. It does not publish the exact required enthalpy pair and therefore cannot itself close the gate.
+The historic SUPPLIER_A pre-study explicitly records its process stack as Aspen HYSYS v10.0 + MBWR with **Helium properties HEPAK v3.4**, establishing HEPAK v3.4 as project-era independent methodology. It does not publish the exact required enthalpy pair and therefore cannot itself close the gate.
 
 ## Stop rule
 

@@ -1,0 +1,36 @@
+{
+  "schema": "code-purple.lossless-manifest.v1",
+  "historical_main": "85dad8fbdab530d40e6ccf2f664c455f89454aad",
+  "files": {
+    "HANDOVER.md": {
+      "git_blob_sha1": "695ef8424d9f1241f7ca5c4862000055267bb793",
+      "bytes": 9767
+    },
+    "state.json": {
+      "git_blob_sha1": "8326a1d597ee713b7038a88ccc4d482414554972",
+      "bytes": 6857
+    },
+    "DROPIN.md": {
+      "git_blob_sha1": "747f7e0a1f602cc5df185694c6fad7ea93dd3a79",
+      "bytes": 2136
+    },
+    "README.md": {
+      "git_blob_sha1": "e97711ea3829e0d8cad699bf407e9c90bbfc2173",
+      "bytes": 1123
+    },
+    "verify_handover.py": {
+      "git_blob_sha1": "d4c5f77ab53d6089cc745a3ceda5d81c32e49bf2",
+      "bytes": 1415
+    },
+    "atlas_historical.html": {
+      "git_blob_sha1": "e242000a06dbfb2dc26a09f685487bb21067384d",
+      "bytes": 50726
+    }
+  },
+  "unarchived_artifacts": [
+    "EVERRED_4_BD_Queue_Audit.pdf",
+    "EVERRED_4_Control_Atlas_Package.zip",
+    "Original user attached source files"
+  ],
+  "note": "Only committed Git objects are integrity validated; no authorization or full-chat byte fidelity."
+}

@@ -1,6 +1,6 @@
 # W000 Q3/Q4/Q5 Tender Review Artifact Set
 
-This directory contains the provisional review package for ALAT clarification
+This directory contains the provisional review package for SUPPLIER_A clarification
 questions Q3, Q4 and Q5.
 
 ## Contents
@@ -9,9 +9,9 @@ questions Q3, Q4 and Q5.
   applicant-facing answers.
 - `COMPENDIUM.md` consolidates the Q3/Q4/Q5 technical interpretation.
 - `MANAGEMENT_SUMMARY.md` highlights highest-risk clarification items.
-- The ALAT review-intent artifact was externalized from public ABACUS under
+- The SUPPLIER_A review-intent artifact was externalized from public ABACUS under
   #1591. Its original path, SHA-256, private repository, and provenance record
-  are retained in `ssot/review_artifact_manifest.yaml#tender-alat-intent`.
+  are retained in `ssot/review_artifact_manifest.yaml#tender-supplier-a-intent`.
 - `CONTRACTUAL_GAPS.md` summarizes gaps mirrored in
   `ssot/contractual_gap_register.yaml`.
 

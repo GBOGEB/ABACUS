@@ -16,7 +16,7 @@ jobs:
       - name: Admit runner
         run: echo 'MIP external diagnostic runner admitted'
       - name: Checkout exact cryoplant child
-        uses: actions/checkout@v7
+        uses: actions/checkout@v7.0.1
         with:
           repository: GBOGEB/cryoplant-project
           ref: 00f4af0bcce7645eb71fcdbc832de14f6cfc4ad8
@@ -28,7 +28,7 @@ jobs:
         run: python -m pip install pytest pyyaml
       - name: Run unchanged B1 adapter regression
         working-directory: cryoplant-project
-        run: python -m pytest -q tests/test_qps_w99_adapt_alat_v3_agenda.py
+        run: python -m pytest -q tests/test_qps_w99_adapt_supplier_a_v3_agenda.py
       - name: Emit diagnostic receipt
         if: always()
         run: |

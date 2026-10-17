@@ -11,7 +11,7 @@ a commitment — phases can be re-ordered or de-scoped as priorities shift.
 
 - **ABACUS** holds engineering analyses authored as version-controlled
   documents. The first published analysis is the MYRRHA warm-compressor
-  comparison (PR #400, merged), which compares the ALaT FSD 575 SFC and LKT
+  comparison (PR #400, merged), which compares the Supplier_a FSD 575 SFC and SUPPLIER_B
   FSD 475 SFC skids against requested mass-flow targets.
 - The **cryo_leak_rate_dashboard** repository hosts the live status tooling,
   GitHub Pages dashboard, and the ecosystem status / PR-tracking documents.

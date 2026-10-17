@@ -1,0 +1,62 @@
+{
+  "schema": "mip2.method-regression-corpus.v1",
+  "cases": [
+    {
+      "id": "FORMAT_IDEMPOTENCE",
+      "family": "formatter",
+      "kind": "positive",
+      "input_class": "misformatted-python",
+      "expected": "second format pass no diff"
+    },
+    {
+      "id": "FORMAT_SEMANTICS",
+      "family": "formatter",
+      "kind": "negative",
+      "input_class": "already-formatted-python",
+      "expected": "no semantic change"
+    },
+    {
+      "id": "SAST_SEEDED_POSITIVE",
+      "family": "sast",
+      "kind": "positive",
+      "input_class": "synthetic insecure pattern",
+      "expected": "detect known rule"
+    },
+    {
+      "id": "SAST_SEEDED_NEGATIVE",
+      "family": "sast",
+      "kind": "negative",
+      "input_class": "safe counterpart",
+      "expected": "no finding"
+    },
+    {
+      "id": "COVERAGE_MISSING_BRANCH",
+      "family": "coverage",
+      "kind": "positive",
+      "input_class": "unexecuted synthetic branch",
+      "expected": "missing branch detected"
+    },
+    {
+      "id": "COVERAGE_DENOMINATOR",
+      "family": "coverage",
+      "kind": "negative",
+      "input_class": "same code, same measurement settings",
+      "expected": "comparable numerator and denominator"
+    },
+    {
+      "id": "RUNTIME_REPRODUCER",
+      "family": "runtime",
+      "kind": "positive",
+      "input_class": "synthetic crash fixture",
+      "expected": "stable crash signature"
+    },
+    {
+      "id": "SECRET_REDACTION",
+      "family": "secrets",
+      "kind": "negative",
+      "input_class": "synthetic secret marker",
+      "expected": "no plaintext in receipts"
+    }
+  ],
+  "note": "Specifications only; no seeded fixture execution or scanner qualification claimed"
+}

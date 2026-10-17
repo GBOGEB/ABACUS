@@ -10,6 +10,8 @@ import sys
 from pathlib import Path
 from typing import Iterable, List, Sequence
 
+import yaml
+
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
 TEXT_SUFFIXES = {
@@ -58,6 +60,23 @@ def _github_diff_ranges() -> List[List[str]]:
     )
     sha = os.environ.get("GITHUB_SHA", "HEAD")
     ranges: List[List[str]] = []
+
+    # PRs must use their merge base, not the first available event range.
+    # A base..synthetic-merge diff can include unrelated base-branch history.
+    if event_name == "pull_request":
+        if not _is_real_sha(base_sha):
+            raise RuntimeError("PR document diff requires a valid base SHA")
+        if not _commit_exists(base_sha):
+            _fetch_ref(base_sha)
+        if not _commit_exists(base_sha):
+            raise RuntimeError("Cannot resolve PR base SHA; fail closed")
+        merge_base = _run(["git", "merge-base", base_sha, "HEAD"], check=False)
+        if merge_base.returncode != 0:
+            raise RuntimeError("Cannot resolve PR merge base; fail closed")
+        ancestor = merge_base.stdout.strip()
+        if not ancestor or not _commit_exists(ancestor):
+            raise RuntimeError("Invalid PR merge base; fail closed")
+        return [[f"{ancestor}..HEAD"]]
 
     for candidate in (base_sha, before):
         if not _is_real_sha(candidate):
@@ -110,6 +129,51 @@ def _by_kind(paths: Iterable[Path], kind: str) -> List[str]:
     ]
 
 
+
+def validate_yaml_structure(paths: Iterable[str]) -> int:
+    """Parse changed YAML without constructing objects; reject duplicate keys."""
+    failures = 0
+    for name in paths:
+        try:
+            path = REPO_ROOT / name
+            if path.stat().st_size > 8_000_000:
+                raise ValueError("YAML document exceeds 8 MB")
+            raw = path.read_text(encoding="utf-8")
+            documents = list(yaml.compose_all(raw, Loader=yaml.BaseLoader))
+            if not documents:
+                raise ValueError("empty YAML document")
+            if name.startswith(".github/workflows/") and len(documents) != 1:
+                raise ValueError("GitHub Actions workflow requires one YAML document")
+            visited: set[int] = set()
+
+            def walk(node: yaml.Node) -> None:
+                if id(node) in visited:
+                    return
+                visited.add(id(node))
+                if isinstance(node, yaml.MappingNode):
+                    seen: set[str] = set()
+                    for key, value in node.value:
+                        if not isinstance(key, yaml.ScalarNode):
+                            raise ValueError("complex YAML mapping key")
+                        if key.value in seen:
+                            raise ValueError(
+                                f"duplicate YAML key {key.value!r} "
+                                f"at line {key.start_mark.line + 1}"
+                            )
+                        seen.add(key.value)
+                        walk(value)
+                elif isinstance(node, yaml.SequenceNode):
+                    for value in node.value:
+                        walk(value)
+
+            for document in documents:
+                walk(document)
+        except (OSError, UnicodeError, yaml.YAMLError, ValueError) as exc:
+            print(f"Invalid YAML structure: {name}: {exc}")
+            failures += 1
+    return failures
+
+
 def validate_json(paths: Iterable[str]) -> int:
     failures = 0
     for path in paths:
@@ -134,7 +198,11 @@ def run_optional(label: str, command: Sequence[str], paths: List[str]) -> int:
 
 
 def main() -> int:
-    paths = changed_files()
+    try:
+        paths = changed_files()
+    except RuntimeError as exc:
+        print(f"Changed-doc selection error: {exc}", file=sys.stderr)
+        return 1
     markdown = _by_kind(paths, "markdown")
     yaml_paths = _by_kind(paths, "yaml")
     json_paths = _by_kind(paths, "json")
@@ -142,6 +210,7 @@ def main() -> int:
     failures = 0
     failures += run_optional("Markdown", ["markdownlint-cli2"], markdown)
     failures += run_optional("YAML", ["yamllint", "-s", "-d", YAMLLINT_CONFIG], yaml_paths)
+    failures += validate_yaml_structure(yaml_paths)
     failures += validate_json(json_paths)
     if not json_paths:
         print("No changed JSON files.")

@@ -1,0 +1,87 @@
+{
+  "schema": "code-purple.matched-growth-ledger.v1",
+  "observed_at_utc": "2026-10-16",
+  "time_precision": "DATE_ONLY",
+  "evidence_level": "LOCAL_REPRODUCIBILITY_AND_PR_ASSOCIATED_HISTORICAL_READBACK",
+  "publication_role": "READ_ONLY_REVIEW_PROJECTION",
+  "repository": "GBOGEB/ABACUS",
+  "source_pr": 2006,
+  "source_sha": "abdf3d80e3cb4d581d7ef2f61d0dd4bb873d7d34",
+  "observed_merge_checkout_sha": "0ffd810f1eb5a85cdfe6a61401cefad0a754091a",
+  "cohorts": [
+    {
+      "pulse": "N",
+      "unit": "PR_ASSOCIATED_GITHUB_WORKFLOW_RUN",
+      "source_sha": "abdf3d80e3cb4d581d7ef2f61d0dd4bb873d7d34",
+      "run_total": 21,
+      "run_pass": 14,
+      "run_fail": 6,
+      "run_cancelled": 1,
+      "first_red_manifestations": 11,
+      "changed_lines": {
+        "instrument": "B9_DIFF_COVER_9_7_2",
+        "execution_sha": "0ffd810f1eb5a85cdfe6a61401cefad0a754091a",
+        "covered": 253,
+        "eligible": 625
+      },
+      "governance": {
+        "classified": 158,
+        "total": 160
+      },
+      "verified_root_closures": null
+    },
+    {
+      "pulse": "N+1",
+      "unit": "FROZEN_SOURCE_REPLAY_NOT_NEW_NATIVE_CI",
+      "source_sha": "abdf3d80e3cb4d581d7ef2f61d0dd4bb873d7d34",
+      "run_total": 21,
+      "run_pass": 14,
+      "run_fail": 6,
+      "run_cancelled": 1,
+      "first_red_manifestations": 11,
+      "changed_lines": {
+        "instrument": "B9_DIFF_COVER_9_7_2",
+        "execution_sha": "0ffd810f1eb5a85cdfe6a61401cefad0a754091a",
+        "covered": 253,
+        "eligible": 625
+      },
+      "governance": {
+        "classified": 158,
+        "total": 160
+      },
+      "verified_root_closures": null
+    }
+  ],
+  "matched_native_changes": {
+    "workflows_denominator": 0,
+    "workflows_passed": 0,
+    "coverage_eligible": 0,
+    "coverage_covered": 0,
+    "coverage_pp": 0,
+    "governance_classified": 0,
+    "first_red_manifestations": 0
+  },
+  "separate_local_extensions": {
+    "new_regression_checks": 13,
+    "new_regression_pass": 13,
+    "bd_treatment_rows": 10,
+    "historical_tests_claimed_pass": 73,
+    "replayed_tests_pass": 66,
+    "replayed_tests_error": 7,
+    "replay_regression_claim": "NOT_ESTABLISHED_MISSING_HISTORICAL_NESTED_FIXTURE",
+    "unique_combined_test_inventory": null
+  },
+  "comparability": {
+    "matched_coverage": true,
+    "matched_native_time_series": false,
+    "master_input_ledger_verified": false,
+    "root_closure_verified": null,
+    "previous_147_149_statement_coverage": "EXCLUDED_DIFFERENT_SCOPE",
+    "focused_305_305_statement_coverage": "EXCLUDED_DIFFERENT_SCOPE",
+    "independent_workflow_trials": false
+  },
+  "admission": "HOLD",
+  "security_waiver": false,
+  "authority_transfer": false,
+  "merge_authorized": false
+}

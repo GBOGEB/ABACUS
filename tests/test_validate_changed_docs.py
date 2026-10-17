@@ -27,6 +27,8 @@ class ValidateChangedDocsTests(unittest.TestCase):
         def fake_run(args, *, check=True):
             if args[:3] == ["git", "cat-file", "-e"]:
                 return _completed(args)
+            if args[:3] == ["git", "merge-base", "a" * 40]:
+                return _completed(args, stdout="f" * 40 + "\n")
             if args[:2] == ["git", "fetch"]:
                 return _completed(args)
             raise AssertionError(args)
@@ -36,11 +38,7 @@ class ValidateChangedDocsTests(unittest.TestCase):
         ):
             self.assertEqual(
                 docs._github_diff_ranges()[:3],
-                [
-                    [f"{'a' * 40}..{'c' * 40}"],
-                    [f"{'b' * 40}..{'c' * 40}"],
-                    ["origin/main..HEAD"],
-                ],
+                [[f"{'f' * 40}..HEAD"]],
             )
 
     def test_missing_base_sha_is_fetched_before_use(self) -> None:
@@ -93,6 +91,88 @@ class ValidateChangedDocsTests(unittest.TestCase):
             ), mock.patch.object(docs, "_run", side_effect=fake_run):
                 self.assertEqual(docs.changed_files(), [Path("docs/ok.md")])
 
+
+    def test_yaml_duplicate_nested_key_rejected(self) -> None:
+        with tempfile.TemporaryDirectory() as d:
+            root = Path(d)
+            path = root / "workflow.yml"
+            path.write_text(
+                "on: pull_request\njobs:\n  build:\n    runs-on: ubuntu\n"
+                "    runs-on: windows\n",
+                encoding="utf-8",
+            )
+            with mock.patch.object(docs, "REPO_ROOT", root):
+                self.assertEqual(docs.validate_yaml_structure(["workflow.yml"]), 1)
+
+    def test_yaml_anchors_and_on_literal_are_valid(self) -> None:
+        with tempfile.TemporaryDirectory() as d:
+            root = Path(d)
+            path = root / "workflow.yml"
+            path.write_text(
+                "on: pull_request\npaths: &paths\n  - '**/*.yml'\n"
+                "pull_request:\n  paths: *paths\n",
+                encoding="utf-8",
+            )
+            with mock.patch.object(docs, "REPO_ROOT", root):
+                self.assertEqual(docs.validate_yaml_structure(["workflow.yml"]), 0)
+
+    def test_yaml_invalid_syntax_rejected(self) -> None:
+        with tempfile.TemporaryDirectory() as d:
+            root = Path(d)
+            (root / "broken.yaml").write_text(
+                "config: [unclosed\n", encoding="utf-8"
+            )
+            with mock.patch.object(docs, "REPO_ROOT", root):
+                self.assertEqual(docs.validate_yaml_structure(["broken.yaml"]), 1)
+
+    def test_workflow_multidocument_rejected(self) -> None:
+        with tempfile.TemporaryDirectory() as d:
+            root = Path(d)
+            workflow = root / ".github" / "workflows" / "x.yml"
+            workflow.parent.mkdir(parents=True)
+            workflow.write_text("name: one\n---\nname: two\n", encoding="utf-8")
+            with mock.patch.object(docs, "REPO_ROOT", root):
+                self.assertEqual(
+                    docs.validate_yaml_structure([".github/workflows/x.yml"]), 1
+                )
+
+
+
+    def test_yaml_security_semgrep_config_contract(self) -> None:
+        config_file = (
+            Path(__file__).resolve().parents[1]
+            / ".github" / "security" / "semgrep-yaml-workflows.yml"
+        )
+        import yaml
+
+        parsed = yaml.safe_load(config_file.read_text(encoding="utf-8"))
+        ids = {rule["id"] for rule in parsed["rules"]}
+        self.assertEqual(
+            ids,
+            {
+                "abacus.github-actions-broad-write-all",
+                "abacus.github-actions-untrusted-pr-target",
+                "abacus.github-actions-unpinned-action-tag",
+            },
+        )
+        for rule in parsed["rules"]:
+            self.assertEqual(rule["languages"], ["yaml"])
+            self.assertIn("pattern-regex", rule)
+            self.assertEqual(len(rule["paths"]["include"]), 2)
+        import re
+
+        rules = {rule["id"]: rule["pattern-regex"] for rule in parsed["rules"]}
+        samples = {
+            "abacus.github-actions-broad-write-all": "permissions: write-all",
+            "abacus.github-actions-untrusted-pr-target": "  pull_request_target:",
+            "abacus.github-actions-unpinned-action-tag": (
+                "  - uses: actions/checkout@v7"
+            ),
+        }
+        for rule_id, sample in samples.items():
+            with self.subTest(rule=rule_id):
+                self.assertIsNotNone(re.search(rules[rule_id], sample))
+                self.assertIsNone(re.search(rules[rule_id], "permissions: read"))
 
 if __name__ == "__main__":
     unittest.main()
