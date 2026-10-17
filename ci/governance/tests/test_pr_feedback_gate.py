@@ -1,7 +1,9 @@
 import importlib.util
 import json
+import os
 import pathlib
 import sys
+import tempfile
 import unittest
 from unittest import mock
 
@@ -1578,6 +1580,12 @@ class FeedbackGateTests(unittest.TestCase):
         self.assertIn(
             "ref: ${{ github.event.repository.default_branch }}", invalidate
         )
+        # The same event's census runs after its invalidation, so the
+        # invalidator's newer stamp cannot reject the census result.
+        evaluate = workflow.split("  evaluate:\n", 1)[1]
+        self.assertIn("needs: [route, invalidate]", evaluate)
+        self.assertIn("!cancelled()", evaluate)
+        self.assertIn("needs.route.result == 'success'", evaluate)
         self.assertIn("--mark-pending-only", invalidate)
         self.assertNotIn("concurrency:", invalidate)
         # A no-op event must never cancel or displace a run that has PRs to
@@ -1771,6 +1779,77 @@ class FeedbackGateTests(unittest.TestCase):
         for bad in ("2026-10-11T15:00:01Z", "yesterday"):
             with self.assertRaises(gate.argparse.ArgumentTypeError):
                 gate.census_started_arg(bad)
+
+    def test_departing_head_is_invalidated_on_synchronize(self):
+        head = "b" * 40
+        before = "a" * 40
+        event = {
+            "action": "synchronize",
+            "before": before,
+            "after": head,
+            "pull_request": {"number": 7},
+        }
+        self.assertEqual(gate.departing_head_sha(event, 7, head), before)
+        for changed in (
+            {"action": "opened"},
+            {"action": "reopened"},
+            {"before": head},
+            {"before": "0" * 40},
+            {"before": "not-a-sha"},
+            {"pull_request": {"number": 8}},
+        ):
+            self.assertIsNone(
+                gate.departing_head_sha({**event, **changed}, 7, head),
+                changed,
+            )
+        self.assertIsNone(gate.departing_head_sha({}, 7, head))
+
+    def test_mark_pending_also_supersedes_departing_head(self):
+        head = "b" * 40
+        before = "a" * 40
+        published = []
+
+        class FakeGitHub:
+            def __init__(self, token, repository):
+                pass
+
+            def pull(self, number):
+                return {
+                    "state": "open",
+                    "base": {"ref": "main"},
+                    "head": {"sha": head},
+                }
+
+            def publish_gate(self, sha, state, title, summary, text, **kw):
+                published.append((sha, state, kw.get("census_started")))
+                return True
+
+        event = {
+            "action": "synchronize",
+            "before": before,
+            "after": head,
+            "pull_request": {"number": 7},
+        }
+        with tempfile.TemporaryDirectory() as tmp:
+            path = pathlib.Path(tmp) / "event.json"
+            path.write_text(json.dumps(event), encoding="utf-8")
+            argv = [
+                "pr_feedback_gate.py",
+                "--event-path", str(path),
+                "--pr-number", "7",
+                "--census-started", "2026-10-17T20:00:00.000000Z",
+                "--mark-pending-only",
+            ]
+            env = {"GITHUB_REPOSITORY": "o/r", "GITHUB_TOKEN": "t"}
+            with mock.patch.object(gate, "GitHub", FakeGitHub), \
+                    mock.patch.object(sys, "argv", argv), \
+                    mock.patch.dict(os.environ, env):
+                self.assertEqual(gate.main(), 0)
+        self.assertEqual(
+            [(sha, state) for sha, state, _ in published],
+            [(head, "pending"), (before, "pending")],
+        )
+        self.assertEqual(len({stamp for _, _, stamp in published}), 1)
 
 
 if __name__ == "__main__":

@@ -156,8 +156,14 @@ jobs:
 
   evaluate:
     name: Evaluate PR feedback gate (#${{ matrix.pr }})
-    needs: route
-    if: needs.route.outputs.prs != '[]'
+    # Run after this event's own invalidation, so the invalidator's pending
+    # stamp is always older than this census and cannot reject its result.
+    # A skipped or failed invalidation must not block the census itself.
+    needs: [route, invalidate]
+    if: >-
+      !cancelled()
+      && needs.route.result == 'success'
+      && needs.route.outputs.prs != '[]'
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false

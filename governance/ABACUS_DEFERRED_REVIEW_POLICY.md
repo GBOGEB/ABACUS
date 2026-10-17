@@ -163,9 +163,11 @@ immediately. Until then the gate's materiality-aware disposition rule
 applies in addition to, not instead of, native conversation resolution.
 
 A head change (`pull_request` synchronize or reopened) marks the gate pending
-outside the per-PR census queue, the same way a tracking-issue event does, so
-a PR moved from head A to B and back to A cannot re-expose A's earlier
-success while the returning head waits for its census.
+outside the per-PR census queue, the same way a tracking-issue event does. On
+synchronize it also marks the departing head (the event's `before` SHA)
+pending, so a PR moved from head A to B and back to A cannot re-expose A's
+earlier success. The same event's census runs only after that invalidation,
+so its result is never rejected as older than the pending mark.
 
 Overlapping evaluator runs for one PR (for example a tracking-issue event and
 a CI `workflow_run`) cannot interleave: the workflow first routes the event to
