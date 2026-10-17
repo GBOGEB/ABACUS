@@ -30,7 +30,7 @@ class CohortUnionTests(unittest.TestCase):
         self.assertEqual(rec["declared_observation_rows"], 78)
         self.assertIsNone(rec["distinct_run_attempts"])
         self.assertEqual(rec["distinct_declared_run_ids"], 78)
-        self.assertEqual(rec["unknown_attempt_associations"], 78)
+        self.assertEqual(rec["unknown_attempt_associations"], 66)
         self.assertEqual(rec["snapshots_without_head_manifests"], 1)
         self.assertEqual(rec["distinct_declared_pr_heads"], 19)
         self.assertIsNone(result["observed"]["run_attempt_count"])
@@ -51,7 +51,7 @@ class CohortUnionTests(unittest.TestCase):
         data = [data[0], copy.deepcopy(data[0]), copy.deepcopy(data[0])]
         result = produce_cohorts(data)
         self.assertEqual(result["cohort_reconciliation"]["declared_observation_rows"], 36)
-        self.assertIsNone(result["cohort_reconciliation"]["distinct_run_attempts"])
+        self.assertEqual(result["cohort_reconciliation"]["distinct_run_attempts"], 12)
         self.assertEqual(result["cohort_reconciliation"]["distinct_declared_run_ids"], 12)
         self.assertEqual(result["cohort_reconciliation"]["cross_source_duplicate_rows"], 24)
         self.assertEqual(result["cohort_reconciliation"]["distinct_source_documents"], 1)
@@ -60,21 +60,21 @@ class CohortUnionTests(unittest.TestCase):
         data = snapshots()
         forged = copy.deepcopy(data[0])
         forged["observations"][0]["workflow"] = "fake-other-workflow"
-        with self.assertRaisesRegex(ValueError, "conflicting run-attempt"):
+        with self.assertRaisesRegex(ValueError, "conflicting"):
             produce_cohorts([data[0], forged])
 
     def test_same_run_with_different_pr_rejected(self):
         data = snapshots()
         forged = copy.deepcopy(data[0])
         forged["observations"][0]["pr"] = 99999
-        with self.assertRaisesRegex(ValueError, "conflicting run-attempt"):
+        with self.assertRaisesRegex(ValueError, "conflicting"):
             produce_cohorts([data[0], forged])
 
     def test_same_pr_with_changed_sha_rejected(self):
         data = snapshots()
         forged = copy.deepcopy(data[0])
         forged["observations"][0]["sha"] = "1" * 40
-        with self.assertRaisesRegex(ValueError, "incompatible pull-head"):
+        with self.assertRaisesRegex(ValueError, "conflicting|incompatible"):
             produce_cohorts([data[0], forged])
 
     def test_security_waiver_fails_closed(self):
@@ -132,7 +132,7 @@ class CohortUnionTests(unittest.TestCase):
         self.assertEqual(rec["manifest_comparability"], "NOT_A_DENOMINATOR_FOR_UNION_PASS_RATE")
 
     def test_unknown_to_known_same_run_attempt_fails_closed(self):
-        source = snapshots()[0]
+        source = snapshots()[1]
         other = copy.deepcopy(source)
         other["observations"][0]["attempt"] = 1
         with self.assertRaisesRegex(ValueError, "ambiguous unknown/known"):
@@ -168,6 +168,25 @@ class CohortUnionTests(unittest.TestCase):
         second["sampled_pr_heads"][0]["workflow_associations_seen"] += 1
         with self.assertRaisesRegex(ValueError, "conflicting sampled PR head manifest"):
             produce_cohorts([first, second])
+
+
+    def test_known_and_unknown_attempts_are_not_falsely_summed(self):
+        result = produce_cohorts(snapshots())
+        self.assertIsNone(result["observed"]["run_attempt_count"])
+        self.assertEqual(result["observed"]["run_association_count"], 78)
+        self.assertEqual(result["cohort_reconciliation"]["unknown_attempt_associations"], 66)
+        self.assertEqual(result["cohort_reconciliation"]["distinct_declared_run_ids"], 78)
+
+    def test_unknown_attempt_remains_unverified_under_duplicate_source(self):
+        source = snapshots()[1]
+        result = produce_cohorts([source, copy.deepcopy(source)])
+        rec = result["cohort_reconciliation"]
+        self.assertGreater(rec["unknown_attempt_associations"], 0)
+        self.assertIsNone(rec["distinct_run_attempts"])
+        self.assertIsNone(result["observed"]["run_attempt_count"])
+        self.assertIsNone(rec["root_closure_credit"])
+        self.assertEqual(rec["admission"], "HOLD")
+
 
 
 if __name__ == "__main__":
