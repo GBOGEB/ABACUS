@@ -3,6 +3,47 @@ as_of: 2026-09-26
 repository: GBOGEB/ABACUS
 base_branch: main
 
+# Latest additive pulse: the older 53-row October census below is retained.
+# This is GitHub issue lifecycle pressure, NOT an engineering-root ledger.
+latest_followup_pulse:
+  observed_date_utc: '2026-10-17'
+  source_receipt: triage/ABACUS_BD_PULSE2_20261017.json
+  open_ABACUS_issues_before: 53
+  open_ABACUS_issues_after: 38
+  issue_lifecycle_closed_delta: 15
+  new_duplicate_monitoring_closures: 9
+  other_completed_issue_closures: 6
+  engineering_root_open_count: null
+  engineering_root_closed_count: null
+  canonical_dashboard_root: 1885
+  canonical_dashboard_root_state: OPEN
+  dashboard_source_repair_pr: 2164
+  dashboard_source_repair_ci: PENDING
+  canonical_bd_root_issue: 1929
+  admission_issue: 1860
+  admission: HOLD
+  authority_transfer: false
+  four_repo_scoped_issue_census:
+    GBOGEB/ABACUS: 38
+    GBOGEB/CODEX: 10
+    GBOGEB/cryoplant-project: 56
+    GBOGEB/pipeline-automation-hub: 32
+  four_repo_scoped_total: 136
+  all_repositories_total: null
+  current_open_age_cohorts:
+    days_0_to_6: 19
+    days_7_to_13: 1
+    days_14_to_29: 9
+    days_30_plus: 9
+  ageing_pressure_14plus_before: [24, 53]
+  ageing_pressure_14plus_after: [18, 38]
+  aged_item_absolute_count_delta: -6
+  note: >-
+    Duplicate alerts reduce issue noise and change age cohort shares.
+    Source owners must still prove protected-main CI, causal first-red
+    repair and exact-head acceptance before engineering closure.
+
+
 # Live October census overlay. The September queue below remains frozen.
 # GitHub issue objects are NOT deduplicated BD engineering roots.
 latest_live_census:
