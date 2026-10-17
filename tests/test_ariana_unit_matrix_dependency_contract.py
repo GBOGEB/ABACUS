@@ -12,7 +12,7 @@ PRODUCT_SHIM = ROOT / "requirements.txt"
 WORKFLOW = ROOT / ".github/workflows/ci-cd-tests.yml"
 
 
-def _secure_constraint(text: str) -> str:
+def _secure_constraint(text: str, expected: str = "defusedxml>=0.7.1,<0.8.0") -> str:
     declared = [
         line.split("#", 1)[0].strip()
         for line in text.splitlines()
@@ -20,7 +20,7 @@ def _secure_constraint(text: str) -> str:
     ]
     if len(declared) != 1:
         raise ValueError("exactly one secure JUnit parser constraint required")
-    if declared[0] != "defusedxml>=0.7.1,<0.8.0":
+    if declared[0] != expected:
         raise ValueError("unmatched secure JUnit parser constraint")
     return declared[0]
 
@@ -47,8 +47,27 @@ def test_nine_cell_ci_uses_shared_minimal_dependency_manifest() -> None:
 def test_minimal_and_root_secure_parser_constraints_are_consistent() -> None:
     minimal = MINIMAL.read_text(encoding="utf-8")
     root = PRODUCT_SHIM.read_text(encoding="utf-8")
-    assert _secure_constraint(minimal) == _secure_constraint(root)
+    # Root production shim and isolated CI install share the secure floor;
+    # deliberate upper bounds differ: <1.0 for root, <0.8.0 for test-only.
+    isolated = _secure_constraint(minimal)
+    runtime = _secure_constraint(root, expected="defusedxml>=0.7.1,<1.0")
+    assert isolated == "defusedxml>=0.7.1,<0.8.0"
+    assert runtime == "defusedxml>=0.7.1,<1.0"
+    assert isolated.split(",", 1)[0] == runtime.split(",", 1)[0]
     assert "-r DMAIC_V3/requirements.txt" in root
+
+
+def test_missing_or_downgraded_runtime_parser_fails_closed() -> None:
+    source = PRODUCT_SHIM.read_text(encoding="utf-8")
+    constraint = _secure_constraint(source, expected="defusedxml>=0.7.1,<1.0")
+    for replacement in ("", "defusedxml>=0.6.0,<1.0", "defusedxml>=0.7.1,<2.0"):
+        malformed = source.replace(constraint, replacement)
+        try:
+            _secure_constraint(malformed, expected="defusedxml>=0.7.1,<1.0")
+        except ValueError:
+            pass
+        else:
+            raise AssertionError("missing or drifted root secure parser accepted")
 
 
 def test_missing_or_drifted_minimal_parser_fails_closed() -> None:

@@ -5,6 +5,8 @@ on:
       - 'requirements-test.txt'
       - 'tests/test_ariana_unit_matrix_dependency_contract.py'
       - 'tests/test_ariana_secure_junit_dependency.py'
+      - 'tests/test_w3_security_native_receipt.py'
+      - 'scripts/ci/w3_security_native_receipt.py'
       - '.github/workflows/w2-ariana-isolated-xml-qa.yml'
 permissions:
   contents: read
@@ -38,11 +40,24 @@ jobs:
         run: |
           set -euo pipefail
           mkdir -p w2-evidence
-          python -m pytest -q tests/test_ariana_unit_matrix_dependency_contract.py tests/test_ariana_secure_junit_dependency.py --junitxml=w2-evidence/junit.xml
-      - name: Require native JUnit artifact
+          python -m pytest -q tests/test_ariana_unit_matrix_dependency_contract.py tests/test_ariana_secure_junit_dependency.py tests/test_w3_security_native_receipt.py --junitxml=w2-evidence/junit.xml
+      - name: Verify fail-closed exact-head native JUnit receipt
+        shell: bash
+        env:
+          EXPECTED_HEAD: ${{ github.event.pull_request.head.sha }}
+          OS_CELL: ${{ matrix.os }}
+          PYTHON_CELL: ${{ matrix.python-version }}
+        run: |
+          set -euo pipefail
+          python -m scripts.ci.w3_security_native_receipt --expected-head "$EXPECTED_HEAD" \
+            --os-cell "$OS_CELL" --python-cell "$PYTHON_CELL" \
+            --junit w2-evidence/junit.xml --out w2-evidence/native-receipt.json
+          test -s w2-evidence/junit.xml
+          test -s w2-evidence/native-receipt.json
+      - name: Require native JUnit and receipt artifacts
         if: always()
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         with:
           name: secure-xml-${{ matrix.os }}-py${{ matrix.python-version }}
-          path: w2-evidence/junit.xml
+          path: w2-evidence/
           if-no-files-found: error
