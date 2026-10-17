@@ -1,0 +1,73 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>G3A · DMAIC / MIP / gg_MATH evidence observatory</title>
+<style>
+:root{--bg:#0b1524;--p:#15263d;--line:#33445d;--ink:#ebf4ff;--mute:#aec0d5;--good:#60dbba;--hold:#ffc278;--off:#a3adc1}
+*{box-sizing:border-box}body{background:var(--bg);color:var(--ink);font:14px/1.5 system-ui;margin:0}a{color:#9dcbff}
+header{position:sticky;top:0;z-index:30;background:#101e31e9;backdrop-filter:blur(12px);border-bottom:1px solid var(--line);padding:10px max(14px,calc((100vw - 1350px)/2))}
+nav{display:flex;gap:10px;overflow:auto;white-space:nowrap;font-size:11px}nav span{border:1px solid var(--line);border-radius:14px;padding:3px 8px}h1{font-size:21px;margin:0 0 7px}main{max-width:1350px;margin:auto;padding:20px 16px}h2{font-size:18px;margin:22px 0 12px}
+.note{padding:13px;background:#27261f;border:1px solid #7a653e;border-radius:12px}
+.grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px}.card{background:var(--p);border:1px solid var(--line);border-radius:14px;padding:14px;min-width:0}
+.big{font-size:29px;font-weight:760;font-variant-numeric:tabular-nums}.sub{font-size:11px;color:var(--mute)}.chip{font-size:11px;border:1px solid #617185;border-radius:15px;padding:3px 8px;display:inline-block;margin:5px 0}
+.chart{height:170px}.plots .chart{height:330px}.plots{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+button{background:#294366;color:var(--ink);border:1px solid #536b8e;border-radius:8px;padding:6px 10px;cursor:pointer}
+button:focus-visible,a:focus-visible{outline:2px solid var(--good);outline-offset:2px}
+dialog{width:min(1000px,96vw);max-height:92vh;overflow:auto;border-radius:14px;background:var(--p);color:var(--ink);border:1px solid var(--line)}
+dialog::backdrop{background:#000b}.fine{font-size:11px;color:var(--mute)}
+table{border-collapse:collapse;width:100%}td,th{border-bottom:1px solid var(--line);padding:8px;text-align:left}
+table th{color:var(--mute)}@media(max-width:1120px){.grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:650px){.grid,.plots{grid-template-columns:1fr}h1{font-size:17px}main{padding:12px}}
+</style>
+<script src="https://cdn.plot.ly/plotly-3.1.0.min.js" defer></script></head>
+<body><header><h1>G3A · DMAIC/MIP · gg_MATH <small class="fine">Native N-series source-bound evidence</small></h1>
+<nav aria-label="Sticky evidence legend"><span style="color:var(--good)">● Actual improvement</span><span style="color:var(--hold)">● Admission HOLD</span><span style="color:var(--off)">● Not targeted</span><span>N = ordered pulse, not wall time</span><span>PCA/BT = unqualified</span><span>Six Sigma ≠ branch coverage</span></nav></header>
+<main>
+<p class="note"><b>N13/N14 native evidence is measured.</b> N15 is pending native CI, never plotted as zero. The graphics below are derived from source-frozen 446-branch observations; the Six Sigma reference curve is hypothetical only. Mathematical provider: <a href="https://github.com/GBOGEB/gg_MATH/tree/961eadf43f19b6bc0ef11fdd640c30ab59f74f41">gg_MATH@961eadf</a>. Engineering admission and federation promotion remain HOLD.</p>
+<div class="grid" id="cards"></div>
+<h2>Measured coverage and unmet obligations</h2><section class="plots">
+<div class="card"><b>Normalized branch coverage</b><div class="chart" id="overview"></div><button data-zoom="overview">Full plot ↗</button></div>
+<div class="card"><b>Uncovered branch obligations (stacked)</b><div class="chart" id="debt"></div><button data-zoom="debt">Full plot ↗</button></div>
+<div class="card"><b>Distinct newly reached arcs</b><div class="chart" id="gain"></div><button data-zoom="gain">Full plot ↗</button></div>
+<div class="card"><b>Six Sigma convention, synthetic zero-defect illustration</b><span class="chip">NOT MEASURED</span><div class="chart" id="cap"></div><button data-zoom="cap">Full plot ↗</button></div>
+</section>
+<h2>DMAIC + MIP decision table</h2><section class="card">
+<table><thead><tr><th>Method</th><th>Observation</th><th>Action / qualification</th></tr></thead><tbody>
+<tr><td>Define/Measure</td><td>N13 115/446 → N14 200/446</td><td>Frozen source, same arcs/instrumentation</td></tr>
+<tr><td>Analyze</td><td>85 new / 0 lost arcs</td><td>Do not equate one step to trend stability</td></tr>
+<tr><td>Improve</td><td>N15 +14 Phase8 tests in <a href="https://github.com/GBOGEB/ABACUS/pull/2145">#2145</a></td><td>Wait for actual native gain and first-red</td></tr>
+<tr><td>Control</td><td>Two comparable observations</td><td>Not enough for stability, equivalence or asymptote</td></tr>
+<tr><td>gg_MATH PCA M04</td><td>n=2, p=4; centered rank ≤1</td><td>Not qualified; no PC1 extrapolation</td></tr>
+<tr><td>gg_MATH BT M08</td><td>0 observed pairwise matches</td><td>Not estimable; no synthetic comparison conversion</td></tr>
+<tr><td>Six Sigma DPMO</td><td>Field CTQ/opportunity universe missing</td><td>Not assessed from code coverage</td></tr>
+<tr><td>Governance</td><td><a href="https://github.com/GBOGEB/ABACUS/pull/2144">#2144</a> repair candidate</td><td>Exact-head gate plus independent review required</td></tr>
+</tbody></table>
+</section><p class="fine">ABACUS source N14 <code>1446d78a6e93a455d9bed71f070a6b460dc6e86d</code>. This HTML is a read-only draft; its Plotly CDN requires access when viewing the GitHub source version. The downloadable local lossless archive contains a separate fully offline Plotly build. GitHub Pages publication is not established. authority_transfer=false; merge_admission=HOLD.</p>
+</main><dialog id="detail" aria-label="Expanded Plotly chart"><button id="close">Close</button><h2 id="full-title">Full view</h2><div style="height:440px" id="fullplot"></div></dialog>
+<script>
+(function(){
+"use strict";
+const rows=[
+{name:"Debug pipeline",a:17,b:94,d:116,gain:77,target:true},
+{name:"Phase 4 Improve",a:45,b:53,d:134,gain:8,target:true},
+{name:"Phase 8 TODO",a:30,b:30,d:118,gain:0,target:false},
+{name:"CI/CD orchestrator",a:23,b:23,d:78,gain:0,target:false}
+];
+const specs={};const css={plot_bgcolor:"rgba(0,0,0,0)",paper_bgcolor:"rgba(0,0,0,0)",font:{color:"#e6f1ff",size:11},margin:{l:40,r:12,t:15,b:42},height:240};
+function chart(id,data,layout){specs[id]={data,layout:Object.assign({},css,layout)};const el=document.getElementById(id);if(window.Plotly){Plotly.newPlot(el,data,specs[id].layout,{responsive:true,displayModeBar:false});}else{const summary=data.map(d=>(d.name||"Measured")+": "+(d.y||[]).join(" → ")).join(" | ");el.innerHTML='<p class="sub" role="note">Plotly unavailable; static values: '+summary+'</p>';}}
+const root=document.getElementById("cards");
+rows.forEach((r,i)=>{root.insertAdjacentHTML("beforeend",'<article class="card"><b>'+r.name+'</b><div class="big">'+r.b+' <small class="sub">/ '+r.d+'</small></div><div class="sub">'+(100*r.b/r.d).toFixed(2)+'% · '+(r.d-r.b)+' missing</div><span class="chip">'+(r.target?"Observed improvement":"Not targeted N14")+'</span><div class="chart" id="mini-'+i+'"></div><button data-zoom="mini-'+i+'">Expand ↗</button></article>');});
+function mini(r,i){chart("mini-"+i,[{x:["N13","N14"],y:[100*r.a/r.d,100*r.b/r.d],mode:"lines+markers",type:"scatter",line:{color:r.target?"#60dbba":"#8c9ab1",width:3,dash:r.target?"solid":"dot"}}],{height:155,margin:{l:33,r:6,t:9,b:25},showlegend:false,yaxis:{range:[0,100],ticksuffix:"%"}});}
+const plot=()=>{rows.forEach(mini);
+chart("overview",rows.map(r=>({x:["N13","N14"],y:[100*r.a/r.d,100*r.b/r.d],type:"scatter",mode:"lines+markers",name:r.name,line:{width:3,dash:r.target?"solid":"dot"}})),{height:330,yaxis:{range:[0,101],ticksuffix:"%"},legend:{orientation:"h",y:-0.3}});
+chart("debt",rows.map(r=>({x:["N13","N14"],y:[r.d-r.a,r.d-r.b],type:"bar",name:r.name})),{height:330,barmode:"stack",legend:{orientation:"h",y:-0.3}});
+chart("gain",[{x:rows.map(r=>r.name),y:rows.map(r=>r.gain),type:"bar",marker:{color:rows.map(r=>r.target?"#60dbba":"#8c9ab1")},name:"new distinct arcs"}],{height:330,yaxis:{title:"Distinct new arcs"}});
+const x=[100,1000,10000,100000,500000,881098,1000000],y=x.map(v=>-1000000*Math.expm1(Math.log(.05)/v));
+chart("cap",[{x,y,type:"scatter",mode:"lines+markers",name:"Hypothetical"}],{height:330,xaxis:{type:"log"},yaxis:{type:"log"},shapes:[{type:"line",xref:"paper",x0:0,x1:1,yref:"y",y0:3.4,y1:3.4,line:{color:"#ff7485",dash:"dash"}}]});
+};
+function ready(){if(!window.Plotly){const p=document.createElement("p");p.className="note";p.textContent="Plotly CDN could not load. Values and method decision table remain readable; download the fully offline HTML from the handover.";document.querySelector("main").prepend(p);}plot();}
+window.addEventListener("load",ready);
+document.addEventListener("click",ev=>{const btn=ev.target.closest("[data-zoom]");if(!btn)return;const s=specs[btn.dataset.zoom];if(!s)return;const d=document.getElementById("detail");document.getElementById("full-title").textContent="Expanded · "+btn.dataset.zoom;d.showModal();if(window.Plotly){Plotly.newPlot("fullplot",s.data,Object.assign({},s.layout,{height:440,margin:{l:64,r:24,t:24,b:72}}),{responsive:true});}});
+document.getElementById("close").onclick=()=>document.getElementById("detail").close();
+document.getElementById("detail").addEventListener("close",()=>{if(window.Plotly)Plotly.purge("fullplot");});
+})();
+</script></body></html>
