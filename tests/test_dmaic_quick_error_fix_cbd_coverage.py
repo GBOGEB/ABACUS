@@ -113,7 +113,7 @@ def test_type_fix_is_idempotent_and_receipted(tmp_path):
 def test_type_fix_never_corrupts_already_parameterized_annotations(tmp_path):
     fixer = load().QuickFixer()
     path = tmp_path / "valid.py"
-    before = "mapped: Dict[str, Any] = {}\\nvalues: Dict[str, int] = {}\\n"
+    before = "mapped: Dict[str, Any] = {}\nvalues: Dict[str, int] = {}\n"
     path.write_text(before)
     assert fixer.fix_type_hints(path) is False
     assert path.read_text() == before
@@ -122,9 +122,9 @@ def test_type_fix_never_corrupts_already_parameterized_annotations(tmp_path):
 def test_type_fix_repairs_only_incomplete_dict_placeholder(tmp_path):
     fixer = load().QuickFixer()
     path = tmp_path / "partial.py"
-    path.write_text("mapped: Dict[str, ] = {}\\n")
+    path.write_text("mapped: Dict[str, ] = {}\n")
     assert fixer.fix_type_hints(path) is True
-    assert path.read_text() == "mapped: Dict[str, Any] = {}\\n"
+    assert path.read_text() == "mapped: Dict[str, Any] = {}\n"
     assert fixer.fix_type_hints(path) is False
 
 
