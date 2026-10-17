@@ -1,8 +1,6 @@
 #!/usr/bin/env python3
 """Fail-closed read-only MIP U01-U16 backlog validator and roll-up."""
-
 from __future__ import annotations
-
 import argparse
 import datetime as dt
 import json
@@ -45,48 +43,27 @@ def rollup(backlog, as_of):
         if age.get("days") is not None and age["days"] != days:
             raise ValueError("stale age days")
         if state.startswith("VERIFIED"):
-            if not isinstance(row.get("proof_reference"), str) or not row[
-                "proof_reference"
-            ].startswith("https://github.com/"):
+            if not isinstance(row.get("proof_reference"), str) or not row["proof_reference"].startswith("https://github.com/"):
                 raise ValueError("verified state requires native proof URL")
             if row.get("measurement_value") is None:
                 raise ValueError("verified state requires measured value")
         elif row.get("measurement_value") is not None and state == "UNKNOWN":
             raise ValueError("UNKNOWN cannot claim a value")
-        if (
-            state == "VERIFIED_PASS"
-            and row.get("root_id") is not None
-            and not row.get("proof_reference")
-        ):
+        if state == "VERIFIED_PASS" and row.get("root_id") is not None and not row.get("proof_reference"):
             raise ValueError("unproven root")
         counts[state] += 1
-        aged.append(
-            {
-                "id": key,
-                "age_days": days,
-                "state": state,
-                "owner": row["owner"],
-                "overflow": row.get("overflow") is True,
-            }
-        )
+        aged.append({"id": key, "age_days": days, "state": state,
+                     "owner": row["owner"], "overflow": row.get("overflow") is True})
     if ids != {f"U{i:02d}" for i in range(1, 17)}:
         raise ValueError("missing U-ID")
-    return {
-        "schema": "code-purple.mip.unknown-kpi.v1",
-        "as_of": as_of,
-        "source_repository": backlog["source_repository"],
-        "reference_head": backlog["reference_head"],
-        "total": 16,
-        "states": counts,
-        "evidence_completeness": counts["VERIFIED_PASS"] + counts["VERIFIED_FAIL"],
-        "evidence_completeness_pct": round(
-            100 * (counts["VERIFIED_PASS"] + counts["VERIFIED_FAIL"]) / 16, 2
-        ),
-        "aged": aged,
-        "overflow_count": sum(x["overflow"] for x in aged),
-        "merge_admission": "HOLD",
-        "authority_transfer": False,
-    }
+    return {"schema": "code-purple.mip.unknown-kpi.v1",
+            "as_of": as_of, "source_repository": backlog["source_repository"],
+            "reference_head": backlog["reference_head"],
+            "total": 16, "states": counts,
+            "evidence_completeness": counts["VERIFIED_PASS"] + counts["VERIFIED_FAIL"],
+            "evidence_completeness_pct": round(100 * (counts["VERIFIED_PASS"] + counts["VERIFIED_FAIL"]) / 16, 2),
+            "aged": aged, "overflow_count": sum(x["overflow"] for x in aged),
+            "merge_admission": "HOLD", "authority_transfer": False}
 
 
 def main():
@@ -97,9 +74,7 @@ def main():
     a = p.parse_args()
     result = rollup(json.loads(a.input.read_text(encoding="utf-8")), a.as_of)
     a.output.parent.mkdir(parents=True, exist_ok=True)
-    a.output.write_text(
-        json.dumps(result, sort_keys=True, indent=2) + "\n", encoding="utf-8"
-    )
+    a.output.write_text(json.dumps(result, sort_keys=True, indent=2) + "\n", encoding="utf-8")
 
 
 if __name__ == "__main__":

@@ -1,0 +1,140 @@
+{
+  "schema": "code-purple.nplus3.pulse4-bd-coverage/v1",
+  "authority": "APPEND_ONLY_DIAGNOSTIC_NOT_SSOT",
+  "observed_date": "2026-10-15",
+  "admission": "HOLD",
+  "prune_authorized": false,
+  "roots_closed_claimed": 0,
+  "open_issue_records_observed": 47,
+  "open_abacus_prs_observed": 46,
+  "abacus_main_sha": "54da377cf82a358ac97903ecde0270c975b8fcc1",
+  "coverage_pulses": [
+    {
+      "pulse": "W70-N+3",
+      "head": "e2d25f9a282c81b84a89727f529c2ca8e55f484f",
+      "run_id": 38772568864,
+      "job_id": 116551902805,
+      "artifact_id": 11992955283,
+      "tests": {
+        "passed": 21,
+        "total": 21
+      },
+      "line": {
+        "covered": 119,
+        "eligible": 119,
+        "pct": 100
+      },
+      "branch": {
+        "covered": 15,
+        "eligible": 16,
+        "pct": 93.75
+      },
+      "manifestations": {
+        "open": 31,
+        "total": 76
+      },
+      "source_scope": "tools/w70_wave_pulse_metrics.py"
+    },
+    {
+      "pulse": "W70-N+3-P4",
+      "head": "45ba302595f8c4b4e21d9896091b359d9a4630d0",
+      "job_id": 116569116245,
+      "artifact_id": 11994936872,
+      "tests": {
+        "passed": 23,
+        "total": 23
+      },
+      "line": {
+        "covered": 133,
+        "eligible": 133,
+        "pct": 100
+      },
+      "branch": {
+        "covered": 17,
+        "eligible": 18,
+        "pct": 94.44
+      },
+      "manifestations": {
+        "open": 31,
+        "total": 76
+      },
+      "source_scope": "tools/w70_wave_pulse_metrics.py"
+    }
+  ],
+  "comparison": {
+    "same_module_path": true,
+    "same_source_bytes": false,
+    "matched_cohort": false,
+    "scope_adjusted_gain_pp": null,
+    "descriptive_branch_delta_pp": 0.69,
+    "eligible_lines_added": 14,
+    "eligible_branches_added": 2,
+    "tests_added": 2,
+    "root_count_delta": null,
+    "root_burndown": "UNKNOWN"
+  },
+  "bd_queue": [
+    {
+      "priority": "P0",
+      "root": "SECURITY_SAFETY_NLTK",
+      "pr": 2027,
+      "action": "Retain nonzero Safety exit 64 and inspect native vulnerability report, pip check, exact scanner context",
+      "admission": "HOLD"
+    },
+    {
+      "priority": "P0",
+      "root": "PYTHON_MATPLOTLIB_COMPAT",
+      "prs": [
+        2024,
+        2026
+      ],
+      "action": "Await same-interpreter terminal results; pick single source-owned compatible branch and reconcile dependent PRs",
+      "admission": "HOLD"
+    },
+    {
+      "priority": "P0",
+      "root": "A10_INDEPENDENT_REVIEW",
+      "pr": 1995,
+      "action": "Authorized confidentiality adjudication and effective required checks",
+      "admission": "HOLD"
+    },
+    {
+      "priority": "P1",
+      "root": "W70_BROAD_CI",
+      "pr": 1997,
+      "action": "Separate governance, dependency, feedback and security from successful native measurement",
+      "admission": "HOLD"
+    },
+    {
+      "priority": "P1",
+      "root": "MIP_DEPENDENCY",
+      "prs": [
+        1990,
+        2005,
+        2010
+      ],
+      "action": "Preserve child-base dependency, avoid independent credit and stale shared proof"
+    },
+    {
+      "priority": "P1",
+      "root": "MISSIONCONTROL_M3_AUDIT",
+      "prs": [
+        552,
+        553
+      ],
+      "action": "Source-owned M3 YAML repair before strict gate rerun"
+    }
+  ],
+  "unknown_metrics": [
+    "unique root closures",
+    "matched-scope repository coverage delta",
+    "queue p95",
+    "authenticated crew/debug sessions",
+    "PCA/BT readiness",
+    "QPS engineering acceptance"
+  ],
+  "source_urls": [
+    "https://github.com/GBOGEB/ABACUS/actions/runs/38777581263",
+    "https://github.com/GBOGEB/ABACUS/pull/1997"
+  ]
+}

@@ -1,0 +1,228 @@
+schema: char.bd.execution.v1
+name: Char_BD
+short_command: "CBD!"
+display_alias: "CBD<!>"
+machine_id: char_bd
+goal: >-
+  Governed source-attributable burn-down to independently evidenced
+  ASH_QUALIFIED states
+version: 1
+mode: default_deny
+authority_transfer: false
+security_waiver: false
+auto_merge: false
+unknown_policy: null_not_zero
+canonical:
+  admission_issue: "https://github.com/GBOGEB/ABACUS/issues/1860"
+  roots_issue: "https://github.com/GBOGEB/ABACUS/issues/1929"
+  coverage_issue: "https://github.com/GBOGEB/ABACUS/issues/1991"
+  dispatch_issue: "https://github.com/GBOGEB/CODEX/issues/977"
+  joined_schema: bd.ldab.joined.census.v1
+baseline:
+  repository: GBOGEB/ABACUS
+  main_sha: 54da377cf82a358ac97903ecde0270c975b8fcc1
+  b0_covered: 21391
+  b0_eligible: 39139
+  b0_files: 299
+  comparable_new_main_delta: null
+  unique_roots_open: null
+  unique_roots_closed: null
+  authenticated_crew: null
+  accepted_rex: null
+admission_requirements:
+  - native_terminal_exact_head_checks
+  - effective_required_status_contexts
+  - independent_eligible_review
+  - authorized_a10_confidentiality_disposition
+  - security_without_waiver
+  - protected_main_exact_sha_readback
+required_receipt_fields:
+  - repository
+  - full_main_sha
+  - full_head_sha
+  - workflow_run_id
+  - job_id
+  - run_attempt
+  - artifact_id
+  - artifact_sha256
+  - source_config_and_cohort_digest
+  - first_red_fingerprint
+  - owning_root
+  - terminal_conclusion
+  - numerator_and_denominator_if_metric
+tasks:
+  - id: CBD00
+    priority: P0
+    owner: CENSUS
+    dependencies: []
+    action: >-
+      Refresh authoritative default refs, exact PR heads, open issues/PRs,
+      full paginated runs and jobs
+  - id: CBD01
+    priority: P0
+    owner: BD_LDAB
+    dependencies: [CBD00]
+    action: >-
+      Fingerprint and cluster source-attributable first-reds; separate
+      manifestations and inherited debt
+  - id: CBD02
+    priority: P0
+    owner: GOV_1995
+    dependencies: [CBD01]
+    action: >-
+      Reuse canonical workflow classification fix #1995; obtain authorized A10
+      review; retain verified governance
+  - id: CBD03
+    priority: P0
+    owner: COMPAT_2024
+    dependencies: [CBD00]
+    action: >-
+      Consume exact-head terminal CI, Python matrix and B0 artifacts; classify
+      Security Scanning
+  - id: CBD04
+    priority: P0
+    owner: COMPAT_2026
+    dependencies: [CBD03]
+    action: >-
+      Compare source overlap and matrix ownership with #2024; elect one
+      canonical repair and no duplicate pins
+  - id: CBD05
+    priority: P0
+    owner: SECURITY_2027
+    dependencies: [CBD01]
+    action: >-
+      Decode private Safety evidence, inspect actual package versions and fix
+      remaining dependency root; preserve nonzero Safety exit
+  - id: CBD06
+    priority: P0
+    owner: W70_1997
+    dependencies: [CBD02, CBD04]
+    action: >-
+      Reconcile inherited governance and compatibility failures; rerun W70
+      exact-head tests and true measured denominators
+  - id: CBD07
+    priority: P0
+    owner: A10_2006
+    dependencies: [CBD00]
+    action: >-
+      Adjudicate A10 flagged content and Git history through authorized
+      reviewer; avoid public raw leaks
+  - id: CBD08
+    priority: P0
+    owner: ADMISSION
+    dependencies: [CBD02, CBD05, CBD06, CBD07]
+    action: >-
+      Verify effective branch rules, required contexts, latest push, eligible
+      independent approvals and thread resolution
+  - id: CBD09
+    priority: P1
+    owner: COVERAGE_C0
+    dependencies: [CBD03]
+    action: >-
+      Download canonical B0 artifact, verify archive bytes, extract per-file
+      scope and exact source/config fingerprints
+  - id: CBD10
+    priority: P1
+    owner: COVERAGE_C1
+    dependencies: [CBD09]
+    action: >-
+      Write focused uncovered existing branch tests; measure matched
+      changed-line, statement and branch before-after
+  - id: CBD11
+    priority: P1
+    owner: LDAB_C2
+    dependencies: [CBD01]
+    action: >-
+      Add negative tests for stale run IDs, duplicate roots, spoofed receipts
+      and UNKNOWN denominators
+  - id: CBD12
+    priority: P1
+    owner: MIP_STAT_C3
+    dependencies: [CBD09]
+    action: >-
+      Reconcile M1-M3 observations by exact source/run/job; hold PCA/BT
+      inference until sample readiness
+  - id: CBD13
+    priority: P1
+    owner: RUNTIME_C4
+    dependencies: [CBD00]
+    action: >-
+      Assess Python OS and native RHEL/UBI runners using authenticated runtime
+      evidence, not matrix names
+  - id: CBD14
+    priority: P1
+    owner: FEDERATION_C5
+    dependencies: [CBD00]
+    action: >-
+      Read-only ABACUS/CODEX/QPS family census with separately verified
+      per-repo authority
+  - id: CBD15
+    priority: P1
+    owner: WAVE_1990_1998
+    dependencies: [CBD01, CBD09]
+    action: >-
+      Join wave/root history; calculate root opened/resolved/reopened with
+      same-scope fingerprints
+  - id: CBD16
+    priority: P1
+    owner: TELEMETRY
+    dependencies: [CBD00]
+    action: >-
+      Calculate queue p50/p95, elapsed, concurrency, attempts and CI
+      amplification from full native timestamps
+  - id: CBD17
+    priority: P1
+    owner: RIPPLE
+    dependencies: [CBD15, CBD16]
+    action: >-
+      Attribute propagated failures and dependent PRs to verified root
+      transitions; count jobs and cost separately
+  - id: CBD18
+    priority: P1
+    owner: CREW_REX
+    dependencies: [CBD14]
+    action: >-
+      Verify authenticated principal, launch/runner ID, repo/ref, actual
+      job/run/attempt, artifact bytes and accepted REX
+  - id: CBD19
+    priority: P1
+    owner: DMAIC_PCA_BT
+    dependencies: [CBD12, CBD15, CBD16]
+    action: >-
+      Run statistically eligible matched repeat observations and guarded
+      prioritization; otherwise HOLD
+  - id: CBD20
+    priority: P0
+    owner: GOVERNED_MERGE
+    dependencies: [CBD08, CBD10]
+    action: >-
+      Admit first eligible narrow PR only with real independent approval,
+      terminal security and enforceable checks; no auto-merge
+  - id: CBD21
+    priority: P1
+    owner: MAIN_REMEASURE
+    dependencies: [CBD20]
+    action: >-
+      Read exact full merge/main SHA and terminal main CI; compare same-cohort
+      coverage and scan roots
+  - id: CBD22
+    priority: P1
+    owner: ASH_DISPOSITION
+    dependencies: [CBD15, CBD21]
+    action: >-
+      Close only independently proven root keys; record blocked, inherited,
+      reopened and superseded items separately
+  - id: CBD23
+    priority: P1
+    owner: RECEIPTS
+    dependencies: [CBD22]
+    action: >-
+      Publish versioned JSON/Markdown metrics, SHA256 lineage, root ledger,
+      UNKNOWN register and next wave
+  - id: CBD24
+    priority: P1
+    owner: CONTROL
+    dependencies: [CBD23]
+    action: >-
+      Re-census after source transitions; detect regressions and trigger only
+      meaningful first-red/coverage/admission alerts
