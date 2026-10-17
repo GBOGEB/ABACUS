@@ -29,13 +29,16 @@ class CohortUnionTests(unittest.TestCase):
         self.assertEqual(rec["source_document_count"], 3)
         self.assertEqual(rec["declared_observation_rows"], 78)
         self.assertIsNone(rec["distinct_run_attempts"])
-        self.assertEqual(rec["distinct_declared_run_ids"], 78)
+        self.assertEqual(rec["distinct_declared_run_ids"], 66)
         self.assertEqual(rec["unknown_attempt_associations"], 66)
+        self.assertEqual(rec["unknown_associations_joined_to_declared_known"], 12)
+        self.assertEqual(rec["unresolved_unknown_run_ids"], 54)
+        self.assertEqual(rec["cross_source_duplicate_rows"], 12)
         self.assertEqual(rec["snapshots_without_head_manifests"], 1)
         self.assertEqual(rec["distinct_declared_pr_heads"], 19)
         self.assertIsNone(result["observed"]["run_attempt_count"])
-        self.assertEqual(result["observed"]["run_association_count"], 78)
-        self.assertEqual(result["observed"]["conclusions"]["failure"], 78)
+        self.assertEqual(result["observed"]["run_association_count"], 66)
+        self.assertEqual(result["observed"]["conclusions"]["failure"], 66)
         self.assertIsNone(result["observed"]["confirmed_causal_root_count"])
         self.assertIsNone(rec["matched_coverage"])
         self.assertEqual(rec["admission"], "HOLD")
@@ -123,7 +126,7 @@ class CohortUnionTests(unittest.TestCase):
         pulses = rec["ingestion_pulses"]
         self.assertEqual([12, 49, 78], [p["declared_rows_cumulative"] for p in pulses])
         self.assertEqual([6, 12, 19], [p["distinct_failed_pr_heads_cumulative"] for p in pulses])
-        self.assertEqual([12, 49, 78], [p["distinct_run_ids_cumulative"] for p in pulses])
+        self.assertEqual([12, 40, 66], [p["distinct_run_ids_cumulative"] for p in pulses])
         self.assertTrue(all(p["kind"] == "SOURCE_INGESTION_NOT_TEMPORAL_IMPROVEMENT" for p in pulses))
         self.assertEqual(rec["distinct_manifested_pr_heads"], 20)
         self.assertEqual(rec["manifested_zero_failure_prs"], [2033])
@@ -131,12 +134,36 @@ class CohortUnionTests(unittest.TestCase):
         self.assertEqual(rec["non_atomic_manifest_failed_associations"], 66)
         self.assertEqual(rec["manifest_comparability"], "NOT_A_DENOMINATOR_FOR_UNION_PASS_RATE")
 
-    def test_unknown_to_known_same_run_attempt_fails_closed(self):
+    def test_unique_known_attempt_can_join_without_native_authentication(self):
         source = snapshots()[1]
         other = copy.deepcopy(source)
         other["observations"][0]["attempt"] = 1
+        rec = produce_cohorts([source, other])["cohort_reconciliation"]
+        self.assertEqual(rec["unknown_associations_joined_to_declared_known"], 1)
+        self.assertEqual(rec["distinct_declared_run_ids"], 37)
+        self.assertEqual(rec["unknown_attempt_associations"], 73)
+        self.assertEqual(rec["unresolved_unknown_run_ids"], 36)
+        self.assertIsNone(rec["distinct_run_attempts"])
+        self.assertEqual(rec["source_attempt_verification"], "NOT_LIVE_VERIFIED")
+        self.assertIsNone(rec["root_closure_credit"])
+        self.assertEqual(rec["admission"], "HOLD")
+
+    def test_ambiguous_unknown_against_two_known_attempts_fails_closed(self):
+        unknown = snapshots()[1]
+        known_one = copy.deepcopy(unknown)
+        known_one["observations"][0]["attempt"] = 1
+        known_two = copy.deepcopy(known_one)
+        known_two["observations"][0]["attempt"] = 2
         with self.assertRaisesRegex(ValueError, "ambiguous unknown/known"):
-            produce_cohorts([source, other])
+            produce_cohorts([unknown, known_one, known_two])
+
+    def test_unknown_known_metadata_conflict_rejected(self):
+        unknown = snapshots()[1]
+        known = copy.deepcopy(unknown)
+        known["observations"][0]["attempt"] = 1
+        known["observations"][0]["workflow"] = "forged-native-workflow"
+        with self.assertRaisesRegex(ValueError, "conflicting"):
+            produce_cohorts([unknown, known])
 
     def test_distinct_known_attempts_are_not_collapsed(self):
         source = snapshots()[0]
@@ -173,9 +200,9 @@ class CohortUnionTests(unittest.TestCase):
     def test_known_and_unknown_attempts_are_not_falsely_summed(self):
         result = produce_cohorts(snapshots())
         self.assertIsNone(result["observed"]["run_attempt_count"])
-        self.assertEqual(result["observed"]["run_association_count"], 78)
+        self.assertEqual(result["observed"]["run_association_count"], 66)
         self.assertEqual(result["cohort_reconciliation"]["unknown_attempt_associations"], 66)
-        self.assertEqual(result["cohort_reconciliation"]["distinct_declared_run_ids"], 78)
+        self.assertEqual(result["cohort_reconciliation"]["distinct_declared_run_ids"], 66)
 
     def test_unknown_attempt_remains_unverified_under_duplicate_source(self):
         source = snapshots()[1]
