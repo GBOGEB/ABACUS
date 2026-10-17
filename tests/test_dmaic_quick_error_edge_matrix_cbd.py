@@ -20,15 +20,40 @@ def load(name):
     return module
 
 
-def test_static_pylint_nonzero_without_error_and_mypy_warning_is_not_fabricated(monkeypatch):
+def test_nonzero_pylint_with_unparseable_output_fails_closed(monkeypatch):
     module = load("quick_error_fix")
-    responses = iter([
-        SimpleNamespace(returncode=2, stdout="fatal: tool unavailable\n"),
-        SimpleNamespace(returncode=0, stdout="warning: not an error marker\n"),
-    ])
-    monkeypatch.setattr(module.subprocess, "run", lambda *args, **kwargs: next(responses))
+    responses = iter(
+        [
+            SimpleNamespace(returncode=2, stdout="fatal: tool unavailable\\n"),
+            SimpleNamespace(returncode=0, stdout="warning only\\n"),
+        ]
+    )
+    monkeypatch.setattr(
+        module.subprocess, "run", lambda *args, **kwargs: next(responses)
+    )
     errors, warnings = module.ErrorDetector().scan_for_errors()
-    assert errors == [] and warnings == []
+    assert warnings == []
+    assert len(errors) == 1
+    assert errors[0]["type"] == "pylint_execution_error"
+    assert "status 2" in errors[0]["message"]
+
+
+def test_nonzero_mypy_with_unparseable_output_fails_closed(monkeypatch):
+    module = load("quick_error_fix")
+    responses = iter(
+        [
+            SimpleNamespace(returncode=0, stdout="clean\\n"),
+            SimpleNamespace(returncode=3, stdout="fatal: resolver unavailable\\n"),
+        ]
+    )
+    monkeypatch.setattr(
+        module.subprocess, "run", lambda *args, **kwargs: next(responses)
+    )
+    errors, warnings = module.ErrorDetector().scan_for_errors()
+    assert warnings == []
+    assert len(errors) == 1
+    assert errors[0]["type"] == "mypy_execution_error"
+    assert "status 3" in errors[0]["message"]
 
 
 def test_mypy_multi_error_records_preserve_each_source_line(monkeypatch):
