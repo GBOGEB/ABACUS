@@ -217,6 +217,68 @@ jobs:
             exit 1
           fi
 
+  ratchet-tool-backed:
+    name: DAB T2 tool-installed ratchet detection
+    runs-on: ubuntu-24.04
+    permissions:
+      contents: read
+    timeout-minutes: 12
+    steps:
+      # Immutable checkout and setup-python references preserve source identity.
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97
+        with:
+          python-version: '3.12'
+      - name: Install pinned ratchet tools and safe evidence reader
+        run: |
+          python -m pip install pytest==8.4.2 black==26.10.1 \
+            isort==9.0.2 flake8==7.3.0 bandit==1.8.6 defusedxml==0.7.1 numpy==1.26.4
+      - name: Prove all four scanners exist and emit exact source
+        run: |
+          git rev-parse HEAD
+          python - <<'PY'
+          import importlib.metadata as im
+          import importlib.util
+          required = ("black", "isort", "flake8", "bandit")
+          for name in required:
+              if importlib.util.find_spec(name) is None:
+                  raise SystemExit("TEST_BLOCKED_DEPENDENCY: " + name)
+              print(name + "==" + im.version(name))
+          PY
+      - name: Run source-owned ratchet negative and positive tests
+        run: python -m pytest -q tests/test_ci_pr_debt_ratchet.py --junitxml=ratchet-proof.xml
+      - name: Fail closed on skipped, empty or failing tool-backed JUnit
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          from defusedxml import ElementTree as ET
+          p = Path("ratchet-proof.xml")
+          if not p.is_file():
+              raise SystemExit("native tool-backed JUnit missing")
+          root = ET.parse(
+              p, forbid_dtd=True, forbid_entities=True, forbid_external=True
+          ).getroot()
+          suites = [root] if root.tag == "testsuite" else root.findall("testsuite")
+          if not suites:
+              raise SystemExit("no ratchet test suite observed")
+          count = sum(int(s.get("tests", "0")) for s in suites)
+          skipped = sum(int(s.get("skipped", "0")) for s in suites)
+          failed = sum(int(s.get("failures", "0")) for s in suites)
+          errors = sum(int(s.get("errors", "0")) for s in suites)
+          print(f"RATCHET_NATIVE: tests={count} skipped={skipped} failures={failed} errors={errors}")
+          if not count or skipped or failed or errors:
+              raise SystemExit("TEST_BLOCKED_DEPENDENCY_OR_FAILING_RATCHET")
+          PY
+      - name: Upload exact-head ratchet JUnit even on failure
+        if: always()
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9
+        with:
+          name: dab-t2-tool-installed-ratchet
+          path: ratchet-proof.xml
+          if-no-files-found: warn
+
   unit-tests:
     name: Unit Tests (Python ${{ matrix.python-version }}, ${{ matrix.os }})
     runs-on: ${{ matrix.os }}
