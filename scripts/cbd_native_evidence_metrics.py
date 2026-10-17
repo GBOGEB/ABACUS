@@ -230,12 +230,143 @@ def replay(snapshot: dict) -> dict:
     }
 
 
+
+SUPPLEMENT = (
+    Path(__file__).resolve().parents[1]
+    / "docs/ci/CBD_W3_NATIVE_LOG_SUPPLEMENT_20261017.json"
+)
+
+
+def classify_supplement_first_red(record: dict) -> str:
+    """Classify only step-bound, witnessed failures, never incidental tool names."""
+    text = "\n".join(record.get("diagnostic_tail_sanitized", []))
+    step = record.get("first_failed_step")
+    if (step == "Fail closed on governance red"
+            and "policy_outcome=failure" in text
+            and "inventory_outcome=failure" in text):
+        return "GOVERNANCE_POLICY_INVENTORY"
+    if (step == "Generate governance inventory as evidence"
+            and "CI governance failed: unclassified workflows" in text):
+        return "GOVERNANCE_UNCLASSIFIED_WORKFLOW"
+    if step == "Enforce security red roots" and "##[error]Safety is red." in text:
+        return "SAFETY_NONZERO"
+    if (step == "Tender guard (new or changed files only)"
+            and "restricted term in content" in text):
+        return "A10_RESTRICTED"
+    if (step == "Run canonical exact-head coverage surface"
+            and "test_change_detector_legacy_windows_snapshot_does_not_create_phantom_change" in text):
+        return "TEST_PATH_NORMALIZATION"
+    if (step == "Install dependencies"
+            and "No matching distribution found for matplotlib" in text):
+        return "MATPLOTLIB_RESOLVER"
+    if step == "Verify committed Black and isort styles" and "would reformat" in text:
+        return "BLACK_REFORMAT"
+    if step == "Validate changed docs" and "error MD013/line-length" in text:
+        return "MARKDOWN_MD013"
+    if step == "Upload to code-scanning" and "API rate limit exceeded for installation" in text:
+        return "GITHUB_API_RATE_LIMIT"
+    if (step == "Enforce code-quality red roots"
+            and "Required BLACK full scan failed." in text
+            and "Required ISORT full scan failed." in text):
+        return "QUALITY_BLACK_ISORT"
+    return "UNCLASSIFIED_REQUIRES_REVIEW"
+
+
+def replay_supplement(snapshot: dict, supplement: dict) -> dict:
+    """Join nonoverlapping, targeted log evidence without creating new authority."""
+    baseline = replay(snapshot)
+    if not isinstance(supplement, dict) or supplement.get("schema") != (
+        "cbd.native_log_supplement.v2"
+    ) or supplement.get("repository") != "GBOGEB/ABACUS":
+        raise ValueError("supplement source schema or repository")
+    if supplement.get("source_snapshot_sha") != snapshot.get("source_ref"):
+        raise ValueError("wrong evidence checkpoint")
+    if (
+        supplement.get("selection_bias") != "TARGETED_STRATA_NOT_RANDOM_FREQUENCY_SAMPLE"
+        or supplement.get("untrusted_search_hits_are_not_root_categories") is not True
+        or supplement.get("admission") != "HOLD"
+        or supplement.get("accepted_root_closures") != 0
+    ):
+        raise ValueError("non-atomic classification authority violated")
+    records = supplement.get("records")
+    if not isinstance(records, list) or not records:
+        raise ValueError("missing supplementary job logs")
+    base_runs = {r["run_id"]: r for r in snapshot["run_evidence"]}
+    classified = {}
+    seen = set()
+    supplemental_matplotlib = 0
+    for record in records:
+        if not isinstance(record, dict):
+            raise ValueError("invalid supplementary record")
+        run_id = record.get("run_id")
+        if not _integer(run_id, minimum=1) or run_id not in base_runs or run_id in seen:
+            raise ValueError("duplicate or unbound supplemental run")
+        seen.add(run_id)
+        original = base_runs[run_id]
+        first = original["jobs"]["first_failed_step"]
+        if original.get("log_evidence") is not None or first is None:
+            raise ValueError("supplement duplicates previously sampled first-red")
+        if not (
+            record.get("head_sha") == original["source_sha"]
+            and record.get("attempt") == original["attempt"]
+            and record.get("pr") == original["pr"]
+            and record.get("job_id") == first["job_id"]
+            and record.get("first_failed_step") == first["step_name"]
+            and record.get("failed_step_number") == first["step_number"]
+            and record.get("workflow") == original["workflow"]
+            and record.get("log_retrieved") is True
+        ):
+            raise ValueError("supplement run/job/step source mismatch")
+        if not isinstance(record.get("diagnostic_tail_sanitized"), list):
+            raise ValueError("missing log witness snippets")
+        identity = classify_supplement_first_red(record)
+        if identity != record.get("validated_signature") or identity == (
+            "UNCLASSIFIED_REQUIRES_REVIEW"
+        ) or record.get("signature_grounded_in_sanitized_witness") is not True:
+            raise ValueError("unsupported first-red root signature")
+        if record.get("causal_root_admission") is not False or record.get(
+            "rerun_admission"
+        ) is not False:
+            raise ValueError("false root or rerun acceptance")
+        classified[identity] = classified.get(identity, 0) + 1
+        if identity == "MATPLOTLIB_RESOLVER":
+            supplemental_matplotlib += 1
+    if (
+        supplement.get("new_log_rows") != len(records)
+        or supplement.get("new_logs_downloaded") != len(records)
+        or supplement.get("baseline_logged_runs") != baseline["log_sampling_reach"]["numerator"]
+        or supplement.get("baseline_unique_runs") != len(base_runs)
+        or supplement.get("uniquely_new") is not True
+        or supplement.get("all_records_have_witness") is not True
+        or supplement.get("validated_signature_counts") != classified
+    ):
+        raise ValueError("false supplemental denominators or classes")
+    combined = baseline["log_sampling_reach"]["numerator"] + len(records)
+    baseline["log_sampling_reach"] = {
+        "numerator": combined,
+        "denominator": len(base_runs),
+        "percent": round(100.0 * combined / len(base_runs), 3),
+    }
+    baseline["supplemental_logs"] = len(records)
+    baseline["classified_first_red_supplement"] = dict(sorted(classified.items()))
+    baseline["resolver_attribution"]["signature_runs"] += supplemental_matplotlib
+    baseline["resolver_attribution"]["accepted_root_closures"] = 0
+    baseline["selection_bias"] = "TARGETED_NOT_INFERENTIAL"
+    baseline["historical_first_red_proof_only"] = True
+    baseline["admission"] = "HOLD"
+    return baseline
+
+
+
 def main() -> None:
     parser = argparse.ArgumentParser()
     parser.add_argument("--source", type=Path, default=SOURCE)
     parser.add_argument("--output", type=Path)
+    parser.add_argument("--supplement", type=Path)
     args = parser.parse_args()
-    result = replay(json.loads(args.source.read_text(encoding="utf-8")))
+    source = json.loads(args.source.read_text(encoding="utf-8"))
+    result = (replay_supplement(source, json.loads(args.supplement.read_text(encoding="utf-8")))
+              if args.supplement else replay(source))
     encoded = json.dumps(result, indent=2, sort_keys=True) + "\n"
     if args.output:
         args.output.parent.mkdir(parents=True, exist_ok=True)
