@@ -27,6 +27,8 @@ class ValidateChangedDocsTests(unittest.TestCase):
         def fake_run(args, *, check=True):
             if args[:3] == ["git", "cat-file", "-e"]:
                 return _completed(args)
+            if args[:3] == ["git", "merge-base", "a" * 40]:
+                return _completed(args, stdout="f" * 40 + "\n")
             if args[:2] == ["git", "fetch"]:
                 return _completed(args)
             raise AssertionError(args)
@@ -36,11 +38,7 @@ class ValidateChangedDocsTests(unittest.TestCase):
         ):
             self.assertEqual(
                 docs._github_diff_ranges()[:3],
-                [
-                    [f"{'a' * 40}..{'c' * 40}"],
-                    [f"{'b' * 40}..{'c' * 40}"],
-                    ["origin/main..HEAD"],
-                ],
+                [[f"{'f' * 40}..HEAD"]],
             )
 
     def test_missing_base_sha_is_fetched_before_use(self) -> None:

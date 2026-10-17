@@ -1,0 +1,361 @@
+{
+  "schema": "ABACUS_CHAT_TUPLE_DELTA_V1",
+  "created_date": "2026-10-15",
+  "fidelity": "SEMANTIC_NOT_VERBATIM",
+  "session_lossless_certified": false,
+  "scope": "Visible conversation; historical statements plus targeted current GitHub readback",
+  "parent": {
+    "repo": "GBOGEB/ABACUS",
+    "pr": 2006,
+    "head_at_last_readback": "f79a8aae6721c3270c084b2fc38241ceebd6344a",
+    "v2_protocol": "tools/handover_v2/process_spec.json"
+  },
+  "authority": {
+    "abacus_main_sha": "54da377cf82a358ac97903ecde0270c975b8fcc1",
+    "codex_main_sha": "4fa9d77018fcb44324bbc57b0bc9d96336951ce3",
+    "active_abacus_ruleset_id": 24494381,
+    "required_approvals": 0,
+    "required_checks_rule_present": false
+  },
+  "coverage_reference": [
+    {
+      "scope": "main 2026-10-11",
+      "pct": 36.85,
+      "n": null,
+      "d": null
+    },
+    {
+      "scope": "PR broad 2026-10-12",
+      "pct": 36.92,
+      "n": null,
+      "d": null
+    },
+    {
+      "scope": "PR diff 2026-10-12",
+      "pct": 51,
+      "n": null,
+      "d": null
+    },
+    {
+      "scope": "main b2b4ef7b64d3a047182b5b61e758b526155fd3d5",
+      "pct": 42.0238,
+      "n": null,
+      "d": null
+    }
+  ],
+  "operational_roots_opened": null,
+  "operational_roots_closed": null,
+  "accepted_rex_count": null,
+  "crew_launch_count": null,
+  "tuples": [
+    {
+      "id": "T01",
+      "user_prompt_summary": "Repeated recovery watch",
+      "assistant_response_summary": "Observed #1990 producer tests and governance/YAML red; root counts unknown",
+      "topic": "governance inventory",
+      "pr_refs": [
+        "1990"
+      ],
+      "raw_user_sha256": null,
+      "raw_assistant_sha256": null,
+      "evidence_class": "CHAT_REPORTED_UNLESS_RECHECKED",
+      "status": "SEMANTIC_SUMMARY",
+      "cumulative_sha256": "2abe24d119d5f8d66aa7642c2c1fb7b419773cdcd2084070a30ff86bbeaf1f0c"
+    },
+    {
+      "id": "T02",
+      "user_prompt_summary": "Repeated watch, compare coverage",
+      "assistant_response_summary": "Reported #1990 82/96 to 96/96 same scope; Black/security remains",
+      "topic": "coverage proof and formatting",
+      "pr_refs": [
+        "1990"
+      ],
+      "raw_user_sha256": null,
+      "raw_assistant_sha256": null,
+      "evidence_class": "CHAT_REPORTED_UNLESS_RECHECKED",
+      "status": "SEMANTIC_SUMMARY",
+      "cumulative_sha256": "d416f84917fdd8a321dbadd03595a7d9973cd52b41b3048235cbb50176b3e6f7"
+    },
+    {
+      "id": "T03",
+      "user_prompt_summary": "Repeated watch on successors",
+      "assistant_response_summary": "Reported Black 3 to 7; #2005 15+22+11 regression tests; 305/305 is broader scope",
+      "topic": "negative root closure controls",
+      "pr_refs": [
+        "1990",
+        "2005"
+      ],
+      "raw_user_sha256": null,
+      "raw_assistant_sha256": null,
+      "evidence_class": "CHAT_REPORTED_UNLESS_RECHECKED",
+      "status": "SEMANTIC_SUMMARY",
+      "cumulative_sha256": "70dd2dbd13d31a86445426f48b3d9120e99153584f87ac92b104b446996af2a7"
+    },
+    {
+      "id": "T04",
+      "user_prompt_summary": "Repeated watch and improvement",
+      "assistant_response_summary": "Reported #1979 148/211 to 205/211; #1989 formatter ratchet recovered; #1990 7 to 9 Black manifestations",
+      "topic": "safety/A10 and formatting",
+      "pr_refs": [
+        "1979",
+        "1989",
+        "1990"
+      ],
+      "raw_user_sha256": null,
+      "raw_assistant_sha256": null,
+      "evidence_class": "CHAT_REPORTED_UNLESS_RECHECKED",
+      "status": "SEMANTIC_SUMMARY",
+      "cumulative_sha256": "efbd8f2d1a37582c17cfffa4fe595c0c6944316ec7a3517052279a0b7765f2c6"
+    },
+    {
+      "id": "T05",
+      "user_prompt_summary": "Repeated watch of changed first-red",
+      "assistant_response_summary": "Reported #2012 matplotlib requirement broke Python 3.10; matrix 3/3 to 2/3",
+      "topic": "compatibility",
+      "pr_refs": [
+        "2012",
+        "1990"
+      ],
+      "raw_user_sha256": null,
+      "raw_assistant_sha256": null,
+      "evidence_class": "CHAT_REPORTED_UNLESS_RECHECKED",
+      "status": "SEMANTIC_SUMMARY",
+      "cumulative_sha256": "0513f5438b85a006684490519777c42534828957f68170ad00126540e6a03c5c"
+    },
+    {
+      "id": "T06",
+      "user_prompt_summary": "Can this chat close losslessly?",
+      "assistant_response_summary": "Conditional: operational continuation possible, full transcript completeness not attested",
+      "topic": "transcript and receiver",
+      "pr_refs": [
+        "2006"
+      ],
+      "raw_user_sha256": null,
+      "raw_assistant_sha256": null,
+      "evidence_class": "CHAT_REPORTED_UNLESS_RECHECKED",
+      "status": "SEMANTIC_SUMMARY",
+      "cumulative_sha256": "45aab7435e7a08a90fff8c8df06e98d8d410a15f5c317fe5458a3e9fdbc5497e"
+    },
+    {
+      "id": "T07",
+      "user_prompt_summary": "Repeated watch after compatibility fix",
+      "assistant_response_summary": "Reported #2024 Python 3.10/11/12 recovered 3/3; full CI security still red, Python 3.9 enterprise separately red",
+      "topic": "new first-red and support contract",
+      "pr_refs": [
+        "2024"
+      ],
+      "raw_user_sha256": null,
+      "raw_assistant_sha256": null,
+      "evidence_class": "CHAT_REPORTED_UNLESS_RECHECKED",
+      "status": "SEMANTIC_SUMMARY",
+      "cumulative_sha256": "a9d1e7572cc315d666f8bb106606ac1c0a087d03fcc553fcaab7d5136541b5b3"
+    },
+    {
+      "id": "T08",
+      "user_prompt_summary": "Produce recursive prompt-output tuples, golden thread and BD of TODOs",
+      "assistant_response_summary": "Current deliverable: semantic tuple ledger and root-vs-TODO distinction; publication to PR #2006 not confirmed",
+      "topic": "lossless export and native V2 seal",
+      "pr_refs": [
+        "2006"
+      ],
+      "raw_user_sha256": null,
+      "raw_assistant_sha256": null,
+      "evidence_class": "CHAT_REPORTED_UNLESS_RECHECKED",
+      "status": "SEMANTIC_SUMMARY",
+      "cumulative_sha256": "2adb346533940bf7394c4be07e7b157bc9a88c6d4f505b80956027f043104c3a"
+    }
+  ],
+  "todo_records": [
+    {
+      "id": "BD01",
+      "priority": "P0",
+      "title": "Original complete chat export, message IDs and raw tool/attachment hash inventory",
+      "source_tuple_ids": [
+        "T06",
+        "T08"
+      ],
+      "state": "BLOCKED",
+      "root_signature": null,
+      "operational_root_credit": "WITHHELD",
+      "closure_receipt": null
+    },
+    {
+      "id": "BD02",
+      "priority": "P0",
+      "title": "V2 handover pilot #2006 native build+verify+replay; avoid alternative SSOT",
+      "source_tuple_ids": [
+        "T06",
+        "T08"
+      ],
+      "state": "HOLD",
+      "root_signature": null,
+      "operational_root_credit": "WITHHELD",
+      "closure_receipt": null
+    },
+    {
+      "id": "BD03",
+      "priority": "P1",
+      "title": "#1990 exact-current-head Black attribution and CI recheck",
+      "source_tuple_ids": [
+        "T02",
+        "T03",
+        "T04"
+      ],
+      "state": "VERIFY",
+      "root_signature": null,
+      "operational_root_credit": "WITHHELD",
+      "closure_receipt": null
+    },
+    {
+      "id": "BD04",
+      "priority": "P0",
+      "title": "Security Safety/Bandit source-level remediation; no waiver",
+      "source_tuple_ids": [
+        "T04",
+        "T07"
+      ],
+      "state": "HOLD",
+      "root_signature": null,
+      "operational_root_credit": "WITHHELD",
+      "closure_receipt": null
+    },
+    {
+      "id": "BD05",
+      "priority": "P0",
+      "title": "Authorized independent A10 confidentiality review",
+      "source_tuple_ids": [
+        "T02",
+        "T04"
+      ],
+      "state": "HOLD",
+      "root_signature": null,
+      "operational_root_credit": "WITHHELD",
+      "closure_receipt": null
+    },
+    {
+      "id": "BD06",
+      "priority": "P1",
+      "title": "#2005 negative tests and self-attested root closure prohibition",
+      "source_tuple_ids": [
+        "T03"
+      ],
+      "state": "VERIFY",
+      "root_signature": null,
+      "operational_root_credit": "WITHHELD",
+      "closure_receipt": null
+    },
+    {
+      "id": "BD07",
+      "priority": "P0",
+      "title": "Effective required checks, true independent review and canaries",
+      "source_tuple_ids": [
+        "T08"
+      ],
+      "state": "HOLD",
+      "root_signature": null,
+      "operational_root_credit": "WITHHELD",
+      "closure_receipt": null
+    },
+    {
+      "id": "BD08",
+      "priority": "P0",
+      "title": "Authenticated Crew/runner/LDAB IDs plus accepted REX receipt",
+      "source_tuple_ids": [
+        "T08"
+      ],
+      "state": "UNKNOWN",
+      "root_signature": null,
+      "operational_root_credit": "WITHHELD",
+      "closure_receipt": null
+    },
+    {
+      "id": "BD09",
+      "priority": "P1",
+      "title": "Preserve Python 3.10 recovery; separately repair 3.9 contract",
+      "source_tuple_ids": [
+        "T05",
+        "T07"
+      ],
+      "state": "VERIFY",
+      "root_signature": null,
+      "operational_root_credit": "WITHHELD",
+      "closure_receipt": null
+    },
+    {
+      "id": "BD10",
+      "priority": "P0",
+      "title": "Comparable canonical main scope/obligation receipt",
+      "source_tuple_ids": [
+        "T04",
+        "T07"
+      ],
+      "state": "UNKNOWN",
+      "root_signature": null,
+      "operational_root_credit": "WITHHELD",
+      "closure_receipt": null
+    },
+    {
+      "id": "BD11",
+      "priority": "P1",
+      "title": "Deduplicated BD opened/closed fingerprints from matched native scans",
+      "source_tuple_ids": [
+        "T03",
+        "T08"
+      ],
+      "state": "UNKNOWN",
+      "root_signature": null,
+      "operational_root_credit": "WITHHELD",
+      "closure_receipt": null
+    },
+    {
+      "id": "BD12",
+      "priority": "P1",
+      "title": "Native exact-head RHEL8/RHEL9/UBI proof",
+      "source_tuple_ids": [
+        "T08"
+      ],
+      "state": "UNKNOWN",
+      "root_signature": null,
+      "operational_root_credit": "WITHHELD",
+      "closure_receipt": null
+    },
+    {
+      "id": "BD13",
+      "priority": "P1",
+      "title": "#2007 successor governance inventory and generator reconciliation",
+      "source_tuple_ids": [
+        "T08"
+      ],
+      "state": "VERIFY",
+      "root_signature": null,
+      "operational_root_credit": "WITHHELD",
+      "closure_receipt": null
+    },
+    {
+      "id": "BD14",
+      "priority": "P1",
+      "title": "Native full CI/artifact receipt per successor exact head",
+      "source_tuple_ids": [
+        "T03",
+        "T04",
+        "T07"
+      ],
+      "state": "VERIFY",
+      "root_signature": null,
+      "operational_root_credit": "WITHHELD",
+      "closure_receipt": null
+    },
+    {
+      "id": "BD15",
+      "priority": "P0",
+      "title": "Attach this lineage to canonical GitHub receiver only with verified branch lease",
+      "source_tuple_ids": [
+        "T08"
+      ],
+      "state": "BLOCKED",
+      "root_signature": null,
+      "operational_root_credit": "WITHHELD",
+      "closure_receipt": null
+    }
+  ]
+}

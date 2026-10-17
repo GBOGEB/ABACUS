@@ -1,0 +1,91 @@
+schema: char.bd.fanout.v1
+status: PROPOSAL_NON_EXECUTING
+owner: GBOGEB/ABACUS
+parent_contract: docs/ci/CHAR_BD_EXECUTION_v1.yaml
+mode: read_only_plan
+execution_authority: false
+remote_dispatch: false
+auto_merge: false
+security_waiver: false
+authority_transfer: false
+unknown_policy: null_not_zero
+purpose: >-
+  Partition canonical BD roots into disjoint bounded lanes and measure
+  native progress without duplicating inherited repairs.
+scheduler:
+  concurrency_limit: 3
+  limit_is_proposed_not_observed: true
+  admission: explicit_authorized_worker_and_scope
+  unit_of_work: unique_root_fingerprint
+  isolation_key: repository_and_canonical_owner_and_source_path
+  on_collision: HOLD_AND_RECONCILE
+  on_missing_source_sha: HOLD
+  on_missing_authenticated_runner: UNKNOWN
+  on_p0_block: HOLD
+  completion: exact_head_native_receipt_and_independent_disposition
+lanes:
+  - id: DOC_2032
+    owner: ABACUS_PR_2032
+    mode: verify_only
+    source_head: c3c15fcb276b483d6a879dffc3fc5fc7c355d0e4
+    prior_run: 38795697186
+    first_red: markdownlint_structure
+    next: native_changed_docs_and_yaml_verification
+  - id: COMPAT
+    owner: ABACUS_PR_2024
+    mode: inspect_and_reconcile
+    source_head: 4aae61e3cfd52061e1183db4b3281a77b22fd5c0
+    observed_on: ABACUS_PR_2032
+    prior_run: 38795697194
+    first_red: python_dependency_matplotlib_3_11_2
+    next: compare_dependency_pin_and_python_matrix
+  - id: GOVERNANCE
+    owner: ABACUS_PR_1995
+    mode: inspect_only
+    source_head: 59d3bcc07caf7f3678f7df7b2f618a9605c83b1a
+    first_red: a10_and_governance
+    next: authorized_independent_review_and_exact_head_evidence
+  - id: SECURITY
+    owner: ABACUS_PR_2027
+    mode: inspect_only
+    source_head: 8cb4d742ad046ab688d691f4cc68c4171ad4308f
+    first_red: safety_exit_64
+    next: native_security_artifact_provenance
+  - id: W70
+    owner: ABACUS_PR_1997
+    mode: inspect_only
+    source_head: d548c28c47cff6b450c5f28712b123ae1dec4530
+    first_red: governance_a10_bandit
+    next: root_crosswalk_and_native_denominators
+measure:
+  source_sha: required
+  run_id: required_for_native_credit
+  job_id: required_for_native_credit
+  attempt: required_for_native_credit
+  artifact_sha256: required_for_artifact_credit
+  roots_open: nullable
+  roots_closed: nullable
+  first_red_count: nullable
+  jobs_terminal: nullable
+  queue_p95_seconds: nullable
+  unique_authenticated_workers: nullable
+  native_coverage_covered: nullable
+  native_coverage_eligible: nullable
+  diff_coverage_covered: nullable
+  diff_coverage_eligible: nullable
+  matched_cohort_digest: required_for_delta
+  merge_admitted: requires_independent_governance_proof
+fanout_metrics:
+  planned_lanes: 5
+  proposed_parallel_limit: 3
+  authenticated_worker_launches: null
+  accepted_rex: null
+  native_concurrency_observed: null
+  matched_coverage_delta: null
+  independently_closed_roots: null
+rollup:
+  aggregation: distinct_root_fingerprint_not_workflow_count
+  denominator: actual_eligible_cohort
+  no_cross_sha_credit: true
+  no_cross_repo_authority: true
+  preserve_blocked_and_unknown: true
