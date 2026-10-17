@@ -27,6 +27,22 @@ class WorkflowPolicyTests(unittest.TestCase):
         self.assertEqual({}, report["multiple_matches"])
         self.assertEqual([], report["missing_canonical"])
 
+    def test_code_purple_mip_rules_have_unique_domain_owners(self):
+        expected = {
+            "code-purple-dashboard-v31.yml": "runtime_governance",
+            "code-purple-sut-gui.yml": "runtime_governance",
+            "mip-py310-combined-head-probe.yml": "statistics",
+        }
+        for filename, owner in expected.items():
+            with self.subTest(filename=filename):
+                rule, matches = MODULE.classify(filename, self.policy)
+                self.assertEqual(1, len(matches))
+                self.assertEqual(owner, rule["cluster"])
+                self.assertEqual("pr_domain", rule["lifecycle"])
+                self.assertEqual("keep", rule["disposition"])
+        self.assertEqual(0, self.policy["quality_gates"]["allow_unclassified"])
+        self.assertFalse(self.policy["quality_gates"]["allow_multiple_rule_matches"])
+
     def test_parser_extracts_top_level_jobs_and_events(self):
         source = """name: Example\non:\n  push:\n  pull_request:\njobs:\n  test:\n    runs-on: ubuntu-latest\n    steps:\n      - run: pytest -q\n  lint:\n    runs-on: ubuntu-latest\n"""
         with tempfile.TemporaryDirectory() as tmp:
