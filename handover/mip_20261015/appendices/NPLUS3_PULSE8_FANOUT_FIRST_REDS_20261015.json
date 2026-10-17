@@ -1,0 +1,137 @@
+{
+  "schema": "code-purple.nplus3.wave8.readback/v1",
+  "observation_date": "2026-10-15",
+  "evidence_class": "NATIVE_LOGS_AND_NONATOMIC_GITHUB_CHECKS",
+  "authority": "APPEND_ONLY_DIAGNOSTIC",
+  "overall_admission": "HOLD",
+  "open_abacus_prs_last_sample": 49,
+  "prior_open_prs": 48,
+  "pr_delta": 1,
+  "number_of_verified_root_closures": 0,
+  "lane_status": [
+    {
+      "id": "L1",
+      "prs": [
+        2024,
+        2026,
+        2029
+      ],
+      "root": "MATPLOTLIB_PY39_RESOLVER",
+      "first_red": "matplotlib>=3.10.0,<3.11.0 unavailable for Python 3.9",
+      "proof": {
+        "pr": 2029,
+        "sha": "f7c4a7da7002474b3fa682147796021d94521429",
+        "job_id": 116593610410
+      },
+      "next": "Reconcile Python3.9-specific dependency marker with separate Python3.10+ semantics, native matrix, full security separately",
+      "status": "RED"
+    },
+    {
+      "id": "L2",
+      "prs": [
+        2027,
+        1995
+      ],
+      "root": "SAFETY_A10_SECURITY",
+      "observed_failed_checks_2027": 12,
+      "next": "Authenticated NLTK/Safety 64 report and authorized A10 adjudication; no waiver",
+      "status": "RED"
+    },
+    {
+      "id": "L3",
+      "prs": [
+        1997,
+        2030
+      ],
+      "root": "COVERAGE_INSTRUMENTATION_MIXED_MODES",
+      "first_red": "coverage.exceptions.DataError: Can't combine statement coverage data with branch data",
+      "proof": {
+        "pr": 2030,
+        "sha": "f56dddc7e13d67b65712691332ceb180d100c64a",
+        "job_id": 116647709944
+      },
+      "next": "Scope coverage files per test invocation or normalize branch instrumentation, rerun exact-head B0/changed lines and publish actual numerator/denominator",
+      "status": "RED"
+    },
+    {
+      "id": "L3_W70",
+      "prs": [
+        1997
+      ],
+      "root": "W70_NATIVE_COVERAGE",
+      "proof": {
+        "pr": 1997,
+        "head": "d548c28c47cff6b450c5f28712b123ae1dec4530",
+        "job_id": 116648231024,
+        "artifact_id": 12003723842,
+        "line": [
+          133,
+          133
+        ],
+        "branch": [
+          17,
+          18
+        ],
+        "tests": [
+          23,
+          23
+        ]
+      },
+      "admission": "HOLD",
+      "status": "NATIVE_MEASUREMENT_PASS"
+    },
+    {
+      "id": "L4",
+      "prs": [
+        1995,
+        1997,
+        2027
+      ],
+      "root": "POLICY_AND_INVENTORY",
+      "next": "Regenerate canonical workflow classification and inventory in separate source slice",
+      "status": "RED"
+    },
+    {
+      "id": "L5",
+      "prs": [
+        552,
+        553,
+        554,
+        555,
+        556,
+        557
+      ],
+      "root": "M3_WORKFLOW_YAML",
+      "next": "Choose one source-owned repair before retesting #553 and #557",
+      "status": "HOLD"
+    },
+    {
+      "id": "L6",
+      "root": "FEDERATION_SOURCE_TUPLE",
+      "next": "Authenticate H1-H4 source tuple, run/job/attempt, artifact bytes and owner returns",
+      "status": "HOLD"
+    }
+  ],
+  "telemetry": {
+    "newly_measured_unique_root_closure": null,
+    "worker_sessions_authenticated": null,
+    "queue_p95_ms": null,
+    "normalized_repair_yield": null,
+    "matched_cohort_coverage_delta": null,
+    "bandwidth_of_parallel_lanes_planned": 6,
+    "actual_parallel_dispatch_verified": 0,
+    "matching_method": "Never compare check-count populations with changing denominators or use same-path differently instrumented coverage as qualified gain"
+  },
+  "required_gates": [
+    "Effective checks",
+    "Eligible independent review",
+    "A10 security disposition",
+    "Exact-head native CI",
+    "QPS owner approval for engineering credit"
+  ],
+  "notes": [
+    "Historical evidence in earlier appendices retained",
+    "No code remediation/merge/rerun launched in this pulse",
+    "Source-root ownership and dependency DAG unchanged"
+  ]
+}
