@@ -1,0 +1,92 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>CODE PURPLE · Handover & Moniker Taxonomy</title>
+<style>
+:root{color-scheme:dark;--bg:#101826;--panel:#182437;--border:#36465b;--text:#eaf1f8;--muted:#afbed0;--cyan:#72d4e6;--gold:#f2c979}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--text);font:15px/1.5 system-ui,Segoe UI,Arial,sans-serif}
+main{max-width:1260px;margin:auto;padding:22px}header{display:flex;flex-wrap:wrap;justify-content:space-between;gap:15px;align-items:center;margin-bottom:18px}
+h1{font-size:clamp(21px,3.3vw,32px);margin:0}h2{font-size:18px;margin:0 0 12px}.muted,.small{color:var(--muted)}.small{font-size:12px}
+.panel{background:var(--panel);border:1px solid var(--border);border-radius:14px;padding:16px;margin-bottom:16px}
+.controls{display:flex;gap:10px;flex-wrap:wrap;align-items:center}input,select,button{font:inherit;padding:9px 11px;border-radius:8px;min-height:42px;max-width:100%}
+input,select{background:#101a2b;border:1px solid #607189;color:var(--text)}input[type=search]{flex:2 1 260px}button{background:#233c54;color:var(--text);border:1px solid #6a8ba3;cursor:pointer}button:hover{border-color:var(--cyan)}button:focus-visible,input:focus-visible,select:focus-visible{outline:2px solid var(--cyan)}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(300px,100%),1fr));gap:12px}
+article{border:1px solid var(--border);padding:14px;border-radius:12px;background:#122032;min-width:0}
+article h3{font-size:16px;margin:0 0 6px;overflow-wrap:anywhere}.tag{display:inline-block;border:1px solid var(--cyan);border-radius:15px;padding:2px 7px;color:var(--cyan);font-size:11px}
+article p{margin:7px 0}article a{color:var(--cyan);overflow-wrap:anywhere}.danger{color:#ffc7b2}.mono{font-family:ui-monospace,SFMono-Regular,Consolas,monospace;overflow-wrap:anywhere}
+.row{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}.metric{padding:12px;border:1px solid var(--border);border-radius:10px;min-width:170px;flex:1}
+.metric strong{font-size:24px;display:block}.editline{display:flex;gap:5px;align-items:center;flex-wrap:wrap}.editline input{flex:1;min-width:130px}
+footer{font-size:12px;color:var(--muted);padding-bottom:20px}
+@media(max-width:600px){main{padding:12px}.panel{padding:12px}.controls>*{width:100%}.metric{min-width:130px}.grid{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<main>
+<header><div><h1>CODE PURPLE · Operational handover</h1><div class="muted">Source-bound moniker lookup · dated review projection · P0 HOLD</div></div>
+<div class="controls"><button id="copyDropin" type="button">Copy next-chat prompt</button><button id="exportJson" type="button">Export edited JSON</button></div>
+</header>
+<section class="panel" aria-label="Source snapshot">
+ <div id="metrics" class="row"></div><p class="small">GitHub state may change; local edits are proposals until committed and reviewed. Root closures, Crew launches and P0 admission are not inferred.</p>
+</section>
+<section class="panel">
+ <h2>Choose a moniker</h2>
+ <div class="controls"><input id="search" type="search" placeholder="Search ID, task, warning or description" aria-label="Search monikers">
+ <select id="category" aria-label="Filter by category"><option value="all">All categories</option></select>
+ <label class="small"><input id="editMode" type="checkbox"> Edit local display labels</label>
+ <label class="small">Import proposal JSON <input id="importJson" type="file" accept=".json,application/json"></label></div>
+ <div class="row" style="margin-top:9px"><span class="small" id="count"></span><button id="clear" type="button">Reset filters</button></div>
+</section>
+<section id="cards" class="grid" aria-live="polite"></section>
+<section class="panel"><h2>How to continue</h2><div id="recipes"></div><p class="small">CLI: <code>python cli.py build</code> · <code>python cli.py serve</code> · <code>python cli.py verify</code> · <code>python cli.py dropin</code> · <code>python cli.py gh-status</code></p></section>
+<footer id="footer"></footer>
+</main>
+<script id="sourceMonikers" type="application/json">__MONIKER_JSON__</script>
+<script id="sourceState" type="application/json">__STATE_JSON__</script>
+<script id="sourceDropin" type="application/json">__DROPIN_JSON__</script>
+<script>
+"use strict";
+const original=JSON.parse(document.getElementById("sourceMonikers").textContent);
+const state=JSON.parse(document.getElementById("sourceState").textContent);
+const dropin=JSON.parse(document.getElementById("sourceDropin").textContent);
+let data=JSON.parse(JSON.stringify(original));
+const $=id=>document.getElementById(id);
+const github="https://github.com/GBOGEB/ABACUS/blob/main/";
+function node(tag,txt,cls){const n=document.createElement(tag);if(txt!==undefined)n.textContent=txt;if(cls)n.className=cls;return n}
+function metric(label,val){const c=node("div",undefined,"metric");c.append(node("span",label,"small"),node("strong",val));return c}
+function renderMetrics(){
+ const now=state.snapshots.find(s=>s.label==="POST_MERGE_LIVE");
+ $("metrics").replaceChildren(metric("Open issues",String(now.open_issues)),metric("Open PRs",String(now.open_prs)),metric("P0 admission",state.merge_admission),metric("Repositories",String(state.repository_heads.length)));
+ $("footer").textContent="Snapshot 2026-10-17 · main at capture "+state.repository_heads[0].sha+" · LOCAL_REPRODUCIBILITY only";
+}
+function categories(){
+ const sel=$("category");sel.replaceChildren(new Option("All categories","all"));
+ [...new Set(data.entries.map(x=>x.type))].sort().forEach(x=>sel.add(new Option(x,x)));
+}
+function render(){
+ const words=$("search").value.trim().toLowerCase(),category=$("category").value;
+ const chosen=data.entries.filter(x=>(category==="all"||x.type===category)&&[x.id,x.label,x.use,x.not,x.source].join(" ").toLowerCase().includes(words));
+ const cards=$("cards");cards.replaceChildren();
+ chosen.forEach((x,i)=>{
+  const c=node("article"),head=node("div",undefined,"row"),title=node("h3",x.id);
+  head.append(title,node("span",x.type,"tag"));c.append(head,node("p",x.label));
+  const p=node("p");p.append(node("strong","Use: "),document.createTextNode(x.use));c.append(p);
+  const w=node("p",undefined,"danger");w.append(node("strong","Not: "),document.createTextNode(x.not));c.append(w);
+  const a=node("a",x.source);a.href=x.source.startsWith("http")?x.source:github+x.source;a.target="_blank";a.rel="noopener noreferrer";c.append(a);
+  if($("editMode").checked){const wrap=node("label",undefined,"editline");wrap.append(node("span","Display label"));const edit=node("input");edit.value=x.label;edit.setAttribute("aria-label","Display label for "+x.id);edit.addEventListener("input",()=>{x.label=edit.value.trim()||x.label;c.querySelector("p").textContent=x.label});wrap.append(edit);c.append(wrap)}
+  const copy=node("button","Copy command · "+x.id);copy.type="button";copy.addEventListener("click",()=>copyText(x.id+": "+x.use));c.append(copy);cards.append(c);
+ });
+ $("count").textContent=chosen.length+" of "+data.entries.length+" terms shown";
+}
+async function copyText(txt){try{await navigator.clipboard.writeText(txt)}catch(e){const box=node("textarea");box.value=txt;document.body.append(box);box.select();document.execCommand("copy");box.remove()}}
+function exportData(){const bytes=new Blob([JSON.stringify(data,null,2)+"\n"],{type:"application/json"});const url=URL.createObjectURL(bytes);const a=document.createElement("a");a.href=url;a.download="MONIKERS_PROPOSAL.json";a.click();setTimeout(()=>URL.revokeObjectURL(url),1000)}
+$("search").addEventListener("input",render);$("category").addEventListener("change",render);$("editMode").addEventListener("change",render);
+$("clear").addEventListener("click",()=>{$("search").value="";$("category").value="all";render()});
+$("copyDropin").addEventListener("click",()=>copyText(dropin));$("exportJson").addEventListener("click",exportData);
+$("importJson").addEventListener("change",async e=>{const file=e.target.files[0];if(!file)return;try{const x=JSON.parse(await file.text());if(x.schema!==original.schema||x.promotion_authority!==false||!Array.isArray(x.entries)||!x.entries.length||new Set(x.entries.map(y=>y.id)).size!==x.entries.length)throw Error("Invalid schema/IDs");data=x;categories();render()}catch(err){window.alert("Import rejected: "+err.message)}});
+$("recipes").append(node("p","CBD! = complete governed burndown; G3A = three accepted A1/A2/A3 checkpoints; 3W/G3W = delivery tranches; 3MP = measured loops; LOSSLESS_HANDOVER_V2 = restart/replay protocol. Do not equate these."));
+renderMetrics();categories();render();
+</script>
+</body>
+</html>

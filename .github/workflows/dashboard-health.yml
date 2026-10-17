@@ -51,7 +51,7 @@ jobs:
             for src in $(grep -oP 'src="\K[^"]+' "$f" | grep -v '^http'); do
               # Generated JavaScript template placeholders are not static URLs.
               # Count genuine missing paths separately from dynamic expressions.
-              case "$href" in
+              case "$src" in
                 *"+url+"*|*"'+url+'"*)
                   echo "Dynamic href skipped: $f -> $href"
                   continue
@@ -86,6 +86,13 @@ jobs:
             fi
           done
 
+      - name: Reproduce Pages runtime-governance evidence
+        run: |
+          python scripts/validate_runtime_foundation.py
+          python scripts/write_runtime_governance_status.py \
+            --output docs/reports/runtime_governance_status.json
+          test -s docs/reports/runtime_governance_status.json
+
       - name: Report broken links
         run: |
           echo "=== Internal link report ==="
@@ -97,7 +104,17 @@ jobs:
                 ""|\#*|/*|\$\{*|[a-zA-Z][a-zA-Z0-9+.-]*:*)
                   continue
                   ;;
+                "'+url+'")
+                  echo "Dynamic JavaScript URL expression skipped: $f"
+                  continue
+                  ;;
               esac
+              # A JS-built URL in serialized script text is not a static navigation URL.
+              # Restrict this exclusion to the exact known expression, not other paths.
+              if [ "$href" = "'+url+'" ]; then
+                echo "Dynamic template expression skipped: $f -> $href"
+                continue
+              fi
               dir=$(dirname "$f")
               target="$dir/$href"
               target="${target%%#*}"

@@ -1,0 +1,41 @@
+name: W2 DMAIC Phase-Cache Replay Regression
+on:
+  pull_request:
+    paths:
+      - 'DMAIC_V3/core/handover_bridge.py'
+      - 'DMAIC_V3/tests/test_handover_bridge_runtime_coverage.py'
+      - '.github/workflows/w2-dmaic-phase-cache-qa.yml'
+permissions:
+  contents: read
+jobs:
+  replay-proof:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: ['3.10', '3.11', '3.12']
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+      - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065
+        with:
+          python-version: ${{ matrix.python-version }}
+      - name: Install bounded native prerequisites
+        run: python -m pip install pytest numpy packaging pyyaml
+      - name: Prove exact checkout and phase replay behavior
+        env:
+          EXPECTED_HEAD: ${{ github.event.pull_request.head.sha }}
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$EXPECTED_HEAD"
+          mkdir -p w2-evidence
+          python -m pytest -q DMAIC_V3/tests/test_handover_bridge_runtime_coverage.py --junitxml=w2-evidence/junit.xml
+      - name: Fail closed if native JUnit is missing
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: w2-handover-phase-cache-py${{ matrix.python-version }}
+          path: w2-evidence/junit.xml
+          if-no-files-found: error
