@@ -209,5 +209,141 @@ class CBD260Tests(unittest.TestCase):
             "authenticated_crew_launches"])
 
 
+    def test_cli_static_receipts_are_source_bound(self):
+        import contextlib
+        import io
+
+        with tempfile.TemporaryDirectory() as directory:
+            output = Path(directory) / "static"
+            stream = io.StringIO()
+            with contextlib.redirect_stdout(stream):
+                cbd.main(
+                    [*(str(path) for path in PATHS), "--output-dir", str(output)]
+                )
+            observation = json.loads(stream.getvalue())
+            self.assertEqual("READ_ONLY", observation["status"])
+            self.assertEqual("HOLD", observation["admission"])
+            self.assertEqual(0, observation["root_closure_credit"])
+            self.assertEqual(253, observation["metrics"]["distinct_failed_run_ids"])
+            self.assertIsNone(observation["metrics"]["current_main_coverage"])
+            self.assertFalse((output / "native_jobs.json").exists())
+
+    def test_cli_mocked_native_253_scouts_and_receipt_parity(self):
+        import contextlib
+        import io
+        import sys
+        import types
+        from unittest import mock
+
+        reader = FakeNativeReader(no_step=True)
+        reader.entries = self.snapshot["unique_failed_runs"]
+        module = types.SimpleNamespace(GitHubReadOnly=lambda: reader)
+        with tempfile.TemporaryDirectory() as directory:
+            output = Path(directory) / "native"
+            before_path = list(sys.path)
+            try:
+                with mock.patch.dict(sys.modules, {"native_ingest": module}):
+                    with contextlib.redirect_stdout(io.StringIO()):
+                        cbd.main(
+                            [
+                                *(str(path) for path in PATHS),
+                                "--output-dir",
+                                str(output),
+                                "--enrich-native",
+                                "--workers",
+                                "3",
+                                "--max-native-runs",
+                                "256",
+                            ]
+                        )
+            finally:
+                sys.path[:] = before_path
+            data = json.loads((output / "native_jobs.json").read_text())
+            self.assertEqual(253, len(data))
+            self.assertTrue(
+                all(value["status"] == "JOB_METADATA_BOUND" for value in data.values())
+            )
+            self.assertTrue(
+                all(
+                    job["first_failed_step"] is None
+                    for value in data.values()
+                    for job in value["failed_jobs"]
+                )
+            )
+            receipts = json.loads((output / "sha256.json").read_text())
+            for name, digest in receipts.items():
+                content = (output / name).read_bytes()
+                self.assertEqual(hashlib.sha256(content).hexdigest(), digest)
+            self.assertIsNone(
+                json.loads((output / "summary.json").read_text())["metrics"][
+                    "open_causal_roots"
+                ]
+            )
+
+    def test_successful_native_job_not_counted_as_failed(self):
+        class MixedJobReader(FakeNativeReader):
+            def run_and_jobs(self, repo, run_id, sha):
+                run, jobs = super().run_and_jobs(repo, run_id, sha)
+                successful = copy.deepcopy(jobs[0])
+                successful["id"] += 9999999999
+                successful["conclusion"] = "success"
+                jobs.append(successful)
+                return run, jobs
+
+        reader = MixedJobReader()
+        reader.entries = self.snapshot["unique_failed_runs"]
+        native = cbd.enrich_native(self.snapshot, reader, workers=3)
+        self.assertEqual(253, len(native))
+        self.assertTrue(
+            all(value["failed_job_count"] == 1 for value in native.values())
+        )
+        self.assertIsNone(
+            cbd.project(self.snapshot, native)["metrics"]["closed_causal_roots"]
+        )
+
+    def test_native_reader_errors_never_become_false_green(self):
+        class FailingReader:
+            def run_and_jobs(self, _repo, _run_id, _sha):
+                raise RuntimeError("Synthetic source failure")
+
+        result = cbd.enrich_native(self.snapshot, FailingReader(), workers=2)
+        projection = cbd.project(self.snapshot, result)
+        self.assertEqual(253, projection["metrics"]["job_readbacks_withheld"])
+        self.assertEqual(0, projection["metrics"]["job_readbacks_accepted"])
+        self.assertIsNone(projection["metrics"]["native_complete_failure_job_denominator"])
+        self.assertEqual("HOLD", projection["safety"]["merge_admission"])
+
+    def test_native_output_written_only_for_explicit_native_argument(self):
+        with tempfile.TemporaryDirectory() as directory:
+            location = Path(directory)
+            native = {"123": {"status": "READBACK_WITHHELD", "failed_jobs": None}}
+            result = cbd.build(PATHS, location, native=native)
+            self.assertEqual(1, result["metrics"]["job_readbacks_withheld"])
+            self.assertEqual(
+                native, json.loads((location / "native_jobs.json").read_text())
+            )
+            self.assertIn(
+                "native_jobs.json",
+                json.loads((location / "sha256.json").read_text()),
+            )
+
+    def test_native_scout_bounds_reject_invalid_execution_parameters(self):
+        for workers in (0, 9, True, 1.5):
+            with self.subTest(workers=workers):
+                with self.assertRaisesRegex(ValueError, "worker"):
+                    cbd.enrich_native(self.snapshot, self.reader, workers=workers)
+        for limit in (0, 513, True, 3.5):
+            with self.subTest(limit=limit):
+                with self.assertRaisesRegex(ValueError, "run bound"):
+                    cbd.enrich_native(self.snapshot, self.reader, limit=limit)
+
+    def test_source_file_bounds_reject_empty_and_excess_inputs(self):
+        for paths in ([], [PATHS[0]] * 33):
+            with self.subTest(size=len(paths)):
+                with self.assertRaisesRegex(ValueError, "bounded"):
+                    cbd.read_n0(paths)
+
+
+
 if __name__ == "__main__":
     unittest.main()
