@@ -1,0 +1,61 @@
+name: G3A Governed Three-Advance Contract Proof
+on:
+  pull_request:
+    paths:
+      - scripts/g3a_bounded_mission.py
+      - tests/test_g3a_bounded_mission.py
+      - docs/ci/G3A_EXAMPLE_MISSION.json
+      - docs/ci/G3A_GOVERNED_THREE_ADVANCE.md
+      - .github/workflows/g3a-bounded-continuation-proof.yml
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  g3a-readonly-proof:
+    name: G3A bounded 3-checkpoint + coverage proof
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout exact PR head
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+      - name: Setup Python 3.12
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install coverage only
+        run: python -m pip install 'coverage>=7.7,<8'
+      - name: Test control and measure native branch coverage
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p test_reports/g3a
+          python -m coverage run --branch --include='*/scripts/g3a_bounded_mission.py' -m unittest discover -s tests -p test_g3a_bounded_mission.py -v 2>&1 | tee test_reports/g3a/unittest.log
+          python -m coverage json -o test_reports/g3a/coverage.json
+      - name: Execute bound N to N+3 local demonstration
+        shell: bash
+        env:
+          EXPECTED_HEAD: ${{ github.event.pull_request.head.sha || github.sha }}
+        run: |
+          set -euo pipefail
+          python scripts/g3a_bounded_mission.py --spec docs/ci/G3A_EXAMPLE_MISSION.json --repo-root . --expected-head "$EXPECTED_HEAD" --out test_reports/g3a/mission-receipt.json
+          python - <<'PY'
+          import json, pathlib
+          root = pathlib.Path('test_reports/g3a')
+          receipt = json.loads((root / 'mission-receipt.json').read_text())
+          cov = json.loads((root / 'coverage.json').read_text())['files']['scripts/g3a_bounded_mission.py']['summary']
+          assert receipt['status'] == 'COMPLETE_LOCAL_3_OF_3' and receipt['accepted_checkpoints'] == 3
+          assert cov['num_statements'] > 0 and cov['num_branches'] > 0
+          assert cov['covered_lines'] * 100 >= 90 * cov['num_statements']
+          assert cov['covered_branches'] * 100 >= 85 * cov['num_branches']
+          assert receipt['merge_admission'] == 'HOLD' and receipt['formal_root_closures'] == 0
+          print('Exact-head G3A local proof checked; merge admission remains HOLD')
+          PY
+      - name: Preserve immutable run receipt
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: g3a-proof-${{ github.run_id }}-${{ github.run_attempt }}
+          path: test_reports/g3a/
+          if-no-files-found: warn
