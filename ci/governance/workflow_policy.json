@@ -412,26 +412,8 @@
       "disposition": "keep"
     },
     {
-      "pattern": "^dow-remaining-gates-telemetry\\.yml$",
-      "cluster": "runtime_governance",
-      "lifecycle": "pr_domain",
-      "disposition": "keep"
-    },
-    {
-      "pattern": "^recovery-action-value-evidence\\.yml$",
-      "cluster": "runtime_governance",
-      "lifecycle": "pr_domain",
-      "disposition": "keep"
-    },
-    {
-      "pattern": "^missioncontrol-issue-burndown\\.yml$",
-      "cluster": "runtime_governance",
-      "lifecycle": "pr_domain",
-      "disposition": "keep"
-    },
-    {
-      "pattern": "^mip2-method-qualification\\.yml$",
-      "cluster": "runtime_governance",
+      "pattern": "^mip-wave-pulse-testflight\\.yml$",
+      "cluster": "specialised",
       "lifecycle": "pr_domain",
       "disposition": "keep"
     }
