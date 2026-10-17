@@ -18,7 +18,7 @@ jobs:
     timeout-minutes: 30
     steps:
       - uses: actions/checkout@v7
-      - uses: actions/setup-python@v7
+      - uses: actions/setup-python@v7.0.0
         with:
           python-version: '3.12'
       - name: Install scanner and test runner
@@ -193,7 +193,10 @@ jobs:
               json.dumps(receipt, indent=2) + chr(10), encoding="utf-8"
           )
           PY
+      # Keep scanner evidence independent of the governance inventory gate.
+      # The failed inventory check remains a red job step.
       - name: Run full and configured scans with separate denominators
+        if: ${{ !cancelled() }}
         shell: bash
         run: |
           mkdir -p bandit-evidence
@@ -230,6 +233,7 @@ jobs:
               print(f"{name}: {len(data['results'])} findings")
           PY
       - name: Partition full scan by exclusive file owner
+        if: ${{ !cancelled() }}
         run: |
           SCAN_SHA="${{ github.event.pull_request.head.sha || github.sha }}"
           python scripts/bandit_disjoint_census.py \
@@ -239,7 +243,7 @@ jobs:
           sha256sum bandit-evidence/*.json > bandit-evidence/SHA256SUMS
       - name: Upload evidence regardless of scan findings
         if: always()
-        uses: actions/upload-artifact@v7
+        uses: actions/upload-artifact@v7.0.2
         with:
           name: bandit-disjoint-${{ github.run_id }}
           path: bandit-evidence/

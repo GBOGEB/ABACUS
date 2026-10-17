@@ -36,12 +36,12 @@ jobs:
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v7
+        uses: actions/checkout@v7.0.1
         with:
           fetch-depth: 0
 
       - name: Set up Python ${{ matrix.python-version }}
-        uses: actions/setup-python@v7
+        uses: actions/setup-python@v7.0.0
         with:
           python-version: ${{ matrix.python-version }}
           cache: 'pip'
@@ -89,7 +89,6 @@ jobs:
             --tb=short \
             --maxfail=5 \
             -n 0
-        continue-on-error: ${{ matrix.python-version != '3.11' }}
 
       - name: Upload coverage to Codecov
         if: matrix.python-version == '3.11' && matrix.os == 'ubuntu-latest'
@@ -102,7 +101,7 @@ jobs:
 
       - name: Upload test results
         if: always()
-        uses: actions/upload-artifact@v7
+        uses: actions/upload-artifact@v7.0.2
         with:
           name: test-results-${{ matrix.os }}-py${{ matrix.python-version }}
           path: |
@@ -117,10 +116,10 @@ jobs:
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v7
+        uses: actions/checkout@v7.0.1
 
       - name: Set up Python
-        uses: actions/setup-python@v7
+        uses: actions/setup-python@v7.0.0
         with:
           python-version: ${{ env.PYTHON_VERSION }}
           cache: 'pip'
@@ -159,10 +158,10 @@ jobs:
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v7
+        uses: actions/checkout@v7.0.1
 
       - name: Set up Python
-        uses: actions/setup-python@v7
+        uses: actions/setup-python@v7.0.0
         with:
           python-version: ${{ env.PYTHON_VERSION }}
 
@@ -182,7 +181,7 @@ jobs:
 
       - name: Upload security reports
         if: always()
-        uses: actions/upload-artifact@v7
+        uses: actions/upload-artifact@v7.0.2
         with:
           name: security-reports
           path: |
@@ -196,10 +195,10 @@ jobs:
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v7
+        uses: actions/checkout@v7.0.1
 
       - name: Set up Python
-        uses: actions/setup-python@v7
+        uses: actions/setup-python@v7.0.0
         with:
           python-version: ${{ env.PYTHON_VERSION }}
 
@@ -216,7 +215,7 @@ jobs:
           twine check dist/*
 
       - name: Upload build artifacts
-        uses: actions/upload-artifact@v7
+        uses: actions/upload-artifact@v7.0.2
         with:
           name: dist
           path: dist/
@@ -229,10 +228,10 @@ jobs:
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v7
+        uses: actions/checkout@v7.0.1
 
       - name: Set up Python
-        uses: actions/setup-python@v7
+        uses: actions/setup-python@v7.0.0
         with:
           python-version: ${{ env.PYTHON_VERSION }}
 
@@ -251,10 +250,10 @@ jobs:
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v7
+        uses: actions/checkout@v7.0.1
 
       - name: Set up Python
-        uses: actions/setup-python@v7
+        uses: actions/setup-python@v7.0.0
         with:
           python-version: ${{ env.PYTHON_VERSION }}
 

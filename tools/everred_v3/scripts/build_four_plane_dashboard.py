@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 """Deterministic, standalone four-plane evidence review dashboard."""
+
 from __future__ import annotations
 
 import argparse
@@ -27,12 +28,17 @@ def build(snapshot: Path, target: Path) -> dict:
     svg = []
     for name in ("06_four_plane_execution.svg", "07_four_plane_sipoc.svg"):
         s = (BASE / "diagrams" / name).read_text(encoding="utf-8")
-        svg.append(s[s.index("<svg"):])
-    source_json = json.dumps(obj, sort_keys=True, ensure_ascii=True).replace("<", "\\u003c")
+        svg.append(s[s.index("<svg") :])
+    source_json = json.dumps(obj, sort_keys=True, ensure_ascii=True).replace(
+        "<", "\\u003c"
+    )
     source_json = source_json.replace("</", "<\\/")
     titles = ("Execution DAG", "SIPOC ownership and evidence flow")
-    arts = "".join('<article class="diagram"><h3>' + label + '</h3>' + s + '</article>' for label,s in zip(titles,svg))
-    page = '''<!doctype html>
+    arts = "".join(
+        '<article class="diagram"><h3>' + label + "</h3>" + s + "</article>"
+        for label, s in zip(titles, svg)
+    )
+    page = """<!doctype html>
 <html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="generator" content="EVERRED V3.1 four-plane dashboard"><meta name="source-digest" content="DIGEST">
 <title>EVERRED V3.1 | Four-plane runtime evidence</title>
@@ -119,21 +125,40 @@ document.getElementById('importJson').addEventListener('change',async e=>{
  e.target.value='';
 });
 render();
-</script></body></html>'''
-    page = page.replace("DIGEST", digest).replace("COUNT", str(count)).replace("TASKS", str(len(tasks)))
-    page = page.replace("DIGEST", digest).replace("HEAD_PLACEHOLDER", html.escape(sha)).replace("ARTS", arts).replace("DATA", source_json)
+</script></body></html>"""
+    page = (
+        page.replace("DIGEST", digest)
+        .replace("COUNT", str(count))
+        .replace("TASKS", str(len(tasks)))
+    )
+    page = (
+        page.replace("DIGEST", digest)
+        .replace("HEAD_PLACEHOLDER", html.escape(sha))
+        .replace("ARTS", arts)
+        .replace("DATA", source_json)
+    )
     target.parent.mkdir(parents=True, exist_ok=True)
     target.write_text(page, encoding="utf-8")
-    return {"html": target.as_posix(), "html_sha256": hashlib.sha256(target.read_bytes()).hexdigest(),
-            "snapshot_sha256": digest, "observations": count, "tasks": len(tasks)}
+    return {
+        "html": target.as_posix(),
+        "html_sha256": hashlib.sha256(target.read_bytes()).hexdigest(),
+        "snapshot_sha256": digest,
+        "observations": count,
+        "tasks": len(tasks),
+    }
 
 
 def main() -> None:
-    p=argparse.ArgumentParser()
-    p.add_argument("--snapshot",type=Path,default=BASE/"data/four_plane_preflight.json")
-    p.add_argument("--output",type=Path,default=BASE/"dashboard/four_plane_status.html")
-    x=p.parse_args()
-    print(json.dumps(build(x.snapshot,x.output),sort_keys=True))
+    p = argparse.ArgumentParser()
+    p.add_argument(
+        "--snapshot", type=Path, default=BASE / "data/four_plane_preflight.json"
+    )
+    p.add_argument(
+        "--output", type=Path, default=BASE / "dashboard/four_plane_status.html"
+    )
+    x = p.parse_args()
+    print(json.dumps(build(x.snapshot, x.output), sort_keys=True))
 
-if __name__=="__main__":
+
+if __name__ == "__main__":
     main()

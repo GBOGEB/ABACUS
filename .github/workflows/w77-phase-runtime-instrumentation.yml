@@ -18,10 +18,10 @@ jobs:
     timeout-minutes: 10
     steps:
       - name: Checkout control implementation
-        uses: actions/checkout@v7
+        uses: actions/checkout@v7.0.1
 
       - name: Set up Python
-        uses: actions/setup-python@v7
+        uses: actions/setup-python@v7.0.0
         with:
           python-version: "3.11"
 
@@ -58,12 +58,12 @@ jobs:
       REPEAT: ${{ matrix.repeat }}
     steps:
       - name: Checkout W77 control implementation
-        uses: actions/checkout@v7
+        uses: actions/checkout@v7.0.1
         with:
           fetch-depth: 1
 
       - name: Set up Python
-        uses: actions/setup-python@v7
+        uses: actions/setup-python@v7.0.0
         with:
           python-version: "3.11"
 
@@ -85,7 +85,7 @@ jobs:
           git worktree remove --force "${worktree}"
 
       - name: Upload W77 phase probe
-        uses: actions/upload-artifact@v7
+        uses: actions/upload-artifact@v7.0.2
         with:
           # Repeat + target is unique within one workflow run.
           name: r${{ matrix.repeat }}-${{ matrix.target.label }}
@@ -98,10 +98,10 @@ jobs:
     timeout-minutes: 10
     steps:
       - name: Checkout W77 control implementation
-        uses: actions/checkout@v7
+        uses: actions/checkout@v7.0.1
 
       - name: Set up Python
-        uses: actions/setup-python@v7
+        uses: actions/setup-python@v7.0.0
         with:
           python-version: "3.11"
 
@@ -129,7 +129,7 @@ jobs:
           cat architecture/w77/runtime/W77_FEATURE_STABILITY.json
 
       - name: Upload W77 stability evidence
-        uses: actions/upload-artifact@v7
+        uses: actions/upload-artifact@v7.0.2
         with:
           name: w77-phase-stability-${{ github.sha }}
           path: architecture/w77/runtime/W77_FEATURE_STABILITY.json

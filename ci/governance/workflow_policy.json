@@ -170,6 +170,24 @@
       "disposition": "keep"
     },
     {
+      "pattern": "^code-purple-dashboard-v31\\.yml$",
+      "cluster": "runtime_governance",
+      "lifecycle": "pr_domain",
+      "disposition": "keep"
+    },
+    {
+      "pattern": "^code-purple-sut-gui\\.yml$",
+      "cluster": "runtime_governance",
+      "lifecycle": "pr_domain",
+      "disposition": "keep"
+    },
+    {
+      "pattern": "^recovery-action-value-evidence\\.yml$",
+      "cluster": "runtime_governance",
+      "lifecycle": "pr_domain",
+      "disposition": "keep"
+    },
+    {
       "pattern": "^pr-feedback-gate\\.yml$",
       "cluster": "runtime_governance",
       "lifecycle": "pr_domain",
@@ -361,6 +379,12 @@
       "pattern": "^code-purple-quality-ratchet-proof\\.yml$",
       "cluster": "core_test",
       "lifecycle": "pr_fast",
+      "disposition": "keep"
+    },
+    {
+      "pattern": "^mcw-artifact-cold-build\\.yml$",
+      "cluster": "specialised",
+      "lifecycle": "pr_domain",
       "disposition": "keep"
     }
   ],

@@ -1,39 +1,65 @@
 """TOP21 census: denominator separation, provenance rejection, deterministic replay."""
+
 import copy
+import json
 import pathlib
 import sys
 import tempfile
 import unittest
-import json
 
 ROOT = pathlib.Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "src"))
 sys.path.insert(0, str(ROOT / "scripts"))
-from top21_rollout import rollout_census, InvalidCensus, RANK_SCHEMA, RECEIPT_SCHEMA
 from build_top21_rollout import main
 
-REPOS = ["GBOGEB/ABACUS", "GBOGEB/CODEX", "GBOGEB/cryoplant-project",
-         "GBOGEB/CODESPACES_jyperter", "GBOGEB/morris.js"]
+from top21_rollout import RANK_SCHEMA, RECEIPT_SCHEMA, InvalidCensus, rollout_census
+
+REPOS = [
+    "GBOGEB/ABACUS",
+    "GBOGEB/CODEX",
+    "GBOGEB/cryoplant-project",
+    "GBOGEB/CODESPACES_jyperter",
+    "GBOGEB/morris.js",
+]
 
 
 def contract():
-    return {"schema_version": "1.0.0",
-            "authority": {"authority_transfer": False, "formal_credit_delta": 0,
-                          "engineering_credit_delta": 0},
-            "rollout": {"repository_candidates": list(REPOS),
-                        "top21_definition": "pending owner approval"}}
+    return {
+        "schema_version": "1.0.0",
+        "authority": {
+            "authority_transfer": False,
+            "formal_credit_delta": 0,
+            "engineering_credit_delta": 0,
+        },
+        "rollout": {
+            "repository_candidates": list(REPOS),
+            "top21_definition": "pending owner approval",
+        },
+    }
 
 
 def receipt():
-    return {"repository": REPOS[0], "source_sha": "a" * 40, "run_id": 123,
-            "job_id": 456, "kind": "CI",
-            "evidence_url": "https://github.com/GBOGEB/ABACUS/actions/runs/123"}
+    return {
+        "repository": REPOS[0],
+        "source_sha": "a" * 40,
+        "run_id": 123,
+        "job_id": 456,
+        "kind": "CI",
+        "evidence_url": "https://github.com/GBOGEB/ABACUS/actions/runs/123",
+    }
 
 
 def ranked():
-    return {"schema": RANK_SCHEMA, "items": [
-        {"rank": 1, "root_candidate_id": "ABACUS-RC-2026-0001",
-         "origin_repository": REPOS[0]}]}
+    return {
+        "schema": RANK_SCHEMA,
+        "items": [
+            {
+                "rank": 1,
+                "root_candidate_id": "ABACUS-RC-2026-0001",
+                "origin_repository": REPOS[0],
+            }
+        ],
+    }
 
 
 class Top21Tests(unittest.TestCase):
@@ -41,7 +67,9 @@ class Top21Tests(unittest.TestCase):
         r = rollout_census(contract())
         self.assertEqual(r["root_ranking"]["capacity"], 21)
         self.assertEqual(r["repository_rollout"]["nominated_inventory"], 5)
-        self.assertEqual(r["repository_rollout"]["repositories_with_declared_receipts"], 0)
+        self.assertEqual(
+            r["repository_rollout"]["repositories_with_declared_receipts"], 0
+        )
         self.assertIsNone(r["repository_rollout"]["authenticated_deployments"])
         self.assertIsNone(r["evidence"]["live_worker_count"])
         self.assertEqual(r["admission"], "HOLD")
@@ -67,35 +95,66 @@ class Top21Tests(unittest.TestCase):
             x["items"].append(y)
             with self.subTest(field=field), self.assertRaises(InvalidCensus):
                 rollout_census(contract(), ranking=x)
-        x = {"schema": RANK_SCHEMA, "items": [{"rank": i,
-             "root_candidate_id": f"RC-{i:03d}", "origin_repository": REPOS[0]}
-             for i in range(1, 23)]}
+        x = {
+            "schema": RANK_SCHEMA,
+            "items": [
+                {
+                    "rank": i,
+                    "root_candidate_id": f"RC-{i:03d}",
+                    "origin_repository": REPOS[0],
+                }
+                for i in range(1, 23)
+            ],
+        }
         with self.assertRaises(InvalidCensus):
             rollout_census(contract(), ranking=x)
 
     def test_invalid_source_binding_fails(self):
-        for delta in ({"source_sha": "HEAD"}, {"run_id": False},
-                      {"job_id": 0}, {"evidence_url": "https://github.com.evil/x"},
-                      {"repository": "GBOGEB/UNAPPROVED"}, {"verified": True}):
+        for delta in (
+            {"source_sha": "HEAD"},
+            {"run_id": False},
+            {"job_id": 0},
+            {"evidence_url": "https://github.com.evil/x"},
+            {"repository": "GBOGEB/UNAPPROVED"},
+            {"verified": True},
+        ):
             x = dict(receipt(), **delta)
             with self.subTest(delta=delta), self.assertRaises(InvalidCensus):
                 rollout_census(contract(), {"schema": RECEIPT_SCHEMA, "items": [x]})
 
     def test_duplicate_or_mixed_heads_fail(self):
         x = receipt()
-        y = dict(x, source_sha="b" * 40, run_id=124,
-                 evidence_url="https://github.com/GBOGEB/ABACUS/actions/runs/124")
+        y = dict(
+            x,
+            source_sha="b" * 40,
+            run_id=124,
+            evidence_url="https://github.com/GBOGEB/ABACUS/actions/runs/124",
+        )
         for pair in ([x, x], [x, y]):
             with self.subTest(pair=pair), self.assertRaises(InvalidCensus):
                 rollout_census(contract(), {"schema": RECEIPT_SCHEMA, "items": pair})
 
     def test_zero_changed_lines_na(self):
-        x = dict(receipt(), kind="COVERAGE", artifact_sha256="c" * 64,
-                 measurement={"scope": "changed_lines", "unit": "lines",
-                              "covered": 0, "eligible": 0, "config_digest": "d" * 64,
-                              "tool_version": "coverage-7", "test_selection": "focused"})
+        x = dict(
+            receipt(),
+            kind="COVERAGE",
+            artifact_sha256="c" * 64,
+            measurement={
+                "scope": "changed_lines",
+                "unit": "lines",
+                "covered": 0,
+                "eligible": 0,
+                "config_digest": "d" * 64,
+                "tool_version": "coverage-7",
+                "test_selection": "focused",
+            },
+        )
         r = rollout_census(contract(), {"schema": RECEIPT_SCHEMA, "items": [x]})
-        self.assertIsNone(r["repository_rollout"]["inventory"][0]["coverage_by_scope"][0]["reported_pct"])
+        self.assertIsNone(
+            r["repository_rollout"]["inventory"][0]["coverage_by_scope"][0][
+                "reported_pct"
+            ]
+        )
         x["measurement"]["scope"] = "broad"
         with self.assertRaises(InvalidCensus):
             rollout_census(contract(), {"schema": RECEIPT_SCHEMA, "items": [x]})
