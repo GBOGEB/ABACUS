@@ -20,7 +20,7 @@ class PreflightContractTests(unittest.TestCase):
         (self.root / "src/a.py").write_text("print('safe')\n", encoding="utf-8")
         (self.root / ".github/workflows/demo.yml").write_text("name: demo\n")
         (self.root / "ci/governance/workflow_policy.json").write_text(
-            json.dumps({"rules": [{"pattern": r"^demo\\.yml$"}]}), encoding="utf-8")
+            json.dumps({"rules": [{"pattern": "^demo[.]yml$"}]}), encoding="utf-8")
         self.a = "a" * 40
         self.b = "b" * 40
 
