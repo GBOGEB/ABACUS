@@ -45,8 +45,7 @@ jobs:
         run: |
           set -euo pipefail
           python -m coverage json -o test_reports/cbd-native/coverage.json
-          python -m cbd_native_evidence_metrics --output test_reports/cbd-native/pulse.json || \
-            python scripts/cbd_native_evidence_metrics.py --output test_reports/cbd-native/pulse.json
+          python scripts/cbd_native_evidence_metrics.py --output test_reports/cbd-native/pulse.json
           python - <<'PY'
           import hashlib
           import json
