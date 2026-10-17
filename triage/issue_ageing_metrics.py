@@ -13,7 +13,7 @@ from pathlib import Path
 
 SOURCE_SCHEMA = "abacus.triage.issue-age-census.v1"
 PR_SCHEMA = "abacus.triage.pr-head-register.v1"
-SHA40 = re.compile(r"[0-9a-f]{40}\\Z")
+SHA40 = re.compile(r"[0-9a-f]{40}")
 BANDS = ("0_to_6", "7_to_13", "14_to_29", "30_plus")
 
 
