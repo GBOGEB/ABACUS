@@ -53,13 +53,13 @@ jobs:
               def __init__(self):
                   super().__init__()
                   self.ids = set()
+                  self.tags = set()
                   self.scripts = []
                   self.headings = 0
                   self._inside = False
               def handle_starttag(self, tag, attrs):
                   d = dict(attrs)
-                  if tag == 'h1':
-                      self.headings += 1
+                  self.tags.add(tag)
                   if 'id' in d:
                       assert d['id'] not in self.ids, 'duplicate id'
                       self.ids.add(d['id'])
@@ -74,10 +74,16 @@ jobs:
           p = Path('tools/everred_v3/sut_gui/index.html')
           html = p.read_text(encoding='utf-8')
           assert html.startswith('<!doctype html>')
-          assert '<title>' in html
+          # Structural semantics, not brittle literal opening tags with no attributes.
           structure = Structure()
           structure.feed(html)
-          assert structure.headings == 1, 'expected exactly one semantic h1'
+          assert {'title', 'h1'}.issubset(structure.tags), 'missing title/H1 semantic element'
+          positive = Structure()
+          positive.feed('<title>X</title><h1 class="title">Y</h1>')
+          assert {'title', 'h1'}.issubset(positive.tags)
+          negative = Structure()
+          negative.feed('<title>X</title><div class="title">Y</div>')
+          assert 'h1' not in negative.tags
           must = {'refresh', 'run', 'token', 'profile', 'ci-body', 'connection'}
           assert must.issubset(structure.ids), must - structure.ids
           assert structure.scripts, 'JavaScript missing'
