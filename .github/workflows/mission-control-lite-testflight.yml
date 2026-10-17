@@ -11,6 +11,7 @@ on:
       - 'scripts/validate_changed_docs.py'
       - 'tests/test_validate_changed_docs_selector.py'
       - 'tests/test_bd_telemetry.py'
+      - 'tests/test_mcl_gate_census.py'
       - 'DMAIC_V3/requirements.txt'
       - '.github/workflows/mission-control-lite-testflight.yml'
 permissions:
@@ -68,6 +69,12 @@ jobs:
             -p test_bd_telemetry.py -v \
             > evidence/telemetry-tests.log 2>&1
           python -m mission_control_lite.timing_pulse measure \
+            --output evidence/phase-times.json --phase gate-census-tests -- \
+            python -m coverage run --append --branch \
+            --source=mission_control_lite \
+            -m unittest discover -s tests -p test_mcl_gate_census.py -v \
+            > evidence/gate-census-tests.log 2>&1
+          python -m mission_control_lite.timing_pulse measure \
             --output evidence/phase-times.json --phase coverage-json -- \
             python -m coverage json -o evidence/coverage.json
           python -m mission_control_lite.timing_pulse measure \
@@ -93,6 +100,8 @@ jobs:
             --rex-log evidence/rex-tests.log \
             --metrics-log evidence/metrics-tests.log \
             --timing-tests-log evidence/timing-tests.log \
+            --telemetry-tests-log evidence/telemetry-tests.log \
+            --gate-census-tests-log evidence/gate-census-tests.log \
             --timing-log evidence/phase-times.json \
             --source-sha "$SOURCE_SHA" --event-sha "$EVENT_SHA" \
             --run-id "$RUN_ID" --output evidence/coverage-pulse.json \
@@ -163,6 +172,7 @@ jobs:
             evidence/metrics-tests.log
             evidence/timing-tests.log
             evidence/telemetry-tests.log
+            evidence/gate-census-tests.log
             evidence/phase-times.json
           include-hidden-files: false
           if-no-files-found: error
