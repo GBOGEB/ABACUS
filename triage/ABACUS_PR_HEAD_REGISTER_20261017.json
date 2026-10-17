@@ -1,0 +1,245 @@
+{
+  "schema": "abacus.triage.pr-head-register.v1",
+  "repository": "GBOGEB/ABACUS",
+  "date_utc": "2026-10-17",
+  "authority_transfer": false,
+  "merge_admission": "HOLD",
+  "related_issue_age_register": "triage/ABACUS_ISSUE_AGEING_CENSUS_20261017.json",
+  "primary_source_heads": [
+    {
+      "pr": 2135,
+      "head_sha": "dc2804cfc74f0ef92fa4fe9193c79cdad0f8fcd1",
+      "base": "main",
+      "created": "2026-10-17T14:31:47Z",
+      "updated": "2026-10-17T16:46:08Z",
+      "state": "open",
+      "merged": false,
+      "draft": false,
+      "title": "feat(mip): B-series three-pulse source-bound temporal KPI hierarchy",
+      "url": "https://github.com/GBOGEB/ABACUS/pull/2135"
+    },
+    {
+      "pr": 2026,
+      "head_sha": "0b64fe68a3f27f07dbb7797858d1f85253512df3",
+      "base": "main",
+      "created": "2026-10-15T16:43:38Z",
+      "updated": "2026-10-17T11:45:33Z",
+      "state": "open",
+      "merged": false,
+      "draft": false,
+      "title": "fix(mip): restore matplotlib Python 3.10 dependency compatibility",
+      "url": "https://github.com/GBOGEB/ABACUS/pull/2026"
+    },
+    {
+      "pr": 2027,
+      "head_sha": "8cb4d742ad046ab688d691f4cc68c4171ad4308f",
+      "base": "main",
+      "created": "2026-10-15T16:52:57Z",
+      "updated": "2026-10-16T20:20:07Z",
+      "state": "open",
+      "merged": false,
+      "draft": false,
+      "title": "fix(security): retain Safety failure and remediate runner setuptools (#1738)",
+      "url": "https://github.com/GBOGEB/ABACUS/pull/2027"
+    },
+    {
+      "pr": 2033,
+      "head_sha": "4c38d40342f65051216e5d5c28b4a39dd93f1982",
+      "base": "main",
+      "created": "2026-10-15T20:20:53Z",
+      "updated": "2026-10-17T11:09:50Z",
+      "state": "open",
+      "merged": false,
+      "draft": false,
+      "title": "feat(mip): disjoint exact-SHA CI worker telemetry with fail-closed receipts",
+      "url": "https://github.com/GBOGEB/ABACUS/pull/2033"
+    },
+    {
+      "pr": 2041,
+      "head_sha": "60d2a5640c997fc916285580b6de8a3d86c27c38",
+      "base": "main",
+      "created": "2026-10-15T23:40:31Z",
+      "updated": "2026-10-17T16:25:49Z",
+      "state": "open",
+      "merged": false,
+      "draft": false,
+      "title": "fix(ci-governance): classify two CODE PURPLE workflows and regenerate inventory",
+      "url": "https://github.com/GBOGEB/ABACUS/pull/2041"
+    },
+    {
+      "pr": 2055,
+      "head_sha": "2d50f8fa79c1c21fa2bd70969ff410aae2e11fb4",
+      "base": "main",
+      "created": "2026-10-16T08:31:15Z",
+      "updated": "2026-10-17T10:57:09Z",
+      "state": "open",
+      "merged": false,
+      "draft": false,
+      "title": "fix(dmaic C4B): fail-closed test bridge and behavioral coverage",
+      "url": "https://github.com/GBOGEB/ABACUS/pull/2055"
+    },
+    {
+      "pr": 2077,
+      "head_sha": "00cc896802b426c6b222c2557338e54412a51062",
+      "base": "main",
+      "created": "2026-10-16T16:50:58Z",
+      "updated": "2026-10-17T11:45:57Z",
+      "state": "open",
+      "merged": false,
+      "draft": false,
+      "title": "feat(everred): CBD! 260 failed workflows to native first-red DAG and disjoint BD waves",
+      "url": "https://github.com/GBOGEB/ABACUS/pull/2077"
+    },
+    {
+      "pr": 2097,
+      "head_sha": "ce2a867deedd4b8649e4607d7fc59b2923cb3cc1",
+      "base": "main",
+      "created": "2026-10-17T09:35:27Z",
+      "updated": "2026-10-17T12:31:56Z",
+      "state": "open",
+      "merged": false,
+      "draft": false,
+      "title": "Evidence/cbd queue gated rerun 20261017",
+      "url": "https://github.com/GBOGEB/ABACUS/pull/2097"
+    },
+    {
+      "pr": 2099,
+      "head_sha": "94222bd2b9ba75563b41e6b7e6b058ea06ca6c0d",
+      "base": "main",
+      "created": "2026-10-17T09:49:26Z",
+      "updated": "2026-10-17T12:23:14Z",
+      "state": "open",
+      "merged": false,
+      "draft": false,
+      "title": "test(cbd): disjoint coverage for two zero-tested DMAIC error utilities",
+      "url": "https://github.com/GBOGEB/ABACUS/pull/2099"
+    },
+    {
+      "pr": 2106,
+      "head_sha": "58ab341bfbd73fbf5bec8c82abb8ae6a97376bc9",
+      "base": "main",
+      "created": "2026-10-17T10:30:29Z",
+      "updated": "2026-10-17T11:47:00Z",
+      "state": "open",
+      "merged": false,
+      "draft": false,
+      "title": "test(cbd): prevent stale CI coverage from counting as convergence",
+      "url": "https://github.com/GBOGEB/ABACUS/pull/2106"
+    },
+    {
+      "pr": 2113,
+      "head_sha": "574b1a2639fd5b60c815ca509abeb26e8eb8ff66",
+      "base": "main",
+      "created": "2026-10-17T10:47:19Z",
+      "updated": "2026-10-17T12:16:37Z",
+      "state": "open",
+      "merged": false,
+      "draft": false,
+      "title": "feat(cbd W12): matched source-bound statement/branch metrics with 19 negative controls",
+      "url": "https://github.com/GBOGEB/ABACUS/pull/2113"
+    },
+    {
+      "pr": 2138,
+      "head_sha": "ba3423f3e5141bb5a85ecf3d5f042ee818ec932c",
+      "base": "main",
+      "created": "2026-10-17T15:46:27Z",
+      "updated": "2026-10-17T16:03:07Z",
+      "state": "open",
+      "merged": false,
+      "draft": false,
+      "title": "fix(ariana): first-red CI recovery, real DOW regression and governed KEB/QPS evidence",
+      "url": "https://github.com/GBOGEB/ABACUS/pull/2138"
+    },
+    {
+      "pr": 2148,
+      "head_sha": "e96d391118ef844bfcbad8e7fc63dee2e2e80060",
+      "base": "main",
+      "created": "2026-10-17T16:19:33Z",
+      "updated": "2026-10-17T16:43:39Z",
+      "state": "open",
+      "merged": false,
+      "draft": true,
+      "title": "docs+test(rex): source-bound Ariana N-1/N/N+1 prediction calibration and lessons learned",
+      "url": "https://github.com/GBOGEB/ABACUS/pull/2148"
+    },
+    {
+      "pr": 1995,
+      "head_sha": "f4fd2cfa54f6ab11ec30a6f848d048a6656ead2a",
+      "base": "main",
+      "created": "2026-10-15T07:58:26Z",
+      "updated": "2026-10-16T20:17:58Z",
+      "state": "open",
+      "merged": false,
+      "draft": false,
+      "title": "fix(governance): classify CODE PURPLE workflows and regenerate exact inventory",
+      "url": "https://github.com/GBOGEB/ABACUS/pull/1995"
+    }
+  ],
+  "verified_merge_classes": {
+    "last_merged_into_main": {
+      "pr": 2017,
+      "merged_at": "2026-10-15T14:06:16Z",
+      "sha": "54da377cf82a358ac97903ecde0270c975b8fcc1"
+    },
+    "representative_feature_merges": [
+      {
+        "pr": 2142,
+        "base": "feat/g3a-n13-four-module-breadth-canary-20261017",
+        "merged_at": "2026-10-17T16:05:42Z",
+        "merge_sha": "9df4886f5f168981b57e09111241721c73ab5c38"
+      },
+      {
+        "pr": 2089,
+        "base": "feat/mip-ci-worker-telemetry-20261015",
+        "merged_at": "2026-10-16T20:41:08Z",
+        "merge_sha": "1baba57c7af75afbbca9845725047ffd8d7a0966"
+      }
+    ],
+    "closed_unmerged": [
+      {
+        "pr": 2048,
+        "closed_at": "2026-10-16T08:17:52Z"
+      }
+    ],
+    "historical_main_matplotlib_intro": {
+      "pr": 2012,
+      "merge_sha": "5bbc09ab72cda4bbc74ddc054f899c76252743b7",
+      "merged_at": "2026-10-15T13:52:14Z",
+      "pending_owner_pr": 2026
+    }
+  },
+  "status_semantics": {
+    "pr_merge_feature_not_main": true,
+    "merged_pr_not_closed_issue": true,
+    "closed_unmerged_no_merit_without_root_proof": true,
+    "main_protected_gates_noncompensating": true,
+    "canonical_eng_root_closed": null
+  },
+  "bseries_source_matched": {
+    "pr": 2135,
+    "verified_run": 39048934046,
+    "verified_source_sha": "97f8cc988c9c5148524f494fa31cc58fb7edefd3",
+    "new_head": "dc2804cfc74f0ef92fa4fe9193c79cdad0f8fcd1",
+    "statement_before": [
+      56,
+      69
+    ],
+    "statement_after": [
+      68,
+      69
+    ],
+    "branches_before": [
+      16,
+      20
+    ],
+    "branches_after": [
+      19,
+      20
+    ],
+    "native_B0_pass": [
+      13,
+      13
+    ],
+    "current_head_terminal": null
+  }
+}

@@ -142,7 +142,8 @@ def copy_file_with_backup(src: Path, dst: Path, backup_suffix: str = ".bak") -> 
     try:
         if dst.exists():
             backup_path = dst.with_suffix(dst.suffix + backup_suffix)
-            shutil.copy2(src, backup_path)
+            # Preserve the previous destination bytes before replacement.
+            shutil.copy2(dst, backup_path)
 
         shutil.copy2(src, dst)
         return True
