@@ -117,5 +117,58 @@ class CohortUnionTests(unittest.TestCase):
         self.assertTrue(all(not item["source_mutation_authorized"] for item in result["candidate_disjoint_waves"]))
 
 
+    def test_nonatomic_source_ingestion_pulses_are_not_time_series(self):
+        result = produce_cohorts(snapshots())
+        rec = result["cohort_reconciliation"]
+        pulses = rec["ingestion_pulses"]
+        self.assertEqual([12, 49, 78], [p["declared_rows_cumulative"] for p in pulses])
+        self.assertEqual([6, 12, 19], [p["distinct_failed_pr_heads_cumulative"] for p in pulses])
+        self.assertEqual([12, 49, 78], [p["distinct_run_ids_cumulative"] for p in pulses])
+        self.assertTrue(all(p["kind"] == "SOURCE_INGESTION_NOT_TEMPORAL_IMPROVEMENT" for p in pulses))
+        self.assertEqual(rec["distinct_manifested_pr_heads"], 20)
+        self.assertEqual(rec["manifested_zero_failure_prs"], [2033])
+        self.assertEqual(rec["non_atomic_manifest_workflow_associations"], 533)
+        self.assertEqual(rec["non_atomic_manifest_failed_associations"], 66)
+        self.assertEqual(rec["manifest_comparability"], "NOT_A_DENOMINATOR_FOR_UNION_PASS_RATE")
+
+    def test_unknown_to_known_same_run_attempt_fails_closed(self):
+        source = snapshots()[0]
+        other = copy.deepcopy(source)
+        other["observations"][0]["attempt"] = 1
+        with self.assertRaisesRegex(ValueError, "ambiguous unknown/known"):
+            produce_cohorts([source, other])
+
+    def test_distinct_known_attempts_are_not_collapsed(self):
+        source = snapshots()[0]
+        first = copy.deepcopy(source)
+        second = copy.deepcopy(source)
+        for row in first["observations"]:
+            row["attempt"] = 1
+        for row in second["observations"]:
+            row["attempt"] = 2
+        result = produce_cohorts([first, second])
+        rec = result["cohort_reconciliation"]
+        self.assertEqual(rec["declared_observation_rows"], 24)
+        self.assertEqual(rec["distinct_run_attempts"], 24)
+        self.assertEqual(rec["distinct_declared_run_ids"], 12)
+        self.assertEqual(rec["unknown_attempt_associations"], 0)
+
+    def test_repeated_run_identity_cannot_change_workflow_across_attempt(self):
+        first = snapshots()[0]
+        second = copy.deepcopy(first)
+        for row in second["observations"]:
+            row["attempt"] = 1
+        second["observations"][0]["workflow"] = "forged-new-workflow"
+        with self.assertRaisesRegex(ValueError, "conflicting cross-attempt"):
+            produce_cohorts([first, second])
+
+    def test_manifest_conflicts_fail_closed(self):
+        first = snapshots()[1]
+        second = copy.deepcopy(first)
+        second["sampled_pr_heads"][0]["workflow_associations_seen"] += 1
+        with self.assertRaisesRegex(ValueError, "conflicting sampled PR head manifest"):
+            produce_cohorts([first, second])
+
+
 if __name__ == "__main__":
     unittest.main()
