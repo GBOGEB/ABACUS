@@ -23,19 +23,20 @@ def snapshots():
 
 
 class CohortUnionTests(unittest.TestCase):
-    def test_frozen_three_cohort_native_denominators(self):
+    def test_frozen_three_cohort_source_denominators(self):
         result = produce_cohorts(snapshots())
         rec = result["cohort_reconciliation"]
         self.assertEqual(rec["source_document_count"], 3)
         self.assertEqual(rec["declared_observation_rows"], 78)
         self.assertIsNone(rec["distinct_run_attempts"])
-        self.assertEqual(rec["distinct_declared_run_ids"], 78)
+        self.assertEqual(rec["distinct_declared_run_ids"], 66)
+        self.assertEqual(rec["cross_source_duplicate_rows"], 12)
         self.assertEqual(rec["unknown_attempt_associations"], 78)
         self.assertEqual(rec["snapshots_without_head_manifests"], 1)
         self.assertEqual(rec["distinct_declared_pr_heads"], 19)
         self.assertIsNone(result["observed"]["run_attempt_count"])
-        self.assertEqual(result["observed"]["run_association_count"], 78)
-        self.assertEqual(result["observed"]["conclusions"]["failure"], 78)
+        self.assertEqual(result["observed"]["run_association_count"], 66)
+        self.assertEqual(result["observed"]["conclusions"]["failure"], 66)
         self.assertIsNone(result["observed"]["confirmed_causal_root_count"])
         self.assertIsNone(rec["matched_coverage"])
         self.assertEqual(rec["admission"], "HOLD")
@@ -123,7 +124,7 @@ class CohortUnionTests(unittest.TestCase):
         pulses = rec["ingestion_pulses"]
         self.assertEqual([12, 49, 78], [p["declared_rows_cumulative"] for p in pulses])
         self.assertEqual([6, 12, 19], [p["distinct_failed_pr_heads_cumulative"] for p in pulses])
-        self.assertEqual([12, 49, 78], [p["distinct_run_ids_cumulative"] for p in pulses])
+        self.assertEqual([12, 37, 66], [p["distinct_run_ids_cumulative"] for p in pulses])
         self.assertTrue(all(p["kind"] == "SOURCE_INGESTION_NOT_TEMPORAL_IMPROVEMENT" for p in pulses))
         self.assertEqual(rec["distinct_manifested_pr_heads"], 20)
         self.assertEqual(rec["manifested_zero_failure_prs"], [2033])
