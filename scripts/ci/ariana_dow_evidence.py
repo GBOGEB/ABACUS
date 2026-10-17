@@ -13,7 +13,8 @@ from pathlib import Path
 import re
 import subprocess
 import sys
-import xml.etree.ElementTree as ET
+from defusedxml import ElementTree as ET
+from defusedxml.common import DefusedXmlException
 
 import yaml
 
@@ -75,6 +76,13 @@ def validate_local_contract(root: Path) -> dict:
         raise ValueError("KEB status keys collide with action monikers")
     if "promote_QPS_engineering_truth" not in dock.get("authority", {}).get("must_not", []):
         raise ValueError("QPS engineering authority boundary not preserved")
+    receiver_authority = receiver.get("3pc_consumption", {}).get(
+        "authority", {}
+    )
+    if "promote_QPS_engineering_truth" not in receiver_authority.get(
+        "must_not", []
+    ):
+        raise ValueError("QPS receiver authority boundary not preserved")
     return {
         "runtime_owner": dock["repo"],
         "semantic_owner": receiver["producer"]["repo"],
@@ -92,7 +100,11 @@ def validate_local_contract(root: Path) -> dict:
 def read_junit(path: Path) -> dict | None:
     if not path.is_file():
         return None
-    xml_root = ET.parse(path).getroot()
+    if path.stat().st_size > 4_000_000:
+        raise ValueError("JUnit XML exceeds bounded 4 MB limit")
+    xml_root = ET.parse(
+        path, forbid_dtd=True, forbid_entities=True, forbid_external=True
+    ).getroot()
     cases = list(xml_root.iter("testcase"))
     total = len(cases)
     failures = sum(case.find("failure") is not None for case in cases)
@@ -135,7 +147,7 @@ def read_focused_coverage(path: Path) -> dict | None:
         "combined": {"numerator": sl + bl, "denominator": sd + bd},
         "coverage_json_sha256": digest(path),
         "changed_line": None,
-        "changed_line_reason": "PRODUCTION_SOURCE_UNCHANGED_IN_THIS_PR",
+        "changed_line_reason": "UNMEASURED_BASE_HEAD_DIFF_NOT_BOUND",
     }
 
 
@@ -236,7 +248,8 @@ def main() -> int:
         if args.strict and receipt["disposition"] != "LOCAL_TESTED_FEDERATION_HOLD":
             return 1
         return 0
-    except (OSError, ValueError, KeyError, TypeError, ET.ParseError, subprocess.SubprocessError) as error:
+    except (OSError, ValueError, KeyError, TypeError, ET.ParseError, DefusedXmlException,
+            subprocess.SubprocessError) as error:
         print(f"ARIANA_DOW_FAIL_CLOSED: {error}", file=sys.stderr)
         return 2
 
