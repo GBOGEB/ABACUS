@@ -376,6 +376,18 @@
       "disposition": "keep"
     },
     {
+      "pattern": "^code-purple-dashboard-v31\\.yml$",
+      "cluster": "documentation",
+      "lifecycle": "pr_domain",
+      "disposition": "keep"
+    },
+    {
+      "pattern": "^code-purple-sut-gui\\.yml$",
+      "cluster": "core_test",
+      "lifecycle": "pr_domain",
+      "disposition": "keep"
+    },
+    {
       "pattern": "^code-purple-quality-ratchet-proof\\.yml$",
       "cluster": "core_test",
       "lifecycle": "pr_fast",
