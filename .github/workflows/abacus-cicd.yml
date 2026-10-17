@@ -155,7 +155,7 @@ jobs:
       - uses: actions/checkout@v7
 
       - name: Download execution reports
-        uses: actions/download-artifact@v8
+        uses: actions/download-artifact@v8.0.2
         with:
           name: dmaic-execution-reports
           path: deploy/output/

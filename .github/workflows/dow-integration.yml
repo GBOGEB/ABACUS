@@ -255,7 +255,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Download QPS W08 DOW runtime return
-        uses: actions/download-artifact@v8
+        uses: actions/download-artifact@v8.0.2
         with:
           name: qps-w08-dow-runtime-return-${{ github.run_id }}
           path: qps_w08_dow_return
