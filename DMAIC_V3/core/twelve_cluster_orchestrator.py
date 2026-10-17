@@ -16,7 +16,7 @@ import time
 from concurrent.futures import ThreadPoolExecutor, wait
 from datetime import datetime
 from pathlib import Path
-from typing import Any, Dict, List
+from typing import Any, Dict, List, Optional
 
 try:
     from core.execution_backbone import ExecutionBackbone
@@ -69,9 +69,9 @@ class TwelveClusterOrchestrator:
     def __init__(
         self,
         max_workers: int = 12,
-        use_keb: bool | None = None,
+        use_keb: Optional[bool] = None,
         use_gbogeb: bool = True,
-        task_timeout_seconds: float | None = None,
+        task_timeout_seconds: Optional[float] = None,
         use_execution_backbone: bool = True,
     ):
         self.max_workers = max_workers

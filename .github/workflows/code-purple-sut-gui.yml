@@ -69,6 +69,7 @@ jobs:
                   self.headings = 0
                   self.titles = 0
                   self.scripts = []
+                  self.headings = 0
                   self._inside = False
               def handle_starttag(self, tag, attrs):
                   d = dict(attrs)
