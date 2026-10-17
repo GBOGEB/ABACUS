@@ -61,21 +61,21 @@ class CohortUnionTests(unittest.TestCase):
         data = snapshots()
         forged = copy.deepcopy(data[0])
         forged["observations"][0]["workflow"] = "fake-other-workflow"
-        with self.assertRaisesRegex(ValueError, "conflicting run-attempt"):
+        with self.assertRaisesRegex(ValueError, "conflicting cross-attempt"):
             produce_cohorts([data[0], forged])
 
     def test_same_run_with_different_pr_rejected(self):
         data = snapshots()
         forged = copy.deepcopy(data[0])
         forged["observations"][0]["pr"] = 99999
-        with self.assertRaisesRegex(ValueError, "conflicting run-attempt"):
+        with self.assertRaisesRegex(ValueError, "conflicting cross-attempt"):
             produce_cohorts([data[0], forged])
 
     def test_same_pr_with_changed_sha_rejected(self):
         data = snapshots()
         forged = copy.deepcopy(data[0])
         forged["observations"][0]["sha"] = "1" * 40
-        with self.assertRaisesRegex(ValueError, "incompatible pull-head"):
+        with self.assertRaisesRegex(ValueError, "conflicting cross-attempt"):
             produce_cohorts([data[0], forged])
 
     def test_security_waiver_fails_closed(self):
@@ -169,6 +169,17 @@ class CohortUnionTests(unittest.TestCase):
         second["sampled_pr_heads"][0]["workflow_associations_seen"] += 1
         with self.assertRaisesRegex(ValueError, "conflicting sampled PR head manifest"):
             produce_cohorts([first, second])
+
+
+    def test_distinct_run_same_pr_conflicting_sha_rejected(self):
+        source = snapshots()[0]
+        forged = copy.deepcopy(source)
+        row = forged["observations"][0]
+        row["sha"] = "1" * 40
+        row["run_id"] += 10000000000
+        row["url"] = "https://github.com/GBOGEB/ABACUS/actions/runs/" + str(row["run_id"])
+        with self.assertRaisesRegex(ValueError, "incompatible pull-head"):
+            produce_cohorts([forged])
 
 
 if __name__ == "__main__":
