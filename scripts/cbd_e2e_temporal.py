@@ -49,6 +49,7 @@ def augment(graph, timeline_documents):
     nodes = {n["id"]: n for n in result["nodes"]}
     run_seen, job_seen, sample = set(), set(), []
     inverted_timestamps = 0
+    inverted_job_ids = []
     for document in timeline_documents:
         require(document.get("schema") == "cbd.e2e.native_temporal_snapshot.v1",
                 "invalid temporal schema")
@@ -110,6 +111,7 @@ def augment(graph, timeline_documents):
                             "uncensored duration omitted")
                     if start is not None and end is not None and end < start:
                         inverted_timestamps += 1
+                        inverted_job_ids.append(jid)
                 need["attributes"]["started_at"] = job.get("started_at")
                 need["attributes"]["completed_at"] = job.get("completed_at")
                 need["attributes"]["runtime_ms"] = dur
@@ -132,6 +134,37 @@ def augment(graph, timeline_documents):
                             "support": 1, "overlap_ms": overlap,
                             "jaccard": None, "causal_confirmed": False,
                         })
+    if inverted_job_ids:
+        anomaly = {
+            "id": "anomaly:skipped-job-inverted-clock",
+            "kind": "temporal_anomaly",
+            "label": "Skipped job completion before start",
+            "rank": 8,
+            "attributes": {
+                "observed_count": len(inverted_job_ids),
+                "causal_root_id": None,
+                "classification": "NATIVE_TIMESTAMP_INCONSISTENCY",
+            },
+            "degree": len(inverted_job_ids),
+            "observed_weighted_degree": len(inverted_job_ids),
+        }
+        result["nodes"].append(anomaly)
+        for jid in sorted(inverted_job_ids):
+            job_node = nodes[f"job:{jid}"]
+            job_node["degree"] += 1
+            job_node["observed_weighted_degree"] += 1
+            result["edges"].append({
+                "source": f"job:{jid}",
+                "target": anomaly["id"],
+                "relationship": "skipped_job_clock_inversion_observed",
+                "evidence": "OBSERVED",
+                "support": 1,
+                "jaccard": None,
+                "causal_confirmed": False,
+            })
+        result["metrics"]["node_count"] = len(result["nodes"])
+        result["metrics"]["node_types"]["temporal_anomaly"] = 1
+        result["metrics"]["edge_evidence_classes"]["OBSERVED"] += len(inverted_job_ids)
     require(len(run_seen) == result["metrics"]["native_run_count"],
             "temporal run denominator missing")
     require(len(job_seen) == result["metrics"]["native_job_count"],
