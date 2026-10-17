@@ -41,7 +41,8 @@ items:
       - test_tracking_issue_from_untrusted_author_is_rejected
 
   - id: R3
-    source: 'Codex P2 + security, #1847 @ 3c78c40 / 51e4229; issues #1849, #1862'
+    source: >-
+      Codex P2 + security, #1847 @ 3c78c40 / 51e4229; issues #1849, #1862
     finding: >-
       Tracking-issue close or edit, or deleted disposition comment, left a
       stale green check until the next sweep.
@@ -133,10 +134,36 @@ items:
     closes: [1878]
     evidence_commits:
       - 6985ecb7ad22935dfcde576e43cff6149a932b12
-    evidence_this_pr: invalidate job also runs on pull_request synchronize/reopened
+      - 779d3553a1179a4910eb0c02f87e2830c23696e9
     evidence_tests:
       - test_reused_head_disables_break_glass_fallback
       - test_workflow_subscribes_to_tracking_issue_lifecycle
+
+  - id: R11
+    source: 'Codex P1, #2132 @ 779d355'
+    finding: >-
+      On A -> B the pending mark went only to the new head B, so A's success
+      stayed eligible and a later B -> A move re-exposed it until the
+      returning head's census ran.
+    disposition: FIXED_IN_CURRENT_HEAD
+    evidence_this_pr: >-
+      --mark-pending-only also marks the synchronize event's departing
+      `before` SHA pending (departing_head_sha)
+    evidence_tests:
+      - test_departing_head_is_invalidated_on_synchronize
+      - test_mark_pending_also_supersedes_departing_head
+
+  - id: R12
+    source: 'Codex P2, #2132 @ 779d355'
+    finding: >-
+      invalidate and evaluate were sibling jobs; a later-starting
+      invalidation stamped a newer pending mark and the running census's
+      result was rejected as older, leaving the gate pending until a sweep.
+    disposition: FIXED_IN_CURRENT_HEAD
+    evidence_this_pr: >-
+      evaluate needs [route, invalidate] and still runs when the
+      invalidation is skipped or fails
+    evidence_tests: [test_workflow_subscribes_to_tracking_issue_lifecycle]
 
 standing_controls_not_closed:
   - issue: 1846
