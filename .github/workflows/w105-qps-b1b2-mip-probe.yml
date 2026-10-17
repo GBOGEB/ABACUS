@@ -13,7 +13,7 @@ jobs:
     env:
       QPS_SHA: 7145bf462af40028000e676c98a8d060210872cc
     steps:
-      - uses: actions/checkout@v7
+      - uses: actions/checkout@v7.0.1
         with:
           repository: GBOGEB/cryoplant-project
           ref: ${{ env.QPS_SHA }}

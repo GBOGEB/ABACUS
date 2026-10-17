@@ -19,7 +19,7 @@ jobs:
       matrix:
         python-version: ['3.10', '3.12']
     steps:
-      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           persist-credentials: false
       - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
@@ -54,9 +54,12 @@ jobs:
                   super().__init__()
                   self.ids = set()
                   self.scripts = []
+                  self.headings = 0
                   self._inside = False
               def handle_starttag(self, tag, attrs):
                   d = dict(attrs)
+                  if tag == 'h1':
+                      self.headings += 1
                   if 'id' in d:
                       assert d['id'] not in self.ids, 'duplicate id'
                       self.ids.add(d['id'])
@@ -71,9 +74,10 @@ jobs:
           p = Path('tools/everred_v3/sut_gui/index.html')
           html = p.read_text(encoding='utf-8')
           assert html.startswith('<!doctype html>')
-          assert '<title>' in html and '<h1>' in html
+          assert '<title>' in html
           structure = Structure()
           structure.feed(html)
+          assert structure.headings == 1, 'expected exactly one semantic h1'
           must = {'refresh', 'run', 'token', 'profile', 'ci-body', 'connection'}
           assert must.issubset(structure.ids), must - structure.ids
           assert structure.scripts, 'JavaScript missing'
