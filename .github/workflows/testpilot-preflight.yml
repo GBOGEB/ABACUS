@@ -2,9 +2,10 @@ name: TestPilot Pre-GitHub Parity
 
 on:
   pull_request:
-    branches: [main]
     paths:
       - 'scripts/testpilot_preflight.py'
+      - 'scripts/cbd_e2e_stage.py'
+      - 'tests/test_cbd_e2e_stage.py'
       - 'scripts/testpilot.ps1'
       - '.pre-commit-config.yaml'
       - 'requirements-dev.txt'
@@ -29,6 +30,10 @@ jobs:
     timeout-minutes: 10
     steps:
       - uses: actions/checkout@v7
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+          fetch-depth: 2
       - uses: actions/setup-python@v7.0.0
         with:
           python-version: '3.11'
@@ -37,10 +42,92 @@ jobs:
         run: python -m pip install -r requirements-dev.txt
       - name: Run bounded TestPilot fast preflight
         run: python scripts/testpilot_preflight.py --mode fast --parity
+      - name: Replay pre-push source-bound checks on exact GitHub head
+        if: always()
+        env:
+          EXPECTED_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+        run: |
+          python scripts/cbd_e2e_stage.py --stage checkout \
+            --expected-sha "$EXPECTED_SHA" \
+            --receipt .testpilot/e2e/github_checkout.json
+
+      - name: Isolated fresh local Git clone and equivalent testflight
+        if: always()
+        env:
+          EXPECTED_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+        run: |
+          python scripts/cbd_e2e_stage.py --stage replay \
+            --expected-sha "$EXPECTED_SHA" \
+            --receipt .testpilot/e2e/fresh_clone.json
+
+      - name: Exact-source N-to-N+1 replay comparison
+        if: always()
+        run: |
+          python scripts/cbd_e2e_stage.py --stage compare \
+            --before .testpilot/e2e/github_checkout.json \
+            --after .testpilot/e2e/fresh_clone.json \
+            --receipt .testpilot/e2e/github_clone_parity.json
+
+      - name: Measure exact-source E2E stage statement and branch coverage
+        if: always()
+        env:
+          EXPECTED_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p .testpilot/e2e
+          python -m pytest -q tests/test_cbd_e2e_stage.py \
+            --cov=scripts.cbd_e2e_stage --cov-branch \
+            --cov-report=json:.testpilot/e2e/coverage.json
+          python - <<'PY'
+          import json
+          import os
+          import re
+          import subprocess
+          from pathlib import Path
+          data = json.loads(Path(".testpilot/e2e/coverage.json").read_text())
+          totals = data.get("totals", {})
+          lines = (totals.get("covered_lines"), totals.get("num_statements"))
+          branches = (totals.get("covered_branches"), totals.get("num_branches"))
+          for hit, denominator in (lines, branches):
+              if type(hit) is not int or type(denominator) is not int:
+                  raise SystemExit("Missing integer coverage evidence")
+              if denominator <= 0 or not 0 <= hit <= denominator:
+                  raise SystemExit("Invalid coverage denominator")
+          head = subprocess.check_output(
+              ["git", "rev-parse", "HEAD"], text=True
+          ).strip()
+          tree = subprocess.check_output(
+              ["git", "rev-parse", "HEAD^{tree}"], text=True
+          ).strip()
+          expected = os.environ["EXPECTED_SHA"]
+          if not re.fullmatch(r"[0-9a-f]{40}", expected) or head != expected:
+              raise SystemExit("Current checkout is not exact PR head")
+          receipt = {
+              "schema": "cbd.e2e.stage_module_coverage.v1",
+              "source_sha": head,
+              "tree_sha": tree,
+              "covered_lines": lines[0],
+              "statement_denominator": lines[1],
+              "line_percent": round(lines[0] * 100 / lines[1], 2),
+              "covered_branches": branches[0],
+              "branch_denominator": branches[1],
+              "branch_percent": round(branches[0] * 100 / branches[1], 2),
+              "matched_changed_line_coverage": None,
+              "main_coverage": None,
+              "merge_admission": "HOLD",
+              "security_waiver": False,
+          }
+          Path(".testpilot/e2e/source_coverage_receipt.json").write_text(
+              json.dumps(receipt, sort_keys=True, indent=2) + "\n"
+          )
+          print(json.dumps(receipt, sort_keys=True))
+          PY
+
       - name: Upload TestPilot receipt
         if: always()
         uses: actions/upload-artifact@v7.0.2
         with:
           name: testpilot-receipt-${{ github.sha }}
-          path: .testpilot/last_receipt.json
+          path: .testpilot/
           if-no-files-found: error
