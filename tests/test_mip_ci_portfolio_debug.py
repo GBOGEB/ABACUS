@@ -116,8 +116,6 @@ def test_corrupt_coverage_never_creates_zero_or_delta(kind):
     if kind == "negative":
         coverage["files"][0]["missing"] = -1
     if kind == "duplicate_file":
-        coverage["files"][0]["missing"] = -1
-    if kind == "duplicate_file":
         coverage["files"].append(copy.deepcopy(coverage["files"][0]))
     if kind == "no_files":
         coverage.pop("files")
