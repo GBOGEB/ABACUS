@@ -1,6 +1,6 @@
 # QPS Line S Recovery — SSOT heat-load & LOOP transient data (Agent A / docs).
 # AUTHORITATIVE source set, transcribed from the contract mirror. Every row cites
-# its origin. D2.1 = CEA DSBT-TN-24-37 (conceptual design); SSOT tables = QPS
+# its origin. D2.1 = CEA SUPPLIER_C-TN-24-37 (conceptual design); SSOT tables = QPS
 # Addendum II mirror. Where the contract is older than the SSOT, the SSOT wins and
 # the discrepancy is recorded under `discrepancies`.
 

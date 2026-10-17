@@ -1,0 +1,42 @@
+flowchart TB
+  SHA["Exact repository + source SHA / pulse"] --> RUN["Workflow runs\nterminal + nonterminal"]
+  RUN --> JOB["Jobs\nrunner + queue + runtime"]
+  JOB --> STEP["Steps\nfirst-red surfaces"]
+  STEP --> JUNIT["JUnit / test cases\npass fail skip error"]
+  JUNIT --> CTX["Dynamic test-to-source contexts"]
+  CTX --> COV["Coverage\ncovered / eligible statements + branches"]
+
+  STEP --> FP["Failure fingerprints"]
+  FP --> ROOT["BD root transitions\nopen / repaired / reopened / closed"]
+  ROOT --> WAVE["#1998 wave burndown\nmatched cohorts only"]
+
+  JOB --> SCALE["#2033 structural telemetry\nqueue / runtime / concurrency / penetration"]
+  SCALE --> P3["3P* capacity experiments\nAHT / yield / scaling"]
+
+  CTX --> W78["W78 state vectors\nwork-state diversity"]
+  W78 --> W79["W79 diagnostic PCA\nPA95 + loadings + drift"]
+
+  WAVE --> MATURE["#1989 cycle-level statistical maturity"]
+  P3 --> MATURE
+  COV --> MATURE
+  W79 -. "descriptive input only" .-> MATURE
+
+  MATURE --> DEC{"Independent comparable cycles sufficient?"}
+  DEC -->|"NO / UNKNOWN"| HOLD["M2 / M3 HOLD"]
+  DEC -->|"YES + separately verified"| CONTROL["Control charts / capability / uncertainty"]
+
+  GOV["Independent governance\nA10 + security + reviews + protected main"] --> ADMIT{"Admission gate"}
+  CONTROL --> ADMIT
+  ADMIT -->|"NO"| HOLDMERGE["MERGE HOLD"]
+  ADMIT -->|"YES conditional"| ELIGIBLE["Eligible for authorized merge"]
+
+  classDef source fill:#17364a,stroke:#74c9ff,color:#fff
+  classDef measurement fill:#183a33,stroke:#77e2b0,color:#fff
+  classDef analysis fill:#2b2945,stroke:#c2a2ff,color:#fff
+  classDef hold fill:#47252d,stroke:#ff9f9f,color:#fff
+  classDef decision fill:#2c3040,stroke:#ffda90,color:#fff
+  class SHA,RUN,JOB,STEP,JUNIT,CTX,COV source
+  class FP,ROOT,WAVE,SCALE,P3,W78 measurement
+  class W79,MATURE,CONTROL analysis
+  class HOLD,HOLDMERGE hold
+  class DEC,ADMIT decision

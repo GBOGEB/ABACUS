@@ -1,0 +1,89 @@
+{
+  "schema": "abacus.dow.global_dov.evidence_ownership.v1",
+  "version": "1.0.0",
+  "owner_repository": "GBOGEB/ABACUS",
+  "observer_code": "runtime/federation/qps_math_wormhole_dow.py",
+  "observer_tests": "tests/test_qps_math_wormhole_dow.py",
+  "cross_repo_rollup": "GBOGEB/pipeline-automation-hub",
+  "semantic_peer": "GBOGEB/CODEX",
+  "engineering_owner": "GBOGEB/cryoplant-project",
+  "scope": "INDEPENDENT_ROOT_DIAGNOSTICS_AND_NATIVE_REPLAY_NOT_ENGINEERING_AUTHORITY",
+  "owned_evidence": [
+    {
+      "id": "DOW-001",
+      "required": "provider_sha_and_actual_artifact_bytes",
+      "current": "UNVERIFIED"
+    },
+    {
+      "id": "DOW-002",
+      "required": "CODEX_KEB_semantic_receipt_source_matched",
+      "current": "UNVERIFIED"
+    },
+    {
+      "id": "DOW-003",
+      "required": "independent_run_job_attempt_and_checkout_sha",
+      "current": "UNVERIFIED"
+    },
+    {
+      "id": "DOW-004",
+      "required": "LDAB_root_fingerprint_and_LLDB_session_if_applicable",
+      "current": "UNVERIFIED"
+    },
+    {
+      "id": "DOW-005",
+      "required": "QPS_return_disposition",
+      "current": "DEFER"
+    }
+  ],
+  "active_prs": [
+    {
+      "pr": 1993,
+      "scope": "DOW observer coverage flight",
+      "state": "OPEN",
+      "first_red_roots": [
+        "BLACK_CHANGED_TESTS_AND_PRODUCER",
+        "BANDIT_SUBPROCESS_AND_TEMP_PATH",
+        "CANONICAL_WORKFLOW_GOVERNANCE",
+        "SAFETY_EXIT64_NOT_CLASSIFIED"
+      ]
+    },
+    {
+      "pr": 2003,
+      "scope": "MissionControl-wide DOW/LDAB receipt join",
+      "state": "OPEN",
+      "first_red_roots": [
+        "BLACK_FOUR_FILES",
+        "SAFETY_EXIT64_NOT_CLASSIFIED"
+      ],
+      "receipt": "MD012 repaired at 735198b63e9efa137aa07eb382c65b34dab5b0f7; terminal validate-docs PASS"
+    }
+  ],
+  "hard_gates": {
+    "fixture_status": "SYNTHETIC_ONLY",
+    "native_four_hop": "UNKNOWN",
+    "independent_replay": "UNKNOWN",
+    "qps_acceptance": "DEFER",
+    "security_waived": false,
+    "required_checks_relaxed": false,
+    "authority_transfer": false,
+    "root_closure_claims": 0
+  },
+  "handover": {
+    "retain_existing_EVERRED_and_LDAB": "YES",
+    "mission_control_role": "READ_ONLY_CENSUS_AND_SCHEDULING",
+    "do_not_delete_history": true,
+    "cutover_requires": [
+      "native DOW receipt exact head and bytes",
+      "QPS and CODEX contracts merged",
+      "MC consumer source bound to exact child path",
+      "owner review and explicit cleanup authorization"
+    ]
+  },
+  "next_actions": [
+    "consume exact-head CODEX provider manifest, do not trust fixture claims",
+    "repair per-PR attributable Black/Markdown first-reds",
+    "review Bandit and Safety source-by-source, never blanket waive",
+    "verify actual LDAB debugger receipt before marking runtime_authenticated",
+    "return only diagnostic proposals for child QPS disposition"
+  ]
+}

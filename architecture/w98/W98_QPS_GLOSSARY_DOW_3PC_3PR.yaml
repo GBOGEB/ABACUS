@@ -16,8 +16,8 @@ semantic_validator: GBOGEB/CODEX
   outward_views:
     - QPS_CONTRACT_GLOSSARY
     - QPLANT_SUBSYSTEM_GLOSSARY
-    - ALAT_ONLY_GLOSSARY
-    - LKT_ONLY_GLOSSARY
+    - SUPPLIER_A_ONLY_GLOSSARY
+    - SUPPLIER_B_ONLY_GLOSSARY
     - ABBREVIATION_TLA_ACRONYM_REGISTER
     - DEFINED_TERMS_REGISTER
     - CONFLICT_REGISTER
@@ -46,7 +46,7 @@ challenge_assertions:
   - QPS scope delta is visibly rendered
   - PID homonym is visibly rendered with context
   - >-
-    ALAT and LKT partitions never expose each other in contractor-safe
+    SUPPLIER_A and SUPPLIER_B partitions never expose each other in contractor-safe
     outward views
   - general-related terms are marked non-contractual
   - no rendered view changes child authority or engineering score

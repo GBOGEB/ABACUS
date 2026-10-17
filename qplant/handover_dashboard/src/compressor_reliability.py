@@ -2,7 +2,7 @@
 HP Compressor Redundancy & Reliability Analysis — v4.0.0
 
 CRITICAL CORRECTION (v4.0.0):
-  - HP compressor count reduced from 4 to 3 (Kaeser FSD 575 SFC)
+  - HP compressor count reduced from 4 to 3 (Vendor_1 FSD 575 SFC)
   - Design flow achievable with 3 units: 337.62 g/s max (3 × 112.54)
   - Expected operational flow: 304 g/s
   - Motor power corrected to 315 kW per vendor sheet (was 400 kW generic)

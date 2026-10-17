@@ -184,59 +184,81 @@ class CodeImprover:
             return {"success": False, "error": str(e)}
 
     def remove_unused_imports(self, file_path: Path) -> Dict[str, Any]:
-        """Remove unused imports from file (simple AST-based heuristic)"""
+        """Conservatively remove complete, unused top-level import statements.
+
+        A partly-used multi-alias import must not be removed as a whole.
+        Nontrivial or dynamically referenced imports are left unchanged.
+        """
         try:
             with open(file_path, "r", encoding="utf-8") as f:
                 content = f.read()
 
             tree = ast.parse(content)
-            lines = content.split("\n")
-
-            imports = []
-            for node in ast.walk(tree):
-                if isinstance(node, ast.Import):
-                    for alias in node.names:
-                        imports.append((node.lineno, alias.name))
-                elif isinstance(node, ast.ImportFrom):
-                    module = node.module or ""
-                    for alias in node.names:
-                        imports.append(
-                            (node.lineno, alias.name if alias.name != "*" else module)
-                        )
-
-            used_names = set()
-            for node in ast.walk(tree):
-                if isinstance(node, ast.Name):
-                    used_names.add(node.id)
+            lines = content.splitlines(keepends=True)
+            loaded_names = {
+                node.id for node in ast.walk(tree)
+                if isinstance(node, ast.Name) and isinstance(node.ctx, ast.Load)
+            }
+            dynamic_access = any(
+                isinstance(node, ast.Call) and isinstance(node.func, ast.Name)
+                and node.func.id in {"eval", "exec", "globals", "locals", "__import__"}
+                for node in ast.walk(tree)
+            )
+            string_exports = any(
+                isinstance(node, ast.Name) and node.id == "__all__"
+                for node in ast.walk(tree)
+            )
 
             unused_lines = []
-            for line_no, import_name in imports:
-                base_name = import_name.split(".")[0]
-                if base_name not in used_names:
-                    unused_lines.append(line_no - 1)
+            if not dynamic_access and not string_exports:
+                for node in tree.body:
+                    if not isinstance(node, (ast.Import, ast.ImportFrom)):
+                        continue
+                    # Multi-line, nested, future and star imports cannot be
+                    # removed safely by a one-line lexical transformation.
+                    if getattr(node, "end_lineno", node.lineno) != node.lineno:
+                        continue
+                    if isinstance(node, ast.ImportFrom):
+                        if node.module == "__future__" or any(
+                            alias.name == "*" for alias in node.names
+                        ):
+                            continue
+                        bound_names = [alias.asname or alias.name for alias in node.names]
+                    else:
+                        bound_names = [
+                            alias.asname or alias.name.split(".")[0]
+                            for alias in node.names
+                        ]
 
-            if unused_lines:
-                for line_idx in sorted(set(unused_lines), reverse=True):
-                    if 0 <= line_idx < len(lines):
-                        del lines[line_idx]
+                    # Preserve entire import when ANY alias remains live.
+                    if any(name in loaded_names for name in bound_names):
+                        continue
+                    line = lines[node.lineno - 1]
+                    if ";" in line or "#" in line or "\\" in line:
+                        continue
+                    if not line.lstrip().startswith(("import ", "from ")):
+                        continue
+                    unused_lines.append(node.lineno - 1)
 
-                new_content = "\n".join(lines)
-                with open(file_path, "w", encoding="utf-8") as f:
-                    f.write(new_content)
+            if not unused_lines:
+                return {"success": False, "reason": "No unused imports"}
 
-                result = {
-                    "success": True,
-                    "file": str(file_path),
-                    "modifications": len(unused_lines),
-                }
-                self.improvements_made.append(result)
-                return result
+            for index in sorted(unused_lines, reverse=True):
+                del lines[index]
 
-            return {"success": False, "reason": "No unused imports"}
+            with open(file_path, "w", encoding="utf-8") as f:
+                f.write("".join(lines))
+
+            result = {
+                "success": True,
+                "file": str(file_path),
+                "modifications": len(unused_lines),
+            }
+            self.improvements_made.append(result)
+            return result
 
         except Exception as e:
             return {"success": False, "error": str(e)}
-
 
 class Phase4Improve:
     """

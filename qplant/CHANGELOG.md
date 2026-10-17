@@ -166,7 +166,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 - **Single Source of Truth** - `config.yaml` established
-  - 3-compressor configuration (Kaeser FSD 575 SFC VFD, 315kW each)
+  - 3-compressor configuration (Vendor_1 FSD 575 SFC VFD, 315kW each)
   - Table 5-6 flows data (17 streams)
   - Figure 6 operational scenarios
 

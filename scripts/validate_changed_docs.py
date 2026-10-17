@@ -61,6 +61,23 @@ def _github_diff_ranges() -> List[List[str]]:
     sha = os.environ.get("GITHUB_SHA", "HEAD")
     ranges: List[List[str]] = []
 
+    # PRs must use their merge base, not the first available event range.
+    # A base..synthetic-merge diff can include unrelated base-branch history.
+    if event_name == "pull_request":
+        if not _is_real_sha(base_sha):
+            raise RuntimeError("PR document diff requires a valid base SHA")
+        if not _commit_exists(base_sha):
+            _fetch_ref(base_sha)
+        if not _commit_exists(base_sha):
+            raise RuntimeError("Cannot resolve PR base SHA; fail closed")
+        merge_base = _run(["git", "merge-base", base_sha, "HEAD"], check=False)
+        if merge_base.returncode != 0:
+            raise RuntimeError("Cannot resolve PR merge base; fail closed")
+        ancestor = merge_base.stdout.strip()
+        if not ancestor or not _commit_exists(ancestor):
+            raise RuntimeError("Invalid PR merge base; fail closed")
+        return [[f"{ancestor}..HEAD"]]
+
     for candidate in (base_sha, before):
         if not _is_real_sha(candidate):
             continue
@@ -181,7 +198,11 @@ def run_optional(label: str, command: Sequence[str], paths: List[str]) -> int:
 
 
 def main() -> int:
-    paths = changed_files()
+    try:
+        paths = changed_files()
+    except RuntimeError as exc:
+        print(f"Changed-doc selection error: {exc}", file=sys.stderr)
+        return 1
     markdown = _by_kind(paths, "markdown")
     yaml_paths = _by_kind(paths, "yaml")
     json_paths = _by_kind(paths, "json")

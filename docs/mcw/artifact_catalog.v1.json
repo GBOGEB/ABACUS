@@ -1,0 +1,141 @@
+{
+  "schema": "mcw.artifact.catalog.v1",
+  "version": "0.1.0",
+  "intent": "actual-source-first user-facing HTML with controlled binary lineage",
+  "artifacts": [
+    {
+      "id": "abacus-wave-json",
+      "title": "MINERVA wave-status census",
+      "format": "json",
+      "role": "repository_source",
+      "path": "MINERVA_PID/reports/wave_status.json",
+      "description": "Observed source-side wave statuses and traceability; parsed as data, not release authority."
+    },
+    {
+      "id": "qps-gate-yaml",
+      "title": "QPS W63 binary release gate",
+      "format": "yaml",
+      "role": "repository_source",
+      "path": "qps/roundtrip/QPS_W63_BINARY_RECEIPT_QUANT_GATE_v0.1.yaml",
+      "description": "Real QPS release-gate contract; status remains as declared in source."
+    },
+    {
+      "id": "ci-workflow-yml",
+      "title": "ABACUS CI/CD workflow",
+      "format": "yml",
+      "role": "repository_source",
+      "path": ".github/workflows/ci-cd-tests.yml",
+      "description": "Actual GitHub Actions source defining Python matrix, install and quality controls."
+    },
+    {
+      "id": "qps-product-md",
+      "title": "QPS artifact product contract",
+      "format": "md",
+      "role": "repository_source",
+      "path": "analytics/qps_cost_estimate_roundtrip/docs/ARTIFACT_PRODUCT_CONTRACT.md",
+      "description": "Peer-product, style and recursive lineage contract for outward QPS artifacts."
+    },
+    {
+      "id": "abacus-html",
+      "title": "Existing ABACUS documentation portal",
+      "format": "html",
+      "role": "repository_source",
+      "path": "docs/index.html",
+      "description": "Real repository HTML example; live freshness or runtime not inferred."
+    },
+    {
+      "id": "qps-review-xlsx",
+      "title": "QPS review workbook (generated)",
+      "format": "xlsx",
+      "role": "generated_output",
+      "generator": "scripts/build_qps_ssot_views.py",
+      "description": "Expected Excel output from normalized QPS rows; original user workbook inputs remain immutable.",
+      "depends_on": [
+        "qps-product-md"
+      ]
+    },
+    {
+      "id": "minerva-pptx",
+      "title": "MINERVA dissection slides (generated)",
+      "format": "pptx",
+      "role": "generated_output",
+      "generator": "MINERVA_PID/generator/build_dissection_pptx.py",
+      "description": "Existing PPTX generator; final slide deck is not claimed built by this cold view.",
+      "depends_on": [
+        "qps-product-md"
+      ]
+    },
+    {
+      "id": "minerva-pdf",
+      "title": "MINERVA gradient report (generated)",
+      "format": "pdf",
+      "role": "generated_output",
+      "generator": "MINERVA_PID/generator/build_temp_gradient_pdf.py",
+      "description": "Report-generation source; PDF rendering, pages and file hash remain pending.",
+      "depends_on": [
+        "qps-product-md"
+      ]
+    },
+    {
+      "id": "qps-master-docx",
+      "title": "Controlled source Word document",
+      "format": "docx",
+      "role": "controlled_input",
+      "description": "Office document supplied by the owner; preserve bytes and pinned hash upon controlled mounting. Not present in public checkout."
+    },
+    {
+      "id": "otter-record",
+      "title": "Otter meeting transcript / audio",
+      "format": "otter",
+      "role": "controlled_input",
+      "description": "Potential exported transcript or audio from an external meeting tool. Neither presence nor authorization is assumed."
+    }
+  ],
+  "triggers": [
+    {
+      "event": "Cold start / new clone",
+      "stage": "CENSUS",
+      "action": "Read repo tree, exact SHA, sources and missing expected outputs"
+    },
+    {
+      "event": "SSOT or requirement change",
+      "stage": "SSOT_PIN",
+      "action": "Freeze canonical QPS source + style hashes; invalidate descendants"
+    },
+    {
+      "event": "New controlled Office/Otter input",
+      "stage": "SOURCE_FREEZE",
+      "action": "Immutable byte hash and confidentiality classification before extraction"
+    },
+    {
+      "event": "Source evidence arrives",
+      "stage": "NORMALIZE",
+      "action": "Extract typed rows and exact source locators; no input overwrite"
+    },
+    {
+      "event": "Model/scenario change",
+      "stage": "MODEL",
+      "action": "Recompute affected dependency subgraph only"
+    },
+    {
+      "event": "Generated output request",
+      "stage": "RENDER",
+      "action": "Build Excel/Word/PPTX/PDF from latest qualified model outside Git"
+    },
+    {
+      "event": "Changed-source pull request",
+      "stage": "TYPE_QA",
+      "action": "Fast cold validation, style, lineage and smoke checks"
+    },
+    {
+      "event": "Manual release qualification",
+      "stage": "HASH_REPLAY",
+      "action": "Two-build semantic parity, binary hashes, QA receipts and provenance"
+    },
+    {
+      "event": "Post-merge publishing approval",
+      "stage": "RELEASE_REVIEW",
+      "action": "Independent checks and authority prior to publication"
+    }
+  ]
+}
