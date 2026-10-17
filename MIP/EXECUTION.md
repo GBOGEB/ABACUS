@@ -130,3 +130,9 @@ ABACUS retains three historical `mip/*` refs because the available connector can
 
 Do not merge or revive these branches. Delete the refs when a branch-delete-capable interface is available.
 No implementation or evidence is lost by their deletion; canonical accepted state is on `main` and in merged PR/run history.
+
+## GCA-3 governed execution cadence (current operational convention)
+
+**GCA-3 = Governed Convergence Advance ×3**, a bounded same-invocation attempt to advance engineering acceptance from current accepted wave N through W[N+1], W[N+2] and W[N+3]. A **wave** is a receipted engineering delivery increment; a **pulse** (`U1..Uk`) is one observe/diagnose/improve-or-no-change/verify loop inside a wave (normally 1–3 pulses per wave). The historical **3P\*** method stages P1 discovery, P2 reverse-pressure and P3 re-entry are *not* three pulses. See [GCA-3 glossary and execution protocol](GCA3_GLOSSARY_AND_PROTOCOL.md) and machine-readable [request example](GCA3_REQUEST_TEMPLATE.json); validate with `python scripts/gca3_contract.py MIP/GCA3_REQUEST_TEMPLATE.json`.
+
+Use this only for **new, explicitly bounded work**. Do not reopen or renumber the historical closed 8/8 MIP tranche above. Every wave has separate engineering DoV and independent release-admission checks. Record `attempted_waves` versus `accepted_n`, exact SHA and job/attempt evidence, matched coverage denominators, root/manifestation distinctions and HOLDs. A three-wave attempt does **not** imply an accepted N+3; stop for major authority/security blockers and never autonomously waive, approve or merge. Execution is only within the present supported invocation, not persistent background work.
