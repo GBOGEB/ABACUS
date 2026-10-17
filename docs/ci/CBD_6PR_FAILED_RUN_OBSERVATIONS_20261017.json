@@ -1,0 +1,121 @@
+{
+  "schema": "cbd.pr_workflow_observations.v1",
+  "repository": "GBOGEB/ABACUS",
+  "sampling": "SIX_SELECTED_OPEN_PR_HEADS_FIRST_PAGE_FAILURES_ONLY_NOT_260_COMPLETE",
+  "authority": {
+    "security_waiver": false,
+    "authority_transfer": false,
+    "merge_admission": "HOLD",
+    "dispatch": "STAGED_NOT_LAUNCHED"
+  },
+  "observations": [
+    {
+      "pr": 2074,
+      "sha": "f0899e165239de76c1002c23342c6701222ea218",
+      "run_id": 38925718748,
+      "attempt": 1,
+      "workflow": "Validate Docs (Markdown/YAML/JSON)",
+      "conclusion": "failure",
+      "url": "https://github.com/GBOGEB/ABACUS/actions/runs/38925718748"
+    },
+    {
+      "pr": 2074,
+      "sha": "f0899e165239de76c1002c23342c6701222ea218",
+      "run_id": 38925718611,
+      "attempt": 1,
+      "workflow": "ABACUS v032 - CI/CD Pipeline",
+      "conclusion": "failure",
+      "url": "https://github.com/GBOGEB/ABACUS/actions/runs/38925718611"
+    },
+    {
+      "pr": 2073,
+      "sha": "fb22da447780b58827dca58a59c73707ef1d08bf",
+      "run_id": 38925992164,
+      "attempt": 1,
+      "workflow": "CI/CD Test Suite",
+      "conclusion": "failure",
+      "url": "https://github.com/GBOGEB/ABACUS/actions/runs/38925992164"
+    },
+    {
+      "pr": 2073,
+      "sha": "fb22da447780b58827dca58a59c73707ef1d08bf",
+      "run_id": 38925991896,
+      "attempt": 1,
+      "workflow": "CI Workflow Governance",
+      "conclusion": "failure",
+      "url": "https://github.com/GBOGEB/ABACUS/actions/runs/38925991896"
+    },
+    {
+      "pr": 2072,
+      "sha": "680f5ae0c7278e0dae548a505259800887c27138",
+      "run_id": 38921507617,
+      "attempt": 1,
+      "workflow": "CI/CD Test Suite",
+      "conclusion": "failure",
+      "url": "https://github.com/GBOGEB/ABACUS/actions/runs/38921507617"
+    },
+    {
+      "pr": 2072,
+      "sha": "680f5ae0c7278e0dae548a505259800887c27138",
+      "run_id": 38921508083,
+      "attempt": 1,
+      "workflow": "CI - ABACUS Matrix",
+      "conclusion": "failure",
+      "url": "https://github.com/GBOGEB/ABACUS/actions/runs/38921508083"
+    },
+    {
+      "pr": 2072,
+      "sha": "680f5ae0c7278e0dae548a505259800887c27138",
+      "run_id": 38921507557,
+      "attempt": 1,
+      "workflow": "ABACUS v032 - CI/CD Pipeline",
+      "conclusion": "failure",
+      "url": "https://github.com/GBOGEB/ABACUS/actions/runs/38921507557"
+    },
+    {
+      "pr": 2070,
+      "sha": "9071de0f865ee4ce401aacfff0d214a37494d9e9",
+      "run_id": 38919195368,
+      "attempt": 1,
+      "workflow": "CI Workflow Governance",
+      "conclusion": "failure",
+      "url": "https://github.com/GBOGEB/ABACUS/actions/runs/38919195368"
+    },
+    {
+      "pr": 2070,
+      "sha": "9071de0f865ee4ce401aacfff0d214a37494d9e9",
+      "run_id": 38919194736,
+      "attempt": 1,
+      "workflow": "CI/CD Test Suite",
+      "conclusion": "failure",
+      "url": "https://github.com/GBOGEB/ABACUS/actions/runs/38919194736"
+    },
+    {
+      "pr": 2066,
+      "sha": "9c4a60bf1df84b73ff33b0d0aba5a92ed6ea9770",
+      "run_id": 38913178350,
+      "attempt": 1,
+      "workflow": "CI Workflow Governance",
+      "conclusion": "failure",
+      "url": "https://github.com/GBOGEB/ABACUS/actions/runs/38913178350"
+    },
+    {
+      "pr": 2066,
+      "sha": "9c4a60bf1df84b73ff33b0d0aba5a92ed6ea9770",
+      "run_id": 38913178667,
+      "attempt": 1,
+      "workflow": "CI/CD Test Suite",
+      "conclusion": "failure",
+      "url": "https://github.com/GBOGEB/ABACUS/actions/runs/38913178667"
+    },
+    {
+      "pr": 2057,
+      "sha": "cdea1ae2445911b27f1a1934dd93fbcaa847a321",
+      "run_id": 38920465584,
+      "attempt": 1,
+      "workflow": "CI/CD Test Suite",
+      "conclusion": "failure",
+      "url": "https://github.com/GBOGEB/ABACUS/actions/runs/38920465584"
+    }
+  ]
+}

@@ -13,6 +13,7 @@ import requests
 import asyncio
 import aiohttp
 import platform
+import tempfile
 from pathlib import Path
 from typing import Dict, List
 from datetime import datetime
