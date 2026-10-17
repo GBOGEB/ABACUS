@@ -1,0 +1,31 @@
+{
+  "schema": "abacus.gogreen.first-red-wave.intake.v1",
+  "repository": "GBOGEB/ABACUS",
+  "source_heads": [
+    {"pr": 2068, "head_sha": "2139f8dd84a6989e10232705d9d0795ee8c6918c"},
+    {"pr": 2070, "head_sha": "9071de0f865ee4ce401aacfff0d214a37494d9e9"},
+    {"pr": 2072, "head_sha": "680f5ae0c7278e0dae548a505259800887c27138"},
+    {"pr": 2073, "head_sha": "fb22da447780b58827dca58a59c73707ef1d08bf"},
+    {"pr": 2074, "head_sha": "f0899e165239de76c1002c23342c6701222ea218"},
+    {"pr": 2076, "head_sha": "7a382b1788d3b692ae4714f9079ddab93c907fa3"}
+  ],
+  "observations": [
+    {"pr": 2072,"head_sha":"680f5ae0c7278e0dae548a505259800887c27138","run_id":38921508083,"run_attempt":1,"job_id":117042431431,"step_number":6,"workflow":"CI - ABACUS Matrix","job":"ABACUS - ubuntu-24.04 - Python 3.10","first_red_step":"Install tooling","job_conclusion":"failure","evidence_class":"GITHUB_NATIVE_JOB_STEP_METADATA","run_url":"https://github.com/GBOGEB/ABACUS/actions/runs/38921508083"},
+    {"pr": 2068,"head_sha":"2139f8dd84a6989e10232705d9d0795ee8c6918c","run_id":38907755180,"run_attempt":1,"job_id":116997318096,"step_number":6,"workflow":"CI - ABACUS Matrix","job":"ABACUS - ubuntu-24.04 - Python 3.10","first_red_step":"Install tooling","job_conclusion":"failure","evidence_class":"GITHUB_NATIVE_JOB_STEP_METADATA","run_url":"https://github.com/GBOGEB/ABACUS/actions/runs/38907755180"},
+    {"pr": 2074,"head_sha":"f0899e165239de76c1002c23342c6701222ea218","run_id":38925718611,"run_attempt":1,"job_id":117056807489,"step_number":4,"workflow":"ABACUS v032 - CI/CD Pipeline","job":"Test DMAIC Phases","first_red_step":"Install canonical dependencies","job_conclusion":"failure","evidence_class":"GITHUB_NATIVE_JOB_STEP_METADATA","run_url":"https://github.com/GBOGEB/ABACUS/actions/runs/38925718611"},
+    {"pr": 2072,"head_sha":"680f5ae0c7278e0dae548a505259800887c27138","run_id":38921507557,"run_attempt":1,"job_id":117042499235,"step_number":4,"workflow":"ABACUS v032 - CI/CD Pipeline","job":"Test DMAIC Phases","first_red_step":"Install canonical dependencies","job_conclusion":"failure","evidence_class":"GITHUB_NATIVE_JOB_STEP_METADATA","run_url":"https://github.com/GBOGEB/ABACUS/actions/runs/38921507557"},
+    {"pr": 2073,"head_sha":"fb22da447780b58827dca58a59c73707ef1d08bf","run_id":38925991896,"run_attempt":5,"job_id":117358824307,"step_number":9,"workflow":"CI Workflow Governance","job":"policy-and-inventory","first_red_step":"Fail closed on governance red","job_conclusion":"failure","evidence_class":"GITHUB_NATIVE_JOB_STEP_METADATA","run_url":"https://github.com/GBOGEB/ABACUS/actions/runs/38925991896"},
+    {"pr": 2070,"head_sha":"9071de0f865ee4ce401aacfff0d214a37494d9e9","run_id":38919195368,"run_attempt":1,"job_id":117034411084,"step_number":9,"workflow":"CI Workflow Governance","job":"policy-and-inventory","first_red_step":"Fail closed on governance red","job_conclusion":"failure","evidence_class":"GITHUB_NATIVE_JOB_STEP_METADATA","run_url":"https://github.com/GBOGEB/ABACUS/actions/runs/38919195368"},
+    {"pr": 2076,"head_sha":"7a382b1788d3b692ae4714f9079ddab93c907fa3","run_id":38963803388,"run_attempt":1,"job_id":117185163010,"step_number":9,"workflow":"CI Workflow Governance","job":"policy-and-inventory","first_red_step":"Fail closed on governance red","job_conclusion":"failure","evidence_class":"GITHUB_NATIVE_JOB_STEP_METADATA","run_url":"https://github.com/GBOGEB/ABACUS/actions/runs/38963803388"},
+    {"pr": 2074,"head_sha":"f0899e165239de76c1002c23342c6701222ea218","run_id":38925718748,"run_attempt":1,"job_id":117056633663,"step_number":7,"workflow":"Validate Docs (Markdown/YAML/JSON)","job":"Changed docs lint","first_red_step":"Validate changed docs","job_conclusion":"failure","evidence_class":"GITHUB_NATIVE_JOB_STEP_METADATA","run_url":"https://github.com/GBOGEB/ABACUS/actions/runs/38925718748"},
+    {"pr": 2073,"head_sha":"fb22da447780b58827dca58a59c73707ef1d08bf","run_id":38925992164,"run_attempt":1,"job_id":117057543062,"step_number":11,"workflow":"CI/CD Test Suite","job":"Code Quality Checks","first_red_step":"Per-tool code-quality new-debt ratchet","job_conclusion":"failure","evidence_class":"GITHUB_NATIVE_JOB_STEP_METADATA","run_url":"https://github.com/GBOGEB/ABACUS/actions/runs/38925992164"},
+    {"pr": 2076,"head_sha":"7a382b1788d3b692ae4714f9079ddab93c907fa3","run_id":38963803336,"run_attempt":1,"job_id":117185162053,"step_number":11,"workflow":"CI/CD Test Suite","job":"Code Quality Checks","first_red_step":"Per-tool code-quality new-debt ratchet","job_conclusion":"failure","evidence_class":"GITHUB_NATIVE_JOB_STEP_METADATA","run_url":"https://github.com/GBOGEB/ABACUS/actions/runs/38963803336"},
+    {"pr": 2073,"head_sha":"fb22da447780b58827dca58a59c73707ef1d08bf","run_id":38925992164,"run_attempt":1,"job_id":117057543232,"step_number":10,"workflow":"CI/CD Test Suite","job":"Security Scanning","first_red_step":"PR new-debt ratchet (Bandit)","job_conclusion":"failure","evidence_class":"GITHUB_NATIVE_JOB_STEP_METADATA","run_url":"https://github.com/GBOGEB/ABACUS/actions/runs/38925992164"},
+    {"pr": 2076,"head_sha":"7a382b1788d3b692ae4714f9079ddab93c907fa3","run_id":38963803336,"run_attempt":1,"job_id":117185162693,"step_number":10,"workflow":"CI/CD Test Suite","job":"Security Scanning","first_red_step":"PR new-debt ratchet (Bandit)","job_conclusion":"failure","evidence_class":"GITHUB_NATIVE_JOB_STEP_METADATA","run_url":"https://github.com/GBOGEB/ABACUS/actions/runs/38963803336"}
+  ],
+  "coverage": [],
+  "coverage_comparisons": [],
+  "merge_authorized": false,
+  "authority_transfer": false,
+  "security_waiver": false
+}
