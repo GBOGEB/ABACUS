@@ -183,3 +183,15 @@ def test_missing_native_and_changed_head_do_not_gain_acceptance(tmp_path):
     assert receipt["disposition"] == "EVIDENCE_WITHHELD"
     with pytest.raises(ValueError, match="stale or unexpected checkout"):
         build_receipt(ROOT, "0" * 40, missing, tmp_path / "no-coverage.json")
+
+
+def test_native_artifact_roots_are_visible_and_upload_fail_closed():
+    workflow = (ROOT / ".github/workflows/ariana-cicd.yml").read_text(
+        encoding="utf-8"
+    )
+    assert "path: ariana-evidence/" in workflow
+    assert "path: ariana-federation/two-lane-join.json" in workflow
+    assert ".ariana-evidence/" not in workflow
+    assert ".ariana-federation/" not in workflow
+    assert "if-no-files-found: error" in workflow
+    assert "include-hidden-files: true" not in workflow
