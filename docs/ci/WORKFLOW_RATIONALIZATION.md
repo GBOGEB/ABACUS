@@ -3,11 +3,11 @@
 # ABACUS CI workflow rationalisation
 
 Policy: `ABACUS-CI-SSOT-001`  
-Policy SHA-256: `4c46ff778fff23ab9849870026b72ef2681209c18db0c298e89c3b7bb6e836ab`
+Policy SHA-256: `6f1022866db043298526bf4a77ee454c1b1b99b4a98b27047ec7073c5603a6bd`
 
 ## Outcome
 
-The repository currently contains **162 workflow definitions**. All **162** are assigned to one primary functional cluster and lifecycle stage.
+The repository currently contains **164 workflow definitions**. All **164** are assigned to one primary functional cluster and lifecycle stage.
 
 The observed baseline that motivated this control was PR #681 with 119 check runs (111 queued, 8 skipped) and main with 122 check runs.
 
@@ -30,7 +30,7 @@ The observed baseline that motivated this control was PR #681 with 119 check run
 | `full_regression` | `ci-cd-tests.yml` | 1 | Broad OS/version/integration/coverage regression for code changes. |
 | `statistics` | `ci-cd.yml` | 5 | Bootstrap, AHT, performance and statistical validation. |
 | `bridge_federation` | `bridge-ci.yml` | 12 | CODEX/ABACUS bridge contract and federation smoke evidence. |
-| `dmaic` | `dmaic-enterprise-ci.yml` | 10 | DMAIC phase, convergence and maturity execution. |
+| `dmaic` | `dmaic-enterprise-ci.yml` | 12 | DMAIC phase, convergence and maturity execution. |
 | `dow` | `dow-integration.yml` | 19 | DOW parent mechanics, integration, monitoring and warm-up. |
 | `runtime_governance` | `governance.yml` | 20 | Runtime evidence, governance, review artifacts and schema validation. |
 | `security` | `security-scan.yml` | 11 | Ruff PR security, scheduled Bandit, CodeQL, dependency and supply-chain scanning. |
@@ -99,6 +99,8 @@ Make PR-triggered workflows with write-class GitHub token scopes explicit and re
 | 20 | `dmaic` | `dmaic-v3-cognitive-cicd.yml` | push, workflow_dispatch | 9 | `keep` | — |
 | 20 | `dmaic` | `g3a-bounded-continuation-proof.yml` | pull_request, workflow_dispatch | 2 | `keep` | — |
 | 20 | `dmaic` | `g3a-n14-matched-arc-flight.yml` | pull_request, workflow_dispatch | 1 | `keep` | — |
+| 20 | `dmaic` | `g3a-n14-phase4-import.yml` | pull_request, workflow_dispatch | 1 | `keep` | — |
+| 20 | `dmaic` | `g3a-n15-python-matrix.yml` | pull_request, workflow_dispatch | 1 | `keep` | — |
 | 20 | `dmaic` | `recursive-build.yml` | push, workflow_dispatch | 1 | `keep` | — |
 | 20 | `documentation` | `code-purple-dashboard-v31.yml` | pull_request, workflow_dispatch | 1 | `keep` | — |
 | 20 | `dow` | `background_orchestrator.yml` | schedule, pull_request, workflow_dispatch | 2 | `keep` | — |
