@@ -139,6 +139,7 @@ def test_focused_coverage_numerators_and_denominators_not_imputed(tmp_path):
     assert result["branches"] == {"numerator": 3, "denominator": 4}
     assert result["combined"] == {"numerator": 15, "denominator": 20}
     assert result["changed_line"] is None
+    assert result["changed_line_reason"] == "UNMEASURED_BASE_HEAD_DIFF_NOT_BOUND"
     with pytest.raises(ValueError, match="invalid measured"):
         read_focused_coverage(_coverage(p, covered_lines=20, statements=16))
     assert read_focused_coverage(tmp_path / "nonexistent.json") is None
@@ -195,3 +196,69 @@ def test_native_artifact_roots_are_visible_and_upload_fail_closed():
     assert ".ariana-federation/" not in workflow
     assert "if-no-files-found: error" in workflow
     assert "include-hidden-files: true" not in workflow
+
+
+
+def test_ash_doctype_and_entity_junit_are_rejected(tmp_path):
+    """Survival: untrusted JUnit cannot expand entities or fabricate PASS."""
+    from defusedxml.common import DefusedXmlException
+
+    p = tmp_path / "malicious.xml"
+    p.write_text(
+        '<!DOCTYPE testsuite [<!ENTITY x "pass">]>'
+        '<testsuite><testcase name="&x;"/></testsuite>',
+        encoding="utf-8",
+    )
+    with pytest.raises(DefusedXmlException):
+        read_junit(p)
+
+
+def test_ash_oversized_junit_fails_closed_before_parse(tmp_path):
+    p = tmp_path / "huge.xml"
+    p.write_bytes(b"x" * 4_000_001)
+    with pytest.raises(ValueError, match="bounded 4 MB"):
+        read_junit(p)
+
+
+def test_ash_receiver_must_not_promote_qps_contract(tmp_path):
+    """Dock alone cannot compensate for revoked receiver authority."""
+    needed = (
+        SOURCE_PATH,
+        Path("DMAIC_V3/core/test_system_bridge.py"),
+        Path(".mesh/MESH_DOCK.yaml"),
+        RECEIVER_PATH,
+        Path("DMAIC_V3/tests/test_dow_ariana_integration_runtime_coverage.py"),
+        Path("tests/test_dow_ariana_changed_line_coverage.py"),
+        Path("tests/test_ariana_ci_federation.py"),
+    )
+    for path in needed:
+        dest = tmp_path / path
+        dest.parent.mkdir(parents=True, exist_ok=True)
+        shutil.copy2(ROOT / path, dest)
+    payload = yaml.safe_load((tmp_path / RECEIVER_PATH).read_text("utf-8"))
+    payload["3pc_consumption"]["authority"]["must_not"].remove(
+        "promote_QPS_engineering_truth"
+    )
+    (tmp_path / RECEIVER_PATH).write_text(
+        yaml.safe_dump(payload), encoding="utf-8"
+    )
+    with pytest.raises(ValueError, match="QPS receiver authority"):
+        validate_local_contract(tmp_path)
+
+
+def test_ash_action_supply_chain_and_import_triggers_are_pinned():
+    import re
+
+    workflow = (ROOT / ".github/workflows/ariana-cicd.yml").read_text(
+        encoding="utf-8"
+    )
+    refs = re.findall(r"uses: (actions/[\\w-]+)@([^\\s]+)", workflow)
+    assert len(refs) >= 6
+    assert all(re.fullmatch(r"[0-9a-f]{40}", sha) for _, sha in refs)
+    for dep in (
+        "DMAIC_V3/core/handover_bridge.py",
+        "DMAIC_V3/config.py",
+        "DMAIC_V3/core/models.py",
+        "src/dmaic/idempotency.py",
+    ):
+        assert workflow.count(f"'{dep}'") == 2

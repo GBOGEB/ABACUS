@@ -9,6 +9,10 @@ on:
       - 'DMAIC_V3/core/dow_ariana_integration.py'
       - 'DMAIC_V3/core/test_system_bridge.py'
       - 'DMAIC_V3/core/state.py'
+      - 'DMAIC_V3/core/handover_bridge.py'
+      - 'DMAIC_V3/config.py'
+      - 'DMAIC_V3/core/models.py'
+      - 'src/dmaic/idempotency.py'
       - 'DMAIC_V3/tests/test_dow_ariana_integration_runtime_coverage.py'
       - 'tests/test_dow_ariana_changed_line_coverage.py'
       - 'tests/test_ariana_ci_federation.py'
@@ -21,6 +25,10 @@ on:
       - 'DMAIC_V3/core/dow_ariana_integration.py'
       - 'DMAIC_V3/core/test_system_bridge.py'
       - 'DMAIC_V3/core/state.py'
+      - 'DMAIC_V3/core/handover_bridge.py'
+      - 'DMAIC_V3/config.py'
+      - 'DMAIC_V3/core/models.py'
+      - 'src/dmaic/idempotency.py'
       - 'DMAIC_V3/tests/test_dow_ariana_integration_runtime_coverage.py'
       - 'tests/test_dow_ariana_changed_line_coverage.py'
       - 'tests/test_ariana_ci_federation.py'
@@ -43,7 +51,7 @@ jobs:
         python-version: ['3.11', '3.12']
     steps:
       - name: Checkout exact PR head
-        uses: actions/checkout@v7
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
         with:
           ref: ${{ github.event.pull_request.head.sha || github.sha }}
       - name: Verify exact source checkout
@@ -52,14 +60,14 @@ jobs:
         run: |
           test "$(git rev-parse HEAD)" = "$SOURCE_SHA"
       - name: Set up Python
-        uses: actions/setup-python@v7.0.0
+        uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97
         with:
           python-version: ${{ matrix.python-version }}
       - name: Install bounded test and measurement dependencies
         run: |
           python -m pip install --disable-pip-version-check \
             'pytest>=8,<10' 'PyYAML>=6,<7' 'coverage==7.13.3' \
-            'numpy>=2.0,<3.0'
+            'numpy>=2.0,<3.0' 'defusedxml>=0.7.1,<0.8.0'
       - name: Validate real DOW bridge and existing KEB semantic receiver
         env:
           SOURCE_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
@@ -89,7 +97,7 @@ jobs:
             --out ariana-evidence/ariana-dow-receipt.json --strict
       - name: Upload test/coverage and read-only federation evidence
         if: always()
-        uses: actions/upload-artifact@v7.0.2
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9
         with:
           name: ariana-evidence-py${{ matrix.python-version }}
           path: ariana-evidence/
@@ -103,11 +111,11 @@ jobs:
     timeout-minutes: 10
     steps:
       - name: Checkout exact PR head
-        uses: actions/checkout@v7
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
         with:
           ref: ${{ github.event.pull_request.head.sha || github.sha }}
       - name: Download two native source-bound receipts
-        uses: actions/download-artifact@v8
+        uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333
         with:
           pattern: ariana-evidence-py*
           path: ariana-federation/
@@ -183,7 +191,7 @@ jobs:
           print("ARIANA_DOW_NATIVE_MATRIX=PASS; FEDERATION_REMOTE=HOLD")
           PY
       - name: Upload read-only dual-lane federation join
-        uses: actions/upload-artifact@v7.0.2
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9
         with:
           name: ariana-federation-two-lane
           path: ariana-federation/two-lane-join.json
