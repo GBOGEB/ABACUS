@@ -1,0 +1,242 @@
+{
+  "schema": "code-purple.lossless-operational-handover/1.0",
+  "protocol_reference": "tools/handover_v2/process_spec.json",
+  "fidelity": "OPERATIONAL_SNAPSHOT_NOT_VERBATIM_CHAT_EXPORT",
+  "source_type": "LIVE_GITHUB_CONNECTOR_READBACK_PLUS_CONVERSATION_CONTINUITY",
+  "captured_date_utc": "2026-10-17",
+  "authority_transfer": false,
+  "native_merge_governance_verified": false,
+  "merge_admission": "HOLD",
+  "source_of_truth": "LIVE_GITHUB_AND_LOCAL_CANONICAL_REPOS; SNAPSHOT_NOT_SSOT",
+  "repository_heads": [
+    {
+      "repo": "GBOGEB/ABACUS",
+      "branch": "main",
+      "sha": "db1be4da2d33c264f23d6f819cf355c03d56836c",
+      "last_known_at": "2026-10-17T18:47:54Z"
+    },
+    {
+      "repo": "GBOGEB/CODEX",
+      "branch": "main",
+      "sha": "f8a179f8bf67bba4264364b5742c7c271f4041a6"
+    },
+    {
+      "repo": "GBOGEB/cryoplant-project",
+      "branch": "main",
+      "sha": "4782b8ab418f8645ff409a1297ce2d84a8bdcaf8"
+    },
+    {
+      "repo": "GBOGEB/pipeline-automation-hub",
+      "branch": "master",
+      "sha": "4455321f1ac5ead05135e2cd2355e64ff0a3d9a2"
+    },
+    {
+      "repo": "GBOGEB/gg_MATH",
+      "branch": "main",
+      "sha": "4caaeae153927fef6c30ac728cb70fc8611d0ac8"
+    }
+  ],
+  "snapshots": [
+    {
+      "scope": "ABACUS",
+      "label": "PR2159_AGEING_CENSUS",
+      "open_issues": 53,
+      "open_prs": 122,
+      "age_bins": {
+        "0-6": 25,
+        "7-13": 4,
+        "14-29": 15,
+        "30+": 9
+      },
+      "as_of": "2026-10-17 earlier readback"
+    },
+    {
+      "scope": "ABACUS",
+      "label": "POST_MERGE_LIVE",
+      "open_issues": 38,
+      "open_prs": 27,
+      "as_of": "2026-10-17 latest readback",
+      "change_from_previous": {
+        "open_issues": -15,
+        "open_prs": -95
+      },
+      "claim": "GITHUB_OBJECT_CHANGE_NOT_ENGINEERING_ROOT_CLOSURE"
+    },
+    {
+      "scope": "ABACUS",
+      "label": "ISSUE_CLOSURES_20261017",
+      "closed_issues": 15,
+      "duplicate_dashboard": 9,
+      "completed": 6,
+      "engineering_roots_closed": null
+    },
+    {
+      "scope": "ABACUS",
+      "label": "PR_LIFECYCLE_20261017",
+      "merged_prs": 100,
+      "closed_without_merge_prs": 1,
+      "merge_to_main_fraction": null,
+      "review_governance_qualified_fraction": null
+    }
+  ],
+  "confirmed_merges": [
+    {
+      "pr": 2159,
+      "base": "main",
+      "merged_at": "2026-10-17T16:56:05Z",
+      "merge_sha": "69c36752380c39bf02264290b5ec647c9a4d36dd",
+      "purpose": "ISSUE_AGEING_BD_REGISTER"
+    },
+    {
+      "pr": 2135,
+      "base": "main",
+      "merged_at": "2026-10-17T17:56:16Z",
+      "merge_sha": "74ae7e836d45f6ff2235e442122c8d248e4f5246",
+      "purpose": "B_SERIES_TEMPORAL_METRIC_ENGINE"
+    }
+  ],
+  "latest_known_PR_heads": [
+    {
+      "pr": 2135,
+      "sha": "dc2804cfc74f0ef92fa4fe9193c79cdad0f8fcd1",
+      "merged": true,
+      "ci_snapshot": {
+        "success": 18,
+        "queued": 4,
+        "cancelled": 1,
+        "workflow_total": 23
+      }
+    },
+    {
+      "pr": 2159,
+      "sha": "7e17bcb254e31c65d440352d3719ccb294cfa9c0",
+      "merged": true,
+      "ci_snapshot": {
+        "success": 20,
+        "queued": 2,
+        "workflow_total": 22
+      }
+    }
+  ],
+  "issue_controls": [
+    {
+      "repo": "GBOGEB/ABACUS",
+      "issue": 1860,
+      "state": "OPEN",
+      "checked": 1,
+      "unchecked": 11,
+      "category": "P0_ADMISSION"
+    },
+    {
+      "repo": "GBOGEB/ABACUS",
+      "issue": 1929,
+      "state": "OPEN",
+      "category": "CANONICAL_CAUSAL_ROOT_LEDGER"
+    },
+    {
+      "repo": "GBOGEB/ABACUS",
+      "issue": 1885,
+      "state": "OPEN",
+      "category": "DASHBOARD_HREF_ROOT",
+      "historical_hrefs": {
+        "total": 53,
+        "myrrha": 50,
+        "reports": 2,
+        "dynamic_expression_candidate": 1
+      }
+    },
+    {
+      "repo": "GBOGEB/CODEX",
+      "issue": 977,
+      "state": "OPEN",
+      "checked": 0,
+      "unchecked": 7,
+      "category": "AUTHENTICATED_DISPATCH"
+    }
+  ],
+  "codex_pr_975": {
+    "merged": true,
+    "merge_sha": "c51b3debd784558c6ccb9b85d091eb1decb38605",
+    "historical_not_new_admission": true
+  },
+  "metrics": {
+    "bseries_measured_source_sha": "97f8cc988c9c5148524f494fa31cc58fb7edefd3",
+    "bseries_run": 39048934046,
+    "bseries_jobs": [
+      13,
+      13
+    ],
+    "matched_module_statements": {
+      "before": [
+        56,
+        69
+      ],
+      "after": [
+        68,
+        69
+      ],
+      "gain_covered": 12
+    },
+    "matched_module_branches": {
+      "before": [
+        16,
+        20
+      ],
+      "after": [
+        19,
+        20
+      ],
+      "gain_covered": 3
+    },
+    "target_module_blob": "2b6de9fa187ee6b890ae20b39d866099329e3eb9",
+    "main_coverage_delta": null,
+    "pr_diff_coverage_delta": null,
+    "b1_detected_fingerprints": 139,
+    "b1_six_observation_stability": true,
+    "b1_scan_files_161_one_observation": true,
+    "prospective_b1_prediction": {
+      "prediction": 139,
+      "actual": 139,
+      "error": 0,
+      "replicates": 1,
+      "calibrated": false
+    },
+    "canonical_root_open": null,
+    "canonical_root_closed": null,
+    "crew_authenticated_launches": null,
+    "independent_approval": null
+  },
+  "interrupted_work": {
+    "user_intent": "Finish issue-ageing and BD queue after CI, then publish operationally lossless PR-backed handover, restart script, moniker guide, HTML taxonomy and ZIP.",
+    "achieved": "PR #2159 and #2135 merged to main; historical B0/coverage gains verified; issue/PR census and closure reasons refreshed.",
+    "pending": "Verify effective branch rules and accepted review for those merges; main-native CI and matched main/diff coverage; causal root closure for six completed issues; current run/attempt/jobs; Crew/REX receipts; N+4 scan-persistence with source-matched population."
+  },
+  "semantic_guards": [
+    "UNKNOWN_NEVER_ZERO",
+    "PR_MERGED_NOT_EQUAL_ROOT_CLOSED",
+    "CI_GREEN_NOT_EQUAL_P0_ADMITTED",
+    "FEATURE_MERGE_NOT_EQUAL_MAIN_ADMISSION",
+    "CREW_DISPATCH_REQUIRES_AUTHENTICATED_RECEIPT",
+    "SNAPSHOT_REFETCH_ON_RESTART",
+    "NO_SECURITY_WAIVER",
+    "DO_NOT_RECONSTRUCT_FULL_CHAT_FROM_SUMMARY"
+  ],
+  "related_paths": [
+    "tools/handover_v2/process_spec.json",
+    "docs/session-lifecycle/README.md",
+    "docs/ci/CHAR_BD_GLOSSARY_v1.md",
+    "docs/ci/G3A_GOVERNED_THREE_ADVANCE.md",
+    "MIP/README.md",
+    "triage/ABACUS_BD_QUEUE_CURRENT.yaml",
+    "triage/ABACUS_ISSUE_AGEING_CENSUS_20261017.json",
+    "triage/ABACUS_PR_HEAD_REGISTER_20261017.json",
+    "docs/ci/B_SERIES_NATIVE_NPLUS3_20261017.json"
+  ],
+  "session_stats": {
+    "verified_cross_repo_heads": 5,
+    "verified_new_issue_closures": 15,
+    "verified_merged_prs_today": 100,
+    "prior_chat_prompt_count": null,
+    "unavailable_full_transcript": true
+  }
+}
