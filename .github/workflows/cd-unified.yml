@@ -27,7 +27,7 @@ jobs:
         uses: actions/checkout@v7
 
       - name: Setup Python
-        uses: actions/setup-python@v7
+        uses: actions/setup-python@v7.0.0
         with:
           python-version: ${{ env.PYTHON_VERSION }}
 
@@ -67,7 +67,7 @@ jobs:
         uses: actions/checkout@v7
 
       - name: Setup Python
-        uses: actions/setup-python@v7
+        uses: actions/setup-python@v7.0.0
         with:
           python-version: ${{ env.PYTHON_VERSION }}
 
@@ -218,7 +218,7 @@ jobs:
         uses: actions/checkout@v7
 
       - name: Setup Python
-        uses: actions/setup-python@v7
+        uses: actions/setup-python@v7.0.0
         with:
           python-version: ${{ env.PYTHON_VERSION }}
 
@@ -271,7 +271,7 @@ jobs:
           fi
 
       - name: Upload DMAIC outputs
-        uses: actions/upload-artifact@v7
+        uses: actions/upload-artifact@v7.0.2
         with:
           name: dmaic-outputs-${{ github.run_id }}
           path: |
@@ -291,7 +291,7 @@ jobs:
         uses: actions/checkout@v7
 
       - name: Setup Python
-        uses: actions/setup-python@v7
+        uses: actions/setup-python@v7.0.0
         with:
           python-version: ${{ env.PYTHON_VERSION }}
 
@@ -325,7 +325,7 @@ jobs:
           python scripts/build_handover_from_glob_yaml.py
 
       - name: Upload manifest bundle
-        uses: actions/upload-artifact@v7
+        uses: actions/upload-artifact@v7.0.2
         with:
           name: dmaic-handover-manifest-${{ github.run_id }}
           path: |
@@ -338,7 +338,7 @@ jobs:
           python scripts/archive_handover.py --spec handover/GLOOB.yaml --name DMAIC_V3_3_HANDOVER_ALL
 
       - name: Upload universal archives
-        uses: actions/upload-artifact@v7
+        uses: actions/upload-artifact@v7.0.2
         with:
           name: dmaic-handover-archives-${{ github.run_id }}
           path: |
