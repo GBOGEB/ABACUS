@@ -74,7 +74,7 @@ function render(){
   const p=node("p");p.append(node("strong","Use: "),document.createTextNode(x.use));c.append(p);
   const w=node("p",undefined,"danger");w.append(node("strong","Not: "),document.createTextNode(x.not));c.append(w);
   const a=node("a",x.source);a.href=x.source.startsWith("http")?x.source:github+x.source;a.target="_blank";a.rel="noopener noreferrer";c.append(a);
-  if($("editMode").checked){const wrap=node("label",undefined,"editline");wrap.append(node("span","Display label"));const edit=node("input");edit.value=x.label;edit.setAttribute("aria-label","Display label for "+x.id);edit.addEventListener("change",()=>{x.label=edit.value.trim()||x.label;render()});wrap.append(edit);c.append(wrap)}
+  if($("editMode").checked){const wrap=node("label",undefined,"editline");wrap.append(node("span","Display label"));const edit=node("input");edit.value=x.label;edit.setAttribute("aria-label","Display label for "+x.id);edit.addEventListener("input",()=>{x.label=edit.value.trim()||x.label;c.querySelector("p").textContent=x.label});wrap.append(edit);c.append(wrap)}
   const copy=node("button","Copy command · "+x.id);copy.type="button";copy.addEventListener("click",()=>copyText(x.id+": "+x.use));c.append(copy);cards.append(c);
  });
  $("count").textContent=chosen.length+" of "+data.entries.length+" terms shown";
