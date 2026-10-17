@@ -388,20 +388,38 @@
       "disposition": "keep"
     },
     {
+      "pattern": "^code-purple-dashboard-v31\\.yml$",
+      "cluster": "runtime_governance",
+      "lifecycle": "pr_domain",
+      "disposition": "keep"
+    },
+    {
       "pattern": "^code-purple-sut-gui\\.yml$",
       "cluster": "core_test",
       "lifecycle": "pr_domain",
       "disposition": "keep"
     },
     {
-      "pattern": "^code-purple-quality-ratchet-proof\\.yml$",
-      "cluster": "core_test",
-      "lifecycle": "pr_fast",
+      "pattern": "^dow-remaining-gates-telemetry\\.yml$",
+      "cluster": "runtime_governance",
+      "lifecycle": "pr_domain",
       "disposition": "keep"
     },
     {
-      "pattern": "^code-purple-(dashboard-v31|sut-gui)\\.yml$",
-      "cluster": "core_test",
+      "pattern": "^recovery-action-value-evidence\\.yml$",
+      "cluster": "runtime_governance",
+      "lifecycle": "pr_domain",
+      "disposition": "keep"
+    },
+    {
+      "pattern": "^missioncontrol-issue-burndown\\.yml$",
+      "cluster": "runtime_governance",
+      "lifecycle": "pr_domain",
+      "disposition": "keep"
+    },
+    {
+      "pattern": "^mip-bminus1-worker-contract\\.yml$",
+      "cluster": "runtime_governance",
       "lifecycle": "pr_domain",
       "disposition": "keep"
     }
