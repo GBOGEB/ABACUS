@@ -36,7 +36,7 @@ def validate(d):
     for r in rows:
         if type(r.get("pr")) is not int or r["pr"]<=0 or not isinstance(r.get("sha"),str) or len(r["sha"])!=40 or any(c not in "0123456789abcdef" for c in r["sha"]):
             raise ValueError("invalid source identity")
-        if not isinstance(r.get("run_id"),int) or r["run_id"]<=0 or type(r.get("attempt")) is not int or r["attempt"]<=0:
+        if type(r.get("run_id")) is not int or r["run_id"]<=0 or "attempt" not in r or (r["attempt"] is not None and (type(r["attempt"]) is not int or r["attempt"]<=0)):
             raise ValueError("invalid run identity")
         if not isinstance(r.get("workflow"),str) or not r["workflow"].strip():raise ValueError("workflow")
         if r.get("conclusion") not in ("success","failure","cancelled",None):raise ValueError("conclusion")
@@ -75,7 +75,7 @@ def produce(d):
         if f["priority"]=="P0":status="HOLD_INDEPENDENT_OWNER_REVIEW"
         if path!="UNOWNED" and not collision:leases.append(path)
         waves.append({"candidate_family":f["candidate_family"],"worker_type":kind,"path_lease_candidate":path,"scheduler_status":status,"source_mutation_authorized":False,"predicted_unblock_upper_bound_prs":f["unique_prs_affected"]})
-    return {"schema":"cbd.failure_census_projection.v1","observation_scope":"PR_HEAD_ASSOCIATED_FIRST_PAGE_ONLY","input_digest":sha256(d),"source_sha_scope":"PR_HEAD_PER_OBSERVATION","authority":d["authority"],"observed":{"pr_count":len(prs),"run_attempt_count":len(d["observations"]),"conclusions":counts,"candidate_family_count":len(ledger),"confirmed_causal_root_count":None,"accepted_closed_root_count":None,"matched_coverage_delta":None},"candidate_families":ledger,"candidate_disjoint_waves":waves,"safety_rules":["FAMILY_NAME_IS_SYMPTOM_NOT_CONFIRMED_ROOT","REUSE_CANONICAL_BD_LDAB_JOINER","NO_MERGE_OR_WAIVER","VERIFY_JOB_STEP_FIRST_RED_BEFORE_REPAIR","READ_ONLY_SCOUT_CAN_FAN_OUT_MUTATION_CANNOT_OVERLAP_PATH","EXACT_HEAD_AFTER_EACH_MUTATION"]}
+    return {"schema":"cbd.failure_census_projection.v1","observation_scope":"PR_HEAD_ASSOCIATED_FIRST_PAGE_ONLY","input_digest":sha256(d),"source_sha_scope":"PR_HEAD_PER_OBSERVATION","authority":d["authority"],"observed":{"pr_count":len(prs),"run_attempt_count":(len(d["observations"]) if all(r["attempt"] is not None for r in d["observations"]) else None),"run_association_count":len(d["observations"]),"conclusions":counts,"candidate_family_count":len(ledger),"confirmed_causal_root_count":None,"accepted_closed_root_count":None,"matched_coverage_delta":None},"candidate_families":ledger,"candidate_disjoint_waves":waves,"safety_rules":["FAMILY_NAME_IS_SYMPTOM_NOT_CONFIRMED_ROOT","REUSE_CANONICAL_BD_LDAB_JOINER","NO_MERGE_OR_WAIVER","VERIFY_JOB_STEP_FIRST_RED_BEFORE_REPAIR","READ_ONLY_SCOUT_CAN_FAN_OUT_MUTATION_CANNOT_OVERLAP_PATH","EXACT_HEAD_AFTER_EACH_MUTATION"]}
 def main():
     ap=argparse.ArgumentParser()
     ap.add_argument("source",type=Path);ap.add_argument("--out",type=Path,required=True)
