@@ -56,7 +56,7 @@ jobs:
     name: Code Quality Checks
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v7
+      - uses: actions/checkout@v7.0.1
         with:
           # Depth 2 keeps the PR merge commit's base parent for the
           # red-root delta census; no extra history is fetched otherwise.
@@ -227,7 +227,7 @@ jobs:
         python-version: ['3.10', '3.11', '3.12']
 
     steps:
-      - uses: actions/checkout@v7
+      - uses: actions/checkout@v7.0.1
 
       - name: Set up Python ${{ matrix.python-version }}
         uses: actions/setup-python@v7.0.0
@@ -265,7 +265,7 @@ jobs:
     needs: unit-tests
 
     steps:
-      - uses: actions/checkout@v7
+      - uses: actions/checkout@v7.0.1
 
       - name: Set up Python
         uses: actions/setup-python@v7.0.0
@@ -484,7 +484,7 @@ jobs:
     if: always()
 
     steps:
-      - uses: actions/checkout@v7
+      - uses: actions/checkout@v7.0.1
 
       - name: Set up Python
         uses: actions/setup-python@v7.0.0
@@ -517,7 +517,7 @@ jobs:
     if: always()
 
     steps:
-      - uses: actions/checkout@v7
+      - uses: actions/checkout@v7.0.1
 
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v4
@@ -547,7 +547,7 @@ jobs:
     needs: unit-tests
 
     steps:
-      - uses: actions/checkout@v7
+      - uses: actions/checkout@v7.0.1
 
       - name: Set up Python
         uses: actions/setup-python@v7.0.0
@@ -580,7 +580,7 @@ jobs:
     if: always() && needs.unit-tests.result == 'success'
 
     steps:
-      - uses: actions/checkout@v7
+      - uses: actions/checkout@v7.0.1
 
       - name: Set up Python
         uses: actions/setup-python@v7.0.0
@@ -649,7 +649,7 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v7
+      - uses: actions/checkout@v7.0.1
         with:
           # Depth 2 keeps the PR merge commit's base parent for the
           # red-root delta census.
@@ -676,7 +676,47 @@ jobs:
       - name: Run Safety Check
         id: safety
         continue-on-error: true
-        run: safety check --json > safety-report.json
+        shell: bash
+        run: |
+          # Keep Safety's failing exit status; retain diagnostics privately.
+          set +e
+          safety check --json > safety-report.json 2> safety-stderr.log
+          status=$?
+          set -e
+          echo "Safety exit status: $status" >> "$GITHUB_STEP_SUMMARY"
+          python - <<'PY' >> "$GITHUB_STEP_SUMMARY"
+          import json
+          from pathlib import Path
+
+          try:
+              raw = Path("safety-report.json").read_text("utf-8")
+              decoder = json.JSONDecoder()
+              payload = None
+              for index, char in enumerate(raw):
+                  if char != "{":
+                      continue
+                  try:
+                      value, _ = decoder.raw_decode(raw[index:])
+                  except json.JSONDecodeError:
+                      continue
+                  if isinstance(value, dict) and isinstance(
+                      value.get("report_meta"), dict
+                  ):
+                      payload = value
+                      break
+              if payload is None:
+                  raise ValueError("missing Safety metadata")
+          except (OSError, ValueError):
+              print("Safety report parse failed; inspect artifact.")
+          else:
+              meta = payload["report_meta"]
+              found = meta.get("vulnerabilities_found")
+              ignored = meta.get("vulnerabilities_ignored")
+              found = found if type(found) is int else "UNKNOWN"
+              ignored = ignored if type(ignored) is int else "UNKNOWN"
+              print(f"Safety findings: {found}; ignored: {ignored}")
+          PY
+          exit "$status"
 
       - name: Census security red-root delta
         if: always()
@@ -703,6 +743,7 @@ jobs:
           path: |
             bandit-report.json
             safety-report.json
+            safety-stderr.log
             security-red-root-delta.json
           if-no-files-found: warn
 
@@ -855,7 +896,7 @@ jobs:
     if: github.ref == 'refs/heads/main'
 
     steps:
-      - uses: actions/checkout@v7
+      - uses: actions/checkout@v7.0.1
 
       - name: Download Dashboard Artifact
         uses: actions/download-artifact@v8

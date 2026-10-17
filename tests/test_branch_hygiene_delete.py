@@ -280,3 +280,59 @@ def test_main_writes_receipt_and_needs_token(monkeypatch, tmp_path):
     assert (
         data["mode"] == "dry_run" and data["eligible"] == 1 and "done" in api.branches
     )
+
+
+@pytest.mark.parametrize("limit", [0, -1, 7])
+def test_live_sample_rejects_unbounded_limit(limit, monkeypatch, tmp_path):
+    import sys
+    listing = tmp_path / "w1.tsv"
+    listing.write_text(f"branch\t{SHA}\tdelete\n", encoding="utf-8")
+    monkeypatch.setenv("GITHUB_TOKEN", "test-only")
+    monkeypatch.setattr(
+        sys, "argv",
+        ["hygiene", str(listing), "--repo", "GBOGEB/ABACUS",
+         "--sample-limit", str(limit)],
+    )
+    with pytest.raises(SystemExit, match="sample-limit"):
+        bh.main()
+
+
+def test_live_sample_rejects_execute_even_when_bounded(monkeypatch, tmp_path):
+    import sys
+    listing = tmp_path / "w1.tsv"
+    listing.write_text(f"branch\t{SHA}\tdelete\n", encoding="utf-8")
+    monkeypatch.setenv("GITHUB_TOKEN", "test-only")
+    monkeypatch.setattr(
+        sys, "argv",
+        ["hygiene", str(listing), "--repo", "GBOGEB/ABACUS",
+         "--sample-limit", "1", "--execute"],
+    )
+    with pytest.raises(SystemExit, match="sample-limit"):
+        bh.main()
+
+
+def test_bounded_live_sample_only_gets_and_never_mutates(monkeypatch, tmp_path):
+    import json
+    import sys
+
+    listing = tmp_path / "w1.tsv"
+    listing.write_text(
+        "".join(f"{x}\t{SHA}\tdelete\n" for x in ("a", "b", "c", "d")),
+        encoding="utf-8",
+    )
+    receipt_path = tmp_path / "receipt.json"
+    api = FakeApi({name: (SHA, False) for name in ("a", "b", "c", "d")})
+    monkeypatch.setenv("GITHUB_TOKEN", "test-only")
+    monkeypatch.setattr(bh, "make_api", lambda *args, **kwargs: api)
+    monkeypatch.setattr(
+        sys, "argv",
+        ["hygiene", str(listing), "--repo", "GBOGEB/ABACUS",
+         "--sample-limit", "3", "--receipt", str(receipt_path)],
+    )
+    assert bh.main() == 0
+    receipt = json.loads(receipt_path.read_text(encoding="utf-8"))
+    assert receipt["listed"] == 3
+    assert receipt["mode"] == "dry_run"
+    assert receipt["deleted"] == 0
+    assert len(api.branches) == 4
+    assert all(method == "GET" for method, _ in api.calls)

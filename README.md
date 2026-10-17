@@ -1,6 +1,34 @@
 # ABACUS — 12-Cluster Analysis Framework
 
+
+> **CODE PURPLE P4 federation navigation (dated 16 Oct 2026):** This repository owns **first-red diagnosis, source-level repairs, CI and independent security**. [Mission Control](https://github.com/GBOGEB/pipeline-automation-hub) · [Local recursive SIPOC pilot](https://github.com/GBOGEB/pipeline-automation-hub/blob/master/mission-control/federation-atlas/flightdeck/pulses/federation_landing_p4.html) · [Current repository Actions](https://github.com/GBOGEB/ABACUS/actions) · [Open PRs](https://github.com/GBOGEB/ABACUS/pulls) · [Current source history](https://github.com/GBOGEB/ABACUS/commits). **Snapshot caution:** The README contains historical v4.4.0 completion/coverage badges; those are not present main admission evidence. This navigation link is not an assertion that the P4 pilot is merged or hosted; preserve UNKNOWN and independent owner gates.
+
 <!-- markdownlint-disable MD001 MD013 MD022 MD029 MD031 MD032 MD040 MD060 -->
+
+<!-- code-purple-federation-w0:begin -->
+## Federation landing / source-bound navigation (W0)
+
+> DOW / ANALYTICAL SOURCE REPAIR. This is a **navigation-only snapshot** of the 16 October 2026
+> architecture wave, not an assertion that GitHub Pages is deployed or CI has passed.
+> Historical release, readiness and coverage values elsewhere in this README
+> remain bound to their original versions and populations.
+
+| Open | Purpose / evidence boundary |
+|---|---|
+| [This repo: current commits](https://github.com/GBOGEB/ABACUS/commits/main) | Read exact head; dynamic navigation, not a cached pass |
+| [ABACUS Pages source](docs/index.html) | Existing repository-owned documentation/build surface |
+| [Native exact-head CI](https://github.com/GBOGEB/ABACUS/actions) | Owner-controlled verification and release gate |
+| [MissionControl federation W0](https://github.com/GBOGEB/pipeline-automation-hub/pull/579) | Draft one-to-three-hop SIPOC and wave view; not yet published |
+| [Canonical 10-lane SIPOC](https://github.com/GBOGEB/pipeline-automation-hub/blob/master/mission-control/federation-atlas/PROCESS_LANES_v1.json) | Process stages, supplier/input/output/customer roles |
+| [Canonical 10-beam DAG](https://github.com/GBOGEB/pipeline-automation-hub/blob/master/mission-control/federation-atlas/CODE_PURPLE_BEAMS_DAG_v1.json) | Feedforward within N; feedback into N+1 |
+| [Cross-repository actions](https://github.com/GBOGEB/pipeline-automation-hub/actions) | Native workflow identity; statuses require exact-head readback |
+
+**SIPOC recursion:** N consumes only authenticated, owner-admitted N−1 evidence;
+the next customer does not automatically become an authorized supplier.
+DOW, KEB, QPS and gg_MATH retain disjoint sources, branch protection,
+security controls and release acceptance. `UNKNOWN` is not `PASS` or zero.
+
+<!-- code-purple-federation-w0:end -->
 
 [![main version](https://img.shields.io/badge/dynamic/toml?url=https%3A%2F%2Fraw.githubusercontent.com%2FGBOGEB%2FABACUS%2Fmain%2Fpyproject.toml&query=%24.project.version&prefix=v&label=main%20version&color=blue&style=flat-square)](pyproject.toml)
 [![last release](https://img.shields.io/github/v/release/GBOGEB/ABACUS?label=last%20release&style=flat-square)](https://github.com/GBOGEB/ABACUS/releases/latest)

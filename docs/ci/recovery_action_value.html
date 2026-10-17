@@ -1,0 +1,215 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>CODE PURPLE · Recovery Action Value / Unblocking</title>
+<style>
+:root{color-scheme:dark;--bg:#091321;--panel:#162238;--line:#526985;--ink:#f6f9ff;--muted:#bdcce1;--cyan:#7fe0ff;--green:#80e9c4;--amber:#ffe09c;--red:#ffa1b4}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.55 system-ui,Segoe UI,sans-serif}
+a{color:var(--cyan)}button{cursor:pointer;background:#233552;color:var(--ink);border:2px solid var(--cyan);border-radius:9px;padding:10px 16px;font:inherit;font-weight:700}
+button:focus-visible,a:focus-visible{outline:3px solid var(--amber);outline-offset:3px}
+header,main,footer{max-width:1250px;margin:auto;padding:22px}h1{font-size:clamp(1.6rem,3vw,2.5rem);line-height:1.2;margin:4px 0 10px}h2{margin:0 0 12px;font-size:1.3rem}
+small,.muted{color:var(--muted)}.top{position:sticky;top:0;z-index:8;background:#101d32f8;border-bottom:2px solid var(--line);padding:9px 16px;display:flex;gap:12px;align-items:center;overflow-x:auto}
+.top a{white-space:nowrap;font-size:.87rem;font-weight:700}.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:13px}
+.tile,.panel{border:2px solid var(--line);border-radius:13px;padding:17px;background:var(--panel)}
+.tile{border-top:5px solid var(--accent)}.tile:nth-child(1){--accent:var(--red)}.tile:nth-child(2){--accent:var(--cyan)}.tile:nth-child(3){--accent:var(--amber)}.tile:nth-child(4){--accent:var(--green)}
+.tile strong{font-size:clamp(1.3rem,3vw,2.05rem);display:block;line-height:1.3;overflow-wrap:anywhere}.tile span{font-size:.9rem}
+.panel{margin-top:17px}.action{display:grid;grid-template-columns:1fr 1fr;gap:14px}.action article{border-left:5px solid var(--amber);background:#0f1c30;padding:12px 17px;border-radius:9px}
+.action article:first-child{border-left-color:var(--cyan)}.action h3{margin:0;font-size:1.02rem}.proof{color:var(--amber);font-weight:800}.pass{color:var(--green);font-weight:800}.hold{color:var(--red);font-weight:800}
+table{width:100%;border-collapse:collapse}td,th{text-align:left;border-bottom:1px solid var(--line);padding:9px 10px;vertical-align:top}
+th{color:var(--cyan);font-weight:700}td{overflow-wrap:anywhere}.scroll{overflow-x:auto}
+.legend{display:flex;flex-wrap:wrap;gap:8px 16px;font-size:.86rem;padding:7px 0}.legend span{border-left:6px solid var(--color);padding-left:8px}
+#notice{min-height:1.7em}.bar{background:#24334c;border-radius:8px;height:12px;overflow:hidden;margin-top:7px}
+.bar div{height:100%;background:var(--red);width:100%}
+#baseline-bar{background:var(--red)}#after-bar{background:var(--green);width:0}
+code{overflow-wrap:anywhere}
+@media(max-width:960px){.grid{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:580px){.grid,.action{grid-template-columns:1fr}header,main,footer{padding:15px}.top{gap:9px}}
+@media(prefers-reduced-motion:reduce){*{scroll-behavior:auto!important}}
+</style>
+</head><body>
+<nav class="top" aria-label="Persistent recovery navigation">
+<a href="#summary">Action value</a><a href="#docs">Documentation</a><a href="#dow">DOW</a><a href="#coverage">Coverage</a><a href="#governance">Governance</a><a href="#provenance">Provenance</a>
+</nav>
+<header><small>CODE PURPLE / ABACUS #1860 · Read-only recovery projection</small>
+<h1>Action → verified improvement → downstream unblocking</h1>
+<p class="muted">A committed fix is not a confirmed root closure. Exact-source CI, denominator parity and independent governance remain separate gates.</p>
+<button id="refresh" type="button">Refresh native proof</button>
+<p id="notice" aria-live="polite">Source snapshot not loaded. Native after-state UNKNOWN.</p>
+<div class="legend" aria-label="Metric meaning">
+<span style="--color:var(--cyan)">Observed baseline</span>
+<span style="--color:var(--green)">Verified resolved</span>
+<span style="--color:var(--amber)">Pending / UNKNOWN</span>
+<span style="--color:var(--red)">Blocking failure</span>
+</div>
+</header>
+<main>
+<section id="summary">
+<div class="grid">
+<article class="tile"><span>Document lint · before</span><strong id="before">13</strong><small>Native historical failed job</small></article>
+<article class="tile"><span>Document lint · after</span><strong id="after">UNKNOWN</strong><small>Only same-SHA terminal check</small></article>
+<article class="tile"><span>Verified findings resolved</span><strong id="resolved">UNKNOWN</strong><small>No credit from commit alone</small></article>
+<article class="tile"><span>Ruff · bounded 4-file slice</span><strong id="ruff-score">UNKNOWN</strong><small>Native run source/receipt, not full repo</small></article>
+<article class="tile"><span>Downstream DOW jobs unblocked</span><strong id="unblocked">UNKNOWN</strong><small>Potential 6; executed proof required</small></article>
+<article class="tile"><span>P0 known ruleset</span><strong id="rules-delta">0 → 3</strong><small>Protection restored in server readback; required checks still under review</small></article>
+</div></section>
+<section id="docs" class="panel"><h2>Documentation first-red — exact file and job</h2>
+<div class="action"><article><h3>Before · current-main failure</h3>
+<p>MD013 <strong id="md013">10</strong> · MD022 <strong id="md022">2</strong> · MD032 <strong id="md032">1</strong></p>
+<div class="bar" aria-label="Historical 13 errors"><div id="baseline-bar"></div></div>
+<p><a id="before-link" href="https://github.com/GBOGEB/ABACUS/actions/runs/38584212177">Native failure receipt</a></p>
+</article><article><h3>After · candidate validation</h3>
+<p id="docs-state" class="proof">UNKNOWN — awaiting exact-head native outcome</p>
+<div class="bar" aria-label="Verified remaining errors if known"><div id="after-bar"></div></div>
+<p><a id="after-link" href="https://github.com/GBOGEB/ABACUS/pull/1966">Scoped fix PR #1966</a></p>
+</article></div><p class="muted">13 → 0 is recorded only after the expected changed-docs job finishes SUCCESS on the exact configured source SHA. PR-side clearance is not current-main clearance.</p>
+<p id="latest-docs-root" class="hold">Current-main additional documentation first-red: UNKNOWN.</p>
+</section>
+<section id="dow" class="panel"><h2>DOW first-red / reverse-pressure fan-out</h2>
+<p>Observed on main: <strong id="hooks">3</strong> failing hooks; <strong id="skipped">6</strong> downstream jobs skipped. A skip is not a repaired defect, and a potentially unblocked edge is not a verified executed job.</p>
+<div class="scroll"><table><thead><tr><th>Root or consequence</th><th>Baseline</th><th>Verified after</th><th>Action lane</th></tr></thead><tbody>
+<tr><td>EOF fixer</td><td>FAILED</td><td>UNKNOWN</td><td>Controlled formatting repair, not mass uncontrolled rewrite</td></tr>
+<tr><td>Trailing whitespace</td><td>FAILED</td><td>UNKNOWN</td><td>File-owned normalization / exact-head pre-commit</td></tr>
+<tr><td>TestPilot / Ruff</td><td>FAILED</td><td id="ruff-state">UNKNOWN</td><td><a id="ruff-link" href="https://github.com/GBOGEB/ABACUS/pull/1965">Disjoint #1965</a></td></tr>
+<tr><td>Ubuntu / RHEL8 / RHEL9 / DMAIC / build / release</td><td>6 SKIPPED</td><td>UNKNOWN</td><td>Must execute natively after lint green</td></tr>
+</tbody></table></div>
+<p id="ruff-detail" class="muted">Measured Ruff and formatting delta requires a source-matched exact-head receipt; no full DOW PASS inferred.</p>
+</section>
+<section id="coverage" class="panel"><h2>Coverage / BD closure / admission remain independent</h2>
+<div class="scroll"><table><thead><tr><th>Metric</th><th>Verified historical baseline</th><th>Current comparable</th></tr></thead><tbody>
+<tr><td>Measured predecessor-main broad coverage</td><td id="main-h">36.85% historical baseline</td><td id="main-measured">UNKNOWN</td></tr>
+<tr><td>Latest main broad coverage</td><td id="main-current-sha">UNKNOWN SHA</td><td id="main-live">UNKNOWN</td></tr>
+<tr><td>Sequential main coverage change</td><td>Same Coverage.py/DAB; source count 298 → 299</td><td id="main-coverage-delta">UNKNOWN</td></tr>
+<tr><td>PR-side broad coverage</td><td id="pr-h">36.92%</td><td>UNKNOWN</td></tr>
+<tr><td>PR-side diff coverage</td><td id="diff-h">51%</td><td>UNKNOWN</td></tr>
+<tr><td>BD roots closed</td><td>UNKNOWN</td><td>UNKNOWN</td></tr>
+<tr><td>Authenticated Crew launches / accepted REX</td><td>UNKNOWN</td><td>UNKNOWN</td></tr>
+<tr><td>Correctly admitted merge</td><td>Not established</td><td class="hold">HOLD</td></tr>
+</tbody></table></div><p id="main-coverage-proof" class="muted">Current-main coverage denominator and artifact: UNKNOWN.</p><p class="muted">Comparable coverage requires matched collection scope/configuration and terminal reports. Different SHA or source scope is not a valid coverage delta.</p>
+</section>
+<section id="governance" class="panel" aria-labelledby="governance-title"><h2 id="governance-title">P0 protection — source-bound restoration, admission HOLD</h2>
+<p id="governance-state" class="proof">UNKNOWN — awaiting current-main rule readback</p>
+<p id="governance-rules" class="muted">Known ruleset: 0 → 3 rules; independent review and effective required CI checks are separate outstanding gates.</p>
+<p id="gov-first-red" class="hold">Current-main workflow-classification first-red: UNKNOWN.</p>
+<p class="muted"><a href="https://github.com/GBOGEB/ABACUS/settings/rules/24494381">Owner/admin ruleset</a> · <a href="https://github.com/GBOGEB/ABACUS/issues/1860">Governed recovery #1860</a>. A green docs or Ruff job cannot substitute for protected-branch admission.</p>
+</section>
+<section id="provenance" class="panel"><h2>Source identities and integrity guards</h2>
+<p id="source-sha" class="muted">Waiting for source JSON.</p>
+<p id="pr-sha" class="muted">Candidate source SHA UNKNOWN.</p>
+<p class="hold">Partial protection restored. Full required-check policy and eligible independent approval are not inferred by this view. No security waiver or merge authority.</p>
+<p class="muted">Source file: <code>../data/recovery_action_value_v1.json</code>. Uses GitHub's read-only public REST responses for the configured run and job; API failures return UNKNOWN. Loaded view does not mutate the source file or any repository settings.</p>
+</section>
+</main><footer>Evidence-first recovery metrics · Source-bound PR candidate only · Governance HOLD · No automatic admission</footer>
+<script>
+"use strict";
+const $=id=>document.getElementById(id);
+let source=null;
+function value(v){return v===null||v===undefined?"UNKNOWN":String(v)}
+function put(id,v){$(id).textContent=value(v)}
+async function getJSON(url){const res=await fetch(url,{cache:"no-store",headers:{"Accept":"application/vnd.github+json"}});if(!res.ok)throw Error("HTTP "+res.status);return res.json()}
+async function refresh(){
+ if(!source){try{source=await getJSON("../data/recovery_action_value_v1.json")}catch(e){put("notice","Source snapshot unavailable: "+e.message+". AFTER remains UNKNOWN.");return}}
+ if(source.schema!=="abacus.recovery.action-value.v1"||source.subject_repo!=="GBOGEB/ABACUS"||source.governance.security_waiver!==false||source.governance.authority_transfer!==false){put("notice","Rejected unsupported/unsafe source. AFTER UNKNOWN.");return}
+ const b=source.baseline,c=source.candidates.documentation;
+ put("before",b.docs.finding_count);put("md013",b.docs.findings_by_rule.MD013);put("md022",b.docs.findings_by_rule.MD022);put("md032",b.docs.findings_by_rule.MD032);
+ put("hooks",b.dow.failed_hook_count);put("skipped",b.dow.observed_downstream_skipped);
+ const r=source.candidates.dow_ruff;
+ const exact=r&&r.comparison_status==="VERIFIED_TERMINAL_PR_SCOPED"&&r.tool==="ruff==0.17.0"&&/^[0-9a-f]{40}$/.test(r.head_sha)&&r.before_findings===11&&r.after_findings===0&&r.opened_occurrences===0&&r.resolved_occurrences===11&&r.identical_scoped_paths.length===4;
+ if(exact){put("ruff-score",r.before_findings+" → "+r.after_findings);put("ruff-state","11 → 0 native PR-scope PASS");$("ruff-state").className="pass";$("ruff-link").href=r.job_url;
+ put("ruff-detail","Exact head "+r.head_sha+" · run "+r.workflow_run_id+" / job "+r.job_id+" · "+r.resolved_occurrences+" resolved, 0 introduced across "+r.identical_scoped_paths.length+" identical paths · 6 focused tests passed · formatting: 9 → 0 trailing whitespace lines and 2 → 0 missing final newlines on 3 paths. Full repo DOW and RHEL remain HOLD.");
+ }else{put("ruff-score","UNKNOWN");put("ruff-state","UNKNOWN");put("ruff-detail","No accepted same-scope Ruff receipt; DOW after-state UNKNOWN.");}
+ put("main-h",source.coverage.historical_main.value_pct+"%");
+ const m=source.coverage.measured_main_at_sha;
+ if(m&&m.exact_main_sha===b.main_sha&&m.job_conclusion==="success"&&m.collected_on_main==="TERMINAL_EXACT_SHA_ARTIFACT_FROM_PREDECESSOR_MAIN"&&m.scope_vs_historical_main==="NOT_RECONCILED"&&m.covered_lines===17088&&m.num_statements===30735&&m.covered_branches===4200&&m.num_branches===8290){
+  put("main-measured",m.percent_combined_covered.toFixed(2)+"% measured on "+m.exact_main_sha.slice(0,9)+"; historical comparison NOT COMPARABLE");
+  const p=$("main-coverage-proof");p.replaceChildren();
+  const a=document.createElement("a");a.href=m.artifact_url;a.textContent="Predecessor-main coverage XML + DAB artifact";
+  p.append("Main as measured at "+m.exact_main_sha+" · "+m.covered_lines+"/"+m.num_statements+" covered statements ("+m.percent_statements_covered.toFixed(2)+"%) · "+m.covered_branches+"/"+m.num_branches+" branches ("+m.percent_branches_covered.toFixed(2)+"%) · branch-inclusive "+m.percent_combined_covered.toFixed(2)+"% · ",a,". No certified improvement over 36.85%.");
+ }else{put("main-measured","UNKNOWN");put("main-coverage-proof","Historical main coverage artifact absent or invalid; no value credited.");}
+ put("main-live","UNKNOWN");
+ put("main-current-sha","Main SHA UNKNOWN");
+ let liveSha=null;let liveProtected=null;
+ try{
+  const current=await getJSON("https://api.github.com/repos/"+source.subject_repo+"/branches/main");
+  liveSha=current&&current.commit&&current.commit.sha;
+  liveProtected=current&&current.protected;
+  if(!/^[0-9a-f]{40}$/.test(liveSha))throw Error("main branch identity missing");
+  put("main-current-sha",liveSha);
+  const currentMeasure=source.coverage.current_main_measured;
+  if(currentMeasure&&currentMeasure.exact_main_sha===liveSha&&currentMeasure.dab_schema==="abacus-coverage-dab/1.0.0"&&currentMeasure.coverage_version==="7.16.2"&&currentMeasure.covered_lines===17158&&currentMeasure.num_statements===30815&&currentMeasure.covered_branches===4233&&currentMeasure.num_branches===8324&&currentMeasure.complete_native_matrix==="success"){
+   put("main-live",currentMeasure.percent_combined_covered.toFixed(2)+"% exact-main VERIFIED; +0.1043 pp versus predecessor same-instrument main; historical 36.85% NOT COMPARABLE");
+   const cmp=source.coverage.sequential_main_comparison;
+   put("main-coverage-delta",cmp&&cmp.to_sha===liveSha&&cmp.common_files===298&&cmp.added_files===1?"+0.1043 pp · 298 unchanged collected files; one new covered module":"UNKNOWN");
+  }else if(m&&liveSha===m.exact_main_sha&&m.collected_on_main==="TERMINAL_EXACT_SHA_ARTIFACT_FROM_PREDECESSOR_MAIN"){
+   put("main-live",m.percent_combined_covered.toFixed(2)+"% SAME-SHA, historical comparator UNKNOWN");
+  }else{
+   put("main-live","UNKNOWN — main advanced since measured source");
+  }
+ }catch(e){put("main-live","UNKNOWN — branch readback unavailable");}
+ const gov=source.governance.recovery_observation;
+ put("governance-state","UNKNOWN — live branch/rules not established");
+ put("rules-delta","UNKNOWN");
+ if(gov&&gov.schema==="abacus.p0.ruleset-readback.v1"&&gov.repository===source.subject_repo&&gov.ruleset_rule_count===3&&gov.ruleset_bypass_actor_count===0&&gov.admission==="HOLD"){
+  if(liveSha===gov.observed_main_sha&&liveProtected===true){
+   put("rules-delta","0 → 3");
+   put("governance-state","PARTIAL RESTORATION · main protected=true at "+liveSha+" · required CI checks NOT observed in known ruleset");
+   try{
+    const active=await getJSON("https://api.github.com/repos/"+source.subject_repo+"/rulesets/"+gov.ruleset_id);
+    const types=Array.isArray(active.rules)?active.rules.map(r=>r.type):[];
+    if(active.enforcement!=="active"||active.id!==gov.ruleset_id||types.length!==3||!["deletion","pull_request","non_fast_forward"].every(t=>types.includes(t)))throw Error("ruleset identity/contract drift");
+    const approvals=active.rules.find(r=>r.type==="pull_request")?.parameters;
+    if(!approvals||approvals.required_approving_review_count!==1)throw Error("review policy drift");
+    put("governance-rules","LIVE known ruleset #"+gov.ruleset_id+": 3 enforceable rules; 1 independent approval required; deletion/force-push blocked; required-status-check rule NOT configured in this ruleset. Applicable other policies and reviewer proof UNKNOWN. ADMISSION HOLD.");
+   }catch(e){put("governance-rules","Branch protected=true; known 3-rule snapshot from "+gov.observed_main_sha+". Current ruleset recheck UNKNOWN ("+e.message+"); independent approval and CI admission unverified.");}
+  }else if(liveSha&&liveProtected===false){
+   put("governance-state","RED — current branch reports protected=false; admission HOLD");
+  }else{
+   put("governance-state","UNKNOWN — known 3-rule snapshot is from "+gov.observed_main_sha+"; current main differs or unavailable");
+  }
+ }
+ const reds=source.current_main_first_reds;
+ if(reds&&liveSha===reds.exact_main_sha&&reds.docs?.finding_count===33&&reds.workflow_governance?.unclassified_workflow_count===2){
+  const docs=$("latest-docs-root");docs.replaceChildren();
+  const a=document.createElement("a");a.href=reds.docs.job_url;a.textContent="Native current-main docs first-red";
+  docs.append("NEW main-side docs debt: 33 findings across V3.1 and V3.2 (separate from #1966's 13 resolved PR findings) · ",a," · candidate #1972, after-count UNKNOWN.");
+  const gov=$("gov-first-red");gov.replaceChildren();
+  const g=document.createElement("a");g.href=reds.workflow_governance.job_url;g.textContent="Native policy-and-inventory job";
+  gov.append("NEW main-side governance first-red: 2 unclassified SUT workflows plus stale generated report · ",g," · candidate #1973, closure UNKNOWN.");
+ }else{
+  put("latest-docs-root","Current-main latest documentation debt UNKNOWN; first-red source SHA is stale or unavailable.");
+  put("gov-first-red","Current-main workflow-governance root UNKNOWN; source SHA mismatch/unavailable.");
+ }
+ put("pr-h",source.coverage.historical_pr_broad.value_pct+"%");
+ put("diff-h",source.coverage.historical_pr_diff.value_pct+"%");
+ $("before-link").href=b.docs.job_url;
+ $("after-link").href=c.candidate_url;
+ put("source-sha","Baseline main: "+b.main_sha+" · Docs run "+b.docs.run_id+" / job "+b.docs.job_id);
+ put("pr-sha","Candidate PR #"+c.pr+" · head "+c.head_sha+" · workflow "+c.workflow_run_id);
+ put("notice","Inspecting exact-source native docs producer. No admission assumed.");
+ const recorded=c.comparison_status==="VERIFIED_TERMINAL_EXACT_HEAD_PR_ONLY"&&c.workflow_run_status==="completed"&&c.workflow_run_conclusion==="success"&&c.job_status==="completed"&&c.job_conclusion==="success"&&c.job_id===115941877977&&c.after_findings===0&&b.docs.finding_count===13;
+ put("after",recorded?0:"UNKNOWN");put("resolved",recorded?13:"UNKNOWN");
+ put("docs-state",recorded?"Recorded PR-head PASS — 13 → 0; confirming freshness":"UNKNOWN — verifying GitHub");
+ $("docs-state").className=recorded?"pass":"proof";
+ try{
+  const u="https://api.github.com/repos/"+source.subject_repo+"/actions/runs/"+c.workflow_run_id;
+  const run=await getJSON(u);
+  if(run.id!==c.workflow_run_id||run.head_sha!==c.head_sha||run.name!==c.workflow_name)throw Error("run identity/SHA mismatch");
+  if(run.status!=="completed"){put("docs-state", "PENDING — native workflow "+run.status);put("notice","Checked run "+run.id+"; terminal after-value UNKNOWN.");return}
+  if(run.conclusion!=="success"){put("docs-state","RED / non-success — "+value(run.conclusion));put("notice","Native after-run is terminal but not green; docs after-count remains UNKNOWN.");return}
+  const jobs=await getJSON(u+"/jobs?per_page=100");
+  if(typeof jobs.total_count!=="number"||jobs.total_count!==jobs.jobs.length)throw Error("incomplete job census");
+  const candidates=jobs.jobs.filter(j=>j.name===c.job_name);
+  if(candidates.length!==1)throw Error("expected exactly one changed-docs job");
+  const j=candidates[0];
+  if(j.status!=="completed"||j.conclusion!=="success"||(j.head_sha&&j.head_sha!==c.head_sha))throw Error("job not exact-source terminal success");
+  put("after",0);put("resolved",b.docs.finding_count);
+  put("docs-state","VERIFIED on PR head — 13 → 0");
+  $("docs-state").className="pass";
+  $("after-bar").style.width="0%";
+  put("notice","Native exact-head docs job PASS. PR-side lint root resolved; integrated-main, DOW and coverage remain HOLD/UNKNOWN.");
+ }catch(e){put("docs-state",recorded?"Recorded exact-head PR PASS; live refresh unavailable":"UNKNOWN — "+e.message);put("notice",recorded?"Source-bound terminal PR receipt retained; live GitHub refresh UNKNOWN. No main/DOW admission credited.":"Cannot independently establish exact-head after-proof; no improvement credited.");}
+}
+$("refresh").addEventListener("click",()=>{void refresh()});
+void refresh();
+</script>
+</body></html>
