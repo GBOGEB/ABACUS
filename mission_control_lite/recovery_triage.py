@@ -80,11 +80,14 @@ def reconcile(observations, canary=None):
         attempt = _id(item.get("attempt"), "run attempt")
         if item.get("status") != "completed" or item.get("conclusion") != "failure":
             raise ValueError("first-red requires terminal failing native job")
-        identity = (repository, head, run_id, job_id, attempt)
-        if identity in seen:
-            raise ValueError("duplicate exact-head run/job/attempt")
-        seen.add(identity)
         root = fingerprint(item.get("first_red"))
+        # One job may contain multiple independent source/security failures.
+        # Deduplicate identical root manifestations per native job/attempt,
+        # not different causal roots from the same job.
+        identity = (repository, head, run_id, job_id, attempt, root)
+        if identity in seen:
+            raise ValueError("duplicate exact-head run/job/attempt/root")
+        seen.add(identity)
         roots[root] += 1
         exact_heads.add(head)
         grouped.setdefault(root, []).append(
