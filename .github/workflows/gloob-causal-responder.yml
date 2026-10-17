@@ -23,10 +23,10 @@ jobs:
   responder:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v7
+      - uses: actions/checkout@v7.0.1
         with:
           fetch-depth: 0
-      - uses: actions/setup-python@v7
+      - uses: actions/setup-python@v7.0.0
         with:
           python-version: "3.12"
       - name: Self-test responder contract
@@ -67,14 +67,14 @@ jobs:
           echo "ack=$ack" >> "$GITHUB_OUTPUT"
       - name: Upload causal return
         if: github.event_name == 'push' && github.ref_name != 'main'
-        uses: actions/upload-artifact@v7
+        uses: actions/upload-artifact@v7.0.2
         with:
           name: gloob-causal-return
           path: ${{ steps.emitted.outputs.return }}
           if-no-files-found: error
       - name: Upload delivery acknowledgement
         if: github.event_name == 'push' && github.ref_name != 'main'
-        uses: actions/upload-artifact@v7
+        uses: actions/upload-artifact@v7.0.2
         with:
           name: gloob-dispatch-ack
           path: ${{ steps.emitted.outputs.ack }}

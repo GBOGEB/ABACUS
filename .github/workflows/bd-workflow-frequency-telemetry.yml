@@ -18,7 +18,7 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 5
     steps:
-      - uses: actions/checkout@v7
+      - uses: actions/checkout@v7.0.1
       - name: Measure top workflow families
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -33,7 +33,7 @@ jobs:
             --out-md .artifacts/bd-workflow-frequency/summary.md
           cat .artifacts/bd-workflow-frequency/summary.md >> "$GITHUB_STEP_SUMMARY"
       - name: Upload frequency telemetry
-        uses: actions/upload-artifact@v7
+        uses: actions/upload-artifact@v7.0.2
         with:
           name: bd-workflow-frequency-${{ github.run_id }}
           path: .artifacts/bd-workflow-frequency/

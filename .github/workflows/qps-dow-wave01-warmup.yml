@@ -44,7 +44,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout exact evaluated source
-        uses: actions/checkout@v7
+        uses: actions/checkout@v7.0.1
         with:
           ref: ${{ env.EVALUATED_SOURCE_SHA }}
 
@@ -54,7 +54,7 @@ jobs:
           test "${actual}" = "${EVALUATED_SOURCE_SHA}"
 
       - name: Set up Python
-        uses: actions/setup-python@v7
+        uses: actions/setup-python@v7.0.0
         with:
           python-version: '3.12'
 
@@ -220,7 +220,7 @@ jobs:
           echo '~~~' >> "$GITHUB_STEP_SUMMARY"
 
       - name: Upload DOW warm-up artifacts
-        uses: actions/upload-artifact@v7
+        uses: actions/upload-artifact@v7.0.2
         with:
           name: qps-dow-wave01-${{ github.run_id }}
           path: |

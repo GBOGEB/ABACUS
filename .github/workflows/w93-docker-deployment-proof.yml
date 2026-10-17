@@ -18,7 +18,7 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 20
     steps:
-      - uses: actions/checkout@v7
+      - uses: actions/checkout@v7.0.1
       - name: Validate compose model
         run: docker compose config --quiet
       - name: Build exact-head root image
@@ -92,7 +92,7 @@ jobs:
           } > "$out/receipt.txt"
       - name: Upload root service port, health, and debug evidence
         if: always()
-        uses: actions/upload-artifact@v7
+        uses: actions/upload-artifact@v7.0.2
         with:
           name: w93-abacus-root-docker-${{ github.sha }}
           path: .artifacts/w93/root/
@@ -103,7 +103,7 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 25
     steps:
-      - uses: actions/checkout@v7
+      - uses: actions/checkout@v7.0.1
       - name: Validate QPLANT compose surfaces
         run: |
           docker compose -f qplant/deployment/docker-compose.yml \
@@ -127,7 +127,7 @@ jobs:
             printf 'compose_validation=PASS\n'
             printf 'engineering_credit_delta=0\n'
           } | tee w93_qplant_docker_receipt.txt
-      - uses: actions/upload-artifact@v7
+      - uses: actions/upload-artifact@v7.0.2
         with:
           name: w93-qplant-docker-${{ github.sha }}
           path: w93_qplant_docker_receipt.txt
