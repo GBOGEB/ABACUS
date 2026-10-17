@@ -20,6 +20,8 @@ class IterationMetrics:
     changes_detected: int = 0
     phases_executed: List[str] = field(default_factory=list)
     convergence_score: float = 0.0
+    execution_time_seconds: float = 0.0
+    maturity_level: str = "initial"
     timestamp: str = field(default_factory=lambda: datetime.now().isoformat())
 
 

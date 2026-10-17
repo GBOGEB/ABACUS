@@ -5,6 +5,8 @@ on:
     paths:
       - "MIP/**"
       - "scripts/mip_*.py"
+      - "tests/test_mip_root_taxonomy.py"
+      - "docs/ci/MIP_ROOT_TAXONOMY_EXTENSION_V1.md"
       - "DMAIC_V3/quick_error_fix.py"
       - "integration/codespace_jyperter/MIP/**"
       - "integration/codespace_jyperter/scripts/mip_*.py"
@@ -21,7 +23,7 @@ jobs:
       EXPECTED_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
     steps:
       - name: Check out exact evaluated SHA
-        uses: actions/checkout@v7
+        uses: actions/checkout@v7.0.1
         with:
           ref: ${{ env.EXPECTED_SHA }}
           fetch-depth: 1
@@ -35,6 +37,11 @@ jobs:
         run: |
           python -m unittest discover -s tests \
             -p 'test_mip_ldab_telemetry.py' -v
+
+      - name: Test deterministic BD LDAB taxonomy adapter
+        run: |
+          python -m unittest discover -s tests \
+            -p 'test_mip_root_taxonomy.py' -v
 
       - name: Verify exact-SHA binding and repeatability
         run: |
