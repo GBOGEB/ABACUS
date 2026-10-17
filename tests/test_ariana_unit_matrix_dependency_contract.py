@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import re
+import tempfile
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -69,3 +70,41 @@ def test_ariana_junit_reader_uses_secure_entity_policy() -> None:
     )
     assert "from defusedxml import ElementTree as ET" in source
     assert "forbid_dtd=True, forbid_entities=True, forbid_external=True" in source
+
+def test_real_ariana_reader_preserves_failures_and_skips() -> None:
+    from scripts.ci.ariana_dow_evidence import read_junit
+
+    with tempfile.TemporaryDirectory() as temp:
+        path = Path(temp) / "native.xml"
+        path.write_text(
+            "<testsuite><testcase name='pass'/>"
+            "<testcase name='fail'><failure/></testcase>"
+            "<testcase name='skip'><skipped/></testcase></testsuite>",
+            encoding="utf-8",
+        )
+        result = read_junit(path)
+        assert result is not None
+        assert result["total"] == 3
+        assert result["passed"] == 1
+        assert result["failures"] == 1
+        assert result["skipped"] == 1
+
+
+def test_real_ariana_reader_rejects_external_xml_entity() -> None:
+    from defusedxml.common import DefusedXmlException
+
+    from scripts.ci.ariana_dow_evidence import read_junit
+
+    with tempfile.TemporaryDirectory() as temp:
+        path = Path(temp) / "hostile.xml"
+        path.write_text(
+            '<!DOCTYPE testsuite [<!ENTITY leak SYSTEM "file:///etc/passwd">]>'
+            '<testsuite><testcase name="&leak;"/></testsuite>',
+            encoding="utf-8",
+        )
+        try:
+            read_junit(path)
+        except DefusedXmlException:
+            pass
+        else:
+            raise AssertionError("external JUnit entity was accepted")
