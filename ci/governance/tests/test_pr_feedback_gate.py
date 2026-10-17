@@ -1566,6 +1566,18 @@ class FeedbackGateTests(unittest.TestCase):
             "\n  evaluate:\n", 1
         )[0]
         self.assertIn("github.event_name == 'issues'", invalidate)
+        # A head change is invalidated outside the queue too, so a PR moved
+        # A -> B -> A never re-exposes A's earlier success (#1878).
+        self.assertIn("github.event_name == 'pull_request'", invalidate)
+        self.assertIn("github.event.action == 'synchronize'", invalidate)
+        self.assertIn("github.event.action == 'reopened'", invalidate)
+        self.assertIn(
+            "pull_request:\n    types: [opened, synchronize, reopened]",
+            workflow,
+        )
+        self.assertIn(
+            "ref: ${{ github.event.repository.default_branch }}", invalidate
+        )
         self.assertIn("--mark-pending-only", invalidate)
         self.assertNotIn("concurrency:", invalidate)
         # A no-op event must never cancel or displace a run that has PRs to

@@ -100,11 +100,25 @@ jobs:
   # issue. This job sits outside that queue and marks the check pending with
   # a newer census stamp, so the running census cannot publish over it and
   # any success it already published is replaced.
+  #
+  # A head change (synchronize/reopened) is invalidated the same way. A
+  # success stays attached to its SHA, so a PR moved A -> B -> A would
+  # otherwise re-expose A's earlier success until the queued census of the
+  # returning head runs (#1878).
   invalidate:
     name: Invalidate PR feedback gate (#${{ matrix.pr }})
     needs: route
     if: >-
-      github.event_name == 'issues'
+      (
+        github.event_name == 'issues'
+        || (
+          github.event_name == 'pull_request'
+          && (
+            github.event.action == 'synchronize'
+            || github.event.action == 'reopened'
+          )
+        )
+      )
       && needs.route.outputs.prs != '[]'
     runs-on: ubuntu-latest
     strategy:
