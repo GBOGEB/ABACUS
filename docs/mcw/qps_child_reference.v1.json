@@ -1,0 +1,34 @@
+{
+  "schema": "mcw.upstream.child.reference.v1",
+  "owner": "GBOGEB/cryoplant-project",
+  "ref_kind": "OPEN_PR_CANDIDATE",
+  "pr_number": 1926,
+  "commit_sha": "e20c81da6875d21f251ef395b9a1212ec49aa695",
+  "checked_parent_main_sha": "c361d72b762fda71fc966c09d9d2ab232647f156",
+  "evidence_class": "SOURCE_POINTER_ONLY",
+  "child_disposition": "UNKNOWN",
+  "physical_evidence_bytes": "NOT_VERIFIED",
+  "source_pins": [
+    {
+      "path": "handover/qps_recursive/GLOB.yaml",
+      "git_blob_sha": "4d1cd574014eee5fbd1ed88fe69faa6d5dafa851"
+    },
+    {
+      "path": "handover/qps_recursive/QTG_CURRENT.yaml",
+      "git_blob_sha": "48b485ccbd559d80e5354969cc6854a8e6269906"
+    },
+    {
+      "path": "docs/QPS_WAVE_LINEAGE_START_HERE.md",
+      "git_blob_sha": "3357445c53777b6bd0df2a79ae35c1fe8ee1b649"
+    },
+    {
+      "path": "docs/presentation/QPS_SEMANTIC_SSOT_TOPOLOGY_v0.1.md",
+      "git_blob_sha": "d21d59474b4966b3e98ab138c698bc4f6714751e"
+    },
+    {
+      "path": "ocd-adr/40_implementation/QPS_DOW_KEB_EXECUTION_ARCHITECTURE_SSOT_v0.1.md",
+      "git_blob_sha": "4a20150a4a0a0c803f68db4174ccff30e639626c"
+    }
+  ],
+  "gating_note": "The original child PR, not ABACUS, owns authority. This manifest contains Git metadata pointers, no external/source binary bytes. Verify live child head and physical 8-object evidence independently; no engineering or release credit."
+}

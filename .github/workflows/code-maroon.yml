@@ -1,0 +1,78 @@
+name: CODE_MAROON Snapshot
+
+on:
+  pull_request:
+    paths:
+      - "CODE_MAROON/**"
+      - "tools/code_maroon/**"
+      - "tests/test_code_maroon_reconcile.py"
+      - "tests/test_code_maroon_ooxml.py"
+      - "**/*.docx"
+      - "**/*.docm"
+      - "**/*.xlsx"
+      - "**/*.xlsm"
+      - "**/*.pptx"
+      - "**/*.pptm"
+      - ".github/workflows/code-maroon.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+env:
+  EVALUATED_SOURCE_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+
+jobs:
+  reconcile:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout exact evaluated source
+        # actions/checkout v7.0.1, pinned full commit SHA
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+      - name: Verify exact checkout
+        shell: bash
+        run: test "$(git rev-parse HEAD)" = "$EVALUATED_SOURCE_SHA"
+      - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97
+        with:
+          python-version: "3.12"
+      - name: Preflight test discovery and runner
+        run: python tools/code_maroon/testflight_guard.py preflight
+      - name: Install bounded pytest runner
+        run: python -m pip install pytest==8.4.2
+      - name: Validate CODE_MAROON ledger and OOXML negative controls
+        run: |
+          mkdir -p "$RUNNER_TEMP/code-maroon"
+          python -m pytest -q --noconftest \
+            tests/test_code_maroon_reconcile.py \
+            tests/test_code_maroon_ooxml.py \
+            tests/test_code_maroon_testflight.py \
+            --junitxml="$RUNNER_TEMP/code-maroon/pytest.xml"
+      - name: Verify JUnit counts and required cohorts
+        run: |
+          python tools/code_maroon/testflight_guard.py verify \
+            --junit "$RUNNER_TEMP/code-maroon/pytest.xml" \
+            --source-sha "$EVALUATED_SOURCE_SHA" \
+            --out "$RUNNER_TEMP/code-maroon/testflight_receipt.json"
+      - name: Scan tracked OOXML packages
+        run: |
+          mkdir -p "$RUNNER_TEMP/code-maroon"
+          python tools/code_maroon/ooxml_scan.py \
+            --discover-git \
+            --output "$RUNNER_TEMP/code-maroon/ooxml_receipt.json" \
+            --fail-on high
+      - name: Emit snapshot receipt
+        run: |
+          python tools/code_maroon/reconcile.py \
+            --snapshot CODE_MAROON/snapshot_20261016.json \
+            --out "$RUNNER_TEMP/code-maroon"
+          cat "$RUNNER_TEMP/code-maroon/code_maroon_receipt.md" \
+            >> "$GITHUB_STEP_SUMMARY"
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: code-maroon-receipt
+          path: ${{ runner.temp }}/code-maroon/
+          if-no-files-found: error

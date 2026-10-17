@@ -146,6 +146,50 @@ class CoveragePulseTests(unittest.TestCase):
                 build(coverage(), {"core": OK}, SHA, OTHER, 123,
                       phases=phases)
 
+    def test_verbose_unique_id_census_with_duplicate_execution(self):
+        def result(*names):
+            body = "".join(
+                f"{n.rsplit('.', 1)[-1]} ({n}) ... ok\n" for n in names
+            )
+            return body + f"Ran {len(names)} tests in 0.001s\n\nOK\n"
+        a = "test_core.Mod.test_case"
+        b = "test_rex.Mod.test_other"
+        output = self.make(logs={"core": result(a, b),
+                                 "telemetry": result(a)})
+        self.assertEqual(output["tests_passed"], 3)
+        self.assertEqual(output["test_execution_count"], 3)
+        self.assertEqual(output["unique_test_cases"], 2)
+        self.assertEqual(output["duplicate_case_executions"], 1)
+        self.assertEqual(output["test_id_status"], "COMPLETE")
+        self.assertEqual(len(output["test_case_id_sha256"]), 64)
+
+    def test_summary_only_never_invents_distinct_cases(self):
+        result = self.make()
+        self.assertEqual(result["tests_passed"], 9)
+        self.assertEqual(result["test_id_status"], "SUMMARY_ONLY")
+        self.assertIsNone(result["unique_test_cases"])
+        self.assertIsNone(result["duplicate_case_executions"])
+
+    def test_partial_or_forged_case_identity_fails_closed(self):
+        partial = ("test_abc (pkg.Class.test_abc) ... ok\n"
+                   "Ran 2 tests in 0.001s\n\nOK\n")
+        with self.assertRaisesRegex(ValueError, "identity count differs"):
+            self.make(logs={"telemetry": partial})
+        malformed = ("test_abc (pkg.Class.test_different) ... ok\n"
+                     "Ran 1 test in 0.001s\n\nOK\n")
+        with self.assertRaisesRegex(ValueError, "malformed case identity"):
+            self.make(logs={"telemetry": malformed})
+
+    def test_suite_population_change_blocks_test_delta(self):
+        previous = self.make()
+        new = self.make(logs={"core": OK, "rex": OK, "metrics": OK,
+                              "telemetry": OK}, previous=previous)
+        self.assertEqual(new["comparison"]["status"], "COMPARABLE")
+        self.assertIsNone(new["comparison"]["test_delta"])
+        self.assertIsNone(new["comparison"]["new_unique_case_ids"])
+        self.assertEqual(new["comparison"]["test_census_status"],
+                         "INCOMPARABLE_SUITE_POPULATION")
+
     def test_rejects_invalid_sha_and_baseline(self):
         with self.assertRaises(ValueError):
             build(coverage(), {"core": OK}, "not-a-sha", OTHER, 123)

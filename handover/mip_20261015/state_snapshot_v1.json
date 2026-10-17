@@ -1,0 +1,429 @@
+{
+  "schema": "abacus.mip.operational-receiver.snapshot.v1",
+  "version": "1.0.0",
+  "observed_date": "2026-10-15",
+  "timezone": "Europe/Brussels",
+  "classification": "HISTORICAL_SOURCE_BOUND_NOT_MERGE_AUTHORITY",
+  "v2_capsule_generated": false,
+  "v2_replay_verified": false,
+  "verbatim_transcript_complete": false,
+  "source_repositories": {
+    "ABACUS": {
+      "default_branch": "main",
+      "main_sha": "85dad8fbdab530d40e6ccf2f664c455f89454aad",
+      "protected": true,
+      "ruleset_id": 24494381,
+      "ruleset_active": true,
+      "required_status_checks_rule": false,
+      "required_approvals": 0,
+      "require_last_push_approval": true,
+      "conversation_resolution": true
+    },
+    "CODEX": {
+      "default_branch": "main",
+      "main_sha": "9606b61365f4639c9df24961f2cf4ef598cb5d81",
+      "protected": false
+    }
+  },
+  "primary_pr": 1989,
+  "prs": [
+    {
+      "number": 1987,
+      "state": "MERGED",
+      "draft": false,
+      "source_sha": "fc32f04f4a1ad0d7d26eaff8dc612199885e0fcf",
+      "base_branch": "code-purple/sut-h1-consolidated-flight02-20261014",
+      "merge_sha": "c32b79f75483e4af587176231187472ce2ffcb62",
+      "main_integration_verified": false
+    },
+    {
+      "number": 1975,
+      "state": "OPEN",
+      "draft": false,
+      "base_branch": "main",
+      "source_sha": "69f03a994d3ceebfa40dce35470bc214c93bdd7d",
+      "merge_admitted": false
+    },
+    {
+      "number": 1988,
+      "state": "OPEN",
+      "draft": false,
+      "base_branch": "main",
+      "source_sha": "aec5a438ace5fd5f7c505c3a5463e74900520906",
+      "merge_admitted": false
+    },
+    {
+      "number": 1989,
+      "state": "OPEN",
+      "draft": false,
+      "base_branch": "main",
+      "source_sha": "7c93c5d54e5e790f0066cfbe79e5416508262ebb",
+      "merge_admitted": false
+    },
+    {
+      "number": 1990,
+      "state": "OPEN",
+      "draft": false,
+      "base_branch": "main",
+      "source_sha": "e62f9ebda6240195fa18a9c471944efa045ff306",
+      "merge_admitted": false
+    },
+    {
+      "number": 1995,
+      "state": "OPEN",
+      "draft": false,
+      "base_branch": "main",
+      "source_sha": "2bd6d0972ab9f0f252c298ac97d2e44138772636",
+      "merge_admitted": false
+    },
+    {
+      "number": 1997,
+      "state": "OPEN",
+      "draft": true,
+      "base_branch": "main",
+      "source_sha": "e021fb05a08e684eee073250c4ff367d728aa0ae",
+      "merge_admitted": false
+    },
+    {
+      "number": 1998,
+      "state": "OPEN",
+      "draft": false,
+      "base_branch": "main",
+      "source_sha": "e02f9bb042d3353a325ab924699c2c0884fb5f21",
+      "merge_admitted": false
+    },
+    {
+      "number": 1999,
+      "state": "OPEN",
+      "draft": true,
+      "base_branch": "main",
+      "source_sha": "ba11b49cb298bc9ab7e96b24d849440b8f210a98",
+      "merge_admitted": false
+    },
+    {
+      "number": 2000,
+      "state": "OPEN",
+      "draft": false,
+      "base_branch": "main",
+      "source_sha": "bd0b066cbb75cf3b520a92e317a23512fc59b4ec",
+      "merge_admitted": false
+    },
+    {
+      "number": 2001,
+      "state": "OPEN",
+      "draft": false,
+      "base_branch": "main",
+      "source_sha": "c138fb5c0a7610399d636440013694fc8e4c9ceb",
+      "merge_admitted": false
+    },
+    {
+      "number": 2002,
+      "state": "OPEN",
+      "draft": true,
+      "base_branch": "main",
+      "source_sha": "6b677428e3a96bd1491f8e54f5ba22340941ce80",
+      "merge_admitted": false
+    },
+    {
+      "number": 2003,
+      "state": "OPEN",
+      "draft": false,
+      "base_branch": "main",
+      "source_sha": "735198b63e9efa137aa07eb382c65b34dab5b0f7",
+      "merge_admitted": false
+    },
+    {
+      "number": 2004,
+      "state": "OPEN",
+      "draft": false,
+      "base_branch": "main",
+      "source_sha": "381a98e8d200214d6db4a60830e83981db88cb7d",
+      "merge_admitted": false
+    },
+    {
+      "number": 2005,
+      "state": "OPEN",
+      "draft": true,
+      "base_branch": "feat/mip-wave-pulse-measured-20261014",
+      "source_sha": "349de249fddb98357f709219443a177643a401b4",
+      "merge_admitted": false
+    },
+    {
+      "number": 2006,
+      "state": "OPEN",
+      "draft": false,
+      "base_branch": "main",
+      "source_sha": "1694b1407e238824e05ba9fd2b784f053e4d5076",
+      "merge_admitted": false,
+      "source_sha_role": "PRE_RECEIVER_INPUT_SHA_HISTORICAL",
+      "live_status_readback": "2026-10-15T13:23:09Z",
+      "live_mergeable_state": "blocked"
+    },
+    {
+      "number": 2007,
+      "state": "OPEN",
+      "draft": true,
+      "base_branch": "main",
+      "source_sha": "cdad1cbcb68490104277c87a1d2b63234a699e30",
+      "merge_admitted": false
+    },
+    {
+      "number": 1979,
+      "state": "OPEN",
+      "draft": false,
+      "base_branch": "main",
+      "source_sha": "5bcd24751e9a42a2716a91b77287f1b0aed991ad",
+      "merge_admitted": false
+    },
+    {
+      "number": 1980,
+      "state": "OPEN",
+      "draft": false,
+      "base_branch": "main",
+      "source_sha": "54bf3e171985c33ac326822f443fc5acd75a7082",
+      "merge_admitted": false
+    },
+    {
+      "number": 1963,
+      "state": "OPEN",
+      "draft": false,
+      "base_branch": "main",
+      "source_sha": "f387b308e98d8f19aade9164d1099f76e6926177",
+      "merge_admitted": false
+    }
+  ],
+  "issue_owners": {
+    "security": 1738,
+    "admission": 1860,
+    "bd_ldab": 1929,
+    "mission_control": 1978,
+    "coverage": 1991,
+    "feedback_epoch": 1877,
+    "review_debt": 1944,
+    "handover_pr": 2006
+  },
+  "metric_baselines": {
+    "main_combined": {
+      "sha": "85dad8fbdab530d40e6ccf2f664c455f89454aad",
+      "covered": 21391,
+      "eligible": 39139,
+      "cohort_files": 299
+    },
+    "main_statement": {
+      "covered": 17158,
+      "eligible": 30815
+    },
+    "main_branch": {
+      "covered": 4233,
+      "eligible": 8324
+    },
+    "historic_b9_diff": {
+      "sha": "e6576177f802ed3b55ec4cd38d03d384343ab7d1",
+      "covered": 266,
+      "eligible": 291
+    },
+    "new_scope_matched_gain": null,
+    "distinct_bd_roots_opened": null,
+    "distinct_bd_roots_closed": null,
+    "accepted_rex_count": null,
+    "authenticated_crew_launch_count": null
+  },
+  "exact_head_1989": {
+    "sha": "7c93c5d54e5e790f0066cfbe79e5416508262ebb",
+    "full_ci": {
+      "run_id": 38729175805,
+      "conclusion": "FAILURE",
+      "quality_job_id": 116402415506,
+      "quality": "SUCCESS",
+      "security_job_id": 116402415753,
+      "security": "FAILURE",
+      "safety_exit": 64
+    },
+    "a10": {
+      "run_id": 38729176052,
+      "conclusion": "FAILURE"
+    },
+    "b0": {
+      "run_id": 38729175967,
+      "conclusion": "SUCCESS",
+      "artifact_id": 11968984117,
+      "artifact_zip_sha256": "329544ed9f8a797deb38d23515ec3d4278c2acaca30a6904d00618d8fa763684",
+      "internal_coverage_reconciled": false
+    },
+    "governance": {
+      "run_id": 38729176310,
+      "conclusion": "SUCCESS"
+    },
+    "bandit": {
+      "run_id": 38729176049,
+      "conclusion": "SUCCESS"
+    },
+    "statistical": {
+      "run_id": 38729176145,
+      "conclusion": "SUCCESS"
+    },
+    "approved_review_observed": false
+  },
+  "historical_safety_scan": {
+    "run_id": 38690384002,
+    "artifact_id": 11952013323,
+    "scanner": "Safety 3.8.1",
+    "packages_scanned": 47,
+    "findings": [
+      {
+        "package": "nltk",
+        "version": "3.10.3",
+        "cve": "CVE-2026-81726"
+      },
+      {
+        "package": "setuptools",
+        "version": "79.0.1",
+        "cve": "CVE-2026-59890"
+      }
+    ],
+    "current_head_finding_verified": false
+  },
+  "debug_rerun": {
+    "user_reported": true,
+    "screen_capture_shared": true,
+    "verified_run_attempt_increment": true,
+    "sampled_failed_run_ids": [
+      38729175805,
+      38729176052,
+      38729033767,
+      38729033600,
+      38727561975,
+      38727562105,
+      38711598429,
+      38702629763,
+      38650508731,
+      38708289667
+    ],
+    "sampled_attempts_at_readback": 1,
+    "debug_markers_verified": false,
+    "terminal_rerun_result": "Both named workflow runs still FAIL at latest attempts",
+    "verified_attempts_by_run": {
+      "38690911565": 2,
+      "38690911605": 3
+    }
+  },
+  "restrictions": {
+    "no_merge": true,
+    "no_waiver": true,
+    "no_auto_a10_allowlist": true,
+    "no_inferred_approval": true,
+    "no_crew_launch_inference": true,
+    "unknown_not_zero": true,
+    "cross_sha_proof_substitution": false
+  },
+  "source_readback_notes": [
+    "Snapshot collected over multiple calls, not atomic",
+    "Publication commits move #2006 head after this snapshot; refresh branch",
+    "Some PRs are technically mergeable but admission withheld",
+    "Source/pr status may move before next receiver opens",
+    "PR #2006 flipped from draft at initial census to OPEN NON-DRAFT at 13:23Z; live mergeable_state=blocked, no admission",
+    "Later GitHub verification: historical ff385c7e source Full CI run #38690911565 now terminal FAILURE attempt 2 and A10 #38690911605 terminal FAILURE attempt 3; debug markers not verified"
+  ],
+  "receiver_paths": {
+    "handover": "handover/mip_20261015/LOSSLESS_OPERATIONS_HANDOVER_v1.md",
+    "dropin": "handover/mip_20261015/DROPIN.md",
+    "machine_snapshot": "handover/mip_20261015/state_snapshot_v1.json",
+    "protocol": "tools/handover_v2/process_spec.json"
+  },
+  "historical_bd_3pulse": {
+    "classification": "HISTORICAL_RECONCILED",
+    "pr_number": 1989,
+    "source_head_sha": "ff385c7e257a38b5b215764de17f7680e9c73e74",
+    "superseded_by_head": "7c93c5d54e5e790f0066cfbe79e5416508262ebb",
+    "midflight_readback": {
+      "governance": "PASS",
+      "bandit": "PASS",
+      "a10": "FAIL",
+      "full_ci": "IN_PROGRESS",
+      "format": "IN_PROGRESS",
+      "canonical_b0": "QUEUED"
+    },
+    "terminal_runs": [
+      {
+        "id": 38690911366,
+        "type": "Governance",
+        "attempt": 1,
+        "conclusion": "SUCCESS"
+      },
+      {
+        "id": 38690911441,
+        "type": "Bandit Disjoint Census",
+        "attempt": 1,
+        "conclusion": "SUCCESS"
+      },
+      {
+        "id": 38690911605,
+        "type": "A10",
+        "attempt": 3,
+        "conclusion": "FAILURE",
+        "failed_job_id": 116442630825
+      },
+      {
+        "id": 38690911565,
+        "type": "Full CI",
+        "attempt": 2,
+        "conclusion": "FAILURE",
+        "failed_quality_job_id": 116442248459,
+        "failed_security_job_id": 116442247871,
+        "downstream_summary_job_id": 116445153784
+      },
+      {
+        "id": 38690911424,
+        "type": "Format Check",
+        "attempt": 1,
+        "conclusion": "SUCCESS"
+      },
+      {
+        "id": 38690911464,
+        "type": "Canonical B0",
+        "attempt": 1,
+        "conclusion": "SUCCESS"
+      }
+    ],
+    "issues": [
+      {
+        "id": 1864,
+        "lane": "DAB T1 Tooling",
+        "comment_id": 6185779264,
+        "state": "OPEN"
+      },
+      {
+        "id": 1865,
+        "lane": "DAB T2 Python matrix",
+        "comment_id": 6185779844,
+        "state": "OPEN"
+      },
+      {
+        "id": 1866,
+        "lane": "DAB T3 Canonical coverage",
+        "comment_id": 6185780450,
+        "state": "OPEN"
+      },
+      {
+        "id": 1867,
+        "lane": "DAB T4 Proof propagation",
+        "comment_id": 6185781048,
+        "state": "OPEN"
+      },
+      {
+        "id": 1868,
+        "lane": "DAB R1 Ratchet false-green",
+        "comment_id": 6185781612,
+        "state": "OPEN"
+      }
+    ],
+    "local_git_dns_failure": "HISTORICAL_EXECUTION_ENVIRONMENT_ONLY",
+    "local_black_toolchain_unavailable": "HISTORICAL_EXECUTION_ENVIRONMENT_ONLY",
+    "confirmed_root_closure": false,
+    "distinct_roots_opened": null,
+    "distinct_roots_closed": null,
+    "new_comparable_coverage_gain": null,
+    "authenticated_worker_returns": null,
+    "acceptance": "HISTORICAL_ONLY_NOT_CURRENT_HEAD_PROOF"
+  }
+}

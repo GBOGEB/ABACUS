@@ -1,0 +1,328 @@
+name: MIP Wave Pulse Native Testflight
+on:
+  pull_request:
+    paths:
+      - 'tools/mip2/mip_wave_pulse.py'
+      - 'tools/mip2/mip_wave_history.py'
+      - 'tests/test_mip_wave_history.py'
+      - 'tools/mip2/mip_federation_census.py'
+      - 'tools/mip2/mip_native_fanout.py'
+      - 'tests/test_mip_native_fanout.py'
+      - 'tests/test_mip_federation_census.py'
+      - 'tests/test_mip_wave_pulse.py'
+      - '.github/workflows/mip-wave-pulse-testflight.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+  actions: read
+jobs:
+  native-wave:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065
+        with:
+          python-version: '3.11'
+      - name: Syntax and wave regression tests
+        run: |
+          python -m py_compile \
+            tools/mip2/mip_wave_pulse.py \
+            tests/test_mip_wave_pulse.py
+          python -m unittest discover -s tests -p test_mip_wave_pulse.py -v
+      - name: Execute producer on synthetic nonclosure control
+        env:
+          SOURCE_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+        run: |
+          python - <<'PY'
+          import json, os
+          from pathlib import Path
+          s=os.environ["SOURCE_SHA"]
+          payload={"schema":"abacus.mip.wave-pulse.v1",
+                   "repository":"GBOGEB/ABACUS",
+                   "base_sha":s,"head_sha":s,"wave_id":"CI-NEGATIVE-CONTROL",
+                   "roots":[{"root_id":"EXAMPLE","owner":"CI",
+                             "status":"OPEN","fingerprints":["SYNTHETIC"]}],
+                   "workers":[],"tests":{"passed":6,"failed":0,"skipped":0},
+                   "first_reds":[],"admission":{"merge_admitted":False}}
+          Path("wave-input.json").write_text(json.dumps(payload))
+          PY
+          python tools/mip2/mip_wave_pulse.py \
+            --input wave-input.json \
+            --output-dir wave-output
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          p=json.loads(Path("wave-output/mip_wave_pulse.json").read_text())
+          b=json.loads(Path("wave-output/mip_backlog_delta.json").read_text())
+          assert p["disposition"]=="P0_HOLD"
+          assert p["coverage"]["status"]=="UNKNOWN"
+          assert b["formal_verified_closures"]==0
+          PY
+      - name: Publish clearly labeled wave-pulse summary
+        run: |
+          python - <<'PY'
+          import json
+          import os
+          from pathlib import Path
+
+          pulse = json.loads(
+              Path("wave-output/mip_wave_pulse.json").read_text()
+          )
+          backlog = json.loads(
+              Path("wave-output/mip_backlog_delta.json").read_text()
+          )
+          # Synthetic CI fixture, never a live BD wave.
+          counts = backlog["distinct_root_counts"]
+          rows = [
+              "## MIP wave/pulse — SYNTHETIC CONTROL (not operational)",
+              "",
+              "> Synthetic fixture. No worker launch or accepted REX receipt.",
+              "> No verified closure, coverage gain or merge approval.",
+              "",
+              "| Signal | Value |",
+              "| --- | --- |",
+              f"| Wave ID | {pulse['wave_id']} |",
+              "| Iteration ID | UNKNOWN — not recorded by this contract |",
+              f"| Head SHA | {pulse['head_sha']} |",
+              f"| CI run | {os.environ.get('GITHUB_RUN_ID', 'UNKNOWN')} |",
+              f"| Synthetic tests | {pulse['tests']['passed']} pass, "
+              f"{pulse['tests']['failed']} fail, "
+              f"{pulse['tests']['skipped']} skip |",
+              f"| Coverage comparison | {pulse['coverage']['status']} |",
+              f"| Synthetic roots | {counts['open']} OPEN |",
+              f"| Closure credit | {backlog['closure_disposition']} |",
+              f"| Admission | {pulse['disposition']} |",
+              "",
+              "Machine-readable receipts: workflow artifact",
+              "mip-wave-pulse-synthetic-control.",
+              "Actual regression-test outcome is the native job result,",
+              "not the synthetic payload's test counts.",
+              "",
+          ]
+          summary = chr(10).join(rows)
+          Path("wave-output/mip_wave_pulse_summary.md").write_text(
+              summary, encoding="utf-8"
+          )
+          with Path(os.environ["GITHUB_STEP_SUMMARY"]).open(
+              "a", encoding="utf-8"
+          ) as output:
+              output.write(summary)
+          PY
+      - name: Test and display separate synthetic pulse iterations
+        env:
+          SOURCE_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+        run: |
+          python -m unittest discover -s tests \
+            -p test_mip_wave_history.py -v
+          python - <<'PY'
+          import hashlib
+          import json
+          import os
+          import subprocess
+          import sys
+          from pathlib import Path
+
+          root = Path("wave-output")
+          source = json.loads(Path("wave-input.json").read_text())
+          source["roots"][0]["status"] = "DEFERRED"
+          second_input = root / "pulse02-input.json"
+          second_input.write_text(json.dumps(source))
+          subprocess.run([
+              sys.executable, "tools/mip2/mip_wave_pulse.py",
+              "--input", str(second_input),
+              "--output-dir", str(root / "p02"),
+          ], check=True)
+          records = []
+          paths = [
+              root / "mip_wave_pulse.json",
+              root / "p02" / "mip_wave_pulse.json",
+          ]
+          for index, path in enumerate(paths, 1):
+              records.append({
+                  "wave_id": "CI-NEGATIVE-CONTROL",
+                  "iteration_id": "I01",
+                  "pulse_id": f"P{index:02d}",
+                  "sequence": index,
+                  "source_kind": "SYNTHETIC_CONTROL",
+                  "run_id": int(os.environ["GITHUB_RUN_ID"]),
+                  "job_id": None,
+                  "head_sha": os.environ["SOURCE_SHA"],
+                  "receipt_path": str(path.relative_to(root)),
+                  "receipt_sha256": hashlib.sha256(
+                      path.read_bytes()
+                  ).hexdigest(),
+              })
+          manifest = {
+              "schema": "abacus.mip.pulse-history-input.v1",
+              "repository": "GBOGEB/ABACUS",
+              "records": records,
+          }
+          (root / "pulse-history-manifest.json").write_text(
+              json.dumps(manifest, sort_keys=True, indent=2)
+          )
+          PY
+          python tools/mip2/mip_wave_history.py \
+            --manifest wave-output/pulse-history-manifest.json \
+            --artifact-root wave-output \
+            --output-dir wave-output/history
+          cat wave-output/history/mip_wave_history.md \
+            >> "$GITHUB_STEP_SUMMARY"
+      - name: Measure SHA-bound history module branch coverage
+        env:
+          SOURCE_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+        run: |
+          python -m pip install coverage==7.16.2
+          python -m coverage run --branch \
+            --include=tools/mip2/mip_wave_history.py \
+            -m unittest discover -s tests \
+            -p test_mip_wave_history.py -v
+          python -m coverage json \
+            --include=tools/mip2/mip_wave_history.py \
+            -o wave-output/history/native-history-coverage.json
+          python - <<'PY'
+          import json
+          import os
+          from pathlib import Path
+          from tools.mip2 import mip_wave_history as history
+
+          report = json.loads(
+              Path("wave-output/history/native-history-coverage.json")
+              .read_text()
+          )
+          counts = history.validate_native_module_coverage(
+              report, "tools/mip2/mip_wave_history.py"
+          )
+          totals = report["totals"]
+          covered = counts["covered"]
+          eligible = counts["eligible"]
+          receipt = {
+              "schema": "abacus.mip.history-coverage.v1",
+              "source_sha": os.environ["SOURCE_SHA"],
+              "run_id": int(os.environ["GITHUB_RUN_ID"]),
+              "covered_statements": totals["covered_lines"],
+              "eligible_statements": totals["num_statements"],
+              "covered_branches": totals["covered_branches"],
+              "eligible_branches": totals["num_branches"],
+              "covered_combined": covered,
+              "eligible_combined": eligible,
+              "coverage_percent": round(100 * covered / eligible, 6),
+              "status": "MEASURED_PR_SCOPE_NOT_MAIN",
+          }
+          Path("wave-output/history/native-history-coverage-receipt.json"
+          ).write_text(json.dumps(receipt, sort_keys=True, indent=2))
+          with Path(os.environ["GITHUB_STEP_SUMMARY"]).open("a") as output:
+              output.write(
+                  "\\n### Native history-module coverage\\n"
+                  f"Source HEAD: {receipt['source_sha']}\\n\\n"
+                  f"Statements: {totals['covered_lines']}/"
+                  f"{totals['num_statements']}\\n\\n"
+                  f"Branches: {totals['covered_branches']}/"
+                  f"{totals['num_branches']}\\n\\n"
+                  f"Combined: {covered}/{eligible} "
+                  f"({receipt['coverage_percent']}%)\\n\\n"
+                  "This is producer scope, not main coverage.\\n"
+              )
+          PY
+      - name: Federation breadth contract and read-only census
+        env:
+          SOURCE_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          python -m unittest discover -s tests \
+            -p test_mip_federation_census.py -v
+          export CODEX_SHA
+          CODEX_SHA="$(gh api repos/GBOGEB/CODEX/branches/main \
+            --jq .commit.sha)"
+          python - <<'PY'
+          import json
+          import os
+          from pathlib import Path
+
+          manifest = {
+              "schema": "abacus.mip.federation-manifest.v1",
+              "repositories": [
+                  {"repository": "GBOGEB/ABACUS",
+                   "head_sha": os.environ["SOURCE_SHA"],
+                   "evidence": []},
+                  {"repository": "GBOGEB/CODEX",
+                   "head_sha": os.environ["CODEX_SHA"],
+                   "evidence": []},
+              ],
+          }
+          Path("wave-output/federation-input.json").write_text(
+              json.dumps(manifest, sort_keys=True, indent=2)
+          )
+          PY
+          python tools/mip2/mip_federation_census.py \
+            --input wave-output/federation-input.json \
+            --artifact-root wave-output \
+            --output-dir wave-output/federation
+          cat wave-output/federation/mip_federation_census.md \
+            >> "$GITHUB_STEP_SUMMARY"
+      - name: Native fan-out negative-control tests
+        run: |
+          python -m py_compile tools/mip2/mip_native_fanout.py
+          python -m unittest discover -s tests \
+            -p test_mip_native_fanout.py -v
+      - name: Fetch retained native GitHub run/job metadata
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          mkdir -p test_reports/native-fanout/input
+          for id in 38703698730 38708850371 38710428385; do
+            gh api "repos/GBOGEB/ABACUS/actions/runs/$id" \
+              > "test_reports/native-fanout/input/$id-run.json"
+            gh api "repos/GBOGEB/ABACUS/actions/runs/$id/jobs?per_page=100" \
+              > "test_reports/native-fanout/input/$id-jobs.json"
+          done
+      - name: Generate native metadata telemetry and HTML
+        run: |
+          input=test_reports/native-fanout/input
+          reports=test_reports/native-fanout/report
+          for pair in '38703698730:38708850371:W1-W2' \
+                      '38708850371:38710428385:W2-W3'; do
+            IFS=: read -r previous current name <<< "$pair"
+            python tools/mip2/mip_native_fanout.py \
+              --previous-run "$input/$previous-run.json" \
+              --previous-jobs "$input/$previous-jobs.json" \
+              --current-run "$input/$current-run.json" \
+              --current-jobs "$input/$current-jobs.json" \
+              --output-dir "$reports/$name"
+            cat "$reports/$name/mip_native_fanout.md" \
+              >> "$GITHUB_STEP_SUMMARY"
+          done
+      - name: Upload separately labeled retained-native wave telemetry
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: mip-wave-retained-native-github-api-metadata
+          path: test_reports/native-fanout/
+          if-no-files-found: error
+      - name: Upload synthetic-only wave controls
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: mip-wave-pulse-synthetic-control
+          path: |
+            wave-input.json
+            wave-output/mip_wave_pulse.json
+            wave-output/mip_backlog_delta.json
+            wave-output/mip_wave_pulse_summary.md
+            wave-output/pulse02-input.json
+            wave-output/p02/
+          if-no-files-found: error
+      - name: Upload hash-verified local pulse history
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: mip-wave-history-local-hash
+          path: |
+            wave-output/history/
+            wave-output/pulse-history-manifest.json
+          if-no-files-found: error
+      - name: Upload read-only federation census including HTML
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: mip-federation-read-only-census
+          path: wave-output/federation/
+          if-no-files-found: error

@@ -1,0 +1,86 @@
+{
+  "schema": "char.bd.pulse.cbd00-cbd01/v1",
+  "readback_date": "2026-10-16",
+  "based_on": "GBOGEB/ABACUS#2032 docs/ci/CHAR_BD_EXECUTION_v1.yaml",
+  "state": "OBSERVED_AND_ATTRIBUTED",
+  "default_branch_sha": "54da377cf82a358ac97903ecde0270c975b8fcc1",
+  "open_prs": 50,
+  "admission": "HOLD",
+  "effective_rules": {
+    "rule_id": 24494381,
+    "required_approvals": 0,
+    "required_checks": "ABSENT"
+  },
+  "fanout": {
+    "concurrency_limit_proposed": 3,
+    "dispatched_workers_verified": 0,
+    "active_remote_sessions_verified": 0
+  },
+  "canonical_roots": [
+    {
+      "id": "MATPLOTLIB_PY39",
+      "owner_pr": 2029,
+      "exact_sha": "f7c4a7da7002474b3fa682147796021d94521429",
+      "evidence": "Python 3.9 macOS, Windows, Ubuntu pip rejects matplotlib>=3.10.0,<3.11.0",
+      "manifestations": 3,
+      "repair_dependency": "Choose source-owned Python3.9 marker without duplicating #2024/#2026"
+    },
+    {
+      "id": "COVERAGE_MIXED_MODE",
+      "owner_pr": 2030,
+      "exact_sha": "f56dddc7e13d67b65712691332ceb180d100c64a",
+      "evidence": "pytest-cov coverage.exceptions.DataError mixing statement and branch data",
+      "manifestations": 1,
+      "repair_dependency": "Harmonize branch measurement or isolate data paths; preserve eligible denominator"
+    },
+    {
+      "id": "SECURITY_SAFETY",
+      "owner_pr": 2027,
+      "exact_sha": "8cb4d742ad046ab688d691f4cc68c4171ad4308f",
+      "evidence": "Safety exit 64 with setuptools 84.0.0 installed; unresolved security findings",
+      "manifestations": null,
+      "repair_dependency": "Native scanner output and approved disposition"
+    },
+    {
+      "id": "A10_GOVERNANCE",
+      "owner_pr": 1995,
+      "exact_sha": "59d3bcc07caf7f3678f7df7b2f618a9605c83b1a",
+      "evidence": "Workflow classification, stale inventory, two unresolved review threads",
+      "manifestations": null,
+      "repair_dependency": "Canonical generator and authorized security reviewer"
+    },
+    {
+      "id": "W70_SOURCE_COVERAGE",
+      "owner_pr": 1997,
+      "exact_sha": "d548c28c47cff6b450c5f28712b123ae1dec4530",
+      "evidence": "Native 133/133 lines, 17/18 branches, 23/23 tests at exact head",
+      "manifestations": null,
+      "repair_dependency": "Separate broad CI admission roots; no repeat coverage repair"
+    }
+  ],
+  "metrics": {
+    "roots_newly_certified_ash": 0,
+    "observed_minimum_two_actionable_first_reds": 2,
+    "unique_roots_population": null,
+    "qualifying_root_burndown": null,
+    "matched_repository_coverage_gain": null,
+    "queue_p95": null,
+    "authenticated_worker_throughput": null
+  },
+  "stages": {
+    "CBD00": "PARTIAL_CURRENT_CENSUS",
+    "CBD01": "FIVE_ROOT_FAMILY_ATTRIBUTION_NOT_FULL_FLEET",
+    "CBD02": "HOLD_A10",
+    "CBD03": "PY_MATRIX_CANDIDATE_NATIVE_PASS_SECURITY_HOLD",
+    "CBD04": "DUPLICATE_CANDIDATE",
+    "CBD05": "PY39_RESOLVER_RED",
+    "CBD06": "C1_INSTRUMENTATION_RED",
+    "CBD07": "W70_NATIVE_PASS",
+    "CBD08": "MISSIONCONTROL_REPAIR_HOLD",
+    "CBD09": "H1_H4_AUTHENTICATION_HOLD"
+  },
+  "no_authority_transfer": true,
+  "no_merge": true,
+  "no_branch_prune": true,
+  "no_security_waiver": true
+}
