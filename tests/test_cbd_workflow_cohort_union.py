@@ -4,6 +4,7 @@ import copy
 import json
 import sys
 import unittest
+from unittest import mock
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -124,7 +125,7 @@ class CohortUnionTests(unittest.TestCase):
         pulses = rec["ingestion_pulses"]
         self.assertEqual([12, 49, 78], [p["declared_rows_cumulative"] for p in pulses])
         self.assertEqual([6, 12, 19], [p["distinct_failed_pr_heads_cumulative"] for p in pulses])
-        self.assertEqual([12, 37, 66], [p["distinct_run_ids_cumulative"] for p in pulses])
+        self.assertEqual([12, 40, 66], [p["distinct_run_ids_cumulative"] for p in pulses])
         self.assertTrue(all(p["kind"] == "SOURCE_INGESTION_NOT_TEMPORAL_IMPROVEMENT" for p in pulses))
         self.assertEqual(rec["distinct_manifested_pr_heads"], 20)
         self.assertEqual(rec["manifested_zero_failure_prs"], [2033])
@@ -180,6 +181,23 @@ class CohortUnionTests(unittest.TestCase):
         row["url"] = "https://github.com/GBOGEB/ABACUS/actions/runs/" + str(row["run_id"])
         with self.assertRaisesRegex(ValueError, "incompatible pull-head"):
             produce_cohorts([forged])
+
+
+    def test_duplicate_run_different_conclusion_fails_closed(self):
+        """A reclassified run with the same attempt cannot override the source."""
+        original = snapshots()[0]
+        forged = copy.deepcopy(original)
+        forged["observations"][0]["conclusion"] = "success"
+        with self.assertRaisesRegex(ValueError, "conflicting run-attempt provenance"):
+            produce_cohorts([original, forged])
+
+    def test_secondary_run_identity_guard_survives_validator_bypass(self):
+        """Even a defective upstream validator cannot admit boolean run IDs."""
+        original = snapshots()[0]
+        original["observations"][0]["run_id"] = True
+        with mock.patch("cbd_workflow_cohort_union.validate", return_value=original):
+            with self.assertRaisesRegex(ValueError, "run/attempt identities"):
+                produce_cohorts([original])
 
 
 if __name__ == "__main__":
