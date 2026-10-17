@@ -13,7 +13,7 @@ import re
 from collections import defaultdict
 from pathlib import Path
 
-SHA = re.compile(r"[a-f0-9]{40}\\Z")
+SHA = re.compile(r"[a-f0-9]{40}")
 EXPECTED_AUTHORITY = {
     "merge_admission": "HOLD",
     "security_waiver": False,
