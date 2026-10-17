@@ -382,8 +382,14 @@
       "disposition": "keep"
     },
     {
-      "pattern": "^mcw-artifact-cold-build\\.yml$",
-      "cluster": "specialised",
+      "pattern": "^code-purple-dashboard-v31\\.yml$",
+      "cluster": "runtime_governance",
+      "lifecycle": "pr_domain",
+      "disposition": "keep"
+    },
+    {
+      "pattern": "^code-purple-sut-gui\\.yml$",
+      "cluster": "runtime_governance",
       "lifecycle": "pr_domain",
       "disposition": "keep"
     }
