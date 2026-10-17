@@ -61,7 +61,7 @@ def test_inverted_skip_timestamp_does_not_go_negative(data):
 def test_wrong_head_for_native_run_rejected(data):
     graph, timeline = data
     timeline[0]["runs"][0]["source_head_sha"] = "f" * 40
-    with pytest.raises(ValueError, match="run head"):
+    with pytest.raises(ValueError, match="temporal run changed exact PR head"):
         temporal.augment(graph, timeline)
 
 
