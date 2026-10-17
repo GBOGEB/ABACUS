@@ -21,7 +21,6 @@
       "run_created_at": "2026-10-16T19:55:57Z",
       "run_started_at": "2026-10-17T09:32:21Z",
       "run_updated_at": "2026-10-17T10:00:54Z",
-      "run_scheduling_delay_ms": 48984000,
       "retrieved_current_jobs": 19,
       "expected_current_jobs": 19,
       "jobs": [
@@ -272,7 +271,9 @@
           "runtime_ms": 5000,
           "start_lag_from_run_start_ms": 1708000
         }
-      ]
+      ],
+      "creation_to_current_attempt_start_ms": 48984000,
+      "actual_runner_queue_wait_ms": null
     },
     {
       "pr": 2082,
@@ -286,7 +287,6 @@
       "run_created_at": "2026-10-16T19:44:24Z",
       "run_started_at": "2026-10-16T19:44:24Z",
       "run_updated_at": "2026-10-16T19:52:17Z",
-      "run_scheduling_delay_ms": 0,
       "retrieved_current_jobs": 19,
       "expected_current_jobs": 19,
       "jobs": [
@@ -537,7 +537,9 @@
           "runtime_ms": 0,
           "start_lag_from_run_start_ms": 467000
         }
-      ]
+      ],
+      "creation_to_current_attempt_start_ms": 0,
+      "actual_runner_queue_wait_ms": null
     },
     {
       "pr": 2080,
@@ -551,7 +553,6 @@
       "run_created_at": "2026-10-16T19:30:30Z",
       "run_started_at": "2026-10-16T19:30:30Z",
       "run_updated_at": "2026-10-16T19:38:53Z",
-      "run_scheduling_delay_ms": 0,
       "retrieved_current_jobs": 19,
       "expected_current_jobs": 19,
       "jobs": [
@@ -802,7 +803,9 @@
           "runtime_ms": null,
           "start_lag_from_run_start_ms": 498000
         }
-      ]
+      ],
+      "creation_to_current_attempt_start_ms": 0,
+      "actual_runner_queue_wait_ms": null
     },
     {
       "pr": 2077,
@@ -816,7 +819,6 @@
       "run_created_at": "2026-10-16T20:19:27Z",
       "run_started_at": "2026-10-16T20:19:27Z",
       "run_updated_at": "2026-10-16T20:51:03Z",
-      "run_scheduling_delay_ms": 0,
       "retrieved_current_jobs": 19,
       "expected_current_jobs": 19,
       "jobs": [
@@ -1067,7 +1069,9 @@
           "runtime_ms": 0,
           "start_lag_from_run_start_ms": 1631000
         }
-      ]
+      ],
+      "creation_to_current_attempt_start_ms": 0,
+      "actual_runner_queue_wait_ms": null
     },
     {
       "pr": 2076,
@@ -1081,7 +1085,6 @@
       "run_created_at": "2026-10-16T20:39:25Z",
       "run_started_at": "2026-10-16T20:39:25Z",
       "run_updated_at": "2026-10-16T20:58:00Z",
-      "run_scheduling_delay_ms": 0,
       "retrieved_current_jobs": 19,
       "expected_current_jobs": 19,
       "jobs": [
@@ -1332,7 +1335,9 @@
           "runtime_ms": null,
           "start_lag_from_run_start_ms": 1108000
         }
-      ]
+      ],
+      "creation_to_current_attempt_start_ms": 0,
+      "actual_runner_queue_wait_ms": null
     },
     {
       "pr": 2075,
@@ -1346,7 +1351,6 @@
       "run_created_at": "2026-10-16T16:25:29Z",
       "run_started_at": "2026-10-16T17:36:14Z",
       "run_updated_at": "2026-10-16T17:42:27Z",
-      "run_scheduling_delay_ms": 4245000,
       "retrieved_current_jobs": 19,
       "expected_current_jobs": 19,
       "jobs": [
@@ -1597,7 +1601,9 @@
           "runtime_ms": null,
           "start_lag_from_run_start_ms": 363000
         }
-      ]
+      ],
+      "creation_to_current_attempt_start_ms": 4245000,
+      "actual_runner_queue_wait_ms": null
     },
     {
       "pr": 2073,
@@ -1611,7 +1617,6 @@
       "run_created_at": "2026-10-16T15:41:33Z",
       "run_started_at": "2026-10-16T15:41:33Z",
       "run_updated_at": "2026-10-16T15:52:26Z",
-      "run_scheduling_delay_ms": 0,
       "retrieved_current_jobs": 19,
       "expected_current_jobs": 19,
       "jobs": [
@@ -1862,7 +1867,9 @@
           "runtime_ms": 0,
           "start_lag_from_run_start_ms": 644000
         }
-      ]
+      ],
+      "creation_to_current_attempt_start_ms": 0,
+      "actual_runner_queue_wait_ms": null
     },
     {
       "pr": 2072,
@@ -1876,7 +1883,6 @@
       "run_created_at": "2026-10-16T15:08:37Z",
       "run_started_at": "2026-10-16T18:09:18Z",
       "run_updated_at": "2026-10-16T18:10:10Z",
-      "run_scheduling_delay_ms": 10841000,
       "retrieved_current_jobs": 19,
       "expected_current_jobs": 19,
       "jobs": [
@@ -2127,7 +2133,9 @@
           "runtime_ms": 7000,
           "start_lag_from_run_start_ms": 45000
         }
-      ]
+      ],
+      "creation_to_current_attempt_start_ms": 10841000,
+      "actual_runner_queue_wait_ms": null
     }
   ]
 }
