@@ -1,0 +1,26 @@
+name: DOW W1 Explicit Coverage Contract QA
+on:
+  pull_request:
+    paths:
+      - '.github/workflows/ci-enhanced.yml'
+      - 'tests/test_dow_coverage_mode_contract.py'
+      - '.github/workflows/dow-w1-coverage-contract-qa.yml'
+permissions:
+  contents: read
+jobs:
+  coverage-contract:
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: ['3.10', '3.11', '3.12']
+    runs-on: ubuntu-24.04
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v7.0.1
+      - uses: actions/setup-python@v7.0.0
+        with:
+          python-version: ${{ matrix.python-version }}
+      - name: Install focused harness
+        run: python -m pip install pytest numpy
+      - name: Verify DOW coverage configuration and failure propagation
+        run: python -m pytest -q tests/test_dow_coverage_mode_contract.py
