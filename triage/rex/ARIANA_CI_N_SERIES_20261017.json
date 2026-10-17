@@ -304,7 +304,10 @@
     "forecast_admission": "HOLD_UNTIL_INDEPENDENT_GATES_PASS",
     "remote_keb_qps_acceptance_prediction": "NOT_PROVEN_FROM_LOCAL_JOIN",
     "observed": null,
-    "scoring": null
+    "scoring": null,
+    "forecast_frozen_at": "2026-10-17T16:13:37Z",
+    "freeze_url": "https://github.com/GBOGEB/ABACUS/issues/1929#issuecomment-6236426822",
+    "retrospective_probability_backfill_allowed": false
   },
   "calibration": {
     "minimum_independent_comparable_forecasts": 10,
