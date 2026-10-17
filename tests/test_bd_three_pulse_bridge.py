@@ -12,19 +12,19 @@ m = importlib.util.module_from_spec(SPEC)
 SPEC.loader.exec_module(m)
 
 
-def pulse(i):
+def pulse(i, *, bandit_count=0):
     sha = str(i) * 40
     run_id, job_id = 100 + i, 200 + i
     scope = {
         "repository": "GBOGEB/ABACUS",
         "head_sha": sha,
-        "scan_configuration": "bandit-full-v1",
+        "scan_configuration": "config-v1",
         "run_id": run_id,
         "job_id": job_id,
-        "evidence_url": f"https://github.com/GBOGEB/ABACUS/actions/runs/{run_id}/job/{job_id}",
+        "evidence_url": f"https://github.com/GBOGEB/ABACUS/actions/runs/{run_id}",
     }
     roots = []
-    for j in range(i):
+    for j in range(bandit_count):
         roots.append(
             {
                 "root_id": f"BD-{i:012x}{j:012x}",
@@ -58,8 +58,8 @@ def pulse(i):
             "scan_configuration": "config-v1",
             "evidence_url": f"https://github.com/GBOGEB/ABACUS/actions/runs/{100+i}",
         },
-        "metrics": {"full_bandit_unique": 0, "comparable_delta": None},
-        "roots": [
+        "metrics": {"full_bandit_unique": bandit_count, "comparable_delta": None},
+        "roots": roots + [
             {"root_id": f"CI-{i:024x}", "category": "CI", "fingerprint": None}
         ],
         "merge_admission": "HOLD",
@@ -97,7 +97,7 @@ def bandit_root(row):
 
 
 def test_three_pulses_preserve_unknown_and_are_deterministic():
-    inp = [pulse(i) for i in (1, 2, 3)]
+    inp = [pulse(i, bandit_count=i) for i in (1, 2, 3)]
     a = m.rollup(inp)
     assert a == m.rollup(inp)
     assert [p["bandit_observations"] for p in a["pulses"]] == [1, 2, 3]
@@ -129,6 +129,25 @@ def test_reject_forged_or_ambiguous_claims(change):
     change(rows[1])
     with pytest.raises(ValueError):
         m.rollup(rows)
+
+
+def test_zero_and_nonzero_bandit_fixture_counts_are_source_reconciled():
+    zero = pulse(1)
+    assert zero["metrics"]["full_bandit_unique"] == 0
+    assert all(root["category"] != "BANDIT" for root in zero["roots"])
+    positive = pulse(2, bandit_count=2)
+    assert positive["metrics"]["full_bandit_unique"] == 2
+    observations = [root for root in positive["roots"] if root["category"] == "BANDIT"]
+    assert len(observations) == 2
+    for root in observations:
+        evidence = root["observations"][0]
+        scope = positive["scope"]
+        assert evidence["source_sha"] == scope["head_sha"]
+        assert evidence["scan_configuration"] == scope["scan_configuration"]
+        assert evidence["evidence_url"] == scope["evidence_url"]
+    result = m.rollup([zero, positive, pulse(3)])
+    assert [p["bandit_observations"] for p in result["pulses"]] == [0, 2, 0]
+    assert result["engineering_credit_delta"] == 0
 
 
 def test_reject_duplicate_sha_and_missing_pulse():
@@ -202,7 +221,7 @@ def test_bandit_denominator_999_with_empty_roots_rejected():
     ],
 )
 def test_reject_spoofed_bandit_root_claims(change):
-    rows = [pulse(i) for i in (1, 2, 3)]
+    rows = [pulse(i, bandit_count=i) for i in (1, 2, 3)]
     change(rows[1])
     with pytest.raises(ValueError):
         m.rollup(rows)
@@ -210,6 +229,8 @@ def test_reject_spoofed_bandit_root_claims(change):
 
 def test_ci_root_does_not_inflate_bandit_denominator():
     rows = [pulse(i) for i in (1, 2, 3)]
+    rows[0]["metrics"]["full_bandit_unique"] = 1
+    rows[0]["roots"].append(bandit_root(rows[0]))
     rows[0]["roots"].append(
         {
             "root_id": "CI-fake-but-distinct",
@@ -220,7 +241,7 @@ def test_ci_root_does_not_inflate_bandit_denominator():
     )
     result = m.rollup(rows)
     assert result["pulses"][0]["bandit_observations"] == 1
-    assert result["pulses"][0]["candidate_root_count"] == 2
+    assert result["pulses"][0]["candidate_root_count"] == 3
 
 
 @pytest.mark.parametrize(

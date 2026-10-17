@@ -163,8 +163,13 @@ def rollup(pulses):
         roots = pulse.get("roots")
         if (
             pulse.get("merge_admission") != "HOLD"
+            or pulse.get("security_disposition") != "INDEPENDENT_REVIEW_REQUIRED"
             or pulse.get("authority_transfer") is not False
             or pulse.get("security_waiver") is not False
+            or type(pulse.get("formal_credit_delta")) is not int
+            or pulse["formal_credit_delta"] != 0
+            or type(pulse.get("engineering_credit_delta")) is not int
+            or pulse["engineering_credit_delta"] != 0
         ):
             raise ValueError("authority/admission contract must remain HOLD")
         _validate_root_census(roots, bandit, scope)
