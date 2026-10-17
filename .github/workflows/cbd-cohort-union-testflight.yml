@@ -69,9 +69,10 @@ jobs:
           coverage = json.loads((target / "coverage.json").read_text())
           totals = coverage["totals"]
           log_bytes = (target / "unittest.log").read_bytes()
+          suite_ok = any(line.strip() == b"OK" or line.strip().startswith(b"OK (") for line in log_bytes.splitlines())
           counts = re.search(rb"Ran (\d+) tests?", log_bytes)
-          if counts is None or int(counts.group(1)) < 16:
-              raise SystemExit("Not all 16 expected tests executed")
+          if counts is None or int(counts.group(1)) < 19:
+              raise SystemExit("Not all 19 expected tests executed")
           lines = (totals["covered_lines"], totals["num_statements"])
           branches = (totals["covered_branches"], totals["num_branches"])
           if not all(total > 0 and 0 <= hit <= total for hit, total in (lines, branches)):
@@ -93,6 +94,7 @@ jobs:
               "run_attempt": os.getenv("GITHUB_RUN_ATTEMPT"),
               "python": sys.version.split()[0],
               "tests_executed": int(counts.group(1)),
+              "test_suite_passed": suite_ok,
               "source_sha256": hashlib.sha256(
                   pathlib.Path("scripts/cbd_workflow_cohort_union.py").read_bytes()
               ).hexdigest(),
@@ -108,6 +110,8 @@ jobs:
               json.dumps(receipt, indent=2, sort_keys=True) + "\n"
           )
           print(json.dumps(receipt, indent=2, sort_keys=True))
+          if not suite_ok:
+              raise SystemExit("Test suite is red: no test success credit")
           if min(100 * lines[0] / lines[1], 100 * branches[0] / branches[1]) < 80:
               raise SystemExit("Module line or branch coverage below 80 percent")
           PY

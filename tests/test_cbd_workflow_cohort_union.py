@@ -4,6 +4,7 @@ import copy
 import json
 import sys
 import unittest
+from unittest import mock
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -229,6 +230,23 @@ class CohortUnionTests(unittest.TestCase):
         row["url"] = "https://github.com/GBOGEB/ABACUS/actions/runs/" + str(row["run_id"])
         with self.assertRaisesRegex(ValueError, "incompatible pull-head"):
             produce_cohorts([forged])
+
+
+    def test_duplicate_run_different_conclusion_fails_closed(self):
+        """A reclassified run with the same attempt cannot override the source."""
+        original = snapshots()[0]
+        forged = copy.deepcopy(original)
+        forged["observations"][0]["conclusion"] = "success"
+        with self.assertRaisesRegex(ValueError, "conflicting run-attempt provenance"):
+            produce_cohorts([original, forged])
+
+    def test_secondary_run_identity_guard_survives_validator_bypass(self):
+        """Even a defective upstream validator cannot admit boolean run IDs."""
+        original = snapshots()[0]
+        original["observations"][0]["run_id"] = True
+        with mock.patch("cbd_workflow_cohort_union.validate", return_value=original):
+            with self.assertRaisesRegex(ValueError, "run/attempt identities"):
+                produce_cohorts([original])
 
 
 if __name__ == "__main__":
