@@ -1,0 +1,114 @@
+{
+  "schema": "cbd.native-pr-head-reconciliation.v1",
+  "repository": "GBOGEB/ABACUS",
+  "segment": "B",
+  "readback_commit": "b2236c52f00a851e3ab2e7923f1682c97927a188",
+  "source": "docs/ci/CBD_10PR_B_FAILED_RUN_OBSERVATIONS_20261017.json",
+  "source_head_records": [
+    {
+      "pr": 2066,
+      "source_sha": "9c4a60bf1df84b73ff33b0d0aba5a92ed6ea9770",
+      "current_sha": "9c4a60bf1df84b73ff33b0d0aba5a92ed6ea9770",
+      "head_matches": true,
+      "declared_workflows": 28,
+      "declared_failed": 2,
+      "github_state": "open",
+      "changed_at": "2026-10-16T14:47:40Z"
+    },
+    {
+      "pr": 2057,
+      "source_sha": "cdea1ae2445911b27f1a1934dd93fbcaa847a321",
+      "current_sha": "cdea1ae2445911b27f1a1934dd93fbcaa847a321",
+      "head_matches": true,
+      "declared_workflows": 25,
+      "declared_failed": 1,
+      "github_state": "open",
+      "changed_at": "2026-10-16T15:01:13Z"
+    },
+    {
+      "pr": 2055,
+      "source_sha": "2b3bf584c783e8c8696f38ebf35b719ddc10fff2",
+      "current_sha": "2b3bf584c783e8c8696f38ebf35b719ddc10fff2",
+      "head_matches": true,
+      "declared_workflows": 31,
+      "declared_failed": 2,
+      "github_state": "open",
+      "changed_at": "2026-10-17T09:15:17Z"
+    },
+    {
+      "pr": 2054,
+      "source_sha": "8e1a39cdb56cc8ad7e019408b6870279f07fcd40",
+      "current_sha": "8e1a39cdb56cc8ad7e019408b6870279f07fcd40",
+      "head_matches": true,
+      "declared_workflows": 25,
+      "declared_failed": 7,
+      "github_state": "open",
+      "changed_at": "2026-10-16T12:53:41Z"
+    },
+    {
+      "pr": 2041,
+      "source_sha": "60d2a5640c997fc916285580b6de8a3d86c27c38",
+      "current_sha": "60d2a5640c997fc916285580b6de8a3d86c27c38",
+      "head_matches": true,
+      "declared_workflows": 24,
+      "declared_failed": 3,
+      "github_state": "open",
+      "changed_at": "2026-10-16T20:20:05Z"
+    },
+    {
+      "pr": 2039,
+      "source_sha": "23ad4b42ed1fdd0848e451c5e6f4e73038704e88",
+      "current_sha": "23ad4b42ed1fdd0848e451c5e6f4e73038704e88",
+      "head_matches": true,
+      "declared_workflows": 18,
+      "declared_failed": 4,
+      "github_state": "open",
+      "changed_at": "2026-10-16T18:32:56Z"
+    },
+    {
+      "pr": 2037,
+      "source_sha": "221457d449f1dfd9eda67766aebc97b71acfea6c",
+      "current_sha": "221457d449f1dfd9eda67766aebc97b71acfea6c",
+      "head_matches": true,
+      "declared_workflows": 23,
+      "declared_failed": 5,
+      "github_state": "open",
+      "changed_at": "2026-10-16T08:30:59Z"
+    },
+    {
+      "pr": 2033,
+      "source_sha": "1baba57c7af75afbbca9845725047ffd8d7a0966",
+      "current_sha": "483baebc56931b1b6f8fe30858fac092e6d6e9b0",
+      "head_matches": false,
+      "declared_workflows": 36,
+      "declared_failed": 0,
+      "github_state": "open",
+      "changed_at": "2026-10-17T09:34:18Z"
+    },
+    {
+      "pr": 2027,
+      "source_sha": "8cb4d742ad046ab688d691f4cc68c4171ad4308f",
+      "current_sha": "8cb4d742ad046ab688d691f4cc68c4171ad4308f",
+      "head_matches": true,
+      "declared_workflows": 18,
+      "declared_failed": 4,
+      "github_state": "open",
+      "changed_at": "2026-10-16T20:20:07Z"
+    },
+    {
+      "pr": 2026,
+      "source_sha": "0b64fe68a3f27f07dbb7797858d1f85253512df3",
+      "current_sha": "0b64fe68a3f27f07dbb7797858d1f85253512df3",
+      "head_matches": true,
+      "declared_workflows": 27,
+      "declared_failed": 1,
+      "github_state": "open",
+      "changed_at": "2026-10-16T20:20:12Z"
+    }
+  ],
+  "observed_count": 10,
+  "stale": 1,
+  "admission": "HOLD",
+  "accepted_root_closure": null,
+  "verification": "LIVE_PR_HEAD_READBACK_ONLY"
+}
