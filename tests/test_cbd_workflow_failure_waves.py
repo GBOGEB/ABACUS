@@ -51,7 +51,7 @@ class CBDTest(unittest.TestCase):
     def test_unknown_workflow_reader_only(self):
         self.data["observations"][0]["workflow"]="NEW_UNKNOWN_GATE"
         o=cbd.produce(self.data)
-        x=next(x for x in o["candidate_disjoint_waves"] if x["candidate_family"]=="UNCLASSIFIED_WORKFLOW")
+        x=next(x for x in o["candidate_disjoint_waves"] if x["candidate_family"].startswith("UNCLASSIFIED_WORKFLOW:"))
         self.assertEqual("READER",x["worker_type"])
     def test_no_workflow_success_inferred_from_missing(self):
         self.assertEqual(0,cbd.produce(self.data)["observed"]["conclusions"]["success"])
