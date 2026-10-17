@@ -72,7 +72,8 @@ def analyze(snapshot, native):
         require(observation.get("full_log_read") is False,
                 "full-log claim forbidden")
         if status == WITHHELD:
-            require(observation.get("failed_jobs") is None,
+            require(observation.get("failed_jobs") is None
+                    and observation.get("failed_job_count") is None,
                     "withheld readback carries jobs")
             metrics["runs_withheld"] += 1
             continue
@@ -161,7 +162,14 @@ def analyze(snapshot, native):
                                 x["candidate_id"]))
     for rank, record in enumerate(ranked, 1):
         record["priority_rank_by_observation_frequency"] = rank
-    counted = dict(metrics)
+    counted = {
+        key: metrics[key]
+        for key in (
+            "runs_requested", "runs_bound", "runs_withheld",
+            "bound_runs_without_failure_job", "failed_job_observations",
+            "jobs_with_failed_step", "jobs_without_failed_step",
+        )
+    }
     counted["candidate_step_signatures"] = len(ranked)
     counted["run_attempt_histogram"] = dict(sorted(attempt_histogram.items()))
     counted["confirmed_roots_open"] = None
