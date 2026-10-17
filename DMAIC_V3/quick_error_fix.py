@@ -232,6 +232,9 @@ class QuickFixer:
                     if line.startswith('import ') or line.startswith('from '):
                         lines.insert(i, import_line)
                         break
+                else:
+                    # A file without imports still requires the requested name.
+                    lines.insert(0, import_line)
 
             with open(file_path, 'w', encoding='utf-8') as f:
                 f.writelines(lines)
