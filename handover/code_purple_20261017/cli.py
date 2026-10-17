@@ -135,7 +135,7 @@ def verify(output):
 def main(argv=None):
     p = argparse.ArgumentParser(description=__doc__)
     p.add_argument("action", choices=["build", "verify", "serve", "dropin", "status", "gh-status"])
-    p.add_argument("--out", default=str(HERE.parent.parent.parent / "dist" / PROJECT))
+    p.add_argument("--out", default=str(HERE.parent.parent / "dist" / PROJECT))
     p.add_argument("--port", type=int, default=8765)
     args = p.parse_args(argv)
     if args.action == "build":
