@@ -93,7 +93,7 @@ jobs:
         run: |
           set -euo pipefail
           mkdir -p test_reports/n13
-          python -m coverage run --branch --source=DMAIC_V3.phases.phase4_improve,DMAIC_V3.phases.phase8_todo_management,DMAIC_V3.debug_pipeline,cicd_github_orchestrator,scripts.g3a_bounded_mission -m unittest discover -s tests -p 'test_g3a_*.py' -v 2>&1 | tee test_reports/n13/unittest.log
+          python -m coverage run --branch --source=DMAIC_V3.phases.phase4_improve,DMAIC_V3.phases.phase8_todo_management,DMAIC_V3.debug_pipeline,cicd_github_orchestrator,scripts -m unittest discover -s tests -p 'test_g3a_*.py' -v 2>&1 | tee test_reports/n13/unittest.log
           python -m coverage json -o test_reports/n13/coverage.json
       - name: Validate branch denominators and collect candidate-red symptoms
         shell: bash
