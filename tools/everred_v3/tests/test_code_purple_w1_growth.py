@@ -69,8 +69,9 @@ class TestGrowthContract(unittest.TestCase):
         self.assertTrue(GROWTH.is_file())
         self.assertTrue(PULSE.is_file())
         self.assertTrue(SCRIPT.is_file())
-        self.assertTrue(all(path.is_relative_to(REPO_ROOT) for path in
-                            (SCRIPT, GROWTH, PULSE)))
+        self.assertTrue(
+            all(path.is_relative_to(REPO_ROOT) for path in (SCRIPT, GROWTH, PULSE))
+        )
 
     def test_valid_replay_from_unrelated_working_directory(self):
         old_cwd = Path.cwd()
