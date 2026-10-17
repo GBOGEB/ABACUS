@@ -20,10 +20,10 @@ jobs:
     timeout-minutes: 10
     steps:
       - name: Checkout W78 control implementation
-        uses: actions/checkout@v7
+        uses: actions/checkout@v7.0.1
 
       - name: Set up Python
-        uses: actions/setup-python@v7
+        uses: actions/setup-python@v7.0.0
         with:
           python-version: "3.11"
 
@@ -80,12 +80,12 @@ jobs:
       REPEAT: ${{ matrix.repeat }}
     steps:
       - name: Checkout W78 control implementation
-        uses: actions/checkout@v7
+        uses: actions/checkout@v7.0.1
         with:
           fetch-depth: 1
 
       - name: Set up Python
-        uses: actions/setup-python@v7
+        uses: actions/setup-python@v7.0.0
         with:
           python-version: "3.11"
 
@@ -107,7 +107,7 @@ jobs:
           git worktree remove --force "${worktree}"
 
       - name: Upload W78 work receipt
-        uses: actions/upload-artifact@v7
+        uses: actions/upload-artifact@v7.0.2
         with:
           name: w78-r${{ matrix.repeat }}-${{ matrix.target.label }}
           path: architecture/w78/W78_WORK_RECEIPT.json
@@ -119,10 +119,10 @@ jobs:
     timeout-minutes: 10
     steps:
       - name: Checkout W78 control implementation
-        uses: actions/checkout@v7
+        uses: actions/checkout@v7.0.1
 
       - name: Set up Python
-        uses: actions/setup-python@v7
+        uses: actions/setup-python@v7.0.0
         with:
           python-version: "3.11"
 
@@ -149,7 +149,7 @@ jobs:
           cat architecture/w78/W78_DIVERSITY_RECEIPT.json
 
       - name: Upload W78 diversity receipt
-        uses: actions/upload-artifact@v7
+        uses: actions/upload-artifact@v7.0.2
         with:
           name: w78-diversity-${{ github.sha }}
           path: architecture/w78/W78_DIVERSITY_RECEIPT.json

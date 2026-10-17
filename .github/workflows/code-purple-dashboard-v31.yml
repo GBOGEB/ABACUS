@@ -1,0 +1,73 @@
+name: CODE PURPLE Dashboard V3.2
+on:
+  pull_request:
+    paths:
+      - 'tools/everred_v3/sut_gui/dashboard_v3.html'
+      - 'tools/everred_v3/sut_gui/DASHBOARD_V31.md'
+      - '.github/workflows/code-purple-dashboard-v31.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: dashboard-v32-${{ github.ref }}
+  cancel-in-progress: false
+jobs:
+  dashboard-contract:
+    name: HTML structure and JavaScript syntax
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - name: Verify semantic HTML and source-bound controls
+        run: |
+          python - <<'PY'
+          from html.parser import HTMLParser
+          from pathlib import Path
+          class Inspect(HTMLParser):
+              def __init__(self):
+                  super().__init__()
+                  self.ids = []
+                  self.links = []
+                  self.scripts = []
+                  self.inside = False
+              def handle_starttag(self, tag, attrs):
+                  attrs = dict(attrs)
+                  if 'id' in attrs:
+                      self.ids.append(attrs['id'])
+                  if tag == 'a' and attrs.get('href', '').startswith('#'):
+                      self.links.append(attrs['href'][1:])
+                  if tag == 'script':
+                      self.inside = True
+              def handle_endtag(self, tag):
+                  if tag == 'script':
+                      self.inside = False
+              def handle_data(self, data):
+                  if self.inside:
+                      self.scripts.append(data)
+          html = Path('tools/everred_v3/sut_gui/dashboard_v3.html').read_text()
+          doc = Inspect()
+          doc.feed(html)
+          required = {
+              'scope-target', 'mini-success', 'mini-failure',
+              'mini-queue', 'ci-filter', 'ci-family',
+              'ci-search', 'arch-hierarchy', 'arch-dag',
+              'arch-wireframe', 'pca-live', 'bt-live'
+          }
+          assert required.issubset(set(doc.ids))
+          assert len(doc.ids) == len(set(doc.ids)), 'duplicate HTML ID'
+          assert set(doc.links).issubset(set(doc.ids)), 'broken nav'
+          assert 'code-purple.sut-gui.v3.2' in html
+          assert 'architecture-legend' in doc.ids
+          assert 'arch-loop feedback' in html
+          assert 'arch-loop feedforward' in html
+          assert 'P7 | CONDITIONAL YES ONLY' in html
+          assert 'Copyable Mermaid DAG source: strict forward graph / NO cycles' in html
+          assert 'NO / HOLD (red)' in html and 'YES / eligible path (green)' in html
+          assert 'Feedback and feedforward (separate control graph, NOT part of the DAG)' in html
+          assert 'Cancelled = GitHub' in html
+          assert 'Native paired outcome records: UNKNOWN' in html
+          assert len(doc.scripts) == 1, 'expected inline JS'
+          Path('/tmp/dashboard-v31.js').write_text(doc.scripts[0])
+          PY
+          node --check /tmp/dashboard-v31.js

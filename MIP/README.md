@@ -12,6 +12,10 @@ This repo uses MIP as a repeatable self-improvement loop:
 | `repo_self_assess_codz_health_selfheal` | Identify code-health and self-heal candidates without silently changing behavior. | Assessment section in the same receipt |
 | `repo_self_produce` | Promote reusable repo functionality into an implantable skill, agent, manager, or orchestrator. | Candidate list in the same receipt |
 
+## Execution unit conventions
+
+In this existing MIP programme, **W = outcome wave**, **P = one verified DMAIC/MIP pulse**, and **S = disjoint owner slice**. The controlled shorthand **G3A** requests three sequential adaptive pulses from pinned evidence N toward N+3; **G3W** requests three delivery waves instead. Neither creates merge authority or guarantees all gates pass. See [MIP/EXECUTION.md](EXECUTION.md#G3A--G3W-unit-taxonomy-and-bounded-autonomous-advancement) and the CODEX [canonical glossary proposal](https://github.com/GBOGEB/CODEX/pull/1060).
+
 ## DoD
 
 1. The self-index runs locally with only the Python standard library.

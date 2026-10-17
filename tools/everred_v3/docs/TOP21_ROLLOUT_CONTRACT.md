@@ -9,6 +9,7 @@ owner-approved TOP21 ranking nor authenticated per-repository deployment is
 established by that inventory.
 
 Run:
+
 ```bash
 python tools/everred_v3/scripts/build_top21_rollout.py \
   --contract docs/data/code_purple_federation_metrics_contract.json \
@@ -33,6 +34,7 @@ branch protection remain `null` without independent proof. No causal root
 identity, owner lease, verified merge admission or security waiver is created.
 
 This component is disjoint from:
+
 - #1947 canonical BD/LDAB producer tests
 - #1950 EVERRED source-binding bridge
 - #1951 causal replay KPI/model readiness
