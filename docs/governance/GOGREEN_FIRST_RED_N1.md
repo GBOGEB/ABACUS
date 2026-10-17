@@ -30,7 +30,8 @@ The sample has six *signature candidate* buckets (not root identities):
 The two Python 3.10 cohorts independently show the Matplotlib resolver
 incompatibility in job logs; source owner #2026 holds that dependency repair.
 Governance repair belongs to #1995/#2041; Bandit/Safety belongs to #1738,
-#2027 and the independent security owner. Other failures are not collapsed.
+- Security owner: PR #2027 and an independent reviewer. Other failure
+  categories remain separately tracked.
 
 ## Execute locally or on an authorized exact-head runner
 

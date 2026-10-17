@@ -285,3 +285,37 @@ class CLIRoundTrip(unittest.TestCase):
             with contextlib.redirect_stdout(captured):
                 self.assertEqual(subject.main([str(inp)]), 0)
             self.assertEqual(json.loads(captured.getvalue()), receipt)
+
+
+
+class BoundariesAndEntry(unittest.TestCase):
+    def test_aliased_downstream_summary_retains_zero_causal_root(self):
+        entry = row(job="Full Red Proof Summary", step="Emit full-red summary")
+        x = sample()
+        x["observations"] = [entry, copy.deepcopy(entry)]
+        y = subject.analyze(x)
+        self.assertEqual(y["unique_native_failed_jobs"], 1)
+        self.assertEqual(y["downstream_summary_jobs"], 1)
+        self.assertEqual(y["candidate_signature_count"], 0)
+        self.assertEqual(y["accepted_root_count"], 0)
+
+    def test_module_main_entrypoint_outputs_observation_without_authority(self):
+        import contextlib
+        import io
+        import runpy
+        import tempfile
+        from unittest.mock import patch
+
+        script = Path(__file__).resolve().parents[1] / "scripts" / "gogreen_first_red_wave.py"
+        with tempfile.TemporaryDirectory() as folder:
+            inp = Path(folder) / "input.json"
+            inp.write_text(json.dumps(sample()), encoding="utf-8")
+            output = io.StringIO()
+            with patch("sys.argv", [str(script), str(inp)]):
+                with contextlib.redirect_stdout(output):
+                    with self.assertRaises(SystemExit) as done:
+                        runpy.run_path(str(script), run_name="__main__")
+            self.assertEqual(done.exception.code, 0)
+            record = json.loads(output.getvalue())
+            self.assertEqual(record["unique_native_failed_jobs"], 2)
+            self.assertFalse(record["merge_authorized"])
