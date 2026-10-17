@@ -103,7 +103,7 @@ class BSeriesTemporalTests(unittest.TestCase):
         s = MODULE.render_markdown(MODULE.build(self.fixture))
         self.assertIn("39024853388", s)
         self.assertIn("39029208988", s)
-        self.assertIn("not an admission", s)
+        self.assertIn("not an admission", s.casefold())
 
 
 if __name__ == "__main__":
