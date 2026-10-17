@@ -12,16 +12,16 @@ m = importlib.util.module_from_spec(SPEC)
 SPEC.loader.exec_module(m)
 
 
-def pulse(i):
+def pulse(i, include_bandit=False):
     sha = str(i) * 40
     run_id, job_id = 100 + i, 200 + i
     scope = {
         "repository": "GBOGEB/ABACUS",
         "head_sha": sha,
-        "scan_configuration": "bandit-full-v1",
+        "scan_configuration": "config-v1",
         "run_id": run_id,
         "job_id": job_id,
-        "evidence_url": f"https://github.com/GBOGEB/ABACUS/actions/runs/{run_id}/job/{job_id}",
+        "evidence_url": f"https://github.com/GBOGEB/ABACUS/actions/runs/{run_id}",
     }
     roots = []
     for j in range(i):
@@ -58,8 +58,8 @@ def pulse(i):
             "scan_configuration": "config-v1",
             "evidence_url": f"https://github.com/GBOGEB/ABACUS/actions/runs/{100+i}",
         },
-        "metrics": {"full_bandit_unique": 0, "comparable_delta": None},
-        "roots": [
+        "metrics": {"full_bandit_unique": len(roots) if include_bandit else 0, "comparable_delta": None},
+        "roots": roots if include_bandit else [
             {"root_id": f"CI-{i:024x}", "category": "CI", "fingerprint": None}
         ],
         "merge_admission": "HOLD",
@@ -97,7 +97,7 @@ def bandit_root(row):
 
 
 def test_three_pulses_preserve_unknown_and_are_deterministic():
-    inp = [pulse(i) for i in (1, 2, 3)]
+    inp = [pulse(i, include_bandit=True) for i in (1, 2, 3)]
     a = m.rollup(inp)
     assert a == m.rollup(inp)
     assert [p["bandit_observations"] for p in a["pulses"]] == [1, 2, 3]
@@ -209,7 +209,7 @@ def test_reject_spoofed_bandit_root_claims(change):
 
 
 def test_ci_root_does_not_inflate_bandit_denominator():
-    rows = [pulse(i) for i in (1, 2, 3)]
+    rows = [pulse(i, include_bandit=True) for i in (1, 2, 3)]
     rows[0]["roots"].append(
         {
             "root_id": "CI-fake-but-distinct",
