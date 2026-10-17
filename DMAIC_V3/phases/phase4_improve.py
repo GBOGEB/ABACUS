@@ -241,7 +241,7 @@ class CodeImprover:
                     unused_lines.append(node.lineno - 1)
 
             if not unused_lines:
-                return {"success": False, "reason": "No safely removable unused imports"}
+                return {"success": False, "reason": "No unused imports"}
 
             for index in sorted(unused_lines, reverse=True):
                 del lines[index]
