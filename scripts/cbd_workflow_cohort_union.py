@@ -27,6 +27,9 @@ def produce_cohorts(sources: list[dict]) -> dict:
     input_rows = 0
     missing_attempts = 0
     missing_manifests = 0
+    manifests_by_pr: dict[int, dict] = {}
+    native_run_identity: dict[int, tuple[int, str, str, int | None]] = {}
+    ingestion_pulses: list[dict] = []
     for source in sources:
         if not isinstance(source, dict):
             raise ValueError("source snapshot must be an object")
@@ -34,6 +37,11 @@ def produce_cohorts(sources: list[dict]) -> dict:
         source_digests.append(sha256(source))
         if "sampled_pr_heads" not in source:
             missing_manifests += 1
+        for head in source.get("sampled_pr_heads", []):
+            pr_id = head["pr"]
+            if pr_id in manifests_by_pr and manifests_by_pr[pr_id] != head:
+                raise ValueError("conflicting sampled PR head manifest")
+            manifests_by_pr[pr_id] = deepcopy(head)
         for row in source["observations"]:
             # bool is an int subclass; it cannot identify a real GitHub run.
             if type(row["run_id"]) is not int or (
@@ -42,6 +50,18 @@ def produce_cohorts(sources: list[dict]) -> dict:
                 raise ValueError("run/attempt identities must be integers or unknown")
             if row["attempt"] is None:
                 missing_attempts += 1
+            rid = row["run_id"]
+            native_identity = (
+                row["pr"], row["sha"], row["workflow"], row["attempt"]
+            )
+            if rid in native_run_identity:
+                prior = native_run_identity[rid]
+                if prior[:3] != native_identity[:3]:
+                    raise ValueError("conflicting cross-attempt run provenance")
+                if (prior[3] is None) != (row["attempt"] is None):
+                    raise ValueError("ambiguous unknown/known run attempt")
+            else:
+                native_run_identity[rid] = native_identity
             key = (row["run_id"], row["attempt"])
             if row["pr"] in head_by_pr and head_by_pr[row["pr"]] != row["sha"]:
                 raise ValueError("incompatible pull-head snapshots")
@@ -50,6 +70,15 @@ def produce_cohorts(sources: list[dict]) -> dict:
                 raise ValueError("conflicting run-attempt provenance")
             rows_by_run[key] = deepcopy(row)
             input_rows += 1
+        ingestion_pulses.append(
+            {
+                "source_index": len(ingestion_pulses) + 1,
+                "declared_rows_cumulative": input_rows,
+                "distinct_run_ids_cumulative": len({key[0] for key in rows_by_run}),
+                "distinct_failed_pr_heads_cumulative": len(head_by_pr),
+                "kind": "SOURCE_INGESTION_NOT_TEMPORAL_IMPROVEMENT",
+            }
+        )
 
     authority = {
         "security_waiver": False,
@@ -79,6 +108,21 @@ def produce_cohorts(sources: list[dict]) -> dict:
         "distinct_declared_run_ids": len({key[0] for key in rows_by_run}),
         "unknown_attempt_associations": missing_attempts,
         "snapshots_without_head_manifests": missing_manifests,
+        "distinct_manifested_pr_heads": len(manifests_by_pr),
+        "manifested_zero_failure_prs": sorted(
+            pr for pr, head in manifests_by_pr.items()
+            if head["failed_associations_seen"] == 0
+        ),
+        "non_atomic_manifest_workflow_associations": sum(
+            head["workflow_associations_seen"]
+            for head in manifests_by_pr.values()
+        ),
+        "non_atomic_manifest_failed_associations": sum(
+            head["failed_associations_seen"]
+            for head in manifests_by_pr.values()
+        ),
+        "manifest_comparability": "NOT_A_DENOMINATOR_FOR_UNION_PASS_RATE",
+        "ingestion_pulses": ingestion_pulses,
         "cross_source_duplicate_rows": input_rows - len(rows_by_run),
         "distinct_declared_pr_heads": len(head_by_pr),
         "source_attempt_verification": "NOT_LIVE_VERIFIED",
