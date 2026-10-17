@@ -108,6 +108,21 @@ jobs:
           python -m coverage json --rcfile=/dev/null \
             --include='*/cbd_job_graph.py' \
             -o "$RUNNER_TEMP/cbd-job-graph-module-coverage.json"
+      - name: Measure scheduled method and gg_MATH bridge branch coverage
+        working-directory: tools/everred_v3
+        run: |
+          python -m coverage run --rcfile=/dev/null --branch \
+            --include='*/cbd_scheduled_pulse.py' \
+            -m unittest discover -s tests -p test_cbd_scheduled_pulse.py -v
+          python -m coverage json --rcfile=/dev/null \
+            --include='*/cbd_scheduled_pulse.py' \
+            -o "$RUNNER_TEMP/cbd-scheduled-module-coverage.json"
+          python -m coverage run --rcfile=/dev/null --branch \
+            --include='*/cbd_ggmath_bridge.py' \
+            -m unittest discover -s tests -p test_cbd_ggmath_bridge.py -v
+          python -m coverage json --rcfile=/dev/null \
+            --include='*/cbd_ggmath_bridge.py' \
+            -o "$RUNNER_TEMP/cbd-ggmath-module-coverage.json"
       - name: Upload CBD 260 local and branch coverage receipts
         if: always()
         uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9
@@ -117,6 +132,8 @@ jobs:
             ${{ runner.temp }}/cbd-260-static/
             ${{ runner.temp }}/cbd-260-module-coverage.json
             ${{ runner.temp }}/cbd-job-graph-module-coverage.json
+            ${{ runner.temp }}/cbd-scheduled-module-coverage.json
+            ${{ runner.temp }}/cbd-ggmath-module-coverage.json
           if-no-files-found: warn
 
       - name: Execute bounded native host and LLDB preflight

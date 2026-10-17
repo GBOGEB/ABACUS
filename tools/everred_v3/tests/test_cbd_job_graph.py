@@ -208,5 +208,44 @@ class CBDJobGraphTests(unittest.TestCase):
             self.assertTrue((destination / "candidate_index.html").exists())
 
 
+    def test_bound_native_run_without_failed_jobs_is_not_a_green(self):
+        rid = next(iter(self.native))
+        dag = self.mutated(
+            lambda data: data[rid].update(failed_jobs=[], failed_job_count=0)
+        )
+        self.assertEqual(1, dag["metrics"]["bound_runs_without_failure_job"])
+        self.assertEqual(252, dag["metrics"]["failed_job_observations"])
+        self.assertIsNone(dag["metrics"]["confirmed_roots_closed"])
+
+    def test_direct_command_line_entrypoint_preserves_hold(self):
+        import contextlib
+        import io
+        import runpy
+        import sys
+
+        with tempfile.TemporaryDirectory() as directory:
+            destination = Path(directory)
+            native_file = destination / "mocked-native.json"
+            native_file.write_text(json.dumps(self.native), encoding="utf-8")
+            output = destination / "receipts"
+            argv = [
+                str(ROOT / "scripts" / "cbd_job_graph.py"),
+                *(str(path) for path in PATHS),
+                "--native-jobs", str(native_file),
+                "--output-dir", str(output),
+            ]
+            with mock.patch.dict(sys.modules, {"cbd_260": cbd}):
+                with mock.patch.object(sys, "argv", argv):
+                    with contextlib.redirect_stdout(io.StringIO()) as stream:
+                        runpy.run_path(
+                            str(ROOT / "scripts" / "cbd_job_graph.py"),
+                            run_name="__main__",
+                        )
+            rendered = json.loads(stream.getvalue())
+            self.assertEqual("HOLD", rendered["admission"])
+            self.assertIsNone(rendered["metrics"]["confirmed_roots_open"])
+            self.assertTrue((output / "sha256.json").exists())
+
+
 if __name__ == "__main__":
     unittest.main()
