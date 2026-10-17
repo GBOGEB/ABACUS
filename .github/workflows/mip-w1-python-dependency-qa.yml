@@ -4,6 +4,7 @@ on:
     paths:
       - 'DMAIC_V3/requirements.txt'
       - 'tests/test_mip_python_dependency_guard.py'
+      - 'tests/test_matplotlib_requirement_compatibility.py'
       - 'tools/mip2/mip_python_dependency_guard.py'
       - '.github/workflows/mip-w1-python-dependency-qa.yml'
 permissions:
@@ -28,7 +29,7 @@ jobs:
       - name: Check policy and negative regression controls
         run: |
           set -euo pipefail
-          python -m pytest -q tests/test_mip_python_dependency_guard.py
+          python -m pytest -q tests/test_mip_python_dependency_guard.py tests/test_matplotlib_requirement_compatibility.py
           python tools/mip2/mip_python_dependency_guard.py --requirements DMAIC_V3/requirements.txt --out artifacts/mip/w1-dependency-policy.json
       - name: Upload structured static-policy evidence
         if: always()
