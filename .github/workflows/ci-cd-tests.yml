@@ -664,6 +664,11 @@ jobs:
         run: |
           python -m pip install --upgrade pip
           pip install bandit safety
+          # CVE-2026-59890: runner setuptools <83 is vulnerable.
+          # Keep Safety active; NLTK CVE-2026-81726 remains unresolved.
+          python -m pip install --upgrade 'setuptools>=83.0.0,<85.0.0'
+          python -m pip check
+          python -m pip show setuptools nltk
 
       - name: Run Bandit
         id: bandit
@@ -673,7 +678,47 @@ jobs:
       - name: Run Safety Check
         id: safety
         continue-on-error: true
-        run: safety check --json > safety-report.json
+        shell: bash
+        run: |
+          # Keep Safety's failing exit status; retain diagnostics privately.
+          set +e
+          safety check --json > safety-report.json 2> safety-stderr.log
+          status=$?
+          set -e
+          echo "Safety exit status: $status" >> "$GITHUB_STEP_SUMMARY"
+          python - <<'PY' >> "$GITHUB_STEP_SUMMARY"
+          import json
+          from pathlib import Path
+
+          try:
+              raw = Path("safety-report.json").read_text("utf-8")
+              decoder = json.JSONDecoder()
+              payload = None
+              for index, char in enumerate(raw):
+                  if char != "{":
+                      continue
+                  try:
+                      value, _ = decoder.raw_decode(raw[index:])
+                  except json.JSONDecodeError:
+                      continue
+                  if isinstance(value, dict) and isinstance(
+                      value.get("report_meta"), dict
+                  ):
+                      payload = value
+                      break
+              if payload is None:
+                  raise ValueError("missing Safety metadata")
+          except (OSError, ValueError):
+              print("Safety report parse failed; inspect artifact.")
+          else:
+              meta = payload["report_meta"]
+              found = meta.get("vulnerabilities_found")
+              ignored = meta.get("vulnerabilities_ignored")
+              found = found if type(found) is int else "UNKNOWN"
+              ignored = ignored if type(ignored) is int else "UNKNOWN"
+              print(f"Safety findings: {found}; ignored: {ignored}")
+          PY
+          exit "$status"
 
       - name: Census security red-root delta
         if: always()
@@ -700,6 +745,7 @@ jobs:
           path: |
             bandit-report.json
             safety-report.json
+            safety-stderr.log
             security-red-root-delta.json
           if-no-files-found: warn
 
