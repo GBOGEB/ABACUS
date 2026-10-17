@@ -26,7 +26,7 @@ jobs:
     timeout-minutes: 10
     steps:
       - name: Checkout code
-        uses: actions/checkout@v7.0.1
+        uses: actions/checkout@v7
       - name: Generate Dashboard
         run: python DOW_DEPLOYMENT_ORCHESTRATOR.py --dashboard
       - name: Upload dashboard evidence

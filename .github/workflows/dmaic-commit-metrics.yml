@@ -44,7 +44,7 @@ jobs:
       escalate: ${{ steps.metrics.outputs.escalate }}
 
     steps:
-      - uses: actions/checkout@v7.0.1
+      - uses: actions/checkout@v7
         with:
           fetch-depth: 0   # full history for commit-level metrics
           persist-credentials: false
@@ -314,7 +314,7 @@ jobs:
       child_sha: ${{ steps.commit.outputs.child_sha }}
       child_committed: ${{ steps.commit.outputs.child_committed }}
     steps:
-      - uses: actions/checkout@v7.0.1
+      - uses: actions/checkout@v7
         with:
           fetch-depth: 0
           persist-credentials: false
@@ -398,7 +398,7 @@ jobs:
       contents: read
       issues: write
     steps:
-      - uses: actions/checkout@v7.0.1
+      - uses: actions/checkout@v7
 
       - name: Read metrics
         id: read
@@ -483,7 +483,7 @@ jobs:
       github.event.workflow_run.conclusion == 'success'
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v7.0.1
+      - uses: actions/checkout@v7
 
       - name: Verify deployed pages & collect post-deploy signal
         run: |

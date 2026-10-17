@@ -33,7 +33,7 @@ jobs:
     name: Validate HTML / CSS / JS
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v7.0.1
+      - uses: actions/checkout@v7
 
       - name: Check HTML files exist
         run: |
@@ -85,7 +85,7 @@ jobs:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
     steps:
-      - uses: actions/checkout@v7.0.1
+      - uses: actions/checkout@v7
 
       # One canonical site artifact: the checked-out docs homepage remains
       # authoritative; QPLANT is built as a separate route.

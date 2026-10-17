@@ -22,7 +22,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout exact source
-        uses: actions/checkout@v7.0.1
+        uses: actions/checkout@v7
       - name: Assert exact source head
         shell: bash
         run: |
