@@ -243,7 +243,7 @@ jobs:
           sha256sum bandit-evidence/*.json > bandit-evidence/SHA256SUMS
       - name: Upload evidence regardless of scan findings
         if: always()
-        uses: actions/upload-artifact@v7.0.2
+        uses: actions/upload-artifact@v7
         with:
           name: bandit-disjoint-${{ github.run_id }}
           path: bandit-evidence/

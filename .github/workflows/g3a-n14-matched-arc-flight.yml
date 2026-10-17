@@ -76,7 +76,7 @@ jobs:
           PY
       - name: Preserve test evidence even on red
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: g3a-n14-${{ github.run_id }}-${{ github.run_attempt }}
           path: test_reports/n14/

@@ -52,7 +52,7 @@ jobs:
         shell: bash
 
       - name: Upload artifacts
-        uses: actions/upload-artifact@v7.0.2
+        uses: actions/upload-artifact@v7
         with:
           name: codex-${{ matrix.os }}-py${{ matrix.python-version }}
           path: |

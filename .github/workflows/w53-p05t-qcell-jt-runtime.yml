@@ -41,7 +41,7 @@ jobs:
               print('A=', row['A_g_s'], 'flash=', row['JT_flash_g_s'], 'liquid=', row['post_flash_liquid_g_s'])
           PY
       - name: Upload receipt
-        uses: actions/upload-artifact@v7.0.2
+        uses: actions/upload-artifact@v7
         with:
           name: w53-p05t-qcell-jt-flash-receipt
           path: artifacts/w53_p05t/qcell_jt_flash_receipt.json

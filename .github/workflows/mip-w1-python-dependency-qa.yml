@@ -33,7 +33,7 @@ jobs:
           python tools/mip2/mip_python_dependency_guard.py --requirements DMAIC_V3/requirements.txt --out artifacts/mip/w1-dependency-policy.json
       - name: Upload structured static-policy evidence
         if: always()
-        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9
         with:
           name: mip-w1-dependency-policy-py${{ matrix.python-version }}
           path: artifacts/mip/w1-dependency-policy.json
