@@ -177,6 +177,28 @@ class BdTelemetryTests(unittest.TestCase):
             summarize_series([record])
 
 
+    def test_validator_rejects_remaining_invalid_contract_paths(self):
+        with self.assertRaisesRegex(ValueError, "must be an object"):
+            validate(None)
+        cases = (
+            ({"schema": "invalid"}, "unsupported schema"),
+            ({"mode": "E9"}, "unsupported schema"),
+            ({"result": "GREEN"}, "unsupported result"),
+            ({"root_id": ""}, "missing root"),
+            ({"root_id": 0}, "missing root"),
+            ({"attempt": 0}, "positive integer"),
+            ({"attempt": True}, "positive integer"),
+            ({"line_covered": None}, "partial coverage"),
+            ({"branch_total": None}, "partial coverage"),
+        )
+        for mutations, message in cases:
+            with self.subTest(mutations=mutations):
+                record = self.record()
+                record.update(mutations)
+                with self.assertRaisesRegex(ValueError, message):
+                    validate(record)
+
+
 
 if __name__ == "__main__":
     unittest.main()
