@@ -1,0 +1,12 @@
+{
+  "schema_version": 1,
+  "mode": "MACH_III_PROPOSED",
+  "active": false,
+  "default_action": "HOLD",
+  "required": ["exact_head", "core_functional_checks", "effective_ruleset_compliance", "source_bound_receipt"],
+  "security": {"blocking": ["P0", "P1", "UNKNOWN"], "deferrable": ["P2", "P3"], "deferral_requires": ["finding_id", "source_sha", "owner", "issue_url", "due_date", "severity_evidence", "reentry_trigger"]},
+  "review": {"respect_effective_required_approvals": true, "independent_review_bypass_enabled": false},
+  "break_glass": {"enabled": false, "max_duration_minutes": 60, "scope": "single_pr", "owner_authorization_required": true, "auto_expire": true, "security_bypass": false, "ci_bypass": false},
+  "unknown_evidence": "HOLD",
+  "audit": {"record_effective_rules_before_after": true, "record_head_sha": true, "record_merge_sha": true, "post_merge_recheck": true}
+}
