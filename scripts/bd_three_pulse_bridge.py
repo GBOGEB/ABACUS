@@ -12,6 +12,7 @@ import re
 from pathlib import Path
 
 SHA = re.compile(r"[0-9a-f]{40}\Z")
+FP = re.compile(r"[0-9a-f]{64}\Z")
 SCHEMA = "abacus.bd.three-pulse.v1"
 
 
@@ -21,36 +22,59 @@ def _count(value, name):
     return value
 
 
-def _ratio(n, d):
-    return n / d if n is not None and d is not None and d > 0 else None
-
-
 def _coverage(data):
-    if data is None:
-        return None
-    if not isinstance(data, dict):
-        raise ValueError("coverage must be an object or null")
-    result = {}
-    for scope in ("main_statement", "main_branch", "diff_statement", "diff_branch"):
-        row = data.get(scope)
-        if row is None:
-            result[scope] = None
-            continue
-        if not isinstance(row, dict) or set(row) != {"covered", "eligible", "config"}:
-            raise ValueError("coverage requires covered, eligible and config")
-        k = _count(row["covered"], "covered")
-        d = _count(row["eligible"], "eligible")
-        if (
-            k > d
-            or d == 0
-            or not isinstance(row["config"], str)
-            or not row["config"]
-        ):
-            raise ValueError("invalid coverage denominator or config")
-        result[scope] = dict(
-            covered=k, eligible=d, config=row["config"], ratio=_ratio(k, d)
+    """No self-reported coverage: #1929 does not attest native artifacts yet."""
+    if data is not None:
+        raise ValueError(
+            "unverified coverage enrichment: require independently validated "
+            "native source/run/job/artifact proof before calculating movements"
         )
-    return result
+    return None
+
+
+def _validate_roots(roots, bandit, scope):
+    """Reconcile the canonical producer's disjoint Bandit root population."""
+    if not isinstance(roots, list):
+        raise ValueError("missing canonical roots")
+    ids = set()
+    bandit_roots = 0
+    for root in roots:
+        if not isinstance(root, dict):
+            raise ValueError("invalid canonical root")
+        rid = root.get("root_id")
+        kind = root.get("category")
+        if not isinstance(rid, str) or not rid or rid in ids:
+            raise ValueError("duplicate or invalid root IDs")
+        ids.add(rid)
+        if kind not in ("BANDIT", "CI"):
+            raise ValueError("invalid canonical root category")
+        observations = root.get("observations")
+        if (
+            not isinstance(observations, list)
+            or not observations
+            or any(not isinstance(obs, dict) for obs in observations)
+        ):
+            raise ValueError("root requires canonical observations")
+        if kind == "CI":
+            if not rid.startswith("CI-") or root.get("fingerprint") is not None:
+                raise ValueError("invalid CI root identity")
+            continue
+        bandit_roots += 1
+        fp = root.get("fingerprint")
+        if not rid.startswith("BD-") or not isinstance(fp, str) or not FP.fullmatch(fp):
+            raise ValueError("invalid Bandit fingerprint or root identity")
+        if not any(
+            obs.get("source") == "bandit_disjoint"
+            and obs.get("repository") == scope["repository"]
+            and obs.get("source_sha") == scope["head_sha"]
+            and obs.get("run_id") == scope["run_id"]
+            and obs.get("job_id") == scope["job_id"]
+            and obs.get("scan_configuration") == scope["scan_configuration"]
+            for obs in observations
+        ):
+            raise ValueError("Bandit root lacks exact-source census observation")
+    if bandit_roots != bandit:
+        raise ValueError("full Bandit denominator does not reconcile with roots")
 
 
 def rollup(pulses):
@@ -70,26 +94,31 @@ def rollup(pulses):
         if not isinstance(sha, str) or not SHA.fullmatch(sha) or sha in seen:
             raise ValueError("unbound or duplicated exact source SHA")
         seen.add(sha)
+        for name in ("run_id", "job_id"):
+            if type(scope.get(name)) is not int or scope[name] < 1:
+                raise ValueError(f"scope.{name} requires positive integer")
+        config = scope.get("scan_configuration")
+        url = scope.get("evidence_url")
+        if not isinstance(config, str) or not config.strip():
+            raise ValueError("missing scanner configuration")
+        if not isinstance(url, str) or not url.startswith("https://github.com/"):
+            raise ValueError("missing GitHub evidence URL")
         metrics = pulse.get("metrics")
         if not isinstance(metrics, dict):
             raise ValueError("missing canonical metrics")
         bandit = _count(metrics.get("full_bandit_unique"), "full_bandit_unique")
         roots = pulse.get("roots")
-        if not isinstance(roots, list):
-            raise ValueError("missing canonical roots")
         if (
             pulse.get("merge_admission") != "HOLD"
             or pulse.get("authority_transfer") is not False
             or pulse.get("security_waiver") is not False
         ):
             raise ValueError("authority/admission contract must remain HOLD")
-        rootids = [r.get("root_id") for r in roots if isinstance(r, dict)]
-        if (
-            len(rootids) != len(roots)
-            or len(set(rootids)) != len(rootids)
-            or any(not isinstance(r, str) or not r for r in rootids)
-        ):
-            raise ValueError("duplicate or invalid root IDs")
+        if pulse.get("security_disposition") not in (None, "INDEPENDENT_REVIEW_REQUIRED"):
+            raise ValueError("security review disposition is not independently accepted")
+        if pulse.get("formal_credit_delta", 0) != 0 or pulse.get("engineering_credit_delta", 0) != 0:
+            raise ValueError("unadmitted source claims cannot earn engineering credit")
+        _validate_roots(roots, bandit, scope)
         out.append(
             {
                 "n": index + 1,
