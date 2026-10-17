@@ -171,3 +171,43 @@ def test_ci_root_does_not_inflate_bandit_denominator():
     result = m.rollup(rows)
     assert result["pulses"][0]["bandit_observations"] == 1
     assert result["pulses"][0]["candidate_root_count"] == 2
+
+
+@pytest.mark.parametrize(
+    "change",
+    [
+        lambda p: p.update(roots=None),
+        lambda p: p["roots"].__setitem__(0, None),
+        lambda p: p["roots"][0].update(root_id=123),
+        lambda p: p.update(schema="bd.forbidden.v1"),
+        lambda p: p["scope"].update(evidence_url="https://example.invalid/forgery"),
+    ],
+)
+def test_reject_remaining_unbound_census_shapes(change):
+    rows = [pulse(i) for i in (1, 2, 3)]
+    change(rows[1])
+    with pytest.raises(ValueError):
+        m.rollup(rows)
+
+
+def test_cli_emits_deterministic_validated_output(tmp_path, monkeypatch):
+    import json
+    import runpy
+    import sys
+
+    paths = []
+    for i in (1, 2, 3):
+        path = tmp_path / f"pulse-{i}.json"
+        path.write_text(json.dumps(pulse(i)), encoding="utf-8")
+        paths.append(path)
+    out = tmp_path / "receipt.json"
+    monkeypatch.setattr(
+        sys,
+        "argv",
+        [str(SOURCE), "--inputs", *(str(path) for path in paths), "--out", str(out)],
+    )
+    runpy.run_path(str(SOURCE), run_name="__main__")
+    first = out.read_bytes()
+    runpy.run_path(str(SOURCE), run_name="__main__")
+    assert out.read_bytes() == first
+    assert json.loads(first)["merge_admission"] == "HOLD"
