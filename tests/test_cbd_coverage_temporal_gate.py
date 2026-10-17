@@ -36,7 +36,8 @@ def coverage(at="2026-10-17T10:10:52Z", covered=(100, 80)):
 def junit(at="2026-10-17T10:05:26.426899+00:00", elapsed="324.007"):
     return (
         '<testsuites><testsuite tests="2" failures="0" '
-        f'timestamp="{at}" time="{elapsed}"/></testsuites>'
+        f'timestamp="{at}" time="{elapsed}"><testcase name="a"/>'
+        '<testcase name="b"/></testsuite></testsuites>'
     )
 
 
@@ -149,3 +150,11 @@ def test_cli_stale_receipt_exits_nonzero(tmp_path, capsys):
     assert gate.main(args) == 2
     assert json.loads(output.read_text())["status"] == "HOLD"
     assert "HOLD" in capsys.readouterr().out
+
+
+def test_inflated_junit_header_is_nonadmissible():
+    bad = junit().replace('tests="2"', 'tests="14"')
+    result = evaluate(j=bad)
+    assert result["junit_count_integrity"] == "MISMATCH"
+    assert result["status"] == "HOLD"
+    assert result["accepted_coverage_uplift"] is None
