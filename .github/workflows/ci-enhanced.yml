@@ -83,11 +83,11 @@ jobs:
           if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
           pip install .
           pip install pytest pytest-cov pytest-benchmark pytest-xdist
-      # Require one compatible branch-coverage mode and isolate xdist fragments.
-      # Coverage stays enforced; mixing statement/branch fragments is fatal.
+      # Keep the coverage producer in one process to avoid xdist mixing
+      # statement-only and branch-aware worker databases. Do not omit branches.
       - run: |
           python -m coverage erase
-          pytest --benchmark-disable -v -n auto --cov=. --cov-branch --cov-config=pyproject.toml --cov-report=term-missing --cov-report=xml
+          python -m pytest --benchmark-disable -v --cov=. --cov-branch --cov-report=term-missing --cov-report=xml
       - run: python -m pytest DMAIC_V3/tests/ -v
 
   test-rhel-8:
