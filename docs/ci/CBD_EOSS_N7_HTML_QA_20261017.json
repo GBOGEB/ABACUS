@@ -1,0 +1,20 @@
+{
+  "schema": "code-purple.eoss.n7.html-playwright.v1",
+  "source_head_before_w12": "a7b236a90f214da69c8b1dabe8830612778c0e2c",
+  "evidence_level": "LOCAL_REPRODUCIBILITY",
+  "viewports": [
+    "1440x1000",
+    "1280x800",
+    "390x844"
+  ],
+  "checks": {
+    "graph_tabs": "PASS",
+    "wave_search": "PASS",
+    "overflow": "PASS",
+    "page_errors": 0,
+    "broken_images": 0
+  },
+  "native_exact_head_ci": "DEFER",
+  "merge_admission": "HOLD",
+  "security_waiver": false
+}

@@ -1,0 +1,156 @@
+{
+  "authority": {
+    "admission": "HOLD",
+    "authority_transfer": false,
+    "security_waiver": false
+  },
+  "baseline": "N5",
+  "clock_pairs": [
+    {
+      "from_wave": "N5",
+      "median_wall_delta_ms": null,
+      "qualified": false,
+      "reason": "missing local clock sample",
+      "to_wave": "W7"
+    },
+    {
+      "from_wave": "W7",
+      "median_wall_delta_ms": null,
+      "qualified": false,
+      "reason": "missing local clock sample",
+      "to_wave": "W8"
+    },
+    {
+      "from_wave": "W8",
+      "median_wall_delta_ms": null,
+      "qualified": false,
+      "reason": "missing local clock sample",
+      "to_wave": "W9"
+    }
+  ],
+  "coverage_pairs": [
+    {
+      "branch_delta_pp": 7.142857,
+      "from_wave": "N5",
+      "qualified": true,
+      "reason": "same source/scope/config/denominator",
+      "statement_delta_pp": 1.428571,
+      "to_wave": "W7"
+    },
+    {
+      "branch_delta_pp": 0.0,
+      "from_wave": "W7",
+      "qualified": true,
+      "reason": "same source/scope/config/denominator",
+      "statement_delta_pp": 0.0,
+      "to_wave": "W8"
+    },
+    {
+      "branch_delta_pp": 0.0,
+      "from_wave": "W8",
+      "qualified": true,
+      "reason": "same source/scope/config/denominator",
+      "statement_delta_pp": 0.0,
+      "to_wave": "W9"
+    }
+  ],
+  "forecast_mae_pp": null,
+  "forecasts": [],
+  "github_runner_speedup_seconds": null,
+  "growth_in_tests_passed": 74,
+  "independent_sample_assumption_proven": false,
+  "main_coverage_uplift_pp": null,
+  "n0_runs_remaining": 193,
+  "observations": [
+    {
+      "backlog_run_ids_read": 60,
+      "branch_percent": 92.857143,
+      "head_sha": "6be945b846d5535a58c39edb52835950efe5fa4e",
+      "local_clock_p50_ms": null,
+      "observed_at": "2026-10-17T10:44:31Z",
+      "statement_percent": 98.571429,
+      "tests": {
+        "collected": 67,
+        "failed": 0,
+        "passed": 67,
+        "skipped": 0
+      },
+      "wave": "N5"
+    },
+    {
+      "backlog_run_ids_read": 60,
+      "branch_percent": 100.0,
+      "head_sha": "21ac90604f36e70b64bd0539272e8982a747ec75",
+      "local_clock_p50_ms": null,
+      "observed_at": "2026-10-17T11:08:00Z",
+      "statement_percent": 100.0,
+      "tests": {
+        "collected": 73,
+        "failed": 0,
+        "passed": 73,
+        "skipped": 0
+      },
+      "wave": "W7"
+    },
+    {
+      "backlog_run_ids_read": 60,
+      "branch_percent": 100.0,
+      "head_sha": "21ac90604f36e70b64bd0539272e8982a747ec75",
+      "local_clock_p50_ms": null,
+      "observed_at": "2026-10-17T11:11:09Z",
+      "statement_percent": 100.0,
+      "tests": {
+        "collected": 123,
+        "failed": 0,
+        "passed": 123,
+        "skipped": 0
+      },
+      "wave": "W8"
+    },
+    {
+      "backlog_run_ids_read": 60,
+      "branch_percent": 100.0,
+      "head_sha": "21ac90604f36e70b64bd0539272e8982a747ec75",
+      "local_clock_p50_ms": 125.897659,
+      "observed_at": "2026-10-17T11:16:09Z",
+      "statement_percent": 100.0,
+      "tests": {
+        "collected": 141,
+        "failed": 0,
+        "passed": 141,
+        "skipped": 0
+      },
+      "wave": "W9"
+    }
+  ],
+  "repository": "GBOGEB/ABACUS",
+  "schema": "code-purple.eoss.trajectory-output.v1",
+  "source_digest_sha256": "2e0e76b262375af22f56a7ba4cf62f3a4aa11858bad88c731019b9c716b3bf60",
+  "trajectory": {
+    "branch_deltas_pp": [
+      7.142857,
+      0.0,
+      0.0
+    ],
+    "branch_second_difference_pp": [
+      -7.142857,
+      0.0
+    ],
+    "certified_convergence": false,
+    "matched_pairs": 3,
+    "plateau_tolerance_pp": 0.5,
+    "state": "APPROACHING_PLATEAU_AFTER_GAIN",
+    "statement_deltas_pp": [
+      1.428571,
+      0.0,
+      0.0
+    ]
+  },
+  "unknown_new_roots": null,
+  "waves": [
+    "N5",
+    "W7",
+    "W8",
+    "W9"
+  ]
+}

@@ -1,0 +1,23 @@
+flowchart LR
+    subgraph LOCAL[LOCAL E0 to E2]
+      S[Source and wheel digest] --> T[Tests plus branch coverage]
+      T --> P[Bounded I/O scout and pre-push]
+    end
+    subgraph REPO[ABACUS E3 to E5]
+      H[Exact head SHA] --> R[Run attempt 1]
+      R --> J[Native job and step]
+      J --> C[Coverage and clock evidence]
+    end
+    subgraph FED[FEDERATION E6]
+      V[Derived EOSS visual suite] --> G{Security / A10 / governance / reviewer}
+      G -->|unresolved| X[HOLD]
+    end
+    P --> H
+    C -. observational projection .-> V
+    J -. first-red symptom only .-> V
+    classDef verified fill:#d8f5e4,stroke:#217354,color:#123b2b
+    classDef candidate fill:#fff0ca,stroke:#b78538,color:#5c451a
+    classDef denied fill:#ffe2e2,stroke:#bb4551,color:#63151f
+    class H,R,J,C verified
+    class V candidate
+    class X denied

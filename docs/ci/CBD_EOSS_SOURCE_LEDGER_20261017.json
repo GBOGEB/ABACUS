@@ -1,0 +1,182 @@
+{
+  "acceptance": {
+    "authority_transfer": false,
+    "main_merge_authorized": false,
+    "security_waiver": false,
+    "state": "HOLD"
+  },
+  "backlog": {
+    "candidate_step_signatures": 56,
+    "confirmed_causal_roots": null,
+    "distinct_historical_run_ids": 253,
+    "distinct_run_ids_not_yet_scanned_by_this_projection": 193,
+    "distinct_run_ids_with_first_page_job_readbacks": 60,
+    "failed_job_metadata_records": 118,
+    "failed_workflow_associations": 260,
+    "first_failed_step_metadata_records": 118,
+    "historical_pr_records": 75,
+    "root_closures_accepted": null,
+    "run_attempts_fully_enumerated": null,
+    "unknown_total_repository_lines": null,
+    "unlisted_backlog_items": null,
+    "untested_total_repository_lines": null
+  },
+  "generated_from": "source-bound native coverage artifact plus frozen owner-specific historical receipts",
+  "native_coverage": {
+    "acceptance_credit": null,
+    "all_measured_source_blobs_equal": true,
+    "artifact_exact_sha": "36d628f9c9deb0efcc11e3aa9ffc164075b75470",
+    "artifact_id": 12098690913,
+    "branch_pct": 95.7447,
+    "covered_branches": 90,
+    "covered_lines": 269,
+    "diff_coverage": null,
+    "eligible_branches": 94,
+    "eligible_lines": 269,
+    "evidence_tier": "CONTENT_EQUIVALENT_MODULE_SCOPE",
+    "line_pct": 100.0,
+    "modules": {
+      "DMAIC_V3/quick_error_fix.py": {
+        "covered_branches": 52,
+        "covered_statements": 165,
+        "eligible_branches": 56,
+        "eligible_statements": 165,
+        "source_blob_equal_to_pr_head": true
+      },
+      "DMAIC_V3/quick_error_lister.py": {
+        "covered_branches": 38,
+        "covered_statements": 104,
+        "eligible_branches": 38,
+        "eligible_statements": 104,
+        "source_blob_equal_to_pr_head": true
+      }
+    },
+    "pr_head_sha_at_check": "fe05c6865f00d40def80996390ff0cf7c002562f",
+    "sha_identity_match": false,
+    "test_cases_by_file": {
+      "test_dmaic_quick_error_edge_matrix_cbd": 9,
+      "test_dmaic_quick_error_fix_cbd_coverage": 24,
+      "test_dmaic_quick_error_lister_cbd_coverage": 14
+    },
+    "test_cases_passed": 47,
+    "whole_repo_coverage": null
+  },
+  "observation_is_atomic": false,
+  "provenance": {
+    "coverage_artifact_file": "test-evidence-py3.12-36d628f9c9deb0efcc11e3aa9ffc164075b75470",
+    "coverage_artifact_id": 12098690913,
+    "coverage_execution_sha": "36d628f9c9deb0efcc11e3aa9ffc164075b75470",
+    "coverage_head_sha": "fe05c6865f00d40def80996390ff0cf7c002562f",
+    "coverage_pr": 2099,
+    "coverage_source_artifact_run_id": 39024853467,
+    "coverage_source_blob_checks": "two source files and three test files identical at both SHAs",
+    "current_head_native_main_coverage": null,
+    "everred_fanin_pr": 2077,
+    "everred_fanin_sha": "00cc896802b426c6b222c2557338e54412a51062",
+    "graph_owner_pr": 2090,
+    "temporal_evidence_kind": "HISTORICAL_NONATOMIC_TEST_ASSERTIONS"
+  },
+  "pulses": [
+    {
+      "actual": {
+        "eligible_branches_covered_pct": 95.7447,
+        "eligible_lines_covered_pct": 100.0,
+        "new_test_cases_recorded": 9
+      },
+      "id": "P1",
+      "narrative": "Two historically zero-covered DMAIC utilities now have source-content-matched Python 3.12 evidence; exact commit SHA differs and security/admission remain HOLD.",
+      "planned": {
+        "eligible_branches_covered_pct": 75,
+        "eligible_lines_covered_pct": 80,
+        "new_test_cases_recorded": 9
+      },
+      "scope": "LOCAL_TO_REPO",
+      "status": "SOURCE_EQUIVALENT",
+      "title": "Coverage and expanded behavioral tests"
+    },
+    {
+      "actual": {
+        "job_readbacks": 387,
+        "unique_runs_read": 60
+      },
+      "id": "P2",
+      "narrative": "60 distinct run IDs in four non-overlapping receipts; 118 failed jobs yield 56 candidate signatures, not formal root closures.",
+      "planned": {
+        "job_readbacks": 350,
+        "unique_runs_read": 60
+      },
+      "scope": "REPO",
+      "status": "HISTORICAL_OBSERVATION",
+      "title": "N0 historical run/first-step attribution"
+    },
+    {
+      "actual": {
+        "actual_warm_cache_saved_seconds": null,
+        "native_job_durations_captured": 293,
+        "target_p95_job_seconds": 267
+      },
+      "id": "P3",
+      "narrative": "Prior historical job-duration cohort p95 was 267 s. A 10% p95 reduction to 240.3 s is a proposed next-run target; no wheel-cache or CoolProp speedup has been authenticated.",
+      "planned": {
+        "actual_warm_cache_saved_seconds": null,
+        "native_job_durations_captured": 293,
+        "target_p95_job_seconds": 240.3
+      },
+      "scope": "REPO_TO_FEDERATION",
+      "status": "HISTORICAL_OBSERVATION",
+      "title": "Execution clock, testflight and cache controls"
+    }
+  ],
+  "schema": "code-purple.eoss.snapshot.v1",
+  "source_of_truth_created": false,
+  "taxonomy": [
+    {
+      "level": "LOCAL",
+      "owner": "TestPilot/developer",
+      "primary": "E0-E2 pre-commit/pre-push",
+      "surfaces": [
+        "hook telemetry",
+        "cache key",
+        "test selection",
+        "source tree digest"
+      ]
+    },
+    {
+      "level": "REPO",
+      "owner": "ABACUS/EVERRED/CBD",
+      "primary": "E3-E5 exact PR head/run/job/step",
+      "surfaces": [
+        "DAG",
+        "SIPOC",
+        "BD queue",
+        "coverage ledger",
+        "native CI timeline"
+      ]
+    },
+    {
+      "level": "FEDERATION",
+      "owner": "Mission Control CODEX / ABACUS governance",
+      "primary": "E6 review and cross-repo gates",
+      "surfaces": [
+        "repo portfolio",
+        "REX",
+        "root-owner crosswalk",
+        "admission gates"
+      ]
+    }
+  ],
+  "temporal": {
+    "actual_runner_queue_wait_seconds": null,
+    "cache_preload_saved_seconds": null,
+    "censored_or_inverted": 10,
+    "clock_basis": "native job started_at to completed_at, nearest-rank on uncensored",
+    "coolprop_wheel_saved_seconds": null,
+    "cross_host_clock_drift_seconds": null,
+    "duration_p50_seconds": 121,
+    "duration_p95_seconds": 267,
+    "historical_temporal_jobs": 303,
+    "measured_completed_job_durations": 293,
+    "rerun_attempt_run_count": 5,
+    "source_bound_cohort": "ABACUS #2090 temporal tests / historic 16 native-job snapshots"
+  }
+}
