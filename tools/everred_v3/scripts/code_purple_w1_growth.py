@@ -1,6 +1,7 @@
 """Fail-closed W+1 matched-growth adapter; descriptive only, not a CI admission gate."""
 
 from __future__ import annotations
+
 import argparse
 import json
 from pathlib import Path

@@ -5,9 +5,10 @@ import tempfile
 import unittest
 from pathlib import Path
 
-from acceptance import core, graph, render, telemetry
 from test_acceptance_core import fixture
 from test_acceptance_telemetry import snapshot
+
+from acceptance import core, graph, render, telemetry
 
 
 def data():
