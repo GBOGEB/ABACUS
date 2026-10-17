@@ -79,7 +79,7 @@ jobs:
     runs-on: ubuntu-24.04
     steps:
       - name: Checkout exact head
-        uses: actions/checkout@v7.0.1
+        uses: actions/checkout@v7
         with:
           ref: ${{ env.EXACT_SHA }}
 
@@ -149,7 +149,7 @@ jobs:
     runs-on: ubuntu-24.04
     steps:
       - name: Checkout exact head
-        uses: actions/checkout@v7.0.1
+        uses: actions/checkout@v7
         with:
           ref: ${{ env.EXACT_SHA }}
 
@@ -211,7 +211,7 @@ jobs:
     runs-on: ubuntu-24.04
     steps:
       - name: Checkout exact head
-        uses: actions/checkout@v7.0.1
+        uses: actions/checkout@v7
         with:
           ref: ${{ env.EXACT_SHA }}
 
@@ -252,7 +252,7 @@ jobs:
       proposal_count: ${{ steps.proposal_matrix.outputs.count }}
     steps:
       - name: Checkout exact head
-        uses: actions/checkout@v7.0.1
+        uses: actions/checkout@v7
         with:
           ref: ${{ env.EXACT_SHA }}
 
@@ -354,7 +354,7 @@ jobs:
       matrix: ${{ fromJSON(needs.static-analysis.outputs.proposal_matrix) }}
     steps:
       - name: Checkout exact head
-        uses: actions/checkout@v7.0.1
+        uses: actions/checkout@v7
         with:
           ref: ${{ env.EXACT_SHA }}
 
@@ -469,7 +469,7 @@ jobs:
           test "$STATIC_RESULT" = "success"
 
       - name: Checkout exact head
-        uses: actions/checkout@v7.0.1
+        uses: actions/checkout@v7
         with:
           ref: ${{ env.EXACT_SHA }}
 
