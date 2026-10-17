@@ -48,8 +48,9 @@ jobs:
           if not re.fullmatch(r'[0-9a-f]{40}', expected) or actual != expected:
               raise SystemExit('HOLD: checkout SHA differs from expected PR head')
           log = (folder / 'unittest.log').read_bytes()
-          if not re.search(rb'Ran 19 tests?', log) or b'OK' not in log:
-              raise SystemExit('HOLD: full regression suite not demonstrated')
+          matched_tests = re.search(rb'Ran (\d+) tests?', log)
+          if matched_tests is None or int(matched_tests.group(1)) < 23 or b'OK' not in log:
+              raise SystemExit('HOLD: full 23-case regression suite not demonstrated')
           data = json.loads((folder / 'coverage.json').read_text())
           name = 'scripts/cbd_matched_coverage_delta.py'
           counts = data['files'][name]['summary']
@@ -68,7 +69,7 @@ jobs:
               'job_id': None,
               'job_id_status': 'PENDING_NATIVE_API_READBACK',
               'source_sha256': {name: hashlib.sha256(pathlib.Path(name).read_bytes()).hexdigest()},
-              'tested_count': 19,
+              'tested_count': int(matched_tests.group(1)),
               'covered_lines': lines,
               'covered_branches': branches,
               'status': 'PROVISIONAL_SOURCE_BOUND_ONLY',
