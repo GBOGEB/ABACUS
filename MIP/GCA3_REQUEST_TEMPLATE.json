@@ -4,12 +4,12 @@
   "mode": "bounded_single_invocation",
   "baseline": {
     "repository": "GBOGEB/ABACUS",
-    "accepted_n": 13,
+    "accepted_n": 0,
     "main_sha": "54da377cf82a358ac97903ecde0270c975b8fcc1",
     "baseline_evidence": "https://github.com/GBOGEB/ABACUS/issues/1860"
   },
   "advance": {
-    "target_n": 16,
+    "target_n": 3,
     "wave_count": 3,
     "max_pulses_per_wave": 3,
     "priorities": [
@@ -50,5 +50,6 @@
     "predicted_vs_actual",
     "dag_sipoc_delta",
     "final_holds"
-  ]
+  ],
+  "example_warning": "N=0 is illustrative, NOT an independently accepted programme index; replace all baseline fields with live verified evidence before execution."
 }
