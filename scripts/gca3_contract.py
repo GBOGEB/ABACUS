@@ -12,7 +12,7 @@ from pathlib import Path
 
 REQUEST = "code-purple.gca3.request.v1"
 RECEIPT = "code-purple.gca3.receipt.v1"
-SHA = re.compile(r"[0-9a-f]{40}\\Z")
+SHA = re.compile(r"[0-9a-f]{40}\Z")
 STATUS = {"PASS", "HOLD", "STOP"}
 
 
