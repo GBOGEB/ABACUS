@@ -71,7 +71,7 @@ SAT_projection:
 HP_projection:
   aggregate_2KOP: {flow_g_s: 326.0, electrical_kW: 814.0, CW_kWth: 733.0}
   owner_normal_frequency_Hz: 56.0
-  selected_package: KAESER_FSD575_SFC_wc
+  selected_package: VENDOR_1_FSD575_SFC_wc
   dedicated_oil_pump_hypothesis: REJECT_GENERIC_PACKAGE_CLARIFICATION_SAYS_NOT_REQUIRED
   max_reference: {Hz: 72.0, flow_g_s: 112.0, package_kW: 357.0, motor_rating_kW: 315.0}
   identifiable_fixed_baseload_from_current_evidence: false

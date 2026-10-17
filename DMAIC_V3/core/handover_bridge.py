@@ -10,7 +10,7 @@ Bridges handover pipeline with DMAIC V3 structure
 """
 
 from pathlib import Path
-from typing import Dict, List, Any, Tuple
+from typing import Dict, List, Any, Tuple, Optional
 from datetime import datetime
 import json
 
@@ -64,10 +64,10 @@ class HandoverBridge:
         """
         self.config = config
         self.state_manager = state_manager
-        self.run_id = None
-        self.provenance_log = []
-        self.metrics_log = []
-        self._phase_cache = {}  # Cache for idempotent phase results
+        self.run_id: Optional[str] = None
+        self.provenance_log: List[Dict[str, Any]] = []
+        self.metrics_log: List[Dict[str, Any]] = []
+        self._phase_cache: Dict[str, Any] = {}  # Cache for idempotent phase results
 
     def begin_run(self, inputs_hash: str = "default") -> str:
         """
@@ -116,16 +116,25 @@ class HandoverBridge:
         Returns:
             Phase execution result
         """
-        # Check cache first
-        if phase_name in self._phase_cache:
-            return self._phase_cache[phase_name]
+        # Bind idempotency to phase plus behavioral inputs. Phase-name-only
+        # caching incorrectly reuses iteration N results for iteration N+1.
+        try:
+            input_hash = idempotency.hash_json({"args": args, "kwargs": kwargs})
+        except (TypeError, ValueError):
+            input_hash = idempotency.hash_json(
+                {
+                    "args": [repr(arg) for arg in args],
+                    "kwargs": {key: repr(value) for key, value in sorted(kwargs.items())},
+                }
+            )
+        cache_key = f"{phase_name}:{input_hash}"
 
-        # Execute phase
+        if cache_key in self._phase_cache:
+            return self._phase_cache[cache_key]
+
         idempotent_phase = IdempotentPhase(phase_name, self.state_manager)
         result = idempotent_phase.execute(phase_func, *args, **kwargs)
-
-        # Cache result
-        self._phase_cache[phase_name] = result
+        self._phase_cache[cache_key] = result
 
         return result
 
@@ -351,7 +360,7 @@ class IdempotentPhaseExecutor:
                 "success" if success else "failed",
                 inputs_hash,
                 outputs_hash,
-                metrics
+                metrics,
             )
 
             return result
@@ -405,12 +414,12 @@ def integrate_phase4_opportunities(phase4_instance, opportunities_path: Path):
 
 def _parse_opportunities(path: Path) -> list:
     """Parse opportunities from markdown file"""
-    opportunities = []
+    opportunities: List[Dict[str, Any]] = []
     content = path.read_text(encoding='utf-8')
 
     # Simple parsing - extract opportunity sections
     lines = content.split('\n')
-    current_opp = None
+    current_opp: Optional[Dict[str, Any]] = None
 
     for line in lines:
         if line.startswith('## OPP-') or line.startswith('### OPP-'):

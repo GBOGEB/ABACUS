@@ -33,6 +33,7 @@ class ErrorDetector:
         )
 
         if result.returncode != 0:
+            parsed = 0
             for line in result.stdout.split('\n'):
                 if 'error' in line.lower():
                     errors.append({
@@ -40,13 +41,20 @@ class ErrorDetector:
                         'message': line.strip(),
                         'timestamp': datetime.now().isoformat()
                     })
+                    parsed += 1
+            if parsed == 0:
+                errors.append({
+                    'type': 'pylint_execution_error',
+                    'message': f'pylint exited with status {result.returncode} without parsed diagnostics',
+                    'timestamp': datetime.now().isoformat()
+                })
 
         result = subprocess.run(
             ['python', '-m', 'mypy', 'DMAIC_V3/', '--no-error-summary'],
             capture_output=True,
             text=True
         )
-
+        parsed = 0
         for line in result.stdout.split('\n'):
             if 'error:' in line:
                 errors.append({
@@ -54,6 +62,13 @@ class ErrorDetector:
                     'message': line.strip(),
                     'timestamp': datetime.now().isoformat()
                 })
+                parsed += 1
+        if result.returncode != 0 and parsed == 0:
+            errors.append({
+                'type': 'mypy_execution_error',
+                'message': f'mypy exited with status {result.returncode} without parsed diagnostics',
+                'timestamp': datetime.now().isoformat()
+            })
 
         self.errors = errors
         self.warnings = warnings
@@ -172,7 +187,7 @@ class QuickFixer:
 
             original = content
 
-            content = content.replace('Dict[str, ', 'Dict[str, Any]')
+            content = content.replace('Dict[str, ]', 'Dict[str, Any]')
             content = content.replace('List[Dict]', 'List[Dict[str, Any]]')
             content = content.replace('Tuple[bool, Dict]', 'Tuple[bool, Dict[str, Any]]')
 
@@ -206,17 +221,35 @@ class QuickFixer:
                 lines = f.readlines()
 
             import_line = f"from typing import {missing_import}\n"
+            typing_lines = [
+                (i, line) for i, line in enumerate(lines)
+                if line.startswith('from typing import ')
+            ]
+            for _, line in typing_lines:
+                imported = {
+                    name.strip().split(' as ', 1)[0]
+                    for name in line.split('import', 1)[1].split(',')
+                }
+                if missing_import in imported:
+                    # An unchanged file is not a successfully applied fix.
+                    return False
 
-            for i, line in enumerate(lines):
-                if line.startswith('from typing import'):
-                    if missing_import not in line:
-                        lines[i] = line.rstrip() + f", {missing_import}\n"
-                        break
+            if typing_lines:
+                i = typing_lines[0][0]
+                lines[i] = lines[i].rstrip('\n') + f", {missing_import}\n"
             else:
+                insertion = 1 if lines and lines[0].startswith('#!') else 0
                 for i, line in enumerate(lines):
-                    if line.startswith('import ') or line.startswith('from '):
-                        lines.insert(i, import_line)
+                    if line.startswith('from __future__ import '):
+                        insertion = max(insertion, i + 1)
+                for i, line in enumerate(lines):
+                    if line.startswith('import ') or (
+                        line.startswith('from ')
+                        and not line.startswith('from __future__ import ')
+                    ):
+                        insertion = max(insertion, i)
                         break
+                lines.insert(insertion, import_line)
 
             with open(file_path, 'w', encoding='utf-8') as f:
                 f.writelines(lines)

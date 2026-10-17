@@ -57,7 +57,7 @@
       "finding_id": "DOW-W44-B02",
       "scope": "formal-closure",
       "source_refs": ["70/90", "0/20 negotiation"],
-      "reason": "No source-bound LKT minute/BAFO/updated-offer return entered canonical child re-entry.",
+      "reason": "No source-bound SUPPLIER_B minute/BAFO/updated-offer return entered canonical child re-entry.",
       "recommended_child_disposition": "DEFER_PENDING_SOURCE"
     }
   ],

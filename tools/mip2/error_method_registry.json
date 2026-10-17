@@ -1,0 +1,168 @@
+{
+  "schema": "mip2.error-method-registry.v1",
+  "policy": {
+    "no_waivers": true,
+    "closure_requires": [
+      "exact_head_native_test",
+      "source_or_configuration_delta",
+      "root_specific_negative_control"
+    ],
+    "statuses": [
+      "DETECTED",
+      "ATTRIBUTED",
+      "REPAIR_COMMITTED",
+      "VERIFIED",
+      "ROOT_RESOLVED"
+    ]
+  },
+  "families": [
+    {
+      "id": "FORMAT",
+      "detectors": [
+        "black",
+        "isort",
+        "ruff"
+      ],
+      "repair_method": "format-only",
+      "acceptance": "pinned formatter and regression"
+    },
+    {
+      "id": "LINT",
+      "detectors": [
+        "ruff",
+        "flake8",
+        "pylint"
+      ],
+      "repair_method": "bounded-refactor",
+      "acceptance": "lint plus focused tests"
+    },
+    {
+      "id": "TYPE",
+      "detectors": [
+        "mypy",
+        "pyright"
+      ],
+      "repair_method": "type-contract-repair",
+      "acceptance": "typecheck plus contract tests"
+    },
+    {
+      "id": "TEST",
+      "detectors": [
+        "pytest",
+        "junit"
+      ],
+      "repair_method": "reproduce-and-regress",
+      "acceptance": "native matrix"
+    },
+    {
+      "id": "COVERAGE",
+      "detectors": [
+        "coverage.py",
+        "diff-cover"
+      ],
+      "repair_method": "target-missing-branches",
+      "acceptance": "exact-head comparable coverage"
+    },
+    {
+      "id": "SAST",
+      "detectors": [
+        "bandit",
+        "codeql",
+        "semgrep"
+      ],
+      "repair_method": "secure-source-repair",
+      "acceptance": "native security scan and negative control"
+    },
+    {
+      "id": "DEPENDENCY",
+      "detectors": [
+        "pip-audit",
+        "osv-scanner",
+        "safety"
+      ],
+      "repair_method": "verified-upgrade",
+      "acceptance": "dependency and regression checks"
+    },
+    {
+      "id": "SECRET",
+      "detectors": [
+        "gitleaks",
+        "detect-secrets",
+        "a10"
+      ],
+      "repair_method": "authorized-confidentiality-review",
+      "acceptance": "authorized disposition; no automatic waiver"
+    },
+    {
+      "id": "CONTAINER",
+      "detectors": [
+        "docker",
+        "trivy",
+        "hadolint"
+      ],
+      "repair_method": "container-reproduction",
+      "acceptance": "image and integration tests"
+    },
+    {
+      "id": "RUNTIME",
+      "detectors": [
+        "lldb",
+        "gdb",
+        "faulthandler",
+        "asan"
+      ],
+      "repair_method": "debugger-root-repair",
+      "acceptance": "reproduction plus debugger receipt"
+    },
+    {
+      "id": "WORKFLOW",
+      "detectors": [
+        "actionlint",
+        "yamllint",
+        "policy-census"
+      ],
+      "repair_method": "workflow-source-repair",
+      "acceptance": "native governance and workflow checks"
+    },
+    {
+      "id": "SCHEMA",
+      "detectors": [
+        "jsonschema",
+        "openapi",
+        "contract-tests"
+      ],
+      "repair_method": "schema-migration",
+      "acceptance": "schema and backward-compatibility tests"
+    },
+    {
+      "id": "DOC",
+      "detectors": [
+        "markdownlint",
+        "link-check",
+        "pdf-qa"
+      ],
+      "repair_method": "source-document-repair",
+      "acceptance": "render and link verification"
+    },
+    {
+      "id": "PERFORMANCE",
+      "detectors": [
+        "benchmark",
+        "opentelemetry",
+        "profiling"
+      ],
+      "repair_method": "profile-guided-repair",
+      "acceptance": "comparable performance run"
+    },
+    {
+      "id": "ENGINEERING",
+      "detectors": [
+        "unit-check",
+        "traceability",
+        "safety-requirements"
+      ],
+      "repair_method": "engineering-validation",
+      "acceptance": "source-linked engineering tests"
+    }
+  ]
+}

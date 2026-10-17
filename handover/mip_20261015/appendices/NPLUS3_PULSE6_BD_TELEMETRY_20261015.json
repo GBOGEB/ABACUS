@@ -1,0 +1,194 @@
+{
+  "schema": "code-purple.nplus3.pulse6-bd-telemetry/v1",
+  "status": "APPEND_ONLY_EVIDENCE_NOT_SSOT",
+  "snapshot_date": "2026-10-15",
+  "caveat": "Non-atomic GitHub check-run samples, first-page only (max 100), counts not final; no baseline matching inferred",
+  "admission": "HOLD",
+  "abacus": {
+    "open_pr_count": 48,
+    "open_nonpr_issue_count": 47,
+    "ruleset_24494381": {
+      "approval_count": 0,
+      "required_status_check_rule": false
+    }
+  },
+  "w70": {
+    "pr": 1997,
+    "head_sha": "7b514a8fc2834f1cd6498dca6e81c49786524d4e",
+    "run_id": 38784464444,
+    "run_attempt": 1,
+    "job_id": 116592772755,
+    "artifact_id": 11997960914,
+    "github_reported_artifact_digest": "sha256:261203272f14c466a8be9fdc776f41d48dbb0c3f4be96da9aa2db3fc80e84497",
+    "line": {
+      "covered": 133,
+      "eligible": 133,
+      "pct": 100
+    },
+    "branch": {
+      "covered": 17,
+      "eligible": 18,
+      "pct": 94.44
+    },
+    "tests": {
+      "passed": 23,
+      "total": 23
+    },
+    "manifestations": {
+      "open": 31,
+      "population": 76
+    },
+    "unique_roots": null,
+    "eligible_main_gain": null,
+    "measurement_status": "EXACT_HEAD_NATIVE_SUCCESS",
+    "full_pr_admission": "HOLD",
+    "comparison_to_prior": {
+      "old_head_sha": "45ba302595f8c4b4e21d9896091b359d9a4630d0",
+      "same_numerators_and_denominators": true,
+      "observed_line_pct_delta": 0,
+      "observed_branch_pct_delta": 0,
+      "source_sha_changed": true,
+      "source_semantic_matching_unproven": true,
+      "do_not_claim_qualified_gain": true
+    }
+  },
+  "new_lanes": [
+    {
+      "pr": 2028,
+      "head_sha": "5e5c166201b0e5d1c2d8e330b9ebc9d4abbd9237",
+      "base": "feat/handover-v2-evidence-pulse-20261015",
+      "status": "CHILD_PR",
+      "root": "HANDOVER_SEMANTIC_TUPLE",
+      "credit": "NO_AUTHENTICATED_COMPLETE_TRANSCRIPT"
+    },
+    {
+      "pr": 2029,
+      "head_sha": "f7c4a7da7002474b3fa682147796021d94521429",
+      "base": "main",
+      "status": "DRAFT_NONTERMINAL",
+      "root": "MATPLOTLIB_PY310_DUPLICATE_CANDIDATE",
+      "checks_sample": {
+        "returned": 39,
+        "success": 1,
+        "pending": 37
+      },
+      "root_closed": false
+    },
+    {
+      "pr": 2030,
+      "head_sha": "c28ac19b69a3e3fdcb11fd52f0c6cc3caf1ea38d",
+      "base": "main",
+      "status": "DRAFT_NONTERMINAL",
+      "root": "C1_BRANCH_RETIREMENT_COVERAGE",
+      "baseline_claim_from_pr_description": {
+        "main_lines_covered": 21391,
+        "main_lines_eligible": 39139,
+        "target_file_combined_covered": 75,
+        "target_file_combined_eligible": 286
+      },
+      "actual_new_head_coverage": null,
+      "qualified_gain": null
+    }
+  ],
+  "check_samples": [
+    {
+      "pr": 1997,
+      "sha": "7b514a8fc2834f1cd6498dca6e81c49786524d4e",
+      "total": 45,
+      "returned": 45,
+      "passed": 7,
+      "failed": 1,
+      "pending": 36,
+      "failed_names": [
+        "policy-and-inventory"
+      ]
+    },
+    {
+      "pr": 2024,
+      "sha": "4aae61e3cfd52061e1183db4b3281a77b22fd5c0",
+      "total": 105,
+      "returned": 100,
+      "passed": 86,
+      "failed": 1,
+      "pending": 6,
+      "first_page_partial": true
+    },
+    {
+      "pr": 2026,
+      "sha": "884212de9cdf9b168a41d8ea254d006bc3421690",
+      "total": 101,
+      "returned": 100,
+      "passed": 79,
+      "failed": 1,
+      "pending": 14,
+      "first_page_partial": true
+    },
+    {
+      "pr": 2027,
+      "sha": "8cb4d742ad046ab688d691f4cc68c4171ad4308f",
+      "total": 75,
+      "returned": 75,
+      "passed": 53,
+      "failed": 12,
+      "pending": 0
+    }
+  ],
+  "missioncontrol": {
+    "open_prs": 6,
+    "overlap": [
+      "#552",
+      "#554",
+      "#555",
+      "#556 source-owned M3 repair alternatives",
+      "#557 child of #553"
+    ],
+    "merge_credit": 0
+  },
+  "bd_queue": [
+    {
+      "priority": "P0",
+      "root": "A10_AND_REQUIRED_CHECKS",
+      "action": "Independent authorized A10 disposition and required-checks enforcement; never waive"
+    },
+    {
+      "priority": "P0",
+      "root": "SAFETY_SECURITY",
+      "action": "Inspect terminal Safety 64/NLTK report, distinguish tool install from scan"
+    },
+    {
+      "priority": "P0",
+      "root": "MATPLOTLIB_PY310",
+      "action": "Qualify single candidate across #2024,#2026,#2029; reconcile exact main and downstream only after governed integration"
+    },
+    {
+      "priority": "P1",
+      "root": "W70_GOVERNANCE",
+      "action": "Classify failing policy-and-inventory independently from green W70 native scope and renew pending exact-head CI"
+    },
+    {
+      "priority": "P1",
+      "root": "C1_COVERAGE",
+      "action": "Wait #2030 terminal B0/coverage artifact and measure actual before/after same scope"
+    },
+    {
+      "priority": "P1",
+      "root": "M3_SOURCE_YAML",
+      "action": "Choose source-owned M3 repair then rerun #553 exact head; no duplicate #552/#554/#555/#556 work"
+    },
+    {
+      "priority": "P1",
+      "root": "SEMANTIC_TUPLE",
+      "action": "Keep #2028 dependent on #2006 and preserve missing original transcript IDs"
+    }
+  ],
+  "unknown": [
+    "Queue p95",
+    "CI fanout cost delta",
+    "Rerun amplification",
+    "Qualified same-cohort coverage delta",
+    "Unique root closures",
+    "Authenticated Crew/REX",
+    "PCA/BT readiness",
+    "QPS owner acceptance"
+  ]
+}
