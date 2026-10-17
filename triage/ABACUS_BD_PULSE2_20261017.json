@@ -1,0 +1,298 @@
+{
+  "schema": "abacus.bd.four-repo-pulse2-20261017.v1",
+  "source": "GITHUB_NATIVE_ISSUE_STATE_AND_ORIGINAL_ACTION_RUNS",
+  "as_of_date_utc": "2026-10-17",
+  "authority_transfer": false,
+  "merge_admission": "HOLD",
+  "main_source_anchor_sha": "8d0c6ca568d6ea0b5e658198d0046283c049e557",
+  "derived_from": "triage/ABACUS_ISSUE_AGEING_CENSUS_20261017.json",
+  "baseline": {
+    "ABACUS_open_issues": 53,
+    "ABACUS_age_bins": {
+      "0_to_6": 25,
+      "7_to_13": 4,
+      "14_to_29": 15,
+      "30_plus": 9
+    }
+  },
+  "latest": {
+    "scoped_repo_issue_open": {
+      "GBOGEB/ABACUS": 38,
+      "GBOGEB/CODEX": 10,
+      "GBOGEB/cryoplant-project": 56,
+      "GBOGEB/pipeline-automation-hub": 32
+    },
+    "four_repo_total": 136,
+    "global_all_repo_total": null,
+    "ABACUS_issue_ages": {
+      "0_to_6": 19,
+      "7_to_13": 1,
+      "14_to_29": 9,
+      "30_plus": 9
+    },
+    "ABACUS_issue_count_delta": -15,
+    "housekeeping_closed_this_pulse": 9,
+    "other_completed_today": 6,
+    "canonical_engineering_roots_open": null,
+    "canonical_engineering_roots_closed": null
+  },
+  "closure_evidence": {
+    "nine_this_pulse": [
+      {
+        "issue": 1447,
+        "repo": "GBOGEB/ABACUS",
+        "state": "closed",
+        "state_reason": "duplicate",
+        "closure_class": "DUPLICATE_MONITORING_TICKET",
+        "historical_broken_hrefs": 16,
+        "source_run_id": 36387912882,
+        "source_run_url": "https://github.com/GBOGEB/ABACUS/actions/runs/36387912882",
+        "canonical_issue": 1885,
+        "source_root_status": "OPEN",
+        "engineering_root_credit": 0
+      },
+      {
+        "issue": 1469,
+        "repo": "GBOGEB/ABACUS",
+        "state": "closed",
+        "state_reason": "duplicate",
+        "closure_class": "DUPLICATE_MONITORING_TICKET",
+        "historical_broken_hrefs": 16,
+        "source_run_id": 36531590731,
+        "source_run_url": "https://github.com/GBOGEB/ABACUS/actions/runs/36531590731",
+        "canonical_issue": 1885,
+        "source_root_status": "OPEN",
+        "engineering_root_credit": 0
+      },
+      {
+        "issue": 1481,
+        "repo": "GBOGEB/ABACUS",
+        "state": "closed",
+        "state_reason": "duplicate",
+        "closure_class": "DUPLICATE_MONITORING_TICKET",
+        "historical_broken_hrefs": 16,
+        "source_run_id": 36678768269,
+        "source_run_url": "https://github.com/GBOGEB/ABACUS/actions/runs/36678768269",
+        "canonical_issue": 1885,
+        "source_root_status": "OPEN",
+        "engineering_root_credit": 0
+      },
+      {
+        "issue": 1543,
+        "repo": "GBOGEB/ABACUS",
+        "state": "closed",
+        "state_reason": "duplicate",
+        "closure_class": "DUPLICATE_MONITORING_TICKET",
+        "historical_broken_hrefs": 16,
+        "source_run_id": 36825395604,
+        "source_run_url": "https://github.com/GBOGEB/ABACUS/actions/runs/36825395604",
+        "canonical_issue": 1885,
+        "source_root_status": "OPEN",
+        "engineering_root_credit": 0
+      },
+      {
+        "issue": 1641,
+        "repo": "GBOGEB/ABACUS",
+        "state": "closed",
+        "state_reason": "duplicate",
+        "closure_class": "DUPLICATE_MONITORING_TICKET",
+        "historical_broken_hrefs": 52,
+        "source_run_id": 36973983760,
+        "source_run_url": "https://github.com/GBOGEB/ABACUS/actions/runs/36973983760",
+        "canonical_issue": 1885,
+        "source_root_status": "OPEN",
+        "engineering_root_credit": 0
+      },
+      {
+        "issue": 1707,
+        "repo": "GBOGEB/ABACUS",
+        "state": "closed",
+        "state_reason": "duplicate",
+        "closure_class": "DUPLICATE_MONITORING_TICKET",
+        "historical_broken_hrefs": 52,
+        "source_run_id": 37103315126,
+        "source_run_url": "https://github.com/GBOGEB/ABACUS/actions/runs/37103315126",
+        "canonical_issue": 1885,
+        "source_root_status": "OPEN",
+        "engineering_root_credit": 0
+      },
+      {
+        "issue": 1763,
+        "repo": "GBOGEB/ABACUS",
+        "state": "closed",
+        "state_reason": "duplicate",
+        "closure_class": "DUPLICATE_MONITORING_TICKET",
+        "historical_broken_hrefs": 52,
+        "source_run_id": 37188018566,
+        "source_run_url": "https://github.com/GBOGEB/ABACUS/actions/runs/37188018566",
+        "canonical_issue": 1885,
+        "source_root_status": "OPEN",
+        "engineering_root_credit": 0
+      },
+      {
+        "issue": 1803,
+        "repo": "GBOGEB/ABACUS",
+        "state": "closed",
+        "state_reason": "duplicate",
+        "closure_class": "DUPLICATE_MONITORING_TICKET",
+        "historical_broken_hrefs": 52,
+        "source_run_id": 37274136404,
+        "source_run_url": "https://github.com/GBOGEB/ABACUS/actions/runs/37274136404",
+        "canonical_issue": 1885,
+        "source_root_status": "OPEN",
+        "engineering_root_credit": 0
+      },
+      {
+        "issue": 1845,
+        "repo": "GBOGEB/ABACUS",
+        "state": "closed",
+        "state_reason": "duplicate",
+        "closure_class": "DUPLICATE_MONITORING_TICKET",
+        "historical_broken_hrefs": 52,
+        "source_run_id": 37424281873,
+        "source_run_url": "https://github.com/GBOGEB/ABACUS/actions/runs/37424281873",
+        "canonical_issue": 1885,
+        "source_root_status": "OPEN",
+        "engineering_root_credit": 0
+      }
+    ],
+    "six_other_completed_today": [
+      {
+        "issue": 1861,
+        "repo": "GBOGEB/ABACUS",
+        "state": "closed",
+        "state_reason": "completed",
+        "closure_class": "ISSUE_COMPLETED_NOT_CAUSAL_ROOT_CERTIFICATION",
+        "proven_engineering_root_closure": null
+      },
+      {
+        "issue": 1862,
+        "repo": "GBOGEB/ABACUS",
+        "state": "closed",
+        "state_reason": "completed",
+        "closure_class": "ISSUE_COMPLETED_NOT_CAUSAL_ROOT_CERTIFICATION",
+        "proven_engineering_root_closure": null
+      },
+      {
+        "issue": 1864,
+        "repo": "GBOGEB/ABACUS",
+        "state": "closed",
+        "state_reason": "completed",
+        "closure_class": "ISSUE_COMPLETED_NOT_CAUSAL_ROOT_CERTIFICATION",
+        "proven_engineering_root_closure": null
+      },
+      {
+        "issue": 1865,
+        "repo": "GBOGEB/ABACUS",
+        "state": "closed",
+        "state_reason": "completed",
+        "closure_class": "ISSUE_COMPLETED_NOT_CAUSAL_ROOT_CERTIFICATION",
+        "proven_engineering_root_closure": null
+      },
+      {
+        "issue": 1878,
+        "repo": "GBOGEB/ABACUS",
+        "state": "closed",
+        "state_reason": "completed",
+        "closure_class": "ISSUE_COMPLETED_NOT_CAUSAL_ROOT_CERTIFICATION",
+        "proven_engineering_root_closure": null
+      },
+      {
+        "issue": 1879,
+        "repo": "GBOGEB/ABACUS",
+        "state": "closed",
+        "state_reason": "completed",
+        "closure_class": "ISSUE_COMPLETED_NOT_CAUSAL_ROOT_CERTIFICATION",
+        "proven_engineering_root_closure": null
+      }
+    ],
+    "independently_confirmed_dashboard_repair": null,
+    "exact_matched_href_target_delta": null,
+    "original_dashboard_issue": 1885,
+    "original_historic_manifestations": 53,
+    "last_native_five": [
+      {
+        "class": "UNPUBLISHED_MYRRHA_LINKS",
+        "count": 2
+      },
+      {
+        "class": "MISSING_CONTRACT_BASELINE_LINK",
+        "count": 1
+      },
+      {
+        "class": "RUNTIME_GENERATED_W007_LINK",
+        "count": 1
+      },
+      {
+        "class": "JS_DYNAMIC_LITERAL_FALSE_POSITIVE",
+        "count": 1
+      }
+    ],
+    "source_repair_pr": 2164,
+    "source_repair_head": "085f9991cb2735f178a4295a35b1fe380949b9eb",
+    "source_repair_native_status": "QUEUED_AT_LAST_READBACK",
+    "source_repair_accepted": false
+  },
+  "owner_todo": [
+    {
+      "repo": "GBOGEB/ABACUS",
+      "issue": 1885,
+      "state": "OPEN",
+      "next": "qualify source-owned PR #2164 exact-head CI and true dashboard-health rerun; issue closure only with native comparable acceptance"
+    },
+    {
+      "repo": "GBOGEB/ABACUS",
+      "issue": 1860,
+      "state": "OPEN_P0_HOLD",
+      "next": "restore/prove effective branch review, terminal required checks and independent security; recertify historical main merges"
+    },
+    {
+      "repo": "GBOGEB/ABACUS",
+      "issue": 1929,
+      "state": "OPEN",
+      "next": "join native deduplicated causal root IDs; separate issues and PRs from roots"
+    },
+    {
+      "repo": "GBOGEB/ABACUS",
+      "issue": 2087,
+      "state": "OPEN",
+      "next": "source-governance exact-head CI and generated inventory"
+    },
+    {
+      "repo": "GBOGEB/CODEX",
+      "issue": 977,
+      "state": "OPEN",
+      "next": "7 checklist actions remain; authenticated ABACUS worker dispatch and REX not proven by main merges"
+    },
+    {
+      "repo": "GBOGEB/cryoplant-project",
+      "issue": 1929,
+      "state": "OPEN",
+      "next": "8 QPS session-recensus obligations remain source-authorized"
+    },
+    {
+      "repo": "GBOGEB/pipeline-automation-hub",
+      "issue": 604,
+      "state": "OPEN",
+      "next": "separate read-only Golden Graph telemetry from approved Crew execution"
+    }
+  ],
+  "measurement_guidance": {
+    "statistical_unit": "GITHUB_ISSUE_LIFECYCLE",
+    "causal_root_unit": "UNKNOWN_SEPARATE",
+    "older_issue_age_14plus_before": [
+      24,
+      53
+    ],
+    "older_issue_age_14plus_after": [
+      18,
+      38
+    ],
+    "older_issue_absolute_debt_change": -6,
+    "selective_closure_changes_share": true,
+    "scope_limit": "FOUR_NAMED_REPOS_ONLY_NOT_ALL_GBOGEB_REPOS",
+    "issue_housekeeping_never_source_root_credit": true,
+    "closed_completed_issue_not_root_proof": true,
+    "feature_merge_not_protected_main_admission": true
+  }
+}

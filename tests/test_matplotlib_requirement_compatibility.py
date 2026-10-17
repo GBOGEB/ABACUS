@@ -78,7 +78,7 @@ class MatplotlibCompatibilityRegression(unittest.TestCase):
         expected = {
             8: "matplotlib>=3.7.5,<3.8.0",
             9: "matplotlib>=3.9.4,<3.10.0",
-            10: "matplotlib>=3.10.8,<3.11.0",
+            10: "matplotlib>=3.10.9,<3.11.0",
             11: "matplotlib>=3.11.2,<4.0.0",
             12: "matplotlib>=3.11.2,<4.0.0",
         }
