@@ -32,9 +32,11 @@ jobs:
       matrix:
         python-version: ['3.10', '3.12']
     steps:
-      # actions/checkout v4.2.2, immutable SHA pin
+      # Source-test checkout uses exact PR head, not a synthetic merge.
+      # Full CI must independently verify merge admission.
       - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
         with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
           persist-credentials: false
       # actions/setup-python v5.6.0, immutable SHA pin
       - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97
@@ -46,7 +48,12 @@ jobs:
             PyYAML==6.0.3 jsonschema==4.25.1 pytest numpy==1.26.4
       - name: Verify source, event chain and disjoint leases
         working-directory: tools/everred_v3
+        env:
+          EXPECTED_HEAD_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
         run: |
+          actual_sha="$(git rev-parse HEAD)"
+          printf 'CBD_EXACT_SOURCE checkout=%s expected=%s event_sha=%s\n' "$actual_sha" "$EXPECTED_HEAD_SHA" "$GITHUB_SHA"
+          test "$actual_sha" = "$EXPECTED_HEAD_SHA"
           python -m compileall -q src scripts tests
           python -m unittest discover -s tests -q
           python src/everred.py verify
@@ -90,6 +97,15 @@ jobs:
           assert d['safety']['merge_admission']=='HOLD'
           print('CBD_N0_INPUT_CENSUS=75_PR_260_ASSOC_253_UNIQUE_FAIL_RUN')
           PY
+      - name: CBD job graph causal-safe attribution and branch coverage
+        working-directory: tools/everred_v3
+        run: |
+          python -m coverage run --rcfile=/dev/null --branch \
+            --include='*/cbd_job_graph.py' \
+            -m unittest discover -s tests -p test_cbd_job_graph.py -v
+          python -m coverage json --rcfile=/dev/null \
+            --include='*/cbd_job_graph.py' \
+            -o "$RUNNER_TEMP/cbd-job-graph-module-coverage.json"
       - name: Upload CBD 260 local and branch coverage receipts
         if: always()
         uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9
@@ -98,6 +114,7 @@ jobs:
           path: |
             ${{ runner.temp }}/cbd-260-static/
             ${{ runner.temp }}/cbd-260-module-coverage.json
+            ${{ runner.temp }}/cbd-job-graph-module-coverage.json
           if-no-files-found: warn
 
       - name: Execute bounded native host and LLDB preflight
@@ -138,6 +155,7 @@ jobs:
             ${{ github.event.pull_request.head.sha || github.sha }}
         run: |
           actual_sha="$(git rev-parse HEAD)"
+          printf 'CBD_BLACK_REPAIR_SOURCE checkout=%s expected=%s event_sha=%s\n' "$actual_sha" "$EXPECTED_HEAD_SHA" "$GITHUB_SHA"
           test "$actual_sha" = "$EXPECTED_HEAD_SHA"
           python -m black --version
           python -m black src scripts tests
@@ -249,7 +267,7 @@ jobs:
 
   cbd-260-native-readonly:
     name: CBD 260 exact-run failure-job scout (no reruns)
-    if: github.event_name == 'pull_request' && startsWith(github.head_ref, 'feat/everred-cbd-')
+    if: github.event_name == 'pull_request' && (startsWith(github.head_ref, 'feat/everred-cbd-') || startsWith(github.head_ref, 'test/cbd-260-native-coverage-'))
     runs-on: ubuntu-24.04
     timeout-minutes: 20
     permissions:
@@ -286,6 +304,28 @@ jobs:
           assert m['job_readbacks_accepted']+m['job_readbacks_withheld']==253
           assert d['safety']['merge_admission']=='HOLD'
           print('CBD_NATIVE_METADATA_READBACK',m['job_readbacks_accepted'],m['job_readbacks_withheld'])
+          PY
+      - name: Build native failed-job candidate DAG and source-bound SIPOC telemetry
+        run: |
+          python tools/everred_v3/scripts/cbd_job_graph.py \
+            tools/everred_v3/data/cbd_260/N0_*.json \
+            --native-jobs "$RUNNER_TEMP/cbd-260-native/native_jobs.json" \
+            --output-dir "$RUNNER_TEMP/cbd-260-native/candidate-graph"
+          python - <<'PY'
+          import json
+          import os
+          from pathlib import Path
+          p = Path(os.environ["RUNNER_TEMP"]) / "cbd-260-native/candidate-graph/candidate_dag.json"
+          doc = json.loads(p.read_text())
+          m = doc["metrics"]
+          assert m["runs_requested"] == 253
+          assert m["runs_bound"] + m["runs_withheld"] == 253
+          assert m["candidate_step_signatures"] <= m["failed_job_observations"]
+          assert m["confirmed_roots_open"] is None
+          assert m["confirmed_roots_closed"] is None
+          assert doc["safety"]["merge_admission"] == "HOLD"
+          print("CBD_DAG_METADATA", m["runs_bound"],
+                m["failed_job_observations"], m["candidate_step_signatures"])
           PY
       - name: Upload native CBD run/job/first-step custody
         if: always()
