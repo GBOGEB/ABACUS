@@ -146,12 +146,10 @@ def test_same_denominator_cannot_promote_unverified_coverage():
         row["coverage"] = {
             "main_branch": {"covered": 10 + i, "eligible": 20, "config": "same"}
         }
-    result = m.rollup(rows)
-    assert result["pulses"][0]["coverage"] is None
-    candidate = result["pulses"][0]["coverage_candidates_unverified"]["main_branch"]
-    assert candidate["covered"] == 10
-    assert result["movements"][0]["coverage"]["main_branch"]["comparable"] is False
-    assert result["movements"][0]["coverage"]["main_branch"]["delta_covered"] is None
+    # A matched denominator does not independently authenticate a coverage receipt.
+    # The hardened producer rejects even quarantined user-provided enrichment.
+    with pytest.raises(ValueError, match="unverified coverage enrichment"):
+        m.rollup(rows)
 
 
 def test_reject_forged_coverage_verification_marker():
