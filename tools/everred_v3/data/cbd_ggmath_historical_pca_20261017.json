@@ -1,0 +1,52 @@
+{
+  "schema": "abacus.ggmath.cbd.exploratory_pca_reference.v1",
+  "evidence_class": "OFFLINE_EXPLORATORY_NOT_NATIVE_GGMATH",
+  "source_run_id": 38961401660,
+  "source_artifact_id": 12073596774,
+  "source_main_sha": "54da377cf82a358ac97903ecde0270c975b8fcc1",
+  "sampled_pr_records": 75,
+  "prs_with_failed_associations": 74,
+  "known_aliases_collapsed": [
+    [
+      2005,
+      2010
+    ]
+  ],
+  "source_head_proxy_groups": 73,
+  "workflow_features": 19,
+  "p_over_n": 0.260274,
+  "explained_variance_ratio_first5": [
+    0.22472698,
+    0.14651764,
+    0.13960069,
+    0.11257077,
+    0.09137678
+  ],
+  "effective_rank": 10.034488,
+  "strongest_pc1_loadings": [
+    {
+      "workflow": "ABACUS v032 - CI/CD Pipeline",
+      "loading": 0.668
+    },
+    {
+      "workflow": "CI - ABACUS Matrix",
+      "loading": 0.639
+    },
+    {
+      "workflow": "Validate Docs (Markdown/YAML/JSON)",
+      "loading": 0.296
+    }
+  ],
+  "bootstrap_resamples": 500,
+  "bootstrap_pc1_absolute_cos_q05_median_q95": [
+    0.745419,
+    0.92485,
+    0.97709
+  ],
+  "provider_execution_confirmed": false,
+  "causal_root_claim": null,
+  "branch_and_main_coverage_claim": null,
+  "authority_transfer": false,
+  "security_waiver": false,
+  "merge_admission": "HOLD"
+}
