@@ -150,17 +150,22 @@ security review.
 
 ## GitHub repository setting
 
-For ABACUS, the owner may disable GitHub's global **Require conversation
-resolution before merging** setting. The repository-native `PR Feedback Gate`
-then carries the materiality-aware disposition rule.
+Keep GitHub's **Require conversation resolution before merging** setting
+enabled on `main` (it is enabled in the `main` ruleset as of 2026-10-17).
+Resolving or unresolving a thread emits only the `pull_request_review_thread`
+webhook, which GitHub Actions does not support as a workflow trigger, so the
+repository-native `PR Feedback Gate` cannot see a thread being reopened until
+the five-minute scheduled sweep. The native setting closes that window.
 
-Known limitation: resolving or unresolving a thread emits only the
-`pull_request_review_thread` webhook, which GitHub Actions does not support
-as a workflow trigger. With the native setting disabled, a thread marked
-unresolved after the gate turns green leaves a stale success until the
-five-minute scheduled sweep. Keep the native setting enabled if that window
-is unacceptable, or bridge the webhook into `repository_dispatch` through a
-GitHub App before disabling it.
+Disable it only after the webhook is bridged into `repository_dispatch`
+through a GitHub App and a reopened thread is observed to re-census the PR
+immediately. Until then the gate's materiality-aware disposition rule
+applies in addition to, not instead of, native conversation resolution.
+
+A head change (`pull_request` synchronize or reopened) marks the gate pending
+outside the per-PR census queue, the same way a tracking-issue event does, so
+a PR moved from head A to B and back to A cannot re-expose A's earlier
+success while the returning head waits for its census.
 
 Overlapping evaluator runs for one PR (for example a tracking-issue event and
 a CI `workflow_run`) cannot interleave: the workflow first routes the event to

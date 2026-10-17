@@ -3,11 +3,11 @@
 # ABACUS CI workflow rationalisation
 
 Policy: `ABACUS-CI-SSOT-001`  
-Policy SHA-256: `6c0995a08703a303ebb16a20af7d52f80e4cd66956ea27ca7215698174e631af`
+Policy SHA-256: `c5bac2e6cfaab07883b8ce0dbf968b66db37eb0e463ac3f21f1b76a2316acb7c`
 
 ## Outcome
 
-The repository currently contains **158 workflow definitions**. All **158** are assigned to one primary functional cluster and lifecycle stage.
+The repository currently contains **161 workflow definitions**. All **161** are assigned to one primary functional cluster and lifecycle stage.
 
 The observed baseline that motivated this control was PR #681 with 119 check runs (111 queued, 8 skipped) and main with 122 check runs.
 
@@ -32,7 +32,7 @@ The observed baseline that motivated this control was PR #681 with 119 check run
 | `bridge_federation` | `bridge-ci.yml` | 12 | CODEX/ABACUS bridge contract and federation smoke evidence. |
 | `dmaic` | `dmaic-enterprise-ci.yml` | 8 | DMAIC phase, convergence and maturity execution. |
 | `dow` | `dow-integration.yml` | 19 | DOW parent mechanics, integration, monitoring and warm-up. |
-| `runtime_governance` | `governance.yml` | 20 | Runtime evidence, governance, review artifacts and schema validation. |
+| `runtime_governance` | `governance.yml` | 23 | Runtime evidence, governance, review artifacts and schema validation. |
 | `security` | `security-scan.yml` | 11 | Ruff PR security, scheduled Bandit, CodeQL, dependency and supply-chain scanning. |
 | `delivery` | `cd-pipeline.yml` | 8 | Build, release, deployment and publication. |
 | `documentation` | `docs-build.yml` | 6 | Documentation validation, rendering, export and Pages. |
@@ -117,6 +117,8 @@ Make PR-triggered workflows with write-class GitHub token scopes explicit and re
 | 20 | `dow` | `w285-dow-depth-recompute.yml` | pull_request, push, workflow_dispatch | 1 | `keep` | — |
 | 20 | `dow` | `w306-dow-typed-findings-proof.yml` | pull_request, push, workflow_dispatch | 1 | `keep` | — |
 | 20 | `full_regression` | `ci-cd-tests.yml` | push, pull_request, schedule, workflow_dispatch | 11 | `canonical` | — |
+| 20 | `runtime_governance` | `code-purple-dashboard-v31.yml` | pull_request, workflow_dispatch | 1 | `keep` | — |
+| 20 | `runtime_governance` | `code-purple-sut-gui.yml` | pull_request, workflow_dispatch | 1 | `keep` | — |
 | 20 | `runtime_governance` | `deployment-enforcement.yml` | workflow_dispatch | 1 | `keep` | — |
 | 20 | `runtime_governance` | `everred-v3-validation.yml` | pull_request, workflow_dispatch | 2 | `keep` | — |
 | 20 | `runtime_governance` | `governance-drift-detection.yml` | schedule, workflow_dispatch | 1 | `keep` | — |
@@ -124,6 +126,7 @@ Make PR-triggered workflows with write-class GitHub token scopes explicit and re
 | 20 | `runtime_governance` | `inventory.yml` | schedule, workflow_dispatch | 1 | `keep` | — |
 | 20 | `runtime_governance` | `leg5-federation-dashboard-proof.yml` | pull_request, workflow_dispatch | 1 | `keep` | — |
 | 20 | `runtime_governance` | `mesh-status-runtime.yml` | push, workflow_dispatch | 1 | `keep` | — |
+| 20 | `runtime_governance` | `mission-control-lite-testflight.yml` | workflow_dispatch, pull_request | 1 | `keep` | — |
 | 20 | `runtime_governance` | `pr-feedback-gate.yml` | issue_comment, issues, pull_request_review, pull_request_review_comment, pull_request, workflow_run, schedule, workflow_dispatch | 3 | `keep` | — |
 | 20 | `runtime_governance` | `review-artifact-validation.yml` | push, pull_request | 1 | `keep` | — |
 | 20 | `runtime_governance` | `runtime-governance.yml` | workflow_dispatch | 1 | `keep` | — |
