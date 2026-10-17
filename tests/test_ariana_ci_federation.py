@@ -252,7 +252,7 @@ def test_ash_action_supply_chain_and_import_triggers_are_pinned():
     workflow = (ROOT / ".github/workflows/ariana-cicd.yml").read_text(
         encoding="utf-8"
     )
-    refs = re.findall(r"uses: (actions/[\\w-]+)@([^\\s]+)", workflow)
+    refs = re.findall(r"uses: (actions/[\w-]+)@([^\s]+)", workflow)
     assert len(refs) >= 6
     assert all(re.fullmatch(r"[0-9a-f]{40}", sha) for _, sha in refs)
     for dep in (
