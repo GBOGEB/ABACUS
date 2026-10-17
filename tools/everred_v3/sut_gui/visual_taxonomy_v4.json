@@ -1,0 +1,149 @@
+{
+  "schema": "code-purple.visual-taxonomy.v4",
+  "description": "Visual semantics are disjoint axes; color conveys outcome only when paired with a text label.",
+  "axes": {
+    "node_function": {
+      "channel": "shape",
+      "mapping": {
+        "activity": "neutral_rectangle",
+        "decision": "purple_outline_diamond"
+      }
+    },
+    "phase": {
+      "channel": "explicit_P_number",
+      "mapping": {
+        "prefix": "P1-P8",
+        "meaning": "ordered process phase"
+      }
+    },
+    "owner": {
+      "channel": "role_text",
+      "mapping": {
+        "key": "Role:",
+        "root_rule": "one accountable repair owner per confirmed causal root"
+      }
+    },
+    "execution_outcome": {
+      "channel": "unique_color_plus_label",
+      "mapping": {
+        "success": {
+          "color": "#77e2b0",
+          "label": "SUCCESS",
+          "scope": "completed native execution"
+        },
+        "failure": {
+          "color": "#ff9f9f",
+          "label": "FAILURE",
+          "scope": "completed native execution"
+        },
+        "cancelled": {
+          "color": "#ffad77",
+          "label": "CANCELLED",
+          "scope": "terminated before normal completion"
+        },
+        "in_progress": {
+          "color": "#84d9ff",
+          "label": "IN PROGRESS",
+          "scope": "nonterminal"
+        },
+        "queued": {
+          "color": "#aebdcf",
+          "label": "QUEUED",
+          "scope": "pending/waiting"
+        },
+        "skipped": {
+          "color": "#b4a6d6",
+          "label": "SKIPPED",
+          "scope": "not executed"
+        }
+      }
+    },
+    "path_disposition": {
+      "channel": "branch_label_plus_conditional_outcome",
+      "mapping": {
+        "yes": "green | YES | eligible path only",
+        "no": "red | NO | HOLD"
+      }
+    },
+    "edge_flow": {
+      "channel": "line_style_plus_label",
+      "mapping": {
+        "forward": "solid | DAG dependency",
+        "feedback": "dashed amber | next-pulse recurrence/RCA",
+        "feedforward": "double cyan | planned SUT preflight"
+      }
+    },
+    "repository_protection": {
+      "channel": "card_border + explicit status text + scoped shield",
+      "mapping": {
+        "protected": {
+          "treatment": "green",
+          "label": "PROTECTED",
+          "meaning": "effective branch protection reported (independent merge approval not claimed)"
+        },
+        "unprotected": {
+          "treatment": "orange",
+          "label": "UNPROTECTED",
+          "meaning": "protection action outstanding"
+        },
+        "unknown": {
+          "treatment": "neutral",
+          "label": "UNKNOWN",
+          "meaning": "readback missing or unavailable"
+        }
+      }
+    },
+    "ruleset_configuration": {
+      "channel": "gold configuration count + action badge + expanded native rule names",
+      "mapping": {
+        "active": "gold",
+        "required_checks_missing": "orange",
+        "required_checks_configured": "green",
+        "unknown": "neutral"
+      },
+      "guard": "Count of rules is NOT the number of passing CI checks."
+    },
+    "workflow_family": {
+      "channel": "outlined badge with text family code, independent from execution outcome",
+      "mapping": {
+        "governance": "GOV (lilac outline)",
+        "measurement": "DATA (teal outline)",
+        "tests": "QA (blue outline)",
+        "security": "SEC (gold outline)",
+        "other": "OTHER (grey outline)"
+      }
+    },
+    "workflow_repetition": {
+      "channel": "expandable grouped cohort with preserved native run links",
+      "guard": "Roll-up affects presentation only; never removes runs from numerator/denominator."
+    },
+    "measurement_granularity": {
+      "channel": "explicit_level_label",
+      "mapping": {
+        "workflow": "RUN",
+        "job": "JOB",
+        "step": "STEP",
+        "test_case": "TEST",
+        "source_context": "CTX",
+        "root": "ROOT",
+        "independent_cycle": "CYCLE"
+      },
+      "guard": "Execution depth and repeated evidence describe granularity; they do not increase independent process sample size."
+    }
+  },
+  "constraints": [
+    "No operational meaning assigned to a filled purple brand card.",
+    "Colors cannot replace named role, numbered phase or proof level.",
+    "No identical HEX color for two native execution outcomes.",
+    "Conditional green YES does not signify actual present admission.",
+    "Forward DAG is acyclic; feedback/feedforward visualized in independent overlay.",
+    "The rendered UI must retain text state labels for accessibility and disambiguation.",
+    "Repository test/coverage proof and physical plant safety colors are separate domains.",
+    "Branch protected=true is not equivalent to admission PASS; show mandatory CI and review separately.",
+    "Configuration colors, execution colors, and ownership/phase markings must not be used as interchangeable evidence.",
+    "Workflow roll-ups retain native individual run IDs and SHA links for audit.",
+    "Telemetry family/granularity styling must not reuse native outcome colors as a semantic status code.",
+    "Workflow/job/step/test/root counts are nested or repeated evidence unless an independent-cycle producer proves otherwise."
+  ],
+  "authority_transfer": false
+}

@@ -43,3 +43,18 @@ updates:
       prefix: "deps"
       include: "scope"
     open-pull-requests-limit: 5
+
+  # QPS Yarn (managed by Dependabot via package-ecosystem: "npm" for yarn.lock):
+  # small, attributable npm security/version update PRs.
+  - package-ecosystem: "npm"
+    directory: "/qps_slide_reviewer"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+    labels:
+      - "dependencies"
+    commit-message:
+      prefix: "deps"
+      include: "scope"
+    open-pull-requests-limit: 4
+    versioning-strategy: "increase-if-necessary"
