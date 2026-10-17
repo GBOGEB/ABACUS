@@ -170,7 +170,19 @@
       "disposition": "keep"
     },
     {
-      "pattern": "^mission-control-lite-testflight\\.yml$",
+      "pattern": "^code-purple-dashboard-v31\\.yml$",
+      "cluster": "runtime_governance",
+      "lifecycle": "pr_domain",
+      "disposition": "keep"
+    },
+    {
+      "pattern": "^code-purple-sut-gui\\.yml$",
+      "cluster": "runtime_governance",
+      "lifecycle": "pr_domain",
+      "disposition": "keep"
+    },
+    {
+      "pattern": "^recovery-action-value-evidence\\.yml$",
       "cluster": "runtime_governance",
       "lifecycle": "pr_domain",
       "disposition": "keep"

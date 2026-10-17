@@ -20,6 +20,19 @@ on:
   pull_request:
     branches: [main, develop]
     paths:
+      - 'scripts/code_purple_bootstrap_ldab_census.py'
+      - 'tests/test_code_purple_bootstrap_ldab_census.py'
+      - 'MIP/code_purple_unknown_backlog.json'
+      - 'scripts/code_purple_mip_unknown_rollup.py'
+      - 'tests/test_code_purple_mip_unknown_rollup.py'
+      - 'MIP/mip_statistical_observations.jsonl'
+      - 'MIP/mip_statistical_native_snapshot.json'
+      - 'scripts/mip_statistical_readiness.py'
+      - 'tests/test_mip_statistical_readiness.py'
+      - 'tests/test_mip_statistical_negative_controls.py'
+      - 'scripts/mip_native_metric_ingest.py'
+      - 'tests/test_mip_native_metric_ingest.py'
+      - 'tests/test_mip_b9_missing_branches.py'
       - 'bootstrap_eval.py'
       - 'deploy_integrated_tests.sh'
       - 'tests/test_bootstrap_eval.py'
@@ -87,6 +100,30 @@ jobs:
           python -c "import numpy; import scipy; import pandas; print('✅ Scientific libraries available')"
           python -c "from tests.bootstrap_bridge import BootstrapBridge; print('✅ Bootstrap bridge importable')"
           ls -la bootstrap_eval.py tests/test_bootstrap_eval.py tests/bootstrap_bridge.py
+
+      - name: Validate CODE PURPLE native census contract
+        run: |
+          python -m unittest discover -s tests \
+            -p 'test_code_purple_bootstrap_ldab_census.py' -v
+          python -m unittest discover -s tests \
+            -p 'test_code_purple_mip_unknown_rollup.py' -v
+          python -m unittest discover -s tests \
+            -p 'test_mip_statistical_readiness.py' -v
+          python -m unittest discover -s tests \
+            -p 'test_mip_statistical_negative_controls.py' -v
+          python -m unittest discover -s tests \
+            -p 'test_mip_native_metric_ingest.py' -v
+          python -m unittest discover -s tests \
+            -p 'test_mip_b9_missing_branches.py' -v
+          python scripts/mip_statistical_readiness.py \
+            --input MIP/mip_statistical_observations.jsonl \
+            --native-evidence MIP/mip_statistical_native_snapshot.json \
+            --output test_reports/mip_statistical_readiness.json
+          cp MIP/mip_statistical_native_snapshot.json test_reports/
+          python scripts/code_purple_mip_unknown_rollup.py \
+            --input MIP/code_purple_unknown_backlog.json \
+            --output test_reports/code-purple-unknown-kpi.json \
+            --as-of "$(date -u +%F)"
 
       - name: Run Bootstrap Statistics Tests (pytest)
         run: |

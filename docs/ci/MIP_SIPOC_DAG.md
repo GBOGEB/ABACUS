@@ -90,3 +90,21 @@ For each pulse count planned vs executed tasks, current-head native tests, branc
 - W6: independent admission and cross-repository consumer rollout.
 
 Authority transfer = false; engineering credit = 0 until independently accepted.
+
+## Execution-unit vocabulary for future instructions (G3A candidate)
+
+The W1-W6 labels above are historical delivery waves, and existing 3P*
+experiment/stability contracts retain their prior meanings.
+
+- `3W`: three implementation waves with disjoint ownership, bounded fan-in
+  and source-bound testflight; does not guarantee three accepted advances.
+- `3MP`: three DMAIC/MIP measurement-and-improvement pulses; each cycle
+  records distinct immutable observation/metric/defer/Control evidence.
+- `G3A`: one kickoff and exactly three bounded **accepted engineering
+  checkpoints**, from N→N+1→N+2→N+3, or stop immediately and return actual N
+  with the first material blocker. Checkpoint advancement never substitutes
+  for a GitHub merge, reviewer approval, security waiver or child authority.
+
+See [G3A mission input, glossary, receipt schema, SIPOC and DAG](G3A_GOVERNED_THREE_ADVANCE.md).
+The CODEX global semantic definitions are proposed in draft PR #1059;
+ABACUS is a consumer and retains its existing scheduler.
