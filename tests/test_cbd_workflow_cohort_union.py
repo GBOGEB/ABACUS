@@ -44,7 +44,7 @@ class CohortUnionTests(unittest.TestCase):
 
     def test_identical_overlapping_row_deduplicated(self):
         data = snapshots()
-        data[1] = copy.deepcopy(data[0])
+        data = [data[0], copy.deepcopy(data[0]), copy.deepcopy(data[0])]
         result = produce_cohorts(data)
         self.assertEqual(result["cohort_reconciliation"]["declared_observation_rows"], 36)
         self.assertEqual(result["cohort_reconciliation"]["distinct_run_attempts"], 12)
