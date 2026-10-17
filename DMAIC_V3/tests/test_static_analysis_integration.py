@@ -7,7 +7,7 @@ import pytest
 
 from DMAIC_V3.core.test_system_bridge import (
     MCPControlPoint,
-    TestExecutionResult,
+    TestExecutionResult as BridgeExecutionResult,
     TestSystemBridge,
 )
 
@@ -23,7 +23,7 @@ def bridge(tmp_path):
     instance.test_results_lock = threading.Lock()
     instance.deployment_metrics = None
     instance.test_results = {
-        "smoke": TestExecutionResult(
+        "smoke": BridgeExecutionResult(
             test_name="smoke",
             returncode=0,
             stdout="one passed",
