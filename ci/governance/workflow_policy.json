@@ -182,6 +182,12 @@
       "disposition": "keep"
     },
     {
+      "pattern": "^everred-real-pipeline-proof\\.yml$",
+      "cluster": "runtime_governance",
+      "lifecycle": "pr_domain",
+      "disposition": "keep"
+    },
+    {
       "pattern": "^recovery-action-value-evidence\\.yml$",
       "cluster": "runtime_governance",
       "lifecycle": "pr_domain",
