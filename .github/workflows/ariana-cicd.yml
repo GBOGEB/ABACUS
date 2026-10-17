@@ -40,6 +40,9 @@ on:
 permissions:
   contents: read
 
+env:
+  EXACT_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+
 jobs:
   test-ariana:
     name: Ariana/DOW native Python ${{ matrix.python-version }}
@@ -51,12 +54,14 @@ jobs:
         python-version: ['3.11', '3.12']
     steps:
     - name: Checkout code
-      uses: actions/checkout@v7.0.1
+      uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+      with:
+        ref: ${{ env.EXACT_SHA }}
     
     - name: Set up Python
-      uses: actions/setup-python@v7.0.0
+      uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97
       with:
-        python-version: '3.12'
+        python-version: ${{ matrix.python-version }}
     
     - name: Install dependencies
       run: |
@@ -84,9 +89,33 @@ jobs:
         cd ARTEFACT_TYPE_GROUPING/PYTHON_code
         python test_ariana_dow_integration.py
     
+    - name: Native focused Ariana/DOW JUnit and measured coverage
+      run: |
+        set -euo pipefail
+        test "$(git rev-parse HEAD)" = "$EXACT_SHA"
+        python -m pip install -r requirements.txt pytest pytest-cov
+        mkdir -p ariana-evidence
+        python -m pytest -q tests/test_ariana_ci_federation.py \
+          --cov=DMAIC_V3.core.dow_ariana_integration --cov-branch \
+          --cov-report=json:ariana-evidence/focused-coverage.json \
+          --junitxml=ariana-evidence/junit.xml
+        python scripts/ci/ariana_dow_evidence.py \
+          --source-sha "$EXACT_SHA" \
+          --junit ariana-evidence/junit.xml \
+          --coverage ariana-evidence/focused-coverage.json \
+          --out ariana-evidence/local-receipt.json --strict
+
+    - name: Upload native Ariana proof
+      if: always()
+      uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9
+      with:
+        name: ariana-native-${{ matrix.python-version }}
+        path: ariana-evidence/
+        if-no-files-found: error
+
     - name: Upload logs
       if: always()
-      uses: actions/upload-artifact@v7.0.2
+      uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9
       with:
         name: ariana-logs
         path: ARTEFACT_TYPE_GROUPING/PYTHON_code/logs/
@@ -98,12 +127,14 @@ jobs:
     timeout-minutes: 10
     steps:
     - name: Checkout code
-      uses: actions/checkout@v7.0.1
+      uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+      with:
+        ref: ${{ env.EXACT_SHA }}
     
     - name: Set up Python
-      uses: actions/setup-python@v7.0.0
+      uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97
       with:
-        python-version: '3.12'
+        python-version: ${{ matrix.python-version }}
     
     - name: Install dependencies
       run: |
@@ -121,8 +152,44 @@ jobs:
         test -f DOW/AGENTS_REGISTRY.json && echo "✅ Agent registered in DOW"
         test -f DOW/ariana_health.json && echo "✅ Health monitoring active"
     
+    - name: Produce local two-lane source-only join
+      run: |
+        set -euo pipefail
+        test "$(git rev-parse HEAD)" = "$EXACT_SHA"
+        mkdir -p ariana-federation
+        python - <<'PY'
+        import json
+        import os
+        from pathlib import Path
+        receipt = {
+            "schema": "abacus.ariana.local-two-lane-join.v1",
+            "repository": "GBOGEB/ABACUS",
+            "exact_head_sha": os.environ["EXACT_SHA"],
+            "run_id": os.getenv("GITHUB_RUN_ID"),
+            "run_attempt": os.getenv("GITHUB_RUN_ATTEMPT"),
+            "local_ariana_job": "COMPLETED_BEFORE_THIS_JOIN",
+            "local_dow_bridge": "LOCAL_ONLY",
+            "remote_keb_rex": None,
+            "remote_qps_rex": None,
+            "accepted_cross_repo_federation": False,
+            "merge_admission": "HOLD",
+            "authority_transfer": False,
+            "security_waiver": False,
+        }
+        Path("ariana-federation/two-lane-join.json").write_text(
+            json.dumps(receipt, sort_keys=True, indent=2) + "\\n", encoding="utf-8"
+        )
+        PY
+
+    - name: Upload source-bound local federation join
+      uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9
+      with:
+        name: ariana-federation-source-only
+        path: ariana-federation/two-lane-join.json
+        if-no-files-found: error
+
     - name: Upload deployment artifacts
-      uses: actions/upload-artifact@v7.0.2
+      uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9
       with:
         name: ariana-deployment
         path: |
