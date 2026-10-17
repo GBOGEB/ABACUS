@@ -108,12 +108,23 @@ def evaluate(x, *, authenticated=False, now=None):
             "block_force_push",
             "block_deletion",
             "require_resolved_conversations",
+            "require_last_push_approval",
+            "dismiss_stale_reviews_on_push",
+            "main_hard_gate_active",
+            "main_hard_gate_no_bypass",
         )
         if (
             fresh
             and all(policy.get(k) is True for k in props)
             and type(policy.get("min_approvals")) is int
             and policy["min_approvals"] >= 1
+            and isinstance(policy.get("status_contexts"), list)
+            and len(policy["status_contexts"]) > 0
+            and len(policy["status_contexts"]) == len(set(policy["status_contexts"]))
+            and all(isinstance(name, str) and name for name in policy["status_contexts"])
+            and "PR Feedback Gate" in policy["status_contexts"]
+            and isinstance(needed, list)
+            and all(isinstance(name, str) and name in policy["status_contexts"] for name in needed)
         ):
             gates["branch_protection"] = "PASS"
         elif not fresh:
@@ -170,8 +181,10 @@ def evaluate(x, *, authenticated=False, now=None):
     }
 
 
-def effective_policy_from_rules(repo, main_sha, rules, branch, fetched_at):
-    """Fail closed for missing effective branch rules, no inferred protections."""
+def effective_policy_from_rules(
+    repo, main_sha, rules, branch, fetched_at, *, main_hard_gate=None
+):
+    """Fail closed on unbound controls. A protected branch alone is not admission."""
     if not isinstance(rules, list) or not isinstance(branch, dict):
         raise InvalidEvidence("invalid GitHub effective policy")
     by_type = {
@@ -179,6 +192,20 @@ def effective_policy_from_rules(repo, main_sha, rules, branch, fetched_at):
     }
     reviews = by_type.get("pull_request", {})
     checks = by_type.get("required_status_checks", {})
+    contexts = checks.get("required_status_checks")
+    status_contexts = (
+        [item.get("context") for item in contexts]
+        if isinstance(contexts, list)
+        and all(isinstance(item, dict) for item in contexts)
+        else None
+    )
+    hard_gate_valid = (
+        isinstance(main_hard_gate, dict)
+        and main_hard_gate.get("id") == 24494381
+        and main_hard_gate.get("source") == repo
+        and main_hard_gate.get("target") == "branch"
+        and main_hard_gate.get("enforcement") == "active"
+    )
     return {
         "source": "effective_branch_rules",
         "repository": repo,
@@ -189,6 +216,13 @@ def effective_policy_from_rules(repo, main_sha, rules, branch, fetched_at):
         "required_pr": "pull_request" in by_type,
         "min_approvals": reviews.get("required_approving_review_count"),
         "strict_checks": checks.get("strict_required_status_checks_policy") is True,
+        "status_contexts": status_contexts,
+        "require_last_push_approval": reviews.get("require_last_push_approval") is True,
+        "dismiss_stale_reviews_on_push": reviews.get("dismiss_stale_reviews_on_push") is True,
+        "main_hard_gate_active": hard_gate_valid,
+        "main_hard_gate_no_bypass": (
+            hard_gate_valid and main_hard_gate.get("bypass_actors") == []
+        ),
         "block_force_push": "non_fast_forward" in by_type,
         "block_deletion": "deletion" in by_type,
         "require_resolved_conversations": reviews.get(
@@ -206,8 +240,11 @@ def collect_readonly_policy(reader: GitHubReadOnly, repo, branch_sha):
     if branch.get("commit", {}).get("sha") != branch_sha:
         raise InvalidEvidence("main advanced; policy snapshot stale")
     rules = reader.get(f"/repos/{repo}/rules/branches/main")
+    hard_gate = reader.get(f"/repos/{repo}/rulesets/24494381")
     now = dt.datetime.now(dt.timezone.utc).isoformat()
-    return effective_policy_from_rules(repo, branch_sha, rules, branch, now)
+    return effective_policy_from_rules(
+        repo, branch_sha, rules, branch, now, main_hard_gate=hard_gate
+    )
 
 
 def main():
