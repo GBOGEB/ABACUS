@@ -204,6 +204,8 @@ def main():
     parser.add_argument("--metrics-log", required=True, type=Path)
     parser.add_argument("--timing-log", type=Path)
     parser.add_argument("--timing-tests-log", type=Path)
+    parser.add_argument("--telemetry-tests-log", type=Path)
+    parser.add_argument("--gate-census-tests-log", type=Path)
     parser.add_argument("--source-sha", required=True)
     parser.add_argument("--event-sha", required=True)
     parser.add_argument("--run-id", required=True)
@@ -218,6 +220,10 @@ def main():
     }
     if args.timing_tests_log:
         logs["timing"] = args.timing_tests_log.read_text()
+    if args.telemetry_tests_log:
+        logs["telemetry"] = args.telemetry_tests_log.read_text()
+    if args.gate_census_tests_log:
+        logs["gate_census"] = args.gate_census_tests_log.read_text()
     old = json.loads(args.baseline.read_text()) if args.baseline else None
     phases = json.loads(args.timing_log.read_text()) if args.timing_log else None
     pulse = build(
