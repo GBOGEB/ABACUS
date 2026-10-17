@@ -98,8 +98,14 @@ def perform(root: Path, step: dict, head: str) -> dict:
         except subprocess.TimeoutExpired:
             return {'ok': False, 'detail': 'test timeout', 'tests_executed': None}
         logs = p.stdout + p.stderr
-        match = re.search(r'Ran (\d+) tests?', logs)
-        count = int(match.group(1)) if match else None
+        # unittest.TextTestRunner emits its terminal summary on stderr; arbitrary
+        # test stdout may not authenticate an execution count. Demand the final
+        # complete runner trailer rather than the first appearance of "Ran N".
+        summary = re.search(
+            r'(?m)^Ran (\d+) tests? in [0-9.]+s\s*\n(?:OK(?: \(skipped=\d+\))?|FAILED \(.*\))\s*\Z',
+            p.stderr,
+        )
+        count = int(summary.group(1)) if summary else None
         return {'ok': p.returncode == 0 and count is not None and count >= step['minimum_tests'],
                 'detail': 'unittest terminal result', 'tests_executed': count,
                 'exit_code': p.returncode,
@@ -115,6 +121,14 @@ def perform(root: Path, step: dict, head: str) -> dict:
                 'source_sha256': digest}
     obj = json.loads(raw)
     if kind == 'metric_delta':
+        # A declared digest alone is not source binding. Verify real source bytes
+        # in the authorized checkout before any N advancement can be claimed.
+        if not isinstance(obj, dict):
+            raise ContractError('matched metric must be an object')
+        module = file_at(root, obj.get('module_path'))
+        observed = hashlib.sha256(module.read_bytes()).hexdigest()
+        if obj.get('source_sha256') != observed:
+            raise ContractError('metric source digest does not match checkout')
         return matched_metric_delta(obj, head, step['minimum_new_covered'], digest)
     if not isinstance(obj, dict) or obj.get('head_sha') != head:
         raise ContractError('metric is not bound to current exact head')
@@ -194,6 +208,49 @@ def verify_clean_checkout(root: Path) -> str:
     return 'TRACKED_FILES_CLEAN'
 
 
+def verify_inputs_tracked(root: Path, spec: dict, manifest: Path) -> str:
+    """Require every selected proof input to exist in the exact Git tree.
+
+    Runtime reports and .coverage are not proof inputs; temporary test modules
+    may not be injected into the tracked tests/ or scripts/ source directories.
+    """
+    validate(spec)
+    repo = root.resolve()
+    declared = set()
+    try:
+        declared.add(manifest.resolve().relative_to(repo).as_posix())
+    except ValueError as exc:
+        raise ContractError('mission input is outside checked-out repository') from exc
+    for step in spec['steps']:
+        if step['kind'] == 'unittest':
+            selected = sorted((repo / 'tests').glob(step['pattern']))
+            if not selected:
+                raise ContractError('selected unittest source missing')
+            for file in selected:
+                declared.add(file_at(repo, file.relative_to(repo).as_posix()).relative_to(repo).as_posix())
+        else:
+            declared.add(file_at(repo, step['path']).relative_to(repo).as_posix())
+            if step['kind'] == 'metric_delta':
+                obj = json.loads(file_at(repo, step['path']).read_text())
+                if not isinstance(obj, dict):
+                    raise ContractError('metric declaration must be an object')
+                declared.add(file_at(repo, obj.get('module_path')).relative_to(repo).as_posix())
+    tracked_raw = subprocess.check_output(
+        ['git', '-C', str(repo), 'ls-files', '-z', '--cached'], text=True)
+    tracked = set(tracked_raw.split('\0'))
+    absent = sorted(declared - tracked)
+    if absent:
+        raise ContractError('untracked proof source: ' + ', '.join(absent))
+    # Keep output artifacts outside the proof-input source directories.
+    untracked = subprocess.check_output(
+        ['git', '-C', str(repo), 'ls-files', '-z', '--others', '--exclude-standard',
+         '--', 'tests', 'scripts'], text=True)
+    extra_source = [p for p in untracked.split('\0') if p.endswith('.py')]
+    if extra_source:
+        raise ContractError('untracked Python source may affect test execution')
+    return 'ALL_DECLARED_INPUTS_TRACKED_AT_HEAD'
+
+
 def execute(spec: dict, root: Path, expected_head: str, observed_head: str) -> dict:
     validate(spec)
     if not isinstance(expected_head, str) or not HEAD.fullmatch(expected_head):
@@ -252,6 +309,7 @@ def main(argv=None):
             raise ContractError('checkout not equal to authorized exact head')
         verify_clean_checkout(root)
         spec = json.loads(Path(args.spec).read_text(encoding='utf-8'))
+        verify_inputs_tracked(root, spec, Path(args.spec))
         receipt = execute(spec, root, args.expected_head, observed_head)
     except (ContractError, OSError, ValueError, subprocess.CalledProcessError) as exc:
         parser.exit(2, f'G3A PRECHECK HOLD: {exc}\n')
