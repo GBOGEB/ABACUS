@@ -72,6 +72,48 @@ def test_skipped_clock_anomaly_is_one_cluster_ten_manifestations(data):
                for e in links)
     assert result["metrics"]["node_count"] == 499
 
+
+def test_second_enrichment_is_identical_and_no_duplicate_atoms(data):
+    first = temporal.augment(*data)
+    second = temporal.augment(first, data[1])
+    third = temporal.augment(second, data[1])
+    assert first == second == third
+    assert first["metrics"]["node_count"] == 499
+    assert first["metrics"]["edge_count"] == 697
+    assert first["metrics"]["edge_evidence_classes"]["OBSERVED"] == 494
+    assert first["metrics"]["edge_evidence_classes"]["TEMPORAL_ASSOCIATION"] == 6
+
+
+def test_partial_preexisting_anomaly_rejected(data):
+    graph, timelines = data
+    graph["edges"] = [
+        e for e in graph["edges"]
+        if e["relationship"] != "skipped_job_clock_inversion_observed"
+    ]
+    with pytest.raises(ValueError, match="temporal anomaly denominator"):
+        temporal.augment(graph, timelines)
+
+
+def test_duplicate_derived_evidence_rejected(data):
+    graph, timelines = data
+    edge = next(
+        e for e in graph["edges"]
+        if e["relationship"] == "skipped_job_clock_inversion_observed"
+    )
+    graph["edges"].append(copy.deepcopy(edge))
+    with pytest.raises(ValueError, match="duplicated temporal evidence"):
+        temporal.augment(graph, timelines)
+
+
+def test_duplicate_anomaly_node_rejected(data):
+    graph, timelines = data
+    graph["nodes"].append(copy.deepcopy(next(
+        n for n in graph["nodes"] if n["kind"] == "temporal_anomaly"
+    )))
+    with pytest.raises(ValueError, match="duplicate graph node identity"):
+        temporal.augment(graph, timelines)
+
+
 def test_wrong_head_for_native_run_rejected(data):
     graph, timeline = data
     timeline[0]["runs"][0]["source_head_sha"] = "f" * 40
