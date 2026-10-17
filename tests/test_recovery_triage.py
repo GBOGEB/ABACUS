@@ -30,6 +30,16 @@ class RecoveryTriageTests(unittest.TestCase):
         self.assertFalse(r["automatic_fanout_authorized"])
         self.assertEqual(r["merge_admission"], "HOLD")
 
+    def test_multiple_independent_roots_in_one_failed_job(self):
+        common = obs(A, 7, 99, "Bandit ratchet failed")
+        independent = obs(A, 7, 99, "Safety is red")
+        report = reconcile([common, independent])
+        self.assertEqual(report["observations"], 2)
+        self.assertEqual(report["distinct_causal_candidates"], 2)
+        self.assertEqual({x["root_id"] for x in report["roots"]},
+                         {"BANDIT", "SAFETY"})
+        self.assertEqual(report["merge_admission"], "HOLD")
+
     def test_dependency_graph_independent_from_quota(self):
         r = reconcile([obs(), obs(B, 99, 102, "Dependency review is not supported")])
         self.assertEqual(r["distinct_causal_candidates"], 2)
