@@ -183,6 +183,26 @@ class ArianaREXPredictionTests(unittest.TestCase):
             with self.assertRaisesRegex(ValueError, "hash mismatch"):
                 verify_archives(d, folder)
 
+    def test_historical_probability_cannot_be_post_hoc_backfilled(self):
+        d = source()
+        d["forecasts"][0]["probability"] = 0.99
+        with self.assertRaisesRegex(ValueError, "not preregistered"):
+            evaluate(d)
+
+    def test_recurring_same_root_deduplicates_across_pulses(self):
+        d = source()
+        d["checkpoints"][1]["root"]["root_id"] = (
+            d["checkpoints"][0]["root"]["root_id"]
+        )
+        result = evaluate(d)
+        self.assertEqual(
+            result["rex"]["observed_source_first_red_roots_in_series"], 1
+        )
+        self.assertEqual(
+            result["rex"]["repeat_observations_of_existing_root"], 1
+        )
+        self.assertEqual(result["rex"]["root_manifestations"], 5)
+
 
 if __name__ == "__main__":
     unittest.main()

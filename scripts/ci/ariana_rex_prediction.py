@@ -171,10 +171,9 @@ def validate_ledger(ledger: dict) -> None:
         require(type(forecast["expected"]) is bool,
                 "directional forecast must be boolean")
         probability = forecast.get("probability")
-        require(probability is None or (
-            isinstance(probability, (int, float)) and not isinstance(probability, bool)
-            and 0 <= probability <= 1
-        ), "invalid preregistered probability")
+        # None of the three archived forecast comments contained numeric p.
+        # Changing JSON after execution cannot invent pre-registered Brier.
+        require(probability is None, "historical probability was not preregistered")
         require(str(forecast["freeze_url"]).startswith("https://github.com/"),
                 "forecast has no source citation")
     future = ledger["prospective"]
@@ -305,8 +304,14 @@ def evaluate(ledger: dict, archive_dir: Path | None = None) -> dict:
             "latest_focused_branch": points[-1]["focused_coverage"]["branch"],
         },
         "rex": {
-            "observed_source_first_red_roots_in_series": sum(
-                p["root"]["distinct_roots"] for p in points
+            "observed_source_first_red_roots_in_series": len({
+                p["root"]["root_id"] for p in points
+                if p["root"]["root_id"] is not None
+            }),
+            "repeat_observations_of_existing_root": (
+                sum(p["root"]["distinct_roots"] for p in points)
+                - len({p["root"]["root_id"] for p in points
+                       if p["root"]["root_id"] is not None})
             ),
             "root_manifestations": sum(len(p["root"]["manifestation_jobs"])
                                        for p in points),
