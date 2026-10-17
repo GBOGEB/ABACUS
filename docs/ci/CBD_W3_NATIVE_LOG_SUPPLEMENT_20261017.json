@@ -1,0 +1,385 @@
+{
+  "schema": "cbd.native_log_supplement.v1",
+  "repository": "GBOGEB/ABACUS",
+  "parent_snapshot_ref": "docs/ci/CBD_W2_NATIVE_EVIDENCE_20261017.json",
+  "source_snapshot_sha": "383bee110b5f51ec933a7cfd3fd8e7359c5c9c90",
+  "checkpoint_parent_pr": 2120,
+  "checkpoint_head_at_collection": "6c94b58d752582389f6ac80e69b3d3d1c8c49079",
+  "selection": "STRATIFIED_TARGETED_DIAGNOSTIC_NOT_RANDOM_SAMPLE",
+  "baseline_logged_runs": 23,
+  "baseline_unique_runs": 66,
+  "new_log_rows": 15,
+  "new_logs_downloaded": 15,
+  "uniquely_new": true,
+  "accepted_root_closures": 0,
+  "admission": "HOLD",
+  "records": [
+    {
+      "pr": 2039,
+      "head_sha": "23ad4b42ed1fdd0848e451c5e6f4e73038704e88",
+      "run_id": 38873689185,
+      "attempt": 1,
+      "workflow": "CI Workflow Governance",
+      "job_id": 116883545987,
+      "first_failed_step": "Fail closed on governance red",
+      "failed_step_number": 9,
+      "source": "NATIVE_GITHUB_JOB_LOG",
+      "log_retrieved": true,
+      "log_decoded_char_count": 42426,
+      "detected_signals": [
+        "governance"
+      ],
+      "diagnostic_tail_sanitized": [
+        "2026-10-16T09:20:34.8802635Z ##[group]Run echo \"policy_outcome=$POLICY_OUTCOME\"",
+        "2026-10-16T09:20:34.8802999Z echo \"policy_outcome=$POLICY_OUTCOME\"",
+        "2026-10-16T09:20:34.8803275Z echo \"inventory_outcome=$INVENTORY_OUTCOME\"",
+        "2026-10-16T09:20:34.8950121Z policy_outcome=failure",
+        "2026-10-16T09:20:34.8950401Z inventory_outcome=failure"
+      ],
+      "raw_log_sha256": null,
+      "causal_root_admission": false,
+      "rerun_admission": false
+    },
+    {
+      "pr": 2039,
+      "head_sha": "23ad4b42ed1fdd0848e451c5e6f4e73038704e88",
+      "run_id": 38873689308,
+      "attempt": 1,
+      "workflow": "Bandit Disjoint Census",
+      "job_id": 116883546484,
+      "first_failed_step": "Generate governance inventory as evidence",
+      "failed_step_number": 6,
+      "source": "NATIVE_GITHUB_JOB_LOG",
+      "log_retrieved": true,
+      "log_decoded_char_count": 57836,
+      "detected_signals": [
+        "governance"
+      ],
+      "diagnostic_tail_sanitized": [],
+      "raw_log_sha256": null,
+      "causal_root_admission": false,
+      "rerun_admission": false
+    },
+    {
+      "pr": 2041,
+      "head_sha": "60d2a5640c997fc916285580b6de8a3d86c27c38",
+      "run_id": 38824989857,
+      "attempt": 2,
+      "workflow": "CI/CD Test Suite",
+      "job_id": 116868296447,
+      "first_failed_step": "Enforce security red roots",
+      "failed_step_number": 11,
+      "source": "NATIVE_GITHUB_JOB_LOG",
+      "log_retrieved": true,
+      "log_decoded_char_count": 88977,
+      "detected_signals": [
+        "safety"
+      ],
+      "diagnostic_tail_sanitized": [
+        "2026-10-16T07:43:40.6199547Z     echo \"::error::Safety is red.\"",
+        "2026-10-16T07:43:40.6322994Z ##[error]Safety is red."
+      ],
+      "raw_log_sha256": null,
+      "causal_root_admission": false,
+      "rerun_admission": false
+    },
+    {
+      "pr": 2041,
+      "head_sha": "60d2a5640c997fc916285580b6de8a3d86c27c38",
+      "run_id": 38824989937,
+      "attempt": 1,
+      "workflow": "a10-guard",
+      "job_id": 116730248604,
+      "first_failed_step": "Tender guard (new or changed files only)",
+      "failed_step_number": 4,
+      "source": "NATIVE_GITHUB_JOB_LOG",
+      "log_retrieved": true,
+      "log_decoded_char_count": 86655,
+      "detected_signals": [
+        "isort",
+        "restricted"
+      ],
+      "diagnostic_tail_sanitized": [
+        "2026-10-15T23:47:38.4492080Z  * [new branch]        gm14-ci-pipeline-pytest-asyncio-20260927 -> origin/gm14-ci-pipeline-pytest-asyncio-20260927",
+        "2026-10-15T23:47:38.8711455Z   BLOCK  ci/governance/workflow_policy.json   (restricted term in content)",
+        "2026-10-15T23:47:38.8711936Z   BLOCK  docs/ci/WORKFLOW_RATIONALIZATION.md   (restricted term in content)"
+      ],
+      "raw_log_sha256": null,
+      "causal_root_admission": false,
+      "rerun_admission": false
+    },
+    {
+      "pr": 2054,
+      "head_sha": "8e1a39cdb56cc8ad7e019408b6870279f07fcd40",
+      "run_id": 38903706823,
+      "attempt": 1,
+      "workflow": "MIP B0 Test Admission and Coverage Evidence",
+      "job_id": 116981927593,
+      "first_failed_step": "Run canonical exact-head coverage surface",
+      "failed_step_number": 6,
+      "source": "NATIVE_GITHUB_JOB_LOG",
+      "log_retrieved": true,
+      "log_decoded_char_count": 100666,
+      "detected_signals": [
+        "isort"
+      ],
+      "diagnostic_tail_sanitized": [
+        "2026-10-16T12:53:29.8209739Z Ignoring pytest-asyncio: markers 'python_version < \"3.10\"' don't match your environment",
+        "2026-10-16T12:53:31.1897040Z Collecting pytest-asyncio<1.5,>=1.4.0 (from -r /home/runner/work/ABACUS/ABACUS/DMAIC_V3/requirements.txt (line 113))",
+        "2026-10-16T12:53:35.7799457Z Installing collected packages: distlib, watchdog, urllib3, typing-extensions, tqdm, tomlkit, stevedore, sphinxcontrib-serializinght",
+        "2026-10-16T12:53:50.5161398Z Successfully installed CoolProp-7.2.0 MarkupSafe-3.0.4 PyGithub-2.10.0 aiohappyeyeballs-2.7.1 aiohttp-3.14.5 aiosignal-1.4.0 alabas"
+      ],
+      "raw_log_sha256": null,
+      "causal_root_admission": false,
+      "rerun_admission": false
+    },
+    {
+      "pr": 2055,
+      "head_sha": "2b3bf584c783e8c8696f38ebf35b719ddc10fff2",
+      "run_id": 39020400081,
+      "attempt": 1,
+      "workflow": "CI Workflow Governance",
+      "job_id": 117360887274,
+      "first_failed_step": "Fail closed on governance red",
+      "failed_step_number": 9,
+      "source": "NATIVE_GITHUB_JOB_LOG",
+      "log_retrieved": true,
+      "log_decoded_char_count": 43543,
+      "detected_signals": [
+        "governance"
+      ],
+      "diagnostic_tail_sanitized": [
+        "2026-10-17T09:15:11.5220095Z ##[group]Run echo \"policy_outcome=$POLICY_OUTCOME\"",
+        "2026-10-17T09:15:11.5220544Z echo \"policy_outcome=$POLICY_OUTCOME\"",
+        "2026-10-17T09:15:11.5220901Z echo \"inventory_outcome=$INVENTORY_OUTCOME\"",
+        "2026-10-17T09:15:11.5373872Z policy_outcome=failure",
+        "2026-10-17T09:15:11.5374523Z inventory_outcome=failure"
+      ],
+      "raw_log_sha256": null,
+      "causal_root_admission": false,
+      "rerun_admission": false
+    },
+    {
+      "pr": 2057,
+      "head_sha": "cdea1ae2445911b27f1a1934dd93fbcaa847a321",
+      "run_id": 38920465584,
+      "attempt": 1,
+      "workflow": "CI/CD Test Suite",
+      "job_id": 117038762492,
+      "first_failed_step": "Enforce security red roots",
+      "failed_step_number": 11,
+      "source": "NATIVE_GITHUB_JOB_LOG",
+      "log_retrieved": true,
+      "log_decoded_char_count": 48423,
+      "detected_signals": [
+        "safety"
+      ],
+      "diagnostic_tail_sanitized": [
+        "2026-10-16T15:02:05.9187189Z     echo \"::error::Safety is red.\"",
+        "2026-10-16T15:02:05.9341340Z ##[error]Safety is red."
+      ],
+      "raw_log_sha256": null,
+      "causal_root_admission": false,
+      "rerun_admission": false
+    },
+    {
+      "pr": 2066,
+      "head_sha": "9c4a60bf1df84b73ff33b0d0aba5a92ed6ea9770",
+      "run_id": 38913178350,
+      "attempt": 1,
+      "workflow": "CI Workflow Governance",
+      "job_id": 117013863996,
+      "first_failed_step": "Fail closed on governance red",
+      "failed_step_number": 9,
+      "source": "NATIVE_GITHUB_JOB_LOG",
+      "log_retrieved": true,
+      "log_decoded_char_count": 42427,
+      "detected_signals": [
+        "governance"
+      ],
+      "diagnostic_tail_sanitized": [
+        "2026-10-16T14:07:15.7952463Z ##[group]Run echo \"policy_outcome=$POLICY_OUTCOME\"",
+        "2026-10-16T14:07:15.7952856Z echo \"policy_outcome=$POLICY_OUTCOME\"",
+        "2026-10-16T14:07:15.7953186Z echo \"inventory_outcome=$INVENTORY_OUTCOME\"",
+        "2026-10-16T14:07:15.8056315Z policy_outcome=failure",
+        "2026-10-16T14:07:15.8056689Z inventory_outcome=failure"
+      ],
+      "raw_log_sha256": null,
+      "causal_root_admission": false,
+      "rerun_admission": false
+    },
+    {
+      "pr": 2066,
+      "head_sha": "9c4a60bf1df84b73ff33b0d0aba5a92ed6ea9770",
+      "run_id": 38913178667,
+      "attempt": 1,
+      "workflow": "CI/CD Test Suite",
+      "job_id": 117013865237,
+      "first_failed_step": "Enforce security red roots",
+      "failed_step_number": 11,
+      "source": "NATIVE_GITHUB_JOB_LOG",
+      "log_retrieved": true,
+      "log_decoded_char_count": 48639,
+      "detected_signals": [
+        "safety"
+      ],
+      "diagnostic_tail_sanitized": [
+        "2026-10-16T14:09:29.1002464Z     echo \"::error::Safety is red.\"",
+        "2026-10-16T14:09:29.1164311Z ##[error]Safety is red."
+      ],
+      "raw_log_sha256": null,
+      "causal_root_admission": false,
+      "rerun_admission": false
+    },
+    {
+      "pr": 2070,
+      "head_sha": "9071de0f865ee4ce401aacfff0d214a37494d9e9",
+      "run_id": 38919195368,
+      "attempt": 1,
+      "workflow": "CI Workflow Governance",
+      "job_id": 117034411084,
+      "first_failed_step": "Fail closed on governance red",
+      "failed_step_number": 9,
+      "source": "NATIVE_GITHUB_JOB_LOG",
+      "log_retrieved": true,
+      "log_decoded_char_count": 42426,
+      "detected_signals": [
+        "governance"
+      ],
+      "diagnostic_tail_sanitized": [
+        "2026-10-16T14:52:41.5082518Z ##[group]Run echo \"policy_outcome=$POLICY_OUTCOME\"",
+        "2026-10-16T14:52:41.5082967Z echo \"policy_outcome=$POLICY_OUTCOME\"",
+        "2026-10-16T14:52:41.5083330Z echo \"inventory_outcome=$INVENTORY_OUTCOME\"",
+        "2026-10-16T14:52:41.5235608Z policy_outcome=failure",
+        "2026-10-16T14:52:41.5236105Z inventory_outcome=failure"
+      ],
+      "raw_log_sha256": null,
+      "causal_root_admission": false,
+      "rerun_admission": false
+    },
+    {
+      "pr": 2075,
+      "head_sha": "f29c870e2395d2fc45ec25ab82a5a4894c9f4b51",
+      "run_id": 38931836090,
+      "attempt": 1,
+      "workflow": "DMAIC V3 Enterprise CI",
+      "job_id": 117077483522,
+      "first_failed_step": "Install dependencies",
+      "failed_step_number": 5,
+      "source": "NATIVE_GITHUB_JOB_LOG",
+      "log_retrieved": true,
+      "log_decoded_char_count": 101420,
+      "detected_signals": [
+        "matplotlib",
+        "isort"
+      ],
+      "diagnostic_tail_sanitized": [
+        "2026-10-16T16:25:37.5680416Z  * [new branch]        gm14-ci-pipeline-pytest-asyncio-20260927 -> origin/gm14-ci-pipeline-pytest-asyncio-20260927",
+        "2026-10-16T16:25:42.4615936Z pip install pytest pytest-cov pytest-benchmark pytest-mock pytest-asyncio pytest-xdist",
+        "2026-10-16T16:25:45.5029219Z ERROR: No matching distribution found for matplotlib<4.0.0,>=3.11.2"
+      ],
+      "raw_log_sha256": null,
+      "causal_root_admission": false,
+      "rerun_admission": false
+    },
+    {
+      "pr": 2077,
+      "head_sha": "133e5a082f74dd99a65bfda5308d7071523904d1",
+      "run_id": 38961401660,
+      "attempt": 1,
+      "workflow": "EVERRED V3 Governed Control Plane",
+      "job_id": 117178386644,
+      "first_failed_step": "Verify committed Black and isort styles",
+      "failed_step_number": 12,
+      "source": "NATIVE_GITHUB_JOB_LOG",
+      "log_retrieved": true,
+      "log_decoded_char_count": 48430,
+      "detected_signals": [
+        "isort"
+      ],
+      "diagnostic_tail_sanitized": [],
+      "raw_log_sha256": null,
+      "causal_root_admission": false,
+      "rerun_admission": false
+    },
+    {
+      "pr": 2080,
+      "head_sha": "db5d8c2c5da6abd27ea0872f3de1a0356d8928a0",
+      "run_id": 38955426268,
+      "attempt": 2,
+      "workflow": "Validate Docs (Markdown/YAML/JSON)",
+      "job_id": 117186924325,
+      "first_failed_step": "Validate changed docs",
+      "failed_step_number": 7,
+      "source": "NATIVE_GITHUB_JOB_LOG",
+      "log_retrieved": true,
+      "log_decoded_char_count": 643768,
+      "detected_signals": [
+        "isort",
+        "docslint"
+      ],
+      "diagnostic_tail_sanitized": [
+        "2026-10-16T20:50:07.3379519Z docs/governance/GOGREEN_ROOT_LEVERAGE_WAVES.md:8:81 error MD013/line-length Line length [Expected: 80; Actual: 113]",
+        "2026-10-16T20:50:07.3379976Z docs/governance/GOGREEN_ROOT_LEVERAGE_WAVES.md:9:81 error MD013/line-length Line length [Expected: 80; Actual: 100]",
+        "2026-10-16T20:50:07.3382830Z docs/governance/GOGREEN_ROOT_LEVERAGE_WAVES.md:21:81 error MD013/line-length Line length [Expected: 80; Actual: 372]",
+        "2026-10-16T20:50:07.3384774Z docs/governance/GOGREEN_ROOT_LEVERAGE_WAVES.md:24:81 error MD013/line-length Line length [Expected: 80; Actual: 240]",
+        "2026-10-16T20:50:07.3386006Z docs/governance/GOGREEN_ROOT_LEVERAGE_WAVES.md:30:81 error MD013/line-length Line length [Expected: 80; Actual: 197]"
+      ],
+      "raw_log_sha256": null,
+      "causal_root_admission": false,
+      "rerun_admission": false
+    },
+    {
+      "pr": 2082,
+      "head_sha": "0b02071aa6e8e80ad9870b69d32348c0945feaf6",
+      "run_id": 38957129403,
+      "attempt": 1,
+      "workflow": "OSV-Scanner",
+      "job_id": 117162696792,
+      "first_failed_step": "Upload to code-scanning",
+      "failed_step_number": 14,
+      "source": "NATIVE_GITHUB_JOB_LOG",
+      "log_retrieved": true,
+      "log_decoded_char_count": 116843,
+      "detected_signals": [
+        "isort",
+        "ratelimit"
+      ],
+      "diagnostic_tail_sanitized": [
+        "2026-10-16T19:44:41.7738111Z  * [new branch]        gm14-ci-pipeline-pytest-asyncio-20260927 -> origin/gm14-ci-pipeline-pytest-asyncio-20260927",
+        "2026-10-16T19:45:33.0633621Z ##[warning]Failed to gather information for telemetry: API rate limit exceeded for installation. If you reach out to GitHub Support",
+        "2026-10-16T19:45:47.4711030Z ##[error]API rate limit exceeded for installation. If you reach out to GitHub Support for help, please include the request ID 2840:",
+        "2026-10-16T19:46:01.8518358Z ##[warning]Failed to gather information for telemetry: API rate limit exceeded for installation. If you reach out to GitHub Support"
+      ],
+      "raw_log_sha256": null,
+      "causal_root_admission": false,
+      "rerun_admission": false
+    },
+    {
+      "pr": 2083,
+      "head_sha": "88d33855dd7a486fa0ca49b9f2c8c7687e5dd782",
+      "run_id": 38958524460,
+      "attempt": 2,
+      "workflow": "CI/CD Test Suite",
+      "job_id": 117364113844,
+      "first_failed_step": "Enforce code-quality red roots",
+      "failed_step_number": 12,
+      "source": "NATIVE_GITHUB_JOB_LOG",
+      "log_retrieved": true,
+      "log_decoded_char_count": 1125642,
+      "detected_signals": [
+        "isort"
+      ],
+      "diagnostic_tail_sanitized": [
+        "2026-10-16T19:56:13.7544734Z Collecting pytest-asyncio<0.24,>=0.23 (from -r requirements-test.txt (line 5))",
+        "2026-10-16T19:56:17.8120398Z Installing collected packages: urllib3, six, rpds-py, PyYAML, pypdf, pyjwt, pygments, pycparser, py-cpuinfo2, propcache, pluggy, nu",
+        "2026-10-16T19:56:26.9896564Z Successfully installed PyGithub-2.10.0 PyYAML-6.0.3 aiohappyeyeballs-2.7.1 aiohttp-3.14.5 aiosignal-1.4.0 attrs-26.1.0 certifi-2026",
+        "2026-10-16T19:58:30.9123336Z     echo \"::error::Per-tool $tool new-debt ratchet failed (exit $rc).\"",
+        "2026-10-16T19:58:32.9826746Z ##[error]Required ISORT full scan failed."
+      ],
+      "raw_log_sha256": null,
+      "causal_root_admission": false,
+      "rerun_admission": false
+    }
+  ]
+}
