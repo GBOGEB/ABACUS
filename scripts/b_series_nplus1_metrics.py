@@ -72,8 +72,15 @@ def extend(doc):
     durations = [row["b0_test_duration_seconds"] for row in rows]
     med = statistics.median(durations)
     mad = statistics.median(abs(x - med) for x in durations)
-    base_report = core.build(doc)
-    frozen_three = core.build({**doc, "observations": rows[:3]})
+    # Only after the native Git blob identities match may the original engine
+    # receive a qualified B1 fingerprint; the frozen source is not rewritten.
+    qualified = [
+        {**row, "b1_config_fingerprint": row["b1_source_config_identity"]}
+        for row in rows
+    ]
+    qualified_doc = {**doc, "observations": qualified}
+    base_report = core.build(qualified_doc)
+    frozen_three = core.build({**qualified_doc, "observations": qualified[:3]})
     base_report["historical_engine_metrics"] = base_report.pop(
         "three_pulse_metrics"
     )
