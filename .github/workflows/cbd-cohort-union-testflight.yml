@@ -22,18 +22,27 @@ jobs:
       matrix:
         python-version: ["3.10", "3.12"]
     env:
-      EXPECTED_PULL_HEAD: ${{ github.event.pull_request.head.sha }}
+      EXPECTED_PULL_HEAD: ${{ github.event.pull_request.head.sha || github.sha }}
       GITHUB_EVENT_SHA: ${{ github.sha }}
     steps:
       - name: Checkout source
         uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+      - name: Fail closed unless checked out at exact source head
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$EXPECTED_PULL_HEAD"
       - name: Setup Python
         uses: actions/setup-python@v5
         with:
           python-version: ${{ matrix.python-version }}
       - name: Install isolated coverage runner
+        # Python 3.10 requires Coverage.py TOML support to read pyproject.toml.
         run: python -m pip install "coverage[toml]>=7.7,<8"
-      - name: Execute 19 source-bound positive and negative contracts
+      - name: Execute 16 source-bound positive and negative contracts
         shell: bash
         run: |
           set -euo pipefail
@@ -71,6 +80,8 @@ jobs:
           pull_head = os.getenv("EXPECTED_PULL_HEAD", "")
           if not re.fullmatch(r"[0-9a-f]{40}", pull_head):
               raise SystemExit("Missing PR pull-head binding")
+          if subprocess.check_output(["git", "rev-parse", "HEAD"], text=True).strip() != pull_head:
+              raise SystemExit("HOLD: checkout and declared source head differ")
           receipt = {
               "schema": "cbd.native-cohort-testflight.v1",
               "repository": os.getenv("GITHUB_REPOSITORY"),
