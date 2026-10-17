@@ -345,5 +345,34 @@ class CBD260Tests(unittest.TestCase):
 
 
 
+    def test_module_main_guard_executes_cli_and_preserves_hold(self):
+        import contextlib
+        import io
+        import runpy
+        import sys
+        from unittest import mock
+
+        with tempfile.TemporaryDirectory() as directory:
+            output = Path(directory) / "direct-entrypoint"
+            argv = [
+                str(ROOT / "scripts" / "cbd_260.py"),
+                *(str(path) for path in PATHS),
+                "--output-dir",
+                str(output),
+            ]
+            with mock.patch.object(sys, "argv", argv):
+                with contextlib.redirect_stdout(io.StringIO()) as stream:
+                    runpy.run_path(
+                        str(ROOT / "scripts" / "cbd_260.py"), run_name="__main__"
+                    )
+            report = json.loads(stream.getvalue())
+            self.assertEqual("READ_ONLY", report["status"])
+            self.assertEqual("HOLD", report["admission"])
+            self.assertEqual(0, report["root_closure_credit"])
+            self.assertEqual(260, report["metrics"]["failed_workflow_associations"])
+            self.assertTrue((output / "sha256.json").exists())
+
+
+
 if __name__ == "__main__":
     unittest.main()
