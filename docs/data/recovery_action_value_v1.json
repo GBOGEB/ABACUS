@@ -1,0 +1,286 @@
+{
+  "schema": "abacus.recovery.action-value.v1",
+  "mode": "SOURCE_BOUND_OBSERVATION_NOT_MERGE_AUTHORITY",
+  "subject_repo": "GBOGEB/ABACUS",
+  "baseline": {
+    "main_sha": "5ede8c97db4aba99fdcc44109e7230db69a3fd6b",
+    "docs": {
+      "path": "tools/everred_v3/sut_gui/DASHBOARD_V3.md",
+      "finding_count": 13,
+      "findings_by_rule": {
+        "MD013": 10,
+        "MD022": 2,
+        "MD032": 1
+      },
+      "run_id": 38584212177,
+      "job_id": 115921732409,
+      "workflow": "Validate Docs (Markdown/YAML/JSON)",
+      "job": "Changed docs lint",
+      "run_url": "https://github.com/GBOGEB/ABACUS/actions/runs/38584212177",
+      "job_url": "https://github.com/GBOGEB/ABACUS/actions/runs/38584212177/job/115921732409",
+      "status": "FAILED"
+    },
+    "dow": {
+      "run_id": 38584212029,
+      "job_id": 115921743487,
+      "run_url": "https://github.com/GBOGEB/ABACUS/actions/runs/38584212029",
+      "failure_signatures": [
+        "end-of-file-fixer",
+        "trailing-whitespace",
+        "abacus-testpilot-fast"
+      ],
+      "failed_hook_count": 3,
+      "observed_downstream_skipped": 6,
+      "skipped_jobs": [
+        "CI - Ubuntu",
+        "CI - RHEL 9",
+        "CI - RHEL 8",
+        "DMAIC Full Cycle",
+        "Build Release Artifacts",
+        "Create GitHub Release"
+      ],
+      "note": "Downstream skip count is observed, not six resolved defects."
+    }
+  },
+  "candidates": {
+    "documentation": {
+      "pr": 1966,
+      "head_sha": "38069df650544f19db7967ecc5ec253d6e36afde",
+      "workflow_run_id": 38589957927,
+      "workflow_name": "Validate Docs (Markdown/YAML/JSON)",
+      "job_name": "Changed docs lint",
+      "same_file_required": true,
+      "comparison_status": "VERIFIED_TERMINAL_EXACT_HEAD_PR_ONLY",
+      "candidate_url": "https://github.com/GBOGEB/ABACUS/pull/1966",
+      "workflow_run_status": "completed",
+      "workflow_run_conclusion": "success",
+      "job_id": 115941877977,
+      "job_url": "https://github.com/GBOGEB/ABACUS/actions/runs/38589957927/job/115941877977",
+      "job_status": "completed",
+      "job_conclusion": "success",
+      "after_findings": 0
+    },
+    "dow_ruff": {
+      "pr": 1965,
+      "head_sha": "c3f7d2f852139ea54c64b325cea44d1e5706f26e",
+      "workflow_run_id": 38590675476,
+      "workflow_name": "DOW Bounded First-Red Burndown",
+      "job_id": 115944391508,
+      "job_name": "Exact-base vs exact-head Ruff and CLI contracts",
+      "job_url": "https://github.com/GBOGEB/ABACUS/actions/runs/38590675476/job/115944391508",
+      "artifact_url": "https://github.com/GBOGEB/ABACUS/actions/runs/38590675476/artifacts/11906997311",
+      "artifact_zip_sha256": "fe241c5534a441e907d78c762a4a5758b4cf6a6fb3f8d68bac58ed5f910e6118",
+      "tool": "ruff==0.17.0",
+      "identical_scoped_paths": [
+        "scripts/preview_diff.py",
+        "scripts/recursive_build.py",
+        "tests/test_dmaic_measurement_receipts.py",
+        "tests/test_loop_transient.py"
+      ],
+      "before_findings": 11,
+      "after_findings": 0,
+      "opened_occurrences": 0,
+      "resolved_occurrences": 11,
+      "net_reduction": 11,
+      "formatting_identical_paths": [
+        ".devcontainer/devcontainer.json",
+        "requirements.txt",
+        "qps_slide_reviewer/components/ui/label.tsx"
+      ],
+      "formatting_before": {
+        "missing_final_newline_files": 2,
+        "trailing_whitespace_lines": 9
+      },
+      "formatting_after": {
+        "missing_final_newline_files": 0,
+        "trailing_whitespace_lines": 0
+      },
+      "focused_regression_pass": 6,
+      "comparison_status": "VERIFIED_TERMINAL_PR_SCOPED",
+      "mainwide_precommit": "NOT_VERIFIED",
+      "candidate_url": "https://github.com/GBOGEB/ABACUS/pull/1965"
+    }
+  },
+  "coverage": {
+    "historical_main": {
+      "value_pct": 36.85,
+      "date": "2026-10-11"
+    },
+    "historical_pr_broad": {
+      "value_pct": 36.92,
+      "date": "2026-10-12"
+    },
+    "historical_pr_diff": {
+      "value_pct": 51,
+      "date": "2026-10-12"
+    },
+    "current_main_comparable_pct": null,
+    "current_pr_broad_comparable_pct": null,
+    "current_pr_diff_comparable_pct": null,
+    "scope_parity_verified": false,
+    "measured_main_at_sha": {
+      "exact_main_sha": "5ede8c97db4aba99fdcc44109e7230db69a3fd6b",
+      "workflow": "CI - ABACUS Matrix",
+      "run_id": 38584212355,
+      "job_id": 115923274430,
+      "job_name": "ABACUS - ubuntu-24.04 - Python 3.12",
+      "job_conclusion": "success",
+      "artifact_id": 11904509862,
+      "artifact_name": "test-evidence-py3.12-5ede8c97db4aba99fdcc44109e7230db69a3fd6b",
+      "artifact_url": "https://github.com/GBOGEB/ABACUS/actions/runs/38584212355/artifacts/11904509862",
+      "zip_sha256": "cb73a933f3af38cd7f361c4487663e3465ab73535a978294931f2767870bc7c4",
+      "coverage_xml_sha256": "1bc982809632eedc762e19c352ef389560b46d7f249cb3c7e89c934ca6a5984d",
+      "coverage_dab_json_sha256": "61e44a173cc1acf1c55629489890be82fa4d24745599cf6a2d3aa85c9708954a",
+      "coverage_version": "7.16.2",
+      "branch_coverage_enabled": true,
+      "covered_lines": 17088,
+      "num_statements": 30735,
+      "covered_branches": 4200,
+      "num_branches": 8290,
+      "percent_statements_covered": 55.6,
+      "percent_branches_covered": 50.66,
+      "percent_combined_covered": 54.55,
+      "scope_vs_historical_main": "NOT_RECONCILED",
+      "comparable_delta_to_36_85_pp": null,
+      "collected_on_main": "TERMINAL_EXACT_SHA_ARTIFACT_FROM_PREDECESSOR_MAIN"
+    },
+    "latest_main_readback_sha": "85dad8fbdab530d40e6ccf2f664c455f89454aad",
+    "latest_main_measured_pct": 54.65392575180766,
+    "latest_main_coverage_status": "VERIFIED_EXACT_SOURCE_MAIN",
+    "current_main_measured": {
+      "exact_main_sha": "85dad8fbdab530d40e6ccf2f664c455f89454aad",
+      "workflow": "CI - ABACUS Matrix",
+      "run_id": 38592202379,
+      "job_id": null,
+      "artifact_id": 11909575868,
+      "artifact_url": "https://github.com/GBOGEB/ABACUS/actions/runs/38592202379/artifacts/11909575868",
+      "zip_sha256": "632185b94fd2dd1fca2b108f3d4b3cde75290ae8ce9e4bae6deffea5bbc9bb36",
+      "coverage_xml_sha256": "86174b8855be4574f355dfbbfa049755a60596a899aaa9840a751b27cc43f73c",
+      "coverage_version": "7.16.2",
+      "dab_schema": "abacus-coverage-dab/1.0.0",
+      "covered_lines": 17158,
+      "num_statements": 30815,
+      "covered_branches": 4233,
+      "num_branches": 8324,
+      "percent_combined_covered": 54.65392575180766,
+      "percent_lines": 55.68,
+      "percent_branches": 50.85,
+      "collection_files": 299,
+      "old_collection_files": 298,
+      "source_additions": [
+        "scripts/dow_first_red_census.py"
+      ],
+      "existing_file_coverage_changed_count": 0,
+      "complete_native_matrix": "success",
+      "baseline_36_85_scope_comparable": false
+    },
+    "sequential_main_comparison": {
+      "from_sha": "5ede8c97db4aba99fdcc44109e7230db69a3fd6b",
+      "to_sha": "85dad8fbdab530d40e6ccf2f664c455f89454aad",
+      "before_pct": 54.54964766175529,
+      "after_pct": 54.65392575180766,
+      "delta_percentage_points": 0.1042780900523752,
+      "same_coverage_version": true,
+      "same_dab_schema": true,
+      "common_files": 298,
+      "added_files": 1,
+      "removed_files": 0,
+      "same_source_denominator": false,
+      "note": "Increase comes from an added highly covered source module, not increased coverage in 298 previously collected files. Not comparable to 36.85% legacy baseline."
+    }
+  },
+  "governance": {
+    "main_protected_at_baseline": false,
+    "observed_ruleset_id": 24494381,
+    "observed_enforced_rule_count": 0,
+    "independent_review_accepted": null,
+    "security_waiver": false,
+    "authority_transfer": false,
+    "formal_credit_delta": 0,
+    "recovery_observation": {
+      "schema": "abacus.p0.ruleset-readback.v1",
+      "repository": "GBOGEB/ABACUS",
+      "observed_main_sha": "85dad8fbdab530d40e6ccf2f664c455f89454aad",
+      "branch_protected": true,
+      "ruleset_id": 24494381,
+      "ruleset_enforcement": "active",
+      "enforced_ruleset_types": [
+        "deletion",
+        "pull_request",
+        "non_fast_forward"
+      ],
+      "ruleset_rule_count": 3,
+      "ruleset_bypass_actor_count": 0,
+      "required_approvals": 1,
+      "dismiss_stale_approvals": true,
+      "require_latest_push_approval": true,
+      "require_conversation_resolution": true,
+      "required_status_checks_present_in_observed_ruleset": false,
+      "independent_review_receipt": null,
+      "admission": "HOLD",
+      "evidence_urls": [
+        "https://api.github.com/repos/GBOGEB/ABACUS/branches/main",
+        "https://api.github.com/repos/GBOGEB/ABACUS/rulesets/24494381"
+      ],
+      "note": "Ruleset-specific, not a proof that no other active rule or branch protection policy exists. Effective required checks across every applicable policy remain UNKNOWN."
+    }
+  },
+  "metrics_contract": {
+    "verified_unblocked_downstream_jobs": null,
+    "verified_closed_bd_roots": null,
+    "verified_authenticated_crew_launches": null,
+    "accepted_rex_returns": null,
+    "docs_before_count": 13,
+    "docs_after_count": 0,
+    "docs_reduction_count": 13,
+    "docs_candidate_change_committed": true,
+    "docs_native_verify": "VERIFIED_EXACT_HEAD_PR_NOT_MAIN",
+    "scoped_ruff_net_resolved": 11,
+    "scoped_ruff_before_count": 11,
+    "scoped_ruff_after_count": 0,
+    "scoped_ruff_new_count": 0,
+    "source_verified_unblocking_scope": "PR_RUFF_4_FILES_ONLY",
+    "docs_verified_run_id": 38589957927,
+    "docs_verified_job_id": 115941877977,
+    "p0_known_ruleset_delta": {
+      "before": 0,
+      "after": 3,
+      "credit": "PARTIAL_GOVERNANCE_RESTORATION_ONLY",
+      "correct_admitted_merge_count": null
+    }
+  },
+  "evidence_policy": "Only trusted GitHub exact-head job success for configured docs workflow and changed-file scope can certify docs root fixed; later current main must separately recheck. DOW fanout remains potential until native dependency jobs execute. Missing/queued/cancelled != zero.",
+  "current_main_first_reds": {
+    "exact_main_sha": "85dad8fbdab530d40e6ccf2f664c455f89454aad",
+    "docs": {
+      "run_id": 38592202343,
+      "job_id": 115949686085,
+      "job_url": "https://github.com/GBOGEB/ABACUS/actions/runs/38592202343/job/115949686085",
+      "finding_count": 33,
+      "files": [
+        "tools/everred_v3/sut_gui/DASHBOARD_V31.md",
+        "tools/everred_v3/sut_gui/DASHBOARD_V32_VISUAL_CONTRACT.md"
+      ],
+      "candidate_pr": 1972,
+      "candidate_head_sha": "357ace9e09e04795f4bd9cdca49a9c81dc469772",
+      "candidate_run_id": 38596841036,
+      "verified_after_count": null,
+      "scope": "MAIN_DOCS_NEW_ROOT_NOT_PRIOR_PR_1966"
+    },
+    "workflow_governance": {
+      "run_id": 38592202482,
+      "job_id": 115949687742,
+      "job_url": "https://github.com/GBOGEB/ABACUS/actions/runs/38592202482/job/115949687742",
+      "unclassified_workflow_count": 2,
+      "unclassified": [
+        "code-purple-dashboard-v31.yml",
+        "code-purple-sut-gui.yml"
+      ],
+      "derived_report_stale": true,
+      "candidate_pr": 1973,
+      "candidate_head_sha": "007642a995f87519b3510277bec997df3522dee0",
+      "verified_after_count": null
+    },
+    "ownership_contract": "These are current-main first-red observations, distinct from the PR-scoped 13-to-0 docs repair and 11-to-0 Ruff repair. No closure before native same-SHA after-check."
+  }
+}

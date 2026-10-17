@@ -1,0 +1,108 @@
+{
+  "schema": "code-purple.mip.g3a.statistical-control.v1",
+  "authority": "ADVISORY_NOT_ADMISSION",
+  "repo": "GBOGEB/ABACUS",
+  "lineage": {
+    "n13_pr": 2133,
+    "n13_sha": "b16ba5c6ff3d4106db9ac5cfb3d3164b3206cb52",
+    "n13_run": 39040416656,
+    "n14_pr": 2139,
+    "n14_sha": "1446d78a6e93a455d9bed71f070a6b460dc6e86d",
+    "n14_run": 39046868554,
+    "n14_job": 117437224320,
+    "n14_artifact": 12106560662,
+    "coverage_version": "7.16.2",
+    "source_bytes_frozen": true,
+    "exact_arcs_rejoined": true
+  },
+  "aggregate": {
+    "eligible": 446,
+    "n13_covered": 115,
+    "n14_covered": 200,
+    "new_arc_count": 85,
+    "lost_arc_count": 0,
+    "uncovered": 246,
+    "delta_pp": 19.05829596412556,
+    "motion": "OBSERVED_IMPROVEMENT",
+    "control": "INSUFFICIENT_INDEPENDENT_SERIES",
+    "plateau": "NOT_DEMONSTRATED",
+    "max": "NOT_ESTABLISHED",
+    "six_sigma": "NOT_ASSESSED_FROM_BRANCH_COVERAGE"
+  },
+  "modules": [
+    {
+      "path": "DMAIC_V3/debug_pipeline.py",
+      "eligible": 116,
+      "n13": 17,
+      "n14": 94,
+      "gained": 77,
+      "lost": 0,
+      "targeted": true,
+      "motion": "OBSERVED_IMPROVEMENT",
+      "stability": "NOT_DEMONSTRATED"
+    },
+    {
+      "path": "DMAIC_V3/phases/phase4_improve.py",
+      "eligible": 134,
+      "n13": 45,
+      "n14": 53,
+      "gained": 8,
+      "lost": 0,
+      "targeted": true,
+      "motion": "OBSERVED_IMPROVEMENT",
+      "stability": "NOT_DEMONSTRATED"
+    },
+    {
+      "path": "DMAIC_V3/phases/phase8_todo_management.py",
+      "eligible": 118,
+      "n13": 30,
+      "n14": 30,
+      "gained": 0,
+      "lost": 0,
+      "targeted": false,
+      "motion": "UNCHANGED_NOT_TARGETED",
+      "stability": "NOT_ASSESSED"
+    },
+    {
+      "path": "cicd_github_orchestrator.py",
+      "eligible": 78,
+      "n13": 23,
+      "n14": 23,
+      "gained": 0,
+      "lost": 0,
+      "targeted": false,
+      "motion": "UNCHANGED_NOT_TARGETED",
+      "stability": "NOT_ASSESSED"
+    }
+  ],
+  "readiness": {
+    "n_comparable_pulses": 2,
+    "independent_interventions_minimum_control": 4,
+    "comparable_observations_minimum_control": 6,
+    "repeat_receipts_minimum_control": 2,
+    "pca": {
+      "state": "PCA_NOT_QUALIFIED",
+      "n": 2,
+      "p": 4,
+      "rank_upper_bound": 1
+    },
+    "bradley_terry": {
+      "state": "BT_NOT_ESTIMABLE",
+      "real_pairwise_outcomes": 0
+    }
+  },
+  "blocker": {
+    "name": "CI Workflow Governance / policy-and-inventory",
+    "run": 39046868436,
+    "state": "FAIL",
+    "first_red": "test_repository_workflows_are_classified_once",
+    "disposition": "OWNER_REPAIR_AND_RETEST"
+  },
+  "controls": {
+    "auto_waiver": false,
+    "main_merge": false,
+    "merge_admission": "HOLD",
+    "formal_root_closure": false,
+    "statistical_confidence_claim": false
+  }
+}

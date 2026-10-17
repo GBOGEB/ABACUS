@@ -1,4 +1,3 @@
-#!/usr/bin/env python3
 """
 # Version: 1.0.0
 # Date: 2025-11-25
@@ -9,14 +8,14 @@ import argparse
 import hashlib
 import json
 from pathlib import Path
-from typing import Dict, Any
+from typing import Any
 
 
 def sha256_file(p: Path) -> str:
     return hashlib.sha256(p.read_bytes()).hexdigest()
 
 
-def load_index(index_path: Path) -> Dict[str, Any]:
+def load_index(index_path: Path) -> dict[str, Any]:
     return json.loads(index_path.read_text(encoding="utf-8"))
 
 
@@ -47,7 +46,7 @@ def main() -> None:
             try:
                 path.read_text(encoding="utf-8", errors="ignore").splitlines()
                 print("(content changed; run hash_update after review)")
-            except Exception:
+            except OSError:
                 print("(binary or unreadable content changed)")
             had_diff = True
 

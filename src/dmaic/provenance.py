@@ -11,7 +11,7 @@ from typing import Dict, List, Any, Optional
 
 
 # In-memory storage for provenance data (used when DMAIC_PROVENANCE_DB is not set)
-_provenance_db = {
+_provenance_db: Dict[str, List[Dict[str, Any]]] = {
     'runs': [],
     'phases': [],
     'artifacts': []

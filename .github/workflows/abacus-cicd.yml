@@ -16,7 +16,7 @@ jobs:
     name: Lint & Validate Code
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v7
+      - uses: actions/checkout@v7.0.1
 
       - name: Set up Python
         uses: actions/setup-python@v7.0.0
@@ -54,7 +54,7 @@ jobs:
     runs-on: ubuntu-latest
     needs: lint-and-validate
     steps:
-      - uses: actions/checkout@v7
+      - uses: actions/checkout@v7.0.1
 
       - name: Set up Python
         uses: actions/setup-python@v7.0.0
@@ -85,7 +85,7 @@ jobs:
     runs-on: ubuntu-latest
     needs: test-phases
     steps:
-      - uses: actions/checkout@v7
+      - uses: actions/checkout@v7.0.1
 
       - name: Set up Python
         uses: actions/setup-python@v7.0.0
@@ -124,7 +124,7 @@ jobs:
     runs-on: ubuntu-latest
     needs: execute-dmaic-pipeline
     steps:
-      - uses: actions/checkout@v7
+      - uses: actions/checkout@v7.0.1
 
       - name: Set up Python
         uses: actions/setup-python@v7.0.0
@@ -152,7 +152,7 @@ jobs:
     needs: update-documentation
     if: github.ref == 'refs/heads/main'
     steps:
-      - uses: actions/checkout@v7
+      - uses: actions/checkout@v7.0.1
 
       - name: Download execution reports
         uses: actions/download-artifact@v8
@@ -175,7 +175,7 @@ jobs:
     runs-on: ubuntu-latest
     needs: execute-dmaic-pipeline
     steps:
-      - uses: actions/checkout@v7
+      - uses: actions/checkout@v7.0.1
 
       - name: Check Quality Metrics
         run: |

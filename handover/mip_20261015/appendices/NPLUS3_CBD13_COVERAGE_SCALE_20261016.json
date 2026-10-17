@@ -1,0 +1,148 @@
+{
+  "schema": "char.bd.cbd13.native-coverage-scale/v1",
+  "date": "2026-10-16",
+  "evidence_class": "EXACT_SHA_RECEIPT_FOR_B0_ONLY",
+  "admission": "HOLD",
+  "census": {
+    "abacus_open_prs": 55,
+    "non_atomic": true,
+    "new_owners": [
+      {
+        "pr": 2033,
+        "root": "EXACT_SHA_WORKER_TELEMETRY",
+        "head": "7faec2980c57c142cd515bba4a1b235d63192df8",
+        "status": "55/68 pass, 4 fail, 1 pending"
+      },
+      {
+        "pr": 2035,
+        "root": "SAFETY_SETUPOOLS",
+        "head": "0e22f3eb3cec72f7fd74b60d017e5e0d590a3cb0",
+        "status": "23/24 pass, governance fail, stacked on #2024"
+      },
+      {
+        "pr": 2037,
+        "root": "CANONICAL_GOVERNANCE",
+        "head": "221457d449f1dfd9eda67766aebc97b71acfea6c",
+        "status": "draft, 34/83 pass, 4 fail, 42 pending"
+      },
+      {
+        "pr": 2038,
+        "root": "W70_PY_GOVERNANCE_FANIN",
+        "head": "651dcf39a563dd5a94e8718a44be32bd7a790d03",
+        "status": "draft, A10 failed, many pending"
+      },
+      {
+        "pr": 2039,
+        "root": "BANDIT_INVENTORY_DECOUPLING",
+        "head": "7f98cb44f0395fe01d4bb999d63d311b7ff78315",
+        "status": "draft, inventory failed, 15 pending"
+      },
+      {
+        "pr": 2040,
+        "root": "XDIST_COVERAGE_MODE",
+        "head": "20b49316c85a0aed1bc98fdc3b3f763628296fe1",
+        "status": "draft, initial check pending"
+      }
+    ]
+  },
+  "c1": {
+    "pr": 2030,
+    "source_sha": "907b96efd08d4b6121e8f5dec97e23af38e9f77f",
+    "run_id": 38823379390,
+    "job_id": 116725018550,
+    "artifact_id": 12014295985,
+    "zip_sha256": "c137525807fb041bf2bb32d4889f05f775034bec06663c902f22c72e2974149c",
+    "zip_crc": "PASS",
+    "native_b0": "SUCCESS",
+    "canonical_test_evidence": {
+      "pass": 2253,
+      "skip": 2,
+      "ratchet": "PASS",
+      "formal_credit_delta": 0,
+      "engineering_credit_delta": 0
+    },
+    "canonical_contexts": {
+      "coverage_py_version": "7.16.2",
+      "branch_coverage": true,
+      "total": {
+        "covered_statements": 17202,
+        "eligible_statements": 30815,
+        "covered_branches": 4262,
+        "eligible_branches": 8324,
+        "combined_covered": 21464,
+        "combined_eligible": 39139,
+        "combined_pct": 54.84
+      },
+      "target_file": "scripts/branch_retirement_report.py",
+      "target": {
+        "covered_statements": 111,
+        "eligible_statements": 212,
+        "covered_branches": 37,
+        "eligible_branches": 74,
+        "combined_covered": 148,
+        "combined_eligible": 286,
+        "combined_pct": 51.75
+      }
+    },
+    "baseline_from_pr_description_only": {
+      "combined_covered": 75,
+      "combined_eligible": 286,
+      "global_covered": 21391,
+      "global_eligible": 39139
+    },
+    "candidate_delta": {
+      "target_covered_elements": 73,
+      "target_percentage_points": 25.52,
+      "global_covered_elements": 73,
+      "global_percentage_points": 0.19
+    },
+    "baseline_exact_sha_verified": false,
+    "matched_cohort_gain_qualified": false,
+    "original_test_ubuntu": {
+      "job_id": 116727169418,
+      "status": "QUEUED",
+      "original_first_red_disappeared": "UNKNOWN"
+    },
+    "independent_failures": [
+      "PR Feedback Gate",
+      "policy-and-inventory",
+      "Security Scanning"
+    ]
+  },
+  "python39": {
+    "pr": 2029,
+    "latest_head": "bf8be5ccbcf662cd450dec3c7abf797543cb6090",
+    "native_run_id": 38824325877,
+    "run_status": "QUEUED",
+    "new_head_native_matrix_proof": "NOT_YET_AVAILABLE",
+    "previous_head_first_red": "pylint>=4.1.3 incompatible with Python3.9",
+    "root_closed": false
+  },
+  "security_governance": {
+    "a10_issue_1996": "OPEN",
+    "pr1995_unresolved_threads": 2,
+    "ruleset_required_approvals": 0,
+    "ruleset_required_checks": false,
+    "independent_security_disposition": "NOT_OBSERVED"
+  },
+  "scale_policy": {
+    "planned_disjoint_slots": 3,
+    "actual_worker_sessions_authenticated": 0,
+    "writer_per_root": 1,
+    "owner_lanes": [
+      "#2029 Python3.9 dependency",
+      " #2040 xdist coverage and #2030 test result",
+      " #2035 Safety + #2037 governance independent review"
+    ],
+    "do_not_duplicate": [
+      "#2040 xdist source repair",
+      "#2037 canonical governance",
+      "#2035 Safety source",
+      "#2033 telemetry"
+    ],
+    "qualified_root_closures": 0,
+    "queue_p95_ms": null,
+    "artifact_digest_verified": true
+  },
+  "next": "Obtain terminal exact-head #2029 matrix, original #2030 Ubuntu job, baseline main B0 artifact matched source/scope; reconcile overlapping owners and preserve A10/Safety HOLD"
+}
