@@ -1,4 +1,3 @@
-#!/usr/bin/env python3
 """
 # Version: 1.0.0
 # Date: 2025-11-25
@@ -15,7 +14,7 @@ Recursive build orchestrator (lightweight stub):
 import argparse
 import csv
 import json
-from datetime import datetime
+import time
 from pathlib import Path
 
 
@@ -34,7 +33,7 @@ def main():
     args = ap.parse_args()
 
     index_path = Path(args.index)
-    idx, artifacts = load_index(index_path)
+    _idx, artifacts = load_index(index_path)
 
     missing = []
     for a in artifacts:
@@ -50,7 +49,7 @@ def main():
         return
 
     # Basic metrics
-    now = datetime.utcnow().date().isoformat()
+    now = time.strftime("%Y-%m-%d", time.gmtime())
     data = {
         "date": now,
         "iteration": 1,
