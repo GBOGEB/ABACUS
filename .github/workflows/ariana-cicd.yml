@@ -1,92 +1,163 @@
 name: Ariana CI/CD
 
+# Fail-closed, source-owned DOW/Ariana testflight. No deployment or remote dispatch.
 on:
   push:
-    branches: [ main, develop ]
+    branches: [main, develop]
     paths:
-      - 'ARTEFACT_TYPE_GROUPING/PYTHON_code/**'
+      - '.github/workflows/ariana-cicd.yml'
+      - 'DMAIC_V3/core/dow_ariana_integration.py'
+      - 'DMAIC_V3/core/test_system_bridge.py'
+      - 'DMAIC_V3/core/state.py'
+      - 'DMAIC_V3/tests/test_dow_ariana_integration_runtime_coverage.py'
+      - 'tests/test_dow_ariana_changed_line_coverage.py'
+      - 'tests/test_ariana_ci_federation.py'
+      - 'scripts/ci/ariana_dow_evidence.py'
+      - '.mesh/MESH_DOCK.yaml'
+      - 'architecture/w112/W112_GLOBAL_HIVE_GLOB_DOW_RECEIVER.yaml'
+  pull_request:
+    paths:
+      - '.github/workflows/ariana-cicd.yml'
+      - 'DMAIC_V3/core/dow_ariana_integration.py'
+      - 'DMAIC_V3/core/test_system_bridge.py'
+      - 'DMAIC_V3/core/state.py'
+      - 'DMAIC_V3/tests/test_dow_ariana_integration_runtime_coverage.py'
+      - 'tests/test_dow_ariana_changed_line_coverage.py'
+      - 'tests/test_ariana_ci_federation.py'
+      - 'scripts/ci/ariana_dow_evidence.py'
+      - '.mesh/MESH_DOCK.yaml'
+      - 'architecture/w112/W112_GLOBAL_HIVE_GLOB_DOW_RECEIVER.yaml'
   workflow_dispatch:
+
+permissions:
+  contents: read
 
 jobs:
   test-ariana:
+    name: Ariana/DOW native Python ${{ matrix.python-version }}
     runs-on: ubuntu-latest
-    
+    timeout-minutes: 15
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: ['3.11', '3.12']
     steps:
-    - name: Checkout code
-      uses: actions/checkout@v7
-    
-    - name: Set up Python
-      uses: actions/setup-python@v7.0.0
-      with:
-        python-version: '3.12'
-    
-    - name: Install dependencies
-      run: |
-        cd ARTEFACT_TYPE_GROUPING/PYTHON_code
-        python -m pip install --upgrade pip
-        pip install -r ariana_requirements.txt
-    
-    - name: Run fix script
-      run: |
-        cd ARTEFACT_TYPE_GROUPING/PYTHON_code
-        python fix_ariana.py
-    
-    - name: Run tests
-      run: |
-        cd ARTEFACT_TYPE_GROUPING/PYTHON_code
-        python test_ariana.py
-    
-    - name: Test agent execution
-      run: |
-        cd ARTEFACT_TYPE_GROUPING/PYTHON_code
-        python -c "from ariana_agent import ArianaAgent; agent = ArianaAgent(); result = agent.run(); print('Agent test passed:', result['status'])"
-    
-    - name: Test DOW integration
-      run: |
-        cd ARTEFACT_TYPE_GROUPING/PYTHON_code
-        python test_ariana_dow_integration.py
-    
-    - name: Upload logs
-      if: always()
-      uses: actions/upload-artifact@v7.0.2
-      with:
-        name: ariana-logs
-        path: ARTEFACT_TYPE_GROUPING/PYTHON_code/logs/
+      - name: Checkout exact PR head
+        uses: actions/checkout@v7
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+      - name: Verify exact source checkout
+        env:
+          SOURCE_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+        run: |
+          test "$(git rev-parse HEAD)" = "$SOURCE_SHA"
+      - name: Set up Python
+        uses: actions/setup-python@v7.0.0
+        with:
+          python-version: ${{ matrix.python-version }}
+      - name: Install bounded test and measurement dependencies
+        run: |
+          python -m pip install --disable-pip-version-check 'pytest>=8,<10' 'PyYAML>=6,<7' 'coverage==7.13.3'
+      - name: Validate real DOW bridge and existing KEB semantic receiver
+        env:
+          SOURCE_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+        run: |
+          python scripts/ci/ariana_dow_evidence.py --repo-root . --source-sha "$SOURCE_SHA" --preflight
+      - name: Run real DOW/Ariana behavior, adversarial cases and focused coverage
+        run: |
+          mkdir -p .ariana-evidence
+          python -m coverage run --branch --source=DMAIC_V3.core.dow_ariana_integration -m pytest -q \
+            DMAIC_V3/tests/test_dow_ariana_integration_runtime_coverage.py \
+            tests/test_dow_ariana_changed_line_coverage.py \
+            tests/test_ariana_ci_federation.py \
+            --junitxml=.ariana-evidence/junit.xml
+          python -m coverage json -o .ariana-evidence/coverage.json
+      - name: Emit source-bound local evidence and nonpromotion federation projection
+        if: always()
+        env:
+          SOURCE_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+        run: |
+          python scripts/ci/ariana_dow_evidence.py \
+            --repo-root . --source-sha "$SOURCE_SHA" \
+            --junit .ariana-evidence/junit.xml \
+            --coverage .ariana-evidence/coverage.json \
+            --out .ariana-evidence/ariana-dow-receipt.json --strict
+      - name: Upload test/coverage and read-only federation evidence
+        if: always()
+        uses: actions/upload-artifact@v7.0.2
+        with:
+          name: ariana-evidence-py${{ matrix.python-version }}
+          path: .ariana-evidence/
+          if-no-files-found: warn
+          retention-days: 30
 
-  deploy-ariana:
+  federation-bridge:
+    name: DOW / KEB / QPS evidence-only matrix join
     needs: test-ariana
     runs-on: ubuntu-latest
-    if: github.ref == 'refs/heads/main'
-    
+    timeout-minutes: 10
     steps:
-    - name: Checkout code
-      uses: actions/checkout@v7
-    
-    - name: Set up Python
-      uses: actions/setup-python@v7.0.0
-      with:
-        python-version: '3.12'
-    
-    - name: Install dependencies
-      run: |
-        cd ARTEFACT_TYPE_GROUPING/PYTHON_code
-        pip install -r ariana_requirements.txt
-    
-    - name: Deploy Ariana with DOW
-      run: |
-        cd ARTEFACT_TYPE_GROUPING/PYTHON_code
-        python ariana_dow_bridge.py
-    
-    - name: Verify deployment
-      run: |
-        cd ARTEFACT_TYPE_GROUPING/PYTHON_code
-        test -f DOW/AGENTS_REGISTRY.json && echo "✅ Agent registered in DOW"
-        test -f DOW/ariana_health.json && echo "✅ Health monitoring active"
-    
-    - name: Upload deployment artifacts
-      uses: actions/upload-artifact@v7.0.2
-      with:
-        name: ariana-deployment
-        path: |
-          ARTEFACT_TYPE_GROUPING/PYTHON_code/DOW/
-          ARTEFACT_TYPE_GROUPING/PYTHON_code/logs/
+      - name: Checkout exact PR head
+        uses: actions/checkout@v7
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+      - name: Download two native source-bound receipts
+        uses: actions/download-artifact@v8
+        with:
+          pattern: ariana-evidence-py*
+          path: .ariana-federation/
+          merge-multiple: false
+      - name: Verify dual-lane evidence without remote authority
+        env:
+          SOURCE_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+        run: |
+          python - <<'PY'
+          import json
+          import os
+          from pathlib import Path
+
+          receipts = sorted(Path(".ariana-federation").rglob("ariana-dow-receipt.json"))
+          assert len(receipts) == 2, f"two independently executed Python lanes required, got {len(receipts)}"
+          data = [json.loads(p.read_text(encoding="utf-8")) for p in receipts]
+          versions = {r["producer"]["python_version"] for r in data}
+          assert versions == {"3.11", "3.12"}, versions
+          source = os.environ["SOURCE_SHA"]
+          assert all(r["producer"]["source_sha"] == source for r in data)
+          assert all(r["disposition"] == "LOCAL_TESTED_FEDERATION_HOLD" for r in data)
+          assert all(r["native_test_receipt"]["total"] >= 28 for r in data)
+          assert all(r["native_test_receipt"]["failures"] == 0 and r["native_test_receipt"]["errors"] == 0 for r in data)
+          assert all(r["governance"]["merge_admission"] == "HOLD" for r in data)
+          assert all(r["governance"]["qps_engineering_acceptance"] is None for r in data)
+          assert all(r["governance"]["keb_acceptance"] is None for r in data)
+          obligations = [
+              r["focused_coverage"]["combined"]["denominator"] for r in data
+          ]
+          assert all(isinstance(n, int) and n > 0 for n in obligations)
+          assert len(set(obligations)) == 1, "unmatched coverage denominator across native lanes"
+          result = {
+              "schema": "abacus.ariana_dow_two_lane_observational_join.v1",
+              "source_sha": source,
+              "python_lanes": sorted(versions),
+              "junit_case_population_by_lane": {
+                  r["producer"]["python_version"]: r["native_test_receipt"]["total"] for r in data
+              },
+              "focused_coverage_by_lane": {
+                  r["producer"]["python_version"]: r["focused_coverage"] for r in data
+              },
+              "remote_keb_or_qps_receipts": None,
+              "disposition": "LOCAL_DOW_BRIDGE_TESTED_REMOTE_FEDERATION_HOLD",
+              "merge_admission": "HOLD",
+              "qps_engineering_acceptance": None,
+              "authority_transfer": False,
+          }
+          out = Path(".ariana-federation/two-lane-join.json")
+          out.write_text(json.dumps(result, indent=2, sort_keys=True) + "\n", encoding="utf-8")
+          print("ARIANA_DOW_NATIVE_MATRIX=PASS; FEDERATION_REMOTE=HOLD")
+          PY
+      - name: Upload read-only dual-lane federation join
+        uses: actions/upload-artifact@v7.0.2
+        with:
+          name: ariana-federation-two-lane
+          path: .ariana-federation/two-lane-join.json
+          if-no-files-found: error
+          retention-days: 30
