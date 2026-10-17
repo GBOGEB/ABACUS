@@ -1,5 +1,7 @@
 """MIP statistical eligibility: descriptive screening, never approval."""
+
 from __future__ import annotations
+
 import math
 import re
 
@@ -11,30 +13,47 @@ def _valid_sha(value):
 
 
 def _reply(model, reasons, **data):
-    return dict(schema="abacus.everred.model-readiness.v1", model=model,
-                decision="NOT_QUALIFIED" if reasons else "FIT_ELIGIBLE_NOT_FITTED",
-                reasons=sorted(set(reasons)), fitted=False,
-                merge_authorized=False, authority_transfer=False, **data)
+    return dict(
+        schema="abacus.everred.model-readiness.v1",
+        model=model,
+        decision="NOT_QUALIFIED" if reasons else "FIT_ELIGIBLE_NOT_FITTED",
+        reasons=sorted(set(reasons)),
+        fitted=False,
+        merge_authorized=False,
+        authority_transfer=False,
+        **data,
+    )
 
 
 def pca_readiness(payload):
     """Process heuristic n >= max(30, 5p); not statistical acceptance."""
-    if not isinstance(payload, dict) or payload.get("schema") != "abacus.everred.pca.panel.v1":
+    if (
+        not isinstance(payload, dict)
+        or payload.get("schema") != "abacus.everred.pca.panel.v1"
+    ):
         return _reply("PCA", ["INVALID_SCHEMA"])
     reasons = [] if _valid_sha(payload.get("source_sha")) else ["EXACT_SHA_UNKNOWN"]
     rows, columns = payload.get("rows"), payload.get("columns")
-    if not isinstance(columns, list) or len(columns) < 2 or len(set(columns)) != len(columns):
+    if (
+        not isinstance(columns, list)
+        or len(columns) < 2
+        or len(set(columns)) != len(columns)
+    ):
         return _reply("PCA", reasons + ["INVALID_VARIABLES"])
     if not isinstance(rows, list):
         return _reply("PCA", reasons + ["ROWS_MISSING"])
     n, p = len(rows), len(columns)
     ids, matrix = [], []
     for row in rows:
-        if not isinstance(row, dict) or not isinstance(row.get("independent_unit"), str):
+        if not isinstance(row, dict) or not isinstance(
+            row.get("independent_unit"), str
+        ):
             return _reply("PCA", reasons + ["UNIT_ID_MISSING"], n=n, p=p)
         values = row.get("values")
-        if not isinstance(values, list) or len(values) != p or any(
-            type(v) not in (int, float) or not math.isfinite(v) for v in values
+        if (
+            not isinstance(values, list)
+            or len(values) != p
+            or any(type(v) not in (int, float) or not math.isfinite(v) for v in values)
         ):
             return _reply("PCA", reasons + ["NONFINITE_OR_INCOMPLETE"], n=n, p=p)
         ids.append(row["independent_unit"])
@@ -64,7 +83,10 @@ def _reach(node, edges):
 
 def bt_readiness(payload):
     """Finite unpenalized BT estimates require a strongly connected win graph."""
-    if not isinstance(payload, dict) or payload.get("schema") != "abacus.everred.bt.pairs.v1":
+    if (
+        not isinstance(payload, dict)
+        or payload.get("schema") != "abacus.everred.bt.pairs.v1"
+    ):
         return _reply("BRADLEY_TERRY", ["INVALID_SCHEMA"])
     reasons = [] if _valid_sha(payload.get("source_sha")) else ["EXACT_SHA_UNKNOWN"]
     names, comparisons = payload.get("items"), payload.get("comparisons")
@@ -89,13 +111,17 @@ def bt_readiness(payload):
         reasons.append("SMALL_PAIR_SAMPLE")
     if any(len(_reach(x, graph)) != len(names) for x in names):
         reasons.append("WIN_GRAPH_NOT_STRONGLY_CONNECTED")
-    return _reply("BRADLEY_TERRY", reasons, n=len(comparisons),
-                  independent_units=len(units))
+    return _reply(
+        "BRADLEY_TERRY", reasons, n=len(comparisons), independent_units=len(units)
+    )
 
 
 def reverse_pressure(payload):
     """Directed prerequisite reachability; not hydraulic pressure/probability."""
-    if not isinstance(payload, dict) or payload.get("schema") != "abacus.everred.blocking-dag.v1":
+    if (
+        not isinstance(payload, dict)
+        or payload.get("schema") != "abacus.everred.blocking-dag.v1"
+    ):
         return _reply("REVERSE_PRESSURE", ["INVALID_SCHEMA"])
     reasons = [] if _valid_sha(payload.get("source_sha")) else ["EXACT_SHA_UNKNOWN"]
     nodes, edges = payload.get("nodes"), payload.get("edges")
@@ -108,7 +134,13 @@ def reverse_pressure(payload):
         return _reply("REVERSE_PRESSURE", reasons + ["DUPLICATED_NODE"])
     adj = {x: set() for x in lookup}
     for edge in edges:
-        if not isinstance(edge, dict) or edge.get("from") not in adj or edge.get("to") not in adj or edge.get("from") == edge.get("to") or edge.get("causally_supported") is not True:
+        if (
+            not isinstance(edge, dict)
+            or edge.get("from") not in adj
+            or edge.get("to") not in adj
+            or edge.get("from") == edge.get("to")
+            or edge.get("causally_supported") is not True
+        ):
             return _reply("REVERSE_PRESSURE", reasons + ["UNVERIFIED_EDGE"])
         adj[edge["from"]].add(edge["to"])
     active, finished = set(), set()
@@ -127,7 +159,11 @@ def reverse_pressure(payload):
 
     if not all(acyclic(x) for x in adj):
         return _reply("REVERSE_PRESSURE", reasons + ["CYCLE"])
-    gates = {key for key, val in lookup.items() if val.get("type") == "gate" and val.get("mandatory") is True}
+    gates = {
+        key
+        for key, val in lookup.items()
+        if val.get("type") == "gate" and val.get("mandatory") is True
+    }
     impacts = [
         {"root_id": key, "reachable_mandatory_gates": sorted(_reach(key, adj) & gates)}
         for key, val in lookup.items()
