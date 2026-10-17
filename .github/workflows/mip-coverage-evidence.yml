@@ -91,7 +91,7 @@ jobs:
           test "$actual_sha" = "$EXACT_SHA"
 
       - name: Setup Python 3.12
-        uses: actions/setup-python@v7.0.0
+        uses: actions/setup-python@v7
         with:
           python-version: "3.12"
           cache: "pip"
@@ -161,7 +161,7 @@ jobs:
           test "$actual_sha" = "$EXACT_SHA"
 
       - name: Setup Python 3.12
-        uses: actions/setup-python@v7.0.0
+        uses: actions/setup-python@v7
         with:
           python-version: "3.12"
           cache: "pip"
@@ -223,7 +223,7 @@ jobs:
           test "$actual_sha" = "$EXACT_SHA"
 
       - name: Setup Python
-        uses: actions/setup-python@v7.0.0
+        uses: actions/setup-python@v7
         with:
           python-version: "3.12"
 
@@ -264,7 +264,7 @@ jobs:
           test "$actual_sha" = "$EXACT_SHA"
 
       - name: Setup Python 3.12
-        uses: actions/setup-python@v7.0.0
+        uses: actions/setup-python@v7
         with:
           python-version: "3.12"
           cache: "pip"
@@ -366,7 +366,7 @@ jobs:
           test "$actual_sha" = "$EXACT_SHA"
 
       - name: Setup Python 3.12
-        uses: actions/setup-python@v7.0.0
+        uses: actions/setup-python@v7
         with:
           python-version: "3.12"
 
@@ -481,7 +481,7 @@ jobs:
           test "$actual_sha" = "$EXACT_SHA"
 
       - name: Setup Python 3.12
-        uses: actions/setup-python@v7.0.0
+        uses: actions/setup-python@v7
         with:
           python-version: "3.12"
 
