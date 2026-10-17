@@ -1,0 +1,43 @@
+{
+  "authority": {
+    "authority_transfer": false,
+    "merge_admission": "HOLD",
+    "security_waiver": false
+  },
+  "issued_at": "2026-10-17T11:09:17.990758Z",
+  "preissued_forecast_for": "W8/W9 only",
+  "schema": "code-purple.eoss.n6.plan.v1",
+  "source_parent": "21ac90604f36e70b64bd0539272e8982a747ec75",
+  "uncertainty": {
+    "cache_preload_savings_seconds": null,
+    "causal_root_closures": null,
+    "main_coverage_pp_delta": null,
+    "runner_time_saved_seconds": null
+  },
+  "waves": [
+    {
+      "native_ci_terminal_required": true,
+      "plan_kind": "RETROSPECTIVE_TARGET_NOT_FORECAST",
+      "planned_existing_eoss_branches_pct": 100,
+      "planned_existing_eoss_statements_pct": 100,
+      "planned_tests_pass_min": 73,
+      "wave": "W7"
+    },
+    {
+      "native_ci_terminal_required": true,
+      "plan_kind": "PREISSUED_TARGET",
+      "planned_existing_eoss_branches_pct": 100,
+      "planned_existing_eoss_statements_pct": 100,
+      "planned_tests_pass_min": 95,
+      "wave": "W8"
+    },
+    {
+      "native_ci_terminal_required": true,
+      "plan_kind": "PREISSUED_TARGET",
+      "planned_existing_eoss_branches_pct": 100,
+      "planned_existing_eoss_statements_pct": 100,
+      "planned_tests_pass_min": 95,
+      "wave": "W9"
+    }
+  ]
+}

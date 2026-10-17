@@ -1,0 +1,75 @@
+{
+  "clock_basis": "NATIVE_JOB_CREATED_STARTED_COMPLETED",
+  "current_head_pass_fraction_accepted": null,
+  "head_sha": "21ac90604f36e70b64bd0539272e8982a747ec75",
+  "jobs": [
+    {
+      "conclusion": "success",
+      "first_red_step": null,
+      "job_id": 117378936297,
+      "name": "ABACUS CI proof planner",
+      "queue_seconds": 4,
+      "run_attempt": 1,
+      "runtime_seconds": 8
+    },
+    {
+      "conclusion": "success",
+      "first_red_step": null,
+      "job_id": 117378936404,
+      "name": "Benchmark baseline - Python 3.12 - no coverage",
+      "queue_seconds": 10,
+      "run_attempt": 1,
+      "runtime_seconds": 46
+    },
+    {
+      "conclusion": "skipped",
+      "first_red_step": null,
+      "job_id": 117378937161,
+      "name": "Runner migration canary - ubuntu-latest - Python 3.12",
+      "queue_seconds": 0,
+      "run_attempt": 1,
+      "runtime_seconds": null
+    },
+    {
+      "conclusion": "failure",
+      "first_red_step": "Install tooling",
+      "job_id": 117378972675,
+      "name": "ABACUS - ubuntu-24.04 - Python 3.10",
+      "queue_seconds": 5,
+      "run_attempt": 1,
+      "runtime_seconds": 13
+    },
+    {
+      "conclusion": "success",
+      "first_red_step": null,
+      "job_id": 117378972734,
+      "name": "ABACUS - ubuntu-24.04 - Python 3.12",
+      "queue_seconds": 5,
+      "run_attempt": 1,
+      "runtime_seconds": 339
+    },
+    {
+      "conclusion": "failure",
+      "first_red_step": "Audit executed and classified-skipped proof roles",
+      "job_id": 117380000552,
+      "name": "Python proof completeness",
+      "queue_seconds": 3,
+      "run_attempt": 1,
+      "runtime_seconds": 8
+    },
+    {
+      "conclusion": "failure",
+      "first_red_step": "Enforce selected proof set",
+      "job_id": 117380036814,
+      "name": "ABACUS compatibility gate",
+      "queue_seconds": 5,
+      "run_attempt": 1,
+      "runtime_seconds": 3
+    }
+  ],
+  "native_causal_roots_accepted": null,
+  "run_attempt": 1,
+  "run_id": 39026629552,
+  "scope": "PR exact-head 1 workflow run, latest-attempt native 7 job records",
+  "url": "https://github.com/GBOGEB/ABACUS/actions/runs/39026629552"
+}

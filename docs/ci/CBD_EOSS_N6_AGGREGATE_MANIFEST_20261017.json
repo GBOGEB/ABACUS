@@ -1,0 +1,23 @@
+{
+  "schema": "code-purple.eoss.n6.artifact_registry.v1",
+  "evidence_level": "LOCAL_REPRODUCIBILITY",
+  "artifacts": {
+    "W9_LOCAL_COVERAGE.json": "2c2505bbcc9fe52e772f8383823e72b4739f4fe2a5d2565ab3b60faeb570a0a0",
+    "eoss_n6_clock.mmd": "c8098afc4d605baefd5d2d25f70de90e709a5ca731377d7256bececd7e23e9e4",
+    "eoss_n6_dashboard.html": "dc74d26ad8ca777a380eec6f78f5ce3c40544b13cc110445aa92ba79136d2c37",
+    "eoss_n6_glossary.md": "688c087441fa1910320930312ee2b143c7003fa9f1cba9fe1a2fc1e7bdd61223",
+    "eoss_n6_local_benchmark.json": "d50d7b62a782814bfedc8cbb22c513dff190f0f30826c5790383d14783c7fc65",
+    "eoss_n6_native_clock.json": "770baf6555793afcdbb4ae8caddbb4d85339156bc0c6c069d47a35888bb08203",
+    "eoss_n6_process.mmd": "97f7e15aca26a0e0c87fd084dd4ed160f107b9e02142e14b8727437113ebb80f",
+    "eoss_n6_release_receipt.json": "c400dac2d3aa026e7d7081c9e6f3b864b2fb00d116e89c48b2c2181a34bdf813",
+    "eoss_n6_review.json": "078741c6df27ad2086b4e194f66cc56c2bf4bd71808fc302480a4d5bb6b5a2f2",
+    "eoss_n6_sipoc.mmd": "73624964c5a9a01f1556733337da1133d3999e5397ac72c0c6566fa362e0ef2d",
+    "eoss_n6_trajectory.json": "1bf812e766aa7237ab20aad8447a31885ceaea4cc974b654253138533709ddcc",
+    "eoss_n6_trajectory_input.json": "9340486da5e4a5e47dee2b0d9cbef7d696565f4895379471faae1b61ac6bcab6",
+    "eoss_n6_visual_qa.json": "606b1855fc13c56758b3fcfc7020853e3fbccf7154f0b9c00ff37028019c3c0c"
+  },
+  "authority": {
+    "admission": "HOLD",
+    "security_waiver": false
+  }
+}
