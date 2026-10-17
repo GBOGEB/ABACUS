@@ -1,4 +1,5 @@
 """Origin-independent EVERRED revision/cycle deltas; descriptive, not admission."""
+
 from __future__ import annotations
 
 import math
@@ -15,7 +16,10 @@ def _int(value):
 
 
 def _metric(metric, sha):
-    if not isinstance(metric, dict) or metric.get("state") not in ("MEASURED", "UNKNOWN"):
+    if not isinstance(metric, dict) or metric.get("state") not in (
+        "MEASURED",
+        "UNKNOWN",
+    ):
         raise ValueError("metric state must be MEASURED or UNKNOWN")
     if metric["state"] == "UNKNOWN":
         if metric.get("value") is not None:
@@ -32,9 +36,14 @@ def _metric(metric, sha):
     if any(v is None or v == "UNKNOWN" for v in basis.values()):
         raise ValueError("measured comparability basis cannot be UNKNOWN")
     source = metric.get("source")
-    if (not isinstance(source, dict) or source.get("sha") != sha or
-        not _int(source.get("run_id")) or source["run_id"] == 0 or
-        not _int(source.get("job_id")) or source["job_id"] == 0):
+    if (
+        not isinstance(source, dict)
+        or source.get("sha") != sha
+        or not _int(source.get("run_id"))
+        or source["run_id"] == 0
+        or not _int(source.get("job_id"))
+        or source["job_id"] == 0
+    ):
         raise ValueError("measured metric requires exact-source SHA, run and job")
 
 
@@ -44,7 +53,11 @@ def _gate(state):
         raise ValueError("explicit four-way admission observations required")
     if any(g.get(k) not in ("PASS", "RED", "UNKNOWN") for k in GATES):
         raise ValueError("invalid/missing non-compensatory admission gate")
-    return "ELIGIBLE_FOR_AUTHORITY_REVIEW" if all(g[k] == "PASS" for k in GATES) else "HOLD"
+    return (
+        "ELIGIBLE_FOR_AUTHORITY_REVIEW"
+        if all(g[k] == "PASS" for k in GATES)
+        else "HOLD"
+    )
 
 
 def _delta(left, right):
@@ -53,8 +66,16 @@ def _delta(left, right):
     if left["state"] != "MEASURED" or right["state"] != "MEASURED":
         return {"status": "UNKNOWN", "reason": "MISSING_OBSERVATION", "delta": None}
     if left["unit"] != right["unit"] or left["basis"] != right["basis"]:
-        return {"status": "UNKNOWN", "reason": "INCOMPARABLE_UNIT_OR_BASIS", "delta": None}
-    return {"status": "COMPARABLE", "unit": left["unit"], "delta": right["value"] - left["value"]}
+        return {
+            "status": "UNKNOWN",
+            "reason": "INCOMPARABLE_UNIT_OR_BASIS",
+            "delta": None,
+        }
+    return {
+        "status": "COMPARABLE",
+        "unit": left["unit"],
+        "delta": right["value"] - left["value"],
+    }
 
 
 def analyze(payload):
@@ -78,9 +99,14 @@ def analyze(payload):
             raise ValueError("invalid state")
         repo, sha = state.get("repository"), state.get("sha")
         j, c = state.get("revision_ordinal"), state.get("recovery_cycle")
-        if (not isinstance(repo, str) or "/" not in repo or
-            not isinstance(sha, str) or not SHA.fullmatch(sha) or
-            not _int(j) or not _int(c)):
+        if (
+            not isinstance(repo, str)
+            or "/" not in repo
+            or not isinstance(sha, str)
+            or not SHA.fullmatch(sha)
+            or not _int(j)
+            or not _int(c)
+        ):
             raise ValueError("invalid repository, SHA, revision or recovery cycle")
         if (repo, sha) in seen or (repo, j) in seen:
             raise ValueError("duplicate revision identity")
@@ -102,22 +128,39 @@ def analyze(payload):
         deltas, matrix = [], []
         for i, (a, b) in enumerate(zip(seq, seq[1:])):
             # D is the sparse first-difference matrix, separate from clock spacing.
-            matrix.append([{ "column": i, "coefficient": -1 },
-                           { "column": i + 1, "coefficient": 1 }])
+            matrix.append(
+                [{"column": i, "coefficient": -1}, {"column": i + 1, "coefficient": 1}]
+            )
             keys = sorted(set(a[3]) | set(b[3]))
-            deltas.append({"from_sha": a[2], "to_sha": b[2],
-                           "revision_span": b[0] - a[0],
-                           "cycle_transition": [a[1], b[1]],
-                           "coordinates": {k: _delta(a[3].get(k), b[3].get(k)) for k in keys},
-                           "admission_transition": [a[4], b[4]]})
+            deltas.append(
+                {
+                    "from_sha": a[2],
+                    "to_sha": b[2],
+                    "revision_span": b[0] - a[0],
+                    "cycle_transition": [a[1], b[1]],
+                    "coordinates": {k: _delta(a[3].get(k), b[3].get(k)) for k in keys},
+                    "admission_transition": [a[4], b[4]],
+                }
+            )
         result[repo] = {
-            "indices": [{"sha": s[2], "revision_ordinal": s[0],
-                         "k": s[0] - origin, "recovery_cycle": s[1],
-                         "admission": s[4]} for s in seq],
+            "indices": [
+                {
+                    "sha": s[2],
+                    "revision_ordinal": s[0],
+                    "k": s[0] - origin,
+                    "recovery_cycle": s[1],
+                    "admission": s[4],
+                }
+                for s in seq
+            ],
             "difference_matrix_sparse": matrix,
             "deltas": deltas,
         }
-    return {"schema": SCHEMA + ".result", "origin_ordinal": origin,
-            "repositories": result, "authority_transfer": False,
-            "merge_authorized": False,
-            "clock_contract": "Per-repository ordinals, separate logical recovery cycles; ancestry requires upstream verification"}
+    return {
+        "schema": SCHEMA + ".result",
+        "origin_ordinal": origin,
+        "repositories": result,
+        "authority_transfer": False,
+        "merge_authorized": False,
+        "clock_contract": "Per-repository ordinals, separate logical recovery cycles; ancestry requires upstream verification",
+    }

@@ -97,7 +97,8 @@ class SourceObligations(unittest.TestCase):
         self.assertEqual(
             compare(before, changed)["families"]["statements"][
                 "source_matched_eligible_obligations"
-            ], 0
+            ],
+            0,
         )
         unmatched = observed(B, config="changed")
         self.assertIsNone(

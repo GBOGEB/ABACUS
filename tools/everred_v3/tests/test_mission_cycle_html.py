@@ -1,4 +1,5 @@
 """Deterministic offline UI, canonical stage, and anti-admission contracts."""
+
 import json
 import pathlib
 import sys
@@ -30,9 +31,10 @@ class MissionCycleHTML(unittest.TestCase):
         doc = generated.split('<script id="guidance" type="application/json">', 1)[1]
         doc = doc.split("</script>", 1)[0]
         guidance = json.loads(doc)
-        self.assertEqual(guidance["stages"], [
-            "Mission", "Wave", "Pulse", "Receipt", "Reallocate", "Recurse"
-        ])
+        self.assertEqual(
+            guidance["stages"],
+            ["Mission", "Wave", "Pulse", "Receipt", "Reallocate", "Recurse"],
+        )
         self.assertFalse(guidance["merge_authorized"])
         self.assertTrue(guidance["cards"])
         for row in guidance["cards"].values():
@@ -41,8 +43,10 @@ class MissionCycleHTML(unittest.TestCase):
             self.assertEqual(row["admission"], "HOLD")
 
     def test_missing_duplicate_marker_and_wrong_source_rejected(self):
-        for source in (self.template.replace("@@GUIDANCE_JSON@@", ""),
-                       self.template + "@@GUIDANCE_JSON@@"):
+        for source in (
+            self.template.replace("@@GUIDANCE_JSON@@", ""),
+            self.template + "@@GUIDANCE_JSON@@",
+        ):
             with self.subTest(source_len=len(source)):
                 with self.assertRaisesRegex(ValueError, "marker"):
                     build(self.bd, source)
