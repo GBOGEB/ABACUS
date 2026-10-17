@@ -170,6 +170,12 @@
       "disposition": "keep"
     },
     {
+      "pattern": "^mission-control-lite-testflight\\.yml$",
+      "cluster": "runtime_governance",
+      "lifecycle": "pr_domain",
+      "disposition": "keep"
+    },
+    {
       "pattern": "^pr-feedback-gate\\.yml$",
       "cluster": "runtime_governance",
       "lifecycle": "pr_domain",
@@ -361,6 +367,12 @@
       "pattern": "^code-purple-quality-ratchet-proof\\.yml$",
       "cluster": "core_test",
       "lifecycle": "pr_fast",
+      "disposition": "keep"
+    },
+    {
+      "pattern": "^code-purple-(dashboard-v31|sut-gui)\\.yml$",
+      "cluster": "runtime_governance",
+      "lifecycle": "pr_domain",
       "disposition": "keep"
     }
   ],
