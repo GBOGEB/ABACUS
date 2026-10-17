@@ -34,7 +34,8 @@ jobs:
       matrix:
         python-version: ['3.10', '3.12']
     steps:
-      # actions/checkout v4.2.2, immutable SHA pin
+      # Source-test checkout uses exact PR head, not a synthetic merge.
+      # Full CI must independently verify merge admission.
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
         with:
           ref: ${{ github.event.pull_request.head.sha || github.sha }}
@@ -49,7 +50,12 @@ jobs:
             PyYAML==6.0.3 jsonschema==4.25.1 pytest numpy==1.26.4
       - name: Verify source, event chain and disjoint leases
         working-directory: tools/everred_v3
+        env:
+          EXPECTED_HEAD_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
         run: |
+          actual_sha="$(git rev-parse HEAD)"
+          printf 'CBD_EXACT_SOURCE checkout=%s expected=%s event_sha=%s\n' "$actual_sha" "$EXPECTED_HEAD_SHA" "$GITHUB_SHA"
+          test "$actual_sha" = "$EXPECTED_HEAD_SHA"
           python -m compileall -q src scripts tests
           python -m unittest discover -s tests -q
           python src/everred.py verify
@@ -235,6 +241,7 @@ jobs:
             ${{ github.event.pull_request.head.sha || github.sha }}
         run: |
           actual_sha="$(git rev-parse HEAD)"
+          printf 'CBD_BLACK_REPAIR_SOURCE checkout=%s expected=%s event_sha=%s\n' "$actual_sha" "$EXPECTED_HEAD_SHA" "$GITHUB_SHA"
           test "$actual_sha" = "$EXPECTED_HEAD_SHA"
           python -m black --version
           python -m black src scripts tests
