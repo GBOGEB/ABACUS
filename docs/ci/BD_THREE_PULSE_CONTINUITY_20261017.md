@@ -1,44 +1,75 @@
-# BDQ three-pulse QA bridge — execution contract
+# BDQ three-pulse QA bridge
 
-**Authority:** canonical queue `triage/ABACUS_BD_QUEUE_CURRENT.yaml`; root/census owner [#1929](https://github.com/GBOGEB/ABACUS/issues/1929); admission [#1860](https://github.com/GBOGEB/ABACUS/issues/1860). This additive consumer must never supersede the queue or invent a new census SSOT.
+**Authority:** ABACUS #1929 is the canonical root census owner.
+ABACUS #1860 owns admission. The queue authority remains
+`triage/ABACUS_BD_QUEUE_CURRENT.yaml` (historical 2026-09-26).
+This is an additive consumer, not another source of truth.
 
-## Three pulses (3PC / N to N+3)
+## Three pulse execution (3PC / N to N+3)
 
-| Pulse | Slice | Expected test/receipt | Admission |
-|---|---|---|---|
-| N+1 | Canonical three distinct SHA joins | Three valid `bd.ldab.joined.census.v1` inputs; reject duplicates/missing provenance | HOLD |
-| N+2 | Comparable root and coverage telemetry | Same scope/config/denominator or null; issue housekeeping excluded | HOLD |
-| N+3 | Terminal native testflight + REX | Exact-head run/job/artifacts, disjoint path owner, human review | HOLD until all required gates |
+- N+1: receive three validated canonical join outputs on distinct exact SHAs.
+  Reject duplicate heads, malformed denominators, and fabricated approval.
+- N+2: compare source-qualified statement and branch numerators only when
+  configurations and eligible denominators match. Otherwise report null.
+- N+3: record terminal native test and artifact receipts, first-red roots,
+  security dispositions, independent review and authority controls.
+  Admission remains HOLD until every gate is satisfied.
 
-Use `python scripts/bd_three_pulse_bridge.py --inputs N1.json N2.json N3.json --out receipt.json`.
-Inputs must originate from `scripts/bd_ldab_join_census.py` and retain immutable source heads. The `coverage` field is an optional **separately source-verified** enrichment, never an inferred legacy conversion. A matching config and denominator is necessary but not sufficient: native artifacts and source membership must be verified independently.
+Run:
 
-## Numbered backlog J01–J09
+```sh
+python scripts/bd_three_pulse_bridge.py \
+  --inputs N1.json N2.json N3.json --out receipt.json
+```
 
-| Item | Scope | This slice | Completion evidence still needed |
-|---|---|---|---|
-| J01 | SHA/run/job/artifact identities | Preserve canonical scope in each pulse | Live native exact-head attachment |
-| J02 | Bandit exclusive B2/B3/B4/B5 ownership | Consume canonical validated join | Fresh full/configured native census |
-| J03 | DAB/CI first-red signatures | Preserve canonical root IDs; no relabeling | Root-owner reviewed signatures and logs |
-| J04 | LDAB/LLDB real sessions | Null launches by default | Authenticated runner/session/port receipts |
-| J05 | Comparable debt burndown | Carry canonical comparable delta without promotion | Same scanner/tool/config before/after |
-| J06 | Coverage and throughput | Numeric delta only on same eligible denom/config | Native source-matched numerator/denominator |
-| J07 | Determinism and projection | Deterministic JSON consumer + negative tests | Terminal exact-head CI and artifact hashes |
-| J08 | Governed admission | Permanent HOLD output and zero formal credit | Human/security/ruleset review + checks |
-| J09 | Repeated statistical quality | Three-pulse sequence without invented trend | >=2 independent comparable actual cycles |
+Inputs must come from `scripts/bd_ldab_join_census.py`.
+Any optional coverage enrichment needs independent native source proof.
+Matching config and denominator alone never establish coverage acceptance.
 
-## Live first-red handoff
+## Numbered backlog J01-J09
 
-- Source repair: [#2135](https://github.com/GBOGEB/ABACUS/pull/2135), case-insensitive report assertion fix committed as `64a49a340dd89811879927ed8bd75494c2d306bd`; native workflow executions are separate and nonterminal until readback proves completion.
-- Existing unrelated blockers: [#2026](https://github.com/GBOGEB/ABACUS/pull/2026) Matplotlib compatibility; [#2133](https://github.com/GBOGEB/ABACUS/pull/2133) YAML length violations; [#1995](https://github.com/GBOGEB/ABACUS/issues/1995)/[#2041](https://github.com/GBOGEB/ABACUS/issues/2041) governance. Never credit these as repaired by this PR.
-- [#1885](https://github.com/GBOGEB/ABACUS/issues/1885): 53 historical href manifestations (50 MYRRHA, 2 report, 1 dynamic). Six historical alert issue closures were duplicate/housekeeping, not accepted engineering-root closures.
-- CODEX [#975](https://github.com/GBOGEB/CODEX/pull/975) is a historical CODEX merge, not ABACUS admission; [#977](https://github.com/GBOGEB/CODEX/issues/977) executor dispatch remains unproven.
+- **J01 - Evidence identities.** Preserve source scope and commit SHA.
+  Need real run, job, artifact, and digest attestations.
+- **J02 - Bandit disjoint ownership.** Consume canonical validated B2-B5.
+  Need fresh full and configured scan census.
+- **J03 - Root/first-red signatures.** Preserve source-owned root IDs.
+  Need reviewed first failed commands and native log links.
+- **J04 - LDAB/LLDB sessions.** Report null worker launches by default.
+  Need authenticated runner, session, debugger, port and REX receipts.
+- **J05 - Comparable debt.** Preserve existing comparator authority.
+  Need same scanner, rules, version, path scope and source receipts.
+- **J06 - Coverage and throughput.** Compute only on eligible scopes.
+  Need native source-bound numerator, denominator and runtime evidence.
+- **J07 - Determinism.** Add negative controls and stable JSON emission.
+  Need terminal exact-head CI and artifact-byte verification.
+- **J08 - Governance.** Maintain HOLD and zero credited formal closures.
+  Need effective ruleset, CI, security and independent human review.
+- **J09 - Repeated statistical quality.** Three-pulse observation is not
+  sufficient for population reliability; need comparable repeated cycles.
 
-## Next admissible operator sequence
+## First-red and continuity ownership
 
-1. Watch current exact head for terminal native lint/test/security checks; classify each first failed step.
-2. Before claiming coverage growth, verify both source SHAs and native job/artifact eligibility.
-3. Obtain authentic ABACUS-local launch identities before reporting a crew or runner as launched (native CI is not Crew dispatch).
-4. Update existing owner/root inventory once verified. Do not close tickets or merge without independent governance.
+- ABACUS PR #2135 received the isolated report-assertion correction.
+  Commit: `64a49a340dd89811879927ed8bd75494c2d306bd`.
+  Native CI checks must be read separately to classify the outcome.
+- ABACUS #2026 owns the Matplotlib compatibility root.
+- ABACUS PR #2133 owns changed-workflow YAML line-length issues.
+- ABACUS #1995 and #2041 own governance/inventory convergence.
+- Dashboard #1885 retains 53 historical broken href manifestations:
+  50 MYRRHA, two reports, and one dynamic expression.
+  Six historically closed duplicate alert tickets are housekeeping.
+  None qualifies as accepted engineering-root closure.
+- CODEX PR #975 merged in CODEX only. CODEX #977 still requires
+  authenticated ABACUS-local dispatch evidence and owner approval.
 
-`MERGE_ADMISSION=HOLD`; `AUTHORITY_TRANSFER=false`; `SECURITY_WAIVER=false`; no synthetic worker launches.
+## Operator return / next admissible action
+
+1. Verify current head SHA against terminal native jobs and artifacts.
+2. Classify each failing first step under an actual source owner.
+3. Reject mismatched heads, changed source populations, and unknown scope.
+4. Update the existing BD queue and deduplicated root owner with receipts.
+5. Require human/security/governance admission before any main merge.
+
+No inferred Crew launch, CI success, human approval or waiver.
+`MERGE_ADMISSION=HOLD`, `AUTHORITY_TRANSFER=false`,
+`SECURITY_WAIVER=false`. Root closures need independent proof.
