@@ -3,6 +3,70 @@ as_of: 2026-09-26
 repository: GBOGEB/ABACUS
 base_branch: main
 
+# Live October census overlay. The September queue below remains frozen.
+# GitHub issue objects are NOT deduplicated BD engineering roots.
+latest_live_census:
+  observed_calendar_date_utc: '2026-10-17'
+  issue_age_register: triage/ABACUS_ISSUE_AGEING_CENSUS_20261017.json
+  pr_head_register: triage/ABACUS_PR_HEAD_REGISTER_20261017.json
+  original_september_queue_as_of: '2026-09-26'
+  prior_queue_open_after_pulse: 12
+  prior_queue_comparable_to_current_issue_population: false
+  open_ordinary_issues: 53
+  open_prs_at_selected_census: 122
+  previous_same_day_open_prs: 118
+  issue_age_30_plus_days: 9
+  issue_age_14_to_29_days: 15
+  issue_age_7_to_13_days: 4
+  issue_age_0_to_6_days: 25
+  recent_closed_duplicate_dashboard_tickets: 6
+  engineering_roots_closed_in_this_census: null
+  canonical_root_register: 1929
+  admission_issue: 1860
+  admission: HOLD
+  authority_transfer: false
+  latest_todo:
+    - issue: 1860
+      disposition: P0_HOLD
+      definition_of_verification: independent human/security review and
+        protected-main exact-head CI; no waiver
+    - issue: 1738
+      disposition: OWNER_SECURITY_PROOF_REQUIRED
+      definition_of_verification: terminal enforced Safety and Bandit evidence
+    - issue: 2087
+      disposition: OWNER_GOVERNANCE_PROOF_REQUIRED
+      definition_of_verification: policy classification and regenerated
+        inventory verified on exact source head
+    - issue: 1566
+      disposition: B1_STABLE_DETECTED_EXPOSURE_NOT_CLOSED
+      baseline: 139 matching unguarded fingerprints across six B0 flights
+      definition_of_verification: source/config/pattern-paired decline with
+        unchanged eligible scan population or explain drift
+    - issue: 1885
+      disposition: CANONICAL_DASHBOARD_ROOT_OPEN
+      original_53_broken_hrefs: 53
+      related_closed_duplicate_tickets: 6
+      related_open_monitor_tickets: 9
+      definition_of_verification: matched href fingerprints and new native
+        dashboard health acceptance; housekeeping not root closure
+    - issue: 1929
+      disposition: CANONICAL_BD_ROOT_CENSUS_OPEN
+      definition_of_verification: native run/job/fingerprint/source-owner
+        attribution with open/closed engineering-root denominator
+    - issue: 1278
+      disposition: OWNER_ADMIN_EXTERNAL_RETURN
+      definition_of_verification: verified independent owner ruleset
+        and effective branch protection enforcement
+    - issue: 633
+      disposition: QPS_PROGRAMME_PARENT_EXTERNAL_EVIDENCE
+      definition_of_verification: external clean clone, governed local binary,
+        OneDrive/Office review as children remain open
+    - issue: 1369
+      disposition: REAL_NATIVE_DISPATCH_PROOF_REQUIRED
+      definition_of_verification: seven same-source real workflow_dispatch
+        receipts, not mixed SHA observations
+
+
 purpose: >-
   Keep one current issue-burndown queue with evidence-backed closure gates.
 

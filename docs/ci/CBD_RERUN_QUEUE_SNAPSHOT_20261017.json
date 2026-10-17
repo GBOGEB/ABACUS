@@ -1,0 +1,70 @@
+{
+  "schema": "cbd.rerun_snapshot.v1",
+  "repository": "GBOGEB/ABACUS",
+  "base_sha": "54da377cf82a358ac97903ecde0270c975b8fcc1",
+  "current_pr_heads": {
+    "2093": "bd1438948911f41f34563e5f8eaf7e9848fce869",
+    "2094": "5571de5cdc5d48e4333b10885c838e9a13bbb1fb"
+  },
+  "capacity": {
+    "queued": 323,
+    "in_progress": 7,
+    "max_queued": 40,
+    "max_in_progress": 12,
+    "max_new_reruns": 2,
+    "max_attempts": 2
+  },
+  "authority": {
+    "merge_admission": "HOLD",
+    "security_waiver": false,
+    "authority_transfer": false,
+    "authenticated_worker_dispatch": null
+  },
+  "source_note": "GitHub native point-in-time status readback, 17 October 2026; not a perpetual live observation",
+  "observations": [
+    {
+      "pr": 2093,
+      "head_sha": "bd1438948911f41f34563e5f8eaf7e9848fce869",
+      "run_id": 39021056489,
+      "attempt": 1,
+      "workflow": "CI/CD Test Suite",
+      "status": "queued",
+      "conclusion": null,
+      "url": "https://github.com/GBOGEB/ABACUS/actions/runs/39021056489",
+      "first_red": null
+    },
+    {
+      "pr": 2093,
+      "head_sha": "bd1438948911f41f34563e5f8eaf7e9848fce869",
+      "run_id": 39021056708,
+      "attempt": 1,
+      "workflow": "MIP B0 Test Admission and Coverage Evidence",
+      "status": "queued",
+      "conclusion": null,
+      "url": "https://github.com/GBOGEB/ABACUS/actions/runs/39021056708",
+      "first_red": null
+    },
+    {
+      "pr": 2094,
+      "head_sha": "5571de5cdc5d48e4333b10885c838e9a13bbb1fb",
+      "run_id": 39021102214,
+      "attempt": 1,
+      "workflow": "CI/CD Test Suite",
+      "status": "queued",
+      "conclusion": null,
+      "url": "https://github.com/GBOGEB/ABACUS/actions/runs/39021102214",
+      "first_red": null
+    },
+    {
+      "pr": 2094,
+      "head_sha": "5571de5cdc5d48e4333b10885c838e9a13bbb1fb",
+      "run_id": 39021102129,
+      "attempt": 1,
+      "workflow": "MIP B0 Test Admission and Coverage Evidence",
+      "status": "queued",
+      "conclusion": null,
+      "url": "https://github.com/GBOGEB/ABACUS/actions/runs/39021102129",
+      "first_red": null
+    }
+  ]
+}
