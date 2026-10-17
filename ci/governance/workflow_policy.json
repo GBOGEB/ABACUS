@@ -382,14 +382,8 @@
       "disposition": "keep"
     },
     {
-      "pattern": "^code-purple-sut-gui\\.yml$",
-      "cluster": "runtime_governance",
-      "lifecycle": "pr_domain",
-      "disposition": "keep"
-    },
-    {
-      "pattern": "^missioncontrol-issue-burndown\\.yml$",
-      "cluster": "runtime_governance",
+      "pattern": "^mcw-artifact-cold-build\\.yml$",
+      "cluster": "specialised",
       "lifecycle": "pr_domain",
       "disposition": "keep"
     }
