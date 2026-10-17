@@ -89,7 +89,6 @@ jobs:
             --tb=short \
             --maxfail=5 \
             -n 0
-        continue-on-error: ${{ matrix.python-version != '3.11' }}
 
       - name: Upload coverage to Codecov
         if: matrix.python-version == '3.11' && matrix.os == 'ubuntu-latest'
