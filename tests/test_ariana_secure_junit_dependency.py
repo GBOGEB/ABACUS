@@ -22,6 +22,15 @@ def test_root_install_declares_secure_junit_parser() -> None:
     assert "-r DMAIC_V3/requirements.txt" in root_lines
 
 
+
+def test_isolated_windows_test_install_declares_secure_parser() -> None:
+    """The Windows test matrix installs requirements-test.txt independently."""
+    test_lines = (ROOT / "requirements-test.txt").read_text(encoding="utf-8").splitlines()
+    secured = [line.split("#", 1)[0].strip() for line in test_lines]
+    assert "defusedxml>=0.7.1,<0.8.0" in secured
+
+
+
 def test_junit_entity_expansion_is_rejected() -> None:
     """Native import must be present, and XML entity expansion must stay forbidden."""
     malicious = '<!DOCTYPE testsuite [<!ENTITY gotcha "forged-pass">]><testsuite><testcase name="&gotcha;"/></testsuite>'
