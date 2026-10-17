@@ -1,0 +1,45 @@
+{
+  "artifacts": {
+    "eoss_n6_clock.mmd": "c8098afc4d605baefd5d2d25f70de90e709a5ca731377d7256bececd7e23e9e4",
+    "eoss_n6_dashboard.html": "dc74d26ad8ca777a380eec6f78f5ce3c40544b13cc110445aa92ba79136d2c37",
+    "eoss_n6_glossary.md": "688c087441fa1910320930312ee2b143c7003fa9f1cba9fe1a2fc1e7bdd61223",
+    "eoss_n6_process.mmd": "97f7e15aca26a0e0c87fd084dd4ed160f107b9e02142e14b8727437113ebb80f",
+    "eoss_n6_review.json": "078741c6df27ad2086b4e194f66cc56c2bf4bd71808fc302480a4d5bb6b5a2f2",
+    "eoss_n6_sipoc.mmd": "73624964c5a9a01f1556733337da1133d3999e5397ac72c0c6566fa362e0ef2d"
+  },
+  "authority": {
+    "admission": "HOLD",
+    "authority_transfer": false,
+    "security_waiver": false
+  },
+  "browser_qa": {
+    "errors": 0,
+    "screenshots": 15,
+    "sha256": "606b1855fc13c56758b3fcfc7020853e3fbccf7154f0b9c00ff37028019c3c0c",
+    "tab_filter_svg_sipoc_clock_glossary": "PASS",
+    "viewports": [
+      "1440x1000",
+      "1280x800",
+      "390x844"
+    ]
+  },
+  "checks": {
+    "cross_artifact_sha_parity": "PASS",
+    "native_exact_head_ci": "DEFER",
+    "structural": "PASS",
+    "visual_playwright": "PASS"
+  },
+  "evidence_level": "LOCAL_REPRODUCIBILITY",
+  "issue_dispositions": {
+    "independent_A10": "HOLD",
+    "independent_security": "HOLD",
+    "native_matrix_python310_install": "REMAINS_OPEN"
+  },
+  "schema": "code-purple.eoss.n6.local-release-receipt.v1",
+  "source_verified": {
+    "github_owner_pr": 2090,
+    "new_exact_head_ci": "PENDING_AFTER_PUSH",
+    "previous_source_head": "b82791cfd41933e3891aaf0487929b3efc956fa8",
+    "scope": "LOCAL_REPRODUCIBILITY"
+  }
+}
