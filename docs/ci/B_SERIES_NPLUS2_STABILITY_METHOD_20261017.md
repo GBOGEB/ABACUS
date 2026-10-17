@@ -63,7 +63,7 @@ Inputs: test reports, scanner/workflow blobs, finding fingerprints.
 Process: PIN -> CENSUS -> MATCH -> INTERSECT -> TREND -> REVIEW.
 Outputs: five-pulse KPI JSON and null-safe forecast hypothesis.
 Controls: #1929 BD roots, #2106 chronology, #2113 matched coverage,
-#1860 independent P0 admission and required human/security gates.
+Issue #1860 independent P0 admission and required human/security gates.
 
 Only qualified source/config comparisons enter temporal differences.
 Missing denominators, unproven launches and roots remain UNKNOWN.
