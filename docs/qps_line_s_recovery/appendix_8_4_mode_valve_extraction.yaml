@@ -6,7 +6,7 @@ formal_credit_delta: 0
 source:
   source_id: SRC-D2-8-4
   document: D2.1
-  source_reference: DSBT-TN-24-37-3.0
+  source_reference: SUPPLIER_C-TN-24-37-3.0
   issue_revision: 2-1
   document_date: 2024-06-13
   section: Appendix 8.4 modes

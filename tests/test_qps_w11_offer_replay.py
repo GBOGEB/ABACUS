@@ -13,12 +13,12 @@ from tools.qps_w11_offer_replay import (
 
 def _record(**overrides) -> ReplayRecord:
     values = {
-        "source_id": "SRC-CUR-ALAT-OFFER",
+        "source_id": "SRC-CUR-SUPPLIER_A-OFFER",
         "source_sha256": "a" * 64,
         "source_format": "pdf",
         "source_locator": "page=210;table=1;row=4",
-        "bidder": "ALAT",
-        "source_role": "OFFER_ALAT",
+        "bidder": "SUPPLIER_A",
+        "source_role": "OFFER_SUPPLIER_A",
         "extracted_text": "RTM-514 Compliant. Refer to technical proposal.",
         "stated_status": "Compliant",
         "extraction_confidence": 0.98,
@@ -84,9 +84,9 @@ def test_explicit_ids_are_deterministic_and_deduplicated() -> None:
 def test_prestudy_is_supporting_not_current_offer_truth() -> None:
     atom, relations = candidate_from_record(
         _record(
-            source_id="SRC-PRE-LKT",
-            bidder="LKT",
-            source_role="PRESTUDY_LKT",
+            source_id="SRC-PRE-SUPPLIER_B",
+            bidder="SUPPLIER_B",
+            source_role="PRESTUDY_SUPPLIER_B",
             extracted_text="RTM-595 prior study context",
             stated_status="",
         ),

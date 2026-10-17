@@ -1,7 +1,7 @@
 """W52-P2L: B-flow topology checksum and governed A/B/W enthalpy propagation.
 
 This module deliberately separates two claims:
-1) topology checksum: if LKT's 43.1 g/s A main flow includes the 2.42 g/s W coupler branch,
+1) topology checksum: if SUPPLIER_B's 43.1 g/s A main flow includes the 2.42 g/s W coupler branch,
    the implied B return is 40.68 g/s and A-(B+W)=0 exactly;
 2) independent mass-residual closure: this remains open until B is independently source-bound or measured.
 
@@ -60,7 +60,7 @@ def topology_receipt(A_g_s: float = 43.1, W_g_s: float = 2.42) -> TopologyReceip
 
 def enthalpy_receipt(stated_qcell_load_W: float = 809.0) -> EnthalpyReceipt:
     topo = topology_receipt()
-    # Current LKT offer, page 6/11, 2K-OP candidate states.
+    # Current SUPPLIER_B offer, page 6/11, 2K-OP candidate states.
     A = state_tp(4.5, 3.0 * BAR)
     B = state_tp(3.6, 0.022 * BAR)
     W = state_tp(300.0, 1.1 * BAR)
@@ -93,7 +93,7 @@ def report() -> dict:
     return {
         "schema": "qps-w52-p2l-b-flow-enthalpy/v1",
         "source_anchor": {
-            "document": "LKT_P522_2096_AP-P-SE_1001_EN_Issue_01",
+            "document": "SUPPLIER_B_P522_2096_AP-P-SE_1001_EN_Issue_01",
             "page": "6_of_11",
             "section": "3.1_Refrigeration_Performance_Expected",
         },

@@ -52,7 +52,7 @@ atom_census:
     real_controlled_input_bound: true
     source_repo: GBOGEB/cryoplant-project
     source_path: "ocd-adr/20_canonical/analysis/\
-      QPS_HP_COMPRESSOR_ALAT_EVIDENCE_v0.1.yaml"
+      QPS_HP_COMPRESSOR_SUPPLIER_A_EVIDENCE_v0.1.yaml"
     source_blob_sha: 1cd312315325991100d90d3f4b2ef51e6796bad6
     source_origin: SOURCE_BOUND
     mtbf_h: 333450

@@ -1513,7 +1513,7 @@ Downtime = 0.264 h/yr = 15.8 min/yr</div>
   <tr><th>Data</th><th>Source</th><th>Confidence</th></tr>
   <tr><td>He-4 properties</td><td>NIST REFPROP</td><td>{_b("accept","HIGH")}</td></tr>
   <tr><td>Valve leak rates</td><td>RTM-048/049, EN 13185</td><td>{_b("accept","HIGH")}</td></tr>
-  <tr><td>FSD575 specs</td><td>Industry (KAESER class)</td><td>{_b("review","MEDIUM")}</td></tr>
+  <tr><td>FSD575 specs</td><td>Industry (VENDOR_1 class)</td><td>{_b("review","MEDIUM")}</td></tr>
   <tr><td>HSD Twin specs</td><td>Industry (Atlas Copco)</td><td>{_b("review","MEDIUM")}</td></tr>
   <tr><td>MTBF = 8760 h</td><td>Conservative assumption</td><td>{_b("review","MEDIUM")}</td></tr>
   <tr><td>MTTR = 8 h</td><td>RTM-053 (upper bound)</td><td>{_b("accept","HIGH")}</td></tr>
@@ -2009,7 +2009,7 @@ def build_stakeholder():
     <li>Approve capital expenditure (€1.62M)</li>
     <li>Issue RFQ to vendors:
       <ul>
-        <li>Kaeser — FSD575 compressors</li>
+        <li>Vendor_1 — FSD575 compressors</li>
         <li>Swagelok — cold valves (UHMWPE)</li>
         <li>Meca Inox — warm valves (HDPE)</li>
       </ul>

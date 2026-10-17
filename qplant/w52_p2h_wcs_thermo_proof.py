@@ -1,7 +1,7 @@
 """W52-P2H: QPLANT/WCS thermodynamic proof harness.
 
 Uses the governed helium property provider for state properties and computes
-reference compression metrics for the current LKT FSD575 design point.
+reference compression metrics for the current SUPPLIER_B FSD575 design point.
 The purpose is validation and reconciliation, not vendor-performance promotion.
 """
 from __future__ import annotations

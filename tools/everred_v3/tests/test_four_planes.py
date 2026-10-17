@@ -271,10 +271,24 @@ class Runtime(unittest.TestCase):
 
 
 class YamlOrchestration(unittest.TestCase):
-    def test_real_plan_eight_tasks(self):
+    def test_real_plan_central_and_disjoint_census_dag(self):
         v = validate_plan(PLAN)
-        self.assertEqual(v["task_count"], 8)
+        self.assertEqual(v["task_count"], 12)
         self.assertEqual(v["topological_order"][0], "YAML_PREFLIGHT")
+        order = v["topological_order"]
+        joined = order.index("JOINED_CENSUS")
+        recensus = order.index("RECENSUS")
+        pulse = order.index("KPI_PULSE")
+        for lane in (
+            "DISJOINT_CENSUS_CI",
+            "DISJOINT_CENSUS_GOVERNANCE",
+            "DISJOINT_CENSUS_SECURITY",
+        ):
+            self.assertGreater(order.index(lane), joined)
+            self.assertLess(order.index(lane), recensus)
+        self.assertLess(recensus, pulse)
+        self.assertEqual(v["mutating_tasks"], ["CONTROLLED_MUTATION"])
+        self.assertFalse(v["dispatch_authority"])
 
     def test_formatter_roundtrip(self):
         raw = (BASE / "config/workflow-groups.yaml").read_text()
@@ -358,6 +372,8 @@ class YamlOrchestration(unittest.TestCase):
         r = evaluate_dispatch(PLAN, {"YAML_PREFLIGHT": "PASS"})
         tasks = {x["id"]: x for x in r["tasks"]}
         self.assertEqual(tasks["LDAB_CORRELATION"]["state"], "WAITING_FOR_EVIDENCE")
+        self.assertEqual(tasks["DISJOINT_CENSUS_CI"]["state"], "WAITING_FOR_EVIDENCE")
+        self.assertEqual(tasks["RECENSUS"]["state"], "WAITING_FOR_EVIDENCE")
         self.assertEqual(tasks["CONTROLLED_MUTATION"]["state"], "HOLD_REVIEW")
         self.assertFalse(r["executed"])
 

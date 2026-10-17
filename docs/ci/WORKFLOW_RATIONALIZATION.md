@@ -29,10 +29,10 @@ The observed baseline that motivated this control was PR #681 with 119 check run
 | `core_test` | `ci-abacus.yml` | 13 | Fast cross-version unit, pre-commit and smoke evidence. |
 | `full_regression` | `ci-cd-tests.yml` | 1 | Broad OS/version/integration/coverage regression for code changes. |
 | `statistics` | `ci-cd.yml` | 5 | Bootstrap, AHT, performance and statistical validation. |
-| `bridge_federation` | `bridge-ci.yml` | 12 | CODEX/ABACUS bridge contract and federation smoke evidence. |
+| `bridge_federation` | `bridge-ci.yml` | 13 | CODEX/ABACUS bridge contract and federation smoke evidence. |
 | `dmaic` | `dmaic-enterprise-ci.yml` | 8 | DMAIC phase, convergence and maturity execution. |
 | `dow` | `dow-integration.yml` | 19 | DOW parent mechanics, integration, monitoring and warm-up. |
-| `runtime_governance` | `governance.yml` | 22 | Runtime evidence, governance, review artifacts and schema validation. |
+| `runtime_governance` | `governance.yml` | 23 | Runtime evidence, governance, review artifacts and schema validation. |
 | `security` | `security-scan.yml` | 11 | Ruff PR security, scheduled Bandit, CodeQL, dependency and supply-chain scanning. |
 | `delivery` | `cd-pipeline.yml` | 8 | Build, release, deployment and publication. |
 | `documentation` | `docs-build.yml` | 7 | Documentation validation, rendering, export and Pages. |

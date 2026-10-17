@@ -1,0 +1,12 @@
+{
+  "admission": "HOLD",
+  "authority_transfer": false,
+  "coverage_percent": 100.0,
+  "native_GitHub_verified": false,
+  "schema": "codepurple.acceptance.local_coverage_receipt.v1",
+  "scope": "LOCAL_FINAL_PACKAGE_ONLY_NOT_GITHUB_CI",
+  "statement_and_branch_denominator": 500,
+  "statement_and_branch_numerator": 500,
+  "tests_passed": 56,
+  "tests_total": 56
+}
