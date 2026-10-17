@@ -1,0 +1,12 @@
+{
+  "schema": "codepurple.acceptance.consumer_request.v1",
+  "consumer_repo": "GBOGEB/cryoplant-project",
+  "role": "QPS-engineering-acceptance-read-only",
+  "observed_main_sha": "d3c562d74eca661dd4879646bc74b6003235764e",
+  "canonical_issues": ["https://github.com/GBOGEB/ABACUS/issues/1929"],
+  "required_inputs": ["exact_sha", "base_sha", "policy_sha", "head_epoch", "engineering_source", "sha256"],
+  "engineering_accepted": null,
+  "source_mutation_allowed": false,
+  "authority_transfer": false,
+  "security_waiver": false
+}
