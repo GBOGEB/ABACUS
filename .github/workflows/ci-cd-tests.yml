@@ -56,7 +56,7 @@ jobs:
     name: Code Quality Checks
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v7
+      - uses: actions/checkout@v7.0.1
         with:
           # Depth 2 keeps the PR merge commit's base parent for the
           # red-root delta census; no extra history is fetched otherwise.
@@ -227,7 +227,7 @@ jobs:
         python-version: ['3.10', '3.11', '3.12']
 
     steps:
-      - uses: actions/checkout@v7
+      - uses: actions/checkout@v7.0.1
 
       - name: Set up Python ${{ matrix.python-version }}
         uses: actions/setup-python@v7.0.0
@@ -265,7 +265,7 @@ jobs:
     needs: unit-tests
 
     steps:
-      - uses: actions/checkout@v7
+      - uses: actions/checkout@v7.0.1
 
       - name: Set up Python
         uses: actions/setup-python@v7.0.0
@@ -484,7 +484,7 @@ jobs:
     if: always()
 
     steps:
-      - uses: actions/checkout@v7
+      - uses: actions/checkout@v7.0.1
 
       - name: Set up Python
         uses: actions/setup-python@v7.0.0
@@ -517,7 +517,7 @@ jobs:
     if: always()
 
     steps:
-      - uses: actions/checkout@v7
+      - uses: actions/checkout@v7.0.1
 
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v4
@@ -547,7 +547,7 @@ jobs:
     needs: unit-tests
 
     steps:
-      - uses: actions/checkout@v7
+      - uses: actions/checkout@v7.0.1
 
       - name: Set up Python
         uses: actions/setup-python@v7.0.0
@@ -580,7 +580,7 @@ jobs:
     if: always() && needs.unit-tests.result == 'success'
 
     steps:
-      - uses: actions/checkout@v7
+      - uses: actions/checkout@v7.0.1
 
       - name: Set up Python
         uses: actions/setup-python@v7.0.0
@@ -649,7 +649,7 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v7
+      - uses: actions/checkout@v7.0.1
         with:
           # Depth 2 keeps the PR merge commit's base parent for the
           # red-root delta census.
@@ -898,7 +898,7 @@ jobs:
     if: github.ref == 'refs/heads/main'
 
     steps:
-      - uses: actions/checkout@v7
+      - uses: actions/checkout@v7.0.1
 
       - name: Download Dashboard Artifact
         uses: actions/download-artifact@v8
