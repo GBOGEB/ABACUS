@@ -37,7 +37,15 @@ def _suite_end(junit_xml):
     if not suites:
         raise ValueError("JUnit testsuite missing")
     ends = []
+    junit_count_consistent = True
     for suite in suites:
+        declared = suite.get("tests")
+        try:
+            count = int(declared)
+        except (ValueError, TypeError) as exc:
+            raise ValueError("JUnit test denominator missing or invalid") from exc
+        if count < 0 or count != len(suite.findall("testcase")):
+            junit_count_consistent = False
         start = _timestamp(suite.get("timestamp"))
         try:
             elapsed = float(suite.get("time", "nan"))
@@ -46,7 +54,7 @@ def _suite_end(junit_xml):
         if not (0 <= elapsed < 86400):
             raise ValueError("invalid suite duration")
         ends.append(start + timedelta(seconds=elapsed))
-    return max(ends)
+    return max(ends), junit_count_consistent
 
 
 def measure(coverage, junit_xml, coverage_binding, test_binding, *, expected_sha):
@@ -67,7 +75,7 @@ def measure(coverage, junit_xml, coverage_binding, test_binding, *, expected_sha
     if coverage.get("meta", {}).get("branch_coverage") is not True:
         raise ValueError("branch coverage instrumentation missing")
     collected_at = _timestamp(coverage.get("meta", {}).get("timestamp"))
-    suite_end = _suite_end(junit_xml)
+    suite_end, junit_count_consistent = _suite_end(junit_xml)
     files = coverage.get("files")
     if not isinstance(files, dict):
         raise ValueError("coverage file inventory unavailable")
@@ -106,6 +114,7 @@ def measure(coverage, junit_xml, coverage_binding, test_binding, *, expected_sha
             }
         )
     stale = collected_at < suite_end
+    held = stale or not junit_count_consistent
     return {
         "schema": SCHEMA,
         "exact_sha": expected_sha,
@@ -120,10 +129,15 @@ def measure(coverage, junit_xml, coverage_binding, test_binding, *, expected_sha
         "coverage_provenance": (
             "STALE_BEFORE_TEST_COMPLETION" if stale else "TEMPORALLY_VALID"
         ),
+        "junit_count_integrity": (
+            "PASS" if junit_count_consistent else "MISMATCH"
+        ),
         "accepted_coverage_uplift": None,
         "root_closure_credit": None,
         "merge_admission": "HOLD",
-        "status": "HOLD" if stale else "ELIGIBLE_FOR_MATCHED_COVERAGE_REVIEW",
+        "status": (
+            "HOLD" if held else "ELIGIBLE_FOR_MATCHED_COVERAGE_REVIEW"
+        ),
     }
 
 
