@@ -13,6 +13,7 @@ SPEC.loader.exec_module(m)
 
 
 def pulse(i):
+    """One source-bound Bandit population per pulse; separate CI controls."""
     sha = str(i) * 40
     run_id, job_id = 100 + i, 200 + i
     scope = {
@@ -50,18 +51,9 @@ def pulse(i):
         )
     return {
         "schema": "bd.ldab.joined.census.v1",
-        "scope": {
-            "repository": "GBOGEB/ABACUS",
-            "head_sha": str(i) * 40,
-            "run_id": 100 + i,
-            "job_id": 200 + i,
-            "scan_configuration": "config-v1",
-            "evidence_url": f"https://github.com/GBOGEB/ABACUS/actions/runs/{100+i}",
-        },
-        "metrics": {"full_bandit_unique": 0, "comparable_delta": None},
-        "roots": [
-            {"root_id": f"CI-{i:024x}", "category": "CI", "fingerprint": None}
-        ],
+        "scope": scope,
+        "metrics": {"full_bandit_unique": i, "comparable_delta": None},
+        "roots": roots,
         "merge_admission": "HOLD",
         "security_disposition": "INDEPENDENT_REVIEW_REQUIRED",
         "authority_transfer": False,
@@ -212,7 +204,7 @@ def test_ci_root_does_not_inflate_bandit_denominator():
     rows = [pulse(i) for i in (1, 2, 3)]
     rows[0]["roots"].append(
         {
-            "root_id": "CI-fake-but-distinct",
+            "root_id": "CI-" + "d" * 24,
             "category": "CI",
             "fingerprint": None,
             "observations": [{"repository": "GBOGEB/ABACUS", "source": "ci_failure"}],
@@ -243,10 +235,10 @@ def test_reject_remaining_unbound_census_shapes(change):
 def test_bandit_census_reconciles():
     rows = [pulse(i) for i in (1, 2, 3)]
     rows[0]["metrics"]["full_bandit_unique"] = 1
-    rows[0]["roots"].append(bandit_root(rows[0]))
+    rows[0]["roots"] = [bandit_root(rows[0])]
     result = m.rollup(rows)
     assert result["pulses"][0]["bandit_observations"] == 1
-    assert result["pulses"][0]["candidate_root_count"] == 2
+    assert result["pulses"][0]["candidate_root_count"] == 1
 
 
 @pytest.mark.parametrize(
