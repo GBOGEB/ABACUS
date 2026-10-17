@@ -1,0 +1,1202 @@
+{
+  "schema": "abacus.bseries.b1-fingerprint-ledger.v1",
+  "provenance": "NATIVE_GITHUB_ACTIONS_LOG_OBSERVATION_EXTRACT",
+  "authority_transfer": false,
+  "sample_design": "FIVE_PINNED_DIFFERENT_HEADS_NONREPRESENTATIVE",
+  "finding_identity": [
+    "path",
+    "line",
+    "sorted_patterns",
+    "text"
+  ],
+  "baseline_pulse": "N-2",
+  "baseline_unguarded_fingerprints": [
+    {
+      "path": ".github/workflows/background_orchestrator.yml",
+      "line": 117,
+      "patterns": [
+        "shell_or_true"
+      ],
+      "text": "git add orchestrator_outputs/ test_validation_results/ || true"
+    },
+    {
+      "path": ".github/workflows/background_orchestrator.yml",
+      "line": 118,
+      "patterns": [
+        "shell_or_echo"
+      ],
+      "text": "git commit -m \"🤖 Background orchestrator run #${{ github.run_number }}\" || echo \"No changes to commit\""
+    },
+    {
+      "path": ".github/workflows/background_orchestrator.yml",
+      "line": 119,
+      "patterns": [
+        "shell_or_echo"
+      ],
+      "text": "git push || echo \"Nothing to push\""
+    },
+    {
+      "path": ".github/workflows/background_orchestrator.yml",
+      "line": 208,
+      "patterns": [
+        "shell_or_true"
+      ],
+      "text": "git add docs/ || true"
+    },
+    {
+      "path": ".github/workflows/background_orchestrator.yml",
+      "line": 209,
+      "patterns": [
+        "shell_or_echo"
+      ],
+      "text": "git commit -m \"📚 Update GitHub Pages documentation\" || echo \"No changes to commit\""
+    },
+    {
+      "path": ".github/workflows/background_orchestrator.yml",
+      "line": 210,
+      "patterns": [
+        "shell_or_echo"
+      ],
+      "text": "git push || echo \"Nothing to push\""
+    },
+    {
+      "path": ".github/workflows/background_orchestrator.yml",
+      "line": 79,
+      "patterns": [
+        "shell_or_true"
+      ],
+      "text": "cp -r DMAIC_V3_OUTPUT/* artifacts/ 2>/dev/null || true"
+    },
+    {
+      "path": ".github/workflows/background_orchestrator.yml",
+      "line": 80,
+      "patterns": [
+        "shell_or_true"
+      ],
+      "text": "cp -r orchestrator_outputs/* artifacts/ 2>/dev/null || true"
+    },
+    {
+      "path": ".github/workflows/background_orchestrator.yml",
+      "line": 81,
+      "patterns": [
+        "shell_or_true"
+      ],
+      "text": "cp -r test_validation_results/* artifacts/ 2>/dev/null || true"
+    },
+    {
+      "path": ".github/workflows/background_orchestrator.yml",
+      "line": 82,
+      "patterns": [
+        "shell_or_true"
+      ],
+      "text": "cp -r local_mcp/logs/* artifacts/ 2>/dev/null || true"
+    },
+    {
+      "path": ".github/workflows/bandit.yml",
+      "line": 36,
+      "patterns": [
+        "shell_or_true"
+      ],
+      "text": "-o bandit-results.sarif || true"
+    },
+    {
+      "path": ".github/workflows/branch-analysis.yml",
+      "line": 118,
+      "patterns": [
+        "shell_or_echo"
+      ],
+      "text": "insertions=$(git diff --stat \"${BASE_SHA}...${HEAD_SHA}\" 2>/dev/null | tail -1 | grep -oP '\\d+ insertion' | grep -oP '\\d+' || echo 0)"
+    },
+    {
+      "path": ".github/workflows/branch-analysis.yml",
+      "line": 119,
+      "patterns": [
+        "shell_or_echo"
+      ],
+      "text": "deletions=$(git diff --stat \"${BASE_SHA}...${HEAD_SHA}\" 2>/dev/null | tail -1 | grep -oP '\\d+ deletion' | grep -oP '\\d+' || echo 0)"
+    },
+    {
+      "path": ".github/workflows/branch-analysis.yml",
+      "line": 120,
+      "patterns": [
+        "shell_or_true"
+      ],
+      "text": "test_files=$(git diff --name-only \"${BASE_SHA}...${HEAD_SHA}\" 2>/dev/null | (grep -c 'test_' || true))"
+    },
+    {
+      "path": ".github/workflows/branch-analysis.yml",
+      "line": 121,
+      "patterns": [
+        "shell_or_true"
+      ],
+      "text": "workflow_files=$(git diff --name-only \"${BASE_SHA}...${HEAD_SHA}\" 2>/dev/null | (grep -c '\\.github/workflows' || true))"
+    },
+    {
+      "path": ".github/workflows/branch-analysis.yml",
+      "line": 122,
+      "patterns": [
+        "shell_or_echo"
+      ],
+      "text": "behind=$(git rev-list --count \"origin/${BASE_REF}..${BASE_SHA}\" 2>/dev/null || echo 0)"
+    },
+    {
+      "path": ".github/workflows/branch-analysis.yml",
+      "line": 134,
+      "patterns": [
+        "shell_or_true"
+      ],
+      "text": "\"${BASE_SHA}\" \"${HEAD_SHA}\" 2>/dev/null | (grep -c '<<<<<<<' || true))"
+    },
+    {
+      "path": ".github/workflows/branch-analysis.yml",
+      "line": 337,
+      "patterns": [
+        "shell_or_true"
+      ],
+      "text": "python -m pip install pytest pytest-cov pytest-mock pyyaml 2>/dev/null || true"
+    },
+    {
+      "path": ".github/workflows/branch-analysis.yml",
+      "line": 365,
+      "patterns": [
+        "shell_or_echo"
+      ],
+      "text": "ahead=$(git rev-list --count \"origin/${BASE}..${remote}\" 2>/dev/null || echo 0)"
+    },
+    {
+      "path": ".github/workflows/branch-analysis.yml",
+      "line": 379,
+      "patterns": [
+        "shell_or_echo"
+      ],
+      "text": "behind=$(git rev-list --count \"${remote}..origin/${BASE}\" 2>/dev/null || echo 0)"
+    },
+    {
+      "path": ".github/workflows/branch-analysis.yml",
+      "line": 381,
+      "patterns": [
+        "shell_or_echo"
+      ],
+      "text": "conflict_markers=$(git merge-tree \"${merge_base}\" \"origin/${BASE}\" \"${remote}\" 2>/dev/null | grep -c '<<<<<<<' || echo 0)"
+    },
+    {
+      "path": ".github/workflows/branch-analysis.yml",
+      "line": 382,
+      "patterns": [
+        "shell_or_echo"
+      ],
+      "text": "ins=$(git diff --stat \"${merge_base}..${remote}\" -- 2>/dev/null | tail -1 | grep -oP '\\d+ insertion' | grep -oP '\\d+' || echo 0)"
+    },
+    {
+      "path": ".github/workflows/branch-analysis.yml",
+      "line": 383,
+      "patterns": [
+        "shell_or_echo"
+      ],
+      "text": "del=$(git diff --stat \"${merge_base}..${remote}\" -- 2>/dev/null | tail -1 | grep -oP '\\d+ deletion' | grep -oP '\\d+' || echo 0)"
+    },
+    {
+      "path": ".github/workflows/branch-analysis.yml",
+      "line": 59,
+      "patterns": [
+        "continue_on_error"
+      ],
+      "text": "continue-on-error: true"
+    },
+    {
+      "path": ".github/workflows/branch-pruner.yml",
+      "line": 101,
+      "patterns": [
+        "shell_or_echo"
+      ],
+      "text": "--jq '.[0] | \"\\(.state)#\\(.number)\"' 2>/dev/null || echo \"\")"
+    },
+    {
+      "path": ".github/workflows/branch-pruner.yml",
+      "line": 109,
+      "patterns": [
+        "shell_or_echo"
+      ],
+      "text": "merge_base=$(git merge-base \"origin/${BASE}\" \"${remote}\" 2>/dev/null || echo \"\")"
+    },
+    {
+      "path": ".github/workflows/branch-pruner.yml",
+      "line": 204,
+      "patterns": [
+        "shell_or_true"
+      ],
+      "text": "(( deleted++ )) || true"
+    },
+    {
+      "path": ".github/workflows/branch-pruner.yml",
+      "line": 207,
+      "patterns": [
+        "shell_or_true"
+      ],
+      "text": "(( failed++ )) || true"
+    },
+    {
+      "path": ".github/workflows/branch-pruner.yml",
+      "line": 63,
+      "patterns": [
+        "shell_or_true"
+      ],
+      "text": "git fetch origin '+refs/heads/*:refs/remotes/origin/*' 2>/dev/null || true"
+    },
+    {
+      "path": ".github/workflows/branch-pruner.yml",
+      "line": 94,
+      "patterns": [
+        "shell_or_echo"
+      ],
+      "text": "ahead=$(git rev-list --count \"origin/${BASE}..${remote}\" 2>/dev/null || echo 0)"
+    },
+    {
+      "path": ".github/workflows/branch-pruner.yml",
+      "line": 95,
+      "patterns": [
+        "shell_or_echo"
+      ],
+      "text": "last_ts=$(git log -1 --format=\"%ct\" \"${remote}\" 2>/dev/null || echo \"$NOW\")"
+    },
+    {
+      "path": ".github/workflows/branch-pruner.yml",
+      "line": 96,
+      "patterns": [
+        "shell_or_echo"
+      ],
+      "text": "last_date=$(git log -1 --format=\"%ci\" \"${remote}\" 2>/dev/null || echo \"unknown\")"
+    },
+    {
+      "path": ".github/workflows/bridge-ci.yml",
+      "line": 194,
+      "patterns": [
+        "continue_on_error"
+      ],
+      "text": "continue-on-error: true"
+    },
+    {
+      "path": ".github/workflows/bridge-ci.yml",
+      "line": 202,
+      "patterns": [
+        "shell_or_true"
+      ],
+      "text": "black --check --line-length=120 DMAIC_V3/core/test_system_bridge.py run_deployment_test_system.py || true"
+    },
+    {
+      "path": ".github/workflows/bridge-ci.yml",
+      "line": 206,
+      "patterns": [
+        "shell_or_true"
+      ],
+      "text": "ruff check DMAIC_V3/core/test_system_bridge.py run_deployment_test_system.py || true"
+    },
+    {
+      "path": ".github/workflows/cd-pipeline.yml",
+      "line": 122,
+      "patterns": [
+        "shell_or_echo"
+      ],
+      "text": "cp -r config/ dist/ || echo \"No config directory\""
+    },
+    {
+      "path": ".github/workflows/cd-pipeline.yml",
+      "line": 123,
+      "patterns": [
+        "shell_or_echo"
+      ],
+      "text": "cp RTM_INTEGRATION_DASHBOARD.html dist/ || echo \"No dashboard\""
+    },
+    {
+      "path": ".github/workflows/cd-pipeline.yml",
+      "line": 60,
+      "patterns": [
+        "shell_or_echo"
+      ],
+      "text": "pip install -r requirements.txt || echo \"No requirements.txt found\""
+    },
+    {
+      "path": ".github/workflows/cd-pipeline.yml",
+      "line": 75,
+      "patterns": [
+        "continue_on_error"
+      ],
+      "text": "continue-on-error: true"
+    },
+    {
+      "path": ".github/workflows/cd-pipeline.yml",
+      "line": 78,
+      "patterns": [
+        "shell_or_echo"
+      ],
+      "text": "black --check . || echo \"Black formatting issues found\""
+    },
+    {
+      "path": ".github/workflows/cd-pipeline.yml",
+      "line": 82,
+      "patterns": [
+        "shell_or_echo"
+      ],
+      "text": "pylint **/*.py --exit-zero || echo \"Pylint warnings found\""
+    },
+    {
+      "path": ".github/workflows/cd-unified.yml",
+      "line": 52,
+      "patterns": [
+        "continue_on_error"
+      ],
+      "text": "continue-on-error: true"
+    },
+    {
+      "path": ".github/workflows/cd-unified.yml",
+      "line": 57,
+      "patterns": [
+        "continue_on_error"
+      ],
+      "text": "continue-on-error: true"
+    },
+    {
+      "path": ".github/workflows/cd.yml",
+      "line": 48,
+      "patterns": [
+        "shell_or_true"
+      ],
+      "text": "run: python scripts/initialize_knowledge_packages.py || true"
+    },
+    {
+      "path": ".github/workflows/cd.yml",
+      "line": 54,
+      "patterns": [
+        "shell_or_echo"
+      ],
+      "text": "run: python -m DMAIC_V3.dmaic_v3_engine --mode single --phase phase6_knowledge || echo \"Phase 6 not available\""
+    },
+    {
+      "path": ".github/workflows/cd.yml",
+      "line": 56,
+      "patterns": [
+        "shell_or_true"
+      ],
+      "text": "run: python scripts/check_convergence.py || true"
+    },
+    {
+      "path": ".github/workflows/cd.yml",
+      "line": 60,
+      "patterns": [
+        "shell_or_true"
+      ],
+      "text": "if compgen -G \"DMAIC_V3_OUTPUT/reports/*\" > /dev/null; then cp -r DMAIC_V3_OUTPUT/reports/* artifacts/reports/ || true; fi"
+    },
+    {
+      "path": ".github/workflows/cd.yml",
+      "line": 61,
+      "patterns": [
+        "shell_or_true"
+      ],
+      "text": "if [ -d \"artifacts_rankings\" ]; then cp -r artifacts_rankings/* artifacts/rankings/ || true; fi"
+    },
+    {
+      "path": ".github/workflows/ci_monitor_and_issue_creator.yml",
+      "line": 46,
+      "patterns": [
+        "continue_on_error"
+      ],
+      "text": "continue-on-error: true"
+    },
+    {
+      "path": ".github/workflows/ci_monitor_and_issue_creator.yml",
+      "line": 48,
+      "patterns": [
+        "shell_or_true"
+      ],
+      "text": "run: pytest --json-report --json-report-file=test_report.json || true"
+    },
+    {
+      "path": ".github/workflows/ci_monitor_and_issue_creator.yml",
+      "line": 49,
+      "patterns": [
+        "continue_on_error"
+      ],
+      "text": "continue-on-error: true"
+    },
+    {
+      "path": ".github/workflows/ci-abacus.yml",
+      "line": 273,
+      "patterns": [
+        "shell_or_echo"
+      ],
+      "text": "pre-commit run --all-files || echo \"Pre-commit advisory completed\""
+    },
+    {
+      "path": ".github/workflows/ci-cd-tests.yml",
+      "line": 101,
+      "patterns": [
+        "continue_on_error"
+      ],
+      "text": "continue-on-error: true"
+    },
+    {
+      "path": ".github/workflows/ci-cd-tests.yml",
+      "line": 306,
+      "patterns": [
+        "continue_on_error"
+      ],
+      "text": "continue-on-error: true"
+    },
+    {
+      "path": ".github/workflows/ci-cd-tests.yml",
+      "line": 670,
+      "patterns": [
+        "continue_on_error"
+      ],
+      "text": "continue-on-error: true"
+    },
+    {
+      "path": ".github/workflows/ci-cd-tests.yml",
+      "line": 675,
+      "patterns": [
+        "continue_on_error"
+      ],
+      "text": "continue-on-error: true"
+    },
+    {
+      "path": ".github/workflows/ci-cd-tests.yml",
+      "line": 81,
+      "patterns": [
+        "continue_on_error"
+      ],
+      "text": "continue-on-error: true"
+    },
+    {
+      "path": ".github/workflows/ci-cd-tests.yml",
+      "line": 91,
+      "patterns": [
+        "continue_on_error"
+      ],
+      "text": "continue-on-error: true"
+    },
+    {
+      "path": ".github/workflows/ci-failure-debug-rerun.yml",
+      "line": 35,
+      "patterns": [
+        "continue_on_error"
+      ],
+      "text": "continue-on-error: true"
+    },
+    {
+      "path": ".github/workflows/ci-governance.yml",
+      "line": 38,
+      "patterns": [
+        "continue_on_error"
+      ],
+      "text": "continue-on-error: true"
+    },
+    {
+      "path": ".github/workflows/ci-governance.yml",
+      "line": 47,
+      "patterns": [
+        "continue_on_error"
+      ],
+      "text": "continue-on-error: true"
+    },
+    {
+      "path": ".github/workflows/ci-governance.yml",
+      "line": 64,
+      "patterns": [
+        "shell_or_true"
+      ],
+      "text": "> ci-governance-generation.log 2>&1 || true"
+    },
+    {
+      "path": ".github/workflows/ci-pipeline.yml",
+      "line": 125,
+      "patterns": [
+        "shell_or_echo"
+      ],
+      "text": "pip install -r requirements.txt || echo \"No requirements.txt\""
+    },
+    {
+      "path": ".github/workflows/ci-pipeline.yml",
+      "line": 33,
+      "patterns": [
+        "continue_on_error"
+      ],
+      "text": "continue-on-error: true"
+    },
+    {
+      "path": ".github/workflows/ci-pipeline.yml",
+      "line": 42,
+      "patterns": [
+        "continue_on_error"
+      ],
+      "text": "continue-on-error: true"
+    },
+    {
+      "path": ".github/workflows/ci-pipeline.yml",
+      "line": 46,
+      "patterns": [
+        "continue_on_error"
+      ],
+      "text": "continue-on-error: true"
+    },
+    {
+      "path": ".github/workflows/ci-pipeline.yml",
+      "line": 50,
+      "patterns": [
+        "shell_or_true"
+      ],
+      "text": "run: bandit -r . -f json -o bandit-report.json || true"
+    },
+    {
+      "path": ".github/workflows/ci-pipeline.yml",
+      "line": 86,
+      "patterns": [
+        "shell_or_echo"
+      ],
+      "text": "pip install -r requirements.txt || echo \"No requirements.txt\""
+    },
+    {
+      "path": ".github/workflows/ci.yml",
+      "line": 82,
+      "patterns": [
+        "shell_or_true"
+      ],
+      "text": "pylint DMAIC_V3/core/test_system_bridge.py --disable=C0111,R0913,R0914 || true"
+    },
+    {
+      "path": ".github/workflows/ci.yml",
+      "line": 86,
+      "patterns": [
+        "shell_or_true"
+      ],
+      "text": "black --check DMAIC_V3/core/test_system_bridge.py run_deployment_test_system.py || true"
+    },
+    {
+      "path": ".github/workflows/deploy-docs.yml",
+      "line": 111,
+      "patterns": [
+        "shell_or_true"
+      ],
+      "text": "cp reports/*.json docs/reports/ 2>/dev/null || true"
+    },
+    {
+      "path": ".github/workflows/deploy-docs.yml",
+      "line": 146,
+      "patterns": [
+        "shell_or_echo"
+      ],
+      "text": "|| echo \"000\")"
+    },
+    {
+      "path": ".github/workflows/dmaic-commit-metrics.yml",
+      "line": 407,
+      "patterns": [
+        "shell_or_echo"
+      ],
+      "text": "python3 - <<'PYEOF' 2>/dev/null || echo \"unknown\""
+    },
+    {
+      "path": ".github/workflows/dmaic-commit-metrics.yml",
+      "line": 512,
+      "patterns": [
+        "shell_or_echo"
+      ],
+      "text": "--max-time 10 \"$URL\" || echo \"000\""
+    },
+    {
+      "path": ".github/workflows/dmaic-commit-metrics.yml",
+      "line": 531,
+      "patterns": [
+        "shell_or_echo"
+      ],
+      "text": "--max-time 10 \"$URL\" || echo \"000\""
+    },
+    {
+      "path": ".github/workflows/dmaic-commit-metrics.yml",
+      "line": 533,
+      "patterns": [
+        "shell_or_echo"
+      ],
+      "text": "ICON=$( [ \"$STATUS\" = \"200\" ] && echo \"✅\" || echo \"❌\" )"
+    },
+    {
+      "path": ".github/workflows/dmaic-v3-cd.yml",
+      "line": 58,
+      "patterns": [
+        "shell_or_echo"
+      ],
+      "text": "--junitxml=test-results.xml || echo \"TESTS_FAILED=true\" >> $GITHUB_ENV"
+    },
+    {
+      "path": ".github/workflows/dmaic-v3-cd.yml",
+      "line": 84,
+      "patterns": [
+        "shell_or_true"
+      ],
+      "text": "mypy DMAIC_V3/core/ --ignore-missing-imports --strict --no-error-summary || true"
+    },
+    {
+      "path": ".github/workflows/dmaic-v3-ci.yml",
+      "line": 378,
+      "patterns": [
+        "shell_or_true"
+      ],
+      "text": "mypy core/ --ignore-missing-imports --no-strict-optional || true"
+    },
+    {
+      "path": ".github/workflows/dow-integration.yml",
+      "line": 39,
+      "patterns": [
+        "shell_or_echo"
+      ],
+      "text": "pip install -r requirements.txt || echo \"No requirements.txt found\""
+    },
+    {
+      "path": ".github/workflows/dow-integration.yml",
+      "line": 80,
+      "patterns": [
+        "shell_or_echo"
+      ],
+      "text": "pip install -r requirements.txt || echo \"No requirements.txt found\""
+    },
+    {
+      "path": ".github/workflows/dow-main-cicd.yml",
+      "line": 34,
+      "patterns": [
+        "shell_or_echo"
+      ],
+      "text": "run: pip install -r requirements.txt || echo 'No requirements.txt'"
+    },
+    {
+      "path": ".github/workflows/dow-scheduled.yml",
+      "line": 39,
+      "patterns": [
+        "shell_or_echo"
+      ],
+      "text": "python -m pytest DMAIC_V3/tests/ || echo \"Tests completed\""
+    },
+    {
+      "path": ".github/workflows/dow-scheduled.yml",
+      "line": 43,
+      "patterns": [
+        "shell_or_echo"
+      ],
+      "text": "python DMAIC_V3/full_pipeline_orchestrator.py || echo \"Pipeline execution completed\""
+    },
+    {
+      "path": ".github/workflows/format-check.yml",
+      "line": 20,
+      "patterns": [
+        "shell_or_true"
+      ],
+      "text": "pip install -r requirements.txt || true"
+    },
+    {
+      "path": ".github/workflows/format-check.yml",
+      "line": 23,
+      "patterns": [
+        "shell_or_echo"
+      ],
+      "text": "python -m black --check --diff . || echo \"Black formatting issues found\""
+    },
+    {
+      "path": ".github/workflows/gbogeb-abacus-integration-ci-cd.yml",
+      "line": 102,
+      "patterns": [
+        "continue_on_error"
+      ],
+      "text": "continue-on-error: true"
+    },
+    {
+      "path": ".github/workflows/gbogeb-abacus-integration-ci-cd.yml",
+      "line": 107,
+      "patterns": [
+        "continue_on_error"
+      ],
+      "text": "continue-on-error: true"
+    },
+    {
+      "path": ".github/workflows/gbogeb-abacus-integration-ci-cd.yml",
+      "line": 97,
+      "patterns": [
+        "continue_on_error"
+      ],
+      "text": "continue-on-error: true"
+    },
+    {
+      "path": ".github/workflows/gloob-causal-responder.yml",
+      "line": 40,
+      "patterns": [
+        "shell_or_true"
+      ],
+      "text": "mapfile -t tickets < <(git diff-tree --no-commit-id --name-only -r \"$GITHUB_SHA\" | grep '^gloob_dispatch/inbox/.*\\.json$' || true)"
+    },
+    {
+      "path": ".github/workflows/history-purge-20260827.yml",
+      "line": 154,
+      "patterns": [
+        "shell_or_true"
+      ],
+      "text": "git remote remove origin 2>/dev/null || true"
+    },
+    {
+      "path": ".github/workflows/history-purge-20260827.yml",
+      "line": 170,
+      "patterns": [
+        "shell_or_true"
+      ],
+      "text": "status=\"$(curl -L -sS -o /dev/null -w '%{http_code}' \"${url}\" || true)\""
+    },
+    {
+      "path": ".github/workflows/inventory.yml",
+      "line": 18,
+      "patterns": [
+        "shell_or_true"
+      ],
+      "text": "pip install -r requirements.txt || true"
+    },
+    {
+      "path": ".github/workflows/main.yml",
+      "line": 107,
+      "patterns": [
+        "shell_or_true"
+      ],
+      "text": "python scripts/recursive_build.py --smoke --index GLOBAL_index.json || true"
+    },
+    {
+      "path": ".github/workflows/main.yml",
+      "line": 112,
+      "patterns": [
+        "shell_or_true"
+      ],
+      "text": "python run_deployment_test_system.py --test-suite smoke --skip-static --version ci-${{ github.sha }} || true"
+    },
+    {
+      "path": ".github/workflows/main.yml",
+      "line": 138,
+      "patterns": [
+        "shell_or_true"
+      ],
+      "text": "flake8 . --count --max-line-length=120 --statistics --exclude=.git,__pycache__,node_modules || true"
+    },
+    {
+      "path": ".github/workflows/main.yml",
+      "line": 143,
+      "patterns": [
+        "shell_or_true"
+      ],
+      "text": "pylint DMAIC_V3/core/*.py --disable=C0111,R0913,R0914 || true"
+    },
+    {
+      "path": ".github/workflows/main.yml",
+      "line": 150,
+      "patterns": [
+        "shell_or_true"
+      ],
+      "text": "black --check . --exclude=\"/(\\.git|\\.venv|node_modules)/\" || true"
+    },
+    {
+      "path": ".github/workflows/main.yml",
+      "line": 34,
+      "patterns": [
+        "shell_or_true"
+      ],
+      "text": "python -m py_compile $(find . -name \"*.py\" -not -path \"./.*\" -not -path \"*/node_modules/*\" | head -20) || true"
+    },
+    {
+      "path": ".github/workflows/main.yml",
+      "line": 39,
+      "patterns": [
+        "shell_or_true"
+      ],
+      "text": "flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics --exclude=.git,__pycache__,node_modules || true"
+    },
+    {
+      "path": ".github/workflows/main.yml",
+      "line": 81,
+      "patterns": [
+        "continue_on_error"
+      ],
+      "text": "continue-on-error: true"
+    },
+    {
+      "path": ".github/workflows/pages.yml",
+      "line": 46,
+      "patterns": [
+        "shell_or_true"
+      ],
+      "text": "cp reports/*.json docs/reports/ 2>/dev/null || true"
+    },
+    {
+      "path": ".github/workflows/qps-dow-w43-triage.yml",
+      "line": 72,
+      "patterns": [
+        "continue_on_error"
+      ],
+      "text": "continue-on-error: true"
+    },
+    {
+      "path": ".github/workflows/qps-dow-w43-triage.yml",
+      "line": 75,
+      "patterns": [
+        "shell_set_plus_e"
+      ],
+      "text": "set +e"
+    },
+    {
+      "path": ".github/workflows/qps-dow-wave01-warmup.yml",
+      "line": 83,
+      "patterns": [
+        "continue_on_error"
+      ],
+      "text": "continue-on-error: true"
+    },
+    {
+      "path": ".github/workflows/qps-dow-wave01-warmup.yml",
+      "line": 85,
+      "patterns": [
+        "shell_set_plus_e"
+      ],
+      "text": "set +e"
+    },
+    {
+      "path": ".github/workflows/recursive-build.yml",
+      "line": 22,
+      "patterns": [
+        "shell_or_echo"
+      ],
+      "text": "python scripts/preview_diff.py --mode both --index GLOBAL_index.json || echo \"diffs detected (expected for evolving baseline)\""
+    },
+    {
+      "path": ".github/workflows/recursive-build.yml",
+      "line": 28,
+      "patterns": [
+        "shell_or_echo"
+      ],
+      "text": "git commit -m \"ci: recursive build + preview-diff\" || echo \"no changes\""
+    },
+    {
+      "path": ".github/workflows/recursive-build.yml",
+      "line": 29,
+      "patterns": [
+        "shell_or_true"
+      ],
+      "text": "git push || true"
+    },
+    {
+      "path": ".github/workflows/reports.yml",
+      "line": 111,
+      "patterns": [
+        "shell_or_echo"
+      ],
+      "text": "ls -lh Report_*.md 2>/dev/null | awk '{print \"- \" $9 \" (\" $5 \")\"}' >> $GITHUB_STEP_SUMMARY || echo \"- No report files found\" >> $GITHUB_STEP_SUMMARY"
+    },
+    {
+      "path": ".github/workflows/reports.yml",
+      "line": 42,
+      "patterns": [
+        "shell_or_true"
+      ],
+      "text": "python scripts/generate_iteration_report.py || true"
+    },
+    {
+      "path": ".github/workflows/reports.yml",
+      "line": 51,
+      "patterns": [
+        "shell_or_true"
+      ],
+      "text": "python scripts/generate_global_index.py || true"
+    },
+    {
+      "path": ".github/workflows/reports.yml",
+      "line": 60,
+      "patterns": [
+        "shell_or_true"
+      ],
+      "text": "python scripts/export_docs.py || true"
+    },
+    {
+      "path": ".github/workflows/reports.yml",
+      "line": 69,
+      "patterns": [
+        "shell_or_true"
+      ],
+      "text": "python scripts/handover_generator.py || true"
+    },
+    {
+      "path": ".github/workflows/reports.yml",
+      "line": 78,
+      "patterns": [
+        "shell_or_true"
+      ],
+      "text": "python scripts/code_health_check.py || true"
+    },
+    {
+      "path": ".github/workflows/reports.yml",
+      "line": 87,
+      "patterns": [
+        "shell_or_true"
+      ],
+      "text": "python scripts/check_convergence.py || true"
+    },
+    {
+      "path": ".github/workflows/runtime-smoke.yml",
+      "line": 30,
+      "patterns": [
+        "shell_set_plus_e"
+      ],
+      "text": "set +e"
+    },
+    {
+      "path": ".github/workflows/security-scan.yml",
+      "line": 40,
+      "patterns": [
+        "shell_or_true"
+      ],
+      "text": "--output-format github || true"
+    },
+    {
+      "path": ".github/workflows/semgrep.yml",
+      "line": 55,
+      "patterns": [
+        "continue_on_error"
+      ],
+      "text": "continue-on-error: true"
+    },
+    {
+      "path": ".github/workflows/sprint-trigger.yml",
+      "line": 23,
+      "patterns": [
+        "shell_or_true"
+      ],
+      "text": "pip install -r requirements.txt || true"
+    },
+    {
+      "path": ".github/workflows/tooling-ci.yml",
+      "line": 130,
+      "patterns": [
+        "shell_or_true"
+      ],
+      "text": "--exclude=__pycache__,agents || true"
+    },
+    {
+      "path": ".github/workflows/tooling-ci.yml",
+      "line": 138,
+      "patterns": [
+        "shell_or_true"
+      ],
+      "text": "flake8 local_mcp/agents/ --max-line-length=120 || true"
+    },
+    {
+      "path": ".github/workflows/tooling-ci.yml",
+      "line": 53,
+      "patterns": [
+        "shell_or_true"
+      ],
+      "text": "flake8 scripts/ --max-line-length=120 --exclude=__pycache__ || true"
+    },
+    {
+      "path": ".github/workflows/tooling-ci.yml",
+      "line": 59,
+      "patterns": [
+        "shell_or_true"
+      ],
+      "text": "black --check scripts/ || true"
+    },
+    {
+      "path": ".github/workflows/tooling-ci.yml",
+      "line": 93,
+      "patterns": [
+        "shell_or_true"
+      ],
+      "text": "--exclude=__pycache__ || true"
+    },
+    {
+      "path": ".github/workflows/update-docs.yml",
+      "line": 134,
+      "patterns": [
+        "shell_or_true"
+      ],
+      "text": "git fetch origin \"$BRANCH\" || true"
+    },
+    {
+      "path": ".github/workflows/update-docs.yml",
+      "line": 143,
+      "patterns": [
+        "shell_or_true"
+      ],
+      "text": "-q '.[0].number' 2>/dev/null || true"
+    },
+    {
+      "path": ".github/workflows/update-docs.yml",
+      "line": 96,
+      "patterns": [
+        "shell_or_true"
+      ],
+      "text": "cp docs/api/modules.json docs_versioned/latest/ 2>/dev/null || true"
+    },
+    {
+      "path": ".github/workflows/v23-cicd.yml",
+      "line": 51,
+      "patterns": [
+        "shell_or_echo"
+      ],
+      "text": "python local_mcp/agent_orchestrator_v3.0.py || echo \"Orchestrator test completed\""
+    },
+    {
+      "path": ".github/workflows/v23-cicd.yml",
+      "line": 59,
+      "patterns": [
+        "shell_or_echo"
+      ],
+      "text": "python local_mcp/agents/analysis_smoke_test_v2.3_OPTIMIZED.py || echo \"Smoke test completed\""
+    },
+    {
+      "path": ".github/workflows/v23-cicd.yml",
+      "line": 64,
+      "patterns": [
+        "shell_or_true"
+      ],
+      "text": "cp -r knowledge_workspace_v2.3 artifacts/v2.3/ || true"
+    },
+    {
+      "path": ".github/workflows/v23-cicd.yml",
+      "line": 65,
+      "patterns": [
+        "shell_or_true"
+      ],
+      "text": "cp local_mcp/agent_orchestrator_v3.0.py artifacts/v2.3/ || true"
+    },
+    {
+      "path": ".github/workflows/w67-pulse3-pca-promotion.yml",
+      "line": 31,
+      "patterns": [
+        "shell_or_true"
+      ],
+      "text": "mapfile -t ROWS < <(find architecture/w66/receipts/history -type f -name 'FEATURE_ROW.json' 2>/dev/null | sort || true)"
+    },
+    {
+      "path": ".github/workflows/w70-retain-measured-pulse.yml",
+      "line": 81,
+      "patterns": [
+        "continue_on_error"
+      ],
+      "text": "continue-on-error: true"
+    },
+    {
+      "path": ".github/workflows/w93-docker-deployment-proof.yml",
+      "line": 39,
+      "patterns": [
+        "shell_or_true"
+      ],
+      "text": "2>&1 || true"
+    },
+    {
+      "path": ".github/workflows/w93-docker-deployment-proof.yml",
+      "line": 41,
+      "patterns": [
+        "shell_or_true"
+      ],
+      "text": "> \"$out/container-state.json\" 2>/dev/null || true"
+    },
+    {
+      "path": ".github/workflows/w93-docker-deployment-proof.yml",
+      "line": 42,
+      "patterns": [
+        "shell_or_true"
+      ],
+      "text": "docker rm -f \"$cid\" >/dev/null 2>&1 || true"
+    },
+    {
+      "path": ".github/workflows/w93-docker-deployment-proof.yml",
+      "line": 49,
+      "patterns": [
+        "shell_or_true"
+      ],
+      "text": ") || true"
+    },
+    {
+      "path": ".github/workflows/w93-docker-deployment-proof.yml",
+      "line": 64,
+      "patterns": [
+        "shell_or_true"
+      ],
+      "text": "http://127.0.0.1:18000/ || true"
+    }
+  ],
+  "comparison": [
+    {
+      "pulse": "N-2",
+      "run_id": 39024853388,
+      "b1_job_id": 117373726052,
+      "source_sha": "fe05c6865f00d40def80996390ff0cf7c002562f",
+      "scanned_files": 160,
+      "allowed_findings": 47,
+      "unguarded_findings": 139,
+      "total_findings": 186,
+      "baseline_intersection": 139,
+      "new_fingerprints": 0,
+      "missing_fingerprints": 0,
+      "native_log_url": "https://github.com/GBOGEB/ABACUS/actions/runs/39024853388/job/117373726052"
+    },
+    {
+      "pulse": "N-1",
+      "run_id": 39028590924,
+      "b1_job_id": 117384674690,
+      "source_sha": "574b1a2639fd5b60c815ca509abeb26e8eb8ff66",
+      "scanned_files": 161,
+      "allowed_findings": 47,
+      "unguarded_findings": 139,
+      "total_findings": 186,
+      "baseline_intersection": 139,
+      "new_fingerprints": 0,
+      "missing_fingerprints": 0,
+      "native_log_url": "https://github.com/GBOGEB/ABACUS/actions/runs/39028590924/job/117384674690"
+    },
+    {
+      "pulse": "N",
+      "run_id": 39029208988,
+      "b1_job_id": 117386408916,
+      "source_sha": "94222bd2b9ba75563b41e6b7e6b058ea06ca6c0d",
+      "scanned_files": 160,
+      "allowed_findings": 47,
+      "unguarded_findings": 139,
+      "total_findings": 186,
+      "baseline_intersection": 139,
+      "new_fingerprints": 0,
+      "missing_fingerprints": 0,
+      "native_log_url": "https://github.com/GBOGEB/ABACUS/actions/runs/39029208988/job/117386408916"
+    },
+    {
+      "pulse": "N+1",
+      "run_id": 39046191707,
+      "b1_job_id": 117435273897,
+      "source_sha": "64a49a340dd89811879927ed8bd75494c2d306bd",
+      "scanned_files": 160,
+      "allowed_findings": 47,
+      "unguarded_findings": 139,
+      "total_findings": 186,
+      "baseline_intersection": 139,
+      "new_fingerprints": 0,
+      "missing_fingerprints": 0,
+      "native_log_url": "https://github.com/GBOGEB/ABACUS/actions/runs/39046191707/job/117435273897"
+    },
+    {
+      "pulse": "N+2",
+      "run_id": 39047236023,
+      "b1_job_id": 117438337500,
+      "source_sha": "c7cdcb5d1abc68de1c5c9f467afca69185f22f95",
+      "scanned_files": 160,
+      "allowed_findings": 47,
+      "unguarded_findings": 139,
+      "total_findings": 186,
+      "baseline_intersection": 139,
+      "new_fingerprints": 0,
+      "missing_fingerprints": 0,
+      "native_log_url": "https://github.com/GBOGEB/ABACUS/actions/runs/39047236023/job/117438337500"
+    }
+  ],
+  "source_warning": "Identical detected fingerprints do not establish identical underlying workflow population or scanner completeness. N-1 scans 161 workflow files; other pulses scan 160. Do not claim Six Sigma or engineering root closure.",
+  "engineering_root_closures": null,
+  "merge_admission": "HOLD"
+}
