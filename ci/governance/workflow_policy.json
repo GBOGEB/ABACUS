@@ -170,7 +170,25 @@
       "disposition": "keep"
     },
     {
-      "pattern": "^mission-control-lite-testflight\\.yml$",
+      "pattern": "^code-purple-dashboard-v31\\.yml$",
+      "cluster": "runtime_governance",
+      "lifecycle": "pr_domain",
+      "disposition": "keep"
+    },
+    {
+      "pattern": "^code-purple-sut-gui\\.yml$",
+      "cluster": "runtime_governance",
+      "lifecycle": "pr_domain",
+      "disposition": "keep"
+    },
+    {
+      "pattern": "^everred-real-pipeline-proof\\.yml$",
+      "cluster": "runtime_governance",
+      "lifecycle": "pr_domain",
+      "disposition": "keep"
+    },
+    {
+      "pattern": "^recovery-action-value-evidence\\.yml$",
       "cluster": "runtime_governance",
       "lifecycle": "pr_domain",
       "disposition": "keep"
@@ -364,9 +382,9 @@
       "disposition": "keep"
     },
     {
-      "pattern": "^code-purple-quality-ratchet-proof\\.yml$",
-      "cluster": "core_test",
-      "lifecycle": "pr_fast",
+      "pattern": "^code-purple-dashboard-v31\\.yml$",
+      "cluster": "documentation",
+      "lifecycle": "pr_domain",
       "disposition": "keep"
     },
     {
@@ -377,7 +395,7 @@
     },
     {
       "pattern": "^code-purple-sut-gui\\.yml$",
-      "cluster": "runtime_governance",
+      "cluster": "core_test",
       "lifecycle": "pr_domain",
       "disposition": "keep"
     },

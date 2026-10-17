@@ -3,6 +3,4 @@
 # scripts that pip install -r requirements.txt) resolve correctly.
 setuptools>=68.0  # required for pkg_resources on Python 3.12+
 aiohttp>=3.10.0
-# Governed JUnit parser for Ariana/DOW CI evidence
-defusedxml>=0.7.1,<0.8.0
 -r DMAIC_V3/requirements.txt

@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 """Deterministic read-only TOP21 census, fail-closed --check mode."""
+
 import argparse
 import json
 import pathlib
