@@ -9,6 +9,7 @@ from __future__ import annotations
 import argparse
 import json
 import math
+import re
 from pathlib import Path
 
 EPOCH = "G3A_W16_V2_PHASE4_REPAIRED"
@@ -30,8 +31,8 @@ def evaluate(receipt: dict | None, *, start_s: float | None = None,
              end_s: float | None = None,
              independently_verified_roots: int = 0,
              comparable_independent_pulses: int = 1) -> dict:
-    if not _valid_int(independently_verified_roots):
-        raise ValueError("verified root count must be a nonnegative int")
+    if independently_verified_roots != 0:
+        raise ValueError("no authenticated causal-root closure receipt supplied")
     if not _valid_int(comparable_independent_pulses, 1):
         raise ValueError("independent pulse count must be a positive int")
     elapsed = None
@@ -52,6 +53,13 @@ def evaluate(receipt: dict | None, *, start_s: float | None = None,
             raise ValueError("source epoch mismatch")
         if receipt.get("merge_admission") != "HOLD":
             raise ValueError("cannot accept a promoted merge claim")
+        if (not isinstance(receipt.get("checkout_sha"), str) or
+                not re.fullmatch(r"[a-f0-9]{40}", receipt["checkout_sha"])):
+            raise ValueError("missing exact-head identity")
+        if receipt.get("phase4_source_blob") != "18bec722fef537aa74b85295954cf66a002695d0":
+            raise ValueError("Phase4 source blob drift")
+        if not _valid_int(receipt.get("run_id"), 1) or not _valid_int(receipt.get("run_attempt"), 1):
+            raise ValueError("run/attempt identity missing")
         files = receipt.get("files")
         if not isinstance(files, dict) or set(files) != set(FOUR_BRANCHES):
             raise ValueError("coverage population mismatch")
