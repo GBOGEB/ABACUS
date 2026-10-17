@@ -92,6 +92,21 @@ def extend(observed, prior, fingerprint):
                 raise core.EvidenceError("native source/attempt mismatch")
         if row.get("b1_job_id") != reference.get("b1_job_id"):
             raise core.EvidenceError("B1 job identity mismatch")
+        scanner, workflow = row.get("b1_scanner_blob_sha"), row.get(
+            "b0_workflow_blob_sha"
+        )
+        ceiling = row.get("b1_max_unguarded")
+        if (
+            not isinstance(scanner, str)
+            or not core.SHA.fullmatch(scanner)
+            or not isinstance(workflow, str)
+            or not core.SHA.fullmatch(workflow)
+            or type(ceiling) is not int
+            or ceiling <= 0
+            or row.get("b1_source_config_identity")
+            != f"{scanner}:{workflow}:{ceiling}"
+        ):
+            raise core.EvidenceError("B1 source-config identity cannot bind")
         for a, b in (
             ("b1_scanned_files", "scanned_files"),
             ("b1_allowed_count", "allowed_findings"),
