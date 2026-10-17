@@ -134,5 +134,35 @@ class MatplotlibCompatibilityRegression(unittest.TestCase):
             classify(["matplotlib>=3.11; platform_system == 'Linux'"], 11)
 
 
+    def test_native_matrix_install_chain_uses_canonical_requirements(self):
+        """Guard root/development requirement shims consumed by CI matrix."""
+        repo = REQUIREMENTS.parents[1]
+        root_lines = (repo / "requirements.txt").read_text(
+            encoding="utf-8"
+        ).splitlines()
+        dev_lines = (repo / "requirements-dev.txt").read_text(
+            encoding="utf-8"
+        ).splitlines()
+        workflow = (repo / ".github/workflows/ci-abacus.yml").read_text(
+            encoding="utf-8"
+        )
+        self.assertIn("-r DMAIC_V3/requirements.txt", root_lines)
+        self.assertIn("-r requirements.txt", dev_lines)
+        self.assertIn("python -m pip install -r requirements-dev.txt", workflow)
+
+    def test_canonical_chain_has_no_unconditional_new_matplotlib_floor(self):
+        """Reject the original first-red irrespective of source import path."""
+        repo = REQUIREMENTS.parents[1]
+        root = (repo / "requirements.txt").read_text(encoding="utf-8")
+        dev = (repo / "requirements-dev.txt").read_text(encoding="utf-8")
+        self.assertIn("-r DMAIC_V3/requirements.txt", root)
+        self.assertIn("-r requirements.txt", dev)
+        pins = matplotlib_lines(REQUIREMENTS.read_text(encoding="utf-8"))
+        self.assertEqual([], [p for p in pins if ";" not in p])
+        self.assertEqual(
+            ["matplotlib>=3.10.8,<3.11.0"], classify(pins, 10)
+        )
+
+
 if __name__ == "__main__":
     unittest.main()
