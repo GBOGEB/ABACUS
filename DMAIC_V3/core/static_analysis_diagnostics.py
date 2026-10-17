@@ -7,17 +7,17 @@ It preserves file/line/rule identities without embedding the full raw job log.
 from __future__ import annotations
 
 import re
-from typing import Any
+from typing import Any, Dict, Optional
 
 FLAKE8_LINE = re.compile(
     r"^(?P<path>.+?):(?P<line>[0-9]+):(?P<column>[0-9]+): "
-    r"(?P<rule>[A-Z][0-9]{3,4}) (?P<message>[^\\r\\n]*)$"
+    r"(?P<rule>[A-Z][0-9]{3,4}) (?P<message>.*)$"
 )
 
 
 def summarize_static_analysis(
-    reports: dict[str, Any] | None, *, max_findings: int = 25
-) -> dict[str, Any]:
+    reports: Optional[Dict[str, Any]], *, max_findings: int = 25
+) -> Dict[str, Any]:
     """Extract bounded actionable line evidence without granting a green gate."""
     if type(max_findings) is not int or not 1 <= max_findings <= 100:
         raise ValueError("max_findings must be an integer between 1 and 100")
