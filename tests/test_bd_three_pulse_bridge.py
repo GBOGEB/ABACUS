@@ -1,5 +1,5 @@
 """Negative controls for the read-only canonical BD three-pulse consumer."""
-import copy
+
 import importlib.util
 from pathlib import Path
 
@@ -18,7 +18,8 @@ def pulse(i):
         "metrics": {"full_bandit_unique": i, "comparable_delta": None},
         "roots": [{"root_id": f"CI-{i}"}],
         "merge_admission": "HOLD",
-        "authority_transfer": False, "security_waiver": False,
+        "authority_transfer": False,
+        "security_waiver": False,
     }
 
 
@@ -32,16 +33,19 @@ def test_three_pulses_preserve_unknown_and_are_deterministic():
     assert a["engineering_credit_delta"] == 0
 
 
-@pytest.mark.parametrize("change", [
-    lambda p: p.pop("metrics"),
-    lambda p: p.update(merge_admission="GO"),
-    lambda p: p.update(authority_transfer=True),
-    lambda p: p.update(security_waiver=True),
-    lambda p: p["metrics"].update(full_bandit_unique=True),
-    lambda p: p.update(roots=[{"root_id": "same"}, {"root_id": "same"}]),
-    lambda p: p["scope"].update(head_sha="MALFORMED"),
-    lambda p: p["scope"].update(repository="GBOGEB/CODEX"),
-])
+@pytest.mark.parametrize(
+    "change",
+    [
+        lambda p: p.pop("metrics"),
+        lambda p: p.update(merge_admission="GO"),
+        lambda p: p.update(authority_transfer=True),
+        lambda p: p.update(security_waiver=True),
+        lambda p: p["metrics"].update(full_bandit_unique=True),
+        lambda p: p.update(roots=[{"root_id": "same"}, {"root_id": "same"}]),
+        lambda p: p["scope"].update(head_sha="MALFORMED"),
+        lambda p: p["scope"].update(repository="GBOGEB/CODEX"),
+    ],
+)
 def test_reject_forged_or_ambiguous_claims(change):
     rows = [pulse(i) for i in (1, 2, 3)]
     change(rows[1])
@@ -70,12 +74,15 @@ def test_only_scope_matched_coverage_deltas():
     assert result["movements"][1]["coverage"]["main_branch"]["delta_covered"] is None
 
 
-@pytest.mark.parametrize("coverage", [
-    {"main_branch": {"covered": 1, "eligible": 0, "config": "v1"}},
-    {"main_branch": {"covered": 3, "eligible": 2, "config": "v1"}},
-    {"main_branch": {"covered": True, "eligible": 2, "config": "v1"}},
-    {"main_branch": {"covered": 1, "eligible": 2, "config": ""}},
-])
+@pytest.mark.parametrize(
+    "coverage",
+    [
+        {"main_branch": {"covered": 1, "eligible": 0, "config": "v1"}},
+        {"main_branch": {"covered": 3, "eligible": 2, "config": "v1"}},
+        {"main_branch": {"covered": True, "eligible": 2, "config": "v1"}},
+        {"main_branch": {"covered": 1, "eligible": 2, "config": ""}},
+    ],
+)
 def test_bad_coverage_fails_closed(coverage):
     rows = [pulse(i) for i in (1, 2, 3)]
     rows[0]["coverage"] = coverage
