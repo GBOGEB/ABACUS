@@ -697,6 +697,18 @@
       "cluster": "dmaic",
       "lifecycle": "pr_domain",
       "disposition": "keep"
+    },
+    {
+      "pattern": "^g3a-n14-phase4-import\\.yml$",
+      "cluster": "dmaic",
+      "lifecycle": "pr_domain",
+      "disposition": "keep"
+    },
+    {
+      "pattern": "^g3a-n15-python-matrix\\.yml$",
+      "cluster": "dmaic",
+      "lifecycle": "pr_domain",
+      "disposition": "keep"
     }
   ],
   "quality_gates": {
