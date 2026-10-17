@@ -217,24 +217,167 @@ class G3AContracts(unittest.TestCase):
                 (root / f's{i}.py').write_text('ok = True\n')
             spec_path, out = root / 'plan.json', root / 'receipt.json'
             spec_path.write_text(json.dumps(mission()))
-            with mock.patch.object(m.subprocess, 'check_output', return_value=HEAD + '\n'):
+            with mock.patch.object(m.subprocess, 'check_output', side_effect=lambda command, **kw: ('HEAD?' if 'no-such-command' in command else ('' if 'status' in command else HEAD + '\n'))):
                 code = m.main(['--spec', str(spec_path), '--repo-root', str(root),
                                '--expected-head', HEAD, '--out', str(out)])
             self.assertEqual(code, 0)
             self.assertEqual(json.loads(out.read_text())['actual_n'], 15)
             (root / 's3.py').unlink()
-            with mock.patch.object(m.subprocess, 'check_output', return_value=HEAD + '\n'):
+            with mock.patch.object(m.subprocess, 'check_output', side_effect=lambda command, **kw: ('HEAD?' if 'no-such-command' in command else ('' if 'status' in command else HEAD + '\n'))):
                 code = m.main(['--spec', str(spec_path), '--repo-root', str(root),
                                '--expected-head', HEAD, '--out', str(out)])
             self.assertEqual(code, 3)
             self.assertEqual(json.loads(out.read_text())['actual_n'], 14)
+
+    def test_git_dirty_tracked_file_prevents_exact_head_proof(self):
+        with mock.patch.object(m.subprocess, 'check_output', return_value=' M scripts/g3a_bounded_mission.py\n'):
+            with self.assertRaisesRegex(m.ContractError, 'tracked working tree'):
+                m.verify_clean_checkout(Path('.'))
+
+    def test_clean_tracked_worktree_passes_preflight(self):
+        with mock.patch.object(m.subprocess, 'check_output', return_value=''):
+            self.assertEqual(m.verify_clean_checkout(Path('.')), 'TRACKED_FILES_CLEAN')
+
+    def test_git_dirty_main_returns_precheck_hold_and_no_receipt(self):
+        with tempfile.TemporaryDirectory() as d:
+            root = Path(d)
+            specfile = root / 'spec.json'
+            specfile.write_text(json.dumps(mission()))
+            def git_response(args, **kw):
+                return ' M tests/test_g3a_bounded_mission.py\n' if 'status' in args else HEAD + '\n'
+            with mock.patch.object(m.subprocess, 'check_output', side_effect=git_response):
+                with self.assertRaises(SystemExit) as err:
+                    m.main(['--spec', str(specfile), '--repo-root', str(root),
+                            '--expected-head', HEAD, '--out', str(root / 'receipt.json')])
+            self.assertEqual(err.exception.code, 2)
+            self.assertFalse((root / 'receipt.json').exists())
+
+    def metric_delta_fixture(self):
+        return {
+            'schema': 'g3a.matched-metric.v1', 'repository': 'GBOGEB/ABACUS',
+            'measurement': 'branches', 'module_path': 'scripts/target.py',
+            'source_sha256': 'f' * 64,
+            'before': {'head_sha': 'b' * 40, 'run_id': 100, 'run_attempt': 1,
+                       'job_id': 101, 'covered': 10, 'total': 40},
+            'after': {'head_sha': HEAD, 'run_id': 102, 'run_attempt': 2,
+                      'job_id': 103, 'covered': 21, 'total': 40},
+        }
+
+    def test_matched_delta_positive_measurable_gain(self):
+        row = m.matched_metric_delta(self.metric_delta_fixture(), HEAD, 5, 'd' * 64)
+        self.assertTrue(row['ok'])
+        self.assertEqual(row['delta_covered'], 11)
+        self.assertEqual(row['delta_percentage_points'], 27.5)
+        self.assertEqual(row['evidence_class'], 'DECLARED_NOT_NATIVE_AUTHENTICATED')
+        self.assertFalse(row['native_approval'])
+
+    def test_matched_delta_below_required_gain_no_advancement(self):
+        row = m.matched_metric_delta(self.metric_delta_fixture(), HEAD, 12, 'd' * 64)
+        self.assertFalse(row['ok'])
+        self.assertEqual(row['after'], [21, 40])
+
+    def test_metric_absent_before_or_after_fails_closed(self):
+        for missing in ('before', 'after'):
+            obj = self.metric_delta_fixture()
+            obj.pop(missing)
+            with self.subTest(missing=missing), self.assertRaisesRegex(m.ContractError, 'before and after'):
+                m.matched_metric_delta(obj, HEAD, 1, 'd' * 64)
+
+    def test_metric_malformed_producer_head_fails_closed(self):
+        obj = self.metric_delta_fixture()
+        obj['before']['head_sha'] = 'not-a-commit'
+        with self.assertRaisesRegex(m.ContractError, 'missing exact head'):
+            m.matched_metric_delta(obj, HEAD, 1, 'd' * 64)
+
+    def test_script_entrypoint_requires_arguments(self):
+        import runpy
+        import sys
+        with mock.patch.object(sys, 'argv', [str(P)]):
+            with self.assertRaises(SystemExit) as err:
+                runpy.run_path(str(P), run_name='__main__')
+        self.assertEqual(err.exception.code, 2)
+
+    def test_matched_delta_regression_cannot_pass(self):
+        obj = self.metric_delta_fixture()
+        obj['after']['covered'] = 9
+        row = m.matched_metric_delta(obj, HEAD, 1, 'd' * 64)
+        self.assertEqual(row['delta_covered'], -1)
+        self.assertFalse(row['ok'])
+
+    def test_denominator_drift_fails_closed(self):
+        obj = self.metric_delta_fixture()
+        obj['after']['total'] = 41
+        with self.assertRaisesRegex(m.ContractError, 'denominator drift'):
+            m.matched_metric_delta(obj, HEAD, 1, 'd' * 64)
+
+    def test_recycled_attempt_and_job_fails_closed(self):
+        obj = self.metric_delta_fixture()
+        for field in ('run_id', 'run_attempt', 'job_id'):
+            obj['after'][field] = obj['before'][field]
+        with self.assertRaisesRegex(m.ContractError, 'recycled'):
+            m.matched_metric_delta(obj, HEAD, 1, 'd' * 64)
+
+    def test_invalid_metric_schema_and_source_identity(self):
+        obj = self.metric_delta_fixture()
+        for key, value in (('schema', 'arbitrary'), ('source_sha256', 'SHORT'),
+                           ('repository', 'GBOGEB/CODEX'), ('measurement', 'fake'),
+                           ('module_path', '../secret.py')):
+            trial = json.loads(json.dumps(obj))
+            trial[key] = value
+            with self.subTest(key=key), self.assertRaises(m.ContractError):
+                m.matched_metric_delta(trial, HEAD, 1, 'd' * 64)
+
+    def test_invalid_metric_count_and_missing_job_identity(self):
+        obj = self.metric_delta_fixture()
+        for key, value in (('covered', True), ('covered', 50), ('total', 0),
+                           ('run_attempt', 0), ('job_id', True), ('run_id', None)):
+            trial = json.loads(json.dumps(obj))
+            trial['after'][key] = value
+            with self.subTest(key=key), self.assertRaises(m.ContractError):
+                m.matched_metric_delta(trial, HEAD, 1, 'd' * 64)
+
+    def test_after_head_has_to_match_checkout(self):
+        obj = self.metric_delta_fixture()
+        obj['after']['head_sha'] = 'c' * 40
+        with self.assertRaisesRegex(m.ContractError, 'does not match checkout'):
+            m.matched_metric_delta(obj, HEAD, 1, 'd' * 64)
+
+    def test_metric_min_new_covered_rejects_zero_and_boolean(self):
+        for minimum in (0, True, -1, 1.2):
+            spec = mission()
+            spec['steps'][0]['kind'] = 'metric_delta'
+            spec['steps'][0]['minimum_new_covered'] = minimum
+            with self.subTest(value=minimum), self.assertRaises(m.ContractError):
+                m.validate(spec)
+
+    def test_local_delta_step_executes_but_not_native_authority(self):
+        with tempfile.TemporaryDirectory() as d:
+            root = Path(d)
+            (root / 'metrics.json').write_text(json.dumps(self.metric_delta_fixture()))
+            row = m.perform(root, {'kind': 'metric_delta', 'path': 'metrics.json',
+                                   'minimum_new_covered': 3}, HEAD)
+            self.assertTrue(row['ok'])
+            self.assertEqual(row['evidence_class'], 'DECLARED_NOT_NATIVE_AUTHENTICATED')
+
+    def test_metric_delta_early_stop_returns_actual_n(self):
+        with tempfile.TemporaryDirectory() as d:
+            root = Path(d)
+            (root / 's1.py').write_text('x=1\n')
+            (root / 'metric.json').write_text(json.dumps(self.metric_delta_fixture()))
+            spec = mission()
+            spec['steps'][1].update(kind='metric_delta', path='metric.json', minimum_new_covered=12)
+            result = m.execute(spec, root, HEAD, HEAD)
+            self.assertEqual(result['status'], 'BLOCKED_MAJOR')
+            self.assertEqual(result['actual_n'], 13)
+            self.assertFalse(result['native_evidence_verified'])
+            self.assertEqual(result['attempted'], 2)
 
     def test_main_untrusted_checkout_precheck_exits_nonzero(self):
         with tempfile.TemporaryDirectory() as d:
             root = Path(d)
             spec_path, out = root / 'plan.json', root / 'receipt.json'
             spec_path.write_text(json.dumps(mission()))
-            with mock.patch.object(m.subprocess, 'check_output', return_value='b' * 40 + '\n'):
+            with mock.patch.object(m.subprocess, 'check_output', side_effect=lambda command, **kw: ('' if 'status' in command else 'b' * 40 + '\n')):
                 with self.assertRaises(SystemExit) as result:
                     m.main(['--spec', str(spec_path), '--repo-root', str(root),
                             '--expected-head', HEAD, '--out', str(out)])

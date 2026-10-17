@@ -18,7 +18,7 @@ from pathlib import Path, PurePosixPath
 
 SCHEMA = 'g3a.bounded-mission.v1'
 HEAD = re.compile(r'[0-9a-f]{40}\Z')
-ACTIONS = {'syntax', 'file_sha256', 'unittest', 'metric_min'}
+ACTIONS = {'syntax', 'file_sha256', 'unittest', 'metric_min', 'metric_delta'}
 MONIKERS = {'CLOSE', 'RED', 'RUNTIME', 'SEM', 'SSOT', 'RECEIPT',
             'ENABLE', 'HARDEN', 'CLEAN', 'MAINT', 'READ', 'EXP', 'WATCH'}
 
@@ -76,6 +76,10 @@ def validate(spec: dict) -> None:
             threshold = step.get('minimum_percent')
             if type(threshold) not in (int, float) or not (0 <= threshold <= 100):
                 raise ContractError('invalid metric threshold')
+        if step['kind'] == 'metric_delta':
+            threshold = step.get('minimum_new_covered')
+            if type(threshold) is not int or threshold < 1:
+                raise ContractError('positive minimum_new_covered required')
         proof_scope = (step['kind'], step.get('pattern') if step['kind'] == 'unittest' else step.get('path'))
         if proof_scope in proof_scopes:
             raise ContractError('duplicate checkpoint proof scope')
@@ -110,6 +114,8 @@ def perform(root: Path, step: dict, head: str) -> dict:
         return {'ok': digest == step['expected_sha256'], 'detail': 'source bytes compared',
                 'source_sha256': digest}
     obj = json.loads(raw)
+    if kind == 'metric_delta':
+        return matched_metric_delta(obj, head, step['minimum_new_covered'], digest)
     if not isinstance(obj, dict) or obj.get('head_sha') != head:
         raise ContractError('metric is not bound to current exact head')
     covered, total = obj.get('covered'), obj.get('total')
@@ -120,6 +126,72 @@ def perform(root: Path, step: dict, head: str) -> dict:
     return {'ok': percent >= step['minimum_percent'], 'detail': 'source-bound metric threshold',
             'covered': covered, 'total': total, 'percent': round(percent, 6),
             'source_sha256': digest}
+
+
+
+def matched_metric_delta(obj: dict, head: str, minimum: int, input_digest: str) -> dict:
+    """Accept a measured gain only with matched identity and denominators.
+
+    The input is a source-authored declaration, *not* independently authenticated
+    GitHub runner or coverage data. External native verification remains required.
+    """
+    if not isinstance(obj, dict) or obj.get('schema') != 'g3a.matched-metric.v1':
+        raise ContractError('unrecognized metric delta schema')
+    if obj.get('repository') != 'GBOGEB/ABACUS' or obj.get('measurement') not in ('statements', 'branches'):
+        raise ContractError('metric repository/kind mismatch')
+    path = obj.get('module_path')
+    if not isinstance(path, str) or not path or path.startswith('/') or '..' in path.split('/') or '\\' in path:
+        raise ContractError('invalid module source path')
+    source_hash = obj.get('source_sha256')
+    if not isinstance(source_hash, str) or re.fullmatch(r'[0-9a-f]{64}', source_hash) is None:
+        raise ContractError('missing source identity digest')
+    before, after = obj.get('before'), obj.get('after')
+    if not isinstance(before, dict) or not isinstance(after, dict):
+        raise ContractError('before and after measurements required')
+    for item in (before, after):
+        sha = item.get('head_sha')
+        if not isinstance(sha, str) or HEAD.fullmatch(sha) is None:
+            raise ContractError('measurement missing exact head')
+        for field in ('run_id', 'run_attempt', 'job_id'):
+            n = item.get(field)
+            if type(n) is not int or n <= 0:
+                raise ContractError(f'missing native {field} declaration')
+        covered, total = item.get('covered'), item.get('total')
+        if type(covered) is not int or type(total) is not int or total <= 0 or not 0 <= covered <= total:
+            raise ContractError('invalid covered/total numerator or denominator')
+    if after['head_sha'] != head:
+        raise ContractError('after measurement does not match checkout')
+    if before['total'] != after['total']:
+        raise ContractError('denominator drift: unmatched metric cohort')
+    before_ref = tuple(before[f] for f in ('run_id', 'run_attempt', 'job_id'))
+    after_ref = tuple(after[f] for f in ('run_id', 'run_attempt', 'job_id'))
+    if before_ref == after_ref:
+        raise ContractError('recycled run/job/attempt is not an independent observation')
+    delta = after['covered'] - before['covered']
+    denominator = before['total']
+    return {
+        'ok': delta >= minimum, 'detail': 'matched declared numerator delta',
+        'evidence_class': 'DECLARED_NOT_NATIVE_AUTHENTICATED',
+        'measurement': obj['measurement'], 'source_sha256': source_hash,
+        'source_module': path, 'input_sha256': input_digest,
+        'before': [before['covered'], denominator],
+        'after': [after['covered'], denominator],
+        'delta_covered': delta,
+        'delta_percentage_points': round(delta * 100.0 / denominator, 6),
+        'before_ref': list(before_ref), 'after_ref': list(after_ref),
+        'native_approval': False,
+    }
+
+
+def verify_clean_checkout(root: Path) -> str:
+    """Prove no changes to tracked files after resolving the commit SHA."""
+    output = subprocess.check_output(
+        ['git', '-C', str(root), 'status', '--porcelain', '--untracked-files=no'],
+        text=True,
+    )
+    if output.strip():
+        raise ContractError('tracked working tree differs from exact HEAD')
+    return 'TRACKED_FILES_CLEAN'
 
 
 def execute(spec: dict, root: Path, expected_head: str, observed_head: str) -> dict:
@@ -133,7 +205,8 @@ def execute(spec: dict, root: Path, expected_head: str, observed_head: str) -> d
                'repository': spec['repository'], 'mode': 'G3A', 'start_n': start,
                'target_n': start + 3, 'actual_n': start, 'accepted_checkpoints': 0,
                'attempted': 0, 'steps': [], 'status': 'RUNNING',
-               'exact_head_sha': expected_head, 'authority_transfer': False,
+               'exact_head_sha': expected_head, 'evidence_scope': 'LOCAL_CONTROL_ONLY',
+               'native_evidence_verified': False, 'authority_transfer': False,
                'merge_admission': 'HOLD', 'security_waiver': False,
                'formal_root_closures': 0, 'main_merges': 0}
     for step in spec['steps']:
@@ -175,6 +248,9 @@ def main(argv=None):
     root = Path(args.repo_root).resolve()
     try:
         observed_head = subprocess.check_output(['git', '-C', str(root), 'rev-parse', 'HEAD'], text=True).strip()
+        if observed_head != args.expected_head:
+            raise ContractError('checkout not equal to authorized exact head')
+        verify_clean_checkout(root)
         spec = json.loads(Path(args.spec).read_text(encoding='utf-8'))
         receipt = execute(spec, root, args.expected_head, observed_head)
     except (ContractError, OSError, ValueError, subprocess.CalledProcessError) as exc:

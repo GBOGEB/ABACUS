@@ -118,7 +118,7 @@ python scripts/g3a_bounded_mission.py \
 ```
 
 The example mission accepts three distinct **local control-verification**
-checkpoints (runner syntax, test-suite syntax, 25 real unit tests).
+checkpoints (runner syntax, test-suite syntax, 42 real unit tests).
 That local N=0→3 is not ABACUS PR/root closure or a merge.
 Native GitHub proof workflow:
 `.github/workflows/g3a-bounded-continuation-proof.yml`.
@@ -126,3 +126,10 @@ Global semantic sources remain
 `GBOGEB/CODEX:federation/mesh/GLOBAL_GLOSSARY_v1.yaml` and
 `GBOGEB/CODEX:federation/mesh/GLOBAL_ACTION_TAXONOMY_v1.yaml`;
 ABACUS consumes them but does not replace them.
+
+## W13 operational hardening (candidate)
+
+- Require clean tracked checkout in addition to the exact git commit SHA; dirty source cannot masquerade as an executed head.
+- New `metric_delta` action accepts only explicitly matched source identity, positive before/after run/job/attempt provenance, stable denominator, and a strictly positive configured numerator gain.
+- Machine output includes actual `delta_covered`, percentage-point difference, source module, and `DECLARED_NOT_NATIVE_AUTHENTICATED` evidence class. External GitHub-native job/artifact checks remain independent.
+- Local proof suite increased from 25 to 42 adversarial tests. This version is a local control proof only; no formal PR admission or programme-level root closure.
