@@ -20,6 +20,7 @@ import threading
 from ..config import DMAICConfig
 from .state import StateManager
 from .handover_bridge import HandoverBridge
+from .static_analysis_diagnostics import summarize_static_analysis
 
 
 @dataclass
@@ -292,6 +293,7 @@ class TestSystemBridge:
         runtime_errors = self.detect_runtime_errors()
 
         static_analysis = self.run_static_analysis()
+        self.static_analysis_evidence = summarize_static_analysis(static_analysis)
         # A scan that raises, or returns no executed flake8 check, is UNKNOWN
         # rather than a passing security/quality signal.
         flake8_report = static_analysis.get('flake8')
@@ -349,6 +351,7 @@ class TestSystemBridge:
                 'execution_time_seconds': self.deployment_metrics.execution_time_seconds,
                 'runtime_errors': self.deployment_metrics.runtime_errors,
                 'static_analysis_passed': self.deployment_metrics.static_analysis_passed,
+                'static_analysis_evidence': getattr(self, 'static_analysis_evidence', None),
                 'deployment_ready': self.deployment_metrics.deployment_ready
             },
             'test_results': {
