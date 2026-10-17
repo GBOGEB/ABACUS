@@ -33,6 +33,7 @@ class ErrorDetector:
         )
 
         if result.returncode != 0:
+            parsed = 0
             for line in result.stdout.split('\n'):
                 if 'error' in line.lower():
                     errors.append({
@@ -40,13 +41,20 @@ class ErrorDetector:
                         'message': line.strip(),
                         'timestamp': datetime.now().isoformat()
                     })
+                    parsed += 1
+            if parsed == 0:
+                errors.append({
+                    'type': 'pylint_execution_error',
+                    'message': f'pylint exited with status {result.returncode} without parsed diagnostics',
+                    'timestamp': datetime.now().isoformat()
+                })
 
         result = subprocess.run(
             ['python', '-m', 'mypy', 'DMAIC_V3/', '--no-error-summary'],
             capture_output=True,
             text=True
         )
-
+        parsed = 0
         for line in result.stdout.split('\n'):
             if 'error:' in line:
                 errors.append({
@@ -54,6 +62,13 @@ class ErrorDetector:
                     'message': line.strip(),
                     'timestamp': datetime.now().isoformat()
                 })
+                parsed += 1
+        if result.returncode != 0 and parsed == 0:
+            errors.append({
+                'type': 'mypy_execution_error',
+                'message': f'mypy exited with status {result.returncode} without parsed diagnostics',
+                'timestamp': datetime.now().isoformat()
+            })
 
         self.errors = errors
         self.warnings = warnings
