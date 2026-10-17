@@ -50,8 +50,9 @@ class PythonDependencyMIPTests(unittest.TestCase):
             for line in source.splitlines()
             if line.startswith("pytest-asyncio")
         ]
-        self.assertEqual(len(requirements), 2)
+        self.assertEqual(len(requirements), 3)  # include exclusive pre-3.9 legacy path
         for lane, valid, invalid in (
+            ("3.8", "0.23.8", "1.2.0"),
             ("3.9", "1.2.0", "1.4.0"),
             ("3.10", "1.4.0", "1.2.0"),
         ):
