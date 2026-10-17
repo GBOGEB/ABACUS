@@ -41,13 +41,18 @@ jobs:
         github.event.client_payload.selector == 'native_checks')) ||
       (github.event_name == 'workflow_dispatch' &&
        (inputs.selector == 'all' || inputs.selector == 'native_checks'))
-    uses: GBOGEB/pipeline-automation-hub/.github/workflows/qps-metric-census-receiver.yml@dd606d8897c70fa797a3a585fa12850bacd1d9e1
+    uses: "GBOGEB/pipeline-automation-hub/.github/workflows/\
+      qps-metric-census-receiver.yml@dd606d8897c70fa797a3a585fa12850bacd1d9e1"
     with:
       route: native_checks
       wave: ${{ github.event.client_payload.wave || inputs.wave }}
       selector: ${{ github.event.client_payload.selector || inputs.selector }}
-      request_id: ${{ github.event.client_payload.request_id || inputs.request_id }}
-      expected_sha: ${{ github.event.client_payload.expected_sha || inputs.expected_sha }}
+      request_id: >-
+        ${{ github.event.client_payload.request_id ||
+        inputs.request_id }}
+      expected_sha: >-
+        ${{ github.event.client_payload.expected_sha ||
+        inputs.expected_sha }}
       toolkit_ref: dd606d8897c70fa797a3a585fa12850bacd1d9e1
 
   coverage-catalog:
@@ -57,11 +62,16 @@ jobs:
         github.event.client_payload.selector == 'coverage_catalog')) ||
       (github.event_name == 'workflow_dispatch' &&
        (inputs.selector == 'all' || inputs.selector == 'coverage_catalog'))
-    uses: GBOGEB/pipeline-automation-hub/.github/workflows/qps-metric-census-receiver.yml@dd606d8897c70fa797a3a585fa12850bacd1d9e1
+    uses: "GBOGEB/pipeline-automation-hub/.github/workflows/\
+      qps-metric-census-receiver.yml@dd606d8897c70fa797a3a585fa12850bacd1d9e1"
     with:
       route: coverage_catalog
       wave: ${{ github.event.client_payload.wave || inputs.wave }}
       selector: ${{ github.event.client_payload.selector || inputs.selector }}
-      request_id: ${{ github.event.client_payload.request_id || inputs.request_id }}
-      expected_sha: ${{ github.event.client_payload.expected_sha || inputs.expected_sha }}
+      request_id: >-
+        ${{ github.event.client_payload.request_id ||
+        inputs.request_id }}
+      expected_sha: >-
+        ${{ github.event.client_payload.expected_sha ||
+        inputs.expected_sha }}
       toolkit_ref: dd606d8897c70fa797a3a585fa12850bacd1d9e1
