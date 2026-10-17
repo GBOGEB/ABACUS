@@ -210,7 +210,7 @@ def test_ci_root_does_not_inflate_bandit_denominator():
     rows = [pulse(i, include_bandit=True) for i in (1, 2, 3)]
     rows[0]["roots"].append(
         {
-            "root_id": "CI-fake-but-distinct",
+            "root_id": "CI-" + "a" * 24,
             "category": "CI",
             "fingerprint": None,
             "observations": [{"repository": "GBOGEB/ABACUS", "source": "ci_failure"}],
