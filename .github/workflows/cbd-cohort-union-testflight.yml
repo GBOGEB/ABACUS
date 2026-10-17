@@ -60,7 +60,7 @@ jobs:
           coverage = json.loads((target / "coverage.json").read_text())
           totals = coverage["totals"]
           log_bytes = (target / "unittest.log").read_bytes()
-          suite_ok = bool(re.search(rb"(?m)^OK(?: \\(.*\\))?\\s*$", log_bytes))
+          suite_ok = any(line.strip() == b"OK" or line.strip().startswith(b"OK (") for line in log_bytes.splitlines())
           counts = re.search(rb"Ran (\d+) tests?", log_bytes)
           if counts is None or int(counts.group(1)) < 19:
               raise SystemExit("Not all 19 expected tests executed")
