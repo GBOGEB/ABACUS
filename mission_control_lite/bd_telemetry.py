@@ -27,9 +27,10 @@ def validate(record: dict[str, Any]) -> dict[str, Any]:
     missing = [field for field in required if field not in record]
     if missing:
         raise ValueError("missing telemetry fields: " + ", ".join(missing))
-    if record["schema"] != SCHEMA or record["mode"] not in MODES:
+    if (record["schema"] != SCHEMA or not isinstance(record["mode"], str)
+            or record["mode"] not in MODES):
         raise ValueError("unsupported schema or emulation mode")
-    if record["result"] not in RESULTS:
+    if not isinstance(record["result"], str) or record["result"] not in RESULTS:
         raise ValueError("unsupported result")
     for key in ("source_sha", "base_sha"):
         val = record[key]
@@ -91,6 +92,8 @@ def summarize_series(records: list[dict[str, Any]]) -> dict[str, Any]:
     seen = set()
     queue_samples = []
     coverage_samples = []
+    line_known = 0
+    branch_known = 0
     heads = set()
     roots = set()
     for record in records:
@@ -107,20 +110,30 @@ def summarize_series(records: list[dict[str, Any]]) -> dict[str, Any]:
         roots.add(record["root_id"])
         if record["queue_seconds"] is not None:
             queue_samples.append(record["queue_seconds"])
-        if record["mode"] == "E3" and record["line_total"] is not None:
+        if record["mode"] == "E3":
+            # Failed/held E3 observations may have independently missing line
+            # or branch evidence. Preserve each dimension as UNKNOWN (None)
+            # rather than raising an unrelated TypeError or inventing 0%.
+            known_lines = record["line_total"] is not None
+            known_branches = record["branch_total"] is not None
+            line_known += int(known_lines)
+            branch_known += int(known_branches)
             coverage_samples.append({
                 "source_sha": record["source_sha"],
                 "root_id": record["root_id"],
                 "attempt": record["attempt"],
+                "result": record["result"],
                 "line_covered": record["line_covered"],
                 "line_total": record["line_total"],
                 "branch_covered": record["branch_covered"],
                 "branch_total": record["branch_total"],
-                "line_percent": round(
-                    100 * record["line_covered"] / record["line_total"], 4
+                "line_percent": (
+                    round(100 * record["line_covered"] / record["line_total"], 4)
+                    if known_lines else None
                 ),
-                "branch_percent": round(
-                    100 * record["branch_covered"] / record["branch_total"], 4
+                "branch_percent": (
+                    round(100 * record["branch_covered"] / record["branch_total"], 4)
+                    if known_branches else None
                 ),
             })
     queue_samples.sort()
@@ -154,6 +167,10 @@ def summarize_series(records: list[dict[str, Any]]) -> dict[str, Any]:
             "p95_qualified": observed >= 20,
         },
         "declared_native_coverage": coverage_samples,
+        "e3_line_coverage_known": line_known,
+        "e3_branch_coverage_known": branch_known,
+        "e3_line_coverage_unknown": native_total - line_known,
+        "e3_branch_coverage_unknown": native_total - branch_known,
         "cross_head_coverage_delta_pp": None,
         "externally_verified_artifact_count": 0,
         "verified_root_closures": 0,
