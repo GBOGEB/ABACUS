@@ -6,7 +6,7 @@ Lightweight, non-blocking file change detection that runs continuously
 import json
 import time
 import threading
-from pathlib import Path
+from pathlib import Path, PureWindowsPath
 from datetime import datetime
 from typing import Dict, Any
 
@@ -72,7 +72,13 @@ class BackgroundChangeDetector:
         if self.snapshot_file.exists():
             try:
                 with open(self.snapshot_file, 'r') as f:
-                    prev_snapshot = json.load(f)
+                    loaded = json.load(f)
+                    # Upgrade legacy Windows keys without fabricating deletions.
+                    if isinstance(loaded, dict):
+                        prev_snapshot = {
+                            PureWindowsPath(key).as_posix(): mtime
+                            for key, mtime in loaded.items()
+                        }
             except (OSError, json.JSONDecodeError):
                 pass
 
@@ -96,7 +102,7 @@ class BackgroundChangeDetector:
                     continue
 
                 try:
-                    rel_path = str(file_path.relative_to(self.workspace_root))
+                    rel_path = file_path.relative_to(self.workspace_root).as_posix()
                     mtime = file_path.stat().st_mtime
 
                     snapshot[rel_path] = mtime
