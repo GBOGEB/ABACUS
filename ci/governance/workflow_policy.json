@@ -380,6 +380,18 @@
       "cluster": "core_test",
       "lifecycle": "pr_fast",
       "disposition": "keep"
+    },
+    {
+      "pattern": "^code-purple-sut-gui\\.yml$",
+      "cluster": "runtime_governance",
+      "lifecycle": "pr_domain",
+      "disposition": "keep"
+    },
+    {
+      "pattern": "^missioncontrol-issue-burndown\\.yml$",
+      "cluster": "runtime_governance",
+      "lifecycle": "pr_domain",
+      "disposition": "keep"
     }
   ],
   "quality_gates": {

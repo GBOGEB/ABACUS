@@ -18,7 +18,7 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 5
     steps:
-      - uses: actions/checkout@v7
+      - uses: actions/checkout@v7.0.1
       - name: Assert no-input consumer remains fail-closed
         run: |
           env -u CODEX_QPS_DEBUG_BINDING_JSON \
@@ -64,7 +64,7 @@ jobs:
           assert p['authority_guards']['formal_engineering_credit_delta'] == 0
           assert p['authority_guards']['negotiation_credit_delta'] == 0
           PY
-      - uses: actions/upload-artifact@v7
+      - uses: actions/upload-artifact@v7.0.2
         with:
           name: qps-debug-dow-actual-w1f-binding
           path: runtime/federation/generated/qps_debug_dow_binding.json
@@ -79,7 +79,7 @@ jobs:
       CODEX_QPS_DEBUG_BINDING_JSON: >-
         ${{ toJson(github.event.client_payload.binding) }}
     steps:
-      - uses: actions/checkout@v7
+      - uses: actions/checkout@v7.0.1
       - name: Consume actual CODEX KEB binding
         run: python3 runtime/federation/qps_debug_dow_consumer.py
       - name: Enforce exact accepted binding before child eligibility
@@ -100,7 +100,7 @@ jobs:
               assert p['checks']['adapter_surface_ready'] is True, p
               assert p['checks']['repo_local_runner_recovered'] is False, p
           PY
-      - uses: actions/upload-artifact@v7
+      - uses: actions/upload-artifact@v7.0.2
         with:
           name: qps-debug-dow-binding
           path: runtime/federation/generated/qps_debug_dow_binding.json

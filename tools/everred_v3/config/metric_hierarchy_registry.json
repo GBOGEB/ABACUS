@@ -1,0 +1,290 @@
+{
+  "schema": "abacus.everred.metric-hierarchy-registry.v1",
+  "version": "2026-10-17-N1",
+  "authority": "observational_only",
+  "canonical": {
+    "execution_plan": "tools/everred_v3/config/workflow-groups.yaml",
+    "existing_metric_engine": "tools/everred_v3/src/metrics.py",
+    "bd_ledger": "https://github.com/GBOGEB/ABACUS/issues/1929",
+    "admission_register": "https://github.com/GBOGEB/ABACUS/issues/1860",
+    "coverage_temporal_owner_pr": 2106,
+    "matched_coverage_owner_pr": 2113
+  },
+  "identity_keys": [
+    "repository",
+    "source_sha",
+    "source_sha256",
+    "scope_id",
+    "population_id",
+    "tool_version",
+    "config_digest",
+    "clock_kind",
+    "N",
+    "run_id",
+    "run_attempt",
+    "job_id",
+    "artifact_digest"
+  ],
+  "clocks": [
+    "pulse_N",
+    "wall_seconds",
+    "workflow_run_sequence",
+    "release_version"
+  ],
+  "metrics": [
+    {
+      "id": "coverage",
+      "estimator": "k_N/d_N",
+      "units": "eligible fraction",
+      "minimum_population": 1
+    },
+    {
+      "id": "velocity",
+      "estimator": "(C_N-C_(N-1))/delta_N",
+      "units": "fraction/clock",
+      "minimum_matched_points": 2
+    },
+    {
+      "id": "acceleration",
+      "estimator": "(v_N-v_(N-1))/delta_N",
+      "units": "fraction/clock^2",
+      "minimum_matched_points": 3
+    },
+    {
+      "id": "yield",
+      "estimator": "delta_accepted_quality/resource",
+      "units": "accepted units/resource",
+      "required_evidence": "independent acceptance"
+    },
+    {
+      "id": "stability",
+      "estimator": "rolling MAD and variance",
+      "units": "fraction",
+      "window_max": 20,
+      "minimum_matched_points": 3
+    },
+    {
+      "id": "repeatability",
+      "estimator": "identical terminal-state transitions/eligible transitions",
+      "units": "fraction",
+      "minimum_matched_points": 2
+    },
+    {
+      "id": "root_leverage",
+      "estimator": "cardinality(verified distinct blocked consumer PRs)",
+      "units": "PR/root",
+      "required_evidence": "confirmed source-bound root"
+    },
+    {
+      "id": "saturation",
+      "estimator": "delta covered items/delta new tests",
+      "units": "covered items/test",
+      "required_evidence": "same source and denominator"
+    },
+    {
+      "id": "forecast_error",
+      "estimator": "actual_N - pred_(N|N-1)",
+      "units": "target quantity",
+      "required_evidence": "prediction frozen before target N"
+    }
+  ],
+  "dimensions": [
+    "federation",
+    "repository",
+    "branch_or_PR",
+    "module_or_pipeline",
+    "run_attempt",
+    "job",
+    "test_or_finding"
+  ],
+  "rollup_rules": {
+    "fractions": "sum qualified numerator and denominator before division",
+    "source_sets": "deduplicate native identities",
+    "hard_gates": "logical AND, never weighted",
+    "null": "UNKNOWN not zero",
+    "uncorrelated_families_only": true,
+    "forbidden_overlap": [
+      [
+        "MIP.B0",
+        "MIP.B1"
+      ]
+    ]
+  },
+  "b_family": [
+    {
+      "id": "MIP.B0",
+      "type": "native_ci",
+      "meaning": "B0 canonical coverage, test evidence, DAB and admission join",
+      "importance": "CRITICAL",
+      "evidence_state": "NATIVE_SAMPLE",
+      "job_name": "MIP B0 Test Admission and Coverage Evidence",
+      "parent": null
+    },
+    {
+      "id": "MIP.B1",
+      "type": "native_ci_child",
+      "meaning": "False-green census nested inside MIP.B0",
+      "importance": "CRITICAL",
+      "evidence_state": "NATIVE_SAMPLE",
+      "job_name": "B1 false-green census",
+      "parent": "MIP.B0"
+    },
+    {
+      "id": "BANDIT.B1",
+      "type": "security_intake",
+      "meaning": "Full and configured security census producer",
+      "importance": "CRITICAL",
+      "evidence_state": "HISTORICAL_CONFIGURED_NOT_EXECUTION_PROVEN",
+      "job_name": null,
+      "parent": null
+    },
+    {
+      "id": "BANDIT.B2",
+      "type": "security_owner",
+      "meaning": "Other production-source findings",
+      "importance": "HIGH",
+      "evidence_state": "HISTORICAL_FULL_CENSUS",
+      "job_name": null,
+      "parent": null
+    },
+    {
+      "id": "BANDIT.B3",
+      "type": "security_owner",
+      "meaning": "Subprocess and command execution findings",
+      "importance": "CRITICAL",
+      "evidence_state": "HISTORICAL_FULL_CENSUS",
+      "job_name": null,
+      "parent": null
+    },
+    {
+      "id": "BANDIT.B4",
+      "type": "security_owner",
+      "meaning": "Files, permissions and secrets findings",
+      "importance": "CRITICAL",
+      "evidence_state": "HISTORICAL_FULL_CENSUS",
+      "job_name": null,
+      "parent": null
+    },
+    {
+      "id": "BANDIT.B5",
+      "type": "security_owner",
+      "meaning": "Test infrastructure findings",
+      "importance": "HIGH",
+      "evidence_state": "HISTORICAL_FULL_CENSUS",
+      "job_name": null,
+      "parent": null
+    },
+    {
+      "id": "BANDIT.B6",
+      "type": "evidence_aggregator",
+      "meaning": "Mission Control read-only owner/fingerprint evidence fan-in",
+      "importance": "HIGH",
+      "evidence_state": "CONFIGURED_NOT_VERIFIED",
+      "job_name": null,
+      "parent": null
+    },
+    {
+      "id": "COVERAGE.B9",
+      "type": "coverage_gate",
+      "meaning": "Changed-line coverage floor in ABACUS matrix",
+      "importance": "CRITICAL",
+      "evidence_state": "NATIVE_PER_HEAD_OUTCOME_UNKNOWN",
+      "job_name": null,
+      "parent": null
+    }
+  ],
+  "objectives": [
+    {
+      "id": "qualified_evidence_readiness",
+      "meaning": "Completeness and trustworthiness of independently verified proof",
+      "weights": {
+        "native_integrity": 0.3,
+        "matched_coverage": 0.25,
+        "independent_security": 0.2,
+        "governance": 0.15,
+        "repeatability": 0.1
+      },
+      "hard_gates": [
+        "P0",
+        "A10",
+        "SECURITY",
+        "GOVERNANCE",
+        "REVIEW",
+        "EXACT_HEAD"
+      ],
+      "status": "UNSCORED"
+    },
+    {
+      "id": "fanout_root_return",
+      "meaning": "Verified distinct consumer relief per controlled cost",
+      "weights": {
+        "accepted_consumer_clears": 0.35,
+        "verified_risk_reduction": 0.3,
+        "recurrence_reduction": 0.2,
+        "execution_efficiency": 0.15
+      },
+      "hard_gates": [
+        "CONFIRMED_ROOT",
+        "SOURCE_OWNER",
+        "EXACT_HEAD"
+      ],
+      "status": "UNSCORED"
+    },
+    {
+      "id": "temporal_reliability",
+      "meaning": "Stable and calibrated behavior over matched N20 observations",
+      "weights": {
+        "transition_persistence": 0.3,
+        "normalized_MAD": 0.25,
+        "queue_reliability": 0.25,
+        "forecast_calibration": 0.2
+      },
+      "hard_gates": [
+        "MATCHED_N20",
+        "IMMUTABLE_FORECAST"
+      ],
+      "status": "UNSCORED"
+    }
+  ],
+  "observed_sample": {
+    "status": "NON_RANDOM_BOUNDED_SAMPLE",
+    "snapshot_date": "2026-10-17",
+    "source_main_sha": "54da377cf82a358ac97903ecde0270c975b8fcc1",
+    "pr_heads": 15,
+    "b0_observed_runs": 14,
+    "b0_success": 13,
+    "b0_failure": 1,
+    "b1_success": 14,
+    "b1_terminal": 14,
+    "b0_jobs_success": 180,
+    "b0_jobs_total": 182,
+    "named_workflow_observations": 395,
+    "latest_b0_run": 39029698384,
+    "latest_b0_pr_head": "ce2a867deedd4b8649e4607d7fc59b2923cb3cc1",
+    "sample_coverage_of_fleet": null
+  },
+  "historical_bandit": {
+    "source_sha": "03ddd8db94fd84d06bb8fd7257e2845659d858c0",
+    "run_id": 38539036478,
+    "artifact_id": 11881129870,
+    "full_findings": 6393,
+    "configured_findings": 3,
+    "full_lanes": {
+      "BANDIT.B2": 0,
+      "BANDIT.B3": 267,
+      "BANDIT.B4": 176,
+      "BANDIT.B5": 5950
+    },
+    "source_date": "2026-10-14",
+    "native_worker_dispatch_receipts": null
+  },
+  "current": {
+    "accepted_main_coverage_delta": null,
+    "accepted_diff_coverage_delta": null,
+    "formal_roots_closed": null,
+    "authenticated_Crew_launches": null
+  },
+  "authority_transfer": false,
+  "security_waiver": false,
+  "merge_admission": "HOLD"
+}
