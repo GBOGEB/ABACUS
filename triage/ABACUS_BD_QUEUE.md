@@ -40,7 +40,7 @@ speed; the 30+ day external programme blockers remain nine.
 
 ### Engineering next admissible actions
 
-1. **#1885:** Source-owned [PR #2164](../pull/2164)
+1. **#1885:** Source-owned [PR #2164][pr2164]
    targets five more recent dashboard href manifestations:
    unpublished MYRRHA (2), absent Contract Baseline (1),
    W007 runtime-generated evidence (1), JS dynamic false
@@ -60,6 +60,8 @@ speed; the 30+ day external programme blockers remain nine.
 **Append-only machine pulse:**
 [ABACUS BD P2 receipt](ABACUS_BD_PULSE2_20261017.json).
 The preceding October and September sections remain intact.
+
+[pr2164]: https://github.com/GBOGEB/ABACUS/pull/2164
 
 ## Previous October census (retained for temporal lineage)
 
