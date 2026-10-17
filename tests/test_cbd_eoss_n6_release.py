@@ -10,10 +10,27 @@ import pytest
 
 from scripts import cbd_eoss_n6_release as out
 from scripts import cbd_eoss_trajectory as trajectory
-from test_cbd_eoss_trajectory import snapshot
+# Pytest importlib collection does not guarantee the tests directory is on sys.path.
+# Load the sibling regression fixture from its checkout-bound path, fail closed.
+import importlib.util
+
+_fixture_path = Path(__file__).with_name("test_cbd_eoss_trajectory.py")
+_fixture_spec = importlib.util.spec_from_file_location(
+    "_cbd_eoss_trajectory_fixture", _fixture_path
+)
+if _fixture_spec is None or _fixture_spec.loader is None:
+    raise ImportError(f"Unable to bind sibling fixture: {_fixture_path}")
+_fixture_module = importlib.util.module_from_spec(_fixture_spec)
+_fixture_spec.loader.exec_module(_fixture_module)
+snapshot = _fixture_module.snapshot
 
 TEMPLATE = Path(__file__).resolve().parents[1] / "scripts" / "cbd_eoss_n6_template.html"
 SHA = "21ac90604f36e70b64bd0539272e8982a747ec75"
+
+
+def test_sibling_snapshot_is_loaded_from_checkout_bound_file():
+    """The release test does not depend on pytest sys.path import mode."""
+    assert Path(snapshot.__code__.co_filename).resolve() == _fixture_path.resolve()
 
 
 def input_data():
