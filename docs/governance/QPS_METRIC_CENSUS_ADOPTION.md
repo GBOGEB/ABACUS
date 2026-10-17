@@ -1,19 +1,39 @@
 # QPS Metric Census — ABACUS
 
-**Status:** draft adoption; not enabled on the default branch until separately admitted and merged.
+**Status:** Adoption PR; receiver is not yet on the default branch.
 
 - Repository: `GBOGEB/ABACUS`
 - Lane: `ABACUS`
-- Engineering/test scope: Python compatibility, CI first-red taxonomy, unit and branch coverage evidence
-- Toolkit reference: `GBOGEB/pipeline-automation-hub@dd606d8897c70fa797a3a585fa12850bacd1d9e1` (immutable pilot pin; renew after canonical promotion)
-- Receives manually approved `workflow_dispatch` or opt-in `repository_dispatch` event `qps-metric-census-v1`.
-- Routes: `native_checks`, `coverage_catalog`. Both are bounded read-only DAG jobs; never execute arbitrary dispatch payload commands.
-- Each request binds `wave + lane + repository + expected source SHA + selector` to an ID; stale or mismatched heads fail closed.
-- Machine-readable receipts contain execution SHA, target SHA, run ID, attempt, job ID and observed metadata; **tests/coverage remain UNKNOWN** until independently attested by native test/coverage jobs.
-- Check names are not accepted causal-root IDs, and test-file counts are **not tests executed**.
-- Permissions: `contents:read`, `actions:read`. No merge, security waiver, branch protection change, code mutation or owner acceptance.
-- Consumer: Mission Control Metric Atlas `tools/metric-atlas/metric_atlas/census.py`. See [federation owner](https://github.com/GBOGEB/pipeline-automation-hub/pull/622) and ABACUS root census [#2079](https://github.com/GBOGEB/ABACUS/issues/2079).
+- Scope: Python compatibility, first-red taxonomy, unit-test and
+  control-flow branch-coverage evidence
+- Toolkit: immutable Mission Control commit
+  `dd606d8897c70fa797a3a585fa12850bacd1d9e1`
+- Entry points: approved `workflow_dispatch` or opt-in
+  `repository_dispatch` event `qps-metric-census-v1`
+- DAG routes: `native_checks` and `coverage_catalog`; both read-only
+- Request identity: wave, lane, repository, expected SHA, selector and ID
+- Fail-closed rule: stale or mismatched source heads are rejected
+- Receipts: execution SHA, target SHA, run ID, attempt, job ID and metadata
+- Native tests and coverage: UNKNOWN until independent log/artifact proof
+- First-red: matching job names are not causal-root evidence
+- Test-file counts do not count as executed tests
+- Token permissions: `contents: read`, `actions: read`, `checks: read`
+- No authority to merge, waive security, relax rules or accept engineering
 
-## DoD / DoV
+Mission Control [Metric Atlas owner][atlas] and ABACUS
+[root census owner][root-census] retain their separate responsibilities.
 
-DoD: owner-source PR review + unchanged repository-required gates; validator first passes negative tests and can create source-bound metadata receipt from a real run. DoV: one observed receiver workflow per requested route at the intended source SHA, independently inspected artifact ZIP/member bytes, and a correct federation rollup. A receiver passing does **not** establish domain-specific acceptance, security approval, coverage improvement or merge eligibility.
+[atlas]: https://github.com/GBOGEB/pipeline-automation-hub/pull/622
+[root-census]: https://github.com/GBOGEB/ABACUS/issues/2079
+
+## Definition of Done / Verification
+
+**DoD:** Repository owner review and all existing required checks.
+Negative tests must pass and a real run must emit source-bound metadata.
+
+**DoV:** Observe each requested route at the intended source SHA.
+Inspect native run/job/attempt and actual ZIP/member bytes independently.
+Produce an identity-validated federation roll-up.
+
+A passing census receiver is not domain acceptance, security approval,
+coverage improvement, or merge authorization.
