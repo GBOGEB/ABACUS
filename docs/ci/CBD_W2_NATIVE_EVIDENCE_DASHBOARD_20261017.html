@@ -1,0 +1,63 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>CODE PURPLE | CBD Native Burndown Evidence</title><style>
+:root{color-scheme:light dark;font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
+body{max-width:1150px;margin:auto;padding:28px 24px;line-height:1.55;background:#0f1927;color:#e8f0ff}
+a{color:#7cbbff}h1{font-size:clamp(1.6rem,4vw,2.7rem);margin:.15rem 0}h2{margin-top:2rem;font-size:1.22rem}
+.eyebrow{letter-spacing:.13em;text-transform:uppercase;font-size:.77rem;color:#93acbf}.muted{color:#adbdcb;font-size:.91rem}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:12px;margin:24px 0}
+.tile{background:#1a2b3e;border:1px solid #324b64;border-radius:12px;padding:18px}
+.big{font-size:2.1rem;font-weight:750;line-height:1.1}.lab{color:#b4c4d3;font-size:.83rem;margin-top:7px}
+section{background:#152437;border:1px solid #31455c;border-radius:12px;padding:20px;margin-top:16px}
+table{border-collapse:collapse;width:100%}td,th{padding:10px;border-bottom:1px solid #2b415a;text-align:left}th{font-size:.8rem;color:#b4c4d3}
+.num{text-align:right;font-variant-numeric:tabular-nums;font-weight:700}.track{width:100%;max-width:270px;background:#293c54;height:11px;border-radius:999px}
+.track span{height:11px;display:block;border-radius:999px;background:#7cbbff}
+.pulse{display:flex;flex-wrap:wrap;align-items:center;gap:12px}.pulse>div{background:#23364b;padding:10px 16px;border-radius:9px}
+.warn{border-left:4px solid #f7bc65;padding:10px 16px;background:#332a22}.code{font-family:ui-monospace,monospace;overflow-wrap:anywhere}
+small{color:#afc0ce}footer{margin:30px 0;font-size:.8rem;color:#9cb2c5}
+</style></head><body>
+<div class="eyebrow">CODE PURPLE · EVERRED · MIP · CBD! · W+2 Native Evidence Checkpoint</div>
+<h1>Failed-workflow burndown, source bound</h1>
+<p class="muted">Frozen multi-PR cohort with latest-attempt GitHub run/job readback. Not a fleet census or a merge-admission decision.</p>
+<div class="grid">
+<div class="tile"><div class="big">78</div><div class="lab">Declared failure rows</div></div>
+<div class="tile"><div class="big">66</div><div class="lab">Unique native run IDs</div></div>
+<div class="tile"><div class="big">64 / 66</div><div class="lab">Observed first failed steps</div></div>
+<div class="tile"><div class="big">13</div><div class="lab">Matching Matplotlib first-red logs</div></div>
+<div class="tile"><div class="big">125</div><div class="lab">Failed jobs in latest attempts</div></div>
+<div class="tile"><div class="big">0</div><div class="lab">Accepted causal-root closures</div></div></div>
+<section><h2>Three ingestion pulses — cumulative source reach, not temporal recovery</h2>
+<div class="pulse"><div><strong>Input 0</strong><br>12 rows · 12 unique runs · 6 PRs</div><span>→</span>
+<div><strong>Input 1</strong><br>49 rows · 37 unique runs · 12 PRs</div><span>→</span>
+<div><strong>Input 2</strong><br>78 rows · 66 unique runs · 19 failing PRs</div></div>
+<p class="muted">12 aliases were removed, not falsely credited as closures. The 20-head manifest also includes #2033 with zero observed failures.</p></section>
+<section><h2>Native evidence quality</h2><div class="grid">
+<div class="tile"><div class="big">66 / 66</div><div class="lab">Run metadata and latest jobsets inspected</div></div>
+<div class="tile"><div class="big">63 / 66</div><div class="lab">Latest attempts terminal failed</div></div>
+<div class="tile"><div class="big">23 / 66</div><div class="lab">First-red job logs sampled</div></div>
+<div class="tile"><div class="big">18 / 20</div><div class="lab">Sampled PR heads still match</div></div></div>
+<p>Three latest attempts are nonterminal; source-locked head mismatches: #2080 and #2033. Independent code coverage remains <strong>unmeasured for this cohort</strong>.</p></section>
+<section><h2>Failed-step symptom distribution</h2><table><thead><tr><th>Earliest observed failed step</th><th class="num">Runs</th><th>Relative frequency</th></tr></thead><tbody><tr><td>Fail closed on governance red</td><td class="num">11</td><td><div class="track"><span style="width:100.0%"></span></div></td></tr>
+<tr><td>Enforce security red roots</td><td class="num">10</td><td><div class="track"><span style="width:90.9%"></span></div></td></tr>
+<tr><td>Install canonical dependencies</td><td class="num">8</td><td><div class="track"><span style="width:72.7%"></span></div></td></tr>
+<tr><td>Install tooling</td><td class="num">5</td><td><div class="track"><span style="width:45.5%"></span></div></td></tr>
+<tr><td>PR new-debt ratchet (Bandit)</td><td class="num">3</td><td><div class="track"><span style="width:27.3%"></span></div></td></tr>
+<tr><td>Validate changed docs</td><td class="num">3</td><td><div class="track"><span style="width:27.3%"></span></div></td></tr>
+<tr><td>NO_TERMINAL_FAILED_STEP</td><td class="num">2</td><td><div class="track"><span style="width:18.2%"></span></div></td></tr>
+<tr><td>Tender guard (new or changed files only)</td><td class="num">2</td><td><div class="track"><span style="width:18.2%"></span></div></td></tr>
+<tr><td>Generate governance inventory as evidence</td><td class="num">2</td><td><div class="track"><span style="width:18.2%"></span></div></td></tr>
+<tr><td>Enforce code-quality red roots</td><td class="num">2</td><td><div class="track"><span style="width:18.2%"></span></div></td></tr>
+<tr><td>Install dependencies</td><td class="num">2</td><td><div class="track"><span style="width:18.2%"></span></div></td></tr>
+<tr><td>Check committed governance inventory</td><td class="num">1</td><td><div class="track"><span style="width:9.1%"></span></div></td></tr></tbody></table>
+<p class="muted">A failed step is not a causal root. Ordering uses native completion timestamps from the selected latest attempt.</p></section>
+<section><h2>Confirmed shared first-red signature</h2>
+<p><strong>Matplotlib dependency resolver — 13 first-red logs across 8 PRs.</strong> Each sampled failed job includes the incompatible <span class="code">matplotlib&gt;=3.11.2</span> requirement for its Python 3.10 dependency installation lane. Source-owner candidate: <a href="https://github.com/GBOGEB/ABACUS/pull/2026">#2026</a>. No fleet closure credited until exact-head integrated CI verifies the source fix.</p>
+<p>Affected PRs: <a href="https://github.com/GBOGEB/ABACUS/pull/2027">#2027</a> · <a href="https://github.com/GBOGEB/ABACUS/pull/2037">#2037</a> · <a href="https://github.com/GBOGEB/ABACUS/pull/2039">#2039</a> · <a href="https://github.com/GBOGEB/ABACUS/pull/2041">#2041</a> · <a href="https://github.com/GBOGEB/ABACUS/pull/2072">#2072</a> · <a href="https://github.com/GBOGEB/ABACUS/pull/2074">#2074</a> · <a href="https://github.com/GBOGEB/ABACUS/pull/2075">#2075</a> · <a href="https://github.com/GBOGEB/ABACUS/pull/2080">#2080</a>.</p></section>
+<section><h2>Canonical DAG & SIPOC</h2>
+<p class="code">Frozen cohort → native workflow run + attempt → matching job SHA → earliest failed step → sampled log signature → source owner / path lease → exact-head integration retest → independent admission</p>
+<p>Supplier: GitHub Actions and source owners. Inputs: SHA, run, attempt, job, step and log. Process: classify → deduplicate → attribute → repair → verify. Output: evidence receipt and disjoint repair queue. Customer: <a href="https://github.com/GBOGEB/ABACUS/issues/1929">BD–LDAB canonical ledger #1929</a>.</p>
+<p class="warn"><strong>HOLD:</strong> 14-package admission remains blocked pending native source repair, broad and changed-line coverage, independent security, governance and review. No security waiver, merge or human approval is inferred.</p></section>
+<section><h2>Source receipts and next owner actions</h2><p><a href="https://github.com/GBOGEB/ABACUS/pull/2092#issuecomment-6232367720">Frozen native evidence comment</a> · <a href="https://github.com/GBOGEB/ABACUS/pull/2092">Stacked CBD PR #2092</a> · <a href="https://github.com/GBOGEB/ABACUS/pull/2090">Planner #2090</a></p>
+<p>Next: verify #2092 Python 3.10/3.12 focused testflight; source-bound join of #2026 into a disjoint integration head; then rerun the affected matrix and code coverage. Do not rerun 66 independent jobs to resolve one shared dependency root.</p></section>
+<footer>Observed provenance ref <span class="code">383bee110b5f51ec933a7cfd3fd8e7359c5c9c90</span>. Commit-bound snapshot generated without granting merge/admission authority. Non-atomic sample: rates are not fleet health claims.</footer>
+<script type="application/json" id="cbd-summary">{"declared_source_rows":78,"unique_runs":66,"aliases":12,"manifest_prs":20,"prs_with_failed_associations":19,"heads_matching":18,"heads_stale":[2080,2033],"native_latest_failure":63,"latest_nonterminal":3,"fully_aligned_jobsets":66,"failed_jobs":125,"failed_steps":135,"observed_first_failed_step":64,"downloaded_logs":23,"matplotlib_signature_runs":13,"matplotlib_affected_prs":[2027,2037,2039,2041,2072,2074,2075,2080],"accepted_closed_roots":0,"validated_main_coverage_delta":null}</script></body></html>

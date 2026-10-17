@@ -1,0 +1,3029 @@
+{
+  "schema": "cbd.native-triage-dashboard-snapshot.v1",
+  "repository": "GBOGEB/ABACUS",
+  "source_ref": "383bee110b5f51ec933a7cfd3fd8e7359c5c9c90",
+  "checkpoint_pr": 2092,
+  "checkpoint_parent_sha": "7a452e2bc17f08edef8912a251308b67187601c9",
+  "observation_scope": "NONATOMIC_FROZEN_COHORT_AND_LATEST_RUN_ATTEMPTS",
+  "authoritative_owner": "https://github.com/GBOGEB/ABACUS/issues/1929",
+  "raw_native_evidence_comment": "https://github.com/GBOGEB/ABACUS/pull/2092#issuecomment-6232367720",
+  "metrics": {
+    "declared_source_rows": 78,
+    "unique_runs": 66,
+    "aliases": 12,
+    "manifest_prs": 20,
+    "prs_with_failed_associations": 19,
+    "heads_matching": 18,
+    "heads_stale": [
+      2080,
+      2033
+    ],
+    "native_latest_failure": 63,
+    "latest_nonterminal": 3,
+    "fully_aligned_jobsets": 66,
+    "failed_jobs": 125,
+    "failed_steps": 135,
+    "observed_first_failed_step": 64,
+    "downloaded_logs": 23,
+    "matplotlib_signature_runs": 13,
+    "matplotlib_affected_prs": [
+      2027,
+      2037,
+      2039,
+      2041,
+      2072,
+      2074,
+      2075,
+      2080
+    ],
+    "accepted_closed_roots": 0,
+    "validated_main_coverage_delta": null
+  },
+  "head_readbacks": [
+    {
+      "pr": 2083,
+      "source_sha": "88d33855dd7a486fa0ca49b9f2c8c7687e5dd782",
+      "current_sha": "88d33855dd7a486fa0ca49b9f2c8c7687e5dd782",
+      "head_matches": true,
+      "declared_workflows": 28,
+      "declared_failed": 2,
+      "github_state": "open",
+      "changed_at": "2026-10-16T19:58:30Z"
+    },
+    {
+      "pr": 2082,
+      "source_sha": "0b02071aa6e8e80ad9870b69d32348c0945feaf6",
+      "current_sha": "0b02071aa6e8e80ad9870b69d32348c0945feaf6",
+      "head_matches": true,
+      "declared_workflows": 27,
+      "declared_failed": 3,
+      "github_state": "open",
+      "changed_at": "2026-10-16T19:52:48Z"
+    },
+    {
+      "pr": 2080,
+      "source_sha": "db5d8c2c5da6abd27ea0872f3de1a0356d8928a0",
+      "current_sha": "c179c91a5f8e39b7a9486e039030ac2c8ce8204a",
+      "head_matches": false,
+      "declared_workflows": 22,
+      "declared_failed": 4,
+      "github_state": "open",
+      "changed_at": "2026-10-17T09:33:08Z"
+    },
+    {
+      "pr": 2077,
+      "source_sha": "133e5a082f74dd99a65bfda5308d7071523904d1",
+      "current_sha": "133e5a082f74dd99a65bfda5308d7071523904d1",
+      "head_matches": true,
+      "declared_workflows": 28,
+      "declared_failed": 5,
+      "github_state": "open",
+      "changed_at": "2026-10-16T20:29:04Z"
+    },
+    {
+      "pr": 2076,
+      "source_sha": "7a382b1788d3b692ae4714f9079ddab93c907fa3",
+      "current_sha": "7a382b1788d3b692ae4714f9079ddab93c907fa3",
+      "head_matches": true,
+      "declared_workflows": 29,
+      "declared_failed": 2,
+      "github_state": "open",
+      "changed_at": "2026-10-16T20:46:21Z"
+    },
+    {
+      "pr": 2075,
+      "source_sha": "f29c870e2395d2fc45ec25ab82a5a4894c9f4b51",
+      "current_sha": "f29c870e2395d2fc45ec25ab82a5a4894c9f4b51",
+      "head_matches": true,
+      "declared_workflows": 52,
+      "declared_failed": 12,
+      "github_state": "open",
+      "changed_at": "2026-10-16T18:08:23Z"
+    },
+    {
+      "pr": 2074,
+      "source_sha": "f0899e165239de76c1002c23342c6701222ea218",
+      "current_sha": "f0899e165239de76c1002c23342c6701222ea218",
+      "head_matches": true,
+      "declared_workflows": 15,
+      "declared_failed": 2,
+      "github_state": "open",
+      "changed_at": "2026-10-16T17:54:43Z"
+    },
+    {
+      "pr": 2073,
+      "source_sha": "fb22da447780b58827dca58a59c73707ef1d08bf",
+      "current_sha": "fb22da447780b58827dca58a59c73707ef1d08bf",
+      "head_matches": true,
+      "declared_workflows": 29,
+      "declared_failed": 2,
+      "github_state": "open",
+      "changed_at": "2026-10-16T18:39:11Z"
+    },
+    {
+      "pr": 2072,
+      "source_sha": "680f5ae0c7278e0dae548a505259800887c27138",
+      "current_sha": "680f5ae0c7278e0dae548a505259800887c27138",
+      "head_matches": true,
+      "declared_workflows": 20,
+      "declared_failed": 3,
+      "github_state": "open",
+      "changed_at": "2026-10-16T20:14:10Z"
+    },
+    {
+      "pr": 2070,
+      "source_sha": "9071de0f865ee4ce401aacfff0d214a37494d9e9",
+      "current_sha": "9071de0f865ee4ce401aacfff0d214a37494d9e9",
+      "head_matches": true,
+      "declared_workflows": 28,
+      "declared_failed": 2,
+      "github_state": "open",
+      "changed_at": "2026-10-16T19:28:04Z"
+    },
+    {
+      "pr": 2066,
+      "source_sha": "9c4a60bf1df84b73ff33b0d0aba5a92ed6ea9770",
+      "current_sha": "9c4a60bf1df84b73ff33b0d0aba5a92ed6ea9770",
+      "head_matches": true,
+      "declared_workflows": 28,
+      "declared_failed": 2,
+      "github_state": "open",
+      "changed_at": "2026-10-16T14:47:40Z"
+    },
+    {
+      "pr": 2057,
+      "source_sha": "cdea1ae2445911b27f1a1934dd93fbcaa847a321",
+      "current_sha": "cdea1ae2445911b27f1a1934dd93fbcaa847a321",
+      "head_matches": true,
+      "declared_workflows": 25,
+      "declared_failed": 1,
+      "github_state": "open",
+      "changed_at": "2026-10-16T15:01:13Z"
+    },
+    {
+      "pr": 2055,
+      "source_sha": "2b3bf584c783e8c8696f38ebf35b719ddc10fff2",
+      "current_sha": "2b3bf584c783e8c8696f38ebf35b719ddc10fff2",
+      "head_matches": true,
+      "declared_workflows": 31,
+      "declared_failed": 2,
+      "github_state": "open",
+      "changed_at": "2026-10-17T09:15:17Z"
+    },
+    {
+      "pr": 2054,
+      "source_sha": "8e1a39cdb56cc8ad7e019408b6870279f07fcd40",
+      "current_sha": "8e1a39cdb56cc8ad7e019408b6870279f07fcd40",
+      "head_matches": true,
+      "declared_workflows": 25,
+      "declared_failed": 7,
+      "github_state": "open",
+      "changed_at": "2026-10-16T12:53:41Z"
+    },
+    {
+      "pr": 2041,
+      "source_sha": "60d2a5640c997fc916285580b6de8a3d86c27c38",
+      "current_sha": "60d2a5640c997fc916285580b6de8a3d86c27c38",
+      "head_matches": true,
+      "declared_workflows": 24,
+      "declared_failed": 3,
+      "github_state": "open",
+      "changed_at": "2026-10-16T20:20:05Z"
+    },
+    {
+      "pr": 2039,
+      "source_sha": "23ad4b42ed1fdd0848e451c5e6f4e73038704e88",
+      "current_sha": "23ad4b42ed1fdd0848e451c5e6f4e73038704e88",
+      "head_matches": true,
+      "declared_workflows": 18,
+      "declared_failed": 4,
+      "github_state": "open",
+      "changed_at": "2026-10-16T18:32:56Z"
+    },
+    {
+      "pr": 2037,
+      "source_sha": "221457d449f1dfd9eda67766aebc97b71acfea6c",
+      "current_sha": "221457d449f1dfd9eda67766aebc97b71acfea6c",
+      "head_matches": true,
+      "declared_workflows": 23,
+      "declared_failed": 5,
+      "github_state": "open",
+      "changed_at": "2026-10-16T08:30:59Z"
+    },
+    {
+      "pr": 2033,
+      "source_sha": "1baba57c7af75afbbca9845725047ffd8d7a0966",
+      "current_sha": "483baebc56931b1b6f8fe30858fac092e6d6e9b0",
+      "head_matches": false,
+      "declared_workflows": 36,
+      "declared_failed": 0,
+      "github_state": "open",
+      "changed_at": "2026-10-17T09:34:18Z"
+    },
+    {
+      "pr": 2027,
+      "source_sha": "8cb4d742ad046ab688d691f4cc68c4171ad4308f",
+      "current_sha": "8cb4d742ad046ab688d691f4cc68c4171ad4308f",
+      "head_matches": true,
+      "declared_workflows": 18,
+      "declared_failed": 4,
+      "github_state": "open",
+      "changed_at": "2026-10-16T20:20:07Z"
+    },
+    {
+      "pr": 2026,
+      "source_sha": "0b64fe68a3f27f07dbb7797858d1f85253512df3",
+      "current_sha": "0b64fe68a3f27f07dbb7797858d1f85253512df3",
+      "head_matches": true,
+      "declared_workflows": 27,
+      "declared_failed": 1,
+      "github_state": "open",
+      "changed_at": "2026-10-16T20:20:12Z"
+    }
+  ],
+  "first_failed_step_buckets": [
+    [
+      "Fail closed on governance red",
+      11
+    ],
+    [
+      "Enforce security red roots",
+      10
+    ],
+    [
+      "Install canonical dependencies",
+      8
+    ],
+    [
+      "Install tooling",
+      5
+    ],
+    [
+      "PR new-debt ratchet (Bandit)",
+      3
+    ],
+    [
+      "Validate changed docs",
+      3
+    ],
+    [
+      "NO_TERMINAL_FAILED_STEP",
+      2
+    ],
+    [
+      "Tender guard (new or changed files only)",
+      2
+    ],
+    [
+      "Generate governance inventory as evidence",
+      2
+    ],
+    [
+      "Enforce code-quality red roots",
+      2
+    ],
+    [
+      "Install dependencies",
+      2
+    ],
+    [
+      "Check committed governance inventory",
+      1
+    ],
+    [
+      "Run pytest --benchmark-disable with coverage",
+      1
+    ],
+    [
+      "Execute Full Pipeline",
+      1
+    ],
+    [
+      "Run canonical exact-head coverage surface",
+      1
+    ],
+    [
+      "Run pytest --benchmark-disable -v -n auto --cov=. --cov-report=term-missing --cov-report=xml",
+      1
+    ],
+    [
+      "Run functional compatibility proof",
+      1
+    ],
+    [
+      "Check test coverage threshold",
+      1
+    ],
+    [
+      "Run full deployment cycle",
+      1
+    ],
+    [
+      "Checkout exact cryoplant child",
+      1
+    ],
+    [
+      "Generate exact workflow rationalisation candidate",
+      1
+    ],
+    [
+      "Execute W111 exact-payload DOW analysis",
+      1
+    ],
+    [
+      "Run actions/checkout@v7",
+      1
+    ],
+    [
+      "Verify committed Black and isort styles",
+      1
+    ],
+    [
+      "Install dev dependencies",
+      1
+    ],
+    [
+      "Upload SARIF to GitHub Security tab",
+      1
+    ],
+    [
+      "Upload to code-scanning",
+      1
+    ]
+  ],
+  "source_manifest_workflow_total_nonatomic": 533,
+  "source_manifest_failed_associations": 66,
+  "source_snapshot_rate_eligible": false,
+  "root_assessment": {
+    "kind": "CONFIRMED_LOG_SIGNATURE_NOT_CONFIRMED_REPAIR",
+    "signature": "MATPLOTLIB_PY310_RESOLVER",
+    "linked_owner_pr": 2026,
+    "first_red_runs": 13,
+    "affected_prs": [
+      2027,
+      2037,
+      2039,
+      2041,
+      2072,
+      2074,
+      2075,
+      2080
+    ],
+    "closure": 0
+  },
+  "authority": {
+    "merge_admission": "HOLD",
+    "security_waiver": false,
+    "independent_review": "NOT_VERIFIED",
+    "source_mutation_authorized": false
+  },
+  "run_evidence": [
+    {
+      "pr": 2026,
+      "source_sha": "0b64fe68a3f27f07dbb7797858d1f85253512df3",
+      "run_id": 38958986407,
+      "workflow": "CI/CD Test Suite",
+      "attempt": 4,
+      "head": "0b64fe68a3f27f07dbb7797858d1f85253512df3",
+      "event": "pull_request",
+      "native_workflow": "CI/CD Test Suite",
+      "result": null,
+      "pr_link": true,
+      "updated_at": "2026-10-17T09:36:13Z",
+      "authenticated": false,
+      "jobs": {
+        "jobs_returned": 18,
+        "jobs_reported": 18,
+        "provenance_aligned_jobs": 18,
+        "failed_jobs": 0,
+        "failed_steps": 0,
+        "first_failed_step": null,
+        "complete": true,
+        "job_attempt_verified": true
+      }
+    },
+    {
+      "pr": 2027,
+      "source_sha": "8cb4d742ad046ab688d691f4cc68c4171ad4308f",
+      "run_id": 38774624108,
+      "workflow": "CI Workflow Governance",
+      "attempt": 2,
+      "head": "8cb4d742ad046ab688d691f4cc68c4171ad4308f",
+      "event": "pull_request",
+      "native_workflow": "CI Workflow Governance",
+      "result": "failure",
+      "pr_link": true,
+      "updated_at": "2026-10-16T09:40:32Z",
+      "authenticated": true,
+      "jobs": {
+        "jobs_returned": 1,
+        "jobs_reported": 1,
+        "provenance_aligned_jobs": 1,
+        "failed_jobs": 1,
+        "failed_steps": 1,
+        "first_failed_step": {
+          "job_id": 116886921937,
+          "job_name": "policy-and-inventory",
+          "step_number": 9,
+          "step_name": "Fail closed on governance red",
+          "step_completed_at": "2026-10-16T09:40:27Z"
+        },
+        "complete": true,
+        "job_attempt_verified": true
+      },
+      "log_evidence": {
+        "job_id": 116886921937,
+        "lines": 912,
+        "excerpt": [
+          {
+            "line": 768,
+            "value": "2026-10-16T09:40:27.6197096Z ##[group]Run echo \"policy_outcome=$POLICY_OUTCOME\""
+          },
+          {
+            "line": 769,
+            "value": "2026-10-16T09:40:27.6197412Z echo \"policy_outcome=$POLICY_OUTCOME\""
+          },
+          {
+            "line": 771,
+            "value": "2026-10-16T09:40:27.6197954Z test \"$POLICY_OUTCOME\" = success"
+          },
+          {
+            "line": 781,
+            "value": "2026-10-16T09:40:27.6254678Z   POLICY_OUTCOME: failure"
+          },
+          {
+            "line": 785,
+            "value": "2026-10-16T09:40:27.6331675Z policy_outcome=failure"
+          },
+          {
+            "line": 787,
+            "value": "2026-10-16T09:40:27.6334501Z ##[error]Process completed with exit code 1."
+          },
+          {
+            "line": 825,
+            "value": "2026-10-16T09:40:27.7149184Z ##[debug]Set git useragent to: git/2.55.0 (github-actions-checkout) actions_orchestration_id/b74f6ac7-a7c6-8cee-a739-9c53c2cf5ac5.policy-and-inventory.__default"
+          },
+          {
+            "line": 911,
+            "value": "2026-10-16T09:40:27.8602177Z ##[debug]Finishing: policy-and-inventory"
+          }
+        ],
+        "signals": [],
+        "downloaded": true,
+        "causal_root_confirmed": false
+      }
+    },
+    {
+      "pr": 2027,
+      "source_sha": "8cb4d742ad046ab688d691f4cc68c4171ad4308f",
+      "run_id": 38774624124,
+      "workflow": "CI - ABACUS Matrix",
+      "attempt": 1,
+      "head": "8cb4d742ad046ab688d691f4cc68c4171ad4308f",
+      "event": "pull_request",
+      "native_workflow": "CI - ABACUS Matrix",
+      "result": "failure",
+      "pr_link": true,
+      "updated_at": "2026-10-15T17:27:58Z",
+      "authenticated": true,
+      "jobs": {
+        "jobs_returned": 8,
+        "jobs_reported": 8,
+        "provenance_aligned_jobs": 8,
+        "failed_jobs": 3,
+        "failed_steps": 3,
+        "first_failed_step": {
+          "job_id": 116560351210,
+          "job_name": "ABACUS - ubuntu-24.04 - Python 3.10",
+          "step_number": 6,
+          "step_name": "Install tooling",
+          "step_completed_at": "2026-10-15T17:18:32Z"
+        },
+        "complete": true,
+        "job_attempt_verified": true
+      },
+      "log_evidence": {
+        "job_id": 116560351210,
+        "lines": 915,
+        "excerpt": [
+          {
+            "line": 746,
+            "value": "2026-10-15T17:18:32.3960320Z ERROR: Could not find a version that satisfies the requirement matplotlib<4.0.0,>=3.11.2 (from versions: 0.86, 0.86.1, 0.86.2, 0.91.0, 0.91.1, 1.0.1, 1.1.0, 1.1.1, 1.2.0, 1.2.1, 1.3.0, 1.3.1, 1.4.0, 1.4.1rc1, 1.4.1, 1.4.2, 1.4.3, 1.5.0, 1.5.1, 1.5.2, 1.5.3, 2.0.0b1, 2.0.0b2, 2.0.0b3, 2.0.0b4, 2.0.0rc1, 2.0.0rc2, 2.0.0, "
+          },
+          {
+            "line": 747,
+            "value": "2026-10-15T17:18:32.3963290Z ERROR: No matching distribution found for matplotlib<4.0.0,>=3.11.2"
+          },
+          {
+            "line": 748,
+            "value": "2026-10-15T17:18:32.4476364Z ##[error]Process completed with exit code 1."
+          }
+        ],
+        "signals": [
+          "MATPLOTLIB_RESOLVER"
+        ],
+        "downloaded": true,
+        "causal_root_confirmed": false
+      }
+    },
+    {
+      "pr": 2027,
+      "source_sha": "8cb4d742ad046ab688d691f4cc68c4171ad4308f",
+      "run_id": 38774624178,
+      "workflow": "CI/CD Test Suite",
+      "attempt": 1,
+      "head": "8cb4d742ad046ab688d691f4cc68c4171ad4308f",
+      "event": "pull_request",
+      "native_workflow": "CI/CD Test Suite",
+      "result": "failure",
+      "pr_link": true,
+      "updated_at": "2026-10-15T17:40:28Z",
+      "authenticated": true,
+      "jobs": {
+        "jobs_returned": 19,
+        "jobs_reported": 19,
+        "provenance_aligned_jobs": 19,
+        "failed_jobs": 3,
+        "failed_steps": 3,
+        "first_failed_step": {
+          "job_id": 116558942054,
+          "job_name": "Security Scanning",
+          "step_number": 11,
+          "step_name": "Enforce security red roots",
+          "step_completed_at": "2026-10-15T17:15:16Z"
+        },
+        "complete": true,
+        "job_attempt_verified": true
+      },
+      "log_evidence": {
+        "job_id": 116558942054,
+        "lines": 657,
+        "excerpt": [
+          {
+            "line": 391,
+            "value": "2026-10-15T17:15:04.6230004Z [tester]\tWARNING\tnosec encountered (B603), but no failed test on file ./tests/test_a10_guard.py:178"
+          },
+          {
+            "line": 392,
+            "value": "2026-10-15T17:15:05.0400171Z [tester]\tWARNING\tnosec encountered (B607), but no failed test on file ./tests/test_ci_pr_debt_ratchet.py:20"
+          },
+          {
+            "line": 393,
+            "value": "2026-10-15T17:15:05.0401390Z [tester]\tWARNING\tnosec encountered (B603), but no failed test on file ./tests/test_ci_pr_debt_ratchet.py:20"
+          },
+          {
+            "line": 407,
+            "value": "2026-10-15T17:15:09.0760884Z ##[error]Process completed with exit code 1."
+          },
+          {
+            "line": 459,
+            "value": "2026-10-15T17:15:13.2624857Z ##[error]Process completed with exit code 64."
+          },
+          {
+            "line": 598,
+            "value": "2026-10-15T17:15:15.9939029Z     echo \"::error::Safety is red.\""
+          },
+          {
+            "line": 622,
+            "value": "2026-10-15T17:15:16.0107396Z ##[error]One or more security roots are red."
+          },
+          {
+            "line": 623,
+            "value": "2026-10-15T17:15:16.0108991Z ##[error]Process completed with exit code 1."
+          }
+        ],
+        "signals": [
+          "SAFETY_RED"
+        ],
+        "downloaded": true,
+        "causal_root_confirmed": false
+      }
+    },
+    {
+      "pr": 2027,
+      "source_sha": "8cb4d742ad046ab688d691f4cc68c4171ad4308f",
+      "run_id": 38774624432,
+      "workflow": "ABACUS v032 - CI/CD Pipeline",
+      "attempt": 1,
+      "head": "8cb4d742ad046ab688d691f4cc68c4171ad4308f",
+      "event": "pull_request",
+      "native_workflow": "ABACUS v032 - CI/CD Pipeline",
+      "result": "failure",
+      "pr_link": true,
+      "updated_at": "2026-10-15T17:26:39Z",
+      "authenticated": true,
+      "jobs": {
+        "jobs_returned": 6,
+        "jobs_reported": 6,
+        "provenance_aligned_jobs": 6,
+        "failed_jobs": 1,
+        "failed_steps": 1,
+        "first_failed_step": {
+          "job_id": 116563076181,
+          "job_name": "Test DMAIC Phases",
+          "step_number": 4,
+          "step_name": "Install canonical dependencies",
+          "step_completed_at": "2026-10-15T17:26:30Z"
+        },
+        "complete": true,
+        "job_attempt_verified": true
+      },
+      "log_evidence": {
+        "job_id": 116563076181,
+        "lines": 223,
+        "excerpt": [
+          {
+            "line": 187,
+            "value": "2026-10-15T17:26:30.5166285Z ERROR: Could not find a version that satisfies the requirement matplotlib<4.0.0,>=3.11.2 (from versions: 0.86, 0.86.1, 0.86.2, 0.91.0, 0.91.1, 1.0.1, 1.1.0, 1.1.1, 1.2.0, 1.2.1, 1.3.0, 1.3.1, 1.4.0, 1.4.1rc1, 1.4.1, 1.4.2, 1.4.3, 1.5.0, 1.5.1, 1.5.2, 1.5.3, 2.0.0b1, 2.0.0b2, 2.0.0b3, 2.0.0b4, 2.0.0rc1, 2.0.0rc2, 2.0.0, "
+          },
+          {
+            "line": 188,
+            "value": "2026-10-15T17:26:30.5170428Z ERROR: No matching distribution found for matplotlib<4.0.0,>=3.11.2"
+          },
+          {
+            "line": 189,
+            "value": "2026-10-15T17:26:30.5613043Z ##[error]Process completed with exit code 1."
+          }
+        ],
+        "signals": [
+          "MATPLOTLIB_RESOLVER"
+        ],
+        "downloaded": true,
+        "causal_root_confirmed": false
+      }
+    },
+    {
+      "pr": 2037,
+      "source_sha": "221457d449f1dfd9eda67766aebc97b71acfea6c",
+      "run_id": 38823726075,
+      "workflow": "CI/CD Test Suite",
+      "attempt": 1,
+      "head": "221457d449f1dfd9eda67766aebc97b71acfea6c",
+      "event": "pull_request",
+      "native_workflow": "CI/CD Test Suite",
+      "result": "failure",
+      "pr_link": true,
+      "updated_at": "2026-10-15T23:58:20Z",
+      "authenticated": true,
+      "jobs": {
+        "jobs_returned": 19,
+        "jobs_reported": 19,
+        "provenance_aligned_jobs": 19,
+        "failed_jobs": 2,
+        "failed_steps": 2,
+        "first_failed_step": {
+          "job_id": 116726156199,
+          "job_name": "Security Scanning",
+          "step_number": 11,
+          "step_name": "Enforce security red roots",
+          "step_completed_at": "2026-10-15T23:31:49Z"
+        },
+        "complete": true,
+        "job_attempt_verified": true
+      },
+      "log_evidence": {
+        "job_id": 116726156199,
+        "lines": 583,
+        "excerpt": [
+          {
+            "line": 354,
+            "value": "2026-10-15T23:31:39.0977957Z [tester]\tWARNING\tnosec encountered (B603), but no failed test on file ./tests/test_a10_guard.py:178"
+          },
+          {
+            "line": 355,
+            "value": "2026-10-15T23:31:39.4817331Z [tester]\tWARNING\tnosec encountered (B607), but no failed test on file ./tests/test_ci_pr_debt_ratchet.py:20"
+          },
+          {
+            "line": 356,
+            "value": "2026-10-15T23:31:39.4818350Z [tester]\tWARNING\tnosec encountered (B603), but no failed test on file ./tests/test_ci_pr_debt_ratchet.py:20"
+          },
+          {
+            "line": 370,
+            "value": "2026-10-15T23:31:43.2450747Z ##[error]Process completed with exit code 1."
+          },
+          {
+            "line": 389,
+            "value": "2026-10-15T23:31:46.9618560Z ##[error]Process completed with exit code 64."
+          },
+          {
+            "line": 524,
+            "value": "2026-10-15T23:31:49.0952243Z     echo \"::error::Safety is red.\""
+          },
+          {
+            "line": 548,
+            "value": "2026-10-15T23:31:49.1076199Z ##[error]Safety is red."
+          },
+          {
+            "line": 549,
+            "value": "2026-10-15T23:31:49.1078184Z ##[error]Process completed with exit code 1."
+          }
+        ],
+        "signals": [
+          "SAFETY_RED"
+        ],
+        "downloaded": true,
+        "causal_root_confirmed": false
+      }
+    },
+    {
+      "pr": 2037,
+      "source_sha": "221457d449f1dfd9eda67766aebc97b71acfea6c",
+      "run_id": 38823726146,
+      "workflow": "Bandit Disjoint Census",
+      "attempt": 1,
+      "head": "221457d449f1dfd9eda67766aebc97b71acfea6c",
+      "event": "pull_request",
+      "native_workflow": "Bandit Disjoint Census",
+      "result": "failure",
+      "pr_link": true,
+      "updated_at": "2026-10-15T23:33:16Z",
+      "authenticated": true,
+      "jobs": {
+        "jobs_returned": 1,
+        "jobs_reported": 1,
+        "provenance_aligned_jobs": 1,
+        "failed_jobs": 1,
+        "failed_steps": 1,
+        "first_failed_step": {
+          "job_id": 116726156409,
+          "job_name": "census",
+          "step_number": 8,
+          "step_name": "Check committed governance inventory",
+          "step_completed_at": "2026-10-15T23:33:12Z"
+        },
+        "complete": true,
+        "job_attempt_verified": true
+      }
+    },
+    {
+      "pr": 2037,
+      "source_sha": "221457d449f1dfd9eda67766aebc97b71acfea6c",
+      "run_id": 38823726196,
+      "workflow": "a10-guard",
+      "attempt": 1,
+      "head": "221457d449f1dfd9eda67766aebc97b71acfea6c",
+      "event": "pull_request",
+      "native_workflow": "a10-guard",
+      "result": "failure",
+      "pr_link": true,
+      "updated_at": "2026-10-15T23:32:35Z",
+      "authenticated": true,
+      "jobs": {
+        "jobs_returned": 1,
+        "jobs_reported": 1,
+        "provenance_aligned_jobs": 1,
+        "failed_jobs": 1,
+        "failed_steps": 1,
+        "first_failed_step": {
+          "job_id": 116726156464,
+          "job_name": "a10-guard",
+          "step_number": 4,
+          "step_name": "Tender guard (new or changed files only)",
+          "step_completed_at": "2026-10-15T23:32:33Z"
+        },
+        "complete": true,
+        "job_attempt_verified": true
+      },
+      "log_evidence": {
+        "job_id": 116726156464,
+        "lines": 709,
+        "excerpt": [
+          {
+            "line": 673,
+            "value": "2026-10-15T23:32:33.6854764Z   BLOCK  ci/governance/workflow_policy.json   (restricted term in content)"
+          },
+          {
+            "line": 675,
+            "value": "2026-10-15T23:32:33.6953107Z ##[error]Process completed with exit code 1."
+          }
+        ],
+        "signals": [
+          "A10_RESTRICTED_CONTENT"
+        ],
+        "downloaded": true,
+        "causal_root_confirmed": false
+      }
+    },
+    {
+      "pr": 2037,
+      "source_sha": "221457d449f1dfd9eda67766aebc97b71acfea6c",
+      "run_id": 38823726217,
+      "workflow": "CI Workflow Governance",
+      "attempt": 1,
+      "head": "221457d449f1dfd9eda67766aebc97b71acfea6c",
+      "event": "pull_request",
+      "native_workflow": "CI Workflow Governance",
+      "result": "failure",
+      "pr_link": true,
+      "updated_at": "2026-10-15T23:31:41Z",
+      "authenticated": true,
+      "jobs": {
+        "jobs_returned": 1,
+        "jobs_reported": 1,
+        "provenance_aligned_jobs": 1,
+        "failed_jobs": 1,
+        "failed_steps": 1,
+        "first_failed_step": {
+          "job_id": 116726156757,
+          "job_name": "policy-and-inventory",
+          "step_number": 9,
+          "step_name": "Fail closed on governance red",
+          "step_completed_at": "2026-10-15T23:31:39Z"
+        },
+        "complete": true,
+        "job_attempt_verified": true
+      },
+      "log_evidence": {
+        "job_id": 116726156757,
+        "lines": 423,
+        "excerpt": [
+          {
+            "line": 317,
+            "value": "2026-10-15T23:31:38.3802181Z CI governance failed: generated report is stale: docs/ci/WORKFLOW_RATIONALIZATION.md; rerun without --check to refresh it"
+          },
+          {
+            "line": 318,
+            "value": "2026-10-15T23:31:38.3862272Z ##[error]Process completed with exit code 1."
+          },
+          {
+            "line": 371,
+            "value": "2026-10-15T23:31:39.2624315Z ##[group]Run echo \"policy_outcome=$POLICY_OUTCOME\""
+          },
+          {
+            "line": 372,
+            "value": "2026-10-15T23:31:39.2624852Z echo \"policy_outcome=$POLICY_OUTCOME\""
+          },
+          {
+            "line": 374,
+            "value": "2026-10-15T23:31:39.2625849Z test \"$POLICY_OUTCOME\" = success"
+          },
+          {
+            "line": 384,
+            "value": "2026-10-15T23:31:39.2711853Z   POLICY_OUTCOME: success"
+          },
+          {
+            "line": 387,
+            "value": "2026-10-15T23:31:39.2815708Z policy_outcome=success"
+          },
+          {
+            "line": 389,
+            "value": "2026-10-15T23:31:39.2820055Z ##[error]Process completed with exit code 1."
+          }
+        ],
+        "signals": [],
+        "downloaded": true,
+        "causal_root_confirmed": false
+      }
+    },
+    {
+      "pr": 2037,
+      "source_sha": "221457d449f1dfd9eda67766aebc97b71acfea6c",
+      "run_id": 38823726315,
+      "workflow": "ABACUS v032 - CI/CD Pipeline",
+      "attempt": 1,
+      "head": "221457d449f1dfd9eda67766aebc97b71acfea6c",
+      "event": "pull_request",
+      "native_workflow": "ABACUS v032 - CI/CD Pipeline",
+      "result": "failure",
+      "pr_link": true,
+      "updated_at": "2026-10-15T23:41:32Z",
+      "authenticated": true,
+      "jobs": {
+        "jobs_returned": 6,
+        "jobs_reported": 6,
+        "provenance_aligned_jobs": 6,
+        "failed_jobs": 1,
+        "failed_steps": 1,
+        "first_failed_step": {
+          "job_id": 116727702534,
+          "job_name": "Test DMAIC Phases",
+          "step_number": 4,
+          "step_name": "Install canonical dependencies",
+          "step_completed_at": "2026-10-15T23:41:30Z"
+        },
+        "complete": true,
+        "job_attempt_verified": true
+      },
+      "log_evidence": {
+        "job_id": 116727702534,
+        "lines": 223,
+        "excerpt": [
+          {
+            "line": 187,
+            "value": "2026-10-15T23:41:30.1164532Z ERROR: Could not find a version that satisfies the requirement matplotlib<4.0.0,>=3.11.2 (from versions: 0.86, 0.86.1, 0.86.2, 0.91.0, 0.91.1, 1.0.1, 1.1.0, 1.1.1, 1.2.0, 1.2.1, 1.3.0, 1.3.1, 1.4.0, 1.4.1rc1, 1.4.1, 1.4.2, 1.4.3, 1.5.0, 1.5.1, 1.5.2, 1.5.3, 2.0.0b1, 2.0.0b2, 2.0.0b3, 2.0.0b4, 2.0.0rc1, 2.0.0rc2, 2.0.0, "
+          },
+          {
+            "line": 188,
+            "value": "2026-10-15T23:41:30.1168825Z ERROR: No matching distribution found for matplotlib<4.0.0,>=3.11.2"
+          },
+          {
+            "line": 189,
+            "value": "2026-10-15T23:41:30.1628444Z ##[error]Process completed with exit code 1."
+          }
+        ],
+        "signals": [
+          "MATPLOTLIB_RESOLVER"
+        ],
+        "downloaded": true,
+        "causal_root_confirmed": false
+      }
+    },
+    {
+      "pr": 2039,
+      "source_sha": "23ad4b42ed1fdd0848e451c5e6f4e73038704e88",
+      "run_id": 38873689177,
+      "workflow": "CI - ABACUS Matrix",
+      "attempt": 1,
+      "head": "23ad4b42ed1fdd0848e451c5e6f4e73038704e88",
+      "event": "pull_request",
+      "native_workflow": "CI - ABACUS Matrix",
+      "result": "failure",
+      "pr_link": true,
+      "updated_at": "2026-10-16T09:02:51Z",
+      "authenticated": true,
+      "jobs": {
+        "jobs_returned": 8,
+        "jobs_reported": 8,
+        "provenance_aligned_jobs": 8,
+        "failed_jobs": 3,
+        "failed_steps": 3,
+        "first_failed_step": {
+          "job_id": 116888904737,
+          "job_name": "ABACUS - ubuntu-24.04 - Python 3.10",
+          "step_number": 6,
+          "step_name": "Install tooling",
+          "step_completed_at": "2026-10-16T08:50:29Z"
+        },
+        "complete": true,
+        "job_attempt_verified": true
+      },
+      "log_evidence": {
+        "job_id": 116888904737,
+        "lines": 935,
+        "excerpt": [
+          {
+            "line": 766,
+            "value": "2026-10-16T08:50:29.2887888Z ERROR: Could not find a version that satisfies the requirement matplotlib<4.0.0,>=3.11.2 (from versions: 0.86, 0.86.1, 0.86.2, 0.91.0, 0.91.1, 1.0.1, 1.1.0, 1.1.1, 1.2.0, 1.2.1, 1.3.0, 1.3.1, 1.4.0, 1.4.1rc1, 1.4.1, 1.4.2, 1.4.3, 1.5.0, 1.5.1, 1.5.2, 1.5.3, 2.0.0b1, 2.0.0b2, 2.0.0b3, 2.0.0b4, 2.0.0rc1, 2.0.0rc2, 2.0.0, "
+          },
+          {
+            "line": 767,
+            "value": "2026-10-16T08:50:29.2890652Z ERROR: No matching distribution found for matplotlib<4.0.0,>=3.11.2"
+          },
+          {
+            "line": 768,
+            "value": "2026-10-16T08:50:29.3330327Z ##[error]Process completed with exit code 1."
+          }
+        ],
+        "signals": [
+          "MATPLOTLIB_RESOLVER"
+        ],
+        "downloaded": true,
+        "causal_root_confirmed": false
+      }
+    },
+    {
+      "pr": 2039,
+      "source_sha": "23ad4b42ed1fdd0848e451c5e6f4e73038704e88",
+      "run_id": 38873689178,
+      "workflow": "ABACUS v032 - CI/CD Pipeline",
+      "attempt": 1,
+      "head": "23ad4b42ed1fdd0848e451c5e6f4e73038704e88",
+      "event": "pull_request",
+      "native_workflow": "ABACUS v032 - CI/CD Pipeline",
+      "result": "failure",
+      "pr_link": true,
+      "updated_at": "2026-10-16T10:23:35Z",
+      "authenticated": true,
+      "jobs": {
+        "jobs_returned": 6,
+        "jobs_reported": 6,
+        "provenance_aligned_jobs": 6,
+        "failed_jobs": 1,
+        "failed_steps": 1,
+        "first_failed_step": {
+          "job_id": 116903937591,
+          "job_name": "Test DMAIC Phases",
+          "step_number": 4,
+          "step_name": "Install canonical dependencies",
+          "step_completed_at": "2026-10-16T10:23:32Z"
+        },
+        "complete": true,
+        "job_attempt_verified": true
+      },
+      "log_evidence": {
+        "job_id": 116903937591,
+        "lines": 223,
+        "excerpt": [
+          {
+            "line": 187,
+            "value": "2026-10-16T10:23:32.2413883Z ERROR: Could not find a version that satisfies the requirement matplotlib<4.0.0,>=3.11.2 (from versions: 0.86, 0.86.1, 0.86.2, 0.91.0, 0.91.1, 1.0.1, 1.1.0, 1.1.1, 1.2.0, 1.2.1, 1.3.0, 1.3.1, 1.4.0, 1.4.1rc1, 1.4.1, 1.4.2, 1.4.3, 1.5.0, 1.5.1, 1.5.2, 1.5.3, 2.0.0b1, 2.0.0b2, 2.0.0b3, 2.0.0b4, 2.0.0rc1, 2.0.0rc2, 2.0.0, "
+          },
+          {
+            "line": 188,
+            "value": "2026-10-16T10:23:32.2416360Z ERROR: No matching distribution found for matplotlib<4.0.0,>=3.11.2"
+          },
+          {
+            "line": 189,
+            "value": "2026-10-16T10:23:32.2980814Z ##[error]Process completed with exit code 1."
+          }
+        ],
+        "signals": [
+          "MATPLOTLIB_RESOLVER"
+        ],
+        "downloaded": true,
+        "causal_root_confirmed": false
+      }
+    },
+    {
+      "pr": 2039,
+      "source_sha": "23ad4b42ed1fdd0848e451c5e6f4e73038704e88",
+      "run_id": 38873689185,
+      "workflow": "CI Workflow Governance",
+      "attempt": 1,
+      "head": "23ad4b42ed1fdd0848e451c5e6f4e73038704e88",
+      "event": "pull_request",
+      "native_workflow": "CI Workflow Governance",
+      "result": "failure",
+      "pr_link": true,
+      "updated_at": "2026-10-16T09:20:37Z",
+      "authenticated": true,
+      "jobs": {
+        "jobs_returned": 1,
+        "jobs_reported": 1,
+        "provenance_aligned_jobs": 1,
+        "failed_jobs": 1,
+        "failed_steps": 1,
+        "first_failed_step": {
+          "job_id": 116883545987,
+          "job_name": "policy-and-inventory",
+          "step_number": 9,
+          "step_name": "Fail closed on governance red",
+          "step_completed_at": "2026-10-16T09:20:34Z"
+        },
+        "complete": true,
+        "job_attempt_verified": true
+      }
+    },
+    {
+      "pr": 2039,
+      "source_sha": "23ad4b42ed1fdd0848e451c5e6f4e73038704e88",
+      "run_id": 38873689308,
+      "workflow": "Bandit Disjoint Census",
+      "attempt": 1,
+      "head": "23ad4b42ed1fdd0848e451c5e6f4e73038704e88",
+      "event": "pull_request",
+      "native_workflow": "Bandit Disjoint Census",
+      "result": "failure",
+      "pr_link": true,
+      "updated_at": "2026-10-16T09:21:14Z",
+      "authenticated": true,
+      "jobs": {
+        "jobs_returned": 1,
+        "jobs_reported": 1,
+        "provenance_aligned_jobs": 1,
+        "failed_jobs": 1,
+        "failed_steps": 3,
+        "first_failed_step": {
+          "job_id": 116883546484,
+          "job_name": "census",
+          "step_number": 6,
+          "step_name": "Generate governance inventory as evidence",
+          "step_completed_at": "2026-10-16T09:20:55Z"
+        },
+        "complete": true,
+        "job_attempt_verified": true
+      }
+    },
+    {
+      "pr": 2041,
+      "source_sha": "60d2a5640c997fc916285580b6de8a3d86c27c38",
+      "run_id": 38824989857,
+      "workflow": "CI/CD Test Suite",
+      "attempt": 2,
+      "head": "60d2a5640c997fc916285580b6de8a3d86c27c38",
+      "event": "pull_request",
+      "native_workflow": "CI/CD Test Suite",
+      "result": "failure",
+      "pr_link": true,
+      "updated_at": "2026-10-16T07:43:54Z",
+      "authenticated": true,
+      "jobs": {
+        "jobs_returned": 19,
+        "jobs_reported": 19,
+        "provenance_aligned_jobs": 19,
+        "failed_jobs": 2,
+        "failed_steps": 2,
+        "first_failed_step": {
+          "job_id": 116868296447,
+          "job_name": "Security Scanning",
+          "step_number": 11,
+          "step_name": "Enforce security red roots",
+          "step_completed_at": "2026-10-16T07:43:40Z"
+        },
+        "complete": true,
+        "job_attempt_verified": true
+      }
+    },
+    {
+      "pr": 2041,
+      "source_sha": "60d2a5640c997fc916285580b6de8a3d86c27c38",
+      "run_id": 38824989937,
+      "workflow": "a10-guard",
+      "attempt": 1,
+      "head": "60d2a5640c997fc916285580b6de8a3d86c27c38",
+      "event": "pull_request",
+      "native_workflow": "a10-guard",
+      "result": "failure",
+      "pr_link": true,
+      "updated_at": "2026-10-15T23:47:41Z",
+      "authenticated": true,
+      "jobs": {
+        "jobs_returned": 1,
+        "jobs_reported": 1,
+        "provenance_aligned_jobs": 1,
+        "failed_jobs": 1,
+        "failed_steps": 1,
+        "first_failed_step": {
+          "job_id": 116730248604,
+          "job_name": "a10-guard",
+          "step_number": 4,
+          "step_name": "Tender guard (new or changed files only)",
+          "step_completed_at": "2026-10-15T23:47:38Z"
+        },
+        "complete": true,
+        "job_attempt_verified": true
+      }
+    },
+    {
+      "pr": 2041,
+      "source_sha": "60d2a5640c997fc916285580b6de8a3d86c27c38",
+      "run_id": 38824989941,
+      "workflow": "ABACUS v032 - CI/CD Pipeline",
+      "attempt": 1,
+      "head": "60d2a5640c997fc916285580b6de8a3d86c27c38",
+      "event": "pull_request",
+      "native_workflow": "ABACUS v032 - CI/CD Pipeline",
+      "result": "failure",
+      "pr_link": true,
+      "updated_at": "2026-10-15T23:57:45Z",
+      "authenticated": true,
+      "jobs": {
+        "jobs_returned": 6,
+        "jobs_reported": 6,
+        "provenance_aligned_jobs": 6,
+        "failed_jobs": 1,
+        "failed_steps": 1,
+        "first_failed_step": {
+          "job_id": 116732792195,
+          "job_name": "Test DMAIC Phases",
+          "step_number": 4,
+          "step_name": "Install canonical dependencies",
+          "step_completed_at": "2026-10-15T23:57:43Z"
+        },
+        "complete": true,
+        "job_attempt_verified": true
+      },
+      "log_evidence": {
+        "job_id": 116732792195,
+        "lines": 223,
+        "excerpt": [
+          {
+            "line": 187,
+            "value": "2026-10-15T23:57:43.5720795Z ERROR: Could not find a version that satisfies the requirement matplotlib<4.0.0,>=3.11.2 (from versions: 0.86, 0.86.1, 0.86.2, 0.91.0, 0.91.1, 1.0.1, 1.1.0, 1.1.1, 1.2.0, 1.2.1, 1.3.0, 1.3.1, 1.4.0, 1.4.1rc1, 1.4.1, 1.4.2, 1.4.3, 1.5.0, 1.5.1, 1.5.2, 1.5.3, 2.0.0b1, 2.0.0b2, 2.0.0b3, 2.0.0b"
+          },
+          {
+            "line": 188,
+            "value": "2026-10-15T23:57:43.5725304Z ERROR: No matching distribution found for matplotlib<4.0.0,>=3.11.2"
+          },
+          {
+            "line": 189,
+            "value": "2026-10-15T23:57:43.6228656Z ##[error]Process completed with exit code 1."
+          }
+        ],
+        "signals": [
+          "MATPLOTLIB_RESOLVER"
+        ],
+        "downloaded": true,
+        "causal_root_confirmed": false
+      }
+    },
+    {
+      "pr": 2054,
+      "source_sha": "8e1a39cdb56cc8ad7e019408b6870279f07fcd40",
+      "run_id": 38903706774,
+      "workflow": "DMAIC V3 Enterprise CI",
+      "attempt": 1,
+      "head": "8e1a39cdb56cc8ad7e019408b6870279f07fcd40",
+      "event": "pull_request",
+      "native_workflow": "DMAIC V3 Enterprise CI",
+      "result": "failure",
+      "pr_link": true,
+      "updated_at": "2026-10-16T13:09:21Z",
+      "authenticated": true,
+      "jobs": {
+        "jobs_returned": 18,
+        "jobs_reported": 18,
+        "provenance_aligned_jobs": 18,
+        "failed_jobs": 13,
+        "failed_steps": 13,
+        "first_failed_step": {
+          "job_id": 116981927647,
+          "job_name": "Test Python 3.11 on windows-latest",
+          "step_number": 8,
+          "step_name": "Run pytest --benchmark-disable with coverage",
+          "step_completed_at": "2026-10-16T12:56:08Z"
+        },
+        "complete": true,
+        "job_attempt_verified": true
+      }
+    },
+    {
+      "pr": 2054,
+      "source_sha": "8e1a39cdb56cc8ad7e019408b6870279f07fcd40",
+      "run_id": 38903706790,
+      "workflow": "ABACUS v032 - CI/CD Pipeline",
+      "attempt": 1,
+      "head": "8e1a39cdb56cc8ad7e019408b6870279f07fcd40",
+      "event": "pull_request",
+      "native_workflow": "ABACUS v032 - CI/CD Pipeline",
+      "result": "failure",
+      "pr_link": true,
+      "updated_at": "2026-10-16T13:04:43Z",
+      "authenticated": true,
+      "jobs": {
+        "jobs_returned": 6,
+        "jobs_reported": 6,
+        "provenance_aligned_jobs": 6,
+        "failed_jobs": 1,
+        "failed_steps": 1,
+        "first_failed_step": {
+          "job_id": 116983858362,
+          "job_name": "Execute Full DMAIC Pipeline",
+          "step_number": 5,
+          "step_name": "Execute Full Pipeline",
+          "step_completed_at": "2026-10-16T13:04:40Z"
+        },
+        "complete": true,
+        "job_attempt_verified": true
+      }
+    },
+    {
+      "pr": 2054,
+      "source_sha": "8e1a39cdb56cc8ad7e019408b6870279f07fcd40",
+      "run_id": 38903706823,
+      "workflow": "MIP B0 Test Admission and Coverage Evidence",
+      "attempt": 1,
+      "head": "8e1a39cdb56cc8ad7e019408b6870279f07fcd40",
+      "event": "pull_request",
+      "native_workflow": "MIP B0 Test Admission and Coverage Evidence",
+      "result": "failure",
+      "pr_link": true,
+      "updated_at": "2026-10-16T13:02:01Z",
+      "authenticated": true,
+      "jobs": {
+        "jobs_returned": 13,
+        "jobs_reported": 13,
+        "provenance_aligned_jobs": 13,
+        "failed_jobs": 2,
+        "failed_steps": 3,
+        "first_failed_step": {
+          "job_id": 116981927593,
+          "job_name": "B0 canonical coverage producer",
+          "step_number": 6,
+          "step_name": "Run canonical exact-head coverage surface",
+          "step_completed_at": "2026-10-16T12:57:39Z"
+        },
+        "complete": true,
+        "job_attempt_verified": true
+      }
+    },
+    {
+      "pr": 2054,
+      "source_sha": "8e1a39cdb56cc8ad7e019408b6870279f07fcd40",
+      "run_id": 38903706856,
+      "workflow": "DOW + Recursive DMAIC - Enhanced CI",
+      "attempt": 1,
+      "head": "8e1a39cdb56cc8ad7e019408b6870279f07fcd40",
+      "event": "pull_request",
+      "native_workflow": "DOW + Recursive DMAIC - Enhanced CI",
+      "result": "failure",
+      "pr_link": true,
+      "updated_at": "2026-10-16T13:11:37Z",
+      "authenticated": true,
+      "jobs": {
+        "jobs_returned": 7,
+        "jobs_reported": 7,
+        "provenance_aligned_jobs": 7,
+        "failed_jobs": 1,
+        "failed_steps": 1,
+        "first_failed_step": {
+          "job_id": 116983245299,
+          "job_name": "Test - Ubuntu (3.11)",
+          "step_number": 6,
+          "step_name": "Run pytest --benchmark-disable -v -n auto --cov=. --cov-report=term-missing --cov-report=xml",
+          "step_completed_at": "2026-10-16T13:05:32Z"
+        },
+        "complete": true,
+        "job_attempt_verified": true
+      }
+    },
+    {
+      "pr": 2054,
+      "source_sha": "8e1a39cdb56cc8ad7e019408b6870279f07fcd40",
+      "run_id": 38903707042,
+      "workflow": "CI - ABACUS Matrix",
+      "attempt": 1,
+      "head": "8e1a39cdb56cc8ad7e019408b6870279f07fcd40",
+      "event": "pull_request",
+      "native_workflow": "CI - ABACUS Matrix",
+      "result": "failure",
+      "pr_link": true,
+      "updated_at": "2026-10-16T13:09:02Z",
+      "authenticated": true,
+      "jobs": {
+        "jobs_returned": 7,
+        "jobs_reported": 7,
+        "provenance_aligned_jobs": 7,
+        "failed_jobs": 4,
+        "failed_steps": 4,
+        "first_failed_step": {
+          "job_id": 116982398724,
+          "job_name": "ABACUS - ubuntu-24.04 - Python 3.10",
+          "step_number": 9,
+          "step_name": "Run functional compatibility proof",
+          "step_completed_at": "2026-10-16T13:01:52Z"
+        },
+        "complete": true,
+        "job_attempt_verified": true
+      }
+    },
+    {
+      "pr": 2054,
+      "source_sha": "8e1a39cdb56cc8ad7e019408b6870279f07fcd40",
+      "run_id": 38903707059,
+      "workflow": "CI/CD Test Suite",
+      "attempt": 1,
+      "head": "8e1a39cdb56cc8ad7e019408b6870279f07fcd40",
+      "event": "pull_request",
+      "native_workflow": "CI/CD Test Suite",
+      "result": "failure",
+      "pr_link": true,
+      "updated_at": "2026-10-16T13:13:59Z",
+      "authenticated": true,
+      "jobs": {
+        "jobs_returned": 19,
+        "jobs_reported": 19,
+        "provenance_aligned_jobs": 19,
+        "failed_jobs": 4,
+        "failed_steps": 4,
+        "first_failed_step": {
+          "job_id": 116981928107,
+          "job_name": "Code Quality Checks",
+          "step_number": 12,
+          "step_name": "Enforce code-quality red roots",
+          "step_completed_at": "2026-10-16T12:55:31Z"
+        },
+        "complete": true,
+        "job_attempt_verified": true
+      },
+      "log_evidence": {
+        "job_id": 116981928107,
+        "lines": 8922,
+        "excerpt": [
+          {
+            "line": 1631,
+            "value": "2026-10-16T12:54:36.9538049Z ##[error]Process completed with exit code 1."
+          },
+          {
+            "line": 3711,
+            "value": "2026-10-16T12:55:04.4206153Z tests/conftest.py:27:8: R1716: Simplify chained comparison between the operands: 0 < total == passed and failed == 0 and returncode == 0 and skipped == 0 (chained-comparison)"
+          },
+          {
+            "line": 7957,
+            "value": "2026-10-16T12:55:22.6057081Z     policy: dict[str, Any],"
+          },
+          {
+            "line": 8798,
+            "value": "2026-10-16T12:55:31.5075975Z # Run the policy from the PR base rather than untrusted proposed code."
+          },
+          {
+            "line": 8817,
+            "value": "2026-10-16T12:55:31.5081252Z     echo \"::error::Per-tool $tool new-debt ratchet failed (exit $rc).\""
+          },
+          {
+            "line": 8886,
+            "value": "2026-10-16T12:55:31.5411590Z ##[error]Required BLACK full scan failed."
+          },
+          {
+            "line": 8887,
+            "value": "2026-10-16T12:55:31.5412896Z ##[error]Required ISORT full scan failed."
+          },
+          {
+            "line": 8888,
+            "value": "2026-10-16T12:55:31.5415055Z ##[error]Process completed with exit code 1."
+          }
+        ],
+        "signals": [],
+        "downloaded": true,
+        "causal_root_confirmed": false
+      }
+    },
+    {
+      "pr": 2054,
+      "source_sha": "8e1a39cdb56cc8ad7e019408b6870279f07fcd40",
+      "run_id": 38903707154,
+      "workflow": "DMAIC V3 Test Suite - Continuous Integration",
+      "attempt": 1,
+      "head": "8e1a39cdb56cc8ad7e019408b6870279f07fcd40",
+      "event": "pull_request",
+      "native_workflow": "DMAIC V3 Test Suite - Continuous Integration",
+      "result": "failure",
+      "pr_link": true,
+      "updated_at": "2026-10-16T13:17:48Z",
+      "authenticated": true,
+      "jobs": {
+        "jobs_returned": 13,
+        "jobs_reported": 13,
+        "provenance_aligned_jobs": 13,
+        "failed_jobs": 1,
+        "failed_steps": 1,
+        "first_failed_step": {
+          "job_id": 116988880317,
+          "job_name": "Quality Gates",
+          "step_number": 8,
+          "step_name": "Check test coverage threshold",
+          "step_completed_at": "2026-10-16T13:15:47Z"
+        },
+        "complete": true,
+        "job_attempt_verified": true
+      }
+    },
+    {
+      "pr": 2055,
+      "source_sha": "2b3bf584c783e8c8696f38ebf35b719ddc10fff2",
+      "run_id": 39020399941,
+      "workflow": "DMAIC V3 Bridge Integration - Test System",
+      "attempt": 1,
+      "head": "2b3bf584c783e8c8696f38ebf35b719ddc10fff2",
+      "event": "pull_request",
+      "native_workflow": "DMAIC V3 Bridge Integration - Test System",
+      "result": "failure",
+      "pr_link": true,
+      "updated_at": "2026-10-17T09:19:13Z",
+      "authenticated": true,
+      "jobs": {
+        "jobs_returned": 6,
+        "jobs_reported": 6,
+        "provenance_aligned_jobs": 6,
+        "failed_jobs": 1,
+        "failed_steps": 1,
+        "first_failed_step": {
+          "job_id": 117361530088,
+          "job_name": "🚀 Full Deployment Test",
+          "step_number": 5,
+          "step_name": "Run full deployment cycle",
+          "step_completed_at": "2026-10-17T09:19:04Z"
+        },
+        "complete": true,
+        "job_attempt_verified": true
+      }
+    },
+    {
+      "pr": 2055,
+      "source_sha": "2b3bf584c783e8c8696f38ebf35b719ddc10fff2",
+      "run_id": 39020400081,
+      "workflow": "CI Workflow Governance",
+      "attempt": 1,
+      "head": "2b3bf584c783e8c8696f38ebf35b719ddc10fff2",
+      "event": "pull_request",
+      "native_workflow": "CI Workflow Governance",
+      "result": "failure",
+      "pr_link": true,
+      "updated_at": "2026-10-17T09:15:15Z",
+      "authenticated": true,
+      "jobs": {
+        "jobs_returned": 1,
+        "jobs_reported": 1,
+        "provenance_aligned_jobs": 1,
+        "failed_jobs": 1,
+        "failed_steps": 1,
+        "first_failed_step": {
+          "job_id": 117360887274,
+          "job_name": "policy-and-inventory",
+          "step_number": 9,
+          "step_name": "Fail closed on governance red",
+          "step_completed_at": "2026-10-17T09:15:11Z"
+        },
+        "complete": true,
+        "job_attempt_verified": true
+      }
+    },
+    {
+      "pr": 2057,
+      "source_sha": "cdea1ae2445911b27f1a1934dd93fbcaa847a321",
+      "run_id": 38920465584,
+      "workflow": "CI/CD Test Suite",
+      "attempt": 1,
+      "head": "cdea1ae2445911b27f1a1934dd93fbcaa847a321",
+      "event": "pull_request",
+      "native_workflow": "CI/CD Test Suite",
+      "result": "failure",
+      "pr_link": true,
+      "updated_at": "2026-10-16T15:11:17Z",
+      "authenticated": true,
+      "jobs": {
+        "jobs_returned": 19,
+        "jobs_reported": 19,
+        "provenance_aligned_jobs": 19,
+        "failed_jobs": 3,
+        "failed_steps": 3,
+        "first_failed_step": {
+          "job_id": 117038762492,
+          "job_name": "Security Scanning",
+          "step_number": 11,
+          "step_name": "Enforce security red roots",
+          "step_completed_at": "2026-10-16T15:02:05Z"
+        },
+        "complete": true,
+        "job_attempt_verified": true
+      }
+    },
+    {
+      "pr": 2066,
+      "source_sha": "9c4a60bf1df84b73ff33b0d0aba5a92ed6ea9770",
+      "run_id": 38913178350,
+      "workflow": "CI Workflow Governance",
+      "attempt": 1,
+      "head": "9c4a60bf1df84b73ff33b0d0aba5a92ed6ea9770",
+      "event": "pull_request",
+      "native_workflow": "CI Workflow Governance",
+      "result": "failure",
+      "pr_link": true,
+      "updated_at": "2026-10-16T14:07:19Z",
+      "authenticated": true,
+      "jobs": {
+        "jobs_returned": 1,
+        "jobs_reported": 1,
+        "provenance_aligned_jobs": 1,
+        "failed_jobs": 1,
+        "failed_steps": 1,
+        "first_failed_step": {
+          "job_id": 117013863996,
+          "job_name": "policy-and-inventory",
+          "step_number": 9,
+          "step_name": "Fail closed on governance red",
+          "step_completed_at": "2026-10-16T14:07:15Z"
+        },
+        "complete": true,
+        "job_attempt_verified": true
+      }
+    },
+    {
+      "pr": 2066,
+      "source_sha": "9c4a60bf1df84b73ff33b0d0aba5a92ed6ea9770",
+      "run_id": 38913178667,
+      "workflow": "CI/CD Test Suite",
+      "attempt": 1,
+      "head": "9c4a60bf1df84b73ff33b0d0aba5a92ed6ea9770",
+      "event": "pull_request",
+      "native_workflow": "CI/CD Test Suite",
+      "result": "failure",
+      "pr_link": true,
+      "updated_at": "2026-10-16T14:15:54Z",
+      "authenticated": true,
+      "jobs": {
+        "jobs_returned": 19,
+        "jobs_reported": 19,
+        "provenance_aligned_jobs": 19,
+        "failed_jobs": 2,
+        "failed_steps": 2,
+        "first_failed_step": {
+          "job_id": 117013865237,
+          "job_name": "Security Scanning",
+          "step_number": 11,
+          "step_name": "Enforce security red roots",
+          "step_completed_at": "2026-10-16T14:09:29Z"
+        },
+        "complete": true,
+        "job_attempt_verified": true
+      }
+    },
+    {
+      "pr": 2070,
+      "source_sha": "9071de0f865ee4ce401aacfff0d214a37494d9e9",
+      "run_id": 38919194736,
+      "workflow": "CI/CD Test Suite",
+      "attempt": 1,
+      "head": "9071de0f865ee4ce401aacfff0d214a37494d9e9",
+      "event": "pull_request",
+      "native_workflow": "CI/CD Test Suite",
+      "result": "failure",
+      "pr_link": true,
+      "updated_at": "2026-10-16T15:01:57Z",
+      "authenticated": true,
+      "jobs": {
+        "jobs_returned": 19,
+        "jobs_reported": 19,
+        "provenance_aligned_jobs": 19,
+        "failed_jobs": 3,
+        "failed_steps": 3,
+        "first_failed_step": {
+          "job_id": 117034408997,
+          "job_name": "Security Scanning",
+          "step_number": 11,
+          "step_name": "Enforce security red roots",
+          "step_completed_at": "2026-10-16T14:52:25Z"
+        },
+        "complete": true,
+        "job_attempt_verified": true
+      }
+    },
+    {
+      "pr": 2070,
+      "source_sha": "9071de0f865ee4ce401aacfff0d214a37494d9e9",
+      "run_id": 38919195368,
+      "workflow": "CI Workflow Governance",
+      "attempt": 1,
+      "head": "9071de0f865ee4ce401aacfff0d214a37494d9e9",
+      "event": "pull_request",
+      "native_workflow": "CI Workflow Governance",
+      "result": "failure",
+      "pr_link": true,
+      "updated_at": "2026-10-16T14:52:45Z",
+      "authenticated": true,
+      "jobs": {
+        "jobs_returned": 1,
+        "jobs_reported": 1,
+        "provenance_aligned_jobs": 1,
+        "failed_jobs": 1,
+        "failed_steps": 1,
+        "first_failed_step": {
+          "job_id": 117034411084,
+          "job_name": "policy-and-inventory",
+          "step_number": 9,
+          "step_name": "Fail closed on governance red",
+          "step_completed_at": "2026-10-16T14:52:41Z"
+        },
+        "complete": true,
+        "job_attempt_verified": true
+      }
+    },
+    {
+      "pr": 2072,
+      "source_sha": "680f5ae0c7278e0dae548a505259800887c27138",
+      "run_id": 38921507557,
+      "workflow": "ABACUS v032 - CI/CD Pipeline",
+      "attempt": 1,
+      "head": "680f5ae0c7278e0dae548a505259800887c27138",
+      "event": "pull_request",
+      "native_workflow": "ABACUS v032 - CI/CD Pipeline",
+      "result": "failure",
+      "pr_link": true,
+      "updated_at": "2026-10-16T15:09:21Z",
+      "authenticated": true,
+      "jobs": {
+        "jobs_returned": 6,
+        "jobs_reported": 6,
+        "provenance_aligned_jobs": 6,
+        "failed_jobs": 1,
+        "failed_steps": 1,
+        "first_failed_step": {
+          "job_id": 117042499235,
+          "job_name": "Test DMAIC Phases",
+          "step_number": 4,
+          "step_name": "Install canonical dependencies",
+          "step_completed_at": "2026-10-16T15:09:18Z"
+        },
+        "complete": true,
+        "job_attempt_verified": true
+      },
+      "log_evidence": {
+        "job_id": 117042499235,
+        "lines": 223,
+        "excerpt": [
+          {
+            "line": 187,
+            "value": "2026-10-16T15:09:18.4898607Z ERROR: Could not find a version that satisfies the requirement matplotlib<4.0.0,>=3.11.2 (from versions: 0.86, 0.86.1, 0.86.2, 0.91.0, 0.91.1, 1.0.1, 1.1.0, 1.1.1, 1.2.0, 1.2.1, 1.3.0, 1.3.1, 1.4.0, 1.4.1rc1, 1.4.1, 1.4.2, 1.4.3, 1.5.0, 1.5.1, 1.5.2, 1.5.3, 2.0.0b1, 2.0.0b2, 2.0.0b3, 2.0.0b"
+          },
+          {
+            "line": 188,
+            "value": "2026-10-16T15:09:18.4902025Z ERROR: No matching distribution found for matplotlib<4.0.0,>=3.11.2"
+          },
+          {
+            "line": 189,
+            "value": "2026-10-16T15:09:18.5522999Z ##[error]Process completed with exit code 1."
+          }
+        ],
+        "signals": [
+          "MATPLOTLIB_RESOLVER"
+        ],
+        "downloaded": true,
+        "causal_root_confirmed": false
+      }
+    },
+    {
+      "pr": 2072,
+      "source_sha": "680f5ae0c7278e0dae548a505259800887c27138",
+      "run_id": 38921507617,
+      "workflow": "CI/CD Test Suite",
+      "attempt": 2,
+      "head": "680f5ae0c7278e0dae548a505259800887c27138",
+      "event": "pull_request",
+      "native_workflow": "CI/CD Test Suite",
+      "result": "failure",
+      "pr_link": true,
+      "updated_at": "2026-10-16T18:10:10Z",
+      "authenticated": true,
+      "jobs": {
+        "jobs_returned": 19,
+        "jobs_reported": 19,
+        "provenance_aligned_jobs": 19,
+        "failed_jobs": 2,
+        "failed_steps": 2,
+        "first_failed_step": {
+          "job_id": 117122265458,
+          "job_name": "Security Scanning",
+          "step_number": 11,
+          "step_name": "Enforce security red roots",
+          "step_completed_at": "2026-10-16T18:09:57Z"
+        },
+        "complete": true,
+        "job_attempt_verified": true
+      }
+    },
+    {
+      "pr": 2072,
+      "source_sha": "680f5ae0c7278e0dae548a505259800887c27138",
+      "run_id": 38921508083,
+      "workflow": "CI - ABACUS Matrix",
+      "attempt": 1,
+      "head": "680f5ae0c7278e0dae548a505259800887c27138",
+      "event": "pull_request",
+      "native_workflow": "CI - ABACUS Matrix",
+      "result": "failure",
+      "pr_link": true,
+      "updated_at": "2026-10-16T15:15:59Z",
+      "authenticated": true,
+      "jobs": {
+        "jobs_returned": 7,
+        "jobs_reported": 7,
+        "provenance_aligned_jobs": 7,
+        "failed_jobs": 3,
+        "failed_steps": 3,
+        "first_failed_step": {
+          "job_id": 117042431431,
+          "job_name": "ABACUS - ubuntu-24.04 - Python 3.10",
+          "step_number": 6,
+          "step_name": "Install tooling",
+          "step_completed_at": "2026-10-16T15:09:15Z"
+        },
+        "complete": true,
+        "job_attempt_verified": true
+      },
+      "log_evidence": {
+        "job_id": 117042431431,
+        "lines": 944,
+        "excerpt": [
+          {
+            "line": 775,
+            "value": "2026-10-16T15:09:15.4803236Z ERROR: Could not find a version that satisfies the requirement matplotlib<4.0.0,>=3.11.2 (from versions: 0.86, 0.86.1, 0.86.2, 0.91.0, 0.91.1, 1.0.1, 1.1.0, 1.1.1, 1.2.0, 1.2.1, 1.3.0, 1.3.1, 1.4.0, 1.4.1rc1, 1.4.1, 1.4.2, 1.4.3, 1.5.0, 1.5.1, 1.5.2, 1.5.3, 2.0.0b1, 2.0.0b2, 2.0.0b3, 2.0.0b4, 2.0.0rc1, 2.0.0rc2, 2.0.0, "
+          },
+          {
+            "line": 776,
+            "value": "2026-10-16T15:09:15.4807080Z ERROR: No matching distribution found for matplotlib<4.0.0,>=3.11.2"
+          },
+          {
+            "line": 777,
+            "value": "2026-10-16T15:09:15.5544038Z ##[error]Process completed with exit code 1."
+          }
+        ],
+        "signals": [
+          "MATPLOTLIB_RESOLVER"
+        ],
+        "downloaded": true,
+        "causal_root_confirmed": false
+      }
+    },
+    {
+      "pr": 2073,
+      "source_sha": "fb22da447780b58827dca58a59c73707ef1d08bf",
+      "run_id": 38925991896,
+      "workflow": "CI Workflow Governance",
+      "attempt": 5,
+      "head": "fb22da447780b58827dca58a59c73707ef1d08bf",
+      "event": "pull_request",
+      "native_workflow": "CI Workflow Governance",
+      "result": "failure",
+      "pr_link": true,
+      "updated_at": "2026-10-17T09:03:42Z",
+      "authenticated": true,
+      "jobs": {
+        "jobs_returned": 1,
+        "jobs_reported": 1,
+        "provenance_aligned_jobs": 1,
+        "failed_jobs": 1,
+        "failed_steps": 1,
+        "first_failed_step": {
+          "job_id": 117358824307,
+          "job_name": "policy-and-inventory",
+          "step_number": 9,
+          "step_name": "Fail closed on governance red",
+          "step_completed_at": "2026-10-17T09:03:39Z"
+        },
+        "complete": true,
+        "job_attempt_verified": true
+      }
+    },
+    {
+      "pr": 2073,
+      "source_sha": "fb22da447780b58827dca58a59c73707ef1d08bf",
+      "run_id": 38925992164,
+      "workflow": "CI/CD Test Suite",
+      "attempt": 1,
+      "head": "fb22da447780b58827dca58a59c73707ef1d08bf",
+      "event": "pull_request",
+      "native_workflow": "CI/CD Test Suite",
+      "result": "failure",
+      "pr_link": true,
+      "updated_at": "2026-10-16T15:52:26Z",
+      "authenticated": true,
+      "jobs": {
+        "jobs_returned": 19,
+        "jobs_reported": 19,
+        "provenance_aligned_jobs": 19,
+        "failed_jobs": 3,
+        "failed_steps": 4,
+        "first_failed_step": {
+          "job_id": 117057543232,
+          "job_name": "Security Scanning",
+          "step_number": 10,
+          "step_name": "PR new-debt ratchet (Bandit)",
+          "step_completed_at": "2026-10-16T15:42:26Z"
+        },
+        "complete": true,
+        "job_attempt_verified": true
+      },
+      "log_evidence": {
+        "job_id": 117057543232,
+        "lines": 588,
+        "excerpt": [
+          {
+            "line": 355,
+            "value": "2026-10-16T15:42:16.9282773Z [tester]\tWARNING\tnosec encountered (B607), but no failed test on file ./tests/test_ci_pr_debt_ratchet.py:20"
+          },
+          {
+            "line": 356,
+            "value": "2026-10-16T15:42:16.9283688Z [tester]\tWARNING\tnosec encountered (B603), but no failed test on file ./tests/test_ci_pr_debt_ratchet.py:20"
+          },
+          {
+            "line": 370,
+            "value": "2026-10-16T15:42:19.4941802Z ##[error]Process completed with exit code 1."
+          },
+          {
+            "line": 389,
+            "value": "2026-10-16T15:42:23.1071074Z ##[error]Process completed with exit code 64."
+          },
+          {
+            "line": 516,
+            "value": "2026-10-16T15:42:26.4349142Z ##[error]Process completed with exit code 1."
+          },
+          {
+            "line": 529,
+            "value": "2026-10-16T15:42:26.4406470Z     echo \"::error::Safety is red.\""
+          },
+          {
+            "line": 553,
+            "value": "2026-10-16T15:42:26.4540683Z ##[error]Safety is red."
+          },
+          {
+            "line": 554,
+            "value": "2026-10-16T15:42:26.4541602Z ##[error]Process completed with exit code 1."
+          }
+        ],
+        "signals": [
+          "SAFETY_RED"
+        ],
+        "downloaded": true,
+        "causal_root_confirmed": false
+      }
+    },
+    {
+      "pr": 2074,
+      "source_sha": "f0899e165239de76c1002c23342c6701222ea218",
+      "run_id": 38925718611,
+      "workflow": "ABACUS v032 - CI/CD Pipeline",
+      "attempt": 1,
+      "head": "f0899e165239de76c1002c23342c6701222ea218",
+      "event": "pull_request",
+      "native_workflow": "ABACUS v032 - CI/CD Pipeline",
+      "result": "failure",
+      "pr_link": true,
+      "updated_at": "2026-10-16T15:40:09Z",
+      "authenticated": true,
+      "jobs": {
+        "jobs_returned": 6,
+        "jobs_reported": 6,
+        "provenance_aligned_jobs": 6,
+        "failed_jobs": 1,
+        "failed_steps": 1,
+        "first_failed_step": {
+          "job_id": 117056807489,
+          "job_name": "Test DMAIC Phases",
+          "step_number": 4,
+          "step_name": "Install canonical dependencies",
+          "step_completed_at": "2026-10-16T15:40:07Z"
+        },
+        "complete": true,
+        "job_attempt_verified": true
+      },
+      "log_evidence": {
+        "job_id": 117056807489,
+        "lines": 223,
+        "excerpt": [
+          {
+            "line": 187,
+            "value": "2026-10-16T15:40:06.9770389Z ERROR: Could not find a version that satisfies the requirement matplotlib<4.0.0,>=3.11.2 (from versions: 0.86, 0.86.1, 0.86.2, 0.91.0, 0.91.1, 1.0.1, 1.1.0, 1.1.1, 1.2.0, 1.2.1, 1.3.0, 1.3.1, 1.4.0, 1.4.1rc1, 1.4.1, 1.4.2, 1.4.3, 1.5.0, 1.5.1, 1.5.2, 1.5.3, 2.0.0b1, 2.0.0b2, 2.0.0b3, 2.0.0b"
+          },
+          {
+            "line": 188,
+            "value": "2026-10-16T15:40:06.9772728Z ERROR: No matching distribution found for matplotlib<4.0.0,>=3.11.2"
+          },
+          {
+            "line": 189,
+            "value": "2026-10-16T15:40:07.0245164Z ##[error]Process completed with exit code 1."
+          }
+        ],
+        "signals": [
+          "MATPLOTLIB_RESOLVER"
+        ],
+        "downloaded": true,
+        "causal_root_confirmed": false
+      }
+    },
+    {
+      "pr": 2074,
+      "source_sha": "f0899e165239de76c1002c23342c6701222ea218",
+      "run_id": 38925718748,
+      "workflow": "Validate Docs (Markdown/YAML/JSON)",
+      "attempt": 1,
+      "head": "f0899e165239de76c1002c23342c6701222ea218",
+      "event": "pull_request",
+      "native_workflow": "Validate Docs (Markdown/YAML/JSON)",
+      "result": "failure",
+      "pr_link": true,
+      "updated_at": "2026-10-16T15:39:58Z",
+      "authenticated": true,
+      "jobs": {
+        "jobs_returned": 1,
+        "jobs_reported": 1,
+        "provenance_aligned_jobs": 1,
+        "failed_jobs": 1,
+        "failed_steps": 1,
+        "first_failed_step": {
+          "job_id": 117056633663,
+          "job_name": "Changed docs lint",
+          "step_number": 7,
+          "step_name": "Validate changed docs",
+          "step_completed_at": "2026-10-16T15:39:54Z"
+        },
+        "complete": true,
+        "job_attempt_verified": true
+      },
+      "log_evidence": {
+        "job_id": 117056633663,
+        "lines": 793,
+        "excerpt": [
+          {
+            "line": 755,
+            "value": "2026-10-16T15:39:54.8981294Z README.md:3 error MD012/no-multiple-blanks Multiple consecutive blank lines [Expected: 1; Actual: 2]"
+          },
+          {
+            "line": 756,
+            "value": "2026-10-16T15:39:54.8982651Z README.md:4:81 error MD013/line-length Line length [Expected: 80; Actual: 859]"
+          },
+          {
+            "line": 759,
+            "value": "2026-10-16T15:39:54.9065519Z ##[error]Process completed with exit code 1."
+          }
+        ],
+        "signals": [
+          "MARKDOWN_LINT"
+        ],
+        "downloaded": true,
+        "causal_root_confirmed": false
+      }
+    },
+    {
+      "pr": 2075,
+      "source_sha": "f29c870e2395d2fc45ec25ab82a5a4894c9f4b51",
+      "run_id": 38931835928,
+      "workflow": "CI/CD Test Suite",
+      "attempt": 2,
+      "head": "f29c870e2395d2fc45ec25ab82a5a4894c9f4b51",
+      "event": "pull_request",
+      "native_workflow": "CI/CD Test Suite",
+      "result": "failure",
+      "pr_link": true,
+      "updated_at": "2026-10-16T17:42:27Z",
+      "authenticated": true,
+      "jobs": {
+        "jobs_returned": 19,
+        "jobs_reported": 19,
+        "provenance_aligned_jobs": 19,
+        "failed_jobs": 3,
+        "failed_steps": 4,
+        "first_failed_step": {
+          "job_id": 117108162219,
+          "job_name": "Security Scanning",
+          "step_number": 10,
+          "step_name": "PR new-debt ratchet (Bandit)",
+          "step_completed_at": "2026-10-16T16:26:20Z"
+        },
+        "complete": true,
+        "job_attempt_verified": true
+      },
+      "log_evidence": {
+        "job_id": 117108162219,
+        "lines": 585,
+        "excerpt": [
+          {
+            "line": 355,
+            "value": "2026-10-16T16:26:05.2781433Z [tester]\tWARNING\tnosec encountered (B607), but no failed test on file ./tests/test_ci_pr_debt_ratchet.py:20"
+          },
+          {
+            "line": 356,
+            "value": "2026-10-16T16:26:05.2782791Z [tester]\tWARNING\tnosec encountered (B603), but no failed test on file ./tests/test_ci_pr_debt_ratchet.py:20"
+          },
+          {
+            "line": 370,
+            "value": "2026-10-16T16:26:09.1446213Z ##[error]Process completed with exit code 1."
+          },
+          {
+            "line": 389,
+            "value": "2026-10-16T16:26:13.1305221Z ##[error]Process completed with exit code 64."
+          },
+          {
+            "line": 513,
+            "value": "2026-10-16T16:26:20.8375783Z ##[error]Process completed with exit code 1."
+          },
+          {
+            "line": 526,
+            "value": "2026-10-16T16:26:20.8426594Z     echo \"::error::Safety is red.\""
+          },
+          {
+            "line": 550,
+            "value": "2026-10-16T16:26:20.8545306Z ##[error]Safety is red."
+          },
+          {
+            "line": 551,
+            "value": "2026-10-16T16:26:20.8547285Z ##[error]Process completed with exit code 1."
+          }
+        ],
+        "signals": [
+          "SAFETY_RED"
+        ],
+        "downloaded": true,
+        "causal_root_confirmed": false
+      }
+    },
+    {
+      "pr": 2075,
+      "source_sha": "f29c870e2395d2fc45ec25ab82a5a4894c9f4b51",
+      "run_id": 38931835966,
+      "workflow": "Bandit Disjoint Census",
+      "attempt": 1,
+      "head": "f29c870e2395d2fc45ec25ab82a5a4894c9f4b51",
+      "event": "pull_request",
+      "native_workflow": "Bandit Disjoint Census",
+      "result": "failure",
+      "pr_link": true,
+      "updated_at": "2026-10-16T16:25:54Z",
+      "authenticated": true,
+      "jobs": {
+        "jobs_returned": 1,
+        "jobs_reported": 1,
+        "provenance_aligned_jobs": 1,
+        "failed_jobs": 1,
+        "failed_steps": 3,
+        "first_failed_step": {
+          "job_id": 117077482466,
+          "job_name": "census",
+          "step_number": 6,
+          "step_name": "Generate governance inventory as evidence",
+          "step_completed_at": "2026-10-16T16:25:50Z"
+        },
+        "complete": true,
+        "job_attempt_verified": true
+      }
+    },
+    {
+      "pr": 2075,
+      "source_sha": "f29c870e2395d2fc45ec25ab82a5a4894c9f4b51",
+      "run_id": 38931836090,
+      "workflow": "DMAIC V3 Enterprise CI",
+      "attempt": 1,
+      "head": "f29c870e2395d2fc45ec25ab82a5a4894c9f4b51",
+      "event": "pull_request",
+      "native_workflow": "DMAIC V3 Enterprise CI",
+      "result": "failure",
+      "pr_link": true,
+      "updated_at": "2026-10-16T16:28:16Z",
+      "authenticated": true,
+      "jobs": {
+        "jobs_returned": 18,
+        "jobs_reported": 18,
+        "provenance_aligned_jobs": 18,
+        "failed_jobs": 7,
+        "failed_steps": 7,
+        "first_failed_step": {
+          "job_id": 117077483522,
+          "job_name": "Test Python 3.10 on ubuntu-latest",
+          "step_number": 5,
+          "step_name": "Install dependencies",
+          "step_completed_at": "2026-10-16T16:25:45Z"
+        },
+        "complete": true,
+        "job_attempt_verified": true
+      }
+    },
+    {
+      "pr": 2075,
+      "source_sha": "f29c870e2395d2fc45ec25ab82a5a4894c9f4b51",
+      "run_id": 38931836109,
+      "workflow": "DMAIC V3 Test Suite - Continuous Integration",
+      "attempt": 1,
+      "head": "f29c870e2395d2fc45ec25ab82a5a4894c9f4b51",
+      "event": "pull_request",
+      "native_workflow": "DMAIC V3 Test Suite - Continuous Integration",
+      "result": "failure",
+      "pr_link": true,
+      "updated_at": "2026-10-16T16:28:16Z",
+      "authenticated": true,
+      "jobs": {
+        "jobs_returned": 11,
+        "jobs_reported": 11,
+        "provenance_aligned_jobs": 11,
+        "failed_jobs": 1,
+        "failed_steps": 1,
+        "first_failed_step": {
+          "job_id": 117078093797,
+          "job_name": "Unit Tests (3.10)",
+          "step_number": 5,
+          "step_name": "Install dependencies",
+          "step_completed_at": "2026-10-16T16:27:42Z"
+        },
+        "complete": true,
+        "job_attempt_verified": true
+      }
+    },
+    {
+      "pr": 2075,
+      "source_sha": "f29c870e2395d2fc45ec25ab82a5a4894c9f4b51",
+      "run_id": 38931836113,
+      "workflow": "Validate Docs (Markdown/YAML/JSON)",
+      "attempt": 1,
+      "head": "f29c870e2395d2fc45ec25ab82a5a4894c9f4b51",
+      "event": "pull_request",
+      "native_workflow": "Validate Docs (Markdown/YAML/JSON)",
+      "result": "failure",
+      "pr_link": true,
+      "updated_at": "2026-10-16T16:26:05Z",
+      "authenticated": true,
+      "jobs": {
+        "jobs_returned": 1,
+        "jobs_reported": 1,
+        "provenance_aligned_jobs": 1,
+        "failed_jobs": 1,
+        "failed_steps": 1,
+        "first_failed_step": {
+          "job_id": 117077483600,
+          "job_name": "Changed docs lint",
+          "step_number": 7,
+          "step_name": "Validate changed docs",
+          "step_completed_at": "2026-10-16T16:26:02Z"
+        },
+        "complete": true,
+        "job_attempt_verified": true
+      },
+      "log_evidence": {
+        "job_id": 117077483600,
+        "lines": 1509,
+        "excerpt": [
+          {
+            "line": 1466,
+            "value": "2026-10-16T16:26:02.4864921Z ##[error]54:81 [line-length] line too long (94 > 80 characters)"
+          },
+          {
+            "line": 1467,
+            "value": "2026-10-16T16:26:02.4865830Z ##[error]75:81 [line-length] line too long (87 > 80 characters)"
+          },
+          {
+            "line": 1468,
+            "value": "2026-10-16T16:26:02.4866738Z ##[error]76:81 [line-length] line too long (87 > 80 characters)"
+          },
+          {
+            "line": 1469,
+            "value": "2026-10-16T16:26:02.4867650Z ##[error]95:81 [line-length] line too long (96 > 80 characters)"
+          },
+          {
+            "line": 1470,
+            "value": "2026-10-16T16:26:02.4868654Z ##[error]105:81 [line-length] line too long (88 > 80 characters)"
+          },
+          {
+            "line": 1471,
+            "value": "2026-10-16T16:26:02.4869810Z ##[error]126:81 [line-length] line too long (96 > 80 characters)"
+          },
+          {
+            "line": 1472,
+            "value": "2026-10-16T16:26:02.4870730Z ##[error]127:81 [line-length] line too long (109 > 80 characters)"
+          },
+          {
+            "line": 1475,
+            "value": "2026-10-16T16:26:02.4918422Z ##[error]Process completed with exit code 1."
+          }
+        ],
+        "signals": [
+          "MARKDOWN_LINT"
+        ],
+        "downloaded": true,
+        "causal_root_confirmed": false
+      }
+    },
+    {
+      "pr": 2075,
+      "source_sha": "f29c870e2395d2fc45ec25ab82a5a4894c9f4b51",
+      "run_id": 38931836124,
+      "workflow": "MIP QPS External Probe",
+      "attempt": 1,
+      "head": "f29c870e2395d2fc45ec25ab82a5a4894c9f4b51",
+      "event": "pull_request",
+      "native_workflow": "MIP QPS External Probe",
+      "result": "failure",
+      "pr_link": true,
+      "updated_at": "2026-10-16T16:26:13Z",
+      "authenticated": true,
+      "jobs": {
+        "jobs_returned": 1,
+        "jobs_reported": 1,
+        "provenance_aligned_jobs": 1,
+        "failed_jobs": 1,
+        "failed_steps": 1,
+        "first_failed_step": {
+          "job_id": 117077482770,
+          "job_name": "qps_external_probe",
+          "step_number": 3,
+          "step_name": "Checkout exact cryoplant child",
+          "step_completed_at": "2026-10-16T16:26:10Z"
+        },
+        "complete": true,
+        "job_attempt_verified": true
+      }
+    },
+    {
+      "pr": 2075,
+      "source_sha": "f29c870e2395d2fc45ec25ab82a5a4894c9f4b51",
+      "run_id": 38931836200,
+      "workflow": "W81 Repair Outcome Block",
+      "attempt": 1,
+      "head": "f29c870e2395d2fc45ec25ab82a5a4894c9f4b51",
+      "event": "pull_request",
+      "native_workflow": "W81 Repair Outcome Block",
+      "result": "failure",
+      "pr_link": true,
+      "updated_at": "2026-10-16T16:27:48Z",
+      "authenticated": true,
+      "jobs": {
+        "jobs_returned": 8,
+        "jobs_reported": 8,
+        "provenance_aligned_jobs": 8,
+        "failed_jobs": 1,
+        "failed_steps": 1,
+        "first_failed_step": {
+          "job_id": 117077484565,
+          "job_name": "governance-report-preview",
+          "step_number": 4,
+          "step_name": "Generate exact workflow rationalisation candidate",
+          "step_completed_at": "2026-10-16T16:26:40Z"
+        },
+        "complete": true,
+        "job_attempt_verified": true
+      }
+    },
+    {
+      "pr": 2075,
+      "source_sha": "f29c870e2395d2fc45ec25ab82a5a4894c9f4b51",
+      "run_id": 38931836223,
+      "workflow": "QPS W111 Power Utility DOW",
+      "attempt": 1,
+      "head": "f29c870e2395d2fc45ec25ab82a5a4894c9f4b51",
+      "event": "pull_request",
+      "native_workflow": "QPS W111 Power Utility DOW",
+      "result": "failure",
+      "pr_link": true,
+      "updated_at": "2026-10-16T16:25:37Z",
+      "authenticated": true,
+      "jobs": {
+        "jobs_returned": 1,
+        "jobs_reported": 1,
+        "provenance_aligned_jobs": 1,
+        "failed_jobs": 1,
+        "failed_steps": 1,
+        "first_failed_step": {
+          "job_id": 117077484285,
+          "job_name": "deterministic-analysis",
+          "step_number": 4,
+          "step_name": "Execute W111 exact-payload DOW analysis",
+          "step_completed_at": "2026-10-16T16:25:35Z"
+        },
+        "complete": true,
+        "job_attempt_verified": true
+      }
+    },
+    {
+      "pr": 2075,
+      "source_sha": "f29c870e2395d2fc45ec25ab82a5a4894c9f4b51",
+      "run_id": 38931836225,
+      "workflow": "CI Workflow Governance",
+      "attempt": 1,
+      "head": "f29c870e2395d2fc45ec25ab82a5a4894c9f4b51",
+      "event": "pull_request",
+      "native_workflow": "CI Workflow Governance",
+      "result": "failure",
+      "pr_link": true,
+      "updated_at": "2026-10-16T16:25:44Z",
+      "authenticated": true,
+      "jobs": {
+        "jobs_returned": 1,
+        "jobs_reported": 1,
+        "provenance_aligned_jobs": 1,
+        "failed_jobs": 1,
+        "failed_steps": 1,
+        "first_failed_step": {
+          "job_id": 117077483857,
+          "job_name": "policy-and-inventory",
+          "step_number": 9,
+          "step_name": "Fail closed on governance red",
+          "step_completed_at": "2026-10-16T16:25:41Z"
+        },
+        "complete": true,
+        "job_attempt_verified": true
+      }
+    },
+    {
+      "pr": 2075,
+      "source_sha": "f29c870e2395d2fc45ec25ab82a5a4894c9f4b51",
+      "run_id": 38931836248,
+      "workflow": "ABACUS v032 - CI/CD Pipeline",
+      "attempt": 1,
+      "head": "f29c870e2395d2fc45ec25ab82a5a4894c9f4b51",
+      "event": "pull_request",
+      "native_workflow": "ABACUS v032 - CI/CD Pipeline",
+      "result": "failure",
+      "pr_link": true,
+      "updated_at": "2026-10-16T16:26:35Z",
+      "authenticated": true,
+      "jobs": {
+        "jobs_returned": 6,
+        "jobs_reported": 6,
+        "provenance_aligned_jobs": 6,
+        "failed_jobs": 1,
+        "failed_steps": 1,
+        "first_failed_step": {
+          "job_id": 117077640179,
+          "job_name": "Test DMAIC Phases",
+          "step_number": 4,
+          "step_name": "Install canonical dependencies",
+          "step_completed_at": "2026-10-16T16:26:31Z"
+        },
+        "complete": true,
+        "job_attempt_verified": true
+      },
+      "log_evidence": {
+        "job_id": 117077640179,
+        "lines": 223,
+        "excerpt": [
+          {
+            "line": 187,
+            "value": "2026-10-16T16:26:31.0271159Z ERROR: Could not find a version that satisfies the requirement matplotlib<4.0.0,>=3.11.2 (from versions: 0.86, 0.86.1, 0.86.2, 0.91.0, 0.91.1, 1.0.1, 1.1.0, 1.1.1, 1.2.0, 1.2.1, 1.3.0, 1.3.1, 1.4.0, 1.4.1rc1, 1.4.1, 1.4.2, 1.4.3, 1.5.0, 1.5.1, 1.5.2, 1.5.3, 2.0.0b1, 2.0.0b2, 2.0.0b3, 2.0.0b"
+          },
+          {
+            "line": 188,
+            "value": "2026-10-16T16:26:31.0273269Z ERROR: No matching distribution found for matplotlib<4.0.0,>=3.11.2"
+          },
+          {
+            "line": 189,
+            "value": "2026-10-16T16:26:31.0655635Z ##[error]Process completed with exit code 1."
+          }
+        ],
+        "signals": [
+          "MATPLOTLIB_RESOLVER"
+        ],
+        "downloaded": true,
+        "causal_root_confirmed": false
+      }
+    },
+    {
+      "pr": 2075,
+      "source_sha": "f29c870e2395d2fc45ec25ab82a5a4894c9f4b51",
+      "run_id": 38931836253,
+      "workflow": "CI - ABACUS Matrix",
+      "attempt": 1,
+      "head": "f29c870e2395d2fc45ec25ab82a5a4894c9f4b51",
+      "event": "pull_request",
+      "native_workflow": "CI - ABACUS Matrix",
+      "result": "failure",
+      "pr_link": true,
+      "updated_at": "2026-10-16T16:33:12Z",
+      "authenticated": true,
+      "jobs": {
+        "jobs_returned": 8,
+        "jobs_reported": 8,
+        "provenance_aligned_jobs": 8,
+        "failed_jobs": 3,
+        "failed_steps": 3,
+        "first_failed_step": {
+          "job_id": 117077654054,
+          "job_name": "ABACUS - ubuntu-24.04 - Python 3.10",
+          "step_number": 6,
+          "step_name": "Install tooling",
+          "step_completed_at": "2026-10-16T16:26:41Z"
+        },
+        "complete": true,
+        "job_attempt_verified": true
+      },
+      "log_evidence": {
+        "job_id": 117077654054,
+        "lines": 945,
+        "excerpt": [
+          {
+            "line": 776,
+            "value": "2026-10-16T16:26:41.7923191Z ERROR: Could not find a version that satisfies the requirement matplotlib<4.0.0,>=3.11.2 (from versions: 0.86, 0.86.1, 0.86.2, 0.91.0, 0.91.1, 1.0.1, 1.1.0, 1.1.1, 1.2.0, 1.2.1, 1.3.0, 1.3.1, 1.4.0, 1.4.1rc1, 1.4.1, 1.4.2, 1.4.3, 1.5.0, 1.5.1, 1.5.2, 1.5.3, 2.0.0b1, 2.0.0b2, 2.0.0b3, 2.0.0b"
+          },
+          {
+            "line": 777,
+            "value": "2026-10-16T16:26:41.7925246Z ERROR: No matching distribution found for matplotlib<4.0.0,>=3.11.2"
+          },
+          {
+            "line": 778,
+            "value": "2026-10-16T16:26:41.8632099Z ##[error]Process completed with exit code 1."
+          }
+        ],
+        "signals": [
+          "MATPLOTLIB_RESOLVER"
+        ],
+        "downloaded": true,
+        "causal_root_confirmed": false
+      }
+    },
+    {
+      "pr": 2075,
+      "source_sha": "f29c870e2395d2fc45ec25ab82a5a4894c9f4b51",
+      "run_id": 38931836317,
+      "workflow": "W105 QPS B1-B2 MIP Probe",
+      "attempt": 1,
+      "head": "f29c870e2395d2fc45ec25ab82a5a4894c9f4b51",
+      "event": "pull_request",
+      "native_workflow": "W105 QPS B1-B2 MIP Probe",
+      "result": "failure",
+      "pr_link": true,
+      "updated_at": "2026-10-16T16:27:33Z",
+      "authenticated": true,
+      "jobs": {
+        "jobs_returned": 1,
+        "jobs_reported": 1,
+        "provenance_aligned_jobs": 1,
+        "failed_jobs": 1,
+        "failed_steps": 1,
+        "first_failed_step": {
+          "job_id": 117077484632,
+          "job_name": "qps-probe",
+          "step_number": 2,
+          "step_name": "Run actions/checkout@v7",
+          "step_completed_at": "2026-10-16T16:27:29Z"
+        },
+        "complete": true,
+        "job_attempt_verified": true
+      }
+    },
+    {
+      "pr": 2076,
+      "source_sha": "7a382b1788d3b692ae4714f9079ddab93c907fa3",
+      "run_id": 38963803336,
+      "workflow": "CI/CD Test Suite",
+      "attempt": 1,
+      "head": "7a382b1788d3b692ae4714f9079ddab93c907fa3",
+      "event": "pull_request",
+      "native_workflow": "CI/CD Test Suite",
+      "result": "failure",
+      "pr_link": true,
+      "updated_at": "2026-10-16T20:58:00Z",
+      "authenticated": true,
+      "jobs": {
+        "jobs_returned": 19,
+        "jobs_reported": 19,
+        "provenance_aligned_jobs": 19,
+        "failed_jobs": 3,
+        "failed_steps": 4,
+        "first_failed_step": {
+          "job_id": 117185162693,
+          "job_name": "Security Scanning",
+          "step_number": 10,
+          "step_name": "PR new-debt ratchet (Bandit)",
+          "step_completed_at": "2026-10-16T20:46:55Z"
+        },
+        "complete": true,
+        "job_attempt_verified": true
+      }
+    },
+    {
+      "pr": 2076,
+      "source_sha": "7a382b1788d3b692ae4714f9079ddab93c907fa3",
+      "run_id": 38963803388,
+      "workflow": "CI Workflow Governance",
+      "attempt": 1,
+      "head": "7a382b1788d3b692ae4714f9079ddab93c907fa3",
+      "event": "pull_request",
+      "native_workflow": "CI Workflow Governance",
+      "result": "failure",
+      "pr_link": true,
+      "updated_at": "2026-10-16T20:46:23Z",
+      "authenticated": true,
+      "jobs": {
+        "jobs_returned": 1,
+        "jobs_reported": 1,
+        "provenance_aligned_jobs": 1,
+        "failed_jobs": 1,
+        "failed_steps": 1,
+        "first_failed_step": {
+          "job_id": 117185163010,
+          "job_name": "policy-and-inventory",
+          "step_number": 9,
+          "step_name": "Fail closed on governance red",
+          "step_completed_at": "2026-10-16T20:46:20Z"
+        },
+        "complete": true,
+        "job_attempt_verified": true
+      }
+    },
+    {
+      "pr": 2077,
+      "source_sha": "133e5a082f74dd99a65bfda5308d7071523904d1",
+      "run_id": 38961401543,
+      "workflow": "CI/CD Test Suite",
+      "attempt": 1,
+      "head": "133e5a082f74dd99a65bfda5308d7071523904d1",
+      "event": "pull_request",
+      "native_workflow": "CI/CD Test Suite",
+      "result": "failure",
+      "pr_link": true,
+      "updated_at": "2026-10-16T20:51:03Z",
+      "authenticated": true,
+      "jobs": {
+        "jobs_returned": 19,
+        "jobs_reported": 19,
+        "provenance_aligned_jobs": 19,
+        "failed_jobs": 3,
+        "failed_steps": 3,
+        "first_failed_step": {
+          "job_id": 117177089359,
+          "job_name": "Security Scanning",
+          "step_number": 11,
+          "step_name": "Enforce security red roots",
+          "step_completed_at": "2026-10-16T20:28:11Z"
+        },
+        "complete": true,
+        "job_attempt_verified": true
+      }
+    },
+    {
+      "pr": 2077,
+      "source_sha": "133e5a082f74dd99a65bfda5308d7071523904d1",
+      "run_id": 38961401569,
+      "workflow": "Validate Docs (Markdown/YAML/JSON)",
+      "attempt": 2,
+      "head": "133e5a082f74dd99a65bfda5308d7071523904d1",
+      "event": "pull_request",
+      "native_workflow": "Validate Docs (Markdown/YAML/JSON)",
+      "result": null,
+      "pr_link": true,
+      "updated_at": "2026-10-17T09:32:20Z",
+      "authenticated": false,
+      "jobs": {
+        "jobs_returned": 1,
+        "jobs_reported": 1,
+        "provenance_aligned_jobs": 1,
+        "failed_jobs": 0,
+        "failed_steps": 0,
+        "first_failed_step": null,
+        "complete": true,
+        "job_attempt_verified": true
+      }
+    },
+    {
+      "pr": 2077,
+      "source_sha": "133e5a082f74dd99a65bfda5308d7071523904d1",
+      "run_id": 38961401660,
+      "workflow": "EVERRED V3 Governed Control Plane",
+      "attempt": 1,
+      "head": "133e5a082f74dd99a65bfda5308d7071523904d1",
+      "event": "pull_request",
+      "native_workflow": "EVERRED V3 Governed Control Plane",
+      "result": "failure",
+      "pr_link": true,
+      "updated_at": "2026-10-16T20:33:45Z",
+      "authenticated": true,
+      "jobs": {
+        "jobs_returned": 4,
+        "jobs_reported": 4,
+        "provenance_aligned_jobs": 4,
+        "failed_jobs": 2,
+        "failed_steps": 4,
+        "first_failed_step": {
+          "job_id": 117178386644,
+          "job_name": "EVERRED source, provenance and negative tests (3.12)",
+          "step_number": 12,
+          "step_name": "Verify committed Black and isort styles",
+          "step_completed_at": "2026-10-16T20:33:03Z"
+        },
+        "complete": true,
+        "job_attempt_verified": true
+      }
+    },
+    {
+      "pr": 2077,
+      "source_sha": "133e5a082f74dd99a65bfda5308d7071523904d1",
+      "run_id": 38961401670,
+      "workflow": "DMAIC V3 Enterprise CI",
+      "attempt": 1,
+      "head": "133e5a082f74dd99a65bfda5308d7071523904d1",
+      "event": "pull_request",
+      "native_workflow": "DMAIC V3 Enterprise CI",
+      "result": "failure",
+      "pr_link": true,
+      "updated_at": "2026-10-16T20:43:36Z",
+      "authenticated": true,
+      "jobs": {
+        "jobs_returned": 18,
+        "jobs_reported": 18,
+        "provenance_aligned_jobs": 18,
+        "failed_jobs": 4,
+        "failed_steps": 4,
+        "first_failed_step": {
+          "job_id": 117177091740,
+          "job_name": "Test Python 3.9 on windows-latest",
+          "step_number": 6,
+          "step_name": "Install dev dependencies",
+          "step_completed_at": "2026-10-16T20:29:26Z"
+        },
+        "complete": true,
+        "job_attempt_verified": true
+      }
+    },
+    {
+      "pr": 2077,
+      "source_sha": "133e5a082f74dd99a65bfda5308d7071523904d1",
+      "run_id": 38961401710,
+      "workflow": "CI Workflow Governance",
+      "attempt": 2,
+      "head": "133e5a082f74dd99a65bfda5308d7071523904d1",
+      "event": "pull_request",
+      "native_workflow": "CI Workflow Governance",
+      "result": "failure",
+      "pr_link": true,
+      "updated_at": "2026-10-17T09:02:52Z",
+      "authenticated": true,
+      "jobs": {
+        "jobs_returned": 1,
+        "jobs_reported": 1,
+        "provenance_aligned_jobs": 1,
+        "failed_jobs": 1,
+        "failed_steps": 1,
+        "first_failed_step": {
+          "job_id": 117358663821,
+          "job_name": "policy-and-inventory",
+          "step_number": 9,
+          "step_name": "Fail closed on governance red",
+          "step_completed_at": "2026-10-17T09:02:49Z"
+        },
+        "complete": true,
+        "job_attempt_verified": true
+      }
+    },
+    {
+      "pr": 2080,
+      "source_sha": "db5d8c2c5da6abd27ea0872f3de1a0356d8928a0",
+      "run_id": 38955426268,
+      "workflow": "Validate Docs (Markdown/YAML/JSON)",
+      "attempt": 2,
+      "head": "db5d8c2c5da6abd27ea0872f3de1a0356d8928a0",
+      "event": "pull_request",
+      "native_workflow": "Validate Docs (Markdown/YAML/JSON)",
+      "result": "failure",
+      "pr_link": true,
+      "updated_at": "2026-10-16T20:50:11Z",
+      "authenticated": true,
+      "jobs": {
+        "jobs_returned": 1,
+        "jobs_reported": 1,
+        "provenance_aligned_jobs": 1,
+        "failed_jobs": 1,
+        "failed_steps": 1,
+        "first_failed_step": {
+          "job_id": 117186924325,
+          "job_name": "Changed docs lint",
+          "step_number": 7,
+          "step_name": "Validate changed docs",
+          "step_completed_at": "2026-10-16T20:50:07Z"
+        },
+        "complete": true,
+        "job_attempt_verified": true
+      }
+    },
+    {
+      "pr": 2080,
+      "source_sha": "db5d8c2c5da6abd27ea0872f3de1a0356d8928a0",
+      "run_id": 38955426416,
+      "workflow": "ABACUS v032 - CI/CD Pipeline",
+      "attempt": 1,
+      "head": "db5d8c2c5da6abd27ea0872f3de1a0356d8928a0",
+      "event": "pull_request",
+      "native_workflow": "ABACUS v032 - CI/CD Pipeline",
+      "result": "failure",
+      "pr_link": true,
+      "updated_at": "2026-10-16T19:31:07Z",
+      "authenticated": true,
+      "jobs": {
+        "jobs_returned": 6,
+        "jobs_reported": 6,
+        "provenance_aligned_jobs": 6,
+        "failed_jobs": 1,
+        "failed_steps": 1,
+        "first_failed_step": {
+          "job_id": 117157143690,
+          "job_name": "Test DMAIC Phases",
+          "step_number": 4,
+          "step_name": "Install canonical dependencies",
+          "step_completed_at": "2026-10-16T19:31:03Z"
+        },
+        "complete": true,
+        "job_attempt_verified": true
+      },
+      "log_evidence": {
+        "job_id": 117157143690,
+        "lines": 223,
+        "excerpt": [
+          {
+            "line": 187,
+            "value": "2026-10-16T19:31:03.9192850Z ERROR: Could not find a version that satisfies the requirement matplotlib<4.0.0,>=3.11.2 (from versions: 0.86, 0.86.1, 0.86.2, 0.91.0, 0.91.1, 1.0.1, 1.1.0, 1.1.1, 1.2.0, 1.2.1, 1.3.0, 1.3.1, 1.4.0, 1.4.1rc1, 1.4.1, 1.4.2, 1.4.3, 1.5.0, 1.5.1, 1.5.2, 1.5.3, 2.0.0b1, 2.0.0b2, 2.0.0b3, 2.0.0b"
+          },
+          {
+            "line": 188,
+            "value": "2026-10-16T19:31:03.9197005Z ERROR: No matching distribution found for matplotlib<4.0.0,>=3.11.2"
+          },
+          {
+            "line": 189,
+            "value": "2026-10-16T19:31:03.9645923Z ##[error]Process completed with exit code 1."
+          }
+        ],
+        "signals": [
+          "MATPLOTLIB_RESOLVER"
+        ],
+        "downloaded": true,
+        "causal_root_confirmed": false
+      }
+    },
+    {
+      "pr": 2080,
+      "source_sha": "db5d8c2c5da6abd27ea0872f3de1a0356d8928a0",
+      "run_id": 38955426428,
+      "workflow": "CI/CD Test Suite",
+      "attempt": 1,
+      "head": "db5d8c2c5da6abd27ea0872f3de1a0356d8928a0",
+      "event": "pull_request",
+      "native_workflow": "CI/CD Test Suite",
+      "result": "failure",
+      "pr_link": true,
+      "updated_at": "2026-10-16T19:38:53Z",
+      "authenticated": true,
+      "jobs": {
+        "jobs_returned": 19,
+        "jobs_reported": 19,
+        "provenance_aligned_jobs": 19,
+        "failed_jobs": 3,
+        "failed_steps": 3,
+        "first_failed_step": {
+          "job_id": 117156970379,
+          "job_name": "Security Scanning",
+          "step_number": 11,
+          "step_name": "Enforce security red roots",
+          "step_completed_at": "2026-10-16T19:31:12Z"
+        },
+        "complete": true,
+        "job_attempt_verified": true
+      }
+    },
+    {
+      "pr": 2080,
+      "source_sha": "db5d8c2c5da6abd27ea0872f3de1a0356d8928a0",
+      "run_id": 38955427526,
+      "workflow": "CI - ABACUS Matrix",
+      "attempt": 1,
+      "head": "db5d8c2c5da6abd27ea0872f3de1a0356d8928a0",
+      "event": "pull_request",
+      "native_workflow": "CI - ABACUS Matrix",
+      "result": "failure",
+      "pr_link": true,
+      "updated_at": "2026-10-16T19:37:44Z",
+      "authenticated": true,
+      "jobs": {
+        "jobs_returned": 7,
+        "jobs_reported": 7,
+        "provenance_aligned_jobs": 7,
+        "failed_jobs": 4,
+        "failed_steps": 4,
+        "first_failed_step": {
+          "job_id": 117157033289,
+          "job_name": "ABACUS - ubuntu-24.04 - Python 3.10",
+          "step_number": 6,
+          "step_name": "Install tooling",
+          "step_completed_at": "2026-10-16T19:30:55Z"
+        },
+        "complete": true,
+        "job_attempt_verified": true
+      },
+      "log_evidence": {
+        "job_id": 117157033289,
+        "lines": 950,
+        "excerpt": [
+          {
+            "line": 781,
+            "value": "2026-10-16T19:30:55.8494719Z ERROR: Could not find a version that satisfies the requirement matplotlib<4.0.0,>=3.11.2 (from versions: 0.86, 0.86.1, 0.86.2, 0.91.0, 0.91.1, 1.0.1, 1.1.0, 1.1.1, 1.2.0, 1.2.1, 1.3.0, 1.3.1, 1.4.0, 1.4.1rc1, 1.4.1, 1.4.2, 1.4.3, 1.5.0, 1.5.1, 1.5.2, 1.5.3, 2.0.0b1, 2.0.0b2, 2.0.0b3, 2.0.0b"
+          },
+          {
+            "line": 782,
+            "value": "2026-10-16T19:30:55.8496980Z ERROR: No matching distribution found for matplotlib<4.0.0,>=3.11.2"
+          },
+          {
+            "line": 783,
+            "value": "2026-10-16T19:30:55.9214661Z ##[error]Process completed with exit code 1."
+          }
+        ],
+        "signals": [
+          "MATPLOTLIB_RESOLVER"
+        ],
+        "downloaded": true,
+        "causal_root_confirmed": false
+      }
+    },
+    {
+      "pr": 2082,
+      "source_sha": "0b02071aa6e8e80ad9870b69d32348c0945feaf6",
+      "run_id": 38957128488,
+      "workflow": "Semgrep",
+      "attempt": 1,
+      "head": "0b02071aa6e8e80ad9870b69d32348c0945feaf6",
+      "event": "pull_request",
+      "native_workflow": "Semgrep",
+      "result": "failure",
+      "pr_link": true,
+      "updated_at": "2026-10-16T19:46:52Z",
+      "authenticated": true,
+      "jobs": {
+        "jobs_returned": 1,
+        "jobs_reported": 1,
+        "provenance_aligned_jobs": 1,
+        "failed_jobs": 1,
+        "failed_steps": 1,
+        "first_failed_step": {
+          "job_id": 117162695589,
+          "job_name": "Semgrep SAST",
+          "step_number": 6,
+          "step_name": "Upload SARIF to GitHub Security tab",
+          "step_completed_at": "2026-10-16T19:46:50Z"
+        },
+        "complete": true,
+        "job_attempt_verified": true
+      }
+    },
+    {
+      "pr": 2082,
+      "source_sha": "0b02071aa6e8e80ad9870b69d32348c0945feaf6",
+      "run_id": 38957128813,
+      "workflow": "CI/CD Test Suite",
+      "attempt": 1,
+      "head": "0b02071aa6e8e80ad9870b69d32348c0945feaf6",
+      "event": "pull_request",
+      "native_workflow": "CI/CD Test Suite",
+      "result": "failure",
+      "pr_link": true,
+      "updated_at": "2026-10-16T19:52:17Z",
+      "authenticated": true,
+      "jobs": {
+        "jobs_returned": 19,
+        "jobs_reported": 19,
+        "provenance_aligned_jobs": 19,
+        "failed_jobs": 2,
+        "failed_steps": 2,
+        "first_failed_step": {
+          "job_id": 117162696155,
+          "job_name": "Security Scanning",
+          "step_number": 11,
+          "step_name": "Enforce security red roots",
+          "step_completed_at": "2026-10-16T19:45:10Z"
+        },
+        "complete": true,
+        "job_attempt_verified": true
+      }
+    },
+    {
+      "pr": 2082,
+      "source_sha": "0b02071aa6e8e80ad9870b69d32348c0945feaf6",
+      "run_id": 38957129403,
+      "workflow": "OSV-Scanner",
+      "attempt": 1,
+      "head": "0b02071aa6e8e80ad9870b69d32348c0945feaf6",
+      "event": "pull_request",
+      "native_workflow": "OSV-Scanner",
+      "result": "failure",
+      "pr_link": true,
+      "updated_at": "2026-10-16T19:46:05Z",
+      "authenticated": true,
+      "jobs": {
+        "jobs_returned": 1,
+        "jobs_reported": 1,
+        "provenance_aligned_jobs": 1,
+        "failed_jobs": 1,
+        "failed_steps": 1,
+        "first_failed_step": {
+          "job_id": 117162696792,
+          "job_name": "OSV Scan (PR — blocks on new vulns) / osv-scan",
+          "step_number": 14,
+          "step_name": "Upload to code-scanning",
+          "step_completed_at": "2026-10-16T19:46:01Z"
+        },
+        "complete": true,
+        "job_attempt_verified": true
+      }
+    },
+    {
+      "pr": 2083,
+      "source_sha": "88d33855dd7a486fa0ca49b9f2c8c7687e5dd782",
+      "run_id": 38958524460,
+      "workflow": "CI/CD Test Suite",
+      "attempt": 2,
+      "head": "88d33855dd7a486fa0ca49b9f2c8c7687e5dd782",
+      "event": "pull_request",
+      "native_workflow": "CI/CD Test Suite",
+      "result": null,
+      "pr_link": true,
+      "updated_at": "2026-10-17T09:32:22Z",
+      "authenticated": false,
+      "jobs": {
+        "jobs_returned": 18,
+        "jobs_reported": 18,
+        "provenance_aligned_jobs": 18,
+        "failed_jobs": 1,
+        "failed_steps": 1,
+        "first_failed_step": {
+          "job_id": 117364113844,
+          "job_name": "Code Quality Checks",
+          "step_number": 12,
+          "step_name": "Enforce code-quality red roots",
+          "step_completed_at": "2026-10-16T19:58:32Z"
+        },
+        "complete": true,
+        "job_attempt_verified": true
+      }
+    },
+    {
+      "pr": 2083,
+      "source_sha": "88d33855dd7a486fa0ca49b9f2c8c7687e5dd782",
+      "run_id": 38958524644,
+      "workflow": "CI Workflow Governance",
+      "attempt": 3,
+      "head": "88d33855dd7a486fa0ca49b9f2c8c7687e5dd782",
+      "event": "pull_request",
+      "native_workflow": "CI Workflow Governance",
+      "result": "failure",
+      "pr_link": true,
+      "updated_at": "2026-10-16T21:27:58Z",
+      "authenticated": true,
+      "jobs": {
+        "jobs_returned": 1,
+        "jobs_reported": 1,
+        "provenance_aligned_jobs": 1,
+        "failed_jobs": 1,
+        "failed_steps": 1,
+        "first_failed_step": {
+          "job_id": 117204201467,
+          "job_name": "policy-and-inventory",
+          "step_number": 9,
+          "step_name": "Fail closed on governance red",
+          "step_completed_at": "2026-10-16T21:27:54Z"
+        },
+        "complete": true,
+        "job_attempt_verified": true
+      }
+    }
+  ]
+}
