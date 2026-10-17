@@ -12,7 +12,7 @@ m = importlib.util.module_from_spec(SPEC)
 SPEC.loader.exec_module(m)
 
 
-def pulse(i):
+def pulse(i, include_bandit=False):
     """One source-bound Bandit population per pulse; separate CI controls."""
     sha = str(i) * 40
     run_id, job_id = 100 + i, 200 + i
@@ -27,7 +27,7 @@ def pulse(i):
         ),
     }
     roots = []
-    for j in range(i):
+    for j in range(i if include_bandit else 0):
         roots.append(
             {
                 "root_id": f"BD-{i:012x}{j:012x}",
@@ -54,7 +54,7 @@ def pulse(i):
     return {
         "schema": "bd.ldab.joined.census.v1",
         "scope": scope,
-        "metrics": {"full_bandit_unique": i, "comparable_delta": None},
+        "metrics": {"full_bandit_unique": i if include_bandit else 0, "comparable_delta": None},
         "roots": roots,
         "merge_admission": "HOLD",
         "security_disposition": "INDEPENDENT_REVIEW_REQUIRED",
@@ -258,7 +258,8 @@ def test_ci_root_does_not_inflate_bandit_denominator():
     ],
 )
 def test_reject_remaining_unbound_census_shapes(change):
-    rows = [pulse(i) for i in (1, 2, 3)]
+    # Populate the positive Bandit case before mutating a root in-place.
+    rows = [pulse(i, include_bandit=True) for i in (1, 2, 3)]
     change(rows[1])
     with pytest.raises(ValueError):
         m.rollup(rows)
