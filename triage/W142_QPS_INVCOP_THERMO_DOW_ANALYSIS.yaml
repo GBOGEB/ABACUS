@@ -30,7 +30,7 @@ supersession:
   reason: W135_W136_direct_offer_source_correction_proved_5pct_was_applied_to_power_not_denominator
   current_engineering_semantics_source: QPS_W142_child_contract
 
-current_controlled_LKT_2K_OP:
+current_controlled_SUPPLIER_B_2K_OP:
   evidence_class: CURRENT_BIDDER_SOURCE_PLUS_CONTROLLED_REPRODUCTION
   direct_refrigerator_terms_kW:
     HP: 814.0
@@ -132,7 +132,7 @@ output_receipt:
   return_to: GBOGEB/CODEX
 
 DoD:
-  corrected_current_LKT_view: PASS
+  corrected_current_SUPPLIER_B_view: PASS
   historical_W111_immutability: PASS
   stale_153p13_interpretation_quarantined: PASS
   isothermal_isentropic_view_contract: PASS

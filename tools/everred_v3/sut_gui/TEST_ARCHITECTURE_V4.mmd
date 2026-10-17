@@ -1,0 +1,38 @@
+flowchart TB
+ subgraph PRODUCE["Evidence producers | configured ≠ executed"]
+  TEST["Standard tests: unittest / pytest / B0 / matrix"]
+  HUMAN["User/SUT preflight: authenticated local testflight"]
+  STATIC["Static bots: Ruff / Flake8 / Black / isort"]
+  SECURITY["Security: Bandit / OSV / Safety / CodeQL"]
+  RUNTIME["Runtime: Docker / RHEL / LLDB / LDAB"]
+ end
+ subgraph CONTROL["Nonvisual control backbone"]
+  API["Read-only native run/job and artifact collectors"]
+  JSON["Source-bound JSON: repository / SHA / run / attempt / job / config"]
+  RCA["EVERRED root candidates, evidence, independent causal confirmation"]
+  MODELS["PCA timing diagnostics / qualified BT matched trials"]
+ end
+ subgraph VIEW["Human-facing GUI / independent admission"]
+  HTML["HTML chronology, DMAIC thresholds, test taxonomy / KPI"]
+  DECISION{"Independent security + reviews + protected main?"}
+  HOLD["NO: admission HOLD"]
+  READY["YES: eligible for authorized merge only"]
+ end
+ TEST --> API
+ HUMAN --> API
+ STATIC --> API
+ SECURITY --> API
+ RUNTIME --> API
+ API --> JSON
+ JSON --> RCA
+ JSON --> MODELS
+ JSON --> HTML
+ RCA --> DECISION
+ DECISION -->|NO| HOLD
+ DECISION -->|YES conditional| READY
+ classDef decision fill:#26344b,stroke:#c2a2ff,color:#ffffff
+ classDef hold fill:#57212a,stroke:#ff9f9f,color:#ffffff
+ classDef yes fill:#12412f,stroke:#77e2b0,color:#ffffff
+ class DECISION decision
+ class HOLD hold
+ class READY yes

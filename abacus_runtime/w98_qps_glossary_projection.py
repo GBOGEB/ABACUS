@@ -11,7 +11,7 @@ def project(rows: list[dict]) -> dict:
     unresolved = [r for r in ordered if r.get("disposition") == "DEFER_SOURCE"]
     qps = [r for r in ordered if r.get("scope") in {"QPS", "PROJECT_WIDE"}]
     qplant = [r for r in ordered if r.get("scope") in {"QPS", "QPLANT", "WCS", "QRB"}]
-    applicants = [r for r in ordered if r.get("authority") in {"ALAT_APPLICANT", "LKT_APPLICANT"}]
+    applicants = [r for r in ordered if r.get("authority") in {"SUPPLIER_A_APPLICANT", "SUPPLIER_B_APPLICANT"}]
     return {
         "total_terms": len(ordered),
         "source_exact_terms": sum(r.get("source_exactness") == "SOURCE_EXACT" for r in ordered),

@@ -1,0 +1,145 @@
+name: DOW Remaining-Gates Telemetry
+
+on:
+  pull_request:
+    paths:
+      - "scripts/dow_gate_telemetry.py"
+      - "tests/test_dow_gate_telemetry.py"
+      - "scripts/recovery_five_lane_evidence.py"
+      - "tests/test_recovery_five_lane_evidence.py"
+      - ".github/workflows/dow-remaining-gates-telemetry.yml"
+      - "docs/ci/DOW_REMAINING_GATES_TELEMETRY.md"
+  workflow_dispatch:
+  schedule:
+    - cron: "41 */6 * * *"
+
+permissions:
+  contents: read
+  actions: read
+  pull-requests: read
+
+concurrency:
+  group: dow-remaining-gates-telemetry-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  remaining-gates:
+    name: Exact-main / exact-PR evidence and downstream impact
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      # Immutable checkout v4.2.2
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          fetch-depth: 0
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+      # Immutable setup-python v5.6.0
+      - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065
+        with:
+          python-version: "3.11"
+      - name: Pin the executed source and install telemetry dependency
+        env:
+          EXPECTED_HEAD: ${{ github.event.pull_request.head.sha || github.sha }}
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$EXPECTED_HEAD"
+          python -m pip install PyYAML==6.0.3
+          python -m unittest discover -s tests \
+            -p test_dow_gate_telemetry.py -v
+          python -m unittest discover -s tests \
+            -p test_recovery_five_lane_evidence.py -v
+      - name: Collect exact-source GitHub observations (read-only)
+        env:
+          GH_TOKEN: ${{ github.token }}
+          TARGET_HEAD: ${{ github.event.pull_request.head.sha || github.sha }}
+        run: |
+          set -euo pipefail
+          export SNAPSHOT_DIR="$RUNNER_TEMP/dow-gate-snapshot"
+          mkdir -p "$SNAPSHOT_DIR"
+          gh api \
+            "repos/$GITHUB_REPOSITORY/branches/main" \
+            > "$SNAPSHOT_DIR/branch.json"
+          export MAIN_SHA
+          MAIN_SHA="$(python - <<'PY'
+          import json
+          import os
+          from pathlib import Path
+          p = Path(os.environ["SNAPSHOT_DIR"]) / "branch.json"
+          print(json.loads(p.read_text())["commit"]["sha"])
+          PY
+          )"
+          test "${#MAIN_SHA}" -eq 40
+          test "${#TARGET_HEAD}" -eq 40
+          echo "MAIN_SHA=$MAIN_SHA" >> "$GITHUB_ENV"
+          echo "TARGET_HEAD=$TARGET_HEAD" >> "$GITHUB_ENV"
+          git cat-file -e "$MAIN_SHA^{commit}"
+          git show "$MAIN_SHA:.github/workflows/cd-unified.yml" \
+            > "$SNAPSHOT_DIR/cd-unified.yml"
+          API_ROOT="repos/$GITHUB_REPOSITORY/actions"
+          join_pages() {
+            local field="$1"
+            jq -c --arg field "$field" '
+              . as $pages
+              | ([$pages[] | .[$field][]] | unique_by(.id)) as $records
+              | ([$pages[].total_count] | max) as $declared
+              | {
+                  total_count: ([$declared, ($records | length)] | max),
+                  source_complete: (
+                    ([$pages[].total_count] | unique | length) == 1
+                    and $declared == ($records | length)
+                  ),
+                  ($field): $records
+                }
+            '
+          }
+          gh api --paginate --slurp \
+            "$API_ROOT/runs?head_sha=$MAIN_SHA&per_page=100" \
+            | join_pages workflow_runs \
+            > "$SNAPSHOT_DIR/main-runs.json"
+          if [ "$TARGET_HEAD" = "$MAIN_SHA" ]; then
+            cp "$SNAPSHOT_DIR/main-runs.json" "$SNAPSHOT_DIR/head-runs.json"
+          else
+            gh api --paginate --slurp \
+              "$API_ROOT/runs?head_sha=$TARGET_HEAD&per_page=100" \
+              | join_pages workflow_runs \
+              > "$SNAPSHOT_DIR/head-runs.json"
+          fi
+          export DOW_RUN
+          DOW_RUN="$(python - <<'PY'
+          import json, os
+          path = os.environ["SNAPSHOT_DIR"] + "/main-runs.json"
+          payload = json.load(open(path))
+          rows = [r for r in payload.get("workflow_runs", [])
+                  if r.get("name") == (
+                      "DOW + Recursive DMAIC - Unified CD Pipeline"
+                  )
+                  and r.get("head_sha") == os.environ["MAIN_SHA"]]
+          print(max(rows, key=lambda r: (r.get("created_at",""), r["id"]))["id"]
+                if rows else "")
+          PY
+          )"
+          if [ -n "$DOW_RUN" ]; then
+            gh api --paginate --slurp \
+              "$API_ROOT/runs/$DOW_RUN/jobs?per_page=100" \
+              | join_pages jobs \
+              > "$SNAPSHOT_DIR/dow-jobs.json"
+          fi
+      - name: Generate machine-readable receipt and operator report
+        run: |
+          set -euo pipefail
+          python scripts/dow_gate_telemetry.py \
+            --snapshot-dir "$RUNNER_TEMP/dow-gate-snapshot" \
+            --workflow "$RUNNER_TEMP/dow-gate-snapshot/cd-unified.yml" \
+            --main-sha "$MAIN_SHA" \
+            --head-sha "$TARGET_HEAD" \
+            --output-dir "$RUNNER_TEMP/dow-gate-report"
+          cat "$RUNNER_TEMP/dow-gate-report/remaining-gates.md" \
+            >> "$GITHUB_STEP_SUMMARY"
+      # Immutable upload-artifact v4.6.2
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: dow-gates-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/dow-gate-report/
+          if-no-files-found: warn

@@ -11988,7 +11988,7 @@
         {
           "slide_number": 13,
           "title": "",
-          "all_text": "13\nThe feed at 8K without LHe Dewar and phase separator sub-cooler is a special operations mode that had been developed with the cryoplant supplier Linde Kryotechnik before the testing started so this special mode was needed, why ?\n\nA first inspection after temperature stabilization but before cooldown completion did not reveal severe cold spots or moisture formation on the long cryoline, however some cold spots on valveboxes due to heat conduction.\n\nEven though the detected issues, particularly the valve TAO, were substantial, we proceeded with heat load determination to find out more about the system, it’s capabilities and limitations.\n\nTo determine the overall heat load of the CDS without CMs and its liquid helium vessels, we operated the system at 8K, making sure to have one phase and sensible heat to deal with only. Okay, but in normal operation, this is also what we get ..\nAlso, we wanted to test in a temperature range yielding moderate specific heat capacity gradients and consequently better resolution of the temperature measurements ok so this mode is mainly for better resolution, not because there is no other way since no phase separator ,\nSummary (at cold)\nCold spots\nTAOs in the Ell VBX\nStatic heat loads at 8 K\n2024 - Commissioning of the cryogenic distribution of the ESS Linac.pdf",
+          "all_text": "13\nThe feed at 8K without LHe Dewar and phase separator sub-cooler is a special operations mode that had been developed with the cryoplant supplier Vendor_2 Kryotechnik before the testing started so this special mode was needed, why ?\n\nA first inspection after temperature stabilization but before cooldown completion did not reveal severe cold spots or moisture formation on the long cryoline, however some cold spots on valveboxes due to heat conduction.\n\nEven though the detected issues, particularly the valve TAO, were substantial, we proceeded with heat load determination to find out more about the system, it’s capabilities and limitations.\n\nTo determine the overall heat load of the CDS without CMs and its liquid helium vessels, we operated the system at 8K, making sure to have one phase and sensible heat to deal with only. Okay, but in normal operation, this is also what we get ..\nAlso, we wanted to test in a temperature range yielding moderate specific heat capacity gradients and consequently better resolution of the temperature measurements ok so this mode is mainly for better resolution, not because there is no other way since no phase separator ,\nSummary (at cold)\nCold spots\nTAOs in the Ell VBX\nStatic heat loads at 8 K\n2024 - Commissioning of the cryogenic distribution of the ESS Linac.pdf",
           "notes": "",
           "layout_name": "Text Slide 2",
           "shapes": [
@@ -12004,7 +12004,7 @@
             {
               "type": "TEXT_BOX (17)",
               "has_text": true,
-              "text": "The feed at 8K without LHe Dewar and phase separator sub-cooler is a special operations mode that had been developed with the cryoplant supplier Linde Kryotechnik before the testing started so this special mode was needed, why ?\n\nA first inspection after temperature stabilization but before cooldown completion did not reveal severe cold spots or moisture formation on the long cryoline, however some cold spots on valveboxes due to heat conduction.\n\nEven though the detected issues, particularly the valve TAO, were substantial, we proceeded with heat load determination to find out more about the system, it’s capabilities and limitations.\n\nTo determine the overall heat load of the CDS without CMs and its liquid helium vessels, we operated the system at 8K, making sure to have one phase and sensible heat to deal with only. Okay, but in normal operation, this is also what we get ..\nAlso, we wanted to test in a temperature range yielding moderate specific heat capacity gradients and consequently better resolution of the temperature measurements ok so this mode is mainly for better resolution, not because there is no other way since no phase separator ,",
+              "text": "The feed at 8K without LHe Dewar and phase separator sub-cooler is a special operations mode that had been developed with the cryoplant supplier Vendor_2 Kryotechnik before the testing started so this special mode was needed, why ?\n\nA first inspection after temperature stabilization but before cooldown completion did not reveal severe cold spots or moisture formation on the long cryoline, however some cold spots on valveboxes due to heat conduction.\n\nEven though the detected issues, particularly the valve TAO, were substantial, we proceeded with heat load determination to find out more about the system, it’s capabilities and limitations.\n\nTo determine the overall heat load of the CDS without CMs and its liquid helium vessels, we operated the system at 8K, making sure to have one phase and sensible heat to deal with only. Okay, but in normal operation, this is also what we get ..\nAlso, we wanted to test in a temperature range yielding moderate specific heat capacity gradients and consequently better resolution of the temperature measurements ok so this mode is mainly for better resolution, not because there is no other way since no phase separator ,",
               "is_image": false,
               "is_chart": false,
               "is_table": false,
@@ -12044,7 +12044,7 @@
           "has_media": false,
           "text_runs": [
             "13",
-            "The feed at 8K without LHe Dewar and phase separator sub-cooler is a special operations mode that had been developed with the cryoplant supplier Linde Kryotechnik before the testing started so this special mode was needed, why ?\n\nA first inspection after temperature stabilization but before cooldown completion did not reveal severe cold spots or moisture formation on the long cryoline, however some cold spots on valveboxes due to heat conduction.\n\nEven though the detected issues, particularly the valve TAO, were substantial, we proceeded with heat load determination to find out more about the system, it’s capabilities and limitations.\n\nTo determine the overall heat load of the CDS without CMs and its liquid helium vessels, we operated the system at 8K, making sure to have one phase and sensible heat to deal with only. Okay, but in normal operation, this is also what we get ..\nAlso, we wanted to test in a temperature range yielding moderate specific heat capacity gradients and consequently better resolution of the temperature measurements ok so this mode is mainly for better resolution, not because there is no other way since no phase separator ,",
+            "The feed at 8K without LHe Dewar and phase separator sub-cooler is a special operations mode that had been developed with the cryoplant supplier Vendor_2 Kryotechnik before the testing started so this special mode was needed, why ?\n\nA first inspection after temperature stabilization but before cooldown completion did not reveal severe cold spots or moisture formation on the long cryoline, however some cold spots on valveboxes due to heat conduction.\n\nEven though the detected issues, particularly the valve TAO, were substantial, we proceeded with heat load determination to find out more about the system, it’s capabilities and limitations.\n\nTo determine the overall heat load of the CDS without CMs and its liquid helium vessels, we operated the system at 8K, making sure to have one phase and sensible heat to deal with only. Okay, but in normal operation, this is also what we get ..\nAlso, we wanted to test in a temperature range yielding moderate specific heat capacity gradients and consequently better resolution of the temperature measurements ok so this mode is mainly for better resolution, not because there is no other way since no phase separator ,",
             "Summary (at cold)\nCold spots\nTAOs in the Ell VBX\nStatic heat loads at 8 K",
             "2024 - Commissioning of the cryogenic distribution of the ESS Linac.pdf"
           ]
@@ -17532,7 +17532,7 @@
             {
               "type": "TEXT_BOX (17)",
               "has_text": true,
-              "text": "DSBT D2.1",
+              "text": "SUPPLIER_C D2.1",
               "is_image": false,
               "is_chart": false,
               "is_table": false,
@@ -17599,7 +17599,7 @@
           "has_media": false,
           "text_runs": [
             "7",
-            "DSBT D2.1",
+            "SUPPLIER_C D2.1",
             "Constraints of 4K operation ATS-1869",
             "When do we need/trigger He Recovery\nThis can be planned or unplanned events\n\nScenario A) planned, normal scenario\nA1) During QCELL emptying of the LHe inventory\n\nScenario B) unplanned, abnormal scenario\nB1) Trip of QPLANT Cold Compressors only\nB2) Trip of QPLANT in general; not just Cold Compressors\nB3) QCELL valves missbehaiving so that circuit A'-B' pressurizes\n\nScenario C) unplanned, utility issues\nC1) Loss of Water on WCS\nC2) Loss of electricity on WCS\nC3) Loss of electricity QPLANT wide\n\n\nScenario C) unplanned, safety scenario\nC1) safety incident causes pressurization of circuit A'-B' [loss of INVAC or BVAC]\nC2) safety incident causes pressurization of QRB circuits",
             "Green = QPLANT’s He Recovery path is happy\nOrange = QPLANT’s He Recovery path is down, but can be restarted\n\u000bRed =",
@@ -17643,7 +17643,7 @@
             {
               "type": "TEXT_BOX (17)",
               "has_text": true,
-              "text": "DSBT D2.1",
+              "text": "SUPPLIER_C D2.1",
               "is_image": false,
               "is_chart": false,
               "is_table": false,
@@ -17719,7 +17719,7 @@
           "has_media": false,
           "text_runs": [
             "8",
-            "DSBT D2.1",
+            "SUPPLIER_C D2.1",
             "! Start during “4K operation”",
             "! Start during “2K operation”"
           ]
@@ -17761,7 +17761,7 @@
             {
               "type": "TEXT_BOX (17)",
               "has_text": true,
-              "text": "DSBT D2.1",
+              "text": "SUPPLIER_C D2.1",
               "is_image": false,
               "is_chart": false,
               "is_table": false,
@@ -17774,13 +17774,13 @@
           "has_media": false,
           "text_runs": [
             "9",
-            "DSBT D2.1"
+            "SUPPLIER_C D2.1"
           ]
         },
         {
           "slide_number": 10,
           "title": "",
-          "all_text": "10\n1 Warm Compressor\n350 kW\n110 g/s\n72 Hz\n1-15 bara\nBelow some back of the envelope estimations\n \nLHe inside the LINAC during operation: \n900L (= 24QM * 90L + 160L for QVE)\nThis is around 110 kg\nBallon sizing\n1 Kg of GHe at 1bar = 5.5 m3\n110 kg is 600 m3\nEach of QPLANT Warm Compressor (we will have 3-4)\nRated at 350 kW elec power for 110 g/s [at 72Hz, not 60Hz]\nCompress from 1bar to 15bar (pressure of our storage tanks)\nIn case of incident during black out\nrecovery needs around 100-200 g/s when the full QPLANT is off [see screenshot below from DSBT estimates]\nif linac was at 2K, then start up of recovery needed after 1h\nif linac was at 4K-standby, then start up is already within 15min!\nrecovery flow rate drops to 20-40 g/s if QPLANT is still partially under operation (thermal shield cooling still OK)\nMachine protection\nSafety devices protects the linac against overpressure. Release pressure is slightly lower than 2bar. \nIn this scenario we gradually vent the He inventory to ambient via safety valves. No burst discs will be triggered during this event.",
+          "all_text": "10\n1 Warm Compressor\n350 kW\n110 g/s\n72 Hz\n1-15 bara\nBelow some back of the envelope estimations\n \nLHe inside the LINAC during operation: \n900L (= 24QM * 90L + 160L for QVE)\nThis is around 110 kg\nBallon sizing\n1 Kg of GHe at 1bar = 5.5 m3\n110 kg is 600 m3\nEach of QPLANT Warm Compressor (we will have 3-4)\nRated at 350 kW elec power for 110 g/s [at 72Hz, not 60Hz]\nCompress from 1bar to 15bar (pressure of our storage tanks)\nIn case of incident during black out\nrecovery needs around 100-200 g/s when the full QPLANT is off [see screenshot below from SUPPLIER_C estimates]\nif linac was at 2K, then start up of recovery needed after 1h\nif linac was at 4K-standby, then start up is already within 15min!\nrecovery flow rate drops to 20-40 g/s if QPLANT is still partially under operation (thermal shield cooling still OK)\nMachine protection\nSafety devices protects the linac against overpressure. Release pressure is slightly lower than 2bar. \nIn this scenario we gradually vent the He inventory to ambient via safety valves. No burst discs will be triggered during this event.",
           "notes": "",
           "layout_name": "Text Slide",
           "shapes": [
@@ -17814,7 +17814,7 @@
             {
               "type": "TEXT_BOX (17)",
               "has_text": true,
-              "text": "Below some back of the envelope estimations\n \nLHe inside the LINAC during operation: \n900L (= 24QM * 90L + 160L for QVE)\nThis is around 110 kg\nBallon sizing\n1 Kg of GHe at 1bar = 5.5 m3\n110 kg is 600 m3\nEach of QPLANT Warm Compressor (we will have 3-4)\nRated at 350 kW elec power for 110 g/s [at 72Hz, not 60Hz]\nCompress from 1bar to 15bar (pressure of our storage tanks)\nIn case of incident during black out\nrecovery needs around 100-200 g/s when the full QPLANT is off [see screenshot below from DSBT estimates]\nif linac was at 2K, then start up of recovery needed after 1h\nif linac was at 4K-standby, then start up is already within 15min!\nrecovery flow rate drops to 20-40 g/s if QPLANT is still partially under operation (thermal shield cooling still OK)\nMachine protection\nSafety devices protects the linac against overpressure. Release pressure is slightly lower than 2bar. \nIn this scenario we gradually vent the He inventory to ambient via safety valves. No burst discs will be triggered during this event.",
+              "text": "Below some back of the envelope estimations\n \nLHe inside the LINAC during operation: \n900L (= 24QM * 90L + 160L for QVE)\nThis is around 110 kg\nBallon sizing\n1 Kg of GHe at 1bar = 5.5 m3\n110 kg is 600 m3\nEach of QPLANT Warm Compressor (we will have 3-4)\nRated at 350 kW elec power for 110 g/s [at 72Hz, not 60Hz]\nCompress from 1bar to 15bar (pressure of our storage tanks)\nIn case of incident during black out\nrecovery needs around 100-200 g/s when the full QPLANT is off [see screenshot below from SUPPLIER_C estimates]\nif linac was at 2K, then start up of recovery needed after 1h\nif linac was at 4K-standby, then start up is already within 15min!\nrecovery flow rate drops to 20-40 g/s if QPLANT is still partially under operation (thermal shield cooling still OK)\nMachine protection\nSafety devices protects the linac against overpressure. Release pressure is slightly lower than 2bar. \nIn this scenario we gradually vent the He inventory to ambient via safety valves. No burst discs will be triggered during this event.",
               "is_image": false,
               "is_chart": false,
               "is_table": false,
@@ -17828,7 +17828,7 @@
           "text_runs": [
             "10",
             "1 Warm Compressor\n350 kW\n110 g/s\n72 Hz\n1-15 bara",
-            "Below some back of the envelope estimations\n \nLHe inside the LINAC during operation: \n900L (= 24QM * 90L + 160L for QVE)\nThis is around 110 kg\nBallon sizing\n1 Kg of GHe at 1bar = 5.5 m3\n110 kg is 600 m3\nEach of QPLANT Warm Compressor (we will have 3-4)\nRated at 350 kW elec power for 110 g/s [at 72Hz, not 60Hz]\nCompress from 1bar to 15bar (pressure of our storage tanks)\nIn case of incident during black out\nrecovery needs around 100-200 g/s when the full QPLANT is off [see screenshot below from DSBT estimates]\nif linac was at 2K, then start up of recovery needed after 1h\nif linac was at 4K-standby, then start up is already within 15min!\nrecovery flow rate drops to 20-40 g/s if QPLANT is still partially under operation (thermal shield cooling still OK)\nMachine protection\nSafety devices protects the linac against overpressure. Release pressure is slightly lower than 2bar. \nIn this scenario we gradually vent the He inventory to ambient via safety valves. No burst discs will be triggered during this event."
+            "Below some back of the envelope estimations\n \nLHe inside the LINAC during operation: \n900L (= 24QM * 90L + 160L for QVE)\nThis is around 110 kg\nBallon sizing\n1 Kg of GHe at 1bar = 5.5 m3\n110 kg is 600 m3\nEach of QPLANT Warm Compressor (we will have 3-4)\nRated at 350 kW elec power for 110 g/s [at 72Hz, not 60Hz]\nCompress from 1bar to 15bar (pressure of our storage tanks)\nIn case of incident during black out\nrecovery needs around 100-200 g/s when the full QPLANT is off [see screenshot below from SUPPLIER_C estimates]\nif linac was at 2K, then start up of recovery needed after 1h\nif linac was at 4K-standby, then start up is already within 15min!\nrecovery flow rate drops to 20-40 g/s if QPLANT is still partially under operation (thermal shield cooling still OK)\nMachine protection\nSafety devices protects the linac against overpressure. Release pressure is slightly lower than 2bar. \nIn this scenario we gradually vent the He inventory to ambient via safety valves. No burst discs will be triggered during this event."
           ]
         },
         {
@@ -21215,7 +21215,7 @@
             {
               "type": "TEXT_BOX (17)",
               "has_text": true,
-              "text": "DSBT D2.1",
+              "text": "SUPPLIER_C D2.1",
               "is_image": false,
               "is_chart": false,
               "is_table": false,
@@ -21282,7 +21282,7 @@
           "has_media": false,
           "text_runs": [
             "7",
-            "DSBT D2.1",
+            "SUPPLIER_C D2.1",
             "Constraints of 4K operation ATS-1869",
             "When do we need/trigger He Recovery\nThis can be planned or unplanned events\n\nScenario A) planned, normal scenario\nA1) During QCELL emptying of the LHe inventory\n\nScenario B) unplanned, abnormal scenario\nB1) Trip of QPLANT Cold Compressors only\nB2) Trip of QPLANT in general; not just Cold Compressors\nB3) QCELL valves missbehaiving so that circuit A'-B' pressurizes\n\nScenario C) unplanned, utility issues\nC1) Loss of Water on WCS\nC2) Loss of electricity on WCS\nC3) Loss of electricity QPLANT wide\n\n\nScenario C) unplanned, safety scenario\nC1) safety incident causes pressurization of circuit A'-B' [loss of INVAC or BVAC]\nC2) safety incident causes pressurization of QRB circuits",
             "Green = QPLANT’s He Recovery path is happy\nOrange = QPLANT’s He Recovery path is down, but can be restarted\n\u000bRed =",
@@ -21326,7 +21326,7 @@
             {
               "type": "TEXT_BOX (17)",
               "has_text": true,
-              "text": "DSBT D2.1",
+              "text": "SUPPLIER_C D2.1",
               "is_image": false,
               "is_chart": false,
               "is_table": false,
@@ -21402,7 +21402,7 @@
           "has_media": false,
           "text_runs": [
             "8",
-            "DSBT D2.1",
+            "SUPPLIER_C D2.1",
             "! Start during “4K operation”",
             "! Start during “2K operation”"
           ]
@@ -21444,7 +21444,7 @@
             {
               "type": "TEXT_BOX (17)",
               "has_text": true,
-              "text": "DSBT D2.1",
+              "text": "SUPPLIER_C D2.1",
               "is_image": false,
               "is_chart": false,
               "is_table": false,
@@ -21457,13 +21457,13 @@
           "has_media": false,
           "text_runs": [
             "9",
-            "DSBT D2.1"
+            "SUPPLIER_C D2.1"
           ]
         },
         {
           "slide_number": 10,
           "title": "",
-          "all_text": "10\n1 Warm Compressor\n350 kW\n110 g/s\n72 Hz\n1-15 bara\nBelow some back of the envelope estimations\n \nLHe inside the LINAC during operation: \n900L (= 24QM * 90L + 160L for QVE)\nThis is around 110 kg\nBallon sizing\n1 Kg of GHe at 1bar = 5.5 m3\n110 kg is 600 m3\nEach of QPLANT Warm Compressor (we will have 3-4)\nRated at 350 kW elec power for 110 g/s [at 72Hz, not 60Hz]\nCompress from 1bar to 15bar (pressure of our storage tanks)\nIn case of incident during black out\nrecovery needs around 100-200 g/s when the full QPLANT is off [see screenshot below from DSBT estimates]\nif linac was at 2K, then start up of recovery needed after 1h\nif linac was at 4K-standby, then start up is already within 15min!\nrecovery flow rate drops to 20-40 g/s if QPLANT is still partially under operation (thermal shield cooling still OK)\nMachine protection\nSafety devices protects the linac against overpressure. Release pressure is slightly lower than 2bar. \nIn this scenario we gradually vent the He inventory to ambient via safety valves. No burst discs will be triggered during this event.",
+          "all_text": "10\n1 Warm Compressor\n350 kW\n110 g/s\n72 Hz\n1-15 bara\nBelow some back of the envelope estimations\n \nLHe inside the LINAC during operation: \n900L (= 24QM * 90L + 160L for QVE)\nThis is around 110 kg\nBallon sizing\n1 Kg of GHe at 1bar = 5.5 m3\n110 kg is 600 m3\nEach of QPLANT Warm Compressor (we will have 3-4)\nRated at 350 kW elec power for 110 g/s [at 72Hz, not 60Hz]\nCompress from 1bar to 15bar (pressure of our storage tanks)\nIn case of incident during black out\nrecovery needs around 100-200 g/s when the full QPLANT is off [see screenshot below from SUPPLIER_C estimates]\nif linac was at 2K, then start up of recovery needed after 1h\nif linac was at 4K-standby, then start up is already within 15min!\nrecovery flow rate drops to 20-40 g/s if QPLANT is still partially under operation (thermal shield cooling still OK)\nMachine protection\nSafety devices protects the linac against overpressure. Release pressure is slightly lower than 2bar. \nIn this scenario we gradually vent the He inventory to ambient via safety valves. No burst discs will be triggered during this event.",
           "notes": "",
           "layout_name": "Text Slide",
           "shapes": [
@@ -21497,7 +21497,7 @@
             {
               "type": "TEXT_BOX (17)",
               "has_text": true,
-              "text": "Below some back of the envelope estimations\n \nLHe inside the LINAC during operation: \n900L (= 24QM * 90L + 160L for QVE)\nThis is around 110 kg\nBallon sizing\n1 Kg of GHe at 1bar = 5.5 m3\n110 kg is 600 m3\nEach of QPLANT Warm Compressor (we will have 3-4)\nRated at 350 kW elec power for 110 g/s [at 72Hz, not 60Hz]\nCompress from 1bar to 15bar (pressure of our storage tanks)\nIn case of incident during black out\nrecovery needs around 100-200 g/s when the full QPLANT is off [see screenshot below from DSBT estimates]\nif linac was at 2K, then start up of recovery needed after 1h\nif linac was at 4K-standby, then start up is already within 15min!\nrecovery flow rate drops to 20-40 g/s if QPLANT is still partially under operation (thermal shield cooling still OK)\nMachine protection\nSafety devices protects the linac against overpressure. Release pressure is slightly lower than 2bar. \nIn this scenario we gradually vent the He inventory to ambient via safety valves. No burst discs will be triggered during this event.",
+              "text": "Below some back of the envelope estimations\n \nLHe inside the LINAC during operation: \n900L (= 24QM * 90L + 160L for QVE)\nThis is around 110 kg\nBallon sizing\n1 Kg of GHe at 1bar = 5.5 m3\n110 kg is 600 m3\nEach of QPLANT Warm Compressor (we will have 3-4)\nRated at 350 kW elec power for 110 g/s [at 72Hz, not 60Hz]\nCompress from 1bar to 15bar (pressure of our storage tanks)\nIn case of incident during black out\nrecovery needs around 100-200 g/s when the full QPLANT is off [see screenshot below from SUPPLIER_C estimates]\nif linac was at 2K, then start up of recovery needed after 1h\nif linac was at 4K-standby, then start up is already within 15min!\nrecovery flow rate drops to 20-40 g/s if QPLANT is still partially under operation (thermal shield cooling still OK)\nMachine protection\nSafety devices protects the linac against overpressure. Release pressure is slightly lower than 2bar. \nIn this scenario we gradually vent the He inventory to ambient via safety valves. No burst discs will be triggered during this event.",
               "is_image": false,
               "is_chart": false,
               "is_table": false,
@@ -21511,7 +21511,7 @@
           "text_runs": [
             "10",
             "1 Warm Compressor\n350 kW\n110 g/s\n72 Hz\n1-15 bara",
-            "Below some back of the envelope estimations\n \nLHe inside the LINAC during operation: \n900L (= 24QM * 90L + 160L for QVE)\nThis is around 110 kg\nBallon sizing\n1 Kg of GHe at 1bar = 5.5 m3\n110 kg is 600 m3\nEach of QPLANT Warm Compressor (we will have 3-4)\nRated at 350 kW elec power for 110 g/s [at 72Hz, not 60Hz]\nCompress from 1bar to 15bar (pressure of our storage tanks)\nIn case of incident during black out\nrecovery needs around 100-200 g/s when the full QPLANT is off [see screenshot below from DSBT estimates]\nif linac was at 2K, then start up of recovery needed after 1h\nif linac was at 4K-standby, then start up is already within 15min!\nrecovery flow rate drops to 20-40 g/s if QPLANT is still partially under operation (thermal shield cooling still OK)\nMachine protection\nSafety devices protects the linac against overpressure. Release pressure is slightly lower than 2bar. \nIn this scenario we gradually vent the He inventory to ambient via safety valves. No burst discs will be triggered during this event."
+            "Below some back of the envelope estimations\n \nLHe inside the LINAC during operation: \n900L (= 24QM * 90L + 160L for QVE)\nThis is around 110 kg\nBallon sizing\n1 Kg of GHe at 1bar = 5.5 m3\n110 kg is 600 m3\nEach of QPLANT Warm Compressor (we will have 3-4)\nRated at 350 kW elec power for 110 g/s [at 72Hz, not 60Hz]\nCompress from 1bar to 15bar (pressure of our storage tanks)\nIn case of incident during black out\nrecovery needs around 100-200 g/s when the full QPLANT is off [see screenshot below from SUPPLIER_C estimates]\nif linac was at 2K, then start up of recovery needed after 1h\nif linac was at 4K-standby, then start up is already within 15min!\nrecovery flow rate drops to 20-40 g/s if QPLANT is still partially under operation (thermal shield cooling still OK)\nMachine protection\nSafety devices protects the linac against overpressure. Release pressure is slightly lower than 2bar. \nIn this scenario we gradually vent the He inventory to ambient via safety valves. No burst discs will be triggered during this event."
           ]
         },
         {
@@ -54456,7 +54456,7 @@
             {
               "type": "AUTO_SHAPE (1)",
               "has_text": true,
-              "text": "DSBT - 6 APR 2023\nSCK CEN/54791951",
+              "text": "SUPPLIER_C - 6 APR 2023\nSCK CEN/54791951",
               "is_image": false,
               "is_chart": false,
               "is_table": false,
@@ -54558,7 +54558,7 @@
             "B’",
             "D’",
             "E’",
-            "DSBT - 6 APR 2023\nSCK CEN/54791951",
+            "SUPPLIER_C - 6 APR 2023\nSCK CEN/54791951",
             "W",
             "V",
             "U",
@@ -57649,7 +57649,7 @@
             {
               "type": "AUTO_SHAPE (1)",
               "has_text": true,
-              "text": "DSBT - 6 APR 2023\nSCK CEN/54791951",
+              "text": "SUPPLIER_C - 6 APR 2023\nSCK CEN/54791951",
               "is_image": false,
               "is_chart": false,
               "is_table": false,
@@ -57751,7 +57751,7 @@
             "B’",
             "D’",
             "E’",
-            "DSBT - 6 APR 2023\nSCK CEN/54791951",
+            "SUPPLIER_C - 6 APR 2023\nSCK CEN/54791951",
             "W",
             "V",
             "U",

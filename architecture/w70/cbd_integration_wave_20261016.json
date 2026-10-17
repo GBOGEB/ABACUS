@@ -1,0 +1,109 @@
+{
+  "schema": "codepurple.cbd.integration-wave.v1",
+  "purpose": "Source-disjoint first-red fanout without transferring owner proof",
+  "repository": "GBOGEB/ABACUS",
+  "integration_pr": 2038,
+  "base_pr": 1997,
+  "base_head": "d548c28c47cff6b450c5f28712b123ae1dec4530",
+  "source_prs": [
+    2026,
+    1995
+  ],
+  "previous_baseline": {
+    "workflow_pass": 21,
+    "workflow_fail": 6,
+    "workflow_pending": 0
+  },
+  "combined_native": {
+    "source_sha": null,
+    "checkout_sha": null,
+    "run_id": null,
+    "attempt": null,
+    "jobs": [],
+    "test_executed": null,
+    "test_pass": null,
+    "test_fail": null,
+    "test_skip": null,
+    "coverage_statement": null,
+    "coverage_branch": null,
+    "matched_delta_pp": null,
+    "artifact_zip_sha256": null,
+    "validated_member_count": null,
+    "first_red_root_closures": 0,
+    "first_red_root_closures_authenticated": false
+  },
+  "packets": [
+    {
+      "id": "CBD-PY310",
+      "owner_pr": 2026,
+      "scope": "DMAIC_V3/requirements.txt",
+      "fingerprint": "python310_matplotlib_unresolvable",
+      "root_id": null,
+      "source_head": "884212de9cdf9b168a41d8ea254d006bc3421690",
+      "native_prior": "38783468536",
+      "prior_status": "PASS_ON_OWNER_HEAD",
+      "combined_status": "UNKNOWN",
+      "blocking": "matrix_install_and_proof_completeness"
+    },
+    {
+      "id": "CBD-GOV",
+      "owner_pr": 1995,
+      "scope": "docs/ci/WORKFLOW_RATIONALIZATION.md",
+      "fingerprint": "generated_workflow_inventory_stale",
+      "root_id": null,
+      "source_head": "59d3bcc07caf7f3678f7df7b2f618a9605c83b1a",
+      "native_prior": "38749650693",
+      "prior_status": "PASS_ON_OWNER_HEAD",
+      "combined_status": "UNKNOWN",
+      "blocking": "native_generator_check"
+    },
+    {
+      "id": "CBD-A10",
+      "owner_pr": 1995,
+      "scope": "ci/governance/workflow_policy.json",
+      "fingerprint": "a10_restricted_content",
+      "root_id": null,
+      "source_head": "59d3bcc07caf7f3678f7df7b2f618a9605c83b1a",
+      "native_prior": "38749650647",
+      "prior_status": "FAIL_ON_OWNER_HEAD",
+      "combined_status": "UNKNOWN",
+      "blocking": "authorized_confidentiality_review"
+    },
+    {
+      "id": "CBD-SEC",
+      "owner_pr": null,
+      "scope": "security_scan",
+      "fingerprint": "bandit_safety_findings",
+      "root_id": null,
+      "source_head": null,
+      "native_prior": "38800580674",
+      "prior_status": "FAIL_ON_W70_HEAD",
+      "combined_status": "UNKNOWN",
+      "blocking": "independent_security_retest"
+    },
+    {
+      "id": "CBD-W70",
+      "owner_pr": 1997,
+      "scope": "tools/w70_wave_pulse_metrics.py",
+      "fingerprint": "w70_source_bound_coverage",
+      "root_id": null,
+      "source_head": "d548c28c47cff6b450c5f28712b123ae1dec4530",
+      "native_prior": "38800580790",
+      "prior_status": "PASS_ON_W70_HEAD",
+      "combined_status": "UNKNOWN",
+      "blocking": "matched_line_branch_numerators_denominators"
+    }
+  ],
+  "execution": {
+    "workers_dispatched": 0,
+    "worker_hours": null,
+    "crew_receipts": null,
+    "rex_receipts": null,
+    "admission": "HOLD",
+    "merge_authorized": false,
+    "security_waiver": false,
+    "qps_owner_acceptance": false,
+    "federation_coverage_credit": 0
+  },
+  "provenance": "Owner-head native successes are not combined-head evidence. Source SHA is null until independently observed; this manifest is not native attestation."
+}

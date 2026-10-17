@@ -1,0 +1,73 @@
+name: MIP Bminus1 Worker Contract
+on:
+  pull_request:
+    paths:
+      - "tools/recovery/mip_bminus1_admission.py"
+      - "tests/test_mip_bminus1_admission.py"
+      - ".github/workflows/mip-bminus1-worker-contract.yml"
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  worker-contract:
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Checkout exact head
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+      - name: Verify SHA
+        env:
+          EXPECTED: ${{ github.event.pull_request.head.sha || github.sha }}
+        run: test "$(git rev-parse HEAD)" = "$EXPECTED"
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Run focused negative control tests
+        run: >-
+          python -m unittest discover -s tests
+          -p test_mip_bminus1_admission.py -v
+      - name: Verify producer emits HOLD on missing required test
+        run: |
+          mkdir -p test_reports/mip-bminus1
+          printf '%s\n' \
+            '<testsuite><testcase classname="w" name="other"/></testsuite>' \
+            > test_reports/mip-bminus1/fixture.xml
+          python - <<'PY'
+          import json
+          import os
+          from pathlib import Path
+          sha = os.popen("git rev-parse HEAD").read().strip()
+          m = dict(
+              worker_id="W1", exact_sha=sha,
+              required_tests=["w::required"], code_committed=True,
+              tests_committed=True, first_reds=[], evidence={}
+          )
+          Path("test_reports/mip-bminus1/fixture.json").write_text(
+              json.dumps(m)
+          )
+          PY
+          rc=0
+          python tools/recovery/mip_bminus1_admission.py \
+            --manifest test_reports/mip-bminus1/fixture.json \
+            --junit test_reports/mip-bminus1/fixture.xml \
+            --out test_reports/mip-bminus1/mip_bminus1_admission.json || rc=$?
+          test "$rc" -eq 2
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          report = Path(
+              "test_reports/mip-bminus1/mip_bminus1_admission.json"
+          )
+          r = json.loads(report.read_text())
+          assert r["merge_admission"]=="HOLD"
+          assert r["test_counts"]["missing"]==1
+          assert not r["decisions"]["VERIFIED"]
+          PY
+      - name: Upload evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: mip-bminus1-contract-${{ github.sha }}
+          path: test_reports/mip-bminus1/
