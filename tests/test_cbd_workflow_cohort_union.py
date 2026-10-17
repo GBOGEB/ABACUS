@@ -23,6 +23,54 @@ def snapshots():
 
 
 class CohortUnionTests(unittest.TestCase):
+
+    def test_python_310_dependency_fanin_and_reverse_regressions(self):
+        """Keep the #2026 Python 3.10 repair when stacking future cohort fixes."""
+        requirements = (ROOT / "DMAIC_V3" / "requirements.txt").read_text(encoding="utf-8")
+        expected = [
+            "matplotlib>=3.7.5,<3.8.0; python_version < '3.9'",
+            "matplotlib>=3.9.4,<3.10.0; python_version >= '3.9' and python_version < '3.10'",
+            "matplotlib>=3.10.8,<3.11.0; python_version >= '3.10' and python_version < '3.11'",
+            "matplotlib>=3.11.2,<4.0.0; python_version >= '3.11'",
+        ]
+
+        def assert_marker_coverage(source):
+            found = [line.strip() for line in source.splitlines()
+                     if line.strip().startswith("matplotlib")]
+            self.assertEqual(found, expected)
+
+        assert_marker_coverage(requirements)
+        self.assertIn("pytest-asyncio>=1.4.0,<1.5; python_version >= '3.10'", requirements)
+        self.assertIn("pylint>=4.1.3,<5.0.0; python_version >= '3.10'", requirements)
+        # Explicit A -> B -> A protection: neither old unconditional pin nor
+        # accidental marker deletion is allowed to pass this proof.
+        with self.assertRaises(AssertionError):
+            assert_marker_coverage(requirements.replace(
+                expected[2], "matplotlib>=3.11.2,<4.0.0", 1))
+        with self.assertRaises(AssertionError):
+            assert_marker_coverage(requirements.replace(expected[2], "", 1))
+
+    def test_cohort_workflow_checkout_and_receipt_are_head_bound(self):
+        """Reject lost checkout binding in the cohort testflight producer."""
+        workflow = (ROOT / ".github" / "workflows" /
+                    "cbd-cohort-union-testflight.yml").read_text(encoding="utf-8")
+        required = (
+            "ref: ${{ github.event.pull_request.head.sha || github.sha }}",
+            "persist-credentials: false",
+            'test "$(git rev-parse HEAD)" = "$EXPECTED_PULL_HEAD"',
+            'subprocess.check_output(["git", "rev-parse", "HEAD"], text=True).strip() != pull_head',
+        )
+
+        def assert_bound(source):
+            for item in required:
+                self.assertIn(item, source)
+
+        assert_bound(workflow)
+        with self.assertRaises(AssertionError):
+            assert_bound(workflow.replace(required[0], "ref: github.sha", 1))
+        with self.assertRaises(AssertionError):
+            assert_bound(workflow.replace(required[2], "echo skipped", 1))
+
     def test_frozen_three_cohort_source_denominators(self):
         result = produce_cohorts(snapshots())
         rec = result["cohort_reconciliation"]
