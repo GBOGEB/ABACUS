@@ -5,6 +5,7 @@ from pathlib import Path
 from types import SimpleNamespace
 
 import pytest
+
 from tests.test_dmaic_orchestration import DMAICTestOrchestrator
 
 
@@ -93,6 +94,7 @@ async def test_measurement_scrubs_parent_pytest_cov_environment(tmp_path, monkey
     assert metrics.passed_tests == 1
     assert metrics.coverage_score == 90.0
 
+
 @pytest.mark.asyncio
 @pytest.mark.parametrize(
     "suite, module_name",
@@ -144,6 +146,7 @@ def test_undeclared_measurement_scope_stays_broad():
         "tests/../test_master_doc_manager.py"
     ) == ["--cov"]
 
+
 @pytest.mark.asyncio
 async def test_week3_measurement_covers_all_three_production_modules(
     tmp_path, monkeypatch
@@ -158,7 +161,7 @@ async def test_week3_measurement_covers_all_three_production_modules(
     }
 
     def run(cmd, **kwargs):
-        assert set(arg for arg in cmd if arg.startswith("--cov=")) == expected
+        assert {arg for arg in cmd if arg.startswith("--cov=")} == expected
         assert "--cov=." not in cmd
         assert "--cov" not in cmd
         report = Path(next(x.split("=", 1)[1] for x in cmd
