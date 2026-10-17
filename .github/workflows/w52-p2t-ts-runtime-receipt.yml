@@ -62,7 +62,7 @@ jobs:
       - name: Display receipt
         run: cat artifacts/w52_p2t/SUPPLIER_B_TS_enthalpy_receipt.json
       - name: Upload governed runtime receipt
-        uses: actions/upload-artifact@v7.0.2
+        uses: actions/upload-artifact@v7
         with:
           name: w53-p05k1-supplier-b-ts-exact-enthalpy-receipt
           path: artifacts/w52_p2t/SUPPLIER_B_TS_enthalpy_receipt.json

@@ -34,7 +34,7 @@ jobs:
           python -m pytest -q DMAIC_V3/tests/test_handover_bridge_runtime_coverage.py --junitxml=w2-evidence/junit.xml
       - name: Fail closed if native JUnit is missing
         if: always()
-        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9
         with:
           name: w2-handover-phase-cache-py${{ matrix.python-version }}
           path: w2-evidence/junit.xml

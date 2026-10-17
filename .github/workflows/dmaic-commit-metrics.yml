@@ -293,7 +293,7 @@ jobs:
 
       - name: Stage metrics publication payload
         if: github.event_name == 'push' && github.ref == 'refs/heads/main'
-        uses: actions/upload-artifact@v7.0.2
+        uses: actions/upload-artifact@v7
         with:
           name: dmaic-metrics-publication-${{ github.run_id }}
           path: |

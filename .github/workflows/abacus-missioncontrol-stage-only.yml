@@ -28,7 +28,7 @@ jobs:
           python scripts/abacus_missioncontrol_stage_only.py --expected-sha "$EXPECTED_SHA" --output artifacts/missioncontrol/stage-only-receipt.json
       - name: Upload stage-only identity receipt
         if: success()
-        uses: actions/upload-artifact@v7.0.2
+        uses: actions/upload-artifact@v7
         with:
           name: abacus-missioncontrol-stage-only-identity
           path: artifacts/missioncontrol/stage-only-receipt.json

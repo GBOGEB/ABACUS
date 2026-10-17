@@ -34,7 +34,7 @@ jobs:
         run: python scripts/write_runtime_governance_status.py --output reports/runtime_governance_status.json
 
       - name: Upload runtime governance evidence
-        uses: actions/upload-artifact@v7.0.2
+        uses: actions/upload-artifact@v7
         with:
           name: w007-runtime-governance-status
           path: reports/runtime_governance_status.json

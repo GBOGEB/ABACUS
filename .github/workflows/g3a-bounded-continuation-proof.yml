@@ -56,7 +56,7 @@ jobs:
           PY
       - name: Preserve immutable run receipt
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: g3a-proof-${{ github.run_id }}-${{ github.run_attempt }}
           path: test_reports/g3a/
@@ -169,7 +169,7 @@ jobs:
           PY
       - name: Preserve source-bound canary receipts on any outcome
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: g3a-n13-breadth-${{ github.run_id }}-${{ github.run_attempt }}
           path: test_reports/n13/

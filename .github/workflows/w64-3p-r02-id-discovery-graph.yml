@@ -94,7 +94,7 @@ jobs:
               json.dumps(receipt, indent=2, sort_keys=True) + '\n'
           )
 
-      - uses: actions/upload-artifact@v7.0.2
+      - uses: actions/upload-artifact@v7
         with:
           name: w64-3p-r02-id-discovery-graph
           path: architecture/w64/receipts/r02/

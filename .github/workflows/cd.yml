@@ -66,7 +66,7 @@ jobs:
       - name: Build handover ZIP from manifest
         run: python scripts/build_handover_from_glob_yaml.py
       - name: Upload manifest bundle
-        uses: actions/upload-artifact@v7.0.2
+        uses: actions/upload-artifact@v7
         with:
           name: dmaic-handover-manifest-${{ github.run_id }}
           path: |
@@ -76,7 +76,7 @@ jobs:
       - name: Build universal handover archives
         run: python scripts/archive_handover.py --spec handover/GLOOB.yaml --name DMAIC_V3_3_HANDOVER_ALL
       - name: Upload universal archives
-        uses: actions/upload-artifact@v7.0.2
+        uses: actions/upload-artifact@v7
         with:
           name: dmaic-handover-archives-${{ github.run_id }}
           path: |

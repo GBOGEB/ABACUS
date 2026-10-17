@@ -39,7 +39,7 @@ jobs:
         run: python scripts/testpilot_preflight.py --mode fast --parity
       - name: Upload TestPilot receipt
         if: always()
-        uses: actions/upload-artifact@v7.0.2
+        uses: actions/upload-artifact@v7
         with:
           name: testpilot-receipt-${{ github.sha }}
           path: .testpilot/last_receipt.json

@@ -82,7 +82,7 @@ jobs:
           PY
       - name: Preserve report and provenance on success or failure
         if: always()
-        uses: actions/upload-artifact@v7.0.2
+        uses: actions/upload-artifact@v7
         with:
           name: cbd-w12-${{ github.run_id }}-${{ github.run_attempt }}
           path: test_reports/cbd-w12/
