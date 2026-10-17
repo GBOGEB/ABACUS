@@ -97,6 +97,11 @@ def fingerprint(repo):
 def project_check(result, name):
     """Retain only safe command fingerprints and verified test denominators."""
     output = result.pop("output")
+    argv = result.pop("argv", [])
+    result["program"] = Path(str(argv[0])).name if argv else None
+    result["argv_sha256"] = sha256_bytes(
+        json.dumps(argv, separators=(",", ":"), ensure_ascii=True).encode()
+    )
     result["name"] = name
     if name == "pytest":
         parsed = TEST_SUMMARY.search(output)
