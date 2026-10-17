@@ -53,6 +53,7 @@ def validate(spec: dict) -> None:
     if not isinstance(steps, list) or len(steps) != 3:
         raise ContractError('G3A requires exactly three ordered checkpoints')
     ids = set()
+    proof_scopes = set()
     for idx, step in enumerate(steps, 1):
         if not isinstance(step, dict) or step.get('id') != f'A{idx}':
             raise ContractError('step IDs must be A1, A2, A3')
@@ -75,6 +76,10 @@ def validate(spec: dict) -> None:
             threshold = step.get('minimum_percent')
             if type(threshold) not in (int, float) or not (0 <= threshold <= 100):
                 raise ContractError('invalid metric threshold')
+        proof_scope = (step['kind'], step.get('pattern') if step['kind'] == 'unittest' else step.get('path'))
+        if proof_scope in proof_scopes:
+            raise ContractError('duplicate checkpoint proof scope')
+        proof_scopes.add(proof_scope)
 
 
 def perform(root: Path, step: dict, head: str) -> dict:
