@@ -10,7 +10,7 @@ import json
 import re
 from pathlib import Path
 
-SHA = re.compile(r"[0-9a-f]{40}\\Z")
+SHA = re.compile(r"[0-9a-f]{40}\Z")
 SCHEMA = "abacus.bd.three-pulse.v1"
 
 
@@ -111,7 +111,7 @@ def main():
     rows = [json.loads(p.read_text(encoding="utf-8")) for p in args.inputs]
     result = rollup(rows)
     args.out.parent.mkdir(parents=True, exist_ok=True)
-    args.out.write_text(json.dumps(result, sort_keys=True, indent=2) + "\\n", encoding="utf-8")
+    args.out.write_text(json.dumps(result, sort_keys=True, indent=2) + "\n", encoding="utf-8")
 
 
 if __name__ == "__main__":
