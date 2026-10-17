@@ -22,17 +22,26 @@ jobs:
       matrix:
         python-version: ["3.10", "3.12"]
     env:
-      EXPECTED_PULL_HEAD: ${{ github.event.pull_request.head.sha }}
+      EXPECTED_PULL_HEAD: ${{ github.event.pull_request.head.sha || github.sha }}
       GITHUB_EVENT_SHA: ${{ github.sha }}
     steps:
       - name: Checkout source
         uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+      - name: Fail closed unless checked out at exact source head
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$EXPECTED_PULL_HEAD"
       - name: Setup Python
         uses: actions/setup-python@v5
         with:
           python-version: ${{ matrix.python-version }}
       - name: Install isolated coverage runner
-        run: python -m pip install "coverage>=7.7,<8"
+        # Python 3.10 requires Coverage.py TOML support to read pyproject.toml.
+        run: python -m pip install "coverage[toml]>=7.7,<8"
       - name: Execute 16 source-bound positive and negative contracts
         shell: bash
         run: |
@@ -60,9 +69,10 @@ jobs:
           coverage = json.loads((target / "coverage.json").read_text())
           totals = coverage["totals"]
           log_bytes = (target / "unittest.log").read_bytes()
+          suite_ok = any(line.strip() == b"OK" or line.strip().startswith(b"OK (") for line in log_bytes.splitlines())
           counts = re.search(rb"Ran (\d+) tests?", log_bytes)
-          if counts is None or int(counts.group(1)) < 16:
-              raise SystemExit("Not all 16 expected tests executed")
+          if counts is None or int(counts.group(1)) < 19:
+              raise SystemExit("Not all 19 expected tests executed")
           lines = (totals["covered_lines"], totals["num_statements"])
           branches = (totals["covered_branches"], totals["num_branches"])
           if not all(total > 0 and 0 <= hit <= total for hit, total in (lines, branches)):
@@ -70,6 +80,8 @@ jobs:
           pull_head = os.getenv("EXPECTED_PULL_HEAD", "")
           if not re.fullmatch(r"[0-9a-f]{40}", pull_head):
               raise SystemExit("Missing PR pull-head binding")
+          if subprocess.check_output(["git", "rev-parse", "HEAD"], text=True).strip() != pull_head:
+              raise SystemExit("HOLD: checkout and declared source head differ")
           receipt = {
               "schema": "cbd.native-cohort-testflight.v1",
               "repository": os.getenv("GITHUB_REPOSITORY"),
@@ -82,6 +94,7 @@ jobs:
               "run_attempt": os.getenv("GITHUB_RUN_ATTEMPT"),
               "python": sys.version.split()[0],
               "tests_executed": int(counts.group(1)),
+              "test_suite_passed": suite_ok,
               "source_sha256": hashlib.sha256(
                   pathlib.Path("scripts/cbd_workflow_cohort_union.py").read_bytes()
               ).hexdigest(),
@@ -97,6 +110,8 @@ jobs:
               json.dumps(receipt, indent=2, sort_keys=True) + "\n"
           )
           print(json.dumps(receipt, indent=2, sort_keys=True))
+          if not suite_ok:
+              raise SystemExit("Test suite is red: no test success credit")
           if min(100 * lines[0] / lines[1], 100 * branches[0] / branches[1]) < 80:
               raise SystemExit("Module line or branch coverage below 80 percent")
           PY
