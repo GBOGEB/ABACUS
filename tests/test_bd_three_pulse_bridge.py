@@ -58,10 +58,10 @@ def pulse(i):
             "scan_configuration": "config-v1",
             "evidence_url": f"https://github.com/GBOGEB/ABACUS/actions/runs/{100+i}",
         },
-        "metrics": {"full_bandit_unique": 0, "comparable_delta": None},
+        "metrics": {"full_bandit_unique": i, "comparable_delta": None},
         "roots": [
             {"root_id": f"CI-{i:024x}", "category": "CI", "fingerprint": None}
-        ],
+        ] + roots,
         "merge_admission": "HOLD",
         "security_disposition": "INDEPENDENT_REVIEW_REQUIRED",
         "authority_transfer": False,
