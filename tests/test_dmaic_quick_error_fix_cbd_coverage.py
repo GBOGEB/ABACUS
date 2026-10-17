@@ -143,7 +143,12 @@ def test_main_writes_report_and_preserves_exit_code(tmp_path, monkeypatch, has_e
     (tmp_path / "DMAIC_V3").mkdir()
     monkeypatch.chdir(tmp_path)
     errors = [{"type": "type_error", "message": "wrong type"}] if has_error else []
-    monkeypatch.setattr(module.ErrorDetector, "scan_for_errors", lambda self: (errors, []))
+    def fake_scan(self):
+        self.errors = list(errors)
+        self.warnings = []
+        return self.errors, self.warnings
+
+    monkeypatch.setattr(module.ErrorDetector, "scan_for_errors", fake_scan)
     assert module.main() == (1 if has_error else 0)
     report = (tmp_path / "DMAIC_V3" / "ERROR_DETECTION_REPORT.md")
     assert report.exists()
