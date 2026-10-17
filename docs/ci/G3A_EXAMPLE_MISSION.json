@@ -1,0 +1,31 @@
+{
+  "schema": "g3a.bounded-mission.v1",
+  "mission_id": "g3a-local-control-proof-20261017",
+  "mode": "G3A",
+  "repository": "GBOGEB/ABACUS",
+  "start_n": 0,
+  "steps": [
+    {
+      "id": "A1",
+      "objective": "Bounded runner compiles at exact checkout",
+      "kind": "syntax",
+      "path": "scripts/g3a_bounded_mission.py",
+      "moniker": "RECEIPT"
+    },
+    {
+      "id": "A2",
+      "objective": "Adversarial test suite compiles at exact checkout",
+      "kind": "syntax",
+      "path": "tests/test_g3a_bounded_mission.py",
+      "moniker": "HARDEN"
+    },
+    {
+      "id": "A3",
+      "objective": "All 49 G3A adversarial tests pass",
+      "kind": "unittest",
+      "pattern": "test_g3a_bounded_mission.py",
+      "minimum_tests": 49,
+      "moniker": "HARDEN"
+    }
+  ]
+}

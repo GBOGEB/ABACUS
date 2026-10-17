@@ -1,19 +1,57 @@
 name: Ariana CI/CD
 
+# Source-owned DOW/Ariana CI; no deployment or remote dispatch.
 on:
   push:
-    branches: [ main, develop ]
+    branches: [main, develop]
     paths:
-      - 'ARTEFACT_TYPE_GROUPING/PYTHON_code/**'
+      - '.github/workflows/ariana-cicd.yml'
+      - 'DMAIC_V3/core/dow_ariana_integration.py'
+      - 'DMAIC_V3/core/test_system_bridge.py'
+      - 'DMAIC_V3/core/state.py'
+      - 'DMAIC_V3/core/handover_bridge.py'
+      - 'DMAIC_V3/config.py'
+      - 'DMAIC_V3/core/models.py'
+      - 'src/dmaic/idempotency.py'
+      - 'DMAIC_V3/tests/test_dow_ariana_integration_runtime_coverage.py'
+      - 'tests/test_dow_ariana_changed_line_coverage.py'
+      - 'tests/test_ariana_ci_federation.py'
+      - 'scripts/ci/ariana_dow_evidence.py'
+      - '.mesh/MESH_DOCK.yaml'
+      - 'architecture/w112/W112_GLOBAL_HIVE_GLOB_DOW_RECEIVER.yaml'
+  pull_request:
+    paths:
+      - '.github/workflows/ariana-cicd.yml'
+      - 'DMAIC_V3/core/dow_ariana_integration.py'
+      - 'DMAIC_V3/core/test_system_bridge.py'
+      - 'DMAIC_V3/core/state.py'
+      - 'DMAIC_V3/core/handover_bridge.py'
+      - 'DMAIC_V3/config.py'
+      - 'DMAIC_V3/core/models.py'
+      - 'src/dmaic/idempotency.py'
+      - 'DMAIC_V3/tests/test_dow_ariana_integration_runtime_coverage.py'
+      - 'tests/test_dow_ariana_changed_line_coverage.py'
+      - 'tests/test_ariana_ci_federation.py'
+      - 'scripts/ci/ariana_dow_evidence.py'
+      - '.mesh/MESH_DOCK.yaml'
+      - 'architecture/w112/W112_GLOBAL_HIVE_GLOB_DOW_RECEIVER.yaml'
   workflow_dispatch:
+
+permissions:
+  contents: read
 
 jobs:
   test-ariana:
+    name: Ariana/DOW native Python ${{ matrix.python-version }}
     runs-on: ubuntu-latest
-    
+    timeout-minutes: 15
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: ['3.11', '3.12']
     steps:
     - name: Checkout code
-      uses: actions/checkout@v7
+      uses: actions/checkout@v7.0.1
     
     - name: Set up Python
       uses: actions/setup-python@v7.0.0
@@ -53,14 +91,14 @@ jobs:
         name: ariana-logs
         path: ARTEFACT_TYPE_GROUPING/PYTHON_code/logs/
 
-  deploy-ariana:
+  federation-bridge:
+    name: DOW / KEB / QPS evidence-only matrix join
     needs: test-ariana
     runs-on: ubuntu-latest
-    if: github.ref == 'refs/heads/main'
-    
+    timeout-minutes: 10
     steps:
     - name: Checkout code
-      uses: actions/checkout@v7
+      uses: actions/checkout@v7.0.1
     
     - name: Set up Python
       uses: actions/setup-python@v7.0.0

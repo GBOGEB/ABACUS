@@ -33,7 +33,7 @@ jobs:
         python-version: ['3.10', '3.12']
     steps:
       # actions/checkout v4.2.2, immutable SHA pin
-      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
         with:
           persist-credentials: false
       # actions/setup-python v5.6.0, immutable SHA pin
@@ -99,6 +99,8 @@ jobs:
         run: |
           python -m pip install black==26.10.1 isort==9.0.2
           python -m black --check src scripts tests
+          # Source repair receipts: diagnostic diff, preserve the independent required isort gate.
+          python -m isort --diff src scripts tests
           python -m isort --check-only src scripts tests
   native-pulse:
     name: Read-only native run / joined census pulse
@@ -109,7 +111,7 @@ jobs:
       contents: read
     steps:
       # actions/checkout v4.2.2, immutable SHA pin
-      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
         with:
           persist-credentials: false
       # actions/setup-python v5.6.0, immutable SHA pin

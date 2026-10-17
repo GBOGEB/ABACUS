@@ -1,4 +1,5 @@
 """Live V3.1 integration and negative admission/federation cases."""
+
 from __future__ import annotations
 
 import copy
@@ -12,17 +13,34 @@ BASE = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(BASE / "src"))
 sys.path.insert(0, str(BASE / "scripts"))
 
-from four_planes import (EvidenceError, Source, clean_log, diagnostic_receipt,
-                         federated_join, ldab_receipt, runtime_receipt)  # noqa: E402
-from federation_bridge import evaluate_exchange, release_candidate  # noqa: E402
-from ldab_adapter import consume_bd_ldab  # noqa: E402
-from runtime_probe import (observe_docker_availability, observe_host,
-                           observe_lldb_availability, os_identity,
-                           transient_loopback_probe)  # noqa: E402
-from yaml_control import (evaluate_dispatch, load_yaml, normalize_yaml,
-                          semantic_diff, validate_federation_policy,
-                          validate_plan)  # noqa: E402
 from four_plane_preflight import execute  # noqa: E402
+
+from federation_bridge import evaluate_exchange, release_candidate  # noqa: E402
+from four_planes import (  # noqa: E402
+    EvidenceError,
+    Source,
+    clean_log,
+    diagnostic_receipt,
+    federated_join,
+    ldab_receipt,
+    runtime_receipt,
+)
+from ldab_adapter import consume_bd_ldab  # noqa: E402
+from runtime_probe import (  # noqa: E402
+    observe_docker_availability,
+    observe_host,
+    observe_lldb_availability,
+    os_identity,
+    transient_loopback_probe,
+)
+from yaml_control import (  # noqa: E402
+    evaluate_dispatch,
+    load_yaml,
+    normalize_yaml,
+    semantic_diff,
+    validate_federation_policy,
+    validate_plan,
+)
 
 SHA = "a" * 40
 OTHER = "b" * 40
@@ -33,13 +51,25 @@ FED = load_yaml((BASE / "config/federation-bindings.yaml").read_text())
 
 
 def debug(**kwargs):
-    return {"tool": "LLDB", "session_id": "demo-session", "binary_build_id": DIG,
-            "verified_step_count": 2, "frames": [], **kwargs}
+    return {
+        "tool": "LLDB",
+        "session_id": "demo-session",
+        "binary_build_id": DIG,
+        "verified_step_count": 2,
+        "frames": [],
+        **kwargs,
+    }
 
 
 def runtime(**kwargs):
-    r = {"os_family": "macOS", "os_release": "Darwin", "kernel": "23.0.0",
-         "container_runtime": "none", "ports": [], "runner_id": "demo"}
+    r = {
+        "os_family": "macOS",
+        "os_release": "Darwin",
+        "kernel": "23.0.0",
+        "container_runtime": "none",
+        "ports": [],
+        "runner_id": "demo",
+    }
     r.update(kwargs)
     return r
 
@@ -49,7 +79,9 @@ class SourceAndIdentity(unittest.TestCase):
         self.assertEqual(SRC.binding()["job_id"], 456)
 
     def test_optional_execution_sha(self):
-        self.assertEqual(Source("GBOGEB/CODEX", SHA, 2, executed_sha=OTHER).executed_sha, OTHER)
+        self.assertEqual(
+            Source("GBOGEB/CODEX", SHA, 2, executed_sha=OTHER).executed_sha, OTHER
+        )
 
     def test_source_rejects_malformed_sha(self):
         for x in ("123", "A" * 40, "", None):
@@ -91,7 +123,11 @@ class Diagnostic(unittest.TestCase):
     def test_step_zero_not_pass(self):
         d = debug()
         d["verified_step_count"] = 0
-        self.assertFalse(diagnostic_receipt(SRC, d, trust="LOCAL_OBSERVED")["data"]["observed_step_evidence"])
+        self.assertFalse(
+            diagnostic_receipt(SRC, d, trust="LOCAL_OBSERVED")["data"][
+                "observed_step_evidence"
+            ]
+        )
 
     def test_negative_and_bool_steps_rejected(self):
         for bad in (True, -1, 2.5, "10"):
@@ -129,7 +165,14 @@ class Diagnostic(unittest.TestCase):
 
     def test_ldab_cannot_self_accept(self):
         with self.assertRaises(EvidenceError):
-            ldab_receipt(SRC, {"root_id": "R-001", "finding_fingerprint": DIG, "disposition": "ACCEPT"})
+            ldab_receipt(
+                SRC,
+                {
+                    "root_id": "R-001",
+                    "finding_fingerprint": DIG,
+                    "disposition": "ACCEPT",
+                },
+            )
 
     def test_ldab_requires_stable_root(self):
         with self.assertRaises(EvidenceError):
@@ -137,7 +180,14 @@ class Diagnostic(unittest.TestCase):
 
     def test_ldab_repair_sha(self):
         with self.assertRaises(EvidenceError):
-            ldab_receipt(SRC, {"root_id": "R-001", "finding_fingerprint": DIG, "repair_commit": "oops"})
+            ldab_receipt(
+                SRC,
+                {
+                    "root_id": "R-001",
+                    "finding_fingerprint": DIG,
+                    "repair_commit": "oops",
+                },
+            )
 
 
 class Runtime(unittest.TestCase):
@@ -147,19 +197,33 @@ class Runtime(unittest.TestCase):
         self.assertEqual(r["data"]["container_runtime"], "none")
 
     def test_rhel_without_docker(self):
-        self.assertEqual(runtime_receipt(SRC, runtime(os_family="RHEL9"))["data"]["os_family"], "RHEL9")
+        self.assertEqual(
+            runtime_receipt(SRC, runtime(os_family="RHEL9"))["data"]["os_family"],
+            "RHEL9",
+        )
 
     def test_container_requires_image(self):
         with self.assertRaises(EvidenceError):
-            runtime_receipt(SRC, runtime(container_runtime="docker", container_id="123"))
+            runtime_receipt(
+                SRC, runtime(container_runtime="docker", container_id="123")
+            )
 
     def test_valid_digest_pinned_container(self):
-        r = runtime_receipt(SRC, runtime(container_runtime="docker", container_id="123", image_digest="sha256:" + DIG))
+        r = runtime_receipt(
+            SRC,
+            runtime(
+                container_runtime="docker",
+                container_id="123",
+                image_digest="sha256:" + DIG,
+            ),
+        )
         self.assertEqual(r["data"]["container_id"], "123")
 
     def test_no_live_port_without_probe(self):
         with self.assertRaises(EvidenceError):
-            runtime_receipt(SRC, runtime(ports=[{"port": 8787, "state": "OBSERVED_LISTENING"}]))
+            runtime_receipt(
+                SRC, runtime(ports=[{"port": 8787, "state": "OBSERVED_LISTENING"}])
+            )
 
     def test_port_bool_rejected(self):
         with self.assertRaises(EvidenceError):
@@ -172,7 +236,10 @@ class Runtime(unittest.TestCase):
 
     def test_actual_os_observation(self):
         o = os_identity()
-        self.assertIn(o["os_family"], ["RHEL8", "RHEL9", "Ubuntu", "Debian", "macOS", "Windows", "OTHER"])
+        self.assertIn(
+            o["os_family"],
+            ["RHEL8", "RHEL9", "Ubuntu", "Debian", "macOS", "Windows", "OTHER"],
+        )
         self.assertIn("kernel", o)
 
     def test_actual_host_receipt(self):
@@ -262,8 +329,16 @@ class YamlOrchestration(unittest.TestCase):
 
     def test_overlap_rejected(self):
         p = copy.deepcopy(PLAN)
-        p["tasks"].append({"id": "SECOND_WRITER", "plane": "orchestration", "owner": "other",
-                           "mode": "REVIEW_REQUIRED", "needs": [], "write_paths": ["tools/everred_v3/src/four_planes.py"]})
+        p["tasks"].append(
+            {
+                "id": "SECOND_WRITER",
+                "plane": "orchestration",
+                "owner": "other",
+                "mode": "REVIEW_REQUIRED",
+                "needs": [],
+                "write_paths": ["tools/everred_v3/src/four_planes.py"],
+            }
+        )
         with self.assertRaises(EvidenceError):
             validate_plan(p)
 
@@ -288,7 +363,10 @@ class YamlOrchestration(unittest.TestCase):
 
     def test_red_dependency_blocks(self):
         r = evaluate_dispatch(PLAN, {"YAML_PREFLIGHT": "FAIL"})
-        self.assertEqual(next(x for x in r["tasks"] if x["id"] == "DEBUG_LLDB")["state"], "BLOCKED_UPSTREAM_RED")
+        self.assertEqual(
+            next(x for x in r["tasks"] if x["id"] == "DEBUG_LLDB")["state"],
+            "BLOCKED_UPSTREAM_RED",
+        )
 
     def test_federation_two_bindings(self):
         self.assertEqual(validate_federation_policy(FED)["binding_count"], 2)
@@ -309,42 +387,78 @@ class YamlOrchestration(unittest.TestCase):
 class Federation(unittest.TestCase):
     def setUp(self):
         self.source = Source("GBOGEB/CODEX", SHA, 999, 5, OTHER)
-        self.payload = {"producer_repo": "GBOGEB/CODEX", "domain": "lldb-dap",
-                        "source_sha": SHA, "executed_sha": OTHER, "artifact_sha256": hashlib.sha256(b"bytes").hexdigest(),
-                        "receipt_id": "CODEX-DBG-01"}
+        self.payload = {
+            "producer_repo": "GBOGEB/CODEX",
+            "domain": "lldb-dap",
+            "source_sha": SHA,
+            "executed_sha": OTHER,
+            "artifact_sha256": hashlib.sha256(b"bytes").hexdigest(),
+            "receipt_id": "CODEX-DBG-01",
+        }
 
     def test_bound_bytes_are_not_approval(self):
-        r = evaluate_exchange(FED, producer=self.source, consumer_repo="GBOGEB/ABACUS",
-                              receipt=self.payload, artifact_bytes=b"bytes")
+        r = evaluate_exchange(
+            FED,
+            producer=self.source,
+            consumer_repo="GBOGEB/ABACUS",
+            receipt=self.payload,
+            artifact_bytes=b"bytes",
+        )
         self.assertEqual(r["consumer_disposition"], "DEFER")
-        self.assertEqual(r["integrity"], "LOCAL_BYTES_HASH_MATCHED_NOT_NATIVE_JOB_ATTESTED")
+        self.assertEqual(
+            r["integrity"], "LOCAL_BYTES_HASH_MATCHED_NOT_NATIVE_JOB_ATTESTED"
+        )
         self.assertFalse(r["authority_transfer"])
 
     def test_declared_checksum_not_verified(self):
-        r = evaluate_exchange(FED, producer=self.source, consumer_repo="GBOGEB/ABACUS", receipt=self.payload)
+        r = evaluate_exchange(
+            FED,
+            producer=self.source,
+            consumer_repo="GBOGEB/ABACUS",
+            receipt=self.payload,
+        )
         self.assertEqual(r["integrity"], "DECLARED_UNVERIFIED")
 
     def test_wrong_producer_rejected(self):
         p = dict(self.payload, producer_repo="GBOGEB/ABACUS")
         with self.assertRaises(EvidenceError):
-            evaluate_exchange(FED, producer=self.source, consumer_repo="GBOGEB/ABACUS", receipt=p)
+            evaluate_exchange(
+                FED, producer=self.source, consumer_repo="GBOGEB/ABACUS", receipt=p
+            )
 
     def test_wrong_executed_sha_rejected(self):
         p = dict(self.payload, executed_sha=SHA)
         with self.assertRaises(EvidenceError):
-            evaluate_exchange(FED, producer=self.source, consumer_repo="GBOGEB/ABACUS", receipt=p)
+            evaluate_exchange(
+                FED, producer=self.source, consumer_repo="GBOGEB/ABACUS", receipt=p
+            )
 
     def test_wrong_payload_hash_rejected(self):
         with self.assertRaises(EvidenceError):
-            evaluate_exchange(FED, producer=self.source, consumer_repo="GBOGEB/ABACUS",
-                              receipt=self.payload, artifact_bytes=b"tampered")
+            evaluate_exchange(
+                FED,
+                producer=self.source,
+                consumer_repo="GBOGEB/ABACUS",
+                receipt=self.payload,
+                artifact_bytes=b"tampered",
+            )
 
     def test_missing_policy_binding(self):
         with self.assertRaises(EvidenceError):
-            evaluate_exchange(FED, producer=self.source, consumer_repo="GBOGEB/cryoplant-project", receipt=self.payload)
+            evaluate_exchange(
+                FED,
+                producer=self.source,
+                consumer_repo="GBOGEB/cryoplant-project",
+                receipt=self.payload,
+            )
 
     def test_review_queue_always_holds(self):
-        r = evaluate_exchange(FED, producer=self.source, consumer_repo="GBOGEB/ABACUS", receipt=self.payload)
+        r = evaluate_exchange(
+            FED,
+            producer=self.source,
+            consumer_repo="GBOGEB/ABACUS",
+            receipt=self.payload,
+        )
         p = release_candidate([r])
         self.assertEqual(p["independently_accepted"], None)
         self.assertEqual(p["admission"], "HOLD")
@@ -392,7 +506,9 @@ class JoinAndNative(unittest.TestCase):
             self.skipTest("jsonschema not installed")
         if jsonschema is None:
             self.skipTest("jsonschema not installed")
-        schema = json.loads((BASE / "contracts/four-plane-receipt.schema.json").read_text())
+        schema = json.loads(
+            (BASE / "contracts/four-plane-receipt.schema.json").read_text()
+        )
         instance = diagnostic_receipt(SRC, debug())
         jsonschema.validate(instance, schema)
         instance["merge_authority"] = True
@@ -402,20 +518,50 @@ class JoinAndNative(unittest.TestCase):
 
 class CanonicalLdabIntegration(unittest.TestCase):
     def fixture(self):
-        return {"schema": "bd.ldab.joined.census.v1",
-                "scope": {"repository": "GBOGEB/ABACUS", "head_sha": SHA, "run_id": 123, "job_id": 456},
-                "roots": [{"root_id": "BD-001", "category": "BANDIT", "fingerprint": DIG,
-                           "owner_lane": "B3-subprocess", "observations": [
-                               {"repository": "GBOGEB/ABACUS", "source_sha": SHA, "run_id": 123, "job_id": 456}]},
-                          {"root_id": "CI-001", "category": "CI", "fingerprint": None, "observations": []}],
-                "metrics": {"full_bandit_unique": 1}, "unlinked_debug_receipts": [],
-                "merge_admission": "HOLD", "authority_transfer": False, "security_waiver": False}
+        return {
+            "schema": "bd.ldab.joined.census.v1",
+            "scope": {
+                "repository": "GBOGEB/ABACUS",
+                "head_sha": SHA,
+                "run_id": 123,
+                "job_id": 456,
+            },
+            "roots": [
+                {
+                    "root_id": "BD-001",
+                    "category": "BANDIT",
+                    "fingerprint": DIG,
+                    "owner_lane": "B3-subprocess",
+                    "observations": [
+                        {
+                            "repository": "GBOGEB/ABACUS",
+                            "source_sha": SHA,
+                            "run_id": 123,
+                            "job_id": 456,
+                        }
+                    ],
+                },
+                {
+                    "root_id": "CI-001",
+                    "category": "CI",
+                    "fingerprint": None,
+                    "observations": [],
+                },
+            ],
+            "metrics": {"full_bandit_unique": 1},
+            "unlinked_debug_receipts": [],
+            "merge_admission": "HOLD",
+            "authority_transfer": False,
+            "security_waiver": False,
+        }
 
     def test_canonical_bridge(self):
         result = consume_bd_ldab(self.fixture(), expected_source=SRC)
         self.assertEqual(len(result["bandit_candidates"]), 1)
         self.assertEqual(result["ci_candidate_ids"], ["CI-001"])
-        self.assertEqual(result["bandit_candidates"][0]["data"]["disposition"], "HYPOTHESIS")
+        self.assertEqual(
+            result["bandit_candidates"][0]["data"]["disposition"], "HYPOTHESIS"
+        )
         self.assertIsNone(result["causal_roots_confirmed"])
 
     def test_cross_sha_rejected(self):
@@ -451,7 +597,9 @@ class ContractSchemaIntegration(unittest.TestCase):
             self.skipTest("jsonschema absent")
         for name, payload in (("execution-plan", PLAN), ("federation-policy", FED)):
             with self.subTest(name=name):
-                schema = json.loads((BASE / "contracts" / (name + ".schema.json")).read_text())
+                schema = json.loads(
+                    (BASE / "contracts" / (name + ".schema.json")).read_text()
+                )
                 jsonschema.validate(payload, schema)
 
     def test_unknown_group_denied_by_schema(self):
@@ -465,6 +613,7 @@ class ContractSchemaIntegration(unittest.TestCase):
         p["tasks"][0]["mode"] = "BYPASS_GATE"
         with self.assertRaises(jsonschema.ValidationError):
             jsonschema.validate(p, schema)
+
 
 if __name__ == "__main__":
     unittest.main()

@@ -1,0 +1,194 @@
+{
+  "schema": "code-purple.lossless-handover.v1",
+  "role": "HISTORICAL_RECEIVER_NOT_MERGE_AUTHORITY",
+  "cut": {
+    "date": "2026-10-14",
+    "repo": "GBOGEB/ABACUS",
+    "main_sha": "85dad8fbdab530d40e6ccf2f664c455f89454aad",
+    "protected": true,
+    "ruleset_id": 24494381,
+    "rules": [
+      "pull_request",
+      "deletion",
+      "non_fast_forward"
+    ],
+    "required_checks_rule_present": false,
+    "required_approval_count": 1,
+    "open_prs_at_sample": 11,
+    "refresh_required": true
+  },
+  "canonical": {
+    "queue": "https://github.com/GBOGEB/ABACUS/issues/1877#issuecomment-6172115901",
+    "admission": "https://github.com/GBOGEB/ABACUS/issues/1860",
+    "bd": "https://github.com/GBOGEB/ABACUS/issues/1929",
+    "fanin": "https://github.com/GBOGEB/ABACUS/pull/1934",
+    "dmaic": "https://github.com/GBOGEB/ABACUS/pull/1938",
+    "source": "https://github.com/GBOGEB/ABACUS/blob/main/tools/everred_v3/sut_gui/index.html",
+    "roots": "https://github.com/GBOGEB/ABACUS/blob/main/tools/everred_v3/data/bd_queue_20261014.json",
+    "join": "https://github.com/GBOGEB/ABACUS/blob/main/scripts/bd_ldab_join_census.py",
+    "feedback": "https://github.com/GBOGEB/ABACUS/blob/main/.github/workflows/pr-feedback-gate.yml",
+    "policy": "https://github.com/GBOGEB/ABACUS/blob/main/governance/ABACUS_DEFERRED_REVIEW_POLICY.md"
+  },
+  "merged_prs": [
+    1914,
+    1915,
+    1927,
+    1928,
+    1930,
+    1931,
+    1934,
+    1936,
+    1937,
+    1938
+  ],
+  "active_issues": [
+    1860,
+    1877,
+    1929
+  ],
+  "observations": [
+    {
+      "utc": "10:00-10:19",
+      "runs": 267,
+      "feedback": 187,
+      "cancelled_feedback": 160,
+      "upstream_cancelled": 143,
+      "scope": "HISTORICAL"
+    },
+    {
+      "utc": "10:20-10:44 partial",
+      "runs": 371,
+      "feedback": 254,
+      "cancelled_feedback": 221,
+      "scope": "HISTORICAL_PARTIAL"
+    },
+    {
+      "utc": "10:30-10:49 pre-fanin",
+      "runs": 464,
+      "feedback": 319,
+      "cancelled_feedback": 285,
+      "scope": "COMPARISON_NOT_CAUSAL"
+    },
+    {
+      "utc": "10:55-11:14 post-fanin",
+      "runs": 639,
+      "feedback": 204,
+      "cancelled_feedback": 178,
+      "scope": "COMPARISON_NOT_CAUSAL"
+    },
+    {
+      "utc": "11:15-11:34",
+      "runs": 185,
+      "feedback": 150,
+      "cancelled_feedback": 128,
+      "scope": "HISTORICAL"
+    }
+  ],
+  "distinct_queues": {
+    "sep26_bd_items": 12,
+    "sep26_external": 8,
+    "sep26_parents": 4,
+    "old_live_issue_count": 50,
+    "bandit_full_pr1915": 6393,
+    "observed_active_runner_instances_sample": 9,
+    "runner_capacity": "UNKNOWN",
+    "crew_capacity": "UNKNOWN"
+  },
+  "unarchived": [
+    {
+      "name": "EVERRED_4_BD_Queue_Audit.pdf",
+      "kind": "PDF_BINARY",
+      "sha256": "5b0f9162d026eac27c29bbdc01ba7c9426d89ad46e6cbce3b57e1b00bbdc5ae1",
+      "status": "NOT_ARCHIVED"
+    },
+    {
+      "name": "EVERRED_4_Control_Atlas_Package.zip",
+      "kind": "EDITABLE_GENERATORS_LOCAL_COMPANION",
+      "status": "NOT_ARCHIVED"
+    },
+    {
+      "name": "user uploaded EVERRED/recovery/CI source .txt files",
+      "kind": "CONVERSATION_ATTACHMENTS",
+      "status": "NOT_ARCHIVED"
+    }
+  ],
+  "tasks": [
+    {
+      "id": "P0-GOV",
+      "status": "OPEN",
+      "action": "Owner/admin to verify required-status-check enforcement; ruleset 24494381 protects main with one approval but no required-check rule",
+      "dov": "Verify rule ID, actual source/check names, negative red and positive guarded merge, independent review",
+      "priority": "P0"
+    },
+    {
+      "id": "P0-COALESCE",
+      "status": "DESIGNED_NOT_CODED",
+      "action": "Implement one commit-epoch completion collector/append-only cancellation-successor reconciliation under #1877; do not fork feedback gate",
+      "dov": "A->B->A, duplicate events, out-of-order slow/fast, retry, no-receipt tests and no false green",
+      "priority": "P0"
+    },
+    {
+      "id": "P1-UI-ROWS",
+      "status": "NOT_CODED",
+      "action": "Improve EXISTING EVERRED V3 live workflow table status/trigger badges, zebra rows, focus/hover, grouped/collapsible rows and timestamps",
+      "dov": "Native code patch + Playwright 1440/1280/390 widths + a11y contrast; tests exact new head",
+      "priority": "P1"
+    },
+    {
+      "id": "P1-ATLAS",
+      "status": "REVIEW_ONLY",
+      "action": "Reconcile standalone EVERRED V4 HTML from this chat into existing V3 SUT UI, not parallel SSOT; preserve original PDF and editable generator sources elsewhere",
+      "dov": "Source->generated parity, browser QA, secure local dispatch contract, GitHub PR exact head",
+      "priority": "P1"
+    },
+    {
+      "id": "P1-BD",
+      "status": "PARTIAL",
+      "action": "Reconcile 2026-09-26 historical 12-item BD issue queue, 2026-10-14 V3 8 root-group snapshot, present issue backlog, disjoint Bandit/Flake8 signatures, LDAB debugger receipts",
+      "dov": "Comparable source SHA/run/job/config, accepted root ID vs analytical candidate, durable owner/disposition",
+      "priority": "P1"
+    },
+    {
+      "id": "P1-CREW",
+      "status": "UNKNOWN",
+      "action": "Enumerate live CODEX Mission Control, RHEL8/9, Docker/Podman, user-side worker/port capacity and accepted authenticated returns",
+      "dov": "Real heartbeat + lease/host/runner ID, job time and REX; NEVER sum crew registry and hosted runners",
+      "priority": "P1"
+    },
+    {
+      "id": "P1-SECURITY",
+      "status": "VERIFY",
+      "action": "Recensus post-merge exact-main #1938 coverage, Safety exit64, A10, DOW/AHT, Bandit, Black/isort, broad 75% and changed-line separately",
+      "dov": "Terminal exact-main JUnit/coverage/security receipts and eligible reviewer decisions; no waiver",
+      "priority": "P1"
+    },
+    {
+      "id": "P2-EXPERIMENT",
+      "status": "OPEN",
+      "action": "Matched before/after event/queue throughput and runner consumption; avoid mixed workloads",
+      "dov": "Two comparable windows, arrival/terminal denominators, cancellation-successor %, wait P95",
+      "priority": "P2"
+    },
+    {
+      "id": "P2-LOCAL-ACTIONS",
+      "status": "PROTOTYPE",
+      "action": "Only allowlisted explicit gh workflow dispatch with correct auth and SHA; keep browser credential free",
+      "dov": "CSRF/origin/lease/policy negative tests; no merge/cancel/waiver endpoint",
+      "priority": "P2"
+    },
+    {
+      "id": "P2-FEDERATE",
+      "status": "OPEN",
+      "action": "Only after ABACUS native acceptance roll out CODEX/QPS/priority repos under their separate authority",
+      "dov": "Repo-specific reviewed source/check config and worker/return receipts",
+      "priority": "P2"
+    }
+  ],
+  "invariants": {
+    "merge_decision": "HOLD_UNTIL_FULL_GOVERNED_ADMISSION",
+    "security_waiver": false,
+    "authority_transfer": false,
+    "formal_credit_delta": 0,
+    "engineering_credit_delta": 0
+  }
+}
