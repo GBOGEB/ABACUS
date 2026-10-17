@@ -10,48 +10,27 @@ import pytest
 
 from scripts import cbd_eoss_n6_release as out
 from scripts import cbd_eoss_trajectory as trajectory
-# Regression: independent native collection must not rely on pytest import mode.
+# Pytest importlib collection does not guarantee the tests directory is on sys.path.
+# Load the sibling regression fixture from its checkout-bound path, fail closed.
+import importlib.util
 
-
-def snapshot(*, coverage=None, clocks=True):
-    """Standalone fixture: do not import another pytest test module."""
-    from scripts import cbd_eoss_trajectory as t
-    D = "a" * 64
-    S = "b" * 64
-    C = "c" * 64
-    H = "d" * 64
-    baseline = {"covered_statements": 207, "covered_branches": 39}
-    row = []
-    for index, wave in enumerate(t.WAVES):
-        coverage_values = (baseline if index == 0 else
-                           {"covered_statements": 210, "covered_branches": 42})
-        digest = coverage or D
-        row.append({
-            "wave": wave,
-            "observed_at": f"2026-10-17T1{index}:00:00Z",
-            "head_sha": (chr(97 + index) * 40),
-            "evidence_tier": "LOCAL_REPRODUCIBILITY",
-            "authority": {"admission": "HOLD", "security_waiver": False,
-                          "authority_transfer": False},
-            "tests": {"collected": [67, 73, 99, 99][index],
-                      "passed": [67, 73, 99, 99][index], "failed": 0, "skipped": 0},
-            "coverage": {"source_content_sha256": digest,
-                         "scope_sha256": S, "config_sha256": C,
-                         "tool_version": "coverage.py 7.13.3",
-                         "eligible_statements": 210, "eligible_branches": 42,
-                         **coverage_values},
-            "clock": ({"basis": "LOCAL_MONOTONIC_WALL", "workload_sha256": H,
-                       "host_sha256": H, "duration_ms": [150.0, 145.0, 149.0]}
-                      if clocks else None),
-            "historical_backlog": {"n0_total": 253, "observed_run_ids": 60,
-                                   "formal_roots_closed": None},
-        })
-    return {"schema": t.SOURCE_SCHEMA, "repository": "GBOGEB/ABACUS",
-            "observations": row, "forecasts": []}
-
+_fixture_path = Path(__file__).with_name("test_cbd_eoss_trajectory.py")
+_fixture_spec = importlib.util.spec_from_file_location(
+    "_cbd_eoss_trajectory_fixture", _fixture_path
+)
+if _fixture_spec is None or _fixture_spec.loader is None:
+    raise ImportError(f"Unable to bind sibling fixture: {_fixture_path}")
+_fixture_module = importlib.util.module_from_spec(_fixture_spec)
+_fixture_spec.loader.exec_module(_fixture_module)
+snapshot = _fixture_module.snapshot
 
 TEMPLATE = Path(__file__).resolve().parents[1] / "scripts" / "cbd_eoss_n6_template.html"
 SHA = "21ac90604f36e70b64bd0539272e8982a747ec75"
+
+
+def test_sibling_snapshot_is_loaded_from_checkout_bound_file():
+    """The release test does not depend on pytest sys.path import mode."""
+    assert Path(snapshot.__code__.co_filename).resolve() == _fixture_path.resolve()
 
 
 def input_data():
