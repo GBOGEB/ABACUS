@@ -97,5 +97,44 @@ class GgMathBridgeTests(unittest.TestCase):
             self.assertEqual("HOLD", status["merge_admission"])
 
 
+    def test_no_alias_branch_keeps_independent_head_proxy_rows(self):
+        source_data = fixture()
+        source_data["families"][0]["affected_prs"] = [2005, 2006]
+        source, task = bridge.build(source_data, "3" * 40)
+        self.assertEqual(4, source["n_source_head_proxy_groups"])
+        self.assertEqual([], source["known_aliases_collapsed"])
+        self.assertFalse(task["authority_transfer"])
+
+    def test_direct_entrypoint_prepares_provider_request_without_execution(self):
+        import contextlib
+        import io
+        import runpy
+        import sys
+        from unittest import mock
+
+        with tempfile.TemporaryDirectory() as directory:
+            base = Path(directory)
+            summary = base / "summary.json"
+            summary.write_text(json.dumps(fixture()), encoding="utf-8")
+            destination = base / "request"
+            argv = [
+                str(ROOT / "scripts" / "cbd_ggmath_bridge.py"),
+                "--summary", str(summary),
+                "--source-sha", "3" * 40,
+                "--output-dir", str(destination),
+            ]
+            with mock.patch.object(sys, "argv", argv):
+                with contextlib.redirect_stdout(io.StringIO()) as stream:
+                    runpy.run_path(
+                        str(ROOT / "scripts" / "cbd_ggmath_bridge.py"),
+                        run_name="__main__",
+                    )
+            outcome = json.loads(stream.getvalue())
+            self.assertFalse(outcome["invoked"])
+            self.assertEqual("HOLD", outcome["admission"])
+            self.assertTrue((destination / "ggmath-request.json").exists())
+
+
+
 if __name__ == "__main__":
     unittest.main()
