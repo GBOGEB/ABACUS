@@ -45,7 +45,7 @@ jobs:
           mkdir -p test_reports/n15
           python -m coverage run --branch --source=DMAIC_V3.phases.phase4_improve,DMAIC_V3.phases.phase8_todo_management,DMAIC_V3.debug_pipeline,cicd_github_orchestrator,scripts -m unittest discover -s tests -p 'test_g3a_*.py' -v 2>&1 | tee test_reports/n15/unittest.log
           python -m coverage json -o test_reports/n15/coverage.json
-          python -m pytest -q tests/test_dmaic_phase4_noop_contract_20261013.py 2>&1 | tee test_reports/n15/noop_contract_pytest.log
+          python -m pytest --noconftest -q tests/test_dmaic_phase4_noop_contract_20261013.py 2>&1 | tee test_reports/n15/noop_contract_pytest.log
       - name: Verify exact denominator and monotone arc presence
         shell: bash
         env:
