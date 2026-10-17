@@ -34,7 +34,7 @@ class CohortUnionTests(unittest.TestCase):
         self.assertEqual(rec["unknown_associations_joined_to_declared_known"], 12)
         self.assertEqual(rec["unresolved_unknown_run_ids"], 54)
         self.assertEqual(rec["cross_source_duplicate_rows"], 12)
-        self.assertEqual(rec["snapshots_without_head_manifests"], 1)
+        self.assertEqual(rec["snapshots_without_head_manifests"], 3)
         self.assertEqual(rec["distinct_declared_pr_heads"], 19)
         self.assertIsNone(result["observed"]["run_attempt_count"])
         self.assertEqual(result["observed"]["run_association_count"], 66)
@@ -128,10 +128,10 @@ class CohortUnionTests(unittest.TestCase):
         self.assertEqual([6, 12, 19], [p["distinct_failed_pr_heads_cumulative"] for p in pulses])
         self.assertEqual([12, 40, 66], [p["distinct_run_ids_cumulative"] for p in pulses])
         self.assertTrue(all(p["kind"] == "SOURCE_INGESTION_NOT_TEMPORAL_IMPROVEMENT" for p in pulses))
-        self.assertEqual(rec["distinct_manifested_pr_heads"], 20)
-        self.assertEqual(rec["manifested_zero_failure_prs"], [2033])
-        self.assertEqual(rec["non_atomic_manifest_workflow_associations"], 533)
-        self.assertEqual(rec["non_atomic_manifest_failed_associations"], 66)
+        self.assertEqual(rec["distinct_manifested_pr_heads"], 0)
+        self.assertEqual(rec["manifested_zero_failure_prs"], [])
+        self.assertEqual(rec["non_atomic_manifest_workflow_associations"], 0)
+        self.assertEqual(rec["non_atomic_manifest_failed_associations"], 0)
         self.assertEqual(rec["manifest_comparability"], "NOT_A_DENOMINATOR_FOR_UNION_PASS_RATE")
 
     def test_unique_known_attempt_can_join_without_native_authentication(self):
@@ -191,10 +191,27 @@ class CohortUnionTests(unittest.TestCase):
 
     def test_manifest_conflicts_fail_closed(self):
         first = snapshots()[1]
+        # Frozen JSON has no manifests; create a controlled pair rather than
+        # treating absent metadata as a real upstream PR-head observation.
+        row = first["observations"][0]
+        first["sampled_pr_heads"] = [{
+            "pr": row["pr"], "sha": row["sha"],
+            "workflow_associations_seen": 3, "failed_associations_seen": 1,
+        }]
         second = copy.deepcopy(first)
         second["sampled_pr_heads"][0]["workflow_associations_seen"] += 1
         with self.assertRaisesRegex(ValueError, "conflicting sampled PR head manifest"):
             produce_cohorts([first, second])
+
+    def test_absent_manifest_stays_absent_in_projection(self):
+        source = snapshots()
+        receipt = produce_cohorts(source)["cohort_reconciliation"]
+        self.assertEqual(receipt["snapshots_without_head_manifests"], 3)
+        self.assertEqual(receipt["distinct_manifested_pr_heads"], 0)
+        self.assertEqual(receipt["non_atomic_manifest_workflow_associations"], 0)
+        self.assertEqual(receipt["manifested_zero_failure_prs"], [])
+        self.assertEqual(receipt["manifest_comparability"],
+                         "NOT_A_DENOMINATOR_FOR_UNION_PASS_RATE")
 
 
     def test_known_and_unknown_attempts_are_not_falsely_summed(self):
