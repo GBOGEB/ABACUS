@@ -1,9 +1,14 @@
 """Fail-closed tests for the read-only B-family objective registry."""
+
 import json
 import pathlib
 import unittest
 
-REGISTRY = pathlib.Path(__file__).resolve().parents[1] / "config" / "metric_hierarchy_registry.json"
+REGISTRY = (
+    pathlib.Path(__file__).resolve().parents[1]
+    / "config"
+    / "metric_hierarchy_registry.json"
+)
 
 
 class MetricHierarchyRegistry(unittest.TestCase):
@@ -21,7 +26,9 @@ class MetricHierarchyRegistry(unittest.TestCase):
     def test_child_reuse_does_not_become_independent_credit(self):
         b1 = next(row for row in self.doc["b_family"] if row["id"] == "MIP.B1")
         self.assertEqual(b1["parent"], "MIP.B0")
-        self.assertIn(["MIP.B0", "MIP.B1"], self.doc["rollup_rules"]["forbidden_overlap"])
+        self.assertIn(
+            ["MIP.B0", "MIP.B1"], self.doc["rollup_rules"]["forbidden_overlap"]
+        )
 
     def test_objective_weights_sum_one_and_are_diagnostic(self):
         for objective in self.doc["objectives"]:
@@ -36,8 +43,12 @@ class MetricHierarchyRegistry(unittest.TestCase):
 
     def test_native_run_and_worker_credit_separated(self):
         sample = self.doc["observed_sample"]
-        self.assertEqual((sample["b0_success"], sample["b0_observed_runs"]), (13, 14))
-        self.assertEqual((sample["b0_jobs_success"], sample["b0_jobs_total"]), (180, 182))
+        self.assertEqual(
+            (sample["b0_success"], sample["b0_observed_runs"]), (13, 14)
+        )
+        self.assertEqual(
+            (sample["b0_jobs_success"], sample["b0_jobs_total"]), (180, 182)
+        )
         self.assertIsNone(self.doc["current"]["authenticated_Crew_launches"])
 
     def test_hard_gates_and_authority_are_never_waived(self):

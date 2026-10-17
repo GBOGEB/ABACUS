@@ -42,7 +42,7 @@ canonical coverage and dependent admission FAILED, B1 passed.
 
 The highest B0 run ID observed was [39029698384](
 https://github.com/GBOGEB/ABACUS/actions/runs/39029698384),
-#2097 head `ce2a867deedd4b8649e4607d7fc59b2923cb3cc1`,
+PR #2097 head `ce2a867deedd4b8649e4607d7fc59b2923cb3cc1`,
 13/13 native jobs PASS. Not proof of #2097's separate cohort
 testflight, not main admission, and not authenticated Crew execution.
 
