@@ -238,5 +238,42 @@
     "verified_merged_prs_today": 100,
     "prior_chat_prompt_count": null,
     "unavailable_full_transcript": true
+  },
+  "verified_issue_closures_20261017": {
+    "duplicate_dashboard": [
+      1447,
+      1469,
+      1481,
+      1543,
+      1641,
+      1707,
+      1763,
+      1803,
+      1845
+    ],
+    "completed_status_without_causal_root_acceptance": [
+      1861,
+      1862,
+      1864,
+      1865,
+      1878,
+      1879
+    ],
+    "earlier_closed_dashboard_duplicates": [
+      1848,
+      1850,
+      1851,
+      1852,
+      1853,
+      1870
+    ],
+    "open_canonical_dashboard_issue": 1885,
+    "closure_reason_source": "native GitHub issue state_reason",
+    "issue_state_not_equivalent_to_root_disposition": true
+  },
+  "next_session_do_v": {
+    "issue_completed_root_review": "Join six completed issue IDs to owning merge PR, main ancestry, exact-head terminal native CI, before/after symptom/fingerprint; no automatic ASH closure",
+    "handover_proof": "Build and verify zip, fresh GitHub heads and effective branch policy, HTML browser QA and native PR checks",
+    "source_admission": "HOLD pending effective ruleset, security, independent review"
   }
 }
