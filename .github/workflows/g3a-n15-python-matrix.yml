@@ -40,7 +40,7 @@ jobs:
         with:
           python-version: ${{ matrix.python-version }}
       - name: Install narrow compatibility tools
-        run: python -m pip install --disable-pip-version-check 'coverage==7.16.2' 'PyYAML==6.0.2'
+        run: python -m pip install --disable-pip-version-check 'coverage[toml]==7.16.2' 'PyYAML==6.0.2'
       - name: Run source-epoch W16 tests and measure 560 eligible five-file arcs
         shell: bash
         run: |
