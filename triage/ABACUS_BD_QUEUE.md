@@ -1,5 +1,68 @@
 # ABACUS current BD queue
 
+## CODE PURPLE follow-up pulse — 17 October 2026 (later readback)
+
+**Source-bound issue lifecycle:** ABACUS open issues **53 -> 38**,
+with 15 same-day closures confirmed in GitHub.
+
+- **9** older dashboard alerts were closed as duplicate housekeeping,
+  after preserving their original run receipts in canonical #1885.
+- **6** other issues (#1861, #1862, #1864, #1865, #1878,
+  #1879) were closed as completed by independent work.
+- **No admitted engineering causal-root closure count exists.**
+  GitHub issue state alone is not a causal-root denominator.
+
+| Live sample | Open ordinary issues |
+| :-- | --: |
+| ABACUS | 38 |
+| CODEX | 10 |
+| cryoplant-project (QPS) | 56 |
+| pipeline-automation-hub | 32 |
+| **Four-repository scoped total** | **136** |
+
+This is a **four-repository sample**, not the entire GBOGEB
+portfolio or 136 deduplicated engineering roots.
+
+### Ageing and closure-selection effect
+
+| Open issue age | Prior 53 | Current 38 |
+| :-- | --: | --: |
+| 0-6 days | 25 | 19 |
+| 7-13 days | 4 | 1 |
+| 14-29 days | 15 | 9 |
+| 30+ days | 9 | 9 |
+
+Issues aged 14+ fell **24 -> 18** (six fewer).
+But their share moved **24/53 = 45.28%** to
+**18/38 = 47.37%** due to selective closure of newer tickets.
+This is not deteriorating engineering quality or convergence
+speed; the 30+ day external programme blockers remain nine.
+
+### Engineering next admissible actions
+
+1. **#1885:** Source-owned [PR #2164](../pull/2164)
+   targets five more recent dashboard href manifestations:
+   unpublished MYRRHA (2), absent Contract Baseline (1),
+   W007 runtime-generated evidence (1), JS dynamic false
+   positive (1). CI is pending; no root closure credited.
+2. **#1860 / #1278:** Reconcile protected main branch
+   enforcement, independent reviewer and terminal required CI
+   before recognizing any governed first admission.
+3. **#1929:** Determine authenticated causal-root identities
+   and open/closed denominators separately from GitHub issues.
+4. **CODEX #977:** Human-authorized ABACUS worker/runner
+   dispatch and REX not proven by unrelated merged PRs.
+5. **QPS #1929:** Eight distinct source-owner recensus and
+   lossless handover TODOs remain; no engineering acceptance.
+6. **Mission Hub #604:** Reuse source-bound global graph
+   census without authorizing dispatch or mixing populations.
+
+**Append-only machine pulse:**
+[ABACUS BD P2 receipt](ABACUS_BD_PULSE2_20261017.json).
+The preceding October and September sections remain intact.
+
+## Previous October census (retained for temporal lineage)
+
 ## Live additive GitHub census — 17 October 2026
 
 The 26 September queue below is a frozen programme cohort, not the
