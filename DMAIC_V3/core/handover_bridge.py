@@ -116,16 +116,25 @@ class HandoverBridge:
         Returns:
             Phase execution result
         """
-        # Check cache first
-        if phase_name in self._phase_cache:
-            return self._phase_cache[phase_name]
+        # Bind idempotency to phase plus behavioral inputs. Phase-name-only
+        # caching incorrectly reuses iteration N results for iteration N+1.
+        try:
+            input_hash = idempotency.hash_json({"args": args, "kwargs": kwargs})
+        except (TypeError, ValueError):
+            input_hash = idempotency.hash_json(
+                {
+                    "args": [repr(arg) for arg in args],
+                    "kwargs": {key: repr(value) for key, value in sorted(kwargs.items())},
+                }
+            )
+        cache_key = f"{phase_name}:{input_hash}"
 
-        # Execute phase
+        if cache_key in self._phase_cache:
+            return self._phase_cache[cache_key]
+
         idempotent_phase = IdempotentPhase(phase_name, self.state_manager)
         result = idempotent_phase.execute(phase_func, *args, **kwargs)
-
-        # Cache result
-        self._phase_cache[phase_name] = result
+        self._phase_cache[cache_key] = result
 
         return result
 
@@ -161,6 +170,31 @@ class HandoverBridge:
             'metrics': metrics,
             'timestamp': datetime.now().isoformat()
         })
+
+    def record_phase(
+        self,
+        phase_name: str,
+        iteration: int,
+        status: str,
+        inputs_hash: str,
+        outputs_hash: str,
+        metrics: Dict[str, Any],
+    ):
+        """Record one phase execution in the bridge-local provenance ledger."""
+        phase_record = {
+            'event': 'phase',
+            'run_id': self.run_id,
+            'phase': phase_name,
+            'iteration': iteration,
+            'status': status,
+            'inputs_hash': inputs_hash,
+            'outputs_hash': outputs_hash,
+            'metrics': metrics,
+            'timestamp': datetime.now().isoformat()
+        }
+        self.provenance_log.append(phase_record)
+        self.record_metrics(phase_name, metrics)
+        return phase_record
 
     def get_provenance_trail(self) -> List[Dict[str, Any]]:
         """Get the complete provenance trail"""
@@ -326,7 +360,7 @@ class IdempotentPhaseExecutor:
                 "success" if success else "failed",
                 inputs_hash,
                 outputs_hash,
-                metrics
+                metrics,
             )
 
             return result

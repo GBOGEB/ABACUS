@@ -20,6 +20,11 @@ on:
   pull_request:
     branches: [main, develop]
     paths:
+      - 'scripts/code_purple_bootstrap_ldab_census.py'
+      - 'tests/test_code_purple_bootstrap_ldab_census.py'
+      - 'MIP/code_purple_unknown_backlog.json'
+      - 'scripts/code_purple_mip_unknown_rollup.py'
+      - 'tests/test_code_purple_mip_unknown_rollup.py'
       - 'bootstrap_eval.py'
       - 'deploy_integrated_tests.sh'
       - 'tests/test_bootstrap_eval.py'
@@ -87,6 +92,17 @@ jobs:
           python -c "import numpy; import scipy; import pandas; print('✅ Scientific libraries available')"
           python -c "from tests.bootstrap_bridge import BootstrapBridge; print('✅ Bootstrap bridge importable')"
           ls -la bootstrap_eval.py tests/test_bootstrap_eval.py tests/bootstrap_bridge.py
+
+      - name: Validate CODE PURPLE native census contract
+        run: |
+          python -m unittest discover -s tests \
+            -p 'test_code_purple_bootstrap_ldab_census.py' -v
+          python -m unittest discover -s tests \
+            -p 'test_code_purple_mip_unknown_rollup.py' -v
+          python scripts/code_purple_mip_unknown_rollup.py \
+            --input MIP/code_purple_unknown_backlog.json \
+            --output test_reports/code-purple-unknown-kpi.json \
+            --as-of "$(date -u +%F)"
 
       - name: Run Bootstrap Statistics Tests (pytest)
         run: |

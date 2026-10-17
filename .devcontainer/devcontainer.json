@@ -1,7 +1,7 @@
 {
   "name": "ABACUS CI/CD Development Environment",
   "image": "mcr.microsoft.com/devcontainers/python:3.11",
-  
+
   "features": {
     "ghcr.io/devcontainers/features/github-cli:1": {
       "version": "latest"
@@ -16,7 +16,7 @@
       "version": "latest"
     }
   },
-  
+
   "customizations": {
     "vscode": {
       "extensions": [
@@ -71,15 +71,15 @@
       }
     }
   },
-  
+
   "postCreateCommand": "pip install --upgrade pip && pip install -r requirements.txt && gh auth status || echo 'Please run: gh auth login'",
-  
+
   "postStartCommand": "git config --global --add safe.directory ${containerWorkspaceFolder}",
-  
+
   "remoteUser": "vscode",
-  
+
   "forwardPorts": [8000, 8080, 5000],
-  
+
   "portsAttributes": {
     "8000": {
       "label": "Application",
@@ -90,11 +90,11 @@
       "onAutoForward": "openBrowser"
     }
   },
-  
+
   "mounts": [
     "source=${localEnv:HOME}/.gitconfig,target=/home/vscode/.gitconfig,type=bind,consistency=cached"
   ],
-  
+
   "containerEnv": {
     "GITHUB_REPOSITORY": "GBOGEB/ABACUS"
   }

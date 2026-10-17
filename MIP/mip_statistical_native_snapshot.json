@@ -1,0 +1,294 @@
+{
+  "schema": "mip.github.snapshot.v1",
+  "acquisition": "GitHub connector GET run and attempt/1/jobs; selected records only; see PR 1989 comment 6199021296",
+  "runs": [
+    {
+      "id": 38637323063,
+      "html_url": "https://github.com/GBOGEB/ABACUS/actions/runs/38637323063",
+      "head_sha": "aaaea0b51a02a07fc68109fabae4c98faa1e5214",
+      "run_attempt": 1,
+      "status": "completed",
+      "conclusion": "success",
+      "updated_at": "2026-10-14T21:08:50Z",
+      "path": ".github/workflows/ci-governance.yml",
+      "repository": {
+        "full_name": "GBOGEB/ABACUS"
+      }
+    },
+    {
+      "id": 38637322500,
+      "html_url": "https://github.com/GBOGEB/ABACUS/actions/runs/38637322500",
+      "head_sha": "aaaea0b51a02a07fc68109fabae4c98faa1e5214",
+      "run_attempt": 1,
+      "status": "completed",
+      "conclusion": "success",
+      "updated_at": "2026-10-14T21:08:50Z",
+      "path": ".github/workflows/qps-canonicalization.yml",
+      "repository": {
+        "full_name": "GBOGEB/ABACUS"
+      }
+    },
+    {
+      "id": 38637299527,
+      "html_url": "https://github.com/GBOGEB/ABACUS/actions/runs/38637299527",
+      "head_sha": "aaaea0b51a02a07fc68109fabae4c98faa1e5214",
+      "run_attempt": 1,
+      "status": "completed",
+      "conclusion": "failure",
+      "updated_at": "2026-10-14T21:07:25Z",
+      "path": ".github/workflows/a10-guard.yml",
+      "repository": {
+        "full_name": "GBOGEB/ABACUS"
+      }
+    },
+    {
+      "id": 38637299662,
+      "html_url": "https://github.com/GBOGEB/ABACUS/actions/runs/38637299662",
+      "head_sha": "aaaea0b51a02a07fc68109fabae4c98faa1e5214",
+      "run_attempt": 1,
+      "status": "completed",
+      "conclusion": "success",
+      "updated_at": "2026-10-14T21:08:01Z",
+      "path": ".github/workflows/validate_docs.yml",
+      "repository": {
+        "full_name": "GBOGEB/ABACUS"
+      }
+    },
+    {
+      "id": 38637299721,
+      "html_url": "https://github.com/GBOGEB/ABACUS/actions/runs/38637299721",
+      "head_sha": "aaaea0b51a02a07fc68109fabae4c98faa1e5214",
+      "run_attempt": 1,
+      "status": "completed",
+      "conclusion": "success",
+      "updated_at": "2026-10-14T21:08:02Z",
+      "path": ".github/workflows/dab-flake8-census.yml",
+      "repository": {
+        "full_name": "GBOGEB/ABACUS"
+      }
+    },
+    {
+      "id": 38637299681,
+      "html_url": "https://github.com/GBOGEB/ABACUS/actions/runs/38637299681",
+      "head_sha": "aaaea0b51a02a07fc68109fabae4c98faa1e5214",
+      "run_attempt": 1,
+      "status": "completed",
+      "conclusion": "success",
+      "updated_at": "2026-10-14T21:07:47Z",
+      "path": ".github/workflows/w70-measured-id-pulse-exact-sha.yml",
+      "repository": {
+        "full_name": "GBOGEB/ABACUS"
+      }
+    },
+    {
+      "id": 38637299665,
+      "html_url": "https://github.com/GBOGEB/ABACUS/actions/runs/38637299665",
+      "head_sha": "aaaea0b51a02a07fc68109fabae4c98faa1e5214",
+      "run_attempt": 1,
+      "status": "completed",
+      "conclusion": "success",
+      "updated_at": "2026-10-14T21:07:50Z",
+      "path": ".github/workflows/security-scan.yml",
+      "repository": {
+        "full_name": "GBOGEB/ABACUS"
+      }
+    },
+    {
+      "id": 38637299687,
+      "html_url": "https://github.com/GBOGEB/ABACUS/actions/runs/38637299687",
+      "head_sha": "aaaea0b51a02a07fc68109fabae4c98faa1e5214",
+      "run_attempt": 1,
+      "status": "completed",
+      "conclusion": "success",
+      "updated_at": "2026-10-14T21:08:06Z",
+      "path": ".github/workflows/w71-residual-lineage-census.yml",
+      "repository": {
+        "full_name": "GBOGEB/ABACUS"
+      }
+    },
+    {
+      "id": 38642180573,
+      "html_url": "https://github.com/GBOGEB/ABACUS/actions/runs/38642180573",
+      "head_sha": "84d7b9652e56d6e6ed68f28cfe474ad4393b24f6",
+      "run_attempt": 1,
+      "status": "completed",
+      "conclusion": "success",
+      "updated_at": "2026-10-14T22:00:53Z",
+      "path": ".github/workflows/bootstrap-integration.yml",
+      "repository": {
+        "full_name": "GBOGEB/ABACUS"
+      }
+    },
+    {
+      "id": 38642180419,
+      "html_url": "https://github.com/GBOGEB/ABACUS/actions/runs/38642180419",
+      "head_sha": "84d7b9652e56d6e6ed68f28cfe474ad4393b24f6",
+      "run_attempt": 1,
+      "status": "completed",
+      "conclusion": "success",
+      "updated_at": "2026-10-14T21:50:01Z",
+      "path": ".github/workflows/ci-abacus.yml",
+      "repository": {
+        "full_name": "GBOGEB/ABACUS"
+      }
+    },
+    {
+      "id": 38642179774,
+      "html_url": "https://github.com/GBOGEB/ABACUS/actions/runs/38642179774",
+      "head_sha": "84d7b9652e56d6e6ed68f28cfe474ad4393b24f6",
+      "run_attempt": 1,
+      "status": "completed",
+      "conclusion": "success",
+      "updated_at": "2026-10-14T21:50:27Z",
+      "path": ".github/workflows/mip-coverage-evidence.yml",
+      "repository": {
+        "full_name": "GBOGEB/ABACUS"
+      }
+    },
+    {
+      "id": 38639572693,
+      "html_url": "https://github.com/GBOGEB/ABACUS/actions/runs/38639572693",
+      "head_sha": "b4906744f07d9be764ddab4d751aaf48a386b506",
+      "run_attempt": 1,
+      "status": "completed",
+      "conclusion": "failure",
+      "updated_at": "2026-10-14T21:25:08Z",
+      "path": ".github/workflows/ci-abacus.yml",
+      "repository": {
+        "full_name": "GBOGEB/ABACUS"
+      }
+    },
+    {
+      "id": 38639572753,
+      "html_url": "https://github.com/GBOGEB/ABACUS/actions/runs/38639572753",
+      "head_sha": "b4906744f07d9be764ddab4d751aaf48a386b506",
+      "run_attempt": 1,
+      "status": "completed",
+      "conclusion": "failure",
+      "updated_at": "2026-10-14T21:25:42Z",
+      "path": ".github/workflows/mip-coverage-evidence.yml",
+      "repository": {
+        "full_name": "GBOGEB/ABACUS"
+      }
+    }
+  ],
+  "jobs": [
+    {
+      "id": 116103690847,
+      "run_id": 38637323063,
+      "head_sha": "aaaea0b51a02a07fc68109fabae4c98faa1e5214",
+      "run_attempt": 1,
+      "status": "completed",
+      "conclusion": "success",
+      "completed_at": "2026-10-14T21:08:49Z"
+    },
+    {
+      "id": 116103688478,
+      "run_id": 38637322500,
+      "head_sha": "aaaea0b51a02a07fc68109fabae4c98faa1e5214",
+      "run_attempt": 1,
+      "status": "completed",
+      "conclusion": "success",
+      "completed_at": "2026-10-14T21:08:49Z"
+    },
+    {
+      "id": 116103610589,
+      "run_id": 38637299527,
+      "head_sha": "aaaea0b51a02a07fc68109fabae4c98faa1e5214",
+      "run_attempt": 1,
+      "status": "completed",
+      "conclusion": "failure",
+      "completed_at": "2026-10-14T21:07:25Z"
+    },
+    {
+      "id": 116103611622,
+      "run_id": 38637299662,
+      "head_sha": "aaaea0b51a02a07fc68109fabae4c98faa1e5214",
+      "run_attempt": 1,
+      "status": "completed",
+      "conclusion": "success",
+      "completed_at": "2026-10-14T21:08:00Z"
+    },
+    {
+      "id": 116103611644,
+      "run_id": 38637299721,
+      "head_sha": "aaaea0b51a02a07fc68109fabae4c98faa1e5214",
+      "run_attempt": 1,
+      "status": "completed",
+      "conclusion": "success",
+      "completed_at": "2026-10-14T21:08:02Z"
+    },
+    {
+      "id": 116103611251,
+      "run_id": 38637299681,
+      "head_sha": "aaaea0b51a02a07fc68109fabae4c98faa1e5214",
+      "run_attempt": 1,
+      "status": "completed",
+      "conclusion": "success",
+      "completed_at": "2026-10-14T21:07:46Z"
+    },
+    {
+      "id": 116103610482,
+      "run_id": 38637299665,
+      "head_sha": "aaaea0b51a02a07fc68109fabae4c98faa1e5214",
+      "run_attempt": 1,
+      "status": "completed",
+      "conclusion": "success",
+      "completed_at": "2026-10-14T21:07:49Z"
+    },
+    {
+      "id": 116103610813,
+      "run_id": 38637299687,
+      "head_sha": "aaaea0b51a02a07fc68109fabae4c98faa1e5214",
+      "run_attempt": 1,
+      "status": "completed",
+      "conclusion": "success",
+      "completed_at": "2026-10-14T21:08:05Z"
+    },
+    {
+      "id": 116120165687,
+      "run_id": 38642180573,
+      "head_sha": "84d7b9652e56d6e6ed68f28cfe474ad4393b24f6",
+      "run_attempt": 1,
+      "status": "completed",
+      "conclusion": "success",
+      "completed_at": "2026-10-14T21:53:59Z"
+    },
+    {
+      "id": 116120493992,
+      "run_id": 38642180419,
+      "head_sha": "84d7b9652e56d6e6ed68f28cfe474ad4393b24f6",
+      "run_attempt": 1,
+      "status": "completed",
+      "conclusion": "success",
+      "completed_at": "2026-10-14T21:42:25Z"
+    },
+    {
+      "id": 116120830167,
+      "run_id": 38642179774,
+      "head_sha": "84d7b9652e56d6e6ed68f28cfe474ad4393b24f6",
+      "run_attempt": 1,
+      "status": "completed",
+      "conclusion": "success",
+      "completed_at": "2026-10-14T21:50:01Z"
+    },
+    {
+      "id": 116111876445,
+      "run_id": 38639572693,
+      "head_sha": "b4906744f07d9be764ddab4d751aaf48a386b506",
+      "run_attempt": 1,
+      "status": "completed",
+      "conclusion": "success",
+      "completed_at": "2026-10-14T21:23:04Z"
+    },
+    {
+      "id": 116111927535,
+      "run_id": 38639572753,
+      "head_sha": "b4906744f07d9be764ddab4d751aaf48a386b506",
+      "run_attempt": 1,
+      "status": "completed",
+      "conclusion": "failure",
+      "completed_at": "2026-10-14T21:23:11Z"
+    }
+  ]
+}
