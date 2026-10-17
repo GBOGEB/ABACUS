@@ -42,19 +42,27 @@
     "status": "NATIVE_SUCCESS"
   },
   "pulse3": {
-    "status": "FORECAST_NOT_OBSERVED",
-    "run_id": null,
-    "attempt": null,
-    "head_sha": null,
+    "status": "NATIVE_FAILED",
+    "run_id": 39065353875,
+    "attempt": 1,
+    "head_sha": "b9204e1d8fe5f5131f3c53776f99917e0141d206",
     "design_os_python_cells": 9,
-    "expected_native_success_jobs": 9,
-    "expected_artifact_count": 9,
-    "forecast_kind": "categorical_preregistered",
-    "forecast_comment_id": 6240126487
+    "observed_native_failure_jobs": 9,
+    "observed_native_success_jobs": 0,
+    "artifact_count": 9,
+    "artifacts_with_sha256": 9,
+    "accepted_native_json_receipts": 0,
+    "first_red": "DUPLICATE_SECURE_JUNIT_DEFUSEDXML_REQUIREMENT_EXACTLY_ONE_REQUIRED",
+    "per_job_observed": {
+      "tests_passed": 22,
+      "tests_failed": 2
+    },
+    "forecast_result": "MISS",
+    "preregistered_comment_id": 6240126487
   },
   "stability": {
-    "label": "NOT_STATISTICALLY_ESTABLISHED",
-    "reason": "Source heads differ; overlapping OS/Python cells are not independent stochastic samples. Three pulses are minimum reporting clocks, not a 3-sigma or Six Sigma capability claim."
+    "label": "NOT_STATISTICALLY_ESTABLISHED_FIRST_RED_CHANGED",
+    "reason": "Pulse1 3/3, Pulse2 9/9, Pulse3 0/9; independent source revisions. Concurrent merge introduced duplicate secure XML parser lines. Never infer process stability or Six Sigma capability."
   },
   "admission": "HOLD",
   "authority_transfer": false,
@@ -64,6 +72,15 @@
   "evidence_links": [
     "https://github.com/GBOGEB/ABACUS/actions/runs/39064141553",
     "https://github.com/GBOGEB/ABACUS/actions/runs/39064371857",
-    "https://github.com/GBOGEB/ABACUS/issues/1860#issuecomment-6240126487"
-  ]
+    "https://github.com/GBOGEB/ABACUS/issues/1860#issuecomment-6240126487",
+    "https://github.com/GBOGEB/ABACUS/actions/runs/39065353875"
+  ],
+  "pulse4": {
+    "status": "FOLLOWUP_CORRECTION_UNOBSERVED",
+    "run_id": null,
+    "attempt": null,
+    "head_sha": null,
+    "design_os_python_cells": 9,
+    "forecast_kind": "categorical_not_assured"
+  }
 }
