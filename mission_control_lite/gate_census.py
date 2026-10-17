@@ -6,7 +6,14 @@ from collections import Counter
 from pathlib import Path
 
 
-TERMINAL = {"success", "failure", "cancelled", "skipped", "timed_out", "action_required", "neutral"}
+TERMINAL = {
+    "success", "failure", "cancelled", "skipped", "timed_out",
+    "action_required", "neutral", "stale", "startup_failure",
+}
+BLOCKING_TERMINAL = {
+    "failure", "cancelled", "timed_out", "action_required",
+    "stale", "startup_failure",
+}
 
 
 def summarize(source_sha: str, runs: list[dict]) -> dict:
@@ -39,6 +46,9 @@ def summarize(source_sha: str, runs: list[dict]) -> dict:
         "successful": success,
         "failed": counts["failure"],
         "cancelled": counts["cancelled"],
+        "stale": counts["stale"],
+        "startup_failure": counts["startup_failure"],
+        "blocking_terminal": sum(counts[reason] for reason in BLOCKING_TERMINAL),
         "other_terminal": total - success - counts["failure"] - counts["cancelled"],
         "success_fraction": success / total if total else None,
         "gate_admission": "HOLD",

@@ -96,5 +96,74 @@ class GateCensusTests(unittest.TestCase):
             summarize("short", [])
 
 
+    def test_stale_and_startup_failure_are_terminal_blockers(self):
+        runs = [
+            {"id": 16, "head_sha": SHA, "status": "completed", "conclusion": "stale"},
+            {"id": 17, "head_sha": SHA, "status": "completed",
+             "conclusion": "startup_failure"},
+        ]
+        report = summarize(SHA, runs)
+        self.assertEqual(report["observations"], 2)
+        self.assertEqual(report["stale"], 1)
+        self.assertEqual(report["startup_failure"], 1)
+        self.assertEqual(report["blocking_terminal"], 2)
+        self.assertEqual(report["other_terminal"], 2)
+        self.assertEqual(report["successful"], 0)
+        self.assertEqual(report["success_fraction"], 0)
+        self.assertEqual(report["gate_admission"], "HOLD")
+
+    def test_all_terminal_outcomes_are_denominator_conserved(self):
+        reasons = [
+            "success", "failure", "cancelled", "skipped", "timed_out",
+            "action_required", "neutral", "stale", "startup_failure",
+        ]
+        runs = [
+            {"id": 101 + i, "head_sha": SHA, "status": "completed",
+             "conclusion": outcome} for i, outcome in enumerate(reasons)
+        ]
+        report = summarize(SHA, runs)
+        self.assertEqual(report["observations"], len(reasons))
+        self.assertEqual(report["successful"], 1)
+        self.assertEqual(report["failed"], 1)
+        self.assertEqual(report["cancelled"], 1)
+        self.assertEqual(report["stale"], 1)
+        self.assertEqual(report["startup_failure"], 1)
+        self.assertEqual(report["blocking_terminal"], 6)
+        self.assertEqual(report["other_terminal"], 6)
+        self.assertEqual(report["success_fraction"], 1 / 9)
+        self.assertEqual(report["gate_admission"], "HOLD")
+
+    def test_running_stale_is_rejected_as_nonterminal(self):
+        with self.assertRaisesRegex(ValueError, "nonterminal"):
+            summarize(SHA, [{"id": 22, "head_sha": SHA,
+                             "status": "in_progress", "conclusion": "stale"}])
+
+    def test_unknown_conclusion_still_fails_closed(self):
+        with self.assertRaisesRegex(ValueError, "unsupported"):
+            summarize(SHA, [{"id": 22, "head_sha": SHA,
+                             "status": "completed", "conclusion": "start_failure"}])
+
+    def test_cli_preserves_new_terminal_reason_counts(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            records = [
+                {"id": 61, "head_sha": SHA, "status": "completed", "conclusion": "stale"},
+                {"id": 62, "head_sha": SHA, "status": "completed",
+                 "conclusion": "startup_failure"},
+            ]
+            (root / "runs.json").write_text(json.dumps(records), encoding="utf-8")
+            with patch.object(sys, "argv", [
+                "gate_census", "--head-sha", SHA,
+                "--runs-json", str(root / "runs.json"),
+                "--out-json", str(root / "receipt.json"),
+            ]):
+                main()
+            result = json.loads((root / "receipt.json").read_text(encoding="utf-8"))
+            self.assertEqual(result["stale"], 1)
+            self.assertEqual(result["startup_failure"], 1)
+            self.assertEqual(result["blocking_terminal"], 2)
+            self.assertEqual(result["gate_admission"], "HOLD")
+
+
 if __name__ == "__main__":
     unittest.main()
