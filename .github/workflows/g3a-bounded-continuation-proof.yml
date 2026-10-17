@@ -4,6 +4,7 @@ on:
     paths:
       - scripts/g3a_bounded_mission.py
       - tests/test_g3a_bounded_mission.py
+      - tests/test_g3a_child_probe.py
       - docs/ci/G3A_EXAMPLE_MISSION.json
       - docs/ci/G3A_GOVERNED_THREE_ADVANCE.md
       - .github/workflows/g3a-bounded-continuation-proof.yml

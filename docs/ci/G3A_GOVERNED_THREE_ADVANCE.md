@@ -118,7 +118,7 @@ python scripts/g3a_bounded_mission.py \
 ```
 
 The example mission accepts three distinct **local control-verification**
-checkpoints (runner syntax, test-suite syntax, 42 real unit tests).
+checkpoints (runner syntax, test-suite syntax, 49 real unit tests).
 That local N=0→3 is not ABACUS PR/root closure or a merge.
 Native GitHub proof workflow:
 `.github/workflows/g3a-bounded-continuation-proof.yml`.
@@ -133,3 +133,19 @@ ABACUS consumes them but does not replace them.
 - New `metric_delta` action accepts only explicitly matched source identity, positive before/after run/job/attempt provenance, stable denominator, and a strictly positive configured numerator gain.
 - Machine output includes actual `delta_covered`, percentage-point difference, source module, and `DECLARED_NOT_NATIVE_AUTHENTICATED` evidence class. External GitHub-native job/artifact checks remain independent.
 - Local proof suite increased from 25 to 42 adversarial tests. This version is a local control proof only; no formal PR admission or programme-level root closure.
+
+## W14 proof-integrity hardening (candidate, 17 October 2026)
+
+The prior G3A head exposed three P1 evidence-integrity review findings:
+a spoofable test-run count, untracked selected proof files, and a merely
+declared matched source digest. W14 requires the final unittest stderr
+summary, tracked proof input paths at HEAD, and real source-file SHA256
+verification before accepting a local checkpoint. Standalone declaration
+comparisons remain diagnostic, not native GitHub attestation.
+
+W14 replaces the ephemeral child-test fixture with a tracked
+`tests/test_g3a_child_probe.py` to preserve source availability during
+the shared B0 coverage reporting step. The local adversarial proof suite
+grows from 42 to 49 tests. Coverage changes are source-scope growth, not
+matched module uplift. Matplotlib Python 3.10 remains a separate dependency
+source-owner issue (#2026). Merge admission remains HOLD.

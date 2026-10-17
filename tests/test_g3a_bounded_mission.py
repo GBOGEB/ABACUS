@@ -156,14 +156,12 @@ class G3AContracts(unittest.TestCase):
                 m.validate(v)
 
     def test_unittest_runs_real_subprocess(self):
-        with tempfile.TemporaryDirectory() as d:
-            root = Path(d)
-            (root / 'tests').mkdir()
-            (root / 'tests' / 'test_small.py').write_text('import unittest\nclass TestSmall(unittest.TestCase):\n def test_pass(self): self.assertTrue(True)\n')
-            step = {'kind': 'unittest', 'pattern': 'test_small.py', 'minimum_tests': 1}
-            result = m.perform(root, step, HEAD)
-            self.assertTrue(result['ok'])
-            self.assertEqual(result['tests_executed'], 1)
+        # The fixture stays tracked and exists when the CI coverage JSON is emitted.
+        root = P.resolve().parents[1]
+        step = {'kind': 'unittest', 'pattern': 'test_g3a_child_probe.py', 'minimum_tests': 1}
+        result = m.perform(root, step, HEAD)
+        self.assertTrue(result['ok'])
+        self.assertEqual(result['tests_executed'], 1)
 
     def test_security_and_merge_never_inferred(self):
         with tempfile.TemporaryDirectory() as d:
@@ -217,17 +215,20 @@ class G3AContracts(unittest.TestCase):
                 (root / f's{i}.py').write_text('ok = True\n')
             spec_path, out = root / 'plan.json', root / 'receipt.json'
             spec_path.write_text(json.dumps(mission()))
-            with mock.patch.object(m.subprocess, 'check_output', side_effect=lambda command, **kw: ('HEAD?' if 'no-such-command' in command else ('' if 'status' in command else HEAD + '\n'))):
+            with mock.patch.object(m.subprocess, 'check_output', side_effect=lambda command, **kw: ('plan.json\0s1.py\0s2.py\0s3.py\0' if '--cached' in command else ('' if ('status' in command or '--others' in command) else HEAD + '\n'))):
                 code = m.main(['--spec', str(spec_path), '--repo-root', str(root),
                                '--expected-head', HEAD, '--out', str(out)])
             self.assertEqual(code, 0)
             self.assertEqual(json.loads(out.read_text())['actual_n'], 15)
             (root / 's3.py').unlink()
-            with mock.patch.object(m.subprocess, 'check_output', side_effect=lambda command, **kw: ('HEAD?' if 'no-such-command' in command else ('' if 'status' in command else HEAD + '\n'))):
-                code = m.main(['--spec', str(spec_path), '--repo-root', str(root),
-                               '--expected-head', HEAD, '--out', str(out)])
-            self.assertEqual(code, 3)
-            self.assertEqual(json.loads(out.read_text())['actual_n'], 14)
+            # An absent tracked source is a preflight HOLD, not a partial
+            # accepted run. The earlier receipt remains historical evidence.
+            with mock.patch.object(m.subprocess, 'check_output', side_effect=lambda command, **kw: ('plan.json\0s1.py\0s2.py\0s3.py\0' if '--cached' in command else ('' if ('status' in command or '--others' in command) else HEAD + '\n'))):
+                with self.assertRaises(SystemExit) as err:
+                    m.main(['--spec', str(spec_path), '--repo-root', str(root),
+                            '--expected-head', HEAD, '--out', str(out)])
+            self.assertEqual(err.exception.code, 2)
+            self.assertEqual(json.loads(out.read_text())['actual_n'], 15)
 
     def test_git_dirty_tracked_file_prevents_exact_head_proof(self):
         with mock.patch.object(m.subprocess, 'check_output', return_value=' M scripts/g3a_bounded_mission.py\n'):
@@ -353,7 +354,12 @@ class G3AContracts(unittest.TestCase):
     def test_local_delta_step_executes_but_not_native_authority(self):
         with tempfile.TemporaryDirectory() as d:
             root = Path(d)
-            (root / 'metrics.json').write_text(json.dumps(self.metric_delta_fixture()))
+            (root / 'scripts').mkdir()
+            source = root / 'scripts' / 'target.py'
+            source.write_text('verified = 1\n')
+            metric = self.metric_delta_fixture()
+            metric['source_sha256'] = hashlib.sha256(source.read_bytes()).hexdigest()
+            (root / 'metrics.json').write_text(json.dumps(metric))
             row = m.perform(root, {'kind': 'metric_delta', 'path': 'metrics.json',
                                    'minimum_new_covered': 3}, HEAD)
             self.assertTrue(row['ok'])
@@ -363,7 +369,12 @@ class G3AContracts(unittest.TestCase):
         with tempfile.TemporaryDirectory() as d:
             root = Path(d)
             (root / 's1.py').write_text('x=1\n')
-            (root / 'metric.json').write_text(json.dumps(self.metric_delta_fixture()))
+            (root / 'scripts').mkdir()
+            source = root / 'scripts' / 'target.py'
+            source.write_text('verified = 1\n')
+            metric = self.metric_delta_fixture()
+            metric['source_sha256'] = hashlib.sha256(source.read_bytes()).hexdigest()
+            (root / 'metric.json').write_text(json.dumps(metric))
             spec = mission()
             spec['steps'][1].update(kind='metric_delta', path='metric.json', minimum_new_covered=12)
             result = m.execute(spec, root, HEAD, HEAD)
@@ -371,6 +382,85 @@ class G3AContracts(unittest.TestCase):
             self.assertEqual(result['actual_n'], 13)
             self.assertFalse(result['native_evidence_verified'])
             self.assertEqual(result['attempted'], 2)
+
+    def test_unittest_stdout_spoof_does_not_increment_checkpoint(self):
+        from types import SimpleNamespace
+        spoof = SimpleNamespace(returncode=0, stdout='Ran 999 tests\n',
+                               stderr='Ran 1 test in 0.000s\n\nOK\n')
+        with mock.patch.object(m.subprocess, 'run', return_value=spoof):
+            row = m.perform(Path('.'), {'kind': 'unittest',
+                'pattern': 'test_g3a_child_probe.py', 'minimum_tests': 42}, HEAD)
+        self.assertFalse(row['ok'])
+        self.assertEqual(row['tests_executed'], 1)
+
+    def test_unittest_stderr_spoof_before_final_summary_not_credited(self):
+        from types import SimpleNamespace
+        spoof = SimpleNamespace(returncode=0, stdout='',
+            stderr='Ran 999 tests in 0.001s\n\nOK\nreal test\nRan 1 test in 0.010s\n\nOK\n')
+        with mock.patch.object(m.subprocess, 'run', return_value=spoof):
+            row = m.perform(Path('.'), {'kind': 'unittest',
+                'pattern': 'test_g3a_child_probe.py', 'minimum_tests': 42}, HEAD)
+        self.assertFalse(row['ok'])
+        self.assertEqual(row['tests_executed'], 1)
+
+    def test_metric_delta_missing_source_rejects_credit(self):
+        with tempfile.TemporaryDirectory() as d:
+            root = Path(d)
+            (root / 'metric.json').write_text(json.dumps(self.metric_delta_fixture()))
+            with self.assertRaisesRegex(m.ContractError, 'missing or external file'):
+                m.perform(root, {'kind': 'metric_delta', 'path': 'metric.json',
+                                 'minimum_new_covered': 1}, HEAD)
+
+    def test_metric_delta_wrong_source_digest_rejects_credit(self):
+        with tempfile.TemporaryDirectory() as d:
+            root = Path(d)
+            (root / 'scripts').mkdir()
+            (root / 'scripts' / 'target.py').write_text('verified = 1\n')
+            (root / 'metric.json').write_text(json.dumps(self.metric_delta_fixture()))
+            with self.assertRaisesRegex(m.ContractError, 'source digest'):
+                m.perform(root, {'kind': 'metric_delta', 'path': 'metric.json',
+                                 'minimum_new_covered': 1}, HEAD)
+
+    def test_untracked_selected_source_is_not_proof(self):
+        with tempfile.TemporaryDirectory() as d:
+            root = Path(d)
+            for i in range(1, 4):
+                (root / f's{i}.py').write_text('x = 1\n')
+            specpath = root / 'plan.json'
+            specpath.write_text(json.dumps(mission()))
+            def git(command, **kw):
+                if '--cached' in command:
+                    return 'plan.json\0s1.py\0s2.py\0'
+                if '--others' in command:
+                    return ''
+                return ''
+            with mock.patch.object(m.subprocess, 'check_output', side_effect=git):
+                with self.assertRaisesRegex(m.ContractError, 'untracked proof source'):
+                    m.verify_inputs_tracked(root, mission(), specpath)
+
+    def test_untracked_python_in_tests_directory_is_rejected(self):
+        with tempfile.TemporaryDirectory() as d:
+            root = Path(d)
+            for i in range(1, 4):
+                (root / f's{i}.py').write_text('x = 1\n')
+            specpath = root / 'plan.json'
+            specpath.write_text(json.dumps(mission()))
+            def git(command, **kw):
+                if '--cached' in command:
+                    return 'plan.json\0s1.py\0s2.py\0s3.py\0'
+                if '--others' in command:
+                    return 'tests/test_injected.py\0'
+                return ''
+            with mock.patch.object(m.subprocess, 'check_output', side_effect=git):
+                with self.assertRaisesRegex(m.ContractError, 'untracked Python'):
+                    m.verify_inputs_tracked(root, mission(), specpath)
+
+    def test_outside_manifest_rejected(self):
+        with tempfile.TemporaryDirectory() as d:
+            root = Path(d)
+            outside = root.parent / 'external-g3a-config.json'
+            with self.assertRaisesRegex(m.ContractError, 'outside checked-out'):
+                m.verify_inputs_tracked(root, mission(), outside)
 
     def test_main_untrusted_checkout_precheck_exits_nonzero(self):
         with tempfile.TemporaryDirectory() as d:
