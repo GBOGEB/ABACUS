@@ -342,5 +342,67 @@
       "conclusion": "failure",
       "url": "https://github.com/GBOGEB/ABACUS/actions/runs/38919195368"
     }
+  ],
+  "sampled_pr_heads": [
+    {
+      "pr": 2083,
+      "sha": "88d33855dd7a486fa0ca49b9f2c8c7687e5dd782",
+      "workflow_associations_seen": 28,
+      "failed_associations_seen": 2
+    },
+    {
+      "pr": 2082,
+      "sha": "0b02071aa6e8e80ad9870b69d32348c0945feaf6",
+      "workflow_associations_seen": 27,
+      "failed_associations_seen": 3
+    },
+    {
+      "pr": 2080,
+      "sha": "db5d8c2c5da6abd27ea0872f3de1a0356d8928a0",
+      "workflow_associations_seen": 22,
+      "failed_associations_seen": 4
+    },
+    {
+      "pr": 2077,
+      "sha": "133e5a082f74dd99a65bfda5308d7071523904d1",
+      "workflow_associations_seen": 28,
+      "failed_associations_seen": 5
+    },
+    {
+      "pr": 2076,
+      "sha": "7a382b1788d3b692ae4714f9079ddab93c907fa3",
+      "workflow_associations_seen": 29,
+      "failed_associations_seen": 2
+    },
+    {
+      "pr": 2075,
+      "sha": "f29c870e2395d2fc45ec25ab82a5a4894c9f4b51",
+      "workflow_associations_seen": 52,
+      "failed_associations_seen": 12
+    },
+    {
+      "pr": 2074,
+      "sha": "f0899e165239de76c1002c23342c6701222ea218",
+      "workflow_associations_seen": 15,
+      "failed_associations_seen": 2
+    },
+    {
+      "pr": 2073,
+      "sha": "fb22da447780b58827dca58a59c73707ef1d08bf",
+      "workflow_associations_seen": 29,
+      "failed_associations_seen": 2
+    },
+    {
+      "pr": 2072,
+      "sha": "680f5ae0c7278e0dae548a505259800887c27138",
+      "workflow_associations_seen": 20,
+      "failed_associations_seen": 3
+    },
+    {
+      "pr": 2070,
+      "sha": "9071de0f865ee4ce401aacfff0d214a37494d9e9",
+      "workflow_associations_seen": 28,
+      "failed_associations_seen": 2
+    }
   ]
 }
