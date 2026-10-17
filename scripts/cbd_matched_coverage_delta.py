@@ -145,13 +145,25 @@ def compare(before, after):
             old_pct, new_pct = pct(old[nkey], old[dkey]), pct(new[nkey], new[dkey])
             delta = (round(new_pct - old_pct, 6) if old_pct is not None else None)
             if delta is not None:
-                regression |= delta < 0
-                improved |= delta > 0
+                regression |= new[nkey] < old[nkey]
+                improved |= new[nkey] > old[nkey]
             row[kind] = {"before": [old[nkey], old[dkey]], "after": [new[nkey], new[dkey]],
                          "before_percent": old_pct, "after_percent": new_pct,
                          "delta_percentage_points": delta,
+                         "delta_covered_items": new[nkey] - old[nkey],
                          "denominator_status": "MEASURED" if old[dkey] else "NOT_APPLICABLE"}
         out[path] = row
+    same_declared_attempt = (
+        before["run_id"] == after["run_id"]
+        and before["run_attempt"] == after["run_attempt"]
+    )
+    if same_declared_attempt and any(
+        a[path][key] != b[path][key]
+        for path in a for key in ("covered_lines", "covered_branches")
+    ):
+        raise EvidenceError(
+            "same run/attempt cannot establish a temporal coverage delta"
+        )
     state = "REGRESSION" if regression else ("IMPROVED" if improved else "UNCHANGED")
     return {"schema": "cbd.matched-coverage-delta.v1", "repository": before["repository"],
             "before_head": before["head_sha"], "after_head": after["head_sha"],
@@ -159,6 +171,10 @@ def compare(before, after):
             "after_run": [after["run_id"], after["run_attempt"], after["job_id"]],
             "status": state, "modules": out, "merge_admission": "HOLD",
             "formal_root_closure": 0, "security_waiver": False,
+            "declared_run_attempt_relation": (
+                "SAME_DECLARED_RUN_ATTEMPT" if same_declared_attempt
+                else "DISTINCT_DECLARED_RUN_ATTEMPTS_NOT_AUTHENTICATED"
+            ), "accepted_matched_main_delta": None,
             "authority": "DECLARED_INPUT_NOT_NATIVE_AUTHENTICATION"}
 
 
