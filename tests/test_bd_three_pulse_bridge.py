@@ -22,7 +22,9 @@ def pulse(i):
         "scan_configuration": "bandit-full-v1",
         "run_id": run_id,
         "job_id": job_id,
-        "evidence_url": f"https://github.com/GBOGEB/ABACUS/actions/runs/{run_id}/job/{job_id}",
+        "evidence_url": (
+            f"https://github.com/GBOGEB/ABACUS/actions/runs/{run_id}/job/{job_id}"
+        ),
     }
     roots = []
     for j in range(i):
