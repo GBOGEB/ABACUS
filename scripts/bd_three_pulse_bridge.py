@@ -13,6 +13,9 @@ from pathlib import Path
 
 SHA = re.compile(r"[0-9a-f]{40}\Z")
 SCHEMA = "abacus.bd.three-pulse.v1"
+FP = re.compile(r"[0-9a-f]{64}\Z")
+ROOT_ID = re.compile(r"(?:BD|CI)-[0-9a-f]{24}\Z")
+LANES = ("B2-source", "B3-subprocess", "B4-files-secrets", "B5-tests")
 
 
 def _count(value, name):
@@ -48,9 +51,75 @@ def _coverage(data):
         ):
             raise ValueError("invalid coverage denominator or config")
         result[scope] = dict(
-            covered=k, eligible=d, config=row["config"], ratio=_ratio(k, d)
+            covered=k, eligible=d, config=row["config"], ratio_unverified=_ratio(k, d)
         )
     return result
+
+
+def _validate_root_census(roots, bandit_count, scope):
+    """Require the canonical producer's one BANDIT root per unique finding."""
+    if not isinstance(roots, list):
+        raise ValueError("missing canonical roots")
+    seen, fingerprints, bandit_roots = set(), set(), 0
+    for root in roots:
+        if not isinstance(root, dict):
+            raise ValueError("root must be an object")
+        root_id = root.get("root_id")
+        if (
+            not isinstance(root_id, str)
+            or not ROOT_ID.fullmatch(root_id)
+            or root_id in seen
+        ):
+            raise ValueError("duplicate or invalid root IDs")
+        seen.add(root_id)
+        category = root.get("category")
+        if category == "CI":
+            if not root_id.startswith("CI-") or root.get("fingerprint") is not None:
+                raise ValueError("invalid CI root")
+            continue
+        if category != "BANDIT" or not root_id.startswith("BD-"):
+            raise ValueError("invalid canonical root category")
+        bandit_roots += 1
+        fp = root.get("fingerprint")
+        if (
+            not isinstance(fp, str)
+            or not FP.fullmatch(fp)
+            or fp in fingerprints
+        ):
+            raise ValueError("invalid Bandit fingerprint")
+        fingerprints.add(fp)
+        if (
+            root.get("owner_lane") not in LANES
+            or type(root.get("line")) is not int
+            or root["line"] <= 0
+        ):
+            raise ValueError("invalid Bandit lane or line")
+        for field in ("source_path", "rule_or_error_code", "disposition"):
+            value = root.get(field)
+            if not isinstance(value, str) or not value.strip():
+                raise ValueError("missing Bandit source metadata")
+        rows = root.get("observations")
+        if not isinstance(rows, list):
+            raise ValueError("missing Bandit observations")
+        native = [
+            obs for obs in rows
+            if isinstance(obs, dict) and obs.get("source") == "bandit_disjoint"
+        ]
+        if len(native) != 1:
+            raise ValueError("Bandit root needs one source-bound observation")
+        for field in (
+            "repository", "source_sha", "run_id", "job_id",
+            "evidence_url", "scan_configuration",
+        ):
+            expected = (
+                scope.get("head_sha")
+                if field == "source_sha"
+                else scope.get(field)
+            )
+            if native[0].get(field) != expected:
+                raise ValueError("Bandit source mismatch: " + field)
+    if bandit_roots != bandit_count:
+        raise ValueError("Bandit numerator does not reconcile with roots")
 
 
 def rollup(pulses):
@@ -83,13 +152,7 @@ def rollup(pulses):
             or pulse.get("security_waiver") is not False
         ):
             raise ValueError("authority/admission contract must remain HOLD")
-        rootids = [r.get("root_id") for r in roots if isinstance(r, dict)]
-        if (
-            len(rootids) != len(roots)
-            or len(set(rootids)) != len(rootids)
-            or any(not isinstance(r, str) or not r for r in rootids)
-        ):
-            raise ValueError("duplicate or invalid root IDs")
+        _validate_root_census(roots, bandit, scope)
         out.append(
             {
                 "n": index + 1,
@@ -102,29 +165,29 @@ def rollup(pulses):
                 "root_open": None,
                 "root_closed": None,
                 "main_merge": None,
-                "coverage": _coverage(pulse.get("coverage")),
+                "coverage": None,
+                "coverage_candidates_unverified": _coverage(pulse.get("coverage")),
+                "coverage_proof_state": (
+                    "UNVERIFIED" if pulse.get("coverage") is not None
+                    else "NOT_SUPPLIED"
+                ),
             }
         )
     movements = []
     for before, after in zip(out, out[1:]):
-        measured = {}
-        for name in ("main_statement", "main_branch", "diff_statement", "diff_branch"):
-            left = before["coverage"].get(name) if before["coverage"] else None
-            right = after["coverage"].get(name) if after["coverage"] else None
-            comparable = (
-                left is not None
-                and right is not None
-                and left["config"] == right["config"]
-                and left["eligible"] == right["eligible"]
-            )
-            measured[name] = {
-                "comparable": comparable,
-                "delta_covered": right["covered"] - left["covered"]
-                if comparable
-                else None,
-                "before": [left["covered"], left["eligible"]] if comparable else None,
-                "after": [right["covered"], right["eligible"]] if comparable else None,
+        # No independently verified native coverage is emitted by the v1 join.
+        measured = {
+            name: {
+                "comparable": False,
+                "delta_covered": None,
+                "before": None,
+                "after": None,
+                "reason": "NATIVE_COVERAGE_PROOF_NOT_AVAILABLE",
             }
+            for name in (
+                "main_statement", "main_branch", "diff_statement", "diff_branch"
+            )
+        }
         movements.append(
             {
                 "from_sha": before["source_sha"],
@@ -143,7 +206,7 @@ def rollup(pulses):
         "formal_credit_delta": 0,
         "engineering_credit_delta": 0,
         "interpretation": (
-            "Three observations are not three authenticated workers "
+            "Three observations are not three authenticated workers, native-verified coverage artifacts, "
             "or admitted source repairs."
         ),
     }
