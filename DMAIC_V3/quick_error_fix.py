@@ -221,20 +221,35 @@ class QuickFixer:
                 lines = f.readlines()
 
             import_line = f"from typing import {missing_import}\n"
+            typing_lines = [
+                (i, line) for i, line in enumerate(lines)
+                if line.startswith('from typing import ')
+            ]
+            for _, line in typing_lines:
+                imported = {
+                    name.strip().split(' as ', 1)[0]
+                    for name in line.split('import', 1)[1].split(',')
+                }
+                if missing_import in imported:
+                    # An unchanged file is not a successfully applied fix.
+                    return False
 
-            for i, line in enumerate(lines):
-                if line.startswith('from typing import'):
-                    if missing_import not in line:
-                        lines[i] = line.rstrip() + f", {missing_import}\n"
-                        break
+            if typing_lines:
+                i = typing_lines[0][0]
+                lines[i] = lines[i].rstrip('\n') + f", {missing_import}\n"
             else:
+                insertion = 1 if lines and lines[0].startswith('#!') else 0
                 for i, line in enumerate(lines):
-                    if line.startswith('import ') or line.startswith('from '):
-                        lines.insert(i, import_line)
+                    if line.startswith('from __future__ import '):
+                        insertion = max(insertion, i + 1)
+                for i, line in enumerate(lines):
+                    if line.startswith('import ') or (
+                        line.startswith('from ')
+                        and not line.startswith('from __future__ import ')
+                    ):
+                        insertion = max(insertion, i)
                         break
-                else:
-                    # A file without imports still requires the requested name.
-                    lines.insert(0, import_line)
+                lines.insert(insertion, import_line)
 
             with open(file_path, 'w', encoding='utf-8') as f:
                 f.writelines(lines)
