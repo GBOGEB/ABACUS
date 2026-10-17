@@ -58,6 +58,20 @@ def test_inverted_skip_timestamp_does_not_go_negative(data):
     assert job["attributes"]["started_at"] > job["attributes"]["completed_at"]
 
 
+
+def test_skipped_clock_anomaly_is_one_cluster_ten_manifestations(data):
+    result = temporal.augment(*data)
+    nodes = [x for x in result["nodes"] if x["kind"] == "temporal_anomaly"]
+    assert len(nodes) == 1
+    assert nodes[0]["attributes"]["observed_count"] == 10
+    links = [e for e in result["edges"]
+             if e["relationship"] == "skipped_job_clock_inversion_observed"]
+    assert len(links) == 10
+    assert len({e["source"] for e in links}) == 10
+    assert all(e["evidence"] == "OBSERVED" and not e["causal_confirmed"]
+               for e in links)
+    assert result["metrics"]["node_count"] == 499
+
 def test_wrong_head_for_native_run_rejected(data):
     graph, timeline = data
     timeline[0]["runs"][0]["source_head_sha"] = "f" * 40
