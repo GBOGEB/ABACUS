@@ -56,9 +56,13 @@ def summarize(issue_census, pr_register):
             raise CensusError("unknown ageing cohort")
         if r.get("age_days") is not None:
             age = _count(r["age_days"], "age_days")
-            if {"0_to_6":(0,6), "7_to_13":(7,13),
-                "14_to_29":(14,29), "30_plus":(30,10**6)
-               }[r["age_band"]][0] > age:
+            low, high = {
+                "0_to_6": (0, 6),
+                "7_to_13": (7, 13),
+                "14_to_29": (14, 29),
+                "30_plus": (30, 10**6),
+            }[r["age_band"]]
+            if not low <= age <= high:
                 raise CensusError("age incompatible with band")
         if r.get("url") != f"https://github.com/GBOGEB/ABACUS/issues/{ident}":
             raise CensusError("issue reference mismatch")
