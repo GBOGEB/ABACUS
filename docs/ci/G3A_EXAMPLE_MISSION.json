@@ -21,10 +21,10 @@
     },
     {
       "id": "A3",
-      "objective": "All 24 G3A adversarial tests pass",
+      "objective": "All 25 G3A adversarial tests pass",
       "kind": "unittest",
       "pattern": "test_g3a_bounded_mission.py",
-      "minimum_tests": 24,
+      "minimum_tests": 25,
       "moniker": "HARDEN"
     }
   ]
