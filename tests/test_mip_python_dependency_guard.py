@@ -8,6 +8,7 @@ import json
 import pathlib
 import tempfile
 import unittest
+import unittest.mock  # test-contained mock import; never depend on other suite side effects
 
 ROOT = pathlib.Path(__file__).resolve().parents[1]
 PATH = ROOT / "tools/mip2/mip_python_dependency_guard.py"
@@ -77,8 +78,9 @@ class PythonDependencyMIPTests(unittest.TestCase):
             for line in source.splitlines()
             if line.startswith("pylint")
         ]
-        self.assertEqual(len(requirements), 2)
+        self.assertEqual(len(requirements), 3)  # explicit legacy pre-3.9 + supported lanes
         for lane, valid, excluded in (
+            ("3.8", "3.2.6", "3.3.9"),
             ("3.9", "3.3.9", "4.1.3"),
             ("3.10", "4.1.3", "3.3.9"),
         ):
