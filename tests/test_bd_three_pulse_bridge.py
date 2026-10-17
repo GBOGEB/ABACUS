@@ -179,7 +179,7 @@ def test_bandit_denominator_999_with_empty_roots_rejected():
     rows = [pulse(i) for i in (1, 2, 3)]
     rows[1]["metrics"]["full_bandit_unique"] = 999
     rows[1]["roots"] = []
-    with pytest.raises(ValueError, match="denominator"):
+    with pytest.raises(ValueError, match="Bandit numerator"):
         m.rollup(rows)
 
 
