@@ -37,6 +37,7 @@ jobs:
       # actions/checkout v4.2.2, immutable SHA pin
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
         with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
           persist-credentials: false
       # actions/setup-python v5.6.0, immutable SHA pin
       - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97
@@ -96,16 +97,86 @@ jobs:
           name: everred-v31-native-${{ matrix.python-version }}
           path: ${{ runner.temp }}/everred-v31-preflight.json
           if-no-files-found: warn
+      - name: Measure matched mass-signal behavioral coverage (advisory)
+        working-directory: tools/everred_v3
+        env:
+          SOURCE_HEAD_SHA: >-
+            ${{ github.event.pull_request.head.sha || github.sha }}
+          MATRIX_PYTHON_VERSION: ${{ matrix.python-version }}
+        run: |
+          set -eu
+          checked_out_sha="$(git rev-parse HEAD)"
+          test "$checked_out_sha" = "$SOURCE_HEAD_SHA" || {
+            echo "Exact source checkout mismatch" >&2
+            exit 64
+          }
+          export CHECKED_OUT_SHA="$checked_out_sha"
+          python -m pip install coverage==7.16.2
+          python -m coverage run --branch --source=mass_signal_join \
+            -m unittest discover -s tests -p test_mass_signal_join.py -v
+          python -m coverage json -o "$RUNNER_TEMP/mass-signal-coverage.json"
+          python - <<'PY'
+          import hashlib
+          import json
+          import os
+          from pathlib import Path
+
+          path = Path(os.environ["RUNNER_TEMP"]) / "mass-signal-coverage.json"
+          report = json.loads(path.read_text(encoding="utf-8"))
+          files = report.get("files", {})
+          modules = [v for k, v in files.items()
+                     if k.replace("\\", "/").endswith("/mass_signal_join.py")]
+          if len(modules) != 1:
+              raise SystemExit("exactly one instrumented module is required")
+          totals = modules[0]["summary"]
+          required = ("covered_lines", "num_statements",
+                      "covered_branches", "num_branches")
+          if any(type(totals.get(k)) is not int for k in required):
+              raise SystemExit("coverage numerator/denominator missing")
+          if totals["num_statements"] == 0 or totals["num_branches"] == 0:
+              raise SystemExit("coverage denominator is zero")
+          receipt = {
+              "schema": "abacus.mass_signal.focused_coverage.v1",
+              "source_sha": os.environ["CHECKED_OUT_SHA"],
+              "event_sha": os.environ["GITHUB_SHA"],
+              "source_head_claim": os.environ["SOURCE_HEAD_SHA"],
+              "run_id": int(os.environ["GITHUB_RUN_ID"]),
+              "run_attempt": int(os.environ["GITHUB_RUN_ATTEMPT"]),
+              "job_key": os.environ["GITHUB_JOB"],
+              "job_id": None,
+              "native_job_binding": "UNKNOWN_UNBOUND",
+              "python_version": os.environ["MATRIX_PYTHON_VERSION"],
+              "report_sha256": hashlib.sha256(path.read_bytes()).hexdigest(),
+              "totals": {k: totals[k] for k in required},
+              "instrumented_files": list(files),
+              "merge_authority": False,
+              "qps_acceptance": "DEFER",
+          }
+          target = path.parent / "mass-signal-coverage-receipt.json"
+          target.write_text(
+              json.dumps(receipt, indent=2, sort_keys=True) + "\n",
+              encoding="utf-8",
+          )
+          print(json.dumps(receipt, sort_keys=True))
+          PY
+      - name: Upload source-bound focused-coverage measurement
+        if: always()
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9
+        with:
+          name: everred-mass-signal-coverage-${{ matrix.python-version }}
+          path: |
+            ${{ runner.temp }}/mass-signal-coverage.json
+            ${{ runner.temp }}/mass-signal-coverage-receipt.json
+          if-no-files-found: warn
       - name: Verify committed Black and isort styles
         working-directory: tools/everred_v3
         run: |
           python -m pip install black==26.10.1 isort==9.0.2
-          python -m isort --diff \
-            src/spine_census.py scripts/live_spine.py \
-            tests/test_spine_census.py tests/test_live_spine.py
+          # Diagnostics only; preserve the existing gate.
           python -m black --diff \
-            src/spine_census.py scripts/live_spine.py \
-            tests/test_spine_census.py tests/test_live_spine.py
+            src/mass_signal_join.py tests/test_mass_signal_join.py
+          python -m isort --diff \
+            src/mass_signal_join.py tests/test_mass_signal_join.py
           python -m black --check src scripts tests
           # Source repair receipts: diagnostic diff, preserve the independent required isort gate.
           python -m isort --diff src scripts tests

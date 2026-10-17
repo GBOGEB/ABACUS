@@ -1,0 +1,34 @@
+rules:
+  - id: abacus.github-actions-broad-write-all
+    languages: [yaml]
+    severity: WARNING
+    message: >-
+      Workflow requests write-all; inspect least privilege and independent
+      review before granting any security or merge-admission credit.
+    paths:
+      include:
+        - .github/workflows/*.yml
+        - .github/workflows/*.yaml
+    pattern-regex: '(?m)^\s*permissions\s*:\s*write-all\s*(?:#.*)?$'
+  - id: abacus.github-actions-untrusted-pr-target
+    languages: [yaml]
+    severity: WARNING
+    message: >-
+      pull_request_target requires a separate review of checkout refs,
+      untrusted expressions, secrets and token permissions.
+    paths:
+      include:
+        - .github/workflows/*.yml
+        - .github/workflows/*.yaml
+    pattern-regex: '(?m)^\s*pull_request_target\s*:\s*(?:\{.*\}|\[.*\]|.*)?$'
+  - id: abacus.github-actions-unpinned-action-tag
+    languages: [yaml]
+    severity: INFO
+    message: >-
+      Action references a mutable version tag rather than an immutable
+      commit SHA. Triage by source ownership and existing policy.
+    paths:
+      include:
+        - .github/workflows/*.yml
+        - .github/workflows/*.yaml
+    pattern-regex: '(?m)^\s*-?\s*uses:\s*[^#\s]+@v\d+(?:\.\d+)*\s*$'
