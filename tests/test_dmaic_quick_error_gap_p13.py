@@ -29,8 +29,9 @@ def test_fixer_keeps_preexisting_typing_import_unique(tmp_path):
     source = tmp_path / "typed.py"
     original = "from typing import Any\nvalue: Any = 1\n"
     source.write_text(original)
-    assert fixer.fix_missing_imports(source, "Any") is True
+    assert fixer.fix_missing_imports(source, "Any") is False
     assert source.read_text() == original
+    assert fixer.fixes_applied == []
     assert source.read_text().count("from typing import Any") == 1
 
 
@@ -77,3 +78,44 @@ def test_lister_exactly_ten_issues_is_not_truncated(tmp_path):
     ]
     assert lister.generate_report([], issues, result) == 10
     assert "and 0 more" not in result.read_text()
+
+
+def test_similar_typing_identifier_is_not_a_false_import_match(tmp_path):
+    fixer = load("quick_error_fix.py").QuickFixer()
+    source = tmp_path / "similar.py"
+    source.write_text("from typing import AnyStr\n")
+    assert fixer.fix_missing_imports(source, "Any") is True
+    assert source.read_text() == "from typing import AnyStr, Any\n"
+    assert len(fixer.fixes_applied) == 1
+
+
+def test_all_typing_lines_are_checked_for_existing_name(tmp_path):
+    fixer = load("quick_error_fix.py").QuickFixer()
+    source = tmp_path / "two_imports.py"
+    original = "from typing import List\nfrom typing import Any\n"
+    source.write_text(original)
+    assert fixer.fix_missing_imports(source, "Any") is False
+    assert source.read_text() == original
+    assert fixer.fixes_applied == []
+
+
+def test_type_import_after_future_import_keeps_file_valid(tmp_path):
+    fixer = load("quick_error_fix.py").QuickFixer()
+    source = tmp_path / "future.py"
+    source.write_text("from __future__ import annotations\nvalue: 'Any' = 1\n")
+    assert fixer.fix_missing_imports(source, "Any") is True
+    content = source.read_text()
+    assert content.startswith(
+        "from __future__ import annotations\nfrom typing import Any\n"
+    )
+    compile(content, str(source), "exec")
+
+
+def test_shebang_stays_first_when_inserting_typing_import(tmp_path):
+    fixer = load("quick_error_fix.py").QuickFixer()
+    source = tmp_path / "script.py"
+    source.write_text("#!/usr/bin/env python3\nvalue = 1\n")
+    assert fixer.fix_missing_imports(source, "Any") is True
+    assert source.read_text().startswith(
+        "#!/usr/bin/env python3\nfrom typing import Any\n"
+    )
