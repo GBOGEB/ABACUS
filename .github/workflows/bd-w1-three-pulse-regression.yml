@@ -21,6 +21,6 @@ jobs:
         with:
           python-version: ${{ matrix.python-version }}
       - name: Install focused test runner
-        run: python -m pip install pytest
+        run: python -m pip install pytest numpy
       - name: Positive and negative Bandit three-pulse bridge
         run: python -m pytest -q tests/test_bd_three_pulse_bridge.py
