@@ -1,9 +1,10 @@
-name: G3A N14 matched four-module branch flight
+name: G3A N14-N15 matched four-module branch flight
 on:
   pull_request:
     paths:
       - 'tests/test_g3a_n14_debug.py'
       - 'tests/test_g3a_n14_improve.py'
+      - 'tests/test_g3a_n15_phase8.py'
       - '.github/workflows/g3a-n14-matched-arc-flight.yml'
   workflow_dispatch:
 permissions:
@@ -35,9 +36,9 @@ jobs:
       - name: N13 plus N14 single-process matched coverage
         run: |
           set -euo pipefail
-          mkdir -p test_reports/n14
-          python -m coverage run --branch --source=DMAIC_V3.phases.phase4_improve,DMAIC_V3.phases.phase8_todo_management,DMAIC_V3.debug_pipeline,cicd_github_orchestrator,scripts -m unittest discover -s tests -p 'test_g3a_*.py' -v 2>&1 | tee test_reports/n14/unittest.log
-          python -m coverage json -o test_reports/n14/coverage.json
+          mkdir -p test_reports/n15
+          python -m coverage run --branch --source=DMAIC_V3.phases.phase4_improve,DMAIC_V3.phases.phase8_todo_management,DMAIC_V3.debug_pipeline,cicd_github_orchestrator,scripts -m unittest discover -s tests -p 'test_g3a_*.py' -v 2>&1 | tee test_reports/n15/unittest.log
+          python -m coverage json -o test_reports/n15/coverage.json
       - name: Fail-closed frozen denominators and test proof
         env:
           RUN_ID: ${{ github.run_id }}
@@ -45,7 +46,7 @@ jobs:
         run: |
           python - <<'PY'
           import json,os,pathlib,re,sys
-          root=pathlib.Path("test_reports/n14")
+          root=pathlib.Path("test_reports/n15")
           data=json.loads((root/"coverage.json").read_text())
           expected={"DMAIC_V3/debug_pipeline.py":(116,17),
                     "DMAIC_V3/phases/phase4_improve.py":(134,45),
@@ -63,21 +64,23 @@ jobs:
                          "executed_branches":v.get("executed_branches",[])}
           log=(root/"unittest.log").read_text()
           counts=re.findall(r"Ran (\d+) tests? in",log)
-          if not counts or int(counts[-1])<98 or "\nOK" not in log:sys.exit("HOLD: N13+N14 tests incomplete")
+          if not counts or int(counts[-1])<112 or "\nOK" not in log:sys.exit("HOLD: N13+N14+N15 tests incomplete")
           total=sum(v["covered"] for k,v in files.items() if k!="scripts/g3a_bounded_mission.py")
-          receipt={"schema":"code-purple.g3a.n14.native.v1",
+          receipt={"schema":"code-purple.g3a.n15.native.v1",
                    "run_id":int(os.environ["RUN_ID"]),"run_attempt":int(os.environ["RUN_ATTEMPT"]),
                    "tests":int(counts[-1]),"covered":total,"eligible":446,
-                   "n13_baseline_covered":115,"delta_count":total-115,"files":files,
+                   "n13_baseline_covered":115,"n14_baseline_covered":200,"phase8_n14_baseline":30,
+                   "phase8_new_count":files["DMAIC_V3/phases/phase8_todo_management.py"]["covered"]-30,
+                   "delta_count":total-115,"files":files,
                    "accepted_roots":None,"security_waiver":False,"merge_admission":"HOLD"}
-          (root/"n14_receipt.json").write_text(json.dumps(receipt,indent=2,sort_keys=True))
-          print("N14_MATCHED_COUNT="+str(total)+"/446; delta="+str(total-115))
+          (root/"n15_receipt.json").write_text(json.dumps(receipt,indent=2,sort_keys=True))
+          print("N15_MATCHED_COUNT="+str(total)+"/446; N14_delta="+str(total-200))
           print("MERGE_ADMISSION=HOLD")
           PY
       - name: Preserve test evidence even on red
         if: always()
         uses: actions/upload-artifact@v7
         with:
-          name: g3a-n14-${{ github.run_id }}-${{ github.run_attempt }}
-          path: test_reports/n14/
+          name: g3a-n15-${{ github.run_id }}-${{ github.run_attempt }}
+          path: test_reports/n15/
           if-no-files-found: warn
