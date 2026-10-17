@@ -93,6 +93,8 @@ jobs:
             --rex-log evidence/rex-tests.log \
             --metrics-log evidence/metrics-tests.log \
             --timing-tests-log evidence/timing-tests.log \
+            --telemetry-tests-log evidence/telemetry-tests.log \
+            --require-case-ids \
             --timing-log evidence/phase-times.json \
             --source-sha "$SOURCE_SHA" --event-sha "$EVENT_SHA" \
             --run-id "$RUN_ID" --output evidence/coverage-pulse.json \
