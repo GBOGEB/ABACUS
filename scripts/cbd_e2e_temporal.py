@@ -10,6 +10,7 @@ import copy
 import json
 from datetime import datetime
 from pathlib import Path
+from collections import Counter
 
 
 def require(value, reason):
@@ -46,6 +47,39 @@ def augment(graph, timeline_documents):
             "unsupported graph schema")
     require(len(timeline_documents) == 2, "expected two temporal snapshots")
     result = copy.deepcopy(graph)
+    # An enriched graph is legitimate input: normalize derived edges before
+    # replaying the same native receipts. Refuse ambiguous/partial provenance.
+    anomaly_id = "anomaly:skipped-job-inverted-clock"
+    derivations = {
+        "observed_failed_job_time_overlap",
+        "skipped_job_clock_inversion_observed",
+    }
+    ids = [n["id"] for n in result["nodes"]]
+    require(len(ids) == len(set(ids)), "duplicate graph node identity")
+    previous = [e for e in result["edges"]
+                if e["relationship"] in derivations]
+    anomaly_nodes = [n for n in result["nodes"] if n["id"] == anomaly_id]
+    if previous or anomaly_nodes:
+        require(len(anomaly_nodes) == 1 and bool(previous),
+                "partial temporal enrichment")
+        prior_keys = [(e["source"], e["target"], e["relationship"])
+                      for e in previous]
+        require(len(prior_keys) == len(set(prior_keys)),
+                "duplicated temporal evidence edge")
+        require(all(e.get("causal_confirmed") is False
+                    and e.get("evidence") in
+                    ("OBSERVED", "TEMPORAL_ASSOCIATION")
+                    for e in previous), "forged temporal causality")
+        inverted = [e for e in previous if e["relationship"] ==
+                    "skipped_job_clock_inversion_observed"]
+        require(len(inverted) == anomaly_nodes[0]["attributes"].get(
+            "observed_count"), "temporal anomaly denominator mismatch")
+        require(all(e["target"] == anomaly_id for e in inverted),
+                "temporal anomaly target mismatch")
+        result["nodes"] = [n for n in result["nodes"]
+                           if n["id"] != anomaly_id]
+        result["edges"] = [e for e in result["edges"]
+                           if e["relationship"] not in derivations]
     nodes = {n["id"]: n for n in result["nodes"]}
     run_seen, job_seen, sample = set(), set(), []
     inverted_timestamps = 0
@@ -150,9 +184,7 @@ def augment(graph, timeline_documents):
         }
         result["nodes"].append(anomaly)
         for jid in sorted(inverted_job_ids):
-            job_node = nodes[f"job:{jid}"]
-            job_node["degree"] += 1
-            job_node["observed_weighted_degree"] += 1
+            require(f"job:{jid}" in nodes, "inverted job is not a graph atom")
             result["edges"].append({
                 "source": f"job:{jid}",
                 "target": anomaly["id"],
@@ -162,9 +194,6 @@ def augment(graph, timeline_documents):
                 "jaccard": None,
                 "causal_confirmed": False,
             })
-        result["metrics"]["node_count"] = len(result["nodes"])
-        result["metrics"]["node_types"]["temporal_anomaly"] = 1
-        result["metrics"]["edge_evidence_classes"]["OBSERVED"] += len(inverted_job_ids)
     require(len(run_seen) == result["metrics"]["native_run_count"],
             "temporal run denominator missing")
     require(len(job_seen) == result["metrics"]["native_job_count"],
@@ -175,6 +204,8 @@ def augment(graph, timeline_documents):
         "measured_completed_job_durations": len(durations),
         "censored_or_unmeasured_jobs": len(sample) - len(durations),
         "inverted_timestamp_jobs": inverted_timestamps,
+        "inverted_timestamp_cluster_count": int(bool(inverted_job_ids)),
+        "inverted_timestamp_cluster_reach_prs": len(inverted_job_ids),
         "duration_p50_ms_nearest_rank": quantile_nearest(durations, 0.5),
         "duration_p95_ms_nearest_rank": quantile_nearest(durations, 0.95),
         "rerun_attempt_run_count": sum(
@@ -187,9 +218,26 @@ def augment(graph, timeline_documents):
         "timestamp_measurement_method": "native started_at to completed_at",
         "quantile_estimator": "nearest-rank of non-null job durations",
     }
+    # Compute all degrees from the final edges rather than inheriting
+    # previously enriched counters. This makes N/N+1 an idempotent transform.
+    degree, weighted = Counter(), Counter()
+    for e in result["edges"]:
+        for endpoint in (e["source"], e["target"]):
+            require(endpoint in {n["id"] for n in result["nodes"]},
+                    "edge refers to missing graph node")
+            degree[endpoint] += 1
+            if e["evidence"] in ("OBSERVED", "SOURCE_BOUND"):
+                weighted[endpoint] += e["support"]
+    for n in result["nodes"]:
+        n["degree"] = degree[n["id"]]
+        n["observed_weighted_degree"] = weighted[n["id"]]
+    result["metrics"]["node_count"] = len(result["nodes"])
     result["metrics"]["edge_count"] = len(result["edges"])
-    result["metrics"]["edge_evidence_classes"]["TEMPORAL_ASSOCIATION"] = sum(
-        e["evidence"] == "TEMPORAL_ASSOCIATION" for e in result["edges"])
+    result["metrics"]["node_types"] = dict(sorted(
+        Counter(n["kind"] for n in result["nodes"]).items()))
+    result["metrics"]["edge_evidence_classes"] = dict(sorted(
+        Counter(e["evidence"] for e in result["edges"]).items()))
+    result["nodes"].sort(key=lambda n: n["id"])
     result["edges"].sort(key=lambda e: (
         e["source"], e["target"], e["relationship"]))
     return result
