@@ -48,6 +48,7 @@ def augment(graph, timeline_documents):
     result = copy.deepcopy(graph)
     nodes = {n["id"]: n for n in result["nodes"]}
     run_seen, job_seen, sample = set(), set(), []
+    inverted_timestamps = 0
     for document in timeline_documents:
         require(document.get("schema") == "cbd.e2e.native_temporal_snapshot.v1",
                 "invalid temporal schema")
@@ -107,6 +108,8 @@ def augment(graph, timeline_documents):
                     require(not (start is not None and end is not None
                                 and end >= start),
                             "uncensored duration omitted")
+                    if start is not None and end is not None and end < start:
+                        inverted_timestamps += 1
                 need["attributes"]["started_at"] = job.get("started_at")
                 need["attributes"]["completed_at"] = job.get("completed_at")
                 need["attributes"]["runtime_ms"] = dur
@@ -138,6 +141,7 @@ def augment(graph, timeline_documents):
         "native_jobs_source_matched": len(sample),
         "measured_completed_job_durations": len(durations),
         "censored_or_unmeasured_jobs": len(sample) - len(durations),
+        "inverted_timestamp_jobs": inverted_timestamps,
         "duration_p50_ms_nearest_rank": quantile_nearest(durations, 0.5),
         "duration_p95_ms_nearest_rank": quantile_nearest(durations, 0.95),
         "rerun_attempt_run_count": sum(
