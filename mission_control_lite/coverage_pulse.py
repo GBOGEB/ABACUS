@@ -102,6 +102,28 @@ def build(report, test_logs, source_sha, event_sha, run_id, previous=None, phase
         counts[name] = int(matches[0])
         if counts[name] <= 0:
             raise ValueError("empty test suite: " + name)
+    fields = ("covered_lines", "num_statements", "covered_branches", "num_branches")
+    derived_totals = {
+        field: sum(files[name]["summary"][field] for name in names)
+        for field in fields
+    }
+    if any(derived_totals[field] != totals[field] for field in fields):
+        raise ValueError("coverage totals disagree with per-file bytes")
+    backlog = sorted(
+        (
+            {
+                "path": name,
+                "missing_lines": per_file[name]["missing_lines"],
+                "missing_branches": per_file[name]["missing_branches"],
+                "triage_score": (
+                    per_file[name]["missing_lines"]
+                    + 2 * per_file[name]["missing_branches"]
+                ),
+            }
+            for name in names
+        ),
+        key=lambda item: (-item["triage_score"], item["path"]),
+    )
     obj = {
         "schema": SCHEMA,
         "repository": "GBOGEB/ABACUS",
@@ -112,6 +134,10 @@ def build(report, test_logs, source_sha, event_sha, run_id, previous=None, phase
         "coverage_version": version,
         "files": names,
         "per_file": per_file,
+        "uncovered_lines": totals["num_statements"] - totals["covered_lines"],
+        "uncovered_branches": totals["num_branches"] - totals["covered_branches"],
+        "coverage_backlog": backlog,
+        "backlog_score_note": "Descriptive heuristic: missing lines + 2 * missing branches.",
         "totals": {k: totals[k] for k in (
             "covered_lines", "num_statements", "covered_branches", "num_branches"
         )},
@@ -206,6 +232,7 @@ def main():
     parser.add_argument("--timing-tests-log", type=Path)
     parser.add_argument("--telemetry-tests-log", type=Path)
     parser.add_argument("--gate-census-tests-log", type=Path)
+    parser.add_argument("--job-first-red-tests-log", type=Path)
     parser.add_argument("--source-sha", required=True)
     parser.add_argument("--event-sha", required=True)
     parser.add_argument("--run-id", required=True)
@@ -224,6 +251,8 @@ def main():
         logs["telemetry"] = args.telemetry_tests_log.read_text()
     if args.gate_census_tests_log:
         logs["gate_census"] = args.gate_census_tests_log.read_text()
+    if args.job_first_red_tests_log:
+        logs["job_first_red"] = args.job_first_red_tests_log.read_text()
     old = json.loads(args.baseline.read_text()) if args.baseline else None
     phases = json.loads(args.timing_log.read_text()) if args.timing_log else None
     pulse = build(

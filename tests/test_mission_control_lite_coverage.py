@@ -83,6 +83,9 @@ class CoveragePulseTests(unittest.TestCase):
         new = coverage()
         new["totals"]["covered_lines"] = 45
         new["totals"]["covered_branches"] = 15
+        for item in new["files"].values():
+            item["summary"]["covered_lines"] += 1
+            item["summary"]["covered_branches"] += 1
         p = self.make(new, previous=old)
         self.assertEqual(p["comparison"]["status"], "COMPARABLE")
         self.assertEqual(p["comparison"]["line_delta_pp"], 10)
@@ -93,6 +96,7 @@ class CoveragePulseTests(unittest.TestCase):
         old = self.make()
         new = coverage()
         new["totals"]["num_statements"] = 60
+        new["files"]["mission_control_lite/core.py"]["summary"]["num_statements"] = 20
         self.assertEqual(self.make(new, previous=old)["comparison"]["status"],
                          "INCOMPARABLE")
         old["scope_id"] = "different"
@@ -114,6 +118,20 @@ class CoveragePulseTests(unittest.TestCase):
             "mission_control_lite/core.py")
         with self.assertRaises(ValueError):
             self.make(bad)
+
+    def test_forged_coverage_totals_fail_closed(self):
+        data = coverage()
+        data["totals"]["covered_lines"] += 1
+        with self.assertRaisesRegex(ValueError, "totals disagree"):
+            self.make(data)
+
+    def test_backlog_denominators_and_nonadmission(self):
+        pulse = self.make()
+        self.assertEqual(pulse["uncovered_lines"], 10)
+        self.assertEqual(pulse["uncovered_branches"], 10)
+        self.assertEqual(len(pulse["coverage_backlog"]), 5)
+        self.assertEqual(pulse["coverage_backlog"][0]["triage_score"], 6)
+        self.assertEqual(pulse["merge_admission"], "HOLD")
 
     def test_timed_phases_summary_and_unknown_queue(self):
         phases = [
