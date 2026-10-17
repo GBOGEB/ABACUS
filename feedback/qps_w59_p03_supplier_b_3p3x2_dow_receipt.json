@@ -1,5 +1,5 @@
 {
-  "moniker":"3PR","scheme":"3P3","pulse":"P3_DOW","bidder":"LKT",
+  "moniker":"3PR","scheme":"3P3","pulse":"P3_DOW","bidder":"SUPPLIER_B",
   "status":"PASS_BOUNDED_QA_PRIORITIZATION_NO_FORMAL_CREDIT",
   "qa":{"findings":16,"graph_nodes":54,"graph_edges":81,"decision_queue_rows":12,"pdf_rendered_pages":7},
   "prioritization":"narrow_to_highest_consequence_owner_decisions_first",

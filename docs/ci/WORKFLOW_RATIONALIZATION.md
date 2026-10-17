@@ -3,11 +3,11 @@
 # ABACUS CI workflow rationalisation
 
 Policy: `ABACUS-CI-SSOT-001`  
-Policy SHA-256: `ebb9c0d49e32012750988fc8f571a4d945218e17aaf91c97e253670c552f3403`
+Policy SHA-256: `ee5ab5d1b0ba377092e02c4e0388e49be8396b0ed9e57164c0fd94ee7946abb8`
 
 ## Outcome
 
-The repository currently contains **161 workflow definitions**. All **161** are assigned to one primary functional cluster and lifecycle stage.
+The repository currently contains **160 workflow definitions**. All **158** are assigned to one primary functional cluster and lifecycle stage.
 
 The observed baseline that motivated this control was PR #681 with 119 check runs (111 queued, 8 skipped) and main with 122 check runs.
 
@@ -174,7 +174,7 @@ Make PR-triggered workflows with write-class GitHub token scopes explicit and re
 | 20 | `specialised` | `w105-qps-b1b2-mip-probe.yml` | pull_request, workflow_dispatch | 1 | `keep` | — |
 | 20 | `specialised` | `w169-qplant-k8s-runtime.yml` | pull_request, workflow_dispatch | 1 | `keep` | — |
 | 20 | `specialised` | `w52-p2m-helium-proof.yml` | pull_request, workflow_dispatch | 1 | `keep` | — |
-| 20 | `specialised` | `w52-p2r-alat-ts-strict-residual.yml` | pull_request, workflow_dispatch | 1 | `keep` | — |
+| 20 | `specialised` | `w52-p2r-supplier-a-ts-strict-residual.yml` | pull_request, workflow_dispatch | 1 | `keep` | — |
 | 20 | `specialised` | `w52-p2t-hp-power-residual.yml` | pull_request | 1 | `keep` | — |
 | 20 | `specialised` | `w52-p2t-ts-runtime-receipt.yml` | pull_request, workflow_dispatch | 1 | `keep` | — |
 | 20 | `specialised` | `w53-p05t-qcell-jt-runtime.yml` | pull_request, workflow_dispatch | 1 | `keep` | — |

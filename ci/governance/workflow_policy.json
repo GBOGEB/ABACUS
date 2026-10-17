@@ -298,7 +298,7 @@
       "disposition": "keep"
     },
     {
-      "pattern": "^(delta-1-baseline|qps-cost-roundtrip-contract|qps-v24-refresh-unresolved-selector|qps_line_s|reusable-ci|session_tuple_ci|v23-cicd|qps-canonicalization|qps-dow-w43-triage|qps-p05f-measured-sensitivity|qps-p05j-quantitative|qps-w111-power-utility-dow|w52-p2m-helium-proof|w52-p2r-alat-ts-strict-residual|w52-p2t-hp-power-residual|w52-p2t-ts-runtime-receipt|w53-p05t-qcell-jt-runtime)\\.yml$",
+      "pattern": "^(delta-1-baseline|qps-cost-roundtrip-contract|qps-v24-refresh-unresolved-selector|qps_line_s|reusable-ci|session_tuple_ci|v23-cicd|qps-canonicalization|qps-dow-w43-triage|qps-p05f-measured-sensitivity|qps-p05j-quantitative|qps-w111-power-utility-dow|w52-p2m-helium-proof|w52-p2r-supplier-a-ts-strict-residual|w52-p2t-hp-power-residual|w52-p2t-ts-runtime-receipt|w53-p05t-qcell-jt-runtime)\\.yml$",
       "cluster": "specialised",
       "lifecycle": "pr_domain",
       "disposition": "keep"

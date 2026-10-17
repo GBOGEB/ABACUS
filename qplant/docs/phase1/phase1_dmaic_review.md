@@ -356,7 +356,7 @@ See companion document: `/home/ubuntu/phase1_control_checklist.md`
 | **S**upplier | **I**nput | **P**rocess | **O**utput | **C**ustomer |
 |-------------|----------|------------|-----------|-------------|
 | Engineering Team | config.yaml (SSoT) | Build pipeline (`build_all.sh`) | HTML documentation, charts | Project Stakeholders |
-| Kaeser (vendor) | FSD575 datasheets | `config_loader.py` | Typed parameters | Python generators |
+| Vendor_1 (vendor) | FSD575 datasheets | `config_loader.py` | Typed parameters | Python generators |
 | Phase 1 analysis | Stale value identification | Source code fixes | Corrected generators | HTML output |
 | Test suite | Test cases | `pytest` execution | Pass/fail results | QA team |
 | Triage spec | Requirements list | `verify_triage.py` | Compliance score | Management |

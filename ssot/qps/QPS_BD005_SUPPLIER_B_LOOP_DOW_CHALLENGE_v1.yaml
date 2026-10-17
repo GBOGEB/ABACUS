@@ -1,4 +1,4 @@
-schema: qps-bd005-lkt-loop-dow-challenge/1.0
+schema: qps-bd005-supplier-b-loop-dow-challenge/1.0
 as_of: '2026-09-14T21:42:00+02:00'
 repo: GBOGEB/ABACUS
 role: H3_DOW_INDEPENDENT_ANALYTICAL_CHALLENGE
@@ -11,14 +11,14 @@ producer:
   pr_head: 11a9c5de94b846a6d6d0f7c9c834ac96f4ae860a
   merge_sha: 1bc865a07c1c57e951b2c1d2633c45ab419aafa4
   current_main_observed: 45d0f93918a9d01bfebb3ff88601ad4fa147259a
-  evidence_path: docs/qps-source-bound-dense-decks-v1-6/bd005_current_lkt_fsd575_loop_point_v1_6.yaml
+  evidence_path: docs/qps-source-bound-dense-decks-v1-6/bd005_current_supplier_b_fsd575_loop_point_v1_6.yaml
   evidence_blob_sha: 5245d3e98c67c6720b93d956130267676fbd46a0
   source_pdf_sha256: d92af4666cc10ec6a4f8ac6cfe57aef477bca116f72a12f9156a680ce7e1e35e
-  source_role: CURRENT_LKT_BIDDER_SOURCE
+  source_role: CURRENT_SUPPLIER_B_BIDDER_SOURCE
 
 accepted_source_facts:
   selected_equipment:
-    model: KAESER_FSD575_SFC_wc
+    model: VENDOR_1_FSD575_SFC_wc
     installed_quantity: 4
     motor_rated_power_each_kW: 315
     water_cooled: true
