@@ -1,0 +1,88 @@
+name: CBD W12 Matched Source Coverage Proof
+
+on:
+  pull_request:
+    paths:
+      - scripts/cbd_matched_coverage_delta.py
+      - tests/test_cbd_matched_coverage_delta.py
+      - .github/workflows/cbd-matched-coverage.yml
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  source-bound-contract:
+    name: W12 measured statement and branch contract
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout exact source head
+        uses: actions/checkout@v7
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+      - name: Set up Python
+        uses: actions/setup-python@v7.0.0
+        with:
+          python-version: '3.12'
+      - name: Install isolated coverage dependency
+        run: python -m pip install 'coverage>=7.7,<8'
+      - name: Execute adversarial tests under branch coverage
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p test_reports/cbd-w12
+          python -m coverage run --branch -m unittest discover -s tests -p 'test_cbd_matched_coverage_delta.py' -v 2>&1 | tee test_reports/cbd-w12/unittest.log
+          python -m coverage json --include='*/scripts/cbd_matched_coverage_delta.py' -o test_reports/cbd-w12/coverage.json
+      - name: Emit exact-head provenance and numerical acceptance
+        shell: bash
+        env:
+          EXPECTED_HEAD: ${{ github.event.pull_request.head.sha || github.sha }}
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          import hashlib, json, os, pathlib, re, subprocess
+          folder = pathlib.Path('test_reports/cbd-w12')
+          actual = subprocess.check_output(['git', 'rev-parse', 'HEAD'], text=True).strip()
+          expected = os.environ['EXPECTED_HEAD']
+          if not re.fullmatch(r'[0-9a-f]{40}', expected) or actual != expected:
+              raise SystemExit('HOLD: checkout SHA differs from expected PR head')
+          log = (folder / 'unittest.log').read_bytes()
+          if not re.search(rb'Ran 19 tests?', log) or b'OK' not in log:
+              raise SystemExit('HOLD: full regression suite not demonstrated')
+          data = json.loads((folder / 'coverage.json').read_text())
+          name = 'scripts/cbd_matched_coverage_delta.py'
+          counts = data['files'][name]['summary']
+          lines = [counts['covered_lines'], counts['num_statements']]
+          branches = [counts['covered_branches'], counts['num_branches']]
+          if min(lines[1], branches[1]) <= 0 or lines[0] * 100 < 95 * lines[1] or branches[0] * 100 < 90 * branches[1]:
+              raise SystemExit('HOLD: branch or statement threshold not met')
+          receipt = {
+              'schema': 'cbd.native-checkout-declaration.v1',
+              'repository': os.environ['GITHUB_REPOSITORY'],
+              'head_sha': expected,
+              'checkout_sha': actual,
+              'event_sha': os.environ['GITHUB_SHA'],
+              'run_id': int(os.environ['GITHUB_RUN_ID']),
+              'run_attempt': int(os.environ['GITHUB_RUN_ATTEMPT']),
+              'job_id': None,
+              'job_id_status': 'PENDING_NATIVE_API_READBACK',
+              'source_sha256': {name: hashlib.sha256(pathlib.Path(name).read_bytes()).hexdigest()},
+              'tested_count': 19,
+              'covered_lines': lines,
+              'covered_branches': branches,
+              'status': 'PROVISIONAL_SOURCE_BOUND_ONLY',
+              'merge_admission': 'HOLD',
+              'formal_root_closure': 0,
+              'security_waiver': False,
+          }
+          (folder / 'provenance.json').write_text(json.dumps(receipt, indent=2, sort_keys=True) + '\n')
+          print(json.dumps(receipt, indent=2, sort_keys=True))
+          PY
+      - name: Preserve report and provenance on success or failure
+        if: always()
+        uses: actions/upload-artifact@v7.0.2
+        with:
+          name: cbd-w12-${{ github.run_id }}-${{ github.run_attempt }}
+          path: test_reports/cbd-w12/
+          if-no-files-found: warn
