@@ -32,8 +32,11 @@ def job(identity=201):
     }
 
 
-def getter(run_value=None, pages=None):
-    run_value = run() if run_value is None else run_value
+_DEFAULT = object()
+
+
+def getter(run_value=_DEFAULT, pages=None):
+    run_value = run() if run_value is _DEFAULT else run_value
     pages = ([{"total_count": 1, "jobs": [job()]}] if pages is None else pages)
     def get(path):
         if "/jobs?" not in path:
