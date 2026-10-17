@@ -7,6 +7,7 @@ from __future__ import annotations
 import argparse
 import datetime as dt
 import json
+import re
 import subprocess
 import sys
 import time
@@ -41,8 +42,9 @@ def completed_run_metrics(run, job):
         raise ValueError("nonterminal run/job")
     if run.get("id") != job.get("run_id"):
         raise ValueError("mixed run/job provenance")
-    if not run.get("head_sha") or len(run["head_sha"]) != 40:
-        raise ValueError("missing run SHA")
+    source_sha = run.get("head_sha")
+    if not isinstance(source_sha, str) or not re.fullmatch(r"[0-9a-f]{40}", source_sha):
+        raise ValueError("missing or invalid run SHA")
     created, started, ended = (
         run.get("created_at"), run.get("run_started_at"), run.get("updated_at")
     )
