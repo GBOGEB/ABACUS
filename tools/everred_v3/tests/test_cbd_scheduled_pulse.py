@@ -165,5 +165,72 @@ class ScheduledDAGTests(unittest.TestCase):
         self.assertIn("&lt;script&gt;", rendered)
 
 
+    def test_cli_direct_entrypoint_with_github_output_receipt(self):
+        import contextlib
+        import io
+        import runpy
+        import sys
+        from unittest import mock
+
+        with tempfile.TemporaryDirectory() as directory:
+            base = Path(directory)
+            observation = base / "snapshot.json"
+            observation.write_text(json.dumps(fixture()), encoding="utf-8")
+            destination = base / "output"
+            github_output = base / "github-output.txt"
+            argv = [
+                str(ROOT / "scripts" / "cbd_scheduled_pulse.py"),
+                "--observation", str(observation),
+                "--output-dir", str(destination),
+                "--method", "gogreen",
+                "--utc-day", "2026-10-19",
+                "--event", "workflow_dispatch",
+                "--github-output", str(github_output),
+            ]
+            with mock.patch.object(sys, "argv", argv):
+                with contextlib.redirect_stdout(io.StringIO()) as stream:
+                    runpy.run_path(
+                        str(ROOT / "scripts" / "cbd_scheduled_pulse.py"),
+                        run_name="__main__",
+                    )
+            self.assertEqual("BOUNDED_READ_ONLY",
+                             json.loads(stream.getvalue())["gate"])
+            self.assertIn("execute_mode=gogreen", github_output.read_text())
+            self.assertTrue((destination / "sha256.json").exists())
+
+    def test_cli_direct_entrypoint_without_github_output_stays_deferred(self):
+        import contextlib
+        import io
+        import runpy
+        import sys
+        from unittest import mock
+
+        with tempfile.TemporaryDirectory() as directory:
+            base = Path(directory)
+            observation = base / "snapshot.json"
+            observation.write_text(json.dumps(fixture(653, 8)), encoding="utf-8")
+            destination = base / "output"
+            argv = [
+                str(ROOT / "scripts" / "cbd_scheduled_pulse.py"),
+                "--observation", str(observation),
+                "--output-dir", str(destination),
+                "--method", "everred",
+                "--utc-day", "2026-10-20",
+                "--event", "schedule",
+            ]
+            with mock.patch.object(sys, "argv", argv):
+                with contextlib.redirect_stdout(io.StringIO()) as stream:
+                    runpy.run_path(
+                        str(ROOT / "scripts" / "cbd_scheduled_pulse.py"),
+                        run_name="__main__",
+                    )
+            report = json.loads(stream.getvalue())
+            self.assertEqual("QUEUE_SATURATED", report["gate"])
+            self.assertEqual("none", json.loads(
+                (destination / "pulse-plan.json").read_text()
+            )["execute_mode"])
+
+
+
 if __name__ == "__main__":
     unittest.main()
