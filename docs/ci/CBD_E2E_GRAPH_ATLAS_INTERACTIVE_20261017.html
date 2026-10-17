@@ -130,7 +130,7 @@ if(!adjacency.has(e.target))adjacency.set(e.target,new Set());
 adjacency.get(e.source).add(e.target);
 adjacency.get(e.target).add(e.source);
 }
-const seen=new Set(seeds), queue=[...seeds.map(id=>({id,depth:0}))];
+const seen=new Set(seeds), queue=Array.from(seeds,id=>({id,depth:0}));
 for(let i=0;i<queue.length;i++){
 const item=queue[i];if(item.depth>=Number(input.depth.value))continue;
 for(const nxt of adjacency.get(item.id)||[]){
