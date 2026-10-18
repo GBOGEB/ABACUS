@@ -28,7 +28,10 @@ jobs:
           script: |
             const path = require('node:path');
             const { classify, render } = require(
-              path.join(process.env.GITHUB_WORKSPACE, 'scripts/post_merge_summary.cjs')
+              path.join(
+                process.env.GITHUB_WORKSPACE,
+                'scripts/post_merge_summary.cjs'
+              )
             );
             const pr = context.payload.pull_request;
             const owner = context.repo.owner;
@@ -36,11 +39,13 @@ jobs:
             const headSha = pr.head.sha;
             const mergeSha = pr.merge_commit_sha;
             if (!mergeSha || !/^[0-9a-f]{40}$/.test(mergeSha)) {
-              core.setFailed('Merge SHA unavailable: cannot publish a source-bound quality summary');
+              core.setFailed(
+                'Merge SHA unavailable: source-bound summary HOLD'
+              );
               return;
             }
 
-            // A separate snapshot per ref; never mix merge-check and PR-head populations.
+            // Keep merge-check and PR-head populations separate.
             async function readChecks(sha) {
               const first = await github.rest.checks.listForRef({
                 owner, repo, ref: sha, per_page: 100
@@ -60,11 +65,16 @@ jobs:
             const codeChanged = files.some(f =>
               /\.(py|yml|yaml|js|ts|tsx|go|java|rb|rs|cjs)$/i.test(f.filename)
             );
-            const versionTouched = files.some(f =>
-              /(VERSION|CHANGELOG|release|docs\/api\/final_handover_tracker\.json|DEPLOYMENT_REPORT|INTEGRATION_TEST_REPORT)/i.test(f.filename)
-            );
+            const versionTouched = files.some(f => {
+              const p = f.filename;
+              return /(VERSION|CHANGELOG|release|DEPLOYMENT_REPORT)/i.test(p) ||
+                /(INTEGRATION_TEST_REPORT)/i.test(p) ||
+                /docs\/api\/final_handover_tracker\.json/i.test(p);
+            });
             const head = classify(headData.runs, headSha, headData.complete);
-            const merge = classify(mergeData.runs, mergeSha, mergeData.complete);
+            const merge = classify(
+              mergeData.runs, mergeSha, mergeData.complete
+            );
             const body = render(pr, head, merge, {
               codeChanged, staleRisk: codeChanged && !versionTouched
             });
