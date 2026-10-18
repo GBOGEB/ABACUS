@@ -1,0 +1,45 @@
+name: ABACUS DELTA_1 Dependency SPINE Proposal
+on:
+  pull_request:
+    paths:
+      - 'runtime/execution/dependency_spine_readonly_selector.py'
+      - 'tests/test_dependency_spine_selector.py'
+      - '.github/workflows/dependency-spine-stage-only.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  stage-only:
+    name: Exact-head contract, no-input DEFER
+    runs-on: ubuntu-24.04
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v7.0.1
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+      - uses: actions/setup-python@v7
+        with:
+          python-version: '3.12'
+      - name: Prove negative stage-only controls
+        env:
+          EXPECTED_HEAD: ${{ github.event.pull_request.head.sha || github.sha }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$EXPECTED_HEAD"
+          python -m unittest discover -s tests -p 'test_dependency_spine_selector.py' -v
+      - name: Produce explicit no-input DEFER receipt
+        env:
+          EXPECTED_HEAD: ${{ github.event.pull_request.head.sha || github.sha }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          python runtime/execution/dependency_spine_readonly_selector.py --root . --expected-head "$EXPECTED_HEAD" --out "$RUNNER_TEMP/dep-stage"
+      - uses: actions/upload-artifact@v7.0.2
+        if: always()
+        with:
+          name: abacus-dow-dep-stage-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/dep-stage/
+          if-no-files-found: warn
+          retention-days: 30
