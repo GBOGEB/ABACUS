@@ -240,8 +240,9 @@ def _capacity(doc, results, actionable):
     )
     queue_exact_head = queue_identity == current_identity
     fresh = [
-        h for h in histories
-        if h["qualified"] and h.get("growth_transitions", 0) >= 2
+        h for h, result in zip(histories, results)
+        if result["state"] == "EXPAND_BEHAVIORAL_TESTS"
+        and h["qualified"] and h.get("growth_transitions", 0) >= 2
         and (h.get("last_run_id"), h.get("last_source_sha")) == current_identity
     ]
     new_terminal = (
