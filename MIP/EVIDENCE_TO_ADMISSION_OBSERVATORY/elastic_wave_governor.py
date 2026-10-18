@@ -294,7 +294,7 @@ def _capacity(doc, results, actionable):
             "queue_bound_to_latest_terminal_head": queue_exact_head}
 
 
-def _programme_stop(doc, results):
+def _programme_stop(doc, results, artifacts):
     end = doc.get("global_acceptance")
     if not isinstance(end, dict):
         raise GovernorError("global_acceptance object required")
@@ -327,10 +327,13 @@ def _programme_stop(doc, results):
          "required_checks", "negative_red_canary", "security")
     ))
     stability = end.get("no_special_cause_variation") is True
-    complete = bool(all_source_targets and numbers_valid and governance and stability)
+    consumer_evidence = artifacts.get("status") == "NATIVE_COMPLETE_CONSUMER_ATTESTED"
+    complete = bool(all_source_targets and numbers_valid and governance
+                    and stability and consumer_evidence)
     return {"state": "GLOBAL_CONTROL_ELIGIBLE" if complete else "CONTINUE_OR_HOLD",
             "stop_entire_program": complete, "all_source_targets": all_source_targets,
             "governance_qualified": bool(governance),
+            "artifact_consumer_evidence_complete": consumer_evidence,
             "accepted_roots_remaining": roots if type(roots) is int else None,
             "repo_reach": {"verified": verified, "total": repos},
             "required_artifact_yield": (valid / artifacts if type(valid) is int
@@ -369,7 +372,7 @@ def artifact_type_census(doc):
             raise GovernorError("artifact type verified exceeds denominator")
         if row.get("source_sha") != doc.get("snapshot_source_sha"):
             raise GovernorError("artifact type SHA mismatch")
-        if row.get("consumer_attested") not in {True, False, None}:
+        if row.get("consumer_attested") is not True and row.get("consumer_attested") is not False and row.get("consumer_attested") is not None:
             raise GovernorError("consumer attestation must be boolean or UNKNOWN")
         out.append({"kind": kind, "expected": expected,
                     "native_verified": verified, "consumer_attested": row.get("consumer_attested"),
@@ -414,8 +417,8 @@ def evaluate(doc):
         if r["id"] in reopens and r["stop_local_coverage"]:
             r["state"] = "LOCAL_RETRIGGER_PILOT"
             r["stop_local_coverage"] = False
-    programme = _programme_stop(doc, results)
     artifacts = artifact_type_census(doc)
+    programme = _programme_stop(doc, results, artifacts)
     capacity = _capacity(doc, results, actionable)
     if programme["stop_entire_program"]:
         capacity["proposed_native_runner_lanes"] = 0
