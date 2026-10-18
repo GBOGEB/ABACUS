@@ -7,6 +7,7 @@ on:
       - 'tests/test_mission_control_lite.py'
       - 'tests/test_mission_control_lite_rex.py'
       - 'tests/test_mission_control_lite_coverage.py'
+      - 'tests/test_mcl_adversarial_family.py'
       - 'tests/test_mission_control_lite_timing.py'
       - 'tests/test_recovery_triage.py'
       - 'tests/test_runner_wait.py'
@@ -85,6 +86,13 @@ jobs:
             -p test_runner_wait.py -v \
             > evidence/runner-wait-tests.log 2>&1
           python -m mission_control_lite.timing_pulse measure \
+            --output evidence/phase-times.json --phase adversarial-family-tests -- \
+            python -m coverage run --append --branch \
+            --source=mission_control_lite \
+            -m unittest discover -s tests \
+            -p test_mcl_adversarial_family.py -v \
+            > evidence/adversarial-family-tests.log 2>&1
+          python -m mission_control_lite.timing_pulse measure \
             --output evidence/phase-times.json --phase coverage-json -- \
             python -m coverage json -o evidence/coverage.json
           python -m mission_control_lite.timing_pulse measure \
@@ -113,7 +121,9 @@ jobs:
             --telemetry-tests-log evidence/telemetry-tests.log \
             --recovery-tests-log evidence/recovery-tests.log \
             --runner-wait-tests-log evidence/runner-wait-tests.log \
+            --adversarial-family-tests-log evidence/adversarial-family-tests.log \
             --require-penetration-suites --require-case-ids \
+            --require-adversarial-family \
             --timing-log evidence/phase-times.json \
             --source-sha "$SOURCE_SHA" --event-sha "$EVENT_SHA" \
             --run-id "$RUN_ID" --output evidence/coverage-pulse.json \
@@ -171,6 +181,7 @@ jobs:
             --output evidence/telemetry-tests.log \
             --output evidence/recovery-tests.log \
             --output evidence/runner-wait-tests.log \
+            --output evidence/adversarial-family-tests.log \
             --receipt evidence/receipt.json
           python -m mission_control_lite.cli ingest evidence/receipt.json \
             --artifact-root . --db evidence/registry.sqlite
@@ -195,6 +206,7 @@ jobs:
             evidence/telemetry-tests.log
             evidence/recovery-tests.log
             evidence/runner-wait-tests.log
+            evidence/adversarial-family-tests.log
             evidence/phase-times.json
           include-hidden-files: false
           if-no-files-found: error
