@@ -225,5 +225,71 @@ class TemporalAndJUnitIntegrity(unittest.TestCase):
                     evaluate(c=c, coverage_head=cov_head, test_head=test_head)
 
 
+
+class W44EvidenceRejectionGuards(unittest.TestCase):
+    def test_same_native_run_attempt_rollback_is_rejected(self):
+        prior = measured(run=401, attempt=3)
+        older = measured(run=401, attempt=2, a_lines=120)
+        with self.assertRaisesRegex(
+            matched.EvidenceError, "attempt rollback",
+        ):
+            matched.compare(prior, older)
+        # A *new* native run identity is separately declared, but never
+        # promoted to authenticated/accepted main coverage.
+        different_run = measured(run=402, attempt=1, a_lines=120)
+        output = matched.compare(prior, different_run)
+        self.assertEqual(output["status"], "IMPROVED")
+        self.assertIsNone(output["accepted_matched_main_delta"])
+
+    def test_malformed_coverage_module_maps_fail_closed(self):
+        before = measured()
+        for label, mutated in (
+            ("list", []),
+            ("none", None),
+            ("empty", {}),
+            ("invalid_row", {A: None, B: before["modules"][B]}),
+        ):
+            with self.subTest(label=label):
+                after = measured(run=101, attempt=2)
+                after["modules"] = copy.deepcopy(mutated)
+                with self.assertRaises(matched.EvidenceError):
+                    matched.compare(before, after)
+
+    def test_timezone_normalization_and_seconds_boundary(self):
+        suite = junit(when="2026-10-18T10:00:00+02:00", elapsed="60")
+        boundary = evaluate(
+            c=coverage(at="2026-10-18T08:01:00Z"), j=suite,
+        )
+        self.assertEqual(boundary["time_gap_seconds"], 0)
+        self.assertEqual(
+            boundary["status"], "ELIGIBLE_FOR_MATCHED_COVERAGE_REVIEW",
+        )
+        before = evaluate(
+            c=coverage(at="2026-10-18T08:00:59Z"), j=suite,
+        )
+        self.assertEqual(before["status"], "HOLD")
+        self.assertEqual(before["time_gap_seconds"], -1)
+        after = evaluate(
+            c=coverage(at="2026-10-18T08:01:01Z"), j=suite,
+        )
+        self.assertEqual(after["status"], "ELIGIBLE_FOR_MATCHED_COVERAGE_REVIEW")
+        self.assertEqual(after["time_gap_seconds"], 1)
+
+    def test_duplicate_test_identity_across_junit_suites_is_not_green(self):
+        case = '<testcase classname="same" name="duplicated"/>'
+        suite = (
+            '<testsuite tests="1" failures="0" errors="0" skipped="0" '
+            'timestamp="2026-10-18T10:00:00Z" time="60">'
+            + case + '</testsuite>'
+        )
+        result = evaluate(j="<testsuites>" + suite + suite + "</testsuites>")
+        self.assertEqual(result["junit_test_cases_declared"], 2)
+        self.assertEqual(result["junit_test_cases_observed"], 2)
+        self.assertEqual(result["junit_count_integrity"], "MISMATCH")
+        self.assertEqual(result["status"], "HOLD")
+        self.assertIsNone(result["accepted_coverage_uplift"])
+
+
+
 if __name__ == "__main__":
     unittest.main()
