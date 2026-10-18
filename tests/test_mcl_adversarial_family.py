@@ -5,9 +5,16 @@ The tests run in unittest and cannot authenticate GitHub receipts by themselves.
 from __future__ import annotations
 
 import json
+import sys
+import tempfile
 import unittest
+from contextlib import redirect_stderr, redirect_stdout
+from io import StringIO
+from pathlib import Path
+from unittest.mock import patch, Mock
 
 from mission_control_lite.test_family_telemetry import FAMILIES, audit_native_family_log
+from mission_control_lite import timing_pulse as timer
 
 SHA = "a" * 40
 OTHER = "b" * 40
@@ -28,6 +35,31 @@ def log_for(methods=None):
 
 def sample():
     return audit_native_family_log(log_for(), SHA, 42)
+
+
+def timing_records():
+    run = {"id": 13, "status": "completed", "head_sha": SHA,
+           "created_at": "2026-10-18T00:00:00Z",
+           "run_started_at": "2026-10-18T00:01:00Z",
+           "updated_at": "2026-10-18T00:02:00Z"}
+    job = {"id": 23, "run_id": 13, "status": "completed",
+           "started_at": "2026-10-18T00:01:10Z",
+           "completed_at": "2026-10-18T00:01:20Z", "steps": []}
+    return run, job
+
+
+def timing_cli_reconcile(run=None, job=None):
+    with tempfile.TemporaryDirectory() as directory:
+        folder = Path(directory)
+        left, right = timing_records()
+        (folder / "run.json").write_text(json.dumps(left if run is None else run))
+        (folder / "job.json").write_text(json.dumps(right if job is None else job))
+        output = folder / "result.json"
+        argv = ["timing_pulse", "reconcile", "--run-json", str(folder / "run.json"),
+                "--job-json", str(folder / "job.json"), "--output", str(output)]
+        with patch.object(sys, "argv", argv), redirect_stdout(StringIO()):
+            timer.main()
+        return json.loads(output.read_text())
 
 
 class FamilyTests(unittest.TestCase):
@@ -180,6 +212,108 @@ class FamilyTests(unittest.TestCase):
     def test_force_trip_empty_native_population_not_accepted(self):
         with self.assertRaises(ValueError):
             audit_native_family_log("Ran 0 tests in 0.01s\n\nOK\n", SHA, 42)
+
+
+    def test_positive_timing_cli_reconcile_writes_bound_result(self):
+        result = timing_cli_reconcile()
+        self.assertEqual(result["source_sha"], SHA)
+        self.assertEqual(result["job_seconds"], 10)
+        self.assertEqual(result["run_queue_seconds"], 60)
+        self.assertEqual(result["merge_admission"], "HOLD")
+
+    def test_positive_timing_cli_measure_dispatch_strips_double_dash(self):
+        with patch.object(sys, "argv", ["timing_pulse", "measure", "--phase", "probe",
+                                        "--output", "times.json", "--", "fake-cmd"]), \
+             patch.object(timer, "measure", return_value=0) as measure:
+            with self.assertRaises(SystemExit) as e:
+                timer.main()
+        self.assertEqual(e.exception.code, 0)
+        measure.assert_called_once_with(Path("times.json"), "probe", ["fake-cmd"])
+
+    def test_positive_timing_cli_measure_without_separator(self):
+        with patch.object(sys, "argv", ["timing_pulse", "measure", "--phase", "probe",
+                                        "--output", "times.json", "fake-cmd"]), \
+             patch.object(timer, "measure", return_value=0) as measure:
+            with self.assertRaises(SystemExit) as e:
+                timer.main()
+        self.assertEqual(e.exception.code, 0)
+        measure.assert_called_once_with(Path("times.json"), "probe", ["fake-cmd"])
+
+    def test_negative_timing_cli_missing_phase_refused(self):
+        with patch.object(sys, "argv", ["timing_pulse", "measure", "--output", "times.json"]), \
+             redirect_stderr(StringIO()), self.assertRaises(SystemExit) as e:
+            timer.main()
+        self.assertEqual(e.exception.code, 2)
+
+    def test_negative_timing_cli_unknown_subcommand_refused(self):
+        with patch.object(sys, "argv", ["timing_pulse", "dispatch"]), \
+             redirect_stderr(StringIO()), self.assertRaises(SystemExit) as e:
+            timer.main()
+        self.assertEqual(e.exception.code, 2)
+
+    def test_negative_timing_reconcile_malformed_time_rejected(self):
+        run, job = timing_records()
+        run["created_at"] = "not-a-time"
+        with self.assertRaisesRegex(ValueError, "invalid timestamp"):
+            timing_cli_reconcile(run, job)
+
+    def test_reverse_timing_reconcile_mismatched_job_refused(self):
+        run, job = timing_records()
+        job["run_id"] = 99
+        with self.assertRaisesRegex(ValueError, "mixed run/job"):
+            timing_cli_reconcile(run, job)
+
+    def test_reverse_timing_reconcile_nonterminal_is_unknown_not_zero(self):
+        run, job = timing_records()
+        run["status"] = "queued"
+        with self.assertRaisesRegex(ValueError, "nonterminal"):
+            timing_cli_reconcile(run, job)
+
+    def test_reverse_timing_missing_step_timestamps_not_invented(self):
+        run, job = timing_records()
+        job["steps"] = [{"name": "unstarted", "started_at": None,
+                         "completed_at": None, "conclusion": None}]
+        result = timer.completed_run_metrics(run, job)
+        self.assertEqual(result["steps"], [])
+        self.assertEqual(result["job_seconds"], 10)
+
+    def test_reverse_timing_zero_wall_has_unknown_runner_fraction(self):
+        run, job = timing_records()
+        same = "2026-10-18T00:00:00Z"
+        run["run_started_at"] = run["updated_at"] = same
+        job["started_at"] = job["completed_at"] = same
+        result = timer.completed_run_metrics(run, job)
+        self.assertIsNone(result["runner_fraction"])
+
+    def test_force_trip_timing_cli_failure_exit_propagated(self):
+        with patch.object(sys, "argv", ["timing_pulse", "measure", "--phase", "probe",
+                                        "--output", "times.json", "--", "fake-cmd"]), \
+             patch.object(timer, "measure", return_value=7):
+            with self.assertRaises(SystemExit) as e:
+                timer.main()
+        self.assertEqual(e.exception.code, 7)
+
+    def test_force_trip_timing_reconcile_wrong_sha_does_not_write(self):
+        run, job = timing_records()
+        run["head_sha"] = "z" * 40
+        with self.assertRaisesRegex(ValueError, "run SHA"):
+            timing_cli_reconcile(run, job)
+
+    def test_force_trip_timing_negative_native_duration_is_refused(self):
+        run, job = timing_records()
+        job["started_at"] = "2026-10-18T00:01:30Z"
+        job["completed_at"] = "2026-10-18T00:01:20Z"
+        with self.assertRaisesRegex(ValueError, "non-monotone"):
+            timer.completed_run_metrics(run, job)
+
+    def test_force_trip_timing_exit_code_persisted_not_normalised(self):
+        with tempfile.TemporaryDirectory() as d:
+            receipt = Path(d) / "failed.json"
+            with patch.object(timer.subprocess, "run", return_value=Mock(returncode=9)):
+                self.assertEqual(timer.measure(receipt, "trip", ["mocked"]), 9)
+            data = json.loads(receipt.read_text())
+            self.assertEqual(data[0]["exit_code"], 9)
+            self.assertEqual(data[0]["phase"], "trip")
 
 
 if __name__ == "__main__":
