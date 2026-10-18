@@ -10,7 +10,7 @@ import tempfile
 import unittest
 from pathlib import Path
 
-import test_g3cs_assurance_matrix as assurance
+from tests import test_g3cs_assurance_matrix as assurance
 
 ROOT=Path(__file__).resolve().parents[1]
 SOURCE=ROOT/'MIP/G3CS_CONVERGENCE_V2/tools/serial_main_pair.py'
