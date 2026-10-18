@@ -130,7 +130,7 @@ class NPlusTests(unittest.TestCase):
 
     def test_render_denominators_are_full_population(self):
         report = as_markdown(rollup(sample()))
-        self.assertIn("Distinct families", report)
+        self.assertIn("Green families", report)
         self.assertIn("Success/all", report)
         self.assertIn("Repeat-adjusted counts are diagnostic only", report)
         self.assertIn("2/2", report)
@@ -143,6 +143,7 @@ class NPlusTests(unittest.TestCase):
         x["waves"][2]["native_total_count"] += 1
         result = rollup(x)
         self.assertEqual(result["progress"]["latest_distinct_workflows"], 2)
+        self.assertEqual(result["progress"]["latest_clean_workflow_families"], 1)
         self.assertEqual(result["progress"]["latest_repeated_run_excess"], 1)
         self.assertEqual(result["progress"]["latest_repeat_success_excess"], 1)
         self.assertIsNone(result["progress"]["latest_workflow_testcase_count"])
