@@ -491,7 +491,7 @@
     },
     {
       "pattern": "^mip-py310-combined-head-probe\\.yml$",
-      "cluster": "core_test",
+      "cluster": "statistics",
       "lifecycle": "pr_domain",
       "disposition": "keep"
     },

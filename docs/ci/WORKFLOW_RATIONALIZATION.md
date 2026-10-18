@@ -3,7 +3,7 @@
 # ABACUS CI workflow rationalisation
 
 Policy: `ABACUS-CI-SSOT-001`  
-Policy SHA-256 (canonical sorted JSON bytes of `ci/governance/workflow_policy.json`): `0bcdf748ff52a8f1678fb947bd417e42ce2a2275ca5118a9e336794dda6bc69b`
+Policy SHA-256 (canonical sorted JSON bytes of `ci/governance/workflow_policy.json`): `ab1a5265ae82dddb767b69dc1be33b62907e628c35a3f568cce0aea2ca451be5`
 
 ## Outcome
 
@@ -26,9 +26,9 @@ The observed baseline that motivated this control was PR #681 with 119 check run
 
 | Cluster | Canonical workflow | Definitions | Intent |
 |---|---|---:|---|
-| `core_test` | `ci-abacus.yml` | 21 | Fast cross-version unit, pre-commit and smoke evidence. |
+| `core_test` | `ci-abacus.yml` | 20 | Fast cross-version unit, pre-commit and smoke evidence. |
 | `full_regression` | `ci-cd-tests.yml` | 1 | Broad OS/version/integration/coverage regression for code changes. |
-| `statistics` | `ci-cd.yml` | 8 | Bootstrap, AHT, performance and statistical validation. |
+| `statistics` | `ci-cd.yml` | 9 | Bootstrap, AHT, performance and statistical validation. |
 | `bridge_federation` | `bridge-ci.yml` | 17 | CODEX/ABACUS bridge contract and federation smoke evidence. |
 | `dmaic` | `dmaic-enterprise-ci.yml` | 9 | DMAIC phase, convergence and maturity execution. |
 | `dow` | `dow-integration.yml` | 22 | DOW parent mechanics, integration, monitoring and warm-up. |
@@ -67,7 +67,7 @@ Make PR-triggered workflows with write-class GitHub token scopes explicit and re
 | 10 | `pr_fast` | `core_test` | `ariana-cicd.yml` | push, pull_request, workflow_dispatch | 2 | `keep` | — |
 | 10 | `pr_fast` | `core_test` | `ci-abacus.yml` | push, pull_request, schedule, workflow_dispatch | 6 | `keep` | — |
 | 10 | `pr_fast` | `core_test` | `ci-enhanced.yml` | push, pull_request, schedule, workflow_dispatch | 7 | `keep` | — |
-| 10 | `pr_fast` | `core_test` | `ci-pipeline.yml` | push, schedule, workflow_dispatch | 4 | `keep` | — |
+| 10 | `pr_fast` | `core_test` | `ci-pipeline.yml` | push, pull_request, schedule, workflow_dispatch | 4 | `keep` | — |
 | 10 | `pr_fast` | `core_test` | `format-check.yml` | push, pull_request, workflow_dispatch | 1 | `keep` | — |
 | 10 | `pr_fast` | `core_test` | `main.yml` | push, workflow_dispatch | 5 | `keep` | — |
 | 10 | `pr_fast` | `core_test` | `pytest-config-validation.yml` | pull_request, push | 1 | `keep` | — |
@@ -97,7 +97,6 @@ Make PR-triggered workflows with write-class GitHub token scopes explicit and re
 | 20 | `pr_domain` | `core_test` | `cbd-w6c-office-style-qa.yml` | pull_request | 1 | `keep` | — |
 | 20 | `pr_domain` | `core_test` | `g3a-n14-phase4-import.yml` | pull_request, workflow_dispatch | 1 | `keep` | — |
 | 20 | `pr_domain` | `core_test` | `g3a-n15-python-matrix.yml` | pull_request, workflow_dispatch | 1 | `keep` | — |
-| 20 | `pr_domain` | `core_test` | `mip-py310-combined-head-probe.yml` | pull_request, workflow_dispatch | 1 | `keep` | — |
 | 20 | `pr_domain` | `core_test` | `mip-w1-python-dependency-qa.yml` | pull_request | 1 | `keep` | — |
 | 20 | `pr_domain` | `core_test` | `mip-wave-pulse-testflight.yml` | pull_request, workflow_dispatch | 1 | `keep` | — |
 | 20 | `pr_domain` | `core_test` | `w2-ariana-isolated-xml-qa.yml` | pull_request | 1 | `keep` | — |
@@ -218,6 +217,7 @@ Make PR-triggered workflows with write-class GitHub token scopes explicit and re
 | 20 | `pr_domain` | `statistics` | `cbd-matched-coverage.yml` | pull_request, workflow_dispatch | 1 | `keep` | — |
 | 20 | `pr_domain` | `statistics` | `ci-cd.yml` | push, pull_request, schedule, workflow_dispatch | 8 | `keep` | — |
 | 20 | `pr_domain` | `statistics` | `g3a-n14-matched-arc-flight.yml` | pull_request, workflow_dispatch | 1 | `keep` | — |
+| 20 | `pr_domain` | `statistics` | `mip-py310-combined-head-probe.yml` | pull_request, workflow_dispatch | 1 | `keep` | — |
 | 20 | `pr_domain` | `statistics` | `mip2-method-qualification.yml` | pull_request, workflow_dispatch, push | 1 | `keep` | — |
 | 20 | `pr_domain` | `statistics` | `w64-3p-r01-retained-baseline.yml` | pull_request, workflow_dispatch | 1 | `keep` | — |
 | 20 | `pr_domain` | `statistics` | `w64-3p-r02-id-discovery-graph.yml` | pull_request, workflow_dispatch | 1 | `keep` | — |
@@ -272,9 +272,9 @@ Make PR-triggered workflows with write-class GitHub token scopes explicit and re
 - `pre-commit run --all-files` — `cd-unified.yml`, `ci-codex.yml`
 - `pylint **/*.py --exit-zero` — `ci-cd-tests.yml`, `ci-pipeline.yml`
 - `pytest --benchmark-disable -v --cov=. --cov-report=term-missing` — `cd-unified.yml`, `ci-codex.yml`
+- `python -m pip install 'pytest>=7.4,<10' 'numpy>=1.24,<3'` — `cbd-w6c-office-style-qa.yml`, `w4-dashboard-publication-qa.yml`
 - `python -m pip install pytest pyyaml` — `cryoplant-federation.yml`, `mip-qps-external-probe.yml`
 - `python -m pytest -q` — `mip-v2-federated-control.yml`, `qps_line_s.yml`
-- `python -m pytest DMAIC_V3/tests -q` — `dow-main-cicd.yml`, `reusable-ci.yml`
 
 ## Control rule
 
