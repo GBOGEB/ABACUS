@@ -1,18 +1,9 @@
 """Adversarial tests for source-bound coverage freshness and counters."""
-import importlib.util
 import json
-from pathlib import Path
 
 import pytest
 
-SOURCE = (
-    Path(__file__).resolve().parents[1]
-    / "scripts"
-    / "cbd_coverage_temporal_gate.py"
-)
-spec = importlib.util.spec_from_file_location("cbd_coverage_temporal_gate", SOURCE)
-gate = importlib.util.module_from_spec(spec)
-spec.loader.exec_module(gate)
+from scripts import cbd_coverage_temporal_gate as gate
 SHA = "a" * 40
 
 
@@ -36,8 +27,8 @@ def coverage(at="2026-10-17T10:10:52Z", covered=(100, 80)):
 def junit(at="2026-10-17T10:05:26.426899+00:00", elapsed="324.007"):
     return (
         '<testsuites><testsuite tests="2" failures="0" '
-        f'timestamp="{at}" time="{elapsed}"><testcase name="a"/>'
-        '<testcase name="b"/></testsuite></testsuites>'
+        f'timestamp="{at}" time="{elapsed}"><testcase classname="test_temporal" name="a"/>'
+        '<testcase classname="test_temporal" name="b"/></testsuite></testsuites>'
     )
 
 
@@ -68,6 +59,8 @@ def test_post_suite_evidence_is_eligible_only_for_review():
     assert result["eligible_target_branches"] == 94
     assert result["merge_admission"] == "HOLD"
     assert result["root_closure_credit"] is None
+    assert result["junit_test_cases_executed"] == 2
+    assert result["junit_test_cases_skipped"] == 0
 
 
 @pytest.mark.parametrize("which", ["coverage", "tests"])

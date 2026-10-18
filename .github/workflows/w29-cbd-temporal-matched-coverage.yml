@@ -1,0 +1,149 @@
+name: W29 CBD temporal fail-closed matched native coverage
+
+on:
+  pull_request:
+    paths:
+      - 'scripts/cbd_coverage_temporal_gate.py'
+      - 'tests/test_cbd_coverage_temporal_gate.py'
+      - 'tests/test_cbd_temporal_w29_adversarial.py'
+      - 'tests/test_cbd_w29_matched_compare.py'
+      - 'tools/recovery/w29_temporal_native_compare.py'
+      - '.github/workflows/w29-cbd-temporal-matched-coverage.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  w29-measure:
+    name: W29 ${{ matrix.os }} Python ${{ matrix.python }} matched branch evidence
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 25
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: ubuntu-latest
+            python: '3.10'
+          - os: ubuntu-latest
+            python: '3.11'
+          - os: ubuntu-latest
+            python: '3.12'
+          - os: windows-latest
+            python: '3.11'
+    steps:
+      - name: Checkout source-owned exact head
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+      - name: Set up exact matrix Python version
+        uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97
+        with:
+          python-version: ${{ matrix.python }}
+      - name: Verify checkout, runtime and source identity
+        shell: bash
+        env:
+          EXPECTED_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+          EXPECTED_PYTHON: ${{ matrix.python }}
+        run: |
+          test "$(git rev-parse HEAD)" = "$EXPECTED_SHA"
+          python -c "import os,sys; expected=tuple(map(int,os.environ['EXPECTED_PYTHON'].split('.'))); assert sys.version_info[:2]==expected, (sys.version,expected)"
+          test -f scripts/cbd_coverage_temporal_gate.py
+      - name: Install source-owned focused test tools
+        shell: bash
+        run: |
+          python -m pip install pytest==9.1.1 coverage==7.16.2 numpy==1.26.4
+          python -m pip install defusedxml==0.7.1 PyYAML==6.0.3 tomli==2.2.1
+      - name: Prove comparator rejects forged/stale native artifacts
+        shell: bash
+        run: |
+          python -m pytest -q tests/test_cbd_w29_matched_compare.py \
+            --junitxml=w29-comparator-junit.xml
+      - name: Measure original temporal test suite at identical head
+        shell: bash
+        run: |
+          python -m coverage erase
+          python -m coverage run --branch --source=scripts.cbd_coverage_temporal_gate -m pytest -q \
+            tests/test_cbd_coverage_temporal_gate.py \
+            --junitxml=w29-baseline-junit.xml
+          python -m coverage json -o w29-baseline-coverage.json
+      - name: Measure expanded temporal adversarial suite at identical head
+        shell: bash
+        run: |
+          python -m coverage erase
+          python -m coverage run --branch --source=scripts.cbd_coverage_temporal_gate -m pytest -q \
+            tests/test_cbd_coverage_temporal_gate.py \
+            tests/test_cbd_temporal_w29_adversarial.py \
+            --junitxml=w29-expanded-junit.xml
+          python -m coverage json -o w29-expanded-coverage.json
+      - name: Fail closed on JUnit provenance, stale evidence or false uplift
+        shell: bash
+        env:
+          EXPECTED_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+        run: |
+          python tools/recovery/w29_temporal_native_compare.py \
+            --before-cov w29-baseline-coverage.json \
+            --after-cov w29-expanded-coverage.json \
+            --before-junit w29-baseline-junit.xml \
+            --after-junit w29-expanded-junit.xml \
+            --exact-head "$EXPECTED_SHA" \
+            --out w29-matched-coverage.json
+      - name: Source/run/attempt/OS/Python SHA256 evidence manifest
+        shell: bash
+        env:
+          EXPECTED_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+          CELL_OS: ${{ matrix.os }}
+          CELL_PYTHON: ${{ matrix.python }}
+        run: |
+          python - <<'PY'
+          import hashlib
+          import json
+          import os
+          from pathlib import Path
+          from subprocess import check_output
+          assert check_output(["git", "rev-parse", "HEAD"], text=True).strip() == os.environ["EXPECTED_SHA"]
+          required = [
+              "w29-comparator-junit.xml", "w29-baseline-junit.xml",
+              "w29-expanded-junit.xml", "w29-baseline-coverage.json",
+              "w29-expanded-coverage.json", "w29-matched-coverage.json",
+              "scripts/cbd_coverage_temporal_gate.py",
+          ]
+          hashes = {}
+          for item in required:
+              data = Path(item).read_bytes()
+              assert data, "missing/empty native evidence: " + item
+              hashes[item] = hashlib.sha256(data).hexdigest()
+          result = json.loads(Path("w29-matched-coverage.json").read_text(encoding="utf-8"))
+          assert result["exact_head"] == os.environ["EXPECTED_SHA"]
+          assert result["merge_admission"] == "HOLD"
+          manifest = {
+              "schema": "abacus.w29.exact-native-evidence.v1",
+              "exact_head": os.environ["EXPECTED_SHA"],
+              "github_run_id": os.environ["GITHUB_RUN_ID"],
+              "github_run_attempt": os.environ["GITHUB_RUN_ATTEMPT"],
+              "matrix_os": os.environ["CELL_OS"],
+              "matrix_python": os.environ["CELL_PYTHON"],
+              "sha256": hashes,
+              "job_numeric_id": None,
+              "main_coverage_delta": None,
+              "pr_diff_coverage_delta": None,
+              "merge_admission": "HOLD",
+              "security_waiver": False,
+              "authority_transfer": False,
+          }
+          Path("w29-evidence-manifest.json").write_text(
+              json.dumps(manifest, indent=2, sort_keys=True) + "\n",
+              encoding="utf-8",
+          )
+          PY
+      - name: Upload complete per-cell native and negative proof
+        if: always()
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9
+        with:
+          name: w29-${{ matrix.os }}-py${{ matrix.python }}-${{ github.run_id }}-a${{ github.run_attempt }}-${{ github.event.pull_request.head.sha || github.sha }}
+          path: |
+            w29-*-junit.xml
+            w29-*-coverage.json
+            w29-evidence-manifest.json
+          if-no-files-found: error
