@@ -110,8 +110,11 @@ def changed_files() -> List[Path]:
             break
         failed_ranges.append(" ".join(diff_range))
     else:
-        print("Unable to determine changed files. Tried: " + ", ".join(failed_ranges))
-        return []
+        # A failed Git comparison is not evidence of zero changed documents.
+        # Propagate the failure to main() so CI cannot report a false green.
+        raise RuntimeError(
+            "Unable to determine changed files. Tried: " + ", ".join(failed_ranges)
+        )
 
     paths: List[Path] = []
     for line in result.stdout.splitlines():
