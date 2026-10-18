@@ -292,6 +292,12 @@
       "disposition": "keep"
     },
     {
+      "pattern": "^post-merge-summary-contract\\.yml$",
+      "cluster": "automation",
+      "lifecycle": "pr_domain",
+      "disposition": "keep"
+    },
+    {
       "pattern": "^branch-hygiene\\.yml$",
       "cluster": "automation",
       "lifecycle": "manual",
