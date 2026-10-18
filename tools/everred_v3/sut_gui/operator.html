@@ -35,7 +35,7 @@
 <div class="actions"><button id="preview">1. Produce dry-run plan</button><button id="execute" class="primary" disabled>2. Execute / schedule approved plan</button><button id="refresh">Refresh records</button></div>
 <p class="muted small" id="hint" aria-live="polite">Execution disabled until the operator service is configured and an exact-head plan is produced.</p>
 <h3>Execution plan / I/O contract</h3><pre id="plan" role="log">Select a registered profile and click “Produce dry-run plan”.</pre>
-<h3>Latest native-local receipt</h3><pre id="detail" role="log">No local task selected.</pre>
+<h3>Latest native-local receipt</h3><pre id="detail" role="log">No local task selected.</pre><div id="downloads" class="actions" aria-label="Hash-verified generated artifact downloads"></div>
 </section>
 <aside class="panel" aria-labelledby="catalog-title">
 <h2 id="catalog-title">02 · Execution taxonomy</h2>
@@ -99,7 +99,25 @@ async function execute(){
   }catch(e){show('hint','Execution rejected: '+e.message)}
 }
 async function inspect(id){
-  try{selectedRun=id;const x=await get('/api/operator/runs/'+encodeURIComponent(id));show('detail',JSON.stringify(x,null,2))}catch(e){show('hint','Readback unavailable: '+e.message)}
+  try{
+    selectedRun=id;const x=await get('/api/operator/runs/'+encodeURIComponent(id));
+    show('detail',JSON.stringify(x,null,2));
+    const buttons=el('downloads');buttons.replaceChildren();
+    (x.artifacts||[]).forEach((art,index)=>{
+      const btn=document.createElement('button');
+      btn.textContent='Download verified '+art.path+' ('+art.bytes+' bytes)';
+      btn.addEventListener('click',async()=>{
+        try{
+          const rsp=await fetch('/api/operator/artifacts/'+encodeURIComponent(id)+'/'+index,{headers:{'X-SUT-Token':el('token').value},cache:'no-store'});
+          if(!rsp.ok)throw Error('artifact HTTP '+rsp.status);
+          const url=URL.createObjectURL(await rsp.blob());
+          const a=document.createElement('a');a.href=url;a.download=art.path.split('/').pop();
+          a.click();setTimeout(()=>URL.revokeObjectURL(url),1000);
+        }catch(e){show('hint','Verified artifact unavailable: '+e.message)}
+      });
+      buttons.append(btn);
+    });
+  }catch(e){show('hint','Readback unavailable: '+e.message)}
 }
 async function cancel(id){try{await post('/api/operator/cancel',{id},true);show('hint','Pre-start task cancelled');await refresh()}catch(e){show('hint','Cancel refused: '+e.message)}}
 async function refresh(){
