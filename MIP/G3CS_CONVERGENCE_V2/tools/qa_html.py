@@ -1,12 +1,14 @@
 #!/usr/bin/env python3
 """Offline three-viewport browser QA with source and screenshot hashes."""
-from pathlib import Path
 import hashlib
 import json
 import os
 import re
 import shutil
+from pathlib import Path
+
 from playwright.sync_api import sync_playwright
+
 from converge import digest
 
 root=Path(__file__).resolve().parents[1]
