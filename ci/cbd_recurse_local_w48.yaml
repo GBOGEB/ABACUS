@@ -1,0 +1,15 @@
+schema: cbd.recurse.local-manifest.v1
+segments:
+  - python
+  - javascript
+  - yaml
+  - taskrunner
+  - security
+  - governance
+  - federation
+  - coverage
+pool_capacities:
+  python: 1
+  node: 1
+  io: 1
+wave_limit: 3
