@@ -3,6 +3,7 @@
 from __future__ import annotations
 import argparse
 import hashlib
+import importlib.util
 import json
 import os
 import re
@@ -21,9 +22,14 @@ from urllib.parse import urlsplit
 from uuid import uuid4
 
 APP = Path(__file__).resolve().parent
-if str(APP) not in sys.path:
-    sys.path.insert(0, str(APP))
-from operator_workbench import OperatorWorkbench
+_OPERATOR_SPEC = importlib.util.spec_from_file_location(
+    "codepurple_operator_workbench", APP / "operator_workbench.py"
+)
+if _OPERATOR_SPEC is None or _OPERATOR_SPEC.loader is None:
+    raise RuntimeError("Local operator module is unavailable")
+_OPERATOR_MODULE = importlib.util.module_from_spec(_OPERATOR_SPEC)
+_OPERATOR_SPEC.loader.exec_module(_OPERATOR_MODULE)
+OperatorWorkbench = _OPERATOR_MODULE.OperatorWorkbench
 
 WORKFLOWS = {
     "model-preflight": [["-m", "unittest", "discover", "-s", "tests", "-p", "test_model_readiness.py", "-q"]],
