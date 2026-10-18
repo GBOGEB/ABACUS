@@ -239,5 +239,89 @@ class PlannerBoundaryMutantSensitivity(unittest.TestCase):
                     planner.compare(x, wrong)
 
 
+
+class W43ProvenanceMutationGuards(unittest.TestCase):
+    def test_duplicate_manifest_keys_do_not_become_green(self):
+        with tempfile.TemporaryDirectory() as directory:
+            target = Path(directory) / "python-3.12-proof.json"
+            checks = dict(matrix.EXPECTED["3.12"])
+            checks["artifact_upload"] = "EXECUTED_PASS"
+            valid = json.dumps({
+                "exact_sha": SHA, "python_version": "3.12",
+                "proof_role": "sentinel", "checks": checks,
+            })
+            top_level_duplicate = (
+                '{"exact_sha":"' + SHA + '","exact_sha":"' + SHA
+                + '","python_version":"3.12","proof_role":"sentinel",'
+                + '"checks":' + json.dumps(checks) + '}'
+            )
+            nested_duplicate = valid.replace(
+                '"artifact_upload": "EXECUTED_PASS"',
+                '"artifact_upload": "EXECUTED_PASS", '
+                '"artifact_upload": "EXECUTED_PASS"',
+            )
+            self.assertEqual(len(valid.split('"artifact_upload"')), 2)
+            self.assertNotEqual(top_level_duplicate, valid)
+            self.assertNotEqual(nested_duplicate, valid)
+            target.write_text(valid, encoding="utf-8")
+            self.assertEqual(
+                matrix.audit(Path(directory), "sentinel", "3.10", SHA)["status"],
+                "PASS",
+            )
+            for payload in (top_level_duplicate, nested_duplicate):
+                with self.subTest(payload=payload[:30]):
+                    target.write_text(payload, encoding="utf-8")
+                    result = matrix.audit(Path(directory), "sentinel", "3.10", SHA)
+                    self.assertEqual(result["status"], "FAIL")
+                    self.assertIn(
+                        "3.12:INVALID_SUMMARY:ValueError", result["errors"],
+                    )
+
+    def test_verified_first_red_cannot_be_rewritten_at_same_attempt(self):
+        prior = snapshot(observation())
+        for change in ("root_signature", "kind", "removed"):
+            with self.subTest(change=change):
+                candidate = copy.deepcopy(prior)
+                if change == "removed":
+                    candidate["observations"][0]["first_red"] = None
+                elif change == "kind":
+                    candidate["observations"][0]["first_red"]["kind"] = "security"
+                else:
+                    candidate["observations"][0]["first_red"]["root_signature"] = "new-root"
+                with self.assertRaisesRegex(
+                    ValueError, "verified first-red cannot be replaced",
+                ):
+                    planner.compare(prior, candidate)
+                # The same changed evidence on an independently numbered
+                # native run attempt is retained as a new observation.
+                candidate["observations"][0]["attempt"] = 2
+                event = planner.compare(prior, candidate)
+                self.assertEqual(event[0]["event"], "NEW_ATTEMPT")
+
+    def test_first_red_discovery_on_same_attempt_is_separate_from_rewrite(self):
+        prior = snapshot(observation())
+        prior["observations"][0]["first_red"] = None
+        updated = snapshot(observation())
+        change = planner.compare(prior, updated)
+        self.assertEqual(change[0]["event"], "FIRST_RED_UPDATED")
+        self.assertEqual(change[0]["allowed_downstream_action"], "RECHECK_ONLY")
+
+    def test_multi_root_rerun_budget_monotonicity(self):
+        rows = [observation(7001, 2284, root="root-A"),
+                observation(7002, 2285, root="root-B"),
+                observation(7003, 2286, root="root-C")]
+        x = snapshot(*rows)
+        for budget in (0, 1, 2, 3, 4):
+            with self.subTest(budget=budget):
+                x["capacity"]["max_new_reruns"] = budget
+                result = planner.plan(x)
+                self.assertEqual(result["proposed_reruns"], min(budget, 3))
+                self.assertTrue(all(not row["executed"]
+                                    for row in result["proposals"]))
+                self.assertTrue(all(not row["merge_authorized"]
+                                    for row in result["proposals"]))
+
+
+
 if __name__ == "__main__":
     unittest.main()
