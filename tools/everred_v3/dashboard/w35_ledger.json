@@ -25,14 +25,23 @@
       2282,
       2283
     ],
-    "current_main_native_B0_queued_at_readback": 39164360709
+    "current_main_native_B0_queued_at_readback": 39164360709,
+    "requirement_readback": "2026-10-18 API_READBACK",
+    "red_canary_required": true,
+    "current_main_B0_verified_at_W46": {
+      "run_id": 39170902976,
+      "attempt": 1,
+      "success_jobs": 13,
+      "total_jobs": 13,
+      "sha": "2687f2bcb0705027eefe04df789365d6c9970678"
+    }
   },
   "repositories": [
     {
       "repo": "ABACUS",
       "default_branch": "main",
-      "sha": "2246c7bd3a9bda6a3d43b9a9116cb7088cfbcc88",
-      "level": "HEAD_OBSERVED"
+      "sha": "2687f2bcb0705027eefe04df789365d6c9970678",
+      "level": "EXACT_HEAD_B0_NATIVE_JOBS_TERMINAL_AND_ZIP_BYTES_VERIFIED"
     },
     {
       "repo": "CODEX",
@@ -128,7 +137,7 @@
         196
       ],
       "eligible_per_cell": 200,
-      "delta_pp_per_cell": 46.0,
+      "delta_pp_per_cell": 46,
       "code_global_coverage": null
     },
     "w38_focused": {
@@ -239,8 +248,16 @@
     }
   },
   "coverage": {
-    "current_main_lines": null,
-    "current_main_branches": null,
+    "current_main_lines": {
+      "covered": 7779,
+      "eligible": 22456,
+      "percent": 34.641076
+    },
+    "current_main_branches": {
+      "covered": 1651,
+      "eligible": 5558,
+      "percent": 29.70493
+    },
     "pr_changed_executable_lines": null,
     "main_matched_delta": null,
     "historical_ranked_paths": 40,
@@ -254,7 +271,23 @@
       "previous_covered": 660,
       "delta_pp": 6.500692,
       "broad_main_credit": null
-    }
+    },
+    "current_main_combined": {
+      "covered": 9430,
+      "eligible": 28014,
+      "percent": 33.661741
+    },
+    "current_main_measurement_class": "SHA_BOUND_NATIVE_B0_FULL_MEASUREMENT_BYTE_VERIFIED",
+    "current_main_matched_pr_delta": null,
+    "current_main_delta_to_older_scopes": null,
+    "w46_verifier_fixed_source": {
+      "baseline_covered": 120,
+      "after_covered": 127,
+      "eligible": 127,
+      "delta_pp": 5.511811,
+      "local_only": true
+    },
+    "w46_ranked_scanning_url": "https://github.com/GBOGEB/ABACUS/tree/test/cbd-w46-disjoint-native-gap-census-20261019/tools/recovery"
   },
   "scheduler": {
     "current_scale_decision": "HOLD_GOVERNANCE_AND_QUEUED_CURRENT_MAIN_B0",
@@ -298,11 +331,11 @@
     "handover_w34": "https://github.com/GBOGEB/ABACUS/tree/ecaaaa8c36edab002a6b2841e69d76213ec30d5a/handover/code_purple_w34_20261018"
   },
   "readonly": true,
-  "native_artifact_sha256_verified": false,
+  "native_artifact_sha256_verified": "THREE_EXACT_SHA_BOUND_B0_ZIPS_W46_ONLY",
   "human_review_approved": false,
   "formal_root_closure": null,
   "baseline_main_sha": "994ad6e73c748923841d92b12651e92d41b2d4ff",
-  "main_sha": "2246c7bd3a9bda6a3d43b9a9116cb7088cfbcc88",
+  "main_sha": "2687f2bcb0705027eefe04df789365d6c9970678",
   "w35_live_transition": {
     "main_sha": "2246c7bd3a9bda6a3d43b9a9116cb7088cfbcc88",
     "base_sha": "994ad6e73c748923841d92b12651e92d41b2d4ff",
@@ -330,6 +363,54 @@
     "coverage_delta": null,
     "effective_rules_required_approvals": 0,
     "effective_rules_status_check_rules": 0,
-    "always_bypass_actors": 6
+    "always_bypass_actors": 6,
+    "evidence_class": "HISTORICAL_W35_DO_NOT_OVERRIDE_WITH_W46"
+  },
+  "readback_mixed_epochs": true,
+  "w46": {
+    "source_sha": "2687f2bcb0705027eefe04df789365d6c9970678",
+    "classification": "EXACT_MAIN_B0_BOUNDED_BYTE_VERIFICATION_AND_LOCAL_W46_TEST_QA",
+    "run_id": 39170902976,
+    "attempt": 1,
+    "canonical_job_id": 117803544289,
+    "workflow_jobs_success": 13,
+    "workflow_jobs_total": 13,
+    "artifact_digests": {
+      "12152488350": "5bfe091ca1150d22664574b9d33843e445227b05255eb2ed576a27c135cc61d1",
+      "12152671934": "54d79a3ff5e25b6698a02e792b3a299cf35ce7fc24bfb4a1189486fffe805301",
+      "12152970363": "3e51193b5e3e41aa946b81b0580c92ed38d399cf6857a0da59a811420b4ab7c8"
+    },
+    "artifact_bytes_match_provider_sha256": true,
+    "canonical_pytest_outcomes": {
+      "pass": 5155,
+      "skip": 3,
+      "fail": 0,
+      "collected": 5158,
+      "blocked_source_missing": 1
+    },
+    "local_archive_verifier": {
+      "baseline": 120,
+      "expanded": 127,
+      "eligible": 127,
+      "pp_gain": 5.511811,
+      "baseline_tests": 18,
+      "expanded_tests": 45,
+      "added_tests": 27,
+      "source_blob": "3c1249dc54e74ab0cb0f4ea3ebebe216ad2c650a",
+      "native_w46_terminal": null
+    },
+    "source_census": {
+      "measured_paths": 223,
+      "zero_executed_paths": 114,
+      "uncovered_opportunities": 18584,
+      "top6_potential_opportunities": 1768,
+      "top6_gain_predicted": null,
+      "local_negative_tests_pass": 16,
+      "local_negative_tests_total": 16
+    },
+    "yellow_denominator_gap": "RESOLVED_ON_2687F2_B0_ONLY",
+    "yellow_global_target": "OPEN",
+    "red_governance": "OPEN",
+    "merge_admission": "HOLD"
   }
 }
