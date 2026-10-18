@@ -310,6 +310,29 @@ def collect(client: Client, baseline: dict, now: str | None = None, artifact_dow
                     state["coverage"]["measured"] = outcome
         # No upload/receipt means no accepted new measurement; preserve prior measured SHA.
 
+    # New source-family scouting is observational and never authorizes coding.
+    # Even when blob SHA is unchanged, historic coverage remains a historic B0.
+    try:
+        frontier = json.loads((HERE / "source_frontier.json").read_text(encoding="utf-8"))
+        state["source_frontier"] = {"coverage_observed_main_sha":frontier.get("coverage_observed_main_sha"),
+                                    "blob_recheck_main_sha":original, "candidates":[]}
+        for item in frontier.get("candidates", []):
+            source = item.get("paths", [None])[0]
+            if not isinstance(source,str) or ".." in source.split("/") or not source.startswith("tools/"):
+                continue
+            path = f"/repos/{REPO}/contents/{source}?ref={original}"
+            blob = safe("source_blob_"+source, lambda path=path: client.get(path))
+            state["source_frontier"]["candidates"].append({
+                "family":item.get("family"), "path":source,
+                "expected_blob":item.get("blob_sha"),
+                "observed_blob":blob.get("sha") if isinstance(blob,dict) else None,
+                "status":"UNCHANGED_SOURCE_BLOB_ONLY_COVERAGE_STALE"
+                    if isinstance(blob,dict) and blob.get("sha")==item.get("blob_sha")
+                    else "BLOB_CHANGED_OR_UNKNOWN_NO_COVERAGE_CREDIT",
+                "coverage_current_main_accepted":None,
+            })
+    except (OSError, ValueError, TypeError) as e:
+        state["source_frontier"]={"status":"SOURCE_FRONTIER_UNAVAILABLE", "reason":str(e)[:100]}
     # A->B->A protection. Source move invalidates a newly collected current-main proof.
     final = ref()
     state["main"]["head_stable"] = final == original

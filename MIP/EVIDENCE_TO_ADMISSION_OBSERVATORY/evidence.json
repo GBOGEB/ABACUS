@@ -532,5 +532,35 @@
     "root_census_owner": "https://github.com/GBOGEB/ABACUS/issues/1929",
     "admission_owner": "https://github.com/GBOGEB/ABACUS/issues/1860",
     "dispatch_owner": "https://github.com/GBOGEB/CODEX/issues/977"
+  },
+  "source_frontier": {
+    "coverage_observed_main_sha": "97a8b13faff577272a90edaf0dd4593035e10605",
+    "blob_recheck_main_sha": "9e0200190555736c74295ee74881e3c003e8a35c",
+    "candidates": [
+      {
+        "family": "W75_STABILITY_DIAGNOSTIC",
+        "path": "tools/w75_stability_diagnostic.py",
+        "expected_blob": "ec7608c52c4ac4717dd5ee5c904764ff5c341172",
+        "observed_blob": "ec7608c52c4ac4717dd5ee5c904764ff5c341172",
+        "status": "UNCHANGED_SOURCE_BLOB_AT_HISTORICAL_RECHECK",
+        "coverage_current_main_accepted": null
+      },
+      {
+        "family": "W81_REPAIR_OUTCOME_BLOCK",
+        "path": "tools/w81_repair_outcome_block.py",
+        "expected_blob": "76a9055cfa50c64bbfa95e7ae9418c9507c4cc02",
+        "observed_blob": "76a9055cfa50c64bbfa95e7ae9418c9507c4cc02",
+        "status": "UNCHANGED_SOURCE_BLOB_AT_HISTORICAL_RECHECK",
+        "coverage_current_main_accepted": null
+      },
+      {
+        "family": "W64_CENSUS_REVERSE_PRESSURE",
+        "path": "tools/w64_census_reverse_pressure_v2.py",
+        "expected_blob": "1fcc07b6b4c13501e2d0ab08083cc1c9d8905f1f",
+        "observed_blob": "1fcc07b6b4c13501e2d0ab08083cc1c9d8905f1f",
+        "status": "UNCHANGED_SOURCE_BLOB_AT_HISTORICAL_RECHECK",
+        "coverage_current_main_accepted": null
+      }
+    ]
   }
 }

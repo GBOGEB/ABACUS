@@ -101,3 +101,30 @@ reported 3.365 -> 0.962 coverage-point gain per wave is a **descriptive
 interval-normalized** deceleration, not a runtime speed or probabilistic trend.
 No root ASH credit, admission or CODEX remote dispatch can be granted by this
 pacing algorithm, even when all technical receipts are green.
+
+## W28: newly measured larger-slice frontier (source candidates, not credited uplift)
+
+The older canonical-main B0 artifact at SHA
+`97a8b13faff577272a90edaf0dd4593035e10605` (run 39142444027,
+artifact 12142730864) has 52,200 combined eligible opportunities. Three
+non-overlapping candidate modules have exactly 508 eligible/374 uncovered:
+
+- `tools/w75_stability_diagnostic.py`: 161 of 221 uncovered.
+- `tools/w81_repair_outcome_block.py`: 114 of 162 uncovered.
+- `tools/w64_census_reverse_pressure_v2.py`: 99 of 125 uncovered.
+
+The three Git object blobs were verified byte-identical at subsequent main
+`9e0200190555736c74295ee74881e3c003e8a35c`, but main moves frequently.
+`source_frontier.json` fixes observed SHA, blob and run identities and may not
+be relabelled current without a fresh source readback. The bounded *conditional*
+contribution to the frozen 52,200-opportunity denominator is 374/52,200 =
+**0.7165 percentage points** if every old uncovered opportunity were to be
+covered with no regressions; it is **not** a forecast or an accepted global
+diff/main uplift. Source churn, altered eligibility and configuration invalidate
+the arithmetic extrapolation. The `census.py` observer now rechecks blobs at
+its own exact-head source snapshot; missing/changed SHA leaves coverage UNKNOWN.
+
+These 3 modules are scouts, not automatically qualified production priorities.
+Only source owners may prove their runtime relevance and license a separate
+reviewed testflight. Higher-ranked first-red candidates must keep root and
+security evidence segregated; CHAR/ASH transitions require independent closure.

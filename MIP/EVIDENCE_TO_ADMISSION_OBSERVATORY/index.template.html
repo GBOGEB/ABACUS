@@ -78,6 +78,8 @@ main{padding:14px 11px 35px}h1{font-size:24px}.statusbar,.buttonset{justify-cont
 <div class="sectionHead"><h2 id="waveTitle">04A / Matched wave progression and adaptive scale</h2><span class="chip wait" id="scaleChip">EVIDENCE-BOUND</span></div>
 <p class="subtitle">Same two W007 modules and 208 counted statement/branch opportunities. Gold bars show the <strong>remaining uncovered count</strong> (0-based, not percentage). N+1 / N+3 / N+4 are uneven wave intervals; rate comparison is normalized per wave, not per hour.</p>
 <div class="wavePulseGrid" id="wavePulseCards" aria-live="polite"></div>
+<div class="small muted" style="margin:8px 0">Larger next-source candidates are observed from an older canonical B0 population; exact-current-main blob and coverage requalification is mandatory.</div>
+<div class="scrolltable"><table><thead><tr><th>Ranked disjoint source</th><th>Uncovered / eligible</th><th>Conditional contribution to 52,200-denominator</th><th>Current source freshness</th></tr></thead><tbody id="frontierRows"></tbody></table></div>
 <div class="waveResults"><div>Gain-rate direction<strong id="gainDirection">UNKNOWN</strong></div><div>Read-only observation lanes<strong id="readonlyScale">UNKNOWN</strong></div><div>Next source slice<strong id="nextSliceLabel">UNKNOWN</strong></div></div>
 <p class="small muted" id="waveNarrative">Waves need exact-head native jobs, JUnit/coverage artifacts, and held governance boundaries.</p>
 <p class="small" id="waveProofLinks"></p>
@@ -143,6 +145,18 @@ function renderAdaptiveWave(){
  set('readonlyScale',Number.isInteger(policy.read_only_parallel_lanes_max)?policy.read_only_parallel_lanes_max+' / 3 max':'UNKNOWN');
  set('nextSliceLabel',progress.ceiling_reached?'New source cohort':'Uncovered W007 paths');
  set('scaleChip',policy.measurement_frontier_qualified?'NATIVE FRONTIER QUALIFIED':'NO MAIN SCALE PROMOTION');
+ const scout=e('frontierRows');scout.replaceChildren();
+ const candidates=receipt.source_frontier?.source_candidates||[];
+ const statusByPath=new Map((state.source_frontier?.candidates||[]).map(x=>[x.path,x]));
+ const total=receipt.source_frontier?.coverage_total_opportunities;
+ for(const x of candidates){const tr=document.createElement('tr'),path=x.paths?.[0],w=statusByPath.get(path);
+  const a=document.createElement('a');a.href='https://github.com/GBOGEB/ABACUS/blob/'+(x.source_sha||'main')+'/'+path;a.target='_blank';a.rel='noopener';a.textContent=x.family+' ↗';
+  let td=document.createElement('td');td.append(a);tr.append(td);
+  td=document.createElement('td');td.textContent=count(x.uncovered)+' / '+count(x.eligible);tr.append(td);
+  td=document.createElement('td');td.textContent=Number.isInteger(x.uncovered)&&Number.isInteger(total)&&total>0?fmt(100*x.uncovered/total,4)+' pp maximum, conditional':'UNKNOWN';tr.append(td);
+  td=document.createElement('td');td.textContent=w?.status||'RECHECK UNKNOWN';tr.append(td);scout.append(tr);
+ }
+
  const last=pulse[pulse.length-1]||{};
  const gaps=(policy.measurement_blockers||[]).join(', ')||'no measurement blockers';
  set('waveNarrative','Observed W007 gap '+pulse.map(p=>count(p.uncovered)).join(' → ')+' opportunities. '+(Number.isInteger(last.uncovered)?'At '+count(last.uncovered)+' remaining, ':'')+'the next slice must target a different measured source population. Historical source gain is not a new main/diff uplift. Measurement scaling blocked by: '+gaps+'.');

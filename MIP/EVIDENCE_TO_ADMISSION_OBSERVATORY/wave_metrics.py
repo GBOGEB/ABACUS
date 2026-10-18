@@ -270,10 +270,25 @@ def adaptive_slice_policy(snapshot: dict, progress: dict) -> dict:
 def build_wave_receipt(snapshot: dict, history: dict) -> dict:
     progress = matched_progress(history.get("observations"))
     policy = adaptive_slice_policy(snapshot, progress)
+    try:
+        frontier_doc = json.loads((ROOT / "source_frontier.json").read_text(encoding="utf-8"))
+        frontier_rank = rank_source_slices(frontier_doc.get("candidates", []))
+        source_frontier = {
+            "coverage_observed_main_sha": frontier_doc.get("coverage_observed_main_sha"),
+            "source_blob_recheck_main_sha": frontier_doc.get("independent_blob_recheck_main_sha"),
+            "coverage_total_opportunities": frontier_doc.get("coverage_total_opportunities"),
+            "source_candidates": frontier_doc.get("candidates"),
+            "ranked": frontier_rank,
+            "arithmetic_max_contribution_pp": frontier_doc.get("arithmetic_max_contribution_pp_on_frozen_52200_denominator"),
+            "current_main_candidate_freshness": "NEEDS_EXACT_CURRENT_HEAD_BLOB_RECHECK",
+            "qualified_current_main_coverage_uplift": None,
+        }
+    except (OSError, ValueError, TypeError, ProofError) as e:
+        source_frontier = {"status":"CANDIDATE_PROOF_UNAVAILABLE", "error":str(e)[:100], "source_candidates":None}
     return {"schema": "codepurple.adaptive_wave_receipt.v1",
             "main_sha": snapshot.get("main", {}).get("sha"),
             "current_main_coverage_sha": (snapshot.get("coverage", {}).get("measured") or {}).get("sha"),
-            "historical_focus": progress, "scale_policy": policy,
+            "historical_focus": progress, "scale_policy": policy, "source_frontier":source_frontier,
             "root_census_owner": "https://github.com/GBOGEB/ABACUS/issues/1929",
             "admission_owner": "https://github.com/GBOGEB/ABACUS/issues/1860",
             "dispatch_owner": "https://github.com/GBOGEB/CODEX/issues/977"}

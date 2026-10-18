@@ -37,6 +37,10 @@ class FakeClient:
             return {'body': '- [ ] pending\n- [ ] blocked'}
         if path.endswith('/issues/1929'):
             return {'state': 'open'}
+        if '/contents/tools/' in path:
+            front=json.loads((ROOT/'source_frontier.json').read_text())
+            found=next((x for x in front['candidates'] if x['paths'][0] in path),None)
+            return {'sha':found['blob_sha'] if found else 'unmatched'}
         if '/search/issues' in path:
             if self.missing_counts and 'closed' in path:
                 raise census.CensusError('simulated rate limit')
@@ -95,6 +99,21 @@ class CensusTests(unittest.TestCase):
         self.assertEqual(wave['historical_focus']['gain_rate_trend'],'DECELERATING_GAIN')
         self.assertEqual(wave['scale_policy']['read_only_parallel_lanes_max'],1)
         self.assertIsNone(wave['scale_policy']['governed_merge_credit'])
+
+    def test_source_scout_does_not_infer_current_coverage(self):
+        d=census.collect(FakeClient(),self.baseline)
+        rows=d['source_frontier']['candidates']
+        self.assertEqual(len(rows),3)
+        self.assertTrue(all(r['status']=='UNCHANGED_SOURCE_BLOB_ONLY_COVERAGE_STALE' for r in rows))
+        self.assertTrue(all(r['coverage_current_main_accepted'] is None for r in rows))
+
+    def test_scout_rank_has_three_independent_paths(self):
+        import wave_metrics
+        doc=json.loads((ROOT/'source_frontier.json').read_text())
+        p=wave_metrics.rank_source_slices(doc['candidates'])
+        self.assertEqual(len(p['qualified_readonly_candidates']),3)
+        self.assertEqual(sum(x['uncovered'] for x in p['qualified_readonly_candidates']),374)
+        self.assertFalse(p['source_write_permitted'])
 
     def test_valid_sha_requires_exact_full_hash(self):
         self.assertEqual(census.check_sha(SHA_A),SHA_A)
