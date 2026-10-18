@@ -280,9 +280,12 @@ def semantic_validate(s: dict, raw_base: Path) -> None:
             raise ValueError("Comparison cannot compare identical metric ID")
     for g in gates.values():
         st = g["status"]
-        if g["run_id"] is not None and g["evidence_ids"]:
-            if not any(evidence[i]["run_id"]==g["run_id"] for i in g["evidence_ids"]):
-                raise ValueError("Gate run ID disagrees with cited evidence: " + g["id"])
+        if (
+            g["run_id"] is not None
+            and g["evidence_ids"]
+            and not any(evidence[i]["run_id"] == g["run_id"] for i in g["evidence_ids"])
+        ):
+            raise ValueError("Gate run ID disagrees with cited evidence: " + g["id"])
         if st == "PASS":
             if not g["source_sha"]:
                 raise ValueError("PASS gate lacks source SHA: " + g["id"])
@@ -611,8 +614,8 @@ def build(args):
             raise ValueError("Parent root does not match input lineage")
     elif s["snapshot"]["parent_manifest_root_sha256"]:
         raise ValueError("Parent root declared but --previous not supplied")
-    files,manifest=expected_files(input_path,script_dir,input_path.parent,parent_s,
-                                  parent_m if args.previous else None)
+    files,_manifest=expected_files(input_path,script_dir,input_path.parent,parent_s,
+                                   parent_m if args.previous else None)
     if out.exists() and any(out.iterdir()) and not args.replace:
         raise ValueError("Output directory already populated; use --replace intentionally")
     if out.exists() and args.replace:
