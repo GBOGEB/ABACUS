@@ -246,6 +246,9 @@ def main():
     parser.add_argument("--timing-log", type=Path)
     parser.add_argument("--timing-tests-log", type=Path)
     parser.add_argument("--telemetry-tests-log", type=Path, required=True)
+    parser.add_argument("--recovery-tests-log", type=Path)
+    parser.add_argument("--runner-wait-tests-log", type=Path)
+    parser.add_argument("--require-penetration-suites", action="store_true")
     parser.add_argument("--require-case-ids", action="store_true")
     parser.add_argument("--source-sha", required=True)
     parser.add_argument("--event-sha", required=True)
@@ -262,6 +265,14 @@ def main():
     }
     if args.timing_tests_log:
         logs["timing"] = args.timing_tests_log.read_text()
+    if args.recovery_tests_log:
+        logs["recovery_triage"] = args.recovery_tests_log.read_text()
+    if args.runner_wait_tests_log:
+        logs["runner_wait"] = args.runner_wait_tests_log.read_text()
+    if args.require_penetration_suites and not {
+        "recovery_triage", "runner_wait"
+    } <= set(logs):
+        parser.error("MCL penetration logs missing; refuse native credit")
     old = json.loads(args.baseline.read_text()) if args.baseline else None
     phases = json.loads(args.timing_log.read_text()) if args.timing_log else None
     pulse = build(
@@ -270,6 +281,11 @@ def main():
     )
     if args.require_case_ids and pulse["test_id_status"] != "COMPLETE":
         parser.error("native case identities missing; refuse to emit pulse")
+    if args.require_penetration_suites:
+        for source in ("recovery_triage.py", "runner_wait.py"):
+            stats = pulse["per_file"].get("mission_control_lite/" + source)
+            if not stats or not stats["line_percent"] or not stats["branch_percent"]:
+                parser.error("unpenetrated measured source: " + source)
     args.output.write_text(json.dumps(pulse, indent=2, sort_keys=True) + "\n")
     if args.summary:
         with args.summary.open("a") as summary:

@@ -8,6 +8,8 @@ on:
       - 'tests/test_mission_control_lite_rex.py'
       - 'tests/test_mission_control_lite_coverage.py'
       - 'tests/test_mission_control_lite_timing.py'
+      - 'tests/test_recovery_triage.py'
+      - 'tests/test_runner_wait.py'
       - 'scripts/validate_changed_docs.py'
       - 'tests/test_validate_changed_docs_selector.py'
       - 'tests/test_bd_telemetry.py'
@@ -33,7 +35,8 @@ jobs:
           mkdir -p evidence
           python -m mission_control_lite.timing_pulse measure \
             --output evidence/phase-times.json --phase coverage-install -- \
-            python -m pip install --disable-pip-version-check coverage==7.10.7 'PyYAML>=6.0.3,<7.0'
+            python -m pip install --disable-pip-version-check \
+              coverage==7.10.7 'PyYAML>=6.0.3,<7.0'
           python -m mission_control_lite.timing_pulse measure \
             --output evidence/phase-times.json --phase core-tests -- \
             python -m coverage run --branch --source=mission_control_lite \
@@ -68,6 +71,20 @@ jobs:
             -p test_bd_telemetry.py -v \
             > evidence/telemetry-tests.log 2>&1
           python -m mission_control_lite.timing_pulse measure \
+            --output evidence/phase-times.json --phase recovery-tests -- \
+            python -m coverage run --append --branch \
+            --source=mission_control_lite \
+            -m unittest discover -s tests \
+            -p test_recovery_triage.py -v \
+            > evidence/recovery-tests.log 2>&1
+          python -m mission_control_lite.timing_pulse measure \
+            --output evidence/phase-times.json --phase runner-wait-tests -- \
+            python -m coverage run --append --branch \
+            --source=mission_control_lite \
+            -m unittest discover -s tests \
+            -p test_runner_wait.py -v \
+            > evidence/runner-wait-tests.log 2>&1
+          python -m mission_control_lite.timing_pulse measure \
             --output evidence/phase-times.json --phase coverage-json -- \
             python -m coverage json -o evidence/coverage.json
           python -m mission_control_lite.timing_pulse measure \
@@ -94,7 +111,9 @@ jobs:
             --metrics-log evidence/metrics-tests.log \
             --timing-tests-log evidence/timing-tests.log \
             --telemetry-tests-log evidence/telemetry-tests.log \
-            --require-case-ids \
+            --recovery-tests-log evidence/recovery-tests.log \
+            --runner-wait-tests-log evidence/runner-wait-tests.log \
+            --require-penetration-suites --require-case-ids \
             --timing-log evidence/phase-times.json \
             --source-sha "$SOURCE_SHA" --event-sha "$EVENT_SHA" \
             --run-id "$RUN_ID" --output evidence/coverage-pulse.json \
@@ -143,6 +162,15 @@ jobs:
             --output evidence/coverage-pulse.json \
             --output evidence/coverage.json \
             --output evidence/phase-times.json \
+            --output evidence/provenance.json \
+            --output evidence/coverage-summary.txt \
+            --output evidence/core-tests.log \
+            --output evidence/rex-tests.log \
+            --output evidence/metrics-tests.log \
+            --output evidence/timing-tests.log \
+            --output evidence/telemetry-tests.log \
+            --output evidence/recovery-tests.log \
+            --output evidence/runner-wait-tests.log \
             --receipt evidence/receipt.json
           python -m mission_control_lite.cli ingest evidence/receipt.json \
             --artifact-root . --db evidence/registry.sqlite
@@ -165,6 +193,8 @@ jobs:
             evidence/metrics-tests.log
             evidence/timing-tests.log
             evidence/telemetry-tests.log
+            evidence/recovery-tests.log
+            evidence/runner-wait-tests.log
             evidence/phase-times.json
           include-hidden-files: false
           if-no-files-found: error
