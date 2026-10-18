@@ -10,7 +10,7 @@
 - [Publication drift](./DRIFT_AT_PUBLICATION.md): observed newer main SHA and why the pinned snapshot is not live.
 
 ## Repeat from this wave
-The standalone W10 release bundle delivered with the session also contains the **Python renderer**, **read-only GitHub refresh collector**, test suite, SVG/DOT diagrams, browser QA receipt and archived screenshots. The exact executable scripts are packaged there; **they have not been published as executable code in this source-only PR**. Do not claim repository-native recursive execution from this HTML alone.
+W11 now commits the **Python renderer**, **read-only GitHub refresh collector**, W10/W11 regression suites, typed DAG/SIPOC contract, generated read-only JSON receipts and the root-level B0 discovery bridge. The standalone bundle retains browser QA sources and screenshots; its local reproducibility is **not** the same as native exact-head admission. The scripts are committed in this review branch; claim native qualification only after terminal exact-head CI, not from this HTML alone.
 
 From an extracted W10 bundle containing all source files in one directory:
 
@@ -28,3 +28,24 @@ Original source epochs in the HTML were verified separately. N−1→N workflow 
 Canonical issues: [ABACUS #1860](https://github.com/GBOGEB/ABACUS/issues/1860) and [CODEX #977](https://github.com/GBOGEB/CODEX/issues/977).
 
 **MERGE_ADMISSION=HOLD · SECURITY_WAIVER=false · AUTHORITY_TRANSFER=false**
+
+
+## W11 executable evidence contract and native-test bridge
+
+See [W11 lossless handover](./W11_HANDOVER.md), [typed DAG](./SPINE_DAG_W11.json),
+[five-row SIPOC](./SPINE_SIPOC_W11.json) and
+[fail-closed contract](./SPINE_CONTRACT_W11.json). Rebuild:
+
+```bash
+cd MIP/G3CS_CONVERGENCE_V2/observatory/w10
+python spine_contract.py --history W10_FROZEN_HISTORY.json --outdir .
+python build_global_spine_w10.py --history W10_FROZEN_HISTORY.json --outdir .
+python -m unittest discover -p 'test_*.py' -v
+```
+
+ABACUS root [canonical B0 collector bridge](https://github.com/GBOGEB/ABACUS/blob/docs/w10-global-spine-observatory-20261018/tests/test_g3cs_spine_w11_bridge.py)
+exposes the nested W7 postmerge cases and W10/W11 regressions as independent native JUnit test methods. Exact-head GitHub results and measurable coverage uplift remain pending. The workflow's mandatory security/Safety gate stays unchanged.
+
+W11 module **local scoped**: 177/177 covered statements and 26/26 covered arcs (100% source-local); this is not a measurement of full main. W10 issue and coverage numbers remain pinned to the historical source SHA until a new native-consistent epoch is added.
+
+`MERGE_ADMISSION=HOLD` / `SECURITY_WAIVER=false` / `AUTHORITY_TRANSFER=false`.
