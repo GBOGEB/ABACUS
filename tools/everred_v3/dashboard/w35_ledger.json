@@ -1,0 +1,335 @@
+{
+  "schema": "codepurple.w35.dashboard-ledger.v1",
+  "version": "1.0.0",
+  "classification": "HISTORICAL_W34_BASELINE_WITH_W35_LIVE_GITHUB_TRANSITION",
+  "observed_date": "2026-10-18",
+  "as_of_utc": null,
+  "non_atomic_api_readback": true,
+  "governed_source": "GBOGEB/ABACUS#1860",
+  "parent_receipt": "https://github.com/GBOGEB/ABACUS/issues/1860#issuecomment-6214640143",
+  "merge_admission": "HOLD",
+  "governance": {
+    "ruleset_id": 24494381,
+    "required_approval_count": 0,
+    "required_status_rules": 0,
+    "always_bypass_actors": 6,
+    "required_last_push_approval": false,
+    "required_thread_resolution": false,
+    "branch_protection_detail": null,
+    "rejected_red_canary": null,
+    "eligible_independent_human_approval": null,
+    "security_waiver": false,
+    "authority_transfer": false,
+    "w34_github_merged_without_submitted_human_review": [
+      2281,
+      2282,
+      2283
+    ],
+    "current_main_native_B0_queued_at_readback": 39164360709
+  },
+  "repositories": [
+    {
+      "repo": "ABACUS",
+      "default_branch": "main",
+      "sha": "2246c7bd3a9bda6a3d43b9a9116cb7088cfbcc88",
+      "level": "HEAD_OBSERVED"
+    },
+    {
+      "repo": "CODEX",
+      "default_branch": "main",
+      "sha": "774d51eb4a58fa259f059764e586d12a7935b2e1",
+      "level": "HEAD_OBSERVED"
+    },
+    {
+      "repo": "cryoplant-project",
+      "default_branch": "main",
+      "sha": "fc07545c3986181a1b837c0eb7ff9a8393fd4058",
+      "level": "HEAD_OBSERVED"
+    },
+    {
+      "repo": "pipeline-automation-hub",
+      "default_branch": "master",
+      "sha": "339bee59cf790498408be19e9c7deb092cc51738",
+      "level": "HEAD_OBSERVED"
+    },
+    {
+      "repo": "gg_MATH",
+      "default_branch": "main",
+      "sha": "6d5310280740e50fe7fbe45712ca62e2dee0c36b",
+      "level": "HEAD_OBSERVED"
+    }
+  ],
+  "cohorts": {
+    "abacus_open_ordinary_issues": {
+      "numerator": 38,
+      "denominator": 38,
+      "definition": "current open ordinary issue population, separate from PRs",
+      "source": "GitHub issues readback; Oct 18"
+    },
+    "abacus_open_prs": {
+      "numerator": 12,
+      "denominator": 12,
+      "definition": "current open pull request population, not root count",
+      "source": "GitHub pull list; Oct 18"
+    },
+    "w34_canonical_b0_jobs": {
+      "passed": 11,
+      "failed": 2,
+      "total": 13,
+      "run_id": 39159906022,
+      "run_attempt": 1,
+      "source_sha": "994ad6e73c748923841d92b12651e92d41b2d4ff",
+      "canonical_job": 117771668289,
+      "downstream_report_job": 117773239113,
+      "level": "NATIVE_EXACT_HEAD_TERMINAL_FAILED"
+    },
+    "w34_canonical_pytest": {
+      "passed": 3854,
+      "failed": 3,
+      "skipped": 1,
+      "total": 3858,
+      "result": "FAIL"
+    },
+    "w34_staged_lanes": {
+      "implemented": 3,
+      "eligible": 3,
+      "native_qualified": 0,
+      "accepted": 0,
+      "changed_paths": 7,
+      "local_synthetic_passed": 18,
+      "local_synthetic_total": 18,
+      "new_test_methods": 24,
+      "merged_gitHub_total": 3,
+      "governed_admitted": 0
+    },
+    "w34_push_overhead": {
+      "observed_queued": 22,
+      "observed_total": 22,
+      "source": "W34 three-branch last readback, historical; automatically triggered qps-canonicalization",
+      "is_complete_future_queue": false
+    },
+    "w27_matched_testpilot": {
+      "historical": true,
+      "producer_pr": 2249,
+      "run_id": 39150064513,
+      "attempt": 1,
+      "jobs_passed": 4,
+      "jobs_total": 4,
+      "before": [
+        106,
+        104,
+        104,
+        104
+      ],
+      "after": [
+        198,
+        196,
+        196,
+        196
+      ],
+      "eligible_per_cell": 200,
+      "delta_pp_per_cell": 46.0,
+      "code_global_coverage": null
+    },
+    "w38_focused": {
+      "source_head": "b69c8e376e25c9345e379a14c371149ba7443adb",
+      "run_id": 39162185592,
+      "job_id": 117777615940,
+      "run_attempt": 1,
+      "interpreter": "3.12",
+      "platform": "native_single_cell",
+      "tests_passed": 203,
+      "tests_failed": 0,
+      "tests_skipped": 0,
+      "before_covered": 660,
+      "after_covered": 707,
+      "eligible": 723,
+      "delta_pp": 6.500692,
+      "artifact_id": 12149111972,
+      "artifact_bytes_independently_verified": null,
+      "accepted_broad_main_coverage": null,
+      "families": [
+        {
+          "family": "W75",
+          "label": "Stability/deconfounding",
+          "covered": 219,
+          "eligible": 221
+        },
+        {
+          "family": "W64",
+          "label": "Reverse pressure",
+          "covered": 123,
+          "eligible": 125
+        },
+        {
+          "family": "W81",
+          "label": "Repair provenance",
+          "covered": 154,
+          "eligible": 162
+        },
+        {
+          "family": "W82",
+          "label": "Semantic discrimination",
+          "covered": 211,
+          "eligible": 215
+        }
+      ]
+    }
+  },
+  "root_families": [
+    {
+      "id": "G3CS_OPTIONAL_ZIP_MARKER_CONTRACT",
+      "family": "TEST",
+      "observed_manifestations": 3,
+      "confirmed_distinct_roots": 1,
+      "owner": "W34-C",
+      "status": "SOURCE_STAGED_NATIVE_UNQUALIFIED",
+      "native_run_id": 39159906022
+    },
+    {
+      "id": "NETWORKX_W13_INSTALL",
+      "family": "RUNTIME",
+      "observed_manifestations": 7,
+      "confirmed_distinct_roots": 1,
+      "owner": "W34-A",
+      "status": "HISTORICAL_SHARED_ROOT_RETEST_REQUIRED",
+      "native_run_id": 39159216550
+    },
+    {
+      "id": "W32_SELF_REPORTED_PROOF_FLAGS",
+      "family": "GOVERNANCE_TELEMETRY",
+      "observed_manifestations": 1,
+      "confirmed_distinct_roots": null,
+      "owner": "W34-B",
+      "status": "SOURCE_STAGED_LOCAL_SYNTHETIC_PASS"
+    }
+  ],
+  "global_dov": {
+    "level_0_repository_heads": {
+      "numerator": 5,
+      "denominator": 5
+    },
+    "level_1_w34_source_implemented": {
+      "numerator": 3,
+      "denominator": 3
+    },
+    "level_2_w34_exact_head_native": {
+      "numerator": 0,
+      "denominator": 3
+    },
+    "level_3_w34_byte_verified": {
+      "numerator": 0,
+      "denominator": 3
+    },
+    "level_4_w34_governed_admitted": {
+      "numerator": 0,
+      "denominator": 3
+    },
+    "authentic_cross_repo_receipts": null,
+    "qps_owner_acceptances": null,
+    "canonical_merge_obligations_historical": {
+      "numerator": 1,
+      "denominator": 12
+    },
+    "w38_focused_py312_native": {
+      "passed": 203,
+      "total": 203,
+      "other_interpreters": null,
+      "scope": "4 owned source families"
+    }
+  },
+  "coverage": {
+    "current_main_lines": null,
+    "current_main_branches": null,
+    "pr_changed_executable_lines": null,
+    "main_matched_delta": null,
+    "historical_ranked_paths": 40,
+    "historical_zero_coverage_disposition_paths": 77,
+    "historical_missed_statement_potential_ranked40": 5872,
+    "ranking_source": "tools/everred_v3/sut_gui/telemetry_reference_v5.json (2026-10-16 source historical, no fresh per-path proof)",
+    "comparability_warning": "Historical broad and module-scoped data must not be aggregated without matching path/blob/config denominators",
+    "w38_focused_source_qualified": {
+      "covered": 707,
+      "eligible": 723,
+      "previous_covered": 660,
+      "delta_pp": 6.500692,
+      "broad_main_credit": null
+    }
+  },
+  "scheduler": {
+    "current_scale_decision": "HOLD_GOVERNANCE_AND_QUEUED_CURRENT_MAIN_B0",
+    "native_cells_newly_dispatched": 0,
+    "next_cells_ceiling_after_owner_gates": 6,
+    "last_local_plateau_transitions": null,
+    "stable_sigma": false,
+    "sigma_dpmo_confidence_bound_qualified": false,
+    "requires_green_canary": true,
+    "first_red_replay_policy": "NO_DUPLICATE_UNCHANGED_SHA"
+  },
+  "lineage": {
+    "w31": {
+      "main": "0dd018768f46dbfecf8aad872776d4ba3f6d4fc8",
+      "b0_run": 39156907500,
+      "job_success": 11,
+      "job_total": 13
+    },
+    "w32": {
+      "main": "405e161d0090bbe94a33e298fb031b6cdbc92cb0",
+      "ci_run": 39159216550,
+      "networkx_manifestations": 7
+    },
+    "w34": {
+      "main": "994ad6e73c748923841d92b12651e92d41b2d4ff",
+      "b0_run": 39159906022,
+      "job_success": 11,
+      "job_total": 13
+    },
+    "w35": {
+      "main": "2246c7bd3a9bda6a3d43b9a9116cb7088cfbcc88",
+      "run": 39164360709,
+      "review": null,
+      "formal_root_closed": null
+    }
+  },
+  "links": {
+    "canonical_issue": "https://github.com/GBOGEB/ABACUS/issues/1860",
+    "ruleset": "https://github.com/GBOGEB/ABACUS/rules/24494381",
+    "global_dov_source": "https://github.com/GBOGEB/ABACUS/blob/994ad6e73c748923841d92b12651e92d41b2d4ff/docs/ci/GLOBAL_DOV_DOW_OWNER_V1.json",
+    "handover_w34": "https://github.com/GBOGEB/ABACUS/tree/ecaaaa8c36edab002a6b2841e69d76213ec30d5a/handover/code_purple_w34_20261018"
+  },
+  "readonly": true,
+  "native_artifact_sha256_verified": false,
+  "human_review_approved": false,
+  "formal_root_closure": null,
+  "baseline_main_sha": "994ad6e73c748923841d92b12651e92d41b2d4ff",
+  "main_sha": "2246c7bd3a9bda6a3d43b9a9116cb7088cfbcc88",
+  "w35_live_transition": {
+    "main_sha": "2246c7bd3a9bda6a3d43b9a9116cb7088cfbcc88",
+    "base_sha": "994ad6e73c748923841d92b12651e92d41b2d4ff",
+    "additional_commits": 74,
+    "observed_main_merges": [
+      2278,
+      2279,
+      2280,
+      2281,
+      2282,
+      2283
+    ],
+    "w34_source_merged_gitHub": [
+      2281,
+      2282,
+      2283
+    ],
+    "w34_governed_admission_verified": false,
+    "native_current_main_status": "QUEUED",
+    "current_main_b0_run_id": 39164360709,
+    "current_main_b0_attempt": 1,
+    "current_main_b0_conclusion": null,
+    "current_main_job_numerator": null,
+    "current_main_job_denominator": null,
+    "coverage_delta": null,
+    "effective_rules_required_approvals": 0,
+    "effective_rules_status_check_rules": 0,
+    "always_bypass_actors": 6
+  }
+}
