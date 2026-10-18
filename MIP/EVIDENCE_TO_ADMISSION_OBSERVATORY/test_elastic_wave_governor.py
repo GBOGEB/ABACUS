@@ -49,6 +49,9 @@ def specimen():
         ],
         "capacity": {
             "queue_population_complete": True, "queue_p95_seconds": 150.0,
+            "head_stable": True,
+            "queue_population_run_id": 90000,
+            "queue_population_source_sha": HEAD,
             "queue_soft_seconds": 600, "queue_hard_seconds": 900,
             "evidence_yield": 1.0, "previous_observation_lanes": 1,
             "maximum_observation_lanes": 8, "available_runner_slots": 8,
@@ -151,6 +154,10 @@ def test_existing_jobs_block_additional_automatic_fanout():
 def test_three_independent_pulses_with_two_positive_deltas_double_lanes_once():
     doc = specimen()
     family(doc)["history"] = [pulse(1, 164), pulse(2, 170), pulse(3, 173)]
+    doc["capacity"]["latest_terminal_run_id"] = 800003
+    doc["capacity"]["latest_terminal_source_sha"] = family(doc)["history"][-1]["source_sha"]
+    doc["capacity"]["queue_population_run_id"] = 800003
+    doc["capacity"]["queue_population_source_sha"] = family(doc)["history"][-1]["source_sha"]
     r = g.evaluate(doc)
     assert r["capacity"]["state"] == "GEOMETRIC_SCALE"
     assert r["capacity"]["recommended_read_only_observation_lanes"] == 2
@@ -166,6 +173,8 @@ def test_geometric_ramp_is_bounded_one_two_four_eight():
         doc["capacity"]["previous_observation_lanes"] = previous
         doc["capacity"]["latest_terminal_run_id"] = 800003
         doc["capacity"]["latest_terminal_source_sha"] = family(doc)["history"][-1]["source_sha"]
+        doc["capacity"]["queue_population_run_id"] = 800003
+        doc["capacity"]["queue_population_source_sha"] = family(doc)["history"][-1]["source_sha"]
         observed.append(g.evaluate(doc)["capacity"]["recommended_read_only_observation_lanes"])
     assert observed == [2, 4, 8, 8]
 
@@ -173,8 +182,12 @@ def test_geometric_ramp_is_bounded_one_two_four_eight():
 def test_repeated_observation_cannot_double_capacity_again():
     doc = specimen()
     family(doc)["history"] = [pulse(1, 164), pulse(2, 170), pulse(3, 173)]
+    doc["capacity"]["latest_terminal_run_id"] = 800003
+    doc["capacity"]["latest_terminal_source_sha"] = family(doc)["history"][-1]["source_sha"]
+    doc["capacity"]["queue_population_run_id"] = 800003
+    doc["capacity"]["queue_population_source_sha"] = family(doc)["history"][-1]["source_sha"]
     doc["capacity"]["last_scaled_run_id"] = doc["capacity"]["latest_terminal_run_id"]
-    doc["capacity"]["last_scaled_source_sha"] = HEAD
+    doc["capacity"]["last_scaled_source_sha"] = doc["capacity"]["latest_terminal_source_sha"]
     r = g.evaluate(doc)
     assert r["capacity"]["state"] == "HOLD_CAPACITY"
     assert r["capacity"]["recommended_read_only_observation_lanes"] == 1
@@ -409,3 +422,33 @@ def test_governed_execution_remains_manual_even_when_pilot_recommended():
     assert r["programme"]["no_automatic_authority_transfer"] is True
     assert r["explicit_stop_scope"] == "LOCAL_ONLY_OR_NONE"
     assert r["control_method"] == "AIMD_WITH_HYSTERESIS_AND_IDEMPOTENT_RETRIGGERS"
+
+
+def test_stale_queue_run_identity_blocks_scaling_even_with_green_history():
+    doc = specimen()
+    family(doc)["history"] = [pulse(1, 164), pulse(2, 168), pulse(3, 172)]
+    doc["capacity"]["latest_terminal_run_id"] = 800003
+    doc["capacity"]["latest_terminal_source_sha"] = family(doc)["history"][-1]["source_sha"]
+    # The queue sample remains for a different run/SHA: no scaling credit.
+    result = g.evaluate(doc)
+    assert result["capacity"]["state"] == "OBSERVE_ONLY"
+    assert result["capacity"]["proposed_native_runner_lanes"] == 0
+    assert result["capacity"]["queue_bound_to_latest_terminal_head"] is False
+
+
+def test_unstable_head_cannot_scale_even_with_low_p95_and_complete_receipts():
+    doc = specimen()
+    doc["capacity"]["head_stable"] = False
+    result = g.evaluate(doc)
+    assert result["capacity"]["state"] == "OBSERVE_ONLY"
+    assert result["capacity"]["proposed_native_runner_lanes"] == 0
+    assert result["capacity"]["source_head_stable"] is False
+
+
+def test_unrelated_terminal_run_does_not_double_source_specific_wave_budget():
+    doc = specimen()
+    family(doc)["history"] = [pulse(1, 164), pulse(2, 168), pulse(3, 172)]
+    # Queue is exact for current run, but this was NOT the pulse with 2 gains.
+    result = g.evaluate(doc)
+    assert result["capacity"]["state"] == "HOLD_CAPACITY"
+    assert result["capacity"]["recommended_read_only_observation_lanes"] == 1
