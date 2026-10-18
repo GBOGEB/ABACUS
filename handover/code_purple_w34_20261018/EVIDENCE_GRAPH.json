@@ -1,0 +1,181 @@
+{
+  "schema": "abacus.codepurple.w34.typed-evidence-graph.v1",
+  "root": "GBOGEB/ABACUS#1860",
+  "nodes": [
+    {
+      "id": "main_w31",
+      "type": "SOURCE_SHA",
+      "ref": "0dd018768f46dbfecf8aad872776d4ba3f6d4fc8"
+    },
+    {
+      "id": "main_w32",
+      "type": "SOURCE_SHA",
+      "ref": "405e161d0090bbe94a33e298fb031b6cdbc92cb0"
+    },
+    {
+      "id": "main_w34",
+      "type": "SOURCE_SHA",
+      "ref": "994ad6e73c748923841d92b12651e92d41b2d4ff"
+    },
+    {
+      "id": "rule_24494381",
+      "type": "GOVERNANCE_CONTROL",
+      "state": "INEFFECTIVE_FOR_ADMISSION"
+    },
+    {
+      "id": "issue_1860",
+      "type": "CANONICAL_ISSUE",
+      "state": "OPEN"
+    },
+    {
+      "id": "run_39159216550",
+      "type": "NATIVE_WORKFLOW",
+      "attempt": 1,
+      "state": "HISTORICAL"
+    },
+    {
+      "id": "root_networkx",
+      "type": "SOURCE_ROOT",
+      "status": "REPAIR_LANDED_UNQUALIFIED"
+    },
+    {
+      "id": "run_39159906022",
+      "type": "NATIVE_WORKFLOW",
+      "attempt": 1,
+      "state": "FAIL"
+    },
+    {
+      "id": "job_117771668289",
+      "type": "NATIVE_JOB",
+      "state": "FAIL"
+    },
+    {
+      "id": "job_117773239113",
+      "type": "NATIVE_JOB",
+      "state": "FAIL_DERIVATIVE"
+    },
+    {
+      "id": "root_g3cs",
+      "type": "SOURCE_ROOT",
+      "status": "STAGED_UNQUALIFIED"
+    },
+    {
+      "id": "stage_matrix",
+      "type": "STAGED_BRANCH",
+      "branch": "code-purple/w34-matrix-networkx-sourceowner-20261018"
+    },
+    {
+      "id": "stage_proof",
+      "type": "STAGED_BRANCH",
+      "branch": "code-purple/w34-proof-verified-handover-20261018"
+    },
+    {
+      "id": "stage_g3cs",
+      "type": "STAGED_BRANCH",
+      "branch": "code-purple/w34-g3cs-single-source-missing-marker-20261018"
+    },
+    {
+      "id": "code_v34",
+      "type": "SOURCE_CODE",
+      "path": "tools/recovery/w34_native_artifact_verify.py"
+    },
+    {
+      "id": "handover_w34",
+      "type": "HANDOVER_POINTER",
+      "path": "handover/code_purple_w34_20261018/README.md"
+    }
+  ],
+  "edges": [
+    {
+      "from": "main_w31",
+      "to": "main_w32",
+      "type": "HISTORICAL_MAIN_PROGRESSION",
+      "authority": false
+    },
+    {
+      "from": "main_w32",
+      "to": "main_w34",
+      "type": "HISTORICAL_MAIN_PROGRESSION",
+      "authority": false
+    },
+    {
+      "from": "main_w32",
+      "to": "run_39159216550",
+      "type": "NATIVE_EXACT_SHA",
+      "authority": false
+    },
+    {
+      "from": "run_39159216550",
+      "to": "root_networkx",
+      "type": "FIRST_RED_SHARED_MANIFESTATIONS",
+      "manifestations": 7,
+      "authority": false
+    },
+    {
+      "from": "main_w34",
+      "to": "run_39159906022",
+      "type": "NATIVE_EXACT_SHA",
+      "authority": false
+    },
+    {
+      "from": "run_39159906022",
+      "to": "job_117771668289",
+      "type": "HAS_JOB",
+      "authority": false
+    },
+    {
+      "from": "run_39159906022",
+      "to": "job_117773239113",
+      "type": "HAS_JOB",
+      "authority": false
+    },
+    {
+      "from": "job_117771668289",
+      "to": "root_g3cs",
+      "type": "FIRST_RED",
+      "manifestations": 3,
+      "authority": false
+    },
+    {
+      "from": "root_g3cs",
+      "to": "job_117773239113",
+      "type": "PROPAGATES_TO_DOWNSTREAM",
+      "authority": false
+    },
+    {
+      "from": "stage_g3cs",
+      "to": "root_g3cs",
+      "type": "SOURCE_OWNED_REPAIR_UNQUALIFIED",
+      "authority": false
+    },
+    {
+      "from": "stage_matrix",
+      "to": "root_networkx",
+      "type": "SOURCE_OWNED_REPAIR_UNQUALIFIED",
+      "authority": false
+    },
+    {
+      "from": "stage_proof",
+      "to": "code_v34",
+      "type": "IMPLEMENTS",
+      "authority": false
+    },
+    {
+      "from": "issue_1860",
+      "to": "rule_24494381",
+      "type": "REQUIRES_SERVER_EVIDENCE",
+      "authority": false
+    },
+    {
+      "from": "handover_w34",
+      "to": "issue_1860",
+      "type": "READ_ONLY_POINTER",
+      "authority": false
+    }
+  ],
+  "graph_cardinality": {
+    "nodes": 16,
+    "edges": 14
+  },
+  "note": "Structural audit graph; not graph-topology proof, scheduling authority, source change approval or root closure."
+}
