@@ -1,0 +1,391 @@
+{
+  "schema": "codepurple.lossless_operational_snapshot.v1",
+  "date_utc": "2026-10-18",
+  "timezone": "Europe/Brussels",
+  "fidelity": "GITHUB_FIRST_OPERATIONAL",
+  "verbatim_transcript": "PARTIAL: user 147-line excerpt plus visible chat; no full-verbatim archive",
+  "non_atomic": true,
+  "source_order": [
+    "exact default/PR Git refs and server rules",
+    "native job/run/attempt and independently verified artifact bytes",
+    "eligible human reviews/admission records",
+    "source-owned issue dispositions",
+    "historical handovers/chat"
+  ],
+  "source": {
+    "ABACUS": {
+      "branch": "main",
+      "sha": "1122dca15557e4d2b0ec16300fcbf409db678e86",
+      "protected": true,
+      "ruleset": 24494381,
+      "required_statuses": 0,
+      "required_approvals": 0,
+      "review_thread_resolution_required": false
+    },
+    "CODEX": {
+      "branch": "main",
+      "sha": "4d86406ccd6751fbe43ecd199ce98a5e608e6ecf",
+      "protected": false,
+      "rulesets": 0
+    },
+    "HUB": {
+      "branch": "master",
+      "sha": "ccd695c22b50bf36369cdc669757063029a86551"
+    }
+  },
+  "historical_MCL": {
+    "pr": 1980,
+    "pull_head": "b24887d2822e9d3dd2a2281e776bffd4977c5db3",
+    "native_success_run": 39052681513,
+    "zip_digest": "f09ec2f3bb719a63e99a4e49e9e7086d46887e15a4a38d3eb39cd215e6543a68",
+    "immutable_failed_run": 38624410381,
+    "immutable_succeeded_runs": [
+      38626368234,
+      38627296781
+    ]
+  },
+  "evidence": {
+    "MCL_G3C": {
+      "run": 39133292534,
+      "head": "796dfc8eeee9b81321cbf345ee348f39e9e20f3e",
+      "passed": 89,
+      "statements": [
+        406,
+        636
+      ],
+      "branches": [
+        173,
+        270
+      ]
+    },
+    "MCL_seven": {
+      "run": 39135497971,
+      "job": 117699059574,
+      "head": "382661dde18a4d375b077d01a0ba83f39afec224",
+      "status": "SUCCESS",
+      "artifact": 12140207329,
+      "artifact_size": 15654,
+      "sha256": "0edfcc3372a07f28c4819c13ef38446e50ada9f98749f78a59094dac8733291a",
+      "payload_verified": [
+        13,
+        13
+      ],
+      "passed_unique_tests": 123,
+      "statements": [
+        569,
+        650
+      ],
+      "branches": [
+        243,
+        282
+      ],
+      "closed": false,
+      "provenance": "pull_head"
+    },
+    "MCL_matched": {
+      "unchanged_source_scope": "MCL excluding coverage_pulse.py",
+      "statements_before": [
+        295,
+        486
+      ],
+      "statements_after": [
+        458,
+        486
+      ],
+      "branches_before": [
+        121,
+        202
+      ],
+      "branches_after": [
+        191,
+        202
+      ],
+      "uplift_statements": 163,
+      "uplift_branches": 70,
+      "diff_coverage": "UNKNOWN"
+    },
+    "dashboard_native": {
+      "run": 39135642509,
+      "passed_cells": 5,
+      "total_cells": 5,
+      "live_pages_53_links_recensus": "UNKNOWN"
+    },
+    "MYCELIUM_producer": {
+      "repo": "GBOGEB/pipeline-automation-hub",
+      "native_run": 39133186022,
+      "producer_sha": "16a548759d879d30b4a7435e587e2c97bf0e3d9b",
+      "artifact": 12139440079,
+      "zip_sha256": "30e43dff2b4abdfdacb7483be2e4f1379e79a2b18f5bfe94b8298c876dc8bc5c",
+      "repositories": [
+        6,
+        6
+      ],
+      "roots": [
+        16,
+        16
+      ],
+      "edges": [
+        16,
+        16
+      ],
+      "manifest_files": [
+        27,
+        27
+      ],
+      "final_hub701_sha": "4cc7fcd0ecb4b9f0d0df373cd0cdd1fd7e685c8b",
+      "final_head_native_proof": "UNKNOWN"
+    },
+    "MYCELIUM_consumer": {
+      "pr": 1089,
+      "head": "8502944c9908909f26f81cbe2fef88cf208087b6",
+      "run": 39134906124,
+      "python_versions": [
+        "3.11",
+        "3.12"
+      ],
+      "tests": [
+        17,
+        17
+      ],
+      "statements": [
+        116,
+        126
+      ],
+      "branches": [
+        21,
+        22
+      ],
+      "producer_artifact_consumed": false,
+      "owner_acceptance": "WITHHELD"
+    },
+    "MYCELIUM_W5": {
+      "pr": 1095,
+      "head": "1c1907d03a27aad68b2dd541984f522dad956103",
+      "native_run": 39142904154,
+      "job": 117720797770,
+      "result": "SUCCESS",
+      "artifact": 12142487783,
+      "artifact_sha256": "d7faefd9eb826058fdc2ae79e86bd2e51089028496b5a2e2a7c86d7623d84103",
+      "assets": 521,
+      "registered": 30,
+      "unregistered": 491,
+      "generated_reports_identical": true,
+      "main_admission": "UNKNOWN"
+    },
+    "ABACUS_governance": {
+      "pr": 2232,
+      "head": "6f8a81f5a2e939a1e414da5e5a2b97b39f638645",
+      "run": 39136453672,
+      "job": 117701823070,
+      "result": "FAILURE",
+      "workflow_count": 190,
+      "classified": 190,
+      "overlaps": 0,
+      "unclassified": 0,
+      "failed_tests": [
+        "Ariana full tier triggered on pull_request",
+        "ci-pipeline.yml unapproved PR-write",
+        "MIP Python compatibility owner statistics expected core_test observed"
+      ],
+      "other_first_red": "generated rationalization stale",
+      "artifact": 12140159569,
+      "artifact_sha256": "348f95f9070a95e9f33d0ed3c699718d608bc01e9e44d85781fe37ca8e7db395"
+    },
+    "ABACUS_security": {
+      "run": 39135642714,
+      "job": 117699483200,
+      "result": "FAILURE",
+      "artifact": 12140916335,
+      "artifact_sha256": "7abe3db4f67aebb12e5785ed38dcad6f37e207e5077746b52b5f5a8328a6effa",
+      "bandit_total": 7960,
+      "touched": 2,
+      "inherited": 7958,
+      "touched_finding_codes": [
+        "B404",
+        "B603"
+      ],
+      "safety": "FAIL exit 64, one NLTK vulnerability",
+      "A10": "INDEPENDENT_REVIEW_UNKNOWN"
+    }
+  },
+  "merge_events_non_admitted": [
+    {
+      "repo": "ABACUS",
+      "pr": 2232,
+      "sha": "d28c720f1ab7bab58a6bce92c283c1bfba8cdbcc",
+      "reviews": 0,
+      "native_governance": "FAIL"
+    },
+    {
+      "repo": "CODEX",
+      "pr": 1093,
+      "sha": "f73c98c9f9c99f234446644e22c14c93d8300e92",
+      "reviews": 0,
+      "native_mycelium": "FAIL"
+    },
+    {
+      "repo": "ABACUS",
+      "pr": 2236,
+      "sha": "6c1f16097f6f123b470d05bb2e750bfb2ad3db50",
+      "merged_at_utc": "2026-10-18T16:09:22Z"
+    },
+    {
+      "repo": "ABACUS",
+      "pr": 2237,
+      "head": "dbd565fdd2cac81fd6dbfe16bfa137095871db34",
+      "merged_at_utc": "2026-10-18T16:09:36Z"
+    },
+    {
+      "repo": "CODEX",
+      "pr": 1095,
+      "sha": "2090642d23f55bc1fec5aec95b8ac9907fd50767",
+      "merged_at_utc": "2026-10-18T16:10:28Z"
+    },
+    {
+      "repo": "CODEX",
+      "pr": 1096,
+      "sha": "4d86406ccd6751fbe43ecd199ce98a5e608e6ecf",
+      "merged_at_utc": "2026-10-18T16:10:42Z"
+    }
+  ],
+  "open_packages": [
+    {
+      "id": "SEC-P0-01",
+      "title": "ABACUS mandatory checks/reviews",
+      "status": "BLOCKED_ADMIN",
+      "formal_closed": false
+    },
+    {
+      "id": "SEC-P0-02",
+      "title": "CODEX main protection",
+      "status": "BLOCKED_ADMIN",
+      "formal_closed": false
+    },
+    {
+      "id": "SEC-P0-03",
+      "title": "external-actor authorization",
+      "status": "FOCUSED_NEGATIVE_PROVEN_DEPLOYMENT_UNKNOWN",
+      "formal_closed": false
+    },
+    {
+      "id": "SEC-P0-04",
+      "title": "MCL trusted bytes and replay",
+      "status": "FOCUSED_NATIVE_PROVEN_ADMISSION_UNKNOWN",
+      "formal_closed": false
+    },
+    {
+      "id": "EXEC-P1-01",
+      "title": "isolated container runtime",
+      "status": "UNKNOWN",
+      "formal_closed": false
+    },
+    {
+      "id": "EXEC-P1-02",
+      "title": "durable restart and idempotency",
+      "status": "UNKNOWN",
+      "formal_closed": false
+    },
+    {
+      "id": "EXEC-P1-03",
+      "title": "bounded external agent testflight",
+      "status": "PARTIAL_DIAGNOSTIC",
+      "formal_closed": false
+    },
+    {
+      "id": "EXEC-P1-04",
+      "title": "cross-repository correlation",
+      "status": "PARTIAL_TYPED_NOT_ACCEPTED",
+      "formal_closed": false
+    },
+    {
+      "id": "OBS-P2-01",
+      "title": "live read-only GUI",
+      "status": "PARTIAL_NATIVE_QA",
+      "formal_closed": false
+    },
+    {
+      "id": "OBS-P2-02",
+      "title": "fingerprint evidence graph",
+      "status": "PARTIAL_TYPED",
+      "formal_closed": false
+    },
+    {
+      "id": "OBS-P2-03",
+      "title": "matched-quality improvement",
+      "status": "MCL_FOCUSED_PROVEN_BROAD_UNKNOWN",
+      "formal_closed": false
+    },
+    {
+      "id": "OBS-P2-04",
+      "title": "causal-root burndown",
+      "status": "UNKNOWN_NO_ACCEPTED_CLOSURE",
+      "formal_closed": false
+    },
+    {
+      "id": "INF-P3-01",
+      "title": "Kubernetes deployment",
+      "status": "CONDITIONAL_DECISION_REQUIRED",
+      "formal_closed": false
+    },
+    {
+      "id": "INF-P3-02",
+      "title": "Dagster/Windmill orchestration",
+      "status": "CONDITIONAL_DECISION_REQUIRED",
+      "formal_closed": false
+    }
+  ],
+  "owner_todo": [
+    {
+      "id": "AB-SEC",
+      "owner": "ABACUS admin + security reviewer",
+      "action": "Server enforce required statuses, eligible human review, RED canary, A10/security adjudication",
+      "proof": "actual effective ruleset + blocked RED + current-head CI"
+    },
+    {
+      "id": "CX-SEC",
+      "owner": "CODEX admin",
+      "action": "Protect main, eligible independent reviewer, blocked RED canary",
+      "proof": "server readback and negative test"
+    },
+    {
+      "id": "AB-GOV",
+      "owner": "ABACUS #2087 governance",
+      "action": "Fix 3 test root owners and regenerate derived 190 inventory on current main",
+      "proof": "native policy-and-inventory SUCCESS, no overlap, A10 separate"
+    },
+    {
+      "id": "CX-MYC",
+      "owner": "CODEX #1088 / W5",
+      "action": "Verify #1095/#1096 merged main, eliminate W003 metadata/manifest roots, consume final-producer artifact through authenticated transport",
+      "proof": "terminal main CI, joined source SHA, byte-verification, owner acceptance"
+    },
+    {
+      "id": "AB-MIP",
+      "owner": "ABACUS W7",
+      "action": "Rerun B0/CI current main after #2236/#2237 and compare source-equivalent coverage/negative tests",
+      "proof": "native run/job/attempt and artifact digest"
+    },
+    {
+      "id": "AB-DASH",
+      "owner": "Dashboard Pages",
+      "action": "Fresh published site/link census",
+      "proof": "0 missing pages and 0 broken live links from native publication"
+    }
+  ],
+  "stability": {
+    "pca": "WITHHELD",
+    "bradley_terry": "WITHHELD",
+    "six_sigma": "WITHHELD",
+    "first_red_recurrence_rate": "UNKNOWN",
+    "worker_hours": "UNKNOWN",
+    "reason": "nonindependent sources and unmatched populations"
+  },
+  "admission": {
+    "formal_closures": 0,
+    "total": 14,
+    "merge_admission": "HOLD",
+    "security_waiver": false,
+    "authority_transfer": false,
+    "reviewer_permission_GEB": "none"
+  }
+}
