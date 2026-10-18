@@ -10,12 +10,13 @@
     "SPINE_DAG_W11.json": "441bda1443e96c35c15d4b9b1e4ecbef3c494a2fde5ba480b31523c72b7c813e",
     "SPINE_SIPOC_W11.json": "81c1c34fabb83e87ab355a1bdf82a4e028293a6842c7f915f84543030ce969a7",
     "W10_FROZEN_HISTORY.json": "e7b1cfb7bf43a6b46c1dcafc56848932e085d087b18f5907a4c3da8666e77e1b",
-    "build_global_spine_w10.py": "c7135bff0a47dfed25236fb1c7cff682acffef1325a4e98fa9c8624b4d62c033",
-    "index.html": "4a1caf3d450ee0d7b6f9271a98d8fac7c1d29b1f28a73e776c913add5161ed78",
+    "W11_OBSERVED_MAIN_EPOCH.json": "b46df16ccc6c7e35f2f88388fe6507dfd827e89225872aaf51aa94596903eb33",
+    "build_global_spine_w10.py": "04921249708787f7a3ab9de1651cf315a7d7d3c17db0cdecc2697c22db8e66fd",
+    "index.html": "c2d4e61e9263cb1fef0c16e0fab6825cb8b8ada82ab213b740055108b919bcdd",
     "qa_w11_browser.py": "adebcad7d8a8cc8b073b5e801ff5e0cc5bc667024a5a441a1950deada9c710bf",
     "refresh_w10_spine.py": "9be2312b822145c18ec519c4d89bc708723c7bc58c7d0606725d642ea1b55921",
     "spine_contract.py": "5004df4d1b1ff32c8f4a1a460592c35d5ae88314b46ada168209eb10acd402b6",
-    "test_w10_spine.py": "ec2b31cd7dc0a52980030900423bd4c6aef044e9f9053f7a28356a2e1f82c9c5",
+    "test_w10_spine.py": "7320709fa5cf20287985ec578960e86cd88b5cee00d7bae7cfc671227297abd1",
     "test_w11_spine_contract.py": "9f2167c847297eb66f2ec065592d01cae0e09e8597eca863d2d2da3af6db66b6"
   },
   "authority_transfer": false,
@@ -47,7 +48,7 @@
   },
   "checks": {
     "PR_changed_line_coverage": "UNKNOWN",
-    "W10_W11_unittest_methods": 62,
+    "W10_W11_unittest_methods": 67,
     "W11_source_branch_arcs": "26/26",
     "W11_source_combined_pct": 100.0,
     "W11_source_statements": "177/177",
@@ -58,12 +59,14 @@
     "latest_main_coverage": "UNKNOWN",
     "merge_admission": "HOLD",
     "native_B0_selection": "PENDING",
-    "passed": 61,
+    "passed": 66,
+    "post_freeze_main_coverage": "35571/52497 = 67.758%",
     "scope": "W11 validator module only; NOT entire ABACUS main",
     "security_first_red": "UNKNOWN_UNTIL_EXACT_HEAD_RUN",
     "sipoc_rows": 5,
     "skipped_optional_native_artifact": 1,
-    "source_hash_match": "PASS"
+    "source_hash_match": "PASS",
+    "uncovered_delta_from_prev_green_main": -120
   },
   "evidence_level": "LOCAL_REPRODUCIBILITY",
   "notes": [
@@ -74,6 +77,7 @@
   "schema": "codepurple.global-spine.w11.qa.v1",
   "security_waiver": false,
   "source": {
+    "appended_measured_main_sha": "9e0200190555736c74295ee74881e3c003e8a35c",
     "branch": "docs/w10-global-spine-observatory-20261018",
     "history_sha256": "e7b1cfb7bf43a6b46c1dcafc56848932e085d087b18f5907a4c3da8666e77e1b",
     "not_current_main": true,
