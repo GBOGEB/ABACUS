@@ -11,8 +11,8 @@ import math
 import re
 from typing import Any
 
-SHA40 = re.compile(r"[0-9a-f]{40}\\Z")
-SHA64 = re.compile(r"[0-9a-f]{64}\\Z")
+SHA40 = re.compile(r"[0-9a-f]{40}\Z")
+SHA64 = re.compile(r"[0-9a-f]{64}\Z")
 
 
 class ConvergenceProofError(ValueError):
