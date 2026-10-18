@@ -408,7 +408,7 @@ def test_runtime_diagnostic_outside_repo_retains_literal_path(
 def test_runtime_writer_real_direct_cli_from_external_cwd(
     tmp_path: Path,
 ) -> None:
-    """The public direct-script invocation must work with an isolated sys.path.
+    """The direct-script invocation must ignore PYTHONPATH and use its script path.
 
     No repository status file is created or mutated: only the test-owned output
     path receives JSON. Running from outside the repository exercises the
@@ -417,7 +417,7 @@ def test_runtime_writer_real_direct_cli_from_external_cwd(
     source = Path(runtime_status.__file__).resolve()
     receipt = tmp_path / "nested" / "runtime-status.json"
     result = subprocess.run(
-        [sys.executable, "-I", str(source), "--output", str(receipt)],
+        [sys.executable, "-E", str(source), "--output", str(receipt)],
         cwd=tmp_path,
         capture_output=True,
         text=True,
