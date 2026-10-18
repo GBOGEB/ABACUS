@@ -169,3 +169,51 @@ def test_constant_training_feature_is_withheld():
     matrix = np.array([[1., 4.], [1., 5.], [1., 6.], [1., 7.]])
     with pytest.raises(ValueError, match="varying training features"):
         w82.frozen_pc1(matrix)
+
+
+def test_w35_w82_real_cli_entrypoint_roundtrips_canonical_receipt(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch, capsys: pytest.CaptureFixture[str],
+) -> None:
+    """Exercise the actual __main__ branch, not a mocked CLI or altered source."""
+    import runpy
+    import sys
+
+    output = tmp_path / "w82-recomputed.json"
+    script = ROOT / "tools/w82_semantic_diversity_diagnostic.py"
+    monkeypatch.setattr(sys, "argv", [
+        str(script),
+        "--w79-input", str(w82.W79_INPUT),
+        "--ledger", str(LEDGER),
+        "--out", str(output),
+    ])
+    runpy.run_path(str(script), run_name="__main__")
+    observed = json.loads(output.read_text(encoding="utf-8"))
+    canonical = json.loads((
+        ROOT / "architecture/w82/W82_SEMANTIC_DIVERSITY_DIAGNOSTIC_v0.1.json"
+    ).read_text(encoding="utf-8"))
+    assert observed == canonical
+    assert observed["formal_credit_delta"] == 0
+    assert observed["global_allocation_authority"] is False
+    assert '"bt_status"' in capsys.readouterr().out
+
+
+def test_w35_w82_cli_rejects_tampered_authority_without_output(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """Invalid ledger never produces a forged canonical or admission artifact."""
+    import runpy
+    import sys
+
+    data = canonical_ledger()
+    data["authority_transfer"] = True
+    forged = tmp_path / "bad-ledger.json"
+    forged.write_text(json.dumps(data), encoding="utf-8")
+    output = tmp_path / "must-not-exist.json"
+    script = ROOT / "tools/w82_semantic_diversity_diagnostic.py"
+    monkeypatch.setattr(sys, "argv", [
+        str(script), "--w79-input", str(w82.W79_INPUT),
+        "--ledger", str(forged), "--out", str(output),
+    ])
+    with pytest.raises(ValueError, match="authority transfer"):
+        runpy.run_path(str(script), run_name="__main__")
+    assert not output.exists()
