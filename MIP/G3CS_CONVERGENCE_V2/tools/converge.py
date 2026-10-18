@@ -249,6 +249,87 @@ def build_html(data,summary,dag,sipoc_doc):
 const filter=document.getElementById('type-filter'), search=document.getElementById('node-search'), atoms=[...document.querySelectorAll('.atom')], count=document.getElementById('visible-count');function refresh(){{const q=search.value.toLowerCase().trim();let visible=0;for(const x of atoms){{const yes=(filter.value==='all'||x.dataset.type===filter.value)&&(!q||x.textContent.toLowerCase().includes(q));x.hidden=!yes;if(yes)visible++;}}count.textContent=visible+' / '+atoms.length+' atoms visible';}}filter.addEventListener('change',refresh);search.addEventListener('input',refresh);refresh();
 </script></body></html>'''
 
+def portable_dag_svg(graph):
+    """Dependency-preserving, deterministic SVG when Graphviz is unavailable.
+
+    This draws dependency edges only; it never upgrades any evidence state.
+    """
+    from collections import defaultdict
+    from textwrap import wrap
+
+    nodes = graph['nodes']
+    edges = graph['edges']
+    by_id = {item['id']: item for item in nodes}
+    check(len(by_id) == len(nodes), 'duplicate portable DAG node')
+    parents = {key: [] for key in by_id}
+    successors = {key: [] for key in by_id}
+    for edge in edges:
+        a, b = edge['from'], edge['to']
+        check(a in by_id and b in by_id, 'unknown portable DAG endpoint')
+        parents[b].append(a)
+        successors[a].append(b)
+    degrees = {key: len(values) for key, values in parents.items()}
+    ready = sorted(key for key in by_id if degrees[key] == 0)
+    ranks = {}
+    while ready:
+        key = ready.pop(0)
+        ranks[key] = max((ranks[parent] + 1 for parent in parents[key]), default=0)
+        for next_id in sorted(successors[key]):
+            degrees[next_id] -= 1
+            if degrees[next_id] == 0:
+                ready.append(next_id)
+        ready.sort()
+    check(len(ranks) == len(nodes), 'cyclic portable DAG')
+    layers = defaultdict(list)
+    for key, rank in ranks.items():
+        layers[rank].append(key)
+    box_w, box_h, gap_x, gap_y, pad, header = 266, 76, 32, 55, 20, 86
+    largest = max(map(len, layers.values()), default=1)
+    width = max(900, 2 * pad + largest * box_w + (largest - 1) * gap_x)
+    height = header + (max(layers, default=0) + 1) * (box_h + gap_y) + pad
+    positions = {}
+    for depth in sorted(layers):
+        items = sorted(layers[depth])
+        row_width = len(items) * box_w + (len(items) - 1) * gap_x
+        for index, key in enumerate(items):
+            positions[key] = ((width - row_width) / 2 + index * (box_w + gap_x),
+                              header + depth * (box_h + gap_y))
+    out = [
+        f'<svg xmlns="http://www.w3.org/2000/svg" width="{width}" height="{height}" viewBox="0 0 {width} {height}" role="img" aria-label="Source-bound G3CS typed dependency graph">',
+        '<defs><marker id="g3cs-arrow" markerWidth="7" markerHeight="7" refX="6" refY="3.5" orient="auto"><path d="M0,0 L7,3.5 L0,7 z" fill="#8293a5"/></marker></defs>',
+        '<rect width="100%" height="100%" fill="#f8fafc"/>',
+        '<text x="24" y="28" font-family="DejaVu Sans, sans-serif" font-size="19" font-weight="bold" fill="#1a354b">CODE PURPLE | source-bound evidence DAG</text>',
+        '<text x="24" y="48" font-family="DejaVu Sans, sans-serif" font-size="12" fill="#567083">Portable renderer | edges describe dependencies, never causal closure or merge admission</text>',
+    ]
+    for edge in sorted(edges, key=lambda item: (item['from'], item['to'], item['type'])):
+        ax, ay = positions[edge['from']]
+        bx, by = positions[edge['to']]
+        x1, y1 = ax + box_w / 2, ay + box_h
+        x2, y2 = bx + box_w / 2, by
+        half = (y2 - y1) / 2
+        out.append(
+            f'<path data-from="{esc(edge["from"])}" data-to="{esc(edge["to"])}" data-edge-type="{esc(edge["type"])}" '
+            f'd="M{x1:.1f},{y1:.1f} C{x1:.1f},{y1 + half:.1f} {x2:.1f},{y2 - half:.1f} {x2:.1f},{y2:.1f}" '
+            'stroke="#9aaabc" stroke-width="1.4" fill="none" marker-end="url(#g3cs-arrow)"/>'
+        )
+    fills = {'AUTHORITY': '#fff1ed', 'DECISION': '#fff1ed', 'MEASURE': '#fcf4df',
+             'OUTPUT': '#edf1fc', 'CONSUMER': '#f5effb', 'PR': '#eaf4fb'}
+    for key in sorted(by_id):
+        node = by_id[key]
+        x, y = positions[key]
+        fill = fills.get(node['type'], '#edf6f0')
+        out.append(f'<g data-node-id="{esc(key)}" data-node-type="{esc(node["type"])}">')
+        out.append(f'<rect x="{x:.1f}" y="{y:.1f}" width="{box_w}" height="{box_h}" rx="8" fill="{fill}" stroke="#b7c8d4"/>')
+        out.append(f'<text x="{x + 11:.1f}" y="{y + 18:.1f}" font-size="10" font-weight="bold" font-family="DejaVu Sans, sans-serif" fill="#5a6e80">{esc(node["type"])} | {esc(node["state"])}</text>')
+        label_lines = wrap(str(node['label']), width=35, break_long_words=False, break_on_hyphens=False) or ['']
+        if len(label_lines) > 2:
+            label_lines = [label_lines[0], label_lines[1][:31] + '...']
+        for index, line in enumerate(label_lines):
+            out.append(f'<text x="{x + 11:.1f}" y="{y + 39 + index * 18:.1f}" font-size="12" font-family="DejaVu Sans, sans-serif" fill="#234158">{esc(line)}</text>')
+        out.append('</g>')
+    out.append('</svg>')
+    return '\n'.join(out) + '\n'
+
 def write_bundle(data,out):
     validate(data);out=Path(out);out.mkdir(parents=True,exist_ok=True)
     summary=metrics(data);graph=typed_graph(data);s=sipoc(data)
@@ -259,6 +340,10 @@ def write_bundle(data,out):
         if shutil.which('dot'):
             run=subprocess.run(['dot','-Tsvg',str(src),'-o',str(out/(name+'.svg'))],capture_output=True,text=True)
             check(run.returncode==0,'Graphviz render failure '+run.stderr)
+        elif name=='G3CS_CONVERGENCE_DAG':
+            # Keep the generation contract executable on CI runners without dot.
+            # The standalone DOT source remains available for native Graphviz QA.
+            (out/(name+'.svg')).write_text(portable_dag_svg(graph),encoding='utf-8')
     (out/'G3CS_CONVERGENCE_SIPOC.svg').write_text(compact_sipoc_svg(s),encoding='utf-8')
     page=build_html(data,summary,graph,s)
     # Single-file review surface: SVGs embedded for offline portability while

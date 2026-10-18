@@ -7,7 +7,6 @@ CI collection just because the source package is outside tests/.
 from __future__ import annotations
 
 import importlib.util
-import shutil
 from pathlib import Path
 
 _SOURCE = (
@@ -24,7 +23,3 @@ _spec.loader.exec_module(_contracts)
 class TestG3CSConvergence(_contracts.ConvergenceContract):
     """Run all provider contracts in the native repository test population."""
 
-    def test_reproducible_digest_and_outputs(self):
-        if shutil.which('dot') is None:
-            self.skipTest('Graphviz dot is needed for SVG rendering qualification')
-        return super().test_reproducible_digest_and_outputs()

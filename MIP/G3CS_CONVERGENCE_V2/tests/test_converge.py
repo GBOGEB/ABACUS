@@ -71,4 +71,36 @@ class ConvergenceContract(unittest.TestCase):
         self.assertEqual(len(graph['nodes']),len(set(n['id'] for n in graph['nodes'])))
         self.assertFalse(graph['safety']['authority_transfer'])
 
+
+    def test_portable_dag_without_graphviz(self):
+        from unittest import mock
+        from xml.etree import ElementTree
+        with tempfile.TemporaryDirectory() as folder:
+            out=Path(folder)
+            with mock.patch.object(mod.shutil,'which',return_value=None):
+                mod.write_bundle(self.data,out)
+            svg=(out/'G3CS_CONVERGENCE_DAG.svg').read_text(encoding='utf-8')
+            tree=ElementTree.fromstring(svg)
+            graph=mod.typed_graph(self.data)
+            self.assertTrue(tree.attrib['viewBox'])
+            self.assertEqual(svg.count('data-node-id='),len(graph['nodes']))
+            self.assertEqual(svg.count('data-edge-type='),len(graph['edges']))
+            self.assertIn('data:image/svg+xml;base64,',(out/'G3CS_CONVERGENCE_DASHBOARD.html').read_text())
+    def test_portable_dag_cycle_fails_closed(self):
+        g=mod.typed_graph(self.data)
+        g['edges'].append({'from':'codeX','to':'native','type':'BACK_EDGE'})
+        with self.assertRaisesRegex(ValueError,'cyclic portable DAG'):mod.portable_dag_svg(g)
+    def test_portable_dag_missing_endpoint_fails_closed(self):
+        g=mod.typed_graph(self.data)
+        g['edges'][0]['to']='missing'
+        with self.assertRaisesRegex(ValueError,'unknown portable DAG endpoint'):mod.portable_dag_svg(g)
+    def test_portable_dag_deterministic_and_escaped(self):
+        from xml.etree import ElementTree
+        g=mod.typed_graph(self.data)
+        g['nodes'][0]['label']='Injected <label> & chars'
+        left=mod.portable_dag_svg(g)
+        self.assertEqual(left,mod.portable_dag_svg(g))
+        self.assertIn('&lt;label&gt; &amp; chars',left)
+        self.assertTrue(ElementTree.fromstring(left).attrib['viewBox'])
+
 if __name__=='__main__':unittest.main()
