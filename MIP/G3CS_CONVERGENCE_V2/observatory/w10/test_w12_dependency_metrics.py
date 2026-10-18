@@ -179,5 +179,18 @@ class DependencyW12Tests(unittest.TestCase):
         self.assertEqual(before,again)
 
 
+    def test_cli_exact_files_and_terminal_source_contract(self):
+        import contextlib, io
+        from unittest import mock
+        with tempfile.TemporaryDirectory() as folder:
+            argv=['dependency_metrics.py','--history',str(HERE/'W10_FROZEN_HISTORY.json'),
+                  '--epoch',str(HERE/'W11_OBSERVED_MAIN_EPOCH.json'),'--outdir',folder]
+            with mock.patch('sys.argv',argv),contextlib.redirect_stdout(io.StringIO()) as out:
+                m.main()
+            self.assertIn('inferential readiness= False',out.getvalue())
+            a=json.loads((Path(folder)/'SPINE_STATS_W12.json').read_text())
+            self.assertEqual(a['graph']['distinct_source_to_customer_paths'],6)
+
+
 if __name__=='__main__':
     unittest.main()
