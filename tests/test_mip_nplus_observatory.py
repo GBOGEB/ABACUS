@@ -35,9 +35,9 @@ class NPlusTests(unittest.TestCase):
         self.assertEqual(result["progress"]["latest_terminal"], 1)
         self.assertEqual(result["progress"]["latest_denominator"], 2)
         self.assertEqual(result["comparisons"][0]["matched_workflows"]
-                         ["counts"]["RECOVERED"], 1)
+                         ["counts"]["RECOVERED_FAILURE_OUTCOME"], 1)
         self.assertEqual(result["comparisons"][1]["matched_workflows"]
-                         ["counts"].get("RECOVERED", 0), 0)
+                         ["counts"].get("RECOVERED_FAILURE_OUTCOME", 0), 0)
         self.assertIsNone(result["progress"]["verified_root_closure_delta"])
         self.assertEqual(result["progress"]["p0_admission"], "HOLD")
         self.assertEqual(result["progress"]["stability_decision"],
@@ -88,6 +88,18 @@ class NPlusTests(unittest.TestCase):
         result = rollup(x)
         self.assertEqual(result["comparisons"][0]["matched_workflows"]
                          ["counts"]["duplicate_family_excluded"], 1)
+
+    def test_cancelled_is_not_a_new_failure_or_repair(self):
+        x = sample()
+        x["waves"][1]["runs"][1]["status"] = "completed"
+        x["waves"][1]["runs"][1]["conclusion"] = "cancelled"
+        c = rollup(x)["comparisons"]
+        self.assertEqual(c[0]["matched_workflows"]["counts"]
+                         .get("NEW_FAILURE_OUTCOME", 0), 0)
+        self.assertEqual(c[1]["matched_workflows"]["counts"]
+                         .get("RECOVERED_FAILURE_OUTCOME", 0), 0)
+        self.assertEqual(c[1]["matched_workflows"]["counts"]
+                         ["NONFAILURE_OUTCOME_TRANSITION"], 1)
 
     def test_no_auto_scale_authority(self):
         x = sample()
