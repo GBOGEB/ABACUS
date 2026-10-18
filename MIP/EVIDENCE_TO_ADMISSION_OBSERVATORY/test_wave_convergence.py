@@ -164,3 +164,21 @@ def test_duplicate_first_red_signature_is_rejected():
 def test_nonlist_history_is_rejected():
     with pytest.raises(m.ConvergenceProofError,match='history must be list'):
         m.evaluate({'not': 'a sequence'})
+
+
+def test_w32_source_history_does_not_turn_failed_or_queued_runs_into_stability():
+    import json
+    from pathlib import Path
+    import wave_metrics
+    root=Path(__file__).resolve().parent
+    history=json.loads((root/'engineering_wave_history.json').read_text())
+    assert history['observations']==[]
+    assert history['events'][0]['native_test_executions_passed']==128
+    assert history['events'][0]['qualifying_coverage'] is None
+    assert history['events'][1]['native_queue_p95_seconds'] is None
+    snapshot=json.loads((root/'evidence.json').read_text())
+    historical=json.loads((root/'wave_history.json').read_text())
+    receipt=wave_metrics.build_wave_receipt(snapshot,historical)
+    assert receipt['engineering_convergence']['state']=='AWAIT_FIRST_TERMINAL_OBSERVATION'
+    assert receipt['engineering_convergence']['verified_waves']==0
+    assert receipt['engineering_convergence']['governed_merge_credit'] is None
