@@ -82,7 +82,7 @@ jobs:
         env:
           EXPECTED_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
         run: |
-          python tools/recovery/w29_temporal_native_compare.py \
+          python -m tools.recovery.w29_temporal_native_compare \
             --before-cov w29-baseline-coverage.json \
             --after-cov w29-expanded-coverage.json \
             --before-junit w29-baseline-junit.xml \
