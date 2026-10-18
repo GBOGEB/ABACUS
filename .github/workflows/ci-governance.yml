@@ -7,13 +7,15 @@ on:
       - "ci/governance/**"
       - "ci/governance/tests/**"
       - "docs/ci/WORKFLOW_RATIONALIZATION.md"
+      - "MIP/EVIDENCE_TO_ADMISSION_OBSERVATORY/global/**"
   push:
-    branches: [main, code-purple/w36-governance-seven-workflow-census-20261018]
+    branches: [main, code-purple/w36-governance-seven-workflow-census-20261018, hold/cbd-w39-gov-dov-qa-20261018]
     paths:
       - ".github/workflows/**"
       - "ci/governance/**"
       - "ci/governance/tests/**"
       - "docs/ci/WORKFLOW_RATIONALIZATION.md"
+      - "MIP/EVIDENCE_TO_ADMISSION_OBSERVATORY/global/**"
   workflow_dispatch:
 
 permissions:
@@ -22,7 +24,7 @@ permissions:
 jobs:
   policy-and-inventory:
     runs-on: ubuntu-latest
-    timeout-minutes: 5
+    timeout-minutes: 15
     steps:
       - name: Checkout
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
@@ -77,6 +79,17 @@ jobs:
             exit 1
           fi
 
+      - name: W39 source-bound global DOV static and browser QA
+        id: global
+        continue-on-error: true
+        shell: bash
+        run: |
+          set -euo pipefail
+          python MIP/EVIDENCE_TO_ADMISSION_OBSERVATORY/global/render_global.py --check
+          python -m unittest discover -s MIP/EVIDENCE_TO_ADMISSION_OBSERVATORY/global -p 'test_global_rollup.py' -v
+          python -m pip install --disable-pip-version-check "playwright==1.57.0"
+          python MIP/EVIDENCE_TO_ADMISSION_OBSERVATORY/global/qa_playwright.py --out w39_qa_receipts
+
       - name: Upload governance diagnostic evidence
         if: always()
         uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7
@@ -90,6 +103,7 @@ jobs:
             ci-governance-generated-report.json
             ci-governance-generated-rationalization.md
             docs/ci/WORKFLOW_RATIONALIZATION.md
+            w39_qa_receipts/
           if-no-files-found: warn
 
       - name: Fail closed on governance red
@@ -97,9 +111,11 @@ jobs:
         env:
           POLICY_OUTCOME: ${{ steps.policy.outcome }}
           INVENTORY_OUTCOME: ${{ steps.inventory.outcome }}
+          GLOBAL_OUTCOME: ${{ steps.global.outcome }}
         shell: bash
         run: |
           echo "policy_outcome=$POLICY_OUTCOME"
           echo "inventory_outcome=$INVENTORY_OUTCOME"
           test "$POLICY_OUTCOME" = success
           test "$INVENTORY_OUTCOME" = success
+          test "$GLOBAL_OUTCOME" = success

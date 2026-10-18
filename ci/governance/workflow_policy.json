@@ -609,24 +609,6 @@
       "disposition": "keep"
     },
     {
-      "pattern": "^code-purple-w40-binary-penetration\\.yml$",
-      "cluster": "statistics",
-      "lifecycle": "pr_domain",
-      "disposition": "keep"
-    },
-    {
-      "pattern": "^code-purple-w42-remaining-arcs\\.yml$",
-      "cluster": "statistics",
-      "lifecycle": "pr_domain",
-      "disposition": "keep"
-    },
-    {
-      "pattern": "^mcl-roundtrip-hub-qa\\.yml$",
-      "cluster": "bridge_federation",
-      "lifecycle": "pr_domain",
-      "disposition": "keep"
-    },
-    {
       "pattern": "^w33-backbone-pool\\.yml$",
       "cluster": "runtime_governance",
       "lifecycle": "pr_domain",
@@ -634,7 +616,7 @@
     },
     {
       "pattern": "^w36-g3cs-skip-contract\\.yml$",
-      "cluster": "runtime_governance",
+      "cluster": "statistics",
       "lifecycle": "pr_domain",
       "disposition": "keep"
     },
