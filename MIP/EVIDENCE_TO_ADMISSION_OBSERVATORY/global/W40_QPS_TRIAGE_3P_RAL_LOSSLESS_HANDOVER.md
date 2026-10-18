@@ -145,3 +145,25 @@ CODEX branch `hold/cbd-w39-abacus-dov-source-nav-20261018` adds a link to the ex
 
 **3P-RAL state:** local method/presentation cycle progressing, independent consumption and C3/C4 stability not earned. `useful_material_delta=true` for taxonomy and handover functionality, `formal_credit_delta=0`. Current STOP for broad W75/W64/W81/W82 tests is maintained.
 
+
+## 10. Recursive evolution, stop and retrigger
+
+Do not increase runners simply because N+1 is possible. `STOP_LOCAL` applies where all four families exceed 95%, the eligible cohort is unchanged, and no distinct evidence or regression predicate exists. The programme retains separate governance, causal-root, source/safety, human review and federation gates.
+
+A new pulse is admissible only on a material exact-source first red, new critical behavior/denominator, new independent consumer, negative canary, safety/source return, or changed authority contract. Start with **one** disjoint source owner and worker. Increase 1→2→4 only when complete native job-population queue p95, artifact yield, source stability and worker lease budgets are measured. Unknown runner capacity = read-only observation, not geometric fan-out.
+
+A global CONTROL claim requires a predeclared multi-clock stability streak, accepted deduplicated roots, server-enforced required checks/reviews and RED canary, terminal security, and independent CODEX/QPS receipts. A plateau N+1=N over consecutive waves is a legitimate STOP or reallocation signal, not a reason to generate redundant runs.
+
+## 11. Next non-compensating owner actions
+
+| Priority | Owner and action | Required evidence | Present decision |
+|---|---|---|---|
+| P0 | ABACUS native owner: qualify latest W40 head; isolate new first-red | Exact SHA/run/job/attempt, taxonomy tests, Chromium three-viewport result, artifact SHA256 | Pending W40 HEAD |
+| P0 | GitHub admin: enforce required contexts, >=1 eligible human approval, stale/last-push approval, resolved threads, blocked RED canary and no bypass actors | Effective ruleset readback + negative server canary | Ruleset #24494381 observed 0 approvals / 0 checks |
+| P0 | A10/security owners: preserve independent CodeQL/Bandit/Safety and confidentiality gates | Terminal exact-head security findings + owner disposition | UNKNOWN for W40 |
+| P1 | CODEX/KEB: consume pinned producer source and return own semantic receipt | Source SHA, workflow run/attempt, evidence digest, KEB status | Source-only navigation branch |
+| P1 | QPS child: reconcile QTG/BT pointers, source/safety veto and independent child return | Exact QPS main, child ACCEPT/REJECT/DEFER, no score transfer | DEFER |
+| P1 | Admission owner: serial PR only after all gates, then distinct post-main verification | Authorized reviews/checks/merge SHA/main SHA | HOLD |
+| P2 | Mission Control: deduplicate closed/unmerged issues/PRs, causal roots, supersession and 7/21/90-day temporal edges | Stable cohort IDs, typed edges and source hashes | Candidate |
+
+No score across rows compensates for a red in another row. Stop specifically completed local W75/W64/W81/W82 expansion while retaining these independent blockers.
