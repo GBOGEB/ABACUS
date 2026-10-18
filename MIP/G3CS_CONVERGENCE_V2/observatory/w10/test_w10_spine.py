@@ -7,14 +7,16 @@ from tempfile import TemporaryDirectory
 from unittest.mock import Mock
 
 ROOT=Path(__file__).resolve().parent
+
 def _sibling_module(name):
-    path=ROOT / (name+'.py')
-    spec=importlib.util.spec_from_file_location('g3cs_w10_'+name,path)
+    path=ROOT / (name + '.py')
+    spec=importlib.util.spec_from_file_location('g3cs_w10_' + name, path)
     if spec is None or spec.loader is None:
-        raise ImportError('Required W10 sibling source missing: '+name)
+        raise ImportError('Required W10 sibling source missing: ' + name)
     module=importlib.util.module_from_spec(spec)
     spec.loader.exec_module(module)
     return module
+
 render=_sibling_module('build_global_spine_w10')
 refresh=_sibling_module('refresh_w10_spine')
 SHA='2b68462d6578fd435a6f22e750b4d4e7855c2195'
@@ -95,5 +97,30 @@ class GlobalSpineW10Tests(unittest.TestCase):
   c=self.h['clocks']['main_coverage']
   self.assertEqual((c[0]['uncovered'],c[1]['uncovered']),(17036,17046))
   self.assertEqual(c[1]['covered']-c[0]['covered'],636)
+
+ def test_new_main_epoch_append_only(self):
+  html=render.w11_native_main_panel(self.h)
+  self.assertIn('67.758%',html)
+  self.assertIn('67.345%',html)
+  self.assertIn('16,926',html)
+  self.assertIn('N+1 conditional',html)
+  self.assertIn('Governed admission HOLD',html)
+ def _bad_native_epoch(self,mutate,phrase):
+  from unittest import mock
+  import tempfile
+  with tempfile.TemporaryDirectory() as folder:
+   old=json.loads((ROOT/'W11_OBSERVED_MAIN_EPOCH.json').read_text())
+   mutate(old)
+   Path(folder,'W11_OBSERVED_MAIN_EPOCH.json').write_text(json.dumps(old))
+   with mock.patch.object(render,'BASE',Path(folder)):
+    with self.assertRaisesRegex(ValueError,phrase):render.w11_native_main_panel(self.h)
+ def test_epoch_rejects_fake_admission(self):
+  self._bad_native_epoch(lambda x:x['governance'].update(merge_admission='PASS'),'governance')
+ def test_epoch_rejects_falsified_scope_denominator(self):
+  self._bad_native_epoch(lambda x:x['measurements'][1]['combined'].update(eligible=50000),'inconsistent')
+ def test_epoch_rejects_fake_covered_delta(self):
+  self._bad_native_epoch(lambda x:x['comparison'].update(covered_delta=999),'conservation')
+ def test_epoch_rejects_statistical_prediction(self):
+  self._bad_native_epoch(lambda x:x['next_conditional'].update(classification='PREDICTED'),'conditional')
 
 if __name__=='__main__':unittest.main()
