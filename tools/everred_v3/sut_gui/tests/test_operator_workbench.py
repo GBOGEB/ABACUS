@@ -158,9 +158,12 @@ class WorkbenchContracts(unittest.TestCase):
         art = result["artifacts"][0]
         path = self.receipts / row["id"] / art["path"]
         self.assertEqual(art["sha256"], operator_module.file_hash(path))
+        self.assertEqual(self.manager.artifact(row["id"], 0)[1], path.read_bytes())
         self.assertEqual(json.loads(path.read_text())["original"], original.name)
         self.assertEqual(result["originals_disposition"],
                          "KEEP_AWAIT_USER_APPROVAL")
+        path.write_bytes(b"CORRUPTED_OUTPUT")
+        self.assertIsNone(self.manager.artifact(row["id"], 0))
 
     def test_input_mutation_after_approval_is_rejected(self):
         original = self.inbox / "review.pdf"
@@ -279,6 +282,23 @@ class OperatorHTTP(WorkbenchContracts):
             retrieved = json.load(urlopen(base + "/api/operator/runs/" + row["id"]))
             self.assertEqual(retrieved["receipt_sha256"],
                              self.manager.get_run(row["id"])["receipt_sha256"])
+            # Generated artifacts are private to token-bearing local readbacks.
+            stat = json.load(post("/api/operator/run", {
+                **request, "profile": "task-census",
+            }, token="w45-token"))["result"]
+            finished = self.wait(stat["id"])
+            self.assertEqual(finished["status"], "PASS_LOCAL_ONLY")
+            artifact_route = base + "/api/operator/artifacts/" + stat["id"] + "/0"
+            with self.assertRaises(HTTPError) as absent_token:
+                urlopen(artifact_route, timeout=5)
+            self.assertEqual(absent_token.exception.code, 403)
+            authorized = Request(artifact_route, headers={"X-SUT-Token": "w45-token"})
+            self.assertEqual(urlopen(authorized, timeout=5).read(),
+                             b"LOCAL_FAKE_RECEIPT")
+            with self.assertRaises(HTTPError) as missing_output:
+                urlopen(Request(base + "/api/operator/artifacts/" + stat["id"] + "/999",
+                                headers={"X-SUT-Token": "w45-token"}), timeout=5)
+            self.assertEqual(missing_output.exception.code, 404)
         finally:
             server.shutdown()
             server.server_close()
