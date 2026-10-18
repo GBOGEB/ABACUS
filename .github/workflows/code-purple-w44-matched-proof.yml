@@ -40,7 +40,7 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          python -m pip install pytest==9.1.1 pytest-cov==5.0.0 coverage==7.16.2 defusedxml==0.7.1
+          python -m pip install pytest==9.1.1 pytest-cov==5.0.0 coverage==7.16.2 defusedxml==0.7.1 numpy==2.2.6
       - name: Baseline N preserved tests
         shell: bash
         env:
