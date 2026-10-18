@@ -342,6 +342,8 @@ class OperatorWorkbench:
                 if _git_head(clone) != row["source_sha"]:
                     raise ValueError("Fresh-clone checkout identity mismatch")
                 work_out = clone / "operator-output"
+                if work_out.is_symlink() or not work_out.resolve().is_relative_to(clone.resolve()):
+                    raise ValueError("Output location escapes fresh clone")
                 work_out.mkdir(exist_ok=True)
                 if row["input"] is not None:
                     original = self._input(row["input"]["name"])
@@ -349,20 +351,26 @@ class OperatorWorkbench:
                             or original.stat().st_size != row["input"]["bytes"]):
                         raise ValueError("Input changed after approval")
                     input_dir = clone / "operator-input"
+                    if input_dir.is_symlink() or not input_dir.resolve().is_relative_to(clone.resolve()):
+                        raise ValueError("Input staging location escapes fresh clone")
                     input_dir.mkdir(exist_ok=True)
                     shutil.copyfile(original, input_dir / original.name)
                 for step in row["argv"]:
                     args = [sys.executable, *step[1:]]
                     try:
-                        out = subprocess.run(args, cwd=clone, env=env,
-                                             text=True, errors="replace",
-                                             capture_output=True,
-                                             timeout=self.timeout_seconds)
+                        # Spool output to files to cap process memory use.
+                        with tempfile.TemporaryFile() as stdout_file, tempfile.TemporaryFile() as stderr_file:
+                            out = subprocess.run(args, cwd=clone, env=env,
+                                                 stdout=stdout_file, stderr=stderr_file,
+                                                 timeout=self.timeout_seconds)
+                            stdout_file.seek(max(0, stdout_file.tell() - 8000))
+                            stderr_file.seek(max(0, stderr_file.tell() - 8000))
+                            stdout_text = stdout_file.read().decode("utf-8", errors="replace")
+                            stderr_text = stderr_file.read().decode("utf-8", errors="replace")
                         command = {"argv": step, "returncode": out.returncode,
-                                   "stdout": out.stdout[-8000:],
-                                   "stderr": out.stderr[-8000:]}
+                                   "stdout": stdout_text, "stderr": stderr_text}
                         row["steps"].append(command)
-                        if out.returncode or "Ran 0 tests" in (out.stdout + out.stderr):
+                        if out.returncode or "Ran 0 tests" in (stdout_text + stderr_text):
                             row["status"] = "RED"
                             break
                     except subprocess.TimeoutExpired:
@@ -375,7 +383,9 @@ class OperatorWorkbench:
                     raise ValueError("Too many output artifacts")
                 # Copy outputs only, never alter/delete the source or inbox file.
                 for path in output_files:
-                    if path.is_symlink() or path.stat().st_size > 8 * 1024 * 1024:
+                    if (path.is_symlink()
+                            or not path.resolve().is_relative_to(work_out.resolve())
+                            or path.stat().st_size > 8 * 1024 * 1024):
                         raise ValueError("Unsafe or oversized generated output")
                     relative = path.relative_to(work_out)
                     stored = self.receipt_dir / rid / "artifacts" / relative
