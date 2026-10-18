@@ -161,3 +161,10 @@ an UNKNOWN flag whenever evidence is missing.
 
 This PR is an architecture and evidence viewer, not an autonomous
 production telemetry or merge service.
+
+
+## Supplemental weighted N+i graph and USER SPINE proposal (18 October 2026)
+
+The proposed [weighted-user-spine read-only projection](ci/NPLUS_WEIGHTED_USER_SPINE_V1.md) reuses this canonical architecture; it does **not** supersede the existing graph viewer, repo authority, LDAB, merge runway, or CODEX/QPS source ownership. Its [typed source/run category snapshot](data/NPLUS_WEIGHTED_RUN_CATEGORY_20261018.json) distinguishes executed workflow runs, successful runs, failed runs, workflow IDs and JUnit test cases. Network edge widths use one absolute square-root count scale across three adjacent views. N23's 12 QPS repetitions are not 12 independent test suites.
+
+[USER SPINE Mermaid source](ci/NPLUS_WEIGHTED_USER_SPINE_V1.mmd) adds user choice/override/veto, competing diagnostic lanes and an explicitly separate next-iteration feedback return. User preference is advisory: source owners, native evidence, required checks, eligible review and QPS child authority remain independent prerequisites. No dispatch, policy waiver, accepted root closure, or correctly governed merge is inferred from the projection. The visualization source/render assets require separate owner acceptance before publication. `MERGE_ADMISSION=HOLD`.
