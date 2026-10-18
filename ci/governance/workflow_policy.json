@@ -607,6 +607,24 @@
       "cluster": "statistics",
       "lifecycle": "pr_domain",
       "disposition": "keep"
+    },
+    {
+      "pattern": "^w33-backbone-pool\\.yml$",
+      "cluster": "runtime_governance",
+      "lifecycle": "pr_domain",
+      "disposition": "keep"
+    },
+    {
+      "pattern": "^w36-g3cs-skip-contract\\.yml$",
+      "cluster": "statistics",
+      "lifecycle": "pr_domain",
+      "disposition": "keep"
+    },
+    {
+      "pattern": "^w38-local-pool-mip\\.yml$",
+      "cluster": "statistics",
+      "lifecycle": "pr_domain",
+      "disposition": "keep"
     }
   ],
   "quality_gates": {
