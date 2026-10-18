@@ -181,6 +181,7 @@ def rollup(doc):
             "latest_success": latest["outcomes"].get("success", 0),
             "latest_distinct_workflows": latest["workflow_family_accounting"]["distinct_workflows"],
             "latest_repeated_run_excess": latest["workflow_family_accounting"]["repeated_executions"],
+            "latest_clean_workflow_families": latest["workflow_family_accounting"]["family_clean_success"],
             "latest_repeat_success_excess": latest["workflow_family_accounting"]["success_excess_from_repeat_runs"],
             "latest_workflow_testcase_count": None,
             "queue_congestion": "OBSERVED" if blocked else "NO_OPEN_RUNS_IN_CENSUS",
@@ -215,14 +216,16 @@ def as_markdown(r):
     lines = ["# CODE PURPLE N+i — native CI cohort observatory", "",
              "Distinct main-SHA push-run populations; **not matched coverage or "
              "engineering-root closures**.", "",
-             "| Wave | SHA | Runs | Distinct families | Repeats | Success | Failed | Cancelled | Open | Success/all | Terminal/all |",
-             "|---|---|---:|---:|---:|---:|---:|---:|---:|---:|---:|"]
+             "| Wave | SHA | Runs | Families | Repeat extras | Extra green repeats | Green families | Success | Failed | Cancelled | Open | Success/all | Terminal/all |",
+             "|---|---|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|"]
     for w in r["waves"]:
         c = w["outcomes"]
         fam = w["workflow_family_accounting"]
         lines.append(f"| {w['wave']} | {w['source_sha'][:12]} | "
                      f"{w['native_total_count']} | {fam['distinct_workflows']} | "
                      f"{fam['repeated_executions']} | "
+                     f"{fam['success_excess_from_repeat_runs']} | "
+                     f"{fam['family_clean_success']}/{fam['distinct_workflows']} | "
                      f"{c.get('success', 0)} | {c.get('failure', 0)} | "
                      f"{c.get('cancelled', 0)} | {c.get('nonterminal', 0)} | "
                      f"{c.get('success', 0)}/{w['native_total_count']} | "
