@@ -167,3 +167,31 @@ A global CONTROL claim requires a predeclared multi-clock stability streak, acce
 | P2 | Mission Control: deduplicate closed/unmerged issues/PRs, causal roots, supersession and 7/21/90-day temporal edges | Stable cohort IDs, typed edges and source hashes | Candidate |
 
 No score across rows compensates for a red in another row. Stop specifically completed local W75/W64/W81/W82 expansion while retaining these independent blockers.
+
+## 12. Artifact and cross-format QA receipt contract
+
+Pin the current source head and Git blob identities for `ledger.json`, `index.template.html`, `index.html`, renderer/tests, machine control, this handover and the drop-in. Keep Git content identity distinct from the SHA-256 digest of a produced ZIP.
+
+Use the QPS artifact QA receipt model: source locator/semantic SHA/Git SHA; artifact HTML path and SHA-256; separate structural, content, visual, Playwright and parity checks; defects/fixes/residuals; evidence level `LOCAL_REPRODUCIBILITY` or `EXACT_SHA_RECEIPT` or `DEFERRED`. Only native execution on the currently committed head can grant exact-head QA.
+
+From `MIP/EVIDENCE_TO_ADMISSION_OBSERVATORY/global/`:
+
+```bash
+python render_global.py --check
+python -m unittest -v test_global_rollup.py
+python qa_playwright.py --out w40_qa_receipts
+```
+
+The native runner must record Chrome/Chromium version, Playwright environment, 1440×1000/1280×800/390×844 screenshots, console/page/overflow outcomes and mocked API interactions. The browser's 19 simulated GET requests are not authenticated federation consumption or live persistent GitHub census updates. A rendered page cannot overwrite QPS source, OFFER/RTM, COST, compliance or accepted REX.
+
+## 13. Re-entry, rollback, supersession, completeness
+
+**Exact next action:** refresh current branch and main SHAs; inspect newest W40 `CI Workflow Governance` run on the **same** head, down to failing job/step/attempt and uploaded receipt. If head moved, earlier W39 QA is historical, not a candidate PASS. Repair only a real first-red with the responsible source owner; avoid blind reruns or broad test duplication.
+
+**Rollback anchor:** W39 source `fc6ea65f2d0322f1a98fde323310c09990522709`, native run `39170632775`; W40 taxonomy and continuity are additive and can be reverted without altering local behavioral production logic or QPS child engineering SSOT.
+
+**Golden Thread preservation:** all W29–W39 heads/runs, W38 premature PR #2278, W39 test and screenshot provenance, CODEX/QPS source-only branches, QPS stable GLOB + volatile QTG + session-pointer hierarchy, and unmerged/closed PR/issue successor relations remain traceable. No silent deletion or retroactive acceptance.
+
+**Lossless package is source-complete when:** machine receipt, human lossless handover, drop-in text, moniker taxonomy in generated HTML, tests, QA receipt and owner hooks are all source-linked. Full governed publication remains **NOT deletion-safe** until new-head QA, independent protection/review and child return are actually observed. Do not self-merge or claim child engineering credit because the bundle exists.
+
+**Disposition:** `LOCAL_W75_W64_W81_W82_TARGET=MET`; `W39_NATIVE=PASS`; `W40_CURRENT_HEAD_NATIVE=PENDING`; `QPS_CHILD_DoV=WITHHELD`; `MERGE_ADMISSION=HOLD`; `formal_credit_delta=0`.
