@@ -103,7 +103,8 @@ def build(event: dict, *, route_output: str, event_name: str,
         "schema": SCHEMA,
         "observation_type": "TRUSTED_NATIVE_ROUTE_OUTPUT_NOT_GLOBAL_CAUSATION",
         "source_repository": REPOSITORY,
-        "feedback_main_sha": main_sha,
+        "github_event_sha": main_sha,
+        "main_head_verified": False,
         "observed_utc": observed_utc,
         "gate_run_id": gate_run_id,
         "gate_attempt": gate_attempt,
@@ -111,6 +112,9 @@ def build(event: dict, *, route_output: str, event_name: str,
         "upstream": upstream,
         "routed_pr_numbers": prs,
         "routed_unique_pr_count": len(prs),
+        "route_stage": "ROUTE_OUTPUT_OBSERVED",
+        "evaluated_pr_count": None,
+        "published_check_count": None,
         "zero_route_observed": len(prs) == 0,
         "eligible_suppression": False,
         "rerun_reduction_verified": None,
@@ -141,6 +145,36 @@ def verify(receipt: dict) -> None:
             and receipt.get("authority_transfer") is False
             and receipt.get("remote_dispatch") is False,
             "AUTHORITY_PROMOTION")
+    require(receipt.get("source_repository") == REPOSITORY
+            and type(receipt.get("github_event_sha")) is str
+            and SHA.fullmatch(receipt["github_event_sha"])
+            and receipt.get("main_head_verified") is False,
+            "EVENT_SHA_NOT_MAIN_ATTESTATION")
+    require(receipt.get("route_stage") == "ROUTE_OUTPUT_OBSERVED"
+            and receipt.get("evaluated_pr_count") is None
+            and receipt.get("published_check_count") is None
+            and receipt.get("rerun_reduction_verified") is None
+            and receipt.get("source_coverage_delta") is None,
+            "ROUTE_NOT_EVALUATION_PROOF")
+    identity(receipt.get("gate_run_id"), "GATE_RUN_ID")
+    identity(receipt.get("gate_attempt"), "GATE_ATTEMPT")
+    require(receipt.get("event") in ALLOWED_EVENTS, "RECEIPT_EVENT")
+    prs = receipt.get("routed_pr_numbers")
+    require(type(prs) is list and len(prs) <= 300, "RECEIPT_ROUTE_LIST")
+    for pr in prs:
+        identity(pr, "ROUTED_PR")
+    require(len(prs) == len(set(prs)) and prs == sorted(prs),
+            "RECEIPT_DUPLICATE_OR_UNORDERED")
+    upstream = receipt.get("upstream")
+    if receipt["event"] == "workflow_run":
+        require(type(upstream) is dict
+                and upstream.get("conclusion") in TERMINAL,
+                "RECEIPT_UPSTREAM_TERMINAL")
+        identity(upstream.get("run_id"), "UPSTREAM_RUN_ID")
+        identity(upstream.get("attempt"), "UPSTREAM_ATTEMPT")
+        sha(upstream.get("head_sha"), "UPSTREAM_HEAD")
+    else:
+        require(upstream is None, "UNEXPECTED_UPSTREAM")
     require(receipt["routed_unique_pr_count"] ==
             len(receipt["routed_pr_numbers"]), "ROUTE_COUNT_DRIFT")
     require(receipt["zero_route_observed"] ==
@@ -153,7 +187,7 @@ def main() -> None:
     p.add_argument("--routed-prs", required=True)
     p.add_argument("--event-name", required=True)
     p.add_argument("--repository", required=True)
-    p.add_argument("--main-sha", required=True)
+    p.add_argument("--event-sha", "--main-sha", dest="event_sha", required=True)
     p.add_argument("--gate-run-id", type=int, required=True)
     p.add_argument("--gate-attempt", type=int, required=True)
     args = p.parse_args()
@@ -163,12 +197,13 @@ def main() -> None:
         route_output=args.routed_prs,
         event_name=args.event_name,
         repository=args.repository,
-        main_sha=args.main_sha,
+        main_sha=args.event_sha,
         gate_run_id=args.gate_run_id,
         gate_attempt=args.gate_attempt,
         observed_utc=observed.replace("+00:00", "Z"),
     )
     verify(result)
+    # GITHUB_SHA is event context, not a verified main branch head.
     # Deliberately prints only typed identifiers. No comments, PR payload
     # bodies, token or owner-private data enter the public Actions log.
     print("CBD_W38_ROUTE_YIELD " + canonical(result).decode().strip())
