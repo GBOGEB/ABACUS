@@ -102,6 +102,24 @@ class WorkbenchContracts(unittest.TestCase):
             consent, delay, token,
         )
 
+    def test_nonbinary_profiles_plan_without_binary_filename(self):
+        # W45 native run 39173795497: eager binary command construction
+        # raised TypeError for filename=None, surfacing as HTTP 400.
+        for profile in (
+            "python-tests", "runner-tests", "debug-compile",
+            "task-census", "pipeline-3p",
+        ):
+            with self.subTest(profile=profile):
+                plan = self.manager.plan(profile)
+                self.assertTrue(plan["executable"])
+                self.assertIsNone(plan["input"])
+                self.assertEqual(plan["source_sha"], self.sha)
+                self.assertNotIn("operator-input/None", repr(plan["argv"]))
+                self.assertTrue(all(command[0] == "python"
+                                    for command in plan["argv"]))
+        with self.assertRaisesRegex(ValueError, "verified local input"):
+            self.manager._steps("binary-bridge", None, self.sha)
+
     def test_profile_catalog_and_mcp_refusal(self):
         catalog = self.manager.catalog()
         self.assertEqual(catalog["source_sha"], self.sha)
