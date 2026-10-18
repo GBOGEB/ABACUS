@@ -57,6 +57,46 @@ class NativeComparatorTests(unittest.TestCase):
     def test_clock_negative_duration_fails(self):
         x=fixture();j=x['runs'][0]['jobs'][0];j['started_at']='2026-10-18T09:57:00Z'
         with self.assertRaisesRegex(ValueError,'negative queue'):module.validate(x)
+    def test_immutable_run_terminal_cannot_flip_green(self):
+        old=fixture();new=copy.deepcopy(old)
+        old['runs'][0].update(status='completed',conclusion='failure')
+        new['runs'][0].update(status='completed',conclusion='success')
+        new['observed_at_utc']='2026-10-18T10:05:00Z'
+        delta=module.compare(old,new)
+        self.assertFalse(delta['comparable'])
+        self.assertIn('IMMUTABLE_RUN_TERMINAL_CHANGED',delta['reasons'])
+        self.assertIsNone(delta['successful_run_delta'])
+
+    def test_immutable_job_terminal_cannot_fake_first_red_fix(self):
+        old=fixture();new=copy.deepcopy(old)
+        old['runs'][0]['jobs'][0].update(status='completed',conclusion='failure',
+            started_at='2026-10-18T09:59:00Z',completed_at='2026-10-18T09:59:11Z')
+        new['runs'][0]['jobs'][0].update(status='completed',conclusion='success',
+            started_at='2026-10-18T09:59:00Z',completed_at='2026-10-18T09:59:11Z')
+        new['observed_at_utc']='2026-10-18T10:05:00Z'
+        delta=module.compare(old,new)
+        self.assertFalse(delta['comparable'])
+        self.assertIn('IMMUTABLE_JOB_TERMINAL_CHANGED',delta['reasons'])
+        self.assertIsNone(delta['job_first_red_cleared'])
+
+    def test_immutable_job_terminal_timestamp_cannot_rewrite_p95(self):
+        old=fixture();new=copy.deepcopy(old)
+        for x in (old,new):
+            x['runs'][0]['jobs'][0].update(status='completed',conclusion='success',
+                started_at='2026-10-18T09:59:00Z',completed_at='2026-10-18T09:59:11Z')
+        new['runs'][0]['jobs'][0]['completed_at']='2026-10-18T09:59:18Z'
+        new['observed_at_utc']='2026-10-18T10:05:00Z'
+        delta=module.compare(old,new)
+        self.assertIn('IMMUTABLE_JOB_TERMINAL_CHANGED',delta['reasons'])
+
+    def test_genuine_new_attempt_never_counts_as_same_population(self):
+        old=fixture();new=copy.deepcopy(old)
+        new['runs'][0]['attempt']=2
+        new['observed_at_utc']='2026-10-18T10:05:00Z'
+        delta=module.compare(old,new)
+        self.assertFalse(delta['comparable'])
+        self.assertIn('RUN_ATTEMPT_POPULATION_CHANGED',delta['reasons'])
+
     def test_failed_job_does_not_create_root_closure(self):
         x=fixture();x['runs'][0]['jobs'][0].update(status='completed',conclusion='failure',
             started_at='2026-10-18T10:00:00Z',completed_at='2026-10-18T10:00:02Z')
