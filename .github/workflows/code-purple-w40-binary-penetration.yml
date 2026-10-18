@@ -37,6 +37,19 @@ jobs:
         run: |
           set -euo pipefail
           python -m pip install pytest==9.1.1 pytest-cov==5.0.0 coverage==7.16.2 pypdf==6.21.1 numpy==2.2.6
+      - name: Matched N baseline - legacy plus W32 only
+        shell: bash
+        env:
+          EXACT_HEAD: ${{ github.event.pull_request.head.sha || github.sha }}
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$EXACT_HEAD"
+          mkdir -p artifacts/w40
+          python -m pytest -q \
+            tests/test_qps_binary_bridge.py \
+            tests/test_qps_binary_bridge_w32_integrity.py \
+            --cov=tools --cov-branch --cov-report=json:artifacts/w40/baseline-coverage.json \
+            --junitxml=artifacts/w40/baseline-junit.xml
       - name: 42 new, plus W32 and baseline cases - native branch coverage
         shell: bash
         env:
@@ -71,9 +84,19 @@ jobs:
           keys=[k for k in report["files"] if k.replace("\\", "/").endswith("tools/qps_binary_bridge.py")]
           assert len(keys)==1, "missing/ambiguous source-bound measured module"
           m=report["files"][keys[0]]["summary"]
+          baseline=json.loads((out/"baseline-coverage.json").read_text())
+          bkeys=[k for k in baseline["files"] if k.replace("\\", "/").endswith("tools/qps_binary_bridge.py")]
+          assert len(bkeys)==1, "missing matched baseline coverage"
+          b=baseline["files"][bkeys[0]]["summary"]
+          assert (m["num_statements"],m["num_branches"])==(b["num_statements"],b["num_branches"]), "changed eligible module denominator"
+          assert m["covered_lines"]>=b["covered_lines"] and m["covered_branches"]>=b["covered_branches"], "coverage regression on same source/config"
+          baseline_tests=list(ET.parse(out/"baseline-junit.xml").iter("testcase"))
+          assert len(baseline_tests)>0
+          assert all(not list(t.iter("failure")) and not list(t.iter("error")) and not list(t.iter("skipped")) for t in baseline_tests), "baseline suite must be green"
           tests=list(ET.parse(out/"junit.xml").iter("testcase"))
           w40=[t for t in tests if "test_qps_binary_bridge_w40_penetration" in (t.attrib.get("classname","")+t.attrib.get("name",""))]
           assert len(w40)==42, ("test denominator mismatch", len(w40))
+          assert len(tests)==len(baseline_tests)+42, "unmatched test populations or culled tests"
           assert all(not list(t.iter("failure")) and not list(t.iter("error")) and not list(t.iter("skipped")) for t in tests), "native test failure or skip"
           sha=os.environ["EXACT_HEAD"]
           assert len(sha)==40 and all(c in "0123456789abcdef" for c in sha)
@@ -84,6 +107,14 @@ jobs:
                    "new_w40_failed":0,"new_w40_skipped":0,
                    "statement_covered":m["covered_lines"],"statement_eligible":m["num_statements"],
                    "branch_covered":m["covered_branches"],"branch_eligible":m["num_branches"],
+                   "baseline_junit_cases":len(baseline_tests),
+                   "baseline_statement_covered":b["covered_lines"],
+                   "baseline_branch_covered":b["covered_branches"],
+                   "delta_statement_covered":m["covered_lines"]-b["covered_lines"],
+                   "delta_branch_covered":m["covered_branches"]-b["covered_branches"],
+                   "matched_eligible_opportunities":m["num_statements"]+m["num_branches"],
+                   "matched_before_covered":b["covered_lines"]+b["covered_branches"],
+                   "matched_after_covered":m["covered_lines"]+m["covered_branches"],
                    "coverage_scope":"tools/qps_binary_bridge.py only","source_file_key":keys[0],
                    "formal_main_uplift":None,"pr_diff_coverage":None,"admission":"HOLD",
                    "authenticated_crew":None,"accepted_rex":None,
