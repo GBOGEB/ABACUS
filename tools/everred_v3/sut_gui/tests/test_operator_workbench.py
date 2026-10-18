@@ -304,5 +304,61 @@ class OperatorHTTP(WorkbenchContracts):
             server.server_close()
 
 
+
+class OperatorSurfaceQA(unittest.TestCase):
+    def test_html_semantics_and_no_eval_escape(self):
+        from html.parser import HTMLParser
+
+        class Scan(HTMLParser):
+            def __init__(self):
+                super().__init__()
+                self.ids = []
+                self.h1 = 0
+                self.title = 0
+                self.scripts = []
+                self.in_script = False
+
+            def handle_starttag(self, tag, attrs):
+                attrs = dict(attrs)
+                if "id" in attrs:
+                    self.ids.append(attrs["id"])
+                if tag == "h1":
+                    self.h1 += 1
+                if tag == "title":
+                    self.title += 1
+                if tag == "script":
+                    self.in_script = True
+
+            def handle_endtag(self, tag):
+                if tag == "script":
+                    self.in_script = False
+
+            def handle_data(self, data):
+                if self.in_script:
+                    self.scripts.append(data)
+
+        html = (HERE / "operator.html").read_text(encoding="utf-8")
+        parser = Scan()
+        parser.feed(html)
+        self.assertTrue(html.startswith("<!doctype html>"))
+        self.assertEqual(parser.h1, 1)
+        self.assertEqual(parser.title, 1)
+        self.assertEqual(len(parser.ids), len(set(parser.ids)))
+        self.assertIn("token", parser.ids)
+        self.assertIn("consent", parser.ids)
+        self.assertIn("downloads", parser.ids)
+        script = "\n".join(parser.scripts)
+        self.assertNotIn("eval(", script)
+        self.assertNotIn("new Function(", script)
+        self.assertIn("/api/operator/plan", script)
+        self.assertIn("input_sha256", script)
+        self.assertIn("/api/operator/artifacts/", script)
+        if shutil.which("node"):
+            completed = subprocess.run(["node", "--check"], input=script,
+                                       text=True, capture_output=True,
+                                       timeout=10)
+            self.assertEqual(completed.returncode, 0, completed.stderr)
+
+
 if __name__ == "__main__":
     unittest.main()
