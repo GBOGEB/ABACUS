@@ -6,7 +6,7 @@ from __future__ import annotations
 import json
 import sys
 from pathlib import Path
-from typing import Any, Dict, List, Mapping
+from typing import Any, Dict, List, Mapping, Optional
 
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
@@ -33,18 +33,18 @@ def _relative(path: Path, repo_root: Path) -> str:
         return str(path)
 
 
-def _load_json(path: Path, repo_root: Path, errors: List[str]) -> Dict[str, Any]:
+def _load_json(path: Path, repo_root: Path, errors: List[str]) -> Optional[Dict[str, Any]]:
     if not path.exists():
         errors.append(f"missing JSON artifact: {_relative(path, repo_root)}")
-        return {}
+        return None
     try:
         data = json.loads(path.read_text(encoding="utf-8"))
     except json.JSONDecodeError as exc:
         errors.append(f"invalid JSON in {_relative(path, repo_root)}: {exc}")
-        return {}
+        return None
     if not isinstance(data, dict):
         errors.append(f"JSON artifact must be an object: {_relative(path, repo_root)}")
-        return {}
+        return None
     return data
 
 
@@ -164,11 +164,13 @@ def validate_runtime_foundation(repo_root: Path = REPO_ROOT) -> List[str]:
 
     errors: List[str] = []
     manifest = _load_json(manifest_path, repo_root, errors)
-    if manifest:
+    # An existing, valid JSON object is not necessarily nonempty.
+    # Empty objects must reach structural validation and fail closed.
+    if manifest is not None:
         _validate_manifest(manifest, repo_root, errors)
 
     trace_matrix = _load_json(trace_matrix_path, repo_root, errors)
-    if trace_matrix:
+    if trace_matrix is not None:
         _validate_trace_matrix(trace_matrix, repo_root, errors)
     _validate_runtime_portal(runtime_portal_path, errors)
     return errors
