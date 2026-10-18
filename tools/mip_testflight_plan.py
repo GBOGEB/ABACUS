@@ -11,8 +11,8 @@ import argparse
 import json
 import math
 import re
-from pathlib import Path
 from datetime import datetime
+from pathlib import Path
 
 SCHEMA = "abacus.mip.testflight-input.v1"
 OUTPUT = "abacus.mip.testflight-plan.v1"
@@ -155,14 +155,21 @@ def _waves(tasks, max_parallel):
     return waves, sorted(blocked)
 
 
+def _parse_native_timestamp(value):
+    # Python 3.9 does not natively accept a terminal "Z"; keep UTC semantics.
+    if value.endswith("Z"):
+        value = value[:-1] + "+00:00"
+    return datetime.fromisoformat(value)
+
+
 def _interval_seconds(start, end):
     if start is None or end is None:
         return None
     if type(start) is not str or type(end) is not str:
         raise ValueError("invalid native timestamp type")
     try:
-        t0 = datetime.fromisoformat(start.replace("Z", "+00:00"))
-        t1 = datetime.fromisoformat(end.replace("Z", "+00:00"))
+        t0 = _parse_native_timestamp(start)
+        t1 = _parse_native_timestamp(end)
         interval = (t1 - t0).total_seconds()
     except (TypeError, ValueError) as exc:
         raise ValueError("invalid native timestamp") from exc
