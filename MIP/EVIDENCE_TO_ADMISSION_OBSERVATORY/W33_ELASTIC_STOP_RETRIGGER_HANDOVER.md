@@ -84,3 +84,12 @@ For every new pulse preserve \`family, source_sha, base_sha, run_id, attempt, jo
 - **N+1** = W31/W32 four-family observed head, 236/236 success, 660/723 focused; **not directly comparable to 342/346 for delta**.
 - **N+2 candidate** = W33 small W82 canonical-test union and elastic governor branch, **not yet native qualified**.
 - Next source wave only if actual fresh receipt and capacity checks pass; stay at one readonly observation lane otherwise.
+
+
+### W33 controller hardening after initial staging
+
+Fresh scaling requires **A->B->A stable current source identity** and a **complete queue job population bound to that same exact terminal run ID and source SHA**; neither is assumed from the older W31/W32 run. Geometric growth may only arise from an *active, not already-target-reached* source family's two new comparable gain transitions. A stale queue population or repeated evaluation cannot double the budget.
+
+Global CONTROL additionally requires exact-current-main canonical B0, complete native artifact-type and downstream-consumer attestations, and the independently governed rules/negative canary/security/roots/repo-stability conditions. The W33 source-type receipt illustrates 4 types x 2 native cells = 8 native-file observations, but consumer attestation is UNKNOWN; 8/8 native ≠ federation acceptance.
+
+\`wave_metrics.py\` now appends \`elastic_controller\` to the pre-existing observatory receipt, with \`measurement_freshness=HISTORICAL_FOCUSED_SOURCE_HEAD_NOT_EXACT_CURRENT_MAIN\`. This is not an execution/replacement of the legacy measured B0 signal.
