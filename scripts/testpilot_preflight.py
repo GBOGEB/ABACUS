@@ -229,6 +229,8 @@ def source_sha() -> str | None:
 
 def receipt_outcome(checks: list[dict], mode: str, *, parity: bool = False) -> tuple[str, int]:
     """Unexecuted checks cannot be reported as complete, especially in gate mode."""
+    if not checks:
+        return "FAIL", 1
     if any(c.get("status") == "FAIL" for c in checks):
         return "FAIL", 1
     if any(c.get("status") == "SKIP" for c in checks):
