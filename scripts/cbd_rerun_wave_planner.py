@@ -43,7 +43,8 @@ def validate(snapshot: dict) -> None:
     if not isinstance(heads, dict) or not heads:
         raise ValueError("missing live PR heads")
     for key, sha in heads.items():
-        if not str(key).isdigit() or not HEX40.fullmatch(str(sha)):
+        if (not isinstance(key, str) or not re.fullmatch(r"[1-9][0-9]*", key)
+                or not isinstance(sha, str) or not HEX40.fullmatch(sha)):
             raise ValueError("invalid PR source identity")
     cap = snapshot.get("capacity")
     if not isinstance(cap, dict):
@@ -134,6 +135,8 @@ def compare(previous: dict, current: dict) -> list[dict]:
         else:
             if earlier["pr"] != row["pr"] or earlier["head_sha"] != row["head_sha"]:
                 raise ValueError("conflicting exact-run source")
+            if earlier["workflow"] != row["workflow"]:
+                raise ValueError("conflicting exact-run workflow identity")
             if row["attempt"] < earlier["attempt"]:
                 raise ValueError("attempt rollback")
             if row["attempt"] > earlier["attempt"]:
@@ -160,7 +163,7 @@ def compare(previous: dict, current: dict) -> list[dict]:
 def plan(snapshot: dict, previous: dict | None = None) -> dict:
     validate(snapshot)
     cap = snapshot["capacity"]
-    saturated = cap["queued"] > cap["max_queued"] or cap["in_progress"] >= cap["max_in_progress"]
+    saturated = cap["queued"] >= cap["max_queued"] or cap["in_progress"] >= cap["max_in_progress"]
     seen_roots = set()
     slots = 0
     proposed = []
