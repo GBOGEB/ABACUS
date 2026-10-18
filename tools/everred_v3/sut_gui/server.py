@@ -5,6 +5,7 @@ import argparse
 import hashlib
 import json
 import os
+import re
 from pathlib import Path
 import secrets
 import shutil
@@ -334,6 +335,15 @@ class Handler(BaseHTTPRequestHandler):
                 return self._send(200, self.operator.catalog())
             if path == "/api/operator/runs":
                 return self._send(200, {"runs": self.operator.list_runs()})
+            if path.startswith("/api/operator/artifacts/"):
+                if (not self.operator.enabled or not secrets.compare_digest(
+                        self.headers.get("X-SUT-Token", ""), self.operator.token)):
+                    return self._send(403, {"error": "Artifact access requires local token"})
+                parts = path[len("/api/operator/artifacts/"):].split("/")
+                if len(parts) != 2 or not re.fullmatch(r"[0-9a-f]{16}", parts[0]) or not parts[1].isdecimal():
+                    return self._send(404, {"error": "Unknown local artifact"})
+                artifact = self.operator.artifact(parts[0], int(parts[1]))
+                return self._send(200, artifact[1], "application/octet-stream") if artifact else self._send(404, {"error": "Missing or altered artifact"})
             if path.startswith("/api/operator/runs/"):
                 rid = path.rsplit("/", 1)[-1]
                 row = self.operator.get_run(rid)
