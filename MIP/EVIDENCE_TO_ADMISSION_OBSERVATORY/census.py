@@ -23,6 +23,7 @@ import urllib.request
 import zipfile
 
 from wave_metrics import ProofError, build_wave_receipt
+from queue_telemetry import summarize_jobs
 
 HERE = Path(__file__).resolve().parent
 REPO = "GBOGEB/ABACUS"
@@ -283,20 +284,18 @@ def collect(client: Client, baseline: dict, now: str | None = None, artifact_dow
                  "source_sha":original,
                  "execution_class":"DAB_PROPOSAL_NOT_CREW" if (x.get("name") or "").startswith("DAB proposal worker") else "NATIVE_EVIDENCE_PRODUCER"}
                 for x in jr]
-            # Native REST exposes created_at/started_at/completed_at. Emit p95
-            # only for actual timestamp pairs, never for absent/queued clocks.
-            import datetime as _dt
-            def elapsed(start,stop):
-                try:
-                    a=_dt.datetime.fromisoformat(start.replace('Z','+00:00'))
-                    b=_dt.datetime.fromisoformat(stop.replace('Z','+00:00'))
-                    return (b-a).total_seconds() if b>=a else None
-                except (AttributeError, ValueError, TypeError):return None
-            def p95(values):
-                v=sorted(x for x in values if x is not None)
-                return v[min(len(v)-1, max(0, int((len(v)*.95+.999999))-1))] if v else None
-            b0["queue_p95_seconds"] = p95([elapsed(x.get('created_at'),x.get('started_at')) for x in jr])
-            b0["execution_p95_seconds"] = p95([elapsed(x.get('started_at'),x.get('completed_at')) for x in jr])
+            # A queued job can have started_at == created_at in GitHub REST.
+            # Require the entire terminal population, unique job identity and
+            # valid monotonic timestamps before queue p95 can control scaling.
+            queue_receipt = safe("b0_queue_telemetry", lambda: summarize_jobs(
+                jr, run_id=run_id, head_sha=original,
+                attempt=b0.get("run_attempt") or 1,
+                total_count=jobs.get("total_count")))
+            b0["queue_telemetry"] = queue_receipt
+            b0["queue_p95_seconds"] = (
+                queue_receipt.get("queue_p95_seconds") if queue_receipt else None)
+            b0["execution_p95_seconds"] = (
+                queue_receipt.get("execution_p95_seconds") if queue_receipt else None)
         artifacts = safe("b0_artifacts", lambda: client.get(f"/repos/{REPO}/actions/runs/{run_id}/artifacts?per_page=100"))
         choices = [x for x in (artifacts or {}).get("artifacts", []) if x.get("name") == "b0-canonical-"+original and not x.get("expired")]
         if len(choices)==1:
