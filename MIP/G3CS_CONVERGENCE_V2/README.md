@@ -66,11 +66,70 @@ The displayed `46..62` N+1 bound is only the arithmetic minimum/maximum for a **
 4. Independently accept causally distinct roots by source-owner and reviewer, not by issue-close totals; preserve confidentiality and Safety gates.
 5. Perform one serial admission, exact PR-head CI, merge-main CI, matched main/diff coverage, and REX; then issue the next N+1 snapshot. Until then `MERGE_ADMISSION=HOLD`.
 
+
+## Serial merged-main measurement extension (G3C-S W5)
+
+The existing \`tools/compare_snapshots.py\` compares **successive readbacks of the
+same exact (source SHA, run ID, attempt) population**. It must never be used
+to infer longitudinal improvement between different PR heads.
+
+The additional \`tools/serial_main_pair.py\` compares **two consecutive,
+source-reported merged-main commits** with different native run/job IDs but the
+same frozen logical job cohorts. Its input schema is
+\`codepurple.g3cs.serial-main-pair-input.v1\`. Capture real main SHA, explicit
+parent-main SHA, timezone-aware capture time, SHA-bound job/run/attempt IDs,
+first-red fingerprints and owner root statuses. Coverage
+\`statement\`/\`branch\`/\`diff\` entries can be \`null\`; otherwise each must
+contain source SHA, covered/eligible counts, and SHA256 hashes for scope,
+selection and tool. **The comparator rejects any noncontiguous main chain.**
+
+Example invocation (on separately obtained, source-reported JSON observations):
+
+\`\`\`bash
+python tools/serial_main_pair.py \
+  --input /path/to/two-serial-main-observations.json \
+  --output /tmp/g3cs-serial-main-pair.json
+python -m unittest discover -s ../../tests -p 'test_g3cs_serial_main.py' -v
+\`\`\`
+
+Interpretation rules:
+
+- Comparisons return \`PAIRED_SOURCE_REPORTED\` only when the scope, tool,
+  selection and denominator all match; otherwise \`UNKNOWN\` or
+  \`NONCOMPARABLE\`. No inferred coverage from green workflow checks.
+- A first-red that disappears is a **nonreproduced candidate**, not an
+  accepted causal-root closure. A source-reported \`CLOSURE_CLAIMED\` root
+  is not independently verified.
+- Queue and execution p95 require at least five **matched terminal jobs**
+  with distinct, plausible run/job/attempt IDs and valid timing clocks.
+  Skipped, cancelled and nonterminal jobs do not fabricate durations.
+- Two serial observations allow descriptive differences only: stability,
+  PCA, Bradley–Terry, Six Sigma and predictive intervals remain \`null\`.
+  The result labels source evidence
+  \`SOURCE_REPORTED_NOT_INDEPENDENTLY_VERIFIED\`, with
+  \`admission=HOLD\` and \`authority_transfer=false\`.
+- Typed output \`dag_joins\` references the existing graph nodes
+  \`main/matrix/coverage/roots/dmaic/dashboard\`; \`sipoc_process\` is the
+  existing MIP/gg_MATH matched-cohort family. This is not a new SSOT,
+  workflow policy, Crew launcher or merge-authority provider.
+
+The new repository-native \`tests/test_g3cs_serial_main.py\` contains
+**17 positive/adversarial methods**, including forged timestamps, duplicate
+job identities, missing source SHA, unmatched denominators, premature
+observations, negative clocks and unsupported authority promotion. Local
+unit proof passed 17/17; current PR-head native CI and independent review
+remain separate.
+
+Browser QA now creates the untracked \`qa/\` folder in clean clones,
+checks the dashboard's embedded source digest against the source input, and
+emits SHA256 hashes of HTML and three viewport screenshots. A local browser
+receipt is not an exact-head native release receipt.
+
 ## Artifact QA status
 
-- Structural/typed metric validation: **PASS** (35 adversarial/positive unit tests).
+- Existing structural/typed metric validation: **35 locally exercised** tests; **17 new serial-main denial/positive tests passed locally**. Exact PR-head native qualification still pending.
 - Desktop/laptop/mobile Playwright: **PASS** (1440×1000, 1280×800, 390×844), no console/page error, no broken SVG image, no horizontal overflow; native filter/search interaction verified.
-- Presentation assets are generated from the same input SHA; `qa/browser_receipt.json` and PNG captures are distributed in the downloadable bundle.
+- Presentation assets are generated from the same input SHA; `qa/browser_receipt.json` and PNG captures are generated on demand (not silently assumed available in a clean clone). Their hashes are retained when produced.
 - Evidence level: `LOCAL_REPRODUCIBILITY`. This is **not** an exact-head native GitHub CI receipt or accepted release.
 
 ## Repeatable N→N+1 native telemetry comparison (v2 extension)
