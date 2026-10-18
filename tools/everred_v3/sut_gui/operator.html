@@ -1,0 +1,124 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="code-purple-schema" content="codepurple.operator.workbench.v1">
+<title>CODE PURPLE | Operator Workbench</title>
+<style>
+:root{color-scheme:dark;--bg:#080f1d;--ink:#edf5ff;--muted:#aac0d6;--panel:#101e30;--edge:#2b4159;--teal:#6cdfbf;--blue:#7fc8ff;--amber:#e9bc71;--red:#ff9aa0;font:15px/1.5 system-ui,Segoe UI,Arial,sans-serif}
+*{box-sizing:border-box}body{margin:0;background:radial-gradient(circle at 95% -15%,#213b60,transparent 45%),var(--bg);color:var(--ink)}a{color:var(--blue)}button,select,input{font:inherit;border-radius:9px}button,select,input{background:#192d46;color:var(--ink);border:1px solid #4a6784;padding:10px}button{cursor:pointer;font-weight:700}button:disabled{opacity:.45;cursor:not-allowed}button:focus-visible,input:focus-visible,select:focus-visible{outline:3px solid var(--amber);outline-offset:2px}input[type=checkbox]{accent-color:var(--teal);width:18px;height:18px}main{max-width:1400px;margin:auto;padding:26px clamp(14px,3vw,46px) 60px}.top{display:flex;justify-content:space-between;gap:22px;align-items:start;flex-wrap:wrap}.eyebrow{color:var(--teal);font-size:12px;letter-spacing:.18em;font-weight:800}.top h1{font-size:clamp(28px,3vw,45px);margin:5px 0;line-height:1.13}.muted{color:var(--muted)}.small{font-size:12px}.toolbar{display:flex;flex-wrap:wrap;gap:10px;align-items:center}.tag{border:1px solid #55718d;border-radius:999px;padding:5px 11px;font-size:12px;font-weight:750}.hold{color:var(--amber);border-color:#896a42}.ok{color:var(--teal);border-color:#3b8178}.red{color:var(--red)}.layout{display:grid;grid-template-columns:minmax(0,1.25fr) minmax(300px,.75fr);gap:16px;margin-top:22px}.panel{border:1px solid var(--edge);background:var(--panel);border-radius:16px;padding:20px;min-width:0}.panel h2{margin:0 0 12px;font-size:20px}.panel h3{font-size:15px;margin:15px 0 8px}.panel p{margin:7px 0}.fields{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}.field{display:flex;flex-direction:column;gap:5px;min-width:0}.field label{font-size:12px;color:var(--muted);font-weight:750}.field input,.field select{width:100%;min-width:0}.wide{grid-column:1/-1}.actions{display:flex;gap:9px;flex-wrap:wrap;margin-top:16px}.primary{background:#206d69;border-color:#55b4a5}.warning{border-left:3px solid var(--amber);padding:9px 12px;background:#272337;color:#f3debd;border-radius:6px}pre{white-space:pre-wrap;overflow-wrap:anywhere;max-height:420px;overflow:auto;background:#081521;border:1px solid var(--edge);border-radius:10px;padding:14px;font:12px/1.55 ui-monospace,Consolas,monospace}table{width:100%;border-collapse:collapse;table-layout:fixed;font-size:12px}th,td{padding:8px 7px;border-bottom:1px solid var(--edge);text-align:left;overflow-wrap:anywhere}th{color:var(--muted)}td button{padding:5px 8px;font-size:11px}.stats{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:11px;margin-top:16px}.metric{padding:12px;border:1px solid var(--edge);border-radius:12px;background:#17273b}.metric strong{font-size:18px;display:block;word-break:break-all}.metric span{font-size:11px;color:var(--muted)}.full{grid-column:1/-1}code{font-family:ui-monospace,Consolas,monospace;overflow-wrap:anywhere}.sr{position:absolute;left:-9999px}@media(max-width:940px){.layout{grid-template-columns:1fr}}@media(max-width:560px){.fields{grid-template-columns:1fr}.stats{grid-template-columns:1fr 1fr}}
+</style>
+</head>
+<body>
+<main>
+<header class="top">
+<div><div class="eyebrow">MISSION CONTROL / CODE PURPLE / DOW</div><h1>Operator Workbench <span style="color:var(--teal)">N+1</span></h1>
+<p class="muted">Operator-controlled pipelines, binary I/O, tests, task receipts and schedule. Exact-source local execution only.</p></div>
+<div class="toolbar"><span class="tag hold" id="authority">MERGE ADMISSION HOLD</span><span class="tag" id="service">SERVICE UNKNOWN</span><a href="/">Control Tower</a><a href="https://github.com/GBOGEB/ABACUS/issues/1978">MCL P0 ledger</a></div>
+</header>
+<section class="stats" aria-label="Operator summary">
+<div class="metric"><span>Trusted checkout SHA</span><strong id="source" style="font-size:12px">UNKNOWN</strong></div>
+<div class="metric"><span>Executable profiles</span><strong id="catalog-count">—</strong></div>
+<div class="metric"><span>Session run records</span><strong id="run-count">—</strong></div>
+</section>
+<div class="layout">
+<section class="panel" aria-labelledby="run-title">
+<h2 id="run-title">01 · Plan → approve → run</h2>
+<p class="warning"><strong>Isolation boundary:</strong> a fresh Git clone protects originals, but trusted Python is executed with your local OS permissions. This is <em>not</em> a container sandbox. No arbitrary shell or remote MCP launch is exposed.</p>
+<div class="fields" style="margin-top:14px">
+<div class="field"><label for="profile">Registered action / profile</label><select id="profile"></select></div>
+<div class="field"><label for="input">Binary input from configured inbox</label><select id="input"><option value="">No binary selected</option></select></div>
+<div class="field"><label for="delay">Execute after (seconds, 0–3600)</label><input id="delay" type="number" min="0" max="3600" step="1" value="0"></div>
+<div class="field"><label for="token">Local execution token (never persisted)</label><input id="token" type="password" autocomplete="off" spellcheck="false" placeholder="Token printed in local server terminal"></div>
+<div class="field wide"><label><input type="checkbox" id="consent"> I explicitly approve running this named profile on a fresh clone at the displayed source SHA, and retaining original inputs.</label></div>
+</div>
+<div class="actions"><button id="preview">1. Produce dry-run plan</button><button id="execute" class="primary" disabled>2. Execute / schedule approved plan</button><button id="refresh">Refresh records</button></div>
+<p class="muted small" id="hint" aria-live="polite">Execution disabled until the operator service is configured and an exact-head plan is produced.</p>
+<h3>Execution plan / I/O contract</h3><pre id="plan" role="log">Select a registered profile and click “Produce dry-run plan”.</pre>
+<h3>Latest native-local receipt</h3><pre id="detail" role="log">No local task selected.</pre>
+</section>
+<aside class="panel" aria-labelledby="catalog-title">
+<h2 id="catalog-title">02 · Execution taxonomy</h2>
+<p class="muted small">Python · pipeline · binary bridge · debug · runner · tasks · MCP</p>
+<div id="catalog" aria-live="polite"></div>
+<h3>Policy and controls</h3>
+<p class="small">The backend validates the exact checkout SHA, input filename and hash, static command argv, bounded schedule and per-process token. It executes in a fresh temporary clone and writes append-only derived receipts.</p>
+<p class="small">Schedule is <strong>process-local, one-shot and not durable across server shutdown</strong>. CI runs, security waiver, merge authorization, cross-repo or MCP dispatch are never inferred from a local success.</p>
+<p class="small"><a href="https://github.com/GBOGEB/ABACUS/issues/1860">Admission #1860</a> · <a href="https://github.com/GBOGEB/ABACUS/issues/1929">BD/LDAB lineage #1929</a></p>
+</aside>
+<section class="panel full" aria-labelledby="ledger-title">
+<div class="top"><h2 id="ledger-title">03 · Session task / receipt ledger</h2><span class="tag" id="running">No active task</span></div>
+<p class="muted small">Select a receipt to inspect step-level stdout/stderr, input SHA-256, output artifact digests and the local-only decision. Cancel is available only before a scheduled task starts.</p>
+<table><thead><tr><th style="width:20%">ID</th><th style="width:20%">Profile</th><th style="width:17%">State</th><th style="width:22%">Source</th><th style="width:21%">Inspect</th></tr></thead><tbody id="runs"></tbody></table>
+</section>
+</div>
+</main>
+<script>
+'use strict';
+const el=id=>document.getElementById(id);
+let currentCatalog=null, approvedPlan=null, selectedRun=null;
+const show=(id,value)=>{el(id).textContent=String(value)};
+const profile=()=>el('profile').value;
+const inputName=()=>el('input').value||null;
+function resetPlan(){approvedPlan=null;el('execute').disabled=true;show('plan','Plan invalidated by selection change. Re-run preflight.')}
+async function get(url){const r=await fetch(url,{cache:'no-store'});const data=await r.json();if(!r.ok)throw Error(data.error||'HTTP '+r.status);return data}
+async function post(url,data,needsToken=false){
+  const headers={'Content-Type':'application/json'};
+  if(needsToken)headers['X-SUT-Token']=el('token').value;
+  const r=await fetch(url,{method:'POST',headers,body:JSON.stringify(data),cache:'no-store'});
+  const out=await r.json();if(!r.ok)throw Error(out.error||'HTTP '+r.status);return out.result
+}
+function populate(){
+  const rows=currentCatalog.profiles||[];
+  const select=el('profile');select.replaceChildren();
+  for(const item of rows){const o=document.createElement('option');o.value=item.id;o.textContent=item.category+' · '+item.description;select.append(o)}
+  const files=el('input');files.replaceChildren();
+  const empty=document.createElement('option');empty.value='';empty.textContent='No binary selected';files.append(empty);
+  for(const file of currentCatalog.inputs||[]){const o=document.createElement('option');o.value=file.name;o.textContent=file.name+' · '+file.bytes+' bytes';files.append(o)}
+  const list=el('catalog');list.replaceChildren();
+  for(const p of rows){const box=document.createElement('p'),name=document.createElement('strong');name.textContent=p.category+' / '+p.id;box.append(name);box.append(document.createTextNode(' — '+(p.executable?'Local allowlist':'BLOCKED: authenticated adapter absent')));list.append(box)}
+  show('catalog-count',rows.filter(x=>x.executable).length+'/'+rows.length);
+  show('source',currentCatalog.source_sha||'UNKNOWN');
+  show('service',currentCatalog.execution_enabled?'OPERATOR ENABLED':'READ-ONLY / DISABLED');
+  el('service').className='tag '+(currentCatalog.execution_enabled?'ok':'hold');
+  el('input').disabled=!rows.find(x=>x.id===profile())?.input_required;
+}
+async function loadCatalog(){try{currentCatalog=await get('/api/operator/catalog');populate();show('hint',currentCatalog.execution_enabled?'Select and plan; execute with explicit local token and approval.':'Start server with --abacus-root and --enable-operator to run local tasks.')}catch(e){show('service','OPERATOR UNAVAILABLE');show('hint',e.message);show('source','UNKNOWN')}}
+async function preview(){
+  try{const data=await post('/api/operator/plan',{profile:profile(),input_name:inputName()});approvedPlan=data;show('plan',JSON.stringify(data,null,2));el('execute').disabled=!(data.executable&&currentCatalog?.execution_enabled);show('hint',data.executable?'Confirm exact source SHA, command argv and retention before launching.':(data.message||data.status))}
+  catch(e){resetPlan();show('hint','Preflight rejected: '+e.message)}
+}
+async function execute(){
+  if(!approvedPlan?.executable)return;
+  if(!el('consent').checked){show('hint','Explicit approval checkbox required');return}
+  try{
+    const delay=Number(el('delay').value);
+    if(!Number.isSafeInteger(delay)||delay<0||delay>3600)throw Error('Invalid schedule delay');
+    const result=await post('/api/operator/run',{profile:approvedPlan.profile,input_name:inputName(),source_sha:approvedPlan.source_sha,consent:true,after_seconds:delay},true);
+    selectedRun=result.id;show('detail',JSON.stringify(result,null,2));show('hint',delay?'Scheduled for this running process only; restart does not resume the task.':'Local execution submitted; inspect native-local receipt, not GitHub CI.');resetPlan();await refresh();
+  }catch(e){show('hint','Execution rejected: '+e.message)}
+}
+async function inspect(id){
+  try{selectedRun=id;const x=await get('/api/operator/runs/'+encodeURIComponent(id));show('detail',JSON.stringify(x,null,2))}catch(e){show('hint','Readback unavailable: '+e.message)}
+}
+async function cancel(id){try{await post('/api/operator/cancel',{id},true);show('hint','Pre-start task cancelled');await refresh()}catch(e){show('hint','Cancel refused: '+e.message)}}
+async function refresh(){
+  try{const value=await get('/api/operator/runs'),rows=value.runs||[];show('run-count',rows.length);const body=el('runs');body.replaceChildren();
+    for(const r of rows){const tr=document.createElement('tr');for(const val of [r.id,r.profile,r.status,(r.source_sha||'UNKNOWN').slice(0,12)]){const td=document.createElement('td');td.textContent=val;tr.append(td)}
+      const td=document.createElement('td'),inspectBtn=document.createElement('button');inspectBtn.textContent='Inspect';inspectBtn.addEventListener('click',()=>inspect(r.id));td.append(inspectBtn);
+      if(r.status==='SCHEDULED'){const cancelBtn=document.createElement('button');cancelBtn.textContent='Cancel';cancelBtn.addEventListener('click',()=>cancel(r.id));td.append(cancelBtn)}tr.append(td);body.append(tr)}
+    show('running',rows.some(r=>['STARTING','RUNNING','SCHEDULED'].includes(r.status))?'WORK IN PROGRESS':'No active task');
+    if(selectedRun)await inspect(selectedRun);
+  }catch(e){show('running','LEDGER UNAVAILABLE');show('hint','Readback error: '+e.message)}
+}
+el('profile').addEventListener('change',()=>{resetPlan();el('input').disabled=!currentCatalog?.profiles?.find(p=>p.id===profile())?.input_required});
+el('input').addEventListener('change',resetPlan);
+el('preview').addEventListener('click',preview);
+el('execute').addEventListener('click',execute);
+el('refresh').addEventListener('click',refresh);
+el('token').addEventListener('change',()=>show('hint','Token stays in this browser field and is used only on an approved local POST.'));
+loadCatalog().then(refresh);
+setInterval(()=>{if(!document.hidden)refresh()},5000);
+</script>
+</body>
+</html>
