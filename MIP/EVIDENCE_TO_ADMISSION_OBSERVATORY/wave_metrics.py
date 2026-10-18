@@ -11,6 +11,7 @@ from pathlib import Path
 from typing import Any
 import json
 import re
+from wave_convergence import evaluate as evaluate_engineering_convergence
 
 SHA = re.compile(r"^[0-9a-f]{40}$")
 ROOT = Path(__file__).resolve().parent
@@ -285,10 +286,23 @@ def build_wave_receipt(snapshot: dict, history: dict) -> dict:
         }
     except (OSError, ValueError, TypeError, ProofError) as e:
         source_frontier = {"status":"CANDIDATE_PROOF_UNAVAILABLE", "error":str(e)[:100], "source_candidates":None}
+    # Only accepted, terminal, non-replayed engineering waves are eligible.
+    # Historical N0/queued events are retained in provenance but excluded.
+    try:
+        engineering = json.loads((ROOT / "engineering_wave_history.json").read_text(encoding="utf-8"))
+        engineering_result = evaluate_engineering_convergence(
+            engineering.get("observations", []),
+            target_pct=engineering.get("target_coverage_percent", 95.0),
+            consecutive_no_change=engineering.get("consecutive_no_change_required", 3),
+        )
+    except (OSError, ValueError, TypeError) as exc:
+        engineering_result = {"state": "CONVERGENCE_PROOF_UNAVAILABLE",
+                              "error": str(exc)[:120], "stop_entire_program": False}
     return {"schema": "codepurple.adaptive_wave_receipt.v1",
             "main_sha": snapshot.get("main", {}).get("sha"),
             "current_main_coverage_sha": (snapshot.get("coverage", {}).get("measured") or {}).get("sha"),
             "historical_focus": progress, "scale_policy": policy, "source_frontier":source_frontier,
+            "engineering_convergence": engineering_result,
             "root_census_owner": "https://github.com/GBOGEB/ABACUS/issues/1929",
             "admission_owner": "https://github.com/GBOGEB/ABACUS/issues/1860",
             "dispatch_owner": "https://github.com/GBOGEB/CODEX/issues/977"}
