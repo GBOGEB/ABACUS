@@ -457,3 +457,22 @@ def test_unrelated_terminal_run_does_not_double_source_specific_wave_budget():
     result = g.evaluate(doc)
     assert result["capacity"]["state"] == "HOLD_CAPACITY"
     assert result["capacity"]["recommended_read_only_observation_lanes"] == 1
+
+
+def test_existing_observatory_consumer_exposes_pinned_policy_without_main_credit():
+    import wave_metrics
+    here = Path(__file__).resolve().parent
+    snapshot = json.loads((here / "evidence.json").read_text(encoding="utf-8"))
+    history = json.loads((here / "wave_history.json").read_text(encoding="utf-8"))
+    receipt = wave_metrics.build_wave_receipt(snapshot, history)
+    elastic = receipt["elastic_controller"]
+    assert elastic["measurement_freshness"] == (
+        "HISTORICAL_FOCUSED_SOURCE_HEAD_NOT_EXACT_CURRENT_MAIN"
+    )
+    assert elastic["source_head_equals_current_main"] is False
+    assert elastic["capacity"]["state"] == "OBSERVE_ONLY"
+    assert elastic["capacity"]["recommended_read_only_observation_lanes"] == 1
+    assert elastic["capacity"]["proposed_native_runner_lanes"] == 0
+    assert elastic["next_pilot"] == "W82"
+    assert elastic["programme"]["stop_entire_program"] is False
+    assert receipt["scale_policy"]["merge_admission"] == "HOLD"
