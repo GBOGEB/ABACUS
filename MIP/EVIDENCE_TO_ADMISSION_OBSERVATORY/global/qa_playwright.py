@@ -112,10 +112,10 @@ def main() -> int:
                 assert page.locator("img:not([complete])").count() == 0
                 page.locator('button[data-lens="governance"]').click()
                 assert page.locator('button[data-lens="governance"]').get_attribute("aria-pressed") == "true"
-                assert page.locator('#spine path[data-lens="native"]').evaluate(
+                assert page.locator('#spine path[data-lens="native"]').first.evaluate(
                     "(x) => x.classList.contains('hide')")
                 page.locator('button[data-lens="all"]').click()
-                assert not page.locator('#spine path[data-lens="native"]').evaluate(
+                assert not page.locator('#spine path[data-lens="native"]').first.evaluate(
                     "(x) => x.classList.contains('hide')")
                 if name == "desktop":
                     page.locator("#status-refresh").click()
