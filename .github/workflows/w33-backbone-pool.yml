@@ -6,6 +6,8 @@ on:
       - 'scripts/emit_execution_backbone_runtime_status.py'
       - 'tests/test_w33_backbone_pool.py'
       - 'docs/ci/W33_POOL_DAG_MIP.md'
+      - 'tools/recovery/w38_local_pool_benchmark.py'
+      - 'tests/test_w38_local_pool_mip.py'
       - '.github/workflows/w33-backbone-pool.yml'
   workflow_dispatch:
 permissions:
