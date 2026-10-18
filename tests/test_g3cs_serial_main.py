@@ -128,6 +128,10 @@ class G3CSSerialMainTests(unittest.TestCase):
                   "duplicated first-red")
         self.deny(lambda p: p["observations"][1]["jobs"][0].update(
             run_id=100, job_id=1000), "reused native job identity")
+        self.deny(lambda p: p["observations"][1]["jobs"][0].update(
+            job_id=1000), "reused native job identity")
+        self.deny(lambda p: p["observations"][1]["jobs"][0].update(
+            run_id=100), "cross-main native run ID reused")
 
     def test_nonterminal_completion_or_negative_clock_rejected(self):
         self.deny(lambda p: p["observations"][1]["jobs"][0].update(
