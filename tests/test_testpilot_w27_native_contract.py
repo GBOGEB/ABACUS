@@ -42,7 +42,7 @@ def test_force_trip_pytest_conftest_numpy_dependency_is_pinned():
     install = _step("Install focused tools")["run"]
     # W27 #2248 repaired the real four-cell Python matrix with a single
     # Python 3.10+ compatible exact NumPy pin. Reject duplicate/relaxed pins.
-    numpy_pins = re.findall(r"\\bnumpy==([0-9]+(?:\\.[0-9]+){2})\\b", install)
+    numpy_pins = re.findall(r"\bnumpy==([0-9]+(?:\.[0-9]+){2})\b", install)
     assert numpy_pins == ["2.2.6"], numpy_pins
     assert "pytest==9.1.1" in install
     assert "coverage==7.16.2" in install
