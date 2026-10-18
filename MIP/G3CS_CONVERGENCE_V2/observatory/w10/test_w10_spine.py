@@ -1,6 +1,5 @@
 """Local negative tests; do not assert authenticated GitHub execution."""
 import hashlib, json, unittest, importlib.util
-import pytest
 from pathlib import Path
 from zipfile import ZipFile
 import io
