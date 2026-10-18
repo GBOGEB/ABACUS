@@ -1,29 +1,49 @@
 {
   "schema": "codepurple.elastic_wave_input.v1",
   "repository": "GBOGEB/ABACUS",
-  "snapshot_source_sha": "dccefcd7bffc39b75224f3c6ec0afd60768c417c",
+  "snapshot_source_sha": "6f51404c121283c56c92cfbabd064f0e63815883",
   "context": {
-    "source": "GitHub Actions run 39159837402 jobs 117770622363 and 117770622870",
-    "evidence_class": "TERMINAL_NATIVE_FOCUSED_NOT_CURRENT_MAIN_B0",
-    "workflow_head": "dccefcd7bffc39b75224f3c6ec0afd60768c417c",
+    "source": "GitHub Actions run 39161760486 / native Python 3.12 job 117776341853",
+    "evidence_class": "TERMINAL_NATIVE_SINGLE_CELL_FOCUSED_NOT_CURRENT_MAIN_B0",
+    "workflow_head": "6f51404c121283c56c92cfbabd064f0e63815883",
     "repository_main_at_branch_creation": "994ad6e73c748923841d92b12651e92d41b2d4ff",
-    "jobs_passed": 2,
-    "jobs_expected": 2,
-    "tests_per_job": 118,
-    "executions_passed": 236,
-    "expected_artifact_zips": 2,
-    "observed_artifact_zips": 2,
+    "jobs_passed": 1,
+    "jobs_expected": 1,
+    "tests_per_job": 203,
+    "executions_passed": 203,
+    "expected_artifact_zips": 1,
+    "observed_artifact_zips": 1,
     "artifact_ids": [
-      12148546623,
-      12148119116
+      12149525118
     ],
-    "native_run_url": "https://github.com/GBOGEB/ABACUS/actions/runs/39159837402",
+    "native_run_url": "https://github.com/GBOGEB/ABACUS/actions/runs/39161760486",
     "numerator_denominator_scope": "FOUR_SOURCE_MODULES_ONLY",
-    "covered": 660,
+    "covered": 707,
     "eligible": 723,
     "release_claim": false,
     "merge_admission": "HOLD",
-    "fresh_native_runner_queue_p95": null
+    "fresh_native_runner_queue_p95": null,
+    "artifact_zip_sha256": "1c9fad124642a7975a7a08be880a60b4040e819ab2829e56b6e6742d831dcb52",
+    "native_file_sha256": {
+      "coverage.json": "8074dd9e187dbbe9d7ab35482dbcb3486a8de5ca4fed15f51a2cf93d86397679",
+      "coverage.xml": "efa91682cb9718820d2cc05b75af4f1c20100f3d13e596d2d686646c99b3b6e9",
+      "junit.xml": "6d1b9bbcc0f32f88ce29ae4cdca6c0f371d69ad1bdf3fead598c987303d94e8e"
+    },
+    "predecessor_w31": {
+      "head": "dccefcd7bffc39b75224f3c6ec0afd60768c417c",
+      "run_id": 39159837402,
+      "covered": 660,
+      "eligible": 723,
+      "tests_passed": 236
+    },
+    "preceding_w34": {
+      "head": "c51e6b9d112fb9a4e5fecd55189f94680b832503",
+      "run_id": 39161560713,
+      "covered": 697,
+      "eligible": 723,
+      "tests_passed": 201
+    },
+    "local_acceptance_state": "FOUR_SOURCE_COVERAGE_TARGETS_REACHED_GLOBAL_NOT_ACCEPTED"
   },
   "families": [
     {
@@ -35,7 +55,7 @@
       "covered": 219,
       "target_percent": 95,
       "first_reds": [],
-      "source_sha": "dccefcd7bffc39b75224f3c6ec0afd60768c417c",
+      "source_sha": "6f51404c121283c56c92cfbabd064f0e63815883",
       "native_observed": true,
       "history": []
     },
@@ -48,7 +68,7 @@
       "covered": 123,
       "target_percent": 95,
       "first_reds": [],
-      "source_sha": "dccefcd7bffc39b75224f3c6ec0afd60768c417c",
+      "source_sha": "6f51404c121283c56c92cfbabd064f0e63815883",
       "native_observed": true,
       "history": []
     },
@@ -61,7 +81,7 @@
       "covered": 154,
       "target_percent": 95,
       "first_reds": [],
-      "source_sha": "dccefcd7bffc39b75224f3c6ec0afd60768c417c",
+      "source_sha": "6f51404c121283c56c92cfbabd064f0e63815883",
       "native_observed": true,
       "history": []
     },
@@ -71,10 +91,10 @@
         "tools/w82_semantic_diversity_diagnostic.py"
       ],
       "eligible": 215,
-      "covered": 164,
+      "covered": 211,
       "target_percent": 95,
       "first_reds": [],
-      "source_sha": "dccefcd7bffc39b75224f3c6ec0afd60768c417c",
+      "source_sha": "6f51404c121283c56c92cfbabd064f0e63815883",
       "native_observed": true,
       "history": []
     }
@@ -91,8 +111,8 @@
     "ready_disjoint_source_leases": 1,
     "source_owner_slots": 1,
     "outstanding_native_jobs": null,
-    "latest_terminal_run_id": 39159837402,
-    "latest_terminal_source_sha": "dccefcd7bffc39b75224f3c6ec0afd60768c417c",
+    "latest_terminal_run_id": 39161760486,
+    "latest_terminal_source_sha": "6f51404c121283c56c92cfbabd064f0e63815883",
     "last_scaled_run_id": null,
     "last_scaled_source_sha": null,
     "head_stable": null,
@@ -122,30 +142,30 @@
   "artifact_types": [
     {
       "kind": "junit.xml",
-      "expected": 2,
-      "native_verified": 2,
-      "source_sha": "dccefcd7bffc39b75224f3c6ec0afd60768c417c",
+      "expected": 1,
+      "native_verified": 1,
+      "source_sha": "6f51404c121283c56c92cfbabd064f0e63815883",
       "consumer_attested": null
     },
     {
       "kind": "coverage.json",
-      "expected": 2,
-      "native_verified": 2,
-      "source_sha": "dccefcd7bffc39b75224f3c6ec0afd60768c417c",
+      "expected": 1,
+      "native_verified": 1,
+      "source_sha": "6f51404c121283c56c92cfbabd064f0e63815883",
       "consumer_attested": null
     },
     {
       "kind": "coverage.xml",
-      "expected": 2,
-      "native_verified": 2,
-      "source_sha": "dccefcd7bffc39b75224f3c6ec0afd60768c417c",
+      "expected": 1,
+      "native_verified": 1,
+      "source_sha": "6f51404c121283c56c92cfbabd064f0e63815883",
       "consumer_attested": null
     },
     {
       "kind": "manifest.json",
-      "expected": 2,
-      "native_verified": 2,
-      "source_sha": "dccefcd7bffc39b75224f3c6ec0afd60768c417c",
+      "expected": 1,
+      "native_verified": 1,
+      "source_sha": "6f51404c121283c56c92cfbabd064f0e63815883",
       "consumer_attested": null
     }
   ]

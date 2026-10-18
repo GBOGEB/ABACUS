@@ -482,7 +482,10 @@ def test_existing_observatory_consumer_exposes_pinned_policy_without_main_credit
     assert elastic["capacity"]["state"] == "OBSERVE_ONLY"
     assert elastic["capacity"]["recommended_read_only_observation_lanes"] == 1
     assert elastic["capacity"]["proposed_native_runner_lanes"] == 0
-    assert elastic["next_pilot"] == "W82"
+    assert elastic["next_pilot"] is None
+    assert all(f["state"] == "LOCAL_COVERAGE_TARGET" for f in elastic["families"])
+    assert sum(f["covered"] for f in elastic["families"]) == 707
+    assert sum(f["eligible"] for f in elastic["families"]) == 723
     assert elastic["programme"]["stop_entire_program"] is False
     assert receipt["scale_policy"]["merge_admission"] == "HOLD"
 
