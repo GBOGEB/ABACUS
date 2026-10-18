@@ -94,7 +94,7 @@ async function execute(){
   try{
     const delay=Number(el('delay').value);
     if(!Number.isSafeInteger(delay)||delay<0||delay>3600)throw Error('Invalid schedule delay');
-    const result=await post('/api/operator/run',{profile:approvedPlan.profile,input_name:inputName(),source_sha:approvedPlan.source_sha,consent:true,after_seconds:delay},true);
+    const result=await post('/api/operator/run',{profile:approvedPlan.profile,input_name:inputName(),source_sha:approvedPlan.source_sha,input_sha256:approvedPlan.input?.sha256||null,consent:true,after_seconds:delay},true);
     selectedRun=result.id;show('detail',JSON.stringify(result,null,2));show('hint',delay?'Scheduled for this running process only; restart does not resume the task.':'Local execution submitted; inspect native-local receipt, not GitHub CI.');resetPlan();await refresh();
   }catch(e){show('hint','Execution rejected: '+e.message)}
 }
