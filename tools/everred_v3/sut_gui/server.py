@@ -392,11 +392,11 @@ class Handler(BaseHTTPRequestHandler):
                         raise ValueError("invalid cancel payload")
                     code, record = self.operator.cancel(data["id"], self.headers.get("X-SUT-Token", ""))
                 else:
-                    if set(data) != {"profile", "input_name", "source_sha", "consent", "after_seconds"}:
+                    if set(data) != {"profile", "input_name", "source_sha", "input_sha256", "consent", "after_seconds"}:
                         raise ValueError("invalid execute payload")
                     code, record = self.operator.submit(
                         data["profile"], data["input_name"], data["source_sha"],
-                        data["consent"], data["after_seconds"],
+                        data["input_sha256"], data["consent"], data["after_seconds"],
                         self.headers.get("X-SUT-Token", ""),
                     )
             return self._send(code, {"result": record} if code in (200, 202) else {"error": record})
