@@ -111,9 +111,14 @@ def make_snapshot(coverage, manifest, modules):
 def _validate_snapshot(data):
     if data.get("schema") != SNAPSHOT_SCHEMA or data.get("scope") != "EXPLICIT_MATCHED_MODULES_ONLY":
         raise EvidenceError("incompatible snapshot schema/scope")
+    modules = data.get("modules")
+    if not isinstance(modules, dict) or not modules:
+        raise EvidenceError("modules must be a non-empty mapping")
+    if any(not isinstance(row, dict) for row in modules.values()):
+        raise EvidenceError("invalid module row")
     manifest = {k: data.get(k) for k in ("repository", "head_sha", "checkout_sha", "run_id", "run_attempt", "job_id")}
     manifest["schema"] = "cbd.native-checkout-declaration.v1"
-    manifest["source_sha256"] = {p: v.get("sha256") for p, v in data.get("modules", {}).items()}
+    manifest["source_sha256"] = {p: v.get("sha256") for p, v in modules.items()}
     validate_manifest(manifest)
     if data.get("authority") != "DECLARED_INPUT_NOT_NATIVE_AUTHENTICATION" or data.get("merge_admission") != "HOLD" or data.get("formal_root_closure") != 0:
         raise EvidenceError("admission/authority invariant violated")
@@ -153,6 +158,9 @@ def compare(before, after):
                          "delta_covered_items": new[nkey] - old[nkey],
                          "denominator_status": "MEASURED" if old[dkey] else "NOT_APPLICABLE"}
         out[path] = row
+    if (before["run_id"] == after["run_id"]
+            and after["run_attempt"] < before["run_attempt"]):
+        raise EvidenceError("attempt rollback for identical native run")
     same_declared_attempt = (
         before["run_id"] == after["run_id"]
         and before["run_attempt"] == after["run_attempt"]
