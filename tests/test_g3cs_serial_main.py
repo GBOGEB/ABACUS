@@ -152,6 +152,16 @@ class G3CSSerialMainTests(unittest.TestCase):
         self.deny(lambda p: p["observations"][1]["jobs"][0].update(
             status="queued", conclusion=None, completed_at=None), "queued job has start")
 
+    def test_waiting_and_requested_are_nonterminal_without_fake_p95(self):
+        for state in ("pending", "waiting", "requested"):
+            p = fixture()
+            for row in p["observations"]:
+                row["jobs"][0].update(status=state, conclusion=None,
+                                      started_at=None, completed_at=None)
+            out = MODULE.compare(p)
+            self.assertEqual(out["telemetry"]["matched_terminal_jobs"], 4)
+            self.assertIsNone(out["telemetry"]["queue_p95_before_seconds"])
+
     def test_nonmatching_job_keys_cannot_fake_latency(self):
         p = fixture()
         for job in p["observations"][1]["jobs"]:
