@@ -1,0 +1,153 @@
+{
+  "schema": "abacus.codepurple.w34.github-first-blob-index.v1",
+  "manifest_type": "OPERATIONAL_HANDOVER_INDEX_NOT_CANONICAL_V2_SEAL",
+  "snapshot_date": "2026-10-18",
+  "observed_main_sha": "994ad6e73c748923841d92b12651e92d41b2d4ff",
+  "staged_branch": "code-purple/w34-proof-verified-handover-20261018",
+  "canonical_template": "handover/HANDOVER_MESSAGE_TEMPLATE.md",
+  "canonical_v2_protocol": "tools/handover_v2/process_spec.json",
+  "indexed_document_count": 10,
+  "indexed_source_file_count": 7,
+  "documents": [
+    {
+      "path": "handover/code_purple_w34_20261018/DAG.mmd",
+      "git_blob_sha1": "fc577f4d4fff802d9561a96687f170c8d85952cf",
+      "bytes": 1760
+    },
+    {
+      "path": "handover/code_purple_w34_20261018/DROPIN.md",
+      "git_blob_sha1": "30cbe604fdcb922920edcec4ec00c3094bf2f24b",
+      "bytes": 3232
+    },
+    {
+      "path": "handover/code_purple_w34_20261018/EVIDENCE_GRAPH.json",
+      "git_blob_sha1": "7fdcf832e2b2740944cc3024b46cf905896de81f",
+      "bytes": 4167
+    },
+    {
+      "path": "handover/code_purple_w34_20261018/FORECAST.json",
+      "git_blob_sha1": "7f17009acf9b0c69a8c0d21eef3a7011a1e8808e",
+      "bytes": 2210
+    },
+    {
+      "path": "handover/code_purple_w34_20261018/HANDOVER.md",
+      "git_blob_sha1": "5c329c5bcb9d04be267f7c01a900b5823788178d",
+      "bytes": 13868
+    },
+    {
+      "path": "handover/code_purple_w34_20261018/HISTORY.json",
+      "git_blob_sha1": "18b732d09884705a1af019ea6657981f03aaa24d",
+      "bytes": 3205
+    },
+    {
+      "path": "handover/code_purple_w34_20261018/QA_REPORT.json",
+      "git_blob_sha1": "30acdff48adfbd9437937c51335b91f6ba617214",
+      "bytes": 3982
+    },
+    {
+      "path": "handover/code_purple_w34_20261018/README.md",
+      "git_blob_sha1": "741bc5781d754e97318d80d0dcc0f2fecdf0a51a",
+      "bytes": 2723
+    },
+    {
+      "path": "handover/code_purple_w34_20261018/STATE.json",
+      "git_blob_sha1": "efcb6f3ee5019c15e4aa82c4232e91fb9e7dbb12",
+      "bytes": 7697
+    },
+    {
+      "path": "handover/code_purple_w34_20261018/TEMPLATE.md",
+      "git_blob_sha1": "1efc2f24292b36b4c720dae87c4fb1bd2ef2dc03",
+      "bytes": 3515
+    }
+  ],
+  "disjoint_source_files": [
+    {
+      "lane": "A",
+      "branch": "code-purple/w34-matrix-networkx-sourceowner-20261018",
+      "path": "requirements-test.txt",
+      "git_blob_sha1": "e509b09aec5c02483968a5d2166123c784b6c56a"
+    },
+    {
+      "lane": "A",
+      "branch": "code-purple/w34-matrix-networkx-sourceowner-20261018",
+      "path": "tests/test_w34_matrix_networkx_dependency.py",
+      "git_blob_sha1": "9bbad8a17fb1d274912aaff9f11d0cd5dfa0c05c"
+    },
+    {
+      "lane": "B",
+      "branch": "code-purple/w34-proof-verified-handover-20261018",
+      "path": "tools/recovery/w32_runner_telemetry.py",
+      "git_blob_sha1": "f45667b4d2baea1e97dd800e3f2f4cc67f4b46ab"
+    },
+    {
+      "lane": "B",
+      "branch": "code-purple/w34-proof-verified-handover-20261018",
+      "path": "tests/test_w32_runner_telemetry.py",
+      "git_blob_sha1": "ba1e46031022c9e13a08cb458c28041126190abf"
+    },
+    {
+      "lane": "B",
+      "branch": "code-purple/w34-proof-verified-handover-20261018",
+      "path": "tools/recovery/w34_native_artifact_verify.py",
+      "git_blob_sha1": "3c1249dc54e74ab0cb0f4ea3ebebe216ad2c650a",
+      "local_sha256": "5e6b04f337f109173ba81b5a15f011636a867caeb8678e979d89d3e86109594a"
+    },
+    {
+      "lane": "B",
+      "branch": "code-purple/w34-proof-verified-handover-20261018",
+      "path": "tests/test_w34_native_artifact_verify.py",
+      "git_blob_sha1": "951a584db2e6bf49cc7117c10eb35ef7869db2bc",
+      "local_sha256": "a8f808871942d19d478eef1c2d606937b2aeac63445dea5a8efdec4c0a3cfc67"
+    },
+    {
+      "lane": "C",
+      "branch": "code-purple/w34-g3cs-single-source-missing-marker-20261018",
+      "path": "MIP/G3CS_CONVERGENCE_V2/observatory/w10/test_w10_spine.py",
+      "git_blob_sha1": "054f7cc1e3d4f6a50225de7e4e7189b89e3b3110"
+    }
+  ],
+  "local_qa": {
+    "local_verifier_tests_passed": 18,
+    "local_verifier_tests_total": 18,
+    "local_test_framework": "pytest",
+    "input_class": "SYNTHETIC_NEGATIVE_FIXTURES",
+    "github_native_run_id": null,
+    "verifier": {
+      "source": "tools/recovery/w34_native_artifact_verify.py",
+      "github_blob_sha1": "3c1249dc54e74ab0cb0f4ea3ebebe216ad2c650a",
+      "local_git_blob_sha1": "3c1249dc54e74ab0cb0f4ea3ebebe216ad2c650a",
+      "local_sha256": "5e6b04f337f109173ba81b5a15f011636a867caeb8678e979d89d3e86109594a",
+      "verified_github_source_equals_local_tested_bytes": true
+    },
+    "tests": {
+      "source": "tests/test_w34_native_artifact_verify.py",
+      "github_blob_sha1": "951a584db2e6bf49cc7117c10eb35ef7869db2bc",
+      "local_git_blob_sha1": "951a584db2e6bf49cc7117c10eb35ef7869db2bc",
+      "local_sha256": "a8f808871942d19d478eef1c2d606937b2aeac63445dea5a8efdec4c0a3cfc67",
+      "verified_github_source_equals_local_tested_bytes": true
+    },
+    "actual_github_artifact_zip_bytes_verified": null,
+    "provider_authenticated_origin": null
+  },
+  "checks": {
+    "required_10_docs_present": true,
+    "exact_source_path_count": true,
+    "graph_cardinality_correct": true,
+    "pinned_main": true,
+    "local_verifier_18_of_18": true,
+    "no_v2_or_authority_transfer": true,
+    "auto_workflows_recorded": true
+  },
+  "index_verdict": "PASS_GITHUB_SOURCE_INDEX",
+  "self_hash_excluded": "MANIFEST.json is intentionally excluded from its own file list",
+  "github_blob_sha1_semantics": "Content identity from GitHub Git blobs; not an independent signature or full SHA256 evidence archive",
+  "sha256_sealed_capsule_root": null,
+  "validated_v2_generator_replay": false,
+  "raw_transcript_and_native_zip_archive_complete": false,
+  "native_w34_qualified": false,
+  "governed_merge_eligible": false,
+  "merge_admission": "HOLD",
+  "security_waiver": false,
+  "authority_transfer": false,
+  "next_action": "Read package and source heads; require owner admin protections + RED canary, eligible reviews, terminal native evidence before PR/dispatch/serial merge."
+}

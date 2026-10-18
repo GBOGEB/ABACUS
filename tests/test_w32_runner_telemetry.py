@@ -37,8 +37,11 @@ def sample():
 def test_job_success_and_verified_proof_are_separate_metrics():
     result = m.summarize(sample())
     assert (result["successful"], result["terminal"]) == (2, 3)
-    assert result["verified_successful_evidence"] == 2
-    assert result["native_proof_yield"] == round(2 / 3, 6)
+    assert result["source_reported_positive_claims"] == 2
+    assert result["verified_successful_evidence"] is None
+    assert result["independent_evidence_status"] == "UNVERIFIED_BYTES"
+    assert result["source_reported_claim_yield"] == round(2 / 3, 6)
+    assert result["native_proof_yield"] is None
     assert result["disjoint_families"] == 3
     assert (result["queue_p95_seconds"], result["execution_p95_seconds"]) == (40, 120)
     assert result["merge_admission"] == "HOLD"
@@ -51,7 +54,8 @@ def test_false_evidence_flag_refuses_proof(key):
     p["cells"][0]["evidence"][key] = False
     result = m.summarize(p)
     assert result["successful"] == 2
-    assert result["verified_successful_evidence"] == 1
+    assert result["source_reported_positive_claims"] == 1
+    assert result["verified_successful_evidence"] is None
 
 
 @pytest.mark.parametrize("key,mutant", [
@@ -62,7 +66,9 @@ def test_false_evidence_flag_refuses_proof(key):
 def test_bad_case_or_coverage_denominator_cannot_gain_proof(key, mutant):
     p = sample()
     p["cells"][0]["evidence"][key] = mutant
-    assert m.summarize(p)["verified_successful_evidence"] == 1
+    out = m.summarize(p)
+    assert out["source_reported_positive_claims"] == 1
+    assert out["verified_successful_evidence"] is None
 
 
 def test_missing_evidence_not_inferred_from_green_job():
@@ -70,7 +76,8 @@ def test_missing_evidence_not_inferred_from_green_job():
     p["cells"][0]["evidence"] = None
     out = m.summarize(p)
     assert out["successful"] == 2
-    assert out["verified_successful_evidence"] == 1
+    assert out["source_reported_positive_claims"] == 1
+    assert out["verified_successful_evidence"] is None
 
 
 def test_pending_job_stays_outside_completed_denominator():
@@ -147,5 +154,17 @@ def test_timezone_naive_date_not_accepted():
 def test_zero_terminal_and_zero_scope_still_hold():
     result = m.summarize({"exact_head": HEAD, "cells": []})
     assert result["observed_jobs"] == 0
+    assert result["native_proof_yield"] is None
+    assert result["merge_admission"] == "HOLD"
+
+
+def test_forged_source_claim_is_never_independently_qualified():
+    """Even maximally green booleans are untrusted without source bytes."""
+    payload = sample()
+    for cell in payload["cells"]:
+        cell["evidence"] = proof()
+    result = m.summarize(payload)
+    assert result["source_reported_positive_claims"] == 2
+    assert result["verified_successful_evidence"] is None
     assert result["native_proof_yield"] is None
     assert result["merge_admission"] == "HOLD"
