@@ -1,82 +1,88 @@
 #!/usr/bin/env python3
-"""
-ExecutionBackbone - bounded task execution runtime
-Lightweight task scheduling and parallel execution engine for V2.3 agents.
+"""ExecutionBackbone: bounded priority admission and honest local pool telemetry.
 
-Provides:
-- Priority-based task queue
-- Configurable worker pool (bounded by max_workers)
-- Memory-capped execution (max_memory_mb advisory)
-- Non-blocking task submission via schedule_task()
-- start() / stop() lifecycle management
+Compatibility: schedule_task(), start(), stop(), get_metrics() and legacy
+counters retain their existing meanings. This is a LOCAL Python worker pool,
+not a GitHub Actions runner-capacity measurement or a remote dispatch gateway.
+
+Queue admission is capped to the number of configured workers. In particular,
+pending low-priority work does not silently disappear into an unbounded executor
+queue ahead of subsequently submitted high-priority work.
 """
+from __future__ import annotations
+
+import math
 import queue
 import threading
 import time
-from concurrent.futures import ThreadPoolExecutor, Future
+from concurrent.futures import Future, ThreadPoolExecutor
 from dataclasses import dataclass, field
 from datetime import datetime
-from typing import Any, Callable, Dict, List, Optional, Tuple
+from typing import Any, Callable, Dict, List, Optional
+
+
+def _p95(samples: list[float]) -> float | None:
+    if not samples:
+        return None
+    return round(sorted(samples)[math.ceil(.95 * len(samples)) - 1], 4)
 
 
 @dataclass(order=True)
 class _PriorityTask:
-    """Internal wrapper that makes tasks comparable by priority (lower int = higher priority)."""
     priority: int
+    sequence: int
     task_id: str = field(compare=False)
     func: Callable = field(compare=False)
     args: tuple = field(compare=False, default_factory=tuple)
     kwargs: dict = field(compare=False, default_factory=dict)
-    submitted_at: str = field(compare=False, default_factory=lambda: datetime.now().isoformat())
+    submitted_at: str = field(compare=False,
+                              default_factory=lambda: datetime.now().isoformat())
+    submitted_monotonic: float = field(compare=False, default_factory=time.monotonic)
 
 
 class ExecutionBackbone:
-    """
-    Bounded task execution backbone.
+    """Local bounded task queue, exact outstanding-work and service telemetry.
 
-    Manages a priority queue of callable tasks executed by a bounded worker
-    pool.  Designed for memory-constrained environments (advisory
-    ``max_memory_mb`` limit) and deterministic shutdown.
-
-    Usage::
-
-        backbone = ExecutionBackbone(max_workers=4, max_memory_mb=2048)
-        backbone.start()
-        backbone.schedule_task("my_task", some_function, priority=3, args=(x,))
-        # ... submit more tasks ...
-        while not backbone.task_queue.empty():
-            time.sleep(0.05)
-        backbone.stop()
+    max_memory_mb is advisory, as in the historical implementation; this class
+    cannot measure or enforce process memory without a separate source-bound
+    operating-system provider. No method is allowed to dispatch remote jobs.
     """
 
     def __init__(self, max_workers: int = 4, max_memory_mb: int = 4096):
-        self.max_workers = max(1, max_workers)
+        self.max_workers = max(1, int(max_workers))
         self.max_memory_mb = max_memory_mb
-
-        # Expose as public attribute so callers can check .empty()
         self.task_queue: queue.PriorityQueue = queue.PriorityQueue()
 
         self._executor: Optional[ThreadPoolExecutor] = None
         self._worker_thread: Optional[threading.Thread] = None
         self._running = False
+        self._stop_without_drain = False
         self._lock = threading.Lock()
+        self._slots = threading.BoundedSemaphore(self.max_workers)
+        self._sequence = 0
 
-        self.tasks_executed: int = 0
-        self.tasks_failed: int = 0
-        self.tasks_submitted: int = 0
+        # Historical names: tasks_executed means successful completed tasks.
+        self.tasks_executed = 0
+        self.tasks_failed = 0
+        self.tasks_submitted = 0
+        self.tasks_cancelled_at_admission = 0
 
+        self._admitted = 0
+        self._active = 0
+        self._peak_active = 0
+        self._queue_wait_samples: List[float] = []
+        self._service_samples: List[float] = []
         self._futures: List[Future] = []
         self._start_time: Optional[float] = None
 
-    # ------------------------------------------------------------------
-    # Lifecycle
-    # ------------------------------------------------------------------
-
     def start(self) -> None:
-        """Start the worker pool and dispatch loop."""
         with self._lock:
             if self._running:
                 return
+            if self._executor is not None:
+                raise RuntimeError("BACKBONE_STOP_IN_PROGRESS")
+            self._slots = threading.BoundedSemaphore(self.max_workers)
+            self._stop_without_drain = False
             self._executor = ThreadPoolExecutor(
                 max_workers=self.max_workers,
                 thread_name_prefix="execution_backbone_worker",
@@ -88,42 +94,34 @@ class ExecutionBackbone:
                 name="execution_backbone_dispatcher",
                 daemon=True,
             )
-            self._worker_thread.start()
-
-        print(f"[EXEC-BACKBONE] Started with {self.max_workers} workers "
-              f"(memory limit: {self.max_memory_mb} MB)")
+            thread = self._worker_thread
+        thread.start()
 
     def stop(self, wait: bool = True, timeout: float = 30.0) -> None:
-        """
-        Signal the dispatcher to stop and optionally wait for completion.
+        """Stop, draining queued tasks by default; timeout does not fabricate drain.
 
-        Parameters
-        ----------
-        wait:
-            If True (default), block until the dispatcher drains the queue
-            and the executor finishes all running tasks.
-        timeout:
-            Maximum seconds to wait when *wait* is True.
+        When wait=False the unadmitted priority queue remains visible; its tasks
+        are not counted as executed or failed. Existing executor tasks finish
+        asynchronously, and a later stop(wait=True) may join them.
         """
         with self._lock:
-            if not self._running:
-                return
             self._running = False
+            if not wait:
+                self._stop_without_drain = True
+            worker, executor = self._worker_thread, self._executor
 
-        if self._worker_thread and wait:
-            self._worker_thread.join(timeout=timeout)
-
-        if self._executor:
-            self._executor.shutdown(wait=wait, cancel_futures=False)
-            self._executor = None
-
-        uptime = round(time.time() - (self._start_time or time.time()), 2)
-        print(f"[EXEC-BACKBONE] Stopped. executed={self.tasks_executed} "
-              f"failed={self.tasks_failed} uptime={uptime}s")
-
-    # ------------------------------------------------------------------
-    # Public API
-    # ------------------------------------------------------------------
+        if worker and wait:
+            worker.join(timeout=timeout)
+            if worker.is_alive():
+                raise TimeoutError("BACKBONE_DRAIN_INCOMPLETE")
+        if executor is not None:
+            executor.shutdown(wait=wait, cancel_futures=False)
+            if wait:
+                with self._lock:
+                    self._executor = None
+        if wait:
+            with self._lock:
+                self._worker_thread = None
 
     def schedule_task(
         self,
@@ -133,76 +131,122 @@ class ExecutionBackbone:
         args: tuple = (),
         kwargs: Optional[Dict[str, Any]] = None,
     ) -> None:
-        """
-        Submit a callable for execution.
-
-        Parameters
-        ----------
-        task_id:
-            Human-readable identifier (used in logs).
-        func:
-            Zero-or-more-argument callable to execute.
-        priority:
-            Execution priority; lower numbers run first (default 5).
-        args:
-            Positional arguments forwarded to *func*.
-        kwargs:
-            Keyword arguments forwarded to *func*.
-        """
-        task = _PriorityTask(
-            priority=priority,
-            task_id=task_id,
-            func=func,
-            args=args,
-            kwargs=kwargs or {},
-        )
+        with self._lock:
+            self._sequence += 1
+            seq = self._sequence
+            self.tasks_submitted += 1
+        task = _PriorityTask(priority=priority, sequence=seq,
+                             task_id=task_id, func=func, args=args,
+                             kwargs=kwargs or {})
         self.task_queue.put(task)
-        self.tasks_submitted += 1
-        print(f"[EXEC-BACKBONE] Scheduled task '{task_id}' (priority={priority})")
 
     def get_metrics(self) -> Dict[str, Any]:
-        """Return current execution metrics."""
-        return {
-            'tasks_submitted': self.tasks_submitted,
-            'tasks_executed': self.tasks_executed,
-            'tasks_failed': self.tasks_failed,
-            'queue_size': self.task_queue.qsize(),
-            'max_workers': self.max_workers,
-            'max_memory_mb': self.max_memory_mb,
-            'running': self._running,
-            'uptime_seconds': round(time.time() - (self._start_time or time.time()), 2),
-        }
+        """Measure pending+admitted+running separately, not just queue.qsize().
 
-    # ------------------------------------------------------------------
-    # Internal
-    # ------------------------------------------------------------------
+        This configured local executor has a known worker limit. The configured
+        slots must never be misrepresented as remote GitHub runner capacity.
+        """
+        with self._lock:
+            queued = self.task_queue.qsize()
+            active, admitted = self._active, self._admitted
+            # A worker can be admitted before its function begins.
+            not_running = max(0, admitted - active)
+            return {
+                "tasks_submitted": self.tasks_submitted,
+                "tasks_executed": self.tasks_executed,
+                "tasks_failed": self.tasks_failed,
+                "tasks_cancelled_at_admission": self.tasks_cancelled_at_admission,
+                "queue_size": queued,
+                "waiting_queue_size": queued,
+                "admitted_not_started": not_running,
+                "currently_running": active,
+                "admitted_inflight": admitted,
+                "outstanding_work": queued + admitted,
+                "peak_running": self._peak_active,
+                "max_workers": self.max_workers,
+                "max_memory_mb": self.max_memory_mb,
+                "max_memory_mb_is_advisory": True,
+                "configured_local_pool_slots": self.max_workers,
+                "local_pool_utilization_pct": round(100*active/self.max_workers, 2),
+                "remote_runner_capacity_slots": None,
+                "queue_wait_p95_seconds": _p95(self._queue_wait_samples),
+                "service_p95_seconds": _p95(self._service_samples),
+                "queue_wait_sample_n": len(self._queue_wait_samples),
+                "service_sample_n": len(self._service_samples),
+                "executor_pending_bound": self.max_workers,
+                "running": self._running,
+                "uptime_seconds": round(time.time()-(self._start_time or time.time()), 2),
+                "merge_admission": "HOLD",
+                "remote_dispatch_enabled": False,
+                "authority_transfer": False,
+            }
 
     def _dispatch_loop(self) -> None:
-        """Continuously pull tasks from the priority queue and execute them."""
-        while self._running or not self.task_queue.empty():
+        while True:
+            with self._lock:
+                if self._stop_without_drain:
+                    return
+                running = self._running
+            if not running and self.task_queue.empty():
+                return
+
+            # Acquire capacity BEFORE removing the best task from priority queue.
+            # Remaining tasks thus stay correctly visible and reprioritizable.
+            if not self._slots.acquire(timeout=0.02):
+                continue
             try:
-                task: _PriorityTask = self.task_queue.get(timeout=0.1)
+                task = self.task_queue.get(timeout=0.02)
             except queue.Empty:
+                self._slots.release()
                 continue
 
-            if self._executor is None:
-                # Executor was shut down; discard remaining tasks
+            with self._lock:
+                executor = self._executor
+                if executor is not None:
+                    self._admitted += 1
+            if executor is None:
+                with self._lock:
+                    self.tasks_cancelled_at_admission += 1
                 self.task_queue.task_done()
+                self._slots.release()
                 continue
-
-            future = self._executor.submit(self._execute_task, task)
-            self._futures.append(future)
-            self.task_queue.task_done()
+            try:
+                future = executor.submit(self._execute_task, task)
+            except RuntimeError:
+                # Never claim a failed execution for a task that never ran.
+                with self._lock:
+                    self._admitted -= 1
+                    self.tasks_cancelled_at_admission += 1
+                self._slots.release()
+            else:
+                with self._lock:
+                    # Avoid an unbounded completed-Future ledger.
+                    self._futures = [f for f in self._futures if not f.done()]
+                    self._futures.append(future)
+            finally:
+                self.task_queue.task_done()
 
     def _execute_task(self, task: _PriorityTask) -> Any:
-        """Execute a single task; update counters on success/failure."""
-        print(f"[EXEC-BACKBONE] Executing task '{task.task_id}'")
+        with self._lock:
+            self._active += 1
+            self._peak_active = max(self._peak_active, self._active)
+            self._queue_wait_samples.append(
+                max(0.0, time.monotonic()-task.submitted_monotonic)
+            )
+        started = time.monotonic()
         try:
             result = task.func(*task.args, **task.kwargs)
-            self.tasks_executed += 1
-            print(f"[EXEC-BACKBONE] Task '{task.task_id}' completed successfully")
+            with self._lock:
+                self.tasks_executed += 1
             return result
         except Exception as exc:
-            self.tasks_failed += 1
+            with self._lock:
+                self.tasks_failed += 1
             print(f"[EXEC-BACKBONE] Task '{task.task_id}' failed: {exc}")
             return None
+        finally:
+            with self._lock:
+                self._service_samples.append(max(0.0, time.monotonic()-started))
+                self._active -= 1
+                self._admitted -= 1
+            self._slots.release()
