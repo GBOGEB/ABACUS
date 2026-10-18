@@ -78,6 +78,10 @@ class GlobalLedgerTests(unittest.TestCase):
         bad=json.loads(json.dumps(self.data))
         bad["presentation"]["pages_deployment_verified"]=True
         with self.assertRaises(ValueError):render(bad,self.template)
+    def test_evidence_type_table_is_scrolled_locally_at_laptop_width(self):
+        self.assertIn('<h3>Evidence-type qualification</h3>\\n<div class="tablewrap"><table>'.replace('\\n','\n'), self.html)
+        self.assertIn('</tbody></table></div><p class="detail">Evidence available',self.html)
+
     def test_explicit_four_pulse_trajectory_is_not_main_b0(self):
         c=self.data["focused_coverage"]
         self.assertEqual([r["covered"] for r in c["trajectory"]],[660,697,707,707])
