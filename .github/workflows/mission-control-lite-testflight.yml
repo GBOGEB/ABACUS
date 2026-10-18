@@ -86,7 +86,8 @@ jobs:
             -p test_runner_wait.py -v \
             > evidence/runner-wait-tests.log 2>&1
           python -m mission_control_lite.timing_pulse measure \
-            --output evidence/phase-times.json --phase adversarial-family-tests -- \
+            --output evidence/phase-times.json \
+            --phase adversarial-family-tests -- \
             python -m coverage run --append --branch \
             --source=mission_control_lite \
             -m unittest discover -s tests \
@@ -121,7 +122,8 @@ jobs:
             --telemetry-tests-log evidence/telemetry-tests.log \
             --recovery-tests-log evidence/recovery-tests.log \
             --runner-wait-tests-log evidence/runner-wait-tests.log \
-            --adversarial-family-tests-log evidence/adversarial-family-tests.log \
+            --adversarial-family-tests-log \
+              evidence/adversarial-family-tests.log \
             --require-penetration-suites --require-case-ids \
             --require-adversarial-family \
             --timing-log evidence/phase-times.json \
