@@ -1,0 +1,139 @@
+{
+  "schema": "codepurple.cbd.w46.native-local-proof.v1",
+  "evidence_class": "EXACT_MAIN_B0_ZIP_BYTES_VERIFIED_PLUS_LOCAL_MATCHED_SOURCE_TEST_ONLY",
+  "observed_date_utc": "2026-10-18",
+  "main_source_sha": "2687f2bcb0705027eefe04df789365d6c9970678",
+  "run": {
+    "id": 39170902976,
+    "attempt": 1,
+    "conclusion": "success",
+    "job_pass": 13,
+    "job_total": 13,
+    "canonical_job_id": 117803544289,
+    "report_only_job_id": 117803544220,
+    "report_admission_job_id": 117805072696
+  },
+  "artifacts": [
+    {
+      "id": 12152488350,
+      "name": "b0-canonical",
+      "sha256": "5bfe091ca1150d22664574b9d33843e445227b05255eb2ed576a27c135cc61d1",
+      "download_bytes_verified": true
+    },
+    {
+      "id": 12152671934,
+      "name": "b0-report-only-producer",
+      "sha256": "54d79a3ff5e25b6698a02e792b3a299cf35ce7fc24bfb4a1189486fffe805301",
+      "download_bytes_verified": true
+    },
+    {
+      "id": 12152970363,
+      "name": "b0-test-admission",
+      "sha256": "3e51193b5e3e41aa946b81b0580c92ed38d399cf6857a0da59a811420b4ab7c8",
+      "download_bytes_verified": true
+    }
+  ],
+  "native_b0": {
+    "test_census": {
+      "pass": 5155,
+      "skip": 3,
+      "fail": 0,
+      "collected": 5158,
+      "governed_skip_states": {
+        "TEST_BLOCKED_CONFIG": 2,
+        "TEST_BLOCKED_SOURCE_MISSING": 1
+      }
+    },
+    "statement": {
+      "covered": 7779,
+      "eligible": 22456,
+      "percent": 34.641076
+    },
+    "branch": {
+      "covered": 1651,
+      "eligible": 5558,
+      "percent": 29.70493
+    },
+    "combined": {
+      "covered": 9430,
+      "eligible": 28014,
+      "percent": 33.661741
+    },
+    "measurement": "coverage.py dynamic_context=test_function, full_measurement in coverage-dab.json",
+    "different_active_source_subset": {
+      "covered_statements": 7720,
+      "eligible_statements": 21248,
+      "pct": 36.3328
+    },
+    "matched_prior_scope_delta": null
+  },
+  "local_zip_test_expansion": {
+    "source": "tools/recovery/w34_native_artifact_verify.py",
+    "unchanged_blob_sha1": "3c1249dc54e74ab0cb0f4ea3ebebe216ad2c650a",
+    "new_test_file": "tests/test_w46_zip_negative_coverage.py",
+    "new_test_blob_sha1": "471143ad7610ef6bad9558d0b3e6dd4e593c38f7",
+    "new_test_sha256": "6b13fd018a99847372f6d7329b280076ce923a29f0c8bcbdb34d9ca3ed9bde44",
+    "test_before": {
+      "pass": 18,
+      "total": 18
+    },
+    "test_after": {
+      "pass": 45,
+      "total": 45
+    },
+    "statement_before": {
+      "covered": 104,
+      "eligible": 111
+    },
+    "statement_after": {
+      "covered": 111,
+      "eligible": 111
+    },
+    "branch_before": {
+      "covered": 16,
+      "eligible": 16
+    },
+    "branch_after": {
+      "covered": 16,
+      "eligible": 16
+    },
+    "combined_before": {
+      "covered": 120,
+      "eligible": 127,
+      "percent": 94.488189
+    },
+    "combined_after": {
+      "covered": 127,
+      "eligible": 127,
+      "percent": 100
+    },
+    "delta_percentage_points": 5.511811,
+    "native_exact_branch_success": null,
+    "regression_tests_in_git": 27,
+    "coverage_instrumentor": "coverage.py 7.13.3; Python 3.13.5",
+    "test_framework": "pytest 9.0.2"
+  },
+  "gates": {
+    "yellow_denominator_unknown": "RESOLVED_ON_THIS_EXACT_MAIN_B0",
+    "yellow_global_coverage_target": "OPEN_33_661741_PERCENT",
+    "red_governance": "OPEN",
+    "effective_ruleset": 24494381,
+    "required_approvals": 0,
+    "required_status_check_rules": 0,
+    "always_bypass_actors": 6,
+    "server_rejected_red_canary_proven": false,
+    "eligible_human_review_proven": false,
+    "security_and_A10_fully_qualified": false,
+    "formal_root_closure": null,
+    "merge_admission": "HOLD"
+  },
+  "preserve_unknowns": [
+    "current-main coverage uplift vs different historical source populations",
+    "W46 branch native terminal matrix",
+    "full CI security/review independent qualifications",
+    "authenticated CODEX/QPS federation return"
+  ],
+  "authority_transfer": false,
+  "waivers_performed": 0,
+  "merges_performed_by_this_wave": 0
+}
