@@ -1,0 +1,324 @@
+{
+  "control": {
+    "head_sha": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+    "origin": "SYNTHETIC",
+    "repository": "GBOGEB/ABACUS"
+  },
+  "edges": [
+    {
+      "from": "event_main",
+      "kind": "fanout",
+      "to": "python_base"
+    },
+    {
+      "from": "event_main",
+      "kind": "fanout",
+      "to": "yaml_lint"
+    },
+    {
+      "from": "event_main",
+      "kind": "observes",
+      "to": "governance_wait"
+    },
+    {
+      "from": "python_base",
+      "kind": "lineage",
+      "to": "python_after"
+    },
+    {
+      "from": "python_after",
+      "kind": "depends_on",
+      "to": "js_consumer"
+    },
+    {
+      "from": "js_consumer",
+      "kind": "fanout",
+      "to": "scheduler_queue"
+    },
+    {
+      "from": "yaml_lint",
+      "kind": "observes",
+      "to": "security_red"
+    },
+    {
+      "from": "governance_wait",
+      "kind": "depends_on",
+      "to": "federation_proposal"
+    }
+  ],
+  "matches": [
+    {
+      "after": "python_after",
+      "before": "python_base"
+    }
+  ],
+  "nodes": [
+    {
+      "attempt": 1,
+      "branch": "main",
+      "conclusion": "success",
+      "coverage": null,
+      "first_red": null,
+      "id": "event_main",
+      "job_id": 1001,
+      "kind": "native",
+      "repository": "GBOGEB/ABACUS",
+      "run_id": 101,
+      "segment": "taskrunner",
+      "sha": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "status": "completed"
+    },
+    {
+      "attempt": 1,
+      "branch": "feature_w48",
+      "conclusion": "success",
+      "coverage": {
+        "artifact_sha256": "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
+        "artifact_url": "https://github.com/GBOGEB/ABACUS/actions/runs/102/artifacts/1021",
+        "branches": {
+          "covered": 47,
+          "eligible": 62
+        },
+        "cell": "ubuntu_py311",
+        "scope": "qps_binary_bridge",
+        "source_blob_sha": "cccccccccccccccccccccccccccccccccccccccc",
+        "statements": {
+          "covered": 184,
+          "eligible": 214
+        },
+        "tool": "coverage_7_16"
+      },
+      "first_red": null,
+      "id": "python_base",
+      "job_id": 1002,
+      "kind": "native",
+      "repository": "GBOGEB/ABACUS",
+      "run_id": 102,
+      "segment": "python",
+      "sha": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+      "status": "completed"
+    },
+    {
+      "attempt": 1,
+      "branch": "feature_w48",
+      "conclusion": "success",
+      "coverage": {
+        "artifact_sha256": "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
+        "artifact_url": "https://github.com/GBOGEB/ABACUS/actions/runs/103/artifacts/1031",
+        "branches": {
+          "covered": 59,
+          "eligible": 62
+        },
+        "cell": "ubuntu_py311",
+        "scope": "qps_binary_bridge",
+        "source_blob_sha": "cccccccccccccccccccccccccccccccccccccccc",
+        "statements": {
+          "covered": 212,
+          "eligible": 214
+        },
+        "tool": "coverage_7_16"
+      },
+      "first_red": null,
+      "id": "python_after",
+      "job_id": 1003,
+      "kind": "native",
+      "repository": "GBOGEB/ABACUS",
+      "run_id": 103,
+      "segment": "python",
+      "sha": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+      "status": "completed"
+    },
+    {
+      "attempt": 1,
+      "branch": "main",
+      "conclusion": "failure",
+      "coverage": null,
+      "first_red": "YAML_LINE_LENGTH",
+      "id": "yaml_lint",
+      "job_id": 1004,
+      "kind": "native",
+      "repository": "GBOGEB/ABACUS",
+      "run_id": 104,
+      "segment": "yaml",
+      "sha": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "status": "completed"
+    },
+    {
+      "attempt": 1,
+      "branch": "feature_w48",
+      "conclusion": "success",
+      "coverage": null,
+      "first_red": null,
+      "id": "js_consumer",
+      "job_id": 1005,
+      "kind": "native",
+      "repository": "GBOGEB/ABACUS",
+      "run_id": 105,
+      "segment": "javascript",
+      "sha": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+      "status": "completed"
+    },
+    {
+      "attempt": 1,
+      "branch": "main",
+      "conclusion": null,
+      "coverage": null,
+      "first_red": null,
+      "id": "scheduler_queue",
+      "job_id": null,
+      "kind": "native",
+      "repository": "GBOGEB/ABACUS",
+      "run_id": 106,
+      "segment": "taskrunner",
+      "sha": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "status": "queued"
+    },
+    {
+      "attempt": 1,
+      "branch": "main",
+      "conclusion": "failure",
+      "coverage": null,
+      "first_red": "SAFETY_EXIT64",
+      "id": "security_red",
+      "job_id": 1007,
+      "kind": "native",
+      "repository": "GBOGEB/ABACUS",
+      "run_id": 107,
+      "segment": "security",
+      "sha": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "status": "completed"
+    },
+    {
+      "attempt": null,
+      "branch": "main",
+      "conclusion": null,
+      "coverage": null,
+      "first_red": null,
+      "id": "governance_wait",
+      "job_id": null,
+      "kind": "local",
+      "repository": "GBOGEB/ABACUS",
+      "run_id": null,
+      "segment": "governance",
+      "sha": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "status": "staged"
+    },
+    {
+      "attempt": null,
+      "branch": "feature_w48",
+      "conclusion": null,
+      "coverage": null,
+      "first_red": null,
+      "id": "federation_proposal",
+      "job_id": null,
+      "kind": "proposal",
+      "repository": "GBOGEB/ABACUS",
+      "run_id": null,
+      "segment": "federation",
+      "sha": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+      "status": "unknown"
+    }
+  ],
+  "schema": "cbd.recurse.input.v1",
+  "tasks": [
+    {
+      "approval_required": false,
+      "depends_on": [],
+      "evidence_node": "python_base",
+      "id": "t00_verified_base",
+      "kind": "read_only",
+      "paths": [
+        "scripts/cbd_recurse_fanout_w48.py"
+      ],
+      "pool": "python",
+      "segment": "python",
+      "state": "done"
+    },
+    {
+      "approval_required": false,
+      "depends_on": [
+        "t00_verified_base"
+      ],
+      "evidence_node": null,
+      "id": "t10_js",
+      "kind": "read_only",
+      "paths": [
+        "scripts/cbd_recurse_public_w48.mjs"
+      ],
+      "pool": "node",
+      "segment": "javascript",
+      "state": "pending"
+    },
+    {
+      "approval_required": false,
+      "depends_on": [
+        "t00_verified_base"
+      ],
+      "evidence_node": null,
+      "id": "t20_py",
+      "kind": "read_only",
+      "paths": [
+        "scripts/cbd_recurse_fanout_w48.py"
+      ],
+      "pool": "python",
+      "segment": "python",
+      "state": "pending"
+    },
+    {
+      "approval_required": false,
+      "depends_on": [
+        "t00_verified_base"
+      ],
+      "evidence_node": null,
+      "id": "t30_py_collision",
+      "kind": "read_only",
+      "paths": [
+        "scripts/cbd_recurse_fanout_w48.py"
+      ],
+      "pool": "python",
+      "segment": "python",
+      "state": "pending"
+    },
+    {
+      "approval_required": false,
+      "depends_on": [
+        "t20_py"
+      ],
+      "evidence_node": null,
+      "id": "t40_yaml",
+      "kind": "read_only",
+      "paths": [
+        "ci/cbd_recurse_local_w48.yaml"
+      ],
+      "pool": "io",
+      "segment": "yaml",
+      "state": "pending"
+    },
+    {
+      "approval_required": true,
+      "depends_on": [],
+      "evidence_node": null,
+      "id": "t50_review",
+      "kind": "approval",
+      "paths": [
+        ".github/workflows/ci-governance.yml"
+      ],
+      "pool": "io",
+      "segment": "governance",
+      "state": "pending"
+    },
+    {
+      "approval_required": true,
+      "depends_on": [],
+      "evidence_node": null,
+      "id": "t60_mutation",
+      "kind": "mutating",
+      "paths": [
+        "scripts/run_all_local.sh"
+      ],
+      "pool": "io",
+      "segment": "taskrunner",
+      "state": "pending"
+    }
+  ]
+}
