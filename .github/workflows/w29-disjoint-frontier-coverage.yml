@@ -1,6 +1,16 @@
 name: W29-W33 Disjoint Frontier Coverage
 
 on:
+  # Explicitly bounded W33 branch-only pilot, without creating a PR
+  # or exposing another draft to the currently ineffective main merge gate.
+  push:
+    branches:
+      - code-purple/w33-elastic-stop-retrigger-governor-20261018
+    paths:
+      - 'MIP/EVIDENCE_TO_ADMISSION_OBSERVATORY/**'
+      - 'tests/test_w82_semantic_diversity_diagnostic.py'
+      - 'tests/test_w32_w82_semantic_permutation.py'
+      - '.github/workflows/w29-disjoint-frontier-coverage.yml'
   pull_request:
     paths:
       - 'tests/test_w29_w75_stability_negative.py'
@@ -33,7 +43,8 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        python-version: ['3.10', '3.12']
+        # One Python cell for branch pilot; retain both for formal PR qualification.
+        python-version: ${{ fromJSON(github.event_name == 'push' && '["3.12"]' || '["3.10","3.12"]') }}
     steps:
       - name: Checkout exact PR source head
         uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
