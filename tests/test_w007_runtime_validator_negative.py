@@ -6,8 +6,11 @@ claiming a Pages publication, or granting engineering authority.
 from __future__ import annotations
 
 from datetime import datetime, timezone
+import builtins
 import json
 from pathlib import Path
+import runpy
+import subprocess
 import sys
 
 import pytest
@@ -16,6 +19,7 @@ from scripts.validate_runtime_foundation import (
     REQUIRED_CAPABILITIES,
     validate_runtime_foundation,
 )
+import scripts.validate_runtime_foundation as runtime_validator
 import scripts.write_runtime_governance_status as runtime_status
 
 
@@ -256,3 +260,207 @@ def test_cli_preserves_status_json_and_exit_code(
     assert runtime_status.main() == expected_exit
     assert json.loads(destination.read_text(encoding="utf-8")) == status
     assert json.loads(capsys.readouterr().out) == status
+
+
+# W007 next-slice negative contract: every structural assumption is evidence,
+# including an existing but empty JSON object (not the same as missing bytes).
+@pytest.mark.parametrize(
+    ("kind", "expected"),
+    [
+        ("manifest", "runtime manifest wave must be W007"),
+        ("matrix", "RTM trace matrix must contain traceability rows"),
+    ],
+)
+def test_empty_object_json_must_fail_closed(
+    runtime_tree: Path, kind: str, expected: str
+) -> None:
+    path = (_manifest(runtime_tree) if kind == "manifest" else _matrix(runtime_tree))[0]
+    path.write_text("{}\n", encoding="utf-8")
+    assert expected in _errors(runtime_tree)
+
+
+@pytest.mark.parametrize("capability", sorted(REQUIRED_CAPABILITIES))
+def test_each_required_runtime_capability_is_nonoptional(
+    runtime_tree: Path, capability: str
+) -> None:
+    path, manifest = _manifest(runtime_tree)
+    manifest["artifacts"] = [
+        item for item in manifest["artifacts"]
+        if item["capability"] != capability
+    ]
+    _write(path, manifest)
+    assert f"runtime manifest missing capability: {capability}" in _errors(runtime_tree)
+
+
+@pytest.mark.parametrize(
+    ("kind", "expected"),
+    [
+        ("non_string_active_path", "runtime manifest artifact #1 missing path"),
+        ("blank_active_path", "runtime manifest artifact #1 missing path"),
+        ("non_string_generated_producer", "runtime-generated artifact missing producer"),
+        ("blank_generated_producer", "runtime-generated artifact missing producer"),
+    ],
+)
+def test_nonpath_or_blank_artifact_identity_is_not_accepted(
+    runtime_tree: Path, kind: str, expected: str
+) -> None:
+    path, manifest = _manifest(runtime_tree)
+    active = next(item for item in manifest["artifacts"] if item["status"] == "active")
+    generated = next(
+        item for item in manifest["artifacts"]
+        if item["status"] == "runtime_generated"
+    )
+    if kind == "non_string_active_path":
+        active["path"] = 123
+    elif kind == "blank_active_path":
+        active["path"] = ""
+    elif kind == "non_string_generated_producer":
+        generated["producer"] = 7
+    else:
+        generated["producer"] = ""
+    index = manifest["artifacts"].index(active) + 1
+    _write(path, manifest)
+    message = expected.replace("#1", f"#{index}")
+    assert message in _errors(runtime_tree)
+
+
+@pytest.mark.parametrize(
+    "section",
+    [
+        "W007 Runtime Foundation",
+        "SSOT Dashboard",
+        "Traceability",
+        "runtime-artifact-manifest.json",
+        "Visualization Layer",
+    ],
+)
+def test_each_runtime_portal_section_is_contractual(
+    runtime_tree: Path, section: str
+) -> None:
+    portal = runtime_tree / "docs" / "runtime.html"
+    portal.write_text(
+        portal.read_text(encoding="utf-8").replace(section, "WITHHELD"),
+        encoding="utf-8",
+    )
+    assert f"runtime portal missing visible section: {section}" in _errors(runtime_tree)
+
+
+@pytest.mark.parametrize("value", [None, 0, 1, "false", [], {}])
+def test_rtm_available_must_be_literal_json_true(
+    runtime_tree: Path, value: object
+) -> None:
+    path, matrix = _matrix(runtime_tree)
+    matrix["rows"][0]["available"] = value
+    _write(path, matrix)
+    assert "RTM trace matrix has unavailable or missing evidence: E1" in _errors(
+        runtime_tree
+    )
+
+
+@pytest.mark.parametrize("evidence_path", [None, 0, False, []])
+def test_rtm_nonpath_evidence_must_fail_closed(
+    runtime_tree: Path, evidence_path: object
+) -> None:
+    path, matrix = _matrix(runtime_tree)
+    matrix["rows"][0]["evidence_artifact"] = evidence_path
+    _write(path, matrix)
+    failures = _errors(runtime_tree)
+    assert "RTM trace row #1 evidence_artifact must be a non-empty string" in failures
+    assert "RTM trace matrix has unavailable or missing evidence: E1" in failures
+
+
+# CLI and diagnostic coverage is part of the admission evidence contract,
+# not merely a library return value.
+@pytest.mark.parametrize("valid", [True, False])
+def test_validator_cli_retains_real_success_and_failure_exit(
+    runtime_tree: Path,
+    monkeypatch: pytest.MonkeyPatch,
+    capsys: pytest.CaptureFixture[str],
+    valid: bool,
+) -> None:
+    if not valid:
+        manifest_path, manifest = _manifest(runtime_tree)
+        manifest["wave"] = "WITHHELD"
+        _write(manifest_path, manifest)
+    validate = runtime_validator.validate_runtime_foundation
+    monkeypatch.setattr(
+        runtime_validator,
+        "validate_runtime_foundation",
+        lambda: validate(runtime_tree),
+    )
+    assert runtime_validator.main() == (0 if valid else 1)
+    output = capsys.readouterr().out
+    if valid:
+        assert output.strip() == "W007 runtime foundation validation passed."
+    else:
+        assert "W007 runtime foundation validation failed:" in output
+        assert "- runtime manifest wave must be W007" in output
+
+
+def test_runtime_diagnostic_outside_repo_retains_literal_path(
+    tmp_path: Path,
+) -> None:
+    repo = tmp_path / "source"
+    external = tmp_path / "outside" / "missing.json"
+    assert runtime_validator._relative(external, repo) == str(external)
+
+
+def test_runtime_writer_real_direct_cli_from_external_cwd(
+    tmp_path: Path,
+) -> None:
+    """The direct-script invocation must ignore PYTHONPATH and use its script path.
+
+    No repository status file is created or mutated: only the test-owned output
+    path receives JSON. Running from outside the repository exercises the
+    documented fallback import used by shell/Windows callers.
+    """
+    source = Path(runtime_status.__file__).resolve()
+    receipt = tmp_path / "nested" / "runtime-status.json"
+    result = subprocess.run(
+        [sys.executable, "-E", str(source), "--output", str(receipt)],
+        cwd=tmp_path,
+        capture_output=True,
+        text=True,
+        timeout=30,
+        check=False,
+    )
+    assert result.returncode == 0, result.stderr[-2000:]
+    assert receipt.is_file()
+    status = json.loads(receipt.read_text(encoding="utf-8"))
+    assert json.loads(result.stdout) == status
+    assert status["schema"] == "abacus-runtime-governance-status/1.0"
+    assert status["validation_passed"] is True
+    assert status["validation_errors"] == []
+    assert status["authority"] == "RUNTIME_EVIDENCE_ONLY_ZERO_ENGINEERING_AUTHORITY"
+
+
+def test_runtime_writer_package_import_fallback_is_fail_closed(
+    runtime_tree: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """Instrument the fallback when the scripts package import is unavailable."""
+    original_import = builtins.__import__
+
+    def isolated_import(
+        name: str,
+        globals_: dict | None = None,
+        locals_: dict | None = None,
+        fromlist: tuple = (),
+        level: int = 0,
+    ) -> object:
+        if name == "scripts.validate_runtime_foundation":
+            raise ModuleNotFoundError(
+                "synthetic direct-script package import failure",
+                name=name,
+            )
+        return original_import(name, globals_, locals_, fromlist, level)
+
+    source = Path(runtime_status.__file__).resolve()
+    monkeypatch.syspath_prepend(str(source.parent))
+    monkeypatch.setattr(builtins, "__import__", isolated_import)
+    namespace = runpy.run_path(str(source), run_name="w007_fallback_test")
+    build_status = namespace["build_status"]
+    status = build_status(runtime_tree)
+    assert status["validation_passed"] is True
+    assert status["runtime_status"] == "validated"
+    assert status["authority"] == "RUNTIME_EVIDENCE_ONLY_ZERO_ENGINEERING_AUTHORITY"
