@@ -1,0 +1,72 @@
+{
+  "artifacts": {
+    "G3CS_CONVERGENCE_DAG.dot": {
+      "bytes": 3379,
+      "sha256": "1213e5c046d203523a464d11c18307ac888af57161bac82b2854c7450135437b",
+      "status": "PASS"
+    },
+    "G3CS_CONVERGENCE_DAG.json": {
+      "bytes": 6006,
+      "sha256": "e94ac27a74e3c8aece74dce7a0a1a22e872dccb8198f046d13f38e0b66ed5bb0",
+      "status": "PASS"
+    },
+    "G3CS_CONVERGENCE_DAG.svg": {
+      "bytes": 26313,
+      "sha256": "c5b5060202454e251e484a03c2c0dd1bbb3391271c1eab580fbc6918fd7b5ad0",
+      "status": "PASS"
+    },
+    "G3CS_CONVERGENCE_DASHBOARD.html": {
+      "bytes": 66822,
+      "sha256": "430fbb1f47d00b4cfb663f2567be54c5a76ed8fb09c7327ec6bb3bc05fce50bf",
+      "status": "PASS"
+    },
+    "G3CS_CONVERGENCE_METRICS.json": {
+      "bytes": 4928,
+      "sha256": "b6477593a06c3aa0f82220c44144e09a167815b5cbf2323042a545ed9601ee03",
+      "status": "PASS"
+    },
+    "G3CS_CONVERGENCE_SIPOC.dot": {
+      "bytes": 1318,
+      "sha256": "ab19f02274d22f3f9fc0c7b535d67bcb89b0f38db82370de6f648d108d5a1156",
+      "status": "PASS"
+    },
+    "G3CS_CONVERGENCE_SIPOC.json": {
+      "bytes": 1938,
+      "sha256": "e585d70d3fe911257cae6ac2b81f2d42c2292f75b4e0e6cf36c8cc76236580c8",
+      "status": "PASS"
+    },
+    "G3CS_CONVERGENCE_SIPOC.svg": {
+      "bytes": 8479,
+      "sha256": "73c0521b62f1f58e817c23bd7bd855ff37f8c9a4cfe6dd99b1c59eaafe6cc389",
+      "status": "PASS"
+    }
+  },
+  "browser_receipt": "qa/browser_receipt.json",
+  "checks": {
+    "cross_format_parity": "PASS",
+    "formula_or_content": "PASS",
+    "playwright": "PASS",
+    "render_visual": "PASS",
+    "structural": "PASS"
+  },
+  "defects": [],
+  "evidence_level": "LOCAL_REPRODUCIBILITY",
+  "notes": [
+    "Native source is a frozen historical observation, not a claim of exact current GitHub state.",
+    "Unreviewed merges cannot satisfy mandatory independent approval.",
+    "No source is mutated, and the generated review projection is not the SSOT.",
+    "Tested 1440x1000, 1280x800 and 390x844 with zero page/console errors, broken images or overflow; filters/search active."
+  ],
+  "schema": "qps-artifact-qa/1.0",
+  "source": {
+    "git_sha": "585dd7476d3b3c629f864c37ec7d7526a648b4c0",
+    "locator": "source/G3CS_CONVERGENCE_INPUT.json",
+    "semantic_sha256": "3e45b1e7694c3bd68bc67db05e687639362cab4631ba7b5ea0d501a07a062530"
+  },
+  "unit_tests": {
+    "executed": 24,
+    "failed": 0,
+    "passed": 24,
+    "selection": "tests/test_converge.py"
+  }
+}
