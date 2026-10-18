@@ -542,6 +542,18 @@
       "cluster": "documentation",
       "lifecycle": "pr_domain",
       "disposition": "keep"
+    },
+    {
+      "pattern": "^cbd-w6c-office-style-qa\\.yml$",
+      "cluster": "core_test",
+      "lifecycle": "pr_domain",
+      "disposition": "keep"
+    },
+    {
+      "pattern": "^w007-runtime-validator-qa\\.yml$",
+      "cluster": "runtime_governance",
+      "lifecycle": "pr_domain",
+      "disposition": "keep"
     }
   ],
   "quality_gates": {
