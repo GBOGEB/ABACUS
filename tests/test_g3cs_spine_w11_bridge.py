@@ -32,3 +32,4 @@ TestG3CSTemporalMatching = _get(Path("tests/test_compare_snapshots.py"), "compar
 TestG3CSPostmerge = _get(Path("tests/test_postmerge_gate_receipt.py"), "postmerge").W7ReceiptTests
 TestG3CSW10Release = _get(Path("observatory/w10/test_w10_spine.py"), "w10").GlobalSpineW10Tests
 TestG3CSW11Spine = _get(Path("observatory/w10/test_w11_spine_contract.py"), "w11").SpineW11ContractTests
+TestG3CSW12Metrics = _get(Path("observatory/w10/test_w12_dependency_metrics.py"), "w12").DependencyW12Tests
