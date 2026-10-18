@@ -79,6 +79,20 @@ class DashboardHealthContracts(unittest.TestCase):
         self.assertIn("Total broken internal links: 2", stdout)
         self.assertIn("broken_links=2", output)
 
+    def test_portable_scanner_and_parent_relative_missing_link(self):
+        # The scanner runs on macOS and Windows as well as Linux.
+        # PCRE grep -P is not portable; it used to silently return 0 links.
+        scanner = _report_shell()
+        self.assertNotIn("grep -oP", scanner)
+        self.assertIn("grep -oE", scanner)
+        stdout, output = _fixture_scan(
+            malicious_link='<a href="../absent.html?rev=7">missing parent</a>'
+        )
+        self.assertIn("missing.html", stdout)
+        self.assertIn("../absent.html?rev=7", stdout)
+        self.assertIn("Total broken internal links: 2", stdout)
+        self.assertIn("broken_links=2", output)
+
     def test_unpublished_myrrha_and_contract_pages_not_advertised_as_live(self):
         html = INDEX.read_text(encoding="utf-8")
         self.assertNotIn('href="myrrha_handover/"', html)
