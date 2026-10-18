@@ -102,7 +102,7 @@ def validate(payload):
             job_names.add(name)
             status = job.get("status")
             conclusion = job.get("conclusion")
-            require(status in ("completed", "queued", "in_progress"), "bad job status")
+            require(status in ("completed", "queued", "in_progress", "pending", "waiting", "requested"), "bad job status")
             if status == "completed":
                 require(conclusion in TERMINAL, "terminal job missing conclusion")
                 if conclusion not in {"skipped", "cancelled"}:
@@ -115,7 +115,7 @@ def validate(payload):
             created = instant(job["created_at"])
             started = instant(job["started_at"]) if job.get("started_at") else None
             finished = instant(job["completed_at"]) if job.get("completed_at") else None
-            require(status != "queued" or started is None, "queued job has start clock")
+            require(status not in {"queued", "pending", "waiting", "requested"} or started is None, "queued job has start clock")
             require(status != "in_progress" or started is not None,
                     "in-progress job missing start clock")
             require(started is None or created <= started, "negative queue clock")
