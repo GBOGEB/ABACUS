@@ -62,7 +62,6 @@ Make PR-triggered workflows with write-class GitHub token scopes explicit and re
 
 | Order | Lifecycle | Cluster | Workflow | Events | Jobs | Decision | Replacement |
 |---:|---|---|---|---|---:|---|---|
-
 | 10 | `pr_fast` | `ci_governance` | `ci-governance.yml` | pull_request, push, workflow_dispatch | 1 | `canonical` | — |
 | 10 | `pr_fast` | `core_test` | `abacus-cicd.yml` | push, pull_request, workflow_dispatch | 6 | `keep` | — |
 | 10 | `pr_fast` | `core_test` | `ariana-cicd.yml` | push, pull_request, workflow_dispatch | 2 | `keep` | — |
@@ -253,6 +252,7 @@ Make PR-triggered workflows with write-class GitHub token scopes explicit and re
 | 50 | `manual` | `core_test` | `code-purple-quality-ratchet-proof.yml` | push, workflow_dispatch | 1 | `keep` | — |
 | 50 | `manual` | `legacy` | `ci.yml` | workflow_dispatch | 3 | `consolidate` | `bridge-ci.yml` |
 | 90 | `retire` | `legacy` | `ci-codex.yml` | workflow_dispatch | 1 | `retire` | `CODEX/.github workflows via versioned manifest; no ABACUS-to-CODEX dispatch` |
+
 ## Repeated quality/test commands
 
 - `python -m pip install pytest numpy` — `abacus-missioncontrol-stage-contract-qa.yml`, `bd-w1-three-pulse-regression.yml`, `book-build.yml`, `dow-w1-coverage-contract-qa.yml`, `leg5-federation-dashboard-proof.yml`
