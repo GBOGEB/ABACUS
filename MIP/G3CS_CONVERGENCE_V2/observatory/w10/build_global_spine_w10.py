@@ -316,6 +316,60 @@ def w11_contract_panel(history):
      before any uplift or closure is credited. Safety and effective ruleset protections are noncompensating gates.</div>
      </section>'''
 
+
+def w12_dependency_statistics_panel(history):
+    # Source-reported structural statistics; no inferential approval.
+    import importlib.util
+    module_path=BASE/'dependency_metrics.py'
+    spec=importlib.util.spec_from_file_location('g3cs_w12_dependency_metrics',module_path)
+    if spec is None or spec.loader is None:
+        raise ValueError('Missing W12 source-controlled statistics provider')
+    provider=importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(provider)
+    epoch=json.loads((BASE/'W11_OBSERVED_MAIN_EPOCH.json').read_text(encoding='utf-8'))
+    calculated=provider.build(history,epoch)
+    pinned=BASE/'SPINE_STATS_W12.json'
+    if not pinned.exists() or json.loads(pinned.read_text(encoding='utf-8'))!=calculated:
+        raise ValueError('W12 typed statistics drift from pinned source inputs')
+    graph=calculated['graph']
+    times=calculated['temporal']
+    inference=calculated['inference']
+    if inference['inference_ready'] or inference['p_values'] is not None:
+        raise ValueError('Unqualified inferential statistic promoted')
+    top=graph['top_structural_betweenness'][:5]
+    rank_rows=''.join(f'<tr><td><code>{esc(x["id"])}</code></td><td>{x["in_degree"]} / {x["out_degree"]}</td><td>{x["structural_betweenness"]:.5f}</td></tr>' for x in top)
+    model_rows=''.join('<tr><td><b>'+esc(name)+'</b></td><td>NOT QUALIFIED</td><td>'+esc(inference[name]['why'])+'</td></tr>' for name in ('PCA','ANOVA','MANOVA','Bradley_Terry_BT','bootstrap_temporal','DNN_temporal'))
+    deltas=times['deltas']
+    changes=', '.join(f'{x["portfolio_coverage_pp_delta"]:+.3f} pp / {x["uncovered_delta"]:+d} debt' for x in deltas)
+    return f'''<section class="panel section" id="w12-stats">
+      <div class="split"><div><h2>12 · N+i statistical observatory · typed DAG + SIPOC + SPINE</h2>
+      <p class="muted">Actual **descriptive** structural metrics and serial native-main epochs. Graph structure is not a set of independent experimental observations.</p></div>
+      {pill('DESCRIPTIVE ONLY · NO INFERENCE','partial')}</div>
+      <div class="issuefigure">
+        <div><b>{graph['nodes']} / {graph['edges']}</b><small class="minor">Validated nodes / typed edges</small></div>
+        <div><b>{graph['directed_density']*100:.2f}%</b><small class="minor">Directed density (46 / 1,332 possible pairs)</small></div>
+        <div><b>{graph['distinct_source_to_customer_paths']}</b><small class="minor">Structural ingest → consumer routes</small></div>
+        <div><b>{graph['longest_dependency_path_hops']}</b><small class="minor">Longest dependency path, hops — NOT runtime</small></div>
+      </div>
+      <p class="muted"><b>All-path structural bottlenecks:</b> {esc(', '.join(graph['all_path_mandatory_nodes']))}.</p>
+      <div class="badge-row">{pill('3 green-main coverage epochs')}{pill('2 descriptive transitions')}
+       {pill('5 mandatory routing nodes')}{pill('Inferential methods NOT QUALIFIED','blocked')}</div>
+      <div class="cols2" style="margin-top:12px">
+       <div><h3>Structural betweenness & fan-in / fan-out</h3><div class="tablewrap"><table><thead><tr><th>Node</th><th>In / Out</th><th>Normalized betweenness</th></tr></thead><tbody>{rank_rows}</tbody></table></div></div>
+       <div><h3>Temporal trend, descriptive only</h3>
+        <p class="muted">N−2 → N−1 → N coverage: <b>{times['observed_main_percentages'][0]:.3f}% → {times['observed_main_percentages'][1]:.3f}% → {times['observed_main_percentages'][2]:.3f}%</b>.</p>
+        <p class="muted">Absolute uncovered: <b>{times['observed_uncovered_counts'][0]:,} → {times['observed_uncovered_counts'][1]:,} → {times['observed_uncovered_counts'][2]:,}</b>.</p>
+        <p class="muted">Sequential portfolio change: {changes}. These observations have <b>different source/coverage denominators</b>; they are not matched causal estimates.</p>
+       </div></div>
+      <h3>Statistical readiness — independent wave blocks required</h3><div class="tablewrap"><table><thead><tr><th>Method</th><th>DoV</th><th>Why not yet valid</th></tr></thead><tbody>{model_rows}</tbody></table></div>
+      <p class="muted">BT is provisionally interpreted as <b>Bradley–Terry paired-strategy ranking</b>. Bayesian tracking and cluster/block bootstrap are separately gated. The next event collector must measure actual source-run-attempt-job-trigger latencies and disjoint wave IDs before temporal inference.</p>
+      <div class="provenance"><a href="SPINE_STATS_W12.json">Full computed graph statistics JSON</a>
+       <a href="SPINE_DAG_W11.json">Pinned DAG</a><a href="SPINE_SIPOC_W11.json">Process SIPOC</a><a href="W11_OBSERVED_MAIN_EPOCH.json">Exact-main temporal receipts</a></div>
+      <div class="alert">N+i is append-only. No speculative p-values, PCA attribution, control limits, posterior probability, authenticated Crew launch, REX acceptance, or governed merge credit is generated by this view.</div>
+      </section>'''
+
+
+
 def main():
     p=argparse.ArgumentParser();p.add_argument('--history',type=Path,default=BASE/'W10_FROZEN_HISTORY.json');p.add_argument('--outdir',type=Path,default=BASE)
     args=p.parse_args();d=checked_history(json.loads(args.history.read_text(encoding='utf-8')))
@@ -326,7 +380,7 @@ def main():
     body=make_html(d,svg)
     if body.count('<footer>')!=1:
         raise ValueError('W10 HTML footer anchor missing or ambiguous')
-    body=body.replace('<footer>',w11_contract_panel(d)+w11_native_main_panel(d)+'<footer>',1)
+    body=body.replace('<footer>',w11_contract_panel(d)+w11_native_main_panel(d)+w12_dependency_statistics_panel(d)+'<footer>',1)
     html_file=out/'CODE_PURPLE_GLOBAL_SPINE_W10.html';html_file.write_text(body,encoding='utf-8')
     (out/'index.html').write_bytes(html_file.read_bytes())  # exact byte-identical HTML review surface
     issue=d['clocks']['issues'][-1];ci0,ci1=d['clocks']['main_ci'][-2:];pr0,pr1=d['clocks']['pr_ci'][-2:];a,b=d['clocks']['main_coverage'][:2]
