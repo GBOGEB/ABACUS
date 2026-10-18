@@ -60,6 +60,11 @@ def specimen():
             "latest_terminal_source_sha": HEAD,
             "last_scaled_run_id": None, "last_scaled_source_sha": None,
         },
+        "artifact_types": [
+            {"kind": name, "expected": 2, "native_verified": 2,
+             "source_sha": HEAD, "consumer_attested": None}
+            for name in ("junit.xml", "coverage.json", "coverage.xml", "manifest.json")
+        ],
         "events": [], "seen_event_keys": [],
         "global_acceptance": {
             "head_stable": None, "canonical_b0_exact_head": False,
@@ -346,6 +351,8 @@ def make_global_ready(doc):
               "no_special_cause_variation": True,
               "head_stable": True, "canonical_b0_exact_head": True})
     e["gates"] = dict.fromkeys(e["gates"], True)
+    for row in doc["artifact_types"]:
+        row["consumer_attested"] = True
 
 
 def test_only_all_families_and_independent_governance_allow_global_control():
@@ -362,7 +369,7 @@ def test_only_all_families_and_independent_governance_allow_global_control():
 @pytest.mark.parametrize("corruption", [
     "family", "root", "repo", "artifact", "stability", "branch_protection",
     "eligible_independent_review", "required_checks", "negative_red_canary", "security",
-    "canonical_b0_exact_head", "head_stable",
+    "canonical_b0_exact_head", "head_stable", "consumer_receipt",
 ])
 def test_no_global_stop_on_partial_target_or_missing_proof(corruption):
     doc = specimen()
@@ -380,6 +387,8 @@ def test_no_global_stop_on_partial_target_or_missing_proof(corruption):
         e["independent_stable_pulses"] = 7
     elif corruption in {"canonical_b0_exact_head", "head_stable"}:
         e[corruption] = False
+    elif corruption == "consumer_receipt":
+        doc["artifact_types"][0]["consumer_attested"] = None
     else:
         e["gates"][corruption] = False
     assert g.evaluate(doc)["programme"]["stop_entire_program"] is False
@@ -476,3 +485,46 @@ def test_existing_observatory_consumer_exposes_pinned_policy_without_main_credit
     assert elastic["next_pilot"] == "W82"
     assert elastic["programme"]["stop_entire_program"] is False
     assert receipt["scale_policy"]["merge_admission"] == "HOLD"
+
+
+def test_four_artifact_types_are_native_complete_but_not_federation_credit():
+    doc = specimen()
+    r = g.evaluate(doc)
+    types = r["artifact_type_census"]
+    assert types["native_verified"] == types["native_expected"] == 8
+    assert types["native_yield"] == 1.0
+    assert types["consumer_attested_types"] == 0
+    assert types["status"] == "NATIVE_COMPLETE_CONSUMER_UNKNOWN"
+    assert types["global_federation_credit"] is None
+
+
+def test_single_lost_manifest_file_changes_artifact_type_yield_not_root_disposition():
+    doc = specimen()
+    doc["artifact_types"][-1]["native_verified"] = 1
+    r = g.evaluate(doc)
+    types = r["artifact_type_census"]
+    assert types["status"] == "NATIVE_INCOMPLETE"
+    assert types["native_verified"] == 7
+    assert types["native_expected"] == 8
+    assert types["native_yield"] == .875
+    assert r["programme"]["stop_entire_program"] is False
+
+
+@pytest.mark.parametrize("defect", ["duplicate_type", "foreign_sha", "negative",
+                                    "overclaim", "invalid_consumer", "no_types"])
+def test_artifact_type_census_fails_closed_on_invalid_or_missing_scope(defect):
+    doc = specimen()
+    if defect == "duplicate_type":
+        doc["artifact_types"][1]["kind"] = "junit.xml"
+    elif defect == "foreign_sha":
+        doc["artifact_types"][1]["source_sha"] = "b" * 40
+    elif defect == "negative":
+        doc["artifact_types"][1]["native_verified"] = -1
+    elif defect == "overclaim":
+        doc["artifact_types"][1]["native_verified"] = 3
+    elif defect == "invalid_consumer":
+        doc["artifact_types"][1]["consumer_attested"] = "true"
+    else:
+        doc["artifact_types"] = []
+    with pytest.raises(g.GovernorError):
+        g.evaluate(doc)
