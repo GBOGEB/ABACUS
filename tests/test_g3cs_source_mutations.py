@@ -10,7 +10,14 @@ import tempfile
 import unittest
 from pathlib import Path
 
-import test_g3cs_assurance_matrix as assurance
+# Load by sibling path: root pytest imports this file as tests.test_*, not as
+# an isolated top-level module. This also supports direct script invocation.
+_ASSURANCE_PATH = Path(__file__).with_name("test_g3cs_assurance_matrix.py")
+_ASSURANCE_SPEC = importlib.util.spec_from_file_location("g3cs_assurance_matrix", _ASSURANCE_PATH)
+if _ASSURANCE_SPEC is None or _ASSURANCE_SPEC.loader is None:
+    raise ImportError("Missing G3C-S assurance sibling test provider")
+assurance = importlib.util.module_from_spec(_ASSURANCE_SPEC)
+_ASSURANCE_SPEC.loader.exec_module(assurance)
 
 ROOT=Path(__file__).resolve().parents[1]
 SOURCE=ROOT/'MIP/G3CS_CONVERGENCE_V2/tools/serial_main_pair.py'
