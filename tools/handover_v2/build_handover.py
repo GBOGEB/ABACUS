@@ -280,9 +280,12 @@ def semantic_validate(s: dict, raw_base: Path) -> None:
             raise ValueError("Comparison cannot compare identical metric ID")
     for g in gates.values():
         st = g["status"]
-        if g["run_id"] is not None and g["evidence_ids"]:
-            if not any(evidence[i]["run_id"]==g["run_id"] for i in g["evidence_ids"]):
-                raise ValueError("Gate run ID disagrees with cited evidence: " + g["id"])
+        if (
+            g["run_id"] is not None
+            and g["evidence_ids"]
+            and not any(evidence[i]["run_id"] == g["run_id"] for i in g["evidence_ids"])
+        ):
+            raise ValueError("Gate run ID disagrees with cited evidence: " + g["id"])
         if st == "PASS":
             if not g["source_sha"]:
                 raise ValueError("PASS gate lacks source SHA: " + g["id"])
