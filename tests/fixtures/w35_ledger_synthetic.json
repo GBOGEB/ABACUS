@@ -1,0 +1,165 @@
+{
+  "schema": "codepurple.w35.dashboard-ledger.v1",
+  "main_sha": "2246c7bd3a9bda6a3d43b9a9116cb7088cfbcc88",
+  "baseline_main_sha": "994ad6e73c748923841d92b12651e92d41b2d4ff",
+  "merge_admission": "HOLD",
+  "readonly": true,
+  "repositories": [
+    {
+      "repo": "ABACUS",
+      "default_branch": "main",
+      "sha": "2246c7bd3a9bda6a3d43b9a9116cb7088cfbcc88",
+      "level": "HEAD_OBSERVED"
+    },
+    {
+      "repo": "CODEX",
+      "default_branch": "main",
+      "sha": "774d51eb4a58fa259f059764e586d12a7935b2e1",
+      "level": "HEAD_OBSERVED"
+    },
+    {
+      "repo": "cryoplant-project",
+      "default_branch": "main",
+      "sha": "fc07545c3986181a1b837c0eb7ff9a8393fd4058",
+      "level": "HEAD_OBSERVED"
+    },
+    {
+      "repo": "pipeline-automation-hub",
+      "default_branch": "master",
+      "sha": "339bee59cf790498408be19e9c7deb092cc51738",
+      "level": "HEAD_OBSERVED"
+    },
+    {
+      "repo": "gg_MATH",
+      "default_branch": "main",
+      "sha": "6d5310280740e50fe7fbe45712ca62e2dee0c36b",
+      "level": "HEAD_OBSERVED"
+    }
+  ],
+  "governance": {
+    "required_approval_count": 0,
+    "required_status_rules": 0,
+    "always_bypass_actors": 6,
+    "security_waiver": false,
+    "authority_transfer": false
+  },
+  "cohorts": {
+    "w34_canonical_b0_jobs": {
+      "passed": 11,
+      "failed": 2,
+      "total": 13,
+      "run_id": 39159906022,
+      "run_attempt": 1,
+      "source_sha": "994ad6e73c748923841d92b12651e92d41b2d4ff",
+      "canonical_job": 117771668289,
+      "downstream_report_job": 117773239113,
+      "level": "NATIVE_EXACT_HEAD_TERMINAL_FAILED"
+    },
+    "w34_canonical_pytest": {
+      "passed": 3854,
+      "failed": 3,
+      "skipped": 1,
+      "total": 3858,
+      "result": "FAIL"
+    },
+    "w34_staged_lanes": {
+      "implemented": 3,
+      "eligible": 3,
+      "native_qualified": 0,
+      "accepted": 0,
+      "changed_paths": 7,
+      "local_synthetic_passed": 18,
+      "local_synthetic_total": 18,
+      "new_test_methods": 24,
+      "merged_gitHub_total": 3,
+      "governed_admitted": 0
+    },
+    "w27_matched_testpilot": {
+      "historical": true,
+      "producer_pr": 2249,
+      "run_id": 39150064513,
+      "attempt": 1,
+      "jobs_passed": 4,
+      "jobs_total": 4,
+      "before": [
+        106,
+        104,
+        104,
+        104
+      ],
+      "after": [
+        198,
+        196,
+        196,
+        196
+      ],
+      "eligible_per_cell": 200,
+      "delta_pp_per_cell": 46.0,
+      "code_global_coverage": null
+    },
+    "w38_focused": {
+      "source_head": "b69c8e376e25c9345e379a14c371149ba7443adb",
+      "run_id": 39162185592,
+      "job_id": 117777615940,
+      "run_attempt": 1,
+      "interpreter": "3.12",
+      "platform": "native_single_cell",
+      "tests_passed": 203,
+      "tests_failed": 0,
+      "tests_skipped": 0,
+      "before_covered": 660,
+      "after_covered": 707,
+      "eligible": 723,
+      "delta_pp": 6.500692,
+      "artifact_id": 12149111972,
+      "artifact_bytes_independently_verified": null,
+      "accepted_broad_main_coverage": null,
+      "families": [
+        {
+          "family": "W75",
+          "label": "Stability/deconfounding",
+          "covered": 219,
+          "eligible": 221
+        },
+        {
+          "family": "W64",
+          "label": "Reverse pressure",
+          "covered": 123,
+          "eligible": 125
+        },
+        {
+          "family": "W81",
+          "label": "Repair provenance",
+          "covered": 154,
+          "eligible": 162
+        },
+        {
+          "family": "W82",
+          "label": "Semantic discrimination",
+          "covered": 211,
+          "eligible": 215
+        }
+      ]
+    }
+  },
+  "root_families": [
+    {
+      "id": "G3CS_OPTIONAL_ZIP_MARKER_CONTRACT",
+      "observed_manifestations": 3,
+      "confirmed_distinct_roots": 1
+    },
+    {
+      "id": "NETWORKX_W13_INSTALL",
+      "observed_manifestations": 7,
+      "confirmed_distinct_roots": 1
+    },
+    {
+      "id": "W32_SELF_REPORTED_PROOF_FLAGS",
+      "observed_manifestations": 1,
+      "confirmed_distinct_roots": null
+    }
+  ],
+  "w35_live_transition": {
+    "current_main_b0_run_id": 39164360709
+  }
+}
