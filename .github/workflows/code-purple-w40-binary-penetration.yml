@@ -1,0 +1,139 @@
+name: CODE PURPLE W40 Binary Penetration 4-Cell Native
+on:
+  pull_request:
+    paths:
+      - 'tests/test_qps_binary_bridge_w40_penetration.py'
+      - 'tests/test_qps_binary_bridge_w41_frontier.py'
+      - 'tests/test_qps_binary_bridge.py'
+      - 'tests/test_qps_binary_bridge_w32_integrity.py'
+      - 'tools/qps_binary_bridge.py'
+      - '.github/workflows/code-purple-w40-binary-penetration.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: code-purple-w40-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+jobs:
+  parser-penetration:
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-24.04, windows-2022]
+        python: ['3.11', '3.12']
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 18
+    steps:
+      - name: Exact-head checkout
+        uses: actions/checkout@v7
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+      - name: Python
+        uses: actions/setup-python@v7.0.0
+        with:
+          python-version: ${{ matrix.python }}
+      - name: Install narrow native instrumented test dependencies
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -m pip install pytest==9.1.1 pytest-cov==5.0.0 coverage==7.16.2 pypdf==6.21.1 numpy==2.2.6
+      - name: Matched N baseline - legacy plus W32 only
+        shell: bash
+        env:
+          EXACT_HEAD: ${{ github.event.pull_request.head.sha || github.sha }}
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$EXACT_HEAD"
+          mkdir -p artifacts/w40
+          python -m pytest -q \
+            tests/test_qps_binary_bridge.py \
+            tests/test_qps_binary_bridge_w32_integrity.py \
+            --cov=tools --cov-branch --cov-report=json:artifacts/w40/baseline-coverage.json \
+            --junitxml=artifacts/w40/baseline-junit.xml
+      - name: 42 new, plus W32 and baseline cases - native branch coverage
+        shell: bash
+        env:
+          EXACT_HEAD: ${{ github.event.pull_request.head.sha || github.sha }}
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$EXACT_HEAD"
+          mkdir -p artifacts/w40
+          python -m pytest -q \
+            tests/test_qps_binary_bridge.py \
+            tests/test_qps_binary_bridge_w32_integrity.py \
+            tests/test_qps_binary_bridge_w40_penetration.py \
+            tests/test_qps_binary_bridge_w41_frontier.py \
+            --cov=tools --cov-branch --cov-report=json:artifacts/w40/coverage.json \
+            --junitxml=artifacts/w40/junit.xml
+      - name: Pin real run, job, attempt and matched scoped numerators
+        shell: bash
+        env:
+          EXACT_HEAD: ${{ github.event.pull_request.head.sha || github.sha }}
+          RUN_ID: ${{ github.run_id }}
+          RUN_ATTEMPT: ${{ github.run_attempt }}
+          GITHUB_JOB_NAME: ${{ matrix.os }}-py${{ matrix.python }}
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          import hashlib
+          import json
+          import os
+          from pathlib import Path
+          import xml.etree.ElementTree as ET
+          out=Path("artifacts/w40")
+          report=json.loads((out/"coverage.json").read_text())
+          keys=[k for k in report["files"] if k.replace("\\", "/").endswith("tools/qps_binary_bridge.py")]
+          assert len(keys)==1, "missing/ambiguous source-bound measured module"
+          m=report["files"][keys[0]]["summary"]
+          baseline=json.loads((out/"baseline-coverage.json").read_text())
+          bkeys=[k for k in baseline["files"] if k.replace("\\", "/").endswith("tools/qps_binary_bridge.py")]
+          assert len(bkeys)==1, "missing matched baseline coverage"
+          b=baseline["files"][bkeys[0]]["summary"]
+          assert (m["num_statements"],m["num_branches"])==(b["num_statements"],b["num_branches"]), "changed eligible module denominator"
+          assert m["covered_lines"]>=b["covered_lines"] and m["covered_branches"]>=b["covered_branches"], "coverage regression on same source/config"
+          baseline_tests=list(ET.parse(out/"baseline-junit.xml").iter("testcase"))
+          assert len(baseline_tests)>0
+          assert all(not list(t.iter("failure")) and not list(t.iter("error")) and not list(t.iter("skipped")) for t in baseline_tests), "baseline suite must be green"
+          tests=list(ET.parse(out/"junit.xml").iter("testcase"))
+          w40=[t for t in tests if "test_qps_binary_bridge_w40_penetration" in (t.attrib.get("classname","")+t.attrib.get("name",""))]
+          assert len(w40)==42, ("W40 denominator mismatch", len(w40))
+          w41=[t for t in tests if "test_qps_binary_bridge_w41_frontier" in (t.attrib.get("classname","")+t.attrib.get("name",""))]
+          assert len(w41)==12, ("W41 denominator mismatch", len(w41))
+          assert len(tests)==len(baseline_tests)+54, "unmatched test populations or culled tests"
+          assert all(not list(t.iter("failure")) and not list(t.iter("error")) and not list(t.iter("skipped")) for t in tests), "native test failure or skip"
+          sha=os.environ["EXACT_HEAD"]
+          assert len(sha)==40 and all(c in "0123456789abcdef" for c in sha)
+          receipt={"schema":"codepurple.w40.native-case-coverage/1.0","source_sha":sha,
+                   "run_id":int(os.environ["RUN_ID"]),"attempt":int(os.environ["RUN_ATTEMPT"]),
+                   "cell":os.environ["GITHUB_JOB_NAME"],"job_id":None,
+                   "total_junit_cases":len(tests),"new_w40_cases":len(w40),
+                   "new_w41_cases":len(w41),"new_case_total":len(w40)+len(w41),
+                   "new_w40_failed":0,"new_w40_skipped":0,
+                   "statement_covered":m["covered_lines"],"statement_eligible":m["num_statements"],
+                   "branch_covered":m["covered_branches"],"branch_eligible":m["num_branches"],
+                   "baseline_junit_cases":len(baseline_tests),
+                   "baseline_statement_covered":b["covered_lines"],
+                   "baseline_branch_covered":b["covered_branches"],
+                   "delta_statement_covered":m["covered_lines"]-b["covered_lines"],
+                   "delta_branch_covered":m["covered_branches"]-b["covered_branches"],
+                   "matched_eligible_opportunities":m["num_statements"]+m["num_branches"],
+                   "matched_before_covered":b["covered_lines"]+b["covered_branches"],
+                   "matched_after_covered":m["covered_lines"]+m["covered_branches"],
+                   "coverage_scope":"tools/qps_binary_bridge.py only","source_file_key":keys[0],
+                   "formal_main_uplift":None,"pr_diff_coverage":None,"admission":"HOLD",
+                   "authenticated_crew":None,"accepted_rex":None,
+                   "authority_transfer":False,"security_waiver":False}
+          (out/"receipt.json").write_text(json.dumps(receipt,indent=2,sort_keys=True)+"\n")
+          (out/"SHA256.json").write_text(json.dumps({p.name:hashlib.sha256(p.read_bytes()).hexdigest()
+             for p in sorted(out.iterdir()) if p.name!="SHA256.json"},sort_keys=True,indent=2)+"\n")
+          print(json.dumps(receipt,sort_keys=True))
+          PY
+      - name: Upload all success/failure evidence for audit
+        if: always()
+        uses: actions/upload-artifact@v7.0.2
+        with:
+          name: w40-parser-${{ matrix.os }}-py${{ matrix.python }}-${{ github.run_id }}-a${{ github.run_attempt }}
+          path: artifacts/w40/
+          if-no-files-found: warn
+          retention-days: 30
