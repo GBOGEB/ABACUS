@@ -68,6 +68,17 @@ def fixture_payload(request_url: str, ledger: dict) -> dict:
     raise AssertionError("Unregistered GitHub API route: " + path)
 
 
+def wait_for_status_text(page, expected: str, attempts: int = 160) -> None:
+    """Poll visible text without page eval: CSP intentionally excludes unsafe-eval."""
+    for _ in range(attempts):
+        current = page.locator("#refresh-result").inner_text()
+        if expected in current:
+            return
+        page.wait_for_timeout(100)
+    raise AssertionError("Refresh status did not include " + expected +
+                         ": " + page.locator("#refresh-result").inner_text())
+
+
 def main() -> int:
     ap = argparse.ArgumentParser()
     ap.add_argument("--out", type=Path, default=HERE / "w39_qa_receipts")
@@ -119,20 +130,16 @@ def main() -> int:
                     "(x) => x.classList.contains('hide')")
                 if name == "desktop":
                     page.locator("#status-refresh").click()
-                    page.wait_for_function(
-                        'document.getElementById("refresh-result").textContent.includes("4/4 responses")',
-                        timeout=12000)
+                    wait_for_status_text(page, "4/4 responses", attempts=120)
                     assert "W36 historical=failure" in page.locator("#refresh-result").inner_text()
                     page.locator("#full-refresh").click()
-                    page.wait_for_function(
-                        'document.getElementById("refresh-result").textContent.includes("15 searches complete")',
-                        timeout=20000)
+                    wait_for_status_text(page, "15 searches complete", attempts=200)
                     assert page.locator("#repoTotals td.num").first.inner_text() == "109"
                     assert len(requests) == 19
-                extent = page.evaluate("""() => ({
-                    doc: document.documentElement.scrollWidth,
+                extent = page.locator("html").evaluate("""(element) => ({
+                    doc: element.scrollWidth,
                     body: document.body.scrollWidth,
-                    viewport: document.documentElement.clientWidth
+                    viewport: element.clientWidth
                 })""")
                 assert extent["doc"] <= extent["viewport"] + 1, "Document horizontal overflow " + str(extent)
                 assert extent["body"] <= extent["viewport"] + 1, "Body horizontal overflow " + str(extent)
