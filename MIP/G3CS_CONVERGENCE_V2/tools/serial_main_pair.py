@@ -6,11 +6,11 @@ grants admission, or treats two main samples as statistical convergence.
 from __future__ import annotations
 
 import argparse
-from datetime import datetime, timezone
 import json
 import math
-from pathlib import Path
 import re
+from datetime import datetime, timezone
+from pathlib import Path
 
 INPUT_SCHEMA = "codepurple.g3cs.serial-main-pair-input.v1"
 OUTPUT_SCHEMA = "codepurple.g3cs.serial-main-pair-result.v1"
