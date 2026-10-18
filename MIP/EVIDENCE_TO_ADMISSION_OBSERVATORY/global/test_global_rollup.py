@@ -87,4 +87,29 @@ class GlobalLedgerTests(unittest.TestCase):
         self.assertEqual([r["covered"] for r in c["trajectory"]],[660,697,707,707])
         self.assertTrue(all(r["eligible"]==723 for r in c["trajectory"]))
         self.assertIsNone(c["canonical_main_credit"])
+
+    def test_method_monikers_have_distinct_native_meanings(self):
+        t=self.data["taxonomy"]
+        self.assertEqual(t["schema"],"qps-triage-moniker-nav/1.0")
+        self.assertEqual(len(t["families"]),5)
+        self.assertEqual(len(t["terms"]),28)
+        items={x["id"]:x for x in t["terms"]}
+        self.assertEqual(len(items),28)
+        self.assertIn("Recursive Assurance Ladder",items["3p-ral"]["expansion"])
+        self.assertIn("Pulse Run",items["p3r"]["expansion"])
+        self.assertIn("Three Pulse",items["3pm"]["expansion"])
+        self.assertIn("QPS + DOW + KEB",items["qps-triage"]["expansion"])
+    def test_moniker_controls_are_in_generated_html(self):
+        for token in ('id="taxonomy"','id="taxSearch"','id="taxFamily"','id="taxCards"','renderTax()'):
+            self.assertIn(token,self.html)
+    def test_moniker_credit_and_source_boundaries(self):
+        t=self.data["taxonomy"]
+        self.assertTrue(all(x["formal_credit_delta"]==0 and x["authority_transfer"] is False for x in t["terms"]))
+        for kind in ("duplicate","authority","link"):
+            wrong=json.loads(json.dumps(self.data))
+            if kind=="duplicate":wrong["taxonomy"]["terms"][1]["id"]=wrong["taxonomy"]["terms"][0]["id"]
+            if kind=="authority":wrong["taxonomy"]["terms"][0]["authority_transfer"]=True
+            if kind=="link":wrong["taxonomy"]["terms"][0]["source_url"]="https://github.com/GBOGEB/ABACUS/blob/main/README.md"
+            with self.subTest(kind=kind), self.assertRaises(ValueError):
+                render(wrong,self.template)
 if __name__=="__main__":unittest.main()
