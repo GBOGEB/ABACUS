@@ -69,7 +69,7 @@ class FeedbackRouteW38(unittest.TestCase):
                 with self.assertRaisesRegex(ValueError,"ROUTED_PR_POSITIVE_INT"):
                     mod.build(**sample(route_output=candidate))
     def test_malformed_routes_rejected(self):
-        for candidate in ("", "1,2", "{\\"pr\\":123}", "[1,]"):
+        for candidate in ("", "1,2", '{"pr":123}', "[1,]"):
             with self.subTest(candidate=candidate):
                 with self.assertRaises(ValueError):
                     mod.build(**sample(route_output=candidate))
