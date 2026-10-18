@@ -14,7 +14,7 @@
 ## Native operation
 
 ```bash
-python -m unittest discover -s MIP/EVIDENCE_TO_ADMISSION_OBSERVATORY -p 'test_observatory.py' -v
+python -m pytest -q MIP/EVIDENCE_TO_ADMISSION_OBSERVATORY/test_*.py
 python MIP/EVIDENCE_TO_ADMISSION_OBSERVATORY/render.py
 # Public read-only API may rate-limit without auth. On an owner runner use the
 # automatically scoped GITHUB_TOKEN; do not paste tokens into browser HTML.
@@ -128,3 +128,14 @@ These 3 modules are scouts, not automatically qualified production priorities.
 Only source owners may prove their runtime relevance and license a separate
 reviewed testflight. Higher-ranked first-red candidates must keep root and
 security evidence segregated; CHAR/ASH transitions require independent closure.
+
+## W29/W30 source-owned implementation: adaptive runner evidence and coverage
+
+- W29 disjoint behavioral source slice is tracked in [draft #2250](https://github.com/GBOGEB/ABACUS/pull/2250), exact initial PR head `38d1d3b52fc7ca943a17471301c20cbe5f5af254`. It tests W75 stability and W64 reverse-pressure behavior without modifying production; focused native [run 39149390636](https://github.com/GBOGEB/ABACUS/actions/runs/39149390636), B0 [39149390719](https://github.com/GBOGEB/ABACUS/actions/runs/39149390719). The two-file historical B0 baseline is **86/346 covered**, **260/346 uncovered**; maximum conditional fixed-52,200 opportunity contribution **0.4981 percentage points**. No current-head uplift credited without same-cohort native B0.
+- W30 local observatory negative tests expanded from **56/56 passing (77% combined statement+branch)** to **108/108 passing (90% combined statement+branch)** on local Python 3.13 with pytest-cov. Collector moved **67% to 88%**; renderer **83% to 100%**; queue telemetry **98%**. These are **local** measurements, not native GitHub proof or main coverage.
+- New `queue_telemetry.py` requires complete terminal job population, exact SHA/run/attempt, unique job IDs, monotonic timestamps and full pagination before publishing scale-authorizing p95. GitHub REST can report `started_at == created_at` for queued jobs: those must **never** count as zero-second wait samples. Partial terminal samples are labelled diagnostics only.
+- Verified historical B0 [run 39142444027](https://github.com/GBOGEB/ABACUS/actions/runs/39142444027) contained 13 terminal jobs with queue p95 **49 s** (nearest rank), execution p95 **427 s**; historical source SHA `97a8b13faff577272a90edaf0dd4593035e10605`. This is *not* the queue p95 of W29; its two jobs were queued at readback, so scale-relevant p95 is UNKNOWN.
+- Read-only scheduled workflow remains **four per day**, with no automatic main push. It now runs 108-case native pytest/branch coverage testflight, preserving run-bound JUnit and coverage JSON/XML. Native outcome UNKNOWN until Actions runs on this source SHA after admissible publication.
+- Disjoint source ownership: W29 tests W75/W64; W30 modifies only the observatory's collector, template, and its tests. No CODEX Crew launch, accepted REX, root/ASH closure, security waiver, owner-admin rule mutation or inferred approval. `MERGE_ADMISSION=HOLD`.
+
+**Adaptive rule**: with missing current-main B0/artifact or queue p95, remain at **one** observational lane; do not scale from the old 49-second p95. When every current-main B0 job and artifact is exact-head terminal, evaluate p95 ≤900 seconds and noncompensating governance. Expand to at most three disjoint **read-only** scouts; source-writing commits stay with separate owners, independent human review, and serial admission.
