@@ -39,7 +39,9 @@ def test_force_trip_python_matrix_is_bound_to_setup_action():
 
 def test_force_trip_pytest_conftest_numpy_dependency_is_pinned():
     install = _step("Install focused tools")["run"]
-    assert "numpy==1.26.4" in install
+    assert "numpy==2.2.6" in install
+    assert install.count("numpy==") == 1
+    assert "numpy==1.26.4" not in install
     assert "pytest==9.1.1" in install
     assert "coverage==7.16.2" in install
     assert "defusedxml==0.7.1" in install
