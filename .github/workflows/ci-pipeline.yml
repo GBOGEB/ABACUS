@@ -3,6 +3,9 @@ name: Continuous Integration Pipeline
 on:
   push:
     branches: [main, master, develop, feature/*]
+  pull_request:
+    paths:
+      - '.github/workflows/ci-pipeline.yml'
   schedule:
     - cron: '0 2 * * *'  # Daily at 2 AM UTC
   workflow_dispatch:
@@ -59,6 +62,8 @@ jobs:
   unit-tests:
     name: Unit Tests
     runs-on: ${{ matrix.os }}
+    env:
+      PYTEST_WORKERS: ${{ matrix.os == 'windows-latest' && '0' || 'auto' }}
     strategy:
       matrix:
         os: [ubuntu-latest, windows-latest]
@@ -92,12 +97,31 @@ jobs:
       - name: Run Tests
         shell: bash
         run: |
+          set -euo pipefail
+          # A clean job-local coverage database must not mix branch data
+          # with stale statement-only worker fragments.
+          python -m coverage erase
+          mkdir -p ci-evidence
           pytest --benchmark-disable tests/ -v \
             --cov=. \
+            --cov-branch \
             --cov-report=xml \
+            --cov-report=json:ci-evidence/coverage.json \
+            --junitxml=ci-evidence/junit.xml \
             --cov-report=html \
             --cov-report=term \
-            -n auto
+            -n "$PYTEST_WORKERS"
+
+      - name: Preserve native unit and coverage evidence
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: ci-coverage-${{ matrix.os }}-py${{ matrix.python-version }}
+          path: |
+            ci-evidence/junit.xml
+            ci-evidence/coverage.json
+            coverage.xml
+          if-no-files-found: error
 
       - name: Upload Coverage
         uses: codecov/codecov-action@v7
