@@ -316,5 +316,375 @@
     "automatic_dispatch": false,
     "accepted_unique_roots_remaining": null,
     "retrigger": "MATERIAL_EXACT_SOURCE_FIRST_RED_OR_SCOPE_CHANGE_ONLY"
+  },
+  "taxonomy": {
+    "schema": "qps-triage-moniker-nav/1.0",
+    "status": "SOURCE_BOUND_DERIVED_NAVIGATION_NO_CREDIT",
+    "glossary_source": "https://github.com/GBOGEB/cryoplant-project/blob/fc07545c3986181a1b837c0eb7ff9a8393fd4058/controls/QPS_GLOBAL_GLOSSARY_v1.yaml",
+    "families": [
+      {
+        "id": "method",
+        "title": "3P-RAL · recursive assurance",
+        "detail": "Method, maturity and conditional operator stack"
+      },
+      {
+        "id": "cycle",
+        "title": "P3R / 3PM · execution",
+        "detail": "Wave, pulse, PRE/POST and roll-up"
+      },
+      {
+        "id": "federation",
+        "title": "QPS TRIAGE · three-repo authority",
+        "detail": "QPS child, KEB semantics, DOW runtime"
+      },
+      {
+        "id": "evidence",
+        "title": "DoD / DoV · controls",
+        "detail": "Native evidence and non-compensating gates"
+      },
+      {
+        "id": "programme",
+        "title": "CODE PURPLE · programme labels",
+        "detail": "Operational names without invented acceptance"
+      }
+    ],
+    "terms": [
+      {
+        "id": "3p-ral",
+        "family": "method",
+        "name": "3P-RAL",
+        "expansion": "Three-P Recursive Assurance Ladder",
+        "meaning": "Governed recursive maturity cycles with orthogonal DMAIC, KPIs, temporal and authority axes.",
+        "stop": "No new cycle for a repeated result.",
+        "source_url": "https://github.com/GBOGEB/cryoplant-project/blob/fc07545c3986181a1b837c0eb7ff9a8393fd4058/triage/w258/QPS_W258_3P_RAL_DMAIC_KPI_TAXONOMY_v0.1.md",
+        "formal_credit_delta": 0,
+        "authority_transfer": false,
+        "source_class": "QPS_NAVIGATION"
+      },
+      {
+        "id": "3pr",
+        "family": "method",
+        "name": "3PR",
+        "expansion": "Refresh / Probe / Rank",
+        "meaning": "Discovery and first-red prioritisation on exact source state.",
+        "stop": "Stop when the first-red and its owner are verified.",
+        "source_url": "https://github.com/GBOGEB/cryoplant-project/blob/fc07545c3986181a1b837c0eb7ff9a8393fd4058/triage/w258/QPS_W258_3P_RAL_DMAIC_KPI_TAXONOMY_v0.1.md",
+        "formal_credit_delta": 0,
+        "authority_transfer": false,
+        "source_class": "QPS_NAVIGATION"
+      },
+      {
+        "id": "mip",
+        "family": "method",
+        "name": "MIP",
+        "expansion": "Modernize / Innovate / Perpetuate",
+        "meaning": "Conditional capability-change operator; sustained CONTROL requires proof.",
+        "stop": "No innovation without material opportunity.",
+        "source_url": "https://github.com/GBOGEB/cryoplant-project/blob/fc07545c3986181a1b837c0eb7ff9a8393fd4058/triage/w258/QPS_W258_3P_RAL_DMAIC_KPI_TAXONOMY_v0.1.md",
+        "formal_credit_delta": 0,
+        "authority_transfer": false,
+        "source_class": "QPS_NAVIGATION"
+      },
+      {
+        "id": "3pc",
+        "family": "method",
+        "name": "3PC",
+        "expansion": "Prepare / Prove / Commit",
+        "meaning": "Bounded exact-head transaction and authorized disposition.",
+        "stop": "Test PASS is not merge authorization.",
+        "source_url": "https://github.com/GBOGEB/cryoplant-project/blob/fc07545c3986181a1b837c0eb7ff9a8393fd4058/triage/w258/QPS_W258_3P_RAL_DMAIC_KPI_TAXONOMY_v0.1.md",
+        "formal_credit_delta": 0,
+        "authority_transfer": false,
+        "source_class": "QPS_NAVIGATION"
+      },
+      {
+        "id": "3p3",
+        "family": "method",
+        "name": "3P3",
+        "expansion": "Preserve/Pin / Propagate/Penetrate / Prove/Promote",
+        "meaning": "Independent propagation/generalisation after local DoV.",
+        "stop": "One proof per unchanged consumer boundary.",
+        "source_url": "https://github.com/GBOGEB/cryoplant-project/blob/fc07545c3986181a1b837c0eb7ff9a8393fd4058/controls/QPS_3P_RAL_DMAIC_CURRENT_v0.1.yaml",
+        "formal_credit_delta": 0,
+        "authority_transfer": false,
+        "source_class": "QPS_NAVIGATION"
+      },
+      {
+        "id": "3p-star",
+        "family": "method",
+        "name": "3P*",
+        "expansion": "Planning wildcard",
+        "meaning": "Resolve to a named operator stack before execution.",
+        "stop": "Never execute wildcard alone.",
+        "source_url": "https://github.com/GBOGEB/cryoplant-project/blob/fc07545c3986181a1b837c0eb7ff9a8393fd4058/triage/w258/QPS_W258_3P_RAL_DMAIC_KPI_TAXONOMY_v0.1.md",
+        "formal_credit_delta": 0,
+        "authority_transfer": false,
+        "source_class": "QPS_NAVIGATION"
+      },
+      {
+        "id": "3p-cycle",
+        "family": "method",
+        "name": "3P#n",
+        "expansion": "Ordinal maturity cycle",
+        "meaning": "Numbered maturity objective, not a new wave or earned credit.",
+        "stop": "No repetition without distinct objective.",
+        "source_url": "https://github.com/GBOGEB/cryoplant-project/blob/fc07545c3986181a1b837c0eb7ff9a8393fd4058/controls/QPS_3P_RAL_DMAIC_CURRENT_v0.1.yaml",
+        "formal_credit_delta": 0,
+        "authority_transfer": false,
+        "source_class": "QPS_NAVIGATION"
+      },
+      {
+        "id": "3p-repeat",
+        "family": "method",
+        "name": "3Pxn",
+        "expansion": "Bounded repeat multiplier",
+        "meaning": "Every repetition needs new evidence or an independently changed boundary.",
+        "stop": "No-op recurrence stops.",
+        "source_url": "https://github.com/GBOGEB/cryoplant-project/blob/fc07545c3986181a1b837c0eb7ff9a8393fd4058/controls/QPS_3P_RAL_DMAIC_CURRENT_v0.1.yaml",
+        "formal_credit_delta": 0,
+        "authority_transfer": false,
+        "source_class": "QPS_NAVIGATION"
+      },
+      {
+        "id": "dmaic",
+        "family": "method",
+        "name": "DMAIC",
+        "expansion": "Define / Measure / Analyse / Improve / Control",
+        "meaning": "Independent process-maturity vector with declared KPIs and clocks.",
+        "stop": "CONTROL needs measured recurrence stability.",
+        "source_url": "https://github.com/GBOGEB/cryoplant-project/blob/fc07545c3986181a1b837c0eb7ff9a8393fd4058/controls/QPS_3P_RAL_DMAIC_CURRENT_v0.1.yaml",
+        "formal_credit_delta": 0,
+        "authority_transfer": false,
+        "source_class": "QPS_NAVIGATION"
+      },
+      {
+        "id": "p3r",
+        "family": "cycle",
+        "name": "P3R",
+        "expansion": "Pulse Run and Roll-up",
+        "meaning": "Full PRE → 3PM → POST → Roll-up → Propagate → Fan-out cycle.",
+        "stop": "No duplicate wave for same-scope correction.",
+        "source_url": "https://github.com/GBOGEB/cryoplant-project/blob/fc07545c3986181a1b837c0eb7ff9a8393fd4058/controls/W56_EXECUTION_TAXONOMY_P3R_3PM_v0.1.yaml",
+        "formal_credit_delta": 0,
+        "authority_transfer": false,
+        "source_class": "QPS_NAVIGATION"
+      },
+      {
+        "id": "3pm",
+        "family": "cycle",
+        "name": "3PM",
+        "expansion": "Three Pulse Method",
+        "meaning": "P1 Produce; P2 Challenge; P3 Re-enter with child ACCEPT/REJECT/DEFER.",
+        "stop": "P3 cannot bypass child authority.",
+        "source_url": "https://github.com/GBOGEB/cryoplant-project/blob/fc07545c3986181a1b837c0eb7ff9a8393fd4058/controls/W56_EXECUTION_TAXONOMY_P3R_3PM_v0.1.yaml",
+        "formal_credit_delta": 0,
+        "authority_transfer": false,
+        "source_class": "QPS_NAVIGATION"
+      },
+      {
+        "id": "pre",
+        "family": "cycle",
+        "name": "PRE",
+        "expansion": "Inherited-state cleanup",
+        "meaning": "Reconcile source identity, unresolved first-red, lineage and stale control before execution.",
+        "stop": "Exit only on explicit baseline or DEFER.",
+        "source_url": "https://github.com/GBOGEB/cryoplant-project/blob/fc07545c3986181a1b837c0eb7ff9a8393fd4058/controls/W56_EXECUTION_TAXONOMY_P3R_3PM_v0.1.yaml",
+        "formal_credit_delta": 0,
+        "authority_transfer": false,
+        "source_class": "QPS_NAVIGATION"
+      },
+      {
+        "id": "post",
+        "family": "cycle",
+        "name": "POST",
+        "expansion": "Post-wave mop-up",
+        "meaning": "Revalidate proofs and reconcile hashes, recurrence, and residual blockers.",
+        "stop": "Other-SHA PASS does not close exact-head red.",
+        "source_url": "https://github.com/GBOGEB/cryoplant-project/blob/fc07545c3986181a1b837c0eb7ff9a8393fd4058/controls/W56_EXECUTION_TAXONOMY_P3R_3PM_v0.1.yaml",
+        "formal_credit_delta": 0,
+        "authority_transfer": false,
+        "source_class": "QPS_NAVIGATION"
+      },
+      {
+        "id": "rollup",
+        "family": "cycle",
+        "name": "ROLL-UP",
+        "expansion": "Governed metric roll-up",
+        "meaning": "Update only comparable source-owned population, counts and formal dispositions.",
+        "stop": "Never sum incompatible root/PR/job units.",
+        "source_url": "https://github.com/GBOGEB/cryoplant-project/blob/fc07545c3986181a1b837c0eb7ff9a8393fd4058/controls/W56_EXECUTION_TAXONOMY_P3R_3PM_v0.1.yaml",
+        "formal_credit_delta": 0,
+        "authority_transfer": false,
+        "source_class": "QPS_NAVIGATION"
+      },
+      {
+        "id": "qps-triage",
+        "family": "federation",
+        "name": "QPS TRIAGE",
+        "expansion": "Federated QPS + DOW + KEB",
+        "meaning": "Composite H4 topology: QPS child, CODEX semantic challenge, ABACUS independent evidence.",
+        "stop": "Parent PASS cannot equal child ACCEPT.",
+        "source_url": "https://github.com/GBOGEB/cryoplant-project/blob/fc07545c3986181a1b837c0eb7ff9a8393fd4058/controls/QPS_MISSION_CONTROL_NAMESPACE_TAXONOMY_v1.yaml",
+        "formal_credit_delta": 0,
+        "authority_transfer": false,
+        "source_class": "QPS_NAVIGATION"
+      },
+      {
+        "id": "qps",
+        "family": "federation",
+        "name": "QPS",
+        "expansion": "Cryoplant-project child namespace",
+        "meaning": "Engineering SSOT and final child disposition, H1_QPS.",
+        "stop": "No engineering promotion without QPS evidence.",
+        "source_url": "https://github.com/GBOGEB/cryoplant-project/blob/fc07545c3986181a1b837c0eb7ff9a8393fd4058/controls/QPS_MISSION_CONTROL_NAMESPACE_TAXONOMY_v1.yaml",
+        "formal_credit_delta": 0,
+        "authority_transfer": false,
+        "source_class": "QPS_NAVIGATION"
+      },
+      {
+        "id": "keb",
+        "family": "federation",
+        "name": "KEB",
+        "expansion": "CODEX semantic-provenance lane",
+        "meaning": "H2_KEB validates receipts; cannot overwrite child engineering.",
+        "stop": "Consumer proof is not QPS acceptance.",
+        "source_url": "https://github.com/GBOGEB/cryoplant-project/blob/fc07545c3986181a1b837c0eb7ff9a8393fd4058/controls/QPS_MISSION_CONTROL_NAMESPACE_TAXONOMY_v1.yaml",
+        "formal_credit_delta": 0,
+        "authority_transfer": false,
+        "source_class": "QPS_NAVIGATION"
+      },
+      {
+        "id": "dow",
+        "family": "federation",
+        "name": "DOW",
+        "expansion": "ABACUS runtime/evidence lane",
+        "meaning": "H3_DOW independently challenges and measures; long-form acronym withheld.",
+        "stop": "DOW local GREEN cannot transfer QPS authority.",
+        "source_url": "https://github.com/GBOGEB/cryoplant-project/blob/fc07545c3986181a1b837c0eb7ff9a8393fd4058/controls/QPS_MISSION_CONTROL_NAMESPACE_TAXONOMY_v1.yaml",
+        "formal_credit_delta": 0,
+        "authority_transfer": false,
+        "source_class": "QPS_NAVIGATION"
+      },
+      {
+        "id": "glob",
+        "family": "federation",
+        "name": "GLOB",
+        "expansion": "Stable restart root",
+        "meaning": "Canonical QPS TRIAGE read order and non-compensating boundaries.",
+        "stop": "Do not rotate GLOB for ordinary first-red churn.",
+        "source_url": "https://github.com/GBOGEB/cryoplant-project/blob/fc07545c3986181a1b837c0eb7ff9a8393fd4058/handover/qps_recursive/GLOB.yaml",
+        "formal_credit_delta": 0,
+        "authority_transfer": false,
+        "source_class": "QPS_NAVIGATION"
+      },
+      {
+        "id": "qtg",
+        "family": "federation",
+        "name": "QTG_CURRENT",
+        "expansion": "Volatile triage pointer",
+        "meaning": "Current first-red, priorities and source-safety state.",
+        "stop": "Outranks historical session snapshots.",
+        "source_url": "https://github.com/GBOGEB/cryoplant-project/blob/fc07545c3986181a1b837c0eb7ff9a8393fd4058/handover/qps_recursive/QTG_CURRENT.yaml",
+        "formal_credit_delta": 0,
+        "authority_transfer": false,
+        "source_class": "QPS_NAVIGATION"
+      },
+      {
+        "id": "session-close",
+        "family": "federation",
+        "name": "SESSION_CLOSE_CURRENT",
+        "expansion": "Append-only closure pointer",
+        "meaning": "Last sealed handover, receipt and drop-in.",
+        "stop": "Session close is not global CONTROL.",
+        "source_url": "https://github.com/GBOGEB/cryoplant-project/blob/fc07545c3986181a1b837c0eb7ff9a8393fd4058/handover/qps_recursive/SESSION_CLOSE_CURRENT.yaml",
+        "formal_credit_delta": 0,
+        "authority_transfer": false,
+        "source_class": "QPS_NAVIGATION"
+      },
+      {
+        "id": "dod",
+        "family": "evidence",
+        "name": "DoD",
+        "expansion": "Definition of Done",
+        "meaning": "Deliverable completeness, not native verification.",
+        "stop": "DoD does not substitute for DoV.",
+        "source_url": "https://github.com/GBOGEB/cryoplant-project/blob/fc07545c3986181a1b837c0eb7ff9a8393fd4058/triage/code_purple/evolutionary_v1/TAXONOMY.md",
+        "formal_credit_delta": 0,
+        "authority_transfer": false,
+        "source_class": "QPS_NAVIGATION"
+      },
+      {
+        "id": "dov",
+        "family": "evidence",
+        "name": "DoV",
+        "expansion": "Definition of Victory",
+        "meaning": "Exact-source tests and evidence-bound victory; local/global separately gated.",
+        "stop": "Local QA does not confer global DoV.",
+        "source_url": "https://github.com/GBOGEB/cryoplant-project/blob/fc07545c3986181a1b837c0eb7ff9a8393fd4058/triage/code_purple/evolutionary_v1/TAXONOMY.md",
+        "formal_credit_delta": 0,
+        "authority_transfer": false,
+        "source_class": "QPS_NAVIGATION"
+      },
+      {
+        "id": "zod",
+        "family": "evidence",
+        "name": "Zod",
+        "expansion": "Typed validation layer",
+        "meaning": "Machine contract syntax and constraints inside QPS TRIAGE.",
+        "stop": "Zod PASS cannot become child ACCEPT.",
+        "source_url": "https://github.com/GBOGEB/cryoplant-project/blob/fc07545c3986181a1b837c0eb7ff9a8393fd4058/controls/QPS_TRIAGE_CONTROL_PLANE_v1.yaml",
+        "formal_credit_delta": 0,
+        "authority_transfer": false,
+        "source_class": "QPS_NAVIGATION"
+      },
+      {
+        "id": "rex",
+        "family": "evidence",
+        "name": "REX",
+        "expansion": "Experience and recurrence learning",
+        "meaning": "Deduplicated causal-root history with preventive proof.",
+        "stop": "Root closure needs owner and recurrence proof.",
+        "source_url": "https://github.com/GBOGEB/cryoplant-project/blob/fc07545c3986181a1b837c0eb7ff9a8393fd4058/triage/code_purple/evolutionary_v1/TAXONOMY.md",
+        "formal_credit_delta": 0,
+        "authority_transfer": false,
+        "source_class": "QPS_NAVIGATION"
+      },
+      {
+        "id": "cbd",
+        "family": "programme",
+        "name": "CBD!",
+        "expansion": "Operational campaign label",
+        "meaning": "Programme burndown shorthand; long-form expansion not asserted as controlled QPS vocabulary.",
+        "stop": "A ticket closure is not causal-root elimination.",
+        "source_url": "https://github.com/GBOGEB/cryoplant-project/blob/fc07545c3986181a1b837c0eb7ff9a8393fd4058/triage/code_purple/evolutionary_v1/TAXONOMY.md",
+        "formal_credit_delta": 0,
+        "authority_transfer": false,
+        "source_class": "QPS_NAVIGATION"
+      },
+      {
+        "id": "everred",
+        "family": "programme",
+        "name": "EVERRED",
+        "expansion": "First-red recurrence lane",
+        "meaning": "ABACUS persistent blocker fingerprints and manifestations.",
+        "stop": "Six identical red jobs are one shared-root candidate.",
+        "source_url": "https://github.com/GBOGEB/ABACUS/blob/2687f2bcb0705027eefe04df789365d6c9970678/tools/everred_v3/dashboard/bd_queue.html",
+        "formal_credit_delta": 0,
+        "authority_transfer": false,
+        "source_class": "ABACUS_OPERATIONAL"
+      },
+      {
+        "id": "gogreen",
+        "family": "programme",
+        "name": "GoGreen",
+        "expansion": "Governed closure lane",
+        "meaning": "Successful issue/PR retirement with explicit supersession and source proof.",
+        "stop": "MERGED does not imply accepted engineering closure.",
+        "source_url": "https://github.com/GBOGEB/ABACUS/blob/2687f2bcb0705027eefe04df789365d6c9970678/MIP/EVIDENCE_TO_ADMISSION_OBSERVATORY/global/index.html",
+        "formal_credit_delta": 0,
+        "authority_transfer": false,
+        "source_class": "ABACUS_OPERATIONAL"
+      }
+    ]
   }
 }
