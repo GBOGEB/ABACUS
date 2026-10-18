@@ -1,0 +1,58 @@
+{
+  "adapter_only": true,
+  "authority_transfer": false,
+  "columns": [
+    "Supplier",
+    "Input",
+    "Process",
+    "Output",
+    "Customer"
+  ],
+  "existing_provider_paths": {
+    "acceptance_graph": "tools/everred_v3/acceptance/graph.py",
+    "acceptance_sipoc": "tools/everred_v3/acceptance/graph.py#sipoc",
+    "acceptance_temporal": "tools/everred_v3/acceptance/telemetry.py",
+    "ci_temporal": "tools/mip_ci_temporal_rollup.py",
+    "coverage_delta": "scripts/cbd_matched_coverage_delta.py",
+    "governance_owner_pr": "https://github.com/GBOGEB/ABACUS/pull/2144"
+  },
+  "rows": [
+    [
+      "GitHub source owners",
+      "Exact PR head, merged-main SHA, native run/attempt IDs",
+      "Pin two clocks, reject staleness",
+      "Versioned provenance + run census",
+      "ABACUS B0, admission #1860"
+    ],
+    [
+      "Actions / CI scanners",
+      "JUnit, job logs, DAB, W70 and B1 receipts",
+      "Validate hashes, populations, failure topology",
+      "First-reds, focused tests, bounded quality deltas",
+      "Engineering owner + independent reviewer"
+    ],
+    [
+      "MIP / gg_MATH",
+      "Coverage scope/tool/config hashes, wave axis",
+      "Match cohorts, compute noncompensating DMAIC metrics",
+      "Measured delta or NONCOMPARABLE; qualified uncertainty",
+      "MIP/REX, control chart users"
+    ],
+    [
+      "Security & branch administrator",
+      "Effective ruleset, review identity, RED canary",
+      "Verify mandatory controls independently",
+      "Governed admission verdict; HOLD until PASS",
+      "Merge governor / main release"
+    ],
+    [
+      "CODEX / QPS consumers",
+      "Receipt digest, source context, DAG edge leases",
+      "Read-only federated replay / owner REX",
+      "Acknowledged consumer receipt; no worker authority",
+      "Mission Control #977 / QPS"
+    ]
+  ],
+  "schema": "codepurple.g3cs.sipoc.v2",
+  "source_of_truth": "ABACUS existing source and native artifacts"
+}
