@@ -1,0 +1,83 @@
+{
+  "artifact_sha256": {
+    "CODE_PURPLE_GLOBAL_SPINE_W10_BROWSER_QA.json": "fcb3bc6f8f45a8a8be320e2118c7475eb904a4bddd2a3eb8ac937f2344aa9315",
+    "CODE_PURPLE_GLOBAL_SPINE_W10_desktop.png": "3b3055d58bfcd1ca4c2ec34ca66f8d33dd3e2721d093e0bba72e2a7fae2a22c3",
+    "CODE_PURPLE_GLOBAL_SPINE_W10_laptop.png": "d050775498b719478c54a0523c87d28a8bdba86affd5dd64c935d3327770c0f2",
+    "CODE_PURPLE_GLOBAL_SPINE_W10_mobile.png": "b5d1c48b76efe1a4bed3884976f53e670cb9c58e31175a5b6fac9e4705c1aeea",
+    "CODE_PURPLE_W10_REPO_SPINE.mmd": "774981656a2acb8c0b03f099bdb871bcf69ce4aece2e25a99754ab17eea70a67",
+    "CODE_PURPLE_W10_REPO_SPINE.svg": "6e59caa10450c9e4e8053628a32736c9b13117d9ad4e501b8641e2a328da3eaf",
+    "SPINE_CONTRACT_W11.json": "92a39dce626efbf90ebc15ed5324b32bb491610bf2a43bdef6394b7d1237202e",
+    "SPINE_DAG_W11.json": "441bda1443e96c35c15d4b9b1e4ecbef3c494a2fde5ba480b31523c72b7c813e",
+    "SPINE_SIPOC_W11.json": "81c1c34fabb83e87ab355a1bdf82a4e028293a6842c7f915f84543030ce969a7",
+    "W10_FROZEN_HISTORY.json": "e7b1cfb7bf43a6b46c1dcafc56848932e085d087b18f5907a4c3da8666e77e1b",
+    "build_global_spine_w10.py": "c7135bff0a47dfed25236fb1c7cff682acffef1325a4e98fa9c8624b4d62c033",
+    "index.html": "4a1caf3d450ee0d7b6f9271a98d8fac7c1d29b1f28a73e776c913add5161ed78",
+    "qa_w11_browser.py": "adebcad7d8a8cc8b073b5e801ff5e0cc5bc667024a5a441a1950deada9c710bf",
+    "refresh_w10_spine.py": "9be2312b822145c18ec519c4d89bc708723c7bc58c7d0606725d642ea1b55921",
+    "spine_contract.py": "5004df4d1b1ff32c8f4a1a460592c35d5ae88314b46ada168209eb10acd402b6",
+    "test_w10_spine.py": "ec2b31cd7dc0a52980030900423bd4c6aef044e9f9053f7a28356a2e1f82c9c5",
+    "test_w11_spine_contract.py": "9f2167c847297eb66f2ec065592d01cae0e09e8597eca863d2d2da3af6db66b6"
+  },
+  "authority_transfer": false,
+  "browser": {
+    "body_horizontal_overflow": 0,
+    "console_errors": 0,
+    "images": {
+      "desktop": "3b3055d58bfcd1ca4c2ec34ca66f8d33dd3e2721d093e0bba72e2a7fae2a22c3",
+      "laptop": "d050775498b719478c54a0523c87d28a8bdba86affd5dd64c935d3327770c0f2",
+      "mobile": "b5d1c48b76efe1a4bed3884976f53e670cb9c58e31175a5b6fac9e4705c1aeea"
+    },
+    "page_errors": 0,
+    "results": "PASS",
+    "snapshot_import_positive_negative": "PASS",
+    "viewports": [
+      [
+        1440,
+        1000
+      ],
+      [
+        1280,
+        800
+      ],
+      [
+        390,
+        844
+      ]
+    ]
+  },
+  "checks": {
+    "PR_changed_line_coverage": "UNKNOWN",
+    "W10_W11_unittest_methods": 62,
+    "W11_source_branch_arcs": "26/26",
+    "W11_source_combined_pct": 100.0,
+    "W11_source_statements": "177/177",
+    "deterministic_rebuild": "PASS",
+    "graph_edges": 46,
+    "graph_nodes": 37,
+    "graph_source_assets": 24,
+    "latest_main_coverage": "UNKNOWN",
+    "merge_admission": "HOLD",
+    "native_B0_selection": "PENDING",
+    "passed": 61,
+    "scope": "W11 validator module only; NOT entire ABACUS main",
+    "security_first_red": "UNKNOWN_UNTIL_EXACT_HEAD_RUN",
+    "sipoc_rows": 5,
+    "skipped_optional_native_artifact": 1,
+    "source_hash_match": "PASS"
+  },
+  "evidence_level": "LOCAL_REPRODUCIBILITY",
+  "notes": [
+    "Executable proof is local; the draft exact-head native CI must complete separately.",
+    "Frozen issue denominator 478 across three repos, not all federation.",
+    "Remote CODEX dispatch/accepted REX and causal-root burndown UNKNOWN."
+  ],
+  "schema": "codepurple.global-spine.w11.qa.v1",
+  "security_waiver": false,
+  "source": {
+    "branch": "docs/w10-global-spine-observatory-20261018",
+    "history_sha256": "e7b1cfb7bf43a6b46c1dcafc56848932e085d087b18f5907a4c3da8666e77e1b",
+    "not_current_main": true,
+    "repository": "GBOGEB/ABACUS",
+    "source_sha_epoch": "1122dca15557e4d2b0ec16300fcbf409db678e86"
+  }
+}
