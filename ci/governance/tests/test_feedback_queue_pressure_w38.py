@@ -104,6 +104,13 @@ class FeedbackSourceBranchW38(unittest.TestCase):
         p=population();p["main_queued"]["workflow_runs"][0]["id"]=-2
         with self.assertRaisesRegex(ValueError,"invalid or repeated"):
             source.analyze(p)
+    def test_missing_workflow_name_exercises_final_source_branch(self):
+        for invalid in ("", None, 17, []):
+            with self.subTest(invalid=invalid):
+                p=population()
+                p["main_queued"]["workflow_runs"][0]["name"]=invalid
+                with self.assertRaisesRegex(ValueError,"workflow identity missing"):
+                    source.analyze(p)
     def test_other_event_excluded_from_feedback_fanin(self):
         p=population()
         p["main_queued"]["workflow_runs"][0]["event"]="schedule"
