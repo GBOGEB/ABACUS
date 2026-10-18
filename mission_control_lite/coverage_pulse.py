@@ -8,6 +8,8 @@ import json
 import re
 from pathlib import Path
 
+from .test_family_telemetry import audit_native_family_log
+
 SHA = re.compile(r"^[0-9a-f]{40}$")
 COUNT = re.compile(r"Ran (\d+) tests? in ")
 CASE = re.compile(r"(?m)^(test\S+) \(([^()\s]+)\) \.\.\. ok$")
@@ -160,6 +162,10 @@ def build(report, test_logs, source_sha, event_sha, run_id, previous=None, phase
         "verified_root_closures": 0,
         "merge_admission": "HOLD",
     }
+    if "adversarial_family" in test_logs:
+        obj["adversarial_test_family"] = audit_native_family_log(
+            test_logs["adversarial_family"], source_sha, int(run_id)
+        )
     if phases is not None:
         if not isinstance(phases, list) or not phases:
             raise ValueError("missing native phase timings")
@@ -212,6 +218,10 @@ def render_summary(pulse):
         "| Duplicate case executions | " + display(
             pulse.get("duplicate_case_executions")) + " |",
         "| Test ID evidence | " + pulse["test_id_status"] + " |",
+        "| Adversarial family reach | " + (
+            str(pulse["adversarial_test_family"]["families_represented"]) + "/4"
+            if "adversarial_test_family" in pulse else "UNKNOWN"
+        ) + " |",
         "| Line coverage | " + display(pulse["line_percent"], "%") + " |",
         "| Branch coverage | " + display(pulse["branch_percent"], "%") + " |",
         "| Comparable baseline | " + comparison["status"] + " |",
@@ -234,6 +244,22 @@ def render_summary(pulse):
             str(item["duration_seconds"]) + " | " +
             str(item["exit_code"]) + " |"
         )
+    family = pulse.get("adversarial_test_family")
+    if family is not None:
+        lines += [
+            "",
+            "### Native adversarial test-family intent census",
+            "",
+            "| Test intent family | Executed cases |",
+            "| --- | ---: |",
+        ]
+        for name, count in family["case_counts_by_family"].items():
+            lines.append("| " + name + " | " + str(count) + " |")
+        lines += [
+            "",
+            "Family intent reach is NOT field sensitivity, FPR/FNR, "
+            "causal-root closure or merge admission.",
+        ]
     return "\n".join(lines) + "\n"
 
 
@@ -250,6 +276,8 @@ def main():
     parser.add_argument("--runner-wait-tests-log", type=Path)
     parser.add_argument("--require-penetration-suites", action="store_true")
     parser.add_argument("--require-case-ids", action="store_true")
+    parser.add_argument("--adversarial-family-tests-log", type=Path)
+    parser.add_argument("--require-adversarial-family", action="store_true")
     parser.add_argument("--source-sha", required=True)
     parser.add_argument("--event-sha", required=True)
     parser.add_argument("--run-id", required=True)
@@ -269,6 +297,8 @@ def main():
         logs["recovery_triage"] = args.recovery_tests_log.read_text()
     if args.runner_wait_tests_log:
         logs["runner_wait"] = args.runner_wait_tests_log.read_text()
+    if args.adversarial_family_tests_log:
+        logs["adversarial_family"] = args.adversarial_family_tests_log.read_text()
     if args.require_penetration_suites and not {
         "recovery_triage", "runner_wait"
     } <= set(logs):
@@ -281,6 +311,11 @@ def main():
     )
     if args.require_case_ids and pulse["test_id_status"] != "COMPLETE":
         parser.error("native case identities missing; refuse to emit pulse")
+    if args.require_adversarial_family:
+        if not pulse.get("adversarial_test_family"):
+            parser.error("native adversarial family census missing")
+        if pulse["duplicate_case_executions"] != 0:
+            parser.error("replayed test identities present: fail closed")
     if args.require_penetration_suites:
         for source in ("recovery_triage.py", "runner_wait.py"):
             stats = pulse["per_file"].get("mission_control_lite/" + source)
