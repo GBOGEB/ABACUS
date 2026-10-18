@@ -213,6 +213,21 @@ class OperatorWorkbench:
             row = self.records.get(rid)
             return self._public(row) if row is not None else None
 
+    def artifact(self, rid, index):
+        """Read back only a run-declared, hash-verified generated artifact."""
+        row = self.get_run(rid)
+        if row is None or type(index) is not int or not 0 <= index < len(row["artifacts"]):
+            return None
+        info = row["artifacts"][index]
+        root = (self.receipt_dir / rid).resolve()
+        path = (root / info["path"]).resolve()
+        if (not path.is_relative_to(root) or path.is_symlink()
+                or not path.is_file() or path.stat().st_size != info["bytes"]
+                or path.stat().st_size > 8 * 1024 * 1024
+                or file_hash(path) != info["sha256"]):
+            return None
+        return path.name, path.read_bytes()
+
     def submit(self, profile, input_name, source_sha, input_sha256,
                consent, delay_seconds, token):
         if not self.enabled:
