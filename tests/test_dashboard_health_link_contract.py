@@ -72,7 +72,10 @@ class DashboardLinks(unittest.TestCase):
         self.assertIn("a source-authorized publication receipt is required", home)
         self.assertIn("Contract Baseline HTML is absent from this published build", home)
         self.assertIn("live JSON is not published", run)
-        self.assertRegex(home, r'<span[^>]*aria-disabled="true"[^>]*>Handover link unavailable</span>')
+        self.assertRegex(
+            home,
+            r'<span[^>]*aria-disabled="true"[^>]*>[^<]*MYRRHA handover not yet published</span>',
+        )
         self.assertRegex(home, r'<span[^>]*aria-disabled="true"[^>]*>Contract Baseline unavailable</span>')
         self.assertEqual(unpublished_targets(home), [],
                          "Unpublished engineering targets must not gain a live link")
