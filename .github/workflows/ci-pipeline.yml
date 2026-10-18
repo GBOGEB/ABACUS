@@ -88,7 +88,11 @@ jobs:
             pytest-benchmark \
             pytest-xdist \
             pytest-timeout
-          pip install -r requirements.txt || echo "No requirements.txt"
+          python -m pip install -r requirements.txt
+          # W13 G3CS bridge imports NetworkX during pytest collection.
+          # Match the Python 3.11+ pin in requirements-dev.txt.
+          python -m pip install "networkx==3.6.1"
+          python -c 'import networkx; assert networkx.__version__ == "3.6.1"'
 
       - name: Build Docker test image
         if: runner.os == 'Linux'
