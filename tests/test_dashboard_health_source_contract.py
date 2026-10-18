@@ -56,8 +56,13 @@ def _fixture_scan(*, malicious_link: str) -> tuple[str, str]:
             stdout=subprocess.PIPE,
             stderr=subprocess.PIPE,
             text=True,
-            check=True,
+            check=False,
         )
+        if result.returncode:
+            raise AssertionError(
+                f"dashboard scanner exit={result.returncode}; "
+                f"stdout={result.stdout!r}; stderr={result.stderr!r}"
+            )
         return result.stdout, output.read_text(encoding="utf-8")
 
 
