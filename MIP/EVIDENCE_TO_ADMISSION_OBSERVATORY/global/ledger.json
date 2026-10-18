@@ -1,0 +1,269 @@
+{
+  "schema": "codepurple.global_dov_rollup.v1",
+  "wave": "W38",
+  "observation_date": "2026-10-18",
+  "evidence_level": "SOURCE_BOUND_OBSERVATION_NO_ADMISSION",
+  "owner": "GBOGEB/ABACUS",
+  "governed_admission": "HOLD",
+  "security_waiver": false,
+  "authority_transfer": false,
+  "accepted_causal_roots_closed": null,
+  "accepted_causal_roots_remaining": null,
+  "global_control": false,
+  "six_sigma_claim": false,
+  "repos": [
+    {
+      "name": "ABACUS",
+      "repo": "GBOGEB/ABACUS",
+      "role": "EVIDENCE_AND_ADMISSION_AUTHORITY",
+      "main_sha": "994ad6e73c748923841d92b12651e92d41b2d4ff",
+      "issues_open": 38,
+      "issues_closed": 267,
+      "prs_open": 16,
+      "prs_closed_unmerged": 137,
+      "prs_merged": 1804
+    },
+    {
+      "name": "CODEX",
+      "repo": "GBOGEB/CODEX",
+      "role": "FEDERATION_CONSUMER",
+      "main_sha": "dfcd6c0ebc4dc902c6bb71e0a739e4d68ac114ed",
+      "issues_open": 11,
+      "issues_closed": 34,
+      "prs_open": 3,
+      "prs_closed_unmerged": 33,
+      "prs_merged": 1026
+    },
+    {
+      "name": "QPS",
+      "repo": "GBOGEB/cryoplant-project",
+      "role": "ENGINEERING_DOMAIN_AUTHORITY",
+      "main_sha": "fc07545c3986181a1b837c0eb7ff9a8393fd4058",
+      "issues_open": 57,
+      "issues_closed": 72,
+      "prs_open": 0,
+      "prs_closed_unmerged": 144,
+      "prs_merged": 1688
+    }
+  ],
+  "focused_coverage": {
+    "source_repo": "GBOGEB/ABACUS",
+    "source_sha": "b69c8e376e25c9345e379a14c371149ba7443adb",
+    "run_id": 39162185592,
+    "job_id": 117777615940,
+    "observed_from": "GITHUB_TERMINAL_NATIVE_PYTHON_3_12_BRANCH_ONLY",
+    "cases_pass": 203,
+    "cases_fail": 0,
+    "cases_skip": 0,
+    "artifact_id": 12149111972,
+    "source_label": "Four-source focused statement-plus-branch opportunity cohort",
+    "eligible": 723,
+    "covered": 707,
+    "previous_covered": 660,
+    "previous_eligible": 723,
+    "local_target_percent": 95,
+    "canonical_main_credit": null,
+    "other_interpreters_exact_head_qualified": false,
+    "consuming_federation_receipts_verified": null,
+    "families": [
+      {
+        "id": "W75",
+        "label": "Stability / deconfounding",
+        "covered": 219,
+        "eligible": 221,
+        "gate": "LOCAL_TARGET_MET"
+      },
+      {
+        "id": "W64",
+        "label": "Reverse-pressure census",
+        "covered": 123,
+        "eligible": 125,
+        "gate": "LOCAL_TARGET_MET"
+      },
+      {
+        "id": "W81",
+        "label": "Repair outcome provenance",
+        "covered": 154,
+        "eligible": 162,
+        "gate": "LOCAL_TARGET_MET"
+      },
+      {
+        "id": "W82",
+        "label": "Semantic discrimination",
+        "covered": 211,
+        "eligible": 215,
+        "gate": "LOCAL_TARGET_MET"
+      }
+    ]
+  },
+  "governance": {
+    "evidence_owner": "ABACUS",
+    "candidate_sha": "a26436955450b8cd27668bffa2a8dc7db458d392",
+    "branch": "code-purple/w36-governance-seven-workflow-census-20261018",
+    "source_workflow_count": 198,
+    "baseline_unclassified": 7,
+    "candidate_unclassified": 0,
+    "candidate_duplicate_match": 0,
+    "qualification_run": 39161993224,
+    "qualification_initial_state": "QUEUED_UNQUALIFIED",
+    "policy_native_acceptance": null,
+    "effective_ruleset_id": 24494381,
+    "required_approvals": 0,
+    "required_status_checks": 0,
+    "independent_eligible_review": false,
+    "red_canary_verified": false,
+    "canonical_report_exact_head_qualified": false
+  },
+  "dov": {
+    "schema": "abacus.dow.global_dov.evidence_ownership.v1",
+    "source": "docs/ci/GLOBAL_DOV_DOW_OWNER_V1.json",
+    "responsibilities": [
+      {
+        "id": "DOW-001",
+        "label": "Provider source SHA and actual bytes",
+        "status": "UNVERIFIED"
+      },
+      {
+        "id": "DOW-002",
+        "label": "CODEX KEB semantic receipt",
+        "status": "UNVERIFIED"
+      },
+      {
+        "id": "DOW-003",
+        "label": "Independent run/job/attempt/checkout",
+        "status": "UNVERIFIED"
+      },
+      {
+        "id": "DOW-004",
+        "label": "LDAB root fingerprint and LLDB replay",
+        "status": "UNVERIFIED"
+      },
+      {
+        "id": "DOW-005",
+        "label": "QPS return disposition",
+        "status": "DEFER"
+      }
+    ],
+    "four_hop_native": "UNKNOWN",
+    "owner_response": "QPS_DEFER"
+  },
+  "throughput": {
+    "window_7d": {
+      "issues_closed": 21,
+      "prs_merged": 591
+    },
+    "window_21d": {
+      "issues_closed": 30,
+      "prs_merged": 1083
+    },
+    "meaning": "RAW_GITHUB_ACTIVITY_NOT_ACCEPTED_ROOT_CLOSURE"
+  },
+  "presentation": {
+    "source_controlled": true,
+    "pages_deployment_verified": false,
+    "browser_api_authentication": false,
+    "generated_views_do_not_authorize_changes": true
+  },
+  "routes": [
+    {
+      "id": "abacus-observatory",
+      "label": "ABACUS evidence observatory",
+      "url": "https://github.com/GBOGEB/ABACUS/tree/994ad6e73c748923841d92b12651e92d41b2d4ff/MIP/EVIDENCE_TO_ADMISSION_OBSERVATORY",
+      "family": "evidence"
+    },
+    {
+      "id": "abacus-spine",
+      "label": "ABACUS G3CS SPINE/SIPOC",
+      "url": "https://github.com/GBOGEB/ABACUS/blob/994ad6e73c748923841d92b12651e92d41b2d4ff/MIP/G3CS_CONVERGENCE_V2/observatory/w10/index.html",
+      "family": "graph"
+    },
+    {
+      "id": "everred",
+      "label": "EVERRED root ledger dashboard",
+      "url": "https://github.com/GBOGEB/ABACUS/blob/994ad6e73c748923841d92b12651e92d4ff/tools/everred_v3/dashboard/bd_queue.html",
+      "family": "roots"
+    },
+    {
+      "id": "codex",
+      "label": "CODEX portal",
+      "url": "https://github.com/GBOGEB/CODEX/blob/dfcd6c0ebc4dc902c6bb71e0a739e4d68ac114ed/docs/index.html",
+      "family": "federation"
+    },
+    {
+      "id": "qps",
+      "label": "QPS source navigation registry",
+      "url": "https://github.com/GBOGEB/cryoplant-project/blob/fc07545c3986181a1b837c0eb7ff9a8393fd4058/governance/QPS_DASHBOARD_FEDERATION_LAUNCH_REGISTRY_v1.md",
+      "family": "engineering"
+    },
+    {
+      "id": "w38",
+      "label": "W38 proposed global hub branch",
+      "url": "https://github.com/GBOGEB/ABACUS/tree/code-purple/w38-global-dov-hub-20261018/MIP/EVIDENCE_TO_ADMISSION_OBSERVATORY/global",
+      "family": "control"
+    }
+  ],
+  "lineage": [
+    {
+      "from": "ABACUS",
+      "to": "W37",
+      "type": "NATIVE_FOCUSED_EVIDENCE",
+      "weight": 203,
+      "unit": "passing tests",
+      "status": "TERMINAL"
+    },
+    {
+      "from": "W37",
+      "to": "LOCAL_CONTROL",
+      "type": "COVERAGE_GATE",
+      "weight": 4,
+      "unit": "source families",
+      "status": "TARGET_MET"
+    },
+    {
+      "from": "ABACUS",
+      "to": "W36",
+      "type": "WORKFLOW_CLASSIFICATION",
+      "weight": 7,
+      "unit": "source classifications",
+      "status": "SOURCE_ONLY"
+    },
+    {
+      "from": "W36",
+      "to": "GLOBAL_DOV",
+      "type": "GOVERNANCE_DEPENDENCY",
+      "weight": null,
+      "unit": "native gate",
+      "status": "PENDING"
+    },
+    {
+      "from": "ABACUS",
+      "to": "CODEX",
+      "type": "FEDERATION_CONSUMER_RECEIPT",
+      "weight": null,
+      "unit": "attested consumers",
+      "status": "UNKNOWN"
+    },
+    {
+      "from": "CODEX",
+      "to": "QPS",
+      "type": "DOMAIN_RETURN",
+      "weight": null,
+      "unit": "accepted QPS returns",
+      "status": "DEFER"
+    },
+    {
+      "from": "GLOBAL_DOV",
+      "to": "GLOBAL_CONTROL",
+      "type": "INDEPENDENT_ACCEPTANCE",
+      "weight": null,
+      "unit": "accepted roots",
+      "status": "HOLD"
+    }
+  ],
+  "source_urls": [
+    "https://github.com/GBOGEB/ABACUS/actions/runs/39162185592",
+    "https://github.com/GBOGEB/ABACUS/actions/runs/39161993224",
+    "https://github.com/GBOGEB/ABACUS/issues/1991#issuecomment-6254614299",
+    "https://github.com/GBOGEB/ABACUS/issues/2087#issuecomment-6254614666"
+  ]
+}
