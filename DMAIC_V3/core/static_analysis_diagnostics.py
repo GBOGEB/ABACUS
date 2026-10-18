@@ -54,7 +54,7 @@ def summarize_static_analysis(
         }
 
     output = report.get("output")
-    findings = []
+    findings: list[dict[str, Any]] = []
     count = 0
     if isinstance(output, str):
         for line in output.splitlines():

@@ -29,7 +29,11 @@ def load_coverage(path: Path) -> tuple[dict, str]:
     meta, files, totals = doc.get("meta", {}), doc.get("files", {}), doc.get("totals", {})
     require(isinstance(meta, dict) and meta.get("branch_coverage") is True,
             "branch instrumentation required")
-    require(isinstance(files, dict) and set(files) == {EXPECTED_FILE},
+    # coverage.py uses native separators on Windows. Admit only these two
+    # byte-exact spellings of the SAME module, never a general path rewrite.
+    allowed_source_keys = {EXPECTED_FILE, EXPECTED_FILE.replace("/", "\\")}
+    require(isinstance(files, dict) and len(files) == 1
+            and next(iter(files)) in allowed_source_keys,
             "only exact TestPilot source coverage allowed")
     keys = ("num_statements", "covered_lines", "num_branches", "covered_branches")
     for field in keys:
@@ -40,6 +44,11 @@ def load_coverage(path: Path) -> tuple[dict, str]:
     require(totals["covered_lines"] <= totals["num_statements"]
             and totals["covered_branches"] <= totals["num_branches"],
             "invalid covered population")
+    source = next(iter(files.values()))
+    summary = source.get("summary") if isinstance(source, dict) else None
+    require(isinstance(summary, dict), "source coverage summary missing")
+    require(all(type(summary.get(k)) is int and summary[k] == totals[k]
+                for k in keys), "coverage source/global totals mismatch")
     return {k: totals[k] for k in keys}, hashlib.sha256(raw).hexdigest()
 
 
@@ -50,11 +59,36 @@ def load_junit(path: Path) -> tuple[dict, str]:
     suites = [root] if root.tag == "testsuite" else list(root) if root.tag == "testsuites" else []
     require(bool(suites) and all(s.tag == "testsuite" for s in suites), "JUnit root invalid")
     count = {key: 0 for key in ("tests", "failures", "errors", "skipped")}
+    seen = set()
     for suite in suites:
+        declared = {}
         for key in count:
             v = suite.get(key)
             require(isinstance(v, str) and v.isdecimal(), "invalid JUnit " + key)
-            count[key] += int(v)
+            declared[key] = int(v)
+        cases = suite.findall("testcase")
+        require(declared["tests"] == len(cases),
+                "JUnit declared tests differ from testcase count")
+        observed = {key: 0 for key in ("failures", "errors", "skipped")}
+        for case in cases:
+            name, classname = case.get("name"), case.get("classname")
+            require(bool(name and name.strip() and classname and classname.strip()),
+                    "JUnit testcase identity missing")
+            identity = (classname, name)
+            require(identity not in seen, "duplicate JUnit testcase identity")
+            seen.add(identity)
+            outcome_count = 0
+            for key, tag in (("failures", "failure"), ("errors", "error"),
+                             ("skipped", "skipped")):
+                if case.find(tag) is not None:
+                    observed[key] += 1
+                    outcome_count += 1
+            require(outcome_count <= 1, "conflicting JUnit testcase outcomes")
+        for key in observed:
+            require(observed[key] == declared[key],
+                    "JUnit declared " + key + " differs from testcase outcomes")
+        for key in count:
+            count[key] += declared[key]
     require(count["tests"] > 0, "zero tests may not pass")
     require(count["failures"] == count["errors"] == 0,
             "failing JUnit may not provide coverage uplift credit")
@@ -71,8 +105,10 @@ def compare(base_cov: dict, expanded_cov: dict, base_junit: dict,
     require(expanded_cov["covered_lines"] >= base_cov["covered_lines"]
             and expanded_cov["covered_branches"] >= base_cov["covered_branches"],
             "coverage regression under same-head test expansion")
-    require(expanded_junit["tests"] > base_junit["tests"],
-            "no independently collected new test cases")
+    old_executed = base_junit["tests"] - base_junit["skipped"]
+    new_executed = expanded_junit["tests"] - expanded_junit["skipped"]
+    require(new_executed > old_executed,
+            "no independently executed new test cases")
     statements = expanded_cov["covered_lines"] - base_cov["covered_lines"]
     branches = expanded_cov["covered_branches"] - base_cov["covered_branches"]
     require(statements > 0 and branches > 0, "no verified statement and branch uplift")
@@ -87,7 +123,7 @@ def compare(base_cov: dict, expanded_cov: dict, base_junit: dict,
         "baseline": {"coverage": base_cov, "junit": base_junit},
         "expanded": {"coverage": expanded_cov, "junit": expanded_junit},
         "uplift": {"covered_statements": statements, "covered_branches": branches,
-                   "additional_executed_tests": expanded_junit["tests"] - base_junit["tests"],
+                   "additional_executed_tests": new_executed - old_executed,
                    "combined_covered_before": old, "combined_covered_after": new,
                    "combined_denominator": denominator,
                    "combined_pp": round(100 * (new - old) / denominator, 6)},

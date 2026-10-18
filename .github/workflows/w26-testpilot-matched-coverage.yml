@@ -6,6 +6,7 @@ on:
       - 'scripts/testpilot_preflight.py'
       - 'tests/test_testpilot_adversarial_coverage.py'
       - 'tests/test_testpilot_coverage_compare.py'
+      - 'tests/test_testpilot_w27_native_contract.py'
       - 'tools/mip2/testpilot_coverage_compare.py'
       - '.github/workflows/w26-testpilot-matched-coverage.yml'
   workflow_dispatch:
@@ -36,6 +37,21 @@ jobs:
         with:
           ref: ${{ github.event.pull_request.head.sha || github.sha }}
           persist-credentials: false
+      - name: Set up matrix Python interpreter
+        uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97
+        with:
+          python-version: ${{ matrix.python }}
+      - name: Verify selected Python minor version
+        shell: bash
+        env:
+          EXPECTED_PYTHON: ${{ matrix.python }}
+        run: |
+          python - <<'PY'
+          import os
+          import sys
+          expected = tuple(map(int, os.environ["EXPECTED_PYTHON"].split(".")))
+          assert sys.version_info[:2] == expected, (sys.version, expected)
+          PY
       - name: Verify exact head
         shell: bash
         env:
@@ -55,6 +71,7 @@ jobs:
         shell: bash
         run: |
           python -m pytest -q tests/test_testpilot_coverage_compare.py \
+            tests/test_testpilot_w27_native_contract.py \
             --junitxml=w26-validator-junit.xml
       - name: Measure baseline on this same exact head
         shell: bash
@@ -91,8 +108,11 @@ jobs:
         if: always()
         uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9
         with:
-          name: w26-${{ matrix.os }}-py${{ matrix.python }}-${{ github.event.pull_request.head.sha || github.sha }}
+          name: >-
+            w26-${{ matrix.os }}-py${{ matrix.python }}
+            -${{ github.run_id }}-a${{ github.run_attempt }}
+            -${{ github.event.pull_request.head.sha || github.sha }}
           path: |
             w26-*-junit.xml
             w26-*-coverage.json
-          if-no-files-found: warn
+          if-no-files-found: error
