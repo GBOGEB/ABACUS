@@ -139,3 +139,20 @@ security evidence segregated; CHAR/ASH transitions require independent closure.
 - Disjoint source ownership: W29 tests W75/W64; W30 modifies only the observatory's collector, template, and its tests. No CODEX Crew launch, accepted REX, root/ASH closure, security waiver, owner-admin rule mutation or inferred approval. `MERGE_ADMISSION=HOLD`.
 
 **Adaptive rule**: with missing current-main B0/artifact or queue p95, remain at **one** observational lane; do not scale from the old 49-second p95. When every current-main B0 job and artifact is exact-head terminal, evaluate p95 ≤900 seconds and noncompensating governance. Expand to at most three disjoint **read-only** scouts; source-writing commits stay with separate owners, independent human review, and serial admission.
+
+
+## W31/W32 convergence and continuity gate (18 October 2026)
+
+The evidence-only controller `wave_convergence.py` and native pytest `test_wave_convergence.py` are source-bound to this branch. Local independent Python testflight currently **155/155 PASS** and **92% scoped combined statement/branch coverage** across census, renderer, adaptive policy, queue and convergence modules; the 46-case W31 convergence module alone reaches **100%** (101 executable statements, 60 branches). These are **local** metrics, not a GitHub-native, PR-diff or main uplift claim.
+
+`engineering_wave_history.json` preserves two W29 events separately from admitted engineering observations: historical N0 head `38d1d3b52fc7ca943a17471301c20cbe5f5af254` had 128 passing behavioral executions but 2 overall failing jobs and **missing coverage**; N1 head `312042de13212319c0e85c9d012fa43747508e4e` remained QUEUED at last readback. Therefore `observations=[]` is correct: no falsely admitted new W29 wave, no assumed 0% gain, no p95=0.
+
+The convergence gate proves four separate safeguards:
+- **Target branch:** 95% for the fixed W75+W64 source-family opportunity cohort (346 historical opportunities), only after a fresh exact-head eligible cohort and coverage config receipt.
+- **Plateau:** require **three consecutive N+1=N comparisons** across **four distinct, terminal, source-changing source-slice executions** with disjoint SHA, run ID, artifact digest, and source-slice lease. Re-reading one GitHub run, A→B→A source replay and zero-gain synthetic wave aliases are rejected. Zero means verified identical numerator on a comparable denominator, not missing evidence.
+- **Reversals:** newly failing tests/first-reds, A10/security regressions, and lower covered numerator take priority. Queue UNKNOWN or above 900s prevents lane expansion; unmatched files/configurations require explicit rebasing.
+- **Scope:** `COHORT_PLATEAU_CONFIRMED` or `SOURCE_TARGET_REACHED` stops spending tests on that **source family** and moves to a separately sourced, measured uncovered cohort. It **never** closes CODE PURPLE, merges a PR, signs REX, authenticates remote Crew or claims deduplicated engineering-root closure. These gates remain separately owner-controlled.
+
+Workflow testflight now covers five observatory modules and includes convergence negative tests. The workflow is not yet merged into protected `main`, and its native success is UNKNOWN. Do not count local tests as admission. Source report/JSON remain read-only artifacts with `MERGE_ADMISSION=HOLD`.
+
+**Next admissible sequence:** acquire repaired W29 [run 39150712686](https://github.com/GBOGEB/ABACUS/actions/runs/39150712686) terminal jobs/JUnit/coverage, exact-head [B0 39150712841](https://github.com/GBOGEB/ABACUS/actions/runs/39150712841), [governance 39150712644](https://github.com/GBOGEB/ABACUS/actions/runs/39150712644), and security. If first-red, repair source on PR #2250 and repeat. Only on terminal and matched numerator+denominator append a genuine wave observation and recalculate the 3-transition hysteresis. Remain at one read-only observation lane while current p95 is UNKNOWN.
