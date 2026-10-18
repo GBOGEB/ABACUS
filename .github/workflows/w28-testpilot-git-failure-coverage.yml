@@ -1,0 +1,132 @@
+name: W28 TestPilot Git-failure matched behavioral coverage
+
+on:
+  pull_request:
+    paths:
+      - 'scripts/testpilot_preflight.py'
+      - 'tests/test_testpilot_adversarial_coverage.py'
+      - 'tests/test_testpilot_w28_git_probe.py'
+      - 'tools/mip2/testpilot_coverage_compare.py'
+      - '.github/workflows/w28-testpilot-git-failure-coverage.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  matched-git-probe:
+    name: W28 ${{ matrix.os }} Python ${{ matrix.python }}
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 20
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: ubuntu-latest
+            python: '3.10'
+          - os: ubuntu-latest
+            python: '3.11'
+          - os: ubuntu-latest
+            python: '3.12'
+          - os: windows-latest
+            python: '3.11'
+    steps:
+      - name: Checkout exact PR head without credentials
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+      - name: Bind interpreter to matrix
+        uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97
+        with:
+          python-version: ${{ matrix.python }}
+      - name: Verify exact source and interpreter before testing
+        shell: bash
+        env:
+          EXPECTED_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+          EXPECTED_PYTHON: ${{ matrix.python }}
+        run: |
+          test "$(git rev-parse HEAD)" = "$EXPECTED_SHA"
+          python -c "import os,sys; assert sys.version_info[:2] == tuple(map(int,os.environ['EXPECTED_PYTHON'].split('.')))"
+      - name: Install bounded focused dependencies
+        shell: bash
+        run: |
+          python -m pip install pytest==9.1.1 coverage==7.16.2 numpy==1.26.4
+          python -m pip install PyYAML==6.0.3 tomli==2.2.1 defusedxml==0.7.1
+      - name: Measure W28 before — inherited TestPilot behavioral family
+        shell: bash
+        run: |
+          python -m coverage erase
+          python -m coverage run --branch --source=scripts.testpilot_preflight -m pytest -q \
+            tests/test_testpilot_receipt_contract.py \
+            tests/test_testpilot_adversarial_coverage.py \
+            --junitxml=w28-baseline-junit.xml
+          python -m coverage json -o w28-baseline-coverage.json
+      - name: Measure W28 after — additional fail-closed Git-failure family
+        shell: bash
+        run: |
+          python -m coverage erase
+          python -m coverage run --branch --source=scripts.testpilot_preflight -m pytest -q \
+            tests/test_testpilot_receipt_contract.py \
+            tests/test_testpilot_adversarial_coverage.py \
+            tests/test_testpilot_w28_git_probe.py \
+            --junitxml=w28-expanded-junit.xml
+          python -m coverage json -o w28-expanded-coverage.json
+      - name: Require matched behavioral uplift and native executed JUnit identities
+        shell: bash
+        env:
+          EXPECTED_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+        run: |
+          python tools/mip2/testpilot_coverage_compare.py \
+            --base-cov w28-baseline-coverage.json \
+            --expanded-cov w28-expanded-coverage.json \
+            --base-junit w28-baseline-junit.xml \
+            --expanded-junit w28-expanded-junit.xml \
+            --exact-head "$EXPECTED_SHA" --output w28-matched-coverage.json
+      - name: Hash and bind all native evidence to exact source, run and attempt
+        shell: bash
+        env:
+          EXPECTED_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+          CELL_OS: ${{ matrix.os }}
+          CELL_PYTHON: ${{ matrix.python }}
+        run: |
+          python - <<'PY'
+          import hashlib
+          import json
+          import os
+          import pathlib
+          import subprocess
+          required = [
+              "w28-baseline-junit.xml", "w28-expanded-junit.xml",
+              "w28-baseline-coverage.json", "w28-expanded-coverage.json",
+              "w28-matched-coverage.json"
+          ]
+          assert subprocess.check_output(["git", "rev-parse", "HEAD"], text=True).strip() == os.environ["EXPECTED_SHA"]
+          for name in required:
+              assert pathlib.Path(name).is_file() and pathlib.Path(name).stat().st_size > 0, name
+          receipt = {
+              "schema": "abacus.w28.git-failure-native-bound.v1",
+              "exact_sha": os.environ["EXPECTED_SHA"],
+              "run_id": os.environ["GITHUB_RUN_ID"],
+              "attempt": os.environ["GITHUB_RUN_ATTEMPT"],
+              "cell": {"os": os.environ["CELL_OS"], "python": os.environ["CELL_PYTHON"]},
+              "sha256": {
+                  name: hashlib.sha256(pathlib.Path(name).read_bytes()).hexdigest()
+                  for name in required
+              },
+              "merge_admission": "HOLD",
+              "global_main_uplift": None,
+              "pr_diff_uplift": None
+          }
+          pathlib.Path("w28-native-receipt.json").write_text(json.dumps(receipt, indent=2, sort_keys=True) + "\n")
+          PY
+      - name: Upload native proof and manifest
+        if: always()
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9
+        with:
+          name: w28-${{ matrix.os }}-py${{ matrix.python }}-${{ github.run_id }}-a${{ github.run_attempt }}-${{ github.event.pull_request.head.sha || github.sha }}
+          path: |
+            w28-*-junit.xml
+            w28-*-coverage.json
+            w28-native-receipt.json
+          if-no-files-found: error

@@ -32,9 +32,26 @@ CONFLICT_MID_RE = re.compile(r"^=======$", re.MULTILINE)
 CONFLICT_END_RE = re.compile(r"^>>>>>>> .+$", re.MULTILINE)
 
 
+class GitProbeError(RuntimeError):
+    """A Git census failure is never equivalent to an empty changed-file set."""
+
+
+
 def run(cmd: list[str], *, cwd: Path = ROOT) -> dict:
     started = time.monotonic()
-    proc = subprocess.run(cmd, cwd=cwd, text=True, capture_output=True, check=False)
+    try:
+        proc = subprocess.run(cmd, cwd=cwd, text=True, capture_output=True, check=False)
+    except (OSError, subprocess.TimeoutExpired) as exc:
+        return {
+            "command": cmd,
+            "cwd": str(cwd.relative_to(ROOT)) if cwd != ROOT else ".",
+            "returncode": None,
+            "seconds": round(time.monotonic() - started, 3),
+            "stdout_tail": "",
+            "stderr_tail": type(exc).__name__,
+            "status": "FAIL",
+            "error_kind": type(exc).__name__,
+        }
     return {
         "command": cmd,
         "cwd": str(cwd.relative_to(ROOT)) if cwd != ROOT else ".",
@@ -47,11 +64,14 @@ def run(cmd: list[str], *, cwd: Path = ROOT) -> dict:
 
 
 def git_lines(*args: str) -> list[str]:
-    proc = subprocess.run(
-        ["git", *args], cwd=ROOT, text=True, capture_output=True, check=False
-    )
+    try:
+        proc = subprocess.run(
+            ["git", *args], cwd=ROOT, text=True, capture_output=True, check=False
+        )
+    except OSError as exc:
+        raise GitProbeError(f"git {args[0] if args else 'probe'} unavailable: {type(exc).__name__}") from exc
     if proc.returncode != 0:
-        return []
+        raise GitProbeError(f"git {args[0] if args else 'probe'} exited {proc.returncode}")
     return [line.strip() for line in proc.stdout.splitlines() if line.strip()]
 
 
@@ -223,7 +243,7 @@ def coverage_check(floor: float) -> dict:
 
 def source_sha() -> str | None:
     values = git_lines("rev-parse", "HEAD")
-    return values[0] if values else None
+    return values[0] if len(values) == 1 and re.fullmatch(r"[0-9a-f]{40}", values[0]) else None
 
 
 
@@ -258,8 +278,23 @@ def main() -> int:
     ):
         ap.error("invalid coverage floor: gate mode requires at least 75%")
 
-    files = parity_subject_files() if args.parity else changed_files()
-    checks: list[dict] = [
+    git_checks: list[dict] = []
+    try:
+        files = parity_subject_files() if args.parity else changed_files()
+    except GitProbeError as exc:
+        files = []
+        git_checks.append({"name": "git_changed_files", "status": "FAIL", "reason": str(exc)})
+    try:
+        verified_sha = source_sha()
+    except GitProbeError as exc:
+        verified_sha = None
+        git_checks.append({"name": "git_source_sha", "status": "FAIL", "reason": str(exc)})
+    if not isinstance(verified_sha, str) or re.fullmatch(r"[0-9a-f]{40}", verified_sha) is None:
+        verified_sha = None
+    if verified_sha is None and not any(c["name"] == "git_source_sha" for c in git_checks):
+        git_checks.append({"name": "git_source_sha", "status": "FAIL",
+                           "reason": "missing or malformed exact HEAD SHA"})
+    checks: list[dict] = git_checks + [
         check_conflicts(files),
         check_python_compile(files),
         check_configs(files),
@@ -277,7 +312,7 @@ def main() -> int:
     outcome, exit_code = receipt_outcome(checks, args.mode, parity=args.parity)
     receipt = {
         "schema": "abacus.testpilot.preflight.v1",
-        "source_sha": source_sha(),
+        "source_sha": verified_sha,
         "mode": args.mode,
         "fix_requested": args.fix,
         "coverage_policy": {
