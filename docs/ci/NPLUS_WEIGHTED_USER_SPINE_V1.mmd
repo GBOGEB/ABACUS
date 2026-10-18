@@ -1,0 +1,19 @@
+flowchart LR
+    USER[USER prerogative - choose or veto] -.-> CODEX[CODEX MissionControl planning]
+    CODEX --> SHA[ABACUS exact source SHA]
+    SHA --> FAM[Distinct workflow family inventory]
+    FAM --> FLIGHT[Disjoint source-owner native testflight]
+    FLIGHT --> ART[Job / JUnit / coverage / artifact receipts]
+    ART --> BD[Matched coverage and canonical BD #1929]
+    BD --> GATE{P0 independent checks / human review?}
+    GATE -->|Not proven| HOLD[HOLD - no admission]
+    GATE -->|Verified separately| MAIN[Protected main readback]
+    MAIN -.-> QPS[QPS retains child engineering authority]
+
+    subgraph CHOICE [Proposed USER SPINE - advisory only]
+      PRIORITY[User priorities] --> COMPETE[Compete: P0 / first-red / coverage / telemetry]
+      COMPETE --> OVERRIDE{Choose / override / veto}
+      OVERRIDE --> PLAN[Proposed bounded wave]
+      PLAN --> EVIDENCE[Source-bound outcome]
+      EVIDENCE -.->|next iteration feedback only| PRIORITY
+    end
