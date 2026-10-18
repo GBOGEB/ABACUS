@@ -12,6 +12,7 @@ from typing import Any
 import json
 import re
 from wave_convergence import evaluate as evaluate_engineering_convergence
+from elastic_wave_governor import evaluate as evaluate_elastic_wave
 
 SHA = re.compile(r"^[0-9a-f]{40}$")
 ROOT = Path(__file__).resolve().parent
@@ -298,7 +299,26 @@ def build_wave_receipt(snapshot: dict, history: dict) -> dict:
     except (OSError, ValueError, TypeError) as exc:
         engineering_result = {"state": "CONVERGENCE_PROOF_UNAVAILABLE",
                               "error": str(exc)[:120], "stop_entire_program": False}
+    # W33 is pinned to an older exact-head focused test run, not the moving
+    # main head. Never interpret a cached candidate evaluation as fresh B0.
+    try:
+        elastic_input = json.loads(
+            (ROOT / "w33_verified_focused_input.json").read_text(encoding="utf-8")
+        )
+        elastic_result = evaluate_elastic_wave(elastic_input)
+        elastic_result["measurement_freshness"] = (
+            "HISTORICAL_FOCUSED_SOURCE_HEAD_NOT_EXACT_CURRENT_MAIN"
+        )
+        elastic_result["source_head_equals_current_main"] = (
+            elastic_input["snapshot_source_sha"] == snapshot.get("main", {}).get("sha")
+        )
+    except (OSError, ValueError, TypeError) as exc:
+        elastic_result = {
+            "state": "W33_CONTROLLER_INPUT_UNQUALIFIED",
+            "error": str(exc)[:180], "governed_merge_admission": "HOLD"
+        }
     return {"schema": "codepurple.adaptive_wave_receipt.v1",
+            "elastic_controller": elastic_result,
             "main_sha": snapshot.get("main", {}).get("sha"),
             "current_main_coverage_sha": (snapshot.get("coverage", {}).get("measured") or {}).get("sha"),
             "historical_focus": progress, "scale_policy": policy, "source_frontier":source_frontier,
