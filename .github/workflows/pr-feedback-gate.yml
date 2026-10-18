@@ -94,6 +94,23 @@ jobs:
             "${args[@]}" --list-prs)
           echo "prs=$prs" >> "$GITHUB_OUTPUT"
 
+      # Optional observation only: does not alter route outputs, pending stamps,
+      # existing evaluator fan-in or the non-compensating review gate.
+      - name: Emit read-only routing yield
+        if: success()
+        continue-on-error: true
+        env:
+          ROUTED_PRS: ${{ steps.route.outputs.prs }}
+        run: |
+          python ci/governance/feedback_route_yield_w38.py \
+            --event-path "$GITHUB_EVENT_PATH" \
+            --routed-prs "$ROUTED_PRS" \
+            --event-name "$GITHUB_EVENT_NAME" \
+            --repository "$GITHUB_REPOSITORY" \
+            --event-sha "$GITHUB_SHA" \
+            --gate-run-id "$GITHUB_RUN_ID" \
+            --gate-attempt "$GITHUB_RUN_ATTEMPT"
+
   # A tracking-issue close or edit must invalidate a deferral-backed success
   # at once. The census it triggers queues behind any census already running
   # for the PR, which could otherwise publish a success computed from the old
