@@ -67,7 +67,7 @@ class GlobalSpineW10Tests(unittest.TestCase):
  @pytest.mark.TEST_BLOCKED_SOURCE_MISSING
  def test_native_zip_success_and_sha_guard(self):
   archive=ROOT/'b0-pr2239.zip'
-  if not archive.exists():self.skipTest("TEST_BLOCKED_SOURCE_MISSING: historical GitHub B0 ZIP is not in source checkout; synthetic parser invariant tests remain active")
+  if not archive.exists():self.skipTest("TEST_BLOCKED_DEPENDENCY: optional historical native GitHub ZIP is not staged; synthetic invariant tests remain mandatory")
   zipbytes=archive.read_bytes()
   digest='sha256:'+hashlib.sha256(zipbytes).hexdigest()
   d=refresh.parse_canonical_zip(zipbytes,SHA,12142769026,39144589287,digest)
