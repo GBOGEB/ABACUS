@@ -94,6 +94,25 @@ def compare(before,after):
     if any(before[k]!=after[k] for k in basis):reasons.append('DIFFERENT_SOURCE_OR_SELECTION_CONTEXT')
     if set(a)!=set(b):reasons.append('RUN_ATTEMPT_POPULATION_CHANGED')
     if not date(before['observed_at_utc'])<date(after['observed_at_utc']):reasons.append('NONMONOTONE_OBSERVATION_TIME')
+    # A terminal GitHub run/job ID is immutable within one attempt.
+    # A genuine retry has a new attempt/job ID and is a different population.
+    for key in b.keys() & a.keys():
+        old_run,new_run=b[key],a[key]
+        if old_run['status']=='completed' and (
+            new_run['status']!='completed' or new_run['conclusion']!=old_run['conclusion']
+        ):
+            reasons.append('IMMUTABLE_RUN_TERMINAL_CHANGED')
+        old_jobs={j['job_id']:j for j in old_run.get('jobs',[])}
+        new_jobs={j['job_id']:j for j in new_run.get('jobs',[])}
+        for jid in old_jobs.keys() & new_jobs.keys():
+            older,newer=old_jobs[jid],new_jobs[jid]
+            if older['status']=='completed' and (
+                newer['status']!='completed' or older['conclusion']!=newer['conclusion']
+                or any(older.get(t)!=newer.get(t)
+                       for t in ('created_at','started_at','completed_at'))
+            ):
+                reasons.append('IMMUTABLE_JOB_TERMINAL_CHANGED')
+    reasons=sorted(set(reasons))
     rb,ra=stats(before),stats(after)
     result={'schema':'codepurple.g3cs.native-run-delta.v1','before':rb,'after':ra,
         'before_observed_at_utc':before['observed_at_utc'],'after_observed_at_utc':after['observed_at_utc'],
@@ -106,14 +125,10 @@ def compare(before,after):
     result['successful_run_delta']=ra['success']-rb['success']
     result['blocked_to_success_run_ids']=sorted([k[0] for k in b if b[k]['status']!='completed' and a[k]['conclusion']=='success'])
     result['regressed_success_run_ids']=sorted([k[0] for k in b if b[k]['conclusion']=='success' and a[k]['conclusion']!='success'])
-    cleared=[]
-    for key in b:
-        old={j['job_id']:j for j in b[key].get('jobs',[])}
-        new={j['job_id']:j for j in a[key].get('jobs',[])}
-        for jid in old.keys() & new.keys():
-            if old[jid]['conclusion']=='failure' and new[jid]['conclusion']=='success':
-                cleared.append((key[0],jid))
-    result['job_first_red_cleared']=[{'run_id':run,'job_id':job} for run,job in sorted(cleared)]
+    # A changed terminal result on the same immutable job ID is rejected
+    # above; this readback comparison cannot claim a causal first-red fix.
+    result['job_first_red_cleared']=[]
+    result['job_first_red_qualification']='NOT_A_CROSS_ATTEMPT_REPAIR_COMPARISON'
     return result
 
 def main(argv=None):
