@@ -99,6 +99,7 @@ jobs:
           BROKEN=0
           while IFS= read -r f; do
             while IFS= read -r href; do
+              href="${href#*\"}"
               href="${href#"${href%%[![:space:]]*}"}"
               case "$href" in
                 ""|\#*|/*|\$\{*|[a-zA-Z][a-zA-Z0-9+.-]*:*)
@@ -123,7 +124,7 @@ jobs:
                 echo "🔗 Broken: $f → $href"
                 BROKEN=$((BROKEN+1))
               fi
-            done < <(grep -oP 'href="\K[^"]+' "$f")
+            done < <(grep -oE 'href="[^"]+' "$f")
           done < <(find docs -name '*.html' -type f)
           echo "Total broken internal links: $BROKEN"
           echo "broken_links=$BROKEN" >> "$GITHUB_OUTPUT"
