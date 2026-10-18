@@ -295,7 +295,7 @@ def _capacity(doc, results, actionable):
             "queue_bound_to_latest_terminal_head": queue_exact_head}
 
 
-def _programme_stop(doc, results, artifacts):
+def _programme_stop(doc, results, artifact_census):
     end = doc.get("global_acceptance")
     if not isinstance(end, dict):
         raise GovernorError("global_acceptance object required")
@@ -328,7 +328,7 @@ def _programme_stop(doc, results, artifacts):
          "required_checks", "negative_red_canary", "security")
     ))
     stability = end.get("no_special_cause_variation") is True
-    consumer_evidence = artifacts.get("status") == "NATIVE_COMPLETE_CONSUMER_ATTESTED"
+    consumer_evidence = artifact_census.get("status") == "NATIVE_COMPLETE_CONSUMER_ATTESTED"
     complete = bool(all_source_targets and numbers_valid and governance
                     and stability and consumer_evidence)
     return {"state": "GLOBAL_CONTROL_ELIGIBLE" if complete else "CONTINUE_OR_HOLD",
