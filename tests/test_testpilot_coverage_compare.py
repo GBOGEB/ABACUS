@@ -2,7 +2,6 @@
 from __future__ import annotations
 
 import json
-from pathlib import Path
 import pytest
 from tools.mip2 import testpilot_coverage_compare as m
 

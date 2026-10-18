@@ -6,7 +6,6 @@ Each negative/reverse/force-trip test asserts fail-closed or explicit partial st
 from __future__ import annotations
 
 import json
-import subprocess
 import sys
 from pathlib import Path
 from types import SimpleNamespace
