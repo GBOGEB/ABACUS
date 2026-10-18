@@ -63,7 +63,7 @@ jobs:
     name: Unit Tests
     runs-on: ${{ matrix.os }}
     env:
-      PYTEST_WORKERS: ${{ runner.os == 'Windows' && '0' || 'auto' }}
+      PYTEST_WORKERS: ${{ matrix.os == 'windows-latest' && '0' || 'auto' }}
     strategy:
       matrix:
         os: [ubuntu-latest, windows-latest]
