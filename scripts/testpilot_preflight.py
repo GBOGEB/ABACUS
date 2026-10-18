@@ -289,6 +289,8 @@ def main() -> int:
     except GitProbeError as exc:
         verified_sha = None
         git_checks.append({"name": "git_source_sha", "status": "FAIL", "reason": str(exc)})
+    if not isinstance(verified_sha, str) or re.fullmatch(r"[0-9a-f]{40}", verified_sha) is None:
+        verified_sha = None
     if verified_sha is None and not any(c["name"] == "git_source_sha" for c in git_checks):
         git_checks.append({"name": "git_source_sha", "status": "FAIL",
                            "reason": "missing or malformed exact HEAD SHA"})
