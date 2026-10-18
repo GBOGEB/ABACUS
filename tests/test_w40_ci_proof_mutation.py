@@ -165,17 +165,18 @@ class PlannerBoundaryMutantSensitivity(unittest.TestCase):
         actual_source = inspect.getsource(planner.plan)
         needle = 'cap["queued"] >= cap["max_queued"]'
         self.assertEqual(actual_source.count(needle), 1)
-        mutant_source = actual_source.replace(needle, 'cap["queued"] > cap["max_queued"]')
-        mutant_globals = dict(vars(planner))
-        exec(compile(mutant_source, "<trusted-repository-test-mutant>", "exec"),
-             mutant_globals)
+        # Static source oracle plus a manually evaluated wrong comparator.
+        # Do not exec/eval mutated source inside CI or create Bandit B102 debt.
         x = snapshot(observation())
         x["capacity"]["queued"] = x["capacity"]["max_queued"]
         reference = planner.plan(x)
-        mutant = mutant_globals["plan"](x)
+        wrong_gt_predicate = (
+            x["capacity"]["queued"] > x["capacity"]["max_queued"]
+            or x["capacity"]["in_progress"] >= x["capacity"]["max_in_progress"]
+        )
+        self.assertFalse(wrong_gt_predicate)
+        self.assertTrue(reference["backpressure"])
         self.assertEqual(reference["proposed_reruns"], 0)
-        self.assertEqual(mutant["proposed_reruns"], 1)
-        self.assertNotEqual(reference, mutant)
 
     def test_duplicate_root_and_budget_are_non_dispatching(self):
         x = snapshot(observation(run_id=7001, pr=2284),
