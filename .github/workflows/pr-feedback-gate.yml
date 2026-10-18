@@ -107,7 +107,7 @@ jobs:
             --routed-prs "$ROUTED_PRS" \
             --event-name "$GITHUB_EVENT_NAME" \
             --repository "$GITHUB_REPOSITORY" \
-            --main-sha "$GITHUB_SHA" \
+            --event-sha "$GITHUB_SHA" \
             --gate-run-id "$GITHUB_RUN_ID" \
             --gate-attempt "$GITHUB_RUN_ATTEMPT"
 
