@@ -53,8 +53,8 @@ jobs:
             tests/test_w29_w75_stability_negative.py \
             tests/test_w29_w64_reverse_pressure_negative.py \
             --junitxml=w29-native/junit.xml \
-            --cov=tools/w75_stability_diagnostic.py \
-            --cov=tools/w64_census_reverse_pressure_v2.py \
+            --cov=w75_stability_diagnostic \
+            --cov=tools.w64_census_reverse_pressure_v2 \
             --cov-branch \
             --cov-report=term-missing \
             --cov-report=json:w29-native/coverage.json \
