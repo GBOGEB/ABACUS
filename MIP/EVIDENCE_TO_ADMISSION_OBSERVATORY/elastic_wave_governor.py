@@ -233,8 +233,17 @@ def _capacity(doc, results, actionable):
     # Qualified growth must be from two independently committed positive
     # changes. Re-evaluating a source/run does not double the lane budget.
     histories = [r["pulse_evidence"] for r in results]
-    fresh = [h for h in histories if h["qualified"] and h.get("growth_transitions", 0) >= 2]
     current_identity = (cap.get("latest_terminal_run_id"), cap.get("latest_terminal_source_sha"))
+    evidence_head_stable = cap.get("head_stable") is True
+    queue_identity = (
+        cap.get("queue_population_run_id"), cap.get("queue_population_source_sha")
+    )
+    queue_exact_head = queue_identity == current_identity
+    fresh = [
+        h for h in histories
+        if h["qualified"] and h.get("growth_transitions", 0) >= 2
+        and (h.get("last_run_id"), h.get("last_source_sha")) == current_identity
+    ]
     new_terminal = (
         type(current_identity[0]) is int and current_identity[0] > 0
         and isinstance(current_identity[1], str) and SHA40.fullmatch(current_identity[1])
@@ -242,7 +251,9 @@ def _capacity(doc, results, actionable):
             cap.get("last_scaled_run_id"), cap.get("last_scaled_source_sha")
         )
     )
-    if not queue_complete or queue is None:
+    if not evidence_head_stable:
+        mode, observations, reason = "OBSERVE_ONLY", 1, "A_B_A_SOURCE_HEAD_UNVERIFIED"
+    elif not queue_complete or queue is None or not queue_exact_head:
         mode, observations, reason = "OBSERVE_ONLY", 1, "QUEUE_POPULATION_UNKNOWN"
     elif queue > hard:
         mode, observations, reason = "THROTTLE", max(1, previous//2), "QUEUE_ABOVE_HARD_LIMIT"
@@ -263,7 +274,8 @@ def _capacity(doc, results, actionable):
     runner_lanes = 0
     if (queue_complete and queue is not None and queue <= hard and receipts == 1
             and slots is not None and independent is not None and owners is not None
-            and outstanding is not None and outstanding == 0):
+            and outstanding is not None and outstanding == 0
+            and evidence_head_stable and queue_exact_head):
         runner_lanes = min(observations, slots, independent, owners,
                            sum(r["state"] in {"EXPAND_BEHAVIORAL_TESTS", "FIRST_RED_REPAIR"}
                                for r in results))
@@ -277,7 +289,9 @@ def _capacity(doc, results, actionable):
             "automatic_dispatch_permitted": False,
             "automated_merge_permitted": False,
             "unverified_queue_is_zero": False,
-            "repeated_poll_scales_up": False}
+            "repeated_poll_scales_up": False,
+            "source_head_stable": evidence_head_stable,
+            "queue_bound_to_latest_terminal_head": queue_exact_head}
 
 
 def _programme_stop(doc, results):
