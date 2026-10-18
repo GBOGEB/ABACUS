@@ -1,18 +1,9 @@
 """Adversarial tests for source-bound coverage freshness and counters."""
-import importlib.util
 import json
-from pathlib import Path
 
 import pytest
 
-SOURCE = (
-    Path(__file__).resolve().parents[1]
-    / "scripts"
-    / "cbd_coverage_temporal_gate.py"
-)
-spec = importlib.util.spec_from_file_location("cbd_coverage_temporal_gate", SOURCE)
-gate = importlib.util.module_from_spec(spec)
-spec.loader.exec_module(gate)
+from scripts import cbd_coverage_temporal_gate as gate
 SHA = "a" * 40
 
 
