@@ -565,6 +565,48 @@
       "cluster": "runtime_governance",
       "lifecycle": "pr_domain",
       "disposition": "keep"
+    },
+    {
+      "pattern": "^code-purple-evidence-observatory\\.yml$",
+      "cluster": "automation",
+      "lifecycle": "scheduled",
+      "disposition": "keep"
+    },
+    {
+      "pattern": "^dependency-spine-peer-census\\.yml$",
+      "cluster": "bridge_federation",
+      "lifecycle": "pr_domain",
+      "disposition": "keep"
+    },
+    {
+      "pattern": "^dependency-spine-stage-only\\.yml$",
+      "cluster": "bridge_federation",
+      "lifecycle": "pr_domain",
+      "disposition": "keep"
+    },
+    {
+      "pattern": "^w13-neural-spine\\.yml$",
+      "cluster": "statistics",
+      "lifecycle": "pr_domain",
+      "disposition": "keep"
+    },
+    {
+      "pattern": "^w28-testpilot-git-failure-coverage\\.yml$",
+      "cluster": "core_test",
+      "lifecycle": "pr_domain",
+      "disposition": "keep"
+    },
+    {
+      "pattern": "^w29-cbd-temporal-matched-coverage\\.yml$",
+      "cluster": "statistics",
+      "lifecycle": "pr_domain",
+      "disposition": "keep"
+    },
+    {
+      "pattern": "^w29-disjoint-frontier-coverage\\.yml$",
+      "cluster": "statistics",
+      "lifecycle": "pr_domain",
+      "disposition": "keep"
     }
   ],
   "quality_gates": {

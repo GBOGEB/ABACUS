@@ -8,7 +8,7 @@ on:
       - "ci/governance/tests/**"
       - "docs/ci/WORKFLOW_RATIONALIZATION.md"
   push:
-    branches: [main]
+    branches: [main, code-purple/w36-governance-seven-workflow-census-20261018]
     paths:
       - ".github/workflows/**"
       - "ci/governance/**"
@@ -62,6 +62,20 @@ jobs:
             --json-output ci-governance-generated-report.json \
             --markdown-output ci-governance-generated-rationalization.md \
             > ci-governance-generation.log 2>&1 || true
+
+      - name: W36 read-only generated report return
+        if: always()
+        shell: bash
+        run: |
+          if test -s ci-governance-generated-rationalization.md; then
+            echo W36_REPORT_BASE64_BEGIN
+            base64 -w 0 ci-governance-generated-rationalization.md
+            echo
+            echo W36_REPORT_BASE64_END
+          else
+            echo W36_REPORT_GENERATOR_MISSING
+            exit 1
+          fi
 
       - name: Upload governance diagnostic evidence
         if: always()
