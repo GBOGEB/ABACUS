@@ -1,0 +1,121 @@
+name: W29 Disjoint Frontier Coverage
+
+on:
+  pull_request:
+    paths:
+      - 'tests/test_w29_w75_stability_negative.py'
+      - 'tests/test_w29_w64_reverse_pressure_negative.py'
+      - 'tools/w75_stability_diagnostic.py'
+      - 'tools/w64_census_reverse_pressure_v2.py'
+      - '.github/workflows/w29-disjoint-frontier-coverage.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: w29-frontier-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  focused-negative-slice:
+    name: W29 native ubuntu py${{ matrix.python-version }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 18
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: ['3.10', '3.12']
+    steps:
+      - name: Checkout exact PR source head
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+      - name: Verify exact-head source identity
+        shell: bash
+        env:
+          EXPECTED_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$EXPECTED_SHA"
+      - name: Python
+        uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97
+        with:
+          python-version: ${{ matrix.python-version }}
+      - name: Install bounded test prerequisites
+        run: python -m pip install 'pytest>=7.4,<10' 'pytest-cov>=4.1,<8' 'numpy>=1.24,<3'
+      - name: Run two disjoint behavioral families with branch receipts
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p w29-native
+          python -m pytest -q \
+            tests/test_w29_w75_stability_negative.py \
+            tests/test_w29_w64_reverse_pressure_negative.py \
+            --junitxml=w29-native/junit.xml \
+            --cov=w75_stability_diagnostic \
+            --cov=tools.w64_census_reverse_pressure_v2 \
+            --cov-branch \
+            --cov-report=term-missing \
+            --cov-report=json:w29-native/coverage.json \
+            --cov-report=xml:w29-native/coverage.xml
+      - name: Verify files and save provenance with count reconciliation
+        if: always()
+        shell: bash
+        env:
+          SOURCE_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+          RUN_ID: ${{ github.run_id }}
+          RUN_ATTEMPT: ${{ github.run_attempt }}
+          JOB_LABEL: "ubuntu-24.04 Python ${{ matrix.python-version }}"
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          import hashlib, json, os, pathlib, xml.etree.ElementTree as ET
+          directory = pathlib.Path("w29-native")
+          expected = ["tools/w75_stability_diagnostic.py", "tools/w64_census_reverse_pressure_v2.py"]
+          receipt = {"schema": "codepurple.w29.disjoint-frontier.native.v1",
+                     "source_sha": os.environ["SOURCE_SHA"],
+                     "run_id": int(os.environ["RUN_ID"]),
+                     "run_attempt": int(os.environ["RUN_ATTEMPT"]),
+                     "job_label": os.environ["JOB_LABEL"],
+                     "scope": expected, "authority": "TEST_ONLY_NO_MERGE_OR_REX"}
+          files = ["junit.xml", "coverage.json", "coverage.xml"]
+          receipt["artifacts"] = {}
+          for name in files:
+              path = directory / name
+              if not path.is_file():
+                  raise SystemExit(f"missing required native receipt: {path}")
+              receipt["artifacts"][name] = hashlib.sha256(path.read_bytes()).hexdigest()
+          doc = json.loads((directory / "coverage.json").read_text())
+          names = doc.get("files", {})
+          for wanted in expected:
+              found = [key for key in names if key.endswith(wanted)]
+              if len(found) != 1:
+                  raise SystemExit(f"expected exactly one coverage entry for {wanted}; got {found}")
+          root = ET.parse(directory / "junit.xml").getroot()
+          cases = root.findall(".//testcase")
+          receipt["actual_testcase_elements"] = len(cases)
+          receipt["testsuite_header_total"] = sum(
+              int(node.attrib.get("tests", "0"))
+              for node in root.iter("testsuite")
+          )
+          receipt["junit_header_disagreement"] = (
+              receipt["testsuite_header_total"] != len(cases)
+          )
+          receipt["case_failures"] = sum(
+              bool(case.find("failure") is not None or case.find("error") is not None)
+              for case in cases
+          )
+          receipt["case_skipped"] = sum(case.find("skipped") is not None for case in cases)
+          (directory / "manifest.json").write_text(json.dumps(receipt, indent=2, sort_keys=True) + "\n")
+          if receipt["case_failures"] or receipt["case_skipped"] or receipt["junit_header_disagreement"]:
+              raise SystemExit("W29 native evidence incomplete or JUnit count mismatch")
+          print(json.dumps(receipt, sort_keys=True))
+          PY
+      - name: Upload run-bound JUnit, coverage JSON/XML and manifest
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: w29-frontier-ubuntu-py${{ matrix.python-version }}
+          path: w29-native/
+          if-no-files-found: error
