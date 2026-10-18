@@ -614,8 +614,8 @@ def build(args):
             raise ValueError("Parent root does not match input lineage")
     elif s["snapshot"]["parent_manifest_root_sha256"]:
         raise ValueError("Parent root declared but --previous not supplied")
-    files,manifest=expected_files(input_path,script_dir,input_path.parent,parent_s,
-                                  parent_m if args.previous else None)
+    files,_manifest=expected_files(input_path,script_dir,input_path.parent,parent_s,
+                                   parent_m if args.previous else None)
     if out.exists() and any(out.iterdir()) and not args.replace:
         raise ValueError("Output directory already populated; use --replace intentionally")
     if out.exists() and args.replace:
