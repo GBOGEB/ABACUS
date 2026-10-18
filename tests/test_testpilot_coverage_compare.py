@@ -115,8 +115,8 @@ def test_positive_junit_parses_fail_closed(tmp_path):
 
 @pytest.mark.parametrize("xml,reason", [
     ('<testsuite tests="0" failures="0" errors="0" skipped="0"/>', "zero tests"),
-    ('<testsuite tests="1" failures="1" errors="0" skipped="0"/>', "failing JUnit"),
-    ('<testsuite tests="1" failures="0" errors="1" skipped="0"/>', "failing JUnit"),
+    ('<testsuite tests="1" failures="1" errors="0" skipped="0"><testcase classname="c" name="f"><failure/></testcase></testsuite>', "failing JUnit"),
+    ('<testsuite tests="1" failures="0" errors="1" skipped="0"><testcase classname="c" name="e"><error/></testcase></testsuite>', "failing JUnit"),
     ('<testsuite tests="nan" failures="0" errors="0" skipped="0"/>', "invalid JUnit"),
     ('<not-junit tests="1" failures="0" errors="0" skipped="0"/>', "JUnit root invalid"),
 ])
