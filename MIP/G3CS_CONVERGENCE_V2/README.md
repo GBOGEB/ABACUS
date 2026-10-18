@@ -68,7 +68,20 @@ The displayed `46..62` N+1 bound is only the arithmetic minimum/maximum for a **
 
 ## Artifact QA status
 
-- Structural/typed metric validation: **PASS** (24 adversarial/positive unit tests).
+- Structural/typed metric validation: **PASS** (35 adversarial/positive unit tests).
 - Desktop/laptop/mobile Playwright: **PASS** (1440×1000, 1280×800, 390×844), no console/page error, no broken SVG image, no horizontal overflow; native filter/search interaction verified.
 - Presentation assets are generated from the same input SHA; `qa/browser_receipt.json` and PNG captures are distributed in the downloadable bundle.
 - Evidence level: `LOCAL_REPRODUCIBILITY`. This is **not** an exact-head native GitHub CI receipt or accepted release.
+
+## Repeatable N→N+1 native telemetry comparison (v2 extension)
+
+The new `tools/compare_snapshots.py` accepts two **immutable read-only native run+job JSON snapshots**, requires matching `(repository, source_sha, run_id, attempt, selection_sha256, source_clock)` populations, and reports exact blocked→success and success→regression transitions. It refuses to calculate a numeric delta if the run selection changes, timestamps are nonmonotone, or the source/config identity differs. This prevents W1/W2/W3 parallel successes from masquerading as temporal improvement.
+
+```bash
+python tools/compare_snapshots.py --before /path/to/native_N.json --after /path/to/native_N1.json --out /tmp/g3cs-native-delta.json
+python -m unittest discover -s tests -p 'test_*.py' -v
+```
+
+The input contract `codepurple.g3cs.native-run-snapshot.v1` requires `source_sha`, `selection_sha256` (SHA256 of frozen workflow/run selection contract), `observed_at_utc`, `source_clock` (`EXACT_PR_HEAD` or `CURRENT_MAIN`), a run array with `run_id`, `attempt`, `status`, `conclusion`, `source_sha`, and optionally child jobs containing `job_id`, `status`, `conclusion`, `source_sha`, `created_at`, `started_at`, and `completed_at` in UTC `Z` form. A missing `created_at` is **not** backfilled with a workflow timestamp under an unlabeled queue metric. `queue_sample_n` and `runtime_sample_n` expose the actual denominator; p50/p95 are descriptive even with small n and never establish statistical control. A cleared job first-red **does not close a causal engineering root** without independent accepted disposition.
+
+Repo-native bridges: `tests/test_g3cs_convergence.py` and `tests/test_g3cs_native_snapshots.py` explicitly expose the provider's **35** cases to ABACUS's existing `pytest.ini` collection. They introduce no new GitHub Actions workflow, workflow-policy owner, or CI bypass.

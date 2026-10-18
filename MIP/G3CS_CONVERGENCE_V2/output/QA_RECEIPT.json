@@ -55,7 +55,8 @@
     "Native source is a frozen historical observation, not a claim of exact current GitHub state.",
     "Unreviewed merges cannot satisfy mandatory independent approval.",
     "No source is mutated, and the generated review projection is not the SSOT.",
-    "Tested 1440x1000, 1280x800 and 390x844 with zero page/console errors, broken images or overflow; filters/search active."
+    "Tested 1440x1000, 1280x800 and 390x844 with zero page/console errors, broken images or overflow; filters/search active.",
+    "Native run/attempt comparator: 11 synthetic positive/adversarial cases verified locally; source SHA and selection identity comparison fail-closed."
   ],
   "schema": "qps-artifact-qa/1.0",
   "source": {
@@ -64,9 +65,9 @@
     "semantic_sha256": "3e45b1e7694c3bd68bc67db05e687639362cab4631ba7b5ea0d501a07a062530"
   },
   "unit_tests": {
-    "executed": 24,
+    "executed": 35,
     "failed": 0,
-    "passed": 24,
+    "passed": 35,
     "selection": "tests/test_converge.py"
   }
 }
