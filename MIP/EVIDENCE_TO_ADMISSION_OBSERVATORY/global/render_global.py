@@ -26,7 +26,7 @@ def render(ledger: dict, template: str) -> str:
             raise ValueError("duplicate/invalid route")
         route_ids.add(rid)
         if not isinstance(route.get("url"),str) or not re.fullmatch(
-            r"https://github[.]com/GBOGEB/(?:ABACUS|CODEX|cryoplant-project)/(?:tree|blob)/[0-9a-f]{40}/[^?#\\s]+",route["url"]
+            r"https://github[.]com/GBOGEB/(?:ABACUS|CODEX|cryoplant-project)/(?:tree|blob)/[0-9a-f]{40}/[^?#\s]+",route["url"]
         ):
             raise ValueError("route lacks immutable 40-character GitHub SHA")
     if not {"w38","everred","abacus-observatory","abacus-spine","codex","qps"}.issubset(route_ids):
