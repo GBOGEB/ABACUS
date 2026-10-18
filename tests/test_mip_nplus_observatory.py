@@ -2,7 +2,7 @@
 import copy
 import unittest
 
-from tools.mip2.mip_nplus_observatory import rollup, matched_workflow_flip
+from tools.mip2.mip_nplus_observatory import rollup, matched_workflow_flip, as_markdown
 
 def sample():
     a, b, c = "a" * 40, "b" * 40, "c" * 40
@@ -107,6 +107,63 @@ class NPlusTests(unittest.TestCase):
         self.assertIsNone(result["scaling"]["mutation_lanes_authorized"])
         self.assertFalse(result["merge_authorized"])
         self.assertFalse(result["native_artifact_bytes_reauthenticated"])
+
+
+    def test_repeat_family_manifest_does_not_inflate_distinct_workflows(self):
+        x = sample()
+        # Wave N21: 2 workflow identities and three executions.
+        duplicated = copy.deepcopy(x["waves"][0]["runs"][0])
+        duplicated["id"] = 13
+        duplicated["conclusion"] = "success"
+        x["waves"][0]["runs"].append(duplicated)
+        x["waves"][0]["native_total_count"] += 1
+        result = rollup(x)
+        fam = result["waves"][0]["workflow_family_accounting"]
+        self.assertEqual(fam["total_runs"], 3)
+        self.assertEqual(fam["distinct_workflows"], 2)
+        self.assertEqual(fam["repeated_executions"], 1)
+        self.assertEqual(fam["families_with_repeats"], 1)
+        self.assertEqual(fam["run_success"], 2)
+        self.assertEqual(fam["family_clean_success"], 1)
+        self.assertEqual(fam["success_excess_from_repeat_runs"], 1)
+        self.assertIsNone(fam["workflow_testcase_count"])
+
+    def test_render_denominators_are_full_population(self):
+        report = as_markdown(rollup(sample()))
+        self.assertIn("Distinct families", report)
+        self.assertIn("Success/all", report)
+        self.assertIn("Repeat-adjusted counts are diagnostic only", report)
+        self.assertIn("2/2", report)
+
+    def test_latest_progress_distinguishes_repeats(self):
+        x = sample()
+        y = copy.deepcopy(x["waves"][2]["runs"][1])
+        y["id"] = 33
+        x["waves"][2]["runs"].append(y)
+        x["waves"][2]["native_total_count"] += 1
+        result = rollup(x)
+        self.assertEqual(result["progress"]["latest_distinct_workflows"], 2)
+        self.assertEqual(result["progress"]["latest_repeated_run_excess"], 1)
+        self.assertEqual(result["progress"]["latest_repeat_success_excess"], 1)
+        self.assertIsNone(result["progress"]["latest_workflow_testcase_count"])
+
+    def test_repeated_failed_workflow_does_not_count_as_extra_success(self):
+        x = sample()
+        new = copy.deepcopy(x["waves"][0]["runs"][0])
+        new["id"] = 13
+        x["waves"][0]["runs"].append(new)
+        x["waves"][0]["native_total_count"] += 1
+        fam = rollup(x)["waves"][0]["workflow_family_accounting"]
+        self.assertEqual(fam["repeat_success_excess"] if "repeat_success_excess" in fam
+                         else fam["success_excess_from_repeat_runs"], 0)
+        self.assertEqual(fam["run_failure"], 2)
+        self.assertEqual(fam["family_any_failure"], 1)
+
+    def test_corrupt_nonterminal_cannot_be_reclassified_by_helper(self):
+        x = sample()
+        x["waves"][1]["runs"][1]["conclusion"] = "success"
+        with self.assertRaisesRegex(ValueError, "nonterminal with conclusion"):
+            rollup(x)
 
 
 if __name__ == "__main__":
