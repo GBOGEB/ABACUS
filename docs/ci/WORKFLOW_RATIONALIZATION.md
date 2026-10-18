@@ -3,11 +3,11 @@
 # ABACUS CI workflow rationalisation
 
 Policy: `ABACUS-CI-SSOT-001`  
-Policy SHA-256 (canonical sorted JSON bytes of `ci/governance/workflow_policy.json`): `ab1a5265ae82dddb767b69dc1be33b62907e628c35a3f568cce0aea2ca451be5`
+Policy SHA-256 (canonical sorted JSON bytes of `ci/governance/workflow_policy.json`): `fc9ebfda98e98ddb5e90d3d70c45850555d35804c7a9546e3a9c3828fc1c3125`
 
 ## Outcome
 
-The repository currently contains **190 workflow definitions**. All **190** are assigned to one primary functional cluster and lifecycle stage.
+The repository currently contains **191 workflow definitions**. All **191** are assigned to one primary functional cluster and lifecycle stage.
 
 The observed baseline that motivated this control was PR #681 with 119 check runs (111 queued, 8 skipped) and main with 122 check runs.
 
@@ -28,7 +28,7 @@ The observed baseline that motivated this control was PR #681 with 119 check run
 |---|---|---:|---|
 | `core_test` | `ci-abacus.yml` | 20 | Fast cross-version unit, pre-commit and smoke evidence. |
 | `full_regression` | `ci-cd-tests.yml` | 1 | Broad OS/version/integration/coverage regression for code changes. |
-| `statistics` | `ci-cd.yml` | 9 | Bootstrap, AHT, performance and statistical validation. |
+| `statistics` | `ci-cd.yml` | 10 | Bootstrap, AHT, performance and statistical validation. |
 | `bridge_federation` | `bridge-ci.yml` | 17 | CODEX/ABACUS bridge contract and federation smoke evidence. |
 | `dmaic` | `dmaic-enterprise-ci.yml` | 9 | DMAIC phase, convergence and maturity execution. |
 | `dow` | `dow-integration.yml` | 22 | DOW parent mechanics, integration, monitoring and warm-up. |
@@ -219,10 +219,11 @@ Make PR-triggered workflows with write-class GitHub token scopes explicit and re
 | 20 | `pr_domain` | `statistics` | `g3a-n14-matched-arc-flight.yml` | pull_request, workflow_dispatch | 1 | `keep` | — |
 | 20 | `pr_domain` | `statistics` | `mip-py310-combined-head-probe.yml` | pull_request, workflow_dispatch | 1 | `keep` | — |
 | 20 | `pr_domain` | `statistics` | `mip2-method-qualification.yml` | pull_request, workflow_dispatch, push | 1 | `keep` | — |
+| 20 | `pr_domain` | `statistics` | `w26-testpilot-matched-coverage.yml` | pull_request, workflow_dispatch | 1 | `keep` | — |
 | 20 | `pr_domain` | `statistics` | `w64-3p-r01-retained-baseline.yml` | pull_request, workflow_dispatch | 1 | `keep` | — |
 | 20 | `pr_domain` | `statistics` | `w64-3p-r02-id-discovery-graph.yml` | pull_request, workflow_dispatch | 1 | `keep` | — |
 | 20 | `pr_domain` | `statistics` | `w65-parallel-discovery-pulses.yml` | pull_request, workflow_dispatch, schedule | 5 | `keep` | — |
-| 30 | `post_merge` | `delivery` | `cd-pipeline.yml` | push, workflow_dispatch | 6 | `keep` | — |
+| 30 | `post_merge` | `delivery` | `cd-pipeline.yml` | push, workflow_dispatch | 7 | `keep` | — |
 | 30 | `post_merge` | `delivery` | `cd-unified.yml` | push, schedule, workflow_dispatch | 7 | `keep` | — |
 | 30 | `post_merge` | `delivery` | `cd.yml` | schedule, workflow_dispatch | 1 | `keep` | — |
 | 30 | `post_merge` | `delivery` | `delta-1-deploy.yml` | workflow_dispatch | 1 | `keep` | — |

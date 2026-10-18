@@ -174,7 +174,6 @@ jobs:
     permissions:
       contents: read
       actions: read
-      security-events: write
 
     steps:
       - name: Checkout Code
@@ -189,13 +188,16 @@ jobs:
           docker run --rm dmaic-pipeline:test python --version
 
       - name: Scan Docker Image
-        uses: aquasecurity/trivy-action@master
+        uses: aquasecurity/trivy-action@6abccf398f78b4c337599c0656f933d91efb91a0
         with:
           image-ref: dmaic-pipeline:test
           format: 'sarif'
           output: 'trivy-results.sarif'
 
-      - name: Upload Scan Results
-        uses: github/codeql-action/upload-sarif@v4.38.3
+      - name: Preserve PR Trivy SARIF as read-only artifact
+        if: always()
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9
         with:
-          sarif_file: 'trivy-results.sarif'
+          name: ci-trivy-sarif
+          path: trivy-results.sarif
+          if-no-files-found: error

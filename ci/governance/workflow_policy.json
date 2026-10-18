@@ -40,6 +40,13 @@
         "a10-guard.yml"
       ]
     },
+    "path_scoped_pr": {
+      "intent": "Path-scoped PR functional testflight; writes published only from trusted main.",
+      "workflows": [
+        "ariana-cicd.yml",
+        "ci-pipeline.yml"
+      ]
+    },
     "full": {
       "intent": "Broad validation retained on main push, schedule, workflow dispatch or lifecycle events instead of every pull request.",
       "workflows": [
@@ -49,7 +56,6 @@
         "federation-notebook.yml",
         "cd-pipeline.yml",
         "dow-main-cicd.yml",
-        "ariana-cicd.yml",
         "ci_monitor_and_issue_creator.yml",
         "cd.yml",
         "main.yml",
@@ -58,7 +64,6 @@
         "session_tuple_ci.yml",
         "runtime-smoke.yml",
         "v23-cicd.yml",
-        "ci-pipeline.yml",
         "dow-integration.yml"
       ]
     }
@@ -379,6 +384,12 @@
       "pattern": "^testpilot-preflight\\.yml$",
       "cluster": "core_test",
       "lifecycle": "pr_fast",
+      "disposition": "keep"
+    },
+    {
+      "pattern": "^w26-testpilot-matched-coverage\\.yml$",
+      "cluster": "statistics",
+      "lifecycle": "pr_domain",
       "disposition": "keep"
     },
     {
