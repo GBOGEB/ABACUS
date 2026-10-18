@@ -21,6 +21,14 @@ def _sibling_module(name):
 render=_sibling_module('build_global_spine_w10')
 refresh=_sibling_module('refresh_w10_spine')
 SHA='2b68462d6578fd435a6f22e750b4d4e7855c2195'
+def _govern_source_missing(test):
+    """Attach the real pytest marker while retaining stdlib-only unittest."""
+    try:
+        import pytest
+    except ImportError:
+        return test
+    return pytest.mark.TEST_BLOCKED_SOURCE_MISSING(test)
+
 class GlobalSpineW10Tests(unittest.TestCase):
  def setUp(self):self.h=json.loads((ROOT/'W10_FROZEN_HISTORY.json').read_text())
  def test_issue_reconciliation(self):
@@ -65,6 +73,7 @@ class GlobalSpineW10Tests(unittest.TestCase):
  def test_wrong_hash_of_canonical_archive_rejected(self):
   with self.assertRaisesRegex(refresh.EvidenceError,'SHA256'):refresh.parse_canonical_zip(b'not a zip',SHA,42,123,'sha256:'+'0'*64)
  @pytest.mark.TEST_BLOCKED_SOURCE_MISSING
+ @_govern_source_missing
  def test_native_zip_success_and_sha_guard(self):
   archive=ROOT/'b0-pr2239.zip'
   if not archive.exists():self.skipTest("TEST_BLOCKED_SOURCE_MISSING: historical GitHub B0 ZIP is not in source checkout; synthetic parser invariant tests remain active")
