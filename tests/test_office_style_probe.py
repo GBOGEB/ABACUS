@@ -100,7 +100,15 @@ def minimal_members(kind):
 def make_archive(path, contents, *, compression=zipfile.ZIP_DEFLATED):
     with zipfile.ZipFile(path, "w", compression=compression) as archive:
         for name, payload in contents.items():
-            archive.writestr(name, payload)
+            if "\\" in name:
+                # ZipInfo normalizes separators on Windows during construction.
+                # Preserve intentionally malformed entries for security tests.
+                member = zipfile.ZipInfo("placeholder.xml")
+                member.filename = name
+                member.compress_type = compression
+                archive.writestr(member, payload)
+            else:
+                archive.writestr(name, payload)
     return path
 
 
@@ -268,7 +276,12 @@ class OfficeStyleProbeProof(unittest.TestCase):
     def test_unsafe_paths_rejected(self):
         for name in ("../steal.xml", "word/../unsafe.xml", "/abs.xml", "word\\doc.xml", "./relative.xml"):
             with self.subTest(path=name):
-                self.rejects("docx",lambda x,n=name:x.update({n:"<root/>"}))
+                path = self.make("docx", lambda x, n=name: x.update({n: "<root/>"}))
+                with zipfile.ZipFile(path) as archive:
+                    # Verify the negative fixture was not normalized away.
+                    self.assertIn(name, archive.namelist())
+                with self.assertRaises(ValueError):
+                    analyze(path, "fixture:docx")
 
     def test_duplicate_case_insensitive_members_rejected(self):
         self.rejects("docx",lambda x:x.update({"WORD/DOCUMENT.XML":DOCX}))
