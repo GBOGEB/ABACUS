@@ -124,9 +124,11 @@ class ExecutionTierTests(unittest.TestCase):
     def test_reverse_untrusted_main_publication_condition_trips(self):
         pr = (WORKFLOWS / "ci-pipeline.yml").read_text(encoding="utf-8")
         cd = (WORKFLOWS / "cd-pipeline.yml").read_text(encoding="utf-8")
+        guard = (
+            "if: github.event_name == 'push' && github.ref == 'refs/heads/main'"
+        )
         self.assertFalse(self._sarif_trust_boundary(
-            pr, cd.replace("github.event_name == 'push'",
-                           "github.event_name == 'pull_request'", 1)
+            pr, cd.replace(guard, "if: github.event_name == 'pull_request'", 1)
         ))
 
     def test_force_trip_missing_exact_head_guard_trips(self):
