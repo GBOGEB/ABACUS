@@ -1,8 +1,8 @@
 {
   "schema": "codepurple.global_dov_rollup.v1",
-  "wave": "W38",
+  "wave": "W39",
   "observation_date": "2026-10-18",
-  "evidence_level": "SOURCE_BOUND_OBSERVATION_NO_ADMISSION",
+  "evidence_level": "SOURCE_BOUND_W39_CANDIDATE_UNQUALIFIED",
   "owner": "GBOGEB/ABACUS",
   "governed_admission": "HOLD",
   "security_waiver": false,
@@ -16,23 +16,23 @@
       "name": "ABACUS",
       "repo": "GBOGEB/ABACUS",
       "role": "EVIDENCE_AND_ADMISSION_AUTHORITY",
-      "main_sha": "994ad6e73c748923841d92b12651e92d41b2d4ff",
+      "main_sha": "2246c7bd3a9bda6a3d43b9a9116cb7088cfbcc88",
       "issues_open": 38,
       "issues_closed": 267,
-      "prs_open": 16,
+      "prs_open": 15,
       "prs_closed_unmerged": 137,
-      "prs_merged": 1804
+      "prs_merged": 1814
     },
     {
       "name": "CODEX",
       "repo": "GBOGEB/CODEX",
       "role": "FEDERATION_CONSUMER",
-      "main_sha": "dfcd6c0ebc4dc902c6bb71e0a739e4d68ac114ed",
+      "main_sha": "0ef6e15b4c2e42555f41c189ae23cbe8d6c690fe",
       "issues_open": 11,
       "issues_closed": 34,
       "prs_open": 3,
       "prs_closed_unmerged": 33,
-      "prs_merged": 1026
+      "prs_merged": 1030
     },
     {
       "name": "QPS",
@@ -94,25 +94,58 @@
         "eligible": 215,
         "gate": "LOCAL_TARGET_MET"
       }
+    ],
+    "trajectory": [
+      {
+        "wave": "W31/32",
+        "covered": 660,
+        "eligible": 723,
+        "run_id": 39159837402
+      },
+      {
+        "wave": "W34",
+        "covered": 697,
+        "eligible": 723,
+        "run_id": 39161560713
+      },
+      {
+        "wave": "W35",
+        "covered": 707,
+        "eligible": 723,
+        "run_id": 39161760486
+      },
+      {
+        "wave": "W37",
+        "covered": 707,
+        "eligible": 723,
+        "run_id": 39162185592
+      }
     ]
   },
   "governance": {
     "evidence_owner": "ABACUS",
-    "candidate_sha": "a26436955450b8cd27668bffa2a8dc7db458d392",
-    "branch": "code-purple/w36-governance-seven-workflow-census-20261018",
-    "source_workflow_count": 198,
-    "baseline_unclassified": 7,
+    "candidate_sha": null,
+    "branch": "hold/cbd-w39-gov-dov-qa-20261018",
+    "source_workflow_count": 201,
+    "baseline_unclassified": 3,
     "candidate_unclassified": 0,
     "candidate_duplicate_match": 0,
-    "qualification_run": 39161993224,
-    "qualification_initial_state": "QUEUED_UNQUALIFIED",
+    "qualification_run": null,
+    "qualification_initial_state": "W39_STATIC_201_201_NATIVE_NOT_QUALIFIED",
     "policy_native_acceptance": null,
     "effective_ruleset_id": 24494381,
     "required_approvals": 0,
     "required_status_checks": 0,
     "independent_eligible_review": false,
     "red_canary_verified": false,
-    "canonical_report_exact_head_qualified": false
+    "canonical_report_exact_head_qualified": false,
+    "previous_native_run": {
+      "run_id": 39161993224,
+      "head_sha": "a26436955450b8cd27668bffa2a8dc7db458d392",
+      "status": "FAIL",
+      "first_red": "GENERATED_RATIONALIZATION_REPORT_STALE",
+      "artifact_id": 12150406945
+    }
   },
   "dov": {
     "schema": "abacus.dow.global_dov.evidence_ownership.v1",
@@ -180,13 +213,13 @@
     {
       "id": "everred",
       "label": "EVERRED root ledger dashboard",
-      "url": "https://github.com/GBOGEB/ABACUS/blob/994ad6e73c748923841d92b12651e92d4ff/tools/everred_v3/dashboard/bd_queue.html",
+      "url": "https://github.com/GBOGEB/ABACUS/blob/2246c7bd3a9bda6a3d43b9a9116cb7088cfbcc88/tools/everred_v3/dashboard/bd_queue.html",
       "family": "roots"
     },
     {
       "id": "codex",
       "label": "CODEX portal",
-      "url": "https://github.com/GBOGEB/CODEX/blob/dfcd6c0ebc4dc902c6bb71e0a739e4d68ac114ed/docs/index.html",
+      "url": "https://github.com/GBOGEB/CODEX/blob/0ef6e15b4c2e42555f41c189ae23cbe8d6c690fe/docs/index.html",
       "family": "federation"
     },
     {
@@ -197,8 +230,8 @@
     },
     {
       "id": "w38",
-      "label": "W38 proposed global hub branch",
-      "url": "https://github.com/GBOGEB/ABACUS/tree/code-purple/w38-global-dov-hub-20261018/MIP/EVIDENCE_TO_ADMISSION_OBSERVATORY/global",
+      "label": "W38 immutable integrated review hub",
+      "url": "https://github.com/GBOGEB/ABACUS/blob/ccc07c76a506a66fc20cbe821ef0ec4c0a3fe064/MIP/EVIDENCE_TO_ADMISSION_OBSERVATORY/global/index.html",
       "family": "control"
     }
   ],
@@ -258,12 +291,30 @@
       "weight": null,
       "unit": "accepted roots",
       "status": "HOLD"
+    },
+    {
+      "from": "ABACUS",
+      "to": "W39",
+      "type": "ADDITIONAL_WORKFLOW_OWNERSHIP",
+      "weight": 3,
+      "unit": "workflow source classifications",
+      "status": "SOURCE_ONLY"
     }
   ],
   "source_urls": [
     "https://github.com/GBOGEB/ABACUS/actions/runs/39162185592",
     "https://github.com/GBOGEB/ABACUS/actions/runs/39161993224",
     "https://github.com/GBOGEB/ABACUS/issues/1991#issuecomment-6254614299",
-    "https://github.com/GBOGEB/ABACUS/issues/2087#issuecomment-6254614666"
-  ]
+    "https://github.com/GBOGEB/ABACUS/issues/2087#issuecomment-6254614666",
+    "https://github.com/GBOGEB/ABACUS/actions/runs/39161993224"
+  ],
+  "control_state": {
+    "local_coverage": "TARGET_MET_4_OF_4",
+    "local_scope_only": true,
+    "global": "HOLD",
+    "queue_p95_seconds": null,
+    "automatic_dispatch": false,
+    "accepted_unique_roots_remaining": null,
+    "retrigger": "MATERIAL_EXACT_SOURCE_FIRST_RED_OR_SCOPE_CHANGE_ONLY"
+  }
 }

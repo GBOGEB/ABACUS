@@ -30,7 +30,9 @@ class GlobalLedgerTests(unittest.TestCase):
         self.assertTrue(all(100*x["covered"]/x["eligible"]>=95 for x in self.data["focused_coverage"]["families"]))
     def test_governance_remains_source_only(self):
         g=self.data["governance"]
-        self.assertEqual((g["source_workflow_count"],g["baseline_unclassified"],g["candidate_unclassified"]),(198,7,0))
+        self.assertEqual((g["source_workflow_count"],g["baseline_unclassified"],g["candidate_unclassified"]),(201,3,0))
+        self.assertEqual(g["previous_native_run"]["status"],"FAIL")
+        self.assertIsNone(g["qualification_run"])
         self.assertIsNone(g["policy_native_acceptance"])
         self.assertFalse(g["red_canary_verified"])
     def test_three_distinct_authorities(self):
@@ -56,5 +58,29 @@ class GlobalLedgerTests(unittest.TestCase):
     def test_repo_population_totals(self):
         repos=self.data["repos"]
         self.assertEqual((sum(r["issues_open"] for r in repos),sum(r["issues_closed"] for r in repos)),(106,373))
-        self.assertEqual((sum(r["prs_open"] for r in repos),sum(r["prs_closed_unmerged"] for r in repos),sum(r["prs_merged"] for r in repos)),(19,314,4518))
+        self.assertEqual((sum(r["prs_open"] for r in repos),sum(r["prs_closed_unmerged"] for r in repos),sum(r["prs_merged"] for r in repos)),(18,314,4532))
+
+    def test_no_deleted_branch_or_truncated_git_source_link(self):
+        self.assertNotIn("code-purple/w38-global-dov-hub-20261018",self.html)
+        for route in self.data["routes"]:
+            self.assertRegex(route["url"],r"^https://github[.]com/GBOGEB/[^/]+/(blob|tree)/[a-f0-9]{40}/")
+        self.assertIn("ccc07c76a506a66fc20cbe821ef0ec4c0a3fe064",
+                      next(x["url"] for x in self.data["routes"] if x["id"]=="w38"))
+    def test_github_metadata_cannot_become_admission(self):
+        self.assertIn("historical.head_sha",self.html)
+        self.assertIn("HEAD MISMATCH",self.html)
+        self.assertIn("metadata only",self.html)
+        self.assertNotIn("setInterval(",self.html)
+    def test_reject_spoofed_publication_and_broken_source_ref(self):
+        bad=json.loads(json.dumps(self.data))
+        bad["routes"][0]["url"]="https://github.com/GBOGEB/ABACUS/blob/not-a-sha/file"
+        with self.assertRaises(ValueError):render(bad,self.template)
+        bad=json.loads(json.dumps(self.data))
+        bad["presentation"]["pages_deployment_verified"]=True
+        with self.assertRaises(ValueError):render(bad,self.template)
+    def test_explicit_four_pulse_trajectory_is_not_main_b0(self):
+        c=self.data["focused_coverage"]
+        self.assertEqual([r["covered"] for r in c["trajectory"]],[660,697,707,707])
+        self.assertTrue(all(r["eligible"]==723 for r in c["trajectory"]))
+        self.assertIsNone(c["canonical_main_credit"])
 if __name__=="__main__":unittest.main()

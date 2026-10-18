@@ -14,6 +14,27 @@ def render(ledger: dict, template: str) -> str:
         sha=repo["main_sha"]
         if not isinstance(sha,str) or len(sha)!=40 or any(x not in "0123456789abcdef" for x in sha):
             raise ValueError("invalid source SHA")
+    if ledger.get("accepted_causal_roots_remaining") is not None:
+        raise ValueError("accepted causal root count cannot be inferred")
+    if ledger.get("presentation",{}).get("pages_deployment_verified") is not False:
+        raise ValueError("Pages publication unverified")
+    import re
+    route_ids=set()
+    for route in ledger.get("routes",[]):
+        rid=route.get("id")
+        if not isinstance(rid,str) or not rid or rid in route_ids:
+            raise ValueError("duplicate/invalid route")
+        route_ids.add(rid)
+        if not isinstance(route.get("url"),str) or not re.fullmatch(
+            r"https://github[.]com/GBOGEB/(?:ABACUS|CODEX|cryoplant-project)/(?:tree|blob)/[0-9a-f]{40}/[^?#\\s]+",route["url"]
+        ):
+            raise ValueError("route lacks immutable 40-character GitHub SHA")
+    if not {"w38","everred","abacus-observatory","abacus-spine","codex","qps"}.issubset(route_ids):
+        raise ValueError("required dashboard/owner route missing")
+    for item in ledger["focused_coverage"].get("trajectory",[]):
+        if (type(item.get("covered")) is not int or type(item.get("eligible")) is not int
+            or item["eligible"]<=0 or not (0<=item["covered"]<=item["eligible"])):
+            raise ValueError("invalid trajectory denominator")
     f=ledger["focused_coverage"]
     if sum(r["covered"] for r in f["families"])!=f["covered"] or sum(r["eligible"] for r in f["families"])!=f["eligible"]:
         raise ValueError("family numerator/denominator mismatch")
