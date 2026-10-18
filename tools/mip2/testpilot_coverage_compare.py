@@ -29,7 +29,11 @@ def load_coverage(path: Path) -> tuple[dict, str]:
     meta, files, totals = doc.get("meta", {}), doc.get("files", {}), doc.get("totals", {})
     require(isinstance(meta, dict) and meta.get("branch_coverage") is True,
             "branch instrumentation required")
-    require(isinstance(files, dict) and set(files) == {EXPECTED_FILE},
+    # coverage.py uses native separators on Windows. Admit only these two
+    # byte-exact spellings of the SAME module, never a general path rewrite.
+    allowed_source_keys = {EXPECTED_FILE, EXPECTED_FILE.replace("/", "\\")}
+    require(isinstance(files, dict) and len(files) == 1
+            and next(iter(files)) in allowed_source_keys,
             "only exact TestPilot source coverage allowed")
     keys = ("num_statements", "covered_lines", "num_branches", "covered_branches")
     for field in keys:
@@ -40,7 +44,7 @@ def load_coverage(path: Path) -> tuple[dict, str]:
     require(totals["covered_lines"] <= totals["num_statements"]
             and totals["covered_branches"] <= totals["num_branches"],
             "invalid covered population")
-    source = files[EXPECTED_FILE]
+    source = next(iter(files.values()))
     summary = source.get("summary") if isinstance(source, dict) else None
     require(isinstance(summary, dict), "source coverage summary missing")
     require(all(type(summary.get(k)) is int and summary[k] == totals[k]

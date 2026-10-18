@@ -189,3 +189,40 @@ def test_positive_real_executed_growth_excludes_skips():
     before = {"tests": 14, "failures": 0, "errors": 0, "skipped": 2}
     after = {"tests": 20, "failures": 0, "errors": 0, "skipped": 3}
     assert m.compare(B, A, before, after, SHA)["uplift"]["additional_executed_tests"] == 5
+
+
+# W28: native Windows JSON separator qualification; preserve fail-closed scope.
+@pytest.mark.parametrize("key", [
+    "scripts/testpilot_preflight.py",
+    r"scripts\testpilot_preflight.py",
+])
+def test_native_platform_exact_source_key_is_accepted(tmp_path, key):
+    source = _cov(tmp_path, "native-coverage.json", B, path=key)
+    counts, raw_sha256 = m.load_coverage(source)
+    assert counts == B
+    assert len(raw_sha256) == 64
+
+
+@pytest.mark.parametrize("wrong", [
+    r"scripts\..\testpilot_preflight.py",
+    r"C:\repo\scripts\testpilot_preflight.py",
+    "./scripts/testpilot_preflight.py",
+    "../scripts/testpilot_preflight.py",
+    "/scripts/testpilot_preflight.py",
+    r"scripts\/testpilot_preflight.py",
+    r"scripts\TESTPILOT_preflight.py",
+    "scripts/testpilot_preflight.py/",
+])
+def test_native_path_whitelist_rejects_aliases_or_traversal(tmp_path, wrong):
+    source = _cov(tmp_path, "invalid-path.json", B, path=wrong)
+    with pytest.raises(ValueError, match="only exact TestPilot"):
+        m.load_coverage(source)
+
+
+def test_dual_platform_keys_do_not_double_count_one_module(tmp_path):
+    source = _cov(tmp_path, "double-path.json", B)
+    doc = json.loads(source.read_text(encoding="utf-8"))
+    doc["files"][r"scripts\testpilot_preflight.py"] = {"summary": B}
+    source.write_text(json.dumps(doc), encoding="utf-8")
+    with pytest.raises(ValueError, match="only exact TestPilot"):
+        m.load_coverage(source)
