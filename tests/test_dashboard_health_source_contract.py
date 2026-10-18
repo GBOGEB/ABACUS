@@ -48,7 +48,9 @@ def _fixture_scan(*, malicious_link: str) -> tuple[str, str]:
             encoding="utf-8",
         )
         output = folder / "output.txt"
-        env = {**os.environ, "GITHUB_OUTPUT": str(output)}
+        # Bash receives a portable path relative to the subprocess cwd.
+        # Raw Windows drive paths are not valid POSIX GITHUB_OUTPUT paths.
+        env = {**os.environ, "GITHUB_OUTPUT": output.name}
         result = subprocess.run(
             ["bash", "-c", _report_shell()],
             cwd=folder,
