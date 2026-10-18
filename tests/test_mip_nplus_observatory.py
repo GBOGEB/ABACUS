@@ -112,7 +112,7 @@ class NPlusTests(unittest.TestCase):
     def test_repeat_family_manifest_does_not_inflate_distinct_workflows(self):
         x = sample()
         # Wave N21: 2 workflow identities and three executions.
-        duplicated = copy.deepcopy(x["waves"][0]["runs"][0])
+        duplicated = copy.deepcopy(x["waves"][0]["runs"][1])
         duplicated["id"] = 13
         duplicated["conclusion"] = "success"
         x["waves"][0]["runs"].append(duplicated)
