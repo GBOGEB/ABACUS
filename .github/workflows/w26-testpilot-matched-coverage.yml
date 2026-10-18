@@ -6,6 +6,7 @@ on:
       - 'scripts/testpilot_preflight.py'
       - 'tests/test_testpilot_adversarial_coverage.py'
       - 'tests/test_testpilot_coverage_compare.py'
+      - 'tests/test_testpilot_w27_native_contract.py'
       - 'tools/mip2/testpilot_coverage_compare.py'
       - '.github/workflows/w26-testpilot-matched-coverage.yml'
   workflow_dispatch:
@@ -61,6 +62,7 @@ jobs:
         shell: bash
         run: |
           python -m pytest -q tests/test_testpilot_coverage_compare.py \
+            tests/test_testpilot_w27_native_contract.py \
             --junitxml=w26-validator-junit.xml
       - name: Measure baseline on this same exact head
         shell: bash
