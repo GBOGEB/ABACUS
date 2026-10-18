@@ -297,8 +297,10 @@ class OfficeStyleProbeProof(unittest.TestCase):
             with self.subTest(path=name):
                 path = self.make("docx", lambda x, n=name: x.update({n: "<root/>"}))
                 with zipfile.ZipFile(path) as archive:
-                    # Verify the negative fixture was not normalized away.
-                    self.assertIn(name, archive.namelist())
+                    # The native ZIP parser may normalize filename on Windows.
+                    # Assert the *original* byte-derived member identity.
+                    raw_names = [entry.orig_filename for entry in archive.infolist()]
+                    self.assertIn(name, raw_names)
                 with self.assertRaises(ValueError):
                     analyze(path, "fixture:docx")
 
