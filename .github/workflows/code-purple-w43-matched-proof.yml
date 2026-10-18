@@ -52,7 +52,7 @@ jobs:
           python -m pytest -q \
             tests/test_cbd_rerun_wave_planner.py \
             tests/test_ci_matrix_proof_audit.py \
-            --cov=scripts.cbd_rerun_wave_planner --cov=scripts.ci_matrix_proof_audit --cov-branch \
+            --cov=scripts --cov-branch \
             --cov-report=json:artifacts/w43/n-coverage.json \
             --junitxml=artifacts/w43/n-junit.xml
       - name: N+1 preserve baseline and add disjoint behavioral tests
@@ -66,7 +66,7 @@ jobs:
             tests/test_cbd_rerun_wave_planner.py \
             tests/test_ci_matrix_proof_audit.py \
             tests/test_w40_ci_proof_mutation.py \
-            --cov=scripts.cbd_rerun_wave_planner --cov=scripts.ci_matrix_proof_audit --cov-branch \
+            --cov=scripts --cov-branch \
             --cov-report=json:artifacts/w43/nplus-coverage.json \
             --junitxml=artifacts/w43/nplus-junit.xml
       - name: Compare matched source, test identities and branch opportunities
