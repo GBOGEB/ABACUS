@@ -159,7 +159,7 @@
   "metrics": {
     "implemented_disjoint_branches": 3,
     "source_paths_in_w34": 7,
-    "new_designed_test_methods": 23,
+    "new_designed_test_methods": 24,
     "locally_executed_synthetic_adversarial_tests": {
       "pass": 18,
       "total": 18
@@ -171,7 +171,23 @@
     "queue_p95_seconds": null,
     "runner_active_peak": null,
     "new_verified_root_closures": 0,
-    "review_gate_completed": false
+    "review_gate_completed": false,
+    "automatically_triggered_workflows_readback": {
+      "matrix": 3,
+      "proof_handover": 14,
+      "g3cs": 2,
+      "total": 19,
+      "queued": 19,
+      "terminal": 0,
+      "classification": "API_METADATA_ONLY_READBACK_NONATOMIC"
+    },
+    "manually_dispatched_workflows": 0,
+    "static_source_contract_QA": {
+      "networkx_matrix_pins_identical": true,
+      "g3cs_exact_source_missing_reason": 1,
+      "g3cs_duplicate_marker": false,
+      "w32_self_proof_promotion": false
+    }
   },
   "scale_guard": {
     "decision": "HOLD_QUEUE_AND_ADMISSION",
@@ -189,8 +205,9 @@
     "current-main matched statements/branches/diff coverage",
     "reviewed scanner/A10/Safety evidence on exact heads",
     "authenticated CODEX Crew/REX/QPS owner return",
-    "actual full conversation transcript and V2 replay-sealed raw archive"
+    "actual full conversation transcript and V2 replay-sealed raw archive",
+    "Feature-branch qps-canonicalization 19 queued at recorded readback (population grows with subsequent commits)"
   ],
-  "stop_reason": "NO_NEW_PR_OR_CI_WHILE_MAIN_GATE_UNPROVEN_AND_QUEUE_BACKLOG",
+  "stop_reason": "NO_NEW_PR_OR_MANUAL_DISPATCH_WHILE_GATE_UNPROVEN_AND_AUTOMATIC_PUSH_CI_QUEUED",
   "source_sha256_equality_of_package": null
 }
