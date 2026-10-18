@@ -40,6 +40,45 @@ class TestMissionControlLite(unittest.TestCase):
                 ingest(db, r, d)
             self.assertEqual(census(db)["verified_roots_with_receipts"], 0)
 
+    def test_exact_duplicate_ingest_rejected_without_second_event(self):
+        with tempfile.TemporaryDirectory() as d:
+            p = Path(d) / "output.json"
+            p.write_bytes(b"trusted")
+            db = Path(d) / "registry.sqlite"
+            r = receipt("m", "task", "root", "a" * 40, "42", [p])
+            ingest(db, r, d)
+            with self.assertRaisesRegex(ValueError, "duplicate or conflicting"):
+                ingest(db, r, d)
+            import sqlite3
+            with sqlite3.connect(db) as connection:
+                self.assertEqual(connection.execute(
+                    "SELECT COUNT(*) FROM receipts").fetchone()[0], 1)
+                self.assertEqual(connection.execute(
+                    "SELECT COUNT(*) FROM events").fetchone()[0], 1)
+            self.assertEqual(census(db)["verified_roots_with_receipts"], 1)
+            self.assertFalse(census(db)["roots"][0]["closed"])
+
+    def test_conflicting_receipt_identity_rejected_with_rollback(self):
+        with tempfile.TemporaryDirectory() as d:
+            p = Path(d) / "output.json"
+            p.write_bytes(b"trusted")
+            db = Path(d) / "registry.sqlite"
+            original = receipt("m", "task", "root", "a" * 40, "42", [p])
+            ingest(db, original, d)
+            # Keep the same unique mission/task/run, but forge root and SHA.
+            conflict = json.loads(json.dumps(original))
+            conflict["root_id"] = "forged-root"
+            conflict["source_sha"] = "b" * 40
+            with self.assertRaisesRegex(ValueError, "duplicate or conflicting"):
+                ingest(db, conflict, d)
+            import sqlite3
+            with sqlite3.connect(db) as connection:
+                rows = connection.execute(
+                    "SELECT root, source_sha FROM receipts").fetchall()
+                self.assertEqual(rows, [("root", "a" * 40)])
+                self.assertEqual(connection.execute(
+                    "SELECT COUNT(*) FROM events").fetchone()[0], 1)
+
     def test_external_actor_authorization_negative(self):
         scope = {"repository": "GBOGEB/ABACUS", "source_sha": "a" * 40,
                  "write": False, "actor": "untrusted-external"}
