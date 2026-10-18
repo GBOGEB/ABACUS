@@ -1,0 +1,103 @@
+# CODE PURPLE / Evidence-to-Admission Observatory V3
+
+**Mode: evidence-only / read-only.** `MERGE_ADMISSION=HOLD` until a real ruleset and authorized negative/positive canary are verified. This tool cannot approve a PR, merge, waive security, enable remote mutations, close a canonical root, or accept CODEX REX. It does not turn a DAB proposal job into an authenticated Crew launch.
+
+## Deliverables
+
+- `index.html` — standalone live public-metadata HTML, with embedded source-bound snapshot, in-graph native GitHub links, 100% readable zoomed coverage chart and separate callout rows to eliminate arrow/label overlap. Browser button re-fetches public GitHub metadata. Auto-refresh every 15 minutes while the page is open over HTTP(S), with stale coverage explicitly flagged. No browser token.
+- `evidence.json` — versioned, pinned observation snapshot. The historical 375-file raw coverage decomposition stays attached to its **original SHA pair**, not relabelled after main advances.
+- `census.py` — read-only GitHub REST collector. A→B→A SHA check, 40-character SHA validation, NULL-not-zero for missing, GitHub workflow catalog and exact-main runs; canonical B0 artifact digest, run head and JUnit+coverage JSON required before updated coverage can be accepted as measured. The 300 MB coverage JSON is tail-streamed with a memory cap; no ZIP extraction and no credentials emitted. Source-owned root closure / authenticated CODEX Crew receipts remain NULL.
+- `render.py` — deterministic, external-dependency-free renderer. Safe JSON embedding; artifacts may be hosted or opened offline.
+- `test_observatory.py` — fake GitHub readback, missing review/issue/count tests, moving-head test, malformed SHA, artifact provenance/digest, null root, renderer safety, lane separation.
+- `.github/workflows/code-purple-evidence-observatory.yml` — one read-only 4/day schedule and manual dispatch; no commits, releases, Pages publication or mutation; single concurrency group; native HTML+JSON artifact.
+
+## Native operation
+
+```bash
+python -m unittest discover -s MIP/EVIDENCE_TO_ADMISSION_OBSERVATORY -p 'test_observatory.py' -v
+python MIP/EVIDENCE_TO_ADMISSION_OBSERVATORY/render.py
+# Public read-only API may rate-limit without auth. On an owner runner use the
+# automatically scoped GITHUB_TOKEN; do not paste tokens into browser HTML.
+GITHUB_TOKEN=... python MIP/EVIDENCE_TO_ADMISSION_OBSERVATORY/census.py \
+  --out MIP/EVIDENCE_TO_ADMISSION_OBSERVATORY/evidence.latest.json --strict-head
+python MIP/EVIDENCE_TO_ADMISSION_OBSERVATORY/render.py \
+  --snapshot MIP/EVIDENCE_TO_ADMISSION_OBSERVATORY/evidence.latest.json \
+  --output MIP/EVIDENCE_TO_ADMISSION_OBSERVATORY/index.html
+```
+
+The scheduled workflow begins only after this source branch is reviewed and merged *under genuinely effective protections*. It publishes an Actions artifact, **not** a protected-main commit. No silent deployment. A user may open the artifact's standalone HTML or authorized publication may deploy the static result separately.
+
+## SHA / graphs / statistical interpretation
+
+Three clocks: `main.sha` (latest GitHub ref), `coverage.measured.sha` (last accepted native B0 receipt), `governance.first_correctly_admitted_pr` (verified acceptance, normally `null`). The historical 66.955→67.345% bar story is from the previous `7488bd7…` PR B0 vs the old `97a8b13…` main. +0.031 percentage points on the fixed 375-file denominator is a *denominator-matched* descriptive increase, not a fully blob-matched causal effect; +0.359pp is compositional. The historic 36.85% main and 36.92% PR broad, 51% diff measurements remain **unmatched**.
+
+- A chart must label `[measurement date, SHA, denominator, cohort]`. Near-ceiling values use an explicitly nonzero zoom axis, not deceptive log scaling of percentages.
+- `root_closed` and `root_open` are null until #1929 supplies one accepted canonical root register. GitHub ticket lifecycle or G3CS manifestations cannot replace it.
+- For valid statistical stability (e.g. PCA, Bradley–Terry, 6σ), require at least 3 independent comparable observation cycles, fixed eligibility, preregistered baselines and repeatability. A static trend is not a probability of closure.
+
+## N+1 bounded wave and scaling rule
+
+| Lease | May execute concurrently? | Source of truth | Minimum evidence | DoV |
+|---|---|---|---|---|
+| L-COV | read-only | native B0 current main + historical baseline | exact-SHA scope, file/blob/config denominator, native diff-cover | known paired numerator and denominator; missing remains UNKNOWN |
+| L-ROOT | read-only | ABACUS #1929 | three disjoint first-reds and manifestation→root mapping | 1 independent ASH only if reproducible non-recurrence + owner disposition |
+| L-CI | read-only | Actions runs/jobs/attempts/artifacts | A→B→A, terminal exact-main B0 Python A10 CodeQL | zero missing required receipts; measure queue p95 only from complete sample |
+| L-GOV | **authorized admin only** | ruleset #24494381, ABACUS #1860 | statuses, ≥1 independent review, rejected RED/eligible GREEN canaries | genuinely enforceable admission, no bypass or waiver |
+| L-REX | **separately authorized CODEX architecture** | CODEX #977 | authenticated launch principal, path/sha leases, idempotency, accepted return | exact remote launch+REX only if actually executed |
+
+Maximum **three concurrent read-only observation workers**. Source-changing workers require distinct path leases and fresh exact-SHA commits; all merges serialize. N+1 targets are *acceptance criteria*, not an invented probabilistic forecast. A verified CHAR root can graduate to ASH only with negative replays and independent closure, even if the PR merged or a test is green.
+
+## SIPOC / DAG
+
+```mermaid
+flowchart LR
+  A[GitHub sources / CODEX + ABACUS] --> B[SHA-locked runs & root signatures]
+  B --> C{A to B to A stable?}
+  C -- NO --> H[HOLD and UNKNOWN]
+  C -- YES --> D[Coverage cohort + first-red classification]
+  D --> E[Read-only evidence and N+1 targets]
+  E --> F{Owner rules + review + canaries?}
+  F -- NO --> H
+  F -- YES --> G[Serial governed merge admission]
+  G --> I[Exact-main remeasurement + canonical ASH disposition]
+```
+
+**Known owner boundaries:** #1860 P0 admission, #1929 canonical root census, CODEX #977 authenticated dispatch. The dashboard does not replace any of these authorities.
+
+## Wave N+1 controller (implemented, evidence-only)
+
+- `wave_history.json` binds *three actual* W007 runs to all 12 native job IDs and uploaded artifact SHA256 digests. Its cohort remains the same two modules and **208 fixed eligible opportunities**; do not mislabel the repeated fixed numeric denominator as proof of byte-identical modules.
+- `wave_metrics.py` refuses missing, stale, duplicate, mismatched or incomplete native receipts. It measures N+1 (192/208, 30 tests/cell) -> N+3 (206/208, 61 tests/cell) -> N+4 (208/208, 63 tests/cell). The uncovered opportunity population contracts **16 -> 2 -> 0**.
+- Wave normalization accounts for the unequal spans **N+1 to N+3 = 2 wave slots** and **N+3 to N+4 = 1 slot**. The accepted *descriptive* gain rate decelerates as the coverage ceiling is reached; these are not elapsed-time accelerations or stochastic forecasts.
+- When the last cohort is saturated, the next slice must move to a **separate, source-bound uncovered module family**, using negative/reverse/fault-injection tests. The next source family must have source+config fingerprint, statements/branches, stable numerator/denominator and native JUnit before any broad-main/diff credit.
+- `adaptive_slice_policy` **cannot** authorize source mutation, merge, remote Crew or root closure. It scales from **1 read-only lane** (uncertain current-main evidence) to at most **3 read-only lanes** only on stable same-head B0 and validated coverage artifact; write leases remain DISABLED and one-source-owner-at-a-time. Owner rules and negative RED canary are noncompensating. No near-ceiling tests are added purely to inflate counts.
+- CI executes both observatory test suites, publishes `wave.latest.json` with `evidence.latest.json`/HTML, and remains four daily read-only observations (no commit to main). The browser shows historical matched gaps and independently displays latest-main staleness.
+
+```bash
+python -m unittest discover -s MIP/EVIDENCE_TO_ADMISSION_OBSERVATORY -p 'test_*.py' -v
+python MIP/EVIDENCE_TO_ADMISSION_OBSERVATORY/wave_metrics.py --snapshot MIP/EVIDENCE_TO_ADMISSION_OBSERVATORY/evidence.json --out MIP/EVIDENCE_TO_ADMISSION_OBSERVATORY/wave.latest.json
+```
+
+Next pulse DoV: exact current-main B0 coverage JSON and diff-cover under a shared source+configuration; first-red signatures joined to #1929 and independent CHAR to ASH disposition; effective protection readback and negative canary through authorized admin only. **MERGE_ADMISSION=HOLD**.
+
+## Adaptive pacing and competing slice-selection criteria
+
+The next slice is NOT a bigger repetition of W007: its remaining uncovered count
+is exactly zero (208/208). The method compares three candidates only where they
+have actual source-bound evidence: (A) first-red reappearance risk, (B) newly
+uncovered eligible opportunity density per changed file and (C) receipt cost
+and runner saturation. Candidate names without eligible/opportunity counts stay
+WITHHELD; the controller never substitutes zero. A concrete rank needs a
+fingerprinted source SHA, path lease, eligible and uncovered counts; a first-red
+case receives priority over a higher-coverage-only case. No overlapping write
+leases, no source mutation, merge or REX is authorized by ranking.
+
+N+1 minimum effort = 1 read-only current-main B0 + config/coverage receipt;
+N+2 may add a disjoint root-signature observation + matched diff producer;
+N+3 may use three read-only observations only if source A->B->A is stable,
+B0 terminal and covered, artifacts received and queue p95 <= 900 seconds.
+If queue p95 is missing/over limit, cap at one independent observation. The
+reported 3.365 -> 0.962 coverage-point gain per wave is a **descriptive
+interval-normalized** deceleration, not a runtime speed or probabilistic trend.
+No root ASH credit, admission or CODEX remote dispatch can be granted by this
+pacing algorithm, even when all technical receipts are green.

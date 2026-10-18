@@ -1,0 +1,229 @@
+<!doctype html>
+<html lang="en"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>CODE PURPLE | Evidence-to-Admission Observatory V3</title>
+<meta name="color-scheme" content="dark">
+<style>
+:root{--bg:#0c0e15;--panel:#151924;--panel2:#1d2230;--stroke:#303748;--fg:#f1f3fa;--muted:#afbad0;--violet:#a47dff;--teal:#42cbb4;--amber:#ffc172;--danger:#eb8290;--gray:#939bae}
+*{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;background:var(--bg);color:var(--fg);font:15px/1.52 system-ui,-apple-system,Segoe UI,Arial,sans-serif}
+a{color:#c8b4ff;text-decoration:none;border-bottom:1px solid #69558c;text-underline-offset:3px}a:hover{color:white;border-color:var(--violet)}button{font:inherit;cursor:pointer;color:var(--fg);border:1px solid #5b527a;background:#2c2841;padding:8px 13px;border-radius:10px}button:hover{border-color:var(--violet);background:#3a3058}button:focus-visible,a:focus-visible{outline:3px solid var(--teal);outline-offset:2px}
+main{max-width:1560px;margin:0 auto;padding:24px 28px 64px}h1,h2,h3,p{margin-top:0}h1{font-size:clamp(25px,3vw,37px);letter-spacing:-.025em;margin-bottom:4px}h2{font-size:18px;letter-spacing:.005em}h3{font-size:15px;margin-bottom:6px;color:#e5dafe}.muted{color:var(--muted)}.micro{font-size:12px}.small{font-size:13px}.strong{font-weight:750}.violet{color:var(--violet)}.teal{color:var(--teal)}.amber{color:var(--amber)}.danger{color:var(--danger)}.mono{font:12px/1.4 ui-monospace,SFMono-Regular,Consolas,monospace;overflow-wrap:anywhere}.caps{font-size:11px;text-transform:uppercase;letter-spacing:.09em;font-weight:800;color:var(--muted)}
+.top{display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap;align-items:start;padding-bottom:14px}.top>div:first-child{min-width:270px;flex:1}.top p{color:var(--muted);margin:0}.statusbar{display:flex;gap:8px;flex-wrap:wrap;align-items:center;justify-content:flex-end}.chip{border:1px solid #5a477d;color:#d9c8ff;padding:5px 9px;border-radius:999px;font-size:12px}.chip.hold{color:#ffc3c8;border-color:#7c434d}.chip.ok{color:#8fe5d5;border-color:#28675d}.chip.wait{color:#ffd9a5;border-color:#765632}.rail{display:grid;grid-template-columns:1fr auto;gap:12px;padding:12px 14px;background:#171b27;border:1px solid var(--stroke);border-radius:12px;margin-bottom:14px}.rail .mono{color:#cfc6e9}.buttonset{display:flex;gap:8px;flex-wrap:wrap;align-items:center;justify-content:flex-end}#refreshStatus{font-size:12px;line-height:1.3;color:var(--muted)}
+.hero{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;margin-bottom:14px}.kpi{background:var(--panel);border:1px solid var(--stroke);border-radius:13px;padding:12px 14px;min-height:116px}.kpi .value{font-size:28px;font-weight:840;line-height:1.2;margin:6px 0;color:var(--violet)}.kpi .value.teal{color:var(--teal)}.kpi .value.amber{color:var(--amber)}.kpi .value.danger{color:var(--danger)}.kpi .desc{font-size:12px;color:var(--muted)}
+.mainpanes{display:grid;grid-template-columns:minmax(0,1.5fr) minmax(310px,1fr);gap:12px;margin-bottom:12px}.panel{background:var(--panel);border:1px solid var(--stroke);padding:17px;border-radius:16px;min-width:0}.subtitle{font-size:12px;color:var(--muted);margin:0 0 8px}.panel .sectionHead{display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap}.chartwrap{border:1px solid #282e3d;background:#111622;border-radius:11px;padding:5px 10px 0;margin:8px 0}.chartwrap svg{display:block;width:100%;height:auto;max-height:305px}#coverageChart text{font-family:system-ui,Segoe UI,sans-serif}.chartlegend{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:7px;margin:1px 4px 8px;text-align:center;font-size:11px}.chartlegend a{display:block;overflow-wrap:anywhere}.deltaStrip{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:10px}.delta{background:#1d2531;border:1px solid #3b4050;border-radius:9px;padding:10px 11px;position:relative}.delta strong{font-size:18px;display:block}.delta p{margin:3px 0 0;color:var(--muted);font-size:12px}.delta .direction{position:absolute;top:11px;right:9px;font-size:21px;color:var(--gray);line-height:1}.metaLine{font-size:12px;margin:11px 0 0;color:var(--muted)}.meter{height:11px;background:#292e3f;border-radius:9px;overflow:hidden}.meter span{display:block;height:100%;background:var(--violet);border-radius:9px}.meter.grey span{background:#787f91}.meter.amber span{background:var(--amber)}.rootline{margin:18px 0 14px}.rootline>div:first-child{display:flex;align-items:baseline;justify-content:space-between;gap:6px;margin-bottom:7px;font-size:13px}.rootline a{color:var(--fg);border:0}.rootline strong{color:#d2c3ff;white-space:nowrap}.rootFoot{background:#2a2431;border:1px solid #685275;border-radius:10px;padding:12px;color:var(--amber);font-size:13px;margin-top:20px}.rootFoot small{display:block;color:var(--muted)}
+.gates{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:9px;margin-top:16px}.gate{background:#222837;border:1px solid #374052;border-left:4px solid var(--gray);border-radius:10px;padding:10px 9px;min-height:105px}.gate.good{border-left-color:var(--teal)}.gate.bad{border-left-color:var(--danger)}.gate.warn{border-left-color:var(--amber)}.gate strong{display:block;font-size:11px;text-transform:uppercase;color:#f0e9ff;letter-spacing:.05em}.gate a{font-size:13px;display:block;line-height:1.35;margin-top:6px}.gate span{font-size:11px;color:var(--muted)}.gateNarrative{margin:14px 0 0;padding:9px 11px;background:#30272a;color:#ffc09a;border-radius:8px;font-size:13px}
+.narrative{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin:12px 0 16px}.narrative .panel p{color:#c2cada;font-size:13px;margin:7px 0}.narrative a{font-weight:650}.inlineLinks{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}.linkTag{font-size:12px;padding:3px 7px;border-radius:7px;background:#262b3c;border:1px solid #414c65;display:inline-block}
+.waveIntro{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:14px;align-items:center;margin-top:14px}.waveIntro p{font-size:13px;color:var(--muted);margin:0}.forecastGrid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;margin:12px 0 17px}.forecard{padding:14px;background:#1a2030;border:1px solid #434459;border-radius:12px}.forecard .future{font-size:22px;color:#ceb7ff;font-weight:850;margin:5px 0}.forecard small{font-size:12px;color:var(--muted)}.forecard strong{color:var(--teal)}
+table{border-collapse:collapse;width:100%;font-size:12px;line-height:1.4}th,td{padding:12px 10px;border-bottom:1px solid var(--stroke);text-align:left;vertical-align:top}th{color:var(--muted);font-size:11px;text-transform:uppercase;letter-spacing:.035em}td>strong{color:#e6daff}td p{margin:4px 0 0;font-size:12px;color:#b9c4d4}.nowrap{white-space:nowrap}td .chip{display:inline-block}.owner{color:#cfc0f4}.scrolltable{overflow:auto;max-width:100%}.descGrid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px}.detail{padding:12px;border:1px solid var(--stroke);background:#171d29;border-radius:10px}.detail strong{color:#d7c9ff}.detail p{color:var(--muted);font-size:12px;margin-top:6px}.flow{display:flex;flex-wrap:wrap;align-items:center;gap:7px;margin:12px 0}.node{border:1px solid #4d486d;border-radius:8px;padding:9px;background:#242538;font-size:12px}.flow b{font-size:17px;color:var(--violet)}details{margin:12px 0;border:1px solid var(--stroke);border-radius:12px;padding:11px 15px;background:#161b26}summary{cursor:pointer;font-weight:760}details p{font-size:13px;color:var(--muted)}footer{font-size:12px;color:var(--muted);padding:20px 3px}#headChange{padding:7px 11px;border-left:3px solid var(--amber);background:#26232b;font-size:12px;color:#f8c88f;margin:10px 0}#errors{font-size:12px;color:#ffbc9c}
+@media(max-width:1100px){.hero{grid-template-columns:repeat(2,minmax(0,1fr))}.mainpanes{grid-template-columns:1fr}.forecastGrid{grid-template-columns:repeat(2,minmax(0,1fr))}.descGrid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:650px){
+.scrolltable #laneRows tr{display:block;background:#1b2130;border:1px solid #373d50;border-radius:11px;margin:9px 0;padding:6px}
+.scrolltable #laneRows td{display:block;white-space:normal;border:0;padding:7px 8px;overflow-wrap:anywhere}
+.scrolltable #laneRows td::before{content:attr(data-label);display:block;margin-bottom:3px;font-size:10px;font-weight:750;letter-spacing:.06em;color:#9eacbf;text-transform:uppercase}
+.scrolltable #laneRows td strong{font-size:12px}
+main{padding:14px 11px 35px}h1{font-size:24px}.statusbar,.buttonset{justify-content:flex-start}.rail{grid-template-columns:1fr}.hero{grid-template-columns:repeat(2,minmax(0,1fr))}.kpi{min-height:100px;padding:10px}.kpi .value{font-size:22px}.narrative{grid-template-columns:1fr}.forecastGrid{grid-template-columns:1fr 1fr}.deltaStrip{grid-template-columns:1fr}.gates{grid-template-columns:repeat(2,minmax(0,1fr))}.descGrid{grid-template-columns:1fr}.waveIntro{grid-template-columns:1fr}.chartwrap{padding:0}.chartlegend{font-size:10px}.panel{padding:12px}.gate{min-height:91px}.caps{font-size:10px}}
+
+.wavePulseGrid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:11px;margin:14px 0}
+.wavePulse{border:1px solid #42465e;border-radius:12px;padding:13px;background:#1a2030;min-width:0}
+.wavePulse .pulseCount{font-size:24px;font-weight:800;color:#e0cbff;line-height:1.2}
+.wavePulse .gapTrack{height:9px;background:#31374a;border-radius:5px;margin:10px 0 6px;overflow:hidden}
+.wavePulse .gapFill{height:100%;background:#e0a766;border-radius:5px}
+.wavePulse .pulseSubtitle{font-size:12px;color:var(--muted)}
+.waveResults{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;margin:12px 0}
+.waveResults>div{background:#202637;border-radius:9px;border:1px solid #474a64;padding:11px;font-size:12px}
+.waveResults strong{display:block;color:#a5e8d8;font-size:17px;margin-top:3px}
+@media(max-width:650px){.wavePulseGrid{grid-template-columns:1fr}.waveResults{grid-template-columns:1fr}}
+</style></head>
+<body><main>
+<header class="top"><div><h1>CODE PURPLE / Evidence-to-Admission Observatory <span class="violet">V3</span></h1><p>Read the change, its denominator, its proof, then the path from first-red <strong>CHAR</strong> to independently accepted <strong>ASH</strong>.</p></div><div class="statusbar"><span class="chip hold" id="holdChip">P0 ADMISSION · HOLD</span><span class="chip" id="modeChip">SOURCE-BOUND SNAPSHOT</span></div></header>
+<div class="rail"><div><div class="caps">Evidence clocks · latest repository SHA ≠ latest measured SHA ≠ admitted event</div><div class="mono" id="headLine">Latest main loading…</div><div class="small muted" id="timeLine">Captured snapshot loading…</div></div><div class="buttonset"><button id="refreshBtn" type="button" title="Read only public GitHub status; never writes repository or settings">↻ Refresh GitHub</button><button id="loadBtn" type="button" title="Load the server-side census file when available">Read census JSON</button><span id="refreshStatus" aria-live="polite">Read-only</span></div></div>
+<div id="headChange" hidden></div>
+<div class="hero">
+ <article class="kpi"><div class="caps">Last measured B0 / raw</div><div class="value" id="covHeadline">—</div><div class="desc" id="covSub">Pinned native artifact required</div></article>
+ <article class="kpi"><div class="caps">Matched-denominator gain</div><div class="value teal" id="matchedHeadline">—</div><div class="desc">Common 375 files · historic paired observation</div></article>
+ <article class="kpi"><div class="caps">Accepted unique causal roots</div><div class="value amber" id="rootsHeadline">UNKNOWN</div><div class="desc">No independently accepted canonical root census</div></article>
+ <article class="kpi"><div class="caps">Governed merge admission</div><div class="value danger" id="admissionHeadline">HOLD</div><div class="desc" id="rulesSub">Required review/check rules remain missing</div></article>
+</div>
+<div class="mainpanes">
+<section class="panel" id="coverage"><div class="sectionHead"><h2>01 · COVERAGE | Raw gain ≠ matched improvement</h2><span class="chip">Zoomed scale; not log of percentage</span></div><p class="subtitle" id="covCaption">Historic N−1 PR head vs verified main cohort; denominator fixed only for common files.</p>
+<div class="chartwrap"><svg id="coverageChart" viewBox="0 0 720 309" role="img" aria-label="Coverage chart with separate cohort and population-composition effects"><title>Matched coverage versus composition effect</title></svg><div class="chartlegend"><a id="prevRunLink" href="https://github.com/GBOGEB/ABACUS/actions/runs/39136242442">N−1 · PR B0</a><a id="cohortLink" href="https://github.com/GBOGEB/ABACUS/compare/7488bd7bdcd2cb2fb7dd2d4a748a7867a7df2ab0...97a8b13faff577272a90edaf0dd4593035e10605">375-file cohort</a><a id="measuredRunLink" href="https://github.com/GBOGEB/ABACUS/actions/runs/39142444027">N · verified main B0</a></div></div>
+<div class="deltaStrip"><div class="delta"><span class="direction" aria-hidden="true">↗</span><strong class="teal" id="matchedDelta">+0.031 pp</strong><span class="caps">01 · Matched existing files</span><p>16 newly covered opportunities in 51,554; identical eligible denominators, <em>not</em> all source blobs verified.</p></div><div class="delta"><span class="direction" aria-hidden="true">↗</span><strong class="violet" id="mixDelta">+0.359 pp</strong><span class="caps">02 · Population composition</span><p>3 newly measured files contribute 620/646 covered opportunities. Visible, but not called a comparable code uplift.</p></div></div>
+<p class="metaLine"><a id="b0ArtifactLink" href="https://github.com/GBOGEB/ABACUS/actions/runs/39142444027/artifacts/12142730864">Open raw native B0 artifact ↗</a> · <span id="covIntegrity">Historic 36.85% main / 36.92% PR broad / 51% diff remain unmatched.</span></p>
+</section>
+<section class="panel" id="bd"><h2>02 · BD / ROOTS | Four different denominators</h2><p class="subtitle">Ticket closures, manifestations, TODOs and accepted causal roots must never share one progress scale.</p>
+<div class="rootline"><div><a href="https://github.com/GBOGEB/ABACUS/issues?q=is%3Aissue" target="_blank" rel="noopener">Ordinary GitHub issues closed ↗</a><strong id="issueCount">—</strong></div><div class="meter"><span id="issueBar" style="width:0%"></span></div></div>
+<div class="rootline"><div><a href="https://github.com/GBOGEB/ABACUS/blob/main/MIP/G3CS_CONVERGENCE_V2/output/G3CS_CONVERGENCE_METRICS.json" target="_blank" rel="noopener">G3CS manifestations · historical ↗</a><strong id="manifestCount">45 / 76</strong></div><div class="meter grey"><span style="width:59.21%"></span></div></div>
+<div class="rootline"><div><a href="https://github.com/GBOGEB/ABACUS/issues/1860" target="_blank" rel="noopener">ABACUS #1860 admission TODO ↗</a><strong id="todo1860">1 / 12</strong></div><div class="meter amber"><span id="todo1860Bar" style="width:8.333%"></span></div></div>
+<div class="rootline"><div><a href="https://github.com/GBOGEB/CODEX/issues/977" target="_blank" rel="noopener">CODEX #977 dispatch TODO ↗</a><strong id="todo977">0 / 7</strong></div><div class="meter amber"><span id="todo977Bar" style="width:0%"></span></div></div>
+<div class="rootFoot"><strong>Canonical accepted roots: UNKNOWN</strong><small>Owner <a href="https://github.com/GBOGEB/ABACUS/issues/1929">#1929 ↗</a> · requires a fingerprint, native replay, source-owner and an independent closure disposition. No root denominator = no root-closure percentage.</small></div>
+</section>
+</div>
+<section class="panel" id="admission"><div class="sectionHead"><h2>03 · MERGED ≠ ADMITTED | Real GitHub edges</h2><span class="chip hold">Required human/admin evidence missing</span></div><div class="gates">
+ <div class="gate good"><strong>Observed source merge</strong><a href="https://github.com/GBOGEB/ABACUS/pull/2233">PR #2233 ↗</a><a href="https://github.com/GBOGEB/ABACUS/pull/2231">PR #2231 ↗</a><span>Verified merge commits; not automatically governed</span></div>
+ <div class="gate good"><strong>Native CI proof</strong><a id="b0GateLink" href="https://github.com/GBOGEB/ABACUS/actions/runs/39142444027">B0 13/13 PASS ↗</a><a id="matrixGateLink" href="https://github.com/GBOGEB/ABACUS/actions/runs/39142443923">Python matrix PASS ↗</a><a href="https://github.com/GBOGEB/ABACUS/actions/runs/39138380209">W007 4-cell PASS ↗</a><span id="ciHeadQualifier">Previous verified main SHA; new head unqualified</span></div>
+ <div class="gate bad"><strong>Effective review rules</strong><a href="https://github.com/GBOGEB/ABACUS/rules/24494381">Ruleset #24494381 ↗</a><span id="gateRules">0 required approvals · 0 required statuses · 6 bypass actors</span></div>
+ <div class="gate warn"><strong>Negative RED canary</strong><a href="https://github.com/GBOGEB/ABACUS/issues/1278">Owner/admin issue #1278 ↗</a><span>Blocked merge attempt required; receipt UNKNOWN</span></div>
+ <div class="gate warn"><strong>First admitted merge</strong><a href="https://github.com/GBOGEB/ABACUS/issues/1860">ABACUS #1860 ↗</a><span>Not demonstrated. P0 admission HOLD.</span></div>
+</div><div class="gateNarrative" id="gateNarrative">Zero required statuses and approvals cannot be compensated for by green CI. Admin must prove RED blocked / eligible GREEN review.</div></section>
+<details id="runnerReceipts" style="margin-top:12px"><summary>04 · Native runner receipt census · click exact GitHub job IDs</summary>
+<p><strong id="runnerSummary">13 native B0 jobs observed at measured SHA</strong> · Eight DAB proposal jobs are native workflow proposals, not authenticated CODEX Crew dispatches. Job IDs are not source commits or accepted REX.</p>
+<div class="scrolltable"><table><thead><tr><th>Native job / purpose</th><th>Run / attempt</th><th>Source SHA</th><th>Terminal outcome</th><th>Exact job link</th></tr></thead><tbody id="runnerRows"></tbody></table></div>
+<p class="small muted" id="runnerTiming">Queue/execution p95 UNKNOWN until complete native timestamps are available.</p></details>
+<div class="narrative">
+ <article class="panel"><h3>Coverage · what actually improved?</h3><p><strong class="teal">+0.390 pp raw</strong> is a real arithmetic movement in the recorded B0 population. Only <strong>+0.031 pp</strong> comes from the fixed 375-file cohort; <strong>+0.359 pp</strong> comes from three newly included highly covered files.</p><p class="muted">Current repository head can advance without a fresh comparable coverage artifact. The visual never changes that denominator by implication.</p><div class="inlineLinks"><a class="linkTag" href="https://github.com/GBOGEB/ABACUS/actions/runs/39142444027">B0 proof ↗</a><a class="linkTag" href="https://github.com/GBOGEB/ABACUS/issues/1991">Coverage-scale issue #1991 ↗</a></div></article>
+ <article class="panel"><h3>BD · which blockers can become ASH?</h3><p>The issue census is valid for GitHub objects. <strong>CHAR → ASH</strong> additionally requires same-condition non-reproduction, source-bound root identity and an independently accepted closure. Reducing duplicate alerts does not prove that a root disappeared.</p><p class="muted">Historical G3CS: 45/76 manifestations closed. These are not 45 accepted causal roots.</p><div class="inlineLinks"><a class="linkTag" href="https://github.com/GBOGEB/ABACUS/issues/1929">Root owner #1929 ↗</a><a class="linkTag" href="https://github.com/GBOGEB/ABACUS/issues/1885">Dashboard root #1885 ↗</a></div></article>
+ <article class="panel"><h3>Governance · why is the programme HOLD?</h3><p>Native W007, B0, Python and security proofs establish engineering work. But no eligible approving review and no effective required-status policy was established for the recorded merges.</p><p class="muted">There are six always-bypass integration actors. A red CI gate that can be bypassed is detection, not governed prevention.</p><div class="inlineLinks"><a class="linkTag" href="https://github.com/GBOGEB/ABACUS/rules/24494381">Live rules ↗</a><a class="linkTag" href="https://github.com/GBOGEB/ABACUS/actions/runs/39142443938">A10 proof ↗</a></div></article>
+</div>
+<section class="panel" id="adaptive-wave" aria-labelledby="waveTitle">
+<div class="sectionHead"><h2 id="waveTitle">04A / Matched wave progression and adaptive scale</h2><span class="chip wait" id="scaleChip">EVIDENCE-BOUND</span></div>
+<p class="subtitle">Same two W007 modules and 208 counted statement/branch opportunities. Gold bars show the <strong>remaining uncovered count</strong> (0-based, not percentage). N+1 / N+3 / N+4 are uneven wave intervals; rate comparison is normalized per wave, not per hour.</p>
+<div class="wavePulseGrid" id="wavePulseCards" aria-live="polite"></div>
+<div class="waveResults"><div>Gain-rate direction<strong id="gainDirection">UNKNOWN</strong></div><div>Read-only observation lanes<strong id="readonlyScale">UNKNOWN</strong></div><div>Next source slice<strong id="nextSliceLabel">UNKNOWN</strong></div></div>
+<p class="small muted" id="waveNarrative">Waves need exact-head native jobs, JUnit/coverage artifacts, and held governance boundaries.</p>
+<p class="small" id="waveProofLinks"></p>
+</section>
+<section class="panel" id="next-wave"><div class="waveIntro"><div><h2>04 · N+1 bounded wave | Minimum attempted burndown to CHAR / ASH</h2><p><strong>Targets are pre-registered engineering obligations, not statistical predictions.</strong> No numeric coverage gain, root closure or worker launch is predicted without qualifying evidence.</p></div><span class="chip wait" id="waveStatus">5 disjoint source lanes · 3 read-only + 1 admin + 1 CODEX authority</span></div>
+<div class="forecastGrid"><div class="forecard"><span class="caps">Coverage N+1 target</span><div class="future">Comparable pair</div><small>Full file/blob + config matched denominators; actual uplift remains UNKNOWN until native return.</small></div><div class="forecard"><span class="caps">Root N+1 target</span><div class="future">3 CHAR cases</div><small>Reproduce three disjoint candidate signatures. Aim for <strong>≥1 ASH</strong> only with authorized closure.</small></div><div class="forecard"><span class="caps">Governance N+1 target</span><div class="future">RED blocked</div><small>Administrator-enforced check contexts, <strong>≥1 independent approval</strong> and canary receipt.</small></div><div class="forecard"><span class="caps">Census N+1 target</span><div class="future">A→B→A</div><small>Same full SHA before and after; every successful lane tied to run, job, attempt and artifact digest.</small></div></div>
+<div class="scrolltable"><table><thead><tr><th>Lane / lease</th><th>Evidence at entry</th><th>Minimum N+1 work</th><th>Measurable release predicate</th><th>Primary link</th></tr></thead><tbody id="laneRows"></tbody></table></div>
+<p class="metaLine">Scaling governor: READ-ONLY observers may fan out on independent snapshots; source-writing workers must use separate path leases and new exact-head commits. No source slice is authorized merely by a proposal job. The next wave expands only after terminal receipts, queue timing and first-red root transitions are counted.</p>
+</section>
+<section class="panel" style="margin-top:13px" id="spine"><h2>05 · Telemetry spine / SIPOC / maturity</h2><div class="flow"><span class="node">Suppliers · GitHub actions + source owners</span><b>→</b><span class="node">Inputs · full SHA + artifacts + rule snapshot</span><b>→</b><span class="node">Process · A→B→A, dedupe, root replay</span><b>→</b><span class="node">Outputs · matched metrics + qualified BD</span><b>→</b><span class="node">Customers · #1860 / #1929 / #977</span></div>
+<div class="descGrid"><div class="detail"><strong>Source / run identity</strong><p>Every GitHub observation binds repository, 40-character SHA, run_id, job_id, attempt and terminal conclusion. Missing = UNKNOWN.</p></div><div class="detail"><strong>Metric comparability</strong><p>Preserve file paths, eligible statements/branches, configuration and source/blob identity; composition effects are a separate term.</p></div><div class="detail"><strong>Root convergence</strong><p>Deduplicate fingerprints by producer scope. A diagnosis is CHAR; confirmed non-recurrence + eligible closure is ASH.</p></div><div class="detail"><strong>MIP / DMAIC statistics</strong><p>No Six Sigma/PCA/BT stabilization claim without repeated, matched trials and explicit process-control bounds.</p></div></div></section>
+<details><summary>Data lineage, source URLs and refresh constraints</summary>
+<div class="scrolltable"><table><thead><tr><th>Source</th><th>Evidence / why it matters</th></tr></thead><tbody>
+<tr><td><a href="https://github.com/GBOGEB/ABACUS/actions/runs/39142444027/artifacts/12142730864">Canonical main B0 native ZIP ↗</a></td><td>Prior measured main 67.345%; SHA-bound and historical after new head advances.</td></tr>
+<tr><td><a href="https://github.com/GBOGEB/ABACUS/actions/runs/39136242442/artifacts/12139904217">Earlier exact PR-head ZIP ↗</a></td><td>66.955% raw and baseline for the 375-file matched-denominator comparison.</td></tr>
+<tr><td><a href="https://github.com/GBOGEB/ABACUS/issues/1929">Canonical root register #1929 ↗</a></td><td>Root signatures and independent dispositions, not ticket counts.</td></tr>
+<tr><td><a href="https://github.com/GBOGEB/ABACUS/issues/1860">Admission register #1860 ↗</a></td><td>Human/owner TODO; current review and canary obligations.</td></tr>
+<tr><td><a href="https://github.com/GBOGEB/CODEX/issues/977">CODEX dispatch #977 ↗</a></td><td>Stage-only orchestration; accepted executor and REX receipts unverified.</td></tr>
+<tr><td><a href="https://github.com/GBOGEB/ABACUS/rules/24494381">Effective ruleset #24494381 ↗</a></td><td>Readback cannot by itself prove prevention; RED canary mandatory.</td></tr>
+<tr><td><a href="https://github.com/GBOGEB/ABACUS/actions">Actions overview ↗</a></td><td>Refresh runner produces JSON/HTML as artifacts, never pushes to protected main.</td></tr>
+</tbody></table></div><p>Browser refresh only requests public GitHub status with no token. It can update head, issues, PR state and rules. Full coverage needs an exact-head native B0 artifact: the read-only Actions census downloads/validates canonical JSON and stamps its SHA256. If missing, the old measurement remains explicitly labelled stale. Scheduled snapshots are available as workflow artifacts after the workflow is merged under authorized governance. There is no automatic Pages publication or branch mutation.</p></details>
+<div id="errors" aria-live="polite"></div>
+<footer>Source-bound observational instrument · `UNKNOWN` is null, never zero · No inferred approvals, ASH closures, authenticated Crew launches, REX or security waivers. No API key is embedded in the HTML.</footer>
+</main>
+<script type="application/json" id="bootstrap">__EVIDENCE_JSON__</script>
+<script>
+(()=>{'use strict';
+const GITHUB_API='https://api.github.com';
+const e=id=>document.getElementById(id);
+let state=JSON.parse(e('bootstrap').textContent);
+let busy=false;
+const fmt=(v,n=3)=>typeof v==='number'&&Number.isFinite(v)?v.toFixed(n):'UNKNOWN';
+const count=(v)=>Number.isInteger(v)?v.toLocaleString('en-US'):'UNKNOWN';
+function set(id,val){const el=e(id);if(el)el.textContent=String(val)}
+function setLink(id,url){const el=e(id);if(el&&typeof url==='string'&&/^https:\/\/github\.com\//.test(url))el.href=url}
+function safePct(n,d){return Number.isInteger(n)&&Number.isInteger(d)&&d>0?Math.max(0,Math.min(100,100*n/d)):null}
+const pad=v=>v?String(v).slice(0,12)+'…':'UNKNOWN';
+const graphNS='http://www.w3.org/2000/svg';
+function drawChart(c){
+ const svg=e('coverageChart');svg.replaceChildren();
+ function node(kind,attrs,text){const obj=document.createElementNS(graphNS,kind);for(const [k,v] of Object.entries(attrs||{}))obj.setAttribute(k,v);if(text!==undefined)obj.textContent=String(text);svg.appendChild(obj);return obj}
+ const low=66.9,high=67.42,bottom=260,top=39,previous=c.previous?.percent,common=c.cohort?.after_percent,current=c.composition?previous+c.composition.raw_total_delta_pp:null;
+ for(let i=0;i<6;i++){const value=66.9+i*.1,y=bottom-(value-low)/(high-low)*(bottom-top);node('line',{x1:72,y1:y,x2:698,y2:y,stroke:'#30384a','stroke-dasharray':'5 5'});node('text',{x:64,y:y+4,'text-anchor':'end',fill:'#b3bbcc','font-size':12},value.toFixed(2)+'%')}
+ const names=['PR HEAD','COMMON','MAIN / RAW'], vals=[previous,common,current],colors=['#798296','#a37cff','#43cbb2'],xs=[166,360,556];
+ vals.forEach((v,i)=>{if(typeof v!=='number')return;const y=bottom-(v-low)/(high-low)*(bottom-top);node('rect',{x:xs[i]-49,y:y,width:98,height:bottom-y,rx:10,fill:colors[i]});node('text',{x:xs[i],y:y-13,'text-anchor':'middle',fill:'#f7f5ff','font-size':19,'font-weight':'760'},fmt(v,3)+'%');node('text',{x:xs[i],y:283,'text-anchor':'middle',fill:'#d8dfe9','font-size':13,'font-weight':'720'},names[i])});
+ node('text',{x:12,y:19,fill:'#8e99ad','font-size':11},'Historical matched decomposition · nonzero axis');
+}
+function renderAdaptiveWave(){
+ const receipt=state.wave_metrics||{},progress=receipt.historical_focus||{},policy=receipt.scale_policy||{};
+ const holder=e('wavePulseCards');holder.replaceChildren();const pulse=progress.observations||[];
+ const maxGap=Math.max(1,...pulse.map(x=>Number.isInteger(x.uncovered)?x.uncovered:0));
+ for(const p of pulse){
+  const box=document.createElement('div');box.className='wavePulse';
+  const heading=document.createElement('div');heading.className='caps';heading.textContent='N+'+p.wave+' / 4 native cells';box.append(heading);
+  const n=document.createElement('div');n.className='pulseCount';n.textContent=count(p.uncovered)+' uncovered';box.append(n);
+  const track=document.createElement('div');track.className='gapTrack';const fill=document.createElement('div');fill.className='gapFill';fill.style.width=(Number.isInteger(p.uncovered)?100*p.uncovered/maxGap:0)+'%';track.append(fill);box.append(track);
+  const line=document.createElement('div');line.className='pulseSubtitle';line.textContent=count(p.covered)+' / '+count(p.eligible)+' covered · '+count(p.cases_per_job)+' cases per cell';box.append(line);
+  const refs=document.createElement('a');refs.href=p.url;refs.target='_blank';refs.rel='noopener';refs.className='small';refs.textContent='Exact-head run '+p.run_id+' ↗';box.append(refs);
+  holder.append(box);
+ }
+ const names={'DECELERATING_GAIN':'DECELERATING near ceiling','ACCELERATING_GAIN':'ACCELERATING gain','STABLE_GAIN':'STABLE gain','INSUFFICIENT_MATCHED_PULSES':'INSUFFICIENT DATA'};
+ set('gainDirection',names[progress.gain_rate_trend]||'UNKNOWN');
+ set('readonlyScale',Number.isInteger(policy.read_only_parallel_lanes_max)?policy.read_only_parallel_lanes_max+' / 3 max':'UNKNOWN');
+ set('nextSliceLabel',progress.ceiling_reached?'New source cohort':'Uncovered W007 paths');
+ set('scaleChip',policy.measurement_frontier_qualified?'NATIVE FRONTIER QUALIFIED':'NO MAIN SCALE PROMOTION');
+ const last=pulse[pulse.length-1]||{};
+ const gaps=(policy.measurement_blockers||[]).join(', ')||'no measurement blockers';
+ set('waveNarrative','Observed W007 gap '+pulse.map(p=>count(p.uncovered)).join(' → ')+' opportunities. '+(Number.isInteger(last.uncovered)?'At '+count(last.uncovered)+' remaining, ':'')+'the next slice must target a different measured source population. Historical source gain is not a new main/diff uplift. Measurement scaling blocked by: '+gaps+'.');
+ const proof=e('waveProofLinks');proof.replaceChildren();
+ for(const [label,url] of [['Root owner #1929',receipt.root_census_owner],['P0 admission #1860',receipt.admission_owner],['CODEX #977',receipt.dispatch_owner]]){
+  if(typeof url!=='string'||!url.startsWith('https://github.com/'))continue;
+  const a=document.createElement('a');a.href=url;a.target='_blank';a.rel='noopener';a.textContent=label+' ↗';a.className='linkTag';proof.append(a);proof.append(document.createTextNode(' '));
+ }
+}
+function render(){
+ const main=state.main||{},cov=state.coverage||{},measured=cov.measured||{},issues=state.issues||{},gov=state.governance||{},cohort=cov.cohort||{},mix=cov.composition||{};
+ set('headLine','CURRENT MAIN '+(main.sha||'UNKNOWN')+'  ·  MEASURED '+(measured.sha||'UNKNOWN'));
+ set('timeLine','Last source readback: '+(state.captured_at_utc||'UNKNOWN')+'  ·  '+(state.census_quality||'UNKNOWN'));
+ set('covHeadline',(typeof measured.percent==='number'?fmt(measured.percent,3)+'%':'UNKNOWN'));
+ set('covSub',(measured.sha===main.sha?'Current-main B0 ':'Older B0 head '+pad(measured.sha)+' · ')+count(measured.total_opportunities)+' measured opportunities');
+ const stale=!!main.sha&&!!measured.sha&&main.sha!==measured.sha;
+ e('headChange').hidden=!stale;
+ if(stale)set('headChange','⚠ HEAD ADVANCED: raw coverage belongs to '+measured.sha+'. Current main '+main.sha+' requires its own terminal B0 receipt; no uplift is inferred.');
+ set('matchedHeadline',typeof cohort.delta_pp==='number'?'+'+fmt(cohort.delta_pp,3)+' pp':'UNKNOWN');
+ set('rootsHeadline',count(issues.accepted_roots_closed));
+ set('admissionHeadline',gov.merge_admission||'HOLD');
+ set('rulesSub',count(gov.required_approvals)+' reviews · '+count(gov.required_check_rules)+' required-check rule(s) · '+count(gov.bypass_actors)+' bypass');
+ set('issueCount',count(issues.closed)+' / '+count(issues.total));
+ set('manifestCount',count(issues.historical_manifestations_closed)+' / '+count(issues.historical_manifestations_total));
+ set('todo1860',count(issues.todo_1860_done)+' / '+count(issues.todo_1860_total));
+ set('todo977',count(issues.todo_977_done)+' / '+count(issues.todo_977_total));
+ for(const [id,n,d] of [['issueBar',issues.closed,issues.total],['todo1860Bar',issues.todo_1860_done,issues.todo_1860_total],['todo977Bar',issues.todo_977_done,issues.todo_977_total]]){const pct=safePct(n,d);e(id).style.width=(pct??0)+'%';e(id).parentElement.setAttribute('aria-label',pct===null?'Percentage UNKNOWN':fmt(pct,1)+'%')}
+ set('matchedDelta',typeof cohort.delta_pp==='number'?'+'+fmt(cohort.delta_pp,3)+' pp':'UNKNOWN');
+ set('mixDelta',typeof mix.population_mix_pp==='number'?'+'+fmt(mix.population_mix_pp,3)+' pp':'UNKNOWN');
+ set('gateRules',count(gov.required_approvals)+' required approvals · '+count(gov.required_check_rules)+' required statuses · '+count(gov.bypass_actors)+' bypass');
+ set('ciHeadQualifier',(state.workflows?.b0?.sha===main.sha?'B0 pinned to latest main':'Older CI head '+pad(state.workflows?.b0?.sha)));
+ set('gateNarrative','P0 '+(gov.merge_admission||'HOLD')+': native green ≠ admitted. Effective independent approval, required contexts and rejected RED canary remain independently gated.');
+ if(state.workflows?.b0?.url)setLink('b0GateLink',state.workflows.b0.url);
+ if(state.workflows?.matrix?.url)setLink('matrixGateLink',state.workflows.matrix.url);
+ setLink('prevRunLink',cov.previous?.run_url);setLink('measuredRunLink',measured.run_url);setLink('b0ArtifactLink',measured.artifact_url);
+ const runnerRows=e('runnerRows');runnerRows.replaceChildren();
+ const b0=state.workflows?.b0||{};set('runnerSummary',count(b0.jobs_total)+' native B0 jobs · '+count(b0.jobs_success)+' SUCCESS · '+count(state.workers?.native_b0_proposal_jobs)+' proposal-worker jobs');
+ for(const job of b0.jobs||[]){const tr=document.createElement('tr');const fields=[job.name,`${job.run_id||'UNKNOWN'} / ${job.run_attempt||'UNKNOWN'}`,pad(job.source_sha||b0.sha),job.conclusion||'UNKNOWN'];for(const v of fields){const cell=document.createElement('td');cell.textContent=v;tr.append(cell)}const dest=document.createElement('td');const a=document.createElement('a');a.href=job.url||b0.url||'#';a.textContent=job.id?'Job '+job.id+' ↗':'Run ↗';a.target='_blank';a.rel='noopener';dest.append(a);tr.append(dest);runnerRows.append(tr)}
+ set('runnerTiming','Queue p95: '+(typeof b0.queue_p95_seconds==='number'?fmt(b0.queue_p95_seconds,1)+'s':'UNKNOWN')+' · Execution p95: '+(typeof b0.execution_p95_seconds==='number'?fmt(b0.execution_p95_seconds,1)+'s':'UNKNOWN')+'. No invented timing values.');
+ const rows=e('laneRows');rows.replaceChildren();
+ for(const lane of state.next_wave?.lanes||[]){const tr=document.createElement('tr');
+ const values=[[lane.id, lane.owner],[lane.status,lane.blocker],[lane.minimum,''],[lane.target,''],[lane.evidence,'link']];
+ for(const [a,b] of values){const td=document.createElement('td');td.dataset.label=['Lease / owner','Status / blocker','N+1 action','DoV target','Source proof'][tr.children.length];if(b==='link'&&typeof a==='string'&&a.startsWith('https://github.com/')){const link=document.createElement('a');link.href=a;link.target='_blank';link.rel='noopener';link.textContent='Open native source ↗';td.append(link)}else{const label=document.createElement('strong');label.textContent=a||'UNKNOWN';td.append(label);if(b){const p=document.createElement('p');p.textContent=b;td.append(p)}}tr.append(td)}rows.append(tr)}
+ drawChart(cov);
+ renderAdaptiveWave();
+ const errs=state.census_errors||[];set('errors',errs.length?'PARTIAL CENSUS — '+errs.map(x=>x.family+': '+x.reason).join(' | '):'');
+}
+async function git(path){const res=await fetch(GITHUB_API+path,{headers:{Accept:'application/vnd.github+json'},cache:'no-store'});if(!res.ok)throw Error('GitHub API '+res.status+' on '+path);return await res.json()}
+function todo(body){if(typeof body!=='string')return [null,null];const m=Array.from(body.matchAll(/^\s*-\s*\[([ xX])\]/gm)).map(x=>x[1]);return [m.filter(x=>x.toLowerCase()==='x').length,m.length]}
+async function refreshGitHub(){if(busy)return;busy=true;const btn=e('refreshBtn');btn.disabled=true;set('refreshStatus','Checking pinned public GitHub state…');
+ const next=structuredClone(state),errors=[];let oldHead=null;
+ try{const r=await git('/repos/GBOGEB/ABACUS/git/ref/heads/main');oldHead=r.object?.sha;if(!/^[a-f0-9]{40}$/.test(oldHead||''))throw Error('No exact main SHA');next.main.sha=oldHead;next.main.url='https://github.com/GBOGEB/ABACUS/commit/'+oldHead;next.main.head_stable=null}
+ catch(err){set('refreshStatus','Source head unavailable; showing verified snapshot');btn.disabled=false;busy=false;return}
+ const operations=[
+ ['issue1860',()=>git('/repos/GBOGEB/ABACUS/issues/1860')],['issue977',()=>git('/repos/GBOGEB/CODEX/issues/977')],
+ ['root1929',()=>git('/repos/GBOGEB/ABACUS/issues/1929')],
+ ['ruleset',()=>git('/repos/GBOGEB/ABACUS/rulesets/24494381')],
+ ['open',()=>git('/search/issues?q=repo%3AGBOGEB%2FABACUS+is%3Aissue+is%3Aopen&per_page=1')],
+ ['closed',()=>git('/search/issues?q=repo%3AGBOGEB%2FABACUS+is%3Aissue+is%3Aclosed&per_page=1')],
+ ['pr2231',()=>git('/repos/GBOGEB/ABACUS/pulls/2231')],['pr2233',()=>git('/repos/GBOGEB/ABACUS/pulls/2233')]
+ ];
+ const results=await Promise.allSettled(operations.map(x=>x[1]()));
+ results.forEach((r,i)=>{const k=operations[i][0];if(r.status!=='fulfilled'){errors.push(k+': '+r.reason?.message);return};const v=r.value;
+ if(k.startsWith('issue')){const t=todo(v.body);const n=k.slice(5);next.issues['todo_'+n+'_done']=t[0];next.issues['todo_'+n+'_total']=t[1]}
+ if(k==='open'||k==='closed')next.issues[k]=Number.isInteger(v.total_count)?v.total_count:null;
+ if(k==='root1929')next.issues.root_owner_open=v.state==='open';
+ if(k==='ruleset'){const pull=(v.rules||[]).find(x=>x.type==='pull_request')?.parameters||{};next.governance.required_approvals=pull.required_approving_review_count??null;next.governance.required_check_rules=(v.rules||[]).filter(x=>x.type==='required_status_checks').length;next.governance.bypass_actors=Array.isArray(v.bypass_actors)?v.bypass_actors.length:null}
+ if(k.startsWith('pr')){const n=Number(k.slice(2)),item=(next.prs||[]).find(x=>x.number===n);if(item){item.merged=Boolean(v.merged_at);item.head=v.head?.sha||null;item.merge_sha=v.merged_at?v.merge_commit_sha:null;item.approvals=null}}
+ });
+ next.issues.total=Number.isInteger(next.issues.open)&&Number.isInteger(next.issues.closed)?next.issues.open+next.issues.closed:null;
+ try{const r=await git('/repos/GBOGEB/ABACUS/git/ref/heads/main');next.main.head_stable=r.object?.sha===oldHead;if(!next.main.head_stable)errors.push('main: HEAD advanced during refresh')}catch(ex){next.main.head_stable=null;errors.push('main verification: '+ex.message)}
+ // A public status refresh cannot assert new coverage, root acceptance or legitimate approval.
+ next.governance.merge_admission='HOLD';next.governance.first_correctly_admitted_pr=null;
+ if(next.wave_metrics?.scale_policy){next.wave_metrics.scale_policy.measurement_frontier_qualified=false;next.wave_metrics.scale_policy.read_only_parallel_lanes_max=1;next.wave_metrics.scale_policy.measurement_blockers=['BROWSER_METADATA_REFRESH_WITHOUT_NATIVE_ARTIFACT'];}
+ if(next.coverage?.measured?.sha!==oldHead)next.coverage.measured.status='MEASURED_OLDER_MAIN_SHA';
+ next.census_errors=errors.map(x=>({family:'browser_public_refresh',reason:x}));next.captured_at_utc=new Date().toISOString();next.mode='PUBLIC_STATUS_REFRESH_NO_COVERAGE_ARTIFACT';next.census_quality=errors.length?'PARTIAL_PUBLIC_REFRESH':'PUBLIC_METADATA_REFRESH';
+ state=next;render();set('refreshStatus',errors.length?'Partial: '+errors.length+' failed source(s)':'Public metadata refreshed · coverage receipt unchanged');busy=false;btn.disabled=false;
+}
+async function loadCensus(){try{const r=await fetch('evidence.latest.json?v='+Date.now(),{cache:'no-store'});if(!r.ok)throw Error('HTTP '+r.status);const data=await r.json();if(data.schema!=='codepurple.evidence_observatory.v2'||!data.main?.sha)throw Error('Invalid snapshot schema/head');state=data;render();set('refreshStatus','Loaded read-only census JSON')}catch(ex){set('refreshStatus','No local census JSON; embedded snapshot retained ('+ex.message+')')}}
+e('refreshBtn').addEventListener('click',refreshGitHub);e('loadBtn').addEventListener('click',loadCensus);render();
+// Public repo only; 15-minute TTL and no token. Browser failures retain truthful stale values.
+if(location.protocol!=='file:'){setTimeout(()=>refreshGitHub(),1200);setInterval(()=>{if(!document.hidden)refreshGitHub()},15*60*1000)}
+})();
+</script></body></html>

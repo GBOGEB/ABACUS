@@ -1,0 +1,536 @@
+{
+  "schema": "codepurple.evidence_observatory.v2",
+  "mode": "READ_ONLY_PINNED_OBSERVATION",
+  "captured_at_utc": "2026-10-18T16:43:34Z",
+  "census_quality": "PARTIAL_MAIN_HEAD_AHEAD_OF_COVERAGE_RECEIPT",
+  "repository": "GBOGEB/ABACUS",
+  "main": {
+    "sha": "1122dca15557e4d2b0ec16300fcbf409db678e86",
+    "url": "https://github.com/GBOGEB/ABACUS/commit/1122dca15557e4d2b0ec16300fcbf409db678e86",
+    "head_stable": null,
+    "commit_at_utc": "2026-10-18T16:09:35Z"
+  },
+  "coverage": {
+    "measured": {
+      "sha": "97a8b13faff577272a90edaf0dd4593035e10605",
+      "run_id": 39142444027,
+      "artifact_id": 12142730864,
+      "sha256": "4f205b496f35c85d9610ac035ad66becb3b923fd01dfd0acfadf5c756167e459",
+      "total_opportunities": 52200,
+      "covered_opportunities": 35154,
+      "percent": 67.34482758620689,
+      "statements": 40154,
+      "covered_statements": 27182,
+      "branches": 12046,
+      "covered_branches": 7972,
+      "test_pass": 4168,
+      "test_skip": 2,
+      "test_fail": null,
+      "run_url": "https://github.com/GBOGEB/ABACUS/actions/runs/39142444027",
+      "artifact_url": "https://github.com/GBOGEB/ABACUS/actions/runs/39142444027/artifacts/12142730864",
+      "status": "MEASURED_OLDER_MAIN_SHA"
+    },
+    "previous": {
+      "sha": "7488bd7bdcd2cb2fb7dd2d4a748a7867a7df2ab0",
+      "run_id": 39136242442,
+      "artifact_id": 12139904217,
+      "covered_opportunities": 34518,
+      "total_opportunities": 51554,
+      "percent": 66.95503743647437,
+      "run_url": "https://github.com/GBOGEB/ABACUS/actions/runs/39136242442"
+    },
+    "cohort": {
+      "label": "375 common files, fixed eligible denominator",
+      "files": 375,
+      "opportunities": 51554,
+      "covered_before": 34518,
+      "covered_after": 34534,
+      "before_percent": 66.95503743647437,
+      "after_percent": 66.98607285564651,
+      "delta_pp": 0.03103541917213019,
+      "source_blob_equality_verified": false,
+      "qualification": "MATCHED_DENOMINATOR_NOT_BLOB_MATCHED"
+    },
+    "composition": {
+      "new_files": 3,
+      "new_opportunities": 646,
+      "covered_new": 620,
+      "raw_total_delta_pp": 0.38979014973253356,
+      "population_mix_pp": 0.358754730560392
+    },
+    "historical": {
+      "main_2026_10_11": 36.85,
+      "pr_broad_2026_10_12": 36.92,
+      "pr_diff_2026_10_12": 51.0,
+      "accepted_uplift_pp": null,
+      "diff_coverage_now": null
+    },
+    "junit": {
+      "previous_actual_cases": 4075,
+      "previous_header": 4616,
+      "current_actual_cases": 4170,
+      "current_header": 4711,
+      "header_overcount": 541
+    },
+    "comparison_anchored_sha": "97a8b13faff577272a90edaf0dd4593035e10605"
+  },
+  "issues": {
+    "open": 38,
+    "closed": 267,
+    "total": 305,
+    "todo_1860_done": 1,
+    "todo_1860_total": 12,
+    "todo_977_done": 0,
+    "todo_977_total": 7,
+    "issue_1860_url": "https://github.com/GBOGEB/ABACUS/issues/1860",
+    "issue_1929_url": "https://github.com/GBOGEB/ABACUS/issues/1929",
+    "issue_977_url": "https://github.com/GBOGEB/CODEX/issues/977",
+    "historical_manifestations_open": 31,
+    "historical_manifestations_closed": 45,
+    "historical_manifestations_total": 76,
+    "historical_pulse_open_before": 53,
+    "historical_pulse_open_after": 38,
+    "historical_duplicate_closures": 9,
+    "historical_other_closures": 6,
+    "accepted_roots_open": null,
+    "accepted_roots_closed": null,
+    "bd_queue_open": null,
+    "bd_queue_closed": null
+  },
+  "governance": {
+    "ruleset_id": 24494381,
+    "required_approvals": 0,
+    "required_check_rules": 0,
+    "bypass_actors": 6,
+    "last_push_required": false,
+    "threads_resolved_required": false,
+    "negative_canary_rejected": null,
+    "first_correctly_admitted_pr": null,
+    "merge_admission": "HOLD",
+    "authenticated_crew_launches": null,
+    "accepted_rex_returns": null,
+    "links": {
+      "ruleset": "https://github.com/GBOGEB/ABACUS/rules/24494381"
+    }
+  },
+  "prs": [
+    {
+      "number": 2233,
+      "merged": true,
+      "head": "bfdf84f385f8db695ad3ee5b80f25b074c9fa993",
+      "merge_sha": "56169e55f506ced810a4c683fccae45ae173896f",
+      "approvals": 0,
+      "url": "https://github.com/GBOGEB/ABACUS/pull/2233",
+      "description": "W007 fail-closed validator"
+    },
+    {
+      "number": 2231,
+      "merged": true,
+      "head": "56169e55f506ced810a4c683fccae45ae173896f",
+      "merge_sha": "01ea2e4813460c50e7ca541d88af5d89461f86c1",
+      "approvals": 0,
+      "url": "https://github.com/GBOGEB/ABACUS/pull/2231",
+      "description": "W007 native bootstrap"
+    }
+  ],
+  "workflows": {
+    "b0": {
+      "name": "MIP B0 Test Admission and Coverage Evidence",
+      "id": 39142444027,
+      "sha": "97a8b13faff577272a90edaf0dd4593035e10605",
+      "status": "completed",
+      "conclusion": "success",
+      "jobs_success": 13,
+      "jobs_total": 13,
+      "url": "https://github.com/GBOGEB/ABACUS/actions/runs/39142444027",
+      "jobs": [
+        {
+          "name": "B0 canonical coverage producer",
+          "id": 117719440816,
+          "status": "completed",
+          "conclusion": "success",
+          "run_id": 39142444027,
+          "run_attempt": 1,
+          "url": "https://github.com/GBOGEB/ABACUS/actions/runs/39142444027/job/117719440816",
+          "source_sha": "97a8b13faff577272a90edaf0dd4593035e10605",
+          "execution_class": "NATIVE_EVIDENCE_PRODUCER"
+        },
+        {
+          "name": "B0 static/DAB census producer",
+          "id": 117719440971,
+          "status": "completed",
+          "conclusion": "success",
+          "run_id": 39142444027,
+          "run_attempt": 1,
+          "url": "https://github.com/GBOGEB/ABACUS/actions/runs/39142444027/job/117719440971",
+          "source_sha": "97a8b13faff577272a90edaf0dd4593035e10605",
+          "execution_class": "NATIVE_EVIDENCE_PRODUCER"
+        },
+        {
+          "name": "B1 false-green census",
+          "id": 117719441012,
+          "status": "completed",
+          "conclusion": "success",
+          "run_id": 39142444027,
+          "run_attempt": 1,
+          "url": "https://github.com/GBOGEB/ABACUS/actions/runs/39142444027/job/117719441012",
+          "source_sha": "97a8b13faff577272a90edaf0dd4593035e10605",
+          "execution_class": "NATIVE_EVIDENCE_PRODUCER"
+        },
+        {
+          "name": "B0 report-only producer",
+          "id": 117719441021,
+          "status": "completed",
+          "conclusion": "success",
+          "run_id": 39142444027,
+          "run_attempt": 1,
+          "url": "https://github.com/GBOGEB/ABACUS/actions/runs/39142444027/job/117719441021",
+          "source_sha": "97a8b13faff577272a90edaf0dd4593035e10605",
+          "execution_class": "NATIVE_EVIDENCE_PRODUCER"
+        },
+        {
+          "name": "DAB proposal worker DAB-97a8b13faff5-E741-006",
+          "id": 117719804140,
+          "status": "completed",
+          "conclusion": "success",
+          "run_id": 39142444027,
+          "run_attempt": 1,
+          "url": "https://github.com/GBOGEB/ABACUS/actions/runs/39142444027/job/117719804140",
+          "source_sha": "97a8b13faff577272a90edaf0dd4593035e10605",
+          "execution_class": "DAB_PROPOSAL_NOT_CREW"
+        },
+        {
+          "name": "DAB proposal worker DAB-97a8b13faff5-E731-003",
+          "id": 117719804174,
+          "status": "completed",
+          "conclusion": "success",
+          "run_id": 39142444027,
+          "run_attempt": 1,
+          "url": "https://github.com/GBOGEB/ABACUS/actions/runs/39142444027/job/117719804174",
+          "source_sha": "97a8b13faff577272a90edaf0dd4593035e10605",
+          "execution_class": "DAB_PROPOSAL_NOT_CREW"
+        },
+        {
+          "name": "DAB proposal worker DAB-97a8b13faff5-F401-008",
+          "id": 117719804180,
+          "status": "completed",
+          "conclusion": "success",
+          "run_id": 39142444027,
+          "run_attempt": 1,
+          "url": "https://github.com/GBOGEB/ABACUS/actions/runs/39142444027/job/117719804180",
+          "source_sha": "97a8b13faff577272a90edaf0dd4593035e10605",
+          "execution_class": "DAB_PROPOSAL_NOT_CREW"
+        },
+        {
+          "name": "DAB proposal worker DAB-97a8b13faff5-F821-002",
+          "id": 117719804202,
+          "status": "completed",
+          "conclusion": "success",
+          "run_id": 39142444027,
+          "run_attempt": 1,
+          "url": "https://github.com/GBOGEB/ABACUS/actions/runs/39142444027/job/117719804202",
+          "source_sha": "97a8b13faff577272a90edaf0dd4593035e10605",
+          "execution_class": "DAB_PROPOSAL_NOT_CREW"
+        },
+        {
+          "name": "DAB proposal worker DAB-97a8b13faff5-E741-007",
+          "id": 117719804212,
+          "status": "completed",
+          "conclusion": "success",
+          "run_id": 39142444027,
+          "run_attempt": 1,
+          "url": "https://github.com/GBOGEB/ABACUS/actions/runs/39142444027/job/117719804212",
+          "source_sha": "97a8b13faff577272a90edaf0dd4593035e10605",
+          "execution_class": "DAB_PROPOSAL_NOT_CREW"
+        },
+        {
+          "name": "DAB proposal worker DAB-97a8b13faff5-E731-004",
+          "id": 117719804239,
+          "status": "completed",
+          "conclusion": "success",
+          "run_id": 39142444027,
+          "run_attempt": 1,
+          "url": "https://github.com/GBOGEB/ABACUS/actions/runs/39142444027/job/117719804239",
+          "source_sha": "97a8b13faff577272a90edaf0dd4593035e10605",
+          "execution_class": "DAB_PROPOSAL_NOT_CREW"
+        },
+        {
+          "name": "DAB proposal worker DAB-97a8b13faff5-F821-001",
+          "id": 117719804268,
+          "status": "completed",
+          "conclusion": "success",
+          "run_id": 39142444027,
+          "run_attempt": 1,
+          "url": "https://github.com/GBOGEB/ABACUS/actions/runs/39142444027/job/117719804268",
+          "source_sha": "97a8b13faff577272a90edaf0dd4593035e10605",
+          "execution_class": "DAB_PROPOSAL_NOT_CREW"
+        },
+        {
+          "name": "DAB proposal worker DAB-97a8b13faff5-E731-005",
+          "id": 117719804307,
+          "status": "completed",
+          "conclusion": "success",
+          "run_id": 39142444027,
+          "run_attempt": 1,
+          "url": "https://github.com/GBOGEB/ABACUS/actions/runs/39142444027/job/117719804307",
+          "source_sha": "97a8b13faff577272a90edaf0dd4593035e10605",
+          "execution_class": "DAB_PROPOSAL_NOT_CREW"
+        },
+        {
+          "name": "B0 report-only admission census",
+          "id": 117721053460,
+          "status": "completed",
+          "conclusion": "success",
+          "run_id": 39142444027,
+          "run_attempt": 1,
+          "url": "https://github.com/GBOGEB/ABACUS/actions/runs/39142444027/job/117721053460",
+          "source_sha": "97a8b13faff577272a90edaf0dd4593035e10605",
+          "execution_class": "NATIVE_EVIDENCE_PRODUCER"
+        }
+      ],
+      "native_workflow_proposal_jobs": 8,
+      "queue_p95_seconds": null,
+      "execution_p95_seconds": null
+    },
+    "matrix": {
+      "name": "CI - ABACUS Matrix",
+      "id": 39142443923,
+      "sha": "97a8b13faff577272a90edaf0dd4593035e10605",
+      "status": "completed",
+      "conclusion": "success",
+      "url": "https://github.com/GBOGEB/ABACUS/actions/runs/39142443923"
+    },
+    "a10": {
+      "name": "a10-guard",
+      "id": 39142443938,
+      "sha": "97a8b13faff577272a90edaf0dd4593035e10605",
+      "status": "completed",
+      "conclusion": "success",
+      "url": "https://github.com/GBOGEB/ABACUS/actions/runs/39142443938"
+    },
+    "ruff": {
+      "name": "Security Scan — Ruff",
+      "id": 39142443853,
+      "sha": "97a8b13faff577272a90edaf0dd4593035e10605",
+      "status": "completed",
+      "conclusion": "success",
+      "url": "https://github.com/GBOGEB/ABACUS/actions/runs/39142443853"
+    },
+    "codeql": {
+      "name": "DELTA_1 CodeQL",
+      "id": 39142443965,
+      "sha": "97a8b13faff577272a90edaf0dd4593035e10605",
+      "status": "in_progress",
+      "conclusion": null,
+      "url": "https://github.com/GBOGEB/ABACUS/actions/runs/39142443965"
+    },
+    "w007": {
+      "name": "W007 Runtime Validator Negative Matrix",
+      "id": 39138380209,
+      "sha": "bfdf84f385f8db695ad3ee5b80f25b074c9fa993",
+      "status": "completed",
+      "conclusion": "success",
+      "tests_per_cell": 63,
+      "cells_pass": 4,
+      "cells_total": 4,
+      "scoped_percent": 100.0,
+      "url": "https://github.com/GBOGEB/ABACUS/actions/runs/39138380209"
+    }
+  },
+  "workers": {
+    "native_b0_proposal_jobs": 8,
+    "github_actions_job_ids_are_crew_ids": false,
+    "authenticated_dispatch_ids": null,
+    "accepted_rex_receipts": null,
+    "source": "https://github.com/GBOGEB/CODEX/issues/977"
+  },
+  "lineage": {
+    "root_owner": "https://github.com/GBOGEB/ABACUS/issues/1929",
+    "admission_owner": "https://github.com/GBOGEB/ABACUS/issues/1860",
+    "code_owner": "https://github.com/GBOGEB/CODEX/issues/977",
+    "bd_queue_source": "https://github.com/GBOGEB/ABACUS/blob/97a8b13faff577272a90edaf0dd4593035e10605/triage/ABACUS_BD_QUEUE_CURRENT.yaml"
+  },
+  "census_errors": [],
+  "next_wave": {
+    "label": "N+1 / CBD! — bounded observable target, not a statistical forecast",
+    "goal": "CHAR first-red to ASH only after comparable non-reproduction and independent disposition; restore governance separately",
+    "lanes": [
+      {
+        "id": "L-COV",
+        "owner": "coverage/telemetry",
+        "status": "SOURCE_READ",
+        "parallel_group": "READ_ONLY",
+        "minimum": "Obtain exact-head B0 JSON and diff-cover receipt; same config and file/blob cohort",
+        "target": "100% denominator/accounting completeness on the selected comparable cohort; no invented +pp",
+        "evidence": "https://github.com/GBOGEB/ABACUS/actions/runs/39142444027",
+        "blocker": "Historical baseline not cohort-matched",
+        "root_effect": "MATHEMATICAL_MEASUREMENT_ONLY"
+      },
+      {
+        "id": "L-ROOT",
+        "owner": "ABACUS #1929",
+        "status": "CENSUS_PENDING",
+        "parallel_group": "READ_ONLY",
+        "minimum": "Bind 3 candidate first-red signatures to native runs, owner paths and a canonical ID",
+        "target": "3 attributable candidates; >=1 independently accepted ASH closure only if genuinely proven",
+        "evidence": "https://github.com/GBOGEB/ABACUS/issues/1929",
+        "blocker": "Canonical root ID/closure receipts unavailable",
+        "root_effect": "CHAR_TO_ASH_CONDITIONAL"
+      },
+      {
+        "id": "L-GOV",
+        "owner": "authorized administrator",
+        "status": "OWNER_BLOCKED",
+        "parallel_group": "ADMIN_ONLY",
+        "minimum": "Install required statuses + >=1 eligible independent approval; submit negative RED and positive GREEN canaries",
+        "target": "At least 1 blocked RED canary and 1 eligible GREEN review path; no waivers",
+        "evidence": "https://github.com/GBOGEB/ABACUS/rules/24494381",
+        "blocker": "0 approvals, 0 required status rules, six bypass actors",
+        "root_effect": "ADMISSION_EDGE"
+      },
+      {
+        "id": "L-CI",
+        "owner": "runner / existing native workflows",
+        "status": "SOURCE_READ",
+        "parallel_group": "READ_ONLY",
+        "minimum": "Exact-main B0, Python 3.10–3.12, A10, CodeQL and immutable artifact census",
+        "target": "100% essential jobs terminal; do not count queued as green",
+        "evidence": "https://github.com/GBOGEB/ABACUS/actions/runs/39142444027",
+        "blocker": "Current main ahead of measured SHA",
+        "root_effect": "QUALIFICATION_EDGE"
+      },
+      {
+        "id": "L-REX",
+        "owner": "CODEX #977",
+        "status": "ARCHITECTURE_BLOCKED",
+        "parallel_group": "NO_REMOTE_MUTATION",
+        "minimum": "Resolve executor authorization architecture and validate stage-only vs actual launch contract",
+        "target": "An authenticated launch ID and accepted REX only if actual approved execution occurs",
+        "evidence": "https://github.com/GBOGEB/CODEX/issues/977",
+        "blocker": "Stage-only transport and owner authorization boundary",
+        "root_effect": "FEDERATED_RETURN_CONDITIONAL"
+      }
+    ]
+  },
+  "wave_metrics": {
+    "schema": "codepurple.adaptive_wave_receipt.v1",
+    "main_sha": "1122dca15557e4d2b0ec16300fcbf409db678e86",
+    "current_main_coverage_sha": "97a8b13faff577272a90edaf0dd4593035e10605",
+    "historical_focus": {
+      "schema": "codepurple.matched_wave_metrics.v1",
+      "cohort_id": "W007_TWO_PRODUCTION_MODULES_208_OPPORTUNITIES",
+      "configuration_id": "W007_PYTEST_COV_BRANCH_ML_20261018",
+      "fixed_opportunity_denominator": 208,
+      "cohort_qualification": "SAME_MODULE_AND_COUNT_NOT_BLOB_IDENTICAL",
+      "causal_coverage_uplift": null,
+      "repository_main_coverage_uplift": null,
+      "observations": [
+        {
+          "wave": 1,
+          "source_sha": "7488bd7bdcd2cb2fb7dd2d4a748a7867a7df2ab0",
+          "run_id": 39136242423,
+          "url": "https://github.com/GBOGEB/ABACUS/actions/runs/39136242423",
+          "native_jobs": 4,
+          "planned_jobs": 4,
+          "cases_per_job": 30,
+          "native_test_executions": 120,
+          "covered": 192,
+          "eligible": 208,
+          "uncovered": 16,
+          "coverage_percent": 92.307692,
+          "delta_covered": null,
+          "delta_pp": null,
+          "wave_span": null,
+          "gain_pp_per_wave": null,
+          "cases_added_per_job": null,
+          "new_covered_per_added_case": null
+        },
+        {
+          "wave": 3,
+          "source_sha": "0aa894c991e2e68a359ddac09c9bb6cff653ad82",
+          "run_id": 39137273009,
+          "url": "https://github.com/GBOGEB/ABACUS/actions/runs/39137273009",
+          "native_jobs": 4,
+          "planned_jobs": 4,
+          "cases_per_job": 61,
+          "native_test_executions": 244,
+          "covered": 206,
+          "eligible": 208,
+          "uncovered": 2,
+          "coverage_percent": 99.038462,
+          "delta_covered": 14,
+          "delta_pp": 6.730769,
+          "wave_span": 2,
+          "gain_pp_per_wave": 3.365385,
+          "cases_added_per_job": 31,
+          "new_covered_per_added_case": 0.451613
+        },
+        {
+          "wave": 4,
+          "source_sha": "bfdf84f385f8db695ad3ee5b80f25b074c9fa993",
+          "run_id": 39138380209,
+          "url": "https://github.com/GBOGEB/ABACUS/actions/runs/39138380209",
+          "native_jobs": 4,
+          "planned_jobs": 4,
+          "cases_per_job": 63,
+          "native_test_executions": 252,
+          "covered": 208,
+          "eligible": 208,
+          "uncovered": 0,
+          "coverage_percent": 100.0,
+          "delta_covered": 2,
+          "delta_pp": 0.961538,
+          "wave_span": 1,
+          "gain_pp_per_wave": 0.961538,
+          "cases_added_per_job": 2,
+          "new_covered_per_added_case": 1.0
+        }
+      ],
+      "gain_rate_trend": "DECELERATING_GAIN",
+      "rate_change_pp_per_wave": -2.403847,
+      "remaining_uncovered_opportunities": 0,
+      "ceiling_reached": true,
+      "next_behavioral_focus": "EXPAND_TO_SEPARATE_UNCOVERED_SOURCE_SLICE",
+      "warnings": [
+        "Wave-normalized rates are NOT wall-clock acceleration",
+        "No unverified root/ASH or main/diff credit"
+      ]
+    },
+    "scale_policy": {
+      "schema": "codepurple.wave_scale_policy.v1",
+      "read_only_parallel_lanes_max": 1,
+      "source_mutation_parallel_lanes_max": 1,
+      "source_mutation_enabled": false,
+      "merge_admission": "HOLD",
+      "governed_merge_credit": null,
+      "authenticated_crew_launch_credit": null,
+      "accepted_causal_root_closed": null,
+      "measurement_frontier_qualified": false,
+      "admission_blockers": [
+        "OWNER_GITHUB_RULES_NOT_ENFORCED",
+        "NEGATIVE_RED_CANARY_NOT_PROVEN"
+      ],
+      "measurement_blockers": [
+        "A_B_A_MAIN_UNVERIFIED",
+        "EXACT_MAIN_B0_NOT_TERMINAL_GREEN",
+        "CURRENT_MAIN_COVERAGE_ARTIFACT_MISSING"
+      ],
+      "next_slice": "NEXT_DISTINCT_SOURCE_FAMILY_OR_DIFF_COHORT",
+      "minimum_next_wave": "Pick uncovered eligible modules with verified denominator + risk, not more W007 coverage-only cases",
+      "scale_up_condition": "Exact stable main + native artifact + complete required gate receipts; no errors",
+      "scale_down_condition": "Head moved, terminal first-red, missing receipt, or uncontrolled queue",
+      "predicted_coverage_pp": null,
+      "prediction_state": "NOT_STATISTICALLY_QUALIFIED",
+      "forecast": {
+        "scope": "BOUNDED_EXECUTION_TARGET_NOT_PROBABILISTIC",
+        "next_readonly_lanes_if_proven": 3,
+        "current_readonly_lanes": 1,
+        "eligible_next_source_families_min": 1,
+        "eligible_next_source_families_max": 3
+      }
+    },
+    "root_census_owner": "https://github.com/GBOGEB/ABACUS/issues/1929",
+    "admission_owner": "https://github.com/GBOGEB/ABACUS/issues/1860",
+    "dispatch_owner": "https://github.com/GBOGEB/CODEX/issues/977"
+  }
+}
