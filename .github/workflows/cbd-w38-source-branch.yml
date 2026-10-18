@@ -79,7 +79,9 @@ jobs:
           }
           (folder/"matched-branch.json").write_text(json.dumps(receipt,indent=2)+"\n")
           print(json.dumps(receipt))
-          if gain<5:raise SystemExit("W38_EXISTING_SOURCE_GAIN_BELOW_FIVE_ARCS")
+          if (gain<15 or new["covered_branches"]!=new["num_branches"] or
+              new["covered_lines"]!=new["num_statements"]):
+              raise SystemExit("W38_EXISTING_SOURCE_NOT_FULLY_EXERCISED")
           PY
       - name: Preserve paired comparable source receipts
         if: always()
