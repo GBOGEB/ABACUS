@@ -6,8 +6,11 @@ claiming a Pages publication, or granting engineering authority.
 from __future__ import annotations
 
 from datetime import datetime, timezone
+import builtins
 import json
 from pathlib import Path
+import runpy
+import subprocess
 import sys
 
 import pytest
@@ -400,3 +403,64 @@ def test_runtime_diagnostic_outside_repo_retains_literal_path(
     repo = tmp_path / "source"
     external = tmp_path / "outside" / "missing.json"
     assert runtime_validator._relative(external, repo) == str(external)
+
+
+def test_runtime_writer_real_direct_cli_from_external_cwd(
+    tmp_path: Path,
+) -> None:
+    """The public direct-script invocation must work with an isolated sys.path.
+
+    No repository status file is created or mutated: only the test-owned output
+    path receives JSON. Running from outside the repository exercises the
+    documented fallback import used by shell/Windows callers.
+    """
+    source = Path(runtime_status.__file__).resolve()
+    receipt = tmp_path / "nested" / "runtime-status.json"
+    result = subprocess.run(
+        [sys.executable, "-I", str(source), "--output", str(receipt)],
+        cwd=tmp_path,
+        capture_output=True,
+        text=True,
+        timeout=30,
+        check=False,
+    )
+    assert result.returncode == 0, result.stderr[-2000:]
+    assert receipt.is_file()
+    status = json.loads(receipt.read_text(encoding="utf-8"))
+    assert json.loads(result.stdout) == status
+    assert status["schema"] == "abacus-runtime-governance-status/1.0"
+    assert status["validation_passed"] is True
+    assert status["validation_errors"] == []
+    assert status["authority"] == "RUNTIME_EVIDENCE_ONLY_ZERO_ENGINEERING_AUTHORITY"
+
+
+def test_runtime_writer_package_import_fallback_is_fail_closed(
+    runtime_tree: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """Instrument the fallback when the scripts package import is unavailable."""
+    original_import = builtins.__import__
+
+    def isolated_import(
+        name: str,
+        globals_: dict | None = None,
+        locals_: dict | None = None,
+        fromlist: tuple = (),
+        level: int = 0,
+    ) -> object:
+        if name == "scripts.validate_runtime_foundation":
+            raise ModuleNotFoundError(
+                "synthetic direct-script package import failure",
+                name=name,
+            )
+        return original_import(name, globals_, locals_, fromlist, level)
+
+    source = Path(runtime_status.__file__).resolve()
+    monkeypatch.syspath_prepend(str(source.parent))
+    monkeypatch.setattr(builtins, "__import__", isolated_import)
+    namespace = runpy.run_path(str(source), run_name="w007_fallback_test")
+    build_status = namespace["build_status"]
+    status = build_status(runtime_tree)
+    assert status["validation_passed"] is True
+    assert status["runtime_status"] == "validated"
+    assert status["authority"] == "RUNTIME_EVIDENCE_ONLY_ZERO_ENGINEERING_AUTHORITY"
