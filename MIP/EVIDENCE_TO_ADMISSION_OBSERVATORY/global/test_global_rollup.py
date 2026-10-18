@@ -112,4 +112,13 @@ class GlobalLedgerTests(unittest.TestCase):
             if kind=="link":wrong["taxonomy"]["terms"][0]["source_url"]="https://github.com/GBOGEB/ABACUS/blob/main/README.md"
             with self.subTest(kind=kind), self.assertRaises(ValueError):
                 render(wrong,self.template)
+
+    def test_lossless_handover_and_dropin_are_linked(self):
+        paths=["W40_QPS_TRIAGE_3P_RAL_LOSSLESS_HANDOVER.md",
+               "W40_DROPIN_NEXT_AGENT.md",
+               "W40_QPS_TRIAGE_LOSSLESS_CONTROL.json",
+               "W40_3P_RAL_CYCLE_ADAPTER.yaml"]
+        for name in paths:
+            self.assertTrue((ROOT/name).exists())
+            self.assertIn('href="'+name+'"',self.html)
 if __name__=="__main__":unittest.main()
