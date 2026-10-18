@@ -32,7 +32,7 @@ jobs:
           python-version: '3.12'
       - name: Install deterministic test prerequisites
         run: python -m pip install 'pytest>=7.4,<10' 'pytest-cov>=4.1,<8'
-      - name: Native 108-case negative and coverage testflight
+      - name: Native 154-case negative and convergence coverage testflight
         shell: bash
         run: |
           set -euo pipefail
@@ -41,8 +41,9 @@ jobs:
           mkdir -p native-metrics
           python -m pytest -q test_observatory.py test_wave_metrics.py \
             test_queue_telemetry.py test_w30_collector_negative.py \
+            test_wave_convergence.py \
             --junitxml=native-metrics/junit.xml \
-            --cov=census --cov=wave_metrics --cov=render --cov=queue_telemetry \
+            --cov=census --cov=wave_metrics --cov=render --cov=queue_telemetry --cov=wave_convergence \
             --cov-branch --cov-report=term-missing \
             --cov-report=json:native-metrics/coverage.json \
             --cov-report=xml:native-metrics/coverage.xml
