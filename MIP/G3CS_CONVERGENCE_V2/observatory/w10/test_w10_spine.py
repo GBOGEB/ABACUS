@@ -65,7 +65,7 @@ class GlobalSpineW10Tests(unittest.TestCase):
   with self.assertRaisesRegex(refresh.EvidenceError,'SHA256'):refresh.parse_canonical_zip(b'not a zip',SHA,42,123,'sha256:'+'0'*64)
  def test_native_zip_success_and_sha_guard(self):
   archive=ROOT/'b0-pr2239.zip'
-  if not archive.exists():self.skipTest("Optional native GitHub B0 artifact unavailable; run synthetic invariant tests")
+  if not archive.exists():self.skipTest("TEST_BLOCKED_SOURCE_MISSING: optional native GitHub B0 artifact unavailable; synthetic invariant tests remain active")
   zipbytes=archive.read_bytes()
   digest='sha256:'+hashlib.sha256(zipbytes).hexdigest()
   d=refresh.parse_canonical_zip(zipbytes,SHA,12142769026,39144589287,digest)
