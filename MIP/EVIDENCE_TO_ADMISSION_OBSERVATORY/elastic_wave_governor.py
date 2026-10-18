@@ -318,6 +318,8 @@ def _programme_stop(doc, results):
         and type(artifacts) is int and artifacts > 0
         and type(valid) is int and valid == artifacts
         and type(stable) is int and stable >= 8
+        and end.get("head_stable") is True
+        and end.get("canonical_b0_exact_head") is True
     )
     governance = (isinstance(gates, dict) and all(
         gates.get(k) is True for k in
