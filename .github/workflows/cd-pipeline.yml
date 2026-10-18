@@ -416,3 +416,40 @@ jobs:
           EOF
 
           cat deployment-report.md
+  # Trusted main-only SARIF publication: never request security-events: write
+  # from the PR-triggered ci-pipeline.yml workflow.
+  trusted-main-trivy-sarif:
+    name: Trusted main Trivy SARIF publication
+    runs-on: ubuntu-latest
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    timeout-minutes: 25
+    permissions:
+      contents: read
+      security-events: write
+    steps:
+      - name: Checkout trusted exact main source
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+      - name: Verify main-only source and token boundary
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$GITHUB_EVENT_NAME" = push
+          test "$GITHUB_REF" = refs/heads/main
+          test "$(git rev-parse HEAD)" = "$GITHUB_SHA"
+      - name: Rebuild trusted main Docker image
+        run: docker build -t dmaic-pipeline:sarif-main .
+      - name: Scan trusted main image with pinned Trivy
+        uses: aquasecurity/trivy-action@6abccf398f78b4c337599c0656f933d91efb91a0
+        with:
+          image-ref: dmaic-pipeline:sarif-main
+          format: sarif
+          output: trivy-results.sarif
+      - name: Verify nonempty SARIF output
+        run: test -s trivy-results.sarif
+      - name: Publish trusted-main SARIF
+        uses: github/codeql-action/upload-sarif@24c54180a607b1449ed407dd24f251e4e9147c8d
+        with:
+          sarif_file: trivy-results.sarif
