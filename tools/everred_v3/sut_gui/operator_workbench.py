@@ -283,10 +283,10 @@ class OperatorWorkbench:
                              sort_keys=True, separators=(",", ":")).encode()
         row["receipt_sha256"] = hashlib.sha256(payload).hexdigest()
         folder = self.receipt_dir / row["id"]
-        folder.mkdir(parents=True, exist_ok=False)
-        (folder / "receipt.json").write_text(
-            json.dumps(row, indent=2, sort_keys=True) + "\n", encoding="utf-8"
-        )
+        folder.mkdir(parents=True, exist_ok=True)
+        # Never overwrite a previous final receipt, even if its identity collides.
+        with (folder / "receipt.json").open("x", encoding="utf-8") as stream:
+            stream.write(json.dumps(row, indent=2, sort_keys=True) + "\n")
 
     def _work(self, rid):
         with self.lock:
