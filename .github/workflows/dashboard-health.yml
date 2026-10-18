@@ -123,7 +123,7 @@ jobs:
                 echo "🔗 Broken: $f → $href"
                 BROKEN=$((BROKEN+1))
               fi
-            done < <(grep -oP 'href="\K[^"]+' "$f")
+            done < <(grep -oE 'href="[^"]+' "$f" | sed 's/^href="//')
           done < <(find docs -name '*.html' -type f)
           echo "Total broken internal links: $BROKEN"
           echo "broken_links=$BROKEN" >> "$GITHUB_OUTPUT"
