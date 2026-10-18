@@ -8,7 +8,7 @@ import argparse
 import json
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
-from xml.etree import ElementTree
+from defusedxml import ElementTree
 
 SCHEMA = "cbd.coverage-temporal-receipt.v1"
 TARGETS = (
@@ -32,30 +32,87 @@ def _timestamp(value):
 
 
 def _suite_end(junit_xml):
+    """Return suite end, identity integrity and observed case denominators.
+
+    A JUnit declaration by itself is never evidence of executed tests. An
+    errored, skipped-only or empty suite cannot qualify a coverage sample.
+    """
     root = ElementTree.fromstring(junit_xml)
-    suites = [root] if root.tag == "testsuite" else root.findall("testsuite")
+    suites = (
+        [root] if root.tag == "testsuite"
+        else root.findall("testsuite") if root.tag == "testsuites"
+        else []
+    )
     if not suites:
         raise ValueError("JUnit testsuite missing")
     ends = []
+    seen = set()
+    counts = {"declared": 0, "observed": 0, "executed": 0, "skipped": 0}
     junit_count_consistent = True
     for suite in suites:
-        declared = suite.get("tests")
-        try:
-            count = int(declared)
-        except (ValueError, TypeError) as exc:
-            raise ValueError("JUnit test denominator missing or invalid") from exc
-        if count < 0 or count != len(suite.findall("testcase")):
+        def read_count(field):
+            raw = suite.get(field)
+            if raw is None and field != "tests":
+                return 0
+            if not isinstance(raw, str) or not raw.isdecimal():
+                raise ValueError("invalid JUnit " + field)
+            return int(raw)
+
+        declared = {field: read_count(field) for field in (
+            "tests", "failures", "errors", "skipped"
+        )}
+        cases = suite.findall("testcase")
+        counts["declared"] += declared["tests"]
+        counts["observed"] += len(cases)
+        if declared["tests"] != len(cases):
             junit_count_consistent = False
+
+        observed = {"failures": 0, "errors": 0, "skipped": 0}
+        for case in cases:
+            identity = (case.get("classname"), case.get("name"))
+            if (
+                not all(isinstance(part, str) and part.strip() for part in identity)
+                or identity in seen
+            ):
+                junit_count_consistent = False
+            else:
+                seen.add(identity)
+            outcomes = [key for key, tag in (
+                ("failures", "failure"),
+                ("errors", "error"),
+                ("skipped", "skipped"),
+            ) if case.find(tag) is not None]
+            if len(outcomes) > 1:
+                junit_count_consistent = False
+            for key in outcomes:
+                observed[key] += 1
+            if "skipped" not in outcomes:
+                counts["executed"] += 1
+            else:
+                counts["skipped"] += 1
+
+        if any(observed[key] != declared[key] for key in observed):
+            junit_count_consistent = False
+        if (
+            declared["failures"] or declared["errors"]
+            or observed["failures"] or observed["errors"]
+        ):
+            raise ValueError("JUnit contains failed or errored tests")
+
         start = _timestamp(suite.get("timestamp"))
         try:
             elapsed = float(suite.get("time", "nan"))
-        except ValueError as exc:
+        except (ValueError, TypeError) as exc:
             raise ValueError("invalid suite duration") from exc
         if not (0 <= elapsed < 86400):
             raise ValueError("invalid suite duration")
         ends.append(start + timedelta(seconds=elapsed))
-    return max(ends), junit_count_consistent
 
+    if counts["declared"] == 0 or counts["observed"] == 0:
+        raise ValueError("JUnit has zero test cases")
+    if counts["executed"] == 0:
+        raise ValueError("JUnit has zero independently executed test cases")
+    return max(ends), junit_count_consistent, counts
 
 def measure(coverage, junit_xml, coverage_binding, test_binding, *, expected_sha):
     """Return a non-authoritative receipt; invalid evidence is never green."""
@@ -72,10 +129,12 @@ def measure(coverage, junit_xml, coverage_binding, test_binding, *, expected_sha
         or test_binding.get("exact_sha") != expected_sha
     ):
         raise ValueError("coverage/test evidence is not bound to exact head")
+    if not isinstance(coverage.get("meta"), dict):
+        raise ValueError("coverage metadata missing")
     if coverage.get("meta", {}).get("branch_coverage") is not True:
         raise ValueError("branch coverage instrumentation missing")
     collected_at = _timestamp(coverage.get("meta", {}).get("timestamp"))
-    suite_end, junit_count_consistent = _suite_end(junit_xml)
+    suite_end, junit_count_consistent, junit_counts = _suite_end(junit_xml)
     files = coverage.get("files")
     if not isinstance(files, dict):
         raise ValueError("coverage file inventory unavailable")
@@ -132,6 +191,10 @@ def measure(coverage, junit_xml, coverage_binding, test_binding, *, expected_sha
         "junit_count_integrity": (
             "PASS" if junit_count_consistent else "MISMATCH"
         ),
+        "junit_test_cases_declared": junit_counts["declared"],
+        "junit_test_cases_observed": junit_counts["observed"],
+        "junit_test_cases_executed": junit_counts["executed"],
+        "junit_test_cases_skipped": junit_counts["skipped"],
         "accepted_coverage_uplift": None,
         "root_closure_credit": None,
         "merge_admission": "HOLD",
