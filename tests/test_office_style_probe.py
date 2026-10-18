@@ -100,7 +100,40 @@ def minimal_members(kind):
 def make_archive(path, contents, *, compression=zipfile.ZIP_DEFLATED):
     with zipfile.ZipFile(path, "w", compression=compression) as archive:
         for name, payload in contents.items():
-            archive.writestr(name, payload)
+            if "\\" in name:
+                # ZipInfo normalizes separators on Windows during construction.
+                # Preserve intentionally malformed entries for security tests.
+                member = zipfile.ZipInfo("placeholder.xml")
+                member.filename = name
+                member.compress_type = compression
+                archive.writestr(member, payload)
+            else:
+                archive.writestr(name, payload)
+    # On Windows, zipfile can normalize member names again at serialization,
+    # even when ZipInfo.filename was explicitly set. Synthesize the precise
+    # negative fixture by changing only the two name fields in the ZIP headers.
+    raw = path.read_bytes()
+    changed = False
+    for name in contents:
+        if "\\" not in name:
+            continue
+        with zipfile.ZipFile(path) as reader:
+            if name in reader.namelist():
+                continue
+        normal = name.replace("\\", "/").encode("utf-8")
+        unsafe = name.encode("utf-8")
+        if len(normal) != len(unsafe):
+            raise AssertionError("unsafe ZIP fixture length invariant failed")
+        if raw.count(unsafe) == 2:
+            # The bytes are already unsafe: only ZipInfo's reader view
+            # normalized the member name on this platform.
+            continue
+        if raw.count(normal) != 2:
+            raise AssertionError("unsafe ZIP fixture header invariant failed")
+        raw = raw.replace(normal, unsafe)
+        changed = True
+    if changed:
+        path.write_bytes(raw)
     return path
 
 
@@ -268,7 +301,14 @@ class OfficeStyleProbeProof(unittest.TestCase):
     def test_unsafe_paths_rejected(self):
         for name in ("../steal.xml", "word/../unsafe.xml", "/abs.xml", "word\\doc.xml", "./relative.xml"):
             with self.subTest(path=name):
-                self.rejects("docx",lambda x,n=name:x.update({n:"<root/>"}))
+                path = self.make("docx", lambda x, n=name: x.update({n: "<root/>"}))
+                with zipfile.ZipFile(path) as archive:
+                    # The native ZIP parser may normalize filename on Windows.
+                    # Assert the *original* byte-derived member identity.
+                    raw_names = [entry.orig_filename for entry in archive.infolist()]
+                    self.assertIn(name, raw_names)
+                with self.assertRaises(ValueError):
+                    analyze(path, "fixture:docx")
 
     def test_duplicate_case_insensitive_members_rejected(self):
         self.rejects("docx",lambda x:x.update({"WORD/DOCUMENT.XML":DOCX}))

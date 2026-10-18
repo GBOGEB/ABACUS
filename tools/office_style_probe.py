@@ -131,6 +131,14 @@ class OfficePackage:
         seen = set()
         for info in records:
             name = info.filename
+            # ZipInfo normalizes native separators when loading a ZIP on
+            # Windows. Validate the original directory entry before trusting
+            # the sanitized filename; a raw backslash must remain forbidden.
+            original = info.orig_filename
+            if not original or "\\" in original or "\x00" in original:
+                raise ValueError("unsafe raw archive path")
+            if original != name:
+                raise ValueError("ZIP member name normalized before validation")
             if not name or "\\" in name or name.startswith("/") or "\x00" in name:
                 raise ValueError("unsafe archive path")
             segments = name.split("/")
