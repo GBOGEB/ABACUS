@@ -1,0 +1,11 @@
+flowchart TD
+  S["ABACUS exact source PR SHA"] --> N["Native 3x3 OS/Python JUnit + JSON"]
+  N --> H["Provider ZIP SHA256 and XML/JSON byte verification"]
+  H --> R["Read-only CODEX Mycelium / QPS MissionControl references"]
+  C["Current main B0 and Python matrix"] --> G{"Terminal exact-head and comparable coverage?"}
+  G -->|NO| X["HOLD; classify first-red"]
+  G -->|YES| A{"Admin required statuses, security and independent review?"}
+  A -->|NO| X
+  A -->|YES and eligible| M["Correctly governed main admission + main SHA readback"]
+  H -. "Focused proof only" .-> G
+  R -. "Not dispatch authority" .-> X
