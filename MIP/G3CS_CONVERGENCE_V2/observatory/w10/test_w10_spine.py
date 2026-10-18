@@ -1,5 +1,6 @@
 """Local negative tests; do not assert authenticated GitHub execution."""
 import hashlib, json, unittest, importlib.util
+import pytest
 from pathlib import Path
 from zipfile import ZipFile
 import io
@@ -63,6 +64,7 @@ class GlobalSpineW10Tests(unittest.TestCase):
   with self.assertRaises(refresh.EvidenceError):refresh.count_pair(-1,30)
  def test_wrong_hash_of_canonical_archive_rejected(self):
   with self.assertRaisesRegex(refresh.EvidenceError,'SHA256'):refresh.parse_canonical_zip(b'not a zip',SHA,42,123,'sha256:'+'0'*64)
+ @pytest.mark.TEST_BLOCKED_SOURCE_MISSING
  def test_native_zip_success_and_sha_guard(self):
   archive=ROOT/'b0-pr2239.zip'
   if not archive.exists():self.skipTest("TEST_BLOCKED_DEPENDENCY: optional historical native GitHub ZIP is not staged; synthetic invariant tests remain mandatory")
