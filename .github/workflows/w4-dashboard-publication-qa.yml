@@ -5,6 +5,7 @@ on:
       - 'docs/index.html'
       - 'tests/test_dashboard_health_link_contract.py'
       - 'tests/test_dashboard_health_source_contract.py'
+      - '.github/workflows/dashboard-health.yml'
       - '.github/workflows/w4-dashboard-publication-qa.yml'
 permissions:
   contents: read
@@ -23,6 +24,8 @@ jobs:
           - os: ubuntu-24.04
             python-version: '3.12'
           - os: windows-2022
+            python-version: '3.11'
+          - os: macos-latest
             python-version: '3.11'
     steps:
       - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
