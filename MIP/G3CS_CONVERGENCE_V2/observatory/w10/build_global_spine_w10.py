@@ -225,6 +225,59 @@ python build_global_spine_w10.py --history CODE_PURPLE_W10_SPINE_HISTORY.json
  }})();
  </script></body></html>'''
 
+def w11_native_main_panel(history):
+    """Post-freeze native B0 epoch is additive, never rewrites W10 SSOT."""
+    source=BASE/'W11_OBSERVED_MAIN_EPOCH.json'
+    if not source.is_file():
+        raise ValueError('W11 independently observed main epoch is missing')
+    epoch=json.loads(source.read_text(encoding='utf-8'))
+    if epoch.get('schema')!='codepurple.spine.w11.observed-main.v1':
+        raise ValueError('W11 main epoch schema invalid')
+    old, new = epoch['measurements']
+    prior=history['clocks']['main_coverage'][1]
+    if old.get('source_sha')!=prior['sha'] or old['combined']['covered']!=prior['covered'] or old['combined']['eligible']!=prior['eligible']:
+        raise ValueError('W11 post-freeze before-main does not join frozen W10 baseline')
+    if epoch.get('governance')!={'merge_admission':'HOLD','security_waiver':False,'authority_transfer':False,'accepted_rex':None,'authorized_crew_launch':None,'causal_root_closure':None}:
+        raise ValueError('W11 post-freeze epoch cannot override authoritative governance')
+    for item in (old,new):
+        for key in ('statements','branches'):
+            measure=item[key]
+            if type(measure['covered']) is not int or type(measure['eligible']) is not int or not(0<=measure['covered']<=measure['eligible']):
+                raise ValueError('Invalid W11 native coverage numerator/denominator')
+        covered=sum(item[k]['covered'] for k in ('statements','branches'))
+        eligible=sum(item[k]['eligible'] for k in ('statements','branches'))
+        if covered!=item['combined']['covered'] or eligible!=item['combined']['eligible'] or item['combined']['uncovered']!=eligible-covered or item['native_b0_terminal']!='success':
+            raise ValueError('W11 source coverage receipt inconsistent with B0 terminal')
+        if len(item['source_sha'])!=40 or len(item['archive_sha256'])!=64:
+            raise ValueError('Native main source/artifact digest invalid')
+    diff=epoch['comparison'];b=old['combined'];a=new['combined']
+    if (diff['covered_delta'],diff['eligible_delta'],diff['uncovered_delta']) != (a['covered']-b['covered'],a['eligible']-b['eligible'],a['uncovered']-b['uncovered']):
+        raise ValueError('W11 native before/after conservation failed')
+    if diff['new_test_ids']<0 or diff['removed_test_ids']<0:
+        raise ValueError('Invalid W11 added/removed test identity counts')
+    target=epoch['next_conditional']
+    if target.get('classification')!='FIXED_DENOMINATOR_SENSITIVITY_NOT_STATISTICAL_PREDICTION' or target.get('assumed_eligible')!=a['eligible']:
+        raise ValueError('W11 N+1 target must remain conditional')
+    nb=100*b['covered']/b['eligible'];na=100*a['covered']/a['eligible'];nf=100*(a['covered']+target['net_new_covered'])/a['eligible']
+    if target['net_new_covered']>a['uncovered']:
+        raise ValueError('N+1 scenario exceeds uncovered main opportunities')
+    if abs(na-epoch['measurements'][1]['combined']['percent'])>1e-5:
+        raise ValueError('W11 source-reported coverage percentage invalid')
+    return f'''<section class="panel section" id="w11-main-epoch">
+    <h2>11 · N−1 → N observed main coverage · N+1 conditional</h2>
+    <p class="muted">Append-only <b>post-W10</b> native main verification. The frozen W10 cards above retain their original time stamp; this newer epoch does not rewrite them.</p>
+    <div class="triple">
+    <div class="epoch"><small>N−1 native main · earlier green</small><b>{nb:.3f}%</b><p>{N(b['covered'])} / {N(b['eligible'])} covered; {N(b['uncovered'])} uncovered</p></div>
+    <div class="epoch"><small>N native main · terminal B0 success</small><b>{na:.3f}%</b><p>{N(a['covered'])} / {N(a['eligible'])} covered; {N(a['uncovered'])} uncovered</p></div>
+    <div class="epoch next"><small>N+1 conditional, not forecast</small><b>{nf:.3f}%*</b><p>+{N(target['net_new_covered'])} unique covered opportunities if denominator remains {N(a['eligible'])}</p></div></div>
+    <div class="badge-row">{pill('Covered +'+N(diff['covered_delta']),'pass')}{pill('Eligible +'+N(diff['eligible_delta']))}
+      {pill('Uncovered '+N(diff['uncovered_delta']),'pass')}{pill('New IDs '+N(diff['new_test_ids'])+' / removed '+N(diff['removed_test_ids']),'pass')}
+      {pill('Governed admission HOLD','blocked')}</div>
+    <p class="muted">Main SHA: <code>{esc(new['source_sha'])}</code>. This is a changing-population portfolio improvement, not a fixed-code causal delta.</p>
+    <div class="provenance"><a href="W11_OBSERVED_MAIN_EPOCH.json">Native source and family census</a>
+    <a href="https://github.com/GBOGEB/ABACUS/actions/runs/{new['native_b0_run_id']}/artifacts/{new['native_b0_artifact_id']}" target="_blank" rel="noopener">Canonical B0 ZIP receipt</a></div>
+    </section>'''
+
 def w11_contract_panel(history):
     """Load executable contract by file path; verify published JSON parity."""
     import importlib.util
@@ -273,7 +326,7 @@ def main():
     body=make_html(d,svg)
     if body.count('<footer>')!=1:
         raise ValueError('W10 HTML footer anchor missing or ambiguous')
-    body=body.replace('<footer>',w11_contract_panel(d)+'<footer>',1)
+    body=body.replace('<footer>',w11_contract_panel(d)+w11_native_main_panel(d)+'<footer>',1)
     html_file=out/'CODE_PURPLE_GLOBAL_SPINE_W10.html';html_file.write_text(body,encoding='utf-8')
     (out/'index.html').write_bytes(html_file.read_bytes())  # exact byte-identical HTML review surface
     issue=d['clocks']['issues'][-1];ci0,ci1=d['clocks']['main_ci'][-2:];pr0,pr1=d['clocks']['pr_ci'][-2:];a,b=d['clocks']['main_coverage'][:2]
