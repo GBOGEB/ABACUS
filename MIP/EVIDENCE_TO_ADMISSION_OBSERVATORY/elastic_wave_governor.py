@@ -341,6 +341,53 @@ def _programme_stop(doc, results):
             "family_statuses": statuses}
 
 
+def artifact_type_census(doc):
+    """Track artifact type breadth without mistaking uploads for federation.
+
+    Native-local verification and downstream consumer acceptance are separate.
+    Missing type lists remain UNKNOWN, not 100%.
+    """
+    rows = doc.get("artifact_types")
+    if rows is None:
+        return {"status": "ARTIFACT_TYPE_POPULATION_UNKNOWN",
+                "native_expected": None, "native_verified": None,
+                "native_yield": None, "consumer_attested_types": None}
+    if not isinstance(rows, list) or not rows:
+        raise GovernorError("artifact_types must be a nonempty list or null")
+    seen = set()
+    out = []
+    for row in rows:
+        if not isinstance(row, dict):
+            raise GovernorError("artifact type must be an object")
+        kind = row.get("kind")
+        if not isinstance(kind, str) or not kind or kind in seen:
+            raise GovernorError("artifact type names must be distinct and nonempty")
+        seen.add(kind)
+        expected = integer(row.get("expected"), f"{kind}.expected", 1)
+        verified = integer(row.get("native_verified"), f"{kind}.native_verified")
+        if verified > expected:
+            raise GovernorError("artifact type verified exceeds denominator")
+        if row.get("source_sha") != doc.get("snapshot_source_sha"):
+            raise GovernorError("artifact type SHA mismatch")
+        if row.get("consumer_attested") not in {True, False, None}:
+            raise GovernorError("consumer attestation must be boolean or UNKNOWN")
+        out.append({"kind": kind, "expected": expected,
+                    "native_verified": verified, "consumer_attested": row.get("consumer_attested"),
+                    "native_yield": round(verified / expected, 6)})
+    total = sum(x["expected"] for x in out)
+    verified = sum(x["native_verified"] for x in out)
+    complete = total == verified
+    consumer = all(x["consumer_attested"] is True for x in out)
+    return {"status": "NATIVE_COMPLETE_CONSUMER_ATTESTED" if complete and consumer
+            else "NATIVE_COMPLETE_CONSUMER_UNKNOWN" if complete
+            else "NATIVE_INCOMPLETE", "types": out,
+            "native_expected": total, "native_verified": verified,
+            "native_yield": round(verified / total, 6),
+            "consumer_attested_types": sum(x["consumer_attested"] is True for x in out),
+            "consumer_attestation_complete": consumer,
+            "global_federation_credit": None}
+
+
 def evaluate(doc):
     if not isinstance(doc, dict) or doc.get("schema") != "codepurple.elastic_wave_input.v1":
         raise GovernorError("unsupported input schema")
@@ -368,6 +415,7 @@ def evaluate(doc):
             r["state"] = "LOCAL_RETRIGGER_PILOT"
             r["stop_local_coverage"] = False
     programme = _programme_stop(doc, results)
+    artifacts = artifact_type_census(doc)
     capacity = _capacity(doc, results, actionable)
     if programme["stop_entire_program"]:
         capacity["proposed_native_runner_lanes"] = 0
@@ -383,6 +431,7 @@ def evaluate(doc):
     return {"schema": "codepurple.elastic_wave_decision.v1",
             "snapshot_source_sha": doc["snapshot_source_sha"],
             "families": results, "capacity": capacity, "programme": programme,
+            "artifact_type_census": artifacts,
             "retrigger": {"actionable": actionable, "duplicate_suppressed": suppressed,
                           "withheld": withheld, "consume_only_after_actual_execution":
                           [r["key"] for r in actionable]},
