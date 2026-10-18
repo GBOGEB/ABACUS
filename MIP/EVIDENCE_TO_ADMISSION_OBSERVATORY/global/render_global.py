@@ -35,6 +35,25 @@ def render(ledger: dict, template: str) -> str:
         if (type(item.get("covered")) is not int or type(item.get("eligible")) is not int
             or item["eligible"]<=0 or not (0<=item["covered"]<=item["eligible"])):
             raise ValueError("invalid trajectory denominator")
+    taxonomy = ledger.get("taxonomy", {})
+    if taxonomy.get("schema") != "qps-triage-moniker-nav/1.0":
+        raise ValueError("missing moniker taxonomy")
+    groups = {r.get("id") for r in taxonomy.get("families", [])}
+    terms = taxonomy.get("terms", [])
+    ids = [t.get("id") for t in terms]
+    if len(groups) != 5 or len(terms) < 25 or len(ids) != len(set(ids)):
+        raise ValueError("taxonomy family/leaf census mismatch")
+    if not {"qps-triage","3p-ral","p3r","3pm","3pr","mip","3pc","3p3","cbd"}.issubset(ids):
+        raise ValueError("canonical QPS moniker leaf absent")
+    for term in terms:
+        if (term.get("family") not in groups or term.get("formal_credit_delta") != 0
+            or term.get("authority_transfer") is not False):
+            raise ValueError("taxonomy cannot promote credit or authority")
+        if not isinstance(term.get("source_url"),str) or not re.fullmatch(
+            r"https://github[.]com/GBOGEB/(?:ABACUS|CODEX|cryoplant-project)/blob/[0-9a-f]{40}/[^?#\s]+",
+            term["source_url"]
+        ):
+            raise ValueError("taxonomy source must be immutable SHA")
     f=ledger["focused_coverage"]
     if sum(r["covered"] for r in f["families"])!=f["covered"] or sum(r["eligible"] for r in f["families"])!=f["eligible"]:
         raise ValueError("family numerator/denominator mismatch")
