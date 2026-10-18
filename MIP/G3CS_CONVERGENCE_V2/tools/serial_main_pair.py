@@ -62,6 +62,8 @@ def validate(payload):
     pair = payload.get("observations")
     require(isinstance(pair, list) and len(pair) == 2, "exactly two serial main samples required")
     seen_jobs = set()
+    seen_jobids = set()
+    prior_run_ids = set()
     for i, item in enumerate(pair):
         sha = item.get("main_sha")
         require(isinstance(sha, str) and SHA40.fullmatch(sha), "invalid main SHA")
@@ -88,14 +90,18 @@ def validate(payload):
         jobs = item.get("jobs")
         require(isinstance(jobs, list), "missing native job observation")
         job_names = set()
+        this_run_ids = set()
         for job in jobs:
             require(job.get("source_sha") == sha, "job not bound to main SHA")
             require(all(type(job.get(k)) is int and job[k] > 0
                         for k in ("run_id", "attempt", "job_id")),
                     "bad native run/job/attempt")
             key = (job["run_id"], job["attempt"], job["job_id"])
-            require(key not in seen_jobs, "reused native job identity")
+            require(key not in seen_jobs and job["job_id"] not in seen_jobids,
+                    "reused native job identity")
             seen_jobs.add(key)
+            seen_jobids.add(job["job_id"])
+            this_run_ids.add(job["run_id"])
             name = job.get("cohort_key")
             require(isinstance(name, str) and name and name not in job_names,
                     "missing or duplicate job cohort key")
@@ -124,6 +130,9 @@ def validate(payload):
             captured = instant(item["captured_at"])
             require(created <= captured and (finished is None or finished <= captured),
                     "observation precedes native job evidence")
+        require(prior_run_ids.isdisjoint(this_run_ids),
+                "cross-main native run ID reused")
+        prior_run_ids.update(this_run_ids)
     return pair
 
 
