@@ -122,7 +122,13 @@ def make_archive(path, contents, *, compression=zipfile.ZIP_DEFLATED):
                 continue
         normal = name.replace("\\", "/").encode("utf-8")
         unsafe = name.encode("utf-8")
-        if len(normal) != len(unsafe) or raw.count(normal) != 2:
+        if len(normal) != len(unsafe):
+            raise AssertionError("unsafe ZIP fixture length invariant failed")
+        if raw.count(unsafe) == 2:
+            # The bytes are already unsafe: only ZipInfo's reader view
+            # normalized the member name on this platform.
+            continue
+        if raw.count(normal) != 2:
             raise AssertionError("unsafe ZIP fixture header invariant failed")
         raw = raw.replace(normal, unsafe)
         changed = True
