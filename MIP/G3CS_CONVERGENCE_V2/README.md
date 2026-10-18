@@ -69,58 +69,58 @@ The displayed `46..62` N+1 bound is only the arithmetic minimum/maximum for a **
 
 ## Serial merged-main measurement extension (G3C-S W5)
 
-The existing \`tools/compare_snapshots.py\` compares **successive readbacks of the
+The existing `tools/compare_snapshots.py` compares **successive readbacks of the
 same exact (source SHA, run ID, attempt) population**. It must never be used
 to infer longitudinal improvement between different PR heads.
 
-The additional \`tools/serial_main_pair.py\` compares **two consecutive,
+The additional `tools/serial_main_pair.py` compares **two consecutive,
 source-reported merged-main commits** with different native run/job IDs but the
 same frozen logical job cohorts. Its input schema is
-\`codepurple.g3cs.serial-main-pair-input.v1\`. Capture real main SHA, explicit
+`codepurple.g3cs.serial-main-pair-input.v1`. Capture real main SHA, explicit
 parent-main SHA, timezone-aware capture time, SHA-bound job/run/attempt IDs,
 first-red fingerprints and owner root statuses. Coverage
-\`statement\`/\`branch\`/\`diff\` entries can be \`null\`; otherwise each must
+`statement`/`branch`/`diff` entries can be `null`; otherwise each must
 contain source SHA, covered/eligible counts, and SHA256 hashes for scope,
 selection and tool. **The comparator rejects any noncontiguous main chain.**
 
 Example invocation (on separately obtained, source-reported JSON observations):
 
-\`\`\`bash
+```bash
 python tools/serial_main_pair.py \
   --input /path/to/two-serial-main-observations.json \
   --output /tmp/g3cs-serial-main-pair.json
 python -m unittest discover -s ../../tests -p 'test_g3cs_serial_main.py' -v
-\`\`\`
+```
 
 Interpretation rules:
 
-- Comparisons return \`PAIRED_SOURCE_REPORTED\` only when the scope, tool,
-  selection and denominator all match; otherwise \`UNKNOWN\` or
-  \`NONCOMPARABLE\`. No inferred coverage from green workflow checks.
+- Comparisons return `PAIRED_SOURCE_REPORTED` only when the scope, tool,
+  selection and denominator all match; otherwise `UNKNOWN` or
+  `NONCOMPARABLE`. No inferred coverage from green workflow checks.
 - A first-red that disappears is a **nonreproduced candidate**, not an
-  accepted causal-root closure. A source-reported \`CLOSURE_CLAIMED\` root
+  accepted causal-root closure. A source-reported `CLOSURE_CLAIMED` root
   is not independently verified.
 - Queue and execution p95 require at least five **matched terminal jobs**
   with distinct, plausible run/job/attempt IDs and valid timing clocks.
   Skipped, cancelled and nonterminal jobs do not fabricate durations.
 - Two serial observations allow descriptive differences only: stability,
-  PCA, Bradley–Terry, Six Sigma and predictive intervals remain \`null\`.
+  PCA, Bradley–Terry, Six Sigma and predictive intervals remain `null`.
   The result labels source evidence
-  \`SOURCE_REPORTED_NOT_INDEPENDENTLY_VERIFIED\`, with
-  \`admission=HOLD\` and \`authority_transfer=false\`.
-- Typed output \`dag_joins\` references the existing graph nodes
-  \`main/matrix/coverage/roots/dmaic/dashboard\`; \`sipoc_process\` is the
+  `SOURCE_REPORTED_NOT_INDEPENDENTLY_VERIFIED`, with
+  `admission=HOLD` and `authority_transfer=false`.
+- Typed output `dag_joins` references the existing graph nodes
+  `main/matrix/coverage/roots/dmaic/dashboard`; `sipoc_process` is the
   existing MIP/gg_MATH matched-cohort family. This is not a new SSOT,
   workflow policy, Crew launcher or merge-authority provider.
 
-The new repository-native \`tests/test_g3cs_serial_main.py\` contains
+The new repository-native `tests/test_g3cs_serial_main.py` contains
 **17 positive/adversarial methods**, including forged timestamps, duplicate
 job identities, missing source SHA, unmatched denominators, premature
 observations, negative clocks and unsupported authority promotion. Local
 unit proof passed 17/17; current PR-head native CI and independent review
 remain separate.
 
-Browser QA now creates the untracked \`qa/\` folder in clean clones,
+Browser QA now creates the untracked `qa/` folder in clean clones,
 checks the dashboard's embedded source digest against the source input, and
 emits SHA256 hashes of HTML and three viewport screenshots. A local browser
 receipt is not an exact-head native release receipt.
