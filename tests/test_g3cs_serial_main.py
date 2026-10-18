@@ -30,7 +30,8 @@ def row(sha, timestamp, parent=None, *, count=5):
         finished = f"2026-10-18T10:{i:02d}:12Z"
         jobs.append({"source_sha": sha, "run_id": (100 if sha == A else 200) + i,
                      "attempt": 1, "job_id": (1000 if sha == A else 2000) + i,
-                     "cohort_key": f"linux-py3.{i}/suite", "status": "completed",
+                     "cohort_key": f"linux-py3.{i}/suite", "environment_sha256": E,
+                     "status": "completed",
                      "conclusion": "success", "created_at": created,
                      "started_at": started, "completed_at": finished})
     return {"main_sha": sha, "parent_main_sha": parent,
@@ -165,6 +166,16 @@ class G3CSSerialMainTests(unittest.TestCase):
             out = MODULE.compare(p)
             self.assertEqual(out["telemetry"]["matched_terminal_jobs"], 4)
             self.assertIsNone(out["telemetry"]["queue_p95_before_seconds"])
+
+    def test_environment_drift_blocks_latency_comparison(self):
+        p = fixture()
+        p["observations"][1]["jobs"][0]["environment_sha256"] = C
+        out = MODULE.compare(p)["telemetry"]
+        self.assertEqual(len(out["environment_mismatched_jobs"]), 1)
+        self.assertEqual(out["matched_terminal_jobs"], 4)
+        self.assertIsNone(out["queue_p95_before_seconds"])
+        self.deny(lambda p: p["observations"][1]["jobs"][0].pop(
+            "environment_sha256"), "missing job environment fingerprint")
 
     def test_nonmatching_job_keys_cannot_fake_latency(self):
         p = fixture()
