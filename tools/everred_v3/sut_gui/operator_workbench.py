@@ -213,7 +213,8 @@ class OperatorWorkbench:
             row = self.records.get(rid)
             return self._public(row) if row is not None else None
 
-    def submit(self, profile, input_name, source_sha, consent, delay_seconds, token):
+    def submit(self, profile, input_name, source_sha, input_sha256,
+               consent, delay_seconds, token):
         if not self.enabled:
             return 403, "Explicit --enable-operator is required"
         if not secrets.compare_digest(str(token), self.token):
@@ -230,6 +231,9 @@ class OperatorWorkbench:
             return 403, "MCP not configured for authorized execution"
         if type(source_sha) is not str or source_sha != plan["source_sha"]:
             return 409, "Source SHA moved or was not explicitly selected"
+        expected_input_hash = (plan["input"] or {}).get("sha256")
+        if input_sha256 != expected_input_hash:
+            return 409, "Binary input hash changed since dry-run approval"
         with self.lock:
             if self.active is not None or any(
                     x["status"] == "SCHEDULED" for x in self.records.values()):
