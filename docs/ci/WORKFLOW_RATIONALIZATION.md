@@ -89,6 +89,7 @@ Make PR-triggered workflows with write-class GitHub token scopes explicit and re
 | 20 | `pr_domain` | `bridge_federation` | `gloob-causal-responder.yml` | pull_request, push | 1 | `keep` | — |
 | 20 | `pr_domain` | `bridge_federation` | `gm-i-a-coolprop-runtime-bridge-p002.yml` | pull_request | 1 | `keep` | — |
 | 20 | `pr_domain` | `bridge_federation` | `gm-i-a-coolprop-runtime-bridge.yml` | pull_request, workflow_dispatch | 1 | `keep` | — |
+| 20 | `pr_domain` | `bridge_federation` | `mcl-roundtrip-hub-qa.yml` | pull_request, workflow_dispatch | 3 | `keep` | — |
 | 20 | `pr_domain` | `bridge_federation` | `mcw-artifact-cold-build.yml` | workflow_dispatch, pull_request | 1 | `keep` | — |
 | 20 | `pr_domain` | `bridge_federation` | `mission-control-lite-testflight.yml` | workflow_dispatch, pull_request | 1 | `keep` | — |
 | 20 | `pr_domain` | `bridge_federation` | `w189f-federation-sample4-exact.yml` | pull_request, push | 1 | `keep` | — |
@@ -220,6 +221,8 @@ Make PR-triggered workflows with write-class GitHub token scopes explicit and re
 | 20 | `pr_domain` | `statistics` | `bootstrap-integration.yml` | push, pull_request, workflow_dispatch | 6 | `keep` | — |
 | 20 | `pr_domain` | `statistics` | `cbd-matched-coverage.yml` | pull_request, workflow_dispatch | 1 | `keep` | — |
 | 20 | `pr_domain` | `statistics` | `ci-cd.yml` | push, pull_request, schedule, workflow_dispatch | 8 | `keep` | — |
+| 20 | `pr_domain` | `statistics` | `code-purple-w40-binary-penetration.yml` | pull_request, workflow_dispatch | 1 | `keep` | — |
+| 20 | `pr_domain` | `statistics` | `code-purple-w42-remaining-arcs.yml` | pull_request, workflow_dispatch | 1 | `keep` | — |
 | 20 | `pr_domain` | `statistics` | `g3a-n14-matched-arc-flight.yml` | pull_request, workflow_dispatch | 1 | `keep` | — |
 | 20 | `pr_domain` | `statistics` | `mip-py310-combined-head-probe.yml` | pull_request, workflow_dispatch | 1 | `keep` | — |
 | 20 | `pr_domain` | `statistics` | `mip2-method-qualification.yml` | pull_request, workflow_dispatch, push | 1 | `keep` | — |
@@ -266,6 +269,7 @@ Make PR-triggered workflows with write-class GitHub token scopes explicit and re
 
 ## Repeated quality/test commands
 
+- `python -m pytest -q \` — `ariana-cicd.yml`, `ci-abacus.yml`, `code-purple-w40-binary-penetration.yml`, `code-purple-w42-remaining-arcs.yml`, `leg5-federation-dashboard-proof.yml`, `w29-disjoint-frontier-coverage.yml`
 - `python -m pip install pytest numpy` — `abacus-missioncontrol-stage-contract-qa.yml`, `bd-w1-three-pulse-regression.yml`, `book-build.yml`, `dow-w1-coverage-contract-qa.yml`, `leg5-federation-dashboard-proof.yml`
 - `python -m pytest \` — `bridge-ci.yml`, `codespace-federation.yml`, `governance.yml`, `mip-coverage-evidence.yml`, `validation.yml`
 - `python -m pip install pytest` — `branch-hygiene.yml`, `cryoplant-federation.yml`, `v5-w62-twelve-cluster-requalification.yml`, `w306-dow-typed-findings-proof.yml`

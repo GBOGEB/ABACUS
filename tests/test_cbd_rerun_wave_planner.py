@@ -128,3 +128,36 @@ class RerunContract(unittest.TestCase):
 
 if __name__=="__main__":
     unittest.main()
+
+
+class W39InputHardening(unittest.TestCase):
+    def test_queue_exactly_at_limit_holds_rerun(self):
+        x = sample(row(status="completed", conclusion="failure",
+                       first_red=first("transient_runner")))
+        x["capacity"]["queued"] = x["capacity"]["max_queued"]
+        out = p.plan(x)
+        self.assertEqual(out["proposed_reruns"], 0)
+        self.assertEqual(out["proposals"][0]["action"], "BACKPRESSURE_HOLD")
+
+    def test_workflow_identity_cannot_change_with_same_run(self):
+        old = sample(row(status="completed", conclusion="failure"))
+        new = copy.deepcopy(old)
+        new["observations"][0]["workflow"] = "Security Scan"
+        with self.assertRaisesRegex(ValueError, "workflow identity"):
+            p.compare(old, new)
+
+    def test_invalid_pr_identity_rejected(self):
+        for bad in ("0", "02093", "-1", " 2093", "2093.0"):
+            with self.subTest(bad=bad):
+                x = sample(row())
+                x["current_pr_heads"] = {bad: SHA}
+                with self.assertRaises(ValueError):
+                    p.plan(x)
+
+    def test_non_string_source_identity_rejected(self):
+        for bad in (None, True, 123, ["a" * 40]):
+            with self.subTest(bad=bad):
+                x = sample(row())
+                x["current_pr_heads"]["2093"] = bad
+                with self.assertRaises(ValueError):
+                    p.plan(x)
