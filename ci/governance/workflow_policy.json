@@ -446,6 +446,102 @@
       "cluster": "dow",
       "lifecycle": "pr_domain",
       "disposition": "keep"
+    },
+    {
+      "pattern": "^code-maroon\\.yml$",
+      "cluster": "security",
+      "lifecycle": "pr_domain",
+      "disposition": "keep"
+    },
+    {
+      "pattern": "^dow-w1-coverage-contract-qa\\.yml$",
+      "cluster": "dow",
+      "lifecycle": "pr_domain",
+      "disposition": "keep"
+    },
+    {
+      "pattern": "^g3a-bounded-continuation-proof\\.yml$",
+      "cluster": "runtime_governance",
+      "lifecycle": "pr_domain",
+      "disposition": "keep"
+    },
+    {
+      "pattern": "^g3a-n14-matched-arc-flight\\.yml$",
+      "cluster": "statistics",
+      "lifecycle": "pr_domain",
+      "disposition": "keep"
+    },
+    {
+      "pattern": "^g3a-n14-phase4-import\\.yml$",
+      "cluster": "core_test",
+      "lifecycle": "pr_domain",
+      "disposition": "keep"
+    },
+    {
+      "pattern": "^g3a-n15-python-matrix\\.yml$",
+      "cluster": "core_test",
+      "lifecycle": "pr_domain",
+      "disposition": "keep"
+    },
+    {
+      "pattern": "^mcw-artifact-cold-build\\.yml$",
+      "cluster": "bridge_federation",
+      "lifecycle": "pr_domain",
+      "disposition": "keep"
+    },
+    {
+      "pattern": "^mip-py310-combined-head-probe\\.yml$",
+      "cluster": "core_test",
+      "lifecycle": "pr_domain",
+      "disposition": "keep"
+    },
+    {
+      "pattern": "^mip-w1-python-dependency-qa\\.yml$",
+      "cluster": "core_test",
+      "lifecycle": "pr_domain",
+      "disposition": "keep"
+    },
+    {
+      "pattern": "^mip-wave-pulse-testflight\\.yml$",
+      "cluster": "core_test",
+      "lifecycle": "pr_domain",
+      "disposition": "keep"
+    },
+    {
+      "pattern": "^mip2-method-qualification\\.yml$",
+      "cluster": "statistics",
+      "lifecycle": "pr_domain",
+      "disposition": "keep"
+    },
+    {
+      "pattern": "^mission-control-lite-testflight\\.yml$",
+      "cluster": "bridge_federation",
+      "lifecycle": "pr_domain",
+      "disposition": "keep"
+    },
+    {
+      "pattern": "^missioncontrol-issue-burndown\\.yml$",
+      "cluster": "automation",
+      "lifecycle": "scheduled",
+      "disposition": "keep"
+    },
+    {
+      "pattern": "^w2-ariana-isolated-xml-qa\\.yml$",
+      "cluster": "core_test",
+      "lifecycle": "pr_domain",
+      "disposition": "keep"
+    },
+    {
+      "pattern": "^w2-dmaic-phase-cache-qa\\.yml$",
+      "cluster": "dmaic",
+      "lifecycle": "pr_domain",
+      "disposition": "keep"
+    },
+    {
+      "pattern": "^w4-dashboard-publication-qa\\.yml$",
+      "cluster": "documentation",
+      "lifecycle": "pr_domain",
+      "disposition": "keep"
     }
   ],
   "quality_gates": {
