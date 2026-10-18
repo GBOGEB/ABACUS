@@ -11,6 +11,8 @@ import re
 from collections import Counter, defaultdict
 from pathlib import Path
 
+from tools.mip2.workflow_family_metrics import summarize_families
+
 SCHEMA = "abacus.nplus.native-ci-intake.v1"
 OUTPUT = "abacus.nplus.telemetry.v1"
 SHA = re.compile(r"^[0-9a-f]{40}$")
@@ -72,10 +74,12 @@ def validate_wave(wave):
             count["nonterminal"] += 1
         families[wf_id].append(row)
     count["terminal"] = len(rows) - count["nonterminal"]
+    family_breakdown = summarize_families(rows)
     return {
         "wave": name, "source_sha": sha, "runs": rows,
         "native_total_count": len(rows),
         "outcomes": dict(sorted(count.items())),
+        "workflow_family_accounting": family_breakdown,
         "terminal_fraction": rate(count["terminal"], len(rows)),
         "success_fraction_all": rate(count["success"], len(rows)),
         "success_fraction_terminal": rate(count["success"], count["terminal"]),
@@ -175,6 +179,10 @@ def rollup(doc):
             "latest_nonterminal": blocked,
             "latest_nonterminal_fraction": rate(blocked, latest["native_total_count"]),
             "latest_success": latest["outcomes"].get("success", 0),
+            "latest_distinct_workflows": latest["workflow_family_accounting"]["distinct_workflows"],
+            "latest_repeated_run_excess": latest["workflow_family_accounting"]["repeated_executions"],
+            "latest_repeat_success_excess": latest["workflow_family_accounting"]["success_excess_from_repeat_runs"],
+            "latest_workflow_testcase_count": None,
             "queue_congestion": "OBSERVED" if blocked else "NO_OPEN_RUNS_IN_CENSUS",
             "issue_housekeeping_delta": None,
             "verified_root_closure_delta": None,
@@ -207,15 +215,20 @@ def as_markdown(r):
     lines = ["# CODE PURPLE N+i — native CI cohort observatory", "",
              "Distinct main-SHA push-run populations; **not matched coverage or "
              "engineering-root closures**.", "",
-             "| Wave | SHA | Success | Failed | Cancelled | Open | Terminal / all |",
-             "|---|---|---:|---:|---:|---:|---:|"]
+             "| Wave | SHA | Runs | Distinct families | Repeats | Success | Failed | Cancelled | Open | Success/all | Terminal/all |",
+             "|---|---|---:|---:|---:|---:|---:|---:|---:|---:|---:|"]
     for w in r["waves"]:
         c = w["outcomes"]
+        fam = w["workflow_family_accounting"]
         lines.append(f"| {w['wave']} | {w['source_sha'][:12]} | "
+                     f"{w['native_total_count']} | {fam['distinct_workflows']} | "
+                     f"{fam['repeated_executions']} | "
                      f"{c.get('success', 0)} | {c.get('failure', 0)} | "
                      f"{c.get('cancelled', 0)} | {c.get('nonterminal', 0)} | "
+                     f"{c.get('success', 0)}/{w['native_total_count']} | "
                      f"{c['terminal']}/{w['native_total_count']} |")
-    lines.extend(["", "## Sequential paired-family observations", "",
+    lines.extend(["", "Repeat-adjusted counts are diagnostic only; test cases, matched coverage and formal root closures remain UNKNOWN.",
+                  "", "## Sequential paired-family observations", "",
                   "A family is paired only when unique and terminal on both "
                   "different heads. Status changes **do not prove causation**.",
                   ""])
