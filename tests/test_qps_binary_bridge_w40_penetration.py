@@ -1,7 +1,7 @@
 """CODE PURPLE W40: native binary/semantic parser penetration, 42 distinct oracles.
 
 The tests exercise real parsers and bytes (not mocked extractor outcomes).
-No test exclusions, gate changes, remote writes, or confidential source fixtures.
+Only self-contained synthetic fixtures; no test exclusions or remote writes.
 """
 from __future__ import annotations
 

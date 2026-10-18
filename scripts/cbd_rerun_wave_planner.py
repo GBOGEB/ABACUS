@@ -139,6 +139,10 @@ def compare(previous: dict, current: dict) -> list[dict]:
                 raise ValueError("conflicting exact-run workflow identity")
             if row["attempt"] < earlier["attempt"]:
                 raise ValueError("attempt rollback")
+            if (row["attempt"] == earlier["attempt"]
+                    and (earlier.get("first_red") or {}).get("verified")
+                    and earlier.get("first_red") != row.get("first_red")):
+                raise ValueError("verified first-red cannot be replaced within a run attempt")
             if row["attempt"] > earlier["attempt"]:
                 change = "NEW_ATTEMPT"
             else:
