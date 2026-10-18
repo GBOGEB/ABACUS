@@ -1,11 +1,15 @@
-name: W29 Disjoint Frontier Coverage
+name: W29-W32 Disjoint Frontier Coverage
 
 on:
   pull_request:
     paths:
       - 'tests/test_w29_w75_stability_negative.py'
+      - 'tests/test_w31_w81_repair_adversarial.py'
+      - 'tests/test_w32_w82_semantic_permutation.py'
       - 'tests/test_w29_w64_reverse_pressure_negative.py'
       - 'tools/w75_stability_diagnostic.py'
+      - 'tools/w81_repair_outcome_block.py'
+      - 'tools/w82_semantic_diversity_diagnostic.py'
       - 'tools/w64_census_reverse_pressure_v2.py'
       - '.github/workflows/w29-disjoint-frontier-coverage.yml'
   workflow_dispatch:
@@ -44,16 +48,20 @@ jobs:
           python-version: ${{ matrix.python-version }}
       - name: Install bounded test prerequisites
         run: python -m pip install 'pytest>=7.4,<10' 'pytest-cov>=4.1,<8' 'numpy>=1.24,<3'
-      - name: Run two disjoint behavioral families with branch receipts
+      - name: Run four disjoint behavioral families with branch receipts
         shell: bash
         run: |
           set -euo pipefail
           mkdir -p w29-native
           python -m pytest -q \
+            tests/test_w31_w81_repair_adversarial.py \
+            tests/test_w32_w82_semantic_permutation.py \
             tests/test_w29_w75_stability_negative.py \
             tests/test_w29_w64_reverse_pressure_negative.py \
             --junitxml=w29-native/junit.xml \
             --cov=w75_stability_diagnostic \
+            --cov=tools.w81_repair_outcome_block \
+            --cov=tools.w82_semantic_diversity_diagnostic \
             --cov=tools.w64_census_reverse_pressure_v2 \
             --cov-branch \
             --cov-report=term-missing \
@@ -72,7 +80,7 @@ jobs:
           python - <<'PY'
           import hashlib, json, os, pathlib, xml.etree.ElementTree as ET
           directory = pathlib.Path("w29-native")
-          expected = ["tools/w75_stability_diagnostic.py", "tools/w64_census_reverse_pressure_v2.py"]
+          expected = ["tools/w75_stability_diagnostic.py", "tools/w64_census_reverse_pressure_v2.py", "tools/w81_repair_outcome_block.py", "tools/w82_semantic_diversity_diagnostic.py"]
           receipt = {"schema": "codepurple.w29.disjoint-frontier.native.v1",
                      "source_sha": os.environ["SOURCE_SHA"],
                      "run_id": int(os.environ["RUN_ID"]),
