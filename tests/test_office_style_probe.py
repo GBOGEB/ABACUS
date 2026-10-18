@@ -109,6 +109,25 @@ def make_archive(path, contents, *, compression=zipfile.ZIP_DEFLATED):
                 archive.writestr(member, payload)
             else:
                 archive.writestr(name, payload)
+    # On Windows, zipfile can normalize member names again at serialization,
+    # even when ZipInfo.filename was explicitly set. Synthesize the precise
+    # negative fixture by changing only the two name fields in the ZIP headers.
+    raw = path.read_bytes()
+    changed = False
+    for name in contents:
+        if "\\" not in name:
+            continue
+        with zipfile.ZipFile(path) as reader:
+            if name in reader.namelist():
+                continue
+        normal = name.replace("\\", "/").encode("utf-8")
+        unsafe = name.encode("utf-8")
+        if len(normal) != len(unsafe) or raw.count(normal) != 2:
+            raise AssertionError("unsafe ZIP fixture header invariant failed")
+        raw = raw.replace(normal, unsafe)
+        changed = True
+    if changed:
+        path.write_bytes(raw)
     return path
 
 
