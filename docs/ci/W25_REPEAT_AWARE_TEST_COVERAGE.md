@@ -8,7 +8,7 @@ The N+i chart counted GitHub Actions **workflow runs**, not pytest test cases.
 Exact-SHA push-run readback separates repetitions from distinct workflow IDs:
 
 | Cohort | Runs | Distinct workflows | qps-canonicalization runs | Success/all |
-|---|---:|---:|---:|---:|
+| --- | ---: | ---: | ---: | ---: |
 | N23 `e08c51232edb...` | 37 | 26 | 12 | 31/37 |
 | N27 `01ea2e481346...` | 28 | 28 | 1 | 14/28 at frozen poll |
 
