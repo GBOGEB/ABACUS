@@ -1,0 +1,51 @@
+{
+  "schema": "codepurple.engineering_wave_history.v1",
+  "project": "GBOGEB/ABACUS",
+  "source_family": "W29-W75-W64",
+  "target_coverage_percent": 95,
+  "consecutive_no_change_required": 3,
+  "eligible_opportunities_historical": 346,
+  "covered_opportunities_historical": 86,
+  "historical_scope_basis": {
+    "source_sha": "97a8b13faff577272a90edaf0dd4593035e10605",
+    "run_id": 39142444027,
+    "meaning": "Old main B0; not qualified as W29 source-head coverage"
+  },
+  "events": [
+    {
+      "label": "W29-N0",
+      "source_sha": "38d1d3b52fc7ca943a17471301c20cbe5f5af254",
+      "run_id": 39149390636,
+      "state": "TERMINAL_FAIL_COVERAGE_ARTIFACT_MISSING",
+      "native_test_executions_passed": 128,
+      "qualifying_coverage": null,
+      "native_jobs_terminal": 2,
+      "native_jobs_success": 0,
+      "native_queue_p95_seconds": 733,
+      "first_red": "PYTEST_COV_NONIMPORTABLE_MODULE_SELECTOR"
+    },
+    {
+      "label": "W29-N1",
+      "source_sha": "312042de13212319c0e85c9d012fa43747508e4e",
+      "run_id": 39150712686,
+      "state": "QUEUED_AT_LAST_OBSERVATION",
+      "native_test_executions_passed": null,
+      "qualifying_coverage": null,
+      "native_jobs_terminal": null,
+      "native_jobs_success": null,
+      "native_queue_p95_seconds": null,
+      "first_red": null
+    }
+  ],
+  "observations": [],
+  "accepted_root_closures": null,
+  "correctly_governed_merges": null,
+  "authenticated_remote_crew_launches": null,
+  "accepted_rex": null,
+  "notes": [
+    "A failed CI job with passing assertions is not an accepted engineering wave.",
+    "Queue placeholders are UNKNOWN, not a zero-second observation.",
+    "An increase in a fresh focused coverage numerator is not global main or PR diff gain.",
+    "Only fresh, terminal, source-bound observations enter the consecutive-wave convergence calculation."
+  ]
+}
