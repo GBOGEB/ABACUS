@@ -56,6 +56,16 @@ main{padding:14px 11px 35px}h1{font-size:24px}.statusbar,.buttonset{justify-cont
  <p class="small muted">N−1 W29: <a href="https://github.com/GBOGEB/ABACUS/actions/runs/39149390636">run 39149390636 ↗</a> — 128/128 behavioral tests PASS across two cells, but coverage selectors produced no machine evidence; job verdict FAIL. Repaired exact head <code>312042de13212319c0e85c9d012fa43747508e4e</code> retains the rejection gate and has fresh CI pending.</p>
 <p class="metaLine"><a href="https://github.com/GBOGEB/ABACUS/pull/2250">Draft PR #2250 ↗</a> · <a href="https://github.com/GBOGEB/ABACUS/actions/runs/39150712686">Two-cell native run ↗</a> · <a href="https://github.com/GBOGEB/ABACUS/actions/runs/39149390719">Exact-head B0 ↗</a> · <a href="https://github.com/GBOGEB/ABACUS/tree/code-purple/observatory-v3-metrics-20261018">Observatory branch ↗</a> · <a href="https://github.com/GBOGEB/ABACUS/issues/1991#issuecomment-6252979625">Burndown receipt ↗</a></p>
 </section>
+<section class="panel" id="w31-convergence">
+ <div class="sectionHead"><h2>W31/W32 · Convergence ≠ repeated snapshots</h2><span class="chip wait" id="engineeringConvergenceState">AWAIT FIRST TERMINAL W29 RECEIPT</span></div>
+ <p class="subtitle">A genuine engineering plateau needs <strong>three consecutive zero-change transitions</strong> across <strong>four distinct terminal source-changing waves</strong>, using a matched source-file denominator, configuration, source identity and run-bound hashed artifact. A↔B↔A or repeated run polls do not count.</p>
+ <div class="wavePulseGrid">
+  <article class="wavePulse"><div class="caps">N−1 · W29 historical attempt</div><div class="pulseCount">128 / 128 <span class="small muted">behavioral PASS</span></div><div class="pulseSubtitle">Two native jobs FAILED strict coverage receipt. Coverage delta UNKNOWN, not 0.</div></article>
+  <article class="wavePulse"><div class="caps">N · W29 repaired head</div><div class="pulseCount"><span id="w31Verified">UNKNOWN</span></div><div class="pulseSubtitle">Native paired coverage, canonical B0 and first-red displacement pending. No repeat refresh credit.</div></article>
+  <article class="wavePulse"><div class="caps">N+1 · convergence threshold</div><div class="pulseCount"><span id="w31PlateauCount">0</span> / 3</div><div class="pulseSubtitle">Consecutive independently qualified unchanged transitions; cohort-only acceptance, never automatic merge.</div></article>
+ </div>
+ <p class="metaLine">Scale up only after valid terminal exact-head evidence. Plateau at 95% target → switch source cohort. Plateau below target → new attack angle, not programme closure. Governance HOLD remains noncompensating. <a href="https://github.com/GBOGEB/ABACUS/tree/code-purple/observatory-v3-metrics-20261018/MIP/EVIDENCE_TO_ADMISSION_OBSERVATORY">Convergence source ↗</a></p>
+</section>
 <div class="mainpanes">
 <section class="panel" id="coverage"><div class="sectionHead"><h2>01 · COVERAGE | Raw gain ≠ matched improvement</h2><span class="chip">Zoomed scale; not log of percentage</span></div><p class="subtitle" id="covCaption">Historic N−1 PR head vs verified main cohort; denominator fixed only for common files.</p>
 <div class="chartwrap"><svg id="coverageChart" viewBox="0 0 720 309" role="img" aria-label="Coverage chart with separate cohort and population-composition effects"><title>Matched coverage versus composition effect</title></svg><div class="chartlegend"><a id="prevRunLink" href="https://github.com/GBOGEB/ABACUS/actions/runs/39136242442">N−1 · PR B0</a><a id="cohortLink" href="https://github.com/GBOGEB/ABACUS/compare/7488bd7bdcd2cb2fb7dd2d4a748a7867a7df2ab0...97a8b13faff577272a90edaf0dd4593035e10605">375-file cohort</a><a id="measuredRunLink" href="https://github.com/GBOGEB/ABACUS/actions/runs/39142444027">N · verified main B0</a></div></div>
@@ -141,6 +151,10 @@ function drawChart(c){
 }
 function renderAdaptiveWave(){
  const receipt=state.wave_metrics||{},progress=receipt.historical_focus||{},policy=receipt.scale_policy||{};
+ const convergence=receipt.engineering_convergence||{};
+ set('engineeringConvergenceState', convergence.state||'AWAIT FIRST TERMINAL W29 RECEIPT');
+ set('w31Verified', Number.isInteger(convergence.verified_waves)?convergence.verified_waves+' verified engineering waves':'UNKNOWN');
+ set('w31PlateauCount', Number.isInteger(convergence.no_change_streak)?String(convergence.no_change_streak):'0');
  const holder=e('wavePulseCards');holder.replaceChildren();const pulse=progress.observations||[];
  const maxGap=Math.max(1,...pulse.map(x=>Number.isInteger(x.uncovered)?x.uncovered:0));
  for(const p of pulse){
