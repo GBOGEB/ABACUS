@@ -34,7 +34,16 @@ EXPECTED = {
 
 
 def load_json(path: Path) -> dict[str, Any]:
-    value = json.loads(path.read_text(encoding="utf-8"))
+    def unique_pairs(pairs):
+        result = {}
+        for key, value in pairs:
+            if key in result:
+                raise ValueError(f"{path}: duplicate proof key: {key}")
+            result[key] = value
+        return result
+
+    value = json.loads(path.read_text(encoding="utf-8"),
+                       object_pairs_hook=unique_pairs)
     if not isinstance(value, dict):
         raise ValueError(f"{path}: expected object")
     return value
