@@ -112,9 +112,65 @@ def test_native_checkout_and_credential_controls():
     assert '--expected-head "$EXPECTED_HEAD"' in workflow
 
 
+def _hook_filter(configuration, hook_id):
+    """Select exactly one named hook, not the first unrelated 'files:' rule."""
+    blocks = re.split(r"(?m)^      - id: ", configuration)[1:]
+    owned = [block for block in blocks
+             if block.partition("\n")[0].strip() == hook_id]
+    if len(owned) != 1:
+        raise ValueError("missing or duplicate pre-commit hook: " + hook_id)
+    paths = re.findall(r"(?m)^        files: (\S+)$", owned[0])
+    if len(paths) != 1:
+        raise ValueError("missing or duplicate hook file filter: " + hook_id)
+    try:
+        re.compile(paths[0])
+    except re.error as exc:
+        raise ValueError("malformed hook regex: " + hook_id) from exc
+    return paths[0]
+
+
 def test_precommit_matches_real_python_paths():
-    pre = (ROOT / ".pre-commit-config.yaml").read_text()
-    found = re.search(r"^        files: (\S+)$", pre, flags=re.MULTILINE)
-    assert found is not None
-    assert re.match(found.group(1), "tools/mip2/mip3_flight.py")
-    assert not re.match(found.group(1), "tools/mip2/README.md")
+    config = (ROOT / ".pre-commit-config.yaml").read_text()
+    syntax = _hook_filter(config, "mip2-python-syntax")
+    assert re.match(syntax, "tools/mip2/mip3_flight.py")
+    assert re.match(syntax, "tools/mip2/tests/test_evidence_integrity.py")
+    assert not re.match(syntax, "tools/mip2/README.md")
+    assert not re.match(syntax, "docs/ci/WORKFLOW_RATIONALIZATION.md")
+
+
+def test_precommit_contract_hook_preserves_docs_and_source_reach():
+    config = (ROOT / ".pre-commit-config.yaml").read_text()
+    contracts = _hook_filter(config, "mip2-method-contracts")
+    assert re.match(contracts, "tools/mip2/mip3_flight.py")
+    assert re.match(contracts, "tools/mip2/README.md")
+
+
+def test_precommit_named_hook_selector_is_order_independent():
+    config = (
+        "      - id: unrelated\n        files: ^tools/mip2/\n"
+        "      - id: mip2-python-syntax\n        files: ^tools/mip2/.*\\.py$\n"
+    )
+    assert _hook_filter(config, "mip2-python-syntax") == r"^tools/mip2/.*\.py$"
+
+
+def test_precommit_missing_or_duplicate_hook_fails_closed():
+    good = "      - id: mip2-python-syntax\n        files: ^tools/mip2/.*\\.py$\n"
+    with pytest.raises(ValueError, match="missing or duplicate pre-commit"):
+        _hook_filter(good, "missing-hook")
+    with pytest.raises(ValueError, match="missing or duplicate pre-commit"):
+        _hook_filter(good + good, "mip2-python-syntax")
+
+
+def test_precommit_missing_or_duplicate_filter_fails_closed():
+    name = "      - id: mip2-python-syntax\n"
+    with pytest.raises(ValueError, match="missing or duplicate hook file"):
+        _hook_filter(name, "mip2-python-syntax")
+    with pytest.raises(ValueError, match="missing or duplicate hook file"):
+        _hook_filter(name + "        files: ^a$\n        files: ^b$\n",
+                     "mip2-python-syntax")
+
+
+def test_precommit_malformed_hook_filter_fails_closed():
+    source = "      - id: mip2-python-syntax\n        files: [invalid\n"
+    with pytest.raises(ValueError, match="malformed hook regex"):
+        _hook_filter(source, "mip2-python-syntax")
