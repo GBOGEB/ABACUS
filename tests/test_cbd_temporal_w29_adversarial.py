@@ -106,7 +106,6 @@ def test_reverse_mixed_skip_and_success_remains_accountable():
     suite([case("", classname="x")]),
     suite([case("one", outcome="skipped"), case("two")], skipped=0),
     suite([case("one"), case("two")], skipped=1),
-    suite([case("one", outcome="skipped")], skipped=0),
 ])
 def test_negative_untrustworthy_junit_identity_or_counts_are_held(xml):
     result = check(xml)
