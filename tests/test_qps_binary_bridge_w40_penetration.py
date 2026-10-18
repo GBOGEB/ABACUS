@@ -142,8 +142,10 @@ def test_ooxml_single_semantic_token_flip_changes_both_digests(
     "suffix,markup,visible,hidden", (
         (".html", "<head>PRIVATE</head><main>Public</main>", "Public", "PRIVATE"),
         (".htm", "<script>EXFIL</script><p>Safe</p>", "Safe", "EXFIL"),
-        (".html", "<style>HIDDEN</style><section>Section</section>", "Section", "HIDDEN"),
-        (".htm", "<template>OPAQUE</template><article>Article</article>", "Article", "OPAQUE"),
+        (".html", "<style>HIDDEN</style><section>Section</section>",
+         "Section", "HIDDEN"),
+        (".htm", "<template>OPAQUE</template><article>Article</article>",
+         "Article", "OPAQUE"),
         (".html", "<div id='root'>A<img src='x'>B</div>", "A B", "NOT-A-TOKEN"),
         (".htm", "<p id='entity'>A &amp; B</p>", "A & B", "NOT-A-TOKEN"),
     ),
