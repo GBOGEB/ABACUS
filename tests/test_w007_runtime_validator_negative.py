@@ -16,6 +16,7 @@ from scripts.validate_runtime_foundation import (
     REQUIRED_CAPABILITIES,
     validate_runtime_foundation,
 )
+import scripts.validate_runtime_foundation as runtime_validator
 import scripts.write_runtime_governance_status as runtime_status
 
 
@@ -363,3 +364,39 @@ def test_rtm_nonpath_evidence_must_fail_closed(
     failures = _errors(runtime_tree)
     assert "RTM trace row #1 evidence_artifact must be a non-empty string" in failures
     assert "RTM trace matrix has unavailable or missing evidence: E1" in failures
+
+
+# CLI and diagnostic coverage is part of the admission evidence contract,
+# not merely a library return value.
+@pytest.mark.parametrize("valid", [True, False])
+def test_validator_cli_retains_real_success_and_failure_exit(
+    runtime_tree: Path,
+    monkeypatch: pytest.MonkeyPatch,
+    capsys: pytest.CaptureFixture[str],
+    valid: bool,
+) -> None:
+    if not valid:
+        manifest_path, manifest = _manifest(runtime_tree)
+        manifest["wave"] = "WITHHELD"
+        _write(manifest_path, manifest)
+    validate = runtime_validator.validate_runtime_foundation
+    monkeypatch.setattr(
+        runtime_validator,
+        "validate_runtime_foundation",
+        lambda: validate(runtime_tree),
+    )
+    assert runtime_validator.main() == (0 if valid else 1)
+    output = capsys.readouterr().out
+    if valid:
+        assert output.strip() == "W007 runtime foundation validation passed."
+    else:
+        assert "W007 runtime foundation validation failed:" in output
+        assert "- runtime manifest wave must be W007" in output
+
+
+def test_runtime_diagnostic_outside_repo_retains_literal_path(
+    tmp_path: Path,
+) -> None:
+    repo = tmp_path / "source"
+    external = tmp_path / "outside" / "missing.json"
+    assert runtime_validator._relative(external, repo) == str(external)
