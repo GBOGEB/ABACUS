@@ -3,6 +3,7 @@ on:
   pull_request:
     paths:
       - 'tests/test_qps_binary_bridge_w40_penetration.py'
+      - 'tests/test_qps_binary_bridge_w41_frontier.py'
       - 'tests/test_qps_binary_bridge.py'
       - 'tests/test_qps_binary_bridge_w32_integrity.py'
       - 'tools/qps_binary_bridge.py'
@@ -62,6 +63,7 @@ jobs:
             tests/test_qps_binary_bridge.py \
             tests/test_qps_binary_bridge_w32_integrity.py \
             tests/test_qps_binary_bridge_w40_penetration.py \
+            tests/test_qps_binary_bridge_w41_frontier.py \
             --cov=tools --cov-branch --cov-report=json:artifacts/w40/coverage.json \
             --junitxml=artifacts/w40/junit.xml
       - name: Pin real run, job, attempt and matched scoped numerators
@@ -95,8 +97,10 @@ jobs:
           assert all(not list(t.iter("failure")) and not list(t.iter("error")) and not list(t.iter("skipped")) for t in baseline_tests), "baseline suite must be green"
           tests=list(ET.parse(out/"junit.xml").iter("testcase"))
           w40=[t for t in tests if "test_qps_binary_bridge_w40_penetration" in (t.attrib.get("classname","")+t.attrib.get("name",""))]
-          assert len(w40)==42, ("test denominator mismatch", len(w40))
-          assert len(tests)==len(baseline_tests)+42, "unmatched test populations or culled tests"
+          assert len(w40)==42, ("W40 denominator mismatch", len(w40))
+          w41=[t for t in tests if "test_qps_binary_bridge_w41_frontier" in (t.attrib.get("classname","")+t.attrib.get("name",""))]
+          assert len(w41)==12, ("W41 denominator mismatch", len(w41))
+          assert len(tests)==len(baseline_tests)+54, "unmatched test populations or culled tests"
           assert all(not list(t.iter("failure")) and not list(t.iter("error")) and not list(t.iter("skipped")) for t in tests), "native test failure or skip"
           sha=os.environ["EXACT_HEAD"]
           assert len(sha)==40 and all(c in "0123456789abcdef" for c in sha)
@@ -104,6 +108,7 @@ jobs:
                    "run_id":int(os.environ["RUN_ID"]),"attempt":int(os.environ["RUN_ATTEMPT"]),
                    "cell":os.environ["GITHUB_JOB_NAME"],"job_id":None,
                    "total_junit_cases":len(tests),"new_w40_cases":len(w40),
+                   "new_w41_cases":len(w41),"new_case_total":len(w40)+len(w41),
                    "new_w40_failed":0,"new_w40_skipped":0,
                    "statement_covered":m["covered_lines"],"statement_eligible":m["num_statements"],
                    "branch_covered":m["covered_branches"],"branch_eligible":m["num_branches"],
