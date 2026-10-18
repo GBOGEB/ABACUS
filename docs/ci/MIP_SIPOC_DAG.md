@@ -115,3 +115,10 @@ flowchart LR
 ```
 
 The completed response shall return the wave receipts, first-red/BDQ root reconciliation, metrics before/after with matched scope, jobs/attempts, owner leases, and acceptance-vector/HOLD status. A source-head CI run that has merely been queued does not count as wave acceptance. No background execution is implied.
+
+
+## Proposed USER SPINE and absolute weighted execution graph (18 October 2026)
+
+The [N+i weighted source/readout and proposed user-prerogative layer](NPLUS_WEIGHTED_USER_SPINE_V1.md) is an **additive SIPOC projection** of this existing DAG. It shows three side-by-side, absolute-scale workflow-run graphs (runs, successful, failed) and the [corresponding Mermaid overlay](NPLUS_WEIGHTED_USER_SPINE_V1.mmd). This is not a replacement for canonical independent P0 admission, source-owner root proof, native JUnit/coverage evidence, or QPS engineering acceptance.
+
+**USER SPINE:** the user supplies priorities, reviews competing governance/first-red/coverage/telemetry options, chooses/overrides/vetoes a bounded proposal, examines native results and provides feedback before the *next* iteration. The return is a feedback/reference edge rather than a causal or dependency edge inside the execution DAG. Selection alone does not launch workers, approve a PR, waive security or count engineering closures. N23's repeat QPS executions remain distinct from test-case count. An approved renderer may be published only after source-data hash and visual/browser QA; until then `P0=HOLD`.
