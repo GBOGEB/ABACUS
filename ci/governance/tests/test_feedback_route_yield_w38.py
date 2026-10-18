@@ -144,6 +144,52 @@ class FeedbackRouteW38(unittest.TestCase):
                     mod.canonical({k:v for k,v in r.items() if k!="receipt_sha256"})).hexdigest()
                 with self.assertRaisesRegex(ValueError,"AUTHORITY_PROMOTION"):
                     mod.verify(r)
+    def test_event_sha_is_not_main_attestation(self):
+        result=mod.build(**sample(event_name="pull_request",event={},route_output="[]"))
+        self.assertEqual(result["github_event_sha"],"a"*40)
+        self.assertIs(result["main_head_verified"],False)
+        self.assertNotIn("feedback_main_sha",result)
+        mod.verify(result)
+    def test_route_only_cannot_claim_completed_evaluation(self):
+        for field,bad in (("evaluated_pr_count",2),("published_check_count",2),
+                          ("rerun_reduction_verified",0.5),("route_stage","EVALUATED"),
+                          ("source_coverage_delta",0.25)):
+            with self.subTest(field=field):
+                result=mod.build(**sample())
+                result[field]=bad
+                result["receipt_sha256"]=__import__("hashlib").sha256(
+                    mod.canonical({k:v for k,v in result.items() if k!="receipt_sha256"})
+                ).hexdigest()
+                with self.assertRaisesRegex(ValueError,"ROUTE_NOT_EVALUATION_PROOF"):
+                    mod.verify(result)
+    def test_signed_duplicate_routes_rejected_even_with_consistent_count(self):
+        result=mod.build(**sample())
+        result["routed_pr_numbers"]=[118,118]
+        result["receipt_sha256"]=__import__("hashlib").sha256(
+            mod.canonical({k:v for k,v in result.items() if k!="receipt_sha256"})
+        ).hexdigest()
+        with self.assertRaisesRegex(ValueError,"RECEIPT_DUPLICATE_OR_UNORDERED"):
+            mod.verify(result)
+    def test_signed_wrong_event_sha_is_not_a_valid_receipt(self):
+        result=mod.build(**sample())
+        result["github_event_sha"]="short"
+        result["receipt_sha256"]=__import__("hashlib").sha256(
+            mod.canonical({k:v for k,v in result.items() if k!="receipt_sha256"})
+        ).hexdigest()
+        with self.assertRaisesRegex(ValueError,"EVENT_SHA_NOT_MAIN_ATTESTATION"):
+            mod.verify(result)
+    def test_signed_forged_upstream_ref_rejected(self):
+        result=mod.build(**sample())
+        result["upstream"]["head_sha"]="not-a-head"
+        result["receipt_sha256"]=__import__("hashlib").sha256(
+            mod.canonical({k:v for k,v in result.items() if k!="receipt_sha256"})
+        ).hexdigest()
+        with self.assertRaisesRegex(ValueError,"UPSTREAM_HEAD_EXACT_SHA"):
+            mod.verify(result)
+    def test_workflow_publishes_event_sha_not_false_main_head(self):
+        workflow=(HOME.parents[1]/".github/workflows/pr-feedback-gate.yml").read_text()
+        self.assertIn('--event-sha "$GITHUB_SHA"',workflow)
+        self.assertNotIn('--main-sha "$GITHUB_SHA"',workflow)
     def test_missing_hash_rejected(self):
         r=mod.build(**sample())
         r["receipt_sha256"]=None
