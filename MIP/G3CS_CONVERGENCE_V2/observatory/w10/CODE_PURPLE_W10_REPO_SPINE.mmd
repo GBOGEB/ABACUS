@@ -1,0 +1,38 @@
+flowchart LR
+  subgraph ABACUS["GBOGEB/ABACUS — execution / coverage authority"]
+    A1["federation/manifest.yaml"]
+    A2[".github/workflows/mip-coverage-evidence.yml"]
+    A3["MIP/G3CS_CONVERGENCE_V2/source + tools"]
+    A4["MIP/G3CS_CONVERGENCE_V2/output: DAG / SIPOC / HTML"]
+    A5["MIP/G3CS_CONVERGENCE_V2/tests: 14 tests"]
+    A1 --> A3
+    A2 -->|native test receipts| A3
+    A3 -->|generator| A4
+    A5 -.->|B0 collection gap| A2
+  end
+  subgraph CODEX["GBOGEB/CODEX — governance / MYCELIUM"]
+    C1["mission_control/mycelium/control_manifest.yaml"]
+    C2["execution_gateway_contract.yaml / DENY"]
+    C3["federation/rex/REPO_REX_RETURN_TEMPLATE_v1.yaml"]
+    C1 --> C2 --> C3
+  end
+  subgraph QPS["GBOGEB/cryoplant-project — engineering truth"]
+    Q1["federation/manifest.yaml"]
+    Q2["federation/golden_thread/CONTRACT_v1.yaml"]
+    Q3["federation/acceptance_dashboard/index.html"]
+    Q1 --> Q2 --> Q3
+  end
+  subgraph W10["W10 read-only observatory candidate — independent projection"]
+    W1["Source-bound history JSON"]
+    W2["HTML / SVG / Mermaid / N-1 N N+1"]
+    W3["Read-only authenticated refresh script"]
+    W3 --> W1 --> W2
+  end
+  A1 -.->|metadata / no authority transfer| C1
+  Q1 -.->|registration / ownership retained| C1
+  A2 -->|native run+artifact proof| W3
+  A4 -.->|visual lineage| W2
+  Q3 -.->|verified readback only| W3
+  W1 -.->|future federation projection only| C1
+  A2 -.->|accepted REX requires execution proof| C3
+
