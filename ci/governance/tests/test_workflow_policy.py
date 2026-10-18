@@ -43,6 +43,23 @@ class WorkflowPolicyTests(unittest.TestCase):
         self.assertEqual(0, self.policy["quality_gates"]["allow_unclassified"])
         self.assertFalse(self.policy["quality_gates"]["allow_multiple_rule_matches"])
 
+
+    def test_w39_bounded_pool_and_g3cs_have_disjoint_source_owners(self):
+        expected = {
+            "w33-backbone-pool.yml": "runtime_governance",
+            "w36-g3cs-skip-contract.yml": "statistics",
+            "w38-local-pool-mip.yml": "statistics",
+        }
+        for filename, owner in expected.items():
+            with self.subTest(filename=filename):
+                rule, matches = MODULE.classify(filename, self.policy)
+                self.assertEqual(1, len(matches))
+                self.assertEqual(owner, rule["cluster"])
+                self.assertEqual("pr_domain", rule["lifecycle"])
+                self.assertEqual("keep", rule["disposition"])
+        self.assertEqual(0, self.policy["quality_gates"]["allow_unclassified"])
+        self.assertFalse(self.policy["quality_gates"]["allow_multiple_rule_matches"])
+
     def test_w26_matched_coverage_has_unique_statistics_owner(self):
         rule, matches = MODULE.classify("w26-testpilot-matched-coverage.yml", self.policy)
         self.assertEqual(1, len(matches))
