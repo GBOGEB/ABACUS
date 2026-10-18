@@ -166,19 +166,23 @@ def test_nonlist_history_is_rejected():
         m.evaluate({'not': 'a sequence'})
 
 
-def test_w32_source_history_does_not_turn_failed_or_queued_runs_into_stability():
+def test_w33_source_history_does_not_turn_failed_native_run_into_stability():
     import json
     from pathlib import Path
     import wave_metrics
     root=Path(__file__).resolve().parent
     history=json.loads((root/'engineering_wave_history.json').read_text())
-    assert history['observations']==[]
+    assert len(history['observations'])==1
     assert history['events'][0]['native_test_executions_passed']==128
     assert history['events'][0]['qualifying_coverage'] is None
-    assert history['events'][1]['native_queue_p95_seconds'] is None
+    assert history['observations'][0]['covered']==342
+    assert history['observations'][0]['eligible']==346
+    assert history['events'][1]['native_queue_p95_seconds']==1055
     snapshot=json.loads((root/'evidence.json').read_text())
     historical=json.loads((root/'wave_history.json').read_text())
     receipt=wave_metrics.build_wave_receipt(snapshot,historical)
-    assert receipt['engineering_convergence']['state']=='AWAIT_FIRST_TERMINAL_OBSERVATION'
-    assert receipt['engineering_convergence']['verified_waves']==0
+    assert receipt['engineering_convergence']['state']=='SOURCE_TARGET_REACHED'
+    assert receipt['engineering_convergence']['verified_waves']==1
+    assert receipt['engineering_convergence']['no_change_streak']==0
+    assert receipt['engineering_convergence']['queue_p95_seconds']==1055
     assert receipt['engineering_convergence']['governed_merge_credit'] is None
