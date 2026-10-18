@@ -44,6 +44,17 @@ main{padding:14px 11px 35px}h1{font-size:24px}.statusbar,.buttonset{justify-cont
  <article class="kpi"><div class="caps">Accepted unique causal roots</div><div class="value amber" id="rootsHeadline">UNKNOWN</div><div class="desc">No independently accepted canonical root census</div></article>
  <article class="kpi"><div class="caps">Governed merge admission</div><div class="value danger" id="admissionHeadline">HOLD</div><div class="desc" id="rulesSub">Required review/check rules remain missing</div></article>
 </div>
+<section class="panel" id="w29w30" aria-label="W29 W30 adaptive expansion evidence">
+ <div class="sectionHead"><h2>W29 / W30 · Larger disjoint coverage and honest runner telemetry</h2><span class="chip wait">W29 native: <span id="w29NativeOutcome">QUEUED AT READBACK</span></span></div>
+ <p class="subtitle">Independent source leases; conditional historical maxima are not measured PR/main gains. Refresh for public workflow state; native artifacts remain required for coverage.</p>
+ <div class="wavePulseGrid">
+  <article class="wavePulse"><div class="caps">W75 · Frozen stability</div><div class="pulseCount">161 / 221 <span class="small muted">uncovered</span></div><div class="gapTrack"><div class="gapFill" style="width:72.85%"></div></div><div class="pulseSubtitle">60 covered · deconfounding tests committed · conditional bound +0.3084 pp</div></article>
+  <article class="wavePulse"><div class="caps">W64 · Reverse pressure</div><div class="pulseCount">99 / 125 <span class="small muted">uncovered</span></div><div class="gapTrack"><div class="gapFill" style="width:79.2%"></div></div><div class="pulseSubtitle">26 covered · lineage/path-hash tests committed · conditional bound +0.1897 pp</div></article>
+  <article class="wavePulse"><div class="caps">W81 · Held next source lease</div><div class="pulseCount">114 / 162 <span class="small muted">uncovered</span></div><div class="gapTrack"><div class="gapFill" style="width:70.37%"></div></div><div class="pulseSubtitle">48 covered · not launched · conditional bound +0.2184 pp</div></article>
+ </div>
+ <div class="waveResults"><div>W29 combined baseline<strong>86 / 346 covered</strong>260 uncovered · maximum +0.4981 pp if fully remeasured</div><div>W30 local observatory<strong>108 / 108 PASS</strong>77% → 90% combined coverage · native UNKNOWN</div><div>Runner control<strong>UNKNOWN current p95</strong>Old 13-job B0 queue p95 49s; not transferable</div></div>
+ <p class="metaLine"><a href="https://github.com/GBOGEB/ABACUS/pull/2250">Draft PR #2250 ↗</a> · <a href="https://github.com/GBOGEB/ABACUS/actions/runs/39149390636">Two-cell native run ↗</a> · <a href="https://github.com/GBOGEB/ABACUS/actions/runs/39149390719">Exact-head B0 ↗</a> · <a href="https://github.com/GBOGEB/ABACUS/tree/code-purple/observatory-v3-metrics-20261018">Observatory branch ↗</a> · <a href="https://github.com/GBOGEB/ABACUS/issues/1991#issuecomment-6252979625">Burndown receipt ↗</a></p>
+</section>
 <div class="mainpanes">
 <section class="panel" id="coverage"><div class="sectionHead"><h2>01 · COVERAGE | Raw gain ≠ matched improvement</h2><span class="chip">Zoomed scale; not log of percentage</span></div><p class="subtitle" id="covCaption">Historic N−1 PR head vs verified main cohort; denominator fixed only for common files.</p>
 <div class="chartwrap"><svg id="coverageChart" viewBox="0 0 720 309" role="img" aria-label="Coverage chart with separate cohort and population-composition effects"><title>Matched coverage versus composition effect</title></svg><div class="chartlegend"><a id="prevRunLink" href="https://github.com/GBOGEB/ABACUS/actions/runs/39136242442">N−1 · PR B0</a><a id="cohortLink" href="https://github.com/GBOGEB/ABACUS/compare/7488bd7bdcd2cb2fb7dd2d4a748a7867a7df2ab0...97a8b13faff577272a90edaf0dd4593035e10605">375-file cohort</a><a id="measuredRunLink" href="https://github.com/GBOGEB/ABACUS/actions/runs/39142444027">N · verified main B0</a></div></div>
@@ -236,7 +247,9 @@ async function refreshGitHub(){if(busy)return;busy=true;const btn=e('refreshBtn'
  state=next;render();set('refreshStatus',errors.length?'Partial: '+errors.length+' failed source(s)':'Public metadata refreshed · coverage receipt unchanged');busy=false;btn.disabled=false;
 }
 async function loadCensus(){try{const r=await fetch('evidence.latest.json?v='+Date.now(),{cache:'no-store'});if(!r.ok)throw Error('HTTP '+r.status);const data=await r.json();if(data.schema!=='codepurple.evidence_observatory.v2'||!data.main?.sha)throw Error('Invalid snapshot schema/head');state=data;render();set('refreshStatus','Loaded read-only census JSON')}catch(ex){set('refreshStatus','No local census JSON; embedded snapshot retained ('+ex.message+')')}}
-e('refreshBtn').addEventListener('click',refreshGitHub);e('loadBtn').addEventListener('click',loadCensus);render();
+e('refreshBtn').addEventListener('click',refreshGitHub);
+e('refreshBtn').addEventListener('click', async ()=>{try{const result=await git('/repos/GBOGEB/ABACUS/actions/runs/39149390636');const actual=result.head_sha==='38d1d3b52fc7ca943a17471301c20cbe5f5af254'?(result.conclusion||result.status||'UNKNOWN'):'HEAD MISMATCH';set('w29NativeOutcome',String(actual).toUpperCase()+' · METADATA ONLY');}catch(ex){set('w29NativeOutcome','UNKNOWN · public API unavailable')}});
+e('loadBtn').addEventListener('click',loadCensus);render();
 // Public repo only; 15-minute TTL and no token. Browser failures retain truthful stale values.
 if(location.protocol!=='file:'){setTimeout(()=>refreshGitHub(),1200);setInterval(()=>{if(!document.hidden)refreshGitHub()},15*60*1000)}
 })();
