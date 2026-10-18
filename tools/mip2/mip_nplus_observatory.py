@@ -101,14 +101,21 @@ def matched_workflow_flip(before, after):
             continue
         counts["paired_terminal_families"] += 1
         old, new = x["conclusion"], y["conclusion"]
-        if old == "success" and new != "success":
-            label = "REGRESSED"
-        elif old != "success" and new == "success":
-            label = "RECOVERED"
+        failures = {"failure", "timed_out", "action_required",
+                    "startup_failure"}
+        if old in failures and new == "success":
+            label = "RECOVERED_FAILURE_OUTCOME"
+        elif old == "success" and new in failures:
+            label = "NEW_FAILURE_OUTCOME"
+        elif old == "success" and new == "success":
+            label = "UNCHANGED_SUCCESS"
+        elif old == new:
+            label = "UNCHANGED_OTHER"
         else:
-            label = "UNCHANGED_SUCCESS" if old == "success" else "UNCHANGED_OTHER"
+            # Cancelled, skipped and neutral are not first-red evidence.
+            label = "NONFAILURE_OUTCOME_TRANSITION"
         counts[label] += 1
-        if label in ("REGRESSED", "RECOVERED"):
+        if label in ("NEW_FAILURE_OUTCOME", "RECOVERED_FAILURE_OUTCOME"):
             flips.append({"workflow_id": wf, "from_run": x["id"],
                           "to_run": y["id"], "before": old, "after": new,
                           "classification": label})
@@ -216,8 +223,8 @@ def as_markdown(r):
         c = comparison["matched_workflows"]["counts"]
         lines.append(f"- {comparison['from']} -> {comparison['to']}: "
                      f"paired={c.get('paired_terminal_families', 0)}, "
-                     f"recovered={c.get('RECOVERED', 0)}, "
-                     f"regressed={c.get('REGRESSED', 0)}, "
+                     f"recovered-failure-outcome={c.get('RECOVERED_FAILURE_OUTCOME', 0)}, "
+                     f"new-failure-outcome={c.get('NEW_FAILURE_OUTCOME', 0)}, "
                      f"excluded nonterminal={c.get('nonterminal_excluded', 0)}, "
                      f"excluded duplicate={c.get('duplicate_family_excluded', 0)}.")
     p = r["progress"]
