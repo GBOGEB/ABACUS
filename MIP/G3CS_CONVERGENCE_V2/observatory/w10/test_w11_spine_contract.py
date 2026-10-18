@@ -219,4 +219,19 @@ class SpineW11ContractTests(unittest.TestCase):
         self.assertEqual(r["merge_admission"],"HOLD")
 
 
+    def test_native_cli_generates_source_bound_receipts(self):
+        import contextlib
+        import io
+        from unittest import mock
+        with tempfile.TemporaryDirectory() as folder:
+            out=Path(folder)
+            argv=['spine_contract.py','--history',str(ROOT/'W10_FROZEN_HISTORY.json'),
+                  '--outdir',str(out)]
+            with mock.patch('sys.argv',argv),contextlib.redirect_stdout(io.StringIO()) as capture:
+                spine.main()
+            self.assertIn('nodes=37, edges=46',capture.getvalue())
+            self.assertEqual(len(list(out.glob('SPINE_*.json'))),3)
+            self.assertEqual(json.loads((out/'SPINE_CONTRACT_W11.json').read_text())['merge_admission'],'HOLD')
+
+
 if __name__=="__main__":unittest.main()
