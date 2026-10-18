@@ -17,6 +17,14 @@ OUTPUT_SCHEMA = "codepurple.g3cs.serial-main-pair-result.v1"
 SHA40 = re.compile(r"^[0-9a-f]{40}$")
 SHA64 = re.compile(r"^[0-9a-f]{64}$")
 ROOT_STATES = {"OPEN", "REPAIRED", "VERIFIED", "CLOSURE_CLAIMED"}
+# These fields would attempt to smuggle decisions into a source-reported packet.
+# A read-only comparator cannot authenticate owner/reviewer/security authority.
+UNTRUSTED_AUTHORITY_FIELDS = frozenset({
+    "admission", "authority_transfer", "security_waiver",
+    "independent_review", "governed_merge_credit", "root_closure_credit",
+    "closure_credit", "verified_closed", "required_approvals",
+    "required_status_checks", "review_approved", "waiver_granted",
+})
 TERMINAL = {"success", "failure", "cancelled", "skipped", "timed_out"}
 
 
@@ -52,9 +60,26 @@ def coverage(item, sha, name):
             f"invalid {name} numerator/denominator")
 
 
+def reject_embedded_authority_claims(value):
+    """Reject privileged fields anywhere in an unauthenticated input document.
+
+    Ordinary additive metadata remains permitted for forward compatibility.
+    """
+    if isinstance(value, dict):
+        for key, child in value.items():
+            require(isinstance(key, str), "invalid metadata key")
+            require(key not in UNTRUSTED_AUTHORITY_FIELDS,
+                    "untrusted authority claim: " + key)
+            reject_embedded_authority_claims(child)
+    elif isinstance(value, list):
+        for child in value:
+            reject_embedded_authority_claims(child)
+
+
 def validate(payload):
     require(isinstance(payload, dict) and payload.get("schema") == INPUT_SCHEMA,
             "bad paired-main schema")
+    reject_embedded_authority_claims(payload)
     require(payload.get("repository") == "GBOGEB/ABACUS" and
             payload.get("clock") == "SERIAL_MERGED_MAIN", "non-main or wrong repo")
     require(payload.get("receipt_authentication") == "NOT_INDEPENDENTLY_VERIFIED",
@@ -65,33 +90,37 @@ def validate(payload):
     seen_jobids = set()
     prior_run_ids = set()
     for i, item in enumerate(pair):
+        require(isinstance(item, dict), "invalid main observation object")
         sha = item.get("main_sha")
         require(isinstance(sha, str) and SHA40.fullmatch(sha), "invalid main SHA")
         if i == 1:
             require(sha != pair[0]["main_sha"] and
                     item.get("parent_main_sha") == pair[0]["main_sha"],
                     "main SHA chain is not contiguous")
-            require(instant(item["captured_at"]) > instant(pair[0]["captured_at"]),
+            require(instant(item.get("captured_at")) > instant(pair[0].get("captured_at")),
                     "nonmonotonic observation clock")
         else:
-            instant(item["captured_at"])
+            instant(item.get("captured_at"))
         values = item.get("coverage")
         require(isinstance(values, dict), "invalid coverage mapping")
         for name in ("statement", "branch", "diff"):
             coverage(values.get(name), sha, name)
         reds = item.get("first_red_fingerprints")
-        require(isinstance(reds, list) and len(reds) == len(set(reds)) and
-                all(isinstance(x, str) and SHA64.fullmatch(x) for x in reds),
+        require(isinstance(reds, list) and
+                all(isinstance(x, str) and SHA64.fullmatch(x) for x in reds) and
+                len(reds) == len(set(reds)),
                 "invalid or duplicated first-red fingerprint")
         roots = item.get("roots")
         require(isinstance(roots, dict) and all(
-            isinstance(k, str) and SHA64.fullmatch(k) and v in ROOT_STATES
+            isinstance(k, str) and SHA64.fullmatch(k) and
+            isinstance(v, str) and v in ROOT_STATES
             for k, v in roots.items()), "invalid causal-root status")
         jobs = item.get("jobs")
         require(isinstance(jobs, list), "missing native job observation")
         job_names = set()
         this_run_ids = set()
         for job in jobs:
+            require(isinstance(job, dict), "invalid native job observation")
             require(job.get("source_sha") == sha, "job not bound to main SHA")
             require(all(type(job.get(k)) is int and job[k] > 0
                         for k in ("run_id", "attempt", "job_id")),
@@ -111,9 +140,12 @@ def validate(payload):
             job_names.add(name)
             status = job.get("status")
             conclusion = job.get("conclusion")
-            require(status in ("completed", "queued", "in_progress", "pending", "waiting", "requested"), "bad job status")
+            require(isinstance(status, str) and
+                    status in ("completed", "queued", "in_progress", "pending", "waiting", "requested"),
+                    "bad job status")
             if status == "completed":
-                require(conclusion in TERMINAL, "terminal job missing conclusion")
+                require(isinstance(conclusion, str) and conclusion in TERMINAL,
+                        "terminal job missing conclusion")
                 if conclusion not in {"skipped", "cancelled"}:
                     require(job.get("started_at") is not None and
                             job.get("completed_at") is not None,
@@ -121,7 +153,7 @@ def validate(payload):
             else:
                 require(conclusion is None and job.get("completed_at") is None,
                         "nonterminal job falsely complete")
-            created = instant(job["created_at"])
+            created = instant(job.get("created_at"))
             started = instant(job["started_at"]) if job.get("started_at") else None
             finished = instant(job["completed_at"]) if job.get("completed_at") else None
             require(status not in {"queued", "pending", "waiting", "requested"} or started is None, "queued job has start clock")
@@ -130,7 +162,7 @@ def validate(payload):
             require(started is None or created <= started, "negative queue clock")
             require(finished is None or (started is not None and started <= finished),
                     "negative execution clock")
-            captured = instant(item["captured_at"])
+            captured = instant(item.get("captured_at"))
             require(created <= captured and (finished is None or finished <= captured),
                     "observation precedes native job evidence")
         require(prior_run_ids.isdisjoint(this_run_ids),
