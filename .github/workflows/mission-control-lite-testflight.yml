@@ -33,7 +33,7 @@ jobs:
           mkdir -p evidence
           python -m mission_control_lite.timing_pulse measure \
             --output evidence/phase-times.json --phase coverage-install -- \
-            python -m pip install --disable-pip-version-check coverage==7.10.7
+            python -m pip install --disable-pip-version-check coverage==7.10.7 'PyYAML>=6.0.3,<7.0'
           python -m mission_control_lite.timing_pulse measure \
             --output evidence/phase-times.json --phase core-tests -- \
             python -m coverage run --branch --source=mission_control_lite \
