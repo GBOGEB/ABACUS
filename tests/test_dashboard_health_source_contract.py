@@ -51,8 +51,20 @@ def _fixture_scan(*, malicious_link: str) -> tuple[str, str]:
         # Bash receives a portable path relative to the subprocess cwd.
         # Raw Windows drive paths are not valid POSIX GITHUB_OUTPUT paths.
         env = {**os.environ, "GITHUB_OUTPUT": output.name}
+        # Windows' bare "bash" may resolve to the WSL shim instead of
+        # Git for Windows (CI has Git Bash but does not have a WSL distro).
+        if os.name == "nt":
+            bash_exe = (
+                Path(os.environ.get("ProgramFiles", r"C:\Program Files"))
+                / "Git" / "bin" / "bash.exe"
+            )
+            if not bash_exe.is_file():
+                raise AssertionError("Git for Windows Bash is required")
+            bash = str(bash_exe)
+        else:
+            bash = "bash"
         result = subprocess.run(
-            ["bash", "-c", _report_shell()],
+            [bash, "-c", _report_shell()],
             cwd=folder,
             env=env,
             stdout=subprocess.PIPE,
