@@ -1,0 +1,117 @@
+{
+  "schema": "codepurple.elastic_wave_input.v1",
+  "repository": "GBOGEB/ABACUS",
+  "snapshot_source_sha": "dccefcd7bffc39b75224f3c6ec0afd60768c417c",
+  "context": {
+    "source": "GitHub Actions run 39159837402 jobs 117770622363 and 117770622870",
+    "evidence_class": "TERMINAL_NATIVE_FOCUSED_NOT_CURRENT_MAIN_B0",
+    "workflow_head": "dccefcd7bffc39b75224f3c6ec0afd60768c417c",
+    "repository_main_at_branch_creation": "994ad6e73c748923841d92b12651e92d41b2d4ff",
+    "jobs_passed": 2,
+    "jobs_expected": 2,
+    "tests_per_job": 118,
+    "executions_passed": 236,
+    "expected_artifact_zips": 2,
+    "observed_artifact_zips": 2,
+    "artifact_ids": [
+      12148546623,
+      12148119116
+    ],
+    "native_run_url": "https://github.com/GBOGEB/ABACUS/actions/runs/39159837402",
+    "numerator_denominator_scope": "FOUR_SOURCE_MODULES_ONLY",
+    "covered": 660,
+    "eligible": 723,
+    "release_claim": false,
+    "merge_admission": "HOLD",
+    "fresh_native_runner_queue_p95": null
+  },
+  "families": [
+    {
+      "id": "W75",
+      "paths": [
+        "tools/w75_stability_diagnostic.py"
+      ],
+      "eligible": 221,
+      "covered": 219,
+      "target_percent": 95,
+      "first_reds": [],
+      "source_sha": "dccefcd7bffc39b75224f3c6ec0afd60768c417c",
+      "native_observed": true,
+      "history": []
+    },
+    {
+      "id": "W64",
+      "paths": [
+        "tools/w64_census_reverse_pressure_v2.py"
+      ],
+      "eligible": 125,
+      "covered": 123,
+      "target_percent": 95,
+      "first_reds": [],
+      "source_sha": "dccefcd7bffc39b75224f3c6ec0afd60768c417c",
+      "native_observed": true,
+      "history": []
+    },
+    {
+      "id": "W81",
+      "paths": [
+        "tools/w81_repair_outcome_block.py"
+      ],
+      "eligible": 162,
+      "covered": 154,
+      "target_percent": 95,
+      "first_reds": [],
+      "source_sha": "dccefcd7bffc39b75224f3c6ec0afd60768c417c",
+      "native_observed": true,
+      "history": []
+    },
+    {
+      "id": "W82",
+      "paths": [
+        "tools/w82_semantic_diversity_diagnostic.py"
+      ],
+      "eligible": 215,
+      "covered": 164,
+      "target_percent": 95,
+      "first_reds": [],
+      "source_sha": "dccefcd7bffc39b75224f3c6ec0afd60768c417c",
+      "native_observed": true,
+      "history": []
+    }
+  ],
+  "capacity": {
+    "queue_population_complete": false,
+    "queue_p95_seconds": null,
+    "queue_soft_seconds": 600,
+    "queue_hard_seconds": 900,
+    "evidence_yield": 1,
+    "previous_observation_lanes": 1,
+    "maximum_observation_lanes": 8,
+    "available_runner_slots": null,
+    "ready_disjoint_source_leases": 1,
+    "source_owner_slots": 1,
+    "outstanding_native_jobs": null,
+    "latest_terminal_run_id": 39159837402,
+    "latest_terminal_source_sha": "dccefcd7bffc39b75224f3c6ec0afd60768c417c",
+    "last_scaled_run_id": null,
+    "last_scaled_source_sha": null
+  },
+  "events": [],
+  "seen_event_keys": [],
+  "global_acceptance": {
+    "accepted_roots_remaining": null,
+    "repositories": 3,
+    "source_attested_repositories": null,
+    "required_artifacts": null,
+    "valid_artifacts": null,
+    "independent_stable_pulses": null,
+    "no_special_cause_variation": false,
+    "gates": {
+      "branch_protection": false,
+      "eligible_independent_review": false,
+      "required_checks": false,
+      "negative_red_canary": false,
+      "security": false
+    }
+  }
+}
