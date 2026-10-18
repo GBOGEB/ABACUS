@@ -20,6 +20,10 @@ from urllib.parse import urlsplit
 from uuid import uuid4
 
 APP = Path(__file__).resolve().parent
+if str(APP) not in sys.path:
+    sys.path.insert(0, str(APP))
+from operator_workbench import OperatorWorkbench
+
 WORKFLOWS = {
     "model-preflight": [["-m", "unittest", "discover", "-s", "tests", "-p", "test_model_readiness.py", "-q"]],
     "unit-tests": [["-m", "unittest", "discover", "-s", "tests", "-q"]],
@@ -299,8 +303,10 @@ class RunManager:
 
 class Handler(BaseHTTPRequestHandler):
     manager: RunManager
+    operator = None
     public_index = APP / "index.html"
-    server_version = "CodePurpleSUT/2.0"
+    operator_page = APP / "operator.html"
+    server_version = "CodePurpleSUT/2.1"
 
     def _send(self, code, body, content_type="application/json; charset=utf-8"):
         payload = json.dumps(body).encode() if not isinstance(body, bytes) else body
@@ -317,6 +323,22 @@ class Handler(BaseHTTPRequestHandler):
 
     def do_GET(self):
         path = urlsplit(self.path).path
+        if path.startswith("/api/operator") or path == "/operator":
+            if self.headers.get("Host") != f"127.0.0.1:{self.server.server_port}":
+                return self._send(403, {"error": "Loopback Host required"})
+            if path == "/operator":
+                return self._send(200, self.operator_page.read_bytes(), "text/html; charset=utf-8")
+            if self.operator is None:
+                return self._send(503, {"error": "Operator root not configured"})
+            if path == "/api/operator/catalog":
+                return self._send(200, self.operator.catalog())
+            if path == "/api/operator/runs":
+                return self._send(200, {"runs": self.operator.list_runs()})
+            if path.startswith("/api/operator/runs/"):
+                rid = path.rsplit("/", 1)[-1]
+                row = self.operator.get_run(rid)
+                return self._send(200, row) if row is not None else self._send(404, {"error": "Unknown operator run"})
+            return self._send(404, {"error": "Unknown operator route"})
         if path in ("/", "/index.html"):
             return self._send(200, self.public_index.read_bytes(), "text/html; charset=utf-8")
         if path == "/api/status":
@@ -332,23 +354,52 @@ class Handler(BaseHTTPRequestHandler):
         self._send(404, {"error": "Unknown route"})
 
     def do_POST(self):
-        if urlsplit(self.path).path != "/api/run":
+        route = urlsplit(self.path).path
+        if route not in {"/api/run", "/api/operator/plan",
+                         "/api/operator/run", "/api/operator/cancel"}:
             return self._send(404, {"error": "Unknown route"})
-        origin = self.headers.get("Origin")
         expected = f"http://127.0.0.1:{self.server.server_port}"
-        if origin != expected:
+        if route.startswith("/api/operator") and self.headers.get("Host") != f"127.0.0.1:{self.server.server_port}":
+            return self._send(403, {"error": "Loopback Host required"})
+        if self.headers.get("Origin") != expected:
             return self._send(403, {"error": "Same-origin browser request required"})
         if self.headers.get("Content-Type", "").split(";")[0] != "application/json":
             return self._send(415, {"error": "Expected JSON"})
         try:
             n = int(self.headers.get("Content-Length", "0"))
-            if not 0 < n <= 1024:
+            if not 0 < n <= (1024 if route == "/api/run" else 2048):
                 raise ValueError("request size")
             data = json.loads(self.rfile.read(n))
-            if not isinstance(data, dict) or set(data) != {"profile"}:
+            if not isinstance(data, dict):
                 raise ValueError("invalid payload")
-            code, record = self.manager.launch(data["profile"], self.headers.get("X-SUT-Token", ""))
-            return self._send(code, {"result": record} if code == 202 else {"error": record})
+            if route == "/api/run":
+                if set(data) != {"profile"}:
+                    raise ValueError("invalid SUT payload")
+                code, record = self.manager.launch(data["profile"], self.headers.get("X-SUT-Token", ""))
+            else:
+                if self.operator is None:
+                    return self._send(503, {"error": "Operator root not configured"})
+                if route == "/api/operator/plan":
+                    if set(data) not in ({"profile"}, {"profile", "input_name"}):
+                        raise ValueError("invalid plan payload")
+                    try:
+                        record = self.operator.plan(data["profile"], data.get("input_name"))
+                        return self._send(200, {"result": record})
+                    except (ValueError, OSError) as exc:
+                        return self._send(400, {"error": str(exc)})
+                if route == "/api/operator/cancel":
+                    if set(data) != {"id"}:
+                        raise ValueError("invalid cancel payload")
+                    code, record = self.operator.cancel(data["id"], self.headers.get("X-SUT-Token", ""))
+                else:
+                    if set(data) != {"profile", "input_name", "source_sha", "consent", "after_seconds"}:
+                        raise ValueError("invalid execute payload")
+                    code, record = self.operator.submit(
+                        data["profile"], data["input_name"], data["source_sha"],
+                        data["consent"], data["after_seconds"],
+                        self.headers.get("X-SUT-Token", ""),
+                    )
+            return self._send(code, {"result": record} if code in (200, 202) else {"error": record})
         except (ValueError, TypeError, json.JSONDecodeError):
             return self._send(400, {"error": "Invalid request"})
 
@@ -361,14 +412,31 @@ def main():
     parser.add_argument("--sut-root", type=Path, default=APP.parent)
     parser.add_argument("--port", type=int, default=8765)
     parser.add_argument("--enable-execution", action="store_true", help="Explicitly allow local trusted-source SUT test profiles")
+    parser.add_argument("--abacus-root", type=Path, help="Trusted local ABACUS Git checkout for operator profiles")
+    parser.add_argument("--operator-inbox", type=Path, help="Original files for derived binary analysis")
+    parser.add_argument("--operator-receipts", type=Path, help="Append-only local operator receipts")
+    parser.add_argument("--enable-operator", action="store_true", help="Explicitly allow bounded local operator tasks")
     args = parser.parse_args()
+    if args.enable_operator and args.abacus_root is None:
+        parser.error("--enable-operator requires --abacus-root")
     manager = RunManager(args.sut_root, execution_enabled=args.enable_execution)
-    cls = type("SUTHandler", (Handler,), {"manager": manager})
+    operator = None
+    if args.abacus_root is not None:
+        operator = OperatorWorkbench(
+            args.abacus_root,
+            args.operator_inbox or (Path.cwd() / "operator-inbox"),
+            args.operator_receipts or (Path.cwd() / "operator-receipts"),
+            enabled=args.enable_operator, token=manager.token,
+        )
+    cls = type("SUTHandler", (Handler,), {"manager": manager, "operator": operator})
     httpd = ThreadingHTTPServer(("127.0.0.1", args.port), cls)
     print(f"CODE PURPLE: http://127.0.0.1:{httpd.server_port}/", flush=True)
     print("SUT root:", manager.root, "| execution:", manager.execution_enabled, flush=True)
-    if manager.execution_enabled:
+    if manager.execution_enabled or (operator is not None and operator.enabled):
         print("Execution token (enter in GUI; do not share):", manager.token, flush=True)
+    if operator is not None:
+        print("Operator: http://127.0.0.1:%d/operator" % httpd.server_port,
+              "| enabled:", operator.enabled, flush=True)
     httpd.serve_forever()
 
 
