@@ -34,3 +34,4 @@ TestG3CSW10Release = _get(Path("observatory/w10/test_w10_spine.py"), "w10").Glob
 TestG3CSW11Spine = _get(Path("observatory/w10/test_w11_spine_contract.py"), "w11").SpineW11ContractTests
 TestG3CSW12Metrics = _get(Path("observatory/w10/test_w12_dependency_metrics.py"), "w12").DependencyW12Tests
 TestG3CSW12Trigger = _get(Path("observatory/w10/test_w12_trigger_events.py"), "w12trigger").TriggerEventW12Tests
+TestG3CSW13Neural = _get(Path("observatory/w10/tests/test_neural_spine_w13.py"), "w13neural").NeuralW13
