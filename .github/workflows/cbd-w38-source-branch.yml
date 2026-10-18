@@ -1,0 +1,91 @@
+name: CBD W38 Matched Existing-Source Branch Uplift
+'on':
+  pull_request:
+    paths:
+      - 'ci/governance/tests/test_feedback_queue_pressure_w38.py'
+      - '.github/workflows/cbd-w38-source-branch.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: cbd-w38-branch-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+jobs:
+  bounded-matched-branch:
+    name: W38 unchanged-source N-1/N matched branch coverage
+    runs-on: ubuntu-24.04
+    timeout-minutes: 12
+    steps:
+      - name: Immutable SHA checkout
+        uses: actions/checkout@v7
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+      - name: Python 3.12
+        uses: actions/setup-python@v7.0.0
+        with:
+          python-version: '3.12'
+      - name: Baseline and expanded branch census, exact same source
+        shell: bash
+        env:
+          EXACT_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$EXACT_SHA"
+          python -m pip install coverage==7.10.7
+          python -m py_compile ci/governance/tests/test_feedback_queue_pressure_w38.py
+          mkdir -p w38_coverage_receipts
+          python -m coverage run --branch --data-file=.coverage.w38.base -m unittest ci.governance.tests.test_feedback_queue_pressure -v
+          python -m coverage json --data-file=.coverage.w38.base -o w38_coverage_receipts/baseline.json --pretty-print
+          python -m coverage run --branch --data-file=.coverage.w38.expanded -m unittest ci.governance.tests.test_feedback_queue_pressure ci.governance.tests.test_feedback_queue_pressure_w38 -v
+          python -m coverage json --data-file=.coverage.w38.expanded -o w38_coverage_receipts/expanded.json --pretty-print
+          python - <<'PY'
+          import hashlib, json, os
+          from pathlib import Path
+          folder=Path("w38_coverage_receipts")
+          a=json.loads((folder/"baseline.json").read_text())
+          b=json.loads((folder/"expanded.json").read_text())
+          name="ci/governance/feedback_queue_pressure.py"
+          def get(d):
+              key=next((k for k in d["files"] if k.endswith(name)),None)
+              if key is None:raise SystemExit("NO_TARGETED_SOURCE_COVERAGE")
+              return d["files"][key]["summary"]
+          old,new=get(a),get(b)
+          if (old["num_branches"]!=new["num_branches"] or
+              old["num_statements"]!=new["num_statements"]):
+              raise SystemExit("UNMATCHED_BRANCH_STATEMENT_DENOMINATOR")
+          gain=new["covered_branches"]-old["covered_branches"]
+          receipt={
+              "schema":"cbd.w38.existing-source-matched-branch.v1",
+              "source_head":os.environ["EXACT_SHA"],
+              "source_file":name,
+              "source_sha256":hashlib.sha256(Path(name).read_bytes()).hexdigest(),
+              "method":"SAME_HEAD_SAME_SOURCE_SAME_COVERAGE_INSTRUMENTER",
+              "baseline":{"covered_branches":old["covered_branches"],
+                          "eligible_branches":old["num_branches"],
+                          "covered_statements":old["covered_lines"],
+                          "eligible_statements":old["num_statements"]},
+              "expanded":{"covered_branches":new["covered_branches"],
+                          "eligible_branches":new["num_branches"],
+                          "covered_statements":new["covered_lines"],
+                          "eligible_statements":new["num_statements"]},
+              "newly_covered_existing_source_branches":gain,
+              "broad_main_global_coverage_delta":None,
+              "coverage_json_sha256":{
+                  f:hashlib.sha256((folder/f).read_bytes()).hexdigest()
+                  for f in ("baseline.json","expanded.json")},
+              "merge_admission":"HOLD","security_waiver":False,
+              "no_gate_relaxations":True
+          }
+          (folder/"matched-branch.json").write_text(json.dumps(receipt,indent=2)+"\n")
+          print(json.dumps(receipt))
+          if gain<5:raise SystemExit("W38_EXISTING_SOURCE_GAIN_BELOW_FIVE_ARCS")
+          PY
+      - name: Preserve paired comparable source receipts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: cbd-w38-matched-${{ github.run_id }}-a${{ github.run_attempt }}
+          path: w38_coverage_receipts/
+          if-no-files-found: warn
+          retention-days: 30
