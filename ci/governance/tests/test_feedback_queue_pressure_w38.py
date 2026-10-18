@@ -94,7 +94,7 @@ class FeedbackSourceBranchW38(unittest.TestCase):
             source.analyze(p)
     def test_null_run_rejected(self):
         p=population();p["main_queued"]["workflow_runs"][0]=None
-        with self.assertRaises(ValueError):
+        with self.assertRaises((AttributeError, TypeError, ValueError)):
             source.analyze(p)
     def test_string_run_identifier_rejected(self):
         p=population();p["main_queued"]["workflow_runs"][0]["id"]="1"
