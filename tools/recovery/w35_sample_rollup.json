@@ -1,0 +1,77 @@
+{
+  "admitted_lanes": {
+    "denominator": 3,
+    "numerator": 0
+  },
+  "authority_transfer": false,
+  "canonical_pytest": {
+    "failed": 3,
+    "passed": 3854,
+    "skipped": 1,
+    "total": 3858
+  },
+  "current_main_b0": {
+    "denominator": null,
+    "numerator": null,
+    "run_id": 39164360709,
+    "source_sha": "2246c7bd3a9bda6a3d43b9a9116cb7088cfbcc88",
+    "terminal": false
+  },
+  "current_main_coverage": null,
+  "exact_main": "2246c7bd3a9bda6a3d43b9a9116cb7088cfbcc88",
+  "historical_w27_cell_delta_pp": [
+    46.0,
+    46.0,
+    46.0,
+    46.0
+  ],
+  "historical_w34_b0": {
+    "attempt": 1,
+    "denominator": 13,
+    "numerator": 11,
+    "run_id": 39159906022,
+    "source_sha": "994ad6e73c748923841d92b12651e92d41b2d4ff",
+    "status": "FAIL"
+  },
+  "local_synthetic": {
+    "denominator": 18,
+    "native_qualification": null,
+    "numerator": 18
+  },
+  "merge_admission": "HOLD",
+  "native_qualified_lanes": {
+    "denominator": 3,
+    "meaning": "proof-count; unobserved is not a measured failure",
+    "numerator": 0
+  },
+  "repository_head_observed": {
+    "denominator": 5,
+    "numerator": 5
+  },
+  "root_census": {
+    "formal_closures": null,
+    "manifestations": 11,
+    "source_classified_roots": 2,
+    "unknown_root_groups": 1
+  },
+  "schema": "codepurple.w35.readonly-rollup.v1",
+  "security_waiver": false,
+  "source_implementation": {
+    "denominator": 3,
+    "numerator": 3
+  },
+  "stable_sigma": false,
+  "w27_whole_repo_delta": null,
+  "w38_focused": {
+    "artifact_bytes_verified": null,
+    "before_covered": 660,
+    "broad_main_coverage": null,
+    "covered": 707,
+    "delta_pp": 6.500692,
+    "eligible": 723,
+    "job_id": 117777615940,
+    "native_passed": 203,
+    "run_id": 39162185592,
+    "tested_python": "3.12"
+  }
+}
