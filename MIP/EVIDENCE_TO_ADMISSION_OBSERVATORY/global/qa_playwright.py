@@ -116,6 +116,20 @@ def main() -> int:
                 assert page.locator("#localTargets").inner_text() == "4/4"
                 assert page.locator("#classified").inner_text() == "201/201"
                 assert page.locator("#globalCoverage").inner_text() == "97.79%"
+
+                assert page.locator("#taxCards details").count()==len(ledger["taxonomy"]["terms"])
+                page.locator("#taxSearch").fill("3P-RAL")
+                assert page.locator("#taxCards details").count()>=1
+                page.locator("#taxSearch").fill("unlikely_moniker_no_match")
+                assert page.locator("#taxCards details").count()==0
+                page.locator("#taxSearch").fill("")
+                page.locator("#taxFamily").select_option("cycle")
+                assert page.locator("#taxCards details").count()==len(
+                    [term for term in ledger["taxonomy"]["terms"] if term["family"]=="cycle"])
+                page.locator("#taxFamily").select_option("all")
+                assert page.locator("#taxCards details").count()==len(ledger["taxonomy"]["terms"])
+                page.locator("#taxCards details").first.locator("summary").click()
+                assert page.locator("#taxCards details").first.locator('a[href^="https://github.com/"]').count()==1
                 assert not requests, "Unexpected autonomous/background API fetch"
                 for anchor in page.locator('a[href^="#"]').all():
                     selector = anchor.get_attribute("href")
