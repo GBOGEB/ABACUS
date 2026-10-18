@@ -42,7 +42,8 @@ def test_positive_git_lines_strips_and_drops_empty(monkeypatch):
 
 def test_negative_git_lines_failure_not_misclassified_as_changed_files(monkeypatch):
     monkeypatch.setattr(pilot.subprocess, "run", lambda *a, **k: _proc("a.py", "fatal", 128))
-    assert pilot.git_lines("diff") == []  # observed existing behavior; see fail-open BD
+    with pytest.raises(pilot.GitProbeError, match="git diff exited 128"):
+        pilot.git_lines("diff")
 
 
 def test_positive_run_receipt_records_exit_and_bounded_tails(monkeypatch):
