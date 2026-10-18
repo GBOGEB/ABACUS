@@ -256,3 +256,110 @@ def test_cli_preserves_status_json_and_exit_code(
     assert runtime_status.main() == expected_exit
     assert json.loads(destination.read_text(encoding="utf-8")) == status
     assert json.loads(capsys.readouterr().out) == status
+
+
+# W007 next-slice negative contract: every structural assumption is evidence,
+# including an existing but empty JSON object (not the same as missing bytes).
+@pytest.mark.parametrize(
+    ("kind", "expected"),
+    [
+        ("manifest", "runtime manifest wave must be W007"),
+        ("matrix", "RTM trace matrix must contain traceability rows"),
+    ],
+)
+def test_empty_object_json_must_fail_closed(
+    runtime_tree: Path, kind: str, expected: str
+) -> None:
+    path = (_manifest(runtime_tree) if kind == "manifest" else _matrix(runtime_tree))[0]
+    path.write_text("{}\n", encoding="utf-8")
+    assert expected in _errors(runtime_tree)
+
+
+@pytest.mark.parametrize("capability", sorted(REQUIRED_CAPABILITIES))
+def test_each_required_runtime_capability_is_nonoptional(
+    runtime_tree: Path, capability: str
+) -> None:
+    path, manifest = _manifest(runtime_tree)
+    manifest["artifacts"] = [
+        item for item in manifest["artifacts"]
+        if item["capability"] != capability
+    ]
+    _write(path, manifest)
+    assert f"runtime manifest missing capability: {capability}" in _errors(runtime_tree)
+
+
+@pytest.mark.parametrize(
+    ("kind", "expected"),
+    [
+        ("non_string_active_path", "runtime manifest artifact #1 missing path"),
+        ("blank_active_path", "runtime manifest artifact #1 missing path"),
+        ("non_string_generated_producer", "runtime-generated artifact missing producer"),
+        ("blank_generated_producer", "runtime-generated artifact missing producer"),
+    ],
+)
+def test_nonpath_or_blank_artifact_identity_is_not_accepted(
+    runtime_tree: Path, kind: str, expected: str
+) -> None:
+    path, manifest = _manifest(runtime_tree)
+    active = next(item for item in manifest["artifacts"] if item["status"] == "active")
+    generated = next(
+        item for item in manifest["artifacts"]
+        if item["status"] == "runtime_generated"
+    )
+    if kind == "non_string_active_path":
+        active["path"] = 123
+    elif kind == "blank_active_path":
+        active["path"] = ""
+    elif kind == "non_string_generated_producer":
+        generated["producer"] = 7
+    else:
+        generated["producer"] = ""
+    index = manifest["artifacts"].index(active) + 1
+    _write(path, manifest)
+    message = expected.replace("#1", f"#{index}")
+    assert message in _errors(runtime_tree)
+
+
+@pytest.mark.parametrize(
+    "section",
+    [
+        "W007 Runtime Foundation",
+        "SSOT Dashboard",
+        "Traceability",
+        "runtime-artifact-manifest.json",
+        "Visualization Layer",
+    ],
+)
+def test_each_runtime_portal_section_is_contractual(
+    runtime_tree: Path, section: str
+) -> None:
+    portal = runtime_tree / "docs" / "runtime.html"
+    portal.write_text(
+        portal.read_text(encoding="utf-8").replace(section, "WITHHELD"),
+        encoding="utf-8",
+    )
+    assert f"runtime portal missing visible section: {section}" in _errors(runtime_tree)
+
+
+@pytest.mark.parametrize("value", [None, 0, 1, "false", [], {}])
+def test_rtm_available_must_be_literal_json_true(
+    runtime_tree: Path, value: object
+) -> None:
+    path, matrix = _matrix(runtime_tree)
+    matrix["rows"][0]["available"] = value
+    _write(path, matrix)
+    assert "RTM trace matrix has unavailable or missing evidence: E1" in _errors(
+        runtime_tree
+    )
+
+
+@pytest.mark.parametrize("evidence_path", [None, 0, False, []])
+def test_rtm_nonpath_evidence_must_fail_closed(
+    runtime_tree: Path, evidence_path: object
+) -> None:
+    path, matrix = _matrix(runtime_tree)
+    matrix["rows"][0]["evidence_artifact"] = evidence_path
+    _write(path, matrix)
+    failures = _errors(runtime_tree)
+    assert "RTM trace row #1 evidence_artifact must be a non-empty string" in failures
+    assert "RTM trace matrix has unavailable or missing evidence: E1" in failures
