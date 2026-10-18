@@ -102,6 +102,9 @@ def validate(payload):
             seen_jobs.add(key)
             seen_jobids.add(job["job_id"])
             this_run_ids.add(job["run_id"])
+            require(isinstance(job.get("environment_sha256"), str) and
+                    SHA64.fullmatch(job["environment_sha256"]),
+                    "missing job environment fingerprint")
             name = job.get("cohort_key")
             require(isinstance(name, str) and name and name not in job_names,
                     "missing or duplicate job cohort key")
@@ -173,8 +176,12 @@ def timing(before, after):
     names = sorted(set(indexed[0]) & set(indexed[1]))
     groups = {"before_queue": [], "after_queue": [],
               "before_execution": [], "after_execution": []}
+    env_mismatches = []
     for name in names:
         a, b = indexed[0][name], indexed[1][name]
+        if a["environment_sha256"] != b["environment_sha256"]:
+            env_mismatches.append(name)
+            continue
         if any(job["status"] != "completed" or
                job["conclusion"] in {"skipped", "cancelled"} or
                job.get("started_at") is None or job.get("completed_at") is None
@@ -186,6 +193,7 @@ def timing(before, after):
             groups[label + "_queue"].append((started - created).total_seconds())
             groups[label + "_execution"].append((ended - started).total_seconds())
     return {"matched_terminal_jobs": len(groups["before_queue"]),
+            "environment_mismatched_jobs": env_mismatches,
             "minimum_for_descriptive_p95": 5,
             "queue_p95_before_seconds": percentile95(groups["before_queue"]),
             "queue_p95_after_seconds": percentile95(groups["after_queue"]),
