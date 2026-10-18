@@ -388,44 +388,8 @@
       "disposition": "keep"
     },
     {
-      "pattern": "^code-purple-dashboard-v31\\.yml$",
-      "cluster": "documentation",
-      "lifecycle": "pr_domain",
-      "disposition": "keep"
-    },
-    {
-      "pattern": "^code-purple-dashboard-v31\\.yml$",
-      "cluster": "runtime_governance",
-      "lifecycle": "pr_domain",
-      "disposition": "keep"
-    },
-    {
-      "pattern": "^code-purple-dashboard-v31\\.yml$",
-      "cluster": "runtime_governance",
-      "lifecycle": "pr_domain",
-      "disposition": "keep"
-    },
-    {
-      "pattern": "^code-purple-sut-gui\\.yml$",
-      "cluster": "runtime_governance",
-      "lifecycle": "pr_domain",
-      "disposition": "keep"
-    },
-    {
       "pattern": "^mip-bminus1-worker-contract\\.yml$",
       "cluster": "runtime_governance",
-      "lifecycle": "pr_domain",
-      "disposition": "keep"
-    },
-    {
-      "pattern": "^code-purple-dashboard-v31\\.yml$",
-      "cluster": "documentation",
-      "lifecycle": "pr_domain",
-      "disposition": "keep"
-    },
-    {
-      "pattern": "^code-purple-sut-gui\\.yml$",
-      "cluster": "specialised",
       "lifecycle": "pr_domain",
       "disposition": "keep"
     },
@@ -433,6 +397,54 @@
       "pattern": "^qps-metric-census-receiver\\.yml$",
       "cluster": "bridge_federation",
       "lifecycle": "manual",
+      "disposition": "keep"
+    },
+    {
+      "pattern": "^abacus-missioncontrol-stage-contract-qa\\.yml$",
+      "cluster": "bridge_federation",
+      "lifecycle": "pr_domain",
+      "disposition": "keep"
+    },
+    {
+      "pattern": "^abacus-missioncontrol-stage-only\\.yml$",
+      "cluster": "bridge_federation",
+      "lifecycle": "manual",
+      "disposition": "keep"
+    },
+    {
+      "pattern": "^bd-w1-three-pulse-regression\\.yml$",
+      "cluster": "core_test",
+      "lifecycle": "pr_domain",
+      "disposition": "keep"
+    },
+    {
+      "pattern": "^cbd-cohort-union-testflight\\.yml$",
+      "cluster": "core_test",
+      "lifecycle": "pr_domain",
+      "disposition": "keep"
+    },
+    {
+      "pattern": "^cbd-matched-coverage\\.yml$",
+      "cluster": "statistics",
+      "lifecycle": "pr_domain",
+      "disposition": "keep"
+    },
+    {
+      "pattern": "^code-purple-quality-ratchet-proof\\.yml$",
+      "cluster": "core_test",
+      "lifecycle": "manual",
+      "disposition": "keep"
+    },
+    {
+      "pattern": "^dow-bounded-first-red-burndown\\.yml$",
+      "cluster": "dow",
+      "lifecycle": "pr_domain",
+      "disposition": "keep"
+    },
+    {
+      "pattern": "^dow-remaining-gates-telemetry\\.yml$",
+      "cluster": "dow",
+      "lifecycle": "pr_domain",
       "disposition": "keep"
     }
   ],
