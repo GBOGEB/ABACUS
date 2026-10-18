@@ -225,6 +225,44 @@ python build_global_spine_w10.py --history CODE_PURPLE_W10_SPINE_HISTORY.json
  }})();
  </script></body></html>'''
 
+def w11_contract_panel(history):
+    """Load executable contract by file path; verify published JSON parity."""
+    import importlib.util
+    spec=importlib.util.spec_from_file_location('g3cs_w11_contract',BASE/'spine_contract.py')
+    if spec is None or spec.loader is None:
+        raise ValueError('Missing pinned W11 typed graph validator')
+    validator=importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(validator)
+    outcome=validator.build(history)
+    sources={
+        'SPINE_DAG_W11.json':outcome['dag'],
+        'SPINE_SIPOC_W11.json':outcome['sipoc'],
+        'SPINE_CONTRACT_W11.json':{k:v for k,v in outcome.items() if k not in ('dag','sipoc')},
+    }
+    for filename, expected in sources.items():
+        path=BASE/filename
+        if not path.is_file() or json.loads(path.read_text(encoding='utf-8'))!=expected:
+            raise ValueError('W11 published evidence contract drift: '+filename)
+    return f'''<section class="panel section" id="w11-contract">
+     <div class="split"><div><h2>10 · Tested SPINE → DAG → SIPOC convergence</h2>
+       <p class="muted">W11 typed evidence overlay derived from the same <b>frozen W10 source</b>; source ownership and admission remain independent.</p></div>
+       {pill('LOCAL CONTRACT · NATIVE QUALIFICATION SEPARATE','partial')}</div>
+     <div class="issuefigure"><div><b>{outcome['nodes']}</b><small class="minor">Typed nodes · stage, repo and file assets</small></div>
+       <div><b>{outcome['edges']}</b><small class="minor">Directed, non-mutating proof/reference edges</small></div>
+       <div><b>{outcome['sipoc_rows']}</b><small class="minor">Source-bound SIPOC rows</small></div></div>
+     <div class="badge-row">{pill('24 frozen assets','pass')}{pill('3 independent repo owners','pass')}
+       {pill('0 accepted root closures claimed')}{pill('Admission HOLD','blocked')}</div>
+     <p class="muted">Evidence path: repository owner → source/run/attempt → normalized CI and coverage
+     → typed dependency graph → SIPOC → read-only projection → candidate CODEX/QPS REX return.
+     A reference edge is never an authenticated worker launch or authorization.</p>
+     <div class="provenance"><a href="SPINE_DAG_W11.json">Typed DAG JSON</a>
+     <a href="SPINE_SIPOC_W11.json">SIPOC JSON</a><a href="SPINE_CONTRACT_W11.json">Source contract receipt</a>
+     <a href="W10_FROZEN_HISTORY.json">Pinned W10 historical source</a></div>
+     <div class="alert" style="margin-top:10px">The W10 source still has latest-main coverage UNKNOWN at its frozen epoch.
+     The W11 local regression expansion requires an <b>exact-PR-head native B0 test-ID and coverage receipt</b>
+     before any uplift or closure is credited. Safety and effective ruleset protections are noncompensating gates.</div>
+     </section>'''
+
 def main():
     p=argparse.ArgumentParser();p.add_argument('--history',type=Path,default=BASE/'W10_FROZEN_HISTORY.json');p.add_argument('--outdir',type=Path,default=BASE)
     args=p.parse_args();d=checked_history(json.loads(args.history.read_text(encoding='utf-8')))
@@ -232,8 +270,12 @@ def main():
     svg=(BASE/'CODE_PURPLE_W10_REPO_SPINE.svg').read_text(encoding='utf-8')
     # Strip XML declaration and DOCTYPE; inline SVG keeps linked nodes, no external assets.
     svg=svg[svg.find('<svg'):]
-    html_file=out/'CODE_PURPLE_GLOBAL_SPINE_W10.html';html_file.write_text(make_html(d,svg),encoding='utf-8')
-    (out/'index.html').write_bytes(html_file.read_bytes())  # byte-identical generated review view
+    body=make_html(d,svg)
+    if body.count('<footer>')!=1:
+        raise ValueError('W10 HTML footer anchor missing or ambiguous')
+    body=body.replace('<footer>',w11_contract_panel(d)+'<footer>',1)
+    html_file=out/'CODE_PURPLE_GLOBAL_SPINE_W10.html';html_file.write_text(body,encoding='utf-8')
+    (out/'index.html').write_bytes(html_file.read_bytes())  # exact byte-identical HTML review surface
     issue=d['clocks']['issues'][-1];ci0,ci1=d['clocks']['main_ci'][-2:];pr0,pr1=d['clocks']['pr_ci'][-2:];a,b=d['clocks']['main_coverage'][:2]
     report=f'''# CODE PURPLE · W10 recursive Global SPINE handover
 
