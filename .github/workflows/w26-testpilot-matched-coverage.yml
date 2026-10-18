@@ -46,7 +46,7 @@ jobs:
         env:
           EXPECTED_PYTHON: ${{ matrix.python }}
         run: |
-          python -c "import os, sys; expected = tuple(map(int, os.environ['EXPECTED_PYTHON'].split('.'))); assert sys.version_info[:2] == expected, (sys.version, expected)"
+          python -c "import os, sys; assert sys.version_info[:2] == tuple(map(int, os.environ['EXPECTED_PYTHON'].split('.')))"
       - name: Verify exact head
         shell: bash
         env:
@@ -99,7 +99,7 @@ jobs:
         if: always()
         uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9
         with:
-          name: w26-${{ matrix.os }}-py${{ matrix.python }}-${{ github.run_id }}-a${{ github.run_attempt }}-${{ github.event.pull_request.head.sha || github.sha }}
+          name: w26-${{ matrix.os }}-py${{ matrix.python }}-${{ github.run_id }}-a${{ github.run_attempt }}-${{ github.sha }}
           path: |
             w26-*-junit.xml
             w26-*-coverage.json
