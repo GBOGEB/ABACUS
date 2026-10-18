@@ -48,9 +48,20 @@ def _fixture_scan(*, malicious_link: str) -> tuple[str, str]:
             encoding="utf-8",
         )
         output = folder / "output.txt"
-        env = {**os.environ, "GITHUB_OUTPUT": str(output)}
+        # Shell output must use cwd-relative paths on Windows Git Bash.
+        env = {**os.environ, "GITHUB_OUTPUT": output.name}
+        if os.name == "nt":
+            bash_exe = (
+                Path(os.environ.get("ProgramFiles", r"C:\Program Files"))
+                / "Git" / "bin" / "bash.exe"
+            )
+            if not bash_exe.is_file():
+                raise AssertionError("Git for Windows Bash is required")
+            bash = str(bash_exe)
+        else:
+            bash = "bash"
         result = subprocess.run(
-            ["bash", "-c", _report_shell()],
+            [bash, "-c", _report_shell()],
             cwd=folder,
             env=env,
             stdout=subprocess.PIPE,
