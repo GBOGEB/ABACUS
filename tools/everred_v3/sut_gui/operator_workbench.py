@@ -300,12 +300,14 @@ class OperatorWorkbench:
         payload = json.dumps({key: value for key, value in row.items()
                               if key != "receipt_sha256"},
                              sort_keys=True, separators=(",", ":")).encode()
-        row["receipt_sha256"] = hashlib.sha256(payload).hexdigest()
+        digest = hashlib.sha256(payload).hexdigest()
         folder = self.receipt_dir / row["id"]
         folder.mkdir(parents=True, exist_ok=True)
-        # Never overwrite a previous final receipt, even if its identity collides.
+        # Publish the receipt identity only once the append-only file is complete.
         with (folder / "receipt.json").open("x", encoding="utf-8") as stream:
-            stream.write(json.dumps(row, indent=2, sort_keys=True) + "\n")
+            stream.write(json.dumps({**row, "receipt_sha256": digest},
+                                    indent=2, sort_keys=True) + "\n")
+        row["receipt_sha256"] = digest
 
     def _work(self, rid):
         with self.lock:
