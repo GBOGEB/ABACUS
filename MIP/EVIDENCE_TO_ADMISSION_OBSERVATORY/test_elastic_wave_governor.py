@@ -62,6 +62,7 @@ def specimen():
         },
         "events": [], "seen_event_keys": [],
         "global_acceptance": {
+            "head_stable": None, "canonical_b0_exact_head": False,
             "accepted_roots_remaining": None, "repositories": 3,
             "source_attested_repositories": None, "required_artifacts": 12,
             "valid_artifacts": None, "independent_stable_pulses": None,
@@ -342,7 +343,8 @@ def make_global_ready(doc):
     e = doc["global_acceptance"]
     e.update({"accepted_roots_remaining": 0, "source_attested_repositories": 3,
               "valid_artifacts": 12, "independent_stable_pulses": 8,
-              "no_special_cause_variation": True})
+              "no_special_cause_variation": True,
+              "head_stable": True, "canonical_b0_exact_head": True})
     e["gates"] = dict.fromkeys(e["gates"], True)
 
 
@@ -360,6 +362,7 @@ def test_only_all_families_and_independent_governance_allow_global_control():
 @pytest.mark.parametrize("corruption", [
     "family", "root", "repo", "artifact", "stability", "branch_protection",
     "eligible_independent_review", "required_checks", "negative_red_canary", "security",
+    "canonical_b0_exact_head", "head_stable",
 ])
 def test_no_global_stop_on_partial_target_or_missing_proof(corruption):
     doc = specimen()
@@ -375,6 +378,8 @@ def test_no_global_stop_on_partial_target_or_missing_proof(corruption):
         e["valid_artifacts"] = 11
     elif corruption == "stability":
         e["independent_stable_pulses"] = 7
+    elif corruption in {"canonical_b0_exact_head", "head_stable"}:
+        e[corruption] = False
     else:
         e["gates"][corruption] = False
     assert g.evaluate(doc)["programme"]["stop_entire_program"] is False
