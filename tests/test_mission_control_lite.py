@@ -2,7 +2,7 @@ import tempfile
 import json
 import sys
 from unittest.mock import patch
-from contextlib import redirect_stdout
+from contextlib import closing, redirect_stdout
 from io import StringIO
 import unittest
 from pathlib import Path
@@ -50,7 +50,7 @@ class TestMissionControlLite(unittest.TestCase):
             with self.assertRaisesRegex(ValueError, "duplicate or conflicting"):
                 ingest(db, r, d)
             import sqlite3
-            with sqlite3.connect(db) as connection:
+            with closing(sqlite3.connect(db)) as connection:
                 self.assertEqual(connection.execute(
                     "SELECT COUNT(*) FROM receipts").fetchone()[0], 1)
                 self.assertEqual(connection.execute(
@@ -72,7 +72,7 @@ class TestMissionControlLite(unittest.TestCase):
             with self.assertRaisesRegex(ValueError, "duplicate or conflicting"):
                 ingest(db, conflict, d)
             import sqlite3
-            with sqlite3.connect(db) as connection:
+            with closing(sqlite3.connect(db)) as connection:
                 rows = connection.execute(
                     "SELECT root, source_sha FROM receipts").fetchall()
                 self.assertEqual(rows, [("root", "a" * 40)])
