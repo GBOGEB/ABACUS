@@ -23,7 +23,7 @@ jobs:
           ref: ${{ github.event.pull_request.head.sha || github.sha }}
           persist-credentials: false
       - name: Setup Python 3.12
-        uses: actions/setup-python@v5
+        uses: actions/setup-python@v7
         with:
           python-version: '3.12'
       - name: Install coverage only
@@ -83,7 +83,7 @@ jobs:
           test "$(git hash-object DMAIC_V3/debug_pipeline.py)" = 730cab72408ac473fb89123d9d76bb7a2edb075e
           test "$(git hash-object cicd_github_orchestrator.py)" = 2e0f80b8f476d6f4eab05defb52aae2f77e30c61
       - name: Setup Python 3.12
-        uses: actions/setup-python@v5
+        uses: actions/setup-python@v7
         with:
           python-version: '3.12'
       - name: Install narrow coverage and YAML tools
