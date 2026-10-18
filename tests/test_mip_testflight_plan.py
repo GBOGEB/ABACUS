@@ -2,7 +2,7 @@
 import copy
 import unittest
 
-from tools.mip_testflight_plan import compile_plan
+from tools.mip_testflight_plan import _interval_seconds, compile_plan
 
 HEAD = "a" * 40
 PREVIOUS = "b" * 40
@@ -193,6 +193,22 @@ class PlanningProof(unittest.TestCase):
         self.assertEqual(r["queue_seconds_p50"], 240)
         self.assertEqual(r["runtime_seconds_p95"], 13)
         self.assertIsNone(r["independent_stable_cycles"])
+
+    def test_utc_z_and_offset_native_timing_remain_equivalent(self):
+        self.assertEqual(
+            _interval_seconds("2026-10-16T08:00:00Z", "2026-10-16T08:00:13+00:00"),
+            13.0,
+        )
+        self.assertEqual(
+            _interval_seconds("2026-10-16T10:00:00+02:00", "2026-10-16T08:00:30Z"),
+            30.0,
+        )
+
+    def test_native_timing_rejects_malformed_and_reversed_clock(self):
+        with self.assertRaisesRegex(ValueError, "invalid native timestamp"):
+            _interval_seconds("invalid-clock", "2026-10-16T08:00:30Z")
+        with self.assertRaisesRegex(ValueError, "negative"):
+            _interval_seconds("2026-10-16T08:00:30Z", "2026-10-16T08:00:00Z")
 
     def test_no_native_queue_as_zero_when_unknown(self):
         r = compile_plan(fixture())
