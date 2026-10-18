@@ -5,6 +5,8 @@ on:
     branches: ["**"]
     paths:
       - 'DMAIC_V3/core/test_system_bridge.py'
+      - 'DMAIC_V3/core/static_analysis_diagnostics.py'
+      - 'DMAIC_V3/tests/test_static_analysis_diagnostics.py'
       - 'DMAIC_V3/tests/test_bridge_integration.py'
       - 'DMAIC_V3/tests/test_test_system_bridge_failclosed_coverage.py'
       - 'tests/test_bridge_coverage_receipt.py'
@@ -15,6 +17,8 @@ on:
     branches: [main, develop]
     paths:
       - 'DMAIC_V3/core/test_system_bridge.py'
+      - 'DMAIC_V3/core/static_analysis_diagnostics.py'
+      - 'DMAIC_V3/tests/test_static_analysis_diagnostics.py'
       - 'DMAIC_V3/tests/test_bridge_integration.py'
       - 'DMAIC_V3/tests/test_test_system_bridge_failclosed_coverage.py'
       - 'tests/test_bridge_coverage_receipt.py'
@@ -124,7 +128,8 @@ jobs:
             --cov-report=term --junitxml=bridge-unit-junit.xml
           python -m pytest --benchmark-disable \
             DMAIC_V3/tests/test_test_system_bridge_failclosed_coverage.py \
-            tests/test_bridge_coverage_receipt.py -v \
+            tests/test_bridge_coverage_receipt.py \
+            DMAIC_V3/tests/test_static_analysis_diagnostics.py -v \
             --cov=DMAIC_V3.core.test_system_bridge --cov-append --cov-branch \
             --cov-report=xml:coverage.xml \
             --cov-report=json:bridge-coverage.json \
