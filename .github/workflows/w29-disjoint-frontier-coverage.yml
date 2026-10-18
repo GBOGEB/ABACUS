@@ -1,4 +1,4 @@
-name: W29-W32 Disjoint Frontier Coverage
+name: W29-W33 Disjoint Frontier Coverage
 
 on:
   pull_request:
@@ -6,8 +6,12 @@ on:
       - 'tests/test_w29_w75_stability_negative.py'
       - 'tests/test_w31_w81_repair_adversarial.py'
       - 'tests/test_w32_w82_semantic_permutation.py'
+      - 'tests/test_w82_semantic_diversity_diagnostic.py'
+      - 'MIP/EVIDENCE_TO_ADMISSION_OBSERVATORY/elastic_wave_governor.py'
+      - 'MIP/EVIDENCE_TO_ADMISSION_OBSERVATORY/test_elastic_wave_governor.py'
       - 'tests/test_w29_w64_reverse_pressure_negative.py'
       - 'tools/w75_stability_diagnostic.py'
+      - 'MIP/EVIDENCE_TO_ADMISSION_OBSERVATORY/w33_verified_focused_input.json'
       - 'tools/w81_repair_outcome_block.py'
       - 'tools/w82_semantic_diversity_diagnostic.py'
       - 'tools/w64_census_reverse_pressure_v2.py'
@@ -48,7 +52,7 @@ jobs:
           python-version: ${{ matrix.python-version }}
       - name: Install bounded test prerequisites
         run: python -m pip install 'pytest>=7.4,<10' 'pytest-cov>=4.1,<8' 'numpy>=1.24,<3'
-      - name: Run four disjoint behavioral families with branch receipts
+      - name: Run four source families plus W33 governor assurance with branch receipts
         shell: bash
         run: |
           set -euo pipefail
@@ -56,6 +60,8 @@ jobs:
           python -m pytest -q \
             tests/test_w31_w81_repair_adversarial.py \
             tests/test_w32_w82_semantic_permutation.py \
+            tests/test_w82_semantic_diversity_diagnostic.py \
+            MIP/EVIDENCE_TO_ADMISSION_OBSERVATORY/test_elastic_wave_governor.py \
             tests/test_w29_w75_stability_negative.py \
             tests/test_w29_w64_reverse_pressure_negative.py \
             --junitxml=w29-native/junit.xml \
