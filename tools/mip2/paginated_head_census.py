@@ -7,6 +7,8 @@ from __future__ import annotations
 
 import re
 from collections import Counter, defaultdict
+from datetime import datetime
+from urllib.parse import quote
 
 SCHEMA = "abacus.github.head-run-pages.v1"
 OUTPUT = "abacus.mip.paginated-head-census.v1"
@@ -16,6 +18,7 @@ PAGE_SIZE = 100
 MAX_PAGES = 50
 SHA = re.compile(r"[0-9a-f]{40}\Z")
 EVENT = re.compile(r"[a-z][a-z0-9_]*\Z")
+TIMESTAMP = re.compile(r"[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}Z\Z")
 OPEN = {"queued", "pending", "in_progress", "requested", "waiting"}
 TERMINAL = {"success", "failure", "cancelled", "skipped", "neutral",
             "timed_out", "action_required", "startup_failure"}
@@ -28,6 +31,15 @@ def _positive(value):
 def _require(value, message):
     if not value:
         raise ValueError(message)
+
+
+def _utc_timestamp(value):
+    if not isinstance(value, str) or not TIMESTAMP.fullmatch(value):
+        raise ValueError("invalid canonical UTC timestamp")
+    try:
+        return datetime.strptime(value, "%Y-%m-%dT%H:%M:%SZ")
+    except ValueError as error:
+        raise ValueError("invalid canonical UTC timestamp") from error
 
 
 def analyze_head_pages(doc):
@@ -43,6 +55,8 @@ def analyze_head_pages(doc):
              "unsupported source identity role")
     sha = doc.get("source_sha")
     _require(isinstance(sha, str) and SHA.fullmatch(sha), "invalid exact head SHA")
+    cutoff = doc.get("created_cutoff_utc")
+    cutoff_time = _utc_timestamp(cutoff) if cutoff is not None else None
     pages = doc.get("pages")
     _require(isinstance(pages, list) and pages, "missing API pages")
     _require(len(pages) <= MAX_PAGES, "page-count cap exceeded")
@@ -68,6 +82,8 @@ def analyze_head_pages(doc):
                  "unstable API total denominator")
         expected_url = (f"{API}?head_sha={sha}&per_page={PAGE_SIZE}"
                         f"&page={page_number}")
+        if cutoff is not None:
+            expected_url += "&created=" + quote("<=" + cutoff, safe="")
         _require(page.get("api_url") == expected_url, "unbound API page URL")
         rows = page.get("runs")
         expected_length = min(PAGE_SIZE, total - PAGE_SIZE * (page_number - 1))
@@ -82,6 +98,10 @@ def analyze_head_pages(doc):
             _require(rid not in run_seen, "duplicate native run identity")
             run_seen.add(rid)
             _require(row.get("head_sha") == sha, "mixed head SHA in API cohort")
+            if cutoff is not None:
+                timestamp = _utc_timestamp(row.get("created_at"))
+                _require(timestamp <= cutoff_time,
+                         "native run created after frozen UTC cutoff")
             event = row.get("event")
             _require(isinstance(event, str) and EVENT.fullmatch(event),
                      "invalid GitHub triggering event")
@@ -124,6 +144,11 @@ def analyze_head_pages(doc):
         "repository": REPO,
         "source_sha": sha,
         "source_role": "OBSERVED_DEFAULT_BRANCH_HEAD",
+        "created_cutoff_utc": cutoff,
+        "snapshot_population": (
+            "FROZEN_CREATION_WINDOW_STATUS_AS_OBSERVED" if cutoff is not None
+            else "UNFILTERED_NONATOMIC_STATUS_OBSERVATION"
+        ),
         "page_size": PAGE_SIZE,
         "pages_qualified_structurally": expected_pages,
         "observed_run_count": total,
