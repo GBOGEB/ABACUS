@@ -1,0 +1,41 @@
+name: CODE PURPLE W36 G3CS Canonical Skip Reconciliation
+on:
+  pull_request:
+    paths:
+      - 'MIP/G3CS_CONVERGENCE_V2/observatory/w10/test_w10_spine.py'
+      - 'tests/test_w36_g3cs_skip_invariant.py'
+      - '.github/workflows/w36-g3cs-skip-contract.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  native:
+    name: W36 governed skip ${{ matrix.os }} Python ${{ matrix.py }}
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 12
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - {os: ubuntu-24.04, py: '3.11'}
+          - {os: ubuntu-24.04, py: '3.12'}
+          - {os: windows-2022, py: '3.11'}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.py }}
+      - name: Install fixed pytest only
+        shell: bash
+        run: python -m pip install pytest==9.1.1
+      - name: Exact-source skip and synthetic receipt negative controls
+        shell: bash
+        env:
+          EXPECTED_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$EXPECTED_SHA"
+          python -m pytest -q tests/test_w30_g3cs_skip_marker_contract.py tests/test_w31_g3cs_pytest_marker.py tests/test_w36_g3cs_skip_invariant.py
