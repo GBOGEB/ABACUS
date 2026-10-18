@@ -387,6 +387,12 @@
       "disposition": "keep"
     },
     {
+      "pattern": "^w26-testpilot-matched-coverage\\.yml$",
+      "cluster": "statistics",
+      "lifecycle": "pr_domain",
+      "disposition": "keep"
+    },
+    {
       "pattern": "^a10-guard\\.yml$",
       "cluster": "security",
       "lifecycle": "pr_fast",
