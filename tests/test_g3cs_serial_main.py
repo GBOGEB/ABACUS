@@ -4,9 +4,8 @@ from __future__ import annotations
 import copy
 import importlib.util
 import json
-from pathlib import Path
-import tempfile
 import unittest
+from pathlib import Path
 
 FILE = (Path(__file__).resolve().parents[1] /
         "MIP/G3CS_CONVERGENCE_V2/tools/serial_main_pair.py")
