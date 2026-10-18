@@ -194,13 +194,28 @@ class ExecutionBackbone:
             # Remaining tasks thus stay correctly visible and reprioritizable.
             if not self._slots.acquire(timeout=0.02):
                 continue
+            # Re-check after a blocked slot wait. stop(wait=False) may have
+            # happened while a running task still held the last permit.
+            with self._lock:
+                cancelled_without_drain = self._stop_without_drain
+            if cancelled_without_drain:
+                self._slots.release()
+                return
             try:
                 task = self.task_queue.get(timeout=0.02)
             except queue.Empty:
                 self._slots.release()
                 continue
 
+            # A stop may also race the dequeue. Preserve the task instead of
+            # either running it or manufacturing a failure/cancellation.
             with self._lock:
+                cancelled_without_drain = self._stop_without_drain
+                if cancelled_without_drain:
+                    self.task_queue.put(task)
+                    self.task_queue.task_done()
+                    self._slots.release()
+                    return
                 executor = self._executor
                 if executor is not None:
                     self._admitted += 1
