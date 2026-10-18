@@ -139,8 +139,16 @@ def summarize(payload):
         "successful": successful,
         "failed": failures,
         "nonterminal": pending,
-        "verified_successful_evidence": verified,
-        "native_proof_yield": round(verified / terminal, 6) if terminal else None,
+        # A caller's bool cannot independently authenticate ZIP/JUnit bytes.
+        # Preserve the old tally only as a SOURCE_REPORTED allegation.
+        "source_reported_positive_claims": verified,
+        "source_reported_claim_yield": (
+            round(verified / terminal, 6) if terminal else None
+        ),
+        "verified_successful_evidence": None,
+        "native_proof_yield": None,
+        "independent_evidence_status": "UNVERIFIED_BYTES",
+        "byte_verifier": "tools/recovery/w34_native_artifact_verify.py",
         "queue_p95_seconds": percentile_nearest(queued, 0.95),
         "execution_p95_seconds": percentile_nearest(elapsed, 0.95),
         "queue_sample_n": len(queued),
