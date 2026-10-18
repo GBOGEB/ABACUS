@@ -28,9 +28,9 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: ${{ matrix.py }}
-      - name: Install fixed pytest only
+      - name: Install fixed pytest and native conftest NumPy
         shell: bash
-        run: python -m pip install pytest==9.1.1
+        run: python -m pip install pytest==9.1.1 numpy==2.2.6
       - name: Exact-source skip and synthetic receipt negative controls
         shell: bash
         env:
