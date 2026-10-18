@@ -1,0 +1,79 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="code-purple-schema" content="code-purple.hosted-operator.v1">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self'; style-src 'self'; connect-src https://api.github.com; img-src 'self'; base-uri 'none'; form-action 'none'">
+<title>CODE PURPLE | Hosted Operator</title>
+<link rel="stylesheet" href="./operator.css">
+<script src="./operator.js" defer></script>
+</head>
+<body><div class="shell">
+<aside class="rail" aria-label="Programme navigation">
+<a class="brand" href="../"><span class="mark">✦</span><span><strong>CODE PURPLE</strong><small>OPERATOR / MCL</small></span></a>
+<nav class="nav">
+<a href="#overview">◉ Overview</a>
+<a href="#launch">⌘ Run tasks</a>
+<a href="#native">▦ Native receipts</a>
+<a href="#lineage">◇ DAG and owners</a>
+<a href="../">↗ ABACUS hub</a>
+</nav>
+<p class="rail-note">ABACUS is the source and admission authority. CODEX is a federation consumer. Browser rendering never grants execution, MCP or merge rights.</p>
+<a href="https://github.com/GBOGEB/ABACUS/issues/1860" target="_blank" rel="noopener noreferrer">Canonical HOLD #1860 ↗</a>
+</aside>
+<main>
+<header class="top" id="overview">
+<div><div class="eyebrow">SOURCE-BOUND / GBOGEB–ABACUS</div><h1>Mission Control <span>Operator</span></h1><p class="muted">Live GitHub evidence, source-pinned testflight and controlled Python, pipeline, runner and bridge selection.</p></div>
+<div class="actions"><span class="tag warning">MERGE ADMISSION · HOLD</span><button id="refresh" type="button">Refresh evidence</button></div>
+</header>
+<div class="notice"><strong>Hosted Pages is read-only.</strong> Click Run workflow to use GitHub's authenticated execution screen. The browser never receives a GitHub token or runs Python. Sensitive binaries stay in the local W45 workbench. No automated merge, owner attestation, waiver or remote MCP authority.</div>
+<section class="metrics" aria-label="Main branch indicators">
+<div><small>Default branch</small><strong id="branch">UNKNOWN</strong><small id="branch-age">Unobserved</small></div>
+<div><small>Current main</small><strong class="mono" id="main-short">UNKNOWN</strong><small id="main-source">Unverified</small></div>
+<div><small>Exact-main workflow sample</small><strong id="run-count">UNKNOWN</strong><small id="run-denom">Denominator unknown</small></div>
+<div><small>Successful / terminal</small><strong id="completion">UNKNOWN</strong><small id="completion-context">No evidence yet</small></div>
+</section>
+<section class="panel" aria-labelledby="identity-title">
+<div class="heading"><div><small>01 · SOURCE PROVENANCE</small><h2 id="identity-title">Identity and admission</h2></div><span class="tag" id="freshness" aria-live="polite">READBACK PENDING</span></div>
+<div class="identity-grid">
+<div><label for="exact-main">Exact main SHA — paste into authenticated GitHub workflow</label><div class="inline-input"><input id="exact-main" readonly value="UNKNOWN" aria-label="Exact GitHub main source SHA"><button id="copy-sha" type="button">Copy SHA</button></div></div>
+<div><strong id="read-time">Not observed</strong><p id="read-reason" class="muted">No current-source evidence yet.</p></div>
+</div>
+<div class="quick-links"><a id="main-link" href="https://github.com/GBOGEB/ABACUS/tree/main" target="_blank" rel="noopener noreferrer">Open exact source ↗</a><a href="https://github.com/GBOGEB/ABACUS/rules/24494381" target="_blank" rel="noopener noreferrer">Effective ruleset ↗</a><a href="https://github.com/GBOGEB/ABACUS/pull/2296" target="_blank" rel="noopener noreferrer">W45 implementation ↗</a></div>
+</section>
+<div class="columns">
+<section class="panel" id="launch" aria-labelledby="launch-title">
+<div class="heading"><div><small>02 · AUTHENTICATED DISPATCH</small><h2 id="launch-title">Choose a pipeline item</h2></div><span class="tag">GITHUB SIGN-IN</span></div>
+<div class="form-grid">
+<div><label for="profile">Registered execution profile</label><select id="profile">
+<option value="mcl-unit">Python · MCL unit tests</option><option value="runner-contract">Runners · queue &amp; timing</option><option value="bridge-contract">Binary bridge · fixture tests</option><option value="gui-contract">GUI · guardrail tests</option><option value="debug-preflight">Debug · Python preflight</option><option value="task-census">Tasks · MCL census</option><option value="pipeline-3p">Pipeline · bounded 3P</option><option value="private-binary">Private binary · local only</option><option value="mcp-readiness">MCP · authorization pending</option></select></div>
+<div><label for="execution-mode">Execution destination</label><input id="execution-mode" readonly value="GitHub Actions · approved actor"></div>
+</div>
+<div class="selected"><strong id="selected-title">Mission Control unit tests</strong><p id="selected-description">Native tests with exact source identity; no merge authority.</p><div class="dag-text">DISCOVER → PIN SHA → GITHUB AUTH → EXECUTE → RECEIPT</div></div>
+<div class="actions"><a class="button primary" id="run-link" href="https://github.com/GBOGEB/ABACUS/actions/workflows/code-purple-hosted-operator.yml" target="_blank" rel="noopener noreferrer">Open authenticated Run workflow ↗</a><button id="copy-profile" type="button">Copy profile</button></div>
+<p id="launch-note" class="muted">Sign into GitHub, choose main, select the profile and supply exact main SHA. No direct browser dispatch.</p>
+<div class="quick-links"><a href="https://github.com/GBOGEB/ABACUS/actions/workflows/mission-control-lite-testflight.yml" target="_blank" rel="noopener noreferrer">Existing MCL testflight ↗</a><a href="https://github.com/GBOGEB/ABACUS/actions/workflows/code-purple-sut-gui.yml" target="_blank" rel="noopener noreferrer">Existing GUI tests ↗</a><a href="https://github.com/GBOGEB/ABACUS/blob/main/tools/everred_v3/sut_gui/OPERATOR_WORKBENCH.md" target="_blank" rel="noopener noreferrer">Local private-binary guide ↗</a></div>
+</section>
+<section class="panel" id="native" aria-labelledby="native-title">
+<div class="heading"><div><small>03 · IMMUTABLE OBSERVATION</small><h2 id="native-title">W45 native qualification</h2></div><span class="tag" id="w45-status" aria-live="polite">UNKNOWN</span></div>
+<p class="muted">Historical <a href="https://github.com/GBOGEB/ABACUS/actions/runs/39173795497" target="_blank" rel="noopener noreferrer">run 39173795497</a>, distinct from the current main SHA. Queued is not PASS.</p>
+<dl class="evidence"><div><dt>Run / attempt</dt><dd id="w45-identity">UNKNOWN</dd></div><div><dt>Workflow state</dt><dd id="w45-outcome">UNKNOWN</dd></div><div><dt>Exact head</dt><dd class="mono" id="w45-sha">UNKNOWN</dd></div><div><dt>Native jobs</dt><dd id="w45-jobs-count">UNKNOWN</dd></div></dl>
+<button id="inspect-jobs" type="button">Read native job steps</button><div id="w45-jobs" class="jobrows" aria-live="polite">Job readback not requested.</div>
+<p class="muted">Human reviewer eligibility, security findings and actual branch protection remain separate admission gates.</p>
+</section>
+</div>
+<section class="panel" aria-labelledby="runs-title">
+<div class="heading"><div><small>04 · MAIN PIPELINE</small><h2 id="runs-title">Native workflow census</h2></div><span class="tag" id="sample-state">UNKNOWN</span></div>
+<div class="filters"><label for="run-filter">Filter by name/state</label><input id="run-filter" type="search" placeholder="e.g. B0, A10, failed"><small id="run-sample-label">Unobserved native sample</small></div>
+<div class="table-scroll"><table><thead><tr><th>Workflow</th><th>Status</th><th>Run / attempt</th><th>Exact head</th></tr></thead><tbody id="runs-body"><tr><td colspan="4">Awaiting GitHub readback.</td></tr></tbody></table></div>
+</section>
+<section class="panel" id="lineage" aria-labelledby="lineage-title">
+<div class="heading"><div><small>05 · GOVERNED EVIDENCE DAG</small><h2 id="lineage-title">Owners and non-compensating gates</h2></div><span class="tag warning">HOLD UNTIL PROVEN</span></div>
+<div class="dag">
+<div><strong>ABACUS</strong><small>Source SHA / test contracts</small><a href="https://github.com/GBOGEB/ABACUS/issues/1978" target="_blank" rel="noopener noreferrer">MCL #1978</a></div><span>→</span><div><strong>NATIVE CI</strong><small>Runs / jobs / attempts</small><a href="https://github.com/GBOGEB/ABACUS/actions" target="_blank" rel="noopener noreferrer">GitHub Actions</a></div><span>→</span><div><strong>RECEIPT</strong><small>Provenance / digests</small><a href="https://github.com/GBOGEB/ABACUS/issues/1929" target="_blank" rel="noopener noreferrer">BD/LDAB #1929</a></div><span>→</span><div><strong>GOVERNANCE</strong><small>Checks / Safety / A10 / review</small><a href="https://github.com/GBOGEB/ABACUS/issues/1860" target="_blank" rel="noopener noreferrer">HOLD #1860</a></div>
+</div>
+<p class="muted">CODEX/QPS are separate consumers and authorities. Remote MCP, private files, and restart-safe scheduling require a qualified authenticated backend; this static page cannot execute them.</p>
+</section>
+<footer>CODE PURPLE · W47 hosted projection · No secrets or remote code dispatch in Pages. <a href="https://github.com/GBOGEB/ABACUS/tree/main/docs/operator" target="_blank" rel="noopener noreferrer">Source ↗</a></footer>
+</main></div></body></html>
