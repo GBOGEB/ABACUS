@@ -23,7 +23,7 @@
     },
     {
       "path": "scripts/mip_debug_diagnostic.py",
-      "sha256": "abe16058beb6e5169b62d6fe57ade2c89e302e045662e3fe2226a087e0ea704b"
+      "sha256": "5439cc41de92eb50b4f348f8cda474e3641148908f30f3bfcb44abdddaa0b947"
     },
     {
       "path": "scripts/mip_kit_manifest.py",
@@ -31,14 +31,14 @@
     },
     {
       "path": "scripts/mip_repo_self_index.py",
-      "sha256": "63032e67a2b74e9b6244f22f49533801407a1072b94f864c9aff0ad92e7b5b09"
+      "sha256": "1701637711fcc7816e5eae51e03ac963c8015e9566c245c0e8b35be56caa6549"
     },
     {
       "path": "scripts/mip_verify_self_index.py",
       "sha256": "46aeb20e947e73e51d84f04c62a233080e1c9c456b5ba44926a684152488d3ac"
     }
   ],
-  "kit_digest_sha256": "4d494a5715d77559eadf78f0b47dc71c6e28365de4beda643b75c6fddbbae9d7",
+  "kit_digest_sha256": "fc8476db0a15e067a98cb512e915f998ca3834d2564de935a95a7a89de7afcd8",
   "repo_local_files": [
     "MIP/mip_surface.json"
   ]

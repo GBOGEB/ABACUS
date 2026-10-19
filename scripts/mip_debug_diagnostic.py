@@ -6,12 +6,13 @@ It is the default ``debug_diagnostic`` named by ``MIP/mip_surface.json``; a
 repository may point that key at its own diagnostic or set it to ``null``.
 
 The debug lane is GREEN only when this diagnostic runs on the exact checkout
-SHA and every check passes. Two checks:
+SHA and every check passes. The emitter that runs it binds the receipt to
+that SHA. Two checks, both in-process (no subprocess, no network):
 
-* ``traceback_localizes``: a deliberate failure in a child interpreter yields
-  a traceback naming the failing file, line, function and exception type.
+* ``traceback_localizes``: a deliberate failure yields a traceback whose last
+  frame names this file, the raising line and function, and the exception.
 * ``validator_fails_closed``: the kit's receipt validator rejects a FAIL
-  receipt with a non-zero exit that names the failed check.
+  receipt with ``SystemExit`` naming the failed check.
 
 The receipt holds no paths, remotes, or timestamps, so two runs on the same SHA
 are identical.
@@ -20,10 +21,9 @@ are identical.
 from __future__ import annotations
 
 import argparse
+import importlib.util
 import json
-import subprocess
-import sys
-import tempfile
+import traceback
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -36,92 +36,68 @@ VALIDATOR = (
     / "validate_receipt.py"
 )
 DIAGNOSTIC_NAME = "mip-debug-diagnostic"
-FAILING_SOURCE = (
-    "def mip_debug_probe_target():\n"
-    "    raise LookupError('mip debug diagnostic')\n"
-    "\n"
-    "mip_debug_probe_target()\n"
-)
+FAILING_RECEIPT = {
+    "schema_version": "0.1",
+    "program": "MIP",
+    "verification": "FAIL",
+    "repository": "diagnostic/negative-control",
+    "head_sha": "0" * 40,
+    "raw_receipt_retention": "transient_runner_only",
+    "root_self_index": {"runs": 2, "normalized_equal": True},
+}
 
 
-def run_git(args: list[str]) -> str | None:
+def mip_debug_probe_target() -> None:
+    raise LookupError("mip debug diagnostic")
+
+
+TARGET_LINE = mip_debug_probe_target.__code__.co_firstlineno + 1
+
+
+def traceback_localizes() -> bool:
     try:
-        return subprocess.check_output(
-            ["git", "-C", str(ROOT), *args],
-            stderr=subprocess.DEVNULL,
-            text=True,
-        ).strip()
-    except (OSError, subprocess.CalledProcessError):
-        return None
+        mip_debug_probe_target()
+    except LookupError as exc:
+        frame = traceback.extract_tb(exc.__traceback__)[-1]
+        rendered = "".join(traceback.format_exception(exc))
+        return (
+            Path(frame.filename).resolve() == Path(__file__).resolve()
+            and frame.lineno == TARGET_LINE
+            and frame.name == "mip_debug_probe_target"
+            and "LookupError: mip debug diagnostic" in rendered
+        )
+    return False
 
 
-def traceback_localizes(tmp: Path) -> bool:
-    script = tmp / "mip_debug_failing_target.py"
-    script.write_text(FAILING_SOURCE, encoding="utf-8")
-    completed = subprocess.run(
-        [sys.executable, str(script)],
-        cwd=tmp,
-        text=True,
-        capture_output=True,
-        check=False,
-    )
-    stderr = completed.stderr
-    return (
-        completed.returncode != 0
-        and script.name in stderr
-        and "line 2" in stderr
-        and "mip_debug_probe_target" in stderr
-        and "LookupError: mip debug diagnostic" in stderr
-    )
-
-
-def validator_fails_closed(tmp: Path) -> bool:
+def validator_fails_closed() -> bool:
     if not VALIDATOR.is_file():
         return False
-    receipt = tmp / "failing-producer.json"
-    receipt.write_text(
-        json.dumps(
-            {
-                "schema_version": "0.1",
-                "program": "MIP",
-                "verification": "FAIL",
-                "repository": "diagnostic/negative-control",
-                "head_sha": "0" * 40,
-                "raw_receipt_retention": "transient_runner_only",
-                "root_self_index": {"runs": 2, "normalized_equal": True},
-            }
-        ),
-        encoding="utf-8",
-    )
-    completed = subprocess.run(
-        [sys.executable, str(VALIDATOR), str(receipt)],
-        cwd=tmp,
-        text=True,
-        capture_output=True,
-        check=False,
-    )
-    output = completed.stdout + completed.stderr
-    return (
-        completed.returncode != 0
-        and "receipt validation failed" in output
-        and "verification" in output
-    )
+    spec = importlib.util.spec_from_file_location("mip_debug_validator", VALIDATOR)
+    if spec is None or spec.loader is None:
+        return False
+    module = importlib.util.module_from_spec(spec)
+    try:
+        spec.loader.exec_module(module)
+        module.validate_producer(dict(FAILING_RECEIPT), None)
+    except SystemExit as exc:
+        message = str(exc.code)
+        return "receipt validation failed" in message and "verification" in message
+    except Exception:  # noqa: BLE001 - any other error is a failed check
+        return False
+    return False
 
 
 def build_receipt() -> dict:
-    with tempfile.TemporaryDirectory(prefix="mip-debug-diagnostic-") as temp:
-        tmp = Path(temp)
-        checks = {
-            "traceback_localizes": traceback_localizes(tmp),
-            "validator_fails_closed": validator_fails_closed(tmp),
-        }
+    checks = {
+        "traceback_localizes": traceback_localizes(),
+        "validator_fails_closed": validator_fails_closed(),
+    }
     failed = sorted(name for name, passed in checks.items() if not passed)
     return {
         "schema_version": "0.1",
         "program": "MIP",
         "diagnostic": DIAGNOSTIC_NAME,
         "verification": "FAIL" if failed else "PASS",
-        "exact_sha": run_git(["rev-parse", "HEAD"]),
         "checks": checks,
         "failed_checks": failed,
         "raw_receipt_retention": "transient_runner_only",

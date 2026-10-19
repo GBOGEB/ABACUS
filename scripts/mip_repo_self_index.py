@@ -168,24 +168,30 @@ def complete_skill_packages(files: list[Path]) -> list[Path]:
     return sorted(packages, key=lambda path: path.as_posix())
 
 
+def run_repo_script(probe: Path, output: Path) -> int:
+    """Run a repo-local probe or diagnostic with ``--output``; return its exit code."""
+    completed = subprocess.run(
+        [
+            sys.executable,
+            str(probe),
+            "--output",
+            str(output),
+        ],
+        cwd=ROOT,
+        text=True,
+        capture_output=True,
+        check=False,
+    )
+    return completed.returncode
+
+
 def run_health_selfheal_probe(probe: Path | None) -> dict | None:
     if probe is None or not probe.is_file():
         return None
     with tempfile.TemporaryDirectory(prefix="mip-self-index-health-") as temp:
         output = Path(temp) / "health-selfheal.json"
-        completed = subprocess.run(
-            [
-                sys.executable,
-                str(probe),
-                "--output",
-                str(output),
-            ],
-            cwd=ROOT,
-            text=True,
-            capture_output=True,
-            check=False,
-        )
-        if completed.returncode != 0 or not output.is_file():
+        returncode = run_repo_script(probe, output)
+        if returncode != 0 or not output.is_file():
             return {
                 "verification": "FAIL",
                 "return_state": "REGRESSED",
@@ -205,18 +211,16 @@ def run_health_selfheal_probe(probe: Path | None) -> dict | None:
 
 
 def run_debug_diagnostic(diagnostic: Path | None) -> dict | None:
-    """Execute the debug diagnostic; its receipt is read even on a non-zero exit."""
+    """Execute the debug diagnostic; its receipt is read even on a non-zero exit.
+
+    The emitter binds the receipt to the HEAD it ran on when the diagnostic
+    does not report ``exact_sha`` itself.
+    """
     if diagnostic is None or not diagnostic.is_file():
         return None
     with tempfile.TemporaryDirectory(prefix="mip-self-index-debug-") as temp:
         output = Path(temp) / "debug-diagnostic.json"
-        subprocess.run(
-            [sys.executable, str(diagnostic), "--output", str(output)],
-            cwd=ROOT,
-            text=True,
-            capture_output=True,
-            check=False,
-        )
+        run_repo_script(diagnostic, output)
         try:
             value = json.loads(output.read_text(encoding="utf-8"))
         except (OSError, json.JSONDecodeError):
@@ -227,6 +231,7 @@ def run_debug_diagnostic(diagnostic: Path | None) -> dict | None:
             "exact_sha": run_git(["rev-parse", "HEAD"]),
             "failed_checks": ["diagnostic_execution"],
         }
+    value.setdefault("exact_sha", run_git(["rev-parse", "HEAD"]))
     return value
 
 
@@ -239,6 +244,7 @@ def debug_assessment(debug: list[Path], diagnostic: dict | None) -> dict:
     checks = (diagnostic or {}).get("checks")
     proven = bool(
         diagnostic
+        and exact_sha
         and diagnostic.get("verification") == "PASS"
         and diagnostic.get("exact_sha") == exact_sha
         and isinstance(checks, dict)
