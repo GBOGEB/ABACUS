@@ -13,7 +13,7 @@ import os
 import re
 import subprocess
 import sys
-import xml.etree.ElementTree as ET
+from defusedxml import ElementTree as ET
 from datetime import datetime, timezone
 from pathlib import Path
 
@@ -143,7 +143,9 @@ def validate_forecast(value: dict) -> None:
 def read_junit(path: Path) -> dict | None:
     if not path.is_file():
         return None
+    require(path.stat().st_size <= 64 * 1024 * 1024, "JUnit exceeds size cap")
     root = ET.parse(path).getroot()
+    require(root.tag in ("testsuite", "testsuites"), "invalid JUnit root")
     cases = list(root.iter("testcase"))
     outcomes = {"executed": len(cases), "passed": 0, "failed": 0,
                 "errors": 0, "skipped": 0}
