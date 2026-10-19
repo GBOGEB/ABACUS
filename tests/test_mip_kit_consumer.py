@@ -51,13 +51,11 @@ _LOAD_SURFACE = verifier.load_surface
 def _script(path: Path, payload: dict) -> Path:
     """A fake emitter/diagnostic: writes ``payload`` to ``--output``."""
     path.write_text(
-        textwrap.dedent(
-            f"""
+        textwrap.dedent(f"""
             import json, sys
             out = sys.argv[sys.argv.index("--output") + 1]
             open(out, "w", encoding="utf-8").write(json.dumps({payload!r}))
-            """
-        ),
+            """),
         encoding="utf-8",
     )
     return path
@@ -189,7 +187,7 @@ def test_emitter_main_on_minimal_tree(tmp_path: Path, monkeypatch, capsys):
     receipt = json.loads(out.read_text(encoding="utf-8"))
     assert receipt["census"]["file_count"] == 2
     assert receipt["assessments"][LANE]["status"] == "green"
-    assert "Wrote out/receipt.json" in capsys.readouterr().out
+    assert f"Wrote {Path('out') / 'receipt.json'}" in capsys.readouterr().out
 
     outside = tmp_path.parent / f"{tmp_path.name}-outside.json"
     monkeypatch.setattr(sys, "argv", ["emitter", "--output", str(outside)])
