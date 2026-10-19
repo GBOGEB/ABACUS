@@ -34,8 +34,10 @@ class ActionTracker:
 
     def register_action(self, action: Dict[str, Any]) -> str:
         """Register a new action and return its ID"""
+        # Preserve existing registry identities; this is not an integrity proof.
         action_id = hashlib.md5(
-            f"{action.get('phase', '')}_{action.get('agent', '')}_{action.get('timestamp', '')}".encode()
+            f"{action.get('phase', '')}_{action.get('agent', '')}_{action.get('timestamp', '')}".encode(),
+            usedforsecurity=False,
         ).hexdigest()[:12]
 
         action['action_id'] = action_id
