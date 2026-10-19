@@ -1,7 +1,8 @@
 name: OSV-Scanner Scheduled
 
 # Full-repository dependency scanning is intentionally scheduled/manual.
-# Per-push execution duplicated other security checks and created queue pressure.
+# Per-push execution duplicated other security checks and created
+# queue pressure.
 on:
   schedule:
     - cron: '0 6 * * 1'
@@ -15,7 +16,8 @@ permissions:
 jobs:
   scan-scheduled:
     name: OSV Scan (schedule / manual)
-    uses: "google/osv-scanner-action/.github/workflows/osv-scanner-reusable.yml@b1d267aea5211fa648d9d442fa64b90dbdcbdd36" # v2.7.0
+    # Pin OSV Scanner v2.7.0 to an immutable commit SHA.
+    uses: "google/osv-scanner-action/.github/workflows/osv-scanner-reusable.yml@b1d267aea5211fa648d9d442fa64b90dbdcbdd36"  # yamllint disable-line rule:line-length
     with:
       scan-args: |-
         -r
