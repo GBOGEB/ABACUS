@@ -24,6 +24,7 @@ jobs:
     runs-on: ubuntu-latest
     env:
       EXPECTED_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+      CODEX_KIT_REF: 46f04ce7b9dff63ba279dbb9840c87ef156d5094
     steps:
       - name: Check out exact evaluated SHA
         uses: actions/checkout@v7
@@ -36,12 +37,21 @@ jobs:
         with:
           python-version: "3.12"
 
-      # Canonical kit from GBOGEB/CODEX: the 7 shareable files must match the
-      # pinned copy of CODEX's manifest byte-for-byte (CRLF-normalised).
+      # Canonical kit from GBOGEB/CODEX: the 7 shareable files must match
+      # CODEX's manifest byte-for-byte (CRLF-normalised). The manifest is
+      # fetched from CODEX at CODEX_KIT_REF, not read from this checkout, so a
+      # PR that edits a kit file and regenerates the local manifest still
+      # fails. Bumping the kit means changing CODEX_KIT_REF here.
+      - name: Fetch the canonical kit manifest from CODEX
+        run: |
+          curl --fail --silent --show-error --location \
+            --output "${RUNNER_TEMP}/codex-kit-manifest.json" \
+            "https://raw.githubusercontent.com/GBOGEB/CODEX/${CODEX_KIT_REF}/MIP/kit/KIT_MANIFEST.json"
+
       - name: Check MIP kit files match the canonical CODEX kit manifest
         run: |
           python scripts/mip_kit_manifest.py check \
-            --canonical MIP/kit/KIT_MANIFEST.json \
+            --canonical "${RUNNER_TEMP}/codex-kit-manifest.json" \
             --summary "${RUNNER_TEMP}/mip-kit-drift-summary.json"
 
       - name: Test LDAB telemetry fail-closed contracts
