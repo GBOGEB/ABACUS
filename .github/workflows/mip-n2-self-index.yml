@@ -10,6 +10,9 @@ on:
       - "DMAIC_V3/quick_error_fix.py"
       - "integration/codespace_jyperter/MIP/**"
       - "integration/codespace_jyperter/scripts/mip_*.py"
+      - ".codex/skills/mip-repo-self-index/**"
+      - "tests/test_mip_kit*.py"
+      - "tests/test_mip_ldab_telemetry.py"
       - ".github/workflows/mip-n2-self-index.yml"
   workflow_dispatch:
 
@@ -33,6 +36,14 @@ jobs:
         with:
           python-version: "3.12"
 
+      # Canonical kit from GBOGEB/CODEX: the 7 shareable files must match the
+      # pinned copy of CODEX's manifest byte-for-byte (CRLF-normalised).
+      - name: Check MIP kit files match the canonical CODEX kit manifest
+        run: |
+          python scripts/mip_kit_manifest.py check \
+            --canonical MIP/kit/KIT_MANIFEST.json \
+            --summary "${RUNNER_TEMP}/mip-kit-drift-summary.json"
+
       - name: Test LDAB telemetry fail-closed contracts
         run: |
           python -m unittest discover -s tests \
@@ -48,8 +59,23 @@ jobs:
           python scripts/mip_verify_self_index.py \
             --summary "${RUNNER_TEMP}/mip-n2-self-index-summary.json"
 
+      # ABACUS-local: the kit verifier does not emit ldab_telemetry; rebuild it
+      # on the same SHA for the consumer job and downstream census readers.
+      - name: Attach ABACUS LDAB telemetry to the summary
+        run: |
+          python scripts/mip_ldab_n2_attach.py \
+            --summary "${RUNNER_TEMP}/mip-n2-self-index-summary.json"
+
       - name: Confirm verifier left source checkout clean
         run: test -z "$(git status --porcelain)"
+
+      - name: Run MIP kit tests
+        env:
+          PYTHONDONTWRITEBYTECODE: "1"
+        run: |
+          python -m pip install --disable-pip-version-check pytest
+          python -m pytest -p no:cacheprovider --noconftest -o addopts="" \
+            tests/test_mip_kit.py tests/test_mip_kit_consumer.py
 
       - name: Publish sanitized summary to job log
         run: |
@@ -65,7 +91,9 @@ jobs:
         uses: actions/upload-artifact@v7
         with:
           name: mip-n2-self-index-sanitized-${{ env.EXPECTED_SHA }}
-          path: ${{ runner.temp }}/mip-n2-self-index-summary.json
+          path: |
+            ${{ runner.temp }}/mip-n2-self-index-summary.json
+            ${{ runner.temp }}/mip-kit-drift-summary.json
           if-no-files-found: error
           retention-days: 14
 
