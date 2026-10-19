@@ -10,6 +10,7 @@ import threading
 import time
 import unittest
 from http.server import ThreadingHTTPServer
+from http.client import HTTPConnection
 from urllib.error import HTTPError
 from urllib.request import Request, urlopen
 
@@ -271,13 +272,17 @@ class OperatorHTTP(WorkbenchContracts):
             if body is not None:
                 opts.setdefault("Origin", base)
                 opts.setdefault("Content-Type", "application/json")
-            req = Request(base + route, data=body, headers=opts,
-                          method="POST" if body is not None else "GET")
+            # Explicit loopback-only transport: no caller-supplied URI scheme
+            # or dynamic URL open. This is a native HTTP denial-path test.
+            conn = HTTPConnection("127.0.0.1", server.server_port, timeout=7)
             try:
-                with urlopen(req, timeout=7) as res:
-                    return res.status
-            except HTTPError as exc:
-                return exc.code
+                conn.request("POST" if body is not None else "GET", route,
+                             body=body, headers=opts)
+                response = conn.getresponse()
+                response.read()
+                return response.status
+            finally:
+                conn.close()
 
         try:
             self.assertEqual(http_status("/api/status"), 200)
