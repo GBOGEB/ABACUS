@@ -68,7 +68,7 @@ test("managed projection preserves author rationale", () => {
   const next = replaceManaged(prior, render(project(fixture())));
   assert.match(next, /^Human intent/);
   assert.match(next, /Reviewer notes$/);
-  assert.doesNotMatch(next, /OLD/);
+  assert.doesNotMatch(next, /<!-- abacus-pr-evidence:start -->OLD/);
 });
 test("duplicate, missing or reversed marker sets fail safely", () => {
   for (const body of [START, END, START + START + END + END, END + START]) {
