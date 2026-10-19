@@ -247,6 +247,64 @@ class WorkbenchContracts(unittest.TestCase):
 
 @unittest.skipUnless(shutil.which("git"), "Git required for end-to-end local server")
 class OperatorHTTP(WorkbenchContracts):
+    def test_loopback_negative_route_and_payload_branches(self):
+        """W49: exercise actual uncovered W45 server denial branches.
+
+        Derived from the native Python 3.10 coverage artifact of run 39176574449.
+        All checks use a local ephemeral HTTP server and must leave the 80%
+        *branch* coverage gate unchanged. No GitHub, arbitrary shell or
+        security policy bypass is involved.
+        """
+        handler = type("W49NegativeHandler", (server_module.Handler,), {
+            "manager": server_module.RunManager(self.root),
+            "operator": self.manager,
+            "public_index": HERE / "index.html",
+            "operator_page": HERE / "operator.html",
+        })
+        server = ThreadingHTTPServer(("127.0.0.1", 0), handler)
+        worker = threading.Thread(target=server.serve_forever, daemon=True)
+        worker.start()
+        base = "http://127.0.0.1:" + str(server.server_port)
+
+        def http_status(route, body=None, headers=None):
+            opts = dict(headers or {})
+            if body is not None:
+                opts.setdefault("Origin", base)
+                opts.setdefault("Content-Type", "application/json")
+            req = Request(base + route, data=body, headers=opts,
+                          method="POST" if body is not None else "GET")
+            try:
+                with urlopen(req, timeout=7) as res:
+                    return res.status
+            except HTTPError as exc:
+                return exc.code
+
+        try:
+            self.assertEqual(http_status("/api/status"), 200)
+            self.assertEqual(http_status("/api/operator/runs/not-present"), 404)
+            self.assertEqual(http_status("/api/runs/not-present"), 404)
+            self.assertEqual(http_status("/api/operator/unknown"), 404)
+            self.assertEqual(http_status(
+                "/api/operator/artifacts/malformed",
+                headers={"X-SUT-Token": "w45-token"}), 404)
+            self.assertEqual(http_status("/api/unknown", body=b"{}"), 404)
+            self.assertEqual(http_status(
+                "/api/operator/plan", body=b'{"profile":"python-tests"}',
+                headers={"Host": "attacker.invalid"}), 403)
+            self.assertEqual(http_status(
+                "/api/operator/plan", body=b'{"profile":"python-tests"}',
+                headers={"Content-Type": "text/plain"}), 415)
+            for payload in (
+                b"", b"[]", b'{"profile":"python-tests","extra":1}',
+                b'{"profile":"../../invalid"}', b"{}",
+            ):
+                with self.subTest(payload=payload):
+                    self.assertEqual(
+                        http_status("/api/operator/plan", body=payload), 400)
+        finally:
+            server.shutdown()
+            server.server_close()
+
     def test_loopback_api_plan_consent_run_cancel_and_html(self):
         handler = type("OperatorTestHandler", (server_module.Handler,), {
             "manager": server_module.RunManager(self.root),
