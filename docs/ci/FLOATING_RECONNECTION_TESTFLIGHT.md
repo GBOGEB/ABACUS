@@ -128,3 +128,16 @@ a QPS module or a federation census.
 M1 remains partial; M2, M3, PCA and Bradley-Terry release
 qualification remain on HOLD until independent populations and
 sufficient longitudinal evidence are available.
+
+
+## Instrumentor census rule
+
+The targeted suite instruments the entire `tools/triage` source directory,
+not only modules imported during test collection. This intentionally
+exposes unused code and test-support files, which increase the eligible
+measurement population. Coverage never silently drops the
+`mip_pulse_rollup.py` module merely because it was pre-imported by
+the test harness. The explicit CI guard requires four core modules plus
+`floating_anchor_census.py` to be present and executed; other measured
+files remain visible as separate candidates and are not silently removed.
+A scope change creates a new baseline; avoid naive percentage comparisons.
