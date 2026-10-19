@@ -141,3 +141,24 @@ the test harness. The explicit CI guard requires four core modules plus
 `floating_anchor_census.py` to be present and executed; other measured
 files remain visible as separate candidates and are not silently removed.
 A scope change creates a new baseline; avoid naive percentage comparisons.
+
+
+## Wave 9 — matched branch and stop-rule hardening
+
+Existing `tools/triage/mip_pulse_rollup.py` now checks statement and
+branch eligible denominators **independently**: swapping statement
+opportunities for branches at constant combined size is not comparable.
+A branch regression cannot be hidden by a statement gain. Parent/child
+file leases are mutually exclusive across workers.
+
+A quiet-watch candidate requires three independent *comparable* steady
+transitions, 100% statement and branch coverage of the fixed local
+source cohort, and structurally distinct native run/attempt IDs.
+Even then, native identity authentication and a separate authorized
+admission remain withheld. Stagnation below saturation triggers
+`RERANK_UNCOVERED`, never automated approval or deletion.
+
+The new `tests/test_floating_rollup_adversarial.py` covers reverse,
+negative, denominator-drift, root-cohort, capacity and stop/restart
+behaviour. It is included in the user-side pre-commit, Windows
+TestPilot, and exact-head native testflight.
