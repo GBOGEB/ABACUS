@@ -5,6 +5,7 @@ import json
 import tempfile
 import unittest
 from pathlib import Path
+from unittest import mock
 
 from tools.triage import floating_testflight as flight
 
@@ -204,6 +205,94 @@ class LocalTestflightTests(unittest.TestCase):
         self.assertIn("No merger", row)
         self.assertIn("HOLD", row)
         self.assertNotIn("ZIP bytes verified", row)
+
+
+    def test_rollup_canonical_import_is_measured_and_fail_closed(self):
+        from tools.triage import mip_pulse_rollup as pulse
+
+        self.assertEqual(pulse.SCHEMA, "codepurple.mip.floating-pulse.v1")
+        with self.assertRaisesRegex(ValueError, "no pulses"):
+            pulse.rollup([])
+        with self.assertRaisesRegex(ValueError, "pulse schema"):
+            with tempfile.TemporaryDirectory() as temp:
+                path = Path(temp) / "bad.json"
+                path.write_text('{"schema":"wrong"}', encoding="utf-8")
+                pulse.read_pulse(path)
+
+    def test_cli_forecast_observe_review_roundtrip(self):
+        with tempfile.TemporaryDirectory() as temp:
+            root = Path(temp)
+            (root / "unit.py").write_text("x = 1\\n", encoding="utf-8")
+            (root / "junit.xml").write_text(
+                '<testsuite><testcase classname="t" name="positive"/></testsuite>',
+                encoding="utf-8")
+            (root / "coverage.json").write_text(json.dumps({
+                "meta": {"branch_coverage": True, "version": "7.16.2"},
+                "totals": {"num_statements": 1, "covered_lines": 1,
+                           "num_branches": 0, "covered_branches": 0},
+                "files": {"unit.py": {"summary": {
+                    "num_statements": 1, "covered_lines": 1,
+                    "num_branches": 0}}},
+            }), encoding="utf-8")
+            fore = root / "frozen.json"
+            result = root / "observed.json"
+            review = root / "review.md"
+            with mock.patch.object(flight, "check_head", return_value=SHA):
+                self.assertEqual(flight.main([
+                    "forecast", "--head", SHA, "--pulse", "12",
+                    "--selection", SEL, "--out", str(fore)]), 0)
+                self.assertEqual(flight.main([
+                    "observe", "--forecast", str(fore), "--root", str(root),
+                    "--junit", str(root / "junit.xml"), "--selection", SEL,
+                    "--coverage", str(root / "coverage.json"),
+                    "--out", str(result)]), 0)
+            self.assertEqual(flight.main([
+                "review", "--forecast", str(fore),
+                "--observation", str(result), "--out", str(review)]), 0)
+            actual = json.loads(result.read_text())
+            self.assertEqual(actual["tests"]["passed"], 1)
+            self.assertEqual(actual["coverage"]["statements"]["covered"], 1)
+            self.assertIn("HOLD", review.read_text())
+            with self.assertRaises(FileExistsError):
+                flight.write_new(fore, frozen())
+
+    def test_missing_covered_file_does_not_forge_zero(self):
+        with tempfile.TemporaryDirectory() as temp:
+            root = Path(temp)
+            path = root / "coverage.json"
+            path.write_text(json.dumps({
+                "totals": {"num_statements": 4, "covered_lines": 2},
+                "files": {"missing.py": {"summary": {
+                    "num_statements": 4, "covered_lines": 2}}},
+            }), encoding="utf-8")
+            result = flight.measured_coverage(path, root)
+            self.assertEqual(result["status"], "UNRESOLVED_SOURCE_PATH")
+            self.assertIsNone(result["scope_sha256"])
+            self.assertIsNone(result["zero_covered_paths"])
+
+    def test_unqualified_prior_scope_scores_unknown_not_success(self):
+        old = observed(1)
+        old["observed_at"] = "2026-10-18T09:00:00Z"
+        p = flight.forecast(SHA, 2, SEL, old, now=T1)
+        j = {"counts": {"executed": 3, "passed": 3, "failed": 0,
+                        "errors": 0, "skipped": 0}, "failure_fingerprints": [],
+             "failure_occurrences": 0}
+        changed = {"statements": {"eligible": 10, "covered": 10},
+                   "branches": {"eligible": 2, "covered": 2},
+                   "scope_sha256": "e" * 64, "config_sha256": "c" * 64}
+        actual = flight.observe(p, j, changed, head=SHA, selection=SEL, now=T2)
+        self.assertEqual(actual["forecast_comparability"],
+                         "WITHHELD_SCOPE_OR_PRIOR_MISMATCH")
+        self.assertTrue(all(v is None for v in
+                            actual["forecast_errors_signed"].values()))
+
+    def test_local_run_cannot_enter_quiet_control(self):
+        rows = [observed(i, run=100 + i) for i in (1, 2, 3, 4)]
+        rows[0]["run_id"] = None
+        decision = flight.control(rows)
+        self.assertEqual(decision["state"], "CONTINUE_MEASUREMENT")
+        self.assertFalse(decision["native_identities_structurally_present"])
+
 
 
 if __name__ == "__main__":
