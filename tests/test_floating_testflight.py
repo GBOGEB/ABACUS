@@ -193,7 +193,7 @@ class LocalTestflightTests(unittest.TestCase):
                          "RERANK_UNCOVERED_OPPORTUNITIES")
 
     def test_regression_and_first_red_restart(self):
-        history = [observed(1), observed(2, covered=8)]
+        history = [observed(1), observed(2, covered=8, run=102)]
         self.assertEqual(flight.control(history)["state"],
                          "RESTART_COVERAGE_REGRESSION")
         history[1]["test_state"] = "RED"
