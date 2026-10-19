@@ -81,17 +81,7 @@ class AdditionalPulseGuards(unittest.TestCase):
         r = receipt(0)
         r["workers"][0]["execution_seconds"] = float("inf")
         with self.assertRaisesRegex(ValueError, "latency"):
-            model.read_pulse(self._write_constant(r))
-
-    @staticmethod
-    def _write_constant(row):
-        # json.dumps intentionally allows nonfinite, validation must reject.
-        import os
-        import tempfile
-        handle, filename = tempfile.mkstemp(suffix=".json")
-        with os.fdopen(handle, "w", encoding="utf-8") as f:
-            json.dump(row, f)
-        return Path(filename)
+            measured(r)
 
     def test_component_denominator_swap_not_comparable(self):
         a, b = receipt(0), receipt(1)
@@ -153,7 +143,7 @@ class AdditionalPulseGuards(unittest.TestCase):
         s = model.snapshot(receipt(0))
         self.assertEqual(s["p95_queue_seconds"], 1)
         self.assertEqual(s["p95_execution_seconds"], 2)
-        self.assertIsNone(s["triage"]["unknown"] if s["triage"] is None else None)
+        self.assertEqual(s["triage"]["unknown"], 2)
 
     def test_cli_keeps_merge_authority_false(self):
         with tempfile.TemporaryDirectory() as d:
