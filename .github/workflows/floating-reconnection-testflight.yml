@@ -81,12 +81,17 @@ jobs:
           import os
           from pathlib import Path
           rows = json.loads(Path("test_reports/floating/history/runs.json").read_text())
-          selected = [str(r["databaseId"]) for r in rows
-                      if r.get("headSha") == os.environ["EXACT_HEAD"]
-                      and r.get("status") == "completed"
-                      and str(r.get("databaseId")) != os.environ["GITHUB_RUN_ID"]]
-          Path("test_reports/floating/history/ids.txt").write_text(
-              "\n".join(selected[:5]) + "\n")
+          # Whole-repo heads may differ while measured source scope is stable.
+          # Authenticate each historical run->head mapping before comparison.
+          selected = [{"id": str(r["databaseId"]), "head": r.get("headSha")}
+                      for r in rows if r.get("status") == "completed"
+                      and str(r.get("databaseId")) != os.environ["GITHUB_RUN_ID"]
+                      and isinstance(r.get("headSha"), str)]
+          source = Path("test_reports/floating/history")
+          source.joinpath("source-heads.json").write_text(json.dumps(
+              {r["id"]: r["head"] for r in selected[:8]}, sort_keys=True))
+          source.joinpath("ids.txt").write_text(
+              "\n".join(r["id"] for r in selected[:8]) + "\n")
           PY
             while IFS= read -r prior_run; do
               test -n "$prior_run" || continue
@@ -104,15 +109,23 @@ jobs:
           import json
           import os
           from pathlib import Path
-          from tools.triage.floating_testflight import OBS_SCHEMA
+          from tools.triage.floating_testflight import (
+              OBS_SCHEMA, DEFAULT_SELECTION, selection_hash
+          )
           root = Path("test_reports/floating/history")
+          sources = json.loads((root / "source-heads.json").read_text()) if (
+              root / "source-heads.json").is_file() else {}
           valid = []
           for file in root.glob("*/**/observation.json"):
               try:
+                  run_id = file.relative_to(root).parts[0]
                   item = json.loads(file.read_text())
                   if (item.get("schema") == OBS_SCHEMA
-                      and item.get("head_sha") == os.environ["EXACT_HEAD"]
-                      and item.get("run_id") == int(file.relative_to(root).parts[0])):
+                      and item.get("head_sha") == sources.get(run_id)
+                      and item.get("selection_sha256") ==
+                          selection_hash(DEFAULT_SELECTION)
+                      and item.get("run_id") == int(run_id)
+                      and item.get("run_attempt") is not None):
                       valid.append((item["pulse"], item))
               except (ValueError, TypeError, IndexError, KeyError):
                   pass
