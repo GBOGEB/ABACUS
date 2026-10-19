@@ -50,6 +50,11 @@ def timestamp(value):
     return date
 
 
+def signed_quantity(value, name):
+    need(type(value) in (int, float) and math.isfinite(value), name + " must be finite")
+    return float(value)
+
+
 def digest(value, kind=SHA64):
     need(isinstance(value, str) and bool(kind.fullmatch(value)), "invalid digest")
     return value
@@ -197,8 +202,8 @@ def validate_forecast(item, by_index):
             issued < timestamp(by_index[target]["observed_at"]),
             "hindsight forecast not allowed",
         )
-    lower = quantity(item.get("gain_lower"), "gain_lower")
-    upper = quantity(item.get("gain_upper"), "gain_upper")
+    lower = signed_quantity(item.get("gain_lower"), "gain_lower")
+    upper = signed_quantity(item.get("gain_upper"), "gain_upper")
     need(lower <= upper, "inverted interval")
     digest(item.get("issuer_head_sha"), SHA40)
     need(item["issuer_head_sha"] == by_index[issued_after]["head_sha"], "issuer head drift")
@@ -224,7 +229,7 @@ def rollup(observations, forecasts=None):
         by_index[index] = row
         need(chk["head"] not in seen_heads, "reused head is a poll, not new pulse")
         native = row["native"]
-        identity = (native["run_id"], native["attempt"], native["job_id"])
+        identity = (native["run_id"], native["attempt"])
         need(identity not in seen_jobs, "replayed native run/job/attempt")
         need(row["artifact_sha256"] not in seen_artifacts, "reused evidence artifact")
         seen_heads.add(chk["head"])
@@ -283,12 +288,16 @@ def rollup(observations, forecasts=None):
         key = (row["issued_after"], row["target_index"], row["rule_id"])
         need(key not in keys, "duplicate immutable forecast")
         keys.add(key)
-        actual = next(
-            (x for x in transitions if x["to_pulse"] == row["target_index"]),
-            None,
+        steps = [
+            x
+            for x in transitions
+            if row["issued_after"] < x["to_pulse"] <= row["target_index"]
+        ]
+        eligible = (
+            len(steps) == row["target_index"] - row["issued_after"]
+            and all(x["covered_delta"] is not None for x in steps)
         )
-        eligible = actual is not None and actual["covered_delta"] is not None
-        delta = actual["covered_delta"] if eligible else None
+        delta = sum(x["covered_delta"] for x in steps) if eligible else None
         scored.append(
             {
                 "issued_after": row["issued_after"],
@@ -340,6 +349,11 @@ def rollup(observations, forecasts=None):
     return {
         "schema": "codepurple.mip.temporal-rollup.v3",
         "pulse_count": len(checked),
+        "forecast_ledger_sha256": hashlib.sha256(
+            json.dumps(
+                forecasts, sort_keys=True, separators=(",", ":"), ensure_ascii=True
+            ).encode("ascii")
+        ).hexdigest(),
         "state_clock": indexes,
         "transitions": transitions,
         "frozen_forecast_scores": scored,
