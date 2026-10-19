@@ -33,8 +33,8 @@ repos:
         stages: [pre-commit]
       - id: abacus-floating-staging-testflight
         name: ABACUS floating reconnection staged regression
-        entry: python -m unittest -q tests.test_floating_testflight tests.test_mip_v3_frontier tests.test_mip_v3_temporal
+        entry: python -m unittest -q tests.test_floating_testflight tests.test_mip_v3_frontier tests.test_mip_v3_temporal tests.test_floating_accelerator_receiver
         language: system
         pass_filenames: false
-        files: ^(tools/triage/(floating_testflight|floating_evidence_join|mip_pulse_rollup)\.py|tests/test_(floating_testflight|floating_evidence_join|mip_pulse_rollup|mip_v3_frontier|mip_v3_temporal)\.py|scripts/coverage_dab_census\.py|\.github/workflows/floating-reconnection-testflight\.yml)$
+        files: ^(tools/triage/(floating_testflight|floating_evidence_join|mip_pulse_rollup)\.py|tests/test_(floating_testflight|floating_evidence_join|mip_pulse_rollup|mip_v3_frontier|mip_v3_temporal|floating_accelerator_receiver)\.py|scripts/coverage_dab_census\.py|\.github/workflows/floating-reconnection-testflight\.yml)$
         stages: [pre-commit]
