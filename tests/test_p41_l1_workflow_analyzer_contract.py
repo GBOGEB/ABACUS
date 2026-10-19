@@ -8,12 +8,16 @@ import sys
 import types
 from pathlib import Path
 
+import pytest
+
 
 def load_source(monkeypatch):
     github = types.ModuleType("github")
+
     class DenyNetwork:
         def __init__(self, *a, **kw):
             raise AssertionError("network authentication is prohibited in test")
+
     github.Github = DenyNetwork
     monkeypatch.setitem(sys.modules, "github", github)
     source = Path(__file__).resolve().parents[1] / "workflow_analyzer.py"
@@ -41,7 +45,7 @@ def test_failure_rate_counts_only_failed_runs(monkeypatch):
     assert result["total_runs"] == 3
     assert result["total_failures"] == 1
     assert result["failures_by_workflow"] == {"B0": 1}
-    assert result["failure_rate"] == 100 / 3
+    assert result["failure_rate"] == pytest.approx(100 / 3)
 
 
 def test_empty_run_population_is_not_one_failed_run(monkeypatch):
@@ -57,10 +61,14 @@ def test_empty_run_population_is_not_one_failed_run(monkeypatch):
 def test_missing_test_and_cd_detection_uses_real_source(monkeypatch):
     cls = load_source(monkeypatch)
     analyzer = analyzer_without_network(cls)
-    runs = [{
-        "name": "Lint", "conclusion": "success",
-        "status": "completed", "event": "push",
-    }]
+    runs = [
+        {
+            "name": "Lint",
+            "conclusion": "success",
+            "status": "completed",
+            "event": "push",
+        }
+    ]
     result = analyzer.identify_missed_opportunities(runs)
     kinds = {row["type"] for row in result}
     assert "missing_tests" in kinds
