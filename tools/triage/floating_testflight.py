@@ -25,7 +25,9 @@ DEFAULT_SELECTION = (
     "tests/test_floating_evidence_join.py "
     "tests/test_mip_pulse_rollup.py "
     "tests/test_floating_testflight.py "
-    "tools/triage/test_floating_anchor_census.py"
+    "tools/triage/test_floating_anchor_census.py "
+    "tests/test_mip_v3_frontier.py "
+    "tests/test_mip_v3_temporal.py"
 )
 
 
