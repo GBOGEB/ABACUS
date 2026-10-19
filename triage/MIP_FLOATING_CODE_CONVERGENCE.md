@@ -56,3 +56,22 @@ Do not treat this example as a live pulse until population and instrumentation h
 - MIP-R / runtime tests: future `tests/` names specific to each owner/module; ensure no overlapping files or fixture modifications.
 
 Evidence status: No new native B0, merge approval, coverage gain, semantic orphan count, review or safety waiver is asserted here. MERGE_ADMISSION = HOLD.
+
+
+## Three-pulse reconnection trial (2026-10-19)
+
+This is a proposal branch, not a merge or proof of coverage uplift.
+
+- **P1 / SHADOW:** Extend `scripts/coverage_dab_census.py` to preserve per-file and active-source branch denominators *only if coverage.py actually emitted them*. Missing branch numerators/denominators remain JSON null. No change to source classification or coverage scope is authorized.
+- **P2 / RECONCILE:** `tools/triage/floating_evidence_join.py` joins the pre-existing W104 path candidates with actual per-file DAB observations. Both inputs must be explicitly tied to the same exact commit: `--source-sha` and `--floating-sha` are required; absent provenance fails closed. A path hint remains a triage candidate, not a runtime edge. Negative cases cover unmatched SHA, absent measurement, disabled branch mode and unknown reachability.
+- **P3 / ADMISSION-BOUND:** Execute `pytest -q tests/test_coverage_dab_census.py tests/test_floating_evidence_join.py` and existing `tools/triage/test_floating_anchor_census.py` on the proposal head. After native CI, obtain canonical B0 coverage and a matching W104 rerun at *that exact source SHA*, then run `python tools/triage/floating_evidence_join.py --dab <DAB_JSON> --floating <W104_JSON> --source-sha <HEAD> --floating-sha <HEAD> --out <EVIDENCE_JSON>`. Do not substitute W104's September historical receipt into a current-head join.
+
+### Evidence and authority controls
+1. Treat tests of a *fixture* as algorithm verification, not evidence of real repository connectivity or uncovered-code recovery.
+2. Keep test execution counts, branch coverage and statement coverage as separate populations.
+3. Require an explicit source/consumer/entrypoint/runtime proof before labeling an orphan. Importlib, dotted filenames, delayed workflows and external consumers create false negatives.
+4. Treat a changed instrumentor, changed inclusion/omit rules or denominator shift as `NOT_COMPARABLE` until matched recomputation.
+5. NO pruning, security waiver, forced merge, engineering acceptance, cross-repo attestation or runner/capacity credit follows from this branch.
+
+### Subsequent P4 candidate backlog
+Prioritize (a) measured zero-covered active-source files with verified live entrypoints and criticality; (b) candidates with positive user/contract value and unclear invocation; (c) only then suspected duplicates or legacy. Attach negative, reverse, async and side-effect-isolation tests to verified source-owned methods; require independent review to select bridge/orchestrate/federate/prune.
