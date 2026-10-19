@@ -7,7 +7,6 @@ verified against GitHub. The generator cannot attest complete-chat preservation.
 from __future__ import annotations
 
 import argparse
-import copy
 from datetime import datetime, timezone
 import hashlib
 import json
