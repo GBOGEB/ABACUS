@@ -13,6 +13,7 @@ on:
       - 'tests/test_floating_testflight.py'
       - 'tests/test_floating_evidence_join.py'
       - 'tests/test_mip_pulse_rollup.py'
+      - 'tools/triage/test_floating_anchor_census.py'
       - '.pre-commit-config.yaml'
       - 'scripts/testpilot.ps1'
       - '.github/workflows/floating-reconnection-testflight.yml'
@@ -180,10 +181,9 @@ jobs:
             tests/test_floating_evidence_join.py \
             tests/test_mip_pulse_rollup.py \
             tests/test_floating_testflight.py \
+            tools/triage/test_floating_anchor_census.py \
             --cov=scripts.coverage_dab_census \
-            --cov=tools.triage.floating_evidence_join \
-            --cov=tools.triage.mip_pulse_rollup \
-            --cov=tools.triage.floating_testflight \
+            --cov=tools/triage \
             --cov-branch \
             --cov-report=json:test_reports/floating/coverage.json \
             --junitxml=test_reports/floating/junit.xml
@@ -202,6 +202,7 @@ jobs:
           source = Path("test_reports/floating/coverage.json")
           expected = {
               "scripts/coverage_dab_census.py",
+              "tools/triage/floating_anchor_census.py",
               "tools/triage/floating_evidence_join.py",
               "tools/triage/floating_testflight.py",
               "tools/triage/mip_pulse_rollup.py",
