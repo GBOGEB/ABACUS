@@ -11,7 +11,7 @@ import hashlib
 import json
 import math
 import re
-from datetime import datetime, timezone
+from datetime import datetime
 from pathlib import Path
 
 SCHEMA = "codepurple.mip.temporal.v3"
@@ -123,6 +123,7 @@ def disjoint(workers):
 
 def validate_observation(row):
     need(isinstance(row, dict) and row.get("schema") == SCHEMA, "pulse schema mismatch")
+    need(row.get("repository") == "GBOGEB/ABACUS", "repository mismatch")
     integer(row.get("pulse_index"), "pulse_index")
     digest(row.get("head_sha"), SHA40)
     for key in ("cohort_sha256", "instrumentation_sha256", "artifact_sha256"):
