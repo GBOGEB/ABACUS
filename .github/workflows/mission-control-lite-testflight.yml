@@ -194,7 +194,6 @@ jobs:
           python -m mission_control_lite.artifact_bundle stage \
             --receipt evidence/receipt.json --artifact-root . \
             --bundle-root mcl_upload_root \
-            --companion evidence/provenance.json \
             --companion evidence/registry.sqlite \
             --companion evidence/census.json
       - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9
