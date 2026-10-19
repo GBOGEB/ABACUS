@@ -141,12 +141,18 @@ class OperatorWorkbench:
                                "-p", "test_runner_wait.py", "-q"]],
             "task-census": [["-m", "mission_control_lite.cli", "census",
                              "--db", out + "/mcl.sqlite"]],
-            "binary-bridge": [["tools/qps_binary_bridge.py",
-                               "operator-input/" + filename,
-                               "--output", out + "/bridge.json",
-                               "--authority", "LOCAL_USER_INPUT",
-                               "--lifecycle-status", "CANDIDATE"]],
         }
+        if profile == "binary-bridge":
+            # Never construct an input-dependent command for unrelated profiles:
+            # eager string concatenation with filename=None previously broke
+            # every Python/test/runner GUI plan (W45 native first-red).
+            if not isinstance(filename, str) or not filename:
+                raise ValueError("Binary bridge requires a verified local input")
+            return [["tools/qps_binary_bridge.py",
+                     "operator-input/" + filename,
+                     "--output", out + "/bridge.json",
+                     "--authority", "LOCAL_USER_INPUT",
+                     "--lifecycle-status", "CANDIDATE"]]
         return commands[profile]
 
     def plan(self, profile, input_name=None):
