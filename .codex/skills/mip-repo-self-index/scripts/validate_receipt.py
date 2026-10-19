@@ -67,6 +67,20 @@ def validate_producer(data: dict[str, Any], expected_sha: str | None) -> str:
             }
         )
 
+    debug = data.get("debug_diagnostic")
+    if debug is not None:
+        checks.update(
+            {
+                "debug_object": isinstance(debug, dict),
+                "debug_verdict": isinstance(debug, dict)
+                and debug.get("verification") in {"PASS", "FAIL"},
+                "debug_sha": isinstance(debug, dict)
+                and debug.get("exact_sha") == head_sha,
+                "debug_retention": isinstance(debug, dict)
+                and debug.get("raw_receipt_retention") == "transient_runner_only",
+            }
+        )
+
     require(checks)
     return head_sha
 

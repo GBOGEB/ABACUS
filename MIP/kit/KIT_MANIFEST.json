@@ -2,12 +2,12 @@
   "schema_version": "0.1",
   "program": "MIP",
   "kit": "mip-repo-self-index",
-  "kit_version": "1.0.0",
+  "kit_version": "1.1.0",
   "source": "GBOGEB/CODEX",
   "files": [
     {
       "path": ".codex/skills/mip-repo-self-index/SKILL.md",
-      "sha256": "2e272da6093fa162b538ada31039f3aab0ec897100752cebcf5a5b8a63d0f82e"
+      "sha256": "2f5e38ea76863f92ac11e404e021563a972aaaa5e154bd67aea2104a697c9ccc"
     },
     {
       "path": ".codex/skills/mip-repo-self-index/agents/openai.yaml",
@@ -15,26 +15,30 @@
     },
     {
       "path": ".codex/skills/mip-repo-self-index/references/receipt-contract.md",
-      "sha256": "bf57753cfc5cef7ab670bc942dc5a91ecdccf758b3db3848ecef02f3f7563cc9"
+      "sha256": "5134e3da728c704d89f7ea07b013c61326720b81bc86d56047d1d81108d8a347"
     },
     {
       "path": ".codex/skills/mip-repo-self-index/scripts/validate_receipt.py",
-      "sha256": "5c3488af062208c4ba54fa7605264f884875aba1c9fae8b8cc586f7651080ec2"
+      "sha256": "ee492f7ee092c0109586dd04651dba561a710c12df811df2632e2c78d7c04422"
+    },
+    {
+      "path": "scripts/mip_debug_diagnostic.py",
+      "sha256": "abe16058beb6e5169b62d6fe57ade2c89e302e045662e3fe2226a087e0ea704b"
     },
     {
       "path": "scripts/mip_kit_manifest.py",
-      "sha256": "741c3eb027b64311edc210aa1cedf2021c8430a41f3e3795ead22272550ca6db"
+      "sha256": "3d55a465beb0b55bad4a3614c549b015710c06528f36b141c633b5b6376edb91"
     },
     {
       "path": "scripts/mip_repo_self_index.py",
-      "sha256": "b14dc52d56c75af10b35ce633e0782d3afeade840b772f78d683110871a9644c"
+      "sha256": "63032e67a2b74e9b6244f22f49533801407a1072b94f864c9aff0ad92e7b5b09"
     },
     {
       "path": "scripts/mip_verify_self_index.py",
-      "sha256": "ca3594c64680c24d9fe1970374438ea12cc44833f2ab70b74e77cb0c59c72775"
+      "sha256": "46aeb20e947e73e51d84f04c62a233080e1c9c456b5ba44926a684152488d3ac"
     }
   ],
-  "kit_digest_sha256": "fa3a846fd3fae0bbd258264126ca915e7117fa6de87cc8ee6b721c6789e9e093",
+  "kit_digest_sha256": "4d494a5715d77559eadf78f0b47dc71c6e28365de4beda643b75c6fddbbae9d7",
   "repo_local_files": [
     "MIP/mip_surface.json"
   ]

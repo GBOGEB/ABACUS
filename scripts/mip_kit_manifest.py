@@ -29,7 +29,7 @@ ROOT = Path(__file__).resolve().parents[1]
 MANIFEST = ROOT / "MIP" / "kit" / "KIT_MANIFEST.json"
 
 KIT_NAME = "mip-repo-self-index"
-KIT_VERSION = "1.0.0"
+KIT_VERSION = "1.1.0"
 KIT_SOURCE = "GBOGEB/CODEX"
 KIT_FILES = (
     ".codex/skills/mip-repo-self-index/SKILL.md",
@@ -39,6 +39,7 @@ KIT_FILES = (
     "scripts/mip_repo_self_index.py",
     "scripts/mip_verify_self_index.py",
     "scripts/mip_kit_manifest.py",
+    "scripts/mip_debug_diagnostic.py",
 )
 REPO_LOCAL_FILES = ("MIP/mip_surface.json",)
 

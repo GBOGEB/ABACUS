@@ -27,6 +27,13 @@ When a nested diagnostic is claimed, require:
 - a named source contract or equivalent evidence origin
 - transient raw-receipt retention
 
+When a root debug diagnostic is recorded (`debug_diagnostic`), require:
+
+- `debug_diagnostic.verification` is `PASS` or `FAIL`; only `PASS` supports a
+  GREEN `repo_self_assess_debug_ldab`
+- `debug_diagnostic.exact_sha == head_sha`
+- transient raw-receipt retention
+
 ## Consumer summary
 
 Required fields:
