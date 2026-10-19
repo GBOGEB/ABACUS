@@ -20,16 +20,16 @@ def fixture():
 
 
 class RecoveryWaveTests(unittest.TestCase):
-    def test_three_disjoint_technical_proposals_and_eight_lanes(self):
+    def test_four_disjoint_technical_proposals_and_nine_lanes(self):
         result = wave.plan(HEAD, fixture())
         wave.verify(result)
-        self.assertEqual(result["lane_count"], 8)
-        self.assertEqual(result["edge_count"], 6)
-        self.assertEqual(result["planned_worker_slots"], 3)
+        self.assertEqual(result["lane_count"], 9)
+        self.assertEqual(result["edge_count"], 7)
+        self.assertEqual(result["planned_worker_slots"], 4)
         self.assertEqual(
             set(result["selected_disjoint_proposals"]),
             {"PY39_RESOLVER", "SECURITY_DASHBOARD_403",
-             "GOVERNANCE_CLASSIFICATION"},
+             "GOVERNANCE_CLASSIFICATION", "MCL_RECEIPT_STAGING"},
         )
         self.assertEqual(result["observed_dispatches"], 0)
         self.assertFalse(result["mutation_enabled"])
@@ -83,7 +83,7 @@ class RecoveryWaveTests(unittest.TestCase):
         budget["proposal_worker_slots"] = 100
         with self.assertRaisesRegex(ValueError, "INVALID_WORKER_CAPACITY"):
             wave.plan(HEAD, data)
-        budget["proposal_worker_slots"] = 3
+        budget["proposal_worker_slots"] = 4
         budget["human_approval_slots"] = 1
         with self.assertRaisesRegex(ValueError, "UNVERIFIED_EXTERNAL_AUTHORITY"):
             wave.plan(HEAD, data)
