@@ -191,9 +191,23 @@ def rollup(pulses):
         last["statement_percent"] == 100
         and last["branch_percent"] == 100
     )
+    native_pairs = [
+        ((p.get("native") or {}).get("run_id"),
+         (p.get("native") or {}).get("attempt"))
+        for p in pulses
+    ]
+    native_identified = (
+        all(
+            type(run_id) is int and run_id > 0
+            and type(attempt) is int and attempt > 0
+            for run_id, attempt in native_pairs
+        ) and len(set(native_pairs)) == len(native_pairs)
+    )
     control = (
         "RESTART_COVERAGE_REGRESSION" if regression
-        else "QUIET_WATCH_CANDIDATE" if plateau and saturated
+        else "QUIET_WATCH_CANDIDATE"
+        if plateau and saturated and native_identified
+        else "HOLD_UNVERIFIED_NATIVE_IDENTITIES" if plateau and saturated
         else "RERANK_UNCOVERED" if plateau
         else "MORE_COMPARABLE_PULSES_REQUIRED" if not matched
         else "CONTINUE_MEASURED_CONVERGENCE"
@@ -204,6 +218,8 @@ def rollup(pulses):
         "latest": last, "history": snaps, "transitions": moves,
         "control": control,
         "phase_two_authorized": False,
+        "native_identities_structurally_present": native_identified,
+        "native_identities_independently_verified": False,
         "source_scope_saturated": saturated,
         "release_ready": False,
         "formal_coverage_credit": False,
