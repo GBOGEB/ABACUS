@@ -27,7 +27,7 @@ federated_execution_scheduler:
     worker_dispatch_authorized: false
     # Planning capacities; these are NOT actual GitHub runner entitlements.
     resources:
-      proposal_worker_slots: 3
+      proposal_worker_slots: 4
       human_approval_slots: 0
       secret_configuration_slots: 0
       admission_slots: 0
@@ -50,6 +50,12 @@ federated_execution_scheduler:
         resource: technical
         needs: []
         evidence: unique_workflow_owner_and_generated_inventory
+      - id: MCL_RECEIPT_STAGING
+        priority: 0
+        source_owner: .github/workflows/mission-control-lite-testflight.yml
+        resource: technical
+        needs: []
+        evidence: source_head_zip_hash_and_receipt_integrity
       - id: DOW_FORMAT_DEBT
         priority: 1
         source_owner: UNALLOCATED_PENDING_FILE_SPLIT
@@ -76,6 +82,7 @@ federated_execution_scheduler:
           - PY39_RESOLVER
           - SECURITY_DASHBOARD_403
           - GOVERNANCE_CLASSIFICATION
+          - MCL_RECEIPT_STAGING
           - DOW_FORMAT_DEBT
         evidence: native_terminal_full_ci_security_and_coverage
       - id: ADMISSION
