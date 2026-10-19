@@ -1,0 +1,41 @@
+{
+  "schema_version": "0.1",
+  "program": "MIP",
+  "kit": "mip-repo-self-index",
+  "kit_version": "1.0.0",
+  "source": "GBOGEB/CODEX",
+  "files": [
+    {
+      "path": ".codex/skills/mip-repo-self-index/SKILL.md",
+      "sha256": "2e272da6093fa162b538ada31039f3aab0ec897100752cebcf5a5b8a63d0f82e"
+    },
+    {
+      "path": ".codex/skills/mip-repo-self-index/agents/openai.yaml",
+      "sha256": "33e050abb8bae94cf5bdcdc45a26c78ff16242b3ebdfbebc1e846e0c05e18a1c"
+    },
+    {
+      "path": ".codex/skills/mip-repo-self-index/references/receipt-contract.md",
+      "sha256": "bf57753cfc5cef7ab670bc942dc5a91ecdccf758b3db3848ecef02f3f7563cc9"
+    },
+    {
+      "path": ".codex/skills/mip-repo-self-index/scripts/validate_receipt.py",
+      "sha256": "5c3488af062208c4ba54fa7605264f884875aba1c9fae8b8cc586f7651080ec2"
+    },
+    {
+      "path": "scripts/mip_kit_manifest.py",
+      "sha256": "741c3eb027b64311edc210aa1cedf2021c8430a41f3e3795ead22272550ca6db"
+    },
+    {
+      "path": "scripts/mip_repo_self_index.py",
+      "sha256": "b14dc52d56c75af10b35ce633e0782d3afeade840b772f78d683110871a9644c"
+    },
+    {
+      "path": "scripts/mip_verify_self_index.py",
+      "sha256": "ca3594c64680c24d9fe1970374438ea12cc44833f2ab70b74e77cb0c59c72775"
+    }
+  ],
+  "kit_digest_sha256": "fa3a846fd3fae0bbd258264126ca915e7117fa6de87cc8ee6b721c6789e9e093",
+  "repo_local_files": [
+    "MIP/mip_surface.json"
+  ]
+}
