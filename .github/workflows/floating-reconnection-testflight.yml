@@ -15,6 +15,7 @@ on:
       - 'tests/test_mip_pulse_rollup.py'
       - 'tests/test_mip_v3_frontier.py'
       - 'tests/test_mip_v3_temporal.py'
+      - 'tests/test_floating_accelerator_receiver.py'
       - 'tools/triage/test_floating_anchor_census.py'
       - '.pre-commit-config.yaml'
       - 'scripts/testpilot.ps1'
@@ -186,6 +187,7 @@ jobs:
             tools/triage/test_floating_anchor_census.py \
             tests/test_mip_v3_frontier.py \
             tests/test_mip_v3_temporal.py \
+            tests/test_floating_accelerator_receiver.py \
             --cov=scripts.coverage_dab_census \
             --cov=tools/triage \
             --cov-branch \
@@ -206,6 +208,7 @@ jobs:
           source = Path("test_reports/floating/coverage.json")
           expected = {
               "scripts/coverage_dab_census.py",
+              "tools/triage/accept_accelerator_atom_contract.py",
               "tools/triage/floating_anchor_census.py",
               "tools/triage/floating_evidence_join.py",
               "tools/triage/floating_testflight.py",
