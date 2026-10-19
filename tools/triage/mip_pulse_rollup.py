@@ -66,8 +66,19 @@ def read_pulse(path):
         paths = w.get("paths")
         require(isinstance(paths, list) and len(paths) > 0, "missing worker paths")
         for item in paths:
-            require(isinstance(item, str) and item and not item.startswith("/") and ".." not in item.split("/"), "unsafe path claim")
-            require(item not in claimed, "overlapping worker path: " + item)
+            require(
+                isinstance(item, str) and item and not item.startswith("/")
+                and "\\" not in item and ":" not in item
+                and all(part not in ("", ".", "..") for part in item.split("/")),
+                "unsafe path claim"
+            )
+            require(
+                not any(
+                    item == held or item.startswith(held + "/")
+                    or held.startswith(item + "/")
+                    for held in claimed
+                ), "overlapping worker path: " + item
+            )
             claimed.add(item)
         for metric in ("queue_seconds", "execution_seconds"):
             if w.get(metric) is not None:
@@ -117,11 +128,17 @@ def transition(a, b):
         and a["instrumentation_sha256"] == b["instrumentation_sha256"]
         and x["eligible"] == y["eligible"]
         and x["eligible"] > 0
+        and all(
+            a["coverage"][k]["eligible"] == b["coverage"][k]["eligible"]
+            for k in ("statements", "branches")
+        )
     )
     item = {
         "from_head": a["head_sha"], "to_head": b["head_sha"],
         "population_comparable": same,
         "coverage_gain_pp": None,
+        "statement_gain_pp": None,
+        "branch_gain_pp": None,
         "newly_covered_opportunities": None,
         "triage_resolved_delta": None,
         "root_reds_closed_net": None,
@@ -130,6 +147,12 @@ def transition(a, b):
     if same:
         item["newly_covered_opportunities"] = y["covered"] - x["covered"]
         item["coverage_gain_pp"] = round(y["combined_percent"] - x["combined_percent"], 6)
+        item["statement_gain_pp"] = round(
+            y["statement_percent"] - x["statement_percent"], 6
+        ) if x["statement_percent"] is not None else None
+        item["branch_gain_pp"] = round(
+            y["branch_percent"] - x["branch_percent"], 6
+        ) if x["branch_percent"] is not None else None
     if a.get("triage") and b.get("triage") and a["population_sha256"] == b["population_sha256"]:
         def resolved(t):
             return t["linked"] + t["orphan"] + t["other_disposed"]
@@ -146,21 +169,42 @@ def rollup(pulses):
     snaps = [snapshot(p) for p in pulses]
     moves = [transition(a, b) for a, b in zip(pulses, pulses[1:])]
     last = snaps[-1]
-    plateau = len(moves) >= 3 and all(
-        m["population_comparable"]
-        and m["coverage_gain_pp"] <= 0.05
-        and m["triage_resolved_delta"] is not None and m["triage_resolved_delta"] <= 0
-        and m["root_reds_closed_net"] is not None and m["root_reds_closed_net"] <= 0
+    matched = len(moves) >= 3 and all(
+        m["population_comparable"] for m in moves[-3:]
+    )
+    regression = bool(moves and moves[-1]["population_comparable"] and any(
+        moves[-1][key] is not None and moves[-1][key] < 0
+        for key in ("statement_gain_pp", "branch_gain_pp")
+    ))
+    plateau = matched and all(
+        m["statement_gain_pp"] is not None
+        and m["branch_gain_pp"] is not None
+        and 0 <= m["statement_gain_pp"] <= 0.05
+        and 0 <= m["branch_gain_pp"] <= 0.05
+        and m["triage_resolved_delta"] is not None
+        and m["triage_resolved_delta"] <= 0
+        and m["root_reds_closed_net"] is not None
+        and m["root_reds_closed_net"] <= 0
         for m in moves[-3:]
     )
-    control = ("STOP_LOCAL_PLATEAU" if plateau else
-               "MORE_COMPARABLE_PULSES_REQUIRED" if len(moves) < 3 or any(not m["population_comparable"] for m in moves[-3:]) else
-               "CONTINUE_MEASURED_CONVERGENCE")
+    saturated = (
+        last["statement_percent"] == 100
+        and last["branch_percent"] == 100
+    )
+    control = (
+        "RESTART_COVERAGE_REGRESSION" if regression
+        else "QUIET_WATCH_CANDIDATE" if plateau and saturated
+        else "RERANK_UNCOVERED" if plateau
+        else "MORE_COMPARABLE_PULSES_REQUIRED" if not matched
+        else "CONTINUE_MEASURED_CONVERGENCE"
+    )
     return {
         "schema": "codepurple.mip.floating-rollup.v1",
         "pulse_count": len(snaps),
         "latest": last, "history": snaps, "transitions": moves,
         "control": control,
+        "phase_two_authorized": False,
+        "source_scope_saturated": saturated,
         "release_ready": False,
         "formal_coverage_credit": False,
         "note": "Read-only descriptive telemetry. Native receipts, source population identity and governed admission require independent validation.",
