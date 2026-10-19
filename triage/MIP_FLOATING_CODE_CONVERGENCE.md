@@ -1,58 +1,242 @@
-# CODE PURPLE / MIP Floating-Code Programme — execution contract
+# CODE PURPLE / MIP V3: evolutionary floating-code convergence
 
-Version: 2026-10-19 / owner: ABACUS source governance / status: PROPOSAL, NOT ADMISSION.
-Reference source: W104 DOW floating-anchor census, ANCHOR_COVERAGE_PENETRATION and W46_HIGH_YIELD_COVERAGE_HANDOVER.
-Exact initial main reference: cf27dba3b6826a364c2467a49104a115feab99f1.
+Date: 2026-10-19. Status: advisory, no admission authority.
 
-## Six stages (MIP / DMAIC)
+Owner: ABACUS source governance. Companion process:
+[Canonical MIP SIPOC-DAG](../docs/ci/MIP_SIPOC_DAG.md).
 
-1. **Baseline / Define and Measure.** Freeze source HEAD, instrumentor, measured cohort (including statement/branch denominators), configuration, B0 run/job/attempt, and SHA256 of raw artifacts. Anchor names and path heuristics are candidates, never verified semantic links. Report unknowns separately. W46 measured 9430/28014 combined, 18584 missing, 114/223 zero-covered paths; no fresh gain is attributed to this programme.
-2. **Classify / Investigate.** Partition into F01 active-uncovered, F02 floating capability, F03 dormant subsystem, F04 cross-repo utility, F05 possible duplicate, F06 legacy/dead candidate, F07 unsafe/unstable. Add UNKNOWN class until runtime consumers and provenance are inspected. Path name and missing coverage alone never authorize orphan or removal classification. Score by missed opportunities, independent graph evidence, risk, size and cross-repo reuse, keeping each feature distinct.
-3. **Construct evidence DAG / Analyze.** Nodes: path, symbol, module, registry declaration, CI/CLI entrypoint, runtime call, artifact producer/consumer, contract, test, owner, commit, receipt. Typed edges distinguish DECLARED, STATIC, DYNAMIC_OBSERVED, CONTRACT, ARTIFACT, NEGATIVE_SEARCH and UNKNOWN, each with source SHA and evidence reference. Search dynamic import, plugins, reflection, scripts, workflows, external and periodic callers before declaring orphan. Map golden threads from user need to entrypoint to behavior to receipt.
-4. **Incubate / Improve.** First no-side-effect smoke and import isolation, then contracts, negative/reverse/property/metamorphic tests, fault/replay stress and mock external effects. For F05 run differential tests of equivalent interfaces, including mutation/side-effect comparison. Dispositions: RETAIN_TEST, BRIDGE, ORCHESTRATE, FEDERATE, SNIP_CONSOLIDATE, PRUNE, QUARANTINE, DEFER_UNKNOWN. Require explicit owner decision and rollback path. PRUNE only when no justified consumer is established, approved, and removal regressions pass.
-5. **Telemetry / Prove.** Measure separate functional numerator gains on matched denominator and structural denominator shifts; never credit source deletion as newly tested behavior. Each pulse stores UTC timestamp, repository, exact HEAD, scope and instrumentor hashes, statement and branch counts, candidate reconciliation, deduplicated root cohort, disjoint workers, queue/execute times, native test artifacts, current admission. Unknown means null, not zero. Use tools/triage/mip_pulse_rollup.py for descriptive histories: per-pulse counts, p95 latency, N->N+1 comparable changes, root delta and conservative local plateau. Cross-branch scopes require matching instrumentation and population fingerprints. Authenticate supplied JSON, artifact hashes and CI provenance separately; the rollup itself is NOT an attestation.
-6. **Scale / Control.** Assign file-ownership leases and separate branches. Independent worker families: A census+graph (read only), B duplicate semantic comparison, C six priority source-test modules by disjoint path, D federation/consumers (read only), E telemetry and QA. No shared-file parallel writes. Each worker produces proposal SHA, tests, run/job/attempt, context, first RED, deduplicated root, changed covered opportunities, and scoped regression evidence. Serial admission only after effective required statuses, approved reviewer, resolved threads, no unapproved bypass and a fresh head check.
+Historical W46: 9,430 / 28,014 covered; 18,584 missing.
+The W46 measured scope has 114 of 223 zero-covered paths.
+These are historical observations, NOT V3 functional gain.
+W104 path hints do not prove semantic orphanhood.
 
-## Wave scheduling
+## 0. First RED: admission and provenance
 
-- **N=0**, measured historical W46 baseline; record source / run / matched denominator and verify artifact provenance; W104 candidate findings remain path heuristics.
-- **N=1**, three disjoint read-only discovery lanes for executable call graph, registry/entrypoint/consumer graph, differential duplicate map. Produce unknown and exclusion populations.
-- **N=2**, six disjoint test incubation owners, scoped to their own paths, without dispatch side effects; run identical-source before/after and audit flags.
-- **N=3**, disposition lanes and bridge integration tests for retained capability, then independent review and serialized CI proof.
-- **N>=4**, dynamically reprioritize based on qualified marginal gains, roots removed, risk and p95 queue latency. Do not set expected gain equal to theoretical saturation.
+GitHub PRs #2320 and #2321 were observed merged on 2026-10-19.
+Their prior descriptions declared MERGE_ADMISSION = HOLD.
+On #2321, the changed-document validation workflow was red
+with 17 MD013 line-length findings. The previous description
+did not establish actual protected admission.
 
-## Convergence controls
+A merge event is not an admission receipt. Trace effective rules,
+required status contexts, security, independent eligible review,
+last-push review, unresolved threads, and negative RED canary.
+Only an authorized administrator can repair policy.
+Keep current and historical SHA evidence separate.
 
-Stop a locally saturated module once statement+branch opportunities are exhausted (on fixed source). Stop a stalled *local* lane after three consecutive terminal comparable pulses with <=0.05 percentage-point gain, no increase in disposition resolution, and no net root closure, **only** when fixed-cohort root telemetry is available. Reroute workers to another source family. A lack of data or mismatched denominator must be tagged NOT_COMPARABLE, never STABLE. Formal release readiness is governed by separate CI, security, review and provenance gates; no auto-merge, acceptance or security waiver.
+## 1. Define, Measure and resource-bound MIP charter
 
-## Minimum telemetry JSON
+Goal: increase verified exercised capability on retained code.
+Co-goals: resolve unknown source ownership; remove real bottlenecks;
+reduce runner-hours and wall time; preserve user-facing behavior.
+Optimize real improvement per constrained resource, not job volume.
 
-```json
-{
-  "schema": "codepurple.mip.floating-pulse.v1",
-  "repository": "GBOGEB/ABACUS",
-  "head_sha": "<40-lowercase-hex>",
-  "population_sha256": "<64-lowercase-hex>",
-  "instrumentation_sha256": "<64-lowercase-hex>",
-  "observed_at": "2026-10-19T12:00:00Z",
-  "coverage": {
-    "statements": {"covered": 7779, "eligible": 22456},
-    "branches": {"covered": 1651, "eligible": 5558}
-  },
-  "triage": null,
-  "root_reds_open": null,
-  "workers": [],
-  "governance": {"merge_admission": "HOLD", "security_waiver": false}
-}
-```
+Measure on an identical eligible opportunity population:
+covered statement count, eligible statements, covered branches,
+eligible branches, CI instrumentation and source cohort fingerprint.
+A changed population or source deletion is a STRUCTURAL DELTA,
+never an automatically earned functional coverage gain.
 
-Do not treat this example as a live pulse until population and instrumentation hashes have been computed from actual matching assets. Command: `python tools/triage/mip_pulse_rollup.py pulse0.json pulse1.json --out mip_rollup.json`. Run `python -m unittest discover -s tests -p test_mip_pulse_rollup.py` for focused synthetic tests.
+Freeze on each native observation: repository, exact source SHA,
+run ID, attempt, job ID, artifact ID and raw SHA256, OS, Python,
+dependency lock, test selection, UTC timestamps and source owner.
+Unknown fields must remain null; never infer a zero from absence.
 
-## Disjoint worker path ownership
+## 2. Classify each discovered path (F01-F07 plus UNKNOWN)
 
-- MIP-T / telemetry: `tools/triage/mip_pulse_rollup.py`, `tests/test_mip_pulse_rollup.py`.
-- MIP-G / method: `triage/MIP_FLOATING_CODE_CONVERGENCE.md`.
-- MIP-C / census extension: future `tools/triage/` paths excluding MIP-T paths; new branch and PR required.
-- MIP-R / runtime tests: future `tests/` names specific to each owner/module; ensure no overlapping files or fixture modifications.
+- F01: active and uncovered; prioritize behavior and fault tests.
+- F02: floating valuable capability; bridge to a real consumer.
+- F03: dormant subsystem; prove an intended orchestrator path.
+- F04: cross-repo utility; test and register federation contracts.
+- F05: possible duplicate; differential and side-effect comparison.
+- F06: obsolete candidate; removal only after search and approval.
+- F07: unsafe or unstable; isolate and sandbox.
+- UNKNOWN: absent semantic evidence; do not silently call orphan.
 
-Evidence status: No new native B0, merge approval, coverage gain, semantic orphan count, review or safety waiver is asserted here. MERGE_ADMISSION = HOLD.
+Evidence ladder: M0 path hint; M1 static graph;
+M2 safe executed smoke; M3 real consumer/differential result;
+M4 approved reversible disposition; M5 independently verified.
+File-name or directory similarities never prove dead code.
+An absent static import does not exclude a dynamic or external user.
+
+## 3. Directed relationships, SIPOC and reverse pressure
+
+Reuse the canonical SIPOC in docs/ci/MIP_SIPOC_DAG.md.
+Graph node types: file, symbol, caller, registry, CI/CLI entry,
+workflow, dependency, producer, artifact, consumer, contract,
+test, owner, source SHA and receipt.
+
+Edge types:
+- HARD_PRECEDES (verified blocker -> dependent)
+- DECLARED_LINK (not proof of execution)
+- STATIC_IMPORT, DYNAMIC_OBSERVED, ARTIFACT_CONSUMER
+- CONTRACT_REQUIRES, CROSS_REPO_CONSUMER
+- INFERRED_HYPOTHESIS (never silently promoted to hard)
+- NEGATIVE_SEARCH (bounded evidence, not proof of absence)
+
+Record direction explicitly. A -> B means B cannot be completed
+before A if the edge is HARD_PRECEDES. Requirements and their
+dependent outputs are reverse-traced from release gates to roots.
+Graph cycles, dangling nodes and contradictory authorities are RED.
+
+A controlling release gate exerts reverse pressure on its verified
+upstream prerequisites. Distinguish:
+- Immediate unlock: action is the last missing prerequisite.
+- Partial unlock: action removes one of several blockers.
+- Downstream leverage: action benefits more than one distinct gate.
+Do not double-count a shared gate under multiple ancestors.
+Never let a soft hypothesis override a hard dependency.
+
+## 4. Invest in discriminating experiments, not maximum testing
+
+Incubator order:
+S0 provenance and environment isolation;
+S1 no-side-effect import/smoke;
+S2 valid/invalid contract tests;
+S3 negative, reverse, metamorphic and fault tests;
+S4 differential behavior for F05 overlap;
+S5 executable consumer/producer integration;
+S6 owner-reviewed disposition and rollback proof.
+
+Stop early if direct action is unsafe, redundant or lower-value
+than closing an evidenced root. Do not require expensive stress
+tests for simple data-only assets without a justified failure mode.
+PRUNE requires owner approval, negative-dependency searches,
+isolated removal test and cross-repo consumer check.
+SNIP extracts unique capability before retiring an obsolete shell.
+No deletion is rewarded as testing improvement.
+
+## 5. Choose a direction: blocker, BT, or experiment
+
+FIRST filter by evidence, safety, authority, hard dependencies,
+disjoint file leases and bounded runner capacity.
+Only independent ready tasks enter any discretionary ranking.
+
+Next evaluate counterfactual gate closure on each candidate:
+How many distinct required sinks become satisfiable if this task
+passes? Use a reverse dependency pass for immediate closure and
+for partial unlocks. Verify scope and estimated time to proof.
+
+Bradley-Terry ranks observed pairwise preference/outcome only.
+It does NOT learn task priority from topological precedence.
+No native connected pairwise network => BT_NOT_IDENTIFIABLE.
+Use frozen prior observations and a declared outcome metric,
+e.g. accepted root closures per bounded engineer/runner hour.
+Do not manufacture wins from heuristic weights or projected gain.
+Complete separation, disconnected graph, confounding and
+uncontrolled context block unqualified BT comparisons.
+Prefer the existing gg_MATH provider for mature inference.
+
+Use bounded exploration only where the expected information
+can alter a downstream disposition or priority decision.
+A high missing-line count is an opportunity CAP, not expected gain.
+An unknown cost is not free; do not divide by an invented hour.
+Preserve nondominated alternatives rather than overfit one score.
+
+## 6. Telemetry: three clocks and an immutable N+2 ledger
+
+Track separately:
+- State clock: ordered pulse N, N+1 and N+2.
+- Wall clock: queue, execution, review and elapsed seconds.
+- Version clock: exact source HEAD, test tree and receipt identity.
+
+A pulse is an attempted source/evidence change with a new receipt.
+Repeated polling is an observation of the same pulse, not N+1.
+Attempted waves and accepted engineering waves are separate clocks.
+An independent governed release decision is a third boundary.
+
+Before observing N+1, seal forecasts for N+1 and N+2:
+prediction issue time, model revision, input exact head,
+expected outcome and credible uncertainty class.
+When actual N+1 arrives, score errors on like-for-like units;
+do NOT retroactively edit the N+1 forecast.
+Then predict N+2 and N+3 from a versioned updated estimator.
+
+Priority metrics:
+- Covered / eligible on matched source and instrumentation.
+- New executed behavioral opportunities; branch/statement split.
+- Incubator dispositions and unresolved candidate cohort.
+- Verified consumer edge penetration and first-red roots resolved.
+- Runner p50/p95 queue, runtime, overhead and receipt yield.
+- Wall-clock critical path, source-owner contention and idle time.
+- Forecast MAE, interval hit rate and priority ranking accuracy.
+- Denominator inflation/deflation and source removal separately.
+
+Temporal caveat: a few dependent workflows are not independent
+replicates. p95 of tiny samples is descriptive, not stable tail
+performance. Validate assumptions before PCA or BT fitting.
+
+## 7. Disjoint workers, DAG scheduler and admission firewall
+
+Reuse, do not replace:
+- scripts/cbd_recurse_fanout_w48.py (bounded DAG, path leases)
+- MIP/EVIDENCE_TO_ADMISSION_OBSERVATORY/elastic_wave_governor.py
+- runtime/execution/dependency_spine_readonly_selector.py
+- tools/triage/mip_pulse_rollup.py (legacy descriptive telemetry)
+
+V3 workers are disjoint source-owner BRANCHES, not concurrent
+writers on main. Separate jobs for governance first-red,
+graph census, duplicated agents, focused coverage, federation,
+telemetry and learned scheduling. Keep overlapping fixtures with
+the designated owner and require a negotiated dependency edge.
+
+Do not dispatch runners or merge from advisory ranking.
+Admission requires fresh exact-head native CI, security and
+A10 checks, effective protection, eligible independent review,
+all required status contexts and thread resolution.
+Merely observing a merge never makes these gates PASS.
+
+## 8. Stop, pivot and recursive convergence
+
+Run bounded source-changing pulses and observe terminal receipts.
+Three consecutive zero-gain transitions require FOUR independent,
+terminal, comparable pulses. A repeated SHA or rerun alone is
+not a source-changing pulse.
+
+- FAILURE: negative covered delta, security RED or gate regression.
+- REBASELINE: source population / instrumentation / tool drift.
+- BLOCKED: no actionable ready task; seek the controlling root.
+- LOCAL_TARGET: proven source-specific target with tests complete.
+- LOCAL_PLATEAU: comparable no-gain pulses; pivot source family.
+- CONTINUE: at least one high-value ready evidence-backed action.
+- GLOBAL_DONE: separately established engineering AND governance.
+
+Never call a plateau global convergence. Stop a marginal
+experiment when its expected bounded benefit does not justify
+its measurement, compute, review and opportunity costs.
+Do not continue on the same failed exact SHA without source repair.
+
+## 9. Resource budget and falsifiable N+2 contract
+
+Per wave reserve bounded capacity for:
+P0 security/governance, P1 dependency-first RED roots,
+P2 highest-yield behavioral tests, P3 exploration/BT calibration.
+Use capacity only when workers, queues and independent owner
+availability are measured. Excess demand remains queued.
+
+For each candidate, store:
+unique task ID, source-owner lease, hard prerequisites,
+expected gain interval or UNKNOWN, runner-hour interval,
+reverse sink IDs, first-red fingerprint, test hypothesis,
+rollback, verification criteria and projected unlock class.
+
+To compare policies, freeze a candidate cohort and record which
+would be selected by dependency-first, BT, reverse pressure and
+simple coverage-size ranking before observing outcomes.
+Score realised closures per cost and error retrospectively;
+do not claim one policy superior from synthetic examples.
+
+Expected next waves:
+- N+1: repair Markdown first RED; mature evidence joins.
+- N+2: compare graph/consumer findings, exercise focused tests.
+- N+3: evaluate disjoint returns and prioritize actual bottleneck.
+These are forecasts, NOT observed passes or authorizations.
+
+## 10. Release and evidence boundary
+
+The 12-gate JADE/B&B point-release readiness assessment is
+separate from ABACUS MIP local tests. A partial MIP success may
+supply evidence to a gate but never substitutes for all gates.
+
+MERGE_ADMISSION = HOLD; authority_transfer = false;
+formal_coverage_credit = false until independently qualified.
