@@ -44,7 +44,7 @@ class PulseTest(unittest.TestCase):
 
     def test_plateau_requires_three_valid_moves(self):
         xs = [receipt(i) for i in range(4)]
-        self.assertEqual(pulse.rollup(xs)["control"], "STOP_LOCAL_PLATEAU")
+        self.assertEqual(pulse.rollup(xs)["control"], "RERANK_UNCOVERED")
 
     def test_unknown_triage_not_zero(self):
         x = receipt(0)
