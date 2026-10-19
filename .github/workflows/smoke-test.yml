@@ -15,4 +15,3 @@ jobs:
       - name: Handover V2 tuple lineage regression
         if: hashFiles('tools/handover_v2/tests/test_tuple_lineage.py') != ''
         run: python -m unittest discover -s tools/handover_v2/tests -p test_tuple_lineage.py -v
-
