@@ -77,7 +77,9 @@ proof pulse merely to make the matrix green.
 
 Use these canonical lanes when present:
 
-- `repo_self_assess_debug_ldab`: executable diagnostic evidence on exact SHA.
+- `repo_self_assess_debug_ldab`: executable diagnostic evidence on exact SHA
+  (`debug_diagnostic` in `MIP/mip_surface.json`, default
+  `scripts/mip_debug_diagnostic.py`).
 - `repo_self_assess_runners_mcp`: executable runner/orchestration evidence.
 - `repo_self_assess_codz_health_selfheal`: observed health/self-heal behavior.
 - `repo_self_produce`: reusable skill, agent, parser, or orchestrator.

@@ -152,6 +152,62 @@ def verify_pair(
     return first, n1
 
 
+def debug_diagnostic_checks(
+    root_receipt: dict[str, Any],
+    root_assessments: dict[str, str],
+    actual_sha: str,
+) -> tuple[dict[str, bool], dict[str, Any] | None]:
+    details = root_receipt.get("assessments", {}).get(DEBUG_LANE, {})
+    evidence = details.get("evidence") if isinstance(details, dict) else None
+    diagnostic_checks = evidence.get("checks") if isinstance(evidence, dict) else None
+    checks = {
+        "root_debug_green": root_assessments.get(DEBUG_LANE) == "GREEN",
+        "evidence_present": isinstance(evidence, dict),
+        "verification": isinstance(evidence, dict)
+        and evidence.get("verification") == "PASS",
+        "exact_sha": isinstance(evidence, dict)
+        and evidence.get("exact_sha") == actual_sha,
+        "checks_passed": isinstance(diagnostic_checks, dict)
+        and bool(diagnostic_checks)
+        and all(passed is True for passed in diagnostic_checks.values()),
+        "retention": isinstance(evidence, dict)
+        and evidence.get("raw_receipt_retention") == "transient_runner_only",
+    }
+    return checks, evidence if isinstance(evidence, dict) else None
+
+
+def summarize_debug_diagnostic(
+    root_receipt: dict[str, Any],
+    root_assessments: dict[str, str],
+    actual_sha: str,
+    *,
+    required: bool,
+) -> dict[str, Any] | None:
+    """Check the executed debug diagnostic; fail closed only when the lane is required."""
+    checks, evidence = debug_diagnostic_checks(
+        root_receipt, root_assessments, actual_sha
+    )
+    failed = sorted(name for name, passed in checks.items() if not passed)
+    if failed and required:
+        raise SystemExit(
+            "debug/LDAB diagnostic validation failed: " + ", ".join(failed)
+        )
+    if evidence is None:
+        return None
+    return {
+        "verification": "FAIL" if failed else "PASS",
+        "exact_sha": evidence.get("exact_sha"),
+        "diagnostic": evidence.get("diagnostic"),
+        "passed_checks": sorted(
+            name
+            for name, passed in (evidence.get("checks") or {}).items()
+            if passed is True
+        ),
+        "failed_checks": failed,
+        "raw_receipt_retention": evidence.get("raw_receipt_retention"),
+    }
+
+
 def validate_health_selfheal(
     root_receipt: dict[str, Any],
     root_assessments: dict[str, str],
@@ -440,6 +496,15 @@ def main() -> int:
             )
             health_executed = True
 
+        debug_summary = summarize_debug_diagnostic(
+            root_receipt,
+            root_assessments,
+            actual_sha,
+            required=DEBUG_LANE in required_green,
+        )
+        if debug_summary is not None:
+            summary["debug_diagnostic"] = debug_summary
+
         nested_rows, diagnostic_rows = verify_nested_surfaces(
             list(surface.get("nested_surfaces", [])), tmp, actual_sha
         )
@@ -477,7 +542,8 @@ def main() -> int:
             root_assessments,
             health_executed=health_executed,
             skill_executed=skill_executed,
-            diagnostic_executed=bool(diagnostic_rows),
+            diagnostic_executed=bool(diagnostic_rows)
+            or (debug_summary or {}).get("verification") == "PASS",
         )
         summary["required_green"] = sorted(required_green)
         summary["lane_maturity"] = maturity

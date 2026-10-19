@@ -49,19 +49,23 @@ def _git_head() -> str:
     ).strip()
 
 
-def root_debug_receipt(emitter: ModuleType, sha: str) -> dict[str, Any]:
+def root_debug_receipt(
+    emitter: ModuleType, sha: str, diagnostic: dict[str, Any] | None = None
+) -> dict[str, Any]:
     """Root debug lane with the complete candidate inventory.
 
     The kit emitter samples at most 20 paths. Its own ``classify`` is run with
     an unbounded ``sample`` so the full list comes from the kit's needles, not
-    a copy of them, and the bounded sample is checked to be its prefix.
+    a copy of them, and the bounded sample is checked to be its prefix. The
+    lane status comes from the same executed debug ``diagnostic`` the kit
+    emitter uses (kit 1.1.0: GREEN needs a passing diagnostic on HEAD).
     """
     files = emitter.iter_files()
-    bounded = emitter.classify(files, None)[LANE]
+    bounded = emitter.classify(files, None, diagnostic)[LANE]
     original_sample = emitter.sample
     emitter.sample = lambda paths, limit=None: [p.as_posix() for p in paths]
     try:
-        full = emitter.classify(files, None)[LANE]["sample_paths"]
+        full = emitter.classify(files, None, diagnostic)[LANE]["sample_paths"]
     finally:
         emitter.sample = original_sample
     if (
@@ -118,7 +122,10 @@ def attach(
         raise SystemExit("kit verifier summary is not a PASS for the current HEAD")
     emitter = _load("mip_repo_self_index", SCRIPTS / "mip_repo_self_index.py")
     telemetry = _load("mip_ldab_telemetry", SCRIPTS / "mip_ldab_telemetry.py")
-    root = root_debug_receipt(emitter, sha)
+    debug_diagnostic = emitter.run_debug_diagnostic(
+        emitter.resolve_debug_diagnostic(surface, emitter.ROOT)
+    )
+    root = root_debug_receipt(emitter, sha, debug_diagnostic)
     root_status = summary.get("root_self_index", {}).get("assessments", {}).get(LANE)
     if root_status != str(root["assessments"][LANE]["status"]).upper():
         raise SystemExit("root LDAB status differs from the kit verifier summary")

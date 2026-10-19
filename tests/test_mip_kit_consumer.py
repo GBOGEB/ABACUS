@@ -74,13 +74,24 @@ def _health(sha: str = SHA) -> dict:
     }
 
 
+def _debug(sha: str = SHA) -> dict:
+    return {
+        "diagnostic": "mip-debug-diagnostic",
+        "verification": "PASS",
+        "exact_sha": sha,
+        "checks": {"traceback_localizes": True, "validator_fails_closed": True},
+        "failed_checks": [],
+        "raw_receipt_retention": "transient_runner_only",
+    }
+
+
 def _root_receipt(sha: str = SHA) -> dict:
     return {
         "repo": {"sha": sha, "root": "/x", "branch": "b"},
         "generated_at": "now",
         "census": {"file_count": 3},
         "assessments": {
-            LANE: {"status": "green"},
+            LANE: {"status": "green", "evidence": _debug(sha)},
             "repo_self_assess_runners_mcp": {"status": "green"},
             "repo_self_assess_codz_health_selfheal": {
                 "status": "green",
@@ -124,7 +135,7 @@ def _diagnostic(sha: str = SHA, verification: str = "PASS") -> dict:
 # --- kit emitter -------------------------------------------------------------
 
 
-def test_emitter_classify_lanes_from_synthetic_tree():
+def test_emitter_classify_lanes_from_synthetic_tree(monkeypatch):
     files = [
         Path(".github/workflows/ci.yml"),
         Path("Dockerfile"),
@@ -136,7 +147,13 @@ def test_emitter_classify_lanes_from_synthetic_tree():
         Path(".codex/skills/demo/references/receipt-contract.md"),
     ]
     green = emitter.classify(files, {**_health(None), "delta": -1})
-    assert green[LANE]["status"] == "green"
+    # kit 1.1.0: debug-like file names alone are AMBER; GREEN needs the
+    # executed diagnostic bound to HEAD.
+    assert green[LANE]["status"] == "amber"
+    monkeypatch.setattr(emitter, "run_git", lambda args: SHA)
+    proven = emitter.classify(files, None, _debug(SHA))
+    assert proven[LANE]["status"] == "green"
+    monkeypatch.undo()
     assert green["repo_self_assess_runners_mcp"]["docker_count"] == 1
     assert green["repo_self_produce"]["complete_skill_paths"] == [".codex/skills/demo"]
     health = green["repo_self_assess_codz_health_selfheal"]
@@ -186,7 +203,8 @@ def test_emitter_main_on_minimal_tree(tmp_path: Path, monkeypatch, capsys):
     assert emitter.main() == 0
     receipt = json.loads(out.read_text(encoding="utf-8"))
     assert receipt["census"]["file_count"] == 2
-    assert receipt["assessments"][LANE]["status"] == "green"
+    # No diagnostic in the synthetic tree: signals only, so AMBER.
+    assert receipt["assessments"][LANE]["status"] == "amber"
     assert f"Wrote {Path('out') / 'receipt.json'}" in capsys.readouterr().out
 
     outside = tmp_path.parent / f"{tmp_path.name}-outside.json"
@@ -383,9 +401,9 @@ def test_attach_fails_closed_on_inventory_mismatch(tmp_path, monkeypatch):
     real_classify = emitter.classify
     calls = []
 
-    def classify(files, probe):
+    def classify(files, probe, diagnostic=None):
         calls.append(1)
-        result = real_classify(files, probe)
+        result = real_classify(files, probe, diagnostic)
         if len(calls) == 2:
             result[LANE]["sample_paths"] = result[LANE]["sample_paths"][:1]
         return result
@@ -412,7 +430,7 @@ def test_attach_main_adds_ldab_block(tmp_path: Path, monkeypatch, capsys):
             {
                 "verification": "PASS",
                 "head_sha": SHA,
-                "root_self_index": {"assessments": {LANE: "GREEN"}},
+                "root_self_index": {"assessments": {LANE: "AMBER"}},
             }
         ),
         encoding="utf-8",
