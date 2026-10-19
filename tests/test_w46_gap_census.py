@@ -1,8 +1,7 @@
 """Fail-closed synthetic negative/reverse tests for disjoint gap census."""
 from __future__ import annotations
-import copy
 import pytest
-from w46_gap_census import family, rollup
+from tools.recovery.w46_gap_census import family, rollup
 
 SHA = 'a' * 40
 
