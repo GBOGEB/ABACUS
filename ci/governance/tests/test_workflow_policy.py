@@ -60,6 +60,34 @@ class WorkflowPolicyTests(unittest.TestCase):
         self.assertEqual(0, self.policy["quality_gates"]["allow_unclassified"])
         self.assertFalse(self.policy["quality_gates"]["allow_multiple_rule_matches"])
 
+    def test_g3f_new_source_owned_workflows_are_explicit_and_read_only(self):
+        """Eight new owners cannot be silently absorbed by broad patterns."""
+        expected = {
+            "cbd-w38-route-yield.yml": "runtime_governance",
+            "cbd-w38-source-branch.yml": "statistics",
+            "code-purple-hosted-operator.yml": "automation",
+            "code-purple-w40-binary-penetration.yml": "specialised",
+            "code-purple-w42-remaining-arcs.yml": "specialised",
+            "code-purple-w43-matched-proof.yml": "statistics",
+            "code-purple-w44-matched-proof.yml": "statistics",
+            "mcl-roundtrip-hub-qa.yml": "bridge_federation",
+        }
+        for filename, cluster in expected.items():
+            with self.subTest(filename=filename):
+                rule, matches = MODULE.classify(filename, self.policy)
+                self.assertEqual([rule], [self.policy["rules"][matches[0]]])
+                self.assertEqual(1, len(matches), "ambiguous ownership")
+                self.assertEqual(rule["pattern"], "^" + filename.replace(".", r"\.") + "$")
+                self.assertEqual(cluster, rule["cluster"])
+                self.assertEqual("pr_domain", rule["lifecycle"])
+                self.assertEqual("keep", rule["disposition"])
+                wf = (ROOT / ".github/workflows" / filename).read_text(encoding="utf-8")
+                self.assertIn("  pull_request:", wf)
+                self.assertIn("permissions:\n  contents: read", wf)
+                self.assertNotIn(": write", wf)
+        self.assertEqual(0, self.policy["quality_gates"]["allow_unclassified"])
+        self.assertFalse(self.policy["quality_gates"]["allow_multiple_rule_matches"])
+
     def test_w26_matched_coverage_has_unique_statistics_owner(self):
         rule, matches = MODULE.classify("w26-testpilot-matched-coverage.yml", self.policy)
         self.assertEqual(1, len(matches))
