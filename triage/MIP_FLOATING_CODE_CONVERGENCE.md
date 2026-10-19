@@ -67,6 +67,7 @@ workflow, dependency, producer, artifact, consumer, contract,
 test, owner, source SHA and receipt.
 
 Edge types:
+
 - HARD_PRECEDES (verified blocker -> dependent)
 - DECLARED_LINK (not proof of execution)
 - STATIC_IMPORT, DYNAMIC_OBSERVED, ARTIFACT_CONSUMER
@@ -81,9 +82,11 @@ Graph cycles, dangling nodes and contradictory authorities are RED.
 
 A controlling release gate exerts reverse pressure on its verified
 upstream prerequisites. Distinguish:
+
 - Immediate unlock: action is the last missing prerequisite.
 - Partial unlock: action removes one of several blockers.
 - Downstream leverage: action benefits more than one distinct gate.
+
 Do not double-count a shared gate under multiple ancestors.
 Never let a soft hypothesis override a hard dependency.
 
@@ -136,6 +139,7 @@ Preserve nondominated alternatives rather than overfit one score.
 ## 6. Telemetry: three clocks and an immutable N+2 ledger
 
 Track separately:
+
 - State clock: ordered pulse N, N+1 and N+2.
 - Wall clock: queue, execution, review and elapsed seconds.
 - Version clock: exact source HEAD, test tree and receipt identity.
@@ -153,6 +157,7 @@ do NOT retroactively edit the N+1 forecast.
 Then predict N+2 and N+3 from a versioned updated estimator.
 
 Priority metrics:
+
 - Covered / eligible on matched source and instrumentation.
 - New executed behavioral opportunities; branch/statement split.
 - Incubator dispositions and unresolved candidate cohort.
@@ -169,6 +174,7 @@ performance. Validate assumptions before PCA or BT fitting.
 ## 7. Disjoint workers, DAG scheduler and admission firewall
 
 Reuse, do not replace:
+
 - scripts/cbd_recurse_fanout_w48.py (bounded DAG, path leases)
 - MIP/EVIDENCE_TO_ADMISSION_OBSERVATORY/elastic_wave_governor.py
 - runtime/execution/dependency_spine_readonly_selector.py
@@ -227,9 +233,11 @@ Score realised closures per cost and error retrospectively;
 do not claim one policy superior from synthetic examples.
 
 Expected next waves:
+
 - N+1: repair Markdown first RED; mature evidence joins.
 - N+2: compare graph/consumer findings, exercise focused tests.
 - N+3: evaluate disjoint returns and prioritize actual bottleneck.
+
 These are forecasts, NOT observed passes or authorizations.
 
 ## 10. Release and evidence boundary
