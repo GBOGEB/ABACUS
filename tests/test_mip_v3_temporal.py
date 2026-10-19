@@ -17,6 +17,7 @@ SPEC.loader.exec_module(mip)
 def pulse(index, covered=10, **overrides):
     obj = {
         "schema": mip.SCHEMA,
+        "repository": "GBOGEB/ABACUS",
         "pulse_index": index,
         "head_sha": f"{index + 1:040x}",
         "cohort_sha256": "a" * 64,
