@@ -31,3 +31,10 @@ repos:
         pass_filenames: false
         files: ^tools/mip2/.*\.py$
         stages: [pre-commit]
+      - id: abacus-floating-staging-testflight
+        name: ABACUS floating reconnection staged regression
+        entry: python -m unittest -q tests.test_floating_testflight
+        language: system
+        pass_filenames: false
+        files: ^(tools/triage/(floating_testflight|floating_evidence_join|mip_pulse_rollup)\\.py|tests/test_(floating_testflight|floating_evidence_join|mip_pulse_rollup)\\.py|scripts/coverage_dab_census\\.py|\\.github/workflows/floating-reconnection-testflight\\.yml)$
+        stages: [pre-commit]
