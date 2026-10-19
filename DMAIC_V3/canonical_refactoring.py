@@ -156,7 +156,8 @@ class CanonicalDocumentRefactorer:
     def _generate_doc_id(self, doc_path: Path) -> str:
         """Generate unique document ID"""
         rel_path = doc_path.relative_to(self.workspace_root)
-        return hashlib.md5(str(rel_path).encode()).hexdigest()[:12]
+        # Legacy registry key only; content integrity uses SHA-256 below.
+        return hashlib.md5(str(rel_path).encode(), usedforsecurity=False).hexdigest()[:12]
 
     def _calculate_content_hash(self, doc_path: Path) -> str:
         """Calculate content hash for versioning"""
