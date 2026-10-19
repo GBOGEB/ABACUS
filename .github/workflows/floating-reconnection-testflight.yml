@@ -61,7 +61,7 @@ jobs:
         run: |
           python -m pip install \
             pytest==9.1.1 pytest-cov==5.0.0 coverage==7.16.2 \
-            defusedxml==0.7.1 pre-commit==4.3.0 PyYAML==6.0.3
+            defusedxml==0.7.1 pre-commit==4.3.0 PyYAML==6.0.3 numpy==2.2.6
           mkdir -p test_reports/floating/history
           python -m pip freeze > test_reports/floating/toolchain.txt
 
@@ -112,7 +112,7 @@ jobs:
                   item = json.loads(file.read_text())
                   if (item.get("schema") == OBS_SCHEMA
                       and item.get("head_sha") == os.environ["EXACT_HEAD"]
-                      and item.get("run_id") == int(file.parts[-3])):
+                      and item.get("run_id") == int(file.relative_to(root).parts[0])):
                       valid.append((item["pulse"], item))
               except (ValueError, TypeError, IndexError, KeyError):
                   pass
@@ -136,7 +136,7 @@ jobs:
       - name: Publish frozen forecast separately
         uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9
         with:
-          name: floating-forecast-${{ github.sha }}-${{ github.run_id }}-${{ github.run_attempt }}
+          name: floating-forecast-${{ env.EXACT_HEAD }}-${{ github.run_id }}-${{ github.run_attempt }}
           path: test_reports/floating/forecast.json
           if-no-files-found: error
           retention-days: 30
@@ -225,7 +225,7 @@ jobs:
         id: publish
         uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9
         with:
-          name: floating-observation-${{ github.sha }}-${{ github.run_id }}-${{ github.run_attempt }}
+          name: floating-observation-${{ env.EXACT_HEAD }}-${{ github.run_id }}-${{ github.run_attempt }}
           path: |
             test_reports/floating/observation.json
             test_reports/floating/control.json
