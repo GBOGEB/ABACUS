@@ -114,10 +114,14 @@ def forecast(head: str, pulse: int, selection: str, prior: dict | None = None,
                             ("branches", "branch_fraction")):
             row = coverage.get(family) or {}
             previous[key] = fraction(row.get("covered"), row.get("eligible"))
-        prior_identity = {"head_sha": prior.get("head_sha"),
-                          "observed_at": prior.get("observed_at"),
-                          "run_id": prior.get("run_id"),
-                          "run_attempt": prior.get("run_attempt")}
+        prior_identity = {
+            "head_sha": prior.get("head_sha"),
+            "observed_at": prior.get("observed_at"),
+            "run_id": prior.get("run_id"),
+            "run_attempt": prior.get("run_attempt"),
+            "scope_sha256": coverage.get("scope_sha256"),
+            "config_sha256": coverage.get("config_sha256"),
+        }
     payload = {
         "schema": FORECAST_SCHEMA, "repository": "GBOGEB/ABACUS",
         "head_sha": head, "issued_at": issued,
@@ -252,9 +256,18 @@ def observe(frozen: dict, junit: dict | None, coverage: dict | None,
             (coverage or {}).get("branches", {}).get("covered"),
             (coverage or {}).get("branches", {}).get("eligible")),
     }
+    baseline = frozen.get("prior_observation") or {}
+    cov = coverage or {}
+    matched_baseline = bool(
+        baseline.get("scope_sha256")
+        and baseline.get("scope_sha256") == cov.get("scope_sha256")
+        and baseline.get("config_sha256")
+        and baseline.get("config_sha256") == cov.get("config_sha256")
+    )
     forecast_errors = {
         key: (round(actual[key] - predicted, 9)
-              if predicted is not None and actual[key] is not None else None)
+              if matched_baseline and predicted is not None
+              and actual[key] is not None else None)
         for key, predicted in frozen["prediction"].items()
     }
     return {
@@ -265,6 +278,10 @@ def observe(frozen: dict, junit: dict | None, coverage: dict | None,
         "forecast_seal_sha256": frozen["seal_sha256"],
         "forecast_issued_at": frozen["issued_at"],
         "forecast_errors_signed": forecast_errors,
+        "forecast_comparability": (
+            "MATCHED_PRIOR_SCOPE" if matched_baseline
+            else "WITHHELD_SCOPE_OR_PRIOR_MISMATCH"
+        ),
         "tests": counts, "test_state": state, "terminal": terminal,
         "coverage": coverage,
         "first_red_fingerprints": (junit or {}).get("failure_fingerprints"),
@@ -329,6 +346,9 @@ def control(observations: list[dict], target: float = 1.0) -> dict:
                 "native run/attempt identity reused")
     transitions = [compare(a, b) for a, b in zip(observations, observations[1:])]
     latest = observations[-1]
+    stable_selection = len({
+        item.get("selection_sha256") for item in observations[-4:]
+    }) == 1
     if not latest["terminal"] or latest["test_state"] == "RED":
         state = "RESTART_FIRST_RED"
     elif transitions and not transitions[-1]["population_comparable"]:
@@ -340,6 +360,8 @@ def control(observations: list[dict], target: float = 1.0) -> dict:
     elif not confirmed or len(transitions) < 3 or not all(
             t["population_comparable"] for t in transitions[-3:]):
         state = "CONTINUE_MEASUREMENT"
+    elif not stable_selection:
+        state = "REBASELINE_TEST_SELECTION"
     else:
         latest_cov = latest["coverage"]
         saturated = all(fraction(latest_cov[part]["covered"],
@@ -361,6 +383,7 @@ def control(observations: list[dict], target: float = 1.0) -> dict:
         "transitions": transitions, "latest_sha": latest["head_sha"],
         "native_identities_structurally_present": confirmed,
         "native_identities_independently_verified": False,
+        "test_selection_stable": stable_selection,
         "phase_two_authorized": False,
         "restart_on": ["new attributable first red", "new source SHA",
                        "population or instrumentor drift",
@@ -384,7 +407,15 @@ def markdown_review(forecast_data: dict, observed: dict | None,
     if observed:
         tests = observed.get("tests") or {}
         cov = observed.get("coverage") or {}
+        predicted = forecast_data.get("prediction") or {}
+        errors = observed.get("forecast_errors_signed") or {}
         rows.extend([
+            f"| Forecast comparability | "
+            f"{observed.get('forecast_comparability')} |",
+            f"| Predicted test fraction | "
+            f"{predicted.get('test_pass_fraction')} |",
+            f"| Prediction signed error | "
+            f"{errors.get('test_pass_fraction')} |",
             f"| Test state | {observed['test_state']} |",
             f"| Tests executed / pass / fail / error / skip | "
             f"{tests.get('executed', 'UNKNOWN')} / {tests.get('passed', 'UNKNOWN')} / "
