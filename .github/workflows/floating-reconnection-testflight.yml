@@ -13,6 +13,8 @@ on:
       - 'tests/test_floating_testflight.py'
       - 'tests/test_floating_evidence_join.py'
       - 'tests/test_mip_pulse_rollup.py'
+      - 'tests/test_mip_v3_frontier.py'
+      - 'tests/test_mip_v3_temporal.py'
       - 'tools/triage/test_floating_anchor_census.py'
       - '.pre-commit-config.yaml'
       - 'scripts/testpilot.ps1'
@@ -182,6 +184,8 @@ jobs:
             tests/test_mip_pulse_rollup.py \
             tests/test_floating_testflight.py \
             tools/triage/test_floating_anchor_census.py \
+            tests/test_mip_v3_frontier.py \
+            tests/test_mip_v3_temporal.py \
             --cov=scripts.coverage_dab_census \
             --cov=tools/triage \
             --cov-branch \
@@ -206,6 +210,8 @@ jobs:
               "tools/triage/floating_evidence_join.py",
               "tools/triage/floating_testflight.py",
               "tools/triage/mip_pulse_rollup.py",
+              "tools/triage/mip_v3_frontier.py",
+              "tools/triage/mip_v3_temporal.py",
           }
           if source.exists():
               coverage = json.loads(source.read_text())
