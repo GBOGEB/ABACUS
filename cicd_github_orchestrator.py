@@ -334,7 +334,7 @@ class CICDGitHubOrchestrator:
                 timeout=30
             )
 
-            lines = result.stdout.strip().split('\n') if result.stdout.strip() else []
+            lines = result.stdout.splitlines()
 
             return {
                 "has_changes": len(lines) > 0,
