@@ -31,7 +31,7 @@ class CohortUnionTests(unittest.TestCase):
         expected = [
             "matplotlib>=3.7.5,<3.8.0; python_version < '3.9'",
             "matplotlib>=3.9.4,<3.10.0; python_version >= '3.9' and python_version < '3.10'",
-            "matplotlib>=3.10.8,<3.11.0; python_version >= '3.10' and python_version < '3.11'",
+            "matplotlib>=3.10.9,<3.11.0; python_version >= '3.10' and python_version < '3.11'",
             "matplotlib>=3.11.2,<4.0.0; python_version >= '3.11'",
         ]
 
