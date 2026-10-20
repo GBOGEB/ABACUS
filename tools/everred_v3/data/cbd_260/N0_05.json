@@ -1,0 +1,441 @@
+{
+  "schema": "abacus.everred.cbd.first_page_pr_failures.v1",
+  "repository": "GBOGEB/ABACUS",
+  "main_sha_at_observation": "54da377cf82a358ac97903ecde0270c975b8fcc1",
+  "observation_date_utc": "2026-10-16",
+  "cohort": "N0-5",
+  "scope": "PR_TRIGGERED_FIRST_PAGE_ASSOCIATION",
+  "run_attempts_covered": null,
+  "job_logs_read": false,
+  "authority_transfer": false,
+  "security_waiver": false,
+  "merge_admission": "HOLD",
+  "rows": [
+    {
+      "pr": 2025,
+      "state": "open",
+      "base": "main",
+      "head_sha": "4d8240082f532c13d5cfb240747b04caed13e5bf",
+      "updated_at": "2026-10-15T18:19:40Z",
+      "counts": {
+        "success": 19,
+        "failure": 5,
+        "cancelled": 0,
+        "nonterminal": 0
+      },
+      "failed_runs": [
+        {
+          "run_id": 38774568187,
+          "workflow": "CI Workflow Governance",
+          "workflow_id": 345346170,
+          "run_attempt": null,
+          "first_red_job": null,
+          "first_red_step": null,
+          "root_id": null
+        },
+        {
+          "run_id": 38774568139,
+          "workflow": "Validate Docs (Markdown/YAML/JSON)",
+          "workflow_id": 207346550,
+          "run_attempt": null,
+          "first_red_job": null,
+          "first_red_step": null,
+          "root_id": null
+        },
+        {
+          "run_id": 38774568186,
+          "workflow": "CI/CD Test Suite",
+          "workflow_id": 293888671,
+          "run_attempt": null,
+          "first_red_job": null,
+          "first_red_step": null,
+          "root_id": null
+        },
+        {
+          "run_id": 38774568349,
+          "workflow": "ABACUS v032 - CI/CD Pipeline",
+          "workflow_id": 207346559,
+          "run_attempt": null,
+          "first_red_job": null,
+          "first_red_step": null,
+          "root_id": null
+        },
+        {
+          "run_id": 38774567994,
+          "workflow": "CI - ABACUS Matrix",
+          "workflow_id": 208410566,
+          "run_attempt": null,
+          "first_red_job": null,
+          "first_red_step": null,
+          "root_id": null
+        }
+      ]
+    },
+    {
+      "pr": 2024,
+      "state": "open",
+      "base": "main",
+      "head_sha": "4738f8e2ebcb76fce189bda27999884d7b533270",
+      "updated_at": "2026-10-15T23:59:28Z",
+      "counts": {
+        "success": 25,
+        "failure": 2,
+        "cancelled": 1,
+        "nonterminal": 0
+      },
+      "failed_runs": [
+        {
+          "run_id": 38825947283,
+          "workflow": "CI Workflow Governance",
+          "workflow_id": 345346170,
+          "run_attempt": null,
+          "first_red_job": null,
+          "first_red_step": null,
+          "root_id": null
+        },
+        {
+          "run_id": 38825947317,
+          "workflow": "CI/CD Test Suite",
+          "workflow_id": 293888671,
+          "run_attempt": null,
+          "first_red_job": null,
+          "first_red_step": null,
+          "root_id": null
+        }
+      ]
+    },
+    {
+      "pr": 2023,
+      "state": "open",
+      "base": "main",
+      "head_sha": "6af3508667fdcb849c0b2f8e0cdaeb4cfdfa6ae4",
+      "updated_at": "2026-10-16T11:35:27Z",
+      "counts": {
+        "success": 14,
+        "failure": 1,
+        "cancelled": 0,
+        "nonterminal": 0
+      },
+      "failed_runs": [
+        {
+          "run_id": 38767754724,
+          "workflow": "ABACUS v032 - CI/CD Pipeline",
+          "workflow_id": 207346559,
+          "run_attempt": null,
+          "first_red_job": null,
+          "first_red_step": null,
+          "root_id": null
+        }
+      ]
+    },
+    {
+      "pr": 2021,
+      "state": "open",
+      "base": "main",
+      "head_sha": "72419f92c3d0f141d530b481bdc640505d3e9e0b",
+      "updated_at": "2026-10-15T15:05:01Z",
+      "counts": {
+        "success": 50,
+        "failure": 12,
+        "cancelled": 1,
+        "nonterminal": 4
+      },
+      "failed_runs": [
+        {
+          "run_id": 38749835666,
+          "workflow": "DMAIC V3 Test Suite - Continuous Integration",
+          "workflow_id": 294079627,
+          "run_attempt": null,
+          "first_red_job": null,
+          "first_red_step": null,
+          "root_id": null
+        },
+        {
+          "run_id": 38749835692,
+          "workflow": "CI/CD Test Suite",
+          "workflow_id": 293888671,
+          "run_attempt": null,
+          "first_red_job": null,
+          "first_red_step": null,
+          "root_id": null
+        },
+        {
+          "run_id": 38749836163,
+          "workflow": "EVERRED V3 Governed Control Plane",
+          "workflow_id": 384182002,
+          "run_attempt": null,
+          "first_red_job": null,
+          "first_red_step": null,
+          "root_id": null
+        },
+        {
+          "run_id": 38749835653,
+          "workflow": "W105 QPS B1-B2 MIP Probe",
+          "workflow_id": 354619544,
+          "run_attempt": null,
+          "first_red_job": null,
+          "first_red_step": null,
+          "root_id": null
+        },
+        {
+          "run_id": 38749835017,
+          "workflow": "ABACUS v032 - CI/CD Pipeline",
+          "workflow_id": 207346559,
+          "run_attempt": null,
+          "first_red_job": null,
+          "first_red_step": null,
+          "root_id": null
+        },
+        {
+          "run_id": 38749835226,
+          "workflow": "DMAIC V3 Enterprise CI",
+          "workflow_id": 207344154,
+          "run_attempt": null,
+          "first_red_job": null,
+          "first_red_step": null,
+          "root_id": null
+        },
+        {
+          "run_id": 38749835239,
+          "workflow": "DMAIC V3 Bridge Integration - Test System",
+          "workflow_id": 207346555,
+          "run_attempt": null,
+          "first_red_job": null,
+          "first_red_step": null,
+          "root_id": null
+        },
+        {
+          "run_id": 38749835175,
+          "workflow": "CI Workflow Governance",
+          "workflow_id": 345346170,
+          "run_attempt": null,
+          "first_red_job": null,
+          "first_red_step": null,
+          "root_id": null
+        },
+        {
+          "run_id": 38749835455,
+          "workflow": "CODE PURPLE SUT GUI Contract",
+          "workflow_id": 384353596,
+          "run_attempt": null,
+          "first_red_job": null,
+          "first_red_step": null,
+          "root_id": null
+        },
+        {
+          "run_id": 38749835381,
+          "workflow": "MIP QPS External Probe",
+          "workflow_id": 354619316,
+          "run_attempt": null,
+          "first_red_job": null,
+          "first_red_step": null,
+          "root_id": null
+        },
+        {
+          "run_id": 38749835295,
+          "workflow": "a10-guard",
+          "workflow_id": 375321860,
+          "run_attempt": null,
+          "first_red_job": null,
+          "first_red_step": null,
+          "root_id": null
+        },
+        {
+          "run_id": 38749835380,
+          "workflow": "CI - ABACUS Matrix",
+          "workflow_id": 208410566,
+          "run_attempt": null,
+          "first_red_job": null,
+          "first_red_step": null,
+          "root_id": null
+        }
+      ]
+    },
+    {
+      "pr": 2020,
+      "state": "open",
+      "base": "main",
+      "head_sha": "1bb83a1db9cdc1dbbdb33747664ad293596760e0",
+      "updated_at": "2026-10-15T15:04:10Z",
+      "counts": {
+        "success": 17,
+        "failure": 4,
+        "cancelled": 1,
+        "nonterminal": 0
+      },
+      "failed_runs": [
+        {
+          "run_id": 38750152897,
+          "workflow": "CI - ABACUS Matrix",
+          "workflow_id": 208410566,
+          "run_attempt": null,
+          "first_red_job": null,
+          "first_red_step": null,
+          "root_id": null
+        },
+        {
+          "run_id": 38750152777,
+          "workflow": "ABACUS v032 - CI/CD Pipeline",
+          "workflow_id": 207346559,
+          "run_attempt": null,
+          "first_red_job": null,
+          "first_red_step": null,
+          "root_id": null
+        },
+        {
+          "run_id": 38750153147,
+          "workflow": "DMAIC V3 Test Suite - Continuous Integration",
+          "workflow_id": 294079627,
+          "run_attempt": null,
+          "first_red_job": null,
+          "first_red_step": null,
+          "root_id": null
+        },
+        {
+          "run_id": 38750152903,
+          "workflow": "DMAIC V3 Enterprise CI",
+          "workflow_id": 207344154,
+          "run_attempt": null,
+          "first_red_job": null,
+          "first_red_step": null,
+          "root_id": null
+        }
+      ]
+    },
+    {
+      "pr": 2015,
+      "state": "open",
+      "base": "main",
+      "head_sha": "35aa169899f836cb020da85396530acd3524257a",
+      "updated_at": "2026-10-15T14:51:13Z",
+      "counts": {
+        "success": 20,
+        "failure": 1,
+        "cancelled": 1,
+        "nonterminal": 0
+      },
+      "failed_runs": [
+        {
+          "run_id": 38748553636,
+          "workflow": "DMAIC V3 Enterprise CI",
+          "workflow_id": 207344154,
+          "run_attempt": null,
+          "first_red_job": null,
+          "first_red_step": null,
+          "root_id": null
+        }
+      ]
+    },
+    {
+      "pr": 2010,
+      "state": "open",
+      "base": "main",
+      "head_sha": "feb17eb836e47599f407c87c489f24f4a7b335ab",
+      "updated_at": "2026-10-16T08:21:50Z",
+      "counts": {
+        "success": 43,
+        "failure": 7,
+        "cancelled": 0,
+        "nonterminal": 0
+      },
+      "failed_runs": [
+        {
+          "run_id": 38871264474,
+          "workflow": "a10-guard",
+          "workflow_id": 375321860,
+          "run_attempt": null,
+          "first_red_job": null,
+          "first_red_step": null,
+          "root_id": null
+        },
+        {
+          "run_id": 38871264506,
+          "workflow": "CI/CD Test Suite",
+          "workflow_id": 293888671,
+          "run_attempt": null,
+          "first_red_job": null,
+          "first_red_step": null,
+          "root_id": null
+        },
+        {
+          "run_id": 38871264130,
+          "workflow": "CI - ABACUS Matrix",
+          "workflow_id": 208410566,
+          "run_attempt": null,
+          "first_red_job": null,
+          "first_red_step": null,
+          "root_id": null
+        },
+        {
+          "run_id": 38871264413,
+          "workflow": "Validate Docs (Markdown/YAML/JSON)",
+          "workflow_id": 207346550,
+          "run_attempt": null,
+          "first_red_job": null,
+          "first_red_step": null,
+          "root_id": null
+        },
+        {
+          "run_id": 38871264066,
+          "workflow": "ABACUS v032 - CI/CD Pipeline",
+          "workflow_id": 207346559,
+          "run_attempt": null,
+          "first_red_job": null,
+          "first_red_step": null,
+          "root_id": null
+        },
+        {
+          "run_id": 38871263999,
+          "workflow": "ABACUS v032 - CI/CD Pipeline",
+          "workflow_id": 207346559,
+          "run_attempt": null,
+          "first_red_job": null,
+          "first_red_step": null,
+          "root_id": null
+        },
+        {
+          "run_id": 38871263923,
+          "workflow": "CI/CD Test Suite",
+          "workflow_id": 293888671,
+          "run_attempt": null,
+          "first_red_job": null,
+          "first_red_step": null,
+          "root_id": null
+        }
+      ]
+    },
+    {
+      "pr": 2009,
+      "state": "open",
+      "base": "main",
+      "head_sha": "9490596948c72b89630b488b6d33ab477e457f94",
+      "updated_at": "2026-10-15T15:01:44Z",
+      "counts": {
+        "success": 18,
+        "failure": 2,
+        "cancelled": 1,
+        "nonterminal": 0
+      },
+      "failed_runs": [
+        {
+          "run_id": 38749690687,
+          "workflow": "ABACUS v032 - CI/CD Pipeline",
+          "workflow_id": 207346559,
+          "run_attempt": null,
+          "first_red_job": null,
+          "first_red_step": null,
+          "root_id": null
+        },
+        {
+          "run_id": 38749690742,
+          "workflow": "CI/CD Test Suite",
+          "workflow_id": 293888671,
+          "run_attempt": null,
+          "first_red_job": null,
+          "first_red_step": null,
+          "root_id": null
+        }
+      ]
+    }
+  ]
+}

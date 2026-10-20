@@ -1,0 +1,369 @@
+{
+  "schema": "abacus.everred.cbd.first_page_pr_failures.v1",
+  "repository": "GBOGEB/ABACUS",
+  "main_sha_at_observation": "54da377cf82a358ac97903ecde0270c975b8fcc1",
+  "observation_date_utc": "2026-10-16",
+  "cohort": "N0-3",
+  "scope": "PR_TRIGGERED_FIRST_PAGE_ASSOCIATION",
+  "run_attempts_covered": null,
+  "job_logs_read": false,
+  "authority_transfer": false,
+  "security_waiver": false,
+  "merge_admission": "HOLD",
+  "rows": [
+    {
+      "pr": 2051,
+      "state": "open",
+      "base": "test/dmaic-runtime-coverage-c2-20261016",
+      "head_sha": "19c92d74a489805f06476857bfecb91dd22cef77",
+      "updated_at": "2026-10-16T12:55:58Z",
+      "counts": {
+        "success": 24,
+        "failure": 1,
+        "cancelled": 0,
+        "nonterminal": 0
+      },
+      "failed_runs": [
+        {
+          "run_id": 38903708105,
+          "workflow": "CI/CD Test Suite",
+          "workflow_id": 293888671,
+          "run_attempt": null,
+          "first_red_job": null,
+          "first_red_step": null,
+          "root_id": null
+        }
+      ]
+    },
+    {
+      "pr": 2050,
+      "state": "open",
+      "base": "main",
+      "head_sha": "4b76467401bc040b4b315670e8faac93733e8b95",
+      "updated_at": "2026-10-16T08:35:48Z",
+      "counts": {
+        "success": 20,
+        "failure": 5,
+        "cancelled": 0,
+        "nonterminal": 0
+      },
+      "failed_runs": [
+        {
+          "run_id": 38871635630,
+          "workflow": "CI - ABACUS Matrix",
+          "workflow_id": 208410566,
+          "run_attempt": null,
+          "first_red_job": null,
+          "first_red_step": null,
+          "root_id": null
+        },
+        {
+          "run_id": 38871635592,
+          "workflow": "ABACUS v032 - CI/CD Pipeline",
+          "workflow_id": 207346559,
+          "run_attempt": null,
+          "first_red_job": null,
+          "first_red_step": null,
+          "root_id": null
+        },
+        {
+          "run_id": 38871635639,
+          "workflow": "DMAIC V3 Test Suite - Continuous Integration",
+          "workflow_id": 294079627,
+          "run_attempt": null,
+          "first_red_job": null,
+          "first_red_step": null,
+          "root_id": null
+        },
+        {
+          "run_id": 38871635667,
+          "workflow": "CI/CD Test Suite",
+          "workflow_id": 293888671,
+          "run_attempt": null,
+          "first_red_job": null,
+          "first_red_step": null,
+          "root_id": null
+        },
+        {
+          "run_id": 38871635664,
+          "workflow": "DMAIC V3 Enterprise CI",
+          "workflow_id": 207344154,
+          "run_attempt": null,
+          "first_red_job": null,
+          "first_red_step": null,
+          "root_id": null
+        }
+      ]
+    },
+    {
+      "pr": 2047,
+      "state": "open",
+      "base": "main",
+      "head_sha": "821e4508df4cad1b777e8b3b5f6663f4940a4130",
+      "updated_at": "2026-10-16T13:36:12Z",
+      "counts": {
+        "success": 18,
+        "failure": 5,
+        "cancelled": 0,
+        "nonterminal": 0
+      },
+      "failed_runs": [
+        {
+          "run_id": 38908374549,
+          "workflow": "CI Workflow Governance",
+          "workflow_id": 345346170,
+          "run_attempt": null,
+          "first_red_job": null,
+          "first_red_step": null,
+          "root_id": null
+        },
+        {
+          "run_id": 38908374416,
+          "workflow": "EVERRED V3 Governed Control Plane",
+          "workflow_id": 384182002,
+          "run_attempt": null,
+          "first_red_job": null,
+          "first_red_step": null,
+          "root_id": null
+        },
+        {
+          "run_id": 38908374434,
+          "workflow": "ABACUS v032 - CI/CD Pipeline",
+          "workflow_id": 207346559,
+          "run_attempt": null,
+          "first_red_job": null,
+          "first_red_step": null,
+          "root_id": null
+        },
+        {
+          "run_id": 38908374410,
+          "workflow": "CI - ABACUS Matrix",
+          "workflow_id": 208410566,
+          "run_attempt": null,
+          "first_red_job": null,
+          "first_red_step": null,
+          "root_id": null
+        },
+        {
+          "run_id": 38908375015,
+          "workflow": "CI/CD Test Suite",
+          "workflow_id": 293888671,
+          "run_attempt": null,
+          "first_red_job": null,
+          "first_red_step": null,
+          "root_id": null
+        }
+      ]
+    },
+    {
+      "pr": 2046,
+      "state": "open",
+      "base": "main",
+      "head_sha": "67ad1b653370d0245aacebe9c95364a8327fd977",
+      "updated_at": "2026-10-16T09:48:22Z",
+      "counts": {
+        "success": 26,
+        "failure": 2,
+        "cancelled": 1,
+        "nonterminal": 0
+      },
+      "failed_runs": [
+        {
+          "run_id": 38875239702,
+          "workflow": "CI Workflow Governance",
+          "workflow_id": 345346170,
+          "run_attempt": null,
+          "first_red_job": null,
+          "first_red_step": null,
+          "root_id": null
+        },
+        {
+          "run_id": 38875239684,
+          "workflow": "CI/CD Test Suite",
+          "workflow_id": 293888671,
+          "run_attempt": null,
+          "first_red_job": null,
+          "first_red_step": null,
+          "root_id": null
+        }
+      ]
+    },
+    {
+      "pr": 2045,
+      "state": "open",
+      "base": "main",
+      "head_sha": "4488618e5d8899033c173df4c95e819aa527abcb",
+      "updated_at": "2026-10-16T10:44:39Z",
+      "counts": {
+        "success": 25,
+        "failure": 2,
+        "cancelled": 1,
+        "nonterminal": 0
+      },
+      "failed_runs": [
+        {
+          "run_id": 38883440402,
+          "workflow": "CI Workflow Governance",
+          "workflow_id": 345346170,
+          "run_attempt": null,
+          "first_red_job": null,
+          "first_red_step": null,
+          "root_id": null
+        },
+        {
+          "run_id": 38883440335,
+          "workflow": "CI/CD Test Suite",
+          "workflow_id": 293888671,
+          "run_attempt": null,
+          "first_red_job": null,
+          "first_red_step": null,
+          "root_id": null
+        }
+      ]
+    },
+    {
+      "pr": 2041,
+      "state": "open",
+      "base": "main",
+      "head_sha": "60d2a5640c997fc916285580b6de8a3d86c27c38",
+      "updated_at": "2026-10-16T08:43:09Z",
+      "counts": {
+        "success": 20,
+        "failure": 3,
+        "cancelled": 1,
+        "nonterminal": 0
+      },
+      "failed_runs": [
+        {
+          "run_id": 38824989937,
+          "workflow": "a10-guard",
+          "workflow_id": 375321860,
+          "run_attempt": null,
+          "first_red_job": null,
+          "first_red_step": null,
+          "root_id": null
+        },
+        {
+          "run_id": 38824989941,
+          "workflow": "ABACUS v032 - CI/CD Pipeline",
+          "workflow_id": 207346559,
+          "run_attempt": null,
+          "first_red_job": null,
+          "first_red_step": null,
+          "root_id": null
+        },
+        {
+          "run_id": 38824989857,
+          "workflow": "CI/CD Test Suite",
+          "workflow_id": 293888671,
+          "run_attempt": null,
+          "first_red_job": null,
+          "first_red_step": null,
+          "root_id": null
+        }
+      ]
+    },
+    {
+      "pr": 2040,
+      "state": "open",
+      "base": "main",
+      "head_sha": "c26c462d8131fd34ba59be3dddc0c7a824fe5e69",
+      "updated_at": "2026-10-16T14:35:39Z",
+      "counts": {
+        "success": 18,
+        "failure": 4,
+        "cancelled": 0,
+        "nonterminal": 0
+      },
+      "failed_runs": [
+        {
+          "run_id": 38917004188,
+          "workflow": "CI - ABACUS Matrix",
+          "workflow_id": 208410566,
+          "run_attempt": null,
+          "first_red_job": null,
+          "first_red_step": null,
+          "root_id": null
+        },
+        {
+          "run_id": 38917004361,
+          "workflow": "CI Workflow Governance",
+          "workflow_id": 345346170,
+          "run_attempt": null,
+          "first_red_job": null,
+          "first_red_step": null,
+          "root_id": null
+        },
+        {
+          "run_id": 38917004391,
+          "workflow": "ABACUS v032 - CI/CD Pipeline",
+          "workflow_id": 207346559,
+          "run_attempt": null,
+          "first_red_job": null,
+          "first_red_step": null,
+          "root_id": null
+        },
+        {
+          "run_id": 38917004423,
+          "workflow": "CI/CD Test Suite",
+          "workflow_id": 293888671,
+          "run_attempt": null,
+          "first_red_job": null,
+          "first_red_step": null,
+          "root_id": null
+        }
+      ]
+    },
+    {
+      "pr": 2039,
+      "state": "open",
+      "base": "main",
+      "head_sha": "23ad4b42ed1fdd0848e451c5e6f4e73038704e88",
+      "updated_at": "2026-10-16T09:21:06Z",
+      "counts": {
+        "success": 14,
+        "failure": 4,
+        "cancelled": 0,
+        "nonterminal": 0
+      },
+      "failed_runs": [
+        {
+          "run_id": 38873689177,
+          "workflow": "CI - ABACUS Matrix",
+          "workflow_id": 208410566,
+          "run_attempt": null,
+          "first_red_job": null,
+          "first_red_step": null,
+          "root_id": null
+        },
+        {
+          "run_id": 38873689185,
+          "workflow": "CI Workflow Governance",
+          "workflow_id": 345346170,
+          "run_attempt": null,
+          "first_red_job": null,
+          "first_red_step": null,
+          "root_id": null
+        },
+        {
+          "run_id": 38873689308,
+          "workflow": "Bandit Disjoint Census",
+          "workflow_id": 383449629,
+          "run_attempt": null,
+          "first_red_job": null,
+          "first_red_step": null,
+          "root_id": null
+        },
+        {
+          "run_id": 38873689178,
+          "workflow": "ABACUS v032 - CI/CD Pipeline",
+          "workflow_id": 207346559,
+          "run_attempt": null,
+          "first_red_job": null,
+          "first_red_step": null,
+          "root_id": null
+        }
+      ]
+    }
+  ]
+}
