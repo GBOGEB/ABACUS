@@ -31,7 +31,7 @@ class CohortUnionTests(unittest.TestCase):
         expected = [
             "matplotlib>=3.7.5,<3.8.0; python_version < '3.9'",
             "matplotlib>=3.9.4,<3.10.0; python_version >= '3.9' and python_version < '3.10'",
-            "matplotlib>=3.10.8,<3.11.0; python_version >= '3.10' and python_version < '3.11'",
+            "matplotlib>=3.10.9,<3.11.0; python_version >= '3.10' and python_version < '3.11'",
             "matplotlib>=3.11.2,<4.0.0; python_version >= '3.11'",
         ]
 
@@ -249,14 +249,10 @@ class CohortUnionTests(unittest.TestCase):
             produce_cohorts([first, second])
 
     def test_manifest_conflicts_fail_closed(self):
+        # Use a complete and independently valid manifest population.
+        # A one-head subset fails validation before cross-source conflict.
         first = snapshots()[1]
-        # Frozen JSON has no manifests; create a controlled pair rather than
-        # treating absent metadata as a real upstream PR-head observation.
-        row = first["observations"][0]
-        first["sampled_pr_heads"] = [{
-            "pr": row["pr"], "sha": row["sha"],
-            "workflow_associations_seen": 3, "failed_associations_seen": 1,
-        }]
+        self.assertTrue(first.get("sampled_pr_heads"))
         second = copy.deepcopy(first)
         second["sampled_pr_heads"][0]["workflow_associations_seen"] += 1
         with self.assertRaisesRegex(ValueError, "conflicting sampled PR head manifest"):
