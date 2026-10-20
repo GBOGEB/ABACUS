@@ -334,14 +334,17 @@ class CICDGitHubOrchestrator:
                 timeout=30
             )
 
-            lines = result.stdout.splitlines()
+            # Porcelain v1's two XY status columns are significant:
+            # stripping the first line converts " M" into "M " and loses
+            # the unstaged-modification classification.
+            lines = [line for line in result.stdout.splitlines() if line]
 
             return {
                 "has_changes": len(lines) > 0,
-                "modified": [line[3:] for line in lines if line.startswith(' M')],
-                "added": [line[3:] for line in lines if line.startswith('A ')],
-                "deleted": [line[3:] for line in lines if line.startswith(' D')],
-                "untracked": [line[3:] for line in lines if line.startswith('??')]
+                "modified": [line[3:] for line in lines if "M" in line[:2]],
+                "added": [line[3:] for line in lines if "A" in line[:2]],
+                "deleted": [line[3:] for line in lines if "D" in line[:2]],
+                "untracked": [line[3:] for line in lines if line.startswith("??")],
             }
         except Exception as e:
             return {"error": str(e), "has_changes": False}

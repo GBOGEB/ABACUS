@@ -14,7 +14,6 @@ from pathlib import Path
 SHA = re.compile(r"[0-9a-f]{40}\Z")
 FP = re.compile(r"[0-9a-f]{64}\Z")
 SCHEMA = "abacus.bd.three-pulse.v1"
-FP = re.compile(r"[0-9a-f]{64}\Z")
 ROOT_ID = re.compile(r"(?:BD|CI)-[0-9a-f]{24}\Z")
 LANES = ("B2-source", "B3-subprocess", "B4-files-secrets", "B5-tests")
 
@@ -33,35 +32,6 @@ def _coverage(data):
             "native source/run/job/artifact proof before calculating movements"
         )
     return None
-
-
-def _validate_roots(roots, bandit, scope):
-    """Reconcile the canonical producer's disjoint Bandit root population."""
-    if not isinstance(roots, list):
-        raise ValueError("missing canonical roots")
-    ids = set()
-    bandit_roots = 0
-    for root in roots:
-        if not isinstance(root, dict):
-            raise ValueError("invalid canonical root")
-        rid = root.get("root_id")
-        kind = root.get("category")
-        if not isinstance(rid, str) or not rid or rid in ids:
-            raise ValueError("duplicate or invalid root IDs")
-        ids.add(rid)
-        if kind not in ("BANDIT", "CI"):
-            raise ValueError("invalid canonical root category")
-        observations = root.get("observations")
-        if (
-            not isinstance(observations, list)
-            or not observations
-            or any(not isinstance(obs, dict) for obs in observations)
-        ):
-            raise ValueError("unverified coverage: invalid denominator or config")
-        result[scope] = dict(
-            covered=k, eligible=d, config=row["config"], ratio_unverified=_ratio(k, d)
-        )
-    return result
 
 
 def _validate_root_census(roots, bandit_count, scope):

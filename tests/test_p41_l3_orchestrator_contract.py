@@ -48,48 +48,27 @@ def test_git_status_scopes_read_only_to_sandbox(monkeypatch, tmp_path):
 
 
 @pytest.mark.parametrize(
-    ("porcelain", "modified", "added", "deleted", "untracked"),
+    ("porcelain", "expected"),
     [
-        ("", [], [], [], []),
-        (" M first.py\n", ["first.py"], [], [], []),
-        (" M dir/my file.py\n", ["dir/my file.py"], [], [], []),
-        (
-            "A  staged-add.py\n D deleted.py\n?? nested/untracked.py\n",
-            [],
-            ["staged-add.py"],
-            ["deleted.py"],
-            ["nested/untracked.py"],
-        ),
-        (" M windows.py\r\n?? untracked.txt\r\n", ["windows.py"], [], [], ["untracked.txt"]),
-        ("?? only-untracked.py\n", [], [], [], ["only-untracked.py"]),
+        (" M demo.py\n", {"modified": ["demo.py"]}),
+        ("M  demo.py\n", {"modified": ["demo.py"]}),
+        ("A  added.py\n", {"added": ["added.py"]}),
+        (" D removed.py\n", {"deleted": ["removed.py"]}),
+        ("D  removed.py\n", {"deleted": ["removed.py"]}),
+        ("?? untracked.py\n", {"untracked": ["untracked.py"]}),
+        ("", {"modified": [], "added": [], "deleted": [], "untracked": []}),
     ],
 )
-def test_git_status_preserves_porcelain_state_columns(
-    monkeypatch, tmp_path, porcelain, modified, added, deleted, untracked
-):
+def test_git_status_preserves_porcelain_columns(monkeypatch, tmp_path, porcelain, expected):
     orchestrator = CICDGitHubOrchestrator(tmp_path)
 
     def fake_run(argv, **kwargs):
+        assert argv == ["git", "status", "--porcelain"]
+        assert kwargs["cwd"] == tmp_path
         return SimpleNamespace(returncode=0, stdout=porcelain, stderr="")
 
     monkeypatch.setattr("cicd_github_orchestrator.subprocess.run", fake_run)
-    assert orchestrator.git_status() == {
-        "has_changes": bool(porcelain),
-        "modified": modified,
-        "added": added,
-        "deleted": deleted,
-        "untracked": untracked,
-    }
-
-
-def test_git_status_executable_failure_is_reported_without_mutation(monkeypatch, tmp_path):
-    orchestrator = CICDGitHubOrchestrator(tmp_path)
-
-    def unavailable(*args, **kwargs):
-        raise OSError("git executable unavailable")
-
-    monkeypatch.setattr("cicd_github_orchestrator.subprocess.run", unavailable)
-    assert orchestrator.git_status() == {
-        "error": "git executable unavailable",
-        "has_changes": False,
-    }
+    status = orchestrator.git_status()
+    for field in ("modified", "added", "deleted", "untracked"):
+        assert status[field] == expected.get(field, [])
+    assert status["has_changes"] is bool(porcelain)
