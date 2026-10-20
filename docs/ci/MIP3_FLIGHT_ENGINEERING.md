@@ -121,7 +121,6 @@ MIP2 exact head 2f8de7b: 4/4 seeded tests PASS in 0.93 s, JUnit artifact
   and PCA readiness.
 - MIP3-10: method promotion and rollback by independent repository proof.
 
-
 ## 16 October 2026 — source-owned evidence-integrity hardening
 
 Canonical implementation and method registry remain in ABACUS PR #1988
@@ -216,7 +215,7 @@ fields UNKNOWN, never zero.
 
 Refresh PR #1988 exact head, terminal native MIP2 job and artifact
 bytes, changed-file coverage and first-reds. Compare impacted open
-#2046 (C2), #2045, #2040, #2047, #2033, #1995 and #1998 owners by
+PR #2046 (C2), #2045, #2040, #2047, #2033, #1995 and #1998 owners by
 changed paths and accepted receipts, not by PR count. Record new or
 retired comments separately from engineering-root closures. Preserve
 security, A10, governance, required-check enforcement and independent
@@ -236,11 +235,11 @@ resolution and native runner evidence remain separate obligations.
 | Spine | Input | Output | Evidence boundary |
 | --- | --- | --- | --- |
 | S0 | Exact source/base/previous SHAs | Bound cohort | JSON is a declaration |
-| S1 | Task DAG and dependencies | Cycle/authority check | Mutation descendants withheld |
-| S2 | Paths, pools, worker cap | Disjoint proposal batches | Lexical, not a launch |
-| S3 | Python/OS matrix | JUnit, run/job/attempt | Terminal native jobs required |
-| S4 | Coverage + artifact hashes | Matched receipt | Source and denominators bound |
-| S5 | Security, governance, review | HOLD or eligible | Independent owner decision |
+| S1 | Task DAG | Cycle/authority check | Mutations withheld |
+| S2 | Paths, cap | Disjoint batches | Lexical plan only |
+| S3 | OS/Python | JUnit + job IDs | Native jobs required |
+| S4 | Coverage/hashes | Matched receipt | Fixed source/denominator |
+| S5 | Owner gates | HOLD/eligible | Independent decision |
 
 ### Dependency DAG
 
@@ -258,13 +257,13 @@ flowchart LR
   H -- "Yes" --> J["Independent admission"]
 ```
 
-### SIPOC
+### SIPOC — W74 lease control
 
 | Supplier | Input | Process | Output | Consumer |
 | --- | --- | --- | --- | --- |
-| CENSUS / BD / LDAB | Root, path, exact SHA | Lease + DAG check | Read-only batches | Native CI |
-| GitHub jobs | OS/Python, run/job/attempt | Test and classify | JUnit + receipt | MIP / TODO |
-| Governance owner | Rules, security, review | Independent gates | HOLD or qualified | ABACUS owner |
+| CENSUS / BD | Root, SHA | DAG + leases | Read-only plan | CI |
+| Native jobs | OS, run/job | Test/classify | JUnit + receipt | MIP |
+| Owner | Rules/reviews | Verify gates | HOLD/eligible | ABACUS |
 
 **Worker economy:** fill unused slots with noncolliding tasks; serialize
 ancestor/child or Windows casefold aliases. Summed maximum *estimated*
