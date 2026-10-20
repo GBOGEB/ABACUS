@@ -49,7 +49,8 @@ def _positive(value, name):
 
 def _path(value):
     if (type(value) is not str or not value or value.startswith("/")
-            or "\\" in value or "\x00" in value or value.endswith("/")
+            or "\\" in value or ":" in value or value.endswith("/")
+            or any(ord(char) < 32 or ord(char) == 127 for char in value)
             or any(p in ("", ".", "..") for p in value.split("/"))):
         raise ValueError("unsafe or noncanonical relative path")
     return value
@@ -405,7 +406,8 @@ def compile_plan(payload):
             "id": task["id"], "kind": task["kind"], "priority": task["priority"],
             "required": task["required"], "mode": task["mode"],
             "needs": task["needs"], "axes": task["axes"],
-            "paths_intersect_changed": bool(set(task["paths"]) & set(changed)) if task["paths"] else None,
+            "paths_intersect_changed": any(_path_overlap(p, c) for p in task["paths"] for c in changed)
+            if task["paths"] else None,
             "previous": prior, "current": result, "transition": transition,
             "artifact_receipt_identity": receipt_identity,
             "decision": decision, "native_job_evidence": [
