@@ -2,6 +2,7 @@
 
 import copy
 import json
+import re
 import sys
 import unittest
 from unittest import mock
@@ -63,19 +64,31 @@ class CohortUnionTests(unittest.TestCase):
             '["git", "rev-parse", "HEAD"], text=True',
             "if actual_head != pull_head:",
         )
+        receipt_guard = re.compile(
+            r"if actual_head != pull_head:\n\s+raise SystemExit\(")
 
         def assert_bound(source):
+            # Exactly one occurrence per binding: a redundant duplicate would
+            # let a mutant that removes one copy pass undetected.
             for item in required:
-                self.assertIn(item, source)
+                self.assertEqual(source.count(item), 1, item)
+            self.assertEqual(len(receipt_guard.findall(source)), 1)
 
         assert_bound(workflow)
-        self.assertEqual(workflow.count(required[5]), 1)
-        with self.assertRaises(AssertionError):
-            assert_bound(workflow.replace(required[0], "ref: github.sha", 1))
-        with self.assertRaises(AssertionError):
-            assert_bound(workflow.replace(required[2], "echo skipped", 1))
-        with self.assertRaises(AssertionError):
-            assert_bound(workflow.replace(required[5], "if False:", 1))
+        # Every mutant removes the single required binding; each must fail.
+        mutants = (
+            workflow.replace(required[0], "ref: github.sha"),
+            workflow.replace(required[1], "persist-credentials: true"),
+            workflow.replace(required[2], "echo skipped"),
+            workflow.replace(required[3], "actual_head = pull_head  # ("),
+            workflow.replace(required[5], "if False:"),
+            receipt_guard.sub("if actual_head != pull_head:\n    print(", workflow),
+            workflow + "\n# " + required[5] + "\n",
+        )
+        for mutant in mutants:
+            self.assertNotEqual(mutant, workflow)
+            with self.assertRaises(AssertionError):
+                assert_bound(mutant)
 
     def test_frozen_three_cohort_source_denominators(self):
         result = produce_cohorts(snapshots())
@@ -285,10 +298,10 @@ class CohortUnionTests(unittest.TestCase):
             produce_cohorts([first, second])
 
     def test_manifest_conflicts_fail_closed(self):
-        # Use a complete and independently valid manifest population.
-        # A one-head subset fails validation before cross-source conflict.
         first = snapshots()[1]
-        self.assertTrue(first.get("sampled_pr_heads"))
+        # Preserve every source-declared head while forging a single
+        # conflicting numerator/denominator in the copied manifest.
+        self.assertEqual(len(first["sampled_pr_heads"]), 10)
         second = copy.deepcopy(first)
         second["sampled_pr_heads"][0]["workflow_associations_seen"] += 1
         with self.assertRaisesRegex(ValueError, "conflicting sampled PR head manifest"):
