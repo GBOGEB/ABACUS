@@ -30,6 +30,11 @@ jobs:
         with:
           ref: ${{ github.event.pull_request.head.sha || github.sha }}
           persist-credentials: false
+      - name: Verify exact pull-head checkout before tests
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$EXPECTED_PULL_HEAD"
       - name: Setup Python
         uses: actions/setup-python@v7
         with:
