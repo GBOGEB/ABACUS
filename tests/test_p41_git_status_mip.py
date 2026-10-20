@@ -1,11 +1,13 @@
 """P41 MIP: parser and fail-closed no-mutation regressions."""
 
 import subprocess
+import sys
 from types import SimpleNamespace
 
 import pytest
 
 from cicd_github_orchestrator import CICDGitHubOrchestrator
+import cicd_github_orchestrator as cli
 
 
 @pytest.mark.parametrize(
@@ -122,3 +124,105 @@ def test_bad_status_blocks_pipeline_before_any_refactoring(monkeypatch, tmp_path
     result = target.execute_full_pipeline(dry_run=False)
     assert result["status"] == "BLOCKED_GIT_STATUS"
     assert result["stages"]["git_status_before"]["has_changes"] is None
+
+
+@pytest.mark.parametrize(
+    ("status", "dry_run"),
+    [
+        ({}, False),
+        ({"has_changes": None}, False),
+        ({"has_changes": ""}, False),
+        ({"has_changes": 0}, False),
+        ({"has_changes": 1}, True),
+        ({"has_changes": []}, True),
+        ({"has_changes": {}}, True),
+        ({"has_changes": "false"}, True),
+        ({"has_changes": False, "error": ""}, False),
+        ({"has_changes": True, "error": "Git was not authorized"}, True),
+    ],
+)
+def test_unknown_or_inconsistent_scan_blocks_before_mutation(
+    monkeypatch, tmp_path, status, dry_run
+):
+    target = CICDGitHubOrchestrator(tmp_path)
+    monkeypatch.setattr(target, "verify_git_tools", lambda: {})
+    sample = SimpleNamespace(
+        total_files=0, python_files=0, total_lines=0,
+        duplicate_files=0, import_issues=0,
+    )
+    monkeypatch.setattr(target, "collect_metrics", lambda _label: sample)
+    monkeypatch.setattr(target, "save_metrics", lambda *args: None)
+    monkeypatch.setattr(target, "git_status", lambda: status)
+
+    def forbidden(*_args, **_kwargs):
+        pytest.fail("Untrusted status reached a mutating/planning stage")
+
+    for stage in (
+        "analyze_refactoring_needs", "execute_refactoring",
+        "git_commit_push", "git_pull", "compare_metrics",
+        "validate_post_roundtrip",
+    ):
+        monkeypatch.setattr(target, stage, forbidden)
+    result = target.execute_full_pipeline(dry_run=dry_run)
+    assert result["status"] == "BLOCKED_GIT_STATUS"
+    assert result["stages"]["git_status_before"] == status
+    assert "refactoring_plan" not in result["stages"]
+
+
+@pytest.mark.parametrize("dry_run", [False, True])
+@pytest.mark.parametrize(
+    "terminal_status", ["BLOCKED_GIT_STATUS", "DENIED", "UNKNOWN"]
+)
+def test_cli_rejects_explicit_non_success_statuses(
+    monkeypatch, tmp_path, capsys, dry_run, terminal_status
+):
+    argv = ["orchestrator", "--workspace", str(tmp_path)]
+    if dry_run:
+        argv.append("--dry-run")
+    monkeypatch.setattr(sys, "argv", argv)
+    seen = []
+
+    def fake_pipeline(self, dry_run):
+        seen.append(dry_run)
+        return {"status": terminal_status, "stages": {}}
+
+    monkeypatch.setattr(CICDGitHubOrchestrator, "execute_full_pipeline", fake_pipeline)
+    assert cli.main() == 2
+    assert seen == [dry_run]
+    output = capsys.readouterr().out
+    assert "[BLOCKED]" in output
+    assert "executed successfully" not in output
+    assert "DRY RUN complete" not in output
+
+
+@pytest.mark.parametrize("dry_run", [False, True])
+def test_cli_rejects_missing_pipeline_receipt(monkeypatch, tmp_path, capsys, dry_run):
+    argv = ["orchestrator", "--workspace", str(tmp_path)]
+    if dry_run:
+        argv.append("--dry-run")
+    monkeypatch.setattr(sys, "argv", argv)
+    monkeypatch.setattr(
+        CICDGitHubOrchestrator, "execute_full_pipeline",
+        lambda self, dry_run: None,
+    )
+    assert cli.main() == 2
+    assert "[BLOCKED]" in capsys.readouterr().out
+
+
+@pytest.mark.parametrize("dry_run", [False, True])
+@pytest.mark.parametrize("receipt", [{"status": "SUCCESS"}, {"stages": {}}])
+def test_cli_success_path_retains_zero_exit(
+    monkeypatch, tmp_path, capsys, dry_run, receipt
+):
+    argv = ["orchestrator", "--workspace", str(tmp_path)]
+    if dry_run:
+        argv.append("--dry-run")
+    monkeypatch.setattr(sys, "argv", argv)
+    monkeypatch.setattr(
+        CICDGitHubOrchestrator, "execute_full_pipeline",
+        lambda self, dry_run: receipt,
+    )
+    assert cli.main() == 0
+    output = capsys.readouterr().out
+    assert "[BLOCKED]" not in output
+    assert ("DRY RUN complete" in output) == dry_run
