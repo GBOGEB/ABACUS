@@ -1,5 +1,4 @@
 """G3A W16 five-KPI contract: positive and fail-closed branches."""
-import copy
 import unittest
 from MIP.statistics.g3a_w16_kpi import EPOCH, FOUR_BRANCHES, METRIC_NAMES, evaluate
 
