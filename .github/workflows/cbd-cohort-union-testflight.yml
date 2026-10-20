@@ -97,10 +97,6 @@ jobs:
           ).strip()
           if actual_head != pull_head:
               raise SystemExit("HOLD: checkout and declared source head differ")
-          if actual_head != pull_head:
-              raise SystemExit(
-                  "Exact PR-head checkout mismatch; coverage WITHHELD"
-              )
           receipt = {
               "schema": "cbd.native-cohort-testflight.v1",
               "repository": os.getenv("GITHUB_REPOSITORY"),
