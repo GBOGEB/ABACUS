@@ -64,7 +64,9 @@ flowchart TD
 - Missing job `created_at`: p95 is `null`, not zero or a guessed delay.
 - Run ID, run attempt and actual head are carried in separate fields.
 - Reverse checks reject changed digest, false success or fake run URL.
-- Six native OS/Python cells have their own test/coverage denominators.
+- Six-cell attempt: Python 3.10 TOML and Windows path first-reds.
+- The classified existing MIP flight owns new focused coverage.
+- Broad OS/Python full-CI cells remain a different execution cohort.
 - Native qualification cannot create a human approval or merge credit.
 
 ## SPINE / SPLINE acceptance
