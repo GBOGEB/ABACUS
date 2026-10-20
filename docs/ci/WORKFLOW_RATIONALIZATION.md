@@ -70,7 +70,6 @@ Make PR-triggered workflows with write-class GitHub token scopes explicit and re
 | 10 | `pr_fast` | `core_test` | `ci-pipeline.yml` | push, pull_request, schedule, workflow_dispatch | 4 | `keep` | — |
 | 10 | `pr_fast` | `core_test` | `format-check.yml` | push, pull_request, workflow_dispatch | 1 | `keep` | — |
 | 10 | `pr_fast` | `core_test` | `main.yml` | push, workflow_dispatch | 5 | `keep` | — |
-| 10 | `pr_fast` | `core_test` | `core_test` | none | 0 | `keep` | — |
 | 10 | `pr_fast` | `core_test` | `pytest-config-validation.yml` | pull_request, push | 1 | `keep` | — |
 | 10 | `pr_fast` | `core_test` | `smoke-test.yml` | pull_request, workflow_dispatch | 1 | `keep` | — |
 | 10 | `pr_fast` | `core_test` | `testpilot-preflight.yml` | pull_request, push, workflow_dispatch | 1 | `keep` | — |
@@ -178,7 +177,7 @@ Make PR-triggered workflows with write-class GitHub token scopes explicit and re
 | 20 | `pr_domain` | `security` | `reusable-security.yml` | workflow_call | 1 | `keep` | — |
 | 20 | `pr_domain` | `security` | `security-dashboard.yml` | schedule, workflow_dispatch | 1 | `keep` | — |
 | 20 | `pr_domain` | `security` | `security-scan.yml` | push, pull_request, schedule | 1 | `keep` | — |
-| 20 | `pr_domain` | `security` | `semgrep.yml` | push, pull_request, schedule, workflow_dispatch | 1 | `keep` | — |
+| 20 | `pr_domain` | `security` | `semgrep.yml` | pull_request, push, schedule, workflow_dispatch | 1 | `keep` | — |
 | 20 | `pr_domain` | `specialised` | `code-purple-w40-binary-penetration.yml` | pull_request, workflow_dispatch | 1 | `keep` | — |
 | 20 | `pr_domain` | `specialised` | `code-purple-w42-remaining-arcs.yml` | pull_request, workflow_dispatch | 1 | `keep` | — |
 | 20 | `pr_domain` | `specialised` | `dab-flake8-census.yml` | workflow_call, pull_request, push, schedule, workflow_dispatch | 1 | `keep` | — |
