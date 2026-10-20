@@ -10,12 +10,17 @@ import datetime as dt
 import html
 import hashlib
 import json
+import math
 import re
 from pathlib import Path
 
 SCHEMA = "abacus.mip.native-fanout.v1"
 SHA = re.compile(r"^[0-9a-f]{40}$")
 WORKER_PREFIX = "DAB proposal worker "
+CONCLUSIONS = frozenset({
+    "success", "failure", "cancelled", "timed_out", "neutral",
+    "skipped", "action_required", "stale", "startup_failure",
+})
 
 
 def require(value: bool, reason: str) -> None:
@@ -34,6 +39,12 @@ def instant(value: object) -> dt.datetime:
     require(when.tzinfo is not None, "timestamp timezone missing")
     return when
 
+def nearest_rank(values: list[float], quantile: float) -> float:
+    """Exact nearest-rank percentile, never extrapolating missing jobs."""
+    require(bool(values), "empty percentile population")
+    ordered = sorted(values)
+    return round(ordered[math.ceil(quantile * len(ordered)) - 1], 3)
+
 
 def observe(run: dict, collection: dict) -> dict:
     """Measure completed native jobs with full API enumeration."""
@@ -44,6 +55,9 @@ def observe(run: dict, collection: dict) -> dict:
     rid = run.get("id")
     require(type(rid) is int and rid > 0, "invalid run ID")
     require(run.get("status") == "completed", "nonterminal run is not an outcome")
+    require(run.get("conclusion") in CONCLUSIONS, "run conclusion missing")
+    attempt = run.get("run_attempt")
+    require(type(attempt) is int and attempt > 0, "invalid run attempt")
     jobs = collection.get("jobs")
     count = collection.get("total_count")
     require(isinstance(jobs, list) and type(count) is int and count == len(jobs), "truncated jobs")
@@ -56,11 +70,19 @@ def observe(run: dict, collection: dict) -> dict:
         seen.add(jid)
         require(job.get("run_id") == rid, "job-run mismatch")
         require(job.get("head_sha") in (None, sha), "job SHA mismatch")
+        require(job.get("run_attempt") in (None, attempt), "job attempt mismatch")
         if not str(job.get("name", "")).startswith(WORKER_PREFIX):
             continue
         require(job.get("status") == "completed", "nonterminal worker")
+        require(job.get("conclusion") in CONCLUSIONS, "missing worker conclusion")
         start, end = instant(job.get("started_at")), instant(job.get("completed_at"))
-        require(end >= start, "negative worker duration")
+        require(end > start, "nonpositive worker duration")
+        created = job.get("created_at")
+        delay = None
+        if created is not None:
+            created_at = instant(created)
+            require(start >= created_at, "negative created-to-start duration")
+            delay = (start - created_at).total_seconds()
         selected.append({
             "job_id": jid,
             "name": job["name"],
@@ -68,6 +90,7 @@ def observe(run: dict, collection: dict) -> dict:
             "start": start,
             "end": end,
             "duration_seconds": (end - start).total_seconds(),
+            "created_to_start_seconds": delay,
         })
     require(bool(selected), "no DAB worker observations")
     events = []
@@ -88,24 +111,49 @@ def observe(run: dict, collection: dict) -> dict:
     wall = (events[-1][0] - events[0][0]).total_seconds()
     total = sum(item["duration_seconds"] for item in selected)
     require(wall > 0 and total > 0, "nonmeasurable fanout")
+    outcomes = {name: sum(
+        job["conclusion"] == name for job in selected
+    ) for name in sorted(CONCLUSIONS)}
+    ids = sorted(job["job_id"] for job in selected)
+    delays = [job["created_to_start_seconds"] for job in selected
+              if job["created_to_start_seconds"] is not None]
+    complete_delay = len(delays) == len(selected)
     return {
         "schema": SCHEMA,
         "repository": "GBOGEB/ABACUS",
         "head_sha": sha,
         "run_id": rid,
+        "run_attempt": attempt,
+        "run_conclusion": run["conclusion"],
         "run_url": f"https://github.com/GBOGEB/ABACUS/actions/runs/{rid}",
         "source_kind": "NATIVE_GITHUB_API_METADATA",
         "evidence_level": "RUN_JOB_METADATA_NOT_ARTIFACT_BYTES",
         "worker_kind": "DAB_PROPOSAL_ONLY",
         "worker_count": len(selected),
         "successful_workers": sum(row["conclusion"] == "success" for row in selected),
-        "failed_workers": sum(row["conclusion"] == "failure" for row in selected),
+        "failed_workers": outcomes["failure"],
+        "non_success_workers": len(selected) - outcomes["success"],
+        "worker_conclusions": outcomes,
+        "worker_job_ids": ids,
+        "worker_job_ids_sha256": hashlib.sha256(
+            ",".join(str(job_id) for job_id in ids).encode("ascii")
+        ).hexdigest(),
         "summed_job_seconds": round(total, 3),
         "first_to_last_seconds": round(wall, 3),
         "idle_gap_seconds": round(idle, 3),
         "active_span_seconds": round(wall - idle, 3),
         "peak_concurrency": peak,
         "overlap_factor": round(total / wall, 4),
+        "execution_p95_seconds": nearest_rank(
+            [job["duration_seconds"] for job in selected], 0.95
+        ),
+        "queue_observation_count": len(delays),
+        "created_to_start_p95_seconds": (
+            nearest_rank(delays, 0.95) if complete_delay else None
+        ),
+        "queue_qualification": (
+            "COMPLETE_JOB_METADATA" if complete_delay else "INCOMPLETE_JOB_METADATA"
+        ),
         "authenticated_crew_dispatches": None,
         "root_closures": None,
         "coverage_gain_pp": None,
