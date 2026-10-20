@@ -158,7 +158,7 @@ class CohortUnionTests(unittest.TestCase):
         with self.assertRaises(ValueError):
             produce_cohorts(data)
 
-    def test_missing_source_fails_closed(self):
+    def test_invalid_and_mutating_source_inputs_fail_closed(self):
         with self.assertRaises(ValueError):
             produce_cohorts([])
         with self.assertRaises(ValueError):
@@ -171,6 +171,26 @@ class CohortUnionTests(unittest.TestCase):
                     ValueError, "source snapshot must be an object"
                 ):
                     produce_cohorts([invalid])
+
+        # A list subclass is accepted by the public input contract. If it
+        # changes between validation and aggregation passes, reject the drift.
+        snapshot = snapshots()[0]
+
+        class ChangingSnapshots(list):
+            def __init__(self, initial):
+                super().__init__(initial)
+                self.iterations = 0
+
+            def __iter__(self):
+                self.iterations += 1
+                if self.iterations == 1:
+                    return iter([snapshot])
+                return iter([None])
+
+        with self.assertRaisesRegex(
+            ValueError, "source snapshot must be an object"
+        ):
+            produce_cohorts(ChangingSnapshots([snapshot]))
 
     def test_invalid_run_attempt_identity_fails_closed(self):
         data = snapshots()
