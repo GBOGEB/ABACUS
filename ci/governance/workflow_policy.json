@@ -675,39 +675,21 @@
       "disposition": "keep"
     },
     {
-      "pattern": "^code-purple-dashboard-v31\\.yml$",
-      "cluster": "documentation",
-      "lifecycle": "pr_domain",
-      "disposition": "keep"
-    },
-    {
-      "pattern": "^code-purple-sut-gui\\.yml$",
+      "pattern": "^cbd-e2e-graph-contract\\.yml$",
       "cluster": "core_test",
       "lifecycle": "pr_domain",
       "disposition": "keep"
     },
     {
-      "pattern": "^g3a-bounded-continuation-proof\\.yml$",
-      "cluster": "dmaic",
+      "pattern": "^cbd-native-evidence-metrics-testflight\\.yml$",
+      "cluster": "statistics",
       "lifecycle": "pr_domain",
       "disposition": "keep"
     },
     {
-      "pattern": "^g3a-n14-matched-arc-flight\\.yml$",
-      "cluster": "dmaic",
-      "lifecycle": "pr_domain",
-      "disposition": "keep"
-    },
-    {
-      "pattern": "^g3a-n14-phase4-import\\.yml$",
-      "cluster": "dmaic",
-      "lifecycle": "pr_domain",
-      "disposition": "keep"
-    },
-    {
-      "pattern": "^g3a-n15-python-matrix\\.yml$",
-      "cluster": "dmaic",
-      "lifecycle": "pr_domain",
+      "pattern": "^cbd-scheduled-gated-pulse\\.yml$",
+      "cluster": "runtime_governance",
+      "lifecycle": "scheduled",
       "disposition": "keep"
     }
   ],
