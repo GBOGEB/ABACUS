@@ -55,6 +55,16 @@ def _path(value):
     return value
 
 
+def _path_overlap(left, right):
+    """Cross-platform conservative lexical file/directory lease overlap.
+
+    Case folding protects Windows runners. Symlink/realpath identity cannot
+    be authenticated by this read-only planner.
+    """
+    a, b = left.casefold(), right.casefold()
+    return a == b or a.startswith(b + "/") or b.startswith(a + "/")
+
+
 def _list_unique(value, name, *, max_items=1000):
     if type(value) is not list or len(value) > max_items:
         raise ValueError(name + " must be a bounded list")
@@ -139,7 +149,25 @@ def _waves(tasks, max_parallel):
         if not ready:
             raise ValueError("unresolvable read-only test dependency")
         ready.sort(key=lambda t: (PRIORITIES[t["priority"]], KIND_RANK[t["kind"]], t["id"]))
-        batches = [ready[i:i + max_parallel] for i in range(0, len(ready), max_parallel)]
+        # Pack independent tasks into bounded parallel batches. A simple
+        # max_parallel slice is unsafe: sibling tasks can claim the same
+        # file, a parent directory, or a Windows case-folded path alias.
+        remaining_ready = ready[:]
+        batches = []
+        while remaining_ready:
+            selected, leased, deferred = [], [], []
+            for task in remaining_ready:
+                collision = any(
+                    _path_overlap(path, other)
+                    for path in task["paths"] for other in leased
+                )
+                if len(selected) < max_parallel and not collision:
+                    selected.append(task)
+                    leased.extend(task["paths"])
+                else:
+                    deferred.append(task)
+            batches.append(selected)
+            remaining_ready = deferred
         waves.append({
             "wave": len(waves) + 1,
             "batches": [[t["id"] for t in batch] for batch in batches],
@@ -149,6 +177,7 @@ def _waves(tasks, max_parallel):
                 if all(t["estimate_seconds"] is not None for t in ready) else None
             ),
             "timing_class": "UNVALIDATED_ESTIMATE_NOT_NATIVE_DURATION",
+            "lease_model": "CASEFOLDED_LEXICAL_PLAN_NOT_AUTHENTICATED",
         })
         finished.update(t["id"] for t in ready)
         waiting.difference_update(finished)
