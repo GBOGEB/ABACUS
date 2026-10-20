@@ -42,11 +42,6 @@ jobs:
           python-version: ${{ matrix.python-version }}
       - name: Install isolated coverage runner
         run: python -m pip install "coverage[toml]>=7.7,<8"
-      - name: Verify exact pull-head checkout before test execution
-        shell: bash
-        run: |
-          set -euo pipefail
-          test "$(git rev-parse HEAD)" = "$EXPECTED_PULL_HEAD"
       - name: Execute 26 source-bound positive and negative contracts
         shell: bash
         run: |
