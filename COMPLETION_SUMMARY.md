@@ -9,14 +9,14 @@ the four automated review suggestions from that PR.
 ## What was changed
 
 The analysis lives as a single Markdown document:
-`analyses/compressors/MYRRHA_warm_compressor_comparison_ALaT_LKT.md`. The polish
+`analyses/compressors/MYRRHA_warm_compressor_comparison_Supplier_a_SUPPLIER_B.md`. The polish
 work touched only that file plus a new standalone visualization page — no other
 repository content was modified.
 
 ### Fix #3 — Add an H1 heading (quick)
 
 - The document now opens with a proper `#` H1 title
-  (`# MYRRHA Warm-Compressor Comparison: ALaT FSD 575 SFC vs LKT FSD 475 SFC`).
+  (`# MYRRHA Warm-Compressor Comparison: Supplier_a FSD 575 SFC vs SUPPLIER_B FSD 475 SFC`).
 - This gives GitHub a document title and a clean entry in the auto-generated
   table of contents.
 
@@ -57,7 +57,7 @@ repository content was modified.
 - **Numeric integrity:** numeric-token diff of original (minus script block) vs.
   new Markdown → identical. No engineering figure changed.
 - **HTML render + interactivity:** opened the standalone page in a browser; all
-  three model presets (ALaT FSD575 full point, LKT FSD475 actual nominal, LKT
+  three model presets (Supplier_a FSD575 full point, SUPPLIER_B FSD475 actual nominal, SUPPLIER_B
   FSD475 documented max) switch correctly and update the metrics, both charts,
   and the status table.
 - **Link integrity:** the relative link from the Markdown resolves to the new
@@ -68,7 +68,7 @@ repository content was modified.
 
 | File | Change |
 |---|---|
-| `analyses/compressors/MYRRHA_warm_compressor_comparison_ALaT_LKT.md` | H1 added, tables converted to Markdown, viz replaced with link |
+| `analyses/compressors/MYRRHA_warm_compressor_comparison_Supplier_a_SUPPLIER_B.md` | H1 added, tables converted to Markdown, viz replaced with link |
 | `analyses/compressors/visualizations/compressor_mass_flow_comparison.html` | New standalone interactive visualization with explicit colours |
 | `INTEGRATION_ROADMAP.md` | New phased ecosystem federation plan |
 | `COMPLETION_SUMMARY.md` | This summary |

@@ -1,0 +1,135 @@
+{
+  "schema": "code-purple.handover.monikers/1.0",
+  "source_authority": "CODEX GLOBAL_GLOSSARY_v1.yaml + ABACUS G3A_GOVERNED_THREE_ADVANCE.md / CHAR_BD_GLOSSARY_v1.md / MIP README",
+  "promotion_authority": false,
+  "entries": [
+    {
+      "id": "CBD!",
+      "label": "Chartered Burn-Down to Ash",
+      "type": "campaign",
+      "use": "Full issue/root burndown: census, assign, repair, verify, review, disposition",
+      "not": "Closing issues without proof",
+      "source": "docs/ci/CHAR_BD_GLOSSARY_v1.md"
+    },
+    {
+      "id": "CENSUS",
+      "label": "Enumerated native inventory",
+      "type": "measurement",
+      "use": "Refresh all eligible issue/PR/run/job/source populations",
+      "not": "Root closure",
+      "source": "docs/ci/CHAR_BD_GLOSSARY_v1.md"
+    },
+    {
+      "id": "3W",
+      "label": "Three delivery waves",
+      "type": "execution",
+      "use": "Three source-owned repair tranches with disjoint commits",
+      "not": "Three successful checkpoints",
+      "source": "docs/ci/G3A_GOVERNED_THREE_ADVANCE.md"
+    },
+    {
+      "id": "G3W",
+      "label": "Three-wave delivery request",
+      "type": "execution",
+      "use": "Ask for three governed outcome waves (same class as 3W)",
+      "not": "Guarantee N+3",
+      "source": "MIP/README.md"
+    },
+    {
+      "id": "3MP",
+      "label": "Three measurement/improvement pulses",
+      "type": "measurement",
+      "use": "Three observe/classify/act/measure/Control cycles",
+      "not": "Automatically three accepted advances",
+      "source": "docs/ci/G3A_GOVERNED_THREE_ADVANCE.md"
+    },
+    {
+      "id": "G3A",
+      "label": "Governed Three-Advance Mission",
+      "type": "execution",
+      "use": "A1/A2/A3 checkpoints, N to actual N+3 if all accepted",
+      "not": "Merge authorization",
+      "source": "docs/ci/G3A_GOVERNED_THREE_ADVANCE.md"
+    },
+    {
+      "id": "W/P/S",
+      "label": "Wave / pulse / disjoint owner slice",
+      "type": "execution",
+      "use": "Distinguish coordinated tranche / source receipt / independently owned edit",
+      "not": "Interchangeable counters",
+      "source": "MIP/README.md"
+    },
+    {
+      "id": "MIP",
+      "label": "Modernize Innovate Perpetuate",
+      "type": "method",
+      "use": "Recursive improvement with measurable controls",
+      "not": "A native CI pass by itself",
+      "source": "MIP/README.md"
+    },
+    {
+      "id": "DMAIC",
+      "label": "Define Measure Analyze Improve Control",
+      "type": "method",
+      "use": "Stage-gated statistical/engineering diagnosis",
+      "not": "Evidence of merger",
+      "source": "docs/ci/CHAR_BD_GLOSSARY_v1.md"
+    },
+    {
+      "id": "B0/B1",
+      "label": "Native test/evidence flight / false-green census",
+      "type": "measurement",
+      "use": "B0 canonical test/census receipts; B1 unguarded false-green findings",
+      "not": "Broad programme coverage or B2+ assumption",
+      "source": ".github/workflows/mip-coverage-evidence.yml"
+    },
+    {
+      "id": "BD-LDAB",
+      "label": "Root-owned burn-down and debugger lineage",
+      "type": "governance",
+      "use": "Canonical issue #1929 causal join and owner attribution",
+      "not": "GitHub issue counts",
+      "source": "docs/ci/CHAR_BD_GLOSSARY_v1.md"
+    },
+    {
+      "id": "REX",
+      "label": "Execution return receipt",
+      "type": "evidence",
+      "use": "Authenticated accepted producer/receiver result",
+      "not": "Proposed or staged launch",
+      "source": "docs/ci/CHAR_BD_GLOSSARY_v1.md"
+    },
+    {
+      "id": "LOSSLESS_HANDOVER_V2",
+      "label": "Governed operational continuity capsule",
+      "type": "handover",
+      "use": "Capture → validate → trace → compare → decide → build → seal → replay → restart",
+      "not": "Verbatim chat transcript without archive",
+      "source": "tools/handover_v2/process_spec.json"
+    },
+    {
+      "id": "3P*",
+      "label": "Proof/provenance/progression family",
+      "type": "evidence",
+      "use": "Use domain-native typed definition and exact IDs",
+      "not": "Invent an expansion or authority",
+      "source": "docs/ci/CHAR_BD_GLOSSARY_v1.md"
+    },
+    {
+      "id": "P0 HOLD",
+      "label": "Non-compensating admission hold",
+      "type": "governance",
+      "use": "Retain CI/Safety/A10/review/branch protection gates",
+      "not": "Overridden by weighted score or merged PR",
+      "source": "docs/ci/G3A_GOVERNED_THREE_ADVANCE.md"
+    },
+    {
+      "id": "CLOSE/RED/RUNTIME/SEM/SSOT/RECEIPT/ENABLE/HARDEN/CLEAN/MAINT/READ/EXP/WATCH",
+      "label": "CODEX atomic action monikers",
+      "type": "action",
+      "use": "Apply scoped native action only with verified authority",
+      "not": "Automatic dispatch, merge or closure",
+      "source": "docs/ci/G3A_GOVERNED_THREE_ADVANCE.md"
+    }
+  ]
+}

@@ -1,0 +1,29 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "ABACUS read-only Office style evidence v1",
+  "description": "Content-minimized derived style evidence; never grants source, merge, review or security authority.",
+  "type": "object",
+  "required": [
+    "schema", "source_id", "source_sha256", "family", "source_type",
+    "style_profile", "style_fingerprint", "extraction_quality",
+    "body_text_exported", "source_authority_transferred", "merge_authorized",
+    "security_waiver", "rex_accepted", "binary_committed_to_public_repo"
+  ],
+  "properties": {
+    "schema": {"const": "abacus.office-style-evidence.v1"},
+    "source_id": {"type": "string", "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,95}$"},
+    "source_sha256": {"type": "string", "pattern": "^[a-f0-9]{64}$"},
+    "family": {"enum": ["docx", "xlsx", "pptx"]},
+    "source_type": {"const": "actual_office_package"},
+    "style_profile": {"type": "object"},
+    "style_fingerprint": {"type": "string", "pattern": "^[a-f0-9]{64}$"},
+    "extraction_quality": {"const": "STRUCTURED"},
+    "body_text_exported": {"const": false},
+    "source_authority_transferred": {"const": false},
+    "merge_authorized": {"const": false},
+    "security_waiver": {"const": false},
+    "rex_accepted": {"type": "null"},
+    "binary_committed_to_public_repo": {"const": false}
+  },
+  "additionalProperties": false
+}

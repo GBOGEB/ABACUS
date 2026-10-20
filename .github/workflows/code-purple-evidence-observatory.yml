@@ -1,0 +1,92 @@
+name: CODE PURPLE Evidence-to-Admission Observatory (read-only)
+
+on:
+  workflow_dispatch:
+  schedule:
+    # Four snapshots/day, not one workflow per run/event; no queue fan-out.
+    - cron: '11 1,7,13,19 * * *'
+
+permissions:
+  contents: read
+  actions: read
+  issues: read
+  pull-requests: read
+
+concurrency:
+  group: code-purple-observatory-main-census
+  cancel-in-progress: false
+
+jobs:
+  bounded-evidence-census:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 17
+    steps:
+      - name: Checkout exact workflow source
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+      - name: Python runtime
+        uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97
+        with:
+          python-version: '3.12'
+      - name: Install deterministic test prerequisites
+        run: python -m pip install 'pytest>=7.4,<10' 'pytest-cov>=4.1,<8'
+      - name: Native 154-case negative and convergence coverage testflight
+        shell: bash
+        run: |
+          set -euo pipefail
+          P=MIP/EVIDENCE_TO_ADMISSION_OBSERVATORY
+          cd "$P"
+          mkdir -p native-metrics
+          python -m pytest -q test_observatory.py test_wave_metrics.py \
+            test_queue_telemetry.py test_w30_collector_negative.py \
+            test_wave_convergence.py \
+            --junitxml=native-metrics/junit.xml \
+            --cov=census --cov=wave_metrics --cov=render --cov=queue_telemetry --cov=wave_convergence \
+            --cov-branch --cov-report=term-missing \
+            --cov-report=json:native-metrics/coverage.json \
+            --cov-report=xml:native-metrics/coverage.xml
+      - name: Read current GitHub census, fail on moving main SHA
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          python MIP/EVIDENCE_TO_ADMISSION_OBSERVATORY/census.py \
+            --baseline MIP/EVIDENCE_TO_ADMISSION_OBSERVATORY/evidence.json \
+            --out MIP/EVIDENCE_TO_ADMISSION_OBSERVATORY/evidence.latest.json \
+            --strict-head
+      - name: Generate self-contained refreshed HTML
+        if: always()
+        shell: bash
+        run: |
+          set -euo pipefail
+          P=MIP/EVIDENCE_TO_ADMISSION_OBSERVATORY
+          if test -s "$P/evidence.latest.json"; then
+            python "$P/render.py" --snapshot "$P/evidence.latest.json" \
+              --template "$P/index.template.html" --output "$P/index.html"
+          fi
+      - name: Derive matched W007 wave telemetry and bounded scale policy
+        if: always()
+        shell: bash
+        run: |
+          set -euo pipefail
+          P=MIP/EVIDENCE_TO_ADMISSION_OBSERVATORY
+          if test -s "$P/evidence.latest.json"; then
+            python "$P/wave_metrics.py" --snapshot "$P/evidence.latest.json" \
+              --history "$P/wave_history.json" --out "$P/wave.latest.json"
+          fi
+      - name: Upload read-only snapshot and receipt, no protected-main push
+        if: always()
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9
+        with:
+          name: code-purple-observatory-${{ github.run_id }}-${{ github.run_attempt }}
+          path: |
+            MIP/EVIDENCE_TO_ADMISSION_OBSERVATORY/index.html
+            MIP/EVIDENCE_TO_ADMISSION_OBSERVATORY/evidence.latest.json
+            MIP/EVIDENCE_TO_ADMISSION_OBSERVATORY/wave.latest.json
+            MIP/EVIDENCE_TO_ADMISSION_OBSERVATORY/README.md
+            MIP/EVIDENCE_TO_ADMISSION_OBSERVATORY/native-metrics/
+          if-no-files-found: error
+          retention-days: 30

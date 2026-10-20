@@ -1,0 +1,1051 @@
+{
+  "schema": "abacus.everred.cbd.n1_firstpage_scout.v1",
+  "repository": "GBOGEB/ABACUS",
+  "source_pr": 2077,
+  "source_sha_at_sampling": "133e5a082f74dd99a65bfda5308d7071523904d1",
+  "n0_pr_denominator": 75,
+  "n0_failed_associations": 260,
+  "n0_unique_failed_runs": 253,
+  "n0_workflow_families": 19,
+  "readback_scope": "15_DISTINCT_N0_WORKFLOW_FAMILIES_NATIVE_JOBS_FIRST_PAGE_LATEST_ATTEMPT_ONLY",
+  "snapshot_atomic": false,
+  "fully_paginated": false,
+  "attempt_identified": false,
+  "run_head_verified": false,
+  "logs_read": false,
+  "root_causality_verified": false,
+  "authority": {
+    "merge_admission": "HOLD",
+    "security_waiver": false,
+    "authority_transfer": false,
+    "dispatch": "STAGED_NOT_LAUNCHED"
+  },
+  "metrics": {
+    "sample_runs": 15,
+    "distinct_workflow_families_sampled": 15,
+    "readbacks": 15,
+    "withheld": 0,
+    "first_page_jobs_observed": 106,
+    "failed_jobs_observed": 35,
+    "failed_jobs_with_failed_step": 35,
+    "full_n0_unique_runs": 253,
+    "complete_attempt_census": false,
+    "confirmed_roots": null,
+    "matched_main_coverage": null,
+    "matched_diff_coverage": null
+  },
+  "observations": [
+    {
+      "pr": 2073,
+      "run_id": 38925992164,
+      "workflow": "CI/CD Test Suite",
+      "readback": "LATEST_ATTEMPT_FIRST_PAGE_UNVERIFIED",
+      "job_page": [
+        {
+          "id": 117057543062,
+          "name": "Code Quality Checks",
+          "status": "completed",
+          "conclusion": "failure",
+          "first_failed_step": {
+            "number": 11,
+            "name": "Per-tool code-quality new-debt ratchet"
+          }
+        },
+        {
+          "id": 117057543232,
+          "name": "Security Scanning",
+          "status": "completed",
+          "conclusion": "failure",
+          "first_failed_step": {
+            "number": 10,
+            "name": "PR new-debt ratchet (Bandit)"
+          }
+        },
+        {
+          "id": 117057543359,
+          "name": "Unit Tests (Python 3.11, macos-latest)",
+          "status": "completed",
+          "conclusion": "success",
+          "first_failed_step": null
+        },
+        {
+          "id": 117057543446,
+          "name": "Unit Tests (Python 3.11, ubuntu-latest)",
+          "status": "completed",
+          "conclusion": "success",
+          "first_failed_step": null
+        },
+        {
+          "id": 117057543515,
+          "name": "Unit Tests (Python 3.12, macos-latest)",
+          "status": "completed",
+          "conclusion": "success",
+          "first_failed_step": null
+        },
+        {
+          "id": 117057543581,
+          "name": "Unit Tests (Python 3.12, ubuntu-latest)",
+          "status": "completed",
+          "conclusion": "success",
+          "first_failed_step": null
+        },
+        {
+          "id": 117057543608,
+          "name": "Unit Tests (Python 3.11, windows-latest)",
+          "status": "completed",
+          "conclusion": "success",
+          "first_failed_step": null
+        },
+        {
+          "id": 117057543663,
+          "name": "Unit Tests (Python 3.10, macos-latest)",
+          "status": "completed",
+          "conclusion": "success",
+          "first_failed_step": null
+        },
+        {
+          "id": 117057543725,
+          "name": "Unit Tests (Python 3.10, ubuntu-latest)",
+          "status": "completed",
+          "conclusion": "success",
+          "first_failed_step": null
+        },
+        {
+          "id": 117057543794,
+          "name": "Unit Tests (Python 3.12, windows-latest)",
+          "status": "completed",
+          "conclusion": "success",
+          "first_failed_step": null
+        },
+        {
+          "id": 117057543982,
+          "name": "Unit Tests (Python 3.10, windows-latest)",
+          "status": "completed",
+          "conclusion": "success",
+          "first_failed_step": null
+        },
+        {
+          "id": 117058772784,
+          "name": "Docker Integration Tests",
+          "status": "completed",
+          "conclusion": "success",
+          "first_failed_step": null
+        },
+        {
+          "id": 117058773123,
+          "name": "Integration Tests",
+          "status": "completed",
+          "conclusion": "success",
+          "first_failed_step": null
+        },
+        {
+          "id": 117060286390,
+          "name": "Performance & Benchmark Tests",
+          "status": "completed",
+          "conclusion": "success",
+          "first_failed_step": null
+        },
+        {
+          "id": 117060286584,
+          "name": "Comprehensive Test Suite",
+          "status": "completed",
+          "conclusion": "success",
+          "first_failed_step": null
+        },
+        {
+          "id": 117060286973,
+          "name": "Code Coverage",
+          "status": "completed",
+          "conclusion": "success",
+          "first_failed_step": null
+        },
+        {
+          "id": 117062401656,
+          "name": "Full Red Proof Summary",
+          "status": "completed",
+          "conclusion": "failure",
+          "first_failed_step": {
+            "number": 2,
+            "name": "Emit full-red summary"
+          }
+        },
+        {
+          "id": 117062401750,
+          "name": "Test Results Notification",
+          "status": "completed",
+          "conclusion": "success",
+          "first_failed_step": null
+        },
+        {
+          "id": 117062403593,
+          "name": "Deploy Test Dashboard",
+          "status": "completed",
+          "conclusion": "skipped",
+          "first_failed_step": null
+        }
+      ],
+      "run_attempt": null,
+      "verified_run_sha": null,
+      "accepted_root": null
+    },
+    {
+      "pr": 2074,
+      "run_id": 38925718611,
+      "workflow": "ABACUS v032 - CI/CD Pipeline",
+      "readback": "LATEST_ATTEMPT_FIRST_PAGE_UNVERIFIED",
+      "job_page": [
+        {
+          "id": 117056616776,
+          "name": "Lint & Validate Code",
+          "status": "completed",
+          "conclusion": "success",
+          "first_failed_step": null
+        },
+        {
+          "id": 117056807489,
+          "name": "Test DMAIC Phases",
+          "status": "completed",
+          "conclusion": "failure",
+          "first_failed_step": {
+            "number": 4,
+            "name": "Install canonical dependencies"
+          }
+        },
+        {
+          "id": 117056894333,
+          "name": "Execute Full DMAIC Pipeline",
+          "status": "completed",
+          "conclusion": "skipped",
+          "first_failed_step": null
+        },
+        {
+          "id": 117056895430,
+          "name": "Quality Gate Check",
+          "status": "completed",
+          "conclusion": "skipped",
+          "first_failed_step": null
+        },
+        {
+          "id": 117056895431,
+          "name": "Update Canonical Documentation",
+          "status": "completed",
+          "conclusion": "skipped",
+          "first_failed_step": null
+        },
+        {
+          "id": 117056895897,
+          "name": "Deploy Artifacts",
+          "status": "completed",
+          "conclusion": "skipped",
+          "first_failed_step": null
+        }
+      ],
+      "run_attempt": null,
+      "verified_run_sha": null,
+      "accepted_root": null
+    },
+    {
+      "pr": 2073,
+      "run_id": 38925991896,
+      "workflow": "CI Workflow Governance",
+      "readback": "LATEST_ATTEMPT_FIRST_PAGE_UNVERIFIED",
+      "job_page": [
+        {
+          "id": 117358824307,
+          "name": "policy-and-inventory",
+          "status": "completed",
+          "conclusion": "failure",
+          "first_failed_step": {
+            "number": 9,
+            "name": "Fail closed on governance red"
+          }
+        }
+      ],
+      "run_attempt": null,
+      "verified_run_sha": null,
+      "accepted_root": null
+    },
+    {
+      "pr": 2072,
+      "run_id": 38921508083,
+      "workflow": "CI - ABACUS Matrix",
+      "readback": "LATEST_ATTEMPT_FIRST_PAGE_UNVERIFIED",
+      "job_page": [
+        {
+          "id": 117042313212,
+          "name": "Benchmark baseline - Python 3.12 - no coverage",
+          "status": "completed",
+          "conclusion": "success",
+          "first_failed_step": null
+        },
+        {
+          "id": 117042313621,
+          "name": "ABACUS CI proof planner",
+          "status": "completed",
+          "conclusion": "success",
+          "first_failed_step": null
+        },
+        {
+          "id": 117042314870,
+          "name": "Runner migration canary - ubuntu-latest - Python 3.12",
+          "status": "completed",
+          "conclusion": "skipped",
+          "first_failed_step": null
+        },
+        {
+          "id": 117042431188,
+          "name": "ABACUS - ubuntu-24.04 - Python 3.12",
+          "status": "completed",
+          "conclusion": "success",
+          "first_failed_step": null
+        },
+        {
+          "id": 117042431431,
+          "name": "ABACUS - ubuntu-24.04 - Python 3.10",
+          "status": "completed",
+          "conclusion": "failure",
+          "first_failed_step": {
+            "number": 6,
+            "name": "Install tooling"
+          }
+        },
+        {
+          "id": 117045540290,
+          "name": "Python proof completeness",
+          "status": "completed",
+          "conclusion": "failure",
+          "first_failed_step": {
+            "number": 5,
+            "name": "Audit executed and classified-skipped proof roles"
+          }
+        },
+        {
+          "id": 117045623663,
+          "name": "ABACUS compatibility gate",
+          "status": "completed",
+          "conclusion": "failure",
+          "first_failed_step": {
+            "number": 2,
+            "name": "Enforce selected proof set"
+          }
+        }
+      ],
+      "run_attempt": null,
+      "verified_run_sha": null,
+      "accepted_root": null
+    },
+    {
+      "pr": 2041,
+      "run_id": 38824989937,
+      "workflow": "a10-guard",
+      "readback": "LATEST_ATTEMPT_FIRST_PAGE_UNVERIFIED",
+      "job_page": [
+        {
+          "id": 116730248604,
+          "name": "a10-guard",
+          "status": "completed",
+          "conclusion": "failure",
+          "first_failed_step": {
+            "number": 4,
+            "name": "Tender guard (new or changed files only)"
+          }
+        }
+      ],
+      "run_attempt": null,
+      "verified_run_sha": null,
+      "accepted_root": null
+    },
+    {
+      "pr": 2074,
+      "run_id": 38925718748,
+      "workflow": "Validate Docs (Markdown/YAML/JSON)",
+      "readback": "LATEST_ATTEMPT_FIRST_PAGE_UNVERIFIED",
+      "job_page": [
+        {
+          "id": 117056633663,
+          "name": "Changed docs lint",
+          "status": "completed",
+          "conclusion": "failure",
+          "first_failed_step": {
+            "number": 7,
+            "name": "Validate changed docs"
+          }
+        }
+      ],
+      "run_attempt": null,
+      "verified_run_sha": null,
+      "accepted_root": null
+    },
+    {
+      "pr": 2065,
+      "run_id": 38902782694,
+      "workflow": "EVERRED V3 Governed Control Plane",
+      "readback": "LATEST_ATTEMPT_FIRST_PAGE_UNVERIFIED",
+      "job_page": [
+        {
+          "id": 116978839676,
+          "name": "EVERRED source, provenance and negative tests (3.12)",
+          "status": "completed",
+          "conclusion": "failure",
+          "first_failed_step": {
+            "number": 5,
+            "name": "Verify source, event chain and disjoint leases"
+          }
+        },
+        {
+          "id": 116978840045,
+          "name": "EVERRED source, provenance and negative tests (3.10)",
+          "status": "completed",
+          "conclusion": "failure",
+          "first_failed_step": {
+            "number": 5,
+            "name": "Verify source, event chain and disjoint leases"
+          }
+        },
+        {
+          "id": 116978841995,
+          "name": "Read-only native run / joined census pulse",
+          "status": "completed",
+          "conclusion": "skipped",
+          "first_failed_step": null
+        }
+      ],
+      "run_attempt": null,
+      "verified_run_sha": null,
+      "accepted_root": null
+    },
+    {
+      "pr": 2054,
+      "run_id": 38903706774,
+      "workflow": "DMAIC V3 Enterprise CI",
+      "readback": "LATEST_ATTEMPT_FIRST_PAGE_UNVERIFIED",
+      "job_page": [
+        {
+          "id": 116981927306,
+          "name": "Build Documentation",
+          "status": "completed",
+          "conclusion": "success",
+          "first_failed_step": null
+        },
+        {
+          "id": 116981927528,
+          "name": "Test Python 3.9 on ubuntu-latest",
+          "status": "completed",
+          "conclusion": "failure",
+          "first_failed_step": {
+            "number": 8,
+            "name": "Run pytest --benchmark-disable with coverage"
+          }
+        },
+        {
+          "id": 116981927575,
+          "name": "Security Scan",
+          "status": "completed",
+          "conclusion": "success",
+          "first_failed_step": null
+        },
+        {
+          "id": 116981927584,
+          "name": "Code Quality Checks",
+          "status": "completed",
+          "conclusion": "success",
+          "first_failed_step": null
+        },
+        {
+          "id": 116981927647,
+          "name": "Test Python 3.11 on windows-latest",
+          "status": "completed",
+          "conclusion": "failure",
+          "first_failed_step": {
+            "number": 8,
+            "name": "Run pytest --benchmark-disable with coverage"
+          }
+        },
+        {
+          "id": 116981927688,
+          "name": "Test Python 3.12 on windows-latest",
+          "status": "completed",
+          "conclusion": "failure",
+          "first_failed_step": {
+            "number": 8,
+            "name": "Run pytest --benchmark-disable with coverage"
+          }
+        },
+        {
+          "id": 116981927712,
+          "name": "Test Python 3.11 on macos-latest",
+          "status": "completed",
+          "conclusion": "failure",
+          "first_failed_step": {
+            "number": 8,
+            "name": "Run pytest --benchmark-disable with coverage"
+          }
+        },
+        {
+          "id": 116981927715,
+          "name": "Test Python 3.11 on ubuntu-latest",
+          "status": "completed",
+          "conclusion": "failure",
+          "first_failed_step": {
+            "number": 8,
+            "name": "Run pytest --benchmark-disable with coverage"
+          }
+        },
+        {
+          "id": 116981927727,
+          "name": "Test Python 3.10 on ubuntu-latest",
+          "status": "completed",
+          "conclusion": "failure",
+          "first_failed_step": {
+            "number": 8,
+            "name": "Run pytest --benchmark-disable with coverage"
+          }
+        },
+        {
+          "id": 116981927732,
+          "name": "Test Python 3.12 on ubuntu-latest",
+          "status": "completed",
+          "conclusion": "failure",
+          "first_failed_step": {
+            "number": 8,
+            "name": "Run pytest --benchmark-disable with coverage"
+          }
+        },
+        {
+          "id": 116981927821,
+          "name": "Test Python 3.10 on windows-latest",
+          "status": "completed",
+          "conclusion": "failure",
+          "first_failed_step": {
+            "number": 8,
+            "name": "Run pytest --benchmark-disable with coverage"
+          }
+        },
+        {
+          "id": 116981927831,
+          "name": "Test Python 3.10 on macos-latest",
+          "status": "completed",
+          "conclusion": "failure",
+          "first_failed_step": {
+            "number": 8,
+            "name": "Run pytest --benchmark-disable with coverage"
+          }
+        },
+        {
+          "id": 116981927863,
+          "name": "Test Python 3.12 on macos-latest",
+          "status": "completed",
+          "conclusion": "failure",
+          "first_failed_step": {
+            "number": 8,
+            "name": "Run pytest --benchmark-disable with coverage"
+          }
+        },
+        {
+          "id": 116981927879,
+          "name": "Test Python 3.9 on macos-latest",
+          "status": "completed",
+          "conclusion": "failure",
+          "first_failed_step": {
+            "number": 8,
+            "name": "Run pytest --benchmark-disable with coverage"
+          }
+        },
+        {
+          "id": 116981927982,
+          "name": "Test Python 3.9 on windows-latest",
+          "status": "completed",
+          "conclusion": "failure",
+          "first_failed_step": {
+            "number": 8,
+            "name": "Run pytest --benchmark-disable with coverage"
+          }
+        },
+        {
+          "id": 116986338639,
+          "name": "CI Summary",
+          "status": "completed",
+          "conclusion": "failure",
+          "first_failed_step": {
+            "number": 3,
+            "name": "Set final status"
+          }
+        },
+        {
+          "id": 116986339955,
+          "name": "Build Package",
+          "status": "completed",
+          "conclusion": "skipped",
+          "first_failed_step": null
+        },
+        {
+          "id": 116986340455,
+          "name": "Integration Tests",
+          "status": "completed",
+          "conclusion": "skipped",
+          "first_failed_step": null
+        }
+      ],
+      "run_attempt": null,
+      "verified_run_sha": null,
+      "accepted_root": null
+    },
+    {
+      "pr": 2039,
+      "run_id": 38873689308,
+      "workflow": "Bandit Disjoint Census",
+      "readback": "LATEST_ATTEMPT_FIRST_PAGE_UNVERIFIED",
+      "job_page": [
+        {
+          "id": 116883546484,
+          "name": "census",
+          "status": "completed",
+          "conclusion": "failure",
+          "first_failed_step": {
+            "number": 6,
+            "name": "Generate governance inventory as evidence"
+          }
+        }
+      ],
+      "run_attempt": null,
+      "verified_run_sha": null,
+      "accepted_root": null
+    },
+    {
+      "pr": 2021,
+      "run_id": 38749835455,
+      "workflow": "CODE PURPLE SUT GUI Contract",
+      "readback": "LATEST_ATTEMPT_FIRST_PAGE_UNVERIFIED",
+      "job_page": [
+        {
+          "id": 116473817499,
+          "name": "SUT GUI guardrails / Python 3.10",
+          "status": "completed",
+          "conclusion": "failure",
+          "first_failed_step": {
+            "number": 5,
+            "name": "Validate HTML structure and launch contract"
+          }
+        },
+        {
+          "id": 116473817576,
+          "name": "SUT GUI guardrails / Python 3.12",
+          "status": "completed",
+          "conclusion": "failure",
+          "first_failed_step": {
+            "number": 5,
+            "name": "Validate HTML structure and launch contract"
+          }
+        }
+      ],
+      "run_attempt": null,
+      "verified_run_sha": null,
+      "accepted_root": null
+    },
+    {
+      "pr": 2054,
+      "run_id": 38903707154,
+      "workflow": "DMAIC V3 Test Suite - Continuous Integration",
+      "readback": "LATEST_ATTEMPT_FIRST_PAGE_UNVERIFIED",
+      "job_page": [
+        {
+          "id": 116981928187,
+          "name": "Smoke Tests (Quick Validation)",
+          "status": "completed",
+          "conclusion": "success",
+          "first_failed_step": null
+        },
+        {
+          "id": 116983397539,
+          "name": "Unit Tests (3.12)",
+          "status": "completed",
+          "conclusion": "success",
+          "first_failed_step": null
+        },
+        {
+          "id": 116983397548,
+          "name": "Unit Tests (3.11)",
+          "status": "completed",
+          "conclusion": "success",
+          "first_failed_step": null
+        },
+        {
+          "id": 116983397613,
+          "name": "Unit Tests (3.10)",
+          "status": "completed",
+          "conclusion": "success",
+          "first_failed_step": null
+        },
+        {
+          "id": 116983397669,
+          "name": "DOW Core Tests (SUT_CORE_DOW)",
+          "status": "completed",
+          "conclusion": "success",
+          "first_failed_step": null
+        },
+        {
+          "id": 116986471531,
+          "name": "DOW Phase Tests (0-9) (phase0 or phase1 or phase2)",
+          "status": "completed",
+          "conclusion": "success",
+          "first_failed_step": null
+        },
+        {
+          "id": 116986471579,
+          "name": "DOW Phase Tests (0-9) (phase6 or phase7 or phase8 or phase9)",
+          "status": "completed",
+          "conclusion": "success",
+          "first_failed_step": null
+        },
+        {
+          "id": 116986471612,
+          "name": "Integration Tests",
+          "status": "completed",
+          "conclusion": "success",
+          "first_failed_step": null
+        },
+        {
+          "id": 116986471718,
+          "name": "DOW Phase Tests (0-9) (phase3 or phase4 or phase5)",
+          "status": "completed",
+          "conclusion": "success",
+          "first_failed_step": null
+        },
+        {
+          "id": 116988880317,
+          "name": "Quality Gates",
+          "status": "completed",
+          "conclusion": "failure",
+          "first_failed_step": {
+            "number": 8,
+            "name": "Check test coverage threshold"
+          }
+        },
+        {
+          "id": 116988880364,
+          "name": "End-to-End Tests",
+          "status": "completed",
+          "conclusion": "success",
+          "first_failed_step": null
+        },
+        {
+          "id": 116991310173,
+          "name": "Test Summary Report",
+          "status": "completed",
+          "conclusion": "success",
+          "first_failed_step": null
+        },
+        {
+          "id": 116992141868,
+          "name": "Notify Results",
+          "status": "completed",
+          "conclusion": "skipped",
+          "first_failed_step": null
+        }
+      ],
+      "run_attempt": null,
+      "verified_run_sha": null,
+      "accepted_root": null
+    },
+    {
+      "pr": 2054,
+      "run_id": 38903706856,
+      "workflow": "DOW + Recursive DMAIC - Enhanced CI",
+      "readback": "LATEST_ATTEMPT_FIRST_PAGE_UNVERIFIED",
+      "job_page": [
+        {
+          "id": 116981927648,
+          "name": "Lint & Code Quality",
+          "status": "completed",
+          "conclusion": "success",
+          "first_failed_step": null
+        },
+        {
+          "id": 116983245299,
+          "name": "Test - Ubuntu (3.11)",
+          "status": "completed",
+          "conclusion": "failure",
+          "first_failed_step": {
+            "number": 6,
+            "name": "Run pytest --benchmark-disable -v -n auto --cov=. --cov-report=term-missing --cov-report=xml"
+          }
+        },
+        {
+          "id": 116983247184,
+          "name": "Test - RHEL 9",
+          "status": "completed",
+          "conclusion": "skipped",
+          "first_failed_step": null
+        },
+        {
+          "id": 116983247736,
+          "name": "Test - RHEL 8",
+          "status": "completed",
+          "conclusion": "skipped",
+          "first_failed_step": null
+        },
+        {
+          "id": 116986959193,
+          "name": "CI Summary",
+          "status": "completed",
+          "conclusion": "success",
+          "first_failed_step": null
+        },
+        {
+          "id": 116986960437,
+          "name": "Smoke Tests",
+          "status": "completed",
+          "conclusion": "skipped",
+          "first_failed_step": null
+        },
+        {
+          "id": 116986961661,
+          "name": "Integration Tests",
+          "status": "completed",
+          "conclusion": "skipped",
+          "first_failed_step": null
+        }
+      ],
+      "run_attempt": null,
+      "verified_run_sha": null,
+      "accepted_root": null
+    },
+    {
+      "pr": 2055,
+      "run_id": 38875312630,
+      "workflow": "DMAIC V3 Bridge Integration - Test System",
+      "readback": "LATEST_ATTEMPT_FIRST_PAGE_UNVERIFIED",
+      "job_page": [
+        {
+          "id": 116888826718,
+          "name": "📊 Static Analysis",
+          "status": "completed",
+          "conclusion": "failure",
+          "first_failed_step": {
+            "number": 5,
+            "name": "Run flake8"
+          }
+        },
+        {
+          "id": 116888827127,
+          "name": "🔥 Bridge Smoke Tests",
+          "status": "completed",
+          "conclusion": "success",
+          "first_failed_step": null
+        },
+        {
+          "id": 116914895916,
+          "name": "🧪 Bridge Unit Tests",
+          "status": "completed",
+          "conclusion": "failure",
+          "first_failed_step": {
+            "number": 4,
+            "name": "Install dependencies"
+          }
+        },
+        {
+          "id": 116934176172,
+          "name": "📢 Deployment Notification",
+          "status": "completed",
+          "conclusion": "success",
+          "first_failed_step": null
+        },
+        {
+          "id": 116934176907,
+          "name": "🚀 Full Deployment Test",
+          "status": "completed",
+          "conclusion": "skipped",
+          "first_failed_step": null
+        },
+        {
+          "id": 116934177516,
+          "name": "🔗 Bridge Integration Tests",
+          "status": "completed",
+          "conclusion": "skipped",
+          "first_failed_step": null
+        }
+      ],
+      "run_attempt": null,
+      "verified_run_sha": null,
+      "accepted_root": null
+    },
+    {
+      "pr": 2054,
+      "run_id": 38903706823,
+      "workflow": "MIP B0 Test Admission and Coverage Evidence",
+      "readback": "LATEST_ATTEMPT_FIRST_PAGE_UNVERIFIED",
+      "job_page": [
+        {
+          "id": 116981927593,
+          "name": "B0 canonical coverage producer",
+          "status": "completed",
+          "conclusion": "failure",
+          "first_failed_step": {
+            "number": 6,
+            "name": "Run canonical exact-head coverage surface"
+          }
+        },
+        {
+          "id": 116981927862,
+          "name": "B1 false-green census",
+          "status": "completed",
+          "conclusion": "success",
+          "first_failed_step": null
+        },
+        {
+          "id": 116981927871,
+          "name": "B0 report-only producer",
+          "status": "completed",
+          "conclusion": "success",
+          "first_failed_step": null
+        },
+        {
+          "id": 116981927941,
+          "name": "B0 static/DAB census producer",
+          "status": "completed",
+          "conclusion": "success",
+          "first_failed_step": null
+        },
+        {
+          "id": 116982873915,
+          "name": "DAB proposal worker DAB-8e1a39cdb56c-E731-001",
+          "status": "completed",
+          "conclusion": "success",
+          "first_failed_step": null
+        },
+        {
+          "id": 116982873947,
+          "name": "DAB proposal worker DAB-8e1a39cdb56c-F401-003",
+          "status": "completed",
+          "conclusion": "success",
+          "first_failed_step": null
+        },
+        {
+          "id": 116982873953,
+          "name": "DAB proposal worker DAB-8e1a39cdb56c-F401-007",
+          "status": "completed",
+          "conclusion": "success",
+          "first_failed_step": null
+        },
+        {
+          "id": 116982874009,
+          "name": "DAB proposal worker DAB-8e1a39cdb56c-F401-005",
+          "status": "completed",
+          "conclusion": "success",
+          "first_failed_step": null
+        },
+        {
+          "id": 116982874060,
+          "name": "DAB proposal worker DAB-8e1a39cdb56c-E741-002",
+          "status": "completed",
+          "conclusion": "success",
+          "first_failed_step": null
+        },
+        {
+          "id": 116982874115,
+          "name": "DAB proposal worker DAB-8e1a39cdb56c-F401-004",
+          "status": "completed",
+          "conclusion": "success",
+          "first_failed_step": null
+        },
+        {
+          "id": 116982874116,
+          "name": "DAB proposal worker DAB-8e1a39cdb56c-F401-006",
+          "status": "completed",
+          "conclusion": "success",
+          "first_failed_step": null
+        },
+        {
+          "id": 116982874221,
+          "name": "DAB proposal worker DAB-8e1a39cdb56c-F401-008",
+          "status": "completed",
+          "conclusion": "success",
+          "first_failed_step": null
+        },
+        {
+          "id": 116983714728,
+          "name": "B0 report-only admission census",
+          "status": "completed",
+          "conclusion": "failure",
+          "first_failed_step": {
+            "number": 2,
+            "name": "Require all exact-SHA producers GREEN"
+          }
+        }
+      ],
+      "run_attempt": null,
+      "verified_run_sha": null,
+      "accepted_root": null
+    },
+    {
+      "pr": 2007,
+      "run_id": 38725120946,
+      "workflow": "W81 Repair Outcome Block",
+      "readback": "LATEST_ATTEMPT_FIRST_PAGE_UNVERIFIED",
+      "job_page": [
+        {
+          "id": 116388928294,
+          "name": "validate",
+          "status": "completed",
+          "conclusion": "success",
+          "first_failed_step": null
+        },
+        {
+          "id": 116388928718,
+          "name": "governance-report-preview",
+          "status": "completed",
+          "conclusion": "failure",
+          "first_failed_step": {
+            "number": 4,
+            "name": "Generate exact workflow rationalisation candidate"
+          }
+        },
+        {
+          "id": 116388928754,
+          "name": "verify-outcomes",
+          "status": "completed",
+          "conclusion": "success",
+          "first_failed_step": null
+        },
+        {
+          "id": 116389006022,
+          "name": "measure (w80_fail, b70f28ba5144aa352b60a511a4237417c6757920)",
+          "status": "completed",
+          "conclusion": "success",
+          "first_failed_step": null
+        },
+        {
+          "id": 116389006137,
+          "name": "measure (w77_repair, bf8e8bce977e895825e7c39f5609bfa89d751df1)",
+          "status": "completed",
+          "conclusion": "success",
+          "first_failed_step": null
+        },
+        {
+          "id": 116389006148,
+          "name": "measure (w77_fail, 49852ad2c8c92f2bacc06d5a52ccb6fb5b2f211a)",
+          "status": "completed",
+          "conclusion": "success",
+          "first_failed_step": null
+        },
+        {
+          "id": 116389006371,
+          "name": "measure (w80_repair, 7d9802aab65b3fead4c1a99719b839485d55f8a2)",
+          "status": "completed",
+          "conclusion": "success",
+          "first_failed_step": null
+        },
+        {
+          "id": 116389191403,
+          "name": "aggregate",
+          "status": "completed",
+          "conclusion": "success",
+          "first_failed_step": null
+        }
+      ],
+      "run_attempt": null,
+      "verified_run_sha": null,
+      "accepted_root": null
+    }
+  ]
+}

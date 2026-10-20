@@ -1,0 +1,55 @@
+{
+  "schema": "char.bd.cbd11.repair-and-scale/v1",
+  "observed_date": "2026-10-16",
+  "type": "append_only_evidence",
+  "admission": "HOLD",
+  "repairs": [
+    {
+      "pr": 2029,
+      "old_head": "58f8f5d635cf517643b606398a165e7347f9c66e",
+      "new_head": "050c76026a186adddd61381c8263265e000110a5",
+      "file": "DMAIC_V3/requirements.txt",
+      "first_red_original": "Python3.9 matplotlib>=3.10.0 unavailable",
+      "prior_pulse_observation": "matplotlib 3.9.4 fetched successfully, then pytest-asyncio>=1.4.0 unavailable",
+      "repair": "Introduce Python<3.10 pytest-asyncio>=1.2.0,<1.3.0 while retaining Python>=3.10 original constraint",
+      "native_exact_head_checks": 35,
+      "native_pending": 35,
+      "root_resolved": false
+    },
+    {
+      "pr": 2030,
+      "head": "907b96efd08d4b6121e8f5dec97e23af38e9f77f",
+      "target": "Mixed statement and branch coverage failure",
+      "repair_prior_commit": true,
+      "new_head_target_test": "NOT_TERMINAL",
+      "separate_first_reds": [
+        "policy-and-inventory",
+        "Security Scanning"
+      ],
+      "b0_job_id": 116725018550,
+      "b0_state": "IN_PROGRESS",
+      "root_resolved": false
+    }
+  ],
+  "ownership": {
+    "python39": "ABACUS#2029",
+    "coverage": "ABACUS#2030",
+    "security": "ABACUS#2027",
+    "governance": "ABACUS#1995"
+  },
+  "scaling": {
+    "parallel_lanes_planned": 3,
+    "actual_authenticated_workers": 0,
+    "source_commits_this_pulse": 1,
+    "technical_roots_closed_verified": 0,
+    "artifact_coverage_delta": null,
+    "queue_p95": null
+  },
+  "gates": {
+    "a10": "HOLD",
+    "required_checks": "NOT_EFFECTIVELY_ENFORCED",
+    "review": "HOLD",
+    "qps": "DEFER"
+  },
+  "next": "Consume terminal new exact-head Python3.9 jobs, check pip resolution beyond pytest-asyncio, get #2030 test-ubuntu result; measure numerator and denominator from exact-head artifacts; no merge or waiver."
+}

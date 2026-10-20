@@ -1,0 +1,100 @@
+{
+  "artifacts": {
+    "html": {
+      "path": "index.html",
+      "sha256": "0f88b162024dbb6032e8ca445ffb8afa0c613ccd7a35bfbc834e6202b0d6a4c6",
+      "status": "PASS"
+    },
+    "json_dag": {
+      "path": "SPINE_DAG_W11.json",
+      "sha256": "441bda1443e96c35c15d4b9b1e4ecbef3c494a2fde5ba480b31523c72b7c813e",
+      "status": "PASS"
+    },
+    "json_sipoc": {
+      "path": "SPINE_SIPOC_W11.json",
+      "sha256": "81c1c34fabb83e87ab355a1bdf82a4e028293a6842c7f915f84543030ce969a7",
+      "status": "PASS"
+    },
+    "json_statistics": {
+      "path": "SPINE_STATS_W12.json",
+      "sha256": "d626246ccb96d5d8fa0343746ae6803b5e99fd317c713e7e619de439ba39cd06",
+      "status": "PASS"
+    }
+  },
+  "checks": {
+    "cross_format_parity": "PASS",
+    "exact_sha_native_ci": "DEFER",
+    "formula_or_content": "PASS",
+    "independent_human_review": "DEFER",
+    "playwright": "PASS",
+    "render_visual": "PASS",
+    "structural": "PASS"
+  },
+  "defects": [],
+  "evidence_level": "LOCAL_REPRODUCIBILITY",
+  "governance": {
+    "accepted_rex": null,
+    "authenticated_crew_launch": null,
+    "authority_transfer": false,
+    "causal_roots_closed": null,
+    "merge_admission": "HOLD",
+    "security_waiver": false
+  },
+  "metrics": {
+    "critical_path_hops": 6,
+    "graph_edges": 46,
+    "graph_nodes": 37,
+    "independent_wave_clusters": null,
+    "inference_ready": false,
+    "main_epochs_descriptive": 3,
+    "sipoc_rows": 5,
+    "source_assets": 24,
+    "source_to_sink_paths": 6
+  },
+  "release": "CODE_PURPLE_W12_N_PLUS_I_TYPED_SPINE",
+  "residual_blockers": [
+    "PR exact-head terminal native B0, CI matrix and security unknown at readback",
+    "Required status contexts and independent approvals not enforced by active ruleset",
+    "Design graph edges not equal native executed trigger receipts",
+    "PCA/ANOVA/MANOVA/Bradley-Terry/Bayesian/SPC/DNN not inferentially qualified"
+  ],
+  "schema": "qps-artifact-qa/1.0",
+  "source": {
+    "frozen_source_history_sha256": "e7b1cfb7bf43a6b46c1dcafc56848932e085d087b18f5907a4c3da8666e77e1b",
+    "git_sha": "SOURCE_BUILD_SUBMITTED_TO_DRAFT_PR_NOT_NATIVE_CI_QUALIFIED",
+    "locator": "GBOGEB/ABACUS/MIP/G3CS_CONVERGENCE_V2/observatory/w10/",
+    "native_main_epoch_sha256": "b46df16ccc6c7e35f2f88388fe6507dfd827e89225872aaf51aa94596903eb33",
+    "statistics_provider_sha256": "d69c05fb0d982626d5b246939f4875365e51f77b723b4c4701e8c6f6ad8e522e",
+    "trigger_provider_sha256": "7deeefaae349dbcb3f784cd3a4ea7e6e2456b2459c1c6f6eb494989fdab8d63d"
+  },
+  "testing": {
+    "coverage_basis": "coverage.py --branch --include=dependency_metrics.py,trigger_events.py run over W12 tests",
+    "local_failed": 0,
+    "local_passed": 120,
+    "local_skipped_optional_artifact": 1,
+    "local_w12_provider_combined_coverage_pct": 98,
+    "no_console_errors": true,
+    "no_horizontal_overflow": true,
+    "no_page_errors": true,
+    "playwright_viewports": [
+      {
+        "height": 1000,
+        "result": "PASS",
+        "width": 1440
+      },
+      {
+        "height": 800,
+        "result": "PASS",
+        "width": 1280
+      },
+      {
+        "height": 844,
+        "result": "PASS",
+        "width": 390
+      }
+    ],
+    "rebuild_byte_equal": true,
+    "w10_w11_w12_methods_executed": 121,
+    "w12_new_methods": 54
+  }
+}

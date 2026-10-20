@@ -15,10 +15,10 @@ REQUIRED_DOCS = (
     "docs/Q3_Q4_Q5/CONTRACTUAL_GAPS.md",
 )
 REQUIRED_EXTERNALIZED_ARTIFACTS = {
-    "tender-alat-intent": {
+    "tender-supplier-a-intent": {
         "state": "externalized_private",
         "external_repo": "GBOGEB/cryoplant-project",
-        "original_path": "docs/Q3_Q4_Q5/WHAT_ALAT_IS_REALLY_ASKING.md",
+        "original_path": "docs/Q3_Q4_Q5/WHAT_SUPPLIER_A_IS_REALLY_ASKING.md",
         "provenance_path": "tender_library/PROVENANCE.csv",
         "sha256": (
             "03a0d496913d642102358492a2000363"

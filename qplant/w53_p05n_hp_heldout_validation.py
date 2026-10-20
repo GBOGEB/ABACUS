@@ -1,7 +1,7 @@
-"""W53-P05N: held-out validation of LKT nominal 2K-OP HP power.
+"""W53-P05N: held-out validation of SUPPLIER_B nominal 2K-OP HP power.
 
 The target row (326 g/s, 814 kW) is excluded from model fitting. The predictor is
-fit only to the other source-bound LKT operating-mode HP flow/power rows. This is
+fit only to the other source-bound SUPPLIER_B operating-mode HP flow/power rows. This is
 an internal cross-mode validation, not an independent OEM performance guarantee.
 """
 from __future__ import annotations
@@ -60,7 +60,7 @@ def report() -> dict:
             "reported_HP_power_kW": TARGET_POWER,
             "excluded_from_fit": True,
         },
-        "training_authority": "OTHER_LKT_SOURCE_BOUND_OPERATING_MODE_ROWS_FROM_REV1_7_SSOT",
+        "training_authority": "OTHER_SUPPLIER_B_SOURCE_BOUND_OPERATING_MODE_ROWS_FROM_REV1_7_SSOT",
         "models": {"linear": linear, "quadratic": quadratic, "cubic_sensitivity": cubic},
         "primary_model": "linear",
         "primary_reason": "lowest_complexity_cross_mode_predictor; avoids overfitting eight training rows",

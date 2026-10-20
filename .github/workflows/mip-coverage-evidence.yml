@@ -91,7 +91,7 @@ jobs:
           test "$actual_sha" = "$EXACT_SHA"
 
       - name: Setup Python 3.12
-        uses: actions/setup-python@v7.0.0
+        uses: actions/setup-python@v7
         with:
           python-version: "3.12"
           cache: "pip"
@@ -135,7 +135,7 @@ jobs:
 
       - name: Upload canonical coverage producer evidence
         if: always()
-        uses: actions/upload-artifact@v7.0.2
+        uses: actions/upload-artifact@v7
         with:
           name: b0-canonical-${{ env.EXACT_SHA }}
           path: |
@@ -161,7 +161,7 @@ jobs:
           test "$actual_sha" = "$EXACT_SHA"
 
       - name: Setup Python 3.12
-        uses: actions/setup-python@v7.0.0
+        uses: actions/setup-python@v7
         with:
           python-version: "3.12"
           cache: "pip"
@@ -200,7 +200,7 @@ jobs:
             --out test_reports/b0/coverage-dab.json
 
       - name: Upload report-only producer evidence
-        uses: actions/upload-artifact@v7.0.2
+        uses: actions/upload-artifact@v7
         with:
           name: b0-report-only-producer-${{ env.EXACT_SHA }}
           path: test_reports/b0/
@@ -223,7 +223,7 @@ jobs:
           test "$actual_sha" = "$EXACT_SHA"
 
       - name: Setup Python
-        uses: actions/setup-python@v7.0.0
+        uses: actions/setup-python@v7
         with:
           python-version: "3.12"
 
@@ -238,7 +238,7 @@ jobs:
             --out test_reports/b1/false-green-census.json
 
       - name: Upload B1 census
-        uses: actions/upload-artifact@v7.0.2
+        uses: actions/upload-artifact@v7
         with:
           name: b1-false-green-census-${{ env.EXACT_SHA }}
           path: test_reports/b1/
@@ -264,7 +264,7 @@ jobs:
           test "$actual_sha" = "$EXACT_SHA"
 
       - name: Setup Python 3.12
-        uses: actions/setup-python@v7.0.0
+        uses: actions/setup-python@v7
         with:
           python-version: "3.12"
           cache: "pip"
@@ -334,7 +334,7 @@ jobs:
           PY
 
       - name: Upload static/DAB producer evidence
-        uses: actions/upload-artifact@v7.0.2
+        uses: actions/upload-artifact@v7
         with:
           name: b0-static-dab-${{ env.EXACT_SHA }}
           path: |
@@ -366,12 +366,12 @@ jobs:
           test "$actual_sha" = "$EXACT_SHA"
 
       - name: Setup Python 3.12
-        uses: actions/setup-python@v7.0.0
+        uses: actions/setup-python@v7
         with:
           python-version: "3.12"
 
       - name: Download proposal queue
-        uses: actions/download-artifact@v8
+        uses: actions/download-artifact@v8.0.2
         with:
           name: b0-static-dab-${{ env.EXACT_SHA }}
           path: test_reports/post-b0
@@ -437,7 +437,7 @@ jobs:
           PY
 
       - name: Upload proposal worker receipt
-        uses: actions/upload-artifact@v7.0.2
+        uses: actions/upload-artifact@v7
         with:
           name: dab-proposal-worker-${{ matrix.proposal_id }}
           path: |
@@ -481,30 +481,30 @@ jobs:
           test "$actual_sha" = "$EXACT_SHA"
 
       - name: Setup Python 3.12
-        uses: actions/setup-python@v7.0.0
+        uses: actions/setup-python@v7
         with:
           python-version: "3.12"
 
       - name: Download canonical coverage evidence
-        uses: actions/download-artifact@v8
+        uses: actions/download-artifact@v8.0.2
         with:
           name: b0-canonical-${{ env.EXACT_SHA }}
           path: test_reports/post-b0
 
       - name: Download report-only evidence
-        uses: actions/download-artifact@v8
+        uses: actions/download-artifact@v8.0.2
         with:
           name: b0-report-only-producer-${{ env.EXACT_SHA }}
           path: test_reports/b0
 
       - name: Download B1 false-green evidence
-        uses: actions/download-artifact@v8
+        uses: actions/download-artifact@v8.0.2
         with:
           name: b1-false-green-census-${{ env.EXACT_SHA }}
           path: test_reports/b1
 
       - name: Download static/DAB evidence
-        uses: actions/download-artifact@v8
+        uses: actions/download-artifact@v8.0.2
         with:
           name: b0-static-dab-${{ env.EXACT_SHA }}
           path: test_reports/post-b0
@@ -558,7 +558,7 @@ jobs:
 
       - name: Upload B0 report-only evidence
         if: always()
-        uses: actions/upload-artifact@v7.0.2
+        uses: actions/upload-artifact@v7
         with:
           name: b0-test-admission-${{ env.EXACT_SHA }}
           path: |

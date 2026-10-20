@@ -1,0 +1,94 @@
+name: CODE PURPLE W40 Binary Penetration 4-Cell Native
+on:
+  pull_request:
+    paths:
+      - 'tests/test_qps_binary_bridge_w40_penetration.py'
+      - 'tests/test_qps_binary_bridge_w41_frontier.py'
+      - 'tests/test_qps_binary_bridge.py'
+      - 'tests/test_qps_binary_bridge_w32_integrity.py'
+      - 'tools/qps_binary_bridge.py'
+      - 'scripts/cbd_w40_native_receipt.py'
+      - '.github/workflows/code-purple-w40-binary-penetration.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: code-purple-w40-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+jobs:
+  parser-penetration:
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-24.04, windows-2022]
+        python: ['3.11', '3.12']
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 18
+    steps:
+      - name: Exact-head checkout
+        uses: actions/checkout@v7
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+      - name: Python
+        uses: actions/setup-python@v7.0.0
+        with:
+          python-version: ${{ matrix.python }}
+      - name: Install narrow native instrumented test dependencies
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -m pip install \
+            pytest==9.1.1 pytest-cov==5.0.0 coverage==7.16.2 \
+            pypdf==6.21.1 numpy==2.2.6
+      - name: Matched N baseline - legacy plus W32 only
+        shell: bash
+        env:
+          EXACT_HEAD: ${{ github.event.pull_request.head.sha || github.sha }}
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$EXACT_HEAD"
+          mkdir -p artifacts/w40
+          python -m pytest -q \
+            tests/test_qps_binary_bridge.py \
+            tests/test_qps_binary_bridge_w32_integrity.py \
+            --cov=tools --cov-branch \
+            --cov-report=json:artifacts/w40/baseline-coverage.json \
+            --junitxml=artifacts/w40/baseline-junit.xml
+      - name: 42 new, plus W32 and baseline cases - native branch coverage
+        shell: bash
+        env:
+          EXACT_HEAD: ${{ github.event.pull_request.head.sha || github.sha }}
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$EXACT_HEAD"
+          mkdir -p artifacts/w40
+          python -m pytest -q \
+            tests/test_qps_binary_bridge.py \
+            tests/test_qps_binary_bridge_w32_integrity.py \
+            tests/test_qps_binary_bridge_w40_penetration.py \
+            tests/test_qps_binary_bridge_w41_frontier.py \
+            --cov=tools --cov-branch \
+            --cov-report=json:artifacts/w40/coverage.json \
+            --junitxml=artifacts/w40/junit.xml
+      - name: Pin real run, job, attempt and matched scoped numerators
+        shell: bash
+        env:
+          EXACT_HEAD: ${{ github.event.pull_request.head.sha || github.sha }}
+          RUN_ID: ${{ github.run_id }}
+          RUN_ATTEMPT: ${{ github.run_attempt }}
+          GITHUB_JOB_NAME: ${{ matrix.os }}-py${{ matrix.python }}
+        run: |
+          set -euo pipefail
+          python scripts/cbd_w40_native_receipt.py
+      - name: Upload all success/failure evidence for audit
+        if: always()
+        uses: actions/upload-artifact@v7.0.2
+        with:
+          name: >-
+            ${{ format('w40-parser-{0}-py{1}-{2}-a{3}',
+            matrix.os, matrix.python, github.run_id,
+            github.run_attempt) }}
+          path: artifacts/w40/
+          if-no-files-found: warn
+          retention-days: 30

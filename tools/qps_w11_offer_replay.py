@@ -57,7 +57,7 @@ def validate_record(record: ReplayRecord) -> None:
         raise ValueError("source_locator is mandatory")
     if record.source_format not in {"pdf", "xlsx", "docx", "pptx"}:
         raise ValueError("unsupported source_format")
-    if record.bidder not in {"ALAT", "LKT", "NONE"}:
+    if record.bidder not in {"SUPPLIER_A", "SUPPLIER_B", "NONE"}:
         raise ValueError("unsupported bidder")
     if not 0 <= record.extraction_confidence <= 1:
         raise ValueError("extraction_confidence must be within [0, 1]")

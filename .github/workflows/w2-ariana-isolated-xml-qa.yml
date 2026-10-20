@@ -1,0 +1,63 @@
+name: W2 Ariana Isolated XML Compatibility QA
+on:
+  pull_request:
+    paths:
+      - 'requirements-test.txt'
+      - 'tests/test_ariana_unit_matrix_dependency_contract.py'
+      - 'tests/test_ariana_secure_junit_dependency.py'
+      - 'tests/test_w3_security_native_receipt.py'
+      - 'scripts/ci/w3_security_native_receipt.py'
+      - '.github/workflows/w2-ariana-isolated-xml-qa.yml'
+permissions:
+  contents: read
+jobs:
+  isolated-os-proof:
+    strategy:
+      fail-fast: false
+      max-parallel: 3
+      matrix:
+        os: [ubuntu-24.04, windows-2022, macos-14]
+        python-version: ['3.10', '3.11', '3.12']
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+      - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97
+        with:
+          python-version: ${{ matrix.python-version }}
+      - name: Verify exact head and install isolated manifest
+        shell: bash
+        env:
+          EXPECTED_HEAD: ${{ github.event.pull_request.head.sha }}
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$EXPECTED_HEAD"
+          python -m pip install -r requirements-test.txt
+      - name: Test secure XML parser and matrix dependency contract
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p w2-evidence
+          python -m pytest -q tests/test_ariana_unit_matrix_dependency_contract.py tests/test_ariana_secure_junit_dependency.py tests/test_w3_security_native_receipt.py --junitxml=w2-evidence/junit.xml
+      - name: Verify fail-closed exact-head native JUnit receipt
+        shell: bash
+        env:
+          EXPECTED_HEAD: ${{ github.event.pull_request.head.sha }}
+          OS_CELL: ${{ matrix.os }}
+          PYTHON_CELL: ${{ matrix.python-version }}
+        run: |
+          set -euo pipefail
+          python -m scripts.ci.w3_security_native_receipt --expected-head "$EXPECTED_HEAD" \
+            --os-cell "$OS_CELL" --python-cell "$PYTHON_CELL" \
+            --junit w2-evidence/junit.xml --out w2-evidence/native-receipt.json
+          test -s w2-evidence/junit.xml
+          test -s w2-evidence/native-receipt.json
+      - name: Require native JUnit and receipt artifacts
+        if: always()
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9
+        with:
+          name: secure-xml-${{ matrix.os }}-py${{ matrix.python-version }}
+          path: w2-evidence/
+          if-no-files-found: error

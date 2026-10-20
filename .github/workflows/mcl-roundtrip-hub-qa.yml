@@ -1,0 +1,56 @@
+name: MCL Round-trip and Convergence Hub QA
+on:
+  pull_request:
+    paths:
+      - 'mission_control_lite/artifact_bundle.py'
+      - 'tests/test_mcl_artifact_roundtrip.py'
+      - 'tests/test_mcl_hub_contract.py'
+      - 'docs/code-purple-mcl-hub/**'
+      - '.github/workflows/mission-control-lite-testflight.yml'
+      - '.github/workflows/mcl-roundtrip-hub-qa.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: mcl-proof-${{ github.ref }}
+  cancel-in-progress: false
+jobs:
+  artifact-transport:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+      - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97
+        with:
+          python-version: '3.11'
+      - name: Portable ZIP and trusted-byte negative tests
+        run: python -m unittest discover -s tests -p test_mcl_artifact_roundtrip.py -v
+  actor-boundary:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+      - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97
+        with:
+          python-version: '3.11'
+      - name: Existing external actor authorization and anti-replay controls
+        run: python -m unittest discover -s tests -p test_mission_control_lite.py -v
+  hub-projection:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+      - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97
+        with:
+          python-version: '3.11'
+      - name: Ledger, navigation and no-admission contract
+        run: python -m unittest discover -s tests -p test_mcl_hub_contract.py -v

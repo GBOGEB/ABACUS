@@ -7,7 +7,7 @@
   "evidence_registry_sha256": "d9312fbcbd36cd815d867278d80a54a99c3c873f82159976e48863404b62f282",
   "generated_at": "2026-09-07T18:37:00+02:00",
   "bidder_model": {
-    "split": ["LKT_ONLY", "ALAT_ONLY"],
+    "split": ["SUPPLIER_B_ONLY", "SUPPLIER_A_ONLY"],
     "combined": ["SIDE_BY_SIDE_BY_RTM", "DIFFERENTIAL_ONLY", "SHARED_GAPS", "BIDDER_UNIQUE_GAPS"],
     "shared_grain": "RTM",
     "cross_bidder_state_copy": false

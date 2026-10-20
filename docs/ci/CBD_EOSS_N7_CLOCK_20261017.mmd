@@ -1,0 +1,12 @@
+flowchart TD
+ C[GitHub job created_at] --> S[started_at]
+ S --> E[completed_at]
+ C -->|same job, ordered timestamps| Q[job wait]
+ S -->|same job, ordered timestamps| D[job execution]
+ D -. not comparable to .-> M[local monotonic EOSS build]
+ M --> H{3 genuine matched cold/warm pairs?}
+ H -->|no| U[cache speedup UNKNOWN]
+ H -->|yes| V[descriptive matched comparison]
+ V --> W{native source and toolchain matched?}
+ W -->|no| U
+ W -->|yes| P[estimated effect, independent review]

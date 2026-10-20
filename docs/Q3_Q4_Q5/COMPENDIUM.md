@@ -13,7 +13,7 @@ Can SCK CEN clarify the design basis, operational responsibilities, pressure-pro
 ### Q5
 Can SCK CEN clarify the scope, design basis, operating conditions and pressure-protection requirements associated with Line W and AH112?
 
-## What ALaT Is Really Asking
+## What Supplier_a Is Really Asking
 Q3: Is a gas balloon mandatory and what contamination scenarios define purification sizing?
 Q4: What abnormal events must QPS accommodate and what pressure basis applies?
 Q5: What is the actual Line W design basis and AH112 scope?

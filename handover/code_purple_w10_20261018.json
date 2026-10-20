@@ -1,0 +1,32 @@
+{
+  "schema": "code_purple.w10.source_owner_receiver.v1",
+  "observed_date_utc": "2026-10-18",
+  "observed_snapshot_atomic": false,
+  "visibility": "PUBLIC_SAFE",
+  "owner_repository": "GBOGEB/ABACUS",
+  "default_branch": "main",
+  "observed_owner_source_sha": "9e0200190555736c74295ee74881e3c003e8a35c",
+  "canonical_handover_repo": "GBOGEB/pipeline-automation-hub",
+  "canonical_handover_pr": 726,
+  "canonical_input_path": "mission-control/v2/handoff/closeout/intakes/CP-W10-MYCELIUM-FEDERATION-20261018.json",
+  "canonical_source_basis_master_sha": "2cc9b4d433c404b50d7afc661f863b96d42e97cc",
+  "verified_prior_w9_source": "fec6231abdead0ce8554b36c7199470bda3a97b1",
+  "verified_prior_w9_native_run_id": 39147416140,
+  "predecessor_session": "CP-FED-CENSUS-W4-20261018",
+  "canonical_bd_authority": "mission-control/federation-atlas/CODE_PURPLE_BD_QUEUE_v1.json",
+  "inherited_source_authority": false,
+  "owner_acceptance": "WITHHELD",
+  "observed_handover_native_status": "PENDING",
+  "security_waiver": false,
+  "merge_admission": "HOLD",
+  "worker_hours": null,
+  "pca_bt_readiness": "NOT_QUALIFIED",
+  "required_owner_actions": [
+    "Refresh ABACUS `main` and canonical B0/Python/A10/Safety/CodeQL with run ID, attempt, job and artifact; historic W4 green is not current-main green.",
+    "Use `tools/handover_v2/process_spec.json`, `handover_input.schema.json` and `handover/HANDOVER_MESSAGE_TEMPLATE.md` for a genuine ABACUS V2 capsule; do not relabel the hub GitHub-first CP.CLOSE as a sealed V2 replay.",
+    "Root/BD owner #1929 is authoritative; separate existing 19 CPQ work items from independent causal roots, CODEX fingerprints, GitHub issues and PRs.",
+    "Governance #1860 requires effective last-push approval, required contexts, independent eligible review, resolved threads and a rejected RED canary; observed merge does not satisfy this.",
+    "ABACUS latest matched statement/branch/PR-diff coverage UNKNOWN until exact-source config/denominator proof."
+  ],
+  "cross_repo_content_custody": "PUBLIC_SAFE_ONLY"
+}

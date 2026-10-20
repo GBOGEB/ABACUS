@@ -1,0 +1,204 @@
+name: Mission Control Lite Testflight
+on:
+  workflow_dispatch:
+  pull_request:
+    paths:
+      - 'mission_control_lite/**'
+      - 'tests/test_mission_control_lite.py'
+      - 'tests/test_mission_control_lite_rex.py'
+      - 'tests/test_mission_control_lite_coverage.py'
+      - 'tests/test_mcl_adversarial_family.py'
+      - 'tests/test_mission_control_lite_timing.py'
+      - 'tests/test_recovery_triage.py'
+      - 'tests/test_runner_wait.py'
+      - 'scripts/validate_changed_docs.py'
+      - 'tests/test_validate_changed_docs_selector.py'
+      - 'tests/test_bd_telemetry.py'
+      - 'DMAIC_V3/requirements.txt'
+      - '.github/workflows/mission-control-lite-testflight.yml'
+permissions:
+  contents: read
+jobs:
+  native-proof:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+      - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97
+        with:
+          python-version: '3.11'
+      - name: Focused tests and timed coverage stages
+        run: |
+          set -euo pipefail
+          mkdir -p evidence
+          python -m mission_control_lite.timing_pulse measure \
+            --output evidence/phase-times.json --phase coverage-install -- \
+            python -m pip install --disable-pip-version-check \
+              coverage==7.10.7 'PyYAML>=6.0.3,<7.0'
+          python -m mission_control_lite.timing_pulse measure \
+            --output evidence/phase-times.json --phase core-tests -- \
+            python -m coverage run --branch --source=mission_control_lite \
+            -m unittest discover -s tests -p test_mission_control_lite.py -v \
+            > evidence/core-tests.log 2>&1
+          python -m mission_control_lite.timing_pulse measure \
+            --output evidence/phase-times.json --phase rex-tests -- \
+            python -m coverage run --append --branch \
+            --source=mission_control_lite \
+            -m unittest discover -s tests \
+            -p test_mission_control_lite_rex.py -v \
+            > evidence/rex-tests.log 2>&1
+          python -m mission_control_lite.timing_pulse measure \
+            --output evidence/phase-times.json --phase metrics-tests -- \
+            python -m coverage run --append --branch \
+            --source=mission_control_lite \
+            -m unittest discover -s tests \
+            -p test_mission_control_lite_coverage.py -v \
+            > evidence/metrics-tests.log 2>&1
+          python -m mission_control_lite.timing_pulse measure \
+            --output evidence/phase-times.json --phase timing-tests -- \
+            python -m coverage run --append --branch \
+            --source=mission_control_lite \
+            -m unittest discover -s tests \
+            -p test_mission_control_lite_timing.py -v \
+            > evidence/timing-tests.log 2>&1
+          python -m mission_control_lite.timing_pulse measure \
+            --output evidence/phase-times.json --phase telemetry-tests -- \
+            python -m coverage run --append --branch \
+            --source=mission_control_lite \
+            -m unittest discover -s tests \
+            -p test_bd_telemetry.py -v \
+            > evidence/telemetry-tests.log 2>&1
+          python -m mission_control_lite.timing_pulse measure \
+            --output evidence/phase-times.json --phase recovery-tests -- \
+            python -m coverage run --append --branch \
+            --source=mission_control_lite \
+            -m unittest discover -s tests \
+            -p test_recovery_triage.py -v \
+            > evidence/recovery-tests.log 2>&1
+          python -m mission_control_lite.timing_pulse measure \
+            --output evidence/phase-times.json --phase runner-wait-tests -- \
+            python -m coverage run --append --branch \
+            --source=mission_control_lite \
+            -m unittest discover -s tests \
+            -p test_runner_wait.py -v \
+            > evidence/runner-wait-tests.log 2>&1
+          python -m mission_control_lite.timing_pulse measure \
+            --output evidence/phase-times.json \
+            --phase adversarial-family-tests -- \
+            python -m coverage run --append --branch \
+            --source=mission_control_lite \
+            -m unittest discover -s tests \
+            -p test_mcl_adversarial_family.py -v \
+            > evidence/adversarial-family-tests.log 2>&1
+          python -m mission_control_lite.timing_pulse measure \
+            --output evidence/phase-times.json --phase coverage-json -- \
+            python -m coverage json -o evidence/coverage.json
+          python -m mission_control_lite.timing_pulse measure \
+            --output evidence/phase-times.json --phase coverage-report -- \
+            python -m coverage report --show-missing \
+            > evidence/coverage-summary.txt
+      - name: Run selector and telemetry negative controls
+        run: |
+          python -m unittest discover -s tests \
+            -p test_validate_changed_docs_selector.py -v
+      - name: Emit exact-head pulse telemetry
+        env:
+          PR_HEAD_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+          EVENT_SHA: ${{ github.sha }}
+          RUN_ID: ${{ github.run_id }}
+        run: |
+          set -euo pipefail
+          SOURCE_SHA="$(git rev-parse HEAD)"
+          test "$SOURCE_SHA" = "$PR_HEAD_SHA"
+          python -m mission_control_lite.coverage_pulse \
+            --coverage-json evidence/coverage.json \
+            --core-log evidence/core-tests.log \
+            --rex-log evidence/rex-tests.log \
+            --metrics-log evidence/metrics-tests.log \
+            --timing-tests-log evidence/timing-tests.log \
+            --telemetry-tests-log evidence/telemetry-tests.log \
+            --recovery-tests-log evidence/recovery-tests.log \
+            --runner-wait-tests-log evidence/runner-wait-tests.log \
+            --adversarial-family-tests-log \
+              evidence/adversarial-family-tests.log \
+            --require-penetration-suites --require-case-ids \
+            --require-adversarial-family \
+            --timing-log evidence/phase-times.json \
+            --source-sha "$SOURCE_SHA" --event-sha "$EVENT_SHA" \
+            --run-id "$RUN_ID" --output evidence/coverage-pulse.json \
+            --summary "$GITHUB_STEP_SUMMARY"
+      - name: Native output and evidence
+        env:
+          PR_HEAD_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+          EVENT_SHA: ${{ github.sha }}
+          RUN_ID: ${{ github.run_id }}
+        run: |
+          set -eu
+          mkdir -p evidence
+          SOURCE_SHA="$(git rev-parse HEAD)"
+          export SOURCE_SHA
+          test "$SOURCE_SHA" = "$PR_HEAD_SHA"
+          python - <<'PY'
+          import json
+          import os
+          from pathlib import Path
+
+          source = os.environ["SOURCE_SHA"]
+          head = os.environ["PR_HEAD_SHA"]
+          event = os.environ["EVENT_SHA"]
+          Path("evidence/provenance.json").write_text(json.dumps({
+              "executed_sha": source,
+              "pull_head_sha": head,
+              "event_sha": event,
+              "checkout_kind": (
+                  "pull_head" if source == head else "merge_or_other"
+              ),
+          }))
+          PY
+          python - <<'PY'
+          import json
+          from pathlib import Path
+
+          Path("evidence/output.json").write_text(json.dumps({
+              "status": "executed",
+              "kind": "native-testflight",
+          }))
+          PY
+          python -m mission_control_lite.cli produce \
+            --mission MCL-P0 --task native-proof --root MCL-ROOT-1 \
+            --sha "$SOURCE_SHA" --run "$RUN_ID" \
+            --output evidence/output.json \
+            --output evidence/coverage-pulse.json \
+            --output evidence/coverage.json \
+            --output evidence/phase-times.json \
+            --output evidence/provenance.json \
+            --output evidence/coverage-summary.txt \
+            --output evidence/core-tests.log \
+            --output evidence/rex-tests.log \
+            --output evidence/metrics-tests.log \
+            --output evidence/timing-tests.log \
+            --output evidence/telemetry-tests.log \
+            --output evidence/recovery-tests.log \
+            --output evidence/runner-wait-tests.log \
+            --output evidence/adversarial-family-tests.log \
+            --receipt evidence/receipt.json
+          python -m mission_control_lite.cli ingest evidence/receipt.json \
+            --artifact-root . --db evidence/registry.sqlite
+          python -m mission_control_lite.cli census \
+            --db evidence/registry.sqlite > evidence/census.json
+      - name: Stage receipt-preserving evidence directory
+        run: |
+          python -m mission_control_lite.artifact_bundle stage \
+            --receipt evidence/receipt.json --artifact-root . \
+            --bundle-root mcl_upload_root \
+            --companion evidence/registry.sqlite \
+            --companion evidence/census.json
+      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9
+        with:
+          name: mission-control-lite-evidence
+          path: mcl_upload_root/
+          include-hidden-files: false
+          if-no-files-found: error

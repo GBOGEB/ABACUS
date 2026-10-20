@@ -1,0 +1,8 @@
+flowchart LR
+    S[SUPPLIERS<br/>GitHub native receipts<br/>TestPilot E0-E2<br/>Coverage XML] --> I[INPUTS<br/>Head SHA / blob SHA<br/>run:attempt:job:step<br/>test selection / clock]
+    I --> P[PROCESS<br/>Provenance validate<br/>DAG/SIPOC join<br/>coverage and runtime pulse QA]
+    P --> O[OUTPUTS<br/>Candidate DAG/BD<br/>measured coverage ledger<br/>HTML + Mermaid + QA manifest]
+    O --> C[CUSTOMERS<br/>Source-owner engineers<br/>Reviewers / ABACUS A10<br/>Mission Control CODEX / QPS]
+    C -. feedback not mutation .-> S
+    classDef evidence fill:#e0f2fe,color:#082f49,stroke:#0284c7,stroke-width:2px
+    class S,I,P,O,C evidence

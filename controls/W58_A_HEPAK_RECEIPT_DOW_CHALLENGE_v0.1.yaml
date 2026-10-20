@@ -4,7 +4,7 @@ child_pr: 720
 child_head_sha: 8de4a3cde52968707a4112adca0e092d59ce9185
 quantified_checks:
   - no_pressure_or_PCA_promotion_without_governed_rho_mu_rows
-  - ALAT_3x185_and_LKT_4x150_remain_separate
+  - SUPPLIER_A_3x185_and_SUPPLIER_B_4x150_remain_separate
   - S_line_pressure_roles_1p05_1p10_1p30_and_PSV_gap_preserved
   - inflow_mass_arithmetic_not_promoted_to_storage_acceptance
 observed_child_metrics:

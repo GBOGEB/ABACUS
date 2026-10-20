@@ -1,0 +1,30 @@
+name: Post-Merge Summary Classification Gate
+
+on:
+  pull_request:
+    paths:
+      - ".github/workflows/post-merge-pr-summary.yml"
+      - ".github/workflows/post-merge-summary-contract.yml"
+      - "scripts/post_merge_summary.cjs"
+      - "scripts/tests/post_merge_summary.test.cjs"
+  push:
+    branches: [main]
+    paths:
+      - ".github/workflows/post-merge-pr-summary.yml"
+      - ".github/workflows/post-merge-summary-contract.yml"
+      - "scripts/post_merge_summary.cjs"
+      - "scripts/tests/post_merge_summary.test.cjs"
+
+permissions:
+  contents: read
+
+jobs:
+  classify:
+    name: Fail-closed post-merge classifier (non-admission)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - name: Run positive and negative classification controls
+        run: node --test scripts/tests/post_merge_summary.test.cjs

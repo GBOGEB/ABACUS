@@ -30,7 +30,7 @@
       "T1_K": 298.0,
       "evidence_class": "OWNER_IMMUTABLE_PLUS_SOURCE_BOUND_DERIVED_EQUAL_SHARE",
       "fluid": "Helium",
-      "id": "LKT_HP_NORMAL_56HZ_EACH",
+      "id": "SUPPLIER_B_HP_NORMAL_56HZ_EACH",
       "mass_flow_kg_s": 0.0815,
       "package_input_kW": 203.5
     },

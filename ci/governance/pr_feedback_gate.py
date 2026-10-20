@@ -1656,6 +1656,32 @@ def event_pr_numbers(
     return sorted(int(item["number"]) for item in github.open_pulls())
 
 
+HEX_SHA = re.compile(r"^[0-9a-f]{40}$")
+
+
+def departing_head_sha(
+    event: dict[str, Any],
+    number: int,
+    head_sha: str,
+) -> str | None:
+    """The head a ``pull_request`` synchronize event moved PR ``number`` off.
+
+    Only GitHub's own ``before`` field of a synchronize event for this PR
+    counts, and only when it differs from the current head.
+    """
+    if event.get("action") != "synchronize":
+        return None
+    pull = event.get("pull_request") or {}
+    if pull.get("number") != number:
+        return None
+    before = event.get("before")
+    if not isinstance(before, str) or not HEX_SHA.match(before):
+        return None
+    if before == head_sha or before == "0" * 40:
+        return None
+    return before
+
+
 def evaluable_pr_numbers(
     github: GitHub,
     event: dict[str, Any],
@@ -1733,6 +1759,22 @@ def main() -> int:
                     "Validation has started; stale success is invalidated.",
                     census_started=census_started,
                 )
+                # A success stays attached to its SHA. Invalidate the head
+                # the PR is moving away from, so a later move back to it
+                # (A -> B -> A) cannot re-expose that success (#1878).
+                departing = departing_head_sha(event, number, head_sha)
+                if departing:
+                    github.publish_gate(
+                        departing,
+                        "pending",
+                        f"PR #{number} feedback gate: SUPERSEDED",
+                        f"head={departing}\nstate=pending\n"
+                        f"superseded_by={head_sha}\n"
+                        f"census_started={census_started}",
+                        "The PR head moved away from this commit; its "
+                        "earlier result no longer admits the PR.",
+                        census_started=census_started,
+                    )
             continue
 
         if args.mark_failure_only:

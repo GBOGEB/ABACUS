@@ -1,0 +1,1571 @@
+{
+  "schema": "cbd.native_ci_job_snapshot.v1",
+  "repository": "GBOGEB/ABACUS",
+  "scope": "NATIVE_LATEST_ATTEMPT_FIRST_PAGE_JOBS_PER_RUN",
+  "observation_date_utc": "2026-10-17",
+  "authority": {
+    "merge_admission": "HOLD",
+    "security_waiver": false,
+    "authority_transfer": false,
+    "dispatch": "NOT_LAUNCHED"
+  },
+  "runs": [
+    {
+      "pr": 2083,
+      "source_head_sha": "88d33855dd7a486fa0ca49b9f2c8c7687e5dd782",
+      "run_id": 38958524460,
+      "workflow": "CI/CD Test Suite",
+      "job_total": 19,
+      "jobs": [
+        {
+          "job_id": 117364112610,
+          "run_attempt": 2,
+          "head_sha": "88d33855dd7a486fa0ca49b9f2c8c7687e5dd782",
+          "job_name": "Security Scanning",
+          "status": "completed",
+          "conclusion": "failure",
+          "failed_steps": [
+            {
+              "step_number": 11,
+              "step_name": "Enforce security red roots"
+            }
+          ]
+        },
+        {
+          "job_id": 117364113371,
+          "run_attempt": 2,
+          "head_sha": "88d33855dd7a486fa0ca49b9f2c8c7687e5dd782",
+          "job_name": "Unit Tests (Python 3.10, ubuntu-latest)",
+          "status": "completed",
+          "conclusion": "success",
+          "failed_steps": []
+        },
+        {
+          "job_id": 117364113844,
+          "run_attempt": 2,
+          "head_sha": "88d33855dd7a486fa0ca49b9f2c8c7687e5dd782",
+          "job_name": "Code Quality Checks",
+          "status": "completed",
+          "conclusion": "failure",
+          "failed_steps": [
+            {
+              "step_number": 12,
+              "step_name": "Enforce code-quality red roots"
+            }
+          ]
+        },
+        {
+          "job_id": 117364113940,
+          "run_attempt": 2,
+          "head_sha": "88d33855dd7a486fa0ca49b9f2c8c7687e5dd782",
+          "job_name": "Docker Integration Tests",
+          "status": "completed",
+          "conclusion": "success",
+          "failed_steps": []
+        },
+        {
+          "job_id": 117364114026,
+          "run_attempt": 2,
+          "head_sha": "88d33855dd7a486fa0ca49b9f2c8c7687e5dd782",
+          "job_name": "Unit Tests (Python 3.11, macos-latest)",
+          "status": "completed",
+          "conclusion": "success",
+          "failed_steps": []
+        },
+        {
+          "job_id": 117364114056,
+          "run_attempt": 2,
+          "head_sha": "88d33855dd7a486fa0ca49b9f2c8c7687e5dd782",
+          "job_name": "Integration Tests",
+          "status": "completed",
+          "conclusion": "success",
+          "failed_steps": []
+        },
+        {
+          "job_id": 117364114081,
+          "run_attempt": 2,
+          "head_sha": "88d33855dd7a486fa0ca49b9f2c8c7687e5dd782",
+          "job_name": "Unit Tests (Python 3.10, macos-latest)",
+          "status": "completed",
+          "conclusion": "success",
+          "failed_steps": []
+        },
+        {
+          "job_id": 117364114092,
+          "run_attempt": 2,
+          "head_sha": "88d33855dd7a486fa0ca49b9f2c8c7687e5dd782",
+          "job_name": "Unit Tests (Python 3.12, macos-latest)",
+          "status": "completed",
+          "conclusion": "success",
+          "failed_steps": []
+        },
+        {
+          "job_id": 117364114256,
+          "run_attempt": 2,
+          "head_sha": "88d33855dd7a486fa0ca49b9f2c8c7687e5dd782",
+          "job_name": "Unit Tests (Python 3.11, windows-latest)",
+          "status": "completed",
+          "conclusion": "success",
+          "failed_steps": []
+        },
+        {
+          "job_id": 117364114469,
+          "run_attempt": 2,
+          "head_sha": "88d33855dd7a486fa0ca49b9f2c8c7687e5dd782",
+          "job_name": "Performance & Benchmark Tests",
+          "status": "completed",
+          "conclusion": "success",
+          "failed_steps": []
+        },
+        {
+          "job_id": 117364114636,
+          "run_attempt": 2,
+          "head_sha": "88d33855dd7a486fa0ca49b9f2c8c7687e5dd782",
+          "job_name": "Test Results Notification",
+          "status": "completed",
+          "conclusion": "success",
+          "failed_steps": []
+        },
+        {
+          "job_id": 117364114678,
+          "run_attempt": 2,
+          "head_sha": "88d33855dd7a486fa0ca49b9f2c8c7687e5dd782",
+          "job_name": "Comprehensive Test Suite",
+          "status": "completed",
+          "conclusion": "success",
+          "failed_steps": []
+        },
+        {
+          "job_id": 117364114692,
+          "run_attempt": 2,
+          "head_sha": "88d33855dd7a486fa0ca49b9f2c8c7687e5dd782",
+          "job_name": "Code Coverage",
+          "status": "completed",
+          "conclusion": "success",
+          "failed_steps": []
+        },
+        {
+          "job_id": 117364114795,
+          "run_attempt": 2,
+          "head_sha": "88d33855dd7a486fa0ca49b9f2c8c7687e5dd782",
+          "job_name": "Deploy Test Dashboard",
+          "status": "completed",
+          "conclusion": "skipped",
+          "failed_steps": []
+        },
+        {
+          "job_id": 117364130357,
+          "run_attempt": 2,
+          "head_sha": "88d33855dd7a486fa0ca49b9f2c8c7687e5dd782",
+          "job_name": "Unit Tests (Python 3.12, windows-latest)",
+          "status": "completed",
+          "conclusion": "success",
+          "failed_steps": []
+        },
+        {
+          "job_id": 117364130490,
+          "run_attempt": 2,
+          "head_sha": "88d33855dd7a486fa0ca49b9f2c8c7687e5dd782",
+          "job_name": "Unit Tests (Python 3.12, ubuntu-latest)",
+          "status": "completed",
+          "conclusion": "success",
+          "failed_steps": []
+        },
+        {
+          "job_id": 117364133237,
+          "run_attempt": 2,
+          "head_sha": "88d33855dd7a486fa0ca49b9f2c8c7687e5dd782",
+          "job_name": "Unit Tests (Python 3.11, ubuntu-latest)",
+          "status": "completed",
+          "conclusion": "success",
+          "failed_steps": []
+        },
+        {
+          "job_id": 117364143249,
+          "run_attempt": 2,
+          "head_sha": "88d33855dd7a486fa0ca49b9f2c8c7687e5dd782",
+          "job_name": "Unit Tests (Python 3.10, windows-latest)",
+          "status": "completed",
+          "conclusion": "success",
+          "failed_steps": []
+        },
+        {
+          "job_id": 117365802671,
+          "run_attempt": 2,
+          "head_sha": "88d33855dd7a486fa0ca49b9f2c8c7687e5dd782",
+          "job_name": "Full Red Proof Summary",
+          "status": "queued",
+          "conclusion": null,
+          "failed_steps": []
+        }
+      ]
+    },
+    {
+      "pr": 2082,
+      "source_head_sha": "0b02071aa6e8e80ad9870b69d32348c0945feaf6",
+      "run_id": 38957128813,
+      "workflow": "CI/CD Test Suite",
+      "job_total": 19,
+      "jobs": [
+        {
+          "job_id": 117162695648,
+          "run_attempt": 1,
+          "head_sha": "0b02071aa6e8e80ad9870b69d32348c0945feaf6",
+          "job_name": "Code Quality Checks",
+          "status": "completed",
+          "conclusion": "success",
+          "failed_steps": []
+        },
+        {
+          "job_id": 117162695984,
+          "run_attempt": 1,
+          "head_sha": "0b02071aa6e8e80ad9870b69d32348c0945feaf6",
+          "job_name": "Unit Tests (Python 3.11, macos-latest)",
+          "status": "completed",
+          "conclusion": "success",
+          "failed_steps": []
+        },
+        {
+          "job_id": 117162696079,
+          "run_attempt": 1,
+          "head_sha": "0b02071aa6e8e80ad9870b69d32348c0945feaf6",
+          "job_name": "Unit Tests (Python 3.10, macos-latest)",
+          "status": "completed",
+          "conclusion": "success",
+          "failed_steps": []
+        },
+        {
+          "job_id": 117162696119,
+          "run_attempt": 1,
+          "head_sha": "0b02071aa6e8e80ad9870b69d32348c0945feaf6",
+          "job_name": "Unit Tests (Python 3.10, ubuntu-latest)",
+          "status": "completed",
+          "conclusion": "success",
+          "failed_steps": []
+        },
+        {
+          "job_id": 117162696155,
+          "run_attempt": 1,
+          "head_sha": "0b02071aa6e8e80ad9870b69d32348c0945feaf6",
+          "job_name": "Security Scanning",
+          "status": "completed",
+          "conclusion": "failure",
+          "failed_steps": [
+            {
+              "step_number": 11,
+              "step_name": "Enforce security red roots"
+            }
+          ]
+        },
+        {
+          "job_id": 117162696199,
+          "run_attempt": 1,
+          "head_sha": "0b02071aa6e8e80ad9870b69d32348c0945feaf6",
+          "job_name": "Unit Tests (Python 3.12, ubuntu-latest)",
+          "status": "completed",
+          "conclusion": "success",
+          "failed_steps": []
+        },
+        {
+          "job_id": 117162696268,
+          "run_attempt": 1,
+          "head_sha": "0b02071aa6e8e80ad9870b69d32348c0945feaf6",
+          "job_name": "Unit Tests (Python 3.10, windows-latest)",
+          "status": "completed",
+          "conclusion": "success",
+          "failed_steps": []
+        },
+        {
+          "job_id": 117162696301,
+          "run_attempt": 1,
+          "head_sha": "0b02071aa6e8e80ad9870b69d32348c0945feaf6",
+          "job_name": "Unit Tests (Python 3.11, ubuntu-latest)",
+          "status": "completed",
+          "conclusion": "success",
+          "failed_steps": []
+        },
+        {
+          "job_id": 117162696344,
+          "run_attempt": 1,
+          "head_sha": "0b02071aa6e8e80ad9870b69d32348c0945feaf6",
+          "job_name": "Unit Tests (Python 3.12, windows-latest)",
+          "status": "completed",
+          "conclusion": "success",
+          "failed_steps": []
+        },
+        {
+          "job_id": 117162696445,
+          "run_attempt": 1,
+          "head_sha": "0b02071aa6e8e80ad9870b69d32348c0945feaf6",
+          "job_name": "Unit Tests (Python 3.12, macos-latest)",
+          "status": "completed",
+          "conclusion": "success",
+          "failed_steps": []
+        },
+        {
+          "job_id": 117162696510,
+          "run_attempt": 1,
+          "head_sha": "0b02071aa6e8e80ad9870b69d32348c0945feaf6",
+          "job_name": "Unit Tests (Python 3.11, windows-latest)",
+          "status": "completed",
+          "conclusion": "success",
+          "failed_steps": []
+        },
+        {
+          "job_id": 117163819300,
+          "run_attempt": 1,
+          "head_sha": "0b02071aa6e8e80ad9870b69d32348c0945feaf6",
+          "job_name": "Docker Integration Tests",
+          "status": "completed",
+          "conclusion": "success",
+          "failed_steps": []
+        },
+        {
+          "job_id": 117163819319,
+          "run_attempt": 1,
+          "head_sha": "0b02071aa6e8e80ad9870b69d32348c0945feaf6",
+          "job_name": "Integration Tests",
+          "status": "completed",
+          "conclusion": "success",
+          "failed_steps": []
+        },
+        {
+          "job_id": 117164036140,
+          "run_attempt": 1,
+          "head_sha": "0b02071aa6e8e80ad9870b69d32348c0945feaf6",
+          "job_name": "Comprehensive Test Suite",
+          "status": "completed",
+          "conclusion": "success",
+          "failed_steps": []
+        },
+        {
+          "job_id": 117164036147,
+          "run_attempt": 1,
+          "head_sha": "0b02071aa6e8e80ad9870b69d32348c0945feaf6",
+          "job_name": "Performance & Benchmark Tests",
+          "status": "completed",
+          "conclusion": "success",
+          "failed_steps": []
+        },
+        {
+          "job_id": 117164036222,
+          "run_attempt": 1,
+          "head_sha": "0b02071aa6e8e80ad9870b69d32348c0945feaf6",
+          "job_name": "Code Coverage",
+          "status": "completed",
+          "conclusion": "success",
+          "failed_steps": []
+        },
+        {
+          "job_id": 117165867945,
+          "run_attempt": 1,
+          "head_sha": "0b02071aa6e8e80ad9870b69d32348c0945feaf6",
+          "job_name": "Full Red Proof Summary",
+          "status": "completed",
+          "conclusion": "failure",
+          "failed_steps": [
+            {
+              "step_number": 2,
+              "step_name": "Emit full-red summary"
+            }
+          ]
+        },
+        {
+          "job_id": 117165868046,
+          "run_attempt": 1,
+          "head_sha": "0b02071aa6e8e80ad9870b69d32348c0945feaf6",
+          "job_name": "Test Results Notification",
+          "status": "completed",
+          "conclusion": "success",
+          "failed_steps": []
+        },
+        {
+          "job_id": 117165869920,
+          "run_attempt": 1,
+          "head_sha": "0b02071aa6e8e80ad9870b69d32348c0945feaf6",
+          "job_name": "Deploy Test Dashboard",
+          "status": "completed",
+          "conclusion": "skipped",
+          "failed_steps": []
+        }
+      ]
+    },
+    {
+      "pr": 2080,
+      "source_head_sha": "db5d8c2c5da6abd27ea0872f3de1a0356d8928a0",
+      "run_id": 38955426428,
+      "workflow": "CI/CD Test Suite",
+      "job_total": 19,
+      "jobs": [
+        {
+          "job_id": 117156970379,
+          "run_attempt": 1,
+          "head_sha": "db5d8c2c5da6abd27ea0872f3de1a0356d8928a0",
+          "job_name": "Security Scanning",
+          "status": "completed",
+          "conclusion": "failure",
+          "failed_steps": [
+            {
+              "step_number": 11,
+              "step_name": "Enforce security red roots"
+            }
+          ]
+        },
+        {
+          "job_id": 117156970628,
+          "run_attempt": 1,
+          "head_sha": "db5d8c2c5da6abd27ea0872f3de1a0356d8928a0",
+          "job_name": "Unit Tests (Python 3.10, ubuntu-latest)",
+          "status": "completed",
+          "conclusion": "success",
+          "failed_steps": []
+        },
+        {
+          "job_id": 117156970690,
+          "run_attempt": 1,
+          "head_sha": "db5d8c2c5da6abd27ea0872f3de1a0356d8928a0",
+          "job_name": "Code Quality Checks",
+          "status": "completed",
+          "conclusion": "failure",
+          "failed_steps": [
+            {
+              "step_number": 11,
+              "step_name": "Per-tool code-quality new-debt ratchet"
+            }
+          ]
+        },
+        {
+          "job_id": 117156970696,
+          "run_attempt": 1,
+          "head_sha": "db5d8c2c5da6abd27ea0872f3de1a0356d8928a0",
+          "job_name": "Unit Tests (Python 3.12, windows-latest)",
+          "status": "completed",
+          "conclusion": "success",
+          "failed_steps": []
+        },
+        {
+          "job_id": 117156970713,
+          "run_attempt": 1,
+          "head_sha": "db5d8c2c5da6abd27ea0872f3de1a0356d8928a0",
+          "job_name": "Unit Tests (Python 3.12, ubuntu-latest)",
+          "status": "completed",
+          "conclusion": "success",
+          "failed_steps": []
+        },
+        {
+          "job_id": 117156970733,
+          "run_attempt": 1,
+          "head_sha": "db5d8c2c5da6abd27ea0872f3de1a0356d8928a0",
+          "job_name": "Unit Tests (Python 3.10, macos-latest)",
+          "status": "completed",
+          "conclusion": "success",
+          "failed_steps": []
+        },
+        {
+          "job_id": 117156970744,
+          "run_attempt": 1,
+          "head_sha": "db5d8c2c5da6abd27ea0872f3de1a0356d8928a0",
+          "job_name": "Unit Tests (Python 3.10, windows-latest)",
+          "status": "completed",
+          "conclusion": "success",
+          "failed_steps": []
+        },
+        {
+          "job_id": 117156970794,
+          "run_attempt": 1,
+          "head_sha": "db5d8c2c5da6abd27ea0872f3de1a0356d8928a0",
+          "job_name": "Unit Tests (Python 3.11, ubuntu-latest)",
+          "status": "completed",
+          "conclusion": "success",
+          "failed_steps": []
+        },
+        {
+          "job_id": 117156970815,
+          "run_attempt": 1,
+          "head_sha": "db5d8c2c5da6abd27ea0872f3de1a0356d8928a0",
+          "job_name": "Unit Tests (Python 3.11, macos-latest)",
+          "status": "completed",
+          "conclusion": "success",
+          "failed_steps": []
+        },
+        {
+          "job_id": 117156970964,
+          "run_attempt": 1,
+          "head_sha": "db5d8c2c5da6abd27ea0872f3de1a0356d8928a0",
+          "job_name": "Unit Tests (Python 3.11, windows-latest)",
+          "status": "completed",
+          "conclusion": "success",
+          "failed_steps": []
+        },
+        {
+          "job_id": 117156971010,
+          "run_attempt": 1,
+          "head_sha": "db5d8c2c5da6abd27ea0872f3de1a0356d8928a0",
+          "job_name": "Unit Tests (Python 3.12, macos-latest)",
+          "status": "completed",
+          "conclusion": "success",
+          "failed_steps": []
+        },
+        {
+          "job_id": 117157770400,
+          "run_attempt": 1,
+          "head_sha": "db5d8c2c5da6abd27ea0872f3de1a0356d8928a0",
+          "job_name": "Docker Integration Tests",
+          "status": "completed",
+          "conclusion": "success",
+          "failed_steps": []
+        },
+        {
+          "job_id": 117157770414,
+          "run_attempt": 1,
+          "head_sha": "db5d8c2c5da6abd27ea0872f3de1a0356d8928a0",
+          "job_name": "Integration Tests",
+          "status": "completed",
+          "conclusion": "success",
+          "failed_steps": []
+        },
+        {
+          "job_id": 117158136813,
+          "run_attempt": 1,
+          "head_sha": "db5d8c2c5da6abd27ea0872f3de1a0356d8928a0",
+          "job_name": "Comprehensive Test Suite",
+          "status": "completed",
+          "conclusion": "success",
+          "failed_steps": []
+        },
+        {
+          "job_id": 117158136850,
+          "run_attempt": 1,
+          "head_sha": "db5d8c2c5da6abd27ea0872f3de1a0356d8928a0",
+          "job_name": "Performance & Benchmark Tests",
+          "status": "completed",
+          "conclusion": "success",
+          "failed_steps": []
+        },
+        {
+          "job_id": 117158137250,
+          "run_attempt": 1,
+          "head_sha": "db5d8c2c5da6abd27ea0872f3de1a0356d8928a0",
+          "job_name": "Code Coverage",
+          "status": "completed",
+          "conclusion": "success",
+          "failed_steps": []
+        },
+        {
+          "job_id": 117160371518,
+          "run_attempt": 1,
+          "head_sha": "db5d8c2c5da6abd27ea0872f3de1a0356d8928a0",
+          "job_name": "Full Red Proof Summary",
+          "status": "completed",
+          "conclusion": "failure",
+          "failed_steps": [
+            {
+              "step_number": 2,
+              "step_name": "Emit full-red summary"
+            }
+          ]
+        },
+        {
+          "job_id": 117160371563,
+          "run_attempt": 1,
+          "head_sha": "db5d8c2c5da6abd27ea0872f3de1a0356d8928a0",
+          "job_name": "Test Results Notification",
+          "status": "completed",
+          "conclusion": "success",
+          "failed_steps": []
+        },
+        {
+          "job_id": 117160373900,
+          "run_attempt": 1,
+          "head_sha": "db5d8c2c5da6abd27ea0872f3de1a0356d8928a0",
+          "job_name": "Deploy Test Dashboard",
+          "status": "completed",
+          "conclusion": "skipped",
+          "failed_steps": []
+        }
+      ]
+    },
+    {
+      "pr": 2077,
+      "source_head_sha": "133e5a082f74dd99a65bfda5308d7071523904d1",
+      "run_id": 38961401543,
+      "workflow": "CI/CD Test Suite",
+      "job_total": 19,
+      "jobs": [
+        {
+          "job_id": 117177089023,
+          "run_attempt": 1,
+          "head_sha": "133e5a082f74dd99a65bfda5308d7071523904d1",
+          "job_name": "Code Quality Checks",
+          "status": "completed",
+          "conclusion": "failure",
+          "failed_steps": [
+            {
+              "step_number": 11,
+              "step_name": "Per-tool code-quality new-debt ratchet"
+            }
+          ]
+        },
+        {
+          "job_id": 117177089266,
+          "run_attempt": 1,
+          "head_sha": "133e5a082f74dd99a65bfda5308d7071523904d1",
+          "job_name": "Unit Tests (Python 3.11, windows-latest)",
+          "status": "completed",
+          "conclusion": "success",
+          "failed_steps": []
+        },
+        {
+          "job_id": 117177089359,
+          "run_attempt": 1,
+          "head_sha": "133e5a082f74dd99a65bfda5308d7071523904d1",
+          "job_name": "Security Scanning",
+          "status": "completed",
+          "conclusion": "failure",
+          "failed_steps": [
+            {
+              "step_number": 11,
+              "step_name": "Enforce security red roots"
+            }
+          ]
+        },
+        {
+          "job_id": 117177089464,
+          "run_attempt": 1,
+          "head_sha": "133e5a082f74dd99a65bfda5308d7071523904d1",
+          "job_name": "Unit Tests (Python 3.10, macos-latest)",
+          "status": "completed",
+          "conclusion": "success",
+          "failed_steps": []
+        },
+        {
+          "job_id": 117177089476,
+          "run_attempt": 1,
+          "head_sha": "133e5a082f74dd99a65bfda5308d7071523904d1",
+          "job_name": "Unit Tests (Python 3.12, macos-latest)",
+          "status": "completed",
+          "conclusion": "success",
+          "failed_steps": []
+        },
+        {
+          "job_id": 117177089484,
+          "run_attempt": 1,
+          "head_sha": "133e5a082f74dd99a65bfda5308d7071523904d1",
+          "job_name": "Unit Tests (Python 3.11, ubuntu-latest)",
+          "status": "completed",
+          "conclusion": "success",
+          "failed_steps": []
+        },
+        {
+          "job_id": 117177089522,
+          "run_attempt": 1,
+          "head_sha": "133e5a082f74dd99a65bfda5308d7071523904d1",
+          "job_name": "Unit Tests (Python 3.10, ubuntu-latest)",
+          "status": "completed",
+          "conclusion": "success",
+          "failed_steps": []
+        },
+        {
+          "job_id": 117177089523,
+          "run_attempt": 1,
+          "head_sha": "133e5a082f74dd99a65bfda5308d7071523904d1",
+          "job_name": "Unit Tests (Python 3.11, macos-latest)",
+          "status": "completed",
+          "conclusion": "success",
+          "failed_steps": []
+        },
+        {
+          "job_id": 117177089561,
+          "run_attempt": 1,
+          "head_sha": "133e5a082f74dd99a65bfda5308d7071523904d1",
+          "job_name": "Unit Tests (Python 3.12, windows-latest)",
+          "status": "completed",
+          "conclusion": "success",
+          "failed_steps": []
+        },
+        {
+          "job_id": 117177089566,
+          "run_attempt": 1,
+          "head_sha": "133e5a082f74dd99a65bfda5308d7071523904d1",
+          "job_name": "Unit Tests (Python 3.12, ubuntu-latest)",
+          "status": "completed",
+          "conclusion": "success",
+          "failed_steps": []
+        },
+        {
+          "job_id": 117177089579,
+          "run_attempt": 1,
+          "head_sha": "133e5a082f74dd99a65bfda5308d7071523904d1",
+          "job_name": "Unit Tests (Python 3.10, windows-latest)",
+          "status": "completed",
+          "conclusion": "success",
+          "failed_steps": []
+        },
+        {
+          "job_id": 117181223222,
+          "run_attempt": 1,
+          "head_sha": "133e5a082f74dd99a65bfda5308d7071523904d1",
+          "job_name": "Docker Integration Tests",
+          "status": "completed",
+          "conclusion": "success",
+          "failed_steps": []
+        },
+        {
+          "job_id": 117181223548,
+          "run_attempt": 1,
+          "head_sha": "133e5a082f74dd99a65bfda5308d7071523904d1",
+          "job_name": "Integration Tests",
+          "status": "completed",
+          "conclusion": "success",
+          "failed_steps": []
+        },
+        {
+          "job_id": 117182023078,
+          "run_attempt": 1,
+          "head_sha": "133e5a082f74dd99a65bfda5308d7071523904d1",
+          "job_name": "Performance & Benchmark Tests",
+          "status": "completed",
+          "conclusion": "success",
+          "failed_steps": []
+        },
+        {
+          "job_id": 117182023313,
+          "run_attempt": 1,
+          "head_sha": "133e5a082f74dd99a65bfda5308d7071523904d1",
+          "job_name": "Comprehensive Test Suite",
+          "status": "completed",
+          "conclusion": "success",
+          "failed_steps": []
+        },
+        {
+          "job_id": 117182023542,
+          "run_attempt": 1,
+          "head_sha": "133e5a082f74dd99a65bfda5308d7071523904d1",
+          "job_name": "Code Coverage",
+          "status": "completed",
+          "conclusion": "success",
+          "failed_steps": []
+        },
+        {
+          "job_id": 117188069258,
+          "run_attempt": 1,
+          "head_sha": "133e5a082f74dd99a65bfda5308d7071523904d1",
+          "job_name": "Test Results Notification",
+          "status": "completed",
+          "conclusion": "success",
+          "failed_steps": []
+        },
+        {
+          "job_id": 117188069360,
+          "run_attempt": 1,
+          "head_sha": "133e5a082f74dd99a65bfda5308d7071523904d1",
+          "job_name": "Full Red Proof Summary",
+          "status": "completed",
+          "conclusion": "failure",
+          "failed_steps": [
+            {
+              "step_number": 2,
+              "step_name": "Emit full-red summary"
+            }
+          ]
+        },
+        {
+          "job_id": 117188071489,
+          "run_attempt": 1,
+          "head_sha": "133e5a082f74dd99a65bfda5308d7071523904d1",
+          "job_name": "Deploy Test Dashboard",
+          "status": "completed",
+          "conclusion": "skipped",
+          "failed_steps": []
+        }
+      ]
+    },
+    {
+      "pr": 2076,
+      "source_head_sha": "7a382b1788d3b692ae4714f9079ddab93c907fa3",
+      "run_id": 38963803336,
+      "workflow": "CI/CD Test Suite",
+      "job_total": 19,
+      "jobs": [
+        {
+          "job_id": 117185162053,
+          "run_attempt": 1,
+          "head_sha": "7a382b1788d3b692ae4714f9079ddab93c907fa3",
+          "job_name": "Code Quality Checks",
+          "status": "completed",
+          "conclusion": "failure",
+          "failed_steps": [
+            {
+              "step_number": 11,
+              "step_name": "Per-tool code-quality new-debt ratchet"
+            }
+          ]
+        },
+        {
+          "job_id": 117185162528,
+          "run_attempt": 1,
+          "head_sha": "7a382b1788d3b692ae4714f9079ddab93c907fa3",
+          "job_name": "Unit Tests (Python 3.10, windows-latest)",
+          "status": "completed",
+          "conclusion": "success",
+          "failed_steps": []
+        },
+        {
+          "job_id": 117185162587,
+          "run_attempt": 1,
+          "head_sha": "7a382b1788d3b692ae4714f9079ddab93c907fa3",
+          "job_name": "Unit Tests (Python 3.10, macos-latest)",
+          "status": "completed",
+          "conclusion": "success",
+          "failed_steps": []
+        },
+        {
+          "job_id": 117185162593,
+          "run_attempt": 1,
+          "head_sha": "7a382b1788d3b692ae4714f9079ddab93c907fa3",
+          "job_name": "Unit Tests (Python 3.10, ubuntu-latest)",
+          "status": "completed",
+          "conclusion": "success",
+          "failed_steps": []
+        },
+        {
+          "job_id": 117185162636,
+          "run_attempt": 1,
+          "head_sha": "7a382b1788d3b692ae4714f9079ddab93c907fa3",
+          "job_name": "Unit Tests (Python 3.12, ubuntu-latest)",
+          "status": "completed",
+          "conclusion": "success",
+          "failed_steps": []
+        },
+        {
+          "job_id": 117185162656,
+          "run_attempt": 1,
+          "head_sha": "7a382b1788d3b692ae4714f9079ddab93c907fa3",
+          "job_name": "Unit Tests (Python 3.11, windows-latest)",
+          "status": "completed",
+          "conclusion": "success",
+          "failed_steps": []
+        },
+        {
+          "job_id": 117185162661,
+          "run_attempt": 1,
+          "head_sha": "7a382b1788d3b692ae4714f9079ddab93c907fa3",
+          "job_name": "Unit Tests (Python 3.12, macos-latest)",
+          "status": "completed",
+          "conclusion": "success",
+          "failed_steps": []
+        },
+        {
+          "job_id": 117185162693,
+          "run_attempt": 1,
+          "head_sha": "7a382b1788d3b692ae4714f9079ddab93c907fa3",
+          "job_name": "Security Scanning",
+          "status": "completed",
+          "conclusion": "failure",
+          "failed_steps": [
+            {
+              "step_number": 10,
+              "step_name": "PR new-debt ratchet (Bandit)"
+            },
+            {
+              "step_number": 11,
+              "step_name": "Enforce security red roots"
+            }
+          ]
+        },
+        {
+          "job_id": 117185162807,
+          "run_attempt": 1,
+          "head_sha": "7a382b1788d3b692ae4714f9079ddab93c907fa3",
+          "job_name": "Unit Tests (Python 3.12, windows-latest)",
+          "status": "completed",
+          "conclusion": "success",
+          "failed_steps": []
+        },
+        {
+          "job_id": 117185162814,
+          "run_attempt": 1,
+          "head_sha": "7a382b1788d3b692ae4714f9079ddab93c907fa3",
+          "job_name": "Unit Tests (Python 3.11, macos-latest)",
+          "status": "completed",
+          "conclusion": "success",
+          "failed_steps": []
+        },
+        {
+          "job_id": 117185162989,
+          "run_attempt": 1,
+          "head_sha": "7a382b1788d3b692ae4714f9079ddab93c907fa3",
+          "job_name": "Unit Tests (Python 3.11, ubuntu-latest)",
+          "status": "completed",
+          "conclusion": "success",
+          "failed_steps": []
+        },
+        {
+          "job_id": 117188670204,
+          "run_attempt": 1,
+          "head_sha": "7a382b1788d3b692ae4714f9079ddab93c907fa3",
+          "job_name": "Integration Tests",
+          "status": "completed",
+          "conclusion": "success",
+          "failed_steps": []
+        },
+        {
+          "job_id": 117188670341,
+          "run_attempt": 1,
+          "head_sha": "7a382b1788d3b692ae4714f9079ddab93c907fa3",
+          "job_name": "Docker Integration Tests",
+          "status": "completed",
+          "conclusion": "success",
+          "failed_steps": []
+        },
+        {
+          "job_id": 117189176831,
+          "run_attempt": 1,
+          "head_sha": "7a382b1788d3b692ae4714f9079ddab93c907fa3",
+          "job_name": "Code Coverage",
+          "status": "completed",
+          "conclusion": "success",
+          "failed_steps": []
+        },
+        {
+          "job_id": 117189176850,
+          "run_attempt": 1,
+          "head_sha": "7a382b1788d3b692ae4714f9079ddab93c907fa3",
+          "job_name": "Performance & Benchmark Tests",
+          "status": "completed",
+          "conclusion": "success",
+          "failed_steps": []
+        },
+        {
+          "job_id": 117189176873,
+          "run_attempt": 1,
+          "head_sha": "7a382b1788d3b692ae4714f9079ddab93c907fa3",
+          "job_name": "Comprehensive Test Suite",
+          "status": "completed",
+          "conclusion": "success",
+          "failed_steps": []
+        },
+        {
+          "job_id": 117192530065,
+          "run_attempt": 1,
+          "head_sha": "7a382b1788d3b692ae4714f9079ddab93c907fa3",
+          "job_name": "Test Results Notification",
+          "status": "completed",
+          "conclusion": "success",
+          "failed_steps": []
+        },
+        {
+          "job_id": 117192530130,
+          "run_attempt": 1,
+          "head_sha": "7a382b1788d3b692ae4714f9079ddab93c907fa3",
+          "job_name": "Full Red Proof Summary",
+          "status": "completed",
+          "conclusion": "failure",
+          "failed_steps": [
+            {
+              "step_number": 2,
+              "step_name": "Emit full-red summary"
+            }
+          ]
+        },
+        {
+          "job_id": 117192532639,
+          "run_attempt": 1,
+          "head_sha": "7a382b1788d3b692ae4714f9079ddab93c907fa3",
+          "job_name": "Deploy Test Dashboard",
+          "status": "completed",
+          "conclusion": "skipped",
+          "failed_steps": []
+        }
+      ]
+    },
+    {
+      "pr": 2075,
+      "source_head_sha": "f29c870e2395d2fc45ec25ab82a5a4894c9f4b51",
+      "run_id": 38931835928,
+      "workflow": "CI/CD Test Suite",
+      "job_total": 19,
+      "jobs": [
+        {
+          "job_id": 117108159918,
+          "run_attempt": 2,
+          "head_sha": "f29c870e2395d2fc45ec25ab82a5a4894c9f4b51",
+          "job_name": "Code Quality Checks",
+          "status": "completed",
+          "conclusion": "failure",
+          "failed_steps": [
+            {
+              "step_number": 11,
+              "step_name": "Per-tool code-quality new-debt ratchet"
+            }
+          ]
+        },
+        {
+          "job_id": 117108162219,
+          "run_attempt": 2,
+          "head_sha": "f29c870e2395d2fc45ec25ab82a5a4894c9f4b51",
+          "job_name": "Security Scanning",
+          "status": "completed",
+          "conclusion": "failure",
+          "failed_steps": [
+            {
+              "step_number": 10,
+              "step_name": "PR new-debt ratchet (Bandit)"
+            },
+            {
+              "step_number": 11,
+              "step_name": "Enforce security red roots"
+            }
+          ]
+        },
+        {
+          "job_id": 117108162920,
+          "run_attempt": 2,
+          "head_sha": "f29c870e2395d2fc45ec25ab82a5a4894c9f4b51",
+          "job_name": "Unit Tests (Python 3.10, ubuntu-latest)",
+          "status": "completed",
+          "conclusion": "success",
+          "failed_steps": []
+        },
+        {
+          "job_id": 117108163199,
+          "run_attempt": 2,
+          "head_sha": "f29c870e2395d2fc45ec25ab82a5a4894c9f4b51",
+          "job_name": "Unit Tests (Python 3.12, windows-latest)",
+          "status": "completed",
+          "conclusion": "success",
+          "failed_steps": []
+        },
+        {
+          "job_id": 117108164039,
+          "run_attempt": 2,
+          "head_sha": "f29c870e2395d2fc45ec25ab82a5a4894c9f4b51",
+          "job_name": "Unit Tests (Python 3.12, macos-latest)",
+          "status": "completed",
+          "conclusion": "success",
+          "failed_steps": []
+        },
+        {
+          "job_id": 117108164453,
+          "run_attempt": 2,
+          "head_sha": "f29c870e2395d2fc45ec25ab82a5a4894c9f4b51",
+          "job_name": "Unit Tests (Python 3.11, macos-latest)",
+          "status": "completed",
+          "conclusion": "success",
+          "failed_steps": []
+        },
+        {
+          "job_id": 117108165104,
+          "run_attempt": 2,
+          "head_sha": "f29c870e2395d2fc45ec25ab82a5a4894c9f4b51",
+          "job_name": "Performance & Benchmark Tests",
+          "status": "completed",
+          "conclusion": "success",
+          "failed_steps": []
+        },
+        {
+          "job_id": 117108165333,
+          "run_attempt": 2,
+          "head_sha": "f29c870e2395d2fc45ec25ab82a5a4894c9f4b51",
+          "job_name": "Code Coverage",
+          "status": "completed",
+          "conclusion": "success",
+          "failed_steps": []
+        },
+        {
+          "job_id": 117108200437,
+          "run_attempt": 2,
+          "head_sha": "f29c870e2395d2fc45ec25ab82a5a4894c9f4b51",
+          "job_name": "Unit Tests (Python 3.12, ubuntu-latest)",
+          "status": "completed",
+          "conclusion": "success",
+          "failed_steps": []
+        },
+        {
+          "job_id": 117108217646,
+          "run_attempt": 2,
+          "head_sha": "f29c870e2395d2fc45ec25ab82a5a4894c9f4b51",
+          "job_name": "Unit Tests (Python 3.11, ubuntu-latest)",
+          "status": "completed",
+          "conclusion": "success",
+          "failed_steps": []
+        },
+        {
+          "job_id": 117108219142,
+          "run_attempt": 2,
+          "head_sha": "f29c870e2395d2fc45ec25ab82a5a4894c9f4b51",
+          "job_name": "Unit Tests (Python 3.10, windows-latest)",
+          "status": "completed",
+          "conclusion": "success",
+          "failed_steps": []
+        },
+        {
+          "job_id": 117108229180,
+          "run_attempt": 2,
+          "head_sha": "f29c870e2395d2fc45ec25ab82a5a4894c9f4b51",
+          "job_name": "Unit Tests (Python 3.11, windows-latest)",
+          "status": "completed",
+          "conclusion": "success",
+          "failed_steps": []
+        },
+        {
+          "job_id": 117108233720,
+          "run_attempt": 2,
+          "head_sha": "f29c870e2395d2fc45ec25ab82a5a4894c9f4b51",
+          "job_name": "Unit Tests (Python 3.10, macos-latest)",
+          "status": "completed",
+          "conclusion": "success",
+          "failed_steps": []
+        },
+        {
+          "job_id": 117109265053,
+          "run_attempt": 2,
+          "head_sha": "f29c870e2395d2fc45ec25ab82a5a4894c9f4b51",
+          "job_name": "Comprehensive Test Suite",
+          "status": "completed",
+          "conclusion": "success",
+          "failed_steps": []
+        },
+        {
+          "job_id": 117109265144,
+          "run_attempt": 2,
+          "head_sha": "f29c870e2395d2fc45ec25ab82a5a4894c9f4b51",
+          "job_name": "Integration Tests",
+          "status": "completed",
+          "conclusion": "success",
+          "failed_steps": []
+        },
+        {
+          "job_id": 117109265239,
+          "run_attempt": 2,
+          "head_sha": "f29c870e2395d2fc45ec25ab82a5a4894c9f4b51",
+          "job_name": "Docker Integration Tests",
+          "status": "completed",
+          "conclusion": "success",
+          "failed_steps": []
+        },
+        {
+          "job_id": 117110119295,
+          "run_attempt": 2,
+          "head_sha": "f29c870e2395d2fc45ec25ab82a5a4894c9f4b51",
+          "job_name": "Test Results Notification",
+          "status": "completed",
+          "conclusion": "success",
+          "failed_steps": []
+        },
+        {
+          "job_id": 117110714777,
+          "run_attempt": 2,
+          "head_sha": "f29c870e2395d2fc45ec25ab82a5a4894c9f4b51",
+          "job_name": "Full Red Proof Summary",
+          "status": "completed",
+          "conclusion": "failure",
+          "failed_steps": [
+            {
+              "step_number": 2,
+              "step_name": "Emit full-red summary"
+            }
+          ]
+        },
+        {
+          "job_id": 117110722568,
+          "run_attempt": 2,
+          "head_sha": "f29c870e2395d2fc45ec25ab82a5a4894c9f4b51",
+          "job_name": "Deploy Test Dashboard",
+          "status": "completed",
+          "conclusion": "skipped",
+          "failed_steps": []
+        }
+      ]
+    },
+    {
+      "pr": 2073,
+      "source_head_sha": "fb22da447780b58827dca58a59c73707ef1d08bf",
+      "run_id": 38925992164,
+      "workflow": "CI/CD Test Suite",
+      "job_total": 19,
+      "jobs": [
+        {
+          "job_id": 117057543062,
+          "run_attempt": 1,
+          "head_sha": "fb22da447780b58827dca58a59c73707ef1d08bf",
+          "job_name": "Code Quality Checks",
+          "status": "completed",
+          "conclusion": "failure",
+          "failed_steps": [
+            {
+              "step_number": 11,
+              "step_name": "Per-tool code-quality new-debt ratchet"
+            }
+          ]
+        },
+        {
+          "job_id": 117057543232,
+          "run_attempt": 1,
+          "head_sha": "fb22da447780b58827dca58a59c73707ef1d08bf",
+          "job_name": "Security Scanning",
+          "status": "completed",
+          "conclusion": "failure",
+          "failed_steps": [
+            {
+              "step_number": 10,
+              "step_name": "PR new-debt ratchet (Bandit)"
+            },
+            {
+              "step_number": 11,
+              "step_name": "Enforce security red roots"
+            }
+          ]
+        },
+        {
+          "job_id": 117057543359,
+          "run_attempt": 1,
+          "head_sha": "fb22da447780b58827dca58a59c73707ef1d08bf",
+          "job_name": "Unit Tests (Python 3.11, macos-latest)",
+          "status": "completed",
+          "conclusion": "success",
+          "failed_steps": []
+        },
+        {
+          "job_id": 117057543446,
+          "run_attempt": 1,
+          "head_sha": "fb22da447780b58827dca58a59c73707ef1d08bf",
+          "job_name": "Unit Tests (Python 3.11, ubuntu-latest)",
+          "status": "completed",
+          "conclusion": "success",
+          "failed_steps": []
+        },
+        {
+          "job_id": 117057543515,
+          "run_attempt": 1,
+          "head_sha": "fb22da447780b58827dca58a59c73707ef1d08bf",
+          "job_name": "Unit Tests (Python 3.12, macos-latest)",
+          "status": "completed",
+          "conclusion": "success",
+          "failed_steps": []
+        },
+        {
+          "job_id": 117057543581,
+          "run_attempt": 1,
+          "head_sha": "fb22da447780b58827dca58a59c73707ef1d08bf",
+          "job_name": "Unit Tests (Python 3.12, ubuntu-latest)",
+          "status": "completed",
+          "conclusion": "success",
+          "failed_steps": []
+        },
+        {
+          "job_id": 117057543608,
+          "run_attempt": 1,
+          "head_sha": "fb22da447780b58827dca58a59c73707ef1d08bf",
+          "job_name": "Unit Tests (Python 3.11, windows-latest)",
+          "status": "completed",
+          "conclusion": "success",
+          "failed_steps": []
+        },
+        {
+          "job_id": 117057543663,
+          "run_attempt": 1,
+          "head_sha": "fb22da447780b58827dca58a59c73707ef1d08bf",
+          "job_name": "Unit Tests (Python 3.10, macos-latest)",
+          "status": "completed",
+          "conclusion": "success",
+          "failed_steps": []
+        },
+        {
+          "job_id": 117057543725,
+          "run_attempt": 1,
+          "head_sha": "fb22da447780b58827dca58a59c73707ef1d08bf",
+          "job_name": "Unit Tests (Python 3.10, ubuntu-latest)",
+          "status": "completed",
+          "conclusion": "success",
+          "failed_steps": []
+        },
+        {
+          "job_id": 117057543794,
+          "run_attempt": 1,
+          "head_sha": "fb22da447780b58827dca58a59c73707ef1d08bf",
+          "job_name": "Unit Tests (Python 3.12, windows-latest)",
+          "status": "completed",
+          "conclusion": "success",
+          "failed_steps": []
+        },
+        {
+          "job_id": 117057543982,
+          "run_attempt": 1,
+          "head_sha": "fb22da447780b58827dca58a59c73707ef1d08bf",
+          "job_name": "Unit Tests (Python 3.10, windows-latest)",
+          "status": "completed",
+          "conclusion": "success",
+          "failed_steps": []
+        },
+        {
+          "job_id": 117058772784,
+          "run_attempt": 1,
+          "head_sha": "fb22da447780b58827dca58a59c73707ef1d08bf",
+          "job_name": "Docker Integration Tests",
+          "status": "completed",
+          "conclusion": "success",
+          "failed_steps": []
+        },
+        {
+          "job_id": 117058773123,
+          "run_attempt": 1,
+          "head_sha": "fb22da447780b58827dca58a59c73707ef1d08bf",
+          "job_name": "Integration Tests",
+          "status": "completed",
+          "conclusion": "success",
+          "failed_steps": []
+        },
+        {
+          "job_id": 117060286390,
+          "run_attempt": 1,
+          "head_sha": "fb22da447780b58827dca58a59c73707ef1d08bf",
+          "job_name": "Performance & Benchmark Tests",
+          "status": "completed",
+          "conclusion": "success",
+          "failed_steps": []
+        },
+        {
+          "job_id": 117060286584,
+          "run_attempt": 1,
+          "head_sha": "fb22da447780b58827dca58a59c73707ef1d08bf",
+          "job_name": "Comprehensive Test Suite",
+          "status": "completed",
+          "conclusion": "success",
+          "failed_steps": []
+        },
+        {
+          "job_id": 117060286973,
+          "run_attempt": 1,
+          "head_sha": "fb22da447780b58827dca58a59c73707ef1d08bf",
+          "job_name": "Code Coverage",
+          "status": "completed",
+          "conclusion": "success",
+          "failed_steps": []
+        },
+        {
+          "job_id": 117062401656,
+          "run_attempt": 1,
+          "head_sha": "fb22da447780b58827dca58a59c73707ef1d08bf",
+          "job_name": "Full Red Proof Summary",
+          "status": "completed",
+          "conclusion": "failure",
+          "failed_steps": [
+            {
+              "step_number": 2,
+              "step_name": "Emit full-red summary"
+            }
+          ]
+        },
+        {
+          "job_id": 117062401750,
+          "run_attempt": 1,
+          "head_sha": "fb22da447780b58827dca58a59c73707ef1d08bf",
+          "job_name": "Test Results Notification",
+          "status": "completed",
+          "conclusion": "success",
+          "failed_steps": []
+        },
+        {
+          "job_id": 117062403593,
+          "run_attempt": 1,
+          "head_sha": "fb22da447780b58827dca58a59c73707ef1d08bf",
+          "job_name": "Deploy Test Dashboard",
+          "status": "completed",
+          "conclusion": "skipped",
+          "failed_steps": []
+        }
+      ]
+    },
+    {
+      "pr": 2072,
+      "source_head_sha": "680f5ae0c7278e0dae548a505259800887c27138",
+      "run_id": 38921507617,
+      "workflow": "CI/CD Test Suite",
+      "job_total": 19,
+      "jobs": [
+        {
+          "job_id": 117122265458,
+          "run_attempt": 2,
+          "head_sha": "680f5ae0c7278e0dae548a505259800887c27138",
+          "job_name": "Security Scanning",
+          "status": "completed",
+          "conclusion": "failure",
+          "failed_steps": [
+            {
+              "step_number": 11,
+              "step_name": "Enforce security red roots"
+            }
+          ]
+        },
+        {
+          "job_id": 117122268626,
+          "run_attempt": 2,
+          "head_sha": "680f5ae0c7278e0dae548a505259800887c27138",
+          "job_name": "Unit Tests (Python 3.12, ubuntu-latest)",
+          "status": "completed",
+          "conclusion": "success",
+          "failed_steps": []
+        },
+        {
+          "job_id": 117122268682,
+          "run_attempt": 2,
+          "head_sha": "680f5ae0c7278e0dae548a505259800887c27138",
+          "job_name": "Code Quality Checks",
+          "status": "completed",
+          "conclusion": "success",
+          "failed_steps": []
+        },
+        {
+          "job_id": 117122268809,
+          "run_attempt": 2,
+          "head_sha": "680f5ae0c7278e0dae548a505259800887c27138",
+          "job_name": "Unit Tests (Python 3.10, macos-latest)",
+          "status": "completed",
+          "conclusion": "success",
+          "failed_steps": []
+        },
+        {
+          "job_id": 117122269190,
+          "run_attempt": 2,
+          "head_sha": "680f5ae0c7278e0dae548a505259800887c27138",
+          "job_name": "Unit Tests (Python 3.12, macos-latest)",
+          "status": "completed",
+          "conclusion": "success",
+          "failed_steps": []
+        },
+        {
+          "job_id": 117122269843,
+          "run_attempt": 2,
+          "head_sha": "680f5ae0c7278e0dae548a505259800887c27138",
+          "job_name": "Unit Tests (Python 3.11, macos-latest)",
+          "status": "completed",
+          "conclusion": "success",
+          "failed_steps": []
+        },
+        {
+          "job_id": 117122270057,
+          "run_attempt": 2,
+          "head_sha": "680f5ae0c7278e0dae548a505259800887c27138",
+          "job_name": "Docker Integration Tests",
+          "status": "completed",
+          "conclusion": "success",
+          "failed_steps": []
+        },
+        {
+          "job_id": 117122270249,
+          "run_attempt": 2,
+          "head_sha": "680f5ae0c7278e0dae548a505259800887c27138",
+          "job_name": "Code Coverage",
+          "status": "completed",
+          "conclusion": "success",
+          "failed_steps": []
+        },
+        {
+          "job_id": 117122271162,
+          "run_attempt": 2,
+          "head_sha": "680f5ae0c7278e0dae548a505259800887c27138",
+          "job_name": "Performance & Benchmark Tests",
+          "status": "completed",
+          "conclusion": "success",
+          "failed_steps": []
+        },
+        {
+          "job_id": 117122271163,
+          "run_attempt": 2,
+          "head_sha": "680f5ae0c7278e0dae548a505259800887c27138",
+          "job_name": "Test Results Notification",
+          "status": "completed",
+          "conclusion": "success",
+          "failed_steps": []
+        },
+        {
+          "job_id": 117122271190,
+          "run_attempt": 2,
+          "head_sha": "680f5ae0c7278e0dae548a505259800887c27138",
+          "job_name": "Comprehensive Test Suite",
+          "status": "completed",
+          "conclusion": "success",
+          "failed_steps": []
+        },
+        {
+          "job_id": 117122271507,
+          "run_attempt": 2,
+          "head_sha": "680f5ae0c7278e0dae548a505259800887c27138",
+          "job_name": "Deploy Test Dashboard",
+          "status": "completed",
+          "conclusion": "skipped",
+          "failed_steps": []
+        },
+        {
+          "job_id": 117122312621,
+          "run_attempt": 2,
+          "head_sha": "680f5ae0c7278e0dae548a505259800887c27138",
+          "job_name": "Unit Tests (Python 3.11, windows-latest)",
+          "status": "completed",
+          "conclusion": "success",
+          "failed_steps": []
+        },
+        {
+          "job_id": 117122313149,
+          "run_attempt": 2,
+          "head_sha": "680f5ae0c7278e0dae548a505259800887c27138",
+          "job_name": "Unit Tests (Python 3.10, ubuntu-latest)",
+          "status": "completed",
+          "conclusion": "success",
+          "failed_steps": []
+        },
+        {
+          "job_id": 117122324638,
+          "run_attempt": 2,
+          "head_sha": "680f5ae0c7278e0dae548a505259800887c27138",
+          "job_name": "Unit Tests (Python 3.11, ubuntu-latest)",
+          "status": "completed",
+          "conclusion": "success",
+          "failed_steps": []
+        },
+        {
+          "job_id": 117122330417,
+          "run_attempt": 2,
+          "head_sha": "680f5ae0c7278e0dae548a505259800887c27138",
+          "job_name": "Unit Tests (Python 3.12, windows-latest)",
+          "status": "completed",
+          "conclusion": "success",
+          "failed_steps": []
+        },
+        {
+          "job_id": 117122331255,
+          "run_attempt": 2,
+          "head_sha": "680f5ae0c7278e0dae548a505259800887c27138",
+          "job_name": "Integration Tests",
+          "status": "completed",
+          "conclusion": "success",
+          "failed_steps": []
+        },
+        {
+          "job_id": 117122337282,
+          "run_attempt": 2,
+          "head_sha": "680f5ae0c7278e0dae548a505259800887c27138",
+          "job_name": "Unit Tests (Python 3.10, windows-latest)",
+          "status": "completed",
+          "conclusion": "success",
+          "failed_steps": []
+        },
+        {
+          "job_id": 117122561802,
+          "run_attempt": 2,
+          "head_sha": "680f5ae0c7278e0dae548a505259800887c27138",
+          "job_name": "Full Red Proof Summary",
+          "status": "completed",
+          "conclusion": "failure",
+          "failed_steps": [
+            {
+              "step_number": 2,
+              "step_name": "Emit full-red summary"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

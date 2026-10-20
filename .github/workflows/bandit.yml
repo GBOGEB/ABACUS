@@ -17,7 +17,7 @@ jobs:
     steps:
       - uses: actions/checkout@v7
 
-      - uses: actions/setup-python@v7.0.0
+      - uses: actions/setup-python@v7
         with:
           python-version: '3.10'
 
@@ -36,7 +36,7 @@ jobs:
             -o bandit-results.sarif || true
 
       - name: Upload SARIF to GitHub Security tab
-        uses: github/codeql-action/upload-sarif@v4.38.3
+        uses: github/codeql-action/upload-sarif@v4.39.0
         if: always()
         with:
           sarif_file: bandit-results.sarif

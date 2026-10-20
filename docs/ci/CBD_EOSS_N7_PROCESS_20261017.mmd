@@ -1,0 +1,21 @@
+flowchart LR
+ subgraph LOCAL[LOCAL E0-E2]
+  L[Pytest import-mode red reproduced] --> R[W10 local test fixture repair]
+  R --> T[W11 negative provenance tests]
+ end
+ subgraph REPO[REPO E3-E5]
+  H[Exact ABACUS head] --> J[GitHub run:attempt:job]
+  J --> F{First failed step}
+  F -->|Py3.12 collection| R
+  F -->|Py3.10 dependency| O[Existing owner PR 2026]
+  T --> C[Source-bound test and coverage receipt]
+  C --> H
+ end
+ subgraph FED[FEDERATION E6]
+  V[N7 EOSS HTML ledger] --> G{A10 and security and governance}
+  G -->|not all verified| X[HOLD]
+ end
+ J -. observational only .-> V
+ O -. no independent owner merge .-> X
+ classDef hold fill:#ffe4e4,stroke:#b9414d,color:#701720
+ class X hold

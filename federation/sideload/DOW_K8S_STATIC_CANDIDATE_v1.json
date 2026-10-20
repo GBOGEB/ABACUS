@@ -1,0 +1,31 @@
+{
+  "schema": "qps.federation.sideload.envelope.v1",
+  "id": "DOW-W169-K8S-STATIC-001",
+  "producer": {
+    "repo": "GBOGEB/ABACUS",
+    "sha": "54da377cf82a358ac97903ecde0270c975b8fcc1"
+  },
+  "consumer": "GBOGEB/CODEX",
+  "kind": "K8S_STATIC",
+  "scope": {
+    "surface": "qplant/deployment/k8s",
+    "namespace": "qplant-production"
+  },
+  "source": {
+    "path": "triage/W74_K8S_EDGE_READINESS.yaml",
+    "sha256": null,
+    "size_bytes": null
+  },
+  "native": {
+    "run_id": null,
+    "job_id": null,
+    "attempt": null,
+    "executed_steps": null
+  },
+  "claims": {
+    "authority_transfer": false,
+    "engineering_credit_delta": 0,
+    "release_admitted": false
+  },
+  "observed_at_utc": null
+}

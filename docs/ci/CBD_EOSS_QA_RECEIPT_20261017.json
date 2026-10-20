@@ -1,0 +1,62 @@
+{
+  "checks": {
+    "CoolProp_cache_speedup": "DEFER",
+    "HTML_playwright_desktop_laptop_mobile": "PASS",
+    "HTML_source_parity": "PASS",
+    "HTML_structural": "PASS",
+    "WCAG_full_audit": "DEFER",
+    "cross_format_parity": "PASS_REVIEW_PROJECTIONS",
+    "current_pr_exact_head_native_coverage": "DEFER",
+    "local_python_branch_coverage": "PASS_98pct",
+    "mermaid_narrative_parity": "PASS",
+    "native_artifact_metadata": "PASS_CONTENT_EQUIVALENT_NOT_EXACT_HEAD",
+    "python_test_suite": "PASS_67_LOCAL",
+    "security_governance_A10_independent_review": "HOLD"
+  },
+  "created_at_utc": "2026-10-17T10:51:43.029367+00:00",
+  "defects_resolved": [
+    "Repository pulse filter included federation slice; fixed explicit tier membership",
+    "SVG atom-view min-content expanded mobile grid; added min-width=0 and checked every tab for overflow"
+  ],
+  "evidence_level": "LOCAL_REPRODUCIBILITY",
+  "merge_admission": "HOLD",
+  "residual_blockers": [
+    "Native current PR exact-head status",
+    "matched main/diff coverage",
+    "authenticated root closure",
+    "full denominator of unenumerated tasks",
+    "cold/warm wheelhouse control cohort",
+    "security/A10/governance/independent reviewer"
+  ],
+  "schema": "code-purple.eoss.qa-release-receipt.v1",
+  "security_waiver": false,
+  "source": {
+    "native_SHA_match": false,
+    "native_artifact_id": 12098690913,
+    "refs": {
+      "ABACUS #2077 EOSS fanin": "00cc896802b426c6b222c2557338e54412a51062",
+      "ABACUS #2090 visual owner reference": "6be945b846d5535a58c39edb52835950efe5fa4e",
+      "ABACUS #2099 current head": "fe05c6865f00d40def80996390ff0cf7c002562f",
+      "Python312 native artifact source": "36d628f9c9deb0efcc11e3aa9ffc164075b75470"
+    },
+    "snapshot_sha256": "cc46079f031289f55e02032f1bced0f7d221957fcaa08a0ff973bf18c091b0db",
+    "target_file_git_blob_parity_verified": true
+  },
+  "source_of_truth_replaced": false,
+  "tests": {
+    "local_passed": 67,
+    "source_adapter_branch_total": 42,
+    "source_adapter_percent_total": 97.62,
+    "source_adapter_statement_total": 210
+  },
+  "timing": {
+    "local_build_seconds": [
+      0.137445,
+      0.115451,
+      0.167847
+    ],
+    "native_runner_speedup_seconds": null,
+    "wheel_cache_savings_seconds": null
+  },
+  "visual_snapshot_scope": "NONATOMIC_CROSS_REPOSITORY_DERIVED_PROJECTION"
+}

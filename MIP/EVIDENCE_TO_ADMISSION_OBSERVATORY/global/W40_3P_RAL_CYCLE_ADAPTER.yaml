@@ -1,0 +1,83 @@
+schema: qps-3p-ral-dmaic-cycle-template/1.0
+usage: LOCAL_ADAPTER_TO_QPS_TEMPLATE_NO_AUTHORITY_TRANSFER
+source_template:
+  repo: GBOGEB/cryoplant-project
+  sha: fc07545c3986181a1b837c0eb7ff9a8393fd4058
+  path: handover/qps_recursive/QPS_3P_RAL_DMAIC_CYCLE_TEMPLATE_v1.yaml
+mission:
+  id: ABACUS-CBD-W40-LOSSLESS
+  authority_owner: GBOGEB/ABACUS
+  authority_transfer: false
+cycle:
+  id: UNASSIGNED_GLOBAL_3P_ORDINAL
+  provisional_local_id: ABACUS-W40-CONTINUITY
+  maturity_job: C1_METHOD_AND_SOURCE_PROOF_LOCAL
+  trigger: W39_NATIVE_PASS_PLUS_NEW_W40_TAXONOMY_AND_LOSSLESS_RECEIPT
+  objective: PRESERVE_RESTART_SOURCE_AND_SEARCHABLE_METHOD_TAXONOMY
+  start_state_identity: fc6ea65f2d0322f1a98fde323310c09990522709
+  stop_predicate: W40_EXACT_HEAD_NATIVE_QA_PASS_AND_NO_NEW_SOURCE_FIRST_RED
+multiclock:
+  k: GITHUB_COMMIT_EVENT_INDEX_TO_BE_PINNED
+  t: 2026-10-19
+  a: UNKNOWN_NO_EXPOSURE_CLOCK
+  wave: W40
+  pulse: PARTIAL
+  pr: null
+  run: null
+  release: null
+DMAIC_before:
+  Define: {passed: null, total: null, rubric: NOT_PREDECLARED}
+  Measure: {passed: null, total: null, rubric: SOURCE_BOUND_KPI_ONLY}
+  Analyse: {passed: null, total: null, rubric: ROOT_CENSUS_INCOMPLETE}
+  Improve: {passed: null, total: null, rubric: W39_NATIVE_LAST_KNOWN_GOOD}
+  Control: {passed: null, total: null, rubric: LOCAL_COVERAGE_ONLY}
+DMAIC_after:
+  Define: {passed: null, total: null, rubric: CANDIDATE}
+  Measure: {passed: null, total: null, rubric: W40_NATIVE_PENDING}
+  Analyse: {passed: null, total: null, rubric: W40_NATIVE_PENDING}
+  Improve: {passed: null, total: null, rubric: W40_TAXONOMY_ADDITIVE}
+  Control: {passed: null, total: null, rubric: GLOBAL_HOLD}
+DMAIC_delta:
+  comparability: NOT_COMPARABLE_WITHOUT_PREDECLARED_RUBRIC
+  note: NO_NUMERIC_DMAIC_CLAIM
+KPI_vector:
+  - {name: focused_coverage, baseline: 660, value: 707, delta: 47, direction: UP, status: LOCAL_TARGET_MET, source: ABACUS_W31_W37_SAME_COHORT, clock_basis: native_run, numerator: 707, denominator: 723, target: 95_percent, unit: covered_opportunities}
+  - {name: source_workflows_classified, baseline: 198, value: 201, delta: NEW_WORKFLOW_POPULATION_NOT_COMPARABLE, direction: COMPLETE, status: W39_NATIVE_PASS, source: ABACUS_39170632775, clock_basis: git_sha, numerator: 201, denominator: 201}
+  - {name: taxonomy_leaves, baseline: 0, value: 28, delta: 28, direction: UP, status: W40_CANDIDATE_NOT_NATIVE_QUALIFIED, source: W40_LEDGER_SOURCE, clock_basis: branch_head, numerator: 28, denominator: 28}
+  - {name: effective_merge_protection, baseline: 0, value: 0, delta: 0, direction: BLOCKED, status: HOLD, source: ABACUS_RULESET_24494381, clock_basis: server_readback, unit: required_approvals}
+pulse_stack:
+  P1:
+    operator: 3PR
+    admitted: true
+    legs: {Refresh: [MAIN_SHA, QPS_GLOB_QTG], Probe: [W40_EXACT_HEAD, FIRST_RED], Rank: [GOVERNANCE, SECURITY, CHILD_RETURN]}
+  P2:
+    operator: MIP
+    admitted: CONDITIONAL_STRUCTURAL_OR_RECURRENCE_GAP
+    legs: {Modernize: [SOURCE_PINNING], Innovate: [TAXONOMY_LEAVES], Perpetuate: [NATIVE_QA_AND_HANDOVER]}
+  P3:
+    operator: 3PC
+    admitted: CONDITIONAL_BOUNDED_TRANSACTION
+    legs: {Prepare: [SOURCE_IDENTITY], Prove: [W40_NATIVE_RUN_PENDING], Commit: [WITHHELD_UNTIL_EFFECTIVE_GOVERNANCE]}
+  P4:
+    operator: 3P3
+    admitted: CONDITIONAL_LOCAL_DOV_PASS_AND_PROPAGATION_GAP
+    legs: {Preserve_or_Pin: [W39_RECEIPT], Propagate_or_Penetrate: [CODEX_QPS_SOURCE_LINKS_ONLY], Prove_or_Promote: [WITHHELD_UNTIL_INDEPENDENT_CONSUMER]}
+node_template:
+  id: W40_SOURCE_NAVIGATION_CANDIDATE
+  dmaic_mode: PROJECTED_DMAIC_ONLY
+  full_dmaic_trigger: PREDECLARED_COMPARABLE_LONGITUDINAL_WINDOW
+  Define: {problem_scope_authority: ABACUS_SOURCE_BOUND_NAVIGATION_NOT_CHILD_QPS_AUTHORITY}
+  Measure: {baseline_denominator_clock: FOCUSED_723_PLUS_SEPARATE_W39_201_WORKFLOWS}
+  Analyse: {first_red_gap_or_cause: MISSING_EFFECTIVE_RULESET_AND_W40_QA_PENDING}
+  Improve: {action_or_no_change_disposition: ADD_TAXONOMY_RECEIPT_DROPIN_NO_PRODUCTION_CHANGE}
+  Control: {exit_gate_and_reentry_trigger: STOP_LOCAL_UNLESS_MATERIAL_NEW_SOURCE_RECEIPT}
+  KPI_delta: NO_FORMAL_CREDIT
+  disposition: LOCAL_CANDIDATE_DEFER_GLOBAL
+cycle_result:
+  first_red_before: W38_UNREVIEWED_MERGE_AND_W36_STALE_REPORT
+  first_red_after: W40_EXACT_HEAD_PENDING
+  useful_material_delta: true
+  authority_state: ABACUS_CANDIDATE_QPS_CHILD_DEFER
+  formal_credit_delta: 0
+  recurse_or_stop: STOP_COMPLETED_LOCAL_COVERAGE_WAIT_MATERIAL_TRIGGER
+  next_trigger: W40_NATIVE_RED_OR_ADMIN_PROTECTION_OR_INDEPENDENT_CONSUMER_SOURCE

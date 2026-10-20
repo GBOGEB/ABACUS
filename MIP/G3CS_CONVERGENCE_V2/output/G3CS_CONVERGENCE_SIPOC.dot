@@ -1,0 +1,14 @@
+digraph S {
+rankdir=LR; graph [fontname="DejaVu Sans",bgcolor="white",pad="0.35",ranksep="0.22",nodesep="0.2"];
+node [shape=box,style="rounded,filled",fontname="DejaVu Sans",fontsize=10,color="#aebaca",margin="0.15,0.11"];
+edge [arrowhead=normal,color="#8196a9",penwidth=1.2];
+c0 [label="Supplier\n\nGitHub source owners Actions / CI scanners MIP / gg_MATH Security & branch administrato… CODEX / QPS consumers", fillcolor="#d5e6f2"];
+c1 [label="Input\n\nExact PR head, merged-main SHA… JUnit, job logs, DAB, W70 and … Coverage scope/tool/config has… Effective ruleset, review iden… Receipt digest, source context…", fillcolor="#e0ece4"];
+c0 -> c1;
+c2 [label="Process\n\nPin two clocks, reject stalene… Validate hashes, populations, … Match cohorts, compute noncomp… Verify mandatory controls inde… Read-only federated replay / o…", fillcolor="#f8e9cb"];
+c1 -> c2;
+c3 [label="Output\n\nVersioned provenance + run cen… First-reds, focused tests, bou… Measured delta or NONCOMPARABL… Governed admission verdict; HO… Acknowledged consumer receipt;…", fillcolor="#eddee5"];
+c2 -> c3;
+c4 [label="Customer\n\nABACUS B0, admission #1860 Engineering owner + independen… MIP/REX, control chart users Merge governor / main release Mission Control #977 / QPS", fillcolor="#dbe0f3"];
+c3 -> c4;
+}
