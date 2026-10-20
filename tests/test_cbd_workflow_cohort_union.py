@@ -163,8 +163,14 @@ class CohortUnionTests(unittest.TestCase):
             produce_cohorts([])
         with self.assertRaises(ValueError):
             produce_cohorts([{}])
-        with self.assertRaises(ValueError):
-            produce_cohorts([None])
+        # Pin the exact fail-closed type boundary; generic ValueError could
+        # otherwise pass because a later validator rejected the payload.
+        for invalid in (None, [], "snapshot", 17, True):
+            with self.subTest(source=repr(invalid)):
+                with self.assertRaisesRegex(
+                    ValueError, "source snapshot must be an object"
+                ):
+                    produce_cohorts([invalid])
 
     def test_invalid_run_attempt_identity_fails_closed(self):
         data = snapshots()
