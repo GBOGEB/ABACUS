@@ -59,7 +59,9 @@ class CohortUnionTests(unittest.TestCase):
             "ref: ${{ github.event.pull_request.head.sha || github.sha }}",
             "persist-credentials: false",
             'test "$(git rev-parse HEAD)" = "$EXPECTED_PULL_HEAD"',
-            'subprocess.check_output(["git", "rev-parse", "HEAD"], text=True).strip() != pull_head',
+            "actual_head = subprocess.check_output(",
+            '["git", "rev-parse", "HEAD"], text=True',
+            "if actual_head != pull_head:",
         )
 
         def assert_bound(source):
@@ -71,6 +73,8 @@ class CohortUnionTests(unittest.TestCase):
             assert_bound(workflow.replace(required[0], "ref: github.sha", 1))
         with self.assertRaises(AssertionError):
             assert_bound(workflow.replace(required[2], "echo skipped", 1))
+        with self.assertRaises(AssertionError):
+            assert_bound(workflow.replace(required[5], "if False:", 1))
 
     def test_frozen_three_cohort_source_denominators(self):
         result = produce_cohorts(snapshots())
