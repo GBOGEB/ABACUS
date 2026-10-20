@@ -541,7 +541,9 @@ class CICDGitHubOrchestrator:
 
         git_status = self.git_status()
         pipeline_results["stages"]["git_status_before"] = git_status
-        if "error" in git_status:
+        # Missing or non-boolean scan evidence is UNKNOWN, never a clean tree.
+        # bool is required explicitly: 0/1 and strings cannot confer safety.
+        if "error" in git_status or type(git_status.get("has_changes")) is not bool:
             pipeline_results["status"] = "BLOCKED_GIT_STATUS"
             return pipeline_results
         print(f"\n[METRICS] Git status: {git_status.get('has_changes', False)}")
@@ -609,14 +611,20 @@ def main():
 
     orchestrator = CICDGitHubOrchestrator(workspace)
 
-    orchestrator.execute_full_pipeline(dry_run=args.dry_run)
+    result = orchestrator.execute_full_pipeline(dry_run=args.dry_run)
+    # A bounded read/scan failure must reach the caller and its shell runner.
+    # A success-looking CLI message must never conceal a blocked pipeline.
+    if not isinstance(result, dict) or result.get("status") not in (None, "SUCCESS"):
+        print("\n[BLOCKED] CI/CD pipeline cannot claim success; inspect stage evidence")
+        return 2
 
     if not args.dry_run:
         print("\n[OK] CI/CD pipeline executed successfully")
     else:
         print("\n[OK] DRY RUN complete - no changes made")
         print("Run without --dry-run to execute changes")
+    return 0
 
 
 if __name__ == "__main__":
-    main()
+    raise SystemExit(main())
