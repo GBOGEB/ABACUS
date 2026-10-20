@@ -673,6 +673,42 @@
       "cluster": "bridge_federation",
       "lifecycle": "pr_domain",
       "disposition": "keep"
+    },
+    {
+      "pattern": "^code-purple-dashboard-v31\\.yml$",
+      "cluster": "documentation",
+      "lifecycle": "pr_domain",
+      "disposition": "keep"
+    },
+    {
+      "pattern": "^code-purple-sut-gui\\.yml$",
+      "cluster": "core_test",
+      "lifecycle": "pr_domain",
+      "disposition": "keep"
+    },
+    {
+      "pattern": "^g3a-bounded-continuation-proof\\.yml$",
+      "cluster": "dmaic",
+      "lifecycle": "pr_domain",
+      "disposition": "keep"
+    },
+    {
+      "pattern": "^g3a-n14-matched-arc-flight\\.yml$",
+      "cluster": "dmaic",
+      "lifecycle": "pr_domain",
+      "disposition": "keep"
+    },
+    {
+      "pattern": "^g3a-n14-phase4-import\\.yml$",
+      "cluster": "dmaic",
+      "lifecycle": "pr_domain",
+      "disposition": "keep"
+    },
+    {
+      "pattern": "^g3a-n15-python-matrix\\.yml$",
+      "cluster": "dmaic",
+      "lifecycle": "pr_domain",
+      "disposition": "keep"
     }
   ],
   "quality_gates": {
