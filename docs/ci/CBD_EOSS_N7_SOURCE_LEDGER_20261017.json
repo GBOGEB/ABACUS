@@ -1,0 +1,156 @@
+{
+  "authority": {
+    "admission": "HOLD",
+    "authority_transfer": false,
+    "security_waiver": false
+  },
+  "baselines": {
+    "historical_failed_associations": 260,
+    "historical_n0_prs": 75,
+    "historical_unique_runs": 253,
+    "n0_observed_run_ids_prior": 60,
+    "n6_eoss_source_branches": 86,
+    "n6_eoss_source_statements": 403,
+    "n6_local_eoss_tests_passed": 141,
+    "remaining_unobserved_n0_runs": 193
+  },
+  "head_before_w12": "a7b236a90f214da69c8b1dabe8830612778c0e2c",
+  "historical_n6_head": "7ec01bfd2bc97c8c31ad0e69e60031021bec05cc",
+  "independent_owner_root": {
+    "pr": 2026,
+    "root": "matplotlib>=3.11.2 on Python3.10",
+    "status": "SOURCE_OWNER_PENDING_INTEGRATION"
+  },
+  "measured_outcomes": {
+    "accepted_root_closures": null,
+    "cache_cold_warm_pair_count": 0,
+    "convergence": "LOCAL_EOSS_TESTS_PASS; NATIVE_CERTIFICATION_UNKNOWN",
+    "eoss_source_scope_grew_branches_by": 28,
+    "eoss_source_scope_grew_statements_by": 85,
+    "local_test_denominator_after": 171,
+    "local_test_denominator_before": 141,
+    "locally_verified_test_increase": 30,
+    "matched_existing_EOSS_coverage_delta_pp": 0.0,
+    "matched_main_coverage_delta_pp": null,
+    "n7_local_branch_coverage": 1.0,
+    "n7_local_statement_coverage": 1.0,
+    "native_runtime_speedup_seconds": null,
+    "performance_acceleration": "NOT_PROVEN"
+  },
+  "native_readbacks": [
+    {
+      "failed_jobs": 4,
+      "first_step_candidates": [
+        {
+          "job_id": 117384221488,
+          "log_source_detail": "pytest collection ModuleNotFoundError test_cbd_eoss_trajectory",
+          "name": "Python 3.12",
+          "step": "Run canonical coverage and emit governed evidence"
+        },
+        {
+          "job_id": 117384221504,
+          "log_source_detail": "matplotlib>=3.11.2 incompatible Python 3.10",
+          "name": "Python 3.10",
+          "step": "Install tooling"
+        },
+        {
+          "downstream": true,
+          "job_id": 117384506585,
+          "name": "Python proof completeness",
+          "step": "Audit executed and classified-skipped proof roles"
+        },
+        {
+          "downstream": true,
+          "job_id": 117384654410,
+          "name": "Compatibility gate",
+          "step": "Enforce selected proof set"
+        }
+      ],
+      "head_sha": "7ec01bfd2bc97c8c31ad0e69e60031021bec05cc",
+      "job_count": 7,
+      "run_attempt": 1,
+      "run_id": 39028400007,
+      "scope": "COMPLETE_FIRST_PAGE_7_OF_7_NOT_ALL_RUN_ATTEMPTS"
+    },
+    {
+      "failed_jobs": 2,
+      "first_step_candidates": [
+        {
+          "job_id": 117383835272,
+          "log_source_detail": "pytest collection ModuleNotFoundError test_cbd_eoss_trajectory",
+          "name": "B0 canonical coverage producer",
+          "step": "Run canonical exact-head coverage surface"
+        },
+        {
+          "downstream": true,
+          "job_id": 117384375066,
+          "name": "B0 report-only admission census",
+          "step": "Require all exact-SHA producers GREEN"
+        }
+      ],
+      "head_sha": "7ec01bfd2bc97c8c31ad0e69e60031021bec05cc",
+      "job_count": 13,
+      "run_attempt": 1,
+      "run_id": 39028400061,
+      "scope": "COMPLETE_FIRST_PAGE_13_OF_13_NOT_ALL_RUN_ATTEMPTS"
+    }
+  ],
+  "owner_pr": 2090,
+  "predictions": {
+    "cache_speedup_forecast": null,
+    "evidence_grade": "PROPOSED_UNVERIFIED_ON_W11_HEAD",
+    "main_merge_prediction": null,
+    "native_collection_repair_expected": "Python3.12 collection no longer fails on EOSS cross-test import",
+    "queue_age_forecast": null
+  },
+  "reused_existing_ssot": true,
+  "schema": "code-purple.eoss.n7.observational-release.v1",
+  "scope": "derivative projection: local + selected native CI readbacks",
+  "source": "GBOGEB/ABACUS",
+  "waves": [
+    {
+      "actual_first_red_prior": {
+        "candidate_only": true,
+        "run_id": 39028400061,
+        "step": "test_cbd_eoss_n6_release.py import from test_cbd_eoss_trajectory"
+      },
+      "github_commit": "72bfa5ad7b0c7ce74c200430d48b976f5535d5c3",
+      "local_behavioral_result": "isolated pytest collection PASS",
+      "local_tests_passed": 141,
+      "native_current_head_ci": "PENDING",
+      "objective": "Fix native collection failure in owned EOSS test path",
+      "planned_test_regression": "native pytest collection PASS on exact head",
+      "source_owner": "#2090",
+      "wave": "W10"
+    },
+    {
+      "github_commit": "a7b236a90f214da69c8b1dabe8830612778c0e2c",
+      "local_source_coverage": {
+        "branch_fraction": 1.0,
+        "branches": 114,
+        "statement_fraction": 1.0,
+        "statements": 488
+      },
+      "local_tests_passed": 171,
+      "native_current_head_ci": "PENDING",
+      "objective": "Add provenance-bound native job/clock family triage and adversarial tests",
+      "planned_test_regression": "fail closed on stale/forged job identities",
+      "source_owner": "#2090",
+      "wave": "W11"
+    },
+    {
+      "github_commit": null,
+      "local_tests_passed": 171,
+      "local_visual_qa": "PASS_3_VIEWPORTS",
+      "native_current_head_ci": "PENDING",
+      "objective": "Fan in source ledgers, visual DAG/SIPOC, runtime and release QA",
+      "planned_visual_qa_viewports": [
+        "1440x1000",
+        "1280x800",
+        "390x844"
+      ],
+      "source_owner": "#2090",
+      "wave": "W12"
+    }
+  ]
+}

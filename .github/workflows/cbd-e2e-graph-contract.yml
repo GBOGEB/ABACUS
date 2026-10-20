@@ -1,0 +1,66 @@
+name: CBD E2E Graph Contract QA
+
+on:
+  pull_request:
+    paths:
+      - 'scripts/cbd_e2e_graph_contract.py'
+      - 'tests/test_cbd_e2e_graph_contract.py'
+      - 'docs/ci/CBD_E2E_EVIDENCE_GRAPH_ATLAS_20261017.json'
+      - '.github/workflows/cbd-e2e-graph-contract.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  graph-contract:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: ['3.11', '3.12']
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+      - name: Assert exact checked-out head
+        env:
+          EXPECTED_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+        run: test "$(git rev-parse HEAD)" = "$EXPECTED_SHA"
+      - name: Install isolated pinned graph test dependencies
+        run: python -m pip install --disable-pip-version-check pytest==9.0.2 coverage==7.13.3
+      - name: Execute snapshot contract and negative tests
+        run: |
+          python -m coverage run --branch --include='*/scripts/cbd_e2e_graph_contract.py' -m pytest -q tests/test_cbd_e2e_graph_contract.py
+          python -m coverage json --output=/tmp/cbd-graph-contract-coverage.json
+      - name: Require native source and graph denominators
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          from scripts.cbd_e2e_graph_contract import audit
+          d=json.loads(Path('docs/ci/CBD_E2E_EVIDENCE_GRAPH_ATLAS_20261017.json').read_text())
+          r=audit(d)
+          assert r['node_count']==499 and r['edge_count']==697
+          assert r['association_edges']==89 and r['temporal_associations']==6
+          assert r['causal_root_credit']==0 and r['merge_admission']=='HOLD'
+          c=json.loads(Path('/tmp/cbd-graph-contract-coverage.json').read_text())['files']
+          match=[row['summary'] for path,row in c.items() if Path(path).name=='cbd_e2e_graph_contract.py']
+          assert len(match)==1, f'coverage source population drift: {len(match)}'
+          s=match[0]
+          assert s['num_statements']>0 and s['num_branches']>0
+          assert s['covered_lines']/s['num_statements']>=0.90
+          assert s['covered_branches']/s['num_branches']>=0.90
+          print('CBD_GRAPH_CONTRACT=PASS; authority=HOLD; native merge admission separate')
+          PY
+      - name: Upload read-only graph contract coverage
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: cbd-graph-contract-${{ matrix.python-version }}
+          path: /tmp/cbd-graph-contract-coverage.json
+          if-no-files-found: warn

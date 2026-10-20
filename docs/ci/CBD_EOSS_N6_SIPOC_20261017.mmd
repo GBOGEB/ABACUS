@@ -1,0 +1,6 @@
+flowchart LR
+    S[SUPPLIERS<br/>GitHub jobs<br/>Local pytest / coverage<br/>TestPilot] --> I[INPUTS<br/>sha, run, attempt, job<br/>test/branch numerator<br/>clock and backlog]
+    I --> P[PROCESS<br/>scope match<br/>three-wave trajectory<br/>clock censor / graph QA]
+    P --> O[OUTPUTS<br/>EOSS ledgers<br/>DAG + SIPOC<br/>HTML + QA manifest]
+    O --> C[CUSTOMERS<br/>source owners<br/>CODEX Mission Control<br/>A10/security reviewers]
+    C -. correction request, not direct mutation .-> S

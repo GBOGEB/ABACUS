@@ -1,0 +1,43 @@
+{
+  "schema": "code-purple.eoss.local_benchmark_result.v1",
+  "plan_sha256": "1bc3eb84fe022de35a427cd934b34a06b9f0d3f6f2ee2eaf3a5b11f5359159ba",
+  "environment": {
+    "python": "3.13.5",
+    "platform": "Linux-6.18.55-x86_64-with-glibc2.41"
+  },
+  "receipts": [
+    {
+      "pulse": 1,
+      "started_at_utc": "2026-10-17T10:46:46.021861+00:00",
+      "clock": "time.perf_counter_ns()",
+      "planned_max_seconds": 2.0,
+      "actual_wall_seconds": 0.137445,
+      "under_local_budget": true,
+      "native_runner_cache_savings_seconds": null
+    },
+    {
+      "pulse": 2,
+      "started_at_utc": "2026-10-17T10:46:46.159343+00:00",
+      "clock": "time.perf_counter_ns()",
+      "planned_max_seconds": 2.0,
+      "actual_wall_seconds": 0.115451,
+      "under_local_budget": true,
+      "native_runner_cache_savings_seconds": null
+    },
+    {
+      "pulse": 3,
+      "started_at_utc": "2026-10-17T10:46:46.274821+00:00",
+      "clock": "time.perf_counter_ns()",
+      "planned_max_seconds": 2.0,
+      "actual_wall_seconds": 0.167847,
+      "under_local_budget": true,
+      "native_runner_cache_savings_seconds": null
+    }
+  ],
+  "completed_runs": 3,
+  "all_below_local_budget": true,
+  "github_ci_runtime_improved": null,
+  "asyncio_savings_measured": null,
+  "coolprop_wheel_savings_measured": null,
+  "classification": "LOCAL_REPRODUCIBILITY_NOT_RUNNER_BENCHMARK"
+}

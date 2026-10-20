@@ -1,0 +1,152 @@
+{
+  "forecasts": [],
+  "observations": [
+    {
+      "authority": {
+        "admission": "HOLD",
+        "authority_transfer": false,
+        "security_waiver": false
+      },
+      "clock": null,
+      "coverage": {
+        "config_sha256": "fac49d1543495a4742fdb1365c537e96bd7a2e9c332975e7e4b68a7178ee6df5",
+        "covered_branches": 39,
+        "covered_statements": 207,
+        "eligible_branches": 42,
+        "eligible_statements": 210,
+        "scope_sha256": "0f7ba205c6dd5fc1ad3bddd2169f7bb8a6b86e3aff477e99ebc474dd697a9d77",
+        "source_content_sha256": "04a483cbf0822e4c4b100f4d112a15324f79586998449ca1b276e884f081df08",
+        "tool_version": "coverage.py 7.13.3"
+      },
+      "evidence_tier": "LOCAL_REPRODUCIBILITY",
+      "head_sha": "6be945b846d5535a58c39edb52835950efe5fa4e",
+      "historical_backlog": {
+        "formal_roots_closed": null,
+        "n0_total": 253,
+        "observed_run_ids": 60
+      },
+      "observation_clock_custody": "LOCAL_COVERAGE_RECEIPT_MTIME_OR_TEST_FILE_MTIME",
+      "observed_at": "2026-10-17T10:44:31Z",
+      "tests": {
+        "collected": 67,
+        "failed": 0,
+        "passed": 67,
+        "skipped": 0
+      },
+      "wave": "N5"
+    },
+    {
+      "authority": {
+        "admission": "HOLD",
+        "authority_transfer": false,
+        "security_waiver": false
+      },
+      "clock": null,
+      "coverage": {
+        "config_sha256": "fac49d1543495a4742fdb1365c537e96bd7a2e9c332975e7e4b68a7178ee6df5",
+        "covered_branches": 42,
+        "covered_statements": 210,
+        "eligible_branches": 42,
+        "eligible_statements": 210,
+        "scope_sha256": "0f7ba205c6dd5fc1ad3bddd2169f7bb8a6b86e3aff477e99ebc474dd697a9d77",
+        "source_content_sha256": "04a483cbf0822e4c4b100f4d112a15324f79586998449ca1b276e884f081df08",
+        "tool_version": "coverage.py 7.13.3"
+      },
+      "evidence_tier": "LOCAL_REPRODUCIBILITY",
+      "head_sha": "21ac90604f36e70b64bd0539272e8982a747ec75",
+      "historical_backlog": {
+        "formal_roots_closed": null,
+        "n0_total": 253,
+        "observed_run_ids": 60
+      },
+      "observation_clock_custody": "LOCAL_COVERAGE_RECEIPT_MTIME_OR_TEST_FILE_MTIME",
+      "observed_at": "2026-10-17T11:08:00Z",
+      "tests": {
+        "collected": 73,
+        "failed": 0,
+        "passed": 73,
+        "skipped": 0
+      },
+      "wave": "W7"
+    },
+    {
+      "authority": {
+        "admission": "HOLD",
+        "authority_transfer": false,
+        "security_waiver": false
+      },
+      "clock": null,
+      "coverage": {
+        "config_sha256": "fac49d1543495a4742fdb1365c537e96bd7a2e9c332975e7e4b68a7178ee6df5",
+        "covered_branches": 42,
+        "covered_statements": 210,
+        "eligible_branches": 42,
+        "eligible_statements": 210,
+        "scope_sha256": "0f7ba205c6dd5fc1ad3bddd2169f7bb8a6b86e3aff477e99ebc474dd697a9d77",
+        "source_content_sha256": "04a483cbf0822e4c4b100f4d112a15324f79586998449ca1b276e884f081df08",
+        "tool_version": "coverage.py 7.13.3"
+      },
+      "evidence_tier": "LOCAL_REPRODUCIBILITY",
+      "head_sha": "21ac90604f36e70b64bd0539272e8982a747ec75",
+      "historical_backlog": {
+        "formal_roots_closed": null,
+        "n0_total": 253,
+        "observed_run_ids": 60
+      },
+      "observation_clock_custody": "LOCAL_COVERAGE_RECEIPT_MTIME_OR_TEST_FILE_MTIME",
+      "observed_at": "2026-10-17T11:11:09Z",
+      "tests": {
+        "collected": 123,
+        "failed": 0,
+        "passed": 123,
+        "skipped": 0
+      },
+      "wave": "W8"
+    },
+    {
+      "authority": {
+        "admission": "HOLD",
+        "authority_transfer": false,
+        "security_waiver": false
+      },
+      "clock": {
+        "basis": "LOCAL_MONOTONIC_WALL",
+        "duration_ms": [
+          125.897659,
+          121.446778,
+          169.684653
+        ],
+        "host_sha256": "39a6cfa504923267eb1477d2c42af2971ac46e7c244958f051825a092055fb5f",
+        "workload_sha256": "a4d62b8f52ca5a7a549aee78bc2d1ffdcaf4e99379c129754974cb7a3392671e"
+      },
+      "coverage": {
+        "config_sha256": "fac49d1543495a4742fdb1365c537e96bd7a2e9c332975e7e4b68a7178ee6df5",
+        "covered_branches": 42,
+        "covered_statements": 210,
+        "eligible_branches": 42,
+        "eligible_statements": 210,
+        "scope_sha256": "0f7ba205c6dd5fc1ad3bddd2169f7bb8a6b86e3aff477e99ebc474dd697a9d77",
+        "source_content_sha256": "04a483cbf0822e4c4b100f4d112a15324f79586998449ca1b276e884f081df08",
+        "tool_version": "coverage.py 7.13.3"
+      },
+      "evidence_tier": "LOCAL_REPRODUCIBILITY",
+      "head_sha": "21ac90604f36e70b64bd0539272e8982a747ec75",
+      "historical_backlog": {
+        "formal_roots_closed": null,
+        "n0_total": 253,
+        "observed_run_ids": 60
+      },
+      "observation_clock_custody": "LOCAL_COVERAGE_RECEIPT_MTIME_OR_TEST_FILE_MTIME",
+      "observed_at": "2026-10-17T11:16:09Z",
+      "tests": {
+        "collected": 141,
+        "failed": 0,
+        "passed": 141,
+        "skipped": 0
+      },
+      "wave": "W9"
+    }
+  ],
+  "repository": "GBOGEB/ABACUS",
+  "schema": "code-purple.eoss.trajectory-input.v1"
+}
