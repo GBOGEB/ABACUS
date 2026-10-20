@@ -31,7 +31,7 @@ class CohortUnionTests(unittest.TestCase):
         expected = [
             "matplotlib>=3.7.5,<3.8.0; python_version < '3.9'",
             "matplotlib>=3.9.4,<3.10.0; python_version >= '3.9' and python_version < '3.10'",
-            "matplotlib>=3.10.8,<3.11.0; python_version >= '3.10' and python_version < '3.11'",
+            "matplotlib>=3.10.9,<3.11.0; python_version >= '3.10' and python_version < '3.11'",
             "matplotlib>=3.11.2,<4.0.0; python_version >= '3.11'",
         ]
 
@@ -83,6 +83,10 @@ class CohortUnionTests(unittest.TestCase):
         self.assertEqual(rec["unknown_attempt_associations"], 78)
         self.assertEqual(rec["snapshots_without_head_manifests"], 1)
         self.assertEqual(rec["distinct_declared_pr_heads"], 19)
+        self.assertEqual(rec["distinct_manifested_pr_heads"], 20)
+        self.assertEqual(rec["non_atomic_manifest_workflow_associations"], 533)
+        self.assertEqual(rec["non_atomic_manifest_failed_associations"], 66)
+        self.assertIsNone(rec["root_closure_credit"])
         self.assertIsNone(result["observed"]["run_attempt_count"])
         self.assertEqual(result["observed"]["run_association_count"], 66)
         self.assertEqual(result["observed"]["conclusions"]["failure"], 66)
@@ -101,9 +105,12 @@ class CohortUnionTests(unittest.TestCase):
         data = [data[0], copy.deepcopy(data[0]), copy.deepcopy(data[0])]
         result = produce_cohorts(data)
         self.assertEqual(result["cohort_reconciliation"]["declared_observation_rows"], 36)
-        self.assertEqual(result["cohort_reconciliation"]["distinct_run_attempts"], 12)
+        self.assertIsNone(result["cohort_reconciliation"]["distinct_run_attempts"])
         self.assertEqual(result["cohort_reconciliation"]["distinct_declared_run_ids"], 12)
         self.assertEqual(result["cohort_reconciliation"]["cross_source_duplicate_rows"], 24)
+        self.assertEqual(result["cohort_reconciliation"]["unknown_attempt_associations"], 36)
+        self.assertEqual(result["cohort_reconciliation"]["unresolved_unknown_run_ids"], 12)
+        self.assertIsNone(result["cohort_reconciliation"]["root_closure_credit"])
         self.assertEqual(result["cohort_reconciliation"]["distinct_source_documents"], 1)
 
     def test_same_run_with_different_workflow_rejected(self):
@@ -176,10 +183,10 @@ class CohortUnionTests(unittest.TestCase):
         # Frozen source files establish 12, then 40, then 66 distinct run IDs.
         self.assertEqual([12, 40, 66], [p["distinct_run_ids_cumulative"] for p in pulses])
         self.assertTrue(all(p["kind"] == "SOURCE_INGESTION_NOT_TEMPORAL_IMPROVEMENT" for p in pulses))
-        self.assertEqual(rec["distinct_manifested_pr_heads"], 0)
-        self.assertEqual(rec["manifested_zero_failure_prs"], [])
-        self.assertEqual(rec["non_atomic_manifest_workflow_associations"], 0)
-        self.assertEqual(rec["non_atomic_manifest_failed_associations"], 0)
+        self.assertEqual(rec["distinct_manifested_pr_heads"], 20)
+        self.assertEqual(rec["manifested_zero_failure_prs"], [2033])
+        self.assertEqual(rec["non_atomic_manifest_workflow_associations"], 533)
+        self.assertEqual(rec["non_atomic_manifest_failed_associations"], 66)
         self.assertEqual(rec["manifest_comparability"], "NOT_A_DENOMINATOR_FOR_UNION_PASS_RATE")
 
     def test_unique_known_attempt_can_join_without_native_authentication(self):
@@ -239,34 +246,33 @@ class CohortUnionTests(unittest.TestCase):
 
     def test_manifest_conflicts_fail_closed(self):
         first = snapshots()[1]
-        # Frozen JSON has no manifests; create a controlled pair rather than
-        # treating absent metadata as a real upstream PR-head observation.
-        row = first["observations"][0]
-        first["sampled_pr_heads"] = [{
-            "pr": row["pr"], "sha": row["sha"],
-            "workflow_associations_seen": 3, "failed_associations_seen": 1,
-        }]
+        # Preserve every source-declared head while forging a single
+        # conflicting numerator/denominator in the copied manifest.
+        self.assertEqual(len(first["sampled_pr_heads"]), 10)
         second = copy.deepcopy(first)
         second["sampled_pr_heads"][0]["workflow_associations_seen"] += 1
         with self.assertRaisesRegex(ValueError, "conflicting sampled PR head manifest"):
             produce_cohorts([first, second])
 
-    def test_absent_manifest_stays_absent_in_projection(self):
+    def test_one_missing_manifest_stays_missing_and_non_authoritative(self):
         source = snapshots()
         receipt = produce_cohorts(source)["cohort_reconciliation"]
-        self.assertEqual(receipt["snapshots_without_head_manifests"], 3)
-        self.assertEqual(receipt["distinct_manifested_pr_heads"], 0)
-        self.assertEqual(receipt["non_atomic_manifest_workflow_associations"], 0)
-        self.assertEqual(receipt["manifested_zero_failure_prs"], [])
+        self.assertEqual(receipt["snapshots_without_head_manifests"], 1)
+        self.assertEqual(receipt["distinct_manifested_pr_heads"], 20)
+        self.assertEqual(receipt["non_atomic_manifest_workflow_associations"], 533)
+        self.assertEqual(receipt["non_atomic_manifest_failed_associations"], 66)
+        self.assertEqual(receipt["manifested_zero_failure_prs"], [2033])
         self.assertEqual(receipt["manifest_comparability"],
                          "NOT_A_DENOMINATOR_FOR_UNION_PASS_RATE")
+        self.assertIsNone(receipt["root_closure_credit"])
+        self.assertEqual(receipt["admission"], "HOLD")
 
 
     def test_known_and_unknown_attempts_are_not_falsely_summed(self):
         result = produce_cohorts(snapshots())
         self.assertIsNone(result["observed"]["run_attempt_count"])
         self.assertEqual(result["observed"]["run_association_count"], 66)
-        self.assertEqual(result["cohort_reconciliation"]["unknown_attempt_associations"], 66)
+        self.assertEqual(result["cohort_reconciliation"]["unknown_attempt_associations"], 78)
         self.assertEqual(result["cohort_reconciliation"]["distinct_declared_run_ids"], 66)
 
     def test_unknown_attempt_remains_unverified_under_duplicate_source(self):
