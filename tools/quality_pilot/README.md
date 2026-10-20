@@ -21,7 +21,7 @@ Bandit, Ruff security and Dependabot. The pilot does **not** re-run those. It ad
 
 | Phase | When | Extras |
 |---|---|---|
-| burn-in | first `BURN_IN_RUNS` (=10) runs, **daily** 05:17 UTC | focused scan + run-over-run trend |
+| burn-in | first `BURN_IN_RUNS` (=10) **scheduled** runs, **daily** 05:17 UTC (PR/manual runs do not consume it) | focused scan + run-over-run trend |
 | steady | afterwards, **Mondays** only (other days skip in ~5 s) | — |
 | manual | `workflow_dispatch` or a PR touching pilot files | focused scan + trend |
 
