@@ -324,7 +324,7 @@ class CICDGitHubOrchestrator:
         return results
 
     def git_status(self) -> Dict:
-        """Get git status"""
+        """Read porcelain v1; preserve XY columns and raw path spelling."""
         try:
             result = subprocess.run(
                 ["git", "status", "--porcelain"],
@@ -333,21 +333,46 @@ class CICDGitHubOrchestrator:
                 text=True,
                 timeout=30
             )
+            if result.returncode != 0:
+                raise RuntimeError(
+                    result.stderr.strip() or f"git status exited {result.returncode}"
+                )
 
-            # Porcelain v1's two XY status columns are significant:
-            # stripping the first line converts " M" into "M " and loses
-            # the unstaged-modification classification.
-            lines = [line for line in result.stdout.splitlines() if line]
-
-            return {
-                "has_changes": len(lines) > 0,
-                "modified": [line[3:] for line in lines if "M" in line[:2]],
-                "added": [line[3:] for line in lines if "A" in line[:2]],
-                "deleted": [line[3:] for line in lines if "D" in line[:2]],
-                "untracked": [line[3:] for line in lines if line.startswith("??")],
+            # Leading spaces are status data, not indentation.  A global strip
+            # turns the first worktree modification from " M" into "M ".
+            lines = result.stdout.splitlines()
+            status = {
+                "has_changes": bool(lines),
+                "modified": [],
+                "added": [],
+                "deleted": [],
+                "untracked": [],
+                "renamed": [],
+                "copied": [],
+                "unmerged": [],
             }
+            conflicts = {"DD", "AU", "UD", "UA", "DU", "AA", "UU"}
+            for line in lines:
+                if len(line) < 4 or line[2] != " ":
+                    raise ValueError("Malformed git porcelain record")
+                xy, path = line[:2], line[3:]
+                if xy == "??":
+                    status["untracked"].append(path)
+                elif xy in conflicts:
+                    status["unmerged"].append(path)
+                elif xy == "  " or any(c not in " MADRCT" for c in xy):
+                    raise ValueError("Unsupported git porcelain status")
+                else:
+                    for codes, key in (
+                        ("MT", "modified"), ("A", "added"),
+                        ("D", "deleted"), ("R", "renamed"), ("C", "copied"),
+                    ):
+                        if any(code in xy for code in codes):
+                            status[key].append(path)
+            return status
         except Exception as e:
-            return {"error": str(e), "has_changes": False}
+            # A failed scan must not be reported as a known clean worktree.
+            return {"error": str(e), "has_changes": None}
 
     def git_commit_push(self, message: str) -> Dict:
         """Commit and push changes to GitHub"""
@@ -516,6 +541,9 @@ class CICDGitHubOrchestrator:
 
         git_status = self.git_status()
         pipeline_results["stages"]["git_status_before"] = git_status
+        if "error" in git_status:
+            pipeline_results["status"] = "BLOCKED_GIT_STATUS"
+            return pipeline_results
         print(f"\n[METRICS] Git status: {git_status.get('has_changes', False)}")
 
         refactoring_plan = self.analyze_refactoring_needs()
