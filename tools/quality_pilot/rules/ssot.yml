@@ -1,0 +1,91 @@
+rules:
+  # ---------------------------------------------------------------------------
+  # GBOGEB governance rules — pilot set (Opengrep / Semgrep-compatible).
+  # Excludes mapped to ABACUS layout (2026-10-20): EOS adapter =
+  # models/helium_properties/, SSOT = **/ssot/**, golden data = **/golden/**.
+  # ---------------------------------------------------------------------------
+
+  - id: ssot-hardcoded-helium-constant
+    message: >-
+      Helium property constant hardcoded outside SSOT. Read it from manifest.yaml
+      (or the EOS adapter) so a single source of truth governs it.
+    severity: WARNING
+    languages: [python]
+    metadata:
+      category: governance
+      layer: TRUTH=SSOT
+    paths:
+      exclude:
+        - "**/ssot/**"
+        - "**/manifest*"
+        - "**/tests/**"
+        - "**/golden/**"
+        - "models/helium_properties/**"
+    pattern-either:
+      - pattern: "4.002602"   # He-4 molar mass [g/mol]
+      - pattern: "4.0026"
+      - pattern: "2.1768"     # lambda point [K]
+      - pattern: "2.177"
+      - pattern: "5.1953"     # critical temperature [K]
+      - pattern: "5.195"
+
+  - id: eos-call-outside-adapter
+    message: >-
+      Direct CoolProp PropsSI call outside the EOS adapter. Route property calls
+      through the adapter so the EOS choice (Ortiz-Vega / HEPAK below lambda)
+      stays in one place.
+    severity: WARNING
+    languages: [python]
+    metadata:
+      category: governance
+    paths:
+      exclude:
+        - "models/helium_properties/**"
+        - "**/tests/**"
+    pattern-either:
+      - pattern: CoolProp.CoolProp.PropsSI(...)
+      - pattern: PropsSI(...)
+
+  - id: protected-ssot-file-write
+    message: >-
+      Code writes to an SSOT / patch-counter / session-state file directly.
+      These files change only through the governed patch path.
+    severity: ERROR
+    languages: [python]
+    metadata:
+      category: governance
+      layer: PATCHES=HISTORY
+    paths:
+      exclude:
+        - "**/tests/**"
+    pattern-either:
+      - patterns:
+          - pattern: open($P, $MODE, ...)
+          - metavariable-regex:
+              metavariable: $MODE
+              regex: ^['"][wax]
+          - metavariable-regex:
+              metavariable: $P
+              regex: (?i)(manifest\.ya?ml|ssot|patch_counter|session_state)
+      - patterns:
+          - pattern: pathlib.Path($P).write_text(...)
+          - metavariable-regex:
+              metavariable: $P
+              regex: (?i)(manifest\.ya?ml|ssot|patch_counter|session_state)
+
+  - id: float-exact-equality
+    message: >-
+      Exact equality against a float literal. In numerical/physics code use
+      math.isclose or a tolerance from SSOT.
+    severity: INFO
+    languages: [python]
+    metadata:
+      category: correctness
+    patterns:
+      - pattern-either:
+          - pattern: $X == $F
+          - pattern: $F == $X
+          - pattern: $X != $F
+      - metavariable-regex:
+          metavariable: $F
+          regex: ^-?\d+\.\d*([eE][-+]?\d+)?$
