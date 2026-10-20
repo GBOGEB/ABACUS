@@ -1,0 +1,98 @@
+{
+  "schema": "codepurple.engineering_wave_history.v1",
+  "project": "GBOGEB/ABACUS",
+  "source_family": "W29-W75-W64",
+  "target_coverage_percent": 95,
+  "consecutive_no_change_required": 3,
+  "eligible_opportunities_historical": 346,
+  "covered_opportunities_historical": 86,
+  "historical_scope_basis": {
+    "source_sha": "97a8b13faff577272a90edaf0dd4593035e10605",
+    "run_id": 39142444027,
+    "meaning": "Old main B0; not qualified as W29 source-head coverage"
+  },
+  "events": [
+    {
+      "label": "W29-N0",
+      "source_sha": "38d1d3b52fc7ca943a17471301c20cbe5f5af254",
+      "run_id": 39149390636,
+      "state": "TERMINAL_FAIL_COVERAGE_ARTIFACT_MISSING",
+      "native_test_executions_passed": 128,
+      "qualifying_coverage": null,
+      "native_jobs_terminal": 2,
+      "native_jobs_success": 0,
+      "native_queue_p95_seconds": 733,
+      "first_red": "PYTEST_COV_NONIMPORTABLE_MODULE_SELECTOR"
+    },
+    {
+      "label": "W29-N1",
+      "source_sha": "312042de13212319c0e85c9d012fa43747508e4e",
+      "run_id": 39150712686,
+      "state": "TERMINAL_SUCCESS_SCOPED_98_84",
+      "native_test_executions_passed": 128,
+      "qualifying_coverage": {
+        "covered": 342,
+        "eligible": 346,
+        "configuration_digest": "e18bfad82214822717630d57b340df986282833fadc1ce9b035591d255231fcb",
+        "cohort_digest": "c7f70c7ea36994dd3b8d79fccbaab1ff5fc75129cc832dcde0dcaaf5b5038e06"
+      },
+      "native_jobs_terminal": 2,
+      "native_jobs_success": 2,
+      "native_queue_p95_seconds": 1055,
+      "first_red": null,
+      "native_artifacts": [
+        {
+          "artifact_id": 12145313627,
+          "job_id": 117743603707,
+          "artifact_sha256": "0a4fc9c588f948194bd6ff33353f5f65a003919eadcb4e3d47c6e59228cf9364",
+          "manifest_sha256": "f3c56a926cdad980b598c2b9c11dd94846a7da1d08175bcfcae1fe57ee448074"
+        },
+        {
+          "artifact_id": 12144574562,
+          "job_id": 117743603897,
+          "artifact_sha256": "0531033c346a56010528b8b62f0d21a723e3c66c4dae868fe243b6cd4aae8c0c",
+          "manifest_sha256": "5d7bcc4ea26047756b0ff28cdad4c6a5f7102bcd85a0f1333f2cab59edf5a11c"
+        }
+      ]
+    }
+  ],
+  "observations": [
+    {
+      "wave": 29,
+      "run_id": 39150712686,
+      "run_attempt": 1,
+      "source_sha": "312042de13212319c0e85c9d012fa43747508e4e",
+      "artifact_digest": "e640e0bf88e4b7bf17070a37a62d3ee1c6ce35abdcd9c577dceaf41159dc5a6e",
+      "configuration_digest": "e18bfad82214822717630d57b340df986282833fadc1ce9b035591d255231fcb",
+      "cohort_digest": "c7f70c7ea36994dd3b8d79fccbaab1ff5fc75129cc832dcde0dcaaf5b5038e06",
+      "source_slice": "W29-W75-W64-adversarial-testflight",
+      "eligible": 346,
+      "covered": 342,
+      "job_expected": 2,
+      "job_success": 2,
+      "test_passed": 128,
+      "test_failed": 0,
+      "test_skipped": 0,
+      "cases_added": 64,
+      "terminal": true,
+      "head_stable": true,
+      "first_red_signatures": [],
+      "root_dispositions_complete": false,
+      "queue_p95_seconds": 1055,
+      "attempted_new_behavior": true
+    }
+  ],
+  "accepted_root_closures": null,
+  "correctly_governed_merges": null,
+  "authenticated_remote_crew_launches": null,
+  "accepted_rex": null,
+  "notes": [
+    "A failed CI job with passing assertions is not an accepted engineering wave.",
+    "Queue placeholders are UNKNOWN, not a zero-second observation.",
+    "An increase in a fresh focused coverage numerator is not global main or PR diff gain.",
+    "Only fresh, terminal, source-bound observations enter the consecutive-wave convergence calculation.",
+    "W29 N1 342/346 is focused W75+W64 coverage; historical B0 86/346 used a different test selection.",
+    "Terminal W29 queue p95 1055 seconds exceeds 900-second read-only lane expansion threshold.",
+    "W29 source cohort reached 95% target, but main B0/PR diff, security, root acceptance and governance remain separately unqualified."
+  ]
+}

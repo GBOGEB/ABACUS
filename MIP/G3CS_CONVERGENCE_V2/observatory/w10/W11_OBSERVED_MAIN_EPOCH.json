@@ -1,0 +1,115 @@
+{
+  "comparison": {
+    "branch_covered_delta": 117,
+    "combined_pp_delta": 0.41333,
+    "covered_delta": 417,
+    "eligible_delta": 297,
+    "new_test_family_counts": {
+      "tests.test_bridge_coverage_receipt": 58,
+      "tests.test_g3cs_assurance_matrix.G3CSAssuranceMatrix": 21,
+      "tests.test_g3cs_source_mutations.G3CSSourceMutationSentinels": 1,
+      "tests.test_mcl_adversarial_family.FamilyTests": 43,
+      "tests.test_mip_nplus_observatory.NPlusTests": 5,
+      "tests.test_testpilot_adversarial_coverage": 52,
+      "tests.test_testpilot_coverage_compare": 27,
+      "tests.test_workflow_family_metrics.FamilyMetricsTests": 23
+    },
+    "new_test_ids": 230,
+    "removed_test_ids": 0,
+    "source_after_sha": "9e0200190555736c74295ee74881e3c003e8a35c",
+    "source_before_sha": "97a8b13faff577272a90edaf0dd4593035e10605",
+    "statement_covered_delta": 300,
+    "uncovered_delta": -120
+  },
+  "complete_federation": false,
+  "coverage_scope": "COMBINED_SOURCE_POPULATION_CHANGED_DENOMINATOR",
+  "governance": {
+    "accepted_rex": null,
+    "authority_transfer": false,
+    "authorized_crew_launch": null,
+    "causal_root_closure": null,
+    "merge_admission": "HOLD",
+    "security_waiver": false
+  },
+  "history_epoch": "POST_W10_FREEZE_APPEND_ONLY",
+  "measurements": [
+    {
+      "archive_sha256": "4f205b496f35c85d9610ac035ad66becb3b923fd01dfd0acfadf5c756167e459",
+      "branch_coverage": true,
+      "branches": {
+        "covered": 7972,
+        "eligible": 12046
+      },
+      "combined": {
+        "covered": 35154,
+        "eligible": 52200,
+        "percent": 67.344828,
+        "uncovered": 17046
+      },
+      "coverage_py_version": "7.16.2",
+      "epoch": "N-1",
+      "formal_admission": "UNVERIFIED_HOLD",
+      "native_b0_artifact_id": 12142730864,
+      "native_b0_run_id": 39142444027,
+      "native_b0_terminal": "success",
+      "repository": "GBOGEB/ABACUS",
+      "source_sha": "97a8b13faff577272a90edaf0dd4593035e10605",
+      "statements": {
+        "covered": 27182,
+        "eligible": 40154
+      },
+      "tests": {
+        "identity_set_sha256": "95f4263d184fc5ca69758fad256b220d8333cdfb2d9cbbc47d3de5740c85b495",
+        "passed": 4168,
+        "skipped": 2,
+        "unique_id_count": 4170
+      }
+    },
+    {
+      "archive_sha256": "f5537a6106ec084a290f36dad980e5879a81c90c7979557368f8ce94387b7733",
+      "branch_coverage": true,
+      "branches": {
+        "covered": 8089,
+        "eligible": 12132
+      },
+      "combined": {
+        "covered": 35571,
+        "eligible": 52497,
+        "percent": 67.758158,
+        "uncovered": 16926
+      },
+      "coverage_py_version": "7.16.2",
+      "epoch": "N",
+      "formal_admission": "UNVERIFIED_HOLD",
+      "native_b0_artifact_id": 12143804356,
+      "native_b0_run_id": 39148074250,
+      "native_b0_terminal": "success",
+      "repository": "GBOGEB/ABACUS",
+      "source_sha": "9e0200190555736c74295ee74881e3c003e8a35c",
+      "statements": {
+        "covered": 27482,
+        "eligible": 40365
+      },
+      "tests": {
+        "identity_set_sha256": "db886a9d9dd6bb5340bde35dcbbe3d47f4df13b80eed4b39e8b4540da4bc0931",
+        "passed": 4398,
+        "skipped": 2,
+        "unique_id_count": 4400
+      }
+    }
+  ],
+  "native_artifact_digests_checked_against_GitHub_API": true,
+  "next_conditional": {
+    "assumed_eligible": 52497,
+    "classification": "FIXED_DENOMINATOR_SENSITIVITY_NOT_STATISTICAL_PREDICTION",
+    "conditional_percent": 68.758215,
+    "net_new_covered": 525
+  },
+  "notes": [
+    "This is a separately observed main epoch; never rewrite W10 historical JSON.",
+    "Portfolio gain includes code/scope changes; not a frozen-source causal estimate.",
+    "Native successful B0 is not independent human approval or correct governed merge."
+  ],
+  "schema": "codepurple.spine.w11.observed-main.v1",
+  "scope": "ABACUS CANONICAL B0 TWO SERIAL MAIN SHA EPOCHS"
+}

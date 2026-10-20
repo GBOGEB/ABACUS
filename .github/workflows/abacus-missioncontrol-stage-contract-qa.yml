@@ -1,0 +1,32 @@
+name: ABACUS MissionControl Stage Contract QA
+on:
+  pull_request:
+    paths:
+      - "scripts/abacus_missioncontrol_stage_only.py"
+      - "tests/test_abacus_missioncontrol_stage_only.py"
+      - ".github/workflows/abacus-missioncontrol-stage-only.yml"
+      - ".github/workflows/abacus-missioncontrol-stage-contract-qa.yml"
+  workflow_dispatch: {}
+permissions:
+  contents: read
+jobs:
+  native-stage-contract:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 12
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: ['3.10', '3.11', '3.12']
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+      - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97
+        with:
+          python-version: ${{ matrix.python-version }}
+      - name: Install isolated test harness
+        run: python -m pip install pytest numpy
+      - name: Assert no mutation or forged authentication permitted
+        run: |
+          set -euo pipefail
+          python -m pytest -q tests/test_abacus_missioncontrol_stage_only.py

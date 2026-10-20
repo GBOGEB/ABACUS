@@ -21,7 +21,7 @@ jobs:
         uses: actions/checkout@v7
 
       - name: Set up Python
-        uses: actions/setup-python@v7.0.0
+        uses: actions/setup-python@v7
         with:
           python-version: "3.11"
 
@@ -63,7 +63,7 @@ jobs:
           fetch-depth: 1
 
       - name: Set up Python
-        uses: actions/setup-python@v7.0.0
+        uses: actions/setup-python@v7
         with:
           python-version: "3.11"
 
@@ -85,7 +85,7 @@ jobs:
           git worktree remove --force "${worktree}"
 
       - name: Upload W77 phase probe
-        uses: actions/upload-artifact@v7.0.2
+        uses: actions/upload-artifact@v7
         with:
           # Repeat + target is unique within one workflow run.
           name: r${{ matrix.repeat }}-${{ matrix.target.label }}
@@ -101,12 +101,12 @@ jobs:
         uses: actions/checkout@v7
 
       - name: Set up Python
-        uses: actions/setup-python@v7.0.0
+        uses: actions/setup-python@v7
         with:
           python-version: "3.11"
 
       - name: Download W77 phase probes
-        uses: actions/download-artifact@v8
+        uses: actions/download-artifact@v8.0.2
         with:
           pattern: r*-*
           path: architecture/w77/probes
@@ -129,7 +129,7 @@ jobs:
           cat architecture/w77/runtime/W77_FEATURE_STABILITY.json
 
       - name: Upload W77 stability evidence
-        uses: actions/upload-artifact@v7.0.2
+        uses: actions/upload-artifact@v7
         with:
           name: w77-phase-stability-${{ github.sha }}
           path: architecture/w77/runtime/W77_FEATURE_STABILITY.json

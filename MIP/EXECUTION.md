@@ -129,6 +129,25 @@ Use transparent BT-style risk/impact/dependency/cost ranking first; record manua
 Formal PCA requires a standardized measured matrix, sample adequacy and interpretable loadings.
 PC1 captures variance, not automatically value; do not label expert guesses as telemetry.
 
+## G3A / G3W unit taxonomy and bounded autonomous advancement
+
+**Federation terminology source:** [CODEX draft PR #1060](https://github.com/GBOGEB/CODEX/pull/1060), `docs/reference/glossary.yaml#/glossary/execution_units`. The cross-repository canonical update is a **proposal until reviewed and merged**; ABACUS retains this existing MIP register and all native acceptance authority.
+
+- **Wave (W):** bounded deliverable/campaign, with one or more sequential improvement pulses and optional parallel disjoint owner slices.
+- **Pulse (P):** one source-pinned MIP/DMAIC `observe -> diagnose -> act -> verify -> disposition` loop; it does not imply a commit, a CI run or a green admission.
+- **Slice (S):** independently owned scope with nonoverlapping write paths and attributable tests.
+- **G3A (Governed Three-Step Advancement):** user's shorthand for *three sequential pulses* within a bounded engagement, intending `N -> N+1 -> N+2 -> N+3`. Stop on any major blocker and return measured partial progress.
+- **G3W (Governed Three-Wave Delivery):** three separate delivery waves, each with its own DoV and as many pulses as justified. This is **not** interchangeable with G3A.
+- **N:** exact repository and pull-head/main SHA, policy/config identity, timestamp, first-red/check inventory, coverage numerator/denominator and admission-state snapshot. A moving head invalidates prior current-head proof.
+
+**Default G3A mission packet:** one measurable goal/DoV, pinned N, bounded repo/owner/file scope, priority rule, three-pulse budget, available tools/workers, explicit allowed actions, mandatory stops, and output receipt. Choose next admissible action after each pulse from observed results. At most four read-only scouts; up to two disjoint owned write lanes; only one integrated exact-head CI testflight after fan-in where possible. Source writes require an owner lease and fresh head checks. Never infer extra agent/runners from advisory worker plans.
+
+**Operator interaction:** no routine request between P1/P2/P3. Interrupt immediately for unresolved P0/P1 security, permission/owner conflict, head/policy drift, untrusted/missing proof, exhausted budget or other material authorization blocker. Explicitly **never** auto-approve, merge, waive, dismiss A10 or weaken branch protection.
+
+**Evidence accounting:** report `evaluated_pulses / planned_pulses`, `native_verified_pulses`, `independently_accepted_pulses`, actual source SHA changes, test/coverage numerators, first-red root candidates, queue/setup/execution/wall times, and admission gates separately. `3/3 evaluated` is not `3/3 accepted`. Existing closure 8/8 and historical wave labels are unaffected.
+
+The CODEX controller `scripts/g3a_protocol.py` is read-only receipt reconciliation, not an automated GitHub executor. Native admission remains in ABACUS and independent security/governance/review checks.
+
 ## Pulse event protocol
 
 Record append-only events with pulse_id, task_id, repo, component, observed_at, source_commit,
@@ -149,6 +168,44 @@ ABACUS retains three historical `mip/*` refs because the available connector can
 
 Do not merge or revive these branches. Delete the refs when a branch-delete-capable interface is available.
 No implementation or evidence is lost by their deletion; canonical accepted state is on `main` and in merged PR/run history.
+
+## GCA-3 governed execution cadence (current operational convention)
+
+**GCA-3 = Governed Convergence Advance ×3**, a bounded same-invocation attempt to advance engineering acceptance from current accepted wave N through W[N+1], W[N+2] and W[N+3]. A **wave** is a receipted engineering delivery increment; a **pulse** (`U1..Uk`) is one observe/diagnose/improve-or-no-change/verify loop inside a wave (normally 1–3 pulses per wave). The historical **3P\*** method stages P1 discovery, P2 reverse-pressure and P3 re-entry are *not* three pulses. See [GCA-3 glossary and execution protocol](GCA3_GLOSSARY_AND_PROTOCOL.md) and machine-readable [request example](GCA3_REQUEST_TEMPLATE.json); validate with `python scripts/gca3_contract.py MIP/GCA3_REQUEST_TEMPLATE.json`.
+
+Use this only for **new, explicitly bounded work**. Do not reopen or renumber the historical closed 8/8 MIP tranche above. Every wave has separate engineering DoV and independent release-admission checks. Record `attempted_waves` versus `accepted_n`, exact SHA and job/attempt evidence, matched coverage denominators, root/manifestation distinctions and HOLDs. A three-wave attempt does **not** imply an accepted N+3; stop for major authority/security blockers and never autonomously waive, approve or merge. Execution is only within the present supported invocation, not persistent background work.
+
+## G3A N15 mathematical consumer (2026-10-17; candidate)
+
+**M09/ANALYZE implementation:** Versioned source-bound input at
+[`MIP/receipts/g3a_n14_gg_math_convergence_input.json`](receipts/g3a_n14_gg_math_convergence_input.json)
+binds N13=115/446 and N14=200/446, same production source blobs,
+Python 3.12/coverage.py 7.16.2 and native run/attempt identities to the
+merged gg_MATH math provider source `961eadf43f19b6bc0ef11fdd640c30ab59f74f41`.
+[`MIP/statistics/gg_math_g3a_consumer.py`](statistics/gg_math_g3a_consumer.py)
+performs strict structural/source checks. Pinned provider execution is optional
+and **not claimed** until an exact local provider checkout and receipt exist.
+
+**Do not confuse qualifications:** N13→N14 is +85 distinct reached arcs
+and 0 lost on 446; it is not a stability demonstration. PCA has n=2,p=4,
+insufficient for an interpretable temporal fit; BT has zero observed pair
+outcomes; Six Sigma has no representative field CTQ/opportunity sample.
+Unchanged Phase 8 and orchestrator under N14 were **not targeted**.
+N15 Phase8 test flight [#2145](https://github.com/GBOGEB/ABACUS/pull/2145)
+is source-frozen and **PENDING NATIVE** on its first attempt; no fabricated N15 metric.
+Governance first-red repair [#2144](https://github.com/GBOGEB/ABACUS/pull/2144)
+must itself obtain terminal first-red clearance; not a waiver.
+A review-only Plotly candidate lives at `docs/ci/g3a-control/index.html`;
+the full offline HTML and its browser QA remain in the lossless session artifact,
+not implicitly a GitHub Pages deployment.
+
+**Authority:** gg_MATH = mathematical method provider, ABACUS = local native
+evidence/quality owner, CODEX/KEB = semantic consumer authority,
+QPS/Mission Control = separate operational consumers. No automatic federation
+promotion, admission, root closure, CI waiver or source-owner transfer.
+Do not modify the historical closed MIP 8/8 denominator; this is a distinct
+candidate scope. Re-enter MIP/CONTROL assessment only after required
+comparable native temporal samples, dedicated owner review and no blocker.
 
 ## G3A N15 mathematical consumer (2026-10-17; candidate)
 

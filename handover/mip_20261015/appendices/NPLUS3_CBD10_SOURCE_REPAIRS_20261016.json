@@ -1,0 +1,58 @@
+{
+  "schema": "code-purple.char_bd.cbd10.exact_source_repair/v1",
+  "date": "2026-10-16",
+  "class": "APPEND_ONLY_OBSERVATION",
+  "admission": "HOLD",
+  "source_repairs": [
+    {
+      "pr": 2029,
+      "old_head": "f7c4a7da7002474b3fa682147796021d94521429",
+      "new_head": "58f8f5d635cf517643b606398a165e7347f9c66e",
+      "path": "DMAIC_V3/requirements.txt",
+      "first_red": "Python3.9 unable to resolve matplotlib >=3.10",
+      "action": "Split Python3.9 >=3.9.4,<3.10; Python3.10 >=3.10.9,<3.11; 3.11 unchanged",
+      "implemented": true,
+      "native_jobs": "IN_PROGRESS",
+      "verdict": "ROOT_UNVERIFIED"
+    },
+    {
+      "pr": 2030,
+      "old_head": "f56dddc7e13d67b65712691332ceb180d100c64a",
+      "new_head": "907b96efd08d4b6121e8f5dec97e23af38e9f77f",
+      "path": ".github/workflows/ci-enhanced.yml",
+      "first_red": "coverage cannot combine statement and branch data under -n auto",
+      "action": "Erase prior local coverage; single process; --cov-branch retained",
+      "implemented": true,
+      "native_jobs": "QUEUED",
+      "verdict": "ROOT_UNVERIFIED"
+    }
+  ],
+  "a10": {
+    "issue": 1996,
+    "state": "OPEN",
+    "unresolved_threads": 2,
+    "eligible_approval": "NOT_OBSERVED",
+    "authorized_confidentiality_review": "NOT_OBSERVED"
+  },
+  "branch_rules": {
+    "required_approving_review_count": 0,
+    "required_status_checks": false
+  },
+  "security": {
+    "safety_exit64_history": "RED",
+    "reviewer_disposition": "UNKNOWN",
+    "no_waiver": true
+  },
+  "metrics": {
+    "committed_source_repairs": 2,
+    "verified_native_first_red_disappearances": 0,
+    "ash_qualified_roots": 0,
+    "merges": 0,
+    "measured_coverage_gain": null,
+    "telemetry_queue_p95": null,
+    "workers_authenticated": 0
+  },
+  "next": "Wait for terminal exact-head native jobs, inspect logs and artifact byte hashes; independently review A10 and Safety; do not integrate before effective rules and eligible approval",
+  "no_prune": true,
+  "no_merge": true
+}

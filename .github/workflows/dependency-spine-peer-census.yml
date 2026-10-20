@@ -1,0 +1,65 @@
+name: Dependency SPINE Peer Source Census (ABACUS)
+on:
+  pull_request:
+    paths:
+      - '.github/workflows/**'
+      - '.github/dependabot.yml'
+      - '.github/dependabot.yaml'
+      - 'tools/ci/dependency_spine_peer_scan.py'
+      - 'tests/test_dependency_spine_peer_scan.py'
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/**'
+      - '.github/dependabot.yml'
+      - '.github/dependabot.yaml'
+      - 'tools/ci/dependency_spine_peer_scan.py'
+      - 'tests/test_dependency_spine_peer_scan.py'
+  workflow_dispatch:
+  schedule:
+    - cron: '29 6 * * 0'
+permissions:
+  contents: read
+concurrency:
+  group: dependency-spine-peer-abacus-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+jobs:
+  source-census:
+    name: Exact-head native read-only dependency census
+    runs-on: ubuntu-24.04
+    timeout-minutes: 8
+    steps:
+      - name: Checkout exact source without persisted credentials
+        uses: actions/checkout@v7.0.1
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+      - name: Set up Python
+        uses: actions/setup-python@v7
+        with:
+          python-version: '3.12'
+      - name: Native adversarial contract tests
+        env:
+          EXPECTED_HEAD: ${{ github.event.pull_request.head.sha || github.sha }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$EXPECTED_HEAD"
+          python -m unittest discover -s tests -p test_dependency_spine_peer_scan.py -v
+      - name: Emit exact-head peer receipt and verify digests
+        env:
+          EXPECTED_HEAD: ${{ github.event.pull_request.head.sha || github.sha }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          python tools/ci/dependency_spine_peer_scan.py \
+            --repo 'GBOGEB/ABACUS' --expected-sha "$EXPECTED_HEAD" \
+            --out "$RUNNER_TEMP/dependency-spine"
+      - name: Retain source-head evidence (not an upgrade-coverage claim)
+        if: always()
+        uses: actions/upload-artifact@v7.0.2
+        with:
+          name: dep-spine-abacus-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/dependency-spine/
+          if-no-files-found: warn
+          retention-days: 30

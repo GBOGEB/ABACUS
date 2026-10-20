@@ -1,0 +1,54 @@
+{
+  "schema": "abacus.codepurple.w34.frozen-nplus2.v1",
+  "produced_for_wave": "W34",
+  "forecast_emitted_before_future_native_outcomes": true,
+  "evidence_class": "CONDITIONAL_TARGET_NOT_STATISTICAL_FORECAST",
+  "estimator": "guarded-source-owner-target",
+  "assumptions": [
+    "Owner restores effective branch protections and human review.",
+    "Source branches stay disjoint or are rebased with exact diff checks.",
+    "Current native run matrix is not reused as a future HEAD's result.",
+    "No exclusions or security gate relaxation."
+  ],
+  "predictions": [
+    {
+      "target_wave": "W34_N_PLUS_1",
+      "scope": "G3CS marker contract tests",
+      "expected": "3/3 targeted failed assertions corrected after new exact-head terminal native run",
+      "confidence": "LOW_UNTIL_RETEST",
+      "actual": null,
+      "score": null,
+      "source_branch": "code-purple/w34-g3cs-single-source-missing-marker-20261018"
+    },
+    {
+      "target_wave": "W34_N_PLUS_2",
+      "scope": "BROAD_MATRIX_NETWORKX",
+      "expected": "0 NetworkX collection import errors across native OS/Python population; expected full 9-cell qualification",
+      "confidence": "LOW_UNTIL_RETEST",
+      "actual": null,
+      "score": null,
+      "source_branch": "code-purple/w34-matrix-networkx-sourceowner-20261018"
+    },
+    {
+      "target_wave": "W34_N_PLUS_3",
+      "scope": "BYTE_EVIDENCE",
+      "expected": "18/18 local negative tests repeat at exact head and at least one source-bound artifact ZIP undergoes external metadata plus independent bytes verification",
+      "confidence": "CONDITIONAL",
+      "actual": null,
+      "score": null,
+      "source_branch": "code-purple/w34-proof-verified-handover-20261018"
+    }
+  ],
+  "calibration": {
+    "observed_native_forecast_trials": 0,
+    "brier_score": null,
+    "absolute_error": null,
+    "selection_bias_unresolved": true
+  },
+  "escalation": [
+    "If new deterministic first-red appears, repair owner once on changed head, not duplicate original SHA.",
+    "If queue remains nonterminal, no further native fan-out.",
+    "If 3 comparable zero-value transitions, STOP_LOCAL_PLATEAU not DMAIC six-sigma certification."
+  ],
+  "merge_admission": "HOLD"
+}

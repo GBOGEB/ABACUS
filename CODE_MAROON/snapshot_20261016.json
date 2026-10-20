@@ -1,0 +1,872 @@
+{
+  "schema": "code-maroon.snapshot.v1",
+  "observed_at": "2026-10-16T08:58:00+02:00",
+  "cohort": "ABACUS-review-security-active-slice-v1",
+  "authority_transfer": false,
+  "merge_authorized": false,
+  "definitions": {
+    "manifestation": "One actionable inline review/security finding. Review summaries are metadata, not findings.",
+    "root": "Canonical causal/repair unit. Multiple scanner/comment manifestations may reference one root_id.",
+    "statuses": [
+      "OPEN_ACTIVE",
+      "CLOSED_IMPLEMENTED",
+      "DEFERRED_OWNER"
+    ],
+    "implementation_states": [
+      "IMPLEMENTED",
+      "NOT_IMPLEMENTED",
+      "NOT_APPLICABLE"
+    ],
+    "thread_states": [
+      "OPEN",
+      "RESOLVED"
+    ],
+    "dispositions": [
+      "ACTIVE",
+      "CLOSED",
+      "DEFERRED"
+    ]
+  },
+  "security_sources": {
+    "semgrep": {
+      "sarif": true,
+      "workflow": ".github/workflows/semgrep.yml"
+    },
+    "bandit": {
+      "sarif": true,
+      "workflow": ".github/workflows/bandit.yml"
+    },
+    "osv": {
+      "sarif": true,
+      "workflow": ".github/workflows/osv-scanner.yml"
+    },
+    "codeql": {
+      "sarif": true,
+      "workflow": "GitHub code scanning / repository CodeQL configuration"
+    },
+    "codex_security_review": {
+      "sarif": false,
+      "source": "PR review threads"
+    },
+    "copilot_review": {
+      "sarif": false,
+      "source": "PR review threads"
+    },
+    "ooxml": {
+      "configured": true,
+      "workflow": ".github/workflows/code-maroon.yml",
+      "scanner": "tools/code_maroon/ooxml_scan.py",
+      "status": "BOUNDED_DISCOVERY_HIGH_SEVERITY_BLOCK"
+    }
+  },
+  "summary": {
+    "manifestations_total": 37,
+    "implemented": 34,
+    "closed": 34,
+    "deferred": 2,
+    "outstanding": 3,
+    "failing_active": 1,
+    "roots_total": 28,
+    "roots_closed": 26,
+    "roots_deferred": 1,
+    "roots_open": 1
+  },
+  "source_counts": {
+    "codex-code-review": 17,
+    "github-advanced-security": 8,
+    "codex-security-review": 1,
+    "copilot-review": 11
+  },
+  "roots": [
+    {
+      "root_id": "CM-CI-FAILCLOSED-COLLECTION",
+      "status": "CLOSED_IMPLEMENTED",
+      "manifestations": 1,
+      "prs": [
+        2045
+      ]
+    },
+    {
+      "root_id": "CM-EVERRED-DASHBOARD-DRIFT",
+      "status": "OPEN_ACTIVE",
+      "manifestations": 1,
+      "prs": [
+        2047
+      ]
+    },
+    {
+      "root_id": "CM-METHOD-QUALIFICATION-FAILOPEN",
+      "status": "CLOSED_IMPLEMENTED",
+      "manifestations": 3,
+      "prs": [
+        2048
+      ]
+    },
+    {
+      "root_id": "CM-BANDIT-CANCEL-GUARD",
+      "status": "CLOSED_IMPLEMENTED",
+      "manifestations": 1,
+      "prs": [
+        2039
+      ]
+    },
+    {
+      "root_id": "CM-GOV-INVENTORY-DRIFT",
+      "status": "DEFERRED_OWNER",
+      "manifestations": 2,
+      "prs": [
+        2037,
+        1988
+      ]
+    },
+    {
+      "root_id": "CM-TELEM-QUEUE-TIMESTAMP",
+      "status": "CLOSED_IMPLEMENTED",
+      "manifestations": 1,
+      "prs": [
+        2033
+      ]
+    },
+    {
+      "root_id": "CM-TELEM-CONCLUSION-ENUM",
+      "status": "CLOSED_IMPLEMENTED",
+      "manifestations": 1,
+      "prs": [
+        2033
+      ]
+    },
+    {
+      "root_id": "CM-TELEM-SHA-VALIDATION",
+      "status": "CLOSED_IMPLEMENTED",
+      "manifestations": 1,
+      "prs": [
+        2033
+      ]
+    },
+    {
+      "root_id": "CM-TELEM-STATUS-ENUM",
+      "status": "CLOSED_IMPLEMENTED",
+      "manifestations": 1,
+      "prs": [
+        2033
+      ]
+    },
+    {
+      "root_id": "CM-BRANCH-RETIREMENT-MOCK",
+      "status": "CLOSED_IMPLEMENTED",
+      "manifestations": 1,
+      "prs": [
+        2030
+      ]
+    },
+    {
+      "root_id": "CM-ACTION-PINNING",
+      "status": "CLOSED_IMPLEMENTED",
+      "manifestations": 3,
+      "prs": [
+        1988
+      ]
+    },
+    {
+      "root_id": "CM-MIP2-SYNTAX",
+      "status": "CLOSED_IMPLEMENTED",
+      "manifestations": 1,
+      "prs": [
+        1988
+      ]
+    },
+    {
+      "root_id": "CM-MIP2-UNUSED-AST",
+      "status": "CLOSED_IMPLEMENTED",
+      "manifestations": 2,
+      "prs": [
+        1988
+      ]
+    },
+    {
+      "root_id": "CM-MIP2-EXACT-HEAD",
+      "status": "CLOSED_IMPLEMENTED",
+      "manifestations": 1,
+      "prs": [
+        1988
+      ]
+    },
+    {
+      "root_id": "CM-MIP2-UNUSED-OS",
+      "status": "CLOSED_IMPLEMENTED",
+      "manifestations": 1,
+      "prs": [
+        1988
+      ]
+    },
+    {
+      "root_id": "CM-MIP2-UNUSED-IMPORTLIB",
+      "status": "CLOSED_IMPLEMENTED",
+      "manifestations": 1,
+      "prs": [
+        1988
+      ]
+    },
+    {
+      "root_id": "CM-MIP2-XML-PARSER",
+      "status": "CLOSED_IMPLEMENTED",
+      "manifestations": 1,
+      "prs": [
+        1988
+      ]
+    },
+    {
+      "root_id": "CM-MIP2-GIT-IDENTITY",
+      "status": "CLOSED_IMPLEMENTED",
+      "manifestations": 1,
+      "prs": [
+        1988
+      ]
+    },
+    {
+      "root_id": "CM-MIP2-PRECOMMIT-REGEX",
+      "status": "CLOSED_IMPLEMENTED",
+      "manifestations": 1,
+      "prs": [
+        1988
+      ]
+    },
+    {
+      "root_id": "CM-MIP2-CREDENTIAL-PERSISTENCE",
+      "status": "CLOSED_IMPLEMENTED",
+      "manifestations": 1,
+      "prs": [
+        1988
+      ]
+    },
+    {
+      "root_id": "CM-MIP2-RECEIPT-KEYERROR",
+      "status": "CLOSED_IMPLEMENTED",
+      "manifestations": 1,
+      "prs": [
+        1988
+      ]
+    },
+    {
+      "root_id": "CM-MIP2-LOG-REDACTION",
+      "status": "CLOSED_IMPLEMENTED",
+      "manifestations": 1,
+      "prs": [
+        1988
+      ]
+    },
+    {
+      "root_id": "CM-MIP2-BANDIT-FAILURE-DIAGNOSTICS",
+      "status": "CLOSED_IMPLEMENTED",
+      "manifestations": 1,
+      "prs": [
+        1988
+      ]
+    },
+    {
+      "root_id": "CM-MIP2-CONTRACT-DIAGNOSTICS",
+      "status": "CLOSED_IMPLEMENTED",
+      "manifestations": 2,
+      "prs": [
+        1988
+      ]
+    },
+    {
+      "root_id": "CM-MIP2-PATH-LOOKUP",
+      "status": "CLOSED_IMPLEMENTED",
+      "manifestations": 1,
+      "prs": [
+        1988
+      ]
+    },
+    {
+      "root_id": "CM-MIP2-UNUSED-FIXTURE",
+      "status": "CLOSED_IMPLEMENTED",
+      "manifestations": 1,
+      "prs": [
+        1988
+      ]
+    },
+    {
+      "root_id": "CM-DOC-MARKDOWN-SPACING",
+      "status": "CLOSED_IMPLEMENTED",
+      "manifestations": 1,
+      "prs": [
+        1972
+      ]
+    },
+    {
+      "root_id": "CM-DOC-CONSISTENCY",
+      "status": "CLOSED_IMPLEMENTED",
+      "manifestations": 3,
+      "prs": [
+        1972
+      ]
+    }
+  ],
+  "manifestations": [
+    {
+      "pr": 2045,
+      "thread_id": "PRRT_kwDOPtqAsM6tGuIZ",
+      "comment_id": "PRRC_kwDOPtqAsM7_0utm",
+      "source": "codex-code-review",
+      "severity": "P2",
+      "root_id": "CM-CI-FAILCLOSED-COLLECTION",
+      "status": "CLOSED_IMPLEMENTED",
+      "path": "tests/test_dmaic_enterprise_pytest_failclosed.py",
+      "summary": "Fail-closed guard outside Enterprise pytest collection.",
+      "scanner": null,
+      "implementation_state": "IMPLEMENTED",
+      "thread_state": "RESOLVED",
+      "disposition": "CLOSED"
+    },
+    {
+      "pr": 2047,
+      "thread_id": "PRRT_kwDOPtqAsM6tHRcS",
+      "comment_id": "PRRC_kwDOPtqAsM7_1m6x",
+      "source": "codex-code-review",
+      "severity": "P2",
+      "root_id": "CM-EVERRED-DASHBOARD-DRIFT",
+      "status": "OPEN_ACTIVE",
+      "path": "tools/everred_v3/config/workflow-groups.yaml",
+      "summary": "Published dashboard/diagram remains stale against expanded 12-task CENSUS DAG.",
+      "scanner": null,
+      "implementation_state": "NOT_IMPLEMENTED",
+      "thread_state": "OPEN",
+      "disposition": "ACTIVE"
+    },
+    {
+      "pr": 2048,
+      "thread_id": "PRRT_kwDOPtqAsM6tHQfm",
+      "comment_id": "PRRC_kwDOPtqAsM7_1lXj",
+      "source": "codex-code-review",
+      "severity": "P2",
+      "root_id": "CM-METHOD-QUALIFICATION-FAILOPEN",
+      "status": "CLOSED_IMPLEMENTED",
+      "path": "scripts/method_qualification.py",
+      "summary": "Blank or malformed identity evidence could qualify.",
+      "scanner": null,
+      "implementation_state": "IMPLEMENTED",
+      "thread_state": "RESOLVED",
+      "disposition": "CLOSED"
+    },
+    {
+      "pr": 2048,
+      "thread_id": "PRRT_kwDOPtqAsM6tHQfy",
+      "comment_id": "PRRC_kwDOPtqAsM7_1lX1",
+      "source": "codex-code-review",
+      "severity": "P2",
+      "root_id": "CM-METHOD-QUALIFICATION-FAILOPEN",
+      "status": "CLOSED_IMPLEMENTED",
+      "path": "scripts/method_qualification.py",
+      "summary": "Truthy non-boolean negative-control evidence could promote M4.",
+      "scanner": null,
+      "implementation_state": "IMPLEMENTED",
+      "thread_state": "RESOLVED",
+      "disposition": "CLOSED"
+    },
+    {
+      "pr": 2048,
+      "thread_id": "PRRT_kwDOPtqAsM6tHQf7",
+      "comment_id": "PRRC_kwDOPtqAsM7_1lYD",
+      "source": "codex-code-review",
+      "severity": "P2",
+      "root_id": "CM-METHOD-QUALIFICATION-FAILOPEN",
+      "status": "CLOSED_IMPLEMENTED",
+      "path": "scripts/method_qualification.py",
+      "summary": "Unbound federation/adaptive receipts could promote M5/M6.",
+      "scanner": null,
+      "implementation_state": "IMPLEMENTED",
+      "thread_state": "RESOLVED",
+      "disposition": "CLOSED"
+    },
+    {
+      "pr": 2039,
+      "thread_id": "PRRT_kwDOPtqAsM6tAjPc",
+      "comment_id": "PRRC_kwDOPtqAsM7_q2KO",
+      "source": "codex-code-review",
+      "severity": "P2",
+      "root_id": "CM-BANDIT-CANCEL-GUARD",
+      "status": "CLOSED_IMPLEMENTED",
+      "path": ".github/workflows/bandit-disjoint-census.yml",
+      "summary": "always() lets scans survive workflow cancellation.",
+      "scanner": null,
+      "implementation_state": "IMPLEMENTED",
+      "thread_state": "RESOLVED",
+      "disposition": "CLOSED"
+    },
+    {
+      "pr": 2037,
+      "thread_id": "PRRT_kwDOPtqAsM6tAiq6",
+      "comment_id": "PRRC_kwDOPtqAsM7_q1P9",
+      "source": "codex-code-review",
+      "severity": "P1",
+      "root_id": "CM-GOV-INVENTORY-DRIFT",
+      "status": "DEFERRED_OWNER",
+      "path": "ci/governance/workflow_policy.json",
+      "summary": "Generated workflow rationalization is stale after policy change.",
+      "scanner": null,
+      "implementation_state": "NOT_IMPLEMENTED",
+      "thread_state": "OPEN",
+      "disposition": "DEFERRED"
+    },
+    {
+      "pr": 2033,
+      "thread_id": "PRRT_kwDOPtqAsM6s-_aQ",
+      "comment_id": "PRRC_kwDOPtqAsM7_oTXo",
+      "source": "codex-code-review",
+      "severity": "P1",
+      "root_id": "CM-TELEM-QUEUE-TIMESTAMP",
+      "status": "CLOSED_IMPLEMENTED",
+      "path": "tools/mip_ci_wave_telemetry.py",
+      "summary": "Queue wait used nonexistent REST job created_at.",
+      "scanner": null,
+      "implementation_state": "IMPLEMENTED",
+      "thread_state": "RESOLVED",
+      "disposition": "CLOSED"
+    },
+    {
+      "pr": 2033,
+      "thread_id": "PRRT_kwDOPtqAsM6s-_aV",
+      "comment_id": "PRRC_kwDOPtqAsM7_oTXv",
+      "source": "codex-code-review",
+      "severity": "P1",
+      "root_id": "CM-TELEM-CONCLUSION-ENUM",
+      "status": "CLOSED_IMPLEMENTED",
+      "path": "tools/mip_ci_wave_telemetry.py",
+      "summary": "Telemetry rejected valid native terminal conclusions.",
+      "scanner": null,
+      "implementation_state": "IMPLEMENTED",
+      "thread_state": "RESOLVED",
+      "disposition": "CLOSED"
+    },
+    {
+      "pr": 2033,
+      "thread_id": "PRRT_kwDOPtqAsM6s-_aY",
+      "comment_id": "PRRC_kwDOPtqAsM7_oTXz",
+      "source": "codex-code-review",
+      "severity": "P1",
+      "root_id": "CM-TELEM-SHA-VALIDATION",
+      "status": "CLOSED_IMPLEMENTED",
+      "path": "tools/mip_ci_wave_telemetry.py",
+      "summary": "Exact source SHA used length-only validation.",
+      "scanner": null,
+      "implementation_state": "IMPLEMENTED",
+      "thread_state": "RESOLVED",
+      "disposition": "CLOSED"
+    },
+    {
+      "pr": 2033,
+      "thread_id": "PRRT_kwDOPtqAsM6s-_ac",
+      "comment_id": "PRRC_kwDOPtqAsM7_oTX5",
+      "source": "codex-code-review",
+      "severity": "P2",
+      "root_id": "CM-TELEM-STATUS-ENUM",
+      "status": "CLOSED_IMPLEMENTED",
+      "path": "tools/mip_ci_wave_telemetry.py",
+      "summary": "Unknown job statuses were accepted as nonterminal.",
+      "scanner": null,
+      "implementation_state": "IMPLEMENTED",
+      "thread_state": "RESOLVED",
+      "disposition": "CLOSED"
+    },
+    {
+      "pr": 2030,
+      "thread_id": "PRRT_kwDOPtqAsM6s7qaj",
+      "comment_id": "PRRC_kwDOPtqAsM7_i55L",
+      "source": "codex-code-review",
+      "severity": "P2",
+      "root_id": "CM-BRANCH-RETIREMENT-MOCK",
+      "status": "CLOSED_IMPLEMENTED",
+      "path": "tests/test_branch_retirement_mip_c1.py",
+      "summary": "Regression test did not exercise actual refs/remotes/origin/main lookup.",
+      "scanner": null,
+      "implementation_state": "IMPLEMENTED",
+      "thread_state": "RESOLVED",
+      "disposition": "CLOSED"
+    },
+    {
+      "pr": 1988,
+      "thread_id": "PRRT_kwDOPtqAsM6shHGf",
+      "comment_id": "PRRC_kwDOPtqAsM7-4anF",
+      "source": "github-advanced-security",
+      "severity": "SCANNER",
+      "root_id": "CM-ACTION-PINNING",
+      "status": "CLOSED_IMPLEMENTED",
+      "path": ".github/workflows/mip2-method-qualification.yml",
+      "summary": "Mutable action reference.",
+      "scanner": "Semgrep",
+      "implementation_state": "IMPLEMENTED",
+      "thread_state": "RESOLVED",
+      "disposition": "CLOSED"
+    },
+    {
+      "pr": 1988,
+      "thread_id": "PRRT_kwDOPtqAsM6shHGy",
+      "comment_id": "PRRC_kwDOPtqAsM7-4ani",
+      "source": "github-advanced-security",
+      "severity": "SCANNER",
+      "root_id": "CM-ACTION-PINNING",
+      "status": "CLOSED_IMPLEMENTED",
+      "path": ".github/workflows/mip2-method-qualification.yml",
+      "summary": "Mutable action reference.",
+      "scanner": "Semgrep",
+      "implementation_state": "IMPLEMENTED",
+      "thread_state": "RESOLVED",
+      "disposition": "CLOSED"
+    },
+    {
+      "pr": 1988,
+      "thread_id": "PRRT_kwDOPtqAsM6shHG9",
+      "comment_id": "PRRC_kwDOPtqAsM7-4anw",
+      "source": "github-advanced-security",
+      "severity": "SCANNER",
+      "root_id": "CM-ACTION-PINNING",
+      "status": "CLOSED_IMPLEMENTED",
+      "path": ".github/workflows/mip2-method-qualification.yml",
+      "summary": "Mutable action reference.",
+      "scanner": "Semgrep",
+      "implementation_state": "IMPLEMENTED",
+      "thread_state": "RESOLVED",
+      "disposition": "CLOSED"
+    },
+    {
+      "pr": 1988,
+      "thread_id": "PRRT_kwDOPtqAsM6shHel",
+      "comment_id": "PRRC_kwDOPtqAsM7-4bNo",
+      "source": "github-advanced-security",
+      "severity": "SCANNER",
+      "root_id": "CM-MIP2-SYNTAX",
+      "status": "CLOSED_IMPLEMENTED",
+      "path": "tools/mip2/tests/test_method_qualification.py",
+      "summary": "Python syntax error.",
+      "scanner": "CodeQL",
+      "implementation_state": "IMPLEMENTED",
+      "thread_state": "RESOLVED",
+      "disposition": "CLOSED"
+    },
+    {
+      "pr": 1988,
+      "thread_id": "PRRT_kwDOPtqAsM6shN2i",
+      "comment_id": "PRRC_kwDOPtqAsM7-4lbg",
+      "source": "github-advanced-security",
+      "severity": "SCANNER",
+      "root_id": "CM-MIP2-UNUSED-AST",
+      "status": "CLOSED_IMPLEMENTED",
+      "path": "tools/mip2/tests/test_method_qualification.py",
+      "summary": "Unused ast import.",
+      "scanner": "CodeQL",
+      "implementation_state": "IMPLEMENTED",
+      "thread_state": "RESOLVED",
+      "disposition": "CLOSED"
+    },
+    {
+      "pr": 1988,
+      "thread_id": "PRRT_kwDOPtqAsM6shpxC",
+      "comment_id": "PRRC_kwDOPtqAsM7-5SUj",
+      "source": "codex-code-review",
+      "severity": "P1",
+      "root_id": "CM-GOV-INVENTORY-DRIFT",
+      "status": "DEFERRED_OWNER",
+      "path": "docs/ci/WORKFLOW_RATIONALIZATION.md",
+      "summary": "Generated inventory omits workflow push trigger.",
+      "scanner": null,
+      "implementation_state": "NOT_IMPLEMENTED",
+      "thread_state": "OPEN",
+      "disposition": "DEFERRED"
+    },
+    {
+      "pr": 1988,
+      "thread_id": "PRRT_kwDOPtqAsM6shpxH",
+      "comment_id": "PRRC_kwDOPtqAsM7-5SUp",
+      "source": "codex-code-review",
+      "severity": "P1",
+      "root_id": "CM-MIP2-EXACT-HEAD",
+      "status": "CLOSED_IMPLEMENTED",
+      "path": ".github/workflows/mip2-method-qualification.yml",
+      "summary": "Receipt job checked synthetic merge instead of exact PR head.",
+      "scanner": null,
+      "implementation_state": "IMPLEMENTED",
+      "thread_state": "RESOLVED",
+      "disposition": "CLOSED"
+    },
+    {
+      "pr": 1988,
+      "thread_id": "PRRT_kwDOPtqAsM6sh_mw",
+      "comment_id": "PRRC_kwDOPtqAsM7-52FV",
+      "source": "github-advanced-security",
+      "severity": "SCANNER",
+      "root_id": "CM-MIP2-UNUSED-OS",
+      "status": "CLOSED_IMPLEMENTED",
+      "path": "tools/mip2/mip3_flight.py",
+      "summary": "Unused os import.",
+      "scanner": "CodeQL",
+      "implementation_state": "IMPLEMENTED",
+      "thread_state": "RESOLVED",
+      "disposition": "CLOSED"
+    },
+    {
+      "pr": 1988,
+      "thread_id": "PRRT_kwDOPtqAsM6sh_m-",
+      "comment_id": "PRRC_kwDOPtqAsM7-52Fs",
+      "source": "github-advanced-security",
+      "severity": "SCANNER",
+      "root_id": "CM-MIP2-UNUSED-IMPORTLIB",
+      "status": "CLOSED_IMPLEMENTED",
+      "path": "tools/mip2/tests/test_mip3_metrics.py",
+      "summary": "Unused importlib import.",
+      "scanner": "CodeQL",
+      "implementation_state": "IMPLEMENTED",
+      "thread_state": "RESOLVED",
+      "disposition": "CLOSED"
+    },
+    {
+      "pr": 1988,
+      "thread_id": "PRRT_kwDOPtqAsM6siArI",
+      "comment_id": "PRRC_kwDOPtqAsM7-53zR",
+      "source": "github-advanced-security",
+      "severity": "SCANNER",
+      "root_id": "CM-MIP2-XML-PARSER",
+      "status": "CLOSED_IMPLEMENTED",
+      "path": "tools/mip2/mip3_flight.py",
+      "summary": "Native XML parser used on untrusted JUnit.",
+      "scanner": "Semgrep",
+      "implementation_state": "IMPLEMENTED",
+      "thread_state": "RESOLVED",
+      "disposition": "CLOSED"
+    },
+    {
+      "pr": 1988,
+      "thread_id": "PRRT_kwDOPtqAsM6szwfd",
+      "comment_id": "PRRC_kwDOPtqAsM7_WN-Y",
+      "source": "codex-code-review",
+      "severity": "P2",
+      "root_id": "CM-MIP2-GIT-IDENTITY",
+      "status": "CLOSED_IMPLEMENTED",
+      "path": "tools/mip2/local_testflight.py",
+      "summary": "Local flight could PASS without Git identity.",
+      "scanner": null,
+      "implementation_state": "IMPLEMENTED",
+      "thread_state": "RESOLVED",
+      "disposition": "CLOSED"
+    },
+    {
+      "pr": 1988,
+      "thread_id": "PRRT_kwDOPtqAsM6szwfv",
+      "comment_id": "PRRC_kwDOPtqAsM7_WN-x",
+      "source": "codex-code-review",
+      "severity": "P2",
+      "root_id": "CM-MIP2-PRECOMMIT-REGEX",
+      "status": "CLOSED_IMPLEMENTED",
+      "path": ".pre-commit-config.yaml",
+      "summary": "Python syntax hook regex did not select .py files.",
+      "scanner": null,
+      "implementation_state": "IMPLEMENTED",
+      "thread_state": "RESOLVED",
+      "disposition": "CLOSED"
+    },
+    {
+      "pr": 1988,
+      "thread_id": "PRRT_kwDOPtqAsM6sz15m",
+      "comment_id": "PRRC_kwDOPtqAsM7_WWLx",
+      "source": "codex-security-review",
+      "severity": "P3",
+      "root_id": "CM-MIP2-CREDENTIAL-PERSISTENCE",
+      "status": "CLOSED_IMPLEMENTED",
+      "path": ".github/workflows/mip2-method-qualification.yml",
+      "summary": "Checkout credentials persisted before executing PR code.",
+      "scanner": null,
+      "implementation_state": "IMPLEMENTED",
+      "thread_state": "RESOLVED",
+      "disposition": "CLOSED"
+    },
+    {
+      "pr": 1988,
+      "thread_id": "PRRT_kwDOPtqAsM6s0Irw",
+      "comment_id": "PRRC_kwDOPtqAsM7_W0NM",
+      "source": "copilot-review",
+      "severity": "ADVISORY",
+      "root_id": "CM-MIP2-RECEIPT-KEYERROR",
+      "status": "CLOSED_IMPLEMENTED",
+      "path": "tools/everred_v3/sut_gui/tests/test_server.py",
+      "summary": "Terminal wait could KeyError when receipt hash absent.",
+      "scanner": null,
+      "implementation_state": "IMPLEMENTED",
+      "thread_state": "RESOLVED",
+      "disposition": "CLOSED"
+    },
+    {
+      "pr": 1988,
+      "thread_id": "PRRT_kwDOPtqAsM6s0Isp",
+      "comment_id": "PRRC_kwDOPtqAsM7_W0Oo",
+      "source": "copilot-review",
+      "severity": "ADVISORY",
+      "root_id": "CM-MIP2-LOG-REDACTION",
+      "status": "CLOSED_IMPLEMENTED",
+      "path": "tools/mip2/local_testflight.py",
+      "summary": "Uploaded receipt could leak subprocess stdout/stderr.",
+      "scanner": null,
+      "implementation_state": "IMPLEMENTED",
+      "thread_state": "RESOLVED",
+      "disposition": "CLOSED"
+    },
+    {
+      "pr": 1988,
+      "thread_id": "PRRT_kwDOPtqAsM6s0ItI",
+      "comment_id": "PRRC_kwDOPtqAsM7_W0Pc",
+      "source": "copilot-review",
+      "severity": "ADVISORY",
+      "root_id": "CM-MIP2-BANDIT-FAILURE-DIAGNOSTICS",
+      "status": "CLOSED_IMPLEMENTED",
+      "path": "tools/mip2/tests/test_method_qualification.py",
+      "summary": "Bandit fixture read JSON without explicit scanner-success/artifact check.",
+      "scanner": null,
+      "implementation_state": "IMPLEMENTED",
+      "thread_state": "RESOLVED",
+      "disposition": "CLOSED"
+    },
+    {
+      "pr": 1988,
+      "thread_id": "PRRT_kwDOPtqAsM6s0IuC",
+      "comment_id": "PRRC_kwDOPtqAsM7_W0Qz",
+      "source": "copilot-review",
+      "severity": "ADVISORY",
+      "root_id": "CM-MIP2-CONTRACT-DIAGNOSTICS",
+      "status": "CLOSED_IMPLEMENTED",
+      "path": "tools/mip2/validate_method_contracts.py",
+      "summary": "Assert-based contract validation could emit empty errors.",
+      "scanner": null,
+      "implementation_state": "IMPLEMENTED",
+      "thread_state": "RESOLVED",
+      "disposition": "CLOSED"
+    },
+    {
+      "pr": 1988,
+      "thread_id": "PRRT_kwDOPtqAsM6s0IvF",
+      "comment_id": "PRRC_kwDOPtqAsM7_W0SK",
+      "source": "copilot-review",
+      "severity": "ADVISORY",
+      "root_id": "CM-MIP2-CONTRACT-DIAGNOSTICS",
+      "status": "CLOSED_IMPLEMENTED",
+      "path": "tools/mip2/validate_method_contracts.py",
+      "summary": "Duplicate manifestation of assert-based contract diagnostics.",
+      "scanner": null,
+      "implementation_state": "IMPLEMENTED",
+      "thread_state": "RESOLVED",
+      "disposition": "CLOSED"
+    },
+    {
+      "pr": 1988,
+      "thread_id": "PRRT_kwDOPtqAsM6s0Ivw",
+      "comment_id": "PRRC_kwDOPtqAsM7_W0TP",
+      "source": "copilot-review",
+      "severity": "ADVISORY",
+      "root_id": "CM-MIP2-PATH-LOOKUP",
+      "status": "CLOSED_IMPLEMENTED",
+      "path": "tools/mip2/mip3_flight.py",
+      "summary": "Tool inventory performed duplicate PATH lookups.",
+      "scanner": null,
+      "implementation_state": "IMPLEMENTED",
+      "thread_state": "RESOLVED",
+      "disposition": "CLOSED"
+    },
+    {
+      "pr": 1988,
+      "thread_id": "PRRT_kwDOPtqAsM6s0Iwd",
+      "comment_id": "PRRC_kwDOPtqAsM7_W0UT",
+      "source": "copilot-review",
+      "severity": "ADVISORY",
+      "root_id": "CM-MIP2-UNUSED-AST",
+      "status": "CLOSED_IMPLEMENTED",
+      "path": "tools/mip2/tests/test_method_qualification.py",
+      "summary": "Duplicate manifestation of unused ast import.",
+      "scanner": null,
+      "implementation_state": "IMPLEMENTED",
+      "thread_state": "RESOLVED",
+      "disposition": "CLOSED"
+    },
+    {
+      "pr": 1988,
+      "thread_id": "PRRT_kwDOPtqAsM6s0IxB",
+      "comment_id": "PRRC_kwDOPtqAsM7_W0VO",
+      "source": "copilot-review",
+      "severity": "ADVISORY",
+      "root_id": "CM-MIP2-UNUSED-FIXTURE",
+      "status": "CLOSED_IMPLEMENTED",
+      "path": "tools/mip2/tests/test_method_qualification.py",
+      "summary": "Unused tmp_path fixture.",
+      "scanner": null,
+      "implementation_state": "IMPLEMENTED",
+      "thread_state": "RESOLVED",
+      "disposition": "CLOSED"
+    },
+    {
+      "pr": 1972,
+      "thread_id": "PRRT_kwDOPtqAsM6saoft",
+      "comment_id": "PRRC_kwDOPtqAsM7-uCtc",
+      "source": "codex-code-review",
+      "severity": "P1",
+      "root_id": "CM-DOC-MARKDOWN-SPACING",
+      "status": "CLOSED_IMPLEMENTED",
+      "path": "tools/everred_v3/sut_gui/DASHBOARD_V31.md",
+      "summary": "Markdown list spacing violated MD030.",
+      "scanner": null,
+      "implementation_state": "IMPLEMENTED",
+      "thread_state": "RESOLVED",
+      "disposition": "CLOSED"
+    },
+    {
+      "pr": 1972,
+      "thread_id": "PRRT_kwDOPtqAsM6s1k2_",
+      "comment_id": "PRRC_kwDOPtqAsM7_ZH1K",
+      "source": "copilot-review",
+      "severity": "ADVISORY",
+      "root_id": "CM-DOC-CONSISTENCY",
+      "status": "CLOSED_IMPLEMENTED",
+      "path": "tools/everred_v3/sut_gui/DASHBOARD_V31.md",
+      "summary": "Use GitHub product spelling.",
+      "scanner": null,
+      "implementation_state": "IMPLEMENTED",
+      "thread_state": "RESOLVED",
+      "disposition": "CLOSED"
+    },
+    {
+      "pr": 1972,
+      "thread_id": "PRRT_kwDOPtqAsM6s1k37",
+      "comment_id": "PRRC_kwDOPtqAsM7_ZH2u",
+      "source": "copilot-review",
+      "severity": "ADVISORY",
+      "root_id": "CM-DOC-CONSISTENCY",
+      "status": "CLOSED_IMPLEMENTED",
+      "path": "tools/everred_v3/sut_gui/DASHBOARD_V31.md",
+      "summary": "Use Node.js spelling.",
+      "scanner": null,
+      "implementation_state": "IMPLEMENTED",
+      "thread_state": "RESOLVED",
+      "disposition": "CLOSED"
+    },
+    {
+      "pr": 1972,
+      "thread_id": "PRRT_kwDOPtqAsM6s1k49",
+      "comment_id": "PRRC_kwDOPtqAsM7_ZH4I",
+      "source": "copilot-review",
+      "severity": "ADVISORY",
+      "root_id": "CM-DOC-CONSISTENCY",
+      "status": "CLOSED_IMPLEMENTED",
+      "path": "tools/everred_v3/sut_gui/DASHBOARD_V32_VISUAL_CONTRACT.md",
+      "summary": "Improve legend readability and casing.",
+      "scanner": null,
+      "implementation_state": "IMPLEMENTED",
+      "thread_state": "RESOLVED",
+      "disposition": "CLOSED"
+    }
+  ],
+  "control_events": [
+    {
+      "pr": 2026,
+      "type": "CODEX_REVIEW_EXECUTION",
+      "status": "DEFERRED",
+      "reason": "Codex review usage limit prevented a successful review run; no finding root inferred from the failed review itself."
+    }
+  ]
+}

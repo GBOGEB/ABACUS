@@ -1,0 +1,55 @@
+{
+  "schema": "code-purple.gca3.request.v1",
+  "mission_id": "GCA3-EXAMPLE-ABACUS-CBDQ",
+  "mode": "bounded_single_invocation",
+  "baseline": {
+    "repository": "GBOGEB/ABACUS",
+    "accepted_n": 0,
+    "main_sha": "54da377cf82a358ac97903ecde0270c975b8fcc1",
+    "baseline_evidence": "https://github.com/GBOGEB/ABACUS/issues/1860"
+  },
+  "advance": {
+    "target_n": 3,
+    "wave_count": 3,
+    "max_pulses_per_wave": 3,
+    "priorities": [
+      "matched_statement_branch_coverage",
+      "causal_first_red_bdq",
+      "telemetry_and_dag_sipoc"
+    ]
+  },
+  "authority": {
+    "source_mutation_requires_exact_head_lease": true,
+    "disjoint_source_owners": true,
+    "automatic_main_merge": false,
+    "automatic_security_waiver": false,
+    "automatic_reviewer_approval": false,
+    "automatic_ruleset_relaxation": false
+  },
+  "budgets": {
+    "max_new_source_commits": 9,
+    "max_new_prs": 3,
+    "max_manual_unchanged_head_reruns": 0
+  },
+  "required_gates": [
+    "exact_head_tests",
+    "matched_coverage",
+    "security",
+    "governance",
+    "a10",
+    "independent_review",
+    "effective_protection"
+  ],
+  "stop_policy": "stop_major_blocker_else_continue_disjoint",
+  "deliverables": [
+    "three_wave_receipts",
+    "accepted_vs_attempted",
+    "sha_run_job_attempt_links",
+    "coverage_numerators_denominators",
+    "bdq_dedup",
+    "predicted_vs_actual",
+    "dag_sipoc_delta",
+    "final_holds"
+  ],
+  "example_warning": "N=0 is illustrative, NOT an independently accepted programme index; replace all baseline fields with live verified evidence before execution."
+}

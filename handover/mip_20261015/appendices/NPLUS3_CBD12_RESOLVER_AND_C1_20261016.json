@@ -1,0 +1,53 @@
+{
+  "schema": "char.bd.cbd12.source-repair-and-native-verdict/v1",
+  "date": "2026-10-16",
+  "append_only": true,
+  "authority": "EVIDENCE_ONLY",
+  "admission": "HOLD",
+  "lanes": [
+    {
+      "pr": 2029,
+      "prior_head": "050c76026a186adddd61381c8263265e000110a5",
+      "new_commit": "bf8be5ccbcf662cd450dec3c7abf797543cb6090",
+      "owned_path": "DMAIC_V3/requirements.txt",
+      "old_first_red": "Pylint>=4.1.3 does not resolve Python3.9",
+      "repair": "Pylint >=3.3.9,<4 for Python3.9 and >=4.1.3,<5 for 3.10+",
+      "status": "IMPLEMENTED",
+      "exact_head_ci": "PENDING",
+      "root_resolved": false
+    },
+    {
+      "pr": 2030,
+      "head": "907b96efd08d4b6121e8f5dec97e23af38e9f77f",
+      "native_b0_status": "PASS",
+      "b0_artifact_id": 12014295985,
+      "original_test_ubuntu_status": "QUEUED",
+      "original_mixed_coverage_first_red_cleared": "UNKNOWN",
+      "distinct_failures": [
+        "Security Scanning",
+        "policy-and-inventory",
+        "PR Feedback Gate"
+      ],
+      "root_resolved": false
+    }
+  ],
+  "metrics": {
+    "additional_source_repair_commits": 1,
+    "original_first_reds_verified_cleared": 0,
+    "newly_ash_qualified_roots": 0,
+    "authenticated_parallel_workers": 0,
+    "qualified_coverage_gain": null,
+    "queue_p95": null
+  },
+  "security_a10": {
+    "authorized_disposition": "NOT_VERIFIED",
+    "safety_clearance": "NOT_VERIFIED",
+    "effective_required_checks": "NOT_VERIFIED",
+    "independent_review": "NOT_VERIFIED"
+  },
+  "next": [
+    "Consume Python3.9 install and test collection results on bf8be5cc exact SHA",
+    "Consume original Ubuntu3.11 job on #2030; do not conflate canonical B0 PASS with strict CI",
+    "Preserve security/A10 hold and independently verify governance enforcement"
+  ]
+}

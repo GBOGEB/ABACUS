@@ -52,6 +52,34 @@ flowchart TD
 9. Retire legacy workflows only after equivalence and branch-protection owner approval; preserve useful quick-start paths.
 10. Reuse canonical workflows; do not manually modify generated docs/ci/WORKFLOW_RATIONALIZATION.md.
 
+## G3A crosswalk: a three-pulse horizon within a wave
+
+The canonical federation terminology is proposed in [CODEX #1060](https://github.com/GBOGEB/CODEX/pull/1060); ABACUS MIP/EXECUTION.md is the existing repo-level receipt register. This is a consumer crosswalk, **not** an alternate glossary or a new admission gate.
+
+| Operator command | Exact scope | Expected unit evidence |
+| --- | --- | --- |
+| `next pulse` | One P, within current W | One observed/diagnosed/acted/verified/dispositioned record |
+| `G3A` / `next 3 pulses` | Sequential P1, P2, P3, toward N+3 | At most three source-bound pulse receipts, adaptive priority, early STOP allowed |
+| `next wave` | One bounded W | Outcome and DoV accepted/held with its own pulse history |
+| `G3W` / `next 3 waves` | Three independent W campaigns | Three wave dispositions, potentially more than three pulses |
+| `fan out` | Concurrency within a pulse | Disjoint source-owner leases; no shared-file write collisions |
+
+```mermaid
+flowchart LR
+  N[Exact evidence N] --> P1[P1 observe / repair / verify]
+  P1 -->|receipt, fresh head| P2[P2 adapt / repair / verify]
+  P2 -->|receipt, fresh head| P3[P3 stabilize / verify / report]
+  P3 --> F[Final N vs actual N+3 ledger]
+  P1 -.->|major blocker| H[HOLD partial receipt]
+  P2 -.->|major blocker| H
+  P3 -.->|major blocker| H
+  F --> G{Native admission separate}
+  G -->|pending or red| H
+  G -->|independent complete proof| I[Eligible for owner decision]
+```
+
+For each pulse count planned vs executed tasks, current-head native tests, branch/line denominators, attributable first-red groups, runner timings and admission. A committed implementation or green focused test alone is not a verified wave or closed root. Always reconcile main/head/policy drift and preserve historical runs as historical.
+
 ## Waves
 
 - W1: taxonomy and advisory planning, PR #1921.
@@ -80,3 +108,28 @@ experiment/stability contracts retain their prior meanings.
 See [G3A mission input, glossary, receipt schema, SIPOC and DAG](G3A_GOVERNED_THREE_ADVANCE.md).
 The CODEX global semantic definitions are proposed in draft PR #1059;
 ABACUS is a consumer and retains its existing scheduler.
+
+## GCA-3: wave/pulse terminology and governed N→N+3 advance
+
+Adopt [GCA-3 terminology and execution protocol](../../MIP/GCA3_GLOSSARY_AND_PROTOCOL.md) as an operational naming overlay without changing this canonical SIPOC/DAG or the historical W1–W6 list. **Wave** (`W[N+i]`) = independently receipted, bounded delivery increment; **pulse** (`Uj`) = observe/diagnose/change-or-no-change/verify loop *within* a wave; **3P\*** P1/P2/P3 = methodology stages, not a pulse count. `GCA-3` = three attempted waves, default ≤3 pulses per wave, accepted index advances only by contiguous engineering DoV PASS. Independent branch/reviewer/security/A10/governance gates never inherit PASS from engineering tests.
+
+```mermaid
+flowchart LR
+  A[Freeze accepted N and exact evidence] --> B[W N+1]
+  B --> U1[U1..U3 bounded pulses]
+  U1 --> G1{Engineering DoV?}
+  G1 -->|PASS| C[W N+2]
+  G1 -->|HOLD| X[Keep accepted index N; route safe disjoint lane]
+  C --> U2[U1..U3 bounded pulses]
+  U2 --> G2{Engineering DoV?}
+  G2 -->|PASS| D[W N+3]
+  G2 -->|HOLD| X
+  D --> U3[U1..U3 bounded pulses]
+  U3 --> G3{Engineering DoV?}
+  G3 -->|PASS| Z[Accepted N+3 engineering scope]
+  G3 -->|HOLD| X
+  Z --> R[Independent release admission remains separate]
+  X --> Q[Return attempted vs accepted and blocker receipts]
+```
+
+The completed response shall return the wave receipts, first-red/BDQ root reconciliation, metrics before/after with matched scope, jobs/attempts, owner leases, and acceptance-vector/HOLD status. A source-head CI run that has merely been queued does not count as wave acceptance. No background execution is implied.

@@ -1,0 +1,101 @@
+{
+  "schema": "char.bd.cbd13.native-artifact-and-scale/v1",
+  "evidence_class": "NATIVE_ARTIFACT_BYTES_AND_EXACT_SHA_GITHUB_READBACK",
+  "observed_date": "2026-10-16",
+  "authority": "APPEND_ONLY_NON_SSOT",
+  "admission": "HOLD",
+  "pr2030": {
+    "head_sha": "907b96efd08d4b6121e8f5dec97e23af38e9f77f",
+    "artifact": {
+      "run_id": 38823379390,
+      "job_id": 116725018550,
+      "id": 12014295985,
+      "zip_sha256": "c137525807fb041bf2bb32d4889f05f775034bec06663c902f22c72e2974149c",
+      "crc": "PASS",
+      "canonical_test_evidence_sha256": "b0511e25183f5a9c57d0c39491af686b9c34327727d1c55dc0d136297bf175e4",
+      "canonical_contexts_sha256": "12ba36b66d47ca43abb854c44b939be598cc19e46057926faf507c8c6c72623b",
+      "canonical_junit_sha256": "50f87e080d813a0e3df98e9f34124448358f40c9c3eedd53a923c08d2db89479",
+      "test_evidence": {
+        "pass": 2253,
+        "skip": 2,
+        "ratchet": "PASS",
+        "engineering_credit_delta": 0,
+        "formal_credit_delta": 0
+      },
+      "junit": {
+        "declared_tests": 2287,
+        "observed_testcases": 2255,
+        "pass": 2253,
+        "skip": 2,
+        "fail": 0,
+        "error": 0,
+        "note": "JUnit suite declared tests 2287 but contains 2255 testcase nodes. Do not silently reconcile; ratchet rows match observed testcase count."
+      },
+      "coverage": {
+        "branch_aware": true,
+        "aggregate": {
+          "statements_covered": 17202,
+          "statements_eligible": 30815,
+          "branches_covered": 4262,
+          "branches_eligible": 8324
+        },
+        "target_file": "scripts/branch_retirement_report.py",
+        "target": {
+          "statements_covered": 111,
+          "statements_eligible": 212,
+          "branches_covered": 37,
+          "branches_eligible": 74,
+          "combined_covered": 148,
+          "combined_eligible": 286
+        },
+        "baseline_claim": {
+          "combined_covered": 75,
+          "combined_eligible": 286
+        },
+        "qualified_comparison": false,
+        "reason": "Source/cohort/instrumentation parity of baseline not established"
+      }
+    },
+    "original_ubuntu_test": {
+      "job_id": 116727169418,
+      "state": "QUEUED",
+      "first_red_cleared": "UNKNOWN"
+    },
+    "independent_failures": [
+      "Security Scanning",
+      "policy-and-inventory",
+      "PR Feedback Gate"
+    ],
+    "sample": {
+      "check_total": 103,
+      "returned": 100,
+      "pass": 83,
+      "pending": 8,
+      "partial": true
+    }
+  },
+  "pr2029": {
+    "head_sha": "bf8be5ccbcf662cd450dec3c7abf797543cb6090",
+    "source_repair": "Pylint Python3.9 marker split",
+    "native_checks_observed": 1,
+    "checks_pending": 1,
+    "python39_matrix": "UNKNOWN",
+    "root_closed": false
+  },
+  "scaling": {
+    "actual_authenticated_workers": 0,
+    "planned_independent_lanes": 3,
+    "root_qualified_closures": 0,
+    "qualified_coverage_gain": null,
+    "queue_p95": null,
+    "admissible_next": [
+      "Verify Python3.9 resolver and collection on exact new head",
+      "Consume queued Ubuntu 3.11 job without substituting B0 success",
+      "Investigate JUnit suite-count discrepancy without rewriting native proof",
+      "Retain independent Safety/A10 and governance first-reds"
+    ],
+    "authority_transfer": false,
+    "no_merge": true,
+    "no_security_waiver": true
+  }
+}

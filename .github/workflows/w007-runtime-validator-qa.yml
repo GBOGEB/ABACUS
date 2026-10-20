@@ -1,0 +1,62 @@
+name: W007 Runtime Validator Negative Matrix
+
+on:
+  pull_request:
+    paths:
+      - 'scripts/validate_runtime_foundation.py'
+      - 'scripts/write_runtime_governance_status.py'
+      - 'tests/test_w007_runtime_validator_negative.py'
+      - '.github/workflows/w007-runtime-validator-qa.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  negative-validator-and-coverage:
+    name: W007 native ${{ matrix.os }} py${{ matrix.python-version }}
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 15
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: ubuntu-24.04
+            python-version: '3.10'
+          - os: ubuntu-24.04
+            python-version: '3.11'
+          - os: ubuntu-24.04
+            python-version: '3.12'
+          - os: windows-2022
+            python-version: '3.11'
+    steps:
+      - name: Checkout exact source head
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+      - name: Set up Python
+        uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97
+        with:
+          python-version: ${{ matrix.python-version }}
+      - name: Assert head SHA is immutable input
+        shell: bash
+        env:
+          EXPECTED_SOURCE_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$EXPECTED_SOURCE_SHA"
+      - name: Install test-only prerequisites (repository conftest needs NumPy)
+        run: python -m pip install 'pytest>=7.4,<10' 'pytest-cov>=4.1,<8' 'numpy>=1.24,<3'
+      - name: Run synthetic negative fixtures and measure scoped branches
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p w007-native
+          python -m pytest -q tests/test_w007_runtime_validator_negative.py --junitxml=w007-native/junit.xml --cov=scripts.validate_runtime_foundation --cov=scripts.write_runtime_governance_status --cov-branch --cov-report=term-missing --cov-report=json:w007-native/coverage.json --cov-report=xml:w007-native/coverage.xml
+      - name: Upload native JUnit and scoped coverage evidence
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: w007-runtime-${{ matrix.os }}-py${{ matrix.python-version }}
+          path: w007-native/
+          if-no-files-found: error

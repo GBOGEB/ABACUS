@@ -1,0 +1,117 @@
+{
+  "schema": "code-purple.mcl-evidence-hub.v1",
+  "observed_date_utc": "2026-10-18",
+  "observation_kind": "PRIOR_NATIVE_GITHUB_READBACK_PLUS_HISTORICAL_BYTE_QA",
+  "authority": "READ_ONLY_NON_ADMITTING_PROJECTION",
+  "merge_admission": "HOLD",
+  "repos": {
+    "producer": "GBOGEB/ABACUS",
+    "consumer": "GBOGEB/CODEX",
+    "qps": "GBOGEB/cryoplant-project"
+  },
+  "focus_pr": {
+    "number": 1980,
+    "state": "merged",
+    "historical_pull_head": "b24887d2822e9d3dd2a2281e776bffd4977c5db3",
+    "merge_commit": "e864283660cbd65ca51324be1a813439c351357b",
+    "matching_testflight_run": 39052681513,
+    "matching_testflight_conclusion": "success",
+    "artifact_id": 12111307020,
+    "zip_sha256_reported": "f09ec2f3bb719a63e99a4e49e9e7086d46887e15a4a38d3eb39cd215e6543a68",
+    "artifact_outputs_attested": 4,
+    "artifact_outputs_verified_historically": 4,
+    "extraction_path_direct_pass": 0,
+    "extraction_path_direct_total": 4,
+    "manual_trusted_restaging_pass": 4,
+    "manual_trusted_restaging_total": 4,
+    "receipt_source_kind": "PULL_HEAD_NOT_SYNTHETIC_EVENT",
+    "trusted_byte_validation": "SOURCE_AND_NEGATIVE_TESTS_VERIFIED_HISTORICALLY",
+    "native_post_download_roundtrip": null
+  },
+  "immutable_history": [
+    {
+      "run": 38624410381,
+      "head_prefix": "d7740c7",
+      "result": "failure",
+      "credit": "HISTORICAL_ONLY"
+    },
+    {
+      "run": 38626368234,
+      "head_prefix": "c0f75f2",
+      "result": "success",
+      "credit": "HISTORICAL_ONLY"
+    },
+    {
+      "run": 38627296781,
+      "head_prefix": "b344a4b",
+      "result": "success",
+      "credit": "HISTORICAL_ONLY"
+    }
+  ],
+  "regions": [
+    {
+      "id": "L0",
+      "name": "Evidence transport",
+      "scope": "one verified artifact",
+      "known_outputs_pass": 4,
+      "known_outputs_total": 4,
+      "portable_paths_pass": 0,
+      "portable_paths_total": 4,
+      "native_new_roundtrip": null
+    },
+    {
+      "id": "L1",
+      "name": "ABACUS repository",
+      "scope": "PR head + full native gate suite",
+      "focused_testflight": "PASS",
+      "full_ci": "NOT_CLOSED",
+      "security": "NOT_CLOSED",
+      "governance": "NOT_CLOSED",
+      "windows_sqlite_locks": null
+    },
+    {
+      "id": "L2",
+      "name": "Federation / global",
+      "scope": "ABACUS -> CODEX -> QPS",
+      "codex_branch_protected": false,
+      "authenticated_cross_repo_receipt": null,
+      "package_closure_denominator": 14,
+      "packages_accepted": null
+    }
+  ],
+  "next_coverage_frontier": {
+    "evidence_class": "HISTORICAL_FROZEN_CANDIDATE_NOT_CURRENT_MAIN",
+    "frozen_eligible": 508,
+    "frozen_uncovered": 374,
+    "legacy_total_eligible": 52200,
+    "maximum_conditional_pp": 0.7165,
+    "source_families": [
+      "tools/w75_stability_diagnostic.py",
+      "tools/w81_repair_outcome_block.py",
+      "tools/w64_census_reverse_pressure_v2.py"
+    ],
+    "recheck_required": "CURRENT_HEAD_B0_WITH_SAME_SOURCE_CONFIG_AND_DENOMINATOR"
+  },
+  "non_compensating_gates": [
+    "matching_current_source_head",
+    "ZIP_DIGEST_AND_BYTES_AND_PREFIX",
+    "full_CI_and_Windows",
+    "matrix_changed_line_coverage",
+    "independent_security",
+    "effective_rules_and_review",
+    "consumer_receipt_and_root_disposition"
+  ],
+  "governance_observation": {
+    "abacus_required_approvals": 0,
+    "abacus_required_status_check_rules": 0,
+    "codex_main_protected": false
+  },
+  "planned_lane_ids": [
+    "ARTIFACT_TRANSPORT",
+    "REPO_CI_SECURITY",
+    "FEDERATION_GOVERNANCE"
+  ],
+  "independent_workers_verified": null,
+  "native_six_sigma_stability": null,
+  "note": "NULL means unknown, not zero. Matched native improvement requires source SHA, cohort, config and denominator equality. Local synthetic ZIP tests do not supply real GitHub post-download proof."
+}

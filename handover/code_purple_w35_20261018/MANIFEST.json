@@ -1,0 +1,133 @@
+{
+  "schema": "abacus.codepurple.w35.github-first-source-index.v1",
+  "captured_date": "2026-10-18",
+  "canonical_global_owner": "MIP/EVIDENCE_TO_ADMISSION_OBSERVATORY/global/ledger.json",
+  "canonical_global_head_at_scoped_readback": "2246c7bd3a9bda6a3d43b9a9116cb7088cfbcc88",
+  "W38_focused_gain": {
+    "source_sha": "b69c8e376e25c9345e379a14c371149ba7443adb",
+    "run_id": 39162185592,
+    "job_id": 117777615940,
+    "python": "3.12",
+    "cases_passed": 203,
+    "cases_denominator": 203,
+    "covered_before": 660,
+    "covered_after": 707,
+    "eligible": 723,
+    "qualified_scope": "FOCUSED_ONLY",
+    "byte_verified": false
+  },
+  "branches": [
+    {
+      "name": "code-purple/w35-global-live-bridge-20261018",
+      "exact_head_at_index_cut": "c99a91056c01d368539fbff0516d628f94d9e4d8",
+      "purpose": "read-only global dashboard overlay, consolidated entrypoint, GitHub refresh, handover",
+      "paths": [
+        {
+          "path": "MIP/EVIDENCE_TO_ADMISSION_OBSERVATORY/global/index.html",
+          "git_blob_sha1": "b634190982e9d5cab852ad98fffbe56da632010a"
+        },
+        {
+          "path": "MIP/EVIDENCE_TO_ADMISSION_OBSERVATORY/global/index.template.html",
+          "git_blob_sha1": "9f97796a44aff33f0b942ace56846c28bc494e13"
+        },
+        {
+          "path": "tools/everred_v3/dashboard/index.html",
+          "git_blob_sha1": "6dc5a8cacfacddb7aee6d397929149f4fb6dcf2e"
+        },
+        {
+          "path": "tools/everred_v3/dashboard/template.html",
+          "git_blob_sha1": "b6f55164f07006bc9a5a900dc60735e5ffbc8663"
+        },
+        {
+          "path": "tools/everred_v3/dashboard/mission_control_w35.html",
+          "git_blob_sha1": "d6bdee0d32774b81b2f7d4ac35398121c0a3b4d5"
+        },
+        {
+          "path": "tools/everred_v3/dashboard/w35_ledger.json",
+          "git_blob_sha1": "e96f6cd6d0f179efb45cb340937276d3503e5e3e"
+        },
+        {
+          "path": "tools/everred_v3/dashboard/W35_LIVE_BRIDGE_README.md",
+          "git_blob_sha1": "8142aa0bb61427603372f6ff7c61a804a7e249ca"
+        },
+        {
+          "path": "tools/everred_v3/sut_gui/dashboard_v3.html",
+          "git_blob_sha1": "99e9baa40f88f57e25d39b817b571e8ec2c0674d"
+        },
+        {
+          "path": "handover/code_purple_w35_20261018/HANDOVER.md",
+          "git_blob_sha1": "2afae5507929b7054ed1070bafc2f37d3acc36e5"
+        },
+        {
+          "path": "handover/code_purple_w35_20261018/README.md",
+          "git_blob_sha1": "a7c8cdcadc8111f1de93481a60f9bf5a05ad3432"
+        },
+        {
+          "path": "handover/code_purple_w35_20261018/DROPIN.md",
+          "git_blob_sha1": "9e6080bd5fc2e1339619fe690746c683473dbe43"
+        },
+        {
+          "path": "handover/code_purple_w35_20261018/QA_REPORT.json",
+          "git_blob_sha1": "23613259366201d89ce8c9acd3e77f51d3704959"
+        }
+      ]
+    },
+    {
+      "name": "code-purple/w35-disjoint-census-20261018",
+      "exact_head_at_index_cut": "b96ce392894a19dfb28f670152f06f5ed17cc611",
+      "purpose": "disjoint source-bound census, negative controls, synthetic fixture; native CI unknown",
+      "paths": [
+        {
+          "path": "tools/recovery/w35_census_rollup.py",
+          "git_blob_sha1": "124efb64d16b9ec375e515fe46048d2f76b3a170"
+        },
+        {
+          "path": "tests/test_w35_census_rollup.py",
+          "git_blob_sha1": "e5b811d96dc4a0ba28e0a0b3fb0e6c9695532d20"
+        },
+        {
+          "path": "tests/fixtures/w35_ledger_synthetic.json",
+          "git_blob_sha1": "8b301922dad40a2a3809f4db44c55cc8656a8cfd"
+        },
+        {
+          "path": "tools/recovery/w35_sample_rollup.json",
+          "git_blob_sha1": "e85455e03128f8683fb123b6f298a2791c365ac9"
+        }
+      ]
+    }
+  ],
+  "source_path_count": 16,
+  "source_ledger_semantic_parity": {
+    "W38_global_template_and_index_embedded_json_equal": true,
+    "W35_browser_refresh_metadata_only": true,
+    "AUTHORITY_TRANSFER": false
+  },
+  "local_QA": {
+    "html_3_viewports_pass": 3,
+    "html_3_viewports_total": 3,
+    "console_errors": 0,
+    "page_errors": 0,
+    "broken_images": 0,
+    "document_overflow": 0,
+    "census_tests_passed": 38,
+    "census_tests_total": 38,
+    "bytes_git_blob_parity": true,
+    "html_sha256": "772544075b63fc87dcb2f2c8a112cd3b0b02088b3c70f8850a1b27c6eab995da",
+    "read_only_browser_mocked_provider": true
+  },
+  "controls": {
+    "canonical_issue_1860": "OPEN",
+    "mandatory_approvals": 0,
+    "mandatory_status_rules": 0,
+    "always_bypass_integrations": 6,
+    "red_canary_verified": false,
+    "formal_causing_root_closures": null,
+    "exact_head_W35_native_qualified": null,
+    "current_main_matched_coverage": null,
+    "MERGE_ADMISSION": "HOLD",
+    "security_waiver": false
+  },
+  "manifest_semantics": "Git blob-index of committed files; MANIFEST.json excluded from own list; no signed V2 replay capsule, artifact ZIP download or human review is asserted.",
+  "full_raw_zip_and_verbatim_transcript_verified": false,
+  "v2_generator_replay": false
+}

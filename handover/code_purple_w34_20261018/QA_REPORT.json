@@ -1,0 +1,92 @@
+{
+  "schema": "abacus.codepurple.w34.github-first-qa.v1",
+  "execution_date": "2026-10-18",
+  "authority": "LOCAL_CODE_QA_AND_GITHUB_METADATA_ONLY",
+  "verdict": "SOURCE_IMPLEMENTATION_QA_PASS_NATIVE_AND_GOVERNANCE_HOLD",
+  "static_checks": {
+    "three_branch_source_ownership_verified": true,
+    "source_file_overlap_between_three_lanes": 0,
+    "networkx_test_and_dev_pins_identical": true,
+    "networkx_pins": [
+      "networkx==3.4.2; python_version < \"3.11\"",
+      "networkx==3.6.1; python_version >= \"3.11\""
+    ],
+    "five_new_matrix_contract_methods_present": true,
+    "g3cs_required_skip_reason_occurrences": 1,
+    "g3cs_optional_test_pytest_marker_duplicated": false,
+    "g3cs_synthetic_archive_integrity_test_preserved": true,
+    "w32_independent_verified_proof_fields_null": true,
+    "w32_old_self_claims_preserved_only_as_source_reported": true,
+    "w32_adversarial_self_forgery_test_added": true,
+    "operational_handover_json_parse_success": [
+      "STATE.json",
+      "HISTORY.json",
+      "EVIDENCE_GRAPH.json",
+      "FORECAST.json"
+    ],
+    "handover_narrative_includes_owner_issue_and_exact_b0": true
+  },
+  "byte_qa": {
+    "local_verifier_tests_passed": 18,
+    "local_verifier_tests_total": 18,
+    "local_test_framework": "pytest",
+    "input_class": "SYNTHETIC_NEGATIVE_FIXTURES",
+    "github_native_run_id": null,
+    "verifier": {
+      "source": "tools/recovery/w34_native_artifact_verify.py",
+      "github_blob_sha1": "3c1249dc54e74ab0cb0f4ea3ebebe216ad2c650a",
+      "local_git_blob_sha1": "3c1249dc54e74ab0cb0f4ea3ebebe216ad2c650a",
+      "local_sha256": "5e6b04f337f109173ba81b5a15f011636a867caeb8678e979d89d3e86109594a",
+      "verified_github_source_equals_local_tested_bytes": true
+    },
+    "tests": {
+      "source": "tests/test_w34_native_artifact_verify.py",
+      "github_blob_sha1": "951a584db2e6bf49cc7117c10eb35ef7869db2bc",
+      "local_git_blob_sha1": "951a584db2e6bf49cc7117c10eb35ef7869db2bc",
+      "local_sha256": "a8f808871942d19d478eef1c2d606937b2aeac63445dea5a8efdec4c0a3cfc67",
+      "verified_github_source_equals_local_tested_bytes": true
+    },
+    "actual_github_artifact_zip_bytes_verified": null,
+    "provider_authenticated_origin": null
+  },
+  "github_runner_observation": {
+    "native_w34_manual_dispatches": 0,
+    "branch_push_qps_canonicalization_auto_runs_initial_sample": 19,
+    "branch_push_qps_canonicalization_queued_initial_sample": 19,
+    "initial_sample_terminal": 0,
+    "sampled_branches": [
+      "code-purple/w34-matrix-networkx-sourceowner-20261018",
+      "code-purple/w34-proof-verified-handover-20261018",
+      "code-purple/w34-g3cs-single-source-missing-marker-20261018"
+    ],
+    "caveat": "Observation non-atomic and new GitHub commits may add queued runs; automatic trigger counts are not capacity/proof and were not manually dispatched."
+  },
+  "canonical_before": {
+    "main_sha": "994ad6e73c748923841d92b12651e92d41b2d4ff",
+    "run_id": 39159906022,
+    "attempt": 1,
+    "b0_jobs_passed": 11,
+    "b0_jobs_total": 13,
+    "junit_passed": 3854,
+    "junit_failed": 3,
+    "junit_skipped": 1,
+    "first_red_root": "G3CS_OPTIONAL_ZIP_MARKER_CONTRACT"
+  },
+  "acceptance": {
+    "native_exact_head_W34_A": null,
+    "native_exact_head_W34_B": null,
+    "native_exact_head_W34_C": null,
+    "independent_human_approval": false,
+    "server_side_red_canary_verified": null,
+    "main_statement_coverage_delta": null,
+    "main_branch_coverage_delta": null,
+    "formal_root_closure": null,
+    "safety_A10_current_head": null,
+    "lossless_handover_v2_schema_replay_verified": false,
+    "full_transcript_verbatim_verified": false,
+    "merge_admission": "HOLD",
+    "security_waiver": false,
+    "authority_transfer": false
+  },
+  "qa_boundary": "This QA report verifies locally tested synthetic source bytes and repository source/index existence only. It does not authenticate private GitHub runtime artifacts, human approvals, merge governance or full V2 replay."
+}

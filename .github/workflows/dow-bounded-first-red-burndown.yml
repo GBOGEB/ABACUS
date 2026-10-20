@@ -1,0 +1,180 @@
+name: DOW Bounded First-Red Burndown
+
+on:
+  pull_request:
+    paths:
+      - "scripts/preview_diff.py"
+      - "scripts/recursive_build.py"
+      - "tests/test_dmaic_measurement_receipts.py"
+      - "tests/test_loop_transient.py"
+      - "tests/test_dow_bounded_testpilot_repairs.py"
+      - ".github/workflows/dow-bounded-first-red-burndown.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  compare-identical-ruff-scope:
+    name: Exact-base vs exact-head Ruff and CLI contracts
+    runs-on: ubuntu-24.04
+    steps:
+      # SHA-pinned checkout v4.2.2
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+      # SHA-pinned setup-python v5.6.0
+      - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97
+        with:
+          python-version: "3.11"
+      - name: Resolve and verify two exact refs
+        shell: bash
+        env:
+          EXPECTED_HEAD: ${{ github.event.pull_request.head.sha || github.sha }}
+          EXPECTED_BASE: ${{ github.event.pull_request.base.sha || github.sha }}
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$EXPECTED_HEAD"
+          git cat-file -e "$EXPECTED_BASE^{commit}"
+          test "${#EXPECTED_HEAD}" -eq 40
+          test "${#EXPECTED_BASE}" -eq 40
+          git worktree add --detach "$RUNNER_TEMP/dow-baseline" "$EXPECTED_BASE"
+      - name: Install pinned measurement tools
+        run: python -m pip install "ruff==0.17.0" "pytest==8.4.2" "numpy==2.3.4"
+      - name: Scope-comparable fingerprint burndown
+        shell: bash
+        env:
+          EXPECTED_HEAD: ${{ github.event.pull_request.head.sha || github.sha }}
+          EXPECTED_BASE: ${{ github.event.pull_request.base.sha || github.sha }}
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          import collections
+          import json
+          import os
+          import pathlib
+          import subprocess
+          import sys
+
+          head = pathlib.Path.cwd()
+          base = pathlib.Path(os.environ["RUNNER_TEMP"]) / "dow-baseline"
+          paths = (
+              "scripts/preview_diff.py",
+              "scripts/recursive_build.py",
+              "tests/test_dmaic_measurement_receipts.py",
+              "tests/test_loop_transient.py",
+          )
+
+          def measure(directory):
+              for target in paths:
+                  if not (directory / target).is_file():
+                      raise RuntimeError(
+                          "Expected scoped file is missing: " + target
+                      )
+              result = subprocess.run(
+                  [
+                      sys.executable, "-m", "ruff", "check",
+                      "--output-format", "json", *paths,
+                  ],
+                  cwd=directory, text=True, capture_output=True, check=False,
+              )
+              if result.returncode not in (0, 1):
+                  raise RuntimeError("Ruff execution failed: " + result.stderr)
+              findings = json.loads(result.stdout)
+              fingerprints = collections.Counter(
+                  (entry["code"],
+                   str(pathlib.Path(entry["filename"]).relative_to(directory)),
+                   entry["message"])
+                  for entry in findings
+              )
+              return findings, fingerprints
+
+          before, a = measure(base)
+          after, b = measure(head)
+          opened = b - a
+          resolved = a - b
+          format_paths = (
+              ".devcontainer/devcontainer.json",
+              "requirements.txt",
+              "qps_slide_reviewer/components/ui/label.tsx",
+          )
+
+          def formatting_debt(directory):
+              totals = {
+                  "trailing_whitespace_lines": 0,
+                  "missing_final_newline_files": 0,
+              }
+              for target in format_paths:
+                  raw = (directory / target).read_text(encoding="utf-8")
+                  totals["trailing_whitespace_lines"] += sum(
+                      line.endswith((" ", "\t")) for line in raw.splitlines()
+                  )
+                  totals["missing_final_newline_files"] += int(
+                      not raw.endswith("\n")
+                  )
+              return totals
+
+          format_before = formatting_debt(base)
+          format_after = formatting_debt(head)
+
+          output = {
+              "schema": "abacus.dow.ruff.scope-comparable.v1",
+              "base_sha": os.environ["EXPECTED_BASE"],
+              "head_sha": os.environ["EXPECTED_HEAD"],
+              "tool": "ruff==0.17.0",
+              "identical_paths": list(paths),
+              "formatting_identical_paths": list(format_paths),
+              "formatting_before": format_before,
+              "formatting_after": format_after,
+              "before_findings": len(before),
+              "after_findings": len(after),
+              "opened_occurrences": sum(opened.values()),
+              "resolved_occurrences": sum(resolved.values()),
+              "remaining_signatures": [
+                  dict(code=code, path=path, message=message, count=count)
+                  for (code, path, message), count in sorted(b.items())
+              ],
+              "introduced_signatures": [
+                  dict(code=code, path=path, message=message, count=count)
+                  for (code, path, message), count in sorted(opened.items())
+              ],
+              "net_reduction": len(before) - len(after),
+              "closure_unit": "Ruff finding occurrence, not root cause",
+              "main_coverage": None,
+              "changed_line_coverage": None,
+              "crew_launch_receipts": None,
+              "admission": "HOLD",
+          }
+          destination = (
+              pathlib.Path(os.environ["RUNNER_TEMP"])
+              / "dow-ruff-scope-parity.json"
+          )
+          destination.write_text(
+              json.dumps(output, indent=2, sort_keys=True) + "\n"
+          )
+          print(json.dumps(output, sort_keys=True))
+          if any(format_after.values()):
+              raise SystemExit(
+                  "Fail-closed: scoped pre-commit formatting debt remains"
+              )
+          if len(before) == 0 or len(after) >= len(before) or opened:
+              raise SystemExit(
+                  "Fail-closed: no comparable reduction or "
+                  "newly introduced findings"
+              )
+          PY
+      - name: Focused behavioral regression
+        run: |
+          python -m compileall -q \
+            scripts/preview_diff.py scripts/recursive_build.py \
+            tests/test_dow_bounded_testpilot_repairs.py
+          python -m pytest -q tests/test_dow_bounded_testpilot_repairs.py
+      # SHA-pinned upload-artifact v4.6.2
+      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9
+        if: always()
+        with:
+          name: dow-ruff-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/dow-ruff-scope-parity.json
+          if-no-files-found: warn

@@ -1,0 +1,177 @@
+{
+  "contract_name": "CODE_PURPLE_ACCEPTANCE_DEBT_FEDERATED",
+  "mode": "SOURCE_BOUND_READ_ONLY",
+  "obligations": [
+    {
+      "depends_on": [],
+      "frozen_source_sha": "068ca4a7d1f8a74e3f8e0ef28c388f5a6ca8b52b",
+      "id": "CP-H001",
+      "kind": "telemetry",
+      "repo": "GBOGEB/ABACUS",
+      "review_stage": "MACHINE_OBSERVATION_NOT_ADMISSION",
+      "scope": "historical",
+      "source_issue": 1929,
+      "title": "Historical 253/253 native run readback, 492 jobs, 67 signatures"
+    },
+    {
+      "depends_on": [
+        "CP-H001"
+      ],
+      "frozen_source_sha": "068ca4a7d1f8a74e3f8e0ef28c388f5a6ca8b52b",
+      "id": "CP-H002",
+      "kind": "coverage",
+      "repo": "GBOGEB/ABACUS",
+      "review_stage": "MACHINE_OBSERVATION_NOT_ADMISSION",
+      "scope": "historical",
+      "source_issue": 1929,
+      "title": "Historical CBD module branch coverage and 191/191 proof"
+    },
+    {
+      "depends_on": [
+        "CP-H002"
+      ],
+      "id": "CP-C003",
+      "kind": "test",
+      "repo": "GBOGEB/ABACUS",
+      "review_stage": "MACHINE_OBSERVATION_NOT_ADMISSION",
+      "scope": "head",
+      "source_issue": 2101,
+      "title": "Current exact-head 546/546 four-module testflight"
+    },
+    {
+      "depends_on": [
+        "CP-H001"
+      ],
+      "id": "CP-G004",
+      "kind": "telemetry",
+      "repo": "GBOGEB/ABACUS",
+      "review_stage": "MACHINE_OBSERVATION_NOT_ADMISSION",
+      "scope": "head",
+      "source_issue": 2101,
+      "title": "Fresh native 253-run graph at current source head"
+    },
+    {
+      "depends_on": [
+        "CP-C003"
+      ],
+      "id": "CP-F005",
+      "kind": "test",
+      "repo": "GBOGEB/ABACUS",
+      "review_stage": "MACHINE_OBSERVATION_NOT_ADMISSION",
+      "scope": "head",
+      "source_issue": 2101,
+      "title": "Black and isort formatter verified clean on exact head"
+    },
+    {
+      "depends_on": [],
+      "id": "CP-D006",
+      "kind": "test",
+      "repo": "GBOGEB/ABACUS",
+      "review_stage": "MACHINE_OBSERVATION_NOT_ADMISSION",
+      "scope": "head",
+      "source_issue": 1860,
+      "title": "Markdown/YAML/JSON lint on exact head"
+    },
+    {
+      "depends_on": [],
+      "id": "CP-S007",
+      "kind": "security",
+      "repo": "GBOGEB/ABACUS",
+      "review_stage": "MACHINE_OBSERVATION_NOT_ADMISSION",
+      "scope": "head",
+      "source_issue": 1860,
+      "title": "Independent Safety/Bandit P0/P1 security gate"
+    },
+    {
+      "depends_on": [],
+      "id": "CP-V008",
+      "kind": "test",
+      "repo": "GBOGEB/ABACUS",
+      "review_stage": "MACHINE_OBSERVATION_NOT_ADMISSION",
+      "scope": "head",
+      "source_issue": 1860,
+      "title": "Workflow inventory classified and governance terminal"
+    },
+    {
+      "depends_on": [
+        "CP-S007",
+        "CP-V008"
+      ],
+      "id": "CP-A009",
+      "kind": "review",
+      "repo": "GBOGEB/ABACUS",
+      "review_stage": "MACHINE_OBSERVATION_NOT_ADMISSION",
+      "scope": "head",
+      "source_issue": 1860,
+      "title": "Independent A10 and owner-reviewed disposition"
+    },
+    {
+      "depends_on": [
+        "CP-C003",
+        "CP-G004",
+        "CP-F005",
+        "CP-D006",
+        "CP-S007",
+        "CP-A009"
+      ],
+      "id": "CP-M010",
+      "kind": "main_merge",
+      "repo": "GBOGEB/ABACUS",
+      "review_stage": "MACHINE_OBSERVATION_NOT_ADMISSION",
+      "scope": "main",
+      "source_issue": 1860,
+      "title": "First correctly admitted protected-main merge and REX"
+    },
+    {
+      "depends_on": [
+        "CP-H001"
+      ],
+      "id": "CX-E011",
+      "kind": "dispatch",
+      "repo": "GBOGEB/CODEX",
+      "review_stage": "MACHINE_OBSERVATION_NOT_ADMISSION",
+      "scope": "main",
+      "source_issue": 977,
+      "title": "Authenticated Mission Control disjoint Crew execution"
+    },
+    {
+      "depends_on": [
+        "CX-E011"
+      ],
+      "id": "CX-R012",
+      "kind": "review",
+      "repo": "GBOGEB/CODEX",
+      "review_stage": "MACHINE_OBSERVATION_NOT_ADMISSION",
+      "scope": "main",
+      "source_issue": 977,
+      "title": "CODEX independently source-bound REX and review return"
+    },
+    {
+      "depends_on": [
+        "CX-R012"
+      ],
+      "id": "QP-E013",
+      "kind": "engineering",
+      "repo": "GBOGEB/cryoplant-project",
+      "review_stage": "MACHINE_OBSERVATION_NOT_ADMISSION",
+      "scope": "main",
+      "source_issue": null,
+      "title": "QPS independent engineering acceptance and provenance"
+    },
+    {
+      "depends_on": [
+        "CP-H001"
+      ],
+      "id": "QP-F014",
+      "kind": "provenance",
+      "repo": "GBOGEB/cryoplant-project",
+      "review_stage": "MACHINE_OBSERVATION_NOT_ADMISSION",
+      "scope": "main",
+      "source_issue": null,
+      "title": "QPS federation reverse smoke and evidence consumer"
+    }
+  ],
+  "owner_authority": "ABACUS #1929 evidence, #1860 admission, CODEX #977 dispatch, QPS engineering",
+  "schema": "codepurple.acceptance.v1",
+  "source_snapshot_atomic": false
+}

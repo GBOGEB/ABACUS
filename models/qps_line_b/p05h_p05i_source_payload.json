@@ -67,7 +67,7 @@
       "interpretation": "With the same total 50 g/s but distributed pickup along the B header, hydraulic loss is substantially below the conservative full-flow/full-length P05H check. Even total equivalent K=100 remains below 4 mbar in this diagnostic distribution. Exact QCELL flow and segment positions are still required for acceptance."
     },
     "thermodynamic_review": {
-      "current_LKT_2K_OP": {
+      "current_SUPPLIER_B_2K_OP": {
         "Q_2K_W": 809,
         "A_flow_g_s": 43.1,
         "A_P_bara": 3.0,
@@ -78,7 +78,7 @@
         "TS_W": 8610,
         "TS_flow_g_s": 81
       },
-      "current_ALAT_2K_OP": {
+      "current_SUPPLIER_A_2K_OP": {
         "cavity_W": 770,
         "B_line_W": 81,
         "A_P_bara": 3.0,
@@ -87,7 +87,7 @@
         "B_T_K": 3.8,
         "calculated_B_flow_g_s": 36.88
       },
-      "historic_LKT_TS_with_LN2": {
+      "historic_SUPPLIER_B_TS_with_LN2": {
         "flow_g_s": 77.37,
         "Tin_K": 38.15,
         "Tout_K": 58.42,
@@ -95,7 +95,7 @@
         "Pout_bara": 11.5,
         "Q_W": 8293
       },
-      "historic_ALAT_method": "Aspen HYSYS v10 / MBWR / HEPAK v3.4",
+      "historic_SUPPLIER_A_method": "Aspen HYSYS v10 / MBWR / HEPAK v3.4",
       "strict_residual_status": "OPEN",
       "reason": "Same-boundary independent enthalpy residuals and He-II validation are not yet fully closed; pre-study evidence remains non-governing."
     },

@@ -1,0 +1,184 @@
+{
+  "schema": "code_purple.github_first_handover_readback.v1",
+  "date": "2026-10-18",
+  "snapshot_atomic": false,
+  "fidelity": "GITHUB_FIRST_OPERATIONAL_NOT_SEALED_V2",
+  "source_base_sha": "403a794e0aac453545cff922c68273b61c527e9f",
+  "repo_heads": [
+    {
+      "repo": "GBOGEB/ABACUS",
+      "branch": "main",
+      "sha": "403a794e0aac453545cff922c68273b61c527e9f"
+    },
+    {
+      "repo": "GBOGEB/CODEX",
+      "branch": "main",
+      "sha": "e422201c615db88f74aa0af02460bb5d23bfd262"
+    },
+    {
+      "repo": "GBOGEB/pipeline-automation-hub",
+      "branch": "master",
+      "sha": "eee89e30dc736805387b522316a8efbe762eea4b"
+    },
+    {
+      "repo": "GBOGEB/cryoplant-project",
+      "branch": "main",
+      "sha": "c07666b2dfc77f97980e8661fac3864f975e2d76"
+    },
+    {
+      "repo": "GBOGEB/gg_MATH",
+      "branch": "main",
+      "sha": "7ce2e3832357c0b87ab17ff439f4d6e84c0292a4"
+    }
+  ],
+  "canonical": {
+    "abacus_v2": "tools/handover_v2/process_spec.json",
+    "abacus_template": "handover/HANDOVER_MESSAGE_TEMPLATE.md",
+    "qps_cp_contract": "GBOGEB/pipeline-automation-hub:mission-control/v2/handoff/CP_HANDOFF_RESUME_V1.json",
+    "code_purple_bd": "GBOGEB/ABACUS#1929",
+    "admission_issue": "GBOGEB/ABACUS#1860",
+    "dispatch_issue": "GBOGEB/CODEX#977"
+  },
+  "nine_cell": {
+    "repo": "GBOGEB/ABACUS",
+    "source_sha": "43f20c25a1b922ec61f037eca47abfc28fecb3a9",
+    "run_id": 39065792654,
+    "attempt": 1,
+    "conclusion": "success",
+    "jobs_pass": 9,
+    "artifacts_verified": 9,
+    "json_junit_pairs_verified": 9,
+    "testcases_passed": 225,
+    "failed": 0,
+    "skipped": 0,
+    "artifact_receipt_sha256": "5fa359c38c7ad1cd6b84189431f387dc06b13dead9832f686031ff3c16cd9532",
+    "provider_artifacts": [
+      {
+        "os": "macos-14",
+        "python": "3.11",
+        "artifact_id": 12113655617,
+        "zip_sha256": "8641434cdd2c62d36c9c255618234738910a79325a8b8586fb58db44a44bb2fb"
+      },
+      {
+        "os": "macos-14",
+        "python": "3.12",
+        "artifact_id": 12113522234,
+        "zip_sha256": "bc532a93df5c154c147b283e04e56783b285ba3cc0a7dedf0a2e1620ed2884ee"
+      },
+      {
+        "os": "windows-2022",
+        "python": "3.11",
+        "artifact_id": 12113361862,
+        "zip_sha256": "d72c9a568591875841c7adc0a780e1e2d9fbfcd88105912ba1b447d647adc8db"
+      },
+      {
+        "os": "windows-2022",
+        "python": "3.12",
+        "artifact_id": 12113172632,
+        "zip_sha256": "1f5200b0bcae210d7bace99b90139ab00699dc71205b325a1948d83f304d1c9b"
+      },
+      {
+        "os": "macos-14",
+        "python": "3.10",
+        "artifact_id": 12113128660,
+        "zip_sha256": "c7e1e02d0fbd8392b9314c6959a6f8db7e52956712124849bda27b947b6199c2"
+      },
+      {
+        "os": "ubuntu-24.04",
+        "python": "3.12",
+        "artifact_id": 12112997163,
+        "zip_sha256": "c7cd3bfa2db7b7482b3180bf05c845c15a9e735777d3edb9e9fab5dc8d653e1a"
+      },
+      {
+        "os": "ubuntu-24.04",
+        "python": "3.11",
+        "artifact_id": 12112902329,
+        "zip_sha256": "ae3b74ef87f17d98983506aaddd4a5dcae41142ef02253fd6ae14bff3cb392ec"
+      },
+      {
+        "os": "ubuntu-24.04",
+        "python": "3.10",
+        "artifact_id": 12112817554,
+        "zip_sha256": "d98e52f0a181c574388c04505da9170c45980269dcc345658b0358a063152bd2"
+      },
+      {
+        "os": "windows-2022",
+        "python": "3.10",
+        "artifact_id": 12112794026,
+        "zip_sha256": "ea020d9c32daf64c3ab7207c9ea2de7aaa0091366ee4eaddc3b83137e9f95555"
+      }
+    ]
+  },
+  "three_pulses": [
+    {
+      "id": 1,
+      "run_id": 39064141553,
+      "success": 3,
+      "fail": 0
+    },
+    {
+      "id": 2,
+      "run_id": 39064371857,
+      "success": 9,
+      "fail": 0
+    },
+    {
+      "id": 3,
+      "run_id": 39065353875,
+      "success": 0,
+      "fail": 9,
+      "forecast": "MISS"
+    }
+  ],
+  "historical_b0": {
+    "sha": "b1bfc7b7a5b6191e06a64fb6110d0e91f1ec5be4",
+    "run_id": 39065946455,
+    "conclusion": "failure",
+    "pass": 4013,
+    "fail": 1,
+    "skip": 2,
+    "first_red": "tests/test_dashboard_health_link_contract.py::DashboardLinks::test_unpublished_pages_are_explicitly_disclosed"
+  },
+  "intermediate_b0": {
+    "sha": "e08c51232edbb0ede05eab5bcd21f039539adf92",
+    "run_id": 39133581466,
+    "observed_status": "queued",
+    "conclusion": null
+  },
+  "current_main_terminal_b0": null,
+  "current_main_qualified_coverage": null,
+  "matched_main_or_diff_delta": null,
+  "governance": {
+    "merge_admission": "HOLD",
+    "abacus_ruleset_id": 24494381,
+    "approvals_required": 0,
+    "last_push_approval": false,
+    "review_threads_required": false,
+    "required_status_rules": 0,
+    "governed_merge_sha": null,
+    "security_waiver": false,
+    "authority_transfer": false,
+    "authenticated_remote_crew": null,
+    "accepted_rex": null
+  },
+  "todo": [
+    {
+      "issue": "GBOGEB/ABACUS#1860",
+      "state": "OPEN",
+      "checked": 1,
+      "remaining": 11
+    },
+    {
+      "issue": "GBOGEB/CODEX#977",
+      "state": "OPEN",
+      "checked": 0,
+      "remaining": 7
+    }
+  ],
+  "accepted_causal_root_closures": null,
+  "historical_coverage_pct": {
+    "main_20261011": 36.85,
+    "pr_broad_20261012": 36.92,
+    "pr_diff_20261012": 51
+  }
+}

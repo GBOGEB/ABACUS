@@ -1,5 +1,5 @@
 schema: abacus.everred.execution-plan.v1
-version: '3.1.0-alpha'
+version: '3.1.1-alpha'
 canonical_workflow_policy: ci/governance/workflow_policy.json
 authority: observational_only
 tasks:
@@ -39,11 +39,38 @@ tasks:
     mode: READ_ONLY
     needs: [GITHUB_RECEIPT, LDAB_CORRELATION, RUNTIME_HOST]
     write_paths: []
-  - id: KPI_PULSE
+  - id: DISJOINT_CENSUS_CI
     plane: evidence
     owner: ABACUS
     mode: READ_ONLY
     needs: [JOINED_CENSUS]
+    write_paths: []
+  - id: DISJOINT_CENSUS_GOVERNANCE
+    plane: evidence
+    owner: ABACUS
+    mode: READ_ONLY
+    needs: [JOINED_CENSUS]
+    write_paths: []
+  - id: DISJOINT_CENSUS_SECURITY
+    plane: evidence
+    owner: ABACUS
+    mode: READ_ONLY
+    needs: [JOINED_CENSUS]
+    write_paths: []
+  - id: RECENSUS
+    plane: evidence
+    owner: ABACUS
+    mode: READ_ONLY
+    needs:
+      - DISJOINT_CENSUS_CI
+      - DISJOINT_CENSUS_GOVERNANCE
+      - DISJOINT_CENSUS_SECURITY
+    write_paths: []
+  - id: KPI_PULSE
+    plane: evidence
+    owner: ABACUS
+    mode: READ_ONLY
+    needs: [RECENSUS]
     write_paths: []
   - id: CONTROLLED_MUTATION
     plane: orchestration
