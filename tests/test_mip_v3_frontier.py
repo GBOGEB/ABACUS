@@ -181,5 +181,92 @@ class FrontierTest(unittest.TestCase):
         self.assertEqual(out["merge_admission"], "HOLD")
 
 
+class FrontierLeaseAdversarialTest(unittest.TestCase):
+    def test_casefolded_exact_file_alias_not_parallel(self):
+        rows = [
+            task("a", paths=["SRC/One.py"]),
+            task("b", paths=["src/oNE.PY"]),
+        ]
+        result = mip.plan(payload(rows))["selected_read_only_proposals"]
+        self.assertEqual(result["selected"], ["a"])
+        self.assertEqual(result["reasons"]["b"], "DISJOINT_LEASE_CONFLICT")
+
+    def test_casefolded_parent_child_prefix_not_parallel(self):
+        rows = [
+            task("a", paths=["SRC"]),
+            task("b", paths=["src/module/file.py"]),
+        ]
+        result = mip.plan(payload(rows))["selected_read_only_proposals"]
+        self.assertEqual(result["selected"], ["a"])
+        self.assertEqual(result["reasons"]["b"], "DISJOINT_LEASE_CONFLICT")
+
+    def test_reverse_casefolded_parent_child_prefix_not_parallel(self):
+        rows = [
+            task("a", paths=["src/module/file.py"]),
+            task("b", paths=["SRC"]),
+        ]
+        result = mip.plan(payload(rows))["selected_read_only_proposals"]
+        self.assertEqual(result["selected"], ["a"])
+        self.assertEqual(result["reasons"]["b"], "DISJOINT_LEASE_CONFLICT")
+
+    def test_prefix_boundary_keeps_distinct_paths_parallel(self):
+        rows = [
+            task("a", paths=["src/tool"]),
+            task("b", paths=["src/toolkit"]),
+        ]
+        result = mip.plan(payload(rows))["selected_read_only_proposals"]
+        self.assertEqual(result["selected"], ["a", "b"])
+
+    def test_control_chars_cannot_inject_a_lease_name(self):
+        candidates = (
+            "src/\x00bad.py", "src/\nnewline.py", "src/\rreturn.py",
+            "src/\tsecret.py", "src/\x7fdel.py",
+            "src/../outside.py", "C:/Windows/system32",
+            "src//alias", "src/./alias", "src\\windows.py",
+        )
+        for claim in candidates:
+            with self.subTest(path=repr(claim)):
+                with self.assertRaisesRegex(ValueError, "unsafe path claim"):
+                    mip.plan(payload([task("a", paths=[claim])]))
+
+    def test_collision_cannot_be_evaded_by_separate_worker_pool(self):
+        rows = [
+            task("a", paths=["SRC/main.py"], pool="cpu"),
+            task("b", paths=["src/MAIN.PY"], pool="io"),
+        ]
+        value = payload(rows)
+        value["capacity"]["pool_slots"]["io"] = 1
+        result = mip.plan(value)["selected_read_only_proposals"]
+        self.assertEqual(result["selected"], ["a"])
+        self.assertEqual(result["reasons"]["b"], "DISJOINT_LEASE_CONFLICT")
+
+    def test_reverse_alias_changes_candidate_to_conflict(self):
+        control = mip.plan(payload([
+            task("a", paths=["src/one"]),
+            task("b", paths=["docs/two"]),
+        ]))
+        adversarial = mip.plan(payload([
+            task("a", paths=["src/one"]),
+            task("b", paths=["SRC"]),
+        ]))
+        self.assertEqual(
+            control["selected_read_only_proposals"]["selected"], ["a", "b"]
+        )
+        self.assertEqual(
+            adversarial["selected_read_only_proposals"]["selected"], ["a"]
+        )
+
+    def test_lexical_proposal_cannot_claim_actual_worker_dispatch(self):
+        doc = payload([task("a"), task("b")])
+        result = mip.plan(doc)
+        self.assertEqual(
+            result["path_lease_model"],
+            "CASEFOLDED_LEXICAL_PLAN_NOT_AUTHENTICATED",
+        )
+        self.assertFalse(result["dispatch_authorized"])
+        self.assertFalse(result["mutation_authorized"])
+        self.assertEqual(result["merge_admission"], "HOLD")
+
+
 if __name__ == "__main__":
     unittest.main()
