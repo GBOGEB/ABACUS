@@ -5,8 +5,8 @@ import json
 import re
 import sys
 import unittest
-from unittest import mock
 from pathlib import Path
+from unittest import mock
 
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "scripts"))
@@ -28,7 +28,9 @@ class CohortUnionTests(unittest.TestCase):
 
     def test_python_310_dependency_fanin_and_reverse_regressions(self):
         """Keep the #2026 Python 3.10 repair when stacking future cohort fixes."""
-        requirements = (ROOT / "DMAIC_V3" / "requirements.txt").read_text(encoding="utf-8")
+        requirements = (ROOT / "DMAIC_V3" / "requirements.txt").read_text(
+            encoding="utf-8"
+        )
         expected = [
             "matplotlib>=3.7.5,<3.8.0; python_version < '3.9'",
             "matplotlib>=3.9.4,<3.10.0; python_version >= '3.9' and python_version < '3.10'",
@@ -37,25 +39,32 @@ class CohortUnionTests(unittest.TestCase):
         ]
 
         def assert_marker_coverage(source):
-            found = [line.strip() for line in source.splitlines()
-                     if line.strip().startswith("matplotlib")]
+            found = [
+                line.strip()
+                for line in source.splitlines()
+                if line.strip().startswith("matplotlib")
+            ]
             self.assertEqual(found, expected)
 
         assert_marker_coverage(requirements)
-        self.assertIn("pytest-asyncio>=1.4.0,<1.5; python_version >= '3.10'", requirements)
+        self.assertIn(
+            "pytest-asyncio>=1.4.0,<1.5; python_version >= '3.10'", requirements
+        )
         self.assertIn("pylint>=4.1.3,<5.0.0; python_version >= '3.10'", requirements)
         # Explicit A -> B -> A protection: neither old unconditional pin nor
         # accidental marker deletion is allowed to pass this proof.
         with self.assertRaises(AssertionError):
-            assert_marker_coverage(requirements.replace(
-                expected[2], "matplotlib>=3.11.2,<4.0.0", 1))
+            assert_marker_coverage(
+                requirements.replace(expected[2], "matplotlib>=3.11.2,<4.0.0", 1)
+            )
         with self.assertRaises(AssertionError):
             assert_marker_coverage(requirements.replace(expected[2], "", 1))
 
     def test_cohort_workflow_checkout_and_receipt_are_head_bound(self):
         """Reject lost checkout binding in the cohort testflight producer."""
-        workflow = (ROOT / ".github" / "workflows" /
-                    "cbd-cohort-union-testflight.yml").read_text(encoding="utf-8")
+        workflow = (
+            ROOT / ".github" / "workflows" / "cbd-cohort-union-testflight.yml"
+        ).read_text(encoding="utf-8")
         required = (
             "ref: ${{ github.event.pull_request.head.sha || github.sha }}",
             "persist-credentials: false",
@@ -65,7 +74,8 @@ class CohortUnionTests(unittest.TestCase):
             "if actual_head != pull_head:",
         )
         receipt_guard = re.compile(
-            r"if actual_head != pull_head:\n\s+raise SystemExit\(")
+            r"if actual_head != pull_head:\n\s+raise SystemExit\("
+        )
 
         def assert_bound(source):
             # Exactly one occurrence per binding: a redundant duplicate would
@@ -122,21 +132,38 @@ class CohortUnionTests(unittest.TestCase):
         data = snapshots()
         data = [data[0], copy.deepcopy(data[0]), copy.deepcopy(data[0])]
         result = produce_cohorts(data)
-        self.assertEqual(result["cohort_reconciliation"]["declared_observation_rows"], 36)
+        self.assertEqual(
+            result["cohort_reconciliation"]["declared_observation_rows"], 36
+        )
         # Declared run IDs are distinct, but native attempts are still unknown.
         self.assertIsNone(result["cohort_reconciliation"]["distinct_run_attempts"])
-        self.assertEqual(result["cohort_reconciliation"]["distinct_declared_run_ids"], 12)
+        self.assertEqual(
+            result["cohort_reconciliation"]["distinct_declared_run_ids"], 12
+        )
         known = copy.deepcopy(data[0])
         for row in known["observations"]:
             row["attempt"] = 1
         proven_shape = produce_cohorts([known, copy.deepcopy(known)])
-        self.assertEqual(proven_shape["cohort_reconciliation"]["distinct_run_attempts"], 12)
-        self.assertEqual(proven_shape["cohort_reconciliation"]["source_attempt_verification"], "NOT_LIVE_VERIFIED")
-        self.assertEqual(result["cohort_reconciliation"]["cross_source_duplicate_rows"], 24)
-        self.assertEqual(result["cohort_reconciliation"]["unknown_attempt_associations"], 36)
-        self.assertEqual(result["cohort_reconciliation"]["unresolved_unknown_run_ids"], 12)
+        self.assertEqual(
+            proven_shape["cohort_reconciliation"]["distinct_run_attempts"], 12
+        )
+        self.assertEqual(
+            proven_shape["cohort_reconciliation"]["source_attempt_verification"],
+            "NOT_LIVE_VERIFIED",
+        )
+        self.assertEqual(
+            result["cohort_reconciliation"]["cross_source_duplicate_rows"], 24
+        )
+        self.assertEqual(
+            result["cohort_reconciliation"]["unknown_attempt_associations"], 36
+        )
+        self.assertEqual(
+            result["cohort_reconciliation"]["unresolved_unknown_run_ids"], 12
+        )
         self.assertIsNone(result["cohort_reconciliation"]["root_closure_credit"])
-        self.assertEqual(result["cohort_reconciliation"]["distinct_source_documents"], 1)
+        self.assertEqual(
+            result["cohort_reconciliation"]["distinct_source_documents"], 1
+        )
 
     def test_same_run_with_different_workflow_rejected(self):
         data = snapshots()
@@ -200,9 +227,7 @@ class CohortUnionTests(unittest.TestCase):
                     return iter([snapshot])
                 return iter([None])
 
-        with self.assertRaisesRegex(
-            ValueError, "source snapshot must be an object"
-        ):
+        with self.assertRaisesRegex(ValueError, "source snapshot must be an object"):
             produce_cohorts(ChangingSnapshots([snapshot]))
 
     def test_invalid_run_attempt_identity_fails_closed(self):
@@ -221,9 +246,15 @@ class CohortUnionTests(unittest.TestCase):
         self.assertEqual(rec["job_first_red_verification"], "NOT_LIVE_VERIFIED")
         self.assertEqual(rec["current_head_verification"], "NOT_LIVE_VERIFIED")
         self.assertIsNone(rec["root_closure_credit"])
-        self.assertTrue(all(not item["root_confirmed"] for item in result["candidate_families"]))
-        self.assertTrue(all(not item["source_mutation_authorized"] for item in result["candidate_disjoint_waves"]))
-
+        self.assertTrue(
+            all(not item["root_confirmed"] for item in result["candidate_families"])
+        )
+        self.assertTrue(
+            all(
+                not item["source_mutation_authorized"]
+                for item in result["candidate_disjoint_waves"]
+            )
+        )
 
     def test_nonatomic_source_ingestion_pulses_are_not_time_series(self):
         # Ingestion pulses count observations; preserve each source's manifest.
@@ -232,15 +263,25 @@ class CohortUnionTests(unittest.TestCase):
         rec = result["cohort_reconciliation"]
         pulses = rec["ingestion_pulses"]
         self.assertEqual([12, 49, 78], [p["declared_rows_cumulative"] for p in pulses])
-        self.assertEqual([6, 12, 19], [p["distinct_failed_pr_heads_cumulative"] for p in pulses])
+        self.assertEqual(
+            [6, 12, 19], [p["distinct_failed_pr_heads_cumulative"] for p in pulses]
+        )
         # Frozen source files establish 12, then 40, then 66 distinct run IDs.
-        self.assertEqual([12, 40, 66], [p["distinct_run_ids_cumulative"] for p in pulses])
-        self.assertTrue(all(p["kind"] == "SOURCE_INGESTION_NOT_TEMPORAL_IMPROVEMENT" for p in pulses))
+        self.assertEqual(
+            [12, 40, 66], [p["distinct_run_ids_cumulative"] for p in pulses]
+        )
+        self.assertTrue(
+            all(
+                p["kind"] == "SOURCE_INGESTION_NOT_TEMPORAL_IMPROVEMENT" for p in pulses
+            )
+        )
         self.assertEqual(rec["distinct_manifested_pr_heads"], 20)
         self.assertEqual(rec["manifested_zero_failure_prs"], [2033])
         self.assertEqual(rec["non_atomic_manifest_workflow_associations"], 533)
         self.assertEqual(rec["non_atomic_manifest_failed_associations"], 66)
-        self.assertEqual(rec["manifest_comparability"], "NOT_A_DENOMINATOR_FOR_UNION_PASS_RATE")
+        self.assertEqual(
+            rec["manifest_comparability"], "NOT_A_DENOMINATOR_FOR_UNION_PASS_RATE"
+        )
 
     def test_unique_known_attempt_can_join_without_native_authentication(self):
         source = snapshots()[1]
@@ -320,18 +361,22 @@ class CohortUnionTests(unittest.TestCase):
         self.assertEqual(receipt["non_atomic_manifest_workflow_associations"], 533)
         self.assertEqual(receipt["non_atomic_manifest_failed_associations"], 66)
         self.assertEqual(receipt["manifested_zero_failure_prs"], [2033])
-        self.assertEqual(receipt["manifest_comparability"],
-                         "NOT_A_DENOMINATOR_FOR_UNION_PASS_RATE")
+        self.assertEqual(
+            receipt["manifest_comparability"], "NOT_A_DENOMINATOR_FOR_UNION_PASS_RATE"
+        )
         self.assertIsNone(receipt["root_closure_credit"])
         self.assertEqual(receipt["admission"], "HOLD")
-
 
     def test_known_and_unknown_attempts_are_not_falsely_summed(self):
         result = produce_cohorts(snapshots())
         self.assertIsNone(result["observed"]["run_attempt_count"])
         self.assertEqual(result["observed"]["run_association_count"], 66)
-        self.assertEqual(result["cohort_reconciliation"]["unknown_attempt_associations"], 78)
-        self.assertEqual(result["cohort_reconciliation"]["distinct_declared_run_ids"], 66)
+        self.assertEqual(
+            result["cohort_reconciliation"]["unknown_attempt_associations"], 78
+        )
+        self.assertEqual(
+            result["cohort_reconciliation"]["distinct_declared_run_ids"], 66
+        )
 
     def test_unknown_attempt_remains_unverified_under_duplicate_source(self):
         source = snapshots()[1]
@@ -343,18 +388,17 @@ class CohortUnionTests(unittest.TestCase):
         self.assertIsNone(rec["root_closure_credit"])
         self.assertEqual(rec["admission"], "HOLD")
 
-
-
     def test_distinct_run_same_pr_conflicting_sha_rejected(self):
         source = snapshots()[0]
         forged = copy.deepcopy(source)
         row = forged["observations"][0]
         row["sha"] = "1" * 40
         row["run_id"] += 10000000000
-        row["url"] = "https://github.com/GBOGEB/ABACUS/actions/runs/" + str(row["run_id"])
+        row["url"] = "https://github.com/GBOGEB/ABACUS/actions/runs/" + str(
+            row["run_id"]
+        )
         with self.assertRaisesRegex(ValueError, "incompatible pull-head"):
             produce_cohorts([forged])
-
 
     def test_duplicate_run_different_conclusion_fails_closed(self):
         """A reclassified run with the same attempt cannot override the source."""
@@ -375,3 +419,4 @@ class CohortUnionTests(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
