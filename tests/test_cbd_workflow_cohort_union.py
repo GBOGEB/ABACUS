@@ -101,8 +101,15 @@ class CohortUnionTests(unittest.TestCase):
         data = [data[0], copy.deepcopy(data[0]), copy.deepcopy(data[0])]
         result = produce_cohorts(data)
         self.assertEqual(result["cohort_reconciliation"]["declared_observation_rows"], 36)
-        self.assertEqual(result["cohort_reconciliation"]["distinct_run_attempts"], 12)
+        # Declared run IDs are distinct, but native attempts are still unknown.
+        self.assertIsNone(result["cohort_reconciliation"]["distinct_run_attempts"])
         self.assertEqual(result["cohort_reconciliation"]["distinct_declared_run_ids"], 12)
+        known = copy.deepcopy(data[0])
+        for row in known["observations"]:
+            row["attempt"] = 1
+        proven_shape = produce_cohorts([known, copy.deepcopy(known)])
+        self.assertEqual(proven_shape["cohort_reconciliation"]["distinct_run_attempts"], 12)
+        self.assertEqual(proven_shape["cohort_reconciliation"]["source_attempt_verification"], "NOT_LIVE_VERIFIED")
         self.assertEqual(result["cohort_reconciliation"]["cross_source_duplicate_rows"], 24)
         self.assertEqual(result["cohort_reconciliation"]["distinct_source_documents"], 1)
 
@@ -168,7 +175,11 @@ class CohortUnionTests(unittest.TestCase):
 
 
     def test_nonatomic_source_ingestion_pulses_are_not_time_series(self):
-        result = produce_cohorts(snapshots())
+        # Isolate ingestion counts from separately supplied head manifests.
+        sources = snapshots()
+        for source in sources:
+            source.pop("sampled_pr_heads", None)
+        result = produce_cohorts(sources)
         rec = result["cohort_reconciliation"]
         pulses = rec["ingestion_pulses"]
         self.assertEqual([12, 49, 78], [p["declared_rows_cumulative"] for p in pulses])
@@ -252,7 +263,11 @@ class CohortUnionTests(unittest.TestCase):
             produce_cohorts([first, second])
 
     def test_absent_manifest_stays_absent_in_projection(self):
+        # This negative control must construct genuinely absent manifests;
+        # the frozen snapshots now include qualified *declared* head metadata.
         source = snapshots()
+        for snapshot in source:
+            snapshot.pop("sampled_pr_heads", None)
         receipt = produce_cohorts(source)["cohort_reconciliation"]
         self.assertEqual(receipt["snapshots_without_head_manifests"], 3)
         self.assertEqual(receipt["distinct_manifested_pr_heads"], 0)
@@ -266,7 +281,7 @@ class CohortUnionTests(unittest.TestCase):
         result = produce_cohorts(snapshots())
         self.assertIsNone(result["observed"]["run_attempt_count"])
         self.assertEqual(result["observed"]["run_association_count"], 66)
-        self.assertEqual(result["cohort_reconciliation"]["unknown_attempt_associations"], 66)
+        self.assertEqual(result["cohort_reconciliation"]["unknown_attempt_associations"], 78)
         self.assertEqual(result["cohort_reconciliation"]["distinct_declared_run_ids"], 66)
 
     def test_unknown_attempt_remains_unverified_under_duplicate_source(self):
