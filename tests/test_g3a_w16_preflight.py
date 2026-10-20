@@ -2,8 +2,8 @@
 import json
 import tempfile
 import unittest
+import unittest.mock as mock
 from pathlib import Path
-from unittest import mock
 
 from scripts import g3a_w16_preflight as pre
 
