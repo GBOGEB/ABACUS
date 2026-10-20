@@ -221,3 +221,70 @@ changed paths and accepted receipts, not by PR count. Record new or
 retired comments separately from engineering-root closures. Preserve
 security, A10, governance, required-check enforcement and independent
 review as separate P0 admission conditions.
+
+## W74 — disjoint DAG planning and native-proof frontier
+
+**Scope:** `tools/mip_testflight_plan.py` is the read-only DAG wave
+planner; `tools/triage/mip_v3_frontier.py` is a separate read-only
+candidate ranker. Neither dispatches jobs. Both now use conservative
+casefolded lexical file/directory leases to avoid proposing simultaneous
+ownership of equivalent Windows paths. Authentication, symlink/realpath
+resolution and native runner evidence remain separate obligations.
+
+### Operational SPLINE
+
+| Spine | Input | Output | Evidence boundary |
+| --- | --- | --- | --- |
+| S0 | Exact source/base/previous SHAs | Bound cohort | JSON is a declaration |
+| S1 | Task DAG and dependencies | Cycle/authority check | Mutation descendants withheld |
+| S2 | Paths, pools, worker cap | Disjoint proposal batches | Lexical, not a launch |
+| S3 | Python/OS matrix | JUnit, run/job/attempt | Terminal native jobs required |
+| S4 | Coverage + artifact hashes | Matched receipt | Source and denominators bound |
+| S5 | Security, governance, review | HOLD or eligible | Independent owner decision |
+
+### Dependency DAG
+
+```mermaid
+flowchart LR
+  A["S0 Exact SHA"] --> B["S1 DAG + authority"]
+  B --> C{"S2 independent leases?"}
+  C -- "Yes" --> D["Parallel read-only proposals"]
+  C -- "No / case alias" --> E["Serialize owner lease"]
+  D --> F["S3 OS + Python native jobs"]
+  E --> F
+  F --> G["S4 byte + coverage evidence"]
+  G --> H{"S5 owner gates complete?"}
+  H -- "No" --> I["HOLD + first-red triage"]
+  H -- "Yes" --> J["Independent admission"]
+```
+
+### SIPOC
+
+| Supplier | Input | Process | Output | Consumer |
+| --- | --- | --- | --- | --- |
+| CENSUS / BD / LDAB | Root, path, exact SHA | Lease + DAG check | Read-only batches | Native CI |
+| GitHub jobs | OS/Python, run/job/attempt | Test and classify | JUnit + receipt | MIP / TODO |
+| Governance owner | Rules, security, review | Independent gates | HOLD or qualified | ABACUS owner |
+
+**Worker economy:** fill unused slots with noncolliding tasks; serialize
+ancestor/child or Windows casefold aliases. Summed maximum *estimated*
+batch durations are proposals, never observed runner-seconds.
+
+**Existing YAML / Docker boundary:** `ci/cbd_recurse_local_w48.yaml`
+describes separate read-only pool ceilings; it does not prove live
+GitHub capacity. Current repository YAML workflows own native CI.
+No competing workflow, container execution or remote dispatch is enabled.
+Container IDs and image digests require independently executed receipts.
+
+### Source-owned fast regression tests
+
+```bash
+python -m unittest discover -s tests -p "test_mip_testflight_plan.py" -v
+python -m unittest discover -s tests -p "test_mip_v3_frontier.py" -v
+```
+
+Positive, reverse and negative controls cover exact/ancestor/descendant
+and casefold collisions, sibling boundaries, concurrency caps, deterministic
+ordering, unsafe paths and changed-file scope. Keep all final-PR-head
+coverage numerators/denominators and native CI/security evidence separate.
+No inferred dispatch, review, root closure or admission credit.
