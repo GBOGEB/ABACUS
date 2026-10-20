@@ -1,0 +1,82 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1420" height="660" viewBox="0 0 1420 660" role="img" aria-label="Five-column SIPOC with five evidence-control rows">
+<rect width="100%" height="100%" fill="#f8fafc"/>
+<text x="22" y="27" fill="#24445c" font-family="DejaVu Sans" font-size="15" font-weight="bold">CODE PURPLE | source-bound SIPOC</text>
+<text x="22" y="46" fill="#5b7687" font-family="DejaVu Sans" font-size="10">Five suppliers → five outputs → non-authoritative consumers; HOLD preserved</text>
+<rect x="20.0" y="73" width="269.6" height="48" rx="8" fill="#e0edf5" stroke="#c5d3df"/>
+<text x="32.0" y="102" font-size="14" font-weight="bold" font-family="DejaVu Sans" fill="#23445b">Supplier</text>
+<rect x="297.6" y="73" width="269.6" height="48" rx="8" fill="#e4f0e7" stroke="#c5d3df"/>
+<text x="309.6" y="102" font-size="14" font-weight="bold" font-family="DejaVu Sans" fill="#23445b">Input</text>
+<rect x="575.2" y="73" width="269.6" height="48" rx="8" fill="#fcf0da" stroke="#c5d3df"/>
+<text x="587.2" y="102" font-size="14" font-weight="bold" font-family="DejaVu Sans" fill="#23445b">Process</text>
+<rect x="852.8" y="73" width="269.6" height="48" rx="8" fill="#f2e7ea" stroke="#c5d3df"/>
+<text x="864.8" y="102" font-size="14" font-weight="bold" font-family="DejaVu Sans" fill="#23445b">Output</text>
+<rect x="1130.4" y="73" width="269.6" height="48" rx="8" fill="#e5eaf8" stroke="#c5d3df"/>
+<text x="1142.4" y="102" font-size="14" font-weight="bold" font-family="DejaVu Sans" fill="#23445b">Customer</text>
+<rect x="20.0" y="131.0" width="269.6" height="97" rx="7" fill="#fff" stroke="#d9e3eb"/>
+<text x="31.0" y="153.0" fill="#344e65" font-size="11" font-family="DejaVu Sans">GitHub source owners</text>
+<rect x="297.6" y="131.0" width="269.6" height="97" rx="7" fill="#fff" stroke="#d9e3eb"/>
+<text x="308.6" y="153.0" fill="#344e65" font-size="11" font-family="DejaVu Sans">Exact PR head, merged-main SHA,</text>
+<text x="308.6" y="168.0" fill="#344e65" font-size="11" font-family="DejaVu Sans">native run/attempt IDs</text>
+<rect x="575.2" y="131.0" width="269.6" height="97" rx="7" fill="#fff" stroke="#d9e3eb"/>
+<text x="586.2" y="153.0" fill="#344e65" font-size="11" font-family="DejaVu Sans">Pin two clocks, reject</text>
+<text x="586.2" y="168.0" fill="#344e65" font-size="11" font-family="DejaVu Sans">staleness</text>
+<rect x="852.8" y="131.0" width="269.6" height="97" rx="7" fill="#fff" stroke="#d9e3eb"/>
+<text x="863.8" y="153.0" fill="#344e65" font-size="11" font-family="DejaVu Sans">Versioned provenance + run</text>
+<text x="863.8" y="168.0" fill="#344e65" font-size="11" font-family="DejaVu Sans">census</text>
+<rect x="1130.4" y="131.0" width="269.6" height="97" rx="7" fill="#fff" stroke="#d9e3eb"/>
+<text x="1141.4" y="153.0" fill="#344e65" font-size="11" font-family="DejaVu Sans">ABACUS B0, admission #1860</text>
+<rect x="20.0" y="235.0" width="269.6" height="97" rx="7" fill="#fff" stroke="#d9e3eb"/>
+<text x="31.0" y="257.0" fill="#344e65" font-size="11" font-family="DejaVu Sans">Actions / CI scanners</text>
+<rect x="297.6" y="235.0" width="269.6" height="97" rx="7" fill="#fff" stroke="#d9e3eb"/>
+<text x="308.6" y="257.0" fill="#344e65" font-size="11" font-family="DejaVu Sans">JUnit, job logs, DAB, W70 and</text>
+<text x="308.6" y="272.0" fill="#344e65" font-size="11" font-family="DejaVu Sans">B1 receipts</text>
+<rect x="575.2" y="235.0" width="269.6" height="97" rx="7" fill="#fff" stroke="#d9e3eb"/>
+<text x="586.2" y="257.0" fill="#344e65" font-size="11" font-family="DejaVu Sans">Validate hashes, populations,</text>
+<text x="586.2" y="272.0" fill="#344e65" font-size="11" font-family="DejaVu Sans">failure topology</text>
+<rect x="852.8" y="235.0" width="269.6" height="97" rx="7" fill="#fff" stroke="#d9e3eb"/>
+<text x="863.8" y="257.0" fill="#344e65" font-size="11" font-family="DejaVu Sans">First-reds, focused tests,</text>
+<text x="863.8" y="272.0" fill="#344e65" font-size="11" font-family="DejaVu Sans">bounded quality deltas</text>
+<rect x="1130.4" y="235.0" width="269.6" height="97" rx="7" fill="#fff" stroke="#d9e3eb"/>
+<text x="1141.4" y="257.0" fill="#344e65" font-size="11" font-family="DejaVu Sans">Engineering owner + independent</text>
+<text x="1141.4" y="272.0" fill="#344e65" font-size="11" font-family="DejaVu Sans">reviewer</text>
+<rect x="20.0" y="339.0" width="269.6" height="97" rx="7" fill="#fff" stroke="#d9e3eb"/>
+<text x="31.0" y="361.0" fill="#344e65" font-size="11" font-family="DejaVu Sans">MIP / gg_MATH</text>
+<rect x="297.6" y="339.0" width="269.6" height="97" rx="7" fill="#fff" stroke="#d9e3eb"/>
+<text x="308.6" y="361.0" fill="#344e65" font-size="11" font-family="DejaVu Sans">Coverage scope/tool/config</text>
+<text x="308.6" y="376.0" fill="#344e65" font-size="11" font-family="DejaVu Sans">hashes, wave axis</text>
+<rect x="575.2" y="339.0" width="269.6" height="97" rx="7" fill="#fff" stroke="#d9e3eb"/>
+<text x="586.2" y="361.0" fill="#344e65" font-size="11" font-family="DejaVu Sans">Match cohorts, compute</text>
+<text x="586.2" y="376.0" fill="#344e65" font-size="11" font-family="DejaVu Sans">noncompensating DMAIC metrics</text>
+<rect x="852.8" y="339.0" width="269.6" height="97" rx="7" fill="#fff" stroke="#d9e3eb"/>
+<text x="863.8" y="361.0" fill="#344e65" font-size="11" font-family="DejaVu Sans">Measured delta or</text>
+<text x="863.8" y="376.0" fill="#344e65" font-size="11" font-family="DejaVu Sans">NONCOMPARABLE; qualified</text>
+<text x="863.8" y="391.0" fill="#344e65" font-size="11" font-family="DejaVu Sans">uncertainty</text>
+<rect x="1130.4" y="339.0" width="269.6" height="97" rx="7" fill="#fff" stroke="#d9e3eb"/>
+<text x="1141.4" y="361.0" fill="#344e65" font-size="11" font-family="DejaVu Sans">MIP/REX, control chart users</text>
+<rect x="20.0" y="443.0" width="269.6" height="97" rx="7" fill="#fff" stroke="#d9e3eb"/>
+<text x="31.0" y="465.0" fill="#344e65" font-size="11" font-family="DejaVu Sans">Security &amp; branch administrator</text>
+<rect x="297.6" y="443.0" width="269.6" height="97" rx="7" fill="#fff" stroke="#d9e3eb"/>
+<text x="308.6" y="465.0" fill="#344e65" font-size="11" font-family="DejaVu Sans">Effective ruleset, review</text>
+<text x="308.6" y="480.0" fill="#344e65" font-size="11" font-family="DejaVu Sans">identity, RED canary</text>
+<rect x="575.2" y="443.0" width="269.6" height="97" rx="7" fill="#fff" stroke="#d9e3eb"/>
+<text x="586.2" y="465.0" fill="#344e65" font-size="11" font-family="DejaVu Sans">Verify mandatory controls</text>
+<text x="586.2" y="480.0" fill="#344e65" font-size="11" font-family="DejaVu Sans">independently</text>
+<rect x="852.8" y="443.0" width="269.6" height="97" rx="7" fill="#fff" stroke="#d9e3eb"/>
+<text x="863.8" y="465.0" fill="#344e65" font-size="11" font-family="DejaVu Sans">Governed admission verdict;</text>
+<text x="863.8" y="480.0" fill="#344e65" font-size="11" font-family="DejaVu Sans">HOLD until PASS</text>
+<rect x="1130.4" y="443.0" width="269.6" height="97" rx="7" fill="#fff" stroke="#d9e3eb"/>
+<text x="1141.4" y="465.0" fill="#344e65" font-size="11" font-family="DejaVu Sans">Merge governor / main release</text>
+<rect x="20.0" y="547.0" width="269.6" height="97" rx="7" fill="#fff" stroke="#d9e3eb"/>
+<text x="31.0" y="569.0" fill="#344e65" font-size="11" font-family="DejaVu Sans">CODEX / QPS consumers</text>
+<rect x="297.6" y="547.0" width="269.6" height="97" rx="7" fill="#fff" stroke="#d9e3eb"/>
+<text x="308.6" y="569.0" fill="#344e65" font-size="11" font-family="DejaVu Sans">Receipt digest, source context,</text>
+<text x="308.6" y="584.0" fill="#344e65" font-size="11" font-family="DejaVu Sans">DAG edge leases</text>
+<rect x="575.2" y="547.0" width="269.6" height="97" rx="7" fill="#fff" stroke="#d9e3eb"/>
+<text x="586.2" y="569.0" fill="#344e65" font-size="11" font-family="DejaVu Sans">Read-only federated replay /</text>
+<text x="586.2" y="584.0" fill="#344e65" font-size="11" font-family="DejaVu Sans">owner REX</text>
+<rect x="852.8" y="547.0" width="269.6" height="97" rx="7" fill="#fff" stroke="#d9e3eb"/>
+<text x="863.8" y="569.0" fill="#344e65" font-size="11" font-family="DejaVu Sans">Acknowledged consumer receipt;</text>
+<text x="863.8" y="584.0" fill="#344e65" font-size="11" font-family="DejaVu Sans">no worker authority</text>
+<rect x="1130.4" y="547.0" width="269.6" height="97" rx="7" fill="#fff" stroke="#d9e3eb"/>
+<text x="1141.4" y="569.0" fill="#344e65" font-size="11" font-family="DejaVu Sans">Mission Control #977 / QPS</text>
+</svg>

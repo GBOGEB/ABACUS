@@ -69,7 +69,8 @@ class GitManager:
                 timeout=30,
                 check=check
             )
-            return True, result.stdout + result.stderr
+            output = result.stdout + result.stderr
+            return result.returncode == 0, output
         except subprocess.CalledProcessError as e:
             return False, e.stderr
         except Exception as e:

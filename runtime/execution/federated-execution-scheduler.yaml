@@ -17,3 +17,79 @@ federated_execution_scheduler:
     - distributed_execution_coordination
     - recursive_operational_scheduling
     - autonomous_execution_management
+
+  # Bounded CODE PURPLE recovery is a proposal layer, not dispatch authority.
+  governed_recovery_wave:
+    version: 1
+    action_class: STAGE_ONLY
+    merge_admission: HOLD
+    auto_merge: false
+    worker_dispatch_authorized: false
+    # Planning capacities; these are NOT actual GitHub runner entitlements.
+    resources:
+      proposal_worker_slots: 4
+      human_approval_slots: 0
+      secret_configuration_slots: 0
+      admission_slots: 0
+    lanes:
+      - id: PY39_RESOLVER
+        priority: 0
+        source_owner: DMAIC_V3/requirements.txt
+        resource: technical
+        needs: []
+        evidence: enterprise_python39_os_matrix
+      - id: SECURITY_DASHBOARD_403
+        priority: 0
+        source_owner: .github/scripts/security_dashboard.py
+        resource: technical
+        needs: []
+        evidence: github_api_auth_negative_test
+      - id: GOVERNANCE_CLASSIFICATION
+        priority: 0
+        source_owner: ci/governance/workflow_policy.json
+        resource: technical
+        needs: []
+        evidence: unique_workflow_owner_and_generated_inventory
+      - id: MCL_RECEIPT_STAGING
+        priority: 0
+        source_owner: .github/workflows/mission-control-lite-testflight.yml
+        resource: technical
+        needs: []
+        evidence: source_head_zip_hash_and_receipt_integrity
+      - id: DOW_FORMAT_DEBT
+        priority: 1
+        source_owner: UNALLOCATED_PENDING_FILE_SPLIT
+        resource: owner
+        needs: []
+        evidence: scoped_hook_first_red_and_source_ownership
+      - id: METRICS_PR_CREDENTIAL
+        priority: 0
+        source_owner: AUTHORIZED_SECRET_SETTINGS
+        resource: owner
+        needs: []
+        evidence: authorized_secret_configuration
+      - id: EFFECTIVE_REPOSITORY_RULES
+        priority: 0
+        source_owner: AUTHORIZED_REPOSITORY_ADMIN
+        resource: owner
+        needs: []
+        evidence: effective_required_checks_review_and_red_canary
+      - id: EXACT_HEAD_QUALIFICATION
+        priority: 1
+        source_owner: READ_ONLY_EVIDENCE_JOIN
+        resource: proof
+        needs:
+          - PY39_RESOLVER
+          - SECURITY_DASHBOARD_403
+          - GOVERNANCE_CLASSIFICATION
+          - MCL_RECEIPT_STAGING
+          - DOW_FORMAT_DEBT
+        evidence: native_terminal_full_ci_security_and_coverage
+      - id: ADMISSION
+        priority: 2
+        source_owner: HUMAN_GOVERNED_GATE
+        resource: admission
+        needs:
+          - EFFECTIVE_REPOSITORY_RULES
+          - EXACT_HEAD_QUALIFICATION
+        evidence: independent_human_review_and_gate_readback

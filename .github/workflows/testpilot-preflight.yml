@@ -34,7 +34,7 @@ jobs:
           ref: ${{ github.event.pull_request.head.sha || github.sha }}
           persist-credentials: false
           fetch-depth: 2
-      - uses: actions/setup-python@v7.0.0
+      - uses: actions/setup-python@v7
         with:
           python-version: '3.11'
           cache: pip
@@ -126,7 +126,7 @@ jobs:
 
       - name: Upload TestPilot receipt
         if: always()
-        uses: actions/upload-artifact@v7.0.2
+        uses: actions/upload-artifact@v7
         with:
           name: testpilot-receipt-${{ github.sha }}
           path: .testpilot/

@@ -1,0 +1,690 @@
+{
+  "schema": "codepurple.global_dov_rollup.v1",
+  "wave": "W39",
+  "observation_date": "2026-10-18",
+  "evidence_level": "SOURCE_BOUND_W39_CANDIDATE_UNQUALIFIED",
+  "owner": "GBOGEB/ABACUS",
+  "governed_admission": "HOLD",
+  "security_waiver": false,
+  "authority_transfer": false,
+  "accepted_causal_roots_closed": null,
+  "accepted_causal_roots_remaining": null,
+  "global_control": false,
+  "six_sigma_claim": false,
+  "repos": [
+    {
+      "name": "ABACUS",
+      "repo": "GBOGEB/ABACUS",
+      "role": "EVIDENCE_AND_ADMISSION_AUTHORITY",
+      "main_sha": "2246c7bd3a9bda6a3d43b9a9116cb7088cfbcc88",
+      "issues_open": 38,
+      "issues_closed": 267,
+      "prs_open": 15,
+      "prs_closed_unmerged": 137,
+      "prs_merged": 1814
+    },
+    {
+      "name": "CODEX",
+      "repo": "GBOGEB/CODEX",
+      "role": "FEDERATION_CONSUMER",
+      "main_sha": "0ef6e15b4c2e42555f41c189ae23cbe8d6c690fe",
+      "issues_open": 11,
+      "issues_closed": 34,
+      "prs_open": 3,
+      "prs_closed_unmerged": 33,
+      "prs_merged": 1030
+    },
+    {
+      "name": "QPS",
+      "repo": "GBOGEB/cryoplant-project",
+      "role": "ENGINEERING_DOMAIN_AUTHORITY",
+      "main_sha": "fc07545c3986181a1b837c0eb7ff9a8393fd4058",
+      "issues_open": 57,
+      "issues_closed": 72,
+      "prs_open": 0,
+      "prs_closed_unmerged": 144,
+      "prs_merged": 1688
+    }
+  ],
+  "focused_coverage": {
+    "source_repo": "GBOGEB/ABACUS",
+    "source_sha": "b69c8e376e25c9345e379a14c371149ba7443adb",
+    "run_id": 39162185592,
+    "job_id": 117777615940,
+    "observed_from": "GITHUB_TERMINAL_NATIVE_PYTHON_3_12_BRANCH_ONLY",
+    "cases_pass": 203,
+    "cases_fail": 0,
+    "cases_skip": 0,
+    "artifact_id": 12149111972,
+    "source_label": "Four-source focused statement-plus-branch opportunity cohort",
+    "eligible": 723,
+    "covered": 707,
+    "previous_covered": 660,
+    "previous_eligible": 723,
+    "local_target_percent": 95,
+    "canonical_main_credit": null,
+    "other_interpreters_exact_head_qualified": false,
+    "consuming_federation_receipts_verified": null,
+    "families": [
+      {
+        "id": "W75",
+        "label": "Stability / deconfounding",
+        "covered": 219,
+        "eligible": 221,
+        "gate": "LOCAL_TARGET_MET"
+      },
+      {
+        "id": "W64",
+        "label": "Reverse-pressure census",
+        "covered": 123,
+        "eligible": 125,
+        "gate": "LOCAL_TARGET_MET"
+      },
+      {
+        "id": "W81",
+        "label": "Repair outcome provenance",
+        "covered": 154,
+        "eligible": 162,
+        "gate": "LOCAL_TARGET_MET"
+      },
+      {
+        "id": "W82",
+        "label": "Semantic discrimination",
+        "covered": 211,
+        "eligible": 215,
+        "gate": "LOCAL_TARGET_MET"
+      }
+    ],
+    "trajectory": [
+      {
+        "wave": "W31/32",
+        "covered": 660,
+        "eligible": 723,
+        "run_id": 39159837402
+      },
+      {
+        "wave": "W34",
+        "covered": 697,
+        "eligible": 723,
+        "run_id": 39161560713
+      },
+      {
+        "wave": "W35",
+        "covered": 707,
+        "eligible": 723,
+        "run_id": 39161760486
+      },
+      {
+        "wave": "W37",
+        "covered": 707,
+        "eligible": 723,
+        "run_id": 39162185592
+      }
+    ]
+  },
+  "governance": {
+    "evidence_owner": "ABACUS",
+    "candidate_sha": null,
+    "branch": "hold/cbd-w39-gov-dov-qa-20261018",
+    "source_workflow_count": 201,
+    "baseline_unclassified": 3,
+    "candidate_unclassified": 0,
+    "candidate_duplicate_match": 0,
+    "qualification_run": null,
+    "qualification_initial_state": "W39_STATIC_201_201_NATIVE_NOT_QUALIFIED",
+    "policy_native_acceptance": null,
+    "effective_ruleset_id": 24494381,
+    "required_approvals": 0,
+    "required_status_checks": 0,
+    "independent_eligible_review": false,
+    "red_canary_verified": false,
+    "canonical_report_exact_head_qualified": false,
+    "previous_native_run": {
+      "run_id": 39161993224,
+      "head_sha": "a26436955450b8cd27668bffa2a8dc7db458d392",
+      "status": "FAIL",
+      "first_red": "GENERATED_RATIONALIZATION_REPORT_STALE",
+      "artifact_id": 12150406945
+    }
+  },
+  "dov": {
+    "schema": "abacus.dow.global_dov.evidence_ownership.v1",
+    "source": "docs/ci/GLOBAL_DOV_DOW_OWNER_V1.json",
+    "responsibilities": [
+      {
+        "id": "DOW-001",
+        "label": "Provider source SHA and actual bytes",
+        "status": "UNVERIFIED"
+      },
+      {
+        "id": "DOW-002",
+        "label": "CODEX KEB semantic receipt",
+        "status": "UNVERIFIED"
+      },
+      {
+        "id": "DOW-003",
+        "label": "Independent run/job/attempt/checkout",
+        "status": "UNVERIFIED"
+      },
+      {
+        "id": "DOW-004",
+        "label": "LDAB root fingerprint and LLDB replay",
+        "status": "UNVERIFIED"
+      },
+      {
+        "id": "DOW-005",
+        "label": "QPS return disposition",
+        "status": "DEFER"
+      }
+    ],
+    "four_hop_native": "UNKNOWN",
+    "owner_response": "QPS_DEFER"
+  },
+  "throughput": {
+    "window_7d": {
+      "issues_closed": 21,
+      "prs_merged": 591
+    },
+    "window_21d": {
+      "issues_closed": 30,
+      "prs_merged": 1083
+    },
+    "meaning": "RAW_GITHUB_ACTIVITY_NOT_ACCEPTED_ROOT_CLOSURE"
+  },
+  "presentation": {
+    "source_controlled": true,
+    "pages_deployment_verified": false,
+    "browser_api_authentication": false,
+    "generated_views_do_not_authorize_changes": true
+  },
+  "routes": [
+    {
+      "id": "abacus-observatory",
+      "label": "ABACUS evidence observatory",
+      "url": "https://github.com/GBOGEB/ABACUS/tree/994ad6e73c748923841d92b12651e92d41b2d4ff/MIP/EVIDENCE_TO_ADMISSION_OBSERVATORY",
+      "family": "evidence"
+    },
+    {
+      "id": "abacus-spine",
+      "label": "ABACUS G3CS SPINE/SIPOC",
+      "url": "https://github.com/GBOGEB/ABACUS/blob/994ad6e73c748923841d92b12651e92d41b2d4ff/MIP/G3CS_CONVERGENCE_V2/observatory/w10/index.html",
+      "family": "graph"
+    },
+    {
+      "id": "everred",
+      "label": "EVERRED root ledger dashboard",
+      "url": "https://github.com/GBOGEB/ABACUS/blob/2246c7bd3a9bda6a3d43b9a9116cb7088cfbcc88/tools/everred_v3/dashboard/bd_queue.html",
+      "family": "roots"
+    },
+    {
+      "id": "codex",
+      "label": "CODEX portal",
+      "url": "https://github.com/GBOGEB/CODEX/blob/0ef6e15b4c2e42555f41c189ae23cbe8d6c690fe/docs/index.html",
+      "family": "federation"
+    },
+    {
+      "id": "qps",
+      "label": "QPS source navigation registry",
+      "url": "https://github.com/GBOGEB/cryoplant-project/blob/fc07545c3986181a1b837c0eb7ff9a8393fd4058/governance/QPS_DASHBOARD_FEDERATION_LAUNCH_REGISTRY_v1.md",
+      "family": "engineering"
+    },
+    {
+      "id": "w38",
+      "label": "W38 immutable integrated review hub",
+      "url": "https://github.com/GBOGEB/ABACUS/blob/ccc07c76a506a66fc20cbe821ef0ec4c0a3fe064/MIP/EVIDENCE_TO_ADMISSION_OBSERVATORY/global/index.html",
+      "family": "control"
+    }
+  ],
+  "lineage": [
+    {
+      "from": "ABACUS",
+      "to": "W37",
+      "type": "NATIVE_FOCUSED_EVIDENCE",
+      "weight": 203,
+      "unit": "passing tests",
+      "status": "TERMINAL"
+    },
+    {
+      "from": "W37",
+      "to": "LOCAL_CONTROL",
+      "type": "COVERAGE_GATE",
+      "weight": 4,
+      "unit": "source families",
+      "status": "TARGET_MET"
+    },
+    {
+      "from": "ABACUS",
+      "to": "W36",
+      "type": "WORKFLOW_CLASSIFICATION",
+      "weight": 7,
+      "unit": "source classifications",
+      "status": "SOURCE_ONLY"
+    },
+    {
+      "from": "W36",
+      "to": "GLOBAL_DOV",
+      "type": "GOVERNANCE_DEPENDENCY",
+      "weight": null,
+      "unit": "native gate",
+      "status": "PENDING"
+    },
+    {
+      "from": "ABACUS",
+      "to": "CODEX",
+      "type": "FEDERATION_CONSUMER_RECEIPT",
+      "weight": null,
+      "unit": "attested consumers",
+      "status": "UNKNOWN"
+    },
+    {
+      "from": "CODEX",
+      "to": "QPS",
+      "type": "DOMAIN_RETURN",
+      "weight": null,
+      "unit": "accepted QPS returns",
+      "status": "DEFER"
+    },
+    {
+      "from": "GLOBAL_DOV",
+      "to": "GLOBAL_CONTROL",
+      "type": "INDEPENDENT_ACCEPTANCE",
+      "weight": null,
+      "unit": "accepted roots",
+      "status": "HOLD"
+    },
+    {
+      "from": "ABACUS",
+      "to": "W39",
+      "type": "ADDITIONAL_WORKFLOW_OWNERSHIP",
+      "weight": 3,
+      "unit": "workflow source classifications",
+      "status": "SOURCE_ONLY"
+    }
+  ],
+  "source_urls": [
+    "https://github.com/GBOGEB/ABACUS/actions/runs/39162185592",
+    "https://github.com/GBOGEB/ABACUS/actions/runs/39161993224",
+    "https://github.com/GBOGEB/ABACUS/issues/1991#issuecomment-6254614299",
+    "https://github.com/GBOGEB/ABACUS/issues/2087#issuecomment-6254614666",
+    "https://github.com/GBOGEB/ABACUS/actions/runs/39161993224"
+  ],
+  "control_state": {
+    "local_coverage": "TARGET_MET_4_OF_4",
+    "local_scope_only": true,
+    "global": "HOLD",
+    "queue_p95_seconds": null,
+    "automatic_dispatch": false,
+    "accepted_unique_roots_remaining": null,
+    "retrigger": "MATERIAL_EXACT_SOURCE_FIRST_RED_OR_SCOPE_CHANGE_ONLY"
+  },
+  "taxonomy": {
+    "schema": "qps-triage-moniker-nav/1.0",
+    "status": "SOURCE_BOUND_DERIVED_NAVIGATION_NO_CREDIT",
+    "glossary_source": "https://github.com/GBOGEB/cryoplant-project/blob/fc07545c3986181a1b837c0eb7ff9a8393fd4058/controls/QPS_GLOBAL_GLOSSARY_v1.yaml",
+    "families": [
+      {
+        "id": "method",
+        "title": "3P-RAL · recursive assurance",
+        "detail": "Method, maturity and conditional operator stack"
+      },
+      {
+        "id": "cycle",
+        "title": "P3R / 3PM · execution",
+        "detail": "Wave, pulse, PRE/POST and roll-up"
+      },
+      {
+        "id": "federation",
+        "title": "QPS TRIAGE · three-repo authority",
+        "detail": "QPS child, KEB semantics, DOW runtime"
+      },
+      {
+        "id": "evidence",
+        "title": "DoD / DoV · controls",
+        "detail": "Native evidence and non-compensating gates"
+      },
+      {
+        "id": "programme",
+        "title": "CODE PURPLE · programme labels",
+        "detail": "Operational names without invented acceptance"
+      }
+    ],
+    "terms": [
+      {
+        "id": "3p-ral",
+        "family": "method",
+        "name": "3P-RAL",
+        "expansion": "Three-P Recursive Assurance Ladder",
+        "meaning": "Governed recursive maturity cycles with orthogonal DMAIC, KPIs, temporal and authority axes.",
+        "stop": "No new cycle for a repeated result.",
+        "source_url": "https://github.com/GBOGEB/cryoplant-project/blob/fc07545c3986181a1b837c0eb7ff9a8393fd4058/triage/w258/QPS_W258_3P_RAL_DMAIC_KPI_TAXONOMY_v0.1.md",
+        "formal_credit_delta": 0,
+        "authority_transfer": false,
+        "source_class": "QPS_NAVIGATION"
+      },
+      {
+        "id": "3pr",
+        "family": "method",
+        "name": "3PR",
+        "expansion": "Refresh / Probe / Rank",
+        "meaning": "Discovery and first-red prioritisation on exact source state.",
+        "stop": "Stop when the first-red and its owner are verified.",
+        "source_url": "https://github.com/GBOGEB/cryoplant-project/blob/fc07545c3986181a1b837c0eb7ff9a8393fd4058/triage/w258/QPS_W258_3P_RAL_DMAIC_KPI_TAXONOMY_v0.1.md",
+        "formal_credit_delta": 0,
+        "authority_transfer": false,
+        "source_class": "QPS_NAVIGATION"
+      },
+      {
+        "id": "mip",
+        "family": "method",
+        "name": "MIP",
+        "expansion": "Modernize / Innovate / Perpetuate",
+        "meaning": "Conditional capability-change operator; sustained CONTROL requires proof.",
+        "stop": "No innovation without material opportunity.",
+        "source_url": "https://github.com/GBOGEB/cryoplant-project/blob/fc07545c3986181a1b837c0eb7ff9a8393fd4058/triage/w258/QPS_W258_3P_RAL_DMAIC_KPI_TAXONOMY_v0.1.md",
+        "formal_credit_delta": 0,
+        "authority_transfer": false,
+        "source_class": "QPS_NAVIGATION"
+      },
+      {
+        "id": "3pc",
+        "family": "method",
+        "name": "3PC",
+        "expansion": "Prepare / Prove / Commit",
+        "meaning": "Bounded exact-head transaction and authorized disposition.",
+        "stop": "Test PASS is not merge authorization.",
+        "source_url": "https://github.com/GBOGEB/cryoplant-project/blob/fc07545c3986181a1b837c0eb7ff9a8393fd4058/triage/w258/QPS_W258_3P_RAL_DMAIC_KPI_TAXONOMY_v0.1.md",
+        "formal_credit_delta": 0,
+        "authority_transfer": false,
+        "source_class": "QPS_NAVIGATION"
+      },
+      {
+        "id": "3p3",
+        "family": "method",
+        "name": "3P3",
+        "expansion": "Preserve/Pin / Propagate/Penetrate / Prove/Promote",
+        "meaning": "Independent propagation/generalisation after local DoV.",
+        "stop": "One proof per unchanged consumer boundary.",
+        "source_url": "https://github.com/GBOGEB/cryoplant-project/blob/fc07545c3986181a1b837c0eb7ff9a8393fd4058/controls/QPS_3P_RAL_DMAIC_CURRENT_v0.1.yaml",
+        "formal_credit_delta": 0,
+        "authority_transfer": false,
+        "source_class": "QPS_NAVIGATION"
+      },
+      {
+        "id": "3p-star",
+        "family": "method",
+        "name": "3P*",
+        "expansion": "Planning wildcard",
+        "meaning": "Resolve to a named operator stack before execution.",
+        "stop": "Never execute wildcard alone.",
+        "source_url": "https://github.com/GBOGEB/cryoplant-project/blob/fc07545c3986181a1b837c0eb7ff9a8393fd4058/triage/w258/QPS_W258_3P_RAL_DMAIC_KPI_TAXONOMY_v0.1.md",
+        "formal_credit_delta": 0,
+        "authority_transfer": false,
+        "source_class": "QPS_NAVIGATION"
+      },
+      {
+        "id": "3p-cycle",
+        "family": "method",
+        "name": "3P#n",
+        "expansion": "Ordinal maturity cycle",
+        "meaning": "Numbered maturity objective, not a new wave or earned credit.",
+        "stop": "No repetition without distinct objective.",
+        "source_url": "https://github.com/GBOGEB/cryoplant-project/blob/fc07545c3986181a1b837c0eb7ff9a8393fd4058/controls/QPS_3P_RAL_DMAIC_CURRENT_v0.1.yaml",
+        "formal_credit_delta": 0,
+        "authority_transfer": false,
+        "source_class": "QPS_NAVIGATION"
+      },
+      {
+        "id": "3p-repeat",
+        "family": "method",
+        "name": "3Pxn",
+        "expansion": "Bounded repeat multiplier",
+        "meaning": "Every repetition needs new evidence or an independently changed boundary.",
+        "stop": "No-op recurrence stops.",
+        "source_url": "https://github.com/GBOGEB/cryoplant-project/blob/fc07545c3986181a1b837c0eb7ff9a8393fd4058/controls/QPS_3P_RAL_DMAIC_CURRENT_v0.1.yaml",
+        "formal_credit_delta": 0,
+        "authority_transfer": false,
+        "source_class": "QPS_NAVIGATION"
+      },
+      {
+        "id": "dmaic",
+        "family": "method",
+        "name": "DMAIC",
+        "expansion": "Define / Measure / Analyse / Improve / Control",
+        "meaning": "Independent process-maturity vector with declared KPIs and clocks.",
+        "stop": "CONTROL needs measured recurrence stability.",
+        "source_url": "https://github.com/GBOGEB/cryoplant-project/blob/fc07545c3986181a1b837c0eb7ff9a8393fd4058/controls/QPS_3P_RAL_DMAIC_CURRENT_v0.1.yaml",
+        "formal_credit_delta": 0,
+        "authority_transfer": false,
+        "source_class": "QPS_NAVIGATION"
+      },
+      {
+        "id": "p3r",
+        "family": "cycle",
+        "name": "P3R",
+        "expansion": "Pulse Run and Roll-up",
+        "meaning": "Full PRE → 3PM → POST → Roll-up → Propagate → Fan-out cycle.",
+        "stop": "No duplicate wave for same-scope correction.",
+        "source_url": "https://github.com/GBOGEB/cryoplant-project/blob/fc07545c3986181a1b837c0eb7ff9a8393fd4058/controls/W56_EXECUTION_TAXONOMY_P3R_3PM_v0.1.yaml",
+        "formal_credit_delta": 0,
+        "authority_transfer": false,
+        "source_class": "QPS_NAVIGATION"
+      },
+      {
+        "id": "3pm",
+        "family": "cycle",
+        "name": "3PM",
+        "expansion": "Three Pulse Method",
+        "meaning": "P1 Produce; P2 Challenge; P3 Re-enter with child ACCEPT/REJECT/DEFER.",
+        "stop": "P3 cannot bypass child authority.",
+        "source_url": "https://github.com/GBOGEB/cryoplant-project/blob/fc07545c3986181a1b837c0eb7ff9a8393fd4058/controls/W56_EXECUTION_TAXONOMY_P3R_3PM_v0.1.yaml",
+        "formal_credit_delta": 0,
+        "authority_transfer": false,
+        "source_class": "QPS_NAVIGATION"
+      },
+      {
+        "id": "pre",
+        "family": "cycle",
+        "name": "PRE",
+        "expansion": "Inherited-state cleanup",
+        "meaning": "Reconcile source identity, unresolved first-red, lineage and stale control before execution.",
+        "stop": "Exit only on explicit baseline or DEFER.",
+        "source_url": "https://github.com/GBOGEB/cryoplant-project/blob/fc07545c3986181a1b837c0eb7ff9a8393fd4058/controls/W56_EXECUTION_TAXONOMY_P3R_3PM_v0.1.yaml",
+        "formal_credit_delta": 0,
+        "authority_transfer": false,
+        "source_class": "QPS_NAVIGATION"
+      },
+      {
+        "id": "post",
+        "family": "cycle",
+        "name": "POST",
+        "expansion": "Post-wave mop-up",
+        "meaning": "Revalidate proofs and reconcile hashes, recurrence, and residual blockers.",
+        "stop": "Other-SHA PASS does not close exact-head red.",
+        "source_url": "https://github.com/GBOGEB/cryoplant-project/blob/fc07545c3986181a1b837c0eb7ff9a8393fd4058/controls/W56_EXECUTION_TAXONOMY_P3R_3PM_v0.1.yaml",
+        "formal_credit_delta": 0,
+        "authority_transfer": false,
+        "source_class": "QPS_NAVIGATION"
+      },
+      {
+        "id": "rollup",
+        "family": "cycle",
+        "name": "ROLL-UP",
+        "expansion": "Governed metric roll-up",
+        "meaning": "Update only comparable source-owned population, counts and formal dispositions.",
+        "stop": "Never sum incompatible root/PR/job units.",
+        "source_url": "https://github.com/GBOGEB/cryoplant-project/blob/fc07545c3986181a1b837c0eb7ff9a8393fd4058/controls/W56_EXECUTION_TAXONOMY_P3R_3PM_v0.1.yaml",
+        "formal_credit_delta": 0,
+        "authority_transfer": false,
+        "source_class": "QPS_NAVIGATION"
+      },
+      {
+        "id": "qps-triage",
+        "family": "federation",
+        "name": "QPS TRIAGE",
+        "expansion": "Federated QPS + DOW + KEB",
+        "meaning": "Composite H4 topology: QPS child, CODEX semantic challenge, ABACUS independent evidence.",
+        "stop": "Parent PASS cannot equal child ACCEPT.",
+        "source_url": "https://github.com/GBOGEB/cryoplant-project/blob/fc07545c3986181a1b837c0eb7ff9a8393fd4058/controls/QPS_MISSION_CONTROL_NAMESPACE_TAXONOMY_v1.yaml",
+        "formal_credit_delta": 0,
+        "authority_transfer": false,
+        "source_class": "QPS_NAVIGATION"
+      },
+      {
+        "id": "qps",
+        "family": "federation",
+        "name": "QPS",
+        "expansion": "Cryoplant-project child namespace",
+        "meaning": "Engineering SSOT and final child disposition, H1_QPS.",
+        "stop": "No engineering promotion without QPS evidence.",
+        "source_url": "https://github.com/GBOGEB/cryoplant-project/blob/fc07545c3986181a1b837c0eb7ff9a8393fd4058/controls/QPS_MISSION_CONTROL_NAMESPACE_TAXONOMY_v1.yaml",
+        "formal_credit_delta": 0,
+        "authority_transfer": false,
+        "source_class": "QPS_NAVIGATION"
+      },
+      {
+        "id": "keb",
+        "family": "federation",
+        "name": "KEB",
+        "expansion": "CODEX semantic-provenance lane",
+        "meaning": "H2_KEB validates receipts; cannot overwrite child engineering.",
+        "stop": "Consumer proof is not QPS acceptance.",
+        "source_url": "https://github.com/GBOGEB/cryoplant-project/blob/fc07545c3986181a1b837c0eb7ff9a8393fd4058/controls/QPS_MISSION_CONTROL_NAMESPACE_TAXONOMY_v1.yaml",
+        "formal_credit_delta": 0,
+        "authority_transfer": false,
+        "source_class": "QPS_NAVIGATION"
+      },
+      {
+        "id": "dow",
+        "family": "federation",
+        "name": "DOW",
+        "expansion": "ABACUS runtime/evidence lane",
+        "meaning": "H3_DOW independently challenges and measures; long-form acronym withheld.",
+        "stop": "DOW local GREEN cannot transfer QPS authority.",
+        "source_url": "https://github.com/GBOGEB/cryoplant-project/blob/fc07545c3986181a1b837c0eb7ff9a8393fd4058/controls/QPS_MISSION_CONTROL_NAMESPACE_TAXONOMY_v1.yaml",
+        "formal_credit_delta": 0,
+        "authority_transfer": false,
+        "source_class": "QPS_NAVIGATION"
+      },
+      {
+        "id": "glob",
+        "family": "federation",
+        "name": "GLOB",
+        "expansion": "Stable restart root",
+        "meaning": "Canonical QPS TRIAGE read order and non-compensating boundaries.",
+        "stop": "Do not rotate GLOB for ordinary first-red churn.",
+        "source_url": "https://github.com/GBOGEB/cryoplant-project/blob/fc07545c3986181a1b837c0eb7ff9a8393fd4058/handover/qps_recursive/GLOB.yaml",
+        "formal_credit_delta": 0,
+        "authority_transfer": false,
+        "source_class": "QPS_NAVIGATION"
+      },
+      {
+        "id": "qtg",
+        "family": "federation",
+        "name": "QTG_CURRENT",
+        "expansion": "Volatile triage pointer",
+        "meaning": "Current first-red, priorities and source-safety state.",
+        "stop": "Outranks historical session snapshots.",
+        "source_url": "https://github.com/GBOGEB/cryoplant-project/blob/fc07545c3986181a1b837c0eb7ff9a8393fd4058/handover/qps_recursive/QTG_CURRENT.yaml",
+        "formal_credit_delta": 0,
+        "authority_transfer": false,
+        "source_class": "QPS_NAVIGATION"
+      },
+      {
+        "id": "session-close",
+        "family": "federation",
+        "name": "SESSION_CLOSE_CURRENT",
+        "expansion": "Append-only closure pointer",
+        "meaning": "Last sealed handover, receipt and drop-in.",
+        "stop": "Session close is not global CONTROL.",
+        "source_url": "https://github.com/GBOGEB/cryoplant-project/blob/fc07545c3986181a1b837c0eb7ff9a8393fd4058/handover/qps_recursive/SESSION_CLOSE_CURRENT.yaml",
+        "formal_credit_delta": 0,
+        "authority_transfer": false,
+        "source_class": "QPS_NAVIGATION"
+      },
+      {
+        "id": "dod",
+        "family": "evidence",
+        "name": "DoD",
+        "expansion": "Definition of Done",
+        "meaning": "Deliverable completeness, not native verification.",
+        "stop": "DoD does not substitute for DoV.",
+        "source_url": "https://github.com/GBOGEB/cryoplant-project/blob/fc07545c3986181a1b837c0eb7ff9a8393fd4058/triage/code_purple/evolutionary_v1/TAXONOMY.md",
+        "formal_credit_delta": 0,
+        "authority_transfer": false,
+        "source_class": "QPS_NAVIGATION"
+      },
+      {
+        "id": "dov",
+        "family": "evidence",
+        "name": "DoV",
+        "expansion": "Definition of Victory",
+        "meaning": "Exact-source tests and evidence-bound victory; local/global separately gated.",
+        "stop": "Local QA does not confer global DoV.",
+        "source_url": "https://github.com/GBOGEB/cryoplant-project/blob/fc07545c3986181a1b837c0eb7ff9a8393fd4058/triage/code_purple/evolutionary_v1/TAXONOMY.md",
+        "formal_credit_delta": 0,
+        "authority_transfer": false,
+        "source_class": "QPS_NAVIGATION"
+      },
+      {
+        "id": "zod",
+        "family": "evidence",
+        "name": "Zod",
+        "expansion": "Typed validation layer",
+        "meaning": "Machine contract syntax and constraints inside QPS TRIAGE.",
+        "stop": "Zod PASS cannot become child ACCEPT.",
+        "source_url": "https://github.com/GBOGEB/cryoplant-project/blob/fc07545c3986181a1b837c0eb7ff9a8393fd4058/controls/QPS_TRIAGE_CONTROL_PLANE_v1.yaml",
+        "formal_credit_delta": 0,
+        "authority_transfer": false,
+        "source_class": "QPS_NAVIGATION"
+      },
+      {
+        "id": "rex",
+        "family": "evidence",
+        "name": "REX",
+        "expansion": "Experience and recurrence learning",
+        "meaning": "Deduplicated causal-root history with preventive proof.",
+        "stop": "Root closure needs owner and recurrence proof.",
+        "source_url": "https://github.com/GBOGEB/cryoplant-project/blob/fc07545c3986181a1b837c0eb7ff9a8393fd4058/triage/code_purple/evolutionary_v1/TAXONOMY.md",
+        "formal_credit_delta": 0,
+        "authority_transfer": false,
+        "source_class": "QPS_NAVIGATION"
+      },
+      {
+        "id": "cbd",
+        "family": "programme",
+        "name": "CBD!",
+        "expansion": "Operational campaign label",
+        "meaning": "Programme burndown shorthand; long-form expansion not asserted as controlled QPS vocabulary.",
+        "stop": "A ticket closure is not causal-root elimination.",
+        "source_url": "https://github.com/GBOGEB/cryoplant-project/blob/fc07545c3986181a1b837c0eb7ff9a8393fd4058/triage/code_purple/evolutionary_v1/TAXONOMY.md",
+        "formal_credit_delta": 0,
+        "authority_transfer": false,
+        "source_class": "QPS_NAVIGATION"
+      },
+      {
+        "id": "everred",
+        "family": "programme",
+        "name": "EVERRED",
+        "expansion": "First-red recurrence lane",
+        "meaning": "ABACUS persistent blocker fingerprints and manifestations.",
+        "stop": "Six identical red jobs are one shared-root candidate.",
+        "source_url": "https://github.com/GBOGEB/ABACUS/blob/2687f2bcb0705027eefe04df789365d6c9970678/tools/everred_v3/dashboard/bd_queue.html",
+        "formal_credit_delta": 0,
+        "authority_transfer": false,
+        "source_class": "ABACUS_OPERATIONAL"
+      },
+      {
+        "id": "gogreen",
+        "family": "programme",
+        "name": "GoGreen",
+        "expansion": "Governed closure lane",
+        "meaning": "Successful issue/PR retirement with explicit supersession and source proof.",
+        "stop": "MERGED does not imply accepted engineering closure.",
+        "source_url": "https://github.com/GBOGEB/ABACUS/blob/2687f2bcb0705027eefe04df789365d6c9970678/MIP/EVIDENCE_TO_ADMISSION_OBSERVATORY/global/index.html",
+        "formal_credit_delta": 0,
+        "authority_transfer": false,
+        "source_class": "ABACUS_OPERATIONAL"
+      }
+    ]
+  }
+}

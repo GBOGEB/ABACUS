@@ -35,20 +35,20 @@ def test_w000_validator_tracks_required_bootstrap_domains():
     }
 
 
-def test_w000_externalized_alat_intent_is_provenance_bound():
+def test_w000_externalized_supplier_a_intent_is_provenance_bound():
     validator = _load_validator()
 
     assert (
-        "docs/Q3_Q4_Q5/WHAT_ALAT_IS_REALLY_ASKING.md"
+        "docs/Q3_Q4_Q5/WHAT_SUPPLIER_A_IS_REALLY_ASKING.md"
         not in validator.REQUIRED_DOCS
     )
     assert validator.REQUIRED_EXTERNALIZED_ARTIFACTS[
-        "tender-alat-intent"
+        "tender-supplier-a-intent"
     ] == {
         "state": "externalized_private",
         "external_repo": "GBOGEB/cryoplant-project",
         "original_path": (
-            "docs/Q3_Q4_Q5/WHAT_ALAT_IS_REALLY_ASKING.md"
+            "docs/Q3_Q4_Q5/WHAT_SUPPLIER_A_IS_REALLY_ASKING.md"
         ),
         "provenance_path": "tender_library/PROVENANCE.csv",
         "sha256": (
@@ -61,9 +61,9 @@ def test_w000_externalized_alat_intent_is_provenance_bound():
 def test_w000_rejects_unregistered_externalized_artifact(monkeypatch):
     validator = _load_validator()
     approved = {
-        "id": "tender-alat-intent",
+        "id": "tender-supplier-a-intent",
         "domain": "tender_review_package",
-        **validator.REQUIRED_EXTERNALIZED_ARTIFACTS["tender-alat-intent"],
+        **validator.REQUIRED_EXTERNALIZED_ARTIFACTS["tender-supplier-a-intent"],
     }
     unregistered = {
         "id": "unregistered-artifact",

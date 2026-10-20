@@ -5,14 +5,24 @@ on:
     branches: ["**"]
     paths:
       - 'DMAIC_V3/core/test_system_bridge.py'
+      - 'DMAIC_V3/core/static_analysis_diagnostics.py'
+      - 'DMAIC_V3/tests/test_static_analysis_diagnostics.py'
       - 'DMAIC_V3/tests/test_bridge_integration.py'
+      - 'DMAIC_V3/tests/test_test_system_bridge_failclosed_coverage.py'
+      - 'tests/test_bridge_coverage_receipt.py'
+      - 'scripts/bridge_coverage_receipt.py'
       - 'run_deployment_test_system.py'
       - '.github/workflows/bridge-ci.yml'
   pull_request:
     branches: [main, develop]
     paths:
       - 'DMAIC_V3/core/test_system_bridge.py'
+      - 'DMAIC_V3/core/static_analysis_diagnostics.py'
+      - 'DMAIC_V3/tests/test_static_analysis_diagnostics.py'
       - 'DMAIC_V3/tests/test_bridge_integration.py'
+      - 'DMAIC_V3/tests/test_test_system_bridge_failclosed_coverage.py'
+      - 'tests/test_bridge_coverage_receipt.py'
+      - 'scripts/bridge_coverage_receipt.py'
       - 'run_deployment_test_system.py'
       - '.github/workflows/bridge-ci.yml'
   workflow_dispatch:
@@ -41,40 +51,45 @@ jobs:
   bridge-smoke-tests:
     name: 🔥 Bridge Smoke Tests
     runs-on: ubuntu-latest
-    
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v7
-      
+
       - name: Set up Python ${{ env.PYTHON_VERSION }}
-        uses: actions/setup-python@v7.0.0
+        uses: actions/setup-python@v7
         with:
           python-version: ${{ env.PYTHON_VERSION }}
-      
+
       - name: Cache pip dependencies
         uses: actions/cache@v6
         with:
           path: ~/.cache/pip
-          key: ${{ runner.os }}-pip-${{ hashFiles('DMAIC_V3/requirements.txt') }}
+          key: >-
+            ${{ runner.os }}-pip-${{ hashFiles('DMAIC_V3/requirements.txt') }}
           restore-keys: |
             ${{ runner.os }}-pip-
-      
+
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
           pip install -r DMAIC_V3/requirements.txt
           pip install pytest pytest-cov pytest-benchmark pytest-mock
-      
+
       - name: Run bridge integration tests (smoke)
         run: |
-          python -m pytest DMAIC_V3/tests/test_bridge_integration.py -m smoke -v --tb=short
-      
+          python -m pytest \
+            DMAIC_V3/tests/test_bridge_integration.py \
+            -m smoke -v --tb=short
+
       - name: Run deployment smoke tests
         run: |
-          python run_deployment_test_system.py --test-suite smoke --skip-static --version ci-smoke-${{ github.sha }}
-      
+          python run_deployment_test_system.py \
+            --test-suite smoke --skip-static \
+            --version ci-smoke-${{ github.sha }}
+
       - name: Upload smoke test artifacts
-        uses: actions/upload-artifact@v7.0.2
+        uses: actions/upload-artifact@v7
         if: always()
         with:
           name: smoke-test-results
@@ -87,35 +102,74 @@ jobs:
     name: 🧪 Bridge Unit Tests
     runs-on: ubuntu-latest
     needs: bridge-smoke-tests
-    
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v7
-      
+
       - name: Set up Python ${{ env.PYTHON_VERSION }}
-        uses: actions/setup-python@v7.0.0
+        uses: actions/setup-python@v7
         with:
           python-version: ${{ env.PYTHON_VERSION }}
-      
+
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
           pip install -r DMAIC_V3/requirements.txt
-          pip install pytest --benchmark-disable pytest-cov pytest-benchmark pytest-mock
-      
+          pip install pytest pytest-cov pytest-benchmark pytest-mock
+
       - name: Run bridge unit tests
         run: |
-          python -m pytest --benchmark-disable DMAIC_V3/tests/test_bridge_integration.py -m unit -v --cov=DMAIC_V3/core/test_system_bridge --cov-report=xml --cov-report=term
-      
+          python -m pytest --benchmark-disable \
+            DMAIC_V3/tests/test_bridge_integration.py -m unit -v \
+            --cov=DMAIC_V3.core.test_system_bridge --cov-branch \
+            --cov-report=xml:coverage.xml \
+            --cov-report=json:bridge-coverage.json \
+            --cov-report=term --junitxml=bridge-unit-junit.xml
+          python -m pytest --benchmark-disable \
+            DMAIC_V3/tests/test_test_system_bridge_failclosed_coverage.py \
+            tests/test_bridge_coverage_receipt.py \
+            DMAIC_V3/tests/test_static_analysis_diagnostics.py -v \
+            --cov=DMAIC_V3.core.test_system_bridge --cov-append --cov-branch \
+            --cov-report=xml:coverage.xml \
+            --cov-report=json:bridge-coverage.json \
+            --cov-report=term --junitxml=bridge-negative-junit.xml
+
       - name: Run deployment unit tests
         run: |
-          python run_deployment_test_system.py --test-suite unit --skip-static --version ci-unit-${{ github.sha }}
-      
+          python run_deployment_test_system.py \
+            --test-suite unit --skip-static \
+            --version ci-unit-${{ github.sha }}
+
+      - name: Validate native bridge coverage evidence
+        env:
+          BRIDGE_HEAD_SHA: >-
+            ${{ github.event.pull_request.head.sha || github.sha }}
+        run: |
+          python scripts/bridge_coverage_receipt.py \
+            --coverage bridge-coverage.json \
+            --source DMAIC_V3/core/test_system_bridge.py \
+            --head "$BRIDGE_HEAD_SHA" \
+            --output bridge-coverage-receipt.json
+
+      - name: Upload native bridge coverage evidence
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: bridge-coverage-${{ github.run_id }}-${{ github.run_attempt }}
+          path: |
+            bridge-coverage.json
+            bridge-coverage-receipt.json
+            bridge-unit-junit.xml
+            bridge-negative-junit.xml
+            coverage.xml
+          if-no-files-found: error
+
       - name: Upload coverage
         uses: codecov/codecov-action@v7
         if: always()
         with:
-          file: ./coverage.xml
+          files: ./coverage.xml
           flags: bridge-unit-tests
           name: bridge-coverage
 
@@ -123,32 +177,36 @@ jobs:
     name: 🔗 Bridge Integration Tests
     runs-on: ubuntu-latest
     needs: bridge-unit-tests
-    
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v7
-      
+
       - name: Set up Python ${{ env.PYTHON_VERSION }}
-        uses: actions/setup-python@v7.0.0
+        uses: actions/setup-python@v7
         with:
           python-version: ${{ env.PYTHON_VERSION }}
-      
+
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
           pip install -r DMAIC_V3/requirements.txt
           pip install pytest pytest-mock
-      
+
       - name: Run bridge integration tests
         run: |
-          python -m pytest DMAIC_V3/tests/test_bridge_integration.py -m integration -v --tb=short
-      
+          python -m pytest \
+            DMAIC_V3/tests/test_bridge_integration.py \
+            -m integration -v --tb=short
+
       - name: Run deployment integration tests
         run: |
-          python run_deployment_test_system.py --test-suite integration --skip-static --version ci-integration-${{ github.sha }}
-      
+          python run_deployment_test_system.py \
+            --test-suite integration --skip-static \
+            --version ci-integration-${{ github.sha }}
+
       - name: Upload integration test results
-        uses: actions/upload-artifact@v7.0.2
+        uses: actions/upload-artifact@v7
         if: always()
         with:
           name: integration-test-results
@@ -160,92 +218,102 @@ jobs:
   bridge-static-analysis:
     name: 📊 Static Analysis
     runs-on: ubuntu-latest
-    
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v7
-      
+
       - name: Set up Python ${{ env.PYTHON_VERSION }}
-        uses: actions/setup-python@v7.0.0
+        uses: actions/setup-python@v7
         with:
           python-version: ${{ env.PYTHON_VERSION }}
-      
+
       - name: Install analysis tools
         run: |
           python -m pip install --upgrade pip
           pip install flake8 mypy pylint black ruff
           pip install -r DMAIC_V3/requirements.txt
-      
+
       - name: Run flake8
         run: |
-          flake8 DMAIC_V3/core/test_system_bridge.py run_deployment_test_system.py \
+          flake8 DMAIC_V3/core/test_system_bridge.py \
+            run_deployment_test_system.py \
             --max-line-length=120 \
             --extend-ignore=E203,W503 \
             --exclude=__pycache__,.git,build,dist
-      
+
       - name: Run mypy
         run: |
-          mypy DMAIC_V3/core/test_system_bridge.py run_deployment_test_system.py \
+          mypy DMAIC_V3/core/test_system_bridge.py \
+            run_deployment_test_system.py \
             --ignore-missing-imports \
             --no-strict-optional \
             --allow-untyped-calls
-      
+
       - name: Run pylint
         continue-on-error: true
         run: |
-          pylint DMAIC_V3/core/test_system_bridge.py run_deployment_test_system.py \
+          pylint DMAIC_V3/core/test_system_bridge.py \
+            run_deployment_test_system.py \
             --disable=C0111,R0913,R0914,R0915,C0103 \
             --max-line-length=120
-      
+
       - name: Check formatting with black
         run: |
-          black --check --line-length=120 DMAIC_V3/core/test_system_bridge.py run_deployment_test_system.py || true
-      
+          black --check --line-length=120 \
+            DMAIC_V3/core/test_system_bridge.py \
+            run_deployment_test_system.py || true
+
       - name: Run ruff
         run: |
-          ruff check DMAIC_V3/core/test_system_bridge.py run_deployment_test_system.py || true
+          ruff check DMAIC_V3/core/test_system_bridge.py \
+            run_deployment_test_system.py || true
 
   bridge-full-deployment:
     name: 🚀 Full Deployment Test
     runs-on: ubuntu-latest
-    needs: [bridge-smoke-tests, bridge-unit-tests, bridge-integration-tests, bridge-static-analysis]
-    
+    needs:
+      - bridge-smoke-tests
+      - bridge-unit-tests
+      - bridge-integration-tests
+      - bridge-static-analysis
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v7
-      
+
       - name: Set up Python ${{ env.PYTHON_VERSION }}
-        uses: actions/setup-python@v7.0.0
+        uses: actions/setup-python@v7
         with:
           python-version: ${{ env.PYTHON_VERSION }}
-      
+
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
           pip install -r DMAIC_V3/requirements.txt
           pip install pytest pytest-mock flake8 mypy pylint
-      
+
       - name: Run full deployment cycle
         run: |
           python run_deployment_test_system.py \
             --test-suite all \
             --version ci-full-${{ github.sha }} \
             --output-dir ./deployment_output
-      
+
       - name: Validate deployment readiness
         run: |
           python -c "
           import json
           from pathlib import Path
-          
+
           report_path = Path('DMAIC_V3_OUTPUT/deployment_report.json')
           if not report_path.exists():
               print('❌ Deployment report not found!')
               exit(1)
-          
+
           report = json.loads(report_path.read_text())
           metrics = report['deployment_metrics']
-          
+
           print('=' * 80)
           print('DEPLOYMENT VALIDATION RESULTS')
           print('=' * 80)
@@ -255,40 +323,50 @@ jobs:
           print(f'Tests Failed: {metrics[\"tests_failed\"]}')
           print(f'Execution Time: {metrics[\"execution_time_seconds\"]:.2f}s')
           print(f'Runtime Errors: {len(metrics[\"runtime_errors\"])}')
-          print(f'Static Analysis: {\"PASSED\" if metrics[\"static_analysis_passed\"] else \"FAILED\"}')
-          print(f'Deployment Ready: {\"✅ YES\" if metrics[\"deployment_ready\"] else \"❌ NO\"}')
+          static_label = 'PASSED'
+          if not metrics['static_analysis_passed']:
+              static_label = 'FAILED'
+          print(f'Static Analysis: {static_label}')
+          ready_label = '✅ YES' if metrics['deployment_ready'] else '❌ NO'
+          print(f'Deployment Ready: {ready_label}')
           print('=' * 80)
-          
+
           if not metrics['deployment_ready']:
               print('❌ Deployment validation FAILED!')
               exit(1)
-          
+
           print('✅ Deployment validation PASSED!')
           "
-      
+
       - name: Generate deployment summary
         if: always()
         run: |
           echo "## 🚀 Bridge Deployment Summary" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
           echo "**Version:** ci-full-${{ github.sha }}" >> $GITHUB_STEP_SUMMARY
-          echo "**Timestamp:** $(date -u +"%Y-%m-%dT%H:%M:%SZ")" >> $GITHUB_STEP_SUMMARY
+          echo "**Timestamp:** $(date -u +"%Y-%m-%dT%H:%M:%SZ")" \
+            >> "$GITHUB_STEP_SUMMARY"
           echo "" >> $GITHUB_STEP_SUMMARY
-          
+
           if [ -f "DMAIC_V3_OUTPUT/deployment_report.json" ]; then
             python -c "
           import json
           from pathlib import Path
-          report = json.loads(Path('DMAIC_V3_OUTPUT/deployment_report.json').read_text())
+          report_path = Path('DMAIC_V3_OUTPUT/deployment_report.json')
+          report = json.loads(report_path.read_text())
           metrics = report['deployment_metrics']
-          print(f'**Tests:** {metrics[\"tests_passed\"]}/{metrics[\"tests_total\"]} passed')
-          print(f'**Execution Time:** {metrics[\"execution_time_seconds\"]:.2f}s')
-          print(f'**Deployment Ready:** {\"✅\" if metrics[\"deployment_ready\"] else \"❌\"}')
+          passed = metrics['tests_passed']
+          total = metrics['tests_total']
+          print(f'**Tests:** {passed}/{total} passed')
+          duration = metrics['execution_time_seconds']
+          print(f'**Execution Time:** {duration:.2f}s')
+          ready = '✅' if metrics['deployment_ready'] else '❌'
+          print(f'**Deployment Ready:** {ready}')
           " >> $GITHUB_STEP_SUMMARY
           fi
-      
+
       - name: Upload deployment artifacts
-        uses: actions/upload-artifact@v7.0.2
+        uses: actions/upload-artifact@v7
         if: always()
         with:
           name: full-deployment-results
@@ -299,7 +377,7 @@ jobs:
             DMAIC_V3/VERSION
             deployment_output/
           retention-days: 30
-      
+
       - name: Comment PR with results
         if: github.event_name == 'pull_request'
         uses: actions/github-script@v9
@@ -307,33 +385,41 @@ jobs:
           script: |
             const fs = require('fs');
             const reportPath = 'DMAIC_V3_OUTPUT/deployment_report.json';
-            
+
             if (!fs.existsSync(reportPath)) {
               return;
             }
-            
+
             const report = JSON.parse(fs.readFileSync(reportPath, 'utf8'));
             const metrics = report.deployment_metrics;
-            
+
             const body = `## 🚀 Bridge Deployment Test Results
-            
+
             **Version:** \`ci-full-${{ github.sha }}\`
             **Status:** ${metrics.deployment_ready ? '✅ READY' : '❌ NOT READY'}
-            
+
             ### Test Results
             - **Total Tests:** ${metrics.tests_total}
             - **Passed:** ${metrics.tests_passed} ✅
-            - **Failed:** ${metrics.tests_failed} ${metrics.tests_failed > 0 ? '❌' : ''}
+            - **Failed:** ${metrics.tests_failed} ${
+              metrics.tests_failed > 0 ? '❌' : ''
+            }
             - **Execution Time:** ${metrics.execution_time_seconds.toFixed(2)}s
-            
+
             ### Analysis
             - **Runtime Errors:** ${metrics.runtime_errors.length}
-            - **Static Analysis:** ${metrics.static_analysis_passed ? '✅ PASSED' : '❌ FAILED'}
-            
+            - **Static Analysis:** ${
+              metrics.static_analysis_passed ? '✅ PASSED' : '❌ FAILED'
+            }
+
             ### Deployment Readiness
-            ${metrics.deployment_ready ? '✅ **DEPLOYMENT READY**' : '❌ **NOT READY FOR DEPLOYMENT**'}
+            ${
+              metrics.deployment_ready
+                ? '✅ **DEPLOYMENT READY**'
+                : '❌ **NOT READY FOR DEPLOYMENT**'
+            }
             `;
-            
+
             github.rest.issues.createComment({
               issue_number: context.issue.number,
               owner: context.repo.owner,
@@ -346,7 +432,7 @@ jobs:
     runs-on: ubuntu-latest
     needs: bridge-full-deployment
     if: always()
-    
+
     steps:
       - name: Send notification
         run: |

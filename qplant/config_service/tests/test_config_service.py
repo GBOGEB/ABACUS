@@ -57,7 +57,7 @@ SAMPLE_CONFIG = {
     "compressor_specifications": {
         "hp_compressors": {
             "count": 3,
-            "model": "Kaeser FSD 575 SFC",
+            "model": "Vendor_1 FSD 575 SFC",
             "power_supply": "400V 3-phase",
             "redundancy": "N+1 where N=3",
             "configuration": "3 active compressors",

@@ -12,7 +12,7 @@ from typing import Any
 def load(path: Path) -> dict[str, Any]:
     value = json.loads(path.read_text(encoding="utf-8"))
     if not isinstance(value, dict):
-        raise ValueError(f"{path}: expected a JSON object")
+        raise TypeError(f"{path}: expected a JSON object")
     return value
 
 
@@ -63,8 +63,21 @@ def validate_producer(data: dict[str, Any], expected_sha: str | None) -> str:
                 "diagnostic_contract": isinstance(diagnostic, dict)
                 and bool(diagnostic.get("source_contract")),
                 "diagnostic_retention": isinstance(diagnostic, dict)
-                and diagnostic.get("raw_receipt_retention")
-                == "transient_runner_only",
+                and diagnostic.get("raw_receipt_retention") == "transient_runner_only",
+            }
+        )
+
+    debug = data.get("debug_diagnostic")
+    if debug is not None:
+        checks.update(
+            {
+                "debug_object": isinstance(debug, dict),
+                "debug_verdict": isinstance(debug, dict)
+                and debug.get("verification") in {"PASS", "FAIL"},
+                "debug_sha": isinstance(debug, dict)
+                and debug.get("exact_sha") == head_sha,
+                "debug_retention": isinstance(debug, dict)
+                and debug.get("raw_receipt_retention") == "transient_runner_only",
             }
         )
 

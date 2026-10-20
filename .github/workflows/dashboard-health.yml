@@ -51,7 +51,7 @@ jobs:
             for src in $(grep -oP 'src="\K[^"]+' "$f" | grep -v '^http'); do
               # Generated JavaScript template placeholders are not static URLs.
               # Count genuine missing paths separately from dynamic expressions.
-              case "$href" in
+              case "$src" in
                 *"+url+"*|*"'+url+'"*)
                   echo "Dynamic href skipped: $f -> $href"
                   continue
@@ -86,18 +86,36 @@ jobs:
             fi
           done
 
+      - name: Reproduce Pages runtime-governance evidence
+        run: |
+          python scripts/validate_runtime_foundation.py
+          python scripts/write_runtime_governance_status.py \
+            --output docs/reports/runtime_governance_status.json
+          test -s docs/reports/runtime_governance_status.json
+
       - name: Report broken links
         run: |
           echo "=== Internal link report ==="
           BROKEN=0
           while IFS= read -r f; do
             while IFS= read -r href; do
+              href="${href#*\"}"
               href="${href#"${href%%[![:space:]]*}"}"
               case "$href" in
                 ""|\#*|/*|\$\{*|[a-zA-Z][a-zA-Z0-9+.-]*:*)
                   continue
                   ;;
+                "'+url+'")
+                  echo "Dynamic JavaScript URL expression skipped: $f"
+                  continue
+                  ;;
               esac
+              # A JS-built URL in serialized script text is not a static navigation URL.
+              # Restrict this exclusion to the exact known expression, not other paths.
+              if [ "$href" = "'+url+'" ]; then
+                echo "Dynamic template expression skipped: $f -> $href"
+                continue
+              fi
               dir=$(dirname "$f")
               target="$dir/$href"
               target="${target%%#*}"
@@ -106,7 +124,7 @@ jobs:
                 echo "🔗 Broken: $f → $href"
                 BROKEN=$((BROKEN+1))
               fi
-            done < <(grep -oP 'href="\K[^"]+' "$f")
+            done < <(grep -oE 'href="[^"]+' "$f")
           done < <(find docs -name '*.html' -type f)
           echo "Total broken internal links: $BROKEN"
           echo "broken_links=$BROKEN" >> "$GITHUB_OUTPUT"

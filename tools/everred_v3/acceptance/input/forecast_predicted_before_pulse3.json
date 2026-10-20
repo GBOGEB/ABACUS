@@ -1,0 +1,13 @@
+{
+  "schema": "codepurple.acceptance.forecast.v1",
+  "source": "local pulse 2 on 2026-10-17",
+  "estimator": "engineering-bound categorical pre-registration, not statistically calibrated",
+  "prediction_clock": 2,
+  "target_clock": 3,
+  "predict_tests_min": 40,
+  "predict_coverage_min_fraction": 0.90,
+  "predict_unauthorized_admissions": 0,
+  "predict_dependency_edges_stable": true,
+  "uncertainty": "design-target-only; no confidence interval",
+  "authority_transfer": false
+}

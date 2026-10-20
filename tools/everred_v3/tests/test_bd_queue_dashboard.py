@@ -1,15 +1,16 @@
 """BD queue HTML operator I/O: source-bound, replayable and fail closed."""
+
 from __future__ import annotations
 
 import copy
 import json
-from pathlib import Path
 import sys
 import unittest
+from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "scripts"))
-from build_bd_queue import render, validate, SCHEMA
+from build_bd_queue import SCHEMA, render, validate
 
 SOURCE = ROOT / "data/bd_queue_20261014.json"
 TEMPLATE = ROOT / "dashboard/bd_queue_template.html"
@@ -33,10 +34,12 @@ class BDQueueCards(unittest.TestCase):
         self.assertEqual(item["disposition"], "ADMISSION_HOLD")
 
     def test_committed_html_matches_deterministic_generator(self):
-        self.assertEqual(render(self.data, self.template),
-                         HTML.read_text(encoding="utf-8"))
-        self.assertEqual(render(self.data, self.template),
-                         render(self.data, self.template))
+        self.assertEqual(
+            render(self.data, self.template), HTML.read_text(encoding="utf-8")
+        )
+        self.assertEqual(
+            render(self.data, self.template), render(self.data, self.template)
+        )
 
     def test_foreign_or_swapped_head_rejected(self):
         bad = copy.deepcopy(self.data)
@@ -46,9 +49,9 @@ class BDQueueCards(unittest.TestCase):
 
     def test_unbound_and_malicious_link_rejected(self):
         bad = copy.deepcopy(self.data)
-        bad["families"][0]["observations"][0]["url"] = (
-            "https://github.com.evil/GBOGEB/ABACUS/actions/runs/1"
-        )
+        bad["families"][0]["observations"][0][
+            "url"
+        ] = "https://github.com.evil/GBOGEB/ABACUS/actions/runs/1"
         with self.assertRaisesRegex(ValueError, "non-native"):
             validate(bad)
 
@@ -63,14 +66,17 @@ class BDQueueCards(unittest.TestCase):
             validate(bad)
 
     def test_authority_promotion_never_allowed(self):
-        for field, value in (("authority_transfer", True),
-                             ("security_waiver", True),
-                             ("formal_credit_delta", 1),
-                             ("disposition", "ADMIT")):
+        for field, value in (
+            ("authority_transfer", True),
+            ("security_waiver", True),
+            ("formal_credit_delta", 1),
+            ("disposition", "ADMIT"),
+        ):
             bad = copy.deepcopy(self.data)
             bad[field] = value
-            with self.subTest(field=field), self.assertRaisesRegex(
-                ValueError, "authority"
+            with (
+                self.subTest(field=field),
+                self.assertRaisesRegex(ValueError, "authority"),
             ):
                 validate(bad)
 
@@ -97,10 +103,13 @@ class BDQueueCards(unittest.TestCase):
         self.assertNotIn("github.rest", source)
 
     def test_missing_or_duplicate_template_marker_fails(self):
-        for source in (self.template.replace("@@BD_QUEUE_JSON@@", ""),
-                       self.template + "@@BD_QUEUE_JSON@@"):
-            with self.subTest(size=len(source)), self.assertRaisesRegex(
-                ValueError, "marker"
+        for source in (
+            self.template.replace("@@BD_QUEUE_JSON@@", ""),
+            self.template + "@@BD_QUEUE_JSON@@",
+        ):
+            with (
+                self.subTest(size=len(source)),
+                self.assertRaisesRegex(ValueError, "marker"),
             ):
                 render(self.data, source)
 

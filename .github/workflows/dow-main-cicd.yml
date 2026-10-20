@@ -27,7 +27,7 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v7
       - name: Set up Python
-        uses: actions/setup-python@v7.0.0
+        uses: actions/setup-python@v7
         with:
           python-version: '3.11'
       - name: Install dependencies
@@ -68,13 +68,13 @@ jobs:
         run: python demo_integrated_system.py
       - name: Upload Test Reports
         if: always()
-        uses: actions/upload-artifact@v7.0.2
+        uses: actions/upload-artifact@v7
         with:
           name: test-reports
           path: TESTING_SUITE/05_TEST_REPORTS/
       - name: Upload Integration Reports
         if: always()
-        uses: actions/upload-artifact@v7.0.2
+        uses: actions/upload-artifact@v7
         with:
           name: integration-reports
           path: demo_workspace/integration_report_*.json

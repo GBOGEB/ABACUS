@@ -1,9 +1,15 @@
 # Test-only dependencies used by CI workflows
+# W34 source-owned W13 neural-SPINE native test collection: shared with
+# requirements-dev.txt. Retain all W13 negative/typed graph tests; no skips.
+networkx==3.4.2; python_version < "3.11"
+networkx==3.6.1; python_version >= "3.11"
 pytest-benchmark>=4.0.0,<6.0.0
 pytest-json-report>=1.5.0,<2.0.0
 pytest-cov>=5.0.0,<6.0.0
 pytest-asyncio>=0.23,<0.24
 PyYAML>=6.0.3,<7.0
+# Secure Ariana/DOW JUnit parser: CI unit/coverage matrix uses this file.
+defusedxml>=0.7.1,<0.8.0
 pandas>=1.5.3,<4.0.0
 aiohttp>=3.9.0,<4.0.0
 requests>=2.31.0,<3.0.0

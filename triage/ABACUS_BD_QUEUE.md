@@ -1,5 +1,149 @@
 # ABACUS current BD queue
 
+## CODE PURPLE follow-up pulse — 17 October 2026 (later readback)
+
+**Source-bound issue lifecycle:** ABACUS open issues **53 -> 38**,
+with 15 same-day closures confirmed in GitHub.
+
+- **9** older dashboard alerts were closed as duplicate housekeeping,
+  after preserving their original run receipts in canonical #1885.
+- **6** other issues (#1861, #1862, #1864, #1865, #1878,
+  #1879) were closed as completed by independent work.
+- **No admitted engineering causal-root closure count exists.**
+  GitHub issue state alone is not a causal-root denominator.
+
+| Live sample | Open ordinary issues |
+| :-- | --: |
+| ABACUS | 38 |
+| CODEX | 10 |
+| cryoplant-project (QPS) | 56 |
+| pipeline-automation-hub | 32 |
+| **Four-repository scoped total** | **136** |
+
+This is a **four-repository sample**, not the entire GBOGEB
+portfolio or 136 deduplicated engineering roots.
+
+### Ageing and closure-selection effect
+
+| Open issue age | Prior 53 | Current 38 |
+| :-- | --: | --: |
+| 0-6 days | 25 | 19 |
+| 7-13 days | 4 | 1 |
+| 14-29 days | 15 | 9 |
+| 30+ days | 9 | 9 |
+
+Issues aged 14+ fell **24 -> 18** (six fewer).
+But their share moved **24/53 = 45.28%** to
+**18/38 = 47.37%** due to selective closure of newer tickets.
+This is not deteriorating engineering quality or convergence
+speed; the 30+ day external programme blockers remain nine.
+
+### Engineering next admissible actions
+
+1. **#1885:** Source-owned [PR #2164][pr2164]
+   targets five more recent dashboard href manifestations:
+   unpublished MYRRHA (2), absent Contract Baseline (1),
+   W007 runtime-generated evidence (1), JS dynamic false
+   positive (1). CI is pending; no root closure credited.
+2. **#1860 / #1278:** Reconcile protected main branch
+   enforcement, independent reviewer and terminal required CI
+   before recognizing any governed first admission.
+3. **#1929:** Determine authenticated causal-root identities
+   and open/closed denominators separately from GitHub issues.
+4. **CODEX #977:** Human-authorized ABACUS worker/runner
+   dispatch and REX not proven by unrelated merged PRs.
+5. **QPS #1929:** Eight distinct source-owner recensus and
+   lossless handover TODOs remain; no engineering acceptance.
+6. **Mission Hub #604:** Reuse source-bound global graph
+   census without authorizing dispatch or mixing populations.
+
+**Append-only machine pulse:**
+[ABACUS BD P2 receipt](ABACUS_BD_PULSE2_20261017.json).
+The preceding October and September sections remain intact.
+
+[pr2164]: https://github.com/GBOGEB/ABACUS/pull/2164
+
+## Previous October census (retained for temporal lineage)
+
+## Live additive GitHub census — 17 October 2026
+
+The 26 September queue below is a frozen programme cohort, not the
+current total GitHub issue population. Do not subtract its 12 open
+items from the 53 observed today.
+
+- Open ordinary issues: **53**; open PRs: **122**.
+- Same-day open PR population: **118 -> 122** (+4 observed).
+- Open PR cohorts: 82 older + 40 created on 17 October.
+- Six recent issues closed as dashboard **duplicates**, not fixes.
+- Canonical engineering root open/closed totals: **UNKNOWN**.
+
+| Issue age (days) | Open | Share |
+| :-- | --: | --: |
+| 0–6 | 25 | 47.2% |
+| 7–13 | 4 | 7.5% |
+| 14–29 | 15 | 28.3% |
+| 30+ | 9 | 17.0% |
+
+Median open-issue age: **11 days**. Oldest #633/#635/#636/#637:
+**51 days**, primarily external/local governance and Office proof.
+
+Live machine receipts (derived, not a second engineering SSOT):
+
+- [Ageing issue census](ABACUS_ISSUE_AGEING_CENSUS_20261017.json).
+- [PR exact-head register](ABACUS_PR_HEAD_REGISTER_20261017.json).
+
+### Priority TODO / BD aging lanes
+
+1. **P0 #1860 / #1278:** Confirm effective protected-main
+   policy, independent review and authorized security gates.
+2. **Security #1738 / PR #2027:** Resolve native Safety/Bandit.
+3. **Compatibility #1874 / PR #2026:** Main PR #2012 introduced
+   an incompatible Python 3.10 Matplotlib dependency minimum.
+4. **Governance #2087 / PRs #2033 and #2041:** Exact-head
+   classification/inventory checks; A10 remains independent.
+5. **B1 #1566:** 139 identical detected unguarded fingerprints
+   over six B0 runs; scan populations differ once (161 vs 160).
+6. **Dashboard #1885:** Historical 53 href occurrences under
+   investigation. Nine older alerts remain open; six later
+   alerts closed as housekeeping duplicates only.
+7. **Canonical root #1929:** Confirm open/closed causal roots
+   and owners from native source-bound job/step transitions.
+8. **External #633/#635/#636/#637/#644/#1313/#1369:**
+   Re-enter only on governed local inputs or real dispatches.
+
+### New source-matched metric proof
+
+PR #2135 B0 native run 39048934046 passed 13/13 jobs
+on head `97f8cc988c9c5148524f494fa31cc58fb7edefd3`.
+It recorded 2,283 pytest passes and two skips.
+
+- N+1 production statements: 56/69 -> **68/69** (+12).
+- N+1 production branches: 16/20 -> **19/20** (+3).
+- Core module unchanged at 119/119 and 52/52.
+- Sixth B1 forecast 139 -> actual 139, one uncalibrated
+  exact-outcome prediction. No population-wide growth claim.
+
+The latest PR head after this measured run needs its own
+exact-head CI. None of these receipts confers main admission.
+
+### Issue closure and PR merge temporal merits
+
+Six dashboard tickets closed as duplicates after median
+**5.817 days**. This measures **issue queue hygiene**, not
+time to engineering repair. Other unverified roots remain open.
+
+Nine PRs merged into main during 15 October; latest #2017
+made the current anchor SHA on 15 October 14:06 UTC.
+Thirty-nine PRs merged into feature branches since that date.
+A feature merge is not a new protected-main admission.
+PR #2048 was closed unmerged; it earns no fix credit.
+
+Do not close by age, text similarity, or green CI alone.
+The 16/52/53 dashboard href counts have differing regimes;
+prove matched source/target fingerprints before root closure.
+
+## Historical 26 September queue (retained verbatim)
+
 **As of:** 2026-09-26
 **Repository:** `GBOGEB/ABACUS`
 **Start of pulse:** 30 open issues

@@ -1,0 +1,37 @@
+{
+  "scenario_id": "SUPPLIER_B_2K_OP_W52_P2J_v0.2",
+  "authority": "MIXED_SOURCE_BOUND_AND_OPEN",
+  "streams": {
+    "A": {"stream_id":"A","mdot_g_s":43.1,"h_J_kg":null,"P_bara":3.0,"T_K":4.5,"authority":"SUPPLIER_B_CURRENT_OFFER_BOP_SOURCE_SUPPORTED","validation":"COOLPROP_PENDING"},
+    "B": {"stream_id":"B","mdot_g_s":null,"h_J_kg":null,"P_bara":0.022,"T_K":3.6,"authority":"SUPPLIER_B_CURRENT_OFFER_BOP_PARTIAL","validation":"MASS_FLOW_TOPOLOGY_BINDING_REQUIRED"},
+    "W": {"stream_id":"W","mdot_g_s":2.42,"h_J_kg":null,"P_bara":1.1,"T_K":300.0,"authority":"SUPPLIER_B_CURRENT_OFFER_BOP_SOURCE_SUPPORTED","validation":"COOLPROP_PENDING"},
+    "D": {"stream_id":"D","mdot_g_s":81.0,"h_J_kg":null,"P_bara":null,"T_K":40.0,"authority":"SUPPLIER_B_CURRENT_OFFER_BOP_PARTIAL","validation":"HP_PRESSURE_EXACT_BINDING_REQUIRED"},
+    "E": {"stream_id":"E","mdot_g_s":81.0,"h_J_kg":null,"P_bara":null,"T_K":60.0,"authority":"SUPPLIER_B_CURRENT_OFFER_BOP_PARTIAL","validation":"HP_MINUS_1BAR_EXACT_BINDING_REQUIRED"}
+  },
+  "qcell_heat_W": 809.0,
+  "ts_heat_W": 8610.0,
+  "hp_total_flow_g_s": 326.0,
+  "hp_total_flow_authority": "SUPPLIER_B_2K_OP_OPERATING_MODE_SOURCE_BOUND_ANALYTICAL_SSOT",
+  "hp_reference_design_point": {"flow_g_s_each":112.0,"P1_bara":1.05,"T1_K":298.0,"P2_bara":14.0,"package_input_kW_each":357.0,"authority":"SUPPLIER_B_72HZ_MAXIMUM_REFERENCE_NOT_NOMINAL_2K_OP"},
+  "hp_predicted_kW": null,
+  "hp_reference_kW": 814.0,
+  "hp_reference_authority": "SUPPLIER_B_2K_OP_OPERATING_MODE_SOURCE_BOUND_ANALYTICAL_SSOT",
+  "hp_cooling_water_reference_kWth": 733.0,
+  "pvps_predicted_kW": null,
+  "pvps_reference_kW": 83.0,
+  "pvps_reference_authority": "SUPPLIER_B_2K_OP_OPERATING_MODE_SOURCE_BOUND_ANALYTICAL_SSOT",
+  "pvps_cooling_water_reference_kWth": 75.0,
+  "minor_2kop_loads": {"cold_compressors_kW":5.0,"dryer_kW":3.0},
+  "hepak_reference_status": "MISSING_FROZEN_INDEPENDENT_REFERENCE",
+  "state_mismatch": [
+    {"id":"B_LOCAL_VS_INTERFACE","status":"OPEN","note":"SUPPLIER_B BOP 0.022 bara return must be mapped to distributed Line-B/QCELL/QRB pressure nodes; do not substitute one node for another."},
+    {"id":"HP_NOMINAL_VS_MAXIMUM","status":"CONTROLLED","note":"326 g/s and 814 kW are nominal 2K-OP operating-mode values; 112 g/s each and 357 kW each are 72 Hz maximum-reference values and shall not be substituted for nominal per-unit power."},
+    {"id":"HP_DESIGN_REFERENCE_GENERATION","status":"OPEN","note":"Current project SSOT also contains 112.54 g/s and 337.62 g/s diagnostic references; preserve source generation and do not silently overwrite the current-offer 112.0 g/s maximum anchor."}
+  ],
+  "notes": [
+    "CPLR/W flow may be a split from A; topology must be resolved before enforcing A=B+W on this bidder BOP row.",
+    "No energy residual is published until helium enthalpies are evaluated by the governed provider.",
+    "HP and PVPS reference powers are now source-bound; residuals remain OPEN_INPUT until independent predicted powers are produced.",
+    "PVPS residual additionally requires the B-return mass-flow boundary and SV750 BF operating/capacity evidence for an independent prediction."
+  ]
+}

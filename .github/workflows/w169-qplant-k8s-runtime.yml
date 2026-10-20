@@ -8,6 +8,8 @@ on:
       - "qplant/handover_dashboard/**"
       - "qplant/deployment/Dockerfile"
       - "qplant/deployment/k8s/**"
+      - "federation/sideload/**"
+      - "triage/SIDELOAD_K8S_SURFACE_CURRENT_v1.json"
       - ".github/workflows/w169-qplant-k8s-runtime.yml"
       - "ci/governance/**"
   workflow_dispatch:

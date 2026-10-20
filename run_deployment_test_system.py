@@ -149,6 +149,19 @@ def main():
 
     if not args.skip_static:
         print(f"Static Analysis: {'PASSED' if metrics.static_analysis_passed else 'FAILED'}")
+        evidence = getattr(test_bridge, "static_analysis_evidence", None)
+        if not metrics.static_analysis_passed and isinstance(evidence, dict):
+            print(
+                "Static first-red evidence: "
+                f"{evidence.get('status', 'UNKNOWN')} "
+                f"findings={evidence.get('finding_count')}"
+            )
+            for finding in evidence.get("findings", [])[:5]:
+                print(
+                    f"  {finding['source_path']}:{finding['line']}:"
+                    f"{finding['column']}: {finding['rule']} "
+                    f"{finding['message']}"
+                )
     else:
         print("Static Analysis: SKIPPED (assumed PASSED)")
 

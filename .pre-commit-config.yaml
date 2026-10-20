@@ -31,3 +31,17 @@ repos:
         pass_filenames: false
         always_run: true
         stages: [pre-push]
+      - id: mip2-method-contracts
+        name: MIP2 method contract validation
+        entry: python tools/mip2/validate_method_contracts.py
+        language: system
+        pass_filenames: false
+        files: ^tools/mip2/
+        stages: [pre-commit]
+      - id: mip2-python-syntax
+        name: MIP2 Python syntax preflight
+        entry: python -m compileall -q tools/mip2
+        language: system
+        pass_filenames: false
+        files: ^tools/mip2/.*\.py$
+        stages: [pre-commit]

@@ -32,7 +32,7 @@ jobs:
           fi
       - name: Download successful measured pulse
         if: github.event_name == 'workflow_run'
-        uses: actions/download-artifact@v8
+        uses: actions/download-artifact@v8.0.2
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           run-id: ${{ steps.meta.outputs.run_id }}
@@ -91,7 +91,7 @@ jobs:
           git push origin HEAD:main
       - name: Upload denominator control receipt
         if: always()
-        uses: actions/upload-artifact@v7.0.2
+        uses: actions/upload-artifact@v7
         with:
           name: w70-pca-denominator-control
           path: |

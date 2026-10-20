@@ -1,0 +1,33 @@
+flowchart TD
+  I["ABACUS #1860 / CBD W10"] --> GATE{"Rules + admin RED canary?"}
+  GATE -->|No: 0 status, 0 approvals, 6 bypass| HOLD["MERGE_ADMISSION HOLD"]
+  GATE -->|Externally verified| REVIEW["Independent eligible human review"]
+  W31["W31 B0 failures / NumPy + G3CS"] -. historical .-> W32["W32 main 405e161d"]
+  W32 --> NET["NetworkX: 7 failed job manifestations / 1 root"]
+  NET -. dev install repaired on prior merged PR .-> A["W34-A: broad requirements-test pins"]
+  W32 --> W33["W34 baseline main 994ad6e7"]
+  W33 --> B0["B0 39159906022 a1 / job 117771668289"]
+  B0 --> ROOT["3 G3CS assertions / 1 source root"]
+  ROOT --> C["W34-C: one marker + typed SOURCE_MISSING"]
+  B0 -. downstream .-> CENSUS["Report-only admission 117773239113 FAILED"]
+  W32 --> SELF["W32 source-reported proof flags"]
+  SELF --> B["W34-B: independent ZIP + JUnit + coverage verifier"]
+  A --> NATIVE{"Exact-head testflight + byte proof?"}
+  B --> NATIVE
+  C --> NATIVE
+  NATIVE -->|UNKNOWN or RED| HOLD
+  NATIVE -->|Terminal PASS| SEC{"Safety / A10 / governance PASS?"}
+  SEC -->|RED / UNKNOWN| HOLD
+  SEC -->|Green| REVIEW
+  REVIEW -->|Not eligible| HOLD
+  REVIEW -->|Eligible| MERGE["Authorized serial merge + exact-main readback"]
+  MERGE --> MET["Matched coverage, root disposition, forecast scoring"]
+  MET --> STOP{"3 equal independent, comparable terminal transitions?"}
+  STOP -->|Yes| PLATEAU["STOP_LOCAL_PLATEAU / not Six Sigma"]
+  STOP -->|No| NEXT["Budget next focused flight max 6 cells"]
+  classDef red fill:#f9e2e2,stroke:#af3b48,color:#831e2a
+  classDef amber fill:#fff0cd,stroke:#b48824,color:#765309
+  classDef green fill:#e2f2e6,stroke:#28845a,color:#14543a
+  class HOLD red
+  class A,B,C,NATIVE,SEC,GATE,REVIEW amber
+  class MET,STOP,NEXT,PLATEAU green

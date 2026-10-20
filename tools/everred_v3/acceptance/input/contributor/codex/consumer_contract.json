@@ -1,0 +1,14 @@
+{
+  "schema": "codepurple.acceptance.consumer_request.v1",
+  "consumer_repo": "GBOGEB/CODEX",
+  "role": "MissionControl-governance-read-only",
+  "observed_main_sha": "c15a1138355455692968b2dd52bf08330f23d910",
+  "canonical_issue": "https://github.com/GBOGEB/CODEX/issues/977",
+  "required_inputs": ["exact_sha", "base_sha", "policy_sha", "head_epoch", "evidence_url", "sha256"],
+  "admission_accepted": false,
+  "worker_dispatched": null,
+  "transport":"NONE",
+  "source_mutation_allowed": false,
+  "authority_transfer": false,
+  "security_waiver": false
+}

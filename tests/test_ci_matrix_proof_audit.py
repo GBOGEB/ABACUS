@@ -83,3 +83,34 @@ def test_manifest_identity_and_role_must_match_expected_matrix(tmp_path):
     assert "3.10:exact_sha" in result["errors"]
     assert "3.10:python_version" in result["errors"]
     assert "3.10:proof_role" in result["errors"]
+
+
+def test_invalid_manifest_payload_is_fail_closed(tmp_path):
+    import json
+    import pytest
+    from scripts.ci_matrix_proof_audit import expected_versions
+
+    assert expected_versions("sampled", "3.10") == ["3.10", "3.12"]
+    assert expected_versions("sampled", "3.11") == ["3.11", "3.12"]
+    for bad in ("3.12", "3.9", "", "3.10,3.11"):
+        with pytest.raises(ValueError):
+            expected_versions("sampled", bad)
+
+    for label, payload in (
+        ("nonobject", "[]"),
+        ("broken_json", "{"),
+        ("null_checks", json.dumps({"checks": None})),
+        ("array_checks", json.dumps({"checks": []})),
+        ("false_checks", json.dumps({"checks": False})),
+    ):
+        (tmp_path / "python-3.12-proof.json").write_text(payload, encoding="utf-8")
+        receipt = audit(tmp_path, "sentinel", "3.10", EXPECTED_SHA)
+        assert receipt["status"] == "FAIL", label
+        assert receipt["errors"], label
+
+
+def test_invalid_source_hash_type_is_fail_closed(tmp_path):
+    for bad in (None, 123, True, [], {}):
+        result = audit(tmp_path, "sentinel", "3.10", bad)
+        assert result["status"] == "FAIL"
+        assert "EXPECTED_SHA_INVALID" in result["errors"]

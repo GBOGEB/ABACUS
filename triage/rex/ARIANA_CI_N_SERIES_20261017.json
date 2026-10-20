@@ -1,0 +1,319 @@
+{
+  "schema": "abacus.ariana.rex_nseries_projection.v1",
+  "authority": "DERIVED_REX_OBSERVATIONS_NOT_SSOT",
+  "as_of_source_update_utc": "2026-10-17T16:03:07Z",
+  "parent": {
+    "repository": "GBOGEB/ABACUS",
+    "issue": 1929,
+    "source_pr": 2138,
+    "source_pr_head_sha": "ba3423f3e5141bb5a85ecf3d5f042ee818ec932c",
+    "source_pr_status": "OPEN_UNMERGED",
+    "source_pr_draft_at_census": false,
+    "original_main_sha": "54da377cf82a358ac97903ecde0270c975b8fcc1",
+    "remote_keb_execution": "NOT_ATTESTED",
+    "qps_engineering_acceptance": null,
+    "merge_admission": "HOLD"
+  },
+  "original_failure_anchor": {
+    "run_id": 39045383015,
+    "source_sha": "54da377cf82a358ac97903ecde0270c975b8fcc1",
+    "run_attempt": 1,
+    "first_red": "ARIANA_LEGACY_PATH_MISSING",
+    "job_id": 117432950517,
+    "created_at": "2026-10-17T15:30:55Z",
+    "conclusion": "failure",
+    "tests": null,
+    "coverage": null,
+    "source_url": "https://github.com/GBOGEB/ABACUS/actions/runs/39045383015"
+  },
+  "checkpoints": [
+    {
+      "index": -1,
+      "label": "N-1",
+      "run_id": 39046522554,
+      "source_sha": "1911ffbe2954278368ffc3e86bf76c862ce2917e",
+      "run_attempt": 1,
+      "created_at": "2026-10-17T15:46:30Z",
+      "completed_at": "2026-10-17T15:48:14Z",
+      "conclusion": "failure",
+      "source_url": "https://github.com/GBOGEB/ABACUS/actions/runs/39046522554",
+      "python_jobs": {
+        "3.11": 117436233578,
+        "3.12": 117436233742
+      },
+      "tests": null,
+      "test_cohort_id": null,
+      "focused_coverage": null,
+      "artifacts": [],
+      "join": {
+        "job_id": null,
+        "status": "SKIPPED",
+        "artifact_id": null
+      },
+      "root": {
+        "root_id": "ARIANA_NUMPY_IMPORT_FIXTURE",
+        "distinct_roots": 1,
+        "manifestation_jobs": [
+          117436233578,
+          117436233742
+        ],
+        "evidence": "shared tests/conftest.py imported numpy before collection"
+      },
+      "milestones": {
+        "legacy_path_bypassed": true,
+        "pytest_collection_reached": false,
+        "two_lane_artifacts_durable": false,
+        "local_join_pass": null
+      }
+    },
+    {
+      "index": 0,
+      "label": "N",
+      "run_id": 39046770415,
+      "source_sha": "da5e6e03d9e301a796d969450ae2a13e263b2655",
+      "run_attempt": 1,
+      "created_at": "2026-10-17T15:49:57Z",
+      "completed_at": "2026-10-17T15:50:59Z",
+      "conclusion": "failure",
+      "source_url": "https://github.com/GBOGEB/ABACUS/actions/runs/39046770415",
+      "python_jobs": {
+        "3.11": 117436948191,
+        "3.12": 117436948376
+      },
+      "tests": {
+        "3.11": {
+          "passed": 28,
+          "total": 28,
+          "failures": 0
+        },
+        "3.12": {
+          "passed": 28,
+          "total": 28,
+          "failures": 0
+        }
+      },
+      "test_cohort_id": "ariana_existing17_plus_new11",
+      "focused_coverage": null,
+      "artifacts": [],
+      "join": {
+        "job_id": 117437131980,
+        "status": "FAIL",
+        "artifact_id": null
+      },
+      "root": {
+        "root_id": "ARIANA_HIDDEN_ARTIFACT_DIRECTORY",
+        "distinct_roots": 1,
+        "manifestation_jobs": [
+          117436948191,
+          117436948376,
+          117437131980
+        ],
+        "evidence": "uploader include-hidden-files false; two warnings, one 0/2 join failure"
+      },
+      "milestones": {
+        "legacy_path_bypassed": true,
+        "pytest_collection_reached": true,
+        "two_lane_artifacts_durable": false,
+        "local_join_pass": false
+      }
+    },
+    {
+      "index": 1,
+      "label": "N+1",
+      "run_id": 39046986905,
+      "source_sha": "ba3423f3e5141bb5a85ecf3d5f042ee818ec932c",
+      "run_attempt": 1,
+      "created_at": "2026-10-17T15:52:53Z",
+      "completed_at": "2026-10-17T15:57:22Z",
+      "conclusion": "success",
+      "source_url": "https://github.com/GBOGEB/ABACUS/actions/runs/39046986905",
+      "python_jobs": {
+        "3.11": 117437567117,
+        "3.12": 117437567452
+      },
+      "tests": {
+        "3.11": {
+          "passed": 29,
+          "total": 29,
+          "failures": 0
+        },
+        "3.12": {
+          "passed": 29,
+          "total": 29,
+          "failures": 0
+        }
+      },
+      "test_cohort_id": "ariana_existing17_plus_new12",
+      "focused_coverage": {
+        "scope": "DMAIC_V3/core/dow_ariana_integration.py",
+        "source_file_sha256": "0514114b0d80d49130c3b86f8afc24e2e1ac3b693b5f266aebd4d3cb777b92c4",
+        "tool": "coverage.py 7.13.3",
+        "statement": {
+          "numerator": 208,
+          "denominator": 209
+        },
+        "branch": {
+          "numerator": 39,
+          "denominator": 42
+        },
+        "combined": {
+          "numerator": 247,
+          "denominator": 251
+        },
+        "same_population_across_python": true,
+        "changed_line": null
+      },
+      "artifacts": [
+        {
+          "id": 12105478809,
+          "name": "ariana-evidence-py3.11",
+          "sha256": "a77a084de0b54654d5aaedc5143ea65c4c1e2ec8b61f7cba7f54f412437d9d67",
+          "contains": [
+            "ariana-dow-receipt.json",
+            "coverage.json",
+            "junit.xml"
+          ],
+          "lane": "3.11"
+        },
+        {
+          "id": 12106247295,
+          "name": "ariana-evidence-py3.12",
+          "sha256": "594e8de7a913f0ec2f98e8dcdee6855a389149ae4d3b79a5485237b31b0f6c70",
+          "contains": [
+            "ariana-dow-receipt.json",
+            "coverage.json",
+            "junit.xml"
+          ],
+          "lane": "3.12"
+        },
+        {
+          "id": 12106595934,
+          "name": "ariana-federation-two-lane",
+          "sha256": "b541c6b7e1e14ea2aaf75b637b2ea7cb92f71a52aa6886b74d21c8596b600c7b",
+          "contains": [
+            "two-lane-join.json"
+          ],
+          "lane": "join"
+        }
+      ],
+      "join": {
+        "job_id": 117437850200,
+        "status": "PASS",
+        "artifact_id": 12106595934,
+        "remote_keb_or_qps_receipts": null,
+        "qps_engineering_acceptance": null,
+        "merge_admission": "HOLD"
+      },
+      "root": {
+        "root_id": null,
+        "distinct_roots": 0,
+        "manifestation_jobs": [],
+        "evidence": "native local Ariana workflow successful; global gates independently held"
+      },
+      "milestones": {
+        "legacy_path_bypassed": true,
+        "pytest_collection_reached": true,
+        "two_lane_artifacts_durable": true,
+        "local_join_pass": true
+      }
+    }
+  ],
+  "forecasts": [
+    {
+      "id": "F1_PATH_TO_PREFLIGHT",
+      "frozen_at": "2026-10-17T15:42:40Z",
+      "freeze_url": "https://github.com/GBOGEB/ABACUS/issues/1929#issuecomment-6235955719",
+      "target_run_id": 39046522554,
+      "milestone": "legacy_path_bypassed",
+      "expected": true,
+      "probability": null,
+      "forecast_scope": "fix-specific, not full-workflow green"
+    },
+    {
+      "id": "F2_NUMPY_TO_COLLECTION",
+      "frozen_at": "2026-10-17T15:49:23Z",
+      "freeze_url": "https://github.com/GBOGEB/ABACUS/pull/2138#issuecomment-6236070446",
+      "target_run_id": 39046770415,
+      "milestone": "pytest_collection_reached",
+      "expected": true,
+      "probability": null,
+      "forecast_scope": "fix-specific, no artifact/provenance guarantee"
+    },
+    {
+      "id": "F3_VISIBLE_DURABLE_RECEIPTS",
+      "frozen_at": "2026-10-17T15:51:53Z",
+      "freeze_url": "https://github.com/GBOGEB/ABACUS/pull/2138#issuecomment-6236107400",
+      "target_run_id": 39046986905,
+      "milestone": "two_lane_artifacts_durable",
+      "expected": true,
+      "probability": null,
+      "forecast_scope": "fix-specific; local join separately observed"
+    }
+  ],
+  "rex": [
+    {
+      "root_id": "ARIANA_LEGACY_PATH_MISSING",
+      "owner": "ABACUS_CI_RUNTIME",
+      "lesson": "Verify repository existence of the workflow workdir before pip or tests",
+      "preflight": "validate path with pinned checkout",
+      "evidence_run_id": 39045383015
+    },
+    {
+      "root_id": "ARIANA_NUMPY_IMPORT_FIXTURE",
+      "owner": "ABACUS_TEST_HARNESS",
+      "lesson": "Resolve tests/conftest.py import closure before executing a focused suite",
+      "preflight": "import-check pytest fixtures and pinned dependencies",
+      "evidence_run_id": 39046522554
+    },
+    {
+      "root_id": "ARIANA_HIDDEN_ARTIFACT_DIRECTORY",
+      "owner": "ABACUS_RECEIPT_PRODUCER",
+      "lesson": "Verify action uploader can see each generated file; never count a warning-only upload as receipt",
+      "preflight": "nonhidden output path, if-no-files-found error, enumerate uploaded artifact IDs",
+      "evidence_run_id": 39046770415
+    },
+    {
+      "root_id": "ARIANA_SECURITY_GOVERNANCE_INDEPENDENT",
+      "owner": "ABACUS_SECURITY_AND_CI_GOVERNANCE",
+      "lesson": "Local CI PASS is not security, review, policy or QPS admission",
+      "preflight": "inspect immutable action refs, safe JUnit parser, policy inventory, independent approvals",
+      "evidence_run_id": 39046986905
+    }
+  ],
+  "prospective": {
+    "checkpoint": "N+2",
+    "status": "NOT_RUN",
+    "run_id": null,
+    "source_precondition_sha": "ba3423f3e5141bb5a85ecf3d5f042ee818ec932c",
+    "predicted_local_tests_per_lane": 29,
+    "predicted_focused_statement": {
+      "numerator": 208,
+      "denominator": 209
+    },
+    "predicted_focused_branch": {
+      "numerator": 39,
+      "denominator": 42
+    },
+    "forecast_kind": "CONDITIONAL_DIRECTIONAL_NOT_PROBABILISTIC",
+    "probability": null,
+    "conditions": [
+      "identical tracked source file blob",
+      "same test names, python matrix and dependency resolver",
+      "authenticated exact-head runner and artifact receipts"
+    ],
+    "forecast_admission": "HOLD_UNTIL_INDEPENDENT_GATES_PASS",
+    "remote_keb_qps_acceptance_prediction": "NOT_PROVEN_FROM_LOCAL_JOIN",
+    "observed": null,
+    "scoring": null,
+    "forecast_frozen_at": "2026-10-17T16:13:37Z",
+    "freeze_url": "https://github.com/GBOGEB/ABACUS/issues/1929#issuecomment-6236426822",
+    "retrospective_probability_backfill_allowed": false
+  },
+  "calibration": {
+    "minimum_independent_comparable_forecasts": 10,
+    "pca": "WITHHELD",
+    "bradley_terry": "WITHHELD",
+    "six_sigma": "NOT_ESTABLISHED",
+    "brier": "NOT_APPLICABLE_NO_PREREGISTERED_PROBABILITIES"
+  }
+}

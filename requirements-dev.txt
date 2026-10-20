@@ -2,6 +2,15 @@
 # Exact-main six-lane recensus trigger; no dependency change.
 -r requirements.txt
 
+# W13 graph/SPINE uses NetworkX; B0 native pytest imports the provider at collection.
+# Mirror W13 owner workflow for Python 3.11+, retain 3.10 testpilot compatibility.
+networkx==3.4.2; python_version < "3.11"
+networkx==3.6.1; python_version >= "3.11"
+
+# Ariana/DOW source-bound JUnit/XML evidence and pytest collection contract.
+# Required by scripts/ci/ariana_dow_evidence.py; not a scanner suppression.
+defusedxml>=0.7.1,<1.0
+
 pytest>=7.4.0
 pytest-cov>=5.0.0,<6.0.0
 pytest-xdist>=3.3.0

@@ -2,7 +2,7 @@
 """Build consolidated QPS Excel + HTML views from one normalized row dataset.
 
 Input contract: JSON object with ``rows`` list, or a top-level JSON list. Each row is
-an actionable Global_ID record from QPS_LKT_NEGO_RFI_COMPLIANCE_SSOT_v1.0.
+an actionable Global_ID record from QPS_SUPPLIER_B_NEGO_RFI_COMPLIANCE_SSOT_v1.0.
 
 This builder is presentation-only. It does not calculate or promote compliance.
 """
@@ -130,7 +130,7 @@ def build_xlsx(rows: list[dict[str, Any]], out: Path, source_hash: str, style: d
     for name in VISIBLE_SHEETS + HIDDEN_SHEETS:
         wb.create_sheet(name)
     start = wb["START_HERE"]
-    start["A1"] = "QPS LKT NEG / RFI / COMPLIANCE — canonical review view"
+    start["A1"] = "QPS SUPPLIER_B NEG / RFI / COMPLIANCE — canonical review view"
     start["A2"] = "Authority"
     start["B2"] = "Derived working view; engineering/compliance authority remains cryoplant-project"
     start["A3"] = "Source row SHA256"
@@ -196,7 +196,7 @@ def build_html(rows: list[dict[str, Any]], out: Path, source_hash: str, style: d
     data = json.dumps(rows, ensure_ascii=False).replace("</", "<\\/")
     columns = MASTER + [c for c in RETURNS + LINEAGE if c not in MASTER]
     doc = f'''<!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>QPS LKT NEG/RFI/Compliance SSOT</title><style>
+<title>QPS SUPPLIER_B NEG/RFI/Compliance SSOT</title><style>
 :root{{--purple:{purple};--warn:{warning};--ok:{ok};--critical:{critical};--text:{text};}}
 *{{box-sizing:border-box}}body{{font-family:{font},Arial,sans-serif;color:var(--text);margin:0;background:#fff;font-size:14px}}
 header{{position:sticky;top:0;background:#fff;border-bottom:1px solid #ddd;padding:12px 18px;z-index:10}}h1{{font-size:20px;margin:0 0 8px;color:var(--purple)}}
@@ -207,7 +207,7 @@ th{{position:sticky;top:0;background:var(--purple);color:#fff;text-align:left;z-
 tr:hover td{{background:#faf7fc}}.dense th,.dense td{{padding:3px 6px;font-size:12px}}.advanced{{display:none}}.show-advanced .advanced{{display:table-cell}}
 .status{{font-weight:700}}.status.NOK,.status.MAJOR_DISCREPANCY{{color:var(--critical)}}.status.PARTIAL,.status.REVIEW_REQUIRED,.status.TBD{{color:var(--warn)}}.status.COMPLY,.status.ACCEPTED_VARIANCE{{color:var(--ok)}}
 details{{max-width:520px}}code{{font-family:Consolas,monospace}}@media(max-width:900px){{header{{position:static}}.table-wrap{{max-height:none}}}}
-</style></head><body><header><h1>QPS LKT NEG / RFI / Compliance — canonical view</h1><div class="controls">
+</style></head><body><header><h1>QPS SUPPLIER_B NEG / RFI / Compliance — canonical view</h1><div class="controls">
 <input id="q" type="search" placeholder="Global search">
 <select id="status" multiple size="1"><option value="">All statuses</option></select>
 <input id="agenda" placeholder="Agenda ID"><input id="offer" placeholder="OFFER"><input id="rtm" placeholder="RTM"><input id="rfi" placeholder="RFI"><input id="neg" placeholder="NEG">
@@ -240,7 +240,7 @@ def main() -> None:
     source_hash = hashlib.sha256(raw).hexdigest()
     rows = load_rows(args.input_json)
     style = load_style(args.style)
-    stem = "QPS_LKT_NEGO_RFI_COMPLIANCE_SSOT_v1.0"
+    stem = "QPS_SUPPLIER_B_NEGO_RFI_COMPLIANCE_SSOT_v1.0"
     build_xlsx(rows, args.out_dir / f"{stem}.xlsx", source_hash, style)
     build_html(rows, args.out_dir / f"{stem}.html", source_hash, style)
     manifest = {"document_id": "QPS_SSOT_VIEW_BUILD_RECEIPT", "source_sha256": source_hash, "row_count": len(rows), "outputs": [f"{stem}.xlsx", f"{stem}.html"], "formal_credit": 0}
