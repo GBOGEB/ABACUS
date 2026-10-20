@@ -69,6 +69,7 @@ class CohortUnionTests(unittest.TestCase):
                 self.assertIn(item, source)
 
         assert_bound(workflow)
+        self.assertEqual(workflow.count(required[5]), 1)
         with self.assertRaises(AssertionError):
             assert_bound(workflow.replace(required[0], "ref: github.sha", 1))
         with self.assertRaises(AssertionError):
@@ -186,10 +187,8 @@ class CohortUnionTests(unittest.TestCase):
 
 
     def test_nonatomic_source_ingestion_pulses_are_not_time_series(self):
-        # Isolate ingestion counts from separately supplied head manifests.
+        # Ingestion pulses count observations; preserve each source's manifest.
         sources = snapshots()
-        for source in sources:
-            source.pop("sampled_pr_heads", None)
         result = produce_cohorts(sources)
         rec = result["cohort_reconciliation"]
         pulses = rec["ingestion_pulses"]
@@ -273,8 +272,9 @@ class CohortUnionTests(unittest.TestCase):
         # This negative control must construct genuinely absent manifests;
         # the frozen snapshots now include qualified *declared* head metadata.
         source = snapshots()
-        for snapshot in source:
-            snapshot.pop("sampled_pr_heads", None)
+        self.assertNotIn("sampled_pr_heads", source[0])
+        self.assertIn("sampled_pr_heads", source[1])
+        self.assertIn("sampled_pr_heads", source[2])
         receipt = produce_cohorts(source)["cohort_reconciliation"]
         self.assertEqual(receipt["snapshots_without_head_manifests"], 1)
         self.assertEqual(receipt["distinct_manifested_pr_heads"], 20)
