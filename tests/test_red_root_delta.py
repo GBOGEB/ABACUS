@@ -74,7 +74,8 @@ class RedRootDeltaTest(unittest.TestCase):
         payload = self._run("deadbeef", flake8_log="")
         self.assertFalse(payload["pr_context"])
         self.assertIsNone(payload["base"])
-        self.assertEqual(payload["touched_findings_upper_bound"], 0)
+        self.assertIsNone(payload["touched_findings_upper_bound"])
+        self.assertEqual(payload["touched_findings_qualification"], "NO_PR_CONTEXT")
 
     def test_black_and_isort_split_absolute_paths(self) -> None:
         root = self.repo.resolve().as_posix()
@@ -134,6 +135,8 @@ class RedRootDeltaTest(unittest.TestCase):
         self.assertEqual(payload["attribution"], "indeterminate")
         self.assertEqual(payload["config_changes"], ["pyproject.toml"])
         self.assertEqual(payload["changed_python_files"], [])
+        self.assertIsNone(payload["touched_findings_upper_bound"])
+        self.assertEqual(payload["touched_findings_qualification"], "INDETERMINATE_CONFIG_CHANGE")
         text = summary.read_text(encoding="utf-8")
         self.assertIn("Attribution indeterminate", text)
         self.assertNotIn("Elsewhere (inherited)", text)
@@ -197,6 +200,7 @@ class RedRootDeltaTest(unittest.TestCase):
     def test_missing_and_unparseable_inputs_do_not_fail(self) -> None:
         payload = self._run("HEAD~1", bandit_json="{not json")
         self.assertEqual(payload["tools"]["bandit"], {"status": "unparseable"})
+        self.assertIsNone(payload["touched_findings_upper_bound"])
         out = self.tmp / "absent.json"
         argv = [
             "--lane",
@@ -211,6 +215,55 @@ class RedRootDeltaTest(unittest.TestCase):
         self.assertEqual(red_root_delta.main(argv), 0)
         data = json.loads(out.read_text(encoding="utf-8"))
         self.assertEqual(data["tools"]["black"], {"status": "not_run"})
+
+    def test_valid_empty_scanner_is_qualified_zero(self) -> None:
+        payload = self._run("HEAD~1", flake8_log="")
+        self.assertEqual(payload["touched_findings_upper_bound"], 0)
+        self.assertEqual(payload["touched_findings_qualification"], "QUALIFIED_INPUTS_ONLY")
+        self.assertEqual(payload["incomplete_tools"], [])
+
+    def test_absent_black_log_is_unknown_even_with_valid_flake8(self) -> None:
+        out = self.tmp / "partial.json"
+        empty = self.tmp / "valid_flake8.log"
+        empty.write_text("", encoding="utf-8")
+        argv = [
+            "--lane", "mixed", "--root", str(self.repo),
+            "--base", "HEAD~1",
+            "--flake8-log", str(empty),
+            "--black-log", str(self.tmp / "missing_black.log"),
+            "--out", str(out),
+        ]
+        self.assertEqual(red_root_delta.main(argv), 0)
+        payload = json.loads(out.read_text(encoding="utf-8"))
+        self.assertIsNone(payload["touched_findings_upper_bound"])
+        self.assertEqual(payload["touched_findings_qualification"], "INCOMPLETE_SCANNER_INPUTS")
+        self.assertEqual(payload["incomplete_tools"], ["black"])
+
+    def test_unparseable_bandit_never_yields_verified_zero(self) -> None:
+        payload = self._run("HEAD~1", bandit_json="{")
+        self.assertIsNone(payload["touched_findings_upper_bound"])
+        self.assertEqual(payload["touched_findings_qualification"], "INCOMPLETE_SCANNER_INPUTS")
+        self.assertEqual(payload["incomplete_tools"], ["bandit"])
+
+    def test_no_selected_scanners_is_unknown(self) -> None:
+        payload = self._run("HEAD~1")
+        self.assertIsNone(payload["touched_findings_upper_bound"])
+        self.assertEqual(payload["touched_findings_qualification"], "NO_SCANNERS_SELECTED")
+
+    def test_valid_positive_finding_retains_bound(self) -> None:
+        payload = self._run(
+            "HEAD~1",
+            flake8_log="pkg/new.py:3:1: F821 undefined name 'missing'\\n",
+        )
+        self.assertEqual(payload["touched_findings_upper_bound"], 1)
+        self.assertEqual(payload["touched_findings_qualification"], "QUALIFIED_INPUTS_ONLY")
+
+    def test_unknown_bound_is_explicit_in_summary(self) -> None:
+        payload = self._run("HEAD~1", bandit_json="{broken")
+        summary = red_root_delta.summary_markdown(payload)
+        self.assertIn("Qualified touched-file bound: **UNKNOWN**", summary)
+        self.assertIn("INCOMPLETE_SCANNER_INPUTS", summary)
+        self.assertNotIn("Qualified touched-file bound: **0**", summary)
 
     def test_summary_is_written_and_states_evidence_only(self) -> None:
         summary = self.tmp / "summary.md"
