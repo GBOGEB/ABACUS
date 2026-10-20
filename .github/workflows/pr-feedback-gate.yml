@@ -94,17 +94,48 @@ jobs:
             "${args[@]}" --list-prs)
           echo "prs=$prs" >> "$GITHUB_OUTPUT"
 
+      # Optional observation only: does not alter route outputs, pending stamps,
+      # existing evaluator fan-in or the non-compensating review gate.
+      - name: Emit read-only routing yield
+        if: success()
+        continue-on-error: true
+        env:
+          ROUTED_PRS: ${{ steps.route.outputs.prs }}
+        run: |
+          python ci/governance/feedback_route_yield_w38.py \
+            --event-path "$GITHUB_EVENT_PATH" \
+            --routed-prs "$ROUTED_PRS" \
+            --event-name "$GITHUB_EVENT_NAME" \
+            --repository "$GITHUB_REPOSITORY" \
+            --event-sha "$GITHUB_SHA" \
+            --gate-run-id "$GITHUB_RUN_ID" \
+            --gate-attempt "$GITHUB_RUN_ATTEMPT"
+
   # A tracking-issue close or edit must invalidate a deferral-backed success
   # at once. The census it triggers queues behind any census already running
   # for the PR, which could otherwise publish a success computed from the old
   # issue. This job sits outside that queue and marks the check pending with
   # a newer census stamp, so the running census cannot publish over it and
   # any success it already published is replaced.
+  #
+  # A head change (synchronize/reopened) is invalidated the same way. A
+  # success stays attached to its SHA, so a PR moved A -> B -> A would
+  # otherwise re-expose A's earlier success until the queued census of the
+  # returning head runs (#1878).
   invalidate:
     name: Invalidate PR feedback gate (#${{ matrix.pr }})
     needs: route
     if: >-
-      github.event_name == 'issues'
+      (
+        github.event_name == 'issues'
+        || (
+          github.event_name == 'pull_request'
+          && (
+            github.event.action == 'synchronize'
+            || github.event.action == 'reopened'
+          )
+        )
+      )
       && needs.route.outputs.prs != '[]'
     runs-on: ubuntu-latest
     strategy:
@@ -142,8 +173,14 @@ jobs:
 
   evaluate:
     name: Evaluate PR feedback gate (#${{ matrix.pr }})
-    needs: route
-    if: needs.route.outputs.prs != '[]'
+    # Run after this event's own invalidation, so the invalidator's pending
+    # stamp is always older than this census and cannot reject its result.
+    # A skipped or failed invalidation must not block the census itself.
+    needs: [route, invalidate]
+    if: >-
+      !cancelled()
+      && needs.route.result == 'success'
+      && needs.route.outputs.prs != '[]'
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false

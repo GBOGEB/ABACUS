@@ -1,0 +1,172 @@
+name: CODE PURPLE Hosted Operator Flight
+run-name: Hosted / ${{ inputs.profile || 'page-qa' }} / ${{ inputs.expected_main_sha || github.sha }}
+on:
+  pull_request:
+    paths:
+      - 'docs/operator/**'
+      - 'docs/index.html'
+      - 'docs/tools/index.html'
+      - '.github/workflows/code-purple-hosted-operator.yml'
+  workflow_dispatch:
+    inputs:
+      profile:
+        description: Bounded source-owned task, no arbitrary shell or uploaded binary
+        required: true
+        type: choice
+        options: [mcl-unit, runner-contract, bridge-contract, gui-contract, debug-preflight, task-census, pipeline-3p]
+      expected_main_sha:
+        description: Exact current 40-hex main SHA from hosted operator
+        required: true
+        type: string
+permissions:
+  contents: read
+concurrency:
+  group: hosted-operator-${{ github.ref }}-${{ inputs.profile || 'contract' }}
+  cancel-in-progress: false
+jobs:
+  page-contract:
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+          persist-credentials: false
+      - name: Assert source SHA, semantic HTML, CSP and JavaScript
+        env:
+          HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$HEAD_SHA"
+          node --check docs/operator/operator.js
+          python - <<'PY'
+          from html.parser import HTMLParser
+          from pathlib import Path
+          root=Path('docs/operator')
+          html=(root/'index.html').read_text()
+          js=(root/'operator.js').read_text()
+          css=(root/'operator.css').read_text()
+          class Scan(HTMLParser):
+              def __init__(self):
+                  super().__init__();self.ids=[];self.refs=[];self.h1=0;self.title=0
+              def handle_starttag(self, tag, attrs):
+                  d=dict(attrs)
+                  if 'id' in d:self.ids.append(d['id'])
+                  if tag=='h1':self.h1+=1
+                  if tag=='title':self.title+=1
+                  if tag in ('link','script'):self.refs.append(d.get('href') or d.get('src'))
+          d=Scan();d.feed(html)
+          assert d.h1==1 and d.title==1 and len(d.ids)==len(set(d.ids))
+          assert {'exact-main','run-link','profile','runs-body','w45-status','w45-jobs'}.issubset(d.ids)
+          assert './operator.js' in d.refs and './operator.css' in d.refs
+          assert "connect-src https://api.github.com" in html
+          for forbidden in ('localStorage','sessionStorage','Authorization:','eval(','new Function('):
+              assert forbidden not in js, forbidden
+          assert 'mcp-readiness' in js and 'private-binary' in js
+          assert 'max-width:560px' in css and 'focus-visible' in css
+          assert 'MERGE ADMISSION' in html
+          print('HOSTED_STATIC_CONTRACT_PASS')
+          PY
+      - name: Preserve sole Pages publisher
+        run: |
+          set -euo pipefail
+          test -f .github/workflows/deploy-docs.yml
+          grep -q 'actions/deploy-pages' .github/workflows/deploy-docs.yml
+      - name: Report not admitted or published
+        if: always()
+        run: echo 'Page QA is not deployment or merge admission.' >> "$GITHUB_STEP_SUMMARY"
+  authenticated-run:
+    if: >-
+      github.event_name == 'workflow_dispatch' &&
+      github.repository == 'GBOGEB/ABACUS' &&
+      github.ref == 'refs/heads/main' &&
+      github.actor == 'GBOGEB'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+      - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97
+        with:
+          python-version: '3.11'
+      - name: Fail closed on source, main transition and unauthorized profile
+        shell: bash
+        env:
+          EXPECTED_SHA: ${{ inputs.expected_main_sha }}
+          PROFILE: ${{ inputs.profile }}
+        run: |
+          set -euo pipefail
+          [[ "$EXPECTED_SHA" =~ ^[0-9a-f]{40}$ ]]
+          test "$(git rev-parse HEAD)" = "$EXPECTED_SHA"
+          LIVE_MAIN="$(git ls-remote --heads origin main | cut -f1)"
+          test -n "$LIVE_MAIN" && test "$LIVE_MAIN" = "$EXPECTED_SHA"
+          case "$PROFILE" in
+            mcl-unit|runner-contract|bridge-contract|gui-contract|debug-preflight|task-census|pipeline-3p) ;;
+            *) echo 'BLOCKED_UNKNOWN_OR_REMOTE_PROFILE' >&2; exit 6;;
+          esac
+      - name: Execute finite read-only test/pipeline profile
+        shell: bash
+        env:
+          PROFILE: ${{ inputs.profile }}
+          EXPECTED_SHA: ${{ inputs.expected_main_sha }}
+        run: |
+          set -euo pipefail
+          OUT="$RUNNER_TEMP/hosted-operator"
+          mkdir -p "$OUT"
+          git rev-parse HEAD > "$OUT/executed-sha.txt"
+          set +e
+          case "$PROFILE" in
+            mcl-unit) python -m unittest discover -s tests -p test_mission_control_lite.py -v > "$OUT/step.log" 2>&1;;
+            runner-contract) python -m unittest discover -s tests -p test_runner_wait.py -v > "$OUT/step.log" 2>&1;;
+            bridge-contract) python -m unittest discover -s tests -p test_qps_binary_bridge.py -v > "$OUT/step.log" 2>&1;;
+            gui-contract) python -m unittest discover -s tools/everred_v3/sut_gui/tests -p 'test_*.py' -v > "$OUT/step.log" 2>&1;;
+            debug-preflight) python -m compileall -q mission_control_lite tools/everred_v3/sut_gui tools/qps_binary_bridge.py > "$OUT/step.log" 2>&1;;
+            task-census) python -m unittest discover -s tests -p test_mcl_artifact_roundtrip.py -v > "$OUT/step.log" 2>&1 && python -m mission_control_lite.cli census --db "$OUT/empty-scratch.sqlite" >> "$OUT/step.log" 2>&1;;
+            pipeline-3p) python tools/generic_3p_pipeline.py --root . --out-dir "$OUT/3p" --history "$OUT/3p/history.jsonl" --repeat 1 --source-sha "$EXPECTED_SHA" > "$OUT/step.log" 2>&1;;
+            *) echo 'DENIED_PROFILE' > "$OUT/step.log"; false;;
+          esac
+          rc=$?
+          set -e
+          if grep -Eq 'Ran 0 tests|no tests ran' "$OUT/step.log"; then rc=7; fi
+          printf '%s\n' "$rc" > "$OUT/exit-code.txt"
+          test "$rc" -eq 0
+      - name: Record provenance and immutable red or green receipt
+        if: always()
+        env:
+          PROFILE: ${{ inputs.profile }}
+          EXPECTED_SHA: ${{ inputs.expected_main_sha }}
+        run: |
+          python - <<'PY'
+          import json,hashlib,os,re
+          from pathlib import Path
+          out=Path(os.environ['RUNNER_TEMP'])/'hosted-operator'
+          out.mkdir(parents=True,exist_ok=True)
+          sha=(out/'executed-sha.txt').read_text().strip() if (out/'executed-sha.txt').exists() else None
+          code=(out/'exit-code.txt').read_text().strip() if (out/'exit-code.txt').exists() else None
+          identity=bool(sha and re.fullmatch('[0-9a-f]{40}',sha) and sha==os.environ.get('EXPECTED_SHA'))
+          paths=sorted(p for p in out.rglob('*') if p.is_file() and p.name!='receipt.json')
+          safe=len(paths)<=40 and all(not p.is_symlink() and p.stat().st_size<=8388608 for p in paths)
+          artifacts=[{'path':p.relative_to(out).as_posix(),'bytes':p.stat().st_size,'sha256':hashlib.sha256(p.read_bytes()).hexdigest()} for p in paths] if safe else []
+          receipt={'schema':'code-purple.hosted.native.v1','repository':'GBOGEB/ABACUS',
+            'profile':os.environ.get('PROFILE'),'source_sha':sha if identity else None,
+            'requested_sha':os.environ.get('EXPECTED_SHA'),
+            'run_id':os.environ.get('GITHUB_RUN_ID'),'run_attempt':os.environ.get('GITHUB_RUN_ATTEMPT'),
+            'job_id':None,'status':'PASS_ENGINEERING_ONLY' if code=='0' and identity and safe else 'RED_OR_NOT_EXECUTED',
+            'exit_code':code,'artifacts':artifacts,'merge_authorized':False,'security_waiver':False,
+            'eligible_review':False,'mcp_remote_dispatch':False,'owner_attestation':False}
+          canonical=json.dumps(receipt,sort_keys=True,separators=(',',':')).encode()
+          receipt['receipt_sha256']=hashlib.sha256(canonical).hexdigest()
+          (out/'receipt.json').write_text(json.dumps(receipt,indent=2,sort_keys=True)+'\n')
+          print(receipt['status'],receipt['receipt_sha256'])
+          PY
+      - name: Upload attempt-scoped engineering output
+        if: always()
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9
+        with:
+          name: hosted-operator-${{ inputs.profile }}-${{ github.run_id }}-a${{ github.run_attempt }}
+          path: ${{ runner.temp }}/hosted-operator
+          if-no-files-found: warn
+          retention-days: 14

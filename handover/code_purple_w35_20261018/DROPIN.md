@@ -1,0 +1,15 @@
+# W35 CP.RESUME — copy-ready, governed
+
+Continue CODE PURPLE W35 from **GitHub-first exact-head evidence**, preserving previous W34 and W38 observations. Do not restart or duplicate an already merged/source-owned work item. Re-resolve `GBOGEB/ABACUS` default `main` and exact SHA, and actual default branches of CODEX, cryoplant-project, pipeline-automation-hub and gg_MATH. The W35 cut pinned main `2246c7bd3a9bda6a3d43b9a9116cb7088cfbcc88` only as a dated source snapshot.
+
+**Read:** `MIP/EVIDENCE_TO_ADMISSION_OBSERVATORY/global/ledger.json` and generated W38 index (canonical presentation); W35 `tools/everred_v3/dashboard/{mission_control_w35.html,w35_ledger.json}`; `handover/code_purple_w35_20261018/{HANDOVER.md,QA_REPORT.json,MANIFEST.json}`. Read linked owner #1860 and W10 comment 6214640143, effective ruleset #24494381; check all mandatory status contexts, bypasses, required eligible review, last-push safeguard and externally blocked RED canary.
+
+**Disjoint implementation heads:** `code-purple/w35-global-live-bridge-20261018` (HTML navigation, W35 historical/source ledger, GitHub default-ref resolution); `code-purple/w35-disjoint-census-20261018` (strict analytics adapter, 38 locally passing negative tests, synthetic fixture, sample read-only rollup). Neither branch is evidence of a properly governed merge. Check their *current exact* HEAD and review/CI results before adding any new source work.
+
+**N+1 scout:** First verify complete terminal exact-main B0 [39164360709](https://github.com/GBOGEB/ABACUS/actions/runs/39164360709), full 9-cell interpreter matrix, security/A10, artifacts and human review; this run was queued at the W35 readback. W38 independently targeted 203/203 Py3.12 tests, 707/723 focused covered opportunities vs 660/723 (+47), four families. W81 and W82 have 12/16 remaining missed opportunities; propose owner-owned reverse/fault-injection behavior on exact paths and frozen 723 denominator. Elsewhere historical 40 ranked paths / 77 zero-coverage dispositions / 5,872 potential misses must be re-scanned at current main before assigning workers.
+
+**STOP:** While ruleset has 0 required approvals, 0 required check rules, 6 always-bypass integrations and no verified blocked-RED canary, keep `MERGE_ADMISSION=HOLD`; no merge, CI rerun/dispatch or changes to protections. Only authorized admin and independent reviewer may restore server-side controls. Source/test growth workers may prepare disjoint local negatives but not claim admission. After restoration, qualify ≤6 new focused native cells and the full matrix separately, compare same-source and method, then wait for source+artifact byte proofs. Three genuinely independent comparable terminal zero-gain transitions can stop a local slice; never label that Six Sigma certification.
+
+**No simulated achievements:** Real GitHub fetch, parse and display ≠ accepted producer receipt. Do not infer root closure, CODEX Crew/REX, QPS disposition, owner attestation, security remediation, waiver or full V2 replay from a webpage or PR merge. Preserve all immutable failed runs.
+
+CP.RESUME(source=GITHUB_FIRST,mode=VERIFY_REFRESH_EXECUTE,horizon=G3P:N_TO_N_PLUS_3)

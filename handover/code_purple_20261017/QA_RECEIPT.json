@@ -1,0 +1,45 @@
+{
+  "schema": "qps-artifact-qa/1.0",
+  "source": {
+    "locator": "GBOGEB/ABACUS handover/code_purple_20261017 at draft PR #2179",
+    "semantic_sha256": null,
+    "git_sha": "8a12738fbd2add593b4e11876018e6d450fdf54e"
+  },
+  "artifacts": {
+    "html": {
+      "path": "handover/code_purple_20261017/taxonomy.html",
+      "sha256": null,
+      "status": "DEFER"
+    },
+    "local_mirror_html": {
+      "path": "LOCAL_ZIP/taxonomy.html",
+      "sha256": null,
+      "status": "PASS"
+    },
+    "local_zip": {
+      "path": "CODE_PURPLE_LOSSLESS_HANDOVER_20261017.zip",
+      "sha256": "0f02c6fe1c150a93293596155043057acdf6a0a27519b13526e0a17fbbb49b20",
+      "status": "PASS"
+    }
+  },
+  "checks": {
+    "structural": "PASS",
+    "formula_or_content": "PASS",
+    "render_visual": "PASS",
+    "playwright": "PASS",
+    "cross_format_parity": "DEFER"
+  },
+  "evidence_level": "LOCAL_REPRODUCIBILITY",
+  "defects": [
+    "Initial local label edit rerender produced a page exception; in-place edit handler fixed in local mirror and GitHub viewer template. Browser QA passed after fix.",
+    "CLI default output location corrected to repository dist."
+  ],
+  "notes": [
+    "Local Chromium Playwright used set_content because file:// and localhost navigation were blocked by administrator. This proves in-memory DOM/interaction/responsive QA only.",
+    "Desktop 1440x1000, laptop 1280x800, mobile 390x844: zero JS errors, zero console errors, zero overflow; search/category/edit/download controls passed on the local mirrored HTML.",
+    "GitHub committed rendered HTML and local ZIP are distinct projections; exact byte equality is not attested.",
+    "Local ZIP 16 files passed SHA256 manifest verification and reproducible second build with same ZIP checksum.",
+    "Native PR #2179 full CI/security and independent review were queued/pending at the post-commit readback; no P0 admission or merge claimed.",
+    "Portable operational snapshot is not a verbatim transcript or fully admitted handover V2 raw-evidence capsule."
+  ]
+}

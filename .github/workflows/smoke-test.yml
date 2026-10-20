@@ -7,9 +7,14 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v7
-      - uses: actions/setup-python@v7.0.0
-        with: { python-version: "3.12" }
+      - uses: actions/setup-python@v7
+        with:
+          python-version: "3.12"
       - name: Self Smoke
         run: |
           python scripts/recursive_build.py --smoke --index GLOBAL_index.json
-
+      - name: Handover V2 tuple lineage regression
+        if: hashFiles('tools/handover_v2/tests/test_tuple_lineage.py') != ''
+        run: |
+          python -m unittest discover -s tools/handover_v2/tests \
+            -p test_tuple_lineage.py -v

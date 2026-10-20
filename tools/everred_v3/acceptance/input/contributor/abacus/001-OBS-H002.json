@@ -1,0 +1,28 @@
+{
+  "authority_transfer": false,
+  "evidence": {
+    "artifact_sha256": "846dcdb6217a1055485c8ce3942b0b6973aad3b47b8be460dc5620458343cc01",
+    "classification": "native_api",
+    "url": "https://github.com/GBOGEB/ABACUS/actions/runs/39021567900/artifacts/12096846922"
+  },
+  "id": "OBS-H002",
+  "measurement": {
+    "denominator": 191,
+    "numerator": 191,
+    "scope": "module"
+  },
+  "obligation_id": "CP-H002",
+  "pulse": 1,
+  "schema": "codepurple.acceptance.observation.v1",
+  "security_waiver": false,
+  "sequence": 0,
+  "subject": {
+    "base_sha": "133e5a082f74dd99a65bfda5308d7071523904d1",
+    "epoch": 0,
+    "head_sha": "068ca4a7d1f8a74e3f8e0ef28c388f5a6ca8b52b",
+    "policy_sha": "cf414990bc092083584d11ca3376c8923cf41b7e",
+    "ref": "pull/2091/head",
+    "repo": "GBOGEB/ABACUS"
+  },
+  "verdict": "PASS"
+}

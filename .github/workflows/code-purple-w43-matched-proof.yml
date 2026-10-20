@@ -1,0 +1,161 @@
+name: CODE PURPLE W43 Matched Evidence Penetration
+on:
+  pull_request:
+    paths:
+      - 'scripts/cbd_rerun_wave_planner.py'
+      - 'scripts/ci_matrix_proof_audit.py'
+      - 'tests/test_cbd_rerun_wave_planner.py'
+      - 'tests/test_ci_matrix_proof_audit.py'
+      - 'tests/test_w40_ci_proof_mutation.py'
+      - '.github/workflows/code-purple-w43-matched-proof.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: code-purple-w43-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+jobs:
+  fixed-source-n-nplus:
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - {os: ubuntu-24.04, python: '3.10'}
+          - {os: ubuntu-24.04, python: '3.12'}
+          - {os: windows-2022, python: '3.11'}
+          - {os: macos-15, python: '3.12'}
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 25
+    steps:
+      - name: Checkout exact PR source
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+      - name: Set Python
+        uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97
+        with:
+          python-version: ${{ matrix.python }}
+      - name: Install bounded test instrumentation
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -m pip install pytest==9.1.1 pytest-cov==5.0.0 coverage==7.16.2 defusedxml==0.7.1 numpy==2.2.6
+      - name: Baseline N preserved tests
+        shell: bash
+        env:
+          EXACT_HEAD: ${{ github.event.pull_request.head.sha || github.sha }}
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$EXACT_HEAD"
+          mkdir -p artifacts/w43
+          python -m pytest -q \
+            tests/test_cbd_rerun_wave_planner.py \
+            tests/test_ci_matrix_proof_audit.py \
+            --cov=scripts --cov-branch \
+            --cov-report=json:artifacts/w43/n-coverage.json \
+            --junitxml=artifacts/w43/n-junit.xml
+      - name: N+1 preserve baseline and add disjoint behavioral tests
+        shell: bash
+        env:
+          EXACT_HEAD: ${{ github.event.pull_request.head.sha || github.sha }}
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$EXACT_HEAD"
+          python -m pytest -q \
+            tests/test_cbd_rerun_wave_planner.py \
+            tests/test_ci_matrix_proof_audit.py \
+            tests/test_w40_ci_proof_mutation.py \
+            --cov=scripts --cov-branch \
+            --cov-report=json:artifacts/w43/nplus-coverage.json \
+            --junitxml=artifacts/w43/nplus-junit.xml
+      - name: Compare matched source, test identities and branch opportunities
+        shell: bash
+        env:
+          EXACT_HEAD: ${{ github.event.pull_request.head.sha || github.sha }}
+          RUN_ID: ${{ github.run_id }}
+          RUN_ATTEMPT: ${{ github.run_attempt }}
+          CELL: ${{ matrix.os }}-py${{ matrix.python }}
+          MODULES: '["scripts/cbd_rerun_wave_planner.py","scripts/ci_matrix_proof_audit.py"]'
+          ADDITIONAL_CASE_TOKEN: 'test_w40_ci_proof_mutation'
+          EXPECTED_ADDED: '12'
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          import hashlib
+          import json
+          import os
+          from pathlib import Path
+          import xml.etree.ElementTree as ET
+
+          out = Path("artifacts/w43")
+          targets = json.loads(os.environ["MODULES"])
+          data = []
+          observed = []
+          for epoch, prefix in (("N", "n"), ("N+1", "nplus")):
+              cov = json.loads((out / (prefix + "-coverage.json")).read_text())
+              assert cov.get("meta", {}).get("branch_coverage") is True
+              junit = ET.parse(out / (prefix + "-junit.xml"))
+              cases = list(junit.iter("testcase"))
+              identities = [(c.get("classname"), c.get("name")) for c in cases]
+              assert identities and len(set(identities)) == len(identities)
+              assert not any(c.find(x) is not None for c in cases
+                             for x in ("failure", "error", "skipped"))
+              modules = []
+              for target in targets:
+                  hits = [key for key in cov["files"]
+                          if key.replace("\\", "/").endswith(target)]
+                  assert len(hits) == 1, (epoch, target, hits)
+                  row = cov["files"][hits[0]]["summary"]
+                  for n, d in (("covered_lines", "num_statements"),
+                               ("covered_branches", "num_branches")):
+                      assert isinstance(row[n], int) and isinstance(row[d], int)
+                      assert 0 <= row[n] <= row[d] and row[d] > 0
+                  modules.append({"source": target,
+                                  "sha256": hashlib.sha256(Path(target).read_bytes()).hexdigest(),
+                                  "statements": [row["covered_lines"], row["num_statements"]],
+                                  "branches": [row["covered_branches"], row["num_branches"]]})
+              data.append({"epoch": epoch, "cases": len(cases), "modules": modules})
+              observed.append(set(identities))
+          assert observed[0].issubset(observed[1]), "baseline cases culled"
+          added = [key for key in observed[1] - observed[0]
+                   if os.environ["ADDITIONAL_CASE_TOKEN"] in (key[0] or "")]
+          assert len(added) == int(os.environ["EXPECTED_ADDED"]), (len(added), added)
+          b0, b1 = data[0]["modules"], data[1]["modules"]
+          assert [(x["source"], x["sha256"]) for x in b0] == [
+              (x["source"], x["sha256"]) for x in b1]
+          assert [(x["statements"][1], x["branches"][1]) for x in b0] == [
+              (x["statements"][1], x["branches"][1]) for x in b1]
+          before = sum(x["statements"][0] + x["branches"][0] for x in b0)
+          after = sum(x["statements"][0] + x["branches"][0] for x in b1)
+          assert after > before, ("no new executable coverage", before, after)
+          assert all(x["statements"][0] >= y["statements"][0] and
+                     x["branches"][0] >= y["branches"][0] for y, x in zip(b0, b1))
+          sha = os.environ["EXACT_HEAD"]
+          assert len(sha) == 40 and all(c in "0123456789abcdef" for c in sha)
+          receipt = {"schema": "codepurple.w43.matched-depth.v1",
+                     "repository": "GBOGEB/ABACUS", "head_sha": sha,
+                     "run_id": int(os.environ["RUN_ID"]),
+                     "attempt": int(os.environ["RUN_ATTEMPT"]),
+                     "native_job_id": None, "cell": os.environ["CELL"],
+                     "epochs": data, "before_covered": before, "after_covered": after,
+                     "new_covered_opportunities": after - before,
+                     "accepted_main_coverage": None,
+                     "formal_root_closed": None, "merge_admission": "HOLD",
+                     "security_waiver": False, "independent_review": None,
+                     "authenticated_dispatch": False}
+          (out / "receipt.json").write_text(json.dumps(receipt, indent=2, sort_keys=True) + "\n")
+          (out / "SHA256.json").write_text(json.dumps({
+              p.name: hashlib.sha256(p.read_bytes()).hexdigest()
+              for p in sorted(out.iterdir()) if p.name != "SHA256.json"
+          }, indent=2, sort_keys=True) + "\n")
+          print(json.dumps(receipt, sort_keys=True))
+          PY
+      - name: Upload native read-only evidence even when RED
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: w43-${{ matrix.os }}-py${{ matrix.python }}-${{ github.run_id }}-a${{ github.run_attempt }}
+          path: artifacts/w43/
+          if-no-files-found: warn
+          retention-days: 30

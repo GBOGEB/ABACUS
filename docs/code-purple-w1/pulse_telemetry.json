@@ -1,0 +1,260 @@
+{
+  "authority_transfer": false,
+  "collected_at": null,
+  "date_precision": "DATE_ONLY",
+  "dmaic": {
+    "ANALYZE": "Target shortfall, duplicate-candidate joins, provenance mismatch and packaging blocker",
+    "CONTROL": "Immutable N+2 forecasts, native exact-head retest and independent review before closure",
+    "DEFINE": "P0 admission gates, independent sources, first-red family inventory",
+    "IMPROVE": "Disjoint canonical-owner repairs; DOE is a prospective plan not a successful experiment",
+    "MEASURE": "21 PR-associated statuses, B9 253/625, governance 158/160, 11 manifestations, re-test 66/73"
+  },
+  "evidence_level": "LOCAL_REPRODUCIBILITY",
+  "federation": {
+    "authority_transfer": false,
+    "engineering_owner": "GBOGEB/cryoplant-project",
+    "formal_credit_delta": 0,
+    "independent_replay": "GBOGEB/ABACUS",
+    "provider": "GBOGEB/gg_MATH",
+    "qualified_native_hops": null,
+    "semantic_challenge": "GBOGEB/CODEX"
+  },
+  "gates": {
+    "P0": "UNKNOWN",
+    "P1": "FAIL",
+    "P2": "UNKNOWN",
+    "P3": "UNKNOWN",
+    "P4": "FAIL",
+    "P5": "FAIL",
+    "P6": "UNKNOWN",
+    "P7": "UNKNOWN"
+  },
+  "master_input_ledger": {
+    "members": null,
+    "reason": "Prior Master_Input Repo Ledger ZIP not mounted; do not infer its contents.",
+    "status": "UNAVAILABLE"
+  },
+  "merge_authorized": false,
+  "methods": {
+    "ANOVA_DOE": {
+      "reason": "no randomized matched replicates, factor/run confounding not resolved",
+      "state": "DESIGN_ONLY"
+    },
+    "Bradley_Terry": {
+      "reason": "no 30 observed pair outcomes / connected win graph; no constructed wins",
+      "state": "HOLD"
+    },
+    "PCA": {
+      "reason": "no >=30 independent units x >=2 comparable quantitative variables; current run rows unsuitable",
+      "state": "HOLD"
+    },
+    "causal_root_priority": {
+      "reason": "source-root causal DAG and independent co-blockers not verified",
+      "state": "HOLD"
+    },
+    "coverage_gap_arithmetic": {
+      "math_topic": "exact ratio/threshold",
+      "maturity": "CORE",
+      "state": "READY"
+    },
+    "descriptive_status_pareto": {
+      "math_topic": "categorical descriptive analysis",
+      "maturity": "CORE",
+      "state": "READY"
+    },
+    "time_series": {
+      "reason": "date-only single snapshot, no ordered repeated comparable cohort",
+      "state": "HOLD"
+    },
+    "wilson_interval": {
+      "reason": "nonrandom dependent workflow observations; binomial IID not established",
+      "state": "DEFER"
+    }
+  },
+  "metrics": {
+    "admission": "HOLD",
+    "candidate_occurrences": 10,
+    "coverage_denominator": 625,
+    "coverage_numerator": 253,
+    "coverage_percent": 40.48,
+    "coverage_shortfall_lines_fixed_denominator": 247,
+    "coverage_target_covered_lines_fixed_denominator": 500,
+    "coverage_target_percent": 80,
+    "dependent_occurrences": 1,
+    "first_red_domain_counts": {
+      "Code quality": 2,
+      "Confidentiality": 1,
+      "Coverage": 1,
+      "Dependency": 2,
+      "Documentation": 1,
+      "Downstream summary": 1,
+      "Governance": 1,
+      "Security": 2
+    },
+    "first_red_occurrences": 11,
+    "first_red_per_run_id": {
+      "38825923697": 5,
+      "38825923758": 1,
+      "38825923773": 2,
+      "38825923797": 1,
+      "38825923810": 1,
+      "38825923811": 1
+    },
+    "governance_classified": 158,
+    "governance_percent": 98.75,
+    "governance_total": 160,
+    "head_sha": "abdf3d80e3cb4d581d7ef2f61d0dd4bb873d7d34",
+    "local_test_replay_error": 7,
+    "local_test_replay_pass": 66,
+    "local_test_replay_total": 73,
+    "merge_checkout_sha": "0ffd810f1eb5a85cdfe6a61401cefad0a754091a",
+    "nested_historical_archive_available": false,
+    "packaged_main_manifest_files": 29,
+    "packaged_main_manifest_verified": 29,
+    "recorded_previous_local_test_pass": 73,
+    "replay_status": "FAIL_MISSING_FIXTURE",
+    "verified_causal_roots": null,
+    "verified_root_closures": null,
+    "workflow_failure_over_terminal": 0.3,
+    "workflow_success_over_all": 0.666667,
+    "workflow_success_over_terminal": 0.7,
+    "workflow_total": 21,
+    "workflows": {
+      "CANCELLED": 1,
+      "FAIL": 6,
+      "PASS": 14
+    }
+  },
+  "mip": {
+    "P1_3PR": "Refresh, Probe, Rank method readiness",
+    "P2_MIP": "Modernize, Innovate, Perpetuate via typed telemetry + source-bound ID",
+    "P3_3PC": "Prepare, Prove, Commit separately governed",
+    "P4_3P3": "Pin, Propagate, Prove cross-repo only after identities authenticated"
+  },
+  "provenance": {
+    "derived": "Ratios, floor gap, grouping and ranked execution priorities only",
+    "historical": "147/149 telemetry-source statement coverage unrelated to B9",
+    "local": "Uploaded ZIP manifest verified; historical nested fixtures absent",
+    "native": "PR_ASSOCIATED_WORKFLOW_READBACK; checkout SHAs vary",
+    "required_native": "Distinct exact source/job/attempt/artifact identities and governance outcomes"
+  },
+  "queue": [
+    {
+      "closure_evidence": null,
+      "id": "BD-001",
+      "lane": "Governance",
+      "next_proof": "Classify 2 workflows and regenerate canonical inventory",
+      "observation": "Unclassified workflow definitions and generated inventory",
+      "owner_scope": "CI Workflow Governance",
+      "priority": "P0",
+      "state": "OPEN_NOT_CLOSED"
+    },
+    {
+      "closure_evidence": null,
+      "id": "BD-002",
+      "lane": "A10 confidentiality",
+      "next_proof": "Authorized owner review without copying content",
+      "observation": "Restricted appendix disposition",
+      "owner_scope": "a10-guard",
+      "priority": "P0",
+      "state": "OPEN_NOT_CLOSED"
+    },
+    {
+      "closure_evidence": null,
+      "id": "BD-003",
+      "lane": "Security - Safety",
+      "next_proof": "Source-owned security remediation and scanner fingerprint verification",
+      "observation": "Distinct Safety nonzero enforcement",
+      "owner_scope": "CI/CD Test Suite",
+      "priority": "P0",
+      "state": "OPEN_NOT_CLOSED"
+    },
+    {
+      "closure_evidence": null,
+      "id": "BD-004",
+      "lane": "Security - Bandit",
+      "next_proof": "Matched scanner diff and root grouping; no blanket waiver",
+      "observation": "Bandit scanner failure independent of Safety",
+      "owner_scope": "CI/CD Test Suite",
+      "priority": "P0",
+      "state": "OPEN_NOT_CLOSED"
+    },
+    {
+      "closure_evidence": null,
+      "id": "BD-005",
+      "lane": "Python 3.10 dependency",
+      "next_proof": "Resolve matplotlib constraint and retest 3.10/3.12",
+      "observation": "Two similar installer incompatibility occurrences",
+      "owner_scope": "CI - ABACUS Matrix",
+      "priority": "P1",
+      "state": "OPEN_NOT_CLOSED"
+    },
+    {
+      "closure_evidence": null,
+      "id": "BD-006",
+      "lane": "Coverage B9",
+      "next_proof": "Instrument build_handover.py negative branches; measured rerun",
+      "observation": "Native changed-production-line coverage below floor",
+      "owner_scope": "CI - ABACUS Matrix",
+      "priority": "P1",
+      "state": "OPEN_NOT_CLOSED"
+    },
+    {
+      "closure_evidence": null,
+      "id": "BD-007",
+      "lane": "Packaging lineage",
+      "next_proof": "Include original manifest+members or change export contract; never forge receipts",
+      "observation": "Nested historical archive absent from uploaded ZIP",
+      "owner_scope": "local testflight replay",
+      "priority": "P1",
+      "state": "OPEN_NOT_CLOSED"
+    },
+    {
+      "closure_evidence": null,
+      "id": "BD-008",
+      "lane": "Source formatting",
+      "next_proof": "Bounded formatter repairs with independent checks",
+      "observation": "Black / isort separately attributed",
+      "owner_scope": "CI/CD Test Suite",
+      "priority": "P1",
+      "state": "OPEN_NOT_CLOSED"
+    },
+    {
+      "closure_evidence": null,
+      "id": "BD-009",
+      "lane": "Documentation validation",
+      "next_proof": "Fix canonical docs/YAML sources then check generator",
+      "observation": "Markdown and YAML lint",
+      "owner_scope": "Validate Docs",
+      "priority": "P1",
+      "state": "OPEN_NOT_CLOSED"
+    },
+    {
+      "closure_evidence": null,
+      "id": "BD-010",
+      "lane": "Downstream dependent",
+      "next_proof": "Re-evaluate only after upstream source failures clear",
+      "observation": "Full Red Proof Summary inherited failure",
+      "owner_scope": "CI/CD Test Suite",
+      "priority": "P2",
+      "state": "OPEN_NOT_CLOSED"
+    }
+  ],
+  "root_closure_credit": null,
+  "schema": "code-purple.dmaic-mip-ggmath.pulse.v1",
+  "security_waiver": false,
+  "source": {
+    "archived_integrity_claim_is_not_source_archives": true,
+    "head_sha": "abdf3d80e3cb4d581d7ef2f61d0dd4bb873d7d34",
+    "manifest": {
+      "files_declared": 29,
+      "files_matching": 29,
+      "files_missing_or_changed": [],
+      "manifest_sha256": "1c1d452a7d3f3a14272a9cc47a3b3b26f172e32d7db84e3a13fefd19329e871e",
+      "status": "PASS"
+    },
+    "merge_checkout_sha": "0ffd810f1eb5a85cdfe6a61401cefad0a754091a",
+    "repository": "GBOGEB/ABACUS",
+    "snapshot_sha256": "f364ace8d9f99ea417c00f9c8c4ea013917c03e81f5a81c6ebaffc3a6123cf5a"
+  }
+}

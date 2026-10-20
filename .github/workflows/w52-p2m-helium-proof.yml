@@ -14,7 +14,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v7
-      - uses: actions/setup-python@v7.0.0
+      - uses: actions/setup-python@v7
         with:
           python-version: '3.11'
           cache: pip
@@ -27,19 +27,19 @@ jobs:
       - name: Generate numerical receipt
         run: |
           mkdir -p artifacts/w52_p2m
-          python - <<'PY' > artifacts/w52_p2m/LKT_2K_OP_ABW_enthalpy_receipt.json
+          python - <<'PY' > artifacts/w52_p2m/SUPPLIER_B_2K_OP_ABW_enthalpy_receipt.json
           import json
           from qplant.w52_p2l_b_flow_enthalpy import report
           print(json.dumps(report(), indent=2, sort_keys=True))
           PY
       - name: Display receipt
-        run: cat artifacts/w52_p2m/LKT_2K_OP_ABW_enthalpy_receipt.json
+        run: cat artifacts/w52_p2m/SUPPLIER_B_2K_OP_ABW_enthalpy_receipt.json
       - name: Validate receipt is non-empty JSON
         run: |
-          test -s artifacts/w52_p2m/LKT_2K_OP_ABW_enthalpy_receipt.json
-          python -m json.tool artifacts/w52_p2m/LKT_2K_OP_ABW_enthalpy_receipt.json >/dev/null
+          test -s artifacts/w52_p2m/SUPPLIER_B_2K_OP_ABW_enthalpy_receipt.json
+          python -m json.tool artifacts/w52_p2m/SUPPLIER_B_2K_OP_ABW_enthalpy_receipt.json >/dev/null
       - name: Upload receipt
-        uses: actions/upload-artifact@v7.0.2
+        uses: actions/upload-artifact@v7
         with:
           name: w52-p2m-helium-receipt
-          path: artifacts/w52_p2m/LKT_2K_OP_ABW_enthalpy_receipt.json
+          path: artifacts/w52_p2m/SUPPLIER_B_2K_OP_ABW_enthalpy_receipt.json

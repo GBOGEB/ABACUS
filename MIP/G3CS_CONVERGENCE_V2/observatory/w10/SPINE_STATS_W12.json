@@ -1,0 +1,741 @@
+{
+  "epoch_sha256": "fe6dc4780e5441efc50ebad742240cd61ec5d0e71fe51448dac84b039a93e745",
+  "governance": {
+    "accepted_rex": null,
+    "authenticated_workers": null,
+    "authority_transfer": false,
+    "formal_root_closure": null,
+    "merge_admission": "HOLD",
+    "security_waiver": false
+  },
+  "graph": {
+    "all_path_mandatory_nodes": [
+      "stage:federation_return",
+      "stage:graph",
+      "stage:ingest",
+      "stage:publish",
+      "stage:verify"
+    ],
+    "asset_nodes_by_owner": {
+      "GBOGEB/ABACUS": 15,
+      "GBOGEB/CODEX": 5,
+      "GBOGEB/cryoplant-project": 4
+    },
+    "classification": "DESCRIPTIVE_DESIGN_STRUCTURE_NOT_INDEPENDENT_RUNTIME_SAMPLES",
+    "customer": "stage:federation_return",
+    "directed_density": 0.03453453,
+    "distinct_source_to_customer_paths": 6,
+    "edge_type_counts": {
+      "DERIVES": 12,
+      "OBSERVATION_ONLY": 2,
+      "OWNS": 24,
+      "SOURCE_INPUT": 8
+    },
+    "edge_type_entropy_bits": 1.630983,
+    "edges": 46,
+    "edges_are_executed_triggers": false,
+    "formal_causal_root_credit": null,
+    "highest_fanout_nodes": [
+      {
+        "id": "stage:verify",
+        "outgoing_observational_edges": 3
+      },
+      {
+        "id": "stage:graph",
+        "outgoing_observational_edges": 2
+      },
+      {
+        "id": "asset:GBOGEB/ABACUS:.github/workflows/mip-coverage-evidence.yml",
+        "outgoing_observational_edges": 1
+      },
+      {
+        "id": "asset:GBOGEB/ABACUS:MIP/G3CS_CONVERGENCE_V2/output/G3CS_CONVERGENCE_DAG.json",
+        "outgoing_observational_edges": 1
+      },
+      {
+        "id": "asset:GBOGEB/ABACUS:MIP/G3CS_CONVERGENCE_V2/output/G3CS_CONVERGENCE_SIPOC.svg",
+        "outgoing_observational_edges": 1
+      },
+      {
+        "id": "asset:GBOGEB/ABACUS:federation/manifest.yaml",
+        "outgoing_observational_edges": 1
+      },
+      {
+        "id": "asset:GBOGEB/ABACUS:scripts/cbd_matched_coverage_delta.py",
+        "outgoing_observational_edges": 1
+      },
+      {
+        "id": "asset:GBOGEB/ABACUS:tools/mip_ci_temporal_rollup.py",
+        "outgoing_observational_edges": 1
+      }
+    ],
+    "longest_dependency_path": [
+      "stage:ingest",
+      "stage:verify",
+      "stage:measure_ci",
+      "stage:graph",
+      "stage:review",
+      "stage:publish",
+      "stage:federation_return"
+    ],
+    "longest_dependency_path_hops": 6,
+    "max_nonownership_trigger_fanout": 3,
+    "node_table": [
+      {
+        "id": "repo:GBOGEB/ABACUS",
+        "in_degree": 0,
+        "kind": "REPOSITORY",
+        "observational_outgoing_edges": 15,
+        "on_all_ingest_to_return_paths": false,
+        "out_degree": 15,
+        "owner": "GBOGEB/ABACUS",
+        "reachable_to_customer": true,
+        "source_to_sink_paths_through": 0,
+        "structural_betweenness": 0.0
+      },
+      {
+        "id": "asset:GBOGEB/ABACUS:.github/workflows/mip-coverage-evidence.yml",
+        "in_degree": 1,
+        "kind": "ASSET",
+        "observational_outgoing_edges": 1,
+        "on_all_ingest_to_return_paths": false,
+        "out_degree": 1,
+        "owner": "GBOGEB/ABACUS",
+        "reachable_to_customer": true,
+        "source_to_sink_paths_through": 0,
+        "structural_betweenness": 0.00238095
+      },
+      {
+        "id": "asset:GBOGEB/ABACUS:DMAIC_V3/",
+        "in_degree": 1,
+        "kind": "ASSET",
+        "observational_outgoing_edges": 0,
+        "on_all_ingest_to_return_paths": false,
+        "out_degree": 0,
+        "owner": "GBOGEB/ABACUS",
+        "reachable_to_customer": false,
+        "source_to_sink_paths_through": 0,
+        "structural_betweenness": 0.0
+      },
+      {
+        "id": "asset:GBOGEB/ABACUS:MIP/G3CS_CONVERGENCE_V2/",
+        "in_degree": 1,
+        "kind": "ASSET",
+        "observational_outgoing_edges": 0,
+        "on_all_ingest_to_return_paths": false,
+        "out_degree": 0,
+        "owner": "GBOGEB/ABACUS",
+        "reachable_to_customer": false,
+        "source_to_sink_paths_through": 0,
+        "structural_betweenness": 0.0
+      },
+      {
+        "id": "asset:GBOGEB/ABACUS:MIP/G3CS_CONVERGENCE_V2/output/G3CS_CONVERGENCE_DAG.json",
+        "in_degree": 1,
+        "kind": "ASSET",
+        "observational_outgoing_edges": 1,
+        "on_all_ingest_to_return_paths": false,
+        "out_degree": 1,
+        "owner": "GBOGEB/ABACUS",
+        "reachable_to_customer": true,
+        "source_to_sink_paths_through": 0,
+        "structural_betweenness": 0.0015873
+      },
+      {
+        "id": "asset:GBOGEB/ABACUS:MIP/G3CS_CONVERGENCE_V2/output/G3CS_CONVERGENCE_DASHBOARD.html",
+        "in_degree": 1,
+        "kind": "ASSET",
+        "observational_outgoing_edges": 0,
+        "on_all_ingest_to_return_paths": false,
+        "out_degree": 0,
+        "owner": "GBOGEB/ABACUS",
+        "reachable_to_customer": false,
+        "source_to_sink_paths_through": 0,
+        "structural_betweenness": 0.0
+      },
+      {
+        "id": "asset:GBOGEB/ABACUS:MIP/G3CS_CONVERGENCE_V2/output/G3CS_CONVERGENCE_SIPOC.svg",
+        "in_degree": 1,
+        "kind": "ASSET",
+        "observational_outgoing_edges": 1,
+        "on_all_ingest_to_return_paths": false,
+        "out_degree": 1,
+        "owner": "GBOGEB/ABACUS",
+        "reachable_to_customer": true,
+        "source_to_sink_paths_through": 0,
+        "structural_betweenness": 0.0015873
+      },
+      {
+        "id": "asset:GBOGEB/ABACUS:MIP/G3CS_CONVERGENCE_V2/source/G3CS_CONVERGENCE_INPUT.json",
+        "in_degree": 1,
+        "kind": "ASSET",
+        "observational_outgoing_edges": 0,
+        "on_all_ingest_to_return_paths": false,
+        "out_degree": 0,
+        "owner": "GBOGEB/ABACUS",
+        "reachable_to_customer": false,
+        "source_to_sink_paths_through": 0,
+        "structural_betweenness": 0.0
+      },
+      {
+        "id": "asset:GBOGEB/ABACUS:MIP/G3CS_CONVERGENCE_V2/tests/test_postmerge_gate_receipt.py",
+        "in_degree": 1,
+        "kind": "ASSET",
+        "observational_outgoing_edges": 0,
+        "on_all_ingest_to_return_paths": false,
+        "out_degree": 0,
+        "owner": "GBOGEB/ABACUS",
+        "reachable_to_customer": false,
+        "source_to_sink_paths_through": 0,
+        "structural_betweenness": 0.0
+      },
+      {
+        "id": "asset:GBOGEB/ABACUS:MIP/G3CS_CONVERGENCE_V2/tools/converge.py",
+        "in_degree": 1,
+        "kind": "ASSET",
+        "observational_outgoing_edges": 0,
+        "on_all_ingest_to_return_paths": false,
+        "out_degree": 0,
+        "owner": "GBOGEB/ABACUS",
+        "reachable_to_customer": false,
+        "source_to_sink_paths_through": 0,
+        "structural_betweenness": 0.0
+      },
+      {
+        "id": "asset:GBOGEB/ABACUS:MIP/G3CS_CONVERGENCE_V2/tools/postmerge_gate_receipt.py",
+        "in_degree": 1,
+        "kind": "ASSET",
+        "observational_outgoing_edges": 0,
+        "on_all_ingest_to_return_paths": false,
+        "out_degree": 0,
+        "owner": "GBOGEB/ABACUS",
+        "reachable_to_customer": false,
+        "source_to_sink_paths_through": 0,
+        "structural_betweenness": 0.0
+      },
+      {
+        "id": "asset:GBOGEB/ABACUS:MIP/G3CS_CONVERGENCE_V2/tools/serial_main_pair.py",
+        "in_degree": 1,
+        "kind": "ASSET",
+        "observational_outgoing_edges": 0,
+        "on_all_ingest_to_return_paths": false,
+        "out_degree": 0,
+        "owner": "GBOGEB/ABACUS",
+        "reachable_to_customer": false,
+        "source_to_sink_paths_through": 0,
+        "structural_betweenness": 0.0
+      },
+      {
+        "id": "asset:GBOGEB/ABACUS:scripts/cbd_matched_coverage_delta.py",
+        "in_degree": 1,
+        "kind": "ASSET",
+        "observational_outgoing_edges": 1,
+        "on_all_ingest_to_return_paths": false,
+        "out_degree": 1,
+        "owner": "GBOGEB/ABACUS",
+        "reachable_to_customer": true,
+        "source_to_sink_paths_through": 0,
+        "structural_betweenness": 0.00079365
+      },
+      {
+        "id": "asset:GBOGEB/ABACUS:tests/test_g3cs_source_mutations.py",
+        "in_degree": 1,
+        "kind": "ASSET",
+        "observational_outgoing_edges": 0,
+        "on_all_ingest_to_return_paths": false,
+        "out_degree": 0,
+        "owner": "GBOGEB/ABACUS",
+        "reachable_to_customer": false,
+        "source_to_sink_paths_through": 0,
+        "structural_betweenness": 0.0
+      },
+      {
+        "id": "asset:GBOGEB/ABACUS:tools/mip_ci_temporal_rollup.py",
+        "in_degree": 1,
+        "kind": "ASSET",
+        "observational_outgoing_edges": 1,
+        "on_all_ingest_to_return_paths": false,
+        "out_degree": 1,
+        "owner": "GBOGEB/ABACUS",
+        "reachable_to_customer": true,
+        "source_to_sink_paths_through": 0,
+        "structural_betweenness": 0.00079365
+      },
+      {
+        "id": "repo:GBOGEB/CODEX",
+        "in_degree": 0,
+        "kind": "REPOSITORY",
+        "observational_outgoing_edges": 5,
+        "on_all_ingest_to_return_paths": false,
+        "out_degree": 5,
+        "owner": "GBOGEB/CODEX",
+        "reachable_to_customer": true,
+        "source_to_sink_paths_through": 0,
+        "structural_betweenness": 0.0
+      },
+      {
+        "id": "asset:GBOGEB/CODEX:.github/workflows/missioncontrol-owner-comment-transport.yml",
+        "in_degree": 1,
+        "kind": "ASSET",
+        "observational_outgoing_edges": 0,
+        "on_all_ingest_to_return_paths": false,
+        "out_degree": 0,
+        "owner": "GBOGEB/CODEX",
+        "reachable_to_customer": false,
+        "source_to_sink_paths_through": 0,
+        "structural_betweenness": 0.0
+      },
+      {
+        "id": "asset:GBOGEB/CODEX:federation/rex/REPO_REX_RETURN_TEMPLATE_v1.yaml",
+        "in_degree": 1,
+        "kind": "ASSET",
+        "observational_outgoing_edges": 1,
+        "on_all_ingest_to_return_paths": false,
+        "out_degree": 1,
+        "owner": "GBOGEB/CODEX",
+        "reachable_to_customer": true,
+        "source_to_sink_paths_through": 0,
+        "structural_betweenness": 0.00039683
+      },
+      {
+        "id": "asset:GBOGEB/CODEX:mission_control/mycelium/execution_gateway_contract.yaml",
+        "in_degree": 1,
+        "kind": "ASSET",
+        "observational_outgoing_edges": 0,
+        "on_all_ingest_to_return_paths": false,
+        "out_degree": 0,
+        "owner": "GBOGEB/CODEX",
+        "reachable_to_customer": false,
+        "source_to_sink_paths_through": 0,
+        "structural_betweenness": 0.0
+      },
+      {
+        "id": "asset:GBOGEB/CODEX:scripts/missioncontrol_authenticated_transport.py",
+        "in_degree": 1,
+        "kind": "ASSET",
+        "observational_outgoing_edges": 0,
+        "on_all_ingest_to_return_paths": false,
+        "out_degree": 0,
+        "owner": "GBOGEB/CODEX",
+        "reachable_to_customer": false,
+        "source_to_sink_paths_through": 0,
+        "structural_betweenness": 0.0
+      },
+      {
+        "id": "repo:GBOGEB/cryoplant-project",
+        "in_degree": 0,
+        "kind": "REPOSITORY",
+        "observational_outgoing_edges": 4,
+        "on_all_ingest_to_return_paths": false,
+        "out_degree": 4,
+        "owner": "GBOGEB/cryoplant-project",
+        "reachable_to_customer": true,
+        "source_to_sink_paths_through": 0,
+        "structural_betweenness": 0.0
+      },
+      {
+        "id": "asset:GBOGEB/cryoplant-project:federation/acceptance_dashboard/index.html",
+        "in_degree": 1,
+        "kind": "ASSET",
+        "observational_outgoing_edges": 1,
+        "on_all_ingest_to_return_paths": false,
+        "out_degree": 1,
+        "owner": "GBOGEB/cryoplant-project",
+        "reachable_to_customer": true,
+        "source_to_sink_paths_through": 0,
+        "structural_betweenness": 0.00079365
+      },
+      {
+        "id": "asset:GBOGEB/cryoplant-project:federation/golden_thread/CONTRACT_v1.yaml",
+        "in_degree": 1,
+        "kind": "ASSET",
+        "observational_outgoing_edges": 0,
+        "on_all_ingest_to_return_paths": false,
+        "out_degree": 0,
+        "owner": "GBOGEB/cryoplant-project",
+        "reachable_to_customer": false,
+        "source_to_sink_paths_through": 0,
+        "structural_betweenness": 0.0
+      },
+      {
+        "id": "asset:GBOGEB/cryoplant-project:federation/manifest.yaml",
+        "in_degree": 1,
+        "kind": "ASSET",
+        "observational_outgoing_edges": 1,
+        "on_all_ingest_to_return_paths": false,
+        "out_degree": 1,
+        "owner": "GBOGEB/cryoplant-project",
+        "reachable_to_customer": true,
+        "source_to_sink_paths_through": 0,
+        "structural_betweenness": 0.0015873
+      },
+      {
+        "id": "asset:GBOGEB/ABACUS:federation/manifest.yaml",
+        "in_degree": 2,
+        "kind": "ASSET",
+        "observational_outgoing_edges": 1,
+        "on_all_ingest_to_return_paths": false,
+        "out_degree": 1,
+        "owner": "GBOGEB/ABACUS",
+        "reachable_to_customer": true,
+        "source_to_sink_paths_through": 0,
+        "structural_betweenness": 0.00396825
+      },
+      {
+        "id": "asset:GBOGEB/CODEX:mission_control/mycelium/control_manifest.yaml",
+        "in_degree": 2,
+        "kind": "ASSET",
+        "observational_outgoing_edges": 1,
+        "on_all_ingest_to_return_paths": false,
+        "out_degree": 1,
+        "owner": "GBOGEB/CODEX",
+        "reachable_to_customer": true,
+        "source_to_sink_paths_through": 0,
+        "structural_betweenness": 0.00277778
+      },
+      {
+        "id": "asset:GBOGEB/cryoplant-project:ssot/",
+        "in_degree": 1,
+        "kind": "ASSET",
+        "observational_outgoing_edges": 0,
+        "on_all_ingest_to_return_paths": false,
+        "out_degree": 0,
+        "owner": "GBOGEB/cryoplant-project",
+        "reachable_to_customer": false,
+        "source_to_sink_paths_through": 0,
+        "structural_betweenness": 0.0
+      },
+      {
+        "id": "stage:ingest",
+        "in_degree": 1,
+        "kind": "STAGE",
+        "observational_outgoing_edges": 1,
+        "on_all_ingest_to_return_paths": true,
+        "out_degree": 1,
+        "owner": "GBOGEB/ABACUS",
+        "reachable_to_customer": true,
+        "source_to_sink_paths_through": 6,
+        "structural_betweenness": 0.00873016
+      },
+      {
+        "id": "stage:verify",
+        "in_degree": 1,
+        "kind": "STAGE",
+        "observational_outgoing_edges": 3,
+        "on_all_ingest_to_return_paths": true,
+        "out_degree": 3,
+        "owner": "GBOGEB/ABACUS",
+        "reachable_to_customer": true,
+        "source_to_sink_paths_through": 6,
+        "structural_betweenness": 0.01349206
+      },
+      {
+        "id": "stage:measure_ci",
+        "in_degree": 2,
+        "kind": "STAGE",
+        "observational_outgoing_edges": 1,
+        "on_all_ingest_to_return_paths": false,
+        "out_degree": 1,
+        "owner": "GBOGEB/ABACUS",
+        "reachable_to_customer": true,
+        "source_to_sink_paths_through": 2,
+        "structural_betweenness": 0.00793651
+      },
+      {
+        "id": "stage:measure_coverage",
+        "in_degree": 2,
+        "kind": "STAGE",
+        "observational_outgoing_edges": 1,
+        "on_all_ingest_to_return_paths": false,
+        "out_degree": 1,
+        "owner": "GBOGEB/ABACUS",
+        "reachable_to_customer": true,
+        "source_to_sink_paths_through": 2,
+        "structural_betweenness": 0.00793651
+      },
+      {
+        "id": "stage:measure_issues",
+        "in_degree": 1,
+        "kind": "STAGE",
+        "observational_outgoing_edges": 1,
+        "on_all_ingest_to_return_paths": false,
+        "out_degree": 1,
+        "owner": "GBOGEB/ABACUS",
+        "reachable_to_customer": true,
+        "source_to_sink_paths_through": 2,
+        "structural_betweenness": 0.00396825
+      },
+      {
+        "id": "stage:graph",
+        "in_degree": 4,
+        "kind": "STAGE",
+        "observational_outgoing_edges": 2,
+        "on_all_ingest_to_return_paths": true,
+        "out_degree": 2,
+        "owner": "GBOGEB/ABACUS",
+        "reachable_to_customer": true,
+        "source_to_sink_paths_through": 6,
+        "structural_betweenness": 0.02936508
+      },
+      {
+        "id": "stage:review",
+        "in_degree": 1,
+        "kind": "STAGE",
+        "observational_outgoing_edges": 1,
+        "on_all_ingest_to_return_paths": false,
+        "out_degree": 1,
+        "owner": "GBOGEB/ABACUS",
+        "reachable_to_customer": true,
+        "source_to_sink_paths_through": 3,
+        "structural_betweenness": 0.00793651
+      },
+      {
+        "id": "stage:sipoc",
+        "in_degree": 2,
+        "kind": "STAGE",
+        "observational_outgoing_edges": 1,
+        "on_all_ingest_to_return_paths": false,
+        "out_degree": 1,
+        "owner": "GBOGEB/ABACUS",
+        "reachable_to_customer": true,
+        "source_to_sink_paths_through": 3,
+        "structural_betweenness": 0.01031746
+      },
+      {
+        "id": "stage:publish",
+        "in_degree": 2,
+        "kind": "STAGE",
+        "observational_outgoing_edges": 1,
+        "on_all_ingest_to_return_paths": true,
+        "out_degree": 1,
+        "owner": "GBOGEB/ABACUS",
+        "reachable_to_customer": true,
+        "source_to_sink_paths_through": 6,
+        "structural_betweenness": 0.01031746
+      },
+      {
+        "id": "stage:federation_return",
+        "in_degree": 4,
+        "kind": "STAGE",
+        "observational_outgoing_edges": 0,
+        "on_all_ingest_to_return_paths": true,
+        "out_degree": 0,
+        "owner": "GBOGEB/ABACUS",
+        "reachable_to_customer": true,
+        "source_to_sink_paths_through": 6,
+        "structural_betweenness": 0.0
+      }
+    ],
+    "nodes": 37,
+    "observed_failure_propagation_probability": null,
+    "source": "stage:ingest",
+    "top_structural_betweenness": [
+      {
+        "id": "stage:graph",
+        "in_degree": 4,
+        "kind": "STAGE",
+        "observational_outgoing_edges": 2,
+        "on_all_ingest_to_return_paths": true,
+        "out_degree": 2,
+        "owner": "GBOGEB/ABACUS",
+        "reachable_to_customer": true,
+        "source_to_sink_paths_through": 6,
+        "structural_betweenness": 0.02936508
+      },
+      {
+        "id": "stage:verify",
+        "in_degree": 1,
+        "kind": "STAGE",
+        "observational_outgoing_edges": 3,
+        "on_all_ingest_to_return_paths": true,
+        "out_degree": 3,
+        "owner": "GBOGEB/ABACUS",
+        "reachable_to_customer": true,
+        "source_to_sink_paths_through": 6,
+        "structural_betweenness": 0.01349206
+      },
+      {
+        "id": "stage:publish",
+        "in_degree": 2,
+        "kind": "STAGE",
+        "observational_outgoing_edges": 1,
+        "on_all_ingest_to_return_paths": true,
+        "out_degree": 1,
+        "owner": "GBOGEB/ABACUS",
+        "reachable_to_customer": true,
+        "source_to_sink_paths_through": 6,
+        "structural_betweenness": 0.01031746
+      },
+      {
+        "id": "stage:sipoc",
+        "in_degree": 2,
+        "kind": "STAGE",
+        "observational_outgoing_edges": 1,
+        "on_all_ingest_to_return_paths": false,
+        "out_degree": 1,
+        "owner": "GBOGEB/ABACUS",
+        "reachable_to_customer": true,
+        "source_to_sink_paths_through": 3,
+        "structural_betweenness": 0.01031746
+      },
+      {
+        "id": "stage:ingest",
+        "in_degree": 1,
+        "kind": "STAGE",
+        "observational_outgoing_edges": 1,
+        "on_all_ingest_to_return_paths": true,
+        "out_degree": 1,
+        "owner": "GBOGEB/ABACUS",
+        "reachable_to_customer": true,
+        "source_to_sink_paths_through": 6,
+        "structural_betweenness": 0.00873016
+      },
+      {
+        "id": "stage:measure_ci",
+        "in_degree": 2,
+        "kind": "STAGE",
+        "observational_outgoing_edges": 1,
+        "on_all_ingest_to_return_paths": false,
+        "out_degree": 1,
+        "owner": "GBOGEB/ABACUS",
+        "reachable_to_customer": true,
+        "source_to_sink_paths_through": 2,
+        "structural_betweenness": 0.00793651
+      },
+      {
+        "id": "stage:measure_coverage",
+        "in_degree": 2,
+        "kind": "STAGE",
+        "observational_outgoing_edges": 1,
+        "on_all_ingest_to_return_paths": false,
+        "out_degree": 1,
+        "owner": "GBOGEB/ABACUS",
+        "reachable_to_customer": true,
+        "source_to_sink_paths_through": 2,
+        "structural_betweenness": 0.00793651
+      },
+      {
+        "id": "stage:review",
+        "in_degree": 1,
+        "kind": "STAGE",
+        "observational_outgoing_edges": 1,
+        "on_all_ingest_to_return_paths": false,
+        "out_degree": 1,
+        "owner": "GBOGEB/ABACUS",
+        "reachable_to_customer": true,
+        "source_to_sink_paths_through": 3,
+        "structural_betweenness": 0.00793651
+      }
+    ],
+    "wall_clock_critical_path_seconds": null
+  },
+  "graph_sha256": "441bda1443e96c35c15d4b9b1e4ecbef3c494a2fde5ba480b31523c72b7c813e",
+  "inference": {
+    "ANOVA": {
+      "gate": "Disjoint treatments with >=10 genuinely independent wave blocks/group for exploratory model; residual/cluster checks",
+      "state": "NOT_QUALIFIED",
+      "why": "No independent randomized/blocked treatment groups or distribution diagnostics"
+    },
+    "Bayesian_trend": {
+      "gate": "Explicit prior, matched scope, instrumented reliability/exposure counts and calibration holdout",
+      "state": "NOT_QUALIFIED",
+      "why": "Prior and likelihood would dominate 3 unlike-source main epochs"
+    },
+    "Bradley_Terry_BT": {
+      "gate": "Connected head-to-head trials with repeated independent blocks, both win/loss, uncertainty intervals",
+      "state": "NOT_QUALIFIED",
+      "why": "BT interpreted as Bradley-Terry strategy ranking; no balanced paired wins/losses with connected comparison graph"
+    },
+    "DNN_temporal": {
+      "gate": "Hundreds+ independent source-bound repeated waves, time-based train/test split, drift and calibration tests",
+      "state": "NOT_QUALIFIED",
+      "why": "Only 3 serial green main epochs and highly dependent workflow tests; extreme overfitting risk"
+    },
+    "MANOVA": {
+      "gate": "Predeclared outcomes, >=20 independent wave blocks/group and more residual df than outcomes; assumptions checked",
+      "state": "NOT_QUALIFIED",
+      "why": "Too few independent multivariate group observations; correlated CI jobs are pseudo-replicates"
+    },
+    "PCA": {
+      "gate": "At least max(20,5*features) source-matched independent waves; stable features and diagnostics",
+      "state": "NOT_QUALIFIED",
+      "why": "Only 3 changing-source main epochs; a 37-node fixed graph is not 37 independent measurements"
+    },
+    "SPC_control_chart": {
+      "gate": "~20+ suitably independent and comparable sequential observations after source/method changes are handled",
+      "state": "NOT_QUALIFIED",
+      "why": "3 nonstationary green main snapshots cannot estimate stable process limits"
+    },
+    "authority_transfer": false,
+    "bootstrap_temporal": {
+      "gate": "Cluster by wave/source head and preserve temporal blocks; avoid resampling correlated jobs as independent",
+      "state": "NOT_QUALIFIED",
+      "why": "Two transitions are not sufficient independent clusters for time-series bootstrap"
+    },
+    "causal_failure_prediction": {
+      "gate": "Capture exact run:attempt:job:step, trigger event, edge fire status, latency, failure root and restart",
+      "state": "NOT_QUALIFIED",
+      "why": "Typed DAG edges are descriptive; no observed per-edge activation/failure or propagation times"
+    },
+    "confidence_intervals": null,
+    "effective_independent_waves": "UNKNOWN_UNTIL_WAVE_CLUSTER_DEDUP_AND_SCOPE_AUDIT",
+    "independent_source_coverage_epochs": 3,
+    "inference_ready": false,
+    "merge_admission": "HOLD",
+    "next_wave_prediction": null,
+    "p_values": null,
+    "safe_now": [
+      "Directed fan-out, degree, betweenness, longest-path hops, path bottlenecks, typed edges, descriptive coverage deltas"
+    ]
+  },
+  "sample_design": {
+    "N_plus_i_mode": "ITERATIVE_APPEND_ONLY_EXACT_SHA_EPOCHS",
+    "runtime_trigger_receipts": null,
+    "unit": "INDEPENDENT_SOURCE_BOUND_WAVE_CLUSTER_NOT_TEST_JOB",
+    "worker_retries_are_not_independent": true
+  },
+  "schema": "codepurple.spine.w12.dependency-statistics.v1",
+  "source_history_sha256": "25345ea8b0366bb8c86dd6b778734d93084f659bb9e1d86e7647c20d1f67dede",
+  "temporal": {
+    "classification": "THREE_DESCRIPTIVE_GREEN_MAIN_EPOCHS_DIFFERENT_CODE_DENOMINATORS",
+    "deltas": [
+      {
+        "after_sha": "97a8b13faff577272a90edaf0dd4593035e10605",
+        "before_sha": "585dd7476d3b3c629f864c37ec7d7526a648b4c0",
+        "covered_delta": 636,
+        "eligible_delta": 646,
+        "fixed_population_causal_delta": null,
+        "portfolio_coverage_pp_delta": 0.38979,
+        "uncovered_delta": 10
+      },
+      {
+        "after_sha": "9e0200190555736c74295ee74881e3c003e8a35c",
+        "before_sha": "97a8b13faff577272a90edaf0dd4593035e10605",
+        "covered_delta": 417,
+        "eligible_delta": 297,
+        "fixed_population_causal_delta": null,
+        "portfolio_coverage_pp_delta": 0.41333,
+        "uncovered_delta": -120
+      }
+    ],
+    "independent_observation_units_for_inferential_modeling": null,
+    "job_runtime_p95_seconds": null,
+    "observed_main_percentages": [
+      66.955037,
+      67.344828,
+      67.758158
+    ],
+    "observed_transitions": 2,
+    "observed_uncovered_counts": [
+      17036,
+      17046,
+      16926
+    ],
+    "predicted_next_wave_gain": null,
+    "queue_p95_seconds": null,
+    "root_recurrence_rate": null,
+    "same_source_scope_all_epochs": false,
+    "statistical_control_limits": null,
+    "successive_green_main_epochs": 3
+  }
+}

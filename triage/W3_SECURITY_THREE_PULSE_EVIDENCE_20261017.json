@@ -1,0 +1,86 @@
+{
+  "schema": "abacus.w3.security_three_pulse_measurement.v1",
+  "source_repo": "GBOGEB/ABACUS",
+  "clock": "ordered_native_source_pulse",
+  "scope": "Ariana isolated secure JUnit OS/Python test cohort; source differences recorded",
+  "pulse1": {
+    "head_sha": "b511aa9c8f43f23ee2769c7e0254525b9fcc6adf",
+    "run_id": 39064141553,
+    "attempt": 1,
+    "os_python_cells": 3,
+    "native_success_jobs": 3,
+    "native_failure_jobs": 0,
+    "artifact_count": 3,
+    "artifact_ids": [
+      12112965816,
+      12112053386,
+      12112038478
+    ],
+    "artifacts_with_sha256": 3,
+    "status": "NATIVE_SUCCESS"
+  },
+  "pulse2": {
+    "head_sha": "c4c86bae0e23ff5f0ec6e4f5a72b239e1b4768da",
+    "run_id": 39064371857,
+    "attempt": 1,
+    "os_python_cells": 9,
+    "native_success_jobs": 9,
+    "native_failure_jobs": 0,
+    "artifact_count": 9,
+    "artifact_ids": [
+      12113110656,
+      12112936759,
+      12112785925,
+      12112727105,
+      12112726935,
+      12112573333,
+      12112538974,
+      12112489469,
+      12111704707
+    ],
+    "artifacts_with_sha256": 9,
+    "status": "NATIVE_SUCCESS"
+  },
+  "pulse3": {
+    "status": "NATIVE_FAILED",
+    "run_id": 39065353875,
+    "attempt": 1,
+    "head_sha": "b9204e1d8fe5f5131f3c53776f99917e0141d206",
+    "design_os_python_cells": 9,
+    "observed_native_failure_jobs": 9,
+    "observed_native_success_jobs": 0,
+    "artifact_count": 9,
+    "artifacts_with_sha256": 9,
+    "accepted_native_json_receipts": 0,
+    "first_red": "DUPLICATE_SECURE_JUNIT_DEFUSEDXML_REQUIREMENT_EXACTLY_ONE_REQUIRED",
+    "per_job_observed": {
+      "tests_passed": 22,
+      "tests_failed": 2
+    },
+    "forecast_result": "MISS",
+    "preregistered_comment_id": 6240126487
+  },
+  "stability": {
+    "label": "NOT_STATISTICALLY_ESTABLISHED_FIRST_RED_CHANGED",
+    "reason": "Pulse1 3/3, Pulse2 9/9, Pulse3 0/9; independent source revisions. Concurrent merge introduced duplicate secure XML parser lines. Never infer process stability or Six Sigma capability."
+  },
+  "admission": "HOLD",
+  "authority_transfer": false,
+  "security_waiver": false,
+  "remote_crew_launch_id": null,
+  "accepted_rex": null,
+  "evidence_links": [
+    "https://github.com/GBOGEB/ABACUS/actions/runs/39064141553",
+    "https://github.com/GBOGEB/ABACUS/actions/runs/39064371857",
+    "https://github.com/GBOGEB/ABACUS/issues/1860#issuecomment-6240126487",
+    "https://github.com/GBOGEB/ABACUS/actions/runs/39065353875"
+  ],
+  "pulse4": {
+    "status": "FOLLOWUP_CORRECTION_UNOBSERVED",
+    "run_id": null,
+    "attempt": null,
+    "head_sha": null,
+    "design_os_python_cells": 9,
+    "forecast_kind": "categorical_not_assured"
+  }
+}

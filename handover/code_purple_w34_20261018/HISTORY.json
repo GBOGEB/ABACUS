@@ -1,0 +1,110 @@
+{
+  "schema": "abacus.codepurple.w34.immutable-epochs.v1",
+  "semantics": "append_only_dated_observations; no retroactive current-head promotion",
+  "epochs": [
+    {
+      "wave": "W10-20261016",
+      "type": "HISTORICAL",
+      "canonical": "https://github.com/GBOGEB/ABACUS/issues/1860#issuecomment-6214640143",
+      "head": "54da377cf82a358ac97903ecde0270c975b8fcc1",
+      "head_class": "historical_only",
+      "observed": "PR #2023 matplotlib Python3.10 install and PR #2026 Safety nonzero failures; no admitted merges"
+    },
+    {
+      "wave": "W27",
+      "type": "HISTORICAL_SCOPED_NATIVE",
+      "pr": 2249,
+      "head": "973325f338c9b539aca2b43172809d511e42a4a4",
+      "run": 39150064513,
+      "attempt": 1,
+      "jobs": {
+        "successful": 4,
+        "total": 4
+      },
+      "cohort": "TestPilot fixed 200 opportunities per cell",
+      "source_class": "historical"
+    },
+    {
+      "wave": "W31",
+      "type": "EXACT_MAIN_NATIVE",
+      "head": "0dd018768f46dbfecf8aad872776d4ba3f6d4fc8",
+      "run": 39156907500,
+      "attempt": 1,
+      "job": 117762201715,
+      "jobs": {
+        "successful": 11,
+        "total": 13
+      },
+      "pytest": {
+        "pass": 4781,
+        "fail": 2,
+        "skip": 2
+      },
+      "root_classification": [
+        "NUMPY_CONTRACT_STALE",
+        "G3CS_SKIP_UNCLASSIFIED"
+      ],
+      "verified_current": false
+    },
+    {
+      "wave": "W32",
+      "type": "HISTORICAL_NATIVE_AT_EXACT_MAIN",
+      "head": "405e161d0090bbe94a33e298fb031b6cdbc92cb0",
+      "pr": 2271,
+      "merge": true,
+      "run": 39159216550,
+      "attempt": 1,
+      "job_ids": [
+        117768767583,
+        117768767545,
+        117768767628,
+        117768767787,
+        117768767650,
+        117768767455,
+        117768767304
+      ],
+      "failed_manifestations": 7,
+      "shared_root": "NETWORKX_IMPORT_NOT_INSTALLED",
+      "repair_pr": 2272,
+      "governed_admission": false
+    },
+    {
+      "wave": "W33",
+      "type": "HISTORICAL_MAIN",
+      "head": "994ad6e73c748923841d92b12651e92d41b2d4ff",
+      "merge_prs": [
+        2273,
+        2272
+      ],
+      "native_b0": "nonterminal_on_earlier_W33_readback",
+      "source_owner_repair": "networkx pinned dev only; broad requirements-test gap remained"
+    },
+    {
+      "wave": "W34",
+      "type": "EXACT_MAIN_NATIVE",
+      "head": "994ad6e73c748923841d92b12651e92d41b2d4ff",
+      "run": 39159906022,
+      "attempt": 1,
+      "canonical_job": 117771668289,
+      "report_job": 117773239113,
+      "jobs": {
+        "successful": 11,
+        "total": 13
+      },
+      "pytest": {
+        "pass": 3854,
+        "fail": 3,
+        "skip": 1
+      },
+      "first_red": "G3CS_SKIP_MARKER_CONTRACT",
+      "three_branches_staged": true,
+      "github_native_requalification": null
+    }
+  ],
+  "invariants": [
+    "Historical receipts are immutable; never count a prior head's green as current-head qualification.",
+    "A merged PR is an observed GitHub event, not governed admission.",
+    "No older test suite count is reused after a change in source/test denominator.",
+    "A first-red root can manifest in multiple jobs; root closure requires independent disposition."
+  ]
+}

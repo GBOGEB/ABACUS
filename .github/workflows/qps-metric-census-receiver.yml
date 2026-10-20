@@ -1,0 +1,77 @@
+name: QPS Metric Census Receiver
+
+on:
+  workflow_dispatch:
+    inputs:
+      wave:
+        description: Exact QPS census wave, e.g. N1
+        type: string
+        required: true
+      selector:
+        description: Bounded DAG route
+        type: choice
+        options:
+          - all
+          - native_checks
+          - coverage_catalog
+        required: true
+        default: all
+      request_id:
+        description: Source-bound request ID from Mission Control
+        type: string
+        required: true
+      expected_sha:
+        description: Exact current source SHA, 40 lowercase hex chars
+        type: string
+        required: true
+  repository_dispatch:
+    types:
+      - qps-metric-census-v1
+
+permissions:
+  contents: read
+  actions: read
+  checks: read
+
+jobs:
+  native-check-census:
+    if: >-
+      (github.event_name == 'repository_dispatch' &&
+       (github.event.client_payload.selector == 'all' ||
+        github.event.client_payload.selector == 'native_checks')) ||
+      (github.event_name == 'workflow_dispatch' &&
+       (inputs.selector == 'all' || inputs.selector == 'native_checks'))
+    uses: "GBOGEB/pipeline-automation-hub/.github/workflows/\
+      qps-metric-census-receiver.yml@dd606d8897c70fa797a3a585fa12850bacd1d9e1"
+    with:
+      route: native_checks
+      wave: ${{ github.event.client_payload.wave || inputs.wave }}
+      selector: ${{ github.event.client_payload.selector || inputs.selector }}
+      request_id: >-
+        ${{ github.event.client_payload.request_id ||
+        inputs.request_id }}
+      expected_sha: >-
+        ${{ github.event.client_payload.expected_sha ||
+        inputs.expected_sha }}
+      toolkit_ref: dd606d8897c70fa797a3a585fa12850bacd1d9e1
+
+  coverage-catalog:
+    if: >-
+      (github.event_name == 'repository_dispatch' &&
+       (github.event.client_payload.selector == 'all' ||
+        github.event.client_payload.selector == 'coverage_catalog')) ||
+      (github.event_name == 'workflow_dispatch' &&
+       (inputs.selector == 'all' || inputs.selector == 'coverage_catalog'))
+    uses: "GBOGEB/pipeline-automation-hub/.github/workflows/\
+      qps-metric-census-receiver.yml@dd606d8897c70fa797a3a585fa12850bacd1d9e1"
+    with:
+      route: coverage_catalog
+      wave: ${{ github.event.client_payload.wave || inputs.wave }}
+      selector: ${{ github.event.client_payload.selector || inputs.selector }}
+      request_id: >-
+        ${{ github.event.client_payload.request_id ||
+        inputs.request_id }}
+      expected_sha: >-
+        ${{ github.event.client_payload.expected_sha ||
+        inputs.expected_sha }}
+      toolkit_ref: dd606d8897c70fa797a3a585fa12850bacd1d9e1

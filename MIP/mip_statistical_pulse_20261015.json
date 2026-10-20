@@ -1,0 +1,75 @@
+{
+  "schema": "mip.statistical.pulse.v1",
+  "date": "2026-10-15",
+  "parent_sha": "7c93c5d54e5e790f0066cfbe79e5416508262ebb",
+  "scope": "scripts/mip_statistical_readiness.py only; local branch coverage",
+  "python_version": "3.12.14",
+  "coverage_version": "7.16.2",
+  "baseline": {
+    "statistical_tests_passed": 15,
+    "coverage": {
+      "covered_lines": 81,
+      "num_statements": 99,
+      "percent_covered": 83.44370860927152,
+      "percent_covered_display": "83",
+      "missing_lines": 18,
+      "excluded_lines": 0,
+      "percent_statements_covered": 81.81818181818181,
+      "percent_statements_covered_display": "82",
+      "num_branches": 52,
+      "num_partial_branches": 5,
+      "covered_branches": 45,
+      "missing_branches": 7,
+      "percent_branches_covered": 86.53846153846153,
+      "percent_branches_covered_display": "87"
+    }
+  },
+  "pulse": {
+    "statistical_tests_passed": 30,
+    "related_mip_tests_passed": 44,
+    "coverage": {
+      "covered_lines": 150,
+      "num_statements": 150,
+      "percent_covered": 99.56140350877193,
+      "percent_covered_display": "99",
+      "missing_lines": 0,
+      "excluded_lines": 0,
+      "percent_statements_covered": 100.0,
+      "percent_statements_covered_display": "100",
+      "num_branches": 78,
+      "num_partial_branches": 1,
+      "covered_branches": 77,
+      "missing_branches": 1,
+      "percent_branches_covered": 98.71794871794872,
+      "percent_branches_covered_display": "99"
+    },
+    "changed_executable_lines": 55,
+    "changed_executable_covered": 55
+  },
+  "matched_unchanged_statement_cohort": {
+    "eligible": 95,
+    "baseline_covered": 79,
+    "pulse_covered": 95,
+    "method": "difflib.SequenceMatcher exact unchanged lines, executable in both versions"
+  },
+  "verification_command": "python -m coverage run --branch --include='*/scripts/mip_statistical_readiness.py' -m unittest discover -s tests -p 'test_mip_statistical*.py'",
+  "snapshot": {
+    "ledger_rows": 13,
+    "matched_receipts": 13,
+    "source_shas": 3,
+    "new_process_observations": 0,
+    "statistically_independent_observations": null
+  },
+  "native_new_head": "PENDING",
+  "formal_root_closures": 0,
+  "merge_admission": "HOLD",
+  "missing_statistical_families": 6,
+  "source_sha256": {
+    "scripts/mip_statistical_readiness.py": "4e0c536b06f1ea0d074c87565fb7af8315c2fdfc577498762bde2b216dfe071c",
+    "tests/test_mip_statistical_readiness.py": "3dc4f111dfedd63d40ad25bf4f92f36ddb6f3db1d6216dfcca7c3ecf08749198",
+    "tests/test_mip_statistical_negative_controls.py": "b1b92f9fb97111dd4dbeab81178df8938d98b705ae0210a3fd61e4c2eacae23e",
+    ".github/workflows/bootstrap-integration.yml": "712c61ab12af15e46845d1540b0abee8b20040775daa381248cb01cc917fec54",
+    "MIP/mip_statistical_native_snapshot.json": "c9f53d955ace97adbdc125a05b9f71792bb50eb2967e37c4d76bf25f102c2883",
+    "MIP/M1_M3_STATISTICAL_MATURITY.md": "57a190d1ff04ad2911baaf32602babcda946933f7e1d090f13ded39b4778da5e"
+  }
+}

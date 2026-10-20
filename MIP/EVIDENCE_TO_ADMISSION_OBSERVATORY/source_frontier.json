@@ -1,0 +1,52 @@
+{
+  "schema": "codepurple.coverage_source_frontier.v1",
+  "evidence_level": "HISTORICAL_CANONICAL_B0_WITH_TWO_COMMIT_BLOB_EQUALITY",
+  "coverage_observed_main_sha": "97a8b13faff577272a90edaf0dd4593035e10605",
+  "coverage_run_id": 39142444027,
+  "coverage_artifact_id": 12142730864,
+  "coverage_configuration": "CANONICAL_B0_BRANCH_52200_OPPORTUNITIES",
+  "coverage_total_opportunities": 52200,
+  "independent_blob_recheck_main_sha": "9e0200190555736c74295ee74881e3c003e8a35c",
+  "candidate_freshness_policy": "REFETCH_EXACT_CURRENT_MAIN_BLOBS_ON_CENSUS; PRIOR_EVIDENCE_NEVER_MERGE_CREDIT",
+  "candidates": [
+    {
+      "family": "W75_STABILITY_DIAGNOSTIC",
+      "paths": ["tools/w75_stability_diagnostic.py"],
+      "eligible": 221,
+      "uncovered": 161,
+      "source_sha": "9e0200190555736c74295ee74881e3c003e8a35c",
+      "blob_sha": "ec7608c52c4ac4717dd5ee5c904764ff5c341172",
+      "first_red": null,
+      "test_method": "fault-injection, negative stability thresholds, reverse checks",
+      "root_closure": null
+    },
+    {
+      "family": "W81_REPAIR_OUTCOME_BLOCK",
+      "paths": ["tools/w81_repair_outcome_block.py"],
+      "eligible": 162,
+      "uncovered": 114,
+      "source_sha": "9e0200190555736c74295ee74881e3c003e8a35c",
+      "blob_sha": "76a9055cfa50c64bbfa95e7ae9418c9507c4cc02",
+      "first_red": null,
+      "test_method": "false-green prevention, invalid outcome reversals",
+      "root_closure": null
+    },
+    {
+      "family": "W64_CENSUS_REVERSE_PRESSURE",
+      "paths": ["tools/w64_census_reverse_pressure_v2.py"],
+      "eligible": 125,
+      "uncovered": 99,
+      "source_sha": "9e0200190555736c74295ee74881e3c003e8a35c",
+      "blob_sha": "1fcc07b6b4c13501e2d0ab08083cc1c9d8905f1f",
+      "first_red": null,
+      "test_method": "census polarity reversal, unknown denominators, missing receipts",
+      "root_closure": null
+    }
+  ],
+  "total_eligible": 508,
+  "total_uncovered": 374,
+  "arithmetic_max_contribution_pp_on_frozen_52200_denominator": 0.716475,
+  "accepted_forecast_pp": null,
+  "accepted_current_main_coverage_delta_pp": null,
+  "authorization": "READ_ONLY_CANDIDATE_RANKING_NOT_CODE_MUTATION"
+}

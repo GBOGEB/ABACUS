@@ -1,0 +1,162 @@
+{
+  "schema": "cbd.b0.source_bound_pulses.v1",
+  "repository": "GBOGEB/ABACUS",
+  "observation_date_utc": "2026-10-17",
+  "scope": "SELECTED_FIVE_NATIVE_EXACT_HEAD_B0_RUNS_NONRANDOM_NONATOMIC",
+  "root_classification": "ONE_RECURRING_TEMPORAL_IDEMPOTENCE_FIRST_RED_ACROSS_THREE_HEADS_SOURCE_LOG_CONFIRMED",
+  "authority": {
+    "merge_admission": "HOLD",
+    "security_waiver": false,
+    "independent_review": "UNKNOWN",
+    "source_owner_repair": "PR_2107_ONLY",
+    "fleet_closure": null,
+    "coverage_delta": null
+  },
+  "records": [
+    {
+      "pr": 2104,
+      "run_id": 39024549106,
+      "source_sha": "aac94c6f1fa43901711a305fb49e02939dd5a67d",
+      "run_attempt": 1,
+      "role": "pre_repair_temporal",
+      "workflow": "MIP B0 Test Admission and Coverage Evidence",
+      "run_status": "completed",
+      "conclusion": "failure",
+      "created_at": "2026-10-17T10:20:52Z",
+      "updated_at": "2026-10-17T10:26:16Z",
+      "job_total": 13,
+      "success_jobs": 11,
+      "failed_jobs": [
+        {
+          "id": 117372910532,
+          "name": "B0 canonical coverage producer",
+          "steps": [
+            "Run canonical exact-head coverage surface"
+          ]
+        },
+        {
+          "id": 117373726592,
+          "name": "B0 report-only admission census",
+          "steps": [
+            "Require all exact-SHA producers GREEN",
+            "Upload B0 report-only evidence"
+          ]
+        }
+      ],
+      "test_summary": {
+        "passed": 2286,
+        "failed": 1,
+        "skipped": 2
+      },
+      "first_red_case": "tests/test_cbd_e2e_temporal.py::test_skipped_clock_anomaly_is_one_cluster_ten_manifestations"
+    },
+    {
+      "pr": 2107,
+      "run_id": 39025178491,
+      "source_sha": "3bf93f36e98334e3dfec18e4111d4702667f8867",
+      "run_attempt": 1,
+      "role": "owned_temporal_repair",
+      "workflow": "MIP B0 Test Admission and Coverage Evidence",
+      "run_status": "completed",
+      "conclusion": "success",
+      "created_at": "2026-10-17T10:30:49Z",
+      "updated_at": "2026-10-17T10:36:44Z",
+      "job_total": 13,
+      "success_jobs": 13,
+      "failed_jobs": [],
+      "test_summary": null,
+      "first_red_case": null
+    },
+    {
+      "pr": 2108,
+      "run_id": 39025382289,
+      "source_sha": "ef3a0acc8fbb449ea900e8030c683caf2d7a1ffc",
+      "run_attempt": 1,
+      "role": "metrics_15_tests_without_repair",
+      "workflow": "MIP B0 Test Admission and Coverage Evidence",
+      "run_status": "completed",
+      "conclusion": "failure",
+      "created_at": "2026-10-17T10:34:01Z",
+      "updated_at": "2026-10-17T10:40:54Z",
+      "job_total": 13,
+      "success_jobs": 11,
+      "failed_jobs": [
+        {
+          "id": 117375390864,
+          "name": "B0 canonical coverage producer",
+          "steps": [
+            "Run canonical exact-head coverage surface"
+          ]
+        },
+        {
+          "id": 117376454814,
+          "name": "B0 report-only admission census",
+          "steps": [
+            "Require all exact-SHA producers GREEN",
+            "Upload B0 report-only evidence"
+          ]
+        }
+      ],
+      "test_summary": {
+        "passed": 2301,
+        "failed": 1,
+        "skipped": 2
+      },
+      "first_red_case": "tests/test_cbd_e2e_temporal.py::test_skipped_clock_anomaly_is_one_cluster_ten_manifestations"
+    },
+    {
+      "pr": 2102,
+      "run_id": 39024760339,
+      "source_sha": "81490b6e42fbd3bc4d2f23410c02f2b683e164a5",
+      "run_attempt": 1,
+      "role": "disjoint_stage_tests",
+      "workflow": "MIP B0 Test Admission and Coverage Evidence",
+      "run_status": "completed",
+      "conclusion": "success",
+      "created_at": "2026-10-17T10:24:18Z",
+      "updated_at": "2026-10-17T10:31:52Z",
+      "job_total": 13,
+      "success_jobs": 13,
+      "failed_jobs": [],
+      "test_summary": null,
+      "first_red_case": null
+    },
+    {
+      "pr": 2090,
+      "run_id": 39024883507,
+      "source_sha": "e47f4e7255ec102d95e68b75f6e04926c07d7d8f",
+      "run_attempt": 1,
+      "role": "pre_repair_parent",
+      "workflow": "MIP B0 Test Admission and Coverage Evidence",
+      "run_status": "completed",
+      "conclusion": "failure",
+      "created_at": "2026-10-17T10:26:13Z",
+      "updated_at": "2026-10-17T10:35:36Z",
+      "job_total": 13,
+      "success_jobs": 11,
+      "failed_jobs": [
+        {
+          "id": 117373807350,
+          "name": "B0 canonical coverage producer",
+          "steps": [
+            "Run canonical exact-head coverage surface"
+          ]
+        },
+        {
+          "id": 117375250315,
+          "name": "B0 report-only admission census",
+          "steps": [
+            "Require all exact-SHA producers GREEN",
+            "Upload B0 report-only evidence"
+          ]
+        }
+      ],
+      "test_summary": {
+        "passed": 2286,
+        "failed": 1,
+        "skipped": 2
+      },
+      "first_red_case": "tests/test_cbd_e2e_temporal.py::test_skipped_clock_anomaly_is_one_cluster_ten_manifestations"
+    }
+  ]
+}

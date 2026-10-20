@@ -1,0 +1,79 @@
+name: CODE PURPLE W33 Bounded Backbone and Pool Telemetry
+on:
+  pull_request:
+    paths:
+      - 'core/execution_backbone/backbone.py'
+      - 'scripts/emit_execution_backbone_runtime_status.py'
+      - 'tests/test_w33_backbone_pool.py'
+      - 'docs/ci/W33_POOL_DAG_MIP.md'
+      - 'tools/recovery/w38_local_pool_benchmark.py'
+      - 'tests/test_w38_local_pool_mip.py'
+      - '.github/workflows/w33-backbone-pool.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: w33-pool-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+jobs:
+  pool:
+    name: W33 local pool ${{ matrix.os }} / Python ${{ matrix.python }}
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 12
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - {os: ubuntu-24.04, python: '3.10'}
+          - {os: ubuntu-24.04, python: '3.11'}
+          - {os: ubuntu-24.04, python: '3.12'}
+          - {os: windows-2022, python: '3.11'}
+    steps:
+      - name: Exact SHA checkout with no stored credentials
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+      - name: Setup Python version
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python }}
+      - name: Execute bounded-concurrency negative and starvation tests
+        shell: bash
+        env:
+          EXPECTED_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$EXPECTED_SHA"
+          python -m unittest discover -s tests -p 'test_w33_backbone_pool.py' -v
+          python -m unittest discover -s tests -p 'test_emit_execution_backbone_runtime_status.py' -v
+      - name: Create local DOW KEB feedback and pool telemetry
+        shell: bash
+        run: |
+          set -euo pipefail
+          python scripts/emit_execution_backbone_runtime_status.py --output w33_receipts/runtime_status.json --timeout-seconds 5
+      - name: Bind report hash to exact source run and attempt
+        shell: bash
+        env:
+          SOURCE_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+          RUN_ID: ${{ github.run_id }}
+          ATTEMPT: ${{ github.run_attempt }}
+        run: |
+          python - <<'PY'
+          import hashlib, json, os, pathlib, sys
+          folder=pathlib.Path('w33_receipts')
+          raw=(folder/'runtime_status.json').read_bytes()
+          d=json.loads(raw)
+          assert d['status']=='ok' and d['pool_telemetry']['remote_dispatch_enabled'] is False
+          assert d['pool_telemetry']['remote_runner_capacity_slots'] is None
+          meta={'schema':'abacus.w33.local-pool.sha256.v1','source_sha':os.environ['SOURCE_SHA'],'run_id':int(os.environ['RUN_ID']),'attempt':int(os.environ['ATTEMPT']),'python':sys.version.split()[0],'admission':'HOLD','source_class':'LOCAL_CONFIGURED_WORKER_POOL_NOT_HOSTED_RUNNER_CAPACITY','files':{'runtime_status.json':hashlib.sha256(raw).hexdigest()}}
+          (folder/'W33_SHA256.json').write_text(json.dumps(meta,sort_keys=True,indent=2)+'\n')
+          PY
+      - name: Archive local-only capacity proof receipts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: abacus-w33-pool-${{ matrix.os }}-py${{ matrix.python }}-${{ github.run_id }}-a${{ github.run_attempt }}
+          path: w33_receipts/
+          if-no-files-found: error
+          retention-days: 30

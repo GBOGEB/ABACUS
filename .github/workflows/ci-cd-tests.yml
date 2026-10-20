@@ -63,7 +63,7 @@ jobs:
           fetch-depth: 2
 
       - name: Set up Python
-        uses: actions/setup-python@v7.0.0
+        uses: actions/setup-python@v7
         with:
           python-version: ${{ env.PYTHON_VERSION }}
           cache: 'pip'
@@ -217,6 +217,68 @@ jobs:
             exit 1
           fi
 
+  ratchet-tool-backed:
+    name: DAB T2 tool-installed ratchet detection
+    runs-on: ubuntu-24.04
+    permissions:
+      contents: read
+    timeout-minutes: 12
+    steps:
+      # Immutable checkout and setup-python references preserve source identity.
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97
+        with:
+          python-version: '3.12'
+      - name: Install pinned ratchet tools and safe evidence reader
+        run: |
+          python -m pip install pytest==8.4.2 black==26.10.1 \
+            isort==9.0.2 flake8==7.3.0 bandit==1.8.6 defusedxml==0.7.1 numpy==1.26.4
+      - name: Prove all four scanners exist and emit exact source
+        run: |
+          git rev-parse HEAD
+          python - <<'PY'
+          import importlib.metadata as im
+          import importlib.util
+          required = ("black", "isort", "flake8", "bandit")
+          for name in required:
+              if importlib.util.find_spec(name) is None:
+                  raise SystemExit("TEST_BLOCKED_DEPENDENCY: " + name)
+              print(name + "==" + im.version(name))
+          PY
+      - name: Run source-owned ratchet negative and positive tests
+        run: python -m pytest -q tests/test_ci_pr_debt_ratchet.py --junitxml=ratchet-proof.xml
+      - name: Fail closed on skipped, empty or failing tool-backed JUnit
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          from defusedxml import ElementTree as ET
+          p = Path("ratchet-proof.xml")
+          if not p.is_file():
+              raise SystemExit("native tool-backed JUnit missing")
+          root = ET.parse(
+              p, forbid_dtd=True, forbid_entities=True, forbid_external=True
+          ).getroot()
+          suites = [root] if root.tag == "testsuite" else root.findall("testsuite")
+          if not suites:
+              raise SystemExit("no ratchet test suite observed")
+          count = sum(int(s.get("tests", "0")) for s in suites)
+          skipped = sum(int(s.get("skipped", "0")) for s in suites)
+          failed = sum(int(s.get("failures", "0")) for s in suites)
+          errors = sum(int(s.get("errors", "0")) for s in suites)
+          print(f"RATCHET_NATIVE: tests={count} skipped={skipped} failures={failed} errors={errors}")
+          if not count or skipped or failed or errors:
+              raise SystemExit("TEST_BLOCKED_DEPENDENCY_OR_FAILING_RATCHET")
+          PY
+      - name: Upload exact-head ratchet JUnit even on failure
+        if: always()
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9
+        with:
+          name: dab-t2-tool-installed-ratchet
+          path: ratchet-proof.xml
+          if-no-files-found: warn
+
   unit-tests:
     name: Unit Tests (Python ${{ matrix.python-version }}, ${{ matrix.os }})
     runs-on: ${{ matrix.os }}
@@ -230,7 +292,7 @@ jobs:
       - uses: actions/checkout@v7
 
       - name: Set up Python ${{ matrix.python-version }}
-        uses: actions/setup-python@v7.0.0
+        uses: actions/setup-python@v7
         with:
           python-version: ${{ matrix.python-version }}
           cache: 'pip'
@@ -253,7 +315,7 @@ jobs:
           pytest tests/ -m "not integration" -v --tb=short \
             --junitxml="${junit_path}"
       - name: Upload Test Results
-        uses: actions/upload-artifact@v7.0.2
+        uses: actions/upload-artifact@v7
         if: always()
         with:
           name: test-results-${{ matrix.os }}-${{ matrix.python-version }}
@@ -268,7 +330,7 @@ jobs:
       - uses: actions/checkout@v7
 
       - name: Set up Python
-        uses: actions/setup-python@v7.0.0
+        uses: actions/setup-python@v7
         with:
           python-version: ${{ env.PYTHON_VERSION }}
           cache: 'pip'
@@ -415,7 +477,7 @@ jobs:
 
       - name: Upload broad coverage campaign evidence
         if: always()
-        uses: actions/upload-artifact@v7.0.2
+        uses: actions/upload-artifact@v7
         with:
           name: broad-coverage-ranking-${{ github.sha }}
           path: |
@@ -433,7 +495,7 @@ jobs:
 
       - name: Upload Coverage HTML
         if: always()
-        uses: actions/upload-artifact@v7.0.2
+        uses: actions/upload-artifact@v7
         with:
           name: coverage-report
           path: |
@@ -487,7 +549,7 @@ jobs:
       - uses: actions/checkout@v7
 
       - name: Set up Python
-        uses: actions/setup-python@v7.0.0
+        uses: actions/setup-python@v7
         with:
           python-version: ${{ env.PYTHON_VERSION }}
           cache: 'pip'
@@ -523,7 +585,7 @@ jobs:
         uses: docker/setup-buildx-action@v4
 
       - name: Set up Python
-        uses: actions/setup-python@v7.0.0
+        uses: actions/setup-python@v7
         with:
           python-version: ${{ env.PYTHON_VERSION }}
           cache: 'pip'
@@ -550,7 +612,7 @@ jobs:
       - uses: actions/checkout@v7
 
       - name: Set up Python
-        uses: actions/setup-python@v7.0.0
+        uses: actions/setup-python@v7
         with:
           python-version: ${{ env.PYTHON_VERSION }}
           cache: 'pip'
@@ -568,7 +630,7 @@ jobs:
           pytest -m benchmark --benchmark-only --benchmark-json=benchmark.json
 
       - name: Upload Benchmark Results
-        uses: actions/upload-artifact@v7.0.2
+        uses: actions/upload-artifact@v7
         with:
           name: benchmark-results
           path: benchmark.json
@@ -583,7 +645,7 @@ jobs:
       - uses: actions/checkout@v7
 
       - name: Set up Python
-        uses: actions/setup-python@v7.0.0
+        uses: actions/setup-python@v7
         with:
           python-version: ${{ env.PYTHON_VERSION }}
           cache: 'pip'
@@ -631,14 +693,14 @@ jobs:
 
       - name: Upload Test Output
         if: always()
-        uses: actions/upload-artifact@v7.0.2
+        uses: actions/upload-artifact@v7
         with:
           name: comprehensive-test-output
           path: test_output.log
           if-no-files-found: error
 
       - name: Upload Dashboard
-        uses: actions/upload-artifact@v7.0.2
+        uses: actions/upload-artifact@v7
         with:
           name: test-dashboard
           path: dashboard/
@@ -656,14 +718,17 @@ jobs:
           fetch-depth: 2
 
       - name: Set up Python
-        uses: actions/setup-python@v7.0.0
+        uses: actions/setup-python@v7
         with:
           python-version: ${{ env.PYTHON_VERSION }}
 
       - name: Install security tools
         run: |
           python -m pip install --upgrade pip
-          pip install bandit safety
+          python -m pip install --upgrade "setuptools>=83.0.0"
+          python -m pip install bandit safety
+          python -m pip check
+          python -m pip show setuptools nltk
 
       - name: Run Bandit
         id: bandit
@@ -673,7 +738,47 @@ jobs:
       - name: Run Safety Check
         id: safety
         continue-on-error: true
-        run: safety check --json > safety-report.json
+        shell: bash
+        run: |
+          # Keep Safety's failing exit status; retain diagnostics privately.
+          set +e
+          safety check --json > safety-report.json 2> safety-stderr.log
+          status=$?
+          set -e
+          echo "Safety exit status: $status" >> "$GITHUB_STEP_SUMMARY"
+          python - <<'PY' >> "$GITHUB_STEP_SUMMARY"
+          import json
+          from pathlib import Path
+
+          try:
+              raw = Path("safety-report.json").read_text("utf-8")
+              decoder = json.JSONDecoder()
+              payload = None
+              for index, char in enumerate(raw):
+                  if char != "{":
+                      continue
+                  try:
+                      value, _ = decoder.raw_decode(raw[index:])
+                  except json.JSONDecodeError:
+                      continue
+                  if isinstance(value, dict) and isinstance(
+                      value.get("report_meta"), dict
+                  ):
+                      payload = value
+                      break
+              if payload is None:
+                  raise ValueError("missing Safety metadata")
+          except (OSError, ValueError):
+              print("Safety report parse failed; inspect artifact.")
+          else:
+              meta = payload["report_meta"]
+              found = meta.get("vulnerabilities_found")
+              ignored = meta.get("vulnerabilities_ignored")
+              found = found if type(found) is int else "UNKNOWN"
+              ignored = ignored if type(ignored) is int else "UNKNOWN"
+              print(f"Safety findings: {found}; ignored: {ignored}")
+          PY
+          exit "$status"
 
       - name: Census security red-root delta
         if: always()
@@ -694,12 +799,13 @@ jobs:
 
       - name: Upload Security Reports
         if: always()
-        uses: actions/upload-artifact@v7.0.2
+        uses: actions/upload-artifact@v7
         with:
           name: security-reports
           path: |
             bandit-report.json
             safety-report.json
+            safety-stderr.log
             security-red-root-delta.json
           if-no-files-found: warn
 
@@ -839,7 +945,7 @@ jobs:
 
       - name: Upload full-red summary
         if: always()
-        uses: actions/upload-artifact@v7.0.2
+        uses: actions/upload-artifact@v7
         with:
           name: full-red-summary-${{ github.sha }}
           path: test_reports/full-red/summary.json
@@ -855,7 +961,7 @@ jobs:
       - uses: actions/checkout@v7
 
       - name: Download Dashboard Artifact
-        uses: actions/download-artifact@v8
+        uses: actions/download-artifact@v8.0.2
         with:
           name: test-dashboard
           path: dashboard/

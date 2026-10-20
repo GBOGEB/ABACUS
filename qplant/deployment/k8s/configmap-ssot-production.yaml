@@ -22,12 +22,12 @@ data:
     environment: production
     system:
       name: "MYRRHA QPLANT Helium Refrigeration"
-      design_basis: "ALaT + LKT Pre-Study Baseline"
+      design_basis: "Supplier_a + SUPPLIER_B Pre-Study Baseline"
       facility: "SCK CEN — MYRRHA"
 
     compressors:
       count: 3
-      model: "Kaeser FSD 575 SFC VFD"
+      model: "Vendor_1 FSD 575 SFC VFD"
       motor_power_kw: 315
       package_power_kw: 348.54
       per_unit_flow_gs: 112.54

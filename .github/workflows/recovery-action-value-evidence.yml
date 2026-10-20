@@ -1,0 +1,126 @@
+name: Recovery Action Value Evidence
+on:
+  pull_request:
+    paths:
+      - "docs/ci/recovery_action_value.html"
+      - "docs/ci/RECOVERY_ACTION_VALUE.md"
+      - "docs/data/recovery_action_value_v1.json"
+      - "tests/test_recovery_action_value_contract.py"
+      - ".github/workflows/recovery-action-value-evidence.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: recovery-action-value-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  source-bound-dashboard-contract:
+    name: Exact-head action-value contract and JS syntax
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Checkout exact PR head, not synthetic merge
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+
+      - name: Verify GitHub exact source identity
+        env:
+          EXPECTED_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$EXPECTED_SHA"
+          test "${#EXPECTED_SHA}" -eq 40
+
+      - name: Setup Python 3.12
+        uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97
+        with:
+          python-version: "3.12"
+
+      - name: Run static source-bound evidence contract
+        run: |
+          python -m unittest discover -s tests -p 'test_recovery_action_value_contract.py' -v
+
+      - name: Extract JavaScript and perform real Node syntax check
+        run: |
+          python - <<'PY'
+          from html.parser import HTMLParser
+          from pathlib import Path
+
+          class Parser(HTMLParser):
+              def __init__(self):
+                  super().__init__()
+                  self.active = False
+                  self.script_count = 0
+                  self.payload = []
+              def handle_starttag(self, tag, attrs):
+                  if tag == "script":
+                      self.active = True
+                      self.script_count += 1
+              def handle_endtag(self, tag):
+                  if tag == "script":
+                      self.active = False
+              def handle_data(self, data):
+                  if self.active:
+                      self.payload.append(data)
+
+          markup = Parser()
+          markup.feed(Path("docs/ci/recovery_action_value.html").read_text(encoding="utf-8"))
+          assert markup.script_count == 1, "Expected exactly one inline script"
+          Path("/tmp/abacus-recovery-action-value.js").write_text(
+              "".join(markup.payload), encoding="utf-8"
+          )
+          PY
+          node --check /tmp/abacus-recovery-action-value.js
+
+      - name: Produce immutable source-integrity receipt
+        env:
+          EXPECTED_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+          WORKFLOW_RUN: ${{ github.run_id }}
+          JOB_NAME: source-bound-dashboard-contract
+        run: |
+          python - <<'PY'
+          import hashlib
+          import json
+          import os
+          from pathlib import Path
+          sources = (
+              "docs/ci/recovery_action_value.html",
+              "docs/data/recovery_action_value_v1.json",
+              "docs/ci/RECOVERY_ACTION_VALUE.md",
+              "tests/test_recovery_action_value_contract.py",
+          )
+          receipt = {
+              "schema": "abacus.recovery.action-value.qa.v1",
+              "repository": "GBOGEB/ABACUS",
+              "exact_sha": os.environ["EXPECTED_SHA"],
+              "run_id": os.environ["WORKFLOW_RUN"],
+              "job_name": os.environ["JOB_NAME"],
+              "source_hashes_sha256": {
+                  p: hashlib.sha256(Path(p).read_bytes()).hexdigest()
+                  for p in sources
+              },
+              "native_contract": "PASS",
+              "javascript_syntax": "PASS",
+              "html_browser_qa": None,
+              "main_branch_admission": "HOLD",
+              "security_waiver": False,
+              "authority_transfer": False,
+              "formal_credit_delta": 0,
+          }
+          Path("/tmp/recovery-action-value-qa.json").write_text(
+              json.dumps(receipt, sort_keys=True, indent=2) + "\n", encoding="utf-8"
+          )
+          print(json.dumps(receipt, sort_keys=True))
+          PY
+
+      - name: Upload source-bound evidence artifact
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9
+        with:
+          name: recovery-action-value-${{ github.event.pull_request.head.sha || github.sha }}
+          path: /tmp/recovery-action-value-qa.json
+          if-no-files-found: error
+          retention-days: 30

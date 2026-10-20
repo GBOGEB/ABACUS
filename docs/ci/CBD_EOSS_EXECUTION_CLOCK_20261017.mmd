@@ -1,0 +1,16 @@
+flowchart TD
+    A[Prepare wheelhouse / cache manifest] --> B{Cache key + wheel hash valid?}
+    B -->|yes| C[Offline wheel install or restored cache]
+    B -->|no| D[Verified dependency resolver and build]
+    C --> E[pytest / coverage with monotonic process clock]
+    D --> E
+    E --> F[Native GitHub job start/end + run attempt]
+    F --> G{Comparable cold and warm cohorts?}
+    G -->|yes| H[Score measured delta and queue separately]
+    G -->|no| I[Record UNKNOWN - do not claim 300 s saved]
+    H --> J[Predict N+1 p95; score only after actual]
+    I --> J
+    classDef safe fill:#d1fae5,color:#064e3b,stroke:#059669,stroke-width:2px
+    classDef caveat fill:#fef3c7,color:#78350f,stroke:#d97706,stroke-width:2px
+    class A,B,C,D,E,F,G,H,J safe
+    class I caveat
