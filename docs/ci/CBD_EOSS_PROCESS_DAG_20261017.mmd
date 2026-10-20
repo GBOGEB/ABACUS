@@ -1,0 +1,27 @@
+flowchart LR
+    subgraph LOCAL[LOCAL - developer and pre-GitHub E0-E2]
+        E0[Source / index digest] --> E1[Pre-commit tests / lint]
+        E1 --> E2[Pre-push parity + wheelhouse key]
+    end
+    subgraph REPO[REPO - exact-head GitHub and fresh clone E3-E5]
+        E3[GH PR head / run:attempt] --> J[Job / first-red step]
+        J --> C[Coverage line + branch receipt]
+        C --> E4[Fresh isolated clone]
+        E4 --> E5[N and N+1 matched parity]
+    end
+    subgraph FED[FEDERATION - CODEX, ABACUS, QPS E6]
+        E6{Security + governance + A10 + reviewer?}
+        D[Derived dashboards / BD ledger]
+        H[Main admission HOLD]
+    end
+    E2 --> E3
+    E5 --> E6
+    J -. candidate only .-> D
+    C -. matched scope .-> D
+    E6 -->|incomplete| H
+    classDef measured fill:#d1fae5,color:#052e2b,stroke:#0f766e,stroke-width:2px
+    classDef withheld fill:#ffedd5,color:#7c2d12,stroke:#c2410c,stroke-width:2px
+    classDef denied fill:#fee2e2,color:#7f1d1d,stroke:#b91c1c,stroke-width:2px
+    class E0,E1,E2,E3,J,C,E4,E5 measured
+    class D,E6 withheld
+    class H denied

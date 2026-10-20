@@ -1229,7 +1229,7 @@ Downtime: 0.022 h/yr</div>
   <tr><td>Type</td><td>Oil-flooded screw</td><td>Standard industrial</td></tr>
   <tr><td>Capacity</td><td>575 Nm³/h @ STP</td><td>Per unit</td></tr>
   <tr><td>Discharge pressure</td><td>14-16 barg</td><td>Per QPLANT spec</td></tr>
-  <tr><td>Motor power</td><td>315 kW</td><td>ALaT vendor sheet</td></tr>
+  <tr><td>Motor power</td><td>315 kW</td><td>Supplier_a vendor sheet</td></tr>
   <tr><td>VFD range</td><td>30-100% speed</td><td>Turndown ratio 3:1</td></tr>
   <tr><td>Efficiency</td><td>70-75% (ISO 1217)</td><td>Typical for class</td></tr>
   <tr><td>Oil separator</td><td>Integrated coalescing</td><td>Standard</td></tr>
@@ -1622,7 +1622,7 @@ P_fixed ≈ P_full × (0.4 + 0.6 × load) (slide valve)
   <tr><th>Data</th><th>Source</th><th>Confidence</th></tr>
   <tr><td>He-4 properties</td><td>NIST REFPROP</td><td><span class="badge badge-accept">HIGH</span></td></tr>
   <tr><td>Valve leak rates</td><td>RTM-048, RTM-049, EN 13185</td><td><span class="badge badge-accept">HIGH</span></td></tr>
-  <tr><td>FSD575 specs</td><td>Industry estimate (KAESER class)</td><td><span class="badge badge-review">MEDIUM</span></td></tr>
+  <tr><td>FSD575 specs</td><td>Industry estimate (VENDOR_1 class)</td><td><span class="badge badge-review">MEDIUM</span></td></tr>
   <tr><td>HSD Twin specs</td><td>Industry estimate (Atlas Copco class)</td><td><span class="badge badge-review">MEDIUM</span></td></tr>
   <tr><td>MTBF = 8760 h</td><td>Conservative assumption</td><td><span class="badge badge-review">MEDIUM</span></td></tr>
   <tr><td>MTTR = 8 h</td><td>RTM-053 (upper bound)</td><td><span class="badge badge-accept">HIGH</span></td></tr>

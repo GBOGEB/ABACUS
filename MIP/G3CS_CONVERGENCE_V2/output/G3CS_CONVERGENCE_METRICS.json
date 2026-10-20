@@ -1,0 +1,171 @@
+{
+  "authority": {
+    "admission": "HOLD",
+    "authority_transfer": false,
+    "protected_merge_credit": 0,
+    "security_waiver": false
+  },
+  "clock_model": {
+    "EPOCH": "READBACK_SNAPSHOT_NOT_A_TRIAL",
+    "MAIN": "SERIAL_MERGE_EVENTS",
+    "PR_HEAD": "PARALLEL_EXPERIMENTS"
+  },
+  "comparison": {
+    "comparable": false,
+    "current_observed": 62,
+    "current_success": 46,
+    "observed_success_count_difference": 4,
+    "prior_observed": 60,
+    "prior_success": 42,
+    "reason": "DIFFERENT_WORKFLOW_POPULATIONS_NO_RUN_ID_PAIRING"
+  },
+  "convergence": {
+    "accepted_admission": "HOLD",
+    "bradley_terry": null,
+    "descriptive_parallel_flat_ae": true,
+    "formal_regime": "INSUFFICIENT_SERIAL_COMPARABLE_MAIN_SAMPLES",
+    "pca": null,
+    "root_closure_rate": null,
+    "six_sigma": null
+  },
+  "forecast": {
+    "cohort_frozen": true,
+    "kind": "ARITHMETIC_BOUND_NOT_STATISTICAL_PREDICTION",
+    "next_observed_success_max": 62,
+    "next_observed_success_min": 46,
+    "next_scope": "ONLY_SAME_62_RUN_IDENTITIES_IF_NOT_CANCELLED",
+    "registration": "AS_OF_THIS_SNAPSHOT_NOT_PREVIOUSLY_PRE_REGISTERED",
+    "schema": "codepurple.g3cs.horizon-bounds.v1",
+    "source_sha256": "3e45b1e7694c3bd68bc67db05e687639362cab4631ba7b5ea0d501a07a062530"
+  },
+  "native_evidence_status": "SOURCE_BOUND_ARTIFACT_CONTENTS_AND_GITHUB_READBACK",
+  "observed_main_sha": "585dd7476d3b3c629f864c37ec7d7526a648b4c0",
+  "schema": "codepurple.g3cs.dmaic-contract.v2",
+  "source_sha256": "3e45b1e7694c3bd68bc67db05e687639362cab4631ba7b5ea0d501a07a062530",
+  "totals": {
+    "canary_rejected": false,
+    "current_diff_coverage": null,
+    "current_main_coverage": null,
+    "eligible_governed_merges": 0,
+    "execution_p95_seconds": null,
+    "flake8_parallel_counts": {
+      "S1": 7152,
+      "S2": 7153,
+      "S3": 7152
+    },
+    "focus_branches": {
+      "covered": 17,
+      "eligible": 18,
+      "percent": 94.4444
+    },
+    "focus_lines": {
+      "covered": 133,
+      "eligible": 133,
+      "percent": 100.0
+    },
+    "issues_closed": 267,
+    "issues_open": 38,
+    "job_first_reds_at_least": 7,
+    "job_red_lower_bound_basis": "historical W1 CI/CD job topology, parent run not terminal",
+    "manifestations_closed": 45,
+    "manifestations_open": 31,
+    "manifestations_population": 76,
+    "manifestations_same_across_parallel_heads": true,
+    "observed_green_pct": 74.1935,
+    "observed_ordinary_merges": 3,
+    "queue_p95_seconds": null,
+    "specific_static_candidate_changes": {
+      "S1_E225_against_S2": -1,
+      "S3_W292_against_S2": -1
+    },
+    "terminal_success_pct": 100.0,
+    "unique_roots_closed": null,
+    "workflow_nonterminal": 16,
+    "workflow_success": 46,
+    "workflow_terminal": 46,
+    "workflow_total": 62
+  },
+  "w70_lane_counts": {
+    "A_registry_gap": {
+      "closed": 10,
+      "open": 10,
+      "population": 20
+    },
+    "B_reference_gap": {
+      "closed": 3,
+      "open": 8,
+      "population": 11
+    },
+    "C_consumer_penetration": {
+      "closed": 10,
+      "open": 0,
+      "population": 10
+    },
+    "D_graph_orphan_drop": {
+      "closed": 16,
+      "open": 9,
+      "population": 25
+    },
+    "E_lineage_evidence": {
+      "closed": 6,
+      "open": 4,
+      "population": 10
+    }
+  },
+  "waves": [
+    {
+      "eligible_review": false,
+      "failure": 0,
+      "green_observed_share": 70.0,
+      "merge_sha": "b77348263d94b14ddf574bbf78ef7949f200d8c8",
+      "nonterminal": 6,
+      "observed": 20,
+      "other_terminal": 0,
+      "pr": 2217,
+      "pr_url": "https://github.com/GBOGEB/ABACUS/pull/2217",
+      "qualifying_full_ci": null,
+      "sha": "6e23c38b2ee6504216887210769d119b4e6a709a",
+      "success": 14,
+      "terminal": 14,
+      "terminal_fraction": 70.0,
+      "terminal_success_fraction": 100.0,
+      "wave": "S1"
+    },
+    {
+      "eligible_review": false,
+      "failure": 0,
+      "green_observed_share": 76.1905,
+      "merge_sha": "4e159a745a32de0530f4228dc8cd5d168dfdd11e",
+      "nonterminal": 5,
+      "observed": 21,
+      "other_terminal": 0,
+      "pr": 2219,
+      "pr_url": "https://github.com/GBOGEB/ABACUS/pull/2219",
+      "qualifying_full_ci": null,
+      "sha": "38277a30cd5638a82f5dd5447d511d253d5846c0",
+      "success": 16,
+      "terminal": 16,
+      "terminal_fraction": 76.1905,
+      "terminal_success_fraction": 100.0,
+      "wave": "S2"
+    },
+    {
+      "eligible_review": false,
+      "failure": 0,
+      "green_observed_share": 76.1905,
+      "merge_sha": "8bcb5729b3407685edb78af80378715ce61e70a2",
+      "nonterminal": 5,
+      "observed": 21,
+      "other_terminal": 0,
+      "pr": 2220,
+      "pr_url": "https://github.com/GBOGEB/ABACUS/pull/2220",
+      "qualifying_full_ci": null,
+      "sha": "0f98f4f091b433c0984c361826ca7c2e9b3630c9",
+      "success": 16,
+      "terminal": 16,
+      "terminal_fraction": 76.1905,
+      "terminal_success_fraction": 100.0,
+      "wave": "S3"
+    }
+  ]
+}

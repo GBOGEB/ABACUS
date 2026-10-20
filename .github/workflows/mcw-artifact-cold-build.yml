@@ -1,0 +1,97 @@
+name: MCW Artifact Cold Build
+
+on:
+  workflow_dispatch:
+  pull_request:
+    paths:
+      - 'tools/mcw_artifact_explorer.py'
+      - 'tools/mcw_artifact_dag_execute.py'
+      - 'tests/test_mcw_artifact_explorer.py'
+      - 'tests/test_mcw_artifact_dag_execute.py'
+      - 'docs/mcw/**'
+      - 'ssot/ssot_style.json'
+      - '.github/workflows/mcw-artifact-cold-build.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  artifact-cold-check:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - name: Checkout immutable pull head
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+      - name: Python
+        uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97
+        with:
+          python-version: '3.11'
+      - name: Validate catalog, style, paths and negative controls
+        run: |
+          set -euo pipefail
+          python -m unittest discover -s tests \
+            -p test_mcw_artifact_explorer.py -v
+          python -m unittest discover -s tests \
+            -p test_mcw_artifact_dag_execute.py -v
+          python scripts/validate_ssot_style.py \
+            --output /tmp/mcw-style-status.json
+      - name: Build twice from current SSOT and compare
+        env:
+          EXPECTED_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$EXPECTED_SHA"
+          mkdir -p /tmp/mcw-a /tmp/mcw-b
+          for target in /tmp/mcw-a /tmp/mcw-b; do
+            python tools/mcw_artifact_explorer.py --root . \
+              --catalog docs/mcw/artifact_catalog.v1.json \
+              --style ssot/ssot_style.json \
+              --style-status /tmp/mcw-style-status.json \
+              --sha "$EXPECTED_SHA" \
+              --html "$target/artifacts.html" --receipt "$target/receipt.json"
+          done
+          cmp /tmp/mcw-a/artifacts.html /tmp/mcw-b/artifacts.html
+          cmp /tmp/mcw-a/receipt.json /tmp/mcw-b/receipt.json
+          cp /tmp/mcw-style-status.json /tmp/mcw-a/style-status.json
+          sha256sum /tmp/mcw-a/artifacts.html /tmp/mcw-a/receipt.json
+          {
+            echo '## MCW — cold artifact presentation'
+            echo "Source SHA: \`$EXPECTED_SHA\`"
+            echo 'Cold build repeatability: PASS'
+            echo 'Binary publication/admission: HOLD'
+            echo 'No controlled source binaries copied to the artifact.'
+          } >> "$GITHUB_STEP_SUMMARY"
+      - name: Execute bounded cold DAG with child-owned authority
+        env:
+          EXPECTED_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+        run: |
+          set -euo pipefail
+          python tools/mcw_artifact_dag_execute.py --root . \
+            --catalog docs/mcw/artifact_catalog.v1.json \
+            --style ssot/ssot_style.json \
+            --style-status /tmp/mcw-style-status.json \
+            --html /tmp/mcw-a/artifacts.html \
+            --receipt /tmp/mcw-a/receipt.json \
+            --child-reference docs/mcw/qps_child_reference.v1.json \
+            --sha "$EXPECTED_SHA" \
+            --output /tmp/mcw-a/dag-execution.json
+          {
+            echo '### Bounded execution DAG'
+            echo 'CENSUS: PASS; SSOT_PIN: PASS'
+            echo 'SOURCE_FREEZE: BLOCKED on controlled QPS evidence'
+            echo 'NORMALIZE/MODEL/RENDER: NOT_RUN'
+            echo 'RELEASE_REVIEW: HOLD'
+          } >> "$GITHUB_STEP_SUMMARY"
+      - name: Upload only HTML and read-only receipts
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9
+        with:
+          name: mcw-artifact-cold-view
+          path: |
+            /tmp/mcw-a/artifacts.html
+            /tmp/mcw-a/receipt.json
+            /tmp/mcw-a/dag-execution.json
+            /tmp/mcw-a/style-status.json
+          if-no-files-found: error

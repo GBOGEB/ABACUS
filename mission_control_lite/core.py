@@ -46,11 +46,18 @@ def ingest(db, r, artifact_root=None):
     if not verify(r, artifact_root):
         raise ValueError("invalid receipt")
     init(db)
-    with closing(sqlite3.connect(db)) as c, c:
-        c.execute("INSERT OR IGNORE INTO receipts VALUES (?,?,?,?,?,?)",
-                  (r["mission_id"], r["task_id"], r["root_id"], r["source_sha"], r["run_id"], json.dumps(r, sort_keys=True)))
-        c.execute("INSERT INTO events(mission,task,kind,payload) VALUES (?,?,?,?)",
-                  (r["mission_id"], r["task_id"], "receipt_ingested", json.dumps({"run_id": r["run_id"]})))
+    try:
+        with closing(sqlite3.connect(db)) as c, c:
+            # The identity is unique even if a replay has identical bytes.
+            # A failed insertion must not emit an additional ingestion event.
+            c.execute("INSERT INTO receipts VALUES (?,?,?,?,?,?)",
+                      (r["mission_id"], r["task_id"], r["root_id"],
+                       r["source_sha"], r["run_id"], json.dumps(r, sort_keys=True)))
+            c.execute("INSERT INTO events(mission,task,kind,payload) VALUES (?,?,?,?)",
+                      (r["mission_id"], r["task_id"], "receipt_ingested",
+                       json.dumps({"run_id": r["run_id"]})))
+    except sqlite3.IntegrityError as exc:
+        raise ValueError("duplicate or conflicting receipt identity") from exc
 
 def census(db):
     init(db)

@@ -22,12 +22,12 @@ jobs:
     steps: &discovery_steps
       - uses: actions/checkout@v7
         with: {fetch-depth: 0}
-      - uses: actions/setup-python@v7.0.0
+      - uses: actions/setup-python@v7
         with: {python-version: '3.11'}
       - run: mkdir -p architecture/w65/current
       - name: Execute method
         run: python tools/w65_parallel_discovery.py top-down --root . --out architecture/w65/current/top_down.json
-      - uses: actions/upload-artifact@v7.0.2
+      - uses: actions/upload-artifact@v7
         with: {name: w65-top-down, path: architecture/w65/current/top_down.json}
 
   bottom_up:
@@ -36,11 +36,11 @@ jobs:
     steps:
       - uses: actions/checkout@v7
         with: {fetch-depth: 0}
-      - uses: actions/setup-python@v7.0.0
+      - uses: actions/setup-python@v7
         with: {python-version: '3.11'}
       - run: mkdir -p architecture/w65/current
       - run: python tools/w65_parallel_discovery.py bottom-up --root . --out architecture/w65/current/bottom_up.json
-      - uses: actions/upload-artifact@v7.0.2
+      - uses: actions/upload-artifact@v7
         with: {name: w65-bottom-up, path: architecture/w65/current/bottom_up.json}
 
   frontier:
@@ -49,11 +49,11 @@ jobs:
     steps:
       - uses: actions/checkout@v7
         with: {fetch-depth: 0}
-      - uses: actions/setup-python@v7.0.0
+      - uses: actions/setup-python@v7
         with: {python-version: '3.11'}
       - run: mkdir -p architecture/w65/current
       - run: python tools/w65_parallel_discovery.py frontier --root . --out architecture/w65/current/frontier.json
-      - uses: actions/upload-artifact@v7.0.2
+      - uses: actions/upload-artifact@v7
         with: {name: w65-frontier, path: architecture/w65/current/frontier.json}
 
   orphan_drop:
@@ -62,11 +62,11 @@ jobs:
     steps:
       - uses: actions/checkout@v7
         with: {fetch-depth: 0}
-      - uses: actions/setup-python@v7.0.0
+      - uses: actions/setup-python@v7
         with: {python-version: '3.11'}
       - run: mkdir -p architecture/w65/current
       - run: python tools/w65_parallel_discovery.py orphan --root . --out architecture/w65/current/orphan_drop.json
-      - uses: actions/upload-artifact@v7.0.2
+      - uses: actions/upload-artifact@v7
         with: {name: w65-orphan-drop, path: architecture/w65/current/orphan_drop.json}
 
   converge:
@@ -76,9 +76,9 @@ jobs:
     steps:
       - uses: actions/checkout@v7
         with: {fetch-depth: 0}
-      - uses: actions/setup-python@v7.0.0
+      - uses: actions/setup-python@v7
         with: {python-version: '3.11'}
-      - uses: actions/download-artifact@v8
+      - uses: actions/download-artifact@v8.0.2
         with: {pattern: 'w65-*', path: architecture/w65/incoming, merge-multiple: true}
       - name: Converge independent receipts
         run: |
@@ -89,5 +89,5 @@ jobs:
                      architecture/w65/incoming/frontier.json \
                      architecture/w65/incoming/orphan_drop.json \
             --out architecture/w65/current/convergence.json
-      - uses: actions/upload-artifact@v7.0.2
+      - uses: actions/upload-artifact@v7
         with: {name: w65-convergence, path: architecture/w65/current/convergence.json}

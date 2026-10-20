@@ -26,7 +26,7 @@ jobs:
         with:
           fetch-depth: 0
 
-      - uses: actions/setup-python@v7.0.0
+      - uses: actions/setup-python@v7
         with:
           python-version: '3.11'
 
@@ -151,7 +151,7 @@ jobs:
           assert receipt['anchor_promotions'] == []
           assert receipt['DoV_gap_after'] == 1.0
 
-      - uses: actions/upload-artifact@v7.0.2
+      - uses: actions/upload-artifact@v7
         with:
           name: w64-3p-r01-retained-baseline
           path: architecture/w64/receipts/r01/

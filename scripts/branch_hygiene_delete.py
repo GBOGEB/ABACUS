@@ -239,12 +239,20 @@ def main() -> int:
         "--execute", action="store_true", help="delete; default is dry run"
     )
     parser.add_argument("--receipt", type=Path)
+    parser.add_argument(
+        "--sample-limit", type=int, default=None,
+        help="bounded read-only dry run (1..6 rows); forbidden with --execute",
+    )
     args = parser.parse_args()
     token = os.environ.get("GITHUB_TOKEN") or os.environ.get("GH_TOKEN")
     if not args.repo or not token:
         raise SystemExit("need --repo (or GITHUB_REPOSITORY) and GITHUB_TOKEN")
 
     rows = parse_list(args.list_file.read_text(encoding="utf-8"))
+    if args.sample_limit is not None:
+        if args.execute or not 1 <= args.sample_limit <= 6:
+            raise SystemExit("sample-limit requires read-only 1..6 and no --execute")
+        rows = rows[:args.sample_limit]
     receipt = run(make_api(args.repo, token), args.repo, rows, args.execute)
     payload = json.dumps(receipt, indent=2, sort_keys=True) + "\n"
     if args.receipt:

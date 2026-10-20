@@ -1,0 +1,114 @@
+{
+  "schema": "qps-artifact-qa/1.0",
+  "snapshot_date": "2026-10-18",
+  "source": {
+    "locator": "GBOGEB/ABACUS MIP/EVIDENCE_TO_ADMISSION_OBSERVATORY/global/ledger.json",
+    "semantic_sha256": null,
+    "git_sha": "2246c7bd3a9bda6a3d43b9a9116cb7088cfbcc88",
+    "source_class": "canonical W38 global DOV ledger, W35 read-only consumer"
+  },
+  "artifacts": {
+    "html": {
+      "path": "tools/everred_v3/dashboard/mission_control_w35.html",
+      "sha256": "772544075b63fc87dcb2f2c8a112cd3b0b02088b3c70f8850a1b27c6eab995da",
+      "git_blob_sha1": "d6bdee0d32774b81b2f7d4ac35398121c0a3b4d5",
+      "status": "PASS"
+    },
+    "json": {
+      "path": "tools/everred_v3/dashboard/w35_ledger.json",
+      "sha256": "97b72a999396d25240a2615e53dcd48b267bb8729db777c947064ff4b4153f7d",
+      "git_blob_sha1": "e96f6cd6d0f179efb45cb340937276d3503e5e3e",
+      "status": "PASS"
+    },
+    "python": {
+      "path": "tools/recovery/w35_census_rollup.py",
+      "branch": "code-purple/w35-disjoint-census-20261018",
+      "sha256": "4ff2e4eebcb1dd275b68e8ab2d95e438883a02b44fbdf7bb4d4631204212da06",
+      "git_blob_sha1": "124efb64d16b9ec375e515fe46048d2f76b3a170",
+      "status": "LOCAL_QA_PASS"
+    }
+  },
+  "checks": {
+    "structural": "PASS",
+    "formula_or_content": "PASS",
+    "render_visual": "PASS",
+    "playwright": "PASS",
+    "cross_format_parity": "PASS",
+    "native_exact_head": "DEFER",
+    "governance": "FAIL_NOT_CONFIGURED",
+    "artifact_source_bytes": "PASS_GIT_BLOB_ONLY"
+  },
+  "viewport_runs": [
+    {
+      "name": "desktop",
+      "width": 1440,
+      "height": 1000,
+      "page_errors": 0,
+      "console_errors": 0,
+      "horizontal_overflow": 0,
+      "broken_images": 0,
+      "interaction": "PASS"
+    },
+    {
+      "name": "laptop",
+      "width": 1280,
+      "height": 800,
+      "page_errors": 0,
+      "console_errors": 0,
+      "horizontal_overflow": 0,
+      "broken_images": 0,
+      "interaction": "PASS"
+    },
+    {
+      "name": "mobile",
+      "width": 390,
+      "height": 844,
+      "page_errors": 0,
+      "console_errors": 0,
+      "horizontal_overflow": 0,
+      "broken_images": 0,
+      "interaction": "PASS"
+    }
+  ],
+  "native_test_census": {
+    "test_file": "tests/test_w35_census_rollup.py",
+    "source_git_blob_sha1": "e5b811d96dc4a0ba28e0a0b3fb0e6c9695532d20",
+    "cases_pass": 38,
+    "cases_fail": 0,
+    "cases_skip": 0,
+    "executor": "LOCAL pytest",
+    "native_run_id": null
+  },
+  "canonical_w38_integrity": {
+    "template_marker_count": 1,
+    "generated_page_prefix_match": true,
+    "generated_page_suffix_match": true,
+    "embedded_json_identical_to_canonical_ledger": true,
+    "generated_page_w35_link": true
+  },
+  "defects": [
+    {
+      "id": "BRANCH_ASSUMPTION",
+      "state": "FIXED_LOCAL_AND_STAGED",
+      "repair": "GET /repos/... then /branches/{observed_default_branch}, no static branch assumption"
+    },
+    {
+      "id": "CHECKS_DENOMINATOR",
+      "state": "FIXED_LOCAL_AND_STAGED",
+      "repair": "show GitHub returned check-run sample numerator/denominator, never call it proof yield"
+    }
+  ],
+  "notes": [
+    "HTML browser interaction exercised with mocked GitHub responses, not actual authenticated provider traffic; screenshots are local visual QA.",
+    "No external scripts/fonts or dynamic remote write operations are used by W35 dashboard; GitHub refresh is GET-only.",
+    "Current-main broad coverage remains unknown; W38 +47/723 is Python3.12 focused matched evidence not current-main global.",
+    "Existing W38 is canonical. W35 source-bound JSON is dated additive explorer input, not a new SSOT.",
+    "GitHub-source blob parity was matched for W35 html, ledger, census module, 38-test module, synthetic fixture.",
+    "User-owned #1860 mandatory-review/check/RED-canary controls remain unmet; no merge or runner dispatch was initiated by W35."
+  ],
+  "evidence_level": "LOCAL_REPRODUCIBILITY",
+  "merge_admission": "HOLD",
+  "security_waiver": false,
+  "authority_transfer": false,
+  "v2_schema_replay_verified": false
+}

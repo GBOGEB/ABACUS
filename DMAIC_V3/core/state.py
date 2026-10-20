@@ -392,7 +392,7 @@ class StateManager:
 
     def get_execution_summary(self) -> Dict[str, Any]:
         """Get summary of execution state"""
-        summary = {
+        summary: Dict[str, Any] = {
             "total_iterations": len(self.execution_history),
             "current_iteration": None,
             "history": []

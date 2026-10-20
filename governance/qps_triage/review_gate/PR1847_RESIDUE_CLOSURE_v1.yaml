@@ -1,0 +1,181 @@
+schema: qps-triage-review-gate-closure/1.0.0
+as_of: '2026-10-17'
+repo: GBOGEB/ABACUS
+role: REVIEW_GATE_RESIDUE_CONSOLIDATION
+source_pr: 1847
+source_pr_merge_commit: a3a5e4745ef88df7928608b4be87552c08ff5573
+source_pr_merged_at: '2026-10-12T16:16:13Z'
+assessed_main_head: 54da377cf82a358ac97903ecde0270c975b8fcc1
+gate_module: ci/governance/pr_feedback_gate.py
+gate_tests: ci/governance/tests/test_pr_feedback_gate.py
+gate_workflow: .github/workflows/pr-feedback-gate.yml
+policy: governance/ABACUS_DEFERRED_REVIEW_POLICY.md
+authority_transfer: false
+formal_credit_delta: 0
+engineering_credit_delta: 0
+
+# One row per review obligation raised on #1847 or split out of it.
+# disposition uses the PR_FEEDBACK_CONTROL finding contract:
+#   FIXED_IN_CURRENT_HEAD | ACCEPTED_NO_CHANGE_WITH_RATIONALE |
+#   DEFERRED_WITH_TRACKED_ISSUE | NON_ACTIONABLE_INFORMATION |
+#   SUPERSEDED_BY_NEWER_EXACT_HEAD
+# evidence_commits are full SHAs reachable from main (the #1847 branch was
+# rebased before merge, so branch-era short SHAs are not cited).
+# evidence_tests must name tests that exist in gate_tests.
+items:
+  - id: R1
+    source: 'Codex P1, #1847 @ 3c78c40'
+    finding: Rename out of a protected path classified as non-sensitive.
+    disposition: FIXED_IN_CURRENT_HEAD
+    evidence_commits: [1555e1064372a9ac9854c11d658bfada4c624f4d]
+    evidence_tests: [test_rename_out_of_sensitive_path_is_sensitive]
+
+  - id: R2
+    source: 'Codex P1, #1847 @ 3c78c40'
+    finding: Marker-only tracking issue satisfied the deferral.
+    disposition: FIXED_IN_CURRENT_HEAD
+    evidence_commits: [1555e1064372a9ac9854c11d658bfada4c624f4d]
+    evidence_tests:
+      - test_marker_only_tracking_issue_is_rejected
+      - test_tracking_issue_must_retain_each_obligation
+      - test_tracking_issue_from_untrusted_author_is_rejected
+
+  - id: R3
+    source: >-
+      Codex P2 + security, #1847 @ 3c78c40 / 51e4229; issues #1849, #1862
+    finding: >-
+      Tracking-issue close or edit, or deleted disposition comment, left a
+      stale green check until the next sweep.
+    disposition: FIXED_IN_CURRENT_HEAD
+    closes: [1862]
+    evidence_commits:
+      - 98c12baf21c34c83ca709efd26ed1f0ff2828c1a
+      - 444537fe4885244e8cb979a4a6e11627895da193
+      - 0d70728be4d4cb709e06a729520cde78e24a9979
+      - 8366e735a9decdd83698a1f707bb3d55f3946976
+      - 24145d8bd370692a08c9b3da158dd66b05279608
+    evidence_tests:
+      - test_tracking_issue_change_recensuses_only_named_prs
+      - test_admitted_tracker_change_recensuses_after_access_loss
+      - test_deferral_success_is_revalidated_before_publication
+      - test_older_census_never_overwrites_newer_result
+
+  - id: R4
+    source: 'Codex P2, #1847 @ 964fcf8'
+    finding: Tracking issue could downgrade a disposition-S2 thread to S3.
+    disposition: FIXED_IN_CURRENT_HEAD
+    evidence_commits: [56cc3f5831cbdcd81f75e54f890e9f0c6838504f]
+    evidence_tests: [test_tracking_issue_must_retain_each_obligation]
+
+  - id: R5
+    source: 'Codex security + P2, #1847 @ 964fcf8 / b6f900a'
+    finding: >-
+      PR file listing capped at 3,000 files hid protected-path and
+      workflow-definition changes.
+    disposition: FIXED_IN_CURRENT_HEAD
+    evidence_commits: [557090447de84d0470d3281665f5529c227a0efc]
+    evidence_tests: [test_truncated_census_blocks_deferral_and_requires_all_ci]
+
+  - id: R6
+    source: 'Codex security P3, #1847 @ b6f900a'
+    finding: Untrusted issue churn could keep every PR gate pending.
+    disposition: FIXED_IN_CURRENT_HEAD
+    evidence_commits:
+      - 20316ff3fa00b977c79654e39907ee317a1cbc1e
+      - 24145d8bd370692a08c9b3da158dd66b05279608
+    evidence_tests:
+      - test_tracking_issue_change_recensuses_only_named_prs
+      - test_admitted_tracker_change_recensuses_after_access_loss
+
+  - id: R7
+    source: 'Codex P2, #1847 @ b6f900a'
+    finding: >-
+      Re-opening a resolved review thread does not re-census the gate while
+      native conversation resolution is disabled.
+    disposition: ACCEPTED_NO_CHANGE_WITH_RATIONALE
+    rationale: >-
+      GitHub Actions has no pull_request_review_thread trigger, so the gate
+      cannot observe it. Native "Require conversation resolution before
+      merging" stays enabled on main (verified in the main ruleset
+      2026-10-17) and the policy now requires it until a GitHub App bridge
+      exists.
+    evidence_tests: [test_workflow_subscribes_to_tracking_issue_lifecycle]
+
+  - id: R8
+    source: 'Codex P1, #1858; issue #1861'
+    finding: >-
+      Delayed Codex outage reply for an old head opened the fallback for the
+      new head; deleted outage/attestation comments did not re-census.
+    disposition: FIXED_IN_CURRENT_HEAD
+    closes: [1861]
+    evidence_commits:
+      - 2ba915b89a6957ed087c4aa9cbe14c96bb437792
+      - 37c6357ecbd87609e174721b0649593505df84f1
+    evidence_tests:
+      - test_current_head_request_binding_and_order
+      - test_delayed_old_head_outage_does_not_enable_fallback
+
+  - id: R9
+    source: 'Codex P1, #1858; issue #1879'
+    finding: Outage reply not correlated to a current-head @codex request.
+    disposition: FIXED_IN_CURRENT_HEAD
+    closes: [1879]
+    evidence_commits: [2ba915b89a6957ed087c4aa9cbe14c96bb437792]
+    evidence_tests:
+      - test_current_head_request_binding_and_order
+      - test_delayed_old_head_outage_does_not_enable_fallback
+
+  - id: R10
+    source: 'Codex P1, #1858; issue #1878'
+    finding: >-
+      A -> B -> A head reuse could briefly re-expose A's earlier success
+      before the returning head's census ran.
+    disposition: FIXED_IN_CURRENT_HEAD
+    closes: [1878]
+    evidence_commits:
+      - 6985ecb7ad22935dfcde576e43cff6149a932b12
+      - 779d3553a1179a4910eb0c02f87e2830c23696e9
+    evidence_tests:
+      - test_reused_head_disables_break_glass_fallback
+      - test_workflow_subscribes_to_tracking_issue_lifecycle
+
+  - id: R11
+    source: 'Codex P1, #2132 @ 779d355'
+    finding: >-
+      On A -> B the pending mark went only to the new head B, so A's success
+      stayed eligible and a later B -> A move re-exposed it until the
+      returning head's census ran.
+    disposition: FIXED_IN_CURRENT_HEAD
+    evidence_this_pr: >-
+      --mark-pending-only also marks the synchronize event's departing
+      `before` SHA pending (departing_head_sha)
+    evidence_tests:
+      - test_departing_head_is_invalidated_on_synchronize
+      - test_mark_pending_also_supersedes_departing_head
+
+  - id: R12
+    source: 'Codex P2, #2132 @ 779d355'
+    finding: >-
+      invalidate and evaluate were sibling jobs; a later-starting
+      invalidation stamped a newer pending mark and the running census's
+      result was rejected as older, leaving the gate pending until a sweep.
+    disposition: FIXED_IN_CURRENT_HEAD
+    evidence_this_pr: >-
+      evaluate needs [route, invalidate] and still runs when the
+      invalidation is skipped or fails
+    evidence_tests: [test_workflow_subscribes_to_tracking_issue_lifecycle]
+
+standing_controls_not_closed:
+  - issue: 1846
+    reason: Standing SECURITY-DEFER backlog control; consumes future deferrals.
+  - issue: 1860
+    reason: >-
+      Merge-admission HOLD register; tick the #1847 entry, keep open for its
+      other queue items.
+
+known_open_outside_scope:
+  - item: PR Feedback Gate is not a required status check in the main ruleset.
+    observed: '2026-10-17'
+    note: >-
+      Every gap above is only enforceable once the gate is bound as a
+      required check. Binding is an owner decision, not part of this record.

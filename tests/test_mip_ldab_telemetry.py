@@ -166,6 +166,23 @@ class LDABTelemetryTests(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, "source status mismatch"):
             telemetry.summarize(a, None, None, SHA)
 
+    def test_root_status_follows_kit_diagnostic_not_file_presence(self):
+        signals_only = root()
+        signals_only["assessments"][LANE]["status"] = "amber"
+        census = telemetry.summarize(signals_only, None, None, SHA)
+        self.assertEqual(
+            census["source_census"]["root"]["producer_assessment"], "AMBER"
+        )
+        proven_without_signals = root(count=0, paths=[])
+        proven_without_signals["assessments"][LANE]["status"] = "green"
+        telemetry.summarize(proven_without_signals, None, None, SHA)
+
+    def test_nested_status_still_derives_from_file_presence(self):
+        n = nested()
+        n["assessments"][LANE]["status"] = "amber"
+        with self.assertRaisesRegex(ValueError, "nested LDAB source status mismatch"):
+            telemetry.summarize(root(), n, diagnostic(), SHA)
+
     def test_rejects_nonboolean_checks(self):
         d = diagnostic()
         d["checks"]["assimilate"] = 1

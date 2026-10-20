@@ -1,0 +1,71 @@
+name: CBD W38 Native Feedback Route Yield + Branch Proof
+'on':
+  pull_request:
+    paths:
+      - 'ci/governance/feedback_route_yield_w38.py'
+      - 'ci/governance/tests/test_feedback_route_yield_w38.py'
+      - '.github/workflows/pr-feedback-gate.yml'
+      - '.github/workflows/cbd-w38-route-yield.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: cbd-w38-route-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+jobs:
+  w38-source-bound-route:
+    name: W38 event-routing native negative controls + branch census
+    runs-on: ubuntu-24.04
+    timeout-minutes: 12
+    steps:
+      - name: Immutable owner checkout
+        uses: actions/checkout@v7
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+      - name: Python 3.12
+        uses: actions/setup-python@v7.0.0
+        with:
+          python-version: '3.12'
+      - name: Source exactness, coverage tool and negative unit contract
+        shell: bash
+        env:
+          EXACT_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$EXACT_SHA"
+          python -m pip install coverage==7.10.7
+          python -m py_compile ci/governance/feedback_route_yield_w38.py ci/governance/tests/test_feedback_route_yield_w38.py
+          python -m coverage run --branch -m unittest ci.governance.tests.test_feedback_route_yield_w38 -v
+          mkdir -p w38_route_receipts
+          python -m coverage json --pretty-print -o w38_route_receipts/coverage-branch.json
+          python - <<'PY'
+          from pathlib import Path
+          import hashlib, json, os
+          p=Path("w38_route_receipts/coverage-branch.json")
+          d=json.loads(p.read_text())
+          name=next((n for n in d["files"] if n.endswith("feedback_route_yield_w38.py")),None)
+          if name is None: raise SystemExit("NO_SOURCE_COVERAGE_POPULATION")
+          s=d["files"][name]["summary"]
+          covered,eligible=s["covered_branches"],s["num_branches"]
+          if not eligible: raise SystemExit("MISSING_BRANCH_DENOMINATOR")
+          ratio=covered/eligible
+          receipt={"schema":"cbd.w38.route-branch.v1","exact_head":os.environ["EXACT_SHA"],
+                   "source_file":name,"covered_branches":covered,"eligible_branches":eligible,
+                   "new_source_branch_ratio":ratio,
+                   "source_sha256":hashlib.sha256(Path(name).read_bytes()).hexdigest(),
+                   "coverage_json_sha256":hashlib.sha256(p.read_bytes()).hexdigest(),
+                   "scope":"NEW_SOURCE_ONLY_NOT_GLOBAL_COVERAGE_UPLIFT",
+                   "merge_admission":"HOLD","mutation_enabled":False}
+          Path("w38_route_receipts/native-branch.json").write_text(json.dumps(receipt,indent=2)+"\n")
+          print(json.dumps(receipt))
+          if ratio < 0.80: raise SystemExit("W38_NEW_SOURCE_BRANCH_BELOW_80_PERCENT")
+          PY
+      - name: Retain matched new-source branch receipt
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: cbd-w38-route-${{ github.run_id }}-a${{ github.run_attempt }}
+          path: w38_route_receipts/
+          if-no-files-found: warn
+          retention-days: 30

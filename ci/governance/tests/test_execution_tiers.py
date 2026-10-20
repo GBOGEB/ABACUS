@@ -28,8 +28,11 @@ class ExecutionTierTests(unittest.TestCase):
     def test_tier_members_exist_and_do_not_overlap(self):
         slim = set(self.tiers["slim_pr"]["workflows"])
         full = set(self.tiers["full"]["workflows"])
+        scoped = set(self.tiers["path_scoped_pr"]["workflows"])
         self.assertFalse(slim & full)
-        for filename in slim | full:
+        self.assertFalse(slim & scoped)
+        self.assertFalse(full & scoped)
+        for filename in slim | full | scoped:
             self.assertTrue((WORKFLOWS / filename).exists(), filename)
 
     def test_full_tier_does_not_run_on_pull_requests(self):
@@ -71,6 +74,70 @@ class ExecutionTierTests(unittest.TestCase):
             if "pull_request_target:" in source and any(scope in source for scope in WRITE_SCOPES):
                 actual.add(path.name)
         self.assertEqual(allowed, actual)
+
+
+    @staticmethod
+    def _sarif_trust_boundary(pr_source, cd_source):
+        """Pure negative oracle: PR can scan, only exact main push can publish."""
+        marker = "\n  trusted-main-trivy-sarif:\n"
+        if (pr_source.count("  pull_request:") != 1
+                or "Scan Docker Image" not in pr_source
+                or "name: ci-trivy-sarif" not in pr_source
+                or "security-events: write" in pr_source
+                or "upload-sarif@" in pr_source):
+            return False
+        if "  pull_request:" in cd_source or cd_source.count(marker) != 1:
+            return False
+        publisher = cd_source.split(marker, 1)[1]
+        return (
+            "if: github.event_name == 'push' && github.ref == 'refs/heads/main'"
+            in publisher
+            and "security-events: write" in publisher
+            and "test \"$GITHUB_REF\" = refs/heads/main" in publisher
+            and "test \"$(git rev-parse HEAD)\" = \"$GITHUB_SHA\"" in publisher
+            and "upload-sarif@24c54180a607b1449ed407dd24f251e4e9147c8d"
+            in publisher
+        )
+
+    def test_path_scoped_pr_domain_preserves_actual_triggers(self):
+        scope = set(self.tiers["path_scoped_pr"]["workflows"])
+        self.assertEqual(scope, {"ariana-cicd.yml", "ci-pipeline.yml"})
+        for filename in scope:
+            src = (WORKFLOWS / filename).read_text(encoding="utf-8")
+            self.assertIn("  pull_request:", src)
+            self.assertIn("    paths:", src)
+
+    def test_sarif_pr_scan_and_main_publication_have_separate_authorities(self):
+        pr = (WORKFLOWS / "ci-pipeline.yml").read_text(encoding="utf-8")
+        cd = (WORKFLOWS / "cd-pipeline.yml").read_text(encoding="utf-8")
+        self.assertTrue(self._sarif_trust_boundary(pr, cd))
+
+    def test_negative_pr_write_scope_reintroduction_trips(self):
+        pr = (WORKFLOWS / "ci-pipeline.yml").read_text(encoding="utf-8")
+        cd = (WORKFLOWS / "cd-pipeline.yml").read_text(encoding="utf-8")
+        self.assertFalse(self._sarif_trust_boundary(
+            pr.replace("      actions: read",
+                       "      actions: read\n      security-events: write", 1),
+            cd,
+        ))
+
+    def test_reverse_untrusted_main_publication_condition_trips(self):
+        pr = (WORKFLOWS / "ci-pipeline.yml").read_text(encoding="utf-8")
+        cd = (WORKFLOWS / "cd-pipeline.yml").read_text(encoding="utf-8")
+        guard = (
+            "if: github.event_name == 'push' && github.ref == 'refs/heads/main'"
+        )
+        self.assertFalse(self._sarif_trust_boundary(
+            pr, cd.replace(guard, "if: github.event_name == 'pull_request'", 1)
+        ))
+
+    def test_force_trip_missing_exact_head_guard_trips(self):
+        pr = (WORKFLOWS / "ci-pipeline.yml").read_text(encoding="utf-8")
+        cd = (WORKFLOWS / "cd-pipeline.yml").read_text(encoding="utf-8")
+        self.assertFalse(self._sarif_trust_boundary(
+            pr, cd.replace('test "$(git rev-parse HEAD)" = "$GITHUB_SHA"',
+                           'echo "unchecked SHA"', 1)
+        ))
 
 
 if __name__ == "__main__":

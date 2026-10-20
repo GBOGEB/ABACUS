@@ -1,0 +1,73 @@
+name: ABACUS W13 Weighted Neural SPINE
+on:
+  pull_request:
+    paths:
+      - 'MIP/G3CS_CONVERGENCE_V2/observatory/w10/build_spine_neural_w13.py'
+      - 'MIP/G3CS_CONVERGENCE_V2/observatory/w10/neural_spine_w13.template.html'
+      - 'MIP/G3CS_CONVERGENCE_V2/observatory/w10/W13_NEURAL_SPINE_*.json'
+      - 'MIP/G3CS_CONVERGENCE_V2/observatory/w10/W13_NEURAL_SPINE_*.html'
+      - 'MIP/G3CS_CONVERGENCE_V2/observatory/w10/tests/test_neural_spine_w13.py'
+      - '.github/workflows/w13-neural-spine.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  graph-proof:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        python: ['3.11', '3.12']
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+      - name: Prove exact checkout
+        env:
+          EXPECTED_HEAD: ${{ github.event.pull_request.head.sha || github.sha }}
+        run: test "$(git rev-parse HEAD)" = "$EXPECTED_HEAD"
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python }}
+      - run: python -m pip install 'networkx==3.6.1' 'coverage==7.13.3'
+      - name: Native W13 typed graph checks and coverage
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p build/w13-neural
+          python -m coverage run --branch --include='*/build_spine_neural_w13.py' \
+            -m unittest discover \
+            -s MIP/G3CS_CONVERGENCE_V2/observatory/w10/tests \
+            -p test_neural_spine_w13.py -v 2>&1 | tee build/w13-neural/tests.log
+          python -m coverage json -o build/w13-neural/coverage.json
+          python - <<'PY'
+          import json, pathlib, re
+          log=pathlib.Path('build/w13-neural/tests.log').read_text()
+          m=re.search(r'Ran (\d+) tests?',log)
+          c=json.loads(pathlib.Path('build/w13-neural/coverage.json').read_text())['totals']
+          if not m or int(m.group(1))<25 or 'FAILED' in log or 'OK' not in log:
+              raise SystemExit('HOLD: W13 test collection missing')
+          if c['num_statements']<=0 or c['num_branches']<=0 or c['percent_covered']<80:
+              raise SystemExit('HOLD: W13 provider coverage insufficient')
+          print('PASS_W13_NEURAL',m.group(1),c['percent_covered'])
+          PY
+      - name: Confirm generated HTML and data parity with pinned W11
+        shell: bash
+        run: |
+          set -euo pipefail
+          root='MIP/G3CS_CONVERGENCE_V2/observatory/w10'
+          python "$root/build_spine_neural_w13.py" \
+            --dag "$root/SPINE_DAG_W11.json" \
+            --sipoc "$root/SPINE_SIPOC_W11.json" \
+            --template "$root/neural_spine_w13.template.html" \
+            --outdir build/w13-neural
+          cmp -s build/w13-neural/W13_NEURAL_SPINE_DATA.json "$root/W13_NEURAL_SPINE_DATA.json"
+          cmp -s build/w13-neural/W13_NEURAL_SPINE_INTERACTIVE.html "$root/W13_NEURAL_SPINE_INTERACTIVE.html"
+          { git rev-parse HEAD; sha256sum build/w13-neural/*.json build/w13-neural/*.html; } > build/w13-neural/source_sha256.txt
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: abacus-w13-spine-${{ matrix.python }}-${{ github.run_id }}-${{ github.run_attempt }}
+          path: build/w13-neural/
+          if-no-files-found: warn

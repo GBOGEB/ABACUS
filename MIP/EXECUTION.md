@@ -86,6 +86,25 @@ Increase capacity only after repeated accepted pulses and available reviewer/run
 
 Horizons count bounded pulses, not dates or promised completions. New work must not silently alter the closed denominator.
 
+
+### G3A notation clarification (17 October 2026; candidate)
+
+The historical N+1/N+5/N+10 horizons above retain their original
+**bounded-pulse** interpretation; they are not rewritten or retrospectively
+claimed as three accepted source changes.
+
+For new requests that explicitly require one uninterrupted N→N+3 mission,
+use **G3A (Governed Three-Advance Mission)** with a separate `g3a_n`
+accepted-checkpoint index. `3W` means three implementation waves,
+`3MP` means three DMAIC/MIP feedback pulses, and neither automatically
+increments `g3a_n`. The repository-local control method, exact-head input
+manifest, early-stop rule, source-bound receipts and SIPOC/DAG are defined in
+[`docs/ci/G3A_GOVERNED_THREE_ADVANCE.md`](../docs/ci/G3A_GOVERNED_THREE_ADVANCE.md).
+Global meaning remains CODEX-owned, proposed in CODEX draft PR #1059.
+Existing source-owner, safety, review, admission and child-domain gates remain
+unchanged.
+
+
 ## IMPROVE to CONTROL
 
 Promote individual components, never the whole mesh by inference.
@@ -110,6 +129,25 @@ Use transparent BT-style risk/impact/dependency/cost ranking first; record manua
 Formal PCA requires a standardized measured matrix, sample adequacy and interpretable loadings.
 PC1 captures variance, not automatically value; do not label expert guesses as telemetry.
 
+## G3A / G3W unit taxonomy and bounded autonomous advancement
+
+**Federation terminology source:** [CODEX draft PR #1060](https://github.com/GBOGEB/CODEX/pull/1060), `docs/reference/glossary.yaml#/glossary/execution_units`. The cross-repository canonical update is a **proposal until reviewed and merged**; ABACUS retains this existing MIP register and all native acceptance authority.
+
+- **Wave (W):** bounded deliverable/campaign, with one or more sequential improvement pulses and optional parallel disjoint owner slices.
+- **Pulse (P):** one source-pinned MIP/DMAIC `observe -> diagnose -> act -> verify -> disposition` loop; it does not imply a commit, a CI run or a green admission.
+- **Slice (S):** independently owned scope with nonoverlapping write paths and attributable tests.
+- **G3A (Governed Three-Step Advancement):** user's shorthand for *three sequential pulses* within a bounded engagement, intending `N -> N+1 -> N+2 -> N+3`. Stop on any major blocker and return measured partial progress.
+- **G3W (Governed Three-Wave Delivery):** three separate delivery waves, each with its own DoV and as many pulses as justified. This is **not** interchangeable with G3A.
+- **N:** exact repository and pull-head/main SHA, policy/config identity, timestamp, first-red/check inventory, coverage numerator/denominator and admission-state snapshot. A moving head invalidates prior current-head proof.
+
+**Default G3A mission packet:** one measurable goal/DoV, pinned N, bounded repo/owner/file scope, priority rule, three-pulse budget, available tools/workers, explicit allowed actions, mandatory stops, and output receipt. Choose next admissible action after each pulse from observed results. At most four read-only scouts; up to two disjoint owned write lanes; only one integrated exact-head CI testflight after fan-in where possible. Source writes require an owner lease and fresh head checks. Never infer extra agent/runners from advisory worker plans.
+
+**Operator interaction:** no routine request between P1/P2/P3. Interrupt immediately for unresolved P0/P1 security, permission/owner conflict, head/policy drift, untrusted/missing proof, exhausted budget or other material authorization blocker. Explicitly **never** auto-approve, merge, waive, dismiss A10 or weaken branch protection.
+
+**Evidence accounting:** report `evaluated_pulses / planned_pulses`, `native_verified_pulses`, `independently_accepted_pulses`, actual source SHA changes, test/coverage numerators, first-red root candidates, queue/setup/execution/wall times, and admission gates separately. `3/3 evaluated` is not `3/3 accepted`. Existing closure 8/8 and historical wave labels are unaffected.
+
+The CODEX controller `scripts/g3a_protocol.py` is read-only receipt reconciliation, not an automated GitHub executor. Native admission remains in ABACUS and independent security/governance/review checks.
+
 ## Pulse event protocol
 
 Record append-only events with pulse_id, task_id, repo, component, observed_at, source_commit,
@@ -130,3 +168,9 @@ ABACUS retains three historical `mip/*` refs because the available connector can
 
 Do not merge or revive these branches. Delete the refs when a branch-delete-capable interface is available.
 No implementation or evidence is lost by their deletion; canonical accepted state is on `main` and in merged PR/run history.
+
+## GCA-3 governed execution cadence (current operational convention)
+
+**GCA-3 = Governed Convergence Advance ×3**, a bounded same-invocation attempt to advance engineering acceptance from current accepted wave N through W[N+1], W[N+2] and W[N+3]. A **wave** is a receipted engineering delivery increment; a **pulse** (`U1..Uk`) is one observe/diagnose/improve-or-no-change/verify loop inside a wave (normally 1–3 pulses per wave). The historical **3P\*** method stages P1 discovery, P2 reverse-pressure and P3 re-entry are *not* three pulses. See [GCA-3 glossary and execution protocol](GCA3_GLOSSARY_AND_PROTOCOL.md) and machine-readable [request example](GCA3_REQUEST_TEMPLATE.json); validate with `python scripts/gca3_contract.py MIP/GCA3_REQUEST_TEMPLATE.json`.
+
+Use this only for **new, explicitly bounded work**. Do not reopen or renumber the historical closed 8/8 MIP tranche above. Every wave has separate engineering DoV and independent release-admission checks. Record `attempted_waves` versus `accepted_n`, exact SHA and job/attempt evidence, matched coverage denominators, root/manifestation distinctions and HOLDs. A three-wave attempt does **not** imply an accepted N+3; stop for major authority/security blockers and never autonomously waive, approve or merge. Execution is only within the present supported invocation, not persistent background work.

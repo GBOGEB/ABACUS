@@ -34,7 +34,16 @@ EXPECTED = {
 
 
 def load_json(path: Path) -> dict[str, Any]:
-    value = json.loads(path.read_text(encoding="utf-8"))
+    def unique_pairs(pairs):
+        result = {}
+        for key, value in pairs:
+            if key in result:
+                raise ValueError(f"{path}: duplicate proof key: {key}")
+            result[key] = value
+        return result
+
+    value = json.loads(path.read_text(encoding="utf-8"),
+                       object_pairs_hook=unique_pairs)
     if not isinstance(value, dict):
         raise ValueError(f"{path}: expected object")
     return value
@@ -44,6 +53,8 @@ def expected_versions(mode: str, secondary: str) -> list[str]:
     if mode == "full":
         return ["3.10", "3.11", "3.12"]
     if mode == "sampled":
+        if secondary not in {"3.10", "3.11"}:
+            raise ValueError("sampled secondary must be an independent Python 3.10/3.11 cell")
         return sorted({"3.12", secondary})
     if mode == "sentinel":
         return ["3.12"]
@@ -60,7 +71,7 @@ def audit(
     rows: list[dict[str, Any]] = []
     versions = expected_versions(mode, secondary)
 
-    if len(expected_sha) != 40 or any(
+    if not isinstance(expected_sha, str) or len(expected_sha) != 40 or any(
         ch not in "0123456789abcdef" for ch in expected_sha
     ):
         errors.append("EXPECTED_SHA_INVALID")
@@ -70,7 +81,11 @@ def audit(
         if not path.exists():
             errors.append(f"{version}:MISSING_SUMMARY")
             continue
-        payload = load_json(path)
+        try:
+            payload = load_json(path)
+        except (OSError, ValueError) as exc:
+            errors.append(f"{version}:INVALID_SUMMARY:{type(exc).__name__}")
+            continue
         if payload.get("exact_sha") != expected_sha:
             errors.append(f"{version}:exact_sha")
         if payload.get("python_version") != version:
@@ -83,7 +98,10 @@ def audit(
             role = "sentinel"
         if payload.get("proof_role") != role:
             errors.append(f"{version}:proof_role")
-        checks = payload.get("checks", {})
+        checks = payload.get("checks")
+        if not isinstance(checks, dict):
+            errors.append(f"{version}:INVALID_CHECKS")
+            checks = {}
         for name, expected in EXPECTED[version].items():
             actual = checks.get(name)
             if actual != expected:

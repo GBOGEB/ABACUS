@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
 <title>CODE PURPLE | LIVE MIP · DMAIC · KPI · RED | SUT</title>
-<meta name="code-purple-schema" content="code-purple.sut-gui.v3.2">
+<meta name="code-purple-schema" content="code-purple.sut-gui.v4.4">
 <style>
 :root{color-scheme:dark;--bg:#0a101b;--surface:#131d2b;--surface2:#1a2940;--stroke:#34455b;--text:#f2f7fd;--muted:#b8c8dc;--blue:#74c9ff;--purple:#c2a2ff;--green:#77e2b0;--red:#ff9f9f;--amber:#ffda90;font:15px/1.5 system-ui,-apple-system,Segoe UI,Roboto,sans-serif}
 *{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;background:var(--bg);color:var(--text)}a{color:var(--blue)}button,select,input{font:inherit}button{cursor:pointer;background:#263b57;border:1px solid #5d82ac;color:var(--text);padding:.7rem 1rem;border-radius:9px;font-weight:650}button:hover:not(:disabled){background:#355477}button:disabled{opacity:.55;cursor:not-allowed}button:focus-visible,input:focus-visible,select:focus-visible,a:focus-visible{outline:3px solid var(--amber);outline-offset:2px}.shell{display:grid;grid-template-columns:232px minmax(0,1fr);max-width:1800px;min-height:100vh;margin:auto}.sidebar{position:sticky;top:0;height:100vh;padding:26px 17px;border-right:1px solid var(--stroke);background:#111827}.brand{display:flex;align-items:center;gap:12px;margin-bottom:24px}.logo{display:grid;place-items:center;width:42px;height:42px;background:#6040a3;border-radius:12px;font-weight:850}.brand small{display:block;color:var(--muted);letter-spacing:.1em}.nav{display:grid;gap:6px}.nav a{display:block;padding:10px 12px;color:var(--muted);text-decoration:none;border-radius:8px}.nav a:hover{background:var(--surface2);color:var(--text)}.side-note{border-top:1px solid var(--stroke);margin-top:24px;padding-top:16px;font-size:12px;color:var(--muted)}main{min-width:0;padding:30px clamp(16px,3vw,54px) 70px}.top{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:12px}h1{font-size:clamp(27px,3vw,43px);margin:8px 0;font-weight:770;letter-spacing:-.03em}h2{font-size:22px;margin:0 0 12px}h3{font-size:15px;margin:0 0 9px}.eyebrow{color:var(--blue);text-transform:uppercase;font-size:11px;letter-spacing:.12em;font-weight:800}.sub{color:var(--muted);margin:4px 0 15px}.badge{display:inline-flex;padding:5px 9px;border-radius:8px;border:1px solid #526781;background:#24334a;font-weight:750;font-size:12px}.badge.red{color:var(--red);border-color:#ae5b66;background:#3a202a}.badge.green{color:var(--green);border-color:#438d70;background:#17362e}.badge.amber{color:var(--amber);border-color:#a88a47;background:#362f20}.badge.unknown{color:#d6dfef}.layout{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:13px}.card{border:1px solid var(--stroke);background:var(--surface);border-radius:12px;padding:18px;min-width:0}.stat-label{font-size:12px;color:var(--muted);font-weight:700}.stat-value{font-weight:780;font-size:clamp(20px,2vw,30px);margin:5px 0;overflow-wrap:anywhere}.small{font-size:12px;color:var(--muted)}.mono,code,pre{font-family:ui-monospace,SFMono-Regular,Consolas,monospace;overflow-wrap:anywhere}.mono{font-size:12px}.panel{margin-top:24px}.panel-head{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;margin-bottom:12px}.actions{display:flex;gap:9px;align-items:center;flex-wrap:wrap}.btn-secondary{background:#172436}.divider{border:0;border-top:1px solid var(--stroke);margin:21px 0}.table-wrap{max-width:100%;overflow-x:auto}table{border-collapse:collapse;width:100%;min-width:650px}th,td{padding:12px 9px;text-align:left;vertical-align:top;border-bottom:1px solid var(--stroke)}th{color:var(--muted);font-size:12px;font-weight:800;background:#1b293c}td{font-size:13px}p{color:var(--muted)}.stack{display:grid;gap:12px}.split{display:grid;grid-template-columns:minmax(0,1.15fr) minmax(300px,.85fr);gap:13px}.field{display:grid;gap:6px;margin:11px 0}.field label{font-size:12px;color:var(--muted);font-weight:700}input,select{min-width:0;width:100%;padding:11px;border:1px solid #5b7695;border-radius:9px;background:#0e1a2b;color:var(--text)}pre{background:#080e18;color:#d5e4f5;border:1px solid #40526a;border-radius:10px;padding:14px;white-space:pre-wrap;word-break:break-word;max-height:390px;overflow:auto;font-size:12px;line-height:1.5}.notice{border-left:4px solid var(--amber);padding:12px 16px;background:#302719;border-radius:0 10px 10px 0;color:#ffe7b6}.notice strong{color:#fff}.notice.red{border-color:var(--red);background:#341e29;color:#ffd5dc}.summary-row{display:flex;flex-wrap:wrap;gap:8px}.kpi-row{display:grid;grid-template-columns:1fr 1fr;gap:13px}.pill{border:1px solid #46566c;border-radius:7px;padding:4px 8px;font-size:11px;color:var(--muted)}.footer{font-size:12px;color:var(--muted);margin-top:36px}#live-meta{font-size:12px;color:var(--muted)}.hidden{display:none!important}
@@ -61,20 +61,216 @@ tr.group-header.red th{border-left-color:var(--red)}tr.group-header.green th{bor
 @media(max-width:990px){.arch-flow{grid-template-columns:repeat(2,minmax(0,1fr))}.arch-step::after{display:none!important}.arch-role-table{grid-template-columns:repeat(2,minmax(0,1fr))}}
 @media(max-width:610px){.arch-flow,.arch-loop-grid,.arch-role-table,.arch-decision-layout{grid-template-columns:minmax(0,1fr)}.arch-key-grid{gap:10px}.arch-branch{min-height:0}}
 
+
+/* V4 taxonomy: status color is reserved for conclusion, never for ownership or phase. */
+:root{--phase:#7098bf;--decision:#c2a2ff;--feedback:#ffbe6e;--feedforward:#6bddea}
+.metric-range{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin-top:8px}
+.metric-measure{padding:8px;border:1px solid var(--stroke);border-radius:8px;font-size:12px;color:#e6f3ff}
+.metric-measure strong{display:block;color:#fff;font-size:15px;font-variant-numeric:tabular-nums}
+.dmaic-item{padding:12px 0}.dmaic-item .phase-head{display:flex;align-items:center;gap:9px;justify-content:space-between}
+.dmaic-item strong{min-width:auto}.phase-measure{font-size:12px;color:#d3e7f6;margin-top:5px}
+.phase-threshold{font-size:11px;color:#95b0cc;margin-top:3px}.phase-progress{background:#28364a;height:6px;margin-top:9px;border-radius:9px;overflow:hidden}
+.phase-progress>i{display:block;background:#74c9ff;height:100%}
+.modal-open{float:right;margin-left:8px;padding:5px 9px;font-size:11px}
+#trend{cursor:zoom-in}#trend:hover{outline:1px dashed var(--blue);outline-offset:3px}
+#trend-dialog{width:min(1300px,96vw);height:min(760px,94vh);max-width:none;max-height:none;background:#111e2f;color:var(--text);border:1px solid #7899c4;border-radius:14px;padding:20px;overflow:auto}
+#trend-dialog::backdrop{background:#02070ddc;backdrop-filter:blur(3px)}
+.modal-head{display:flex;align-items:start;justify-content:space-between;gap:9px}
+.modal-legend{display:flex;flex-wrap:wrap;gap:7px;margin:12px 0;font-size:12px}
+.legend-mark{display:inline-flex;align-items:center;gap:5px;border:1px solid #526582;padding:5px 8px;border-radius:7px;color:#e5effe}
+.legend-mark i{width:10px;height:10px;display:inline-block;border-radius:2px}
+.zoom-chart{display:flex;gap:3px;align-items:flex-end;min-width:max-content;height:190px;padding:16px 10px;border-bottom:1px solid #526582}
+.zoom-chart button{width:11px;min-width:11px;border:0;padding:0;min-height:9px;border-radius:3px 3px 0 0;cursor:pointer;opacity:.93}
+.zoom-chart button:focus-visible,.zoom-chart button:hover{outline:2px solid #fff;outline-offset:2px;opacity:1}
+.zoom-scroll{overflow-x:auto;border:1px solid #344e66;border-radius:10px;background:#0b1523}
+.timeline-detail{margin:12px 0;padding:14px;border-left:4px solid var(--blue);background:#1a2b40;border-radius:7px;font-size:13px}
+.source-inputs{display:flex;gap:10px;flex-wrap:wrap;align-items:end}
+.source-inputs label{font-size:12px;flex:1;min-width:220px}
+.proof-steps{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px}
+.proof-step{padding:12px;border:1px solid #49627a;border-radius:10px;background:#1a2b3f}
+.proof-step b,.proof-step small{display:block}.proof-step small{color:#aac6db}
+.tax-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:11px}
+.tax-card{border:1px solid #425875;border-radius:10px;padding:13px;background:#172638}
+.tax-card b{display:block}.tax-card .stat-value{font-size:19px}.tax-card p{font-size:12px;margin:5px 0}
+.tax-card code{font-size:11px}.tax-muted{color:#a3c3da}
+.tax-legend{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:7px}
+.tax-legend .tax-card{font-size:12px;padding:10px}
+.raw-qual{border-left:3px solid #75d9e8;padding:10px 12px;background:#182d40;margin-top:10px;font-size:12px}
+@media(max-width:900px){.tax-grid,.proof-steps{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:540px){.tax-grid,.proof-steps,.tax-legend,.metric-range{grid-template-columns:1fr}#trend-dialog{padding:11px;width:98vw;height:95vh}}
+
+
+/* V4.1 visual taxonomy: status uses saturated fill + label; family uses outline + abbreviation. */
+.state-headline{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.state-headline .stat-value{margin:3px 0;color:var(--text)}
+.state-headline .stat-value.is-protected{color:var(--green)}
+.state-headline .stat-value.is-unprotected{color:#ffb074}
+.state-headline .stat-value.is-unknown{color:#d1def1}
+.state-headline .stat-value.is-merged{color:var(--green)}
+.state-card{transition:border-color .15s ease;position:relative}
+.state-card.safe{border-left:4px solid #77e2b0}
+.state-card.todo{border-left:4px solid #ffad77}
+.state-card.unclear{border-left:4px solid #92a4ba}
+.state-card.review{border-left:4px solid #e4c16a}
+.mini-badges{display:flex;flex-wrap:wrap;align-items:center;gap:5px;margin-top:8px;min-height:23px}
+.mini-badges .badge{font-size:10px;padding:3px 6px;letter-spacing:.02em}
+.badge.gold{color:#ffe1a2;background:#41331c;border-color:#a58342}
+.badge.todo{color:#ffbf94;background:#43271d;border-color:#ba7452}
+.badge.info{color:#9bcaf8;background:#152e48;border-color:#49789d}
+.rule-inventory{margin-top:10px;padding-top:8px;border-top:1px solid #405065}
+.rule-inventory summary{cursor:pointer;color:#a5d7ff;font-weight:650;font-size:12px}
+.rule-inventory ul{padding-left:17px;margin:8px 0;display:grid;gap:7px}
+.rule-inventory li{font-size:12px;color:#e9effa}
+.rule-inventory li .desc{font-size:11px;color:#b5c9db;display:block;margin-top:2px}
+.rule-warning{font-size:11px;color:#ffda94;margin:8px 0 2px}
+.rule-inventory .rule-summary{color:#c1d7ee;font-size:11px}
+.category-legend{display:flex;gap:7px;flex-wrap:wrap;margin:10px 0;padding:9px;border:1px solid var(--stroke);border-radius:9px;background:#111d2c}
+.category-legend .legend-note{font-size:11px;flex-basis:100%;color:#aec0d7}
+.ci-family{display:inline-flex;align-items:center;padding:3px 8px;border-radius:6px;border:1px solid #5e789a;min-width:50px;justify-content:center;font-size:10px;font-weight:800;letter-spacing:.04em;color:#c7def5;background:#182b42}
+.ci-family.family-governance{border-style:double;border-width:2px;color:#e3c9ff;background:#2e2141;border-color:#9b7ed4}
+.ci-family.family-measurement{border-color:#69c6d5;color:#a0edee;background:#15343e}
+.ci-family.family-tests{border-color:#72b5f2;color:#b1dfff;background:#18334b}
+.ci-family.family-security{border-color:#d7b46c;color:#ffe0a1;background:#382c1b}
+.ci-family.family-other{border-color:#778ba4;color:#bdc8d8;background:#263243}
+.ci-rollup td{padding:9px 10px;background:#172538}
+.ci-rollup summary{cursor:pointer;display:flex;align-items:center;gap:10px;flex-wrap:wrap;list-style-position:inside;padding:5px 0}
+.ci-rollup summary strong{color:#f6f9ff}
+.ci-rollup summary .num{font-variant-numeric:tabular-nums;color:#acc7e3;font-size:12px}
+.ci-rollup .nested-runs{display:grid;gap:0;margin-top:8px;border-top:1px solid #46586d;max-height:390px;overflow:auto}
+.ci-rollup .nested-run{display:grid;grid-template-columns:minmax(0,1fr) 115px 120px;gap:8px;padding:9px 6px;border-bottom:1px solid #34465c;align-items:center;font-size:12px}
+.ci-rollup .nested-run a{color:#98d7ff}
+.ci-rollup .nested-run time{color:#bbcadc}
+.ci-rollup .nested-run .mono{font-size:11px}
+.ci-row-failure{box-shadow:inset 3px 0 #ff9f9f}.ci-row-cancelled{box-shadow:inset 3px 0 #ffad77}
+#group-duplicates{width:auto;accent-color:#75bff2}
+.ci-filters label.toggle-rollup{display:flex;flex-direction:row;flex:0 1 auto;align-items:center;gap:8px;min-width:195px;font-size:12px;color:#d6e7f9;padding:7px 0}
+@media(max-width:650px){.ci-rollup .nested-run{grid-template-columns:minmax(0,1fr) 90px}.ci-rollup .nested-run .mono{display:none}}
+
+
+
+/* V4.2 Evidence registers: role/phase/outcome are distinct visual channels. */
+.mip-head{display:flex;justify-content:space-between;align-items:center;gap:14px;flex-wrap:wrap}
+.mip-thing{display:grid;align-content:start;gap:6px;border-left:3px solid #5e81a8;min-height:170px;background:#162234}
+.mip-thing .mip-top{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
+.mip-thing .mip-id{font:750 12px ui-monospace,monospace;color:#9ad0ff;letter-spacing:.06em}
+.mip-thing strong{font-size:13px;color:#f8fbff}
+.mip-thing .small{margin:0}
+.mip-thing .mip-next{border-top:1px dashed #3d536a;padding-top:7px;color:#cfdfec;font-size:12px}
+.mip-thing .mip-source{font-size:11px;color:#9fd8fc}
+.mip-thing[data-state="BLOCKED"]{border-left-color:#ffad77}
+.mip-thing[data-state="OBSERVED"]{border-left-color:#77e2b0}
+.mip-thing[data-state="PARTIAL"]{border-left-color:#ffda90}
+.mip-thing[data-state="UNKNOWN"]{border-left-color:#8ba0b9}
+.model-register{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:11px;margin-top:14px}
+.model-proof{border:1px solid #405d79;border-radius:11px;padding:14px;background:#17273a;min-width:0}
+.model-proof h3{color:white;margin-bottom:8px}
+.proof-row{display:grid;grid-template-columns:72px minmax(0,1fr) auto;align-items:start;gap:9px;padding:9px 0;border-top:1px solid #3c526b;font-size:12px}
+.proof-row code{color:#9ed5ff;font-size:11px}
+.proof-row .proof-desc{color:#c5d5e9}
+.proof-row .badge{font-size:10px;white-space:nowrap}
+.owned-links{display:flex;flex-wrap:wrap;gap:9px;margin-top:10px}
+.owned-links a{display:inline-block;padding:6px 10px;background:#193148;border:1px solid #5081a5;border-radius:8px;text-decoration:none;font-size:12px}
+.sipoc-table{width:100%;min-width:780px}
+.sipoc-table th{color:#d4ebff}
+.sipoc-table td{line-height:1.5;min-width:0}
+.sipoc-table a{font-size:12px}
+.mip-quick{margin:0 0 12px;color:#bdccde;font-size:12px}
+@media(max-width:790px){.model-register{grid-template-columns:1fr}.proof-row{grid-template-columns:56px minmax(0,1fr)}.proof-row .badge{grid-column:2;justify-self:start}}
+
+/* V4.3 SIPOC controlled lanes: function colors never encode execution status. */
+.sipoc-visual{margin:15px 0;background:#122035;min-width:0}
+.sipoc-visual-header{display:flex;justify-content:space-between;align-items:start;gap:16px;flex-wrap:wrap;margin-bottom:12px}
+.sipoc-visual-header h3{font-size:17px;margin:0 0 5px;color:#f5faff}.sipoc-visual-header p{color:#b9ccdf;font-size:12px;margin:0;max-width:690px}
+.sipoc-zoom-btn{width:auto;min-width:155px;padding:8px 12px;background:#213b54;border:1px solid #72b8e7;color:#d9f2ff;border-radius:8px;cursor:pointer;font-weight:700}
+.sipoc-zoom-btn:hover,.sipoc-zoom-btn:focus-visible{outline:2px solid #9bdbff;outline-offset:1px}
+.sipoc-local-legend{display:flex;gap:7px;align-items:center;flex-wrap:wrap;margin:13px 0}
+.sipoc-key{border:1px solid #54718a;background:#162a41;border-radius:6px;padding:4px 9px;font-weight:700;font-size:11px;letter-spacing:.01em}
+.sipoc-key.s{color:#a8d8ff;border-color:#528bb7}.sipoc-key.i{color:#d0b7ff;border-color:#9476c5}.sipoc-key.p{color:#9cf2ee;border-color:#389fa6}.sipoc-key.o{color:#ffe1a0;border-color:#c09649}.sipoc-key.c{color:#f4c3de;border-color:#b3779c}
+.sipoc-key.line{color:#ddeaf9}.sipoc-key.feedback{color:#ffd493;border-style:dashed;border-color:#bd8b43}.sipoc-key.ff{color:#8fe5f8;border-style:double;border-color:#5ec5df}
+.sipoc-colour-rule{font-size:11px;line-height:1.5;margin:9px 0 17px;color:#b4c9df}
+.sipoc-canvas{display:flex;flex-direction:column;gap:0;min-width:0}
+.sipoc-lane{background:#17263a;border:1px solid #4d6882;border-radius:13px;padding:14px;min-width:0}
+.sipoc-lane-heading{display:flex;align-items:center;gap:10px;margin-bottom:12px}
+.sipoc-lane-heading h3{font-size:13px;color:#e9f4ff;margin:0}.sipoc-lane-heading p{font-size:11px;margin:3px 0 0;color:#aebfd4}
+.sipoc-lane-num{font-size:19px;font-weight:900;line-height:1;border-radius:9px;border:1px solid #6795b8;background:#253b52;color:#e6f3ff;padding:9px;min-width:45px;text-align:center}
+.sipoc-phase{font-size:11px;background:#263d55;border-radius:4px;padding:2px 6px;color:#bedcff;white-space:nowrap}
+.sipoc-block-grid{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:16px}
+.sipoc-block{position:relative;border:1px solid #536c83;border-top:4px solid var(--sipoc-col,#789bb7);border-radius:10px;background:#101e30;min-width:0;min-height:116px;padding:10px 11px;display:flex;flex-direction:column;gap:8px;overflow-wrap:anywhere}
+.sipoc-block:not(:last-child)::after{content:'→';position:absolute;right:-18px;top:42%;z-index:1;color:#b6d0e4;font-size:21px;font-weight:900}
+.sipoc-block.sipoc-s{--sipoc-col:#81bcf0}.sipoc-block.sipoc-i{--sipoc-col:#b9a0ed}.sipoc-block.sipoc-p{--sipoc-col:#69d4d0}.sipoc-block.sipoc-o{--sipoc-col:#eac780}.sipoc-block.sipoc-c{--sipoc-col:#e3aed1}
+.sipoc-block-head{display:flex;gap:7px;align-items:center;font-size:10px;color:#d7e6f4;font-weight:800;letter-spacing:.04em}
+.sipoc-letter{background:var(--sipoc-col);color:#0b1622;display:inline-flex;justify-content:center;align-items:center;width:22px;height:22px;border-radius:5px;font-size:13px;font-weight:900;flex-shrink:0}
+.sipoc-block-body{font-size:12px;line-height:1.5;color:#e2eafa;overflow-wrap:anywhere}
+.sipoc-transfer{min-height:38px;display:flex;align-items:center;gap:10px;color:#bcd7ed;margin:0 20px;font-size:11px}
+.sipoc-transfer-icon{font-size:25px;font-weight:900;color:#87c8f2;line-height:1}.sipoc-transfer strong{font-size:10px;color:#9ed9ff}
+.sipoc-control-overlay{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:12px}
+.sipoc-control{display:flex;gap:10px;align-items:start;border-radius:10px;padding:12px;background:#161e2d;border:1px solid #5e6977}
+.sipoc-control.feedback{border:1px dashed #b88d4e;background:#302819}.sipoc-control.feedforward{border:3px double #52c7db;background:#12343c}
+.sipoc-control-symbol{font-size:25px;line-height:1;color:#ffe0a4}.sipoc-control.feedforward .sipoc-control-symbol{color:#91e8f7}
+.sipoc-control b{color:#f1f7ff;font-size:12px}.sipoc-control small{display:block;font-size:11px;line-height:1.45;color:#cbd9e9;margin-top:4px}
+.sipoc-diagram-footer{display:flex;flex-wrap:wrap;gap:12px;margin-top:12px;font-size:12px}
+.sipoc-diagram-footer a{color:#93ddff}
+.sipoc-ref-table{margin-top:14px;border:1px solid #4a6780;border-radius:9px;padding:10px 12px}
+.sipoc-ref-table summary{cursor:pointer;font-size:12px;color:#bee6ff;font-weight:750}
+.sipoc-ref-table .table-wrap{margin-top:12px}.sipoc-ref-table[open]{background:#14283d}
+.sipoc-dialog{width:min(97vw,1740px);max-width:97vw;height:min(94vh,1100px);max-height:94vh;overflow:hidden;border:1px solid #6894b9;border-radius:15px;background:#0d1726;color:#f4faff;padding:0}
+.sipoc-dialog::backdrop{background:rgba(3,8,17,.86)}
+.sipoc-dialog-header{display:flex;align-items:center;justify-content:space-between;gap:14px;padding:18px 22px;background:#192b40;border-bottom:1px solid #55738f}
+.sipoc-dialog-header h2{font-size:20px;margin:0}.sipoc-dialog-header p{font-size:12px;margin:3px 0 0;color:#b9d0e4}
+.sipoc-dialog-header button{width:auto;background:#344860;border:1px solid #7c9fc1;border-radius:7px;color:#fff;cursor:pointer;padding:9px 15px}
+.sipoc-dialog-content{height:calc(100% - 89px);overflow:auto;padding:17px 22px}
+.sipoc-dialog-content .sipoc-visual{margin:0}.sipoc-dialog-content .sipoc-zoom-btn{display:none}
+@media(max-width:1150px){.sipoc-block-grid{gap:10px}.sipoc-block{padding:9px;min-height:130px}.sipoc-block:not(:last-child)::after{right:-12px;font-size:15px}}
+@media(max-width:780px){.sipoc-block-grid{grid-template-columns:1fr;gap:6px}.sipoc-block{min-height:0;gap:4px}.sipoc-block:not(:last-child)::after{position:static;content:'↓';height:13px;text-align:center;line-height:13px;font-size:16px}.sipoc-control-overlay{grid-template-columns:1fr}.sipoc-transfer{margin:0 6px;flex-wrap:wrap;gap:6px}.sipoc-visual{padding:11px}.sipoc-dialog-header{padding:10px 12px}.sipoc-dialog-content{padding:10px;height:calc(100% - 75px)}}
+@media(prefers-reduced-motion:reduce){.sipoc-dialog *{scroll-behavior:auto!important}}
+
+/* V4.4 telemetry leaves: nested execution depth is visible but never promoted to statistical independence. */
+.telemetry-banner{display:flex;gap:10px;align-items:center;flex-wrap:wrap;border:1px solid #557493;background:#13263a;border-radius:12px;padding:13px;margin-bottom:13px}
+.telemetry-banner strong{color:#fff}.telemetry-banner .guard{margin-left:auto;color:#ffdca0;font-size:12px}
+.telemetry-summary{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px}
+.telemetry-card{border:1px solid #405b76;border-top:4px solid var(--phase);background:#152438;border-radius:12px;padding:15px;min-width:0}
+.telemetry-card.tests,.telemetry-card.coverage,.telemetry-card.scale{border-top-color:var(--phase)}
+.telemetry-card .big{font-size:25px;font-weight:800;letter-spacing:-.025em;font-variant-numeric:tabular-nums;color:#fff}
+.telemetry-card .metricline{display:flex;justify-content:space-between;gap:9px;padding:5px 0;border-bottom:1px solid #31465e;font-size:12px}
+.telemetry-card .metricline:last-child{border-bottom:0}.telemetry-card .metricline span{color:#b7c9dc}.telemetry-card .metricline b{color:#fff;font-variant-numeric:tabular-nums;text-align:right}
+.telemetry-leaves{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:11px;margin-top:13px}
+.telemetry-leaf{border:1px solid #405873;background:#101f31;border-radius:11px;padding:13px;min-width:0}
+.telemetry-leaf h3{display:flex;justify-content:space-between;gap:8px;align-items:start;font-size:13px}
+.telemetry-leaf .leaf-code{font-size:10px;border:1px solid #52718d;border-radius:5px;padding:2px 5px;color:#b9dcf4;white-space:nowrap}
+.telemetry-leaf .leaf-value{font-size:22px;font-weight:800;color:#fff;margin:6px 0;font-variant-numeric:tabular-nums}
+.telemetry-leaf .leaf-sub{font-size:11px;color:#b9cadd}.telemetry-leaf details{margin-top:9px;border-top:1px solid #334b63;padding-top:8px}
+.telemetry-leaf summary{cursor:pointer;color:#d8e7f5;font-size:11px;font-weight:700}.telemetry-leaf ul{padding-left:18px;margin:7px 0}.telemetry-leaf li{font-size:11px;color:#c4d6e6;margin:4px 0}
+.telemetry-split{display:grid;grid-template-columns:minmax(0,1.1fr) minmax(320px,.9fr);gap:13px;margin-top:13px}
+.burn-panel{border:1px solid #405873;background:#111f31;border-radius:11px;padding:14px}.burn-row{display:grid;grid-template-columns:150px 1fr;gap:10px;align-items:center;margin:10px 0}
+.burn-bars{height:84px;display:flex;gap:4px;align-items:flex-end;border-bottom:1px solid #496078;padding:5px 3px;background:#0c1726;border-radius:7px}
+.burn-bars i{flex:1;min-width:5px;border-radius:3px 3px 0 0;background:#74c9ff;position:relative}.burn-bars.backlog i{background:#ffbe6e}
+.burn-bars i:hover::after{content:attr(data-label);position:absolute;bottom:100%;left:50%;transform:translateX(-50%);background:#07111e;border:1px solid #59728d;border-radius:5px;padding:3px 5px;font-size:10px;color:#fff;white-space:nowrap;z-index:3}
+.method-dag{border:1px solid #435f79;background:#0f1d2d;border-radius:12px;padding:14px}
+.method-chain{display:grid;grid-template-columns:repeat(7,minmax(85px,1fr));gap:7px;align-items:stretch}
+.method-node{border:1px solid #5e7891;background:#183048;border-radius:8px;padding:10px 8px;font-size:11px;color:#dceaf7;display:flex;flex-direction:column;gap:4px}
+.method-node b{color:#fff;font-size:12px}.method-node small{color:#aac0d4}.method-node.analysis{border-color:#9b82d3;background:#272a43}.method-node.control{border-color:#58a783;background:#17332b}
+.method-side{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:9px;margin-top:10px}.method-side .method-node{min-height:83px}
+.method-owner{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:9px;margin-top:10px}.method-owner .method-node{border-style:dashed}
+.telemetry-warning{border-left:4px solid #ffda90;background:#302719;color:#ffe6b4;padding:10px 13px;border-radius:0 8px 8px 0;font-size:12px;margin-top:10px}
+.telemetry-source{font-size:11px;color:#adc5d9;margin-top:6px}.telemetry-source a{overflow-wrap:anywhere}
+@media(max-width:1200px){.telemetry-summary,.telemetry-leaves{grid-template-columns:repeat(2,minmax(0,1fr))}.method-chain{grid-template-columns:repeat(4,minmax(0,1fr))}}
+@media(max-width:850px){.telemetry-split,.method-side,.method-owner{grid-template-columns:1fr}.method-chain{grid-template-columns:repeat(2,minmax(0,1fr))}.burn-row{grid-template-columns:1fr}}
+@media(max-width:560px){.telemetry-summary,.telemetry-leaves,.method-chain{grid-template-columns:1fr}.telemetry-banner .guard{margin-left:0}}
+
 </style>
 </head>
 <body>
 <div class="shell">
 <aside class="sidebar"><div class="brand"><span class="logo" aria-hidden="true">CP</span><div><strong>CODE PURPLE</strong><small>SUT CONTROL</small></div></div>
-<nav class="nav" aria-label="Sections"><a href="#overview">Overview</a><a href="#ci">CI first-reds</a><a href="#measurement">DMAIC/KPI</a><a href="#model">PCA/BT</a><a href="#sut">SUT testflight</a><a href="#architecture">Architecture</a><a href="#evidence">Evidence</a></nav>
+<nav class="nav" aria-label="Sections"><a href="../../../MIP/EVIDENCE_TO_ADMISSION_OBSERVATORY/global/index.html">W38 Global DOV</a><a href="../dashboard/mission_control_w35.html">W35 Live bridge</a><a href="#overview">Overview</a><a href="#ci">CI first-reds</a><a href="#measurement">DMAIC/KPI</a><a href="#telemetry">Telemetry / stats</a><a href="#mip-register">MIP actions</a><a href="#model">PCA/BT</a><a href="#sipoc">SIPOC</a><a href="#sut">SUT testflight</a><a href="#test-architecture">Test system</a><a href="#architecture">Architecture</a><a href="#evidence">Evidence</a></nav>
 <div class="side-note">Live readback is advisory. The dashboard never authorizes merges or executes remote workflows without an independent authorized action.</div></aside>
 <main>
-<header id="overview"><div class="top"><div><div class="eyebrow">ABACUS × CODEX / EVERRED</div><h1>Engineering Control <span style="color:var(--purple)">/ LIVE 3.2</span></h1><p class="sub">Source-bound GitHub telemetry + local allowlisted SUT runner. Historical HTML is never silently presented as live.</p></div><div class="actions"><span class="badge unknown" id="connection">NOT REFRESHED</span><button id="refresh">Refresh GitHub</button></div></div><div class="notice" role="status"><strong>Admission is independent.</strong> Passing local tests, an HTML report or a preliminary model cannot replace server-side protection, mandatory CI, security and eligible review.</div><p id="live-meta" aria-live="polite">Not yet fetched. Initial values below are a labeled historical bootstrap only.</p></header>
+<header id="overview"><div class="top"><div><div class="eyebrow">ABACUS × CODEX / EVERRED</div><h1>Engineering Control <span style="color:var(--purple)">/ LIVE 4.4</span></h1><p class="sub">Source-bound GitHub telemetry + local allowlisted SUT runner. Historical HTML is never silently presented as live.</p></div><div class="actions"><span class="badge unknown" id="connection">NOT REFRESHED</span><button id="refresh">Refresh GitHub</button></div></div><div class="notice" role="status"><strong>Admission is independent.</strong> Passing local tests, an HTML report or a preliminary model cannot replace server-side protection, mandatory CI, security and eligible review.</div><p id="live-meta" aria-live="polite">Not yet fetched. Initial values below are a labeled historical bootstrap only.</p></header>
 <section class="panel"><div class="layout">
-<article class="card"><div class="stat-label">ABACUS · main</div><div class="stat-value" id="abacus-state">UNKNOWN</div><div class="mono" id="abacus-sha">SHA unavailable</div><div class="small"><a href="https://github.com/GBOGEB/ABACUS" target="_blank" rel="noopener noreferrer">Repository ↗</a></div></article>
-<article class="card"><div class="stat-label">CODEX · main</div><div class="stat-value" id="codex-state">UNKNOWN</div><div class="mono" id="codex-sha">SHA unavailable</div><div class="small"><a href="https://github.com/GBOGEB/CODEX" target="_blank" rel="noopener noreferrer">Repository ↗</a></div></article>
-<article class="card"><div class="stat-label">ABACUS protected-main rules</div><div class="stat-value" id="rules-count">UNKNOWN</div><div class="small" id="rules-state">Effective enforcement not established</div></article>
-<article class="card"><div class="stat-label">SUT GUI PR #1956</div><div class="stat-value" id="pr-state">UNKNOWN</div><div class="mono" id="pr-sha">Head not verified</div><div class="small"><a href="https://github.com/GBOGEB/ABACUS/pull/1956" target="_blank" rel="noopener noreferrer">PR details ↗</a></div></article>
+<article class="card state-card unclear" id="abacus-card"><div class="stat-label">ABACUS · main</div><div class="state-headline"><span aria-hidden="true">🛡</span><div class="stat-value is-unknown" id="abacus-state">UNKNOWN</div></div><div class="mini-badges" id="abacus-badges"><span class="badge unknown">AWAITING READBACK</span></div><div class="mono" id="abacus-sha">SHA unavailable</div><div class="small"><a href="https://github.com/GBOGEB/ABACUS" target="_blank" rel="noopener noreferrer">Repository ↗</a></div></article>
+<article class="card state-card unclear" id="codex-card"><div class="stat-label">CODEX · main</div><div class="state-headline"><span aria-hidden="true">🛡</span><div class="stat-value is-unknown" id="codex-state">UNKNOWN</div></div><div class="mini-badges" id="codex-badges"><span class="badge unknown">AWAITING READBACK</span></div><div class="mono" id="codex-sha">SHA unavailable</div><div class="small"><a href="https://github.com/GBOGEB/CODEX" target="_blank" rel="noopener noreferrer">Repository ↗</a></div></article>
+<article class="card state-card review" id="rules-card"><div class="stat-label">ABACUS ruleset / governance</div><div class="state-headline"><span aria-hidden="true">⚑</span><div class="stat-value" id="rules-count">UNKNOWN</div></div><div class="mini-badges" id="rules-badges"><span class="badge unknown">POLICY READBACK NEEDED</span></div><div class="small" id="rules-state">Policy cannot be inferred from count alone</div><details class="rule-inventory" id="rules-explain"><summary>Inspect actual rules and missing gates</summary><p class="rule-summary" id="rules-scope">Source and enforcement UNKNOWN</p><ul id="rules-list"><li>Refresh GitHub to retrieve the ruleset.</li></ul><p class="rule-warning" id="rules-gap">Required status checks: UNKNOWN</p><a href="https://github.com/GBOGEB/ABACUS/rules/24494381" target="_blank" rel="noopener noreferrer">Open GitHub ruleset ↗</a></details></article>
+<article class="card state-card unclear" id="pr-card"><div class="stat-label">SUT GUI PR #1956</div><div class="state-headline"><span aria-hidden="true">↳</span><div class="stat-value is-unknown" id="pr-state">UNKNOWN</div></div><div class="mini-badges" id="pr-badges"><span class="badge unknown">PR READBACK NEEDED</span></div><div class="mono" id="pr-sha">Head not verified</div><div class="small"><a href="https://github.com/GBOGEB/ABACUS/pull/1956" target="_blank" rel="noopener noreferrer">PR details ↗</a></div></article>
 </div></section>
 <section class="panel" id="measurement">
  <div class="card compare-controls" role="group" aria-label="Live measurement scope">
@@ -88,20 +284,175 @@ tr.group-header.red th{border-left-color:var(--red)}tr.group-header.green th{bor
  <article class="card"><div class="stat-label">Queue pressure</div><div class="stat-value" id="kpi-queue">UNKNOWN</div><div class="small">Queued + pending / sampled workflows; in-progress separate</div><svg id="mini-queue" class="mini" role="img" aria-label="Temporal queue trend"></svg><div class="mini-note" id="evo-queue">Earlier → later: UNKNOWN</div></article>
  <article class="card"><div class="stat-label">Admissible main</div><div class="stat-value" id="kpi-admission">HOLD</div><div class="small" id="kpi-reason">Requires effective rules, reviews and complete native evidence</div><div class="mini-note" id="kpi-live-progress">In progress: UNKNOWN</div></article>
  </div>
- <div class="split"><div class="card"><h3>DMAIC control loop</h3><div id="dmaic-list" class="stack"></div><p class="small">Evidence-scored process readiness is not physical completion or release authorization.</p></div><div class="card"><h3>Execution chronology <span class="source-chip">Earlier → later, exact SHA</span></h3><div id="trend" class="spark" aria-label="Recent workflow conclusions visual distribution"></div><p id="trend-caption" class="small">Awaiting source-bound run census</p><h3>Cancellation and completion diagnostics</h3><div id="cancel-explain" class="small">Cancelled = GitHub terminated execution before normal completion; often concurrency supersession or manual cancellation. Not PASS, not test FAILURE. A native run/job readback is required to establish the cause.</div><p class="mini-note" id="cancel-count">Cancellation count: UNKNOWN</p><h3>Coverage and defect-debt contract</h3><div id="coverage-bridge" class="stack"></div></div></div>
- <div class="card" style="margin-top:13px"><h3>MIP evidence debt / priority</h3><div id="mip-grid" class="mip-grid"></div><p class="small">MIP completion is based on evidence classes present, not an invented percentage of unknown work.</p></div>
+ <div class="split"><div class="card"><h3>DMAIC control loop · measurement / threshold</h3><div id="dmaic-list" class="stack"></div><p class="small">Evidence-scored process readiness is not physical completion or release authorization.</p></div><div class="card"><h3>Execution chronology <span class="source-chip">Earlier → later, exact SHA</span><button type="button" id="expand-trend" class="modal-open" aria-haspopup="dialog">⤢ Enlarge / explore</button></h3><div id="trend" class="spark" aria-label="Recent workflow conclusions visual distribution"></div><p id="trend-caption" class="small">Awaiting source-bound run census</p><h3>Cancellation and completion diagnostics</h3><div id="cancel-explain" class="small">Cancelled = GitHub terminated execution before normal completion; often concurrency supersession or manual cancellation. Not PASS, not test FAILURE. A native run/job readback is required to establish the cause.</div><p class="mini-note" id="cancel-count">Cancellation count: UNKNOWN</p><h3>Coverage and defect-debt contract</h3><div id="coverage-bridge" class="stack"></div></div></div>
+ 
+<div class="card" style="margin-top:13px" id="producer-input">
+ <h3>Native producer → governed JSON → HTML projection</h3>
+ <div class="source-inputs"><label>Load local source-bound evidence JSON (manually imported; UNVERIFIED until authenticated)<input id="producer-file" type="file" accept=".json,application/json"></label><button type="button" id="load-local-evidence">Load served evidence/latest.json</button></div>
+ <p class="small" id="producer-provenance">No v4 producer receipt loaded; on-screen GitHub API observations are live metadata only.</p>
+ <div class="metric-range" id="producer-metrics" aria-label="Producer completeness and model receipts"></div>
+</div>
+
+<div class="card" id="mip-register" style="margin-top:13px">
+<div class="mip-head"><h3>MIP-01–08 · enumerated evidence and recovery actions</h3><span class="badge amber" id="mip-overall">GATE AUDIT PENDING</span></div>
+<p class="mip-quick">Each card = one proof contract and next action. <b>OBSERVED ≠ ACCEPTED.</b> UNKNOWN is missing evidence, not zero work. This register connects directly to <a href="#sipoc">SIPOC</a>, <a href="#architecture">DAG</a> and <a href="#model">PCA / BT</a>.</p>
+<div id="mip-grid" class="mip-grid" aria-live="polite"></div>
+<p class="small">MIP closure requires independently verified source artifacts and admission criteria, not a percentage invented from cards.</p></div>
 </section>
+
+<section class="panel" id="telemetry">
+ <div class="panel-head"><div><h2>Telemetry / DMAIC / MIP statistical measurement</h2><p class="small">User-facing source-bound reference + importable structural receipts. Depth is shown explicitly; statistical independence is not inferred.</p></div><div class="actions"><span class="badge amber" id="telemetry-reference-state">REFERENCE · 2026-10-16</span><button type="button" id="load-telemetry-reference" class="btn-secondary">Reload telemetry reference</button></div></div>
+ <div class="telemetry-banner"><span class="badge amber">HIERARCHICAL</span><strong>31 workflows → 121 jobs → 1,065 steps ≠ 1,217 independent process observations</strong><span class="guard">M2 / M3 remain HOLD until comparable independent cycles exist.</span></div>
+
+ <div class="telemetry-summary">
+  <article class="telemetry-card"><div class="stat-label">Execution hierarchy · #1989</div><div class="big" id="tel-hierarchy-big">31 → 121 → 1,065</div><div class="metricline"><span>Workflow decisive success</span><b id="tel-workflow-success">83.33%</b></div><div class="metricline"><span>Job decisive success</span><b id="tel-job-success">91.96%</b></div><div class="metricline"><span>Step decisive success</span><b id="tel-step-success">99.03%</b></div><div class="telemetry-source">Exact source <code>79672200a0fb…</code> · <a href="https://github.com/GBOGEB/ABACUS/pull/1989" target="_blank" rel="noopener noreferrer">#1989 ↗</a></div></article>
+  <article class="telemetry-card tests"><div class="stat-label">Test penetration · #2033 prior exact head</div><div class="big" id="tel-test-depth">560 → 2,255</div><div class="metricline"><span>B0 groups</span><b id="tel-test-groups">70</b></div><div class="metricline"><span>Depth factor</span><b id="tel-depth-factor">4.03×</b></div><div class="metricline"><span>Failures / errors</span><b>0 / 0</b></div><div class="telemetry-source">Overlapping surfaces; counts are not additive.</div></article>
+  <article class="telemetry-card coverage"><div class="stat-label">Coverage measurement breadth</div><div class="big" id="tel-coverage-pct">31.38% → 56.60%</div><div class="metricline"><span>Statement denominator</span><b id="tel-coverage-den">21,007 → 30,153</b></div><div class="metricline"><span>Denominator expansion</span><b id="tel-den-expansion">+43.54%</b></div><div class="metricline"><span>Zero-coverage disposition paths</span><b id="tel-zero-paths">77</b></div><div class="telemetry-warning">Changed denominator: this is measurement penetration, <b>not</b> a matched +25.22 pp coverage claim.</div></article>
+  <article class="telemetry-card scale"><div class="stat-label">Queue / runtime / scaling · native B0</div><div class="big" id="tel-queue-p95">queue p95 248 s</div><div class="metricline"><span>Queue p50</span><b id="tel-queue-p50">46 s</b></div><div class="metricline"><span>Runtime p95</span><b id="tel-runtime-p95">368 s</b></div><div class="metricline"><span>Peak observed concurrency</span><b id="tel-peak-concurrency">5</b></div><div class="metricline"><span>Realized parallelism</span><b id="tel-parallelism">1.071×</b></div><div class="telemetry-source"><a href="https://github.com/GBOGEB/ABACUS/actions/runs/38870273917" target="_blank" rel="noopener noreferrer">Native B0 run 38870273917 ↗</a></div></article>
+ </div>
+
+ <div class="telemetry-leaves" id="telemetry-leaves" aria-label="Telemetry measurement leaves">
+  <article class="telemetry-leaf"><h3>CI reliability <span class="leaf-code">REL</span></h3><div class="leaf-value">25 / 30</div><div class="leaf-sub">Workflow success among decisive outcomes; 5 workflow failures remain causal surfaces, not automatically five roots.</div><details><summary>Open hierarchy</summary><ul><li>31 workflows: 25 success, 5 failure, 1 cancelled.</li><li>121 jobs: 103 success, 9 failure, 8 skipped, 1 cancelled.</li><li>1,065 steps: 1,023 success, 10 failure, 32 skipped.</li></ul></details></article>
+  <article class="telemetry-leaf"><h3>Test penetration <span class="leaf-code">TEST</span></h3><div class="leaf-value">2,255 tests</div><div class="leaf-sub">Post-B0 canonical depth on the same exact source SHA; B0 reference = 560 tests / 70 file groups.</div><details><summary>What it means</summary><ul><li>560 B0 tests: 554 pass, 6 skip.</li><li>2,255 post-B0: 2,253 pass, 2 skip.</li><li>Depth expansion ≈ 4.03×; overlapping selections are not additive.</li></ul></details></article>
+  <article class="telemetry-leaf"><h3>Coverage penetration <span class="leaf-code">COV</span></h3><div class="leaf-value">30,153 stmts</div><div class="leaf-sub">Union measurement denominator on the prior #2033 exact head; 17,067 statements covered.</div><details><summary>Pressure surface</summary><ul><li>40 ranked measured source paths.</li><li>77 zero-coverage disposition paths.</li><li>5,872 missed statements in ranked-40 potential; realized gain WITHHELD.</li></ul></details></article>
+  <article class="telemetry-leaf"><h3>DAB / static clusters <span class="leaf-code">DAB</span></h3><div class="leaf-value">3,719</div><div class="leaf-sub">Measured findings across 34 families; 1,102 read-only proposals.</div><details><summary>Concentration</summary><ul><li>Top five families = 75.80%.</li><li>Top ten = 92.12%.</li><li>Family HHI ≈ 0.1478; effective count ≈ 6.77.</li><li>Style findings = 83.54%; do not let style mask security/root work.</li></ul></details></article>
+  <article class="telemetry-leaf"><h3>W78 / W79 PCA <span class="leaf-code">PCA</span></h3><div class="leaf-value">92.28% PC1</div><div class="leaf-sub">15 target states; 10 semantic states; one PA95 component retained in the semantic panel.</div><details><summary>Model geometry</summary><ul><li>30 deterministic observations; 15/15 replay consistency.</li><li>Semantic PC1 = 92.2846%; all-work PC1 = 89.7607%.</li><li>PA95 = 2,000 replicates; small-sample warning true.</li><li>Bradley–Terry remains WITHHELD.</li></ul></details></article>
+  <article class="telemetry-leaf"><h3>3P* capacity <span class="leaf-code">3P*</span></h3><div class="leaf-value">607.09</div><div class="leaf-sub">Evidence units / worker-minute in W64 R01 read-only sample; stability remains insufficient.</div><details><summary>Scaling baseline</summary><ul><li>5 sampled root items.</li><li>5 discovery + 5 discrimination workers; P3 writer = 0.</li><li>Wall/root = 9.60 s; AHT/root = 47.95 s.</li><li>Terminal items/worker-hour = 0 by read-only design.</li></ul></details></article>
+  <article class="telemetry-leaf"><h3>Burndown / penetration <span class="leaf-code">BURN</span></h3><div class="leaf-value">12 → 0</div><div class="leaf-sub">Selected-state open backlog movement; formal root-closure credit remains 0.</div><details><summary>Sequence summary</summary><ul><li>Backlog max 24, median 1, gross +30 / −42, net −12.</li><li>Consumer penetration mean 78.07%, median 94.44%, final 100%.</li><li>Graph-drop / lineage-gap / registry-gap / unresolved-reference final = 0% in selected state.</li></ul></details></article>
+  <article class="telemetry-leaf"><h3>Statistical maturity <span class="leaf-code">M1–M3</span></h3><div class="leaf-value">HOLD</div><div class="leaf-sub">Nested execution telemetry expands measurement richness but does not create independent cycles.</div><details><summary>Sampling boundary</summary><ul><li>#2033 = structural width/depth/timing.</li><li>#1998 = root transitions, matched wave cohorts and coverage.</li><li>#1989 = comparable cycle-level statistical maturity.</li><li>UNKNOWN ≠ zero; HTML never grants admission.</li></ul></details></article>
+ </div>
+
+ <div class="telemetry-split">
+  <div class="burn-panel"><h3>Pulse penetration and backlog shape · W78/W79 selected states</h3><div class="burn-row"><b>Consumer penetration</b><div class="burn-bars" id="tel-penetration-bars" aria-label="Consumer penetration by selected source state"></div></div><div class="burn-row"><b>Open backlog</b><div class="burn-bars backlog" id="tel-backlog-bars" aria-label="Open backlog by selected source state"></div></div><p class="small">Bars are descriptive historical state snapshots. They are not a control chart and do not imply equal time spacing or independent sampling.</p></div>
+  <div class="card"><h3>Producer / owner fan-in</h3><div class="stack"><div><span class="leaf-code">#2033</span> <b>Structural telemetry</b><p class="small">runs → jobs → steps → queue/runtime/concurrency + completeness.</p></div><div><span class="leaf-code">#1998</span> <b>Wave/root series</b><p class="small">root IDs, fingerprints, first-red transitions, matched coverage and burndown.</p></div><div><span class="leaf-code">#1989</span> <b>Statistical maturity</b><p class="small">only correctly sampled comparable cycles feed M1/M2/M3 inference.</p></div><div><span class="leaf-code">W64/W78/W79</span> <b>Capacity / diversity / PCA</b><p class="small">descriptive and experimental inputs with explicit maturity boundaries.</p></div></div><p class="telemetry-source" id="tel-reference-provenance">Static source-bound reference; reload the controlled JSON when served.</p></div>
+ </div>
+
+ <div class="card" style="margin-top:13px" id="telemetry-method-dag"><h3>Measurement method DAG · width → depth → root → maturity</h3>
+  <div class="method-dag">
+   <div class="method-chain">
+    <div class="method-node"><b>Exact SHA / pulse</b><small>source identity</small></div>
+    <div class="method-node"><b>Workflow runs</b><small>terminal + WIP</small></div>
+    <div class="method-node"><b>Jobs</b><small>runner / queue / runtime</small></div>
+    <div class="method-node"><b>Steps</b><small>first-red surfaces</small></div>
+    <div class="method-node"><b>JUnit tests</b><small>pass / fail / skip / error</small></div>
+    <div class="method-node"><b>Test→source contexts</b><small>penetration</small></div>
+    <div class="method-node"><b>Coverage</b><small>covered / eligible</small></div>
+   </div>
+   <div class="method-side">
+    <div class="method-node control"><b>Root / BD lane</b><small>step fingerprints → root transitions → #1998 wave burndown</small></div>
+    <div class="method-node control"><b>Scale lane</b><small>jobs / timing → #2033 → 3P* capacity experiments</small></div>
+    <div class="method-node analysis"><b>Diversity lane</b><small>test/source context → W78 vectors → W79 diagnostic PCA</small></div>
+   </div>
+   <div class="method-owner">
+    <div class="method-node analysis"><b>#1989 maturity fan-in</b><small>cycle-level comparable observations only</small></div>
+    <div class="method-node"><b>Independent gates</b><small>A10 + security + reviews + protected main</small></div>
+    <div class="method-node control"><b>Authorized outcome</b><small>eligible only after all independent gates pass</small></div>
+   </div>
+  </div>
+  <div class="telemetry-warning"><b>Sampling guard:</b> jobs, steps, test cases and deterministic replay states are nested or repeated evidence. They may explain a cycle; they do not multiply the number of independent process cycles.</div>
+  <details class="arch-code"><summary>Copyable Mermaid telemetry DAG source</summary><pre>flowchart TB
+ SHA["Exact repository + source SHA / pulse"] --&gt; RUN["Workflow runs"]
+ RUN --&gt; JOB["Jobs | runner + queue + runtime"]
+ JOB --&gt; STEP["Steps | first-red surfaces"]
+ STEP --&gt; JUNIT["JUnit / test cases"]
+ JUNIT --&gt; CTX["Dynamic test-to-source contexts"]
+ CTX --&gt; COV["Coverage numerator / denominator"]
+ STEP --&gt; FP["Failure fingerprints"] --&gt; ROOT["BD root transitions"] --&gt; WAVE["#1998 wave burndown"]
+ JOB --&gt; SCALE["#2033 structural telemetry"] --&gt; P3["3P* capacity"]
+ CTX --&gt; W78["W78 state vectors"] --&gt; W79["W79 diagnostic PCA"]
+ WAVE --&gt; MATURE["#1989 cycle-level maturity"]
+ P3 --&gt; MATURE
+ COV --&gt; MATURE
+ W79 -. "descriptive input only" .-&gt; MATURE
+ MATURE --&gt; DEC{"Comparable independent cycles sufficient?"}
+ DEC --&gt;|"NO / UNKNOWN"| HOLD["M2 / M3 HOLD"]
+ DEC --&gt;|"YES + verified"| CONTROL["Control / capability / uncertainty"]</pre></details>
+  <p class="small"><a href="https://github.com/GBOGEB/ABACUS/blob/code-purple/test-observability-v4-20261014/tools/everred_v3/sut_gui/TELEMETRY_MEASUREMENT_DAG_V5.mmd" target="_blank" rel="noopener noreferrer">Canonical Mermaid source on this dashboard branch ↗</a></p>
+ </div>
+</section>
+
 <section class="panel" id="model"><div class="panel-head"><h2>PCA / Bradley–Terry / reverse pressure</h2><span class="badge unknown" id="model-status">PRE-FIT QUALIFICATION</span></div>
 <div class="kpi-row"><article class="card"><h3>PCA — observed CI telemetry <span class="source-chip">EXPLORATORY</span></h3><div class="mini-note" id="pca-live">Live PCA panel: awaiting eligible run-level observations</div><div class="stat-value" id="pca-state">UNKNOWN</div><p class="small" id="pca-info">Requires n independent source-bound rows, p named finite variables, scaling, missingness and drift diagnostics.</p><div class="field"><label for="pca-n">Independent observations n</label><input id="pca-n" type="number" min="0" step="1" placeholder="Measured n"></div><div class="field"><label for="pca-p">Variables p</label><input id="pca-p" type="number" min="2" step="1" placeholder="Measured p"></div><button id="check-pca" type="button">Evaluate sample eligibility</button></article>
 <article class="card"><h3>Bradley–Terry — empirical paired evidence</h3><div class="mini-note" id="bt-live">Native pairwise observation producer: UNKNOWN; no win/loss dataset, no fit</div><div class="stat-value" id="bt-state">UNKNOWN</div><p class="small" id="bt-info">Requires independent real pairwise outcomes, finite-MLE win-graph connectivity and uncertainty.</p><div class="field"><label for="bt-n">Independent observed pairs</label><input id="bt-n" type="number" min="0" step="1" placeholder="Measured comparisons"></div><div class="field"><label for="bt-connected">Observed win graph</label><select id="bt-connected"><option value="unknown">Unverified connectivity</option><option value="yes">Strongly connected (verified)</option><option value="no">Not strongly connected</option></select></div><button id="check-bt" type="button">Evaluate BT eligibility</button></article></div>
+<details class="raw-qual"><summary><b>Math + empirical proof contract</b> (thresholds are pre-fit heuristics)</summary>
+ <p>PCA: for <code>X ∈ ℝ^(n×p)</code>, standardize finite nonconstant columns and compute <code>C = ZᵀZ/(n−1)</code>; eigenpairs <code>Cvₖ=λₖvₖ</code>, <code>EVRₖ=λₖ/Σλ</code>. Preliminary sample screen <code>n ≥ max(30,5p)</code> does not prove independent units, stability, eigengaps, or causality. Same-run jobs are clustered, not independent.</p>
+ <p>Bradley–Terry: <code>Pr(i &gt; j) = exp(θᵢ)/(exp(θᵢ)+exp(θⱼ))</code>. The producer needs exact-SHA, identical test-contract digest, distinct trials and real winner/loser outcomes; ≥30 independent pairs and a strongly connected win graph are only eligibility requirements. No model uncertainty or promotion until separately established.</p>
+ </details>
+<div class="model-register" id="model-proof-register" aria-label="PCA and Bradley-Terry enumerated empirical requirements">
+<div class="model-proof"><h3>PCA-01–04 · observed CI covariance</h3><div id="pca-checks">Awaiting observed timing records</div><div class="owned-links"><a href="https://github.com/GBOGEB/gg_MATH" target="_blank" rel="noopener noreferrer">Canonical gg_MATH provider ↗</a><a href="#sipoc">Input source in SIPOC ↓</a></div></div>
+<div class="model-proof"><h3>BT-01–04 · matched test comparisons</h3><div id="bt-checks">Awaiting authenticated trial receipts</div><div class="owned-links"><a href="https://github.com/GBOGEB/ABACUS/blob/main/docs/CODE_PURPLE_EXECUTION_GRAPH_ARCHITECTURE.md" target="_blank" rel="noopener noreferrer">Evidence contract ↗</a><a href="#sipoc">Evidence supplier in SIPOC ↓</a></div></div>
+</div>
+<p class="small"><b>Model maturity:</b> configured → qualifying observations → descriptive fit → calibrated/independent validation. PCA sample threshold and Bradley–Terry pair count are <b>pre-fit heuristics</b>, not acceptance. User-entered eligibility fields cannot create source-bound measurements.</p>
 <div class="card" style="margin-top:13px"><h3>Reverse pressure — supported dependency chain</h3><div class="pressure-flow"><span>Primary RED</span><span>→ Root assignment</span><span>→ Canonical fix</span><span>→ Exact-head verification</span><span>→ Security/review</span><span>→ Governed main</span></div><p class="small" id="pressure-text">Structural exposure only: neither failure-count amplification nor a probability of success. No causally verified dependency DAG loaded.</p></div>
 </section>
 <section class="panel" id="ci"><div class="panel-head"><h2>Native CI & first-red diagnostic</h2><div class="actions"><a href="https://github.com/GBOGEB/ABACUS/actions" target="_blank" rel="noopener noreferrer">ABACUS Actions ↗</a><a href="https://github.com/GBOGEB/CODEX/actions" target="_blank" rel="noopener noreferrer">CODEX Actions ↗</a></div></div><div class="card"><div class="actions" style="margin-bottom:11px"><button id="inspect-red" type="button" class="btn-secondary">Inspect first-red jobs</button><span class="small" id="red-note">Requires latest source-bound workflow census</span></div><div id="red-details" class="stack" aria-live="polite"></div><p class="small" id="ci-note">Exact PR-head workflow status requires successful GitHub API access; no run is assumed green.</p><div class="legend" aria-label="Execution status legend"><span class="ci-state green">✓ SUCCESS</span><span class="ci-state red">✕ FAILURE</span><span class="ci-state cancel">⊘ CANCELLED</span><span class="ci-state running">↻ RUNNING</span><span class="ci-state queued">◷ QUEUED</span><span class="ci-state skipped">− SKIPPED</span></div>
-<div class="ci-filters"><label>Outcome<select id="ci-filter"><option value="all">All outcomes (grouped)</option><option value="failure">Failure</option><option value="in_progress">In progress</option><option value="queued">Queued/pending</option><option value="success">Success</option><option value="cancelled">Cancelled</option><option value="skipped">Skipped</option></select></label><label>Workflow family<select id="ci-family"><option value="all">All families</option><option value="security">Security</option><option value="tests">Tests / QA</option><option value="governance">Governance</option><option value="measurement">Measurement</option><option value="other">Other</option></select></label><label>Search<input type="search" id="ci-search" placeholder="Workflow name"></label></div>
+<div class="category-legend" aria-label="Workflow badge legend"><span class="ci-family family-governance">GOV · Governance</span><span class="ci-family family-measurement">DATA · Measurement</span><span class="ci-family family-tests">QA · Tests</span><span class="ci-family family-security">SEC · Security</span><span class="ci-family family-other">OTHER</span><span class="legend-note">Outlined family badge = workflow type; colored conclusion badge = actual execution outcome. Neither indicates a confirmed root or merge admission.</span></div>
+<div class="ci-filters"><label class="toggle-rollup" title="Collapse repeated names without losing individual run evidence"><input id="group-duplicates" type="checkbox" checked>Roll up repeated workflows</label><label>Outcome<select id="ci-filter"><option value="all">All outcomes (grouped)</option><option value="failure">Failure</option><option value="in_progress">In progress</option><option value="queued">Queued/pending</option><option value="success">Success</option><option value="cancelled">Cancelled</option><option value="skipped">Skipped</option></select></label><label>Workflow family<select id="ci-family"><option value="all">All families</option><option value="security">Security</option><option value="tests">Tests / QA</option><option value="governance">Governance</option><option value="measurement">Measurement</option><option value="other">Other</option></select></label><label>Search<input type="search" id="ci-search" placeholder="Workflow name"></label></div>
 <div class="table-wrap"><table><thead><tr><th>Workflow</th><th>Family</th><th>Conclusion</th><th>Run</th><th>Evidence SHA</th></tr></thead><tbody id="ci-body"><tr><td colspan="5">Refresh to retrieve source-bound workflows.</td></tr></tbody></table></div></div></section>
 <section class="panel" id="sut"><div class="panel-head"><h2>SUT preflight / testflight</h2><span id="sut-badge" class="badge unknown">LOCAL SERVICE UNKNOWN</span></div><div class="split"><div class="card"><h3>Allowlisted execution</h3><p class="small">Run tests in a temporary copy of the trusted local EVERRED checkout. No shell input, Git push, merge, workflow dispatch, or arbitrary script paths.</p><div class="field"><label for="profile">Test profile</label><select id="profile"><option value="model-preflight">Model readiness tests</option><option value="unit-tests">EVERRED unit & negative tests</option><option value="ledger-verify">Ledger integrity validation</option><option value="pipeline-testflight">Pipeline testflight: ledger → tests → joined census → HTML</option></select></div><div class="field"><label for="token">Local execution token (printed by your server)</label><input id="token" type="password" autocomplete="off" placeholder="Not stored or transmitted to GitHub"></div><div class="actions"><button id="run" disabled>Execute local SUT</button><button id="check-service" class="btn-secondary">Check local service</button></div><p id="sut-info" class="small" aria-live="polite">Use <code>python server.py --sut-root PATH --enable-execution</code>. Open its localhost URL rather than opening the HTML as a file to enable execution.</p></div>
 <div class="card"><h3>Execution receipt</h3><div class="summary-row"><span id="run-status" class="badge unknown">NO EXECUTION</span><span id="run-id" class="pill">No run ID</span></div><p class="small" id="run-provenance">Local output is engineering preview only, never native CI or merge authority.</p><pre id="console" role="log" aria-live="polite">Ready. No command has been executed.</pre></div></div>
 <div class="card" style="margin-top:13px"><h3>GitHub workflow handoff</h3><p class="small">Remote workflow dispatch requires GitHub authentication and permissions. Open the native workflow form; this static HTML does not hold tokens or bypass repository rules.</p><div class="actions"><a href="https://github.com/GBOGEB/ABACUS/actions/workflows/everred-v3-validation.yml" target="_blank" rel="noopener noreferrer">EVERRED V3 Workflow ↗</a><a href="https://github.com/GBOGEB/ABACUS/actions" target="_blank" rel="noopener noreferrer">Browse ABACUS workflows ↗</a></div></div>
+</section>
+<section class="panel" id="test-architecture">
+ <div class="panel-head"><h2>Testing architecture / mission taxonomy</h2><span class="badge unknown" id="taxonomy-proof">CONFIGURED ≠ EXECUTED</span></div>
+ <div class="card"><h3>Evidence maturity ladder</h3><div class="proof-steps">
+ <div class="proof-step"><b>1. CONFIGURED</b><small>Workflow YAML, matrix definition, static policies. No execution claimed.</small></div>
+ <div class="proof-step"><b>2. EXECUTED</b><small>GitHub run, attempt and job receipt on exact SHA; may have RED/cancelled outcomes.</small></div>
+ <div class="proof-step"><b>3. SOURCE-BOUND</b><small>SHA + run/job + matched test/JUnit/coverage/scanner config + artifact hash.</small></div>
+ <div class="proof-step"><b>4. ACCEPTED</b><small>Independent causal evidence, security/review/governance gates; never inferred from workflow green.</small></div>
+ </div><p class="small">This ladder classifies proof quality, not a chronological execution phase or named ownership. Every layer can contain multiple owners.</p></div>
+ <div class="tax-grid" id="taxonomy-grid" aria-live="polite"></div>
+ <div class="card" style="margin-top:12px"><h3>Configured capability vs actual runtime and backend receipts</h3><div class="tax-legend">
+ <div class="tax-card"><strong>Standard tests</strong> · pytest/unittest, CI matrix, smoke, coverage. Group by test suite ID, Python/RHEL version, exact SHA and runner; JUnit tests needed for test-case counts.</div>
+ <div class="tax-card"><strong>User/SUT testflight</strong> · preconfigured profiles explicitly launched on a trusted local operator or sandbox; LOCAL_ONLY unless native receipts prove otherwise.</div>
+ <div class="tax-card"><strong>Bot/static analyzers</strong> · Ruff, Flake8, Black, Bandit, OSV, Semgrep, CodeQL, Safety. Scanner finding counts need configuration + fingerprint identity, not just workflow success.</div>
+ <div class="tax-card"><strong>Runtime helpers</strong> · Docker/ports/logs, RHEL 8/9, LLDB debugger, LDAB linked diagnostic census. A configured workflow or tool mention is not proof of an active session.</div>
+ </div><p class="small">Runtime state at this readback: <b>Docker/RHEL/LLDB/LDAB execution UNKNOWN</b> unless an authenticated exact-source receipt is loaded. Worker fleet size, parallel dispatch and port listeners UNKNOWN without native host receipt.</p></div>
+ <div class="card" style="margin-top:12px"><h3>Local taxonomy + visual glossary (controlled)</h3><div class="tax-legend">
+  <div class="tax-card">Neutral filled box = type of activity; NOT success, shared ownership or completed phase.</div>
+  <div class="tax-card">P1–P8 = execution sequence. Explicit <code>Role:</code> identifies responsible function. Confirmed root → single repair owner.</div>
+  <div class="tax-card">Purple outlined diamond = conditional decision TYPE, never both branches' disposition.</div>
+  <div class="tax-card">Green YES / red HOLD = mutually exclusive conditional branch disposition. Color not reused for phase or owner.</div>
+  <div class="tax-card">Solid = DAG prerequisite. Amber dashed = feedback to NEXT pulse. Cyan double = feedforward preflight.</div>
+  <div class="tax-card">Execution outcome colors apply **only** to native status: success green, failure red, cancelled orange, running cyan, waiting grey, skipped muted lilac.</div>
+ </div><p class="small">Rule: use shape for node function, words for ownership, numbered prefix for phase, color for declared outcome, and line style for feedback direction. Never infer security acceptance from chart color.</p></div>
+</section>
+<section class="panel" id="sipoc">
+<div class="panel-head"><h2>CODE PURPLE integrated SIPOC → DAG → MIP / empirical models</h2><span class="source-chip">Governed source links · no parallel SSOT</span></div>
+<p class="small">This crosswalk bridges the existing execution-graph architecture, EVERRED and the current dashboard. SIPOC describes evidence ownership and I/O; the forward DAG describes dependencies; feedback/feedforward are a separate control overlay.</p>
+<div class="sipoc-visual card" id="sipoc-drawing">
+<div class="sipoc-visual-header"><div><h3>Four controlled lanes · S → I → P → O → C</h3><p>Read left to right inside each lane; then follow the downward handoff to the next lane. Diagram is a descriptive process contract, not a live execution result.</p></div><button type="button" id="sipoc-zoom" class="sipoc-zoom-btn" aria-haspopup="dialog" aria-controls="sipoc-dialog">⤢ Enlarge diagram</button></div>
+<div class="sipoc-local-legend" role="group" aria-label="SIPOC local color and arrow legend">
+<span class="sipoc-key s">S · source</span><span class="sipoc-key i">I · input</span><span class="sipoc-key p">P · process</span><span class="sipoc-key o">O · artifact</span><span class="sipoc-key c">C · consumer</span>
+<span class="sipoc-key line">→ Forward dependency</span><span class="sipoc-key feedback">⇠ Feedback / next pulse</span><span class="sipoc-key ff">⇒ Feedforward / preflight</span></div>
+<p class="sipoc-colour-rule"><b>Color contract:</b> SIPOC column colors identify <em>function only</em>, never green PASS, branch admission, phase completion or owner. Numbered lanes give sequence; role text identifies responsibility. Actual admission still uses green conditional YES and red NO/HOLD in the separate DAG.</p>
+<div class="sipoc-canvas" id="sipoc-canvas" aria-label="Four ordered process swimlanes"><article class="sipoc-lane" id="sipoc-lane-1" data-lane="1" aria-label="Lane 1: SOURCE / OBSERVE">
+    <div class="sipoc-lane-heading"><div class="sipoc-lane-num">01</div><div><h3>SOURCE / OBSERVE <span class="sipoc-phase">P1–P2</span></h3><p>Accountable function: ABACUS native producers · role, not named owner or completion status</p></div></div>
+    <div class="sipoc-block-grid"><div class="sipoc-block sipoc-s" data-sipoc-role="S" role="group" aria-label="SUPPLIERS, lane 1"><div class="sipoc-block-head"><span class="sipoc-letter">S</span><span>SUPPLIERS</span></div><div class="sipoc-block-body">ABACUS CI and runtime producers</div></div><div class="sipoc-block sipoc-i" data-sipoc-role="I" role="group" aria-label="INPUTS, lane 1"><div class="sipoc-block-head"><span class="sipoc-letter">I</span><span>INPUTS</span></div><div class="sipoc-block-body">SHA, run, job, JUnit, coverage, scanner fingerprint, debugger receipt</div></div><div class="sipoc-block sipoc-p" data-sipoc-role="P" role="group" aria-label="PROCESS, lane 1"><div class="sipoc-block-head"><span class="sipoc-letter">P</span><span>PROCESS</span></div><div class="sipoc-block-body">P1 observe to P2 normalize</div></div><div class="sipoc-block sipoc-o" data-sipoc-role="O" role="group" aria-label="OUTPUTS, lane 1"><div class="sipoc-block-head"><span class="sipoc-letter">O</span><span>OUTPUTS</span></div><div class="sipoc-block-body">source-bound evidence</div></div><div class="sipoc-block sipoc-c" data-sipoc-role="C" role="group" aria-label="CUSTOMERS, lane 1"><div class="sipoc-block-head"><span class="sipoc-letter">C</span><span>CUSTOMERS</span></div><div class="sipoc-block-body">EVERRED and MIP</div></div></div></article><div class="sipoc-transfer" aria-label="Forward handoff to lane 2"><span class="sipoc-transfer-icon" aria-hidden="true">↓</span><strong>FORWARD HANDOFF 01 → 02</strong><span>Next evidence consumer: EVERRED root discovery</span></div><article class="sipoc-lane" id="sipoc-lane-2" data-lane="2" aria-label="Lane 2: CAUSAL / REPAIR">
+    <div class="sipoc-lane-heading"><div class="sipoc-lane-num">02</div><div><h3>CAUSAL / REPAIR <span class="sipoc-phase">P3–P4</span></h3><p>Accountable function: EVERRED, LDAB + canonical repair owner · role, not named owner or completion status</p></div></div>
+    <div class="sipoc-block-grid"><div class="sipoc-block sipoc-s" data-sipoc-role="S" role="group" aria-label="SUPPLIERS, lane 2"><div class="sipoc-block-head"><span class="sipoc-letter">S</span><span>SUPPLIERS</span></div><div class="sipoc-block-body">EVERRED/LDAB/BD</div></div><div class="sipoc-block sipoc-i" data-sipoc-role="I" role="group" aria-label="INPUTS, lane 2"><div class="sipoc-block-head"><span class="sipoc-letter">I</span><span>INPUTS</span></div><div class="sipoc-block-body">stable roots and signatures</div></div><div class="sipoc-block sipoc-p" data-sipoc-role="P" role="group" aria-label="PROCESS, lane 2"><div class="sipoc-block-head"><span class="sipoc-letter">P</span><span>PROCESS</span></div><div class="sipoc-block-body">P3 diagnose to P4 bounded repair</div></div><div class="sipoc-block sipoc-o" data-sipoc-role="O" role="group" aria-label="OUTPUTS, lane 2"><div class="sipoc-block-head"><span class="sipoc-letter">O</span><span>OUTPUTS</span></div><div class="sipoc-block-body">root lineage and patched exact head</div></div><div class="sipoc-block sipoc-c" data-sipoc-role="C" role="group" aria-label="CUSTOMERS, lane 2"><div class="sipoc-block-head"><span class="sipoc-letter">C</span><span>CUSTOMERS</span></div><div class="sipoc-block-body">SUT and native runners</div></div></div></article><div class="sipoc-transfer" aria-label="Forward handoff to lane 3"><span class="sipoc-transfer-icon" aria-hidden="true">↓</span><strong>FORWARD HANDOFF 02 → 03</strong><span>Next evidence consumer: Native verification and diagnostics</span></div><article class="sipoc-lane" id="sipoc-lane-3" data-lane="3" aria-label="Lane 3: TEST / MODEL">
+    <div class="sipoc-lane-heading"><div class="sipoc-lane-num">03</div><div><h3>TEST / MODEL <span class="sipoc-phase">P5</span></h3><p>Accountable function: Trusted SUT/CI + qualified math provider · role, not named owner or completion status</p></div></div>
+    <div class="sipoc-block-grid"><div class="sipoc-block sipoc-s" data-sipoc-role="S" role="group" aria-label="SUPPLIERS, lane 3"><div class="sipoc-block-head"><span class="sipoc-letter">S</span><span>SUPPLIERS</span></div><div class="sipoc-block-body">CI/SUT and gg_MATH</div></div><div class="sipoc-block sipoc-i" data-sipoc-role="I" role="group" aria-label="INPUTS, lane 3"><div class="sipoc-block-head"><span class="sipoc-letter">I</span><span>INPUTS</span></div><div class="sipoc-block-body">tests, qualified numeric panels, real matched pairs</div></div><div class="sipoc-block sipoc-p" data-sipoc-role="P" role="group" aria-label="PROCESS, lane 3"><div class="sipoc-block-head"><span class="sipoc-letter">P</span><span>PROCESS</span></div><div class="sipoc-block-body">P5 verify and descriptive models</div></div><div class="sipoc-block sipoc-o" data-sipoc-role="O" role="group" aria-label="OUTPUTS, lane 3"><div class="sipoc-block-head"><span class="sipoc-letter">O</span><span>OUTPUTS</span></div><div class="sipoc-block-body">native proof and qualified diagnostics</div></div><div class="sipoc-block sipoc-c" data-sipoc-role="C" role="group" aria-label="CUSTOMERS, lane 3"><div class="sipoc-block-head"><span class="sipoc-letter">C</span><span>CUSTOMERS</span></div><div class="sipoc-block-body">independent gate reviewer</div></div></div></article><div class="sipoc-transfer" aria-label="Forward handoff to lane 4"><span class="sipoc-transfer-icon" aria-hidden="true">↓</span><strong>FORWARD HANDOFF 03 → 04</strong><span>Next evidence consumer: Independent admission review</span></div><article class="sipoc-lane" id="sipoc-lane-4" data-lane="4" aria-label="Lane 4: ADMISSION / MONITOR">
+    <div class="sipoc-lane-heading"><div class="sipoc-lane-num">04</div><div><h3>ADMISSION / MONITOR <span class="sipoc-phase">P6–P8</span></h3><p>Accountable function: Repo administrator + independent reviewer · role, not named owner or completion status</p></div></div>
+    <div class="sipoc-block-grid"><div class="sipoc-block sipoc-s" data-sipoc-role="S" role="group" aria-label="SUPPLIERS, lane 4"><div class="sipoc-block-head"><span class="sipoc-letter">S</span><span>SUPPLIERS</span></div><div class="sipoc-block-body">Repo admin and independent reviewers</div></div><div class="sipoc-block sipoc-i" data-sipoc-role="I" role="group" aria-label="INPUTS, lane 4"><div class="sipoc-block-head"><span class="sipoc-letter">I</span><span>INPUTS</span></div><div class="sipoc-block-body">policy, required CI, review, security</div></div><div class="sipoc-block sipoc-p" data-sipoc-role="P" role="group" aria-label="PROCESS, lane 4"><div class="sipoc-block-head"><span class="sipoc-letter">P</span><span>PROCESS</span></div><div class="sipoc-block-body">P6 decide to P8 monitor</div></div><div class="sipoc-block sipoc-o" data-sipoc-role="O" role="group" aria-label="OUTPUTS, lane 4"><div class="sipoc-block-head"><span class="sipoc-letter">O</span><span>OUTPUTS</span></div><div class="sipoc-block-body">HOLD or authorized integration and main receipt</div></div><div class="sipoc-block sipoc-c" data-sipoc-role="C" role="group" aria-label="CUSTOMERS, lane 4"><div class="sipoc-block-head"><span class="sipoc-letter">C</span><span>CUSTOMERS</span></div><div class="sipoc-block-body">ABACUS, CODEX, QPS separately</div></div></div></article></div>
+<div class="sipoc-control-overlay" aria-label="Separate feedback and feedforward controls">
+<div class="sipoc-control feedback"><span class="sipoc-control-symbol" aria-hidden="true">↶</span><span><b>FEEDBACK · next DMAIC pulse</b><small>New first-RED, recurring signatures, failed replay → back to P3 causal classification. This is a new iteration, not a cycle in the forward DAG.</small></span></div>
+<div class="sipoc-control feedforward"><span class="sipoc-control-symbol" aria-hidden="true">⇒</span><span><b>FEEDFORWARD · before SUT verification</b><small>Known security, coverage and runtime hazards → P5 preflight/test selection before expensive native jobs. No check is bypassed.</small></span></div></div>
+<div class="sipoc-diagram-footer"><a href="#architecture">View forward DAG + decision gate ↓</a><a href="#mip-register">View MIP-01–08 evidence actions ↓</a><a href="https://github.com/GBOGEB/ABACUS/blob/main/docs/CODE_PURPLE_EXECUTION_GRAPH_ARCHITECTURE.md" target="_blank" rel="noopener noreferrer">Canonical architecture ↗</a></div>
+</div>
+<dialog class="sipoc-dialog" id="sipoc-dialog" aria-label="Enlarged CODE PURPLE SIPOC diagram"><div class="sipoc-dialog-header"><div><h2>CODE PURPLE · SIPOC swimlanes</h2><p>Source-linked projection · roles and functions, not completion states</p></div><button type="button" id="sipoc-close">Close ✕</button></div><div class="sipoc-dialog-content" id="sipoc-dialog-content"></div></dialog>
+<div class="card"><details class="sipoc-ref-table" id="sipoc-reference"><summary>Show source SIPOC crosswalk table (5 columns, 4 rows) · reference view</summary><div class="table-wrap"><table class="sipoc-table"><thead><tr><th>S · Suppliers</th><th>I · Inputs</th><th>P · Process</th><th>O · Outputs</th><th>C · Customers / admission</th></tr></thead><tbody>
+<tr><td>ABACUS CI runners, scanners, Docker/RHEL/LLDB/LDAB producers</td><td>Exact SHA, run attempt, job, step, JUnit, coverage, scanner fingerprints, runtime receipts</td><td>P1 native observation → P2 normalization</td><td>Immutable source-bound run/job evidence; coverage/scanner/runtime receipts only when independently produced</td><td>EVERRED RCA, MIP measurement, SUT dashboard</td></tr>
+<tr><td>EVERRED control plane + LDAB and BD census</td><td>Deduplicated signatures, owner evidence, cross-PR dependencies</td><td>P3 causal diagnosis → P4 disjoint root repair</td><td>Confirmed root ID, bounded patch, counterfactual and lineage</td><td>Native testflight and CI; Mission Control planning</td></tr>
+<tr><td>Qualified SUT/test runners and gg_MATH</td><td>Exact-head native checks, independent numerical panels and <em>genuinely matched</em> paired trials</td><td>P5 verification; PCA/BT exploratory diagnostics</td><td>Qualified test results, descriptive model receipts, calibration/uncertainty if actually performed</td><td>Independent reviewer / evidence consumer (not admission by model)</td></tr>
+<tr><td>Repository admin, eligible independent reviewers</td><td>Effective branch policy, required check contexts, approvals, security acceptance, resolved threads</td><td>P6 decision → P7 authorized integration → P8 recurrence watch</td><td>Admission or HOLD; governed integration SHA; follow-on recurrence comparison</td><td>ABACUS main, CODEX orchestration, QPS engineering acceptance separately</td></tr>
+</tbody></table></div></details><div class="owned-links">
+<a href="https://github.com/GBOGEB/ABACUS/blob/main/docs/CODE_PURPLE_EXECUTION_GRAPH_ARCHITECTURE.md" target="_blank" rel="noopener noreferrer">Canonical architecture / evidence contract ↗</a>
+<a href="https://github.com/GBOGEB/ABACUS/blob/main/docs/code_purple_execution_graph.html" target="_blank" rel="noopener noreferrer">Existing CODE PURPLE graph viewer ↗</a>
+<a href="https://github.com/GBOGEB/ABACUS/blob/main/MIP/README.md" target="_blank" rel="noopener noreferrer">MIP root documentation ↗</a>
+<a href="https://github.com/GBOGEB/CODEX/issues/977" target="_blank" rel="noopener noreferrer">CODEX orchestration boundary ↗</a>
+<a href="#architecture">Forward DAG + control overlay ↓</a><a href="#mip-register">MIP-01–08 evidence ↗</a></div>
+<p class="small"><b>Authority:</b> ABACUS owns observed execution evidence; CODEX orchestrates across repositories; QPS retains engineering acceptance. Published diagrams alone confer no source, runtime, security or merge authority.</p></div>
 </section>
 <section class="panel" id="architecture">
 <div class="panel-head"><h2>CODE PURPLE architecture / ownership &amp; control signals</h2><span class="source-chip">Forward DAG + separate control overlay | V3.2</span></div>
@@ -202,8 +553,24 @@ Separate independent governance gates: native CI + security + coverage + reviews
 No gate bypass; no global single-owner assertion.</pre></details></div>
 </section>
 <section class="panel" id="evidence"><h2>Evidence and lineage</h2><div class="card"><div class="stack"><div><strong>Bootstrap snapshot</strong><p class="small">No current state is asserted from the HTML bootstrap. All source-dependent KPIs remain UNKNOWN until a new GitHub API receipt completes.</p></div><div><strong>Source reference</strong><p class="small">EVERRED V3 exists in <code>GBOGEB/ABACUS/tools/everred_v3</code>; the MIP improvement is PR #1951. Historical and native receipts remain distinct.</p></div><div><strong>GUI evidence contract</strong><p class="small" id="evidence-state">A refresh timestamps its readback. Any API failure must show UNKNOWN rather than preserve an apparently live old value. Local execution never claims current-main proof.</p></div></div></div></section>
-<footer class="footer">CODE PURPLE / SUT GUI v3.2 · Source-of-truth remains GitHub and governed native artefacts · No security waiver · No authority transfer.</footer>
+<footer class="footer">CODE PURPLE / SUT GUI v4.4 · Source-of-truth remains GitHub and governed native artefacts · No security waiver · No authority transfer.</footer>
 </main></div>
+
+<dialog id="trend-dialog" aria-labelledby="dialog-trend-title">
+ <div class="modal-head"><div><h2 id="dialog-trend-title">Execution chronology · expanded</h2><p class="small" id="dialog-source">Exact SHA / observation cohort pending</p></div><button type="button" id="close-trend" aria-label="Close enlarged chronology">✕ Close</button></div>
+ <div class="modal-legend" aria-label="Local graph legend">
+  <span class="legend-mark"><i style="background:var(--green)"></i>SUCCESS · completed</span>
+  <span class="legend-mark"><i style="background:var(--red)"></i>FAILURE · completed</span>
+  <span class="legend-mark"><i style="background:var(--cancel)"></i>CANCELLED · not completed</span>
+  <span class="legend-mark"><i style="background:var(--running)"></i>IN PROGRESS</span>
+  <span class="legend-mark"><i style="background:var(--queued)"></i>QUEUED / PENDING</span>
+  <span class="legend-mark"><i style="background:var(--skip)"></i>SKIPPED</span>
+ </div>
+ <div class="zoom-scroll"><div class="zoom-chart" id="zoom-chart" role="group" aria-label="Select individual source-bound workflow runs"></div></div>
+ <p class="small" id="zoom-denominator">Select a bar to inspect that run. Grouped same-SHA workflows can have different test contracts; display is observational, not a comparable test score.</p>
+ <div class="timeline-detail" id="zoom-detail" aria-live="polite">Select a bar to inspect run ID, status, timestamps and link.</div>
+</dialog>
+
 <script>
 (()=>{'use strict';
 const $=id=>document.getElementById(id);let lastRuns=[],lastHead=null;const kv=(id,value)=>{const el=document.getElementById(id);if(el)el.textContent=String(value??'UNKNOWN')};
@@ -216,11 +583,12 @@ function pct(n,d){return d>0?(100*n/d).toFixed(1)+'%':'UNKNOWN'}
 function family(name){const s=String(name||'').toLowerCase();return /bandit|safety|security|semgrep|codeql|osv|dependency review|a10|ruff/.test(s)?'security':/test|matrix|smoke|lint|format|yaml|docs|python|coverage/.test(s)?'tests':/governance|gate|admission|policy|review/.test(s)?'governance':/census|measure|pulse|telemetry|kpi|mip|metric/.test(s)?'measurement':'other'}
 function svgSpark(id,points,color){const el=$(id);el.replaceChildren();if(points.length<2)return;el.setAttribute('viewBox','0 0 240 36');el.setAttribute('preserveAspectRatio','none');const ns='http://www.w3.org/2000/svg';const poly=document.createElementNS(ns,'polyline');poly.setAttribute('fill','none');poly.setAttribute('stroke',color);poly.setAttribute('stroke-width','2.7');poly.setAttribute('stroke-linecap','round');poly.setAttribute('stroke-linejoin','round');poly.setAttribute('points',points.map((y,i)=>(3+(234*i)/(points.length-1)).toFixed(1)+','+(33-Math.max(0,Math.min(1,y))*28).toFixed(1)).join(' '));el.append(poly);for(let k of [0,points.length-1]){const circle=document.createElementNS(ns,'circle');circle.setAttribute('cx',(3+234*k/(points.length-1)).toFixed(1));circle.setAttribute('cy',(33-Math.max(0,Math.min(1,points[k]))*28).toFixed(1));circle.setAttribute('r','3');circle.setAttribute('fill',color);el.append(circle)}}
 function validTime(s){const t=Date.parse(s||'');return Number.isFinite(t)?t:null}
-function telemetryPCA(scoped){const panel=[];for(const r of scoped){if(r.status!=='completed'||!['success','failure'].includes(r.conclusion))continue;const a=validTime(r.created_at),b=validTime(r.run_started_at),c=validTime(r.updated_at);if(a===null||b===null||c===null||b<a||c<b)continue;const queue=(b-a)/1000,execution=(c-b)/1000;if(queue>=0&&execution>=0&&Number.isFinite(queue)&&Number.isFinite(execution))panel.push([queue,execution])}
+function telemetryPCA(scoped){const panel=[];modelObservation.timingPairs=null;modelObservation.pcaEvr=null;modelObservation.pcaCorrelation=null;for(const r of scoped){if(r.status!=='completed'||!['success','failure'].includes(r.conclusion))continue;const a=validTime(r.created_at),b=validTime(r.run_started_at),c=validTime(r.updated_at);if(a===null||b===null||c===null||b<a||c<b)continue;const queue=(b-a)/1000,execution=(c-b)/1000;if(queue>=0&&execution>=0&&Number.isFinite(queue)&&Number.isFinite(execution))panel.push([queue,execution])}
+ modelObservation.timingPairs=panel.length;modelGatePanels();
  if(panel.length<30){kv('pca-live',`${panel.length} source-bound duration pairs / 30 minimum; exploratory PCA NOT FITTED. Independence and producer timing unqualified.`);return}
  const avg=j=>panel.reduce((t,x)=>t+x[j],0)/panel.length,mu=[avg(0),avg(1)],std=mu.map((m,j)=>Math.sqrt(panel.reduce((t,x)=>t+(x[j]-m)**2,0)/(panel.length-1)));if(std.some(x=>x<=0)){kv('pca-live','PCA INVALID: constant duration axis');return}
  const rho=panel.reduce((t,x)=>t+(x[0]-mu[0])*(x[1]-mu[1])/(std[0]*std[1]),0)/(panel.length-1);
- if(!Number.isFinite(rho)){kv('pca-live','PCA INVALID: covariance not finite');return}const evr=(1+Math.abs(rho))/2;kv('pca-live',`OBSERVED EXPLORATORY 2D PCA: ${panel.length} complete workflow runs; PC1 EVR ${(100*evr).toFixed(1)}%, queue/execution r=${rho.toFixed(2)}. Not independent/cause-qualified; times approximate GitHub lifecycle.`)
+ if(!Number.isFinite(rho)){kv('pca-live','PCA INVALID: covariance not finite');return}const evr=(1+Math.abs(rho))/2;modelObservation.pcaEvr=evr;modelObservation.pcaCorrelation=rho;modelGatePanels();kv('pca-live',`OBSERVED EXPLORATORY 2D PCA: ${panel.length} complete workflow runs; PC1 EVR ${(100*evr).toFixed(1)}%, queue/execution r=${rho.toFixed(2)}. Not independent/cause-qualified; times approximate GitHub lifecycle.`)
 }
 function metricsPulse(runs,head,expectedTotal){
  const scoped=Array.isArray(runs)?runs.filter(x=>x&&x.head_sha===head):[];
@@ -235,12 +603,113 @@ function metricsPulse(runs,head,expectedTotal){
  const bar=$('trend');bar.replaceChildren();for(const r of chron){const kind=outcome(r);const el=make('i',kind==='success'?'good':kind==='failure'?'bad':kind==='cancelled'?'cancel':kind==='in_progress'?'active':kind==='skipped'?'skip':'waiting');el.style.height=(r.status==='completed'?'73':'35')+'px';el.title=(r.created_at||'unknown time')+' · '+r.name+' · '+kind;bar.append(el)}
  kv('trend-caption',`${ok} success · ${red} failure · ${cancel} cancelled · ${skip} skipped · ${running} running · ${queue} queued | chronological observed run events, n=${n}, source SHA ${sha(head)}; within-sample comparison, NOT history of engineering debt.`);
  telemetryPCA(scoped);kv('bt-live','Native paired outcome records: UNKNOWN. GitHub workflow success/failure is NOT head-to-head pairwise comparison. BT fit and ranking WITHHELD.');
- renderDMAIC({hasNative:true,hasCensus:true,hasAdmission:false,hasCounterfactual:false,hasBaseline:false});renderMIP({hasRuns:true,hasRules:false});
+ renderDMAIC({sha:head,n,expected:expectedTotal,ok,red,decisive,protected:verifiedPolicy.branchProtected===true});renderMIP({hasRuns:true,n,expected:expectedTotal});
 }
-function renderDMAIC(x){const defs=[['Define','Repo, PR and SHA identity',true],['Measure','GitHub workflow and status census',!!x.hasCensus],['Analyze','Causal first-red and counterfactual RCA',!!x.hasCounterfactual],['Improve','Canonical repair + exact-head regression',!!x.hasBaseline],['Control','Protected-main + independent acceptance',!!x.hasAdmission]];let el=document.getElementById('dmaic-list');el.replaceChildren();for(const [label,detail,verified] of defs){const row=make('div','dmaic-item');row.append(make('strong','',label),make('span','badge '+(verified?'green':'amber'),verified?'OBSERVED':'NOT VERIFIED'),make('div','small',detail));el.append(row)} }
-function renderMIP(x){const el=document.getElementById('mip-grid');el.replaceChildren();verdict(el,'Source-bound GitHub run census',x.hasRuns?'PASS':'UNKNOWN','Native run IDs and exact PR head, subject to pagination');verdict(el,'Effective branch protection',x.hasRules?'PASS':'RED','Mandatory P0 enforcement is required');verdict(el,'Coverage delta','UNKNOWN','Matching numerator, denominator, test selection and config required');verdict(el,'Bandit fingerprint burndown','UNKNOWN','Matched scope/config/version/fingerprint sets required');verdict(el,'LDAB / RHEL / Docker sessions','UNKNOWN','Authenticated source-bound runtime receipts required');verdict(el,'Causal root closure','UNKNOWN','Independent counterfactual and integrated-main evidence required')}
+function renderDMAIC(x){
+ const n=Number.isInteger(x.n)?x.n:0, expected=Number.isInteger(x.expected)?x.expected:null;
+ const confirmed=x.confirmedRoots??null,firstRed=x.firstRed??null;
+ const format=(v,d)=>d>0?((100*v/d).toFixed(1)+'% ('+v+'/'+d+')'):'UNKNOWN';
+ const defs=[
+  {label:'Define',state:x.sha?'BOUND':'UNKNOWN',kind:x.sha?'green':'unknown',measure:'Repo GBOGEB/ABACUS • exact '+sha(x.sha),threshold:'40-digit Git SHA required',progress:x.sha?1:0},
+  {label:'Measure',state:expected!==null&&n===expected?'COMPLETE':'PARTIAL',kind:expected!==null&&n===expected?'green':'amber',measure:'Workflows inventoried '+n+'/'+(expected??'UNKNOWN')+' ('+format(n,expected)+')',threshold:'Full pagination + native run/job metadata; workflow n ≠ test-case n',progress:expected>0?n/expected:null},
+  {label:'Analyze',state:confirmed===null?'UNKNOWN':'MEASURED',kind:'amber',measure:'Failing runs '+(x.red??'UNKNOWN')+'; located failing jobs '+(firstRed??'UNKNOWN')+'; confirmed causal roots '+(confirmed??'UNKNOWN'),threshold:'Each root needs counterfactual and unique root ID',progress:null},
+  {label:'Improve',state:'UNKNOWN',kind:'amber',measure:'Passing workflows '+(x.ok??'UNKNOWN')+'/'+(x.decisive??'UNKNOWN')+' decisive; attributable before/after repair coverage UNKNOWN',threshold:'Same test selection/config and exact SHA before/after; no metric gain inferred',progress:null},
+  {label:'Control',state:x.protected?'GATES PENDING':'HOLD',kind:x.protected?'amber':'red',measure:'Protected main '+(x.protected?'observed':'NOT ESTABLISHED')+'; independent review UNKNOWN; recurrence n UNKNOWN',threshold:'Conjunctive policy + security + coverage + review + consumer proof',progress:null}
+ ];
+ const el=$('dmaic-list');el.replaceChildren();for(const d of defs){const row=make('div','dmaic-item');const h=make('div','phase-head');h.append(make('strong','',d.label),make('span','badge '+d.kind,d.state));row.append(h,make('div','phase-measure',d.measure),make('div','phase-threshold','Gate: '+d.threshold));if(d.progress!==null&&Number.isFinite(d.progress)){const track=make('div','phase-progress'),inner=make('i');inner.style.width=Math.max(0,Math.min(100,d.progress*100))+'%';track.append(inner);row.append(track)}el.append(row)}
+}
+let verifiedPolicy={branchProtected:null,active:null,hasReview:null,requiredCI:null};
+let modelObservation={timingPairs:null,pcaEvr:null,pcaCorrelation:null,btPairs:null,btQualified:false};
+const REFARCH='https://github.com/GBOGEB/ABACUS/blob/main/docs/CODE_PURPLE_EXECUTION_GRAPH_ARCHITECTURE.md';
+const REFGRAPH='https://github.com/GBOGEB/ABACUS/blob/main/docs/code_purple_execution_graph.html';
+const REFPROOF='https://github.com/GBOGEB/ABACUS/actions';
+function renderMIP(x){
+ const el=$('mip-grid');el.replaceChildren();
+ const hasRuns=!!x.hasRuns, observed=Number.isInteger(x.n)?x.n:null,expected=Number.isInteger(x.expected)?x.expected:null;
+ const inventory=hasRuns&&observed!==null&&expected!==null&&observed===expected;
+ const protectedBranch=verifiedPolicy.branchProtected===true;
+ const ciReq=verifiedPolicy.requiredCI===true;
+ const rows=[
+ {id:'MIP-01',name:'Bind repository / exact SHA',state:hasRuns?'OBSERVED':'UNKNOWN',detail:'Scope: '+(lastHead?sha(lastHead):'UNKNOWN')+'; observed run IDs cannot prove JUnit test counts.',action:'Preserve exact 40-hex SHA and source URLs in producer receipt.',url:REFARCH},
+ {id:'MIP-02',name:'Native run and first-RED census',state:hasRuns?'PARTIAL':'UNKNOWN',detail:'Workflow population '+(observed??'UNKNOWN')+' / '+(expected??'UNKNOWN')+'; first-red step/root identity separate; sampled workflow inventory '+(inventory?'complete':'incomplete')+'.',action:'Retrieve remaining pages, jobs, attempts, failing steps and JUnit.',url:REFPROOF},
+ {id:'MIP-03',name:'Effective protected main + required CI',state:protectedBranch&&ciReq?'PARTIAL':protectedBranch?'PARTIAL':verifiedPolicy.branchProtected===false?'BLOCKED':'UNKNOWN',detail:'Branch protection '+(protectedBranch?'OBSERVED':'UNKNOWN / FALSE')+'; required CI '+(ciReq?'CONFIGURED':verifiedPolicy.requiredCI===false?'NOT CONFIGURED':'UNKNOWN')+'; independent review not credited.',action:'Verify required check contexts, review approvals and rule effectiveness.',url:'https://github.com/GBOGEB/ABACUS/rules/24494381'},
+ {id:'MIP-04',name:'Comparable coverage / test evidence',state:'UNKNOWN',detail:'Line/branch numerator, denominator, base SHA, test selection, and JUnit not joined.',action:'Import same-scope coverage XML/JSON + JUnit with source identity.',url:'https://github.com/GBOGEB/ABACUS/actions/workflows/mip-coverage-evidence.yml'},
+ {id:'MIP-05',name:'Security & BD fingerprint burndown',state:'UNKNOWN',detail:'Bandit/Flake8/Ruff root fingerprints require same scanner, scope, rules and version.',action:'Join before/after findings; report opened, resolved, inherited, net.',url:'https://github.com/GBOGEB/ABACUS/actions/workflows/bandit-disjoint-census.yml'},
+ {id:'MIP-06',name:'LDAB / LLDB / Docker / RHEL testflight',state:'UNKNOWN',detail:'Configuration or workflow name is not an authenticated runtime session.',action:'Ingest signed/exact-source host, image, port, run and debugger receipts.',url:'https://github.com/GBOGEB/ABACUS/actions/workflows/w93-docker-deployment-proof.yml'},
+ {id:'MIP-07',name:'Confirm and close distinct causal roots',state:'UNKNOWN',detail:'Confirmed root IDs, independent counterfactuals and consumer replays not joined.',action:'Join BD+LDAB+run signatures; verify bounded repair on new exact head.',url:REFARCH},
+ {id:'MIP-08',name:'Independent admission + recurrence control',state:'BLOCKED',detail:'Protected branch alone is insufficient; verified required CI, security, reviewer and later main receipts needed.',action:'Resolve missing gates and independently review; remeasure main after approved integration.',url:REFGRAPH}
+ ];
+ const responsibilities=['CI provenance / EVERRED','CI evidence collector','Repository admin + reviewer','Coverage producer / test owner','Security/BD root owner','Runtime worker + LDAB','Canonical causal root owner','Independent merger + recurrence monitor'];
+ const priority=['P1','P1','P0','P1','P1','P2','P1','P0'];
+ let complete=0;for(const [i,d] of rows.entries()){if(d.state==='OBSERVED')complete++;const card=make('article','mip-thing');card.dataset.state=d.state;
+ const top=make('div','mip-top');top.append(make('span','mip-id',d.id),make('span','badge '+(d.state==='OBSERVED'?'green':d.state==='BLOCKED'?'red':d.state==='PARTIAL'?'amber':'unknown'),d.state));
+ card.append(top,make('strong','',d.name),make('p','small',d.detail),make('div','small','Priority: '+priority[i]+' · Role: '+responsibilities[i]),make('div','mip-next','NEXT PROOF: '+d.action));const a=make('a','mip-source','Source / producer ↗');a.href=d.url;a.target='_blank';a.rel='noopener noreferrer';card.append(a);el.append(card)}
+ kv('mip-overall',`${complete}/8 classes OBSERVED; ${rows.filter(r=>r.state==='BLOCKED').length} BLOCKED · acceptance HOLD`);
+}
+function modelRow(id,description,state){const row=make('div','proof-row');row.append(make('code','',id),make('span','proof-desc',description),make('span','badge '+(state==='OBSERVED'?'green':state==='PARTIAL'?'amber':'unknown'),state));return row}
+function modelGatePanels(){
+ const p=$('pca-checks'),b=$('bt-checks');if(!p||!b)return;p.replaceChildren();b.replaceChildren();
+ const n=modelObservation.timingPairs;
+ p.append(modelRow('PCA-01',`Observed complete workflow timing pairs n=${n===null?'UNKNOWN':n}; p=2. Heuristic n≥30 (NOT independent units).`,n===null?'UNKNOWN':n>=30?'PARTIAL':'UNKNOWN'));
+ p.append(modelRow('PCA-02','Finite, nonconstant matrix + normalized units; repeat workflow runs are clustered.',modelObservation.pcaEvr===null?'UNKNOWN':'PARTIAL'));
+ p.append(modelRow('PCA-03',`EVR1=${modelObservation.pcaEvr===null?'UNKNOWN':(100*modelObservation.pcaEvr).toFixed(1)+'%'}; descriptive timing structure only.`,modelObservation.pcaEvr===null?'UNKNOWN':'PARTIAL'));
+ p.append(modelRow('PCA-04','Independent-unit diagnostics, time stability, eigengap, uncertainty and calibration unverified.','UNKNOWN'));
+ b.append(modelRow('BT-01','Actual test-contract-matched candidate pairs n='+ (modelObservation.btPairs===null?'UNKNOWN':modelObservation.btPairs)+'; provenance needs verification.',modelObservation.btPairs!==null&&modelObservation.btPairs>0?'PARTIAL':'UNKNOWN'));
+ b.append(modelRow('BT-02','At least 30 distinct independent paired trials; n observed: '+(modelObservation.btPairs===null?'UNKNOWN':modelObservation.btPairs),modelObservation.btPairs!==null&&modelObservation.btPairs>=30?'PARTIAL':'UNKNOWN'));
+ b.append(modelRow('BT-03','Directed winner graph strongly connected; otherwise finite unregularized MLE may not exist.',modelObservation.btQualified?'PARTIAL':'UNKNOWN'));
+ b.append(modelRow('BT-04','Uncertainty, comparison stability, holdout calibration and causal interpretation unverified.','UNKNOWN'));
+}
+
 const text=(id,val)=>$(id).textContent=String(val??'UNKNOWN');let service=false,runTimer=null,lastReadback=0;
 const badge=(id,val,kind='unknown')=>{const el=$(id);el.className='badge '+kind;el.textContent=val};
+const clearAndBadge=(id,items)=>{const e=$(id);e.replaceChildren();for(const [label,kind] of items)e.append(make('span','badge '+kind,label));};
+function protectionDisplay(repo,data){
+ const protectedState=data?.protected,el=$(repo+'-state'),card=$(repo+'-card');
+ el.className='stat-value '+(protectedState===true?'is-protected':protectedState===false?'is-unprotected':'is-unknown');
+ card.classList.remove('safe','todo','unclear');card.classList.add(protectedState===true?'safe':protectedState===false?'todo':'unclear');
+ text(repo+'-state',protectedState===true?'PROTECTED':protectedState===false?'UNPROTECTED':'UNKNOWN');
+ clearAndBadge(repo+'-badges',protectedState===true?[['✓ BRANCH PROTECTION','green'],['≠ MERGE APPROVAL','amber']]:protectedState===false?[['! PROTECTION TODO','todo']]:[['? NOT VERIFIED','unknown']]);
+ text(repo+'-sha',sha(data?.commit?.sha));
+}
+function renderPolicy(rules,branchProtected){
+ verifiedPolicy={branchProtected:branchProtected===true?true:branchProtected===false?false:null,active:rules?.enforcement==='active',hasReview:Array.isArray(rules?.rules)?rules.rules.some(r=>r.type==='pull_request'):null,requiredCI:Array.isArray(rules?.rules)?rules.rules.some(r=>r.type==='required_status_checks'):null};
+ const arr=Array.isArray(rules?.rules)?rules.rules:null;
+ const active=rules?.enforcement==='active';
+ const types=arr?.map(x=>x.type)||[];
+ const required=types.includes('required_status_checks');
+ text('rules-count',arr?arr.length+' rules':'UNKNOWN');
+ const requiredChecks=arr?.find(r=>r.type==='required_status_checks');
+ const contexts=requiredChecks?.parameters?.required_status_checks;
+ const count=Array.isArray(contexts)?contexts.length:null;
+ text('rules-state',arr?(active?'Active ruleset':'Rule enforcement: '+(rules.enforcement||'UNKNOWN')):'RULES UNKNOWN');
+ text('rules-scope',arr?'Target: '+(rules.target||'UNKNOWN')+' · '+(rules.conditions?.ref_name?.include||[]).join(', ')+' · bypass actors '+(Array.isArray(rules.bypass_actors)?rules.bypass_actors.length:'UNKNOWN'):'Ruleset has not been retrieved');
+ const card=$('rules-card');card.classList.remove('review','safe','todo','unclear');card.classList.add(arr?(active?'review':'todo'):'unclear');
+ clearAndBadge('rules-badges',arr?(active?[['ACTIVE RULESET','gold'],[required?'✓ CI GATE CONFIGURED':'! REQUIRED CI MISSING',required?'green':'todo']]:[['! RULESET NOT ACTIVE','todo']]):[['? POLICY UNKNOWN','unknown']]);
+ text('rules-gap',arr?(required?('Required status checks: '+(count??'UNKNOWN')+' checks configured. Universal exact-head success still needs verification.'):'Required status checks: NOT CONFIGURED. Add only verified universal contexts after review.'):'Required status checks: UNKNOWN');
+ const ul=$('rules-list');ul.replaceChildren();
+ if(!arr){ul.append(make('li','','GitHub policy readback missing.'));return}
+ if(!arr.length)ul.append(make('li','','No rules configured.'));
+ for(const r of arr){
+  let name=r.type,detail='Rule details not classified; inspect source.';
+  if(r.type==='deletion'){name='Prevent deletion';detail='Blocks branch deletion.'}
+  else if(r.type==='non_fast_forward'){name='Prevent force pushes';detail='Blocks non-fast-forward updates.'}
+  else if(r.type==='pull_request'){
+    name='Pull request required';const p=r.parameters||{};
+    detail='Approvals: '+(Number.isInteger(p.required_approving_review_count)?p.required_approving_review_count:'UNKNOWN')+' · dismiss stale: '+(p.dismiss_stale_reviews_on_push===true?'YES':'NO / UNKNOWN')+' · latest push approval: '+(p.require_last_push_approval===true?'YES':'NO / UNKNOWN')+' · threads resolved: '+(p.required_review_thread_resolution===true?'YES':'NO / UNKNOWN')+' · unattributed change approval: '+(p.require_extra_approval_for_unattributed_changes===true?'YES':'NO / UNKNOWN');
+  }else if(r.type==='required_status_checks'){name='Required CI status checks';detail='Count '+(count??'UNKNOWN')+' · require up-to-date: '+(r.parameters?.strict_required_status_checks_policy===true?'YES':'NO / UNKNOWN')}
+  const li=make('li');li.append(make('strong','',name),make('span','desc',detail));ul.append(li)
+ }
+ if(arr.length&&!required){const li=make('li');li.append(make('strong','','Not included: mandatory passing status checks'),make('span','desc','Rule absent from this active ruleset; branch protection does not imply a CI gate.'));ul.append(li)}
+}
+function prDisplay(pr){
+ const card=$('pr-card'),el=$('pr-state');card.classList.remove('safe','todo','unclear','review');
+ const merged=pr?.merged===true;card.classList.add(merged?'safe':pr?.state?'review':'unclear');
+ el.className='stat-value '+(merged?'is-merged':'is-unknown');
+ text('pr-state',merged?'MERGED':pr?.state?String(pr.state).toUpperCase()+(pr.draft?' / DRAFT':''):'UNKNOWN');
+ text('pr-sha',sha(pr?.head?.sha));
+ clearAndBadge('pr-badges',merged?[['✓ INTEGRATED','green'],['NO RETROACTIVE ADMISSION','amber']]:pr?.state?[['REVIEW NEEDED','gold']]:[['? PR UNKNOWN','unknown']]);
+}
+
 const sha=v=>typeof v==='string'&&/^[a-f0-9]{40}$/.test(v)?v.slice(0,12):'UNKNOWN';
 const github=async path=>{const r=await fetch('https://api.github.com'+path,{headers:{Accept:'application/vnd.github+json'},cache:'no-store'});if(!r.ok)throw Error('GitHub HTTP '+r.status);return r.json()};
 async function localStatus(){if(location.protocol==='file:')throw Error('Local service unavailable from file://');const r=await fetch('/api/status',{cache:'no-store'});if(!r.ok)throw Error('Service unavailable');return r.json()}
@@ -248,31 +717,210 @@ async function refresh(){ $('refresh').disabled=true;badge('connection','REFRESH
  const target=$('scope-target').value;const req=[['abacus','/repos/GBOGEB/ABACUS/branches/main'],['codex','/repos/GBOGEB/CODEX/branches/main'],['rules','/repos/GBOGEB/ABACUS/rulesets/24494381'],['pr1956','/repos/GBOGEB/ABACUS/pulls/1956'],['pr1958','/repos/GBOGEB/ABACUS/pulls/1958']];
  try{const replies=await Promise.all(req.map(async([n,path])=>{try{return[n,await github(path),null]}catch(e){return[n,null,e.message]}}));const d=Object.fromEntries(replies.map(([n,o])=>[n,o]));const errors=replies.filter(x=>x[2]);const abacus=d.abacus, codex=d.codex, rules=d.rules, p1956=d.pr1956,p1958=d.pr1958;
  const mainsha=abacus?.commit?.sha;const head=target==='main'?mainsha:target==='pr1956'?p1956?.head?.sha:p1958?.head?.sha;
- for(const [name,b] of [['abacus',abacus],['codex',codex]]){text(name+'-state',b?.protected===true?'PROTECTED':b?.protected===false?'UNPROTECTED':'UNKNOWN');text(name+'-sha',sha(b?.commit?.sha))}
- text('rules-count',Number.isInteger(rules?.rules?.length)?rules.rules.length+' rules':'UNKNOWN');text('rules-state',rules?.enforcement==='active'&&rules.rules?.length===0?'Active ruleset but zero enforceable rules':rules?.enforcement||'UNKNOWN');text('pr-state',p1956?.merged?'MERGED':p1956?.state?String(p1956.state).toUpperCase()+(p1956.draft?' / DRAFT':''):'UNKNOWN');text('pr-sha',sha(p1956?.head?.sha));
+ protectionDisplay('abacus',abacus);protectionDisplay('codex',codex);renderPolicy(rules,abacus?.protected===true);prDisplay(p1956);
  const protection=abacus?.protected===true&&rules?.rules?.length>0;
  kv('kpi-admission',protection?'INDEPENDENT REVIEW REQUIRED':'HOLD');kv('kpi-reason',protection?'Missing other admission receipts may still HOLD':'P0 protection not effective; passing CI is not merge approval');
  kv('scope-bind',target.toUpperCase()+' · '+sha(head));badge('connection',errors.length?'PARTIAL / UNKNOWN':'GITHUB READBACK',errors.length?'amber':'green');
  text('live-meta','Observed at '+stamp+' · exact main '+sha(mainsha)+' · '+(errors.length?errors.map(x=>x[0]+': '+x[2]).join('; '):'all branch/policy endpoints returned')+' · Read-only observation; never merge authority.');
  if(!/^[a-f0-9]{40}$/.test(head||''))throw Error('Target exact SHA unknown. No workflow census possible.');
  const batch=await github('/repos/GBOGEB/ABACUS/actions/runs?head_sha='+encodeURIComponent(head)+'&per_page=100');if(!Array.isArray(batch.workflow_runs))throw Error('native run list absent');
- renderRuns(batch.workflow_runs,head,batch.total_count);metricsPulse(batch.workflow_runs,head,batch.total_count);
+ renderRuns(batch.workflow_runs,head,batch.total_count);metricsPulse(batch.workflow_runs,head,batch.total_count);updateConfiguredCatalog();
  kv('scope-limits','Native Actions / exact SHA '+sha(head)+' · '+batch.workflow_runs.length+' returned of '+batch.total_count+' source records'+(batch.total_count>batch.workflow_runs.length?' · TRUNCATED':'')+' · refreshed '+stamp);
- if(!protection)renderMIP({hasRuns:batch.workflow_runs.length>0,hasRules:false});
+ renderDMAIC({sha:head,n:batch.workflow_runs.filter(r=>r.head_sha===head).length,expected:batch.total_count,ok:batch.workflow_runs.filter(r=>outcome(r)==="success").length,red:batch.workflow_runs.filter(r=>outcome(r)==="failure").length,decisive:batch.workflow_runs.filter(r=>["success","failure"].includes(outcome(r))).length,protected:protection});renderMIP({hasRuns:batch.workflow_runs.length>0,n:batch.workflow_runs.filter(r=>r.head_sha===head).length,expected:batch.total_count});
  }catch(e){renderRuns([],null);resetMetrics();badge('connection','UNKNOWN / ERROR','amber');text('ci-note','Source-bound census unavailable: '+e.message);kv('scope-limits','Incomplete live readback: '+e.message)}finally{$('refresh').disabled=false}}
 function renderRuns(runs,head,total){lastRuns=(Array.isArray(runs)?runs:[]).filter(r=>r.head_sha===head);lastHead=head;renderTable();text('ci-note',lastRuns.length+' matching exact-head runs on retrieved page (GitHub total '+(Number.isInteger(total)?total:'UNKNOWN')+'). This is a source-bound but possibly paginated sample; read failures and reruns separately.');}
+function familyTag(key){const cls={security:['SEC','Security'],tests:['QA','Tests / QA'],governance:['GOV','Governance'],measurement:['DATA','Measurement'],other:['OTHER','Other']}[key]||['OTHER','Other'];const el=make('span','ci-family family-'+key,cls[0]);el.title=cls[1]+' is a workflow category, not a result';return el}
 function renderTable(){const runs=lastRuns,root=$('ci-body');root.replaceChildren();kv('red-note',runs.filter(r=>outcome(r)==='failure').length+' failed workflow(s) in selected exact-head sample');
  if(!runs.length){const tr=make('tr');const td=make('td','','No source-bound run data in this sample; UNKNOWN');td.colSpan=5;tr.append(td);root.append(tr);return}
  const selected=$('ci-filter').value,group=$('ci-family').value,search=$('ci-search').value.trim().toLowerCase();const filters=runs.filter(r=>(selected==='all'||outcome(r)===selected)&&(group==='all'||family(r.name)===group)&&(!search||String(r.name).toLowerCase().includes(search)));
  const order=[['failure','FAILURE','red'],['in_progress','RUNNING','running'],['queued','QUEUED / PENDING','queued'],['success','SUCCESS','green'],['cancelled','CANCELLED','cancel'],['skipped','SKIPPED','skipped'],['unknown','UNKNOWN','unknown']];
- for(const [status,label,cls] of order){const groupRuns=filters.filter(r=>outcome(r)===status).sort((a,b)=>(validTime(b.created_at)||0)-(validTime(a.created_at)||0));if(!groupRuns.length)continue;const groupRow=make('tr','group-header '+cls);const th=make('th','',label+' · '+groupRuns.length+' workflow'+(groupRuns.length===1?'':'s'));th.colSpan=5;groupRow.append(th);root.append(groupRow);for(const r of groupRuns){const tr=make('tr','ci-row-'+(status==='failure'?'failure':status==='in_progress'?'running':status));const name=make('td');name.append(make('strong','',r.name||'UNKNOWN'));name.append(make('div','small',r.created_at||'Time unavailable'));tr.append(name);const fam=make('td');fam.append(make('span','ci-family',family(r.name)));tr.append(fam);const st=make('td');const sym={success:'✓',failure:'✕',cancelled:'⊘',in_progress:'↻',queued:'◷',skipped:'−',unknown:'?'};st.append(make('span','ci-state '+cls,(sym[status]||'?')+' '+label));tr.append(st);const cell=make('td');if(r.html_url?.startsWith('https://github.com/')){let link=make('a','',r.id||'UNKNOWN');link.href=r.html_url;link.target='_blank';link.rel='noopener noreferrer';cell.append(link)}else cell.textContent=String(r.id||'UNKNOWN');tr.append(cell);tr.append(make('td','mono',sha(r.head_sha)));root.append(tr)}}
+ const collapsed=$('group-duplicates').checked;
+ function addDetailRow(r,status,label,cls){
+  const tr=make('tr','ci-row-'+(status==='failure'?'failure':status==='in_progress'?'running':status));const name=make('td');name.append(make('strong','',r.name||'UNKNOWN'));name.append(make('div','small',r.created_at||'Time unavailable'));tr.append(name);
+  const fam=make('td');fam.append(familyTag(family(r.name)));tr.append(fam);
+  const sym={success:'✓',failure:'✕',cancelled:'⊘',in_progress:'↻',queued:'◷',skipped:'−',unknown:'?'};const st=make('td');st.append(make('span','ci-state '+cls,(sym[status]||'?')+' '+label));tr.append(st);
+  const cell=make('td');if(r.html_url?.startsWith('https://github.com/')){const link=make('a','',r.id||'UNKNOWN');link.href=r.html_url;link.target='_blank';link.rel='noopener noreferrer';cell.append(link)}else cell.textContent=String(r.id||'UNKNOWN');tr.append(cell);tr.append(make('td','mono',sha(r.head_sha)));root.append(tr)
+ }
+ for(const [status,label,cls] of order){const groupRuns=filters.filter(r=>outcome(r)===status).sort((a,b)=>(validTime(b.created_at)||0)-(validTime(a.created_at)||0));if(!groupRuns.length)continue;const groupRow=make('tr','group-header '+cls);const th=make('th','',label+' · '+groupRuns.length+' workflow'+(groupRuns.length===1?'':'s'));th.colSpan=5;groupRow.append(th);root.append(groupRow);
+  const repeated=new Map();for(const r of groupRuns){const k=String(r.name||'UNKNOWN');if(!repeated.has(k))repeated.set(k,[]);repeated.get(k).push(r)}
+  for(const [name,records] of repeated){if(!collapsed||records.length<3){for(const r of records)addDetailRow(r,status,label,cls);continue}
+    const tr=make('tr','ci-rollup');const td=make('td');td.colSpan=5;const details=make('details');const sum=make('summary');sum.append(make('strong','',name),familyTag(family(name)),make('span','ci-state '+cls,label),make('span','num',records.length+' native runs · grouped, not deduplicated'));details.append(sum);
+    const nested=make('div','nested-runs');for(const r of records){const row=make('div','nested-run');row.append(make('time','',r.created_at||'Time unavailable'));const link=r.html_url?.startsWith('https://github.com/')?make('a','',`Run ${r.id}`):make('span','',`Run ${r.id||'UNKNOWN'}`);if(link.tagName==='A'){link.href=r.html_url;link.target='_blank';link.rel='noopener noreferrer'}row.append(link,make('span','mono',sha(r.head_sha)));nested.append(row)}details.append(nested);td.append(details);tr.append(td);root.append(tr)
+  }
+ }
  if(!filters.length){const tr=make('tr'),td=make('td','','No results for current filters.');td.colSpan=5;tr.append(td);root.append(tr)}
 }
+
 async function checkService(){try{const s=await localStatus();service=s.execution_enabled===true&&s.sut_present===true;badge('sut-badge',service?'EXECUTION ENABLED':'READ-ONLY SERVICE',service?'green':'amber');text('sut-info','SUT root: '+(s.sut_present?'detected':'missing')+' · source '+sha(s.source_sha)+' · '+(s.execution_enabled?'Allowlisted local execution enabled':'Restart server with --enable-execution for local runs'));$('run').disabled=!service}catch(e){service=false;$('run').disabled=true;badge('sut-badge','SERVICE NOT CONNECTED','unknown');text('sut-info','Local runner not connected. Start server.py on 127.0.0.1 and open its URL (file:// cannot run SUT).')} }
 async function launch(){if(!service)return;const profile=$('profile').value,token=$('token').value;if(!token){text('console','Provide local execution token printed in server terminal.');return} $('run').disabled=true;try{const r=await fetch('/api/run',{method:'POST',headers:{'Content-Type':'application/json','X-SUT-Token':token},body:JSON.stringify({profile})});const j=await r.json();if(!r.ok)throw Error(j.error||('HTTP '+r.status));const rid=j.result.id;badge('run-status','RUNNING','amber');text('run-id',rid);text('console','Executing allowlisted profile '+profile+' in isolated SUT copy...');if(runTimer)clearInterval(runTimer);runTimer=setInterval(()=>poll(rid),1500);await poll(rid)}catch(e){text('console','Launch refused: '+e.message);badge('run-status','REFUSED','red');$('run').disabled=false}}
 async function poll(rid){try{const r=await fetch('/api/runs/'+rid,{cache:'no-store'});if(!r.ok)throw Error('run readback '+r.status);const j=await r.json();text('console',(j.logs||[]).join('\n\n').slice(-16000)||'Running, no logs yet');text('run-provenance','Profile '+j.profile+' · source '+sha(j.repository_sha)+' · started '+j.started_at+' · receipt '+(j.receipt_sha256||'PENDING')+' · LOCAL ONLY');badge('run-status',j.status,j.status==='PASS_LOCAL_ONLY'?'green':j.status==='RUNNING'?'amber':'red');if(j.status!=='RUNNING'){clearInterval(runTimer);runTimer=null;$('run').disabled=!service}}catch(e){clearInterval(runTimer);runTimer=null;badge('run-status','UNKNOWN','amber');text('console','Readback failed: '+e.message);$('run').disabled=!service}}
 $('inspect-red').addEventListener('click',async()=>{const el=$('red-details');el.replaceChildren();const failures=lastRuns.filter(r=>r.status==='completed'&&r.conclusion==='failure'&&r.head_sha===lastHead).slice(0,5);if(!failures.length){el.append(make('p','small','No failed exact-head workflows in current sample; absence of evidence is not GREEN.'));return}kv('red-note','Inspecting '+failures.length+' failed run(s), first page of jobs each...');for(const run of failures){const row=make('div','mip-thing');row.append(make('strong','',run.name+' / run '+run.id));el.append(row);try{const data=await github('/repos/GBOGEB/ABACUS/actions/runs/'+encodeURIComponent(run.id)+'/jobs?per_page=100');const jobs=(data.jobs||[]).filter(j=>j.conclusion==='failure');if(!Array.isArray(data.jobs))throw Error('job list missing');const truncated=Number.isInteger(data.total_count)&&data.total_count>data.jobs.length;for(const job of jobs.slice(0,7)){const red=(job.steps||[]).find(st=>st.conclusion==='failure');row.append(make('div','small',job.name+' / '+(red?'step: '+red.name:'failing step unknown')+' / job '+job.id));}if(!jobs.length)row.append(make('p','small','No terminal failing job returned; treat as UNKNOWN.'));if(truncated)row.append(make('span','badge amber','INCOMPLETE PAGINATION'));}catch(e){row.append(make('span','badge amber','JOB READBACK UNKNOWN: '+e.message))}}kv('red-note','Inspection completed; causal identity unconfirmed. No direct repair authority.');});
-$('scope-target').addEventListener('change',refresh);for(const id of ['ci-filter','ci-family','ci-search'])$(id).addEventListener('input',renderTable);for(const btn of document.querySelectorAll('.arch-tab'))btn.addEventListener('click',()=>{for(const panel of document.querySelectorAll('.arch-panel'))panel.classList.add('hidden');$('arch-'+btn.dataset.arch).classList.remove('hidden')});$('refresh').addEventListener('click',refresh);$('check-service').addEventListener('click',checkService);$('run').addEventListener('click',launch);setInterval(()=>{if(lastReadback&&Date.now()-lastReadback>120000)badge('connection','STALE READBACK','amber')},30000);renderDMAIC({hasNative:false});renderMIP({hasRuns:false,hasRules:false});document.getElementById('check-pca').addEventListener('click',()=>{const n=Number(document.getElementById('pca-n').value),p=Number(document.getElementById('pca-p').value);const ok=Number.isInteger(n)&&n>0&&Number.isInteger(p)&&p>=2&&n>=Math.max(30,5*p);kv('pca-state',ok?'SAMPLE SIZE ONLY':'NOT QUALIFIED');kv('pca-info',ok?'Heuristic sample-size gate met; raw matrix, independence, rank, scaling and uncertainty still unverified. NO FIT.':'Heuristic n ≥ max(30,5p) not demonstrated. NO FIT.');});document.getElementById('check-bt').addEventListener('click',()=>{const n=Number(document.getElementById('bt-n').value),g=document.getElementById('bt-connected').value;const ok=Number.isInteger(n)&&n>=30&&g==='yes';kv('bt-state',ok?'PRELIMINARY ONLY':'NOT QUALIFIED');kv('bt-info',ok?'Sample/count and claimed connectivity pass; outcomes, independence, empirical calibration and MLE fit not verified. NO RANKING.':'Need ≥30 independent observed comparisons and a strongly connected win graph. NO RANKING.');});setInterval(()=>{if(lastReadback&&Date.now()-lastReadback>60000)refresh()},60000);refresh();checkService();
+
+// V4: evidence separated by identity, capability and execution; local imports never authorize admission.
+const TEST_FAMILIES={
+ runtime:['Docker / RHEL / UBI / LLDB / LDAB','Trusted session and job-specific runtime receipt'],
+ security:['Bandit / Safety / Semgrep / CodeQL / OSV','Scanner config, finding fingerprint and scope'],
+ static:['Ruff / Flake8 / Black / isort / YAML','Diagnostic census and first-red file provenance'],
+ unit_integration:['pytest / unittest / CI matrix / B0','JUnit test cases, assertions, branch/line coverage'],
+ governance:['Rulesets / admission / reviewers','Effective server-side policy and independent approvals'],
+ observability:['EVERRED / LDAB joins / DMAIC','Stable root and source-bound joined evidence'],
+ unclassified:['Unclassified workflow group','Human mapping required before acceptance']
+};
+
+const workflowCategory=n=>{const s=String(n||'').toLowerCase();
+  for(const [key,pat] of [
+   ['runtime',/docker|container|rhel|ubi|lldb|ldab|debugger|deployment|podman/],
+   ['security',/bandit|safety|semgrep|codeql|osv|dependency|vulnerab|sast/],
+   ['static',/flake8|ruff|format|isort|black|lint|yaml.validate|markdownlint|mypy|pylint/],
+   ['unit_integration',/pytest|unittest|unit.test|matrix|ci.?cd|test.suite|testpilot|regression|smoke|coverage|mip.b0/],
+   ['governance',/govern|policy|admission|ruleset|review|pr.feedback|protection/],
+   ['observability',/census|metrics|telemetry|evidence|everred|recovery|burndown|dmaic|proof|3p/]]){
+      if(pat.test(s))return key;
+  }
+  return 'unclassified';
+};
+async function updateConfiguredCatalog(){
+ try{
+  let list=[],expected=null;
+  for(let page=1;page<=4;page++){
+    const res=await github('/repos/GBOGEB/ABACUS/actions/workflows?per_page=100&page='+page);
+    if(!Array.isArray(res.workflows))throw Error('workflow catalog invalid');
+    expected=res.total_count;list.push(...res.workflows);
+    if(list.length>=expected||res.workflows.length<100)break;
+  }
+  updateTaxonomy({catalog:{items:list.map(w=>({name:w.name,path:w.path,family:workflowCategory(w.name+' '+w.path)}))},runs:{families:{}}});
+  kv('taxonomy-proof', list.length+'/'+(expected??'UNKNOWN')+' WORKFLOW DEFINITIONS · '+(expected===list.length?'COMPLETE':'PAGINATED PARTIAL')+' · EXECUTION SEPARATE');
+ }catch(e){kv('taxonomy-proof','WORKFLOW CONFIGURATION UNKNOWN · '+e.message)}
+}
+
+function updateTaxonomy(snapshot=null){
+ const g=$('taxonomy-grid');g.replaceChildren();let list=snapshot?.catalog?.items||[];
+ let counts={};if(list.length){for(const x of list)counts[x.family]=(counts[x.family]||0)+1}
+ else {for(const k of Object.keys(TEST_FAMILIES))counts[k]=null}
+ for(const [k,[name,proof]] of Object.entries(TEST_FAMILIES)){
+  const c=make('article','tax-card');c.append(make('b','',name));
+  c.append(make('div','stat-value',counts[k]===null?'UNKNOWN':String(counts[k]||0)+' configured'));
+  c.append(make('p','',proof));
+  c.append(make('p','tax-muted','Executed on selected SHA: '+(snapshot?.runs?.families?.[k]?Object.values(snapshot.runs.families[k]).reduce((a,b)=>a+b,0):'UNKNOWN')));
+  g.append(c);
+ }
+ kv('taxonomy-proof',list.length?'CONFIGURED '+list.length+' · EXECUTION SEPARATE':'CAPABILITY CONFIGURATION UNVERIFIED');
+}
+function setModelReceipt(data){
+ const p=data?.models?.pca,b=data?.models?.bt;
+ if(p){modelObservation.timingPairs=Number.isInteger(p.n_complete)?p.n_complete:null;modelObservation.pcaEvr=Number.isFinite(p.pc1_evr)?p.pc1_evr:null;modelGatePanels();kv('pca-state',p.readiness||'UNKNOWN');kv('pca-live',p.n_complete+' complete queue/runtime pairs; PC1 EVR '+(p.pc1_evr===null?'UNKNOWN':(100*p.pc1_evr).toFixed(1)+'%')+'; r '+(p.correlation??'UNKNOWN')+'. '+(p.reason||''));}
+ if(b){modelObservation.btPairs=Number.isInteger(b.usable_pairs)?b.usable_pairs:null;modelObservation.btQualified=b.fit===true;modelGatePanels();kv('bt-state',b.status||'UNKNOWN');kv('bt-live',b.usable_pairs+' source-qualified pair trials; fit '+(b.fit?'DESCRIPTIVE ONLY':'WITHHELD')+'. '+(b.reason||'Missing source evidence'));}
+}
+function populateNativeSnapshot(data, origin){
+ if(!data||data.schema!=='code-purple.test-observability.v1'||!(/^[a-f0-9]{40}$/).test(data.source_sha)||data.authority_transfer!==false||data.merge_authorized!==false)throw Error('Invalid or ungoverned source snapshot');
+ if(lastHead&&data.source_sha!==lastHead)throw Error('Snapshot SHA does not match selected live scope: change scope first');
+ const n=data.runs?.observed,den=data.runs?.expected;
+ if(!Number.isSafeInteger(n)||n<0||!(den===null||Number.isSafeInteger(den)))throw Error('Invalid run denominator');
+ text('producer-provenance',origin+' · '+data.repo+' / '+data.source_sha.slice(0,12)+' · '+n+'/'+(den??'UNKNOWN')+' workflows · '+data.observed_at+' · JSON SOURCE CLAIM; no external admission');
+ const root=$('producer-metrics');root.replaceChildren();
+ const fields=[['Configured workflows',data.catalog?.workflows_count],['Observed / expected runs',n+' / '+(den??'UNKNOWN')],['Native jobs read',data.jobs?.observed??'UNKNOWN'],['Failed job locations',data.jobs?.failed_jobs?.length??'UNKNOWN'],['PCA pairs',data.models?.pca?.n_complete??'UNKNOWN'],['BT matched pairs',data.models?.bt?.usable_pairs??'UNKNOWN']];
+ for(const [name,value] of fields){const c=make('div','metric-measure');c.append(make('strong','',String(value??'UNKNOWN')));c.append(make('span','',name));root.append(c)}
+ updateTaxonomy(data);setModelReceipt(data);
+ // All file imports are unverified even if JSON fields claim otherwise.
+ if(origin.startsWith('MANUAL'))badge('model-status','LOCAL IMPORT · UNVERIFIED','amber');
+}
+
+const TELEMETRY_REFERENCE_PATH='./telemetry_reference_v5.json';
+function barSeries(id,values,maxValue){
+ const root=$(id);if(!root||!Array.isArray(values))return;root.replaceChildren();
+ const max=Number.isFinite(maxValue)&&maxValue>0?maxValue:Math.max(...values.filter(Number.isFinite),1);
+ values.forEach((v,i)=>{const b=make('i');const n=Number(v);b.style.height=(Number.isFinite(n)?Math.max(2,Math.min(100,100*n/max)):2)+'%';b.dataset.label='s'+String(i+1).padStart(2,'0')+' · '+(Number.isFinite(n)?n.toFixed(n%1?1:0):'UNKNOWN');root.append(b)});
+}
+function applyTelemetryReference(data,origin){
+ if(!data||data.schema!=='code-purple.telemetry-reference.v5'||data.authority_transfer!==false||data.merge_authorized!==false||data.security_waiver!==false)throw Error('Invalid telemetry reference contract');
+ const ci=data.ci_hierarchy||{}, b0=data.native_b0||{}, test=data.test_penetration||{}, cov=data.coverage_penetration||{}, burn=data.burndown||{};
+ kv('tel-hierarchy-big',(ci.workflows?.observed??'UNKNOWN')+' → '+(ci.jobs?.observed??'UNKNOWN')+' → '+(ci.steps?.observed??'UNKNOWN'));
+ kv('tel-workflow-success',(ci.workflows?.success_decisive_pct??'UNKNOWN')+(Number.isFinite(ci.workflows?.success_decisive_pct)?'%':''));
+ kv('tel-job-success',(ci.jobs?.success_decisive_pct??'UNKNOWN')+(Number.isFinite(ci.jobs?.success_decisive_pct)?'%':''));
+ kv('tel-step-success',(ci.steps?.success_decisive_pct??'UNKNOWN')+(Number.isFinite(ci.steps?.success_decisive_pct)?'%':''));
+ kv('tel-test-depth',(test.b0?.tests??'UNKNOWN')+' → '+(test.post_b0?.tests??'UNKNOWN'));
+ kv('tel-test-groups',test.b0?.file_groups??'UNKNOWN');
+ kv('tel-depth-factor',Number.isFinite(test.depth_factor)?test.depth_factor.toFixed(2)+'×':'UNKNOWN');
+ kv('tel-coverage-pct',(cov.b0_statements?.pct??'UNKNOWN')+'% → '+(cov.union_statements?.pct??'UNKNOWN')+'%');
+ kv('tel-coverage-den',(cov.b0_statements?.total??'UNKNOWN').toLocaleString?.()+' → '+(cov.union_statements?.total??'UNKNOWN').toLocaleString?.());
+ kv('tel-den-expansion',Number.isFinite(cov.denominator_expansion_pct)?'+'+cov.denominator_expansion_pct.toFixed(2)+'%':'UNKNOWN');
+ kv('tel-zero-paths',cov.zero_coverage_disposition_paths??'UNKNOWN');
+ kv('tel-queue-p95','queue p95 '+(b0.queue_seconds?.p95??'UNKNOWN')+' s');
+ kv('tel-queue-p50',(b0.queue_seconds?.p50??'UNKNOWN')+' s');
+ kv('tel-runtime-p95',(b0.runtime_seconds?.p95??'UNKNOWN')+' s');
+ kv('tel-peak-concurrency',b0.runtime_seconds?.peak_concurrency??'UNKNOWN');
+ kv('tel-parallelism',Number.isFinite(b0.runtime_seconds?.realized_parallelism)?b0.runtime_seconds.realized_parallelism.toFixed(3)+'×':'UNKNOWN');
+ barSeries('tel-penetration-bars',burn.consumer_penetration_sequence_pct,100);
+ barSeries('tel-backlog-bars',burn.open_backlog_sequence,Math.max(...(burn.open_backlog_sequence||[1])));
+ kv('tel-reference-provenance',origin+' · '+data.classification+' · producer '+(data.producer?.head_sha?.slice(0,12)??'UNKNOWN')+' / '+(data.producer?.qualification??'UNKNOWN')+' · no authority transfer');
+ badge('telemetry-reference-state','REFERENCE LOADED','green');
+}
+function applyStructuralTelemetry(data,origin){
+ if(!data||data.schema!=='abacus.mip.ci-wave-telemetry.v2'||data.authority_transfer!==false||data.merge_authorized!==false||data.security_waiver!==false||!(/^[a-f0-9]{40}$/).test(data.source_sha))throw Error('Invalid structural telemetry receipt');
+ kv('tel-hierarchy-big',(data.workflow_records_observed??'UNKNOWN')+' → '+(data.jobs_observed??'UNKNOWN')+' → '+(data.steps_observed??'UNKNOWN'));
+ kv('tel-queue-p95','queue p95 '+(data.queue_seconds_p95??'UNKNOWN')+' s');
+ kv('tel-queue-p50',(data.queue_seconds_p50??'UNKNOWN')+' s');
+ kv('tel-runtime-p95',(data.runtime_seconds_p95??'UNKNOWN')+' s');
+ kv('tel-peak-concurrency',data.peak_runtime_concurrency_observed??'UNKNOWN');
+ kv('tel-parallelism',Number.isFinite(data.realized_parallelism_factor)?data.realized_parallelism_factor.toFixed(3)+'×':'UNKNOWN');
+ kv('tel-reference-provenance',origin+' · STRUCTURAL RECEIPT '+data.source_sha.slice(0,12)+' · jobs '+(data.jobs_observed??'UNKNOWN')+' · steps '+(data.steps_observed??'UNKNOWN')+' · independent cycles '+(data.independent_process_observations??'UNKNOWN'));
+ badge('telemetry-reference-state','STRUCTURAL RECEIPT · NO ADMISSION','amber');
+}
+async function loadTelemetryReference(){
+ try{const r=await fetch(TELEMETRY_REFERENCE_PATH,{cache:'no-store'});if(!r.ok)throw Error('HTTP '+r.status);applyTelemetryReference(await r.json(),'CONTROLLED REFERENCE JSON')}
+ catch(e){badge('telemetry-reference-state','STATIC REFERENCE · FETCH UNAVAILABLE','amber');kv('tel-reference-provenance','Static exact-SHA values remain visible; controlled JSON reload unavailable: '+e.message)}
+}
+
+const legendColor=k=>({success:'var(--green)',failure:'var(--red)',cancelled:'var(--cancel)',in_progress:'var(--running)',queued:'var(--queued)',skipped:'var(--skip)'}[k]||'#808c9b');
+function enlargeChronology(){
+ const dlg=$('trend-dialog'),root=$('zoom-chart');root.replaceChildren();
+ const rows=lastRuns.slice().sort((a,b)=>(validTime(a.created_at)||0)-(validTime(b.created_at)||0)||a.id-b.id);
+ const s=rows.map(r=>outcome(r));let k={};s.forEach(x=>k[x]=(k[x]||0)+1);
+ kv('dialog-source','ABACUS · '+sha(lastHead)+' · '+rows.length+' observed runs · '+Object.entries(k).map(x=>x.join('=')).join(' · ')+' · NOT a test-case count');
+ kv('zoom-denominator','Sample n='+rows.length+' workflow executions. Sequence is creation-time order, not an engineering causal timeline. Click a bar for native run evidence.');
+ for(const row of rows){const st=outcome(row),b=make('button');b.type='button';b.style.background=legendColor(st);b.style.height=(st==='queued'?58:st==='in_progress'?90:st==='cancelled'?125:st==='failure'?160:150)+'px';b.title=(row.name||'Unnamed')+' / '+st+' / '+row.id;
+   b.setAttribute('aria-label','Inspect run '+row.id+': '+st);b.addEventListener('click',()=>{
+      const box=$('zoom-detail');box.replaceChildren();box.append(make('b','',row.name||'UNKNOWN'));
+      box.append(make('p','', 'Outcome: '+st+' | run '+row.id+' | attempt '+(row.run_attempt??'UNKNOWN')+' | event '+(row.event||'UNKNOWN')));
+      box.append(make('p','', 'SHA: '+(row.head_sha||'UNKNOWN')+' | created '+(row.created_at||'UNKNOWN')+' | updated '+(row.updated_at||'UNKNOWN')));
+      if(typeof row.html_url==='string'&&row.html_url.startsWith('https://github.com/')){const a=make('a','','Open native GitHub run ↗');a.href=row.html_url;a.target='_blank';a.rel='noopener noreferrer';box.append(a)}
+      else box.append(make('p','small','Native link unavailable'));
+   });root.append(b)}
+ if(!rows.length)root.append(make('span','small','No exact-SHA native workflow records loaded.'));
+ if(typeof dlg.showModal==='function')dlg.showModal();else dlg.setAttribute('open','');
+}
+$('expand-trend').addEventListener('click',enlargeChronology);
+$('trend').addEventListener('click',enlargeChronology);
+$('trend').setAttribute('tabindex','0');$('trend').setAttribute('role','button');
+$('trend').addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();enlargeChronology()}});
+$('close-trend').addEventListener('click',()=>{const x=$('trend-dialog');if(x.close)x.close();else x.removeAttribute('open')});
+$('trend-dialog').addEventListener('click',e=>{if(e.target===e.currentTarget)e.currentTarget.close()});
+$('producer-file').addEventListener('change',async e=>{const f=e.target.files?.[0];if(!f)return;
+ try{if(f.size>4*1024*1024)throw Error('Maximum import 4 MiB');const data=JSON.parse(await f.text());if(data?.schema==='abacus.mip.ci-wave-telemetry.v2')applyStructuralTelemetry(data,'MANUAL_UNVERIFIED '+f.name);else if(data?.schema==='code-purple.telemetry-reference.v5')applyTelemetryReference(data,'MANUAL_UNVERIFIED '+f.name);else populateNativeSnapshot(data,'MANUAL_UNVERIFIED '+f.name)}
+ catch(err){text('producer-provenance','REJECTED / '+err.message)}});
+$('load-telemetry-reference').addEventListener('click',loadTelemetryReference);
+$('load-local-evidence').addEventListener('click',async()=>{
+ try{const r=await fetch('./evidence/latest.json',{cache:'no-store'});if(!r.ok)throw Error('HTTP '+r.status);populateNativeSnapshot(await r.json(),'LOCAL_SERVED_UNVERIFIED source file');}
+ catch(e){text('producer-provenance','Local evidence unavailable: '+e.message+'; choose file manually.')}});
+updateTaxonomy();
+loadTelemetryReference();
+
+$('scope-target').addEventListener('change',refresh);for(const id of ['ci-filter','ci-family','ci-search','group-duplicates'])$(id).addEventListener('input',renderTable);for(const btn of document.querySelectorAll('.arch-tab'))btn.addEventListener('click',()=>{for(const panel of document.querySelectorAll('.arch-panel'))panel.classList.add('hidden');$('arch-'+btn.dataset.arch).classList.remove('hidden')});$('refresh').addEventListener('click',refresh);$('check-service').addEventListener('click',checkService);$('run').addEventListener('click',launch);setInterval(()=>{if(lastReadback&&Date.now()-lastReadback>120000)badge('connection','STALE READBACK','amber')},30000);renderDMAIC({sha:null,n:0,expected:null,protected:false});renderMIP({hasRuns:false,n:null,expected:null});modelGatePanels();document.getElementById('check-pca').addEventListener('click',()=>{const n=Number(document.getElementById('pca-n').value),p=Number(document.getElementById('pca-p').value);const ok=Number.isInteger(n)&&n>0&&Number.isInteger(p)&&p>=2&&n>=Math.max(30,5*p);kv('pca-state',ok?'SAMPLE SIZE ONLY':'NOT QUALIFIED');kv('pca-info',ok?'Heuristic sample-size gate met; raw matrix, independence, rank, scaling and uncertainty still unverified. NO FIT.':'Heuristic n ≥ max(30,5p) not demonstrated. NO FIT.');});document.getElementById('check-bt').addEventListener('click',()=>{const n=Number(document.getElementById('bt-n').value),g=document.getElementById('bt-connected').value;const ok=Number.isInteger(n)&&n>=30&&g==='yes';kv('bt-state',ok?'PRELIMINARY ONLY':'NOT QUALIFIED');kv('bt-info',ok?'Sample/count and claimed connectivity pass; outcomes, independence, empirical calibration and MLE fit not verified. NO RANKING.':'Need ≥30 independent observed comparisons and a strongly connected win graph. NO RANKING.');});setInterval(()=>{if(lastReadback&&Date.now()-lastReadback>60000)refresh()},60000);refresh();checkService();
+// Full-size SIPOC uses the exact same local blocks; no independent diagram content or model results.
+const sipocDialog = document.getElementById('sipoc-dialog');
+const sipocZoom = document.getElementById('sipoc-zoom');
+const sipocClose = document.getElementById('sipoc-close');
+sipocZoom?.addEventListener('click',()=>{
+ const source=document.getElementById('sipoc-drawing');
+ const target=document.getElementById('sipoc-dialog-content');
+ target.replaceChildren(source.cloneNode(true));
+ const nested=target.querySelector('#sipoc-zoom');if(nested)nested.remove();
+ // Duplicated IDs on cloned content are removed so native anchors remain unique.
+ for(const el of target.querySelectorAll('[id]'))el.removeAttribute('id');
+ if(typeof sipocDialog.showModal==='function')sipocDialog.showModal();
+});
+sipocClose?.addEventListener('click',()=>sipocDialog.close());
+sipocDialog?.addEventListener('click',(e)=>{if(e.target===sipocDialog)sipocDialog.close()});
 })();
 </script>
 </body></html>

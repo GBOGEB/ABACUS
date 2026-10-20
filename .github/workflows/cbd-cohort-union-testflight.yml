@@ -1,0 +1,121 @@
+name: CBD Cohort Union Exact-Head Testflight
+
+on:
+  pull_request:
+    paths:
+      - "scripts/cbd_workflow_cohort_union.py"
+      - "scripts/cbd_workflow_failure_waves.py"
+      - "tests/test_cbd_workflow_cohort_union.py"
+      - "docs/ci/CBD_*_FAILED_RUN_OBSERVATIONS_20261017.json"
+      - ".github/workflows/cbd-cohort-union-testflight.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  cohort-contract:
+    name: Native cohort contract (Python ${{ matrix.python-version }})
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: ["3.10", "3.12"]
+    env:
+      EXPECTED_PULL_HEAD: ${{ github.event.pull_request.head.sha || github.sha }}
+      GITHUB_EVENT_SHA: ${{ github.sha }}
+    steps:
+      - name: Checkout exact pull head
+        uses: actions/checkout@v7
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+      - name: Setup Python
+        uses: actions/setup-python@v7
+        with:
+          python-version: ${{ matrix.python-version }}
+      - name: Install isolated coverage runner
+        run: python -m pip install "coverage[toml]>=7.7,<8"
+      - name: Execute 16 source-bound positive and negative contracts
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p test_reports/cbd-cohort
+          python -m coverage run --branch --source=cbd_workflow_cohort_union \
+            -m unittest discover -s tests -p "test_cbd_workflow_cohort_union.py" -v \
+            2>&1 | tee test_reports/cbd-cohort/unittest.log
+      - name: Materialize exact-head line and branch receipt
+        if: always()
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -m coverage json -o test_reports/cbd-cohort/coverage.json
+          python - <<'PY'
+          import hashlib
+          import json
+          import os
+          import pathlib
+          import re
+          import subprocess
+          import sys
+
+          target = pathlib.Path("test_reports/cbd-cohort")
+          coverage = json.loads((target / "coverage.json").read_text())
+          totals = coverage["totals"]
+          log_bytes = (target / "unittest.log").read_bytes()
+          suite_ok = any(line.strip() == b"OK" or line.strip().startswith(b"OK (") for line in log_bytes.splitlines())
+          counts = re.search(rb"Ran (\d+) tests?", log_bytes)
+          if counts is None or int(counts.group(1)) < 19:
+              raise SystemExit("Not all 19 expected tests executed")
+          lines = (totals["covered_lines"], totals["num_statements"])
+          branches = (totals["covered_branches"], totals["num_branches"])
+          if not all(total > 0 and 0 <= hit <= total for hit, total in (lines, branches)):
+              raise SystemExit("Invalid statement/branch denominator")
+          pull_head = os.getenv("EXPECTED_PULL_HEAD", "")
+          if not re.fullmatch(r"[0-9a-f]{40}", pull_head):
+              raise SystemExit("Missing PR pull-head binding")
+          if subprocess.check_output(["git", "rev-parse", "HEAD"], text=True).strip() != pull_head:
+              raise SystemExit("HOLD: checkout and declared source head differ")
+          actual_head = subprocess.check_output(
+              ["git", "rev-parse", "HEAD"], text=True
+          ).strip()
+          if actual_head != pull_head:
+              raise SystemExit("Exact PR-head checkout mismatch; coverage WITHHELD")
+          receipt = {
+              "schema": "cbd.native-cohort-testflight.v1",
+              "repository": os.getenv("GITHUB_REPOSITORY"),
+              "pull_head_sha": pull_head,
+              "event_sha": os.getenv("GITHUB_EVENT_SHA"),
+              "checkout_sha": actual_head,
+              "run_id": os.getenv("GITHUB_RUN_ID"),
+              "run_attempt": os.getenv("GITHUB_RUN_ATTEMPT"),
+              "python": sys.version.split()[0],
+              "tests_executed": int(counts.group(1)),
+              "test_suite_passed": suite_ok,
+              "source_sha256": hashlib.sha256(
+                  pathlib.Path("scripts/cbd_workflow_cohort_union.py").read_bytes()
+              ).hexdigest(),
+              "test_log_sha256": hashlib.sha256(log_bytes).hexdigest(),
+              "covered_lines": lines[0],
+              "statement_denominator": lines[1],
+              "covered_branches": branches[0],
+              "branch_denominator": branches[1],
+              "admission": "HOLD",
+              "security_waiver": False,
+          }
+          (target / "receipt.json").write_text(
+              json.dumps(receipt, indent=2, sort_keys=True) + "\n"
+          )
+          print(json.dumps(receipt, indent=2, sort_keys=True))
+          if not suite_ok:
+              raise SystemExit("Test suite is red: no test success credit")
+          if min(100 * lines[0] / lines[1], 100 * branches[0] / branches[1]) < 80:
+              raise SystemExit("Module line or branch coverage below 80 percent")
+          PY
+      - name: Upload exact-head proof bytes
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: cbd-cohort-native-${{ matrix.python-version }}-${{ github.run_id }}
+          path: test_reports/cbd-cohort/
+          if-no-files-found: error

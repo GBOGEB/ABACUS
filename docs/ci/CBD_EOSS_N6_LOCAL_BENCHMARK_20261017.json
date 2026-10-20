@@ -1,0 +1,21 @@
+{
+  "CoolProp_cache_saved_seconds": null,
+  "clock_basis": "LOCAL_MONOTONIC_WALL",
+  "duration_ms": [
+    125.897659,
+    121.446778,
+    169.684653
+  ],
+  "github_runner_speedup": null,
+  "python": "3.13.5",
+  "reference_comparable_exact_host_and_workload": false,
+  "reference_n5_duration_ms": [
+    137.445,
+    115.451,
+    167.847
+  ],
+  "run_count": 3,
+  "schema": "code-purple.eoss.n6.local_process_clock.v1",
+  "source_sha256": "04a483cbf0822e4c4b100f4d112a15324f79586998449ca1b276e884f081df08",
+  "workload_scope": "EOSS offline projection, existing source-bound evidence ZIP"
+}

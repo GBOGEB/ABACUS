@@ -37,9 +37,9 @@ type PcAxis = 'pc2' | 'pc3';
 
 const GROUP_COLORS: Record<string, string> = {
   'Front matter': '#7030A0',
-  'ALAT 3D model': '#A855F7',
+  'SUPPLIER_A 3D model': '#A855F7',
   'Compliance tables': '#EC4899',
-  'LKT 2D drawings': '#F59E0B',
+  'SUPPLIER_B 2D drawings': '#F59E0B',
 };
 const FALLBACK_COLOR = '#6B7280';
 function groupColor(g?: string | null): string {

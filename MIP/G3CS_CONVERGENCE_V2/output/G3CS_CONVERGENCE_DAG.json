@@ -1,0 +1,299 @@
+{
+  "edge_count": 31,
+  "edges": [
+    {
+      "from": "native",
+      "to": "normalise",
+      "type": "SUPPLIES"
+    },
+    {
+      "from": "normalise",
+      "to": "branch",
+      "type": "CLASSIFIES"
+    },
+    {
+      "from": "normalise",
+      "to": "main",
+      "type": "CLASSIFIES"
+    },
+    {
+      "from": "branch",
+      "to": "quality",
+      "type": "INPUT"
+    },
+    {
+      "from": "branch",
+      "to": "matrix",
+      "type": "INPUT"
+    },
+    {
+      "from": "branch",
+      "to": "coverage",
+      "type": "INPUT"
+    },
+    {
+      "from": "matrix",
+      "to": "roots",
+      "type": "FINGERPRINTS_NOT_CLOSURES"
+    },
+    {
+      "from": "roots",
+      "to": "graph",
+      "type": "CANDIDATE_LINKS"
+    },
+    {
+      "from": "quality",
+      "to": "graph",
+      "type": "MEASUREMENT"
+    },
+    {
+      "from": "graph",
+      "to": "dmaic",
+      "type": "DEPENDENCY"
+    },
+    {
+      "from": "coverage",
+      "to": "dmaic",
+      "type": "REQUIRES_SCOPE"
+    },
+    {
+      "from": "dmaic",
+      "to": "owner",
+      "type": "REPAIR_REVIEW"
+    },
+    {
+      "from": "owner",
+      "to": "reviews",
+      "type": "REQUIRES"
+    },
+    {
+      "from": "main",
+      "to": "gate",
+      "type": "MAIN_STATE"
+    },
+    {
+      "from": "reviews",
+      "to": "gate",
+      "type": "REQUIRES"
+    },
+    {
+      "from": "gate",
+      "to": "admission",
+      "type": "BLOCKS_UNTIL_PROVEN"
+    },
+    {
+      "from": "main",
+      "to": "post",
+      "type": "SOURCE"
+    },
+    {
+      "from": "admission",
+      "to": "post",
+      "type": "REQUIRES"
+    },
+    {
+      "from": "dmaic",
+      "to": "dashboard",
+      "type": "PROJECTS"
+    },
+    {
+      "from": "post",
+      "to": "dashboard",
+      "type": "STATUS_ONLY"
+    },
+    {
+      "from": "dashboard",
+      "to": "codeX",
+      "type": "EVIDENCE_ONLY"
+    },
+    {
+      "from": "dashboard",
+      "to": "qps",
+      "type": "EVIDENCE_ONLY"
+    },
+    {
+      "from": "branch",
+      "to": "pr:2217",
+      "type": "INDEPENDENT_HEAD"
+    },
+    {
+      "from": "pr:2217",
+      "to": "quality",
+      "type": "MEASURES"
+    },
+    {
+      "from": "pr:2217",
+      "to": "main",
+      "type": "MERGED_EVENT_NOT_ADMISSION"
+    },
+    {
+      "from": "branch",
+      "to": "pr:2219",
+      "type": "INDEPENDENT_HEAD"
+    },
+    {
+      "from": "pr:2219",
+      "to": "quality",
+      "type": "MEASURES"
+    },
+    {
+      "from": "pr:2219",
+      "to": "main",
+      "type": "MERGED_EVENT_NOT_ADMISSION"
+    },
+    {
+      "from": "branch",
+      "to": "pr:2220",
+      "type": "INDEPENDENT_HEAD"
+    },
+    {
+      "from": "pr:2220",
+      "to": "quality",
+      "type": "MEASURES"
+    },
+    {
+      "from": "pr:2220",
+      "to": "main",
+      "type": "MERGED_EVENT_NOT_ADMISSION"
+    }
+  ],
+  "node_count": 21,
+  "nodes": [
+    {
+      "id": "native",
+      "label": "GitHub API & artifacts",
+      "state": "OBSERVATION",
+      "type": "SUPPLIER"
+    },
+    {
+      "id": "normalise",
+      "label": "Source/attempt/selection validation",
+      "state": "OBSERVATION",
+      "type": "PROCESS"
+    },
+    {
+      "id": "branch",
+      "label": "Parallel PR-head clock",
+      "state": "OBSERVATION",
+      "type": "PROCESS"
+    },
+    {
+      "id": "main",
+      "label": "Serial main commit clock",
+      "state": "OBSERVATION",
+      "type": "PROCESS"
+    },
+    {
+      "id": "quality",
+      "label": "Full static/DAB",
+      "state": "OBSERVATION",
+      "type": "MEASURE"
+    },
+    {
+      "id": "matrix",
+      "label": "Native test & first-red",
+      "state": "OBSERVATION",
+      "type": "MEASURE"
+    },
+    {
+      "id": "coverage",
+      "label": "Scoped coverage, matching rules",
+      "state": "OBSERVATION",
+      "type": "MEASURE"
+    },
+    {
+      "id": "roots",
+      "label": "Causal-root ledger (UNKNOWN)",
+      "state": "UNKNOWN",
+      "type": "MEASURE"
+    },
+    {
+      "id": "graph",
+      "label": "Typed DAG & dependency reach",
+      "state": "OBSERVATION",
+      "type": "PROCESS"
+    },
+    {
+      "id": "dmaic",
+      "label": "DMAIC · MIP · paired deltas",
+      "state": "OBSERVATION",
+      "type": "PROCESS"
+    },
+    {
+      "id": "owner",
+      "label": "Source owners & native CI",
+      "state": "OBSERVATION",
+      "type": "AUTHORITY"
+    },
+    {
+      "id": "reviews",
+      "label": "Independent eligible human review",
+      "state": "HOLD",
+      "type": "AUTHORITY"
+    },
+    {
+      "id": "gate",
+      "label": "Effective required checks / negative RED canary",
+      "state": "HOLD",
+      "type": "AUTHORITY"
+    },
+    {
+      "id": "admission",
+      "label": "Governed merge admission",
+      "state": "HOLD",
+      "type": "DECISION"
+    },
+    {
+      "id": "post",
+      "label": "Exact merged-main CI & matched coverage",
+      "state": "UNKNOWN",
+      "type": "PROCESS"
+    },
+    {
+      "id": "dashboard",
+      "label": "Read-only scorecard, SIPOC, burndowns",
+      "state": "OBSERVATION",
+      "type": "OUTPUT"
+    },
+    {
+      "id": "codeX",
+      "label": "CODEX Crew #977 — no launch",
+      "state": "HOLD",
+      "type": "CONSUMER"
+    },
+    {
+      "id": "qps",
+      "label": "QPS / gg_MATH / REX — nonpromoting",
+      "state": "HOLD",
+      "type": "CONSUMER"
+    },
+    {
+      "id": "pr:2217",
+      "label": "S1 · PR #2217",
+      "sha": "6e23c38b2ee6504216887210769d119b4e6a709a",
+      "state": "MERGED_UNGOVERNED",
+      "type": "PR"
+    },
+    {
+      "id": "pr:2219",
+      "label": "S2 · PR #2219",
+      "sha": "38277a30cd5638a82f5dd5447d511d253d5846c0",
+      "state": "MERGED_UNGOVERNED",
+      "type": "PR"
+    },
+    {
+      "id": "pr:2220",
+      "label": "S3 · PR #2220",
+      "sha": "0f98f4f091b433c0984c361826ca7c2e9b3630c9",
+      "state": "MERGED_UNGOVERNED",
+      "type": "PR"
+    }
+  ],
+  "safety": {
+    "admission": "HOLD",
+    "authority_transfer": false,
+    "causal_edges_are_not_root_closure": true,
+    "merges_not_admission": true
+  },
+  "schema": "codepurple.g3cs.typed-dag.v2"
+}

@@ -1,0 +1,127 @@
+{
+  "schema": "abacus.everred.mass-signal.snapshot.v1",
+  "observed_date": "2026-10-16",
+  "repository": "GBOGEB/ABACUS",
+  "source_sha": "bdbb8c21d6de2ef270f7fe0eedbeadf2fa200036",
+  "historical_not_current_head": true,
+  "scope": "PR_2047_NATIVE_SCANNER_PULSE_ONLY",
+  "sources": [
+    {
+      "scanner": "flake8",
+      "mode": "ORIGINAL_GITHUB_ARTIFACT",
+      "run_id": 38870931116,
+      "attempt": 1,
+      "job_id": 116874572746,
+      "artifact_id": 12032899404,
+      "artifact_zip_sha256": "2e9c104357075fbf55e5f8cf6f1f519f6303b23bc72996536d6dedb6ef375609",
+      "total_findings": 3595,
+      "rule_families": 34,
+      "proposal_count": 1065,
+      "dominant_rules": {
+        "E501": 1037,
+        "E402": 650,
+        "E231": 410,
+        "F401": 339,
+        "F541": 270
+      },
+      "g1": {
+        "threshold_exclusive": 3000,
+        "static_budget_pass": false,
+        "companion_proof": "REQUIRED"
+      },
+      "workflow_conclusion": "success",
+      "actual_gate": "READ_ONLY_PROPOSAL_CENSUS",
+      "evidence_grade": "ORIGINAL_ARTIFACT_BYTES_INSPECTED"
+    },
+    {
+      "scanner": "semgrep",
+      "mode": "NATIVE_RUN_LOG",
+      "run_id": 38870931223,
+      "attempt": 1,
+      "job_id": 116874573857,
+      "total_findings": 1008,
+      "targets_scanned": 2860,
+      "rules_run": 307,
+      "scanner_blocking_labels": 1008,
+      "workflow_continue_on_error": true,
+      "workflow_conclusion": "success",
+      "sarif_original_bytes_verified": false,
+      "actual_gate": "ADVISORY_SCAN_UPLOAD",
+      "evidence_grade": "NATIVE_JOB_LOG"
+    },
+    {
+      "scanner": "ruff",
+      "mode": "NATIVE_RUN_LOG_ANNOTATIONS",
+      "run_id": 38870931044,
+      "attempt": 1,
+      "job_id": 116874572447,
+      "total_findings": 185,
+      "files_with_annotations": 57,
+      "rule_counts": {
+        "F541": 99,
+        "S607": 30,
+        "F401": 19,
+        "B007": 10,
+        "S314": 10,
+        "S110": 9,
+        "S324": 3,
+        "S112": 2,
+        "S108": 2,
+        "B905": 1
+      },
+      "workflow_conclusion": "success",
+      "actual_gate": "ADVISORY_ANNOTATIONS",
+      "evidence_grade": "NATIVE_JOB_LOG"
+    },
+    {
+      "scanner": "osv",
+      "mode": "NATIVE_RUN_LOG",
+      "run_id": 38870932005,
+      "attempt": 1,
+      "job_id": 116874575746,
+      "packages_discovered": 1418,
+      "packages_local_or_unscannable": 116,
+      "largest_manifest": "qps_slide_reviewer/yarn.lock",
+      "largest_manifest_packages": 1225,
+      "workflow_conclusion": "success",
+      "observed_reporter": "No issues found",
+      "new_vulnerability_delta": 0,
+      "actual_gate": "FAIL_ON_NEW_EXPOSURE",
+      "evidence_grade": "NATIVE_JOB_LOG"
+    }
+  ],
+  "unmatched_handover_only": [
+    {
+      "domain": "bandit",
+      "observed_occurrences": 6607,
+      "grade": "USER_HANDOVER_ONLY_NOT_MATCHED_TO_THIS_SHA"
+    },
+    {
+      "domain": "repo_global_black",
+      "red_files": 741,
+      "checked_files": 889,
+      "grade": "USER_HANDOVER_ONLY_NOT_MATCHED_TO_THIS_SHA"
+    },
+    {
+      "domain": "everred_black",
+      "red_files": 22,
+      "checked_files": 41,
+      "grade": "USER_HANDOVER_ONLY_NOT_MATCHED_TO_THIS_SHA"
+    },
+    {
+      "domain": "historical_flake8",
+      "observed_occurrences": 2983,
+      "grade": "USER_HANDOVER_ONLY_NOT_COMPARABLE_TO_NATIVE_3595"
+    }
+  ],
+  "authority": {
+    "confirmed_causal_roots": null,
+    "verified_root_closures": 0,
+    "merge_admission": "HOLD",
+    "qps_acceptance": "DEFER",
+    "native_four_hop": "UNKNOWN",
+    "security_waiver": false,
+    "authority_transfer": false
+  },
+  "caveat": "No SUM/DIFFERENCE across scanners is a root count; scanner success and label 'blocking' are not proof of effective branch admission. The future head must recensus; historical source must never be rewritten."
+}

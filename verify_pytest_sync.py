@@ -1,7 +1,14 @@
-"""Pre-commit hook shim — physics branch (w001).
+"""Legacy CI entrypoint, delegating to fail-closed canonical marker validation."""
+from __future__ import annotations
 
-The DMAIC pytest-sync check does not apply to this branch.
-This stub satisfies the hook so commits are not blocked.
-"""
 import sys
-sys.exit(0)
+
+from sync_pytest_config import main as sync_main
+
+
+def main():
+    return sync_main(["--dry-run"])
+
+
+if __name__ == "__main__":
+    sys.exit(main())

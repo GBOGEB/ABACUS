@@ -40,3 +40,8 @@ testpilot-gate:
 	$(PYTHON) scripts/testpilot_preflight.py --mode gate
 
 .PHONY: docs-zip test lint smoke patch-bundle testpilot testpilot-fix testpilot-full testpilot-gate
+
+# CODE PURPLE W48: no network, remote dispatch, or automatic mutation.
+.PHONY: cbd-recurse-local
+cbd-recurse-local:
+	bash scripts/run_cbd_recurse_w48_local.sh

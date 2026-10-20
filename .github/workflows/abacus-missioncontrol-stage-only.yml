@@ -1,0 +1,36 @@
+name: ABACUS MissionControl Stage-Only Identity Receipt
+on:
+  workflow_dispatch:
+    inputs:
+      expected_head_sha:
+        description: Exact 40-character main SHA; fail closed if stale
+        type: string
+        required: true
+permissions:
+  contents: read
+concurrency:
+  group: abacus-missioncontrol-stage-only-${{ github.repository }}
+  cancel-in-progress: false
+jobs:
+  stage-only:
+    if: github.repository == 'GBOGEB/ABACUS' && github.actor == 'GBOGEB'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-python@v7
+        with:
+          python-version: '3.11'
+      - name: Assert exact main GitHub-native context and emit stage receipt
+        env:
+          EXPECTED_SHA: ${{ inputs.expected_head_sha }}
+        run: |
+          python scripts/abacus_missioncontrol_stage_only.py --expected-sha "$EXPECTED_SHA" --output artifacts/missioncontrol/stage-only-receipt.json
+      - name: Upload stage-only identity receipt
+        if: success()
+        uses: actions/upload-artifact@v7
+        with:
+          name: abacus-missioncontrol-stage-only-identity
+          path: artifacts/missioncontrol/stage-only-receipt.json
+          if-no-files-found: error
+          retention-days: 14

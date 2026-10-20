@@ -1,0 +1,116 @@
+{
+  "schema": "codepurple.w46.b0_gap_priority.v1",
+  "snapshot_date_utc": "2026-10-18",
+  "exact_main_sha": "2687f2bcb0705027eefe04df789365d6c9970678",
+  "native_run": {
+    "id": 39170902976,
+    "attempt": 1,
+    "status": "completed",
+    "conclusion": "success",
+    "job_pass": 13,
+    "job_total": 13
+  },
+  "artifact": {
+    "id": 12152671934,
+    "role": "b0-report-only-producer",
+    "sha256": "54d79a3ff5e25b6698a02e792b3a299cf35ce7fc24bfb4a1189486fffe805301",
+    "zip_digest_verified_from_bytes": true,
+    "source_sha_verified": true
+  },
+  "full_b0": {
+    "measured_file_count": 223,
+    "zero_executed_file_count": 114,
+    "covered_statements": 7779,
+    "eligible_statements": 22456,
+    "covered_branches": 1651,
+    "eligible_branches": 5558,
+    "combined_covered": 9430,
+    "combined_eligible": 28014,
+    "combined_percent": 33.661741,
+    "uncovered_opportunities": 18584
+  },
+  "source_bound_candidates": [
+    {
+      "path": "DMAIC_V3/debug_pipeline.py",
+      "family": "DMAIC_V3",
+      "missing": 469,
+      "covered": 0,
+      "eligible": 469,
+      "next_test": "sandbox diagnostic faults, no real auto_fix"
+    },
+    {
+      "path": "cicd_github_orchestrator.py",
+      "family": "ROOT_EXECUTION",
+      "missing": 406,
+      "covered": 0,
+      "eligible": 406,
+      "next_test": "dry-run dispatch/replay guard, no GitHub mutation"
+    },
+    {
+      "path": "models/qps_line_s/closure_contract.py",
+      "family": "QPS_LINE_S",
+      "missing": 342,
+      "covered": 0,
+      "eligible": 342,
+      "next_test": "domain owner receipt validation, no false QPS acceptance"
+    },
+    {
+      "path": "mission_control_lite/coverage_pulse.py",
+      "family": "MISSION_CONTROL_LITE",
+      "missing": 276,
+      "covered": 0,
+      "eligible": 276,
+      "next_test": "exact-SHA test family timestamps and coverage diff counters"
+    },
+    {
+      "path": "core/execution_backbone/backbone.py",
+      "family": "CORE",
+      "missing": 142,
+      "covered": 0,
+      "eligible": 142,
+      "next_test": "event replay, rollback, duplicate, negative oracles"
+    },
+    {
+      "path": "rich_padding/markdown_reader_engine.py",
+      "family": "RICH_PADDING",
+      "missing": 133,
+      "covered": 0,
+      "eligible": 133,
+      "next_test": "malformed markdown parser boundaries and binary fragments"
+    }
+  ],
+  "disjoint_lane_count": 6,
+  "selected_missing_opportunities": 1768,
+  "selected_share_of_total_missing_percent": 9.51356,
+  "maximum_theoretical_combined_gain_percentage_points": 6.31113,
+  "predicted_gain": null,
+  "source_overlaps": 0,
+  "native_cells_dispatched": 0,
+  "source_census_adversarial_tests": {
+    "pass": 16,
+    "total": 16,
+    "evidence_class": "LOCAL_SYNTHETIC_ONLY"
+  },
+  "archive_lane": {
+    "new_adversarial_cases": 27,
+    "before_combined": "120/127",
+    "after_combined": "127/127",
+    "exact_source_blob": "3c1249dc54e74ab0cb0f4ea3ebebe216ad2c650a",
+    "local_stop": "SATURATED_100_PERCENT_FIXED_SOURCE",
+    "DMAIC_SIX_SIGMA": false
+  },
+  "gates": {
+    "B0_job_success": "PASS_13_OF_13",
+    "current_main_denominator": "MEASURED_AND_ZIP_SHA256_VERIFIED",
+    "current_main_coverage_target": "OPEN",
+    "required_status_checks": 0,
+    "required_independent_approvals": 0,
+    "always_bypass_actors": 6,
+    "rejected_RED_canary_verified": false,
+    "eligible_reviewer_verified": false,
+    "merge_admission": "HOLD"
+  },
+  "role": "ADVISORY_READ_ONLY_DOV_SCOUT_NOT_QPS_AUTHORITY",
+  "formal_root_closure": null,
+  "authenticated_federation_return": null
+}

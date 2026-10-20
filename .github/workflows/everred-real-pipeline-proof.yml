@@ -1,0 +1,124 @@
+name: EVERRED Real Pipeline Output Proof
+on:
+  pull_request:
+    paths:
+      - 'tools/everred_v3/**'
+      - '.github/workflows/everred-real-pipeline-proof.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: everred-real-pipeline-proof-${{ github.ref }}
+  cancel-in-progress: false
+jobs:
+  real-pipeline:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+      - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97
+        with:
+          python-version: '3.11'
+      - name: Install pinned pipeline test dependencies
+        run: python -m pip install 'PyYAML==6.0.3' 'defusedxml==0.7.1'
+      - name: Run real EVERRED producer pipeline
+        env:
+          EXPECTED_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$EXPECTED_SHA"
+          cd tools/everred_v3
+          mkdir -p qa/pipeline-proof
+          python src/everred.py verify 2>&1 \
+            | tee qa/pipeline-proof/01-ledger.log
+          python -m unittest discover -s tests -p 'test_*.py' -v \
+            2>&1 | tee qa/pipeline-proof/02-tests.log
+          grep -E '^Ran [1-9][0-9]* tests? in ' qa/pipeline-proof/02-tests.log
+          python src/everred.py snapshot 2>&1 \
+            | tee qa/pipeline-proof/03-snapshot.log
+          python scripts/build_joined_census.py 2>&1 \
+            | tee qa/pipeline-proof/04-census.log
+          python scripts/build_dashboard.py 2>&1 \
+            | tee qa/pipeline-proof/05-dashboard.log
+      - name: Validate durable producer outputs and manifest
+        if: success()
+        env:
+          EXPECTED_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+          GH_RUN_ID: ${{ github.run_id }}
+          GH_ATTEMPT: ${{ github.run_attempt }}
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          import hashlib
+          import json
+          import os
+          from pathlib import Path
+          base=Path("tools/everred_v3")
+          receipt=base/"qa/pipeline-proof"
+          required={
+            "snapshot":base/"data/snapshot.json",
+            "joined_census":base/"data/joined_native.json",
+            "dashboard":base/"dashboard/index.html",
+          }
+          results={}
+          for name,path in required.items():
+            raw=path.read_bytes()
+            if not raw.strip():
+              raise ValueError(f"empty output {path}")
+            if name != "dashboard":
+              data=json.loads(raw)
+              if not isinstance(data,dict):
+                raise ValueError(f"unexpected JSON shape {path}")
+              if (name == "snapshot" and
+                  data.get("schema") != "abacus.everred.snapshot.v3"):
+                raise ValueError("wrong snapshot schema")
+            elif b"<html" not in raw.lower():
+              raise ValueError("HTML dashboard lacks html element")
+            results[name] = {
+              "path": str(path), "bytes": len(raw),
+              "sha256": hashlib.sha256(raw).hexdigest(),
+            }
+          logs={}
+          for file in sorted(receipt.glob("0*.log")):
+            raw=file.read_bytes()
+            if not raw.strip():
+              raise ValueError(f"empty command log {file}")
+            logs[file.name] = {
+              "bytes": len(raw),
+              "sha256": hashlib.sha256(raw).hexdigest(),
+            }
+          if len(logs)!=5:
+            raise ValueError(f"expected 5 command logs; observed {len(logs)}")
+          report = {
+            "schema": "abacus.everred.pipeline-proof.v1",
+            "repository": "GBOGEB/ABACUS",
+            "source_sha": os.environ["EXPECTED_SHA"],
+            "run_id": os.environ["GH_RUN_ID"],
+            "run_attempt": os.environ["GH_ATTEMPT"],
+            "result": "PRODUCER_OUTPUTS_VERIFIED",
+            "outputs": results, "command_logs": logs,
+            "admission_authorized": False,
+                  "security_waiver":False,"authority_transfer":False,
+            "coverage_main": None, "diff_coverage": None,
+            "bd_roots_open": None, "bd_roots_closed": None,
+          }
+          (receipt/"manifest.json").write_text(
+            json.dumps(report, sort_keys=True, indent=2) + "\n"
+          )
+          print(json.dumps(report,indent=2))
+          PY
+      - name: Publish actual pipeline outputs and proof
+        if: always()
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9
+        with:
+          name: everred-real-pipeline-proof-${{ github.run_id }}
+          retention-days: 30
+          if-no-files-found: error
+          path: |
+            tools/everred_v3/qa/pipeline-proof/
+            tools/everred_v3/data/snapshot.json
+            tools/everred_v3/data/joined_native.json
+            tools/everred_v3/dashboard/index.html
