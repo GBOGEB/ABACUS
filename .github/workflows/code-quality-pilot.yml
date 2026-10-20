@@ -228,6 +228,13 @@ jobs:
             cat "$REPORTS/timings.csv" 2>/dev/null
             echo '```'
             echo
+            for f in "$REPORTS"/*.stderr; do
+              [ -s "$f" ] || continue
+              echo "stderr tail — $(basename "$f" .stderr):"
+              echo '```'
+              tail -n 6 "$f"
+              echo '```'
+            done
             echo "Opengrep rule self-test:"
             echo '```'
             tail -n 8 "$REPORTS/opengrep-selftest.txt" 2>/dev/null

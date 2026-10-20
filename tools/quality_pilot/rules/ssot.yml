@@ -63,7 +63,7 @@ rules:
           - pattern: open($P, $MODE, ...)
           - metavariable-regex:
               metavariable: $MODE
-              regex: ^['"][wax]
+              regex: ^['"]?[wax]
           - metavariable-regex:
               metavariable: $P
               regex: (?i)(manifest\.ya?ml|ssot|patch_counter|session_state)

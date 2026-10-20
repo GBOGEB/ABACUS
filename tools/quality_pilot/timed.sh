@@ -7,10 +7,11 @@ set -uo pipefail
 tool="$1"; out="$2"; shift 2
 mkdir -p "${REPORTS:?REPORTS not set}"
 start=$(date +%s)
+err="$REPORTS/${tool}.stderr"
 if [ "$out" = "-" ]; then
-  "$@"
+  "$@" 2> >(tee "$err" >&2)
 else
-  "$@" > "$out"
+  "$@" > "$out" 2> >(tee "$err" >&2)
 fi
 rc=$?
 secs=$(( $(date +%s) - start ))
