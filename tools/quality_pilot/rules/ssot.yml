@@ -58,20 +58,11 @@ rules:
     paths:
       exclude:
         - "**/tests/**"
+    # String-regex literals ("=~/.../") instead of metavariable-regex: run #2/#3
+    # self-tests showed the metavariable form never bound under Opengrep 1.31.
     pattern-either:
-      - patterns:
-          - pattern: open($P, $MODE, ...)
-          - metavariable-regex:
-              metavariable: $MODE
-              regex: ^['"]?[wax]
-          - metavariable-regex:
-              metavariable: $P
-              regex: (?i)(manifest\.ya?ml|ssot|patch_counter|session_state)
-      - patterns:
-          - pattern: pathlib.Path($P).write_text(...)
-          - metavariable-regex:
-              metavariable: $P
-              regex: (?i)(manifest\.ya?ml|ssot|patch_counter|session_state)
+      - pattern: open("=~/(?i)(manifest.ya?ml|ssot|patch_counter|session_state)/", "=~/^[wax]/", ...)
+      - pattern: pathlib.Path("=~/(?i)(manifest.ya?ml|ssot|patch_counter|session_state)/").write_text(...)
 
   - id: float-exact-equality
     message: >-

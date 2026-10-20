@@ -96,3 +96,12 @@ def test_score_gates_security_hit_immediately(tmp_path: Path, capsys: pytest.Cap
     ps.main(["score", str(p)])
     out = capsys.readouterr().out
     assert "GATE now" in out and "too few samples" in out
+
+
+def test_pip_audit_per_file_reports_are_deduplicated(tmp_path: Path) -> None:
+    vuln = {"dependencies": [{"name": "jinja2", "version": "3.1.2",
+                              "vulns": [{"id": "GHSA-abc", "fix_versions": ["3.1.6"]}]}]}
+    for name in ("pip-audit-requirements.json", "pip-audit-requirements-dev.json"):
+        (tmp_path / name).write_text(json.dumps(vuln), encoding="utf-8")
+    found = ps.parse_pip_audit(tmp_path)
+    assert len(found) == 1 and found[0]["rule"] == "GHSA-abc"

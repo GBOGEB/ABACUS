@@ -119,12 +119,17 @@ jobs:
         # rex-allow: ADVISORY_EXPLICIT - report-only pilot; CVE baseline, Dependabot owns fixes.
         continue-on-error: true
         run: |
-          args=()
-          for r in requirements.txt requirements-dev.txt requirements-test.txt; do
-            if [ -f "$r" ]; then args+=(-r "$r"); fi
-          done
+          # Audit each requirements file on its own: run #3 showed the three files
+          # cannot be co-resolved (pytest-asyncio pins conflict), which zeroed the baseline.
           export TOOL_VERSION="$(pip-audit --version)"
-          "$TIMED" pip-audit - pip-audit "${args[@]}" -f json -o "$REPORTS/pip-audit.json" --progress-spinner off
+          rc=0
+          for r in requirements.txt requirements-dev.txt requirements-test.txt; do
+            if [ -f "$r" ]; then
+              n="${r%.txt}"
+              "$TIMED" "pip-audit-$n" - pip-audit -r "$r" -f json -o "$REPORTS/pip-audit-$n.json" --progress-spinner off || rc=$?
+            fi
+          done
+          exit "$rc"
 
       # --- Tier 1 -------------------------------------------------------------
       - name: Types on core (mypy)

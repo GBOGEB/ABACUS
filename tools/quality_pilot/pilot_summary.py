@@ -104,16 +104,25 @@ def parse_mypy_focus(d: Path):
 
 
 def parse_pip_audit(d: Path):
-    data = _load_json(d / "pip-audit.json")
-    if data is None:
-        return []
-    deps = data.get("dependencies", []) if isinstance(data, dict) else data
-    out = []
-    for dep in deps:
-        for v in dep.get("vulns", []) or []:
-            fix = ", ".join(v.get("fix_versions") or []) or "no fix yet"
-            out.append(_f("pip-audit", v.get("id"), f"{dep.get('name')}=={dep.get('version')}",
-                          0, f"fix: {fix}", "vuln"))
+    """One JSON per requirements file (pip-audit-<file>.json); legacy pip-audit.json too.
+
+    The same pinned package can appear in several files; count each (package, version, vuln) once.
+    """
+    out, seen = [], set()
+    for p in sorted(d.glob("pip-audit*.json")):
+        data = _load_json(p)
+        if data is None:
+            continue
+        deps = data.get("dependencies", []) if isinstance(data, dict) else data
+        for dep in deps:
+            for v in dep.get("vulns", []) or []:
+                key = (dep.get("name"), dep.get("version"), v.get("id"))
+                if key in seen:
+                    continue
+                seen.add(key)
+                fix = ", ".join(v.get("fix_versions") or []) or "no fix yet"
+                out.append(_f("pip-audit", v.get("id"), f"{dep.get('name')}=={dep.get('version')}",
+                              0, f"fix: {fix} (from {p.stem})", "vuln"))
     return out
 
 
@@ -292,7 +301,8 @@ def summarize(args):
     lines = [f"# Quality pilot — run {args.run} ({args.phase})", "",
              f"**Total findings:** {len(findings)}", "",
              "| Tool | Findings | Top rules |", "|---|---:|---|"]
-    ran_here = [t for t, fn in REPORT_FILES.items() if (reports / fn).exists()]
+    ran_here = [t for t, fn in REPORT_FILES.items()
+                if (reports / fn).exists() or (t == "pip-audit" and any(reports.glob("pip-audit*.json")))]
     existing = sorted(t for t in per_tool if t not in REPORT_FILES)
     for tool in ran_here + existing:
         rules = Counter(f["rule"] for f in findings if f["tool"] == tool).most_common(4)
