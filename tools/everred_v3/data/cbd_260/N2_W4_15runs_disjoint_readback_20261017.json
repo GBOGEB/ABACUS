@@ -1,0 +1,816 @@
+{
+  "schema": "abacus.everred.cbd.n2_disjoint_wave_native_jobs.v1",
+  "repository": "GBOGEB/ABACUS",
+  "canonical_pr": 2077,
+  "immutable_n0": {
+    "prs": 75,
+    "failed_associations": 260,
+    "unique_runs": 253,
+    "workflow_families": 19,
+    "source_head": "133e5a082f74dd99a65bfda5308d7071523904d1"
+  },
+  "wave": "W4",
+  "writer_lane": "N2-A-READ_ONLY_SCOUT",
+  "source_owner": "#2077 EVERRED",
+  "readback_scope": "N0_SUBSET_LATEST_ATTEMPT_FIRST_PAGE_JOBS",
+  "full_run_attempt_census": false,
+  "fully_paginated": false,
+  "log_level_first_red": false,
+  "verified_run_head": false,
+  "roots_accepted": 0,
+  "authority": {
+    "security_waiver": false,
+    "authority_transfer": false,
+    "dispatch": "STAGED_NOT_LAUNCHED",
+    "merge_admission": "HOLD"
+  },
+  "metrics": {
+    "requested_distinct_runs": 15,
+    "bound_readbacks": 15,
+    "withheld": 0,
+    "all_job_records": 74,
+    "failed_job_records": 26,
+    "failed_jobs_with_step": 26,
+    "matched_main_coverage": null,
+    "matched_diff_coverage": null,
+    "accepted_causal_roots": null
+  },
+  "observations": [
+    {
+      "pr": 2021,
+      "n0_source_sha": "72419f92c3d0f141d530b481bdc640505d3e9e0b",
+      "run_id": 38749835381,
+      "workflow": "MIP QPS External Probe",
+      "state": "LATEST_ATTEMPT_FIRST_PAGE_JOB_METADATA",
+      "latest_attempt": null,
+      "run_sha_verified": false,
+      "jobs": [
+        {
+          "job_id": 116473815601,
+          "name": "qps_external_probe",
+          "status": "completed",
+          "conclusion": "failure",
+          "first_failed_step": {
+            "number": 3,
+            "name": "Checkout exact cryoplant child"
+          }
+        }
+      ],
+      "causal_root": null
+    },
+    {
+      "pr": 1988,
+      "n0_source_sha": "b11072882b99e8322afaf731d2aa49ebba9e77f2",
+      "run_id": 38873488232,
+      "workflow": "MIP2 Method Qualification",
+      "state": "LATEST_ATTEMPT_FIRST_PAGE_JOB_METADATA",
+      "latest_attempt": null,
+      "run_sha_verified": false,
+      "jobs": [
+        {
+          "job_id": 116882898879,
+          "name": "qualify",
+          "status": "completed",
+          "conclusion": "failure",
+          "first_failed_step": {
+            "number": 9,
+            "name": "Execute seeded qualification corpus with branch coverage"
+          }
+        }
+      ],
+      "causal_root": null
+    },
+    {
+      "pr": 1988,
+      "n0_source_sha": "b11072882b99e8322afaf731d2aa49ebba9e77f2",
+      "run_id": 38873488132,
+      "workflow": "TestPilot Pre-GitHub Parity",
+      "state": "LATEST_ATTEMPT_FIRST_PAGE_JOB_METADATA",
+      "latest_attempt": null,
+      "run_sha_verified": false,
+      "jobs": [
+        {
+          "job_id": 116882898915,
+          "name": "parity",
+          "status": "completed",
+          "conclusion": "failure",
+          "first_failed_step": {
+            "number": 5,
+            "name": "Run bounded TestPilot fast preflight"
+          }
+        }
+      ],
+      "causal_root": null
+    },
+    {
+      "pr": 2021,
+      "n0_source_sha": "72419f92c3d0f141d530b481bdc640505d3e9e0b",
+      "run_id": 38749835653,
+      "workflow": "W105 QPS B1-B2 MIP Probe",
+      "state": "LATEST_ATTEMPT_FIRST_PAGE_JOB_METADATA",
+      "latest_attempt": null,
+      "run_sha_verified": false,
+      "jobs": [
+        {
+          "job_id": 116473858696,
+          "name": "qps-probe",
+          "status": "completed",
+          "conclusion": "failure",
+          "first_failed_step": {
+            "number": 2,
+            "name": "Run actions/checkout@v7.0.1"
+          }
+        }
+      ],
+      "causal_root": null
+    },
+    {
+      "pr": 2072,
+      "n0_source_sha": "680f5ae0c7278e0dae548a505259800887c27138",
+      "run_id": 38921507617,
+      "workflow": "CI/CD Test Suite",
+      "state": "LATEST_ATTEMPT_FIRST_PAGE_JOB_METADATA",
+      "latest_attempt": null,
+      "run_sha_verified": false,
+      "jobs": [
+        {
+          "job_id": 117122265458,
+          "name": "Security Scanning",
+          "status": "completed",
+          "conclusion": "failure",
+          "first_failed_step": {
+            "number": 11,
+            "name": "Enforce security red roots"
+          }
+        },
+        {
+          "job_id": 117122268626,
+          "name": "Unit Tests (Python 3.12, ubuntu-latest)",
+          "status": "completed",
+          "conclusion": "success",
+          "first_failed_step": null
+        },
+        {
+          "job_id": 117122268682,
+          "name": "Code Quality Checks",
+          "status": "completed",
+          "conclusion": "success",
+          "first_failed_step": null
+        },
+        {
+          "job_id": 117122268809,
+          "name": "Unit Tests (Python 3.10, macos-latest)",
+          "status": "completed",
+          "conclusion": "success",
+          "first_failed_step": null
+        },
+        {
+          "job_id": 117122269190,
+          "name": "Unit Tests (Python 3.12, macos-latest)",
+          "status": "completed",
+          "conclusion": "success",
+          "first_failed_step": null
+        },
+        {
+          "job_id": 117122269843,
+          "name": "Unit Tests (Python 3.11, macos-latest)",
+          "status": "completed",
+          "conclusion": "success",
+          "first_failed_step": null
+        },
+        {
+          "job_id": 117122270057,
+          "name": "Docker Integration Tests",
+          "status": "completed",
+          "conclusion": "success",
+          "first_failed_step": null
+        },
+        {
+          "job_id": 117122270249,
+          "name": "Code Coverage",
+          "status": "completed",
+          "conclusion": "success",
+          "first_failed_step": null
+        },
+        {
+          "job_id": 117122271162,
+          "name": "Performance & Benchmark Tests",
+          "status": "completed",
+          "conclusion": "success",
+          "first_failed_step": null
+        },
+        {
+          "job_id": 117122271163,
+          "name": "Test Results Notification",
+          "status": "completed",
+          "conclusion": "success",
+          "first_failed_step": null
+        },
+        {
+          "job_id": 117122271190,
+          "name": "Comprehensive Test Suite",
+          "status": "completed",
+          "conclusion": "success",
+          "first_failed_step": null
+        },
+        {
+          "job_id": 117122271507,
+          "name": "Deploy Test Dashboard",
+          "status": "completed",
+          "conclusion": "skipped",
+          "first_failed_step": null
+        },
+        {
+          "job_id": 117122312621,
+          "name": "Unit Tests (Python 3.11, windows-latest)",
+          "status": "completed",
+          "conclusion": "success",
+          "first_failed_step": null
+        },
+        {
+          "job_id": 117122313149,
+          "name": "Unit Tests (Python 3.10, ubuntu-latest)",
+          "status": "completed",
+          "conclusion": "success",
+          "first_failed_step": null
+        },
+        {
+          "job_id": 117122324638,
+          "name": "Unit Tests (Python 3.11, ubuntu-latest)",
+          "status": "completed",
+          "conclusion": "success",
+          "first_failed_step": null
+        },
+        {
+          "job_id": 117122330417,
+          "name": "Unit Tests (Python 3.12, windows-latest)",
+          "status": "completed",
+          "conclusion": "success",
+          "first_failed_step": null
+        },
+        {
+          "job_id": 117122331255,
+          "name": "Integration Tests",
+          "status": "completed",
+          "conclusion": "success",
+          "first_failed_step": null
+        },
+        {
+          "job_id": 117122337282,
+          "name": "Unit Tests (Python 3.10, windows-latest)",
+          "status": "completed",
+          "conclusion": "success",
+          "first_failed_step": null
+        },
+        {
+          "job_id": 117122561802,
+          "name": "Full Red Proof Summary",
+          "status": "completed",
+          "conclusion": "failure",
+          "first_failed_step": {
+            "number": 2,
+            "name": "Emit full-red summary"
+          }
+        }
+      ],
+      "causal_root": null
+    },
+    {
+      "pr": 2072,
+      "n0_source_sha": "680f5ae0c7278e0dae548a505259800887c27138",
+      "run_id": 38921507557,
+      "workflow": "ABACUS v032 - CI/CD Pipeline",
+      "state": "LATEST_ATTEMPT_FIRST_PAGE_JOB_METADATA",
+      "latest_attempt": null,
+      "run_sha_verified": false,
+      "jobs": [
+        {
+          "job_id": 117042310520,
+          "name": "Lint & Validate Code",
+          "status": "completed",
+          "conclusion": "success",
+          "first_failed_step": null
+        },
+        {
+          "job_id": 117042499235,
+          "name": "Test DMAIC Phases",
+          "status": "completed",
+          "conclusion": "failure",
+          "first_failed_step": {
+            "number": 4,
+            "name": "Install canonical dependencies"
+          }
+        },
+        {
+          "job_id": 117042644568,
+          "name": "Execute Full DMAIC Pipeline",
+          "status": "completed",
+          "conclusion": "skipped",
+          "first_failed_step": null
+        },
+        {
+          "job_id": 117042645414,
+          "name": "Update Canonical Documentation",
+          "status": "completed",
+          "conclusion": "skipped",
+          "first_failed_step": null
+        },
+        {
+          "job_id": 117042646064,
+          "name": "Quality Gate Check",
+          "status": "completed",
+          "conclusion": "skipped",
+          "first_failed_step": null
+        },
+        {
+          "job_id": 117042646942,
+          "name": "Deploy Artifacts",
+          "status": "completed",
+          "conclusion": "skipped",
+          "first_failed_step": null
+        }
+      ],
+      "causal_root": null
+    },
+    {
+      "pr": 2070,
+      "n0_source_sha": "9071de0f865ee4ce401aacfff0d214a37494d9e9",
+      "run_id": 38919195368,
+      "workflow": "CI Workflow Governance",
+      "state": "LATEST_ATTEMPT_FIRST_PAGE_JOB_METADATA",
+      "latest_attempt": null,
+      "run_sha_verified": false,
+      "jobs": [
+        {
+          "job_id": 117034411084,
+          "name": "policy-and-inventory",
+          "status": "completed",
+          "conclusion": "failure",
+          "first_failed_step": {
+            "number": 9,
+            "name": "Fail closed on governance red"
+          }
+        }
+      ],
+      "causal_root": null
+    },
+    {
+      "pr": 2068,
+      "n0_source_sha": "2139f8dd84a6989e10232705d9d0795ee8c6918c",
+      "run_id": 38907755180,
+      "workflow": "CI - ABACUS Matrix",
+      "state": "LATEST_ATTEMPT_FIRST_PAGE_JOB_METADATA",
+      "latest_attempt": null,
+      "run_sha_verified": false,
+      "jobs": [
+        {
+          "job_id": 116996238099,
+          "name": "Benchmark baseline - Python 3.12 - no coverage",
+          "status": "completed",
+          "conclusion": "success",
+          "first_failed_step": null
+        },
+        {
+          "job_id": 116996238545,
+          "name": "ABACUS CI proof planner",
+          "status": "completed",
+          "conclusion": "success",
+          "first_failed_step": null
+        },
+        {
+          "job_id": 116996240727,
+          "name": "Runner migration canary - ubuntu-latest - Python 3.12",
+          "status": "completed",
+          "conclusion": "skipped",
+          "first_failed_step": null
+        },
+        {
+          "job_id": 116997317855,
+          "name": "ABACUS - ubuntu-24.04 - Python 3.12",
+          "status": "completed",
+          "conclusion": "success",
+          "first_failed_step": null
+        },
+        {
+          "job_id": 116997318096,
+          "name": "ABACUS - ubuntu-24.04 - Python 3.10",
+          "status": "completed",
+          "conclusion": "failure",
+          "first_failed_step": {
+            "number": 6,
+            "name": "Install tooling"
+          }
+        },
+        {
+          "job_id": 117000749910,
+          "name": "Python proof completeness",
+          "status": "completed",
+          "conclusion": "failure",
+          "first_failed_step": {
+            "number": 5,
+            "name": "Audit executed and classified-skipped proof roles"
+          }
+        },
+        {
+          "job_id": 117001141670,
+          "name": "ABACUS compatibility gate",
+          "status": "completed",
+          "conclusion": "failure",
+          "first_failed_step": {
+            "number": 2,
+            "name": "Enforce selected proof set"
+          }
+        }
+      ],
+      "causal_root": null
+    },
+    {
+      "pr": 2038,
+      "n0_source_sha": "651dcf39a563dd5a94e8718a44be32bd7a790d03",
+      "run_id": 38823908839,
+      "workflow": "a10-guard",
+      "state": "LATEST_ATTEMPT_FIRST_PAGE_JOB_METADATA",
+      "latest_attempt": null,
+      "run_sha_verified": false,
+      "jobs": [
+        {
+          "job_id": 116726750689,
+          "name": "a10-guard",
+          "status": "completed",
+          "conclusion": "failure",
+          "first_failed_step": {
+            "number": 4,
+            "name": "Tender guard (new or changed files only)"
+          }
+        }
+      ],
+      "causal_root": null
+    },
+    {
+      "pr": 2065,
+      "n0_source_sha": "e21809801e1d30e7d5f440b1b944bbe0c9a70abe",
+      "run_id": 38902782685,
+      "workflow": "Validate Docs (Markdown/YAML/JSON)",
+      "state": "LATEST_ATTEMPT_FIRST_PAGE_JOB_METADATA",
+      "latest_attempt": null,
+      "run_sha_verified": false,
+      "jobs": [
+        {
+          "job_id": 116978839500,
+          "name": "Changed docs lint",
+          "status": "completed",
+          "conclusion": "failure",
+          "first_failed_step": {
+            "number": 7,
+            "name": "Validate changed docs"
+          }
+        }
+      ],
+      "causal_root": null
+    },
+    {
+      "pr": 2047,
+      "n0_source_sha": "821e4508df4cad1b777e8b3b5f6663f4940a4130",
+      "run_id": 38908374416,
+      "workflow": "EVERRED V3 Governed Control Plane",
+      "state": "LATEST_ATTEMPT_FIRST_PAGE_JOB_METADATA",
+      "latest_attempt": null,
+      "run_sha_verified": false,
+      "jobs": [
+        {
+          "job_id": 116998561068,
+          "name": "EVERRED source, provenance and negative tests (3.10)",
+          "status": "completed",
+          "conclusion": "failure",
+          "first_failed_step": {
+            "number": 12,
+            "name": "Verify committed Black and isort styles"
+          }
+        },
+        {
+          "job_id": 116998561399,
+          "name": "EVERRED source, provenance and negative tests (3.12)",
+          "status": "completed",
+          "conclusion": "failure",
+          "first_failed_step": {
+            "number": 12,
+            "name": "Verify committed Black and isort styles"
+          }
+        },
+        {
+          "job_id": 116998563244,
+          "name": "Read-only native run / joined census pulse",
+          "status": "completed",
+          "conclusion": "skipped",
+          "first_failed_step": null
+        }
+      ],
+      "causal_root": null
+    },
+    {
+      "pr": 2050,
+      "n0_source_sha": "4b76467401bc040b4b315670e8faac93733e8b95",
+      "run_id": 38871635664,
+      "workflow": "DMAIC V3 Enterprise CI",
+      "state": "LATEST_ATTEMPT_FIRST_PAGE_JOB_METADATA",
+      "latest_attempt": null,
+      "run_sha_verified": false,
+      "jobs": [
+        {
+          "job_id": 116876839597,
+          "name": "Build Documentation",
+          "status": "completed",
+          "conclusion": "success",
+          "first_failed_step": null
+        },
+        {
+          "job_id": 116876839717,
+          "name": "Code Quality Checks",
+          "status": "completed",
+          "conclusion": "success",
+          "first_failed_step": null
+        },
+        {
+          "job_id": 116876839731,
+          "name": "Test Python 3.9 on windows-latest",
+          "status": "completed",
+          "conclusion": "failure",
+          "first_failed_step": {
+            "number": 6,
+            "name": "Install dev dependencies"
+          }
+        },
+        {
+          "job_id": 116876839892,
+          "name": "Test Python 3.11 on macos-latest",
+          "status": "completed",
+          "conclusion": "success",
+          "first_failed_step": null
+        },
+        {
+          "job_id": 116876839972,
+          "name": "Security Scan",
+          "status": "completed",
+          "conclusion": "success",
+          "first_failed_step": null
+        },
+        {
+          "job_id": 116876840044,
+          "name": "Test Python 3.12 on windows-latest",
+          "status": "completed",
+          "conclusion": "success",
+          "first_failed_step": null
+        },
+        {
+          "job_id": 116876840080,
+          "name": "Test Python 3.10 on windows-latest",
+          "status": "completed",
+          "conclusion": "failure",
+          "first_failed_step": {
+            "number": 6,
+            "name": "Install dev dependencies"
+          }
+        },
+        {
+          "job_id": 116876840100,
+          "name": "Test Python 3.9 on ubuntu-latest",
+          "status": "completed",
+          "conclusion": "failure",
+          "first_failed_step": {
+            "number": 5,
+            "name": "Install dependencies"
+          }
+        },
+        {
+          "job_id": 116876840129,
+          "name": "Test Python 3.12 on ubuntu-latest",
+          "status": "completed",
+          "conclusion": "success",
+          "first_failed_step": null
+        },
+        {
+          "job_id": 116876840132,
+          "name": "Test Python 3.11 on ubuntu-latest",
+          "status": "completed",
+          "conclusion": "success",
+          "first_failed_step": null
+        },
+        {
+          "job_id": 116876840167,
+          "name": "Test Python 3.11 on windows-latest",
+          "status": "completed",
+          "conclusion": "success",
+          "first_failed_step": null
+        },
+        {
+          "job_id": 116876840181,
+          "name": "Test Python 3.9 on macos-latest",
+          "status": "completed",
+          "conclusion": "failure",
+          "first_failed_step": {
+            "number": 5,
+            "name": "Install dependencies"
+          }
+        },
+        {
+          "job_id": 116876840184,
+          "name": "Test Python 3.10 on macos-latest",
+          "status": "completed",
+          "conclusion": "failure",
+          "first_failed_step": {
+            "number": 5,
+            "name": "Install dependencies"
+          }
+        },
+        {
+          "job_id": 116876840294,
+          "name": "Test Python 3.12 on macos-latest",
+          "status": "completed",
+          "conclusion": "success",
+          "first_failed_step": null
+        },
+        {
+          "job_id": 116876840314,
+          "name": "Test Python 3.10 on ubuntu-latest",
+          "status": "completed",
+          "conclusion": "failure",
+          "first_failed_step": {
+            "number": 5,
+            "name": "Install dependencies"
+          }
+        },
+        {
+          "job_id": 116887777382,
+          "name": "CI Summary",
+          "status": "completed",
+          "conclusion": "failure",
+          "first_failed_step": {
+            "number": 3,
+            "name": "Set final status"
+          }
+        },
+        {
+          "job_id": 116887779135,
+          "name": "Build Package",
+          "status": "completed",
+          "conclusion": "skipped",
+          "first_failed_step": null
+        },
+        {
+          "job_id": 116887779192,
+          "name": "Integration Tests",
+          "status": "completed",
+          "conclusion": "skipped",
+          "first_failed_step": null
+        }
+      ],
+      "causal_root": null
+    },
+    {
+      "pr": 2037,
+      "n0_source_sha": "221457d449f1dfd9eda67766aebc97b71acfea6c",
+      "run_id": 38823726146,
+      "workflow": "Bandit Disjoint Census",
+      "state": "LATEST_ATTEMPT_FIRST_PAGE_JOB_METADATA",
+      "latest_attempt": null,
+      "run_sha_verified": false,
+      "jobs": [
+        {
+          "job_id": 116726156409,
+          "name": "census",
+          "status": "completed",
+          "conclusion": "failure",
+          "first_failed_step": {
+            "number": 8,
+            "name": "Check committed governance inventory"
+          }
+        }
+      ],
+      "causal_root": null
+    },
+    {
+      "pr": 1972,
+      "n0_source_sha": "2785372417e8bd0e21f5496761240255946fe4eb",
+      "run_id": 38765466176,
+      "workflow": "CODE PURPLE SUT GUI Contract",
+      "state": "LATEST_ATTEMPT_FIRST_PAGE_JOB_METADATA",
+      "latest_attempt": null,
+      "run_sha_verified": false,
+      "jobs": [
+        {
+          "job_id": 116527393887,
+          "name": "SUT GUI guardrails / Python 3.12",
+          "status": "completed",
+          "conclusion": "failure",
+          "first_failed_step": {
+            "number": 5,
+            "name": "Validate HTML structure and launch contract"
+          }
+        },
+        {
+          "job_id": 116527394070,
+          "name": "SUT GUI guardrails / Python 3.10",
+          "status": "completed",
+          "conclusion": "failure",
+          "first_failed_step": {
+            "number": 5,
+            "name": "Validate HTML structure and launch contract"
+          }
+        }
+      ],
+      "causal_root": null
+    },
+    {
+      "pr": 2050,
+      "n0_source_sha": "4b76467401bc040b4b315670e8faac93733e8b95",
+      "run_id": 38871635639,
+      "workflow": "DMAIC V3 Test Suite - Continuous Integration",
+      "state": "LATEST_ATTEMPT_FIRST_PAGE_JOB_METADATA",
+      "latest_attempt": null,
+      "run_sha_verified": false,
+      "jobs": [
+        {
+          "job_id": 116876840338,
+          "name": "Smoke Tests (Quick Validation)",
+          "status": "completed",
+          "conclusion": "success",
+          "first_failed_step": null
+        },
+        {
+          "job_id": 116887727148,
+          "name": "DOW Core Tests (SUT_CORE_DOW)",
+          "status": "completed",
+          "conclusion": "success",
+          "first_failed_step": null
+        },
+        {
+          "job_id": 116887727186,
+          "name": "Unit Tests (3.11)",
+          "status": "completed",
+          "conclusion": "success",
+          "first_failed_step": null
+        },
+        {
+          "job_id": 116887727199,
+          "name": "Unit Tests (3.12)",
+          "status": "completed",
+          "conclusion": "success",
+          "first_failed_step": null
+        },
+        {
+          "job_id": 116887727378,
+          "name": "Unit Tests (3.10)",
+          "status": "completed",
+          "conclusion": "failure",
+          "first_failed_step": {
+            "number": 5,
+            "name": "Install dependencies"
+          }
+        },
+        {
+          "job_id": 116913342561,
+          "name": "Test Summary Report",
+          "status": "completed",
+          "conclusion": "success",
+          "first_failed_step": null
+        },
+        {
+          "job_id": 116913343226,
+          "name": "DOW Phase Tests (0-9)",
+          "status": "completed",
+          "conclusion": "skipped",
+          "first_failed_step": null
+        },
+        {
+          "job_id": 116913343659,
+          "name": "Quality Gates",
+          "status": "completed",
+          "conclusion": "skipped",
+          "first_failed_step": null
+        },
+        {
+          "job_id": 116913343704,
+          "name": "Integration Tests",
+          "status": "completed",
+          "conclusion": "skipped",
+          "first_failed_step": null
+        },
+        {
+          "job_id": 116913343999,
+          "name": "End-to-End Tests",
+          "status": "completed",
+          "conclusion": "skipped",
+          "first_failed_step": null
+        },
+        {
+          "job_id": 116932918954,
+          "name": "Notify Results",
+          "status": "completed",
+          "conclusion": "skipped",
+          "first_failed_step": null
+        }
+      ],
+      "causal_root": null
+    }
+  ]
+}
