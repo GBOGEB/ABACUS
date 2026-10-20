@@ -87,6 +87,7 @@ def validate(d):
 
     seen = set()
     run_identity = {}
+    immutable_run_identity = {}
     for row in rows:
         if not isinstance(row, dict):
             raise ValueError("invalid observation")
@@ -123,6 +124,12 @@ def validate(d):
         if run_key in run_identity and run_identity[run_key] != identity:
             raise ValueError("conflicting repeated native run identity")
         run_identity[run_key] = identity
+        # A rerun can change attempt/conclusion, never the GitHub run's
+        # source SHA or workflow. PR aliases for the same run remain allowed.
+        immutable = (row["sha"], row["workflow"])
+        if run_id in immutable_run_identity and immutable_run_identity[run_id] != immutable:
+            raise ValueError("conflicting native run provenance across attempts")
+        immutable_run_identity[run_id] = immutable
 
     if sampled is not None:
         actual = defaultdict(int)
