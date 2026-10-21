@@ -121,7 +121,8 @@ def test_dow_cli_fails_closed_on_invalid_population(
     with pytest.raises(SystemExit) as exc:
         module.main()
     assert exc.value.code == 1
-    assert "[X]" in capsys.readouterr().out or "[FAILED]" in capsys.readouterr().out
+    output = capsys.readouterr().out
+    assert "[X]" in output or "[FAILED]" in output
 
 
 def test_dow_cli_valid_population_exits_zero(tmp_path, monkeypatch, capsys):
