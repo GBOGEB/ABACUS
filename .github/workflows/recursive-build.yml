@@ -4,26 +4,62 @@ on:
     branches: [main]
     paths: ["docs/**", "scripts/**", "GLOBAL_index.json", "metrics/**"]
   workflow_dispatch:
+# Evidence-only: the receipt is an artifact, never a commit to main.
+permissions:
+  contents: read
+  actions: read
+concurrency:
+  group: recursive-build-${{ github.ref }}
+  cancel-in-progress: false
 jobs:
   build:
     runs-on: ubuntu-latest
+    env:
+      RECEIPT_ARTIFACT: recursive-build-receipt
     steps:
       - uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+      - name: Verify exact source head
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$GITHUB_SHA"
       - uses: actions/setup-python@v7
         with: { python-version: "3.11" }
-      - name: Recursive build
+      - name: Restore parent receipt from last green run
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
         run: |
-          python scripts/recursive_build.py --index GLOBAL_index.json --out metrics/metrics.json --update-metrics
-      - name: Update artefact hashes
+          set -euo pipefail
+          mkdir -p parent
+          run_id="$(gh run list --repo "$GITHUB_REPOSITORY" \
+            --workflow recursive-build.yml --branch main --status success \
+            --limit 1 --json databaseId --jq '.[0].databaseId // empty')"
+          found=""
+          if [ -n "$run_id" ]; then
+            found="$(gh api "repos/$GITHUB_REPOSITORY/actions/runs/$run_id/artifacts" \
+              --jq ".artifacts[] | select(.name == \"$RECEIPT_ARTIFACT\" and .expired == false) | .id")"
+          fi
+          if [ -n "$found" ]; then
+            gh run download "$run_id" --repo "$GITHUB_REPOSITORY" \
+              --name "$RECEIPT_ARTIFACT" --dir parent
+            test -s parent/metrics.json
+            echo "PARENT=parent/metrics.json" >> "$GITHUB_ENV"
+          else
+            echo "No unexpired parent receipt: this run is GENESIS"
+          fi
+      - name: Recursive build (strict, chained, read-only index)
+        shell: bash
         run: |
-          python scripts/hash_update.py --index GLOBAL_index.json
-      - name: Preview Diff (bi-directional)
-        run: |
-          python scripts/preview_diff.py --mode both --index GLOBAL_index.json || echo "diffs detected (expected for evolving baseline)"
-      - name: Commit baseline updates
-        run: |
-          git config user.name "ci-bot"
-          git config user.email "ci@example.com"
-          git add -A
-          git commit -m "ci: recursive build + preview-diff" || echo "no changes"
-          git push || true
+          set -euo pipefail
+          python scripts/recursive_build.py --strict --index GLOBAL_index.json \
+            --out metrics/metrics.json ${PARENT:+--previous "$PARENT"}
+      - name: Upload lineage receipt
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: ${{ env.RECEIPT_ARTIFACT }}
+          path: metrics/metrics.json
+          if-no-files-found: error
