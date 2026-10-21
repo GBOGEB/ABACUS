@@ -61,22 +61,23 @@ def _engine():
     return importlib.import_module("DMAIC_V3.dmaic_v3_engine")
 
 
-def test_mip_fix_verifier_all_true_and_failing_error_is_not_green(
-    monkeypatch, capsys
-):
+def test_mip_fix_verifier_all_true_and_failing_error_is_not_green(monkeypatch, capsys):
     mod = _verify()
-    names = [f"test_fix_{i}_{suffix}" for i, suffix in enumerate(
-        [
-            "workspace_scope",
-            "chunking",
-            "improvements",
-            "quality_gates",
-            "knowledge_extraction",
-            "action_collection",
-            "todo_scanning",
-        ],
-        1,
-    )]
+    names = [
+        f"test_fix_{i}_{suffix}"
+        for i, suffix in enumerate(
+            [
+                "workspace_scope",
+                "chunking",
+                "improvements",
+                "quality_gates",
+                "knowledge_extraction",
+                "action_collection",
+                "todo_scanning",
+            ],
+            1,
+        )
+    ]
     for name in names:
         monkeypatch.setattr(mod, name, lambda: True)
     assert mod.main() == 0
@@ -92,9 +93,7 @@ def test_mip_fix_verifier_all_true_and_failing_error_is_not_green(
     assert "missing fixture" in output
 
 
-def test_generator_cli_missing_command_does_not_execute_source(
-    monkeypatch, capsys
-):
+def test_generator_cli_missing_command_does_not_execute_source(monkeypatch, capsys):
     mod = _cli()
     monkeypatch.setattr(sys, "argv", ["dmaic-generators"])
     assert mod.main() == 1
@@ -109,9 +108,9 @@ def test_generator_cli_dispatch_version_and_error(monkeypatch, capsys):
 
     monkeypatch.setattr(sys, "argv", ["dmaic-generators", "align-docs"])
     monkeypatch.setattr(
-        mod, "cmd_align_docs", lambda args: (_ for _ in ()).throw(
-            RuntimeError("offline alignment")
-        ),
+        mod,
+        "cmd_align_docs",
+        lambda args: (_ for _ in ()).throw(RuntimeError("offline alignment")),
     )
     assert mod.main() == 1
     assert "offline alignment" in capsys.readouterr().out
@@ -136,9 +135,7 @@ def test_generator_document_alignment_missing_file_is_not_success(
     tmp_path, monkeypatch
 ):
     mod = _cli()
-    args = SimpleNamespace(
-        docs_dir=tmp_path, export_json=False, export_yaml=False
-    )
+    args = SimpleNamespace(docs_dir=tmp_path, export_json=False, export_yaml=False)
     assert mod.cmd_align_docs(args) == 1
 
 
@@ -253,9 +250,7 @@ def _fake_engine_config(tmp_path, enabled):
     )
 
 
-def test_engine_version_and_single_phase_tuple_success(
-    tmp_path, monkeypatch
-):
+def test_engine_version_and_single_phase_tuple_success(tmp_path, monkeypatch):
     mod = _engine()
     monkeypatch.setattr(sys, "argv", ["dmaic", "--version"])
     assert mod.main() == 0
@@ -279,9 +274,7 @@ def test_engine_version_and_single_phase_tuple_success(
     assert json.loads(saved[0].read_text(encoding="utf-8"))["status"] == "synthetic"
 
 
-def test_engine_negative_phase6_result_refuses_false_success(
-    tmp_path, monkeypatch
-):
+def test_engine_negative_phase6_result_refuses_false_success(tmp_path, monkeypatch):
     mod = _engine()
     conf = _fake_engine_config(tmp_path, enabled=True)
     monkeypatch.setattr(mod, "DMAICConfig", lambda: conf)
