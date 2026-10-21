@@ -107,7 +107,9 @@ def test_dow_structure_rejects_malformed_or_noncontainer_input(
     assert "Error processing" in capsys.readouterr().out
 
 
-@pytest.mark.parametrize("mode", ["missing-directory", "empty-directory", "invalid-json"])
+@pytest.mark.parametrize(
+    "mode", ["missing-directory", "empty-directory", "invalid-json"]
+)
 def test_dow_cli_fails_closed_on_invalid_population(
     tmp_path, monkeypatch, mode, capsys
 ):
@@ -127,9 +129,7 @@ def test_dow_cli_fails_closed_on_invalid_population(
 
 def test_dow_cli_valid_population_exits_zero(tmp_path, monkeypatch, capsys):
     module = _validator()
-    (tmp_path / "good.json").write_text(
-        json.dumps(_valid_dow()), encoding="utf-8"
-    )
+    (tmp_path / "good.json").write_text(json.dumps(_valid_dow()), encoding="utf-8")
     monkeypatch.setattr(sys, "argv", ["validate_dow_structure", str(tmp_path)])
     with pytest.raises(SystemExit) as exc:
         module.main()
