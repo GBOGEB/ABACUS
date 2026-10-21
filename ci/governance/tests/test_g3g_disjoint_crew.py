@@ -1,10 +1,10 @@
 """Negative resource leases and DAG guards; NO worker launch authority."""
-import importlib.util
 import copy
+import importlib.util
 import unittest
+from pathlib import Path
 
 import pytest
-from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[3]
 FILE = ROOT / "MIP/EVIDENCE_TO_ADMISSION_OBSERVATORY/g3g_disjoint_crew.py"
