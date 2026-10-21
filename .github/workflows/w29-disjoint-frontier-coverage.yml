@@ -134,12 +134,47 @@ jobs:
               ).hexdigest()
           doc = json.loads((directory / "coverage.json").read_text())
           names = doc.get("files", {})
+          receipt["source_file_sha256"] = {}
+          receipt["coverage_by_source"] = {}
           for wanted in expected:
               found = [key for key in names if key.endswith(wanted)]
               if len(found) != 1:
                   raise SystemExit(
                       f"coverage source missing/ambiguous: {wanted} ({found})"
                   )
+              source_path = pathlib.Path(wanted)
+              receipt["source_file_sha256"][wanted] = hashlib.sha256(
+                  source_path.read_bytes()
+              ).hexdigest()
+              summary = names[found[0]].get("summary", {})
+              fields = (
+                  "covered_lines", "num_statements",
+                  "covered_branches", "num_branches"
+              )
+              if any(type(summary.get(k)) is not int for k in fields):
+                  raise SystemExit("invalid coverage counters: " + wanted)
+              lines = summary["covered_lines"]
+              eligible = summary["num_statements"]
+              branches = summary["covered_branches"]
+              branch_total = summary["num_branches"]
+              if (eligible <= 0 or branch_total <= 0
+                      or not 0 <= lines <= eligible
+                      or not 0 <= branches <= branch_total):
+                  raise SystemExit(f"invalid denominator: {wanted}")
+              receipt["coverage_by_source"][wanted] = {
+                  "covered_lines": lines,
+                  "eligible_statements": eligible,
+                  "covered_branches": branches,
+                  "eligible_branches": branch_total,
+                  "statement_pct": round(100 * lines / eligible, 6),
+                  "branch_pct": round(100 * branches / branch_total, 6),
+              }
+              if (wanted.endswith("elastic_wave_governor.py")
+                      or wanted.endswith("g3g_disjoint_crew.py")):
+                  if lines == 0 or branches == 0:
+                      raise SystemExit(
+                          f"W78 source remains zero-covered: {wanted}"
+                      )
           root = ET.parse(directory / "junit.xml").getroot()
           cases = root.findall(".//testcase")
           receipt["actual_testcase_elements"] = len(cases)
