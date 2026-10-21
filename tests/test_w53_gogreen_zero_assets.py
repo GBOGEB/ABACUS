@@ -59,7 +59,11 @@ def test_recent_files_real_yaml_json_markdown_gap_detection(tmp_path):
     agent.calculate_statistics()
     metrics = agent.results["statistics"]
     assert metrics["total_files"] == 4
-    assert (metrics["yaml_count"], metrics["json_count"], metrics["markdown_count"]) == (
+    assert (
+        metrics["yaml_count"],
+        metrics["json_count"],
+        metrics["markdown_count"],
+    ) == (
         1,
         2,
         1,
@@ -146,13 +150,12 @@ def _notebook_fixture():
 def test_notebook_hash_counts_binary_filter_and_knowledge_receipt(tmp_path):
     module = _notebook()
     notebook = tmp_path / "lesson.ipynb"
-    notebook.write_text(
-        json.dumps(_notebook_fixture()), encoding="utf-8"
-    )
+    notebook.write_text(json.dumps(_notebook_fixture()), encoding="utf-8")
     extracted = module.NotebookParser().parse(notebook)
-    assert extracted["notebook_sha256"] == hashlib.sha256(
-        notebook.read_bytes()
-    ).hexdigest()
+    assert (
+        extracted["notebook_sha256"]
+        == hashlib.sha256(notebook.read_bytes()).hexdigest()
+    )
     assert extracted["cell_count"] == 3
     assert extracted["code_cell_count"] == 1
     assert extracted["markdown_cell_count"] == 1
@@ -237,9 +240,12 @@ def test_document_aligner_uses_filename_title_and_exports_json_yaml(tmp_path):
     json_path = agent.export_version_info_json()
     yaml_path = agent.export_version_info_yaml()
     assert json.loads(json_path.read_text(encoding="utf-8"))["changelog"]
-    assert yaml.safe_load(yaml_path.read_text(encoding="utf-8"))["version_info"][
-        "integration_mode"
-    ] == "BIDIRECTIONAL"
+    assert (
+        yaml.safe_load(yaml_path.read_text(encoding="utf-8"))["version_info"][
+            "integration_mode"
+        ]
+        == "BIDIRECTIONAL"
+    )
 
 
 def test_document_aligner_all_four_missing_files_are_reported(tmp_path):
