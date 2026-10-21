@@ -8,7 +8,6 @@ from __future__ import annotations
 
 import importlib.util
 import json
-import subprocess
 import sys
 from pathlib import Path
 from types import SimpleNamespace
@@ -340,11 +339,16 @@ def test_dow_subprocess_exit_contract_is_preserved(
         assert observed["return_code"] == 9
 
 
-@pytest.mark.parametrize(
-    "fault", [subprocess.TimeoutExpired("fake", 1), OSError("offline")]
-)
-def test_dow_subprocess_exception_never_false_green(dow, tmp_path, monkeypatch, fault):
+@pytest.mark.parametrize("fault_name", ["timeout", "offline"])
+def test_dow_subprocess_exception_never_false_green(
+    dow, tmp_path, monkeypatch, fault_name
+):
     executor = dow.DOWIntegrationExecutor()
+    fault = (
+        dow.subprocess.TimeoutExpired("fake", 1)
+        if fault_name == "timeout"
+        else OSError("offline")
+    )
 
     def deny(*args, **kwargs):
         raise fault
