@@ -178,5 +178,25 @@ class W76ZeroAssetAuditTests(unittest.TestCase):
         self.assertFalse(r["native_artifact_bytes_verified"])
 
 
+    def test_windows_backslash_paths_are_normalized_to_exact_roster(self):
+        candidate = coverage_for()
+        candidate["files"] = {
+            name.replace("/", "\\"): record
+            for name, record in candidate["files"].items()
+        }
+        receipt = examine(coverage=candidate)
+        self.assertEqual(receipt["recovered_zero_covered_assets"], 10)
+        self.assertEqual(receipt["unknown_or_incomparable_assets"], 0)
+        self.assertEqual(receipt["matched_statement_coverage"]["candidate_covered"], 40)
+
+    def test_windows_and_posix_alias_for_same_file_is_rejected(self):
+        candidate = coverage_for()
+        name = BASE["files"][0]["path"]
+        candidate["files"][name.replace("/", "\\")] = copy.deepcopy(
+            candidate["files"][name])
+        with self.assertRaisesRegex(ValueError, "duplicate normalized coverage"):
+            examine(coverage=candidate)
+
+
 if __name__ == "__main__":
     unittest.main()
