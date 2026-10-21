@@ -26,11 +26,25 @@ from pathlib import Path
 
 SCHEMA = "abacus.recursive-build.v2"
 CSV_HEADER = [
-    "date", "iteration", "artefacts", "missing", "hash_matched",
-    "hash_mismatched", "unhashed", "status", "source_sha",
+    "date",
+    "iteration",
+    "artefacts",
+    "missing",
+    "hash_matched",
+    "hash_mismatched",
+    "unhashed",
+    "status",
+    "source_sha",
 ]
 EXIT_RED = 1
 EXIT_VACUOUS = 2
+STATUSES = ("VACUOUS", "RED", "UNVERIFIED", "PASS")
+LINEAGE_KINDS = ("GENESIS", "CHILD")
+# Every field the delta is measured over must be present in the parent.
+REQUIRED_PARENT_FIELDS = {
+    "counts": ("artefacts", "missing"),
+    "integrity": ("hash_matched", "hash_mismatched", "unhashed"),
+}
 
 
 def sha256_bytes(data: bytes) -> str:
@@ -72,15 +86,38 @@ def load_parent(path: Path):
         parent = json.loads(raw)
     except ValueError as exc:
         raise SystemExit(f"parent receipt is not JSON: {path}") from exc
-    iteration = parent.get("iteration") if isinstance(parent, dict) else None
-    counts = parent.get("counts") if isinstance(parent, dict) else None
-    if (
-        type(iteration) is not int
-        or iteration < 1
-        or not isinstance(counts, dict)
-    ):
-        raise SystemExit(f"parent receipt lacks a valid iteration/counts: {path}")
+    problem = parent_problem(parent)
+    if problem:
+        raise SystemExit(f"invalid parent receipt ({problem}): {path}")
     return parent, sha256_bytes(raw)
+
+
+def _is_count(value) -> bool:
+    return type(value) is int and value >= 0
+
+
+def parent_problem(parent):
+    """Return why a parent receipt cannot extend the lineage, or None."""
+    if not isinstance(parent, dict):
+        return "not an object"
+    if parent.get("schema") != SCHEMA:
+        return f"schema is not {SCHEMA}"
+    iteration = parent.get("iteration")
+    if type(iteration) is not int or iteration < 1:
+        return "iteration must be an int >= 1"
+    if parent.get("status") not in STATUSES:
+        return "unknown status"
+    lineage = parent.get("lineage")
+    if not isinstance(lineage, dict) or lineage.get("kind") not in LINEAGE_KINDS:
+        return "lineage kind must be GENESIS or CHILD"
+    for section, keys in REQUIRED_PARENT_FIELDS.items():
+        values = parent.get(section)
+        if not isinstance(values, dict):
+            return f"{section} must be an object"
+        for key in keys:
+            if not _is_count(values.get(key)):
+                return f"{section}.{key} must be a non-negative int"
+    return None
 
 
 def source_head():
@@ -90,7 +127,9 @@ def source_head():
         return env_sha
     try:
         head = subprocess.run(
-            ["git", "rev-parse", "HEAD"], capture_output=True, text=True,
+            ["git", "rev-parse", "HEAD"],
+            capture_output=True,
+            text=True,
             check=True,
         ).stdout.strip()
     except (OSError, subprocess.CalledProcessError):
@@ -114,17 +153,17 @@ def build_receipt(artifacts, checked, parent=None, parent_sha=None):
     }
     counts = {"artefacts": len(artifacts), "missing": len(checked["missing"])}
     if parent is None:
-        lineage = {"kind": "GENESIS", "parent_sha256": None,
-                   "parent_iteration": None}
+        lineage = {"kind": "GENESIS", "parent_sha256": None, "parent_iteration": None}
         delta = None
     else:
-        lineage = {"kind": "CHILD", "parent_sha256": parent_sha,
-                   "parent_iteration": parent["iteration"]}
-        before = {**parent["counts"], **parent.get("integrity", {})}
+        lineage = {
+            "kind": "CHILD",
+            "parent_sha256": parent_sha,
+            "parent_iteration": parent["iteration"],
+        }
+        before = {**parent["counts"], **parent["integrity"]}
         delta = {
-            key: value - before[key]
-            for key, value in {**counts, **integrity}.items()
-            if type(before.get(key)) is int
+            key: value - before[key] for key, value in {**counts, **integrity}.items()
         }
     return {
         "schema": SCHEMA,
@@ -157,13 +196,19 @@ def append_csv(csv_path: Path, data) -> None:
         w = csv.writer(f)
         if new:
             w.writerow(CSV_HEADER)
-        w.writerow([
-            data["date"], data["iteration"], data["counts"]["artefacts"],
-            data["counts"]["missing"], data["integrity"]["hash_matched"],
-            data["integrity"]["hash_mismatched"],
-            data["integrity"]["unhashed"], data["status"],
-            data["source_sha"] or "",
-        ])
+        w.writerow(
+            [
+                data["date"],
+                data["iteration"],
+                data["counts"]["artefacts"],
+                data["counts"]["missing"],
+                data["integrity"]["hash_matched"],
+                data["integrity"]["hash_mismatched"],
+                data["integrity"]["unhashed"],
+                data["status"],
+                data["source_sha"] or "",
+            ]
+        )
 
 
 def main():

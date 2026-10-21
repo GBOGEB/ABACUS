@@ -1,6 +1,7 @@
 """Evolutionary lineage, fail-closed status and workflow contracts for the
 recursive build. Positive cases establish the contract; every negative
 control removes exactly one property and must fail."""
+
 from __future__ import annotations
 
 import csv
@@ -47,8 +48,7 @@ def hashed_artifact(tmp_path: Path, name="a.txt", body="frozen\n") -> dict:
     return {"path": str(p), "hash": hashlib.sha256(p.read_bytes()).hexdigest()}
 
 
-def build(monkeypatch, tmp_path, out: str, previous: str | None = None,
-          *extra: str):
+def build(monkeypatch, tmp_path, out: str, previous: str | None = None, *extra: str):
     args = ["--index", "index.json", "--out", out, *extra]
     if previous:
         args += ["--previous", previous]
@@ -62,14 +62,16 @@ def test_genesis_receipt_is_measured_and_source_bound(monkeypatch, tmp_path):
     assert code == 0
     assert data["schema"] == rb.SCHEMA
     assert data["iteration"] == 1
-    assert data["lineage"] == {"kind": "GENESIS", "parent_sha256": None,
-                               "parent_iteration": None}
+    assert data["lineage"] == {
+        "kind": "GENESIS",
+        "parent_sha256": None,
+        "parent_iteration": None,
+    }
     assert data["delta"] is None
     assert data["status"] == "PASS"
     assert data["source_sha"] == FAKE_SHA
     assert data["counts"] == {"artefacts": 1, "missing": 0}
-    assert data["integrity"] == {"hash_matched": 1, "hash_mismatched": 0,
-                                 "unhashed": 0}
+    assert data["integrity"] == {"hash_matched": 1, "hash_mismatched": 0, "unhashed": 0}
 
 
 def test_recursive_chain_links_every_parent_by_sha256(monkeypatch, tmp_path):
@@ -83,8 +85,10 @@ def test_recursive_chain_links_every_parent_by_sha256(monkeypatch, tmp_path):
             parent_bytes = (tmp_path / previous).read_bytes()
             assert data["lineage"]["kind"] == "CHILD"
             assert data["lineage"]["parent_iteration"] == n - 1
-            assert data["lineage"]["parent_sha256"] == hashlib.sha256(
-                parent_bytes).hexdigest()
+            assert (
+                data["lineage"]["parent_sha256"]
+                == hashlib.sha256(parent_bytes).hexdigest()
+            )
             assert set(data["delta"].values()) == {0}
         previous = out
 
@@ -111,25 +115,66 @@ def test_tampered_parent_changes_lineage_hash(monkeypatch, tmp_path):
     build(monkeypatch, tmp_path, "r1.json")
     _, honest = build(monkeypatch, tmp_path, "r2.json", "r1.json")
     parent = json.loads((tmp_path / "r1.json").read_text(encoding="utf-8"))
-    parent["status"] = "PASS-forged"
+    parent["date"] = "1970-01-01"
     (tmp_path / "r1.json").write_text(json.dumps(parent), encoding="utf-8")
     _, forged = build(monkeypatch, tmp_path, "r3.json", "r1.json")
     assert forged["lineage"]["parent_sha256"] != honest["lineage"]["parent_sha256"]
 
 
-@pytest.mark.parametrize("parent", [
-    "not json",
-    json.dumps([1]),
-    json.dumps({"iteration": 0, "counts": {}}),
-    json.dumps({"iteration": True, "counts": {}}),
-    json.dumps({"iteration": "2", "counts": {}}),
-    json.dumps({"iteration": 2}),
-])
+def mutate_valid_parent(monkeypatch, tmp_path, spec: str) -> str:
+    """A real receipt with exactly one field removed or overwritten."""
+    _, receipt = build(monkeypatch, tmp_path, "good.json")
+    action, _, edit = spec.partition(":")
+    key, _, raw = edit.partition("=")
+    *parents, leaf = key.split(".")
+    target = receipt
+    for part in parents:
+        target = target[part]
+    if action == "WITHOUT":
+        del target[leaf]
+    else:
+        try:
+            target[leaf] = json.loads(raw)
+        except ValueError:
+            target[leaf] = raw
+    return json.dumps(receipt)
+
+
+@pytest.mark.parametrize(
+    "parent",
+    [
+        "not json",
+        json.dumps([1]),
+        json.dumps({"iteration": 0, "counts": {}}),
+        json.dumps({"iteration": True, "counts": {}}),
+        json.dumps({"iteration": "2", "counts": {}}),
+        json.dumps({"iteration": 2}),
+        "VALID_WITH:counts={}",
+        "VALID_WITH:integrity=[1]",
+        "VALID_WITH:integrity.unhashed=-1",
+        "VALID_WITH:counts.missing=true",
+        "VALID_WITH:status=PASS-forged",
+        "VALID_WITH:schema=abacus.recursive-build.v1",
+        "WITHOUT:schema",
+        "WITHOUT:integrity",
+        "WITHOUT:lineage",
+    ],
+)
 def test_invalid_parent_fails_closed(monkeypatch, tmp_path, parent):
     write_index(tmp_path, hashed_artifact(tmp_path))
+    if parent.startswith(("VALID_WITH:", "WITHOUT:")):
+        parent = mutate_valid_parent(monkeypatch, tmp_path, parent)
     (tmp_path / "bad.json").write_text(parent, encoding="utf-8")
-    code = run(monkeypatch, tmp_path, "--index", "index.json", "--out",
-               "r.json", "--previous", "bad.json")
+    code = run(
+        monkeypatch,
+        tmp_path,
+        "--index",
+        "index.json",
+        "--out",
+        "r.json",
+        "--previous",
+        "bad.json",
+    )
     assert code == 3  # SystemExit with a message
     assert not (tmp_path / "r.json").exists()
 
@@ -140,8 +185,10 @@ def test_empty_index_is_vacuous_not_green(monkeypatch, tmp_path, smoke):
     mode = ["--smoke"] if smoke else ["--out", "r.json"]
     # Compatibility: non-strict callers keep their exit contract.
     assert run(monkeypatch, tmp_path, "--index", "index.json", *mode) == 0
-    assert run(monkeypatch, tmp_path, "--index", "index.json", *mode,
-               "--strict") == rb.EXIT_VACUOUS
+    assert (
+        run(monkeypatch, tmp_path, "--index", "index.json", *mode, "--strict")
+        == rb.EXIT_VACUOUS
+    )
     if not smoke:
         data = json.loads((tmp_path / "r.json").read_text(encoding="utf-8"))
         assert data["status"] == "VACUOUS"
@@ -164,15 +211,17 @@ def test_missing_artifact_is_red(monkeypatch, tmp_path):
     assert data["counts"]["missing"] == 1
 
 
-@pytest.mark.parametrize("payload", [
-    {"artefacts": {}},
-    {"artefacts": [{"hash": "x"}]},
-    {"artefacts": [{"path": 7}]},
-])
+@pytest.mark.parametrize(
+    "payload",
+    [
+        {"artefacts": {}},
+        {"artefacts": [{"hash": "x"}]},
+        {"artefacts": [{"path": 7}]},
+    ],
+)
 def test_malformed_index_fails_closed(monkeypatch, tmp_path, payload):
     (tmp_path / "index.json").write_text(json.dumps(payload), encoding="utf-8")
-    assert run(monkeypatch, tmp_path, "--index", "index.json", "--out",
-               "r.json") == 3
+    assert run(monkeypatch, tmp_path, "--index", "index.json", "--out", "r.json") == 3
 
 
 def test_csv_rows_are_measured_never_constant(monkeypatch, tmp_path):
@@ -195,8 +244,18 @@ def test_legacy_csv_is_not_silently_mixed(monkeypatch, tmp_path):
     legacy = tmp_path / "metrics" / "metrics.csv"
     legacy.parent.mkdir()
     legacy.write_text("2025-11-25,1,0.82,0.85,0.4,0.75,0\n", encoding="utf-8")
-    assert run(monkeypatch, tmp_path, "--index", "index.json", "--out",
-               "r.json", "--update-metrics") == 3
+    assert (
+        run(
+            monkeypatch,
+            tmp_path,
+            "--index",
+            "index.json",
+            "--out",
+            "r.json",
+            "--update-metrics",
+        )
+        == 3
+    )
     assert legacy.read_text(encoding="utf-8").count("\n") == 1
 
 
@@ -204,7 +263,9 @@ def test_source_head_is_never_fabricated(monkeypatch, tmp_path):
     monkeypatch.setenv("GITHUB_SHA", "not-a-sha")
     monkeypatch.chdir(tmp_path)  # not a git repository
     assert rb.source_head() is None
-    monkeypatch.setattr(rb.subprocess, "run", lambda *a, **k: (_ for _ in ()).throw(OSError()))
+    monkeypatch.setattr(
+        rb.subprocess, "run", lambda *a, **k: (_ for _ in ()).throw(OSError())
+    )
     assert rb.source_head() is None
 
 
@@ -212,8 +273,9 @@ def test_source_head_falls_back_to_exact_git_commit(monkeypatch):
     monkeypatch.delenv("GITHUB_SHA", raising=False)
     monkeypatch.chdir(ROOT)
     head = rb.source_head()
-    expected = rb.subprocess.run(["git", "rev-parse", "HEAD"],
-                                 capture_output=True, text=True).stdout.strip()
+    expected = rb.subprocess.run(
+        ["git", "rev-parse", "HEAD"], capture_output=True, text=True
+    ).stdout.strip()
     if not re.fullmatch(r"[0-9a-f]{40}", expected):
         pytest.skip("checkout has no git metadata")
     assert head == expected
@@ -221,8 +283,7 @@ def test_source_head_falls_back_to_exact_git_commit(monkeypatch):
 
 def test_smoke_missing_artifact_is_red(monkeypatch, tmp_path, capsys):
     write_index(tmp_path, {"path": "gone.txt"})
-    assert run(monkeypatch, tmp_path, "--index", "index.json",
-               "--smoke") == rb.EXIT_RED
+    assert run(monkeypatch, tmp_path, "--index", "index.json", "--smoke") == rb.EXIT_RED
     assert "gone.txt" in capsys.readouterr().out
 
 
@@ -278,7 +339,7 @@ def test_recursive_workflow_is_evidence_only_with_genuine_mutants():
 
 def test_burndown_accepts_clean_hold_but_not_regression():
     source = BURNDOWN.read_text(encoding="utf-8")
-    assert 'if not before and after:' in source
+    assert "if not before and after:" in source
     assert '"CLEAN_HOLD" if not before else "REDUCTION"' in source
     assert "len(before) == 0 or" not in source
     assert source.count("tests/test_recursive_build_lineage.py") == 3

@@ -17,7 +17,8 @@ jobs:
     env:
       RECEIPT_ARTIFACT: recursive-build-receipt
     steps:
-      - uses: actions/checkout@v7
+      # SHA-pinned checkout v7.0.1
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
         with:
           persist-credentials: false
       - name: Verify exact source head
@@ -25,8 +26,10 @@ jobs:
         run: |
           set -euo pipefail
           test "$(git rev-parse HEAD)" = "$GITHUB_SHA"
-      - uses: actions/setup-python@v7
-        with: { python-version: "3.11" }
+      # SHA-pinned setup-python v7.0.0
+      - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97
+        with:
+          python-version: "3.11"
       - name: Restore parent receipt from last green run
         shell: bash
         env:
@@ -39,8 +42,10 @@ jobs:
             --limit 1 --json databaseId --jq '.[0].databaseId // empty')"
           found=""
           if [ -n "$run_id" ]; then
-            found="$(gh api "repos/$GITHUB_REPOSITORY/actions/runs/$run_id/artifacts" \
-              --jq ".artifacts[] | select(.name == \"$RECEIPT_ARTIFACT\" and .expired == false) | .id")"
+            api="repos/$GITHUB_REPOSITORY/actions/runs/$run_id/artifacts"
+            pick=".artifacts[] | select(.name == env.RECEIPT_ARTIFACT"
+            pick="$pick and .expired == false) | .id"
+            found="$(gh api "$api" --jq "$pick")"
           fi
           if [ -n "$found" ]; then
             gh run download "$run_id" --repo "$GITHUB_REPOSITORY" \
@@ -58,7 +63,8 @@ jobs:
             --out metrics/metrics.json ${PARENT:+--previous "$PARENT"}
       - name: Upload lineage receipt
         if: always()
-        uses: actions/upload-artifact@v7
+        # SHA-pinned upload-artifact v7.0.2
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9
         with:
           name: ${{ env.RECEIPT_ARTIFACT }}
           path: metrics/metrics.json
