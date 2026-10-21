@@ -8,7 +8,6 @@ from __future__ import annotations
 
 import importlib.util
 import json
-import subprocess
 import sys
 from pathlib import Path
 from types import SimpleNamespace
@@ -76,9 +75,15 @@ def test_dow_all_six_successes_are_distinct_and_positive(tmp_path):
     executor = mod.DOWIntegrationExecutor()
     success = {"status": "success", "output": "synthetic"}
     with (
-        patch.object(executor, "_run_agent", return_value=success.copy()),
-        patch.object(executor, "_run_ranking", return_value=success.copy()),
-        patch.object(executor, "_run_validation", return_value=success.copy()),
+        patch.object(
+            executor, "_run_agent", side_effect=lambda *args: success.copy()
+        ),
+        patch.object(
+            executor, "_run_ranking", side_effect=lambda *args: success.copy()
+        ),
+        patch.object(
+            executor, "_run_validation", side_effect=lambda *args: success.copy()
+        ),
     ):
         result = executor.execute_pipeline(1, str(tmp_path))
     assert result["status"] == "success"
@@ -127,7 +132,7 @@ def test_dow_script_runtime_typed_positive_and_terminal_negative(
     target = tmp_path / "agent.py"
     target.write_text("print('fixture')\n", encoding="utf-8")
     if mode == "timeout":
-        response = subprocess.TimeoutExpired("fake-cmd", 2)
+        response = mod.subprocess.TimeoutExpired("fake-cmd", 2)
     else:
         rc = 0 if mode == "good" else 7
         response = SimpleNamespace(
@@ -159,7 +164,7 @@ def test_real_execution_never_runs_untrusted_python_code(
     target = tmp_path / "test.py"
     target.write_text("raise RuntimeError('would execute')\n", encoding="utf-8")
     if mode == "timeout":
-        effect = subprocess.TimeoutExpired("python", 60)
+        effect = mod.subprocess.TimeoutExpired("python", 60)
         value = None
     else:
         effect = None
