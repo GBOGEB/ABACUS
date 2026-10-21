@@ -105,6 +105,34 @@ def read_junit(path: Path) -> dict | None:
     xml_root = ET.parse(
         path, forbid_dtd=True, forbid_entities=True, forbid_external=True
     ).getroot()
+    # Never promote a forged partial JUnit population into a passing receipt.
+    # Both pytest's testsuite and standard testsuites containers are supported.
+    if xml_root.tag not in ("testsuite", "testsuites"):
+        raise ValueError("invalid JUnit root element")
+    suites = [xml_root] if xml_root.tag == "testsuite" else list(xml_root)
+    if not suites or any(node.tag != "testsuite" for node in suites):
+        raise ValueError("invalid JUnit suites structure")
+
+    def check_declared_counts(node):
+        population = list(node.iter("testcase"))
+        measured = {
+            "tests": len(population),
+            "failures": sum(case.find("failure") is not None for case in population),
+            "errors": sum(case.find("error") is not None for case in population),
+            "skipped": sum(case.find("skipped") is not None for case in population),
+        }
+        for name, actual in measured.items():
+            declared = node.get(name)
+            if declared is not None and (
+                re.fullmatch(r"[0-9]{1,9}", declared) is None
+                or int(declared) != actual
+            ):
+                raise ValueError(f"JUnit declared {name} contradicts testcases")
+
+    for suite in suites:
+        check_declared_counts(suite)
+    if xml_root.tag == "testsuites":
+        check_declared_counts(xml_root)
     cases = list(xml_root.iter("testcase"))
     total = len(cases)
     failures = sum(case.find("failure") is not None for case in cases)

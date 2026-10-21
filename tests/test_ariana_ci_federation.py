@@ -262,3 +262,38 @@ def test_ash_action_supply_chain_and_import_triggers_are_pinned():
         "src/dmaic/idempotency.py",
     ):
         assert workflow.count(f"'{dep}'") == 2
+
+
+
+@pytest.mark.parametrize(
+    "xml",
+    [
+        '<testsuite tests="2"><testcase name="only-one"/></testsuite>',
+        '<testsuite failures="0"><testcase name="red"><failure/></testcase></testsuite>',
+        '<testsuite errors="0"><testcase name="red"><error/></testcase></testsuite>',
+        '<testsuite skipped="0"><testcase name="pending"><skipped/></testcase></testsuite>',
+        '<testsuites tests="3"><testsuite tests="1"><testcase name="one"/></testsuite></testsuites>',
+        '<testsuite tests="-1"><testcase name="one"/></testsuite>',
+        '<untrusted><testcase name="one"/></untrusted>',
+    ],
+)
+def test_junit_declared_count_forgery_fails_closed(tmp_path, xml):
+    path = tmp_path / "untrusted.xml"
+    path.write_text(xml, encoding="utf-8")
+    with pytest.raises(ValueError, match="JUnit"):
+        read_junit(path)
+
+
+def test_junit_declared_counts_valid_positive(tmp_path):
+    path = tmp_path / "native.xml"
+    path.write_text(
+        '<testsuites tests="2" failures="1" errors="0" skipped="0">'
+        '<testsuite tests="2" failures="1" errors="0" skipped="0">'
+        '<testcase name="ok"/><testcase name="red"><failure/></testcase>'
+        '</testsuite></testsuites>',
+        encoding="utf-8",
+    )
+    result = read_junit(path)
+    assert result["total"] == 2
+    assert result["passed"] == 1
+    assert result["failures"] == 1
