@@ -3,11 +3,11 @@
 # ABACUS CI workflow rationalisation
 
 Policy: `ABACUS-CI-SSOT-001`  
-Policy SHA-256 (canonical sorted JSON bytes of `ci/governance/workflow_policy.json`): `be116b88b1c8a31a32d0e94376572bc4d833a6f670fe651bc5d87449081c6206`
+Policy SHA-256 (canonical sorted JSON bytes of `ci/governance/workflow_policy.json`): `8885126e9898e05d1204a82f607b4426e94b39e7b1468f3ae5657c6235a2f750`
 
 ## Outcome
 
-The repository currently contains **212 workflow definitions**. All **212** are assigned to one primary functional cluster and lifecycle stage.
+The repository currently contains **213 workflow definitions**. All **213** are assigned to one primary functional cluster and lifecycle stage.
 
 The observed baseline that motivated this control was PR #681 with 119 check runs (111 queued, 8 skipped) and main with 122 check runs.
 
@@ -33,7 +33,7 @@ The observed baseline that motivated this control was PR #681 with 119 check run
 | `dmaic` | `dmaic-enterprise-ci.yml` | 9 | DMAIC phase, convergence and maturity execution. |
 | `dow` | `dow-integration.yml` | 22 | DOW parent mechanics, integration, monitoring and warm-up. |
 | `runtime_governance` | `governance.yml` | 30 | Runtime evidence, governance, review artifacts and schema validation. |
-| `security` | `security-scan.yml` | 12 | Ruff PR security, scheduled Bandit, CodeQL, dependency and supply-chain scanning. |
+| `security` | `security-scan.yml` | 13 | Ruff PR security, scheduled Bandit, CodeQL, dependency and supply-chain scanning. |
 | `delivery` | `cd-pipeline.yml` | 8 | Build, release, deployment and publication. |
 | `documentation` | `docs-build.yml` | 7 | Documentation validation, rendering, export and Pages. |
 | `automation` | `post-merge-pr-summary.yml` | 13 | Repository maintenance, reporting, branch and PR automation. |
@@ -55,7 +55,7 @@ Make PR-triggered workflows with write-class GitHub token scopes explicit and re
 
 | Control | Workflows |
 |---|---|
-| PR write exceptions | `bootstrap-integration.yml`, `branch-hygiene.yml`, `codeql.yml`, `dependency-review.yml`, `gloob-causal-responder.yml`, `osv-scanner.yml`, `post-merge-pr-summary.yml`, `pr-feedback-gate.yml`, `semgrep.yml`, `w67-measured-id-pulse.yml` |
+| PR write exceptions | `bootstrap-integration.yml`, `branch-hygiene.yml`, `code-quality-pilot.yml`, `codeql.yml`, `dependency-review.yml`, `gloob-causal-responder.yml`, `osv-scanner.yml`, `post-merge-pr-summary.yml`, `pr-feedback-gate.yml`, `semgrep.yml`, `w67-measured-id-pulse.yml` |
 | `pull_request_target` write exceptions | none |
 
 ## Workflow inventory
@@ -268,6 +268,7 @@ Make PR-triggered workflows with write-class GitHub token scopes explicit and re
 | 40 | `scheduled` | `automation` | `post-merge-pr-summary.yml` | pull_request | 1 | `keep` | — |
 | 40 | `scheduled` | `runtime_governance` | `cbd-scheduled-gated-pulse.yml` | schedule, workflow_dispatch | 1 | `keep` | — |
 | 40 | `scheduled` | `security` | `bandit.yml` | schedule, workflow_dispatch | 1 | `keep` | — |
+| 40 | `scheduled` | `security` | `code-quality-pilot.yml` | workflow_dispatch, pull_request, schedule | 3 | `keep` | — |
 | 50 | `manual` | `automation` | `branch-hygiene.yml` | workflow_dispatch, pull_request | 3 | `keep` | — |
 | 50 | `manual` | `bridge_federation` | `abacus-missioncontrol-stage-only.yml` | workflow_dispatch | 1 | `keep` | — |
 | 50 | `manual` | `bridge_federation` | `qps-metric-census-receiver.yml` | workflow_dispatch, repository_dispatch | 2 | `keep` | — |
