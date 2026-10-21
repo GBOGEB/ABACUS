@@ -98,7 +98,14 @@ def measure(baseline, coverage, source_sha, get_blob, test_counts):
         if (statements == 0 or record.get("baseline_covered_statements") != 0
                 or record.get("baseline_covered_branches") != 0):
             raise ValueError("baseline must contain executable zero-covered assets")
-        entry = measured.get(name)
+        # Coverage.py emits POSIX paths on Linux and backslash paths on
+        # Windows. Normalize only to the pinned roster, and reject ambiguous
+        # aliases rather than selecting one silently or counting false ZERO.
+        paths = [key for key in measured if isinstance(key, str)
+                 and key.replace("\\", "/") == name]
+        if len(paths) > 1:
+            raise ValueError("duplicate normalized coverage production path")
+        entry = measured[paths[0]] if paths else None
         if entry is None:
             rows.append({"path": name, "status": "UNKNOWN_MISSING_COVERAGE",
                          "source_blob_sha": expected,
