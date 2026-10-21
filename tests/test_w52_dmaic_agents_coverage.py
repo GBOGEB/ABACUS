@@ -61,9 +61,7 @@ def test_context_manager_missing_then_persistent_and_corrupted(tmp_path):
     module = _agent("context_manager")
     agent = module.ContextManagerAgent(tmp_path)
     assert agent.load_context() == {}
-    assert agent.save_context({"lane": "test", "value": [1, 2]}) == {
-        "success": True
-    }
+    assert agent.save_context({"lane": "test", "value": [1, 2]}) == {"success": True}
     assert agent.load_context() == {"lane": "test", "value": [1, 2]}
     agent.context_file.write_text("{corrupt", encoding="utf-8")
     with pytest.raises(json.JSONDecodeError):
@@ -107,16 +105,12 @@ def test_dependency_graph_reads_imports_and_skips_unparseable_files(tmp_path):
     module = _agent("dependency_graph")
     agent = module.DependencyGraphAgent(tmp_path)
     source = tmp_path / "good.py"
-    source.write_text(
-        "import os, json\nfrom pathlib import Path\n", encoding="utf-8"
-    )
+    source.write_text("import os, json\nfrom pathlib import Path\n", encoding="utf-8")
     broken = tmp_path / "broken.py"
     broken.write_text("def invalid(:\n", encoding="utf-8")
     ignored = tmp_path / "notes.txt"
     ignored.write_text("import fake\n", encoding="utf-8")
-    graph = agent.build_graph(
-        [source, broken, ignored, tmp_path / "missing.py"]
-    )
+    graph = agent.build_graph([source, broken, ignored, tmp_path / "missing.py"])
     assert set(graph[str(source)]) == {"os", "json", "pathlib"}
     assert set(graph) == {str(source)}
 
@@ -166,6 +160,8 @@ def test_health_checker_uses_controlled_sensor_bytes_not_host_sensors(tmp_path):
     assert values["status"] == "healthy"
     assert values["timestamp"]
 
-    with patch.object(module.psutil, "cpu_percent", side_effect=RuntimeError("offline")):
+    with patch.object(
+        module.psutil, "cpu_percent", side_effect=RuntimeError("offline")
+    ):
         with pytest.raises(RuntimeError, match="offline"):
             agent.check_health()
