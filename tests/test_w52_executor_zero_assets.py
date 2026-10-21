@@ -86,19 +86,19 @@ def test_quick_output_entrypoint_missing_and_complete_fixture(
     measure.mkdir(parents=True)
     (measure / "result.json").write_text("{}", encoding="utf-8")
     (output / "agent_registry.json").write_text(
-        json.dumps(
-            {"version": "fixture", "agents": {"a": {"category": "analysis"}}}
-        ),
+        json.dumps({"version": "fixture", "agents": {"a": {"category": "analysis"}}}),
         encoding="utf-8",
     )
     (measure.parent / "orchestration_statistics.json").write_text(
         json.dumps(
-            {"orchestration": {
-                "total_phases": 1,
-                "successful_phases": 1,
-                "failed_phases": 0,
-                "total_duration_seconds": 0.1,
-            }}
+            {
+                "orchestration": {
+                    "total_phases": 1,
+                    "successful_phases": 1,
+                    "failed_phases": 0,
+                    "total_duration_seconds": 0.1,
+                }
+            }
         ),
         encoding="utf-8",
     )
