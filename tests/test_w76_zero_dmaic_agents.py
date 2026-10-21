@@ -124,7 +124,7 @@ class W76DMAICAgentCoverage(unittest.TestCase):
         agent.save_context({"pulse": 2})
         self.assertEqual(agent.load_context(), {"pulse": 2})
         self.assertEqual(agent.get_info()["name"], "context_manager")
-        self.assertTrue(agent.context_file.is_relative_to(self.root))
+        self.assertTrue(agent.context_file.is_relative_to(self.root.resolve()))
 
     def test_context_manager_corrupt_json_fails_closed(self):
         agent = load("context_manager").ContextManagerAgent(self.root)
