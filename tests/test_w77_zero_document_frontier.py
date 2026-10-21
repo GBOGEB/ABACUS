@@ -87,8 +87,9 @@ def test_scan_ignores_old_content(recent, tmp_path):
 def test_scan_nested_phase_reports(recent, tmp_path):
     _file(tmp_path, "nested/sub/phase_report.json", "{}")
     recent.scan_directories(["recent"])
-    assert recent.results["json_files"][0]["path"].endswith(
-        "recent/nested/sub/phase_report.json"
+    observed = recent.results["json_files"][0]["path"]
+    assert Path(observed).parts[-4:] == (
+        "recent", "nested", "sub", "phase_report.json"
     )
     assert len(recent.results["gaps"]["json"]) == 3
 
@@ -103,7 +104,9 @@ def test_yaml_full_contract_and_nonmapping_are_gap_free(recent, tmp_path):
     recent.scan_directories(["recent"])
     assert len(recent.results["yaml_files"]) == 2
     assert recent.results["gaps"]["yaml"] == []
-    assert recent.results["yaml_files"][1]["keys"] == []
+    by_name = {item["name"]: item for item in recent.results["yaml_files"]}
+    assert by_name["list.yml"]["keys"] == []
+    assert set(by_name["complete.yml"]["keys"]) == {"actions", "sprints"}
 
 
 def test_yaml_malformed_is_recorded_not_discarded(recent, tmp_path):
