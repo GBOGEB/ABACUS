@@ -92,7 +92,7 @@ class W77LegacyReleaseAndSessionTests(unittest.TestCase):
             obj = importlib.import_module(
                 "abacus_v21_postdeployment_validation").PostDeploymentValidation()
             result = obj.validate_production_health()
-            self.assertIn(result["status"], ("CHECKING", "COMPLETED", "HEALTHY"))
+            self.assertIn(result["status"], ("ALL_HEALTHY",))
             self.assertGreater(len(result["checks"]), 0)
             self.assertEqual(obj.results["status"], "INITIATED")
             self.assertNotIn("observed_native_receiver_id", result)
