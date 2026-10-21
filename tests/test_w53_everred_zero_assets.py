@@ -75,9 +75,7 @@ def test_dow_all_six_successes_are_distinct_and_positive(tmp_path):
     executor = mod.DOWIntegrationExecutor()
     success = {"status": "success", "output": "synthetic"}
     with (
-        patch.object(
-            executor, "_run_agent", side_effect=lambda *args: success.copy()
-        ),
+        patch.object(executor, "_run_agent", side_effect=lambda *args: success.copy()),
         patch.object(
             executor, "_run_ranking", side_effect=lambda *args: success.copy()
         ),
@@ -188,9 +186,7 @@ def test_real_execution_unexpected_runner_exception_is_visible(tmp_path):
     mod = _runner()
     target = tmp_path / "safe.py"
     target.write_text("pass\n", encoding="utf-8")
-    with patch.object(
-        mod.subprocess, "run", side_effect=OSError("no runner")
-    ):
+    with patch.object(mod.subprocess, "run", side_effect=OSError("no runner")):
         result = mod.run_python_file(target, tmp_path)
     assert result["status"] == "ERROR"
     assert result["exit_code"] == -1
@@ -202,9 +198,7 @@ def _status(verdict):
         "verdict": verdict,
         "n_open_gates": 1 if verdict == "ISSUE_RFI" else 0,
         "energy_model": "UNVERIFIED_SYNTHETIC",
-        "open_gates": (
-            [{"id": "TEST-GATE"}] if verdict == "ISSUE_RFI" else []
-        ),
+        "open_gates": ([{"id": "TEST-GATE"}] if verdict == "ISSUE_RFI" else []),
     }
 
 
@@ -217,9 +211,7 @@ def test_package_headers_distinguish_rfi_and_ready_without_promotion():
     assert mod._divider("APPENDIX") == "\n---\n\n## APPENDIX\n\n"
 
 
-def test_package_assembly_uses_only_local_trusted_fixture_files(
-    tmp_path, monkeypatch
-):
+def test_package_assembly_uses_only_local_trusted_fixture_files(tmp_path, monkeypatch):
     mod = _package()
     source = tmp_path / "skeleton.md"
     gen = tmp_path / "generated"
@@ -276,8 +268,6 @@ def test_canonical_books_positive_phases_and_registry(tmp_path, monkeypatch):
     validator._test_document_registry()
     assert validator.results["tests_passed"] == 2
     validator._generate_report()
-    saved = json.loads(
-        (folder / "VALIDATION_REPORT.json").read_text(encoding="utf-8")
-    )
+    saved = json.loads((folder / "VALIDATION_REPORT.json").read_text(encoding="utf-8"))
     assert saved["tests_run"] == 2
     assert saved["tests_failed"] == 0
