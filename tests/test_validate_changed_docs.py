@@ -26,7 +26,8 @@ class ValidateChangedDocsTests(unittest.TestCase):
 
         def fake_run(args, *, check=True):
             if args[:3] == ["git", "cat-file", "-e"]:
-                return _completed(args)
+                # A PR head that is not a synthetic merge has no 2nd parent.
+                return _completed(args, returncode=int(args[3].startswith("HEAD^2")))
             if args[:3] == ["git", "merge-base", "a" * 40]:
                 return _completed(args, stdout="f" * 40 + "\n")
             if args[:2] == ["git", "fetch"]:

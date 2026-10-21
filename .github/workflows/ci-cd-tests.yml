@@ -145,20 +145,28 @@ jobs:
           BASE_SHA: ${{ github.event.pull_request.base.sha }}
         run: |
           set -euo pipefail
+          # The event's base.sha goes stale once the base branch moves; the
+          # merge commit's first parent is the base tip the PR merges into.
+          if git cat-file -e 'HEAD^2^{commit}' 2>/dev/null; then
+            base="$(git rev-parse 'HEAD^1')"
+          else
+            git fetch --no-tags --depth=1 origin "$BASE_SHA"
+            base="$BASE_SHA"
+          fi
           # Run the policy from the PR base rather than untrusted proposed code.
           ratchet="$RUNNER_TEMP/ci_pr_debt_ratchet.py"
           if ! git cat-file -e \
-            "$BASE_SHA:scripts/ci_pr_debt_ratchet.py" 2>/dev/null; then
+            "$base:scripts/ci_pr_debt_ratchet.py" 2>/dev/null; then
             for tool in black isort flake8; do
               echo "${tool}_full_scan=required" >> "$GITHUB_OUTPUT"
             done
             exit 0
           fi
-          git show "$BASE_SHA:scripts/ci_pr_debt_ratchet.py" > "$ratchet"
+          git show "$base:scripts/ci_pr_debt_ratchet.py" > "$ratchet"
           for tool in black isort flake8; do
             rc=0
             python -I "$ratchet" --root "$GITHUB_WORKSPACE" \
-              --base "$BASE_SHA" --tools "$tool" \
+              --base "$base" --tools "$tool" \
               --summary "$GITHUB_STEP_SUMMARY" || rc=$?
             if [[ "$rc" -eq 3 ]]; then
               # Config/tool changes require a successful full scan.
@@ -809,12 +817,6 @@ jobs:
             security-red-root-delta.json
           if-no-files-found: warn
 
-      - name: Fetch PR base for new-debt ratchet
-        if: github.event_name == 'pull_request'
-        env:
-          BASE_SHA: ${{ github.event.pull_request.base.sha }}
-        run: git fetch --no-tags --depth=1 origin "$BASE_SHA"
-
       # On a pull request, Bandit admission is the new-debt ratchet: the
       # PR's changed Python files must not gain Bandit findings. Safety is
       # not relaxed: its outcome is enforced on every event.
@@ -823,10 +825,17 @@ jobs:
         if: github.event_name == 'pull_request'
         env:
           BASE_SHA: ${{ github.event.pull_request.base.sha }}
-        # The base revision's ratchet runs, as in Code Quality.
+        # The base revision's ratchet runs, as in Code Quality, against the
+        # merge commit's first parent rather than the event's stale base.sha.
         run: |
+          if git cat-file -e 'HEAD^2^{commit}' 2>/dev/null; then
+            base="$(git rev-parse 'HEAD^1')"
+          else
+            git fetch --no-tags --depth=1 origin "$BASE_SHA"
+            base="$BASE_SHA"
+          fi
           ratchet="$RUNNER_TEMP/ci_pr_debt_ratchet.py"
-          if ! git show "$BASE_SHA:scripts/ci_pr_debt_ratchet.py" \
+          if ! git show "$base:scripts/ci_pr_debt_ratchet.py" \
             > "$ratchet" 2>/dev/null; then
             echo "::notice::No ratchet at the base; the full scan decides."
             echo "full_scan=required" >> "$GITHUB_OUTPUT"
@@ -834,7 +843,7 @@ jobs:
           fi
           rc=0
           python -I "$ratchet" --root "$GITHUB_WORKSPACE" \
-            --base "$BASE_SHA" --tools bandit \
+            --base "$base" --tools bandit \
             --summary "$GITHUB_STEP_SUMMARY" || rc=$?
           # Exit 3: Bandit's config, install or invocation changed; the
           # full Bandit scan decides.

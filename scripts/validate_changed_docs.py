@@ -76,6 +76,12 @@ def _github_diff_ranges() -> List[List[str]]:
         ancestor = merge_base.stdout.strip()
         if not ancestor or not _commit_exists(ancestor):
             raise RuntimeError("Invalid PR merge base; fail closed")
+        # base.sha is frozen at the event; once the base branch moves it is
+        # an ancestor of the synthetic merge's first parent, and diffing from
+        # it would charge later base-branch commits to the PR. The first
+        # parent is the base tip the PR actually merges into.
+        if _commit_exists("HEAD^2"):
+            return [["HEAD^1..HEAD"]]
         return [[f"{ancestor}..HEAD"]]
 
     for candidate in (base_sha, before):
