@@ -1,6 +1,7 @@
 """Native wave-pulse telemetry is read-only and fails closed."""
 from __future__ import annotations
 
+import copy
 import json
 import sys
 import tempfile
@@ -16,6 +17,7 @@ SHA = "a" * 40
 def fixture(run_id=100, durations=((0, 10), (5, 15))):
     run = {
         "id": run_id, "head_sha": SHA, "status": "completed",
+        "conclusion": "success", "run_attempt": 1,
         "repository": {"full_name": "GBOGEB/ABACUS"},
     }
     jobs = []
@@ -86,7 +88,7 @@ class NativeFanoutTests(unittest.TestCase):
             fanout.observe(run, jobs)
         jobs["jobs"][0]["run_id"] = 100
         jobs["jobs"][0]["completed_at"] = "2026-10-15T07:00:00Z"
-        with self.assertRaisesRegex(ValueError, "negative worker"):
+        with self.assertRaisesRegex(ValueError, "nonpositive worker"):
             fanout.observe(run, jobs)
 
     def test_no_worker_population_is_not_comparable(self):
@@ -109,14 +111,165 @@ class NativeFanoutTests(unittest.TestCase):
     def test_rendering_offline_and_escapes_strings(self):
         a = fanout.observe(*fixture(100))
         b = fanout.observe(*fixture(101))
-        b["run_url"] = "https://example.com/<script>alert(1)</script>"
         report = fanout.compare(a, b)
+        # Renderer escapes even an untrusted post-comparison imported URL.
+        report["after"]["run_url"] = "https://example.com/<script>alert(1)</script>"
         output = fanout.render_html(report)
         self.assertIn("&lt;script&gt;", output)
         self.assertNotIn("<script>", output)
         self.assertIn("offline", fanout.render_markdown(report).lower()
                       + " offline")
         self.assertIn("UNKNOWN", fanout.render_markdown(report))
+
+
+    def test_completed_runs_require_real_attempt_and_conclusion(self):
+        for value in (None, True, "1", 0, -1, 1.5):
+            with self.subTest(value=value):
+                run, jobs = fixture()
+                run["run_attempt"] = value
+                with self.assertRaisesRegex(ValueError, "run attempt"):
+                    fanout.observe(run, jobs)
+        run, jobs = fixture()
+        run.pop("conclusion")
+        with self.assertRaisesRegex(ValueError, "run conclusion"):
+            fanout.observe(run, jobs)
+
+    def test_job_attempt_mismatch_rejected(self):
+        run, jobs = fixture()
+        jobs["jobs"][0]["run_attempt"] = 2
+        with self.assertRaisesRegex(ValueError, "attempt mismatch"):
+            fanout.observe(run, jobs)
+
+    def test_non_success_census_and_no_false_green(self):
+        run, jobs = fixture()
+        jobs["jobs"][0]["conclusion"] = "cancelled"
+        jobs["jobs"][1]["conclusion"] = "failure"
+        report = fanout.observe(run, jobs)
+        self.assertEqual(report["worker_count"], 2)
+        self.assertEqual(report["successful_workers"], 0)
+        self.assertEqual(report["failed_workers"], 1)
+        self.assertEqual(report["non_success_workers"], 2)
+        self.assertEqual(report["worker_conclusions"]["cancelled"], 1)
+        self.assertEqual(report["worker_conclusions"]["failure"], 1)
+        self.assertIsNone(report["authenticated_crew_dispatches"])
+
+    def test_nonterminal_or_unknown_worker_conclusions_rejected(self):
+        for invalid in (None, "in_progress", "complete", "unknown"):
+            with self.subTest(conclusion=invalid):
+                run, jobs = fixture()
+                jobs["jobs"][0]["conclusion"] = invalid
+                with self.assertRaisesRegex(ValueError, "conclusion"):
+                    fanout.observe(run, jobs)
+        run, jobs = fixture()
+        jobs["jobs"][0]["status"] = "queued"
+        with self.assertRaisesRegex(ValueError, "nonterminal worker"):
+            fanout.observe(run, jobs)
+
+    def test_created_to_start_p95_requires_complete_worker_population(self):
+        run, jobs = fixture()
+        jobs["jobs"][0]["created_at"] = "2026-10-15T07:59:50Z"
+        jobs["jobs"][1]["created_at"] = "2026-10-15T07:59:55Z"
+        measured = fanout.observe(run, jobs)
+        self.assertEqual(measured["queue_observation_count"], 2)
+        self.assertEqual(measured["created_to_start_p95_seconds"], 10)
+        self.assertEqual(measured["execution_p95_seconds"], 10)
+        self.assertEqual(measured["queue_qualification"], "COMPLETE_JOB_METADATA")
+        jobs["jobs"][1].pop("created_at")
+        unknown = fanout.observe(run, jobs)
+        self.assertEqual(unknown["queue_observation_count"], 1)
+        self.assertIsNone(unknown["created_to_start_p95_seconds"])
+        self.assertEqual(unknown["queue_qualification"], "INCOMPLETE_JOB_METADATA")
+
+    def test_negative_created_to_start_is_rejected(self):
+        run, jobs = fixture()
+        jobs["jobs"][0]["created_at"] = "2026-10-15T08:00:02Z"
+        with self.assertRaisesRegex(ValueError, "negative created-to-start"):
+            fanout.observe(run, jobs)
+
+    def test_zero_duration_and_negative_time_are_rejected(self):
+        for end in ("2026-10-15T08:00:00Z", "2026-10-15T07:59:59Z"):
+            with self.subTest(end=end):
+                run, jobs = fixture()
+                jobs["jobs"][0]["completed_at"] = end
+                with self.assertRaisesRegex(ValueError, "nonpositive"):
+                    fanout.observe(run, jobs)
+
+    def test_duplicate_worker_population_does_not_create_speed_credit(self):
+        run, jobs = fixture()
+        duplicate = copy.deepcopy(jobs["jobs"][0])
+        jobs["jobs"].append(duplicate)
+        jobs["total_count"] = 3
+        with self.assertRaisesRegex(ValueError, "duplicate job"):
+            fanout.observe(run, jobs)
+
+    def test_large_disjoint_worker_fanout_and_permutation_invariance(self):
+        durations = tuple((index, index + 10) for index in range(30))
+        run, jobs = fixture(durations=durations)
+        first = fanout.observe(run, jobs)
+        self.assertEqual(first["worker_count"], 30)
+        self.assertEqual(first["peak_concurrency"], 10)
+        self.assertEqual(first["execution_p95_seconds"], 10)
+        self.assertEqual(first["non_success_workers"], 0)
+        jobs["jobs"].reverse()
+        second = fanout.observe(run, jobs)
+        self.assertEqual(first, second)
+
+    def test_compare_withholds_partial_queue_delta(self):
+        before = fanout.observe(*fixture(100))
+        run, jobs = fixture(101)
+        for job in jobs["jobs"]:
+            job["created_at"] = "2026-10-15T07:59:50Z"
+        after = fanout.observe(run, jobs)
+        report = fanout.compare(before, after)
+        self.assertIsNone(report["delta"]["created_to_start_p95_seconds"])
+        self.assertIn("UNKNOWN", fanout.render_markdown(report))
+        self.assertIn("UNKNOWN", fanout.render_html(report))
+
+    def test_compare_rejects_tampered_run_and_metrics(self):
+        before = fanout.observe(*fixture(100))
+        after = fanout.observe(*fixture(101))
+        mutations = (
+            ("worker_count", 4),
+            ("successful_workers", 3),
+            ("non_success_workers", 2),
+            ("peak_concurrency", 3),
+            ("queue_observation_count", 8),
+            ("summed_job_seconds", -2),
+            ("overlap_factor", 999),
+            ("execution_p95_seconds", float("nan")),
+            ("run_url", "https://attacker.invalid/not-github"),
+            ("run_attempt", 0),
+            ("merge_admission", "PASS"),
+            ("root_closures", 1),
+            ("worker_job_ids_sha256", "0" * 64),
+            ("worker_job_ids", [10001, 10001]),
+            ("queue_qualification", "COMPLETE_JOB_METADATA"),
+            ("created_to_start_p95_seconds", 0),
+        )
+        for field, value in mutations:
+            with self.subTest(field=field):
+                forged = copy.deepcopy(after)
+                forged[field] = value
+                with self.assertRaises(ValueError):
+                    fanout.compare(before, forged)
+
+    def test_compare_rejects_spoofed_conclusion_census(self):
+        before = fanout.observe(*fixture(100))
+        after = fanout.observe(*fixture(101))
+        after["worker_conclusions"]["success"] = 0
+        with self.assertRaisesRegex(ValueError, "conclusion census"):
+            fanout.compare(before, after)
+
+    def test_valid_known_queue_comparison_is_numeric(self):
+        a, aj = fixture(100)
+        b, bj = fixture(101)
+        for job in aj["jobs"]:
+            job["created_at"] = "2026-10-15T07:59:50Z"
+        for job in bj["jobs"]:
+            job["created_at"] = "2026-10-15T07:59:40Z"
+        report = fanout.compare(fanout.observe(a, aj), fanout.observe(b, bj))
+        self.assertEqual(report["delta"]["created_to_start_p95_seconds"], 10)
+        self.assertEqual(report["matched_population"], "DAB_PROPOSAL_WORKERS")
 
     def test_cli_generates_three_synchronized_surfaces(self):
         a, aj = fixture(100)

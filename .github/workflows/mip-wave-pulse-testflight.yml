@@ -22,6 +22,7 @@ jobs:
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
         with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
           persist-credentials: false
       - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97
         with:
@@ -267,6 +268,157 @@ jobs:
           python -m py_compile tools/mip2/mip_native_fanout.py
           python -m unittest discover -s tests \
             -p test_mip_native_fanout.py -v
+      - name: Exact-head fanout branch/statement coverage
+        env:
+          EXPECTED_HEAD: ${{ github.event.pull_request.head.sha || github.sha }}
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$EXPECTED_HEAD"
+          python -m pip install "coverage[toml]==7.13.3"
+          mkdir -p test_reports/native-fanout/focused
+          cat > test_reports/native-fanout/focused/baseline_runner.py <<'PY'
+          """Fixed original method population on the same W75 source blob."""
+          import importlib.util
+          import pathlib
+          import sys
+          import unittest
+
+          sys.path.insert(0, str(pathlib.Path.cwd()))
+          path = pathlib.Path("tests/test_mip_native_fanout.py")
+          spec = importlib.util.spec_from_file_location("w75_tests", path)
+          module = importlib.util.module_from_spec(spec)
+          spec.loader.exec_module(module)
+          methods = (
+              "test_measures_overlapping_worker_intervals",
+              "test_detects_gaps_and_peak",
+              "test_nonterminal_run_is_not_proof",
+              "test_duplicate_job_ids_are_rejected",
+              "test_truncated_job_list_not_zero",
+              "test_rejects_sha_and_repository_mismatch",
+              "test_rejects_wrong_run_id_or_time",
+              "test_no_worker_population_is_not_comparable",
+              "test_comparison_requires_two_distinct_real_runs",
+              "test_rendering_offline_and_escapes_strings",
+              "test_cli_generates_three_synchronized_surfaces",
+          )
+          suite = unittest.TestSuite(
+              module.NativeFanoutTests(name) for name in methods
+          )
+          result = unittest.TextTestRunner(verbosity=2).run(suite)
+          raise SystemExit(0 if result.wasSuccessful() else 1)
+          PY
+          python -m coverage run --branch \
+            --include=tools/mip2/mip_native_fanout.py \
+            test_reports/native-fanout/focused/baseline_runner.py \
+            2>&1 | tee test_reports/native-fanout/focused/baseline.log
+          python -m coverage json \
+            --include=tools/mip2/mip_native_fanout.py \
+            -o test_reports/native-fanout/focused/baseline-coverage.json
+          python -m coverage run --branch \
+            --include=tools/mip2/mip_native_fanout.py \
+            -m unittest discover -s tests \
+            -p test_mip_native_fanout.py -v \
+            2>&1 | tee test_reports/native-fanout/focused/unittest.log
+          python -m coverage json \
+            --include=tools/mip2/mip_native_fanout.py \
+            -o test_reports/native-fanout/focused/coverage.json
+          python - <<'PY'
+          import hashlib
+          import json
+          import os
+          import pathlib
+          import re
+          import subprocess
+
+          output = pathlib.Path("test_reports/native-fanout/focused")
+          obj = json.loads((output / "coverage.json").read_text())
+          expected = "tools/mip2/mip_native_fanout.py"
+          files = obj.get("files", {})
+          if len(files) != 1:
+              raise SystemExit("W75 expected exactly one covered module")
+          source = next(iter(files))
+          if source.replace("\\", "/").split("/")[-3:] != [
+              "tools", "mip2", "mip_native_fanout.py"
+          ]:
+              raise SystemExit("W75 measured wrong source")
+          baseline = json.loads(
+              (output / "baseline-coverage.json").read_text()
+          )
+          baseline_files = baseline.get("files", {})
+          if set(baseline_files) != set(files):
+              raise SystemExit("W75 baseline/expanded source scope differs")
+          baseline_totals = baseline["totals"]
+          totals = obj["totals"]
+          summary = files[source]["summary"]
+          fields = ("covered_lines", "num_statements",
+                    "covered_branches", "num_branches")
+          if obj.get("meta", {}).get("branch_coverage") is not True:
+              raise SystemExit("W75 branch instrumentation absent")
+          if any(type(totals.get(k)) is not int or
+                 totals[k] != summary.get(k) for k in fields):
+              raise SystemExit("W75 totals not source-matched")
+          if any(totals[x] > totals[n] or totals[n] <= 0
+                 for x, n in ((fields[0], fields[1]),
+                              (fields[2], fields[3]))):
+              raise SystemExit("W75 invalid denominators")
+          if any(type(baseline_totals.get(k)) is not int or
+                 baseline_totals[k] != baseline_files[source]["summary"][k]
+                 for k in fields):
+              raise SystemExit("W75 baseline totals not source-matched")
+          if any(baseline_totals[n] != totals[n] or
+                 baseline_totals[x] > totals[x]
+                 for x, n in ((fields[0], fields[1]),
+                              (fields[2], fields[3]))):
+              raise SystemExit("W75 unmatched population or lost coverage")
+          raw = (output / "unittest.log").read_bytes()
+          match = re.search(rb"Ran (\d+) tests?", raw)
+          if not match or int(match.group(1)) < 24:
+              raise SystemExit("W75 focused test population not reached")
+          if not any(row.strip() == b"OK" for row in raw.splitlines()):
+              raise SystemExit("W75 focused tests not all passing")
+          actual = subprocess.check_output(
+              ["git", "rev-parse", "HEAD"], text=True
+          ).strip()
+          if actual != os.environ["EXPECTED_HEAD"]:
+              raise SystemExit("W75 checkout/expected SHA mismatch")
+          receipt = {
+              "schema": "abacus.mip.w75-module-coverage.v1",
+              "source_head_sha": actual,
+              "run_id": os.environ["GITHUB_RUN_ID"],
+              "run_attempt": os.environ["GITHUB_RUN_ATTEMPT"],
+              "test_count": int(match.group(1)),
+              "source_blob": subprocess.check_output(
+                  ["git", "rev-parse", "HEAD:" + expected], text=True
+              ).strip(),
+              "source_sha256": hashlib.sha256(
+                  pathlib.Path(expected).read_bytes()
+              ).hexdigest(),
+              "statements": [totals[fields[0]], totals[fields[1]]],
+              "branches": [totals[fields[2]], totals[fields[3]]],
+              "original_method_population": 11,
+              "expanded_method_population": int(match.group(1)),
+              "baseline_statements": [
+                  baseline_totals[fields[0]], baseline_totals[fields[1]]
+              ],
+              "baseline_branches": [
+                  baseline_totals[fields[2]], baseline_totals[fields[3]]
+              ],
+              "matched_newly_covered_statements": (
+                  totals[fields[0]] - baseline_totals[fields[0]]
+              ),
+              "matched_newly_covered_branches": (
+                  totals[fields[2]] - baseline_totals[fields[2]]
+              ),
+              "matched_population": "SAME_SOURCE_BLOB_EXPANDED_TESTS",
+              "test_log_sha256": hashlib.sha256(raw).hexdigest(),
+              "scope": "FOCUSED_PRODUCER_NOT_GLOBAL_MAIN",
+              "admission": "HOLD",
+          }
+          (output / "receipt.json").write_text(
+              json.dumps(receipt, indent=2, sort_keys=True) + "\n"
+          )
+          print(json.dumps(receipt, sort_keys=True))
+          PY
       - name: Fetch retained native GitHub run/job metadata
         env:
           GH_TOKEN: ${{ github.token }}
