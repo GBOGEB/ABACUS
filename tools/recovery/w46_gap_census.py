@@ -125,7 +125,6 @@ def rollup(report, *, head_sha, expected_totals=None, max_lanes=6):
     }
 
 
-
 def compare_zero_frontier(
     before, after, *, before_head, after_head,
     before_source_blobs=None, after_source_blobs=None,
@@ -193,25 +192,7 @@ def compare_zero_frontier(
             before_source_blobs is None or after_source_blobs is None):
         return stop('UNKNOWN_SOURCE_OR_CONFIG_IDENTITY')
 
-    sha256 = re.compile(r'^[0-9a-f]{64}
-    p = argparse.ArgumentParser()
-    p.add_argument('--zip', type=Path, required=True)
-    p.add_argument('--head', required=True)
-    p.add_argument('--out', type=Path, required=True)
-    args = p.parse_args(argv)
-    with zipfile.ZipFile(args.zip) as z:
-        report = json.loads(z.read('coverage-contexts.json'))
-        full = json.loads(z.read('coverage-dab.json'))['full_measurement']
-    tally = rollup(report, head_sha=args.head, expected_totals={
-        k: full[k] for k in _COUNTERS})
-    args.out.parent.mkdir(parents=True, exist_ok=True)
-    args.out.write_text(json.dumps(tally, indent=2, sort_keys=True) + '\n', encoding='utf-8')
-    return 0
-
-
-if __name__ == '__main__':
-    raise SystemExit(main())
-)
+    sha256 = re.compile(r'^[0-9a-f]{64}$')
     for name, digest in (
         ('before_config', before_config_sha256),
         ('after_config', after_config_sha256),
