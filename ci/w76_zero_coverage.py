@@ -11,7 +11,6 @@ import argparse
 import hashlib
 import json
 import re
-import subprocess
 from pathlib import Path
 
 SCHEMA = "codepurple.zero-asset.pulse.v1"
@@ -172,10 +171,30 @@ def measure(baseline, coverage, source_sha, get_blob, test_counts):
     }
 
 
-def git(repo, *args):
-    return subprocess.check_output(["git", "-C", str(repo), *args],
-                                   text=True, stderr=subprocess.DEVNULL,
-                                   timeout=15).strip()
+def exact_checkout_sha(repo):
+    """Accept only a detached Git HEAD; no shell execution or symbolic guessing."""
+    dotgit = repo / ".git"
+    if not dotgit.is_dir() or (dotgit / "HEAD").is_symlink():
+        raise ValueError("Git checkout identity unavailable: HOLD")
+    head = (dotgit / "HEAD").read_text(encoding="ascii").strip()
+    if not SHA40.fullmatch(head):
+        raise ValueError("detached exact Git HEAD required: HOLD")
+    return head
+
+
+def source_blob_sha(repo, path):
+    """Compute the canonical Git blob object ID from the checked-out bytes."""
+    name = verify_path(path)
+    target = repo / name
+    if (not target.is_file() or target.is_symlink()
+            or not target.resolve().is_relative_to(repo.resolve())):
+        raise ValueError("unsafe or missing production source: " + name)
+    data = target.read_bytes()
+    # Git object IDs are SHA-1 object names, NOT a security signature.
+    return hashlib.sha1(
+        b"blob " + str(len(data)).encode("ascii") + b"\0" + data,
+        usedforsecurity=False,
+    ).hexdigest()
 
 
 def main():
@@ -188,7 +207,7 @@ def main():
     parser.add_argument("--out", type=Path, required=True)
     opts = parser.parse_args()
     repo = opts.repository_root.resolve()
-    if git(repo, "rev-parse", "HEAD") != opts.expected_head:
+    if exact_checkout_sha(repo) != opts.expected_head:
         raise SystemExit("EXACT_HEAD_SOURCE_MISMATCH")
     base_bytes, cov_bytes, log_bytes = (
         opts.baseline.read_bytes(), opts.coverage_json.read_bytes(),
@@ -196,13 +215,10 @@ def main():
     baseline, coverage = json.loads(base_bytes), json.loads(cov_bytes)
 
     def source_blob(path):
-        tree_blob = git(repo, "rev-parse", "HEAD:" + verify_path(path))
-        working_blob = git(repo, "hash-object", "--", path)
-        if tree_blob != working_blob:
-            raise ValueError("dirty or untracked production source: " + path)
-        if (repo / path).is_symlink() or not (repo / path).is_file():
-            raise ValueError("unsafe tracked source: " + path)
-        return working_blob
+        # The historical baseline binds the exact immutable source Git blob.
+        # This compares real working bytes to that source ID without spawning
+        # a subprocess or granting any external execution authority.
+        return source_blob_sha(repo, path)
 
     receipt = measure(baseline, coverage, opts.expected_head, source_blob,
                       parse_terminal(log_bytes))
