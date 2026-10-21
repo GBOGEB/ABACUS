@@ -194,6 +194,7 @@ def test_auxiliary_federation_source_exists_contract(
 
 
 def test_product_version_source_and_installed_fallback(tmp_path):
+    pytest.importorskip("tomllib")  # 3.11+: native stdlib used by the SUT
     m = source_module("DMAIC_V3/product_version.py")
     assert m.get_product_version() == m.ABACUS_VERSION
     project_file = tmp_path / "pyproject.toml"
