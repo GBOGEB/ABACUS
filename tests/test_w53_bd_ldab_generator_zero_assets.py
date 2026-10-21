@@ -92,9 +92,7 @@ def test_pipeline_no_source_execution_without_mocked_runner(tmp_path):
     with patch.object(
         mod.subprocess,
         "run",
-        return_value=SimpleNamespace(
-            returncode=0, stdout="checked\n", stderr=""
-        ),
+        return_value=SimpleNamespace(returncode=0, stdout="checked\n", stderr=""),
     ) as called:
         report = system.test_top_level_script(script)
     assert called.call_count == 1
@@ -113,7 +111,9 @@ def test_pipeline_nonzero_exit_and_runner_exception_never_pass(tmp_path):
         mod.subprocess,
         "run",
         return_value=SimpleNamespace(
-            returncode=12, stdout="", stderr="invalid",
+            returncode=12,
+            stdout="",
+            stderr="invalid",
         ),
     ):
         failed = system.test_top_level_script(script)
@@ -154,7 +154,9 @@ def test_pipeline_invalid_telemetry_is_not_promoted_to_success(tmp_path):
         mod.subprocess,
         "run",
         return_value=SimpleNamespace(
-            returncode=0, stdout="TESTS_RUN:not-a-number", stderr="",
+            returncode=0,
+            stdout="TESTS_RUN:not-a-number",
+            stderr="",
         ),
     ):
         bad = system.test_core_module_with_io(source)
