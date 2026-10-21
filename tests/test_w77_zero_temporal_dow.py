@@ -3,6 +3,7 @@
 All phase and subprocess interfaces are stubs; assertions target genuine
 production decision logic and preserve blocked/failed states.
 """
+
 from __future__ import annotations
 
 import importlib.util
@@ -56,9 +57,7 @@ def test_temporal_invalid_phase_refused_before_any_snapshot(temporal, tmp_path):
     assert runner.temporal_snapshots == []
 
 
-def test_temporal_tuple_success_emits_local_before_after_and_devour(
-    temporal, tmp_path
-):
+def test_temporal_tuple_success_emits_local_before_after_and_devour(temporal, tmp_path):
     class FakePhase:
         def __init__(self, config=None, state_manager=None):
             assert config is not None and state_manager is not None
@@ -166,9 +165,7 @@ def test_temporal_run_all_stops_at_first_red_and_saves_summary(
     assert json.loads(saved.read_text())["failed_phases"] == 1
 
 
-def test_temporal_cli_no_selection_refuses_implicit_work(
-    temporal, monkeypatch, capsys
-):
+def test_temporal_cli_no_selection_refuses_implicit_work(temporal, monkeypatch, capsys):
     class FakeRunner:
         def __init__(self, **kwargs):
             pass
@@ -195,7 +192,8 @@ def test_temporal_cli_phase_failure_is_nonzero(temporal, monkeypatch):
 def test_dow_missing_target_is_error_without_dispatch(dow, tmp_path, monkeypatch):
     executor = dow.DOWIntegrationExecutor()
     monkeypatch.setattr(
-        executor, "_run_agent",
+        executor,
+        "_run_agent",
         lambda *args: pytest.fail("forbidden dispatch"),
     )
     result = executor.execute_pipeline(1, str(tmp_path / "missing"))
@@ -216,7 +214,8 @@ def test_dow_six_required_stages_success_only_when_each_succeeds(
 
     monkeypatch.setattr(executor, "_run_agent", mark)
     monkeypatch.setattr(
-        executor, "_run_convergence",
+        executor,
+        "_run_convergence",
         lambda *a: mark("convergence"),
     )
     monkeypatch.setattr(executor, "_run_ranking", lambda *a: mark("ranking"))
@@ -225,15 +224,17 @@ def test_dow_six_required_stages_success_only_when_each_succeeds(
     assert result["status"] == "success"
     assert result["required_stages"] == result["successful_stages"] == 6
     assert observed == [
-        "dow_metadata_injector", "dow_recursive_hooks_injector",
-        "convergence", "dow_knowledge_extractor", "ranking", "validation",
+        "dow_metadata_injector",
+        "dow_recursive_hooks_injector",
+        "convergence",
+        "dow_knowledge_extractor",
+        "ranking",
+        "validation",
     ]
 
 
 @pytest.mark.parametrize("fail_stage", [1, 2, 3, 4, 5, 6])
-def test_dow_failure_stops_exactly_at_first_red(
-    dow, tmp_path, monkeypatch, fail_stage
-):
+def test_dow_failure_stops_exactly_at_first_red(dow, tmp_path, monkeypatch, fail_stage):
     executor = dow.DOWIntegrationExecutor()
     index = 0
 
@@ -241,13 +242,13 @@ def test_dow_failure_stops_exactly_at_first_red(
         nonlocal index
         index += 1
         return {
-            "status": "blocked_missing_parent_mechanic"
-            if index == fail_stage else "success",
+            "status": (
+                "blocked_missing_parent_mechanic" if index == fail_stage else "success"
+            ),
             "reason": "missing parent",
         }
 
-    for name in ("_run_agent", "_run_convergence", "_run_ranking",
-                 "_run_validation"):
+    for name in ("_run_agent", "_run_convergence", "_run_ranking", "_run_validation"):
         monkeypatch.setattr(executor, name, stage)
     result = executor.execute_pipeline(1, str(tmp_path))
     assert result["status"] == "error"
@@ -270,7 +271,8 @@ def test_dow_convergence_previous_iteration_is_optional(dow, tmp_path, monkeypat
     executor = dow.DOWIntegrationExecutor()
     calls = []
     monkeypatch.setattr(
-        executor, "_run_agent",
+        executor,
+        "_run_agent",
         lambda name, args: (calls.append(args), {"status": "success"})[1],
     )
     executor._run_convergence(2, str(tmp_path))
@@ -287,13 +289,18 @@ def test_dow_missing_and_stub_ranking_are_blocked(dow, tmp_path, monkeypatch):
     assert executor._run_ranking(str(tmp_path))["status"] == (
         "blocked_missing_parent_mechanic"
     )
-    path = tmp_path / "DMAIC_V3/local_mcp/agents/recursive_self_ranking_v2.3_OPTIMIZED.py"
+    path = (
+        tmp_path / "DMAIC_V3/local_mcp/agents/recursive_self_ranking_v2.3_OPTIMIZED.py"
+    )
     path.parent.mkdir(parents=True)
     path.write_text("STUB - Needs implementation\n", encoding="utf-8")
-    assert executor._run_ranking(str(tmp_path))["status"] == "blocked_stub_parent_mechanic"
+    assert (
+        executor._run_ranking(str(tmp_path))["status"] == "blocked_stub_parent_mechanic"
+    )
     path.write_text("print('synthetic only')\n", encoding="utf-8")
     monkeypatch.setattr(
-        executor, "_run_script",
+        executor,
+        "_run_script",
         lambda *args, **kwargs: {"status": "success"},
     )
     assert executor._run_ranking(str(tmp_path))["status"] == "success"
@@ -308,7 +315,8 @@ def test_dow_missing_validation_and_local_fallback(dow, tmp_path, monkeypatch):
     target.parent.mkdir(parents=True)
     target.write_text("# synthetic fixture\n")
     monkeypatch.setattr(
-        executor, "_run_script",
+        executor,
+        "_run_script",
         lambda *args, **kwargs: {"status": "success", "agent": "smoke_test"},
     )
     assert executor._run_validation(str(tmp_path))["status"] == "success"
@@ -332,10 +340,10 @@ def test_dow_subprocess_exit_contract_is_preserved(
         assert observed["return_code"] == 9
 
 
-@pytest.mark.parametrize("fault", [subprocess.TimeoutExpired("fake", 1), OSError("offline")])
-def test_dow_subprocess_exception_never_false_green(
-    dow, tmp_path, monkeypatch, fault
-):
+@pytest.mark.parametrize(
+    "fault", [subprocess.TimeoutExpired("fake", 1), OSError("offline")]
+)
+def test_dow_subprocess_exception_never_false_green(dow, tmp_path, monkeypatch, fault):
     executor = dow.DOWIntegrationExecutor()
 
     def deny(*args, **kwargs):
@@ -347,9 +355,7 @@ def test_dow_subprocess_exception_never_false_green(
     assert "Timeout" in result["error"] or "offline" in result["error"]
 
 
-def test_dow_cli_failure_is_nonzero_and_local_only(
-    dow, monkeypatch, tmp_path
-):
+def test_dow_cli_failure_is_nonzero_and_local_only(dow, monkeypatch, tmp_path):
     monkeypatch.chdir(tmp_path)
 
     class Fake:
