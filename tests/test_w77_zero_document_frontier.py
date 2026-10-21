@@ -2,6 +2,7 @@
 
 All filesystem work is isolated in temporary directories; no deployment.
 """
+
 from __future__ import annotations
 
 import importlib.util
@@ -52,9 +53,10 @@ def test_scan_missing_directories_is_empty(recent):
     recent.scan_directories(["absent"])
     recent.calculate_statistics()
     assert recent.results["statistics"]["total_files"] == 0
-    assert all(not recent.results[key] for key in (
-        "yaml_files", "json_files", "markdown_files", "top_30_files"
-    ))
+    assert all(
+        not recent.results[key]
+        for key in ("yaml_files", "json_files", "markdown_files", "top_30_files")
+    )
 
 
 def test_scan_mixed_files_and_rank_by_size(recent, tmp_path):
@@ -65,8 +67,12 @@ def test_scan_mixed_files_and_rank_by_size(recent, tmp_path):
     recent.scan_directories(["recent"])
     recent.calculate_statistics()
     m = recent.results["statistics"]
-    assert (m["total_files"], m["yaml_count"], m["json_count"],
-            m["markdown_count"]) == (3, 1, 1, 1)
+    assert (
+        m["total_files"],
+        m["yaml_count"],
+        m["json_count"],
+        m["markdown_count"],
+    ) == (3, 1, 1, 1)
     assert m["total_size"] > 0
     assert recent.results["yaml_files"][0]["has_actions"] is True
     assert len(recent.results["gaps"]["yaml"]) == 3
@@ -88,18 +94,20 @@ def test_scan_nested_phase_reports(recent, tmp_path):
     _file(tmp_path, "nested/sub/phase_report.json", "{}")
     recent.scan_directories(["recent"])
     observed = recent.results["json_files"][0]["path"]
-    assert Path(observed).parts[-4:] == (
-        "recent", "nested", "sub", "phase_report.json"
-    )
+    assert Path(observed).parts[-4:] == ("recent", "nested", "sub", "phase_report.json")
     assert len(recent.results["gaps"]["json"]) == 3
 
 
 def test_yaml_full_contract_and_nonmapping_are_gap_free(recent, tmp_path):
-    _file(tmp_path, "complete.yml", (
-        "actions:\n  build:\n    inputs: {}\n    outputs: {}\n"
-        "    command: echo\nsprints:\n  current:\n    tasks: []\n"
-        "    owner: nobody\n"
-    ))
+    _file(
+        tmp_path,
+        "complete.yml",
+        (
+            "actions:\n  build:\n    inputs: {}\n    outputs: {}\n"
+            "    command: echo\nsprints:\n  current:\n    tasks: []\n"
+            "    owner: nobody\n"
+        ),
+    )
     _file(tmp_path, "list.yml", "- hello\n- world\n")
     recent.scan_directories(["recent"])
     assert len(recent.results["yaml_files"]) == 2
@@ -129,11 +137,18 @@ def test_json_invalid_and_array_are_distinct(recent, tmp_path):
 
 def test_markdown_valid_headings_and_fence(recent, tmp_path):
     fence = chr(96) * 3
-    _file(tmp_path, "DMAIC_README.md", (
-        "# DMAIC\n## Installation\n## Usage\n"
-        "recursive iteration convergence\n"
-        + fence + "python\npass\n" + fence + "\n| A | B |\n"
-    ))
+    _file(
+        tmp_path,
+        "DMAIC_README.md",
+        (
+            "# DMAIC\n## Installation\n## Usage\n"
+            "recursive iteration convergence\n"
+            + fence
+            + "python\npass\n"
+            + fence
+            + "\n| A | B |\n"
+        ),
+    )
     recent.scan_directories(["recent"])
     md = recent.results["markdown_files"][0]
     assert md["has_headers"] and md["has_code_blocks"] and md["has_tables"]
