@@ -46,6 +46,14 @@ def _cli():
 
 
 def _smoke():
+    # The distributed package declares Python >=3.11. On optional 3.10 CI,
+    # isolate only its 3.11-specific TOML product-version dependency; all
+    # seven self-smoke functions still execute and retain failure semantics.
+    if sys.version_info < (3, 11):
+        fixture = types.ModuleType("DMAIC_V3.product_version")
+        fixture.ABACUS_VERSION = "W53_TEST_FIXTURE_UNQUALIFIED"
+        with patch.dict(sys.modules, {"DMAIC_V3.product_version": fixture}):
+            return importlib.import_module("DMAIC_V3.self_smoke")
     return importlib.import_module("DMAIC_V3.self_smoke")
 
 
