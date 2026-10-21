@@ -1,0 +1,290 @@
+{
+  "schema": "codepurple.w77.legacy12.breadth.v1",
+  "observed_at": "2026-10-21",
+  "base_repo": "GBOGEB/ABACUS",
+  "source_baseline_head": "2e2d4dfa0d10e20514ef183dbb259fed8926185d",
+  "branch_base_sha": "44caccf716a7c20693a2911566289bfc75ea81d9",
+  "native_baseline_workflow_run_id": 39501000858,
+  "zip_artifact_id": 12301271979,
+  "zip_sha256": "8e426998ad97a61a734151cc0276c388fdf9837136502f9cef4be05aaff409a9",
+  "coverage_tool": "coverage.py 7.16.2 branch",
+  "baseline_global": {
+    "files_measured": 429,
+    "executable_files": 415,
+    "zero_executable": 71,
+    "covered_statements": 33579,
+    "eligible_statements": 46942,
+    "covered_branches": 9830,
+    "eligible_branches": 14102
+  },
+  "cohort": {
+    "count": 12,
+    "eligible_statements": 1889,
+    "eligible_branches": 238,
+    "baseline_covered_statements": 0,
+    "baseline_covered_branches": 0
+  },
+  "interpretation": "12 legacy simulation/plan/report sources are ZERO-covered in the historical broad census; import+behavior tests may first-touch source without proving engineering acceptance. New current-main zero-reduction is UNKNOWN until a source-blobs+same-denominator broad census.",
+  "targets": [
+    {
+      "path": "abacus_v21_backup_recovery.py",
+      "git_blob_sha": "a85a8be7ed378955742bb6ae3f4a3332e775c46b",
+      "baseline": {
+        "statements": {
+          "covered": 0,
+          "eligible": 133
+        },
+        "branches": {
+          "covered": 0,
+          "eligible": 8
+        }
+      },
+      "candidate": {
+        "statement_covered": null,
+        "branch_covered": null,
+        "zero_recovered": null,
+        "status": "PENDING"
+      }
+    },
+    {
+      "path": "abacus_v21_cicd_pipeline_setup.py",
+      "git_blob_sha": "683f227caacb441165bb6e6c7993201d312ca043",
+      "baseline": {
+        "statements": {
+          "covered": 0,
+          "eligible": 131
+        },
+        "branches": {
+          "covered": 0,
+          "eligible": 8
+        }
+      },
+      "candidate": {
+        "statement_covered": null,
+        "branch_covered": null,
+        "zero_recovered": null,
+        "status": "PENDING"
+      }
+    },
+    {
+      "path": "abacus_v21_monitoring_integration.py",
+      "git_blob_sha": "3c0b8d46bba186442bbfdc16a1e3d0529b5ae5ff",
+      "baseline": {
+        "statements": {
+          "covered": 0,
+          "eligible": 129
+        },
+        "branches": {
+          "covered": 0,
+          "eligible": 8
+        }
+      },
+      "candidate": {
+        "statement_covered": null,
+        "branch_covered": null,
+        "zero_recovered": null,
+        "status": "PENDING"
+      }
+    },
+    {
+      "path": "abacus_v21_knowledge_preservation.py",
+      "git_blob_sha": "85fdc5f0ad3a0eb4b0a2d801f0433017f488ae82",
+      "baseline": {
+        "statements": {
+          "covered": 0,
+          "eligible": 115
+        },
+        "branches": {
+          "covered": 0,
+          "eligible": 4
+        }
+      },
+      "candidate": {
+        "statement_covered": null,
+        "branch_covered": null,
+        "zero_recovered": null,
+        "status": "PENDING"
+      }
+    },
+    {
+      "path": "abacus_v21_security_hardening.py",
+      "git_blob_sha": "517afdff3ec7edfc4353a4980b2852cd619ed984",
+      "baseline": {
+        "statements": {
+          "covered": 0,
+          "eligible": 148
+        },
+        "branches": {
+          "covered": 0,
+          "eligible": 10
+        }
+      },
+      "candidate": {
+        "statement_covered": null,
+        "branch_covered": null,
+        "zero_recovered": null,
+        "status": "PENDING"
+      }
+    },
+    {
+      "path": "abacus_v21_dry_run_tests.py",
+      "git_blob_sha": "41b43a492ec26be60cdb45a3f6aa8be43d5f569d",
+      "baseline": {
+        "statements": {
+          "covered": 0,
+          "eligible": 151
+        },
+        "branches": {
+          "covered": 0,
+          "eligible": 26
+        }
+      },
+      "candidate": {
+        "statement_covered": null,
+        "branch_covered": null,
+        "zero_recovered": null,
+        "status": "PENDING"
+      }
+    },
+    {
+      "path": "abacus_v21_bridge_validation_tests.py",
+      "git_blob_sha": "c43c6b79291b5eb5fac9bdfc676f2a510c53ee8d",
+      "baseline": {
+        "statements": {
+          "covered": 0,
+          "eligible": 154
+        },
+        "branches": {
+          "covered": 0,
+          "eligible": 28
+        }
+      },
+      "candidate": {
+        "statement_covered": null,
+        "branch_covered": null,
+        "zero_recovered": null,
+        "status": "PENDING"
+      }
+    },
+    {
+      "path": "abacus_v21_environment_preparation.py",
+      "git_blob_sha": "163590b4d62828686c191adc3bdf675205726535",
+      "baseline": {
+        "statements": {
+          "covered": 0,
+          "eligible": 168
+        },
+        "branches": {
+          "covered": 0,
+          "eligible": 24
+        }
+      },
+      "candidate": {
+        "statement_covered": null,
+        "branch_covered": null,
+        "zero_recovered": null,
+        "status": "PENDING"
+      }
+    },
+    {
+      "path": "abacus_v21_production_deployment.py",
+      "git_blob_sha": "f2bd7bde5b51ab626644819de27e20424e17f714",
+      "baseline": {
+        "statements": {
+          "covered": 0,
+          "eligible": 187
+        },
+        "branches": {
+          "covered": 0,
+          "eligible": 8
+        }
+      },
+      "candidate": {
+        "statement_covered": null,
+        "branch_covered": null,
+        "zero_recovered": null,
+        "status": "PENDING"
+      }
+    },
+    {
+      "path": "abacus_v21_postdeployment_validation.py",
+      "git_blob_sha": "5422aeb2f6c3a9617fc1847208016470b5dce4f5",
+      "baseline": {
+        "statements": {
+          "covered": 0,
+          "eligible": 192
+        },
+        "branches": {
+          "covered": 0,
+          "eligible": 14
+        }
+      },
+      "candidate": {
+        "statement_covered": null,
+        "branch_covered": null,
+        "zero_recovered": null,
+        "status": "PENDING"
+      }
+    },
+    {
+      "path": "abacus_v21_system_feedback.py",
+      "git_blob_sha": "81f87555a99fef44680ed1b7c6a37c8ca63b00e2",
+      "baseline": {
+        "statements": {
+          "covered": 0,
+          "eligible": 169
+        },
+        "branches": {
+          "covered": 0,
+          "eligible": 54
+        }
+      },
+      "candidate": {
+        "statement_covered": null,
+        "branch_covered": null,
+        "zero_recovered": null,
+        "status": "PENDING"
+      }
+    },
+    {
+      "path": "abacus_v21_session_tuple_analyzer.py",
+      "git_blob_sha": "cd1a36224f1bdc329e85c878041e6ec35674f8b8",
+      "baseline": {
+        "statements": {
+          "covered": 0,
+          "eligible": 212
+        },
+        "branches": {
+          "covered": 0,
+          "eligible": 46
+        }
+      },
+      "candidate": {
+        "statement_covered": null,
+        "branch_covered": null,
+        "zero_recovered": null,
+        "status": "PENDING"
+      }
+    }
+  ],
+  "testing": {
+    "lanes": [
+      "tests/test_w77_legacy_configurations.py",
+      "tests/test_w77_legacy_validation.py",
+      "tests/test_w77_legacy_release_sim.py"
+    ],
+    "distinct_test_methods": 35,
+    "live_deployment_authorized": false,
+    "live_network_operations_authorized": false
+  },
+  "authority": {
+    "merge_admission": "HOLD",
+    "independent_human_approval": "NOT_VERIFIED",
+    "security_waiver": false,
+    "owner_acceptance": false,
+    "qualified_roots_closed": 0,
+    "statistical_m2": "HOLD",
+    "statistical_m3": "HOLD",
+    "pca_bt": "NOT_ASSESSABLE"
+  }
+}
