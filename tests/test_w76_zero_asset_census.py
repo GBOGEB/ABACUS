@@ -2,6 +2,8 @@
 from __future__ import annotations
 
 import copy
+import hashlib
+import tempfile
 import importlib.util
 import json
 import pathlib
@@ -196,6 +198,56 @@ class W76ZeroAssetAuditTests(unittest.TestCase):
             candidate["files"][name])
         with self.assertRaisesRegex(ValueError, "duplicate normalized coverage"):
             examine(coverage=candidate)
+
+
+    def test_detached_git_head_identity_and_ref_reverse(self):
+        with tempfile.TemporaryDirectory(prefix="w76-head-") as temp:
+            root = pathlib.Path(temp)
+            gitdir = root / ".git"
+            gitdir.mkdir()
+            (gitdir / "HEAD").write_text("a" * 40 + "\n", encoding="ascii")
+            self.assertEqual(GATE.exact_checkout_sha(root), "a" * 40)
+            (gitdir / "HEAD").write_text("ref: refs/heads/main\n",
+                                         encoding="ascii")
+            with self.assertRaisesRegex(ValueError, "detached exact"):
+                GATE.exact_checkout_sha(root)
+
+    def test_source_blob_hash_is_git_object_identity_not_security_claim(self):
+        with tempfile.TemporaryDirectory(prefix="w76-blob-") as temp:
+            root = pathlib.Path(temp)
+            (root / "src").mkdir()
+            path = root / "src" / "demo.py"
+            raw = b"answer = 42\n"
+            path.write_bytes(raw)
+            expected = hashlib.sha1(
+                b"blob " + str(len(raw)).encode("ascii") + b"\0" + raw,
+                usedforsecurity=False,
+            ).hexdigest()
+            self.assertEqual(
+                GATE.source_blob_sha(root, "src/demo.py"), expected
+            )
+            path.write_bytes(b"answer = 43\n")
+            self.assertNotEqual(
+                GATE.source_blob_sha(root, "src/demo.py"), expected
+            )
+
+    def test_source_blob_disallows_missing_symlink_and_traversal(self):
+        with tempfile.TemporaryDirectory(prefix="w76-unsafe-") as temp:
+            root = pathlib.Path(temp)
+            (root / "src").mkdir()
+            with self.assertRaisesRegex(ValueError, "unsafe or missing"):
+                GATE.source_blob_sha(root, "src/absent.py")
+            with self.assertRaisesRegex(ValueError, "unsafe or noncanonical"):
+                GATE.source_blob_sha(root, "../outside.py")
+            source = root / "src" / "real.py"
+            source.write_text("x = 2\n", encoding="utf-8")
+            alias = root / "src" / "alias.py"
+            try:
+                alias.symlink_to(source)
+            except (OSError, NotImplementedError):
+                return
+            with self.assertRaisesRegex(ValueError, "unsafe or missing"):
+                GATE.source_blob_sha(root, "src/alias.py")
 
 
 if __name__ == "__main__":
