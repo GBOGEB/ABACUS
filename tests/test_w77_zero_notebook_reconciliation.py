@@ -2,6 +2,7 @@
 
 All fixtures stay in temporary directories. No real project reconciliation.
 """
+
 from __future__ import annotations
 
 import hashlib
@@ -43,10 +44,14 @@ def master_module():
 def _notebook(path, *, nbformat=4, cells=None, metadata=None):
     payload = {
         "nbformat": nbformat,
-        "metadata": metadata if metadata is not None else {
-            "kernelspec": {"display_name": "Python 3", "language": "python"},
-            "language_info": {"name": "python"},
-        },
+        "metadata": (
+            metadata
+            if metadata is not None
+            else {
+                "kernelspec": {"display_name": "Python 3", "language": "python"},
+                "language_info": {"name": "python"},
+            }
+        ),
         "cells": cells if cells is not None else [],
     }
     path.write_text(json.dumps(payload), encoding="utf-8")
@@ -66,23 +71,36 @@ def test_notebook_empty_source_is_real_zero_cell_observation(notebook_module, tm
 
 def test_notebook_mixed_cells_and_nonbinary_output(notebook_module, tmp_path):
     cells = [
-        {"cell_type": "code", "source": ["print(", "'ok')"],
-         "execution_count": 3, "metadata": {"trusted": True},
-         "outputs": [
-             {"output_type": "display_data",
-              "data": {"text/plain": ["ok"], "image/png": "SECRET",
-                       "application/octet-stream": "BINARY"}},
-             {"output_type": "stream", "text": ["log"]},
-             "invalid"
-         ]},
+        {
+            "cell_type": "code",
+            "source": ["print(", "'ok')"],
+            "execution_count": 3,
+            "metadata": {"trusted": True},
+            "outputs": [
+                {
+                    "output_type": "display_data",
+                    "data": {
+                        "text/plain": ["ok"],
+                        "image/png": "SECRET",
+                        "application/octet-stream": "BINARY",
+                    },
+                },
+                {"output_type": "stream", "text": ["log"]},
+                "invalid",
+            ],
+        },
         {"cell_type": "markdown", "source": "# Title", "metadata": {}},
         {"cell_type": "raw", "source": ["literal"], "metadata": {}},
     ]
     result = notebook_module.NotebookParser().parse(
         _notebook(tmp_path / "mixed.ipynb", cells=cells)
     )
-    assert (result["cell_count"], result["code_cell_count"],
-            result["markdown_cell_count"], result["raw_cell_count"]) == (3, 1, 1, 1)
+    assert (
+        result["cell_count"],
+        result["code_cell_count"],
+        result["markdown_cell_count"],
+        result["raw_cell_count"],
+    ) == (3, 1, 1, 1)
     assert result["cells"][0]["source"] == "print('ok')"
     outputs = result["cells"][0]["outputs"]
     assert len(outputs) == 2
@@ -94,10 +112,12 @@ def test_notebook_mixed_cells_and_nonbinary_output(notebook_module, tmp_path):
 def test_notebook_unknown_cell_type_does_not_fabricate_known_counts(
     notebook_module, tmp_path
 ):
-    result = notebook_module.NotebookParser().parse(_notebook(
-        tmp_path / "unknown.ipynb",
-        cells=[{"cell_type": "future", "source": "x", "outputs": []}],
-    ))
+    result = notebook_module.NotebookParser().parse(
+        _notebook(
+            tmp_path / "unknown.ipynb",
+            cells=[{"cell_type": "future", "source": "x", "outputs": []}],
+        )
+    )
     assert result["cell_count"] == 1
     assert result["raw_cell_count"] == 0
     assert result["code_cell_count"] == 0
@@ -138,21 +158,28 @@ def test_notebook_save_and_knowledge_source_are_scoped(notebook_module, tmp_path
     output = parser.save_extract(extracted, tmp_path / "out", iteration=7)
     assert output.name == "notebook_cells_t_iter7.json"
     assert output.parent == tmp_path / "out"
-    assert json.loads(output.read_text())["notebook_sha256"] == extracted["notebook_sha256"]
+    assert (
+        json.loads(output.read_text())["notebook_sha256"]
+        == extracted["notebook_sha256"]
+    )
     k = parser.build_knowledge_source(extracted)
     assert k["source_id"].endswith(extracted["notebook_sha256"][:8])
     assert k["source_type"] == "notebook_extract"
     assert parser.build_knowledge_source(extracted, source_id="ID")["source_id"] == "ID"
 
 
-def test_notebook_cli_refuses_empty_and_missing_paths(notebook_module, tmp_path, capsys):
+def test_notebook_cli_refuses_empty_and_missing_paths(
+    notebook_module, tmp_path, capsys
+):
     assert notebook_module._main([]) == 1
     assert "Usage" in capsys.readouterr().err
     assert notebook_module._main([str(tmp_path / "no.ipynb")]) == 1
     assert "ERROR" in capsys.readouterr().err
 
 
-def test_notebook_cli_prints_only_parsed_local_content(notebook_module, tmp_path, capsys):
+def test_notebook_cli_prints_only_parsed_local_content(
+    notebook_module, tmp_path, capsys
+):
     path = _notebook(tmp_path / "ok.ipynb")
     assert notebook_module._main([str(path)]) == 0
     result = json.loads(capsys.readouterr().out)
