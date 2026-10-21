@@ -175,6 +175,12 @@ jobs:
                       raise SystemExit(
                           f"W78 source remains zero-covered: {wanted}"
                       )
+                  statement_pct = 100 * lines / eligible
+                  branch_pct = 100 * branches / branch_total
+                  if min(statement_pct, branch_pct) < 80:
+                      raise SystemExit(
+                          f"W78 assurance scope below 80 percent: {wanted}"
+                      )
           root = ET.parse(directory / "junit.xml").getroot()
           cases = root.findall(".//testcase")
           receipt["actual_testcase_elements"] = len(cases)
