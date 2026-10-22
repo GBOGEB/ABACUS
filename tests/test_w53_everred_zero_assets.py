@@ -217,13 +217,16 @@ def test_package_assembly_uses_only_local_trusted_fixture_files(tmp_path, monkey
     gen = tmp_path / "generated"
     gen.mkdir()
     source.write_text("# Source document\n", encoding="utf-8")
-    (gen / "t_available_grid.md").write_text("grid", encoding="utf-8")
+    (gen / "t_available_grid.md").write_text(
+        "W53_GENERATED_GRID_BODY_FIXTURE", encoding="utf-8"
+    )
     (gen / "applicant_rfi.md").write_text("rfi", encoding="utf-8")
     monkeypatch.setattr(mod, "SKELETON", source)
     monkeypatch.setattr(mod, "GEN", gen)
     assembled = mod.assemble(_status("ISSUE_RFI"))
     assert "# Source document" in assembled
-    assert "grid" in assembled and "rfi" in assembled
+    assert "W53_GENERATED_GRID_BODY_FIXTURE" in assembled
+    assert "rfi" in assembled
     assert "DRAFT-GATED" in assembled
     (gen / "applicant_rfi.md").unlink()
     with pytest.raises(FileNotFoundError):
@@ -243,10 +246,12 @@ def test_canonical_books_invalid_registry_and_missing_books_record_failures(
     registry = folder / "document_registry.json"
     registry.write_text("not-json", encoding="utf-8")
     validator._test_document_registry()
-    assert any(
-        "Document registry parsing" in row["test"]
+    registry_result = next(
+        row
         for row in validator.results["validations"]
+        if "Document registry parsing" in row["test"]
     )
+    assert registry_result["status"] == "FAIL"
 
 
 def test_canonical_books_positive_phases_and_registry(tmp_path, monkeypatch):
