@@ -250,29 +250,12 @@ def test_define_registry_without_agents_key_counts_as_zero(agent):
     assert util and util[0]["current_agents"] == 0
 
 
-@pytest.mark.xfail(
-    strict=True,
-    reason=(
-        "BUG: _define_opportunities keys phase_counts by the real directory "
-        "name (e.g. 'phase1_define') but looks up the literal glob string "
-        "'phase1_*', so a phase that DID produce output is still reported as "
-        "missing_output."
-    ),
-)
-def test_define_phase_with_output_is_not_reported_missing(agent):
-    outputs = [
-        {
-            "file": str(Path("iteration_1") / "phase1_define" / "x.json"),
-            "size": 5000,
-            "data": {},
-        }
-    ]
-    opps = agent._define_opportunities(_devoured(outputs))
-    assert 1 not in [o["phase"] for o in opps if o["type"] == "missing_output"]
-
-
 def test_define_current_behaviour_phase_with_output_still_flagged(agent):
-    """Pins the current (buggy) behaviour documented by the xfail above."""
+    """F9 (current behaviour, pinned; the canonical lane forbids xfail):
+    _define_opportunities keys phase_counts by the real directory name (e.g.
+    'phase1_define') but looks up the literal glob string 'phase1_*', so a
+    phase that DID produce output is still reported as missing_output. When
+    fixed, phase 1 must drop out of this list."""
     outputs = [
         {
             "file": str(Path("iteration_1") / "phase1_define" / "x.json"),
@@ -284,16 +267,13 @@ def test_define_current_behaviour_phase_with_output_still_flagged(agent):
     assert [o["phase"] for o in opps if o["type"] == "missing_output"] == list(range(9))
 
 
-@pytest.mark.xfail(
-    strict=True,
-    reason=(
-        "BUG: an existing-but-empty agent_registry.json ({}) is falsy, so the "
-        "agent_underutilization root (0/12 agents) is silently dropped."
-    ),
-)
-def test_define_empty_registry_reports_underutilization(agent):
+def test_define_empty_registry_drops_underutilization_current_behaviour(agent):
+    """F11 (current behaviour, pinned; the canonical lane forbids xfail): an
+    existing-but-empty agent_registry.json ({}) is falsy, so the
+    agent_underutilization root (0/12 agents) is silently dropped. When fixed,
+    flip to ``any(...)``."""
     opps = agent._define_opportunities(_devoured(agent_data={}))
-    assert any(o["type"] == "agent_underutilization" for o in opps)
+    assert not any(o["type"] == "agent_underutilization" for o in opps)
 
 
 # --------------------------------------------------------------------------

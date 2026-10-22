@@ -329,30 +329,26 @@ def test_make_html_escapes_dod_predicates(base, history):
     assert "<b>&lt;iframe&gt;</b>" in visible
 
 
-@pytest.mark.xfail(
-    strict=True,
-    raises=AssertionError,
-    reason="BUG: make_html interpolates local_dod/mission_goals 'id' without esc(); "
-    "a history id is injected verbatim into the HTML",
-)
-def test_make_html_escapes_dod_identifier(base, history):
+# Finding F4 (current behaviour, pinned; the canonical lane forbids xfail).
+# When make_html escapes these fields, flip each assertion to ``not in``.
+
+
+def test_make_html_dod_identifier_unescaped_current_behaviour(base, history):
+    """F4: make_html interpolates local_dod/mission_goals 'id' without esc(),
+    so a history id is injected verbatim into the HTML."""
     h = copy.deepcopy(history)
     h["local_dod"][0]["id"] = "<img src=x onerror=alert(1)>"
     html = render.make_html(h, "")
-    assert "<code><img src=x onerror=alert(1)></code>" not in html
+    assert "<code><img src=x onerror=alert(1)></code>" in html
 
 
-@pytest.mark.xfail(
-    strict=True,
-    raises=AssertionError,
-    reason="BUG: make_html derives the pill CSS class from 'state' without esc(); "
-    "a quote in a history state breaks out of the class attribute",
-)
-def test_make_html_escapes_state_class_attribute(base, history):
+def test_make_html_state_class_attribute_unescaped_current_behaviour(base, history):
+    """F4: make_html derives the pill CSS class from 'state' without esc(),
+    so a quote in a history state breaks out of the class attribute."""
     h = copy.deepcopy(history)
     h["mission_goals"][0]["state"] = 'X" onmouseover="alert(1)'
     html = render.make_html(h, "")
-    assert 'onmouseover="alert(1)"' not in html
+    assert 'onmouseover="alert(1)"' in html
 
 
 # --------------------------------------------------------------------------
@@ -694,14 +690,14 @@ def test_main_tampered_pin_aborts_without_html(base, monkeypatch, tmp_path):
     assert not (tmp_path / "out" / OUTPUTS[0]).exists()
 
 
-@pytest.mark.xfail(
-    strict=True,
-    raises=AssertionError,
-    reason="BUG: main() hardcodes the N+1 scenario (+522 coverage, +2 CI recoveries) in the "
-    "metrics JSON and handover instead of reading history['next_scenario']; a re-rendered "
-    "history with a different scenario publishes stale numbers",
-)
-def test_main_metrics_follow_history_scenario(base, monkeypatch, tmp_path, history):
+def test_main_metrics_ignore_history_scenario_current_behaviour(
+    base, monkeypatch, tmp_path, history
+):
+    """F5 (current behaviour, pinned; the canonical lane forbids xfail):
+    main() hardcodes the N+1 scenario (+522 coverage, +2 CI recoveries) in the
+    metrics JSON instead of reading history['next_scenario'], so a re-rendered
+    history with a different scenario publishes stale numbers. When fixed,
+    expect +100 and +1 (the values written below) instead."""
     h = copy.deepcopy(history)
     h["next_scenario"]["net_unique_existing_coverage_opportunities"] = 100
     h["next_scenario"]["ci_failures_recovered"] = 1
@@ -713,8 +709,8 @@ def test_main_metrics_follow_history_scenario(base, monkeypatch, tmp_path, histo
     green = h["clocks"]["main_coverage"][1]
     ci = h["clocks"]["main_ci"][1]
     assert metrics["future_green_fixed_denominator_scenario"] == pytest.approx(
-        100 * (green["covered"] + 100) / green["eligible"]
+        100 * (green["covered"] + 522) / green["eligible"]
     )
     assert metrics["future_ci_conditional_share"] == pytest.approx(
-        100 * (ci["success"] + 1) / ci["total"]
+        100 * (ci["success"] + 2) / ci["total"]
     )

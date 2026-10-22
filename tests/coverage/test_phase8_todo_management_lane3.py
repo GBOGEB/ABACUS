@@ -298,8 +298,13 @@ def test_duplicate_todo_ids_collapse_in_registry_but_not_in_local_list(
     only_id = next(iter(ids))
     registry = _read_registry(env.registry)
     assert registry["total_todos"] == 1
-    # The registry keeps only the last writer's source file.
-    assert registry["todos"][0]["source_file"].endswith("y.json")
+    # The registry keeps only the last writer's source file. Which file is
+    # "last" follows Path.glob order: alphabetical on NTFS, arbitrary on
+    # ext4/APFS (finding F13). So compare against this run's own registration
+    # order instead of assuming phase4_b sorts after phase4_a.
+    sources = [t["source_file"] for t in results["local_todos"]]
+    assert sorted(Path(s).name for s in sources) == ["x.json", "y.json"]
+    assert registry["todos"][0]["source_file"] == sources[-1]
     assert results["todo_links"]["phase_to_todos"]["phase4"] == [only_id] * 2
 
 
