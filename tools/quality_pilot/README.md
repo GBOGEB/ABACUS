@@ -9,7 +9,7 @@ ABACUS already runs CodeQL, Semgrep (`p/python`, `p/owasp-top-ten`, `p/secrets`)
 Bandit, Ruff security and Dependabot. The pilot does **not** re-run those. It adds:
 
 | Tool | Gap it closes | Licence |
-|---|---|---|
+| --- | --- | --- |
 | gitleaks (full history, redacted) | Semgrep `p/secrets` sees the current tree only | MIT |
 | pip-audit | Dependabot opens PRs but gives no CVE baseline count | Apache-2.0 |
 | mypy on `models` + `DMAIC_V3/core` | no type checking on physics/orchestration core | MIT |
@@ -20,12 +20,14 @@ Bandit, Ruff security and Dependabot. The pilot does **not** re-run those. It ad
 ## Cadence
 
 | Phase | When | Extras |
-|---|---|---|
-| burn-in | first `BURN_IN_RUNS` (=10) **scheduled** runs, **daily** 05:17 UTC (PR/manual runs do not consume it) | focused scan + run-over-run trend |
+| --- | --- | --- |
+| burn-in | first `BURN_IN_RUNS` (=10) **scheduled** runs, **daily** 05:17 UTC | focused scan + run-over-run trend |
+|  | PR/manual runs do not consume the burn-in window |  |
 | steady | afterwards, **Mondays** only (other days skip in ~5 s) | — |
 | manual | `workflow_dispatch` or a PR touching pilot files | focused scan + trend |
 
-Change `BURN_IN_RUNS` in the workflow `env:` to extend or shorten burn-in.
+Change `BURN_IN_RUNS` in the workflow `env:` to extend or shorten
+burn-in.
 
 ## Telemetry (per run, in the `quality-pilot-N` artifact)
 
@@ -36,10 +38,11 @@ Change `BURN_IN_RUNS` in the workflow `env:` to extend or shorten burn-in.
 - `summary.md` — also posted to the job summary.
 - `triage_sample.csv` — 20 findings, stratified per tool, new seed each run.
 
-Scheduled and manual runs also post this digest as a comment on the standing issue
-**"Quality pilot — burn-in telemetry"** (created on first scheduled run), so every
-burn-in run produces a readable notification. Pilot PRs post no comment: their
-token stays read-only and the digest goes to the job summary instead.
+Scheduled and manual runs also post this digest as a comment on the standing
+issue **"Quality pilot — burn-in telemetry"** (created on first scheduled run),
+so every burn-in run produces a readable notification. Pilot PRs post no
+comment: their token stays read-only and the digest goes to the job summary
+instead.
 
 Exit codes are recorded honestly (`timed.sh` returns the scanner's own code).
 All advisory steps carry `# rex-allow: ADVISORY_EXPLICIT` and pass
@@ -57,7 +60,7 @@ All advisory steps carry `# rex-allow: ADVISORY_EXPLICIT` and pass
 5. **Control** — gate only what earned it:
 
 | Score result | Action |
-|---|---|
+| --- | --- |
 | gitleaks / pip-audit with ≥1 real hit | gate immediately |
 | precision ≥ 50 % | gate **new code only** (ratchet) |
 | 20–50 % | stay report-only, tune |

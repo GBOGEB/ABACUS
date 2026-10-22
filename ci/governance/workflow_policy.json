@@ -292,6 +292,12 @@
       "disposition": "keep"
     },
     {
+      "pattern": "^nextjs\\.yml$",
+      "cluster": "delivery",
+      "lifecycle": "post_merge",
+      "disposition": "keep"
+    },
+    {
       "pattern": "^(deploy-docs|docs-build|export-docs|pages|reports|update-docs)\\.yml$",
       "cluster": "documentation",
       "lifecycle": "post_merge",
