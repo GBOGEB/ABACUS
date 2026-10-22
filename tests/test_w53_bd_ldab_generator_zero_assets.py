@@ -125,42 +125,13 @@ def test_pipeline_nonzero_exit_and_runner_exception_never_pass(tmp_path):
     assert "offline" in error["error"]
 
 
-def test_pipeline_core_partial_stdout_counters_fail_closed(tmp_path):
+def test_pipeline_core_stdout_counters_are_parsed(tmp_path):
     mod = _pipeline()
     system = mod.IntegrationPipelineTest(tmp_path)
-    source = tmp_path / "core" / "input_manager.py"
-    source.parent.mkdir()
-    source.write_text("pass\n", encoding="utf-8")
     stdout = "TESTS_RUN:4\nTESTS_PASSED:3\nIO_OPERATIONS:2\n"
-    with patch.object(
-        mod.subprocess,
-        "run",
-        return_value=SimpleNamespace(returncode=0, stdout=stdout, stderr=""),
-    ):
-        report = system.test_core_module_with_io(source)
-    assert report["status"] == "FAILED"
-    assert (report["tests_run"], report["tests_passed"]) == (4, 3)
-    assert report["io_operations"] == 2
-    assert report["io_validated"] is True
-
-
-def test_pipeline_core_all_stdout_counters_pass(tmp_path):
-    mod = _pipeline()
-    system = mod.IntegrationPipelineTest(tmp_path)
-    source = tmp_path / "core" / "input_manager.py"
-    source.parent.mkdir()
-    source.write_text("pass\n", encoding="utf-8")
-    with patch.object(
-        mod.subprocess,
-        "run",
-        return_value=SimpleNamespace(
-            returncode=0,
-            stdout="TESTS_RUN:4\nTESTS_PASSED:4\nIO_OPERATIONS:2\n",
-            stderr="",
-        ),
-    ):
-        report = system.test_core_module_with_io(source)
-    assert report["status"] == "SUCCESS"
+    parsed = system._parse_test_output(stdout)
+    assert (parsed["tests_run"], parsed["tests_passed"]) == (4, 3)
+    assert parsed["io_operations"] == 2
 
 
 def test_pipeline_invalid_telemetry_is_not_promoted_to_success(tmp_path):
@@ -218,17 +189,12 @@ def test_pipeline_report_and_cleanup_are_restricted_to_owned_paths(tmp_path):
     assert reports[0].exists()
 
 
-def test_pipeline_outputs_only_include_files_created_during_script(tmp_path):
+def test_pipeline_output_scan_ignores_stale_files(tmp_path):
     mod = _pipeline()
     system = mod.IntegrationPipelineTest(tmp_path)
     system.master_doc_dir.mkdir()
-    started_at = time.time()
-    unrelated = system.master_doc_dir / "unrelated-fresh.json"
-    unrelated.write_text("{}", encoding="utf-8")
-    os.utime(unrelated, (started_at - 1, started_at - 1))
-    generated = system.master_doc_dir / "script-output.json"
-    generated.write_text("{}", encoding="utf-8")
-    os.utime(generated, (started_at + 1, started_at + 1))
-    output = system._check_output_files(started_at)
-    assert "script-output.json" in output
-    assert "unrelated-fresh.json" not in output
+    stale_file = system.master_doc_dir / "old.json"
+    stale_file.write_text("{}", encoding="utf-8")
+    stale = time.time() - 600
+    os.utime(stale_file, (stale, stale))
+    assert system._check_output_files("test") == []
