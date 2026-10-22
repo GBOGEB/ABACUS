@@ -559,9 +559,15 @@ class CICDGitHubOrchestrator:
             push_result = self.git_commit_push(commit_msg)
             pipeline_results["stages"]["git_push"] = push_result
 
-            if push_result.get("success"):
+            # A failed commit/push or pull is a terminal failure: record it as a
+            # status so main() cannot report success (absent status == success).
+            if push_result.get("success") is not True:
+                pipeline_results["status"] = "FAILED_GIT_PUSH"
+            else:
                 pull_result = self.git_pull()
                 pipeline_results["stages"]["git_pull"] = pull_result
+                if pull_result.get("success") is not True:
+                    pipeline_results["status"] = "FAILED_GIT_PULL"
 
         self.post_metrics = self.collect_metrics("POST")
         self.save_metrics(self.post_metrics, "post")

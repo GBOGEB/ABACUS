@@ -206,6 +206,9 @@ def main(argv: list[str] | None = None) -> int:
             continue
 
         junit = args.junit_dir / f"{index:03d}-{test_file.stem}.xml"
+        # Only this run's JUnit is evidence: a file left by an earlier census must
+        # not be read if pytest exits without writing one.
+        junit.unlink(missing_ok=True)
         run = run_command(
             [
                 sys.executable,
