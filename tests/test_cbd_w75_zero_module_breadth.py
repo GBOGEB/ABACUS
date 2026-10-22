@@ -8,6 +8,7 @@ only a fresh exact-head coverage artifact can establish any measured delta.
 All fixtures run in tmp_path or memory. No deployment, network, provider,
 bidder input, merge action, policy change, or security waiver is permitted.
 """
+
 from __future__ import annotations
 
 import importlib.util
@@ -46,7 +47,8 @@ def test_framework_detects_all_and_empty_project(tmp_path):
         (tmp_path / name).write_text("", encoding="utf-8")
     assert a.detect_frameworks() == {
         "python": ["pip", "setuptools", "poetry"],
-        "javascript": ["npm"], "build_tools": [],
+        "javascript": ["npm"],
+        "build_tools": [],
     }
     assert a.get_info()["status"] == "active"
 
@@ -55,7 +57,9 @@ def test_style_extractor_positive_missing_and_malformed(tmp_path):
     m = agent("style_extractor")
     a = m.StyleExtractorAgent(tmp_path)
     good = tmp_path / "source.py"
-    good.write_text('class A:\n    """Documentation."""\n    def f(self):\n        return 1\n')
+    good.write_text(
+        'class A:\n    """Documentation."""\n    def f(self):\n        return 1\n'
+    )
     assert a.extract_style(good)["has_docstrings"] is True
     good.write_text("def f():\n    return 1\n")
     assert a.extract_style(good)["has_docstrings"] is False
@@ -122,7 +126,8 @@ def test_performance_tracker_guard_two_runs_and_reset(tmp_path):
         second = a.stop_tracking("measure")
     assert second["duration_seconds"] == 5.0
     assert [r["phase"] for r in json.loads(a.perf_file.read_text())] == [
-        "define", "measure"
+        "define",
+        "measure",
     ]
     assert a.get_info()["name"] == "performance_tracker"
 
@@ -148,9 +153,11 @@ def test_health_agent_isolated_psutil_and_info(tmp_path):
     a = m.HealthCheckerAgent(tmp_path)
     health = a.check_health()
     assert health["status"] == "healthy"
-    assert (health["cpu_percent"], health["memory_percent"], health["disk_percent"]) == (
-        17.0, 29.0, 38.0
-    )
+    assert (
+        health["cpu_percent"],
+        health["memory_percent"],
+        health["disk_percent"],
+    ) == (17.0, 29.0, 38.0)
     assert "T" in health["timestamp"]
     psutil.cpu_percent.assert_called_once_with(interval=1)
     assert a.get_info()["name"] == "health_checker"
@@ -160,13 +167,20 @@ def test_health_agent_isolated_psutil_and_info(tmp_path):
     "filename,expected_repo",
     [
         ("integration/cryoplant_project/src/federation.py", "GBOGEB/cryoplant-project"),
-        ("integration/codespace_jyperter/src/federation.py", "GBOGEB/codespace_jyperter"),
+        (
+            "integration/codespace_jyperter/src/federation.py",
+            "GBOGEB/codespace_jyperter",
+        ),
     ],
 )
 @pytest.mark.parametrize(
     "manifest_present,spec_present,status",
-    [(True, True, "ok"), (True, False, "degraded"),
-     (False, True, "degraded"), (False, False, "error")],
+    [
+        (True, True, "ok"),
+        (True, False, "degraded"),
+        (False, True, "degraded"),
+        (False, False, "error"),
+    ],
 )
 def test_auxiliary_federation_source_exists_contract(
     tmp_path, filename, expected_repo, manifest_present, spec_present, status
@@ -193,8 +207,11 @@ def test_auxiliary_federation_source_exists_contract(
     assert len(receipt["details"]) == 2
 
 
+@pytest.mark.TEST_BLOCKED_DEPENDENCY
 def test_product_version_source_and_installed_fallback(tmp_path):
-    pytest.importorskip("tomllib")  # 3.11+: native stdlib used by the SUT
+    pytest.importorskip(
+        "tomllib", reason="TEST_BLOCKED_DEPENDENCY: tomllib requires Python 3.11+"
+    )
     m = source_module("DMAIC_V3/product_version.py")
     assert m.get_product_version() == m.ABACUS_VERSION
     project_file = tmp_path / "pyproject.toml"
