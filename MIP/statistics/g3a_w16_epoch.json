@@ -4,13 +4,13 @@
     "DMAIC_V3/debug_pipeline.py": {
       "blob": "730cab72408ac473fb89123d9d76bb7a2edb075e",
       "branches": {
-        "3.10": null,
-        "3.12": null
+        "3.10": 116,
+        "3.12": 116
       },
       "category": "carried",
       "covered": {
-        "3.10": null,
-        "3.12": null
+        "3.10": 94,
+        "3.12": 94
       },
       "floor": 94,
       "role": "kpi"
@@ -18,13 +18,13 @@
     "DMAIC_V3/phases/phase4_improve.py": {
       "blob": "18bec722fef537aa74b85295954cf66a002695d0",
       "branches": {
-        "3.10": null,
-        "3.12": null
+        "3.10": 132,
+        "3.12": 132
       },
       "category": "carried",
       "covered": {
-        "3.10": null,
-        "3.12": null
+        "3.10": 51,
+        "3.12": 51
       },
       "floor": 42,
       "role": "kpi"
@@ -32,43 +32,43 @@
     "DMAIC_V3/phases/phase8_todo_management.py": {
       "blob": "d5ab3ea15a720c70b635910e5ced203e2c486353",
       "branches": {
-        "3.10": null,
-        "3.12": null
+        "3.10": 118,
+        "3.12": 118
       },
       "category": "main_drift_repinned",
       "covered": {
-        "3.10": null,
-        "3.12": null
+        "3.10": 63,
+        "3.12": 63
       },
-      "floor": null,
+      "floor": 63,
       "previous_blob": "e9e4edd4c2b5b23a850892efb40b0c256a9ce490",
       "role": "kpi"
     },
     "cicd_github_orchestrator.py": {
       "blob": "82a9a707115c58721a2c13c41a7b7baebde6b2c1",
       "branches": {
-        "3.10": null,
-        "3.12": null
+        "3.10": 98,
+        "3.12": 98
       },
       "category": "main_drift_repinned",
       "covered": {
-        "3.10": null,
-        "3.12": null
+        "3.10": 23,
+        "3.12": 23
       },
-      "floor": null,
+      "floor": 23,
       "previous_blob": "2e0f80b8f476d6f4eab05defb52aae2f77e30c61",
       "role": "kpi"
     },
     "scripts/g3a_bounded_mission.py": {
       "blob": "73742d3ad9ca5e791cfa294e01a083b20922580c",
       "branches": {
-        "3.10": null,
-        "3.12": null
+        "3.10": 116,
+        "3.12": 116
       },
       "category": "control",
       "covered": {
-        "3.10": null,
-        "3.12": null
+        "3.10": 105,
+        "3.12": 105
       },
       "floor": 105,
       "role": "control"
@@ -86,7 +86,7 @@
   ],
   "schema": "code-purple.g3a.w16.epoch.v1",
   "source_epoch": "G3A_W16_V3_MAIN_44CACCF7",
-  "status": "PENDING_NATIVE_MEASUREMENT",
+  "status": "PINNED",
   "workflows": {
     "by_cluster": {
       "UNCLASSIFIED": 2,

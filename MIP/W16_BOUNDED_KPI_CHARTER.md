@@ -11,25 +11,54 @@ certificate, main-branch merge, or proof of formal root closure.
 The verified historical N13→N14 same-source series is **115/446 → 200/446**
 (+85 distinct reached arcs, zero lost). Concurrent Phase 4 source repair
 changed the eligible population for the later branch epoch from 134 to 132.
-Therefore **W16 uses 444 four-module eligible branches**, with no arithmetic
-N14→W16 slope or coverage uplift unless the same current source is measured
-twice. Historical source-bound gg_MATH input remains historical and must not
-silently consume new W16 measurements.
+The first W16 epoch (`G3A_W16_V2_PHASE4_REPAIRED`) therefore used **444
+four-module eligible branches** (116/132/118/78) and 164 workflows, with no
+arithmetic N14→W16 slope or coverage uplift unless the same current source is
+measured twice. Historical source-bound gg_MATH input remains historical and
+must not silently consume new W16 measurements.
 
-Frozen production Git blobs for W16: debugger
-`730cab72408ac473fb89123d9d76bb7a2edb075e`, Phase 4
-`18bec722fef537aa74b85295954cf66a002695d0`, Phase 8
-`e9e4edd4c2b5b23a850892efb40b0c256a9ce490`, and CI/CD orchestrator
-`2e0f80b8f476d6f4eab05defb52aae2f77e30c61`.
-Source preflight checks exact-head identity, source digests, policy classification
-of all 164 workflows, and the deterministic generated inventory **before**
-installing the Python test environment.
+### 1a. Canonical epoch manifest and re-pin (current: V3)
+
+The pinned epoch now lives in one file,
+[`MIP/statistics/g3a_w16_epoch.json`](statistics/g3a_w16_epoch.json), read by
+the preflight, the KPI contract and both native workflows. When main moves a
+pinned file or the workflow population, `scripts/g3a_w16_repin.py --repin`
+records the new blobs and the workflow census mapped to policy
+cluster/lifecycle sub-categories, clears the affected denominators, and the
+native workflows print `W16_MEASURED` records while the epoch is pending;
+`--measured` pins denominators **only** from those native records.
+
+Main moved Phase 8 (`e9e4edd4`→`d5ab3ea1`, dd0946fa) and the CI/CD
+orchestrator (`2e0f80b8`→`82a9a707`, c856600b/f8c48f18) and grew the
+workflow population 164→214, so V2 can no longer be reproduced. Epoch
+**`G3A_W16_V3_MAIN_44CACCF7`** (pinned from main `44caccf7`) was re-measured
+in full natively — N15 run `39798543241`, coverage.py 7.16.2, Python 3.10
+and 3.12 identical:
+
+| File | Sub-category | Eligible | Covered | Floor |
+|---|---|---:|---:|---:|
+| `DMAIC_V3/debug_pipeline.py` | carried (blob unchanged) | 116 | 94 | 94 |
+| `DMAIC_V3/phases/phase4_improve.py` | carried (blob unchanged) | 132 | 51 | 42 |
+| `DMAIC_V3/phases/phase8_todo_management.py` | main drift, re-pinned | 118 | 63 | 63 |
+| `cicd_github_orchestrator.py` | main drift, re-pinned | 98 | 23 | 23 |
+| **Four KPI modules** | | **464** | **231** | |
+| `scripts/g3a_bounded_mission.py` | control (separate) | 116 | 105 | 105 |
+
+231/464 is a **new-epoch baseline**, not an uplift over 444 or over the
+historical 200/446: the orchestrator's population changed (78→98), so no
+cross-epoch delta is computed. Workflow census at the pin: 214 workflows, 212
+classified, 2 `UNCLASSIFIED` (`code-quality-pilot.yml`, `nextjs.yml`, main
+drift fixed by #2375; re-pin the census after it merges).
+
+Source preflight checks exact-head identity, the pinned source digests, policy
+classification and sub-category mapping of all workflows, and the deterministic
+generated inventory **before** installing the Python test environment.
 
 ## 2. Five authoritative KPI families — all other values are diagnostics
 
 | KPI | Unit / estimator | W16 interpretation | Acceptance guard |
 |---|---|---|---|
-| K1. Matched branch coverage | `k / d`, uncovered `d-k` | Four frozen W16 modules; `d=444`; numerator unknown until native proof | Same source/tool/denominator |
+| K1. Matched branch coverage | `k / d`, uncovered `d-k` | Four pinned W16 modules; V3 `d=464`, native `k=231` (§1a); V2 `d=444` historical | Same source/tool/denominator |
 | K2. Native proof yield | Verified focused receipts / attempted exact-head testflights | A complete native testflight can contribute one proof; project-wide yield remains N/A | Run/attempt/head and 121+ passing cohort |
 | K3. Causal-root burndown | Verified closed unique causal roots / identified unique roots | **Zero credited** until owner proof and exact-head CI; symptom disappearance ≠ root closure | Independent owner disposition |
 | K4. Time to evidence | Test execution seconds; job queue/run p50/p95 when timestamps exist | N15 red run wall ~1,055 s, but it never measured coverage; queue wait is UNKNOWN | Distinguish queue/run/step clocks |
@@ -93,8 +122,9 @@ has been recensused and reviewed.
 ## 5. Acceptance / stop rules
 
 1. Static local source/governance preflight returns PASS on current head.
-2. Existing native tests reach >=121 actual tests, all PASS, 444 eligible
-   source branches, 116 separate control branches, coverage.py 7.16.2.
+2. Existing native tests reach >=121 actual tests, all PASS, and match the
+   pinned epoch manifest exactly (V3: 464 eligible source branches, 116
+   separate control branches, coverage.py 7.16.2, floors held).
 3. New source-epoch phase4 fixes preserve the externally specified reason
    `No unused imports` without weakening AST import-preservation rules.
 4. Native governance, security, full compatibility and reviews must succeed
