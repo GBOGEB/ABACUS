@@ -10,7 +10,6 @@ from __future__ import annotations
 
 import json
 import runpy
-import subprocess
 import sys
 from pathlib import Path
 from types import SimpleNamespace
@@ -24,6 +23,9 @@ import cicd_github_orchestrator as cgo
 CICDGitHubOrchestrator = cgo.CICDGitHubOrchestrator
 MetricsSnapshot = cgo.MetricsSnapshot
 RefactoringPlan = cgo.RefactoringPlan
+# The orchestrator's own subprocess module; importing it here only adds
+# Bandit B404 noise to a test file that never launches a process (594189ef).
+subprocess = cgo.subprocess
 
 MODULE_PATH = Path(cgo.__file__).resolve()
 

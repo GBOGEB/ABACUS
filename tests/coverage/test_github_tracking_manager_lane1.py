@@ -14,7 +14,6 @@ from __future__ import annotations
 
 import importlib.util
 import json
-import subprocess
 import sys
 import types
 from datetime import datetime
@@ -179,7 +178,7 @@ def _disk_state(workdir: Path):
 # --------------------------------------------------------------------------
 # Import-time dependency fallback (lines 25-28)
 # --------------------------------------------------------------------------
-def test_missing_pygithub_triggers_pip_install_then_reimport(monkeypatch, capsys):
+def test_missing_pygithub_triggers_pip_install_then_reimport(gtm, monkeypatch, capsys):
     monkeypatch.setitem(sys.modules, "github", None)  # forces ImportError
     installed = types.ModuleType("github")
 
@@ -193,7 +192,7 @@ def test_missing_pygithub_triggers_pip_install_then_reimport(monkeypatch, capsys
         calls.append(cmd)
         sys.modules["github"] = installed  # simulate a successful install
 
-    monkeypatch.setattr(subprocess, "check_call", fake_check_call)
+    monkeypatch.setattr(gtm.subprocess, "check_call", fake_check_call)
     module = _exec_module("_l1_gtm_fallback_ok")
 
     assert calls == [
@@ -203,14 +202,14 @@ def test_missing_pygithub_triggers_pip_install_then_reimport(monkeypatch, capsys
     assert "Installing PyGithub" in capsys.readouterr().out
 
 
-def test_failed_pygithub_install_aborts_import(monkeypatch):
+def test_failed_pygithub_install_aborts_import(gtm, monkeypatch):
     monkeypatch.setitem(sys.modules, "github", None)
 
     def failing_check_call(cmd):
-        raise subprocess.CalledProcessError(1, cmd)
+        raise gtm.subprocess.CalledProcessError(1, cmd)
 
-    monkeypatch.setattr(subprocess, "check_call", failing_check_call)
-    with pytest.raises(subprocess.CalledProcessError):
+    monkeypatch.setattr(gtm.subprocess, "check_call", failing_check_call)
+    with pytest.raises(gtm.subprocess.CalledProcessError):
         _exec_module("_l1_gtm_fallback_fail")
 
 
@@ -684,8 +683,8 @@ def test_generate_report_summary_counts(manager, capsys):
 # --------------------------------------------------------------------------
 # get_github_token
 # --------------------------------------------------------------------------
-def _completed(cmd, rc=0, out="", err=""):
-    return subprocess.CompletedProcess(cmd, rc, stdout=out, stderr=err)
+def _completed(gtm, cmd, rc=0, out="", err=""):
+    return gtm.subprocess.CompletedProcess(cmd, rc, stdout=out, stderr=err)
 
 
 def test_token_from_gh_cli(gtm, monkeypatch):
@@ -693,7 +692,7 @@ def test_token_from_gh_cli(gtm, monkeypatch):
 
     def fake_run(cmd, **kw):
         seen.append((cmd, kw))
-        return _completed(cmd, out="gho_cli_token\n")
+        return _completed(gtm, cmd, out="gho_cli_token\n")
 
     monkeypatch.setattr(gtm.subprocess, "run", fake_run)
     monkeypatch.setenv("GITHUB_TOKEN", "env-token")
@@ -706,9 +705,9 @@ def test_token_from_gh_cli(gtm, monkeypatch):
 def test_token_falls_back_to_env(gtm, monkeypatch, behaviour):
     def fake_run(cmd, **kw):
         if behaviour == "empty":
-            return _completed(cmd, out="  \n")
+            return _completed(gtm, cmd, out="  \n")
         if behaviour == "nonzero":
-            raise subprocess.CalledProcessError(1, cmd)
+            raise gtm.subprocess.CalledProcessError(1, cmd)
         raise FileNotFoundError("gh")
 
     monkeypatch.setattr(gtm.subprocess, "run", fake_run)
@@ -720,7 +719,9 @@ def test_token_absent_everywhere(gtm, monkeypatch):
     monkeypatch.setattr(
         gtm.subprocess,
         "run",
-        lambda cmd, **kw: (_ for _ in ()).throw(subprocess.CalledProcessError(4, cmd)),
+        lambda cmd, **kw: (_ for _ in ()).throw(
+            gtm.subprocess.CalledProcessError(4, cmd)
+        ),
     )
     monkeypatch.delenv("GITHUB_TOKEN", raising=False)
     assert gtm.get_github_token() == (None, None)
@@ -729,21 +730,21 @@ def test_token_absent_everywhere(gtm, monkeypatch):
 # --------------------------------------------------------------------------
 # main() CLI
 # --------------------------------------------------------------------------
-def _cli(gtm, monkeypatch, argv, *, gh_token=None, git_remote=None, git_error=None):
+def _cli(gtm, monkeypatch, argv, *, gh_cli_out=None, git_remote=None, git_error=None):
     calls = []
 
     def fake_run(cmd, **kw):
         calls.append(cmd)
         if cmd[:2] == ["gh", "auth"]:
-            if gh_token is None:
-                raise subprocess.CalledProcessError(1, cmd)
-            return _completed(cmd, out=gh_token)
+            if gh_cli_out is None:
+                raise gtm.subprocess.CalledProcessError(1, cmd)
+            return _completed(gtm, cmd, out=gh_cli_out)
         if cmd[:2] == ["git", "remote"]:
             if git_error is not None:
                 raise git_error
             if git_remote is None:
-                return _completed(cmd, rc=2, err="no such remote")
-            return _completed(cmd, out=git_remote)
+                return _completed(gtm, cmd, rc=2, err="no such remote")
+            return _completed(gtm, cmd, out=git_remote)
         raise AssertionError(f"unexpected subprocess call {cmd}")
 
     monkeypatch.setattr(gtm.subprocess, "run", fake_run)
@@ -794,7 +795,7 @@ def test_main_without_resolvable_repo_exits_1(
     ids=["https", "ssh"],
 )
 def test_main_repo_from_git_remote(gtm, workdir, monkeypatch, capsys, client, remote):
-    _cli(gtm, monkeypatch, ["--report"], gh_token="cli-tok\n", git_remote=remote)
+    _cli(gtm, monkeypatch, ["--report"], gh_cli_out="cli-tok\n", git_remote=remote)
     gtm.main()
     out = capsys.readouterr().out
     assert "Authenticated via: GitHub CLI" in out

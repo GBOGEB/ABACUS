@@ -16,9 +16,7 @@ from __future__ import annotations
 
 import importlib.util
 import json
-import subprocess
 import sys
-import xml.etree.ElementTree as ET
 from pathlib import Path
 from types import SimpleNamespace
 
@@ -41,6 +39,12 @@ def _load():
 
 
 census = _load()
+
+# The census module's own subprocess and ElementTree, bound before any test
+# swaps them out. Importing them here only adds Bandit B404/B405 noise to a
+# test file that never launches a process or parses untrusted XML (594189ef).
+subprocess = census.subprocess
+ET = census.ET
 
 ZERO = {"pass": 0, "fail": 0, "error": 0, "skip": 0}
 
