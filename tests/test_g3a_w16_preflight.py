@@ -134,12 +134,23 @@ class PreflightContractTests(unittest.TestCase):
         self.assertIn("EPOCH_MANIFEST_UNREADABLE", x["errors"])
         self.assertIn("WORKFLOW_POPULATION_DRIFT", x["errors"])
 
+    def test_git_failure_records_no_blob(self):
+        error = pre.subprocess.CalledProcessError(128, ["git"])
+        with mock.patch.object(pre, "_git", side_effect=error):
+            x = pre.scan(self.root, self.a)
+        self.assertIsNone(x["checkout_head"])
+        self.assertIsNone(x["source_blobs"]["src/a.py"]["actual"])
+        self.assertIn("CHECKOUT_NOT_AVAILABLE", x["errors"])
+        self.assertIn("SOURCE_BLOB_DRIFT:src/a.py", x["errors"])
+
     def test_missing_checkout_and_invalid_head_fail_closed(self):
         ceiling = {"GIT_CEILING_DIRECTORIES": str(self.root.parent)}
         with mock.patch.dict(os.environ, ceiling):
             x = pre.scan(self.root, "not-a-sha")
         self.assertIsNone(x["checkout_head"])
-        self.assertIsNone(x["source_blobs"]["src/a.py"]["actual"])
+        # Outside a repository `git hash-object` may still hash the file
+        # (Linux) or fail (Windows temp ACLs); either way it is not the pin.
+        self.assertFalse(x["source_blobs"]["src/a.py"]["matches"])
         for error in (
             "EXPECTED_HEAD_INVALID",
             "CHECKOUT_NOT_AVAILABLE",
