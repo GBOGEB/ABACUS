@@ -109,7 +109,7 @@ class W76ZeroAssetAuditTests(unittest.TestCase):
     def test_coverage_requires_exact_version_and_branch_instrumentation(self):
         for key, bad in (("version", "7.15.0"),
                          ("branch_coverage", False),
-                         ("branch_coverage", True if False else None)):
+                         ("branch_coverage", None)):
             cov = coverage_for()
             cov["meta"][key] = bad
             with self.subTest(key=key, bad=bad), self.assertRaisesRegex(
