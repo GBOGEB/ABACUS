@@ -362,5 +362,143 @@ class PlanningProof(unittest.TestCase):
             compile_plan(p)
 
 
+def lease_fixture(*claims, max_parallel=2, estimates=None, changed=None):
+    """Construct independent exact-head advisory tasks with explicit leases."""
+    value = fixture()
+    value["max_parallel"] = max_parallel
+    value["changed_paths"] = ["src/main.py"] if changed is None else changed
+    value["tasks"] = []
+    for index, claim in enumerate(claims):
+        value["tasks"].append({
+            "id": chr(ord("A") + index),
+            "kind": "static",
+            "required": True,
+            "priority": "P0",
+            "needs": [],
+            "paths": claim if isinstance(claim, list) else [claim],
+            "estimate_seconds": (estimates[index] if estimates else 10),
+        })
+    return value
+
+
+class DisjointWaveRegression(unittest.TestCase):
+    def test_parent_child_and_independent_lane_fill_free_slot(self):
+        plan = compile_plan(lease_fixture(
+            "src", "src/main.py", "docs/README.md",
+            estimates=[8, 12, 5],
+        ))
+        wave = plan["waves"][0]
+        self.assertEqual(wave["batches"], [["A", "C"], ["B"]])
+        self.assertEqual(wave["predicted_wall_seconds"], 20)
+        self.assertEqual(
+            wave["lease_model"], "CASEFOLDED_LEXICAL_PLAN_NOT_AUTHENTICATED"
+        )
+        self.assertEqual(plan["dispatch"], "NOT_PERFORMED_READ_ONLY_PLAN")
+
+    def test_reverse_parent_child_claims_are_still_serial(self):
+        plan = compile_plan(lease_fixture("src/main.py", "src", "docs/x.md"))
+        self.assertEqual(plan["waves"][0]["batches"], [["A", "C"], ["B"]])
+
+    def test_windows_casefold_alias_cannot_share_worker_batch(self):
+        plan = compile_plan(lease_fixture("SRC/MOD.py", "src/mod.PY", "other/x"))
+        self.assertEqual(plan["waves"][0]["batches"], [["A", "C"], ["B"]])
+
+    def test_mixed_case_parent_alias_cannot_share_worker_batch(self):
+        plan = compile_plan(lease_fixture("SRC", "src/sub/module.py"))
+        self.assertEqual(plan["waves"][0]["batches"], [["A"], ["B"]])
+
+    def test_exact_claim_collision_serializes_beyond_worker_capacity(self):
+        plan = compile_plan(lease_fixture(
+            "src/shared.py", "src/shared.py", "src/shared.py",
+            "src/shared.py", max_parallel=4,
+        ))
+        self.assertEqual(
+            plan["waves"][0]["batches"], [["A"], ["B"], ["C"], ["D"]]
+        )
+        self.assertFalse(plan["merge_authorized"])
+
+    def test_boundary_prefix_is_not_directory_ancestor(self):
+        plan = compile_plan(lease_fixture("src/tool", "src/toolkit"))
+        self.assertEqual(plan["waves"][0]["batches"], [["A", "B"]])
+
+    def test_unclaimed_paths_are_readonly_parallel_proposals(self):
+        plan = compile_plan(lease_fixture([], [], max_parallel=2))
+        self.assertEqual(plan["waves"][0]["batches"], [["A", "B"]])
+        self.assertFalse(plan["merge_authorized"])
+
+    def test_worker_cap_and_total_wall_estimate(self):
+        plan = compile_plan(lease_fixture(
+            "src/a", "src/b", "src/c", "src/d", "src/e",
+            max_parallel=2, estimates=[7, 11, 13, 17, 19],
+        ))
+        self.assertEqual(
+            plan["waves"][0]["batches"],
+            [["A", "B"], ["C", "D"], ["E"]],
+        )
+        self.assertEqual(plan["waves"][0]["predicted_wall_seconds"], 47)
+
+    def test_permutation_does_not_change_dag_or_leases(self):
+        initial = lease_fixture("src", "src/main.py", "docs/readme.md")
+        backwards = copy.deepcopy(initial)
+        backwards["tasks"] = list(reversed(backwards["tasks"]))
+        self.assertEqual(
+            compile_plan(initial)["waves"],
+            compile_plan(backwards)["waves"],
+        )
+
+    def test_reverse_mutation_turns_parallel_into_serial(self):
+        control = compile_plan(lease_fixture("src/main.py", "docs/main.py"))
+        mutated = compile_plan(lease_fixture("src/main.py", "SRC"))
+        self.assertEqual(control["waves"][0]["batches"], [["A", "B"]])
+        self.assertEqual(mutated["waves"][0]["batches"], [["A"], ["B"]])
+
+    def test_changed_path_detects_casefold_and_parent_directory(self):
+        value = lease_fixture(
+            "src", "docs/README.md", "SRC/main.py",
+            changed=["src/main.py"],
+        )
+        rows = compile_plan(value)["tasks"]
+        self.assertEqual(
+            {row["id"]: row["paths_intersect_changed"] for row in rows},
+            {"A": True, "B": False, "C": True},
+        )
+
+    def test_missing_changed_path_not_an_implicit_positive(self):
+        value = lease_fixture("src/a.py", changed=[])
+        row = compile_plan(value)["tasks"][0]
+        self.assertFalse(row["paths_intersect_changed"])
+
+    def test_unknown_estimate_is_not_assumed_zero_wall_time(self):
+        value = lease_fixture("src/a.py", "src/b.py")
+        value["tasks"][1].pop("estimate_seconds")
+        self.assertIsNone(
+            compile_plan(value)["waves"][0]["predicted_wall_seconds"]
+        )
+
+    def test_synthetic_adversarial_paths_rejected_before_lease(self):
+        cases = (
+            "C:/Windows/system32", "src/\tsecret.py",
+            "src/\nnewline.py", "src/\rreturn.py",
+            "src/\x00nul.py", "src/\x7fdel.py",
+            "src/../escape", "src//alias", "src/./alias",
+            "src/trailing/",
+        )
+        for claim in cases:
+            with self.subTest(path=repr(claim)):
+                with self.assertRaisesRegex(
+                    ValueError, "unsafe or noncanonical relative path"
+                ):
+                    compile_plan(lease_fixture(claim))
+
+    def test_nonmutation_source_and_no_authorized_crew(self):
+        value = lease_fixture("src", "src/a.py", "docs/readme.md")
+        frozen = copy.deepcopy(value)
+        plan = compile_plan(value)
+        self.assertEqual(value, frozen)
+        self.assertIsNone(plan["crew_launch_authenticated"])
+        self.assertFalse(plan["merge_authorized"])
+        self.assertFalse(plan["security_waiver"])
+
+
 if __name__ == "__main__":
     unittest.main()

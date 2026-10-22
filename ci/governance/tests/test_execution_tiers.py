@@ -88,15 +88,22 @@ class ExecutionTierTests(unittest.TestCase):
             return False
         if "  pull_request:" in cd_source or cd_source.count(marker) != 1:
             return False
-        publisher = cd_source.split(marker, 1)[1]
+        # Keep requirements inside this job, not in a later unrelated job.
+        publisher = re.split(
+            r"(?m)^  [A-Za-z_][\w-]*:\s*$",
+            cd_source.split(marker, 1)[1], maxsplit=1,
+        )[0]
+        upload_pins = re.findall(
+            r"(?m)^\s*(?:-\s*)?uses:\s*github/codeql-action/upload-sarif@"
+            r"([0-9a-f]{40})(?:\s+#.*)?\s*$", publisher,
+        )
         return (
             "if: github.event_name == 'push' && github.ref == 'refs/heads/main'"
             in publisher
             and "security-events: write" in publisher
             and "test \"$GITHUB_REF\" = refs/heads/main" in publisher
             and "test \"$(git rev-parse HEAD)\" = \"$GITHUB_SHA\"" in publisher
-            and "upload-sarif@24c54180a607b1449ed407dd24f251e4e9147c8d"
-            in publisher
+            and upload_pins == ["6f2ac81f5cd81fe351a197ba0b00d91d03cd2aee"]
         )
 
     def test_path_scoped_pr_domain_preserves_actual_triggers(self):
@@ -115,6 +122,7 @@ class ExecutionTierTests(unittest.TestCase):
     def test_negative_pr_write_scope_reintroduction_trips(self):
         pr = (WORKFLOWS / "ci-pipeline.yml").read_text(encoding="utf-8")
         cd = (WORKFLOWS / "cd-pipeline.yml").read_text(encoding="utf-8")
+        self.assertTrue(self._sarif_trust_boundary(pr, cd))
         self.assertFalse(self._sarif_trust_boundary(
             pr.replace("      actions: read",
                        "      actions: read\n      security-events: write", 1),
@@ -124,6 +132,7 @@ class ExecutionTierTests(unittest.TestCase):
     def test_reverse_untrusted_main_publication_condition_trips(self):
         pr = (WORKFLOWS / "ci-pipeline.yml").read_text(encoding="utf-8")
         cd = (WORKFLOWS / "cd-pipeline.yml").read_text(encoding="utf-8")
+        self.assertTrue(self._sarif_trust_boundary(pr, cd))
         guard = (
             "if: github.event_name == 'push' && github.ref == 'refs/heads/main'"
         )
@@ -134,10 +143,34 @@ class ExecutionTierTests(unittest.TestCase):
     def test_force_trip_missing_exact_head_guard_trips(self):
         pr = (WORKFLOWS / "ci-pipeline.yml").read_text(encoding="utf-8")
         cd = (WORKFLOWS / "cd-pipeline.yml").read_text(encoding="utf-8")
+        self.assertTrue(self._sarif_trust_boundary(pr, cd))
         self.assertFalse(self._sarif_trust_boundary(
             pr, cd.replace('test "$(git rev-parse HEAD)" = "$GITHUB_SHA"',
                            'echo "unchecked SHA"', 1)
         ))
+
+
+    def test_negative_mutable_or_unapproved_sarif_pin_trips(self):
+        pr = (WORKFLOWS / "ci-pipeline.yml").read_text(encoding="utf-8")
+        cd = (WORKFLOWS / "cd-pipeline.yml").read_text(encoding="utf-8")
+        self.assertTrue(self._sarif_trust_boundary(pr, cd))
+        approved = "6f2ac81f5cd81fe351a197ba0b00d91d03cd2aee"
+        for replacement in ("v4", "0" * 40):
+            with self.subTest(replacement=replacement):
+                changed = cd.replace("upload-sarif@" + approved,
+                                     "upload-sarif@" + replacement, 1)
+                self.assertNotEqual(cd, changed)
+                self.assertFalse(self._sarif_trust_boundary(pr, changed))
+
+    def test_negative_guard_in_unrelated_job_cannot_complete_publisher(self):
+        pr = (WORKFLOWS / "ci-pipeline.yml").read_text(encoding="utf-8")
+        cd = (WORKFLOWS / "cd-pipeline.yml").read_text(encoding="utf-8")
+        self.assertTrue(self._sarif_trust_boundary(pr, cd))
+        guard = "test \"$(git rev-parse HEAD)\" = \"$GITHUB_SHA\""
+        changed = cd.replace(guard, 'echo "unchecked SHA"', 1)
+        self.assertNotEqual(cd, changed)
+        changed += "\n  unrelated-job:\n    steps:\n      - run: " + guard + "\n"
+        self.assertFalse(self._sarif_trust_boundary(pr, changed))
 
 
 if __name__ == "__main__":

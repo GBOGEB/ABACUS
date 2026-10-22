@@ -22,6 +22,7 @@ totals, independent trials, or formal open roots. The input batches are ten
 `54da377cf82a358ac97903ecde0270c975b8fcc1`.
 
 **Hierarchy and semantics:**
+
 1. `PR` -> `source HEAD` -> `run ID:attempt` -> `job ID` -> `step number` ->
    `first material red` -> `source/config/procedure root hypothesis` ->
    `canonical owner` -> `controlled repair` -> `independent gate` -> `main
@@ -41,26 +42,116 @@ totals, independent trials, or formal open roots. The input batches are ten
 
 ## SIPOC / recursive neighborhood
 
-| SIPOC | Immediate producer / process / consumer |
-|---|---|
-| **S** | GitHub PR-head metadata; exact-run run/jobs/steps; native artifacts; scanner config, VERSION and root-owned code |
-| **I** | Repo, source SHA, PR/base ref, run:attempt:job:step, timestamp, first failed step, evidence class and ownership |
-| **P (N−1)** | Frozen N0 census, previous source and first-red signatures; never rewrite |
-| **P (N)** | N1 native job-step scout → N2 source-log causal classification → N3 disjoint owner repair + negative/positive tests |
-| **P (N+1)** | Current head native CI, matched coverage and recurrence readback; invalidate old-head proof |
-| **O** | Versioned source-bound JSON, immutable SHA-256 manifest, HTML review surface, owner suggestion, UNKNOWN gates |
-| **C** | ABACUS DOW root owner, KEB semantics, Mission Control historian/viewer, gg_MATH qualified analytics, QPS child engineering acceptance |
+### S
+
+**Immediate producer / process / consumer:** GitHub PR-head metadata;
+exact-run run/jobs/steps; native artifacts; scanner config, VERSION and
+root-owned code
+
+### I
+
+**Immediate producer / process / consumer:** Repo, source SHA, PR/base ref,
+run:attempt:job:step, timestamp, first failed step, evidence class and
+ownership
+
+### P (N−1)
+
+**Immediate producer / process / consumer:** Frozen N0 census, previous source
+and first-red signatures; never rewrite
+
+### P (N)
+
+**Immediate producer / process / consumer:** N1 native job-step scout → N2
+source-log causal classification → N3 disjoint owner repair +
+negative/positive tests
+
+### P (N+1)
+
+**Immediate producer / process / consumer:** Current head native CI, matched
+coverage and recurrence readback; invalidate old-head proof
+
+### O
+
+**Immediate producer / process / consumer:** Versioned source-bound JSON,
+immutable SHA-256 manifest, HTML review surface, owner suggestion, UNKNOWN
+gates
+
+### C
+
+**Immediate producer / process / consumer:** ABACUS DOW root owner, KEB
+semantics, Mission Control historian/viewer, gg_MATH qualified analytics, QPS
+child engineering acceptance
 
 ## Waves and runner leases
 
-| Wave | Run type | Work size/denominator | DOV | Dispatch |
-|---|---|---|---|---|
-| N0 | **Static cold / local** | 75 PR / 260 failed associations / 253 unique failed runs | Deterministic validation and 19 adversarial tests | Executed source capture; native test still pending |
-| N1 | **Native read-only scout** | <=256 distinct runs, <=4 concurrent API readers; expected >=506 REST calls for run + jobs including pagination | Run/source identity and first failed job/step; missing stays withheld | PR branch workflow, not Crew |
-| N2 | **Material first-red** | Start with high-impact workflow buckets, then traverse 19 buckets to terminal classification | Native job logs, distinct SHA/config, earliest independent failure and owner | Scout proposals only |
-| N3 | **Owner disjoint repairs** | Maximum two parallel source writers after path-lease check | Exact original red eliminated + reverse/negative regression | Owner lease mandatory |
-| N4 | **GoGREEN positive proof** | 12-job Enterprise matrix, W72, Safety/Bandit, Semgrep, Markdown/YAML/JSON, Black/Isort, branch/diff coverage as applicable | Native exact-head, same config/denominator, zero false green; no weakening | Native GitHub CI |
-| N5 | **CODE PURPLE admission** | Independent A10, security, reviews, effective protection, main proof/REX | Genuine admitted main merge, current-main recheck, distinct-source recurrence | HOLD unless all qualify |
+### N0
+
+**Run type:** **Static cold / local**
+
+**Work size/denominator:** 75 PR / 260 failed associations / 253 unique failed
+runs
+
+**DOV:** Deterministic validation and 19 adversarial tests
+
+**Dispatch:** Executed source capture; native test still pending
+
+### N1
+
+**Run type:** **Native read-only scout**
+
+**Work size/denominator:** <=256 distinct runs, <=4 concurrent API readers;
+expected >=506 REST calls for run + jobs including pagination
+
+**DOV:** Run/source identity and first failed job/step; missing stays withheld
+
+**Dispatch:** PR branch workflow, not Crew
+
+### N2
+
+**Run type:** **Material first-red**
+
+**Work size/denominator:** Start with high-impact workflow buckets, then
+traverse 19 buckets to terminal classification
+
+**DOV:** Native job logs, distinct SHA/config, earliest independent failure
+and owner
+
+**Dispatch:** Scout proposals only
+
+### N3
+
+**Run type:** **Owner disjoint repairs**
+
+**Work size/denominator:** Maximum two parallel source writers after
+path-lease check
+
+**DOV:** Exact original red eliminated + reverse/negative regression
+
+**Dispatch:** Owner lease mandatory
+
+### N4
+
+**Run type:** **GoGREEN positive proof**
+
+**Work size/denominator:** 12-job Enterprise matrix, W72, Safety/Bandit,
+Semgrep, Markdown/YAML/JSON, Black/Isort, branch/diff coverage as applicable
+
+**DOV:** Native exact-head, same config/denominator, zero false green; no
+weakening
+
+**Dispatch:** Native GitHub CI
+
+### N5
+
+**Run type:** **CODE PURPLE admission**
+
+**Work size/denominator:** Independent A10, security, reviews, effective
+protection, main proof/REX
+
+**DOV:** Genuine admitted main merge, current-main recheck, distinct-source
+recurrence
+
+**Dispatch:** HOLD unless all qualify
 
 Disjoint **readers** may split by run ID independent of source paths. Disjoint
 **source workers** must split by canonical owned file paths; two PRs that touch
@@ -133,7 +224,9 @@ PowerShell (cross-platform, no authentication or Git mutation):
 ```powershell
 Set-Location tools/everred_v3
 python -m unittest discover -s tests -p test_cbd_260.py -v
-python scripts/cbd_260.py (Get-ChildItem data/cbd_260/N0_*.json | ForEach-Object FullName) --output-dir ./out/cbd260
+$Inputs = Get-ChildItem data/cbd_260/N0_*.json |
+    ForEach-Object FullName
+python scripts/cbd_260.py $Inputs --output-dir ./out/cbd260
 ```
 
 The existing `.github/workflows/everred-v3-validation.yml` has an optional

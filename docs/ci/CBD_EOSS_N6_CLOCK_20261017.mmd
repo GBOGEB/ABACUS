@@ -1,0 +1,12 @@
+flowchart TD
+    A[Local monotonic experiment] --> B[Three samples per wave]
+    B --> C{Same workload, host, and test selection?}
+    C -->|yes| D[Descriptive local duration delta]
+    C -->|no| U[UNKNOWN acceleration]
+    E[Native job created / started / completed] --> F{Non-skipped, ordered timestamps?}
+    F -->|yes| G[Runner job wait and execution]
+    F -->|no| H[Clock censored]
+    D -. NOT equivalent to .-> G
+    U --> K[Forecast next cohort; no speedup credit]
+    H --> K
+    G --> K
