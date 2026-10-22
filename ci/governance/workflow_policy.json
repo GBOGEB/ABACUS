@@ -691,6 +691,12 @@
       "cluster": "runtime_governance",
       "lifecycle": "scheduled",
       "disposition": "keep"
+    },
+    {
+      "pattern": "^config-surface-audit\\.yml$",
+      "cluster": "runtime_governance",
+      "lifecycle": "pr_domain",
+      "disposition": "keep"
     }
   ],
   "quality_gates": {
