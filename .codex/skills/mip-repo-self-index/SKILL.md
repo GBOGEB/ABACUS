@@ -4,7 +4,7 @@ description: >-
   Prove and classify repository self-index state with exact-SHA lineage,
   sanitized producer and consumer receipts, and branch-causality separation.
   Use for MIP, QPS TRIAGE, or similar repository convergence work when
-  ChatGPT must bind evidence to a GitHub commit, inspect self-index or
+  an agent must bind evidence to a GitHub commit, inspect self-index or
   diagnostic CI, classify branch-caused versus inherited reds, validate
   downstream artifact consumption, or promote a repository capability from
   RED or AMBER toward GREEN or CONTROL without claiming broader project DoV.
@@ -77,7 +77,9 @@ proof pulse merely to make the matrix green.
 
 Use these canonical lanes when present:
 
-- `repo_self_assess_debug_ldab`: executable diagnostic evidence on exact SHA.
+- `repo_self_assess_debug_ldab`: executable diagnostic evidence on exact SHA
+  (`debug_diagnostic` in `MIP/mip_surface.json`, default
+  `scripts/mip_debug_diagnostic.py`).
 - `repo_self_assess_runners_mcp`: executable runner/orchestration evidence.
 - `repo_self_assess_codz_health_selfheal`: observed health/self-heal behavior.
 - `repo_self_produce`: reusable skill, agent, parser, or orchestrator.
@@ -115,6 +117,20 @@ For each failure:
 
 Do not repeatedly retry an unavailable log endpoint. Switch to base/head
 evidence or preserved artifacts instead.
+
+## Kit provenance
+
+The canonical copy of this skill and its runner scripts lives in
+`GBOGEB/CODEX`. `MIP/kit/KIT_MANIFEST.json` lists every shareable file with
+its sha256. A consumer repository copies the listed files unchanged, keeps its
+own `MIP/mip_surface.json`, and runs:
+
+```bash
+python scripts/mip_kit_manifest.py check --canonical <codex-manifest.json>
+```
+
+Repository-specific behaviour belongs in `MIP/mip_surface.json`, never in an
+edited copy of a kit file.
 
 ## Stop conditions
 

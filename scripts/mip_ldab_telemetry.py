@@ -74,9 +74,15 @@ def _source_census(receipt: dict[str, Any], location: str) -> dict[str, Any]:
         location + " LDAB sample conflicts with denominator",
     )
     status = lane.get("status")
+    if location == "root":
+        # Kit 1.1.0: root GREEN needs an executed diagnostic on HEAD, so
+        # signals without one are AMBER and a proven repo may have none.
+        # Only RED still follows from file presence: no signals at all.
+        consistent = not (status == "red" and count > 0)
+    else:
+        consistent = (status == "green") == (count > 0)
     _require(
-        status in ("green", "amber", "red")
-        and (status == "green") == (count > 0),
+        status in ("green", "amber", "red") and consistent,
         location + " LDAB source status mismatch",
     )
     full = lane.get("all_candidate_paths")

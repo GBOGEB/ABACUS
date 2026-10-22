@@ -1,0 +1,64 @@
+{
+  "schema": "code-purple.eoss.n6.playwright.v1",
+  "checks": [
+    {
+      "viewport": "desktop",
+      "width": 1440,
+      "height": 1000,
+      "panels": 5,
+      "interaction_checks": [
+        "wave_filter",
+        "node_depth_zoom",
+        "node_click",
+        "SIPOC",
+        "clocks_censor",
+        "glossary_search"
+      ],
+      "errors": [],
+      "broken_images": 0,
+      "document_overflow": false,
+      "screenshots": 5,
+      "status": "PASS"
+    },
+    {
+      "viewport": "laptop",
+      "width": 1280,
+      "height": 800,
+      "panels": 5,
+      "interaction_checks": [
+        "wave_filter",
+        "node_depth_zoom",
+        "node_click",
+        "SIPOC",
+        "clocks_censor",
+        "glossary_search"
+      ],
+      "errors": [],
+      "broken_images": 0,
+      "document_overflow": false,
+      "screenshots": 5,
+      "status": "PASS"
+    },
+    {
+      "viewport": "mobile",
+      "width": 390,
+      "height": 844,
+      "panels": 5,
+      "interaction_checks": [
+        "wave_filter",
+        "node_depth_zoom",
+        "node_click",
+        "SIPOC",
+        "clocks_censor",
+        "glossary_search"
+      ],
+      "errors": [],
+      "broken_images": 0,
+      "document_overflow": false,
+      "screenshots": 5,
+      "status": "PASS"
+    }
+  ],
+  "overall": "PASS",
+  "evidence": "LOCAL_REPRODUCIBILITY"
+}

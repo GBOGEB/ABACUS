@@ -48,12 +48,18 @@ def path_safe(path):
         and not path.startswith("/")
         and "\\" not in path
         and ":" not in path
+        and not any(ord(c) < 32 or ord(c) == 127 for c in path)
         and all(part not in ("", ".", "..") for part in path.split("/"))
     )
 
 
 def path_overlap(a, b):
-    return a == b or a.startswith(b + "/") or b.startswith(a + "/")
+    """Cross-platform conservative lexical leases; not realpath/ACL proof."""
+    left, right = a.casefold(), b.casefold()
+    return (
+        left == right or left.startswith(right + "/")
+        or right.startswith(left + "/")
+    )
 
 
 def validate(doc):
@@ -360,6 +366,7 @@ def plan(doc):
         "selected_read_only_proposals": reserve(ranks, tasks, doc["capacity"]),
         "ablation_status": "PENDING_MEASURED_OUTCOMES",
         "advisory_only": True,
+        "path_lease_model": "CASEFOLDED_LEXICAL_PLAN_NOT_AUTHENTICATED",
         "dispatch_authorized": False,
         "mutation_authorized": False,
         "merge_admission": "HOLD",

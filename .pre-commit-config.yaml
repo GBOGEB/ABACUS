@@ -17,6 +17,20 @@ repos:
         language: system
         pass_filenames: false
         stages: [pre-commit]
+      - id: cbd-e2e-pre-commit
+        name: CBD TestPilot source-bound pre-commit atom checks
+        entry: python scripts/cbd_e2e_stage.py --stage pre-commit --receipt .testpilot/e2e/pre_commit.json
+        language: system
+        pass_filenames: false
+        always_run: true
+        stages: [pre-commit]
+      - id: cbd-e2e-pre-push
+        name: CBD TestPilot source-bound pre-push and pytest proof
+        entry: python scripts/cbd_e2e_stage.py --stage pre-push --receipt .testpilot/e2e/pre_push.json
+        language: system
+        pass_filenames: false
+        always_run: true
+        stages: [pre-push]
       - id: mip2-method-contracts
         name: MIP2 method contract validation
         entry: python tools/mip2/validate_method_contracts.py

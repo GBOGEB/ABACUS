@@ -673,6 +673,24 @@
       "cluster": "bridge_federation",
       "lifecycle": "pr_domain",
       "disposition": "keep"
+    },
+    {
+      "pattern": "^cbd-e2e-graph-contract\\.yml$",
+      "cluster": "core_test",
+      "lifecycle": "pr_domain",
+      "disposition": "keep"
+    },
+    {
+      "pattern": "^cbd-native-evidence-metrics-testflight\\.yml$",
+      "cluster": "statistics",
+      "lifecycle": "pr_domain",
+      "disposition": "keep"
+    },
+    {
+      "pattern": "^cbd-scheduled-gated-pulse\\.yml$",
+      "cluster": "runtime_governance",
+      "lifecycle": "scheduled",
+      "disposition": "keep"
     }
   ],
   "quality_gates": {

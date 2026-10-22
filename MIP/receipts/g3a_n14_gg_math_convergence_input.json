@@ -1,0 +1,47 @@
+{
+  "schema": "gg_math.convergence_input.v1",
+  "evidence_class": "SOURCE_BOUND_UNVERIFIED_RECEIPTS",
+  "authority_transfer": false,
+  "tolerance_pp": 0.5,
+  "cap_tolerance_pp": 1,
+  "equivalence_alpha": 0.05,
+  "observations": [
+    {
+      "n": 13,
+      "k": 115,
+      "d": 446,
+      "scope_id": "ABACUS_G3A_FOUR_MODULE_FROZEN_446_BRANCHES_coverage7.16.2",
+      "sha": "b16ba5c6ff3d4106db9ac5cfb3d3164b3206cb52",
+      "run_id": 39040416656,
+      "attempt": 1
+    },
+    {
+      "n": 14,
+      "k": 200,
+      "d": 446,
+      "scope_id": "ABACUS_G3A_FOUR_MODULE_FROZEN_446_BRANCHES_coverage7.16.2",
+      "sha": "1446d78a6e93a455d9bed71f070a6b460dc6e86d",
+      "run_id": 39046868554,
+      "attempt": 1
+    }
+  ],
+  "blocking_dependencies": [
+    "CI_GOVERNANCE_EXACT_HEAD_PROOF_PENDING",
+    "INDEPENDENT_REVIEW_PENDING"
+  ],
+  "defect_opportunities": {
+    "defects": null,
+    "opportunities": null,
+    "independent": false,
+    "ctq": null
+  },
+  "federation": {
+    "math_provider": "GBOGEB/gg_MATH",
+    "math_provider_sha": "961eadf43f19b6bc0ef11fdd640c30ab59f74f41",
+    "semantic_owner": "CODEX/KEB",
+    "consumer": "ABACUS/MIP",
+    "no_pca_bt_pairwise_inference": true,
+    "provider_receipt_authenticates_native_ci": false,
+    "merge_admission": "HOLD"
+  }
+}

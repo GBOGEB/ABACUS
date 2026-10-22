@@ -49,10 +49,21 @@ def _positive(value, name):
 
 def _path(value):
     if (type(value) is not str or not value or value.startswith("/")
-            or "\\" in value or "\x00" in value or value.endswith("/")
+            or "\\" in value or ":" in value or value.endswith("/")
+            or any(ord(char) < 32 or ord(char) == 127 for char in value)
             or any(p in ("", ".", "..") for p in value.split("/"))):
         raise ValueError("unsafe or noncanonical relative path")
     return value
+
+
+def _path_overlap(left, right):
+    """Cross-platform conservative lexical file/directory lease overlap.
+
+    Case folding protects Windows runners. Symlink/realpath identity cannot
+    be authenticated by this read-only planner.
+    """
+    a, b = left.casefold(), right.casefold()
+    return a == b or a.startswith(b + "/") or b.startswith(a + "/")
 
 
 def _list_unique(value, name, *, max_items=1000):
@@ -139,7 +150,25 @@ def _waves(tasks, max_parallel):
         if not ready:
             raise ValueError("unresolvable read-only test dependency")
         ready.sort(key=lambda t: (PRIORITIES[t["priority"]], KIND_RANK[t["kind"]], t["id"]))
-        batches = [ready[i:i + max_parallel] for i in range(0, len(ready), max_parallel)]
+        # Pack independent tasks into bounded parallel batches. A simple
+        # max_parallel slice is unsafe: sibling tasks can claim the same
+        # file, a parent directory, or a Windows case-folded path alias.
+        remaining_ready = ready[:]
+        batches = []
+        while remaining_ready:
+            selected, leased, deferred = [], [], []
+            for task in remaining_ready:
+                collision = any(
+                    _path_overlap(path, other)
+                    for path in task["paths"] for other in leased
+                )
+                if len(selected) < max_parallel and not collision:
+                    selected.append(task)
+                    leased.extend(task["paths"])
+                else:
+                    deferred.append(task)
+            batches.append(selected)
+            remaining_ready = deferred
         waves.append({
             "wave": len(waves) + 1,
             "batches": [[t["id"] for t in batch] for batch in batches],
@@ -149,6 +178,7 @@ def _waves(tasks, max_parallel):
                 if all(t["estimate_seconds"] is not None for t in ready) else None
             ),
             "timing_class": "UNVALIDATED_ESTIMATE_NOT_NATIVE_DURATION",
+            "lease_model": "CASEFOLDED_LEXICAL_PLAN_NOT_AUTHENTICATED",
         })
         finished.update(t["id"] for t in ready)
         waiting.difference_update(finished)
@@ -376,7 +406,8 @@ def compile_plan(payload):
             "id": task["id"], "kind": task["kind"], "priority": task["priority"],
             "required": task["required"], "mode": task["mode"],
             "needs": task["needs"], "axes": task["axes"],
-            "paths_intersect_changed": bool(set(task["paths"]) & set(changed)) if task["paths"] else None,
+            "paths_intersect_changed": any(_path_overlap(p, c) for p in task["paths"] for c in changed)
+            if task["paths"] else None,
             "previous": prior, "current": result, "transition": transition,
             "artifact_receipt_identity": receipt_identity,
             "decision": decision, "native_job_evidence": [

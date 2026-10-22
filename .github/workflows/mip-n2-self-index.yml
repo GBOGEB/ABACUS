@@ -10,6 +10,9 @@ on:
       - "DMAIC_V3/quick_error_fix.py"
       - "integration/codespace_jyperter/MIP/**"
       - "integration/codespace_jyperter/scripts/mip_*.py"
+      - ".codex/skills/mip-repo-self-index/**"
+      - "tests/test_mip_kit*.py"
+      - "tests/test_mip_ldab_telemetry.py"
       - ".github/workflows/mip-n2-self-index.yml"
   workflow_dispatch:
 
@@ -21,6 +24,7 @@ jobs:
     runs-on: ubuntu-latest
     env:
       EXPECTED_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+      CODEX_KIT_REF: 1aa40cdb081ada67b213f8e4a3d849d57c56fd0f
     steps:
       - name: Check out exact evaluated SHA
         uses: actions/checkout@v7
@@ -32,6 +36,23 @@ jobs:
         uses: actions/setup-python@v7
         with:
           python-version: "3.12"
+
+      # Canonical kit from GBOGEB/CODEX: the 7 shareable files must match
+      # CODEX's manifest byte-for-byte (CRLF-normalised). The manifest is
+      # fetched from CODEX at CODEX_KIT_REF, not read from this checkout, so a
+      # PR that edits a kit file and regenerates the local manifest still
+      # fails. Bumping the kit means changing CODEX_KIT_REF here.
+      - name: Fetch the canonical kit manifest from CODEX
+        run: |
+          curl --fail --silent --show-error --location \
+            --output "${RUNNER_TEMP}/codex-kit-manifest.json" \
+            "https://raw.githubusercontent.com/GBOGEB/CODEX/${CODEX_KIT_REF}/MIP/kit/KIT_MANIFEST.json"
+
+      - name: Check MIP kit files match the canonical CODEX kit manifest
+        run: |
+          python scripts/mip_kit_manifest.py check \
+            --canonical "${RUNNER_TEMP}/codex-kit-manifest.json" \
+            --summary "${RUNNER_TEMP}/mip-kit-drift-summary.json"
 
       - name: Test LDAB telemetry fail-closed contracts
         run: |
@@ -48,8 +69,23 @@ jobs:
           python scripts/mip_verify_self_index.py \
             --summary "${RUNNER_TEMP}/mip-n2-self-index-summary.json"
 
+      # ABACUS-local: the kit verifier does not emit ldab_telemetry; rebuild it
+      # on the same SHA for the consumer job and downstream census readers.
+      - name: Attach ABACUS LDAB telemetry to the summary
+        run: |
+          python scripts/mip_ldab_n2_attach.py \
+            --summary "${RUNNER_TEMP}/mip-n2-self-index-summary.json"
+
       - name: Confirm verifier left source checkout clean
         run: test -z "$(git status --porcelain)"
+
+      - name: Run MIP kit tests
+        env:
+          PYTHONDONTWRITEBYTECODE: "1"
+        run: |
+          python -m pip install --disable-pip-version-check pytest
+          python -m pytest -p no:cacheprovider --noconftest -o addopts="" \
+            tests/test_mip_kit.py tests/test_mip_kit_consumer.py
 
       - name: Publish sanitized summary to job log
         run: |
@@ -65,7 +101,9 @@ jobs:
         uses: actions/upload-artifact@v7
         with:
           name: mip-n2-self-index-sanitized-${{ env.EXPECTED_SHA }}
-          path: ${{ runner.temp }}/mip-n2-self-index-summary.json
+          path: |
+            ${{ runner.temp }}/mip-n2-self-index-summary.json
+            ${{ runner.temp }}/mip-kit-drift-summary.json
           if-no-files-found: error
           retention-days: 14
 

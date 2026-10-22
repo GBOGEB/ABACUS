@@ -1,11 +1,11 @@
 {
   "schema": "abacus.everred.snapshot.v3",
-  "generated_at": "2026-10-14T09:56:16.600324+00:00",
+  "generated_at": "2026-10-20T05:59:32.878754+00:00",
   "mode": "HISTORICAL_EVIDENCE_NOT_LIVE",
   "repository": "GBOGEB/ABACUS",
   "base_sha": "e9f34b22967064c779891a4d2ac40541f370e812",
-  "events_count": 14,
-  "root_count": 2,
+  "events_count": 271,
+  "root_count": 60,
   "roots": [
     {
       "id": "CANDIDATE-DMAIC-1914",
@@ -26,6 +26,713 @@
       "applicable_consumers": null,
       "source": "https://github.com/GBOGEB/ABACUS/actions/runs/38532010346",
       "provenance": "historical_source"
+    },
+    {
+      "id": "RT-ROOT-ABACUS-02cca5020d59",
+      "title": "Bandit Disjoint Census red from 02cca502",
+      "state": "CANDIDATE",
+      "owner": "UNASSIGNED",
+      "cause": "UNKNOWN",
+      "applicable_consumers": [
+        "Bandit Disjoint Census"
+      ],
+      "source": "https://github.com/GBOGEB/ABACUS/actions/runs/38532480254",
+      "provenance": "observed"
+    },
+    {
+      "id": "RT-ROOT-ABACUS-0416345a56f6",
+      "title": "CI Workflow Governance red from 0416345a",
+      "state": "CANDIDATE",
+      "owner": "UNASSIGNED",
+      "cause": "UNKNOWN",
+      "applicable_consumers": [
+        "CI Workflow Governance"
+      ],
+      "source": "https://github.com/GBOGEB/ABACUS/actions/runs/39281653558",
+      "provenance": "observed"
+    },
+    {
+      "id": "RT-ROOT-ABACUS-0ec1965356b0",
+      "title": "cryoplant-project Federation Check red from 0ec19653",
+      "state": "CANDIDATE",
+      "owner": "UNASSIGNED",
+      "cause": "UNKNOWN",
+      "applicable_consumers": [
+        "cryoplant-project Federation Check"
+      ],
+      "source": "https://github.com/GBOGEB/ABACUS/actions/runs/38277255943",
+      "provenance": "observed"
+    },
+    {
+      "id": "RT-ROOT-ABACUS-1b1366e69fbe",
+      "title": ".github/workflows/qps-debug-dow-consumer.yml red from 1b1366e6",
+      "state": "CANDIDATE",
+      "owner": "UNASSIGNED",
+      "cause": "UNKNOWN",
+      "applicable_consumers": [
+        ".github/workflows/qps-debug-dow-consumer.yml"
+      ],
+      "source": "https://github.com/GBOGEB/ABACUS/actions/runs/34705507326",
+      "provenance": "observed"
+    },
+    {
+      "id": "RT-ROOT-ABACUS-1c2d72154c95",
+      "title": "DMAIC V3 CI - Test System Bridge red from 1c2d7215",
+      "state": "CANDIDATE",
+      "owner": "UNASSIGNED",
+      "cause": "UNKNOWN",
+      "applicable_consumers": [
+        "DMAIC V3 CI - Test System Bridge"
+      ],
+      "source": "https://github.com/GBOGEB/ABACUS/actions/runs/27397241108",
+      "provenance": "observed"
+    },
+    {
+      "id": "RT-ROOT-ABACUS-24df2e3842e2",
+      "title": "Validate ABACUS Setup red from 24df2e38",
+      "state": "CANDIDATE",
+      "owner": "UNASSIGNED",
+      "cause": "UNKNOWN",
+      "applicable_consumers": [
+        "Validate ABACUS Setup"
+      ],
+      "source": "https://github.com/GBOGEB/ABACUS/actions/runs/17631452387",
+      "provenance": "observed"
+    },
+    {
+      "id": "RT-ROOT-ABACUS-2e8e8b95ddfa",
+      "title": "TestPilot Pre-GitHub Parity red from 2e8e8b95",
+      "state": "CANDIDATE",
+      "owner": "UNASSIGNED",
+      "cause": "UNKNOWN",
+      "applicable_consumers": [
+        "TestPilot Pre-GitHub Parity"
+      ],
+      "source": "https://github.com/GBOGEB/ABACUS/actions/runs/38562948844",
+      "provenance": "observed"
+    },
+    {
+      "id": "RT-ROOT-ABACUS-462a73fc8da6",
+      "title": "CI Failure Debug Rerun red from 462a73fc",
+      "state": "CANDIDATE",
+      "owner": "UNASSIGNED",
+      "cause": "UNKNOWN",
+      "applicable_consumers": [
+        "CI Failure Debug Rerun"
+      ],
+      "source": "https://github.com/GBOGEB/ABACUS/actions/runs/33247129474",
+      "provenance": "observed"
+    },
+    {
+      "id": "RT-ROOT-ABACUS-505e0fb49ede",
+      "title": "Auto-Merge PRs red from 505e0fb4",
+      "state": "CANDIDATE",
+      "owner": "UNASSIGNED",
+      "cause": "UNKNOWN",
+      "applicable_consumers": [
+        "Auto-Merge PRs"
+      ],
+      "source": "https://github.com/GBOGEB/ABACUS/actions/runs/33197963751",
+      "provenance": "observed"
+    },
+    {
+      "id": "RT-ROOT-ABACUS-53688f26d5b9",
+      "title": "Security Dashboard — REX Telemetry red from 53688f26",
+      "state": "CANDIDATE",
+      "owner": "UNASSIGNED",
+      "cause": "UNKNOWN",
+      "applicable_consumers": [
+        "Security Dashboard — REX Telemetry"
+      ],
+      "source": "https://github.com/GBOGEB/ABACUS/actions/runs/38223058438",
+      "provenance": "observed"
+    },
+    {
+      "id": "RT-ROOT-ABACUS-6178594f40d1",
+      "title": "Shared break root: 2 workflows red from 6178594f",
+      "state": "CANDIDATE",
+      "owner": "UNASSIGNED",
+      "cause": "UNKNOWN",
+      "applicable_consumers": [
+        "DMAIC V3 - Cognitive Loop CI/CD",
+        "DOW Sprint 6 - Cognitive Deployment CI/CD"
+      ],
+      "source": "https://github.com/GBOGEB/ABACUS/actions/runs/27365306605",
+      "provenance": "observed"
+    },
+    {
+      "id": "RT-ROOT-ABACUS-6198d6cc411c",
+      "title": "CI/CD Test Suite red from 6198d6cc",
+      "state": "CANDIDATE",
+      "owner": "UNASSIGNED",
+      "cause": "UNKNOWN",
+      "applicable_consumers": [
+        "CI/CD Test Suite"
+      ],
+      "source": "https://github.com/GBOGEB/ABACUS/actions/runs/39132773955",
+      "provenance": "observed"
+    },
+    {
+      "id": "RT-ROOT-ABACUS-62ab9a6b0e37",
+      "title": "DMAIC V3.3 - CD Pipeline red from 62ab9a6b",
+      "state": "CANDIDATE",
+      "owner": "UNASSIGNED",
+      "cause": "UNKNOWN",
+      "applicable_consumers": [
+        "DMAIC V3.3 - CD Pipeline"
+      ],
+      "source": "https://github.com/GBOGEB/ABACUS/actions/runs/33210483015",
+      "provenance": "observed"
+    },
+    {
+      "id": "RT-ROOT-ABACUS-6d48bf73bff6",
+      "title": "GBOGEB/ABACUS ↔ DOW Integration CI/CD red from 6d48bf73",
+      "state": "CANDIDATE",
+      "owner": "UNASSIGNED",
+      "cause": "UNKNOWN",
+      "applicable_consumers": [
+        "GBOGEB/ABACUS ↔ DOW Integration CI/CD"
+      ],
+      "source": "https://github.com/GBOGEB/ABACUS/actions/runs/19498151485",
+      "provenance": "observed"
+    },
+    {
+      "id": "RT-ROOT-ABACUS-799ec6a3a0fb",
+      "title": "Automatic Dependency Submission (Python) red from 799ec6a3",
+      "state": "CANDIDATE",
+      "owner": "UNASSIGNED",
+      "cause": "UNKNOWN",
+      "applicable_consumers": [
+        "Automatic Dependency Submission (Python)"
+      ],
+      "source": "https://github.com/GBOGEB/ABACUS/actions/runs/27561242880",
+      "provenance": "observed"
+    },
+    {
+      "id": "RT-ROOT-ABACUS-7fa5b7aca888",
+      "title": "Bootstrap Statistics CI/CD Pipeline red from 7fa5b7ac",
+      "state": "CANDIDATE",
+      "owner": "UNASSIGNED",
+      "cause": "UNKNOWN",
+      "applicable_consumers": [
+        "Bootstrap Statistics CI/CD Pipeline"
+      ],
+      "source": "https://github.com/GBOGEB/ABACUS/actions/runs/39051478150",
+      "provenance": "observed"
+    },
+    {
+      "id": "RT-ROOT-ABACUS-9e0200190555",
+      "title": "DOW + Recursive DMAIC - Unified CD Pipeline red from 9e020019",
+      "state": "CANDIDATE",
+      "owner": "UNASSIGNED",
+      "cause": "UNKNOWN",
+      "applicable_consumers": [
+        "DOW + Recursive DMAIC - Unified CD Pipeline"
+      ],
+      "source": "https://github.com/GBOGEB/ABACUS/actions/runs/39148074266",
+      "provenance": "observed"
+    },
+    {
+      "id": "RT-ROOT-ABACUS-a0de73a9a600",
+      "title": "ABACUS DOW Integration CI/CD red from a0de73a9",
+      "state": "CANDIDATE",
+      "owner": "UNASSIGNED",
+      "cause": "UNKNOWN",
+      "applicable_consumers": [
+        "ABACUS DOW Integration CI/CD"
+      ],
+      "source": "https://github.com/GBOGEB/ABACUS/actions/runs/35339699035",
+      "provenance": "observed"
+    },
+    {
+      "id": "RT-ROOT-ABACUS-a7d01ff86da6",
+      "title": "DMAIC Metrics — Per-Commit Tracking & Feedback Loop red from a7d01ff8",
+      "state": "CANDIDATE",
+      "owner": "UNASSIGNED",
+      "cause": "UNKNOWN",
+      "applicable_consumers": [
+        "DMAIC Metrics — Per-Commit Tracking & Feedback Loop"
+      ],
+      "source": "https://github.com/GBOGEB/ABACUS/actions/runs/39232263777",
+      "provenance": "observed"
+    },
+    {
+      "id": "RT-ROOT-ABACUS-bbb08395a370",
+      "title": "Shared break root: 4 workflows red from bbb08395",
+      "state": "CANDIDATE",
+      "owner": "UNASSIGNED",
+      "cause": "UNKNOWN",
+      "applicable_consumers": [
+        "CI - ABACUS Matrix",
+        "Continuous Integration Pipeline",
+        "MIP B0 Test Admission and Coverage Evidence",
+        "Session Tuple CI/CD"
+      ],
+      "source": "https://github.com/GBOGEB/ABACUS/actions/runs/39295699979",
+      "provenance": "observed"
+    },
+    {
+      "id": "RT-ROOT-ABACUS-bd3f7429b078",
+      "title": "Sprint Trigger red from bd3f7429",
+      "state": "CANDIDATE",
+      "owner": "UNASSIGNED",
+      "cause": "UNKNOWN",
+      "applicable_consumers": [
+        "Sprint Trigger"
+      ],
+      "source": "https://github.com/GBOGEB/ABACUS/actions/runs/21553773334",
+      "provenance": "observed"
+    },
+    {
+      "id": "RT-ROOT-ABACUS-d3db31411795",
+      "title": "OSV-Scanner Scheduled red from d3db3141",
+      "state": "CANDIDATE",
+      "owner": "UNASSIGNED",
+      "cause": "UNKNOWN",
+      "applicable_consumers": [
+        "OSV-Scanner Scheduled"
+      ],
+      "source": "https://github.com/GBOGEB/ABACUS/actions/runs/36385418595",
+      "provenance": "observed"
+    },
+    {
+      "id": "RT-ROOT-ABACUS-e789b3b18836",
+      "title": "DOW + Recursive DMAIC - Enhanced CI red from e789b3b1",
+      "state": "CANDIDATE",
+      "owner": "UNASSIGNED",
+      "cause": "UNKNOWN",
+      "applicable_consumers": [
+        "DOW + Recursive DMAIC - Enhanced CI"
+      ],
+      "source": "https://github.com/GBOGEB/ABACUS/actions/runs/39068234571",
+      "provenance": "observed"
+    },
+    {
+      "id": "RT-ROOT-ABACUS-edee4420e9fc",
+      "title": "Shared break root: 2 workflows red from edee4420",
+      "state": "CANDIDATE",
+      "owner": "UNASSIGNED",
+      "cause": "UNKNOWN",
+      "applicable_consumers": [
+        "DMAIC V3 Bridge Integration - Test System",
+        "Inventory Scan"
+      ],
+      "source": "https://github.com/GBOGEB/ABACUS/actions/runs/19396177522",
+      "provenance": "observed"
+    },
+    {
+      "id": "RT-ROOT-ABACUS-f7866ff09336",
+      "title": "DMAIC V3 Enterprise CI red from f7866ff0",
+      "state": "CANDIDATE",
+      "owner": "UNASSIGNED",
+      "cause": "UNKNOWN",
+      "applicable_consumers": [
+        "DMAIC V3 Enterprise CI"
+      ],
+      "source": "https://github.com/GBOGEB/ABACUS/actions/runs/39068108146",
+      "provenance": "observed"
+    },
+    {
+      "id": "RT-ROOT-CODEX-025ab083ab5b",
+      "title": ".github/workflows/release.yml red from 025ab083",
+      "state": "CANDIDATE",
+      "owner": "UNASSIGNED",
+      "cause": "UNKNOWN",
+      "applicable_consumers": [
+        ".github/workflows/release.yml"
+      ],
+      "source": "https://github.com/GBOGEB/CODEX/actions/runs/26650356778",
+      "provenance": "observed"
+    },
+    {
+      "id": "RT-ROOT-CODEX-18b5d47beb19",
+      "title": "SPINE Gate red from 18b5d47b",
+      "state": "CANDIDATE",
+      "owner": "UNASSIGNED",
+      "cause": "UNKNOWN",
+      "applicable_consumers": [
+        "SPINE Gate"
+      ],
+      "source": "https://github.com/GBOGEB/CODEX/actions/runs/39135750113",
+      "provenance": "observed"
+    },
+    {
+      "id": "RT-ROOT-CODEX-1bc865a07c1c",
+      "title": ".github/workflows/w70-qps-zero-delta-diagnostic.yml red from 1bc865a0",
+      "state": "CANDIDATE",
+      "owner": "UNASSIGNED",
+      "cause": "UNKNOWN",
+      "applicable_consumers": [
+        ".github/workflows/w70-qps-zero-delta-diagnostic.yml"
+      ],
+      "source": "https://github.com/GBOGEB/CODEX/actions/runs/34885518023",
+      "provenance": "observed"
+    },
+    {
+      "id": "RT-ROOT-CODEX-3dbd06626d46",
+      "title": "G5 Unified Lifecycle Execution & Deployment Gateway red from 3dbd0662",
+      "state": "CANDIDATE",
+      "owner": "UNASSIGNED",
+      "cause": "UNKNOWN",
+      "applicable_consumers": [
+        "G5 Unified Lifecycle Execution & Deployment Gateway"
+      ],
+      "source": "https://github.com/GBOGEB/CODEX/actions/runs/26524696576",
+      "provenance": "observed"
+    },
+    {
+      "id": "RT-ROOT-CODEX-5821ad208f93",
+      "title": "QPS KEB W43 TRIAGE red from 5821ad20",
+      "state": "CANDIDATE",
+      "owner": "UNASSIGNED",
+      "cause": "UNKNOWN",
+      "applicable_consumers": [
+        "QPS KEB W43 TRIAGE"
+      ],
+      "source": "https://github.com/GBOGEB/CODEX/actions/runs/33861535842",
+      "provenance": "observed"
+    },
+    {
+      "id": "RT-ROOT-CODEX-6a9cf37718c9",
+      "title": "ABACUS Multi-Format Publication red from 6a9cf377",
+      "state": "CANDIDATE",
+      "owner": "UNASSIGNED",
+      "cause": "UNKNOWN",
+      "applicable_consumers": [
+        "ABACUS Multi-Format Publication"
+      ],
+      "source": "https://github.com/GBOGEB/CODEX/actions/runs/34870534075",
+      "provenance": "observed"
+    },
+    {
+      "id": "RT-ROOT-CODEX-855acb78b2c1",
+      "title": "MASTER Contract SSOT Validation red from 855acb78",
+      "state": "CANDIDATE",
+      "owner": "UNASSIGNED",
+      "cause": "UNKNOWN",
+      "applicable_consumers": [
+        "MASTER Contract SSOT Validation"
+      ],
+      "source": "https://github.com/GBOGEB/CODEX/actions/runs/34166172257",
+      "provenance": "observed"
+    },
+    {
+      "id": "RT-ROOT-CODEX-ad451cbc5be1",
+      "title": "Shared break root: 3 workflows red from ad451cbc",
+      "state": "CANDIDATE",
+      "owner": "UNASSIGNED",
+      "cause": "UNKNOWN",
+      "applicable_consumers": [
+        "ABACUS Snapshot Publication",
+        "QPS W05 bidder evaluation KEB receipt",
+        "semantic-validation"
+      ],
+      "source": "https://github.com/GBOGEB/CODEX/actions/runs/39104611366",
+      "provenance": "observed"
+    },
+    {
+      "id": "RT-ROOT-CODEX-b6421d7f154c",
+      "title": "OSV-Scanner red from b6421d7f",
+      "state": "CANDIDATE",
+      "owner": "UNASSIGNED",
+      "cause": "UNKNOWN",
+      "applicable_consumers": [
+        "OSV-Scanner"
+      ],
+      "source": "https://github.com/GBOGEB/CODEX/actions/runs/38413481440",
+      "provenance": "observed"
+    },
+    {
+      "id": "RT-ROOT-CODEX-b7bc79ea0ffb",
+      "title": ".github/workflows/qps-debug-federation-consumer.yml red from b7bc79ea",
+      "state": "CANDIDATE",
+      "owner": "UNASSIGNED",
+      "cause": "UNKNOWN",
+      "applicable_consumers": [
+        ".github/workflows/qps-debug-federation-consumer.yml"
+      ],
+      "source": "https://github.com/GBOGEB/CODEX/actions/runs/34705474438",
+      "provenance": "observed"
+    },
+    {
+      "id": "RT-ROOT-CODEX-e48cfc7923be",
+      "title": "Shared break root: 2 workflows red from e48cfc79",
+      "state": "CANDIDATE",
+      "owner": "UNASSIGNED",
+      "cause": "UNKNOWN",
+      "applicable_consumers": [
+        "QPS Roundtrip Zero-Delta",
+        "W05 QPS Roundtrip Regeneration Zero-Delta"
+      ],
+      "source": "https://github.com/GBOGEB/CODEX/actions/runs/34906099356",
+      "provenance": "observed"
+    },
+    {
+      "id": "RT-ROOT-CODEX-ea8c6db999a8",
+      "title": "Orchestration TypeScript CI red from ea8c6db9",
+      "state": "CANDIDATE",
+      "owner": "UNASSIGNED",
+      "cause": "UNKNOWN",
+      "applicable_consumers": [
+        "Orchestration TypeScript CI"
+      ],
+      "source": "https://github.com/GBOGEB/CODEX/actions/runs/27298977758",
+      "provenance": "observed"
+    },
+    {
+      "id": "RT-ROOT-cryoplant-project-0b2ebb300def",
+      "title": ".github/workflows/qps-golden-thread-bdq9-full-control-closure.yml red from 0b2ebb30",
+      "state": "CANDIDATE",
+      "owner": "UNASSIGNED",
+      "cause": "UNKNOWN",
+      "applicable_consumers": [
+        ".github/workflows/qps-golden-thread-bdq9-full-control-closure.yml"
+      ],
+      "source": "https://github.com/GBOGEB/cryoplant-project/actions/runs/36223534715",
+      "provenance": "observed"
+    },
+    {
+      "id": "RT-ROOT-cryoplant-project-152d7b4b4cfb",
+      "title": "QPS Dependency SPINE Read-only Census red from 152d7b4b",
+      "state": "CANDIDATE",
+      "owner": "UNASSIGNED",
+      "cause": "UNKNOWN",
+      "applicable_consumers": [
+        "QPS Dependency SPINE Read-only Census"
+      ],
+      "source": "https://github.com/GBOGEB/cryoplant-project/actions/runs/39244116563",
+      "provenance": "observed"
+    },
+    {
+      "id": "RT-ROOT-cryoplant-project-1e07febfa17b",
+      "title": "qps-w142-invcop-thermo-control red from 1e07febf",
+      "state": "CANDIDATE",
+      "owner": "UNASSIGNED",
+      "cause": "UNKNOWN",
+      "applicable_consumers": [
+        "qps-w142-invcop-thermo-control"
+      ],
+      "source": "https://github.com/GBOGEB/cryoplant-project/actions/runs/34690359030",
+      "provenance": "observed"
+    },
+    {
+      "id": "RT-ROOT-cryoplant-project-2c85973b2a9a",
+      "title": "MIP N2 exact-SHA self-index red from 2c85973b",
+      "state": "CANDIDATE",
+      "owner": "UNASSIGNED",
+      "cause": "UNKNOWN",
+      "applicable_consumers": [
+        "MIP N2 exact-SHA self-index"
+      ],
+      "source": "https://github.com/GBOGEB/cryoplant-project/actions/runs/39271923686",
+      "provenance": "observed"
+    },
+    {
+      "id": "RT-ROOT-cryoplant-project-4782b8ab418f",
+      "title": "QPS BD Queue Integrity red from 4782b8ab",
+      "state": "CANDIDATE",
+      "owner": "UNASSIGNED",
+      "cause": "UNKNOWN",
+      "applicable_consumers": [
+        "QPS BD Queue Integrity"
+      ],
+      "source": "https://github.com/GBOGEB/cryoplant-project/actions/runs/39051175754",
+      "provenance": "observed"
+    },
+    {
+      "id": "RT-ROOT-cryoplant-project-59315bbb0d8a",
+      "title": "Shared break root: 2 workflows red from 59315bbb",
+      "state": "CANDIDATE",
+      "owner": "UNASSIGNED",
+      "cause": "UNKNOWN",
+      "applicable_consumers": [
+        ".github/workflows/qps-code-purple-evolutionary.yml",
+        "github_actions in /. - Update #1630350736"
+      ],
+      "source": "https://github.com/GBOGEB/cryoplant-project/actions/runs/38858385258",
+      "provenance": "observed"
+    },
+    {
+      "id": "RT-ROOT-cryoplant-project-8102bce3b43c",
+      "title": "Shared break root: 3 workflows red from 8102bce3",
+      "state": "CANDIDATE",
+      "owner": "UNASSIGNED",
+      "cause": "UNKNOWN",
+      "applicable_consumers": [
+        "QPS PR binary refresh",
+        "TRIAGE Repository Census",
+        "qps-canonicalization"
+      ],
+      "source": "https://github.com/GBOGEB/cryoplant-project/actions/runs/39244025705",
+      "provenance": "observed"
+    },
+    {
+      "id": "RT-ROOT-cryoplant-project-829573b07405",
+      "title": "QPS W162 Visual Convergence Control red from 829573b0",
+      "state": "CANDIDATE",
+      "owner": "UNASSIGNED",
+      "cause": "UNKNOWN",
+      "applicable_consumers": [
+        "QPS W162 Visual Convergence Control"
+      ],
+      "source": "https://github.com/GBOGEB/cryoplant-project/actions/runs/34768683829",
+      "provenance": "observed"
+    },
+    {
+      "id": "RT-ROOT-cryoplant-project-86f600f99eb9",
+      "title": "QPS W163 Namespace Collision Control red from 86f600f9",
+      "state": "CANDIDATE",
+      "owner": "UNASSIGNED",
+      "cause": "UNKNOWN",
+      "applicable_consumers": [
+        "QPS W163 Namespace Collision Control"
+      ],
+      "source": "https://github.com/GBOGEB/cryoplant-project/actions/runs/39295518072",
+      "provenance": "observed"
+    },
+    {
+      "id": "RT-ROOT-cryoplant-project-9caccb14f311",
+      "title": "QPS TRIAGE Debug DAG Pilot red from 9caccb14",
+      "state": "CANDIDATE",
+      "owner": "UNASSIGNED",
+      "cause": "UNKNOWN",
+      "applicable_consumers": [
+        "QPS TRIAGE Debug DAG Pilot"
+      ],
+      "source": "https://github.com/GBOGEB/cryoplant-project/actions/runs/39253633295",
+      "provenance": "observed"
+    },
+    {
+      "id": "RT-ROOT-cryoplant-project-aeb16b224d83",
+      "title": "TODO-011 release pack smoke red from aeb16b22",
+      "state": "CANDIDATE",
+      "owner": "UNASSIGNED",
+      "cause": "UNKNOWN",
+      "applicable_consumers": [
+        "TODO-011 release pack smoke"
+      ],
+      "source": "https://github.com/GBOGEB/cryoplant-project/actions/runs/34170499782",
+      "provenance": "observed"
+    },
+    {
+      "id": "RT-ROOT-cryoplant-project-bac0045c81d0",
+      "title": ".github/workflows/qps-debug-dow-reentry.yml red from bac0045c",
+      "state": "CANDIDATE",
+      "owner": "UNASSIGNED",
+      "cause": "UNKNOWN",
+      "applicable_consumers": [
+        ".github/workflows/qps-debug-dow-reentry.yml"
+      ],
+      "source": "https://github.com/GBOGEB/cryoplant-project/actions/runs/35848917593",
+      "provenance": "observed"
+    },
+    {
+      "id": "RT-ROOT-cryoplant-project-c07666b2dfc7",
+      "title": "QPS Triage Console Refresh red from c07666b2",
+      "state": "CANDIDATE",
+      "owner": "UNASSIGNED",
+      "cause": "UNKNOWN",
+      "applicable_consumers": [
+        "QPS Triage Console Refresh"
+      ],
+      "source": "https://github.com/GBOGEB/cryoplant-project/actions/runs/39154395930",
+      "provenance": "observed"
+    },
+    {
+      "id": "RT-ROOT-cryoplant-project-dd28b8471bad",
+      "title": "QPS W189 Federation Sample 4 red from dd28b847",
+      "state": "CANDIDATE",
+      "owner": "UNASSIGNED",
+      "cause": "UNKNOWN",
+      "applicable_consumers": [
+        "QPS W189 Federation Sample 4"
+      ],
+      "source": "https://github.com/GBOGEB/cryoplant-project/actions/runs/34870473600",
+      "provenance": "observed"
+    },
+    {
+      "id": "RT-ROOT-cryoplant-project-f8ccc17539c4",
+      "title": "W99 R1 722 DOCX Reconciliation red from f8ccc175",
+      "state": "CANDIDATE",
+      "owner": "UNASSIGNED",
+      "cause": "UNKNOWN",
+      "applicable_consumers": [
+        "W99 R1 722 DOCX Reconciliation"
+      ],
+      "source": "https://github.com/GBOGEB/cryoplant-project/actions/runs/34422648056",
+      "provenance": "observed"
+    },
+    {
+      "id": "RT-ROOT-pipeline-automation-hub-127f84b79f52",
+      "title": "GM-V Governor Readiness red from 127f84b7",
+      "state": "CANDIDATE",
+      "owner": "UNASSIGNED",
+      "cause": "PINNED_HISTORICAL_EVIDENCE",
+      "applicable_consumers": [
+        "GM-V Governor Readiness"
+      ],
+      "source": "https://github.com/GBOGEB/pipeline-automation-hub/actions/runs/39028648422",
+      "provenance": "observed"
+    },
+    {
+      "id": "RT-ROOT-pipeline-automation-hub-3b468f1e1f16",
+      "title": "pages build and deployment red from 3b468f1e",
+      "state": "CANDIDATE",
+      "owner": "UNASSIGNED",
+      "cause": "UNKNOWN",
+      "applicable_consumers": [
+        "pages build and deployment"
+      ],
+      "source": "https://github.com/GBOGEB/pipeline-automation-hub/actions/runs/38772328436",
+      "provenance": "observed"
+    },
+    {
+      "id": "RT-ROOT-pipeline-automation-hub-612dd40421b6",
+      "title": "GM-IV RECON_4 Governor Gate red from 612dd404",
+      "state": "CANDIDATE",
+      "owner": "UNASSIGNED",
+      "cause": "UNKNOWN",
+      "applicable_consumers": [
+        "GM-IV RECON_4 Governor Gate"
+      ],
+      "source": "https://github.com/GBOGEB/pipeline-automation-hub/actions/runs/35149068279",
+      "provenance": "observed"
+    },
+    {
+      "id": "RT-ROOT-pipeline-automation-hub-6980c60fae21",
+      "title": "GM-V 3PSTAR MIP Control red from 6980c60f",
+      "state": "CANDIDATE",
+      "owner": "UNASSIGNED",
+      "cause": "PINNED_HISTORICAL_EVIDENCE",
+      "applicable_consumers": [
+        "GM-V 3PSTAR MIP Control"
+      ],
+      "source": "https://github.com/GBOGEB/pipeline-automation-hub/actions/runs/35359256000",
+      "provenance": "observed"
+    },
+    {
+      "id": "RT-ROOT-pipeline-automation-hub-c3b874fe98c4",
+      "title": "Zero-Test Gate Guard red from c3b874fe",
+      "state": "CANDIDATE",
+      "owner": "UNASSIGNED",
+      "cause": "UNKNOWN",
+      "applicable_consumers": [
+        "Zero-Test Gate Guard"
+      ],
+      "source": "https://github.com/GBOGEB/pipeline-automation-hub/actions/runs/39289287081",
+      "provenance": "observed"
+    },
+    {
+      "id": "RT-ROOT-pipeline-automation-hub-d1012487f8fc",
+      "title": "Mission Control N3 Evidence Metrics red from d1012487",
+      "state": "CANDIDATE",
+      "owner": "UNASSIGNED",
+      "cause": "UNKNOWN",
+      "applicable_consumers": [
+        "Mission Control N3 Evidence Metrics"
+      ],
+      "source": "https://github.com/GBOGEB/pipeline-automation-hub/actions/runs/39028590472",
+      "provenance": "observed"
     }
   ],
   "metrics_derived": {
@@ -37,7 +744,7 @@
     "coverage_comparable_pairs": [],
     "known_consumer_denominator": null,
     "queue_wait_samples": 0,
-    "method": "Only complete comparable evidence produces measured KPIs; absent denominator is null."
+    "method": "Exact consumer-head, source-bound native PASS claims only; incomplete registries remain null. Source claims are not admission authority."
   },
   "occurrences": [
     {
@@ -55,6 +762,1740 @@
       "repo": "GBOGEB/ABACUS",
       "schema": "abacus.everred.event.v3",
       "sha": "e9f34b22967064c779891a4d2ac40541f370e812"
+    },
+    {
+      "evidence": {
+        "class": "EVERRED",
+        "failing": [],
+        "last_green_sha": null,
+        "path": ".github/workflows/auto-merge-prs.yml",
+        "pinned_historical_ids": [],
+        "red_streak_runs": null,
+        "run_id": "33197963751",
+        "stale": true,
+        "suspect_commit_count": null,
+        "url": "https://github.com/GBOGEB/ABACUS/actions/runs/33197963751",
+        "workflow": "Auto-Merge PRs"
+      },
+      "id": "RT-OCC-ABACUS-Auto-Merge-PRs-505e0fb49ede",
+      "kind": "occurrence",
+      "occurred_at": "2026-08-28T18:08:51Z",
+      "provenance": "observed",
+      "repo": "GBOGEB/ABACUS",
+      "root_id": "RT-ROOT-ABACUS-505e0fb49ede",
+      "schema": "abacus.everred.event.v3",
+      "sha": "505e0fb49ede8889378707031e9787d62b7c460d"
+    },
+    {
+      "evidence": {
+        "class": "EVERRED",
+        "failing": [
+          "census: Check committed governance inventory, Validate coverage and JUnit receipts"
+        ],
+        "last_green_sha": null,
+        "path": ".github/workflows/bandit-disjoint-census.yml",
+        "pinned_historical_ids": [],
+        "red_streak_runs": null,
+        "run_id": "38532480254",
+        "stale": true,
+        "suspect_commit_count": null,
+        "url": "https://github.com/GBOGEB/ABACUS/actions/runs/38532480254",
+        "workflow": "Bandit Disjoint Census"
+      },
+      "id": "RT-OCC-ABACUS-Bandit-Disjoint-Census-02cca5020d59",
+      "kind": "occurrence",
+      "occurred_at": "2026-10-14T08:03:40Z",
+      "provenance": "observed",
+      "repo": "GBOGEB/ABACUS",
+      "root_id": "RT-ROOT-ABACUS-02cca5020d59",
+      "schema": "abacus.everred.event.v3",
+      "sha": "02cca5020d59cc339cea486ed38857f53eea3e88"
+    },
+    {
+      "evidence": {
+        "class": "EVERRED",
+        "failing": [
+          "🔥 Bridge Smoke Tests: ",
+          "📊 Static Analysis: "
+        ],
+        "last_green_sha": null,
+        "path": ".github/workflows/bridge-ci.yml",
+        "pinned_historical_ids": [],
+        "red_streak_runs": null,
+        "run_id": "19396177522",
+        "stale": false,
+        "suspect_commit_count": null,
+        "url": "https://github.com/GBOGEB/ABACUS/actions/runs/19396177522",
+        "workflow": "DMAIC V3 Bridge Integration - Test System"
+      },
+      "id": "RT-OCC-ABACUS-DMAIC-V3-Bridge-Integration-Test-System-edee4420e9fc",
+      "kind": "occurrence",
+      "occurred_at": "2025-11-15T22:03:44Z",
+      "provenance": "observed",
+      "repo": "GBOGEB/ABACUS",
+      "root_id": "RT-ROOT-ABACUS-edee4420e9fc",
+      "schema": "abacus.everred.event.v3",
+      "sha": "edee4420e9fcb463323c44175722062103a74ca8"
+    },
+    {
+      "evidence": {
+        "class": "EVERRED",
+        "failing": [
+          "Lint & Validate: Run pre-commit hooks"
+        ],
+        "last_green_sha": null,
+        "path": ".github/workflows/cd-unified.yml",
+        "pinned_historical_ids": [],
+        "red_streak_runs": null,
+        "run_id": "39148074266",
+        "stale": false,
+        "suspect_commit_count": null,
+        "url": "https://github.com/GBOGEB/ABACUS/actions/runs/39148074266",
+        "workflow": "DOW + Recursive DMAIC - Unified CD Pipeline"
+      },
+      "id": "RT-OCC-ABACUS-DOW-Recursive-DMAIC-Unified-CD-Pipeline-9e0200190555",
+      "kind": "occurrence",
+      "occurred_at": "2026-10-18T17:06:49Z",
+      "provenance": "observed",
+      "repo": "GBOGEB/ABACUS",
+      "root_id": "RT-ROOT-ABACUS-9e0200190555",
+      "schema": "abacus.everred.event.v3",
+      "sha": "9e0200190555736c74295ee74881e3c003e8a35c"
+    },
+    {
+      "evidence": {
+        "class": "EVERRED",
+        "failing": [
+          "dmaic: Build handover PDF"
+        ],
+        "last_green_sha": null,
+        "path": ".github/workflows/cd.yml",
+        "pinned_historical_ids": [],
+        "red_streak_runs": null,
+        "run_id": "33210483015",
+        "stale": false,
+        "suspect_commit_count": null,
+        "url": "https://github.com/GBOGEB/ABACUS/actions/runs/33210483015",
+        "workflow": "DMAIC V3.3 - CD Pipeline"
+      },
+      "id": "RT-OCC-ABACUS-DMAIC-V3-3-CD-Pipeline-62ab9a6b0e37",
+      "kind": "occurrence",
+      "occurred_at": "2026-08-28T20:58:00Z",
+      "provenance": "observed",
+      "repo": "GBOGEB/ABACUS",
+      "root_id": "RT-ROOT-ABACUS-62ab9a6b0e37",
+      "schema": "abacus.everred.event.v3",
+      "sha": "62ab9a6b0e37b6dacff9ce268642745845c25572"
+    },
+    {
+      "evidence": {
+        "class": "FLAKY",
+        "failing": [
+          "ABACUS - ubuntu-24.04 - Python 3.12: Run canonical coverage and emit governed evidence",
+          "ABACUS - ubuntu-24.04 - Python 3.11: Run functional compatibility proof",
+          "ABACUS - ubuntu-24.04 - Python 3.10: Run functional compatibility proof",
+          "Python proof completeness: Audit executed and classified-skipped proof roles",
+          "ABACUS compatibility gate: Enforce selected proof set"
+        ],
+        "last_green_sha": "0f9f0c3b48dc6c369e8a01faf06e433b30326db9",
+        "path": ".github/workflows/ci-abacus.yml",
+        "pinned_historical_ids": [],
+        "red_streak_runs": 3,
+        "run_id": "39295699979",
+        "stale": false,
+        "suspect_commit_count": 2,
+        "url": "https://github.com/GBOGEB/ABACUS/actions/runs/39295699979",
+        "workflow": "CI - ABACUS Matrix"
+      },
+      "id": "RT-OCC-ABACUS-CI-ABACUS-Matrix-bbb08395a370",
+      "kind": "occurrence",
+      "occurred_at": "2026-10-19T17:37:22Z",
+      "provenance": "observed",
+      "repo": "GBOGEB/ABACUS",
+      "root_id": "RT-ROOT-ABACUS-bbb08395a370",
+      "schema": "abacus.everred.event.v3",
+      "sha": "bbb08395a37033fb145d0bf62c748da4fcd3f5f8"
+    },
+    {
+      "evidence": {
+        "class": "EVERRED",
+        "failing": [
+          "Security Scanning: Enforce security red roots",
+          "Code Quality Checks: Enforce code-quality red roots",
+          "Unit Tests (Python 3.12, windows-latest): Run Unit Tests",
+          "Unit Tests (Python 3.11, windows-latest): Run Unit Tests",
+          "Unit Tests (Python 3.10, windows-latest): Run Unit Tests",
+          "Unit Tests (Python 3.10, macos-latest): Run Unit Tests",
+          "Unit Tests (Python 3.11, macos-latest): Run Unit Tests",
+          "Unit Tests (Python 3.12, macos-latest): Run Unit Tests",
+          "Full Red Proof Summary: Emit full-red summary"
+        ],
+        "last_green_sha": null,
+        "path": ".github/workflows/ci-cd-tests.yml",
+        "pinned_historical_ids": [],
+        "red_streak_runs": null,
+        "run_id": "39132773955",
+        "stale": false,
+        "suspect_commit_count": null,
+        "url": "https://github.com/GBOGEB/ABACUS/actions/runs/39132773955",
+        "workflow": "CI/CD Test Suite"
+      },
+      "id": "RT-OCC-ABACUS-CI-CD-Test-Suite-6198d6cc411c",
+      "kind": "occurrence",
+      "occurred_at": "2026-10-18T13:43:10Z",
+      "provenance": "observed",
+      "repo": "GBOGEB/ABACUS",
+      "root_id": "RT-ROOT-ABACUS-6198d6cc411c",
+      "schema": "abacus.everred.event.v3",
+      "sha": "6198d6cc411c6b6b836e1536edb7b4dc48aae24a"
+    },
+    {
+      "evidence": {
+        "class": "FLAKY",
+        "failing": [
+          "Deploy to Production: Run deployment script"
+        ],
+        "last_green_sha": "54da377cf82a358ac97903ecde0270c975b8fcc1",
+        "path": ".github/workflows/ci-cd.yml",
+        "pinned_historical_ids": [],
+        "red_streak_runs": 18,
+        "run_id": "39051478150",
+        "stale": false,
+        "suspect_commit_count": 85,
+        "url": "https://github.com/GBOGEB/ABACUS/actions/runs/39051478150",
+        "workflow": "Bootstrap Statistics CI/CD Pipeline"
+      },
+      "id": "RT-OCC-ABACUS-Bootstrap-Statistics-CI-CD-Pipeline-7fa5b7aca888",
+      "kind": "occurrence",
+      "occurred_at": "2026-10-17T16:55:00Z",
+      "provenance": "observed",
+      "repo": "GBOGEB/ABACUS",
+      "root_id": "RT-ROOT-ABACUS-7fa5b7aca888",
+      "schema": "abacus.everred.event.v3",
+      "sha": "7fa5b7aca8884d90317afe26759beb177ad2570b"
+    },
+    {
+      "evidence": {
+        "class": "FLAKY",
+        "failing": [
+          "Test - Ubuntu (3.11): Run python -m coverage erase"
+        ],
+        "last_green_sha": "3be70452d95cb86a6c4e86ad3aed83df091022f2",
+        "path": ".github/workflows/ci-enhanced.yml",
+        "pinned_historical_ids": [],
+        "red_streak_runs": 5,
+        "run_id": "39068234571",
+        "stale": false,
+        "suspect_commit_count": 1349,
+        "url": "https://github.com/GBOGEB/ABACUS/actions/runs/39068234571",
+        "workflow": "DOW + Recursive DMAIC - Enhanced CI"
+      },
+      "id": "RT-OCC-ABACUS-DOW-Recursive-DMAIC-Enhanced-CI-e789b3b18836",
+      "kind": "occurrence",
+      "occurred_at": "2026-10-17T20:47:55Z",
+      "provenance": "observed",
+      "repo": "GBOGEB/ABACUS",
+      "root_id": "RT-ROOT-ABACUS-e789b3b18836",
+      "schema": "abacus.everred.event.v3",
+      "sha": "e789b3b18836d8cc6ee75c1f2519e16577410282"
+    },
+    {
+      "evidence": {
+        "class": "EVERRED",
+        "failing": [
+          "rerun-with-debug: Extract failure location"
+        ],
+        "last_green_sha": null,
+        "path": ".github/workflows/ci-failure-debug-rerun.yml",
+        "pinned_historical_ids": [],
+        "red_streak_runs": null,
+        "run_id": "33247129474",
+        "stale": true,
+        "suspect_commit_count": null,
+        "url": "https://github.com/GBOGEB/ABACUS/actions/runs/33247129474",
+        "workflow": "CI Failure Debug Rerun"
+      },
+      "id": "RT-OCC-ABACUS-CI-Failure-Debug-Rerun-462a73fc8da6",
+      "kind": "occurrence",
+      "occurred_at": "2026-08-29T10:08:45Z",
+      "provenance": "observed",
+      "repo": "GBOGEB/ABACUS",
+      "root_id": "RT-ROOT-ABACUS-462a73fc8da6",
+      "schema": "abacus.everred.event.v3",
+      "sha": "462a73fc8da650701f6e31099a58491aff9dcd97"
+    },
+    {
+      "evidence": {
+        "class": "FLAKY",
+        "failing": [
+          "policy-and-inventory: Fail closed on governance red"
+        ],
+        "last_green_sha": "81ac7ea8ff42841ba8c19b9d99807dc2b0508d82",
+        "path": ".github/workflows/ci-governance.yml",
+        "pinned_historical_ids": [],
+        "red_streak_runs": 2,
+        "run_id": "39281653558",
+        "stale": false,
+        "suspect_commit_count": 2,
+        "url": "https://github.com/GBOGEB/ABACUS/actions/runs/39281653558",
+        "workflow": "CI Workflow Governance"
+      },
+      "id": "RT-OCC-ABACUS-CI-Workflow-Governance-0416345a56f6",
+      "kind": "occurrence",
+      "occurred_at": "2026-10-19T15:56:10Z",
+      "provenance": "observed",
+      "repo": "GBOGEB/ABACUS",
+      "root_id": "RT-ROOT-ABACUS-0416345a56f6",
+      "schema": "abacus.everred.event.v3",
+      "sha": "0416345a56f6b91f1a7af6d5ce3315515fa2d352"
+    },
+    {
+      "evidence": {
+        "class": "FLAKY",
+        "failing": [
+          "Unit Tests (ubuntu-latest, 3.11): Run Tests"
+        ],
+        "last_green_sha": "0f9f0c3b48dc6c369e8a01faf06e433b30326db9",
+        "path": ".github/workflows/ci-pipeline.yml",
+        "pinned_historical_ids": [],
+        "red_streak_runs": 6,
+        "run_id": "39295699965",
+        "stale": false,
+        "suspect_commit_count": 2,
+        "url": "https://github.com/GBOGEB/ABACUS/actions/runs/39295699965",
+        "workflow": "Continuous Integration Pipeline"
+      },
+      "id": "RT-OCC-ABACUS-Continuous-Integration-Pipeline-bbb08395a370",
+      "kind": "occurrence",
+      "occurred_at": "2026-10-19T17:37:22Z",
+      "provenance": "observed",
+      "repo": "GBOGEB/ABACUS",
+      "root_id": "RT-ROOT-ABACUS-bbb08395a370",
+      "schema": "abacus.everred.event.v3",
+      "sha": "bbb08395a37033fb145d0bf62c748da4fcd3f5f8"
+    },
+    {
+      "evidence": {
+        "class": "EVERRED",
+        "failing": [
+          "test-bridge-integration (3.12): Install dependencies",
+          "lint-and-static-analysis: Install dependencies"
+        ],
+        "last_green_sha": null,
+        "path": ".github/workflows/ci.yml",
+        "pinned_historical_ids": [],
+        "red_streak_runs": null,
+        "run_id": "27397241108",
+        "stale": true,
+        "suspect_commit_count": null,
+        "url": "https://github.com/GBOGEB/ABACUS/actions/runs/27397241108",
+        "workflow": "DMAIC V3 CI - Test System Bridge"
+      },
+      "id": "RT-OCC-ABACUS-DMAIC-V3-CI-Test-System-Bridge-1c2d72154c95",
+      "kind": "occurrence",
+      "occurred_at": "2026-06-12T05:46:34Z",
+      "provenance": "observed",
+      "repo": "GBOGEB/ABACUS",
+      "root_id": "RT-ROOT-ABACUS-1c2d72154c95",
+      "schema": "abacus.everred.event.v3",
+      "sha": "1c2d72154c95fa6d732948a9784b74e46fe0a704"
+    },
+    {
+      "evidence": {
+        "class": "EVERRED",
+        "failing": [
+          "Reciprocal Probe (ABACUS -> cryoplant-project): Probe cryoplant-project live"
+        ],
+        "last_green_sha": null,
+        "path": ".github/workflows/cryoplant-federation.yml",
+        "pinned_historical_ids": [],
+        "red_streak_runs": null,
+        "run_id": "38277255943",
+        "stale": false,
+        "suspect_commit_count": null,
+        "url": "https://github.com/GBOGEB/ABACUS/actions/runs/38277255943",
+        "workflow": "cryoplant-project Federation Check"
+      },
+      "id": "RT-OCC-ABACUS-cryoplant-project-Federation-Check-0ec1965356b0",
+      "kind": "occurrence",
+      "occurred_at": "2026-10-12T16:25:11Z",
+      "provenance": "observed",
+      "repo": "GBOGEB/ABACUS",
+      "root_id": "RT-ROOT-ABACUS-0ec1965356b0",
+      "schema": "abacus.everred.event.v3",
+      "sha": "0ec1965356b047a3e8c614c5789f76be5a9be8da"
+    },
+    {
+      "evidence": {
+        "class": "FLAKY",
+        "failing": [
+          "Publish DMAIC Metrics Through Governed PR: Publish metrics artefacts through governed PR"
+        ],
+        "last_green_sha": "16b63ac81d3fd5b1534a25afa3b5d171f19db6a8",
+        "path": ".github/workflows/dmaic-commit-metrics.yml",
+        "pinned_historical_ids": [],
+        "red_streak_runs": 17,
+        "run_id": "39232263777",
+        "stale": false,
+        "suspect_commit_count": 3,
+        "url": "https://github.com/GBOGEB/ABACUS/actions/runs/39232263777",
+        "workflow": "DMAIC Metrics — Per-Commit Tracking & Feedback Loop"
+      },
+      "id": "RT-OCC-ABACUS-DMAIC-Metrics-Per-Commit-Tracking-Feedback-Loop-a7d01ff86da6",
+      "kind": "occurrence",
+      "occurred_at": "2026-10-19T09:44:00Z",
+      "provenance": "observed",
+      "repo": "GBOGEB/ABACUS",
+      "root_id": "RT-ROOT-ABACUS-a7d01ff86da6",
+      "schema": "abacus.everred.event.v3",
+      "sha": "a7d01ff86da6d56eed45da900b7e8c87bb302a79"
+    },
+    {
+      "evidence": {
+        "class": "FLAKY",
+        "failing": [
+          "Test Python 3.9 on ubuntu-latest: Install dependencies",
+          "Test Python 3.9 on windows-latest: Install dev dependencies",
+          "Test Python 3.9 on macos-latest: Install dependencies",
+          "CI Summary: Set final status"
+        ],
+        "last_green_sha": "e63d313f96791b845e0515a045ff784f9673c0da",
+        "path": ".github/workflows/dmaic-enterprise-ci.yml",
+        "pinned_historical_ids": [],
+        "red_streak_runs": 11,
+        "run_id": "39068108146",
+        "stale": false,
+        "suspect_commit_count": 4,
+        "url": "https://github.com/GBOGEB/ABACUS/actions/runs/39068108146",
+        "workflow": "DMAIC V3 Enterprise CI"
+      },
+      "id": "RT-OCC-ABACUS-DMAIC-V3-Enterprise-CI-f7866ff09336",
+      "kind": "occurrence",
+      "occurred_at": "2026-10-17T20:46:05Z",
+      "provenance": "observed",
+      "repo": "GBOGEB/ABACUS",
+      "root_id": "RT-ROOT-ABACUS-f7866ff09336",
+      "schema": "abacus.everred.event.v3",
+      "sha": "f7866ff09336ab69c44def3b928ceeb54947f1a6"
+    },
+    {
+      "evidence": {
+        "class": "EVERRED",
+        "failing": [
+          "P0: PHASE0 Validation Gate: Run PHASE0 Validation"
+        ],
+        "last_green_sha": null,
+        "path": ".github/workflows/dmaic-v3-cognitive-cicd.yml",
+        "pinned_historical_ids": [],
+        "red_streak_runs": null,
+        "run_id": "27365306605",
+        "stale": false,
+        "suspect_commit_count": null,
+        "url": "https://github.com/GBOGEB/ABACUS/actions/runs/27365306605",
+        "workflow": "DMAIC V3 - Cognitive Loop CI/CD"
+      },
+      "id": "RT-OCC-ABACUS-DMAIC-V3-Cognitive-Loop-CI-CD-6178594f40d1",
+      "kind": "occurrence",
+      "occurred_at": "2026-06-11T17:29:09Z",
+      "provenance": "observed",
+      "repo": "GBOGEB/ABACUS",
+      "root_id": "RT-ROOT-ABACUS-6178594f40d1",
+      "schema": "abacus.everred.event.v3",
+      "sha": "6178594f40d18ec78dd19781a9cbeb748b028dc4"
+    },
+    {
+      "evidence": {
+        "class": "EVERRED",
+        "failing": [
+          "Test DOW Phases (DMAIC): Run DOW Phase Tests"
+        ],
+        "last_green_sha": null,
+        "path": ".github/workflows/dow-integration-ci-cd.yml",
+        "pinned_historical_ids": [],
+        "red_streak_runs": null,
+        "run_id": "35339699035",
+        "stale": true,
+        "suspect_commit_count": null,
+        "url": "https://github.com/GBOGEB/ABACUS/actions/runs/35339699035",
+        "workflow": "ABACUS DOW Integration CI/CD"
+      },
+      "id": "RT-OCC-ABACUS-ABACUS-DOW-Integration-CI-CD-a0de73a9a600",
+      "kind": "occurrence",
+      "occurred_at": "2026-09-18T11:27:10Z",
+      "provenance": "observed",
+      "repo": "GBOGEB/ABACUS",
+      "root_id": "RT-ROOT-ABACUS-a0de73a9a600",
+      "schema": "abacus.everred.event.v3",
+      "sha": "a0de73a9a60071665f27bf2fecb6e17e24172a93"
+    },
+    {
+      "evidence": {
+        "class": "EVERRED",
+        "failing": [
+          "Step 1: Define - Initialize & Validate Structure: Define - Validate Repository Structure",
+          "Step 5: Control - Monitor & Report: Set up job"
+        ],
+        "last_green_sha": null,
+        "path": ".github/workflows/dow-sprint6-cicd.yml",
+        "pinned_historical_ids": [],
+        "red_streak_runs": null,
+        "run_id": "27365307109",
+        "stale": false,
+        "suspect_commit_count": null,
+        "url": "https://github.com/GBOGEB/ABACUS/actions/runs/27365307109",
+        "workflow": "DOW Sprint 6 - Cognitive Deployment CI/CD"
+      },
+      "id": "RT-OCC-ABACUS-DOW-Sprint-6-Cognitive-Deployment-CI-CD-6178594f40d1",
+      "kind": "occurrence",
+      "occurred_at": "2026-06-11T17:29:09Z",
+      "provenance": "observed",
+      "repo": "GBOGEB/ABACUS",
+      "root_id": "RT-ROOT-ABACUS-6178594f40d1",
+      "schema": "abacus.everred.event.v3",
+      "sha": "6178594f40d18ec78dd19781a9cbeb748b028dc4"
+    },
+    {
+      "evidence": {
+        "class": "EVERRED",
+        "failing": [
+          "🔍 Validate Integration Setup: "
+        ],
+        "last_green_sha": null,
+        "path": ".github/workflows/gbogeb-abacus-integration-ci-cd.yml",
+        "pinned_historical_ids": [],
+        "red_streak_runs": null,
+        "run_id": "19498151485",
+        "stale": false,
+        "suspect_commit_count": null,
+        "url": "https://github.com/GBOGEB/ABACUS/actions/runs/19498151485",
+        "workflow": "GBOGEB/ABACUS ↔ DOW Integration CI/CD"
+      },
+      "id": "RT-OCC-ABACUS-GBOGEB-ABACUS-DOW-Integration-CI-CD-6d48bf73bff6",
+      "kind": "occurrence",
+      "occurred_at": "2025-11-19T10:30:35Z",
+      "provenance": "observed",
+      "repo": "GBOGEB/ABACUS",
+      "root_id": "RT-ROOT-ABACUS-6d48bf73bff6",
+      "schema": "abacus.everred.event.v3",
+      "sha": "6d48bf73bff680434572751ad2fcd864f799207d"
+    },
+    {
+      "evidence": {
+        "class": "EVERRED",
+        "failing": [
+          "scan: "
+        ],
+        "last_green_sha": null,
+        "path": ".github/workflows/inventory.yml",
+        "pinned_historical_ids": [],
+        "red_streak_runs": null,
+        "run_id": "19397759477",
+        "stale": false,
+        "suspect_commit_count": null,
+        "url": "https://github.com/GBOGEB/ABACUS/actions/runs/19397759477",
+        "workflow": "Inventory Scan"
+      },
+      "id": "RT-OCC-ABACUS-Inventory-Scan-edee4420e9fc",
+      "kind": "occurrence",
+      "occurred_at": "2025-11-16T00:31:09Z",
+      "provenance": "observed",
+      "repo": "GBOGEB/ABACUS",
+      "root_id": "RT-ROOT-ABACUS-edee4420e9fc",
+      "schema": "abacus.everred.event.v3",
+      "sha": "edee4420e9fcb463323c44175722062103a74ca8"
+    },
+    {
+      "evidence": {
+        "class": "FLAKY",
+        "failing": [
+          "B0 canonical coverage producer: Run canonical exact-head coverage surface",
+          "B0 report-only admission census: Require all exact-SHA producers GREEN, Upload B0 report-only evidence"
+        ],
+        "last_green_sha": "0416345a56f6b91f1a7af6d5ce3315515fa2d352",
+        "path": ".github/workflows/mip-coverage-evidence.yml",
+        "pinned_historical_ids": [],
+        "red_streak_runs": 2,
+        "run_id": "39295700414",
+        "stale": false,
+        "suspect_commit_count": 10,
+        "url": "https://github.com/GBOGEB/ABACUS/actions/runs/39295700414",
+        "workflow": "MIP B0 Test Admission and Coverage Evidence"
+      },
+      "id": "RT-OCC-ABACUS-MIP-B0-Test-Admission-and-Coverage-Evidence-bbb08395a370",
+      "kind": "occurrence",
+      "occurred_at": "2026-10-19T17:37:23Z",
+      "provenance": "observed",
+      "repo": "GBOGEB/ABACUS",
+      "root_id": "RT-ROOT-ABACUS-bbb08395a370",
+      "schema": "abacus.everred.event.v3",
+      "sha": "bbb08395a37033fb145d0bf62c748da4fcd3f5f8"
+    },
+    {
+      "evidence": {
+        "class": "GREEN_TO_RED",
+        "failing": [
+          "OSV Scan (schedule / manual) / osv-scan: Check that the scan completed, Upload to code-scanning"
+        ],
+        "last_green_sha": "599b6055ea39ecae161f6312fb18bc127fb3f94e",
+        "path": ".github/workflows/osv-scheduled.yml",
+        "pinned_historical_ids": [],
+        "red_streak_runs": 4,
+        "run_id": "36385418595",
+        "stale": false,
+        "suspect_commit_count": 310,
+        "url": "https://github.com/GBOGEB/ABACUS/actions/runs/36385418595",
+        "workflow": "OSV-Scanner Scheduled"
+      },
+      "id": "RT-OCC-ABACUS-OSV-Scanner-Scheduled-d3db31411795",
+      "kind": "occurrence",
+      "occurred_at": "2026-09-28T06:13:48Z",
+      "provenance": "observed",
+      "repo": "GBOGEB/ABACUS",
+      "root_id": "RT-ROOT-ABACUS-d3db31411795",
+      "schema": "abacus.everred.event.v3",
+      "sha": "d3db31411795524fb3e30074bc9588287c059e8a"
+    },
+    {
+      "evidence": {
+        "class": "EVERRED",
+        "failing": [],
+        "last_green_sha": null,
+        "path": ".github/workflows/qps-debug-dow-consumer.yml",
+        "pinned_historical_ids": [],
+        "red_streak_runs": null,
+        "run_id": "34705507326",
+        "stale": true,
+        "suspect_commit_count": null,
+        "url": "https://github.com/GBOGEB/ABACUS/actions/runs/34705507326",
+        "workflow": ".github/workflows/qps-debug-dow-consumer.yml"
+      },
+      "id": "RT-OCC-ABACUS-github-workflows-qps-debug-dow-consumer-yml-1b1366e69fbe",
+      "kind": "occurrence",
+      "occurred_at": "2026-09-12T16:31:43Z",
+      "provenance": "observed",
+      "repo": "GBOGEB/ABACUS",
+      "root_id": "RT-ROOT-ABACUS-1b1366e69fbe",
+      "schema": "abacus.everred.event.v3",
+      "sha": "1b1366e69fbe7a4451db7bd11cccc8f7260f3b52"
+    },
+    {
+      "evidence": {
+        "class": "FLAKY",
+        "failing": [
+          "Build Security Dashboard: Commit dashboard if changed"
+        ],
+        "last_green_sha": "2201f86a1a77ba2c33fb78734fbd853bd98ce854",
+        "path": ".github/workflows/security-dashboard.yml",
+        "pinned_historical_ids": [],
+        "red_streak_runs": 2,
+        "run_id": "38223058438",
+        "stale": false,
+        "suspect_commit_count": 45,
+        "url": "https://github.com/GBOGEB/ABACUS/actions/runs/38223058438",
+        "workflow": "Security Dashboard — REX Telemetry"
+      },
+      "id": "RT-OCC-ABACUS-Security-Dashboard-REX-Telemetry-53688f26d5b9",
+      "kind": "occurrence",
+      "occurred_at": "2026-10-12T08:21:19Z",
+      "provenance": "observed",
+      "repo": "GBOGEB/ABACUS",
+      "root_id": "RT-ROOT-ABACUS-53688f26d5b9",
+      "schema": "abacus.everred.event.v3",
+      "sha": "53688f26d5b9c4cd074ef905e426849e85324383"
+    },
+    {
+      "evidence": {
+        "class": "FLAKY",
+        "failing": [
+          "test (3.11): Run Full Test Suite, Test Report"
+        ],
+        "last_green_sha": "0f9f0c3b48dc6c369e8a01faf06e433b30326db9",
+        "path": ".github/workflows/session_tuple_ci.yml",
+        "pinned_historical_ids": [],
+        "red_streak_runs": 6,
+        "run_id": "39295700018",
+        "stale": false,
+        "suspect_commit_count": 2,
+        "url": "https://github.com/GBOGEB/ABACUS/actions/runs/39295700018",
+        "workflow": "Session Tuple CI/CD"
+      },
+      "id": "RT-OCC-ABACUS-Session-Tuple-CI-CD-bbb08395a370",
+      "kind": "occurrence",
+      "occurred_at": "2026-10-19T17:37:22Z",
+      "provenance": "observed",
+      "repo": "GBOGEB/ABACUS",
+      "root_id": "RT-ROOT-ABACUS-bbb08395a370",
+      "schema": "abacus.everred.event.v3",
+      "sha": "bbb08395a37033fb145d0bf62c748da4fcd3f5f8"
+    },
+    {
+      "evidence": {
+        "class": "EVERRED",
+        "failing": [
+          "execute: "
+        ],
+        "last_green_sha": null,
+        "path": ".github/workflows/sprint-trigger.yml",
+        "pinned_historical_ids": [],
+        "red_streak_runs": null,
+        "run_id": "21553773334",
+        "stale": true,
+        "suspect_commit_count": null,
+        "url": "https://github.com/GBOGEB/ABACUS/actions/runs/21553773334",
+        "workflow": "Sprint Trigger"
+      },
+      "id": "RT-OCC-ABACUS-Sprint-Trigger-bd3f7429b078",
+      "kind": "occurrence",
+      "occurred_at": "2026-02-01T00:53:33Z",
+      "provenance": "observed",
+      "repo": "GBOGEB/ABACUS",
+      "root_id": "RT-ROOT-ABACUS-bd3f7429b078",
+      "schema": "abacus.everred.event.v3",
+      "sha": "bd3f7429b07842b4869f5cd5a2096e8bd2cd74a4"
+    },
+    {
+      "evidence": {
+        "class": "GREEN_TO_RED",
+        "failing": [
+          "parity: Run bounded TestPilot fast preflight"
+        ],
+        "last_green_sha": "5f0dfebb1cd567e3093050e6692ce53ef37e3250",
+        "path": ".github/workflows/testpilot-preflight.yml",
+        "pinned_historical_ids": [],
+        "red_streak_runs": 11,
+        "run_id": "38562948844",
+        "stale": false,
+        "suspect_commit_count": 318,
+        "url": "https://github.com/GBOGEB/ABACUS/actions/runs/38562948844",
+        "workflow": "TestPilot Pre-GitHub Parity"
+      },
+      "id": "RT-OCC-ABACUS-TestPilot-Pre-GitHub-Parity-2e8e8b95ddfa",
+      "kind": "occurrence",
+      "occurred_at": "2026-10-14T12:19:36Z",
+      "provenance": "observed",
+      "repo": "GBOGEB/ABACUS",
+      "root_id": "RT-ROOT-ABACUS-2e8e8b95ddfa",
+      "schema": "abacus.everred.event.v3",
+      "sha": "2e8e8b95ddfa2c1b26eafa0ed7f9a842609e358c"
+    },
+    {
+      "evidence": {
+        "class": "EVERRED",
+        "failing": [
+          "validate-permissions: "
+        ],
+        "last_green_sha": null,
+        "path": ".github/workflows/validate-setup.yml",
+        "pinned_historical_ids": [],
+        "red_streak_runs": null,
+        "run_id": "17631452387",
+        "stale": true,
+        "suspect_commit_count": null,
+        "url": "https://github.com/GBOGEB/ABACUS/actions/runs/17631452387",
+        "workflow": "Validate ABACUS Setup"
+      },
+      "id": "RT-OCC-ABACUS-Validate-ABACUS-Setup-24df2e3842e2",
+      "kind": "occurrence",
+      "occurred_at": "2025-09-11T01:40:41Z",
+      "provenance": "observed",
+      "repo": "GBOGEB/ABACUS",
+      "root_id": "RT-ROOT-ABACUS-24df2e3842e2",
+      "schema": "abacus.everred.event.v3",
+      "sha": "24df2e3842e2da3af55bb62884a7d96509fbc693"
+    },
+    {
+      "evidence": {
+        "class": "EVERRED",
+        "failing": [
+          "submit-pypi: validate-project"
+        ],
+        "last_green_sha": null,
+        "path": "dynamic/dependency-graph/auto-submission",
+        "pinned_historical_ids": [],
+        "red_streak_runs": null,
+        "run_id": "27561242880",
+        "stale": true,
+        "suspect_commit_count": null,
+        "url": "https://github.com/GBOGEB/ABACUS/actions/runs/27561242880",
+        "workflow": "Automatic Dependency Submission (Python)"
+      },
+      "id": "RT-OCC-ABACUS-Automatic-Dependency-Submission-Python-799ec6a3a0fb",
+      "kind": "occurrence",
+      "occurred_at": "2026-06-15T16:36:45Z",
+      "provenance": "observed",
+      "repo": "GBOGEB/ABACUS",
+      "root_id": "RT-ROOT-ABACUS-799ec6a3a0fb",
+      "schema": "abacus.everred.event.v3",
+      "sha": "799ec6a3a0fbc9f951c541e6449c018b603ec345"
+    },
+    {
+      "evidence": {
+        "class": "FLAKY",
+        "failing": [
+          "deploy-and-prove-pages: Wait for hosted Pages to converge and create execution receipt"
+        ],
+        "last_green_sha": "7006236938ac3d7d7e8539e6b492ca532a41346b",
+        "path": ".github/workflows/abacus-multiformat-publication.yml",
+        "pinned_historical_ids": [],
+        "red_streak_runs": 31,
+        "run_id": "34870534075",
+        "stale": false,
+        "suspect_commit_count": 19,
+        "url": "https://github.com/GBOGEB/CODEX/actions/runs/34870534075",
+        "workflow": "ABACUS Multi-Format Publication"
+      },
+      "id": "RT-OCC-CODEX-ABACUS-Multi-Format-Publication-6a9cf37718c9",
+      "kind": "occurrence",
+      "occurred_at": "2026-09-14T16:45:06Z",
+      "provenance": "observed",
+      "repo": "GBOGEB/CODEX",
+      "root_id": "RT-ROOT-CODEX-6a9cf37718c9",
+      "schema": "abacus.everred.event.v3",
+      "sha": "6a9cf37718c945dc132d4ce58bea999dc3aa6b01"
+    },
+    {
+      "evidence": {
+        "class": "FLAKY",
+        "failing": [
+          "snapshot-publication: Validate semantic vocabulary before visual execution, Upload image-native execution evidence"
+        ],
+        "last_green_sha": "403524b03c14b0f7116a8707483cb007b534a51f",
+        "path": ".github/workflows/abacus-snapshot-publication.yml",
+        "pinned_historical_ids": [],
+        "red_streak_runs": 1,
+        "run_id": "39104611366",
+        "stale": false,
+        "suspect_commit_count": 616,
+        "url": "https://github.com/GBOGEB/CODEX/actions/runs/39104611366",
+        "workflow": "ABACUS Snapshot Publication"
+      },
+      "id": "RT-OCC-CODEX-ABACUS-Snapshot-Publication-ad451cbc5be1",
+      "kind": "occurrence",
+      "occurred_at": "2026-10-18T06:35:58Z",
+      "provenance": "observed",
+      "repo": "GBOGEB/CODEX",
+      "root_id": "RT-ROOT-CODEX-ad451cbc5be1",
+      "schema": "abacus.everred.event.v3",
+      "sha": "ad451cbc5be1d83d82ed0cf5d54dc8f911f19429"
+    },
+    {
+      "evidence": {
+        "class": "EVERRED",
+        "failing": [
+          "g5-build-and-deploy: Execute G5 Master Orchestrator and Bake Artifacts"
+        ],
+        "last_green_sha": null,
+        "path": ".github/workflows/deploy_pipeline.yml",
+        "pinned_historical_ids": [],
+        "red_streak_runs": null,
+        "run_id": "26524696576",
+        "stale": true,
+        "suspect_commit_count": null,
+        "url": "https://github.com/GBOGEB/CODEX/actions/runs/26524696576",
+        "workflow": "G5 Unified Lifecycle Execution & Deployment Gateway"
+      },
+      "id": "RT-OCC-CODEX-G5-Unified-Lifecycle-Execution-Deployment-Gatewa-3dbd06626d46",
+      "kind": "occurrence",
+      "occurred_at": "2026-05-27T16:34:57Z",
+      "provenance": "observed",
+      "repo": "GBOGEB/CODEX",
+      "root_id": "RT-ROOT-CODEX-3dbd06626d46",
+      "schema": "abacus.everred.event.v3",
+      "sha": "3dbd06626d460c6d72b262bca6b1c22ea428763c"
+    },
+    {
+      "evidence": {
+        "class": "GREEN_TO_RED",
+        "failing": [
+          "validate-master-contract-ssot: Validate MASTER contract SSOT"
+        ],
+        "last_green_sha": "c552769ab62785a524e72893ad2ad0e3e27f3238",
+        "path": ".github/workflows/master-contract-ssot-validation.yml",
+        "pinned_historical_ids": [],
+        "red_streak_runs": 5,
+        "run_id": "34166172257",
+        "stale": false,
+        "suspect_commit_count": 1078,
+        "url": "https://github.com/GBOGEB/CODEX/actions/runs/34166172257",
+        "workflow": "MASTER Contract SSOT Validation"
+      },
+      "id": "RT-OCC-CODEX-MASTER-Contract-SSOT-Validation-855acb78b2c1",
+      "kind": "occurrence",
+      "occurred_at": "2026-09-07T22:17:40Z",
+      "provenance": "observed",
+      "repo": "GBOGEB/CODEX",
+      "root_id": "RT-ROOT-CODEX-855acb78b2c1",
+      "schema": "abacus.everred.event.v3",
+      "sha": "855acb78b2c15fe3854bc32360b7469ab175e152"
+    },
+    {
+      "evidence": {
+        "class": "EVERRED",
+        "failing": [
+          "build-and-test: Route tests"
+        ],
+        "last_green_sha": null,
+        "path": ".github/workflows/orchestration-ts.yml",
+        "pinned_historical_ids": [],
+        "red_streak_runs": null,
+        "run_id": "27298977758",
+        "stale": false,
+        "suspect_commit_count": null,
+        "url": "https://github.com/GBOGEB/CODEX/actions/runs/27298977758",
+        "workflow": "Orchestration TypeScript CI"
+      },
+      "id": "RT-OCC-CODEX-Orchestration-TypeScript-CI-ea8c6db999a8",
+      "kind": "occurrence",
+      "occurred_at": "2026-06-10T18:56:30Z",
+      "provenance": "observed",
+      "repo": "GBOGEB/CODEX",
+      "root_id": "RT-ROOT-CODEX-ea8c6db999a8",
+      "schema": "abacus.everred.event.v3",
+      "sha": "ea8c6db999a816c54aeb3cf1638d956d7eba9d6a"
+    },
+    {
+      "evidence": {
+        "class": "EVERRED",
+        "failing": [
+          "scan-scheduled / osv-scan: Run osv-scanner-reporter"
+        ],
+        "last_green_sha": null,
+        "path": ".github/workflows/osv-scanner.yml",
+        "pinned_historical_ids": [],
+        "red_streak_runs": null,
+        "run_id": "38413481440",
+        "stale": false,
+        "suspect_commit_count": null,
+        "url": "https://github.com/GBOGEB/CODEX/actions/runs/38413481440",
+        "workflow": "OSV-Scanner"
+      },
+      "id": "RT-OCC-CODEX-OSV-Scanner-b6421d7f154c",
+      "kind": "occurrence",
+      "occurred_at": "2026-10-13T14:27:15Z",
+      "provenance": "observed",
+      "repo": "GBOGEB/CODEX",
+      "root_id": "RT-ROOT-CODEX-b6421d7f154c",
+      "schema": "abacus.everred.event.v3",
+      "sha": "b6421d7f154c97152b1dd250011c5d87ea93525f"
+    },
+    {
+      "evidence": {
+        "class": "EVERRED",
+        "failing": [],
+        "last_green_sha": null,
+        "path": ".github/workflows/qps-debug-federation-consumer.yml",
+        "pinned_historical_ids": [],
+        "red_streak_runs": null,
+        "run_id": "34705474438",
+        "stale": true,
+        "suspect_commit_count": null,
+        "url": "https://github.com/GBOGEB/CODEX/actions/runs/34705474438",
+        "workflow": ".github/workflows/qps-debug-federation-consumer.yml"
+      },
+      "id": "RT-OCC-CODEX-github-workflows-qps-debug-federation-consumer-y-b7bc79ea0ffb",
+      "kind": "occurrence",
+      "occurred_at": "2026-09-12T16:31:05Z",
+      "provenance": "observed",
+      "repo": "GBOGEB/CODEX",
+      "root_id": "RT-ROOT-CODEX-b7bc79ea0ffb",
+      "schema": "abacus.everred.event.v3",
+      "sha": "b7bc79ea0ffb5d4b33509818c66dced7f5172f94"
+    },
+    {
+      "evidence": {
+        "class": "EVERRED",
+        "failing": [
+          "keb-w43-triage: Execute source-bound W43 KEB exchange"
+        ],
+        "last_green_sha": null,
+        "path": ".github/workflows/qps-keb-w43-triage.yml",
+        "pinned_historical_ids": [],
+        "red_streak_runs": null,
+        "run_id": "33861535842",
+        "stale": false,
+        "suspect_commit_count": null,
+        "url": "https://github.com/GBOGEB/CODEX/actions/runs/33861535842",
+        "workflow": "QPS KEB W43 TRIAGE"
+      },
+      "id": "RT-OCC-CODEX-QPS-KEB-W43-TRIAGE-5821ad208f93",
+      "kind": "occurrence",
+      "occurred_at": "2026-09-04T10:05:29Z",
+      "provenance": "observed",
+      "repo": "GBOGEB/CODEX",
+      "root_id": "RT-ROOT-CODEX-5821ad208f93",
+      "schema": "abacus.everred.event.v3",
+      "sha": "5821ad208f933ab86072017fb81180815b94ef51"
+    },
+    {
+      "evidence": {
+        "class": "EVERRED",
+        "failing": [],
+        "last_green_sha": null,
+        "path": ".github/workflows/qps-roundtrip-zero-delta.yml",
+        "pinned_historical_ids": [],
+        "red_streak_runs": null,
+        "run_id": "34906099356",
+        "stale": true,
+        "suspect_commit_count": null,
+        "url": "https://github.com/GBOGEB/CODEX/actions/runs/34906099356",
+        "workflow": "QPS Roundtrip Zero-Delta"
+      },
+      "id": "RT-OCC-CODEX-QPS-Roundtrip-Zero-Delta-e48cfc7923be",
+      "kind": "occurrence",
+      "occurred_at": "2026-09-14T22:51:04Z",
+      "provenance": "observed",
+      "repo": "GBOGEB/CODEX",
+      "root_id": "RT-ROOT-CODEX-e48cfc7923be",
+      "schema": "abacus.everred.event.v3",
+      "sha": "e48cfc7923be78343344762ea42bdbd1c72675c0"
+    },
+    {
+      "evidence": {
+        "class": "FLAKY",
+        "failing": [
+          "execute-validate: Validate repository semantic substrate"
+        ],
+        "last_green_sha": "403524b03c14b0f7116a8707483cb007b534a51f",
+        "path": ".github/workflows/qps-w05-bidder-eval-keb.yml",
+        "pinned_historical_ids": [],
+        "red_streak_runs": 1,
+        "run_id": "39104611151",
+        "stale": false,
+        "suspect_commit_count": 616,
+        "url": "https://github.com/GBOGEB/CODEX/actions/runs/39104611151",
+        "workflow": "QPS W05 bidder evaluation KEB receipt"
+      },
+      "id": "RT-OCC-CODEX-QPS-W05-bidder-evaluation-KEB-receipt-ad451cbc5be1",
+      "kind": "occurrence",
+      "occurred_at": "2026-10-18T06:35:58Z",
+      "provenance": "observed",
+      "repo": "GBOGEB/CODEX",
+      "root_id": "RT-ROOT-CODEX-ad451cbc5be1",
+      "schema": "abacus.everred.event.v3",
+      "sha": "ad451cbc5be1d83d82ed0cf5d54dc8f911f19429"
+    },
+    {
+      "evidence": {
+        "class": "EVERRED",
+        "failing": [],
+        "last_green_sha": null,
+        "path": ".github/workflows/release.yml",
+        "pinned_historical_ids": [],
+        "red_streak_runs": null,
+        "run_id": "26650356778",
+        "stale": true,
+        "suspect_commit_count": null,
+        "url": "https://github.com/GBOGEB/CODEX/actions/runs/26650356778",
+        "workflow": ".github/workflows/release.yml"
+      },
+      "id": "RT-OCC-CODEX-github-workflows-release-yml-025ab083ab5b",
+      "kind": "occurrence",
+      "occurred_at": "2026-05-29T16:52:14Z",
+      "provenance": "observed",
+      "repo": "GBOGEB/CODEX",
+      "root_id": "RT-ROOT-CODEX-025ab083ab5b",
+      "schema": "abacus.everred.event.v3",
+      "sha": "025ab083ab5be5a4e9893aa8b7d1c660d3d1a779"
+    },
+    {
+      "evidence": {
+        "class": "FLAKY",
+        "failing": [
+          "validate-semantic-substrate: Run semantic validator"
+        ],
+        "last_green_sha": "403524b03c14b0f7116a8707483cb007b534a51f",
+        "path": ".github/workflows/semantic-validation.yml",
+        "pinned_historical_ids": [],
+        "red_streak_runs": 1,
+        "run_id": "39104611195",
+        "stale": false,
+        "suspect_commit_count": 616,
+        "url": "https://github.com/GBOGEB/CODEX/actions/runs/39104611195",
+        "workflow": "semantic-validation"
+      },
+      "id": "RT-OCC-CODEX-semantic-validation-ad451cbc5be1",
+      "kind": "occurrence",
+      "occurred_at": "2026-10-18T06:35:58Z",
+      "provenance": "observed",
+      "repo": "GBOGEB/CODEX",
+      "root_id": "RT-ROOT-CODEX-ad451cbc5be1",
+      "schema": "abacus.everred.event.v3",
+      "sha": "ad451cbc5be1d83d82ed0cf5d54dc8f911f19429"
+    },
+    {
+      "evidence": {
+        "class": "GREEN_TO_RED",
+        "failing": [
+          "spine-gate: Receipt must be regenerated in the same PR"
+        ],
+        "last_green_sha": "b75fc4e7d35039c93f612f4cce34ae0f929f9ec8",
+        "path": ".github/workflows/spine-gate.yml",
+        "pinned_historical_ids": [],
+        "red_streak_runs": 1,
+        "run_id": "39135750113",
+        "stale": false,
+        "suspect_commit_count": 469,
+        "url": "https://github.com/GBOGEB/CODEX/actions/runs/39135750113",
+        "workflow": "SPINE Gate"
+      },
+      "id": "RT-OCC-CODEX-SPINE-Gate-18b5d47beb19",
+      "kind": "occurrence",
+      "occurred_at": "2026-10-18T14:23:12Z",
+      "provenance": "observed",
+      "repo": "GBOGEB/CODEX",
+      "root_id": "RT-ROOT-CODEX-18b5d47beb19",
+      "schema": "abacus.everred.event.v3",
+      "sha": "18b5d47beb19186c457b1edb53f618749a248c90"
+    },
+    {
+      "evidence": {
+        "class": "EVERRED",
+        "failing": [],
+        "last_green_sha": null,
+        "path": ".github/workflows/w05-qps-roundtrip-regeneration-zero-delta.yml",
+        "pinned_historical_ids": [],
+        "red_streak_runs": null,
+        "run_id": "34906101152",
+        "stale": true,
+        "suspect_commit_count": null,
+        "url": "https://github.com/GBOGEB/CODEX/actions/runs/34906101152",
+        "workflow": "W05 QPS Roundtrip Regeneration Zero-Delta"
+      },
+      "id": "RT-OCC-CODEX-W05-QPS-Roundtrip-Regeneration-Zero-Delta-e48cfc7923be",
+      "kind": "occurrence",
+      "occurred_at": "2026-09-14T22:51:05Z",
+      "provenance": "observed",
+      "repo": "GBOGEB/CODEX",
+      "root_id": "RT-ROOT-CODEX-e48cfc7923be",
+      "schema": "abacus.everred.event.v3",
+      "sha": "e48cfc7923be78343344762ea42bdbd1c72675c0"
+    },
+    {
+      "evidence": {
+        "class": "EVERRED",
+        "failing": [],
+        "last_green_sha": null,
+        "path": ".github/workflows/w70-qps-zero-delta-diagnostic.yml",
+        "pinned_historical_ids": [],
+        "red_streak_runs": null,
+        "run_id": "34885518023",
+        "stale": true,
+        "suspect_commit_count": null,
+        "url": "https://github.com/GBOGEB/CODEX/actions/runs/34885518023",
+        "workflow": ".github/workflows/w70-qps-zero-delta-diagnostic.yml"
+      },
+      "id": "RT-OCC-CODEX-github-workflows-w70-qps-zero-delta-diagnostic-y-1bc865a07c1c",
+      "kind": "occurrence",
+      "occurred_at": "2026-09-14T19:12:52Z",
+      "provenance": "observed",
+      "repo": "GBOGEB/CODEX",
+      "root_id": "RT-ROOT-CODEX-1bc865a07c1c",
+      "schema": "abacus.everred.event.v3",
+      "sha": "1bc865a07c1c57e951b2c1d2633c45ab419aafa4"
+    },
+    {
+      "evidence": {
+        "class": "EVERRED",
+        "failing": [
+          "self-index-proof: "
+        ],
+        "last_green_sha": null,
+        "path": ".github/workflows/mip-n2-self-index.yml",
+        "pinned_historical_ids": [],
+        "red_streak_runs": null,
+        "run_id": "39271923686",
+        "stale": false,
+        "suspect_commit_count": null,
+        "url": "https://github.com/GBOGEB/cryoplant-project/actions/runs/39271923686",
+        "workflow": "MIP N2 exact-SHA self-index"
+      },
+      "id": "RT-OCC-cryoplant-project-MIP-N2-exact-SHA-self-index-2c85973b2a9a",
+      "kind": "occurrence",
+      "occurred_at": "2026-10-19T14:46:02Z",
+      "provenance": "observed",
+      "repo": "GBOGEB/cryoplant-project",
+      "root_id": "RT-ROOT-cryoplant-project-2c85973b2a9a",
+      "schema": "abacus.everred.event.v3",
+      "sha": "2c85973b2a9ab65407af812b70958063ce8803f8"
+    },
+    {
+      "evidence": {
+        "class": "GREEN_TO_RED",
+        "failing": [
+          "parity: Validate live issue parity and partial-return no-close guards"
+        ],
+        "last_green_sha": "666d77668db22601e9154e99b2f168288b76ff5d",
+        "path": ".github/workflows/qps-bd-queue-integrity.yml",
+        "pinned_historical_ids": [],
+        "red_streak_runs": 1,
+        "run_id": "39051175754",
+        "stale": false,
+        "suspect_commit_count": 190,
+        "url": "https://github.com/GBOGEB/cryoplant-project/actions/runs/39051175754",
+        "workflow": "QPS BD Queue Integrity"
+      },
+      "id": "RT-OCC-cryoplant-project-QPS-BD-Queue-Integrity-4782b8ab418f",
+      "kind": "occurrence",
+      "occurred_at": "2026-10-17T16:50:41Z",
+      "provenance": "observed",
+      "repo": "GBOGEB/cryoplant-project",
+      "root_id": "RT-ROOT-cryoplant-project-4782b8ab418f",
+      "schema": "abacus.everred.event.v3",
+      "sha": "4782b8ab418f8645ff409a1297ce2d84a8bdcaf8"
+    },
+    {
+      "evidence": {
+        "class": "FLAKY",
+        "failing": [
+          "validate: "
+        ],
+        "last_green_sha": "b3ac5041da29d801cc0f22017d5fecac55c9fa0d",
+        "path": ".github/workflows/qps-canonicalization.yml",
+        "pinned_historical_ids": [],
+        "red_streak_runs": 14,
+        "run_id": "39244025705",
+        "stale": false,
+        "suspect_commit_count": 4,
+        "url": "https://github.com/GBOGEB/cryoplant-project/actions/runs/39244025705",
+        "workflow": "qps-canonicalization"
+      },
+      "id": "RT-OCC-cryoplant-project-qps-canonicalization-8102bce3b43c",
+      "kind": "occurrence",
+      "occurred_at": "2026-10-19T11:21:17Z",
+      "provenance": "observed",
+      "repo": "GBOGEB/cryoplant-project",
+      "root_id": "RT-ROOT-cryoplant-project-8102bce3b43c",
+      "schema": "abacus.everred.event.v3",
+      "sha": "8102bce3b43ccfa48beae7425dd544ae79e90d35"
+    },
+    {
+      "evidence": {
+        "class": "EVERRED",
+        "failing": [],
+        "last_green_sha": null,
+        "path": ".github/workflows/qps-code-purple-evolutionary.yml",
+        "pinned_historical_ids": [],
+        "red_streak_runs": null,
+        "run_id": "38858385258",
+        "stale": true,
+        "suspect_commit_count": null,
+        "url": "https://github.com/GBOGEB/cryoplant-project/actions/runs/38858385258",
+        "workflow": ".github/workflows/qps-code-purple-evolutionary.yml"
+      },
+      "id": "RT-OCC-cryoplant-project-github-workflows-qps-code-purple-evolutionary-ym-59315bbb0d8a",
+      "kind": "occurrence",
+      "occurred_at": "2026-10-16T05:56:02Z",
+      "provenance": "observed",
+      "repo": "GBOGEB/cryoplant-project",
+      "root_id": "RT-ROOT-cryoplant-project-59315bbb0d8a",
+      "schema": "abacus.everred.event.v3",
+      "sha": "59315bbb0d8a15fd7d6f3c40a46f2db8874cfbc3"
+    },
+    {
+      "evidence": {
+        "class": "GREEN_TO_RED",
+        "failing": [
+          "plan DAG and prove session/port contract: ",
+          "roll up debug DAG metrics and next pulse: "
+        ],
+        "last_green_sha": "0c77a6bc0a9fa7dcd21429a43a27c435b90e96cc",
+        "path": ".github/workflows/qps-debug-dag.yml",
+        "pinned_historical_ids": [],
+        "red_streak_runs": 3,
+        "run_id": "39253633295",
+        "stale": false,
+        "suspect_commit_count": 190,
+        "url": "https://github.com/GBOGEB/cryoplant-project/actions/runs/39253633295",
+        "workflow": "QPS TRIAGE Debug DAG Pilot"
+      },
+      "id": "RT-OCC-cryoplant-project-QPS-TRIAGE-Debug-DAG-Pilot-9caccb14f311",
+      "kind": "occurrence",
+      "occurred_at": "2026-10-19T12:38:26Z",
+      "provenance": "observed",
+      "repo": "GBOGEB/cryoplant-project",
+      "root_id": "RT-ROOT-cryoplant-project-9caccb14f311",
+      "schema": "abacus.everred.event.v3",
+      "sha": "9caccb14f3116296d26c0b94adedb2edd7300b00"
+    },
+    {
+      "evidence": {
+        "class": "EVERRED",
+        "failing": [],
+        "last_green_sha": null,
+        "path": ".github/workflows/qps-debug-dow-reentry.yml",
+        "pinned_historical_ids": [],
+        "red_streak_runs": null,
+        "run_id": "35848917593",
+        "stale": true,
+        "suspect_commit_count": null,
+        "url": "https://github.com/GBOGEB/cryoplant-project/actions/runs/35848917593",
+        "workflow": ".github/workflows/qps-debug-dow-reentry.yml"
+      },
+      "id": "RT-OCC-cryoplant-project-github-workflows-qps-debug-dow-reentry-yml-bac0045c81d0",
+      "kind": "occurrence",
+      "occurred_at": "2026-09-23T10:27:42Z",
+      "provenance": "observed",
+      "repo": "GBOGEB/cryoplant-project",
+      "root_id": "RT-ROOT-cryoplant-project-bac0045c81d0",
+      "schema": "abacus.everred.event.v3",
+      "sha": "bac0045c81d091aa3e0803ba55bf892f000490b6"
+    },
+    {
+      "evidence": {
+        "class": "GREEN_TO_RED",
+        "failing": [
+          "Five-repository contract, QPS exact-head native observer: "
+        ],
+        "last_green_sha": "e72e4454d854592fb5e3abbabd7a455b149fbc99",
+        "path": ".github/workflows/qps-dependency-spine.yml",
+        "pinned_historical_ids": [],
+        "red_streak_runs": 12,
+        "run_id": "39244116563",
+        "stale": false,
+        "suspect_commit_count": 32,
+        "url": "https://github.com/GBOGEB/cryoplant-project/actions/runs/39244116563",
+        "workflow": "QPS Dependency SPINE Read-only Census"
+      },
+      "id": "RT-OCC-cryoplant-project-QPS-Dependency-SPINE-Read-only-Census-152d7b4b4cfb",
+      "kind": "occurrence",
+      "occurred_at": "2026-10-19T11:22:04Z",
+      "provenance": "observed",
+      "repo": "GBOGEB/cryoplant-project",
+      "root_id": "RT-ROOT-cryoplant-project-152d7b4b4cfb",
+      "schema": "abacus.everred.event.v3",
+      "sha": "152d7b4b4cfb9d2559f5b5a9b13afbe683892ce2"
+    },
+    {
+      "evidence": {
+        "class": "EVERRED",
+        "failing": [],
+        "last_green_sha": null,
+        "path": ".github/workflows/qps-golden-thread-bdq9-full-control-closure.yml",
+        "pinned_historical_ids": [],
+        "red_streak_runs": null,
+        "run_id": "36223534715",
+        "stale": true,
+        "suspect_commit_count": null,
+        "url": "https://github.com/GBOGEB/cryoplant-project/actions/runs/36223534715",
+        "workflow": ".github/workflows/qps-golden-thread-bdq9-full-control-closure.yml"
+      },
+      "id": "RT-OCC-cryoplant-project-github-workflows-qps-golden-thread-bdq9-full-con-0b2ebb300def",
+      "kind": "occurrence",
+      "occurred_at": "2026-09-26T06:22:03Z",
+      "provenance": "observed",
+      "repo": "GBOGEB/cryoplant-project",
+      "root_id": "RT-ROOT-cryoplant-project-0b2ebb300def",
+      "schema": "abacus.everred.event.v3",
+      "sha": "0b2ebb300def68aa1ab776438a8d1d60b251cf98"
+    },
+    {
+      "evidence": {
+        "class": "GREEN_TO_RED",
+        "failing": [
+          "refresh-open-prs-after-main: "
+        ],
+        "last_green_sha": "b3ac5041da29d801cc0f22017d5fecac55c9fa0d",
+        "path": ".github/workflows/qps-pr-binary-refresh.yml",
+        "pinned_historical_ids": [],
+        "red_streak_runs": 14,
+        "run_id": "39244025719",
+        "stale": false,
+        "suspect_commit_count": 4,
+        "url": "https://github.com/GBOGEB/cryoplant-project/actions/runs/39244025719",
+        "workflow": "QPS PR binary refresh"
+      },
+      "id": "RT-OCC-cryoplant-project-QPS-PR-binary-refresh-8102bce3b43c",
+      "kind": "occurrence",
+      "occurred_at": "2026-10-19T11:21:17Z",
+      "provenance": "observed",
+      "repo": "GBOGEB/cryoplant-project",
+      "root_id": "RT-ROOT-cryoplant-project-8102bce3b43c",
+      "schema": "abacus.everred.event.v3",
+      "sha": "8102bce3b43ccfa48beae7425dd544ae79e90d35"
+    },
+    {
+      "evidence": {
+        "class": "EVERRED",
+        "failing": [
+          "refresh: Census (read-only, fails closed)"
+        ],
+        "last_green_sha": null,
+        "path": ".github/workflows/qps-triage-console-refresh.yml",
+        "pinned_historical_ids": [],
+        "red_streak_runs": null,
+        "run_id": "39154395930",
+        "stale": false,
+        "suspect_commit_count": null,
+        "url": "https://github.com/GBOGEB/cryoplant-project/actions/runs/39154395930",
+        "workflow": "QPS Triage Console Refresh"
+      },
+      "id": "RT-OCC-cryoplant-project-QPS-Triage-Console-Refresh-c07666b2dfc7",
+      "kind": "occurrence",
+      "occurred_at": "2026-10-18T18:29:39Z",
+      "provenance": "observed",
+      "repo": "GBOGEB/cryoplant-project",
+      "root_id": "RT-ROOT-cryoplant-project-c07666b2dfc7",
+      "schema": "abacus.everred.event.v3",
+      "sha": "c07666b2dfc77f97980e8661fac3864f975e2d76"
+    },
+    {
+      "evidence": {
+        "class": "EVERRED",
+        "failing": [
+          "validate: "
+        ],
+        "last_green_sha": null,
+        "path": ".github/workflows/qps-w142-invcop-thermo-control.yml",
+        "pinned_historical_ids": [],
+        "red_streak_runs": null,
+        "run_id": "34690359030",
+        "stale": true,
+        "suspect_commit_count": null,
+        "url": "https://github.com/GBOGEB/cryoplant-project/actions/runs/34690359030",
+        "workflow": "qps-w142-invcop-thermo-control"
+      },
+      "id": "RT-OCC-cryoplant-project-qps-w142-invcop-thermo-control-1e07febfa17b",
+      "kind": "occurrence",
+      "occurred_at": "2026-09-12T11:10:39Z",
+      "provenance": "observed",
+      "repo": "GBOGEB/cryoplant-project",
+      "root_id": "RT-ROOT-cryoplant-project-1e07febfa17b",
+      "schema": "abacus.everred.event.v3",
+      "sha": "1e07febfa17b926119f2e4101cf4b71cae8b966e"
+    },
+    {
+      "evidence": {
+        "class": "EVERRED",
+        "failing": [
+          "visual-convergence: "
+        ],
+        "last_green_sha": null,
+        "path": ".github/workflows/qps-w162-visual-convergence.yml",
+        "pinned_historical_ids": [],
+        "red_streak_runs": null,
+        "run_id": "34768683829",
+        "stale": true,
+        "suspect_commit_count": null,
+        "url": "https://github.com/GBOGEB/cryoplant-project/actions/runs/34768683829",
+        "workflow": "QPS W162 Visual Convergence Control"
+      },
+      "id": "RT-OCC-cryoplant-project-QPS-W162-Visual-Convergence-Control-829573b07405",
+      "kind": "occurrence",
+      "occurred_at": "2026-09-13T16:28:32Z",
+      "provenance": "observed",
+      "repo": "GBOGEB/cryoplant-project",
+      "root_id": "RT-ROOT-cryoplant-project-829573b07405",
+      "schema": "abacus.everred.event.v3",
+      "sha": "829573b0740503e47dae59624a2dc34a52dc8cfb"
+    },
+    {
+      "evidence": {
+        "class": "FLAKY",
+        "failing": [
+          "namespace-control: "
+        ],
+        "last_green_sha": "87e39abba7e398046b74070e0b3d793118ae51f4",
+        "path": ".github/workflows/qps-w163-namespace-control.yml",
+        "pinned_historical_ids": [],
+        "red_streak_runs": 1,
+        "run_id": "39295518072",
+        "stale": false,
+        "suspect_commit_count": 339,
+        "url": "https://github.com/GBOGEB/cryoplant-project/actions/runs/39295518072",
+        "workflow": "QPS W163 Namespace Collision Control"
+      },
+      "id": "RT-OCC-cryoplant-project-QPS-W163-Namespace-Collision-Control-86f600f99eb9",
+      "kind": "occurrence",
+      "occurred_at": "2026-10-19T17:36:07Z",
+      "provenance": "observed",
+      "repo": "GBOGEB/cryoplant-project",
+      "root_id": "RT-ROOT-cryoplant-project-86f600f99eb9",
+      "schema": "abacus.everred.event.v3",
+      "sha": "86f600f99eb9d3bf4878976844da3bd97d287c29"
+    },
+    {
+      "evidence": {
+        "class": "EVERRED",
+        "failing": [
+          "prove-w189: "
+        ],
+        "last_green_sha": null,
+        "path": ".github/workflows/qps-w189-federation-sample4.yml",
+        "pinned_historical_ids": [],
+        "red_streak_runs": null,
+        "run_id": "34870473600",
+        "stale": true,
+        "suspect_commit_count": null,
+        "url": "https://github.com/GBOGEB/cryoplant-project/actions/runs/34870473600",
+        "workflow": "QPS W189 Federation Sample 4"
+      },
+      "id": "RT-OCC-cryoplant-project-QPS-W189-Federation-Sample-4-dd28b8471bad",
+      "kind": "occurrence",
+      "occurred_at": "2026-09-14T16:44:30Z",
+      "provenance": "observed",
+      "repo": "GBOGEB/cryoplant-project",
+      "root_id": "RT-ROOT-cryoplant-project-dd28b8471bad",
+      "schema": "abacus.everred.event.v3",
+      "sha": "dd28b8471bada007add5b1a94b3d131f7d0b6748"
+    },
+    {
+      "evidence": {
+        "class": "GREEN_TO_RED",
+        "failing": [
+          "release-smoke: "
+        ],
+        "last_green_sha": "cf0f7137da321e59280b8b06c2be871bef53bde7",
+        "path": ".github/workflows/todo011-release-smoke.yml",
+        "pinned_historical_ids": [],
+        "red_streak_runs": 33,
+        "run_id": "34170499782",
+        "stale": true,
+        "suspect_commit_count": 38,
+        "url": "https://github.com/GBOGEB/cryoplant-project/actions/runs/34170499782",
+        "workflow": "TODO-011 release pack smoke"
+      },
+      "id": "RT-OCC-cryoplant-project-TODO-011-release-pack-smoke-aeb16b224d83",
+      "kind": "occurrence",
+      "occurred_at": "2026-09-07T23:34:38Z",
+      "provenance": "observed",
+      "repo": "GBOGEB/cryoplant-project",
+      "root_id": "RT-ROOT-cryoplant-project-aeb16b224d83",
+      "schema": "abacus.everred.event.v3",
+      "sha": "aeb16b224d830c9be344e6883de0992ecaba59b9"
+    },
+    {
+      "evidence": {
+        "class": "GREEN_TO_RED",
+        "failing": [
+          "runner-preflight: "
+        ],
+        "last_green_sha": "b3ac5041da29d801cc0f22017d5fecac55c9fa0d",
+        "path": ".github/workflows/triage-repo-census.yml",
+        "pinned_historical_ids": [],
+        "red_streak_runs": 6,
+        "run_id": "39244025732",
+        "stale": false,
+        "suspect_commit_count": 4,
+        "url": "https://github.com/GBOGEB/cryoplant-project/actions/runs/39244025732",
+        "workflow": "TRIAGE Repository Census"
+      },
+      "id": "RT-OCC-cryoplant-project-TRIAGE-Repository-Census-8102bce3b43c",
+      "kind": "occurrence",
+      "occurred_at": "2026-10-19T11:21:17Z",
+      "provenance": "observed",
+      "repo": "GBOGEB/cryoplant-project",
+      "root_id": "RT-ROOT-cryoplant-project-8102bce3b43c",
+      "schema": "abacus.everred.event.v3",
+      "sha": "8102bce3b43ccfa48beae7425dd544ae79e90d35"
+    },
+    {
+      "evidence": {
+        "class": "EVERRED",
+        "failing": [
+          "reconcile: "
+        ],
+        "last_green_sha": null,
+        "path": ".github/workflows/w99-r1-722-docx-reconciliation.yml",
+        "pinned_historical_ids": [],
+        "red_streak_runs": null,
+        "run_id": "34422648056",
+        "stale": true,
+        "suspect_commit_count": null,
+        "url": "https://github.com/GBOGEB/cryoplant-project/actions/runs/34422648056",
+        "workflow": "W99 R1 722 DOCX Reconciliation"
+      },
+      "id": "RT-OCC-cryoplant-project-W99-R1-722-DOCX-Reconciliation-f8ccc17539c4",
+      "kind": "occurrence",
+      "occurred_at": "2026-09-10T00:45:35Z",
+      "provenance": "observed",
+      "repo": "GBOGEB/cryoplant-project",
+      "root_id": "RT-ROOT-cryoplant-project-f8ccc17539c4",
+      "schema": "abacus.everred.event.v3",
+      "sha": "f8ccc17539c4fb9d92c63ce712c1e7c26c277420"
+    },
+    {
+      "evidence": {
+        "class": "GREEN_TO_RED",
+        "failing": [
+          "Dependabot: Run Dependabot"
+        ],
+        "last_green_sha": "a5fc3eaf3f55d7896605e6cb6393363fed13dee2",
+        "path": "dynamic/dependabot/dependabot-updates",
+        "pinned_historical_ids": [],
+        "red_streak_runs": 1,
+        "run_id": "38823280061",
+        "stale": true,
+        "suspect_commit_count": 176,
+        "url": "https://github.com/GBOGEB/cryoplant-project/actions/runs/38823280061",
+        "workflow": "github_actions in /. - Update #1630350736"
+      },
+      "id": "RT-OCC-cryoplant-project-github-actions-in-Update-1630350736-59315bbb0d8a",
+      "kind": "occurrence",
+      "occurred_at": "2026-10-15T23:23:27Z",
+      "provenance": "observed",
+      "repo": "GBOGEB/cryoplant-project",
+      "root_id": "RT-ROOT-cryoplant-project-59315bbb0d8a",
+      "schema": "abacus.everred.event.v3",
+      "sha": "59315bbb0d8a15fd7d6f3c40a46f2db8874cfbc3"
+    },
+    {
+      "evidence": {
+        "class": "GREEN_TO_RED",
+        "failing": [
+          "recon4-governor: Execute RECON_4 Governor gate"
+        ],
+        "last_green_sha": "3a35154ae350f747eb650508ebd7e90f6a9dc779",
+        "path": ".github/workflows/gm-iv-recon4-governor.yml",
+        "pinned_historical_ids": [],
+        "red_streak_runs": 4,
+        "run_id": "35149068279",
+        "stale": false,
+        "suspect_commit_count": 11,
+        "url": "https://github.com/GBOGEB/pipeline-automation-hub/actions/runs/35149068279",
+        "workflow": "GM-IV RECON_4 Governor Gate"
+      },
+      "id": "RT-OCC-pipeline-automation-hub-GM-IV-RECON-4-Governor-Gate-612dd40421b6",
+      "kind": "occurrence",
+      "occurred_at": "2026-09-16T20:51:50Z",
+      "provenance": "observed",
+      "repo": "GBOGEB/pipeline-automation-hub",
+      "root_id": "RT-ROOT-pipeline-automation-hub-612dd40421b6",
+      "schema": "abacus.everred.event.v3",
+      "sha": "612dd40421b645bd389e36d2e4849a41b64c716f"
+    },
+    {
+      "evidence": {
+        "class": "FLAKY",
+        "failing": [
+          "gm-v-3pstar-mip-control: Compile and run deterministic 3PSTAR MIP validator"
+        ],
+        "last_green_sha": "75986e497f4e812cae01cb521f1bedb555fbaed3",
+        "path": ".github/workflows/gm-v-3pstar-mip-control.yml",
+        "pinned_historical_ids": [
+          "10476967287",
+          "10546460986",
+          "35171901674",
+          "35343419829"
+        ],
+        "red_streak_runs": 2,
+        "run_id": "35359256000",
+        "stale": true,
+        "suspect_commit_count": 76,
+        "url": "https://github.com/GBOGEB/pipeline-automation-hub/actions/runs/35359256000",
+        "workflow": "GM-V 3PSTAR MIP Control"
+      },
+      "id": "RT-OCC-pipeline-automation-hub-GM-V-3PSTAR-MIP-Control-6980c60fae21",
+      "kind": "occurrence",
+      "occurred_at": "2026-09-18T14:55:33Z",
+      "provenance": "observed",
+      "repo": "GBOGEB/pipeline-automation-hub",
+      "root_id": "RT-ROOT-pipeline-automation-hub-6980c60fae21",
+      "schema": "abacus.everred.event.v3",
+      "sha": "6980c60fae211f956e4ad3068f76882fa02139a3"
+    },
+    {
+      "evidence": {
+        "class": "GREEN_TO_RED",
+        "failing": [
+          "gm-v-governor-readiness: Verify exact GM-IV runtime capacity run and artifact identity"
+        ],
+        "last_green_sha": "445bced67e814b4246b4ad5ebaca5f64538ca00f",
+        "path": ".github/workflows/gm-v-governor-readiness.yml",
+        "pinned_historical_ids": [
+          "10476967287",
+          "35171901674"
+        ],
+        "red_streak_runs": 2,
+        "run_id": "39028648422",
+        "stale": false,
+        "suspect_commit_count": 595,
+        "url": "https://github.com/GBOGEB/pipeline-automation-hub/actions/runs/39028648422",
+        "workflow": "GM-V Governor Readiness"
+      },
+      "id": "RT-OCC-pipeline-automation-hub-GM-V-Governor-Readiness-127f84b79f52",
+      "kind": "occurrence",
+      "occurred_at": "2026-10-17T11:25:35Z",
+      "provenance": "observed",
+      "repo": "GBOGEB/pipeline-automation-hub",
+      "root_id": "RT-ROOT-pipeline-automation-hub-127f84b79f52",
+      "schema": "abacus.everred.event.v3",
+      "sha": "127f84b79f522242cdf9884c8d0acb55cc6bb5e8"
+    },
+    {
+      "evidence": {
+        "class": "EVERRED",
+        "failing": [
+          "N3 evidence Python 3.12: Run bounded N3 unit, adversarial and CLI tests",
+          "N3 evidence Python 3.11: Run bounded N3 unit, adversarial and CLI tests"
+        ],
+        "last_green_sha": null,
+        "path": ".github/workflows/mission-control-n3-evidence.yml",
+        "pinned_historical_ids": [],
+        "red_streak_runs": null,
+        "run_id": "39028590472",
+        "stale": false,
+        "suspect_commit_count": null,
+        "url": "https://github.com/GBOGEB/pipeline-automation-hub/actions/runs/39028590472",
+        "workflow": "Mission Control N3 Evidence Metrics"
+      },
+      "id": "RT-OCC-pipeline-automation-hub-Mission-Control-N3-Evidence-Metrics-d1012487f8fc",
+      "kind": "occurrence",
+      "occurred_at": "2026-10-17T11:24:44Z",
+      "provenance": "observed",
+      "repo": "GBOGEB/pipeline-automation-hub",
+      "root_id": "RT-ROOT-pipeline-automation-hub-d1012487f8fc",
+      "schema": "abacus.everred.event.v3",
+      "sha": "d1012487f8fc8ea9115184e1f9b4577353f97b37"
+    },
+    {
+      "evidence": {
+        "class": "FLAKY",
+        "failing": [
+          "audit: Every unittest gate collects at least one test"
+        ],
+        "last_green_sha": "76bafe29758c7bf82917c2de3da99da265800949",
+        "path": ".github/workflows/zero-test-gate-guard.yml",
+        "pinned_historical_ids": [],
+        "red_streak_runs": 1,
+        "run_id": "39289287081",
+        "stale": false,
+        "suspect_commit_count": 2,
+        "url": "https://github.com/GBOGEB/pipeline-automation-hub/actions/runs/39289287081",
+        "workflow": "Zero-Test Gate Guard"
+      },
+      "id": "RT-OCC-pipeline-automation-hub-Zero-Test-Gate-Guard-c3b874fe98c4",
+      "kind": "occurrence",
+      "occurred_at": "2026-10-19T16:52:47Z",
+      "provenance": "observed",
+      "repo": "GBOGEB/pipeline-automation-hub",
+      "root_id": "RT-ROOT-pipeline-automation-hub-c3b874fe98c4",
+      "schema": "abacus.everred.event.v3",
+      "sha": "c3b874fe98c4201a8dd92e5978c763b8067f5f6e"
+    },
+    {
+      "evidence": {
+        "class": "GREEN_TO_RED",
+        "failing": [
+          "deploy: Deploy to GitHub Pages"
+        ],
+        "last_green_sha": "a3fb9a5afb56b36e8a4b12f23e3fb7b2fa7c8559",
+        "path": "dynamic/pages/pages-build-deployment",
+        "pinned_historical_ids": [],
+        "red_streak_runs": 1,
+        "run_id": "38772328436",
+        "stale": true,
+        "suspect_commit_count": 15,
+        "url": "https://github.com/GBOGEB/pipeline-automation-hub/actions/runs/38772328436",
+        "workflow": "pages build and deployment"
+      },
+      "id": "RT-OCC-pipeline-automation-hub-pages-build-and-deployment-3b468f1e1f16",
+      "kind": "occurrence",
+      "occurred_at": "2026-10-15T16:50:26Z",
+      "provenance": "observed",
+      "repo": "GBOGEB/pipeline-automation-hub",
+      "root_id": "RT-ROOT-pipeline-automation-hub-3b468f1e1f16",
+      "schema": "abacus.everred.event.v3",
+      "sha": "3b468f1e1f161a64566eb85c104335c40411153b"
     }
   ],
   "coverage_scopes": {
@@ -232,6 +2673,2268 @@
       "repo": "GBOGEB/ABACUS",
       "schema": "abacus.everred.event.v3",
       "sha": "e9f34b22967064c779891a4d2ac40541f370e812"
+    },
+    {
+      "evidence": {
+        "name": "a10-guard",
+        "recovers_first_red_sha": "3dd86fe3100a66e5d3598ece113f0363e7492131",
+        "red_hours": 0.02,
+        "run_id": "39173833942",
+        "scope": "workflow_conclusion_only",
+        "status": "PASS",
+        "url": "https://github.com/GBOGEB/ABACUS/actions/runs/39173833942"
+      },
+      "id": "RT-VER-ABACUS-a10-guard-c4cc0bbe5b9e",
+      "kind": "verification",
+      "occurred_at": "2026-10-18T22:48:36Z",
+      "provenance": "observed",
+      "repo": "GBOGEB/ABACUS",
+      "schema": "abacus.everred.event.v3",
+      "sha": "c4cc0bbe5b9eb171a764ddc6938de9f521f5120c"
+    },
+    {
+      "evidence": {
+        "name": "Ariana CI/CD",
+        "recovers_first_red_sha": "a06c0339bb6369a22653fb467fc6fe9acd9689d5",
+        "red_hours": 1.95,
+        "run_id": "39061347750",
+        "scope": "workflow_conclusion_only",
+        "status": "PASS",
+        "url": "https://github.com/GBOGEB/ABACUS/actions/runs/39061347750"
+      },
+      "id": "RT-VER-ABACUS-Ariana-CI-CD-79bda8caadc9",
+      "kind": "verification",
+      "occurred_at": "2026-10-17T19:11:07Z",
+      "provenance": "observed",
+      "repo": "GBOGEB/ABACUS",
+      "schema": "abacus.everred.event.v3",
+      "sha": "79bda8caadc963f8fdcebb79105b5ba27529bad0"
+    },
+    {
+      "evidence": {
+        "action": "replay before asserting HEAD state",
+        "age_days": 51.4,
+        "state": "RED_AT_LAST_OBSERVATION_STALE",
+        "workflow": "Auto-Merge PRs"
+      },
+      "id": "RT-STALE-ABACUS-Auto-Merge-PRs-d88677b3f069",
+      "kind": "note",
+      "occurred_at": "2026-08-29T19:32:56Z",
+      "provenance": "observed",
+      "repo": "GBOGEB/ABACUS",
+      "schema": "abacus.everred.event.v3",
+      "sha": "d88677b3f069566ff38db2aefe42474e1c2e73c8"
+    },
+    {
+      "evidence": {
+        "name": "DOW-KEB-GBOGEB Background Orchestrator",
+        "recovers_first_red_sha": "ab5df9bcdb6105b71e2517095e1eecbc1cc015ff",
+        "red_hours": 42.33,
+        "run_id": "36363017998",
+        "scope": "workflow_conclusion_only",
+        "status": "PASS",
+        "url": "https://github.com/GBOGEB/ABACUS/actions/runs/36363017998"
+      },
+      "id": "RT-VER-ABACUS-DOW-KEB-GBOGEB-Background-Orchestrator-fd992b0b1ce3",
+      "kind": "verification",
+      "occurred_at": "2026-09-28T00:39:33Z",
+      "provenance": "observed",
+      "repo": "GBOGEB/ABACUS",
+      "schema": "abacus.everred.event.v3",
+      "sha": "fd992b0b1ce3af8a4aa19b58ee397862132fc645"
+    },
+    {
+      "evidence": {
+        "action": "replay before asserting HEAD state",
+        "age_days": 5.9,
+        "state": "RED_AT_LAST_OBSERVATION_STALE",
+        "workflow": "Bandit Disjoint Census"
+      },
+      "id": "RT-STALE-ABACUS-Bandit-Disjoint-Census-02cca5020d59",
+      "kind": "note",
+      "occurred_at": "2026-10-14T08:03:40Z",
+      "provenance": "observed",
+      "repo": "GBOGEB/ABACUS",
+      "schema": "abacus.everred.event.v3",
+      "sha": "02cca5020d59cc339cea486ed38857f53eea3e88"
+    },
+    {
+      "evidence": {
+        "name": "Bandit",
+        "recovers_first_red_sha": "999712c774e9b2d3b18126b9cba57577333e2731",
+        "red_hours": 1579.75,
+        "run_id": "33363286725",
+        "scope": "workflow_conclusion_only",
+        "status": "PASS",
+        "url": "https://github.com/GBOGEB/ABACUS/actions/runs/33363286725"
+      },
+      "id": "RT-VER-ABACUS-Bandit-308a246d56df",
+      "kind": "verification",
+      "occurred_at": "2026-08-31T06:12:53Z",
+      "provenance": "observed",
+      "repo": "GBOGEB/ABACUS",
+      "schema": "abacus.everred.event.v3",
+      "sha": "308a246d56df8f1001cc6c5cb39c8d76fd7e48f1"
+    },
+    {
+      "evidence": {
+        "name": "Bootstrap Statistics Integration CI/CD",
+        "recovers_first_red_sha": "6178594f40d18ec78dd19781a9cbeb748b028dc4",
+        "red_hours": 2118.24,
+        "run_id": "34170972193",
+        "scope": "workflow_conclusion_only",
+        "status": "PASS",
+        "url": "https://github.com/GBOGEB/ABACUS/actions/runs/34170972193"
+      },
+      "id": "RT-VER-ABACUS-Bootstrap-Statistics-Integration-CI-CD-c29b7956696f",
+      "kind": "verification",
+      "occurred_at": "2026-09-07T23:43:16Z",
+      "provenance": "observed",
+      "repo": "GBOGEB/ABACUS",
+      "schema": "abacus.everred.event.v3",
+      "sha": "c29b7956696ff880f7c80eb5ae93268dacee425f"
+    },
+    {
+      "evidence": {
+        "name": "CI - ABACUS Matrix",
+        "recovers_first_red_sha": "f2b78a1a626ab72fefbc04e8d2b9505c735eb9b8",
+        "red_hours": 1.15,
+        "run_id": "39281653770",
+        "scope": "workflow_conclusion_only",
+        "status": "PASS",
+        "url": "https://github.com/GBOGEB/ABACUS/actions/runs/39281653770"
+      },
+      "id": "RT-VER-ABACUS-CI-ABACUS-Matrix-0416345a56f6",
+      "kind": "verification",
+      "occurred_at": "2026-10-19T15:56:10Z",
+      "provenance": "observed",
+      "repo": "GBOGEB/ABACUS",
+      "schema": "abacus.everred.event.v3",
+      "sha": "0416345a56f6b91f1a7af6d5ce3315515fa2d352"
+    },
+    {
+      "evidence": {
+        "name": "Bootstrap Statistics CI/CD Pipeline",
+        "recovers_first_red_sha": "3471039b0ce133b21ab53c5533ec177ab1e96e4d",
+        "red_hours": 36.34,
+        "run_id": "38994184968",
+        "scope": "workflow_conclusion_only",
+        "status": "PASS",
+        "url": "https://github.com/GBOGEB/ABACUS/actions/runs/38994184968"
+      },
+      "id": "RT-VER-ABACUS-Bootstrap-Statistics-CI-CD-Pipeline-54da377cf82a",
+      "kind": "verification",
+      "occurred_at": "2026-10-17T02:15:09Z",
+      "provenance": "observed",
+      "repo": "GBOGEB/ABACUS",
+      "schema": "abacus.everred.event.v3",
+      "sha": "54da377cf82a358ac97903ecde0270c975b8fcc1"
+    },
+    {
+      "evidence": {
+        "name": "DOW + Recursive DMAIC - Enhanced CI",
+        "recovers_first_red_sha": "b786ae8e9a44de07ca9d45ab6ca0d3386f67c7fa",
+        "red_hours": 24.91,
+        "run_id": "38746860868",
+        "scope": "workflow_conclusion_only",
+        "status": "PASS",
+        "url": "https://github.com/GBOGEB/ABACUS/actions/runs/38746860868"
+      },
+      "id": "RT-VER-ABACUS-DOW-Recursive-DMAIC-Enhanced-CI-3be70452d95c",
+      "kind": "verification",
+      "occurred_at": "2026-10-15T13:55:28Z",
+      "provenance": "observed",
+      "repo": "GBOGEB/ABACUS",
+      "schema": "abacus.everred.event.v3",
+      "sha": "3be70452d95cb86a6c4e86ad3aed83df091022f2"
+    },
+    {
+      "evidence": {
+        "action": "replay before asserting HEAD state",
+        "age_days": 6.9,
+        "state": "RED_AT_LAST_OBSERVATION_STALE",
+        "workflow": "CI Failure Debug Rerun"
+      },
+      "id": "RT-STALE-ABACUS-CI-Failure-Debug-Rerun-5f0dfebb1cd5",
+      "kind": "note",
+      "occurred_at": "2026-10-13T09:23:41Z",
+      "provenance": "observed",
+      "repo": "GBOGEB/ABACUS",
+      "schema": "abacus.everred.event.v3",
+      "sha": "5f0dfebb1cd567e3093050e6692ce53ef37e3250"
+    },
+    {
+      "evidence": {
+        "name": "CI Workflow Governance",
+        "recovers_first_red_sha": "15ee5866024ddb21e82a8c797cfa2d9370534cfd",
+        "red_hours": 14.66,
+        "run_id": "39231000103",
+        "scope": "workflow_conclusion_only",
+        "status": "PASS",
+        "url": "https://github.com/GBOGEB/ABACUS/actions/runs/39231000103"
+      },
+      "id": "RT-VER-ABACUS-CI-Workflow-Governance-16b63ac81d3f",
+      "kind": "verification",
+      "occurred_at": "2026-10-19T09:33:47Z",
+      "provenance": "observed",
+      "repo": "GBOGEB/ABACUS",
+      "schema": "abacus.everred.event.v3",
+      "sha": "16b63ac81d3fd5b1534a25afa3b5d171f19db6a8"
+    },
+    {
+      "evidence": {
+        "name": "Continuous Integration Pipeline",
+        "recovers_first_red_sha": "f2b78a1a626ab72fefbc04e8d2b9505c735eb9b8",
+        "red_hours": 0.95,
+        "run_id": "39280226178",
+        "scope": "workflow_conclusion_only",
+        "status": "PASS",
+        "url": "https://github.com/GBOGEB/ABACUS/actions/runs/39280226178"
+      },
+      "id": "RT-VER-ABACUS-Continuous-Integration-Pipeline-02d48e2dc81a",
+      "kind": "verification",
+      "occurred_at": "2026-10-19T15:44:12Z",
+      "provenance": "observed",
+      "repo": "GBOGEB/ABACUS",
+      "schema": "abacus.everred.event.v3",
+      "sha": "02d48e2dc81a309ef42c2143c7d91d804e69fab4"
+    },
+    {
+      "evidence": {
+        "action": "replay before asserting HEAD state",
+        "age_days": 51.7,
+        "state": "RED_AT_LAST_OBSERVATION_STALE",
+        "workflow": "DMAIC V3 CI - Test System Bridge"
+      },
+      "id": "RT-STALE-ABACUS-DMAIC-V3-CI-Test-System-Bridge-06086b50e537",
+      "kind": "note",
+      "occurred_at": "2026-08-29T13:47:43Z",
+      "provenance": "observed",
+      "repo": "GBOGEB/ABACUS",
+      "schema": "abacus.everred.event.v3",
+      "sha": "06086b50e53769b1c0d0d0843044c1de36a681f3"
+    },
+    {
+      "evidence": {
+        "name": "codespace_jyperter Federation Check",
+        "recovers_first_red_sha": "770e10ffacaefdf9b2ae727736f056e3a11d53a4",
+        "red_hours": 3260.12,
+        "run_id": "38277502724",
+        "scope": "workflow_conclusion_only",
+        "status": "PASS",
+        "url": "https://github.com/GBOGEB/ABACUS/actions/runs/38277502724"
+      },
+      "id": "RT-VER-ABACUS-codespace-jyperter-Federation-Check-e7a25eead87e",
+      "kind": "verification",
+      "occurred_at": "2026-10-12T16:27:17Z",
+      "provenance": "observed",
+      "repo": "GBOGEB/ABACUS",
+      "schema": "abacus.everred.event.v3",
+      "sha": "e7a25eead87e9e8901cf37b09f1ad7f342a45394"
+    },
+    {
+      "evidence": {
+        "name": "Dashboard Health Check",
+        "recovers_first_red_sha": "02cca5020d59cc339cea486ed38857f53eea3e88",
+        "red_hours": 95.94,
+        "run_id": "39104046706",
+        "scope": "workflow_conclusion_only",
+        "status": "PASS",
+        "url": "https://github.com/GBOGEB/ABACUS/actions/runs/39104046706"
+      },
+      "id": "RT-VER-ABACUS-Dashboard-Health-Check-49c945268ba2",
+      "kind": "verification",
+      "occurred_at": "2026-10-18T06:26:36Z",
+      "provenance": "observed",
+      "repo": "GBOGEB/ABACUS",
+      "schema": "abacus.everred.event.v3",
+      "sha": "49c945268ba26a8addb8a9cfa788de057b93fe1e"
+    },
+    {
+      "evidence": {
+        "name": "Deploy Documentation to GitHub Pages",
+        "recovers_first_red_sha": "fcc423c2d64bae238b13830b99cc5fcc7783aa10",
+        "red_hours": 0.86,
+        "run_id": "38569532757",
+        "scope": "workflow_conclusion_only",
+        "status": "PASS",
+        "url": "https://github.com/GBOGEB/ABACUS/actions/runs/38569532757"
+      },
+      "id": "RT-VER-ABACUS-Deploy-Documentation-to-GitHub-Pages-faad5d8085ad",
+      "kind": "verification",
+      "occurred_at": "2026-10-14T13:09:59Z",
+      "provenance": "observed",
+      "repo": "GBOGEB/ABACUS",
+      "schema": "abacus.everred.event.v3",
+      "sha": "faad5d8085adcb8ae3229d31f97447a27187fc08"
+    },
+    {
+      "evidence": {
+        "name": "DMAIC Metrics — Per-Commit Tracking & Feedback Loop",
+        "recovers_first_red_sha": "cc49e0ce780032461b2482b1ca1743578fcbe119",
+        "red_hours": 8.68,
+        "run_id": "39231364355",
+        "scope": "workflow_conclusion_only",
+        "status": "PASS",
+        "url": "https://github.com/GBOGEB/ABACUS/actions/runs/39231364355"
+      },
+      "id": "RT-VER-ABACUS-DMAIC-Metrics-Per-Commit-Tracking-Feedback-Loop-16b63ac81d3f",
+      "kind": "verification",
+      "occurred_at": "2026-10-19T09:36:41Z",
+      "provenance": "observed",
+      "repo": "GBOGEB/ABACUS",
+      "schema": "abacus.everred.event.v3",
+      "sha": "16b63ac81d3fd5b1534a25afa3b5d171f19db6a8"
+    },
+    {
+      "evidence": {
+        "name": "DMAIC V3 Enterprise CI",
+        "recovers_first_red_sha": "c0fcb6354740ab9dc4ec306e6d7e49cd454927a0",
+        "red_hours": 0.05,
+        "run_id": "39068073477",
+        "scope": "workflow_conclusion_only",
+        "status": "PASS",
+        "url": "https://github.com/GBOGEB/ABACUS/actions/runs/39068073477"
+      },
+      "id": "RT-VER-ABACUS-DMAIC-V3-Enterprise-CI-e63d313f9679",
+      "kind": "verification",
+      "occurred_at": "2026-10-17T20:45:35Z",
+      "provenance": "observed",
+      "repo": "GBOGEB/ABACUS",
+      "schema": "abacus.everred.event.v3",
+      "sha": "e63d313f96791b845e0515a045ff784f9673c0da"
+    },
+    {
+      "evidence": {
+        "name": "DMAIC V3 Test Suite - Continuous Integration",
+        "recovers_first_red_sha": "2bbabf197d2beed75c9b376bb20b92b1f483c7a1",
+        "red_hours": 1.88,
+        "run_id": "39063977406",
+        "scope": "workflow_conclusion_only",
+        "status": "PASS",
+        "url": "https://github.com/GBOGEB/ABACUS/actions/runs/39063977406"
+      },
+      "id": "RT-VER-ABACUS-DMAIC-V3-Test-Suite-Continuous-Integration-7104bf83a252",
+      "kind": "verification",
+      "occurred_at": "2026-10-17T19:47:38Z",
+      "provenance": "observed",
+      "repo": "GBOGEB/ABACUS",
+      "schema": "abacus.everred.event.v3",
+      "sha": "7104bf83a252538ebbe28bafaa3bb56956b20580"
+    },
+    {
+      "evidence": {
+        "action": "replay before asserting HEAD state",
+        "age_days": 23.9,
+        "state": "RED_AT_LAST_OBSERVATION_STALE",
+        "workflow": "ABACUS DOW Integration CI/CD"
+      },
+      "id": "RT-STALE-ABACUS-ABACUS-DOW-Integration-CI-CD-2e29200f396f",
+      "kind": "note",
+      "occurred_at": "2026-09-26T07:25:09Z",
+      "provenance": "observed",
+      "repo": "GBOGEB/ABACUS",
+      "schema": "abacus.everred.event.v3",
+      "sha": "2e29200f396fe6ec3d09d91da7943a01822ccb88"
+    },
+    {
+      "evidence": {
+        "name": "EVERRED V3 Governed Control Plane",
+        "recovers_first_red_sha": "8d0c6ca568d6ea0b5e658198d0046283c049e557",
+        "red_hours": 6.56,
+        "run_id": "39084865669",
+        "scope": "workflow_conclusion_only",
+        "status": "PASS",
+        "url": "https://github.com/GBOGEB/ABACUS/actions/runs/39084865669"
+      },
+      "id": "RT-VER-ABACUS-EVERRED-V3-Governed-Control-Plane-49c945268ba2",
+      "kind": "verification",
+      "occurred_at": "2026-10-18T01:00:26Z",
+      "provenance": "observed",
+      "repo": "GBOGEB/ABACUS",
+      "schema": "abacus.everred.event.v3",
+      "sha": "49c945268ba26a8addb8a9cfa788de057b93fe1e"
+    },
+    {
+      "evidence": {
+        "name": "Federation Notebook Plane — Smoke Validation",
+        "recovers_first_red_sha": "65a6c3f359446700487b3da002969933f05b469d",
+        "red_hours": 1305.11,
+        "run_id": "32293555192",
+        "scope": "workflow_conclusion_only",
+        "status": "PASS",
+        "url": "https://github.com/GBOGEB/ABACUS/actions/runs/32293555192"
+      },
+      "id": "RT-VER-ABACUS-Federation-Notebook-Plane-Smoke-Validation-d4a447d934c5",
+      "kind": "verification",
+      "occurred_at": "2026-08-19T19:32:05Z",
+      "provenance": "observed",
+      "repo": "GBOGEB/ABACUS",
+      "schema": "abacus.everred.event.v3",
+      "sha": "d4a447d934c56074af7011b5e16d585a9a282791"
+    },
+    {
+      "evidence": {
+        "name": "MIP B0 Test Admission and Coverage Evidence",
+        "recovers_first_red_sha": "f2b78a1a626ab72fefbc04e8d2b9505c735eb9b8",
+        "red_hours": 1.15,
+        "run_id": "39281653534",
+        "scope": "workflow_conclusion_only",
+        "status": "PASS",
+        "url": "https://github.com/GBOGEB/ABACUS/actions/runs/39281653534"
+      },
+      "id": "RT-VER-ABACUS-MIP-B0-Test-Admission-and-Coverage-Evidence-0416345a56f6",
+      "kind": "verification",
+      "occurred_at": "2026-10-19T15:56:10Z",
+      "provenance": "observed",
+      "repo": "GBOGEB/ABACUS",
+      "schema": "abacus.everred.event.v3",
+      "sha": "0416345a56f6b91f1a7af6d5ce3315515fa2d352"
+    },
+    {
+      "evidence": {
+        "name": "MIP v2 federated control",
+        "recovers_first_red_sha": "c80b6701acb5ad6609a0147ed9e86f52f5471337",
+        "red_hours": 3.54,
+        "run_id": "36879940998",
+        "scope": "workflow_conclusion_only",
+        "status": "PASS",
+        "url": "https://github.com/GBOGEB/ABACUS/actions/runs/36879940998"
+      },
+      "id": "RT-VER-ABACUS-MIP-v2-federated-control-b97150d59243",
+      "kind": "verification",
+      "occurred_at": "2026-10-01T14:53:34Z",
+      "provenance": "observed",
+      "repo": "GBOGEB/ABACUS",
+      "schema": "abacus.everred.event.v3",
+      "sha": "b97150d59243c65cb739c8261da557a596fb4164"
+    },
+    {
+      "evidence": {
+        "name": "OSV-Scanner",
+        "recovers_first_red_sha": "cb94e3d0eae12812ca095ea764a02788fb73bd77",
+        "red_hours": 4.45,
+        "run_id": "33271400661",
+        "scope": "workflow_conclusion_only",
+        "status": "PASS",
+        "url": "https://github.com/GBOGEB/ABACUS/actions/runs/33271400661"
+      },
+      "id": "RT-VER-ABACUS-OSV-Scanner-4690bb5faeb8",
+      "kind": "verification",
+      "occurred_at": "2026-08-29T19:38:34Z",
+      "provenance": "observed",
+      "repo": "GBOGEB/ABACUS",
+      "schema": "abacus.everred.event.v3",
+      "sha": "4690bb5faeb83b6f0c9fb782138422cbd31889e3"
+    },
+    {
+      "evidence": {
+        "name": "QPLANT Pages Runtime Publish",
+        "recovers_first_red_sha": "b7a7d8b10ca9e725827e8d6398930de41a300453",
+        "red_hours": 2322.66,
+        "run_id": "34980203351",
+        "scope": "workflow_conclusion_only",
+        "status": "PASS",
+        "url": "https://github.com/GBOGEB/ABACUS/actions/runs/34980203351"
+      },
+      "id": "RT-VER-ABACUS-QPLANT-Pages-Runtime-Publish-c4dd80fe37ec",
+      "kind": "verification",
+      "occurred_at": "2026-09-15T14:13:42Z",
+      "provenance": "observed",
+      "repo": "GBOGEB/ABACUS",
+      "schema": "abacus.everred.event.v3",
+      "sha": "c4dd80fe37ecc902e8115023efa964eeb7e95e25"
+    },
+    {
+      "evidence": {
+        "name": "Pytest Config Validation",
+        "recovers_first_red_sha": "6178594f40d18ec78dd19781a9cbeb748b028dc4",
+        "red_hours": 2115.49,
+        "run_id": "34161389342",
+        "scope": "workflow_conclusion_only",
+        "status": "PASS",
+        "url": "https://github.com/GBOGEB/ABACUS/actions/runs/34161389342"
+      },
+      "id": "RT-VER-ABACUS-Pytest-Config-Validation-e6fc81ece93a",
+      "kind": "verification",
+      "occurred_at": "2026-09-07T20:58:18Z",
+      "provenance": "observed",
+      "repo": "GBOGEB/ABACUS",
+      "schema": "abacus.everred.event.v3",
+      "sha": "e6fc81ece93a6fc6904ed6b1b61a6b5abae49048"
+    },
+    {
+      "evidence": {
+        "name": "QPS cost roundtrip contract",
+        "recovers_first_red_sha": "0cf0384858deb96f1a0062cd1cb6300e29b71660",
+        "red_hours": 76.05,
+        "run_id": "33343181606",
+        "scope": "workflow_conclusion_only",
+        "status": "PASS",
+        "url": "https://github.com/GBOGEB/ABACUS/actions/runs/33343181606"
+      },
+      "id": "RT-VER-ABACUS-QPS-cost-roundtrip-contract-e0e884f4dcae",
+      "kind": "verification",
+      "occurred_at": "2026-08-30T23:58:06Z",
+      "provenance": "observed",
+      "repo": "GBOGEB/ABACUS",
+      "schema": "abacus.everred.event.v3",
+      "sha": "e0e884f4dcae93062d4146d149489a8251d247fb"
+    },
+    {
+      "evidence": {
+        "action": "replay before asserting HEAD state",
+        "age_days": 37.6,
+        "state": "RED_AT_LAST_OBSERVATION_STALE",
+        "workflow": ".github/workflows/qps-debug-dow-consumer.yml"
+      },
+      "id": "RT-STALE-ABACUS-github-workflows-qps-debug-dow-consumer-yml-1b1366e69fbe",
+      "kind": "note",
+      "occurred_at": "2026-09-12T16:31:43Z",
+      "provenance": "observed",
+      "repo": "GBOGEB/ABACUS",
+      "schema": "abacus.everred.event.v3",
+      "sha": "1b1366e69fbe7a4451db7bd11cccc8f7260f3b52"
+    },
+    {
+      "evidence": {
+        "name": "QPS DOW W43 TRIAGE",
+        "recovers_first_red_sha": "5fe7b2004ee9fe4293d4d767f0f26eb1d3ae4ce2",
+        "red_hours": 0.13,
+        "run_id": "35585770023",
+        "scope": "workflow_conclusion_only",
+        "status": "PASS",
+        "url": "https://github.com/GBOGEB/ABACUS/actions/runs/35585770023"
+      },
+      "id": "RT-VER-ABACUS-QPS-DOW-W43-TRIAGE-a896efec628c",
+      "kind": "verification",
+      "occurred_at": "2026-09-21T09:53:29Z",
+      "provenance": "observed",
+      "repo": "GBOGEB/ABACUS",
+      "schema": "abacus.everred.event.v3",
+      "sha": "a896efec628c064a6b958a91eaaedf19e6d04055"
+    },
+    {
+      "evidence": {
+        "name": "QPS DOW Wave 01 Warm-up",
+        "recovers_first_red_sha": "5fe7b2004ee9fe4293d4d767f0f26eb1d3ae4ce2",
+        "red_hours": 0.13,
+        "run_id": "35585770090",
+        "scope": "workflow_conclusion_only",
+        "status": "PASS",
+        "url": "https://github.com/GBOGEB/ABACUS/actions/runs/35585770090"
+      },
+      "id": "RT-VER-ABACUS-QPS-DOW-Wave-01-Warm-up-a896efec628c",
+      "kind": "verification",
+      "occurred_at": "2026-09-21T09:53:29Z",
+      "provenance": "observed",
+      "repo": "GBOGEB/ABACUS",
+      "schema": "abacus.everred.event.v3",
+      "sha": "a896efec628c064a6b958a91eaaedf19e6d04055"
+    },
+    {
+      "evidence": {
+        "name": "QPS W04 DOW receipt contract",
+        "recovers_first_red_sha": "380b869e4adaf220a1dfcd2bf3a8986d9695f031",
+        "red_hours": 2.21,
+        "run_id": "33329278061",
+        "scope": "workflow_conclusion_only",
+        "status": "PASS",
+        "url": "https://github.com/GBOGEB/ABACUS/actions/runs/33329278061"
+      },
+      "id": "RT-VER-ABACUS-QPS-W04-DOW-receipt-contract-f54666dfbe3d",
+      "kind": "verification",
+      "occurred_at": "2026-08-30T18:52:03Z",
+      "provenance": "observed",
+      "repo": "GBOGEB/ABACUS",
+      "schema": "abacus.everred.event.v3",
+      "sha": "f54666dfbe3dde7ef5f8b8c77b1cf05ad94de5d6"
+    },
+    {
+      "evidence": {
+        "name": "QPS W05 Bidder Evaluation DOW receipt",
+        "recovers_first_red_sha": "4f2245d81e38a76d56ea49a12fc7a1b146aed228",
+        "red_hours": 224.18,
+        "run_id": "34380554876",
+        "scope": "workflow_conclusion_only",
+        "status": "PASS",
+        "url": "https://github.com/GBOGEB/ABACUS/actions/runs/34380554876"
+      },
+      "id": "RT-VER-ABACUS-QPS-W05-Bidder-Evaluation-DOW-receipt-f25a2f809a7d",
+      "kind": "verification",
+      "occurred_at": "2026-09-09T17:03:22Z",
+      "provenance": "observed",
+      "repo": "GBOGEB/ABACUS",
+      "schema": "abacus.everred.event.v3",
+      "sha": "f25a2f809a7d9b341da108fbc53bace4c78d8e42"
+    },
+    {
+      "evidence": {
+        "name": "QPS M05 DOW Independent Attestation Consumer",
+        "recovers_first_red_sha": "27c1fca9c22a712d87e5c4c81307a9a6c957eb51",
+        "red_hours": 0.01,
+        "run_id": "35621604329",
+        "scope": "workflow_conclusion_only",
+        "status": "PASS",
+        "url": "https://github.com/GBOGEB/ABACUS/actions/runs/35621604329"
+      },
+      "id": "RT-VER-ABACUS-QPS-M05-DOW-Independent-Attestation-Consumer-7a6df0aaa20b",
+      "kind": "verification",
+      "occurred_at": "2026-09-21T15:50:01Z",
+      "provenance": "observed",
+      "repo": "GBOGEB/ABACUS",
+      "schema": "abacus.everred.event.v3",
+      "sha": "7a6df0aaa20bdd9c13356b5c31d4cd91f6b446e5"
+    },
+    {
+      "evidence": {
+        "name": "Security Dashboard — REX Telemetry",
+        "recovers_first_red_sha": "992c595ecc0eba6dd0beb2763b323b0b3f8905c0",
+        "red_hours": 14.25,
+        "run_id": "33371475220",
+        "scope": "workflow_conclusion_only",
+        "status": "PASS",
+        "url": "https://github.com/GBOGEB/ABACUS/actions/runs/33371475220"
+      },
+      "id": "RT-VER-ABACUS-Security-Dashboard-REX-Telemetry-308a246d56df",
+      "kind": "verification",
+      "occurred_at": "2026-08-31T08:08:17Z",
+      "provenance": "observed",
+      "repo": "GBOGEB/ABACUS",
+      "schema": "abacus.everred.event.v3",
+      "sha": "308a246d56df8f1001cc6c5cb39c8d76fd7e48f1"
+    },
+    {
+      "evidence": {
+        "name": "Session Tuple CI/CD",
+        "recovers_first_red_sha": "f2b78a1a626ab72fefbc04e8d2b9505c735eb9b8",
+        "red_hours": 0.95,
+        "run_id": "39280225982",
+        "scope": "workflow_conclusion_only",
+        "status": "PASS",
+        "url": "https://github.com/GBOGEB/ABACUS/actions/runs/39280225982"
+      },
+      "id": "RT-VER-ABACUS-Session-Tuple-CI-CD-02d48e2dc81a",
+      "kind": "verification",
+      "occurred_at": "2026-10-19T15:44:11Z",
+      "provenance": "observed",
+      "repo": "GBOGEB/ABACUS",
+      "schema": "abacus.everred.event.v3",
+      "sha": "02d48e2dc81a309ef42c2143c7d91d804e69fab4"
+    },
+    {
+      "evidence": {
+        "action": "replay before asserting HEAD state",
+        "age_days": 19.2,
+        "state": "RED_AT_LAST_OBSERVATION_STALE",
+        "workflow": "Sprint Trigger"
+      },
+      "id": "RT-STALE-ABACUS-Sprint-Trigger-1aa4edee11db",
+      "kind": "note",
+      "occurred_at": "2026-10-01T00:12:02Z",
+      "provenance": "observed",
+      "repo": "GBOGEB/ABACUS",
+      "schema": "abacus.everred.event.v3",
+      "sha": "1aa4edee11db09052117f3f802c35d089bb9bca2"
+    },
+    {
+      "evidence": {
+        "name": "Tooling CI",
+        "recovers_first_red_sha": "c12ddf61430c20a156a249d2f779477e8003f381",
+        "red_hours": 175.32,
+        "run_id": "38276398904",
+        "scope": "workflow_conclusion_only",
+        "status": "PASS",
+        "url": "https://github.com/GBOGEB/ABACUS/actions/runs/38276398904"
+      },
+      "id": "RT-VER-ABACUS-Tooling-CI-c436d942ec3e",
+      "kind": "verification",
+      "occurred_at": "2026-10-12T16:17:50Z",
+      "provenance": "observed",
+      "repo": "GBOGEB/ABACUS",
+      "schema": "abacus.everred.event.v3",
+      "sha": "c436d942ec3e38019259180b1c9b4e1981d38cd5"
+    },
+    {
+      "evidence": {
+        "name": "Update Documentation on Code Changes",
+        "recovers_first_red_sha": "aabbc295a377b5be48cda7f3f454367f636a948e",
+        "red_hours": 0.12,
+        "run_id": "39156907521",
+        "scope": "workflow_conclusion_only",
+        "status": "PASS",
+        "url": "https://github.com/GBOGEB/ABACUS/actions/runs/39156907521"
+      },
+      "id": "RT-VER-ABACUS-Update-Documentation-on-Code-Changes-0dd018768f46",
+      "kind": "verification",
+      "occurred_at": "2026-10-18T19:02:24Z",
+      "provenance": "observed",
+      "repo": "GBOGEB/ABACUS",
+      "schema": "abacus.everred.event.v3",
+      "sha": "0dd018768f46dbfecf8aad872776d4ba3f6d4fc8"
+    },
+    {
+      "evidence": {
+        "action": "replay before asserting HEAD state",
+        "age_days": 339.3,
+        "state": "RED_AT_LAST_OBSERVATION_STALE",
+        "workflow": "Validate ABACUS Setup"
+      },
+      "id": "RT-STALE-ABACUS-Validate-ABACUS-Setup-6bf502ede7c6",
+      "kind": "note",
+      "occurred_at": "2025-11-14T23:20:55Z",
+      "provenance": "observed",
+      "repo": "GBOGEB/ABACUS",
+      "schema": "abacus.everred.event.v3",
+      "sha": "6bf502ede7c6fdd158ac6e1d513aec0473d63cd0"
+    },
+    {
+      "evidence": {
+        "name": "Validate Docs (Markdown/YAML/JSON)",
+        "recovers_first_red_sha": "0f9f0c3b48dc6c369e8a01faf06e433b30326db9",
+        "red_hours": 0.73,
+        "run_id": "39295700437",
+        "scope": "workflow_conclusion_only",
+        "status": "PASS",
+        "url": "https://github.com/GBOGEB/ABACUS/actions/runs/39295700437"
+      },
+      "id": "RT-VER-ABACUS-Validate-Docs-Markdown-YAML-JSON-bbb08395a370",
+      "kind": "verification",
+      "occurred_at": "2026-10-19T17:37:23Z",
+      "provenance": "observed",
+      "repo": "GBOGEB/ABACUS",
+      "schema": "abacus.everred.event.v3",
+      "sha": "bbb08395a37033fb145d0bf62c748da4fcd3f5f8"
+    },
+    {
+      "evidence": {
+        "name": "npm_and_yarn in /qps_slide_reviewer for class-variance-authority - Update #1637669306",
+        "recovers_first_red_sha": "53688f26d5b9c4cd074ef905e426849e85324383",
+        "red_hours": 179.9,
+        "run_id": "38445494231",
+        "scope": "workflow_conclusion_only",
+        "status": "PASS",
+        "url": "https://github.com/GBOGEB/ABACUS/actions/runs/38445494231"
+      },
+      "id": "RT-VER-ABACUS-npm-and-yarn-in-qps-slide-reviewer-for-class-var-8bb4a9da4a9f",
+      "kind": "verification",
+      "occurred_at": "2026-10-13T18:17:11Z",
+      "provenance": "observed",
+      "repo": "GBOGEB/ABACUS",
+      "schema": "abacus.everred.event.v3",
+      "sha": "8bb4a9da4a9f59086012323ea92c1c17849176a9"
+    },
+    {
+      "evidence": {
+        "action": "replay before asserting HEAD state",
+        "age_days": 110.6,
+        "state": "RED_AT_LAST_OBSERVATION_STALE",
+        "workflow": "Automatic Dependency Submission (Python)"
+      },
+      "id": "RT-STALE-ABACUS-Automatic-Dependency-Submission-Python-bcea4c89db3a",
+      "kind": "note",
+      "occurred_at": "2026-07-01T16:01:06Z",
+      "provenance": "observed",
+      "repo": "GBOGEB/ABACUS",
+      "schema": "abacus.everred.event.v3",
+      "sha": "bcea4c89db3a46153126bfe803985ae2ce8c10af"
+    },
+    {
+      "evidence": {
+        "name": "ABACUS Multi-Format Publication",
+        "recovers_first_red_sha": "0f1d998165f601c116da166d694e3a69435ea8d2",
+        "red_hours": 0.11,
+        "run_id": "34869064961",
+        "scope": "workflow_conclusion_only",
+        "status": "PASS",
+        "url": "https://github.com/GBOGEB/CODEX/actions/runs/34869064961"
+      },
+      "id": "RT-VER-CODEX-ABACUS-Multi-Format-Publication-7006236938ac",
+      "kind": "verification",
+      "occurred_at": "2026-09-14T16:30:42Z",
+      "provenance": "observed",
+      "repo": "GBOGEB/CODEX",
+      "schema": "abacus.everred.event.v3",
+      "sha": "7006236938ac3d7d7e8539e6b492ca532a41346b"
+    },
+    {
+      "evidence": {
+        "name": "ABACUS Semantic Runtime",
+        "recovers_first_red_sha": "3751fb00471ede2dcc1727366e6a028103ccb447",
+        "red_hours": 0.74,
+        "run_id": "34940362119",
+        "scope": "workflow_conclusion_only",
+        "status": "PASS",
+        "url": "https://github.com/GBOGEB/CODEX/actions/runs/34940362119"
+      },
+      "id": "RT-VER-CODEX-ABACUS-Semantic-Runtime-3ae2228b5fed",
+      "kind": "verification",
+      "occurred_at": "2026-09-15T07:10:23Z",
+      "provenance": "observed",
+      "repo": "GBOGEB/CODEX",
+      "schema": "abacus.everred.event.v3",
+      "sha": "3ae2228b5fed0e7f5929d64231163b4e0b509d50"
+    },
+    {
+      "evidence": {
+        "name": "ABACUS Snapshot Publication",
+        "recovers_first_red_sha": "3751fb00471ede2dcc1727366e6a028103ccb447",
+        "red_hours": 632.2,
+        "run_id": "38147975358",
+        "scope": "workflow_conclusion_only",
+        "status": "PASS",
+        "url": "https://github.com/GBOGEB/CODEX/actions/runs/38147975358"
+      },
+      "id": "RT-VER-CODEX-ABACUS-Snapshot-Publication-393c08c02260",
+      "kind": "verification",
+      "occurred_at": "2026-10-11T14:38:02Z",
+      "provenance": "observed",
+      "repo": "GBOGEB/CODEX",
+      "schema": "abacus.everred.event.v3",
+      "sha": "393c08c022605a3c175dbf85db37343570d105ee"
+    },
+    {
+      "evidence": {
+        "name": "CI",
+        "recovers_first_red_sha": "0790f75409ba0d4db42d12ae4316b594e3fb382e",
+        "red_hours": 4.57,
+        "run_id": "39174351034",
+        "scope": "workflow_conclusion_only",
+        "status": "PASS",
+        "url": "https://github.com/GBOGEB/CODEX/actions/runs/39174351034"
+      },
+      "id": "RT-VER-CODEX-CI-4184b00433d1",
+      "kind": "verification",
+      "occurred_at": "2026-10-18T22:55:58Z",
+      "provenance": "observed",
+      "repo": "GBOGEB/CODEX",
+      "schema": "abacus.everred.event.v3",
+      "sha": "4184b00433d178ffb6732f700a7af046555e05ed"
+    },
+    {
+      "evidence": {
+        "name": "CODE PURPLE REX Control",
+        "recovers_first_red_sha": "05fd3224f5ddba7b22b986730e34b3bc5c3889a4",
+        "red_hours": 0.32,
+        "run_id": "38286702735",
+        "scope": "workflow_conclusion_only",
+        "status": "PASS",
+        "url": "https://github.com/GBOGEB/CODEX/actions/runs/38286702735"
+      },
+      "id": "RT-VER-CODEX-CODE-PURPLE-REX-Control-27cbd8774b4f",
+      "kind": "verification",
+      "occurred_at": "2026-10-12T17:48:49Z",
+      "provenance": "observed",
+      "repo": "GBOGEB/CODEX",
+      "schema": "abacus.everred.event.v3",
+      "sha": "27cbd8774b4fe0c3debba85de7717c2cddc08e1a"
+    },
+    {
+      "evidence": {
+        "name": "CODEX Semantic Runtime CI",
+        "recovers_first_red_sha": "0790f75409ba0d4db42d12ae4316b594e3fb382e",
+        "red_hours": 4.57,
+        "run_id": "39174350953",
+        "scope": "workflow_conclusion_only",
+        "status": "PASS",
+        "url": "https://github.com/GBOGEB/CODEX/actions/runs/39174350953"
+      },
+      "id": "RT-VER-CODEX-CODEX-Semantic-Runtime-CI-4184b00433d1",
+      "kind": "verification",
+      "occurred_at": "2026-10-18T22:55:58Z",
+      "provenance": "observed",
+      "repo": "GBOGEB/CODEX",
+      "schema": "abacus.everred.event.v3",
+      "sha": "4184b00433d178ffb6732f700a7af046555e05ed"
+    },
+    {
+      "evidence": {
+        "name": "Contract Governance Workbench",
+        "recovers_first_red_sha": "6662b38cb4fa6e77ad125a262bf113076257ec89",
+        "red_hours": 2106.06,
+        "run_id": "33510244596",
+        "scope": "workflow_conclusion_only",
+        "status": "PASS",
+        "url": "https://github.com/GBOGEB/CODEX/actions/runs/33510244596"
+      },
+      "id": "RT-VER-CODEX-Contract-Governance-Workbench-a8525f61102d",
+      "kind": "verification",
+      "occurred_at": "2026-09-01T12:54:11Z",
+      "provenance": "observed",
+      "repo": "GBOGEB/CODEX",
+      "schema": "abacus.everred.event.v3",
+      "sha": "a8525f61102d00cbbe5a7cbe832ac1573a86783c"
+    },
+    {
+      "evidence": {
+        "name": "Contract Workbench SSOT",
+        "recovers_first_red_sha": "aee7f309b10444e0b3a0b3aeb8e75e1a4337da62",
+        "red_hours": 1985.49,
+        "run_id": "33210555548",
+        "scope": "workflow_conclusion_only",
+        "status": "PASS",
+        "url": "https://github.com/GBOGEB/CODEX/actions/runs/33210555548"
+      },
+      "id": "RT-VER-CODEX-Contract-Workbench-SSOT-ae72024f5dab",
+      "kind": "verification",
+      "occurred_at": "2026-08-28T20:59:00Z",
+      "provenance": "observed",
+      "repo": "GBOGEB/CODEX",
+      "schema": "abacus.everred.event.v3",
+      "sha": "ae72024f5dabaec15b097821cf3e0c542c8152b1"
+    },
+    {
+      "evidence": {
+        "name": "Validate Documentation",
+        "recovers_first_red_sha": "05fd3224f5ddba7b22b986730e34b3bc5c3889a4",
+        "red_hours": 0.88,
+        "run_id": "38290515316",
+        "scope": "workflow_conclusion_only",
+        "status": "PASS",
+        "url": "https://github.com/GBOGEB/CODEX/actions/runs/38290515316"
+      },
+      "id": "RT-VER-CODEX-Validate-Documentation-ac1a0295e191",
+      "kind": "verification",
+      "occurred_at": "2026-10-12T18:22:54Z",
+      "provenance": "observed",
+      "repo": "GBOGEB/CODEX",
+      "schema": "abacus.everred.event.v3",
+      "sha": "ac1a0295e19184c11d543e39bcc113ee271afcda"
+    },
+    {
+      "evidence": {
+        "action": "replay before asserting HEAD state",
+        "age_days": 141.0,
+        "state": "RED_AT_LAST_OBSERVATION_STALE",
+        "workflow": "G5 Unified Lifecycle Execution & Deployment Gateway"
+      },
+      "id": "RT-STALE-CODEX-G5-Unified-Lifecycle-Execution-Deployment-Gatewa-f8105ac7c853",
+      "kind": "note",
+      "occurred_at": "2026-06-01T04:51:18Z",
+      "provenance": "observed",
+      "repo": "GBOGEB/CODEX",
+      "schema": "abacus.everred.event.v3",
+      "sha": "f8105ac7c853d666706880c36ac1dc66b64dcfb4"
+    },
+    {
+      "evidence": {
+        "name": "CODEX Metrics — Per-Commit Tracking & Feedback Loop",
+        "recovers_first_red_sha": "71a4d00f7016e3830c791cde172ca1db91b627e8",
+        "red_hours": 0.01,
+        "run_id": "39201916462",
+        "scope": "workflow_conclusion_only",
+        "status": "PASS",
+        "url": "https://github.com/GBOGEB/CODEX/actions/runs/39201916462"
+      },
+      "id": "RT-VER-CODEX-CODEX-Metrics-Per-Commit-Tracking-Feedback-Loop-53320f703283",
+      "kind": "verification",
+      "occurred_at": "2026-10-19T04:55:38Z",
+      "provenance": "observed",
+      "repo": "GBOGEB/CODEX",
+      "schema": "abacus.everred.event.v3",
+      "sha": "53320f70328323d7a91e94916f54e424c4326ce4"
+    },
+    {
+      "evidence": {
+        "name": "Full Stack Governance CI",
+        "recovers_first_red_sha": "13ed167963312b897ba7e489bb5a81c80db104f7",
+        "red_hours": 0.64,
+        "run_id": "39173614757",
+        "scope": "workflow_conclusion_only",
+        "status": "PASS",
+        "url": "https://github.com/GBOGEB/CODEX/actions/runs/39173614757"
+      },
+      "id": "RT-VER-CODEX-Full-Stack-Governance-CI-61b889cffa34",
+      "kind": "verification",
+      "occurred_at": "2026-10-18T22:45:30Z",
+      "provenance": "observed",
+      "repo": "GBOGEB/CODEX",
+      "schema": "abacus.everred.event.v3",
+      "sha": "61b889cffa34825748f9985d57af3a74131bd9ae"
+    },
+    {
+      "evidence": {
+        "name": "MissionControl Graph Explorer Browser QA",
+        "recovers_first_red_sha": "e00bbf8553c1d2a7055a31eb3a033a5c6cebd4c0",
+        "red_hours": 0.22,
+        "run_id": "38413243286",
+        "scope": "workflow_conclusion_only",
+        "status": "PASS",
+        "url": "https://github.com/GBOGEB/CODEX/actions/runs/38413243286"
+      },
+      "id": "RT-VER-CODEX-MissionControl-Graph-Explorer-Browser-QA-ad37edad0ff8",
+      "kind": "verification",
+      "occurred_at": "2026-10-13T14:25:37Z",
+      "provenance": "observed",
+      "repo": "GBOGEB/CODEX",
+      "schema": "abacus.everred.event.v3",
+      "sha": "ad37edad0ff82ce4dec661ff2fc993a95c8108c6"
+    },
+    {
+      "evidence": {
+        "name": "MissionControl Mycelium CI",
+        "recovers_first_red_sha": "13ed167963312b897ba7e489bb5a81c80db104f7",
+        "red_hours": 6.52,
+        "run_id": "39200482795",
+        "scope": "workflow_conclusion_only",
+        "status": "PASS",
+        "url": "https://github.com/GBOGEB/CODEX/actions/runs/39200482795"
+      },
+      "id": "RT-VER-CODEX-MissionControl-Mycelium-CI-7de59b0e3661",
+      "kind": "verification",
+      "occurred_at": "2026-10-19T04:38:29Z",
+      "provenance": "observed",
+      "repo": "GBOGEB/CODEX",
+      "schema": "abacus.everred.event.v3",
+      "sha": "7de59b0e366158c14f33125099f35c5a1bb9caae"
+    },
+    {
+      "evidence": {
+        "name": "Deploy GitHub Pages",
+        "recovers_first_red_sha": "f73c98c9f9c99f234446644e22c14c93d8300e92",
+        "red_hours": 8.02,
+        "run_id": "39179077241",
+        "scope": "workflow_conclusion_only",
+        "status": "PASS",
+        "url": "https://github.com/GBOGEB/CODEX/actions/runs/39179077241"
+      },
+      "id": "RT-VER-CODEX-Deploy-GitHub-Pages-3991795a68fe",
+      "kind": "verification",
+      "occurred_at": "2026-10-19T00:03:56Z",
+      "provenance": "observed",
+      "repo": "GBOGEB/CODEX",
+      "schema": "abacus.everred.event.v3",
+      "sha": "3991795a68fe51f96e300cdf6e2e6edbef1287b5"
+    },
+    {
+      "evidence": {
+        "name": "QPS accepted-release gate",
+        "recovers_first_red_sha": "a5c4514721c433fc6bc2401bd66773972068e070",
+        "red_hours": 54.71,
+        "run_id": "33355241820",
+        "scope": "workflow_conclusion_only",
+        "status": "PASS",
+        "url": "https://github.com/GBOGEB/CODEX/actions/runs/33355241820"
+      },
+      "id": "RT-VER-CODEX-QPS-accepted-release-gate-b981ce7fa137",
+      "kind": "verification",
+      "occurred_at": "2026-08-31T03:52:51Z",
+      "provenance": "observed",
+      "repo": "GBOGEB/CODEX",
+      "schema": "abacus.everred.event.v3",
+      "sha": "b981ce7fa137fe481d66d5ef0c35949cc61c23c3"
+    },
+    {
+      "evidence": {
+        "action": "replay before asserting HEAD state",
+        "age_days": 37.5,
+        "state": "RED_AT_LAST_OBSERVATION_STALE",
+        "workflow": ".github/workflows/qps-debug-federation-consumer.yml"
+      },
+      "id": "RT-STALE-CODEX-github-workflows-qps-debug-federation-consumer-y-68175971e385",
+      "kind": "note",
+      "occurred_at": "2026-09-12T16:57:32Z",
+      "provenance": "observed",
+      "repo": "GBOGEB/CODEX",
+      "schema": "abacus.everred.event.v3",
+      "sha": "68175971e3858deb7460783fe0bbcbdd9161f9a9"
+    },
+    {
+      "evidence": {
+        "name": "QPS KEB Wave 01 Warm-up",
+        "recovers_first_red_sha": "b53a4a62eeaf7a9c20026ab4be83ad809fb0561e",
+        "red_hours": 0.18,
+        "run_id": "33272693060",
+        "scope": "workflow_conclusion_only",
+        "status": "PASS",
+        "url": "https://github.com/GBOGEB/CODEX/actions/runs/33272693060"
+      },
+      "id": "RT-VER-CODEX-QPS-KEB-Wave-01-Warm-up-b9f7ac2d02b0",
+      "kind": "verification",
+      "occurred_at": "2026-08-29T20:08:32Z",
+      "provenance": "observed",
+      "repo": "GBOGEB/CODEX",
+      "schema": "abacus.everred.event.v3",
+      "sha": "b9f7ac2d02b054a12b22094ab41e32c918967e9e"
+    },
+    {
+      "evidence": {
+        "name": "QPS roundtrip policy",
+        "recovers_first_red_sha": "4a608461b4dd13de12ae17677e3d949ebba5408e",
+        "red_hours": 55.34,
+        "run_id": "33356205467",
+        "scope": "workflow_conclusion_only",
+        "status": "PASS",
+        "url": "https://github.com/GBOGEB/CODEX/actions/runs/33356205467"
+      },
+      "id": "RT-VER-CODEX-QPS-roundtrip-policy-da4c51968d9f",
+      "kind": "verification",
+      "occurred_at": "2026-08-31T04:11:14Z",
+      "provenance": "observed",
+      "repo": "GBOGEB/CODEX",
+      "schema": "abacus.everred.event.v3",
+      "sha": "da4c51968d9ff9d86a9d4f2d49987b0bb075e458"
+    },
+    {
+      "evidence": {
+        "action": "replay before asserting HEAD state",
+        "age_days": 25.9,
+        "state": "RED_AT_LAST_OBSERVATION_STALE",
+        "workflow": "QPS Roundtrip Zero-Delta"
+      },
+      "id": "RT-STALE-CODEX-QPS-Roundtrip-Zero-Delta-6c65ecc64ca3",
+      "kind": "note",
+      "occurred_at": "2026-09-24T07:28:50Z",
+      "provenance": "observed",
+      "repo": "GBOGEB/CODEX",
+      "schema": "abacus.everred.event.v3",
+      "sha": "6c65ecc64ca3d183e74d07f76da7802a0076560b"
+    },
+    {
+      "evidence": {
+        "name": "QPS W04 KEB receipt contract",
+        "recovers_first_red_sha": "8e16dd148dfd68caaa4fceefa79f9f683037bb9a",
+        "red_hours": 2.21,
+        "run_id": "33329289158",
+        "scope": "workflow_conclusion_only",
+        "status": "PASS",
+        "url": "https://github.com/GBOGEB/CODEX/actions/runs/33329289158"
+      },
+      "id": "RT-VER-CODEX-QPS-W04-KEB-receipt-contract-c7b16138f132",
+      "kind": "verification",
+      "occurred_at": "2026-08-30T18:52:18Z",
+      "provenance": "observed",
+      "repo": "GBOGEB/CODEX",
+      "schema": "abacus.everred.event.v3",
+      "sha": "c7b16138f13204df8f7ca3c4da5fbe8da65c0d16"
+    },
+    {
+      "evidence": {
+        "name": "QPS W05 Bidder Evaluation KEB receipt",
+        "recovers_first_red_sha": "91d194608d389a75b703bda3f79e6bd2cc8fe3ab",
+        "red_hours": 6.96,
+        "run_id": "33410548275",
+        "scope": "workflow_conclusion_only",
+        "status": "PASS",
+        "url": "https://github.com/GBOGEB/CODEX/actions/runs/33410548275"
+      },
+      "id": "RT-VER-CODEX-QPS-W05-Bidder-Evaluation-KEB-receipt-994d4e138bbc",
+      "kind": "verification",
+      "occurred_at": "2026-08-31T15:48:26Z",
+      "provenance": "observed",
+      "repo": "GBOGEB/CODEX",
+      "schema": "abacus.everred.event.v3",
+      "sha": "994d4e138bbca78ae0aa1e1ffcf29568123ac2ca"
+    },
+    {
+      "evidence": {
+        "name": "QPS W05 bidder evaluation KEB receipt",
+        "recovers_first_red_sha": "12e243009eb2be8f09c00fb58ec7fec9f4fbc239",
+        "red_hours": 25.99,
+        "run_id": "34522109880",
+        "scope": "workflow_conclusion_only",
+        "status": "PASS",
+        "url": "https://github.com/GBOGEB/CODEX/actions/runs/34522109880"
+      },
+      "id": "RT-VER-CODEX-QPS-W05-bidder-evaluation-KEB-receipt-66a0b83296af",
+      "kind": "verification",
+      "occurred_at": "2026-09-10T19:43:41Z",
+      "provenance": "observed",
+      "repo": "GBOGEB/CODEX",
+      "schema": "abacus.everred.event.v3",
+      "sha": "66a0b83296af396bf4fb17aae7897147ee1c4117"
+    },
+    {
+      "evidence": {
+        "name": "Quality burndown and UBI 9 testflight",
+        "recovers_first_red_sha": "b6421d7f154c97152b1dd250011c5d87ea93525f",
+        "red_hours": 1.17,
+        "run_id": "38423643520",
+        "scope": "workflow_conclusion_only",
+        "status": "PASS",
+        "url": "https://github.com/GBOGEB/CODEX/actions/runs/38423643520"
+      },
+      "id": "RT-VER-CODEX-Quality-burndown-and-UBI-9-testflight-6fe9b7bef760",
+      "kind": "verification",
+      "occurred_at": "2026-10-13T15:37:22Z",
+      "provenance": "observed",
+      "repo": "GBOGEB/CODEX",
+      "schema": "abacus.everred.event.v3",
+      "sha": "6fe9b7bef760ed009acab8e1036f084c4a3000a8"
+    },
+    {
+      "evidence": {
+        "action": "replay before asserting HEAD state",
+        "age_days": 142.5,
+        "state": "RED_AT_LAST_OBSERVATION_STALE",
+        "workflow": ".github/workflows/release.yml"
+      },
+      "id": "RT-STALE-CODEX-github-workflows-release-yml-72e86490468e",
+      "kind": "note",
+      "occurred_at": "2026-05-30T18:23:06Z",
+      "provenance": "observed",
+      "repo": "GBOGEB/CODEX",
+      "schema": "abacus.everred.event.v3",
+      "sha": "72e86490468e8eb8d57753b05735942a79ea5787"
+    },
+    {
+      "evidence": {
+        "name": "Runtime Release Gate",
+        "recovers_first_red_sha": "0569df2e4cb88c5802e11359d241167db97c3ca3",
+        "red_hours": 93.93,
+        "run_id": "39135750111",
+        "scope": "workflow_conclusion_only",
+        "status": "PASS",
+        "url": "https://github.com/GBOGEB/CODEX/actions/runs/39135750111"
+      },
+      "id": "RT-VER-CODEX-Runtime-Release-Gate-18b5d47beb19",
+      "kind": "verification",
+      "occurred_at": "2026-10-18T14:23:12Z",
+      "provenance": "observed",
+      "repo": "GBOGEB/CODEX",
+      "schema": "abacus.everred.event.v3",
+      "sha": "18b5d47beb19186c457b1edb53f618749a248c90"
+    },
+    {
+      "evidence": {
+        "name": "semantic-validation",
+        "recovers_first_red_sha": "a5681b15d81a021bbbe553ec3a65819559000c19",
+        "red_hours": 36.28,
+        "run_id": "34385128809",
+        "scope": "workflow_conclusion_only",
+        "status": "PASS",
+        "url": "https://github.com/GBOGEB/CODEX/actions/runs/34385128809"
+      },
+      "id": "RT-VER-CODEX-semantic-validation-0400c6426431",
+      "kind": "verification",
+      "occurred_at": "2026-09-09T17:48:04Z",
+      "provenance": "observed",
+      "repo": "GBOGEB/CODEX",
+      "schema": "abacus.everred.event.v3",
+      "sha": "0400c642643121bace6f13ae50ecfbec0ce1ee86"
+    },
+    {
+      "evidence": {
+        "name": "Update Documentation on Code Changes",
+        "recovers_first_red_sha": "7d87aa7567af4860975356ebca829b5b36a4381a",
+        "red_hours": 0.05,
+        "run_id": "38410273462",
+        "scope": "workflow_conclusion_only",
+        "status": "PASS",
+        "url": "https://github.com/GBOGEB/CODEX/actions/runs/38410273462"
+      },
+      "id": "RT-VER-CODEX-Update-Documentation-on-Code-Changes-d73cf59bc293",
+      "kind": "verification",
+      "occurred_at": "2026-10-13T14:04:38Z",
+      "provenance": "observed",
+      "repo": "GBOGEB/CODEX",
+      "schema": "abacus.everred.event.v3",
+      "sha": "d73cf59bc29361a8edfb6abc975320b3c52c8c0b"
+    },
+    {
+      "evidence": {
+        "name": "Governance Validation",
+        "recovers_first_red_sha": "3720c667230d074c93f1066245b7b210aab76787",
+        "red_hours": 182.75,
+        "run_id": "35732832535",
+        "scope": "workflow_conclusion_only",
+        "status": "PASS",
+        "url": "https://github.com/GBOGEB/CODEX/actions/runs/35732832535"
+      },
+      "id": "RT-VER-CODEX-Governance-Validation-edf2c7b65a39",
+      "kind": "verification",
+      "occurred_at": "2026-09-22T13:20:31Z",
+      "provenance": "observed",
+      "repo": "GBOGEB/CODEX",
+      "schema": "abacus.everred.event.v3",
+      "sha": "edf2c7b65a39159562a926f4f2572bf3002bf5bb"
+    },
+    {
+      "evidence": {
+        "name": "Validate QPS DOW KEB bridge rows",
+        "recovers_first_red_sha": "bba2249d424baba57e80451083ca77339b9ff2e6",
+        "red_hours": 12.45,
+        "run_id": "34619046468",
+        "scope": "workflow_conclusion_only",
+        "status": "PASS",
+        "url": "https://github.com/GBOGEB/CODEX/actions/runs/34619046468"
+      },
+      "id": "RT-VER-CODEX-Validate-QPS-DOW-KEB-bridge-rows-c14a641efc05",
+      "kind": "verification",
+      "occurred_at": "2026-09-11T15:56:09Z",
+      "provenance": "observed",
+      "repo": "GBOGEB/CODEX",
+      "schema": "abacus.everred.event.v3",
+      "sha": "c14a641efc051774061ef79c580f81a31587db67"
+    },
+    {
+      "evidence": {
+        "action": "replay before asserting HEAD state",
+        "age_days": 25.9,
+        "state": "RED_AT_LAST_OBSERVATION_STALE",
+        "workflow": "W05 QPS Roundtrip Regeneration Zero-Delta"
+      },
+      "id": "RT-STALE-CODEX-W05-QPS-Roundtrip-Regeneration-Zero-Delta-6c65ecc64ca3",
+      "kind": "note",
+      "occurred_at": "2026-09-24T07:28:50Z",
+      "provenance": "observed",
+      "repo": "GBOGEB/CODEX",
+      "schema": "abacus.everred.event.v3",
+      "sha": "6c65ecc64ca3d183e74d07f76da7802a0076560b"
+    },
+    {
+      "evidence": {
+        "action": "replay before asserting HEAD state",
+        "age_days": 27.7,
+        "state": "RED_AT_LAST_OBSERVATION_STALE",
+        "workflow": ".github/workflows/w70-qps-zero-delta-diagnostic.yml"
+      },
+      "id": "RT-STALE-CODEX-github-workflows-w70-qps-zero-delta-diagnostic-y-eb75769888a4",
+      "kind": "note",
+      "occurred_at": "2026-09-22T13:19:22Z",
+      "provenance": "observed",
+      "repo": "GBOGEB/CODEX",
+      "schema": "abacus.everred.event.v3",
+      "sha": "eb75769888a46ad13a252d28ae951204590b5165"
+    },
+    {
+      "evidence": {
+        "name": "Graph Update: pip in /., /pca_engine #1634289607",
+        "recovers_first_red_sha": "6662b38cb4fa6e77ad125a262bf113076257ec89",
+        "red_hours": 32.63,
+        "run_id": "27081530886",
+        "scope": "workflow_conclusion_only",
+        "status": "PASS",
+        "url": "https://github.com/GBOGEB/CODEX/actions/runs/27081530886"
+      },
+      "id": "RT-VER-CODEX-Graph-Update-pip-in-pca-engine-1634289607-2904db83443a",
+      "kind": "verification",
+      "occurred_at": "2026-06-07T03:28:40Z",
+      "provenance": "observed",
+      "repo": "GBOGEB/CODEX",
+      "schema": "abacus.everred.event.v3",
+      "sha": "2904db83443aa281168b02770e388c53af4be920"
+    },
+    {
+      "evidence": {
+        "name": "canonical-v5.3.0-qa",
+        "recovers_first_red_sha": "6fa8df734c6fa0e181f559ca00ea1da1e97c1837",
+        "red_hours": 636.34,
+        "run_id": "38147992184",
+        "scope": "workflow_conclusion_only",
+        "status": "PASS",
+        "url": "https://github.com/GBOGEB/cryoplant-project/actions/runs/38147992184"
+      },
+      "id": "RT-VER-cryoplant-project-canonical-v5-3-0-qa-16411221df89",
+      "kind": "verification",
+      "occurred_at": "2026-10-11T14:38:16Z",
+      "provenance": "observed",
+      "repo": "GBOGEB/cryoplant-project",
+      "schema": "abacus.everred.event.v3",
+      "sha": "16411221df890bda1d3146474b4cda40310315cd"
+    },
+    {
+      "evidence": {
+        "name": "DELTA_1 Federation Smoke",
+        "recovers_first_red_sha": "cb93aff645120c0eb8d2df89c0df7fbb4af223a0",
+        "red_hours": 403.17,
+        "run_id": "36321958418",
+        "scope": "workflow_conclusion_only",
+        "status": "PASS",
+        "url": "https://github.com/GBOGEB/cryoplant-project/actions/runs/36321958418"
+      },
+      "id": "RT-VER-cryoplant-project-DELTA-1-Federation-Smoke-a317bf666401",
+      "kind": "verification",
+      "occurred_at": "2026-09-27T13:18:51Z",
+      "provenance": "observed",
+      "repo": "GBOGEB/cryoplant-project",
+      "schema": "abacus.everred.event.v3",
+      "sha": "a317bf6664011e04acb9fcd9138941b1a129779c"
+    },
+    {
+      "evidence": {
+        "name": "Global Victory Score",
+        "recovers_first_red_sha": "aeb16b224d830c9be344e6883de0992ecaba59b9",
+        "red_hours": 424.61,
+        "run_id": "36159127359",
+        "scope": "workflow_conclusion_only",
+        "status": "PASS",
+        "url": "https://github.com/GBOGEB/cryoplant-project/actions/runs/36159127359"
+      },
+      "id": "RT-VER-cryoplant-project-Global-Victory-Score-e8930662b1a0",
+      "kind": "verification",
+      "occurred_at": "2026-09-25T16:11:09Z",
+      "provenance": "observed",
+      "repo": "GBOGEB/cryoplant-project",
+      "schema": "abacus.everred.event.v3",
+      "sha": "e8930662b1a0402d3867e79c8a6987a2b13403a8"
+    },
+    {
+      "evidence": {
+        "name": "Gloob causal responder",
+        "recovers_first_red_sha": "f915a206e7cc9a0646d7578184c3aa3f0096fce4",
+        "red_hours": 632.22,
+        "run_id": "38147992084",
+        "scope": "workflow_conclusion_only",
+        "status": "PASS",
+        "url": "https://github.com/GBOGEB/cryoplant-project/actions/runs/38147992084"
+      },
+      "id": "RT-VER-cryoplant-project-Gloob-causal-responder-16411221df89",
+      "kind": "verification",
+      "occurred_at": "2026-10-11T14:38:16Z",
+      "provenance": "observed",
+      "repo": "GBOGEB/cryoplant-project",
+      "schema": "abacus.everred.event.v3",
+      "sha": "16411221df890bda1d3146474b4cda40310315cd"
+    },
+    {
+      "evidence": {
+        "name": "helium-properties-pages",
+        "recovers_first_red_sha": "c176d5a4f484d98d43b9ee11aa36c71b18c50e46",
+        "red_hours": 102.78,
+        "run_id": "38174727684",
+        "scope": "workflow_conclusion_only",
+        "status": "PASS",
+        "url": "https://github.com/GBOGEB/cryoplant-project/actions/runs/38174727684"
+      },
+      "id": "RT-VER-cryoplant-project-helium-properties-pages-a5fc3eaf3f55",
+      "kind": "verification",
+      "occurred_at": "2026-10-11T21:02:47Z",
+      "provenance": "observed",
+      "repo": "GBOGEB/cryoplant-project",
+      "schema": "abacus.everred.event.v3",
+      "sha": "a5fc3eaf3f55d7896605e6cb6393363fed13dee2"
+    },
+    {
+      "evidence": {
+        "name": "Mesh Status Runtime",
+        "recovers_first_red_sha": "83b53192ae1b4e2440d07f987bf4ddd9abf1a1f6",
+        "red_hours": 718.8,
+        "run_id": "38147992151",
+        "scope": "workflow_conclusion_only",
+        "status": "PASS",
+        "url": "https://github.com/GBOGEB/cryoplant-project/actions/runs/38147992151"
+      },
+      "id": "RT-VER-cryoplant-project-Mesh-Status-Runtime-16411221df89",
+      "kind": "verification",
+      "occurred_at": "2026-10-11T14:38:16Z",
+      "provenance": "observed",
+      "repo": "GBOGEB/cryoplant-project",
+      "schema": "abacus.everred.event.v3",
+      "sha": "16411221df890bda1d3146474b4cda40310315cd"
+    },
+    {
+      "evidence": {
+        "name": "QPS BD Queue Integrity",
+        "recovers_first_red_sha": "de58af7e6c17127b5b15e05b23032575b2b2eb86",
+        "red_hours": 521.69,
+        "run_id": "38356552364",
+        "scope": "workflow_conclusion_only",
+        "status": "PASS",
+        "url": "https://github.com/GBOGEB/cryoplant-project/actions/runs/38356552364"
+      },
+      "id": "RT-VER-cryoplant-project-QPS-BD-Queue-Integrity-666d77668db2",
+      "kind": "verification",
+      "occurred_at": "2026-10-13T06:24:52Z",
+      "provenance": "observed",
+      "repo": "GBOGEB/cryoplant-project",
+      "schema": "abacus.everred.event.v3",
+      "sha": "666d77668db22601e9154e99b2f168288b76ff5d"
+    },
+    {
+      "evidence": {
+        "name": "qps-canonicalization",
+        "recovers_first_red_sha": "0c43abe9b8d9212df4842d462f068196ff784c08",
+        "red_hours": 0.18,
+        "run_id": "39183919056",
+        "scope": "workflow_conclusion_only",
+        "status": "PASS",
+        "url": "https://github.com/GBOGEB/cryoplant-project/actions/runs/39183919056"
+      },
+      "id": "RT-VER-cryoplant-project-qps-canonicalization-098496a38ae2",
+      "kind": "verification",
+      "occurred_at": "2026-10-19T01:07:57Z",
+      "provenance": "observed",
+      "repo": "GBOGEB/cryoplant-project",
+      "schema": "abacus.everred.event.v3",
+      "sha": "098496a38ae2f1b31f0c7d0e0d294292d533d04d"
+    },
+    {
+      "evidence": {
+        "action": "replay before asserting HEAD state",
+        "age_days": 4.0,
+        "state": "RED_AT_LAST_OBSERVATION_STALE",
+        "workflow": ".github/workflows/qps-code-purple-evolutionary.yml"
+      },
+      "id": "RT-STALE-cryoplant-project-github-workflows-qps-code-purple-evolutionary-ym-59315bbb0d8a",
+      "kind": "note",
+      "occurred_at": "2026-10-16T05:56:02Z",
+      "provenance": "observed",
+      "repo": "GBOGEB/cryoplant-project",
+      "schema": "abacus.everred.event.v3",
+      "sha": "59315bbb0d8a15fd7d6f3c40a46f2db8874cfbc3"
+    },
+    {
+      "evidence": {
+        "name": "QPS cost source-policy",
+        "recovers_first_red_sha": "920b7c43e19d20c7495f02f360035cf45c984776",
+        "red_hours": 392.1,
+        "run_id": "36004694519",
+        "scope": "workflow_conclusion_only",
+        "status": "PASS",
+        "url": "https://github.com/GBOGEB/cryoplant-project/actions/runs/36004694519"
+      },
+      "id": "RT-VER-cryoplant-project-QPS-cost-source-policy-c79f012dbbe1",
+      "kind": "verification",
+      "occurred_at": "2026-09-24T13:17:55Z",
+      "provenance": "observed",
+      "repo": "GBOGEB/cryoplant-project",
+      "schema": "abacus.everred.event.v3",
+      "sha": "c79f012dbbe139296d7da61141a03524f46eb51e"
+    },
+    {
+      "evidence": {
+        "action": "replay before asserting HEAD state",
+        "age_days": 25.7,
+        "state": "RED_AT_LAST_OBSERVATION_STALE",
+        "workflow": ".github/workflows/qps-debug-dow-reentry.yml"
+      },
+      "id": "RT-STALE-cryoplant-project-github-workflows-qps-debug-dow-reentry-yml-425549aac821",
+      "kind": "note",
+      "occurred_at": "2026-09-24T13:18:12Z",
+      "provenance": "observed",
+      "repo": "GBOGEB/cryoplant-project",
+      "schema": "abacus.everred.event.v3",
+      "sha": "425549aac8213125f6bf93e5ec7ad42eb6d23d01"
+    },
+    {
+      "evidence": {
+        "action": "replay before asserting HEAD state",
+        "age_days": 24.0,
+        "state": "RED_AT_LAST_OBSERVATION_STALE",
+        "workflow": ".github/workflows/qps-golden-thread-bdq9-full-control-closure.yml"
+      },
+      "id": "RT-STALE-cryoplant-project-github-workflows-qps-golden-thread-bdq9-full-con-5d45e82cc4c0",
+      "kind": "note",
+      "occurred_at": "2026-09-26T06:23:01Z",
+      "provenance": "observed",
+      "repo": "GBOGEB/cryoplant-project",
+      "schema": "abacus.everred.event.v3",
+      "sha": "5d45e82cc4c0761283a380e2d006b71c293eb14a"
+    },
+    {
+      "evidence": {
+        "name": "QPS Golden Thread Exact-Head Replay",
+        "recovers_first_red_sha": "d1831712fac0a8ae60f7bb1022fdcbf63ac839b8",
+        "red_hours": 176.6,
+        "run_id": "35986330450",
+        "scope": "workflow_conclusion_only",
+        "status": "PASS",
+        "url": "https://github.com/GBOGEB/cryoplant-project/actions/runs/35986330450"
+      },
+      "id": "RT-VER-cryoplant-project-QPS-Golden-Thread-Exact-Head-Replay-32504477fac2",
+      "kind": "verification",
+      "occurred_at": "2026-09-24T10:17:14Z",
+      "provenance": "observed",
+      "repo": "GBOGEB/cryoplant-project",
+      "schema": "abacus.everred.event.v3",
+      "sha": "32504477fac259cb470cb2161f990e11da41ea54"
+    },
+    {
+      "evidence": {
+        "action": "replay before asserting HEAD state",
+        "age_days": 37.8,
+        "state": "RED_AT_LAST_OBSERVATION_STALE",
+        "workflow": "qps-w142-invcop-thermo-control"
+      },
+      "id": "RT-STALE-cryoplant-project-qps-w142-invcop-thermo-control-d87b2080bbba",
+      "kind": "note",
+      "occurred_at": "2026-09-12T11:12:19Z",
+      "provenance": "observed",
+      "repo": "GBOGEB/cryoplant-project",
+      "schema": "abacus.everred.event.v3",
+      "sha": "d87b2080bbbaa31a59408c511a077d3e61970607"
+    },
+    {
+      "evidence": {
+        "name": "QPS W162 N200 Candidate Intake",
+        "recovers_first_red_sha": "ef00df7ef35f9a6a505e1321285311292e63336d",
+        "red_hours": 669.54,
+        "run_id": "38147992196",
+        "scope": "workflow_conclusion_only",
+        "status": "PASS",
+        "url": "https://github.com/GBOGEB/cryoplant-project/actions/runs/38147992196"
+      },
+      "id": "RT-VER-cryoplant-project-QPS-W162-N200-Candidate-Intake-16411221df89",
+      "kind": "verification",
+      "occurred_at": "2026-10-11T14:38:16Z",
+      "provenance": "observed",
+      "repo": "GBOGEB/cryoplant-project",
+      "schema": "abacus.everred.event.v3",
+      "sha": "16411221df890bda1d3146474b4cda40310315cd"
+    },
+    {
+      "evidence": {
+        "action": "replay before asserting HEAD state",
+        "age_days": 36.0,
+        "state": "RED_AT_LAST_OBSERVATION_STALE",
+        "workflow": "QPS W162 Visual Convergence Control"
+      },
+      "id": "RT-STALE-cryoplant-project-QPS-W162-Visual-Convergence-Control-63121ad911b6",
+      "kind": "note",
+      "occurred_at": "2026-09-14T06:35:03Z",
+      "provenance": "observed",
+      "repo": "GBOGEB/cryoplant-project",
+      "schema": "abacus.everred.event.v3",
+      "sha": "63121ad911b65869783adfbd50e10b2703f6eb8e"
+    },
+    {
+      "evidence": {
+        "name": "QPS W163 Namespace Collision Control",
+        "recovers_first_red_sha": "0c43abe9b8d9212df4842d462f068196ff784c08",
+        "red_hours": 0.18,
+        "run_id": "39183919068",
+        "scope": "workflow_conclusion_only",
+        "status": "PASS",
+        "url": "https://github.com/GBOGEB/cryoplant-project/actions/runs/39183919068"
+      },
+      "id": "RT-VER-cryoplant-project-QPS-W163-Namespace-Collision-Control-098496a38ae2",
+      "kind": "verification",
+      "occurred_at": "2026-10-19T01:07:57Z",
+      "provenance": "observed",
+      "repo": "GBOGEB/cryoplant-project",
+      "schema": "abacus.everred.event.v3",
+      "sha": "098496a38ae2f1b31f0c7d0e0d294292d533d04d"
+    },
+    {
+      "evidence": {
+        "name": "QPS W164 Mission Federation Control",
+        "recovers_first_red_sha": "17558b08ac53df9f00476aaed90609c91f40489a",
+        "red_hours": 718.65,
+        "run_id": "38428379313",
+        "scope": "workflow_conclusion_only",
+        "status": "PASS",
+        "url": "https://github.com/GBOGEB/cryoplant-project/actions/runs/38428379313"
+      },
+      "id": "RT-VER-cryoplant-project-QPS-W164-Mission-Federation-Control-5b5393b232a2",
+      "kind": "verification",
+      "occurred_at": "2026-10-13T16:10:58Z",
+      "provenance": "observed",
+      "repo": "GBOGEB/cryoplant-project",
+      "schema": "abacus.everred.event.v3",
+      "sha": "5b5393b232a21ab794c53a511fa266c4c93e8296"
+    },
+    {
+      "evidence": {
+        "name": "QPS W166 Federation Measurement and Crew REX",
+        "recovers_first_red_sha": "5e0a92876fd2d2403941c1420de082974fff84e5",
+        "red_hours": 668.59,
+        "run_id": "38147992092",
+        "scope": "workflow_conclusion_only",
+        "status": "PASS",
+        "url": "https://github.com/GBOGEB/cryoplant-project/actions/runs/38147992092"
+      },
+      "id": "RT-VER-cryoplant-project-QPS-W166-Federation-Measurement-and-Crew-REX-16411221df89",
+      "kind": "verification",
+      "occurred_at": "2026-10-11T14:38:16Z",
+      "provenance": "observed",
+      "repo": "GBOGEB/cryoplant-project",
+      "schema": "abacus.everred.event.v3",
+      "sha": "16411221df890bda1d3146474b4cda40310315cd"
+    },
+    {
+      "evidence": {
+        "name": "QPS W170 Federation Expansion Sample 3",
+        "recovers_first_red_sha": "21374d6b8bfb6ff68ba5a50a9d4391d79556a64d",
+        "red_hours": 685.03,
+        "run_id": "38221821209",
+        "scope": "workflow_conclusion_only",
+        "status": "PASS",
+        "url": "https://github.com/GBOGEB/cryoplant-project/actions/runs/38221821209"
+      },
+      "id": "RT-VER-cryoplant-project-QPS-W170-Federation-Expansion-Sample-3-478a940e0f2e",
+      "kind": "verification",
+      "occurred_at": "2026-10-12T08:08:59Z",
+      "provenance": "observed",
+      "repo": "GBOGEB/cryoplant-project",
+      "schema": "abacus.everred.event.v3",
+      "sha": "478a940e0f2e5c029b03dfc04e0aa228b41ed398"
+    },
+    {
+      "evidence": {
+        "action": "replay before asserting HEAD state",
+        "age_days": 7.9,
+        "state": "RED_AT_LAST_OBSERVATION_STALE",
+        "workflow": "QPS W189 Federation Sample 4"
+      },
+      "id": "RT-STALE-cryoplant-project-QPS-W189-Federation-Sample-4-e25a5c0a38c9",
+      "kind": "note",
+      "occurred_at": "2026-10-12T08:09:13Z",
+      "provenance": "observed",
+      "repo": "GBOGEB/cryoplant-project",
+      "schema": "abacus.everred.event.v3",
+      "sha": "e25a5c0a38c9a1636c47ce331995d0617a8f72d9"
+    },
+    {
+      "evidence": {
+        "name": "QPS W189R Federation Sample 4 Return",
+        "recovers_first_red_sha": "8b0d1f3e51102b1ad5dc545c813c87077b881348",
+        "red_hours": 645.81,
+        "run_id": "38147992123",
+        "scope": "workflow_conclusion_only",
+        "status": "PASS",
+        "url": "https://github.com/GBOGEB/cryoplant-project/actions/runs/38147992123"
+      },
+      "id": "RT-VER-cryoplant-project-QPS-W189R-Federation-Sample-4-Return-16411221df89",
+      "kind": "verification",
+      "occurred_at": "2026-10-11T14:38:16Z",
+      "provenance": "observed",
+      "repo": "GBOGEB/cryoplant-project",
+      "schema": "abacus.everred.event.v3",
+      "sha": "16411221df890bda1d3146474b4cda40310315cd"
+    },
+    {
+      "evidence": {
+        "name": "QPS W257 Grandmission I-B Temporal PCA",
+        "recovers_first_red_sha": "3df44372a017b94085d50671d1efb3b452440861",
+        "red_hours": 644.77,
+        "run_id": "38428379341",
+        "scope": "workflow_conclusion_only",
+        "status": "PASS",
+        "url": "https://github.com/GBOGEB/cryoplant-project/actions/runs/38428379341"
+      },
+      "id": "RT-VER-cryoplant-project-QPS-W257-Grandmission-I-B-Temporal-PCA-5b5393b232a2",
+      "kind": "verification",
+      "occurred_at": "2026-10-13T16:10:58Z",
+      "provenance": "observed",
+      "repo": "GBOGEB/cryoplant-project",
+      "schema": "abacus.everred.event.v3",
+      "sha": "5b5393b232a21ab794c53a511fa266c4c93e8296"
+    },
+    {
+      "evidence": {
+        "name": "QPS W280R Federation Sample 5 Return",
+        "recovers_first_red_sha": "b0b968729fee9e8609b0463c31f30ccd49a9dd52",
+        "red_hours": 554.74,
+        "run_id": "38147992172",
+        "scope": "workflow_conclusion_only",
+        "status": "PASS",
+        "url": "https://github.com/GBOGEB/cryoplant-project/actions/runs/38147992172"
+      },
+      "id": "RT-VER-cryoplant-project-QPS-W280R-Federation-Sample-5-Return-16411221df89",
+      "kind": "verification",
+      "occurred_at": "2026-10-11T14:38:16Z",
+      "provenance": "observed",
+      "repo": "GBOGEB/cryoplant-project",
+      "schema": "abacus.everred.event.v3",
+      "sha": "16411221df890bda1d3146474b4cda40310315cd"
+    },
+    {
+      "evidence": {
+        "name": "QPS W283 Federation Surface 3Pstar MIP",
+        "recovers_first_red_sha": "d4094e46add13d5b64734b211b020aa1ce189e8a",
+        "red_hours": 553.14,
+        "run_id": "38147992171",
+        "scope": "workflow_conclusion_only",
+        "status": "PASS",
+        "url": "https://github.com/GBOGEB/cryoplant-project/actions/runs/38147992171"
+      },
+      "id": "RT-VER-cryoplant-project-QPS-W283-Federation-Surface-3Pstar-MIP-16411221df89",
+      "kind": "verification",
+      "occurred_at": "2026-10-11T14:38:16Z",
+      "provenance": "observed",
+      "repo": "GBOGEB/cryoplant-project",
+      "schema": "abacus.everred.event.v3",
+      "sha": "16411221df890bda1d3146474b4cda40310315cd"
+    },
+    {
+      "evidence": {
+        "action": "replay before asserting HEAD state",
+        "age_days": 33.1,
+        "state": "RED_AT_LAST_OBSERVATION_STALE",
+        "workflow": "TODO-011 release pack smoke"
+      },
+      "id": "RT-STALE-cryoplant-project-TODO-011-release-pack-smoke-646ba21371f8",
+      "kind": "note",
+      "occurred_at": "2026-09-17T02:22:49Z",
+      "provenance": "observed",
+      "repo": "GBOGEB/cryoplant-project",
+      "schema": "abacus.everred.event.v3",
+      "sha": "646ba21371f8ff58430f3ef58e304c6dbd873a7b"
+    },
+    {
+      "evidence": {
+        "name": "Validate cryoplant DOW KEB bridge rows",
+        "recovers_first_red_sha": "3316a51bbb68465402306f56f243b1ab7f4ab79e",
+        "red_hours": 726.2,
+        "run_id": "38147992167",
+        "scope": "workflow_conclusion_only",
+        "status": "PASS",
+        "url": "https://github.com/GBOGEB/cryoplant-project/actions/runs/38147992167"
+      },
+      "id": "RT-VER-cryoplant-project-Validate-cryoplant-DOW-KEB-bridge-rows-16411221df89",
+      "kind": "verification",
+      "occurred_at": "2026-10-11T14:38:16Z",
+      "provenance": "observed",
+      "repo": "GBOGEB/cryoplant-project",
+      "schema": "abacus.everred.event.v3",
+      "sha": "16411221df890bda1d3146474b4cda40310315cd"
+    },
+    {
+      "evidence": {
+        "name": "Validate strict cryoplant DOW KEB receipts",
+        "recovers_first_red_sha": "d0b8addfa5a28348d304b19b123ed0351a0fb337",
+        "red_hours": 730.16,
+        "run_id": "38147992100",
+        "scope": "workflow_conclusion_only",
+        "status": "PASS",
+        "url": "https://github.com/GBOGEB/cryoplant-project/actions/runs/38147992100"
+      },
+      "id": "RT-VER-cryoplant-project-Validate-strict-cryoplant-DOW-KEB-receipts-16411221df89",
+      "kind": "verification",
+      "occurred_at": "2026-10-11T14:38:16Z",
+      "provenance": "observed",
+      "repo": "GBOGEB/cryoplant-project",
+      "schema": "abacus.everred.event.v3",
+      "sha": "16411221df890bda1d3146474b4cda40310315cd"
+    },
+    {
+      "evidence": {
+        "name": "W262 Temporal PCA Visual Runtime",
+        "recovers_first_red_sha": "dd2f7f1163a7430caf270e83a99eaa4a9e7d8ec4",
+        "red_hours": 593.79,
+        "run_id": "38147992210",
+        "scope": "workflow_conclusion_only",
+        "status": "PASS",
+        "url": "https://github.com/GBOGEB/cryoplant-project/actions/runs/38147992210"
+      },
+      "id": "RT-VER-cryoplant-project-W262-Temporal-PCA-Visual-Runtime-16411221df89",
+      "kind": "verification",
+      "occurred_at": "2026-10-11T14:38:16Z",
+      "provenance": "observed",
+      "repo": "GBOGEB/cryoplant-project",
+      "schema": "abacus.everred.event.v3",
+      "sha": "16411221df890bda1d3146474b4cda40310315cd"
+    },
+    {
+      "evidence": {
+        "action": "replay before asserting HEAD state",
+        "age_days": 7.9,
+        "state": "RED_AT_LAST_OBSERVATION_STALE",
+        "workflow": "W99 R1 722 DOCX Reconciliation"
+      },
+      "id": "RT-STALE-cryoplant-project-W99-R1-722-DOCX-Reconciliation-e25a5c0a38c9",
+      "kind": "note",
+      "occurred_at": "2026-10-12T08:09:13Z",
+      "provenance": "observed",
+      "repo": "GBOGEB/cryoplant-project",
+      "schema": "abacus.everred.event.v3",
+      "sha": "e25a5c0a38c9a1636c47ce331995d0617a8f72d9"
+    },
+    {
+      "evidence": {
+        "action": "replay before asserting HEAD state",
+        "age_days": 4.3,
+        "state": "RED_AT_LAST_OBSERVATION_STALE",
+        "workflow": "github_actions in /. - Update #1630350736"
+      },
+      "id": "RT-STALE-cryoplant-project-github-actions-in-Update-1630350736-59315bbb0d8a",
+      "kind": "note",
+      "occurred_at": "2026-10-15T23:23:27Z",
+      "provenance": "observed",
+      "repo": "GBOGEB/cryoplant-project",
+      "schema": "abacus.everred.event.v3",
+      "sha": "59315bbb0d8a15fd7d6f3c40a46f2db8874cfbc3"
+    },
+    {
+      "evidence": {
+        "name": "LM-10 W260 BD-260.4 Common Fixture",
+        "recovers_first_red_sha": "ef466822aa14dfaf3799971329c008931b71efe1",
+        "red_hours": 0.06,
+        "run_id": "35592153194",
+        "scope": "workflow_conclusion_only",
+        "status": "PASS",
+        "url": "https://github.com/GBOGEB/gg_MATH/actions/runs/35592153194"
+      },
+      "id": "RT-VER-gg-MATH-LM-10-W260-BD-260-4-Common-Fixture-2b27f4a6d70a",
+      "kind": "verification",
+      "occurred_at": "2026-09-21T11:05:06Z",
+      "provenance": "observed",
+      "repo": "GBOGEB/gg_MATH",
+      "schema": "abacus.everred.event.v3",
+      "sha": "2b27f4a6d70a11324d9a7c81d9c88995888b3d74"
+    },
+    {
+      "evidence": {
+        "name": "Release Infrastructure v1",
+        "recovers_first_red_sha": "a91d3ea59109773d0f747395c60d4597e807ebcb",
+        "red_hours": 5.83,
+        "run_id": "39200328168",
+        "scope": "workflow_conclusion_only",
+        "status": "PASS",
+        "url": "https://github.com/GBOGEB/gg_MATH/actions/runs/39200328168"
+      },
+      "id": "RT-VER-gg-MATH-Release-Infrastructure-v1-5cf036c66be4",
+      "kind": "verification",
+      "occurred_at": "2026-10-19T04:36:36Z",
+      "provenance": "observed",
+      "repo": "GBOGEB/gg_MATH",
+      "schema": "abacus.everred.event.v3",
+      "sha": "5cf036c66be498cd00a4ff09687802806200368b"
+    },
+    {
+      "evidence": {
+        "name": "CODE PURPLE Disjoint Live Census (read-only)",
+        "recovers_first_red_sha": "0d881567f0481f4c6155ac1bac4cedd0d55b57d4",
+        "red_hours": 45.14,
+        "run_id": "39127961347",
+        "scope": "workflow_conclusion_only",
+        "status": "PASS",
+        "url": "https://github.com/GBOGEB/pipeline-automation-hub/actions/runs/39127961347"
+      },
+      "id": "RT-VER-pipeline-automation-hub-CODE-PURPLE-Disjoint-Live-Census-read-only-28e0f3a3a9fa",
+      "kind": "verification",
+      "occurred_at": "2026-10-18T12:36:04Z",
+      "provenance": "observed",
+      "repo": "GBOGEB/pipeline-automation-hub",
+      "schema": "abacus.everred.event.v3",
+      "sha": "28e0f3a3a9faf0a49c321c024a7bb1bbed0ca3a2"
+    },
+    {
+      "evidence": {
+        "name": "CODE PURPLE M3 Lossless Stabilization",
+        "recovers_first_red_sha": "3b441b517baee741197a7c687c5fb33a16ad4454",
+        "red_hours": 96.56,
+        "run_id": "39293721710",
+        "scope": "workflow_conclusion_only",
+        "status": "PASS",
+        "url": "https://github.com/GBOGEB/pipeline-automation-hub/actions/runs/39293721710"
+      },
+      "id": "RT-VER-pipeline-automation-hub-CODE-PURPLE-M3-Lossless-Stabilization-c3b874fe98c4",
+      "kind": "verification",
+      "occurred_at": "2026-10-19T17:23:39Z",
+      "provenance": "observed",
+      "repo": "GBOGEB/pipeline-automation-hub",
+      "schema": "abacus.everred.event.v3",
+      "sha": "c3b874fe98c4201a8dd92e5978c763b8067f5f6e"
+    },
+    {
+      "evidence": {
+        "name": "CODE PURPLE Method Atlas (read-only)",
+        "recovers_first_red_sha": "d757aee382e0a0daf278d28fc08a6f032bcc6ea8",
+        "red_hours": 5.68,
+        "run_id": "39200403496",
+        "scope": "workflow_conclusion_only",
+        "status": "PASS",
+        "url": "https://github.com/GBOGEB/pipeline-automation-hub/actions/runs/39200403496"
+      },
+      "id": "RT-VER-pipeline-automation-hub-CODE-PURPLE-Method-Atlas-read-only-fe72f4233955",
+      "kind": "verification",
+      "occurred_at": "2026-10-19T04:37:31Z",
+      "provenance": "observed",
+      "repo": "GBOGEB/pipeline-automation-hub",
+      "schema": "abacus.everred.event.v3",
+      "sha": "fe72f423395503728a89b1bb3d6ce32b688db3d0"
+    },
+    {
+      "evidence": {
+        "name": "CP.CLOSE GitHub Handover QA",
+        "recovers_first_red_sha": "915e08bf4a5463c084f1be8d16de9bcfa9ce9842",
+        "red_hours": 22.41,
+        "run_id": "39135727464",
+        "scope": "workflow_conclusion_only",
+        "status": "PASS",
+        "url": "https://github.com/GBOGEB/pipeline-automation-hub/actions/runs/39135727464"
+      },
+      "id": "RT-VER-pipeline-automation-hub-CP-CLOSE-GitHub-Handover-QA-6078fb9f6d5a",
+      "kind": "verification",
+      "occurred_at": "2026-10-18T14:22:54Z",
+      "provenance": "observed",
+      "repo": "GBOGEB/pipeline-automation-hub",
+      "schema": "abacus.everred.event.v3",
+      "sha": "6078fb9f6d5a8c016e7feaf9cf5b12a93b982183"
+    },
+    {
+      "evidence": {
+        "name": "MissionControl Crew Frontier PCA BT",
+        "recovers_first_red_sha": "2a7be4731e7f47f1aa95169cc87f3e00647d4d7b",
+        "red_hours": 0.07,
+        "run_id": "34776950952",
+        "scope": "workflow_conclusion_only",
+        "status": "PASS",
+        "url": "https://github.com/GBOGEB/pipeline-automation-hub/actions/runs/34776950952"
+      },
+      "id": "RT-VER-pipeline-automation-hub-MissionControl-Crew-Frontier-PCA-BT-58b7098b4eba",
+      "kind": "verification",
+      "occurred_at": "2026-09-13T19:11:56Z",
+      "provenance": "observed",
+      "repo": "GBOGEB/pipeline-automation-hub",
+      "schema": "abacus.everred.event.v3",
+      "sha": "58b7098b4eba22b6282706f45fe6a43967334509"
+    },
+    {
+      "evidence": {
+        "name": "Fleet Open-Issue Convergence",
+        "recovers_first_red_sha": "b41de9ac10fbd8eaa76c872f1964fcd905bae1a8",
+        "red_hours": 0.07,
+        "run_id": "35601174474",
+        "scope": "workflow_conclusion_only",
+        "status": "PASS",
+        "url": "https://github.com/GBOGEB/pipeline-automation-hub/actions/runs/35601174474"
+      },
+      "id": "RT-VER-pipeline-automation-hub-Fleet-Open-Issue-Convergence-42dc07b3ce58",
+      "kind": "verification",
+      "occurred_at": "2026-09-21T12:43:16Z",
+      "provenance": "observed",
+      "repo": "GBOGEB/pipeline-automation-hub",
+      "schema": "abacus.everred.event.v3",
+      "sha": "42dc07b3ce58d65787265722c055312f01c03640"
+    },
+    {
+      "evidence": {
+        "name": "GM-IV ACTIVE_8 Governor Readiness",
+        "recovers_first_red_sha": "bf2179d7f0c06a29737951156bfe817b4e1b6e1c",
+        "red_hours": 39.14,
+        "run_id": "35343419809",
+        "scope": "workflow_conclusion_only",
+        "status": "PASS",
+        "url": "https://github.com/GBOGEB/pipeline-automation-hub/actions/runs/35343419809"
+      },
+      "id": "RT-VER-pipeline-automation-hub-GM-IV-ACTIVE-8-Governor-Readiness-0d3b66ee8c25",
+      "kind": "verification",
+      "occurred_at": "2026-09-18T12:12:11Z",
+      "provenance": "observed",
+      "repo": "GBOGEB/pipeline-automation-hub",
+      "schema": "abacus.everred.event.v3",
+      "sha": "0d3b66ee8c2566ed1e5f8b83c2932e4a9160bcbb"
+    },
+    {
+      "evidence": {
+        "name": "GM-IV Evidence Economics",
+        "recovers_first_red_sha": "612dd40421b645bd389e36d2e4849a41b64c716f",
+        "red_hours": 0.07,
+        "run_id": "35149466891",
+        "scope": "workflow_conclusion_only",
+        "status": "PASS",
+        "url": "https://github.com/GBOGEB/pipeline-automation-hub/actions/runs/35149466891"
+      },
+      "id": "RT-VER-pipeline-automation-hub-GM-IV-Evidence-Economics-f518646f3a07",
+      "kind": "verification",
+      "occurred_at": "2026-09-16T20:55:58Z",
+      "provenance": "observed",
+      "repo": "GBOGEB/pipeline-automation-hub",
+      "schema": "abacus.everred.event.v3",
+      "sha": "f518646f3a075d3193522e2ad8deeebb20a22dae"
+    },
+    {
+      "evidence": {
+        "name": "GM-IV Forward Gate Safety",
+        "recovers_first_red_sha": "612dd40421b645bd389e36d2e4849a41b64c716f",
+        "red_hours": 16.96,
+        "run_id": "35229506193",
+        "scope": "workflow_conclusion_only",
+        "status": "PASS",
+        "url": "https://github.com/GBOGEB/pipeline-automation-hub/actions/runs/35229506193"
+      },
+      "id": "RT-VER-pipeline-automation-hub-GM-IV-Forward-Gate-Safety-73e367a7f671",
+      "kind": "verification",
+      "occurred_at": "2026-09-17T13:49:12Z",
+      "provenance": "observed",
+      "repo": "GBOGEB/pipeline-automation-hub",
+      "schema": "abacus.everred.event.v3",
+      "sha": "73e367a7f6714d489860648038ca32681a6e222f"
+    },
+    {
+      "evidence": {
+        "name": "GM-IV PILOT_2_OF_8 Final Recensus",
+        "recovers_first_red_sha": "f3657b820a99a4fbd408f1735f22373e6249ac1c",
+        "red_hours": 0.52,
+        "run_id": "35343914428",
+        "scope": "workflow_conclusion_only",
+        "status": "PASS",
+        "url": "https://github.com/GBOGEB/pipeline-automation-hub/actions/runs/35343914428"
+      },
+      "id": "RT-VER-pipeline-automation-hub-GM-IV-PILOT-2-OF-8-Final-Recensus-3df37a048587",
+      "kind": "verification",
+      "occurred_at": "2026-09-18T12:17:53Z",
+      "provenance": "observed",
+      "repo": "GBOGEB/pipeline-automation-hub",
+      "schema": "abacus.everred.event.v3",
+      "sha": "3df37a0485874f968f0dffa02bc474c5f4645fba"
+    },
+    {
+      "evidence": {
+        "name": "GM-IV RECON_4 Promotion Control",
+        "recovers_first_red_sha": "612dd40421b645bd389e36d2e4849a41b64c716f",
+        "red_hours": 39.43,
+        "run_id": "35343914458",
+        "scope": "workflow_conclusion_only",
+        "status": "PASS",
+        "url": "https://github.com/GBOGEB/pipeline-automation-hub/actions/runs/35343914458"
+      },
+      "id": "RT-VER-pipeline-automation-hub-GM-IV-RECON-4-Promotion-Control-3df37a048587",
+      "kind": "verification",
+      "occurred_at": "2026-09-18T12:17:53Z",
+      "provenance": "observed",
+      "repo": "GBOGEB/pipeline-automation-hub",
+      "schema": "abacus.everred.event.v3",
+      "sha": "3df37a0485874f968f0dffa02bc474c5f4645fba"
+    },
+    {
+      "evidence": {
+        "name": "GM-IV Runtime Capability Capacity Proof v2",
+        "recovers_first_red_sha": "d4f203afd369559ddbff7e833e74f2a6b7a43f70",
+        "red_hours": 180.75,
+        "run_id": "39293734282",
+        "scope": "workflow_conclusion_only",
+        "status": "PASS",
+        "url": "https://github.com/GBOGEB/pipeline-automation-hub/actions/runs/39293734282"
+      },
+      "id": "RT-VER-pipeline-automation-hub-GM-IV-Runtime-Capability-Capacity-Proof-v2-c3b874fe98c4",
+      "kind": "verification",
+      "occurred_at": "2026-10-19T17:23:44Z",
+      "provenance": "observed",
+      "repo": "GBOGEB/pipeline-automation-hub",
+      "schema": "abacus.everred.event.v3",
+      "sha": "c3b874fe98c4201a8dd92e5978c763b8067f5f6e"
+    },
+    {
+      "evidence": {
+        "action": "replay before asserting HEAD state",
+        "age_days": 31.0,
+        "state": "RED_AT_LAST_OBSERVATION_STALE",
+        "workflow": "GM-V 3PSTAR MIP Control"
+      },
+      "id": "RT-STALE-pipeline-automation-hub-GM-V-3PSTAR-MIP-Control-06ea8a1c30d6",
+      "kind": "note",
+      "occurred_at": "2026-09-19T06:03:38Z",
+      "provenance": "observed",
+      "repo": "GBOGEB/pipeline-automation-hub",
+      "schema": "abacus.everred.event.v3",
+      "sha": "06ea8a1c30d6f4a82a3f2611abf6c0e7b03fbe77"
+    },
+    {
+      "evidence": {
+        "name": "GM-V 3PSTAR MIP Control",
+        "recovers_first_red_sha": "a9695cd69ae94f596b9568024f99aac7cf15cb09",
+        "red_hours": 0.05,
+        "run_id": "35351928155",
+        "scope": "workflow_conclusion_only",
+        "status": "PASS",
+        "url": "https://github.com/GBOGEB/pipeline-automation-hub/actions/runs/35351928155"
+      },
+      "id": "RT-VER-pipeline-automation-hub-GM-V-3PSTAR-MIP-Control-a691d8bc6652",
+      "kind": "verification",
+      "occurred_at": "2026-09-18T13:43:49Z",
+      "provenance": "observed",
+      "repo": "GBOGEB/pipeline-automation-hub",
+      "schema": "abacus.everred.event.v3",
+      "sha": "a691d8bc66521236d4a7f3da3bea1013d12aa1d0"
+    },
+    {
+      "evidence": {
+        "name": "MissionControl Historian Register Control",
+        "recovers_first_red_sha": "d6343fbae4eef839f92203e77673857e06e884bb",
+        "red_hours": 1.2,
+        "run_id": "35744710561",
+        "scope": "workflow_conclusion_only",
+        "status": "PASS",
+        "url": "https://github.com/GBOGEB/pipeline-automation-hub/actions/runs/35744710561"
+      },
+      "id": "RT-VER-pipeline-automation-hub-MissionControl-Historian-Register-Control-a773551b57b3",
+      "kind": "verification",
+      "occurred_at": "2026-09-22T15:03:59Z",
+      "provenance": "observed",
+      "repo": "GBOGEB/pipeline-automation-hub",
+      "schema": "abacus.everred.event.v3",
+      "sha": "a773551b57b3896203716d4dd78384271612aabc"
+    },
+    {
+      "evidence": {
+        "name": "CODE PURPLE Live Lossless QA",
+        "recovers_first_red_sha": "6078fb9f6d5a8c016e7feaf9cf5b12a93b982183",
+        "red_hours": 1.11,
+        "run_id": "39140712191",
+        "scope": "workflow_conclusion_only",
+        "status": "PASS",
+        "url": "https://github.com/GBOGEB/pipeline-automation-hub/actions/runs/39140712191"
+      },
+      "id": "RT-VER-pipeline-automation-hub-CODE-PURPLE-Live-Lossless-QA-ccd695c22b50",
+      "kind": "verification",
+      "occurred_at": "2026-10-18T15:29:30Z",
+      "provenance": "observed",
+      "repo": "GBOGEB/pipeline-automation-hub",
+      "schema": "abacus.everred.event.v3",
+      "sha": "ccd695c22b50bf36369cdc669757063029a86551"
+    },
+    {
+      "evidence": {
+        "name": "MissionControl Measured Crew Allocation",
+        "recovers_first_red_sha": "86350271c04a583b27eddc5226a6112580399063",
+        "red_hours": 0.06,
+        "run_id": "35575368403",
+        "scope": "workflow_conclusion_only",
+        "status": "PASS",
+        "url": "https://github.com/GBOGEB/pipeline-automation-hub/actions/runs/35575368403"
+      },
+      "id": "RT-VER-pipeline-automation-hub-MissionControl-Measured-Crew-Allocation-92876db294a4",
+      "kind": "verification",
+      "occurred_at": "2026-09-21T07:56:43Z",
+      "provenance": "observed",
+      "repo": "GBOGEB/pipeline-automation-hub",
+      "schema": "abacus.everred.event.v3",
+      "sha": "92876db294a4f790a5a7acda60a3217ee8972922"
+    },
+    {
+      "evidence": {
+        "name": "Mission Control v2 Contract",
+        "recovers_first_red_sha": "7ca671fa808f3692c2f947746b0ef47393e3b8cc",
+        "red_hours": 0.28,
+        "run_id": "39029381856",
+        "scope": "workflow_conclusion_only",
+        "status": "PASS",
+        "url": "https://github.com/GBOGEB/pipeline-automation-hub/actions/runs/39029381856"
+      },
+      "id": "RT-VER-pipeline-automation-hub-Mission-Control-v2-Contract-ec111f9e7d70",
+      "kind": "verification",
+      "occurred_at": "2026-10-17T11:37:03Z",
+      "provenance": "observed",
+      "repo": "GBOGEB/pipeline-automation-hub",
+      "schema": "abacus.everred.event.v3",
+      "sha": "ec111f9e7d708eae4f76e0ee0d58c6d59041c78a"
+    },
+    {
+      "evidence": {
+        "name": "Zero-Test Gate Guard",
+        "recovers_first_red_sha": "285c667aa01b948e00f0bab36bfab6de1dbc7021",
+        "red_hours": 4.34,
+        "run_id": "39173444272",
+        "scope": "workflow_conclusion_only",
+        "status": "PASS",
+        "url": "https://github.com/GBOGEB/pipeline-automation-hub/actions/runs/39173444272"
+      },
+      "id": "RT-VER-pipeline-automation-hub-Zero-Test-Gate-Guard-c71ad78baf9a",
+      "kind": "verification",
+      "occurred_at": "2026-10-18T22:43:04Z",
+      "provenance": "observed",
+      "repo": "GBOGEB/pipeline-automation-hub",
+      "schema": "abacus.everred.event.v3",
+      "sha": "c71ad78baf9abf5fbe2f39c7c5993a3c75c1d505"
+    },
+    {
+      "evidence": {
+        "action": "replay before asserting HEAD state",
+        "age_days": 4.5,
+        "state": "RED_AT_LAST_OBSERVATION_STALE",
+        "workflow": "pages build and deployment"
+      },
+      "id": "RT-STALE-pipeline-automation-hub-pages-build-and-deployment-3b468f1e1f16",
+      "kind": "note",
+      "occurred_at": "2026-10-15T16:50:26Z",
+      "provenance": "observed",
+      "repo": "GBOGEB/pipeline-automation-hub",
+      "schema": "abacus.everred.event.v3",
+      "sha": "3b468f1e1f161a64566eb85c104335c40411153b"
     }
   ],
   "kpis": [
