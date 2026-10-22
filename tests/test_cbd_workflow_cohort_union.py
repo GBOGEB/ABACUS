@@ -69,7 +69,14 @@ class CohortUnionTests(unittest.TestCase):
             "ref: ${{ github.event.pull_request.head.sha || github.sha }}",
             "persist-credentials: false",
             "if actual_head != pull_head:",
-            'subprocess.check_output(["git", "rev-parse", "HEAD"], text=True).strip() != pull_head',
+        )
+        checkout_receipt = re.compile(
+            r"actual_head = subprocess\.check_output\(\s*"
+            r'\["git", "rev-parse", "HEAD"\], text=True\s*'
+            r"\)\.strip\(\)"
+        )
+        receipt_guard = re.compile(
+            r"if actual_head != pull_head:\n\s+raise SystemExit\("
         )
 
         def assert_bound(source):
@@ -77,6 +84,7 @@ class CohortUnionTests(unittest.TestCase):
             # let a mutant that removes one copy pass undetected.
             for item in required:
                 self.assertEqual(source.count(item), 1, item)
+            self.assertEqual(len(checkout_receipt.findall(source)), 1)
             self.assertEqual(len(receipt_guard.findall(source)), 1)
 
         assert_bound(workflow)
@@ -84,6 +92,10 @@ class CohortUnionTests(unittest.TestCase):
             assert_bound(workflow.replace(required[0], "ref: github.sha", 1))
         with self.assertRaises(AssertionError):
             assert_bound(workflow.replace(required[2], "if False:", 1))
+        with self.assertRaises(AssertionError):
+            assert_bound(
+                checkout_receipt.sub("actual_head = pull_head", workflow, count=1)
+            )
 
     def test_frozen_three_cohort_source_denominators(self):
         result = produce_cohorts(snapshots())
@@ -373,4 +385,3 @@ class CohortUnionTests(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
-
