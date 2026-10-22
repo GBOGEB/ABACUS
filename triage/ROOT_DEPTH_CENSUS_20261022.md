@@ -107,15 +107,15 @@ artifact-lineage investigation, not indiscriminate test work.
 
 | Kind | Executable check | Formatting policy |
 | --- | --- | --- |
-| YAML/YML | BaseLoader compose, duplicate keys, job needs DAG | yamllint separately; do not rewrite Actions blindly |
-| GitHub Actions | PyYAML BaseLoader then actionlint (separate) | Preserve literal `on`, expressions, jobs, triggers |
-| JSON | strict stdlib decoder with duplicate-key guard | json formatting only on owner-controlled inputs |
-| TOML | Python 3.11 `tomllib` parse | owner-selected TOML formatter; preserve semantics |
+| YAML/YML | Parse, keys, DAG | Separate style; no automatic rewrite |
+| Actions | BaseLoader + actionlint | Preserve event keys and expressions |
+| JSON | Reject duplicate keys | Format only controlled inputs |
+| TOML | `tomllib` | Semantics-preserving formatting |
 | INI | `configparser` syntax | avoid silent interpolation/reordering |
-| `__init__.py` | AST parse only; no imports/side effects | Black/isort limited to controlled source diff |
-| Mermaid `.mmd` | external `mmdc` required | semantics UNKNOWN without renderer |
+| `__init__.py` | AST syntax, no imports | Black/isort on scoped diff |
+| Mermaid `.mmd` | External `mmdc` | UNKNOWN if absent |
 | Graphviz `.dot` | external `dot` required | semantics UNKNOWN without parser |
-| CSV/SVG/HTML | explicit schema/consumer QA later | do not label unvalidated output GREEN |
+| CSV/SVG/HTML | Future consumer QA | UNKNOWN if unvalidated |
 
 The existing changed-doc gate handles Markdown/YAML/JSON and
 `.pre-commit-config.yaml` declares `check-toml`, but the
@@ -126,7 +126,8 @@ Read-only scanner:
 
 ```bash
 git rev-parse HEAD
-gh api "repos/GBOGEB/ABACUS/git/trees/$(git rev-parse HEAD)?recursive=1" > tree.json
+HEAD_SHA="$(git rev-parse HEAD)"
+gh api "repos/GBOGEB/ABACUS/git/trees/$HEAD_SHA?recursive=1" > tree.json
 python tools/triage/root_depth_census.py --tree tree.json \
   --head "$(git rev-parse HEAD)" --out root_depth.json
 python tools/triage/config_surface_audit.py --root . \
