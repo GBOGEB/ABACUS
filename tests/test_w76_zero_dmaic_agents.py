@@ -14,7 +14,7 @@ import tempfile
 import types
 import unittest
 from datetime import datetime
-from unittest import mock
+import unittest.mock as mock
 
 ROOT = pathlib.Path(__file__).resolve().parents[1]
 AGENTS = ROOT / "DMAIC_V3" / "agents"

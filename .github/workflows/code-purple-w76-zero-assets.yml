@@ -7,6 +7,16 @@ on:
       - 'ci/w76_zero_coverage_baseline.json'
       - 'tests/test_w76_zero_*.py'
       - '.github/workflows/code-purple-w76-zero-assets.yml'
+      - 'DMAIC_V3/agents/health_checker.py'
+      - 'DMAIC_V3/agents/style_extractor.py'
+      - 'DMAIC_V3/agents/framework.py'
+      - 'DMAIC_V3/agents/context_manager.py'
+      - 'DMAIC_V3/agents/iteration_tracker.py'
+      - 'DMAIC_V3/agents/dependency_graph.py'
+      - 'DMAIC_V3/agents/performance_tracker.py'
+      - 'DMAIC_V3/product_version.py'
+      - 'integration/codespace_jyperter/src/federation.py'
+      - 'integration/cryoplant_project/src/federation.py'
   workflow_dispatch: {}
 
 permissions:
@@ -18,7 +28,7 @@ concurrency:
 
 jobs:
   zero-asset-proof:
-    name: W76 pinned zero-assets (${{ matrix.os }}, py${{ matrix.python-version }})
+    name: W76 proof (${{ matrix.os }}, Python ${{ matrix.python-version }})
     runs-on: ${{ matrix.os }}
     timeout-minutes: 12
     strategy:
@@ -65,7 +75,7 @@ jobs:
         if: always()
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         with:
-          name: code-purple-w76-${{ matrix.os }}-py${{ matrix.python-version }}-${{ github.event.pull_request.head.sha || github.sha }}
+          name: w76-${{ matrix.os }}-py${{ matrix.python-version }}
           path: w76-evidence/
           if-no-files-found: warn
           retention-days: 30

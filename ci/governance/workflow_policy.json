@@ -327,6 +327,12 @@
       "disposition": "keep"
     },
     {
+      "pattern": "^code-purple-w76-zero-assets\\.yml$",
+      "cluster": "specialised",
+      "lifecycle": "pr_domain",
+      "disposition": "keep"
+    },
+    {
       "pattern": "^gg-math-temporal-pca-exact-live-dow\\.yml$",
       "cluster": "dow",
       "lifecycle": "pr_domain",

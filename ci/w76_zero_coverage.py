@@ -191,6 +191,7 @@ def source_blob_sha(repo, path):
         raise ValueError("unsafe or missing production source: " + name)
     data = target.read_bytes()
     # Git object IDs are SHA-1 object names, NOT a security signature.
+    # nosemgrep: python.lang.security.insecure-hash-algorithms.insecure-hash-algorithm-sha1
     return hashlib.sha1(
         b"blob " + str(len(data)).encode("ascii") + b"\0" + data,
         usedforsecurity=False,
