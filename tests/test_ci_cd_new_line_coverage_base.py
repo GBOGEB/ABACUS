@@ -52,10 +52,9 @@ def run_step(repo, tmp_path, base_sha):
     # Stub the installer and diff-cover; record the base diff-cover gets.
     bin_dir = tmp_path / "bin"
     bin_dir.mkdir()
-    (bin_dir / "pip").write_text("#!/bin/sh\nexit 0\n", encoding="utf-8")
-    (bin_dir / "diff-cover").write_text(
-        '#!/bin/sh\nprintf "%s\\n" "$2" > compare.txt\n: > diff-coverage.md\n',
-        encoding="utf-8",
+    (bin_dir / "pip").write_bytes(b"#!/bin/sh\nexit 0\n")
+    (bin_dir / "diff-cover").write_bytes(
+        b'#!/bin/sh\nprintf "%s\\n" "$2" > compare.txt\n: > diff-coverage.md\n'
     )
     for stub in bin_dir.iterdir():
         stub.chmod(0o755)
