@@ -16,16 +16,22 @@ re-pinned in two steps, never by hand-editing numbers:
    native CI measurements; an empty floor is set from the first measurement.
    The epoch is ``PINNED`` once every file is measured on every Python.
 
-Read-only towards git: blob ids are computed in-process exactly as
-``git hash-object`` does for an LF-normalised text file.
+Read-only towards git: blob ids come from ``git hash-object`` through the
+preflight's own git helper, so both tools agree on attributes and line
+endings and no hashing is reimplemented here.
 """
 from __future__ import annotations
 
 import argparse
-import hashlib
+import importlib.util
 import json
 import re
 from pathlib import Path
+
+_PREFLIGHT_PATH = Path(__file__).resolve().with_name("g3a_w16_preflight.py")
+_SPEC = importlib.util.spec_from_file_location("g3a_w16_preflight", _PREFLIGHT_PATH)
+_preflight = importlib.util.module_from_spec(_SPEC)
+_SPEC.loader.exec_module(_preflight)
 
 MANIFEST = Path("MIP/statistics/g3a_w16_epoch.json")
 SCHEMA = "code-purple.g3a.w16.epoch.v1"
@@ -38,13 +44,8 @@ class RepinError(ValueError):
     """The requested re-pin would lose or invent evidence."""
 
 
-def blob_id(data: bytes) -> str:
-    # The repository normalises text to LF (``* text=auto eol=lf``), so a CRLF
-    # working copy hashes to the same blob git would store.
-    if b"\0" not in data:
-        data = data.replace(b"\r\n", b"\n")
-    header = b"blob %d\0" % len(data)
-    return hashlib.sha1(header + data, usedforsecurity=False).hexdigest()
+def blob_id(root: Path, path: str) -> str:
+    return _preflight._git(root, "hash-object", path)
 
 
 def workflow_census(root: Path) -> dict:
@@ -99,7 +100,7 @@ def repin(
         source = root / path
         if not source.is_file():
             raise RepinError("pinned source file is missing: " + path)
-        blob = blob_id(source.read_bytes())
+        blob = blob_id(root, path)
         changed = blob != entry["blob"]
         if changed:
             entry["previous_blob"] = entry["blob"]

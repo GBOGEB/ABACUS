@@ -5,6 +5,7 @@ import io
 import json
 import tempfile
 import unittest
+import unittest.mock as mock
 from pathlib import Path
 
 from scripts import g3a_w16_repin as rp
@@ -47,6 +48,15 @@ class RepinCase(unittest.TestCase):
             },
         }
         (self.root / "src/ctl.py").write_text("print('safe')\n", encoding="utf-8")
+        # Blob ids come from git; a content-keyed fake keeps these tests
+        # independent of git and of temp-directory ownership rules.
+        fake_git = mock.patch.object(rp._preflight, "_git", side_effect=self.fake_git)
+        self.git = fake_git.start()
+        self.addCleanup(fake_git.stop)
+
+    def fake_git(self, root, command, path):
+        content = (root / path).read_text(encoding="utf-8")
+        return SAFE_BLOB if content == "print('safe')\n" else "e" * 40
 
     @staticmethod
     def entry(role, blob, branches, floor):
@@ -72,10 +82,10 @@ class RepinCase(unittest.TestCase):
 
 
 class BlobAndCensusTests(RepinCase):
-    def test_blob_id_matches_git_for_lf_and_crlf_working_copies(self):
-        self.assertEqual(rp.blob_id(b"print('safe')\n"), SAFE_BLOB)
-        self.assertEqual(rp.blob_id(b"print('safe')\r\n"), SAFE_BLOB)
-        self.assertNotEqual(rp.blob_id(b"\0\r\n"), rp.blob_id(b"\0\n"))
+    def test_blob_id_is_git_hash_object_via_preflight_helper(self):
+        self.assertEqual(rp.blob_id(self.root, "src/kept.py"), SAFE_BLOB)
+        self.git.assert_called_with(self.root, "hash-object", "src/kept.py")
+        self.assertEqual(rp.blob_id(self.root, "src/moved.py"), "e" * 40)
 
     def test_workflow_census_maps_policy_subcategories(self):
         census = rp.workflow_census(self.root)
