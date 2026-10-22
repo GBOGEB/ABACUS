@@ -214,6 +214,18 @@ def test_notebook_nonmapping_binary_outputs_are_dropped():
     assert result == [{"data": {"text/plain": "ok"}}]
 
 
+def test_notebook_non_object_json_root_is_refused_by_parser_and_cli(
+    tmp_path, capsys
+):
+    module = _notebook()
+    path = tmp_path / "array.ipynb"
+    path.write_text("[]", encoding="utf-8")
+    with pytest.raises(ValueError, match="JSON root must be an object"):
+        module.NotebookParser().parse(path)
+    assert module._main([str(path)]) == 1
+    assert "ERROR: Notebook JSON root must be an object" in capsys.readouterr().err
+
+
 def test_document_aligner_missing_then_local_alignment(tmp_path):
     Aligner = _aligner()
     agent = Aligner(tmp_path)
