@@ -78,7 +78,9 @@ def test_notebook_parser_native_cells_and_binary_sanitization(tmp_path):
     }
     notebook.write_text(json.dumps(data), encoding="utf-8")
     result = m.NotebookParser().parse(notebook)
-    assert result["notebook_sha256"] == hashlib.sha256(notebook.read_bytes()).hexdigest()
+    assert (
+        result["notebook_sha256"] == hashlib.sha256(notebook.read_bytes()).hexdigest()
+    )
     assert result["cell_count"] == 4
     assert (result["code_cell_count"], result["markdown_cell_count"]) == (1, 1)
     assert result["raw_cell_count"] == 1
@@ -91,9 +93,9 @@ def test_notebook_parser_native_cells_and_binary_sanitization(tmp_path):
     assert parser.save_extract(result, tmp_path / "out").exists()
     knowledge = parser.build_knowledge_source(result)
     assert knowledge["source_id"].endswith(result["notebook_sha256"][:8])
-    assert parser.build_knowledge_source(result, source_id="owner:test")["source_id"] == (
-        "owner:test"
-    )
+    assert parser.build_knowledge_source(result, source_id="owner:test")[
+        "source_id"
+    ] == ("owner:test")
 
 
 def test_notebook_parser_negative_paths_and_unknown_defaults(tmp_path, capsys):
@@ -231,7 +233,9 @@ def test_self_smoke_probes_and_deterministic_fail_closed_receipt(tmp_path):
         with (
             mock.patch.object(m, "_git", side_effect=["a" * 40, "b" * 40] * 2),
             mock.patch.object(m, "_probe_orchestrator", return_value={"class": "Fake"}),
-            mock.patch.object(m, "_probe_agent_manager", return_value={"class": "Fake"}),
+            mock.patch.object(
+                m, "_probe_agent_manager", return_value={"class": "Fake"}
+            ),
             mock.patch.object(m, "_probe_handover", return_value={"module": "Fake"}),
         ):
             first = m.run_self_smoke()
@@ -250,9 +254,14 @@ def test_self_smoke_preserves_failed_probe_and_captured_stdout(tmp_path):
             "product_version": {"ABACUS_VERSION": "6.0.0"},
         },
     )
+
+    def fail_config():
+        print("synthetic diagnostic")
+        raise RuntimeError("synthetic red")
+
     with (
         mock.patch.object(m, "_git", side_effect=["a" * 40, "b" * 40]),
-        mock.patch.object(m, "_probe_config", side_effect=RuntimeError("synthetic red")),
+        mock.patch.object(m, "_probe_config", side_effect=fail_config),
         mock.patch.object(m, "_probe_ssot", return_value={"sha256": "safe"}),
         mock.patch.object(m, "_probe_contract", return_value={"surfaces": []}),
         mock.patch.object(m, "_probe_orchestrator", return_value={}),
@@ -264,6 +273,7 @@ def test_self_smoke_preserves_failed_probe_and_captured_stdout(tmp_path):
     assert receipt["passed"] == 6
     assert receipt["stages"][1]["status"] == "FAIL"
     assert "synthetic red" in receipt["stages"][1]["error"]
+    assert receipt["stages"][1]["captured_stdout"] == "synthetic diagnostic"
 
 
 def test_dmaic_entrypoint_version_json_and_self_smoke(capsys, monkeypatch):
@@ -294,7 +304,9 @@ def test_compatibility_module_entrypoints_are_importable():
     main.main = mock.Mock(return_value=0)
     modules = {
         "src": fake_package("src"),
-        "src.qplant_presentation_engine": fake_package("src.qplant_presentation_engine"),
+        "src.qplant_presentation_engine": fake_package(
+            "src.qplant_presentation_engine"
+        ),
         "src.qplant_presentation_engine.__main__": main,
     }
     with mock.patch.dict(sys.modules, modules):
@@ -302,9 +314,7 @@ def test_compatibility_module_entrypoints_are_importable():
     assert qplant.main() == 0
     main.main.assert_called_once_with()
     phases = {"phase0_init": {"Phase0Init": type("Phase0Init", (), {})}}
-    setup = load_with_siblings(
-        "DMAIC_V3/phases/phase0_setup.py", "w76_phases", phases
-    )
+    setup = load_with_siblings("DMAIC_V3/phases/phase0_setup.py", "w76_phases", phases)
     assert setup.Phase0Setup.__bases__[0].__name__ == "Phase0Init"
 
 
