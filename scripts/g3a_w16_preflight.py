@@ -74,11 +74,14 @@ def scan(root: Path, expected_head: str) -> dict:
             errors.append(
                 "WORKFLOW_POLICY_MATCH_COUNT:" + workflow.name + ":" + str(len(hits))
             )
+            # Same bucket as scripts/g3a_w16_repin.py, so a pinned census
+            # compares like for like.
+            cluster = lifecycle = "UNCLASSIFIED"
         else:
             classified += 1
             cluster, lifecycle = hits[0].get("cluster"), hits[0].get("lifecycle")
-            by_cluster[cluster] = by_cluster.get(cluster, 0) + 1
-            by_lifecycle[lifecycle] = by_lifecycle.get(lifecycle, 0) + 1
+        by_cluster[cluster] = by_cluster.get(cluster, 0) + 1
+        by_lifecycle[lifecycle] = by_lifecycle.get(lifecycle, 0) + 1
     if len(workflows) != census.get("population"):
         errors.append("WORKFLOW_POPULATION_DRIFT")
     for key, actual in (("by_cluster", by_cluster), ("by_lifecycle", by_lifecycle)):

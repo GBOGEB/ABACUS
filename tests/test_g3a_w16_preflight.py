@@ -95,6 +95,9 @@ class PreflightContractTests(unittest.TestCase):
             )
         )
         self.assertIn("WORKFLOW_POPULATION_DRIFT", x["errors"])
+        self.assertEqual(
+            x["workflow_subcategories"]["by_cluster"], {"UNCLASSIFIED": 1, "c": 1}
+        )
 
     def test_generated_inventory_staleness_not_ignored(self):
         x = self.scan(audit_rc=1)
