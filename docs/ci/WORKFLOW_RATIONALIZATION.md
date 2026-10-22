@@ -7,7 +7,7 @@ Policy SHA-256 (canonical sorted JSON bytes of `ci/governance/workflow_policy.js
 
 ## Outcome
 
-The repository currently contains **212 workflow definitions**. All **212** are assigned to one primary functional cluster and lifecycle stage.
+The repository currently contains **214 workflow definitions**. All **212** are assigned to one primary functional cluster and lifecycle stage.
 
 The observed baseline that motivated this control was PR #681 with 119 check runs (111 queued, 8 skipped) and main with 122 check runs.
 
