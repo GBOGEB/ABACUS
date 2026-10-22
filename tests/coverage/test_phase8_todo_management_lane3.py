@@ -18,7 +18,6 @@ import pytest
 import yaml
 
 import DMAIC_V3.phases.phase8_todo_management as p8
-from DMAIC_V3.phases.phase8_todo_management import Phase8TODOManagement, TODOTracker
 
 # On case-insensitive globbing (Windows) both "TODO*.yaml" and "todo*.yaml"
 # match the same file, so YAML TODO files are ingested once per pattern.
@@ -53,7 +52,7 @@ def env(tmp_path, monkeypatch):
     workspace.mkdir()
     run_dir.mkdir()
     monkeypatch.chdir(run_dir)
-    phase = Phase8TODOManagement(
+    phase = p8.Phase8TODOManagement(
         SimpleNamespace(workspace_root=str(workspace)), SimpleNamespace()
     )
     return SimpleNamespace(
