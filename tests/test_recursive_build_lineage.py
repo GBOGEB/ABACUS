@@ -199,7 +199,10 @@ def test_invalid_parent_fails_closed(monkeypatch, tmp_path, parent):
     [
         ("delta", {}),
         ("lineage.parent_sha256", "not-a-sha"),
+        ("lineage.parent_sha256", int("1" * 64)),
         ("lineage.parent_iteration", 2),
+        ("lineage.parent_iteration", True),
+        ("lineage.parent_iteration", 1.0),
         ("lineage.kind", "GENESIS"),
     ],
 )

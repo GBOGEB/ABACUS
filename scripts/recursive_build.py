@@ -201,9 +201,13 @@ def parent_problem(parent):
     else:
         if lineage["kind"] != "CHILD":
             return "iterations after 1 must be CHILD receipts"
-        if not re.fullmatch(r"[0-9a-f]{64}", str(lineage.get("parent_sha256", ""))):
+        parent_sha256 = lineage.get("parent_sha256")
+        if not isinstance(parent_sha256, str) or not re.fullmatch(
+            r"[0-9a-f]{64}", parent_sha256
+        ):
             return "lineage.parent_sha256 must be a 64-character SHA"
-        if lineage.get("parent_iteration") != iteration - 1:
+        parent_iteration = lineage.get("parent_iteration")
+        if type(parent_iteration) is not int or parent_iteration != iteration - 1:
             return "lineage.parent_iteration must be iteration - 1"
         delta = parent.get("delta")
         if not isinstance(delta, dict) or set(delta) != set(DELTA_FIELDS):
