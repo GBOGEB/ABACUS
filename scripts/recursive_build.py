@@ -214,6 +214,18 @@ def parent_problem(parent):
             return "delta must contain every measured count"
         if not all(type(delta[field]) is int for field in DELTA_FIELDS):
             return "delta values must be ints"
+        previous_counts = {
+            field: parent[section][field] - delta[field]
+            for section, fields in REQUIRED_PARENT_FIELDS.items()
+            for field in fields
+        }
+        if any(value < 0 for value in previous_counts.values()):
+            return "delta implies negative predecessor counts"
+        if previous_counts["artefacts"] != sum(
+            previous_counts[field]
+            for field in ("missing", "hash_matched", "hash_mismatched", "unhashed")
+        ):
+            return "delta implies inconsistent predecessor classifications"
     return None
 
 
@@ -258,9 +270,14 @@ def build_receipt(artifacts, checked, parent=None, parent_sha=None):
             "parent_sha256": parent_sha,
             "parent_iteration": parent["iteration"],
         }
-        before = {**parent["counts"], **parent["integrity"]}
+        before = {
+            field: parent[section][field]
+            for section, fields in REQUIRED_PARENT_FIELDS.items()
+            for field in fields
+        }
+        current = {**counts, **integrity}
         delta = {
-            key: value - before[key] for key, value in {**counts, **integrity}.items()
+            key: current[key] - before[key] for key in DELTA_FIELDS
         }
     return {
         "schema": SCHEMA,
@@ -340,7 +357,7 @@ def main():
 
     out = Path(args.out)
     out.parent.mkdir(parents=True, exist_ok=True)
-    out.write_text(json.dumps(data, indent=2) + "\n", encoding="utf-8")
+    out.write_bytes((json.dumps(data, indent=2) + "\n").encode("utf-8"))
     print(f"[WROTE] {out} iteration={data['iteration']} status={data['status']}")
 
     if args.update_metrics:

@@ -72,6 +72,9 @@ def test_genesis_receipt_is_measured_and_source_bound(monkeypatch, tmp_path):
     assert data["source_sha"] == FAKE_SHA
     assert data["counts"] == {"artefacts": 1, "missing": 0}
     assert data["integrity"] == {"hash_matched": 1, "hash_mismatched": 0, "unhashed": 0}
+    receipt_bytes = (tmp_path / "r1.json").read_bytes()
+    assert receipt_bytes.endswith(b"\n")
+    assert b"\r" not in receipt_bytes
 
 
 def test_recursive_chain_links_every_parent_by_sha256(monkeypatch, tmp_path):
@@ -119,6 +122,18 @@ def test_tampered_parent_changes_lineage_hash(monkeypatch, tmp_path):
     (tmp_path / "r1.json").write_text(json.dumps(parent), encoding="utf-8")
     _, forged = build(monkeypatch, tmp_path, "r3.json", "r1.json")
     assert forged["lineage"]["parent_sha256"] != honest["lineage"]["parent_sha256"]
+
+
+def test_extra_parent_fields_do_not_overwrite_delta_baseline(monkeypatch, tmp_path):
+    write_index(tmp_path, hashed_artifact(tmp_path))
+    build(monkeypatch, tmp_path, "r1.json")
+    parent = json.loads((tmp_path / "r1.json").read_text(encoding="utf-8"))
+    parent["integrity"]["artefacts"] = 100
+    (tmp_path / "r1.json").write_text(json.dumps(parent), encoding="utf-8")
+
+    _, child = build(monkeypatch, tmp_path, "r2.json", "r1.json")
+
+    assert set(child["delta"].values()) == {0}
 
 
 def mutate_valid_parent(monkeypatch, tmp_path, spec: str) -> str:
@@ -204,6 +219,8 @@ def test_invalid_parent_fails_closed(monkeypatch, tmp_path, parent):
         ("lineage.parent_iteration", True),
         ("lineage.parent_iteration", 1.0),
         ("lineage.kind", "GENESIS"),
+        ("delta.artefacts", 2),
+        ("delta.artefacts", 1),
     ],
 )
 def test_invalid_child_parent_fails_closed(monkeypatch, tmp_path, field, value):
