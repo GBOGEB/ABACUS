@@ -753,17 +753,10 @@ def test_cli_fails_closed_for_any_status_other_than_SUCCESS(
     assert "[BLOCKED]" in capsys.readouterr().out
 
 
-def test_cli_push_failure_currently_still_exits_0(tmp_path, monkeypatch, capsys):
-    """Finding (documented, not fixed): a rejected ``git push`` in live mode
-    sets no pipeline ``status``, so ``main`` prints success and returns 0.
-    The fail-closed gate only covers the git-status scan."""
-    install_git(monkeypatch, status=" M a.py\n", push_rc=1)
-    ranking_probe(monkeypatch)
-    _argv(monkeypatch, tmp_path)
-    assert cgo.main() == 0
-    out = capsys.readouterr().out
-    assert "Push failed: rejected: non-fast-forward" in out
-    assert "[OK] CI/CD pipeline executed successfully" in out
+# Finding F1 (a rejected live push exited 0) is fixed in PR #2391.  Its CLI
+# exit-code assertions live there (tests/test_f1_orchestrator_push_failure_exit.py),
+# so this wave asserts neither the old nor the new exit code and merges in
+# either order.
 
 
 def test_script_entrypoint_propagates_blocked_exit_code_to_shell(

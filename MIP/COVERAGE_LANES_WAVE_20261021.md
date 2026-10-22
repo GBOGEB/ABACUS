@@ -126,8 +126,10 @@ coverage job on this branch can confirm or refute it.
 
 Test execution:
 
-- The wave adds 424 new tests: L1 104, L2 200, L3 83, L4 37.
-- The combined cohort result is 801 passed, 1 skipped and 5 strict xfail.
+- The wave adds 422 new tests: L1 103, L2 199, L3 83, L4 37. That is 424
+  measured, minus the F1 and F3 pins moved to PR #2391.
+- The combined cohort result, measured before the F1/F3 pins moved, is 801
+  passed, 1 skipped and 5 strict xfail.
 - One test failed, and it fails without the wave too:
   `test_w32_g3cs_neural_dependencies::test_native_import_is_real_not_a_mock_or_skip`.
   The workstation has networkx 3.5 and the test pins 3.6.1, so this is
@@ -153,17 +155,19 @@ coverage writes the file on every test switch, with SQLite journaling off. It
 does not fit a test writing into the file. The exact trigger is unproven, so the
 CI broad-coverage job should be checked for the same error.
 
-## Production findings (pinned by tests, not fixed)
+## Production findings
 
-Each finding is pinned either as asserted current behaviour or as
-`xfail(strict=True)`. A fix will flip the pin, which makes the test the
-regression guard.
+F1 and F3 are fixed in draft PR #2391. Their regression tests live there,
+so this wave asserts neither the old nor the new behaviour, and the two PRs
+merge in either order. The other findings are pinned here either as asserted
+current behaviour or as `xfail(strict=True)`, unfixed. A fix will flip the
+pin, which makes the test the regression guard.
 
 | ID | Module | Finding | Pinned by |
 | --- | --- | --- | --- |
-| F1 | `cicd_github_orchestrator.py` | In live mode a rejected `git push` sets no pipeline status, so `main()` prints success and returns 0. Fail-closed covers only the git-status scan. | `test_cli_push_failure_currently_still_exits_0` |
+| F1 | `cicd_github_orchestrator.py` | In live mode a rejected `git push` sets no pipeline status, so `main()` prints success and returns 0. Fail-closed covers only the git-status scan. | **Fixed in #2391** (`tests/test_f1_orchestrator_push_failure_exit.py`) |
 | F2 | `cicd_github_orchestrator.py` | `has_changes` is sampled before refactoring, so on a clean tree a live run moves and deletes files but never commits them. | lane 1 current behaviour |
-| F3 | `scripts/test_admission_census.py` | A JUnit file left in `--junit-dir` by an earlier run is not cleared. If pytest writes no new JUnit (exit 0 or 5), the stale pass is classified `TEST_GREEN`. | `test_main_stale_junit_from_previous_run_is_trusted` |
+| F3 | `scripts/test_admission_census.py` | A JUnit file left in `--junit-dir` by an earlier run is not cleared. If pytest writes no new JUnit (exit 0 or 5), the stale pass is classified `TEST_GREEN`. | **Fixed in #2391** (`tests/test_f3_census_stale_junit.py`) |
 | F4 | `build_global_spine_w10.py` | `make_html` puts the `local_dod` and `mission_goals` `id` field and the pill CSS class built from `state` into HTML unescaped. | strict xfail ×2 |
 | F5 | `build_global_spine_w10.py` | The metrics JSON and handover hardcode `+522` coverage and `+2` CI recoveries instead of reading `history["next_scenario"]`. | `test_main_metrics_follow_history_scenario` (strict xfail) |
 | F6 | `phase8_todo_management.py` | Code-scan TODO IDs hash `datetime.now()`, so replaying the same workspace registers the same TODO again. | lane 3 current behaviour |
@@ -175,7 +179,7 @@ regression guard.
 | F12 | `github_tracking_manager.py` | Feedback and action IDs come only from `utcnow().timestamp()`, so they collide within one clock tick. CI run records store no head SHA. | lane 1 current behaviour |
 
 F1 and F3 are integrity defects in exit-code and evidence propagation. They are
-the ones most relevant to admission.
+the ones most relevant to admission, and #2391 addresses them.
 
 ## Disposition
 

@@ -546,24 +546,10 @@ def test_main_malformed_junit_aborts_without_report(monkeypatch, tree):
     assert not (tree.out / "report" / "census.json").exists()
 
 
-def test_main_stale_junit_from_previous_run_is_trusted(monkeypatch, tree):
-    """Documents current behaviour (reported as a finding).
-
-    ``main`` does not delete a pre-existing ``NNN-<stem>.xml`` before running a
-    file.  If the pytest run writes no JUnit (crash before report, or a
-    plugin-level abort with exit 0/5), a stale passing JUnit left in
-    ``--junit-dir`` from an earlier census is read as current evidence.
-    """
-    _touch(tree.dmaic / "test_a.py")
-    junit_dir = tree.out / "junit"
-    junit_dir.mkdir(parents=True)
-    _junit(junit_dir / "000-test_a.xml", '<testcase name="old_pass"/>')
-    _install(monkeypatch, FakeProcs({"test_a": {"junit": None, "run_rc": 5}}))
-    census.main(_argv(tree))
-    row = _read_report(tree)["rows"][0]
-    assert row["run_returncode"] == 5
-    assert row["outcomes"]["pass"] == 1
-    assert row["test_state"] == "TEST_GREEN"
+# Finding F3 (a stale JUnit left in --junit-dir was trusted as current evidence)
+# is fixed in PR #2391.  Its stale-evidence assertions live there
+# (tests/test_f3_census_stale_junit.py), so this wave pins neither behaviour
+# and merges in either order.
 
 
 def test_main_requires_mandatory_arguments(capsys):
