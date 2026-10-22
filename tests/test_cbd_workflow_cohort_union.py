@@ -76,6 +76,9 @@ class CohortUnionTests(unittest.TestCase):
             r"['\"]HEAD['\"]\s*\],"
             r"\s*text=True\s*\)\s*\.strip\(\)"
         )
+        checkout_guard = re.compile(
+            r"if actual_head != pull_head:\n\s+raise SystemExit\("
+        )
         receipt_guard = re.compile(
             r'"pull_head_sha":\s*pull_head,\s*'
             r'"event_sha":\s*os\.getenv\("GITHUB_EVENT_SHA"\),\s*'
@@ -88,6 +91,7 @@ class CohortUnionTests(unittest.TestCase):
             for item in required:
                 self.assertEqual(source.count(item), 1, item)
             self.assertEqual(len(checkout_head.findall(source)), 1)
+            self.assertEqual(len(checkout_guard.findall(source)), 1)
             self.assertEqual(len(receipt_guard.findall(source)), 1)
 
         assert_bound(workflow)
@@ -97,6 +101,18 @@ class CohortUnionTests(unittest.TestCase):
             assert_bound(workflow.replace(required[2], "if False:", 1))
         with self.assertRaises(AssertionError):
             assert_bound(checkout_head.sub("", workflow, count=1))
+        with self.assertRaises(AssertionError):
+            assert_bound(
+                checkout_head.sub("actual_head = pull_head", workflow, count=1)
+            )
+        with self.assertRaises(AssertionError):
+            assert_bound(
+                checkout_guard.sub(
+                    "if actual_head != pull_head:\n            pass",
+                    workflow,
+                    count=1,
+                )
+            )
         with self.assertRaises(AssertionError):
             assert_bound(
                 workflow.replace(
