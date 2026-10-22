@@ -24,6 +24,7 @@ def require(flag: bool, why: str) -> None:
 
 def _path(s: Any) -> bool:
     return isinstance(s, str) and bool(s) and not s.startswith("/") and (
+        not re.match(r"^[A-Za-z]:", s) and "\0" not in s and
         "\\" not in s and all(x not in ("", ".", "..") for x in s.split("/"))
     )
 

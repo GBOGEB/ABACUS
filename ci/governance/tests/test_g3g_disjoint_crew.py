@@ -211,7 +211,9 @@ class G3GSutSourceLeaseTests(unittest.TestCase):
 
     def test_traversal_or_malformed_target_inventory_rejected(self):
         for targets in ("integration/shared.py", ["../secret.py"],
-                        ["integration/./shared.py"], ["integration/shared.py"] * 2):
+                        ["integration/./shared.py"], ["integration/shared.py"] * 2,
+                        ["C:/work/ABACUS/DMAIC_V3/analyze_recent_files.py"],
+                        ["DMAIC_V3/analyze_recent_files.py\x00"]):
             with self.subTest(targets=targets):
                 data = self.declared()
                 data["lanes"][0]["sut_paths"] = targets
