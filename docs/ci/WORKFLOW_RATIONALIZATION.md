@@ -3,11 +3,11 @@
 # ABACUS CI workflow rationalisation
 
 Policy: `ABACUS-CI-SSOT-001`  
-Policy SHA-256 (canonical sorted JSON bytes of `ci/governance/workflow_policy.json`): `be116b88b1c8a31a32d0e94376572bc4d833a6f670fe651bc5d87449081c6206`
+Policy SHA-256 (canonical sorted JSON bytes of `ci/governance/workflow_policy.json`): `11f2edea8494485f4942efa7c6844510ce8478820dcd8553c378e9ba1231ad6e`
 
 ## Outcome
 
-The repository currently contains **212 workflow definitions**. All **212** are assigned to one primary functional cluster and lifecycle stage.
+The repository currently contains **215 workflow definitions**. All **215** are assigned to one primary functional cluster and lifecycle stage.
 
 The observed baseline that motivated this control was PR #681 with 119 check runs (111 queued, 8 skipped) and main with 122 check runs.
 
@@ -33,11 +33,11 @@ The observed baseline that motivated this control was PR #681 with 119 check run
 | `dmaic` | `dmaic-enterprise-ci.yml` | 9 | DMAIC phase, convergence and maturity execution. |
 | `dow` | `dow-integration.yml` | 22 | DOW parent mechanics, integration, monitoring and warm-up. |
 | `runtime_governance` | `governance.yml` | 30 | Runtime evidence, governance, review artifacts and schema validation. |
-| `security` | `security-scan.yml` | 12 | Ruff PR security, scheduled Bandit, CodeQL, dependency and supply-chain scanning. |
+| `security` | `security-scan.yml` | 13 | Ruff PR security, scheduled Bandit, CodeQL, dependency and supply-chain scanning. |
 | `delivery` | `cd-pipeline.yml` | 8 | Build, release, deployment and publication. |
-| `documentation` | `docs-build.yml` | 7 | Documentation validation, rendering, export and Pages. |
+| `documentation` | `docs-build.yml` | 8 | Documentation validation, rendering, export and Pages. |
 | `automation` | `post-merge-pr-summary.yml` | 13 | Repository maintenance, reporting, branch and PR automation. |
-| `specialised` | `qps-cost-roundtrip-contract.yml` | 45 | Bounded product or historical pipelines retained outside core CI. |
+| `specialised` | `qps-cost-roundtrip-contract.yml` | 46 | Bounded product or historical pipelines retained outside core CI. |
 | `ci_governance` | `ci-governance.yml` | 2 | This policy, inventory, overlap and staleness gate. |
 | `legacy` | — | 2 | Superseded workflows kept temporarily for manual comparison before deletion. |
 
@@ -55,7 +55,7 @@ Make PR-triggered workflows with write-class GitHub token scopes explicit and re
 
 | Control | Workflows |
 |---|---|
-| PR write exceptions | `bootstrap-integration.yml`, `branch-hygiene.yml`, `codeql.yml`, `dependency-review.yml`, `gloob-causal-responder.yml`, `osv-scanner.yml`, `post-merge-pr-summary.yml`, `pr-feedback-gate.yml`, `semgrep.yml`, `w67-measured-id-pulse.yml` |
+| PR write exceptions | `bootstrap-integration.yml`, `branch-hygiene.yml`, `code-quality-pilot.yml`, `codeql.yml`, `dependency-review.yml`, `gloob-causal-responder.yml`, `osv-scanner.yml`, `post-merge-pr-summary.yml`, `pr-feedback-gate.yml`, `semgrep.yml`, `w67-measured-id-pulse.yml` |
 | `pull_request_target` write exceptions | none |
 
 ## Workflow inventory
@@ -170,6 +170,7 @@ Make PR-triggered workflows with write-class GitHub token scopes explicit and re
 | 20 | `pr_domain` | `runtime_governance` | `yaml-validation.yml` | push, pull_request | 1 | `keep` | — |
 | 20 | `pr_domain` | `security` | `bandit-disjoint-census.yml` | workflow_dispatch, pull_request | 1 | `keep` | — |
 | 20 | `pr_domain` | `security` | `code-maroon.yml` | pull_request, workflow_dispatch | 1 | `keep` | — |
+| 20 | `pr_domain` | `security` | `code-quality-pilot.yml` | workflow_dispatch, pull_request, schedule | 2 | `keep` | — |
 | 20 | `pr_domain` | `security` | `codeql.yml` | push, pull_request, schedule | 1 | `keep` | — |
 | 20 | `pr_domain` | `security` | `dependency-review.yml` | pull_request | 1 | `keep` | — |
 | 20 | `pr_domain` | `security` | `osv-scanner.yml` | pull_request, merge_group | 1 | `keep` | — |
@@ -180,6 +181,7 @@ Make PR-triggered workflows with write-class GitHub token scopes explicit and re
 | 20 | `pr_domain` | `security` | `semgrep.yml` | push, pull_request, schedule, workflow_dispatch | 1 | `keep` | — |
 | 20 | `pr_domain` | `specialised` | `code-purple-w40-binary-penetration.yml` | pull_request, workflow_dispatch | 1 | `keep` | — |
 | 20 | `pr_domain` | `specialised` | `code-purple-w42-remaining-arcs.yml` | pull_request, workflow_dispatch | 1 | `keep` | — |
+| 20 | `pr_domain` | `specialised` | `code-purple-w76-zero-assets.yml` | pull_request, workflow_dispatch | 1 | `keep` | — |
 | 20 | `pr_domain` | `specialised` | `dab-flake8-census.yml` | workflow_call, pull_request, push, schedule, workflow_dispatch | 1 | `keep` | — |
 | 20 | `pr_domain` | `specialised` | `delta-1-baseline.yml` | workflow_dispatch | 1 | `keep` | — |
 | 20 | `pr_domain` | `specialised` | `mip-coverage-evidence.yml` | workflow_dispatch, push, pull_request | 6 | `keep` | — |
@@ -253,6 +255,7 @@ Make PR-triggered workflows with write-class GitHub token scopes explicit and re
 | 30 | `post_merge` | `documentation` | `deploy-docs.yml` | push, workflow_dispatch | 3 | `keep` | — |
 | 30 | `post_merge` | `documentation` | `docs-build.yml` | push | 1 | `keep` | — |
 | 30 | `post_merge` | `documentation` | `export-docs.yml` | push, workflow_dispatch | 1 | `keep` | — |
+| 30 | `post_merge` | `documentation` | `nextjs.yml` | push, workflow_dispatch | 2 | `keep` | — |
 | 30 | `post_merge` | `documentation` | `pages.yml` | workflow_dispatch | 1 | `keep` | — |
 | 30 | `post_merge` | `documentation` | `reports.yml` | schedule, workflow_dispatch, push | 2 | `keep` | — |
 | 30 | `post_merge` | `documentation` | `update-docs.yml` | push, workflow_dispatch | 1 | `keep` | — |

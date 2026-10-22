@@ -86,6 +86,7 @@
     "pr_write_allowed": [
       "bootstrap-integration.yml",
       "branch-hygiene.yml",
+      "code-quality-pilot.yml",
       "codeql.yml",
       "dependency-review.yml",
       "gloob-causal-responder.yml",
@@ -273,7 +274,7 @@
       "disposition": "keep"
     },
     {
-      "pattern": "^(codeql|dependency-review|osv-scanner|osv-scheduled|reusable-security|security-dashboard|security-scan|semgrep)\\.yml$",
+      "pattern": "^(code-quality-pilot|codeql|dependency-review|osv-scanner|osv-scheduled|reusable-security|security-dashboard|security-scan|semgrep)\\.yml$",
       "cluster": "security",
       "lifecycle": "pr_domain",
       "disposition": "keep"
@@ -285,7 +286,7 @@
       "disposition": "keep"
     },
     {
-      "pattern": "^(deploy-docs|docs-build|export-docs|pages|reports|update-docs)\\.yml$",
+      "pattern": "^(deploy-docs|docs-build|export-docs|nextjs|pages|reports|update-docs)\\.yml$",
       "cluster": "documentation",
       "lifecycle": "post_merge",
       "disposition": "keep"
