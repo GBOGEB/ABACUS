@@ -328,6 +328,10 @@ jobs:
 
     steps:
       - uses: actions/checkout@v7
+        with:
+          # Depth 2 keeps the PR merge commit's base parent for the
+          # new-line coverage diff.
+          fetch-depth: 2
 
       - name: Set up Python
         uses: actions/setup-python@v7
@@ -503,22 +507,27 @@ jobs:
             coverage.xml
             coverage-summary.json
 
-      - name: Fetch PR base for new-line coverage
-        if: always() && github.event_name == 'pull_request'
-        env:
-          BASE_SHA: ${{ github.event.pull_request.base.sha }}
-        run: git fetch --no-tags --depth=1 origin "$BASE_SHA"
-
       # On a pull request, coverage of the lines the PR adds or changes is
       # measured and reported next to the broad-suite percentage above. No
       # PR threshold is enforced until the owner approves one.
       - name: PR new-line coverage (report)
+        id: new_line_coverage
         if: always() && github.event_name == 'pull_request'
+        shell: bash
         env:
           BASE_SHA: ${{ github.event.pull_request.base.sha }}
         run: |
+          set -euo pipefail
+          # The event's base.sha goes stale once the base branch moves; the
+          # merge commit's first parent is the base tip the PR merges into.
+          if git cat-file -e 'HEAD^2^{commit}' 2>/dev/null; then
+            base="$(git rev-parse 'HEAD^1')"
+          else
+            git fetch --no-tags --depth=1 origin "$BASE_SHA"
+            base="$BASE_SHA"
+          fi
           pip install diff-cover
-          diff-cover coverage.xml --compare-branch="$BASE_SHA" \
+          diff-cover coverage.xml --compare-branch="$base" \
             --diff-range-notation=.. \
             --format "markdown:diff-coverage.md"
           cat diff-coverage.md >> "$GITHUB_STEP_SUMMARY"
