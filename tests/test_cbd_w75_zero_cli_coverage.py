@@ -4,14 +4,15 @@ Exact baseline 7e9564f955dc00de23a7fba446d776e076758a8e.
 No real DOW/CD/engineering deployment or private source may be touched:
 all CLI output is scoped to tmp_path and unknown values stay unknown.
 """
+
 from __future__ import annotations
 
 import importlib.util
 import json
 import os
-from pathlib import Path
 import sys
 import types
+from pathlib import Path
 from unittest import mock
 
 import pytest
@@ -33,10 +34,16 @@ def load(relative):
 def test_dow_structure_complete_partial_invalid_and_missing(tmp_path):
     m = load("DMAIC_V3/validate_dow_structure.py")
     full = tmp_path / "valid.json"
-    full.write_text(json.dumps({
-        "metadata": {}, "recursive_hooks": [], "convergence_metrics": {},
-        "knowledge_gain": {},
-    }))
+    full.write_text(
+        json.dumps(
+            {
+                "metadata": {},
+                "recursive_hooks": [],
+                "convergence_metrics": {},
+                "knowledge_gain": {},
+            }
+        )
+    )
     good, checks = m.validate_dow_structure(full)
     assert good and len(checks) == 4 and all(checks.values())
     full.write_text(json.dumps({"metadata": {}}))
@@ -63,10 +70,16 @@ def test_dow_structure_cli_exit_codes(tmp_path, monkeypatch, cohort, exit_code, 
     if cohort != "missing":
         target.mkdir()
     if cohort in {"all_good", "mixed"}:
-        (target / "good.json").write_text(json.dumps({
-            "metadata": {}, "recursive_hooks": {}, "convergence_metrics": {},
-            "knowledge_gain": {},
-        }))
+        (target / "good.json").write_text(
+            json.dumps(
+                {
+                    "metadata": {},
+                    "recursive_hooks": {},
+                    "convergence_metrics": {},
+                    "knowledge_gain": {},
+                }
+            )
+        )
     if cohort == "mixed":
         (target / "bad.json").write_text("{}")
     monkeypatch.setattr(sys, "argv", ["validate_dow_structure.py", str(target)])
@@ -110,18 +123,30 @@ def test_quick_output_cli_empty_and_populated(tmp_path, monkeypatch, capsys):
     phase = root / "iteration_1" / "phaseA"
     phase.mkdir(parents=True)
     (phase / "note.txt").write_text("source safe")
-    (root / "agent_registry.json").write_text(json.dumps({
-        "version": "test", "agents": {"a": {"category": "core", "name": "A"}}
-    }))
-    (root / "iteration_1" / "orchestration_statistics.json").write_text(json.dumps({
-        "orchestration": {"total_phases": 2, "successful_phases": 2,
-                          "failed_phases": 0, "total_duration_seconds": 1.2}
-    }))
+    (root / "agent_registry.json").write_text(
+        json.dumps(
+            {"version": "test", "agents": {"a": {"category": "core", "name": "A"}}}
+        )
+    )
+    (root / "iteration_1" / "orchestration_statistics.json").write_text(
+        json.dumps(
+            {
+                "orchestration": {
+                    "total_phases": 2,
+                    "successful_phases": 2,
+                    "failed_phases": 0,
+                    "total_duration_seconds": 1.2,
+                }
+            }
+        )
+    )
     assert m.main() == 0
     assert "STATISTICS" in capsys.readouterr().out
 
 
-def test_deployment_dashboard_and_cli_are_non_destructive(tmp_path, monkeypatch, capsys):
+def test_deployment_dashboard_and_cli_are_non_destructive(
+    tmp_path, monkeypatch, capsys
+):
     m = load("DOW_DEPLOYMENT_ORCHESTRATOR.py")
     testdir = tmp_path / "DMAIC_V3" / "tests"
     testdir.mkdir(parents=True)
@@ -129,8 +154,10 @@ def test_deployment_dashboard_and_cli_are_non_destructive(tmp_path, monkeypatch,
     agentdir = tmp_path / "local_mcp" / "agents"
     agentdir.mkdir(parents=True)
     (agentdir / "dow_synthetic.py").write_text("# synthetic")
-    with (mock.patch.object(m, "__file__", str(tmp_path / "runner.py")),
-          mock.patch.object(m, "LOG_DIR", tmp_path / "dashboard_output")):
+    with (
+        mock.patch.object(m, "__file__", str(tmp_path / "runner.py")),
+        mock.patch.object(m, "LOG_DIR", tmp_path / "dashboard_output"),
+    ):
         assert m.generate_dashboard() == 0
         receipt = json.loads((m.LOG_DIR / "latest.json").read_text())
         assert receipt["components"]["dmaic_test_files"] == 1
@@ -171,8 +198,7 @@ def load_metrics_collector_safely():
     # Source startup conditionally reconfigures sys.stdout and sets an encoding
     # environment variable: isolate both rather than mutating pytest capture.
     fake_stdout = types.SimpleNamespace()
-    with (mock.patch.object(sys, "stdout", fake_stdout),
-          mock.patch.dict(os.environ)):
+    with mock.patch.object(sys, "stdout", fake_stdout), mock.patch.dict(os.environ):
         return load("fast_metrics_collector.py")
 
 
@@ -188,9 +214,9 @@ def test_fast_metrics_empty_cohort_yields_zero_not_division_by_zero(
     assert v["summary"]["total_files"] == 0
     assert v["summary"]["version_header_percentage"] == 0
     assert v["summary"]["estimated_import_issues"] == 0
-    assert list((tmp_path / "DMAIC_INTEGRATION_OUTPUT/cicd_github").glob(
-        "metrics_empty_*.json"
-    ))
+    assert list(
+        (tmp_path / "DMAIC_INTEGRATION_OUTPUT/cicd_github").glob("metrics_empty_*.json")
+    )
 
 
 def test_fast_metrics_duplicate_nonempty_and_version_headers(tmp_path, monkeypatch):
@@ -199,9 +225,7 @@ def test_fast_metrics_duplicate_nonempty_and_version_headers(tmp_path, monkeypat
     workspace.mkdir()
     (workspace / "one.py").write_text("__version__ = '1.0'\n", encoding="utf-8")
     (workspace / "two.py").write_text("__version__ = '1.0'\n", encoding="utf-8")
-    (workspace / "three.py").write_text(
-        "from ...mod import x\n", encoding="utf-8"
-    )
+    (workspace / "three.py").write_text("from ...mod import x\n", encoding="utf-8")
     monkeypatch.chdir(tmp_path)
     v = m.FastMetricsCollector(workspace, output_suffix="seed").collect_fast_metrics()
     assert v["summary"]["total_files"] == 3
