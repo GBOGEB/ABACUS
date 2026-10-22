@@ -60,14 +60,13 @@ def _summary(value, path):
     return summary
 
 
-def _source_blob(path, root):
+def _source_sha256(path, root):
     relative = _normalize(path)
     target = root / relative
     if not target.is_file() or target.is_symlink() or not target.resolve().is_relative_to(root.resolve()):
         raise ValueError("unavailable or unsafe production source: " + relative)
     raw = target.read_bytes()
-    header = b"blob " + str(len(raw)).encode("ascii") + b"\0"
-    return hashlib.sha1(header + raw).hexdigest()
+    return hashlib.sha256(raw).hexdigest()
 
 
 def compare(baseline, candidate, manifest, head_sha, source_root=None):
@@ -118,10 +117,12 @@ def compare(baseline, candidate, manifest, head_sha, source_root=None):
             raise ValueError("duplicate pinned source target")
         seen.add(path)
         old = item.get("baseline", {})
-        blob = item.get("git_blob_sha")
-        if not isinstance(blob, str) or not SHA.fullmatch(blob):
-            raise ValueError("source blob unqualified")
-        if source_root is not None and _source_blob(path, Path(source_root)) != blob:
+        source_sha256 = item.get("source_sha256")
+        if not isinstance(source_sha256, str) or not re.fullmatch(
+                r"[0-9a-f]{64}", source_sha256):
+            raise ValueError("source digest unqualified")
+        if source_root is not None and _source_sha256(
+                path, Path(source_root)) != source_sha256:
             raise ValueError("source identity mismatch at " + path)
         expected_s = old.get("statements", {})
         expected_b = old.get("branches", {})
@@ -141,7 +142,7 @@ def compare(baseline, candidate, manifest, head_sha, source_root=None):
             roster.append({"path": path, "status": "INCOMPARABLE"})
             continue
         roster.append({
-            "path": path, "git_blob_sha": blob,
+            "path": path, "source_sha256": source_sha256,
             "status": "RECOVERED" if b["covered_lines"] > 0 else "ZERO",
             "statements": {
                 "base_covered": 0, "candidate_covered": b["covered_lines"],

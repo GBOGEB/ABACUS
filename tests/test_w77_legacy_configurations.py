@@ -93,7 +93,9 @@ class W77LegacyConfigurationTests(unittest.TestCase):
             policy = json.loads(pathlib.Path(
                 receipt["details"]["config_file"]).read_text(encoding="utf-8"))
             self.assertEqual(policy["backup_types"]["full_backup"]["retention_days"], 30)
-            self.assertTrue(policy["backup_verification"]["integrity_check"] == "sha256")
+            self.assertEqual(
+                policy["backup_verification"]["integrity_check"], "sha256"
+            )
             self.assertFalse(obj.results.get("native_restore_verified", False))
 
     def test_recovery_plan_is_a_template_not_an_actual_restore(self):

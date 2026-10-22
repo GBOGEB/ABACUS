@@ -101,8 +101,13 @@ class W77FrontierContractTests(unittest.TestCase):
 
     def test_duplicate_windows_posix_paths_rejected(self):
         before, after = fixture()
-        path = MANIFEST["targets"][0]["path"]
-        after["files"][path.replace("/", "\\")] = after["files"][path]
+        path = "scripts/new_pulse.py"
+        summary = {
+            "summary": {"num_statements": 1, "covered_lines": 0,
+                        "num_branches": 0, "covered_branches": 0}
+        }
+        after["files"][path] = summary
+        after["files"][path.replace("/", "\\")] = summary
         with self.assertRaisesRegex(ValueError, "ambiguous"):
             FRONTIER.compare(before, after, MANIFEST, HEAD)
 
@@ -114,15 +119,15 @@ class W77FrontierContractTests(unittest.TestCase):
             with self.subTest(value=invalid), self.assertRaises(ValueError):
                 FRONTIER.compare(before, after, MANIFEST, HEAD)
 
-    def test_tampered_source_blob_and_changed_zero_roster_rejected(self):
+    def test_tampered_source_digest_and_changed_zero_roster_rejected(self):
         before, after = fixture()
         item = copy.deepcopy(MANIFEST)
         item["targets"][0]["baseline"]["statements"]["covered"] = 1
         with self.assertRaisesRegex(ValueError, "nonzero target"):
             FRONTIER.compare(before, after, item, HEAD)
         item = copy.deepcopy(MANIFEST)
-        item["targets"][0]["git_blob_sha"] = "bad"
-        with self.assertRaisesRegex(ValueError, "blob"):
+        item["targets"][0]["source_sha256"] = "bad"
+        with self.assertRaisesRegex(ValueError, "digest"):
             FRONTIER.compare(before, after, item, HEAD)
 
     def test_missing_local_source_cannot_claim_source_identity(self):
@@ -131,18 +136,18 @@ class W77FrontierContractTests(unittest.TestCase):
             with self.assertRaisesRegex(ValueError, "source"):
                 FRONTIER.compare(before, after, MANIFEST, HEAD, source_root=temp)
 
-    def test_actual_pinned_repository_source_blob_is_identical(self):
+    def test_actual_pinned_repository_source_digest_is_identical(self):
         item = MANIFEST["targets"][0]
         self.assertEqual(
-            FRONTIER._source_blob(item["path"], ROOT), item["git_blob_sha"]
+            FRONTIER._source_sha256(item["path"], ROOT), item["source_sha256"]
         )
 
-    def test_actual_twelve_pinned_source_blobs_match(self):
+    def test_actual_twelve_pinned_source_digests_match(self):
         for item in MANIFEST["targets"]:
             with self.subTest(source=item["path"]):
                 self.assertEqual(
-                    FRONTIER._source_blob(item["path"], ROOT),
-                    item["git_blob_sha"],
+                    FRONTIER._source_sha256(item["path"], ROOT),
+                    item["source_sha256"],
                 )
 
     def test_false_complete_statistics_are_never_granted(self):
