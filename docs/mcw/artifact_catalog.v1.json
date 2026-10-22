@@ -15,9 +15,8 @@
       "id": "qps-gate-yaml",
       "title": "QPS W63 binary release gate",
       "format": "yaml",
-      "role": "repository_source",
-      "path": "qps/roundtrip/QPS_W63_BINARY_RECEIPT_QUANT_GATE_v0.1.yaml",
-      "description": "Real QPS release-gate contract; status remains as declared in source."
+      "role": "controlled_input",
+      "description": "Real QPS release-gate contract; status remains as declared in source. Moved to the private cryoplant-project (tender_library/abacus_phase_b_20261022) by A10 F3 phase B; not present in public checkout."
     },
     {
       "id": "ci-workflow-yml",

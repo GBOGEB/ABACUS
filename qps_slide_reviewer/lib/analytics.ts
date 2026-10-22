@@ -78,9 +78,9 @@ export async function buildAnalytics() {
 
   return {
     meta: {
-      deck: 'QPS- 3D _DKO.pptx',
-      docNumber: 'SCK CEN/101648634',
-      classification: 'ISC: Restricted',
+      deck: process.env.QPS_REVIEW_DECK ?? 'review deck (name kept private)',
+      docNumber: process.env.QPS_REVIEW_DOC_NUMBER ?? 'DOC-NUMBER-PRIVATE',
+      classification: process.env.QPS_REVIEW_CLASSIFICATION ?? 'see private configuration',
       generatedAt: new Date().toISOString(),
       method: 'Bradley-Terry (MM, prior 0.1, ties = half win) + PCA (standardised, power iteration)',
     },

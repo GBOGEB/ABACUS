@@ -3,11 +3,11 @@
 # ABACUS CI workflow rationalisation
 
 Policy: `ABACUS-CI-SSOT-001`  
-Policy SHA-256 (canonical sorted JSON bytes of `ci/governance/workflow_policy.json`): `be116b88b1c8a31a32d0e94376572bc4d833a6f670fe651bc5d87449081c6206`
+Policy SHA-256 (canonical sorted JSON bytes of `ci/governance/workflow_policy.json`): `ae62ab34943270e9c42d84975ffdb5e3a79c319f8b4d62dfa41b4f18e96eca2b`
 
 ## Outcome
 
-The repository currently contains **212 workflow definitions**. All **212** are assigned to one primary functional cluster and lifecycle stage.
+The repository currently contains **213 workflow definitions**. All **211** are assigned to one primary functional cluster and lifecycle stage.
 
 The observed baseline that motivated this control was PR #681 with 119 check runs (111 queued, 8 skipped) and main with 122 check runs.
 
@@ -37,7 +37,7 @@ The observed baseline that motivated this control was PR #681 with 119 check run
 | `delivery` | `cd-pipeline.yml` | 8 | Build, release, deployment and publication. |
 | `documentation` | `docs-build.yml` | 7 | Documentation validation, rendering, export and Pages. |
 | `automation` | `post-merge-pr-summary.yml` | 13 | Repository maintenance, reporting, branch and PR automation. |
-| `specialised` | `qps-cost-roundtrip-contract.yml` | 45 | Bounded product or historical pipelines retained outside core CI. |
+| `specialised` | `qps-cost-roundtrip-contract.yml` | 44 | Bounded product or historical pipelines retained outside core CI. |
 | `ci_governance` | `ci-governance.yml` | 2 | This policy, inventory, overlap and staleness gate. |
 | `legacy` | — | 2 | Superseded workflows kept temporarily for manual comparison before deletion. |
 
@@ -132,7 +132,7 @@ Make PR-triggered workflows with write-class GitHub token scopes explicit and re
 | 20 | `pr_domain` | `dow` | `qps-math-wormhole-dow.yml` | pull_request, workflow_dispatch | 1 | `keep` | — |
 | 20 | `pr_domain` | `dow` | `qps-triage-dow-contract.yml` | pull_request, push, workflow_dispatch | 1 | `keep` | — |
 | 20 | `pr_domain` | `dow` | `qps-w04-dow-receipt.yml` | workflow_dispatch, pull_request, push | 3 | `keep` | — |
-| 20 | `pr_domain` | `dow` | `qps-w05-bidder-eval-dow.yml` | workflow_dispatch, pull_request, push | 1 | `keep` | — |
+| 20 | `pr_domain` | `dow` | `qps-w05-supplier-eval-dow.yml` | workflow_dispatch, pull_request, push | 1 | `keep` | — |
 | 20 | `pr_domain` | `dow` | `qps_m05_dow_independent_consumer.yml` | pull_request, push, workflow_dispatch | 1 | `keep` | — |
 | 20 | `pr_domain` | `dow` | `sprint-trigger.yml` | schedule, workflow_dispatch | 1 | `keep` | — |
 | 20 | `pr_domain` | `dow` | `w259-p4-method-cards-independent-dow.yml` | pull_request, push | 1 | `keep` | — |
@@ -192,7 +192,6 @@ Make PR-triggered workflows with write-class GitHub token scopes explicit and re
 | 20 | `pr_domain` | `specialised` | `qps-p05f-measured-sensitivity.yml` | pull_request, workflow_dispatch | 1 | `keep` | — |
 | 20 | `pr_domain` | `specialised` | `qps-p05j-quantitative.yml` | workflow_dispatch, pull_request | 1 | `keep` | — |
 | 20 | `pr_domain` | `specialised` | `qps-v24-refresh-unresolved-selector.yml` | workflow_dispatch, push | 1 | `keep` | — |
-| 20 | `pr_domain` | `specialised` | `qps-w111-power-utility-dow.yml` | pull_request, workflow_dispatch | 1 | `keep` | — |
 | 20 | `pr_domain` | `specialised` | `qps_line_s.yml` | pull_request, workflow_dispatch | 1 | `keep` | — |
 | 20 | `pr_domain` | `specialised` | `reusable-ci.yml` | workflow_call | 1 | `keep` | — |
 | 20 | `pr_domain` | `specialised` | `session_tuple_ci.yml` | push, workflow_dispatch | 3 | `keep` | — |

@@ -1,7 +1,14 @@
 import json
 from pathlib import Path
 
+import pytest
+
 from models.qps_line_b.run_p05h_p05i_receipts import DEFAULT_SOURCE, emit
+
+pytestmark = pytest.mark.skipif(
+    not DEFAULT_SOURCE.is_file(),
+    reason="source payload moved to private cryoplant-project (A10 F3 phase B)",
+)
 
 
 ROOT = Path(__file__).resolve().parents[1]

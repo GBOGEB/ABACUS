@@ -21,7 +21,7 @@ jobs:
 
           targets = [
               Path('docs/qps_line_b/generated/P05H_DN150_VALIDATION_RECEIPT.json'),
-              Path('docs/qps_line_b/generated/P05I_DISTRIBUTED_VLP_THERMO_LINES_CHECK.json'),
+              Path('private:cryoplant-project/tender_library/abacus_phase_b_20261022/docs/qps_line_b/generated/P05I_DISTRIBUTED_VLP_THERMO_LINES_CHECK.json'),
           ]
           lineage_path = Path('governance/w64_generated_authority_lineage.json')
           lineage = json.loads(lineage_path.read_text(encoding='utf-8')) if lineage_path.exists() else {}
