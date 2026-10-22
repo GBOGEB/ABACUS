@@ -206,35 +206,3 @@ promotion, admission, root closure, CI waiver or source-owner transfer.
 Do not modify the historical closed MIP 8/8 denominator; this is a distinct
 candidate scope. Re-enter MIP/CONTROL assessment only after required
 comparable native temporal samples, dedicated owner review and no blocker.
-
-## G3A N15 mathematical consumer (2026-10-17; candidate)
-
-**M09/ANALYZE implementation:** Versioned source-bound input at
-[`MIP/receipts/g3a_n14_gg_math_convergence_input.json`](receipts/g3a_n14_gg_math_convergence_input.json)
-binds N13=115/446 and N14=200/446, same production source blobs,
-Python 3.12/coverage.py 7.16.2 and native run/attempt identities to the
-merged gg_MATH math provider source `961eadf43f19b6bc0ef11fdd640c30ab59f74f41`.
-[`MIP/statistics/gg_math_g3a_consumer.py`](statistics/gg_math_g3a_consumer.py)
-performs strict structural/source checks. Pinned provider execution is optional
-and **not claimed** until an exact local provider checkout and receipt exist.
-
-**Do not confuse qualifications:** N13→N14 is +85 distinct reached arcs
-and 0 lost on 446; it is not a stability demonstration. PCA has n=2,p=4,
-insufficient for an interpretable temporal fit; BT has zero observed pair
-outcomes; Six Sigma has no representative field CTQ/opportunity sample.
-Unchanged Phase 8 and orchestrator under N14 were **not targeted**.
-N15 Phase8 test flight [#2145](https://github.com/GBOGEB/ABACUS/pull/2145)
-is source-frozen and **PENDING NATIVE** on its first attempt; no fabricated N15 metric.
-Governance first-red repair [#2144](https://github.com/GBOGEB/ABACUS/pull/2144)
-must itself obtain terminal first-red clearance; not a waiver.
-A review-only Plotly candidate lives at `docs/ci/g3a-control/index.html`;
-the full offline HTML and its browser QA remain in the lossless session artifact,
-not implicitly a GitHub Pages deployment.
-
-**Authority:** gg_MATH = mathematical method provider, ABACUS = local native
-evidence/quality owner, CODEX/KEB = semantic consumer authority,
-QPS/Mission Control = separate operational consumers. No automatic federation
-promotion, admission, root closure, CI waiver or source-owner transfer.
-Do not modify the historical closed MIP 8/8 denominator; this is a distinct
-candidate scope. Re-enter MIP/CONTROL assessment only after required
-comparable native temporal samples, dedicated owner review and no blocker.

@@ -18,7 +18,7 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 15
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
         with:
           ref: ${{ github.event.pull_request.head.sha || github.sha }}
           persist-credentials: false
@@ -28,7 +28,7 @@ jobs:
         run: |
           set -euo pipefail
           python3 scripts/g3a_w16_preflight.py --expected-head "$EXPECTED_HEAD" --out test_reports/n16/preflight.json
-      - uses: actions/setup-python@v5
+      - uses: actions/setup-python@v7
         with:
           python-version: '3.12'
       - name: Source guard
@@ -109,7 +109,7 @@ jobs:
           python3 MIP/statistics/g3a_w16_kpi.py --receipt test_reports/n16/n16_receipt.json --start-s test_reports/n16/test-start.txt --end-s test_reports/n16/test-end.txt --out test_reports/n16/w16_kpis.json
       - name: Preserve test evidence even on red
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: g3a-w16-${{ github.run_id }}-${{ github.run_attempt }}
           path: test_reports/n16/
