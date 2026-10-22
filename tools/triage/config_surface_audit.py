@@ -81,11 +81,10 @@ def check_yaml(raw: str, workflow: bool = False) -> list:
                 raise ValueError("workflow needs entry must be string")
             if any("${{" in x for x in dep):
                 concerns.append("DYNAMIC_JOB_NEEDS_NOT_RESOLVED")
-                links[name] = []
-                continue
-            if any(x not in jobs for x in dep):
+            literal_dep = [x for x in dep if "${{" not in x]
+            if any(x not in jobs for x in literal_dep):
                 raise ValueError("unknown workflow job in needs: " + name)
-            links[name] = dep
+            links[name] = literal_dep
         visited, active = set(), set()
         def visit(name):
             if name in active:
@@ -147,6 +146,12 @@ def audit(root: Path, paths: list[str], limit: int = LIMIT) -> dict:
     counts = Counter()
     findings = []
     seen = set()
+    root = root.resolve()
+
+    def unknown(name: str, state: str) -> None:
+        counts[state] += 1
+        findings.append({"path": name, "state": state})
+
     for name in paths:
         if name in seen:
             raise ValueError("duplicate source path in census")
@@ -159,11 +164,29 @@ def audit(root: Path, paths: list[str], limit: int = LIMIT) -> dict:
             continue
         path = root / name
         try:
+            try:
+                path.resolve(strict=False).relative_to(root)
+            except ValueError:
+                unknown(name, "UNKNOWN_OUTSIDE_ROOT")
+                continue
+            except (OSError, RuntimeError):
+                unknown(name, "UNKNOWN_UNSAFE_PATH")
+                continue
+            current = root
+            has_symlink = False
+            for part in Path(name).parts:
+                current = current / part
+                if current.is_symlink():
+                    unknown(name, "UNKNOWN_SYMLINK")
+                    has_symlink = True
+                    break
+            if has_symlink:
+                continue
             if not path.is_file():
-                raise ValueError("tracked file absent from checkout")
+                unknown(name, "UNKNOWN_MISSING")
+                continue
             if path.stat().st_size > limit:
-                counts["UNKNOWN_OVERSIZE"] += 1
-                findings.append({"path": name, "state": "UNKNOWN_OVERSIZE"})
+                unknown(name, "UNKNOWN_OVERSIZE")
                 continue
             raw = path.read_text(encoding="utf-8")
             kind, concerns = check_text(name, raw)
@@ -199,13 +222,33 @@ def audit(root: Path, paths: list[str], limit: int = LIMIT) -> dict:
     }
 
 
+def reject_tracked_output(root: Path, out: Path, paths: list[str]) -> None:
+    root = root.resolve()
+    tracked = set()
+    for name in paths:
+        source = root / name
+        tracked.add(source)
+        try:
+            tracked.add(source.resolve(strict=False))
+        except (OSError, RuntimeError) as exc:
+            raise ValueError("cannot safely resolve tracked source path") from exc
+    try:
+        destination = out.resolve(strict=False)
+    except (OSError, RuntimeError) as exc:
+        raise ValueError("cannot safely resolve output path") from exc
+    if destination in tracked or out.absolute() in tracked:
+        raise ValueError("output path resolves to a tracked source file")
+
+
 def main(argv=None) -> int:
     p = argparse.ArgumentParser()
     p.add_argument("--root", type=Path, default=Path("."))
     p.add_argument("--out", type=Path, required=True)
     p.add_argument("--strict", action="store_true")
     a = p.parse_args(argv)
-    result = audit(a.root, discover(a.root))
+    paths = discover(a.root)
+    reject_tracked_output(a.root, a.out, paths)
+    result = audit(a.root, paths)
     proc = subprocess.run(
         ["git", "rev-parse", "--verify", "HEAD"],
         cwd=a.root,
