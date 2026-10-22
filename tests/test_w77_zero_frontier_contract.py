@@ -1,4 +1,5 @@
 """W77 P3 measurement controls: no false zero, cohort, source or authority gain."""
+
 from __future__ import annotations
 
 import copy
@@ -15,24 +16,25 @@ if str(ROOT) not in sys.path:
 from scripts import codepurple_zero_frontier as FRONTIER  # noqa: E402
 
 MANIFEST = json.loads(
-    (ROOT / "triage" / "W77_LEGACY12_SOURCE_BASELINE.json").read_text(
-        encoding="utf-8"
-    )
+    (ROOT / "triage" / "W77_LEGACY12_SOURCE_BASELINE.json").read_text(encoding="utf-8")
 )
 HEAD = "a" * 40
 
 
 def fixture():
-    before = {"meta": {"version": "7.16.2", "branch_coverage": True},
-              "files": {}}
+    before = {"meta": {"version": "7.16.2", "branch_coverage": True}, "files": {}}
     after = copy.deepcopy(before)
     for item in MANIFEST["targets"]:
         name = item["path"]
         statements = item["baseline"]["statements"]["eligible"]
         branches = item["baseline"]["branches"]["eligible"]
         before["files"][name] = {
-            "summary": {"num_statements": statements, "covered_lines": 0,
-                        "num_branches": branches, "covered_branches": 0}
+            "summary": {
+                "num_statements": statements,
+                "covered_lines": 0,
+                "num_branches": branches,
+                "covered_branches": 0,
+            }
         }
         after["files"][name] = {
             "summary": {
@@ -62,8 +64,12 @@ class W77FrontierContractTests(unittest.TestCase):
     def test_new_uncovered_script_excluded_from_original_denominator(self):
         before, after = fixture()
         after["files"]["scripts/new_pulse.py"] = {
-            "summary": {"num_statements": 100, "covered_lines": 0,
-                        "num_branches": 10, "covered_branches": 0}
+            "summary": {
+                "num_statements": 100,
+                "covered_lines": 0,
+                "num_branches": 10,
+                "covered_branches": 0,
+            }
         }
         result = FRONTIER.compare(before, after, MANIFEST, HEAD)
         self.assertEqual(result["new_files_excluded"], ["scripts/new_pulse.py"])
@@ -93,8 +99,7 @@ class W77FrontierContractTests(unittest.TestCase):
     def test_windows_paths_normalize_only_once(self):
         before, after = fixture()
         after["files"] = {
-            name.replace("/", "\\"): data
-            for name, data in after["files"].items()
+            name.replace("/", "\\"): data for name, data in after["files"].items()
         }
         result = FRONTIER.compare(before, after, MANIFEST, HEAD)
         self.assertEqual(result["targeted_zero_recovered"], 12)
@@ -103,8 +108,12 @@ class W77FrontierContractTests(unittest.TestCase):
         before, after = fixture()
         path = "scripts/new_pulse.py"
         summary = {
-            "summary": {"num_statements": 1, "covered_lines": 0,
-                        "num_branches": 0, "covered_branches": 0}
+            "summary": {
+                "num_statements": 1,
+                "covered_lines": 0,
+                "num_branches": 0,
+                "covered_branches": 0,
+            }
         }
         after["files"][path] = summary
         after["files"][path.replace("/", "\\")] = summary

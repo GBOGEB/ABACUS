@@ -4,6 +4,7 @@ All artifacts are produced inside a disposable temporary workspace.  Generated
 deployment YAML, backup plans and role definitions are DOCUMENTS, not approval
 to deploy, restore, write GitHub content or issue a security waiver.
 """
+
 from __future__ import annotations
 
 import importlib
@@ -23,11 +24,13 @@ SOURCES = {
     "abacus_v21_cicd_pipeline_setup": ("CICDPipelineSetup", "ABACUS_V21_CICD_PIPELINE"),
     "abacus_v21_backup_recovery": ("BackupRecovery", "ABACUS_V21_BACKUP"),
     "abacus_v21_monitoring_integration": (
-        "MonitoringIntegration", "ABACUS_V21_MONITORING"
+        "MonitoringIntegration",
+        "ABACUS_V21_MONITORING",
     ),
     "abacus_v21_security_hardening": ("SecurityHardening", "ABACUS_V21_SECURITY"),
     "abacus_v21_environment_preparation": (
-        "EnvironmentPreparation", "ABACUS_V21_ENVIRONMENT_PREP"
+        "EnvironmentPreparation",
+        "ABACUS_V21_ENVIRONMENT_PREP",
     ),
 }
 
@@ -81,8 +84,12 @@ class W77LegacyConfigurationTests(unittest.TestCase):
             second = obj.create_gitlab_ci_config()
             self.assertEqual(first["status"], "CREATED")
             self.assertEqual(second["status"], "CREATED")
-            self.assertIn("pipeline {", pathlib.Path(
-                first["details"]["jenkinsfile"]).read_text(encoding="utf-8"))
+            self.assertIn(
+                "pipeline {",
+                pathlib.Path(first["details"]["jenkinsfile"]).read_text(
+                    encoding="utf-8"
+                ),
+            )
             self.assertEqual(len(list(obj.output_dir.glob("*"))) >= 2, True)
 
     def test_backup_policy_retention_and_copy_configuration(self):
@@ -90,12 +97,15 @@ class W77LegacyConfigurationTests(unittest.TestCase):
             obj = instantiate("abacus_v21_backup_recovery")
             receipt = obj.create_backup_strategy()
             self.assertEqual(receipt["status"], "CREATED")
-            policy = json.loads(pathlib.Path(
-                receipt["details"]["config_file"]).read_text(encoding="utf-8"))
-            self.assertEqual(policy["backup_types"]["full_backup"]["retention_days"], 30)
-            self.assertEqual(
-                policy["backup_verification"]["integrity_check"], "sha256"
+            policy = json.loads(
+                pathlib.Path(receipt["details"]["config_file"]).read_text(
+                    encoding="utf-8"
+                )
             )
+            self.assertEqual(
+                policy["backup_types"]["full_backup"]["retention_days"], 30
+            )
+            self.assertEqual(policy["backup_verification"]["integrity_check"], "sha256")
             self.assertFalse(obj.results.get("native_restore_verified", False))
 
     def test_recovery_plan_is_a_template_not_an_actual_restore(self):
@@ -109,8 +119,12 @@ class W77LegacyConfigurationTests(unittest.TestCase):
     def test_monitoring_config_has_no_live_receiver_attestation(self):
         with temporary_workspace():
             obj = instantiate("abacus_v21_monitoring_integration")
-            for method in ("create_logging_config", "create_metrics_config",
-                           "create_alert_rules", "create_dashboard_config"):
+            for method in (
+                "create_logging_config",
+                "create_metrics_config",
+                "create_alert_rules",
+                "create_dashboard_config",
+            ):
                 with self.subTest(method=method):
                     receipt = getattr(obj, method)()
                     self.assertEqual(receipt["status"], "CREATED")
@@ -129,8 +143,11 @@ class W77LegacyConfigurationTests(unittest.TestCase):
             obj = instantiate("abacus_v21_security_hardening")
             receipt = obj.create_rbac_config()
             self.assertEqual(receipt["status"], "CREATED")
-            cfg = json.loads(pathlib.Path(
-                receipt["details"]["config_file"]).read_text(encoding="utf-8"))
+            cfg = json.loads(
+                pathlib.Path(receipt["details"]["config_file"]).read_text(
+                    encoding="utf-8"
+                )
+            )
             self.assertIn("admin", cfg["roles"])
             self.assertIn("viewer", cfg["roles"])
             self.assertFalse(obj.results.get("security_waiver", False))
@@ -140,8 +157,7 @@ class W77LegacyConfigurationTests(unittest.TestCase):
             obj = instantiate("abacus_v21_security_hardening")
             receipt = obj.create_secrets_management()
             self.assertEqual(receipt["status"], "CREATED")
-            template = (obj.output_dir / ".env.template").read_text(
-                encoding="utf-8")
+            template = (obj.output_dir / ".env.template").read_text(encoding="utf-8")
             self.assertIn("<vault:", template)
             self.assertIn("DO NOT commit actual secrets", template)
             self.assertNotIn("native_secret_rotation_verified", obj.results)
@@ -161,17 +177,21 @@ class W77LegacyConfigurationTests(unittest.TestCase):
             self.assertEqual(receipt["status"], "PASS")
             self.assertTrue((root / "logs").is_dir())
             self.assertTrue((root / "backups").is_dir())
-            self.assertEqual(len(receipt["details"]["created"]) +
-                             len(receipt["details"]["existing"]), 9)
+            self.assertEqual(
+                len(receipt["details"]["created"])
+                + len(receipt["details"]["existing"]),
+                9,
+            )
 
     def test_configuration_templates_do_not_imply_cicd_security_acceptance(self):
         with temporary_workspace():
             for source in (
-                    "abacus_v21_cicd_pipeline_setup",
-                    "abacus_v21_backup_recovery",
-                    "abacus_v21_monitoring_integration",
-                    "abacus_v21_security_hardening",
-                    "abacus_v21_environment_preparation"):
+                "abacus_v21_cicd_pipeline_setup",
+                "abacus_v21_backup_recovery",
+                "abacus_v21_monitoring_integration",
+                "abacus_v21_security_hardening",
+                "abacus_v21_environment_preparation",
+            ):
                 obj = instantiate(source)
                 with self.subTest(source=source):
                     self.assertNotIn("independent_approval", obj.results)

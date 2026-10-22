@@ -10,6 +10,7 @@ Usage:
     --manifest triage/W77_LEGACY12_SOURCE_BASELINE.json \
     --head <exact-PR-head-SHA> --out zero-frontier.json
 """
+
 from __future__ import annotations
 
 import argparse
@@ -25,8 +26,12 @@ def _normalize(filename):
     if not isinstance(filename, str):
         raise ValueError("non-text coverage path")
     path = filename.replace("\\", "/")
-    if (not path or path.startswith("/") or ":" in path or
-            any(part in ("", ".", "..") for part in path.split("/"))):
+    if (
+        not path
+        or path.startswith("/")
+        or ":" in path
+        or any(part in ("", ".", "..") for part in path.split("/"))
+    ):
         raise ValueError("noncanonical coverage path")
     return path
 
@@ -48,14 +53,15 @@ def _summary(value, path):
     summary = value.get("summary") if isinstance(value, dict) else None
     if not isinstance(summary, dict):
         raise ValueError("missing instrumented summary for " + path)
-    keys = ("num_statements", "covered_lines", "num_branches",
-            "covered_branches")
+    keys = ("num_statements", "covered_lines", "num_branches", "covered_branches")
     for key in keys:
         count = summary.get(key)
         if type(count) is not int or count < 0:
             raise ValueError("invalid " + key + " for " + path)
-    if (summary["covered_lines"] > summary["num_statements"] or
-            summary["covered_branches"] > summary["num_branches"]):
+    if (
+        summary["covered_lines"] > summary["num_statements"]
+        or summary["covered_branches"] > summary["num_branches"]
+    ):
         raise ValueError("coverage numerator exceeds eligible denominator")
     return summary
 
@@ -63,7 +69,11 @@ def _summary(value, path):
 def _source_sha256(path, root):
     relative = _normalize(path)
     target = root / relative
-    if not target.is_file() or target.is_symlink() or not target.resolve().is_relative_to(root.resolve()):
+    if (
+        not target.is_file()
+        or target.is_symlink()
+        or not target.resolve().is_relative_to(root.resolve())
+    ):
         raise ValueError("unavailable or unsafe production source: " + relative)
     raw = target.read_bytes()
     return hashlib.sha256(raw).hexdigest()
@@ -75,27 +85,40 @@ def compare(baseline, candidate, manifest, head_sha, source_root=None):
     if not isinstance(baseline, dict) or not isinstance(candidate, dict):
         raise ValueError("invalid coverage inputs")
     a_meta, b_meta = baseline.get("meta", {}), candidate.get("meta", {})
-    if (a_meta.get("branch_coverage") is not True or
-            b_meta.get("branch_coverage") is not True or
-            a_meta.get("version") != b_meta.get("version")):
+    if (
+        a_meta.get("branch_coverage") is not True
+        or b_meta.get("branch_coverage") is not True
+        or a_meta.get("version") != b_meta.get("version")
+    ):
         raise ValueError("instrumentation mode/version mismatch")
-    if (manifest.get("schema") != "codepurple.w77.legacy12.breadth.v1" or
-            manifest.get("base_repo") != "GBOGEB/ABACUS" or
-            manifest.get("source_baseline_head") is None):
+    if (
+        manifest.get("schema") != "codepurple.w77.legacy12.breadth.v1"
+        or manifest.get("base_repo") != "GBOGEB/ABACUS"
+        or manifest.get("source_baseline_head") is None
+    ):
         raise ValueError("unqualified source/roster manifest")
     before, after = _files(baseline), _files(candidate)
     removed = sorted(set(before) - set(after))
     new = sorted(set(after) - set(before))
     mismatches = []
-    counts = {"base_statements": 0, "new_statements": 0,
-              "eligible_statements": 0, "base_branches": 0,
-              "new_branches": 0, "eligible_branches": 0,
-              "zero_before": 0, "zero_after": 0,
-              "executable_before": 0, "executable_after": 0}
+    counts = {
+        "base_statements": 0,
+        "new_statements": 0,
+        "eligible_statements": 0,
+        "base_branches": 0,
+        "new_branches": 0,
+        "eligible_branches": 0,
+        "zero_before": 0,
+        "zero_after": 0,
+        "executable_before": 0,
+        "executable_after": 0,
+    }
     for path in sorted(set(before) & set(after)):
         a, b = _summary(before[path], path), _summary(after[path], path)
-        if ((a["num_statements"], a["num_branches"]) !=
-                (b["num_statements"], b["num_branches"])):
+        if (a["num_statements"], a["num_branches"]) != (
+            b["num_statements"],
+            b["num_branches"],
+        ):
             mismatches.append(path)
             continue
         counts["base_statements"] += a["covered_lines"]
@@ -119,14 +142,17 @@ def compare(baseline, candidate, manifest, head_sha, source_root=None):
         old = item.get("baseline", {})
         source_sha256 = item.get("source_sha256")
         if not isinstance(source_sha256, str) or not re.fullmatch(
-                r"[0-9a-f]{64}", source_sha256):
+            r"[0-9a-f]{64}", source_sha256
+        ):
             raise ValueError("source digest unqualified")
-        if source_root is not None and _source_sha256(
-                path, Path(source_root)) != source_sha256:
+        if (
+            source_root is not None
+            and _source_sha256(path, Path(source_root)) != source_sha256
+        ):
             raise ValueError("source identity mismatch at " + path)
         expected_s = old.get("statements", {})
         expected_b = old.get("branches", {})
-        if (expected_s.get("covered") != 0 or expected_b.get("covered") != 0):
+        if expected_s.get("covered") != 0 or expected_b.get("covered") != 0:
             raise ValueError("nonzero target inserted into baseline zero roster")
         first = before.get(path)
         last = after.get(path)
@@ -134,23 +160,33 @@ def compare(baseline, candidate, manifest, head_sha, source_root=None):
             roster.append({"path": path, "status": "UNKNOWN_MISSING_SOURCE"})
             continue
         a, b = _summary(first, path), _summary(last, path)
-        if ((a["num_statements"], a["num_branches"]) !=
-                (expected_s.get("eligible"), expected_b.get("eligible")) or
-                a["covered_lines"] != 0 or a["covered_branches"] != 0 or
-                (b["num_statements"], b["num_branches"]) !=
-                (a["num_statements"], a["num_branches"])):
+        if (
+            (a["num_statements"], a["num_branches"])
+            != (expected_s.get("eligible"), expected_b.get("eligible"))
+            or a["covered_lines"] != 0
+            or a["covered_branches"] != 0
+            or (b["num_statements"], b["num_branches"])
+            != (a["num_statements"], a["num_branches"])
+        ):
             roster.append({"path": path, "status": "INCOMPARABLE"})
             continue
-        roster.append({
-            "path": path, "source_sha256": source_sha256,
-            "status": "RECOVERED" if b["covered_lines"] > 0 else "ZERO",
-            "statements": {
-                "base_covered": 0, "candidate_covered": b["covered_lines"],
-                "eligible": b["num_statements"]},
-            "branches": {
-                "base_covered": 0, "candidate_covered": b["covered_branches"],
-                "eligible": b["num_branches"]},
-        })
+        roster.append(
+            {
+                "path": path,
+                "source_sha256": source_sha256,
+                "status": "RECOVERED" if b["covered_lines"] > 0 else "ZERO",
+                "statements": {
+                    "base_covered": 0,
+                    "candidate_covered": b["covered_lines"],
+                    "eligible": b["num_statements"],
+                },
+                "branches": {
+                    "base_covered": 0,
+                    "candidate_covered": b["covered_branches"],
+                    "eligible": b["num_branches"],
+                },
+            }
+        )
     if len(roster) != 12:
         raise ValueError("pinned twelve-source roster incomplete")
     return {
@@ -173,15 +209,17 @@ def compare(baseline, candidate, manifest, head_sha, source_root=None):
         "target_roster": roster,
         "targeted_zero_recovered": sum(x["status"] == "RECOVERED" for x in roster),
         "targeted_incomparable_unknown": sum(
-            x["status"] in ("INCOMPARABLE", "UNKNOWN_MISSING_SOURCE")
-            for x in roster
+            x["status"] in ("INCOMPARABLE", "UNKNOWN_MISSING_SOURCE") for x in roster
         ),
         "merge_authorized": False,
         "security_waiver": False,
         "independent_approval": None,
         "accepted_root_closures": 0,
-        "m1": "STRUCTURAL", "m2": "HOLD", "m3": "HOLD",
-        "pca_bt": "NOT_ASSESSABLE", "worker_hours": None,
+        "m1": "STRUCTURAL",
+        "m2": "HOLD",
+        "m3": "HOLD",
+        "pca_bt": "NOT_ASSESSABLE",
+        "worker_hours": None,
         "real_runner_capacity": None,
     }
 
@@ -195,28 +233,30 @@ def main():
     parser.add_argument("--root", type=Path, default=Path("."))
     parser.add_argument("--out", required=True, type=Path)
     args = parser.parse_args()
-    raw = [p.read_bytes() for p in (
-        args.baseline, args.candidate, args.manifest)]
+    raw = [p.read_bytes() for p in (args.baseline, args.candidate, args.manifest)]
     data = compare(
-        *[json.loads(value) for value in raw], args.head,
-        source_root=args.root)
+        *[json.loads(value) for value in raw], args.head, source_root=args.root
+    )
     data["input_sha256"] = {
         name: hashlib.sha256(payload).hexdigest()
-        for name, payload in zip(
-            ("baseline", "candidate", "manifest"), raw
-        )
+        for name, payload in zip(("baseline", "candidate", "manifest"), raw)
     }
     args.out.parent.mkdir(parents=True, exist_ok=True)
     args.out.write_text(
         json.dumps(data, indent=2, sort_keys=True) + "\n", encoding="utf-8"
     )
-    print(json.dumps({
-        "head": args.head,
-        "targets_recovered": data["targeted_zero_recovered"],
-        "matched_files": data["baseline_files"],
-        "global_zero_delta": data["global_zero_delta"],
-        "admission": "HOLD"
-    }, sort_keys=True))
+    print(
+        json.dumps(
+            {
+                "head": args.head,
+                "targets_recovered": data["targeted_zero_recovered"],
+                "matched_files": data["baseline_files"],
+                "global_zero_delta": data["global_zero_delta"],
+                "admission": "HOLD",
+            },
+            sort_keys=True,
+        )
+    )
     if data["targeted_incomparable_unknown"]:
         raise SystemExit("target source/denominator unqualified: HOLD")
     if not data["global_cohort_comparable"]:
