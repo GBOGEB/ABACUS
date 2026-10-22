@@ -11,6 +11,7 @@ import argparse
 import ast
 import configparser
 import json
+import re
 import subprocess
 import tomllib
 from collections import Counter
@@ -205,6 +206,17 @@ def main(argv=None) -> int:
     p.add_argument("--strict", action="store_true")
     a = p.parse_args(argv)
     result = audit(a.root, discover(a.root))
+    proc = subprocess.run(
+        ["git", "rev-parse", "--verify", "HEAD"],
+        cwd=a.root,
+        check=True,
+        capture_output=True,
+        text=True,
+    )
+    head = proc.stdout.strip()
+    if not re.fullmatch(r"[0-9a-f]{40}", head):
+        raise ValueError("invalid source HEAD identity")
+    result["source_head_sha"] = head
     a.out.parent.mkdir(parents=True, exist_ok=True)
     a.out.write_text(
         json.dumps(result, indent=2, sort_keys=True) + "\n",
