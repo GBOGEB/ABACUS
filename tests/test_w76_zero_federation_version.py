@@ -9,7 +9,6 @@ import importlib.util
 import pathlib
 import tempfile
 import unittest
-from unittest import mock
 
 ROOT = pathlib.Path(__file__).resolve().parents[1]
 
@@ -38,7 +37,7 @@ class W76VersionAndFederationTests(unittest.TestCase):
     def test_product_version_source_valid_and_missing_value_negative(self):
         mod = load_file("DMAIC_V3/product_version.py", "w76_product_local")
         project = self.workspace / "pyproject.toml"
-        with mock.patch.object(mod, "_root", return_value=self.workspace):
+        with unittest.mock.patch.object(mod, "_root", return_value=self.workspace):
             project.write_text('[project]\nversion = "6.1.2"\n', encoding="utf-8")
             self.assertEqual(mod.get_product_version(), "6.1.2")
             for bad in ('[project]\nname="abacus-dow"\n',
@@ -51,8 +50,8 @@ class W76VersionAndFederationTests(unittest.TestCase):
 
     def test_product_version_distribution_fallback_if_source_absent(self):
         mod = load_file("DMAIC_V3/product_version.py", "w76_product_fallback")
-        with (mock.patch.object(mod, "_root", return_value=self.workspace),
-              mock.patch.object(mod, "package_version", return_value="7.2.0") as query):
+        with (unittest.mock.patch.object(mod, "_root", return_value=self.workspace),
+              unittest.mock.patch.object(mod, "package_version", return_value="7.2.0") as query):
             self.assertEqual(mod.get_product_version(), "7.2.0")
         query.assert_called_once_with("abacus-dow")
 
@@ -130,8 +129,8 @@ class W76VersionAndFederationTests(unittest.TestCase):
             present = self.workspace / ("present_" + name)
             present.touch()
             missing = self.workspace / ("absent_" + name)
-            with (mock.patch.object(mod, "_INTEGRATION_MANIFEST", present),
-                  mock.patch.object(mod, "_FEDERATION_SPEC", missing)):
+            with (unittest.mock.patch.object(mod, "_INTEGRATION_MANIFEST", present),
+                  unittest.mock.patch.object(mod, "_FEDERATION_SPEC", missing)):
                 result = mod.assimilate({"evidence": "local-only"})
                 self.assertEqual(result["status"], "degraded")
                 self.assertTrue(result["manifest_found"])
