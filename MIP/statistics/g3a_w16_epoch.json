@@ -1,0 +1,59 @@
+{
+  "coverage_version": "7.16.2",
+  "files": {
+    "DMAIC_V3/debug_pipeline.py": {
+      "blob": "730cab72408ac473fb89123d9d76bb7a2edb075e",
+      "branches": {"3.10": 116, "3.12": 116},
+      "category": "carried",
+      "covered": {"3.10": null, "3.12": null},
+      "floor": 94,
+      "role": "kpi"
+    },
+    "DMAIC_V3/phases/phase4_improve.py": {
+      "blob": "18bec722fef537aa74b85295954cf66a002695d0",
+      "branches": {"3.10": 132, "3.12": 132},
+      "category": "carried",
+      "covered": {"3.10": null, "3.12": null},
+      "floor": 42,
+      "role": "kpi"
+    },
+    "DMAIC_V3/phases/phase8_todo_management.py": {
+      "blob": "e9e4edd4c2b5b23a850892efb40b0c256a9ce490",
+      "branches": {"3.10": 118, "3.12": 118},
+      "category": "carried",
+      "covered": {"3.10": null, "3.12": null},
+      "floor": 30,
+      "role": "kpi"
+    },
+    "cicd_github_orchestrator.py": {
+      "blob": "2e0f80b8f476d6f4eab05defb52aae2f77e30c61",
+      "branches": {"3.10": 78, "3.12": 78},
+      "category": "carried",
+      "covered": {"3.10": null, "3.12": null},
+      "floor": 23,
+      "role": "kpi"
+    },
+    "scripts/g3a_bounded_mission.py": {
+      "blob": "73742d3ad9ca5e791cfa294e01a083b20922580c",
+      "branches": {"3.10": 116, "3.12": 116},
+      "category": "control",
+      "covered": {"3.10": null, "3.12": null},
+      "floor": 105,
+      "role": "control"
+    }
+  },
+  "kpi_python": "3.12",
+  "lineage": [],
+  "min_tests": 121,
+  "pinned_main_sha": null,
+  "pythons": ["3.10", "3.12"],
+  "schema": "code-purple.g3a.w16.epoch.v1",
+  "source_epoch": "G3A_W16_V2_PHASE4_REPAIRED",
+  "status": "PINNED",
+  "workflows": {
+    "by_cluster": null,
+    "by_lifecycle": null,
+    "population": 164,
+    "unclassified": []
+  }
+}

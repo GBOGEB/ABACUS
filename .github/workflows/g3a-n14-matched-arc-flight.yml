@@ -7,9 +7,15 @@ on:
       - 'tests/test_g3a_n14_improve.py'
       - 'tests/test_g3a_n15_phase8.py'
       - 'tests/test_g3a_w16_*.py'
+      - 'DMAIC_V3/debug_pipeline.py'
       - 'DMAIC_V3/phases/phase4_improve.py'
+      - 'DMAIC_V3/phases/phase8_todo_management.py'
+      - 'cicd_github_orchestrator.py'
+      - 'scripts/g3a_bounded_mission.py'
       - 'MIP/statistics/g3a_w16_kpi.py'
+      - 'MIP/statistics/g3a_w16_epoch.json'
       - 'scripts/g3a_w16_preflight.py'
+      - 'scripts/g3a_w16_repin.py'
       - '.github/workflows/g3a-n14-matched-arc-flight.yml'
   workflow_dispatch:
 permissions:
@@ -37,11 +43,9 @@ jobs:
           EXPECTED_HEAD: ${{ github.event.pull_request.head.sha || github.sha }}
         run: |
           set -euo pipefail
+          # Source blobs are pinned in MIP/statistics/g3a_w16_epoch.json and
+          # were verified by the preflight above.
           test "$(git rev-parse HEAD)" = "$EXPECTED_HEAD"
-          test "$(git hash-object DMAIC_V3/debug_pipeline.py)" = 730cab72408ac473fb89123d9d76bb7a2edb075e
-          test "$(git hash-object DMAIC_V3/phases/phase4_improve.py)" = 18bec722fef537aa74b85295954cf66a002695d0
-          test "$(git hash-object DMAIC_V3/phases/phase8_todo_management.py)" = e9e4edd4c2b5b23a850892efb40b0c256a9ce490
-          test "$(git hash-object cicd_github_orchestrator.py)" = 2e0f80b8f476d6f4eab05defb52aae2f77e30c61
       - name: Install coverage and PyYAML
         run: python -m pip install --disable-pip-version-check 'coverage==7.16.2' 'PyYAML==6.0.2'
       - name: W16 source-epoch single-process branch flight
@@ -56,7 +60,7 @@ jobs:
           date +%s > test_reports/n16/test-end.txt
           test "$test_exit" -eq 0
           python -m coverage json -o test_reports/n16/coverage.json
-      - name: Fail-closed frozen denominators and test proof
+      - name: Fail-closed pinned denominators and test proof
         env:
           RUN_ID: ${{ github.run_id }}
           RUN_ATTEMPT: ${{ github.run_attempt }}
@@ -64,43 +68,53 @@ jobs:
           python - <<'PY'
           import json,os,pathlib,re,subprocess,sys
           root=pathlib.Path("test_reports/n16")
+          epoch=json.loads(pathlib.Path("MIP/statistics/g3a_w16_epoch.json").read_text())
+          py="%d.%d" % sys.version_info[:2]
           data=json.loads((root/"coverage.json").read_text())
-          expected={"DMAIC_V3/debug_pipeline.py":(116,94),
-                    "DMAIC_V3/phases/phase4_improve.py":(132,None),
-                    "DMAIC_V3/phases/phase8_todo_management.py":(118,30),
-                    "cicd_github_orchestrator.py":(78,23),
-                    "scripts/g3a_bounded_mission.py":(116,105)}
-          if data["meta"]["version"]!="7.16.2":sys.exit("HOLD: instrumentation drift")
-          files={}
-          for path,(den,old) in expected.items():
+          if data["meta"]["version"]!=epoch["coverage_version"]:sys.exit("HOLD: instrumentation drift")
+          measured={}
+          for path in sorted(epoch["files"]):
             hits=[v for k,v in data["files"].items() if k==path or k.endswith("/"+path)]
             if len(hits)!=1:sys.exit("HOLD: missing/duplicated scope "+path)
-            v=hits[0];s=v["summary"]
-            if s["num_branches"]!=den or (old is not None and s["covered_branches"]<old):sys.exit("HOLD: scope drift/regression "+path)
-            files[path]={"eligible":den,"covered":s["covered_branches"],"baseline":old,
-                         "executed_branches":v.get("executed_branches",[])}
+            measured[path]=hits[0]
+            s=hits[0]["summary"]
+            record={"epoch":epoch["source_epoch"],"coverage_version":data["meta"]["version"],
+                    "python":py,"path":path,"branches":s["num_branches"],"covered":s["covered_branches"]}
+            print("::notice title=W16 native measurement::W16_MEASURED "+json.dumps(record,sort_keys=True))
           log=(root/"unittest.log").read_text()
           counts=re.findall(r"Ran (\d+) tests? in",log)
-          if not counts or int(counts[-1])<121 or "\nOK" not in log:sys.exit("HOLD: W16 cohort incomplete")
-          total=sum(v["covered"] for k,v in files.items() if k!="scripts/g3a_bounded_mission.py")
+          if not counts or int(counts[-1])<epoch["min_tests"] or "\nOK" not in log:sys.exit("HOLD: W16 cohort incomplete")
+          pending=[p for p,e in epoch["files"].items() if e["branches"].get(py) is None]
+          if pending:
+            sys.exit("HOLD: epoch "+epoch["source_epoch"]+" pending native measurement on Python "+py+
+                     "; feed the W16_MEASURED lines to scripts/g3a_w16_repin.py --measured")
+          for path,entry in epoch["files"].items():
+            s=measured[path]["summary"]
+            if s["num_branches"]!=entry["branches"][py]:sys.exit("HOLD: scope drift "+path)
+            if entry["floor"] is not None and s["covered_branches"]<entry["floor"]:sys.exit("HOLD: regression below floor "+path)
+          def row(path):
+            s=measured[path]["summary"];entry=epoch["files"][path]
+            return {"eligible":s["num_branches"],"covered":s["covered_branches"],"floor":entry["floor"],
+                    "category":entry["category"],"executed_branches":measured[path].get("executed_branches",[])}
+          kpi=sorted(p for p,e in epoch["files"].items() if e["role"]=="kpi")
+          control=[p for p,e in epoch["files"].items() if e["role"]=="control"]
+          files={p:row(p) for p in kpi}
+          total=sum(v["covered"] for v in files.values())
+          eligible=sum(v["eligible"] for v in files.values())
           receipt={"schema":"code-purple.g3a.w16.native.v1",
-                   "source_epoch":"G3A_W16_V2_PHASE4_REPAIRED",
+                   "source_epoch":epoch["source_epoch"],"lineage":epoch["lineage"],
                    "run_id":int(os.environ["RUN_ID"]),"run_attempt":int(os.environ["RUN_ATTEMPT"]),
                    "checkout_sha":subprocess.check_output(["git","rev-parse","HEAD"],text=True).strip(),
-                   "phase4_source_blob":subprocess.check_output(["git","hash-object",
-                       "DMAIC_V3/phases/phase4_improve.py"],text=True).strip(),
-                   "tests":int(counts[-1]),"covered":total,"eligible":444,
+                   "source_blobs":{p:subprocess.check_output(["git","hash-object",p],text=True).strip() for p in kpi},
+                   "tests":int(counts[-1]),"covered":total,"eligible":eligible,
                    "historical_n14":{"covered":200,"eligible":446,"same_epoch":False,
                                      "delta_pp":None},
-                   "phase8_same_blob_gain":files["DMAIC_V3/phases/phase8_todo_management.py"]["covered"]-30,
-                   "candidate_roots_closed":0,"files":{k:v for k,v in files.items()
-                         if k!="scripts/g3a_bounded_mission.py"},
-                   "control_file":files["scripts/g3a_bounded_mission.py"],
+                   "candidate_roots_closed":0,"files":files,
+                   "control_file":{p:row(p) for p in control},
                    "security_waiver":False,"merge_admission":"HOLD"}
-          if total<0 or total>444:sys.exit("HOLD: four-module arithmetic invalid")
+          if total<0 or total>eligible:sys.exit("HOLD: four-module arithmetic invalid")
           (root/"n16_receipt.json").write_text(json.dumps(receipt,indent=2,sort_keys=True))
-          print("W16_SOURCE_EPOCH=444; COVERED="+str(total)+
-                "; Phase8 same-blob delta="+str(receipt["phase8_same_blob_gain"]))
+          print("W16_SOURCE_EPOCH="+epoch["source_epoch"]+"; COVERED="+str(total)+"/"+str(eligible))
           print("N14_VS_W16_CROSS_EPOCH_DELTA=NOT_COMPARABLE")
           print("MERGE_ADMISSION=HOLD")
           PY

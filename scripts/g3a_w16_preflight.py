@@ -1,8 +1,10 @@
 #!/usr/bin/env python3
 """G3A W16 sub-second local/runner gate before dependency installation.
 
-Read-only: checks a new source epoch, canonical workflow classification and
-generated inventory. Refuses to infer coverage or source-root closure.
+Read-only: checks the source epoch pinned in the canonical epoch manifest
+(``MIP/statistics/g3a_w16_epoch.json``), the workflow population and its
+policy sub-categories, and the generated inventory. Refuses to infer coverage
+or source-root closure; drift is repaired with ``scripts/g3a_w16_repin.py``.
 """
 from __future__ import annotations
 
@@ -13,14 +15,7 @@ import subprocess
 import sys
 from pathlib import Path
 
-EPOCH = "G3A_W16_V2_PHASE4_REPAIRED"
-SOURCE_BLOBS = {
-    "DMAIC_V3/debug_pipeline.py": "730cab72408ac473fb89123d9d76bb7a2edb075e",
-    "DMAIC_V3/phases/phase4_improve.py": "18bec722fef537aa74b85295954cf66a002695d0",
-    "DMAIC_V3/phases/phase8_todo_management.py": "e9e4edd4c2b5b23a850892efb40b0c256a9ce490",
-    "cicd_github_orchestrator.py": "2e0f80b8f476d6f4eab05defb52aae2f77e30c61",
-}
-EXPECTED_WORKFLOWS = 164
+MANIFEST = Path("MIP/statistics/g3a_w16_epoch.json")
 
 
 def _git(root: Path, *args: str) -> str:
@@ -40,8 +35,16 @@ def scan(root: Path, expected_head: str) -> dict:
         errors.append("CHECKOUT_NOT_AVAILABLE")
     if head != expected_head:
         errors.append("NOT_EXACT_HEAD")
+    try:
+        epoch = json.loads((root / MANIFEST).read_text(encoding="utf-8"))
+        source_blobs = {path: v["blob"] for path, v in epoch["files"].items()}
+        census = epoch["workflows"]
+        source_epoch = epoch["source_epoch"]
+    except (OSError, ValueError, KeyError, TypeError):
+        source_blobs, census, source_epoch = {}, {}, None
+        errors.append("EPOCH_MANIFEST_UNREADABLE")
     blobs = {}
-    for path, expected in SOURCE_BLOBS.items():
+    for path, expected in source_blobs.items():
         source = root / path
         try:
             actual = _git(root, "hash-object", path) if source.is_file() else None
@@ -63,16 +66,24 @@ def scan(root: Path, expected_head: str) -> dict:
         rules = []
         errors.append("WORKFLOW_POLICY_UNREADABLE")
     classified = 0
+    by_cluster: dict[str, int] = {}
+    by_lifecycle: dict[str, int] = {}
     for workflow in workflows:
-        count = sum(bool(re.search(rule["pattern"], workflow.name)) for rule in rules)
-        if count != 1:
+        hits = [rule for rule in rules if re.search(rule["pattern"], workflow.name)]
+        if len(hits) != 1:
             errors.append(
-                "WORKFLOW_POLICY_MATCH_COUNT:" + workflow.name + ":" + str(count)
+                "WORKFLOW_POLICY_MATCH_COUNT:" + workflow.name + ":" + str(len(hits))
             )
         else:
             classified += 1
-    if len(workflows) != EXPECTED_WORKFLOWS:
+            cluster, lifecycle = hits[0].get("cluster"), hits[0].get("lifecycle")
+            by_cluster[cluster] = by_cluster.get(cluster, 0) + 1
+            by_lifecycle[lifecycle] = by_lifecycle.get(lifecycle, 0) + 1
+    if len(workflows) != census.get("population"):
         errors.append("WORKFLOW_POPULATION_DRIFT")
+    for key, actual in (("by_cluster", by_cluster), ("by_lifecycle", by_lifecycle)):
+        if census.get(key) is not None and census[key] != actual:
+            errors.append("WORKFLOW_SUBCATEGORY_DRIFT:" + key)
     if not errors:
         audit = subprocess.run(
             [
@@ -92,12 +103,16 @@ def scan(root: Path, expected_head: str) -> dict:
     return {
         "schema": "code-purple.g3a.w16.preflight.v1",
         "status": "PASS" if not errors else "HOLD",
-        "source_epoch": EPOCH,
+        "source_epoch": source_epoch,
         "expected_head": expected_head,
         "checkout_head": head,
         "source_blobs": blobs,
         "workflows": len(workflows),
         "classified": classified,
+        "workflow_subcategories": {
+            "by_cluster": by_cluster,
+            "by_lifecycle": by_lifecycle,
+        },
         "errors": errors,
         "native_coverage": None,
         "queue_seconds": None,
@@ -124,7 +139,7 @@ def main() -> int:
         "G3A_W16_PREFLIGHT="
         + result["status"]
         + " source_epoch="
-        + EPOCH
+        + str(result["source_epoch"])
         + " errors="
         + ",".join(result["errors"])
     )

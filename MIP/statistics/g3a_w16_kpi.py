@@ -3,6 +3,8 @@
 
 Five decision KPIs. Missing clocks, unmatched source epochs, unsupported PCA,
 BT, capability and unverified root closures are explicitly null/unqualified.
+Source epoch, blobs and branch denominators come from the canonical epoch
+manifest ``g3a_w16_epoch.json``; a pending (unmeasured) epoch never passes.
 """
 from __future__ import annotations
 
@@ -12,13 +14,7 @@ import math
 import re
 from pathlib import Path
 
-EPOCH = "G3A_W16_V2_PHASE4_REPAIRED"
-FOUR_BRANCHES = {
-    "DMAIC_V3/debug_pipeline.py": 116,
-    "DMAIC_V3/phases/phase4_improve.py": 132,
-    "DMAIC_V3/phases/phase8_todo_management.py": 118,
-    "cicd_github_orchestrator.py": 78,
-}
+EPOCH_MANIFEST = Path(__file__).resolve().with_name("g3a_w16_epoch.json")
 METRIC_NAMES = (
     "matched_coverage",
     "proof_yield",
@@ -32,6 +28,20 @@ def _valid_int(value: object, lower: int = 0) -> bool:
     return type(value) is int and value >= lower
 
 
+def load_epoch(path: Path = EPOCH_MANIFEST) -> dict:
+    return json.loads(path.read_text(encoding="utf-8"))
+
+
+def kpi_files(epoch: dict) -> dict:
+    """KPI source files with their pinned blob and KPI-Python denominator."""
+    python = epoch["kpi_python"]
+    return {
+        path: {"blob": entry["blob"], "eligible": entry["branches"].get(python)}
+        for path, entry in epoch["files"].items()
+        if entry["role"] == "kpi"
+    }
+
+
 def evaluate(
     receipt: dict | None,
     *,
@@ -39,7 +49,10 @@ def evaluate(
     end_s: float | None = None,
     independently_verified_roots: int = 0,
     comparable_independent_pulses: int = 1,
+    epoch: dict | None = None,
 ) -> dict:
+    epoch = load_epoch() if epoch is None else epoch
+    pinned = kpi_files(epoch)
     if independently_verified_roots != 0:
         raise ValueError("no authenticated causal-root closure receipt supplied")
     if not _valid_int(comparable_independent_pulses, 1):
@@ -62,7 +75,7 @@ def evaluate(
     if receipt is not None:
         if receipt.get("schema") != "code-purple.g3a.w16.native.v1":
             raise ValueError("wrong native receipt schema")
-        if receipt.get("source_epoch") != EPOCH:
+        if receipt.get("source_epoch") != epoch["source_epoch"]:
             raise ValueError("source epoch mismatch")
         if receipt.get("merge_admission") != "HOLD":
             raise ValueError("cannot accept a promoted merge claim")
@@ -70,19 +83,18 @@ def evaluate(
             r"[a-f0-9]{40}", receipt["checkout_sha"]
         ):
             raise ValueError("missing exact-head identity")
-        if (
-            receipt.get("phase4_source_blob")
-            != "18bec722fef537aa74b85295954cf66a002695d0"
-        ):
-            raise ValueError("Phase4 source blob drift")
+        if receipt.get("source_blobs") != {k: v["blob"] for k, v in pinned.items()}:
+            raise ValueError("source blob drift against the pinned epoch")
+        if any(v["eligible"] is None for v in pinned.values()):
+            raise ValueError("epoch denominators pending native measurement")
         if not _valid_int(receipt.get("run_id"), 1) or not _valid_int(
             receipt.get("run_attempt"), 1
         ):
             raise ValueError("run/attempt identity missing")
         files = receipt.get("files")
-        if not isinstance(files, dict) or set(files) != set(FOUR_BRANCHES):
+        if not isinstance(files, dict) or set(files) != set(pinned):
             raise ValueError("coverage population mismatch")
-        for name, den in FOUR_BRANCHES.items():
+        for name, den in ((k, v["eligible"]) for k, v in pinned.items()):
             f = files[name]
             if (
                 not _valid_int(f.get("eligible"), 1)
@@ -92,11 +104,11 @@ def evaluate(
             ):
                 raise ValueError("coverage branch denominator/numerator drift")
         covered = sum(v["covered"] for v in files.values())
-        eligible = sum(FOUR_BRANCHES.values())
+        eligible = sum(v["eligible"] for v in pinned.values())
         if (
             covered != receipt.get("covered")
             or eligible != receipt.get("eligible")
-            or not _valid_int(receipt.get("tests"), 121)
+            or not _valid_int(receipt.get("tests"), epoch["min_tests"])
         ):
             raise ValueError("receipt arithmetic or test identity drift")
         status = "NATIVE_FOCUSED_PROOF_PASS"
@@ -104,7 +116,8 @@ def evaluate(
 
     return {
         "schema": "code-purple.mip.g3a.w16.decision_kpi.v1",
-        "source_epoch": EPOCH,
+        "source_epoch": epoch["source_epoch"],
+        "epoch_status": epoch["status"],
         "native_state": status,
         "metric_count": len(METRIC_NAMES),
         "metrics": {

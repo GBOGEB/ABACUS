@@ -4,9 +4,15 @@ on:
   pull_request:
     paths:
       - 'tests/test_g3a_n15_alias_fault_matrix.py'
+      - 'DMAIC_V3/debug_pipeline.py'
       - 'DMAIC_V3/phases/phase4_improve.py'
+      - 'DMAIC_V3/phases/phase8_todo_management.py'
+      - 'cicd_github_orchestrator.py'
+      - 'scripts/g3a_bounded_mission.py'
       - 'MIP/statistics/g3a_w16_kpi.py'
+      - 'MIP/statistics/g3a_w16_epoch.json'
       - 'scripts/g3a_w16_preflight.py'
+      - 'scripts/g3a_w16_repin.py'
       - '.github/workflows/g3a-n15-python-matrix.yml'
   workflow_dispatch:
 permissions:
@@ -25,24 +31,28 @@ jobs:
         with:
           ref: ${{ github.event.pull_request.head.sha || github.sha }}
           persist-credentials: false
-      - name: Assert exact checkout and owner source blob
+      - name: Assert exact checkout and pinned epoch source blobs
         shell: bash
         env:
           EXPECTED_HEAD: ${{ github.event.pull_request.head.sha || github.sha }}
         run: |
           set -euo pipefail
           test "$(git rev-parse HEAD)" = "$EXPECTED_HEAD"
-          test "$(git hash-object DMAIC_V3/phases/phase4_improve.py)" = 18bec722fef537aa74b85295954cf66a002695d0
-          test "$(git hash-object DMAIC_V3/phases/phase8_todo_management.py)" = e9e4edd4c2b5b23a850892efb40b0c256a9ce490
-          test "$(git hash-object DMAIC_V3/debug_pipeline.py)" = 730cab72408ac473fb89123d9d76bb7a2edb075e
-          test "$(git hash-object cicd_github_orchestrator.py)" = 2e0f80b8f476d6f4eab05defb52aae2f77e30c61
+          python3 -c 'import json;[print(p,v["blob"]) for p,v in sorted(json.load(open("MIP/statistics/g3a_w16_epoch.json"))["files"].items())]' |
+            while read -r path blob; do
+              actual="$(git hash-object "$path")"
+              if [[ "$actual" != "$blob" ]]; then
+                echo "::error::SOURCE_BLOB_DRIFT $path pinned=$blob actual=$actual; re-pin with scripts/g3a_w16_repin.py"
+                exit 1
+              fi
+            done
       - name: Setup Python
         uses: actions/setup-python@v7
         with:
           python-version: ${{ matrix.python-version }}
       - name: Install narrow compatibility tools
         run: python -m pip install --disable-pip-version-check 'coverage[toml]==7.16.2' 'PyYAML==6.0.2' 'pytest>=8,<9'
-      - name: Run source-epoch W16 tests and measure 560 eligible five-file arcs
+      - name: Run source-epoch W16 tests and measure the pinned five-file arcs
         shell: bash
         run: |
           set -euo pipefail
@@ -61,29 +71,34 @@ jobs:
           python - <<'PY'
           import json,os,pathlib,re,subprocess,sys
           root=pathlib.Path('test_reports/n15')
+          epoch=json.loads(pathlib.Path('MIP/statistics/g3a_w16_epoch.json').read_text())
+          py='%d.%d' % sys.version_info[:2]
           data=json.loads((root/'coverage.json').read_text())
-          log=(root/'unittest.log').read_text()
-          matches=re.findall(r'Ran (\d+) tests? in',log)
-          if not matches or int(matches[-1])<121 or '\nOK' not in log:
-              raise SystemExit('HOLD: W16 same-source cohort not completely green')
-          expected={
-            'DMAIC_V3/phases/phase4_improve.py':(132,42),
-            'DMAIC_V3/phases/phase8_todo_management.py':(118,30),
-            'DMAIC_V3/debug_pipeline.py':(116,94),
-            'cicd_github_orchestrator.py':(78,23),
-            'scripts/g3a_bounded_mission.py':(116,105),
-          }
+          if data.get('meta',{}).get('version')!=epoch['coverage_version']:
+              raise SystemExit('HOLD: instrumentation drift')
           measured={}
-          for path,(eligible,baseline) in expected.items():
+          for path in sorted(epoch['files']):
               found=[v for k,v in data['files'].items() if k==path or k.endswith('/'+path)]
               if len(found)!=1: raise SystemExit('HOLD: missing/duplicate coverage '+path)
               s=found[0]['summary']
-              if s['num_branches']!=eligible:
-                  raise SystemExit('HOLD: Python/compiler denominator drift '+path)
-              if s['covered_branches']<baseline:
-                  raise SystemExit('HOLD: native branch reach displaced '+path)
               measured[path]={k:int(s[k]) for k in
                   ('num_statements','covered_lines','num_branches','covered_branches')}
+              record={'epoch':epoch['source_epoch'],'coverage_version':data['meta']['version'],
+                      'python':py,'path':path,'branches':s['num_branches'],'covered':s['covered_branches']}
+              print('::notice title=W16 native measurement::W16_MEASURED '+json.dumps(record,sort_keys=True))
+          log=(root/'unittest.log').read_text()
+          matches=re.findall(r'Ran (\d+) tests? in',log)
+          if not matches or int(matches[-1])<epoch['min_tests'] or '\nOK' not in log:
+              raise SystemExit('HOLD: W16 same-source cohort not completely green')
+          pending=[p for p,e in epoch['files'].items() if e['branches'].get(py) is None]
+          if pending:
+              raise SystemExit('HOLD: epoch '+epoch['source_epoch']+' pending native measurement on Python '+py+
+                               '; feed the W16_MEASURED lines to scripts/g3a_w16_repin.py --measured')
+          for path,entry in epoch['files'].items():
+              if measured[path]['num_branches']!=entry['branches'][py]:
+                  raise SystemExit('HOLD: Python/compiler denominator drift '+path)
+              if entry['floor'] is not None and measured[path]['covered_branches']<entry['floor']:
+                  raise SystemExit('HOLD: native branch reach displaced '+path)
           receipt={
             'schema':'code-purple.g3a.w16.cross-python.v1',
             'source_sha':os.environ['EXPECTED_HEAD'],
@@ -94,18 +109,19 @@ jobs:
             'run_attempt':int(os.environ['NATIVE_RUN_ATTEMPT']),
             'job_id':None,'job_identity':'PENDING_NATIVE_API_READBACK',
             'passed_test_count':int(matches[-1]),'failed_test_count':0,
-            'source_epoch':'G3A_W16_V2_PHASE4_REPAIRED',
+            'source_epoch':epoch['source_epoch'],'lineage':epoch['lineage'],
             'source_unchanged_from_N14':False,
             'historical_n14':{'four_file_covered':200,'four_file_eligible':446,
                               'comparable':False,'delta_pp':None},
             'current_five_file_covered':sum(x['covered_branches'] for x in measured.values()),
             'current_five_file_eligible':sum(x['num_branches'] for x in measured.values()),
+            'categories':{p:e['category'] for p,e in epoch['files'].items()},
             'files':measured,'accepted_root_closures':0,
             'merge_admission':'HOLD','security_waiver':False,'authority_transfer':False,
           }
           (root/'native_receipt.json').write_text(json.dumps(receipt,indent=2,sort_keys=True)+'\n')
           print('N15_PYTHON='+sys.version.split()[0])
-          print('W16_NEW_EPOCH_FIVE_FILE_BRANCH='+str(receipt['current_five_file_covered'])+'/560')
+          print('W16_FIVE_FILE_BRANCH='+str(receipt['current_five_file_covered'])+'/'+str(receipt['current_five_file_eligible']))
           print('N15_GATES=HOLD')
           PY
       - name: Always preserve native first-red and evidence

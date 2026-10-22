@@ -25,10 +25,30 @@ class PreflightContractTests(unittest.TestCase):
         (self.root / "src/a.py").write_text("print('safe')\n", encoding="utf-8")
         (self.root / ".github/workflows/demo.yml").write_text("name: demo\n")
         (self.root / "ci/governance/workflow_policy.json").write_text(
-            json.dumps({"rules": [{"pattern": "^demo[.]yml$"}]}), encoding="utf-8"
+            json.dumps(
+                {
+                    "rules": [
+                        {"pattern": "^demo[.]yml$", "cluster": "c", "lifecycle": "l"}
+                    ]
+                }
+            ),
+            encoding="utf-8",
         )
         self.a = "a" * 40
         self.b = "b" * 40
+        self.write_epoch()
+
+    def write_epoch(self, **workflows):
+        census = {"population": 1, "by_cluster": {"c": 1}, "by_lifecycle": {"l": 1}}
+        census.update(workflows)
+        epoch = {
+            "source_epoch": "E",
+            "files": {"src/a.py": {"blob": self.b}},
+            "workflows": census,
+        }
+        manifest = self.root / pre.MANIFEST
+        manifest.parent.mkdir(parents=True, exist_ok=True)
+        manifest.write_text(json.dumps(epoch), encoding="utf-8")
 
     def scan(self, *, blob=None, head=None, audit_rc=0):
         if blob is None:
@@ -40,8 +60,6 @@ class PreflightContractTests(unittest.TestCase):
             return head if args[0] == "rev-parse" else blob
 
         with (
-            mock.patch.object(pre, "SOURCE_BLOBS", {"src/a.py": self.b}),
-            mock.patch.object(pre, "EXPECTED_WORKFLOWS", 1),
             mock.patch.object(pre, "_git", side_effect=fake_git),
             mock.patch.object(
                 pre.subprocess, "run", return_value=mock.Mock(returncode=audit_rc)
@@ -87,13 +105,35 @@ class PreflightContractTests(unittest.TestCase):
         x = self.scan()
         self.assertIn("WORKFLOW_POLICY_UNREADABLE", x["errors"])
 
+    def test_good_scan_reports_workflow_subcategories(self):
+        x = self.scan()
+        self.assertEqual(x["source_epoch"], "E")
+        self.assertEqual(
+            x["workflow_subcategories"],
+            {"by_cluster": {"c": 1}, "by_lifecycle": {"l": 1}},
+        )
+
+    def test_subcategory_drift_requires_repin(self):
+        self.write_epoch(by_cluster={"other": 1})
+        x = self.scan()
+        self.assertEqual(x["status"], "HOLD")
+        self.assertIn("WORKFLOW_SUBCATEGORY_DRIFT:by_cluster", x["errors"])
+        self.assertNotIn("WORKFLOW_SUBCATEGORY_DRIFT:by_lifecycle", x["errors"])
+
+    def test_unmapped_historical_subcategories_are_not_compared(self):
+        self.write_epoch(by_cluster=None, by_lifecycle=None)
+        self.assertEqual(self.scan()["status"], "PASS")
+
+    def test_epoch_manifest_unreadable_is_explicit(self):
+        (self.root / pre.MANIFEST).write_text("{bad", encoding="utf-8")
+        x = self.scan()
+        self.assertIsNone(x["source_epoch"])
+        self.assertIn("EPOCH_MANIFEST_UNREADABLE", x["errors"])
+        self.assertIn("WORKFLOW_POPULATION_DRIFT", x["errors"])
+
     def test_missing_checkout_and_invalid_head_fail_closed(self):
         ceiling = {"GIT_CEILING_DIRECTORIES": str(self.root.parent)}
-        with (
-            mock.patch.dict(os.environ, ceiling),
-            mock.patch.object(pre, "SOURCE_BLOBS", {"src/a.py": self.b}),
-            mock.patch.object(pre, "EXPECTED_WORKFLOWS", 1),
-        ):
+        with mock.patch.dict(os.environ, ceiling):
             x = pre.scan(self.root, "not-a-sha")
         self.assertIsNone(x["checkout_head"])
         self.assertIsNone(x["source_blobs"]["src/a.py"]["actual"])
@@ -106,7 +146,11 @@ class PreflightContractTests(unittest.TestCase):
             self.assertIn(error, x["errors"])
 
     def run_main(self, status):
-        result = {"status": status, "errors": [] if status == "PASS" else ["X"]}
+        result = {
+            "status": status,
+            "source_epoch": "E",
+            "errors": [] if status == "PASS" else ["X"],
+        }
         argv = [
             "g3a_w16_preflight.py",
             "--root",
