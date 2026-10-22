@@ -1,4 +1,5 @@
 """Negative and positive controls for terminal first-red census."""
+
 import unittest
 
 from mission_control_lite.job_first_red import summarize
@@ -10,23 +11,35 @@ def make_job(job_id, conclusion="failure", step=None, run_id=1):
     steps = []
     if step is not None:
         steps = [
-            {"number": 1, "name": "checkout", "status": "completed",
-             "conclusion": "success"},
-            {"number": 2, "name": step, "status": "completed",
-             "conclusion": "failure"},
+            {
+                "number": 1,
+                "name": "checkout",
+                "status": "completed",
+                "conclusion": "success",
+            },
+            {"number": 2, "name": step, "status": "completed", "conclusion": "failure"},
         ]
     return {
-        "id": job_id, "run_id": run_id, "name": "security",
-        "status": "completed", "conclusion": conclusion, "steps": steps,
+        "id": job_id,
+        "run_id": run_id,
+        "name": "security",
+        "status": "completed",
+        "conclusion": conclusion,
+        "steps": steps,
     }
 
 
 class FirstRedCensusTests(unittest.TestCase):
     def test_shared_first_red_is_candidate_not_root(self):
         report = summarize(
-            SHA, {1: SHA, 2: SHA},
-            [make_job(11, step="bandit"), make_job(12, step="bandit", run_id=2),
-             make_job(13), make_job(14, conclusion="success")],
+            SHA,
+            {1: SHA, 2: SHA},
+            [
+                make_job(11, step="bandit"),
+                make_job(12, step="bandit", run_id=2),
+                make_job(13),
+                make_job(14, conclusion="success"),
+            ],
         )
         self.assertEqual(report["failed_jobs"], 3)
         self.assertEqual(report["first_red_observed_jobs"], 2)

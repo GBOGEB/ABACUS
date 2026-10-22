@@ -7,7 +7,7 @@ import unittest
 from pathlib import Path
 from unittest.mock import patch
 
-from mission_control_lite.coverage_pulse import build, compare, render_summary, main
+from mission_control_lite.coverage_pulse import build, compare, main, render_summary
 
 SHA = "a" * 40
 OTHER = "b" * 40

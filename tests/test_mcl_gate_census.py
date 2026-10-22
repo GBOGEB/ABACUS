@@ -1,4 +1,5 @@
 """Negative controls for source-bound gate census."""
+
 import json
 import sys
 import tempfile
@@ -6,7 +7,7 @@ import unittest
 from pathlib import Path
 from unittest.mock import patch
 
-from mission_control_lite.gate_census import summarize, main
+from mission_control_lite.gate_census import main, summarize
 
 SHA = "77a359bbdb742e9145c38b5f94ad882cc40f7ac4"
 
@@ -21,7 +22,12 @@ class GateCensusTests(unittest.TestCase):
         runs = [
             {"id": 3, "head_sha": SHA, "status": "completed", "conclusion": "failure"},
             {"id": 2, "head_sha": SHA, "status": "completed", "conclusion": "success"},
-            {"id": 4, "head_sha": SHA, "status": "completed", "conclusion": "cancelled"},
+            {
+                "id": 4,
+                "head_sha": SHA,
+                "status": "completed",
+                "conclusion": "cancelled",
+            },
         ]
         report = summarize(SHA, runs)
         self.assertEqual(report["observations"], 3)
@@ -34,8 +40,17 @@ class GateCensusTests(unittest.TestCase):
 
     def test_moving_head_rejected(self):
         with self.assertRaisesRegex(ValueError, "source differs"):
-            summarize(SHA, [{"id": 1, "head_sha": "a" * 40,
-                             "status": "completed", "conclusion": "success"}])
+            summarize(
+                SHA,
+                [
+                    {
+                        "id": 1,
+                        "head_sha": "a" * 40,
+                        "status": "completed",
+                        "conclusion": "success",
+                    }
+                ],
+            )
 
     def test_duplicate_run_id_rejected(self):
         row = {"id": 1, "head_sha": SHA, "status": "completed", "conclusion": "success"}
@@ -44,22 +59,49 @@ class GateCensusTests(unittest.TestCase):
 
     def test_running_success_not_terminal(self):
         with self.assertRaisesRegex(ValueError, "nonterminal"):
-            summarize(SHA, [{"id": 1, "head_sha": SHA,
-                             "status": "in_progress", "conclusion": "success"}])
+            summarize(
+                SHA,
+                [
+                    {
+                        "id": 1,
+                        "head_sha": SHA,
+                        "status": "in_progress",
+                        "conclusion": "success",
+                    }
+                ],
+            )
 
     def test_cli_writes_explicit_terminal_denominators(self):
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp)
             records = [
-                {"id": 10, "head_sha": SHA, "status": "completed", "conclusion": "success"},
-                {"id": 11, "head_sha": SHA, "status": "completed", "conclusion": "failure"},
+                {
+                    "id": 10,
+                    "head_sha": SHA,
+                    "status": "completed",
+                    "conclusion": "success",
+                },
+                {
+                    "id": 11,
+                    "head_sha": SHA,
+                    "status": "completed",
+                    "conclusion": "failure",
+                },
             ]
             (root / "runs.json").write_text(json.dumps(records), encoding="utf-8")
-            with patch.object(sys, "argv", [
-                "gate_census", "--head-sha", SHA,
-                "--runs-json", str(root / "runs.json"),
-                "--out-json", str(root / "receipt.json"),
-            ]):
+            with patch.object(
+                sys,
+                "argv",
+                [
+                    "gate_census",
+                    "--head-sha",
+                    SHA,
+                    "--runs-json",
+                    str(root / "runs.json"),
+                    "--out-json",
+                    str(root / "receipt.json"),
+                ],
+            ):
                 main()
             result = json.loads((root / "receipt.json").read_text(encoding="utf-8"))
             self.assertEqual(result["source_sha"], SHA)
@@ -73,34 +115,56 @@ class GateCensusTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp)
             (root / "runs.json").write_text('{"id": 1}', encoding="utf-8")
-            with patch.object(sys, "argv", [
-                "gate_census", "--head-sha", SHA,
-                "--runs-json", str(root / "runs.json"),
-                "--out-json", str(root / "receipt.json"),
-            ]), self.assertRaisesRegex(ValueError, "JSON list"):
+            with (
+                patch.object(
+                    sys,
+                    "argv",
+                    [
+                        "gate_census",
+                        "--head-sha",
+                        SHA,
+                        "--runs-json",
+                        str(root / "runs.json"),
+                        "--out-json",
+                        str(root / "receipt.json"),
+                    ],
+                ),
+                self.assertRaisesRegex(ValueError, "JSON list"),
+            ):
                 main()
             self.assertFalse((root / "receipt.json").exists())
 
     def test_invalid_run_id_types_are_rejected(self):
         for value in (True, -1, "3", 0):
-            with self.subTest(value=value), self.assertRaisesRegex(
-                ValueError, "invalid or duplicate"
+            with (
+                self.subTest(value=value),
+                self.assertRaisesRegex(ValueError, "invalid or duplicate"),
             ):
-                summarize(SHA, [
-                    {"id": value, "head_sha": SHA, "status": "completed",
-                     "conclusion": "success"}
-                ])
+                summarize(
+                    SHA,
+                    [
+                        {
+                            "id": value,
+                            "head_sha": SHA,
+                            "status": "completed",
+                            "conclusion": "success",
+                        }
+                    ],
+                )
 
     def test_invalid_head_rejected(self):
         with self.assertRaisesRegex(ValueError, "full hexadecimal"):
             summarize("short", [])
 
-
     def test_stale_and_startup_failure_are_terminal_blockers(self):
         runs = [
             {"id": 16, "head_sha": SHA, "status": "completed", "conclusion": "stale"},
-            {"id": 17, "head_sha": SHA, "status": "completed",
-             "conclusion": "startup_failure"},
+            {
+                "id": 17,
+                "head_sha": SHA,
+                "status": "completed",
+                "conclusion": "startup_failure",
+            },
         ]
         report = summarize(SHA, runs)
         self.assertEqual(report["observations"], 2)
@@ -114,12 +178,24 @@ class GateCensusTests(unittest.TestCase):
 
     def test_all_terminal_outcomes_are_denominator_conserved(self):
         reasons = [
-            "success", "failure", "cancelled", "skipped", "timed_out",
-            "action_required", "neutral", "stale", "startup_failure",
+            "success",
+            "failure",
+            "cancelled",
+            "skipped",
+            "timed_out",
+            "action_required",
+            "neutral",
+            "stale",
+            "startup_failure",
         ]
         runs = [
-            {"id": 101 + i, "head_sha": SHA, "status": "completed",
-             "conclusion": outcome} for i, outcome in enumerate(reasons)
+            {
+                "id": 101 + i,
+                "head_sha": SHA,
+                "status": "completed",
+                "conclusion": outcome,
+            }
+            for i, outcome in enumerate(reasons)
         ]
         report = summarize(SHA, runs)
         self.assertEqual(report["observations"], len(reasons))
@@ -135,28 +211,63 @@ class GateCensusTests(unittest.TestCase):
 
     def test_running_stale_is_rejected_as_nonterminal(self):
         with self.assertRaisesRegex(ValueError, "nonterminal"):
-            summarize(SHA, [{"id": 22, "head_sha": SHA,
-                             "status": "in_progress", "conclusion": "stale"}])
+            summarize(
+                SHA,
+                [
+                    {
+                        "id": 22,
+                        "head_sha": SHA,
+                        "status": "in_progress",
+                        "conclusion": "stale",
+                    }
+                ],
+            )
 
     def test_unknown_conclusion_still_fails_closed(self):
         with self.assertRaisesRegex(ValueError, "unsupported"):
-            summarize(SHA, [{"id": 22, "head_sha": SHA,
-                             "status": "completed", "conclusion": "start_failure"}])
+            summarize(
+                SHA,
+                [
+                    {
+                        "id": 22,
+                        "head_sha": SHA,
+                        "status": "completed",
+                        "conclusion": "start_failure",
+                    }
+                ],
+            )
 
     def test_cli_preserves_new_terminal_reason_counts(self):
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp)
             records = [
-                {"id": 61, "head_sha": SHA, "status": "completed", "conclusion": "stale"},
-                {"id": 62, "head_sha": SHA, "status": "completed",
-                 "conclusion": "startup_failure"},
+                {
+                    "id": 61,
+                    "head_sha": SHA,
+                    "status": "completed",
+                    "conclusion": "stale",
+                },
+                {
+                    "id": 62,
+                    "head_sha": SHA,
+                    "status": "completed",
+                    "conclusion": "startup_failure",
+                },
             ]
             (root / "runs.json").write_text(json.dumps(records), encoding="utf-8")
-            with patch.object(sys, "argv", [
-                "gate_census", "--head-sha", SHA,
-                "--runs-json", str(root / "runs.json"),
-                "--out-json", str(root / "receipt.json"),
-            ]):
+            with patch.object(
+                sys,
+                "argv",
+                [
+                    "gate_census",
+                    "--head-sha",
+                    SHA,
+                    "--runs-json",
+                    str(root / "runs.json"),
+                    "--out-json",
+                    str(root / "receipt.json"),
+                ],
+            ):
                 main()
             result = json.loads((root / "receipt.json").read_text(encoding="utf-8"))
             self.assertEqual(result["stale"], 1)

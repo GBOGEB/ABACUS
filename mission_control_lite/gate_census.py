@@ -1,24 +1,37 @@
 """Read-only, exact-head gate metrics; never confers merge admission."""
+
 from __future__ import annotations
 
 import json
 from collections import Counter
 from pathlib import Path
 
-
 TERMINAL = {
-    "success", "failure", "cancelled", "skipped", "timed_out",
-    "action_required", "neutral", "stale", "startup_failure",
+    "success",
+    "failure",
+    "cancelled",
+    "skipped",
+    "timed_out",
+    "action_required",
+    "neutral",
+    "stale",
+    "startup_failure",
 }
 BLOCKING_TERMINAL = {
-    "failure", "cancelled", "timed_out", "action_required",
-    "stale", "startup_failure",
+    "failure",
+    "cancelled",
+    "timed_out",
+    "action_required",
+    "stale",
+    "startup_failure",
 }
 
 
 def summarize(source_sha: str, runs: list[dict]) -> dict:
     """Compute explicit-denominator, per-run outcomes without collapsing gates."""
-    if len(source_sha) != 40 or any(ch not in "0123456789abcdefABCDEF" for ch in source_sha):
+    if len(source_sha) != 40 or any(
+        ch not in "0123456789abcdefABCDEF" for ch in source_sha
+    ):
         raise ValueError("full hexadecimal pull-head SHA required")
     seen = set()
     counts = Counter()
@@ -35,8 +48,14 @@ def summarize(source_sha: str, runs: list[dict]) -> dict:
         if state != "completed" or conclusion not in TERMINAL:
             raise ValueError("nonterminal or unsupported run result")
         counts[conclusion] += 1
-        records.append({"run_id": run_id, "name": str(run.get("name", "")),
-                        "conclusion": conclusion, "source_sha": source_sha})
+        records.append(
+            {
+                "run_id": run_id,
+                "name": str(run.get("name", "")),
+                "conclusion": conclusion,
+                "source_sha": source_sha,
+            }
+        )
     total = len(records)
     success = counts["success"]
     return {
@@ -70,7 +89,9 @@ def main() -> None:
         raise ValueError("input must be a JSON list of workflow runs")
     result = summarize(args.head_sha, runs)
     args.out_json.parent.mkdir(parents=True, exist_ok=True)
-    args.out_json.write_text(json.dumps(result, indent=2, sort_keys=True) + "\n", encoding="utf-8")
+    args.out_json.write_text(
+        json.dumps(result, indent=2, sort_keys=True) + "\n", encoding="utf-8"
+    )
 
 
 if __name__ == "__main__":
