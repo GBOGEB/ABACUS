@@ -241,6 +241,29 @@ def build_payload(args: argparse.Namespace) -> dict[str, Any]:
         tools["flake8_critical"] = census_flake8(_read(args.flake8_log), root, changed)
     if args.bandit_json is not None:
         tools["bandit"] = census_bandit(_read(args.bandit_json), root, changed)
+
+    # Missing PR context, a global tool-config change or an unreadable log
+    # cannot establish a touched-file bound. A numeric zero in those cases
+    # falsely looks like a verified absence of new findings. This is still
+    # input qualification only, never scanner-exit or independent CI proof.
+    incomplete_tools = sorted(
+        name for name, receipt in tools.items()
+        if receipt.get("status") != "parsed"
+    )
+    if changed is None:
+        qualification = "NO_PR_CONTEXT"
+    elif configs:
+        qualification = "INDETERMINATE_CONFIG_CHANGE"
+    elif not tools:
+        qualification = "NO_SCANNERS_SELECTED"
+    elif incomplete_tools:
+        qualification = "INCOMPLETE_SCANNER_INPUTS"
+    else:
+        qualification = "QUALIFIED_INPUTS_ONLY"
+    touched_upper_bound = (
+        sum(touched_count(tool) for tool in tools.values())
+        if qualification == "QUALIFIED_INPUTS_ONLY" else None
+    )
     return {
         "schema": SCHEMA,
         "lane": args.lane,
@@ -250,7 +273,10 @@ def build_payload(args: argparse.Namespace) -> dict[str, Any]:
         "config_changes": configs,
         "attribution": attribution,
         "tools": tools,
-        "touched_findings_upper_bound": sum(touched_count(t) for t in tools.values()),
+        "touched_findings_upper_bound": touched_upper_bound,
+        "touched_findings_qualification": qualification,
+        "incomplete_tools": incomplete_tools,
+        "qualification_scope": "local source/log inputs; not CI scanner-exit or root closure",
         "verdict_effect": "none: evidence only, enforcement steps unchanged",
     }
 
@@ -296,6 +322,15 @@ def summary_markdown(payload: dict[str, Any]) -> str:
         lines.append(_row(name, tool, pr_context))
         if "parse_errors" in tool:
             lines.append(_row(f"{name} parse errors", tool["parse_errors"], pr_context))
+    lines.append("")
+    qualified_bound = payload.get("touched_findings_upper_bound")
+    qualification = payload.get("touched_findings_qualification", "UNKNOWN")
+    label = str(qualified_bound) if qualified_bound is not None else "UNKNOWN"
+    lines.append(f"Qualified touched-file bound: **{label}** ({qualification}).")
+    lines.append(
+        "Bound qualification checks available input/log populations only; "
+        "it never attests native scanner exit, approval or root closure."
+    )
     lines.append("")
     lines.append(
         "Touched-file counts (parse errors included) are an upper bound on "

@@ -40,12 +40,12 @@ residual_burndown:
 
 source_recovery_priority:
   queries:
-    - exact_LKT_2K_OP_thermal_shield_HP_pressure
+    - exact_SUPPLIER_B_2K_OP_thermal_shield_HP_pressure
     - exact_D_supply_pressure
     - exact_E_return_pressure
     - Table_or_BOP_row_with_81_g_s_40K_60K
   acceptable_evidence:
-    - current_LKT_offer_exact_row
+    - current_SUPPLIER_B_offer_exact_row
     - contract_exact_boundary
     - source_bound_project_SSOT_with_exact_locator
 

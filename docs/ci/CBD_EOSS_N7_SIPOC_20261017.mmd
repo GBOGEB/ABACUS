@@ -1,0 +1,6 @@
+flowchart LR
+ S[SUPPLIERS: local pytest; GitHub Actions; source owners] --> I[INPUTS: SHA; run and attempt; job logs; test and branch counts]
+ I --> P[PROCESS: fix owned first-red; rerun local; validate provenance; join metrics]
+ P --> O[OUTPUTS: source commits; machine ledger; DAG; SIPOC; HTML QA]
+ O --> C[CUSTOMERS: engineers; Mission Control; A10/security reviewers]
+ C -. new authorized source disposition .-> S

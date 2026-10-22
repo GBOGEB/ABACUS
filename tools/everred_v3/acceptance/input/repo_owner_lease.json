@@ -1,0 +1,13 @@
+{
+  "schema": "codepurple.acceptance.disjoint_lease_proposal.v1",
+  "leases": [
+    {"repo":"GBOGEB/ABACUS","path":"tools/everred_v3/acceptance","owner":"ABACUS-EVERRED-evidence-provider"},
+    {"repo":"GBOGEB/ABACUS","path":"tools/everred_v3/tests/test_acceptance_core.py","owner":"ABACUS-EVERRED-contract-tests"},
+    {"repo":"GBOGEB/CODEX","path":"federation/acceptance_debt","owner":"CODEX-MissionControl-reader"},
+    {"repo":"GBOGEB/cryoplant-project","path":"federation/acceptance_debt","owner":"QPS-engineering-reader"}
+  ],
+  "source_writers_authorized": 0,
+  "owner_approval": null,
+  "lease_promotion": "PROPOSED_ONLY",
+  "authority_transfer": false
+}

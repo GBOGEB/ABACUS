@@ -2,11 +2,10 @@
 
 from models.qps_line_s.loop_transient import simulate
 from models.qps_line_s.ssot_tables import (
-    k_aisi304_w_m_k,
     integrate_k_signed_w_per_m,
+    k_aisi304_w_m_k,
     static_heat_loads_w,
 )
-
 
 # --- NIST conductivity sanity ---
 

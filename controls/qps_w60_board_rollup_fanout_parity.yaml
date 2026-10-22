@@ -28,7 +28,7 @@ rollup_contract:
   aggregate_value_may_be_split_to_branches_without_source: false
 validation_requests:
   - verify_six_group_launcher_has_no_metric_delta
-  - verify_LKT_ALAT_comparison_keeps_bidder_counts_and_selected_values_separate
+  - verify_SUPPLIER_B_SUPPLIER_A_comparison_keeps_bidder_counts_and_selected_values_separate
   - verify_fanout_member_edges_do_not_change_formal_denominators
   - verify_board_core_metrics_equal_child_source_metrics
   - return_DOW_parity_receipt_to_child_without_self_promotion

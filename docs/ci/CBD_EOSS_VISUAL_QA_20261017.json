@@ -1,0 +1,47 @@
+{
+  "schema": "code-purple.eoss.playwright.v1",
+  "evidence_level": "LOCAL_REPRODUCIBILITY",
+  "target": "/mnt/data/code_purple_eoss_n5/out/eoss_dashboard.html",
+  "checks": [
+    {
+      "viewport": "desktop",
+      "width": 1440,
+      "height": 1000,
+      "tabs_passed": 5,
+      "filters_passed": true,
+      "svg_depth_and_zoom_passed": true,
+      "screenshot_count": 5,
+      "console_and_page_errors": [],
+      "horizontal_overflow": false,
+      "broken_images": 0,
+      "status": "PASS"
+    },
+    {
+      "viewport": "laptop",
+      "width": 1280,
+      "height": 800,
+      "tabs_passed": 5,
+      "filters_passed": true,
+      "svg_depth_and_zoom_passed": true,
+      "screenshot_count": 5,
+      "console_and_page_errors": [],
+      "horizontal_overflow": false,
+      "broken_images": 0,
+      "status": "PASS"
+    },
+    {
+      "viewport": "mobile",
+      "width": 390,
+      "height": 844,
+      "tabs_passed": 5,
+      "filters_passed": true,
+      "svg_depth_and_zoom_passed": true,
+      "screenshot_count": 5,
+      "console_and_page_errors": [],
+      "horizontal_overflow": false,
+      "broken_images": 0,
+      "status": "PASS"
+    }
+  ],
+  "overall": "PASS"
+}

@@ -4,7 +4,7 @@
 Promote the strongest P05J result into the first governed QPLANT strict numerical residual, or name the exact blocker without granting artificial credit.
 
 ## Exact evidence boundary
-Current ALAT source: `C1462-TN-001_0_SCK_CEN_MYRRHA_Phase_1_Technical_Proposal`.
+Current SUPPLIER_A source: `C1462-TN-001_0_SCK_CEN_MYRRHA_Phase_1_Technical_Proposal`.
 Controlled child locators: guaranteed performance p55/81 §3; guaranteed conditions p56/81; non-binding thermodynamic example inputs p59/81; outputs p60/81.
 
 Exact current-offer non-binding TS example:
@@ -23,7 +23,7 @@ Authority warning: the exact 14.12/35 -> 13.12/55 state is explicitly a current-
 
 ## Residual battery
 ### R3A — cross-source energy residual
-Use exact ALAT D/E P/T + contract `≈77 g/s` + governed independent properties:
+Use exact SUPPLIER_A D/E P/T + contract `≈77 g/s` + governed independent properties:
 `Q_pred = mdot_contract * [h(E)-h(D)]`.
 Emit W and % residual against 8200 W.
 
@@ -35,7 +35,7 @@ Emit W and % residual against 8200 W.
 Classify `NON_INDEPENDENT_SOURCE_CONSISTENCY`; never score as strict PASS.
 
 ### R3D — provider cross-validation
-Evaluate exact D/E state with pinned CoolProp 7.2.0 and a genuinely independent property source: HEPAK, MBWR/Aspen-HYSYS, governed REFPROP-equivalent, or exact source table. Historical ALAT method lineage (`Aspen HYSYS v10 / MBWR / HEPAK v3.4`) is supporting lineage, not exact-state validation by itself.
+Evaluate exact D/E state with pinned CoolProp 7.2.0 and a genuinely independent property source: HEPAK, MBWR/Aspen-HYSYS, governed REFPROP-equivalent, or exact source table. Historical SUPPLIER_A method lineage (`Aspen HYSYS v10 / MBWR / HEPAK v3.4`) is supporting lineage, not exact-state validation by itself.
 
 ## Predeclared flow sensitivity
 Because Table-9 says approximately 77 g/s, calculate before disposition at 76.5, 77.0 and 77.5 g/s. Add ±1 g/s only if controlled contract semantics justify it. No post-hoc tolerance selection.
@@ -44,7 +44,7 @@ Because Table-9 says approximately 77 g/s, calculate before disposition at 76.5,
 Emit: source SHA/locators; D/E P/T; provider/version; hD/hE/Δh; predicted duty at every flow point; W/% residual; inverse flow; flow residual; provider disagreement %; bidder internal-consistency residual; source-bound fraction; independent-reference coverage; provenance completeness; uncertainty width; retry count; PASS/DEFER/FAIL.
 
 ## Fail-closed negative tests
-DEFER/FAIL if: ALAT 77.01 is called independent; non-binding state is called guaranteed; rounded 14/40 -> 13/60 substitutes for exact state; topology identity receives residual credit; CoolProp validates itself; historic pre-study overrides current offer; missing property values are imputed; tolerance is chosen after the result; parent runtime self-promotes compliance.
+DEFER/FAIL if: SUPPLIER_A 77.01 is called independent; non-binding state is called guaranteed; rounded 14/40 -> 13/60 substitutes for exact state; topology identity receives residual credit; CoolProp validates itself; historic pre-study overrides current offer; missing property values are imputed; tolerance is chosen after the result; parent runtime self-promotes compliance.
 
 ## DoV gate
 Track strict residual PASS/DEFER/FAIL, same-boundary completeness, independent-reference coverage, provider agreement, residual W/%, flow residual, source-bound %, provenance %, diagnostic DoV delta and formal credit delta separately.

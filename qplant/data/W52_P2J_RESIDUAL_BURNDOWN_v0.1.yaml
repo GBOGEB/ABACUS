@@ -5,8 +5,8 @@ mode: residual_burndown
 architecture_percentage_reporting: deprecated_for_helium_model_progress
 
 baseline:
-  scenario: LKT_2K_OP_W52_P2J_v0.2
-  source_file: qplant/data/w52_p2j_lkt_2kop_case_v0.1.json
+  scenario: SUPPLIER_B_2K_OP_W52_P2J_v0.2
+  source_file: qplant/data/w52_p2j_supplier_b_2kop_case_v0.1.json
   residual_harness: qplant/w52_p2j_mass_energy_closure.py
   merged_execution_lineage: [863, 865]
 

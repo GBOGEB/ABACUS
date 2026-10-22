@@ -48,18 +48,37 @@ class TestPilotReceiptContractTests(TestCase):
                 [{"status": "FAIL"}, {"status": "SKIP"}], mode
             ))
 
-    def test_invalid_gate_floor_exits_before_running_tests(self):
-        for floor in ("0", "74.9", "nan", "inf", "101"):
-            with self.subTest(floor=floor):
-                with patch.object(sys, "argv", [
-                    "testpilot_preflight.py", "--mode", "gate",
-                    "--coverage-floor", floor
-                ]), patch.object(pilot, "targeted_pytest") as pytest_mock:
-                    with contextlib.redirect_stderr(io.StringIO()):
-                        with self.assertRaises(SystemExit) as error:
-                            pilot.main()
-                    self.assertEqual(2, error.exception.code)
-                    pytest_mock.assert_not_called()
+    def _assert_invalid_gate_floor(self, floor):
+        # Five independent pytest/unittest cases give JUnit one testcase per
+        # exercised value. A five-iteration subTest had inflated declared
+        # suite totals without five distinct testcase elements.
+        with (
+            patch.object(sys, "argv", [
+                "testpilot_preflight.py", "--mode", "gate",
+                "--coverage-floor", floor
+            ]),
+            patch.object(pilot, "targeted_pytest") as pytest_mock,
+            contextlib.redirect_stderr(io.StringIO()),
+        ):
+            with self.assertRaises(SystemExit) as error:
+                pilot.main()
+            self.assertEqual(2, error.exception.code)
+            pytest_mock.assert_not_called()
+
+    def test_invalid_gate_floor_zero(self):
+        self._assert_invalid_gate_floor("0")
+
+    def test_invalid_gate_floor_fractional(self):
+        self._assert_invalid_gate_floor("74.9")
+
+    def test_invalid_gate_floor_nan(self):
+        self._assert_invalid_gate_floor("nan")
+
+    def test_invalid_gate_floor_infinite(self):
+        self._assert_invalid_gate_floor("inf")
+
+    def test_invalid_gate_floor_above_hundred(self):
+        self._assert_invalid_gate_floor("101")
 
     def test_valid_higher_gate_floor_is_permitted(self):
         with TemporaryDirectory() as folder:

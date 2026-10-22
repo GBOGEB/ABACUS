@@ -1,0 +1,435 @@
+{
+  "before_main_sha": "e08c51232edbb0ede05eab5bcd21f039539adf92",
+  "evidence_files": [
+    {
+      "container_zip_sha256": "804e6599faaf44749f078133359fb20227eb7c09b6a2682380771140c2b0ec5b",
+      "locator": "dmaic-g3cs-w1w70.zip#W70_METRICS.json",
+      "sha256": "6cabd77a39bd8de692bac112f5e8831d1d59307bb4b3fe7eb83af460d7af2cd6"
+    },
+    {
+      "container_zip_sha256": "5839666bb8d45908f7d9804eef6ac030390e1d88a3f9d948d4adf9cc3c58b440",
+      "locator": "dmaic-g3cs-w1dab.zip#dab_flake8_census.json",
+      "sha256": "33158bba8edcad4810a252e808f2445d53a8fd17d8d91d04ed2e01f62e29971a"
+    },
+    {
+      "container_zip_sha256": "b4edf180dcd77ff24c568122a5e409a7ff3976ba526bdccc67fe4aba34df21be",
+      "locator": "dmaic-g3cs-w2w70.zip#W70_METRICS.json",
+      "sha256": "ed672a794e83f431d8a2061eb5446cb3b32325e5c08a6e76717a8a40a7baa5f7"
+    },
+    {
+      "container_zip_sha256": "befac58d22c728ceb616dcff0ed6f75f362ae60abf6bf14901fb791585ae1aa6",
+      "locator": "dmaic-g3cs-w2dab.zip#dab_flake8_census.json",
+      "sha256": "532ba5aeb507634690d9ea0bfcd2cbaac618cd2da9e068514dce512f1776dc93"
+    },
+    {
+      "container_zip_sha256": "954f06170ef9d8aad6161b56bf8f755496133c9ac7e71f5ba1bd14ebc03917d6",
+      "locator": "dmaic-g3cs-w3w70.zip#W70_METRICS.json",
+      "sha256": "3e39edaa5ea00135f36b6c0914ff69ba5ab95f17b8f8722ba757447f098db086"
+    },
+    {
+      "container_zip_sha256": "d7ee73fb7e867562e66c1d43774ed3add5f1ed0958d308ab1dcc1f30a3b75770",
+      "locator": "dmaic-g3cs-w3dab.zip#dab_flake8_census.json",
+      "sha256": "2ea4319da33c2695b8f4484172cbde69fe67ee9694fb7fdb75bb1b7605b9b963"
+    }
+  ],
+  "existing_providers": {
+    "acceptance_graph": "tools/everred_v3/acceptance/graph.py",
+    "acceptance_sipoc": "tools/everred_v3/acceptance/graph.py#sipoc",
+    "acceptance_temporal": "tools/everred_v3/acceptance/telemetry.py",
+    "ci_temporal": "tools/mip_ci_temporal_rollup.py",
+    "coverage_delta": "scripts/cbd_matched_coverage_delta.py",
+    "governance_owner_pr": "https://github.com/GBOGEB/ABACUS/pull/2144"
+  },
+  "external": {
+    "admission_todo_completed": 1,
+    "admission_todo_total": 12,
+    "deduplicated_roots_closed": null,
+    "deduplicated_roots_open": null,
+    "diff_coverage": null,
+    "dispatch_todo_completed": 0,
+    "dispatch_todo_total": 7,
+    "issue_reference": "https://github.com/GBOGEB/ABACUS/issues/1860",
+    "issues_closed": 267,
+    "issues_open": 38,
+    "main_branch_coverage": null,
+    "main_statement_coverage": null,
+    "remote_crew_launch_verified": false
+  },
+  "governance": {
+    "admission": "HOLD",
+    "authority_transfer": false,
+    "negative_red_canary_proven": false,
+    "required_approvals": 0,
+    "required_status_contexts": [],
+    "review_eligibility_verified": false,
+    "ruleset_id": 24494381,
+    "security_waiver": false
+  },
+  "history": {
+    "historical_main_coverage": {
+      "covered": 34222,
+      "eligible": 51264,
+      "scope": "HISTORICAL_COMBINED_NOT_CURRENT_MAIN",
+      "source_sha": "49c945268ba26a8addb8a9cfa788de057b93fe1e"
+    },
+    "previous_snapshot": {
+      "comparability": "UNMATCHED_DIFFERENT_DENOMINATOR",
+      "observed": 60,
+      "run_population_hash": null,
+      "successful": 42
+    }
+  },
+  "live_observation_origin": "MCP_GITHUB_READBACK_WITH_DOWNLOADED_NATIVE_ARTIFACTS",
+  "native_main_after_merge": {
+    "negative_merge_canary": null,
+    "postmerge_coverage": null,
+    "terminal_full_ci": null
+  },
+  "observed_date_utc": "2026-10-18",
+  "observed_main_sha": "585dd7476d3b3c629f864c37ec7d7526a648b4c0",
+  "parallel_heads_are_not_serial": "REQUIRED",
+  "repository": "GBOGEB/ABACUS",
+  "schema": "codepurple.g3cs.convergence-input.v2",
+  "waves": [
+    {
+      "clock": "PARALLEL_PR_HEAD",
+      "dab": {
+        "command": "flake8 . --count --exit-zero --statistics --max-line-length=120",
+        "families": {
+          "E225": 737,
+          "W292": 18
+        },
+        "run_id": 39134199001,
+        "source_sha": "6e23c38b2ee6504216887210769d119b4e6a709a",
+        "total": 7152
+      },
+      "eligible_approvals": 0,
+      "main_merge_sha": "b77348263d94b14ddf574bbf78ef7949f200d8c8",
+      "merged": true,
+      "merged_at_utc": "2026-10-18T14:17:45Z",
+      "pr": 2217,
+      "proofs": {
+        "handover_native_tests": 14,
+        "native_smoke": "success"
+      },
+      "source_base_sha": "e08c51232edbb0ede05eab5bcd21f039539adf92",
+      "source_sha": "6e23c38b2ee6504216887210769d119b4e6a709a",
+      "w70": {
+        "attempt": 1,
+        "branches": {
+          "covered": 17,
+          "eligible": 18,
+          "pct": 94.44
+        },
+        "closed_manifestations": 45,
+        "coverage_delta": {
+          "baseline_receipt_sha256": null,
+          "branch_delta_pp": null,
+          "comparable": false,
+          "debt_delta": null,
+          "line_delta_pp": null,
+          "reason": "NO_BASELINE"
+        },
+        "lanes": {
+          "A_registry_gap": {
+            "closed": 10,
+            "open": 10,
+            "population": 20
+          },
+          "B_reference_gap": {
+            "closed": 3,
+            "open": 8,
+            "population": 11
+          },
+          "C_consumer_penetration": {
+            "closed": 10,
+            "open": 0,
+            "population": 10
+          },
+          "D_graph_orphan_drop": {
+            "closed": 16,
+            "open": 9,
+            "population": 25
+          },
+          "E_lineage_evidence": {
+            "closed": 6,
+            "open": 4,
+            "population": 10
+          }
+        },
+        "lines": {
+          "covered": 133,
+          "eligible": 133,
+          "pct": 100.0
+        },
+        "open_manifestations": 31,
+        "run_id": 39134199003,
+        "scope": "tools/w70_wave_pulse_metrics.py",
+        "scope_sha256": "56ff0f680d18ee209bbae9f868e1e6cda7c09b491be4e64c5fd8fae331960cc9",
+        "source_sha": "6e23c38b2ee6504216887210769d119b4e6a709a",
+        "test_selection": "test_w70_wave_pulse_metrics.py",
+        "tool_version": "7.13.3",
+        "unique_confirmed_roots": null
+      },
+      "wave": "S1",
+      "workflow_census": {
+        "completeness": "FIRST_PAGE_ONLY",
+        "failure": 0,
+        "nonterminal": 6,
+        "observed": 20,
+        "other_terminal": 0,
+        "run_attempt_status": "ONE_LATEST_OBSERVATION_PER_RUN",
+        "run_ids": [
+          39135344276,
+          39134199171,
+          39134198949,
+          39134199001,
+          39134198899,
+          39134199027,
+          39134199000,
+          39134198907,
+          39134198958,
+          39134199006,
+          39134198927,
+          39134198914,
+          39134198948,
+          39134198956,
+          39134198965,
+          39134199003,
+          39134199018,
+          39134198999,
+          39134199023,
+          39134198981
+        ],
+        "scope": "SELECTED_PR_TRIGGERED_FIRST_PAGE",
+        "success": 14
+      }
+    },
+    {
+      "clock": "PARALLEL_PR_HEAD",
+      "dab": {
+        "command": "flake8 . --count --exit-zero --statistics --max-line-length=120",
+        "families": {
+          "E225": 738,
+          "W292": 18
+        },
+        "run_id": 39134282622,
+        "source_sha": "38277a30cd5638a82f5dd5447d511d253d5846c0",
+        "total": 7153
+      },
+      "eligible_approvals": 0,
+      "main_merge_sha": "4e159a745a32de0530f4228dc8cd5d168dfdd11e",
+      "merged": true,
+      "merged_at_utc": "2026-10-18T14:18:56Z",
+      "pr": 2219,
+      "proofs": {},
+      "source_base_sha": "e08c51232edbb0ede05eab5bcd21f039539adf92",
+      "source_sha": "38277a30cd5638a82f5dd5447d511d253d5846c0",
+      "w70": {
+        "attempt": 1,
+        "branches": {
+          "covered": 17,
+          "eligible": 18,
+          "pct": 94.44
+        },
+        "closed_manifestations": 45,
+        "coverage_delta": {
+          "baseline_receipt_sha256": null,
+          "branch_delta_pp": null,
+          "comparable": false,
+          "debt_delta": null,
+          "line_delta_pp": null,
+          "reason": "NO_BASELINE"
+        },
+        "lanes": {
+          "A_registry_gap": {
+            "closed": 10,
+            "open": 10,
+            "population": 20
+          },
+          "B_reference_gap": {
+            "closed": 3,
+            "open": 8,
+            "population": 11
+          },
+          "C_consumer_penetration": {
+            "closed": 10,
+            "open": 0,
+            "population": 10
+          },
+          "D_graph_orphan_drop": {
+            "closed": 16,
+            "open": 9,
+            "population": 25
+          },
+          "E_lineage_evidence": {
+            "closed": 6,
+            "open": 4,
+            "population": 10
+          }
+        },
+        "lines": {
+          "covered": 133,
+          "eligible": 133,
+          "pct": 100.0
+        },
+        "open_manifestations": 31,
+        "run_id": 39134282694,
+        "scope": "tools/w70_wave_pulse_metrics.py",
+        "scope_sha256": "56ff0f680d18ee209bbae9f868e1e6cda7c09b491be4e64c5fd8fae331960cc9",
+        "source_sha": "38277a30cd5638a82f5dd5447d511d253d5846c0",
+        "test_selection": "test_w70_wave_pulse_metrics.py",
+        "tool_version": "7.13.3",
+        "unique_confirmed_roots": null
+      },
+      "wave": "S2",
+      "workflow_census": {
+        "completeness": "FIRST_PAGE_ONLY",
+        "failure": 0,
+        "nonterminal": 5,
+        "observed": 21,
+        "other_terminal": 0,
+        "run_attempt_status": "ONE_LATEST_OBSERVATION_PER_RUN",
+        "run_ids": [
+          39135431172,
+          39134282594,
+          39134282669,
+          39134282622,
+          39134282776,
+          39134282720,
+          39134282702,
+          39134282694,
+          39134282910,
+          39134282597,
+          39134282675,
+          39134282646,
+          39134282798,
+          39134282616,
+          39134282779,
+          39134282657,
+          39134283101,
+          39134282747,
+          39134282604,
+          39134283046,
+          39134282783
+        ],
+        "scope": "SELECTED_PR_TRIGGERED_FIRST_PAGE",
+        "success": 16
+      }
+    },
+    {
+      "clock": "PARALLEL_PR_HEAD",
+      "dab": {
+        "command": "flake8 . --count --exit-zero --statistics --max-line-length=120",
+        "families": {
+          "E225": 738,
+          "W292": 17
+        },
+        "run_id": 39134658652,
+        "source_sha": "0f98f4f091b433c0984c361826ca7c2e9b3630c9",
+        "total": 7152
+      },
+      "eligible_approvals": 0,
+      "main_merge_sha": "8bcb5729b3407685edb78af80378715ce61e70a2",
+      "merged": true,
+      "merged_at_utc": "2026-10-18T14:18:41Z",
+      "pr": 2220,
+      "proofs": {
+        "pytest_validation_workflow": "success"
+      },
+      "source_base_sha": "e08c51232edbb0ede05eab5bcd21f039539adf92",
+      "source_sha": "0f98f4f091b433c0984c361826ca7c2e9b3630c9",
+      "w70": {
+        "attempt": 1,
+        "branches": {
+          "covered": 17,
+          "eligible": 18,
+          "pct": 94.44
+        },
+        "closed_manifestations": 45,
+        "coverage_delta": {
+          "baseline_receipt_sha256": null,
+          "branch_delta_pp": null,
+          "comparable": false,
+          "debt_delta": null,
+          "line_delta_pp": null,
+          "reason": "NO_BASELINE"
+        },
+        "lanes": {
+          "A_registry_gap": {
+            "closed": 10,
+            "open": 10,
+            "population": 20
+          },
+          "B_reference_gap": {
+            "closed": 3,
+            "open": 8,
+            "population": 11
+          },
+          "C_consumer_penetration": {
+            "closed": 10,
+            "open": 0,
+            "population": 10
+          },
+          "D_graph_orphan_drop": {
+            "closed": 16,
+            "open": 9,
+            "population": 25
+          },
+          "E_lineage_evidence": {
+            "closed": 6,
+            "open": 4,
+            "population": 10
+          }
+        },
+        "lines": {
+          "covered": 133,
+          "eligible": 133,
+          "pct": 100.0
+        },
+        "open_manifestations": 31,
+        "run_id": 39134658665,
+        "scope": "tools/w70_wave_pulse_metrics.py",
+        "scope_sha256": "56ff0f680d18ee209bbae9f868e1e6cda7c09b491be4e64c5fd8fae331960cc9",
+        "source_sha": "0f98f4f091b433c0984c361826ca7c2e9b3630c9",
+        "test_selection": "test_w70_wave_pulse_metrics.py",
+        "tool_version": "7.13.3",
+        "unique_confirmed_roots": null
+      },
+      "wave": "S3",
+      "workflow_census": {
+        "completeness": "FIRST_PAGE_ONLY",
+        "failure": 0,
+        "nonterminal": 5,
+        "observed": 21,
+        "other_terminal": 0,
+        "run_attempt_status": "ONE_LATEST_OBSERVATION_PER_RUN",
+        "run_ids": [
+          39135416072,
+          39134658882,
+          39134658595,
+          39134658623,
+          39134658591,
+          39134658631,
+          39134658665,
+          39134658614,
+          39134658657,
+          39134658673,
+          39134658667,
+          39134658652,
+          39134658605,
+          39134658616,
+          39134658666,
+          39134658626,
+          39134658658,
+          39134658678,
+          39134658664,
+          39134658670,
+          39134658641
+        ],
+        "scope": "SELECTED_PR_TRIGGERED_FIRST_PAGE",
+        "success": 16
+      }
+    }
+  ]
+}

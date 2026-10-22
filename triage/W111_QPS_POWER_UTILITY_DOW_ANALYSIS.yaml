@@ -49,7 +49,7 @@ analysis_model:
 known_inputs:
   helium_R_kJ_kgK: 2.077
   helium_gamma_ideal_reference: 1.6666666667
-  LKT_HP_normal_each:
+  SUPPLIER_B_HP_normal_each:
     mass_flow_kg_s: 0.0815
     T1_K: 298.0
     P1_bara: 1.05
@@ -57,7 +57,7 @@ known_inputs:
     frequency_Hz: 56.0
     package_input_kW: 203.5
     classification: MIXED_OWNER_IMMUTABLE_PLUS_SOURCE_BOUND_DERIVED_EQUAL_SHARE
-  LKT_HP_max_each:
+  SUPPLIER_B_HP_max_each:
     mass_flow_kg_s: 0.112
     T1_K: 298.0
     P1_bara: 1.05
@@ -66,7 +66,7 @@ known_inputs:
     motor_rating_kW: 315.0
     package_input_kW: 357.0
     classification: SOURCE_BOUND_BIDDER_MAX_REFERENCE
-  LKT_2KOP:
+  SUPPLIER_B_2KOP:
     HP_kW: 814.0
     PVPS_kW: 83.0
     CC_kW: 5.0
@@ -123,7 +123,7 @@ PCA_contract:
 BT_reverse_loading:
   current_priority:
     - rank: 1
-      evidence: exact_LKT_electrical_SLD_load_schedule_and_invCOP_meter_boundary
+      evidence: exact_SUPPLIER_B_electrical_SLD_load_schedule_and_invCOP_meter_boundary
       reason: decomposes_153p13kW_and_defines_E3
     - rank: 2
       evidence: FSD575_motor_VFD_auxiliary_breakdown_at_56Hz_and_72Hz

@@ -2,7 +2,7 @@
 
 ## 1. Purpose
 
-Convert the strongest P05J diagnostic result into a governed strict residual candidate using the **exact current ALAT thermal-shield state**, an independent contract mass-flow anchor, and at least one independent helium-property calculation.
+Convert the strongest P05J diagnostic result into a governed strict residual candidate using the **exact current SUPPLIER_A thermal-shield state**, an independent contract mass-flow anchor, and at least one independent helium-property calculation.
 
 This wave is intentionally narrow. It does not add architecture. It either earns the first strict numerical residual or records the precise evidence/property reason why it remains deferred.
 
@@ -14,7 +14,7 @@ This wave is intentionally narrow. It does not add architecture. It either earns
 - Table 9, 2K-OP: `D ≈ 77 g/s`, `E ≈ 77 g/s`.
 - Contract `≈77 g/s` is a design-flow semantic, not an exact metrology value. Any strict acceptance must state and govern the tolerance used for that approximation.
 
-### 2.2 Current ALAT offer — exact non-binding thermodynamic example
+### 2.2 Current SUPPLIER_A offer — exact non-binding thermodynamic example
 
 Source: `C1462-TN-001_0_SCK_CEN_MYRRHA_Phase_1_Technical_Proposal`.
 
@@ -48,7 +48,7 @@ The bidder reconstructed flow is **not independent** of bidder duty/enthalpy and
 
 Use:
 
-- current ALAT exact D/E state from pages 59–60;
+- current SUPPLIER_A exact D/E state from pages 59–60;
 - **contract independent design-flow anchor ≈77 g/s**;
 - independent governed helium properties.
 
@@ -82,7 +82,7 @@ Run exact D/E state against:
 1. governed CoolProp 7.2.0 normal-fluid provider;
 2. a genuinely independent reference where recoverable: HEPAK, MBWR/Aspen-HYSYS, REFPROP-equivalent governed source, or a source table with exact state enthalpies.
 
-Historical ALAT pre-study establishes method lineage (`Aspen HYSYS v10 / MBWR / HEPAK v3.4`) but does **not** automatically provide exact current-state property values. Historical method similarity therefore cannot silently satisfy the independent-reference gate.
+Historical SUPPLIER_A pre-study establishes method lineage (`Aspen HYSYS v10 / MBWR / HEPAK v3.4`) but does **not** automatically provide exact current-state property values. Historical method similarity therefore cannot silently satisfy the independent-reference gate.
 
 If an exact independent reference cannot be recovered, disposition is `DEFER_INDEPENDENT_PROPERTY_REFERENCE` even if CoolProp residual is numerically excellent.
 
@@ -118,9 +118,9 @@ No tolerance may be invented after seeing the residual. The child acceptance rec
 
 Reject or defer if any of the following occurs:
 
-- reconstructed ALAT 77.01 g/s is represented as an independent source;
+- reconstructed SUPPLIER_A 77.01 g/s is represented as an independent source;
 - current non-binding D/E state is represented as a guaranteed fixed BOP;
-- rounded 14/40→13/60 state substitutes for the exact ALAT 14.12/35→13.12/55 state;
+- rounded 14/40→13/60 state substitutes for the exact SUPPLIER_A 14.12/35→13.12/55 state;
 - `A=B+W` or any other topology identity is scored as an independent residual;
 - CoolProp is treated as an independent reference to itself;
 - historic pre-study data overwrite the current offer;
@@ -174,7 +174,7 @@ P05K1 is done when one of two outcomes is source-proven:
 
 ### Outcome A — strict PASS candidate
 
-- exact ALAT D/E state bound;
+- exact SUPPLIER_A D/E state bound;
 - independent contract ≈77 g/s semantics governed;
 - CoolProp receipt generated;
 - independent property reference generated;

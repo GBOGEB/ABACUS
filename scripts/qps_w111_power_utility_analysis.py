@@ -166,15 +166,15 @@ def analyze() -> dict[str, object]:
     atoms = atom_map(body)
 
     normal = CompressionPoint(
-        "LKT_HP_56Hz_each",
-        atom_value(atoms, "LKT_HP_FLOW_EACH_2KOP") / 1000.0,
+        "SUPPLIER_B_HP_56Hz_each",
+        atom_value(atoms, "SUPPLIER_B_HP_FLOW_EACH_2KOP") / 1000.0,
         298.0,
-        atom_value(atoms, "LKT_HP_P1"),
-        atom_value(atoms, "LKT_HP_P2"),
-        atom_value(atoms, "LKT_HP_ELECTRICAL_2KOP") / 4.0,
-        atom_value(atoms, "LKT_HP_FREQUENCY_2KOP"),
+        atom_value(atoms, "SUPPLIER_B_HP_P1"),
+        atom_value(atoms, "SUPPLIER_B_HP_P2"),
+        atom_value(atoms, "SUPPLIER_B_HP_ELECTRICAL_2KOP") / 4.0,
+        atom_value(atoms, "SUPPLIER_B_HP_FREQUENCY_2KOP"),
     )
-    max_ref = CompressionPoint("LKT_HP_72Hz_each", 0.112, 298.0, 1.05, 14.0, 357.0, 72.0)
+    max_ref = CompressionPoint("SUPPLIER_B_HP_72Hz_each", 0.112, 298.0, 1.05, 14.0, 357.0, 72.0)
 
     points = []
     for point in (normal, max_ref):
@@ -193,11 +193,11 @@ def analyze() -> dict[str, object]:
     local_eta = float(points[0]["package_isothermal_efficiency"])
     local_is = float(points[0]["isentropic_reference"]["ideal_isentropic_reference_kW"])
 
-    qeq = atom_value(atoms, "LKT_INV_COP_QEQ_MARGIN")
-    controlled_subtotal = atom_value(atoms, "LKT_CONTROLLED_OPERATING_SUBTOTAL")
-    bidder_invCOP = atom_value(atoms, "LKT_INV_COP_REFERENCE")
-    bidder_implied_total = atom_value(atoms, "LKT_INV_COP_IMPLIED_TOTAL_ELECTRICAL")
-    residual = atom_value(atoms, "LKT_UNRECONCILED_ELECTRICAL")
+    qeq = atom_value(atoms, "SUPPLIER_B_INV_COP_QEQ_MARGIN")
+    controlled_subtotal = atom_value(atoms, "SUPPLIER_B_CONTROLLED_OPERATING_SUBTOTAL")
+    bidder_invCOP = atom_value(atoms, "SUPPLIER_B_INV_COP_REFERENCE")
+    bidder_implied_total = atom_value(atoms, "SUPPLIER_B_INV_COP_IMPLIED_TOTAL_ELECTRICAL")
+    residual = atom_value(atoms, "SUPPLIER_B_UNRECONCILED_ELECTRICAL")
 
     return {
         "schema": "abacus-dow-w111-power-utility-receipt/0.4",

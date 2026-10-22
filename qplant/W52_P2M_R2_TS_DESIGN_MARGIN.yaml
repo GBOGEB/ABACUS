@@ -7,7 +7,7 @@ thermal_shield_reference_chain:
   contract_user_base_load_W: 8200
   design_margin_percent: 5.0
   design_margin_W: 410
-  lkt_design_target_W: 8610
+  supplier_b_design_target_W: 8610
   relation: "8610 = 8200 * 1.05"
   interpretation: CONTRACT_BASE_LOAD_PLUS_BIDDER_DESIGN_MARGIN
 
@@ -15,7 +15,7 @@ source_roles:
   contract_user:
     value_W: 8200
     role: acceptance_and_user_design_load_basis
-  lkt_offer:
+  supplier_b_offer:
     value_W: 8610
     role: bidder_design_point_with_5_percent_margin
 

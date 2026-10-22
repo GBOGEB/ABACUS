@@ -129,6 +129,19 @@ def build_census(
         covered = int(summary.get("covered_lines", 0) or 0)
         missed = max(0, statements - covered)
         percent = float(summary.get("percent_covered", 0.0) or 0.0)
+        # A missing branch denominator is UNKNOWN, never an observed zero.
+        branches_measured = coverage.get("meta", {}).get("branch_coverage") is True
+        branch_total_raw = summary.get("num_branches") if branches_measured else None
+        branch_covered_raw = (
+            summary.get("covered_branches") if branches_measured else None
+        )
+        if branch_total_raw is None or branch_covered_raw is None:
+            branch_total = branch_covered = branch_missed = None
+        else:
+            branch_total, branch_covered = int(branch_total_raw), int(branch_covered_raw)
+            if not 0 <= branch_covered <= branch_total:
+                raise ValueError(f"{path}: invalid measured branch counts")
+            branch_missed = branch_total - branch_covered
         contexts = measured_contexts(data)
         source_class = classify_source(path, entries)
         metadata = entries.get(path, {}) if isinstance(entries.get(path, {}), dict) else {}
@@ -180,6 +193,9 @@ def build_census(
                 "covered_statements": covered,
                 "missed_statements": missed,
                 "coverage_pct": round(percent, 4),
+                "eligible_branches": branch_total,
+                "covered_branches": branch_covered,
+                "missed_branches": branch_missed,
                 "source_class": source_class,
                 "disposition": disposition,
                 "test_state": test_state,
@@ -204,6 +220,7 @@ def build_census(
                 "warning_dependencies": metadata.get("warning_dependencies", []),
                 "evidence_class": "MEASURED",
                 "maximum_statement_gain": missed,
+                "maximum_branch_gain": branch_missed,
                 "expected_gain": "WITHHELD",
                 "authority_transfer": False,
                 "formal_credit_delta": 0,
@@ -214,6 +231,19 @@ def build_census(
     active = [row for row in rows if row["source_class"] == "ACTIVE_SOURCE"]
     active_statements = sum(row["statements"] for row in active)
     active_covered = sum(row["covered_statements"] for row in active)
+    branches_complete = bool(active) and all(
+        row["eligible_branches"] is not None
+        and row["covered_branches"] is not None
+        for row in active
+    )
+    active_branch_total = (
+        sum(int(row["eligible_branches"]) for row in active)
+        if branches_complete else None
+    )
+    active_branch_covered = (
+        sum(int(row["covered_branches"]) for row in active)
+        if branches_complete else None
+    )
     active_pct = (
         100.0 * active_covered / active_statements if active_statements else 0.0
     )
@@ -249,6 +279,13 @@ def build_census(
             "covered_statements": active_covered,
             "missed_statements": active_statements - active_covered,
             "coverage_pct": round(active_pct, 4),
+            "branches_complete": branches_complete,
+            "eligible_branches": active_branch_total,
+            "covered_branches": active_branch_covered,
+            "missed_branches": (
+                active_branch_total - active_branch_covered
+                if branches_complete else None
+            ),
         },
         "full_measurement": coverage.get("totals", {}),
         "legacy_matrix_baseline": matrix_baseline or {},

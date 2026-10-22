@@ -1,0 +1,260 @@
+{
+  "schema": "qps-triage-lossless-bridge/1.0",
+  "document_id": "CBD_W40_QPS_TRIAGE_3P_RAL_LOSSLESS_CONTINUITY",
+  "capture_date": "2026-10-19",
+  "snapshot_boundary": "2026-10-18T22:05:04Z",
+  "execution_wave_type": "PARTIAL",
+  "source_status": "DERIVED_RESTART_CANDIDATE_NOT_ENGINEERING_SSOT",
+  "authority_transfer": false,
+  "formal_credit_delta": 0,
+  "engineering_credit_delta": 0,
+  "security_waiver": false,
+  "global_control": false,
+  "merge_admission": "HOLD",
+  "qps_child_disposition": "DEFER",
+  "authority": {
+    "child": {
+      "repo": "GBOGEB/cryoplant-project",
+      "role": "ENGINEERING_SSOT_ACCEPT_REJECT_DEFER",
+      "observed_main": "fc07545c3986181a1b837c0eb7ff9a8393fd4058",
+      "source_nav_branch": "hold/cbd-w39-abacus-dov-source-nav-20261018",
+      "source_nav_commit": "e487ec2e2f9929b6f2ad4e74665d2c66f2d98297"
+    },
+    "keb": {
+      "repo": "GBOGEB/CODEX",
+      "role": "SEMANTIC_PROVENANCE_CHALLENGE",
+      "observed_main": "843020d9e85b404ac10a94bbc1a1283865d1d57e",
+      "source_nav_branch": "hold/cbd-w39-abacus-dov-source-nav-20261018",
+      "source_nav_commit": "9d879a7e11bb9f6e85a316a51724963da77819eb"
+    },
+    "dow": {
+      "repo": "GBOGEB/ABACUS",
+      "role": "RUNTIME_CI_EVIDENCE_AND_ADMISSION",
+      "observed_main": "2687f2bcb0705027eefe04df789365d6c9970678",
+      "source_candidate_branch": "hold/cbd-w39-gov-dov-qa-20261018",
+      "last_qualified_head": "fc6ea65f2d0322f1a98fde323310c09990522709",
+      "last_qualified_run": 39170632775
+    }
+  },
+  "evidence_classes": [
+    "OBSERVED_NATIVE",
+    "SOURCE_BOUND_STATIC",
+    "DERIVED_PROJECTION",
+    "CANDIDATE_NOT_QUALIFIED",
+    "OWNER_DEFER"
+  ],
+  "method": {
+    "root": "QPS TRIAGE",
+    "moniker": "3P-RAL",
+    "expansion": "Three-P Recursive Assurance Ladder",
+    "execution_cycle": "P3R",
+    "bounded_core": "3PM",
+    "operator_stack": [
+      "3PR",
+      "MIP",
+      "3PC"
+    ],
+    "optional_after_independent_consumer": [
+      "3P3"
+    ],
+    "dmaic": [
+      "Define",
+      "Measure",
+      "Analyse",
+      "Improve",
+      "Control"
+    ],
+    "stop": "LOCAL_TARGET_MET_NO_NEW_MATERIAL_PREDICATE",
+    "retrigger": "MATERIAL_EXACT_SOURCE_OR_CONSUMER_OR_NEGATIVE_CANARY_CHANGE"
+  },
+  "local_coverage": {
+    "cohort": "ABACUS_W75_W64_W81_W82_FOCUSED_723",
+    "historical_baseline": {
+      "covered": 660,
+      "eligible": 723,
+      "run_id": 39159837402
+    },
+    "w34": {
+      "covered": 697,
+      "eligible": 723,
+      "run_id": 39161560713
+    },
+    "w35": {
+      "covered": 707,
+      "eligible": 723,
+      "run_id": 39161760486
+    },
+    "w37": {
+      "covered": 707,
+      "eligible": 723,
+      "run_id": 39162185592,
+      "cases_pass": 203
+    },
+    "families": [
+      {
+        "id": "W75",
+        "covered": 219,
+        "eligible": 221
+      },
+      {
+        "id": "W64",
+        "covered": 123,
+        "eligible": 125
+      },
+      {
+        "id": "W81",
+        "covered": 154,
+        "eligible": 162
+      },
+      {
+        "id": "W82",
+        "covered": 211,
+        "eligible": 215
+      }
+    ],
+    "local_gate": "4_OF_4_OVER_95_PERCENT",
+    "main_canonical_B0_delta": null,
+    "release_credit": false
+  },
+  "native_qa": {
+    "scope": "ABACUS_BRANCH_ONLY",
+    "exact_head": "fc6ea65f2d0322f1a98fde323310c09990522709",
+    "run_id": 39170632775,
+    "job_id": 117802739785,
+    "run_attempt": 1,
+    "conclusion": "SUCCESS",
+    "governance_tests": {
+      "pass": 258,
+      "fail": 0
+    },
+    "dashboard_tests": {
+      "pass": 14,
+      "fail": 0
+    },
+    "playwright": {
+      "viewports": [
+        "1440x1000",
+        "1280x800",
+        "390x844"
+      ],
+      "passed": 3,
+      "real_GitHub_gets": 0,
+      "mocked_gets": 19,
+      "mutating_calls": 0
+    },
+    "artifact_id": 12152052335,
+    "artifact_zip_sha256": "e4156bdcf3f6a07b2ee8c15debeb79dd93117e165f4c633f470eafc8476b7404",
+    "w40_taxonomy_after_qa": {
+      "term_count": 28,
+      "family_count": 5,
+      "source_head": null,
+      "native_qa": "PENDING_NEW_EXACT_HEAD"
+    }
+  },
+  "governance": {
+    "current_main_201_workflows": {
+      "classified_candidate": 201,
+      "unclassified_candidate": 0,
+      "multiple_classifications": 0
+    },
+    "w36_historical": {
+      "run": 39161993224,
+      "result": "FAIL_STALE_GENERATED_REPORT",
+      "head": "a26436955450b8cd27668bffa2a8dc7db458d392"
+    },
+    "w39_native": {
+      "run": 39170632775,
+      "result": "PASS",
+      "head": "fc6ea65f2d0322f1a98fde323310c09990522709"
+    },
+    "policy_report_native_generated": true,
+    "main_ruleset_id": 24494381,
+    "required_approvals": 0,
+    "required_checks": 0,
+    "independent_eligible_review": false,
+    "negative_red_canary": false,
+    "security_terminal_for_current_head": null,
+    "governed_merges_verified": false
+  },
+  "global_ordinary_GitHub_census": {
+    "issues_open": 106,
+    "issues_closed": 373,
+    "prs_open": 18,
+    "prs_closed_unmerged": 314,
+    "prs_merged": 4532,
+    "population": [
+      "ABACUS",
+      "CODEX",
+      "cryoplant-project"
+    ],
+    "accepted_unique_roots_closed": null,
+    "source_window": "2026-10-18",
+    "counts_not_accepted_roots": true
+  },
+  "causal_roots": {
+    "W34": {
+      "manifestations": 3,
+      "distinct_candidate_roots": 1,
+      "type": "CONTROLLER_ARTIFACT_PARAMETER_SHADOWING",
+      "root_formally_accepted": false
+    },
+    "W38": {
+      "manifestations": 6,
+      "distinct_candidate_roots": 1,
+      "type": "MISSING_NETWORKX_DEPENDENCY",
+      "repair_pr": 2283,
+      "repair_merged": true,
+      "root_formally_accepted": false
+    }
+  },
+  "incident": {
+    "unqualified_PR": 2278,
+    "merge_commit": "ccc07c76a506a66fc20cbe821ef0ec4c0a3fe064",
+    "cause": "PREMATURE_AUTO_MERGE_WITHOUT_EFFECTIVE_REQUIRED_HUMAN_APPROVALS_AND_CHECKS",
+    "governed_admission": "HOLD"
+  },
+  "qps_native": {
+    "read_order": [
+      "handover/qps_recursive/GLOB.yaml",
+      "handover/qps_recursive/SESSION_CLOSE_CURRENT.yaml",
+      "handover/qps_recursive/QTG_CURRENT.yaml",
+      "handover/qps_recursive/QTG_CURRENT_EXTENSIONS.yaml",
+      "controls/QPS_TRIAGE_CONTROL_PLANE_v1.yaml",
+      "controls/QPS_TRIAGE_BT_PRESSURE_CURRENT_v1.yaml",
+      "controls/QPS_TRIAGE_CHILD_CONTRACT_v1.json"
+    ],
+    "QPS_global_DoV": "WITHHELD",
+    "BT_fitted": false,
+    "old_session_qtg_as_of": "2026-09-29",
+    "old_queue_snapshot": "50/50 (HISTORICAL_NOT_CURRENT_CENSUS)",
+    "vetoes": [
+      "QPS_ISSUE_943_PLUS_SELECTED_SAFETY_SOURCE_SET",
+      "W155_W199_CURRENT_SOURCE_RETURN"
+    ],
+    "closed_persist": [
+      "QPS_ISSUE_923_COMPLETED",
+      "GOLDEN_THREAD_GT_BDQ_0_TO_9_CLOSED"
+    ],
+    "qps_receiver_issue": 1904,
+    "publication_issue": 1379
+  },
+  "restart": {
+    "first_operation": "3PR_REFRESH_ALL_MAIN_SHAS_AND_EXACT_HEAD_CI",
+    "next_owner_actions": [
+      "W40_EXACT_HEAD_HTML_TAXONOMY_QA",
+      "ABACUS_ADMIN_EFFECTIVE_RULESET_AND_BLOCKED_RED_CANARY",
+      "ELIGIBLE_INDEPENDENT_REVIEW_AND_SECURITY",
+      "CODEX_EXACT_RECEIPT_CONSUMPTION",
+      "QPS_CHILD_ACCEPT_REJECT_DEFER",
+      "SERIAL_MERGE_ONLY_IF_ALL_GATES_PASS"
+    ],
+    "stop": "NO_MORE_W75_W64_W81_W82_BROAD_TESTS_WITHOUT_NEW_MATERIAL_TRIGGER",
+    "no_automatic_merge": true,
+    "no_background_autonomous_runner_claim": true
+  },
+  "source_authority_immutability": {
+    "qps_template": "handover/qps_recursive/QPS_3P_RAL_DMAIC_CYCLE_TEMPLATE_v1.yaml",
+    "namespace": "controls/QPS_MISSION_CONTROL_NAMESPACE_TAXONOMY_v1.yaml",
+    "lossless_pointer": "handover/qps_recursive/SESSION_CLOSE_CURRENT.yaml"
+  }
+}

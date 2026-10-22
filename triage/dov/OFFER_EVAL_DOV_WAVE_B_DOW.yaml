@@ -6,9 +6,9 @@ wave_a_pr: GBOGEB/ABACUS#1023
 child_wave_b_pr: GBOGEB/cryoplant-project#712
 keb_wave_b_pr: GBOGEB/CODEX#519
 terminal_runtime_gates:
-  - id: D1_COMPENDIUM_LOADS_LKT
+  - id: D1_COMPENDIUM_LOADS_SUPPLIER_B
     status: PASS_LOCAL_STATIC_QA
-  - id: D2_COMPENDIUM_LOADS_ALAT
+  - id: D2_COMPENDIUM_LOADS_SUPPLIER_A
     status: PASS_LOCAL_STATIC_QA
   - id: D3_SINGULAR_BIDDER_SURFACE_SELECTION
     status: PASS_LOCAL_STATIC_QA

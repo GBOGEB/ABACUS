@@ -27,6 +27,75 @@ class WorkflowPolicyTests(unittest.TestCase):
         self.assertEqual({}, report["multiple_matches"])
         self.assertEqual([], report["missing_canonical"])
 
+    def test_code_purple_mip_rules_have_unique_domain_owners(self):
+        expected = {
+            "code-purple-dashboard-v31.yml": "runtime_governance",
+            "code-purple-sut-gui.yml": "runtime_governance",
+            "mip-py310-combined-head-probe.yml": "statistics",
+        }
+        for filename, owner in expected.items():
+            with self.subTest(filename=filename):
+                rule, matches = MODULE.classify(filename, self.policy)
+                self.assertEqual(1, len(matches))
+                self.assertEqual(owner, rule["cluster"])
+                self.assertEqual("pr_domain", rule["lifecycle"])
+                self.assertEqual("keep", rule["disposition"])
+        self.assertEqual(0, self.policy["quality_gates"]["allow_unclassified"])
+        self.assertFalse(self.policy["quality_gates"]["allow_multiple_rule_matches"])
+
+
+    def test_w39_bounded_pool_and_g3cs_have_disjoint_source_owners(self):
+        expected = {
+            "w33-backbone-pool.yml": "runtime_governance",
+            "w36-g3cs-skip-contract.yml": "statistics",
+            "w38-local-pool-mip.yml": "statistics",
+        }
+        for filename, owner in expected.items():
+            with self.subTest(filename=filename):
+                rule, matches = MODULE.classify(filename, self.policy)
+                self.assertEqual(1, len(matches))
+                self.assertEqual(owner, rule["cluster"])
+                self.assertEqual("pr_domain", rule["lifecycle"])
+                self.assertEqual("keep", rule["disposition"])
+        self.assertEqual(0, self.policy["quality_gates"]["allow_unclassified"])
+        self.assertFalse(self.policy["quality_gates"]["allow_multiple_rule_matches"])
+
+    def test_g3f_new_source_owned_workflows_are_explicit_and_read_only(self):
+        """Eight new owners cannot be silently absorbed by broad patterns."""
+        expected = {
+            "cbd-w38-route-yield.yml": "runtime_governance",
+            "cbd-w38-source-branch.yml": "statistics",
+            "code-purple-hosted-operator.yml": "automation",
+            "code-purple-w40-binary-penetration.yml": "specialised",
+            "code-purple-w42-remaining-arcs.yml": "specialised",
+            "code-purple-w43-matched-proof.yml": "statistics",
+            "code-purple-w44-matched-proof.yml": "statistics",
+            "mcl-roundtrip-hub-qa.yml": "bridge_federation",
+        }
+        for filename, cluster in expected.items():
+            with self.subTest(filename=filename):
+                rule, matches = MODULE.classify(filename, self.policy)
+                self.assertEqual([rule], [self.policy["rules"][matches[0]]])
+                self.assertEqual(1, len(matches), "ambiguous ownership")
+                self.assertEqual(rule["pattern"], "^" + filename.replace(".", r"\.") + "$")
+                self.assertEqual(cluster, rule["cluster"])
+                self.assertEqual("pr_domain", rule["lifecycle"])
+                self.assertEqual("keep", rule["disposition"])
+                wf = (ROOT / ".github/workflows" / filename).read_text(encoding="utf-8")
+                self.assertIn("  pull_request:", wf)
+                self.assertIn("permissions:\n  contents: read", wf)
+                self.assertNotIn(": write", wf)
+        self.assertEqual(0, self.policy["quality_gates"]["allow_unclassified"])
+        self.assertFalse(self.policy["quality_gates"]["allow_multiple_rule_matches"])
+
+    def test_w26_matched_coverage_has_unique_statistics_owner(self):
+        rule, matches = MODULE.classify("w26-testpilot-matched-coverage.yml", self.policy)
+        self.assertEqual(1, len(matches))
+        self.assertEqual("statistics", rule["cluster"])
+        self.assertEqual("pr_domain", rule["lifecycle"])
+        self.assertEqual("keep", rule["disposition"])
+        self.assertEqual(0, self.policy["quality_gates"]["allow_unclassified"])
+
     def test_parser_extracts_top_level_jobs_and_events(self):
         source = """name: Example\non:\n  push:\n  pull_request:\njobs:\n  test:\n    runs-on: ubuntu-latest\n    steps:\n      - run: pytest -q\n  lint:\n    runs-on: ubuntu-latest\n"""
         with tempfile.TemporaryDirectory() as tmp:
@@ -82,6 +151,19 @@ class WorkflowPolicyTests(unittest.TestCase):
         control_surface = (ROOT / "ci/governance/README.md").read_text(encoding="utf-8")
         self.assertIn("`workflow_policy.json` is the workflow-policy SSOT", control_surface)
         self.assertIn("Queued checks are not counted as pass evidence", control_surface)
+
+    def test_rendered_report_documents_hash_basis_and_lifecycle_column(self):
+        report = MODULE.audit(ROOT / ".github/workflows", self.policy)
+        rendered = MODULE.render_markdown(report, self.policy)
+        self.assertIn(
+            "Policy SHA-256 (canonical sorted JSON bytes of `ci/governance/workflow_policy.json`):",
+            rendered,
+        )
+        self.assertIn(
+            "| Order | Lifecycle | Cluster | Workflow | Events | Jobs | Decision | Replacement |",
+            rendered,
+        )
+        self.assertIn("| `pr_fast` |", rendered)
 
 
 if __name__ == "__main__":

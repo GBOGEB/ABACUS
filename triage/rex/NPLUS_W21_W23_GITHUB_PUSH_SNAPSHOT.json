@@ -1,0 +1,736 @@
+{
+  "schema": "abacus.nplus.native-ci-intake.v1",
+  "repository": "GBOGEB/ABACUS",
+  "provenance": "LIVE_GITHUB_CONNECTOR_READ_ONLY",
+  "waves": [
+    {
+      "wave": "N21",
+      "source_sha": "337109e102e9caa515dbf9837848c4917e9383a0",
+      "source_role": "HISTORICAL_MAIN_HEAD",
+      "api_url": "https://api.github.com/repos/GBOGEB/ABACUS/actions/runs?head_sha=337109e102e9caa515dbf9837848c4917e9383a0&event=push&per_page=100",
+      "native_total_count": 24,
+      "runs": [
+        {
+          "id": 39131381568,
+          "workflow_id": 350890474,
+          "run_attempt": 1,
+          "head_sha": "337109e102e9caa515dbf9837848c4917e9383a0",
+          "event": "push",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "id": 39131379070,
+          "workflow_id": 350890474,
+          "run_attempt": 1,
+          "head_sha": "337109e102e9caa515dbf9837848c4917e9383a0",
+          "event": "push",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "id": 39118870536,
+          "workflow_id": 375321860,
+          "run_attempt": 1,
+          "head_sha": "337109e102e9caa515dbf9837848c4917e9383a0",
+          "event": "push",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "id": 39118870588,
+          "workflow_id": 293888672,
+          "run_attempt": 1,
+          "head_sha": "337109e102e9caa515dbf9837848c4917e9383a0",
+          "event": "push",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "id": 39118870556,
+          "workflow_id": 286076648,
+          "run_attempt": 1,
+          "head_sha": "337109e102e9caa515dbf9837848c4917e9383a0",
+          "event": "push",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "id": 39118870645,
+          "workflow_id": 350890474,
+          "run_attempt": 1,
+          "head_sha": "337109e102e9caa515dbf9837848c4917e9383a0",
+          "event": "push",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "id": 39118870557,
+          "workflow_id": 286312989,
+          "run_attempt": 1,
+          "head_sha": "337109e102e9caa515dbf9837848c4917e9383a0",
+          "event": "push",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "id": 39118870565,
+          "workflow_id": 280309431,
+          "run_attempt": 1,
+          "head_sha": "337109e102e9caa515dbf9837848c4917e9383a0",
+          "event": "push",
+          "status": "completed",
+          "conclusion": "failure"
+        },
+        {
+          "id": 39118870477,
+          "workflow_id": 289633215,
+          "run_attempt": 1,
+          "head_sha": "337109e102e9caa515dbf9837848c4917e9383a0",
+          "event": "push",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "id": 39118870814,
+          "workflow_id": 286312988,
+          "run_attempt": 1,
+          "head_sha": "337109e102e9caa515dbf9837848c4917e9383a0",
+          "event": "push",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "id": 39118870587,
+          "workflow_id": 371038481,
+          "run_attempt": 1,
+          "head_sha": "337109e102e9caa515dbf9837848c4917e9383a0",
+          "event": "push",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "id": 39118870512,
+          "workflow_id": 207346550,
+          "run_attempt": 1,
+          "head_sha": "337109e102e9caa515dbf9837848c4917e9383a0",
+          "event": "push",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "id": 39118870487,
+          "workflow_id": 208410565,
+          "run_attempt": 1,
+          "head_sha": "337109e102e9caa515dbf9837848c4917e9383a0",
+          "event": "push",
+          "status": "completed",
+          "conclusion": "failure"
+        },
+        {
+          "id": 39118870625,
+          "workflow_id": 207346558,
+          "run_attempt": 1,
+          "head_sha": "337109e102e9caa515dbf9837848c4917e9383a0",
+          "event": "push",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "id": 39118870569,
+          "workflow_id": 280454283,
+          "run_attempt": 1,
+          "head_sha": "337109e102e9caa515dbf9837848c4917e9383a0",
+          "event": "push",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "id": 39118870555,
+          "workflow_id": 207346559,
+          "run_attempt": 1,
+          "head_sha": "337109e102e9caa515dbf9837848c4917e9383a0",
+          "event": "push",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "id": 39118870516,
+          "workflow_id": 207344146,
+          "run_attempt": 1,
+          "head_sha": "337109e102e9caa515dbf9837848c4917e9383a0",
+          "event": "push",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "id": 39118870589,
+          "workflow_id": 293894059,
+          "run_attempt": 1,
+          "head_sha": "337109e102e9caa515dbf9837848c4917e9383a0",
+          "event": "push",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "id": 39118870488,
+          "workflow_id": 207346553,
+          "run_attempt": 1,
+          "head_sha": "337109e102e9caa515dbf9837848c4917e9383a0",
+          "event": "push",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "id": 39118870523,
+          "workflow_id": 293888665,
+          "run_attempt": 1,
+          "head_sha": "337109e102e9caa515dbf9837848c4917e9383a0",
+          "event": "push",
+          "status": "completed",
+          "conclusion": "failure"
+        },
+        {
+          "id": 39118870513,
+          "workflow_id": 293888670,
+          "run_attempt": 1,
+          "head_sha": "337109e102e9caa515dbf9837848c4917e9383a0",
+          "event": "push",
+          "status": "completed",
+          "conclusion": "failure"
+        },
+        {
+          "id": 39118870550,
+          "workflow_id": 293888671,
+          "run_attempt": 1,
+          "head_sha": "337109e102e9caa515dbf9837848c4917e9383a0",
+          "event": "push",
+          "status": "completed",
+          "conclusion": "failure"
+        },
+        {
+          "id": 39118870507,
+          "workflow_id": 208410566,
+          "run_attempt": 1,
+          "head_sha": "337109e102e9caa515dbf9837848c4917e9383a0",
+          "event": "push",
+          "status": "completed",
+          "conclusion": "failure"
+        },
+        {
+          "id": 39118870563,
+          "workflow_id": 293888681,
+          "run_attempt": 1,
+          "head_sha": "337109e102e9caa515dbf9837848c4917e9383a0",
+          "event": "push",
+          "status": "completed",
+          "conclusion": "success"
+        }
+      ]
+    },
+    {
+      "wave": "N22",
+      "source_sha": "6a07a1bffb53030ace141ddc1ed75dd1c5dd7da8",
+      "source_role": "HISTORICAL_MAIN_HEAD",
+      "api_url": "https://api.github.com/repos/GBOGEB/ABACUS/actions/runs?head_sha=6a07a1bffb53030ace141ddc1ed75dd1c5dd7da8&event=push&per_page=100",
+      "native_total_count": 24,
+      "runs": [
+        {
+          "id": 39133478506,
+          "workflow_id": 350890474,
+          "run_attempt": 1,
+          "head_sha": "6a07a1bffb53030ace141ddc1ed75dd1c5dd7da8",
+          "event": "push",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "id": 39133345842,
+          "workflow_id": 350890474,
+          "run_attempt": 1,
+          "head_sha": "6a07a1bffb53030ace141ddc1ed75dd1c5dd7da8",
+          "event": "push",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "id": 39133320722,
+          "workflow_id": 207344146,
+          "run_attempt": 1,
+          "head_sha": "6a07a1bffb53030ace141ddc1ed75dd1c5dd7da8",
+          "event": "push",
+          "status": "queued",
+          "conclusion": null
+        },
+        {
+          "id": 39133320733,
+          "workflow_id": 293888665,
+          "run_attempt": 1,
+          "head_sha": "6a07a1bffb53030ace141ddc1ed75dd1c5dd7da8",
+          "event": "push",
+          "status": "completed",
+          "conclusion": "failure"
+        },
+        {
+          "id": 39133320734,
+          "workflow_id": 293888671,
+          "run_attempt": 1,
+          "head_sha": "6a07a1bffb53030ace141ddc1ed75dd1c5dd7da8",
+          "event": "push",
+          "status": "queued",
+          "conclusion": null
+        },
+        {
+          "id": 39133320749,
+          "workflow_id": 372055739,
+          "run_attempt": 1,
+          "head_sha": "6a07a1bffb53030ace141ddc1ed75dd1c5dd7da8",
+          "event": "push",
+          "status": "completed",
+          "conclusion": "cancelled"
+        },
+        {
+          "id": 39133320792,
+          "workflow_id": 293888670,
+          "run_attempt": 1,
+          "head_sha": "6a07a1bffb53030ace141ddc1ed75dd1c5dd7da8",
+          "event": "push",
+          "status": "queued",
+          "conclusion": null
+        },
+        {
+          "id": 39133320712,
+          "workflow_id": 293888681,
+          "run_attempt": 1,
+          "head_sha": "6a07a1bffb53030ace141ddc1ed75dd1c5dd7da8",
+          "event": "push",
+          "status": "queued",
+          "conclusion": null
+        },
+        {
+          "id": 39133320858,
+          "workflow_id": 207346558,
+          "run_attempt": 1,
+          "head_sha": "6a07a1bffb53030ace141ddc1ed75dd1c5dd7da8",
+          "event": "push",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "id": 39133320724,
+          "workflow_id": 350890474,
+          "run_attempt": 1,
+          "head_sha": "6a07a1bffb53030ace141ddc1ed75dd1c5dd7da8",
+          "event": "push",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "id": 39133320745,
+          "workflow_id": 289633215,
+          "run_attempt": 1,
+          "head_sha": "6a07a1bffb53030ace141ddc1ed75dd1c5dd7da8",
+          "event": "push",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "id": 39133320687,
+          "workflow_id": 280454283,
+          "run_attempt": 1,
+          "head_sha": "6a07a1bffb53030ace141ddc1ed75dd1c5dd7da8",
+          "event": "push",
+          "status": "completed",
+          "conclusion": "cancelled"
+        },
+        {
+          "id": 39133320811,
+          "workflow_id": 208410565,
+          "run_attempt": 1,
+          "head_sha": "6a07a1bffb53030ace141ddc1ed75dd1c5dd7da8",
+          "event": "push",
+          "status": "completed",
+          "conclusion": "cancelled"
+        },
+        {
+          "id": 39133320816,
+          "workflow_id": 280309431,
+          "run_attempt": 1,
+          "head_sha": "6a07a1bffb53030ace141ddc1ed75dd1c5dd7da8",
+          "event": "push",
+          "status": "completed",
+          "conclusion": "cancelled"
+        },
+        {
+          "id": 39133320776,
+          "workflow_id": 286312988,
+          "run_attempt": 1,
+          "head_sha": "6a07a1bffb53030ace141ddc1ed75dd1c5dd7da8",
+          "event": "push",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "id": 39133320790,
+          "workflow_id": 286076648,
+          "run_attempt": 1,
+          "head_sha": "6a07a1bffb53030ace141ddc1ed75dd1c5dd7da8",
+          "event": "push",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "id": 39133320833,
+          "workflow_id": 293894059,
+          "run_attempt": 1,
+          "head_sha": "6a07a1bffb53030ace141ddc1ed75dd1c5dd7da8",
+          "event": "push",
+          "status": "completed",
+          "conclusion": "cancelled"
+        },
+        {
+          "id": 39133320780,
+          "workflow_id": 293888672,
+          "run_attempt": 1,
+          "head_sha": "6a07a1bffb53030ace141ddc1ed75dd1c5dd7da8",
+          "event": "push",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "id": 39133320708,
+          "workflow_id": 371038481,
+          "run_attempt": 1,
+          "head_sha": "6a07a1bffb53030ace141ddc1ed75dd1c5dd7da8",
+          "event": "push",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "id": 39133320803,
+          "workflow_id": 375321860,
+          "run_attempt": 1,
+          "head_sha": "6a07a1bffb53030ace141ddc1ed75dd1c5dd7da8",
+          "event": "push",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "id": 39133320725,
+          "workflow_id": 286312989,
+          "run_attempt": 1,
+          "head_sha": "6a07a1bffb53030ace141ddc1ed75dd1c5dd7da8",
+          "event": "push",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "id": 39133320786,
+          "workflow_id": 207346550,
+          "run_attempt": 1,
+          "head_sha": "6a07a1bffb53030ace141ddc1ed75dd1c5dd7da8",
+          "event": "push",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "id": 39133320743,
+          "workflow_id": 207346559,
+          "run_attempt": 1,
+          "head_sha": "6a07a1bffb53030ace141ddc1ed75dd1c5dd7da8",
+          "event": "push",
+          "status": "queued",
+          "conclusion": null
+        },
+        {
+          "id": 39133320692,
+          "workflow_id": 208410566,
+          "run_attempt": 1,
+          "head_sha": "6a07a1bffb53030ace141ddc1ed75dd1c5dd7da8",
+          "event": "push",
+          "status": "completed",
+          "conclusion": "cancelled"
+        }
+      ]
+    },
+    {
+      "wave": "N23",
+      "source_sha": "e08c51232edbb0ede05eab5bcd21f039539adf92",
+      "source_role": "HISTORICAL_MAIN_HEAD",
+      "api_url": "https://api.github.com/repos/GBOGEB/ABACUS/actions/runs?head_sha=e08c51232edbb0ede05eab5bcd21f039539adf92&event=push&per_page=100",
+      "native_total_count": 30,
+      "runs": [
+        {
+          "id": 39134244821,
+          "workflow_id": 350890474,
+          "run_attempt": 1,
+          "head_sha": "e08c51232edbb0ede05eab5bcd21f039539adf92",
+          "event": "push",
+          "status": "queued",
+          "conclusion": null
+        },
+        {
+          "id": 39134177592,
+          "workflow_id": 350890474,
+          "run_attempt": 1,
+          "head_sha": "e08c51232edbb0ede05eab5bcd21f039539adf92",
+          "event": "push",
+          "status": "queued",
+          "conclusion": null
+        },
+        {
+          "id": 39133997723,
+          "workflow_id": 350890474,
+          "run_attempt": 1,
+          "head_sha": "e08c51232edbb0ede05eab5bcd21f039539adf92",
+          "event": "push",
+          "status": "queued",
+          "conclusion": null
+        },
+        {
+          "id": 39133715642,
+          "workflow_id": 350890474,
+          "run_attempt": 1,
+          "head_sha": "e08c51232edbb0ede05eab5bcd21f039539adf92",
+          "event": "push",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "id": 39133581466,
+          "workflow_id": 372055739,
+          "run_attempt": 1,
+          "head_sha": "e08c51232edbb0ede05eab5bcd21f039539adf92",
+          "event": "push",
+          "status": "queued",
+          "conclusion": null
+        },
+        {
+          "id": 39133581476,
+          "workflow_id": 286076648,
+          "run_attempt": 1,
+          "head_sha": "e08c51232edbb0ede05eab5bcd21f039539adf92",
+          "event": "push",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "id": 39133581535,
+          "workflow_id": 207344153,
+          "run_attempt": 1,
+          "head_sha": "e08c51232edbb0ede05eab5bcd21f039539adf92",
+          "event": "push",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "id": 39133581509,
+          "workflow_id": 280309435,
+          "run_attempt": 1,
+          "head_sha": "e08c51232edbb0ede05eab5bcd21f039539adf92",
+          "event": "push",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "id": 39133581399,
+          "workflow_id": 371038481,
+          "run_attempt": 1,
+          "head_sha": "e08c51232edbb0ede05eab5bcd21f039539adf92",
+          "event": "push",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "id": 39133581443,
+          "workflow_id": 207344146,
+          "run_attempt": 1,
+          "head_sha": "e08c51232edbb0ede05eab5bcd21f039539adf92",
+          "event": "push",
+          "status": "queued",
+          "conclusion": null
+        },
+        {
+          "id": 39133581530,
+          "workflow_id": 286312988,
+          "run_attempt": 1,
+          "head_sha": "e08c51232edbb0ede05eab5bcd21f039539adf92",
+          "event": "push",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "id": 39133581542,
+          "workflow_id": 280309431,
+          "run_attempt": 1,
+          "head_sha": "e08c51232edbb0ede05eab5bcd21f039539adf92",
+          "event": "push",
+          "status": "queued",
+          "conclusion": null
+        },
+        {
+          "id": 39133581428,
+          "workflow_id": 208410565,
+          "run_attempt": 1,
+          "head_sha": "e08c51232edbb0ede05eab5bcd21f039539adf92",
+          "event": "push",
+          "status": "completed",
+          "conclusion": "failure"
+        },
+        {
+          "id": 39133581541,
+          "workflow_id": 293888670,
+          "run_attempt": 1,
+          "head_sha": "e08c51232edbb0ede05eab5bcd21f039539adf92",
+          "event": "push",
+          "status": "in_progress",
+          "conclusion": null
+        },
+        {
+          "id": 39133581426,
+          "workflow_id": 293894059,
+          "run_attempt": 1,
+          "head_sha": "e08c51232edbb0ede05eab5bcd21f039539adf92",
+          "event": "push",
+          "status": "in_progress",
+          "conclusion": null
+        },
+        {
+          "id": 39133581445,
+          "workflow_id": 293888672,
+          "run_attempt": 1,
+          "head_sha": "e08c51232edbb0ede05eab5bcd21f039539adf92",
+          "event": "push",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "id": 39133581417,
+          "workflow_id": 207344148,
+          "run_attempt": 1,
+          "head_sha": "e08c51232edbb0ede05eab5bcd21f039539adf92",
+          "event": "push",
+          "status": "queued",
+          "conclusion": null
+        },
+        {
+          "id": 39133581468,
+          "workflow_id": 375321860,
+          "run_attempt": 1,
+          "head_sha": "e08c51232edbb0ede05eab5bcd21f039539adf92",
+          "event": "push",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "id": 39133581405,
+          "workflow_id": 207346559,
+          "run_attempt": 1,
+          "head_sha": "e08c51232edbb0ede05eab5bcd21f039539adf92",
+          "event": "push",
+          "status": "queued",
+          "conclusion": null
+        },
+        {
+          "id": 39133581435,
+          "workflow_id": 350890474,
+          "run_attempt": 1,
+          "head_sha": "e08c51232edbb0ede05eab5bcd21f039539adf92",
+          "event": "push",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "id": 39133581502,
+          "workflow_id": 207346550,
+          "run_attempt": 1,
+          "head_sha": "e08c51232edbb0ede05eab5bcd21f039539adf92",
+          "event": "push",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "id": 39133581527,
+          "workflow_id": 293888681,
+          "run_attempt": 1,
+          "head_sha": "e08c51232edbb0ede05eab5bcd21f039539adf92",
+          "event": "push",
+          "status": "in_progress",
+          "conclusion": null
+        },
+        {
+          "id": 39133581481,
+          "workflow_id": 207344143,
+          "run_attempt": 1,
+          "head_sha": "e08c51232edbb0ede05eab5bcd21f039539adf92",
+          "event": "push",
+          "status": "in_progress",
+          "conclusion": null
+        },
+        {
+          "id": 39133581506,
+          "workflow_id": 289633215,
+          "run_attempt": 1,
+          "head_sha": "e08c51232edbb0ede05eab5bcd21f039539adf92",
+          "event": "push",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "id": 39133581553,
+          "workflow_id": 286312989,
+          "run_attempt": 1,
+          "head_sha": "e08c51232edbb0ede05eab5bcd21f039539adf92",
+          "event": "push",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "id": 39133581449,
+          "workflow_id": 207346558,
+          "run_attempt": 1,
+          "head_sha": "e08c51232edbb0ede05eab5bcd21f039539adf92",
+          "event": "push",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "id": 39133581446,
+          "workflow_id": 293888665,
+          "run_attempt": 1,
+          "head_sha": "e08c51232edbb0ede05eab5bcd21f039539adf92",
+          "event": "push",
+          "status": "completed",
+          "conclusion": "failure"
+        },
+        {
+          "id": 39133581514,
+          "workflow_id": 280454283,
+          "run_attempt": 1,
+          "head_sha": "e08c51232edbb0ede05eab5bcd21f039539adf92",
+          "event": "push",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "id": 39133581482,
+          "workflow_id": 293888671,
+          "run_attempt": 1,
+          "head_sha": "e08c51232edbb0ede05eab5bcd21f039539adf92",
+          "event": "push",
+          "status": "queued",
+          "conclusion": null
+        },
+        {
+          "id": 39133581513,
+          "workflow_id": 208410566,
+          "run_attempt": 1,
+          "head_sha": "e08c51232edbb0ede05eab5bcd21f039539adf92",
+          "event": "push",
+          "status": "queued",
+          "conclusion": null
+        }
+      ]
+    }
+  ]
+}

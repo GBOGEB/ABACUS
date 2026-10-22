@@ -1,0 +1,385 @@
+{
+  "schema": "gbogeb.lossless.mip-mc-state.v1",
+  "snapshot_date": "2026-10-15",
+  "snapshot_timezone": "Europe/Brussels",
+  "source_class": "LIVE_GITHUB_METADATA_PLUS_USER_SUPPLIED_N2_REPLAY",
+  "immutability": "frozen-pre-handover-measured-snapshot",
+  "no_zip": true,
+  "authority": {
+    "merge_admission": "HOLD",
+    "authority_transfer": false,
+    "security_waiver": false,
+    "formal_root_closures": null,
+    "authenticated_codex_to_abacus_crew_dispatches": null,
+    "independent_eligible_review_for_active_prs": false,
+    "disposition": "DO_NOT_CLAIM_MERGE_APPROVAL"
+  },
+  "repositories": [
+    {
+      "repo": "GBOGEB/ABACUS",
+      "default_branch": "main",
+      "head_sha": "85dad8fbdab530d40e6ccf2f664c455f89454aad",
+      "protected": true,
+      "required_checks_rule_present": false,
+      "required_approving_review_count": 0
+    },
+    {
+      "repo": "GBOGEB/CODEX",
+      "default_branch": "main",
+      "head_sha": "9606b61365f4639c9df24961f2cf4ef598cb5d81",
+      "protected": false
+    },
+    {
+      "repo": "GBOGEB/cryoplant-project",
+      "default_branch": "main",
+      "head_sha": "8582a9e1da8aaa67e85ecd2da7aee98ffbbced50",
+      "protected": false,
+      "private": true
+    },
+    {
+      "repo": "GBOGEB/pipeline-automation-hub",
+      "default_branch": "master",
+      "head_sha": "f931e443cafae8b286b149ae4331a0326298730a",
+      "protected": false
+    }
+  ],
+  "issue_census": {
+    "abacus_open_issues": 53,
+    "abacus_closed_issues": 246,
+    "abacus_open_prs": 35,
+    "bd_unique_open": null,
+    "bd_unique_closed": null,
+    "reopened_roots": null,
+    "scanner_occurrences_not_root_counts": true
+  },
+  "refs": {
+    "ABACUS#1990": {
+      "type": "pr",
+      "state": "open",
+      "merged": false,
+      "draft": false,
+      "code_head_before_handover": "e62f9ebda6240195fa18a9c471944efa045ff306",
+      "branch": "feat/mip-wave-pulse-measured-20261014",
+      "base": "85dad8fbdab530d40e6ccf2f664c455f89454aad",
+      "handover_publication_changes_head": true
+    },
+    "ABACUS#1979": {
+      "type": "pr",
+      "state": "open",
+      "merged": false,
+      "draft": false,
+      "head_sha": "5bcd24751e9a42a2716a91b77287f1b0aed991ad",
+      "base": "85dad8fbdab530d40e6ccf2f664c455f89454aad"
+    },
+    "ABACUS#1989": {
+      "type": "pr",
+      "state": "open",
+      "merged": false,
+      "head_sha": "7c93c5d54e5e790f0066cfbe79e5416508262ebb"
+    },
+    "ABACUS#1993": {
+      "type": "pr",
+      "state": "open",
+      "merged": false,
+      "head_sha": "3bd744a6e057e4df4d26edb2149f987f54678f7e"
+    },
+    "ABACUS#1928": {
+      "type": "pr",
+      "state": "closed",
+      "merged": true,
+      "merge_commit_sha": "b466c1d73004a474ab081019e9e0e9c6d4d2b6e9",
+      "merged_at": "2026-10-14T09:09:54Z",
+      "correctly_governed_merge": null
+    },
+    "MissionControl#534": {
+      "type": "pr",
+      "state": "closed",
+      "merged": true,
+      "merge_commit_sha": "d99750e694cc0dfcff4e138e583c5a4366e10a0f",
+      "merged_at": "2026-10-15T13:00:11Z",
+      "qps_accepted": false,
+      "authenticated_crossrepo_chain": false
+    },
+    "MissionControl#537": {
+      "type": "pr",
+      "state": "closed",
+      "merged": true,
+      "merge_commit_sha": "210f0b7f9a8f7fff41e6c49f2053f0afb4b40647"
+    },
+    "CODEX#975": {
+      "type": "pr",
+      "state": "closed",
+      "merged": true,
+      "meaning": "inventory regeneration not native Crew dispatch"
+    },
+    "ABACUS#1860": {
+      "type": "issue",
+      "state": "open",
+      "checklist_checked": 0,
+      "checklist_unchecked": 12
+    },
+    "ABACUS#1929": {
+      "type": "issue",
+      "state": "open",
+      "scope": "joined BD/LDAB census"
+    },
+    "CODEX#977": {
+      "type": "issue",
+      "state": "open",
+      "checklist_checked": 0,
+      "checklist_unchecked": 7
+    },
+    "CODEX#1037": {
+      "type": "issue",
+      "state": "open",
+      "scope": "CODE PURPLE first-red and protection"
+    },
+    "MissionControl#153": {
+      "type": "issue",
+      "state": "open",
+      "scope": "global BD queue"
+    }
+  },
+  "coverage": {
+    "cohort": "ABACUS#1979_PR_CHANGED_LINES",
+    "config": "diff-cover origin/main...HEAD; Python 3.12 native matrix",
+    "baseline": {
+      "sha": "0362c028cfb9656a3a5e17e6a91ff451b54fdefd",
+      "covered": 148,
+      "eligible": 211,
+      "percent": 70.14,
+      "uncovered": 63
+    },
+    "wave2": {
+      "sha": "1a9318692f372dc4f50e2bc93e7ac0679e03c625",
+      "covered": 179,
+      "eligible": 211,
+      "percent": 84.83,
+      "uncovered": 32
+    },
+    "wave3": {
+      "sha": "5bcd24751e9a42a2716a91b77287f1b0aed991ad",
+      "covered": 205,
+      "eligible": 211,
+      "percent": 97.16,
+      "uncovered": 6,
+      "run_id": 38710428362,
+      "job_id": 116340251466,
+      "tests_added_in_wave": 12
+    },
+    "change": {
+      "delta_covered": 57,
+      "delta_percentage_points": 27.01,
+      "uncovered_reduction_pct": 90.4762,
+      "denominator_constant": true,
+      "delta_percentage_points_exact": 27.01421800947867
+    },
+    "main_coverage": {
+      "historical_sample": "21391/39139=54.65% from earlier reported main context",
+      "new_verified_main": null
+    },
+    "diff_comparable_only_within_cohort": true
+  },
+  "fanout": {
+    "worker_kind": "DAB_PROPOSAL_ONLY",
+    "snapshots": [
+      {
+        "wave": "W1",
+        "run_id": 38703698730,
+        "workers": 8,
+        "successful": 8,
+        "job_seconds": 69,
+        "elapsed_seconds": 45,
+        "idle_seconds": 12,
+        "peak_parallel": 6,
+        "overlap_ratio": 1.533
+      },
+      {
+        "wave": "W2",
+        "run_id": 38708850371,
+        "workers": 8,
+        "successful": 8,
+        "job_seconds": 78,
+        "elapsed_seconds": 85,
+        "idle_seconds": 44,
+        "peak_parallel": 5,
+        "overlap_ratio": 0.918
+      },
+      {
+        "wave": "W3",
+        "run_id": 38710428385,
+        "workers": 8,
+        "successful": 8,
+        "job_seconds": 87,
+        "elapsed_seconds": 27,
+        "idle_seconds": 0,
+        "peak_parallel": 6,
+        "overlap_ratio": 3.222
+      }
+    ],
+    "observed_w2_to_w3_elapsed_improvement_seconds": 58,
+    "causal_scheduler_explanation": null
+  },
+  "ci": {
+    "PR#1979": {
+      "matrix": {
+        "run": 38710428362,
+        "conclusion": "success",
+        "sha": "5bcd24751e9a42a2716a91b77287f1b0aed991ad"
+      },
+      "full_suite": {
+        "run": 38710428612,
+        "conclusion": "failure",
+        "security_job": 116340159325,
+        "quality_job": 116340159746
+      },
+      "a10": {
+        "run": 38710428481,
+        "conclusion": "failure",
+        "blocks": [
+          "ci/governance/workflow_policy.json",
+          "docs/ci/WORKFLOW_RATIONALIZATION.md"
+        ]
+      },
+      "everred": {
+        "run": 38710428581,
+        "conclusion": "failure",
+        "black_files_would_reformat": 22
+      }
+    },
+    "PR#1990": {
+      "native_mip": {
+        "run": 38729033486,
+        "conclusion": "success",
+        "exact_code_sha": "e62f9ebda6240195fa18a9c471944efa045ff306",
+        "artifacts": [
+          {
+            "id": 11970121246,
+            "class": "SYNTHETIC_CONTROL"
+          },
+          {
+            "id": 11969736833,
+            "class": "API_METADATA_ONLY"
+          },
+          {
+            "id": 11969621979,
+            "class": "LOCAL_HASH_ONLY_FEDERATION"
+          },
+          {
+            "id": 11969536961,
+            "class": "LOCAL_HASH_ONLY_HISTORY"
+          }
+        ]
+      },
+      "after_handover_commit_reverify": true
+    },
+    "G5": {
+      "consumer_replay_run": 38728223274,
+      "followon_exact_head_run": 38728626693,
+      "original_tests_passed": 44,
+      "new_negative_tests_passed": 10,
+      "consumer_artifact_id": 11969036514,
+      "consumer_artifact_sha256": "5ed6556012d1666ce0d4d686237a56e27b1ff3e1d455d8bda93433994a3a0c6e",
+      "source": "USER_PROVIDED_N2_AND_GITHUB_LINKED",
+      "qps_verdict": "DEFER"
+    }
+  },
+  "first_reds": [
+    {
+      "owner": "ABACUS#1979",
+      "root": "A10 confidentiality",
+      "status": "OPEN",
+      "evidence_job": 116340158217,
+      "policy_clearance_required": true
+    },
+    {
+      "owner": "ABACUS#1979",
+      "root": "Safety",
+      "status": "OPEN",
+      "evidence_job": 116340159325,
+      "exit": 64,
+      "finding_count": null
+    },
+    {
+      "owner": "ABACUS#1979",
+      "root": "Code quality Black",
+      "status": "OPEN",
+      "evidence_job": 116340159746,
+      "changed_python_files": 18,
+      "pr_touched_black_findings": 15,
+      "full_black_findings": 754,
+      "full_isort_findings": 477
+    },
+    {
+      "owner": "ABACUS#1979",
+      "root": "EVERRED Black",
+      "status": "OPEN",
+      "evidence_run": 38710428581,
+      "files_would_reformat": 22
+    },
+    {
+      "owner": "ABACUS#1990",
+      "root": "MIP on handover head exact CI recheck",
+      "status": "PENDING_NEW_SHA",
+      "evidence_run": 38729033486
+    }
+  ],
+  "census_findings": {
+    "DAB_total_historical": 2945,
+    "DAB_style_queue_historical": 2346,
+    "DAB_style_queue_new_observation": 3118,
+    "Bandit_full_historical": 6333,
+    "Bandit_full_new_observation": 6609,
+    "comparable_delta_certified": false,
+    "reason": "scope/tool/config/source equality not established"
+  },
+  "federation": {
+    "scope": "ABACUS,CODEX,cryoplant-project × 8 domains",
+    "configured_slots": 24,
+    "authenticated_received": null,
+    "accepted_rex": null,
+    "qps_accepted_links": 0,
+    "missioncontrol_mutation_enabled": false,
+    "control_manifest_mutation_transports": []
+  },
+  "gogreen_n2": {
+    "producer_run": 38726158685,
+    "producer_job": 116392416193,
+    "producer_artifact_id": 11968217957,
+    "producer_artifact_sha256": "f926b86d377f989cfb380c587ce5cbf2843a3e7e152d0df3c4d8a3a914ba2117",
+    "consumer_run": 38728223274,
+    "source_sha": "6ca8bea048982d3aff44689da0dd7ce2e355f60f",
+    "consumer_archive_id": 11969036514,
+    "consumer_archive_sha256": "5ed6556012d1666ce0d4d686237a56e27b1ff3e1d455d8bda93433994a3a0c6e",
+    "same_repo_replay_verified": 1,
+    "authenticated_crossrepo_hops": 0,
+    "qps_accepted_links": 0,
+    "evidence_basis": "USER_SUPPLIED_N2_VERIFIED_REPORT"
+  },
+  "next_execution": [
+    "recensus latest heads after handover commits",
+    "read and classify all current first-reds",
+    "complete disjoint Black/isort changes independently of confidential A10",
+    "obtain authorized A10 review and Safety 64 source fix",
+    "verify new exact-head MIP PR1990 testflight",
+    "reconcile 24-slot census with authenticated G1/G5 and CODEX/ABACUS proof",
+    "close issue only on independent accepted root proof"
+  ],
+  "guide_references": [
+    "handover/mc2/MISSIONCONTROL_CURRENT.json",
+    "handover/mc2/MISSIONCONTROL_DROPIN_v1.1.md",
+    "handover/mc2/SESSION_CLOSE_CURRENT.json",
+    "deepagent-handover-package/handover/04_handover_manifest.yaml",
+    "GBOGEB/CODEX/docs/handover/RECURSIVE_IDEMPOTENT_METHOD_HANDOVER_v1.md"
+  ],
+  "user_supplied_source": {
+    "filename": "Pasted text(20261015-125710).txt",
+    "scope": "MissionControl GOGREEN N+2 nine-track prior snapshot",
+    "sha256": "c3bf8a8eb52402dcce94565f199777bd3c49745ff10e81bce465c5723807835a",
+    "byte_length": 15923,
+    "line_count": 131,
+    "ingress": "user-attached unmodified source; no implied live GitHub authority",
+    "preserved_copy_for_user": "GOGREEN_N2_original_exact_20261015.txt",
+    "git_commit_of_original_bytes": null
+  }
+}

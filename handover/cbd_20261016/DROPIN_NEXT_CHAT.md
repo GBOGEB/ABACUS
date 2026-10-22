@@ -1,6 +1,7 @@
 # CODE PURPLE / CBD! — GitHub-first lossless continuation (16 October 2026)
 
-### Copy the entire contents of this file into a fresh chat if needed.
+## Copy the entire contents of this file into a fresh chat if needed
+
 This dossier is a **source-bound handover snapshot, not merge authority**.
 First read the BINDER.json and run binder.py --live if authorized.
 No ZIP is required. Do not delete the prior chat until the next chat
@@ -25,14 +26,11 @@ This new binder (draft, not merged):
 
 - BINDER.json: repo/PR exact historical SHAs, causal roots, native run/job
   receipts, metrics, and machine-readable HOLD classifications.
-
 - binder.py: pure-standard-library read-only validation, local Markdown
   readback, optional GitHub GET re-CENSUS, SHA drift check.
-
 - test_binder.py: positive/negative source, authority, and metric controls.
 - ARTIFACT_INDEX.md: native run/job, artifact IDs, uploaded digests,
   evidence quality, reusable build dossier links and pulse definitions.
-
 - DROPIN_NEXT_CHAT.md (this file): complete no-ZIP continuation instructions.
 
 Established handover receiver (historical): ABACUS PR #1975
@@ -63,17 +61,13 @@ read-only projections. Do not invent a competing SSOT or runtime federation.
 - ABACUS main: 54da377cf82a358ac97903ecde0270c975b8fcc1,
   protected=true; active ruleset #24494381 lacks required_status_checks.
   59 PRs visible open in this readback.
-
 - Mission Control pipeline-automation-hub master:
   929b970f97291c7b510004a6ad9b1af16932ec8a,
   protected=false; 2 open PRs visible.
-
 - CODEX main ee5a06e6e2873dbfd4bf40f23e367a849d7650e1,
   protected=false, 0 open PRs visible.
-
 - cryoplant-project QPS main bd7d0156eb581f7803b73fe7158b6b49148d5229,
   protected=false, 0 open PRs visible.
-
 - gg_MATH main c5cd3e30a8e241111fc9f15367f3b92ba0393ea7,
   protected=false, 0 open PRs visible.
 
@@ -124,7 +118,7 @@ required, no unreviewed allowlist hash.
 Two unclassified workflows: code-purple-dashboard-v31.yml and
 code-purple-sut-gui.yml. Report was 158 while repository has 160
 workflow definitions. Reuse canonical regeneration and review #1995,
-\#2037, #2041; do not maintain three conflicting inventories.
+Related: #2037, #2041; do not maintain three conflicting inventories.
 ABACUS main ruleset lacks required check enforcement.
 
 ### D — Security
@@ -189,10 +183,8 @@ For every pulse collect:
 1. repo, canonical root ID, path lease, exact base/head SHA;
 2. workflow run ID, attempt, job ID, terminal conclusion, JUnit
    pass/fail/skip and first-red; no downstream summary double count;
-
 3. artifact ID, ZIP SHA-256, member digests, native source match
    (distinguish upload log from downloaded bytes);
-
 4. statement and branch coverage covered/eligible + tool settings;
 5. stable security scanner fingerprints and root transitions;
 6. worker/runner identity, actual hours and queue timestamps;
@@ -212,7 +204,7 @@ Wave 1: consume #2045 new-head compatibility proof and Black repair
 from #1998 in disjoint paths; preserve residual Safety and A10.
 Wave 2: authorized inventory/A10 on #2041 and independent security #2027.
 Wave 3: #2046 clean-clone behavior, matched module/broad coverage and
-\#2033 queue/worker telemetry.
+Related: #2033 queue/worker telemetry.
 Wave 4: Mission Control ZIP/member verification; only then expand six
 scouts with two max concurrent and a rollback receipt.
 Wave 5: evaluate M2/M3/PCA/BT eligibility, exact-main REX recurrence
@@ -242,10 +234,10 @@ new SHA drift/unknown.
 Read the linked GitHub dossier and BINDER.json. Refresh GitHub main and
 PR heads, native runs and required checks before any source edit.
 Operate disjoint workers under existing owners (#2045, #1998, #2041,
-\#2027, #2046, Mission Control ZIP/census). Execute eligible source fixes
+Related: #2027, #2046, Mission Control ZIP/census). Execute eligible source fixes
 and native testflight without security waiver or merger authority.
 Report a per-wave KPI scorecard and closing impact CENSUS with exact
 artifact/build binder links, source/provenance and UNKNOWN preserved.
 Prefer drop-in Markdown and tiny stdlib Python files; NO ZIP needed.
 
-### Final transfer remains HOLD.
+## Final transfer remains HOLD

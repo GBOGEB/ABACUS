@@ -1,0 +1,50 @@
+[
+  {
+    "viewport": "desktop",
+    "size": [
+      1440,
+      900
+    ],
+    "errors": [],
+    "visible": "34 / 55",
+    "loaded": true,
+    "overflow": false,
+    "sidebar_position": "sticky",
+    "snapshot": "W13_desktop.png"
+  },
+  {
+    "interaction": "density_size_filter_registry_selection_reset",
+    "full": "55 / 55",
+    "rows": 55,
+    "search_bradley": 1,
+    "click": "Selected node",
+    "reset": "34 / 55",
+    "errors": []
+  },
+  {
+    "viewport": "laptop",
+    "size": [
+      1280,
+      800
+    ],
+    "errors": [],
+    "visible": "34 / 55",
+    "loaded": true,
+    "overflow": false,
+    "sidebar_position": "sticky",
+    "snapshot": "W13_laptop.png"
+  },
+  {
+    "viewport": "mobile",
+    "size": [
+      390,
+      844
+    ],
+    "errors": [],
+    "visible": "34 / 55",
+    "loaded": true,
+    "overflow": false,
+    "sidebar_position": "relative",
+    "snapshot": "W13_mobile.png"
+  }
+]

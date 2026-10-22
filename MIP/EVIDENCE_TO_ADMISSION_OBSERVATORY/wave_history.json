@@ -1,0 +1,141 @@
+{
+  "schema": "codepurple.focused_wave_history.v1",
+  "source": "GITHUB_NATIVE_RUN_AND_ARTIFACT_READBACK",
+  "observations": [
+    {
+      "wave": 1,
+      "head_sha": "7488bd7bdcd2cb2fb7dd2d4a748a7867a7df2ab0",
+      "run_id": 39136242423,
+      "cases_per_job": 30,
+      "eligible_opportunities": 208,
+      "covered_opportunities": 192,
+      "cohort_id": "W007_TWO_PRODUCTION_MODULES_208_OPPORTUNITIES",
+      "configuration_id": "W007_PYTEST_COV_BRANCH_ML_20261018",
+      "expected_jobs": 4,
+      "jobs": [
+        {
+          "job_id": 117701224266,
+          "run_id": 39136242423,
+          "head_sha": "7488bd7bdcd2cb2fb7dd2d4a748a7867a7df2ab0",
+          "conclusion": "success",
+          "artifact_id": 12140136464,
+          "artifact_sha256": "49f19c062408f55a3776783ebfb927c86601e92295c93d03a05931fbc65238c6"
+        },
+        {
+          "job_id": 117701224467,
+          "run_id": 39136242423,
+          "head_sha": "7488bd7bdcd2cb2fb7dd2d4a748a7867a7df2ab0",
+          "conclusion": "success",
+          "artifact_id": 12139583674,
+          "artifact_sha256": "7ae0daedead665fdaa5b8ba788301c1eacc17b7ea0b0ffc3411741c538843161"
+        },
+        {
+          "job_id": 117701224500,
+          "run_id": 39136242423,
+          "head_sha": "7488bd7bdcd2cb2fb7dd2d4a748a7867a7df2ab0",
+          "conclusion": "success",
+          "artifact_id": 12139628943,
+          "artifact_sha256": "358bd61c49d7ba5889c91d0fc6c888aa265b049b3d42986e0cb322c697db4d0b"
+        },
+        {
+          "job_id": 117701224518,
+          "run_id": 39136242423,
+          "head_sha": "7488bd7bdcd2cb2fb7dd2d4a748a7867a7df2ab0",
+          "conclusion": "success",
+          "artifact_id": 12140261909,
+          "artifact_sha256": "44c790eda3803b9e87ba670338515092be1b015dbdd2d3d7e3fa96858708c448"
+        }
+      ]
+    },
+    {
+      "wave": 3,
+      "head_sha": "0aa894c991e2e68a359ddac09c9bb6cff653ad82",
+      "run_id": 39137273009,
+      "cases_per_job": 61,
+      "eligible_opportunities": 208,
+      "covered_opportunities": 206,
+      "cohort_id": "W007_TWO_PRODUCTION_MODULES_208_OPPORTUNITIES",
+      "configuration_id": "W007_PYTEST_COV_BRANCH_ML_20261018",
+      "expected_jobs": 4,
+      "jobs": [
+        {
+          "job_id": 117704239617,
+          "run_id": 39137273009,
+          "head_sha": "0aa894c991e2e68a359ddac09c9bb6cff653ad82",
+          "conclusion": "success",
+          "artifact_id": 12140442718,
+          "artifact_sha256": "d638c834a89a9c653d89a1b66a1ed3519b749b9a1f5544651ba1fb76354b10a8"
+        },
+        {
+          "job_id": 117704239740,
+          "run_id": 39137273009,
+          "head_sha": "0aa894c991e2e68a359ddac09c9bb6cff653ad82",
+          "conclusion": "success",
+          "artifact_id": 12140437855,
+          "artifact_sha256": "d9cd9d77637e8080c8132ded5400b110a5b0fe520166fbc7efca59b17e601872"
+        },
+        {
+          "job_id": 117704239769,
+          "run_id": 39137273009,
+          "head_sha": "0aa894c991e2e68a359ddac09c9bb6cff653ad82",
+          "conclusion": "success",
+          "artifact_id": 12140740814,
+          "artifact_sha256": "00578430fefb2308feb72cf2a83bbd843de5c78e80dc88faefe7b9c48f834017"
+        },
+        {
+          "job_id": 117704239918,
+          "run_id": 39137273009,
+          "head_sha": "0aa894c991e2e68a359ddac09c9bb6cff653ad82",
+          "conclusion": "success",
+          "artifact_id": 12139739230,
+          "artifact_sha256": "5ba8e92cc089de351d2f2eba3ee521cb1571a52a366f06d288a8d0e257fa1d30"
+        }
+      ]
+    },
+    {
+      "wave": 4,
+      "head_sha": "bfdf84f385f8db695ad3ee5b80f25b074c9fa993",
+      "run_id": 39138380209,
+      "cases_per_job": 63,
+      "eligible_opportunities": 208,
+      "covered_opportunities": 208,
+      "cohort_id": "W007_TWO_PRODUCTION_MODULES_208_OPPORTUNITIES",
+      "configuration_id": "W007_PYTEST_COV_BRANCH_ML_20261018",
+      "expected_jobs": 4,
+      "jobs": [
+        {
+          "job_id": 117707511343,
+          "run_id": 39138380209,
+          "head_sha": "bfdf84f385f8db695ad3ee5b80f25b074c9fa993",
+          "conclusion": "success",
+          "artifact_id": 12140438603,
+          "artifact_sha256": "2a0747d71abb89a451dc0a608bbeb5e88f913172ebc4e3022dd03b697f6b4ce9"
+        },
+        {
+          "job_id": 117707511417,
+          "run_id": 39138380209,
+          "head_sha": "bfdf84f385f8db695ad3ee5b80f25b074c9fa993",
+          "conclusion": "success",
+          "artifact_id": 12140473532,
+          "artifact_sha256": "3a1b475dbf11be963efb3d85233d926f53bc3f954836cba61dda93d550a3dc9d"
+        },
+        {
+          "job_id": 117707511448,
+          "run_id": 39138380209,
+          "head_sha": "bfdf84f385f8db695ad3ee5b80f25b074c9fa993",
+          "conclusion": "success",
+          "artifact_id": 12140831934,
+          "artifact_sha256": "1093c2b8defb8814818454f033b44b099c46bc426d77ec2a7d5ab8c1f4e06dac"
+        },
+        {
+          "job_id": 117707511476,
+          "run_id": 39138380209,
+          "head_sha": "bfdf84f385f8db695ad3ee5b80f25b074c9fa993",
+          "conclusion": "success",
+          "artifact_id": 12140413777,
+          "artifact_sha256": "e2d00d1362352eee62440593ccea421b2f0b9aea1c17488c27bd066b8eec1916"
+        }
+      ]
+    }
+  ]
+}

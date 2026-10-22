@@ -1,10 +1,10 @@
-"""W52-P2U: repaired independent HP power residual triage for nominal LKT 2K-OP point.
+"""W52-P2U: repaired independent HP power residual triage for nominal SUPPLIER_B 2K-OP point.
 
 Source-bound bidder point:
 - total HP mass flow = 326 g/s
 - package input power = 814 kW
 
-Candidate compression boundary inherited from the LKT 72 Hz reference:
+Candidate compression boundary inherited from the SUPPLIER_B 72 Hz reference:
 - P1 = 1.05 bara, T1 = 298 K, P2 = 14 bara
 
 Independent engineering model:
@@ -58,13 +58,13 @@ def main() -> None:
         "source_point": {
             "hp_total_flow_g_s": 326.0,
             "hp_reference_power_kW": P_REF_KW,
-            "authority": "LKT_2K_OP_OPERATING_MODE_SOURCE_BOUND_ANALYTICAL_SSOT",
+            "authority": "SUPPLIER_B_2K_OP_OPERATING_MODE_SOURCE_BOUND_ANALYTICAL_SSOT",
         },
         "candidate_boundary": {
             "P1_bara": P1_BARA,
             "T1_K": T1_K,
             "P2_bara": P2_BARA,
-            "authority": "LKT_72HZ_REFERENCE_BOUNDARY_REUSED_FOR_DIAGNOSTIC_ONLY",
+            "authority": "SUPPLIER_B_72HZ_REFERENCE_BOUNDARY_REUSED_FOR_DIAGNOSTIC_ONLY",
             "exact_nominal_2kop_boundary_confirmed": False,
         },
         "independent_model": {

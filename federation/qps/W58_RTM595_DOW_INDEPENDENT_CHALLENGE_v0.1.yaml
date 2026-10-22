@@ -12,7 +12,7 @@ independent_findings:
   - id: DOW-RTM595-01
     disposition: ACCEPT_SOURCE_LIMITATION
     finding: >-
-      Current LKT evidence positively establishes that statistically reliable CC MTBF is unavailable and
+      Current SUPPLIER_B evidence positively establishes that statistically reliable CC MTBF is unavailable and
       non-turbine MTBF values are assumption-based; this is evidence of uncertainty, not evidence of zero failure rate.
   - id: DOW-RTM595-02
     disposition: DEFER_COMMON_CAUSE_RATE

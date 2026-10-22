@@ -1,0 +1,22 @@
+{
+  "schema_version": "0.1",
+  "program": "MIP",
+  "repository": "GBOGEB/ABACUS",
+  "role": "kit_consumer",
+  "health_probe": "scripts/mip_health_selfheal_probe.py",
+  "nested_surfaces": [
+    {
+      "path": "integration/codespace_jyperter",
+      "emitter": "integration/codespace_jyperter/scripts/mip_surface_self_index.py",
+      "diagnostic": "integration/codespace_jyperter/scripts/mip_debug_diagnostic.py"
+    }
+  ],
+  "shareable_skill": ".codex/skills/mip-repo-self-index",
+  "required_green": [
+    "repo_self_assess_codz_health_selfheal",
+    "repo_self_assess_debug_ldab",
+    "repo_self_assess_runners_mcp",
+    "repo_self_produce"
+  ],
+  "next_victory_condition": "Preserve all four root N2 lanes GREEN on a later distinct SHA, then recurse into nested-surface AMBER lanes."
+}

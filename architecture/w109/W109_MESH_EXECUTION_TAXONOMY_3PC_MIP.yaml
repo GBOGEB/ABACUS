@@ -30,20 +30,20 @@ visible_taxonomy:
     CG: {name: Current Gate, type_label: Target transition}
     WD: {name: Work Disposition, type_label: Decision state}
   preconditions:
-    RR: {name: Repository Readiness, type_label: Can repo proceed?}
-    DR: {name: Dependency Readiness, type_label: Are dependencies ready?}
-    SR: {name: Semantic Readiness, type_label: Does meaning align?}
-    HK: {name: Integration Handshake, type_label: Are endpoints connected?}
+    RR: {name: Repository Readiness, type_label: "Can repo proceed?"}
+    DR: {name: Dependency Readiness, type_label: "Are dependencies ready?"}
+    SR: {name: Semantic Readiness, type_label: "Does meaning align?"}
+    HK: {name: Integration Handshake, type_label: "Are endpoints connected?"}
   execution:
-    EX: {name: Execution / Runtime, type_label: Did it actually run?}
-    FE: {name: Federation Exchange, type_label: Did it cross the boundary?}
+    EX: {name: Execution / Runtime, type_label: "Did it actually run?"}
+    FE: {name: Federation Exchange, type_label: "Did it cross the boundary?"}
   verification_evidence:
-    QH: {name: Quality Health, type_label: Was the run acceptable?}
-    KR: {name: Knowledge Receipt, type_label: Can we prove it?}
-    CR: {name: Critical Risk, type_label: What can still hurt us?}
+    QH: {name: Quality Health, type_label: "Was the run acceptable?"}
+    KR: {name: Knowledge Receipt, type_label: "Can we prove it?"}
+    CR: {name: Critical Risk, type_label: "What can still hurt us?"}
   progress_blocking:
-    PB: {name: Progress / Burndown, type_label: How much remains?}
-    BG: {name: Blocking Gate, type_label: What stops transition?}
+    PB: {name: Progress / Burndown, type_label: "How much remains?"}
+    BG: {name: Blocking Gate, type_label: "What stops transition?"}
 MIP:
   Modernize:
     action: adapt_existing_scheduler_inputs_from_commit_scrape_to_mesh_status_vectors

@@ -173,7 +173,7 @@ def render_markdown(report: dict, policy: dict) -> str:
         "# ABACUS CI workflow rationalisation",
         "",
         f"Policy: `{report['policy_id']}`  ",
-        f"Policy SHA-256: `{report['policy_sha256']}`",
+        f"Policy SHA-256 (canonical sorted JSON bytes of `ci/governance/workflow_policy.json`): `{report['policy_sha256']}`",
         "",
         "## Outcome",
         "",
@@ -233,13 +233,13 @@ def render_markdown(report: dict, policy: dict) -> str:
         "",
         "## Workflow inventory",
         "",
-        "| Order | Cluster | Workflow | Events | Jobs | Decision | Replacement |",
-        "|---:|---|---|---|---:|---|---|",
+        "| Order | Lifecycle | Cluster | Workflow | Events | Jobs | Decision | Replacement |",
+        "|---:|---|---|---|---|---:|---|---|",
     ]
     for row in report["workflows"]:
         replacement = f"`{row['replacement']}`" if row.get("replacement") else "—"
         lines.append(
-            f"| {row['order']} | `{row['cluster']}` | `{row['file']}` | "
+            f"| {row['order']} | `{row['lifecycle']}` | `{row['cluster']}` | `{row['file']}` | "
             f"{', '.join(row['events']) or 'none'} | {row['job_count']} | "
             f"`{row['disposition']}` | {replacement} |"
         )

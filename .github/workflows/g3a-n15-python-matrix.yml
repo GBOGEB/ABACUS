@@ -1,0 +1,111 @@
+name: G3A N15 Cross-Python Source-Matched Coverage Proof
+on:
+  pull_request:
+    paths:
+      - 'tests/test_g3a_n15_alias_fault_matrix.py'
+      - '.github/workflows/g3a-n15-python-matrix.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  n15-same-head-proof:
+    name: N15 source-bound Python ${{ matrix.python-version }}
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: ['3.10', '3.12']
+    steps:
+      - name: Checkout exact PR head
+        uses: actions/checkout@v7
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+      - name: Assert exact checkout and owner source blob
+        shell: bash
+        env:
+          EXPECTED_HEAD: ${{ github.event.pull_request.head.sha || github.sha }}
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$EXPECTED_HEAD"
+          test "$(git hash-object DMAIC_V3/phases/phase4_improve.py)" = 18bec722fef537aa74b85295954cf66a002695d0
+          test "$(git hash-object DMAIC_V3/phases/phase8_todo_management.py)" = e9e4edd4c2b5b23a850892efb40b0c256a9ce490
+          test "$(git hash-object DMAIC_V3/debug_pipeline.py)" = 730cab72408ac473fb89123d9d76bb7a2edb075e
+          test "$(git hash-object cicd_github_orchestrator.py)" = 2e0f80b8f476d6f4eab05defb52aae2f77e30c61
+      - name: Setup Python
+        uses: actions/setup-python@v7
+        with:
+          python-version: ${{ matrix.python-version }}
+      - name: Install narrow compatibility tools
+        run: python -m pip install --disable-pip-version-check 'coverage[toml]==7.16.2' 'PyYAML==6.0.2' 'pytest>=8,<9'
+      - name: Run 97 test identities and measure same-source arcs
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p test_reports/n15
+          python -m coverage run --branch --source=DMAIC_V3.phases.phase4_improve,DMAIC_V3.phases.phase8_todo_management,DMAIC_V3.debug_pipeline,cicd_github_orchestrator,scripts -m unittest discover -s tests -p 'test_g3a_*.py' -v 2>&1 | tee test_reports/n15/unittest.log
+          python -m coverage json -o test_reports/n15/coverage.json
+          python -m pytest --noconftest -q tests/test_dmaic_phase4_noop_contract_20261013.py 2>&1 | tee test_reports/n15/noop_contract_pytest.log
+      - name: Verify exact denominator and monotone arc presence
+        shell: bash
+        env:
+          EXPECTED_HEAD: ${{ github.event.pull_request.head.sha || github.sha }}
+          NATIVE_RUN_ID: ${{ github.run_id }}
+          NATIVE_RUN_ATTEMPT: ${{ github.run_attempt }}
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          import json,os,pathlib,re,subprocess,sys
+          root=pathlib.Path('test_reports/n15')
+          data=json.loads((root/'coverage.json').read_text())
+          log=(root/'unittest.log').read_text()
+          matches=re.findall(r'Ran (\d+) tests? in',log)
+          if not matches or int(matches[-1])<97 or '\nOK' not in log:
+              raise SystemExit('HOLD: 97-method current-head cohort not completely green')
+          expected={
+            'DMAIC_V3/phases/phase4_improve.py':(132,42),
+            'DMAIC_V3/phases/phase8_todo_management.py':(118,30),
+            'DMAIC_V3/debug_pipeline.py':(116,17),
+            'cicd_github_orchestrator.py':(78,23),
+            'scripts/g3a_bounded_mission.py':(116,105),
+          }
+          measured={}
+          for path,(eligible,baseline) in expected.items():
+              found=[v for k,v in data['files'].items() if k==path or k.endswith('/'+path)]
+              if len(found)!=1: raise SystemExit('HOLD: missing/duplicate coverage '+path)
+              s=found[0]['summary']
+              if s['num_branches']!=eligible:
+                  raise SystemExit('HOLD: Python/compiler denominator drift '+path)
+              if s['covered_branches']<baseline:
+                  raise SystemExit('HOLD: native branch reach displaced '+path)
+              measured[path]={k:int(s[k]) for k in
+                  ('num_statements','covered_lines','num_branches','covered_branches')}
+          receipt={
+            'schema':'code-purple.g3a.n15.cross-python.v1',
+            'source_sha':os.environ['EXPECTED_HEAD'],
+            'checkout_sha':subprocess.check_output(['git','rev-parse','HEAD'],text=True).strip(),
+            'python':sys.version.split()[0],
+            'coverage_version':data.get('meta',{}).get('version'),
+            'run_id':int(os.environ['NATIVE_RUN_ID']),
+            'run_attempt':int(os.environ['NATIVE_RUN_ATTEMPT']),
+            'job_id':None,'job_identity':'PENDING_NATIVE_API_READBACK',
+            'passed_test_count':int(matches[-1]),'failed_test_count':0,
+            'source_unchanged_from_N14':True,
+            'prior_five_file_covered':217,'prior_five_file_eligible':560,
+            'current_five_file_covered':sum(x['covered_branches'] for x in measured.values()),
+            'current_five_file_eligible':sum(x['num_branches'] for x in measured.values()),
+            'files':measured,'accepted_root_closures':0,
+            'merge_admission':'HOLD','security_waiver':False,'authority_transfer':False,
+          }
+          (root/'native_receipt.json').write_text(json.dumps(receipt,indent=2,sort_keys=True)+'\n')
+          print('N15_PYTHON='+sys.version.split()[0])
+          print('N15_SAME_SOURCE_BRANCH='+str(receipt['current_five_file_covered'])+'/560')
+          print('N15_GATES=HOLD')
+          PY
+      - name: Always preserve native first-red and evidence
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: g3a-n15-py${{ matrix.python-version }}-${{ github.run_id }}-${{ github.run_attempt }}
+          path: test_reports/n15/
+          if-no-files-found: warn

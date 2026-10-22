@@ -534,6 +534,11 @@ def normalize_source(
 
     raw = path.read_bytes()
     normalized = EXTRACTORS[suffix](path)
+    # Extractors reopen the source path. Do not bind original source bytes
+    # to semantic content extracted after a concurrent file mutation.
+    # This is a fail-closed byte-consistency check, not an atomic file lock.
+    if path.read_bytes() != raw:
+        raise RuntimeError("binary source mutated during extraction: " + str(path))
     semantic_sha = canonical_sha256(normalized)
 
     return {

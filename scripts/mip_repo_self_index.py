@@ -1,5 +1,9 @@
 #!/usr/bin/env python3
-"""Generate a MIP repo self-index receipt using only stdlib."""
+"""Generate a MIP repo self-index receipt using only stdlib.
+
+Part of the canonical MIP kit hosted in GBOGEB/CODEX (``MIP/kit/KIT_MANIFEST.json``).
+Repository-specific behaviour comes only from ``MIP/mip_surface.json``.
+"""
 
 from __future__ import annotations
 
@@ -10,13 +14,66 @@ import subprocess
 import sys
 import tempfile
 from collections import Counter
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from pathlib import Path
-
 
 ROOT = Path(__file__).resolve().parents[1]
 DEFAULT_OUTPUT = ROOT / "MIP" / "receipts" / "repo_self_index.json"
-HEALTH_SELFHEAL_PROBE = ROOT / "scripts" / "mip_health_selfheal_probe.py"
+SURFACE_CONFIG = ROOT / "MIP" / "mip_surface.json"
+DEFAULT_HEALTH_PROBE = "scripts/mip_health_selfheal_probe.py"
+DEFAULT_DEBUG_DIAGNOSTIC = "scripts/mip_debug_diagnostic.py"
+DEFAULT_NEXT_VICTORY_CONDITION = (
+    "Run the receipt on two more distinct SHAs, then package the "
+    "highest-confidence repo_self_produce candidate."
+)
+
+
+def load_surface_config(config_path: Path = SURFACE_CONFIG) -> dict:
+    """Read the repo-local MIP surface config; a missing or unreadable file is ``{}``.
+
+    The kit is shared across repositories; only this config is repo-specific.
+    """
+    try:
+        value = json.loads(config_path.read_text(encoding="utf-8"))
+    except (OSError, json.JSONDecodeError):
+        return {}
+    return value if isinstance(value, dict) else {}
+
+
+def resolve_repo_script(
+    config: dict, key: str, default: str, root: Path = ROOT
+) -> Path | None:
+    """Resolve a repo-specific script named by ``key`` in the surface config.
+
+    * key absent: fall back to ``default``;
+    * ``null`` (or empty): the repo declares none;
+    * otherwise a repo-relative path that must stay inside the repo root.
+    """
+    if key not in config:
+        return root / default
+    value = config.get(key)
+    if not value:
+        return None
+    if not isinstance(value, str):
+        raise SystemExit(f"MIP surface config: {key} must be a string or null")
+    candidate = (root / value).resolve()
+    if Path(value).is_absolute() or not candidate.is_relative_to(root.resolve()):
+        raise SystemExit(f"MIP surface config: {key} must be repo-relative: {value}")
+    return candidate
+
+
+def resolve_health_probe(config: dict, root: Path = ROOT) -> Path | None:
+    """Resolve the health/self-heal probe (default ``scripts/mip_health_selfheal_probe.py``)."""
+    return resolve_repo_script(config, "health_probe", DEFAULT_HEALTH_PROBE, root)
+
+
+def resolve_debug_diagnostic(config: dict, root: Path = ROOT) -> Path | None:
+    """Resolve the debug/LDAB diagnostic (default ``scripts/mip_debug_diagnostic.py``)."""
+    return resolve_repo_script(
+        config, "debug_diagnostic", DEFAULT_DEBUG_DIAGNOSTIC, root
+    )
+
+
 IGNORED_DIRS = {
     ".git",
     ".mypy_cache",
@@ -80,9 +137,7 @@ def grep_count(files: list[Path], needles: tuple[str, ...]) -> int:
         if rel.suffix.lower() not in text_exts:
             continue
         try:
-            text = (ROOT / rel).read_text(
-                encoding="utf-8", errors="ignore"
-            ).lower()
+            text = (ROOT / rel).read_text(encoding="utf-8", errors="ignore").lower()
         except OSError:
             continue
         if any(needle in text for needle in needles):
@@ -113,24 +168,30 @@ def complete_skill_packages(files: list[Path]) -> list[Path]:
     return sorted(packages, key=lambda path: path.as_posix())
 
 
-def run_health_selfheal_probe() -> dict | None:
-    if not HEALTH_SELFHEAL_PROBE.is_file():
+def run_repo_script(probe: Path, output: Path) -> int:
+    """Run a repo-local probe or diagnostic with ``--output``; return its exit code."""
+    completed = subprocess.run(
+        [
+            sys.executable,
+            str(probe),
+            "--output",
+            str(output),
+        ],
+        cwd=ROOT,
+        text=True,
+        capture_output=True,
+        check=False,
+    )
+    return completed.returncode
+
+
+def run_health_selfheal_probe(probe: Path | None) -> dict | None:
+    if probe is None or not probe.is_file():
         return None
     with tempfile.TemporaryDirectory(prefix="mip-self-index-health-") as temp:
         output = Path(temp) / "health-selfheal.json"
-        completed = subprocess.run(
-            [
-                sys.executable,
-                str(HEALTH_SELFHEAL_PROBE),
-                "--output",
-                str(output),
-            ],
-            cwd=ROOT,
-            text=True,
-            capture_output=True,
-            check=False,
-        )
-        if completed.returncode != 0 or not output.is_file():
+        returncode = run_repo_script(probe, output)
+        if returncode != 0 or not output.is_file():
             return {
                 "verification": "FAIL",
                 "return_state": "REGRESSED",
@@ -149,13 +210,91 @@ def run_health_selfheal_probe() -> dict | None:
         return value if isinstance(value, dict) else None
 
 
-def classify(files: list[Path], health_probe: dict | None) -> dict:
+def run_debug_diagnostic(diagnostic: Path | None) -> dict | None:
+    """Execute the debug diagnostic; its receipt is read even on a non-zero exit.
+
+    The emitter binds the receipt to the HEAD it ran on when the diagnostic
+    does not report ``exact_sha`` itself.
+    """
+    if diagnostic is None or not diagnostic.is_file():
+        return None
+    with tempfile.TemporaryDirectory(prefix="mip-self-index-debug-") as temp:
+        output = Path(temp) / "debug-diagnostic.json"
+        run_repo_script(diagnostic, output)
+        try:
+            value = json.loads(output.read_text(encoding="utf-8"))
+        except (OSError, json.JSONDecodeError):
+            value = None
+    if not isinstance(value, dict):
+        return {
+            "verification": "FAIL",
+            "exact_sha": run_git(["rev-parse", "HEAD"]),
+            "failed_checks": ["diagnostic_execution"],
+        }
+    value.setdefault("exact_sha", run_git(["rev-parse", "HEAD"]))
+    return value
+
+
+def debug_assessment(debug: list[Path], diagnostic: dict | None) -> dict:
+    """GREEN only on an executed, passing diagnostic bound to this exact SHA.
+
+    Path-name signals alone are discovery (AMBER), never proof.
+    """
+    exact_sha = run_git(["rev-parse", "HEAD"])
+    checks = (diagnostic or {}).get("checks")
+    proven = bool(
+        diagnostic
+        and exact_sha
+        and diagnostic.get("verification") == "PASS"
+        and diagnostic.get("exact_sha") == exact_sha
+        and isinstance(checks, dict)
+        and checks
+        and all(passed is True for passed in checks.values())
+    )
+    if proven:
+        status = "green"
+        next_action = "Keep the diagnostic bound to the exact SHA on every run."
+    elif diagnostic:
+        status = "amber"
+        next_action = "Repair the first failing debug diagnostic check."
+    elif debug:
+        status = "amber"
+        next_action = "Bind debug/LDAB signals to an executable diagnostic receipt."
+    else:
+        status = "red"
+        next_action = "Add minimal debug/LDAB diagnostic surface."
+    evidence = None
+    if diagnostic:
+        evidence = {
+            key: diagnostic.get(key)
+            for key in (
+                "diagnostic",
+                "verification",
+                "exact_sha",
+                "checks",
+                "failed_checks",
+                "raw_receipt_retention",
+            )
+        }
+    return {
+        "status": status,
+        "signals": len(debug),
+        "sample_paths": sample(debug),
+        "evidence": evidence,
+        "next_action": next_action,
+    }
+
+
+def classify(
+    files: list[Path],
+    health_probe: dict | None,
+    debug_diagnostic: dict | None = None,
+) -> dict:
     workflows = [p for p in files if p.parts[:2] == (".github", "workflows")]
     docker = [
         p
         for p in files
-        if p.name.lower() == "dockerfile"
-        or "docker-compose" in p.name.lower()
+        if p.name.lower() == "dockerfile" or "docker-compose" in p.name.lower()
     ]
     runners = [
         p
@@ -174,9 +313,7 @@ def classify(files: list[Path], health_probe: dict | None) -> dict:
     ]
     mcp = [p for p in files if contains_any(p, ("mcp", "agent", "orchestrat"))]
     skills = [
-        p
-        for p in files
-        if contains_any(p, ("skill", ".codex/skills", "skill.md"))
+        p for p in files if contains_any(p, ("skill", ".codex/skills", "skill.md"))
     ]
     complete_skills = complete_skill_packages(files)
     debug = [
@@ -241,7 +378,9 @@ def classify(files: list[Path], health_probe: dict | None) -> dict:
         )
     else:
         self_produce_status = "red"
-        self_produce_next = "Create one complete reusable skill or orchestrator package."
+        self_produce_next = (
+            "Create one complete reusable skill or orchestrator package."
+        )
 
     health_evidence = None
     if health_probe:
@@ -265,22 +404,7 @@ def classify(files: list[Path], health_probe: dict | None) -> dict:
         }
 
     return {
-        "repo_self_assess_debug_ldab": {
-            "status": "green" if debug else "red",
-            "signals": len(debug),
-            "sample_paths": sample(debug),
-            "all_candidate_paths": sample(debug, limit=len(debug)),
-            "sample_is_complete": len(debug) <= 20,
-            "evidence_level": "SOURCE_DISCOVERY_ONLY",
-            "native_debug_sessions": None,
-            "authenticated_port_leases": None,
-            "accepted_remediations": None,
-            "next_action": (
-                "Paths only: attach exact-SHA executed diagnostic and native debugger receipt."
-                if debug
-                else "Add minimal debug/LDAB diagnostic surface."
-            ),
-        },
+        "repo_self_assess_debug_ldab": debug_assessment(debug, debug_diagnostic),
         "repo_self_assess_runners_mcp": {
             "status": "green" if workflows or runners or mcp else "red",
             "workflow_count": len(workflows),
@@ -312,11 +436,11 @@ def classify(files: list[Path], health_probe: dict | None) -> dict:
 
 def build_receipt() -> dict:
     files = iter_files()
-    health_probe = run_health_selfheal_probe()
+    surface = load_surface_config()
+    health_probe = run_health_selfheal_probe(resolve_health_probe(surface))
+    debug_diagnostic = run_debug_diagnostic(resolve_debug_diagnostic(surface))
     extensions = Counter(p.suffix.lower() or "<none>" for p in files)
-    top_dirs = Counter(
-        p.parts[0] if len(p.parts) > 1 else "<root>" for p in files
-    )
+    top_dirs = Counter(p.parts[0] if len(p.parts) > 1 else "<root>" for p in files)
     status_short = run_git(["status", "--short"]) or ""
 
     return {
@@ -333,16 +457,15 @@ def build_receipt() -> dict:
             ),
             "dirty_summary": status_short.splitlines()[:50],
         },
-        "generated_at": datetime.now(timezone.utc).isoformat(),
+        "generated_at": datetime.now(UTC).isoformat(),
         "census": {
             "file_count": len(files),
             "extension_counts": dict(extensions.most_common(30)),
             "top_directory_counts": dict(top_dirs.most_common(30)),
         },
-        "assessments": classify(files, health_probe),
-        "next_victory_condition": (
-            "Preserve all four root N2 lanes GREEN on a later distinct SHA, "
-            "then recurse into nested-surface AMBER lanes."
+        "assessments": classify(files, health_probe, debug_diagnostic),
+        "next_victory_condition": surface.get(
+            "next_victory_condition", DEFAULT_NEXT_VICTORY_CONDITION
         ),
     }
 
@@ -363,7 +486,8 @@ def main() -> int:
     try:
         output_display = args.output.relative_to(ROOT)
     except ValueError:
-        output_display = args.output
+        # External transient output: never echo the absolute runner path.
+        output_display = args.output.name
     print(f"Wrote {output_display}")
     print(
         json.dumps(

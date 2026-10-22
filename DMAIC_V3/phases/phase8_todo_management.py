@@ -37,8 +37,10 @@ class TODOTracker:
 
     def register_todo(self, todo: Dict[str, Any]) -> str:
         """Register a new TODO and return its ID"""
+        # Preserve existing registry identities; this is not an integrity proof.
         todo_id = hashlib.md5(
-            f"{todo.get('phase', '')}_{todo.get('description', '')}_{todo.get('timestamp', '')}".encode()
+            f"{todo.get('phase', '')}_{todo.get('description', '')}_{todo.get('timestamp', '')}".encode(),
+            usedforsecurity=False,
         ).hexdigest()[:12]
 
         todo['todo_id'] = todo_id
