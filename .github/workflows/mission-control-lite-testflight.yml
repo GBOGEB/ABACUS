@@ -136,7 +136,6 @@ jobs:
             --telemetry-tests-log evidence/telemetry-tests.log \
             --gate-census-tests-log evidence/gate-census-tests.log \
             --job-first-red-tests-log evidence/first-red-tests.log \
-            --telemetry-tests-log evidence/telemetry-tests.log \
             --recovery-tests-log evidence/recovery-tests.log \
             --runner-wait-tests-log evidence/runner-wait-tests.log \
             --adversarial-family-tests-log \
@@ -198,6 +197,8 @@ jobs:
             --output evidence/metrics-tests.log \
             --output evidence/timing-tests.log \
             --output evidence/telemetry-tests.log \
+            --output evidence/gate-census-tests.log \
+            --output evidence/first-red-tests.log \
             --output evidence/recovery-tests.log \
             --output evidence/runner-wait-tests.log \
             --output evidence/adversarial-family-tests.log \
