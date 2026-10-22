@@ -159,8 +159,7 @@ jobs:
 
       # --- Tier 1 -------------------------------------------------------------
       - name: Types on core (mypy)
-        # rex-allow: ADVISORY_EXPLICIT - findings and exit code are recorded
-        # in telemetry.
+        # rex-allow: ADVISORY_EXPLICIT - findings and exit code are recorded.
         continue-on-error: true
         run: |
           export TOOL_VERSION="$(mypy --version)"
@@ -170,8 +169,7 @@ jobs:
 
       - name: Focused scan — strict types on physics paths (burn-in / manual)
         if: env.PHASE != 'steady'
-        # rex-allow: ADVISORY_EXPLICIT - focused burn-in telemetry; scored
-        # separately as mypy-focus.
+        # rex-allow: ADVISORY_EXPLICIT - focused scan is separately scored.
         continue-on-error: true
         run: |
           export TOOL_VERSION="$(mypy --version) strict-focus"
@@ -182,8 +180,7 @@ jobs:
             --warn-redundant-casts
 
       - name: Install Opengrep
-        # rex-allow: ADVISORY_EXPLICIT - optional engine; summary reports the
-        # tool as absent if this fails.
+        # rex-allow: ADVISORY_EXPLICIT - optional engine; absence is reported.
         continue-on-error: true
         run: |
           install_url="https://raw.githubusercontent.com/opengrep/opengrep/"
@@ -196,16 +193,14 @@ jobs:
           "$OG" --version
 
       - name: Governance rules self-test (Opengrep)
-        # rex-allow: ADVISORY_EXPLICIT - self-test result is reported in the
-        # job log.
+        # rex-allow: ADVISORY_EXPLICIT - self-test result is reported in logs.
         continue-on-error: true
         run: |
           "$OPENGREP" scan --test "$PILOT_DIR/rules" 2>&1 \
             | tee "$REPORTS/opengrep-selftest.txt"
 
       - name: Governance rules scan (Opengrep)
-        # rex-allow: ADVISORY_EXPLICIT - report-only pilot; governance
-        # precision is measured first.
+        # rex-allow: ADVISORY_EXPLICIT - report-only; precision measured.
         continue-on-error: true
         run: |
           export TOOL_VERSION="opengrep $("$OPENGREP" --version)"
@@ -214,8 +209,7 @@ jobs:
 
       # --- Existing scanners (read-only) ------------------------------------
       - name: Fetch open code-scanning alerts (CodeQL / Semgrep / Bandit)
-        # rex-allow: ADVISORY_EXPLICIT - read-only enrichment; absent alerts
-        # do not hide pilot results.
+        # rex-allow: ADVISORY_EXPLICIT - read-only; absent alerts are safe.
         continue-on-error: true
         env:
           GH_TOKEN: ${{ github.token }}
@@ -236,8 +230,7 @@ jobs:
 
       - name: Burn-in trend (previous runs' telemetry)
         if: always() && env.PHASE != 'steady'
-        # rex-allow: ADVISORY_EXPLICIT - first runs have no history; the trend
-        # table says so.
+        # rex-allow: ADVISORY_EXPLICIT - trend reports missing history.
         continue-on-error: true
         env:
           GH_TOKEN: ${{ github.token }}
@@ -337,8 +330,7 @@ jobs:
           path: reports
 
       - name: Publish telemetry (trusted runs only)
-        # rex-allow: ADVISORY_EXPLICIT - publishing telemetry must never mask
-        # scan results.
+        # rex-allow: ADVISORY_EXPLICIT - publishing must not mask scan results.
         continue-on-error: true
         env:
           GH_TOKEN: ${{ github.token }}
