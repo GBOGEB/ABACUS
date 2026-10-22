@@ -214,9 +214,9 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
-          gh api --paginate \
-            "repos/${{ github.repository }}/code-scanning/alerts?"\
-            "state=open&per_page=100" \
+          endpoint="repos/${{ github.repository }}/code-scanning/alerts"
+          endpoint+="?state=open&per_page=100"
+          gh api --paginate "$endpoint" \
             | jq -s 'add' > "$REPORTS/code-scanning.json"
 
       # --- Measure ----------------------------------------------------------
