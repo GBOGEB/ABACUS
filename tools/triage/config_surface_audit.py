@@ -139,7 +139,7 @@ def discover(root: Path) -> list[str]:
         check=True,
         stdout=subprocess.PIPE,
     )
-    return sorted(x.decode("utf-8") for x in p.stdout.split(b"\\x00") if x)
+    return sorted(x.decode("utf-8") for x in p.stdout.split(bytes([0])) if x)
 
 
 def audit(root: Path, paths: list[str], limit: int = LIMIT) -> dict:
