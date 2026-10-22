@@ -1,5 +1,10 @@
 """G3A W16 source/CI preflight: deterministic sandbox and negative cases."""
+
+import contextlib
+import io
 import json
+import os
+import sys
 import tempfile
 import unittest
 import unittest.mock as mock
@@ -20,7 +25,8 @@ class PreflightContractTests(unittest.TestCase):
         (self.root / "src/a.py").write_text("print('safe')\n", encoding="utf-8")
         (self.root / ".github/workflows/demo.yml").write_text("name: demo\n")
         (self.root / "ci/governance/workflow_policy.json").write_text(
-            json.dumps({"rules": [{"pattern": "^demo[.]yml$"}]}), encoding="utf-8")
+            json.dumps({"rules": [{"pattern": "^demo[.]yml$"}]}), encoding="utf-8"
+        )
         self.a = "a" * 40
         self.b = "b" * 40
 
@@ -33,11 +39,14 @@ class PreflightContractTests(unittest.TestCase):
         def fake_git(root, *args):
             return head if args[0] == "rev-parse" else blob
 
-        with (mock.patch.object(pre, "SOURCE_BLOBS", {"src/a.py": self.b}),
-              mock.patch.object(pre, "EXPECTED_WORKFLOWS", 1),
-              mock.patch.object(pre, "_git", side_effect=fake_git),
-              mock.patch.object(pre.subprocess, "run",
-                                return_value=mock.Mock(returncode=audit_rc))):
+        with (
+            mock.patch.object(pre, "SOURCE_BLOBS", {"src/a.py": self.b}),
+            mock.patch.object(pre, "EXPECTED_WORKFLOWS", 1),
+            mock.patch.object(pre, "_git", side_effect=fake_git),
+            mock.patch.object(
+                pre.subprocess, "run", return_value=mock.Mock(returncode=audit_rc)
+            ),
+        ):
             return pre.scan(self.root, self.a)
 
     def test_good_exact_checkout_and_classification(self):
@@ -57,10 +66,16 @@ class PreflightContractTests(unittest.TestCase):
         self.assertIn("NOT_EXACT_HEAD", self.scan(head="c" * 40)["errors"])
 
     def test_new_unclassified_workflow_fails_closed(self):
-        (self.root / ".github/workflows/unclassified.yml").write_text("name: surprise\n")
+        (self.root / ".github/workflows/unclassified.yml").write_text(
+            "name: surprise\n"
+        )
         x = self.scan()
-        self.assertTrue(any(v.startswith("WORKFLOW_POLICY_MATCH_COUNT:unclassified.yml")
-                            for v in x["errors"]))
+        self.assertTrue(
+            any(
+                v.startswith("WORKFLOW_POLICY_MATCH_COUNT:unclassified.yml")
+                for v in x["errors"]
+            )
+        )
         self.assertIn("WORKFLOW_POPULATION_DRIFT", x["errors"])
 
     def test_generated_inventory_staleness_not_ignored(self):
@@ -71,6 +86,58 @@ class PreflightContractTests(unittest.TestCase):
         (self.root / "ci/governance/workflow_policy.json").write_text("{bad")
         x = self.scan()
         self.assertIn("WORKFLOW_POLICY_UNREADABLE", x["errors"])
+
+    def test_missing_checkout_and_invalid_head_fail_closed(self):
+        ceiling = {"GIT_CEILING_DIRECTORIES": str(self.root.parent)}
+        with (
+            mock.patch.dict(os.environ, ceiling),
+            mock.patch.object(pre, "SOURCE_BLOBS", {"src/a.py": self.b}),
+            mock.patch.object(pre, "EXPECTED_WORKFLOWS", 1),
+        ):
+            x = pre.scan(self.root, "not-a-sha")
+        self.assertIsNone(x["checkout_head"])
+        self.assertIsNone(x["source_blobs"]["src/a.py"]["actual"])
+        for error in (
+            "EXPECTED_HEAD_INVALID",
+            "CHECKOUT_NOT_AVAILABLE",
+            "NOT_EXACT_HEAD",
+            "SOURCE_BLOB_DRIFT:src/a.py",
+        ):
+            self.assertIn(error, x["errors"])
+
+    def run_main(self, status):
+        result = {"status": status, "errors": [] if status == "PASS" else ["X"]}
+        argv = [
+            "g3a_w16_preflight.py",
+            "--root",
+            str(self.root),
+            "--expected-head",
+            self.a,
+            "--out",
+            "reports/preflight.json",
+        ]
+        with (
+            mock.patch.object(sys, "argv", argv),
+            mock.patch.object(pre, "scan", return_value=result),
+            contextlib.redirect_stdout(io.StringIO()) as out,
+        ):
+            rc = pre.main()
+        written = json.loads(
+            (self.root / "reports/preflight.json").read_text(encoding="utf-8")
+        )
+        return rc, out.getvalue(), written
+
+    def test_cli_pass_writes_relative_receipt(self):
+        rc, text, written = self.run_main("PASS")
+        self.assertEqual(rc, 0)
+        self.assertIn("G3A_W16_PREFLIGHT=PASS", text)
+        self.assertEqual(written["status"], "PASS")
+
+    def test_cli_hold_exits_two(self):
+        rc, text, written = self.run_main("HOLD")
+        self.assertEqual(rc, 2)
+        self.assertIn("errors=X", text)
+        self.assertEqual(written["errors"], ["X"])
 
 
 if __name__ == "__main__":

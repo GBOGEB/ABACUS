@@ -1,5 +1,15 @@
 """G3A W16 five-KPI contract: positive and fail-closed branches."""
+
+import contextlib
+import io
+import json
+import sys
+import tempfile
 import unittest
+import unittest.mock as mock
+from pathlib import Path
+
+from MIP.statistics import g3a_w16_kpi as kpi
 from MIP.statistics.g3a_w16_kpi import EPOCH, FOUR_BRANCHES, METRIC_NAMES, evaluate
 
 SHA = "a" * 40
@@ -7,19 +17,26 @@ BLOB = "18bec722fef537aa74b85295954cf66a002695d0"
 
 
 def native():
-    vals = {"DMAIC_V3/debug_pipeline.py": 94,
-            "DMAIC_V3/phases/phase4_improve.py": 50,
-            "DMAIC_V3/phases/phase8_todo_management.py": 35,
-            "cicd_github_orchestrator.py": 23}
+    vals = {
+        "DMAIC_V3/debug_pipeline.py": 94,
+        "DMAIC_V3/phases/phase4_improve.py": 50,
+        "DMAIC_V3/phases/phase8_todo_management.py": 35,
+        "cicd_github_orchestrator.py": 23,
+    }
     return {
         "schema": "code-purple.g3a.w16.native.v1",
         "source_epoch": EPOCH,
-        "checkout_sha": SHA, "phase4_source_blob": BLOB,
-        "run_id": 38901984001, "run_attempt": 1, "tests": 130,
-        "files": {k: {"covered": vals[k], "eligible": FOUR_BRANCHES[k]}
-                  for k in FOUR_BRANCHES},
-        "covered": sum(vals.values()), "eligible": 444,
-        "merge_admission": "HOLD"
+        "checkout_sha": SHA,
+        "phase4_source_blob": BLOB,
+        "run_id": 38901984001,
+        "run_attempt": 1,
+        "tests": 130,
+        "files": {
+            k: {"covered": vals[k], "eligible": FOUR_BRANCHES[k]} for k in FOUR_BRANCHES
+        },
+        "covered": sum(vals.values()),
+        "eligible": 444,
+        "merge_admission": "HOLD",
     }
 
 
@@ -38,11 +55,15 @@ class W16DecisionMetricTests(unittest.TestCase):
         self.assertEqual(x["metrics"]["matched_coverage"]["k"], 202)
         self.assertEqual(x["metrics"]["matched_coverage"]["uncovered"], 242)
         self.assertIsNone(x["metrics"]["matched_coverage"]["cross_epoch_delta"])
-        self.assertEqual(x["metrics"]["proof_yield"]["single_exact_head_focused_proof"], 1.0)
+        self.assertEqual(
+            x["metrics"]["proof_yield"]["single_exact_head_focused_proof"], 1.0
+        )
 
     def test_timing_only_from_bounded_clock_measurement(self):
         x = evaluate(native(), start_s=10.5, end_s=15.1)
-        self.assertEqual(x["metrics"]["time_to_evidence"]["measured_test_execution_seconds"], 4.6)
+        self.assertEqual(
+            x["metrics"]["time_to_evidence"]["measured_test_execution_seconds"], 4.6
+        )
         self.assertIsNone(x["metrics"]["time_to_evidence"]["queue_p95_seconds"])
 
     def test_clock_reverse_fails_closed(self):
@@ -85,6 +106,70 @@ class W16DecisionMetricTests(unittest.TestCase):
         self.assertEqual(state["bt"], "NO_PAIRWISE_OUTCOMES")
         self.assertEqual(state["six_sigma"], "NOT_ASSESSED")
         self.assertEqual(x["merge_admission"], "HOLD")
+
+    def test_receipt_shape_guards(self):
+        for key, value, match in [
+            ("schema", "code-purple.g3a.n15.cross-python.v1", "schema"),
+            ("run_id", 0, "run"),
+            ("files", {}, "population"),
+        ]:
+            x = native()
+            x[key] = value
+            with self.subTest(key=key), self.assertRaisesRegex(ValueError, match):
+                evaluate(x)
+
+    def test_pulse_count_must_be_positive_int(self):
+        with self.assertRaisesRegex(ValueError, "pulse"):
+            evaluate(None, comparable_independent_pulses=0)
+
+
+class W16KpiCliTests(unittest.TestCase):
+    def setUp(self):
+        self.temp = tempfile.TemporaryDirectory()
+        self.addCleanup(self.temp.cleanup)
+        self.root = Path(self.temp.name)
+
+    def run_main(self, *args):
+        argv = ["g3a_w16_kpi.py", *map(str, args)]
+        with (
+            mock.patch.object(sys, "argv", argv),
+            contextlib.redirect_stdout(io.StringIO()) as out,
+        ):
+            rc = kpi.main()
+        return rc, out.getvalue()
+
+    def test_cli_writes_pass_receipt_with_clock(self):
+        receipt = self.root / "n16_receipt.json"
+        receipt.write_text(json.dumps(native()), encoding="utf-8")
+        (self.root / "start.txt").write_text("10.5\n")
+        (self.root / "end.txt").write_text("15.1\n")
+        out = self.root / "out/w16_kpis.json"
+        rc, text = self.run_main(
+            "--receipt",
+            receipt,
+            "--start-s",
+            self.root / "start.txt",
+            "--end-s",
+            self.root / "end.txt",
+            "--out",
+            out,
+        )
+        self.assertEqual(rc, 0)
+        self.assertIn("G3A_W16_KPIS=NATIVE_FOCUSED_PROOF_PASS", text)
+        data = json.loads(out.read_text(encoding="utf-8"))
+        self.assertEqual(
+            data["metrics"]["time_to_evidence"]["measured_test_execution_seconds"], 4.6
+        )
+
+    def test_cli_missing_receipt_is_not_measured_and_red(self):
+        out = self.root / "w16_kpis.json"
+        rc, text = self.run_main("--receipt", self.root / "absent.json", "--out", out)
+        self.assertEqual(rc, 2)
+        self.assertIn("NATIVE_NOT_MEASURED", text)
+        data = json.loads(out.read_text(encoding="utf-8"))
+        self.assertIsNone(
+            data["metrics"]["time_to_evidence"]["measured_test_execution_seconds"]
+        )
 
 
 if __name__ == "__main__":
