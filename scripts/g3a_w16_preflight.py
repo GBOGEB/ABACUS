@@ -47,8 +47,11 @@ def scan(root: Path, expected_head: str) -> dict:
             actual = _git(root, "hash-object", path) if source.is_file() else None
         except (subprocess.CalledProcessError, OSError):
             actual = None
-        blobs[path] = {"expected": expected, "actual": actual,
-                       "matches": actual == expected}
+        blobs[path] = {
+            "expected": expected,
+            "actual": actual,
+            "matches": actual == expected,
+        }
         if actual != expected:
             errors.append("SOURCE_BLOB_DRIFT:" + path)
     workflows = sorted((root / ".github/workflows").glob("*.y*ml"))
@@ -63,28 +66,43 @@ def scan(root: Path, expected_head: str) -> dict:
     for workflow in workflows:
         count = sum(bool(re.search(rule["pattern"], workflow.name)) for rule in rules)
         if count != 1:
-            errors.append("WORKFLOW_POLICY_MATCH_COUNT:" + workflow.name + ":" + str(count))
+            errors.append(
+                "WORKFLOW_POLICY_MATCH_COUNT:" + workflow.name + ":" + str(count)
+            )
         else:
             classified += 1
     if len(workflows) != EXPECTED_WORKFLOWS:
         errors.append("WORKFLOW_POPULATION_DRIFT")
     if not errors:
         audit = subprocess.run(
-            [sys.executable, str(root / "ci/governance/audit_ci_workflows.py"),
-             "--check", "--markdown-output",
-             str(root / "docs/ci/WORKFLOW_RATIONALIZATION.md")],
-            cwd=str(root), capture_output=True, text=True, check=False,
+            [
+                sys.executable,
+                str(root / "ci/governance/audit_ci_workflows.py"),
+                "--check",
+                "--markdown-output",
+                str(root / "docs/ci/WORKFLOW_RATIONALIZATION.md"),
+            ],
+            cwd=str(root),
+            capture_output=True,
+            text=True,
+            check=False,
         )
         if audit.returncode:
             errors.append("GENERATED_WORKFLOW_INVENTORY_STALE_OR_INVALID")
     return {
         "schema": "code-purple.g3a.w16.preflight.v1",
         "status": "PASS" if not errors else "HOLD",
-        "source_epoch": EPOCH, "expected_head": expected_head,
-        "checkout_head": head, "source_blobs": blobs,
-        "workflows": len(workflows), "classified": classified,
-        "errors": errors, "native_coverage": None, "queue_seconds": None,
-        "formal_root_closure": 0, "merge_admission": "HOLD",
+        "source_epoch": EPOCH,
+        "expected_head": expected_head,
+        "checkout_head": head,
+        "source_blobs": blobs,
+        "workflows": len(workflows),
+        "classified": classified,
+        "errors": errors,
+        "native_coverage": None,
+        "queue_seconds": None,
+        "formal_root_closure": 0,
+        "merge_admission": "HOLD",
     }
 
 
@@ -99,11 +117,17 @@ def main() -> int:
     if args.out:
         dest = args.out if args.out.is_absolute() else root / args.out
         dest.parent.mkdir(parents=True, exist_ok=True)
-        dest.write_text(json.dumps(result, indent=2, sort_keys=True) + "\n",
-                        encoding="utf-8")
-    print("G3A_W16_PREFLIGHT=" + result["status"] +
-          " source_epoch=" + EPOCH +
-          " errors=" + ",".join(result["errors"]))
+        dest.write_text(
+            json.dumps(result, indent=2, sort_keys=True) + "\n", encoding="utf-8"
+        )
+    print(
+        "G3A_W16_PREFLIGHT="
+        + result["status"]
+        + " source_epoch="
+        + EPOCH
+        + " errors="
+        + ",".join(result["errors"])
+    )
     return 0 if result["status"] == "PASS" else 2
 
 
