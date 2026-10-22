@@ -20,8 +20,9 @@ import hashlib
 import json
 import os
 import re
-import subprocess
+import subprocess  # nosec B404
 import time
+from datetime import date
 from pathlib import Path
 
 SCHEMA = "abacus.recursive-build.v2"
@@ -44,6 +45,28 @@ LINEAGE_KINDS = ("GENESIS", "CHILD")
 REQUIRED_PARENT_FIELDS = {
     "counts": ("artefacts", "missing"),
     "integrity": ("hash_matched", "hash_mismatched", "unhashed"),
+}
+DELTA_FIELDS = tuple(
+    field for fields in REQUIRED_PARENT_FIELDS.values() for field in fields
+)
+RECEIPT_LIST_FIELDS = {
+    "missing": "missing",
+    "hash_mismatched": "mismatched",
+    "unhashed": "unhashed",
+}
+REQUIRED_PARENT_RECEIPT_FIELDS = {
+    "schema",
+    "date",
+    "iteration",
+    "lineage",
+    "source_sha",
+    "status",
+    "counts",
+    "integrity",
+    "delta",
+    "missing",
+    "mismatched",
+    "unhashed",
 }
 
 
@@ -100,6 +123,9 @@ def parent_problem(parent):
     """Return why a parent receipt cannot extend the lineage, or None."""
     if not isinstance(parent, dict):
         return "not an object"
+    missing_fields = REQUIRED_PARENT_RECEIPT_FIELDS - parent.keys()
+    if missing_fields:
+        return "missing fields: " + ", ".join(sorted(missing_fields))
     if parent.get("schema") != SCHEMA:
         return f"schema is not {SCHEMA}"
     iteration = parent.get("iteration")
@@ -110,6 +136,21 @@ def parent_problem(parent):
     lineage = parent.get("lineage")
     if not isinstance(lineage, dict) or lineage.get("kind") not in LINEAGE_KINDS:
         return "lineage kind must be GENESIS or CHILD"
+    source_sha = parent["source_sha"]
+    if source_sha is not None and (
+        not isinstance(source_sha, str)
+        or not re.fullmatch(r"[0-9a-f]{40}", source_sha)
+    ):
+        return "source_sha must be a 40-character SHA or null"
+    receipt_date = parent["date"]
+    if not isinstance(receipt_date, str) or not re.fullmatch(
+        r"\d{4}-\d{2}-\d{2}", receipt_date
+    ):
+        return "date must be an ISO calendar date"
+    try:
+        date.fromisoformat(receipt_date)
+    except ValueError:
+        return "date must be an ISO calendar date"
     for section, keys in REQUIRED_PARENT_FIELDS.items():
         values = parent.get(section)
         if not isinstance(values, dict):
@@ -117,6 +158,58 @@ def parent_problem(parent):
         for key in keys:
             if not _is_count(values.get(key)):
                 return f"{section}.{key} must be a non-negative int"
+    counts = parent["counts"]
+    integrity = parent["integrity"]
+    for field, list_field in RECEIPT_LIST_FIELDS.items():
+        values = parent.get(list_field)
+        if not isinstance(values, list) or not all(
+            isinstance(value, str) for value in values
+        ):
+            return f"{list_field} must be a list of strings"
+        if len(values) != (
+            counts["missing"] if field == "missing" else integrity[field]
+        ):
+            return f"{list_field} length does not match its count"
+    if counts["artefacts"] != (
+        counts["missing"]
+        + integrity["hash_matched"]
+        + integrity["hash_mismatched"]
+        + integrity["unhashed"]
+    ):
+        return "counts.artefacts does not match classified artefacts"
+
+    expected_status = (
+        "VACUOUS"
+        if counts["artefacts"] == 0
+        else "RED"
+        if counts["missing"] or integrity["hash_mismatched"]
+        else "UNVERIFIED"
+        if integrity["unhashed"]
+        else "PASS"
+    )
+    if parent["status"] != expected_status:
+        return "status does not match receipt counts"
+
+    if iteration == 1:
+        if (
+            lineage["kind"] != "GENESIS"
+            or lineage.get("parent_sha256") is not None
+            or lineage.get("parent_iteration") is not None
+            or parent.get("delta") is not None
+        ):
+            return "iteration 1 must be a GENESIS receipt"
+    else:
+        if lineage["kind"] != "CHILD":
+            return "iterations after 1 must be CHILD receipts"
+        if not re.fullmatch(r"[0-9a-f]{64}", str(lineage.get("parent_sha256", ""))):
+            return "lineage.parent_sha256 must be a 64-character SHA"
+        if lineage.get("parent_iteration") != iteration - 1:
+            return "lineage.parent_iteration must be iteration - 1"
+        delta = parent.get("delta")
+        if not isinstance(delta, dict) or set(delta) != set(DELTA_FIELDS):
+            return "delta must contain every measured count"
+        if not all(type(delta[field]) is int for field in DELTA_FIELDS):
+            return "delta values must be ints"
     return None
 
 
@@ -126,7 +219,7 @@ def source_head():
     if re.fullmatch(r"[0-9a-f]{40}", env_sha):
         return env_sha
     try:
-        head = subprocess.run(
+        head = subprocess.run(  # nosec B603, B607
             ["git", "rev-parse", "HEAD"],
             capture_output=True,
             text=True,

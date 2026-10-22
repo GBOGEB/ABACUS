@@ -153,11 +153,26 @@ def mutate_valid_parent(monkeypatch, tmp_path, spec: str) -> str:
         "VALID_WITH:integrity=[1]",
         "VALID_WITH:integrity.unhashed=-1",
         "VALID_WITH:counts.missing=true",
+        "VALID_WITH:counts.artefacts=2",
+        "VALID_WITH:integrity.hash_matched=0",
+        "VALID_WITH:missing=[\"gone.txt\"]",
+        "VALID_WITH:status=RED",
         "VALID_WITH:status=PASS-forged",
         "VALID_WITH:schema=abacus.recursive-build.v1",
+        "VALID_WITH:date=not-a-date",
+        "VALID_WITH:date=20261022",
+        "VALID_WITH:source_sha=short",
+        "VALID_WITH:lineage.parent_iteration=1",
+        "VALID_WITH:delta={}",
         "WITHOUT:schema",
+        "WITHOUT:date",
+        "WITHOUT:source_sha",
+        "WITHOUT:delta",
         "WITHOUT:integrity",
         "WITHOUT:lineage",
+        "WITHOUT:missing",
+        "WITHOUT:mismatched",
+        "WITHOUT:unhashed",
     ],
 )
 def test_invalid_parent_fails_closed(monkeypatch, tmp_path, parent):
@@ -177,6 +192,42 @@ def test_invalid_parent_fails_closed(monkeypatch, tmp_path, parent):
     )
     assert code == 3  # SystemExit with a message
     assert not (tmp_path / "r.json").exists()
+
+
+@pytest.mark.parametrize(
+    ("field", "value"),
+    [
+        ("delta", {}),
+        ("lineage.parent_sha256", "not-a-sha"),
+        ("lineage.parent_iteration", 2),
+        ("lineage.kind", "GENESIS"),
+    ],
+)
+def test_invalid_child_parent_fails_closed(monkeypatch, tmp_path, field, value):
+    write_index(tmp_path, hashed_artifact(tmp_path))
+    build(monkeypatch, tmp_path, "r1.json")
+    build(monkeypatch, tmp_path, "r2.json", "r1.json")
+    parent = json.loads((tmp_path / "r2.json").read_text(encoding="utf-8"))
+    *parents, leaf = field.split(".")
+    target = parent
+    for part in parents:
+        target = target[part]
+    target[leaf] = value
+    (tmp_path / "bad.json").write_text(json.dumps(parent), encoding="utf-8")
+
+    code = run(
+        monkeypatch,
+        tmp_path,
+        "--index",
+        "index.json",
+        "--out",
+        "r3.json",
+        "--previous",
+        "bad.json",
+    )
+
+    assert code == 3
+    assert not (tmp_path / "r3.json").exists()
 
 
 @pytest.mark.parametrize("smoke", [False, True])
