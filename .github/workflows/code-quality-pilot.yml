@@ -1,7 +1,7 @@
 # Code Quality Pilot — REPORT-ONLY (open source).
 #
 # Adds only what existing ABACUS scanners do not cover:
-#   gitleaks · pip-audit · mypy (physics core) · Opengrep governance rules
+#   gitleaks (full history) · pip-audit · mypy core · Opengrep rules
 # plus a measurement layer that also triages the open alerts already produced by
 # CodeQL / Semgrep / Bandit (code-scanning API).
 #
