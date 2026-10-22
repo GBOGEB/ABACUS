@@ -43,13 +43,18 @@ Never equate zero Git-tracked ZIPs with zero external ZIPs.
 The full tree contains nested manifest candidates:
 
 - `MINERVA_PID/pyproject.toml`: dedicated Python package,
+
   its own `.coveragerc`, and direct-run standalone tests.
   Explicit `MINERVA_PID/AGENTS.md` says its tests are not pytest.
+
 - `qps_slide_reviewer/package.json`: independent Next.js app.
 - `qps_contract_canonicalization/package.json`: Node project.
 - `deepagent-handover-package/implementation/deepagent/package.json`:
+
   TypeScript package, currently has a placeholder test command.
+
 - `tools/everred_v3/pyproject.toml`: scoped isort configuration;
+
   a local config island, **not by itself** a separate package.
 
 No Gitlink was present in the exact tree, so none is reported as
@@ -77,6 +82,7 @@ as published package; other root scripts are not thereby
 automatically published.
 
 Per-project acceptance is required:
+
 - tracked source paths (complete tree population);
 - discovered runtime entrypoints/imports (static + dynamic);
 - tests collected and tests actually executed (distinct);
