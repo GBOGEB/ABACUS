@@ -29,10 +29,16 @@ Commit the source under test before generating a source-bound forecast.
 Do not label a dirty worktree's uncommitted bytes with HEAD.
 
 ```powershell
+$selection = @(
+  "tests/test_coverage_dab_census.py",
+  "tests/test_floating_evidence_join.py",
+  "tests/test_mip_pulse_rollup.py",
+  "tests/test_floating_testflight.py"
+) -join " "
 $head = (git rev-parse HEAD).Trim()
 New-Item -ItemType Directory -Force .testpilot/floating | Out-Null
 python tools/triage/floating_testflight.py forecast `
-  --head $head --pulse 1 `
+  --head $head --pulse 1 --selection $selection `
   --out .testpilot/floating/forecast.json
 ```
 
@@ -67,6 +73,7 @@ Regardless of the test result, record the observed state:
 ```powershell
 python tools/triage/floating_testflight.py observe `
   --forecast .testpilot/floating/forecast.json `
+  --selection $selection `
   --junit .testpilot/floating/junit.xml `
   --coverage .testpilot/floating/coverage.json `
   --out .testpilot/floating/observation.json

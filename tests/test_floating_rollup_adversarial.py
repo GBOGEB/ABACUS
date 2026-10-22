@@ -117,6 +117,34 @@ class AdditionalPulseGuards(unittest.TestCase):
         self.assertEqual(result["control"], "HOLD_UNVERIFIED_NATIVE_IDENTITIES")
         self.assertFalse(result["phase_two_authorized"])
 
+    def test_increasing_open_root_reds_restart_before_quiet_watch(self):
+        states = [receipt(i, covered=100, roots=i) for i in range(4)]
+        for n, item in enumerate(states):
+            item["coverage"]["branches"]["covered"] = 20
+            item["native"] = {"run_id": 300 + n, "attempt": 1}
+        self.assertEqual(model.rollup(states)["control"],
+                         "RESTART_ROOT_RED_INCREASE")
+
+    def test_all_four_receipts_require_healthy_terminal_test_outcomes(self):
+        states = [receipt(i, covered=100) for i in range(4)]
+        for n, item in enumerate(states):
+            item["coverage"]["branches"]["covered"] = 20
+            item["native"] = {"run_id": 300 + n, "attempt": 1}
+        states[0]["tests"]["skipped"] = 1
+        states[0]["tests"]["passed"] = 9
+        self.assertEqual(model.rollup(states)["control"],
+                         "RESTART_SKIPPED_TESTS")
+        states[0]["tests"] = {
+            "executed": 10, "passed": 10, "failed": 0,
+            "errors": 0, "skipped": 0,
+        }
+        states[0]["terminal"] = False
+        self.assertEqual(model.rollup(states)["control"],
+                         "HOLD_UNVERIFIED_TEST_OUTCOMES")
+        with self.assertRaisesRegex(ValueError, "test outcomes missing"):
+            measured({key: value for key, value in receipt(0).items()
+                      if key != "tests"})
+
     def test_native_identities_allow_candidate_not_authority(self):
         states = [receipt(i, covered=100) for i in range(4)]
         for n, item in enumerate(states):

@@ -31,6 +31,11 @@ DEFAULT_SELECTION = (
     "tests/test_floating_accelerator_receiver.py "
     "tests/test_floating_rollup_adversarial.py"
 )
+GATE_NAMES = ("syntax", "hook", "pytest", "source_scope")
+NATIVE_CONCLUSIONS = {
+    "action_required", "cancelled", "failure", "neutral", "pending",
+    "skipped", "startup_failure", "success", "timed_out", "unverified",
+}
 
 
 def require(condition: bool, message: str) -> None:
@@ -238,11 +243,21 @@ def positive_env_int(name: str) -> int | None:
 def observe(frozen: dict, junit: dict | None, coverage: dict | None,
             *, head: str, selection: str, now: str | None = None,
             run_id: int | None = None, run_attempt: int | None = None,
-            job: str | None = None) -> dict:
+            job: str | None = None, gate_outcomes: dict | None = None,
+            native_conclusion: str = "unverified") -> dict:
     validate_forecast(frozen)
     require(frozen["head_sha"] == head, "forecast source SHA mismatch")
     require(frozen["selection_sha256"] == selection_hash(selection),
             "test selection changed after forecast")
+    require(gate_outcomes is None or (
+            isinstance(gate_outcomes, dict)
+            and set(gate_outcomes).issubset(GATE_NAMES)
+            and all(value in ("PASS", "FAIL", "UNKNOWN")
+                    for value in gate_outcomes.values())),
+            "invalid gate outcomes")
+    require(isinstance(native_conclusion, str)
+            and native_conclusion in NATIVE_CONCLUSIONS,
+            "invalid native conclusion")
     observed_at = now or stamp()
     require(parse_stamp(frozen["issued_at"]) < parse_stamp(observed_at),
             "observation must follow frozen forecast")
@@ -288,6 +303,8 @@ def observe(frozen: dict, junit: dict | None, coverage: dict | None,
             else "WITHHELD_SCOPE_OR_PRIOR_MISMATCH"
         ),
         "tests": counts, "test_state": state, "terminal": terminal,
+        "gate_outcomes": gate_outcomes or {},
+        "native_conclusion": native_conclusion,
         "coverage": coverage,
         "first_red_fingerprints": (junit or {}).get("failure_fingerprints"),
         "first_red_occurrences": (junit or {}).get("failure_occurrences"),
@@ -334,6 +351,27 @@ def compare(a: dict, b: dict) -> dict:
             "reasons": reasons or None}
 
 
+def test_outcome(observation: dict) -> str:
+    counts = observation.get("tests")
+    if not isinstance(counts, dict) or observation.get("terminal") is not True:
+        return "UNKNOWN"
+    if any(type(counts.get(name)) is not int or counts[name] < 0
+           for name in ("executed", "passed", "failed", "errors", "skipped")):
+        return "UNKNOWN"
+    if counts["executed"] <= 0 or counts["executed"] != sum(
+        counts[name] for name in ("passed", "failed", "errors", "skipped")
+    ):
+        return "UNKNOWN"
+    if counts["failed"] or counts["errors"] or observation.get("test_state") == "RED":
+        return "FAILED"
+    if counts["skipped"] or observation.get("test_state") == "GREEN_WITH_SKIPS":
+        return "SKIPPED"
+    return "GREEN" if (
+        counts["passed"] == counts["executed"]
+        and observation.get("test_state") == "GREEN"
+    ) else "UNKNOWN"
+
+
 def control(observations: list[dict], target: float = 1.0) -> dict:
     require(0 < target <= 1, "target must be a fraction")
     require(len(observations) > 0, "at least one observation required")
@@ -354,13 +392,43 @@ def control(observations: list[dict], target: float = 1.0) -> dict:
     stable_selection = len({
         item.get("selection_sha256") for item in observations[-4:]
     }) == 1
-    if not latest["terminal"] or latest["test_state"] == "RED":
+    window = observations[-4:]
+    gates_failed = any(
+        isinstance(row.get("gate_outcomes"), dict)
+        and any(value == "FAIL" for value in row["gate_outcomes"].values())
+        for row in window
+    )
+    test_outcomes = [test_outcome(row) for row in window]
+    if gates_failed:
+        state = "RESTART_FAILED_GATE"
+    elif "FAILED" in test_outcomes:
+        state = "RESTART_FIRST_RED"
+    elif "SKIPPED" in test_outcomes:
+        state = "RESTART_UNHEALTHY_TESTS"
+    elif any(result == "UNKNOWN" for result in test_outcomes):
+        state = "HOLD_UNVERIFIED_TEST_OUTCOMES"
+    elif any(
+        not isinstance(row.get("gate_outcomes"), dict)
+        or any(row["gate_outcomes"].get(name) != "PASS"
+               for name in GATE_NAMES)
+        for row in window
+    ):
+        state = "HOLD_UNVERIFIED_GATE_OUTCOMES"
+    elif any(row.get("native_conclusion") in
+             ("failure", "cancelled", "timed_out", "startup_failure")
+             for row in window):
+        state = "RESTART_FAILED_NATIVE_ATTEMPT"
+    elif any(row.get("native_conclusion") != "success" for row in window):
+        state = "HOLD_UNVERIFIED_NATIVE_CONCLUSION"
+    elif not latest["terminal"] or latest["test_state"] == "RED":
         state = "RESTART_FIRST_RED"
     elif transitions and not transitions[-1]["population_comparable"]:
         state = "REBASELINE_SCOPE_DRIFT"
-    elif transitions and any(
-            x["delta_pp"] is not None and x["delta_pp"] < 0
-            for x in transitions[-1]["metrics"].values()):
+    elif any(
+            transition["population_comparable"]
+            and any(metric["delta_pp"] is not None and metric["delta_pp"] < 0
+                    for metric in transition["metrics"].values())
+            for transition in transitions[-3:]):
         state = "RESTART_COVERAGE_REGRESSION"
     elif not confirmed or len(transitions) < 3 or not all(
             t["population_comparable"] for t in transitions[-3:]):
@@ -374,9 +442,13 @@ def control(observations: list[dict], target: float = 1.0) -> dict:
                         and fraction(latest_cov[part]["covered"],
                                      latest_cov[part]["eligible"]) >= target
                         for part in ("statements", "branches"))
-        healthy = all(r["terminal"] and r["test_state"] == "GREEN"
-                      for r in observations[-4:])
-        flat = all(all(abs(t["metrics"][part]["delta_pp"]) <= 0.05
+        healthy = all(test_outcome(r) == "GREEN"
+                      and r.get("native_conclusion") == "success"
+                      and isinstance(r.get("gate_outcomes"), dict)
+                      and all(r["gate_outcomes"].get(name) == "PASS"
+                              for name in GATE_NAMES)
+                      for r in window)
+        flat = all(all(0 <= t["metrics"][part]["delta_pp"] <= 0.05
                        for part in ("statements", "branches"))
                    for t in transitions[-3:])
         state = ("QUIET_WATCH_CANDIDATE" if saturated and healthy and flat
@@ -460,6 +532,8 @@ def main(argv: list[str] | None = None) -> int:
     o.add_argument("--forecast", type=Path, required=True)
     o.add_argument("--junit", type=Path, required=True)
     o.add_argument("--coverage", type=Path, required=True)
+    o.add_argument("--gate-outcomes", type=Path)
+    o.add_argument("--native-conclusion", default="unverified")
     o.add_argument("--selection", default=DEFAULT_SELECTION)
     o.add_argument("--root", type=Path, default=Path.cwd())
     o.add_argument("--out", type=Path, required=True)
@@ -486,7 +560,10 @@ def main(argv: list[str] | None = None) -> int:
                         head=frozen["head_sha"], selection=a.selection,
                         run_id=positive_env_int("GITHUB_RUN_ID"),
                         run_attempt=positive_env_int("GITHUB_RUN_ATTEMPT"),
-                        job=os.environ.get("GITHUB_JOB"))
+                        job=os.environ.get("GITHUB_JOB"),
+                        gate_outcomes=read(a.gate_outcomes)
+                        if a.gate_outcomes else None,
+                        native_conclusion=a.native_conclusion)
         write_new(a.out, value)
     elif a.mode == "control":
         write_new(a.out, control([read(path) for path in a.observations],

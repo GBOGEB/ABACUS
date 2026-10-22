@@ -80,23 +80,34 @@ jobs:
           # Missing history is recorded as UNKNOWN, never invented as zero.
           if gh run list --repo "$GITHUB_REPOSITORY" \
             --workflow floating-reconnection-testflight.yml --limit 30 \
-            --json databaseId,headSha,status > test_reports/floating/history/runs.json; then
+             --json databaseId,headSha,status,number > test_reports/floating/history/runs.json; then
             python - <<'PY'
           import json
           import os
+          import subprocess
           from pathlib import Path
           rows = json.loads(Path("test_reports/floating/history/runs.json").read_text())
+          current = int(os.environ["GITHUB_RUN_NUMBER"])
           # Whole-repo heads may differ while measured source scope is stable.
           # Authenticate each historical run->head mapping before comparison.
-          selected = [{"id": str(r["databaseId"]), "head": r.get("headSha")}
-                      for r in rows if r.get("status") == "completed"
-                      and str(r.get("databaseId")) != os.environ["GITHUB_RUN_ID"]
-                      and isinstance(r.get("headSha"), str)]
+          selected = [
+               {"id": str(row["databaseId"]), "head": row.get("headSha"),
+                "pulse": row.get("number")}
+               for row in rows
+               if row.get("status") == "completed"
+               and type(row.get("number")) is int
+               and row["number"] < current
+               and isinstance(row.get("databaseId"), int)
+               and isinstance(row.get("headSha"), str)
+          ]
+          selected.sort(key=lambda row: row["pulse"], reverse=True)
           source = Path("test_reports/floating/history")
-          source.joinpath("source-heads.json").write_text(json.dumps(
-              {r["id"]: r["head"] for r in selected[:8]}, sort_keys=True))
+          selected = selected[:8]
+          source.joinpath("source-runs.json").write_text(json.dumps(
+               {r["id"]: {"head": r["head"], "pulse": r["pulse"]}
+                for r in selected}, sort_keys=True))
           source.joinpath("ids.txt").write_text(
-              "\n".join(r["id"] for r in selected[:8]) + "\n")
+               "\n".join(r["id"] for r in selected) + "\n")
           PY
             while IFS= read -r prior_run; do
               test -n "$prior_run" || continue
@@ -112,32 +123,58 @@ jobs:
           fi
           python - <<'PY'
           import json
-          import os
+          import subprocess
           from pathlib import Path
           from tools.triage.floating_testflight import (
               OBS_SCHEMA, DEFAULT_SELECTION, selection_hash
           )
           root = Path("test_reports/floating/history")
-          sources = json.loads((root / "source-heads.json").read_text()) if (
-              root / "source-heads.json").is_file() else {}
-          valid = []
+          sources = json.loads((root / "source-runs.json").read_text()) if (
+                  root / "source-runs.json").is_file() else {}
+          valid = {}
+          represented = set()
           for file in root.glob("*/**/observation.json"):
               try:
                   run_id = file.relative_to(root).parts[0]
                   item = json.loads(file.read_text())
+                  source = sources.get(run_id, {})
+                  attempt = item.get("run_attempt")
                   if (item.get("schema") == OBS_SCHEMA
-                      and item.get("head_sha") == sources.get(run_id)
+                      and item.get("head_sha") == source.get("head")
                       and item.get("selection_sha256") ==
                           selection_hash(DEFAULT_SELECTION)
                       and item.get("run_id") == int(run_id)
-                      and item.get("run_attempt") is not None):
-                      valid.append((item["pulse"], item))
+                      and type(attempt) is int and attempt > 0
+                      and type(item.get("pulse")) is int
+                      and item["pulse"] == source.get("pulse")):
+                    try:
+                      result = subprocess.run(
+                          ["gh", "run", "view", run_id, "--attempt", str(attempt),
+                           "--json", "conclusion", "--jq", ".conclusion"],
+                          check=True, capture_output=True, text=True)
+                      conclusion = result.stdout.strip()
+                      item["native_conclusion"] = (
+                          conclusion if conclusion in {
+                              "success", "failure", "cancelled", "timed_out",
+                              "action_required", "neutral", "skipped",
+                              "startup_failure",
+                          } else "unverified")
+                    except (OSError, subprocess.CalledProcessError):
+                      item["native_conclusion"] = "unverified"
+                    represented.add(run_id)
+                    previous = valid.get(item["pulse"])
+                    if previous is None or attempt > previous["run_attempt"]:
+                      valid[item["pulse"]] = item
               except (ValueError, TypeError, IndexError, KeyError):
                   pass
+          missing = sorted(set(sources) - represented)
+          if missing:
+              with (root / "unavailable.txt").open("a", encoding="utf-8") as handle:
+                  handle.write("\n".join(missing) + "\n")
           if valid:
-              valid.sort(key=lambda x: x[0])
-              (root / "prior.json").write_text(json.dumps(valid[-1][1]))
-              for i, item in valid[-3:]:
+              ordered = sorted(valid.items())
+              (root / "prior.json").write_text(json.dumps(ordered[-1][1]))
+              for i, item in ordered[-3:]:
                   (root / f"pulse-{i:08d}.json").write_text(json.dumps(item))
           PY
 
@@ -254,13 +291,38 @@ jobs:
       - name: Record exact-source observation and review package
         if: always()
         shell: bash
+        env:
+          SYNTAX_EXIT: ${{ steps.staged.outputs.syntax_exit }}
+          HOOK_EXIT: ${{ steps.staged.outputs.hook_exit }}
+          TEST_EXIT: ${{ steps.behavioral.outputs.test_exit }}
+          SOURCE_EXIT: ${{ steps.source_scope.outputs.source_exit }}
         run: |
           set -euo pipefail
           if test -f test_reports/floating/forecast.json; then
+            python - <<'PY'
+          import json
+          import os
+          from pathlib import Path
+          names = {
+              "syntax": "SYNTAX_EXIT",
+              "hook": "HOOK_EXIT",
+              "pytest": "TEST_EXIT",
+              "source_scope": "SOURCE_EXIT",
+          }
+          gates = {}
+          for name, variable in names.items():
+              raw = os.environ.get(variable, "")
+              gates[name] = "PASS" if raw == "0" else (
+                  "FAIL" if raw.isdecimal() else "UNKNOWN")
+          Path("test_reports/floating/gates.json").write_text(
+              json.dumps(gates, sort_keys=True) + "\n")
+          PY
             python tools/triage/floating_testflight.py observe \
               --forecast test_reports/floating/forecast.json \
               --junit test_reports/floating/junit.xml \
               --coverage test_reports/floating/coverage.json \
+              --gate-outcomes test_reports/floating/gates.json \
+              --native-conclusion pending \
               --out test_reports/floating/observation.json
             python - <<'PY'
           import json
@@ -282,6 +344,16 @@ jobs:
                          "reason": type(exc).__name__,
                          "phase_two_authorized": False,
                          "merge_admission": "HOLD"}
+          unavailable = root / "history" / "unavailable.txt"
+          if unavailable.is_file() and unavailable.read_text().strip():
+              verdict = {
+                  **verdict,
+                  "previous_state": verdict.get("state"),
+                  "state": "HOLD_UNVERIFIED_HISTORY",
+                  "reason": "one or more prior native receipts were unavailable",
+                  "phase_two_authorized": False,
+                  "merge_admission": "HOLD",
+              }
           (root / "control.json").write_text(
               json.dumps(verdict, sort_keys=True, indent=2) + "\n")
           PY
@@ -306,6 +378,7 @@ jobs:
             test_reports/floating/coverage.json
             test_reports/floating/source-scope.json
             test_reports/floating/junit.xml
+            test_reports/floating/gates.json
             test_reports/floating/toolchain.txt
             test_reports/floating/history/unavailable.txt
           if-no-files-found: warn

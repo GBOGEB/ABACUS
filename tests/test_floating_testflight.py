@@ -28,6 +28,11 @@ def observed(pulse=1, *, covered=10, branches=2, state="GREEN", run=100):
         "tests": {"executed": 3, "passed": 3, "failed": 0,
                   "errors": 0, "skipped": 0},
         "terminal": True, "test_state": state,
+        "gate_outcomes": {
+            "syntax": "PASS", "hook": "PASS", "pytest": "PASS",
+            "source_scope": "PASS",
+        },
+        "native_conclusion": "success",
         "coverage": {
             "scope_sha256": "b" * 64, "config_sha256": "c" * 64,
             "statements": {"covered": covered, "eligible": 10},
@@ -104,8 +109,15 @@ class LocalTestflightTests(unittest.TestCase):
                "branches": {"covered": 1, "eligible": 2},
                "scope_sha256": "b" * 64, "config_sha256": "c" * 64}
         r = flight.observe(f, junit, cov, head=SHA, selection=SEL, now=T2,
-                           run_id=42, run_attempt=1)
+                           run_id=42, run_attempt=1,
+                           gate_outcomes={
+                               "syntax": "PASS", "hook": "PASS",
+                               "pytest": "FAIL", "source_scope": "PASS",
+                           },
+                           native_conclusion="pending")
         self.assertEqual(r["test_state"], "RED")
+        self.assertEqual(r["gate_outcomes"]["pytest"], "FAIL")
+        self.assertEqual(r["native_conclusion"], "pending")
         self.assertEqual(r["forecast_errors_signed"]["test_pass_fraction"], -0.5)
         self.assertEqual(r["forecast_errors_signed"]["branch_fraction"], -0.5)
         self.assertEqual(r["first_red_occurrences"], 1)
@@ -187,6 +199,44 @@ class LocalTestflightTests(unittest.TestCase):
         history[-1]["run_id"] = history[-2]["run_id"]
         with self.assertRaisesRegex(ValueError, "reused"):
             flight.control(history)
+
+    def test_control_restarts_for_coverage_regression_anywhere_in_window(self):
+        history = [
+            observed(1, covered=10),
+            observed(2, covered=9, run=102),
+            observed(3, covered=10, run=103),
+            observed(4, covered=10, run=104),
+        ]
+        self.assertEqual(flight.control(history)["state"],
+                         "RESTART_COVERAGE_REGRESSION")
+
+    def test_control_requires_every_gate_and_native_attempt_to_pass(self):
+        history = [observed(i, run=100 + i) for i in (1, 2, 3, 4)]
+        history[1]["gate_outcomes"]["hook"] = "FAIL"
+        self.assertEqual(flight.control(history)["state"], "RESTART_FAILED_GATE")
+        history[1]["gate_outcomes"]["hook"] = "PASS"
+        history[1]["native_conclusion"] = "cancelled"
+        self.assertEqual(flight.control(history)["state"],
+                         "RESTART_FAILED_NATIVE_ATTEMPT")
+        history[1]["native_conclusion"] = "unverified"
+        self.assertEqual(flight.control(history)["state"],
+                         "HOLD_UNVERIFIED_NATIVE_CONCLUSION")
+
+    def test_control_holds_for_missing_or_skipped_gate_evidence(self):
+        history = [observed(i, run=100 + i) for i in (1, 2, 3, 4)]
+        history[0]["gate_outcomes"].pop("source_scope")
+        self.assertEqual(flight.control(history)["state"],
+                         "HOLD_UNVERIFIED_GATE_OUTCOMES")
+        history[0]["gate_outcomes"]["source_scope"] = "PASS"
+        history[0]["test_state"] = "GREEN_WITH_SKIPS"
+        self.assertEqual(flight.control(history)["state"],
+                         "RESTART_UNHEALTHY_TESTS")
+
+    def test_control_does_not_trust_green_label_over_failed_counts(self):
+        history = [observed(i, run=100 + i) for i in (1, 2, 3, 4)]
+        history[0]["tests"]["passed"] = 2
+        history[0]["tests"]["failed"] = 1
+        self.assertEqual(flight.control(history)["state"], "RESTART_FIRST_RED")
 
     def test_stop_not_allowed_below_target(self):
         history = [observed(i, covered=9, run=100 + i) for i in (1, 2, 3, 4)]

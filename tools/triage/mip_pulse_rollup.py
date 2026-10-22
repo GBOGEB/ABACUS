@@ -46,6 +46,17 @@ def read_pulse(path):
         eligible = number(row.get("eligible"), key + " eligible")
         covered = number(row.get("covered"), key + " covered")
         require(covered <= eligible, "covered exceeds eligible")
+    tests = data.get("tests")
+    require(isinstance(tests, dict), "test outcomes missing")
+    require(type(data.get("terminal")) is bool, "test terminal state missing")
+    for key in ("executed", "passed", "failed", "errors", "skipped"):
+        number(tests.get(key), "tests " + key)
+    require(
+        tests["executed"] == sum(
+            tests[key] for key in ("passed", "failed", "errors", "skipped")
+        ),
+        "test outcomes do not reconcile",
+    )
     triage = data.get("triage")
     if triage is not None:
         require(isinstance(triage, dict), "triage shape")
@@ -96,6 +107,26 @@ def percent(numerator, denominator):
 def p95(values):
     values = sorted(values)
     return values[math.ceil(0.95 * len(values)) - 1] if values else None
+
+
+def test_outcome(pulse):
+    tests = pulse.get("tests")
+    if not isinstance(tests, dict) or pulse.get("terminal") is not True:
+        return "UNKNOWN"
+    if type(tests.get("executed")) is not int or tests["executed"] <= 0:
+        return "UNKNOWN"
+    if any(type(tests.get(key)) is not int or tests[key] < 0
+           for key in ("passed", "failed", "errors", "skipped")):
+        return "UNKNOWN"
+    if tests["executed"] != sum(
+        tests[key] for key in ("passed", "failed", "errors", "skipped")
+    ):
+        return "UNKNOWN"
+    if tests["failed"] or tests["errors"]:
+        return "FAILED"
+    if tests["skipped"]:
+        return "SKIPPED"
+    return "GREEN" if tests["passed"] == tests["executed"] else "UNKNOWN"
 
 
 def snapshot(p):
@@ -176,6 +207,12 @@ def rollup(pulses):
         moves[-1][key] is not None and moves[-1][key] < 0
         for key in ("statement_gain_pp", "branch_gain_pp")
     ))
+    root_red_increase = matched and any(
+        move["root_reds_closed_net"] is not None
+        and move["root_reds_closed_net"] < 0
+        for move in moves[-3:]
+    )
+    outcomes = [test_outcome(pulse) for pulse in pulses[-4:]]
     plateau = matched and all(
         m["statement_gain_pp"] is not None
         and m["branch_gain_pp"] is not None
@@ -205,6 +242,11 @@ def rollup(pulses):
     )
     control = (
         "RESTART_COVERAGE_REGRESSION" if regression
+        else "RESTART_ROOT_RED_INCREASE" if root_red_increase
+        else "RESTART_FAILED_TESTS" if "FAILED" in outcomes
+        else "RESTART_SKIPPED_TESTS" if "SKIPPED" in outcomes
+        else "HOLD_UNVERIFIED_TEST_OUTCOMES"
+        if len(outcomes) < 4 or any(result != "GREEN" for result in outcomes)
         else "QUIET_WATCH_CANDIDATE"
         if plateau and saturated and native_identified
         else "HOLD_UNVERIFIED_NATIVE_IDENTITIES" if plateau and saturated
@@ -221,6 +263,9 @@ def rollup(pulses):
         "native_identities_structurally_present": native_identified,
         "native_identities_independently_verified": False,
         "source_scope_saturated": saturated,
+        "test_outcomes_healthy": len(outcomes) == 4 and all(
+            result == "GREEN" for result in outcomes
+        ),
         "release_ready": False,
         "formal_coverage_credit": False,
         "note": "Read-only descriptive telemetry. Native receipts, source population identity and governed admission require independent validation.",
