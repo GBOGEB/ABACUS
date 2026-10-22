@@ -184,7 +184,12 @@ def compare_zero_frontier(
             return stop('INCOMPARABLE_FILE_DENOMINATORS')
     version_before = before['meta'].get('version')
     version_after = after['meta'].get('version')
-    if not isinstance(version_before, str) or not version_before:
+    if (
+        not isinstance(version_before, str)
+        or not version_before
+        or not isinstance(version_after, str)
+        or not version_after
+    ):
         return stop('UNKNOWN_INSTRUMENTATION_VERSION')
     if version_before != version_after:
         return stop('INCOMPARABLE_INSTRUMENTATION_VERSION')

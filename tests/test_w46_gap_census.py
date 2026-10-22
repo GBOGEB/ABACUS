@@ -1,7 +1,10 @@
 """Fail-closed synthetic negative/reverse tests for disjoint gap census."""
 from __future__ import annotations
-import pytest
+
 from copy import deepcopy
+
+import pytest
+
 from tools.recovery.w46_gap_census import compare_zero_frontier, family, rollup
 
 SHA = 'a' * 40
@@ -190,6 +193,22 @@ def test_w51_no_blobs_no_coverage_delta_not_a_zero_value():
     assert output["comparison"] == "UNKNOWN_SOURCE_OR_CONFIG_IDENTITY"
     assert output["before_zero"] == output["after_zero"] == 1
     assert output["zero_count_delta"] is None
+
+
+@pytest.mark.parametrize("fault", ["missing", "empty", "non_string"])
+def test_w51_missing_after_instrumentation_version_is_unknown(fault):
+    before = _w51_coverage()
+    after = deepcopy(before)
+    if fault == "missing":
+        after["meta"].pop("version")
+    elif fault == "empty":
+        after["meta"]["version"] = ""
+    else:
+        after["meta"]["version"] = 7
+    outcome = _w51_compare(before, after)
+    assert outcome["comparison"] == "UNKNOWN_INSTRUMENTATION_VERSION"
+    assert outcome["covered_opportunities_delta"] is None
+    assert outcome["zero_count_delta"] is None
 
 
 @pytest.mark.parametrize("fault", ["wrong_config", "changed_source",
