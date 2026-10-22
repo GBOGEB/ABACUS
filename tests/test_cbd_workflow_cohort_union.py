@@ -70,13 +70,19 @@ class CohortUnionTests(unittest.TestCase):
             "persist-credentials: false",
             "if actual_head != pull_head:",
         )
-        checkout_receipt = re.compile(
-            r"actual_head = subprocess\.check_output\(\s*"
-            r'\["git", "rev-parse", "HEAD"\], text=True\s*'
-            r"\)\.strip\(\)"
+        checkout_head = re.compile(
+            r"actual_head\s*=\s*subprocess\.check_output\(\s*"
+            r"\[\s*['\"]git['\"],\s*['\"]rev-parse['\"],\s*"
+            r"['\"]HEAD['\"]\s*\],"
+            r"\s*text=True\s*\)\s*\.strip\(\)"
+        )
+        checkout_guard = re.compile(
+            r"if actual_head != pull_head:\n\s+raise SystemExit\("
         )
         receipt_guard = re.compile(
-            r"if actual_head != pull_head:\n\s+raise SystemExit\("
+            r'"pull_head_sha":\s*pull_head,\s*'
+            r'"event_sha":\s*os\.getenv\("GITHUB_EVENT_SHA"\),\s*'
+            r'"checkout_sha":\s*actual_head'
         )
 
         def assert_bound(source):
@@ -84,7 +90,8 @@ class CohortUnionTests(unittest.TestCase):
             # let a mutant that removes one copy pass undetected.
             for item in required:
                 self.assertEqual(source.count(item), 1, item)
-            self.assertEqual(len(checkout_receipt.findall(source)), 1)
+            self.assertEqual(len(checkout_head.findall(source)), 1)
+            self.assertEqual(len(checkout_guard.findall(source)), 1)
             self.assertEqual(len(receipt_guard.findall(source)), 1)
 
         assert_bound(workflow)
@@ -93,8 +100,26 @@ class CohortUnionTests(unittest.TestCase):
         with self.assertRaises(AssertionError):
             assert_bound(workflow.replace(required[2], "if False:", 1))
         with self.assertRaises(AssertionError):
+            assert_bound(checkout_head.sub("", workflow, count=1))
+        with self.assertRaises(AssertionError):
             assert_bound(
-                checkout_receipt.sub("actual_head = pull_head", workflow, count=1)
+                checkout_head.sub("actual_head = pull_head", workflow, count=1)
+            )
+        with self.assertRaises(AssertionError):
+            assert_bound(
+                checkout_guard.sub(
+                    "if actual_head != pull_head:\n            pass",
+                    workflow,
+                    count=1,
+                )
+            )
+        with self.assertRaises(AssertionError):
+            assert_bound(
+                workflow.replace(
+                    '"checkout_sha": actual_head',
+                    '"checkout_sha": pull_head',
+                    1,
+                )
             )
 
     def test_frozen_three_cohort_source_denominators(self):

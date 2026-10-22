@@ -125,6 +125,148 @@ def rollup(report, *, head_sha, expected_totals=None, max_lanes=6):
     }
 
 
+def compare_zero_frontier(
+    before, after, *, before_head, after_head,
+    before_source_blobs=None, after_source_blobs=None,
+    before_config_sha256=None, after_config_sha256=None,
+    max_lanes=6,
+):
+    """Compare zero-to-touched files without inventing scope/native authority.
+
+    Source blob IDs and coverage-config digests must come from an independent
+    trusted acquisition. Passing them here is NOT authentication of that
+    acquisition. Missing or mismatched evidence yields null deltas.
+    """
+    left = rollup(before, head_sha=before_head, max_lanes=max_lanes)
+    right = rollup(after, head_sha=after_head, max_lanes=max_lanes)
+    before_files = before['files']
+    after_files = after['files']
+    before_paths = set(before_files)
+    after_paths = set(after_files)
+    output = {
+        'schema': 'codepurple.w51.zero_frontier.v1',
+        'before_head': before_head,
+        'after_head': after_head,
+        'before_file_count': left['file_count'],
+        'after_file_count': right['file_count'],
+        'before_zero': left['zero_coverage_file_count'],
+        'after_zero': right['zero_coverage_file_count'],
+        'before_combined_covered': left['covered'],
+        'after_combined_covered': right['covered'],
+        'before_combined_eligible': left['eligible'],
+        'after_combined_eligible': right['eligible'],
+        'comparison': 'UNKNOWN_PROVENANCE',
+        'newly_touched': None,
+        'regressed_to_zero': None,
+        'zero_count_delta': None,
+        'covered_opportunities_delta': None,
+        'newly_full': None,
+        'after_full_count': None,
+        'first_touch_queue': None,
+        'coverage_improvement_qualified': False,
+        'native_run_job_artifact_verified': None,
+        'accepted_root_closure': None,
+        'merge_admission': 'HOLD',
+        'authority_transfer': False,
+    }
+
+    def stop(reason):
+        output['comparison'] = reason
+        return output
+
+    if before_paths != after_paths:
+        return stop('INCOMPARABLE_FILE_POPULATION')
+    for path in before_paths:
+        x, y = before_files[path]['summary'], after_files[path]['summary']
+        if (x['num_statements'], x['num_branches']) != (
+            y['num_statements'], y['num_branches']
+        ):
+            return stop('INCOMPARABLE_FILE_DENOMINATORS')
+    version_before = before['meta'].get('version')
+    version_after = after['meta'].get('version')
+    if (
+        not isinstance(version_before, str)
+        or not version_before
+        or not isinstance(version_after, str)
+        or not version_after
+    ):
+        return stop('UNKNOWN_INSTRUMENTATION_VERSION')
+    if version_before != version_after:
+        return stop('INCOMPARABLE_INSTRUMENTATION_VERSION')
+    if (before_config_sha256 is None or after_config_sha256 is None or
+            before_source_blobs is None or after_source_blobs is None):
+        return stop('UNKNOWN_SOURCE_OR_CONFIG_IDENTITY')
+
+    sha256 = re.compile(r'^[0-9a-f]{64}$')
+    for name, digest in (
+        ('before_config', before_config_sha256),
+        ('after_config', after_config_sha256),
+    ):
+        need(isinstance(digest, str) and bool(sha256.fullmatch(digest)),
+             'invalid ' + name + ' SHA256')
+    if before_config_sha256 != after_config_sha256:
+        return stop('INCOMPARABLE_COVERAGE_CONFIG')
+    for identity in (before_source_blobs, after_source_blobs):
+        need(isinstance(identity, dict) and set(identity) == before_paths,
+             'incomplete source blob manifest')
+        need(all(isinstance(value, str) and _SHA.fullmatch(value)
+                 for value in identity.values()), 'invalid source blob SHA')
+    if before_source_blobs != after_source_blobs:
+        return stop('INCOMPARABLE_SOURCE_BLOBS')
+
+    def hit(source, path):
+        counts = source[path]['summary']
+        return counts['covered_lines'] + counts['covered_branches']
+
+    def eligible(source, path):
+        counts = source[path]['summary']
+        return counts['num_statements'] + counts['num_branches']
+
+    new_touches = sorted(path for path in before_paths
+                         if eligible(before_files, path) > 0
+                         and hit(before_files, path) == 0
+                         and hit(after_files, path) > 0)
+    regressions = sorted(path for path in before_paths
+                         if eligible(before_files, path) > 0
+                         and hit(before_files, path) > 0
+                         and hit(after_files, path) == 0)
+    new_full = sorted(path for path in before_paths
+                      if eligible(before_files, path) > 0
+                      and hit(before_files, path) < eligible(before_files, path)
+                      and hit(after_files, path) == eligible(after_files, path))
+    zero_candidates = sorted(
+        (path for path in after_paths if eligible(after_files, path) > 0
+         and hit(after_files, path) == 0),
+        key=lambda path: (-eligible(after_files, path), path),
+    )
+    queued = []
+    used_owners = set()
+    for path in zero_candidates:
+        owner = family(path)
+        if owner not in used_owners and len(queued) < max_lanes:
+            queued.append({
+                'path': path, 'owner_candidate': owner,
+                'missed_opportunities': eligible(after_files, path),
+                'predicted_coverage_gain': None,
+            })
+            used_owners.add(owner)
+    full_count = sum(eligible(after_files, path) > 0 and
+                     hit(after_files, path) == eligible(after_files, path)
+                     for path in after_paths)
+    output.update({
+        'comparison': 'STRUCTURAL_MATCH_NATIVE_ATTESTATION_PENDING',
+        'newly_touched': new_touches,
+        'regressed_to_zero': regressions,
+        'zero_count_delta': right['zero_coverage_file_count'] -
+                            left['zero_coverage_file_count'],
+        'covered_opportunities_delta': right['covered'] - left['covered'],
+        'newly_full': new_full,
+        'after_full_count': full_count,
+        'first_touch_queue': queued,
+    })
+    return output
+
+
 def main(argv=None):
     p = argparse.ArgumentParser()
     p.add_argument('--zip', type=Path, required=True)
