@@ -28,7 +28,11 @@ def _path(s: Any) -> bool:
         isinstance(s, str) and bool(s) and not s.startswith("/")
         and "\\" not in s and ":" not in s
         and not any(ord(char) < 32 or ord(char) == 127 for char in s)
-        and all(part not in ("", ".", "..") for part in s.split("/"))
+        and all(
+            part not in ("", ".", "..")
+            and not part.endswith((".", " "))
+            for part in s.split("/")
+        )
     )
 
 

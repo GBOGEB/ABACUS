@@ -59,7 +59,11 @@ def source_path_safe(value):
         and "\\" not in value
         and ":" not in value
         and not any(ord(char) < 32 or ord(char) == 127 for char in value)
-        and all(part not in ("", ".", "..") for part in value.split("/"))
+        and all(
+            part not in ("", ".", "..")
+            and not part.endswith((".", " "))
+            for part in value.split("/")
+        )
     )
 
 

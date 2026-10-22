@@ -21,10 +21,6 @@ on:
         description: "Space-separated paths for the focused (strict) scan"
         required: false
         default: "models"
-  pull_request:              # verifies the pilot itself when its own files change
-    paths:
-      - ".github/workflows/code-quality-pilot.yml"
-      - "tools/quality_pilot/**"
   schedule:
     - cron: "17 5 * * *"   # daily 05:17 UTC; the cadence job thins this after burn-in
 
@@ -56,8 +52,8 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
-          # Burn-in counts SCHEDULED runs only, so PR/manual verification runs do not
-          # consume the N+10 daily window. Includes this run when it is scheduled.
+          # Burn-in counts scheduled runs only, so manual runs do not consume
+          # the daily window. Includes this run when it is scheduled.
           prev=$(gh run list -R "${{ github.repository }}" -w code-quality-pilot.yml \
                    -e schedule -s completed -L 50 --json databaseId -q 'length')
           if [ "${{ github.event_name }}" = "schedule" ]; then n=$((prev + 1)); else n=$((prev)); fi
@@ -79,7 +75,10 @@ jobs:
 
   pilot:
     needs: cadence
-    if: needs.cadence.outputs.run == 'true' && github.repository_owner == 'GBOGEB'
+    if: >-
+      needs.cadence.outputs.run == 'true' &&
+      github.repository_owner == 'GBOGEB' &&
+      github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
     timeout-minutes: 40
     permissions:
@@ -87,7 +86,6 @@ jobs:
       actions: read             # burn-in trend: read previous pilot artifacts
       security-events: read     # read existing CodeQL/Semgrep/Bandit alerts
       issues: write             # burn-in telemetry issue comments
-      pull-requests: write      # telemetry comment on pilot PRs
     env:
       PHASE: ${{ needs.cadence.outputs.phase }}
       TIMED: tools/quality_pilot/timed.sh
@@ -262,7 +260,7 @@ jobs:
             echo "[Run log + artifact](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }})"
           } > "$REPORTS/digest.md"
 
-      - name: Publish telemetry (PR comment or burn-in issue)
+      - name: Publish burn-in issue telemetry
         if: always()
         # rex-allow: ADVISORY_EXPLICIT - publishing telemetry must never mask scan results.
         continue-on-error: true
@@ -271,26 +269,15 @@ jobs:
           REPO: ${{ github.repository }}
         run: |
           body="$REPORTS/digest.md"
-          if [ "${{ github.event_name }}" = "pull_request" ]; then
-            pr="${{ github.event.pull_request.number }}"
-            cid=$(gh api "repos/$REPO/issues/$pr/comments" --paginate \
-                    -q '.[] | select(.body | startswith("<!-- quality-pilot-telemetry -->")) | .id' | tail -n 1)
-            if [ -n "$cid" ]; then
-              gh api -X PATCH "repos/$REPO/issues/comments/$cid" -F body=@"$body" -q .html_url
-            else
-              gh api "repos/$REPO/issues/$pr/comments" -F body=@"$body" -q .html_url
-            fi
-          else
-            title="Quality pilot — burn-in telemetry"
-            num=$(gh api "repos/$REPO/issues?state=open&per_page=100" --paginate \
-                    -q ".[] | select(.title == \"$title\") | .number" | head -n 1)
-            if [ -z "$num" ]; then
-              num=$(gh api "repos/$REPO/issues" -f title="$title" \
-                      -f body="Telemetry digest from each run of .github/workflows/code-quality-pilot.yml (protocol: tools/quality_pilot/README.md). Close when burn-in and triage are done." \
-                      -q .number)
-            fi
-            gh api "repos/$REPO/issues/$num/comments" -F body=@"$body" -q .html_url
+          title="Quality pilot — burn-in telemetry"
+          num=$(gh api "repos/$REPO/issues?state=open&per_page=100" --paginate \
+                  -q ".[] | select(.title == \"$title\") | .number" | head -n 1)
+          if [ -z "$num" ]; then
+            num=$(gh api "repos/$REPO/issues" -f title="$title" \
+                    -f body="Telemetry digest from each run of .github/workflows/code-quality-pilot.yml (protocol: tools/quality_pilot/README.md). Close when burn-in and triage are done." \
+                    -q .number)
           fi
+          gh api "repos/$REPO/issues/$num/comments" -F body=@"$body" -q .html_url
 
       - name: Upload reports
         if: always()

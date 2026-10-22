@@ -7,6 +7,7 @@ from __future__ import annotations
 import copy
 import json
 import sys
+import unittest
 from pathlib import Path
 
 import pytest
@@ -536,6 +537,7 @@ def test_artifact_type_census_fails_closed_on_invalid_or_missing_scope(defect):
 @pytest.mark.parametrize("attack", [
     "/repo/absolute.py", "C:/repo/file.py", r"src\renamed.py",
     "src//module.py", "src/./module.py", "src/../module.py",
+    "src/module.", "src/module ",
     "src/", "src/\x00secret.py", "src/\x7fsecret.py",
     "src:alternate.py", "", None, True,
 ])
@@ -581,9 +583,10 @@ def test_w78_segment_distinct_siblings_are_not_false_conflicts(neighbor):
     doc = specimen()
     family(doc, "W81")["paths"] = [neighbor]
     result = g.evaluate(doc)
-    assert result["capacity"]["automatic_dispatch_permitted"] is False
-    assert result["governed_merge_admission"] == "HOLD"
-    assert result["programme"]["stop_entire_program"] is False
+    checks = unittest.TestCase()
+    checks.assertIs(result["capacity"]["automatic_dispatch_permitted"], False)
+    checks.assertEqual(result["governed_merge_admission"], "HOLD")
+    checks.assertIs(result["programme"]["stop_entire_program"], False)
 
 
 def test_w78_aba_bad_lease_cannot_mutate_verified_baseline():
@@ -593,8 +596,9 @@ def test_w78_aba_bad_lease_cannot_mutate_verified_baseline():
     family(first, "W81")["paths"] = ["tools"]
     with pytest.raises(g.GovernorError, match="non-disjoint"):
         g.evaluate(first)
-    assert g.evaluate(unchanged) == baseline
-    assert baseline["formal_acceptance_claim"] is False
+    checks = unittest.TestCase()
+    checks.assertEqual(g.evaluate(unchanged), baseline)
+    checks.assertIs(baseline["formal_acceptance_claim"], False)
 
 
 def test_w78_alias_collision_cannot_buy_native_workers_from_queue_claims():

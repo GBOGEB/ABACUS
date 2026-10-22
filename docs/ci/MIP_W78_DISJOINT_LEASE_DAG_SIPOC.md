@@ -1,7 +1,7 @@
 # CODE PURPLE W78 — Source-lease safety and coverage convergence
 
-**Evidence class:** source implementation candidate; not an admission, executed Crew
-launch, owner authorization, or canonical root closure.
+**Evidence class:** source implementation candidate; not an admission, executed
+Crew launch, owner authorization, or canonical root closure.
 
 ## Problem and design decision
 
@@ -21,24 +21,31 @@ authentication, or GitHub branch-protection proof.
 
 | Lease | Existing SUT | Native test file | Responsibility |
 | --- | --- | --- | --- |
-| W78-A | `MIP/EVIDENCE_TO_ADMISSION_OBSERVATORY/elastic_wave_governor.py` | `test_elastic_wave_governor.py` (same directory) | Cross-family and intra-family casefolded/nested lease rejection; intact stop, N+1/AIMD and UNKNOWN controls |
-| W78-B | `MIP/EVIDENCE_TO_ADMISSION_OBSERVATORY/g3g_disjoint_crew.py` | `ci/governance/tests/test_g3g_disjoint_crew.py` | Repo-aware DAG lease rejection; case-insensitive GitHub owner identity; preserve no-fabricated-worker proof |
-| W78-TEST | `.github/workflows/w29-disjoint-frontier-coverage.yml` | Existing 2-cell native Testflight | Integration reader, not a third engineering root |
+| W78-A | Governor | Native tests | Cross-family leases; bounded capacity |
+| W78-B | G3G | Native tests | Repo-aware DAG leases; no worker authority |
+| W78-TEST | W29 | Native Testflight | Shared integration reader only |
 
 The two module/test pairs are disjoint. The shared native Testflight is
 serialized per PR and MUST not be counted as two independent executed Crew
 workers. Existing W76/W77 zero-covered source owners retain their own paths;
 existing Dockerfile PR #2361 remains outside this source scope.
 
+Source files: `MIP/EVIDENCE_TO_ADMISSION_OBSERVATORY/elastic_wave_governor.py`
+and `MIP/EVIDENCE_TO_ADMISSION_OBSERVATORY/g3g_disjoint_crew.py`.
+Their tests are `test_elastic_wave_governor.py` and
+`ci/governance/tests/test_g3g_disjoint_crew.py`.
+
 ## SIPOC
 
 | Stage | Contract |
 | --- | --- |
 | Supplier | GitHub exact-source checkout; MIP controller and G3G proposals |
-| Input | Typed family IDs, repository IDs, relative source paths, exact source SHA, queue/capacity fields and source-bound receipts |
-| Process | Validate relative path → reject traversal/alternate streams/control characters → compare casefolded path segments → detect intra/inter-owner collisions → evaluate DAG/topology and stop policy → execute native negative/positive tests |
-| Output | Governed proposal result or fail-closed exception; JUnit, branch/statement coverage JSON/XML, source-file SHA-256 and manifest |
-| Customer | ABACUS #1860 admission owner, #1929 canonical BD owner, CODEX #977 orchestration (no delegated write authority) |
+| Input | Typed IDs, relative paths, exact SHA and source-bound receipts |
+| Process | Validate paths and leases; evaluate DAG and stop policy |
+| Output | Fail-closed proposal; hashed JUnit, coverage and manifest |
+| Customer | Admission, canonical BD and orchestration owners |
+
+No delegated write authority is granted.
 
 ## Dependency DAG
 
@@ -80,12 +87,15 @@ a zero-to-positive credit requires independently comparable receipts for the
 
 ### Reverse/adversarial matrix
 
-- `a` vs `a/b.py`, `A/B.py` vs `a/b.py`: reject
-- `a/file.py` vs `a/file.py-old`: permit (segment boundary)
-- `a/../b`, `a//b`, `a/./b`, backslash, colon/ADS, absolute or control bytes: reject
-- Same path, distinct **actual** repository: allow; same GitHub repository with different capitalization: reject collision
-- A → malicious B → original A: original result reproducible; no source mutation
-- Missing owner/reviewer/runners, unverified security, or stale source: no admission/dispatch credit
+- `a` vs `a/b.py` and `A/B.py` vs `a/b.py`: reject.
+- `a/file.py` vs `a/file.py-old`: permit (segment boundary).
+- Traversal, duplicate separators, backslashes, alternate streams, absolute
+  paths, control bytes and trailing dots/spaces: reject.
+- Same path in distinct **actual** repositories: allow. Case aliases of one
+  GitHub repository: reject.
+- A → malicious B → original A: preserve the original result without mutation.
+- Missing owners, reviewers, runners, security proof or current source: no
+  admission/dispatch credit.
 
 ## Telemetry and administrative boundaries
 
