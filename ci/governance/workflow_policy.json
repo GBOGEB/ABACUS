@@ -691,6 +691,12 @@
       "cluster": "runtime_governance",
       "lifecycle": "scheduled",
       "disposition": "keep"
+    },
+    {
+      "pattern": "^floating-reconnection-testflight\\.yml$",
+      "cluster": "core_test",
+      "lifecycle": "pr_domain",
+      "disposition": "keep"
     }
   ],
   "quality_gates": {
