@@ -36,9 +36,9 @@ Change `BURN_IN_RUNS` in the workflow `env:` to extend or shorten burn-in.
 - `summary.md` — also posted to the job summary.
 - `triage_sample.csv` — 20 findings, stratified per tool, new seed each run.
 
-Each run also posts this digest as a comment: on the PR for pilot PRs, otherwise on
-the standing issue **"Quality pilot — burn-in telemetry"** (created on first scheduled
-run), so every burn-in run produces a readable notification.
+Trusted scheduled or main-branch manual runs post this digest to the standing issue
+**"Quality pilot — burn-in telemetry"** (created on first scheduled run). PR runs
+publish only the job summary and artifact; their scan job has read-only permissions.
 
 Exit codes are recorded honestly (`timed.sh` returns the scanner's own code).
 All advisory steps carry `# rex-allow: ADVISORY_EXPLICIT` and pass

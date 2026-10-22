@@ -108,27 +108,27 @@ def assess(payload: dict) -> dict:
         walk(key)
     used = []
     for lane in lanes:
+        repo_key = lane["repo"].casefold()
         for path in lane["lease_paths"]:
             for repo, other, owner in used:
-                require(not (repo == lane["repo"] and
-                             _overlap(path, other)),
+                require(not (repo == repo_key and _overlap(path, other)),
                         f"overlapping source lease {owner} -> {lane['id']}")
-            used.append((lane["repo"], path, lane["id"]))
+            used.append((repo_key, path, lane["id"]))
     # Preserve historical plans: absent SUT inventories do not cause an
     # exception, but they cannot be promoted to independent scaling proof.
     sut_used = []
     sut_unknown = []
     for lane in lanes:
+        repo_key = lane["repo"].casefold()
         targets = lane.get("sut_paths")
         if targets is None or (not targets and lane["lease_paths"]):
             sut_unknown.append(lane["id"])
             continue
         for target in targets:
             for repo, other, owner in sut_used:
-                require(not (repo == lane["repo"] and
-                             _overlap(target, other)),
+                require(not (repo == repo_key and _overlap(target, other)),
                         f"overlapping SUT source target {owner} -> {lane['id']}")
-            sut_used.append((lane["repo"], target, lane["id"]))
+            sut_used.append((repo_key, target, lane["id"]))
     sut_complete = not sut_unknown
     fingerprint_counts = {}
     occurrence_counts = {}

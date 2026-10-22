@@ -193,6 +193,22 @@ class G3GSutSourceLeaseTests(unittest.TestCase):
         data["lanes"][2]["sut_paths"] = ["integration/shared.py"]
         self.assertTrue(m.assess(data)["sut_source_leases_disjoint"])
 
+    def test_repository_name_case_does_not_hide_lease_collisions(self):
+        data = sample()
+        data["lanes"][2]["repo"] = "GBOGEB/abacus"
+        data["lanes"][2]["lease_paths"] = list(
+            data["lanes"][0]["lease_paths"])
+        with self.assertRaisesRegex(ValueError, "overlapping source lease"):
+            m.assess(data)
+
+        data = self.declared()
+        data["lanes"][2]["repo"] = "GBOGEB/abacus"
+        data["lanes"][2]["sut_paths"] = list(
+            data["lanes"][0]["sut_paths"])
+        with self.assertRaisesRegex(ValueError,
+                                    "overlapping SUT source target"):
+            m.assess(data)
+
     def test_traversal_or_malformed_target_inventory_rejected(self):
         for targets in ("integration/shared.py", ["../secret.py"],
                         ["integration/./shared.py"], ["integration/shared.py"] * 2):
