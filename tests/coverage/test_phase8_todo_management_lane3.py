@@ -341,7 +341,7 @@ def test_collect_phase_todos_skips_corrupt_and_non_directory_inputs(env, capsys)
 
 def test_collect_phase_todos_tolerates_unusable_workspace_root(tmp_path, monkeypatch):
     monkeypatch.chdir(tmp_path)
-    phase = object.__new__(Phase8TODOManagement)
+    phase = object.__new__(p8.Phase8TODOManagement)
     phase.config = SimpleNamespace(workspace_root=None)
     _write_phase_output(
         tmp_path, 1, "phase6_z", "z.json", {"todos": [{"description": "only phase"}]}
@@ -512,7 +512,7 @@ def test_execute_todos_unknown_id_leaves_registry_entries_untouched(env, monkeyp
 
 
 def test_tracker_register_on_corrupt_registry_raises(tmp_path):
-    tracker = TODOTracker(tmp_path)
+    tracker = p8.TODOTracker(tmp_path)
     tracker.global_registry_path.parent.mkdir(parents=True)
     tracker.global_registry_path.write_text("", encoding="utf-8")
 
