@@ -10,21 +10,20 @@ Bandit, Ruff security and Dependabot. The pilot does **not** re-run those. It ad
 
 | Tool | Gap it closes | Licence |
 | --- | --- | --- |
-| gitleaks (full history, redacted) | Semgrep `p/secrets` sees the current tree only | MIT |
-| pip-audit | Dependabot opens PRs but gives no CVE baseline count | Apache-2.0 |
-| mypy on `models` + `DMAIC_V3/core` | no type checking on physics/orchestration core | MIT |
-| mypy-focus (burn-in only) | strict scan of `models/` (`--check-untyped-defs --warn-unreachable --strict-equality`) | MIT |
-| Opengrep + `rules/ssot.yml` | SSOT / EOS-adapter / patch-counter governance | LGPL-2.1 |
-| code-scanning import | precision of the **existing** CodeQL/Semgrep/Bandit alerts | — |
+| gitleaks (full history) | Scans history, not only the current tree | MIT |
+| pip-audit | Adds a CVE baseline to Dependabot | Apache-2.0 |
+| mypy core paths | Type checks physics and orchestration code | MIT |
+| mypy-focus | Strict burn-in scan of `models/` | MIT |
+| Opengrep | SSOT, EOS, and patch-counter rules | LGPL-2.1 |
+| Code-scanning import | Measures existing scanner precision | — |
 
 ## Cadence
 
 | Phase | When | Extras |
 | --- | --- | --- |
-| burn-in | first `BURN_IN_RUNS` (=10) **scheduled** runs, **daily** 05:17 UTC | focused scan + run-over-run trend |
-|  | PR/manual runs do not consume the burn-in window |  |
-| steady | afterwards, **Mondays** only (other days skip in ~5 s) | — |
-| manual | `workflow_dispatch` or a PR touching pilot files | focused scan + trend |
+| burn-in | First 10 scheduled runs; daily at 05:17 UTC | Focused scan + trend |
+| steady | After burn-in, Mondays only | — |
+| manual | Manual dispatch or a pilot-file PR | Focused scan + trend |
 
 Change `BURN_IN_RUNS` in the workflow `env:` to extend or shorten
 burn-in.

@@ -1,32 +1,32 @@
 # Code Quality Pilot — REPORT-ONLY (open source).
 #
 # Adds only what existing ABACUS scanners do not cover:
-#   gitleaks (full history) · pip-audit · mypy (physics core) · Opengrep governance rules
+#   gitleaks · pip-audit · mypy (physics core) · Opengrep governance rules
 # plus a measurement layer that also triages the open alerts already produced by
 # CodeQL / Semgrep / Bandit (code-scanning API).
 #
 # Cadence: daily during burn-in (first BURN_IN_RUNS runs), then Mondays only.
-# Burn-in (and manual runs) add a FOCUSED scan on physics paths and a run-over-run
-# telemetry trend. Nothing here gates a merge; protocol: tools/quality_pilot/README.md
+# Burn-in and manual runs add a FOCUSED physics scan and a run-over-run trend.
+# Nothing gates a merge; protocol: tools/quality_pilot/README.md
 name: Code Quality Pilot
 
 on:
   workflow_dispatch:
     inputs:
       core_paths:
-        description: "Space-separated paths for mypy (physics + orchestration core)"
+        description: "Space-separated mypy paths (physics + orchestration core)"
         required: false
         default: "models DMAIC_V3/core"
       focus_paths:
         description: "Space-separated paths for the focused (strict) scan"
         required: false
         default: "models"
-  pull_request:              # verifies the pilot itself when its own files change
+  pull_request:  # verifies the pilot itself when its own files change
     paths:
       - ".github/workflows/code-quality-pilot.yml"
       - "tools/quality_pilot/**"
   schedule:
-    - cron: "17 5 * * *"   # daily 05:17 UTC; the cadence job thins this after burn-in
+    - cron: "17 5 * * *"  # daily 05:17 UTC; cadence thins this after burn-in
 
 permissions:
   contents: read
@@ -46,7 +46,7 @@ jobs:
   cadence:
     runs-on: ubuntu-latest
     permissions:
-      actions: read             # count previous scheduled runs for the burn-in window
+      actions: read  # count previous scheduled runs for burn-in window
     outputs:
       run: ${{ steps.decide.outputs.run }}
       phase: ${{ steps.decide.outputs.phase }}
@@ -56,13 +56,21 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
-          # Burn-in counts SCHEDULED runs only, so PR/manual verification runs do not
-          # consume the N+10 daily window. Includes this run when it is scheduled.
-          prev=$(gh run list -R "${{ github.repository }}" -w code-quality-pilot.yml \
-                   -e schedule -s completed -L 50 --json databaseId -q 'length')
-          if [ "${{ github.event_name }}" = "schedule" ]; then n=$((prev + 1)); else n=$((prev)); fi
+          # Only scheduled runs consume the burn-in window.
+          prev=$(gh run list -R "${{ github.repository }}" \
+                   -w code-quality-pilot.yml -e schedule -s completed -L 50 \
+                   --json databaseId -q 'length')
+          if [ "${{ github.event_name }}" = "schedule" ]; then
+            n=$((prev + 1))
+          else
+            n=$((prev))
+          fi
           dow="$(date -u +%u)"   # 1 = Monday
-          if [ "$n" -le "$BURN_IN_RUNS" ]; then phase=burn-in; else phase=steady; fi
+          if [ "$n" -le "$BURN_IN_RUNS" ]; then
+            phase=burn-in
+          else
+            phase=steady
+          fi
           if [ "${{ github.event_name }}" != "schedule" ]; then
             run=true; why="manual dispatch"
             [ "$phase" = "steady" ] && phase=manual
@@ -79,7 +87,9 @@ jobs:
 
   pilot:
     needs: cadence
-    if: needs.cadence.outputs.run == 'true' && github.repository_owner == 'GBOGEB'
+    if: >-
+      needs.cadence.outputs.run == 'true' &&
+      github.repository_owner == 'GBOGEB'
     runs-on: ubuntu-latest
     timeout-minutes: 40
     permissions:
@@ -113,7 +123,8 @@ jobs:
 
       # --- Tier 0 -------------------------------------------------------------
       - name: Secrets across full history (gitleaks, redacted)
-        # rex-allow: ADVISORY_EXPLICIT - report-only pilot; findings are triaged, not gated.
+        # Report-only pilot; findings are triaged, not gated.
+        # rex-allow: ADVISORY_EXPLICIT
         continue-on-error: true
         run: |
           img=ghcr.io/gitleaks/gitleaks:latest
@@ -124,24 +135,27 @@ jobs:
             --report-format json --report-path "/repo/$REPORTS/gitleaks.json"
 
       - name: Dependency CVEs (pip-audit)
-        # rex-allow: ADVISORY_EXPLICIT - report-only pilot; CVE baseline, Dependabot owns fixes.
+        # Report-only CVE baseline; Dependabot owns fixes.
+        # rex-allow: ADVISORY_EXPLICIT
         continue-on-error: true
         run: |
-          # Audit each requirements file on its own: run #3 showed the three files
-          # cannot be co-resolved (pytest-asyncio pins conflict), which zeroed the baseline.
+          # Audit each requirements file independently.
           export TOOL_VERSION="$(pip-audit --version)"
           rc=0
-          for r in requirements.txt requirements-dev.txt requirements-test.txt; do
+          for r in requirements.txt requirements-dev.txt \
+                   requirements-test.txt; do
             if [ -f "$r" ]; then
               n="${r%.txt}"
-              "$TIMED" "pip-audit-$n" - pip-audit -r "$r" -f json -o "$REPORTS/pip-audit-$n.json" --progress-spinner off || rc=$?
+              "$TIMED" "pip-audit-$n" - pip-audit -r "$r" -f json \
+                -o "$REPORTS/pip-audit-$n.json" --progress-spinner off || rc=$?
             fi
           done
           exit "$rc"
 
       # --- Tier 1 -------------------------------------------------------------
       - name: Types on core (mypy)
-        # rex-allow: ADVISORY_EXPLICIT - mypy exit 1 = findings; exit code is recorded in telemetry.
+        # Mypy exit 1 means findings; its exit is recorded in telemetry.
+        # rex-allow: ADVISORY_EXPLICIT
         continue-on-error: true
         run: |
           export TOOL_VERSION="$(mypy --version)"
@@ -151,50 +165,61 @@ jobs:
 
       - name: Focused scan — strict types on physics paths (burn-in / manual)
         if: env.PHASE != 'steady'
-        # rex-allow: ADVISORY_EXPLICIT - focused burn-in telemetry; scored separately as mypy-focus.
+        # Focused burn-in telemetry is scored separately as mypy-focus.
+        # rex-allow: ADVISORY_EXPLICIT
         continue-on-error: true
         run: |
           export TOOL_VERSION="$(mypy --version) strict-focus"
           # shellcheck disable=SC2086
           "$TIMED" mypy-focus "$REPORTS/mypy-focus.txt" mypy $FOCUS_PATHS \
             --ignore-missing-imports --show-error-codes --no-error-summary \
-            --check-untyped-defs --warn-unreachable --strict-equality --warn-redundant-casts
+            --check-untyped-defs --warn-unreachable --strict-equality \
+            --warn-redundant-casts
 
       - name: Install Opengrep
-        # rex-allow: ADVISORY_EXPLICIT - optional engine; summary shows the tool as absent if this fails.
+        # The summary reports this optional engine as absent if install fails.
+        # rex-allow: ADVISORY_EXPLICIT
         continue-on-error: true
         run: |
-          curl -fsSL https://raw.githubusercontent.com/opengrep/opengrep/main/install.sh | bash
-          OG="$(command -v opengrep || find "$HOME/.opengrep" -type f -name 'opengrep*' -perm -u+x 2>/dev/null | head -1)"
+          installer=https://raw.githubusercontent.com/opengrep/opengrep/main/install.sh
+          curl -fsSL "$installer" | bash
+          OG="$(command -v opengrep || find "$HOME/.opengrep" -type f \
+            -name 'opengrep*' -perm -u+x 2>/dev/null | head -1)"
           test -n "$OG"
           echo "OPENGREP=$OG" >> "$GITHUB_ENV"
           "$OG" --version
 
       - name: Governance rules self-test (Opengrep)
-        # rex-allow: ADVISORY_EXPLICIT - rule self-test result is reported in the job log.
+        # Rule self-test result is reported in the job log.
+        # rex-allow: ADVISORY_EXPLICIT
         continue-on-error: true
         run: |
-          "$OPENGREP" scan --test "$PILOT_DIR/rules" 2>&1 | tee "$REPORTS/opengrep-selftest.txt"
+          "$OPENGREP" scan --test "$PILOT_DIR/rules" 2>&1 \
+            | tee "$REPORTS/opengrep-selftest.txt"
 
       - name: Governance rules scan (Opengrep)
-        # rex-allow: ADVISORY_EXPLICIT - report-only pilot; governance precision measured first.
+        # Report-only pilot; governance precision is measured first.
+        # rex-allow: ADVISORY_EXPLICIT
         continue-on-error: true
         run: |
           export TOOL_VERSION="opengrep $("$OPENGREP" --version)"
           "$TIMED" opengrep "$REPORTS/opengrep.json" "$OPENGREP" scan --json \
             --exclude "$PILOT_DIR" -f "$PILOT_DIR/rules/ssot.yml" .
 
-      # --- Existing scanners (read-only) ----------------------------------------
+      # --- Existing scanners (read-only) -------------------------------------
       - name: Fetch open code-scanning alerts (CodeQL / Semgrep / Bandit)
-        # rex-allow: ADVISORY_EXPLICIT - read-only enrichment; absent alerts do not hide pilot results.
+        # Read-only enrichment; absent alerts do not hide pilot results.
+        # rex-allow: ADVISORY_EXPLICIT
         continue-on-error: true
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
-          gh api --paginate "repos/${{ github.repository }}/code-scanning/alerts?state=open&per_page=100" \
+          gh api --paginate \
+            "repos/${{ github.repository }}/code-scanning/alerts"\
+            "?state=open&per_page=100" \
             | jq -s 'add' > "$REPORTS/code-scanning.json"
 
-      # --- Measure --------------------------------------------------------------
+      # --- Measure ----------------------------------------------------------
       - name: Summarize + telemetry + triage sample
         if: always()
         run: |
@@ -205,23 +230,27 @@ jobs:
 
       - name: Burn-in trend (previous runs' telemetry)
         if: always() && env.PHASE != 'steady'
-        # rex-allow: ADVISORY_EXPLICIT - first runs have no history; the trend table says so.
+        # First runs have no history; the trend table says so.
+        # rex-allow: ADVISORY_EXPLICIT
         continue-on-error: true
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
           mkdir -p prev
-          ids=$(gh run list -R "${{ github.repository }}" -w code-quality-pilot.yml \
-                  -s completed -L 15 --json databaseId -q '.[].databaseId')
+          ids=$(gh run list -R "${{ github.repository }}" \
+                  -w code-quality-pilot.yml -s completed -L 15 \
+                  --json databaseId -q '.[].databaseId')
           for id in $ids; do
-            if gh run download "$id" -R "${{ github.repository }}" -p 'quality-pilot-*' -D "prev/$id" 2>/dev/null; then
+            if gh run download "$id" -R "${{ github.repository }}" \
+                -p 'quality-pilot-*' -D "prev/$id" 2>/dev/null; then
               :
             else
               echo "run $id: no pilot artifact (skipped day or expired)"
             fi
           done
           shopt -s nullglob
-          python "$PILOT_DIR/pilot_summary.py" trend "$REPORTS/telemetry.json" prev/*/*/telemetry.json \
+          python "$PILOT_DIR/pilot_summary.py" trend \
+            "$REPORTS/telemetry.json" prev/*/*/telemetry.json \
             --last 12 --out "$REPORTS/trend.md"
           cat "$REPORTS/trend.md" >> "$GITHUB_STEP_SUMMARY"
 
@@ -230,12 +259,18 @@ jobs:
         run: |
           {
             echo "<!-- quality-pilot-telemetry -->"
-            echo "### Quality pilot — run ${{ github.run_number }} · ${PHASE} · $(date -u +%Y-%m-%d)"
+            run_date="$(date -u +%Y-%m-%d)"
+            echo "### Quality pilot — run ${{ github.run_number }}" \
+              "· ${PHASE} · ${run_date}"
             echo
             cat "$REPORTS/summary.md" 2>/dev/null
             echo
-            if [ -f "$REPORTS/trend.md" ]; then cat "$REPORTS/trend.md"; echo; fi
-            echo "<details><summary>Scanner telemetry (tool, seconds, exit, version)</summary>"
+            if [ -f "$REPORTS/trend.md" ]; then
+              cat "$REPORTS/trend.md"
+              echo
+            fi
+            echo "<details><summary>Scanner telemetry"
+            echo "(tool, seconds, exit, version)</summary>"
             echo
             echo '```'
             cat "$REPORTS/timings.csv" 2>/dev/null
@@ -251,15 +286,20 @@ jobs:
             echo "Opengrep rule self-test (verdict lines):"
             echo '```'
             if [ -s "$REPORTS/opengrep-selftest.txt" ]; then
-              grep -iE "mismatch|passed|failed|error|✓|✔|✖|✗|[0-9]+/[0-9]+" "$REPORTS/opengrep-selftest.txt" | tail -n 8
-              echo "(self-test output: $(wc -l < "$REPORTS/opengrep-selftest.txt") lines)"
+              grep -iE \
+                "mismatch|passed|failed|error|✓|✔|✖|✗|[0-9]+/[0-9]+" \
+                "$REPORTS/opengrep-selftest.txt" | tail -n 8
+              echo "(self-test output: $(wc -l \
+                < "$REPORTS/opengrep-selftest.txt") lines)"
             else
               echo "no self-test output captured"
             fi
             echo '```'
             echo "</details>"
             echo
-            echo "[Run log + artifact](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }})"
+            run_url="${{ github.server_url }}/${{ github.repository }}"
+            run_url="$run_url/actions/runs/${{ github.run_id }}"
+            echo "[Run log + artifact]($run_url)"
           } > "$REPORTS/digest.md"
 
       - name: Telemetry digest to job summary (PR runs post no comment)
@@ -275,17 +315,20 @@ jobs:
           retention-days: 60
 
   telemetry:
-    # The workflow's only write scope. Never runs on pull_request, so PR-triggered
+    # The workflow's only write scope. Never runs on pull_request, so PR runs
     # runs hold a read-only token end to end.
     needs: pilot
-    if: always() && needs.pilot.result != 'skipped' && github.event_name != 'pull_request'
+    if: >-
+      always() && needs.pilot.result != 'skipped' &&
+      github.event_name != 'pull_request'
     runs-on: ubuntu-latest
     timeout-minutes: 5
     permissions:
       issues: write             # burn-in telemetry issue comments
     steps:
       - name: Download this run's digest
-        # rex-allow: ADVISORY_EXPLICIT - publishing telemetry must never mask scan results.
+        # Publishing telemetry must never mask scan results.
+        # rex-allow: ADVISORY_EXPLICIT
         continue-on-error: true
         # actions/download-artifact (pinned, as in ariana-cicd.yml)
         uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333
@@ -294,7 +337,8 @@ jobs:
           path: ${{ env.REPORTS }}
 
       - name: Publish telemetry (burn-in issue)
-        # rex-allow: ADVISORY_EXPLICIT - publishing telemetry must never mask scan results.
+        # Publishing telemetry must never mask scan results.
+        # rex-allow: ADVISORY_EXPLICIT
         continue-on-error: true
         env:
           GH_TOKEN: ${{ github.token }}
@@ -306,8 +350,12 @@ jobs:
           num=$(gh api "repos/$REPO/issues?state=open&per_page=100" --paginate \
                   -q ".[] | select(.title == \"$title\") | .number" | head -n 1)
           if [ -z "$num" ]; then
+            issue_body="Telemetry digest from each run of"
+            issue_body="$issue_body .github/workflows/code-quality-pilot.yml"
+            issue_body="$issue_body (protocol: tools/quality_pilot/README.md)."
+            issue_body="$issue_body Close when burn-in and triage are done."
             num=$(gh api "repos/$REPO/issues" -f title="$title" \
-                    -f body="Telemetry digest from each run of .github/workflows/code-quality-pilot.yml (protocol: tools/quality_pilot/README.md). Close when burn-in and triage are done." \
-                    -q .number)
+                    -f body="$issue_body" -q .number)
           fi
-          gh api "repos/$REPO/issues/$num/comments" -F body=@"$body" -q .html_url
+          gh api "repos/$REPO/issues/$num/comments" \
+            -F body=@"$body" -q .html_url

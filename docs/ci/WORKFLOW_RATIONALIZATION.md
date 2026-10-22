@@ -3,11 +3,11 @@
 # ABACUS CI workflow rationalisation
 
 Policy: `ABACUS-CI-SSOT-001`  
-Policy SHA-256 (canonical sorted JSON bytes of `ci/governance/workflow_policy.json`): `8885126e9898e05d1204a82f607b4426e94b39e7b1468f3ae5657c6235a2f750`
+Policy SHA-256 (canonical sorted JSON bytes of `ci/governance/workflow_policy.json`): `a1b88668703aab367cf19c451ad444311e495c938f5a30970429d15ebd4ea755`
 
 ## Outcome
 
-The repository currently contains **213 workflow definitions**. All **213** are assigned to one primary functional cluster and lifecycle stage.
+The repository currently contains **214 workflow definitions**. All **214** are assigned to one primary functional cluster and lifecycle stage.
 
 The observed baseline that motivated this control was PR #681 with 119 check runs (111 queued, 8 skipped) and main with 122 check runs.
 
@@ -34,7 +34,7 @@ The observed baseline that motivated this control was PR #681 with 119 check run
 | `dow` | `dow-integration.yml` | 22 | DOW parent mechanics, integration, monitoring and warm-up. |
 | `runtime_governance` | `governance.yml` | 30 | Runtime evidence, governance, review artifacts and schema validation. |
 | `security` | `security-scan.yml` | 13 | Ruff PR security, scheduled Bandit, CodeQL, dependency and supply-chain scanning. |
-| `delivery` | `cd-pipeline.yml` | 8 | Build, release, deployment and publication. |
+| `delivery` | `cd-pipeline.yml` | 9 | Build, release, deployment and publication. |
 | `documentation` | `docs-build.yml` | 7 | Documentation validation, rendering, export and Pages. |
 | `automation` | `post-merge-pr-summary.yml` | 13 | Repository maintenance, reporting, branch and PR automation. |
 | `specialised` | `qps-cost-roundtrip-contract.yml` | 45 | Bounded product or historical pipelines retained outside core CI. |
@@ -248,6 +248,7 @@ Make PR-triggered workflows with write-class GitHub token scopes explicit and re
 | 30 | `post_merge` | `delivery` | `delta-1-deploy.yml` | workflow_dispatch | 1 | `keep` | — |
 | 30 | `post_merge` | `delivery` | `delta-1-release.yml` | workflow_dispatch | 1 | `keep` | — |
 | 30 | `post_merge` | `delivery` | `history-purge-20260827.yml` | push | 1 | `keep` | — |
+| 30 | `post_merge` | `delivery` | `nextjs.yml` | push, workflow_dispatch | 2 | `keep` | — |
 | 30 | `post_merge` | `delivery` | `release.yml` | push, workflow_dispatch | 2 | `keep` | — |
 | 30 | `post_merge` | `delivery` | `remove-public-binaries.yml` | push | 1 | `keep` | — |
 | 30 | `post_merge` | `documentation` | `deploy-docs.yml` | push, workflow_dispatch | 3 | `keep` | — |
