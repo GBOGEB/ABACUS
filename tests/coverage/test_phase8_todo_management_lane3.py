@@ -296,11 +296,12 @@ def test_duplicate_todo_ids_collapse_in_registry_but_not_in_local_list(
     assert len(results["local_todos"]) == 2
     ids = {t["todo_id"] for t in results["local_todos"]}
     assert len(ids) == 1
+    only_id = next(iter(ids))
     registry = _read_registry(env.registry)
     assert registry["total_todos"] == 1
     # The registry keeps only the last writer's source file.
     assert registry["todos"][0]["source_file"].endswith("y.json")
-    assert results["todo_links"]["phase_to_todos"]["phase4"] == [ids.pop()] * 2
+    assert results["todo_links"]["phase_to_todos"]["phase4"] == [only_id] * 2
 
 
 # --------------------------------------------------------------------------- collection
