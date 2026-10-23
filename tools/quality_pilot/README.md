@@ -5,33 +5,28 @@ anything new is gated. Nothing in this pilot can fail a merge.
 
 ## What it adds (and what it deliberately does not)
 
-ABACUS already runs CodeQL, Semgrep (`p/python`, `p/owasp-top-ten`,
-`p/secrets`), Bandit, Ruff security and Dependabot. The pilot does **not**
-re-run those. It adds:
+ABACUS already runs CodeQL, Semgrep (`p/python`, `p/owasp-top-ten`, `p/secrets`),
+Bandit, Ruff security and Dependabot. The pilot does **not** re-run those. It adds:
 
-- **gitleaks** (full history, redacted; MIT) — Semgrep `p/secrets` sees only
-  the current tree.
-- **pip-audit** (Apache-2.0) — Dependabot opens PRs but gives no CVE baseline
-  count.
-- **mypy** on `models` + `DMAIC_V3/core` (MIT) — no type checking on the
-  physics/orchestration core.
-- **mypy-focus** (burn-in only; MIT) — strict scan of `models/` with
-  `--check-untyped-defs`, `--warn-unreachable` and `--strict-equality`.
-- **Opengrep** + `rules/ssot.yml` (LGPL-2.1) — SSOT / EOS-adapter /
-  patch-counter governance.
-- **code-scanning import** (—) — precision of the **existing**
-  CodeQL/Semgrep/Bandit alerts.
+| Tool | Gap it closes | Licence |
+| --- | --- | --- |
+| gitleaks (full history) | Scans history, not only the current tree | MIT |
+| pip-audit | Adds a CVE baseline to Dependabot | Apache-2.0 |
+| mypy core paths | Type checks physics and orchestration code | MIT |
+| mypy-focus | Strict burn-in scan of `models/` | MIT |
+| Opengrep | SSOT, EOS, and patch-counter rules | LGPL-2.1 |
+| Code-scanning import | Measures existing scanner precision | — |
 
 ## Cadence
 
-- **burn-in** — first `BURN_IN_RUNS` (=10) **scheduled** runs, daily at
-  05:17 UTC (PR/manual runs do not consume it); focused scan + run-over-run
-  trend.
-- **steady** — afterwards, **Mondays** only (other days skip in ~5 s).
-- **manual** — `workflow_dispatch` or a PR touching pilot files; focused scan
-  and trend.
+| Phase | When | Extras |
+| --- | --- | --- |
+| burn-in | First 10 scheduled runs; daily at 05:17 UTC | Focused scan + trend |
+| steady | After burn-in, Mondays only | — |
+| manual | Manual dispatch or a pilot-file PR | Focused scan + trend |
 
-Change `BURN_IN_RUNS` in the workflow `env:` to extend or shorten burn-in.
+Change `BURN_IN_RUNS` in the workflow `env:` to extend or shorten
+burn-in.
 
 ## Telemetry (per run, in the `quality-pilot-N` artifact)
 
@@ -43,10 +38,11 @@ Change `BURN_IN_RUNS` in the workflow `env:` to extend or shorten burn-in.
 - `summary.md` — also posted to the job summary.
 - `triage_sample.csv` — 20 findings, stratified per tool, new seed each run.
 
-Trusted scheduled or main-branch manual runs post this digest to the standing
-issue **"Quality pilot — burn-in telemetry"** (created on first scheduled run).
-PR runs publish only the job summary and artifact; their scan job has read-only
-permissions.
+Scheduled and manual runs also post this digest as a comment on the standing
+issue **"Quality pilot — burn-in telemetry"** (created on first scheduled run),
+so every burn-in run produces a readable notification. Pilot PRs post no
+comment: their token stays read-only and the digest goes to the job summary
+instead.
 
 Exit codes are recorded honestly (`timed.sh` returns the scanner's own code).
 All advisory steps carry `# rex-allow: ADVISORY_EXPLICIT` and pass
@@ -63,10 +59,12 @@ All advisory steps carry `# rex-allow: ADVISORY_EXPLICIT` and pass
 4. **Improve** — tune or drop rules the score marks low-precision.
 5. **Control** — gate only what earned it:
 
-- **gitleaks / pip-audit with ≥1 real hit** — gate immediately.
-- **precision ≥ 50 %** — gate **new code only** (ratchet).
-- **20–50 %** — stay report-only and tune.
-- **< 20 %** — drop or rewrite the rule.
+| Score result | Action |
+| --- | --- |
+| gitleaks / pip-audit with ≥1 real hit | gate immediately |
+| precision ≥ 50 % | gate **new code only** (ratchet) |
+| 20–50 % | stay report-only, tune |
+| < 20 % | drop or rewrite the rule |
 
 Thresholds: `GATE_PRECISION`, `TUNE_PRECISION` in `pilot_summary.py`.
 

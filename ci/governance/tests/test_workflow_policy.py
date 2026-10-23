@@ -60,6 +60,13 @@ class WorkflowPolicyTests(unittest.TestCase):
         self.assertEqual(0, self.policy["quality_gates"]["allow_unclassified"])
         self.assertFalse(self.policy["quality_gates"]["allow_multiple_rule_matches"])
 
+    def test_nextjs_pages_deployment_is_owned_by_delivery(self):
+        rule, matches = MODULE.classify("nextjs.yml", self.policy)
+        self.assertEqual(1, len(matches))
+        self.assertEqual("delivery", rule["cluster"])
+        self.assertEqual("post_merge", rule["lifecycle"])
+        self.assertEqual("keep", rule["disposition"])
+
     def test_g3f_new_source_owned_workflows_are_explicit_and_read_only(self):
         """Eight new owners cannot be silently absorbed by broad patterns."""
         expected = {

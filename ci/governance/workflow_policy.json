@@ -232,6 +232,12 @@
       "disposition": "keep"
     },
     {
+      "pattern": "^code-quality-pilot\\.yml$",
+      "cluster": "security",
+      "lifecycle": "scheduled",
+      "disposition": "keep"
+    },
+    {
       "pattern": "^(ci-abacus|ci-enhanced|ci-pipeline|main|abacus-cicd|ariana-cicd|tooling-ci|format-check|pytest-config-validation|smoke-test)\\.yml$",
       "cluster": "core_test",
       "lifecycle": "pr_fast",
@@ -292,13 +298,13 @@
       "disposition": "keep"
     },
     {
-      "pattern": "^(deploy-docs|docs-build|export-docs|nextjs|pages|reports|update-docs)\\.yml$",
-      "cluster": "documentation",
+      "pattern": "^nextjs\\.yml$",
+      "cluster": "delivery",
       "lifecycle": "post_merge",
       "disposition": "keep"
     },
     {
-      "pattern": "^nextjs\\.yml$",
+      "pattern": "^(deploy-docs|docs-build|export-docs|pages|reports|update-docs)\\.yml$",
       "cluster": "documentation",
       "lifecycle": "post_merge",
       "disposition": "keep"
