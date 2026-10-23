@@ -274,7 +274,7 @@
       "disposition": "keep"
     },
     {
-      "pattern": "^(codeql|dependency-review|osv-scanner|osv-scheduled|reusable-security|security-dashboard|security-scan|semgrep)\\.yml$",
+      "pattern": "^(code-quality-pilot|codeql|dependency-review|osv-scanner|osv-scheduled|reusable-security|security-dashboard|security-scan|semgrep)\\.yml$",
       "cluster": "security",
       "lifecycle": "pr_domain",
       "disposition": "keep"
@@ -292,7 +292,7 @@
       "disposition": "keep"
     },
     {
-      "pattern": "^(deploy-docs|docs-build|export-docs|pages|reports|update-docs)\\.yml$",
+      "pattern": "^(deploy-docs|docs-build|export-docs|nextjs|pages|reports|update-docs)\\.yml$",
       "cluster": "documentation",
       "lifecycle": "post_merge",
       "disposition": "keep"
@@ -336,6 +336,12 @@
     {
       "pattern": "^cycle2-temporal-pca-independent-consumer\\.yml$",
       "cluster": "dow",
+      "lifecycle": "pr_domain",
+      "disposition": "keep"
+    },
+    {
+      "pattern": "^code-purple-w76-zero-assets\\.yml$",
+      "cluster": "specialised",
       "lifecycle": "pr_domain",
       "disposition": "keep"
     },
