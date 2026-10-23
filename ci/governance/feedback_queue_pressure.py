@@ -112,13 +112,15 @@ def analyze(data):
 def emit(data, output):
     result = analyze(data)
     output.mkdir(parents=True, exist_ok=True)
-    report = canonical(result) + "\n"
-    (output / "pressure.json").write_text(report, encoding="utf-8")
+    # Hash and write the same bytes: text-mode writes translate "\n" to "\r\n"
+    # on Windows, so the manifest would not bind the receipt on disk.
+    report = (canonical(result) + "\n").encode("utf-8")
+    (output / "pressure.json").write_bytes(report)
     manifest = {"schema": SCHEMA + ".manifest",
-                "sha256": {"pressure.json": hashlib.sha256(report.encode()).hexdigest()},
+                "sha256": {"pressure.json": hashlib.sha256(report).hexdigest()},
                 "source_sha": result["main_sha"], "authority_transfer": False}
-    (output / "manifest.json").write_text(
-        canonical(manifest) + "\n", encoding="utf-8"
+    (output / "manifest.json").write_bytes(
+        (canonical(manifest) + "\n").encode("utf-8")
     )
     return result
 

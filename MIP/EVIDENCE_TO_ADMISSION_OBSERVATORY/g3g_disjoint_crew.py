@@ -23,13 +23,26 @@ def require(flag: bool, why: str) -> None:
 
 
 def _path(s: Any) -> bool:
-    return isinstance(s, str) and bool(s) and not s.startswith("/") and (
-        "\\" not in s and all(x not in ("", ".", "..") for x in s.split("/"))
+    """Conservative cross-platform path lease; not realpath/ACL proof."""
+    return (
+        isinstance(s, str) and bool(s) and not s.startswith("/")
+        and "\\" not in s and ":" not in s
+        and not any(ord(char) < 32 or ord(char) == 127 for char in s)
+        and all(
+            part not in ("", ".", "..")
+            and not part.endswith((".", " "))
+            for part in s.split("/")
+        )
     )
 
 
 def _overlap(a: str, b: str) -> bool:
-    return a == b or a.startswith(b + "/") or b.startswith(a + "/")
+    left, right = a.casefold(), b.casefold()
+    return (
+        left == right
+        or left.startswith(right + "/")
+        or right.startswith(left + "/")
+    )
 
 
 def assess(payload: dict) -> dict:
@@ -58,16 +71,23 @@ def assess(payload: dict) -> dict:
         require(lane.get("parent") in PARENTS and
                 lane.get("state") in STATES, "parent/state")
         require(isinstance(lane.get("repo"), str) and
-                lane["repo"].startswith("GBOGEB/") and
-                lane["repo"].count("/") == 1, "repository")
+                re.fullmatch(r"GBOGEB/[A-Za-z0-9_.-]+", lane["repo"],
+                             flags=re.IGNORECASE) is not None and
+                lane["repo"].split("/")[1] not in (".", ".."),
+                "repository")
         require(isinstance(lane.get("head_sha"), str) and
                 bool(SHA.fullmatch(lane["head_sha"])), "exact SHA")
         deps = lane.get("depends_on")
         require(isinstance(deps, list) and len(deps) == len(set(deps)) and
                 all(d in table and d != lane["id"] for d in deps), "DAG edges")
         paths = lane.get("lease_paths")
-        require(isinstance(paths, list) and all(_path(x) for x in paths) and
-                len(paths) == len(set(paths)), "leased source paths")
+        require(isinstance(paths, list) and all(_path(x) for x in paths),
+                "leased source paths")
+        require(not any(
+            _overlap(path, earlier)
+            for index, path in enumerate(paths)
+            for earlier in paths[:index]
+        ), "overlapping intra-lane source lease")
         need = lane.get("receipt")
         if lane["state"] == "NATIVE_PASS":
             require(isinstance(need, dict) and
@@ -100,12 +120,29 @@ def assess(payload: dict) -> dict:
         walk(key)
     used = []
     for lane in lanes:
+        repo_key = lane["repo"].casefold()
         for path in lane["lease_paths"]:
             for repo, other, owner in used:
-                require(not (repo == lane["repo"] and
+                require(not (repo.casefold() == lane["repo"].casefold() and
                              _overlap(path, other)),
                         f"overlapping source lease {owner} -> {lane['id']}")
-            used.append((lane["repo"], path, lane["id"]))
+            used.append((repo_key, path, lane["id"]))
+    # Preserve historical plans: absent SUT inventories do not cause an
+    # exception, but they cannot be promoted to independent scaling proof.
+    sut_used = []
+    sut_unknown = []
+    for lane in lanes:
+        repo_key = lane["repo"].casefold()
+        targets = lane.get("sut_paths")
+        if targets is None or (not targets and lane["lease_paths"]):
+            sut_unknown.append(lane["id"])
+            continue
+        for target in targets:
+            for repo, other, owner in sut_used:
+                require(not (repo == repo_key and _overlap(target, other)),
+                        f"overlapping SUT source target {owner} -> {lane['id']}")
+            sut_used.append((repo_key, target, lane["id"]))
+    sut_complete = not sut_unknown
     fingerprint_counts = {}
     occurrence_counts = {}
     for lane in lanes:
@@ -138,6 +175,10 @@ def assess(payload: dict) -> dict:
         "read_only_unblocked_lanes": ready,
         "advisory_readonly_parallel_limit": min(3, len(ready)),
         "source_path_leases_disjoint": True,
+        "sut_source_leases_disjoint": True if sut_complete else None,
+        "sut_lease_census_complete": sut_complete,
+        "sut_source_target_count": len(sut_used) if sut_complete else None,
+        "sut_unreported_lane_ids": sorted(sut_unknown),
         "distinct_first_red_fingerprints": len(fingerprint_counts),
         "fingerprint_manifestations_by_lane": dict(sorted(fingerprint_counts.items())),
         "source_observed_occurrences": dict(sorted(occurrence_counts.items())),

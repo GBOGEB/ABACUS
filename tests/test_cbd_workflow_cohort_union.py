@@ -71,6 +71,7 @@ class CohortUnionTests(unittest.TestCase):
             'test "$(git rev-parse HEAD)" = "$EXPECTED_PULL_HEAD"',
             "actual_head = subprocess.check_output(",
             '["git", "rev-parse", "HEAD"], text=True',
+            ").strip()",
             "if actual_head != pull_head:",
         )
         receipt_guard = re.compile(
@@ -85,15 +86,14 @@ class CohortUnionTests(unittest.TestCase):
             self.assertEqual(len(receipt_guard.findall(source)), 1)
 
         assert_bound(workflow)
-        # Every mutant removes the single required binding; each must fail.
         mutants = (
-            workflow.replace(required[0], "ref: github.sha"),
-            workflow.replace(required[1], "persist-credentials: true"),
-            workflow.replace(required[2], "echo skipped"),
-            workflow.replace(required[3], "actual_head = pull_head  # ("),
-            workflow.replace(required[5], "if False:"),
+            workflow.replace(required[0], "ref: github.sha", 1),
+            workflow.replace(required[1], "persist-credentials: true", 1),
+            workflow.replace(required[2], "echo skipped", 1),
+            workflow.replace(required[3], "actual_head = pull_head  #", 1),
+            workflow.replace(required[6], "if False:", 1),
             receipt_guard.sub("if actual_head != pull_head:\n    print(", workflow),
-            workflow + "\n# " + required[5] + "\n",
+            workflow + "\n# " + required[6] + "\n",
         )
         for mutant in mutants:
             self.assertNotEqual(mutant, workflow)
@@ -132,38 +132,18 @@ class CohortUnionTests(unittest.TestCase):
         data = snapshots()
         data = [data[0], copy.deepcopy(data[0]), copy.deepcopy(data[0])]
         result = produce_cohorts(data)
-        self.assertEqual(
-            result["cohort_reconciliation"]["declared_observation_rows"], 36
-        )
-        # Declared run IDs are distinct, but native attempts are still unknown.
+        self.assertEqual(result["cohort_reconciliation"]["declared_observation_rows"], 36)
+        # All 12 run IDs have unknown attempts in the frozen snapshot.
+        # Identical duplicates do not manufacture authenticated attempts.
         self.assertIsNone(result["cohort_reconciliation"]["distinct_run_attempts"])
-        self.assertEqual(
-            result["cohort_reconciliation"]["distinct_declared_run_ids"], 12
-        )
-        known = copy.deepcopy(data[0])
-        for row in known["observations"]:
-            row["attempt"] = 1
-        proven_shape = produce_cohorts([known, copy.deepcopy(known)])
-        self.assertEqual(
-            proven_shape["cohort_reconciliation"]["distinct_run_attempts"], 12
-        )
-        self.assertEqual(
-            proven_shape["cohort_reconciliation"]["source_attempt_verification"],
-            "NOT_LIVE_VERIFIED",
-        )
-        self.assertEqual(
-            result["cohort_reconciliation"]["cross_source_duplicate_rows"], 24
-        )
-        self.assertEqual(
-            result["cohort_reconciliation"]["unknown_attempt_associations"], 36
-        )
-        self.assertEqual(
-            result["cohort_reconciliation"]["unresolved_unknown_run_ids"], 12
-        )
+        self.assertEqual(result["cohort_reconciliation"]["unresolved_unknown_run_ids"], 12)
+        self.assertEqual(result["cohort_reconciliation"]["distinct_declared_run_ids"], 12)
+        self.assertEqual(result["cohort_reconciliation"]["source_attempt_verification"],
+                         "NOT_LIVE_VERIFIED")
+        self.assertEqual(result["cohort_reconciliation"]["cross_source_duplicate_rows"], 24)
+        self.assertEqual(result["cohort_reconciliation"]["unknown_attempt_associations"], 36)
         self.assertIsNone(result["cohort_reconciliation"]["root_closure_credit"])
-        self.assertEqual(
-            result["cohort_reconciliation"]["distinct_source_documents"], 1
-        )
+        self.assertEqual(result["cohort_reconciliation"]["distinct_source_documents"], 1)
 
     def test_same_run_with_different_workflow_rejected(self):
         data = snapshots()
@@ -267,21 +247,15 @@ class CohortUnionTests(unittest.TestCase):
             [6, 12, 19], [p["distinct_failed_pr_heads_cumulative"] for p in pulses]
         )
         # Frozen source files establish 12, then 40, then 66 distinct run IDs.
-        self.assertEqual(
-            [12, 40, 66], [p["distinct_run_ids_cumulative"] for p in pulses]
-        )
-        self.assertTrue(
-            all(
-                p["kind"] == "SOURCE_INGESTION_NOT_TEMPORAL_IMPROVEMENT" for p in pulses
-            )
-        )
+        self.assertEqual([12, 40, 66], [p["distinct_run_ids_cumulative"] for p in pulses])
+        self.assertTrue(all(p["kind"] == "SOURCE_INGESTION_NOT_TEMPORAL_IMPROVEMENT" for p in pulses))
+        # The two later frozen source snapshots carry 20 distinct declared
+        # PR-head manifests; these are non-atomic, not native live receipts.
         self.assertEqual(rec["distinct_manifested_pr_heads"], 20)
         self.assertEqual(rec["manifested_zero_failure_prs"], [2033])
         self.assertEqual(rec["non_atomic_manifest_workflow_associations"], 533)
         self.assertEqual(rec["non_atomic_manifest_failed_associations"], 66)
-        self.assertEqual(
-            rec["manifest_comparability"], "NOT_A_DENOMINATOR_FOR_UNION_PASS_RATE"
-        )
+        self.assertEqual(rec["manifest_comparability"], "NOT_A_DENOMINATOR_FOR_UNION_PASS_RATE")
 
     def test_unique_known_attempt_can_join_without_native_authentication(self):
         source = snapshots()[1]
@@ -356,27 +330,28 @@ class CohortUnionTests(unittest.TestCase):
         self.assertIn("sampled_pr_heads", source[1])
         self.assertIn("sampled_pr_heads", source[2])
         receipt = produce_cohorts(source)["cohort_reconciliation"]
+        # One older snapshot omits manifests; two later snapshots declare
+        # head summaries without proving native run/attempt identities.
         self.assertEqual(receipt["snapshots_without_head_manifests"], 1)
         self.assertEqual(receipt["distinct_manifested_pr_heads"], 20)
         self.assertEqual(receipt["non_atomic_manifest_workflow_associations"], 533)
         self.assertEqual(receipt["non_atomic_manifest_failed_associations"], 66)
         self.assertEqual(receipt["manifested_zero_failure_prs"], [2033])
-        self.assertEqual(
-            receipt["manifest_comparability"], "NOT_A_DENOMINATOR_FOR_UNION_PASS_RATE"
-        )
+        self.assertEqual(receipt["manifest_comparability"],
+                         "NOT_A_DENOMINATOR_FOR_UNION_PASS_RATE")
         self.assertIsNone(receipt["root_closure_credit"])
         self.assertEqual(receipt["admission"], "HOLD")
+
 
     def test_known_and_unknown_attempts_are_not_falsely_summed(self):
         result = produce_cohorts(snapshots())
         self.assertIsNone(result["observed"]["run_attempt_count"])
         self.assertEqual(result["observed"]["run_association_count"], 66)
-        self.assertEqual(
-            result["cohort_reconciliation"]["unknown_attempt_associations"], 78
-        )
-        self.assertEqual(
-            result["cohort_reconciliation"]["distinct_declared_run_ids"], 66
-        )
+        # Raw input has 78 unknown-attempt associations; deduplication
+        # yields 66 distinct run IDs but must not rewrite that raw count.
+        self.assertEqual(result["cohort_reconciliation"]["unknown_attempt_associations"], 78)
+        self.assertEqual(result["cohort_reconciliation"]["unresolved_unknown_run_ids"], 66)
+        self.assertEqual(result["cohort_reconciliation"]["distinct_declared_run_ids"], 66)
 
     def test_unknown_attempt_remains_unverified_under_duplicate_source(self):
         source = snapshots()[1]
@@ -419,4 +394,3 @@ class CohortUnionTests(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
-

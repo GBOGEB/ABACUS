@@ -78,7 +78,8 @@
       "governance.yml",
       "yaml-validation.yml",
       "recursive-build.yml",
-      "docs-build.yml"
+      "docs-build.yml",
+      "nextjs.yml"
     ]
   },
   "permission_controls": {
@@ -86,6 +87,7 @@
     "pr_write_allowed": [
       "bootstrap-integration.yml",
       "branch-hygiene.yml",
+      "code-quality-pilot.yml",
       "codeql.yml",
       "dependency-review.yml",
       "gloob-causal-responder.yml",
@@ -231,6 +233,12 @@
       "disposition": "keep"
     },
     {
+      "pattern": "^code-quality-pilot\\.yml$",
+      "cluster": "security",
+      "lifecycle": "scheduled",
+      "disposition": "keep"
+    },
+    {
       "pattern": "^(ci-abacus|ci-enhanced|ci-pipeline|main|abacus-cicd|ariana-cicd|tooling-ci|format-check|pytest-config-validation|smoke-test)\\.yml$",
       "cluster": "core_test",
       "lifecycle": "pr_fast",
@@ -273,7 +281,13 @@
       "disposition": "keep"
     },
     {
-      "pattern": "^(codeql|dependency-review|osv-scanner|osv-scheduled|reusable-security|security-dashboard|security-scan|semgrep)\\.yml$",
+      "pattern": "^(code-quality-pilot|codeql|dependency-review|osv-scanner|osv-scheduled|reusable-security|security-dashboard|security-scan|semgrep)\\.yml$",
+      "cluster": "security",
+      "lifecycle": "pr_domain",
+      "disposition": "keep"
+    },
+    {
+      "pattern": "^code-quality-pilot\\.yml$",
       "cluster": "security",
       "lifecycle": "pr_domain",
       "disposition": "keep"
@@ -285,7 +299,7 @@
       "disposition": "keep"
     },
     {
-      "pattern": "^(deploy-docs|docs-build|export-docs|pages|reports|update-docs)\\.yml$",
+      "pattern": "^(deploy-docs|docs-build|export-docs|nextjs|pages|reports|update-docs)\\.yml$",
       "cluster": "documentation",
       "lifecycle": "post_merge",
       "disposition": "keep"
@@ -323,6 +337,12 @@
     {
       "pattern": "^cycle2-temporal-pca-independent-consumer\\.yml$",
       "cluster": "dow",
+      "lifecycle": "pr_domain",
+      "disposition": "keep"
+    },
+    {
+      "pattern": "^code-purple-w76-zero-assets\\.yml$",
+      "cluster": "specialised",
       "lifecycle": "pr_domain",
       "disposition": "keep"
     },

@@ -126,7 +126,10 @@ class FastMetricsCollector:
             "duplicate_files": sum(len(files) - 1 for files in duplicates.values()),
             "files_with_version_headers": files_with_headers,
             "version_header_percentage": round(files_with_headers / len(python_files) * 100, 2) if python_files else 0,
-            "estimated_import_issues": int(len(import_issues) * (len(python_files) / len(sample_files)))
+            "estimated_import_issues": (
+            int(len(import_issues) * (len(python_files) / len(sample_files)))
+            if sample_files else 0
+        )
         }
 
         print("\n[SUMMARY]")
