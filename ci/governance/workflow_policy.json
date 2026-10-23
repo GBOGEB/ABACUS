@@ -280,6 +280,12 @@
       "disposition": "keep"
     },
     {
+      "pattern": "^code-quality-pilot\\.yml$",
+      "cluster": "security",
+      "lifecycle": "pr_domain",
+      "disposition": "keep"
+    },
+    {
       "pattern": "^(cd-pipeline|cd-unified|cd|release|delta-1-deploy|delta-1-release|history-purge-20260827|remove-public-binaries)\\.yml$",
       "cluster": "delivery",
       "lifecycle": "post_merge",
@@ -287,6 +293,12 @@
     },
     {
       "pattern": "^(deploy-docs|docs-build|export-docs|nextjs|pages|reports|update-docs)\\.yml$",
+      "cluster": "documentation",
+      "lifecycle": "post_merge",
+      "disposition": "keep"
+    },
+    {
+      "pattern": "^nextjs\\.yml$",
       "cluster": "documentation",
       "lifecycle": "post_merge",
       "disposition": "keep"
@@ -697,6 +709,12 @@
       "pattern": "^cbd-scheduled-gated-pulse\\.yml$",
       "cluster": "runtime_governance",
       "lifecycle": "scheduled",
+      "disposition": "keep"
+    },
+    {
+      "pattern": "^config-surface-audit\\.yml$",
+      "cluster": "runtime_governance",
+      "lifecycle": "pr_domain",
       "disposition": "keep"
     }
   ],
