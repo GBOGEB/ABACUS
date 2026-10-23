@@ -281,13 +281,7 @@
       "disposition": "keep"
     },
     {
-      "pattern": "^(code-quality-pilot|codeql|dependency-review|osv-scanner|osv-scheduled|reusable-security|security-dashboard|security-scan|semgrep)\\.yml$",
-      "cluster": "security",
-      "lifecycle": "pr_domain",
-      "disposition": "keep"
-    },
-    {
-      "pattern": "^code-quality-pilot\\.yml$",
+      "pattern": "^(codeql|dependency-review|osv-scanner|osv-scheduled|reusable-security|security-dashboard|security-scan|semgrep)\\.yml$",
       "cluster": "security",
       "lifecycle": "pr_domain",
       "disposition": "keep"
@@ -299,7 +293,13 @@
       "disposition": "keep"
     },
     {
-      "pattern": "^(deploy-docs|docs-build|export-docs|nextjs|pages|reports|update-docs)\\.yml$",
+      "pattern": "^nextjs\\.yml$",
+      "cluster": "delivery",
+      "lifecycle": "post_merge",
+      "disposition": "keep"
+    },
+    {
+      "pattern": "^(deploy-docs|docs-build|export-docs|pages|reports|update-docs)\\.yml$",
       "cluster": "documentation",
       "lifecycle": "post_merge",
       "disposition": "keep"
@@ -715,6 +715,12 @@
     {
       "pattern": "^floating-reconnection-testflight\\.yml$",
       "cluster": "core_test",
+      "lifecycle": "pr_domain",
+      "disposition": "keep"
+    },
+    {
+      "pattern": "^config-surface-audit\\.yml$",
+      "cluster": "runtime_governance",
       "lifecycle": "pr_domain",
       "disposition": "keep"
     }
