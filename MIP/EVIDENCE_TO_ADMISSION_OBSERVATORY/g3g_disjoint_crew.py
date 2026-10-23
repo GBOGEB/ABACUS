@@ -88,6 +88,14 @@ def assess(payload: dict) -> dict:
             for index, path in enumerate(paths)
             for earlier in paths[:index]
         ), "overlapping intra-lane source lease")
+        # An independent test-file lease does not prove independence of the
+        # production code under test. Missing targets remain UNKNOWN.
+        targets = lane.get("sut_paths")
+        require(targets is None or (
+            isinstance(targets, list) and
+            all(_path(x) for x in targets) and
+            len(targets) == len(set(targets))
+        ), "SUT source paths")
         need = lane.get("receipt")
         if lane["state"] == "NATIVE_PASS":
             require(isinstance(need, dict) and
