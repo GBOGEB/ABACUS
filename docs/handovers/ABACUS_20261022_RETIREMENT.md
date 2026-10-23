@@ -143,6 +143,8 @@ Ledger `S07`, `E16`–`E20`; cohort `C-MAIN-0138ef51`; roots R08/R10 revised, pl
 
 **Follow-up on this branch:** R12 now has a proposed fix: Python 3.10 is dropped from both matrices and from the proof audit, in line with `requires-python >=3.11`. It hasn't run in CI yet. **R13**: the CI Workflow Governance failure reproduces locally. `config-surface-audit.yml` (#2390) has no workflow classification, and the Next.js Pages deployment has the wrong owner.
 
+**R13 fix on this branch:** three ownership rules that the merge burst dropped are restored: `nextjs.yml` → delivery, `config-surface-audit.yml` → runtime_governance, and `code-quality-pilot.yml` now has a single owner, security/scheduled. The rationalisation report is regenerated, and `test_workflow_policy.py` passes 15/15. **R14 (open):** `code-quality-pilot.yml` itself has reverted to an older layout. Two `test_execution_tiers` checks still fail because of it, so CI Workflow Governance stays red until you decide which version of that workflow is canonical.
+
 **To close the coverage gap:** with an authenticated `gh`, run `gh run download 39922825831 -R GBOGEB/ABACUS -n b0-canonical-0138ef5193b20ef8a64132267444299074cd8beb -D <empty dir>`, then record its totals as `C-MAIN-0138ef51`.
 
 **MERGE_ADMISSION = HOLD (MACH-II prerequisite unmet) · Formal engineering credit Δ = 0 · Stability 3/3 = UNVERIFIED**
