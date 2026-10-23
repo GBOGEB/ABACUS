@@ -1,3 +1,4 @@
+# yamllint disable rule:line-length
 name: G3A N14-N15 matched four-module branch flight
 on:
   pull_request:
@@ -5,6 +6,16 @@ on:
       - 'tests/test_g3a_n14_debug.py'
       - 'tests/test_g3a_n14_improve.py'
       - 'tests/test_g3a_n15_phase8.py'
+      - 'tests/test_g3a_w16_*.py'
+      - 'DMAIC_V3/debug_pipeline.py'
+      - 'DMAIC_V3/phases/phase4_improve.py'
+      - 'DMAIC_V3/phases/phase8_todo_management.py'
+      - 'cicd_github_orchestrator.py'
+      - 'scripts/g3a_bounded_mission.py'
+      - 'MIP/statistics/g3a_w16_kpi.py'
+      - 'MIP/statistics/g3a_w16_epoch.json'
+      - 'scripts/g3a_w16_preflight.py'
+      - 'scripts/g3a_w16_repin.py'
       - '.github/workflows/g3a-n14-matched-arc-flight.yml'
   workflow_dispatch:
 permissions:
@@ -18,6 +29,14 @@ jobs:
         with:
           ref: ${{ github.event.pull_request.head.sha || github.sha }}
           persist-credentials: false
+      - name: W16 preflight before Python provisioning
+        env:
+          EXPECTED_HEAD: ${{ github.event.pull_request.head.sha || github.sha }}
+        run: |
+          set -euo pipefail
+          python3 scripts/g3a_w16_preflight.py \
+            --expected-head "$EXPECTED_HEAD" \
+            --out test_reports/n16/preflight.json
       - uses: actions/setup-python@v7
         with:
           python-version: '3.12'
@@ -26,101 +45,103 @@ jobs:
           EXPECTED_HEAD: ${{ github.event.pull_request.head.sha || github.sha }}
         run: |
           set -euo pipefail
+          # Source blobs are pinned in MIP/statistics/g3a_w16_epoch.json and
+          # were verified by the preflight above.
           test "$(git rev-parse HEAD)" = "$EXPECTED_HEAD"
-          actual="$(git hash-object DMAIC_V3/debug_pipeline.py)"
-          test "$actual" = "730cab72408ac473fb89123d9d76bb7a2edb075e"
-          actual="$(git hash-object DMAIC_V3/phases/phase4_improve.py)"
-          test "$actual" = "c86e8e3406f0942f7c0dc3eda4952588308c169d"
-          actual="$(git hash-object DMAIC_V3/phases/phase8_todo_management.py)"
-          test "$actual" = "e9e4edd4c2b5b23a850892efb40b0c256a9ce490"
-          actual="$(git hash-object cicd_github_orchestrator.py)"
-          test "$actual" = "2e0f80b8f476d6f4eab05defb52aae2f77e30c61"
       - name: Install coverage and PyYAML
         run: |
           python -m pip install --disable-pip-version-check \
             'coverage==7.16.2' 'PyYAML==6.0.2'
-      - name: N13 plus N14 single-process matched coverage
+      - name: W16 source-epoch single-process branch flight
         run: |
           set -euo pipefail
-          mkdir -p test_reports/n15
+          mkdir -p test_reports/n16
+          date +%s > test_reports/n16/test-start.txt
           source_modules="DMAIC_V3.phases.phase4_improve,"
           source_modules="${source_modules}DMAIC_V3.phases."
           source_modules="${source_modules}phase8_todo_management,"
           source_modules="${source_modules}DMAIC_V3.debug_pipeline,"
           source_modules="${source_modules}cicd_github_orchestrator,scripts"
+          set +e
           python -m coverage run --branch \
             --source="$source_modules" -m unittest discover \
             -s tests -p 'test_g3a_*.py' -v 2>&1 \
-            | tee test_reports/n15/unittest.log
-          python -m coverage json -o test_reports/n15/coverage.json
-      - name: Fail-closed frozen denominators and test proof
+            | tee test_reports/n16/unittest.log
+          test_exit="${PIPESTATUS[0]}"
+          set -e
+          date +%s > test_reports/n16/test-end.txt
+          test "$test_exit" -eq 0
+          python -m coverage json -o test_reports/n16/coverage.json
+      - name: Fail-closed pinned denominators and test proof
         env:
           RUN_ID: ${{ github.run_id }}
           RUN_ATTEMPT: ${{ github.run_attempt }}
         run: |
           python - <<'PY'
-          import json,os,pathlib,re,sys
-          root=pathlib.Path("test_reports/n15")
+          import json,os,pathlib,re,subprocess,sys
+          root=pathlib.Path("test_reports/n16")
+          epoch=json.loads(pathlib.Path("MIP/statistics/g3a_w16_epoch.json").read_text())
+          py="%d.%d" % sys.version_info[:2]
           data=json.loads((root/"coverage.json").read_text())
-          expected={"DMAIC_V3/debug_pipeline.py":(116,17),
-                    "DMAIC_V3/phases/phase4_improve.py":(134,45),
-                    "DMAIC_V3/phases/phase8_todo_management.py":(118,30),
-                    "cicd_github_orchestrator.py":(78,23),
-                    "scripts/g3a_bounded_mission.py":(116,105)}
-          if data["meta"]["version"] != "7.16.2":
-              sys.exit("HOLD: instrumentation drift")
-          files={}
-          for path,(den,old) in expected.items():
-            hits = [
-                v for k, v in data["files"].items()
-                if k == path or k.endswith("/" + path)
-            ]
+          if data["meta"]["version"]!=epoch["coverage_version"]:sys.exit("HOLD: instrumentation drift")
+          measured={}
+          for path in sorted(epoch["files"]):
+            hits=[v for k,v in data["files"].items() if k==path or k.endswith("/"+path)]
             if len(hits)!=1:sys.exit("HOLD: missing/duplicated scope "+path)
-            v=hits[0];s=v["summary"]
-            if s["num_branches"] != den or s["covered_branches"] < old:
-                sys.exit("HOLD: scope drift/regression " + path)
-            files[path] = {
-                "eligible": den,
-                "covered": s["covered_branches"],
-                "baseline": old,
-                "executed_branches": v.get("executed_branches", []),
-            }
+            measured[path]=hits[0]
+            s=hits[0]["summary"]
+            record={"epoch":epoch["source_epoch"],"coverage_version":data["meta"]["version"],
+                    "python":py,"path":path,"branches":s["num_branches"],"covered":s["covered_branches"]}
+            print("::notice title=W16 native measurement::W16_MEASURED "+json.dumps(record,sort_keys=True))
           log=(root/"unittest.log").read_text()
           counts=re.findall(r"Ran (\d+) tests? in",log)
-          if not counts or int(counts[-1]) < 112 or "\nOK" not in log:
-              sys.exit("HOLD: N13+N14+N15 tests incomplete")
-          total = sum(
-              v["covered"] for k, v in files.items()
-              if k != "scripts/g3a_bounded_mission.py"
-          )
-          phase8 = files["DMAIC_V3/phases/phase8_todo_management.py"]
-          receipt = {
-              "schema": "code-purple.g3a.n15.native.v1",
-              "run_id": int(os.environ["RUN_ID"]),
-              "run_attempt": int(os.environ["RUN_ATTEMPT"]),
-              "tests": int(counts[-1]),
-              "covered": total,
-              "eligible": 446,
-              "n13_baseline_covered": 115,
-              "n14_baseline_covered": 200,
-              "phase8_n14_baseline": 30,
-              "phase8_new_count": phase8["covered"] - 30,
-              "delta_count": total - 115,
-              "files": files,
-              "accepted_roots": None,
-              "security_waiver": False,
-              "merge_admission": "HOLD",
-          }
-          (root / "n15_receipt.json").write_text(
-              json.dumps(receipt, indent=2, sort_keys=True)
-          )
-          print(f"N15_MATCHED_COUNT={total}/446; N14_delta={total - 200}")
+          if not counts or int(counts[-1])<epoch["min_tests"] or "\nOK" not in log:sys.exit("HOLD: W16 cohort incomplete")
+          pending=[p for p,e in epoch["files"].items() if e["branches"].get(py) is None]
+          if pending:
+            sys.exit("HOLD: epoch "+epoch["source_epoch"]+" pending native measurement on Python "+py+
+                     "; feed the W16_MEASURED lines to scripts/g3a_w16_repin.py --measured")
+          for path,entry in epoch["files"].items():
+            s=measured[path]["summary"]
+            if s["num_branches"]!=entry["branches"][py]:sys.exit("HOLD: scope drift "+path)
+            if entry["floor"] is not None and s["covered_branches"]<entry["floor"]:sys.exit("HOLD: regression below floor "+path)
+          def row(path):
+            s=measured[path]["summary"];entry=epoch["files"][path]
+            return {"eligible":s["num_branches"],"covered":s["covered_branches"],"floor":entry["floor"],
+                    "category":entry["category"],"executed_branches":measured[path].get("executed_branches",[])}
+          kpi=sorted(p for p,e in epoch["files"].items() if e["role"]=="kpi")
+          control=[p for p,e in epoch["files"].items() if e["role"]=="control"]
+          files={p:row(p) for p in kpi}
+          total=sum(v["covered"] for v in files.values())
+          eligible=sum(v["eligible"] for v in files.values())
+          receipt={"schema":"code-purple.g3a.w16.native.v1",
+                   "source_epoch":epoch["source_epoch"],"lineage":epoch["lineage"],
+                   "run_id":int(os.environ["RUN_ID"]),"run_attempt":int(os.environ["RUN_ATTEMPT"]),
+                   "checkout_sha":subprocess.check_output(["git","rev-parse","HEAD"],text=True).strip(),
+                   "source_blobs":{p:subprocess.check_output(["git","hash-object",p],text=True).strip() for p in kpi},
+                   "tests":int(counts[-1]),"covered":total,"eligible":eligible,
+                   "historical_n14":{"covered":200,"eligible":446,"same_epoch":False,
+                                     "delta_pp":None},
+                   "candidate_roots_closed":0,"files":files,
+                   "control_file":{p:row(p) for p in control},
+                   "security_waiver":False,"merge_admission":"HOLD"}
+          if total<0 or total>eligible:sys.exit("HOLD: four-module arithmetic invalid")
+          (root/"n16_receipt.json").write_text(json.dumps(receipt,indent=2,sort_keys=True))
+          print("W16_SOURCE_EPOCH="+epoch["source_epoch"]+"; COVERED="+str(total)+"/"+str(eligible))
+          print("N14_VS_W16_CROSS_EPOCH_DELTA=NOT_COMPARABLE")
           print("MERGE_ADMISSION=HOLD")
           PY
+      - name: Write bounded five-KPI receipt including failure states
+        if: always()
+        run: |
+          python3 MIP/statistics/g3a_w16_kpi.py \
+            --receipt test_reports/n16/n16_receipt.json \
+            --start-s test_reports/n16/test-start.txt \
+            --end-s test_reports/n16/test-end.txt \
+            --out test_reports/n16/w16_kpis.json
       - name: Preserve test evidence even on red
         if: always()
         uses: actions/upload-artifact@v7
         with:
-          name: g3a-n15-${{ github.run_id }}-${{ github.run_attempt }}
-          path: test_reports/n15/
+          name: g3a-w16-${{ github.run_id }}-${{ github.run_attempt }}
+          path: test_reports/n16/
           if-no-files-found: warn
