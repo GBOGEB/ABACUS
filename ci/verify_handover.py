@@ -5,6 +5,7 @@ evidence-quality gaps that should be carried forward, not hidden.
 
 Usage: python -I ci/verify_handover.py [pack_root]
 """
+
 import json
 import re
 import sys
@@ -12,8 +13,18 @@ from pathlib import Path
 
 SHA40 = re.compile(r"^[0-9a-f]{40}$")
 SHA256 = re.compile(r"^[0-9a-f]{64}$")
-RUN_KEYS = ("repo", "source_sha", "checkout_kind", "workflow", "run", "attempt",
-            "job", "artifact", "terminal", "conclusion")
+RUN_KEYS = (
+    "repo",
+    "source_sha",
+    "checkout_kind",
+    "workflow",
+    "run",
+    "attempt",
+    "job",
+    "artifact",
+    "terminal",
+    "conclusion",
+)
 UNKNOWN = (None, "UNKNOWN")
 
 
@@ -61,20 +72,36 @@ for r in ledger:
     if r.get("artifact_sha256") is not None:
         check_sha(where, r["artifact_sha256"], SHA256)
         if r.get("digest_source") != "verified":
-            warnings.append(f"{where}: artifact {r['artifact']} digest is {r.get('digest_source')}, not re-hashed")
+            warnings.append(
+                f"{where}: artifact {r['artifact']} digest is {r.get('digest_source')}, not re-hashed"
+            )
     if r.get("artifact") is not None:
         prev = artifact_digest.setdefault(r["artifact"], r.get("artifact_sha256"))
         if prev != r.get("artifact_sha256"):
             errors.append(f"{where}: artifact {r['artifact']} has conflicting digests")
-    if r.get("checkout_kind") == "exact_head" and r.get("checkout_sha") not in (None, r.get("source_sha")):
+    if r.get("checkout_kind") == "exact_head" and r.get("checkout_sha") not in (
+        None,
+        r.get("source_sha"),
+    ):
         errors.append(f"{where}: exact_head but checkout_sha != source_sha")
-    if r.get("terminal") is not True and r.get("conclusion") not in ("queued", "in_progress", "action_required"):
-        errors.append(f"{where}: non-terminal row with terminal conclusion {r.get('conclusion')!r}")
+    if r.get("terminal") is not True and r.get("conclusion") not in (
+        "queued",
+        "in_progress",
+        "action_required",
+    ):
+        errors.append(
+            f"{where}: non-terminal row with terminal conclusion {r.get('conclusion')!r}"
+        )
     if r.get("attempt") is None:
-        warnings.append(f"{where}: run {r['run']} attempt unknown")
-    elif r["attempt"] > 1 and (r.get("attempt1_conclusion") in UNKNOWN
-                               or str(r.get("attempt1_conclusion")).startswith("UNKNOWN")):
-        warnings.append(f"{where}: run {r['run']} attempt {r['attempt']} - attempt-1 outcome at same SHA unrecorded (rerun-pass risk)")
+        if r.get("kind") != "local_reproduction":
+            warnings.append(f"{where}: run {r['run']} attempt unknown")
+    elif r["attempt"] > 1 and (
+        r.get("attempt1_conclusion") in UNKNOWN
+        or str(r.get("attempt1_conclusion")).startswith("UNKNOWN")
+    ):
+        warnings.append(
+            f"{where}: run {r['run']} attempt {r['attempt']} - attempt-1 outcome at same SHA unrecorded (rerun-pass risk)"
+        )
     if r.get("superseded_by") and r["superseded_by"] not in ids:
         errors.append(f"{where}: superseded_by {r['superseded_by']} not in ledger")
     for rid in r.get("roots", []):
@@ -90,10 +117,14 @@ for c in roots:
         if c.get("displaced_at") in UNKNOWN:
             errors.append(f"{where}: displaced without displaced_at")
         elif c.get("displaced_at") == c.get("first_red_at"):
-            errors.append(f"{where}: displaced at the same SHA as first-red (not source-changing)")
+            errors.append(
+                f"{where}: displaced at the same SHA as first-red (not source-changing)"
+            )
         check_sha(where, c.get("displaced_at"))
     if c.get("accepted_closure"):
-        warnings.append(f"{where}: accepted_closure=true - confirm a governed merge backs it")
+        warnings.append(
+            f"{where}: accepted_closure=true - confirm a governed merge backs it"
+        )
     if c.get("status") in ("open", "suspected"):
         warnings.append(f"{where}: {c['status']} - {c['summary']}")
 
@@ -107,10 +138,14 @@ for c in by_id.values():
     elif base:
         for denom in ("statements", "branches"):
             if c.get(denom) != base.get(denom):
-                errors.append(f"{where}: {denom} denominator differs from {base['id']} - delta not comparable")
+                errors.append(
+                    f"{where}: {denom} denominator differs from {base['id']} - delta not comparable"
+                )
         actual = c["covered_statements"] - base["covered_statements"]
         if actual != c.get("delta_statements"):
-            errors.append(f"{where}: delta_statements {c.get('delta_statements')} != computed {actual}")
+            errors.append(
+                f"{where}: delta_statements {c.get('delta_statements')} != computed {actual}"
+            )
 for rule in (c for c in cohorts if c.get("rule") == "no_accumulation"):
     for cid in rule["cohorts"]:
         if cid not in by_id:

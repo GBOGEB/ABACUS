@@ -114,8 +114,33 @@ Between 08:02:54Z and 08:10:40Z, main went from `44caccf7` to **`0138ef51`** thr
 | #2375 | 08:06:07Z | `d99e70d2` | `a38dd42e` ✘ | 0 | Bandit Disjoint Census, CI Matrix, CI Workflow Governance | 4 runs |
 | #2388 | 08:09:06Z | `b44aaa7d` | `76531e5a` ✘ | 0 | CI/CD Test Suite | none |
 
-Ruleset 24494381 was updated at 07:57:58Z, five minutes before the first merge, and still has no `required_status_checks` rule. With 0 approvals against a 2-approval rule, the merges must have gone through some bypass or a rule change. The approval count was not re-read after the ruleset update.
+Ruleset 24494381 was updated at 07:57:58Z, five minutes before the first merge, and still has no `required_status_checks` rule. **V3 correction:** that update set `required_approving_review_count` to **0**, which is the owner's documented solo-developer waiver. So the merges complied with the ruleset. What makes them ungoverned is the missing enforced checks, not the approval count.
 
-**Disposition:** these are **not correctly governed merges** under §5.5. Candidate evidence in §1 does not become main credit. For #2367, #2375 and #2388 it doesn't carry over at all, because the merged heads differ from the qualified heads. A new main baseline (coverage cohort, B0 at `0138ef51`) is the next qualifying measurement. R03 (W88 Bandit debt) has probably reached main and needs re-reading there.
+**Disposition (revised in V3):** these merges complied with the ruleset but were **not evidence-gated** under §5.5. Candidate evidence in §1 does not become main credit. For #2367, #2375 and #2388 it doesn't carry over at all, because the merged heads differ from the qualified heads. A new main baseline (coverage cohort, B0 at `0138ef51`) is the next qualifying measurement. R03 (W88 Bandit debt) has probably reached main and needs re-reading there.
 
 **MERGE_ADMISSION = N/A (merged) · Formal engineering credit Δ = 0 · Stability 3/3 = UNVERIFIED**
+
+## 10. V3: read-only main baseline at `0138ef51` (23 October 2026)
+
+Ledger `S07`, `E16`–`E20`; cohort `C-MAIN-0138ef51`; roots R08/R10 revised, plus new roots R11 and R12.
+
+| Item | Result | Evidence |
+|---|---|---|
+| Push runs at main | **9 of 37 failed** (plus 1 cancelled): Validate Docs, Session Tuple CI/CD, export-docs, CI Workflow Governance, TestPilot Pre-GitHub Parity, DOW + Recursive DMAIC, DMAIC Metrics, **CI/CD Test Suite**, **CI Matrix** | S07 |
+| MIP B0 | **13/13 success** (producer 120316240659, admission census 120329072380). Canonical artifact 12489263924 `6605eb67…` (GitHub metadata) | E16 |
+| CI/CD Test Suite | **failure.** Unit cells 6/9: **all three Python 3.10 cells fail** (exit 2), 3.11/3.12 pass. Security Scanning, Code Quality and Full Red Summary fail. Integration and Docker integration pass. Code Coverage job **skipped** | E17 |
+| CI Matrix | **failure.** py3.10 fails, py3.11/3.12 pass; the proof-completeness and compatibility gates fail | E18 |
+| CI Workflow Governance | **failure** (`policy-and-inventory`). Detail unreadable without admin auth | E19 |
+| **Coverage** | **UNKNOWN.** The CI/CD coverage job is skipped on push. B0's numbers are inside its artifact, and both artifact downloads and job logs need authentication (HTTP 403). No main-coverage figure is claimed | C-MAIN-0138ef51 |
+| **Bandit** (local reproduction of the push-mode command, bandit 1.9.1) | **10,916 findings**: 8 HIGH, 95 MEDIUM, 10,813 LOW (10,182 are B101 `assert`). The repo's own `red_root_delta.py` reports NO_PR_CONTEXT, which changes no verdict | E20 |
+| **Ruleset 24494381** | Active on `~DEFAULT_BRANCH`. **`required_approving_review_count: 0`** (solo waiver); stale-review dismissal on; last-push approval off; thread resolution off; extra approval for unattributed changes on; `code_quality` severity `errors`; Copilot review on drafts, not on push. **No `required_status_checks`.** Bypass actors not visible without auth | S07 |
+
+**New roots**
+- **R11, structurally red security lane.** On push, `Enforce security red roots` fails whenever `bandit -r .` exits non-zero, which happens with any whole-repo finding. Main can't show a green CI/CD Test Suite until push mode uses a baseline ratchet, or `-lll` plus excluding B101 under `tests/`.
+- **R12, Python 3.10 (suspected).** `tools/triage/config_surface_audit.py` (#2390) imports `tomllib` unconditionally, and `tests/test_config_surface_audit.py` imports that module. `pyproject.toml` says `requires-python >=3.11`. Either drop the 3.10 cells or guard the import.
+
+**Method change:** the solo-developer approval waiver is now explicit policy. Admission is judged by the **CODE PURPLE MACH ladder** (`docs/governance/CODE_PURPLE_MACH_LADDER.md`), where MACH-II's compensating control is *platform-enforced required checks*. Replayed through the evaluator, the 23 October burst holds at step 1 (`HOLD_CHECKS_NOT_ENFORCED`). With checks enforced it would hold on red or pending lanes, and from step 2 on a stale base.
+
+**To close the coverage gap:** with an authenticated `gh`, run `gh run download 39922825831 -R GBOGEB/ABACUS -n b0-canonical-0138ef5193b20ef8a64132267444299074cd8beb -D <empty dir>`, then record its totals as `C-MAIN-0138ef51`.
+
+**MERGE_ADMISSION = HOLD (MACH-II prerequisite unmet) · Formal engineering credit Δ = 0 · Stability 3/3 = UNVERIFIED**

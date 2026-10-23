@@ -37,7 +37,16 @@ Three qualifying transitions require four distinct, terminal, comparable, **sour
 
 ## 5. Admission requires effective governance
 
-Configured ≠ effective. Verify: required status checks naming the canonical producers; independent approvals; last-push approval; stale-review dismissal; thread resolution; minimal bypass actors; and a deliberately RED canary that was **rejected**. Any gap → `MERGE_ADMISSION = HOLD`.
+Configured ≠ effective. Verify: required status checks naming the canonical producers; stale-review dismissal; minimal bypass actors; and a deliberately RED canary that was **rejected**. Any gap → `MERGE_ADMISSION = HOLD`.
+
+Independent approval, last-push approval and thread resolution depend on the repository's **CODE PURPLE MACH level** (`docs/governance/CODE_PURPLE_MACH_LADDER.md`, evaluator `scripts/code_purple_mach_admission.py`):
+
+- **MACH-I** (team): all three required.
+- **MACH-II** (solo owner, the current ABACUS mode): the approval count is waived by recorded policy. A 0-approval merge is *not* a finding on its own. It is admissible only when checks are platform-enforced, the required lanes are green at the exact head, and an automated review is present at that head.
+- **MACH-III**: one owner PR in a ≤60-minute exception window with P2/P3 deferral records. P0/P1/UNKNOWN still block.
+- **MACH-IV** (merge train): each step re-qualified on the main left by the previous merge, at most `max_steps`, then a green post-train main baseline.
+
+Report the level-specific `HOLD_*` reason, not only HOLD.
 
 ## 6. Notify only on material change
 
