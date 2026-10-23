@@ -3,11 +3,11 @@
 # ABACUS CI workflow rationalisation
 
 Policy: `ABACUS-CI-SSOT-001`  
-Policy SHA-256 (canonical sorted JSON bytes of `ci/governance/workflow_policy.json`): `8c33195af3c3945a39c62a13801f1a682746c42b3cfaa942dca4d2382a2b49b5`
+Policy SHA-256 (canonical sorted JSON bytes of `ci/governance/workflow_policy.json`): `b6aaaf26104c2195017c87ce6cf0c47fbb96499189ca97edf2f6bca242e5a350`
 
 ## Outcome
 
-The repository currently contains **214 workflow definitions**. All **214** are assigned to one primary functional cluster and lifecycle stage.
+The repository currently contains **215 workflow definitions**. All **213** are assigned to one primary functional cluster and lifecycle stage.
 
 The observed baseline that motivated this control was PR #681 with 119 check runs (111 queued, 8 skipped) and main with 122 check runs.
 
@@ -26,7 +26,7 @@ The observed baseline that motivated this control was PR #681 with 119 check run
 
 | Cluster | Canonical workflow | Definitions | Intent |
 |---|---|---:|---|
-| `core_test` | `ci-abacus.yml` | 22 | Fast cross-version unit, pre-commit and smoke evidence. |
+| `core_test` | `ci-abacus.yml` | 23 | Fast cross-version unit, pre-commit and smoke evidence. |
 | `full_regression` | `ci-cd-tests.yml` | 1 | Broad OS/version/integration/coverage regression for code changes. |
 | `statistics` | `ci-cd.yml` | 19 | Bootstrap, AHT, performance and statistical validation. |
 | `bridge_federation` | `bridge-ci.yml` | 20 | CODEX/ABACUS bridge contract and federation smoke evidence. |
@@ -100,6 +100,7 @@ Make PR-triggered workflows with write-class GitHub token scopes explicit and re
 | 20 | `pr_domain` | `core_test` | `cbd-cohort-union-testflight.yml` | pull_request, workflow_dispatch | 1 | `keep` | — |
 | 20 | `pr_domain` | `core_test` | `cbd-e2e-graph-contract.yml` | pull_request, workflow_dispatch | 1 | `keep` | — |
 | 20 | `pr_domain` | `core_test` | `cbd-w6c-office-style-qa.yml` | pull_request | 1 | `keep` | — |
+| 20 | `pr_domain` | `core_test` | `floating-reconnection-testflight.yml` | workflow_dispatch, push, pull_request, schedule | 1 | `keep` | — |
 | 20 | `pr_domain` | `core_test` | `g3a-n14-phase4-import.yml` | pull_request, workflow_dispatch | 1 | `keep` | — |
 | 20 | `pr_domain` | `core_test` | `g3a-n15-python-matrix.yml` | pull_request, workflow_dispatch | 1 | `keep` | — |
 | 20 | `pr_domain` | `core_test` | `mip-w1-python-dependency-qa.yml` | pull_request | 1 | `keep` | — |
@@ -300,9 +301,9 @@ Make PR-triggered workflows with write-class GitHub token scopes explicit and re
 - `pre-commit run --all-files` — `cd-unified.yml`, `ci-codex.yml`
 - `pylint **/*.py --exit-zero` — `ci-cd-tests.yml`, `ci-pipeline.yml`
 - `pytest --benchmark-disable -v --cov=. --cov-report=term-missing` — `cd-unified.yml`, `ci-codex.yml`
+- `pytest==9.1.1 pytest-cov==5.0.0 coverage==7.16.2 \` — `code-purple-w40-binary-penetration.yml`, `floating-reconnection-testflight.yml`
 - `python -m pip install 'pytest>=7.4,<10' 'numpy>=1.24,<3'` — `cbd-w6c-office-style-qa.yml`, `w4-dashboard-publication-qa.yml`
-- `python -m pip install pytest pyyaml` — `cryoplant-federation.yml`, `mip-qps-external-probe.yml`
-- `python -m pip install pytest==9.1.1 coverage==7.16.2 numpy==1.26.4` — `w28-testpilot-git-failure-coverage.yml`, `w29-cbd-temporal-matched-coverage.yml`
+- `python -m pip install 'pytest>=7.4,<10' 'pytest-cov>=4.1,<8' 'numpy>=1.24,<3'` — `w007-runtime-validator-qa.yml`, `w29-disjoint-frontier-coverage.yml`
 
 ## Control rule
 

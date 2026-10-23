@@ -713,8 +713,8 @@
       "disposition": "keep"
     },
     {
-      "pattern": "^config-surface-audit\\.yml$",
-      "cluster": "runtime_governance",
+      "pattern": "^floating-reconnection-testflight\\.yml$",
+      "cluster": "core_test",
       "lifecycle": "pr_domain",
       "disposition": "keep"
     }
