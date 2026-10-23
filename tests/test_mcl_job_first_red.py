@@ -81,6 +81,22 @@ class FirstRedCensusTests(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, "nonterminal failed"):
             summarize(SHA, {1: SHA}, [job])
 
+    def test_stale_job_is_terminal_but_not_failed(self):
+        report = summarize(SHA, {1: SHA}, [make_job(1, conclusion="stale")])
+        self.assertEqual(report["terminal_jobs"], 1)
+        self.assertEqual(report["failed_jobs"], 0)
+        self.assertEqual(report["records"][0]["result"], "stale")
+
+    def test_nonpositive_run_ids_rejected(self):
+        for run_id in (0, -1):
+            with self.subTest(run_id=run_id):
+                with self.assertRaisesRegex(ValueError, "invalid run-head mapping"):
+                    summarize(SHA, {run_id: SHA}, [])
+                with self.assertRaisesRegex(ValueError, "invalid run-head mapping"):
+                    summarize(
+                        SHA, {run_id: SHA}, [make_job(1, step="test", run_id=run_id)]
+                    )
+
     def test_canonical_sha_rejected(self):
         with self.assertRaisesRegex(ValueError, "canonical"):
             summarize(SHA.upper().replace("A", "G"), {1: SHA}, [])

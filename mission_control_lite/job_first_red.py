@@ -11,6 +11,7 @@ CONCLUSIONS = frozenset(
         "neutral",
         "timed_out",
         "action_required",
+        "stale",
     }
 )
 
@@ -29,7 +30,10 @@ def summarize(head_sha, run_heads, jobs):
         raise ValueError("canonical exact head SHA required")
     if not isinstance(run_heads, dict) or not isinstance(jobs, list):
         raise ValueError("run-head mapping and job list required")
-    if any(type(key) is not int or not _sha(value) for key, value in run_heads.items()):
+    if any(
+        type(key) is not int or key < 1 or not _sha(value)
+        for key, value in run_heads.items()
+    ):
         raise ValueError("invalid run-head mapping")
     if any(value != head_sha for value in run_heads.values()):
         raise ValueError("run-head drift")
