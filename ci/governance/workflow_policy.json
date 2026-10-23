@@ -87,6 +87,7 @@
     "pr_write_allowed": [
       "bootstrap-integration.yml",
       "branch-hygiene.yml",
+      "ci-cd.yml",
       "code-quality-pilot.yml",
       "codeql.yml",
       "dependency-review.yml",
