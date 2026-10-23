@@ -79,6 +79,20 @@ class ChangedDocsSelectionTests(unittest.TestCase):
         finally:
             tmp.cleanup()
 
+    def test_stale_base_sha_excludes_later_base_changes(self):
+        tmp, root, git, ancestor, base, head = self._fixture()
+        try:
+            # The base branch moves after the event froze base.sha.
+            git("checkout", "-qB", "integration", base)
+            (root / "later-base.yml").write_text("later: true\n")
+            git("add", ".")
+            git("commit", "-qm", "base moved on")
+            git("merge", "-q", "--no-ff", "feature", "-m", "synthetic")
+            merged = git("rev-parse", "HEAD")
+            self.assertEqual(self._select(root, base, merged), ["feature.yml"])
+        finally:
+            tmp.cleanup()
+
     def test_missing_merge_base_fails_closed(self):
         tmp, root, git, ancestor, base, head = self._fixture()
         try:
