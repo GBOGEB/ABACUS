@@ -35,13 +35,12 @@
         "3.10": 118,
         "3.12": 118
       },
-      "category": "main_drift_repinned",
+      "category": "carried",
       "covered": {
         "3.10": 63,
         "3.12": 63
       },
       "floor": 63,
-      "previous_blob": "e9e4edd4c2b5b23a850892efb40b0c256a9ce490",
       "role": "kpi"
     },
     "cicd_github_orchestrator.py": {
@@ -50,13 +49,12 @@
         "3.10": 98,
         "3.12": 98
       },
-      "category": "main_drift_repinned",
+      "category": "carried",
       "covered": {
         "3.10": 23,
         "3.12": 23
       },
       "floor": 23,
-      "previous_blob": "2e0f80b8f476d6f4eab05defb52aae2f77e30c61",
       "role": "kpi"
     },
     "scripts/g3a_bounded_mission.py": {
@@ -76,48 +74,44 @@
   },
   "kpi_python": "3.12",
   "lineage": [
-    "G3A_W16_V2_PHASE4_REPAIRED"
+    "G3A_W16_V2_PHASE4_REPAIRED",
+    "G3A_W16_V3_MAIN_44CACCF7"
   ],
   "min_tests": 121,
-  "pinned_main_sha": "44caccf716a7c20693a2911566289bfc75ea81d9",
+  "pinned_main_sha": "88f13a7824066b2fce09160577052a765847a388",
   "pythons": [
     "3.10",
     "3.12"
   ],
   "schema": "code-purple.g3a.w16.epoch.v1",
-  "source_epoch": "G3A_W16_V3_MAIN_44CACCF7",
+  "source_epoch": "G3A_W16_V4_MAIN_88F13A78",
   "status": "PINNED",
   "workflows": {
     "by_cluster": {
-      "UNCLASSIFIED": 2,
       "automation": 13,
       "bridge_federation": 20,
       "ci_governance": 2,
-      "core_test": 22,
-      "delivery": 8,
+      "core_test": 23,
+      "delivery": 9,
       "dmaic": 9,
       "documentation": 7,
       "dow": 22,
       "full_regression": 1,
       "legacy": 2,
-      "runtime_governance": 30,
-      "security": 12,
-      "specialised": 45,
+      "runtime_governance": 31,
+      "security": 13,
+      "specialised": 46,
       "statistics": 19
     },
     "by_lifecycle": {
-      "UNCLASSIFIED": 2,
       "manual": 5,
-      "post_merge": 14,
-      "pr_domain": 167,
+      "post_merge": 15,
+      "pr_domain": 170,
       "pr_fast": 13,
       "retire": 1,
-      "scheduled": 12
+      "scheduled": 13
     },
-    "population": 214,
-    "unclassified": [
-      "code-quality-pilot.yml",
-      "nextjs.yml"
-    ]
+    "population": 217,
+    "unclassified": []
   }
 }

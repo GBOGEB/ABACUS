@@ -46,9 +46,14 @@ and 3.12 identical:
 
 231/464 is a **new-epoch baseline**, not an uplift over 444 or over the
 historical 200/446: the orchestrator's population changed (78→98), so no
-cross-epoch delta is computed. Workflow census at the pin: 214 workflows, 212
-classified, 2 `UNCLASSIFIED` (`code-quality-pilot.yml`, `nextjs.yml`, main
-drift fixed by #2375; re-pin the census after it merges).
+cross-epoch delta is computed. Workflow census at the V3 pin: 214 workflows,
+212 classified, 2 `UNCLASSIFIED` (`code-quality-pilot.yml`, `nextjs.yml`).
+
+After #2375 and #2402 fixed that main drift, epoch
+**`G3A_W16_V4_MAIN_88F13A78`** (pinned from main `88f13a78`) re-pinned only
+the workflow census: 217 workflows, all classified once. All five source blobs
+are unchanged, so the V3 denominators and floors above carry over and 231/464
+stands.
 
 Source preflight checks exact-head identity, the pinned source digests, policy
 classification and sub-category mapping of all workflows, and the deterministic

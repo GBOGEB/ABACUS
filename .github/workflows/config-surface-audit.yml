@@ -1,0 +1,74 @@
+name: CODE PURPLE Root Config Surface Audit
+
+on:
+  pull_request:
+    paths:
+      - "tools/triage/config_surface_audit.py"
+      - "tests/test_config_surface_audit.py"
+      - ".github/workflows/config-surface-audit.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: root-config-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  root-config-observation:
+    name: Read-only full tracked config syntax census
+    runs-on: ubuntu-24.04
+    timeout-minutes: 12
+    steps:
+      - name: Checkout exact PR head
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+
+      - name: Validate exact source identity
+        env:
+          EXPECTED_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$EXPECTED_SHA"
+
+      - name: Set up Python
+        uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7
+        with:
+          python-version: "3.12"
+
+      - name: Install bounded YAML parser
+        run: |
+          python -m pip install --disable-pip-version-check "PyYAML==6.0.2"
+
+      - name: Run adversarial collector tests
+        run: |
+          python -m unittest discover -s tests \
+            -p 'test_config_surface_audit.py' -v
+
+      - name: Inventory tracked config and DAG syntax
+        run: |
+          set -euo pipefail
+          mkdir -p test_reports/root-depth
+          python tools/triage/config_surface_audit.py \
+            --root . \
+            --out test_reports/root-depth/config_surface.json
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          p = Path("test_reports/root-depth/config_surface.json")
+          receipt = json.loads(p.read_text(encoding="utf-8"))
+          print("selected:", receipt["selected_files"])
+          for key, value in sorted(receipt["counts"].items()):
+              print(key + ":", value)
+          print("admission remains HOLD; no formatter executed")
+          PY
+
+      - name: Upload read-only observations
+        if: always()
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9
+        with:
+          name: root-config-${{ github.run_id }}-${{ github.run_attempt }}
+          path: test_reports/root-depth/config_surface.json
+          if-no-files-found: warn

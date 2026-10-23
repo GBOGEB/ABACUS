@@ -34,7 +34,9 @@ jobs:
           EXPECTED_HEAD: ${{ github.event.pull_request.head.sha || github.sha }}
         run: |
           set -euo pipefail
-          python3 scripts/g3a_w16_preflight.py --expected-head "$EXPECTED_HEAD" --out test_reports/n16/preflight.json
+          python3 scripts/g3a_w16_preflight.py \
+            --expected-head "$EXPECTED_HEAD" \
+            --out test_reports/n16/preflight.json
       - uses: actions/setup-python@v7
         with:
           python-version: '3.12'
@@ -47,14 +49,24 @@ jobs:
           # were verified by the preflight above.
           test "$(git rev-parse HEAD)" = "$EXPECTED_HEAD"
       - name: Install coverage and PyYAML
-        run: python -m pip install --disable-pip-version-check 'coverage==7.16.2' 'PyYAML==6.0.2'
+        run: |
+          python -m pip install --disable-pip-version-check \
+            'coverage==7.16.2' 'PyYAML==6.0.2'
       - name: W16 source-epoch single-process branch flight
         run: |
           set -euo pipefail
           mkdir -p test_reports/n16
           date +%s > test_reports/n16/test-start.txt
+          source_modules="DMAIC_V3.phases.phase4_improve,"
+          source_modules="${source_modules}DMAIC_V3.phases."
+          source_modules="${source_modules}phase8_todo_management,"
+          source_modules="${source_modules}DMAIC_V3.debug_pipeline,"
+          source_modules="${source_modules}cicd_github_orchestrator,scripts"
           set +e
-          python -m coverage run --branch --source=DMAIC_V3.phases.phase4_improve,DMAIC_V3.phases.phase8_todo_management,DMAIC_V3.debug_pipeline,cicd_github_orchestrator,scripts -m unittest discover -s tests -p 'test_g3a_*.py' -v 2>&1 | tee test_reports/n16/unittest.log
+          python -m coverage run --branch \
+            --source="$source_modules" -m unittest discover \
+            -s tests -p 'test_g3a_*.py' -v 2>&1 \
+            | tee test_reports/n16/unittest.log
           test_exit="${PIPESTATUS[0]}"
           set -e
           date +%s > test_reports/n16/test-end.txt
@@ -121,7 +133,11 @@ jobs:
       - name: Write bounded five-KPI receipt including failure states
         if: always()
         run: |
-          python3 MIP/statistics/g3a_w16_kpi.py --receipt test_reports/n16/n16_receipt.json --start-s test_reports/n16/test-start.txt --end-s test_reports/n16/test-end.txt --out test_reports/n16/w16_kpis.json
+          python3 MIP/statistics/g3a_w16_kpi.py \
+            --receipt test_reports/n16/n16_receipt.json \
+            --start-s test_reports/n16/test-start.txt \
+            --end-s test_reports/n16/test-end.txt \
+            --out test_reports/n16/w16_kpis.json
       - name: Preserve test evidence even on red
         if: always()
         uses: actions/upload-artifact@v7

@@ -66,6 +66,17 @@ class ExecutionTierTests(unittest.TestCase):
                 actual.add(path.name)
         self.assertEqual(allowed, actual)
 
+    def test_quality_pilot_pr_scan_has_no_write_permissions(self):
+        source = (WORKFLOWS / "code-quality-pilot.yml").read_text(encoding="utf-8")
+        pilot = source.split("\n  pilot:\n", 1)[1].split("\n  telemetry:\n", 1)[0]
+        telemetry = source.split("\n  telemetry:\n", 1)[1]
+        for scope in WRITE_SCOPES:
+            self.assertNotIn(scope, pilot)
+        self.assertIn("issues: write", telemetry)
+        self.assertIn("github.event_name == 'schedule'", telemetry)
+        self.assertIn("github.event_name == 'workflow_dispatch'", telemetry)
+        self.assertIn("github.ref == 'refs/heads/main'", telemetry)
+
     def test_pull_request_target_write_permissions_are_not_enabled(self):
         allowed = set(self.policy["permission_controls"]["pull_request_target_write_allowed"])
         actual = set()
