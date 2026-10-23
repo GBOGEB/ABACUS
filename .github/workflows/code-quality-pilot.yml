@@ -21,10 +21,6 @@ on:
         description: "Space-separated paths for the focused (strict) scan"
         required: false
         default: "models"
-  pull_request:  # verifies the pilot itself when its own files change
-    paths:
-      - ".github/workflows/code-quality-pilot.yml"
-      - "tools/quality_pilot/**"
   schedule:
     - cron: "17 5 * * *"  # daily 05:17 UTC; cadence thins this after burn-in
 
@@ -56,15 +52,11 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
-          # Only scheduled runs consume the burn-in window.
-          prev=$(gh run list -R "${{ github.repository }}" \
-                   -w code-quality-pilot.yml -e schedule -s completed -L 50 \
-                   --json databaseId -q 'length')
-          if [ "${{ github.event_name }}" = "schedule" ]; then
-            n=$((prev + 1))
-          else
-            n=$((prev))
-          fi
+          # Burn-in counts scheduled runs only, so manual runs do not consume
+          # the daily window. Includes this run when it is scheduled.
+          prev=$(gh run list -R "${{ github.repository }}" -w code-quality-pilot.yml \
+                   -e schedule -s completed -L 50 --json databaseId -q 'length')
+          if [ "${{ github.event_name }}" = "schedule" ]; then n=$((prev + 1)); else n=$((prev)); fi
           dow="$(date -u +%u)"   # 1 = Monday
           if [ "$n" -le "$BURN_IN_RUNS" ]; then
             phase=burn-in
@@ -90,15 +82,15 @@ jobs:
     needs: cadence
     if: >-
       needs.cadence.outputs.run == 'true' &&
-      github.repository_owner == 'GBOGEB'
+      github.repository_owner == 'GBOGEB' &&
+      github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
     timeout-minutes: 40
     permissions:
       contents: read
       actions: read             # burn-in trend: read previous pilot artifacts
       security-events: read     # read existing CodeQL/Semgrep/Bandit alerts
-      # No write scopes: this job runs on pull_request. The only write (burn-in
-      # issue comment) lives in the `telemetry` job, which never runs on PRs.
+      issues: write             # burn-in telemetry issue comments
     env:
       PHASE: ${{ needs.cadence.outputs.phase }}
       TIMED: tools/quality_pilot/timed.sh
@@ -303,9 +295,24 @@ jobs:
             echo "[Run log + artifact]($run_url)"
           } > "$REPORTS/digest.md"
 
-      - name: Telemetry digest to job summary (PR runs post no comment)
-        if: always() && github.event_name == 'pull_request'
-        run: cat "$REPORTS/digest.md" >> "$GITHUB_STEP_SUMMARY"
+      - name: Publish burn-in issue telemetry
+        if: always()
+        # rex-allow: ADVISORY_EXPLICIT - publishing telemetry must never mask scan results.
+        continue-on-error: true
+        env:
+          GH_TOKEN: ${{ github.token }}
+          REPO: ${{ github.repository }}
+        run: |
+          body="$REPORTS/digest.md"
+          title="Quality pilot — burn-in telemetry"
+          num=$(gh api "repos/$REPO/issues?state=open&per_page=100" --paginate \
+                  -q ".[] | select(.title == \"$title\") | .number" | head -n 1)
+          if [ -z "$num" ]; then
+            num=$(gh api "repos/$REPO/issues" -f title="$title" \
+                    -f body="Telemetry digest from each run of .github/workflows/code-quality-pilot.yml (protocol: tools/quality_pilot/README.md). Close when burn-in and triage are done." \
+                    -q .number)
+          fi
+          gh api "repos/$REPO/issues/$num/comments" -F body=@"$body" -q .html_url
 
       - name: Upload reports
         if: always()

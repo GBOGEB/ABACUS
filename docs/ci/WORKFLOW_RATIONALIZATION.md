@@ -3,7 +3,7 @@
 # ABACUS CI workflow rationalisation
 
 Policy: `ABACUS-CI-SSOT-001`  
-Policy SHA-256 (canonical sorted JSON bytes of `ci/governance/workflow_policy.json`): `a1b88668703aab367cf19c451ad444311e495c938f5a30970429d15ebd4ea755`
+Policy SHA-256 (canonical sorted JSON bytes of `ci/governance/workflow_policy.json`): `8c33195af3c3945a39c62a13801f1a682746c42b3cfaa942dca4d2382a2b49b5`
 
 ## Outcome
 
@@ -34,8 +34,8 @@ The observed baseline that motivated this control was PR #681 with 119 check run
 | `dow` | `dow-integration.yml` | 22 | DOW parent mechanics, integration, monitoring and warm-up. |
 | `runtime_governance` | `governance.yml` | 30 | Runtime evidence, governance, review artifacts and schema validation. |
 | `security` | `security-scan.yml` | 13 | Ruff PR security, scheduled Bandit, CodeQL, dependency and supply-chain scanning. |
-| `delivery` | `cd-pipeline.yml` | 9 | Build, release, deployment and publication. |
-| `documentation` | `docs-build.yml` | 7 | Documentation validation, rendering, export and Pages. |
+| `delivery` | `cd-pipeline.yml` | 8 | Build, release, deployment and publication. |
+| `documentation` | `docs-build.yml` | 8 | Documentation validation, rendering, export and Pages. |
 | `automation` | `post-merge-pr-summary.yml` | 13 | Repository maintenance, reporting, branch and PR automation. |
 | `specialised` | `qps-cost-roundtrip-contract.yml` | 46 | Bounded product or historical pipelines retained outside core CI. |
 | `ci_governance` | `ci-governance.yml` | 2 | This policy, inventory, overlap and staleness gate. |
@@ -273,7 +273,7 @@ Make PR-triggered workflows with write-class GitHub token scopes explicit and re
 | 40 | `scheduled` | `automation` | `post-merge-pr-summary.yml` | pull_request | 1 | `keep` | — |
 | 40 | `scheduled` | `runtime_governance` | `cbd-scheduled-gated-pulse.yml` | schedule, workflow_dispatch | 1 | `keep` | — |
 | 40 | `scheduled` | `security` | `bandit.yml` | schedule, workflow_dispatch | 1 | `keep` | — |
-| 40 | `scheduled` | `security` | `code-quality-pilot.yml` | workflow_dispatch, pull_request, schedule | 3 | `keep` | — |
+| 40 | `scheduled` | `security` | `code-quality-pilot.yml` | workflow_dispatch, schedule | 2 | `keep` | — |
 | 50 | `manual` | `automation` | `branch-hygiene.yml` | workflow_dispatch, pull_request | 3 | `keep` | — |
 | 50 | `manual` | `bridge_federation` | `abacus-missioncontrol-stage-only.yml` | workflow_dispatch | 1 | `keep` | — |
 | 50 | `manual` | `bridge_federation` | `qps-metric-census-receiver.yml` | workflow_dispatch, repository_dispatch | 2 | `keep` | — |
@@ -301,8 +301,8 @@ Make PR-triggered workflows with write-class GitHub token scopes explicit and re
 - `pylint **/*.py --exit-zero` — `ci-cd-tests.yml`, `ci-pipeline.yml`
 - `pytest --benchmark-disable -v --cov=. --cov-report=term-missing` — `cd-unified.yml`, `ci-codex.yml`
 - `python -m pip install 'pytest>=7.4,<10' 'numpy>=1.24,<3'` — `cbd-w6c-office-style-qa.yml`, `w4-dashboard-publication-qa.yml`
-- `python -m pip install 'pytest>=7.4,<10' 'pytest-cov>=4.1,<8' 'numpy>=1.24,<3'` — `w007-runtime-validator-qa.yml`, `w29-disjoint-frontier-coverage.yml`
 - `python -m pip install pytest pyyaml` — `cryoplant-federation.yml`, `mip-qps-external-probe.yml`
+- `python -m pip install pytest==9.1.1 coverage==7.16.2 numpy==1.26.4` — `w28-testpilot-git-failure-coverage.yml`, `w29-cbd-temporal-matched-coverage.yml`
 
 ## Control rule
 

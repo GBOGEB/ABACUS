@@ -78,7 +78,8 @@
       "governance.yml",
       "yaml-validation.yml",
       "recursive-build.yml",
-      "docs-build.yml"
+      "docs-build.yml",
+      "nextjs.yml"
     ]
   },
   "permission_controls": {
@@ -298,13 +299,7 @@
       "disposition": "keep"
     },
     {
-      "pattern": "^nextjs\\.yml$",
-      "cluster": "delivery",
-      "lifecycle": "post_merge",
-      "disposition": "keep"
-    },
-    {
-      "pattern": "^(deploy-docs|docs-build|export-docs|pages|reports|update-docs)\\.yml$",
+      "pattern": "^(deploy-docs|docs-build|export-docs|nextjs|pages|reports|update-docs)\\.yml$",
       "cluster": "documentation",
       "lifecycle": "post_merge",
       "disposition": "keep"
