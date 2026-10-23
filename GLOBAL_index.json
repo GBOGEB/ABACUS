@@ -1,1 +1,19 @@
-{"artefacts": []}
+{
+  "artefacts": [
+    {
+      "path": "docs/ci/CBD_6PR_FAILED_RUN_OBSERVATIONS_20261017.json",
+      "hash": "5dd8f5c4ab795cb7f4b6abbbd00f9d3a0cb18c3120b3bf8e4d4ba07420effca2",
+      "role": "frozen-evidence"
+    },
+    {
+      "path": "docs/ci/CBD_10PR_A_FAILED_RUN_OBSERVATIONS_20261017.json",
+      "hash": "9b22765a8cf8f6afad38b47243f47ed2a8f102610142658f91f801ce16ae842b",
+      "role": "frozen-evidence"
+    },
+    {
+      "path": "docs/ci/CBD_10PR_B_FAILED_RUN_OBSERVATIONS_20261017.json",
+      "hash": "6b63876aebfd90a738afdc89859f72fa47367a372a06e7db129b532f54ac3321",
+      "role": "frozen-evidence"
+    }
+  ]
+}
