@@ -145,6 +145,8 @@ Ledger `S07`, `E16`–`E20`; cohort `C-MAIN-0138ef51`; roots R08/R10 revised, pl
 
 **R13 fix on this branch:** three ownership rules that the merge burst dropped are restored: `nextjs.yml` → delivery, `config-surface-audit.yml` → runtime_governance, and `code-quality-pilot.yml` now has a single owner, security/scheduled. The rationalisation report is regenerated, and `test_workflow_policy.py` passes 15/15. **R14 (open):** `code-quality-pilot.yml` itself has reverted to an older layout. Two `test_execution_tiers` checks still fail because of it, so CI Workflow Governance stays red until you decide which version of that workflow is canonical.
 
+**Update (main `88f13a78`, #2402):** your commit `130082c0` fixed R13 and R14 on main. Its policy rules are identical to this branch's. `code-quality-pilot.yml` now has a read-only `pilot` job, and an `issues: write` `telemetry` job that runs only on schedule or dispatch on main. Main is merged into this branch, and `ci/governance/tests` passes 368/368 locally. Main moved after V3, so the V3 baseline describes `0138ef51`, not `88f13a78`.
+
 **To close the coverage gap:** with an authenticated `gh`, run `gh run download 39922825831 -R GBOGEB/ABACUS -n b0-canonical-0138ef5193b20ef8a64132267444299074cd8beb -D <empty dir>`, then record its totals as `C-MAIN-0138ef51`.
 
 **MERGE_ADMISSION = HOLD (MACH-II prerequisite unmet) · Formal engineering credit Δ = 0 · Stability 3/3 = UNVERIFIED**
