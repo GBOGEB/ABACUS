@@ -1,0 +1,159 @@
+{
+  "schema": "codepurple.w52.zero-file-coverage-baseline.v1",
+  "repo": "GBOGEB/ABACUS",
+  "source_sha": "7e9564f955dc00de23a7fba446d776e076758a8e",
+  "native_run_id": 39502104581,
+  "source_type": "GitHub Actions native full CI, coverage-report",
+  "artifact": {
+    "id": 12303081782,
+    "zip_sha256": "695059520fdf48b4cfba06fc743c994cfbb6fd42eed1c2fd380d54b298bfe8d9",
+    "coverage_member": "coverage-summary.json",
+    "coverage_member_sha256": "582f1b810eaee69edaa592f8c8f4bd1a303c689680db8b2f45a7aaae2a301d57",
+    "coverage_py_version": "7.16.2",
+    "branch_coverage": true
+  },
+  "cohort": {
+    "instrumented_files": 429,
+    "zero_covered_files": 71,
+    "covered_statements": 33580,
+    "eligible_statements": 46942,
+    "covered_branches": 9830,
+    "eligible_branches": 14102,
+    "combined_covered": 43410,
+    "combined_eligible": 61044,
+    "combined_percent": 71.11264006290544
+  },
+  "targets": {
+    "count": 12,
+    "baseline_zero": 12,
+    "eligible_statements": 425,
+    "eligible_branches": 98,
+    "max_new_covered_opportunities": 523,
+    "upper_bound_combined_pp": 0.8567590590393813,
+    "new_zero_target": 0,
+    "desired_global_zero_upper_bound": 59,
+    "files": [
+      {
+        "path": "DMAIC_V3/agents/context_manager.py",
+        "git_blob_sha": "56fd928ce61dcf89695dc768cbf52a3653ad1bfc",
+        "statements": 21,
+        "branches": 2,
+        "covered_statements": 0,
+        "covered_branches": 0
+      },
+      {
+        "path": "DMAIC_V3/agents/health_checker.py",
+        "git_blob_sha": "ff9cd4302a2d0ae66b90ef75bed010550338e5dd",
+        "statements": 13,
+        "branches": 0,
+        "covered_statements": 0,
+        "covered_branches": 0
+      },
+      {
+        "path": "DMAIC_V3/agents/iteration_tracker.py",
+        "git_blob_sha": "bcea35364a0a3459971891623f01cba169143a81",
+        "statements": 22,
+        "branches": 2,
+        "covered_statements": 0,
+        "covered_branches": 0
+      },
+      {
+        "path": "DMAIC_V3/agents/style_extractor.py",
+        "git_blob_sha": "15760bd51bcd17f9e1cdf7e5a3bedbc59683b27e",
+        "statements": 18,
+        "branches": 0,
+        "covered_statements": 0,
+        "covered_branches": 0
+      },
+      {
+        "path": "DMAIC_V3/agents/dependency_graph.py",
+        "git_blob_sha": "8f9371ae1dc3aaa1c79ba57f9e89cc4bf5fa1418",
+        "statements": 30,
+        "branches": 12,
+        "covered_statements": 0,
+        "covered_branches": 0
+      },
+      {
+        "path": "DMAIC_V3/agents/framework.py",
+        "git_blob_sha": "2c07c23cf8f372d380856b729909a69d634ab5f9",
+        "statements": 20,
+        "branches": 8,
+        "covered_statements": 0,
+        "covered_branches": 0
+      },
+      {
+        "path": "DMAIC_V3/agents/performance_tracker.py",
+        "git_blob_sha": "1bd56aa07238425651a4d76651047d47af3c4323",
+        "statements": 31,
+        "branches": 4,
+        "covered_statements": 0,
+        "covered_branches": 0
+      },
+      {
+        "path": "integration/codespace_jyperter/src/federation.py",
+        "git_blob_sha": "c960e52246e5ff18c89c0e9f0a397f4f6188f040",
+        "statements": 27,
+        "branches": 8,
+        "covered_statements": 0,
+        "covered_branches": 0
+      },
+      {
+        "path": "integration/cryoplant_project/src/federation.py",
+        "git_blob_sha": "53ce97561fed45c763d86c60b98c89d5f7f6eda8",
+        "statements": 27,
+        "branches": 8,
+        "covered_statements": 0,
+        "covered_branches": 0
+      },
+      {
+        "path": "DMAIC_V3/validate_dow_structure.py",
+        "git_blob_sha": "6c631ea115d1c11e3675280e9f978222e8ac81ab",
+        "statements": 47,
+        "branches": 12,
+        "covered_statements": 0,
+        "covered_branches": 0
+      },
+      {
+        "path": "DMAIC_V3/quick_output_analysis.py",
+        "git_blob_sha": "a121673fa852ac1791a6ab6fbece405e2ea5f329",
+        "statements": 97,
+        "branches": 36,
+        "covered_statements": 0,
+        "covered_branches": 0
+      },
+      {
+        "path": "DMAIC_V3/orchestrators/dmaic_postdeploy.py",
+        "git_blob_sha": "9d4e4148db808f61fd5332ffa8c8febe18e871f6",
+        "statements": 72,
+        "branches": 6,
+        "covered_statements": 0,
+        "covered_branches": 0
+      }
+    ]
+  },
+  "comparability": {
+    "must_match_source_blob_per_target": true,
+    "must_match_coverage_selection_and_config": true,
+    "must_match_instrumentor_version": true,
+    "must_match_unchanged_target_statements_and_branches": true,
+    "source_test_only_change": true,
+    "denominator_changes_report_separately": true,
+    "missing_native_proof_is_unknown_not_zero": true
+  },
+  "admission": {
+    "state": "HOLD",
+    "verified_14_package_closures": 0,
+    "independent_review": null,
+    "main_coverage_improvement_verified": null,
+    "owner_governance_controls_not_modified": true,
+    "qualifying_current_head_evidence_required": true
+  },
+  "historical_other_cohorts": [
+    {
+      "name": "W46 floating code",
+      "zero_covered": 114,
+      "file_count": 223,
+      "use_for_delta": false
+    }
+  ]
+}

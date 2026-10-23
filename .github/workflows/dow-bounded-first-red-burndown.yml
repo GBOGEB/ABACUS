@@ -8,6 +8,7 @@ on:
       - "tests/test_dmaic_measurement_receipts.py"
       - "tests/test_loop_transient.py"
       - "tests/test_dow_bounded_testpilot_repairs.py"
+      - "tests/test_recursive_build_lineage.py"
       - ".github/workflows/dow-bounded-first-red-burndown.yml"
   workflow_dispatch:
 
@@ -141,6 +142,8 @@ jobs:
                   for (code, path, message), count in sorted(opened.items())
               ],
               "net_reduction": len(before) - len(after),
+              # A clean scope cannot reduce further; it must stay clean.
+              "acceptance": "CLEAN_HOLD" if not before else "REDUCTION",
               "closure_unit": "Ruff finding occurrence, not root cause",
               "main_coverage": None,
               "changed_line_coverage": None,
@@ -159,18 +162,21 @@ jobs:
               raise SystemExit(
                   "Fail-closed: scoped pre-commit formatting debt remains"
               )
-          if len(before) == 0 or len(after) >= len(before) or opened:
-              raise SystemExit(
-                  "Fail-closed: no comparable reduction or "
-                  "newly introduced findings"
-              )
+          if opened:
+              raise SystemExit("Fail-closed: newly introduced findings")
+          if before and len(after) >= len(before):
+              raise SystemExit("Fail-closed: no comparable reduction")
+          if not before and after:
+              raise SystemExit("Fail-closed: clean scope regressed")
           PY
       - name: Focused behavioral regression
         run: |
           python -m compileall -q \
             scripts/preview_diff.py scripts/recursive_build.py \
-            tests/test_dow_bounded_testpilot_repairs.py
-          python -m pytest -q tests/test_dow_bounded_testpilot_repairs.py
+            tests/test_dow_bounded_testpilot_repairs.py \
+            tests/test_recursive_build_lineage.py
+          python -m pytest -q tests/test_dow_bounded_testpilot_repairs.py \
+            tests/test_recursive_build_lineage.py
       # SHA-pinned upload-artifact v4.6.2
       - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9
         if: always()

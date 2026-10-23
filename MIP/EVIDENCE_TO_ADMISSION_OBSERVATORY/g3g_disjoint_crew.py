@@ -120,12 +120,29 @@ def assess(payload: dict) -> dict:
         walk(key)
     used = []
     for lane in lanes:
+        repo_key = lane["repo"].casefold()
         for path in lane["lease_paths"]:
             for repo, other, owner in used:
                 require(not (repo.casefold() == lane["repo"].casefold() and
                              _overlap(path, other)),
                         f"overlapping source lease {owner} -> {lane['id']}")
-            used.append((lane["repo"], path, lane["id"]))
+            used.append((repo_key, path, lane["id"]))
+    # Preserve historical plans: absent SUT inventories do not cause an
+    # exception, but they cannot be promoted to independent scaling proof.
+    sut_used = []
+    sut_unknown = []
+    for lane in lanes:
+        repo_key = lane["repo"].casefold()
+        targets = lane.get("sut_paths")
+        if targets is None or (not targets and lane["lease_paths"]):
+            sut_unknown.append(lane["id"])
+            continue
+        for target in targets:
+            for repo, other, owner in sut_used:
+                require(not (repo == repo_key and _overlap(target, other)),
+                        f"overlapping SUT source target {owner} -> {lane['id']}")
+            sut_used.append((repo_key, target, lane["id"]))
+    sut_complete = not sut_unknown
     fingerprint_counts = {}
     occurrence_counts = {}
     for lane in lanes:
@@ -158,6 +175,10 @@ def assess(payload: dict) -> dict:
         "read_only_unblocked_lanes": ready,
         "advisory_readonly_parallel_limit": min(3, len(ready)),
         "source_path_leases_disjoint": True,
+        "sut_source_leases_disjoint": True if sut_complete else None,
+        "sut_lease_census_complete": sut_complete,
+        "sut_source_target_count": len(sut_used) if sut_complete else None,
+        "sut_unreported_lane_ids": sorted(sut_unknown),
         "distinct_first_red_fingerprints": len(fingerprint_counts),
         "fingerprint_manifestations_by_lane": dict(sorted(fingerprint_counts.items())),
         "source_observed_occurrences": dict(sorted(occurrence_counts.items())),
