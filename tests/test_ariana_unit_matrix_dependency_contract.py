@@ -36,10 +36,10 @@ def _unit_matrix_workflow() -> str:
     return section.group(1)
 
 
-def test_nine_cell_ci_uses_shared_minimal_dependency_manifest() -> None:
+def test_six_cell_ci_uses_shared_minimal_dependency_manifest() -> None:
     unit = _unit_matrix_workflow()
     assert "os: [ubuntu-latest, windows-latest, macos-latest]" in unit
-    assert "python-version: ['3.10', '3.11', '3.12']" in unit
+    assert "python-version: ['3.11', '3.12']" in unit
     assert "pip install -r requirements-test.txt" in unit
     assert "pip install -r requirements-dev.txt" not in unit
 
