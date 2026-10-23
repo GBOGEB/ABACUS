@@ -139,5 +139,103 @@ class G3GDisjointCrewTests(unittest.TestCase):
         self.assertEqual(x["accepted_causal_root_closures"], 0)
 
 
+class G3GSutSourceLeaseTests(unittest.TestCase):
+    """SUT targets and test-file edits require separate collision proofs."""
+
+    def declared(self):
+        data = sample()
+        for lane in data["lanes"]:
+            lane["sut_paths"] = list(lane["lease_paths"])
+        return data
+
+    def test_legacy_plan_without_target_inventory_is_unknown(self):
+        result = m.assess(sample())
+        self.assertTrue(result["source_path_leases_disjoint"])
+        self.assertIsNone(result["sut_source_leases_disjoint"])
+        self.assertFalse(result["sut_lease_census_complete"])
+        self.assertEqual(result["sut_unreported_lane_ids"],
+                         ["cred", "gov", "probe"])
+
+    def test_explicit_disjoint_sut_lease_is_positive_control(self):
+        result = m.assess(self.declared())
+        self.assertTrue(result["sut_source_leases_disjoint"])
+        self.assertTrue(result["sut_lease_census_complete"])
+        self.assertEqual(result["sut_source_target_count"], 2)
+        self.assertEqual(result["sut_unreported_lane_ids"], [])
+        self.assertFalse(result["source_write_permission_granted_by_viewer"])
+
+    def test_different_test_paths_same_sut_is_not_disjoint(self):
+        data = self.declared()
+        data["lanes"][2]["repo"] = "GBOGEB/ABACUS"
+        data["lanes"][2]["sut_paths"] = list(data["lanes"][0]["sut_paths"])
+        with self.assertRaisesRegex(ValueError, "overlapping SUT source target"):
+            m.assess(data)
+
+    def test_nested_sut_directory_overlap_is_rejected(self):
+        data = self.declared()
+        data["lanes"][2]["repo"] = "GBOGEB/ABACUS"
+        data["lanes"][0]["sut_paths"] = ["DMAIC_V3"]
+        data["lanes"][2]["sut_paths"] = ["DMAIC_V3/analyze_recent_files.py"]
+        with self.assertRaisesRegex(ValueError, "overlapping SUT source target"):
+            m.assess(data)
+
+    def test_reverse_order_cannot_hide_colliding_suts(self):
+        data = self.declared()
+        data["lanes"][2]["repo"] = "GBOGEB/ABACUS"
+        data["lanes"][2]["sut_paths"] = list(data["lanes"][0]["sut_paths"])
+        data["lanes"].reverse()
+        with self.assertRaisesRegex(ValueError, "overlapping SUT source target"):
+            m.assess(data)
+
+    def test_identical_sut_names_are_scoped_to_repository(self):
+        data = self.declared()
+        data["lanes"][0]["sut_paths"] = ["integration/shared.py"]
+        data["lanes"][2]["sut_paths"] = ["integration/shared.py"]
+        self.assertTrue(m.assess(data)["sut_source_leases_disjoint"])
+
+    def test_repository_name_case_does_not_hide_lease_collisions(self):
+        data = sample()
+        data["lanes"][2]["repo"] = "GBOGEB/abacus"
+        data["lanes"][2]["lease_paths"] = list(
+            data["lanes"][0]["lease_paths"])
+        with self.assertRaisesRegex(ValueError, "overlapping source lease"):
+            m.assess(data)
+
+        data = self.declared()
+        data["lanes"][2]["repo"] = "GBOGEB/abacus"
+        data["lanes"][2]["sut_paths"] = list(
+            data["lanes"][0]["sut_paths"])
+        with self.assertRaisesRegex(ValueError,
+                                    "overlapping SUT source target"):
+            m.assess(data)
+
+    def test_traversal_or_malformed_target_inventory_rejected(self):
+        for targets in ("integration/shared.py", ["../secret.py"],
+                        ["integration/./shared.py"], ["integration/shared.py"] * 2,
+                        ["C:/work/ABACUS/DMAIC_V3/analyze_recent_files.py"],
+                        ["DMAIC_V3/analyze_recent_files.py\x00"]):
+            with self.subTest(targets=targets):
+                data = self.declared()
+                data["lanes"][0]["sut_paths"] = targets
+                with self.assertRaisesRegex(ValueError, "SUT source paths"):
+                    m.assess(data)
+
+    def test_empty_sut_claim_with_a_write_lease_is_unknown(self):
+        data = self.declared()
+        data["lanes"][0]["sut_paths"] = []
+        result = m.assess(data)
+        self.assertIsNone(result["sut_source_leases_disjoint"])
+        self.assertFalse(result["sut_lease_census_complete"])
+        self.assertIn("gov", result["sut_unreported_lane_ids"])
+        self.assertIsNone(result["sut_source_target_count"])
+
+    def test_partial_sut_census_never_claims_global_independence(self):
+        data = self.declared()
+        del data["lanes"][2]["sut_paths"]
+        result = m.assess(data)
+        self.assertIsNone(result["sut_source_leases_disjoint"])
+        self.assertEqual(result["sut_unreported_lane_ids"], ["probe"])
+
+
 if __name__ == "__main__":
     unittest.main()
