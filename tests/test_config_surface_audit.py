@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 import importlib.util
+import sys
 import tempfile
 import unittest
 from pathlib import Path
@@ -66,6 +67,22 @@ class ConfigSurfaceTest(unittest.TestCase):
     def test_toml_duplicate_section_red(self):
         with self.assertRaises(Exception):
             audit.check_text("pyproject.toml", "[a]\nx = 1\n[a]\ny = 2\n")
+
+    def test_toml_falls_back_to_tomli_without_tomllib(self):
+        # Python 3.10 has no tomllib: the module must bind tomli instead.
+        parser = audit.tomllib
+        spec = importlib.util.spec_from_file_location(
+            "config_surface_audit_tomli", SPEC.origin
+        )
+        fallback = importlib.util.module_from_spec(spec)
+        with mock.patch.dict(sys.modules, {"tomllib": None, "tomli": parser}):
+            spec.loader.exec_module(fallback)
+        self.assertIs(fallback.tomllib, parser)
+        self.assertEqual(
+            fallback.check_text("pyproject.toml", "[a]\nx = 1\n"), ("TOML", [])
+        )
+        with self.assertRaises(parser.TOMLDecodeError):
+            fallback.check_text("pyproject.toml", "[a]\nx = 1\n[a]\ny = 2\n")
 
     def test_ini_duplicate_section_red(self):
         with self.assertRaises(Exception):
