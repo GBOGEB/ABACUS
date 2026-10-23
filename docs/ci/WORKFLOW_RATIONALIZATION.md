@@ -3,11 +3,11 @@
 # ABACUS CI workflow rationalisation
 
 Policy: `ABACUS-CI-SSOT-001`  
-Policy SHA-256 (canonical sorted JSON bytes of `ci/governance/workflow_policy.json`): `1fe1ae9522ca3956bede0e12d48c16393550ad24ad81d39680cfa91f52ed8002`
+Policy SHA-256 (canonical sorted JSON bytes of `ci/governance/workflow_policy.json`): `94635006fa0be1c22d4f927232c063aceedc27f66c1eabdeaa9111268b6458a6`
 
 ## Outcome
 
-The repository currently contains **214 workflow definitions**. All **214** are assigned to one primary functional cluster and lifecycle stage.
+The repository currently contains **215 workflow definitions**. All **213** are assigned to one primary functional cluster and lifecycle stage.
 
 The observed baseline that motivated this control was PR #681 with 119 check runs (111 queued, 8 skipped) and main with 122 check runs.
 
@@ -32,8 +32,8 @@ The observed baseline that motivated this control was PR #681 with 119 check run
 | `bridge_federation` | `bridge-ci.yml` | 20 | CODEX/ABACUS bridge contract and federation smoke evidence. |
 | `dmaic` | `dmaic-enterprise-ci.yml` | 9 | DMAIC phase, convergence and maturity execution. |
 | `dow` | `dow-integration.yml` | 22 | DOW parent mechanics, integration, monitoring and warm-up. |
-| `runtime_governance` | `governance.yml` | 30 | Runtime evidence, governance, review artifacts and schema validation. |
-| `security` | `security-scan.yml` | 13 | Ruff PR security, scheduled Bandit, CodeQL, dependency and supply-chain scanning. |
+| `runtime_governance` | `governance.yml` | 31 | Runtime evidence, governance, review artifacts and schema validation. |
+| `security` | `security-scan.yml` | 12 | Ruff PR security, scheduled Bandit, CodeQL, dependency and supply-chain scanning. |
 | `delivery` | `cd-pipeline.yml` | 8 | Build, release, deployment and publication. |
 | `documentation` | `docs-build.yml` | 8 | Documentation validation, rendering, export and Pages. |
 | `automation` | `post-merge-pr-summary.yml` | 13 | Repository maintenance, reporting, branch and PR automation. |
@@ -142,6 +142,7 @@ Make PR-triggered workflows with write-class GitHub token scopes explicit and re
 | 20 | `pr_domain` | `runtime_governance` | `cbd-w38-route-yield.yml` | none | 1 | `keep` | — |
 | 20 | `pr_domain` | `runtime_governance` | `code-purple-dashboard-v31.yml` | pull_request, workflow_dispatch | 2 | `keep` | — |
 | 20 | `pr_domain` | `runtime_governance` | `code-purple-sut-gui.yml` | pull_request, workflow_dispatch | 1 | `keep` | — |
+| 20 | `pr_domain` | `runtime_governance` | `config-surface-audit.yml` | pull_request, workflow_dispatch | 1 | `keep` | — |
 | 20 | `pr_domain` | `runtime_governance` | `deployment-enforcement.yml` | workflow_dispatch | 1 | `keep` | — |
 | 20 | `pr_domain` | `runtime_governance` | `everred-real-pipeline-proof.yml` | pull_request, workflow_dispatch | 1 | `keep` | — |
 | 20 | `pr_domain` | `runtime_governance` | `everred-v3-validation.yml` | pull_request, schedule, workflow_dispatch | 4 | `keep` | — |

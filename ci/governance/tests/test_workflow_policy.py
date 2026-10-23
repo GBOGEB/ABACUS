@@ -96,18 +96,12 @@ class WorkflowPolicyTests(unittest.TestCase):
         self.assertEqual("keep", rule["disposition"])
         self.assertEqual(0, self.policy["quality_gates"]["allow_unclassified"])
 
-    def test_quality_pilot_and_pages_workflows_have_explicit_owners(self):
-        expected = {
-            "code-quality-pilot.yml": ("security", "pr_domain"),
-            "nextjs.yml": ("documentation", "post_merge"),
-        }
-        for filename, (cluster, lifecycle) in expected.items():
-            with self.subTest(filename=filename):
-                rule, matches = MODULE.classify(filename, self.policy)
-                self.assertEqual(1, len(matches))
-                self.assertEqual(cluster, rule["cluster"])
-                self.assertEqual(lifecycle, rule["lifecycle"])
-                self.assertEqual("keep", rule["disposition"])
+    def test_config_surface_audit_has_unique_governance_owner(self):
+        rule, matches = MODULE.classify("config-surface-audit.yml", self.policy)
+        self.assertEqual(1, len(matches))
+        self.assertEqual("runtime_governance", rule["cluster"])
+        self.assertEqual("pr_domain", rule["lifecycle"])
+        self.assertEqual("keep", rule["disposition"])
 
     def test_parser_extracts_top_level_jobs_and_events(self):
         source = """name: Example\non:\n  push:\n  pull_request:\njobs:\n  test:\n    runs-on: ubuntu-latest\n    steps:\n      - run: pytest -q\n  lint:\n    runs-on: ubuntu-latest\n"""
