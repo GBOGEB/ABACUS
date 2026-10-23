@@ -44,9 +44,12 @@
     {"path": "models/qps_line_s/rfi_package.py", "type": "rfi_renderer", "status": "active"},
     {"path": "models/qps_line_s/runtime.py", "type": "runtime_verdict", "status": "active"},
     {"path": "models/qps_line_s/recovery_model.py", "type": "model_recovery", "status": "active"},
+    {"path": "models/qps_line_s/ssot_tables.py", "type": "ssot_mirror", "status": "active", "source": "contract Addendum II rev 146 App. 11.2 Tables 27-29 (cryoplant-project triage/w365 addendum2_rev146.json, sha256 16b56d57a70034614a8b95ddb92e47aafb0d3328d99a6d9b7e46aa8729ee2779)"},
+    {"path": "models/qps_line_s/loop_transient.py", "type": "model_loop_transient", "status": "active", "source": "ssot_tables.py; cool-down counterpart cryoplant-project triage/w366/codellm_cooldown_recovery/cooldown/model.py"},
     {"path": "tests/test_line_s_buffer.py", "type": "test", "status": "active"},
     {"path": "tests/test_runtime.py", "type": "test", "status": "active"},
     {"path": "tests/test_recovery_model.py", "type": "test", "status": "active"},
+    {"path": "tests/test_loop_transient.py", "type": "test", "status": "active"},
     {"path": "docs/qps_line_s_recovery/reference-registry.yaml", "type": "reference_registry", "status": "active"},
     {"path": ".github/workflows/qps_line_s.yml", "type": "ci_workflow", "status": "active"},
     {"path": ".gitignore", "type": "source_control_policy", "status": "active"}

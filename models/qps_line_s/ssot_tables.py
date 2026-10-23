@@ -1,6 +1,18 @@
 """SSOT Tables 27 / 28 / 29 — Python mirror and NIST AISI 304 conductivity.
 
 All constants transcribed from the SSOT (QPS Addendum II mirror).
+
+Source: contract Addendum II rev 146, Appendix 11.2 (Cryogenic User
+Transient Model), Tables 27-29, as extracted in GBOGEB/cryoplant-project
+triage/w365/qpsdeck_icd_family/inputs/contract/addendum2_rev146.json
+(sha256 16b56d57a70034614a8b95ddb92e47aafb0d3328d99a6d9b7e46aa8729ee2779).
+The same tables drive the cool-down kernels in cryoplant-project
+triage/w366/codellm_cooldown_recovery/cooldown/: contract.py loads that
+file and checks its sha256, and materials.py has the same NIST SS fit.
+Checked 2026-10-23: Tables 27, 28 and 29 (all 30 rows) match exactly, and
+the conductivity integral agrees within 0.03 % over 2-300 K. These values
+are copies, so a new contract revision is not picked up here on its own.
+
 CONDUCTION_AL_CONSTANT is CLOSED: a_cond [m] in Table 28 is the empirical
 lumped coefficient, used directly as Q_cond = a_cond * INT(lambda_SS dT).
 """
