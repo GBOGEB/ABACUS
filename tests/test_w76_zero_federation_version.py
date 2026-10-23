@@ -7,6 +7,7 @@ from __future__ import annotations
 
 import importlib.util
 import pathlib
+import sys
 import tempfile
 import unittest
 import unittest.mock as mock
@@ -19,7 +20,23 @@ def load_file(path, alias):
     if spec is None or spec.loader is None:
         raise AssertionError("unavailable production target " + path)
     module = importlib.util.module_from_spec(spec)
-    spec.loader.exec_module(module)
+    # product_version.py imports ``tomllib`` (Python 3.11+, as pyproject
+    # requires), but ABACUS's full CI matrix also collects tests on 3.10.
+    # Alias the tomli backport only while the module executes so the logic
+    # under test runs there too; the pinned W76 source blob stays unchanged.
+    shim = False
+    try:
+        import tomllib  # noqa: F401
+    except ModuleNotFoundError:
+        import tomli
+
+        sys.modules["tomllib"] = tomli
+        shim = True
+    try:
+        spec.loader.exec_module(module)
+    finally:
+        if shim:
+            del sys.modules["tomllib"]
     return module
 
 
