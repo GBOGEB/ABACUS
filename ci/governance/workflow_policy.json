@@ -280,7 +280,13 @@
       "disposition": "keep"
     },
     {
-      "pattern": "^(codeql|dependency-review|osv-scanner|osv-scheduled|reusable-security|security-dashboard|security-scan|semgrep)\\.yml$",
+      "pattern": "^(code-quality-pilot|codeql|dependency-review|osv-scanner|osv-scheduled|reusable-security|security-dashboard|security-scan|semgrep)\\.yml$",
+      "cluster": "security",
+      "lifecycle": "pr_domain",
+      "disposition": "keep"
+    },
+    {
+      "pattern": "^code-quality-pilot\\.yml$",
       "cluster": "security",
       "lifecycle": "pr_domain",
       "disposition": "keep"
@@ -336,6 +342,12 @@
     {
       "pattern": "^cycle2-temporal-pca-independent-consumer\\.yml$",
       "cluster": "dow",
+      "lifecycle": "pr_domain",
+      "disposition": "keep"
+    },
+    {
+      "pattern": "^code-purple-w76-zero-assets\\.yml$",
+      "cluster": "specialised",
       "lifecycle": "pr_domain",
       "disposition": "keep"
     },
@@ -703,6 +715,12 @@
       "pattern": "^cbd-scheduled-gated-pulse\\.yml$",
       "cluster": "runtime_governance",
       "lifecycle": "scheduled",
+      "disposition": "keep"
+    },
+    {
+      "pattern": "^config-surface-audit\\.yml$",
+      "cluster": "runtime_governance",
+      "lifecycle": "pr_domain",
       "disposition": "keep"
     }
   ],

@@ -33,7 +33,8 @@ burn-in.
 - `telemetry.json` — schema `gbogeb-quality-pilot-telemetry/1.0.0`: per tool
   findings, top rules, seconds, exit code, tool version; run number; phase.
 - `trend.md` — burn-in table, findings per tool across runs, classified
-  `stable` / `falling` / `rising — investigate` / `fluctuating — check determinism`.
+  `stable` / `falling` / `rising — investigate` /
+  `fluctuating — check determinism`.
 - `summary.md` — also posted to the job summary.
 - `triage_sample.csv` — 20 findings, stratified per tool, new seed each run.
 

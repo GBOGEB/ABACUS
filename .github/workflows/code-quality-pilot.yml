@@ -83,7 +83,8 @@ jobs:
           fi
           echo "run=$run" >> "$GITHUB_OUTPUT"
           echo "phase=$phase" >> "$GITHUB_OUTPUT"
-          echo "Cadence: $why · phase=$phase" | tee -a "$GITHUB_STEP_SUMMARY"
+          echo "Cadence: $why · phase=$phase" \
+            | tee -a "$GITHUB_STEP_SUMMARY"
 
   pilot:
     needs: cadence

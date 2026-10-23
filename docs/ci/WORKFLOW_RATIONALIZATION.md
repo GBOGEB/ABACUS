@@ -37,7 +37,7 @@ The observed baseline that motivated this control was PR #681 with 119 check run
 | `delivery` | `cd-pipeline.yml` | 9 | Build, release, deployment and publication. |
 | `documentation` | `docs-build.yml` | 7 | Documentation validation, rendering, export and Pages. |
 | `automation` | `post-merge-pr-summary.yml` | 13 | Repository maintenance, reporting, branch and PR automation. |
-| `specialised` | `qps-cost-roundtrip-contract.yml` | 45 | Bounded product or historical pipelines retained outside core CI. |
+| `specialised` | `qps-cost-roundtrip-contract.yml` | 46 | Bounded product or historical pipelines retained outside core CI. |
 | `ci_governance` | `ci-governance.yml` | 2 | This policy, inventory, overlap and staleness gate. |
 | `legacy` | — | 2 | Superseded workflows kept temporarily for manual comparison before deletion. |
 
@@ -142,6 +142,7 @@ Make PR-triggered workflows with write-class GitHub token scopes explicit and re
 | 20 | `pr_domain` | `runtime_governance` | `cbd-w38-route-yield.yml` | none | 1 | `keep` | — |
 | 20 | `pr_domain` | `runtime_governance` | `code-purple-dashboard-v31.yml` | pull_request, workflow_dispatch | 2 | `keep` | — |
 | 20 | `pr_domain` | `runtime_governance` | `code-purple-sut-gui.yml` | pull_request, workflow_dispatch | 1 | `keep` | — |
+| 20 | `pr_domain` | `runtime_governance` | `config-surface-audit.yml` | pull_request, workflow_dispatch | 1 | `keep` | — |
 | 20 | `pr_domain` | `runtime_governance` | `deployment-enforcement.yml` | workflow_dispatch | 1 | `keep` | — |
 | 20 | `pr_domain` | `runtime_governance` | `everred-real-pipeline-proof.yml` | pull_request, workflow_dispatch | 1 | `keep` | — |
 | 20 | `pr_domain` | `runtime_governance` | `everred-v3-validation.yml` | pull_request, schedule, workflow_dispatch | 4 | `keep` | — |
@@ -170,6 +171,7 @@ Make PR-triggered workflows with write-class GitHub token scopes explicit and re
 | 20 | `pr_domain` | `runtime_governance` | `yaml-validation.yml` | push, pull_request | 1 | `keep` | — |
 | 20 | `pr_domain` | `security` | `bandit-disjoint-census.yml` | workflow_dispatch, pull_request | 1 | `keep` | — |
 | 20 | `pr_domain` | `security` | `code-maroon.yml` | pull_request, workflow_dispatch | 1 | `keep` | — |
+| 20 | `pr_domain` | `security` | `code-quality-pilot.yml` | workflow_dispatch, pull_request, schedule | 2 | `keep` | — |
 | 20 | `pr_domain` | `security` | `codeql.yml` | push, pull_request, schedule | 1 | `keep` | — |
 | 20 | `pr_domain` | `security` | `dependency-review.yml` | pull_request | 1 | `keep` | — |
 | 20 | `pr_domain` | `security` | `osv-scanner.yml` | pull_request, merge_group | 1 | `keep` | — |
@@ -180,6 +182,7 @@ Make PR-triggered workflows with write-class GitHub token scopes explicit and re
 | 20 | `pr_domain` | `security` | `semgrep.yml` | push, pull_request, schedule, workflow_dispatch | 1 | `keep` | — |
 | 20 | `pr_domain` | `specialised` | `code-purple-w40-binary-penetration.yml` | pull_request, workflow_dispatch | 1 | `keep` | — |
 | 20 | `pr_domain` | `specialised` | `code-purple-w42-remaining-arcs.yml` | pull_request, workflow_dispatch | 1 | `keep` | — |
+| 20 | `pr_domain` | `specialised` | `code-purple-w76-zero-assets.yml` | pull_request, workflow_dispatch | 1 | `keep` | — |
 | 20 | `pr_domain` | `specialised` | `dab-flake8-census.yml` | workflow_call, pull_request, push, schedule, workflow_dispatch | 1 | `keep` | — |
 | 20 | `pr_domain` | `specialised` | `delta-1-baseline.yml` | workflow_dispatch | 1 | `keep` | — |
 | 20 | `pr_domain` | `specialised` | `mip-coverage-evidence.yml` | workflow_dispatch, push, pull_request | 6 | `keep` | — |
@@ -254,6 +257,7 @@ Make PR-triggered workflows with write-class GitHub token scopes explicit and re
 | 30 | `post_merge` | `documentation` | `deploy-docs.yml` | push, workflow_dispatch | 3 | `keep` | — |
 | 30 | `post_merge` | `documentation` | `docs-build.yml` | push | 1 | `keep` | — |
 | 30 | `post_merge` | `documentation` | `export-docs.yml` | push, workflow_dispatch | 1 | `keep` | — |
+| 30 | `post_merge` | `documentation` | `nextjs.yml` | push, workflow_dispatch | 2 | `keep` | — |
 | 30 | `post_merge` | `documentation` | `pages.yml` | workflow_dispatch | 1 | `keep` | — |
 | 30 | `post_merge` | `documentation` | `reports.yml` | schedule, workflow_dispatch, push | 2 | `keep` | — |
 | 30 | `post_merge` | `documentation` | `update-docs.yml` | push, workflow_dispatch | 1 | `keep` | — |
