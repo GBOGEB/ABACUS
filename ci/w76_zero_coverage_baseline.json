@@ -1,0 +1,115 @@
+{
+  "schema": "codepurple.zero-asset.baseline.v1",
+  "source_repository": "GBOGEB/ABACUS",
+  "observed_pr_head_sha": "2e2d4dfa0d10e20514ef183dbb259fed8926185d",
+  "producer_workflow_run_id": 39501000858,
+  "coverage_artifact_id": 12301271979,
+  "coverage_zip_sha256": "8e426998ad97a61a734151cc0276c388fdf9837136502f9cef4be05aaff409a9",
+  "coverage_tool_version": "7.16.2",
+  "event_merge_sha": "6f8dfa9827ca586144b2e9d1bf468ab6d5b188d3",
+  "checkout_sha": null,
+  "identity_note": "PR-head, merge-event and checkout identities are distinct. Production Git blobs individually verified unchanged from observed baseline PR head to W76 base; do not equate event_merge_sha with PR-head checkout.",
+  "baseline_population": {
+    "files_measured": 429,
+    "files_zero_covered": 85,
+    "nonexecutable_zero_statement_files": 14,
+    "executable_zero_covered_files": 71,
+    "covered_statements": 33579,
+    "eligible_statements": 46942,
+    "covered_branches": 9830,
+    "eligible_branches": 14102
+  },
+  "files": [
+    {
+      "path": "DMAIC_V3/agents/health_checker.py",
+      "baseline_covered_statements": 0,
+      "baseline_covered_branches": 0,
+      "eligible_statements": 13,
+      "eligible_branches": 0,
+      "source_blob_sha": "ff9cd4302a2d0ae66b90ef75bed010550338e5dd"
+    },
+    {
+      "path": "DMAIC_V3/agents/style_extractor.py",
+      "baseline_covered_statements": 0,
+      "baseline_covered_branches": 0,
+      "eligible_statements": 18,
+      "eligible_branches": 0,
+      "source_blob_sha": "15760bd51bcd17f9e1cdf7e5a3bedbc59683b27e"
+    },
+    {
+      "path": "DMAIC_V3/agents/framework.py",
+      "baseline_covered_statements": 0,
+      "baseline_covered_branches": 0,
+      "eligible_statements": 20,
+      "eligible_branches": 8,
+      "source_blob_sha": "2c07c23cf8f372d380856b729909a69d634ab5f9"
+    },
+    {
+      "path": "DMAIC_V3/agents/context_manager.py",
+      "baseline_covered_statements": 0,
+      "baseline_covered_branches": 0,
+      "eligible_statements": 21,
+      "eligible_branches": 2,
+      "source_blob_sha": "56fd928ce61dcf89695dc768cbf52a3653ad1bfc"
+    },
+    {
+      "path": "DMAIC_V3/agents/iteration_tracker.py",
+      "baseline_covered_statements": 0,
+      "baseline_covered_branches": 0,
+      "eligible_statements": 22,
+      "eligible_branches": 2,
+      "source_blob_sha": "bcea35364a0a3459971891623f01cba169143a81"
+    },
+    {
+      "path": "DMAIC_V3/agents/dependency_graph.py",
+      "baseline_covered_statements": 0,
+      "baseline_covered_branches": 0,
+      "eligible_statements": 30,
+      "eligible_branches": 12,
+      "source_blob_sha": "8f9371ae1dc3aaa1c79ba57f9e89cc4bf5fa1418"
+    },
+    {
+      "path": "DMAIC_V3/agents/performance_tracker.py",
+      "baseline_covered_statements": 0,
+      "baseline_covered_branches": 0,
+      "eligible_statements": 31,
+      "eligible_branches": 4,
+      "source_blob_sha": "1bd56aa07238425651a4d76651047d47af3c4323"
+    },
+    {
+      "path": "DMAIC_V3/product_version.py",
+      "baseline_covered_statements": 0,
+      "baseline_covered_branches": 0,
+      "eligible_statements": 24,
+      "eligible_branches": 6,
+      "source_blob_sha": "c190772ba26ace8681ca892b4a52dcf621491fdf"
+    },
+    {
+      "path": "integration/codespace_jyperter/src/federation.py",
+      "baseline_covered_statements": 0,
+      "baseline_covered_branches": 0,
+      "eligible_statements": 27,
+      "eligible_branches": 8,
+      "source_blob_sha": "c960e52246e5ff18c89c0e9f0a397f4f6188f040"
+    },
+    {
+      "path": "integration/cryoplant_project/src/federation.py",
+      "baseline_covered_statements": 0,
+      "baseline_covered_branches": 0,
+      "eligible_statements": 27,
+      "eligible_branches": 8,
+      "source_blob_sha": "53ce97561fed45c763d86c60b98c89d5f7f6eda8"
+    }
+  ],
+  "acceptance": {
+    "required_source_blob_match": true,
+    "required_coverage_branch_mode": true,
+    "denominator_drift": "INCOMPARABLE",
+    "missing_files": "UNKNOWN",
+    "threshold": "each eligible production asset has >=1 covered statement",
+    "global_zero_count_claim_without_new_full_broad_cohort": false,
+    "authority_transfer": false,
+    "merge_authorized": false,
+    "qps_owner_accepted": false
+  }
+}

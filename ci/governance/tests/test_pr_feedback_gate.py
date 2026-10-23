@@ -498,7 +498,7 @@ class FeedbackGateTests(unittest.TestCase):
     def current_head_request(self, at="2026-10-11T19:10:00Z",
                              head=None, **overrides):
         comment = {
-            "body": "@codex security review\n\nExact head \`%s\`" % (head or self.HEAD),
+            "body": "@codex security review\n\nExact head \\`%s\\`" % (head or self.HEAD),
             "created_at": at,
             "updated_at": at,
             "user": {"login": "GBOGEB", "type": "User"},

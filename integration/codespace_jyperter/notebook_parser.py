@@ -86,6 +86,8 @@ class NotebookParser:
         raw = path.read_bytes()
         sha256 = hashlib.sha256(raw).hexdigest()
         nb = json.loads(raw)
+        if not isinstance(nb, dict):
+            raise ValueError("Notebook JSON root must be an object")
 
         nbformat = nb.get("nbformat", 0)
         if nbformat not in self.SUPPORTED_NBFORMAT:

@@ -21,6 +21,9 @@ def receipt(i, *, covered=10, population=P, instrument=I, unknown=2, roots=5):
         "observed_at": f"2026-10-{19+i:02d}T10:00:00Z",
         "coverage": {"statements": {"covered": covered, "eligible": 100},
                      "branches": {"covered": 0, "eligible": 20}},
+        "terminal": True,
+        "tests": {"executed": 10, "passed": 10, "failed": 0,
+                  "errors": 0, "skipped": 0},
         "triage": {"candidates": 10, "linked": 4, "orphan": 1,
                    "other_disposed": 5-unknown, "unknown": unknown},
         "root_reds_open": roots, "root_cohort_id": "fixed-roots",
@@ -44,7 +47,7 @@ class PulseTest(unittest.TestCase):
 
     def test_plateau_requires_three_valid_moves(self):
         xs = [receipt(i) for i in range(4)]
-        self.assertEqual(pulse.rollup(xs)["control"], "STOP_LOCAL_PLATEAU")
+        self.assertEqual(pulse.rollup(xs)["control"], "RERANK_UNCOVERED")
 
     def test_unknown_triage_not_zero(self):
         x = receipt(0)

@@ -3,6 +3,7 @@ param(
     [string]$Mode = "fast",
     [switch]$Fix,
     [switch]$All,
+    [switch]$Floating,
     [double]$CoverageFloor = -1
 )
 
@@ -14,4 +15,10 @@ if ($CoverageFloor -ge 0) {
 }
 
 python @ArgsList
-exit $LASTEXITCODE
+if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+
+if ($Floating) {
+    python -m unittest -q tests.test_floating_testflight tests.test_mip_v3_frontier tests.test_mip_v3_temporal tests.test_floating_accelerator_receiver tests.test_floating_rollup_adversarial
+    exit $LASTEXITCODE
+}
+exit 0
