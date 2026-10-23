@@ -3,7 +3,7 @@
 # ABACUS CI workflow rationalisation
 
 Policy: `ABACUS-CI-SSOT-001`  
-Policy SHA-256 (canonical sorted JSON bytes of `ci/governance/workflow_policy.json`): `746fc72a93302f78847f89617a0a52a7cb3bbef2ed20e0b422207e74c985ba0d`
+Policy SHA-256 (canonical sorted JSON bytes of `ci/governance/workflow_policy.json`): `321f2001a0196a614a38510199bf028367396c62f9819733db80dea61602ce0c`
 
 ## Outcome
 
@@ -55,7 +55,7 @@ Make PR-triggered workflows with write-class GitHub token scopes explicit and re
 
 | Control | Workflows |
 |---|---|
-| PR write exceptions | `bootstrap-integration.yml`, `branch-hygiene.yml`, `code-quality-pilot.yml`, `codeql.yml`, `dependency-review.yml`, `gloob-causal-responder.yml`, `osv-scanner.yml`, `post-merge-pr-summary.yml`, `pr-feedback-gate.yml`, `semgrep.yml`, `w67-measured-id-pulse.yml` |
+| PR write exceptions | `bootstrap-integration.yml`, `branch-hygiene.yml`, `ci-cd.yml`, `code-quality-pilot.yml`, `codeql.yml`, `dependency-review.yml`, `gloob-causal-responder.yml`, `osv-scanner.yml`, `post-merge-pr-summary.yml`, `pr-feedback-gate.yml`, `semgrep.yml`, `w67-measured-id-pulse.yml` |
 | `pull_request_target` write exceptions | none |
 
 ## Workflow inventory
