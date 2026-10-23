@@ -6,6 +6,7 @@ BT, capability and unverified root closures are explicitly null/unqualified.
 Source epoch, blobs and branch denominators come from the canonical epoch
 manifest ``g3a_w16_epoch.json``; a pending (unmeasured) epoch never passes.
 """
+
 from __future__ import annotations
 
 import argparse

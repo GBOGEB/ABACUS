@@ -6,6 +6,7 @@ Read-only: checks the source epoch pinned in the canonical epoch manifest
 policy sub-categories, and the generated inventory. Refuses to infer coverage
 or source-root closure; drift is repaired with ``scripts/g3a_w16_repin.py``.
 """
+
 from __future__ import annotations
 
 import argparse

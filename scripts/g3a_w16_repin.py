@@ -20,6 +20,7 @@ Read-only towards git: blob ids come from ``git hash-object`` through the
 preflight's own git helper, so both tools agree on attributes and line
 endings and no hashing is reimplemented here.
 """
+
 from __future__ import annotations
 
 import argparse
