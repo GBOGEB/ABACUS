@@ -75,12 +75,12 @@ def write_proofs(directory, versions):
 
 
 class MatrixMutantSensitivity(unittest.TestCase):
-    def test_three_interpreter_baseline_and_fifteen_false_green_mutants(self):
+    def test_two_interpreter_baseline_and_ten_false_green_mutants(self):
         with tempfile.TemporaryDirectory() as d:
             path = Path(d)
-            versions = ("3.10", "3.11", "3.12")
+            versions = ("3.11", "3.12")
             write_proofs(path, versions)
-            baseline = matrix.audit(path, "full", "3.10", SHA)
+            baseline = matrix.audit(path, "full", "3.11", SHA)
             self.assertEqual(baseline["status"], "PASS", baseline["errors"])
             killed = 0
             for version in versions:
@@ -91,7 +91,7 @@ class MatrixMutantSensitivity(unittest.TestCase):
                         mutant = copy.deepcopy(original)
                         mutant["checks"][key] = "EXECUTED_PASS_MUTANT"
                         target.write_text(json.dumps(mutant), encoding="utf-8")
-                        result = matrix.audit(path, "full", "3.10", SHA)
+                        result = matrix.audit(path, "full", "3.11", SHA)
                         self.assertEqual(result["status"], "FAIL")
                         self.assertTrue(
                             any(e.startswith(version + ":" + key + ":")
@@ -100,8 +100,8 @@ class MatrixMutantSensitivity(unittest.TestCase):
                         )
                         killed += 1
                         target.write_text(json.dumps(original), encoding="utf-8")
-            self.assertEqual(killed, 15)
-            self.assertEqual(matrix.audit(path, "full", "3.10", SHA)["status"], "PASS")
+            self.assertEqual(killed, 10)
+            self.assertEqual(matrix.audit(path, "full", "3.11", SHA)["status"], "PASS")
 
     def test_sentinel_and_sampled_interpreter_proof_roles(self):
         with tempfile.TemporaryDirectory() as d:
@@ -113,9 +113,9 @@ class MatrixMutantSensitivity(unittest.TestCase):
                 "exact_sha": SHA, "python_version": "3.12",
                 "proof_role": "sentinel", "checks": checks,
             }), encoding="utf-8")
-            self.assertEqual(matrix.audit(path, "sentinel", "3.10", SHA)["status"], "PASS")
-            self.assertEqual(matrix.audit(path, "sampled", "3.10", SHA)["status"], "FAIL")
-            for secondary in ("3.12", "3.9", "", "not-python"):
+            self.assertEqual(matrix.audit(path, "sentinel", "3.11", SHA)["status"], "PASS")
+            self.assertEqual(matrix.audit(path, "sampled", "3.11", SHA)["status"], "FAIL")
+            for secondary in ("3.10", "3.12", "3.9", "", "not-python"):
                 with self.subTest(secondary=secondary):
                     with self.assertRaises(ValueError):
                         matrix.expected_versions("sampled", secondary)
@@ -133,7 +133,7 @@ class MatrixMutantSensitivity(unittest.TestCase):
             for payload in variants:
                 with self.subTest(payload=payload):
                     target.write_text(payload, encoding="utf-8")
-                    result = matrix.audit(Path(d), "sentinel", "3.10", SHA)
+                    result = matrix.audit(Path(d), "sentinel", "3.11", SHA)
                     self.assertEqual(result["status"], "FAIL")
                     self.assertTrue(result["errors"])
 
@@ -265,13 +265,13 @@ class W43ProvenanceMutationGuards(unittest.TestCase):
             self.assertNotEqual(nested_duplicate, valid)
             target.write_text(valid, encoding="utf-8")
             self.assertEqual(
-                matrix.audit(Path(directory), "sentinel", "3.10", SHA)["status"],
+                matrix.audit(Path(directory), "sentinel", "3.11", SHA)["status"],
                 "PASS",
             )
             for payload in (top_level_duplicate, nested_duplicate):
                 with self.subTest(payload=payload[:30]):
                     target.write_text(payload, encoding="utf-8")
-                    result = matrix.audit(Path(directory), "sentinel", "3.10", SHA)
+                    result = matrix.audit(Path(directory), "sentinel", "3.11", SHA)
                     self.assertEqual(result["status"], "FAIL")
                     self.assertIn(
                         "3.12:INVALID_SUMMARY:ValueError", result["errors"],

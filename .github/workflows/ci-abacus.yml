@@ -44,7 +44,6 @@ jobs:
         shell: bash
         env:
           EVENT_NAME: ${{ github.event_name }}
-          PR_NUMBER: ${{ github.event.pull_request.number }}
           BASE_SHA: ${{ github.event.pull_request.base.sha }}
           HEAD_SHA: ${{ github.event.pull_request.head.sha }}
         run: |
@@ -52,7 +51,9 @@ jobs:
 
           mode="full"
           reason="non-PR events retain full compatibility recertification"
-          secondary="3.10"
+          # pyproject.toml requires-python >=3.11: 3.11 is the only
+          # supported interpreter besides the 3.12 sentinel.
+          secondary="3.11"
 
           if [[ "${EVENT_NAME}" == "pull_request" ]]; then
             mapfile -t changed < <(
@@ -117,11 +118,6 @@ jobs:
               reason+="this CI workflow changed"
             elif [[ "${python_delta}" == "true" ]]; then
               mode="sampled"
-              if (( ${PR_NUMBER:-0} % 2 == 0 )); then
-                secondary="3.10"
-              else
-                secondary="3.11"
-              fi
               reason="Python changed: run 3.12 sentinel plus deterministic "
               reason+="compatibility sample"
             else
@@ -141,18 +137,12 @@ jobs:
               echo
               if [[ "${mode}" == "sentinel" ]]; then
                 echo "- Python 3.12: **EXECUTED / SENTINEL**"
-                echo "- Python 3.10: DEFERRED; recertify main/schedule"
                 echo "- Python 3.11: DEFERRED; recertify main/schedule"
               elif [[ "${mode}" == "sampled" ]]; then
                 echo "- Python 3.12: **EXECUTED / SENTINEL**"
                 echo "- Python ${secondary}: EXECUTED compatibility sample"
-                if [[ "${secondary}" == "3.10" ]]; then
-                  echo "- Python 3.11: DEFERRED; recertify main/schedule"
-                else
-                  echo "- Python 3.10: DEFERRED; recertify main/schedule"
-                fi
               else
-                echo "- Python 3.10 / 3.11 / 3.12: **EXECUTED / FULL_MATRIX**"
+                echo "- Python 3.11 / 3.12: **EXECUTED / FULL_MATRIX**"
               fi
               echo
               echo "<details><summary>Changed paths</summary>"
@@ -172,7 +162,7 @@ jobs:
               echo
               echo "- event: \`${EVENT_NAME}\`"
               echo "- mode: **full**"
-              echo "- Python 3.10 / 3.11 / 3.12: **EXECUTED / FULL_MATRIX**"
+              echo "- Python 3.11 / 3.12: **EXECUTED / FULL_MATRIX**"
               echo "- reason: ${reason}"
             } >> "${GITHUB_STEP_SUMMARY}"
           fi
@@ -185,7 +175,7 @@ jobs:
               matrix="{\"include\":[{\"os\":\"ubuntu-24.04\",\"python-version\":\"3.12\",\"proof-role\":\"sentinel\"},{\"os\":\"ubuntu-24.04\",\"python-version\":\"${secondary}\",\"proof-role\":\"compatibility-sample\"}]}"
               ;;
             full)
-              matrix='{"include":[{"os":"ubuntu-24.04","python-version":"3.10","proof-role":"full-matrix"},{"os":"ubuntu-24.04","python-version":"3.11","proof-role":"full-matrix"},{"os":"ubuntu-24.04","python-version":"3.12","proof-role":"full-matrix"}]}'
+              matrix='{"include":[{"os":"ubuntu-24.04","python-version":"3.11","proof-role":"full-matrix"},{"os":"ubuntu-24.04","python-version":"3.12","proof-role":"full-matrix"}]}'
               ;;
             *)
               echo "::error::Unknown CI proof mode: ${mode}"
@@ -258,12 +248,7 @@ jobs:
           set -euo pipefail
           python -m pip install --upgrade pip
           python -m pip install -r requirements-dev.txt
-          if [[ "${{ matrix.python-version }}" != "3.10" ]]; then
-            python -m pip install .
-          else
-            echo "Python 3.10 is a source-tree compatibility proof;"
-            echo "pyproject requires >=3.11."
-          fi
+          python -m pip install .
 
       - name: Run pre-commit hooks
         shell: bash

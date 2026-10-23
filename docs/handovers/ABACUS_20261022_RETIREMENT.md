@@ -141,6 +141,8 @@ Ledger `S07`, `E16`–`E20`; cohort `C-MAIN-0138ef51`; roots R08/R10 revised, pl
 
 **Method change:** the solo-developer approval waiver is now explicit policy. Admission is judged by the **CODE PURPLE MACH ladder** (`docs/governance/CODE_PURPLE_MACH_LADDER.md`), where MACH-II's compensating control is *platform-enforced required checks*. Replayed through the evaluator, the 23 October burst holds at step 1 (`HOLD_CHECKS_NOT_ENFORCED`). With checks enforced it would hold on red or pending lanes, and from step 2 on a stale base.
 
+**Follow-up on this branch:** R12 now has a proposed fix: Python 3.10 is dropped from both matrices and from the proof audit, in line with `requires-python >=3.11`. It hasn't run in CI yet. **R13**: the CI Workflow Governance failure reproduces locally. `config-surface-audit.yml` (#2390) has no workflow classification, and the Next.js Pages deployment has the wrong owner.
+
 **To close the coverage gap:** with an authenticated `gh`, run `gh run download 39922825831 -R GBOGEB/ABACUS -n b0-canonical-0138ef5193b20ef8a64132267444299074cd8beb -D <empty dir>`, then record its totals as `C-MAIN-0138ef51`.
 
 **MERGE_ADMISSION = HOLD (MACH-II prerequisite unmet) · Formal engineering credit Δ = 0 · Stability 3/3 = UNVERIFIED**

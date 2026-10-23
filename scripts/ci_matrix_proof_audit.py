@@ -8,14 +8,8 @@ import json
 from pathlib import Path
 from typing import Any
 
+# pyproject.toml requires-python >=3.11, so 3.10 is not a proof interpreter.
 EXPECTED = {
-    "3.10": {
-        "canonical_coverage": "CLASSIFIED_ROLE_SKIP",
-        "functional_compatibility": "EXECUTED_PASS",
-        "phase0": "CLASSIFIED_ROLE_SKIP",
-        "qps_w08": "CLASSIFIED_ROLE_SKIP",
-        "recursive_build": "EXECUTED_PASS",
-    },
     "3.11": {
         "canonical_coverage": "CLASSIFIED_ROLE_SKIP",
         "functional_compatibility": "EXECUTED_PASS",
@@ -51,10 +45,10 @@ def load_json(path: Path) -> dict[str, Any]:
 
 def expected_versions(mode: str, secondary: str) -> list[str]:
     if mode == "full":
-        return ["3.10", "3.11", "3.12"]
+        return ["3.11", "3.12"]
     if mode == "sampled":
-        if secondary not in {"3.10", "3.11"}:
-            raise ValueError("sampled secondary must be an independent Python 3.10/3.11 cell")
+        if secondary != "3.11":
+            raise ValueError("sampled secondary must be the independent Python 3.11 cell")
         return sorted({"3.12", secondary})
     if mode == "sentinel":
         return ["3.12"]
@@ -130,7 +124,7 @@ def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--dir", type=Path, required=True)
     parser.add_argument("--mode", required=True)
-    parser.add_argument("--secondary", default="3.10")
+    parser.add_argument("--secondary", default="3.11")
     parser.add_argument("--expected-sha", required=True)
     parser.add_argument("--out", type=Path, required=True)
     args = parser.parse_args()
