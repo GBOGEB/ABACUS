@@ -13,11 +13,15 @@ import configparser
 import json
 import re
 import subprocess
-import tomllib
 from collections import Counter
 from pathlib import Path
 
 import yaml
+
+try:
+    import tomllib
+except ModuleNotFoundError:  # Python 3.10: tomli is the same parser
+    import tomli as tomllib
 
 SCHEMA = "codepurple.abacus.config-surface-audit.v1"
 EXTS = {".yaml": "yaml", ".yml": "yaml", ".json": "json",
