@@ -137,3 +137,7 @@ pwsh -File ./scripts/Invoke-AbacusPrDebug.ps1 -Mode Apply -Yes -OnlyPR 2109 -Max
 ~~~
 
 **Do not claim the example commands ran.** Do not count a debug-rerun dispatch as native test success or human decision. Do not delete this session before preserving its non-GitHub attachments or explicitly marking their original bytes unavailable.
+
+## Addendum: latest CODEX Method Atlas head
+
+A post-write GitHub readback observed CODEX main **58ee1520b0ed90265e4134be82f5580d60a30139**, two commits after the earlier 3f00b1dac349d2280430f4dc94c2e348713344d6 snapshot. The delta is tools/method_atlas/method_atlas_seed.yaml and includes a JADE rolling-five/Golden Thread method entry. **Use 58ee1520... as the latest known CODEX observation, not an assumed current head.** Re-fetch it with fresh ABACUS main, PR #2109 and both effective rulesets before P1. Keep the earlier SHA as immutable drift evidence.
