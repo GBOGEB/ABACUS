@@ -27,8 +27,11 @@ ROOT_STATES = (
     "displaced",
     "accepted_closure",
 )
-# Review authors that can never supply independent approval.
+# Only a positively identified actor type counts. A review whose ``user_type``
+# is missing or unrecognised is neither human nor automated: it counts for
+# nothing, so incomplete identity can only ever hold.
 AUTOMATED_USER_TYPES = {"Bot", "Organization"}
+HUMAN_USER_TYPES = {"User"}
 
 
 def _mach():
@@ -39,34 +42,119 @@ def _mach():
     return module
 
 
+def _number(value):
+    """``value`` if it is a real number, else ``None`` (bools and strings are not)."""
+    if isinstance(value, bool) or not isinstance(value, (int, float)):
+        return None
+    return value
+
+
 # --------------------------------------------------------------------------- #
 # 1. Admission: one fail-closed verdict
 # --------------------------------------------------------------------------- #
 
 
-def classify_reviews(reviews, head_sha, author):
-    """Return the strongest review identity present at ``head_sha``.
+def review_facts(reviews, head_sha, author):
+    """Review facts at ``head_sha``: ``(known, human_approval, automated_review)``.
 
-    ``human_approval`` needs an APPROVED review by a non-bot user other than the
-    PR author, made on the exact head. ``automated_comment_only`` covers every
-    other review at the head (bots, COMMENTED, self-approval). Unknown input is
-    ``unknown``.
+    ``human_approval``: an APPROVED review by a positively identified human
+    (``user_type`` User, with a login) who is not the PR author, and only when
+    the author is known. ``automated_review``: any review by a positively
+    identified automated actor. Reviews on other heads and reviews with
+    incomplete identity count for neither. Missing reviews or head: not known.
     """
     if reviews is None or head_sha is None:
-        return "unknown"
+        return (False, False, False)
     at_head = [r for r in reviews if r.get("commit_id") == head_sha]
-    for review in at_head:
-        if (
-            review.get("state") == "APPROVED"
-            and review.get("user_type") not in AUTOMATED_USER_TYPES
-            and review.get("login") not in (None, author)
-        ):
-            return "human_approval"
-    return "automated_comment_only" if at_head else "none"
+    human = any(
+        r.get("state") == "APPROVED"
+        and r.get("user_type") in HUMAN_USER_TYPES
+        and r.get("login")
+        and author
+        and r.get("login") != author
+        for r in at_head
+    )
+    automated = any(r.get("user_type") in AUTOMATED_USER_TYPES for r in at_head)
+    return (True, human, automated)
 
 
-def _unknown_fields(evidence, fields):
-    return [name for name in fields if evidence.get(name) is None]
+def classify_reviews(reviews, head_sha, author):
+    """Strongest review identity present at ``head_sha``, for reporting.
+
+    One of ``human_approval``, ``automated_review``, ``other_review`` (a review
+    that is neither: human COMMENTED, self-review, incomplete identity),
+    ``none`` or ``unknown``.
+    """
+    known, human, automated = review_facts(reviews, head_sha, author)
+    if not known:
+        return "unknown"
+    if human:
+        return "human_approval"
+    if automated:
+        return "automated_review"
+    at_head = [r for r in reviews if r.get("commit_id") == head_sha]
+    return "other_review" if at_head else "none"
+
+
+def _pregate(evidence):
+    """Gates common to every level; a ``HOLD_*`` string, or ``None`` if met."""
+    for name in (
+        "head_sha",
+        "observed_head_sha",
+        "required_checks_enforced",
+        "canary_rejected",
+    ):
+        if evidence.get(name) is None:
+            return "HOLD_UNKNOWN_" + name.upper()
+    if evidence["head_sha"] != evidence["observed_head_sha"]:
+        return "HOLD_EXACT_HEAD"
+    if evidence["required_checks_enforced"] is not True:
+        return "HOLD_CHECKS_NOT_ENFORCED"
+    if evidence["canary_rejected"] is not True:
+        return "HOLD_NO_REJECTED_CANARY"
+    return None
+
+
+def _derive(evidence):
+    """Overwrite every review assertion the ladder reads with a derived one.
+
+    Caller-supplied ``automated_review_at_head``, ``required_reviews_satisfied``
+    and ``exact_head`` are never trusted; they come from the review list and
+    the head comparison. Lane results and mergeability stay observations the
+    caller supplies.
+    """
+    _, human, automated = review_facts(
+        evidence.get("reviews"), evidence.get("head_sha"), evidence.get("author")
+    )
+    return dict(
+        evidence,
+        automated_review_at_head=automated,
+        required_reviews_satisfied=human,
+        exact_head=True,
+    )
+
+
+def _admit_mach_i(evidence, policy):
+    """No recorded waiver: independent approval plus every other MACH-I control."""
+    known, human, _ = review_facts(
+        evidence.get("reviews"), evidence["head_sha"], evidence.get("author")
+    )
+    if not known:
+        return "HOLD_UNKNOWN_REVIEWS"
+    # An approval on the exact head is also the last-push approval.
+    if not human:
+        return "HOLD_INDEPENDENT_REVIEW"
+    threads = _number(evidence.get("unresolved_threads"))
+    if threads is None:
+        return "HOLD_UNKNOWN_UNRESOLVED_THREADS"
+    if threads > 0:
+        return "HOLD_UNRESOLVED_THREADS"
+    lane_hold = _mach()._lanes(
+        evidence.get("lanes") or {}, policy.get("required_lanes", [])
+    )
+    if lane_hold:
+        return lane_hold
+    return GO if evidence.get("mergeable") is True else "HOLD_MERGEABILITY"
 
 
 def admission_verdict(level, evidence, policy):
@@ -76,51 +164,33 @@ def admission_verdict(level, evidence, policy):
       * protection must be *effective* (enforced checks, rejected RED canary);
       * the evidence head must equal the PR head observed now;
       * a missing field is ``HOLD_UNKNOWN_<FIELD>``, never assumed.
-    MACH-I (no recorded waiver) additionally needs independent human approval.
+    MACH-I (no recorded waiver) additionally needs independent human approval
+    on the exact head, no unresolved threads, green lanes and mergeability.
+    Levels II to IV have their review assertions derived from review lists (for
+    MACH-IV, per train step, each step also passing the pre-gates); an
+    automated review must come from a positively identified automated actor.
     Any exception while evaluating is ``HOLD_EVIDENCE_ERROR``.
     """
     try:
-        unknown = _unknown_fields(
-            evidence,
-            (
-                "head_sha",
-                "observed_head_sha",
-                "required_checks_enforced",
-                "canary_rejected",
-            ),
-        )
-        if unknown:
-            return "HOLD_UNKNOWN_" + unknown[0].upper()
-        if evidence["head_sha"] != evidence["observed_head_sha"]:
-            return "HOLD_EXACT_HEAD"
-        if evidence["required_checks_enforced"] is not True:
-            return "HOLD_CHECKS_NOT_ENFORCED"
-        if evidence["canary_rejected"] is not True:
-            return "HOLD_NO_REJECTED_CANARY"
-
-        identity = classify_reviews(
+        if level == "IV":
+            derived = []
+            for number, step in enumerate(evidence.get("train") or [], 1):
+                hold = _pregate(step)
+                if hold:
+                    return f"HOLD_STEP_{number}_{hold}"
+                derived.append(_derive(step))
+            return _mach().decide(level, dict(evidence, train=derived), policy)
+        hold = _pregate(evidence)
+        if hold:
+            return hold
+        if level == "I":
+            return _admit_mach_i(evidence, policy)
+        known, _, _ = review_facts(
             evidence.get("reviews"), evidence["head_sha"], evidence.get("author")
         )
-        if level == "I":
-            # No recorded waiver: independent approval, and the same lane and
-            # mergeability gates the MACH ladder applies from level II.
-            if identity != "human_approval":
-                return "HOLD_INDEPENDENT_REVIEW"
-            lane_hold = _mach()._lanes(
-                evidence.get("lanes") or {}, policy.get("required_lanes", [])
-            )
-            if lane_hold:
-                return lane_hold
-            return GO if evidence.get("mergeable") is True else "HOLD_MERGEABILITY"
-        if identity == "unknown":
+        if not known:
             return "HOLD_UNKNOWN_REVIEWS"
-
-        # The ladder reads ``automated_review_at_head``; derive it from reviews
-        # rather than trusting a caller-supplied flag.
-        derived = dict(
-            evidence, automated_review_at_head=identity != "none", exact_head=True
-        )
-        return _mach().decide(level, derived, policy)
+        return _mach().decide(level, _derive(evidence), policy)
     except Exception:  # noqa: BLE001  fail closed: any evaluation error is a HOLD
         return "HOLD_EVIDENCE_ERROR"
 
@@ -173,13 +243,6 @@ def engineering_credit(issue_state, root_state, closure_merge=None):
 # --------------------------------------------------------------------------- #
 
 
-def _number(value):
-    """``value`` if it is a real number, else ``None`` (bools and strings are not)."""
-    if isinstance(value, bool) or not isinstance(value, (int, float)):
-        return None
-    return value
-
-
 def _event_id(kind, current, discriminator):
     raw = json.dumps(
         [kind, current.get("source_sha"), current.get("baseline_id"), discriminator],
@@ -218,10 +281,14 @@ def notifications(previous, current, seen=frozenset()):
         return []
     out = []
 
+    # A new verified merge is a new merge SHA, not merely "still verified".
     if (
         current.get("governed_main_merge_verified") is True
-        and previous.get("governed_main_merge_verified") is not True
         and current.get("merge_sha")
+        and (
+            previous.get("governed_main_merge_verified") is not True
+            or previous.get("merge_sha") != current["merge_sha"]
+        )
     ):
         out.append(_alert("governed_main_merge", current, current["merge_sha"]))
 

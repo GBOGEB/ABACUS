@@ -19,6 +19,10 @@ POLICY = json.loads(
 HEAD = "41ba0ab47b5ab7f8c503b3a9e9e99bf668101e6a"
 OLD_HEAD = "23b06e2606ea3200ef512b0e1deba6a96a1428c8"
 MERGE = "94a3c281e947dba8aed85a831a67ffc55309080a"
+MAIN_0 = "44caccf716a7c20693a2911566289bfc75ea81d9"
+HUMAN = [
+    {"login": "alice", "user_type": "User", "state": "APPROVED", "commit_id": HEAD}
+]
 
 GREEN = {
     "author": "GBOGEB",
@@ -36,6 +40,7 @@ GREEN = {
         }
     ],
     "mergeable": True,
+    "unresolved_threads": 0,
 }
 
 
@@ -156,6 +161,154 @@ class AdmissionTests(unittest.TestCase):
         )
 
 
+class ReviewIdentityTests(unittest.TestCase):
+    """Regression tests for the Codex review findings on PR 2423."""
+
+    def test_human_comment_is_not_an_automated_review(self):
+        for review in (
+            {"login": "alice", "user_type": "User", "state": "COMMENTED"},
+            {"login": "GBOGEB", "user_type": "User", "state": "APPROVED"},
+            {"login": "mystery", "user_type": None, "state": "COMMENTED"},
+            {"login": "mystery", "state": "COMMENTED"},
+        ):
+            reviews = [dict(review, commit_id=HEAD)]
+            self.assertEqual(
+                ev.admission_verdict("II", evidence(reviews=reviews), POLICY),
+                "HOLD_AUTOMATED_REVIEW",
+                review,
+            )
+
+    def test_organization_actor_counts_as_automated(self):
+        org = [{"login": "ci", "user_type": "Organization", "commit_id": HEAD}]
+        self.assertEqual(
+            ev.admission_verdict("II", evidence(reviews=org), POLICY), ev.GO
+        )
+
+    def test_mach_i_needs_known_human_identity_and_known_author(self):
+        no_type = [dict(HUMAN[0], user_type=None)]
+        self.assertEqual(
+            ev.admission_verdict("I", evidence(reviews=no_type), POLICY),
+            "HOLD_INDEPENDENT_REVIEW",
+        )
+        self.assertEqual(
+            ev.admission_verdict("I", evidence(reviews=HUMAN, author=None), POLICY),
+            "HOLD_INDEPENDENT_REVIEW",
+        )
+
+    def test_mach_i_unresolved_threads(self):
+        for threads, expected in (
+            (None, "HOLD_UNKNOWN_UNRESOLVED_THREADS"),
+            ("0", "HOLD_UNKNOWN_UNRESOLVED_THREADS"),
+            (2, "HOLD_UNRESOLVED_THREADS"),
+        ):
+            self.assertEqual(
+                ev.admission_verdict(
+                    "I", evidence(reviews=HUMAN, unresolved_threads=threads), POLICY
+                ),
+                expected,
+                threads,
+            )
+
+    def test_classify_reviews_reports_each_identity(self):
+        def kind(reviews):
+            return ev.classify_reviews(reviews, HEAD, "GBOGEB")
+
+        self.assertEqual(kind(None), "unknown")
+        self.assertEqual(kind([]), "none")
+        self.assertEqual(kind(HUMAN), "human_approval")
+        self.assertEqual(kind(GREEN["reviews"]), "automated_review")
+        other = [{"login": "alice", "user_type": "User", "commit_id": HEAD}]
+        self.assertEqual(kind(other), "other_review")
+
+
+class UpperLadderReviewForgeryTests(unittest.TestCase):
+    """MACH-III and MACH-IV must not trust caller-supplied review booleans."""
+
+    def with_active(self, section):
+        return dict(POLICY, **{section: dict(POLICY[section], active=True)})
+
+    def mach_iii(self, **overrides):
+        base = evidence(
+            core_functional_checks=True,
+            effective_ruleset_compliance=True,
+            source_bound_receipt=True,
+            security_severities=["P3"],
+            deferred_findings_complete=True,
+            exception={
+                "reason": "P3 deferral",
+                "authorized_actor": "GBOGEB",
+                "expiry": "2026-10-24T20:00:00Z",
+                "source_sha": HEAD,
+                "minutes": 45,
+            },
+        )
+        return dict(base, **overrides)
+
+    def test_non_owner_cannot_forge_required_reviews(self):
+        forged = self.mach_iii(
+            author="someone-else", reviews=[], required_reviews_satisfied=True
+        )
+        self.assertEqual(
+            ev.admission_verdict("III", forged, self.with_active("mach_iii")),
+            "HOLD_REVIEW",
+        )
+
+    def test_non_owner_with_real_human_approval_passes(self):
+        real = self.mach_iii(author="someone-else", reviews=HUMAN)
+        self.assertEqual(
+            ev.admission_verdict("III", real, self.with_active("mach_iii")), ev.GO
+        )
+
+    def step(self, base, merge, **overrides):
+        return evidence(level="II", base_sha=base, merge_sha=merge, **overrides)
+
+    def train(self, *steps):
+        return {
+            "main_before": MAIN_0,
+            "train": list(steps),
+            "main_after": steps[-1]["merge_sha"],
+            "post_train_lanes": {
+                name: "success" for name in POLICY["merge_train"]["post_train_lanes"]
+            },
+        }
+
+    def test_train_step_cannot_forge_automated_review(self):
+        forged = self.step(MAIN_0, MERGE, reviews=[], automated_review_at_head=True)
+        self.assertEqual(
+            ev.admission_verdict(
+                "IV", self.train(forged), self.with_active("merge_train")
+            ),
+            "HOLD_STEP_1_HOLD_AUTOMATED_REVIEW",
+        )
+
+    def test_train_step_must_pass_pregates(self):
+        stale = self.step(MAIN_0, MERGE, observed_head_sha=OLD_HEAD)
+        self.assertEqual(
+            ev.admission_verdict(
+                "IV", self.train(stale), self.with_active("merge_train")
+            ),
+            "HOLD_STEP_1_HOLD_EXACT_HEAD",
+        )
+
+    def test_genuine_train_verifies(self):
+        step = self.step(MAIN_0, MERGE)
+        self.assertEqual(
+            ev.admission_verdict(
+                "IV", self.train(step), self.with_active("merge_train")
+            ),
+            "GO_TRAIN_VERIFIED",
+        )
+
+    def test_empty_or_missing_train_holds(self):
+        for train in (None, []):
+            self.assertEqual(
+                ev.admission_verdict(
+                    "IV", {"train": train}, self.with_active("merge_train")
+                ),
+                "HOLD_EMPTY_TRAIN",
+            )
+
+
 class MergeVerifiedTests(unittest.TestCase):
     RECORD = {
         "verdict": ev.GO,
@@ -262,8 +415,22 @@ class NotificationTests(unittest.TestCase):
     def test_merge_notifies_on_transition_only(self):
         current = dict(self.QUIET, governed_main_merge_verified=True, merge_sha=MERGE)
         self.assertTrue(ev.should_notify(self.QUIET, current))
-        already = dict(self.QUIET, governed_main_merge_verified=True)
+        already = dict(self.QUIET, governed_main_merge_verified=True, merge_sha=MERGE)
         self.assertFalse(ev.should_notify(already, current))
+
+    def test_second_verified_merge_notifies_again(self):
+        first = dict(self.QUIET, governed_main_merge_verified=True, merge_sha=OLD_HEAD)
+        second = dict(
+            self.QUIET,
+            source_sha=HEAD,
+            governed_main_merge_verified=True,
+            merge_sha=MERGE,
+        )
+        alerts = ev.notifications(first, second)
+        self.assertEqual([a["kind"] for a in alerts], ["governed_main_merge"])
+        # the same merge observed again is still deduplicated
+        self.assertEqual(ev.notifications(first, second, {alerts[0]["event_id"]}), [])
+        self.assertEqual(ev.notifications(second, second), [])
 
     def test_merge_without_merge_sha_is_silent(self):
         current = dict(self.QUIET, governed_main_merge_verified=True)
@@ -283,11 +450,6 @@ class NotificationTests(unittest.TestCase):
     def test_observation_without_source_sha_is_not_evidence(self):
         current = {"governed_main_merge_verified": True, "merge_sha": MERGE}
         self.assertEqual(ev.notifications(self.QUIET, current), [])
-
-
-HUMAN = [
-    {"login": "alice", "user_type": "User", "state": "APPROVED", "commit_id": HEAD}
-]
 
 
 class MachITests(unittest.TestCase):
