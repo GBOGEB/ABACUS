@@ -1,0 +1,53 @@
+repo,issue,title,family,git_state,closure_class,url,evidence_class
+ABACUS,1860,Merge-admission HOLD: exact-head and owner-review queue,Governance / admission,OPEN,UNKNOWN_ENGINEERING_ROOT,https://github.com/GBOGEB/ABACUS/issues/1860,LIVE_GITHUB_20261024
+ABACUS,1978,P0 Mission Control Lite security hardening / 14 packages,Governance / admission,OPEN,UNKNOWN_ENGINEERING_ROOT,https://github.com/GBOGEB/ABACUS/issues/1978,LIVE_GITHUB_20261024
+ABACUS,2087,Workflow governance classification and inventory,Governance / admission,OPEN,UNKNOWN_ENGINEERING_ROOT,https://github.com/GBOGEB/ABACUS/issues/2087,LIVE_GITHUB_20261024
+ABACUS,1566,GM14 false-green workflow governance,Governance / admission,OPEN,UNKNOWN_ENGINEERING_ROOT,https://github.com/GBOGEB/ABACUS/issues/1566,LIVE_GITHUB_20261024
+ABACUS,2079,GoGREEN shared required-check roots,Governance / admission,OPEN,UNKNOWN_ENGINEERING_ROOT,https://github.com/GBOGEB/ABACUS/issues/2079,LIVE_GITHUB_20261024
+ABACUS,1278,REX-CM-005 governance-red merge binding,Governance / admission,OPEN,UNKNOWN_ENGINEERING_ROOT,https://github.com/GBOGEB/ABACUS/issues/1278,LIVE_GITHUB_20261024
+ABACUS,1996,P0 A10 confidentiality disposition,Governance / admission,OPEN,UNKNOWN_ENGINEERING_ROOT,https://github.com/GBOGEB/ABACUS/issues/1996,LIVE_GITHUB_20261024
+ABACUS,1736,Dependency-review PR-head snapshot gap,Governance / admission,OPEN,UNKNOWN_ENGINEERING_ROOT,https://github.com/GBOGEB/ABACUS/issues/1736,LIVE_GITHUB_20261024
+ABACUS,1846,SECURITY-DEFER reviewer backlog,Governance / admission,OPEN,UNKNOWN_ENGINEERING_ROOT,https://github.com/GBOGEB/ABACUS/issues/1846,LIVE_GITHUB_20261024
+ABACUS,981,Repository maturity / controlled release,Governance / admission,OPEN,UNKNOWN_ENGINEERING_ROOT,https://github.com/GBOGEB/ABACUS/issues/981,LIVE_GITHUB_20261024
+ABACUS,1738,Bandit/Safety full-red baseline,Security / quality,OPEN,UNKNOWN_ENGINEERING_ROOT,https://github.com/GBOGEB/ABACUS/issues/1738,LIVE_GITHUB_20261024
+ABACUS,1944,GHAS / Semgrep review debt,Security / quality,OPEN,UNKNOWN_ENGINEERING_ROOT,https://github.com/GBOGEB/ABACUS/issues/1944,LIVE_GITHUB_20261024
+ABACUS,1488,DAB-HARD semantic Flake8 debt,Security / quality,OPEN,UNKNOWN_ENGINEERING_ROOT,https://github.com/GBOGEB/ABACUS/issues/1488,LIVE_GITHUB_20261024
+ABACUS,1609,DAB-BD8K scaled security burndown,Security / quality,OPEN,UNKNOWN_ENGINEERING_ROOT,https://github.com/GBOGEB/ABACUS/issues/1609,LIVE_GITHUB_20261024
+ABACUS,2088,MIP Black + isort formatting root,Security / quality,OPEN,UNKNOWN_ENGINEERING_ROOT,https://github.com/GBOGEB/ABACUS/issues/2088,LIVE_GITHUB_20261024
+ABACUS,2049,EVERRED formatter/CI contract root,Security / quality,OPEN,UNKNOWN_ENGINEERING_ROOT,https://github.com/GBOGEB/ABACUS/issues/2049,LIVE_GITHUB_20261024
+ABACUS,2326,Source-bound floating-code testflight N+2,Coverage / TestFlight,OPEN,UNKNOWN_ENGINEERING_ROOT,https://github.com/GBOGEB/ABACUS/issues/2326,LIVE_GITHUB_20261024
+ABACUS,1991,MIP disjoint C0-C5 coverage waves,Coverage / TestFlight,OPEN,UNKNOWN_ENGINEERING_ROOT,https://github.com/GBOGEB/ABACUS/issues/1991,LIVE_GITHUB_20261024
+ABACUS,1866,DAB T3 canonical coverage evidence,Coverage / TestFlight,OPEN,UNKNOWN_ENGINEERING_ROOT,https://github.com/GBOGEB/ABACUS/issues/1866,LIVE_GITHUB_20261024
+ABACUS,1867,DAB T4 proof propagation / compatibility,Coverage / TestFlight,OPEN,UNKNOWN_ENGINEERING_ROOT,https://github.com/GBOGEB/ABACUS/issues/1867,LIVE_GITHUB_20261024
+ABACUS,1868,DAB R1 Codex ratchet false-green,Coverage / TestFlight,OPEN,UNKNOWN_ENGINEERING_ROOT,https://github.com/GBOGEB/ABACUS/issues/1868,LIVE_GITHUB_20261024
+ABACUS,1874,Python support/toolchain matrix,Coverage / TestFlight,OPEN,UNKNOWN_ENGINEERING_ROOT,https://github.com/GBOGEB/ABACUS/issues/1874,LIVE_GITHUB_20261024
+ABACUS,1369,TRIAGE cluster synchronized exact-head proof,Coverage / TestFlight,OPEN,UNKNOWN_ENGINEERING_ROOT,https://github.com/GBOGEB/ABACUS/issues/1369,LIVE_GITHUB_20261024
+ABACUS,1929,BD-LDAB joined canonical root census,Telemetry / DAG / roots,OPEN,UNKNOWN_ENGINEERING_ROOT,https://github.com/GBOGEB/ABACUS/issues/1929,LIVE_GITHUB_20261024
+ABACUS,2359,Quality-pilot burn-in telemetry,Telemetry / DAG / roots,OPEN,UNKNOWN_ENGINEERING_ROOT,https://github.com/GBOGEB/ABACUS/issues/2359,LIVE_GITHUB_20261024
+ABACUS,1660,W70 retention / queue saturation,Telemetry / DAG / roots,OPEN,UNKNOWN_ENGINEERING_ROOT,https://github.com/GBOGEB/ABACUS/issues/1660,LIVE_GITHUB_20261024
+ABACUS,1877,Incremental CI evidence / first-red scheduler,Telemetry / DAG / roots,OPEN,UNKNOWN_ENGINEERING_ROOT,https://github.com/GBOGEB/ABACUS/issues/1877,LIVE_GITHUB_20261024
+ABACUS,1164,DOW-MC2 telemetry PCA / BT,Telemetry / DAG / roots,OPEN,UNKNOWN_ENGINEERING_ROOT,https://github.com/GBOGEB/ABACUS/issues/1164,LIVE_GITHUB_20261024
+ABACUS,2301,Native binary TestFlight and disposal,Telemetry / DAG / roots,OPEN,UNKNOWN_ENGINEERING_ROOT,https://github.com/GBOGEB/ABACUS/issues/2301,LIVE_GITHUB_20261024
+ABACUS,2110,CBD Golden Graph pulses,Telemetry / DAG / roots,OPEN,UNKNOWN_ENGINEERING_ROOT,https://github.com/GBOGEB/ABACUS/issues/2110,LIVE_GITHUB_20261024
+ABACUS,1885,Dashboard broken links / live Pages,Dashboard / deployment,OPEN,UNKNOWN_ENGINEERING_ROOT,https://github.com/GBOGEB/ABACUS/issues/1885,LIVE_GITHUB_20261024
+ABACUS,2136,CBD/EVERRED HTML/browser QA,Dashboard / deployment,OPEN,UNKNOWN_ENGINEERING_ROOT,https://github.com/GBOGEB/ABACUS/issues/2136,LIVE_GITHUB_20261024
+ABACUS,667,Typed DOW engineering feedback service,Dashboard / deployment,OPEN,UNKNOWN_ENGINEERING_ROOT,https://github.com/GBOGEB/ABACUS/issues/667,LIVE_GITHUB_20261024
+ABACUS,1313,QPS RTM Line-S / Appendix evidence,QPS / federation,OPEN,UNKNOWN_ENGINEERING_ROOT,https://github.com/GBOGEB/ABACUS/issues/1313,LIVE_GITHUB_20261024
+ABACUS,644,QPS OCD/ADR binary parsing bridge,QPS / federation,OPEN,UNKNOWN_ENGINEERING_ROOT,https://github.com/GBOGEB/ABACUS/issues/644,LIVE_GITHUB_20261024
+ABACUS,633,GOV-001 QPS cost roundtrip,QPS / federation,OPEN,UNKNOWN_ENGINEERING_ROOT,https://github.com/GBOGEB/ABACUS/issues/633,LIVE_GITHUB_20261024
+ABACUS,785,QPS DOW engineering-domain coverage,QPS / federation,OPEN,UNKNOWN_ENGINEERING_ROOT,https://github.com/GBOGEB/ABACUS/issues/785,LIVE_GITHUB_20261024
+ABACUS,635,Clean-clone source build evidence,QPS / federation,OPEN,UNKNOWN_ENGINEERING_ROOT,https://github.com/GBOGEB/ABACUS/issues/635,LIVE_GITHUB_20261024
+ABACUS,636,OneDrive immutable publication,QPS / federation,OPEN,UNKNOWN_ENGINEERING_ROOT,https://github.com/GBOGEB/ABACUS/issues/636,LIVE_GITHUB_20261024
+ABACUS,637,Office review assimilation,QPS / federation,OPEN,UNKNOWN_ENGINEERING_ROOT,https://github.com/GBOGEB/ABACUS/issues/637,LIVE_GITHUB_20261024
+ABACUS,1863,Paired cryoplant federation acceptance,QPS / federation,OPEN,UNKNOWN_ENGINEERING_ROOT,https://github.com/GBOGEB/ABACUS/issues/1863,LIVE_GITHUB_20261024
+CODEX,977,Authenticated ABACUS-local execution promotion,Governance / admission,OPEN,UNKNOWN_ENGINEERING_ROOT,https://github.com/GBOGEB/CODEX/issues/977,LIVE_GITHUB_20261024
+CODEX,1037,Post-merge CODE PURPLE first-red reader,Governance / admission,OPEN,UNKNOWN_ENGINEERING_ROOT,https://github.com/GBOGEB/CODEX/issues/1037,LIVE_GITHUB_20261024
+CODEX,991,Independent security reviewer needed,Governance / admission,OPEN,UNKNOWN_ENGINEERING_ROOT,https://github.com/GBOGEB/CODEX/issues/991,LIVE_GITHUB_20261024
+CODEX,879,MissionControl owner dispatch control,Governance / admission,OPEN,UNKNOWN_ENGINEERING_ROOT,https://github.com/GBOGEB/CODEX/issues/879,LIVE_GITHUB_20261024
+CODEX,500,TRIAGE conversion gate / governance,Governance / admission,OPEN,UNKNOWN_ENGINEERING_ROOT,https://github.com/GBOGEB/CODEX/issues/500,LIVE_GITHUB_20261024
+CODEX,319,DMAIC PR-to-PR wave control,Governance / admission,OPEN,UNKNOWN_ENGINEERING_ROOT,https://github.com/GBOGEB/CODEX/issues/319,LIVE_GITHUB_20261024
+CODEX,1067,KEB/Zod HTML QA bridge,Dashboard / telemetry,OPEN,UNKNOWN_ENGINEERING_ROOT,https://github.com/GBOGEB/CODEX/issues/1067,LIVE_GITHUB_20261024
+CODEX,989,CODE PURPLE telemetry Pages / LDAB / REX,Dashboard / telemetry,OPEN,UNKNOWN_ENGINEERING_ROOT,https://github.com/GBOGEB/CODEX/issues/989,LIVE_GITHUB_20261024
+CODEX,1088,MYCELIUM P-process typed reference,Federation / knowledge,OPEN,UNKNOWN_ENGINEERING_ROOT,https://github.com/GBOGEB/CODEX/issues/1088,LIVE_GITHUB_20261024
+CODEX,324,KEB semantic/evidence coverage,Federation / knowledge,OPEN,UNKNOWN_ENGINEERING_ROOT,https://github.com/GBOGEB/CODEX/issues/324,LIVE_GITHUB_20261024
+CODEX,753,QPS v6 Pages / release provenance,QPS / publication,OPEN,UNKNOWN_ENGINEERING_ROOT,https://github.com/GBOGEB/CODEX/issues/753,LIVE_GITHUB_20261024
