@@ -101,6 +101,37 @@ Remaining source/calibration items are listed below.
 
 `MDA_PACKAGE_READY_EVIDENCE_PENDING`
 
+## REQ-130 / REQ-131
+
+### REQ-130 / REQ-131 interpretation
+
+Each QCELL shall stay at or below the defined Thermal Shield temperature
+limit for the entire failure event. Both IDs carry the same wording
+(Addendum II "Availability & Reliability", paragraphs 538 and 543 in
+`qplant/canonical_master/attributes/requirements.json`).
+
+### REQ-130 / REQ-131 current evidence
+
+`models/qps_line_s/loop_transient.py` `simulate()` integrates the TS Mass
+temperature T_TS(t) during LOOP boil-off with the Tables 27-29 two-lump
+model. It reports `ts_at_dryout_k` and a 10-minute `series` of T_TS.
+
+`tests/test_loop_transient.py` pins the heat-load signs, the initial Q1
+magnitude and the dry-out bracket of that model.
+
+`tests/test_ssot_tables_contract.py` asserts that every Tables 27-29 value
+in `models/qps_line_s/ssot_tables.py` equals the vendored contract rows in
+`docs/qps_line_s_recovery/addendum2_rev146_tables_27_29.json`
+(cryoplant-project W365 extraction, contract JSON sha256 `16b56d57...`).
+
+The TS Mass lump is a thermal-shield proxy; QCELL-level temperatures are not
+modelled. The Thermal Shield temperature limit value is not bound in ABACUS,
+so no test compares T_TS(t) with it.
+
+### REQ-130 / REQ-131 status
+
+`MODEL_LINKED_LIMIT_PENDING`
+
 ## Current authoritative evidence
 
 - `docs/qps_line_s_recovery/assumptions_register.yaml`
@@ -112,6 +143,10 @@ Remaining source/calibration items are listed below.
 - `models/qps_line_s/line_s_buffer.py`
 - `models/qps_line_s/recovery_model.py`
 - `models/qps_line_s/loop_transient.py`
+- `models/qps_line_s/ssot_tables.py`
+- `docs/qps_line_s_recovery/addendum2_rev146_tables_27_29.json`
+- `tests/test_loop_transient.py`
+- `tests/test_ssot_tables_contract.py`
 - `docs/qps_line_s_recovery/appendix_8_4_mode_valve_extraction.yaml`
 
 ## Resolved MDA gates
@@ -133,6 +168,8 @@ Remaining source/calibration items are listed below.
 6. Resolve or explicitly carry the 1.44 heat-load margin pedigree.
 7. Resolve `H2_heat_to_flow` calibration for credited transient use.
 8. Complete independent HEPAK low-temperature reference where required.
+9. Bind the Thermal Shield temperature limit (REQ-130 / REQ-131) and add a
+   T_TS(t) <= limit check to the LOOP transient tests.
 
 Mode-dependent recovery paths and connected V_eff shall not be frozen until
 the relevant Appendix 8.4 topology is fully source-bound.
