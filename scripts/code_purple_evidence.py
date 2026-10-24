@@ -43,6 +43,7 @@ def _mach():
 # 1. Admission: one fail-closed verdict
 # --------------------------------------------------------------------------- #
 
+
 def classify_reviews(reviews, head_sha, author):
     """Return the strongest review identity present at ``head_sha``.
 
@@ -81,8 +82,12 @@ def admission_verdict(level, evidence, policy):
     try:
         unknown = _unknown_fields(
             evidence,
-            ("head_sha", "observed_head_sha", "required_checks_enforced",
-             "canary_rejected"),
+            (
+                "head_sha",
+                "observed_head_sha",
+                "required_checks_enforced",
+                "canary_rejected",
+            ),
         )
         if unknown:
             return "HOLD_UNKNOWN_" + unknown[0].upper()
@@ -97,7 +102,16 @@ def admission_verdict(level, evidence, policy):
             evidence.get("reviews"), evidence["head_sha"], evidence.get("author")
         )
         if level == "I":
-            return GO if identity == "human_approval" else "HOLD_INDEPENDENT_REVIEW"
+            # No recorded waiver: independent approval, and the same lane and
+            # mergeability gates the MACH ladder applies from level II.
+            if identity != "human_approval":
+                return "HOLD_INDEPENDENT_REVIEW"
+            lane_hold = _mach()._lanes(
+                evidence.get("lanes") or {}, policy.get("required_lanes", [])
+            )
+            if lane_hold:
+                return lane_hold
+            return GO if evidence.get("mergeable") is True else "HOLD_MERGEABILITY"
         if identity == "unknown":
             return "HOLD_UNKNOWN_REVIEWS"
 
@@ -107,7 +121,7 @@ def admission_verdict(level, evidence, policy):
             evidence, automated_review_at_head=identity != "none", exact_head=True
         )
         return _mach().decide(level, derived, policy)
-    except Exception:  # fail closed
+    except Exception:  # noqa: BLE001  fail closed: any evaluation error is a HOLD
         return "HOLD_EVIDENCE_ERROR"
 
 
@@ -117,8 +131,13 @@ def merge_verified(record):
     Needs an admission verdict recorded for the same head that was merged, and
     the merge SHA read back from main to equal the SHA the API reported.
     """
-    needed = ("verdict", "admitted_head", "merged_head", "merge_sha",
-              "merge_sha_readback")
+    needed = (
+        "verdict",
+        "admitted_head",
+        "merged_head",
+        "merge_sha",
+        "merge_sha_readback",
+    )
     if any(record.get(name) is None for name in needed):
         return False
     return (
@@ -131,6 +150,7 @@ def merge_verified(record):
 # --------------------------------------------------------------------------- #
 # 2. Issue state, root state and engineering credit are separate axes
 # --------------------------------------------------------------------------- #
+
 
 def engineering_credit(issue_state, root_state, closure_merge=None):
     """Credit for one root. GitHub issue closure alone never earns any.
@@ -151,6 +171,14 @@ def engineering_credit(issue_state, root_state, closure_merge=None):
 # --------------------------------------------------------------------------- #
 # 3. Notification: material transitions only, deduplicated by event identity
 # --------------------------------------------------------------------------- #
+
+
+def _number(value):
+    """``value`` if it is a real number, else ``None`` (bools and strings are not)."""
+    if isinstance(value, bool) or not isinstance(value, (int, float)):
+        return None
+    return value
+
 
 def _event_id(kind, current, discriminator):
     raw = json.dumps(
@@ -180,11 +208,13 @@ def _alert(kind, current, discriminator, **extra):
 def notifications(previous, current, seen=frozenset()):
     """Alerts for state transitions not already notified.
 
-    ``previous`` and ``current`` are observation dicts. ``seen`` holds
+    ``previous`` and ``current`` are observation dicts (``previous`` may be ``None``
+    for a first observation). ``seen`` holds
     ``event_id`` values already sent; the caller persists them. An alert needs a
     ``source_sha``: an observation without one is not evidence.
     """
-    if not current.get("source_sha"):
+    previous = previous or {}
+    if not current or not current.get("source_sha"):
         return []
     out = []
 
@@ -195,7 +225,7 @@ def notifications(previous, current, seen=frozenset()):
     ):
         out.append(_alert("governed_main_merge", current, current["merge_sha"]))
 
-    delta = current.get("matched_coverage_delta")
+    delta = _number(current.get("matched_coverage_delta"))
     if (
         current.get("matched_coverage_delta_verified") is True
         and current.get("baseline_id")
@@ -219,3 +249,56 @@ def notifications(previous, current, seen=frozenset()):
 
 def should_notify(previous, current, seen=frozenset()):
     return bool(notifications(previous, current, seen))
+
+
+# --------------------------------------------------------------------------- #
+# CLI
+# --------------------------------------------------------------------------- #
+
+
+def _load(path):
+    return json.loads(Path(path).read_text(encoding="utf-8"))
+
+
+def main(argv=None):
+    """``admission LEVEL EVIDENCE`` prints a verdict; ``notify PREV CUR`` prints alerts.
+
+    ``notify --seen FILE`` reads and then updates a JSON list of sent event ids,
+    so re-running on the same observation prints nothing.
+    """
+    import argparse
+
+    parser = argparse.ArgumentParser(description=main.__doc__)
+    sub = parser.add_subparsers(dest="command", required=True)
+    adm = sub.add_parser("admission")
+    adm.add_argument("level", choices=("I", "II", "III", "IV"))
+    adm.add_argument("evidence", type=Path)
+    adm.add_argument(
+        "--policy",
+        type=Path,
+        default=Path("config/governance/code_purple_mach_policy.json"),
+    )
+    note = sub.add_parser("notify")
+    note.add_argument("previous", type=Path)
+    note.add_argument("current", type=Path)
+    note.add_argument("--seen", type=Path)
+    args = parser.parse_args(argv)
+
+    if args.command == "admission":
+        print(admission_verdict(args.level, _load(args.evidence), _load(args.policy)))
+        return 0
+
+    seen = set(_load(args.seen)) if args.seen and args.seen.exists() else set()
+    alerts = notifications(_load(args.previous), _load(args.current), seen)
+    if args.seen and alerts:
+        args.seen.write_text(
+            json.dumps(sorted(seen | {a["event_id"] for a in alerts})) + "\n",
+            encoding="utf-8",
+            newline="\n",
+        )
+    print(json.dumps(alerts, indent=2, sort_keys=True))
+    return 0
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())

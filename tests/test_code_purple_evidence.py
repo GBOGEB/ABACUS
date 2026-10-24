@@ -28,7 +28,12 @@ GREEN = {
     "canary_rejected": True,
     "lanes": {name: "success" for name in POLICY["required_lanes"]},
     "reviews": [
-        {"login": "copilot", "user_type": "Bot", "state": "COMMENTED", "commit_id": HEAD}
+        {
+            "login": "copilot",
+            "user_type": "Bot",
+            "state": "COMMENTED",
+            "commit_id": HEAD,
+        }
     ],
     "mergeable": True,
 }
@@ -43,7 +48,9 @@ class AdmissionTests(unittest.TestCase):
         self.assertEqual(ev.admission_verdict("II", GREEN, POLICY), ev.GO)
 
     def test_observed_green_on_a_stale_head_is_not_admissible(self):
-        verdict = ev.admission_verdict("II", evidence(observed_head_sha=OLD_HEAD), POLICY)
+        verdict = ev.admission_verdict(
+            "II", evidence(observed_head_sha=OLD_HEAD), POLICY
+        )
         self.assertEqual(verdict, "HOLD_EXACT_HEAD")
 
     def test_unknown_protection_holds_and_is_not_assumed_false(self):
@@ -87,8 +94,14 @@ class AdmissionTests(unittest.TestCase):
         )
 
     def test_review_on_old_head_does_not_count(self):
-        old = [{"login": "copilot", "user_type": "Bot", "state": "COMMENTED",
-                "commit_id": OLD_HEAD}]
+        old = [
+            {
+                "login": "copilot",
+                "user_type": "Bot",
+                "state": "COMMENTED",
+                "commit_id": OLD_HEAD,
+            }
+        ]
         self.assertEqual(
             ev.admission_verdict("II", evidence(reviews=old), POLICY),
             "HOLD_AUTOMATED_REVIEW",
@@ -107,16 +120,28 @@ class AdmissionTests(unittest.TestCase):
 
     def test_mach_i_rejects_self_approval_and_bot_approval(self):
         for login, kind in (("GBOGEB", "User"), ("copilot", "Bot")):
-            review = [{"login": login, "user_type": kind, "state": "APPROVED",
-                       "commit_id": HEAD}]
+            review = [
+                {
+                    "login": login,
+                    "user_type": kind,
+                    "state": "APPROVED",
+                    "commit_id": HEAD,
+                }
+            ]
             self.assertEqual(
                 ev.admission_verdict("I", evidence(reviews=review), POLICY),
                 "HOLD_INDEPENDENT_REVIEW",
             )
 
     def test_mach_i_accepts_independent_human_approval_at_head(self):
-        review = [{"login": "alice", "user_type": "User", "state": "APPROVED",
-                   "commit_id": HEAD}]
+        review = [
+            {
+                "login": "alice",
+                "user_type": "User",
+                "state": "APPROVED",
+                "commit_id": HEAD,
+            }
+        ]
         self.assertEqual(
             ev.admission_verdict("I", evidence(reviews=review), POLICY), ev.GO
         )
@@ -206,15 +231,20 @@ class NotificationTests(unittest.TestCase):
 
     def test_coverage_none_does_not_crash_or_notify(self):
         current = dict(
-            self.QUIET, matched_coverage_delta_verified=True,
-            matched_coverage_delta=None, baseline_id="b1",
+            self.QUIET,
+            matched_coverage_delta_verified=True,
+            matched_coverage_delta=None,
+            baseline_id="b1",
         )
         self.assertEqual(ev.notifications(self.QUIET, current), [])
 
     def test_coverage_needs_verified_matched_baseline_and_positive_delta(self):
         base = dict(
-            self.QUIET, matched_coverage_delta_verified=True,
-            matched_coverage_delta=1, baseline_id="b1", numerator=33580,
+            self.QUIET,
+            matched_coverage_delta_verified=True,
+            matched_coverage_delta=1,
+            baseline_id="b1",
+            numerator=33580,
             denominator=46942,
         )
         self.assertEqual(
@@ -253,6 +283,110 @@ class NotificationTests(unittest.TestCase):
     def test_observation_without_source_sha_is_not_evidence(self):
         current = {"governed_main_merge_verified": True, "merge_sha": MERGE}
         self.assertEqual(ev.notifications(self.QUIET, current), [])
+
+
+HUMAN = [
+    {"login": "alice", "user_type": "User", "state": "APPROVED", "commit_id": HEAD}
+]
+
+
+class MachITests(unittest.TestCase):
+    def test_approval_alone_is_not_enough(self):
+        lane = POLICY["required_lanes"][0]
+        red = dict(GREEN["lanes"], **{lane: "failure"})
+        self.assertEqual(
+            ev.admission_verdict("I", evidence(reviews=HUMAN, lanes=red), POLICY),
+            "HOLD_RED_LANE",
+        )
+        self.assertEqual(
+            ev.admission_verdict("I", evidence(reviews=HUMAN, lanes={}), POLICY),
+            "HOLD_NONTERMINAL_LANE",
+        )
+
+    def test_unmergeable_holds(self):
+        self.assertEqual(
+            ev.admission_verdict("I", evidence(reviews=HUMAN, mergeable=None), POLICY),
+            "HOLD_MERGEABILITY",
+        )
+
+
+class RealRulesetTests(unittest.TestCase):
+    """24 Oct readback: ruleset 24494381 had no required_status_checks rule."""
+
+    def test_green_ci_without_enforced_checks_still_holds(self):
+        verdict = ev.admission_verdict(
+            "II",
+            evidence(required_checks_enforced=False, canary_rejected=False),
+            POLICY,
+        )
+        self.assertEqual(verdict, "HOLD_CHECKS_NOT_ENFORCED")
+
+
+class NotificationRobustnessTests(unittest.TestCase):
+    QUIET = {"source_sha": HEAD}
+
+    def test_first_observation_has_no_previous(self):
+        current = dict(self.QUIET, governed_main_merge_verified=True, merge_sha=MERGE)
+        self.assertEqual(
+            [a["kind"] for a in ev.notifications(None, current)],
+            ["governed_main_merge"],
+        )
+        self.assertEqual(ev.notifications(None, None), [])
+
+    def test_non_numeric_delta_is_ignored_not_a_crash(self):
+        for bad in ("5", True, [1], {"n": 1}):
+            current = dict(
+                self.QUIET,
+                matched_coverage_delta_verified=True,
+                matched_coverage_delta=bad,
+                baseline_id="b1",
+            )
+            self.assertEqual(ev.notifications(self.QUIET, current), [], bad)
+
+
+class CliTests(unittest.TestCase):
+    def setUp(self):
+        import tempfile
+
+        self.dir = Path(tempfile.mkdtemp())
+        self.addCleanup(__import__("shutil").rmtree, self.dir, True)
+
+    def write(self, name, data):
+        path = self.dir / name
+        path.write_text(json.dumps(data), encoding="utf-8")
+        return str(path)
+
+    def run_cli(self, *argv):
+        import contextlib
+        import io
+
+        out = io.StringIO()
+        with contextlib.redirect_stdout(out):
+            code = ev.main(list(argv))
+        return code, out.getvalue()
+
+    def test_admission_prints_verdict(self):
+        policy = self.write("policy.json", POLICY)
+        code, out = self.run_cli(
+            "admission", "II", self.write("e.json", GREEN), "--policy", policy
+        )
+        self.assertEqual((code, out.strip()), (0, ev.GO))
+
+    def test_notify_seen_file_prevents_repeat(self):
+        prev = self.write("p.json", {"source_sha": OLD_HEAD})
+        cur = self.write(
+            "c.json",
+            {
+                "source_sha": HEAD,
+                "governed_main_merge_verified": True,
+                "merge_sha": MERGE,
+            },
+        )
+        seen = str(self.dir / "seen.json")
+        _, first = self.run_cli("notify", prev, cur, "--seen", seen)
+        _, second = self.run_cli("notify", prev, cur, "--seen", seen)
+        self.assertEqual(len(json.loads(first)), 1)
+        self.assertEqual(json.loads(second), [])
 
 
 if __name__ == "__main__":
