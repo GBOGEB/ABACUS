@@ -117,6 +117,9 @@ secrets/
 
 # Large data files
 *.csv
+# Exception: root refactor map and inventory are small, reviewed sources of truth.
+!docs_versioned/ROOT_RELOCATION_MAP.csv
+!docs/repo-structure/ROOT_INVENTORY.csv
 *.parquet
 *.h5
 *.hdf5
