@@ -22,8 +22,8 @@
 | 1.1 | `npm run build` script | ✅ DONE | Added `build`, `build:watch`, `clean`, `rebuild`, `typecheck` scripts to `package.json`. Verified `npm install && npm run build` succeeds (exit 0). |
 | 1.2 | TypeScript emit configuration | ✅ DONE | `tsconfig.json` now `noEmit: false`, `outDir: "dist"`, with `declaration`, `declarationMap`, `sourceMap`. Emits JS + `.d.ts` + maps; `dist/` git-ignored. |
 | 1.3 | Test suite | 📋 Scheduled | `test` script no longer fails (placeholder exits 0 with pointer to ROADMAP). Real suite scheduled for **v2.1** — see [ROADMAP.md](./ROADMAP.md). |
-| 1.4 | License declaration | ✅ DONE | Added MIT [`LICENSE`](./LICENSE); `package.json` `license: "MIT"`; README license section updated. |
-| 1.5 | Contact / ownership fields | ✅ DONE | `MANIFEST.yaml` & `handover/04_handover_manifest.yaml`: `technical_lead`/`product_owner` = GBOGEB, `support_url` = repo Issues, `license: MIT`. README acknowledgments updated. |
+| 1.4 | License declaration | ✅ DONE | Apache-2.0 [`LICENSE`](./LICENSE) with GBOGEB [`NOTICE`](./NOTICE) (relicensed from MIT on 2026-10-24); `package.json` `license: "Apache-2.0"`; README license section updated. |
+| 1.5 | Contact / ownership fields | ✅ DONE | `MANIFEST.yaml` & `handover/04_handover_manifest.yaml`: `technical_lead`/`product_owner` = GBOGEB, `support_url` = repo Issues, `license: Apache-2.0`. README acknowledgments updated. |
 | 1.6 | Example projects | 📋 Scheduled | Scheduled for **v2.1** — see [ROADMAP.md](./ROADMAP.md). |
 
 ---
