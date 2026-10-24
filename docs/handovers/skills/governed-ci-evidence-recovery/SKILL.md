@@ -59,6 +59,8 @@ notify = exact_head_terminal_first_red_changed
 
 A new failure of a known, unchanged root is not material.
 
+Executable form: `notifications(previous, current, seen)` in `scripts/code_purple_evidence.py`. It emits one alert per transition, keyed by a content-hash `event_id`; persist the seen set so the same observation never alerts twice. Each alert keeps source SHA, URLs, baseline, numerator, denominator, root and next action; unknown stays `null`, never `0`.
+
 ## 7. Output
 
 Each check ends with:
@@ -70,3 +72,12 @@ Each check ends with:
 ## 8. Session retirement
 
 Retire only after: ledger/roots/cohorts committed; open actions carried into the durable TODO register; method lessons in repo; a restart contract (`ABACUS_20261022_RESTART_CONTRACT.yaml`) whose reads were executed once by a fresh session and matched. Run `ci/verify_handover.py` to check pack integrity.
+
+## 9. Four KPIs and three states stay independent
+
+Coverage growth, root reduction, runner activity and merge admission are separate KPIs. One never establishes another.
+
+- **Admission:** call `admission_verdict(level, evidence, policy)`. It is fail-closed: unknown evidence is `HOLD_UNKNOWN_*`, and review identity is derived from the review list at the exact head, never from a flag. A merge counts only when `merge_verified()` holds (verdict for the merged head, plus main readback of the merge SHA).
+- **Roots:** keep `issue_state`, `root_state` and credit apart with `engineering_credit()`. A closed issue with an open or unknown root is `HOUSEKEEPING_ONLY` or `UNKNOWN`, never credit.
+- **Runners:** a GitHub-hosted run proves execution, not authenticated cross-repo mutation. That needs the dispatch principal, nonce, exact SHA and run/job IDs.
+- Do the arithmetic in tested Python; use this skill to order the evidence workflow, not to replace the code.
