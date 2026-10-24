@@ -2,11 +2,12 @@
 
 [![Python 3.12+](https://img.shields.io/badge/python-3.12+-blue.svg)](https://www.python.org/downloads/)
 [![License: Apache-2.0](https://img.shields.io/badge/License-Apache--2.0-blue.svg)](../LICENSE)
-[![Status: Production Ready](https://img.shields.io/badge/status-production%20ready-green.svg)]()
+![Status: Production Ready](https://img.shields.io/badge/status-production%20ready-green.svg)
 
 ## 🎯 Overview
 
-ABACUS v2.1 is a comprehensive session tracking and conversation analysis system with full deployment automation.
+ABACUS v2.1 is a comprehensive session tracking and conversation analysis
+system with full deployment automation.
 
 ## 🚀 Quick Start
 
