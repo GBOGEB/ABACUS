@@ -25,7 +25,7 @@ This roadmap schedules the follow-up work identified in `REMAINING_TODO_CHECKLIS
 **Delivered:**
 - Complete handover package (44 artifacts) merged to `main` (PR #383).
 - TypeScript framework with working build (`npm run build` → `dist/`), declarations & source maps.
-- MIT `LICENSE`, finalized ownership/contact metadata.
+- Apache-2.0 `LICENSE` and GBOGEB `NOTICE` (relicensed from MIT on 2026-10-24), finalized ownership/contact metadata.
 - Post-merge verification report, remaining-TODO checklist, security triage report.
 
 ---
