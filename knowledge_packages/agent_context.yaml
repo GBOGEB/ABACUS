@@ -31,9 +31,11 @@ guideline_sets:
     - Align with project goals
 response_templates:
   phase_completion: "Phase {phase} completed successfully. {summary}"
-  issue_found: "Issue detected in {location}: {description}. Recommendation: {action}"
+  issue_found: "Issue detected in {location}: {description}. Recommendation:
+    {action}"
   metric_alert: "Metric {metric} exceeded threshold: {value} > {threshold}"
-  improvement_suggestion: "Improvement opportunity: {description}. Expected benefit: {benefit}"
+  improvement_suggestion: "Improvement opportunity: {description}. Expected
+    benefit: {benefit}"
 kpis:
   - Syntax errors: 0
   - Success rate: 100%

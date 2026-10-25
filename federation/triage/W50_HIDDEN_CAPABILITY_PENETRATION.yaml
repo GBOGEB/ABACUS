@@ -4,8 +4,10 @@ repo: GBOGEB/ABACUS
 role: DOW_ANALYSIS_PARENT
 formal_credit_delta: 0
 intent: >-
-  Inventory latent reusable engineering capabilities before PCA/BT wave ranking so already-built
-  DOW, HEPAK, cryogenic-property, orchestration and validation blocks are not undervalued simply
+  Inventory latent reusable engineering capabilities before PCA/BT wave
+  ranking so already-built
+  DOW, HEPAK, cryogenic-property, orchestration and validation blocks are not
+  undervalued simply
   because they are poorly exposed.
 
 observed_capabilities:
@@ -41,7 +43,8 @@ observed_capabilities:
     state: ACTIVE_REFERENCE_SURFACE
     role: NIST_REFPROP_10_helium4_surface
     independence_guard: >-
-      Do not treat CoolProp-vs-REFPROP as an independent helium oracle where they share EOS lineage.
+      Do not treat CoolProp-vs-REFPROP as an independent helium oracle
+      where they share EOS lineage.
   mcp_controller:
     evidence:
       - docs_versioned/status_reports/MASTER_EXECUTION_TRACKER.md
@@ -49,7 +52,8 @@ observed_capabilities:
   hepak_chatgpt_skill:
     state: NOT_EXPOSED
     note: >-
-      Repository capability is not the same as a ChatGPT Skill. Promote engine -> worker -> Skill only
+      Repository capability is not the same as a ChatGPT Skill. Promote
+      engine -> worker -> Skill only
       after the property contract and validation oracle are stable.
 
 proposed_property_contract:
@@ -85,7 +89,8 @@ proposed_property_contract:
 pca_bt_effect:
   before_ranking: true
   reason: >-
-    Candidate generation must include latent capabilities and integration gaps, not only visible PR work.
+    Candidate generation must include latent capabilities and integration
+    gaps, not only visible PR work.
   candidate_dimensions:
     - dormant_capability_value
     - reuse_value

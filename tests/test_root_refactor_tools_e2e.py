@@ -204,6 +204,51 @@ class RelocateEndToEndTest(ScratchRepo):
         self.assertEqual(relocate.load_map(self.root), [])
         self.assertEqual(relocate.check(self.root), [])
 
+    def write_mentions(self, rows, header=relocate.MENTION_FIELDS):
+        with (self.root / relocate.MENTIONS).open(
+            "w", newline="", encoding="utf-8"
+        ) as f:
+            w = csv.writer(f, lineterminator="\n")
+            w.writerow(header)
+            w.writerows(rows)
+
+    def test_acknowledged_mention_is_silent_and_stale_one_fails(self):
+        (self.root / "scripts/other.py").write_text(
+            "OUT = base / 'GUIDE.md'\n", encoding="utf-8"
+        )
+        relocate.git("add", "-A")
+        run_quiet(relocate.main, ["apply", "--wave", "W1"])
+        run_quiet(relocate.main, ["apply", "--wave", "W4"])
+        msg = "scripts/other.py: code or config still names moved root file GUIDE.md"
+        self.assertEqual(relocate.check(self.root), [msg])
+        ack = ["scripts/other.py", "GUIDE.md", "a GUIDE.md under base, not the root"]
+        self.write_mentions([ack])
+        self.assertEqual(relocate.check(self.root), [])
+        (self.root / "scripts/other.py").write_text("OUT = 1\n", encoding="utf-8")
+        self.assertEqual(
+            relocate.check(self.root),
+            [
+                f"{relocate.MENTIONS}: scripts/other.py no longer names GUIDE.md;"
+                " remove the acknowledgement"
+            ],
+        )
+
+    def test_invalid_acknowledgements_block_check(self):
+        self.write_mentions([["a.py", "NOT_MAPPED.md", " "]])
+        errors = relocate.check(self.root)
+        self.assertIn(
+            f"{relocate.MENTIONS} line 2: 'NOT_MAPPED.md' is not a mapped old_path",
+            errors,
+        )
+        self.assertIn(f"{relocate.MENTIONS} line 2: reason is required", errors)
+        self.write_mentions(
+            [["a.py", "GUIDE.md"]], header=["consumer_path", "old_path"]
+        )
+        self.assertEqual(
+            relocate.check(self.root),
+            [f"{relocate.MENTIONS}: header must be consumer_path,old_path,reason"],
+        )
+
 
 class InventoryEndToEndTest(ScratchRepo):
     def test_rows_classify_count_refs_and_flag_prune_candidates(self):

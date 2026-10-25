@@ -77,7 +77,9 @@ def validate_mentions(acks: list[dict], olds: set[str]) -> list[str]:
         if list(a) != MENTION_FIELDS:
             return [f"{MENTIONS}: header must be {','.join(MENTION_FIELDS)}"]
         if a["old_path"] not in olds:
-            errors.append(f"{MENTIONS} line {i}: {a['old_path']!r} is not a mapped old_path")
+            errors.append(
+                f"{MENTIONS} line {i}: {a['old_path']!r} is not a mapped old_path"
+            )
         if not a["reason"].strip():
             errors.append(f"{MENTIONS} line {i}: reason is required")
     return errors
