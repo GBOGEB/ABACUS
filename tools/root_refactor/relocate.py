@@ -178,15 +178,21 @@ def check(root: Path = ROOT) -> list[str]:
         if path.is_file():
             for old in links_to(read(path), doc, olds):
                 errors.append(f"{doc}: link still points at moved root file {old}")
-    if olds:
-        bare = re.compile(r"(?<![\w./\\-])(" + "|".join(map(re.escape, sorted(olds, key=len, reverse=True)))
-                          + r")(?![\w.-])")
-        for src in tracked_code():
-            path = root / src
-            if path.is_file():
-                for old in sorted(set(bare.findall(read(path)))):
-                    errors.append(f"{src}: code or config still names moved root file {old}")
+    for src in tracked_code():
+        path = root / src
+        if path.is_file():
+            for old in code_mentions(read(path), olds):
+                errors.append(f"{src}: code or config still names moved root file {old}")
     return errors
+
+
+def code_mentions(text: str, olds: set[str]) -> list[str]:
+    """Moved root names a script or config still uses as a bare root path (not `dir/name`)."""
+    if not olds:
+        return []
+    bare = re.compile(r"(?<![\w./\\-])(" + "|".join(map(re.escape, sorted(olds, key=len, reverse=True)))
+                      + r")(?![\w.-])")
+    return sorted(set(bare.findall(text)))
 
 
 def tracked_code() -> list[str]:

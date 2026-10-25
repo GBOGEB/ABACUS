@@ -37,11 +37,11 @@ class RewriteLinksTest(unittest.TestCase):
         text = ('[home](README.md) [sib](Report_2.md) [web](https://x.y/README.md) '
                 '[top](#summary) <a href="docs/index.html">d</a>')
         out = relocate.rewrite_links(text, "Report_1.md", MOVES["Report_1.md"], MOVES)
-        self.assertIn("[home](../../../README.md)", out)
+        self.assertIn("[home](../../README.md)", out)
         self.assertIn("[sib](Report_2.md)", out)
         self.assertIn("[web](https://x.y/README.md)", out)
         self.assertIn("[top](#summary)", out)
-        self.assertIn('href="../../../docs/index.html"', out)
+        self.assertIn('href="../../docs/index.html"', out)
 
     def test_fragment_title_and_encoding_are_kept(self):
         out = relocate.rewrite_links('[m](My%20File.md#sec "t")', "README.md", "README.md", MOVES)
@@ -60,6 +60,16 @@ class RewriteLinksTest(unittest.TestCase):
     def test_links_to_finds_only_live_links(self):
         text = "`Report_1.md` | Report_1.md\n[x](Report_1.md)\n```\n[y](Report_1.md)\n```\n"
         self.assertEqual(relocate.links_to(text, "README.md", {"Report_1.md"}), ["Report_1.md"])
+
+
+class CodeMentionsTest(unittest.TestCase):
+    def test_bare_root_names_are_found_and_nested_paths_are_not(self):
+        olds = {"Report_1.md", "HANDOVER.md"}
+        text = ('BOOK = ["Report_1.md", "docs/HANDOVER.md"]\n'
+                "  - HANDOVER.md\ngit add Report_1.md.bak\n")
+        self.assertEqual(relocate.code_mentions(text, olds), ["HANDOVER.md", "Report_1.md"])
+        self.assertEqual(relocate.code_mentions("docs/HANDOVER.md Report_1.md.bak", olds), [])
+        self.assertEqual(relocate.code_mentions("anything", set()), [])
 
 
 class ValidateRowsTest(unittest.TestCase):

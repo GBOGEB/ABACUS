@@ -1,0 +1,35 @@
+# JADE repo pointer (pipeline-automation-hub: mission-control/jade_temple/04_REPO_ROOT_SPINE_CONTRACT.md).
+# A pointer, not a new source of truth: every value names a file that owns the fact. null = not decided yet.
+schema: jade-caste/repo-pointer/v0
+repository: GBOGEB/ABACUS
+observed_commit: null
+canonical_readme: README.md
+source_roots:
+  - DMAIC_V3        # installed package (pyproject.toml [tool.setuptools] packages); CLI: abacus = DMAIC_V3.__main__:main
+  - src/dmaic
+  - tools
+  - scripts
+build_entrypoints:
+  - pyproject.toml  # release identity: [project].version
+  - pytest.ini      # testpaths: tests, DMAIC_V3/tests
+  - Makefile
+  - Dockerfile
+  - .github/workflows/ci.yml
+canonical_issue_queue: null
+site:
+  source_path: docs
+  hosted_url: https://gbogeb.github.io/ABACUS/
+  served_sha: null
+release:
+  owner: null
+  version_policy: pyproject.toml [project].version
+  last_qualified_tag: null
+governance:
+  proposed_tier: null
+  effective_protection_evidence: null
+# Additive extension: where loose root files go and how to find a moved one.
+root_refactor:
+  plan: docs/repo-structure/ROOT_REFACTOR_PLAN.md
+  inventory: docs/repo-structure/ROOT_INVENTORY.csv
+  relocation_map: docs_versioned/ROOT_RELOCATION_MAP.csv
+  jade_task: J14

@@ -17,6 +17,9 @@ ABACUS/
 │       ├── smoke-test.yml         # Smoke test pipeline
 │       └── ...
 │
+├── .jade/
+│   └── repo.yaml                  # JADE repo pointer: entry points, site, root refactor files
+│
 ├── .vscode/
 │   ├── settings.json              # Editor settings (Python, Pylance)
 │   └── tasks.json                 # VS Code task definitions
@@ -44,6 +47,7 @@ ABACUS/
 │
 ├── docs/                          # GitHub Pages site (deployed via deploy-docs.yml)
 │   ├── index.html                 # Main entry point (HTML-first GUI)
+│   ├── repo-structure/            # Repository map (index.html), root refactor plan + inventory
 │   ├── manifest.yml               # Site manifest + federation section
 │   ├── patch.md                   # Single-file session patch bundle
 │   ├── session-lifecycle/
@@ -54,6 +58,12 @@ ABACUS/
 │   ├── ASCII_FEDERATION_FLOW.md   # Federation flow diagram
 │   ├── content/                   # Markdown articles
 │   └── assets/                    # CSS, JS (common.js, style.css)
+│
+├── docs_versioned/                # Frozen history (not published)
+│   ├── ROOT_RELOCATION_MAP.csv    # Every file moved off the root: old → new path
+│   ├── generated_reports/         # Timestamped tool outputs (root refactor W1)
+│   ├── handover/                  # Past handover and session notes (root refactor W2)
+│   └── v2.1/ v2.2_archived/ v2.3/ …  # Version-stamped documentation
 │
 ├── federation/
 │   └── manifest.yaml              # Global federation entry point (DELTA_1)
@@ -90,6 +100,7 @@ ABACUS/
 │       ├── recursion.py
 │       └── tuple_metadata.py      # Tuple schema + validate_tracker_payload()
 │
+│   (~330 more loose root files: see docs/repo-structure/index.html and ROOT_REFACTOR_PLAN.md)
 ├── abacus_v21_session_tuple_analyzer.py   # Legacy root-level analyser
 ├── KNOWLEDGE_SYSTEMS_ARCHITECTURE.md
 ├── DMAIC_V3_ASCII_WORKFLOWS_COMPLETE.md
