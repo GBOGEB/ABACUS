@@ -30,7 +30,7 @@ jobs:
           - {os: windows-2022, python: '3.11'}
     steps:
       - name: Exact SHA checkout with no stored credentials
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
         with:
           ref: ${{ github.event.pull_request.head.sha || github.sha }}
           persist-credentials: false
