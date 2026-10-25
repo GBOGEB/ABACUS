@@ -13,6 +13,8 @@ relative Markdown/HTML links that resolve to the old path (in every tracked
 document), and re-bases the moved file's own relative links to its new folder.
 Plain-text mentions (tables, backticks, dated census snapshots) are history and
 are left as written; the map resolves them. Links inside fenced code are kept.
+Scripts, workflows and configs that name a moved file must be updated in the same
+wave (MOVE_WITH_CONSUMER_REPLAY); `check` fails while one still names an old path.
 Nothing is ever deleted.
 """
 from __future__ import annotations
@@ -32,6 +34,8 @@ FIELDS = ["old_path", "new_path", "family", "wave", "disposition"]
 FAMILIES = {"F1", "F2", "F3", "F4", "F5"}
 DISPOSITIONS = {"ARCHIVE_PRESERVE_LINKS", "MOVE_WITH_CONSUMER_REPLAY", "LINK_ALIAS_FIRST"}
 DOC_EXT = (".md", ".markdown", ".html", ".htm")
+CODE_EXT = (".py", ".sh", ".ps1", ".yml", ".yaml", ".toml", ".cfg", ".ini")
+CODE_NAMES = {"Makefile", "Dockerfile"}
 
 INLINE = re.compile(r"(\]\()(<[^>\n]+>|[^)\s]+)((?:\s+\"[^\"\n]*\")?\))")
 REFDEF = re.compile(r"^(\s{0,3}\[[^\]\n]+\]:\s*)(<[^>\n]+>|\S+)", re.M)
@@ -174,7 +178,21 @@ def check(root: Path = ROOT) -> list[str]:
         if path.is_file():
             for old in links_to(read(path), doc, olds):
                 errors.append(f"{doc}: link still points at moved root file {old}")
+    if olds:
+        bare = re.compile(r"(?<![\w./\\-])(" + "|".join(map(re.escape, sorted(olds, key=len, reverse=True)))
+                          + r")(?![\w.-])")
+        for src in tracked_code():
+            path = root / src
+            if path.is_file():
+                for old in sorted(set(bare.findall(read(path)))):
+                    errors.append(f"{src}: code or config still names moved root file {old}")
     return errors
+
+
+def tracked_code() -> list[str]:
+    """Files that can open a root path at run time: scripts, workflows, build and tool configs."""
+    return [p for p in git("ls-files", "-z").split("\0")
+            if p.lower().endswith(CODE_EXT) or posixpath.basename(p) in CODE_NAMES]
 
 
 def apply(wave: str) -> int:
