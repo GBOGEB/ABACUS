@@ -1,5 +1,7 @@
 # ABACUS root refactor plan
 
+<!-- markdownlint-disable MD013 -->
+
 **JADE task:** J14, the first ABACUS slice of J10 ("root candidate disposition and nonbreaking alias tests")
 in `pipeline-automation-hub/mission-control/jade_temple/data/BD_QUEUE.csv`.
 **Observed commit:** `1dff4c361f17abc44dfa65cccba2ee052ee01a2a` (inventory); W1 and W2 applied on top of `8d27bca8`.
@@ -39,7 +41,7 @@ inbound references and prune flag. Regenerate it with `python tools/root_refacto
 and those are the ones a move could break.
 
 | ID | Family | Files | Hard-ref files | Prune candidates | Destination | JADE disposition | Wave |
-|----|--------|------:|---------------:|-----------------:|-------------|------------------|------|
+| --- | --- | ---: | ---: | ---: | --- | --- | --- |
 | KEEP | Front door and manifests | 19 | 12 | 0 | root | CANONICAL_ROOT | — |
 | F1 | Generated run reports (timestamped or "Generated:" outputs) | 20 | 0 | 1 | `docs_versioned/generated_reports/` | ARCHIVE_PRESERVE_LINKS | **W1** |
 | F2 | Handover and session notes | 42 | 2 | 4 | `docs_versioned/handover/`; the three `V2.2_*` notes to `docs_versioned/v2.2_archived/` as the README layout declares | ARCHIVE_PRESERVE_LINKS (2 MOVE_WITH_CONSUMER_REPLAY) | **W2** |
@@ -97,7 +99,7 @@ ABACUS/
 ### Per wave
 
 | Wave | Family | Moves | Root files after | Folders added or filled | Starts when |
-|------|--------|------:|-----------------:|-------------------------|-------------|
+| --- | --- | ---: | ---: | --- | --- |
 | W0 | inventory, map, tool, test, `.jade` pointer | 0 | 390 | `docs/repo-structure/`, `.jade/` | — |
 | **W1** | F1 generated run reports | 20 | **370** | `docs_versioned/generated_reports/` | this PR |
 | **W2** | F2 handover and session notes | 41 (1 held) | **329** | `docs_versioned/handover/`, `docs_versioned/v2.2_archived/` (fixes the README "Get Started" links) | this PR |
@@ -141,7 +143,7 @@ W5  ABACUS/
 ### Smoke checks
 
 | Check | Command | Pass rule |
-|-------|---------|-----------|
+| --- | --- | --- |
 | Relocation invariant | `python tools/root_refactor/relocate.py check` (also `tests/test_root_relocation.py`) | 0 problems: old paths gone, new paths present, no live link to an old path |
 | Repo-wide relative links | link census over every tracked `.md`/`.html` | broken links after ⊆ broken links before |
 | Docs site links | `python scripts/validate_docs_links.py` | no new errors |
@@ -158,7 +160,7 @@ W1_RESULTS_PLACEHOLDER
 Names are the original root names; moved files are now at the location the [repository map](index.html) shows. `DMAIC_V3_CANONICAL_HANDOVER_BOOK.md` is held at the root in W2 because `handover/GLOOB.yaml` still lists it: delete it and the GLOOB entry together, or move both.
 
 | File | Family | Why | Proposal |
-|------|--------|-----|----------|
+| --- | --- | --- | --- |
 | `DMAIC Implementation Manifest.md` | F4 | empty (0 bytes) | delete |
 | `DMAIC_ACTION_ITEMS.md` | F3 | byte-identical to `dmaic-sprint-system/docs/DMAIC_ACTION_ITEMS.md` | delete the root copy and repoint its links to the twin |
 | `DMAIC_QUICK_START_GUIDE.md` | F4 | byte-identical to `dmaic-sprint-system/docs/DMAIC_QUICK_START_GUIDE.md` | delete the root copy and repoint its links to the twin |
@@ -194,7 +196,7 @@ baseline the N10 census head `99faf195`. Root layout is not one of the lifecycle
 these are the stage levels the refactor must not lower.
 
 | Stage | Level | Probes passing | Next blocker |
-|-------|-------|---------------:|--------------|
+| --- | --- | ---: | --- |
 | S0 PLAN | L3 automated | 4/5 | plan.protection UNKNOWN |
 | S1 CODE | L5 controlled | 5/5 | — |
 | S2 BUILD | L3 automated | 4/5 | build.pinned_actions FAIL |

@@ -32,7 +32,11 @@ ROOT = Path(__file__).resolve().parents[2]
 MAP = "docs_versioned/ROOT_RELOCATION_MAP.csv"
 FIELDS = ["old_path", "new_path", "family", "wave", "disposition"]
 FAMILIES = {"F1", "F2", "F3", "F4", "F5"}
-DISPOSITIONS = {"ARCHIVE_PRESERVE_LINKS", "MOVE_WITH_CONSUMER_REPLAY", "LINK_ALIAS_FIRST"}
+DISPOSITIONS = {
+    "ARCHIVE_PRESERVE_LINKS",
+    "MOVE_WITH_CONSUMER_REPLAY",
+    "LINK_ALIAS_FIRST",
+}
 DOC_EXT = (".md", ".markdown", ".html", ".htm")
 CODE_EXT = (".py", ".sh", ".ps1", ".yml", ".yaml", ".toml", ".cfg", ".ini")
 CODE_NAMES = {"Makefile", "Dockerfile"}
@@ -45,8 +49,13 @@ EXTERNAL = re.compile(r"^(?:[a-z][a-z0-9+.-]*:|#|/|\{\{)", re.I)
 
 
 def git(*args: str) -> str:
-    return subprocess.run(["git", "-C", str(ROOT), *args], capture_output=True, check=True,
-                          text=True, encoding="utf-8").stdout
+    return subprocess.run(
+        ["git", "-C", str(ROOT), *args],
+        capture_output=True,
+        check=True,
+        text=True,
+        encoding="utf-8",
+    ).stdout
 
 
 def load_map(root: Path = ROOT) -> list[dict]:
@@ -86,6 +95,7 @@ def rewrite_links(text: str, src: str, new_src: str, moves: dict[str, str]) -> s
     A link is rewritten when its target moves, or when the document itself moves
     (so the same target needs a new relative path). Fenced code is left alone.
     """
+
     def fix(raw: str) -> str:
         path, suffix, angle = split_target(raw)
         old = resolve(src, path)
@@ -148,13 +158,17 @@ def validate_rows(rows: list[dict]) -> list[str]:
         if "/" in old:
             errors.append(f"line {i}: old_path {old!r} is not a root file")
         if "/" not in new or new.startswith(("/", "../")) or "\\" in new:
-            errors.append(f"line {i}: new_path {new!r} must be a repo-relative sub-folder path")
+            errors.append(
+                f"line {i}: new_path {new!r} must be a repo-relative sub-folder path"
+            )
         if r["family"] not in FAMILIES:
             errors.append(f"line {i}: family {r['family']!r} not in {sorted(FAMILIES)}")
         if not re.fullmatch(r"W\d+[a-z]?", r["wave"]):
             errors.append(f"line {i}: wave {r['wave']!r} must look like W1 or W3a")
         if r["disposition"] not in DISPOSITIONS:
-            errors.append(f"line {i}: disposition {r['disposition']!r} not in {sorted(DISPOSITIONS)}")
+            errors.append(
+                f"line {i}: disposition {r['disposition']!r} not in {sorted(DISPOSITIONS)}"
+            )
         if old in olds or new in news:
             errors.append(f"line {i}: duplicate old_path or new_path")
         olds.add(old)
@@ -170,7 +184,9 @@ def check(root: Path = ROOT) -> list[str]:
     olds = {r["old_path"] for r in rows}
     for r in rows:
         if (root / r["old_path"]).exists():
-            errors.append(f"{r['old_path']}: still at repo root (wave {r['wave']} not applied or file re-added)")
+            errors.append(
+                f"{r['old_path']}: still at repo root (wave {r['wave']} not applied or file re-added)"
+            )
         if not (root / r["new_path"]).is_file():
             errors.append(f"{r['new_path']}: relocation target missing")
     for doc in tracked_docs():
@@ -182,7 +198,9 @@ def check(root: Path = ROOT) -> list[str]:
         path = root / src
         if path.is_file():
             for old in code_mentions(read(path), olds):
-                errors.append(f"{src}: code or config still names moved root file {old}")
+                errors.append(
+                    f"{src}: code or config still names moved root file {old}"
+                )
     return errors
 
 
@@ -190,15 +208,21 @@ def code_mentions(text: str, olds: set[str]) -> list[str]:
     """Moved root names a script or config still uses as a bare root path (not `dir/name`)."""
     if not olds:
         return []
-    bare = re.compile(r"(?<![\w./\\-])(" + "|".join(map(re.escape, sorted(olds, key=len, reverse=True)))
-                      + r")(?![\w.-])")
+    bare = re.compile(
+        r"(?<![\w./\\-])("
+        + "|".join(map(re.escape, sorted(olds, key=len, reverse=True)))
+        + r")(?![\w.-])"
+    )
     return sorted(set(bare.findall(text)))
 
 
 def tracked_code() -> list[str]:
     """Files that can open a root path at run time: scripts, workflows, build and tool configs."""
-    return [p for p in git("ls-files", "-z").split("\0")
-            if p.lower().endswith(CODE_EXT) or posixpath.basename(p) in CODE_NAMES]
+    return [
+        p
+        for p in git("ls-files", "-z").split("\0")
+        if p.lower().endswith(CODE_EXT) or posixpath.basename(p) in CODE_NAMES
+    ]
 
 
 def apply(wave: str) -> int:
@@ -207,8 +231,11 @@ def apply(wave: str) -> int:
     if errors:
         print("\n".join(errors), file=sys.stderr)
         return 1
-    todo = {r["old_path"]: r["new_path"] for r in rows
-            if r["wave"] == wave and (ROOT / r["old_path"]).exists()}
+    todo = {
+        r["old_path"]: r["new_path"]
+        for r in rows
+        if r["wave"] == wave and (ROOT / r["old_path"]).exists()
+    }
     if not todo:
         print(f"{wave}: nothing to move (already applied or no rows)")
         return 0
@@ -241,7 +268,9 @@ def main(argv: list[str] | None = None) -> int:
     errors = check()
     for e in errors:
         print(e, file=sys.stderr)
-    print(f"root relocation check: {len(load_map())} mapped file(s), {len(errors)} problem(s)")
+    print(
+        f"root relocation check: {len(load_map())} mapped file(s), {len(errors)} problem(s)"
+    )
     return 1 if errors else 0
 
 

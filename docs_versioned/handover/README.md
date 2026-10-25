@@ -1,5 +1,7 @@
 # Handover and session notes (moved from the repository root)
 
+<!-- markdownlint-disable MD013 -->
+
 Past session summaries, handover packages and "start here / execute now" notes,
 moved out of the repository root in wave W2 of the
 [root refactor](../../docs/repo-structure/ROOT_REFACTOR_PLAN.md). Contents and file

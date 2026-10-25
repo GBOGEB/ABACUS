@@ -37,7 +37,9 @@ def _is_external(link: str) -> bool:
 
 def _normalize_target(base_file: Path, link: str) -> Path:
     without_anchor = link.split("#", 1)[0]
-    target = Path(unquote(without_anchor))  # hrefs are URL-encoded (e.g. %20 for a space)
+    target = Path(
+        unquote(without_anchor)
+    )  # hrefs are URL-encoded (e.g. %20 for a space)
     if target.is_absolute():
         return target
     return (base_file.parent / target).resolve()

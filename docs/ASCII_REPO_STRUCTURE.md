@@ -18,7 +18,7 @@ ABACUS/
 │       └── ...
 │
 ├── .jade/
-│   └── repo.yaml                  # JADE repo pointer: entry points, site, root refactor files
+│   └── repo.yaml                  # JADE repo pointer (entry points)
 │
 ├── .vscode/
 │   ├── settings.json              # Editor settings (Python, Pylance)
@@ -47,7 +47,7 @@ ABACUS/
 │
 ├── docs/                          # GitHub Pages site (deployed via deploy-docs.yml)
 │   ├── index.html                 # Main entry point (HTML-first GUI)
-│   ├── repo-structure/            # Repository map (index.html), root refactor plan + inventory
+│   ├── repo-structure/            # Repository map, refactor plan
 │   ├── manifest.yml               # Site manifest + federation section
 │   ├── patch.md                   # Single-file session patch bundle
 │   ├── session-lifecycle/
@@ -62,7 +62,7 @@ ABACUS/
 ├── docs_versioned/                # Frozen history (not published)
 │   ├── ROOT_RELOCATION_MAP.csv    # Every file moved off the root: old → new path
 │   ├── generated_reports/         # Timestamped tool outputs (root refactor W1)
-│   ├── handover/                  # Past handover and session notes (root refactor W2)
+│   ├── handover/                  # Past handovers (refactor W2)
 │   └── v2.1/ v2.2_archived/ v2.3/ …  # Version-stamped documentation
 │
 ├── federation/

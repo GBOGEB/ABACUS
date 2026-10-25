@@ -1,10 +1,11 @@
 """Repository map page (docs/repo-structure/index.html): deterministic, self-contained, in sync."""
+
 from __future__ import annotations
 
 import html
 import importlib.util
-from pathlib import Path
 import unittest
+from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 SCRIPT = ROOT / "tools" / "root_refactor" / "discovery_page.py"
@@ -24,8 +25,11 @@ class DiscoveryPageTest(unittest.TestCase):
     def test_committed_page_is_current(self):
         out = ROOT / page_mod.OUT
         self.assertTrue(out.is_file(), f"{page_mod.OUT} missing; run: {page_mod.REGEN}")
-        self.assertEqual(out.read_bytes().decode("utf-8"), self.page,
-                         f"{page_mod.OUT} is stale; run: {page_mod.REGEN}")
+        self.assertEqual(
+            out.read_bytes().decode("utf-8"),
+            self.page,
+            f"{page_mod.OUT} is stale; run: {page_mod.REGEN}",
+        )
 
     def test_self_contained(self):
         low = self.page.lower()

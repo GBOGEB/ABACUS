@@ -21,27 +21,67 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[2]
 OUT = "docs/repo-structure/ROOT_INVENTORY.csv"
-FIELDS = ["path", "family", "wave", "size", "inbound_files", "hard_ref_files", "prune_candidate", "observed_commit"]
+FIELDS = [
+    "path",
+    "family",
+    "wave",
+    "size",
+    "inbound_files",
+    "hard_ref_files",
+    "prune_candidate",
+    "observed_commit",
+]
 
 # Front door and build/runtime manifests stay at the root (JADE CANONICAL_ROOT / KEEP_JUSTIFIED).
 KEEP = {
-    "README.md", "LICENSE", "SECURITY.md", "CHANGELOG.md", "pyproject.toml", "pytest.ini",
-    "requirements.txt", "requirements-dev.txt", "requirements-test.txt", "Makefile", "Dockerfile",
-    "docker-compose.yml", ".dockerignore", ".editorconfig", ".env.example", ".gitattributes",
-    ".gitignore", ".pre-commit-config.yaml", ".a10_guard_allow",
+    "README.md",
+    "LICENSE",
+    "SECURITY.md",
+    "CHANGELOG.md",
+    "pyproject.toml",
+    "pytest.ini",
+    "requirements.txt",
+    "requirements-dev.txt",
+    "requirements-test.txt",
+    "Makefile",
+    "Dockerfile",
+    "docker-compose.yml",
+    ".dockerignore",
+    ".editorconfig",
+    ".env.example",
+    ".gitattributes",
+    ".gitignore",
+    ".pre-commit-config.yaml",
+    ".a10_guard_allow",
 }
 # family -> (wave, rule). Order matters: first match wins.
 RULES = [
-    ("F1", "W1", r"^Report_\d{8}_\d{6}\.md$|^MARKDOWN_FIX_REPORT_\d{8}_\d{6}\.md$|^iteration_\d+_report_\d{8}_\d{6}\.md$"
-                 r"|_REPORT_\d{8}_\d{6}\.md$|^EXECUTION_SUMMARY_\d{8}_\d{6}\.md$"
-                 r"|^(deep_integration_test_report|integration_test_results|final_report|recovery_report|lineage_analysis)\.md$"),
-    ("F5", "W5", r"\.(py|ps1|sh|ipynb)$|^(orchestrator_config|ranking|code_index|reference-registry)\.ya?ml$"
-                 r"|^github_tracking_state\.(json|yaml)$|^(GLOBAL_index|PERFORMANCE_BENCHMARK_REPORT|bottleneck_report"
-                 r"|maturity_assessment)\.json$|^(QUICK_START|START_HERE_DEPLOYMENT_GUIDE)\.txt$"),
-    ("F2", "W2", r"HANDOVER|SESSION|handover|CHATREADY|^NEW_SESSION_START|^READY_TO_EXECUTE|^EXECUTE_NOW|^DEPLOY_NOW"),
-    ("F3", "W3", r"SUMMARY|COMPLETE|STATUS|REPORT|RESULTS|CERTIFICATE|FINAL|DELIVERABLES|ANNOUNCEMENT|RELEASE_NOTES"
-                 r"|FIXED|BUGS|ERROR_ANALYSIS|EXECUTION_LOG|ACTUAL_RESULTS|PRODUCTION_READY|DASHBOARD|SCORECARD|TRACKER"
-                 r"|PROGRESS|CHANGELOG_|_CHANGES|ACTION_ITEMS|_ANSWERS|CORRECTED|OPEN_ACTIONS|_log\.md$|_report\.md$"),
+    (
+        "F1",
+        "W1",
+        r"^Report_\d{8}_\d{6}\.md$|^MARKDOWN_FIX_REPORT_\d{8}_\d{6}\.md$|^iteration_\d+_report_\d{8}_\d{6}\.md$"
+        r"|_REPORT_\d{8}_\d{6}\.md$|^EXECUTION_SUMMARY_\d{8}_\d{6}\.md$"
+        r"|^(deep_integration_test_report|integration_test_results|final_report|recovery_report|lineage_analysis)\.md$",
+    ),
+    (
+        "F5",
+        "W5",
+        r"\.(py|ps1|sh|ipynb)$|^(orchestrator_config|ranking|code_index|reference-registry)\.ya?ml$"
+        r"|^github_tracking_state\.(json|yaml)$|^(GLOBAL_index|PERFORMANCE_BENCHMARK_REPORT|bottleneck_report"
+        r"|maturity_assessment)\.json$|^(QUICK_START|START_HERE_DEPLOYMENT_GUIDE)\.txt$",
+    ),
+    (
+        "F2",
+        "W2",
+        r"HANDOVER|SESSION|handover|CHATREADY|^NEW_SESSION_START|^READY_TO_EXECUTE|^EXECUTE_NOW|^DEPLOY_NOW",
+    ),
+    (
+        "F3",
+        "W3",
+        r"SUMMARY|COMPLETE|STATUS|REPORT|RESULTS|CERTIFICATE|FINAL|DELIVERABLES|ANNOUNCEMENT|RELEASE_NOTES"
+        r"|FIXED|BUGS|ERROR_ANALYSIS|EXECUTION_LOG|ACTUAL_RESULTS|PRODUCTION_READY|DASHBOARD|SCORECARD|TRACKER"
+        r"|PROGRESS|CHANGELOG_|_CHANGES|ACTION_ITEMS|_ANSWERS|CORRECTED|OPEN_ACTIONS|_log\.md$|_report\.md$",
+    ),
     ("F4", "W4", r"\.md$"),
 ]
 FAMILY_NAMES = {
@@ -52,14 +92,21 @@ FAMILY_NAMES = {
     "F4": "plans, guides, architecture and reference",
     "F5": "code, automation and the data files they read or write",
 }
-HARD = re.compile(r"^\.github/|^(Makefile|Dockerfile|docker-compose\.yml|pyproject\.toml|pytest\.ini|"
-                  r"\.pre-commit-config\.yaml|requirements[^/]*\.txt)$|(^|/)tests/|\.(py|sh|ps1)$")
+HARD = re.compile(
+    r"^\.github/|^(Makefile|Dockerfile|docker-compose\.yml|pyproject\.toml|pytest\.ini|"
+    r"\.pre-commit-config\.yaml|requirements[^/]*\.txt)$|(^|/)tests/|\.(py|sh|ps1)$"
+)
 TOKEN = re.compile(rb"[A-Za-z0-9_.\-]+")
 
 
 def git(*args: str) -> str:
-    return subprocess.run(["git", "-C", str(ROOT), *args], capture_output=True, check=True,
-                          text=True, encoding="utf-8").stdout
+    return subprocess.run(
+        ["git", "-C", str(ROOT), *args],
+        capture_output=True,
+        check=True,
+        text=True,
+        encoding="utf-8",
+    ).stdout
 
 
 def classify(name: str) -> tuple[str, str]:
@@ -98,14 +145,29 @@ def inventory(ref: str = "HEAD") -> list[dict]:
     for path, blob, size in sorted(root, key=lambda r: r[0].lower()):
         refs = set(hits.get(path, ()))
         if path.endswith(".py"):
-            refs |= {p for p in hits.get(path[:-3], ()) if p.endswith((".py", ".toml", ".ini", ".cfg", ".yml", ".yaml"))}
+            refs |= {
+                p
+                for p in hits.get(path[:-3], ())
+                if p.endswith((".py", ".toml", ".ini", ".cfg", ".yml", ".yaml"))
+            }
         refs.discard(path)
         family, wave = classify(path)
         twins = sorted(p for p in by_blob[blob] if p != path)
-        prune = "empty-file" if size == 0 else (f"exact-dup-of:{twins[0]}" if twins else "")
-        rows.append({"path": path, "family": family, "wave": wave, "size": size,
-                     "inbound_files": len(refs), "hard_ref_files": sum(1 for p in refs if HARD.search(p)),
-                     "prune_candidate": prune if family != "KEEP" else "", "observed_commit": commit})
+        prune = (
+            "empty-file" if size == 0 else (f"exact-dup-of:{twins[0]}" if twins else "")
+        )
+        rows.append(
+            {
+                "path": path,
+                "family": family,
+                "wave": wave,
+                "size": size,
+                "inbound_files": len(refs),
+                "hard_ref_files": sum(1 for p in refs if HARD.search(p)),
+                "prune_candidate": prune if family != "KEEP" else "",
+                "observed_commit": commit,
+            }
+        )
     return rows
 
 
@@ -114,8 +176,10 @@ def summary(rows: list[dict]) -> str:
     for fam in ["KEEP", "F1", "F2", "F3", "F4", "F5", "UNCLASSIFIED"]:
         rs = [r for r in rows if r["family"] == fam]
         if rs:
-            out.append(f"  {fam:5} {len(rs):4} files  hard-ref {sum(1 for r in rs if r['hard_ref_files']):3}  "
-                       f"prune {sum(1 for r in rs if r['prune_candidate']):3}  {FAMILY_NAMES.get(fam, '')}")
+            out.append(
+                f"  {fam:5} {len(rs):4} files  hard-ref {sum(1 for r in rs if r['hard_ref_files']):3}  "
+                f"prune {sum(1 for r in rs if r['prune_candidate']):3}  {FAMILY_NAMES.get(fam, '')}"
+            )
     return "\n".join(out)
 
 

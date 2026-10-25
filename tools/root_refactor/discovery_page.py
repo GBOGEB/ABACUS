@@ -43,12 +43,20 @@ FAMILY_ORDER = ["KEEP", "F1", "F2", "F3", "F4", "F5"]
 START_HERE = [
     ("README.md", False, "Front door: what ABACUS is and how to run it."),
     ("docs/index.html", False, "GitHub Pages site (docs/ is the Pages source)."),
-    (".jade/repo.yaml", False, "JADE pointer: repo identity for the governance tooling."),
+    (
+        ".jade/repo.yaml",
+        False,
+        "JADE pointer: repo identity for the governance tooling.",
+    ),
     ("DMAIC_V3", True, "Runtime package: the DMAIC V3 engine."),
     ("tests", True, "Test suite (pytest / unittest)."),
     (".github/workflows", True, "CI workflows and gates."),
     ("docs_versioned", True, "Frozen history: relocated reports and versioned docs."),
-    ("docs/repo-structure/ROOT_REFACTOR_PLAN.md", False, "Root refactor plan: families, waves, rules."),
+    (
+        "docs/repo-structure/ROOT_REFACTOR_PLAN.md",
+        False,
+        "Root refactor plan: families, waves, rules.",
+    ),
 ]
 
 
@@ -99,12 +107,30 @@ def merge(inv: list[dict], moves: list[dict]) -> list[dict]:
             status, now = "STAYS", r["path"]
         else:
             status, now = "AT ROOT", r["path"]
-        rows.append({"name": r["path"], "family": r["family"], "wave": r["wave"] or (m or {}).get("wave", ""),
-                     "status": status, "now": now, "prune": r.get("prune_candidate", "")})
-    for m in moves:  # map rows not in the inventory (should not happen; never hide them)
+        rows.append(
+            {
+                "name": r["path"],
+                "family": r["family"],
+                "wave": r["wave"] or (m or {}).get("wave", ""),
+                "status": status,
+                "now": now,
+                "prune": r.get("prune_candidate", ""),
+            }
+        )
+    for (
+        m
+    ) in moves:  # map rows not in the inventory (should not happen; never hide them)
         if m["old_path"] not in seen:
-            rows.append({"name": m["old_path"], "family": m["family"], "wave": m["wave"],
-                         "status": "MOVED", "now": m["new_path"], "prune": ""})
+            rows.append(
+                {
+                    "name": m["old_path"],
+                    "family": m["family"],
+                    "wave": m["wave"],
+                    "status": "MOVED",
+                    "now": m["new_path"],
+                    "prune": "",
+                }
+            )
     rows.sort(key=lambda x: (x["name"].lower(), x["name"]))
     return rows
 
@@ -116,8 +142,16 @@ def family_stats(inv: list[dict], moves: list[dict]) -> list[dict]:
         rs = [r for r in inv if r["family"] == fam]
         moved = sum(1 for m in moves if m["family"] == fam)
         waves = sorted({r["wave"] for r in rs if r["wave"]})
-        out.append({"family": fam, "name": FAMILY_NAMES.get(fam, ""), "total": len(rs), "moved": moved,
-                    "remaining": max(len(rs) - moved, 0), "wave": ", ".join(waves) or "-"})
+        out.append(
+            {
+                "family": fam,
+                "name": FAMILY_NAMES.get(fam, ""),
+                "total": len(rs),
+                "moved": moved,
+                "remaining": max(len(rs) - moved, 0),
+                "wave": ", ".join(waves) or "-",
+            }
+        )
     return out
 
 
@@ -126,8 +160,10 @@ def copy_btn(text: str, label: str = "Copy") -> str:
 
 
 def local_link(path: str, folder: bool = False) -> str:
-    return (f'<a class="local" data-p="{esc(path)}" data-dir="{1 if folder else 0}" '
-            f'href="{esc(rel_href(path, folder))}">Local</a>')
+    return (
+        f'<a class="local" data-p="{esc(path)}" data-dir="{1 if folder else 0}" '
+        f'href="{esc(rel_href(path, folder))}">Local</a>'
+    )
 
 
 CSS = """
@@ -269,18 +305,22 @@ def render(root: Path = ROOT) -> str:
     w('<meta charset="utf-8">')
     w('<meta name="viewport" content="width=device-width, initial-scale=1">')
     w("<title>ABACUS repository map</title>")
-    w('<meta name="description" content="Where everything is in the ABACUS repository and how to open it.">')
+    w(
+        '<meta name="description" content="Where everything is in the ABACUS repository and how to open it.">'
+    )
     w("<style>" + CSS.strip() + "</style>")
     w("</head>")
     w("<body>")
     w("<main>")
     w("<h1>ABACUS \u2014 repository map</h1>")
-    w("<p>Where everything in the ABACUS repository lives, and how to open it on GitHub, on GitHub Pages "
-      "or in your own checkout with Windows File Explorer. This page is generated from two sources of truth, "
-      '<a href="ROOT_INVENTORY.csv">ROOT_INVENTORY.csv</a> (every file at the repository root when the '
-      'inventory was taken) and <a href="../../docs_versioned/ROOT_RELOCATION_MAP.csv">ROOT_RELOCATION_MAP.csv</a> '
-      f'(every file moved off the root so far; <a href="{BLOB}/docs_versioned/ROOT_RELOCATION_MAP.csv">on GitHub</a>), '
-      'so it follows the <a href="ROOT_REFACTOR_PLAN.md">root refactor plan</a> without drifting.</p>')
+    w(
+        "<p>Where everything in the ABACUS repository lives, and how to open it on GitHub, on GitHub Pages "
+        "or in your own checkout with Windows File Explorer. This page is generated from two sources of truth, "
+        '<a href="ROOT_INVENTORY.csv">ROOT_INVENTORY.csv</a> (every file at the repository root when the '
+        'inventory was taken) and <a href="../../docs_versioned/ROOT_RELOCATION_MAP.csv">ROOT_RELOCATION_MAP.csv</a> '
+        f'(every file moved off the root so far; <a href="{BLOB}/docs_versioned/ROOT_RELOCATION_MAP.csv">on GitHub</a>), '
+        'so it follows the <a href="ROOT_REFACTOR_PLAN.md">root refactor plan</a> without drifting.</p>'
+    )
 
     # 2. How to open it
     w('<h2 id="open">How to open it</h2>')
@@ -295,18 +335,30 @@ def render(root: Path = ROOT) -> str:
     w("</section>")
     w('<section class="card"><h3>Local (Windows File Explorer)</h3>')
     w('<label for="localroot">Your local ABACUS folder</label>')
-    w('<input type="text" id="localroot" placeholder="C:\\path\\to\\ABACUS" autocomplete="off" spellcheck="false">')
-    w('<p class="muted">Saved in this browser only. Once set, every <em>Local</em> link on this page opens '
-      "that file, and the copy buttons give you File Explorer commands.</p>")
+    w(
+        '<input type="text" id="localroot" placeholder="C:\\path\\to\\ABACUS" autocomplete="off" spellcheck="false">'
+    )
+    w(
+        '<p class="muted">Saved in this browser only. Once set, every <em>Local</em> link on this page opens '
+        "that file, and the copy buttons give you File Explorer commands.</p>"
+    )
     w('<div id="localcmds" hidden>')
-    w('<div class="cmd"><code id="cmd-open"></code><button type="button" class="copy" '
-      'data-copyof="cmd-open">Copy</button></div>')
-    w('<p class="muted">Per file: the <strong>\u29c9</strong> button in the table copies '
-      "<code>explorer.exe /select,\"&lt;folder&gt;\\&lt;path&gt;\"</code> (paste it in PowerShell).</p>")
+    w(
+        '<div class="cmd"><code id="cmd-open"></code><button type="button" class="copy" '
+        'data-copyof="cmd-open">Copy</button></div>'
+    )
+    w(
+        '<p class="muted">Per file: the <strong>\u29c9</strong> button in the table copies '
+        '<code>explorer.exe /select,"&lt;folder&gt;\\&lt;path&gt;"</code> (paste it in PowerShell).</p>'
+    )
     w("</div>")
-    w(f'<div class="cmd"><code>git clone {CLONE}</code>{copy_btn("git clone " + CLONE)}</div>')
-    w('<p class="muted">Browsers may block <code>file:///</code> links from an https page; the copied '
-      "PowerShell command is the reliable route. From a locally opened copy of this page the links work.</p>")
+    w(
+        f'<div class="cmd"><code>git clone {CLONE}</code>{copy_btn("git clone " + CLONE)}</div>'
+    )
+    w(
+        '<p class="muted">Browsers may block <code>file:///</code> links from an https page; the copied '
+        "PowerShell command is the reliable route. From a locally opened copy of this page the links work.</p>"
+    )
     w("</section>")
     w("</div>")
     w('<p id="status" role="status" aria-live="polite"></p>')
@@ -316,64 +368,85 @@ def render(root: Path = ROOT) -> str:
     w('<div class="grid">')
     for path, folder, purpose in START_HERE:
         shown = path + ("/" if folder else "")
-        w(f'<section class="card"><h3><code>{esc(shown)}</code></h3><p>{esc(purpose)}</p>'
-          f'<div class="links"><a href="{esc(gh_url(path, folder))}">GitHub</a>{local_link(path, folder)}</div>'
-          "</section>")
+        w(
+            f'<section class="card"><h3><code>{esc(shown)}</code></h3><p>{esc(purpose)}</p>'
+            f'<div class="links"><a href="{esc(gh_url(path, folder))}">GitHub</a>{local_link(path, folder)}</div>'
+            "</section>"
+        )
     w("</div>")
 
     # 4. Progress
     w('<h2 id="progress">Root refactor progress</h2>')
-    w(f'<p>Root files at inventory commit: <strong>{total}</strong> \u00b7 moved so far: '
-      f"<strong>{nmoved}</strong> \u00b7 root files now: <strong>{max(total - nmoved, 0)}</strong></p>")
+    w(
+        f"<p>Root files at inventory commit: <strong>{total}</strong> \u00b7 moved so far: "
+        f"<strong>{nmoved}</strong> \u00b7 root files now: <strong>{max(total - nmoved, 0)}</strong></p>"
+    )
     w('<div class="card">')
     for s in stats:
         pct = 0 if not s["total"] else round(100 * s["moved"] / s["total"])
         stays = s["family"] == "KEEP"
-        nums = (f'{s["total"]} files \u00b7 stay at root' if stays else
-                f'{s["total"]} files \u00b7 moved {s["moved"]} \u00b7 remaining {s["remaining"]} '
-                f'\u00b7 wave {esc(s["wave"])} \u00b7 {pct}%')
-        w(f'<div class="fam"><strong>{esc(s["family"])}</strong><span>{esc(s["name"])}</span>'
-          f'<span class="nums">{nums}</span>'
-          f'<div class="bar" role="img" aria-label="{esc(s["family"])} {pct}% moved"><span style="width:{pct}%">'
-          "</span></div></div>")
+        nums = (
+            f'{s["total"]} files \u00b7 stay at root'
+            if stays
+            else f'{s["total"]} files \u00b7 moved {s["moved"]} \u00b7 remaining {s["remaining"]} '
+            f'\u00b7 wave {esc(s["wave"])} \u00b7 {pct}%'
+        )
+        w(
+            f'<div class="fam"><strong>{esc(s["family"])}</strong><span>{esc(s["name"])}</span>'
+            f'<span class="nums">{nums}</span>'
+            f'<div class="bar" role="img" aria-label="{esc(s["family"])} {pct}% moved"><span style="width:{pct}%">'
+            "</span></div></div>"
+        )
     w("</div>")
 
     # 5. Find a file
     w('<h2 id="find">Find a file</h2>')
     w('<div id="filters" class="filters" hidden>')
-    w('<div style="flex:1 1 220px"><label for="q">Search name or location</label>'
-      '<input type="search" id="q" placeholder="e.g. HANDOVER or generated_reports" autocomplete="off"></div>')
+    w(
+        '<div style="flex:1 1 220px"><label for="q">Search name or location</label>'
+        '<input type="search" id="q" placeholder="e.g. HANDOVER or generated_reports" autocomplete="off"></div>'
+    )
     w('<div role="group" aria-label="Filter by family">')
     for fam in [s["family"] for s in stats]:
-        w(f'<button type="button" data-fam="{esc(fam)}" aria-pressed="false" '
-          f'title="{esc(FAMILY_NAMES.get(fam, ""))}">{esc(fam)}</button>')
+        w(
+            f'<button type="button" data-fam="{esc(fam)}" aria-pressed="false" '
+            f'title="{esc(FAMILY_NAMES.get(fam, ""))}">{esc(fam)}</button>'
+        )
     w("</div>")
     w('<button type="button" id="movedonly" aria-pressed="false">Moved only</button>')
     w("</div>")
     w(f'<p id="count" class="muted">{len(rows)} files</p>')
     w('<div class="tablewrap"><table id="files">')
-    w("<thead><tr><th>Name</th><th>Family</th><th>Wave</th><th>Status</th><th>Location now</th>"
-      "<th>Open</th></tr></thead>")
+    w(
+        "<thead><tr><th>Name</th><th>Family</th><th>Wave</th><th>Status</th><th>Location now</th>"
+        "<th>Open</th></tr></thead>"
+    )
     w("<tbody>")
     for r in rows:
         name, now = r["name"], r["now"]
         search = esc((name + " " + now).lower())
         st = r["status"]
-        badge = f'<br><span class="badge">{esc(r["prune"])}</span>' if r["prune"] else ""
-        w(f'<tr data-s="{search}" data-f="{esc(r["family"])}" data-m="{1 if st == "MOVED" else 0}">'
-          f'<td class="n">{esc(name)}{badge}</td><td>{esc(r["family"])}</td><td>{esc(r["wave"])}</td>'
-          f'<td><span class="st st-{st.split()[0]}">{st}</span></td><td class="now">{esc(now)}</td>'
-          f'<td class="links"><a href="{esc(gh_url(now))}">GitHub</a>{local_link(now)}'
-          f'<button type="button" class="sel" data-sel="{esc(now)}" '
-          f'aria-label="Copy File Explorer command for {esc(now)}" title="Copy explorer /select command">'
-          "\u29c9</button></td></tr>")
+        badge = (
+            f'<br><span class="badge">{esc(r["prune"])}</span>' if r["prune"] else ""
+        )
+        w(
+            f'<tr data-s="{search}" data-f="{esc(r["family"])}" data-m="{1 if st == "MOVED" else 0}">'
+            f'<td class="n">{esc(name)}{badge}</td><td>{esc(r["family"])}</td><td>{esc(r["wave"])}</td>'
+            f'<td><span class="st st-{st.split()[0]}">{st}</span></td><td class="now">{esc(now)}</td>'
+            f'<td class="links"><a href="{esc(gh_url(now))}">GitHub</a>{local_link(now)}'
+            f'<button type="button" class="sel" data-sel="{esc(now)}" '
+            f'aria-label="Copy File Explorer command for {esc(now)}" title="Copy explorer /select command">'
+            "\u29c9</button></td></tr>"
+        )
     w("</tbody></table></div>")
 
     # 6. Footer
     w("<footer>")
-    w(f"<p>Generated by <code>{REGEN}</code> from the inventory observed at commit "
-      f"<code>{esc(commit)}</code> and the relocation map as committed. This is not live state: "
-      "regenerate after each wave.</p>")
+    w(
+        f"<p>Generated by <code>{REGEN}</code> from the inventory observed at commit "
+        f"<code>{esc(commit)}</code> and the relocation map as committed. This is not live state: "
+        "regenerate after each wave.</p>"
+    )
     w("</footer>")
     w("</main>")
     w("<script>" + JS.strip() + "</script>")
@@ -404,8 +477,10 @@ def main(argv: list[str] | None = None) -> int:
         return 0
     inv = load_inventory()
     moved = len(relocate_mod.load_map())
-    print(f"repository map: {len(inv)} root files at inventory, {moved} moved, "
-          f"{len(inv) - moved} at root now; {len(merge(inv, relocate_mod.load_map()))} table rows")
+    print(
+        f"repository map: {len(inv)} root files at inventory, {moved} moved, "
+        f"{len(inv) - moved} at root now; {len(merge(inv, relocate_mod.load_map()))} table rows"
+    )
     return 0
 
 
