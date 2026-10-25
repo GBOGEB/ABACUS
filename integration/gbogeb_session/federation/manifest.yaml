@@ -1,0 +1,27 @@
+# integration/gbogeb_session/federation/manifest.yaml
+# Federation registration stub for the GBOGEB session-2026-05-22 node.
+# Mirrors integration/cryoplant_project/federation/manifest.yaml convention.
+federation:
+  moniker: DELTA_1
+  version: "1.0"
+  node:
+    name: GBOGEB/session-2026-05-22
+    plane: runtime
+    kind: assimilated_session_deliverable
+    status: draft
+    supersedes: feat/mcp-orchestration-session-2026-05-22-noworkflows
+    responsibilities:
+      - publication_governance_engines_render_contrast_slideid_lineage
+      - mcp_server_dual_repo_context_bridge
+      - mcp_orchestration_documentation_suite
+  planes:
+    governance:
+      repository: GBOGEB/CODEX
+      role: governance_plane
+    runtime:
+      repository: GBOGEB/ABACUS
+      role: runtime_plane
+    auxiliary:
+      repository: GBOGEB/cryoplant-project
+      role: auxiliary_plane
+  spec_ref: runtime/federation/codex-abacus-federation.yaml
