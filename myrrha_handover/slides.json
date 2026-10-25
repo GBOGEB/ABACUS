@@ -1,0 +1,47 @@
+[
+  {
+    "id": "cover",
+    "title": "MYRRHA QPLANT \u2014 Engineering Handover",
+    "subtitle": "v0.4 \u2014 SCK CEN \u00d7 Kaeser",
+    "layout": "text-only",
+    "caption": "",
+    "notes": "TODO: confirm version stamp before final export.",
+    "body": "# MYRRHA QPLANT\n**Engineering Handover** \u2014 *v0.4*\n\nBaseline: **350 g/s @ 14 barG** (see B1)"
+  },
+  {
+    "id": "exec-summary",
+    "title": "Executive Summary",
+    "subtitle": "Key design points (B1\u2013B5)",
+    "layout": "text-only",
+    "caption": "",
+    "notes": "REVIEW: cross-check B2/B3 against latest test bench data.",
+    "body": "- **B1** Baseline: 350 g/s @ 14 barG\n- **B2** ALaT: 2 FSD \u00b7 SFC 575 \u00b7 72 Hz \u2192 ~220 g/s\n- **B3** LKT: 3 FSD \u00b7 SFC 475 \u00b7 ~57 Hz \u2192 264 g/s nominal\n- **B4** RCW: 85 \u00b0C max \u00b7 30 \u00b0C inlet \u00b7 \u0394T = 25 \u00b0C\n- **B5** LCC/PVPS: 50 g/s \u00b7 2\u00d75 units (N+1)"
+  },
+  {
+    "id": "hierarchy",
+    "title": "MYRRHA QPLANT System Hierarchy",
+    "subtitle": "Canonical decomposition (Slide #3)",
+    "layout": "text-only",
+    "caption": "F1 \u2014 System decomposition tree",
+    "notes": "ACTION: validate skid IDs (HP1..HP4) with Kaeser nameplates.\nTODO: add LCC unit numbering scheme on next iteration.",
+    "body": "```\nQPLANT\n\u251c\u2500\u2500 QRB (cold side & coldbox)\n\u2514\u2500\u2500 WCS (warm side & warm compressor station)\n    \u251c\u2500\u2500 HCC (LP\u2192HP total, black box with utilities)\n    \u2502   \u251c\u2500\u2500 HP1 (Kaeser SKID 1)\n    \u2502   \u251c\u2500\u2500 HP2 (Kaeser SKID 2)\n    \u2502   \u251c\u2500\u2500 HP3 (Kaeser SKID 3)\n    \u2502   \u2514\u2500\u2500 HP4 (Kaeser SKID 4)\n    \u2514\u2500\u2500 LCC (PVPS - 50 g/s target)\n        \u2514\u2500\u2500 2\u00d75 units (10 total, N+1 config)\n```\n\nCross-refs: see **T1** (tables.html) and **G1** (graphs.html)."
+  },
+  {
+    "id": "baseline",
+    "title": "Baseline Operating Point \u2014 B1",
+    "subtitle": "",
+    "layout": "text-table",
+    "caption": "",
+    "notes": "Anchor for all sizing calcs.",
+    "body": "The reference point **B1 = 350 g/s @ 14 barG** anchors HCC + LCC delivery."
+  },
+  {
+    "id": "roadmap",
+    "title": "Roadmap & Next Steps",
+    "subtitle": "",
+    "layout": "text-only",
+    "caption": "",
+    "notes": "TODO: schedule v0.5 review with full team.",
+    "body": "1. Validate B2/B3 on test bench\n2. Finalize LCC unit-level P&IDs\n3. Lock RCW heat-exchanger sizing"
+  }
+]

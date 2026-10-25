@@ -1,0 +1,335 @@
+<!doctype html>
+<html lang="en"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>MYRRHA WCS · DMAIC Quality Review</title>
+<link rel="icon" href="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><text y='26' font-size='26'>📋</text></svg>">
+<link rel="stylesheet" href="assets/style.css">
+<script src="assets/common.js" defer></script>
+<script src="https://cdn.plot.ly/plotly-2.27.0.min.js"></script>
+<style>
+.phase{border-left:4px solid var(--accent);padding-left:16px;margin:24px 0}
+.phase.define{border-color:#1D9E75}.phase.measure{border-color:#378ADD}.phase.analyze{border-color:#D85A30}
+.phase.improve{border-color:#7F77DD}.phase.control{border-color:#E5A100}
+.phase-tag{display:inline-block;padding:3px 10px;border-radius:999px;font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:#fff;margin-bottom:8px}
+.phase-tag.define{background:#1D9E75}.phase-tag.measure{background:#378ADD}.phase-tag.analyze{background:#D85A30}
+.phase-tag.improve{background:#7F77DD}.phase-tag.control{background:#E5A100;color:#333}
+.kpi-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:10px;margin:12px 0}
+.kpi{background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:12px;text-align:center}
+.kpi .val{font-size:26px;font-weight:700}.kpi .lbl{font-size:11px;color:var(--fg2);text-transform:uppercase;letter-spacing:.04em}
+.kpi.green .val{color:#1D9E75}.kpi.amber .val{color:#D85A30}.kpi.red .val{color:#C0392B}
+.bar-h{height:20px;border-radius:4px;position:relative;overflow:hidden;background:var(--bg);border:1px solid var(--border)}
+.bar-h .fill{height:100%;border-radius:3px;transition:width .6s}
+.bar-h .pct{position:absolute;right:6px;top:1px;font-size:11px;font-weight:600;color:var(--fg)}
+.gap-card{background:var(--bg2);border:1px solid var(--border);border-radius:8px;padding:14px;margin:8px 0}
+.gap-card h4{margin:0 0 4px;font-size:14px;color:var(--fg)}
+.gap-card .severity{display:inline-block;padding:2px 8px;border-radius:4px;font-size:11px;font-weight:600;color:#fff}
+.sev-high{background:#C0392B}.sev-med{background:#D85A30}.sev-low{background:#E5A100;color:#333}
+.checklist label{display:flex;align-items:flex-start;gap:8px;padding:4px 0;font-size:13px;cursor:pointer}
+.checklist input[type=checkbox]{margin-top:3px;accent-color:var(--accent)}
+.improve-row{display:grid;grid-template-columns:60px 1fr 80px 60px;gap:8px;padding:6px 0;border-bottom:1px solid var(--border);font-size:13px;align-items:center}
+.improve-row:first-child{font-weight:600;color:var(--fg2)}
+.ctrl-table td:nth-child(3),.ctrl-table td:nth-child(4){font-family:var(--mono);font-size:12px}
+.breadcrumb{font-size:12px;color:var(--fg2);margin-bottom:12px}
+.breadcrumb a{color:var(--accent2)}
+</style>
+</head><body>
+<div class="container">
+<p class="breadcrumb"><a href="index.html">Hub</a> › DMAIC Quality Review</p>
+<h1>📋 DMAIC Quality Review Dashboard</h1>
+<p class="muted">Six Sigma methodology applied to MYRRHA WCS Handover Package · v0.4.1</p>
+
+<!-- ═══ DEFINE ═══ -->
+<div class="phase define">
+<span class="phase-tag define">D — Define</span>
+<h2>Project Scope & Objectives</h2>
+
+<div class="kpi-grid">
+  <div class="kpi green"><div class="val">13/13</div><div class="lbl">Views Delivered</div></div>
+  <div class="kpi green"><div class="val">5/5</div><div class="lbl">Guides Complete</div></div>
+  <div class="kpi green"><div class="val">4/4</div><div class="lbl">Master Sources</div></div>
+  <div class="kpi green"><div class="val">26</div><div class="lbl">Smart Labels</div></div>
+</div>
+
+<div class="card">
+<h3>Deliverables Scope</h3>
+<table>
+<thead><tr><th>Category</th><th>Target</th><th>Actual</th><th>Status</th><th>Threshold</th></tr></thead>
+<tbody>
+<tr><td>Core HTML views</td><td>13</td><td>13</td><td><span class="tag ok">✓ 100%</span></td><td>≥12</td></tr>
+<tr><td>Documentation guides</td><td>5</td><td>5</td><td><span class="tag ok">✓ 100%</span></td><td>≥4</td></tr>
+<tr><td>Master source files</td><td>4</td><td>4</td><td><span class="tag ok">✓ 100%</span></td><td>4 required</td></tr>
+<tr><td>Smart labels (B+G+T+E)</td><td>26</td><td>26</td><td><span class="tag ok">✓ 100%</span></td><td>≥20</td></tr>
+<tr><td>Interactive charts</td><td>8</td><td>8</td><td><span class="tag ok">✓ 100%</span></td><td>≥6</td></tr>
+<tr><td>Export formats</td><td>4</td><td>3</td><td><span class="tag warn">75%</span></td><td>≥3</td></tr>
+</tbody></table>
+</div>
+</div>
+
+<!-- ═══ MEASURE ═══ -->
+<div class="phase measure">
+<span class="phase-tag measure">M — Measure</span>
+<h2>Current State Assessment</h2>
+
+<h3>Data Completeness by Component</h3>
+<div id="completenessChart" style="height:340px"></div>
+
+<div class="card">
+<table>
+<thead><tr><th>Component</th><th>Completeness</th><th style="width:200px">Bar</th><th>Missing Items</th></tr></thead>
+<tbody id="compBody"></tbody>
+</table>
+</div>
+
+<h3>Usability Metrics</h3>
+<div class="kpi-grid">
+  <div class="kpi green"><div class="val">9/10</div><div class="lbl">Navigation Clarity</div></div>
+  <div class="kpi green"><div class="val">8/10</div><div class="lbl">Interactive Features</div></div>
+  <div class="kpi amber"><div class="val">7/10</div><div class="lbl">Export Functionality</div></div>
+  <div class="kpi green"><div class="val">8/10</div><div class="lbl">Mobile Responsive</div></div>
+  <div class="kpi amber"><div class="val">6/10</div><div class="lbl">Accessibility</div></div>
+  <div class="kpi green"><div class="val">9/10</div><div class="lbl">Handover Protocol</div></div>
+</div>
+
+<h3>Documentation Quality</h3>
+<div id="docQualChart" style="height:280px"></div>
+</div>
+
+<!-- ═══ ANALYZE ═══ -->
+<div class="phase analyze">
+<span class="phase-tag analyze">A — Analyse</span>
+<h2>Gap Analysis & Root Causes</h2>
+
+<h3>Top 10 Identified Gaps</h3>
+<div id="gapsContainer"></div>
+
+<h3>Root Cause Analysis (Ishikawa)</h3>
+<div class="card">
+<table>
+<thead><tr><th>Category</th><th>Root Cause</th><th>Impact</th><th>Addressable?</th></tr></thead>
+<tbody>
+<tr><td><b>External</b></td><td>Vendor data unavailable (PVPS, COMBI)</td><td>High</td><td>🔴 Blocked</td></tr>
+<tr><td><b>External</b></td><td>QRB coldbox scope not defined</td><td>High</td><td>🔴 Blocked</td></tr>
+<tr><td><b>Resource</b></td><td>90% budget consumed</td><td>Medium</td><td>🟠 Constrained</td></tr>
+<tr><td><b>Scope</b></td><td>Focus on core functionality first</td><td>Medium</td><td>🟢 By design</td></tr>
+<tr><td><b>Platform</b></td><td>Static HTML — no database</td><td>Medium</td><td>🟡 v1.0 target</td></tr>
+<tr><td><b>Process</b></td><td>Single-user editing model</td><td>Low</td><td>🟡 v0.6 target</td></tr>
+</tbody></table>
+</div>
+
+<h3>Pareto Chart — Gap Impact</h3>
+<div id="paretoChart" style="height:320px"></div>
+</div>
+
+<!-- ═══ IMPROVE ═══ -->
+<div class="phase improve">
+<span class="phase-tag improve">I — Improve</span>
+<h2>Prioritized Improvement Roadmap</h2>
+
+<h3>Short-Term (v0.4.1 — This Session)</h3>
+<div class="card">
+<div class="checklist" id="shortTerm"></div>
+</div>
+
+<h3>Medium-Term (v0.4.2–0.4.5 — Next 1–4 weeks)</h3>
+<div class="card">
+<div class="checklist" id="medTerm"></div>
+</div>
+
+<h3>Long-Term (v0.5+ — 1–6 months)</h3>
+<div class="card">
+<div class="checklist" id="longTerm"></div>
+</div>
+
+<h3>Effort vs Impact Matrix</h3>
+<div id="effortImpact" style="height:380px"></div>
+</div>
+
+<!-- ═══ CONTROL ═══ -->
+<div class="phase control">
+<span class="phase-tag control">C — Control</span>
+<h2>Ongoing Monitoring & Thresholds</h2>
+
+<div class="card">
+<table class="ctrl-table">
+<thead><tr><th>Metric</th><th>Current</th><th>Target</th><th>Threshold</th><th>Frequency</th><th>Status</th></tr></thead>
+<tbody>
+<tr><td>Data completeness (%)</td><td>75%</td><td>95%</td><td>≥85%</td><td>Weekly</td><td><span class="tag warn">Below</span></td></tr>
+<tr><td>Vendor response (days)</td><td>TBD</td><td>&lt;14</td><td>&lt;21</td><td>Per request</td><td><span class="tag">Pending</span></td></tr>
+<tr><td>Calc accuracy (%)</td><td>98%</td><td>100%</td><td>≥99%</td><td>Per update</td><td><span class="tag ok">OK</span></td></tr>
+<tr><td>Doc currency (days stale)</td><td>0</td><td>&lt;7</td><td>&lt;14</td><td>Weekly</td><td><span class="tag ok">OK</span></td></tr>
+<tr><td>Navigation time (sec)</td><td>12</td><td>&lt;8</td><td>&lt;10</td><td>Monthly</td><td><span class="tag warn">Above</span></td></tr>
+<tr><td>Export success (%)</td><td>95%</td><td>100%</td><td>≥98%</td><td>Monthly</td><td><span class="tag warn">Below</span></td></tr>
+<tr><td>Mobile usability</td><td>8/10</td><td>9/10</td><td>≥8/10</td><td>Quarterly</td><td><span class="tag ok">OK</span></td></tr>
+<tr><td>Accessibility (WCAG)</td><td>6/10</td><td>9/10</td><td>≥8/10</td><td>Quarterly</td><td><span class="tag warn">Below</span></td></tr>
+</tbody></table>
+</div>
+
+<h3>Control Chart — Overall Completeness Trend</h3>
+<div id="controlChart" style="height:300px"></div>
+</div>
+
+<div class="card" style="margin-top:24px">
+<h3 style="margin-top:0">Related Views</h3>
+<div class="gridq">
+<a class="card" href="missed-opportunities.html"><h4 style="margin-top:0">🔍 Missed Opportunities</h4><p class="muted">Technical, usability & integration gaps</p></a>
+<a class="card" href="action-tracker.html"><h4 style="margin-top:0">📌 Action Tracker</h4><p class="muted">Trackable items with owners & due dates</p></a>
+<a class="card" href="xref-matrix.html"><h4 style="margin-top:0">🔗 Cross-Reference Matrix</h4><p class="muted">B↔G↔T↔E label linkage</p></a>
+<a class="card" href="qa-checklist.html"><h4 style="margin-top:0">✅ QA Checklist</h4><p class="muted">Validation steps & verification</p></a>
+</div>
+</div>
+
+</div>
+
+<script>
+/* ── Completeness data ── */
+const comp=[
+  {name:'HCC (HP Compressors)',pct:95,color:'#1D9E75',missing:'Actual discharge temps, noise compliance'},
+  {name:'Thermodynamics',pct:85,color:'#378ADD',missing:'Actual polytropic efficiency'},
+  {name:'β/γ Operations',pct:75,color:'#7F77DD',missing:'Turndown scenarios C30/C24'},
+  {name:'RCW Heat Exchangers',pct:70,color:'#E5A100',missing:'HX count, N+1 config, vendor specs'},
+  {name:'PVPS',pct:60,color:'#D85A30',missing:'Vendor datasheets, actual efficiencies, VFD curves'},
+  {name:'COMBI Units',pct:50,color:'#C0392B',missing:'Concept only, no vendor confirmation'},
+  {name:'Coldbox Interface',pct:0,color:'#888',missing:'Not in scope (flagged for v0.5)'}
+];
+const tb=document.getElementById('compBody');
+comp.forEach(c=>{
+  const cls=c.pct>=85?'#1D9E75':c.pct>=60?'#D85A30':'#C0392B';
+  tb.innerHTML+=`<tr><td><b>${c.name}</b></td><td>${c.pct}%</td>
+    <td><div class="bar-h"><div class="fill" style="width:${c.pct}%;background:${c.color}"></div><div class="pct">${c.pct}%</div></div></td>
+    <td class="muted">${c.missing}</td></tr>`;
+});
+
+Plotly.newPlot('completenessChart',[{
+  type:'bar',x:comp.map(c=>c.pct),y:comp.map(c=>c.name),orientation:'h',
+  marker:{color:comp.map(c=>c.color)},text:comp.map(c=>c.pct+'%'),textposition:'outside'
+}],{margin:{l:160,r:40,t:20,b:30},xaxis:{range:[0,105],title:'Completeness %'},
+  paper_bgcolor:'transparent',plot_bgcolor:'transparent',font:{family:'Aptos',size:12}},
+{responsive:true,displayModeBar:false});
+
+/* ── Doc Quality Radar ── */
+Plotly.newPlot('docQualChart',[{
+  type:'scatterpolar',r:[8,9,7,9,8,8],theta:['Design Guide','Editing Guide','Slide Notes','Handover Protocol','Consistency','Coverage'],
+  fill:'toself',fillcolor:'rgba(55,138,221,0.15)',line:{color:'#378ADD',width:2},
+  marker:{size:8}
+}],{polar:{radialaxis:{visible:true,range:[0,10]}},margin:{t:30,b:30},
+  paper_bgcolor:'transparent',font:{family:'Aptos',size:12}},
+{responsive:true,displayModeBar:false});
+
+/* ── Gaps ── */
+const gaps=[
+  {id:'G1',title:'PVPS & COMBI Placeholder Data',severity:'high',desc:'60% vendor dependency — no confirmed efficiencies, VFD curves, or datasheets'},
+  {id:'G2',title:'No Calculation Verification',severity:'high',desc:'No independent cross-check against hand calcs or vendor heat balance'},
+  {id:'G3',title:'Missing Cross-Reference Matrix',severity:'med',desc:'Smart labels exist but no formal B↔G↔T↔E traceability matrix'},
+  {id:'G4',title:'Manual Rendering Pipeline',severity:'med',desc:'render_all.py exists but requires manual trigger — no CI/CD automation'},
+  {id:'G5',title:'Single-User Editing',severity:'med',desc:'No concurrent edit handling or conflict resolution'},
+  {id:'G6',title:'No Git Integration',severity:'med',desc:'Changelog exists but not linked to version control system'},
+  {id:'G7',title:'Plotly Performance',severity:'low',desc:'Large charts slow on initial load — no lazy loading or data decimation'},
+  {id:'G8',title:'No QA Suite',severity:'med',desc:'No validation checklist or automated testing for data integrity'},
+  {id:'G9',title:'No Search Functionality',severity:'low',desc:'No full-text search across 13 views'},
+  {id:'G10',title:'No Automated Backup',severity:'low',desc:'master/ sources not automatically backed up'}
+];
+const gc=document.getElementById('gapsContainer');
+gaps.forEach(g=>{
+  gc.innerHTML+=`<div class="gap-card"><span class="severity sev-${g.severity}">${g.severity.toUpperCase()}</span>
+    <h4>${g.id}: ${g.title}</h4><p class="muted" style="margin:4px 0 0">${g.desc}</p></div>`;
+});
+
+/* ── Pareto ── */
+const paretoLabels=['Vendor Data','Verification','Xref Matrix','Automation','QA Suite','Git VCS','Concurrency','Performance','Search','Backup'];
+const paretoImpact=[30,20,12,10,8,6,5,4,3,2];
+let cumPct=[],sum=paretoImpact.reduce((a,b)=>a+b,0),running=0;
+paretoImpact.forEach(v=>{running+=v;cumPct.push(Math.round(running/sum*100))});
+Plotly.newPlot('paretoChart',[
+  {type:'bar',x:paretoLabels,y:paretoImpact,marker:{color:'#378ADD'},name:'Impact Score'},
+  {type:'scatter',x:paretoLabels,y:cumPct,yaxis:'y2',mode:'lines+markers',line:{color:'#D85A30',width:2},marker:{size:6},name:'Cumulative %'}
+],{yaxis:{title:'Impact Score'},yaxis2:{title:'Cumulative %',overlaying:'y',side:'right',range:[0,105]},
+  margin:{t:20,b:80},paper_bgcolor:'transparent',plot_bgcolor:'transparent',
+  font:{family:'Aptos',size:11},legend:{x:0.01,y:0.99}},
+{responsive:true,displayModeBar:false});
+
+/* ── Improvement checklists ── */
+const shortItems=[
+  {id:'I1.1',text:'Add cross-reference matrix (B↔G↔T↔E)',effort:'30 min',done:true},
+  {id:'I1.2',text:'Create calculation verification checklist',effort:'15 min',done:true},
+  {id:'I1.3',text:'Add breadcrumb navigation to all views',effort:'10 min',done:true},
+  {id:'I1.4',text:'Generate QA validation checklist',effort:'10 min',done:true},
+  {id:'I1.5',text:'Create searchable term/equation index',effort:'15 min',done:true},
+  {id:'I1.6',text:'Add batch export to graphs.html',effort:'20 min',done:false}
+];
+const medItems=[
+  {id:'I2.1',text:'Obtain PVPS vendor datasheets → update data.json',effort:'2-4 hrs',done:false},
+  {id:'I2.2',text:'Validate COMBI concept with Kaeser (64 Hz fixed)',effort:'1-2 hrs',done:false},
+  {id:'I2.3',text:'Define coldbox suction pressure → update PVPS CR',effort:'2-3 hrs',done:false},
+  {id:'I2.4',text:'Calculate actual polytropic efficiency from vendor HB',effort:'1 hr',done:false},
+  {id:'I2.5',text:'Expand turndown scenarios (C30/C24 sub-configs)',effort:'2 hrs',done:false},
+  {id:'I2.6',text:'Automated backup script for master/ (cron)',effort:'30 min',done:false},
+  {id:'I2.7',text:'Git version control integration',effort:'1 hr',done:false},
+  {id:'I2.8',text:'Optimize Plotly chart loading (lazy load)',effort:'2 hrs',done:false},
+  {id:'I2.9',text:'Add ARIA labels (WCAG 2.1 AA)',effort:'1.5 hrs',done:false},
+  {id:'I2.10',text:'Mobile-optimized chart variants',effort:'2 hrs',done:false}
+];
+const longItems=[
+  {id:'I3.1',text:'QRB coldbox interface (P, T, exergy)',effort:'8-16 hrs',done:false},
+  {id:'I3.2',text:'Collaborative editing (multi-user)',effort:'20-40 hrs',done:false},
+  {id:'I3.3',text:'Dynamic web app (DB backend)',effort:'40-80 hrs',done:false},
+  {id:'I3.4',text:'Monte Carlo uncertainty analysis',effort:'8-12 hrs',done:false},
+  {id:'I3.5',text:'Automated report generation',effort:'12-16 hrs',done:false},
+  {id:'I3.6',text:'Exergy optimization solver',effort:'16-24 hrs',done:false},
+  {id:'I3.7',text:'3D CAD integration',effort:'24-40 hrs',done:false},
+  {id:'I3.8',text:'Cost estimation module (CAPEX/OPEX)',effort:'12-20 hrs',done:false},
+  {id:'I3.9',text:'Training module (interactive tutorials)',effort:'16-24 hrs',done:false},
+  {id:'I3.10',text:'Industry benchmark comparison',effort:'8-16 hrs',done:false}
+];
+function renderChecklist(items,elId){
+  const el=document.getElementById(elId);
+  items.forEach(i=>{
+    el.innerHTML+=`<label><input type="checkbox" ${i.done?'checked':''}> <span><b>${i.id}</b> ${i.text} <span class="muted">(${i.effort})</span></span></label>`;
+  });
+}
+renderChecklist(shortItems,'shortTerm');
+renderChecklist(medItems,'medTerm');
+renderChecklist(longItems,'longTerm');
+
+/* ── Effort vs Impact ── */
+const eiData=[
+  {x:0.5,y:9,text:'I1.1 Xref Matrix',cat:'short'},{x:0.25,y:8,text:'I1.2 Verification',cat:'short'},
+  {x:0.17,y:7,text:'I1.3 Breadcrumbs',cat:'short'},{x:0.17,y:7,text:'I1.4 QA Checklist',cat:'short'},
+  {x:0.25,y:6,text:'I1.5 Search Index',cat:'short'},{x:0.33,y:5,text:'I1.6 Batch Export',cat:'short'},
+  {x:3,y:10,text:'I2.1 PVPS Data',cat:'med'},{x:1.5,y:9,text:'I2.2 COMBI Valid.',cat:'med'},
+  {x:2.5,y:9,text:'I2.3 Coldbox P',cat:'med'},{x:1,y:8,text:'I2.4 Polytropic η',cat:'med'},
+  {x:12,y:10,text:'I3.1 Coldbox',cat:'long'},{x:30,y:7,text:'I3.3 Web App',cat:'long'},
+  {x:10,y:8,text:'I3.4 Monte Carlo',cat:'long'},{x:18,y:6,text:'I3.8 Cost Module',cat:'long'}
+];
+const colors={short:'#1D9E75',med:'#378ADD',long:'#7F77DD'};
+['short','med','long'].forEach(cat=>{
+  const d=eiData.filter(i=>i.cat===cat);
+  Plotly.addTraces('effortImpact',{
+    x:d.map(i=>i.x),y:d.map(i=>i.y),text:d.map(i=>i.text),mode:'markers+text',
+    textposition:'top center',textfont:{size:10},
+    marker:{size:14,color:colors[cat],opacity:0.8},
+    name:cat==='short'?'Short-term':cat==='med'?'Medium-term':'Long-term'
+  });
+});
+Plotly.relayout('effortImpact',{
+  xaxis:{title:'Effort (hours)',type:'log',range:[-1,2]},yaxis:{title:'Impact (1-10)',range:[4,11]},
+  margin:{t:20,b:50},paper_bgcolor:'transparent',plot_bgcolor:'transparent',
+  font:{family:'Aptos',size:11},legend:{x:0.7,y:0.15},
+  shapes:[{type:'rect',x0:0.01,x1:1,y0:7,y1:11,fillcolor:'rgba(29,158,117,0.05)',line:{width:0}}],
+  annotations:[{x:0.3,y:10.5,text:'Quick Wins ↗',showarrow:false,font:{size:12,color:'#1D9E75'}}]
+});
+
+/* ── Control chart ── */
+Plotly.newPlot('controlChart',[
+  {x:['v0.1','v0.2','v0.3','v0.4','v0.4.1'],y:[15,35,60,75,78],mode:'lines+markers',
+   name:'Actual',line:{color:'#378ADD',width:3},marker:{size:8}},
+  {x:['v0.1','v0.2','v0.3','v0.4','v0.4.1','v0.5','v1.0'],y:[15,35,60,75,78,88,98],mode:'lines',
+   name:'Projected',line:{color:'#378ADD',width:2,dash:'dot'}},
+  {x:['v0.1','v0.4.1','v1.0'],y:[85,85,85],mode:'lines',name:'Threshold (85%)',
+   line:{color:'#D85A30',width:1,dash:'dash'}},
+  {x:['v0.1','v0.4.1','v1.0'],y:[95,95,95],mode:'lines',name:'Target (95%)',
+   line:{color:'#1D9E75',width:1,dash:'dash'}}
+],{margin:{t:20,b:40},yaxis:{title:'Overall Completeness %',range:[0,105]},
+  paper_bgcolor:'transparent',plot_bgcolor:'transparent',font:{family:'Aptos',size:11}},
+{responsive:true,displayModeBar:false});
+</script>
+</body></html>

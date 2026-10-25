@@ -1,0 +1,608 @@
+<!doctype html>
+<html lang="en"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>MYRRHA WCS · Bradley-Terry Ranking</title>
+<link rel="icon" href="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><text y='26' font-size='26'>📊</text></svg>">
+<link rel="stylesheet" href="assets/style.css">
+<script src="https://cdn.plot.ly/plotly-2.27.0.min.js"></script>
+<script src="assets/common.js" defer></script>
+<style>
+.breadcrumb{font-size:12px;color:var(--fg2);margin-bottom:12px}.breadcrumb a{color:var(--accent2)}
+.comparison-card{background:var(--bg2);border:2px solid var(--border);border-radius:var(--radius);padding:24px;margin:18px 0;text-align:center}
+.comparison-card h3{margin:0 0 18px;font-size:16px;color:var(--fg2)}
+.vs-grid{display:grid;grid-template-columns:1fr auto 1fr;gap:20px;align-items:center}
+.vs-option{background:var(--bg);border:2px solid var(--border);border-radius:var(--radius);padding:18px;cursor:pointer;transition:all .2s;min-height:100px;display:flex;flex-direction:column;justify-content:center}
+.vs-option:hover{border-color:var(--accent2);transform:translateY(-2px);box-shadow:0 4px 16px rgba(0,0,0,.1)}
+.vs-option.selected{border-color:var(--accent);background:rgba(29,158,117,.05)}
+.vs-option .action-id{font-family:var(--mono);font-size:11px;color:var(--fg2)}
+.vs-option .action-name{font-weight:600;font-size:14px;margin:6px 0}
+.vs-option .action-sev{font-size:12px}
+.vs-label{font-size:28px;font-weight:700;color:var(--fg2)}
+.skip-btn{margin-top:12px;display:inline-block}
+.progress-info{display:flex;justify-content:space-between;align-items:center;margin:8px 0;font-size:12px;color:var(--fg2)}
+.ranking-table{margin:18px 0}
+.ranking-table td:first-child{font-weight:700;font-family:var(--mono);width:40px;text-align:center}
+.bt-score{font-family:var(--mono);font-weight:700}
+.ci-bar{display:inline-block;height:6px;background:linear-gradient(90deg,var(--accent2),var(--accent));border-radius:3px;vertical-align:middle;margin:0 4px}
+.filter-bar{display:flex;gap:8px;flex-wrap:wrap;margin:14px 0}
+.filter-bar button{background:var(--bg);color:var(--fg);border:1px solid var(--border);border-radius:6px;padding:6px 12px;font-size:12px;cursor:pointer;font-family:inherit;transition:all .15s}
+.filter-bar button.active{background:var(--accent);color:#fff;border-color:var(--accent)}
+.export-bar{display:flex;gap:8px;margin:14px 0;flex-wrap:wrap}
+.plotly-chart{width:100%;min-height:400px;margin:14px 0}
+.sev-badge{display:inline-block;min-width:22px;text-align:center;padding:2px 7px;border-radius:4px;font-size:11px;font-weight:700;font-family:var(--mono);color:#fff}
+.sev-5{background:#C0392B}.sev-4{background:#D85A30}.sev-3{background:#E5A100;color:#1a1d23}.sev-2{background:#378ADD}.sev-1{background:#7F77DD}
+.converged-badge{display:inline-block;padding:3px 10px;border-radius:999px;font-size:11px;font-weight:600;margin-left:8px}
+.converged-badge.yes{background:#E8F5E9;color:#2E7D32;border:1px solid #A5D6A7}
+.converged-badge.no{background:#FFF3E0;color:#E65100;border:1px solid #FFCC80}
+[data-theme=dark] .converged-badge.yes{background:#1a3a1a;border-color:#2a5a2a}
+[data-theme=dark] .converged-badge.no{background:#3a2a10;border-color:#5a4020}
+.yaml-block{background:var(--bg);border:1px solid var(--border);border-radius:var(--radius);padding:14px;font-family:var(--mono);font-size:12px;white-space:pre;overflow-x:auto;line-height:1.6}
+.stats-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px;margin:14px 0}
+.stats-card{text-align:center;padding:14px;background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius)}
+.stats-card .big{font-size:24px;font-weight:700;font-family:var(--mono)}
+.stats-card .lbl{font-size:11px;color:var(--fg2);text-transform:uppercase;margin-top:4px}
+@media(max-width:780px){.vs-grid{grid-template-columns:1fr;}.vs-label{transform:rotate(90deg)}}
+</style>
+</head><body>
+<div class="container">
+<p class="breadcrumb"><a href="index.html">Hub</a> › <a href="weighted-priority.html">Priority</a> › Bradley-Terry Ranking</p>
+<h1>📊 Bradley-Terry Pairwise Ranking</h1>
+<p class="muted">Statistical ranking of all 29 actions via pairwise comparison · MLE with 97.5% CI · v0.4.4</p>
+
+<!-- CONVERGENCE STATS -->
+<div class="stats-grid" id="statsGrid">
+  <div class="stats-card"><div class="big" id="statIter">0</div><div class="lbl">Iterations</div></div>
+  <div class="stats-card"><div class="big" id="statPairs">0/406</div><div class="lbl">Pairs Compared</div></div>
+  <div class="stats-card"><div class="big" id="statLL">—</div><div class="lbl">Log-Likelihood</div></div>
+  <div class="stats-card"><div class="big" id="statConv">—</div><div class="lbl">Convergence <span class="converged-badge no" id="convBadge">pending</span></div></div>
+</div>
+
+<!-- COMPARISON INTERFACE -->
+<div class="comparison-card" id="compCard">
+  <h3>Which action is more important? <span style="font-weight:400;font-size:13px" id="pairProgress">(1 of 406)</span></h3>
+  <div class="vs-grid" id="vsGrid">
+    <div class="vs-option" id="optA" onclick="choose('A')">
+      <div class="action-id" id="idA">—</div>
+      <div class="action-name" id="nameA">Loading...</div>
+      <div class="action-sev" id="sevA"></div>
+    </div>
+    <div class="vs-label">VS</div>
+    <div class="vs-option" id="optB" onclick="choose('B')">
+      <div class="action-id" id="idB">—</div>
+      <div class="action-name" id="nameB">Loading...</div>
+      <div class="action-sev" id="sevB"></div>
+    </div>
+  </div>
+  <div style="margin-top:14px">
+    <button class="btn alt skip-btn" onclick="choose('skip')">⏭ Skip (equal)</button>
+    <button class="btn alt skip-btn" onclick="autoRank()">⚡ Auto-Rank (from severity)</button>
+    <button class="btn alt skip-btn" onclick="randomSample(20)">🎲 Random 20 pairs</button>
+  </div>
+  <div class="progress-info">
+    <span id="compCount">0 comparisons made</span>
+    <div class="progress" style="width:200px"><div id="compBar" style="width:0%"></div></div>
+  </div>
+</div>
+
+<!-- FILTERS -->
+<div class="filter-bar">
+  <button class="active" onclick="filterRank('all',this)">All (29)</button>
+  <button onclick="filterRank('short',this)">Short-term</button>
+  <button onclick="filterRank('medium',this)">Medium-term</button>
+  <button onclick="filterRank('long',this)">Long-term</button>
+</div>
+
+<!-- RANKING TABLE -->
+<div class="card">
+<h3 style="margin-top:0">Current Rankings</h3>
+<table class="ranking-table" id="rankTable">
+<thead><tr><th>#</th><th>ID</th><th>Action</th><th>Category</th><th>Sev</th><th>BT Score</th><th>97.5% CI</th><th>W/L</th></tr></thead>
+<tbody id="rankBody"></tbody>
+</table>
+</div>
+
+<!-- EXPORTS -->
+<div class="export-bar">
+  <button class="btn" onclick="exportData('json')">💾 JSON</button>
+  <button class="btn alt" onclick="exportData('yaml')">📄 YAML</button>
+  <button class="btn alt" onclick="exportData('csv')">📊 CSV</button>
+  <button class="btn alt" onclick="resetBT()">🔄 Reset</button>
+</div>
+
+<!-- YAML TOP-5 -->
+<div class="card">
+<h3 style="margin-top:0">Top 5 per Category (YAML)</h3>
+<div class="yaml-block" id="yamlOutput">Awaiting comparisons...</div>
+</div>
+
+<!-- PLOTLY CHARTS -->
+<div class="gridq">
+  <div class="card"><div id="plotRanks" class="plotly-chart"></div></div>
+  <div class="card"><div id="plotConverge" class="plotly-chart"></div></div>
+</div>
+<div class="gridq">
+  <div class="card"><div id="plotCategory" class="plotly-chart"></div></div>
+  <div class="card">
+    <div class="heatmap-container">
+      <div id="plotHeatmap" class="plotly-chart heatmap-full"></div>
+      <div class="zoom-label" style="display:none;">Tap to zoom and pan</div>
+    </div>
+  </div>
+</div>
+
+<!-- MT-10: Mobile heatmap modal -->
+<div id="heatmap-modal" class="heatmap-modal">
+  <span class="modal-close" onclick="closeHeatmapModal()">&times;</span>
+  <div class="heatmap-modal-content">
+    <div id="heatmap-zoom"></div>
+    <p style="color: white; text-align: center; margin-top: 20px; font-size: 14px;">
+      📱 Pinch to zoom • Swipe to pan • Tap ✕ to close
+    </p>
+  </div>
+</div>
+
+</div><!-- /container -->
+
+<script>
+/* ===== 29 Actions Data ===== */
+const ACTIONS = [
+  {id:"ST-1",name:"Fix Config24 flow (β+γ ≠ 264)",cat:"short",sev:3,impact:4,effort:1},
+  {id:"ST-2",name:"Add per-unit utility rows to tables.html",cat:"short",sev:2,impact:3,effort:1},
+  {id:"ST-3",name:"Populate PVPS placeholder data",cat:"short",sev:4,impact:4,effort:2},
+  {id:"ST-4",name:"Add RCW HX count + N+1 note",cat:"short",sev:3,impact:3,effort:1},
+  {id:"ST-5",name:"Breadcrumb on remaining views",cat:"short",sev:1,impact:2,effort:0.5},
+  {id:"ST-6",name:"Version badge consistency",cat:"short",sev:1,impact:1,effort:0.5},
+  {id:"MT-1",name:"COMBI skid validation (fixed+VFD)",cat:"medium",sev:4,impact:5,effort:4},
+  {id:"MT-2",name:"Kaeser data sheet cross-check",cat:"medium",sev:5,impact:5,effort:3},
+  {id:"MT-3",name:"Turndown ratio documentation",cat:"medium",sev:3,impact:4,effort:3},
+  {id:"MT-4",name:"Config24/30 utility recalculation",cat:"medium",sev:4,impact:4,effort:4},
+  {id:"MT-5",name:"Define C30/C24 operating scenarios",cat:"medium",sev:3,impact:4,effort:3},
+  {id:"MT-6",name:"Energy waterfall verification",cat:"medium",sev:3,impact:3,effort:2},
+  {id:"MT-7",name:"Add isentropic efficiency curves",cat:"medium",sev:2,impact:3,effort:3},
+  {id:"MT-8",name:"Oil carryover / separator sizing",cat:"medium",sev:4,impact:4,effort:3},
+  {id:"MT-9",name:"Vibration & noise specifications",cat:"medium",sev:2,impact:2,effort:2},
+  {id:"MT-10",name:"Mobile responsive charts",cat:"medium",sev:2,impact:3,effort:3},
+  {id:"MT-11",name:"Vendor scout: Kaeser contact & NDA",cat:"medium",sev:5,impact:5,effort:2},
+  {id:"MT-12",name:"Vendor scout: PVPS flow confirmation",cat:"medium",sev:5,impact:5,effort:2},
+  {id:"MT-13",name:"400V power analysis & VFD sizing",cat:"medium",sev:5,impact:5,effort:4},
+  {id:"LT-1",name:"Monte Carlo uncertainty analysis",cat:"long",sev:2,impact:4,effort:8},
+  {id:"LT-2",name:"Dynamic web app (React/Vue)",cat:"long",sev:1,impact:3,effort:10},
+  {id:"LT-3",name:"HAZOP interface linkage",cat:"long",sev:3,impact:4,effort:6},
+  {id:"LT-4",name:"P&ID integration overlay",cat:"long",sev:3,impact:4,effort:8},
+  {id:"LT-5",name:"Lifecycle cost model (20-yr TCO)",cat:"long",sev:2,impact:4,effort:6},
+  {id:"LT-6",name:"Automated test suite (Playwright)",cat:"long",sev:1,impact:2,effort:8},
+  {id:"LT-7",name:"Multi-language support (EN/FR/NL)",cat:"long",sev:1,impact:2,effort:6},
+  {id:"LT-8",name:"Real-time SCADA data hooks",cat:"long",sev:2,impact:3,effort:10},
+  {id:"LT-9",name:"3D compressor room visualization",cat:"long",sev:1,impact:3,effort:8},
+  {id:"LT-10",name:"AI-assisted anomaly detection",cat:"long",sev:1,impact:3,effort:10}
+];
+
+const N = ACTIONS.length;
+let wins = Array.from({length:N},()=>new Float64Array(N)); // wins[i][j] = times i beat j
+let theta = new Float64Array(N).fill(1.0); // BT parameters
+let converged = false;
+let iterCount = 0;
+let comparisonsDone = 0;
+const totalPairs = N*(N-1)/2;
+let convergenceHistory = [];
+let currentPairIdx = 0;
+let pairQueue = [];
+const STORAGE_BT = 'myrrha-bt-wins';
+
+// Load saved state
+function loadState(){
+  const saved = localStorage.getItem(STORAGE_BT);
+  if(saved){
+    try{
+      const d=JSON.parse(saved);
+      for(let i=0;i<N;i++) for(let j=0;j<N;j++) wins[i][j]=d.wins[i][j]||0;
+      comparisonsDone = d.comparisonsDone||0;
+    }catch(e){ console.warn('BT: failed to load saved state',e); }
+  }
+  generatePairQueue();
+  // BUG-004 FIX: Auto-seed from severity if no comparisons exist
+  // Without seeding, all θ=1.0 and the page looks broken/empty
+  if(comparisonsDone===0){
+    autoRank();          // seeds all pairs from severity×impact/effort
+    return;              // autoRank already calls runMLE + render
+  }
+  runMLE();
+  renderComparison();
+  renderRankings('all');
+}
+
+function saveState(){
+  const d={wins:wins.map(r=>Array.from(r)),comparisonsDone};
+  localStorage.setItem(STORAGE_BT,JSON.stringify(d));
+}
+
+function generatePairQueue(){
+  pairQueue=[];
+  for(let i=0;i<N;i++) for(let j=i+1;j<N;j++){
+    if(wins[i][j]===0 && wins[j][i]===0) pairQueue.push([i,j]);
+  }
+  // Shuffle for variety
+  for(let k=pairQueue.length-1;k>0;k--){
+    const r=Math.floor(Math.random()*(k+1));
+    [pairQueue[k],pairQueue[r]]=[pairQueue[r],pairQueue[k]];
+  }
+  currentPairIdx=0;
+}
+
+/* ===== Bradley-Terry MLE ===== */
+function runMLE(){
+  // Iterative proportional fitting (Zermelo's algorithm)
+  theta.fill(1.0);
+  convergenceHistory=[];
+  const maxIter=200;
+  const tol=0.001;
+  for(let iter=0;iter<maxIter;iter++){
+    const thetaOld = new Float64Array(theta);
+    for(let i=0;i<N;i++){
+      let num=0,den=0;
+      for(let j=0;j<N;j++){
+        if(i===j) continue;
+        num += wins[i][j];
+        const nij = wins[i][j]+wins[j][i];
+        if(nij>0) den += nij/(theta[i]+theta[j]);
+      }
+      theta[i] = num>0 ? num/Math.max(den,1e-10) : 0.01;
+    }
+    // Normalize so max = 1
+    const mx = Math.max(...theta);
+    if(mx>0) for(let i=0;i<N;i++) theta[i]/=mx;
+    // Check convergence
+    let diff=0;
+    for(let i=0;i<N;i++) diff+=Math.abs(theta[i]-thetaOld[i]);
+    convergenceHistory.push({iter:iter+1,diff,ll:logLikelihood()});
+    if(diff<tol){converged=true;iterCount=iter+1;break;}
+    iterCount=iter+1;
+  }
+  // Relaxed convergence check — only valid if we have enough data
+  if(!converged && comparisonsDone>N) converged = convergenceHistory[convergenceHistory.length-1].diff<0.01;
+  // BUG-004 FIX: never claim convergence with fewer than N comparisons
+  if(comparisonsDone<N) converged=false;
+}
+
+function logLikelihood(){
+  let ll=0;
+  for(let i=0;i<N;i++) for(let j=0;j<N;j++){
+    if(i!==j && wins[i][j]>0 && theta[i]+theta[j]>0){
+      ll += wins[i][j]*Math.log(theta[i]/(theta[i]+theta[j]));
+    }
+  }
+  return ll;
+}
+
+/* ===== Fisher Information & CI ===== */
+function computeCI(){
+  // Standard errors from observed Fisher Information
+  const se = new Float64Array(N);
+  for(let i=0;i<N;i++){
+    let info=0;
+    for(let j=0;j<N;j++){
+      if(i===j) continue;
+      const nij=wins[i][j]+wins[j][i];
+      if(nij>0){
+        const p=theta[i]/(theta[i]+theta[j]);
+        info += nij*p*(1-p)/(theta[i]*theta[i]+1e-10);
+      }
+    }
+    se[i]=info>0?1/Math.sqrt(info):0.1;
+  }
+  // 97.5% CI: z=2.24 (two-sided 95% → each tail 2.5%)
+  return ACTIONS.map((_,i)=>({
+    lower:Math.max(0,theta[i]-2.24*se[i]),
+    upper:Math.min(1,theta[i]+2.24*se[i]),
+    se:se[i]
+  }));
+}
+
+/* ===== Comparison Interface ===== */
+function renderComparison(){
+  if(pairQueue.length===0 || currentPairIdx>=pairQueue.length){
+    document.getElementById('compCard').innerHTML='<h3>✅ All pairs compared!</h3><p class="muted">Rankings are finalized. You can still export or reset.</p>';
+    return;
+  }
+  const [a,b]=pairQueue[currentPairIdx];
+  document.getElementById('idA').textContent=ACTIONS[a].id;
+  document.getElementById('nameA').textContent=ACTIONS[a].name;
+  document.getElementById('sevA').innerHTML=`<span class="sev-badge sev-${ACTIONS[a].sev}">${ACTIONS[a].sev}</span> · ${ACTIONS[a].cat}`;
+  document.getElementById('idB').textContent=ACTIONS[b].id;
+  document.getElementById('nameB').textContent=ACTIONS[b].name;
+  document.getElementById('sevB').innerHTML=`<span class="sev-badge sev-${ACTIONS[b].sev}">${ACTIONS[b].sev}</span> · ${ACTIONS[b].cat}`;
+  document.getElementById('optA').classList.remove('selected');
+  document.getElementById('optB').classList.remove('selected');
+  const done = comparisonsDone;
+  document.getElementById('pairProgress').textContent=`(${done+1} of ${totalPairs})`;
+  document.getElementById('compCount').textContent=`${done} comparisons made`;
+  document.getElementById('compBar').style.width=Math.round(done/totalPairs*100)+'%';
+  updateStats();
+}
+
+function choose(choice){
+  if(currentPairIdx>=pairQueue.length) return;
+  const [a,b]=pairQueue[currentPairIdx];
+  if(choice==='A'){wins[a][b]++;document.getElementById('optA').classList.add('selected');}
+  else if(choice==='B'){wins[b][a]++;document.getElementById('optB').classList.add('selected');}
+  // skip = no winner recorded
+  comparisonsDone++;
+  currentPairIdx++;
+  saveState();
+  setTimeout(()=>{runMLE();renderComparison();renderRankings(currentFilter);},200);
+}
+
+function autoRank(){
+  // Use severity*impact/effort as proxy for all remaining pairs
+  for(let k=currentPairIdx;k<pairQueue.length;k++){
+    const [a,b]=pairQueue[k];
+    const scoreA=ACTIONS[a].sev*ACTIONS[a].impact/(ACTIONS[a].effort+1);
+    const scoreB=ACTIONS[b].sev*ACTIONS[b].impact/(ACTIONS[b].effort+1);
+    if(scoreA>scoreB) wins[a][b]++;
+    else if(scoreB>scoreA) wins[b][a]++;
+    comparisonsDone++;
+  }
+  currentPairIdx=pairQueue.length;
+  saveState();
+  runMLE();
+  renderComparison();
+  renderRankings(currentFilter);
+}
+
+function randomSample(n){
+  const remaining=pairQueue.slice(currentPairIdx);
+  const sample=remaining.slice(0,Math.min(n,remaining.length));
+  sample.forEach(([a,b])=>{
+    const scoreA=ACTIONS[a].sev*ACTIONS[a].impact/(ACTIONS[a].effort+1);
+    const scoreB=ACTIONS[b].sev*ACTIONS[b].impact/(ACTIONS[b].effort+1);
+    if(scoreA>scoreB) wins[a][b]++;
+    else if(scoreB>scoreA) wins[b][a]++;
+    comparisonsDone++;
+    currentPairIdx++;
+  });
+  saveState();
+  runMLE();
+  renderComparison();
+  renderRankings(currentFilter);
+}
+
+/* ===== Render Rankings ===== */
+let currentFilter='all';
+
+function filterRank(cat,btn){
+  currentFilter=cat;
+  document.querySelectorAll('.filter-bar button').forEach(b=>b.classList.remove('active'));
+  if(btn) btn.classList.add('active');
+  renderRankings(cat);
+}
+
+function renderRankings(cat){
+  const ci=computeCI();
+  let ranked=ACTIONS.map((a,i)=>({...a,idx:i,score:theta[i],ci:ci[i],
+    totalWins:wins[i].reduce((s,v)=>s+v,0),
+    totalLosses:wins.reduce((s,r)=>s+r[i],0)}));
+  if(cat!=='all') ranked=ranked.filter(a=>a.cat===cat||(cat==='medium'&&a.cat==='medium'));
+  ranked.sort((a,b)=>b.score-a.score);
+
+  const tbody=document.getElementById('rankBody');
+  tbody.innerHTML=ranked.map((a,rank)=>{
+    const barWidth=Math.round((a.ci.upper-a.ci.lower)*300);
+    return `<tr>
+      <td>${rank+1}</td>
+      <td><span style="font-family:var(--mono);font-size:12px">${a.id}</span></td>
+      <td>${a.name}</td>
+      <td><span class="tag">${a.cat}</span></td>
+      <td><span class="sev-badge sev-${a.sev}">${a.sev}</span></td>
+      <td class="bt-score">${a.score.toFixed(3)}</td>
+      <td><span style="font-size:11px;color:var(--fg2)">${a.ci.lower.toFixed(3)}</span> <span class="ci-bar" style="width:${Math.max(barWidth,4)}px"></span> <span style="font-size:11px;color:var(--fg2)">${a.ci.upper.toFixed(3)}</span></td>
+      <td style="font-family:var(--mono);font-size:12px">${a.totalWins}/${a.totalLosses}</td>
+    </tr>`}).join('');
+
+  updateStats();
+  renderYAML(ranked);
+  // BUG-004 FIX: wrap Plotly calls in try-catch so YAML still renders if Plotly fails
+  try{ if(typeof Plotly!=='undefined') renderPlots(ranked); }
+  catch(e){ console.warn('BT: Plotly render error',e); }
+}
+
+function updateStats(){
+  document.getElementById('statIter').textContent=iterCount;
+  // BUG-004 FIX: Float64Array doesn't have .flat() — use Array.from
+  const pairsWithData=[].concat(...wins.map(r=>Array.from(r))).filter(v=>v>0).length/2;
+  document.getElementById('statPairs').textContent=`${Math.round(pairsWithData)}/${totalPairs}`;
+  const ll=logLikelihood();
+  document.getElementById('statLL').textContent=isFinite(ll)?ll.toFixed(1):'—';
+  const badge=document.getElementById('convBadge');
+  const convBig=document.getElementById('statConv')?.querySelector('.big');
+  if(comparisonsDone<3){badge.textContent='pending';badge.className='converged-badge no';}
+  else if(converged){badge.textContent='✓ converged';badge.className='converged-badge yes';if(convBig) convBig.textContent='< 0.001';}
+  else{badge.textContent='running';badge.className='converged-badge no';if(convBig) convBig.textContent=(convergenceHistory.length?convergenceHistory[convergenceHistory.length-1].diff.toFixed(4):'—');}
+}
+
+/* ===== YAML Output ===== */
+function renderYAML(ranked){
+  const allRanked=[...ACTIONS.map((a,i)=>({...a,score:theta[i]}))].sort((a,b)=>b.score-a.score);
+  const top5=allRanked.slice(0,5);
+  const byCat={short:[],medium:[],long:[]};
+  allRanked.forEach(a=>byCat[a.cat]?.push(a));
+  let yaml=`# Bradley-Terry Rankings — v0.4.4
+# Generated: ${new Date().toISOString().slice(0,10)}
+# Confidence: 97.5% | Iterations: ${iterCount}
+
+top_5_overall:
+${top5.map((a,i)=>`  - rank: ${i+1}
+    id: "${a.id}"
+    name: "${a.name}"
+    bt_score: ${a.score.toFixed(3)}
+    severity: ${a.sev}`).join('\n')}
+
+top_5_by_category:
+  short_term:
+${byCat.short.slice(0,5).map((a,i)=>`    - rank: ${i+1}
+      id: "${a.id}"
+      name: "${a.name}"
+      bt_score: ${a.score.toFixed(3)}`).join('\n')}
+  medium_term:
+${byCat.medium.slice(0,5).map((a,i)=>`    - rank: ${i+1}
+      id: "${a.id}"
+      name: "${a.name}"
+      bt_score: ${a.score.toFixed(3)}`).join('\n')}
+  long_term:
+${byCat.long.slice(0,5).map((a,i)=>`    - rank: ${i+1}
+      id: "${a.id}"
+      name: "${a.name}"
+      bt_score: ${a.score.toFixed(3)}`).join('\n')}
+
+convergence:
+  iterations: ${iterCount}
+  final_log_likelihood: ${logLikelihood().toFixed(1)}
+  confidence_level: 0.975
+  converged: ${converged}`;
+  document.getElementById('yamlOutput').textContent=yaml;
+}
+
+/* ===== Plotly Charts ===== */
+function renderPlots(ranked){
+  const pCfg={font:{family:'Aptos,sans-serif',size:11},margin:{l:50,r:30,t:40,b:40},
+    plot_bgcolor:'rgba(0,0,0,0)',paper_bgcolor:'rgba(0,0,0,0)'};
+  const ci=computeCI();
+
+  // 1. Rank distribution with error bars
+  const allRanked=[...ACTIONS.map((a,i)=>({...a,idx:i,score:theta[i],ci:ci[i]}))].sort((a,b)=>b.score-a.score);
+  Plotly.newPlot('plotRanks',[{
+    y:allRanked.map(a=>a.id),x:allRanked.map(a=>a.score),
+    error_x:{type:'data',symmetric:false,
+      array:allRanked.map(a=>a.ci.upper-a.score),
+      arrayminus:allRanked.map(a=>a.score-a.ci.lower),
+      color:'#6baed6',thickness:1.5},
+    type:'bar',orientation:'h',
+    marker:{color:allRanked.map(a=>a.sev===5?'#C0392B':a.sev===4?'#D85A30':a.sev===3?'#E5A100':a.sev===2?'#378ADD':'#7F77DD')},
+    text:allRanked.map(a=>a.score.toFixed(3)),textposition:'outside',textfont:{size:9}
+  }],{...pCfg,title:{text:'BT Scores with 97.5% CI',font:{size:13}},
+    height:Math.max(400,allRanked.length*22),yaxis:{automargin:true,autorange:'reversed'},
+    xaxis:{title:'θ (BT Score)',range:[0,1.15]}},{responsive:true});
+
+  // 2. Convergence plot
+  if(convergenceHistory.length>0){
+    Plotly.newPlot('plotConverge',[
+      {x:convergenceHistory.map(h=>h.iter),y:convergenceHistory.map(h=>h.diff),
+        name:'||Δθ||',type:'scatter',mode:'lines+markers',line:{color:'#08519c',width:2},marker:{size:4}},
+      {x:[0,convergenceHistory.length],y:[0.001,0.001],
+        name:'Tolerance (0.001)',type:'scatter',mode:'lines',line:{color:'#C0392B',dash:'dash',width:1.5}}
+    ],{...pCfg,title:{text:'MLE Convergence',font:{size:13}},
+      xaxis:{title:'Iteration'},yaxis:{title:'||θ(n+1) - θ(n)||',type:'log'},
+      legend:{x:0.6,y:0.95}},{responsive:true});
+  }
+
+  // 3. Category comparison
+  const cats=['short','medium','long'];
+  const catScores=cats.map(c=>{
+    const items=allRanked.filter(a=>a.cat===c);
+    return items.length?items.reduce((s,a)=>s+a.score,0)/items.length:0;
+  });
+  Plotly.newPlot('plotCategory',[{
+    x:['Short-term','Medium-term','Long-term'],y:catScores,type:'bar',
+    marker:{color:['#1D9E75','#378ADD','#7F77DD']},
+    text:catScores.map(v=>v.toFixed(3)),textposition:'outside'
+  }],{...pCfg,title:{text:'Mean BT Score by Category',font:{size:13}},
+    yaxis:{title:'Mean θ',range:[0,Math.max(...catScores)*1.3||1]}},{responsive:true});
+
+  // 4. Covariance heatmap (simplified as win matrix)
+  const top10=allRanked.slice(0,10);
+  const heatZ=top10.map(a=>top10.map(b=>a.idx===b.idx?0:wins[a.idx][b.idx]));
+  Plotly.newPlot('plotHeatmap',[{
+    z:heatZ,x:top10.map(a=>a.id),y:top10.map(a=>a.id),
+    type:'heatmap',colorscale:'Blues',showscale:true
+  }],{...pCfg,title:{text:'Pairwise Wins (Top 10)',font:{size:13}},
+    height:420,yaxis:{automargin:true},xaxis:{automargin:true}},{responsive:true});
+}
+
+/* ===== Export ===== */
+function exportData(fmt){
+  const ci=computeCI();
+  const allRanked=[...ACTIONS.map((a,i)=>({...a,idx:i,bt_score:theta[i],ci_lower:ci[i].lower,ci_upper:ci[i].upper,
+    pairwise_wins:wins[i].reduce((s,v)=>s+v,0),pairwise_losses:wins.reduce((s,r)=>s+r[i],0)}))].sort((a,b)=>b.bt_score-a.bt_score);
+
+  if(fmt==='json'){
+    const obj={bt_rankings:{actions:allRanked.map((a,r)=>({id:a.id,name:a.name,bt_score:+a.bt_score.toFixed(3),rank:r+1,
+      ci_lower:+a.ci_lower.toFixed(3),ci_upper:+a.ci_upper.toFixed(3),category:a.cat,severity:a.sev,
+      pairwise_wins:a.pairwise_wins,pairwise_losses:a.pairwise_losses})),
+      convergence:{iterations:iterCount,final_likelihood:+logLikelihood().toFixed(1),confidence_level:0.975}}};
+    download(JSON.stringify(obj,null,2),'bt-rankings.json','application/json');
+  } else if(fmt==='yaml'){
+    download(document.getElementById('yamlOutput').textContent,'bt-rankings.yaml','text/yaml');
+  } else {
+    const header='Rank,ID,Name,Category,Severity,BT_Score,CI_Lower,CI_Upper,Wins,Losses\n';
+    const rows=allRanked.map((a,r)=>`${r+1},${a.id},"${a.name}",${a.cat},${a.sev},${a.bt_score.toFixed(3)},${a.ci_lower.toFixed(3)},${a.ci_upper.toFixed(3)},${a.pairwise_wins},${a.pairwise_losses}`).join('\n');
+    download(header+rows,'bt-rankings.csv','text/csv');
+  }
+}
+
+function download(content,name,type){
+  const blob=new Blob([content],{type});
+  const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=name;a.click();
+}
+
+function resetBT(){
+  if(!confirm('Reset all Bradley-Terry comparisons?')) return;
+  wins=Array.from({length:N},()=>new Float64Array(N));
+  theta.fill(1.0);comparisonsDone=0;converged=false;iterCount=0;
+  localStorage.removeItem(STORAGE_BT);
+  generatePairQueue();
+  renderComparison();
+  renderRankings('all');
+}
+
+/* MT-10: Mobile heatmap modal functions */
+function openHeatmapModal() {
+  const modal = document.getElementById('heatmap-modal');
+  const zoomDiv = document.getElementById('heatmap-zoom');
+  const heatmap = document.getElementById('plotHeatmap');
+  
+  // Clone heatmap data into modal
+  const plotData = heatmap.data;
+  const plotLayout = JSON.parse(JSON.stringify(heatmap.layout || {}));
+  
+  // Resize for modal viewing (2x screen size for zooming)
+  plotLayout.width = window.innerWidth * 2;
+  plotLayout.height = window.innerWidth * 2;
+  plotLayout.autosize = false;
+  
+  // Recreate plot in modal
+  Plotly.newPlot(zoomDiv, plotData, plotLayout, {responsive: false, displayModeBar: true});
+  
+  modal.classList.add('active');
+  document.body.style.overflow = 'hidden';
+}
+
+function closeHeatmapModal() {
+  const modal = document.getElementById('heatmap-modal');
+  modal.classList.remove('active');
+  document.body.style.overflow = 'auto';
+  
+  // Clean up the zoomed plot
+  const zoomDiv = document.getElementById('heatmap-zoom');
+  Plotly.purge(zoomDiv);
+}
+
+// Mobile: Make heatmap tappable to open modal
+if (window.innerWidth <= 768) {
+  window.addEventListener('load', function() {
+    const heatmapContainer = document.querySelector('.heatmap-container');
+    const heatmapDiv = document.getElementById('plotHeatmap');
+    const zoomLabel = document.querySelector('.zoom-label');
+    
+    if (heatmapContainer && heatmapDiv) {
+      // Show zoom label on mobile
+      if (zoomLabel) zoomLabel.style.display = 'block';
+      
+      // Make heatmap clickable
+      heatmapDiv.style.cursor = 'pointer';
+      heatmapDiv.addEventListener('click', openHeatmapModal);
+    }
+  });
+}
+
+loadState();
+</script>
+</body></html>

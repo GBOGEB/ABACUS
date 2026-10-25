@@ -1,0 +1,263 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>MYRRHA QPLANT — Slide Editor (dual-view)</title>
+<style>
+  :root {
+    --primary:#0b3d91; --accent:#ff8a00; --bg:#f7f8fa; --fg:#1b1f24;
+    --rule:#d8dde3; --muted:#5b6470;
+    --body:Aptos,'Segoe UI',system-ui,Helvetica,Arial,sans-serif;
+    --mono:Consolas,'JetBrains Mono','Courier New',monospace;
+  }
+  * { box-sizing:border-box; }
+  body { margin:0; font-family:var(--body); color:var(--fg); background:var(--bg); }
+  header.top { display:flex; align-items:center; gap:14px; padding:10px 18px;
+    background:var(--primary); color:#fff; }
+  header.top a { color:#fff; text-decoration:none; opacity:.9; }
+  header.top a:hover { opacity:1; text-decoration:underline; }
+  header.top .spacer { flex:1; }
+  header.top button { background:var(--accent); color:#fff; border:0;
+    padding:7px 14px; border-radius:6px; font-weight:600; cursor:pointer; }
+  header.top button.ghost { background:transparent; border:1px solid rgba(255,255,255,.5); }
+  .wrap { display:grid; grid-template-columns:1.618fr 1fr; gap:0;
+    height:calc(100vh - 50px); }
+  .pane { overflow:auto; }
+  .pane.preview { background:#eef1f5; padding:24px; border-right:1px solid var(--rule); }
+  .pane.editor  { background:#fff; padding:18px 22px; }
+  .preview .frame { background:#fff; border:1px solid var(--rule); border-radius:12px;
+    padding:32px 40px; box-shadow:0 1px 4px rgba(0,0,0,.05); min-height:420px; }
+  .preview h1 { color:var(--primary); margin-top:0; }
+  .preview .sub { color:var(--muted); margin-top:-6px; margin-bottom:18px; }
+  .preview pre.ascii { background:#0e1116; color:#e6edf3; padding:16px;
+    border-radius:8px; font-family:var(--mono); line-height:1.45; overflow:auto; }
+  .preview .caption { font-size:13px; color:var(--muted); font-style:italic; margin-top:6px; }
+  .preview .notes { margin-top:18px; border-top:1px dashed var(--rule);
+    padding-top:10px; font-size:13px; color:var(--muted); }
+  .preview .notes b { color:var(--accent); }
+  .preview .label { display:inline-block; font-family:var(--mono); font-size:12px;
+    background:var(--primary); color:#fff; padding:2px 8px; border-radius:6px; margin-right:6px; }
+
+  .editor .row { margin-bottom:12px; }
+  .editor label { display:block; font-size:12px; font-weight:600; color:var(--muted);
+    text-transform:uppercase; letter-spacing:.04em; margin-bottom:4px; }
+  .editor input, .editor select, .editor textarea {
+    width:100%; padding:8px 10px; border:1px solid var(--rule); border-radius:6px;
+    font-family:var(--body); font-size:14px; background:#fff; color:var(--fg); }
+  .editor textarea { font-family:var(--mono); font-size:13px; line-height:1.5; resize:vertical; }
+  .editor textarea.body { min-height:200px; }
+  .editor textarea.notes { min-height:90px; background:#fffbf2; }
+  .editor .nav { display:flex; gap:8px; align-items:center; margin-bottom:14px; }
+  .editor .nav button { padding:6px 10px; border:1px solid var(--rule); background:#fff;
+    border-radius:6px; cursor:pointer; font-family:var(--body); }
+  .editor .nav .pill { font-family:var(--mono); font-size:12px; background:var(--primary);
+    color:#fff; padding:3px 8px; border-radius:6px; }
+  .editor .actions { display:flex; gap:8px; flex-wrap:wrap; margin-top:14px;
+    padding-top:14px; border-top:1px solid var(--rule); }
+  .editor .actions button { padding:8px 14px; border-radius:6px; border:0;
+    background:var(--primary); color:#fff; cursor:pointer; font-weight:600; }
+  .editor .actions button.alt { background:#fff; color:var(--primary);
+    border:1px solid var(--primary); }
+  .editor .hint { font-size:11px; color:var(--muted); margin-top:3px; }
+  .layout-text-table .content, .layout-text-graph .content { display:grid;
+    grid-template-columns:1.618fr 1fr; gap:24px; }
+  .layout-4-quadrants .content { display:grid; grid-template-columns:1fr 1fr;
+    grid-template-rows:1fr 1fr; gap:16px; }
+</style>
+<script src="assets/js/live-render.js"></script>
+</head>
+<body>
+<header class="top">
+  <a href="index.html">← Hub</a>
+  <a href="slides.html">All slides</a>
+  <a href="truth.html">SSoT</a>
+  <strong style="margin-left:8px">Slide Editor</strong>
+  <span class="spacer"></span>
+  <button class="ghost" id="reload">Reload from master</button>
+  <button id="save">Save changes</button>
+</header>
+
+<div class="wrap">
+  <div class="pane preview">
+    <div class="frame" id="preview">
+      <h1>Loading…</h1>
+    </div>
+  </div>
+  <div class="pane editor">
+    <div class="nav">
+      <button id="prev">◀ Prev</button>
+      <span class="pill" id="pos">–/–</span>
+      <button id="next">Next ▶</button>
+      <span style="margin-left:auto;font-size:12px;color:var(--muted)" id="status">idle</span>
+    </div>
+    <div class="row"><label>Title</label>
+      <input id="f-title" type="text"></div>
+    <div class="row"><label>Subtitle</label>
+      <input id="f-subtitle" type="text"></div>
+    <div class="row"><label>Content type / layout</label>
+      <select id="f-layout">
+        <option value="text-only">text-only</option>
+        <option value="text-table">text + table</option>
+        <option value="text-graph">text + graph</option>
+        <option value="4-quadrants">4 quadrants</option>
+      </select>
+      <div class="hint">Drives the preview grid (see master/config.yaml).</div>
+    </div>
+    <div class="row"><label>Main content (markdown)</label>
+      <textarea id="f-body" class="body" spellcheck="false"></textarea>
+      <div class="hint">Supports headings, lists, **bold**, *italic*, `code`, and ``` fenced blocks (Consolas).</div>
+    </div>
+    <div class="row"><label>Caption / legend</label>
+      <input id="f-caption" type="text"></div>
+    <div class="row"><label>Slide notes (TODO / REVIEW / ACTION)</label>
+      <textarea id="f-notes" class="notes" spellcheck="false"></textarea>
+      <div class="hint">Words <b>TODO</b>, <b>REVIEW</b>, <b>ACTION</b> are highlighted.</div>
+    </div>
+    <div class="actions">
+      <button id="save2">Save</button>
+      <button class="alt" id="export-html">Export slide HTML</button>
+      <button class="alt" id="export-md">Export slide Markdown</button>
+    </div>
+  </div>
+</div>
+
+<script>
+const STATE = { slides: [], idx: 0, dirty: false };
+const $ = id => document.getElementById(id);
+
+async function load() {
+  // Try server-side slides.json, fall back to localStorage cache, else seed.
+  let data;
+  try {
+    const res = await fetch("slides.json", {cache:"no-store"});
+    if (!res.ok) throw 0;
+    data = await res.json();
+  } catch {
+    const cached = localStorage.getItem("myrrha.slides");
+    data = cached ? JSON.parse(cached) : seed();
+  }
+  // Merge any local overrides
+  const overrides = JSON.parse(localStorage.getItem("myrrha.slides.overrides") || "{}");
+  data.forEach(s => { if (overrides[s.id]) Object.assign(s, overrides[s.id]); });
+  STATE.slides = data;
+  // jump to slide #3 (hierarchy) by default if present
+  const hi = data.findIndex(s => s.id === "hierarchy");
+  STATE.idx = hi >= 0 ? hi : 0;
+  bind();
+  renderEditor(); renderPreview();
+}
+
+function seed() {
+  return [{
+    id:"hierarchy",
+    title:"MYRRHA QPLANT System Hierarchy",
+    subtitle:"Canonical decomposition (Slide #3)",
+    layout:"text-only",
+    caption:"F1 — System decomposition tree",
+    notes:"ACTION: validate skid IDs (HP1..HP4) with Kaeser nameplates.\nTODO: add LCC unit numbering scheme.",
+    body:"```\nQPLANT\n├── QRB (cold side & coldbox)\n└── WCS (warm side & warm compressor station)\n    ├── HCC (LP→HP total, black box with utilities)\n    │   ├── HP1 (Kaeser SKID 1)\n    │   ├── HP2 (Kaeser SKID 2)\n    │   ├── HP3 (Kaeser SKID 3)\n    │   └── HP4 (Kaeser SKID 4)\n    └── LCC (PVPS - 50 g/s target)\n        └── 2×5 units (10 total, N+1 config)\n```\n\nCross-refs: see **T1** (tables.html) and **G1** (graphs.html)."
+  }];
+}
+
+function current() { return STATE.slides[STATE.idx]; }
+
+function bind() {
+  ["f-title","f-subtitle","f-layout","f-body","f-caption","f-notes"].forEach(id => {
+    $(id).addEventListener("input", () => { STATE.dirty = true; pull(); renderPreview(); status("editing…"); });
+  });
+  $("prev").onclick = () => { STATE.idx = (STATE.idx - 1 + STATE.slides.length) % STATE.slides.length; renderEditor(); renderPreview(); };
+  $("next").onclick = () => { STATE.idx = (STATE.idx + 1) % STATE.slides.length; renderEditor(); renderPreview(); };
+  $("save").onclick = $("save2").onclick = save;
+  $("reload").onclick = async () => { localStorage.removeItem("myrrha.slides.overrides"); await load(); status("reloaded from master"); };
+  $("export-html").onclick = exportHtml;
+  $("export-md").onclick = exportMd;
+  document.addEventListener("keydown", e => {
+    if (e.target.tagName === "TEXTAREA" || e.target.tagName === "INPUT") return;
+    if (e.key === "ArrowLeft") $("prev").click();
+    if (e.key === "ArrowRight") $("next").click();
+  });
+}
+
+function pull() {
+  const s = current();
+  s.title    = $("f-title").value;
+  s.subtitle = $("f-subtitle").value;
+  s.layout   = $("f-layout").value;
+  s.body     = $("f-body").value;
+  s.caption  = $("f-caption").value;
+  s.notes    = $("f-notes").value;
+}
+
+function renderEditor() {
+  const s = current();
+  $("f-title").value    = s.title || "";
+  $("f-subtitle").value = s.subtitle || "";
+  $("f-layout").value   = s.layout || "text-only";
+  $("f-body").value     = s.body || "";
+  $("f-caption").value  = s.caption || "";
+  $("f-notes").value    = s.notes || "";
+  $("pos").textContent  = `${STATE.idx+1}/${STATE.slides.length} · ${s.id}`;
+}
+
+function renderPreview() {
+  const s = current();
+  const body = LiveRender.mdToHtml(s.body || "");
+  const sub  = s.subtitle ? `<div class="sub">${LiveRender.escapeHtml(s.subtitle)}</div>` : "";
+  const cap  = s.caption  ? `<div class="caption">${LiveRender.escapeHtml(s.caption)}</div>` : "";
+  let notes  = "";
+  if ((s.notes || "").trim()) {
+    const dec = LiveRender.escapeHtml(s.notes).replace(/\b(TODO|REVIEW|ACTION)\b/g, "<b>$1</b>").replace(/\n/g,"<br>");
+    notes = `<div class="notes"><b>Slide notes</b><br>${dec}</div>`;
+  }
+  $("preview").className = "frame layout-" + (s.layout || "text-only");
+  $("preview").innerHTML = `
+    <div><span class="label">${STATE.idx+1}/${STATE.slides.length}</span><span class="label">${s.layout}</span></div>
+    <h1>${LiveRender.escapeHtml(s.title || "")}</h1>${sub}
+    <div class="content">${body}</div>${cap}${notes}`;
+}
+
+function save() {
+  pull();
+  const overrides = JSON.parse(localStorage.getItem("myrrha.slides.overrides") || "{}");
+  const s = current();
+  overrides[s.id] = s;
+  localStorage.setItem("myrrha.slides.overrides", JSON.stringify(overrides));
+  STATE.dirty = false;
+  status(`saved · ${new Date().toLocaleTimeString()}`);
+}
+
+function status(msg) { $("status").textContent = msg; }
+
+function download(name, content, mime="text/plain") {
+  const blob = new Blob([content], {type: mime});
+  const a = document.createElement("a");
+  a.href = URL.createObjectURL(blob); a.download = name; a.click();
+  URL.revokeObjectURL(a.href);
+}
+
+function exportHtml() {
+  const s = current();
+  const css = `body{font-family:Aptos,'Segoe UI',system-ui,sans-serif;color:#1b1f24;max-width:900px;margin:24px auto;padding:0 20px}
+  h1{color:#0b3d91} pre{background:#0e1116;color:#e6edf3;padding:16px;border-radius:8px;font-family:Consolas,monospace}
+  .caption{color:#5b6470;font-style:italic;font-size:13px}
+  .notes{border-top:1px dashed #d8dde3;margin-top:18px;padding-top:10px;color:#5b6470;font-size:13px}
+  .notes b{color:#ff8a00}`;
+  const html = `<!doctype html><meta charset="utf-8"><title>${s.title}</title><style>${css}</style>
+<h1>${LiveRender.escapeHtml(s.title||"")}</h1>
+${s.subtitle?`<p><em>${LiveRender.escapeHtml(s.subtitle)}</em></p>`:""}
+${LiveRender.mdToHtml(s.body||"")}
+${s.caption?`<p class="caption">${LiveRender.escapeHtml(s.caption)}</p>`:""}
+${s.notes?`<div class="notes"><b>Slide notes</b><br>${LiveRender.escapeHtml(s.notes).replace(/\n/g,"<br>")}</div>`:""}`;
+  download(`${s.id}.html`, html, "text/html");
+}
+
+function exportMd() {
+  const s = current();
+  const fm = `---\nid: ${s.id}\ntitle: ${s.title}\nsubtitle: ${s.subtitle||""}\nlayout: ${s.layout}\ncaption: ${s.caption||""}\nnotes: |\n${(s.notes||"").split("\n").map(l=>"  "+l).join("\n")}\n---\n\n`;
+  download(`${s.id}.md`, fm + (s.body || ""), "text/markdown");
+}
+
+load();
+</script>
+</body>
+</html>
