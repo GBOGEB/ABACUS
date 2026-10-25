@@ -84,7 +84,7 @@ PyGithub>=2.10.0,<3.0.0; python_version >= "3.10"
 # ============================================================================
 
 # File watching and monitoring
-watchdog>=2.1.0,<3.0.0
+watchdog>=6.0.0,<7.0.0
 
 # Governed PDF semantic extraction for the binary bridge
 pypdf>=6.21.2,<7.0.0
