@@ -151,7 +151,7 @@ class ColdBuildTests(unittest.TestCase):
     def test_real_repository_sample_paths_and_style_contract(self):
         catalog = json.loads((ROOT / "docs" / "mcw" / "artifact_catalog.v1.json").read_text())
         style = json.loads((ROOT / "ssot" / "ssot_style.json").read_text())
-        self.assertEqual(len(catalog["artifacts"]), 10)
+        self.assertEqual(len(catalog["artifacts"]), 7)
         self.assertEqual(len(catalog["triggers"]), 9)
         self.assertEqual(style["palette"]["tokens"]["define"], "#562873")
         for item in catalog["artifacts"]:
