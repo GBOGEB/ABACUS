@@ -12,6 +12,12 @@ repos:
       - id: trailing-whitespace
   - repo: local
     hooks:
+      - id: guard-public-repo-binaries
+        name: Block binary artifacts in this public repo (defense-in-depth)
+        entry: python scripts/guard_public_repo.py
+        language: system
+        pass_filenames: true
+        stages: [pre-commit]
       - id: abacus-testpilot-fast
         name: ABACUS TestPilot fast preflight
         entry: python scripts/testpilot_preflight.py --mode fast
