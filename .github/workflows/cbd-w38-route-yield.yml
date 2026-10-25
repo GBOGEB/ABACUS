@@ -63,7 +63,7 @@ jobs:
           PY
       - name: Retain matched new-source branch receipt
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: cbd-w38-route-${{ github.run_id }}-a${{ github.run_attempt }}
           path: w38_route_receipts/

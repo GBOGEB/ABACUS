@@ -36,7 +36,7 @@ jobs:
         run: |
           set -euo pipefail
           python runtime/execution/dependency_spine_readonly_selector.py --root . --expected-head "$EXPECTED_HEAD" --out "$RUNNER_TEMP/dep-stage"
-      - uses: actions/upload-artifact@v7.0.2
+      - uses: actions/upload-artifact@v7
         if: always()
         with:
           name: abacus-dow-dep-stage-${{ github.run_id }}-${{ github.run_attempt }}

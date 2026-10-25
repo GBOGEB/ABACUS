@@ -65,7 +65,7 @@ jobs:
           cmp -s build/w13-neural/W13_NEURAL_SPINE_DATA.json "$root/W13_NEURAL_SPINE_DATA.json"
           cmp -s build/w13-neural/W13_NEURAL_SPINE_INTERACTIVE.html "$root/W13_NEURAL_SPINE_INTERACTIVE.html"
           { git rev-parse HEAD; sha256sum build/w13-neural/*.json build/w13-neural/*.html; } > build/w13-neural/source_sha256.txt
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v7
         if: always()
         with:
           name: abacus-w13-spine-${{ matrix.python }}-${{ github.run_id }}-${{ github.run_attempt }}

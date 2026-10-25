@@ -83,7 +83,7 @@ jobs:
           python scripts/cbd_w40_native_receipt.py
       - name: Upload all success/failure evidence for audit
         if: always()
-        uses: actions/upload-artifact@v7.0.2
+        uses: actions/upload-artifact@v7
         with:
           name: >-
             ${{ format('w40-parser-{0}-py{1}-{2}-a{3}',
