@@ -215,6 +215,7 @@ HTML export tools generate interactive dashboards, handover visualizations, and 
 | **Progress Tracker** | [`docs/progress_tracker.html`](docs/progress_tracker.html) | Interactive HTML | **NEW** — Development stages, branch status, and milestones |
 | **DMAIC Metrics** | [`docs/dmaic-metrics.html`](docs/dmaic-metrics.html) | Interactive HTML | DMAIC phase metrics visualization |
 | **Repository Structure** | [`docs/repository_structure.html`](docs/repository_structure.html) | Static HTML | Visual repo structure overview |
+| **Repository Map** | [`docs/repo-structure/index.html`](docs/repo-structure/index.html) | Static HTML | Find any file that used to sit at the root; open it on GitHub or in your local checkout ([refactor plan](docs/repo-structure/ROOT_REFACTOR_PLAN.md)) |
 
 > **Workflow integration:** HTML exports are triggered by [`export-docs.yml`](.github/workflows/export-docs.yml) and [`deploy-docs.yml`](.github/workflows/deploy-docs.yml). See also: [GitHub Pages deployment guide](github_pages_deployment_guide.md).
 

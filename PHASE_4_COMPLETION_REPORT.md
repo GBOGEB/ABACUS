@@ -162,8 +162,8 @@ python3 -c "from DMAIC_V3.core.twelve_cluster_orchestrator import TwelveClusterO
 | [`12_cluster_vision.md`](12_cluster_vision.md) | Core 12-Cluster Architecture |
 | [`tool_ecosystem_map.md`](tool_ecosystem_map.md) | DOW/KEB/GBOGEB ecosystem |
 | [`ssot_artifacts_catalog.md`](ssot_artifacts_catalog.md) | SSOT artifacts inventory |
-| [`recovery_report.md`](recovery_report.md) | File recovery & integrity report |
-| [`integration_test_results.md`](integration_test_results.md) | Test results & workflow status |
+| [`recovery_report.md`](docs_versioned/generated_reports/recovery_report.md) | File recovery & integrity report |
+| [`integration_test_results.md`](docs_versioned/generated_reports/integration_test_results.md) | Test results & workflow status |
 | [`p1_p2_p3_implementation_log.md`](p1_p2_p3_implementation_log.md) | Implementation log |
 | [`docs/TIMEOUT_HANDLING.md`](docs/TIMEOUT_HANDLING.md) | Timeout configuration guide |
 | [`docs/workflows/README.md`](docs/workflows/README.md) | CI/CD workflow installation |

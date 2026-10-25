@@ -211,10 +211,10 @@ Knowledge Must Grow, Never Dilute
 | Document | Purpose | Lines |
 |----------|---------|-------|
 | [TODO Dashboard](TODO_DASHBOARD_V3.1_2025-11-10.md) | Task tracking | 600 |
-| [Final Analysis](FINAL_SESSION_ANALYSIS_V3.1_2025-11-10.md) | Conversation tuple | 850 |
+| [Final Analysis](docs_versioned/handover/FINAL_SESSION_ANALYSIS_V3.1_2025-11-10.md) | Conversation tuple | 850 |
 | [Executive Summary](EXECUTIVE_SUMMARY_V3.1_2025-11-10.md) | Brief overview | 400 |
 | [Index YAML](INDEX_V3.1_2025-11-10.yaml) | Navigation | 550 |
-| [Status Dashboard](DMAIC_STATUS_DASHBOARD.md) | Real-time status | 600+ |
+| [Status Dashboard](docs_versioned/status_reports/DMAIC_STATUS_DASHBOARD.md) | Real-time status | 600+ |
 | [New Files](NEW_FILES_V3.1_2025-11-10.md) | File summary | 400 |
 
 ---

@@ -167,7 +167,7 @@ cat DMAIC_V3_OUTPUT/sprints/full_cycle_report_*.json | tail -1 | jq '.total_dura
 
 ## 📚 RELATED DOCUMENTS
 
-1. **[DMAIC_ITERATION_3_ERROR_ANALYSIS.md](DMAIC_ITERATION_3_ERROR_ANALYSIS.md)**
+1. **[DMAIC_ITERATION_3_ERROR_ANALYSIS.md](../../DMAIC_ITERATION_3_ERROR_ANALYSIS.md)**
    - Complete error analysis
    - Root cause investigation
    - Fix action plan
