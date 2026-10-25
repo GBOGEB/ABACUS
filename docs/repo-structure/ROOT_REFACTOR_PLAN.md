@@ -5,7 +5,7 @@
 **JADE task:** J14, the first ABACUS slice of J10 ("root candidate disposition and nonbreaking alias tests")
 in `pipeline-automation-hub/mission-control/jade_temple/data/BD_QUEUE.csv`.
 **Observed commit:** `1dff4c361f17abc44dfa65cccba2ee052ee01a2a` (inventory); W1 and W2 applied on top of `8d27bca8`.
-**Status:** W0 (discover and classify), W1 (generated run reports) and W2 (handover and session notes) are in the first PR: 61 files moved, root 390 → 329. W3 to W5 are planned only.
+**Status:** W0 (discover and classify), W1 (generated run reports) and W2 (handover and session notes) are in the first PR (ABACUS#2438): 61 files moved, root 390 → 329. W3a (40 unversioned status reports) is stacked on it: root 329 → 289. W3b to W5 are planned only.
 **Find anything:** the [repository map](index.html) (search every former root file, open it on GitHub or in your local checkout).
 
 How to open the map:
@@ -53,7 +53,7 @@ and those are the ones a move could break.
 | KEEP | Front door and manifests | 19 | 12 | 0 | root | CANONICAL_ROOT | — |
 | F1 | Generated run reports (timestamped or "Generated:" outputs) | 20 | 0 | 1 | `docs_versioned/generated_reports/` | ARCHIVE_PRESERVE_LINKS | **W1** |
 | F2 | Handover and session notes | 42 | 2 | 4 | `docs_versioned/handover/`; the three `V2.2_*` notes to `docs_versioned/v2.2_archived/` as the README layout declares | ARCHIVE_PRESERVE_LINKS (2 MOVE_WITH_CONSUMER_REPLAY) | **W2** |
-| F3 | Status, completion and result reports | 118 | 22 | 7 | version folders in `docs_versioned/` when the name carries a version, else `docs_versioned/status_reports/` | ARCHIVE_PRESERVE_LINKS | W3 (3 slices of up to 40) |
+| F3 | Status, completion and result reports | 118 | 22 | 7 | version folders in `docs_versioned/` when the name carries a version, else `docs_versioned/status_reports/` | ARCHIVE_PRESERVE_LINKS | W3a–W3d (4 slices of up to 40) |
 | F4 | Plans, guides, architecture and reference | 126 | 26 | 7 | still-used guides go to `docs/guides/`; superseded ones to `docs_versioned/plans/` or a version folder | LINK_ALIAS_FIRST / ARCHIVE_PRESERVE_LINKS | W4 (at least 3 slices) |
 | F5 | Code, automation and the data files they read or write | 65 | 47 | 0 | `scripts/<purpose>/` (deploy, ci, github, dow, …); `abacus_v21_*` next to `ABACUS_V21_DEPLOYMENT_PACKAGE/` | MOVE_WITH_CONSUMER_REPLAY | W5 (slices by consumer) |
 
@@ -111,9 +111,12 @@ ABACUS/
 | W0 | inventory, map, tool, test, `.jade` pointer | 0 | 390 | `docs/repo-structure/`, `.jade/` | — |
 | **W1** | F1 generated run reports | 20 | **370** | `docs_versioned/generated_reports/` | this PR |
 | **W2** | F2 handover and session notes | 41 (1 held) | **329** | `docs_versioned/handover/`, `docs_versioned/v2.2_archived/` (fixes the README "Get Started" links) | this PR |
-| W3 | F3 status and result reports | 118 | 211 | `docs_versioned/status_reports/`, version folders | W2 merged and green |
-| W4 | F4 plans, guides, reference | 126 | 85 | `docs/guides/`, `docs_versioned/plans/`, version folders | W3 merged and green |
-| W5 | F5 code and data | 65 | 20 (19 + the held F2 file until the prune decision) | `scripts/<purpose>/` | W4 merged and green |
+| **W3a** | F3 unversioned, no code consumer | 40 | **289** | `docs_versioned/status_reports/` | stacked on #2438; opens after it merges green |
+| W3b | F3 unversioned, 14 with code or config consumers (+ `COMPLETION_SUMMARY.md`, a name clash in two tracker YAMLs) | 25 | 264 | `docs_versioned/status_reports/` | W3a merged and green |
+| W3c | F3 version-stamped V2.1, V2.2, V2.3, v4.4 (3 with code consumers) | 24 | 240 | `docs_versioned/v2.1/`, `v2.2_archived/`, `v2.3/`, `v4.4/` | W3b merged and green |
+| W3d | F3 version-stamped V3.x (5 with code consumers) | 22 | 218 (+ 7 F3 prune candidates held) | `docs_versioned/v3.3/` | W3c merged and green |
+| W4 | F4 plans, guides, reference | 126 | 92 | `docs/guides/`, `docs_versioned/plans/`, version folders | W3 merged and green |
+| W5 | F5 code and data | 65 | 27 (19 + 8 held prune candidates until decided) | `scripts/<purpose>/` | W4 merged and green |
 
 ```text
 W1  ABACUS/                                 W2  ABACUS/
@@ -127,7 +130,7 @@ W3  ABACUS/                                 W4  ABACUS/
     ├── docs_versioned/                         ├── docs/guides/                 +n (owner picks)
     │   ├── status_reports/          +n         ├── docs_versioned/plans/        +m
     │   └── v2.x/ v3.3/ v4.4/        +118-n     │   └── v2.x/ v3.3/ v4.4/        +126-n-m
-    └── root: 211 files                         └── root: 85 files
+    └── root: 218 files (+7 held)               └── root: 92 files
 
 W5  ABACUS/
     ├── scripts/<purpose>/           +65  (shims where a workflow still calls the root path)

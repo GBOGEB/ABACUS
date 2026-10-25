@@ -17,13 +17,14 @@ This index provides a complete navigation guide to all DMAIC project documentati
 
 ### For Executives & Decision Makers
 
-1. **[DMAIC_EXECUTIVE_SUMMARY.md](DMAIC_EXECUTIVE_SUMMARY.md)** ⭐ START HERE
+1. **[DMAIC_EXECUTIVE_SUMMARY.md](docs_versioned/status_reports/DMAIC_EXECUTIVE_SUMMARY.md)**
+   ⭐ START HERE
    - Quick overview of all 5 sprints
    - Key metrics and achievements
    - System health dashboard
    - 5-minute read
 
-2. **[DMAIC_COMPLETE_BOOK_OF_TOTAL_MARKDOWN.md](DMAIC_COMPLETE_BOOK_OF_TOTAL_MARKDOWN.md)**
+2. **[DMAIC_COMPLETE_BOOK_OF_TOTAL_MARKDOWN.md](docs_versioned/status_reports/DMAIC_COMPLETE_BOOK_OF_TOTAL_MARKDOWN.md)**
    - Comprehensive analysis of all sprints
    - Iteration scoring and metrics
    - Pre/post sprint comparison
@@ -32,7 +33,8 @@ This index provides a complete navigation guide to all DMAIC project documentati
 
 ### For Developers & Technical Teams
 
-1. **[DMAIC_STATUS_DASHBOARD.md](DMAIC_STATUS_DASHBOARD.md)** ⭐ START HERE
+1. **[DMAIC_STATUS_DASHBOARD.md](docs_versioned/status_reports/DMAIC_STATUS_DASHBOARD.md)**
+   ⭐ START HERE
    - Current system status
    - Version comparison
    - Technical metrics
@@ -46,7 +48,8 @@ This index provides a complete navigation guide to all DMAIC project documentati
 
 ### For Project Managers
 
-1. **[DMAIC_SPRINT_5_HANDOVER_SESSION.md](docs_versioned/handover/DMAIC_SPRINT_5_HANDOVER_SESSION.md)** ⭐ START HERE
+1. **[DMAIC_SPRINT_5_HANDOVER_SESSION.md](docs_versioned/handover/DMAIC_SPRINT_5_HANDOVER_SESSION.md)**
+   ⭐ START HERE
    - Complete handover package
    - All deliverables
    - Next steps
@@ -114,8 +117,8 @@ This index provides a complete navigation guide to all DMAIC project documentati
 **Status:** ✅ COMPLETE | **Score:** 92/100
 
 **Documents:**
-- [DMAIC_SPRINT_5_COMPLETION_REPORT.md](DMAIC_SPRINT_5_COMPLETION_REPORT.md)
-- [DMAIC_SPRINT_5_FINAL_SUMMARY.md](DMAIC_SPRINT_5_FINAL_SUMMARY.md)
+- [DMAIC_SPRINT_5_COMPLETION_REPORT.md](docs_versioned/status_reports/DMAIC_SPRINT_5_COMPLETION_REPORT.md)
+- [DMAIC_SPRINT_5_FINAL_SUMMARY.md](docs_versioned/status_reports/DMAIC_SPRINT_5_FINAL_SUMMARY.md)
 - [DMAIC_SPRINT_5_HANDOVER_SESSION.md](docs_versioned/handover/DMAIC_SPRINT_5_HANDOVER_SESSION.md)
 - [DMAIC_SPRINT_5_TASK1_COMPLETION.md](DMAIC_SPRINT_5_TASK1_COMPLETION.md)
 
@@ -131,7 +134,8 @@ This index provides a complete navigation guide to all DMAIC project documentati
 **Status:** 🔄 PLANNED | **Target Score:** 95/100
 
 **Planning Documents:**
-- See [DMAIC_COMPLETE_BOOK_OF_TOTAL_MARKDOWN.md](DMAIC_COMPLETE_BOOK_OF_TOTAL_MARKDOWN.md) - Sprint 6 Planning section
+- See [DMAIC_COMPLETE_BOOK_OF_TOTAL_MARKDOWN.md](docs_versioned/status_reports/DMAIC_COMPLETE_BOOK_OF_TOTAL_MARKDOWN.md)
+  — Sprint 6 Planning section
 
 **Planned Deliverables:**
 - Enhanced metrics collection
@@ -220,10 +224,13 @@ This index provides a complete navigation guide to all DMAIC project documentati
 ### For New Team Members
 
 **Read in this order:**
-1. [DMAIC_EXECUTIVE_SUMMARY.md](DMAIC_EXECUTIVE_SUMMARY.md) (5 min)
+1. [DMAIC_EXECUTIVE_SUMMARY.md](docs_versioned/status_reports/DMAIC_EXECUTIVE_SUMMARY.md)
+   (5 min)
 2. [DMAIC_QUICK_START_GUIDE.md](DMAIC_QUICK_START_GUIDE.md) (15 min)
-3. [DMAIC_STATUS_DASHBOARD.md](DMAIC_STATUS_DASHBOARD.md) (10 min)
-4. [DMAIC_SPRINT_5_HANDOVER_SESSION.md](docs_versioned/handover/DMAIC_SPRINT_5_HANDOVER_SESSION.md) (20 min)
+3. [DMAIC_STATUS_DASHBOARD.md](docs_versioned/status_reports/DMAIC_STATUS_DASHBOARD.md)
+   (10 min)
+4. [DMAIC_SPRINT_5_HANDOVER_SESSION.md](docs_versioned/handover/DMAIC_SPRINT_5_HANDOVER_SESSION.md)
+   (20 min)
 
 **Total Time:** ~50 minutes to full understanding
 
@@ -238,9 +245,12 @@ This index provides a complete navigation guide to all DMAIC project documentati
 ### For Sprint Planning
 
 **Read in this order:**
-1. [DMAIC_COMPLETE_BOOK_OF_TOTAL_MARKDOWN.md](DMAIC_COMPLETE_BOOK_OF_TOTAL_MARKDOWN.md) - Sprint 6 Planning section
-2. [DMAIC_SPRINT_5_COMPLETION_REPORT.md](DMAIC_SPRINT_5_COMPLETION_REPORT.md) - Lessons learned
-3. [DMAIC_STATUS_DASHBOARD.md](DMAIC_STATUS_DASHBOARD.md) - Current status
+1. [DMAIC_COMPLETE_BOOK_OF_TOTAL_MARKDOWN.md](docs_versioned/status_reports/DMAIC_COMPLETE_BOOK_OF_TOTAL_MARKDOWN.md)
+   — Sprint 6 Planning section
+2. [DMAIC_SPRINT_5_COMPLETION_REPORT.md](docs_versioned/status_reports/DMAIC_SPRINT_5_COMPLETION_REPORT.md)
+   — Lessons learned
+3. [DMAIC_STATUS_DASHBOARD.md](docs_versioned/status_reports/DMAIC_STATUS_DASHBOARD.md)
+   — Current status
 
 ---
 
@@ -274,22 +284,24 @@ This index provides a complete navigation guide to all DMAIC project documentati
 ### How do I...?
 
 **...understand the overall project?**
-→ Read [DMAIC_EXECUTIVE_SUMMARY.md](DMAIC_EXECUTIVE_SUMMARY.md)
+→ Read [DMAIC_EXECUTIVE_SUMMARY.md](docs_versioned/status_reports/DMAIC_EXECUTIVE_SUMMARY.md)
 
 **...get started using the system?**
 → Read [DMAIC_QUICK_START_GUIDE.md](DMAIC_QUICK_START_GUIDE.md)
 
 **...see the current status?**
-→ Read [DMAIC_STATUS_DASHBOARD.md](DMAIC_STATUS_DASHBOARD.md)
+→ Read [DMAIC_STATUS_DASHBOARD.md](docs_versioned/status_reports/DMAIC_STATUS_DASHBOARD.md)
 
 **...understand Sprint 5 achievements?**
-→ Read [DMAIC_SPRINT_5_COMPLETION_REPORT.md](DMAIC_SPRINT_5_COMPLETION_REPORT.md)
+→ Read [DMAIC_SPRINT_5_COMPLETION_REPORT.md](docs_versioned/status_reports/DMAIC_SPRINT_5_COMPLETION_REPORT.md)
 
 **...plan Sprint 6?**
-→ Read [DMAIC_COMPLETE_BOOK_OF_TOTAL_MARKDOWN.md](DMAIC_COMPLETE_BOOK_OF_TOTAL_MARKDOWN.md) - Sprint 6 section
+→ Read [DMAIC_COMPLETE_BOOK_OF_TOTAL_MARKDOWN.md](docs_versioned/status_reports/DMAIC_COMPLETE_BOOK_OF_TOTAL_MARKDOWN.md)
+— Sprint 6 section
 
 **...run the tests?**
-→ See [DMAIC_SPRINT_5_HANDOVER_SESSION.md](docs_versioned/handover/DMAIC_SPRINT_5_HANDOVER_SESSION.md) - Testing Instructions
+→ See [DMAIC_SPRINT_5_HANDOVER_SESSION.md](docs_versioned/handover/DMAIC_SPRINT_5_HANDOVER_SESSION.md)
+— Testing Instructions
 
 **...understand the architecture?**
 → Read [dmaic_recursive_idempotent_pipeline_handover_ready_edit.md](docs_versioned/handover/dmaic_recursive_idempotent_pipeline_handover_ready_edit.md)
@@ -366,10 +378,10 @@ cat DMAIC_V3_OUTPUT/sprints/full_cycle_report_*.json | tail -1
 
 **System Usage:**
 - See [DMAIC_QUICK_START_GUIDE.md](DMAIC_QUICK_START_GUIDE.md)
-- Check [DMAIC_STATUS_DASHBOARD.md](DMAIC_STATUS_DASHBOARD.md)
+- Check [DMAIC_STATUS_DASHBOARD.md](docs_versioned/status_reports/DMAIC_STATUS_DASHBOARD.md)
 
 **Sprint Planning:**
-- See [DMAIC_COMPLETE_BOOK_OF_TOTAL_MARKDOWN.md](DMAIC_COMPLETE_BOOK_OF_TOTAL_MARKDOWN.md)
+- See [DMAIC_COMPLETE_BOOK_OF_TOTAL_MARKDOWN.md](docs_versioned/status_reports/DMAIC_COMPLETE_BOOK_OF_TOTAL_MARKDOWN.md)
 - Review Sprint 5 lessons learned
 
 **Technical Issues:**

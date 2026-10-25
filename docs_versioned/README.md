@@ -31,6 +31,8 @@ v2.1 (Production Baseline)
   the repository root (W2)
 - [Generated run reports](generated_reports/) — timestamped tool outputs,
   moved from the repository root (W1)
+- [Status and completion reports](status_reports/) — unversioned status
+  summaries, moved from the repository root (W3)
 - [Root relocation map](ROOT_RELOCATION_MAP.csv) — every file moved off
   the root, old → new path; the
   [repository map](../docs/repo-structure/index.html) searches it
