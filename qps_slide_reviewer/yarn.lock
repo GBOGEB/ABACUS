@@ -5627,7 +5627,7 @@ __metadata:
     cmdk: "npm:1.0.0"
     cookie: "npm:2.0.1"
     csv: "npm:6.3.11"
-    date-fns: "npm:4.0.0"
+    date-fns: "npm:4.4.0"
     dayjs: "npm:1.11.13"
     dotenv: "npm:16.5.0"
     embla-carousel-react: "npm:8.6.0"
@@ -6931,10 +6931,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"date-fns@npm:4.0.0":
-  version: 4.0.0
-  resolution: "date-fns@npm:4.0.0"
-  checksum: 10c0/c706d29f05c28fdaea939068d688489bbc3096ef2486d1fe4a56d209c3a061ba99febae943b9562bb8ac08fe61257cf11fe74adad164adb7ba6df994e09cb99b
+"date-fns@npm:4.4.0":
+  version: 4.4.0
+  resolution: "date-fns@npm:4.4.0"
+  checksum: 10c0/988f0a13db183f5dfc85c36bbb6847a9c135a9225888bbea4005876ec15539a8613c21a07370a4e7ea543918d5a1cafb423c528b42cdbbde5fdfddb178126b21
   languageName: node
   linkType: hard
 
