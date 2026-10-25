@@ -288,7 +288,7 @@ A recursive, DMAIC-driven multi-agent system for analyzing cryogenic engineering
 ### Get Started Now
 1. **Read:** [MASTER_HANDOVER_INDEX.md](docs_versioned/handover/MASTER_HANDOVER_INDEX.md) (5 min) ⭐
 2. **DMAIC V3 Handover:** [ABACUS_Handover_Book.md](DMAIC_V3/docs/handover/ABACUS_Handover_Book.md) (Complete reference) 📚
-3. **Status:** [Final Status Dashboard](docs/final_status_v4.4.0.html) + [TOTAL_PROGRESS_SUMMARY.md](TOTAL_PROGRESS_SUMMARY.md) (5 min)
+3. **Status:** [Final Status Dashboard](docs/final_status_v4.4.0.html) + [TOTAL_PROGRESS_SUMMARY.md](docs_versioned/status_reports/TOTAL_PROGRESS_SUMMARY.md) (5 min)
 4. **Test:** `python local_mcp/agent_orchestrator_v3.0.py`
 5. **Explore:** [COMPREHENSIVE_VERSION_ANALYSIS](docs_versioned/handover/COMPREHENSIVE_VERSION_ANALYSIS_20251111.md) (Historical lineage) 📘
 

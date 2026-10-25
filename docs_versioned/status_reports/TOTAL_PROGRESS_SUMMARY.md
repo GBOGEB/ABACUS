@@ -193,4 +193,4 @@ The GBOGEB/ABACUS repository moved from an unstructured, multi-version, partiall
 - **92.5 / 100 DMAIC quality composite**.
 - **v4.4.0 released and live** at `https://gbogeb.github.io/ABACUS/`.
 
-The methodology that produced this result is documented in [`DMAIC_REPO_CLEANUP_METHODOLOGY.md`](./DMAIC_REPO_CLEANUP_METHODOLOGY.md) and ready to be applied to the next four sister repositories.
+The methodology that produced this result is documented in [`DMAIC_REPO_CLEANUP_METHODOLOGY.md`](../../DMAIC_REPO_CLEANUP_METHODOLOGY.md) and ready to be applied to the next four sister repositories.

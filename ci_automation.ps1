@@ -199,7 +199,7 @@ Complete integration with live demonstration:
 
     # Create GitHub release
     Write-Host "Creating GitHub release..." -ForegroundColor Yellow
-    gh release create $TAG_NAME --title "DMAIC + DOW Integration v1.0.0" --notes-file README_INTEGRATION_COMPLETE.md
+    gh release create $TAG_NAME --title "DMAIC + DOW Integration v1.0.0" --notes-file docs_versioned/status_reports/README_INTEGRATION_COMPLETE.md
 
     Write-Host "✅ GitHub release created!" -ForegroundColor Green
 }

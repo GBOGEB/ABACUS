@@ -32,7 +32,7 @@ def generate_handover_summary() -> str:
 **File:** `DMAIC_V3/phases/phase4_improve.py`
 
 **Features:**
-- ✅ Phase 4 opportunities loader from CORRECTED_PHASE4_OPPORTUNITIES.md
+- ✅ Phase 4 opportunities loader from docs_versioned/status_reports/CORRECTED_PHASE4_OPPORTUNITIES.md
 - ✅ Knowledge preservation tracking
 - ✅ Integrated opportunity-recommendation mapping
 - ✅ Enhanced refactoring recommendations with OPP-001, OPP-003 principles
@@ -129,7 +129,7 @@ bridge.finish_run("success", results.get('statistics', {{}}))
 ### Configuration
 7. `VERSION` - Current version (3.3.0-enhanced)
 8. `CHANGELOG.md` - Change history
-9. `CORRECTED_PHASE4_OPPORTUNITIES.md` - Opportunities spec
+9. `docs_versioned/status_reports/CORRECTED_PHASE4_OPPORTUNITIES.md` - Opportunities spec
 
 ---
 
