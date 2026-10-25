@@ -51,7 +51,7 @@ jobs:
           python -m pytest -q tests/test_dashboard_health_link_contract.py tests/test_dashboard_health_source_contract.py --junitxml=w4-evidence/junit.xml
       - name: Preserve native JUnit
         if: always()
-        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9
         with:
           name: w4-dashboard-status-${{ matrix.os }}-py${{ matrix.python-version }}
           path: w4-evidence/junit.xml

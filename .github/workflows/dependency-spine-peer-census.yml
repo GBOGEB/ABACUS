@@ -57,7 +57,7 @@ jobs:
             --out "$RUNNER_TEMP/dependency-spine"
       - name: Retain source-head evidence (not an upgrade-coverage claim)
         if: always()
-        uses: actions/upload-artifact@v7.0.2
+        uses: actions/upload-artifact@v7
         with:
           name: dep-spine-abacus-${{ github.run_id }}-${{ github.run_attempt }}
           path: ${{ runner.temp }}/dependency-spine/
