@@ -420,12 +420,12 @@ Date       | Unit Tests | Integration | Total
 - [Convergence Plan](CONVERGENCE_PLAN_V23_TO_V3.md)
 - [Comprehensive Status](DMAIC_COMPREHENSIVE_STATUS_V3.3_202501101800.md)
 - [Quick Reference](DMAIC_QUICK_REFERENCE_V3.3_202501101800.md)
-- [Corrected Handover](CORRECTED_HANDOVER_PARALLEL_VERSIONS.md)
+- [Corrected Handover](docs_versioned/handover/CORRECTED_HANDOVER_PARALLEL_VERSIONS.md)
 
 ### Previous Sessions
 - [TODO Tracking](TODO_V3.1_2025-11-10.yaml)
 - [Master Index](MASTER_INDEX_V3.1_2025-11-10.md)
-- [Session Handover](SESSION_HANDOVER_HONEST_V3.3_202501101800.md)
+- [Session Handover](docs_versioned/handover/SESSION_HANDOVER_HONEST_V3.3_202501101800.md)
 
 ### Execution Reports
 - [Latest Execution Report](output/execution_reports/real_execution_report_20251110_162537.json)

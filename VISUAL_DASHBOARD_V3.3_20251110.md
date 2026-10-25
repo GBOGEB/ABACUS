@@ -432,7 +432,7 @@
 - 📊 [User Progress Report](USER_PROGRESS_REPORT_V3.3_20251110.md)
 - 🔄 [Convergence Plan](CONVERGENCE_PLAN_V23_TO_V3.md)
 - 📋 [Comprehensive Changelog](CHANGELOG_V3.3_20251110.md)
-- 📝 [Session Summary](SESSION_SUMMARY_V3.3_20251110.md)
+- 📝 [Session Summary](docs_versioned/handover/SESSION_SUMMARY_V3.3_20251110.md)
 - 📊 [Visual Dashboard](VISUAL_DASHBOARD_V3.3_20251110.md) (this document)
 
 ### Key Commands

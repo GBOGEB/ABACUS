@@ -46,7 +46,7 @@ This index provides a complete navigation guide to all DMAIC project documentati
 
 ### For Project Managers
 
-1. **[DMAIC_SPRINT_5_HANDOVER_SESSION.md](DMAIC_SPRINT_5_HANDOVER_SESSION.md)** ⭐ START HERE
+1. **[DMAIC_SPRINT_5_HANDOVER_SESSION.md](docs_versioned/handover/DMAIC_SPRINT_5_HANDOVER_SESSION.md)** ⭐ START HERE
    - Complete handover package
    - All deliverables
    - Next steps
@@ -116,7 +116,7 @@ This index provides a complete navigation guide to all DMAIC project documentati
 **Documents:**
 - [DMAIC_SPRINT_5_COMPLETION_REPORT.md](DMAIC_SPRINT_5_COMPLETION_REPORT.md)
 - [DMAIC_SPRINT_5_FINAL_SUMMARY.md](DMAIC_SPRINT_5_FINAL_SUMMARY.md)
-- [DMAIC_SPRINT_5_HANDOVER_SESSION.md](DMAIC_SPRINT_5_HANDOVER_SESSION.md)
+- [DMAIC_SPRINT_5_HANDOVER_SESSION.md](docs_versioned/handover/DMAIC_SPRINT_5_HANDOVER_SESSION.md)
 - [DMAIC_SPRINT_5_TASK1_COMPLETION.md](DMAIC_SPRINT_5_TASK1_COMPLETION.md)
 
 **Key Deliverables:**
@@ -185,7 +185,7 @@ This index provides a complete navigation guide to all DMAIC project documentati
 
 ### Architecture & Design
 
-1. **[dmaic_recursive_idempotent_pipeline_handover_ready_edit.md](dmaic_recursive_idempotent_pipeline_handover_ready_edit.md)**
+1. **[dmaic_recursive_idempotent_pipeline_handover_ready_edit.md](docs_versioned/handover/dmaic_recursive_idempotent_pipeline_handover_ready_edit.md)**
    - System architecture
    - Pipeline design
    - Technical specifications
@@ -223,7 +223,7 @@ This index provides a complete navigation guide to all DMAIC project documentati
 1. [DMAIC_EXECUTIVE_SUMMARY.md](DMAIC_EXECUTIVE_SUMMARY.md) (5 min)
 2. [DMAIC_QUICK_START_GUIDE.md](DMAIC_QUICK_START_GUIDE.md) (15 min)
 3. [DMAIC_STATUS_DASHBOARD.md](DMAIC_STATUS_DASHBOARD.md) (10 min)
-4. [DMAIC_SPRINT_5_HANDOVER_SESSION.md](DMAIC_SPRINT_5_HANDOVER_SESSION.md) (20 min)
+4. [DMAIC_SPRINT_5_HANDOVER_SESSION.md](docs_versioned/handover/DMAIC_SPRINT_5_HANDOVER_SESSION.md) (20 min)
 
 **Total Time:** ~50 minutes to full understanding
 
@@ -232,7 +232,7 @@ This index provides a complete navigation guide to all DMAIC project documentati
 **Read in this order:**
 1. [DMAIC_QUICK_START_GUIDE.md](DMAIC_QUICK_START_GUIDE.md)
 2. Test files in `DMAIC_V3/tests/`
-3. [dmaic_recursive_idempotent_pipeline_handover_ready_edit.md](dmaic_recursive_idempotent_pipeline_handover_ready_edit.md)
+3. [dmaic_recursive_idempotent_pipeline_handover_ready_edit.md](docs_versioned/handover/dmaic_recursive_idempotent_pipeline_handover_ready_edit.md)
 4. Source code in `DMAIC_V3/`
 
 ### For Sprint Planning
@@ -289,10 +289,10 @@ This index provides a complete navigation guide to all DMAIC project documentati
 → Read [DMAIC_COMPLETE_BOOK_OF_TOTAL_MARKDOWN.md](DMAIC_COMPLETE_BOOK_OF_TOTAL_MARKDOWN.md) - Sprint 6 section
 
 **...run the tests?**
-→ See [DMAIC_SPRINT_5_HANDOVER_SESSION.md](DMAIC_SPRINT_5_HANDOVER_SESSION.md) - Testing Instructions
+→ See [DMAIC_SPRINT_5_HANDOVER_SESSION.md](docs_versioned/handover/DMAIC_SPRINT_5_HANDOVER_SESSION.md) - Testing Instructions
 
 **...understand the architecture?**
-→ Read [dmaic_recursive_idempotent_pipeline_handover_ready_edit.md](dmaic_recursive_idempotent_pipeline_handover_ready_edit.md)
+→ Read [dmaic_recursive_idempotent_pipeline_handover_ready_edit.md](docs_versioned/handover/dmaic_recursive_idempotent_pipeline_handover_ready_edit.md)
 
 **...see iteration results?**
 → Check `DMAIC_V3_OUTPUT/sprints/` directory
@@ -377,7 +377,7 @@ cat DMAIC_V3_OUTPUT/sprints/full_cycle_report_*.json | tail -1
 - Review architecture documentation
 
 **Handover:**
-- See [DMAIC_SPRINT_5_HANDOVER_SESSION.md](DMAIC_SPRINT_5_HANDOVER_SESSION.md)
+- See [DMAIC_SPRINT_5_HANDOVER_SESSION.md](docs_versioned/handover/DMAIC_SPRINT_5_HANDOVER_SESSION.md)
 
 ---
 
