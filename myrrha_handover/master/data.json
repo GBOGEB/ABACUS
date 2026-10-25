@@ -1,0 +1,383 @@
+{
+  "baseline": {
+    "id": "B1",
+    "mass_flow_g_s": 350,
+    "pressure_barG": 14
+  },
+  "operating_points": [
+    {
+      "id": "B2",
+      "name": "ALaT",
+      "fsd": 2,
+      "model": "SFC 575",
+      "speed_Hz": 72,
+      "delivery_g_s": 220
+    },
+    {
+      "id": "B3",
+      "name": "LKT",
+      "fsd": 3,
+      "model": "SFC 475",
+      "speed_Hz": 57,
+      "delivery_g_s": 264
+    }
+  ],
+  "rcw": {
+    "id": "B4",
+    "hot_max_C": 85,
+    "inlet_C": 30,
+    "deltaT_C": 25
+  },
+  "lcc_pvps": {
+    "id": "B5",
+    "target_g_s": 50,
+    "units_total": 10,
+    "config": "2x5 (N+1)"
+  },
+  "PVPS": {
+    "system_name": "WCS.LCC",
+    "description": "Low-pressure PVPS compressors (vacuum / pumping side)",
+    "configuration": "2x5 units (10 total, N+1)",
+    "version_tag": "v0.4 Baseline - Placeholder pending vendor confirmation",
+    "baseline_flow_per_unit": 5.0,
+    "baseline_flow_total": 50.0,
+    "gamma_symbol": "\u03b3",
+    "isothermal_efficiency": 0.5,
+    "motor_efficiency": 0.967,
+    "efficiency_note": "Placeholder - awaiting vendor data",
+    "n_plus_1_flow_per_unit": 5.56,
+    "units": [
+      {
+        "id": "LP1",
+        "row": "A",
+        "position": 1,
+        "nominal_flow": 5.0,
+        "unit": "g/s"
+      },
+      {
+        "id": "LP2",
+        "row": "A",
+        "position": 2,
+        "nominal_flow": 5.0,
+        "unit": "g/s"
+      },
+      {
+        "id": "LP3",
+        "row": "A",
+        "position": 3,
+        "nominal_flow": 5.0,
+        "unit": "g/s"
+      },
+      {
+        "id": "LP4",
+        "row": "A",
+        "position": 4,
+        "nominal_flow": 5.0,
+        "unit": "g/s"
+      },
+      {
+        "id": "LP5",
+        "row": "A",
+        "position": 5,
+        "nominal_flow": 5.0,
+        "unit": "g/s"
+      },
+      {
+        "id": "LP6",
+        "row": "B",
+        "position": 1,
+        "nominal_flow": 5.0,
+        "unit": "g/s"
+      },
+      {
+        "id": "LP7",
+        "row": "B",
+        "position": 2,
+        "nominal_flow": 5.0,
+        "unit": "g/s"
+      },
+      {
+        "id": "LP8",
+        "row": "B",
+        "position": 3,
+        "nominal_flow": 5.0,
+        "unit": "g/s"
+      },
+      {
+        "id": "LP9",
+        "row": "B",
+        "position": 4,
+        "nominal_flow": 5.0,
+        "unit": "g/s"
+      },
+      {
+        "id": "LP10",
+        "row": "B",
+        "position": 5,
+        "nominal_flow": 5.0,
+        "unit": "g/s"
+      }
+    ],
+    "calculated_utilities": {
+      "isothermal_work_kW_total": 71.55,
+      "shaft_power_kW_total": 143.1,
+      "motor_power_kW_total": 147.98,
+      "hvac_kW_total": 14.8,
+      "cooling_water_heat_kW_total": 133.18,
+      "cooling_water_flow_m3h_total": 7.67,
+      "per_unit_motor_kW": 14.8,
+      "per_unit_hvac_kW": 1.48,
+      "per_unit_cw_heat_kW": 13.32,
+      "per_unit_cw_flow_m3h": 0.77
+    },
+    "utilities": {
+      "electric_power_total": "TBD - calculate from isothermal + efficiency",
+      "hvac_fraction": 0.1,
+      "cooling_water_fraction": 0.9,
+      "hvac_note": "10% of electric power",
+      "cooling_water_note": "90% of remaining heat (after HVAC)"
+    },
+    "pressure_conditions": {
+      "suction_pressure": "TBD - from system design (~0.1 barA assumed)",
+      "discharge_pressure": "TBD - matches HCC suction ~1.05 barA",
+      "compression_ratio": "~10.5 (placeholder)"
+    },
+    "operating_scenarios": {
+      "config30": {
+        "name": "Configuration 30",
+        "wcs_hp_flow": 330,
+        "pvps_flow": 50,
+        "total_wcs_flow": 380,
+        "note": "Expected normal operation"
+      },
+      "config24": {
+        "name": "Configuration 24",
+        "wcs_hp_flow": 304,
+        "pvps_flow": 50,
+        "total_wcs_flow": 354,
+        "note": "Reduced HP flow scenario"
+      }
+    },
+    "operating_modes": [
+      {
+        "mode": "Normal",
+        "running": 9,
+        "standby": 1,
+        "per_unit_flow": 5.56,
+        "total_flow": 50.0
+      },
+      {
+        "mode": "N+1 (full)",
+        "running": 10,
+        "standby": 0,
+        "per_unit_flow": 5.0,
+        "total_flow": 50.0
+      },
+      {
+        "mode": "Degraded",
+        "running": 8,
+        "standby": 1,
+        "per_unit_flow": 6.25,
+        "total_flow": 50.0,
+        "note": "one in maintenance, one standby"
+      }
+    ],
+    "todo_next_version": [
+      "Vendor datasheets for actual PVPS units",
+      "Suction pressure from coldbox interface",
+      "Actual motor power and cooling requirements",
+      "VFD turndown capabilities",
+      "Noise levels and dimensions"
+    ]
+  },
+  "RCW_HX": {
+    "id": "B6",
+    "design_inlet_temp_C": 30,
+    "design_delta_T_K": 25,
+    "design_outlet_temp_C": 55,
+    "oil_inlet_temp_C": 85,
+    "oil_outlet_temp_C": 30,
+    "helium_inlet_temp_K": 84,
+    "helium_outlet_temp_K": 300,
+    "Q_oil_per_skid_kW": 197.6,
+    "Q_he_sensible_per_skid_kW": 126.3,
+    "Q_total_CW_per_skid_kW": 323.9,
+    "V_RCW_oil_per_skid_m3h": 6.83,
+    "units_per_skid": "1 duty + 1 plant-level standby (N+1 manifold)",
+    "n_plus_1_strategy": "shared standby HX on plant manifold, isolated per-skid via MOVs"
+  },
+  "COMBI": {
+    "configuration": "Fixed @ 64 Hz + VFD @ variable 50-72 Hz",
+    "fixed_unit_hz": 64,
+    "fixed_unit_flow_g_s": 100.04,
+    "fixed_unit_motor_kW": 280.0,
+    "fixed_unit_CW_m3h": 16.18,
+    "vfd_design_hz": 60,
+    "vfd_design_flow_g_s": 93.78,
+    "vfd_design_motor_kW": 262.5,
+    "vfd_max_hz": 72,
+    "vfd_max_flow_g_s": 112.54,
+    "vfd_min_hz": 50,
+    "vfd_min_flow_g_s": 78.15,
+    "two_unit_design_flow_g_s": 193.82,
+    "two_unit_max_flow_g_s": 212.58,
+    "four_unit_scenario": "2 fixed @ 64 Hz + 2 VFD @ variable",
+    "four_unit_design_flow_g_s": 387.64,
+    "four_unit_max_flow_g_s": 425.16
+  },
+  "Config24": {
+    "beta_flow_g_s": 304,
+    "gamma_flow_g_s": 50,
+    "total_flow_g_s": 354,
+    "hp_units_running": "3 (preferred) or 4 (COMBI variant)",
+    "utilities_3_units": {
+      "f_Hz": 64.83,
+      "motor_power_total_kW": 850.7,
+      "CW_flow_total_m3h": 49.2,
+      "CW_heat_total_kW": 875.0,
+      "RCW_oil_total_m3h": 18.5
+    },
+    "utilities_4_units_combi": {
+      "split": "2 fixed @ 64 + 2 VFD @ 33.3 Hz (below VFD min \u2014 needs recycle)",
+      "motor_power_total_kW": 791.0,
+      "CW_flow_total_m3h": 45.7,
+      "feasibility": "marginal"
+    },
+    "utilities_4_units_balanced_VFD": {
+      "f_Hz": 48.6,
+      "motor_power_total_kW": 851.4,
+      "CW_flow_total_m3h": 49.2
+    },
+    "recommended": "Option A \u2014 3 VFD units"
+  },
+  "Config344": {
+    "beta_flow_g_s": 344,
+    "gamma_flow_g_s": 50,
+    "total_flow_g_s": 394,
+    "hp_units_running": "4 VFD (preferred \u2014 3 breaches 72 Hz envelope)",
+    "utilities_3_units": {
+      "f_Hz": 73.4,
+      "motor_power_total_kW": 962.7,
+      "feasibility": "vendor extrapolation required (>72 Hz)"
+    },
+    "utilities_4_units": {
+      "f_Hz": 55.0,
+      "motor_power_total_kW": 962.7,
+      "CW_flow_total_m3h": 55.7,
+      "RCW_oil_total_m3h": 27.3
+    },
+    "note": "Intermediate scenario between 336 (Config30) and 350 (baseline)",
+    "recommended": "Option B \u2014 4 VFD units @ 55 Hz"
+  },
+  "hierarchy": {
+    "QPLANT": {
+      "QRB": "cold side & coldbox",
+      "WCS": {
+        "HCC": [
+          "HP1 (Kaeser SKID 1)",
+          "HP2 (Kaeser SKID 2)",
+          "HP3 (Kaeser SKID 3)",
+          "HP4 (Kaeser SKID 4)"
+        ],
+        "LCC": [
+          "2x5 units (10 total, N+1) - LP1..LP10"
+        ]
+      }
+    }
+  },
+  "tables": [
+    {
+      "id": "T1",
+      "title": "Operating Point Summary",
+      "columns": [
+        "ID",
+        "Name",
+        "FSD",
+        "Model",
+        "Speed (Hz)",
+        "Delivery (g/s)"
+      ],
+      "rows": [
+        [
+          "B2",
+          "ALaT",
+          2,
+          "SFC 575",
+          72,
+          220
+        ],
+        [
+          "B3",
+          "LKT",
+          3,
+          "SFC 475",
+          57,
+          264
+        ]
+      ]
+    }
+  ],
+  "thermodynamics": {
+    "reference_environment": {
+      "temperature_K": 293,
+      "pressure_barA": 1.0
+    },
+    "helium_properties": {
+      "R_specific": 2077.1,
+      "Cp_avg_300K": 5193,
+      "gamma": 1.66
+    },
+    "isothermal_work_kW": {
+      "PVPS_50gs_293K_0p1_to_1p05": 71.55,
+      "HCC_350gs_308K_1p05_to_14": 580.0,
+      "HCC_344gs": 570.0,
+      "HCC_330gs": 546.8,
+      "HCC_304gs": 503.8,
+      "HCC_264gs": 437.5,
+      "HCC_220gs": 364.6,
+      "FSD575_112p5gs": 186.4,
+      "FSD475_88gs": 145.8
+    },
+    "efficiency": {
+      "baseline_isothermal": 0.5,
+      "range_min": 0.45,
+      "range_max": 0.6,
+      "motor": 0.967
+    },
+    "baseline_350gs_balance_kW": {
+      "HCC_motor_electrical": 1199.6,
+      "HCC_shaft": 1160.0,
+      "HCC_motor_losses": 39.6,
+      "HCC_Wiso": 580.0,
+      "HCC_excess_heat": 580.0,
+      "PVPS_motor_electrical": 148.0,
+      "PVPS_shaft": 143.1,
+      "PVPS_motor_losses": 4.9,
+      "PVPS_Wiso": 71.55,
+      "PVPS_excess_heat": 71.55,
+      "HVAC": 134.7,
+      "total_grid": 1482.3,
+      "useful_compression_exergy": 651.6,
+      "second_law_efficiency": 0.44
+    },
+    "FSD575_heat_balance": {
+      "motor_kW": 315,
+      "motor_eff": 0.967,
+      "shaft_kW": 304.6,
+      "package_kW": 348.54,
+      "cooling_water_kW": 323.9,
+      "flow_g_s": 112.5,
+      "Wiso_kW": 186.4,
+      "excess_heat_kW": 118.2,
+      "effective_iso_eff": 0.612
+    },
+    "FSD475_heat_balance": {
+      "motor_kW": 250,
+      "shaft_kW": 241.75,
+      "package_kW": 266,
+      "cooling_water_kW": 230.9,
+      "flow_g_s": 88,
+      "Wiso_kW": 145.8
+    }
+  }
+}

@@ -1,0 +1,150 @@
+<!doctype html>
+<html lang="en"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>MYRRHA WCS · Engineering & Agent Handover</title>
+<link rel="stylesheet" href="assets/style.css">
+<style>
+pre.bios{background:#0d1117;color:#c9d1d9;padding:14px 18px;border-radius:6px;overflow-x:auto;font-family:Consolas,monospace;font-size:13px;line-height:1.5}
+pre.bios .k{color:#79c0ff;font-weight:600}
+pre.bios .v{color:#a5d6ff}
+pre.bios .c{color:#8b949e;font-style:italic}
+.checklist li{list-style:none;margin:6px 0}
+.checklist input{margin-right:8px}
+.cat{display:inline-block;padding:2px 9px;border-radius:3px;font-size:11px;font-weight:700;margin-right:6px;color:#fff}
+.cat.crit{background:#dc2626}
+.cat.high{background:#ea580c}
+.cat.med{background:#ca8a04}
+.cat.low{background:#16a34a}
+table.k td,table.k th{padding:6px 10px;border:1px solid #d0d7de}
+table.k th{background:#f6f8fa;text-align:left}
+.tree{font-family:Consolas,monospace;font-size:13px;background:#f6f8fa;padding:14px;border-radius:6px;white-space:pre;line-height:1.5}
+</style>
+</head><body>
+<div class="container">
+<p><a href="index.html">← Hub</a> · <span class="muted">handover.html · v0.4</span></p>
+<h1>Engineering &amp; Agent Handover</h1>
+<p class="muted">Continuity package: agent BIOS, session protocol, knowledge transfer, TODO tracker, version history, canonical structure.</p>
+
+<div class="card">
+<h2 style="margin-top:0">§1 — Agent BIOS</h2>
+<pre class="bios">
+<span class="c">; ─── MYRRHA WCS ENGINEERING ASSISTANT BIOS ───────────────────────</span>
+<span class="k">AGENT</span>          : <span class="v">MYRRHA WCS Engineering Assistant v0.4</span>
+<span class="k">RESPONSIBILITY</span> : <span class="v">Warm Compressor Station sizing &amp; utility analysis</span>
+<span class="k">FUNCTION</span>       : <span class="v">Comparative assessment — ALaT FSD 575 vs LKT FSD 475</span>
+<span class="k">CONSTRAINTS</span>    :
+                 - Vendor data pending for PVPS and COMBI
+                 - Coldbox interface (QRB) not yet defined
+                 - Config turndown scenarios awaiting supplier input
+<span class="k">RESOURCES</span>      :
+                 - ALaT Pre-Study (C1393, 09/02/2023)
+                 - LKT Pre-Study v3
+                 - Kaeser FSD 475 / 575 SFC datasheets
+<span class="k">EXPERIENCE</span>     : <span class="v">Thermodynamic sizing · N+1 redundancy · utility optimization</span>
+<span class="k">CAPABILITY</span>     : <span class="v">Isothermal η · exergy balancing · multi-unit VFD optimization</span>
+<span class="c">; ──────────────────────────────────────────────────────────────────</span>
+</pre>
+</div>
+
+<div class="card">
+<h2 style="margin-top:0">§2 — Session Handover Protocol</h2>
+<pre class="bios">
+<span class="k">INTENT</span>    : Size WCS for 350 g/s baseline with Config24/30 operational flexibility
+<span class="k">ACTIONS</span>   :
+            - Compared ALaT (2×FSD 575) vs LKT (3×FSD 475)
+            - Expanded PVPS with 2×5 unit N+1 configuration
+            - Sized RCW heat exchangers for oil cooling
+            - Analysed COMBI unit concept (fixed + VFD)
+            - Created thermodynamic energy / exergy balances
+            - Defined β / γ / α operational notation
+<span class="k">PROGRESS</span>  : v0.4 complete — <b>85 %</b> (pending vendor data)
+<span class="k">ARTIFACTS</span> :
+            - 13 HTML views (index, slides, slide-editor, reports, tables, graphs,
+              status, truth, utilities, pvps, hx-sizing, thermo-analysis,
+              <b>operations</b>, <b>handover</b>)
+            - Master sources (slides.md, truth.md, config.yaml, data.json)
+            - Rendering pipeline (render_all.py, live-render.js)
+            - Documentation (design-guide, editing-guide, slide-notes-guide)
+<span class="k">LINKS</span>     : Cross-referenced via smart labels (B1–B7, G1–G8, T1–T6, E1–E5)
+<span class="k">METHODS</span>   : Isothermal baseline · 50 % efficiency · VFD linear scaling
+<span class="k">WORKFLOW</span>  : Single source of truth → master/data.json → regenerate all views
+</pre>
+</div>
+
+<div class="card">
+<h2 style="margin-top:0">§3 — Knowledge Transfer Checklist</h2>
+<ul class="checklist">
+<li><input type="checkbox"> Review all design arguments (B1–B7)</li>
+<li><input type="checkbox"> Validate 350 g/s baseline against system requirements</li>
+<li><input type="checkbox"> Confirm PVPS 50 % isothermal efficiency with vendor</li>
+<li><input type="checkbox"> Obtain COMBI unit feasibility from Kaeser</li>
+<li><input type="checkbox"> Define coldbox interface pressure and temperature</li>
+<li><input type="checkbox"> Finalize Config24 / Config30 turndown scenarios</li>
+<li><input type="checkbox"> Approve RCW heat-exchanger N+1 strategy</li>
+<li><input type="checkbox"> Review exergy efficiency target (current: 44 %)</li>
+</ul>
+</div>
+
+<div class="card">
+<h2 style="margin-top:0">§4 — TODO Tracker (Categorised)</h2>
+<table class="k">
+<thead><tr><th>Cat</th><th>Item</th><th>Owner</th></tr></thead>
+<tbody>
+<tr><td><span class="cat crit">CRITICAL</span></td><td>Coldbox suction pressure for PVPS</td><td>Process / Coldbox lead</td></tr>
+<tr><td><span class="cat crit">CRITICAL</span></td><td>COMBI unit vendor confirmation (64 Hz fixed + VFD)</td><td>Kaeser</td></tr>
+<tr><td><span class="cat high">HIGH</span></td><td>PVPS vendor datasheets</td><td>Procurement</td></tr>
+<tr><td><span class="cat high">HIGH</span></td><td>Config24/30 turndown details — C30(00,10), C24(00,10)</td><td>Vendor + WCS lead</td></tr>
+<tr><td><span class="cat high">HIGH</span></td><td>RCW heat-exchanger count and N+1 configuration</td><td>Utilities</td></tr>
+<tr><td><span class="cat med">MEDIUM</span></td><td>Actual discharge temperatures from vendor</td><td>Kaeser</td></tr>
+<tr><td><span class="cat med">MEDIUM</span></td><td>Noise-level compliance verification</td><td>HSE</td></tr>
+<tr><td><span class="cat med">MEDIUM</span></td><td>Waste-heat recovery feasibility</td><td>Utilities</td></tr>
+<tr><td><span class="cat low">LOW</span></td><td>Optimize HVAC load allocation</td><td>HVAC</td></tr>
+<tr><td><span class="cat low">LOW</span></td><td>Explore exergy efficiency improvements</td><td>R&amp;D</td></tr>
+</tbody></table>
+</div>
+
+<div class="card">
+<h2 style="margin-top:0">§5 — Version History</h2>
+<table class="k">
+<thead><tr><th>Version</th><th>Highlights</th></tr></thead>
+<tbody>
+<tr><td><b>v0.1</b></td><td>Initial compressor comparison (ALaT vs LKT)</td></tr>
+<tr><td><b>v0.2</b></td><td>Flow targets · utilities per skid · 3-skid totals</td></tr>
+<tr><td><b>v0.3</b></td><td>Interactive HTML hub · 8 specialized views · master sources</td></tr>
+<tr><td><b>v0.4</b></td><td>PVPS expansion · RCW/COMBI analysis · thermodynamics · β/γ notation · dual-view editor · operations + handover views</td></tr>
+<tr><td><b>v0.5 (planned)</b></td><td>QRB coldbox integration · vendor data validation</td></tr>
+</tbody></table>
+</div>
+
+<div class="card">
+<h2 style="margin-top:0">§6 — Canonical Documentation Structure</h2>
+<div class="tree">/home/ubuntu/myrrha_handover/
+├── index.html                    ← ENTRY POINT
+├── master/                       ← SINGLE SOURCE OF TRUTH (human-editable)
+│   ├── data.json                 ← all numeric data
+│   ├── slides.md                 ← slide content
+│   ├── truth.md                  ← design decisions
+│   └── config.yaml               ← themes, fonts, layout
+├── docs/                         ← guidance (design / editing / notes)
+├── assets/                       ← shared CSS, JS
+├── slides/                       ← slide assets
+└── 13 HTML views:
+    slides.html · slide-editor.html · reports.html · tables.html
+    graphs.html · status.html · truth.html · utilities.html
+    pvps.html · hx-sizing.html · thermo-analysis.html
+    operations.html · handover.html
+</div>
+</div>
+
+<div class="card">
+<h2 style="margin-top:0">Next-session boot prompt</h2>
+<pre class="bios">
+LOAD  : /home/ubuntu/myrrha_handover/handover.html
+STATE : v0.4 · 85% complete
+NEXT  : resolve CRITICAL TODOs (coldbox QRB, COMBI confirmation)
+THEN  : promote to v0.5 — vendor data integration
+</pre>
+</div>
+
+</div>
+</body></html>

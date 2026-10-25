@@ -1,0 +1,369 @@
+<!doctype html>
+<html lang="en"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>MYRRHA WCS · Action Tracker</title>
+<link rel="icon" href="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><text y='26' font-size='26'>📌</text></svg>">
+<link rel="stylesheet" href="assets/style.css">
+<script src="assets/common.js" defer></script>
+<style>
+.breadcrumb{font-size:12px;color:var(--fg2);margin-bottom:12px}.breadcrumb a{color:var(--accent2)}
+.filter-bar{display:flex;gap:8px;flex-wrap:wrap;margin:14px 0}
+.filter-bar button{background:var(--bg);color:var(--fg);border:1px solid var(--border);border-radius:6px;padding:6px 12px;font-size:12px;cursor:pointer;font-family:inherit;transition:all .15s}
+.filter-bar button.active{background:var(--accent);color:#fff;border-color:var(--accent)}
+.filter-bar button:hover:not(.active){background:var(--bg2);border-color:var(--accent2)}
+.status-dot{display:inline-block;width:10px;height:10px;border-radius:50%;margin-right:4px;vertical-align:middle}
+.s-done{background:#1D9E75}.s-ready{background:#E5A100}.s-wait{background:#D85A30}.s-block{background:#C0392B}.s-plan{background:#378ADD}
+.progress-ring{display:flex;align-items:center;gap:16px;margin:14px 0;flex-wrap:wrap}
+.ring{width:100px;height:100px;position:relative}
+.ring svg{transform:rotate(-90deg)}
+.ring .val{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);font-size:20px;font-weight:700}
+.ring-label{font-size:12px;color:var(--fg2)}
+table.tracker{font-size:12px}
+table.tracker td,table.tracker th{vertical-align:middle;padding:6px 8px}
+table.tracker tr.done{opacity:0.55}
+.effort-tag{font-family:var(--mono);font-size:11px;background:var(--bg);padding:2px 6px;border-radius:4px;border:1px solid var(--border)}
+.sev-badge{display:inline-block;min-width:22px;text-align:center;padding:2px 7px;border-radius:4px;font-size:11px;font-weight:700;font-family:var(--mono);color:#fff}
+.sev-5{background:#C0392B}.sev-4{background:#D85A30}.sev-3{background:#E5A100;color:#1a1d23}.sev-2{background:#378ADD}.sev-1{background:#7F77DD}
+.impact-tag{font-size:10px;padding:1px 5px;border-radius:3px;background:var(--bg);border:1px solid var(--border);white-space:nowrap}
+.priority-score{font-family:var(--mono);font-weight:700;font-size:13px}
+.ps-high{color:#C0392B}.ps-med{color:#D85A30}.ps-low{color:#378ADD}
+.sev-legend{display:flex;gap:10px;flex-wrap:wrap;font-size:12px;margin:10px 0}
+.sev-legend span{display:flex;align-items:center;gap:4px}
+details.vendor-scout{border:1px solid var(--border);border-radius:var(--radius);padding:12px 16px;margin:8px 0;background:var(--bg2)}
+details.vendor-scout summary{font-weight:600;font-size:13px;cursor:pointer;padding:4px 0}
+details.vendor-scout[open] summary{margin-bottom:10px;border-bottom:1px solid var(--border);padding-bottom:8px}
+details.vendor-scout ul{margin:6px 0;padding-left:20px;font-size:12.5px;line-height:1.7}
+details.vendor-scout li{margin:2px 0}
+.formula-box{background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:14px 18px;font-family:var(--mono);font-size:13px;margin:12px 0}
+.formula-box .label{font-size:11px;color:var(--fg2);text-transform:uppercase;letter-spacing:.06em;margin-bottom:6px;font-family:var(--sans)}
+.sort-btn{cursor:pointer;user-select:none}
+.sort-btn:after{content:' ⇅';font-size:10px;opacity:.4}
+.sort-btn.asc:after{content:' ↑';opacity:.7}
+.sort-btn.desc:after{content:' ↓';opacity:.7}
+</style>
+</head><body>
+<div class="container">
+<p class="breadcrumb"><a href="index.html">Hub</a> › <a href="review-dmaic.html">DMAIC</a> › Action Tracker</p>
+<h1>📌 Action Tracker — Enhanced</h1>
+<p class="muted">All improvement actions with severity rankings, weighted priority scores, and vendor deep-scout preparation · v0.4.2</p>
+
+<!-- SEVERITY LEGEND -->
+<div class="card">
+<h3 style="margin-top:0">Severity Scale</h3>
+<div class="sev-legend">
+  <span><span class="sev-badge sev-5">5</span> CRITICAL — Blocks downstream, safety/compliance</span>
+  <span><span class="sev-badge sev-4">4</span> HIGH — Major design/cost impact</span>
+  <span><span class="sev-badge sev-3">3</span> MEDIUM — Subsystem-level, quality</span>
+  <span><span class="sev-badge sev-2">2</span> LOW — Minor improvement</span>
+  <span><span class="sev-badge sev-1">1</span> NICE-TO-HAVE — Future optimization</span>
+</div>
+<div class="formula-box">
+  <div class="label">Weighted Priority Calculation</div>
+  Priority Score = (Severity/5 × 0.5) + (Impact/5 × 0.3) + ((10 − Effort_hrs)/10 × 0.2)<br>
+  <span style="color:var(--fg2);font-size:11px">Range: 0.00 → 1.00 · Higher = do first · Effort capped at 10 hrs for normalization</span>
+</div>
+</div>
+
+<!-- PROGRESS RINGS -->
+<div class="progress-ring">
+  <div>
+    <div class="ring"><svg viewBox="0 0 36 36"><path d="M18 2.0845a15.9155 15.9155 0 0 1 0 31.831a15.9155 15.9155 0 0 1 0-31.831" fill="none" stroke="var(--border)" stroke-width="2.5"/><path d="M18 2.0845a15.9155 15.9155 0 0 1 0 31.831a15.9155 15.9155 0 0 1 0-31.831" fill="none" stroke="#1D9E75" stroke-width="2.5" stroke-dasharray="17, 100"/></svg><div class="val">5/29</div></div>
+    <div class="ring-label" style="text-align:center">Overall</div>
+  </div>
+  <div>
+    <div class="ring"><svg viewBox="0 0 36 36"><path d="M18 2.0845a15.9155 15.9155 0 0 1 0 31.831a15.9155 15.9155 0 0 1 0-31.831" fill="none" stroke="var(--border)" stroke-width="2.5"/><path d="M18 2.0845a15.9155 15.9155 0 0 1 0 31.831a15.9155 15.9155 0 0 1 0-31.831" fill="none" stroke="#1D9E75" stroke-width="2.5" stroke-dasharray="83, 100"/></svg><div class="val">5/6</div></div>
+    <div class="ring-label" style="text-align:center">Short-term</div>
+  </div>
+  <div>
+    <div class="ring"><svg viewBox="0 0 36 36"><path d="M18 2.0845a15.9155 15.9155 0 0 1 0 31.831a15.9155 15.9155 0 0 1 0-31.831" fill="none" stroke="var(--border)" stroke-width="2.5"/><path d="M18 2.0845a15.9155 15.9155 0 0 1 0 31.831a15.9155 15.9155 0 0 1 0-31.831" fill="none" stroke="#D85A30" stroke-width="2.5" stroke-dasharray="0, 100"/></svg><div class="val">0/13</div></div>
+    <div class="ring-label" style="text-align:center">Medium-term</div>
+  </div>
+  <div>
+    <div class="ring"><svg viewBox="0 0 36 36"><path d="M18 2.0845a15.9155 15.9155 0 0 1 0 31.831a15.9155 15.9155 0 0 1 0-31.831" fill="none" stroke="var(--border)" stroke-width="2.5"/><path d="M18 2.0845a15.9155 15.9155 0 0 1 0 31.831a15.9155 15.9155 0 0 1 0-31.831" fill="none" stroke="#378ADD" stroke-width="2.5" stroke-dasharray="0, 100"/></svg><div class="val">0/10</div></div>
+    <div class="ring-label" style="text-align:center">Long-term</div>
+  </div>
+</div>
+
+<!-- FILTERS -->
+<div class="filter-bar">
+  <button class="active" onclick="filterActions('all',this)">All (29)</button>
+  <button onclick="filterActions('short',this)">Short-term (6)</button>
+  <button onclick="filterActions('med',this)">Medium-term (13)</button>
+  <button onclick="filterActions('long',this)">Long-term (10)</button>
+  <button onclick="filterActions('done',this)">✓ Done</button>
+  <button onclick="filterActions('blocked',this)">🔴 Blocked</button>
+  <button onclick="filterActions('ready',this)">🟡 Ready</button>
+  <button onclick="filterActions('critical',this)">⚠ Critical (5)</button>
+  <button onclick="filterActions('high',this)">🔶 High (4)</button>
+</div>
+
+<!-- ========== SHORT-TERM ========== -->
+<h2>Short-Term Actions <span class="muted" style="font-size:14px;font-weight:400">(v0.4.1 — This Session)</span></h2>
+<div class="card" style="overflow-x:auto">
+<table class="tracker" id="tbl-short">
+<thead><tr>
+  <th>ID</th><th>Action</th><th>Sev</th><th>Impact</th><th class="sort-btn" onclick="sortTable('tbl-short',6)">Priority</th>
+  <th>Owner</th><th>Effort</th><th>Risk if Skipped</th><th>Deps</th><th>Status</th><th>Deliverable</th>
+</tr></thead>
+<tbody>
+<tr class="done" data-cat="short" data-status="done" data-sev="4"><td>ST-1</td><td>Cross-reference matrix (B↔G↔T↔E)</td><td><span class="sev-badge sev-4">4</span></td><td><span class="impact-tag">Quality</span></td><td class="priority-score ps-high">0.84</td><td>Agent</td><td><span class="effort-tag">30 min</span></td><td>Traceability gaps in review</td><td>—</td><td><span class="status-dot s-done"></span>Done</td><td><a href="xref-matrix.html">xref-matrix.html</a></td></tr>
+<tr class="done" data-cat="short" data-status="done" data-sev="4"><td>ST-2</td><td>Calculation verification checklist</td><td><span class="sev-badge sev-4">4</span></td><td><span class="impact-tag">Quality</span></td><td class="priority-score ps-high">0.83</td><td>Agent</td><td><span class="effort-tag">15 min</span></td><td>Unvalidated calcs shipped</td><td>—</td><td><span class="status-dot s-done"></span>Done</td><td><a href="verification-checklist.html">verification-checklist.html</a></td></tr>
+<tr class="done" data-cat="short" data-status="done" data-sev="3"><td>ST-3</td><td>Breadcrumb navigation on all views</td><td><span class="sev-badge sev-3">3</span></td><td><span class="impact-tag">Quality</span></td><td class="priority-score ps-med">0.66</td><td>Agent</td><td><span class="effort-tag">10 min</span></td><td>Poor navigation UX</td><td>—</td><td><span class="status-dot s-done"></span>Done</td><td>All HTML files</td></tr>
+<tr class="done" data-cat="short" data-status="done" data-sev="3"><td>ST-4</td><td>QA validation checklist</td><td><span class="sev-badge sev-3">3</span></td><td><span class="impact-tag">Quality</span></td><td class="priority-score ps-med">0.66</td><td>Agent</td><td><span class="effort-tag">10 min</span></td><td>No QA gate before release</td><td>—</td><td><span class="status-dot s-done"></span>Done</td><td><a href="qa-checklist.html">qa-checklist.html</a></td></tr>
+<tr class="done" data-cat="short" data-status="done" data-sev="3"><td>ST-5</td><td>Searchable term/equation index</td><td><span class="sev-badge sev-3">3</span></td><td><span class="impact-tag">Quality</span></td><td class="priority-score ps-med">0.65</td><td>Agent</td><td><span class="effort-tag">15 min</span></td><td>Hard to find equations</td><td>—</td><td><span class="status-dot s-done"></span>Done</td><td><a href="search-index.html">search-index.html</a></td></tr>
+<tr data-cat="short" data-status="ready" data-sev="2"><td>ST-6</td><td>Batch graph export (ZIP download)</td><td><span class="sev-badge sev-2">2</span></td><td><span class="impact-tag">Quality</span></td><td class="priority-score ps-low">0.46</td><td>Agent</td><td><span class="effort-tag">20 min</span></td><td>Manual graph exports</td><td>—</td><td><span class="status-dot s-ready"></span>Ready</td><td>graphs.html update</td></tr>
+</tbody></table>
+</div>
+
+<!-- ========== MEDIUM-TERM ========== -->
+<h2>Medium-Term Actions <span class="muted" style="font-size:14px;font-weight:400">(v0.4.2–0.4.5 — Next 1–4 weeks)</span></h2>
+<div class="card" style="overflow-x:auto">
+<table class="tracker" id="tbl-med">
+<thead><tr>
+  <th>ID</th><th>Action</th><th>Sev</th><th>Impact</th><th class="sort-btn" onclick="sortTable('tbl-med',4)">Priority</th>
+  <th>Owner</th><th>Effort</th><th>Risk if Skipped</th><th>Deps</th><th>Status</th><th>Due</th>
+</tr></thead>
+<tbody>
+<tr data-cat="med" data-status="done" data-sev="5"><td><strong>✅ MT-13</strong></td><td>400V power supply constraint analysis</td><td><span class="sev-badge sev-5">5</span></td><td><span class="impact-tag">Technical</span> <span class="impact-tag">Cost</span></td><td class="priority-score ps-high">0.91</td><td>Electrical Eng</td><td><span class="effort-tag">2-3 hrs</span></td><td>Comprehensive analysis complete (€736k CAPEX)</td><td>✅ Complete</td><td><span class="status-dot s-done" style="background:#2ecc71"></span>Complete</td><td>Week 1</td></tr>
+<tr data-cat="med" data-status="ready" data-sev="4"><td>MT-11</td><td>Kaeser HCC deep-scout preparation</td><td><span class="sev-badge sev-4">4</span></td><td><span class="impact-tag">Technical</span> <span class="impact-tag">Cost</span> <span class="impact-tag">Schedule</span></td><td class="priority-score ps-high">0.78</td><td>Eng + Procurement</td><td><span class="effort-tag">4-6 hrs</span></td><td>RFQ package ready; 400V constraint verified</td><td>—</td><td><span class="status-dot s-ready"></span>Ready</td><td>Week 2</td></tr>
+<tr data-cat="med" data-status="ready" data-sev="4"><td>MT-12</td><td>PVPS vendor deep-scout preparation</td><td><span class="sev-badge sev-4">4</span></td><td><span class="impact-tag">Technical</span> <span class="impact-tag">Cost</span></td><td class="priority-score ps-high">0.76</td><td>Eng + Procurement</td><td><span class="effort-tag">3-5 hrs</span></td><td>Vendor candidate list prepared (5 candidates)</td><td>—</td><td><span class="status-dot s-ready"></span>Ready</td><td>Week 2</td></tr>
+<tr data-cat="med" data-status="blocked" data-sev="4"><td>MT-1</td><td>Obtain PVPS vendor datasheets → update data.json</td><td><span class="sev-badge sev-4">4</span></td><td><span class="impact-tag">Technical</span></td><td class="priority-score ps-high">0.74</td><td>Eng Team</td><td><span class="effort-tag">2-4 hrs</span></td><td>No validated PVPS sizing</td><td>Vendor</td><td><span class="status-dot s-block"></span>Blocked</td><td>Week 2</td></tr>
+<tr data-cat="med" data-status="blocked" data-sev="4"><td>MT-2</td><td>Validate COMBI concept with Kaeser (64 Hz fixed)</td><td><span class="sev-badge sev-4">4</span></td><td><span class="impact-tag">Technical</span> <span class="impact-tag">Cost</span></td><td class="priority-score ps-high">0.76</td><td>Eng Team</td><td><span class="effort-tag">1-2 hrs</span></td><td>COMBI concept unvalidated</td><td>Vendor</td><td><span class="status-dot s-block"></span>Blocked</td><td>Week 2</td></tr>
+<tr data-cat="med" data-status="blocked" data-sev="4"><td>MT-3</td><td>Define coldbox suction pressure → update PVPS CR</td><td><span class="sev-badge sev-4">4</span></td><td><span class="impact-tag">Technical</span></td><td class="priority-score ps-high">0.74</td><td>Eng Team</td><td><span class="effort-tag">2-3 hrs</span></td><td>PVPS compression ratio unknown</td><td>QRB Team</td><td><span class="status-dot s-block"></span>Blocked</td><td>Week 3</td></tr>
+<tr data-cat="med" data-status="wait" data-sev="3"><td>MT-4</td><td>Calculate actual polytropic efficiency</td><td><span class="sev-badge sev-3">3</span></td><td><span class="impact-tag">Technical</span></td><td class="priority-score ps-med">0.56</td><td>Agent</td><td><span class="effort-tag">1 hr</span></td><td>Assumed η may be wrong</td><td>MT-1</td><td><span class="status-dot s-wait"></span>Waiting</td><td>Week 3</td></tr>
+<tr data-cat="med" data-status="wait" data-sev="3"><td>MT-5</td><td>Expand turndown scenarios (C30/C24)</td><td><span class="sev-badge sev-3">3</span></td><td><span class="impact-tag">Technical</span> <span class="impact-tag">Schedule</span></td><td class="priority-score ps-med">0.52</td><td>Agent</td><td><span class="effort-tag">2 hrs</span></td><td>No turndown strategy</td><td>MT-1, MT-2</td><td><span class="status-dot s-wait"></span>Waiting</td><td>Week 4</td></tr>
+<tr data-cat="med" data-status="ready" data-sev="3"><td>MT-6</td><td>Automated backup script (cron)</td><td><span class="sev-badge sev-3">3</span></td><td><span class="impact-tag">Quality</span></td><td class="priority-score ps-med">0.59</td><td>Agent</td><td><span class="effort-tag">30 min</span></td><td>Data loss risk</td><td>—</td><td><span class="status-dot s-ready"></span>Ready</td><td>Week 1</td></tr>
+<tr data-cat="med" data-status="ready" data-sev="3"><td>MT-7</td><td>Git version control integration</td><td><span class="sev-badge sev-3">3</span></td><td><span class="impact-tag">Quality</span> <span class="impact-tag">Schedule</span></td><td class="priority-score ps-med">0.56</td><td>Agent</td><td><span class="effort-tag">1 hr</span></td><td>No change history</td><td>—</td><td><span class="status-dot s-ready"></span>Ready</td><td>Week 2</td></tr>
+<tr data-cat="med" data-status="ready" data-sev="2"><td>MT-8</td><td>Optimize Plotly loading (lazy load, decimation)</td><td><span class="sev-badge sev-2">2</span></td><td><span class="impact-tag">Quality</span></td><td class="priority-score ps-low">0.40</td><td>Agent</td><td><span class="effort-tag">2 hrs</span></td><td>Slow page load</td><td>—</td><td><span class="status-dot s-ready"></span>Ready</td><td>Week 3</td></tr>
+<tr data-cat="med" data-status="complete" data-sev="1"><td>MT-9</td><td>Add ARIA labels (WCAG 2.1 AA)</td><td><span class="sev-badge sev-1">1</span></td><td><span class="impact-tag">Quality</span></td><td class="priority-score ps-low">0.27</td><td>Agent</td><td><span class="effort-tag">1.5 hrs</span></td><td>Accessibility gaps</td><td>v0.4.7</td><td><span class="status-dot s-complete"></span>Complete</td><td>Week 4</td></tr>
+<tr data-cat="med" data-status="complete" data-sev="1"><td>MT-10</td><td>Mobile-optimized chart variants</td><td><span class="sev-badge sev-1">1</span></td><td><span class="impact-tag">Quality</span></td><td class="priority-score ps-low">0.24</td><td>Agent</td><td><span class="effort-tag">2 hrs</span></td><td>Bad mobile experience</td><td>v0.4.7</td><td><span class="status-dot s-complete"></span>Complete</td><td>Week 4</td></tr>
+</tbody></table>
+</div>
+
+<!-- VENDOR DEEP-SCOUT DETAILS -->
+<h2>Vendor Deep-Scout Details</h2>
+
+<details class="vendor-scout" open>
+<summary>🔧 MT-11: Kaeser HCC Deep-Scout Preparation <span class="sev-badge sev-4" style="margin-left:8px">SEV 4</span> <span class="effort-tag" style="margin-left:4px">4-6 hrs</span></summary>
+<div class="gridq">
+<div>
+<h4>1. Technical Requirements Document</h4>
+<ul>
+  <li><b>Mass flow range:</b> 200–350 g/s per skid</li>
+  <li><b>Suction:</b> 1.05 barA @ 308 K</li>
+  <li><b>Discharge:</b> 14 barG</li>
+  <li><b>Power supply:</b> 400V AC <span class="sev-badge sev-5" style="font-size:9px;padding:1px 4px">CRITICAL CONSTRAINT</span></li>
+  <li><b>Cooling:</b> Water-cooled preferred (RCW integration)</li>
+  <li><b>VFD:</b> 50–72 Hz range required</li>
+  <li><b>N+1 redundancy:</b> 3+1 or 2+2 configurations</li>
+</ul>
+<h4>2. Request from Kaeser</h4>
+<ul>
+  <li>FSD 475 SFC: Confirm 400V motor availability</li>
+  <li>FSD 575 SFC: Confirm 400V motor availability (currently 315 kW @ high voltage)</li>
+  <li>COMBI feasibility: Fixed speed @ 64 Hz + VFD unit</li>
+  <li>Actual performance curves (flow vs Hz, power vs Hz)</li>
+  <li>Heat rejection split (oil cooling vs gas sensible)</li>
+  <li>Actual discharge temperature vs flow</li>
+  <li>Turndown capabilities and minimum stable flow</li>
+  <li>Noise levels at various Hz</li>
+  <li>Footprint and weight for 400V variant</li>
+</ul>
+</div>
+<div>
+<h4>3. Alternative Vendor Scouting</h4>
+<table style="font-size:12px">
+<thead><tr><th>Vendor</th><th>Model/Series</th><th>Type</th><th>400V?</th></tr></thead>
+<tbody>
+<tr><td>Atlas Copco</td><td>ZH series</td><td>Oil-free centrifugal</td><td>TBC</td></tr>
+<tr><td>Atlas Copco</td><td>ZR series</td><td>Oil-injected rotary</td><td>TBC</td></tr>
+<tr><td>Howden</td><td>WRV series</td><td>Screw compressor</td><td>TBC</td></tr>
+<tr><td>Gardner Denver</td><td>VSS series</td><td>Rotary screw</td><td>TBC</td></tr>
+</tbody></table>
+<h4>4. Vendor Comparison Matrix</h4>
+<p style="font-size:12px;color:var(--fg2)">Create Kaeser vs alternatives matrix covering: capacity, power, voltage, cooling, footprint, noise, lead time, cost estimate.</p>
+<h4>5. Pre-RFQ Meetings</h4>
+<ul>
+  <li>Schedule Kaeser technical meeting (Week 3)</li>
+  <li>Schedule Atlas Copco / Howden calls (Week 3–4)</li>
+  <li>Prepare standardized Q&A template</li>
+</ul>
+</div>
+</div>
+</details>
+
+<details class="vendor-scout">
+<summary>🔧 MT-12: PVPS Vendor Deep-Scout Preparation <span class="sev-badge sev-4" style="margin-left:8px">SEV 4</span> <span class="effort-tag" style="margin-left:4px">3-5 hrs</span></summary>
+<div class="gridq">
+<div>
+<h4>1. PVPS Technical Specification</h4>
+<ul>
+  <li><b>Suction:</b> ~0.1 barA @ 293 K (from coldbox)</li>
+  <li><b>Discharge:</b> 1.05 barA</li>
+  <li><b>Flow:</b> 5 g/s per unit, 10 units total (50 g/s)</li>
+  <li><b>Power supply:</b> 400V AC</li>
+  <li><b>VFD:</b> Required for turndown</li>
+  <li><b>N+1 redundancy:</b> 9+1 configuration</li>
+  <li><b>Target efficiency:</b> &gt;50% isothermal</li>
+</ul>
+<h4>2. Vendor Candidates</h4>
+<table style="font-size:12px">
+<thead><tr><th>Vendor</th><th>Model/Series</th><th>Type</th></tr></thead>
+<tbody>
+<tr><td>Busch</td><td>COBRA</td><td>Dry screw vacuum</td></tr>
+<tr><td>Pfeiffer</td><td>Roots blower pkgs</td><td>Roots + backing</td></tr>
+<tr><td>Atlas Copco</td><td>GHS VSD+</td><td>Variable speed dry</td></tr>
+<tr><td>Edwards</td><td>GV series</td><td>Dry pumps</td></tr>
+</tbody></table>
+</div>
+<div>
+<h4>3. Data Requests</h4>
+<ul>
+  <li>Performance curves at 0.1 → 1.05 barA</li>
+  <li>Power consumption vs flow at suction conditions</li>
+  <li>VFD turndown range and min stable flow</li>
+  <li>Heat rejection and cooling requirements</li>
+  <li>Noise levels at rated conditions</li>
+  <li>Footprint and weight per unit</li>
+  <li>MTBF and maintenance intervals</li>
+</ul>
+<h4>4. Layout Impact Analysis</h4>
+<ul>
+  <li>2×5 layout: 2 banks of 5, shared headers</li>
+  <li>1×10 layout: single bank, individual valves</li>
+  <li>Compare piping complexity, maintenance access, cost</li>
+</ul>
+<h4>5. Cooling Requirements</h4>
+<ul>
+  <li>Heat rejection per unit at rated flow</li>
+  <li>Integration with RCW or PCW system</li>
+  <li>Ambient temperature constraints</li>
+</ul>
+</div>
+</div>
+</details>
+
+<details class="vendor-scout">
+<summary>✅ MT-13: 400V Power Supply Constraint Analysis <span class="sev-badge sev-5" style="margin-left:8px">SEV 5</span> <span class="effort-tag" style="margin-left:4px">2-3 hrs</span> <strong style="color:#2ecc71">COMPLETE</strong></summary>
+<div class="gridq">
+<div>
+<h4>Deliverables (✅ Complete)</h4>
+<ul>
+  <li><b>✅ 1.</b> 400V 3-phase AC supply CONFIRMED as feasible</li>
+  <li><b>✅ 2.</b> Total electrical load calculated: <strong>1,437 kW</strong> (rounded 1,500 kW design)</li>
+  <li><b>✅ 3.</b> Transformer sizing: <strong>2,000 kVA selected</strong> (20% margin)</li>
+  <li><b>✅ 4.</b> Harmonic analysis complete: <strong>Active filter required</strong> (IEEE 519 compliance)</li>
+  <li><b>✅ 5.</b> Power factor correction: <strong>200 kVAR capacitor bank</strong> (target PF &gt; 0.95)</li>
+  <li><b>✅ 6.</b> Emergency backup: <strong>40 kW UPS, 30 min</strong> (critical loads only)</li>
+  <li><b>✅ 7.</b> <strong>ELECTRICAL CAPEX: €736k</strong> (equipment + labour + contingency)</li>
+</ul>
+<p style="font-size:12px;color:#2ecc71;margin-top:8px;font-weight:600">
+  → Full analysis: <a href="mt-13-report.html" style="color:#2ecc71"><strong>mt-13-report.html</strong></a>
+</p>
+</div>
+<div>
+<h4>Critical Constraint (VENDOR ENGAGEMENT)</h4>
+<div class="card" style="border-left:4px solid #2ecc71;margin:0;background:#e8f8f0">
+  <p style="font-size:12px;margin:0"><b style="color:#2ecc71">✅ 400V IS AVAILABLE – No fallback needed</b></p>
+  <ul style="font-size:12px;margin:6px 0;padding-left:16px">
+    <li><strong>Max VFD frequency @ 400V: 72 Hz</strong> (hard limit; affects peak capacity)</li>
+    <li>Kaeser FSD 575 @ 72 Hz = 112 g/s per unit (verified compatible)</li>
+    <li>Design point: 63–68 Hz → 300 g/s total (3 units × 100 g/s)</li>
+    <li>Harmonic filtering: Active filter + PFC system (€70k investment)</li>
+    <li>Motor power @ 68 Hz: ~360 kW per FSD 575 (confirmed from datasheet)</li>
+  </ul>
+</div>
+<h4 style="margin-top:14px">Next Steps (Unblocked)</h4>
+<ul style="font-size:12px">
+  <li>✅ <strong>MT-11:</strong> Kaeser RFQ released (400V constraint explicit)</li>
+  <li>✅ <strong>MT-12:</strong> PVPS vendor scout ready (5 candidates identified)</li>
+  <li>✅ <strong>Electrical infrastructure:</strong> Site survey & EPC contractor selection (Week 3)</li>
+</ul>
+</div>
+</div>
+</details>
+
+<!-- ========== LONG-TERM ========== -->
+<h2>Long-Term Actions <span class="muted" style="font-size:14px;font-weight:400">(v0.5+ — 1–6 months)</span></h2>
+<div class="card" style="overflow-x:auto">
+<table class="tracker" id="tbl-long">
+<thead><tr>
+  <th>ID</th><th>Action</th><th>Sev</th><th>Impact</th><th class="sort-btn" onclick="sortTable('tbl-long',4)">Priority</th>
+  <th>Owner</th><th>Effort</th><th>Risk if Skipped</th><th>Phase</th><th>Status</th><th>Target</th>
+</tr></thead>
+<tbody>
+<tr data-cat="long" data-status="plan" data-sev="4"><td>LT-1</td><td>QRB coldbox interface (P, T, exergy flow)</td><td><span class="sev-badge sev-4">4</span></td><td><span class="impact-tag">Technical</span></td><td class="priority-score ps-high">0.70</td><td>Eng Team</td><td><span class="effort-tag">8-16 hrs</span></td><td>Interface mismatch with QRB</td><td>v0.5</td><td><span class="status-dot s-plan"></span>Planned</td><td>Month 2</td></tr>
+<tr data-cat="long" data-status="plan" data-sev="3"><td>LT-2</td><td>Collaborative editing (multi-user, conflicts)</td><td><span class="sev-badge sev-3">3</span></td><td><span class="impact-tag">Schedule</span></td><td class="priority-score ps-med">0.42</td><td>Dev Team</td><td><span class="effort-tag">20-40 hrs</span></td><td>Serial editing bottleneck</td><td>v0.6</td><td><span class="status-dot s-plan"></span>Planned</td><td>Month 3</td></tr>
+<tr data-cat="long" data-status="plan" data-sev="3"><td>LT-3</td><td>Dynamic web app (DB backend, real-time)</td><td><span class="sev-badge sev-3">3</span></td><td><span class="impact-tag">Technical</span> <span class="impact-tag">Cost</span></td><td class="priority-score ps-med">0.38</td><td>Dev Team</td><td><span class="effort-tag">40-80 hrs</span></td><td>Limited to static files</td><td>v1.0</td><td><span class="status-dot s-plan"></span>Planned</td><td>Month 6</td></tr>
+<tr data-cat="long" data-status="plan" data-sev="3"><td>LT-4</td><td>Monte Carlo uncertainty analysis</td><td><span class="sev-badge sev-3">3</span></td><td><span class="impact-tag">Technical</span> <span class="impact-tag">Quality</span></td><td class="priority-score ps-med">0.52</td><td>Eng Team</td><td><span class="effort-tag">8-12 hrs</span></td><td>No uncertainty quantification</td><td>v0.7</td><td><span class="status-dot s-plan"></span>Planned</td><td>Month 3</td></tr>
+<tr data-cat="long" data-status="plan" data-sev="3"><td>LT-5</td><td>Automated report generation</td><td><span class="sev-badge sev-3">3</span></td><td><span class="impact-tag">Schedule</span></td><td class="priority-score ps-med">0.46</td><td>Dev Team</td><td><span class="effort-tag">12-16 hrs</span></td><td>Manual report formatting</td><td>v0.8</td><td><span class="status-dot s-plan"></span>Planned</td><td>Month 4</td></tr>
+<tr data-cat="long" data-status="plan" data-sev="4"><td>LT-6</td><td>Exergy optimization solver</td><td><span class="sev-badge sev-4">4</span></td><td><span class="impact-tag">Technical</span> <span class="impact-tag">Cost</span></td><td class="priority-score ps-high">0.60</td><td>Eng Team</td><td><span class="effort-tag">16-24 hrs</span></td><td>Sub-optimal energy use</td><td>v0.9</td><td><span class="status-dot s-plan"></span>Planned</td><td>Month 5</td></tr>
+<tr data-cat="long" data-status="plan" data-sev="2"><td>LT-7</td><td>3D CAD integration (IFC viewer)</td><td><span class="sev-badge sev-2">2</span></td><td><span class="impact-tag">Quality</span></td><td class="priority-score ps-low">0.30</td><td>CAD Team</td><td><span class="effort-tag">24-40 hrs</span></td><td>No spatial context</td><td>v1.1</td><td><span class="status-dot s-plan"></span>Planned</td><td>Month 6</td></tr>
+<tr data-cat="long" data-status="plan" data-sev="4"><td>LT-8</td><td>Cost estimation module (CAPEX/OPEX)</td><td><span class="sev-badge sev-4">4</span></td><td><span class="impact-tag">Cost</span></td><td class="priority-score ps-high">0.62</td><td>Finance</td><td><span class="effort-tag">12-20 hrs</span></td><td>No cost baseline</td><td>v1.2</td><td><span class="status-dot s-plan"></span>Planned</td><td>Month 5</td></tr>
+<tr data-cat="long" data-status="plan" data-sev="2"><td>LT-9</td><td>Training module (interactive tutorials)</td><td><span class="sev-badge sev-2">2</span></td><td><span class="impact-tag">Quality</span></td><td class="priority-score ps-low">0.30</td><td>Eng Team</td><td><span class="effort-tag">16-24 hrs</span></td><td>Steep learning curve</td><td>v1.3</td><td><span class="status-dot s-plan"></span>Planned</td><td>Month 6</td></tr>
+<tr data-cat="long" data-status="plan" data-sev="2"><td>LT-10</td><td>Industry benchmark comparison</td><td><span class="sev-badge sev-2">2</span></td><td><span class="impact-tag">Quality</span></td><td class="priority-score ps-low">0.36</td><td>Eng Team</td><td><span class="effort-tag">8-16 hrs</span></td><td>No external reference</td><td>v1.4</td><td><span class="status-dot s-plan"></span>Planned</td><td>Month 6</td></tr>
+</tbody></table>
+</div>
+
+<!-- LEGEND -->
+<div class="card">
+<h3 style="margin-top:0">Legend</h3>
+<p style="font-size:13px">
+<span class="status-dot s-done"></span> <b>Done</b> — Completed &nbsp;|&nbsp;
+<span class="status-dot s-ready"></span> <b>Ready</b> — Can start immediately &nbsp;|&nbsp;
+<span class="status-dot s-wait"></span> <b>Waiting</b> — Upstream dependency &nbsp;|&nbsp;
+<span class="status-dot s-block"></span> <b>Blocked</b> — External dependency &nbsp;|&nbsp;
+<span class="status-dot s-plan"></span> <b>Planned</b> — Scheduled for future
+</p>
+<p style="font-size:12px;color:var(--fg2);margin-top:8px">
+<b>Impact types:</b> Technical · Cost · Schedule · Quality &nbsp;|&nbsp;
+<b>Priority score:</b> <span class="ps-high">≥0.70 HIGH</span> · <span class="ps-med">0.45–0.69 MEDIUM</span> · <span class="ps-low">&lt;0.45 LOW</span>
+</p>
+</div>
+
+<!-- NAV -->
+<div class="card">
+<h3 style="margin-top:0">Related Views</h3>
+<div class="grid4">
+<a class="card" href="review-dmaic.html"><h4 style="margin-top:0">📋 DMAIC Dashboard</h4></a>
+<a class="card" href="missed-opportunities.html"><h4 style="margin-top:0">🔍 Missed Opportunities</h4></a>
+<a class="card" href="weighted-priority.html"><h4 style="margin-top:0">⚖ Weighted Priority</h4></a>
+<a class="card" href="artifact-tracker.html"><h4 style="margin-top:0">📦 Artifact Tracker</h4></a>
+<a class="card" href="diff-tracker.html"><h4 style="margin-top:0">🔀 Diff Tracker</h4></a>
+<a class="card" href="ci-cd-pipeline.html"><h4 style="margin-top:0">🚀 CI/CD Pipeline</h4></a>
+</div>
+</div>
+</div>
+
+<script>
+function filterActions(cat,btn){
+  document.querySelectorAll('.filter-bar button').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  document.querySelectorAll('table.tracker tbody tr').forEach(row=>{
+    const rc=row.dataset.cat,rs=row.dataset.status,sv=row.dataset.sev;
+    if(cat==='all') row.style.display='';
+    else if(cat==='done') row.style.display=rs==='done'?'':'none';
+    else if(cat==='blocked') row.style.display=rs==='blocked'?'':'none';
+    else if(cat==='ready') row.style.display=rs==='ready'?'':'none';
+    else if(cat==='critical') row.style.display=sv==='5'?'':'none';
+    else if(cat==='high') row.style.display=sv==='4'?'':'none';
+    else row.style.display=rc===cat?'':'none';
+  });
+}
+function sortTable(tableId,colIdx){
+  const table=document.getElementById(tableId);
+  const th=table.querySelectorAll('thead th')[colIdx];
+  const tbody=table.querySelector('tbody');
+  const rows=Array.from(tbody.querySelectorAll('tr'));
+  const asc=!th.classList.contains('asc');
+  table.querySelectorAll('thead th').forEach(h=>{h.classList.remove('asc','desc')});
+  th.classList.add(asc?'asc':'desc');
+  rows.sort((a,b)=>{
+    const av=parseFloat(a.cells[colIdx].textContent)||0;
+    const bv=parseFloat(b.cells[colIdx].textContent)||0;
+    return asc?(av-bv):(bv-av);
+  });
+  rows.forEach(r=>tbody.appendChild(r));
+}
+</script>
+</body></html>

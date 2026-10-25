@@ -1,0 +1,234 @@
+<!doctype html>
+<html lang="en"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>MYRRHA · Reports</title>
+<link rel="icon" href="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><text y='26' font-size='26'>📄</text></svg>">
+<link rel="stylesheet" href="assets/style.css">
+<script src="assets/common.js" defer></script>
+<style>
+.toc{position:sticky;top:64px}
+.toc a{display:block;padding:5px 8px;color:var(--fg);font-size:13px;border-radius:6px}
+.toc a:hover{background:var(--bg2);text-decoration:none}
+.report{max-width:820px}
+.report blockquote{border-left:3px solid var(--accent);padding:6px 14px;color:var(--fg2);background:var(--bg2);border-radius:0 8px 8px 0;margin:12px 0}
+.copybtn{position:absolute;top:8px;right:8px;font-size:11px;background:var(--bg);border:1px solid var(--border);color:var(--fg2);padding:3px 8px;border-radius:4px;cursor:pointer;font-family:var(--mono)}
+.codewrap{position:relative}
+.token-k{color:#d8617a}.token-s{color:#5fa860}.token-n{color:#9b7fdb}.token-c{color:var(--fg2);font-style:italic}
+.section-tag{display:inline-block;font-family:var(--mono);font-size:11px;background:var(--accent);color:#fff;padding:2px 8px;border-radius:4px;margin-right:8px;vertical-align:middle}
+</style>
+</head><body>
+<div class="container" style="display:grid;grid-template-columns:200px 1fr;gap:30px">
+<aside class="toc">
+  <h4>Contents</h4>
+  <a href="#b1">B1 · Compressor comparison</a>
+  <a href="#b2">B2 · Flow analysis</a>
+  <a href="#b3">B3 · Utility requirements</a>
+  <a href="#b4">B4 · Interface closure</a>
+  <a href="#b5">B5 · PVPS LP strategy</a>
+  <a href="#b6">B6 · RCW &amp; COMBI</a>
+  <hr><a href="index.html">← Hub</a>
+</aside>
+<main class="report">
+<h1>MYRRHA WCS · Engineering Reports</h1>
+<p class="muted">Rendered markdown · v0.3 · arguments labelled <span class="kbd">B1</span>…<span class="kbd">B4</span>.</p>
+
+<section id="b1"><h2><span class="section-tag">B1</span>Warm Compressor Comparison · ALaT vs LKT</h2>
+
+<p>Both pre-studies select Kaeser screw compressors with VFDs. They differ in <em>frame size</em>, <em>unit count</em>, and <em>operating speed</em>:</p>
+<ul>
+  <li><b>ALaT pre-study</b> §4.6 (p. 30/56): <em>2 × FSD 575 SFC @ 72 Hz → ~220 g/s</em>; layout originally based on 3 × ESD 445 SFC.</li>
+  <li><b>LKT pre-study</b> §6.1.1.1 (p. 11/50) and Table 16 (p. 35/50): <em>3 × FSD 475 SFC</em>; design 264 g/s, max 288 g/s.</li>
+</ul>
+
+<h3>Per-skid basis points (Table 1)</h3>
+<table><thead><tr><th>Item</th><th>ALaT FSD 575 SFC</th><th>LKT FSD 475 SFC</th><th>Source</th></tr></thead>
+<tbody>
+<tr><td>Flow basis point</td><td>112.54 g/s @ 72 Hz</td><td>88 g/s @ ~57 Hz · 96.1 g/s @ 62 Hz max</td><td>ALaT pp.67–69 · LKT Tbl 16 + image (4)</td></tr>
+<tr><td>Motor rated</td><td>315 kW</td><td>250 kW</td><td>same</td></tr>
+<tr><td>Package input (water-cooled)</td><td>348.54 kW</td><td>266 kW (289 kW max)</td><td>same</td></tr>
+<tr><td>CW flow</td><td>18.2 m³/h</td><td>15.5 m³/h</td><td>same</td></tr>
+<tr><td>CW heat reject</td><td>323.9 kW</td><td>230.9 kW</td><td>same</td></tr>
+<tr><td>Noise @ 1 m</td><td>75 dB(A)</td><td>74 dB(A)</td><td>same</td></tr>
+<tr><td>Weight</td><td>6770 kg</td><td>~6400 kg</td><td>same</td></tr>
+</tbody></table>
+<p class="fig-cap">Table 1 — Per-skid datasheet alignment.</p>
+
+<blockquote><b>Argument B1 conclusion:</b> the FSD 575 has a higher per-skid duty point and therefore a smaller unit count for a given total flow, at the cost of ~30 % more electrical and CW load per unit.</blockquote>
+</section>
+
+<section id="b2"><h2><span class="section-tag">B2</span>Flow Analysis · Targets vs 3-skid capacity</h2>
+
+<p>Requested totals: <span class="kbd">200, 250, 275, 304, 336, 344, 350 g/s</span>. Equal-load per-skid frequency estimated by linear flow-vs-speed scaling from the documented basis point.</p>
+
+<h3>ALaT 3 × FSD 575 SFC — cap 337.62 g/s (Table 2)</h3>
+<table><thead><tr><th>Total</th><th>Per-skid</th><th>Est. Hz</th><th>Status</th></tr></thead><tbody>
+<tr><td>350</td><td>116.67</td><td>74.64</td><td><span class="tag warn">over</span></td></tr>
+<tr><td>344</td><td>114.67</td><td>73.36</td><td><span class="tag warn">over</span></td></tr>
+<tr><td>336</td><td>112.00</td><td>71.65</td><td><span class="tag ok">OK</span></td></tr>
+<tr><td>304</td><td>101.33</td><td>64.83</td><td><span class="tag ok">OK</span></td></tr>
+<tr><td>275</td><td>91.67</td><td>58.65</td><td><span class="tag ok">OK</span></td></tr>
+<tr><td>250</td><td>83.33</td><td>53.31</td><td><span class="tag ok">OK</span></td></tr>
+<tr><td>200</td><td>66.67</td><td>42.65</td><td><span class="tag ok">OK</span></td></tr>
+</tbody></table>
+<p class="fig-cap">Table 2 — ALaT capacity matrix.</p>
+
+<h3>LKT 3 × FSD 475 SFC max-point — cap 288.3 g/s (Table 3)</h3>
+<table><thead><tr><th>Total</th><th>Per-skid</th><th>Est. Hz</th><th>Status</th></tr></thead><tbody>
+<tr><td>350</td><td>116.67</td><td>75.27</td><td><span class="tag warn">over</span></td></tr>
+<tr><td>344</td><td>114.67</td><td>73.98</td><td><span class="tag warn">over</span></td></tr>
+<tr><td>336</td><td>112.00</td><td>72.26</td><td><span class="tag warn">over</span></td></tr>
+<tr><td>304</td><td>101.33</td><td>65.38</td><td><span class="tag warn">over</span></td></tr>
+<tr><td>275</td><td>91.67</td><td>59.14</td><td><span class="tag ok">OK</span></td></tr>
+<tr><td>250</td><td>83.33</td><td>53.76</td><td><span class="tag ok">OK</span></td></tr>
+<tr><td>200</td><td>66.67</td><td>43.01</td><td><span class="tag ok">OK</span></td></tr>
+</tbody></table>
+<p class="fig-cap">Table 3 — LKT max-point capacity matrix.</p>
+
+<blockquote><b>Argument B2 conclusion:</b> only the FSD 575 meets the upper end of the requested envelope on documented data; even there, 344 / 350 g/s exceed 72 Hz and require either vendor extrapolation, oversizing, or HP4 in service rather than as N+1.</blockquote>
+</section>
+
+<section id="b3"><h2><span class="section-tag">B3</span>Utility Requirements · Electricity, PCW, RCW</h2>
+
+<p>Per-skid utilities (vendor sheets). Multiply by deployed-skid count for plant load. Detailed math in <a href="utilities.html">utilities.html</a>.</p>
+
+<h3>Per-skid utility footprint (Table 4)</h3>
+<table><thead><tr><th>Utility</th><th>ALaT 575</th><th>LKT 475</th><th>Unit</th></tr></thead>
+<tbody>
+<tr><td>Motor rated electricity</td><td>315</td><td>250</td><td>kW</td></tr>
+<tr><td>Package electricity</td><td>348.54</td><td>266 / 289</td><td>kW</td></tr>
+<tr><td>PCW machine sheet</td><td>18.2</td><td>15.5</td><td>m³/h</td></tr>
+<tr><td>PCW site allowance</td><td>—</td><td>~20 (3×20 in PP)</td><td>m³/h</td></tr>
+<tr><td>PCW heat reject</td><td>323.9</td><td>230.9</td><td>kW</td></tr>
+<tr><td>Cooling air enclosure</td><td>5000</td><td>5000</td><td>m³/h</td></tr>
+<tr><td>Cooling air VFD</td><td>4200</td><td>4200</td><td>m³/h</td></tr>
+<tr><td>Heat to ambient (waste)</td><td>14.2</td><td>5.1</td><td>kW</td></tr>
+</tbody></table>
+<p class="fig-cap">Table 4 — Per-skid utilities.</p>
+
+<h3>RCW (HCC oil precool)</h3>
+<p>Recovery cooling water for the oil-cooler precool stream is sized at the QPLANT-level interface, not on the compressor datasheet. Adopted assumptions:</p>
+<pre class="codewrap"><code><span class="token-c"># RCW assumptions</span>
+T_in_max  = <span class="token-n">30</span>   <span class="token-c"># °C, nominal supply</span>
+T_out_max = <span class="token-n">85</span>   <span class="token-c"># °C, hard ceiling</span>
+dT_design = <span class="token-n">25</span>   <span class="token-c"># °C, sizing ΔT (30 → 55)</span></code><button class="copybtn" onclick="copyCode(this)">copy</button></pre>
+
+<blockquote><b>Argument B3 conclusion:</b> at the 350 g/s baseline the dominant utility load is package electricity and PCW heat reject. RCW for oil precool is independent of compressor brand and is sized from the HCC oil-cooler curve (vendor data still pending — see TODO in <a href="utilities.html">utilities.html</a>).</blockquote>
+</section>
+
+<section id="b4"><h2><span class="section-tag">B4</span>Interface Closure Strategy</h2>
+
+<p>The HCC is treated as a black box at the QPLANT battery limit. Closure means each utility, signal, and process line crossing the BL is named, valued, and budgeted.</p>
+
+<pre class="codewrap"><code>QPLANT-BL
+├── Process
+│   ├── He LP suction       (from QRB)
+│   └── He HP discharge     (to QRB)
+├── Utilities
+│   ├── 400 V / VFD power
+│   ├── PCW supply / return
+│   ├── RCW supply / return    <span class="token-c"># oil precool</span>
+│   ├── Instrument air
+│   └── LN2                    <span class="token-c"># LKT optional</span>
+└── Control / safety signals</code><button class="copybtn" onclick="copyCode(this)">copy</button></pre>
+
+<blockquote><b>Argument B4 conclusion:</b> closure is achievable without re-opening the compressor selection — utility budgets are linear in deployed skid count and bracketed by the FSD 575 (upper) and FSD 475 nominal (lower) values. The 4-skid HP1..HP4 layout (N+1) is the carrier for either vendor.</blockquote>
+</section>
+
+<section id="b5"><h2><span class="section-tag">B5</span>PVPS Low-Pressure Compression Strategy (WCS.LCC)</h2>
+
+<p><span class="tag warn">v0.4 baseline — placeholder pending vendor confirmation</span></p>
+
+<h3>System description</h3>
+<p>The PVPS (Pumping/Vacuum Pre-compression Station) is the low-pressure half of the Warm Compressor Station, designated <b>WCS.LCC</b>. It is built as <b>2 × 5 = 10 identical units</b> (LP1–LP10) sharing a common suction and discharge header, lifting helium from the QRB return at ~0.1 barA up to the HCC suction header at ~1.05 barA. Target combined flow γ = <b>50 g/s</b>.</p>
+
+<h3>N+1 redundancy justification</h3>
+<p>The 10-unit array provides <b>N+1 redundancy</b> at the unit level: γ = 50 g/s is achievable with 9 units running at 5.56 g/s (VFD-trimmed), keeping one as a hot standby for online maintenance and component changeout without plant shutdown. A <em>degraded</em> mode of 8 units × 6.25 g/s preserves γ during a coincident maintenance + standby outage. This complements the skid-level N+1 of the HCC (HP1..HP4).</p>
+
+<h3>Flow contribution to total WCS output</h3>
+<p><span class="tag warn">v0.4.7 CORRECTION: Inclusive model — PVPS flow is PART OF total, not additive</span></p>
+<table><caption>WCS Flow Split: HP + PVPS = Total (Inclusive Model)</caption>
+<thead><tr><th>Configuration</th><th>WCS.HCC β (g/s)</th><th>WCS.LCC γ (g/s)</th><th>Total WCS (g/s)</th><th>γ as % of Total</th></tr></thead><tbody>
+<tr><td>Baseline</td><td>300</td><td>50</td><td><b>350</b></td><td>14.3%</td></tr>
+<tr><td>Config30</td><td>280</td><td>50</td><td><b>330</b></td><td>15.2%</td></tr>
+<tr><td>Config24</td><td>254</td><td>50</td><td><b>304</b></td><td>16.4%</td></tr>
+</tbody></table>
+<p><em>Critical Note:</em> The PVPS (γ) operates on helium from the <strong>total</strong> WCS inventory. When PVPS flow changes, the total changes proportionally. This is <strong>not</strong> an additive model where Total = β + γ with independent flows.</p>
+
+<h3>Utility requirements (placeholder)</h3>
+<p>From a 50 % isothermal efficiency baseline (see <a href="utilities.html#">utilities §5</a>):</p>
+<ul>
+<li>Total motor power γ = 50 g/s: <b>150 kW</b> (10 units × 15 kW)</li>
+<li>HVAC load: <b>15 kW</b> (10% of motor)</li>
+<li>Cooling water heat: <b>135 kW</b> (90% of motor)</li>
+<li>Cooling water flow @ ΔT 15 K: <b>~7.8 m³/h</b></li>
+</ul>
+<p><em>Note:</em> Values updated in v0.4.7 for consistency with overall WCS electrical budget.</p>
+
+<h3>Integration with HCC</h3>
+<p>Discharge pressure of PVPS matches HCC suction (~<b>1.05 barA</b>) at a shared inter-stage header. Pressure stability of this header is the key control coupling between the LCC and HCC blocks; VFD turndown on the PVPS array is the primary actuator.</p>
+
+<h3>Open data — required for v0.5</h3>
+<ul>
+<li>Vendor datasheets for the actual PVPS unit selection</li>
+<li>Suction pressure from the coldbox QRB interface</li>
+<li>Validation of the 50 % isothermal efficiency assumption (vendor map)</li>
+<li>VFD turndown floor and per-unit minimum flow</li>
+<li>Noise and footprint for the 2 × 5 enclosure</li>
+<li>C30(00,10) / C24(00,10) static / VFD splits for control synthesis</li>
+</ul>
+
+<blockquote><b>Argument B5 conclusion:</b> the 2 × 5 N+1 architecture decouples low-pressure availability from single-unit failures and bounds the LCC plant load at ~150 kW electric / 130 kW heat under the placeholder isothermal baseline. Detailed sizing is gated on supplier data and the QRB suction pressure; the architecture is robust to a ±20 % shift in either.</blockquote>
+</section>
+
+<section id="b6"><h2><span class="section-tag">B6</span>Recovery Cooling Water Strategy (RCW + COMBI)</h2>
+<p><b>Detailed sizing view: <a href="hx-sizing.html">hx-sizing.html</a></b> · math in <a href="utilities.html#s6">utilities §6</a>.</p>
+
+<h3>RCW vs PCW</h3>
+<ul>
+<li><b>PCW</b> (Process Cooling Water, 15 °C / 30 °C) services the package internals — sensible-helium after-cooler and motor jackets. Vendor-defined.</li>
+<li><b>RCW</b> (Recovery Cooling Water, 30 °C / 55 °C) is a dedicated higher-grade loop dedicated to the <b>oil-cooler</b>, where 25 K rise downstream is recoverable as low-grade heat.</li>
+</ul>
+
+<h3>Oil precool: 85 °C → 30 °C</h3>
+<p>Vendor compressor-oil hot-end is 85 °C. RCW inlet 30 °C nominal, ΔT 25 K → outlet 55 °C. Oil-side duty <b>197.6 kW per skid</b> (= 323.9 kW total CW − 126.3 kW sensible-helium budget). RCW flow per skid <b>6.83 m³/h</b>, plant-level 20.5 m³/h (3 skids) or 27.3 m³/h (4-skid COMBI).</p>
+
+<h3>HX redundancy / N+1</h3>
+<p>One plate-and-frame HX per skid (200 kW class) plus a single shared <b>plant-level standby HX</b> on a manifold isolated by per-skid MOVs. Loss-of-1 without standby restricts the train to ~280 g/s or requires +5 K oil-loop offset.</p>
+
+<h3>COMBI operational flexibility</h3>
+<p>Pairs a <b>fixed @ 64 Hz</b> unit (100 g/s, 280 kW) with a <b>VFD @ 50–72 Hz</b> sister (78–112 g/s, 219–315 kW). 2-unit bundle covers 194–213 g/s (design @ 64+60 Hz). 4-unit bundle covers ~388–425 g/s.</p>
+
+<h3>Config24 / Config30 utility optimum</h3>
+<table><thead><tr><th>Total β (g/s)</th><th>Best config</th><th>f (Hz)</th><th>ΣP (kW)</th><th>Σ V_RCW (m³/h)</th></tr></thead><tbody>
+<tr><td>304 (Config24)</td><td>3 VFD</td><td>64.83</td><td>851</td><td>20.5</td></tr>
+<tr><td>336 (Config30)</td><td>3 VFD</td><td>71.7</td><td>940</td><td>20.5</td></tr>
+<tr><td>344</td><td>4 VFD</td><td>55.0</td><td>963</td><td>27.3</td></tr>
+<tr><td>350 (baseline)</td><td>3 VFD or 4-COMBI</td><td>74.7 / 56.0</td><td>990–981</td><td>20.5–27.3</td></tr>
+</tbody></table>
+
+<blockquote><b>Argument B6 conclusion:</b> a dedicated RCW loop sized for the oil-cooler train (~7 m³/h per skid, ΔT 25 K) plus a plant-level standby HX delivers full N+1 without doubling installed area. The COMBI fixed+VFD pairing extends the operable band cleanly to 304–350 g/s; the 344 g/s case explicitly favours 4-skid running at 55 Hz, demonstrating that the HP1..HP4 (N+1) layout is also the natural carrier for off-design trim. Vendor confirmation of the 64 Hz fixed-speed point is the only open item.</blockquote>
+</section>
+
+<section id="B7">
+<h2>B7 · Thermodynamic Performance and Efficiency Analysis</h2>
+<p><span class="tag warn">v0.4.7 UPDATE: Corrected electrical values and flow accounting</span></p>
+<p><b>Argument.</b> A complete 1st- and 2nd-law accounting of the WCS (350 g/s total baseline, split 300 g/s HP + 50 g/s PVPS) shows that of <b>1,290 kW</b> grid input, approximately <b>570 kW</b> (44%) is delivered as useful compression exergy to the helium stream; the balance is destroyed by motor irreversibility, real-gas compression irreversibility (dominated by isothermal-efficiency shortfall), and HVAC dissipation.</p>
+<ul>
+<li><b>Electrical breakdown:</b> Kaeser HP 990 kW + PVPS 150 kW + HVAC 130 kW + Controls 20 kW = <b>1,290 kW</b> total grid input</li>
+<li><b>Energy cascade:</b> Grid → motor (η≈96.7%) → shaft (1,102 kW) → ideal-isothermal compression at η_iso = 50% baseline → W_iso ≈ 551 kW useful work</li>
+<li><b>50% isothermal efficiency justification:</b> oil-flooded screw compressors with intercooling typically reach 55–62% effective isothermal efficiency; the 50% conservative baseline absorbs vendor uncertainty and aging margin (FSD 575 heat balance gives <b>61.2%</b> from datasheet, confirming margin).</li>
+<li><b>Exergy destruction breakdown:</b> compression irreversibility >90% of total destruction → primary improvement lever is multi-stage intercooled compression (would push η_II from 44% toward 55–60%).</li>
+<li><b>Waste-heat recovery opportunities:</b> ~550 kW excess compression heat available at oil/gas temperatures (60–90 °C) — candidate for site-water preheat or HVAC integration; potential 100–300 kW thermal recovery without process impact.</li>
+<li><b>Industry benchmark:</b> large helium plants (CERN, JT-60SA, ITER) report η_II = 35–48% across full WCS+coldbox; MYRRHA WCS at ~44% sits in the upper-middle of the band.</li>
+</ul>
+<p>Full waterfall, Sankey, T-s, exergy sunburst and η-curve charts: <a href="thermo-analysis.html"><b>thermo-analysis.html</b></a>. Calculation steps: <a href="utilities.html#thermo">utilities §7</a>.</p>
+</section>
+
+<hr>
+<p class="muted">Cross-refs: <a href="tables.html">Tables</a> · <a href="graphs.html">Graphs</a> · <a href="hx-sizing.html">HX sizing</a> · <a href="thermo-analysis.html">Thermo</a> · <a href="truth.html">Source of truth</a> · <a href="utilities.html">Utility math</a>.</p>
+</main>
+</div>
+<script>
+function copyCode(btn){const t=btn.parentElement.querySelector('code').innerText;navigator.clipboard.writeText(t);btn.textContent='copied';setTimeout(()=>btn.textContent='copy',1200)}
+</script>
+</body></html>
