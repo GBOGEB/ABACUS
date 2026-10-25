@@ -8,6 +8,14 @@ in `pipeline-automation-hub/mission-control/jade_temple/data/BD_QUEUE.csv`.
 **Status:** W0 (discover and classify), W1 (generated run reports) and W2 (handover and session notes) are in the first PR: 61 files moved, root 390 → 329. W3 to W5 are planned only.
 **Find anything:** the [repository map](index.html) (search every former root file, open it on GitHub or in your local checkout).
 
+How to open the map:
+
+- **GitHub Pages** (after merge): <https://gbogeb.github.io/ABACUS/repo-structure/>
+- **GitHub source:** <https://github.com/GBOGEB/ABACUS/tree/main/docs/repo-structure>
+- **Local checkout (Windows):** from the repository folder run `explorer.exe docs\repo-structure`
+  and open `index.html`, or `start docs\repo-structure\index.html` in PowerShell. Enter your
+  checkout folder once on the page to get File Explorer links for every file.
+
 The repository root holds 390 loose files next to 95 folders. A person landing on the
 repository sees hundreds of reports, handovers and scripts before the README.
 This plan moves them, one family per wave, into the folders where the same kind of
@@ -153,7 +161,22 @@ W5  ABACUS/
 
 ## W1 + W2 results
 
-W1_RESULTS_PLACEHOLDER
+Measured locally on Python 3.12 (Windows): before = `5678e2bc` (main `8d27bca8` merged, nothing moved),
+after = the W1 + W2 branch. CI on Linux (3.11 and 3.12) is the authority.
+
+| Check | Before | After |
+| --- | --- | --- |
+| `relocate.py check` | 47 problems (W1 not applied) | **0** (61 mapped files) |
+| Relative links in all tracked .md/.html | 1133, 101 broken | 1141, 99 broken: **0 new**, 2 README links fixed |
+| `scripts/validate_docs_links.py` | 7 errors | 7, identical |
+| `scripts/verify_workflows.sh` | 217/217 valid | 217/217 valid |
+| `tools/a10_guard.py --diff origin/main` | — | OK |
+| Changed-docs lint (`scripts/validate_changed_docs.py`) | — | pass: 59 pure renames skipped, 3 new docs clean, 14 edited legacy docs add no findings |
+| Full pytest (`-n 6`, 5847 tests) | 5699 passed, 26 failed, 110 errors, 12 skipped | identical, test by test: **0 newly failing** |
+| Root refactor and validator tests | — | 35 passed |
+
+The 26 failures and 110 errors are the same tests in both runs (Windows-only environment
+gaps such as `git init` in temp folders and the `hepak-tools` package shadowing `scripts`).
 
 ## Prune and merge candidates (owner decision; none deleted)
 
