@@ -1,0 +1,310 @@
+{
+  "manifest_version": "1.0.0",
+  "schema": "gbogeb-build-handover-v1",
+  "session": {
+    "id": "GBOGEB-2026-05-22-MCP-ORCH",
+    "date": "2026-05-22",
+    "handover_generated": "2026-06-02T00:00:00Z",
+    "agent": "Abacus AI Deep Agent",
+    "agent_version": "2026-06",
+    "user": "GBOGEB",
+    "platform": "Abacus AI ChatLLM"
+  },
+  "environment": {
+    "os": "Linux 6.17.0-1010-aws x86_64",
+    "python": "3.11.6",
+    "node": "22.14.0",
+    "git": "2.39.5",
+    "disk_total": "1.7T",
+    "disk_used": "275G",
+    "disk_available": "1.5T"
+  },
+  "repositories": {
+    "cryogenic_accelerator_workspace": {
+      "github_url": "https://github.com/GBOGEB/cryogenic-accelerator-workspace",
+      "local_path": "/home/ubuntu",
+      "current_branch": "feat/mcp-orchestration-suite",
+      "head_commit": "c9ba9b07ea8f1538c7a9f4ca6c22ea36376fed0c",
+      "main_commit": "e064e71",
+      "remote": "origin",
+      "branches": ["main", "ci/complete-suite", "ci/environment-tracking", "feat/mcp-orchestration-suite"],
+      "status": "clean_on_branch"
+    },
+    "gba_abacus": {
+      "github_url": "https://github.com/GBOGEB/ABACUS",
+      "local_path": "/home/ubuntu/gbogeb_abacus",
+      "current_branch": "main",
+      "head_commit": "8cda4ab3cb7f5b11621f5935e1e128355879f3be",
+      "test_count": 79,
+      "topology_nodes": 20,
+      "status": "clean"
+    },
+    "gbc_codex": {
+      "github_url": "https://github.com/GBOGEB/CODEX",
+      "local_path": "/home/ubuntu/gbogeb_codex",
+      "current_branch": "main",
+      "head_commit": "e61516545ea2090c6938734db782c7db22aa03a9",
+      "test_count": 68,
+      "topology_nodes": 7,
+      "status": "clean"
+    },
+    "mcp_server": {
+      "github_url": "https://github.com/GBOGEB/gbogeb-mcp-server",
+      "local_path": "/home/ubuntu/gbogeb_mcp_server",
+      "current_branch": "main",
+      "head_commit": "0920b3b5963337bec70fe45a23829b65cad1ff93",
+      "test_count": 51,
+      "tools": 7,
+      "status": "clean"
+    }
+  },
+  "pull_requests": {
+    "pr_1": {
+      "number": 1,
+      "repo": "cryogenic-accelerator-workspace",
+      "title": "CI/CD environment tracking",
+      "state": "merged",
+      "url": "https://github.com/GBOGEB/cryogenic-accelerator-workspace/pull/1"
+    },
+    "pr_2": {
+      "number": 2,
+      "repo": "cryogenic-accelerator-workspace",
+      "title": "[PRIORITY-ESCALATE] feat: complete CI/CD suite (6 workflows) + MCP orchestration framework",
+      "state": "merged",
+      "url": "https://github.com/GBOGEB/cryogenic-accelerator-workspace/pull/2",
+      "escalated": true
+    },
+    "pr_3": {
+      "number": 3,
+      "repo": "cryogenic-accelerator-workspace",
+      "title": "docs: MCP Orchestration Suite — 8 documents, 99 tuples, 4-repo integration",
+      "state": "open",
+      "branch": "feat/mcp-orchestration-suite",
+      "base": "main",
+      "url": "https://github.com/GBOGEB/cryogenic-accelerator-workspace/pull/3",
+      "files_count": 8,
+      "lines_added": 2984
+    }
+  },
+  "file_inventory": {
+    "orchestration_suite": [
+      {
+        "filename": "GBA_MCP_ORCHESTRATION.md",
+        "path": "/home/ubuntu/GBA_MCP_ORCHESTRATION.md",
+        "size_bytes": 15313,
+        "sha256": "016d678907c9838dfd945f60bbc25666b94e50390a1a75d1c04fb00ecb747f7e",
+        "tuples": 29,
+        "pr": 3,
+        "idempotency_key": "gba-orch-v1-29t"
+      },
+      {
+        "filename": "GBC_MCP_ORCHESTRATION.md",
+        "path": "/home/ubuntu/GBC_MCP_ORCHESTRATION.md",
+        "size_bytes": 11859,
+        "sha256": "f6ed0853db1e625fe489a8b70ee9f12ea5aab220d88ce10204fc22afe8145cb4",
+        "tuples": 22,
+        "pr": 3,
+        "idempotency_key": "gbc-orch-v1-22t"
+      },
+      {
+        "filename": "CROSS_REPO_MCP_BRIDGE.md",
+        "path": "/home/ubuntu/CROSS_REPO_MCP_BRIDGE.md",
+        "size_bytes": 14400,
+        "sha256": "7882f926f221e5da5ccb7babf073fa19dcae06310eb585edc603cd6da0fb6621",
+        "tuples": 12,
+        "pr": 3,
+        "idempotency_key": "bridge-v1-12t"
+      },
+      {
+        "filename": "DOCUMENT_ORG_INTEGRATION_PLAN.md",
+        "path": "/home/ubuntu/DOCUMENT_ORG_INTEGRATION_PLAN.md",
+        "size_bytes": 11437,
+        "sha256": "7f60e4daaea8399dd98934723578d75d3ffcff6afcdfd812f577d7e40e80504e",
+        "tuples": 0,
+        "pr": 3,
+        "idempotency_key": "dos-plan-v1-8n"
+      },
+      {
+        "filename": "EXHIBIT_EXTRACTION_TUPLES.md",
+        "path": "/home/ubuntu/EXHIBIT_EXTRACTION_TUPLES.md",
+        "size_bytes": 15137,
+        "sha256": "9b9ac6a8d828fe4812071cd7d8b4a76df52d49951fce672caddb455b5b6154d6",
+        "tuples": 8,
+        "pr": 3,
+        "idempotency_key": "exhibit-v1-8t"
+      },
+      {
+        "filename": "CROSS_CHAT_ORCHESTRATION.md",
+        "path": "/home/ubuntu/CROSS_CHAT_ORCHESTRATION.md",
+        "size_bytes": 13368,
+        "sha256": "b5a6b57e01ffdb56385c243392fe7261519089638f69789fde995429062214ad",
+        "tuples": 7,
+        "pr": 3,
+        "idempotency_key": "xchat-v1-7t"
+      },
+      {
+        "filename": "UBUNTU_MCP_SEQUENCES.md",
+        "path": "/home/ubuntu/UBUNTU_MCP_SEQUENCES.md",
+        "size_bytes": 15461,
+        "sha256": "e6d269e776fc32884981c41c47cd39dcbaf3256784216bb275d68f8720cf248c",
+        "tuples": 0,
+        "pr": 3,
+        "idempotency_key": "ubuntu-mcp-v1-e010"
+      },
+      {
+        "filename": "GBOGEB_INTEGRATION_MANIFEST.md",
+        "path": "/home/ubuntu/GBOGEB_INTEGRATION_MANIFEST.md",
+        "size_bytes": 15236,
+        "sha256": "7763e8a5d304fe7616152a4381e8c54c64d9f1d983c610c22a831894f8c3b0a5",
+        "tuples": 21,
+        "pr": 3,
+        "idempotency_key": "manifest-v1-21t"
+      }
+    ],
+    "prior_artifacts": [
+      {
+        "filename": "MCP_ORCHESTRATION_FRAMEWORK.md",
+        "path": "/home/ubuntu/MCP_ORCHESTRATION_FRAMEWORK.md",
+        "size_bytes": 22145,
+        "sha256": "714b5359c1d01d47a0dc124690b0edf3752d5441ba1aabacf3a0c2db6367823e",
+        "tuples": 21,
+        "pr": 2,
+        "idempotency_key": "mcp-framework-v1-21t"
+      }
+    ],
+    "handover_artifacts": [
+      {
+        "filename": "SESSION_HANDOVER_2026-05-22_GBOGEB.md",
+        "idempotency_key": "handover-session-v1"
+      },
+      {
+        "filename": "USER_AGENT_SEMANTIC_PAIRS.md",
+        "idempotency_key": "handover-pairs-v1"
+      },
+      {
+        "filename": "BUILD_HANDOVER_MANIFEST.json",
+        "idempotency_key": "handover-manifest-v1"
+      },
+      {
+        "filename": "TECHNICAL_STATE_SNAPSHOT.md",
+        "idempotency_key": "handover-techstate-v1"
+      },
+      {
+        "filename": "CONTINUATION_PROTOCOL.md",
+        "idempotency_key": "handover-continuation-v1"
+      },
+      {
+        "filename": "PR_VERIFICATION_STATUS.md",
+        "idempotency_key": "handover-prverify-v1"
+      },
+      {
+        "filename": "EXHIBIT_INTEGRATION_STATUS.md",
+        "idempotency_key": "handover-exhibits-v1"
+      },
+      {
+        "filename": "SESSION_COMPLETION_CERTIFICATE.md",
+        "idempotency_key": "handover-cert-v1"
+      }
+    ]
+  },
+  "test_results": {
+    "total": 198,
+    "breakdown": {
+      "gba_abacus": {
+        "total": 79,
+        "files": {
+          "test_render_linter.py": 22,
+          "test_wcag_contrast.py": 19,
+          "test_slide_id_enforcer.py": 19,
+          "test_verification_hook.py": 19
+        }
+      },
+      "gbc_codex": {
+        "total": 68,
+        "files": {
+          "test_theme_engine.py": 25,
+          "test_layout_compiler.py": 24,
+          "test_export_pipeline.py": 19
+        }
+      },
+      "mcp_server": {
+        "total": 51,
+        "files": {
+          "test_mcp_server.py": 51
+        }
+      }
+    }
+  },
+  "ci_cd": {
+    "workflows": [
+      {
+        "name": "governance-validation.yml",
+        "trigger": "PR to main/develop",
+        "jobs": ["lint", "contrast", "slide-ids", "tests"],
+        "status": "deployed"
+      },
+      {
+        "name": "asset-verification.yml",
+        "trigger": "push/PR to Input_Master/**",
+        "jobs": ["verify-assets"],
+        "status": "deployed"
+      },
+      {
+        "name": "archive-deploy.yml",
+        "trigger": "push to main",
+        "jobs": ["build", "deploy"],
+        "status": "deployed"
+      },
+      {
+        "name": "topology-integrity.yml",
+        "trigger": "push/PR to config/**",
+        "jobs": ["validate-topology"],
+        "status": "deployed"
+      },
+      {
+        "name": "cross-repo-sync.yml",
+        "trigger": "workflow_dispatch",
+        "jobs": ["sync-assets"],
+        "status": "deployed"
+      },
+      {
+        "name": "release-bundle.yml",
+        "trigger": "push tag v*",
+        "jobs": ["build-bundle", "create-release"],
+        "status": "deployed"
+      }
+    ]
+  },
+  "topology": {
+    "total_nodes": 35,
+    "total_tuples": 99,
+    "total_edges": 12,
+    "breakdown": {
+      "gba_nodes": 20,
+      "gbc_nodes": 7,
+      "dos_nodes_planned": 8
+    }
+  },
+  "version_lineage": {
+    "v0.1": {
+      "description": "Initial CI/CD workflows",
+      "pr": 1,
+      "date": "2026-05-20"
+    },
+    "v0.2": {
+      "description": "Complete CI/CD suite + MCP framework (21 tuples)",
+      "pr": 2,
+      "date": "2026-05-22"
+    },
+    "v0.3": {
+      "description": "Full orchestration suite (99 tuples, 8 docs)",
+      "pr": 3,
+      "date": "2026-05-22"
+    },
+    "v0.4": {
+      "description": "Session handover artifacts (8 docs)",
+      "pr": "3 (amended)",
+      "date": "2026-06-02"
+    }
+  }
+}

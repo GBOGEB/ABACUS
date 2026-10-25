@@ -1,0 +1,89 @@
+GBOGEB/ABACUS Multi-View Engineering Tool — LLM Transfer Format
+================================================================
+Format: Plaintext HTML summary optimized for Gemini/GPT token efficiency.
+Schema: v2.1.0 | Generated: 2026-05-20
+
+ARCHITECTURE
+------------
+Single Page Application (SPA) with:
+- Split-pane layout: left=code editor, right=render views
+- Resizable divider (mouse drag, 20-80% range)
+- 3 themes: userstyle (light), corporate (purple), focus (dark)
+- Live YAML→render pipeline (js-yaml parse, 300ms debounce)
+- External deps: Plotly 2.35, js-yaml 4.1, FontAwesome 6.5
+
+THEME TOKENS (CSS custom properties on [data-theme])
+-----------------------------------------------------
+userstyle: primary=#1a73e8 accent=#34a853 surface=#fff on-surface=#202124
+corporate: primary=#6d28d9 accent=#a78bfa surface=#faf5ff on-surface=#1e1b4b
+focus:     primary=#60a5fa accent=#34d399 surface=#0f172a on-surface=#f1f5f9
+
+LEFT PANEL — Code Editor Tabs
+------------------------------
+Tab 1: YAML Config (textarea, editable)
+  - Embedded default SSOT: facility, cryogenic, engineering_metrics, topology
+  - On input → parseYAML → renderAll (debounced)
+  - Validation badge: green=VALID, red=YAML ERROR
+
+Tab 2: Physics Validator (readonly textarea)
+  - Python source display: HeliumPropertyEngine, verify_mass_balance
+  - NIST polynomial coefficients (6th order, 1.8-5.2 K range)
+
+RIGHT PANEL — Render Tabs
+--------------------------
+Tab 1: HMI Dashboard
+  - Grid of metric cards: facility, temperature, pressure, heat load, mass balance
+  - Component status cards from topology (cryomodule, valve, heat exchanger)
+  - Plotly bar chart: heat load distribution by category (static=primary, dynamic=accent)
+  - Inline SVG: P&ID schematic with dynamic data binding
+    Components: rounded-rect (cryomodule), diamond (valve), rect+zigzag (heat exchanger)
+    Connections: cubic bezier paths with arrowheads and labels
+
+Tab 2: Marp Presentation
+  - 6 slides rendered as styled cards
+  - Slides: Title, Cryogenic Params, Heat Loads (table), Mass Balance (equation), Topology, Summary
+
+Tab 3: Technical Report
+  - Full document layout: header, 7 sections
+  - Embedded SVG flowchart (CM-01 → CV-01 → HX-01)
+  - Tables, equation blocks (styled div), cross-references
+
+YAML SSOT STRUCTURE
+-------------------
+version_control: {schema_version, last_modified, author}
+facility: {name, beam_energy_MeV, cryomodule_count, operating_temperature_K}
+cryogenic: {coolant, supply/return temp+pressure, lambda_point, enthalpy_supply/return}
+engineering_metrics:
+  heat_loads:
+    categories: [{id, label, value}] × 6 (3 static + 3 dynamic)
+    summary: {Q_static_W=24.5, Q_dynamic_W=47.8, Q_total_W=72.3, safety_factor=1.5, Q_design_W=108.45}
+  mass_balance: {formula, delta_h_J_g=23.58, m_dot_calculated=3.066, m_dot_design=4.6}
+topology:
+  components: [{id, type, label, x, y, width, height, status, ...params}]
+  connections: [{from, to, label}]
+
+PHYSICS ENGINE (Python)
+-----------------------
+HeliumPropertyEngine:
+  enthalpy(T) → J/g via NIST 6th-order polynomial
+  density(T) → kg/m³ via NIST polynomial
+  viscosity(T) → μPa·s (He-I only, T > λ)
+  phase(T) → "He-II" if T < 2.1768 K else "He-I"
+
+verify_mass_balance(Q_static, Q_dynamic, h_supply, h_return, m_dot_design, SF=1.5):
+  m_dot = (Q_static + Q_dynamic) / (h_return - h_supply)
+  deviation = |m_dot × SF - m_dot_design| / m_dot_design × 100
+  PASS if deviation ≤ 5%
+
+KEY FORMULAS
+------------
+Mass balance:    ṁ = (Q_static + Q_dynamic) / Δh
+Enthalpy diff:   Δh = h_return - h_supply = 26.14 - 2.56 = 23.58 J/g
+Design flow:     ṁ_design = ṁ_calc × SF = 3.066 × 1.5 = 4.599 g/s
+Polynomial:      h(T) = Σ(n=0..6) aₙ·Tⁿ
+
+GOVERNANCE INTEGRATION
+----------------------
+verification_hook: engines.verification_hook (YAML schema validation)
+SEMANTIC_THEME: CSS custom properties bound to governance tokens
+RENDER_RULES: figure_prefix=fig, equation_numbering=true, cross_ref_validation=true
