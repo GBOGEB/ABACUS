@@ -127,9 +127,9 @@ cd ABACUS
 ```
 
 ### 2. Understand the Architecture
-- Read [`12_cluster_vision.md`](12_cluster_vision.md) — the 12-Cluster Architecture
-- Read [`tool_ecosystem_map.md`](tool_ecosystem_map.md) — DOW/KEB/GBOGEB ecosystem
-- Browse section READMEs in [`section_readmes/`](section_readmes/)
+- Read [`12_cluster_vision.md`](../../12_cluster_vision.md) — the 12-Cluster Architecture
+- Read [`tool_ecosystem_map.md`](../../tool_ecosystem_map.md) — DOW/KEB/GBOGEB ecosystem
+- Browse section READMEs in [`section_readmes/`](../../section_readmes)
 
 ### 3. Test Core Components
 ```bash
@@ -149,9 +149,9 @@ python3 -c "from DMAIC_V3.core.twelve_cluster_orchestrator import TwelveClusterO
 - Check the analysis dashboard: `docs/deep_analysis_dashboard.html`
 
 ### 5. Contribute
-- Read [`.github/CONTRIBUTING.md`](.github/CONTRIBUTING.md)
-- Use [issue templates](.github/ISSUE_TEMPLATE/) for bugs/features
-- Follow the [PR template](.github/PULL_REQUEST_TEMPLATE.md)
+- Read [`.github/CONTRIBUTING.md`](../../.github/CONTRIBUTING.md)
+- Use [issue templates](../../.github/ISSUE_TEMPLATE) for bugs/features
+- Follow the [PR template](../../.github/PULL_REQUEST_TEMPLATE.md)
 
 ---
 
@@ -159,14 +159,14 @@ python3 -c "from DMAIC_V3.core.twelve_cluster_orchestrator import TwelveClusterO
 
 | Document | Description |
 |----------|-------------|
-| [`12_cluster_vision.md`](12_cluster_vision.md) | Core 12-Cluster Architecture |
-| [`tool_ecosystem_map.md`](tool_ecosystem_map.md) | DOW/KEB/GBOGEB ecosystem |
-| [`ssot_artifacts_catalog.md`](ssot_artifacts_catalog.md) | SSOT artifacts inventory |
-| [`recovery_report.md`](docs_versioned/generated_reports/recovery_report.md) | File recovery & integrity report |
-| [`integration_test_results.md`](docs_versioned/generated_reports/integration_test_results.md) | Test results & workflow status |
+| [`12_cluster_vision.md`](../../12_cluster_vision.md) | Core 12-Cluster Architecture |
+| [`tool_ecosystem_map.md`](../../tool_ecosystem_map.md) | DOW/KEB/GBOGEB ecosystem |
+| [`ssot_artifacts_catalog.md`](../../ssot_artifacts_catalog.md) | SSOT artifacts inventory |
+| [`recovery_report.md`](../generated_reports/recovery_report.md) | File recovery & integrity report |
+| [`integration_test_results.md`](../generated_reports/integration_test_results.md) | Test results & workflow status |
 | [`p1_p2_p3_implementation_log.md`](p1_p2_p3_implementation_log.md) | Implementation log |
-| [`docs/TIMEOUT_HANDLING.md`](docs/TIMEOUT_HANDLING.md) | Timeout configuration guide |
-| [`docs/workflows/README.md`](docs/workflows/README.md) | CI/CD workflow installation |
+| [`docs/TIMEOUT_HANDLING.md`](../../docs/TIMEOUT_HANDLING.md) | Timeout configuration guide |
+| [`docs/workflows/README.md`](../../docs/workflows/README.md) | CI/CD workflow installation |
 
 ---
 

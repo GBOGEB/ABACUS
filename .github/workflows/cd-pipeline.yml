@@ -121,7 +121,7 @@ jobs:
           # No separate root runners/ tree exists on current main.
           cp -r config/ dist/ || echo "No config directory"
           cp RTM_INTEGRATION_DASHBOARD.html dist/ || echo "No dashboard"
-          cp TOTAL_PROGRESS_SUMMARY.md dist/
+          cp docs_versioned/status_reports/TOTAL_PROGRESS_SUMMARY.md dist/
 
           # Create version file
           echo "${{ steps.version.outputs.version }}" > dist/VERSION

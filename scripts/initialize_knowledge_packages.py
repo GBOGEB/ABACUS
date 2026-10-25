@@ -188,7 +188,7 @@ class KnowledgePackageInitializer:
             },
 
             "knowledge_sources": [
-                "DMAIC_TEMPORAL_MAPPING_COMPLETE.md",
+                "docs_versioned/status_reports/DMAIC_TEMPORAL_MAPPING_COMPLETE.md",
                 "DMAIC_V3_3_IMPLEMENTATION_SUMMARY.md",
                 "DMAIC_V3_EXECUTION_SUMMARY.md",
                 "CONVERGENCE_QUICK_REFERENCE.md"

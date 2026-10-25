@@ -15,6 +15,9 @@ Plain-text mentions (tables, backticks, dated census snapshots) are history and
 are left as written; the map resolves them. Links inside fenced code are kept.
 Scripts, workflows and configs that name a moved file must be updated in the same
 wave (MOVE_WITH_CONSUMER_REPLAY); `check` fails while one still names an old path.
+A mention that is not the moved file (another folder's file of the same name, a
+frozen log line) is acknowledged one consumer at a time, with a reason, in
+ROOT_RELOCATION_MENTIONS.csv; an acknowledgement that no longer matches fails too.
 Nothing is ever deleted.
 """
 from __future__ import annotations
@@ -31,6 +34,8 @@ from urllib.parse import quote, unquote
 ROOT = Path(__file__).resolve().parents[2]
 MAP = "docs_versioned/ROOT_RELOCATION_MAP.csv"
 FIELDS = ["old_path", "new_path", "family", "wave", "disposition"]
+MENTIONS = "docs_versioned/ROOT_RELOCATION_MENTIONS.csv"
+MENTION_FIELDS = ["consumer_path", "old_path", "reason"]
 FAMILIES = {"F1", "F2", "F3", "F4", "F5"}
 DISPOSITIONS = {
     "ARCHIVE_PRESERVE_LINKS",
@@ -58,12 +63,24 @@ def git(*args: str) -> str:
     ).stdout
 
 
-def load_map(root: Path = ROOT) -> list[dict]:
-    path = root / MAP
+def load_map(root: Path = ROOT, name: str = MAP) -> list[dict]:
+    path = root / name
     if not path.exists():
         return []
     with path.open(newline="", encoding="utf-8") as f:
         return list(csv.DictReader(f))
+
+
+def validate_mentions(acks: list[dict], olds: set[str]) -> list[str]:
+    errors = []
+    for i, a in enumerate(acks, 2):
+        if list(a) != MENTION_FIELDS:
+            return [f"{MENTIONS}: header must be {','.join(MENTION_FIELDS)}"]
+        if a["old_path"] not in olds:
+            errors.append(f"{MENTIONS} line {i}: {a['old_path']!r} is not a mapped old_path")
+        if not a["reason"].strip():
+            errors.append(f"{MENTIONS} line {i}: reason is required")
+    return errors
 
 
 def split_target(raw: str) -> tuple[str, str, bool]:
@@ -182,6 +199,11 @@ def check(root: Path = ROOT) -> list[str]:
     if errors:
         return errors
     olds = {r["old_path"] for r in rows}
+    acks = load_map(root, MENTIONS)
+    errors = validate_mentions(acks, olds)
+    if errors:
+        return errors
+    acked = {(a["consumer_path"], a["old_path"]) for a in acks}
     for r in rows:
         if (root / r["old_path"]).exists():
             errors.append(
@@ -194,13 +216,20 @@ def check(root: Path = ROOT) -> list[str]:
         if path.is_file():
             for old in links_to(read(path), doc, olds):
                 errors.append(f"{doc}: link still points at moved root file {old}")
+    seen = set()
     for src in tracked_code():
         path = root / src
         if path.is_file():
             for old in code_mentions(read(path), olds):
-                errors.append(
-                    f"{src}: code or config still names moved root file {old}"
-                )
+                seen.add((src, old))
+                if (src, old) not in acked:
+                    errors.append(
+                        f"{src}: code or config still names moved root file {old}"
+                    )
+    for src, old in sorted(acked - seen):
+        errors.append(
+            f"{MENTIONS}: {src} no longer names {old}; remove the acknowledgement"
+        )
     return errors
 
 

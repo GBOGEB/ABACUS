@@ -44,7 +44,7 @@ observed_capabilities:
       Do not treat CoolProp-vs-REFPROP as an independent helium oracle where they share EOS lineage.
   mcp_controller:
     evidence:
-      - MASTER_EXECUTION_TRACKER.md
+      - docs_versioned/status_reports/MASTER_EXECUTION_TRACKER.md
     state: PRESENT_NEEDS_RUNTIME_VALIDATION
   hepak_chatgpt_skill:
     state: NOT_EXPOSED

@@ -69,5 +69,5 @@ All templates follow the same pattern:
 
 - 📘 [DMAIC Methodology](../../DMAIC_REPO_CLEANUP_METHODOLOGY.md) — full playbook
 - ⏱️ [Quick Start Guide](../../REPO_CLEANUP_QUICK_START.md) — day-by-day execution
-- 📊 [Health Scorecard](../../REPO_HEALTH_SCORECARD.md) — 100-point rubric
+- 📊 [Health Scorecard](../../docs_versioned/status_reports/REPO_HEALTH_SCORECARD.md) — 100-point rubric
 - 🎬 [Example Dry-Run](../../EXAMPLE_DRY_RUN.md) — end-to-end walkthrough
