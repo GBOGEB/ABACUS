@@ -83,6 +83,18 @@ run python3 src/abacus_svg_pid/render_collage.py
 run python3 -m abacus_svg_pid.build_viewer
 
 # ---------------------------------------------------------------------------
+# 6b. AD_01 auxiliary-building drawing-package inventory (optional).
+#    Only runs if the raw PDFs have been extracted to data/aux_building/pdfs/
+#    (git-ignored input binaries). Emits reports/aux_building_inventory.{json,md}
+#    with an honest tag cross-check against the QCELL design/as-drawn registers.
+# ---------------------------------------------------------------------------
+if ls data/aux_building/pdfs/*.pdf >/dev/null 2>&1; then
+  run python3 -m abacus_svg_pid.build_aux_inventory
+else
+  echo ">>> AD_01 aux-building PDFs not present (data/aux_building/pdfs/) -- skipping inventory."
+fi
+
+# ---------------------------------------------------------------------------
 # 7. W009 — Commissioning: final v1.0 canonical register + sign-off record.
 #    Consolidates W005 reconciliation + W006 cross-map + reviewer-confirmed
 #    seeds (configs/known_seeds.json). Reviewer triage is promoted via:

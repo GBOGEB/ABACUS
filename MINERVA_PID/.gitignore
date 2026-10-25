@@ -27,3 +27,7 @@ __pycache__/
 coverage.xml
 htmlcov/
 .pytest_cache/
+
+# AD_01 auxiliary-building raw drawing inputs (46 MB of source PDFs; the
+# generated reports/aux_building_inventory.{json,md} are the tracked artifact)
+data/aux_building/
