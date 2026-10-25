@@ -112,6 +112,31 @@ class RatchetTest(unittest.TestCase):
             "Markdown (base unreadable)", ["markdownlint-cli2"], ["legacy.md"]
         )
 
+    def test_nothing_to_ratchet(self):
+        self.assertEqual(docs.ratchet_markdown([], {}), 0)
+
+    def test_git_blob_reads_the_base_revision(self):
+        with mock.patch.object(docs, "_run", return_value=done("# Ä\n")) as run:
+            self.assertEqual(docs._git_blob("base1", "a.md"), (0, "# Ä\n".encode()))
+        run.assert_called_once_with(["git", "show", "base1:a.md"], check=False)
+
+
+class MainTest(unittest.TestCase):
+    def test_renames_skip_new_files_lint_in_full_edits_ratchet(self):
+        paths = [Path("moved.md"), Path("new.md"), Path("legacy.md")]
+        origins = {"legacy.md": ("base1", "legacy.md")}
+        with (
+            mock.patch.object(docs, "changed_files", return_value=paths),
+            mock.patch.object(
+                docs, "rename_origins", return_value=({"moved.md"}, origins)
+            ),
+            mock.patch.object(docs, "run_optional", return_value=0) as full,
+            mock.patch.object(docs, "ratchet_markdown", return_value=1) as ratchet,
+        ):
+            self.assertEqual(docs.main(), 1)
+        full.assert_any_call("Markdown", ["markdownlint-cli2"], ["new.md"])
+        ratchet.assert_called_once_with(["legacy.md"], origins)
+
 
 if __name__ == "__main__":
     unittest.main()
