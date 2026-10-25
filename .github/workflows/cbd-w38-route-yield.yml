@@ -24,7 +24,7 @@ jobs:
           ref: ${{ github.event.pull_request.head.sha || github.sha }}
           persist-credentials: false
       - name: Python 3.12
-        uses: actions/setup-python@v7.0.0
+        uses: actions/setup-python@v7
         with:
           python-version: '3.12'
       - name: Source exactness, coverage tool and negative unit contract
