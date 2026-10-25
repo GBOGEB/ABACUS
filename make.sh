@@ -85,6 +85,18 @@ run python3 src/abacus_svg_pid/render_collage.py
 # ---------------------------------------------------------------------------
 run python3 -m abacus_svg_pid.build_viewer
 
+# ---------------------------------------------------------------------------
+# 7. AD_01 auxiliary-building drawing-package inventory (optional).
+#    Only runs if the raw PDFs have been extracted to data/aux_building/pdfs/
+#    (git-ignored input binaries). Emits reports/aux_building_inventory.{json,md}
+#    with an honest tag cross-check against the QCELL design/as-drawn registers.
+# ---------------------------------------------------------------------------
+if ls data/aux_building/pdfs/*.pdf >/dev/null 2>&1; then
+  run python3 -m abacus_svg_pid.build_aux_inventory
+else
+  echo ">>> AD_01 aux-building PDFs not present (data/aux_building/pdfs/) -- skipping inventory."
+fi
+
 echo ""
 echo "=========================================================================="
 echo " Regeneration complete. Derived outputs written to:"

@@ -34,6 +34,9 @@ Honest "Claim ≠ Complete" accounting. Every row is one of:
 | Flag RFCELL template placeholders as non-reconcilable | 24 placeholders (TTxxx/EHx11…) flagged |
 | Apply documented PPT instrument re-allocations | 2 (TT535→PZ coldest, TT525→PZ warmest) |
 | Emit canonical merged instrument register (SSOT) | `data/excel/canonical_register_v1.yaml`, 238 entries |
+| Assimilate AD_01 auxiliary-building drawing package (integration pass) | 19 PDFs / 43 pages / 46.7 MB → `reports/aux_building_inventory.{json,md}` via `build_aux_inventory.py`; 111 instrument tags, 44 pipe-lines |
+| Honest cross-check of AD_01 tags vs MINERVA registers | 0 overlap with design (97) and 0 with as-drawn (141) — AD_01 uses a disjoint `AA####`/`BR####`/`=NA.PSxx` namespace; reported truthfully, not forced |
+| Map GitHub integration/merge/prune across ABACUS / CODES / cryoplant-project | `docs/GITHUB_INTEGRATION_MAP.md`: cryoplant-project identified as domain home (1:1 97-row nomenclature match in `triage/w367`); all 4 MINERVA PRs (#546/#547/#556/#560) confirmed merged via API; W008 PR → `main` |
 
 ## CANNOT — blocked by source data / toolchain
 

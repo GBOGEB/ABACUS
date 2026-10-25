@@ -27,3 +27,8 @@ __pycache__/
 coverage.xml
 htmlcov/
 .pytest_cache/
+
+# AD_01 auxiliary-building raw input PDFs (binaries; re-extract from the uploaded
+# zip via data/aux_building/). Derived reports/aux_building_inventory.* are tracked.
+data/aux_building/
+

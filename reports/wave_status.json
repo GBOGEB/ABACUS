@@ -263,6 +263,41 @@
         "pre-commit hooks are advisory/opt-in (not run in CI) to avoid a mass black/flake8 reformat diff that could perturb reproducible outputs.",
         "The wave-registry W007 line also names cross-drawing QCELL<->RFCELL reconciliation and 4.5K/2K/warm per-segment classification; those remain modelling scope deferred to a follow-up. This deliverable is the CI/CD half."
       ]
+    },
+    {
+      "wave": "W008",
+      "name": "Interactive Viewer + GitHub Integration / AD_01 Assimilation Pass",
+      "claim": "Full interactive cross-map viewer (single self-contained HTML), AD_01 auxiliary-building drawing package assimilated with an honest tag cross-check, and a GitHub integration/merge/prune map across ABACUS/CODES/cryoplant-project with the W008 work propagated to the mono-repo as an open PR.",
+      "actual": {
+        "viewer": "publish/interactive_viewer.html (full build; tag->SVG highlight, triage, export, compare)",
+        "viewer_tests": "tests/test_w008_viewer.py (7 assertions)",
+        "aux_builder": "src/abacus_svg_pid/build_aux_inventory.py",
+        "aux_inventory": "reports/aux_building_inventory.{json,md}",
+        "aux_pdf_count": 19,
+        "aux_total_pages": 43,
+        "aux_unique_instrument_tags": 111,
+        "aux_unique_pipe_lines": 44,
+        "aux_overlap_with_design_register": 0,
+        "aux_overlap_with_asdrawn_real": 0,
+        "aux_design_register_size": 97,
+        "aux_asdrawn_real_size": 141,
+        "aux_tests": "tests/test_aux_inventory.py (9 assertions)",
+        "integration_map": "docs/GITHUB_INTEGRATION_MAP.md",
+        "repos_accessible": ["GBOGEB/ABACUS (public)", "GBOGEB/cryoplant-project (private)"],
+        "repos_blocked": ["GBOGEB/CODES (HTTP 404 - does not exist under this name)"],
+        "minerva_prs_merged": ["#546", "#547", "#556", "#560"],
+        "w008_pr_base": "main",
+        "domain_home_recommendation": "cryoplant-project (1:1 97-row nomenclature match in triage/w367; org PR#2434 already moving MINERVA_PID private)"
+      },
+      "validation_report": "docs/GITHUB_INTEGRATION_MAP.md + reports/aux_building_inventory.md + reports/W008_VIEWER_ENHANCEMENT_REPORT.md",
+      "pass": true,
+      "known_gaps": [
+        "AD_01 tag overlap with both MINERVA registers is 0 - this is the truthful, expected result (disjoint AA####/BR####/=NA.PSxx namespace vs the QCELL cryo register), NOT a reconciliation; no matches were fabricated.",
+        "GBOGEB/CODES is a 404 (no such repo under that name); recorded as BLOCKED, no work attempted.",
+        "The W008 mono-repo PR targets main because its predecessor branch minerva-pid-w007 was auto-deleted after PR#560 merged; main already contains W001-W007.",
+        "Branch pruning (pr1-w001-w005 on origin; ~457 total ABACUS branches incl. 100+ auto/update-docs-*) is RECOMMENDED ONLY - nothing was deleted.",
+        "W009 (release v1.0-complete) remains pending."
+      ]
     }
   ]
 }
