@@ -178,7 +178,7 @@ pull_requests_opened:
     base: main
     purpose: "Add cross-repo integration report + manifest under docs/integration/"
     merged: false
-    url: "https://github.com/GBOGEB/ABACUS/pull/__PRA__"
+    url: "https://github.com/GBOGEB/ABACUS/pull/2436"
   - id: B
     repo: cryoplant-project
     branch: fix/pytest-root-conftest-collection-20261025

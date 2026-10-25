@@ -56,7 +56,7 @@ All three repos keep a **single long-lived `main` branch** on the remote (featur
 
 ### 1.4 Security / Dependabot signals
 
-- ABACUS: push notification reports **6 vulnerabilities on `main` (3 high, 3 moderate)**. Per-alert detail is **BLOCKED** — Dependabot **Alerts API returns 403** (GitHub App lacks `security_events` scope). A prior SBOM-derived triage lives at `ABACUS/deepagent-handover-package/SECURITY_TRIAGE_REPORT.md` (setuptools ≥78.1.1, jinja2 ≥3.1.6).
+- ABACUS: push notification (2026-10-25) reports **51 vulnerabilities on `main` (6 critical, 26 high, 19 moderate)** — materially higher than the stale "6" noted in a prior session; treat 51 as current. cryoplant-project reports **1 high** (#111); CODEX count not surfaced this session. Per-alert detail is **BLOCKED** — Dependabot **Alerts API returns 403** (GitHub App lacks `security_events` scope). A prior SBOM-derived triage lives at `ABACUS/deepagent-handover-package/SECURITY_TRIAGE_REPORT.md` (setuptools ≥78.1.1, jinja2 ≥3.1.6).
 - CODEX / cryoplant-project: no alert counts surfaced to this session; `security_events` scope not granted → **UNKNOWN**. CODEX ships `bandit.yml`, `codeql.yml`, `coverity-scan.yml`; cryoplant ships source-gate / canonicalization guards.
 - **Action for owner:** to unblock full security triage across all three, grant the GitHub App `security_events` via <https://github.com/apps/abacusai/installations/select_target>.
 
@@ -165,7 +165,7 @@ DELTA_1 federation
 
 | PR | Repo | Branch | Type | Status |
 |----|------|--------|------|--------|
-| **A** | ABACUS | `docs/cross-repo-integration-report-20261025` | Add this report + manifest under `docs/integration/` | **OPEN** — https://github.com/GBOGEB/ABACUS/pull/__PRA__ |
+| **A** | ABACUS | `docs/cross-repo-integration-report-20261025` | Add this report + manifest under `docs/integration/` | **OPEN** — https://github.com/GBOGEB/ABACUS/pull/2436 |
 | **B** | cryoplant-project | `fix/pytest-root-conftest-collection-20261025` | Root `conftest.py` so `pytest tests/` collects cleanly (fixes §3.3) | **OPEN** — https://github.com/GBOGEB/cryoplant-project/pull/2087 |
 
 No PRs opened against CODEX (its suite is green and no concrete low-risk fix was found this session; the `qps_contract_canonicalization` canonicalization in §4.1 is high-risk and left for owner-driven design). **No PR was or will be merged.**
