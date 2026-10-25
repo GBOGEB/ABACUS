@@ -29,6 +29,24 @@ security controls and release acceptance. `UNKNOWN` is not `PASS` or zero.
 
 <!-- code-purple-federation-w0:end -->
 
+<!-- cross-repo-federation:begin -->
+## Cross-repo federation view (ABACUS · CODEX · cryoplant-project)
+
+> Smoke-verified 2026-10-25 by a cross-repo integration pass. This is a navigation + status
+> snapshot, **not** an assertion that any PR is merged or that CI passed on exact head.
+> Full evidence, integration matrix and merge/prune list: **[docs/INTEGRATION_REPORT.md](docs/INTEGRATION_REPORT.md)**.
+
+| Repo | Role | Smoke verdict | Key integration / merge-prune points |
+|------|------|---------------|--------------------------------------|
+| **[CODEX](https://github.com/GBOGEB/CODEX)** | Governance + KEB semantic/provenance **canonical hub** | ✅ PASS — `pca_engine` 16/16; JSON/YAML/PY/HTML clean | P1 canonical Bradley-Terry/PCA (`pca_engine`); P2 single-source `federation/`+`ssot/`+`governance/` |
+| **ABACUS** (this repo) | DOW analytical runtime + TSX slide-reviewer | ✅ PASS — 6254 passed / 37 skipped (only Docker-absent fails) | P1 converge `qps_slide_reviewer/lib/stats.ts` onto CODEX; P4 prune stale snapshots/branches |
+| **cryoplant-project** (private) | QPS engineering child authority (SSOT, OCD/ADR) | 🟡 PASS w/ caveats — 32 smoke passed; 31 live YAML parse errors | P3 fix live YAML; P4/P9 quarantine recovered-history artifacts; P2 consume CODEX federation |
+
+**Model:** hub-and-spoke federation (not a monorepo) — canonicalize shared logic into CODEX and
+reference it from spokes. Companion analysis: CODEX PR **#1188** (W59 cross-repo census).
+
+<!-- cross-repo-federation:end -->
+
 [![main version](https://img.shields.io/badge/dynamic/toml?url=https%3A%2F%2Fraw.githubusercontent.com%2FGBOGEB%2FABACUS%2Fmain%2Fpyproject.toml&query=%24.project.version&prefix=v&label=main%20version&color=blue&style=flat-square)](pyproject.toml)
 [![last release](https://img.shields.io/github/v/release/GBOGEB/ABACUS?label=last%20release&style=flat-square)](https://github.com/GBOGEB/ABACUS/releases/latest)
 [![v4.4.0 completion](https://img.shields.io/badge/v4.4.0%20completion-95%25-brightgreen?style=flat-square)](FINAL_COMPLETION_REPORT_v4.4.0.md)
