@@ -27,7 +27,7 @@ jobs:
       EVENT_SHA: ${{ github.sha }}
     steps:
       - name: Checkout exact PR merge context
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
       - name: Install Python
         uses: actions/setup-python@v5
         with:
