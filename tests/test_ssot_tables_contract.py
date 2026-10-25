@@ -221,8 +221,13 @@ def test_upstream_contract_revision_reports_drift(tmp_path, capsys):
     assert problems[0].startswith("contract sha256 ")
     assert problems[1] == "contract revision 147 != vendored 146"
     assert problems[2].startswith("Tables 27-29 differ")
+    # The default checks every vendored extract; this synthetic contract has
+    # no requirements and no Table 7, so the RTM extract drifts as well.
     assert contract_tables.main(["--contract", str(path)]) == 1
-    assert capsys.readouterr().out.count("DRIFT: ") == 3
+    out = capsys.readouterr().out
+    assert out.count("DRIFT: addendum2_rev146_tables_27_29.json: ") == 3
+    assert out.count("DRIFT: addendum2_rev146_rtm_292_293_061.json: ") == 4
+    assert "requirements missing upstream: RTM-292, RTM-293, RTM-061" in out
 
 
 def test_drift_cli_ok_against_matching_contract(tmp_path, capsys):
