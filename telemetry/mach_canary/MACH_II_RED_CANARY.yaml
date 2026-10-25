@@ -1,3 +1,0 @@
-# MACH-II canary: deliberately invalid YAML. Never merge.
-key: [unclosed
-  - nope: : :
