@@ -4,14 +4,6 @@
   "intent": "actual-source-first user-facing HTML with controlled binary lineage",
   "artifacts": [
     {
-      "id": "abacus-wave-json",
-      "title": "MINERVA wave-status census",
-      "format": "json",
-      "role": "repository_source",
-      "path": "MINERVA_PID/reports/wave_status.json",
-      "description": "Observed source-side wave statuses and traceability; parsed as data, not release authority."
-    },
-    {
       "id": "qps-gate-yaml",
       "title": "QPS W63 binary release gate",
       "format": "yaml",
@@ -50,28 +42,6 @@
       "role": "generated_output",
       "generator": "scripts/build_qps_ssot_views.py",
       "description": "Expected Excel output from normalized QPS rows; original user workbook inputs remain immutable.",
-      "depends_on": [
-        "qps-product-md"
-      ]
-    },
-    {
-      "id": "minerva-pptx",
-      "title": "MINERVA dissection slides (generated)",
-      "format": "pptx",
-      "role": "generated_output",
-      "generator": "MINERVA_PID/generator/build_dissection_pptx.py",
-      "description": "Existing PPTX generator; final slide deck is not claimed built by this cold view.",
-      "depends_on": [
-        "qps-product-md"
-      ]
-    },
-    {
-      "id": "minerva-pdf",
-      "title": "MINERVA gradient report (generated)",
-      "format": "pdf",
-      "role": "generated_output",
-      "generator": "MINERVA_PID/generator/build_temp_gradient_pdf.py",
-      "description": "Report-generation source; PDF rendering, pages and file hash remain pending.",
       "depends_on": [
         "qps-product-md"
       ]
