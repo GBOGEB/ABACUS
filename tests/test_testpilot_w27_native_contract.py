@@ -33,7 +33,7 @@ def test_positive_four_real_os_python_matrix_cells():
 
 def test_force_trip_python_matrix_is_bound_to_setup_action():
     setup = _step("Set up matrix Python interpreter")
-    assert setup["uses"] == "actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97"
+    assert setup["uses"] == "actions/setup-python@6d4fd22b20465ccc0f7354476588e8df7c9ca0e0"
     assert setup["with"]["python-version"] == "${{ matrix.python }}"
     assert "sys.version_info[:2] == expected" in _step("Verify selected Python minor version")["run"]
 
