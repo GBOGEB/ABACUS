@@ -114,7 +114,7 @@ class ExecutionTierTests(unittest.TestCase):
             and "security-events: write" in publisher
             and "test \"$GITHUB_REF\" = refs/heads/main" in publisher
             and "test \"$(git rev-parse HEAD)\" = \"$GITHUB_SHA\"" in publisher
-            and upload_pins == ["6f2ac81f5cd81fe351a197ba0b00d91d03cd2aee"]
+            and upload_pins == ["9b3254085494b55a0f7c4c2b3d2d52cc712ce370"]
         )
 
     def test_path_scoped_pr_domain_preserves_actual_triggers(self):
@@ -165,8 +165,8 @@ class ExecutionTierTests(unittest.TestCase):
         pr = (WORKFLOWS / "ci-pipeline.yml").read_text(encoding="utf-8")
         cd = (WORKFLOWS / "cd-pipeline.yml").read_text(encoding="utf-8")
         self.assertTrue(self._sarif_trust_boundary(pr, cd))
-        approved = "6f2ac81f5cd81fe351a197ba0b00d91d03cd2aee"
-        for replacement in ("v4", "0" * 40):
+        approved = "9b3254085494b55a0f7c4c2b3d2d52cc712ce370"
+        for replacement in ("v4", "0" * 40, "6f2ac81f5cd81fe351a197ba0b00d91d03cd2aee"):
             with self.subTest(replacement=replacement):
                 changed = cd.replace("upload-sarif@" + approved,
                                      "upload-sarif@" + replacement, 1)
