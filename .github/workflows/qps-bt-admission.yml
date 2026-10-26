@@ -21,5 +21,6 @@ jobs:
           node-version: '24'
       - name: Fail-closed preflight negatives (Node TS stripping)
         run: |
-          node --test qps_slide_reviewer/tests/bt_admission.test.ts \\
+          node --test \
+            qps_slide_reviewer/tests/bt_admission.test.ts \
             qps_slide_reviewer/tests/bt_observed.test.ts
