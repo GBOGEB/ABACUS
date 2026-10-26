@@ -1,5 +1,5 @@
 /** Raw comparison telemetry; never a model fit or mathematical authority. */
-import type { BtComparison } from './bt_admission';
+import type { BtComparison } from './bt_admission.ts';
 
 export interface BtObserved {
   wins: number;
