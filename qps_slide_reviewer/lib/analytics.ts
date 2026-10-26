@@ -1,6 +1,7 @@
 import { prisma } from '@/lib/prisma';
 import { bradleyTerry, pca, dmaicKpis, type SlideRow, type Comparison } from '@/lib/stats';
 import { assessBtAdmission } from '@/lib/bt_admission';
+import { countBtObservations } from '@/lib/bt_observed';
 
 export async function buildAnalytics() {
   const [slides, results, sessions] = await Promise.all([
@@ -31,6 +32,7 @@ export async function buildAnalytics() {
   // The gg_MATH Ford preflight is necessary, not sufficient for a provider fit.
   // Never turn sparse/separated comparisons into an authoritative ranking.
   const btAdmission = assessBtAdmission(ids, comps);
+  const observedBt = countBtObservations(ids, comps);
   const bt = btAdmission.eligible ? bradleyTerry(ids, comps) : [];
   const btById = new Map(bt.map((b) => [b.id, b]));
 
@@ -51,6 +53,9 @@ export async function buildAnalytics() {
     // A proxy readiness score must never compensate for a deferred BT fit.
     kpis.control.readiness = 'red';
     kpis.control.notes.unshift(`BT deferred: ${btAdmission.status}; ranking and BT PCA inputs withheld.`);
+    kpis.measure.meanComparisonsPerSlide = rows.length
+      ? [...observedBt.values()].reduce((sum, o) => sum + o.comparisons, 0) / rows.length
+      : 0;
   }
 
   const btRanked = [...bt].sort((a, b) => b.strength - a.strength);
@@ -58,15 +63,16 @@ export async function buildAnalytics() {
 
   const slideStats = rows.map((r) => {
     const b = btById.get(r.id);
+    const observed = observedBt.get(r.id)!;
     const p = pcaById.get(r.id)!;
     return {
       ...r,
       netVotes: r.votesUp - r.votesDown,
-      abWins: b?.wins ?? 0,
-      abLosses: b?.losses ?? 0,
-      abTies: b?.ties ?? 0,
-      abComparisons: b?.comparisons ?? 0,
-      winRate: b?.winRate ?? null,
+      abWins: observed.wins,
+      abLosses: observed.losses,
+      abTies: observed.ties,
+      abComparisons: observed.comparisons,
+      winRate: observed.winRate,
       btStrength: b?.strength ?? null,
       btLogStrength: b?.logStrength ?? null,
       btStdError: b && Number.isFinite(b.stdError) ? b.stdError : null,
