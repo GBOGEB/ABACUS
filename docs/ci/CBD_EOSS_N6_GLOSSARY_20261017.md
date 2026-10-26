@@ -22,7 +22,7 @@
 
 ## Reader navigation
 
-View the [interactive HTML](eoss_n6.html) for trajectory, evidence clocks, and expansion status. The three Mermaid source diagrams are `eoss_n6_process.mmd`, `eoss_n6_sipoc.mmd`, `eoss_n6_clock.mmd`; each is reproduced below with a narrative.
+View the [interactive HTML](CBD_EOSS_N6_REVIEW_ATLAS_20261017.html) for trajectory, evidence clocks, and expansion status. The three Mermaid source diagrams are `eoss_n6_process.mmd`, `eoss_n6_sipoc.mmd`, `eoss_n6_clock.mmd`; each is reproduced below with a narrative.
 
 ## Process DAG
 

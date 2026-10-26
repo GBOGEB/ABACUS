@@ -1,0 +1,175 @@
+{
+  "label": "k10_themed",
+  "pages": [
+    {
+      "page": "themed_bottom_legend.html",
+      "viewports": {
+        "desktop_1440x900": {
+          "size": "1440x900",
+          "checks": {
+            "K1_no_console_error": {
+              "pass": true,
+              "errors": [],
+              "bad_responses": []
+            },
+            "K2_no_page_error": {
+              "pass": true,
+              "errors": []
+            },
+            "K3_no_body_horizontal_overflow": {
+              "pass": true
+            },
+            "K4_navigation": {
+              "pass": true,
+              "nav_links": 0,
+              "note": "skipped (no nav on page)"
+            },
+            "K5_readable_content": {
+              "pass": true,
+              "text_len": 97
+            },
+            "K6_deep_link": {
+              "pass": true
+            },
+            "K7_read_only_boundary": {
+              "pass": true,
+              "unexpected": []
+            },
+            "K8_chart_render": {
+              "pass": true,
+              "chart_count": 1
+            },
+            "K9_contrast": {
+              "pass": true,
+              "min_text_contrast": 16.1,
+              "min_graphic_contrast": 4.92,
+              "aa_text": 4.5,
+              "aa_graphic": 3.0,
+              "text_failures": [],
+              "graphic_failures": []
+            },
+            "K10_legend_axis_no_overlap": {
+              "pass": true,
+              "overlaps": []
+            }
+          },
+          "all_pass": true,
+          "screenshots": [
+            "k10_themed/themed_bottom_legend/desktop_1440x900/plotly-lineage.png",
+            "k10_themed/themed_bottom_legend/desktop_1440x900/_full_page.png"
+          ]
+        },
+        "laptop_1280x720": {
+          "size": "1280x720",
+          "checks": {
+            "K1_no_console_error": {
+              "pass": true,
+              "errors": [],
+              "bad_responses": []
+            },
+            "K2_no_page_error": {
+              "pass": true,
+              "errors": []
+            },
+            "K3_no_body_horizontal_overflow": {
+              "pass": true
+            },
+            "K4_navigation": {
+              "pass": true,
+              "nav_links": 0,
+              "note": "skipped (no nav on page)"
+            },
+            "K5_readable_content": {
+              "pass": true,
+              "text_len": 97
+            },
+            "K6_deep_link": {
+              "pass": true
+            },
+            "K7_read_only_boundary": {
+              "pass": true,
+              "unexpected": []
+            },
+            "K8_chart_render": {
+              "pass": true,
+              "chart_count": 1
+            },
+            "K9_contrast": {
+              "pass": true,
+              "min_text_contrast": 16.1,
+              "min_graphic_contrast": 4.92,
+              "aa_text": 4.5,
+              "aa_graphic": 3.0,
+              "text_failures": [],
+              "graphic_failures": []
+            },
+            "K10_legend_axis_no_overlap": {
+              "pass": true,
+              "overlaps": []
+            }
+          },
+          "all_pass": true,
+          "screenshots": [
+            "k10_themed/themed_bottom_legend/laptop_1280x720/plotly-lineage.png",
+            "k10_themed/themed_bottom_legend/laptop_1280x720/_full_page.png"
+          ]
+        },
+        "mobile_390x844": {
+          "size": "390x844",
+          "checks": {
+            "K1_no_console_error": {
+              "pass": true,
+              "errors": [],
+              "bad_responses": []
+            },
+            "K2_no_page_error": {
+              "pass": true,
+              "errors": []
+            },
+            "K3_no_body_horizontal_overflow": {
+              "pass": true
+            },
+            "K4_navigation": {
+              "pass": true,
+              "nav_links": 0,
+              "note": "skipped (no nav on page)"
+            },
+            "K5_readable_content": {
+              "pass": true,
+              "text_len": 97
+            },
+            "K6_deep_link": {
+              "pass": true
+            },
+            "K7_read_only_boundary": {
+              "pass": true,
+              "unexpected": []
+            },
+            "K8_chart_render": {
+              "pass": true,
+              "chart_count": 1
+            },
+            "K9_contrast": {
+              "pass": true,
+              "min_text_contrast": 16.1,
+              "min_graphic_contrast": 4.92,
+              "aa_text": 4.5,
+              "aa_graphic": 3.0,
+              "text_failures": [],
+              "graphic_failures": []
+            },
+            "K10_legend_axis_no_overlap": {
+              "pass": true,
+              "overlaps": []
+            }
+          },
+          "all_pass": true,
+          "screenshots": [
+            "k10_themed/themed_bottom_legend/mobile_390x844/plotly-lineage.png",
+            "k10_themed/themed_bottom_legend/mobile_390x844/_full_page.png"
+          ]
+        }
+      }
+    }
+  ]
+}

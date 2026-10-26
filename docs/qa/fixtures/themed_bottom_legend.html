@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>K10 repro — themed bottom legend (FIXED)</title>
+<script src="https://cdn.plot.ly/plotly-2.27.0.min.js" charset="utf-8"></script>
+<script src="../../assets/abacus_chart_theme.js"></script>
+<style>body{font-family:system-ui,sans-serif;margin:0}#plotly-lineage{width:100%;height:340px}</style>
+</head>
+<body>
+<!--
+  Theme-fixed counterpart to naive_bottom_legend.html. Uses the shared accessible
+  theme (assets/abacus_chart_theme.js): colour-blind-safe palette + a bottom
+  legend pinned clearly below the x-axis title band. K10 must PASS (0 overlap)
+  and K9 must PASS (contrast) at 1440x900 / 1280x720 / 390x844.
+-->
+<div id="plotly-lineage"></div>
+<script>
+var T = window.ABACUS_CHART_THEME;
+var P = T.light;
+var versions = ['v2.3.0','v3.0.0','v3.3.0','v3.3.1'];
+Plotly.newPlot('plotly-lineage', [
+  {name:'New',     x:versions, y:[6,12,8,5], type:'bar', marker:{color:P.define}},
+  {name:'Changed', x:versions, y:[2,7,11,9], type:'bar', marker:{color:P.analyze}},
+  {name:'Removed', x:versions, y:[0,3,2,1], type:'bar', marker:{color:P.improve}}
+], T.layout('light', {
+  barmode:'stack',
+  xaxis:{title:'Version'},
+  yaxis:{title:'Artifact / config file count'}
+}, {legend:'bottom'}), T.config);
+</script>
+</body>
+</html>

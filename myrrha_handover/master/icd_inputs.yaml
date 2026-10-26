@@ -1,0 +1,118 @@
+# =============================================================================
+# icd_inputs.yaml  --  READ-ONLY projection of the controlled SSOT
+# -----------------------------------------------------------------------------
+# These values are MIRRORED from the private engineering SSOT
+# (GBOGEB/cryoplant-project). They are the CANONICAL electrical / thermal
+# interface anchors. This file is a read-only consumption surface for the
+# ABACUS analytical-runtime handover. DO NOT edit the numbers here to "fix"
+# anything -- the SSOT is authoritative; raise any change against the SSOT.
+#
+# Binding rule (W52 ICD): HP flow and B flow SHALL NOT be conflated.
+#   - HP compressor duty  is driven by total warm HP circulation flow (mdot_HP_total).
+#   - PVPS duty           is driven by the B / VLP return flow (mdot_B).
+#   They are SEPARATE drivers; they are NOT summed into a single sizing flow.
+# =============================================================================
+
+provenance:
+  consumed_from: GBOGEB/cryoplant-project
+  plane: "ABACUS analytical runtime (read-only consumer)"
+  ssot_is_canonical: true
+  note: "British English. No SSOT value modified. Open items carried forward, not resolved."
+
+hp_compressor:                      # source: QPS_WCS_HP_PVPS_THERMO_CONTROL_ICD_W52
+  source_document_id: QPS_WCS_HP_PVPS_THERMO_CONTROL_ICD_W52
+  manufacturer_model: KAESER_FSD575_SFC_wc
+  installed_units: 4
+  suction_P_bara: 1.05
+  suction_T_K: 298
+  discharge_P_bara_design: 14.0
+  design_pressure_ratio: 13.333
+  max_flow_per_unit_g_s_at_72Hz: 112.0
+  package_input_power_kW_at_design: 357      # per unit, at design point (112 g/s, 14 bara)
+  recoverable_heat_kW_per_unit_at_max_load: 229
+  authority_class: BIDDER_SELECTED_SOURCE_SUPPORTED
+  guard: "do_not_add_atmospheric_pressure_to_14_bara"
+
+pvps:                               # source: QPS_WCS_HP_PVPS_THERMO_CONTROL_ICD_W52
+  source_document_id: QPS_WCS_HP_PVPS_THERMO_CONTROL_ICD_W52
+  manufacturer_model: LEYBOLD_SOGEVAC_SV750_BF
+  installed_units: 4
+  motor_power_kW_each: 18.5
+  drive: VFD
+  discharge_P_bara_candidate: 1.05
+  primary_driver: mdot_B_g_s
+  authority_class: BIDDER_SELECTED_SOURCE_SUPPORTED
+
+nominal_2K_OP_anchor:               # source: QPS_WCS_HP_PVPS_THERMO_CONTROL_ICD_W52
+  source_document_id: QPS_WCS_HP_PVPS_THERMO_CONTROL_ICD_W52
+  mdot_HP_total_g_s: 326
+  authority_class: BIDDER_SELECTED_SOURCE_SUPPORTED
+  configuration_candidates:
+    - id: HP_CFG_3_OF_4
+      active_units: 3
+      standby_units: 1
+      mdot_per_active_unit_g_s: 108.667
+      status: CANDIDATE_NOT_ASSUMED
+    - id: HP_CFG_4_OF_4
+      active_units: 4
+      standby_units: 0
+      mdot_per_active_unit_g_s: 81.5
+      status: CANDIDATE_NOT_ASSUMED
+  decision_rule: "Do not infer preferred configuration from mass-flow split alone."
+
+cooling_water:                      # source: QPS_W54_P02_QRB_CC_CW_ELEC_ICD_CARD_BRIDGE
+  source_document_id: QPS_W54_P02_QRB_CC_CW_ELEC_ICD_CARD_BRIDGE
+  fluid: PG40
+  concentration_wt_pct: 40
+  supply_temperature_C: 27
+  return_temperature_C: 37
+  deltaT_K: 10
+  authority_class: OWNER_CONFIRMED
+  # Property assumptions used to convert heat duty -> volumetric flow.
+  # Typical 40 wt% aqueous glycol at ~32 C mean. ASSUMPTION (not owner-bound).
+  assumed_density_kg_m3: 1050
+  assumed_cp_kJ_kgK: 3.5
+  property_authority_class: ASSUMPTION
+
+qrb_cc_electrical:                  # source: QPS_W54_P02_QRB_CC_CW_ELEC_ICD_CARD_BRIDGE
+  source_document_id: QPS_W54_P02_QRB_CC_CW_ELEC_ICD_CARD_BRIDGE
+  note: "QRB cold-compressor (CC) train -- a SEPARATE consumer from the warm HP Kaeser."
+  cc_count: 3
+  contract_envelope_kW_each: 45
+  contract_envelope_kW_total: 135
+  contract_authority_class: OWNER_STATED_CONTRACT_RTM_PENDING_EXACT_LOCATOR
+  bidder_lkt_kW_each: 10
+  bidder_lkt_kW_total: 30
+  historic_alat_kW_each: 15
+  historic_alat_kW_total: 45
+  rule: "Contract envelope may NOT be reduced by bidder value without owner disposition."
+
+hvac:
+  basis: "Residual NON-water rejected heat only. Must not double-count water-rejected heat."
+  residual_authority_class: DERIVED
+
+electrical_interface:               # source: QPS_W363_ICD_EL_001_ELECTRICAL_INTERFACE_REV1_2
+  source_document_id: QPS_W363_ICD_EL_001_ELECTRICAL_INTERFACE_REV1_2
+  supply: "TN-S 400 VAC L1+L2+L3+N+PE, 50 Hz (owner provision, Table 19/20)"
+  guard: "Indicative currents are pre-sizing only; bidder offer values never resize owner Table 19/20."
+
+# -----------------------------------------------------------------------------
+# OPEN ITEMS -- carried forward from the SSOT, NOT resolved in the handover.
+# -----------------------------------------------------------------------------
+open_items:
+  - id: EL-R04
+    source_document_id: QPS_W363_ICD_EL_001_ELECTRICAL_INTERFACE_REV1_2
+    issue: "LKT SLD shows 4 PVPS stations each ~150 kW with own owner fuse vs ONE 150 kW Table 19 row."
+    status: OPEN
+  - id: CC-ENVELOPE
+    source_document_id: QPS_W54_P02_QRB_CC_CW_ELEC_ICD_CARD_BRIDGE
+    issue: "Contract 3x45 kW (135 kW) vs LKT bidder 3x10 kW (30 kW); exact RTM locator pending."
+    status: OPEN
+  - id: PVPS-RUN-COUNT
+    source_document_id: QPS_WCS_HP_PVPS_THERMO_CONTROL_ICD_W52
+    issue: "PVPS guaranteed capacity and normal running count per 2K mode not yet source-closed."
+    status: OPEN
+  - id: CC-CW-PER-BRANCH
+    source_document_id: QPS_W54_P02_QRB_CC_CW_ELEC_ICD_CARD_BRIDGE
+    issue: "CC CW per-branch design flow and heat rejection = null (pending source binding) -- null, not zero."
+    status: OPEN
