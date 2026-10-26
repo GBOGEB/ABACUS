@@ -14,6 +14,17 @@ federation:
       repository: GBOGEB/CODEX
       role: governance_plane
       spec_ref: runtime/federation/codex-abacus-federation.yaml
+    math:
+      repository: GBOGEB/gg_MATH
+      role: math_ssot_plane
+      spec_ref: kernels/
+      responsibility:
+        - canonical_pca_bradley_terry_kernels
+        - exact_jacobi_eigendecomposition_and_parallel_analysis
+        - fail_closed_mle_ranking_with_defer_guards
+        - parity_contracts_for_downstream_consumers
+      authority_transfer: false
+      parity_binding: qps_slide_reviewer/parity/QPS_SLIDE_REVIEWER_PARITY_CONTRACT_v1.md
     runtime:
       repository: GBOGEB/ABACUS
       role: runtime_plane
@@ -44,6 +55,14 @@ federation:
     - name: GBOGEB/CODEX
       plane: governance
       status: active
+    - name: GBOGEB/gg_MATH
+      plane: math
+      status: active
+      role: math_ssot_plane
+      # Mathematical single source of truth for PCA / Bradley-Terry across the
+      # federation. Downstream consumers (qps_slide_reviewer, CODEX pca_engine)
+      # bind to its kernels via parity contracts rather than re-deriving math.
+      # Registered on branch feat/register-gg_math-ssot-and-qps-parity.
     - name: GBOGEB/morris.js
       plane: auxiliary
       status: active
