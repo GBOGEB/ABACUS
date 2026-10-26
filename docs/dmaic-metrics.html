@@ -6,6 +6,7 @@
   <title>DMAIC Metrics Dashboard – ABACUS</title>
   <meta name="description" content="Live DMAIC metrics per commit, quality score trends, phase health, and escalation hub."/>
   <link rel="stylesheet" href="assets/style.css"/>
+  <script src="assets/abacus_chart_theme.js"></script>
   <script src="https://cdn.plot.ly/plotly-2.27.0.min.js"></script>
   <style>
     .metrics-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:1rem;margin:1.5rem 0}
@@ -299,39 +300,48 @@ function drawCharts() {
   const phases = Object.keys(ps).map(p => p.charAt(0).toUpperCase()+p.slice(1));
   const scores = Object.values(ps).map(v => v.score);
   const files  = Object.values(ps).map(v => v.files);
-  const dark = {paper_bgcolor:'#0d1117',plot_bgcolor:'#0d1117',
-    font:{color:'#e6edf3'},xaxis:{gridcolor:'#30363d'},yaxis:{gridcolor:'#30363d'}};
+  // Shared accessible dark theme (colour-blind-safe palette + overlap-safe layout).
+  const THEME = window.ABACUS_CHART_THEME;
+  const DP = THEME ? THEME.dark : {define:'#56b4e9',control:'#cc79a7',
+    good:'#009e73',warn:'#f0e442',bad:'#e69f00',text:'#e6edf3',grid:'#30363d',bg:'#0d1117'};
+  const CFG = THEME ? THEME.config : {responsive:true,displayModeBar:false};
+  function DL(overrides, opts){
+    if (THEME) return THEME.layout('dark', overrides||{}, opts||{});
+    return Object.assign({paper_bgcolor:'#0d1117',plot_bgcolor:'#0d1117',
+      font:{color:'#e6edf3'}}, overrides||{});
+  }
 
   // Radar
   Plotly.newPlot('chart-radar', [{
     type:'scatterpolar', r:[...scores, scores[0]], theta:[...phases, phases[0]],
-    fill:'toself', line:{color:'#58a6ff'}, fillcolor:'rgba(88,166,255,0.2)', name:'Score'
-  }], {
-    polar:{radialaxis:{visible:true,range:[0,100],gridcolor:'#30363d'},
-           angularaxis:{gridcolor:'#30363d'}},
-    ...dark,
-    title:{text:'DMAIC Phase Radar', font:{color:'#e6edf3'}}
-  }, {responsive:true});
+    fill:'toself', line:{color:DP.define}, fillcolor:'rgba(86,180,233,0.22)', name:'Score'
+  }], DL({
+    polar:{bgcolor:DP.bg,
+      radialaxis:{visible:true,range:[0,100],gridcolor:DP.grid,tickfont:{color:DP.text}},
+      angularaxis:{gridcolor:DP.grid,tickfont:{color:DP.text}}},
+    title:{text:'DMAIC Phase Radar'}
+  }, {legend:'none'}), CFG);
 
-  // Bar — phase scores
+  // Bar — phase scores (semantic colours: green ok / amber warn / orange bad — no red-vs-green)
   Plotly.newPlot('chart-bar', [{
     type:'bar', x:phases, y:scores,
-    marker:{color:scores.map(s => s>=70 ? '#3fb950' : s>=40 ? '#d29922' : '#f85149')},
+    marker:{color:scores.map(s => s>=70 ? DP.good : s>=40 ? DP.warn : DP.bad)},
     text:scores.map(s => s+'/100'), textposition:'outside'
-  }], {
-    ...dark, yaxis:{...dark.yaxis, range:[0,115]},
-    title:{text:'Phase Scores', font:{color:'#e6edf3'}}
-  }, {responsive:true});
+  }], DL({
+    yaxis:{range:[0,115], title:'Score'}, xaxis:{title:'DMAIC phase'},
+    title:{text:'Phase Scores'}
+  }, {legend:'none'}), CFG);
 
   // Bar — files per phase
   Plotly.newPlot('chart-files', [{
-    type:'bar', x:phases, y:files, marker:{color:'#bc8cff'},
+    type:'bar', x:phases, y:files, marker:{color:DP.control},
     text:files.map(f => f+' files'), textposition:'outside'
-  }], {
-    ...dark, title:{text:'Files per DMAIC Phase', font:{color:'#e6edf3'}}
-  }, {responsive:true});
+  }], DL({
+    yaxis:{title:'Files'}, xaxis:{title:'DMAIC phase'},
+    title:{text:'Files per DMAIC Phase'}
+  }, {legend:'none'}), CFG);
 
-  // Snapshot bar
+  // Snapshot bar — long labels rotated; automargin + bottom margin keep title clear
   const snap = {
     'Total Commits': m.total_commits||0,
     'Commits (30d)': m.recent_commits||0,
@@ -341,11 +351,11 @@ function drawCharts() {
     'Workflows':     m.workflows||0,
   };
   Plotly.newPlot('chart-snap', [{
-    type:'bar', x:Object.keys(snap), y:Object.values(snap), marker:{color:'#58a6ff'}
-  }], {
-    ...dark, title:{text:'Repository Activity Snapshot', font:{color:'#e6edf3'}},
-    xaxis:{...dark.xaxis, tickangle:-20}
-  }, {responsive:true});
+    type:'bar', x:Object.keys(snap), y:Object.values(snap), marker:{color:DP.define}
+  }], DL({
+    yaxis:{title:'Count'}, xaxis:{title:'Metric'},
+    title:{text:'Repository Activity Snapshot'}
+  }, {legend:'none', tickangle:-30}), CFG);
 }
 
 // ── Init ──────────────────────────────────────────────────────────────────
