@@ -121,6 +121,13 @@ jobs:
               target="${target%%#*}"
               target="${target%%\?*}"
               if [ -n "$target" ] && [ ! -e "$target" ]; then
+                # HTML href percent-encodes spaces but filesystem paths do not.
+                # Only accept a decoded %20 target when that exact file exists;
+                # missing or differently encoded paths still fail closed.
+                decoded_target="${target//%20/ }"
+                if [ "$decoded_target" != "$target" ] && [ -e "$decoded_target" ]; then
+                  continue
+                fi
                 echo "🔗 Broken: $f → $href"
                 BROKEN=$((BROKEN+1))
               fi
