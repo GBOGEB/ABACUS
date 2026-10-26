@@ -74,15 +74,17 @@ jobs:
       - uses: actions/cache@v6
         with:
           path: ~/.cache/pip
-          key: ${{ runner.os }}-pip-${{ matrix.python-version }}-${{ hashFiles('**/requirements.txt') }}
+          key: ${{ runner.os }}-pip-${{ matrix.python-version }}-${{ hashFiles('requirements*.txt') }}
           restore-keys: |
             ${{ runner.os }}-pip-${{ matrix.python-version }}-
             ${{ runner.os }}-pip-
       - run: |
+          set -euo pipefail
           python -m pip install --upgrade pip
-          if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
-          pip install .
-          pip install pytest pytest-cov pytest-benchmark pytest-xdist
+          python -m pip install -r requirements-dev.txt
+          python -m pip install .
+          python -m pip install pytest pytest-cov pytest-benchmark pytest-xdist
+          python -c 'import networkx; print(networkx.__version__)'
       # Keep the coverage producer in one process to avoid xdist mixing
       # statement-only and branch-aware worker databases. Do not omit branches.
       - run: |
@@ -104,9 +106,10 @@ jobs:
           python3.11 -m venv venv || python3 -m venv venv
           source venv/bin/activate
           python -m pip install --upgrade pip
-          pip install -r requirements.txt
-          pip install .
-          pip install pytest pytest-xdist
+          python -m pip install -r requirements-dev.txt
+          python -m pip install .
+          python -m pip install pytest pytest-xdist
+          python -c 'import networkx; print(networkx.__version__)'
           pytest -v -n auto
           python -m pytest DMAIC_V3/tests/ -v
 
@@ -124,9 +127,10 @@ jobs:
           python3.11 -m venv venv || python3 -m venv venv
           source venv/bin/activate
           python -m pip install --upgrade pip
-          pip install -r requirements.txt
-          pip install .
-          pip install pytest pytest-xdist
+          python -m pip install -r requirements-dev.txt
+          python -m pip install .
+          python -m pip install pytest pytest-xdist
+          python -c 'import networkx; print(networkx.__version__)'
           pytest -v -n auto
           python -m pytest DMAIC_V3/tests/ -v
 
