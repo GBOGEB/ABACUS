@@ -283,8 +283,8 @@ Make PR-triggered workflows with write-class GitHub token scopes explicit and re
 
 ## Repeated quality/test commands
 
-- `python -m pip install pytest` — `branch-hygiene.yml`, `cryoplant-federation.yml`, `federation-bridge-contract.yml`, `v5-w62-twelve-cluster-requalification.yml`, `w306-dow-typed-findings-proof.yml`
 - `python -m pytest -q \` — `ariana-cicd.yml`, `ci-abacus.yml`, `code-purple-w40-binary-penetration.yml`, `code-purple-w42-remaining-arcs.yml`, `code-purple-w43-matched-proof.yml`, `code-purple-w44-matched-proof.yml`, `federation-bridge-contract.yml`, `leg5-federation-dashboard-proof.yml`, `w29-disjoint-frontier-coverage.yml`
+- `python -m pip install pytest` — `branch-hygiene.yml`, `cryoplant-federation.yml`, `federation-bridge-contract.yml`, `v5-w62-twelve-cluster-requalification.yml`, `w306-dow-typed-findings-proof.yml`
 - `python -m pip install pytest numpy` — `abacus-missioncontrol-stage-contract-qa.yml`, `bd-w1-three-pulse-regression.yml`, `book-build.yml`, `dow-w1-coverage-contract-qa.yml`, `leg5-federation-dashboard-proof.yml`
 - `python -m pytest \` — `bridge-ci.yml`, `codespace-federation.yml`, `governance.yml`, `mip-coverage-evidence.yml`, `validation.yml`
 - `pip install pytest` — `cd-unified.yml`, `federation-notebook.yml`, `tooling-ci.yml`
