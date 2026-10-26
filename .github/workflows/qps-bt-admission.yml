@@ -1,0 +1,22 @@
+name: qps-bt-admission
+on:
+  pull_request:
+    paths:
+      - 'qps_slide_reviewer/lib/analytics.ts'
+      - 'qps_slide_reviewer/lib/bt_admission.ts'
+      - 'qps_slide_reviewer/tests/bt_admission.test.ts'
+      - '.github/workflows/qps-bt-admission.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  bt-admission:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
+        with:
+          node-version: '24'
+      - name: Fail-closed preflight negatives (Node TS stripping)
+        run: |
+          node --test qps_slide_reviewer/tests/bt_admission.test.ts
