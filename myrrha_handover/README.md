@@ -1,4 +1,4 @@
-# MYRRHA Warm Compressor Engineering Handover · v0.4.7
+# MYRRHA Warm Compressor Engineering Handover · v0.5.0
 
 A self-contained HTML ecosystem for the **MYRRHA QPLANT Warm Compressor Station (WCS)** — comparing ALaT FSD 575 SFC vs LKT FSD 475 SFC compressor configurations.
 

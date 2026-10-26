@@ -2,6 +2,26 @@
 
 All notable changes to the MYRRHA Warm Compressor Station engineering handover package.
 
+## [0.5.0] — 2026-10-26
+
+### Added
+- `master/icd_inputs.yaml` — read-only projection of the controlled SSOT (cryoplant-project) electrical/thermal anchors
+- `master/compute_utilities.py` — ICD-bound utility engine (electricity → recoverable water heat → cooling-water flow → HVAC residual)
+- `master/validate_consistency.py` — parity gate: fails on isothermal-basis electricity, conflated HP+B flows, or 350 g/s shown as design anchor without a legacy label
+- `icd-electrical.html` — new view presenting the ICD-bound chain, 3-of-4 vs 4-of-4 at the 326 g/s anchor, flow→power scaling, and open items (EL-R04, CC envelope, PVPS running count, CC CW per-branch)
+- `icd_bound_utilities` block in `master/data.json`
+
+### Changed
+- Electricity is now **consumed from the ICD** (Kaeser 357 kW/unit at design; PVPS 18.5 kW/unit), not derived from isothermal work ÷ efficiency
+- HP flow and B flow are treated as **separate drivers** (binding rule of QPS_WCS_HP_PVPS_THERMO_CONTROL_ICD_W52); they are no longer summed into one sizing flow
+- Design anchor aligned to the ICD nominal 2K OP of **326 g/s HP total** (350 g/s retained only as a legacy/utility figure)
+- Old PVPS `utilities` isothermal/fraction keys marked DEPRECATED (retained, not deleted)
+- Live chrome version badge → v0.5.0
+
+### Notes
+- The private SSOT was NOT modified; open items are carried forward, not resolved
+- 350 g/s on 3 HP units is infeasible (75 Hz > 72 Hz cap); it requires 4 units
+
 ## [0.4.7] — 2026-05-20
 
 ### Added

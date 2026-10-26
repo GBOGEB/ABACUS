@@ -14,6 +14,7 @@
       ['status.html','Status'],
       ['truth.html','Truth'],
       ['utilities.html','Utilities'],
+      ['icd-electrical.html','ICD Elec'],
       ['review-dmaic.html','DMAIC'],
       ['action-tracker.html','Actions'],
       ['artifact-tracker.html','Artifacts'],
@@ -40,7 +41,7 @@
       const here=location.pathname.split('/').pop()||'index.html';
       bar.innerHTML=`
         <div class="brand">⚙ MYRRHA · WCS Handover</div>
-        <span class="ver">v0.4.5</span>
+        <span class="ver">v0.5.0</span>
         <nav>${this.nav.map(([h,n])=>`<a href="${h}" class="${h===here?'active':''}">${n}</a>`).join('')}</nav>
         <div class="controls">
           <select id="themeSel" title="Theme">
