@@ -43,13 +43,16 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        # One Python cell for branch pilot; retain both for formal PR qualification.
-        python-version: ${{ fromJSON(github.event_name == 'push' && '["3.12"]' || '["3.10","3.12"]') }}
+        # Branch pilots: one cell; PR qualification: two cells.
+        python-version: >-
+          ${{ fromJSON(github.event_name == 'push' &&
+          '["3.12"]' || '["3.10","3.12"]') }}
     steps:
       - name: Checkout exact PR source head
-        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
         with:
           ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
       - name: Verify exact-head source identity
         shell: bash
         env:
@@ -58,21 +61,26 @@ jobs:
           set -euo pipefail
           test "$(git rev-parse HEAD)" = "$EXPECTED_SHA"
       - name: Python
-        uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97
+        uses: actions/setup-python@6d4fd22b20465ccc0f7354476588e8df7c9ca0e0
         with:
           python-version: ${{ matrix.python-version }}
       - name: Install bounded test prerequisites
-        run: python -m pip install 'pytest>=7.4,<10' 'pytest-cov>=4.1,<8' 'numpy>=1.24,<3'
-      - name: Run four source families plus W33 governor assurance with branch receipts
+        run: |
+          python -m pip install 'pytest>=7.4,<10' \
+            'pytest-cov>=4.1,<8' 'numpy>=1.24,<3'
+      - name: Run six source families with adversarial controls
         shell: bash
         run: |
           set -euo pipefail
           mkdir -p w29-native
+          export PYTHONPATH="$PWD/MIP/EVIDENCE_TO_ADMISSION_OBSERVATORY"
+          P=MIP/EVIDENCE_TO_ADMISSION_OBSERVATORY
           python -m pytest -q \
             tests/test_w31_w81_repair_adversarial.py \
             tests/test_w32_w82_semantic_permutation.py \
             tests/test_w82_semantic_diversity_diagnostic.py \
-            MIP/EVIDENCE_TO_ADMISSION_OBSERVATORY/test_elastic_wave_governor.py \
+            "$P"/test_elastic_wave_governor.py \
+            ci/governance/tests/test_g3g_disjoint_crew.py \
             tests/test_w29_w75_stability_negative.py \
             tests/test_w29_w64_reverse_pressure_negative.py \
             --junitxml=w29-native/junit.xml \
@@ -80,6 +88,8 @@ jobs:
             --cov=tools.w81_repair_outcome_block \
             --cov=tools.w82_semantic_diversity_diagnostic \
             --cov=tools.w64_census_reverse_pressure_v2 \
+            --cov=elastic_wave_governor \
+            --cov=g3g_disjoint_crew \
             --cov-branch \
             --cov-report=term-missing \
             --cov-report=json:w29-native/coverage.json \
@@ -97,26 +107,80 @@ jobs:
           python - <<'PY'
           import hashlib, json, os, pathlib, xml.etree.ElementTree as ET
           directory = pathlib.Path("w29-native")
-          expected = ["tools/w75_stability_diagnostic.py", "tools/w64_census_reverse_pressure_v2.py", "tools/w81_repair_outcome_block.py", "tools/w82_semantic_diversity_diagnostic.py"]
+          expected = [
+              "tools/w75_stability_diagnostic.py",
+              "tools/w64_census_reverse_pressure_v2.py",
+              "tools/w81_repair_outcome_block.py",
+              "tools/w82_semantic_diversity_diagnostic.py",
+              "MIP/EVIDENCE_TO_ADMISSION_OBSERVATORY/elastic_wave_governor.py",
+              "MIP/EVIDENCE_TO_ADMISSION_OBSERVATORY/g3g_disjoint_crew.py",
+          ]
           receipt = {"schema": "codepurple.w29.disjoint-frontier.native.v1",
                      "source_sha": os.environ["SOURCE_SHA"],
                      "run_id": int(os.environ["RUN_ID"]),
                      "run_attempt": int(os.environ["RUN_ATTEMPT"]),
                      "job_label": os.environ["JOB_LABEL"],
-                     "scope": expected, "authority": "TEST_ONLY_NO_MERGE_OR_REX"}
+                     "scope": expected,
+                     "authority": "TEST_ONLY_NO_MERGE_OR_REX",
+                     "merge_admission": "HOLD", "worker_launch": None}
           files = ["junit.xml", "coverage.json", "coverage.xml"]
           receipt["artifacts"] = {}
           for name in files:
               path = directory / name
               if not path.is_file():
                   raise SystemExit(f"missing required native receipt: {path}")
-              receipt["artifacts"][name] = hashlib.sha256(path.read_bytes()).hexdigest()
+              receipt["artifacts"][name] = hashlib.sha256(
+                  path.read_bytes()
+              ).hexdigest()
           doc = json.loads((directory / "coverage.json").read_text())
           names = doc.get("files", {})
+          receipt["source_file_sha256"] = {}
+          receipt["coverage_by_source"] = {}
           for wanted in expected:
               found = [key for key in names if key.endswith(wanted)]
               if len(found) != 1:
-                  raise SystemExit(f"expected exactly one coverage entry for {wanted}; got {found}")
+                  raise SystemExit(
+                      f"coverage source missing/ambiguous: {wanted} ({found})"
+                  )
+              source_path = pathlib.Path(wanted)
+              receipt["source_file_sha256"][wanted] = hashlib.sha256(
+                  source_path.read_bytes()
+              ).hexdigest()
+              summary = names[found[0]].get("summary", {})
+              fields = (
+                  "covered_lines", "num_statements",
+                  "covered_branches", "num_branches"
+              )
+              if any(type(summary.get(k)) is not int for k in fields):
+                  raise SystemExit("invalid coverage counters: " + wanted)
+              lines = summary["covered_lines"]
+              eligible = summary["num_statements"]
+              branches = summary["covered_branches"]
+              branch_total = summary["num_branches"]
+              if (eligible <= 0 or branch_total <= 0
+                      or not 0 <= lines <= eligible
+                      or not 0 <= branches <= branch_total):
+                  raise SystemExit(f"invalid denominator: {wanted}")
+              receipt["coverage_by_source"][wanted] = {
+                  "covered_lines": lines,
+                  "eligible_statements": eligible,
+                  "covered_branches": branches,
+                  "eligible_branches": branch_total,
+                  "statement_pct": round(100 * lines / eligible, 6),
+                  "branch_pct": round(100 * branches / branch_total, 6),
+              }
+              if (wanted.endswith("elastic_wave_governor.py")
+                      or wanted.endswith("g3g_disjoint_crew.py")):
+                  if lines == 0 or branches == 0:
+                      raise SystemExit(
+                          f"W78 source remains zero-covered: {wanted}"
+                      )
+                  statement_pct = 100 * lines / eligible
+                  branch_pct = 100 * branches / branch_total
+                  if min(statement_pct, branch_pct) < 80:
+                      raise SystemExit(
+                          f"W78 assurance scope below 80 percent: {wanted}"
+                      )
           root = ET.parse(directory / "junit.xml").getroot()
           cases = root.findall(".//testcase")
           receipt["actual_testcase_elements"] = len(cases)
@@ -128,18 +192,28 @@ jobs:
               receipt["testsuite_header_total"] != len(cases)
           )
           receipt["case_failures"] = sum(
-              bool(case.find("failure") is not None or case.find("error") is not None)
+              bool(
+                  case.find("failure") is not None
+                  or case.find("error") is not None
+              )
               for case in cases
           )
-          receipt["case_skipped"] = sum(case.find("skipped") is not None for case in cases)
-          (directory / "manifest.json").write_text(json.dumps(receipt, indent=2, sort_keys=True) + "\n")
-          if receipt["case_failures"] or receipt["case_skipped"] or receipt["junit_header_disagreement"]:
-              raise SystemExit("W29 native evidence incomplete or JUnit count mismatch")
+          receipt["case_skipped"] = sum(
+              case.find("skipped") is not None for case in cases
+          )
+          (directory / "manifest.json").write_text(
+              json.dumps(receipt, indent=2, sort_keys=True) + "\n"
+          )
+          if (receipt["case_failures"] or receipt["case_skipped"]
+                  or receipt["junit_header_disagreement"]):
+              raise SystemExit(
+                  "W29 native evidence incomplete or JUnit count mismatch"
+              )
           print(json.dumps(receipt, sort_keys=True))
           PY
       - name: Upload run-bound JUnit, coverage JSON/XML and manifest
         if: always()
-        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9
         with:
           name: w29-frontier-ubuntu-py${{ matrix.python-version }}
           path: w29-native/

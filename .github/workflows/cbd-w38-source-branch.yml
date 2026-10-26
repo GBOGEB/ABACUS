@@ -22,7 +22,7 @@ jobs:
           ref: ${{ github.event.pull_request.head.sha || github.sha }}
           persist-credentials: false
       - name: Python 3.12
-        uses: actions/setup-python@v7.0.0
+        uses: actions/setup-python@v7
         with:
           python-version: '3.12'
       - name: Baseline and expanded branch census, exact same source
@@ -85,7 +85,7 @@ jobs:
           PY
       - name: Preserve paired comparable source receipts
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: cbd-w38-matched-${{ github.run_id }}-a${{ github.run_attempt }}
           path: w38_coverage_receipts/

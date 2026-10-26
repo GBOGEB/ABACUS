@@ -1,0 +1,119 @@
+{
+  "schema": "codepurple.w77.six-asset-source-breadth.v1",
+  "repository": "GBOGEB/ABACUS",
+  "baseline": {
+    "head_sha": "7e9564f955dc00de23a7fba446d776e076758a8e",
+    "coverage_run_id": 39502104581,
+    "coverage_artifact_id": 12303081782,
+    "zip_sha256": "695059520fdf48b4cfba06fc743c994cfbb6fd42eed1c2fd380d54b298bfe8d9",
+    "member": "coverage-summary.json",
+    "member_sha256": "582f1b810eaee69edaa592f8c8f4bd1a303c689680db8b2f45a7aaae2a301d57",
+    "coverage_py_version": "7.16.2",
+    "branch_mode": true,
+    "cohort": {
+      "files_measured": 429,
+      "zero_covered_files": 85,
+      "zero_executable_assets": 71,
+      "zero_executable_missing_combined": 8481,
+      "combined_covered": 43410,
+      "combined_eligible": 61044
+    }
+  },
+  "branch_frozen_base_sha": "44caccf716a7c20693a2911566289bfc75ea81d9",
+  "source_blobs_equal_at_baseline_and_branch_base": true,
+  "targets": [
+    {
+      "path": "DMAIC_V3/analyze_recent_files.py",
+      "eligible_statements": 203,
+      "eligible_branches": 100,
+      "baseline_covered_statements": 0,
+      "baseline_covered_branches": 0,
+      "blob_sha": "6343114960adcd1db49d6c5f2b7fabad8a7454c9",
+      "test_owner": "tests/test_w77_zero_document_frontier.py",
+      "lane": "A",
+      "proposed_new_covered_statements": null,
+      "proposed_new_covered_branches": null
+    },
+    {
+      "path": "DMAIC_V3/generators/documentation_aligner.py",
+      "eligible_statements": 96,
+      "eligible_branches": 20,
+      "baseline_covered_statements": 0,
+      "baseline_covered_branches": 0,
+      "blob_sha": "95a36393e64546a53e7b1df0c3b9dfcaecab3572",
+      "test_owner": "tests/test_w77_zero_document_frontier.py",
+      "lane": "A",
+      "proposed_new_covered_statements": null,
+      "proposed_new_covered_branches": null
+    },
+    {
+      "path": "integration/codespace_jyperter/notebook_parser.py",
+      "eligible_statements": 81,
+      "eligible_branches": 24,
+      "baseline_covered_statements": 0,
+      "baseline_covered_branches": 0,
+      "blob_sha": "5b4a7f367516b3fbf9699a9ccafd03708345507a",
+      "test_owner": "tests/test_w77_zero_notebook_reconciliation.py",
+      "lane": "B",
+      "proposed_new_covered_statements": null,
+      "proposed_new_covered_branches": null
+    },
+    {
+      "path": "DMAIC_V3/generators/master_reconciliation.py",
+      "eligible_statements": 166,
+      "eligible_branches": 12,
+      "baseline_covered_statements": 0,
+      "baseline_covered_branches": 0,
+      "blob_sha": "761017d0f8b2177c43b9aaeea8d14b4be5ca116d",
+      "test_owner": "tests/test_w77_zero_notebook_reconciliation.py",
+      "lane": "B",
+      "proposed_new_covered_statements": null,
+      "proposed_new_covered_branches": null
+    },
+    {
+      "path": "DMAIC_V3/temporal_phase_runner.py",
+      "eligible_statements": 154,
+      "eligible_branches": 32,
+      "baseline_covered_statements": 0,
+      "baseline_covered_branches": 0,
+      "blob_sha": "7af37380327cb2f13b13f7f0a064b63c8d1a5312",
+      "test_owner": "tests/test_w77_zero_temporal_dow.py",
+      "lane": "C",
+      "proposed_new_covered_statements": null,
+      "proposed_new_covered_branches": null
+    },
+    {
+      "path": "DMAIC_V3/dow_integration_executor.py",
+      "eligible_statements": 125,
+      "eligible_branches": 34,
+      "baseline_covered_statements": 0,
+      "baseline_covered_branches": 0,
+      "blob_sha": "93ccc00b44dc5c943cae0db404ac36363f8f6595",
+      "test_owner": "tests/test_w77_zero_temporal_dow.py",
+      "lane": "C",
+      "proposed_new_covered_statements": null,
+      "proposed_new_covered_branches": null
+    }
+  ],
+  "targeted_opportunities": 1047,
+  "targeted_zero_assets": 6,
+  "theoretical_max_combined_pp": 1.715156,
+  "acceptance": {
+    "production_bytes_unchanged": true,
+    "allow_full_broad_zero_delta_claim": false,
+    "do_not_count_zero_statement_init_files_as_executable": true,
+    "must_use_matched_per_file_source_blobs": true,
+    "delta_requires_matched_scope_instrumentation_and_denominators": true,
+    "all_six_need_at_least_one_executed_statement": true,
+    "security_waiver": false,
+    "merge_admission": "HOLD",
+    "formal_root_closures_verified": 0,
+    "require_native_pr_head_proof": true
+  },
+  "notes": [
+    "This baseline is historical and source-bound; other independent PRs may change current-main population.",
+    "Do not assume untouched modules have no tests outside this specific broad cohort.",
+    "Theoretical maximum is not a forecast. No accepted coverage gain until native test receipts.",
+    "Three test-owner lanes are separate files but one serial PR branch, not three authenticated workers."
+  ]
+}

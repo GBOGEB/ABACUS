@@ -8,9 +8,16 @@ repos:
         args: [--allow-multiple-documents]
       - id: check-toml
       - id: end-of-file-fixer
+        exclude: (^|/)LICENSE$
       - id: trailing-whitespace
   - repo: local
     hooks:
+      - id: guard-public-repo-binaries
+        name: Block binary artifacts in this public repo (defense-in-depth)
+        entry: python scripts/guard_public_repo.py
+        language: system
+        pass_filenames: true
+        stages: [pre-commit]
       - id: abacus-testpilot-fast
         name: ABACUS TestPilot fast preflight
         entry: python scripts/testpilot_preflight.py --mode fast
@@ -44,4 +51,11 @@ repos:
         language: system
         pass_filenames: false
         files: ^tools/mip2/.*\.py$
+        stages: [pre-commit]
+      - id: abacus-floating-staging-testflight
+        name: ABACUS floating reconnection staged regression
+        entry: python -m unittest -q tests.test_floating_testflight tests.test_mip_v3_frontier tests.test_mip_v3_temporal tests.test_floating_accelerator_receiver tests.test_floating_rollup_adversarial
+        language: system
+        pass_filenames: false
+        files: ^(tools/triage/(floating_testflight|floating_evidence_join|mip_pulse_rollup)\.py|tests/test_(floating_testflight|floating_evidence_join|mip_pulse_rollup|mip_v3_frontier|mip_v3_temporal|floating_accelerator_receiver|floating_rollup_adversarial)\.py|scripts/coverage_dab_census\.py|\.github/workflows/floating-reconnection-testflight\.yml)$
         stages: [pre-commit]

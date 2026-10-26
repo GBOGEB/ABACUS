@@ -1,0 +1,285 @@
+# ============================================================================
+# LAYOUT_CONTRACTS.yaml — Deterministic Visual Spacing Constraints
+# GBOGEB/ABACUS A6 Governance Engine
+# Version: 1.0.0 | YAML 1.2 Strict
+# ============================================================================
+#
+# PURPOSE: Defines constraint-based layout rules that the Semantic Layout
+# Engine enforces. Every spacing value, grid definition, and breakpoint
+# is deterministic and machine-verifiable.
+#
+# RULE REFS: RULE-010 through RULE-022 (see RENDER_RULES.md)
+# ============================================================================
+
+schema_version: "1.0.0"
+
+# ── Spacing Scale (rem-based, 1rem = 16px) ──
+spacing:
+  unit: "rem"
+  scale:
+    xs: 0.25    #  4px
+    sm: 0.5     #  8px
+    md: 1.0     # 16px
+    lg: 1.5     # 24px
+    xl: 2.0     # 32px
+    xxl: 3.0    # 48px
+    xxxl: 4.0   # 64px
+
+  # Minimum enforced distances
+  minimums:
+    content_block_gap: 1.0        # RULE-021: 16px between content blocks
+    section_break: 2.0            # RULE-022: 32px between sections
+    margin_page_edge: 1.5         # 24px from page edge
+    margin_slide_edge: 2.0        # 32px from slide edge
+    figure_caption_gap: 0.5       #  8px between figure and caption
+    list_item_gap: 0.25           #  4px between list items
+    heading_to_content: 0.75      # 12px below heading
+
+# ── Grid System ──
+grid:
+  type: "css-grid"
+  columns: 12
+  gutter: 1.5    # 24px
+  max_width: "1440px"
+
+  # Breakpoint definitions
+  breakpoints:
+    mobile:
+      min_width: "320px"
+      max_width: "767px"
+      columns: 4
+      gutter: 1.0
+      margin: 1.0
+    tablet:
+      min_width: "768px"
+      max_width: "1023px"
+      columns: 8
+      gutter: 1.0
+      margin: 1.5
+    desktop:
+      min_width: "1024px"
+      max_width: "1439px"
+      columns: 12
+      gutter: 1.5
+      margin: 2.0
+    wide:
+      min_width: "1440px"
+      max_width: "1919px"
+      columns: 12
+      gutter: 1.5
+      margin: 3.0
+    ultrawide:
+      min_width: "1920px"
+      max_width: null
+      columns: 12
+      gutter: 2.0
+      margin: 4.0
+
+# ── Slide Layout Contracts ──
+slides:
+  aspect_ratio: "16:9"
+  width: 1920
+  height: 1080
+  safe_area:
+    top: 80
+    right: 80
+    bottom: 100
+    left: 80
+
+  # Slide layout templates
+  templates:
+    title_slide:
+      zones:
+        - id: "title"
+          x: 80
+          y: 300
+          width: 1760
+          height: 200
+          max_font_size: 48
+          alignment: "center"
+        - id: "subtitle"
+          x: 80
+          y: 520
+          width: 1760
+          height: 100
+          max_font_size: 24
+          alignment: "center"
+        - id: "metadata"
+          x: 80
+          y: 900
+          width: 1760
+          height: 80
+          max_font_size: 14
+          alignment: "center"
+
+    content_slide:
+      zones:
+        - id: "heading"
+          x: 80
+          y: 60
+          width: 1760
+          height: 80
+          max_font_size: 36
+          alignment: "left"
+        - id: "body"
+          x: 80
+          y: 160
+          width: 1760
+          height: 820
+          max_font_size: 20
+          alignment: "left"
+          overflow_action: "paginate"
+
+    two_column:
+      zones:
+        - id: "heading"
+          x: 80
+          y: 60
+          width: 1760
+          height: 80
+          max_font_size: 36
+          alignment: "left"
+        - id: "left_column"
+          x: 80
+          y: 160
+          width: 840
+          height: 820
+          max_font_size: 18
+          alignment: "left"
+        - id: "right_column"
+          x: 960
+          y: 160
+          width: 840
+          height: 820
+          max_font_size: 18
+          alignment: "left"
+
+    figure_slide:
+      zones:
+        - id: "heading"
+          x: 80
+          y: 60
+          width: 1760
+          height: 80
+          max_font_size: 36
+          alignment: "left"
+        - id: "figure"
+          x: 80
+          y: 160
+          width: 1760
+          height: 680
+          min_scale: 0.6    # RULE-012: no scaling below 60%
+          alignment: "center"
+        - id: "caption"
+          x: 80
+          y: 860
+          width: 1760
+          height: 60
+          max_font_size: 14
+          alignment: "center"
+
+# ── Typography Scale ──
+typography:
+  scale_ratio: 1.25    # Major Third
+  base_size: 16        # pixels
+
+  levels:
+    h1:
+      size_factor: 3.052
+      weight: 700
+      line_height: 1.2
+      margin_top: "xxl"
+      margin_bottom: "lg"
+    h2:
+      size_factor: 2.441
+      weight: 600
+      line_height: 1.2
+      margin_top: "xl"
+      margin_bottom: "md"
+    h3:
+      size_factor: 1.953
+      weight: 600
+      line_height: 1.3
+      margin_top: "lg"
+      margin_bottom: "md"
+    h4:
+      size_factor: 1.563
+      weight: 500
+      line_height: 1.3
+      margin_top: "md"
+      margin_bottom: "sm"
+    h5:
+      size_factor: 1.25
+      weight: 500
+      line_height: 1.4
+      margin_top: "md"
+      margin_bottom: "sm"
+    h6:
+      size_factor: 1.0
+      weight: 500
+      line_height: 1.4
+      margin_top: "sm"
+      margin_bottom: "sm"
+    body:
+      size_factor: 1.0
+      weight: 400
+      line_height: 1.5
+      margin_top: "xs"
+      margin_bottom: "md"
+    small:
+      size_factor: 0.8
+      weight: 400
+      line_height: 1.4
+      margin_top: "xs"
+      margin_bottom: "xs"
+    caption:
+      size_factor: 0.75
+      weight: 400
+      line_height: 1.3
+      margin_top: "xs"
+      margin_bottom: "xs"
+
+  # Absolute constraints
+  constraints:
+    min_font_size: 12           # RULE-052
+    max_heading_screen: 48      # RULE-042
+    max_heading_print: 36       # RULE-042 (pt)
+    min_body_screen: 16         # RULE-041
+    min_body_print: 10          # RULE-041 (pt)
+    min_line_height_body: 1.4   # RULE-043
+    min_line_height_heading: 1.2 # RULE-043
+
+# ── Component Spacing Contracts ──
+components:
+  card:
+    padding: "lg"
+    border_radius: "0.5rem"
+    shadow: "0 1px 3px rgba(0,0,0,0.12)"
+    margin_bottom: "lg"
+
+  table:
+    cell_padding: "sm md"
+    header_weight: 600
+    border_width: "1px"
+    stripe_opacity: 0.05
+
+  code_block:
+    padding: "md"
+    border_radius: "0.25rem"
+    font_size: "0.875rem"
+    line_height: 1.6
+    max_height: "500px"
+    overflow: "auto"
+
+  blockquote:
+    padding_left: "lg"
+    border_left_width: "4px"
+    font_style: "italic"
+    margin: "lg 0"
+
+# ── Overflow Handling ──
+overflow:
+  strategy: "paginate"    # RULE-011: never truncate
+  indicator: true         # show continuation indicator
+  max_content_height_slide: 820  # pixels, within safe area
+  max_content_height_page: null  # web pages scroll naturally

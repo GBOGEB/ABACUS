@@ -255,7 +255,7 @@ After successful execution:
 - [DMAIC_V2.2_INTEGRATION_COMPLETE.md](DMAIC_V2.2_INTEGRATION_COMPLETE.md) - V2.2 integration
 
 ### Phase-Specific
-- [CORRECTED_PHASE4_OPPORTUNITIES.md](CORRECTED_PHASE4_OPPORTUNITIES.md) - Phase 4 corrections
+- [CORRECTED_PHASE4_OPPORTUNITIES.md](docs_versioned/status_reports/CORRECTED_PHASE4_OPPORTUNITIES.md) - Phase 4 corrections
 - [DMAIC_PHASE3_RUNTIME_DEPENDENCY_ANALYSIS.md](DMAIC_PHASE3_RUNTIME_DEPENDENCY_ANALYSIS.md) - Phase 3 analysis
 
 ### Canonical Framework

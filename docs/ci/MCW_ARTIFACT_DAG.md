@@ -75,8 +75,7 @@ get public links. The `file://` view needs no network or backend.
 - HTML: the existing portal and cold generated read-only navigator.
 - XLSX: `scripts/build_qps_ssot_views.py` is an observed QPS builder.
 - DOCX: controlled owner input; no public source bytes claimed.
-- PPTX: `MINERVA_PID/generator/build_dissection_pptx.py`.
-- PDF: `MINERVA_PID/generator/build_temp_gradient_pdf.py`.
+- PPTX, PDF: moved to the private repo GBOGEB/MINERVA_PID (2026-10-25).
 - Otter: potential external transcript/audio, not an observed file.
 
 **Zero DataFrame delta is not binary identity.** To call an original

@@ -50,6 +50,33 @@ def number(x, name, *, minimum=0.0, maximum=None):
     return float(x)
 
 
+def source_path_safe(value):
+    """Conservative cross-platform lexical path lease; NOT filesystem proof."""
+    return (
+        isinstance(value, str)
+        and bool(value)
+        and not value.startswith("/")
+        and "\\" not in value
+        and ":" not in value
+        and not any(ord(char) < 32 or ord(char) == 127 for char in value)
+        and all(
+            part not in ("", ".", "..")
+            and not part.endswith((".", " "))
+            for part in value.split("/")
+        )
+    )
+
+
+def source_path_overlap(left, right):
+    """Casefold and use segment boundaries, never raw startswith."""
+    left, right = left.casefold(), right.casefold()
+    return (
+        left == right
+        or left.startswith(right + "/")
+        or right.startswith(left + "/")
+    )
+
+
 def checked_history(history):
     """Return a comparable terminal cohort or explicit incomparability.
 
@@ -122,11 +149,15 @@ def family_result(family):
     paths = family.get("paths")
     if not isinstance(family_id, str) or not family_id:
         raise GovernorError("family id required")
-    if (not isinstance(paths, list) or not paths or any(
-        not isinstance(p, str) or not p or p.startswith("/") or ".." in p.split("/")
-        for p in paths
-    ) or len(paths) != len(set(paths))):
+    if not isinstance(paths, list) or not paths or any(
+        not source_path_safe(path) for path in paths
+    ):
         raise GovernorError(f"{family_id}: invalid source path lease")
+    for idx, path in enumerate(paths):
+        if any(source_path_overlap(path, older) for older in paths[:idx]):
+            raise GovernorError(
+                f"{family_id}: overlapping source path leases within family"
+            )
     eligible = integer(family.get("eligible"), f"{family_id}.eligible", 1)
     covered = integer(family.get("covered"), f"{family_id}.covered")
     if covered > eligible:
@@ -405,9 +436,16 @@ def evaluate(doc):
     ids = [r["id"] for r in results]
     if len(set(ids)) != len(ids):
         raise GovernorError("duplicate source family")
-    leases = [p for r in results for p in r["paths"]]
-    if len(set(leases)) != len(leases):
-        raise GovernorError("non-disjoint source path leases")
+    leases = []
+    for result in results:
+        for path in result["paths"]:
+            for owner, older in leases:
+                if source_path_overlap(path, older):
+                    raise GovernorError(
+                        "non-disjoint source path leases: "
+                        f"{owner} vs {result['id']}"
+                    )
+            leases.append((result["id"], path))
     if any(f["source_sha"] != doc["snapshot_source_sha"] for f in results):
         raise GovernorError("mixed source SHA: no exact-head comparison")
     actionable, suppressed, withheld = _events(

@@ -422,6 +422,36 @@ def test_quality_workflow_ratchets_each_tool_independently():
     assert 'fallback="${!flag_name}"' in workflow
 
 
+@pytest.mark.parametrize(
+    "job, step_id",
+    [("lint-and-format", "quality_ratchet"), ("security-scan", "bandit_ratchet")],
+)
+def test_workflow_ratchets_against_the_merge_base_tip(job, step_id):
+    # base.sha goes stale when the base branch moves, and a depth-2 checkout
+    # does not hold it; the merge commit's first parent is the live base tip.
+    import yaml
+
+    workflow = yaml.safe_load(
+        (
+            Path(__file__).resolve().parents[1]
+            / ".github"
+            / "workflows"
+            / "ci-cd-tests.yml"
+        ).read_text(encoding="utf-8")
+    )
+    steps = workflow["jobs"][job]["steps"]
+    (step,) = [s for s in steps if s.get("id") == step_id]
+    run = step["run"]
+    assert "base=\"$(git rev-parse 'HEAD^1')\"" in run
+    assert "git cat-file -e 'HEAD^2^{commit}'" in run
+    # The policy still comes from the base, never from the PR head.
+    assert '"$base:scripts/ci_pr_debt_ratchet.py"' in run
+    assert 'python -I "$ratchet"' in run
+    assert '--base "$base"' in run
+    assert '--base "$BASE_SHA"' not in run
+    assert '"$BASE_SHA:' not in run
+
+
 def test_per_tool_config_map_is_not_global_override(repo):
     base = commit(repo, {"pkg/a.py": CLEAN})
     commit(repo, {".flake8": "[flake8]\nselect=E9\n"})

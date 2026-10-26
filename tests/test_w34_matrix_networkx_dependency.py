@@ -37,7 +37,7 @@ def test_broad_native_matrix_really_installs_the_test_requirements():
     assert "pip install -r requirements-test.txt" in part
     assert "pytest tests/ -m \"not integration\"" in part
     assert "os: [ubuntu-latest, windows-latest, macos-latest]" in part
-    assert "python-version: ['3.10', '3.11', '3.12']" in part
+    assert "python-version: ['3.11', '3.12']" in part
     assert "continue-on-error: true" not in part
 
 

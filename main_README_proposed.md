@@ -57,11 +57,11 @@ open docs/deep_analysis_dashboard.html
 |----------|---------|
 | [12-Cluster Architecture](12CLUSTER_ARCHITECTURE_BOOK.md) | Primary architecture spec |
 | [12-Cluster Vision](12_cluster_vision.md) | Elevated cluster model documentation |
-| [Version Lineage](lineage_analysis.md) | Complete version heritage analysis |
+| [Version Lineage](docs_versioned/generated_reports/lineage_analysis.md) | Complete version heritage analysis |
 | [Tool Ecosystem](tool_ecosystem_map.md) | DOW, KEB, GBOGEB interconnections |
 | [SSOT Catalog](ssot_artifacts_catalog.md) | Truth artifact inventory |
-| [Integration Tests](integration_test_results.md) | Smoke test results |
-| [Recovery Report](recovery_report.md) | Corrupted file recovery |
+| [Integration Tests](docs_versioned/generated_reports/integration_test_results.md) | Smoke test results |
+| [Recovery Report](docs_versioned/generated_reports/recovery_report.md) | Corrupted file recovery |
 
 ---
 
@@ -88,4 +88,4 @@ All versions are **active and valuable** — none should be deleted:
 - **V2.3** → Active development (6/6 agents upgraded)
 - **V3.3** → Engine + documentation
 
-*See [lineage_analysis.md](lineage_analysis.md) for complete heritage.*
+*See [lineage_analysis.md](docs_versioned/generated_reports/lineage_analysis.md) for complete heritage.*

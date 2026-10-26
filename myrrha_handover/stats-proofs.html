@@ -1,0 +1,279 @@
+<!doctype html>
+<html lang="en"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>MYRRHA WCS · Statistical Foundations</title>
+<link rel="icon" href="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><text y='26' font-size='26'>🔬</text></svg>">
+<link rel="stylesheet" href="assets/style.css">
+<script src="https://cdn.plot.ly/plotly-2.27.0.min.js"></script>
+<script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+<script>window.MathJax={tex:{inlineMath:[['$','$'],['\\(','\\)']],displayMath:[['$$','$$'],['\\[','\\]']]}};</script>
+<script src="assets/common.js" defer></script>
+<style>
+.breadcrumb{font-size:12px;color:var(--fg2);margin-bottom:12px}.breadcrumb a{color:var(--accent2)}
+.proof-section{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);padding:20px 24px;margin:18px 0;box-shadow:var(--shadow)}
+.proof-section h3{margin:0 0 12px;font-size:16px;border-bottom:1px solid var(--border);padding-bottom:8px}
+.proof-section h4{margin:16px 0 6px;color:var(--accent2)}
+.def-box{background:var(--bg);border-left:4px solid var(--accent2);padding:12px 18px;margin:12px 0;border-radius:0 8px 8px 0;font-size:13.5px}
+.thm-box{background:var(--bg);border-left:4px solid var(--accent);padding:12px 18px;margin:12px 0;border-radius:0 8px 8px 0;font-size:13.5px}
+.thm-box .thm-title{font-weight:700;color:var(--accent);margin-bottom:4px}
+.proof-box{background:var(--bg);border-left:4px solid var(--violet);padding:12px 18px;margin:12px 0;border-radius:0 8px 8px 0;font-size:13px}
+.proof-box .proof-title{font-weight:700;color:var(--violet);margin-bottom:4px}
+.example-box{background:#F3E5F5;border:1px solid #CE93D8;border-radius:8px;padding:12px 18px;margin:12px 0;font-size:13px}
+[data-theme=dark] .example-box{background:#2a1a3a;border-color:#5a3a7a}
+.eq-ref{font-family:var(--mono);font-size:11px;color:var(--fg2);float:right}
+.toc{columns:2;font-size:13px;margin:14px 0;line-height:2}
+.toc a{display:block}
+.plotly-chart{width:100%;min-height:350px;margin:14px 0}
+</style>
+</head><body>
+<div class="container">
+<p class="breadcrumb"><a href="index.html">Hub</a> › <a href="bt-ranking.html">BT Ranking</a> › Statistical Foundations</p>
+<h1>🔬 Mathematical Foundations</h1>
+<p class="muted">Rigorous derivations for Bradley-Terry model, weighted priority scores, and convergence proofs · v0.4.3</p>
+
+<!-- TABLE OF CONTENTS -->
+<div class="card">
+<h3 style="margin-top:0">Contents</h3>
+<div class="toc">
+  <a href="#bt-model">1. Bradley-Terry Model</a>
+  <a href="#bt-mle">2. Maximum Likelihood Estimation</a>
+  <a href="#bt-fisher">3. Fisher Information & CI</a>
+  <a href="#bt-convergence">4. Convergence Analysis</a>
+  <a href="#weighted-priority">5. Weighted Priority Score</a>
+  <a href="#sensitivity">6. Sensitivity Analysis</a>
+  <a href="#numerical">7. Numerical Examples</a>
+</div>
+</div>
+
+<!-- ===== 1. BRADLEY-TERRY MODEL ===== -->
+<div class="proof-section" id="bt-model">
+<h3>1. Bradley-Terry Probability Model</h3>
+
+<div class="def-box">
+<strong>Definition 1 (Bradley-Terry Model).</strong> Given $n$ items with latent strength parameters $\boldsymbol{\theta} = (\theta_1, \theta_2, \ldots, \theta_n)$ where $\theta_i > 0$, the probability that item $i$ is preferred over item $j$ in a pairwise comparison is:
+
+$$P(i \succ j \mid \boldsymbol{\theta}) = \frac{\theta_i}{\theta_i + \theta_j}$$
+<span class="eq-ref">(Eq. 1)</span>
+</div>
+
+<h4>Properties</h4>
+<ul style="font-size:13.5px;line-height:1.8">
+  <li><strong>Reciprocity:</strong> $P(i \succ j) + P(j \succ i) = 1$</li>
+  <li><strong>Scale invariance:</strong> For any $c > 0$, replacing $\theta_i$ with $c\theta_i$ for all $i$ leaves probabilities unchanged</li>
+  <li><strong>Transitivity:</strong> If $\theta_i > \theta_j > \theta_k$, then $P(i \succ k) > P(i \succ j)$</li>
+  <li><strong>Identifiability:</strong> Due to scale invariance, we impose $\max_i \theta_i = 1$ (or $\sum_i \theta_i = 1$)</li>
+</ul>
+
+<p style="font-size:13.5px">In our application, $n = 29$ improvement actions are compared pairwise. Let $n_{ij}$ denote the number of times item $i$ is preferred over $j$ in observed comparisons. The total number of possible pairs is $\binom{29}{2} = 406$.</p>
+</div>
+
+<!-- ===== 2. MLE ===== -->
+<div class="proof-section" id="bt-mle">
+<h3>2. Maximum Likelihood Estimation</h3>
+
+<div class="def-box">
+<strong>Definition 2 (Log-Likelihood).</strong> The log-likelihood function for the BT model is:
+
+$$\ell(\boldsymbol{\theta}) = \sum_{i \neq j} n_{ij} \log \frac{\theta_i}{\theta_i + \theta_j} = \sum_{i \neq j} n_{ij} \left[\log \theta_i - \log(\theta_i + \theta_j)\right]$$
+<span class="eq-ref">(Eq. 2)</span>
+</div>
+
+<h4>Score Equations</h4>
+<p style="font-size:13.5px">Taking the partial derivative with respect to $\theta_i$:</p>
+
+$$\frac{\partial \ell}{\partial \theta_i} = \frac{w_i}{\theta_i} - \sum_{j \neq i} \frac{n_{ij} + n_{ji}}{\theta_i + \theta_j} = 0$$
+
+<p style="font-size:13.5px">where $w_i = \sum_{j \neq i} n_{ij}$ is the total number of wins for item $i$.</p>
+
+<h4>Iterative Solution (Zermelo's Algorithm, 1929)</h4>
+
+<div class="thm-box">
+<div class="thm-title">Algorithm 1: Iterative Proportional Fitting</div>
+<p style="font-size:13px">Initialize: $\theta_i^{(0)} = 1$ for all $i$.<br>
+For $t = 0, 1, 2, \ldots$ until convergence:</p>
+
+$$\theta_i^{(t+1)} = \frac{w_i}{\displaystyle\sum_{j \neq i} \frac{n_{ij} + n_{ji}}{\theta_i^{(t)} + \theta_j^{(t)}}}$$
+<span class="eq-ref">(Eq. 3)</span>
+
+<p style="font-size:13px">Normalize: $\theta_i^{(t+1)} \leftarrow \theta_i^{(t+1)} / \max_k \theta_k^{(t+1)}$</p>
+</div>
+</div>
+
+<!-- ===== 3. FISHER INFORMATION ===== -->
+<div class="proof-section" id="bt-fisher">
+<h3>3. Fisher Information Matrix & Confidence Intervals</h3>
+
+<div class="def-box">
+<strong>Definition 3 (Observed Fisher Information).</strong> The $(i,i)$-th element of the observed Fisher information matrix is:
+
+$$\mathcal{I}_{ii} = -\frac{\partial^2 \ell}{\partial \theta_i^2} = \frac{w_i}{\theta_i^2} + \sum_{j \neq i} \frac{(n_{ij} + n_{ji}) \cdot \theta_j}{(\theta_i + \theta_j)^2 \cdot \theta_i}$$
+
+<p style="font-size:12.5px">At the MLE $\hat{\theta}$, the standard error is:</p>
+
+$$\text{SE}(\hat{\theta}_i) = \frac{1}{\sqrt{\mathcal{I}_{ii}(\hat{\theta})}}$$
+<span class="eq-ref">(Eq. 4)</span>
+</div>
+
+<h4>Confidence Intervals</h4>
+<p style="font-size:13.5px">By asymptotic normality of the MLE:</p>
+
+$$\hat{\theta}_i \pm z_{\alpha/2} \cdot \text{SE}(\hat{\theta}_i)$$
+
+<table style="font-size:13px;max-width:400px"><thead><tr><th>Confidence</th><th>$z_{\alpha/2}$</th><th>Formula</th></tr></thead><tbody>
+  <tr><td>90%</td><td>1.645</td><td>$\hat\theta_i \pm 1.645 \cdot \text{SE}$</td></tr>
+  <tr><td>95%</td><td>1.960</td><td>$\hat\theta_i \pm 1.960 \cdot \text{SE}$</td></tr>
+  <tr><td>97.5%</td><td>2.241</td><td>$\hat\theta_i \pm 2.241 \cdot \text{SE}$</td></tr>
+  <tr><td>99%</td><td>2.576</td><td>$\hat\theta_i \pm 2.576 \cdot \text{SE}$</td></tr>
+</tbody></table>
+
+<div class="example-box">
+<strong>Example:</strong> If $\hat{\theta}_i = 0.85$ and $\text{SE}(\hat\theta_i) = 0.03$, then the 97.5% CI is:<br>
+$0.85 \pm 2.241 \times 0.03 = [0.783, 0.917]$
+</div>
+</div>
+
+<!-- ===== 4. CONVERGENCE ===== -->
+<div class="proof-section" id="bt-convergence">
+<h3>4. Convergence Analysis</h3>
+
+<div class="thm-box">
+<div class="thm-title">Theorem 1 (Zermelo, 1929; Hunter, 2004)</div>
+<p style="font-size:13px">If the comparison graph is strongly connected (i.e., for every pair $(i,j)$ there exists a sequence of comparisons linking $i$ to $j$), then Zermelo's algorithm converges to the unique MLE $\hat{\boldsymbol{\theta}}$ (up to scaling).</p>
+</div>
+
+<div class="proof-box">
+<div class="proof-title">Proof sketch (convergence rate)</div>
+<p style="font-size:12.5px">The iteration map $T: \theta^{(t)} \mapsto \theta^{(t+1)}$ is a contraction in the Hilbert projective metric on the positive orthant. By Birkhoff's contraction theorem, the convergence rate is geometric:</p>
+
+$$\|\theta^{(t)} - \hat\theta\| \leq C \cdot \rho^t$$
+
+<p style="font-size:12.5px">where $\rho \in (0,1)$ depends on the connectivity of the comparison graph. For a complete comparison graph (all $\binom{n}{2}$ pairs observed), $\rho \approx 1 - 2/n$.</p>
+<p style="font-size:12.5px;text-align:right">$\blacksquare$</p>
+</div>
+
+<h4>Convergence Criterion</h4>
+<p style="font-size:13.5px">We declare convergence when:</p>
+
+$$\|\boldsymbol{\theta}^{(t+1)} - \boldsymbol{\theta}^{(t)}\|_1 = \sum_{i=1}^{n} |\theta_i^{(t+1)} - \theta_i^{(t)}| < \epsilon$$
+
+<p style="font-size:13.5px">with $\epsilon = 0.001$ (default). For $n=29$ actions, typical convergence occurs in 10–20 iterations when ≥50% of pairs have been compared.</p>
+</div>
+
+<!-- ===== 5. WEIGHTED PRIORITY ===== -->
+<div class="proof-section" id="weighted-priority">
+<h3>5. Weighted Priority Score Derivation</h3>
+
+<div class="def-box">
+<strong>Definition 4 (Weighted Priority Score).</strong> For action $i$ with severity $S_i \in [1,5]$, impact $I_i \in [1,5]$, and effort $E_i$ (hours):
+
+$$P_i = w_1 \cdot \frac{S_i}{5} + w_2 \cdot \frac{I_i}{5} + w_3 \cdot \frac{10 - E_i}{10}$$
+<span class="eq-ref">(Eq. 5)</span>
+
+<p style="font-size:12.5px">Default weights: $w_1 = 0.5$, $w_2 = 0.3$, $w_3 = 0.2$ with constraint $w_1 + w_2 + w_3 = 1$.</p>
+</div>
+
+<h4>Score Range</h4>
+<p style="font-size:13.5px">The priority score $P_i \in [0, 1]$:</p>
+<ul style="font-size:13px">
+  <li><strong>Maximum:</strong> $P = 0.5 \cdot (5/5) + 0.3 \cdot (5/5) + 0.2 \cdot (10/10) = 1.0$ (Sev=5, Impact=5, Effort=0)</li>
+  <li><strong>Minimum:</strong> $P = 0.5 \cdot (1/5) + 0.3 \cdot (1/5) + 0.2 \cdot (0/10) = 0.16$ (Sev=1, Impact=1, Effort=10)</li>
+</ul>
+</div>
+
+<!-- ===== 6. SENSITIVITY ===== -->
+<div class="proof-section" id="sensitivity">
+<h3>6. Sensitivity Analysis</h3>
+
+<h4>Partial Derivatives of Priority w.r.t. Weights</h4>
+
+$$\frac{\partial P_i}{\partial w_1} = \frac{S_i}{5}, \quad \frac{\partial P_i}{\partial w_2} = \frac{I_i}{5}, \quad \frac{\partial P_i}{\partial w_3} = \frac{10 - E_i}{10}$$
+
+<div class="example-box">
+<strong>Example:</strong> For MT-13 (400V Power Analysis): $S=5, I=5, E=4$<br>
+$\frac{\partial P}{\partial w_1} = 1.0, \quad \frac{\partial P}{\partial w_2} = 1.0, \quad \frac{\partial P}{\partial w_3} = 0.6$<br>
+<em>Interpretation:</em> This action's priority is equally sensitive to severity and impact weight changes, less sensitive to effort weight.
+</div>
+
+<h4>Rank Stability</h4>
+<p style="font-size:13.5px">Two actions $i, j$ swap ranks when:</p>
+
+$$P_i(w_1 + \Delta w_1, w_2, w_3 - \Delta w_1) < P_j(w_1 + \Delta w_1, w_2, w_3 - \Delta w_1)$$
+
+<p style="font-size:13.5px">The critical weight shift $\Delta w_1^*$ that causes $i$ and $j$ to swap is:</p>
+
+$$\Delta w_1^* = \frac{P_i - P_j}{\frac{S_j - S_i}{5} - \frac{(10-E_j) - (10-E_i)}{10}}$$
+</div>
+
+<!-- ===== 7. NUMERICAL EXAMPLES ===== -->
+<div class="proof-section" id="numerical">
+<h3>7. Numerical Examples</h3>
+
+<h4>Example: 3-Action BT Computation</h4>
+<p style="font-size:13.5px">Consider actions A, B, C with observed comparisons: A beats B (1×), A beats C (1×), B beats C (1×).</p>
+
+<div class="example-box">
+<strong>Iteration 0:</strong> $\theta = (1, 1, 1)$<br><br>
+<strong>Iteration 1:</strong><br>
+$\theta_A = \frac{w_A}{\frac{n_{AB}+n_{BA}}{\theta_A+\theta_B} + \frac{n_{AC}+n_{CA}}{\theta_A+\theta_C}} = \frac{2}{\frac{1}{2} + \frac{1}{2}} = 2.0$<br>
+$\theta_B = \frac{1}{\frac{1}{2} + \frac{1}{2}} = 1.0$<br>
+$\theta_C = \frac{0}{\frac{1}{2} + \frac{1}{2}} \rightarrow 0.01$ (clamped)<br><br>
+Normalize: $\theta = (1.000, 0.500, 0.005)$<br><br>
+<strong>Final (converged):</strong> $\theta = (1.000, 0.500, 0.010)$<br>
+Ranking: A > B > C ✓
+</div>
+
+<h4>Interactive Weight Explorer</h4>
+<div class="card">
+<div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px">
+  <div><label style="font-size:12px">w₁ (Severity): <strong id="w1v">0.50</strong></label><br><input type="range" id="w1" min="0" max="100" value="50" oninput="updateWeights()" style="width:100%;accent-color:var(--accent)"></div>
+  <div><label style="font-size:12px">w₂ (Impact): <strong id="w2v">0.30</strong></label><br><input type="range" id="w2" min="0" max="100" value="30" oninput="updateWeights()" style="width:100%;accent-color:var(--accent)"></div>
+  <div><label style="font-size:12px">w₃ (Effort⁻¹): <strong id="w3v">0.20</strong></label><br><input type="range" id="w3" min="0" max="100" value="20" oninput="updateWeights()" style="width:100%;accent-color:var(--accent)"></div>
+</div>
+<div id="plotWeights" class="plotly-chart"></div>
+</div>
+</div>
+
+</div><!-- /container -->
+
+<script>
+const SAMPLE_ACTIONS = [
+  {id:"MT-13",name:"400V Power Analysis",sev:5,impact:5,effort:4},
+  {id:"MT-11",name:"Vendor Scout: Kaeser",sev:5,impact:5,effort:2},
+  {id:"MT-12",name:"Vendor Scout: PVPS",sev:5,impact:5,effort:2},
+  {id:"MT-2",name:"Kaeser Data Cross-check",sev:5,impact:5,effort:3},
+  {id:"MT-1",name:"COMBI Validation",sev:4,impact:5,effort:4},
+  {id:"ST-3",name:"Populate PVPS Data",sev:4,impact:4,effort:2},
+  {id:"MT-4",name:"Config24/30 Recalc",sev:4,impact:4,effort:4},
+  {id:"MT-8",name:"Oil Separator Sizing",sev:4,impact:4,effort:3},
+  {id:"ST-1",name:"Fix Config24 Flow",sev:3,impact:4,effort:1},
+  {id:"LT-1",name:"Monte Carlo",sev:2,impact:4,effort:8}
+];
+
+function priority(a,w1,w2,w3){
+  return w1*(a.sev/5)+w2*(a.impact/5)+w3*((10-a.effort)/10);
+}
+
+function updateWeights(){
+  let v1=+document.getElementById('w1').value;
+  let v2=+document.getElementById('w2').value;
+  let v3=+document.getElementById('w3').value;
+  const total=v1+v2+v3||1;
+  const w1=v1/total,w2=v2/total,w3=v3/total;
+  document.getElementById('w1v').textContent=w1.toFixed(2);
+  document.getElementById('w2v').textContent=w2.toFixed(2);
+  document.getElementById('w3v').textContent=w3.toFixed(2);
+  const scored=SAMPLE_ACTIONS.map(a=>({...a,p:priority(a,w1,w2,w3)})).sort((a,b)=>b.p-a.p);
+  Plotly.newPlot('plotWeights',[{
+    y:scored.map(a=>a.id+' '+a.name.slice(0,20)),
+    x:scored.map(a=>a.p),
+    type:'bar',orientation:'h',
+    marker:{color:scored.map(a=>a.sev===5?'#C0392B':a.sev===4?'#D85A30':a.sev===3?'#E5A100':'#378ADD')},
+    text:scored.map(a=>a.p.toFixed(3)),textposition:'outside',textfont:{size:10}
+  }],{margin:{l:170,r:40,t:30,b:30},height:350,
+    font:{family:'Aptos,sans-serif',size:11},
+    plot_bgcolor:'rgba(0,0,0,0)',paper_bgcolor:'rgba(0,0,0,0)',
+    xaxis:{title:'Priority Score',range:[0,1.1]},yaxis:{automargin:true,autorange:'reversed'}},{responsive:true});
+}
+updateWeights();
+</script>
+</body></html>

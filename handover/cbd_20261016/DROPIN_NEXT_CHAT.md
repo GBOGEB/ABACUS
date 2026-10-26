@@ -1,6 +1,7 @@
 # CODE PURPLE / CBD! — GitHub-first lossless continuation (16 October 2026)
 
-**Copy the entire contents of this file into a fresh chat if needed.**
+## Copy the entire contents of this file into a fresh chat if needed
+
 This dossier is a **source-bound handover snapshot, not merge authority**.
 First read the BINDER.json and run binder.py --live if authorized.
 No ZIP is required. Do not delete the prior chat until the next chat
@@ -239,4 +240,4 @@ Report a per-wave KPI scorecard and closing impact CENSUS with exact
 artifact/build binder links, source/provenance and UNKNOWN preserved.
 Prefer drop-in Markdown and tiny stdlib Python files; NO ZIP needed.
 
-**Final transfer remains HOLD.**
+## Final transfer remains HOLD

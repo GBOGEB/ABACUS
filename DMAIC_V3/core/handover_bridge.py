@@ -378,7 +378,7 @@ def integrate_phase4_opportunities(phase4_instance, opportunities_path: Path):
 
     Args:
         phase4_instance: Phase4Improve instance
-        opportunities_path: Path to CORRECTED_PHASE4_OPPORTUNITIES.md
+        opportunities_path: Path to docs_versioned/status_reports/CORRECTED_PHASE4_OPPORTUNITIES.md
 
     Returns:
         Enhanced phase instance with opportunities integrated

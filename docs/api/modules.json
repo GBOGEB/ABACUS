@@ -1,6 +1,6 @@
 {
-  "generated_at": "2026-09-30T16:19:40.545177",
-  "module_count": 190,
+  "generated_at": "2026-10-23T12:16:56.861172",
+  "module_count": 208,
   "modules": {
     "DMAIC_V3/quick_output_analysis.py": {
       "docstring": "Quick Analysis of DMAIC V3 Outputs\nAnalyzes existing iteration outputs without running full pipeline",
@@ -53,7 +53,7 @@
       ]
     },
     "DMAIC_V3/full_pipeline_orchestrator.py": {
-      "docstring": "# Version: 1.0.0\n# Date: 2025-11-25\n# Description: Auto-generated version header",
+      "docstring": "# Version: 1.0.0\n# Date: 2025-11-25\n# Description: Auto-generated version header\n\nDMAIC V3.3 - FULL PIPELINE ORCHESTRATOR\n=============================================================================\nPhase 0:     Initialization (12-agent orchestration)\nPhases 1-5:  DMAIC Core (Define, Measure, Analy",
       "members": [
         {
           "name": "Phase7AdvancedAnalytics",
@@ -1576,7 +1576,7 @@
         },
         {
           "name": "remove_unused_imports",
-          "doc": "Remove unused imports from file (simple AST-based heuristic)"
+          "doc": "Conservatively remove complete, unused top-level import statements.\n\nA partly-used multi-alias import must not be removed as a whole.\nNontrivial or dynamically referenced imports are left unchanged."
         },
         {
           "name": "__init__",
@@ -2933,6 +2933,22 @@
           "doc": ""
         },
         {
+          "name": "test_execute_rejects_non_dict_payload",
+          "doc": ""
+        },
+        {
+          "name": "test_execute_rejects_empty_tuple",
+          "doc": ""
+        },
+        {
+          "name": "test_execute_rejects_scalar",
+          "doc": ""
+        },
+        {
+          "name": "test_execute_preserves_failure",
+          "doc": ""
+        },
+        {
           "name": "test_calculate_statistics",
           "doc": ""
         },
@@ -3029,6 +3045,44 @@
         },
         {
           "name": "test_metrics_exporter_writes_all_formats",
+          "doc": ""
+        }
+      ]
+    },
+    "DMAIC_V3/tests/test_stability_monitor_runtime_coverage.py": {
+      "docstring": "Behavioral C3 coverage for stability telemetry and alert control.",
+      "members": [
+        {
+          "name": "test_stability_monitor_tracks_regressions_variance_and_report",
+          "doc": ""
+        },
+        {
+          "name": "test_stable_samples_missing_hash_and_hook_failure_are_fail_soft",
+          "doc": ""
+        },
+        {
+          "name": "test_scan_patterns_and_alert_summary_paths",
+          "doc": ""
+        },
+        {
+          "name": "broken_hook",
+          "doc": ""
+        }
+      ]
+    },
+    "DMAIC_V3/tests/test_pygithub_matrix_constraints.py": {
+      "docstring": "Fail-closed PyGithub dependency marker regression across native matrix lanes.\n\nThis proves marker selection only. Native pip resolution and functional test\nresults are independent admission evidence.",
+      "members": [
+        {
+          "name": "_pygithub_requirements",
+          "doc": ""
+        },
+        {
+          "name": "test_each_supported_python_lane_selects_one_compatible_constraint",
+          "doc": ""
+        },
+        {
+          "name": "test_constraints_deny_unmarked_or_unbounded_pygithub",
           "doc": ""
         }
       ]
@@ -3171,6 +3225,63 @@
         }
       ]
     },
+    "DMAIC_V3/tests/test_background_change_detector_runtime_coverage.py": {
+      "docstring": "Deterministic file-state and shutdown coverage for background change detection.",
+      "members": [
+        {
+          "name": "test_added_modified_deleted_files_keep_distinct_receipts",
+          "doc": ""
+        },
+        {
+          "name": "test_missing_scan_directories_do_not_fabricate_changes",
+          "doc": ""
+        },
+        {
+          "name": "test_corrupt_state_snapshot_and_summary_fail_closed",
+          "doc": ""
+        },
+        {
+          "name": "test_summary_reports_each_change_family_and_optional_timestamp",
+          "doc": ""
+        },
+        {
+          "name": "test_detection_loop_catches_errors_and_stops_without_busy_wait",
+          "doc": ""
+        },
+        {
+          "name": "test_start_is_idempotent_and_stop_joins_worker",
+          "doc": ""
+        },
+        {
+          "name": "test_legacy_windows_snapshot_keys_migrate_without_phantom_changes",
+          "doc": ""
+        },
+        {
+          "name": "test_non_mapping_legacy_snapshot_is_ignored_safely",
+          "doc": ""
+        },
+        {
+          "name": "failing_snapshot",
+          "doc": ""
+        },
+        {
+          "name": "FakeThread",
+          "doc": ""
+        },
+        {
+          "name": "__init__",
+          "doc": ""
+        },
+        {
+          "name": "start",
+          "doc": ""
+        },
+        {
+          "name": "join",
+          "doc": ""
+        }
+      ]
+    },
     "DMAIC_V3/tests/test_smoke_federation.py": {
       "docstring": "Smoke tests for the DELTA_1 federation assimilation hook.\n\nThese tests verify that:\n  1. The global federation manifest exists and is loadable.\n  2. The authoritative DELTA_1 spec file exists.\n  3. src/dmaic/federation.assimilate() returns status == \"ok\".\n  4. The codespace/CODESPACES notebook repos",
       "members": [
@@ -3207,6 +3318,10 @@
           "doc": "assimilate() must echo the caller context in the returned dict."
         }
       ]
+    },
+    "DMAIC_V3/tests/conftest.py": {
+      "docstring": "Collection rules for the DMAIC_V3 suite.\n\nThe docker-image probes check the host's Docker install, not product code.\nThey are opt-in (DMAIC_DOCKER_TESTS=1). Without the opt-in they are left out\nof collection, explicitly and in one place, instead of contributing governed\nskips to the canonical covera",
+      "members": []
     },
     "DMAIC_V3/tests/test_github_roundtrip.py": {
       "docstring": "",
@@ -3254,6 +3369,10 @@
         },
         {
           "name": "test_workflow_yaml_present",
+          "doc": ""
+        },
+        {
+          "name": "test_deploy_docs_is_sole_publisher_and_keeps_docs_homepage",
           "doc": ""
         },
         {
@@ -3415,6 +3534,31 @@
         }
       ]
     },
+    "DMAIC_V3/tests/test_static_analysis_integration.py": {
+      "docstring": "Integration tests for fail-closed deployment report scanner receipts.",
+      "members": [
+        {
+          "name": "bridge",
+          "doc": ""
+        },
+        {
+          "name": "test_nonzero_scanner_retains_first_red_in_saved_report",
+          "doc": ""
+        },
+        {
+          "name": "test_scanner_failure_unknown_remains_not_deployment_ready",
+          "doc": ""
+        },
+        {
+          "name": "test_executed_clean_flake8_keeps_independent_deployment_semantics",
+          "doc": ""
+        },
+        {
+          "name": "test_zero_tests_never_green_even_with_clean_static",
+          "doc": ""
+        }
+      ]
+    },
     "DMAIC_V3/tests/test_stability_monitor.py": {
       "docstring": "DMAIC V3 Test Suite - Stability Monitor Tests\nVersion: 3.2.0\nCreated: 2025-11-12T04:50:00Z\nUpdated: 2025-11-12T05:00:00Z",
       "members": [
@@ -3514,6 +3658,131 @@
         }
       ]
     },
+    "DMAIC_V3/tests/test_test_system_bridge_failclosed_coverage.py": {
+      "docstring": "C4 behavioral tests for fail-closed DMAIC test-system bridge admission.",
+      "members": [
+        {
+          "name": "bridge",
+          "doc": ""
+        },
+        {
+          "name": "successful_result",
+          "doc": ""
+        },
+        {
+          "name": "test_zero_tests_cannot_report_deployment_ready",
+          "doc": ""
+        },
+        {
+          "name": "test_missing_or_failing_static_analysis_cannot_be_green",
+          "doc": ""
+        },
+        {
+          "name": "test_parallel_worker_exception_is_counted_as_failed_result",
+          "doc": ""
+        },
+        {
+          "name": "test_duplicate_parallel_names_reject_before_execution",
+          "doc": ""
+        },
+        {
+          "name": "test_required_artifact_is_not_hidden_by_zero_exit",
+          "doc": ""
+        },
+        {
+          "name": "test_timeout_is_recorded_as_failed_and_not_dropped",
+          "doc": ""
+        },
+        {
+          "name": "test_pytest_suite_command_keeps_markers_and_exit_proof",
+          "doc": ""
+        },
+        {
+          "name": "test_version_action_and_corrupt_prior_action_receipts",
+          "doc": ""
+        },
+        {
+          "name": "test_setup_environment_copies_real_file_and_directory",
+          "doc": ""
+        },
+        {
+          "name": "test_real_report_distinguishes_success_failed_and_error_receipts",
+          "doc": ""
+        },
+        {
+          "name": "test_success_requires_real_test_and_positive_static_result",
+          "doc": ""
+        },
+        {
+          "name": "test_scanner_success_and_error_returns_source_bound_result",
+          "doc": ""
+        },
+        {
+          "name": "test_pytest_suite_with_no_optional_args_does_not_invent_filters",
+          "doc": ""
+        },
+        {
+          "name": "test_failed_test_without_error_signature_is_not_runtime_traceback",
+          "doc": ""
+        },
+        {
+          "name": "test_nonlist_action_history_is_not_appended_as_a_list",
+          "doc": ""
+        },
+        {
+          "name": "test_source_runner_without_declared_artifacts_does_not_forge_receipts",
+          "doc": ""
+        },
+        {
+          "name": "test_missing_report_and_metrics_are_generated_at_default_path",
+          "doc": ""
+        },
+        {
+          "name": "test_sequential_cycle_requires_every_independent_phase",
+          "doc": ""
+        },
+        {
+          "name": "test_parallel_cycle_preserves_all_three_worker_receipts",
+          "doc": ""
+        },
+        {
+          "name": "test_phase_context_records_positive_and_negative_exit",
+          "doc": ""
+        },
+        {
+          "name": "fake_run_test",
+          "doc": ""
+        },
+        {
+          "name": "time_out",
+          "doc": ""
+        },
+        {
+          "name": "record",
+          "doc": ""
+        },
+        {
+          "name": "successful_scanner",
+          "doc": ""
+        },
+        {
+          "name": "missing_scanner",
+          "doc": ""
+        },
+        {
+          "name": "record",
+          "doc": ""
+        },
+        {
+          "name": "phase",
+          "doc": ""
+        },
+        {
+          "name": "completed_batch",
+          "doc": ""
+        }
+      ]
+    },
     "DMAIC_V3/tests/test_qplant_presentation_engine_runtime.py": {
       "docstring": "",
       "members": [
@@ -3564,6 +3833,112 @@
         }
       ]
     },
+    "DMAIC_V3/tests/test_dmaic_enterprise_pytest_failclosed.py": {
+      "docstring": "Guard Enterprise CI against false-green pytest verdicts.",
+      "members": [
+        {
+          "name": "test_enterprise_pytest_is_required_on_all_supported_versions",
+          "doc": ""
+        },
+        {
+          "name": "test_enterprise_summary_requires_real_test_job_success",
+          "doc": ""
+        }
+      ]
+    },
+    "DMAIC_V3/tests/test_full_pipeline_orchestrator_runtime_coverage.py": {
+      "docstring": "Behavioral C3 coverage for the operational full-pipeline runtime.",
+      "members": [
+        {
+          "name": "DummyDetector",
+          "doc": ""
+        },
+        {
+          "name": "DummyPlanner",
+          "doc": ""
+        },
+        {
+          "name": "Phase",
+          "doc": ""
+        },
+        {
+          "name": "_orchestrator",
+          "doc": ""
+        },
+        {
+          "name": "_patch_phases",
+          "doc": ""
+        },
+        {
+          "name": "test_full_pipeline_success_runs_all_phases_and_finalizes",
+          "doc": ""
+        },
+        {
+          "name": "test_core_phase_failure_stops_pipeline_but_detector_always_finalizes",
+          "doc": ""
+        },
+        {
+          "name": "test_phase_tracking_handles_dict_false_and_crash_without_false_green",
+          "doc": ""
+        },
+        {
+          "name": "test_reports_statistics_and_git_commit_paths",
+          "doc": ""
+        },
+        {
+          "name": "__init__",
+          "doc": ""
+        },
+        {
+          "name": "start",
+          "doc": ""
+        },
+        {
+          "name": "stop",
+          "doc": ""
+        },
+        {
+          "name": "get_summary",
+          "doc": ""
+        },
+        {
+          "name": "__init__",
+          "doc": ""
+        },
+        {
+          "name": "scan_actual_state",
+          "doc": ""
+        },
+        {
+          "name": "determine_current_state",
+          "doc": ""
+        },
+        {
+          "name": "calculate_possible_next",
+          "doc": ""
+        },
+        {
+          "name": "save_snapshot",
+          "doc": ""
+        },
+        {
+          "name": "__init__",
+          "doc": ""
+        },
+        {
+          "name": "execute",
+          "doc": ""
+        },
+        {
+          "name": "Crash",
+          "doc": ""
+        },
+        {
+          "name": "execute",
+          "doc": ""
+        }
+      ]
+    },
     "DMAIC_V3/tests/test_knowledge_integration_timeouts.py": {
       "docstring": "",
       "members": [
@@ -3593,6 +3968,43 @@
         },
         {
           "name": "slow_task",
+          "doc": ""
+        }
+      ]
+    },
+    "DMAIC_V3/tests/test_quality_gate_coverage_recovery.py": {
+      "docstring": "",
+      "members": [
+        {
+          "name": "test_agent_manager_loads_existing_agent_config",
+          "doc": ""
+        },
+        {
+          "name": "test_metrics_exporter_uses_default_phase_and_csv_names",
+          "doc": ""
+        },
+        {
+          "name": "test_mcp_detects_parent_mutation_outside_worker_isolation",
+          "doc": ""
+        },
+        {
+          "name": "test_canonical_name_collapses_consecutive_separators",
+          "doc": ""
+        },
+        {
+          "name": "test_state_missing_phase_and_completed_resume_paths",
+          "doc": ""
+        },
+        {
+          "name": "test_state_save_failure_is_reported_without_masking",
+          "doc": ""
+        },
+        {
+          "name": "mutate_outer_parent",
+          "doc": ""
+        },
+        {
+          "name": "fail_dump",
           "doc": ""
         }
       ]
@@ -3915,6 +4327,95 @@
         }
       ]
     },
+    "DMAIC_V3/tests/test_control_boundary_runtime_coverage.py": {
+      "docstring": "Behavioral C5 coverage for Git and pipeline control boundaries.",
+      "members": [
+        {
+          "name": "manager_without_probe",
+          "doc": ""
+        },
+        {
+          "name": "test_run_git_honors_nonzero_return_when_check_false",
+          "doc": ""
+        },
+        {
+          "name": "test_run_git_unavailable_and_exception_fail_closed",
+          "doc": ""
+        },
+        {
+          "name": "test_git_availability_uses_native_exit_code",
+          "doc": ""
+        },
+        {
+          "name": "test_commit_iteration_stages_existing_files_and_propagates_commit_failure",
+          "doc": ""
+        },
+        {
+          "name": "test_commit_nothing_to_commit_is_idempotent_success",
+          "doc": ""
+        },
+        {
+          "name": "test_tag_diff_changes_and_log_obey_failed_git_result",
+          "doc": ""
+        },
+        {
+          "name": "test_git_report_and_history_parsing",
+          "doc": ""
+        },
+        {
+          "name": "controller_without_real_signals",
+          "doc": ""
+        },
+        {
+          "name": "test_pipeline_controller_registers_stop_signals_and_sets_stop",
+          "doc": ""
+        },
+        {
+          "name": "test_invalid_iteration_controls_fail_before_orchestration",
+          "doc": ""
+        },
+        {
+          "name": "test_single_iteration_returns_orchestrator_result",
+          "doc": ""
+        },
+        {
+          "name": "test_multi_iteration_stop_pause_and_crash_paths",
+          "doc": ""
+        },
+        {
+          "name": "fake_run",
+          "doc": ""
+        },
+        {
+          "name": "fake_run",
+          "doc": ""
+        },
+        {
+          "name": "FakeOrchestrator",
+          "doc": ""
+        },
+        {
+          "name": "FakeOrchestrator",
+          "doc": ""
+        },
+        {
+          "name": "__init__",
+          "doc": ""
+        },
+        {
+          "name": "execute_full_pipeline",
+          "doc": ""
+        },
+        {
+          "name": "__init__",
+          "doc": ""
+        },
+        {
+          "name": "execute_full_pipeline",
+          "doc": ""
+        }
+      ]
+    },
     "DMAIC_V3/tests/test_twelve_cluster_orchestrator.py": {
       "docstring": "",
       "members": [
@@ -4196,6 +4697,80 @@
         }
       ]
     },
+    "DMAIC_V3/tests/test_convergence_analyzer_runtime_coverage.py": {
+      "docstring": "Measured convergence scoring, history, and runtime artifact regressions.",
+      "members": [
+        {
+          "name": "analyzer",
+          "doc": ""
+        },
+        {
+          "name": "test_default_thresholds_and_score_bounds",
+          "doc": ""
+        },
+        {
+          "name": "test_custom_yaml_config_and_hashing",
+          "doc": ""
+        },
+        {
+          "name": "test_workspace_history_three_sample_stability_contract",
+          "doc": ""
+        },
+        {
+          "name": "test_knowledge_growth_missing_and_present",
+          "doc": ""
+        },
+        {
+          "name": "test_analyze_writes_true_counts_scores_and_report",
+          "doc": ""
+        },
+        {
+          "name": "test_second_iteration_trend_and_degraded_scenario",
+          "doc": ""
+        },
+        {
+          "name": "test_history_missing_does_not_fabricate_progress",
+          "doc": ""
+        }
+      ]
+    },
+    "DMAIC_V3/tests/test_convergence_controller_runtime_coverage.py": {
+      "docstring": "Behavioral C4 coverage for convergence change and iteration control.",
+      "members": [
+        {
+          "name": "test_change_detector_lifecycle_preserves_added_modified_deleted_identity",
+          "doc": ""
+        },
+        {
+          "name": "test_change_detector_legacy_windows_snapshot_does_not_create_phantom_change",
+          "doc": ""
+        },
+        {
+          "name": "test_change_detector_snapshot_hash_filters_and_fail_closed_state",
+          "doc": ""
+        },
+        {
+          "name": "test_file_change_auto_timestamp_and_explicit_timestamp",
+          "doc": ""
+        },
+        {
+          "name": "test_iteration_recording_persists_runtime_fields_and_reload",
+          "doc": ""
+        },
+        {
+          "name": "test_iteration_continue_stop_and_convergence_paths",
+          "doc": ""
+        },
+        {
+          "name": "test_convergence_score_and_maturity_thresholds_are_bounded",
+          "doc": ""
+        },
+        {
+          "name": "test_convergence_status_and_empty_report_fail_closed",
+          "doc": ""
+        }
+      ]
+    },
     "DMAIC_V3/tests/test_phase5_control.py": {
       "docstring": "",
       "members": [
@@ -4322,6 +4897,19 @@
         }
       ]
     },
+    "DMAIC_V3/tests/test_twelve_cluster_py39_annotations.py": {
+      "docstring": "Python 3.9 runtime annotation regression for the canonical orchestrator.",
+      "members": [
+        {
+          "name": "test_orchestrator_constructor_annotations_resolve_on_supported_python",
+          "doc": "Import-time and runtime evaluation must work on Python 3.9 through 3.12."
+        },
+        {
+          "name": "test_orchestrator_accepts_legacy_keb_alias_without_optional_type_error",
+          "doc": ""
+        }
+      ]
+    },
     "DMAIC_V3/tests/test_review_package_validation.py": {
       "docstring": "",
       "members": [
@@ -4335,6 +4923,14 @@
         },
         {
           "name": "test_w000_validator_tracks_required_bootstrap_domains",
+          "doc": ""
+        },
+        {
+          "name": "test_w000_externalized_supplier_a_intent_is_provenance_bound",
+          "doc": ""
+        },
+        {
+          "name": "test_w000_rejects_unregistered_externalized_artifact",
           "doc": ""
         }
       ]
@@ -4462,6 +5058,18 @@
           "doc": ""
         },
         {
+          "name": "test_ensure_contract_appends_current_version_to_history",
+          "doc": ""
+        },
+        {
+          "name": "test_contract_error_branches_are_fail_closed",
+          "doc": ""
+        },
+        {
+          "name": "test_downstream_consumer_registry_defaults_and_lookup",
+          "doc": ""
+        },
+        {
           "name": "run",
           "doc": ""
         }
@@ -4485,6 +5093,10 @@
         {
           "name": "TestPhase9DocumentationGeneration",
           "doc": ""
+        },
+        {
+          "name": "TestPhase9EvidenceBoundaries",
+          "doc": "Exercise the real skip, verification and report-generation branches."
         },
         {
           "name": "test_initialization",
@@ -4532,6 +5144,46 @@
         },
         {
           "name": "test_multiple_iterations_are_independent",
+          "doc": ""
+        },
+        {
+          "name": "test_both_minimum_phase_receipts_are_required",
+          "doc": ""
+        },
+        {
+          "name": "test_valid_minimum_receipts_are_accepted",
+          "doc": ""
+        },
+        {
+          "name": "test_open_bugs_block_publication",
+          "doc": ""
+        },
+        {
+          "name": "test_failed_quality_gate_blocks_books",
+          "doc": ""
+        },
+        {
+          "name": "test_passed_gates_and_closed_bugs_allow_publication",
+          "doc": ""
+        },
+        {
+          "name": "test_discrepancy_classifies_canonical_difference",
+          "doc": ""
+        },
+        {
+          "name": "test_phase_summary_reporting_paths",
+          "doc": ""
+        },
+        {
+          "name": "test_phase_lookup_has_explicit_unknown_fallback",
+          "doc": ""
+        },
+        {
+          "name": "test_actual_books_include_metrics_actions_and_adjustment_receipt",
+          "doc": ""
+        },
+        {
+          "name": "test_invalid_quality_json_cannot_be_reported_as_success",
           "doc": ""
         }
       ]
@@ -4622,6 +5274,47 @@
         },
         {
           "name": "list_tools",
+          "doc": ""
+        }
+      ]
+    },
+    "DMAIC_V3/tests/test_static_analysis_diagnostics.py": {
+      "docstring": "Bounded DMAIC static-scan diagnostics: negative and positive controls.",
+      "members": [
+        {
+          "name": "test_error_exposes_source_line_column_rule",
+          "doc": ""
+        },
+        {
+          "name": "test_windows_drive_path_is_preserved",
+          "doc": ""
+        },
+        {
+          "name": "test_unexecuted_or_unauthenticated_scanner_is_unknown",
+          "doc": ""
+        },
+        {
+          "name": "test_nonzero_exit_without_matching_findings_remains_red",
+          "doc": ""
+        },
+        {
+          "name": "test_zero_exit_is_only_scanner_receipt_not_deployment_admission",
+          "doc": ""
+        },
+        {
+          "name": "test_bounded_diagnostics_keep_actual_finding_denominator",
+          "doc": ""
+        },
+        {
+          "name": "test_no_raw_log_content_is_published",
+          "doc": ""
+        },
+        {
+          "name": "test_diagnostic_message_is_bounded",
+          "doc": ""
+        },
+        {
+          "name": "test_invalid_limits_are_rejected",
           "doc": ""
         }
       ]
@@ -5287,6 +5980,10 @@
           "doc": ""
         },
         {
+          "name": "test_save_cache_retries_transient_permission_error",
+          "doc": ""
+        },
+        {
           "name": "test_enable_idempotency_rebinds_global_configuration",
           "doc": ""
         },
@@ -5347,6 +6044,10 @@
           "doc": ""
         },
         {
+          "name": "flaky_replace",
+          "doc": ""
+        },
+        {
           "name": "__init__",
           "doc": ""
         },
@@ -5404,6 +6105,83 @@
     "DMAIC_V3/tests/__init__.py": {
       "docstring": "DMAIC V3 Test Suite\nVersion: 3.2.0",
       "members": []
+    },
+    "DMAIC_V3/tests/test_dow_ariana_integration_runtime_coverage.py": {
+      "docstring": "Behavioral and artifact coverage for the DOW/Ariana integration boundary.",
+      "members": [
+        {
+          "name": "_Bridge",
+          "doc": ""
+        },
+        {
+          "name": "integration",
+          "doc": ""
+        },
+        {
+          "name": "test_initialization_writes_real_configuration_and_agent_files",
+          "doc": ""
+        },
+        {
+          "name": "test_pipeline_success_writes_report_and_auditable_result",
+          "doc": ""
+        },
+        {
+          "name": "test_pipeline_records_failed_test_without_forging_success",
+          "doc": ""
+        },
+        {
+          "name": "test_pipeline_exception_is_persisted_as_failure",
+          "doc": ""
+        },
+        {
+          "name": "test_trace_collection_missing_valid_and_invalid",
+          "doc": ""
+        },
+        {
+          "name": "test_registry_orchestration_and_metrics_output",
+          "doc": ""
+        },
+        {
+          "name": "test_registry_output_fallback_list_and_transition_metadata",
+          "doc": ""
+        },
+        {
+          "name": "test_registry_missing_and_unexpected_entries_fail_to_match",
+          "doc": ""
+        },
+        {
+          "name": "test_primary_registry_wins_over_output_fallback",
+          "doc": ""
+        },
+        {
+          "name": "test_custom_report_destination_and_empty_trace_log",
+          "doc": ""
+        },
+        {
+          "name": "test_registry_dict_lookup_skips_unnamed_and_nonmatching_agents",
+          "doc": ""
+        },
+        {
+          "name": "test_trace_file_absent_does_not_create_fake_activity",
+          "doc": ""
+        },
+        {
+          "name": "test_orchestration_report_persists_real_metrics_not_worker_claims",
+          "doc": ""
+        },
+        {
+          "name": "__init__",
+          "doc": ""
+        },
+        {
+          "name": "run_tests_parallel",
+          "doc": ""
+        },
+        {
+          "name": "fail_phase",
+          "doc": ""
+        }
+      ]
     },
     "DMAIC_V3/tests/test_phase8_todo_management.py": {
       "docstring": "DMAIC V3 Test Suite - Phase 8: TODO Management Tests",
@@ -5548,6 +6326,75 @@
         }
       ]
     },
+    "DMAIC_V3/tests/test_handover_bridge_runtime_coverage.py": {
+      "docstring": "Root and behavioral coverage for the DMAIC V3 handover bridge.",
+      "members": [
+        {
+          "name": "bridge",
+          "doc": ""
+        },
+        {
+          "name": "DummyPhase",
+          "doc": ""
+        },
+        {
+          "name": "test_executor_records_phase_and_metrics_once",
+          "doc": ""
+        },
+        {
+          "name": "test_phase_cache_is_iteration_bound_and_resets_for_next_run",
+          "doc": ""
+        },
+        {
+          "name": "test_executor_records_failed_tuple_without_masking_status",
+          "doc": ""
+        },
+        {
+          "name": "test_plain_phase_result_records_success_and_empty_metrics",
+          "doc": ""
+        },
+        {
+          "name": "test_iteration_stop_rules_cover_empty_max_converged_and_continue",
+          "doc": ""
+        },
+        {
+          "name": "test_convergence_analysis_covers_boundaries_and_result_shape",
+          "doc": ""
+        },
+        {
+          "name": "test_phase4_opportunity_integration_parses_and_matches_recommendations",
+          "doc": ""
+        },
+        {
+          "name": "test_missing_phase4_opportunities_is_nonmutating",
+          "doc": ""
+        },
+        {
+          "name": "__init__",
+          "doc": ""
+        },
+        {
+          "name": "execute",
+          "doc": ""
+        },
+        {
+          "name": "FailedPhase",
+          "doc": ""
+        },
+        {
+          "name": "PlainPhase",
+          "doc": ""
+        },
+        {
+          "name": "execute",
+          "doc": ""
+        },
+        {
+          "name": "execute",
+          "doc": ""
+        }
+      ]
+    },
     "DMAIC_V3/tests/test_phase7_action_tracking.py": {
       "docstring": "DMAIC V3 Test Suite - Phase 7: Action Tracking Tests",
       "members": [
@@ -5621,6 +6468,63 @@
         },
         {
           "name": "test_with_prior_phase4_output",
+          "doc": ""
+        }
+      ]
+    },
+    "DMAIC_V3/tests/test_core_utils_runtime_coverage.py": {
+      "docstring": "Behavioral coverage for real DMAIC runtime utility branches (C2).",
+      "members": [
+        {
+          "name": "test_hashes_are_stable_across_mapping_order_and_file_chunks",
+          "doc": ""
+        },
+        {
+          "name": "test_ensure_directory_and_json_roundtrip",
+          "doc": ""
+        },
+        {
+          "name": "test_json_corruption_is_rejected_and_temp_file_is_cleaned",
+          "doc": ""
+        },
+        {
+          "name": "test_path_and_permissions_validation",
+          "doc": ""
+        },
+        {
+          "name": "test_recursive_sizes_and_zero_length_files",
+          "doc": ""
+        },
+        {
+          "name": "test_copy_file_and_archive_report_actual_disk_results",
+          "doc": ""
+        },
+        {
+          "name": "test_archive_failure_is_not_reported_as_success",
+          "doc": ""
+        },
+        {
+          "name": "test_durations_timestamps_and_invalid_parse",
+          "doc": ""
+        },
+        {
+          "name": "test_truncation_sanitization_and_relative_paths",
+          "doc": ""
+        },
+        {
+          "name": "test_file_logger_writes_evidence_to_selected_file",
+          "doc": ""
+        },
+        {
+          "name": "test_copy_existing_destination_creates_backup_before_replace",
+          "doc": ""
+        },
+        {
+          "name": "deny_move",
+          "doc": ""
+        },
+        {
+          "name": "reject_archive",
           "doc": ""
         }
       ]
@@ -6444,6 +7348,10 @@
           "doc": "Record metrics for a phase\n\nArgs:\n    phase_name: Name of the phase\n    metrics: Metrics dictionary"
         },
         {
+          "name": "record_phase",
+          "doc": "Record one phase execution in the bridge-local provenance ledger."
+        },
+        {
           "name": "get_provenance_trail",
           "doc": "Get the complete provenance trail"
         },
@@ -6633,6 +7541,10 @@
         {
           "name": "_decode_cache_value",
           "doc": "Recursively restore values encoded by _encode_cache_value."
+        },
+        {
+          "name": "_replace_with_retry",
+          "doc": "Atomically replace target, retrying transient Windows file-lock races."
         },
         {
           "name": "_save_cache",
@@ -7139,6 +8051,15 @@
         {
           "name": "get_execution_summary",
           "doc": "Get summary of execution state"
+        }
+      ]
+    },
+    "DMAIC_V3/core/static_analysis_diagnostics.py": {
+      "docstring": "Bounded, fail-closed scanner diagnostics for DMAIC deployment receipts.\n\nDiagnostic extraction does not change static-analysis admission decisions.\nIt preserves file/line/rule identities without embedding the full raw job log.",
+      "members": [
+        {
+          "name": "summarize_static_analysis",
+          "doc": "Extract bounded actionable line evidence without granting a green gate."
         }
       ]
     },

@@ -21,11 +21,11 @@ jobs:
           - {os: ubuntu-24.04, py: '3.12'}
           - {os: windows-2022, py: '3.11'}
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
         with:
           ref: ${{ github.event.pull_request.head.sha || github.sha }}
           persist-credentials: false
-      - uses: actions/setup-python@v5
+      - uses: actions/setup-python@v7
         with:
           python-version: ${{ matrix.py }}
       - name: Install fixed pytest and native conftest NumPy

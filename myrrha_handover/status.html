@@ -1,0 +1,133 @@
+<!doctype html>
+<html lang="en"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>MYRRHA · Status</title>
+<link rel="icon" href="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><text y='26' font-size='26'>✅</text></svg>">
+<link rel="stylesheet" href="assets/style.css">
+<script src="assets/common.js" defer></script>
+</head><body>
+<div class="container">
+<h1>Session Status</h1>
+<p class="muted">Live tracker for the WCS handover work-stream. Edit any cell — content is plain HTML.</p>
+
+<div class="card">
+  <h2 style="margin-top:0">Version control</h2>
+  <table><thead><tr><th>Version</th><th>Scope</th><th>State</th></tr></thead><tbody>
+    <tr><td><span class="tag ok">v0.4.7</span></td><td><strong>MT-9 + MT-10: Mobile &amp; Accessibility Sprint</strong> · Responsive charts (FAIL→PASS) · Mobile heatmap modal · ARIA labels (WCAG 2.1 AA) · PVPS flow accounting corrected (inclusive model) · 990 kW HP power · 1,290 kW total · Skip links · Colour contrast fixes · 97% test pass rate</td><td><span class="tag ok">released</span></td></tr>
+    <tr><td><span class="tag ok">v0.4.6</span></td><td><strong>MT-13: 400V Power Analysis Complete</strong> · Electrical CAPEX (€736k) · 2,000 kVA transformer · Harmonic filter + PFC · UPS backup · MT-11 RFQ ready · MT-12 vendor scout ready · 43 total views</td><td><span class="tag ok">released</span></td></tr>
+    <tr><td><span class="tag ok">v0.4.5</span></td><td>Kaeser corrected · BT artifact ranking · BT scatter · QA BT + collapsible · automated test suite · responsive review · British English · 4 new views · 40 total</td><td><span class="tag ok">released</span></td></tr>
+    <tr><td><span class="tag ok">v0.4.4</span></td><td>BT fix · interaction analysis · testing strategy · code quality · BT validation · DMAIC statistical · 5 new views</td><td><span class="tag ok">released</span></td></tr>
+    <tr><td><span class="tag b">v0.4.3</span></td><td>Bradley-Terry ranking · Kaeser deep-dive · QA interactive · artifact index · changelog · math proofs</td><td><span class="tag ok">released</span></td></tr>
+    <tr><td><span class="tag">v0.4.2</span></td><td>Severity rankings · vendor deep-scouts · artifact/diff/ci-cd/priority trackers</td><td><span class="tag ok">released</span></td></tr>
+    <tr><td><span class="tag">v0.4.1</span></td><td>DMAIC quality review · 7 new views · xref matrix · QA suite</td><td><span class="tag ok">released</span></td></tr>
+    <tr><td><span class="tag">v0.4</span></td><td>Slide editor · master sources · smart labels · 13 views</td><td><span class="tag ok">released</span></td></tr>
+    <tr><td><span class="tag">v0.3</span></td><td>Multi-file HTML ecosystem (8 pages)</td><td><span class="tag">superseded</span></td></tr>
+    <tr><td><span class="tag">v0.2</span></td><td>Single-file Playground artifact</td><td><span class="tag">superseded</span></td></tr>
+    <tr><td><span class="tag">v0.1</span></td><td>Markdown comparison note</td><td><span class="tag">archived</span></td></tr>
+  </tbody></table>
+</div>
+
+<div class="card">
+  <h2 style="margin-top:0">Progress</h2>
+  <div class="progress"><div style="width:96%"></div></div>
+  <p class="muted" style="font-size:12px;margin-top:6px">~96% towards engineering decision lock (v0.4.7) — MT-9 (accessibility) and MT-10 (mobile rendering) complete. PVPS flow accounting corrected to inclusive model across all views. Test pass rate: 97% (29/30). QA pass rate: 97.4% (37/38). Responsive pass rate: 95% (53/56). 43 total views + 2 new docs. Next: Vendor responses (target 2 weeks), COMBI validation, PVPS datasheets.</p>
+</div>
+
+<div class="grid2">
+<div class="card">
+  <h2 style="margin-top:0">✅ Completed</h2>
+  <ul>
+    <li>Datasheet extraction (FSD 575 + FSD 475)</li>
+    <li>Per-skid spec alignment table</li>
+    <li>3-skid totals derivation</li>
+    <li>Flow-target capacity matrix (7 totals × 3 cases)</li>
+    <li>Interactive Playground artifact (v0.2)</li>
+    <li>Multi-file handover ecosystem (v0.3)</li>
+    <li>Recommendations B1–B4 articulated</li>
+    <li><b>v0.4:</b> RCW HX sizing &amp; COMBI analysis (<a href="hx-sizing.html">hx-sizing.html</a>) — interactive Plotly with drop pins</li>
+    <li><b>v0.4:</b> Argument B6 (RCW + COMBI) added to reports</li>
+    <li><b>v0.4:</b> Utility math §6 (oil/He split, COMBI scaling, 304/344 calcs)</li>
+    <li><b>v0.4:</b> Slides 8–10 (RCW HX, COMBI, utilities comparison)</li>
+    <li><b>v0.4.2:</b> Enhanced action-tracker with severity rankings (1–5 scale)</li>
+    <li><b>v0.4.2:</b> Vendor deep-scout tasks: MT-11 (Kaeser HCC), MT-12 (PVPS), MT-13 (400V power)</li>
+    <li><b>v0.4.2:</b> Artifact tracker — 35 artifacts with per-artifact DMAIC phases</li>
+    <li><b>v0.4.2:</b> Diff tracker — version comparison with impact analysis</li>
+    <li><b>v0.4.2:</b> CI/CD pipeline — GitHub Actions + Pages deployment strategy</li>
+    <li><b>v0.4.2:</b> Weighted priority dashboard — scoring formula + execution strategy</li>
+    <li><b>v0.4.6:</b> <strong>MT-13: 400V Power Analysis Complete</strong> — <a href="mt-13-report.html">mt-13-report.html</a> (full electrical CAPEX, transformer, harmonic/PFC, UPS)</li>
+    <li><b>v0.4.6:</b> <strong>MT-11: Kaeser RFQ Package</strong> — <a href="mt-11-kaeser-technical-requirements.html">mt-11-kaeser-technical-requirements.html</a> (400V specs, vendor checklist, electrical constraints)</li>
+    <li><b>v0.4.6:</b> <strong>MT-12: PVPS Vendor Scout</strong> — <a href="mt-12-pvps-technical-requirements.html">mt-12-pvps-technical-requirements.html</a> (5 candidate vendors, N+1 redundancy, specifications)</li>
+    <li><b>v0.4.6:</b> Updated vendor-kaeser.html with electrical requirements section (critical 400V constraint, cost impact)</li>
+    <li><b>v0.4.6:</b> Updated action-tracker with MT-13 completion and MT-11/MT-12 unblocked status</li>
+    <li><b>v0.4.7:</b> <strong>MT-10: Mobile Rendering Fixes</strong> — Responsive Plotly charts, heatmap zoom modal, sidebar/table/chart mobile fixes</li>
+    <li><b>v0.4.7:</b> <strong>MT-9: Accessibility Improvements</strong> — ARIA labels on 6 views, skip links, colour contrast (WCAG 2.1 AA), keyboard navigation</li>
+    <li><b>v0.4.7:</b> <strong>PVPS Flow Accounting Corrected</strong> — Inclusive model (not additive) across slides.html, reports.html, tables.html, index.html</li>
+    <li><b>v0.4.7:</b> Corrected Kaeser HP power: 990 kW (was 945 kW). Total electrical: 1,290 kW</li>
+    <li><b>v0.4.7:</b> Test pass rate: 83% → 97%. QA pass rate: 92.1% → 97.4%. Responsive: 86% → 95%</li>
+  </ul>
+</div>
+<div class="card">
+  <h2 style="margin-top:0">📝 TODO</h2>
+  <ul>
+    <li>Finalize RCW oil-precool sizing (vendor curve pending)</li>
+    <li>Confirm FSD 575 operability above 72 Hz</li>
+    <li>Confirm FSD 475 SFC up to 72 Hz</li>
+    <li>HP4 (N+1) layout drawing</li>
+    <li>PCW / RCW header hydraulic check</li>
+    <li>VFD harmonics study</li>
+    <li>LCC / PVPS detail (50 g/s, 2×5 N+1) — <em>v0.4 baseline added</em></li>
+    <li>Obtain vendor datasheets for PVPS units</li>
+    <li>Confirm suction pressure from coldbox QRB interface</li>
+    <li>Validate 50 % isothermal efficiency assumption</li>
+    <li>Define VFD turndown characteristics</li>
+    <li>Finalize Config30 and Config24 operational parameters</li>
+    <li>Specify C30(00,10) and C24(00,10) static/VFD splits</li>
+    <li>Acoustic enclosure go/no-go</li>
+    <li>Spare-part &amp; oil-change strategy</li>
+    <li><b>COMBI:</b> vendor confirmation of fixed-speed @ 64 Hz mechanical option (gearbox vs locked-VFD)</li>
+    <li><b>COMBI:</b> VFD lower-limit confirmation (50 Hz floor assumed) and recycle/bypass strategy below floor</li>
+    <li><b>RCW HX:</b> Kaeser oil-cooler thermal curve (oil ṁ, c_p, fouling factor)</li>
+    <li><b>RCW HX:</b> standby-HX manifold P&amp;ID and MOV interlock matrix</li>
+    <li><b>RCW HX:</b> 84 K → 300 K helium boundary — confirm with QRB warm-end interface</li>
+    <li><b>Config24/344:</b> live VFD-map confirmation in 55–65 Hz band with vendor</li>
+  </ul>
+</div>
+</div>
+
+<div class="card">
+  <h2 style="margin-top:0">🌀 Loose ends &amp; open questions</h2>
+  <ul>
+    <li>LKT plant utility allowance lists 60 m³/h CW total (3×20) vs 15.5 m³/h on machine sheet — keep both as <em>equipment</em> vs <em>battery-limit</em>.</li>
+    <li>RCW max 85 °C ceiling vs 30 °C inlet → ΔT 25 K design, but maximum permissible return needs site-loop confirmation.</li>
+    <li>Is FSD 475 SFC characterized between 62 Hz and 72 Hz? Vendor data gap.</li>
+    <li>Does QRB cold-side actually demand 350 g/s nominal, or is 304–336 g/s the realistic operating envelope?</li>
+  </ul>
+</div>
+
+<div class="card">
+  <h2 style="margin-top:0">✨ Possible enhancements</h2>
+  <ul>
+    <li>PFD-style diagram embedded in slides</li>
+    <li>Sankey of utility flows at 350 g/s baseline</li>
+    <li>3D layout sketch of HP1..HP4</li>
+    <li>Auto-generated change feed from a JSON log</li>
+    <li>Integration of Kaeser ESS curves once available</li>
+  </ul>
+</div>
+
+<div class="card">
+  <h2 style="margin-top:0">Summary tuple</h2>
+  <table><tbody>
+    <tr><th>Intent</th><td>Hand off MYRRHA WCS engineering basis as a navigable HTML package.</td></tr>
+    <tr><th>Actions</th><td>Extract datasheets · build capacity matrix · derive utilities · author 8-file site.</td></tr>
+    <tr><th>Progress</th><td>v0.3 released · ~72 % to lock.</td></tr>
+    <tr><th>Key artifacts</th><td>index, slides, reports, tables, graphs, status, truth, utilities (HTML)</td></tr>
+    <tr><th>Links</th><td><a href="index.html">Hub</a> · <a href="truth.html">Truth</a> · <a href="utilities.html">Utilities</a></td></tr>
+    <tr><th>Interactions</th><td>theme/font selectors · slide deck nav · table copy/sort/filter · graph zoom/export</td></tr>
+    <tr><th>Methods</th><td>parallel doc-read → sequential derivation → iterative target sweep → closure</td></tr>
+    <tr><th>Workflow</th><td>md → single-file artifact → multi-file ecosystem → freeze → vendor loop</td></tr>
+  </tbody></table>
+</div>
+
+</div>
+</body></html>

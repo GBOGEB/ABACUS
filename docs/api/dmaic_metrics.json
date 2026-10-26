@@ -1,30 +1,30 @@
 {
-  "timestamp": "2026-10-05T09:42:33.599455Z",
+  "timestamp": "2026-10-25T23:40:18.321648Z",
   "trigger": "push",
   "ref": "main",
-  "sha": "fa9089ba84da",
-  "quality_score": 81.0,
-  "total_commits": 4336,
-  "recent_commits": 1767,
-  "python_files": 786,
-  "test_files": 260,
-  "total_loc": 165766,
-  "html_docs": 37,
-  "markdown_docs": 880,
-  "workflows": 151,
+  "sha": "6ebebbc2aee8",
+  "quality_score": 80.0,
+  "total_commits": 7647,
+  "recent_commits": 4195,
+  "python_files": 1405,
+  "test_files": 650,
+  "total_loc": 279158,
+  "html_docs": 43,
+  "markdown_docs": 1030,
+  "workflows": 217,
   "phase_scores": {
     "define": {
-      "files": 22,
+      "files": 23,
       "score": 100,
       "weight": 20
     },
     "measure": {
-      "files": 67,
+      "files": 83,
       "score": 100,
       "weight": 20
     },
     "analyze": {
-      "files": 180,
+      "files": 197,
       "score": 100,
       "weight": 20
     },
@@ -34,8 +34,8 @@
       "weight": 20
     },
     "control": {
-      "files": 2,
-      "score": 10,
+      "files": 1,
+      "score": 5,
       "weight": 20
     }
   },

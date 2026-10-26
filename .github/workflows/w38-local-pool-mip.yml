@@ -27,12 +27,12 @@ jobs:
           - {os: windows-2022, python: '3.11'}
     steps:
       - name: Checkout exact W38 source without stored credentials
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
         with:
           ref: ${{ github.event.pull_request.head.sha || github.sha }}
           persist-credentials: false
       - name: Set up native interpreter
-        uses: actions/setup-python@v5
+        uses: actions/setup-python@v7
         with:
           python-version: ${{ matrix.python }}
       - name: Verify HEAD and run falsification controls
@@ -55,7 +55,7 @@ jobs:
           python -m tools.recovery.w38_local_pool_benchmark --out w38_receipts --head "$SOURCE_SHA" --run-id "$RUN_ID" --attempt "$ATTEMPT" --verify-only
       - name: Retain local-only MIP receipt and raw trial denominators
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: w38-local-pool-${{ matrix.os }}-py${{ matrix.python }}-${{ github.run_id }}-a${{ github.run_attempt }}
           path: w38_receipts/

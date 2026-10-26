@@ -1,0 +1,214 @@
+# ============================================================================
+# LINEAGE_SCHEMA.yaml — Immutable Traceability Schema
+# GBOGEB/ABACUS A6 Governance Engine
+# Version: 1.0.0 | YAML 1.2 Strict
+# ============================================================================
+#
+# PURPOSE: Defines the schema for lineage tracking records that connect
+# every generated output to its canonical source, ensuring complete
+# traceability from Input_Master/ assets through to final publications.
+#
+# RULE REFS: RULE-110 through RULE-123 (see RENDER_RULES.md)
+# ============================================================================
+
+schema_version: "1.0.0"
+yaml_version: "1.2"
+
+# ── Core Lineage Record ──
+lineage_record:
+  description: >
+    A lineage record captures the full provenance of a generated output.
+    Records are append-only; existing entries are never modified.
+  
+  required_fields:
+    slide_id:
+      type: string
+      pattern: "^[a-zA-Z0-9]+-[a-zA-Z0-9]+-[0-9]+$"
+      description: >
+        Deterministic slide identifier following the format:
+        {deck}-{section}-{sequence}. Example: "arch-overview-001".
+        Immutable once assigned (RULE-110, RULE-111).
+    
+    derived_from:
+      type: string
+      description: >
+        Path to the canonical source file in GBOGEB/CODEX that this
+        output was generated from. Must be a valid repository path.
+      example: "themes/engineering/slides/architecture.yaml"
+    
+    generated_outputs:
+      type: array
+      items:
+        type: object
+        properties:
+          format:
+            type: string
+            enum: ["html", "pdf", "pptx", "png", "svg"]
+          path:
+            type: string
+          sha256:
+            type: string
+            pattern: "^[a-f0-9]{64}$"
+          size_bytes:
+            type: integer
+      description: >
+        List of all output artifacts generated from this source.
+        Each output includes its format, path, SHA256 hash, and size.
+    
+    render_commit:
+      type: string
+      pattern: "^[a-f0-9]{40}$"
+      description: >
+        The full git commit SHA of the ABACUS engine at the time
+        of rendering. Enables exact reproduction of the build.
+    
+    generated_at:
+      type: string
+      format: "iso-8601"
+      description: >
+        ISO 8601 timestamp of when the output was generated.
+        Example: "2026-05-20T10:30:00Z"
+
+  optional_fields:
+    source_sha256:
+      type: string
+      pattern: "^[a-f0-9]{64}$"
+      description: "SHA256 hash of the source file at time of processing."
+    
+    engine_version:
+      type: string
+      description: "Semantic version of the ABACUS engine used."
+      example: "1.0.0"
+    
+    stakeholder_routing:
+      type: array
+      items:
+        type: string
+        enum: ["KEB", "DOW", "ALL"]
+      description: "Distribution targets for this output (RULE-150)."
+    
+    parent_record:
+      type: string
+      description: >
+        Reference to a parent lineage record ID if this output
+        was derived from another generated output (chain tracking).
+    
+    validation_status:
+      type: object
+      properties:
+        linter_pass:
+          type: boolean
+        contrast_pass:
+          type: boolean
+        slide_id_valid:
+          type: boolean
+        validated_at:
+          type: string
+          format: "iso-8601"
+
+# ── Asset Ingestion Record (Input_Master/) ──
+asset_record:
+  description: >
+    Records created by the verification hook when binary assets
+    are dropped into Input_Master/. Stored in .mock sidecar files.
+  
+  required_fields:
+    filename:
+      type: string
+      description: "Original filename of the ingested asset."
+    
+    sha256:
+      type: string
+      pattern: "^[a-f0-9]{64}$"
+      description: "SHA256 hash of the binary asset."
+    
+    ingested_at:
+      type: string
+      format: "iso-8601"
+      description: "Timestamp of when the asset was ingested."
+    
+    file_size:
+      type: integer
+      description: "Size of the asset in bytes."
+    
+    mock_file:
+      type: string
+      description: "Path to the .mock sidecar file."
+
+  optional_fields:
+    mime_type:
+      type: string
+      description: "MIME type of the asset."
+    
+    source_system:
+      type: string
+      description: "Origin system of the asset."
+    
+    processing_status:
+      type: string
+      enum: ["pending", "processed", "verified", "rejected"]
+    
+    notes:
+      type: string
+      description: "Human-readable notes about the asset."
+
+# ── Manifest Schema (_data/lineage_manifest.json) ──
+manifest:
+  description: >
+    The lineage_manifest.json is the central registry of all
+    processed assets and generated outputs. Updated by the
+    verification hook and rendering engine.
+  
+  structure:
+    version:
+      type: string
+      description: "Schema version of the manifest."
+    
+    last_updated:
+      type: string
+      format: "iso-8601"
+    
+    assets:
+      type: array
+      items:
+        ref: "#/asset_record"
+    
+    lineage:
+      type: array
+      items:
+        ref: "#/lineage_record"
+
+# ── Validation Rules ──
+validation:
+  rules:
+    - id: "LIN-001"
+      description: "Every lineage record must have all required fields."
+      severity: "ERROR"
+    
+    - id: "LIN-002"
+      description: "slide_id must match the pattern {deck}-{section}-{sequence}."
+      severity: "ERROR"
+    
+    - id: "LIN-003"
+      description: "render_commit must be a valid 40-character hex string."
+      severity: "ERROR"
+    
+    - id: "LIN-004"
+      description: "generated_at must be a valid ISO 8601 timestamp."
+      severity: "ERROR"
+    
+    - id: "LIN-005"
+      description: "SHA256 hashes must be 64-character lowercase hex strings."
+      severity: "ERROR"
+    
+    - id: "LIN-006"
+      description: "derived_from path must exist in the CODEX repository."
+      severity: "WARNING"
+    
+    - id: "LIN-007"
+      description: "Duplicate slide_ids within the same manifest are prohibited."
+      severity: "ERROR"
+    
+    - id: "LIN-008"
+      description: "Asset records must have corresponding .mock sidecar files."
+      severity: "ERROR"

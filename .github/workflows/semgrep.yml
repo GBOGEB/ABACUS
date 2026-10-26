@@ -56,7 +56,7 @@ jobs:
           SEMGREP_APP_TOKEN: ${{ secrets.SEMGREP_APP_TOKEN }}
         continue-on-error: true
       - name: Upload SARIF to GitHub Security tab
-        uses: github/codeql-action/upload-sarif@v4.39.0
+        uses: github/codeql-action/upload-sarif@v4.39.1
         if: always() && hashFiles('semgrep.sarif') != ''
         with:
           sarif_file: semgrep.sarif
@@ -78,7 +78,7 @@ jobs:
           if-no-files-found: error
       - name: Upload YAML findings to GitHub Security tab
         if: always() && hashFiles('semgrep-yaml.sarif') != ''
-        uses: github/codeql-action/upload-sarif@v4.39.0
+        uses: github/codeql-action/upload-sarif@v4.39.1
         with:
           sarif_file: semgrep-yaml.sarif
           category: semgrep-yaml-workflows
