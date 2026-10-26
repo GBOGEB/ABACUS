@@ -81,7 +81,7 @@
     "csv": "6.3.11",
     "date-fns": "4.4.0",
     "dayjs": "1.11.13",
-    "dotenv": "16.5.0",
+    "dotenv": "18.0.9",
     "embla-carousel-react": "8.6.0",
     "formik": "2.4.5",
     "framer-motion": "14.3.0",
