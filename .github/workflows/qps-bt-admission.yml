@@ -4,7 +4,9 @@ on:
     paths:
       - 'qps_slide_reviewer/lib/analytics.ts'
       - 'qps_slide_reviewer/lib/bt_admission.ts'
+      - 'qps_slide_reviewer/lib/bt_observed.ts'
       - 'qps_slide_reviewer/tests/bt_admission.test.ts'
+      - 'qps_slide_reviewer/tests/bt_observed.test.ts'
       - '.github/workflows/qps-bt-admission.yml'
   workflow_dispatch:
 permissions:
@@ -19,4 +21,5 @@ jobs:
           node-version: '24'
       - name: Fail-closed preflight negatives (Node TS stripping)
         run: |
-          node --test qps_slide_reviewer/tests/bt_admission.test.ts
+          node --test qps_slide_reviewer/tests/bt_admission.test.ts \\
+            qps_slide_reviewer/tests/bt_observed.test.ts
