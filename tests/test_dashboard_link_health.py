@@ -25,7 +25,8 @@ class DashboardHrefRegression(unittest.TestCase):
     def test_health_check_checks_real_decoded_target_before_broken(self):
         src = WORKFLOW.read_text(encoding="utf-8")
         self.assertIn('decoded_target="${target//%20/ }"', src)
-        self.assertIn('if [ "$decoded_target" != "$target" ] && [ -e "$decoded_target" ]; then', src)
+        self.assertIn('if [ "$decoded_target" != "$target" ] &&', src)
+        self.assertIn('[ -e "$decoded_target" ]; then', src)
         self.assertIn('echo "🔗 Broken:', src)
         self.assertIn('BROKEN=$((BROKEN+1))', src)
 
