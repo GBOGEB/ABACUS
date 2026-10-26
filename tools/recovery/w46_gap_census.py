@@ -54,7 +54,9 @@ def rollup(report, *, head_sha, expected_totals=None, max_lanes=6):
                                       zero_covered_paths=0))
     for path, obj in files.items():
         need(isinstance(path, str) and path.endswith('.py') and '\\' not in path
-             and '..' not in path and bool(path), 'unsafe or foreign source path')
+             and bool(path) and not path.startswith('/') and ':' not in path
+             and all(part not in ('', '.', '..') for part in path.split('/')),
+             'unsafe or foreign source path')
         need(isinstance(obj, dict) and isinstance(obj.get('summary'), dict),
              'missing file summary')
         row = obj['summary']
@@ -90,6 +92,17 @@ def rollup(report, *, head_sha, expected_totals=None, max_lanes=6):
         need(totals == {k: expected_totals[k] for k in _COUNTERS},
              'scope / full measurement denominator mismatch')
     cohort.sort(key=lambda x: (-x['missing'], x['path']))
+    zero_first = sorted((item for item in cohort if item['eligible'] > 0
+                         and item['covered'] == 0),
+                        key=lambda item: (-item['missing'], item['path']))
+    zero_picks = []
+    zero_owners = set()
+    for item in zero_first:
+        if item['owner_candidate'] not in zero_owners:
+            zero_picks.append(item)
+            zero_owners.add(item['owner_candidate'])
+        if len(zero_picks) >= max_lanes:
+            break
     owner_picks = []
     owned = set()
     for x in cohort:
@@ -114,6 +127,9 @@ def rollup(report, *, head_sha, expected_totals=None, max_lanes=6):
         'top_paths': cohort[:40],
         'owner_families': dict(sorted(groups.items(), key=lambda kv: -kv[1]['missing'])),
         'proposed_source_disjoint_lanes': owner_picks,
+        'zero_covered_source_paths': [item['path'] for item in zero_first],
+        'zero_first_disjoint_recovery_candidates': zero_picks,
+        'measured_zero_coverage_reduction': None,
         'source_overlap_in_proposals': False,
         'native_workflow_dispatches': 0,
         'predicted_gain': None,
