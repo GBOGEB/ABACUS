@@ -29,7 +29,7 @@ class DashboardHrefRegression(unittest.TestCase):
         self.assertIn('if [ "$decoded_target" != "$target" ] &&', src)
         self.assertIn('[ -e "$decoded_target" ]; then', src)
         self.assertIn('echo "🔗 Broken:', src)
-        self.assertIn('BROKEN=$((BROKEN+1))', src)
+        self.assertIn("BROKEN=$((BROKEN+1))", src)
 
     def test_missing_encoded_link_remains_broken(self):
         href = "../../not%20an%20existing%20file.md"
