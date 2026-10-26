@@ -41,6 +41,27 @@ into CODEX and reference it from spokes** — not collapse the three repos toget
 
 ---
 
+## 1.1 Wave execution status (concurrent PRs — this pass)
+
+The P1–P5 actions were executed as three disjoint, concurrent waves (one PR per repo). All
+evidence below was produced by commands run locally in this pass. **No PR is merged; no branch
+deleted; all changes are additive.**
+
+| Wave | Repo | PR | Scope | Verified evidence |
+|------|------|----|-------|-------------------|
+| **W1** | CODEX | [#1204](https://github.com/GBOGEB/CODEX/pull/1204) | P1 — canonicalize `pca_engine`; parity harness vs ABACUS `stats.ts`; `CANONICAL_API.md`; README pointer | `pytest pca_engine/` → **20 passed** (16 + 4 new parity tests) |
+| **W2** | ABACUS | [#2473](https://github.com/GBOGEB/ABACUS/pull/2473) | P1/P4/P5 — fix `validate_tuple_metadata.py` import path; repair docs-link validator + broken links; `STATS_CONVERGENCE.md`; `PRUNE_MANIFEST.md`; convergence notice on `stats.ts` (maths unchanged) | `validate_tuple_metadata.py --help` rc=0; docs-link validator passes |
+| **W3** | cryoplant-project | [#2137](https://github.com/GBOGEB/cryoplant-project/pull/2137) | P3 — fix live YAML; guard import-time `sys.exit`; quarantine recovered/archive subtrees; `docs/CI_HEALTH.md` | live YAML **0 failures** (was 26); `pytest -m smoke` → **59 passed, 9 skipped** (collection crash gone) |
+
+> **Honest correction to P3:** the estimate above says "31 live YAML parse errors". The
+> tool-verified **live** count (excluding the quarantined recovered-history archive) was **26**,
+> all now fixed. **P1 parity verdict (W1):** CODEX `pca_engine` and ABACUS `stats.ts` implement the
+> same Hunter-2004 MM Bradley-Terry update; the two intentional divergences (ABACUS `prior=0.1`
+> regularization; geometric- vs arithmetic-mean normalization) are asserted in the parity tests —
+> with the prior removed, win-probabilities match to 1e-6.
+
+---
+
 ## 2. Per-repo inventory
 
 | Dimension | ABACUS | CODEX | cryoplant-project |
