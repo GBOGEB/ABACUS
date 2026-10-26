@@ -1,6 +1,7 @@
 """Dashboard-health first-red regression: percent-encoded links must resolve, not waive."""
-from pathlib import Path
+
 import unittest
+from pathlib import Path
 
 
 ROOT = Path(__file__).resolve().parents[1]
