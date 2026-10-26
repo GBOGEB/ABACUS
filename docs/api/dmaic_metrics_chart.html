@@ -25,10 +25,10 @@
     <span class="qs">80.0/100</span>
   </h1>
   <div class="sub">
-    SHA: d8aa6c5d10d2 ·
-    Generated: 2026-10-26 05:26:09 UTC ·
-    Commits (30d): 4217 /
-    7669 total
+    SHA: 5485dfa4fe3b ·
+    Generated: 2026-10-26 14:08:33 UTC ·
+    Commits (30d): 4205 /
+    7680 total
   </div>
 </div>
 <div class="charts">
@@ -40,7 +40,7 @@
 <script>
 const phases   = ["Define", "Measure", "Analyze", "Improve", "Control"];
 const scores   = [100, 100, 100, 45, 5];
-const files    = [23, 83, 197, 9, 1];
+const files    = [23, 84, 198, 9, 1];
 const radarScores = [...scores, scores[0]];
 const radarLabels = [...phases, phases[0]];
 
@@ -80,14 +80,14 @@ Plotly.newPlot('coverage', [{
 }, {responsive:true});
 
 const meta = {
-  'Total commits':    7669,
-  'Recent (30d)':     4217,
-  'Python files':     1410,
-  'Test files':       650,
+  'Total commits':    7680,
+  'Recent (30d)':     4205,
+  'Python files':     1411,
+  'Test files':       651,
   'HTML docs':        45,
-  'Markdown docs':    1037,
-  'Workflows':        217,
-  'Total LOC':        280133,
+  'Markdown docs':    1038,
+  'Workflows':        218,
+  'Total LOC':        280194,
 };
 Plotly.newPlot('activity', [{
   type:'bar', x:Object.keys(meta), y:Object.values(meta),
