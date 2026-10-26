@@ -218,9 +218,9 @@ Scenario: LOOP_100 (ṁ_in = 100 g/s), no suction, cold line T = 4 K
 
 ### 4.1  Pressure rise analysis
 
-![Fig 1](figures/fig1_pressure_rise_cold.png)
+> _Fig 1 (pending): pressure-rise analysis, cold section — figure asset not yet generated/committed._
 
-![Fig 2](figures/fig2_t_available_heatmap.png)
+> _Fig 2 (pending): T-available heatmap — figure asset not yet generated/committed._
 
 **Summary table — LOOP_100 (100 g/s inflow):**
 
@@ -237,7 +237,7 @@ running **before** the LOOP event, not started in response to it.
 
 ### 4.2  LOOP boil-off transient
 
-![Fig 3](figures/fig3_boiloff_transient.png)
+> _Fig 3 (pending): LOOP boil-off transient — figure asset not yet generated/committed._
 
 | Result | Value | D2.1 target |
 |--------|-------|-------------|
@@ -254,9 +254,9 @@ flow (88.7 g/s) stays below both 100 g/s and 112 g/s lines.
 
 ### 4.3  Heat loads
 
-![Fig 4](figures/fig4_heat_loads_vs_T_TS.png)
+> _Fig 4 (pending): heat loads vs T_TS — figure asset not yet generated/committed._
 
-![Fig 5](figures/fig5_nist_conductivity.png)
+> _Fig 5 (pending): NIST conductivity — figure asset not yet generated/committed._
 
 ---
 

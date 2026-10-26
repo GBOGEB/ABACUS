@@ -218,6 +218,8 @@ git rebase origin/main
 
 ## 8. See also
 
+- `docs/STATS_CONVERGENCE.md` — **P1** ABACUS→CODEX `pca_engine` stats convergence + verified parity (CODEX PR #1204).
+- `docs/PRUNE_MANIFEST.md` — **P4/P7** list-only snapshot & branch prune candidates (nothing deleted).
 - `docs/BRIDGES_AND_CONNECTIONS.md` — intra-ABACUS tuple ↔ handoff ↔ workflow bridges.
 - `docs/CODEX_ABACUS_FEDERATION_MATRIX.md` — ABACUS↔CODEX federation matrix.
 - `docs/progress_tracker.html` — interactive tracker (now with a cross-repo federation section).

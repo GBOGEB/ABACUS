@@ -8,7 +8,13 @@ from pathlib import Path
 import sys
 
 ROOT_DIR = Path(__file__).resolve().parents[1]
-sys.path.insert(0, str(ROOT_DIR / "src"))
+# src/ holds the `dmaic` package; ROOT_DIR itself holds the top-level `DMAIC_V3`
+# package that `dmaic.config` imports. Both must be importable when this script is
+# run from the repo root (previously only `src` was added -> ModuleNotFoundError:
+# No module named 'DMAIC_V3').
+for _path in (str(ROOT_DIR), str(ROOT_DIR / "src")):
+    if _path not in sys.path:
+        sys.path.insert(0, _path)
 
 from dmaic.tuple_metadata import validate_tracker_payload  # noqa: E402
 

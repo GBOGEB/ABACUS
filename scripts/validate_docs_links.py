@@ -35,6 +35,23 @@ def _is_external(link: str) -> bool:
     )
 
 
+def _is_dynamic(link: str) -> bool:
+    """Skip hrefs/srcs that are constructed at runtime in JavaScript.
+
+    Interactive dashboards build links like ``href="'+url+'"`` or ``href=`${u}` ``.
+    These are not static file references and must not be treated as broken links.
+    A real on-disk path never contains JS string-concatenation markers or a bare
+    leading/embedded quote.
+    """
+    n = link.strip()
+    if not n:
+        return True
+    dynamic_markers = ("'+", "+'", '"+', '+"', "${", "`")
+    if any(marker in n for marker in dynamic_markers):
+        return True
+    return n[0] in "'\""
+
+
 def _normalize_target(base_file: Path, link: str) -> Path:
     without_anchor = link.split("#", 1)[0]
     target = Path(
@@ -62,7 +79,7 @@ def main() -> int:
         if not file_path.is_file():
             continue
         for link in _collect_links(file_path):
-            if _is_external(link):
+            if _is_external(link) or _is_dynamic(link):
                 continue
             resolved = _normalize_target(file_path, link)
             if not resolved.exists():
