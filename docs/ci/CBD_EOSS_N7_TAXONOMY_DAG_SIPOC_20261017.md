@@ -12,9 +12,12 @@ Native 3.12 collection failed at the EOSS test module import, reproduced and rep
 DAG edges indicate real process sequence or dashed observational relationships. SIPOC feedback is a source-owner request and may not mutate canonical evidence. Clock differences are computed only when native job timestamps share an identity; a skipped/inverted or absent clock must be censored. No cache savings were measured.
 
 ## Local / repo / federation glossary
-**LOCAL:** import isolation, pytest/coverage.py, monotonic build clocks, development wheelhouse, pre-push.  
-**REPO:** head SHA, run/attempt/job/step, terminal source proof, B0 canonical coverage, documented first-red.  
-**FEDERATION:** cross-repo owner map, DAG, SIPOC, REX, Mission Control, independent admission.
+**LOCAL:** import isolation, pytest/coverage.py, monotonic build clocks,
+development wheelhouse, pre-push.  
+**REPO:** head SHA, run/attempt/job/step, terminal source proof, B0 canonical
+coverage, documented first-red.  
+**FEDERATION:** cross-repo owner map, DAG, SIPOC, REX, Mission Control,
+independent admission.
 
 **Wave:** bounded source-engineering change plus test and evidence receipt. **Pulse:** one observation/validation cycle inside a wave. **Plateau:** unchanged matched coverage across consecutive comparisons; not permission to merge. **Acceleration:** a qualified second difference or matched end-to-end runtime improvement. **Causal root:** only authorized independently attributable confirmed reason, not a repeated step label. **Enumerated / unenumerated:** distinct inventory statuses.
 
