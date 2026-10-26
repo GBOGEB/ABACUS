@@ -234,3 +234,81 @@ def test_aligner_io_is_bound_to_temp_workspace(aligner, tmp_path):
     assert aligner.docs_dir == tmp_path
     assert not (tmp_path / "master_document_system").exists()
     assert "DMAIC_V3" in aligner.version_info["code_links"]["metrics"]
+
+
+
+# W77 N+8 deeper same-owner controls. Historical zero status is not a
+# current-main coverage measurement; these tests seek uncovered branches.
+def test_yaml_action_and_sprint_partial_gaps_are_independently_counted(recent):
+    info = {"path": "recent/partial.yaml", "name": "partial.yaml"}
+    recent.check_yaml_gaps(
+        {"actions": {"builder": {}}, "sprints": {"sprint0": {}}}, info
+    )
+    gaps = [row["gap"] for row in recent.results["gaps"]["yaml"]]
+    assert len(gaps) == 5
+    assert sum("Action 'builder'" in x for x in gaps) == 3
+    assert sum("Sprint 'sprint0'" in x for x in gaps) == 2
+
+
+def test_mixed_phase_iteration_json_missing_both_contracts(recent):
+    recent.check_json_gaps(
+        {}, {"name": "phase_iteration.json", "path": "recent/phase_iteration.json"}
+    )
+    gaps = [row["gap"] for row in recent.results["gaps"]["json"]]
+    assert len(gaps) == 5
+    assert "Missing 'metadata' section" in gaps
+    assert "Missing 'convergence_metrics'" in gaps
+
+
+def test_complete_phase_iteration_json_has_no_gaps(recent, tmp_path):
+    _file(
+        tmp_path, "phase_iteration.json",
+        '{"metadata":{},"timestamp":"2026-10-26T00:00:00Z",'
+        '"version":"v1","iteration_number":1,"convergence_metrics":{}}',
+    )
+    recent.scan_directories(["recent"])
+    assert len(recent.results["json_files"]) == 1
+    assert recent.results["gaps"]["json"] == []
+    assert recent.results["json_files"][0]["has_metadata"] is True
+
+
+def test_invalid_encoding_is_an_attributed_error_per_format(recent, tmp_path):
+    for name in ("invalid.yaml", "invalid.json", "invalid.md"):
+        path = tmp_path / "recent" / name
+        path.parent.mkdir(parents=True, exist_ok=True)
+        path.write_bytes(b"\xff")
+    recent.scan_directories(["recent"])
+    recent.calculate_statistics()
+    assert recent.results["statistics"]["files_with_errors"] == 3
+    for key in ("yaml_files", "json_files", "markdown_files"):
+        assert len(recent.results[key]) == 1
+        assert "error" in recent.results[key][0]
+    report = tmp_path / "errors.md"
+    recent.generate_report(report)
+    assert report.is_file()
+    assert "Error:" in report.read_text(encoding="utf-8")
+    emitted = json.loads(report.with_suffix(".json").read_text())
+    assert emitted["statistics"]["files_with_errors"] == 3
+
+
+def test_top30_is_bounded_without_losing_total_denominator(recent, tmp_path):
+    for i in range(35):
+        _file(tmp_path, f"file_{i:02}.json", '{"payload":"' + "x" * i + '"}')
+    recent.scan_directories(["recent"])
+    recent.calculate_statistics()
+    assert recent.results["statistics"]["total_files"] == 35
+    assert len(recent.results["top_30_files"]) == 30
+    sizes = [row["size"] for row in recent.results["top_30_files"]]
+    assert sizes == sorted(sizes, reverse=True)
+    assert sizes[0] > sizes[-1]
+
+
+def test_empty_report_does_not_fabricate_observations(recent, tmp_path):
+    recent.scan_directories(["missing"])
+    target = tmp_path / "empty.md"
+    recent.generate_report(target)
+    payload = json.loads(target.with_suffix(".json").read_text())
+    assert payload["statistics"]["total_files"] == 0
+    assert payload["statistics"]["files_with_errors"] == 0
+    assert payload["top_30_files"] == []
+    assert "TOP 30 FILES BY SIZE" in target.read_text(encoding="utf-8")
