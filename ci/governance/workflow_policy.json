@@ -730,6 +730,12 @@
       "cluster": "bridge_federation",
       "lifecycle": "pr_domain",
       "disposition": "keep"
+    },
+    {
+      "pattern": "^qps-bt-admission\\.yml$",
+      "cluster": "statistics",
+      "lifecycle": "pr_domain",
+      "disposition": "keep"
     }
   ],
   "quality_gates": {
