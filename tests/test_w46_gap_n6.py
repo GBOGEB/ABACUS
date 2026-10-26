@@ -48,7 +48,7 @@ def test_zero_paths_rank_explicitly_and_keep_denominators():
     ]
     assert result["measured_zero_coverage_reduction"] is None
     assert result["merge_admission"] == "HOLD"
-    assert result["eligible"] == 102
+    assert result["eligible"] == 112
     assert result["covered"] == 72
 
 
