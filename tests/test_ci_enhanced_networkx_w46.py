@@ -1,4 +1,5 @@
 """W46: prevent repeat networkx collection failures in enhanced CI."""
+
 from pathlib import Path
 import re
 import unittest
@@ -14,7 +15,10 @@ class EnhancedCICollectionContract(unittest.TestCase):
         source = WORKFLOW.read_text(encoding="utf-8")
         cls.jobs = {}
         for name in ("test-ubuntu", "test-rhel-8", "test-rhel-9"):
-            match = re.search(r"(?ms)^  " + re.escape(name) + r":\n(.*?)(?=^  [\w-]+:\n|\Z)", source)
+            match = re.search(
+                r"(?ms)^  " + re.escape(name) + r":\n(.*?)(?=^  [\w-]+:\n|\Z)",
+                source,
+            )
             if match is None:
                 raise AssertionError("missing job " + name)
             cls.jobs[name] = match.group(1)
@@ -47,7 +51,9 @@ class EnhancedCICollectionContract(unittest.TestCase):
                 self.assertNotIn("|| echo", body)
 
     def test_ubuntu_cache_tracks_graph_pin(self):
-        self.assertIn("hashFiles('requirements*.txt')", WORKFLOW.read_text(encoding="utf-8"))
+        self.assertIn(
+            "hashFiles('requirements*.txt')", WORKFLOW.read_text(encoding="utf-8")
+        )
 
 
 if __name__ == "__main__":
