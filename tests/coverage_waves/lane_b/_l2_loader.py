@@ -12,7 +12,13 @@ from pathlib import Path
 REPO_ROOT = Path(__file__).resolve().parents[3]
 
 
-def load(rel_path, name=None):
+def load(rel_path, name=None, deps=None):
+    """Execute ``rel_path`` as a fresh module.
+
+    ``deps`` maps bare import names (for example sibling modules a script
+    imports without a package) to already-loaded modules. They are visible
+    only while the target executes, so no bare name leaks into other tests.
+    """
     path = REPO_ROOT / rel_path
     mod_name = name or "l2_" + rel_path.replace("/", "_").replace(".", "_").replace(
         "-", "_"
@@ -20,5 +26,14 @@ def load(rel_path, name=None):
     spec = importlib.util.spec_from_file_location(mod_name, path)
     module = importlib.util.module_from_spec(spec)
     sys.modules[mod_name] = module
-    spec.loader.exec_module(module)
+    saved = {key: sys.modules.get(key) for key in deps or {}}
+    sys.modules.update(deps or {})
+    try:
+        spec.loader.exec_module(module)
+    finally:
+        for key, previous in saved.items():
+            if previous is None:
+                sys.modules.pop(key, None)
+            else:
+                sys.modules[key] = previous
     return module
