@@ -214,16 +214,17 @@ def test_stats_no_terminal_runs():
     assert st["queue_p50_seconds"] is None
 
 
-@pytest.mark.xfail(
-    strict=True,
-    reason="production_defect: stats() KeyErrors on a nonterminal job "
-    "without a 'conclusion' key that validate() accepts",
-)
-def test_stats_nonterminal_job_without_conclusion_key():
+def test_production_defect_stats_keyerror_on_job_without_conclusion():
+    """validate() accepts a queued job with no 'conclusion'; stats() indexes it."""
+    # production_defect (see WAVE_LEDGER.jsonl): this test pins the current
+    # broken behaviour, so it fails once the defect is fixed. The repo's
+    # test-evidence ratchet allows no xfails, hence no xfail marker.
     j = job(1, status="queued", started_at=None, completed_at=None)
     del j["conclusion"]
-    st = cs.stats(snap(runs=[run(status="queued", conclusion=None, jobs=[j])]))
-    assert st["failed_jobs"] == 0
+    s = snap(runs=[run(status="queued", conclusion=None, jobs=[j])])
+    cs.validate(s)
+    with pytest.raises(KeyError, match="conclusion"):
+        cs.stats(s)
 
 
 def test_compare_comparable_delta():

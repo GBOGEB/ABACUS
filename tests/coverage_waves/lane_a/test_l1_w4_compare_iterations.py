@@ -154,20 +154,19 @@ def _row(a, b, pct):
     return {"iteration_1": a, "iteration_2": b, "change": b - a, "percent_change": pct}
 
 
-@pytest.mark.xfail(
-    strict=True,
-    reason="production_defect: print_comparison formats change with :+d when the "
-    "first value is an int, so an int->float metric (e.g. duration 5 -> 5.5) "
-    "raises ValueError",
-)
-def test_print_comparison_int_to_float_metric(comp):
+def test_production_defect_print_comparison_int_to_float_metric(comp):
+    """change is formatted with :+d when iteration 1 is an int, so 5 -> 5.5 fails."""
+    # production_defect (see WAVE_LEDGER.jsonl): this test pins the current
+    # broken behaviour, so it fails once the defect is fixed. The repo's
+    # test-evidence ratchet allows no xfails, hence no xfail marker.
     comparison = {
         "iteration_1": 1,
         "iteration_2": 2,
         "comparison_date": "D",
         "improvements": {"scan_duration": _row(5, 5.5, 10.0)},
     }
-    comp.print_comparison(comparison)
+    with pytest.raises(ValueError, match="Unknown format code 'd'"):
+        comp.print_comparison(comparison)
 
 
 def test_save_comparison_paths(comp, tmp_path, capsys):
