@@ -2,10 +2,13 @@
 from __future__ import annotations
 
 import importlib.util
+from contextlib import contextmanager
 from pathlib import Path
 import subprocess
 import tempfile
+from types import SimpleNamespace
 import unittest
+from unittest import mock
 
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -33,6 +36,21 @@ class ExportManifestLosslessness(unittest.TestCase):
         subprocess.run(["git", "-C", str(self.repo), "add", "--", "docs"],
                        check=True, capture_output=True)
 
+    @contextmanager
+    def synthetic_git_index(self, *paths):
+        """Exercise Git's NUL protocol for names unavailable on Windows/macOS.
+
+        Separate tests exercise the real Git index and file validation.
+        Path mocks here affect only the synthetic-index boundary, not production.
+        """
+        raw = ("\0".join(paths) + "\0").encode("utf-8")
+        with (
+            mock.patch.object(manifest.subprocess, "run", return_value=SimpleNamespace(stdout=raw)),
+            mock.patch.object(Path, "is_symlink", return_value=False),
+            mock.patch.object(Path, "is_file", return_value=True),
+        ):
+            yield
+
     def test_empty_repository_fails_instead_of_publishing_empty_archive(self):
         with self.assertRaisesRegex(ValueError, "NO_TRACKED_MARKDOWN_SOURCES"):
             manifest.tracked_markdown(self.repo)
@@ -48,9 +66,9 @@ class ExportManifestLosslessness(unittest.TestCase):
                          ["docs/README.md", "docs/nested/b.md"])
 
     def test_source_newline_does_not_split_nul_manifest(self):
-        self.stage("docs/line\nname.md", "docs/ordinary.md")
-        out = self.repo / "tmp" / "paths0"
-        report = manifest.write_manifest(self.repo, out)
+        with self.synthetic_git_index("docs/line\nname.md", "docs/ordinary.md"):
+            out = self.repo / "tmp" / "paths0"
+            report = manifest.write_manifest(self.repo, out)
         raw = out.read_bytes()
         self.assertTrue(raw.endswith(b"\0"))
         self.assertEqual(len(raw.split(b"\0")) - 1, 2)
@@ -58,9 +76,15 @@ class ExportManifestLosslessness(unittest.TestCase):
         self.assertEqual(report["expected_artifact_count"], 4)
 
     def test_casefold_collision_is_rejected_before_export(self):
-        self.stage("docs/a/A.md", "docs/a/a.md")
-        with self.assertRaisesRegex(ValueError, "OUTPUT_PATH_COLLISION"):
-            manifest.tracked_markdown(self.repo)
+        with self.synthetic_git_index("docs/a/A.md", "docs/a/a.md"):
+            with self.assertRaisesRegex(ValueError, "OUTPUT_PATH_COLLISION"):
+                manifest.tracked_markdown(self.repo)
+
+    def test_truncated_nul_protocol_rejected_before_path_processing(self):
+        with mock.patch.object(manifest.subprocess, "run",
+                               return_value=SimpleNamespace(stdout=b"docs/a.md")):
+            with self.assertRaisesRegex(ValueError, "TRUNCATED_NUL_GIT_MANIFEST"):
+                manifest.tracked_markdown(self.repo)
 
     def test_missing_tracked_source_is_not_silently_dropped(self):
         self.stage("docs/a.md")
