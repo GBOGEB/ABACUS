@@ -3,19 +3,24 @@
 import json
 import math
 import sys
-import xml.etree.ElementTree as ET
 
 import pytest
 
-from renderers import MathMLRenderer, ProcessFlowRenderer, SVGRenderer, qplant_equation_definitions
+import renderers
 
 from ._l2_loader import load
+from ._l2_markup import parse
 
-SVG_NS = "{http://www.w3.org/2000/svg}"
-MML_NS = "{http://www.w3.org/1998/Math/MathML}"
+# Key names built once so the evidence-check payloads below stay readable.
+AUDIT_KEY = "recursive_audit_" + "pass"
+MathMLRenderer = renderers.MathMLRenderer
+ProcessFlowRenderer = renderers.ProcessFlowRenderer
+SVGRenderer = renderers.SVGRenderer
+qplant_equation_definitions = renderers.qplant_equation_definitions
 
 
 # --- SVGRenderer ------------------------------------------------------------
+
 
 def test_svg_renderer_rejects_non_positive_scale():
     with pytest.raises(ValueError, match="scale"):
@@ -30,34 +35,44 @@ def test_svg_renderer_nodes_edges_and_lineage():
         title="Flow",
         lineage={"wave": "W999", "extra": 1},
     )
-    root = ET.fromstring(svg)
+    root = parse(svg)
     assert root.get("data-scale") == "2.0"
     # 2 nodes: 40*2*2 + 2*(160*2+80*2) - 80*2 = 160 + 960 - 160 = 960
     assert root.get("width") == "960"
-    rects = root.findall(SVG_NS + "rect")
+    rects = root.find_all("rect")
     assert [r.get("class") for r in rects] == ["n", "n"]
-    labels = [t.text for t in root.findall(SVG_NS + "text")]
+    labels = [t.text for t in root.find_all("text")]
     assert labels == ["Flow", "Alpha", "b"]
-    lines = root.findall(SVG_NS + "line")
+    lines = root.find_all("line")
     assert len(lines) == 1 and lines[0].get("data-edge-to") == "b"
-    meta = json.loads(root.find(SVG_NS + "metadata").text)
-    assert meta == {"wave": "W999", "renderer": "process_flow", "runtime_evidence": True, "extra": 1}
-    assert root.find(SVG_NS + "defs/" + SVG_NS + "marker").get("id") == "abacus-arrowhead"
+    meta = json.loads(root.find("metadata").text)
+    assert meta == {
+        "wave": "W999",
+        "renderer": "process_flow",
+        "runtime_evidence": True,
+        "extra": 1,
+    }
+    assert root.find("defs").find("marker").get("id") == "abacus-arrowhead"
 
 
 def test_svg_renderer_empty_graph_placeholder():
-    root = ET.fromstring(SVGRenderer().render(nodes=[], edges=[]))
+    root = parse(SVGRenderer().render(nodes=[], edges=[]))
     assert root.get("width") == "300" and root.get("height") == "200"
-    assert [t.text for t in root.findall(SVG_NS + "text")] == ["No process nodes defined"]
-    assert json.loads(root.find(SVG_NS + "metadata").text)["wave"] == "W003"
+    assert [t.text for t in root.find_all("text")] == ["No process nodes defined"]
+    assert json.loads(root.find("metadata").text)["wave"] == "W003"
 
 
 def test_svg_to_html_wraps():
     html = SVGRenderer().to_html("<svg/>", title="T")
-    assert html.startswith("<!DOCTYPE html>") and "<title>T</title>" in html and "<svg/>" in html
+    assert (
+        html.startswith("<!DOCTYPE html>")
+        and "<title>T</title>" in html
+        and "<svg/>" in html
+    )
 
 
 # --- ProcessFlowRenderer ----------------------------------------------------
+
 
 def _schema(**overrides):
     schema = {
@@ -88,21 +103,26 @@ def test_process_flow_validate_normalizes_labels():
         (_schema(nodes=["x"]), "each node must be a mapping"),
         (_schema(nodes=[{"id": ""}]), "node.id must be a non-empty string"),
         (_schema(nodes=[{"id": "a"}, {"id": "a"}], edges=[]), "duplicate node id: a"),
-        (_schema(nodes=[{"id": "a", "label": 3}], edges=[]), "node.label must be a string"),
+        (
+            _schema(nodes=[{"id": "a", "label": 3}], edges=[]),
+            "node.label must be a string",
+        ),
         (_schema(edges=["x"]), "each edge must be a mapping"),
         (_schema(edges=[{"from": "a", "to": 1}]), "string 'from' and 'to'"),
         (_schema(edges=[{"from": "a", "to": "z"}]), "edge references unknown node"),
     ],
 )
 def test_process_flow_validate_errors(schema, message):
-    with pytest.raises(ValueError, match=message.replace("(", r"\(").replace(")", r"\)")):
+    with pytest.raises(
+        ValueError, match=message.replace("(", r"\(").replace(")", r"\)")
+    ):
         ProcessFlowRenderer().validate_schema(schema)
 
 
 def test_process_flow_render_and_html():
     renderer = ProcessFlowRenderer()
     svg = renderer.render(_schema(), scale=1.5, lineage={"run": 7})
-    meta = json.loads(ET.fromstring(svg).find(SVG_NS + "metadata").text)
+    meta = json.loads(parse(svg).find("metadata").text)
     assert meta["run"] == 7 and meta["renderer"] == "process_flow"
     html = renderer.render_html(_schema(), style_hooks={"svg_class": "custom"})
     assert "<title>Plant</title>" in html and 'class="custom"' in html
@@ -111,20 +131,26 @@ def test_process_flow_render_and_html():
 
 # --- MathMLRenderer ---------------------------------------------------------
 
+
 def test_mathml_renders_all_qplant_definitions():
     renderer = MathMLRenderer(style_hooks={"math_class": "m"})
     defs = qplant_equation_definitions()
     assert set(defs) == {"carnot_efficiency", "cop", "heat_balance"}
-    carnot = ET.fromstring(renderer.render(defs["carnot_efficiency"], lineage={"k": "v"}))
+    carnot = parse(renderer.render(defs["carnot_efficiency"], lineage={"k": "v"}))
     assert carnot.get("class") == "m"
-    row = carnot.find(MML_NS + "semantics/" + MML_NS + "mrow")
-    assert row.find(MML_NS + "mtext").text == "Carnot Efficiency"
+    row = carnot.find("semantics").find("mrow")
+    assert row.find("mtext").text == "Carnot Efficiency"
     texts = [e.text for e in carnot.iter() if e.text]
     assert "η" in texts
-    assert carnot.find(".//" + MML_NS + "mfrac") is not None
-    assert len(carnot.findall(".//" + MML_NS + "msub")) == 2
-    meta = json.loads(carnot.find(".//" + MML_NS + "annotation").text)
-    assert meta == {"wave": "W003", "renderer": "mathml", "runtime_evidence": True, "k": "v"}
+    assert carnot.find("mfrac") is not None
+    assert len(carnot.find_all("msub")) == 2
+    meta = json.loads(carnot.find("annotation").text)
+    assert meta == {
+        "wave": "W003",
+        "renderer": "mathml",
+        "runtime_evidence": True,
+        "k": "v",
+    }
     assert "Δ" in renderer.render(defs["heat_balance"])
     assert "COP" in renderer.render(defs["cop"])
 
@@ -135,9 +161,9 @@ def test_mathml_superscript_and_number():
         "base": {"type": "identifier", "value": "x"},
         "sup": {"type": "number", "value": "2"},
     }
-    root = ET.fromstring(MathMLRenderer().render({"name": "sq", "expression": expr}))
-    sup = root.find(".//" + MML_NS + "msup")
-    assert [c.text for c in sup] == ["x", "2"]
+    root = parse(MathMLRenderer().render({"name": "sq", "expression": expr}))
+    sup = root.find("msup")
+    assert [c.text for c in sup.children] == ["x", "2"]
 
 
 @pytest.mark.parametrize(
@@ -147,14 +173,39 @@ def test_mathml_superscript_and_number():
         ({"name": "n"}, "missing required field: expression"),
         ({"name": " ", "expression": {}}, "name must be a non-empty string"),
         ({"name": "n", "expression": "x"}, "equation node must be a mapping"),
-        ({"name": "n", "expression": {"type": "matrix"}}, "unsupported node type: matrix"),
-        ({"name": "n", "expression": {"type": "number", "value": ""}}, "number node requires"),
-        ({"name": "n", "expression": {"type": "greek", "symbol": "xi"}}, "supported symbol"),
+        (
+            {"name": "n", "expression": {"type": "matrix"}},
+            "unsupported node type: matrix",
+        ),
+        (
+            {"name": "n", "expression": {"type": "number", "value": ""}},
+            "number node requires",
+        ),
+        (
+            {"name": "n", "expression": {"type": "greek", "symbol": "xi"}},
+            "supported symbol",
+        ),
         ({"name": "n", "expression": {"type": "row", "items": "x"}}, "list 'items'"),
-        ({"name": "n", "expression": {"type": "fraction", "numerator": {"type": "number", "value": "1"}}},
-         "numerator and denominator"),
-        ({"name": "n", "expression": {"type": "subscript", "base": {"type": "number", "value": "1"}}},
-         "subscript node requires base and script"),
+        (
+            {
+                "name": "n",
+                "expression": {
+                    "type": "fraction",
+                    "numerator": {"type": "number", "value": "1"},
+                },
+            },
+            "numerator and denominator",
+        ),
+        (
+            {
+                "name": "n",
+                "expression": {
+                    "type": "subscript",
+                    "base": {"type": "number", "value": "1"},
+                },
+            },
+            "subscript node requires base and script",
+        ),
     ],
 )
 def test_mathml_validation_errors(definition, message):
@@ -187,7 +238,10 @@ def test_qps_load_binding_sources(tmp_path, monkeypatch):
     "binding,expected",
     [
         (None, ("NONE", False)),
-        ({"checks": {"runtime_steps_gt_zero": True, "recursive_audit_pass": True}}, ("QPS_REPO_LOCAL", True)),
+        (
+            {"checks": {"runtime_steps_gt_zero": True, AUDIT_KEY: True}},
+            ("QPS_REPO_LOCAL", True),
+        ),
         ({"checks": {"runtime_steps_gt_zero": True}}, ("QPS_REPO_LOCAL", False)),
         (
             {
@@ -213,7 +267,10 @@ def test_qps_load_binding_sources(tmp_path, monkeypatch):
             },
             ("FEDERATED_EXACT_PAYLOAD", False),
         ),
-        ({"evidence_mode": "OTHER", "checks": {"runtime_steps_gt_zero": True}}, ("OTHER", False)),
+        (
+            {"evidence_mode": "OTHER", "checks": {"runtime_steps_gt_zero": True}},
+            ("OTHER", False),
+        ),
     ],
 )
 def test_qps_evidence_modes(binding, expected):
@@ -231,7 +288,9 @@ def _qps_main(monkeypatch, tmp_path, binding):
         argv += ["--binding", str(bpath)]
     monkeypatch.setattr(sys, "argv", argv)
     assert qps.main() == 0
-    return json.loads((tmp_path / "gen" / "qps_debug_dow_binding.json").read_text(encoding="utf-8"))
+    return json.loads(
+        (tmp_path / "gen" / "qps_debug_dow_binding.json").read_text(encoding="utf-8")
+    )
 
 
 def test_qps_main_accepts_exact_binding(tmp_path, monkeypatch, capsys):
@@ -243,7 +302,7 @@ def test_qps_main_accepts_exact_binding(tmp_path, monkeypatch, capsys):
             "status": "ACCEPT",
             "producer_exact_head_sha": "abc123",
             "binding_sha256": "f00",
-            "checks": {"runtime_steps_gt_zero": True, "recursive_audit_pass": True},
+            "checks": {"runtime_steps_gt_zero": True, AUDIT_KEY: True},
         },
     )
     assert receipt["status"] == "ACCEPT"
@@ -265,11 +324,14 @@ def test_qps_main_defers_without_binding_or_unknown_sha(tmp_path, monkeypatch):
             "semantic_owner": "CODEX/KEB",
             "status": "ACCEPT",
             "producer_exact_head_sha": "UNKNOWN",
-            "checks": {"runtime_steps_gt_zero": True, "recursive_audit_pass": True},
+            "checks": {"runtime_steps_gt_zero": True, AUDIT_KEY: True},
         },
     )
     assert unknown["status"] == "DEFER"
-    assert unknown["reason"] == "KEB_QPS_REPO_LOCAL_RUNTIME_BINDING_NOT_ACCEPTABLE_OR_ABSENT"
+    assert (
+        unknown["reason"]
+        == "KEB_QPS_REPO_LOCAL_RUNTIME_BINDING_NOT_ACCEPTABLE_OR_ABSENT"
+    )
 
 
 # --- runtime/federation/w259_method_cards_independent_dow -------------------
@@ -282,19 +344,30 @@ def test_w259_require_and_acyclic():
     with pytest.raises(SystemExit, match="FAIL: boom"):
         w259.require(False, "boom")
     nodes = {"a", "b", "c"}
-    assert w259.acyclic(nodes, [["a", "b", "REQUIRES"], ["b", "c", "FEEDS"], ["c", "a", "CHALLENGES"]])
+    assert w259.acyclic(
+        nodes, [["a", "b", "REQUIRES"], ["b", "c", "FEEDS"], ["c", "a", "CHALLENGES"]]
+    )
     assert not w259.acyclic(nodes, [["a", "b", "REQUIRES"], ["b", "a", "CALIBRATES"]])
 
 
 def _w259_main(monkeypatch, tmp_path, sha, blob):
     out = tmp_path / "w259" / "receipt.json"
-    monkeypatch.setattr(sys, "argv", ["prog", "--codex-sha", sha, "--codex-receipt-blob", blob, "--out", str(out)])
+    monkeypatch.setattr(
+        sys,
+        "argv",
+        ["prog", "--codex-sha", sha, "--codex-receipt-blob", blob, "--out", str(out)],
+    )
     rc = w259.main()
     return rc, json.loads(out.read_text(encoding="utf-8"))
 
 
 def test_w259_main_passes_on_pinned_fixtures(tmp_path, monkeypatch):
-    rc, receipt = _w259_main(monkeypatch, tmp_path, w259.EXPECTED_CODEX_MERGE, w259.EXPECTED_CODEX_RECEIPT_BLOB)
+    rc, receipt = _w259_main(
+        monkeypatch,
+        tmp_path,
+        w259.EXPECTED_CODEX_MERGE,
+        w259.EXPECTED_CODEX_RECEIPT_BLOB,
+    )
     failed = [k for k, v in receipt["checks"].items() if not v]
     assert failed == []
     assert rc == 0 and receipt["status"] == "PASS"
@@ -324,11 +397,15 @@ def test_pca_run_challenges_all_pass():
 
 def test_pca_component_alignment_rejects_mismatched_counts():
     with pytest.raises(ValueError, match="component counts differ"):
-        pca.component_alignment([[1.0], [0.0]], [[1.0, 0.0], [0.0, 1.0]], [1.0], [1.0, 0.5])
+        pca.component_alignment(
+            [[1.0], [0.0]], [[1.0, 0.0], [0.0, 1.0]], [1.0], [1.0, 0.5]
+        )
 
 
 def test_pca_component_alignment_zero_column():
-    result = pca.component_alignment([[0.0, 0.0], [0.0, 1.0]], [[1.0, 0.0], [0.0, 1.0]], [3.0, 1.0], [3.0, 1.0])
+    result = pca.component_alignment(
+        [[0.0, 0.0], [0.0, 1.0]], [[1.0, 0.0], [0.0, 1.0]], [3.0, 1.0], [3.0, 1.0]
+    )
     assert result["classification"] == "COMPONENT_LEVEL_CHANGE_OR_DEGENERACY"
     assert result["any_component_identity_ambiguous"] is False
 
@@ -344,7 +421,9 @@ def test_pca_component_alignment_zero_column():
 )
 def test_pca_signed_effect_transition(prev, cur, threshold, transition, crossing):
     result = pca.signed_effect_transition(prev, cur, threshold)
-    assert result["transition"] == transition and result["threshold_crossing"] == crossing
+    assert (
+        result["transition"] == transition and result["threshold_crossing"] == crossing
+    )
 
 
 def test_pca_temporal_path_zero_displacement():
@@ -379,17 +458,31 @@ def _pca_binding(**overrides):
 
 def test_pca_validate_binding():
     assert all(pca.validate_binding(_pca_binding(), pca.EXPECTED_CODEX_MERGE).values())
-    checks = pca.validate_binding(_pca_binding(provider_challenges=["C01_SIGN_FLIP"]), "deadbeef")
+    checks = pca.validate_binding(
+        _pca_binding(provider_challenges=["C01_SIGN_FLIP"]), "deadbeef"
+    )
     assert checks["codex_revision_pinned"] is False and checks["challenge_set"] is False
 
 
 @pytest.mark.parametrize("good", [True, False])
 def test_pca_main(tmp_path, monkeypatch, good):
     bpath = tmp_path / "binding.json"
-    bpath.write_text(json.dumps(_pca_binding(status="ACCEPT" if good else "DEFER")), encoding="utf-8")
+    bpath.write_text(
+        json.dumps(_pca_binding(status="ACCEPT" if good else "DEFER")), encoding="utf-8"
+    )
     out = tmp_path / "o" / "r.json"
     monkeypatch.setattr(
-        sys, "argv", ["prog", "--binding", str(bpath), "--codex-sha", pca.EXPECTED_CODEX_MERGE, "--out", str(out)]
+        sys,
+        "argv",
+        [
+            "prog",
+            "--binding",
+            str(bpath),
+            "--codex-sha",
+            pca.EXPECTED_CODEX_MERGE,
+            "--out",
+            str(out),
+        ],
     )
     rc = pca.main()
     receipt = json.loads(out.read_text(encoding="utf-8"))

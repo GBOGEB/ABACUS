@@ -25,6 +25,7 @@ def _entry(tid, **extra):
 
 # --- tuple_metadata ---------------------------------------------------------
 
+
 def test_tuple_metadata_valid_with_cross_references():
     entries = [_entry("a", feeds_into=["b"]), _entry("b", consumed_from=["a"])]
     assert tm.validate_tuple_metadata(entries) == []
@@ -51,7 +52,9 @@ def test_tuple_metadata_reports_each_defect():
     assert "tuple_metadata[3].consumed_from[1] must be a non-empty string" in errors
     # Item-level errors short-circuit the unknown-reference check for that field.
     assert not any("tuple_metadata[3].consumed_from references" in e for e in errors)
-    assert "tuple_metadata[4].consumed_from references unknown tuple_id: ghost" in errors
+    assert (
+        "tuple_metadata[4].consumed_from references unknown tuple_id: ghost" in errors
+    )
 
 
 def test_tracker_payload_valid():
@@ -92,6 +95,7 @@ def test_tracker_payload_branch_entries():
 
 # --- reconstruction_manifest ------------------------------------------------
 
+
 def _repo(tmp_path):
     (tmp_path / "f.txt").write_text("x", encoding="utf-8")
     (tmp_path / "wf.yml").write_text("x", encoding="utf-8")
@@ -121,7 +125,9 @@ def test_manifest_valid(tmp_path):
 
 
 def test_manifest_non_dict(tmp_path):
-    assert rm.validate_reconstruction_manifest("x", tmp_path) == ["payload must be an object"]
+    assert rm.validate_reconstruction_manifest("x", tmp_path) == [
+        "payload must be an object"
+    ]
 
 
 def test_manifest_missing_top_level(tmp_path):
@@ -148,8 +154,12 @@ def test_manifest_artifact_defects(tmp_path):
     assert "artifacts[0] must be an object" in errors
     assert "artifacts[1] missing required non-empty field: name" in errors
     assert "artifacts[1] missing required non-empty field: path" in errors
-    assert any(e.startswith("artifacts[2].path must be a relative path") for e in errors)
-    assert "artifacts[3].path traverses outside repository root: ../outside.txt" in errors
+    assert any(
+        e.startswith("artifacts[2].path must be a relative path") for e in errors
+    )
+    assert (
+        "artifacts[3].path traverses outside repository root: ../outside.txt" in errors
+    )
     assert "artifacts[4].path does not exist: missing.txt" in errors
 
 
@@ -173,17 +183,29 @@ def test_manifest_component_defects(tmp_path):
     assert "component_map[1] field 'name' must be a non-empty string" in errors
     assert "component_map[1] field 'artifact' must be a non-empty string" in errors
     assert "component_map[1].file_refs must be a non-empty list" in errors
-    assert "component_map[2] artifact 'undeclared' is not declared in the artifacts list" in errors
+    assert (
+        "component_map[2] artifact 'undeclared' is not declared in the artifacts list"
+        in errors
+    )
     assert "component_map[2].file_refs must be a non-empty list" in errors
     assert "component_map[2].workflow_refs[0] must be a non-empty string path" in errors
-    assert any(e.startswith("component_map[2].workflow_refs[1] must be a relative path") for e in errors)
-    assert "component_map[2].test_refs[0] path traverses outside repository root: ../x.py" in errors
+    assert any(
+        e.startswith("component_map[2].workflow_refs[1] must be a relative path")
+        for e in errors
+    )
+    assert (
+        "component_map[2].test_refs[0] path traverses outside repository root: ../x.py"
+        in errors
+    )
     assert "component_map[2].test_refs[1] path does not exist: nope.py" in errors
     assert "component_map missing required component: branch DAG" in errors
-    assert "component_map missing required component: semantic tuple ledger" not in errors
+    assert (
+        "component_map missing required component: semantic tuple ledger" not in errors
+    )
 
 
 # --- CLI scripts ------------------------------------------------------------
+
 
 @pytest.fixture
 def isolated_imports(monkeypatch):
@@ -202,7 +224,11 @@ def test_validate_tuple_metadata_cli(tmp_path, monkeypatch, capsys, isolated_imp
     good = tmp_path / "good.json"
     good.write_text(
         json.dumps(
-            {"status_schema": sorted(tm.STATUS_VALUES), "branches": [], "tuple_metadata": [_entry("a")]}
+            {
+                "status_schema": sorted(tm.STATUS_VALUES),
+                "branches": [],
+                "tuple_metadata": [_entry("a")],
+            }
         ),
         encoding="utf-8",
     )
@@ -216,12 +242,17 @@ def test_validate_tuple_metadata_cli(tmp_path, monkeypatch, capsys, isolated_imp
     assert _run(cli, monkeypatch, "--input", str(good)) == 0
 
     bad = tmp_path / "bad.json"
-    bad.write_text(json.dumps({"status_schema": [], "branches": [], "tuple_metadata": []}), encoding="utf-8")
+    bad.write_text(
+        json.dumps({"status_schema": [], "branches": [], "tuple_metadata": []}),
+        encoding="utf-8",
+    )
     assert _run(cli, monkeypatch, "--input", str(bad)) == 1
     assert "ERROR: status_schema must equal" in capsys.readouterr().out
 
 
-def test_validate_reconstruction_manifest_cli(tmp_path, monkeypatch, capsys, isolated_imports):
+def test_validate_reconstruction_manifest_cli(
+    tmp_path, monkeypatch, capsys, isolated_imports
+):
     cli = load("scripts/validate_reconstruction_manifest.py")
     assert _run(cli, monkeypatch, "--input", str(tmp_path / "absent.json")) == 1
     assert "Input file not found" in capsys.readouterr().out
@@ -237,16 +268,28 @@ def test_validate_reconstruction_manifest_cli(tmp_path, monkeypatch, capsys, iso
     assert "ERROR: manifest_version is required" in capsys.readouterr().out
 
     # A passing manifest must reference real repo paths (validated against the repo root).
-    monkeypatch.setattr(cli, "validate_reconstruction_manifest", lambda payload, root: [])
+    monkeypatch.setattr(
+        cli, "validate_reconstruction_manifest", lambda payload, root: []
+    )
     ok = tmp_path / "ok.json"
-    ok.write_text(json.dumps({"manifest_version": "2", "artifacts": [1], "component_map": [1, 2]}), encoding="utf-8")
+    ok.write_text(
+        json.dumps(
+            {"manifest_version": "2", "artifacts": [1], "component_map": [1, 2]}
+        ),
+        encoding="utf-8",
+    )
     out = tmp_path / "o" / "m.json"
     assert _run(cli, monkeypatch, "--input", str(ok), "--output", str(out)) == 0
     written = json.loads(out.read_text(encoding="utf-8"))
-    assert (written["manifest_version"], written["artifact_count"], written["component_count"]) == ("2", 1, 2)
+    assert (
+        written["manifest_version"],
+        written["artifact_count"],
+        written["component_count"],
+    ) == ("2", 1, 2)
 
 
 # --- small scripts ----------------------------------------------------------
+
 
 def test_guard_public_repo(monkeypatch, capsys):
     guard = load("scripts/guard_public_repo.py")
@@ -267,7 +310,14 @@ def test_guard_public_repo(monkeypatch, capsys):
 
 @pytest.mark.parametrize(
     "expr,expected",
-    [("", True), ("(a[b]{c})", True), ("([)]", False), ("((", False), ("}", False), ("x+y", True)],
+    [
+        ("", True),
+        ("(a[b]{c})", True),
+        ("([)]", False),
+        ("((", False),
+        ("}", False),
+        ("x+y", True),
+    ],
 )
 def test_check_brackets(expr, expected):
     assert load("scripts/auto_bracket_check.py").check_brackets(expr) is expected
@@ -275,7 +325,9 @@ def test_check_brackets(expr, expected):
 
 def test_env_doctor(monkeypatch, capsys):
     doctor = load("scripts/env_doctor.py")
-    monkeypatch.setattr(doctor.shutil, "which", lambda tool: "/bin/" + tool if tool == "gh" else None)
+    monkeypatch.setattr(
+        doctor.shutil, "which", lambda tool: "/bin/" + tool if tool == "gh" else None
+    )
     rc = doctor.main()
     info = json.loads(capsys.readouterr().out)
     assert info["tools"] == {"pandoc": False, "xelatex": False, "gh": True}
