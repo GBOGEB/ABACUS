@@ -5674,7 +5674,7 @@ __metadata:
     cookie: "npm:2.0.1"
     csv: "npm:6.3.11"
     date-fns: "npm:4.4.0"
-    dayjs: "npm:1.11.13"
+    dayjs: "npm:1.11.23"
     dotenv: "npm:18.0.9"
     embla-carousel-react: "npm:8.6.0"
     eslint: "npm:10.13.0"
@@ -5685,7 +5685,7 @@ __metadata:
     framer-motion: "npm:14.3.0"
     gray-matter: "npm:4.0.3"
     input-otp: "npm:1.2.4"
-    jotai: "npm:2.10.0"
+    jotai: "npm:3.0.1"
     jsonwebtoken: "npm:9.0.2"
     lodash: "npm:4.18.1"
     lucide-react: "npm:0.446.0"
@@ -6964,10 +6964,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"dayjs@npm:1.11.13":
-  version: 1.11.13
-  resolution: "dayjs@npm:1.11.13"
-  checksum: 10c0/a3caf6ac8363c7dade9d1ee797848ddcf25c1ace68d9fe8678ecf8ba0675825430de5d793672ec87b24a69bf04a1544b176547b2539982275d5542a7955f35b7
+"dayjs@npm:1.11.23":
+  version: 1.11.23
+  resolution: "dayjs@npm:1.11.23"
+  checksum: 10c0/69ab04bf19c676e44ab50cc2fca223d265f3dafd107151ef3b0f3ad74d360c37caa602abe62f87cb25d90bd9f6bee003698af47df5b0dbf10a998b7b5f3bb3f1
   languageName: node
   linkType: hard
 
@@ -9541,18 +9541,18 @@ __metadata:
   languageName: node
   linkType: hard
 
-"jotai@npm:2.10.0":
-  version: 2.10.0
-  resolution: "jotai@npm:2.10.0"
+"jotai@npm:3.0.1":
+  version: 3.0.1
+  resolution: "jotai@npm:3.0.1"
   peerDependencies:
-    "@types/react": ">=17.0.0"
-    react: ">=17.0.0"
+    "@types/react": ">=18.0.0"
+    react: ">=18.0.0"
   peerDependenciesMeta:
     "@types/react":
       optional: true
     react:
       optional: true
-  checksum: 10c0/81c619c1a82444bff50220dab1e2c10960f41922d46c9227004f6dd34db3a615ad596b277657c21d5935c50918936f04ffa858e494e1caf18e4ed60560e183d9
+  checksum: 10c0/84b6adac2e3c8f7e8fd27c52f3206ceb1b22f9b46dfb81100b3765f652134399e91bfaee49a15e2e25083adf5638b8168aeb338234074e9c80955d51c231b456
   languageName: node
   linkType: hard
 
