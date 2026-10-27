@@ -1,0 +1,34 @@
+name: qps-bt-admission
+on:
+  pull_request:
+    paths:
+      - 'qps_slide_reviewer/lib/analytics.ts'
+      - 'qps_slide_reviewer/lib/bt_admission.ts'
+      - 'qps_slide_reviewer/lib/bt_observed.ts'
+      - 'qps_slide_reviewer/tsconfig.json'
+      - 'qps_slide_reviewer/tests/bt_admission.test.ts'
+      - 'qps_slide_reviewer/tests/bt_observed.test.ts'
+      - '.github/workflows/qps-bt-admission.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  bt-admission:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
+        with:
+          node-version: '24'
+      - name: Check graph and observed kernels under TypeScript 5.6.3
+        run: |
+          npx --yes --package typescript@5.6.3 tsc --noEmit \
+            --target ES2020 --module ESNext --moduleResolution bundler \
+            --allowImportingTsExtensions \
+            qps_slide_reviewer/lib/bt_admission.ts \
+            qps_slide_reviewer/lib/bt_observed.ts
+      - name: Fail-closed preflight negatives (Node TS stripping)
+        run: |
+          node --test \
+            qps_slide_reviewer/tests/bt_admission.test.ts \
+            qps_slide_reviewer/tests/bt_observed.test.ts

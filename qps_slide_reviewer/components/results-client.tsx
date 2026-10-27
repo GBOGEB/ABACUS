@@ -115,7 +115,7 @@ export function ResultsClient() {
       case 'votes':
         return safe.sort((a, b) => b.netVotes - a.netVotes || b.abWins - a.abWins);
       case 'ab-wins':
-        return safe.sort((a, b) => b.abWins - a.abWins || b.winRate - a.winRate);
+        return safe.sort((a, b) => b.abWins - a.abWins || (b.winRate ?? 0) - (a.winRate ?? 0));
       default:
         return safe;
     }
