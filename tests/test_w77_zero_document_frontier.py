@@ -236,7 +236,6 @@ def test_aligner_io_is_bound_to_temp_workspace(aligner, tmp_path):
     assert "DMAIC_V3" in aligner.version_info["code_links"]["metrics"]
 
 
-
 # W77 N+8 deeper same-owner controls. Historical zero status is not a
 # current-main coverage measurement; these tests seek uncovered branches.
 def test_yaml_action_and_sprint_partial_gaps_are_independently_counted(recent):
