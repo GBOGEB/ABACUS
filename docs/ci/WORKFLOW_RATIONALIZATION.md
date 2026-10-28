@@ -3,11 +3,11 @@
 # ABACUS CI workflow rationalisation
 
 Policy: `ABACUS-CI-SSOT-001`  
-Policy SHA-256 (canonical sorted JSON bytes of `ci/governance/workflow_policy.json`): `2b2543e446039595e118bdc34296566ac2789868f8506dcff92c364a50cfa38b`
+Policy SHA-256 (canonical sorted JSON bytes of `ci/governance/workflow_policy.json`): `df7b87bdd4764c8358663931e1bd17ff71377bf3d8b8936fd16e24a5a1dd3e14`
 
 ## Outcome
 
-The repository currently contains **218 workflow definitions**. All **218** are assigned to one primary functional cluster and lifecycle stage.
+The repository currently contains **219 workflow definitions**. All **219** are assigned to one primary functional cluster and lifecycle stage.
 
 The observed baseline that motivated this control was PR #681 with 119 check runs (111 queued, 8 skipped) and main with 122 check runs.
 
@@ -28,7 +28,7 @@ The observed baseline that motivated this control was PR #681 with 119 check run
 |---|---|---:|---|
 | `core_test` | `ci-abacus.yml` | 23 | Fast cross-version unit, pre-commit and smoke evidence. |
 | `full_regression` | `ci-cd-tests.yml` | 1 | Broad OS/version/integration/coverage regression for code changes. |
-| `statistics` | `ci-cd.yml` | 19 | Bootstrap, AHT, performance and statistical validation. |
+| `statistics` | `ci-cd.yml` | 20 | Bootstrap, AHT, performance and statistical validation. |
 | `bridge_federation` | `bridge-ci.yml` | 21 | CODEX/ABACUS bridge contract and federation smoke evidence. |
 | `dmaic` | `dmaic-enterprise-ci.yml` | 9 | DMAIC phase, convergence and maturity execution. |
 | `dow` | `dow-integration.yml` | 22 | DOW parent mechanics, integration, monitoring and warm-up. |
@@ -237,6 +237,7 @@ Make PR-triggered workflows with write-class GitHub token scopes explicit and re
 | 20 | `pr_domain` | `statistics` | `g3a-n14-matched-arc-flight.yml` | pull_request, workflow_dispatch | 1 | `keep` | — |
 | 20 | `pr_domain` | `statistics` | `mip-py310-combined-head-probe.yml` | pull_request, workflow_dispatch | 1 | `keep` | — |
 | 20 | `pr_domain` | `statistics` | `mip2-method-qualification.yml` | pull_request, workflow_dispatch, push | 1 | `keep` | — |
+| 20 | `pr_domain` | `statistics` | `qps-bt-admission.yml` | pull_request, workflow_dispatch | 1 | `keep` | — |
 | 20 | `pr_domain` | `statistics` | `w13-neural-spine.yml` | pull_request, workflow_dispatch | 1 | `keep` | — |
 | 20 | `pr_domain` | `statistics` | `w26-testpilot-matched-coverage.yml` | pull_request, workflow_dispatch | 1 | `keep` | — |
 | 20 | `pr_domain` | `statistics` | `w29-cbd-temporal-matched-coverage.yml` | pull_request, workflow_dispatch | 1 | `keep` | — |
