@@ -558,19 +558,19 @@ function openHeatmapModal() {
   const modal = document.getElementById('heatmap-modal');
   const zoomDiv = document.getElementById('heatmap-zoom');
   const heatmap = document.getElementById('plotHeatmap');
-  
+
   // Clone heatmap data into modal
   const plotData = heatmap.data;
   const plotLayout = JSON.parse(JSON.stringify(heatmap.layout || {}));
-  
+
   // Resize for modal viewing (2x screen size for zooming)
   plotLayout.width = window.innerWidth * 2;
   plotLayout.height = window.innerWidth * 2;
   plotLayout.autosize = false;
-  
+
   // Recreate plot in modal
   Plotly.newPlot(zoomDiv, plotData, plotLayout, {responsive: false, displayModeBar: true});
-  
+
   modal.classList.add('active');
   document.body.style.overflow = 'hidden';
 }
@@ -579,7 +579,7 @@ function closeHeatmapModal() {
   const modal = document.getElementById('heatmap-modal');
   modal.classList.remove('active');
   document.body.style.overflow = 'auto';
-  
+
   // Clean up the zoomed plot
   const zoomDiv = document.getElementById('heatmap-zoom');
   Plotly.purge(zoomDiv);
@@ -591,11 +591,11 @@ if (window.innerWidth <= 768) {
     const heatmapContainer = document.querySelector('.heatmap-container');
     const heatmapDiv = document.getElementById('plotHeatmap');
     const zoomLabel = document.querySelector('.zoom-label');
-    
+
     if (heatmapContainer && heatmapDiv) {
       // Show zoom label on mobile
       if (zoomLabel) zoomLabel.style.display = 'block';
-      
+
       // Make heatmap clickable
       heatmapDiv.style.cursor = 'pointer';
       heatmapDiv.addEventListener('click', openHeatmapModal);

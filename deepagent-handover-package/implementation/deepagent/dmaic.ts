@@ -190,11 +190,11 @@ export class DMAICProcessManager {
     try {
       // Create project charter deliverable
       const charter = this.createDeliverable('Project Charter', 'project_charter.md', projectCharter);
-      
+
       // Conduct VOC analysis
       const vocData = await this.conductVOCAnalysis(projectCharter.customerSegments);
       const voc = this.createDeliverable('Voice of Customer (VOC)', 'voc_analysis.md', vocData);
-      
+
       // Create SIPOC diagram
       const sipocData = await this.createSIPOCDiagram(projectCharter.processScope);
       const sipoc = this.createDeliverable('SIPOC Diagram', 'sipoc_diagram.md', sipocData);
@@ -230,11 +230,11 @@ export class DMAICProcessManager {
     try {
       // Create measurement plan deliverable
       const plan = this.createDeliverable('Measurement Plan', 'measurement_plan.md', measurementPlan);
-      
+
       // Establish baseline
       const baselineData = await this.establishBaseline(measurementPlan.kpiDefinitions);
       const baseline = this.createDeliverable('Baseline Assessment', 'baseline_assessment.md', baselineData);
-      
+
       // Set up data collection system
       const collectionSystem = await this.setupDataCollectionSystem(measurementPlan);
       const system = this.createDeliverable('Data Collection System', 'data_collection_setup.md', collectionSystem);
@@ -266,11 +266,11 @@ export class DMAICProcessManager {
       // Perform statistical analysis
       const statisticalData = await this.performStatisticalAnalysis(analysisScope.dataSet);
       const statistical = this.createDeliverable('Statistical Analysis Report', 'statistical_analysis.md', statisticalData);
-      
+
       // Conduct root cause analysis
       const rootCauseData = await this.conductRootCauseAnalysis(analysisScope.problemAreas);
       const rootCause = this.createDeliverable('Root Cause Analysis', 'root_cause_analysis.md', rootCauseData);
-      
+
       // Assess opportunities
       const opportunityData = await this.assessImprovementOpportunities(rootCauseData.validatedRootCauses);
       const opportunity = this.createDeliverable('Opportunity Assessment', 'opportunity_assessment.md', opportunityData);
@@ -302,11 +302,11 @@ export class DMAICProcessManager {
       // Design solutions
       const solutionData = await this.designSolutions(improvementPlan.targetAreas);
       const solution = this.createDeliverable('Solution Design Document', 'solution_design.md', solutionData);
-      
+
       // Implement pilot
       const pilotData = await this.implementPilot(solutionData.solutions);
       const pilot = this.createDeliverable('Pilot Implementation Results', 'pilot_results.md', pilotData);
-      
+
       // Validate improvements
       const validationData = await this.validateImprovements(pilotData.results);
       const validation = this.createDeliverable('Improvement Validation Report', 'improvement_validation.md', validationData);
@@ -337,11 +337,11 @@ export class DMAICProcessManager {
     try {
       // Create control plan
       const plan = this.createDeliverable('Control Plan', 'control_plan.md', controlPlan);
-      
+
       // Develop SOPs
       const sopData = await this.developStandardOperatingProcedures(controlPlan.processes);
       const sop = this.createDeliverable('Standard Operating Procedures', 'sop_documentation.md', sopData);
-      
+
       // Establish continuous improvement
       const ciData = await this.establishContinuousImprovement(controlPlan.improvementFramework);
       const ci = this.createDeliverable('Continuous Improvement Framework', 'continuous_improvement.md', ciData);
@@ -371,7 +371,7 @@ export class DMAICProcessManager {
   // Utility Methods
   private initializePhases(): void {
     const phases: DMAICPhase[] = ['define', 'measure', 'analyze', 'improve', 'control'];
-    
+
     phases.forEach(phase => {
       this.phaseData.set(phase, {
         phase: this.createPhaseDefinition(phase),
@@ -472,11 +472,11 @@ export class DMAICProcessManager {
   private getNextPhase(currentPhase: DMAICPhase): DMAICPhase | null {
     const phaseOrder: DMAICPhase[] = ['define', 'measure', 'analyze', 'improve', 'control'];
     const currentIndex = phaseOrder.indexOf(currentPhase);
-    
+
     if (currentIndex === -1 || currentIndex === phaseOrder.length - 1) {
       return null;
     }
-    
+
     return phaseOrder[currentIndex + 1];
   }
 
