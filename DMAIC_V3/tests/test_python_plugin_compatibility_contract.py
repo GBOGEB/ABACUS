@@ -4,11 +4,14 @@ This tests the explicit support matrix from the source manifest without
 pretending package metadata or a resolver has been independently verified.
 Native 3.9 / 3.11 / 3.12 installation and benchmark test proof remain required.
 """
+
 from __future__ import annotations
 
+import re
 from pathlib import Path
 
-from packaging.requirements import Requirement
+import pytest
+from packaging.requirements import InvalidRequirement, Requirement
 from packaging.version import Version
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -24,18 +27,22 @@ def _requirements(text: str) -> list[Requirement]:
     entries = []
     for line in text.splitlines():
         value = line.strip()
-        if not value or value.startswith("#"):
+        if not value or value.startswith(("#", "-")):
             continue
-        if value.startswith("-"):
-            continue
+        # pip's inline comment starts at whitespace followed by '#'. Do not
+        # strip hash fragments inside PEP 508 direct-reference URLs.
+        value = re.split(r"\s+#", value, maxsplit=1)[0].strip()
         entries.append(Requirement(value))
     return entries
 
 
-def _applicable(entries: list[Requirement], name: str, version: str) -> list[Requirement]:
+def _applicable(
+    entries: list[Requirement], name: str, version: str
+) -> list[Requirement]:
     environment = {"python_version": version}
     return [
-        item for item in entries
+        item
+        for item in entries
         if item.name.lower().replace("_", "-") == name
         and (item.marker is None or item.marker.evaluate(environment))
     ]
@@ -48,7 +55,9 @@ def test_one_applicable_constraint_for_each_plugin_and_interpreter():
             matching = _applicable(entries, name, python_version)
             assert len(matching) == 1, (name, python_version, matching)
             assert Version(package_version) in matching[0].specifier, (
-                name, python_version, package_version
+                name,
+                python_version,
+                package_version,
             )
 
 
@@ -78,3 +87,32 @@ def test_missing_and_duplicate_constraints_fail_closed():
     duplicate = _requirements("pytest>=8\npytest>=9\n")
     assert len(_applicable(duplicate, "pytest", "3.11")) == 2
     assert not _applicable([], "pytest", "3.11")
+
+
+def test_pip_inline_comment_preserves_marker_and_url_fragment():
+    entries = _requirements(
+        "sphinx>=9.1.0,<10.0.0; python_version >= '3.12'  # requires 3.12\n"
+        "demo @ https://example.invalid/demo.whl#sha256=abcd  # hashed source\n"
+    )
+    assert len(entries) == 2
+    assert entries[0].marker.evaluate({"python_version": "3.12"})
+    assert not entries[0].marker.evaluate({"python_version": "3.11"})
+    assert entries[1].url.endswith("#sha256=abcd")
+    with pytest.raises(InvalidRequirement):
+        _requirements("pytest>==9  # malformed specifier must remain red\n")
+
+
+def test_flake8_legacy_and_modern_interpreter_boundaries():
+    entries = _requirements(MANIFEST.read_text(encoding="utf-8"))
+    expectations = {
+        "3.9": ("7.3.0", "7.4.1"),
+        "3.10": ("7.4.1", "7.3.0"),
+        "3.11": ("7.4.1", "7.3.0"),
+        "3.12": ("7.4.1", "7.3.0"),
+    }
+    for python_version, (allowed, rejected) in expectations.items():
+        matching = _applicable(entries, "flake8", python_version)
+        assert len(matching) == 1, (python_version, matching)
+        assert Version(allowed) in matching[0].specifier
+        assert Version(rejected) not in matching[0].specifier
+    assert not _applicable(entries, "flake8", "3.8")
