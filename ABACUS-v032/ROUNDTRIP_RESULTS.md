@@ -1,8 +1,8 @@
 # 🔄 ABACUS v032/v033 Alignment - Roundtrip Results
 
-**Date:** 2025-01-17  
-**Branch:** `roundtrip/20251117_042931`  
-**Commit:** `5adab27`  
+**Date:** 2025-01-17
+**Branch:** `roundtrip/20251117_042931`
+**Commit:** `5adab27`
 **Repository:** https://github.com/GBOGEB/ABACUS.git
 
 ---
@@ -275,6 +275,6 @@ cat QUICK_REFERENCE_ALIGNMENT.md
 
 ---
 
-*Generated: 2025-01-17*  
-*Branch: roundtrip/20251117_042931*  
+*Generated: 2025-01-17*
+*Branch: roundtrip/20251117_042931*
 *Commit: 5adab27*

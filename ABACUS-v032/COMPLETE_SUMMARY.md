@@ -189,7 +189,7 @@ c104823 - ci/cd: Docker and workflows update
    ```powershell
    # Dry run first
    python bulk_resolve_github_issues.py --repo GBOGEB/ABACUS --action close --dry-run
-   
+
    # Then for real
    python bulk_resolve_github_issues.py --repo GBOGEB/ABACUS --action close
    ```
@@ -329,7 +329,7 @@ All documentation available in `ABACUS-v032/`:
 
 ---
 
-**Generated**: 2025-11-17 11:30:00  
-**Version**: v033.1  
-**Status**: ✅ PRODUCTION READY + BULK RESOLUTION TOOL  
+**Generated**: 2025-11-17 11:30:00
+**Version**: v033.1
+**Status**: ✅ PRODUCTION READY + BULK RESOLUTION TOOL
 **Principle**: *KNOWLEDGE MUST GROW, NEVER DILUTE*
