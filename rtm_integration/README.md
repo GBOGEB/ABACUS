@@ -5,7 +5,7 @@ This directory contains the complete Requirements Traceability Matrix (RTM) inte
 ## Contents
 
 - deliverables/: Final RTM Excel files and analysis reports
-- docs/: Engineering handover documentation and analysis summaries  
+- docs/: Engineering handover documentation and analysis summaries
 - automation/: GitHub workflows and automation scripts for ongoing RTM management
 - templates/: RTM templates for future projects
 
