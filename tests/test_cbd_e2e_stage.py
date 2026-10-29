@@ -1,4 +1,5 @@
 """Adversarial stage, clock, clean-clone, source and coverage-scope tests."""
+
 import copy
 import json
 import subprocess
@@ -17,8 +18,10 @@ def receipt(stage="checkout", sha="a" * 40, tests=55):
         "stage": stage,
         "status": "PASS",
         "source": {"head_sha": sha, "head_tree_sha": "b" * 40},
-        "checks": [{"name": name, "status": "PASS"}
-                   for name in ("compile", "black", "isort", "pytest")],
+        "checks": [
+            {"name": name, "status": "PASS"}
+            for name in ("compile", "black", "isort", "pytest")
+        ],
         "tests_executed": tests,
         "clock": {"elapsed_process_ms": 1200},
     }
@@ -42,7 +45,9 @@ def test_different_source_sha_cannot_pass():
 def test_different_tree_sha_cannot_pass():
     other = receipt("replay")
     other["source"]["head_tree_sha"] = "d" * 40
-    assert "source mismatch: head_tree_sha" in e2e.compare(receipt(), other)["differences"]
+    assert (
+        "source mismatch: head_tree_sha" in e2e.compare(receipt(), other)["differences"]
+    )
 
 
 def test_different_executed_denominators_hold():
@@ -81,7 +86,6 @@ def test_output_hashes_instead_of_raw_secret(tmp_path):
     assert len(evidence["stdout_sha256"]) == 64
 
 
-
 def test_secret_in_argv_cannot_enter_stage_receipt(tmp_path):
     secret = "CREDENTIAL_NEVER_PRINT_THIS_VALUE"
     raw = e2e.command(
@@ -116,26 +120,44 @@ def test_no_required_files_is_not_success(tmp_path):
 
 
 def test_expected_git_sha_mismatch_is_hard_failure(tmp_path):
-    with mock.patch.object(e2e, "fingerprint", return_value={
-        "head_sha": "a" * 40,
-        "head_tree_sha": "b" * 40,
-        "tracked_changes_present": False,
-    }), mock.patch.object(e2e, "tools_for_stage", return_value=[
-        ("pytest", [sys.executable, "-c", "print('4 passed')"])
-    ]):
+    with (
+        mock.patch.object(
+            e2e,
+            "fingerprint",
+            return_value={
+                "head_sha": "a" * 40,
+                "head_tree_sha": "b" * 40,
+                "tracked_changes_present": False,
+            },
+        ),
+        mock.patch.object(
+            e2e,
+            "tools_for_stage",
+            return_value=[("pytest", [sys.executable, "-c", "print('4 passed')"])],
+        ),
+    ):
         result = e2e.run_stage(tmp_path, "checkout", "c" * 40)
     assert result["status"] == "FAIL"
     assert result["source_exact"] is False
 
 
 def test_dirty_tracked_prepush_is_rejected(tmp_path):
-    with mock.patch.object(e2e, "fingerprint", return_value={
-        "head_sha": "a" * 40,
-        "head_tree_sha": "b" * 40,
-        "tracked_changes_present": True,
-    }), mock.patch.object(e2e, "tools_for_stage", return_value=[
-        ("pytest", [sys.executable, "-c", "print('3 passed')"])
-    ]):
+    with (
+        mock.patch.object(
+            e2e,
+            "fingerprint",
+            return_value={
+                "head_sha": "a" * 40,
+                "head_tree_sha": "b" * 40,
+                "tracked_changes_present": True,
+            },
+        ),
+        mock.patch.object(
+            e2e,
+            "tools_for_stage",
+            return_value=[("pytest", [sys.executable, "-c", "print('3 passed')"])],
+        ),
+    ):
         result = e2e.run_stage(tmp_path, "pre-push")
     assert result["status"] == "FAIL"
     assert result["clean_tracked"] is False
@@ -156,10 +178,21 @@ def test_local_git_replay_checks_exact_checkout_without_network(tmp_path):
     subprocess.run(["git", "init", "-q", str(origin)], check=True)
     (origin / "README.md").write_text("source-bound")
     subprocess.run(["git", "-C", str(origin), "add", "README.md"], check=True)
-    subprocess.run([
-        "git", "-C", str(origin), "-c", "user.name=Test",
-        "-c", "user.email=tests@example.invalid", "commit", "-qm", "fixture"
-    ], check=True)
+    subprocess.run(
+        [
+            "git",
+            "-C",
+            str(origin),
+            "-c",
+            "user.name=Test",
+            "-c",
+            "user.email=tests@example.invalid",
+            "commit",
+            "-qm",
+            "fixture",
+        ],
+        check=True,
+    )
     sha = e2e.git_value(origin, "rev-parse", "HEAD")
     tree = e2e.git_value(origin, "rev-parse", "HEAD^{tree}")
     asserted = []
