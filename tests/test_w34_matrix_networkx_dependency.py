@@ -56,6 +56,8 @@ def test_mutation_wrong_or_unpinned_matrix_package_is_caught():
     valid = TEST_REQUIREMENTS.read_text(encoding="utf-8")
     for bogus in ("networkx", "networkx>=3", "networkx==3.6.1",
                   "networkx==3.7.0", "networkx==3.4.2"):
+        mutated = valid.replace(PIN_39, bogus)
+        assert _scope(mutated) != [PIN_39, PIN_310, PIN_NEW]
         mutated = valid.replace(PIN_NEW, bogus)
         assert _scope(mutated) != [PIN_39, PIN_310, PIN_NEW]
     for bogus in ("networkx", "networkx>=3", "networkx==3.6.1",
@@ -67,5 +69,5 @@ def test_mutation_wrong_or_unpinned_matrix_package_is_caught():
 def test_no_duplicate_or_extra_networkx_requirement():
     original = TEST_REQUIREMENTS.read_text(encoding="utf-8")
     duplicated = original + "\n" + PIN_NEW + "\n"
-    assert len(_scope(duplicated)) != 2
+    assert len(_scope(duplicated)) != 3
     assert len(_scope(original)) == 3
