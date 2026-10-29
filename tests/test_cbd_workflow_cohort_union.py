@@ -74,8 +74,13 @@ class CohortUnionTests(unittest.TestCase):
             ").strip()",
             "if actual_head != pull_head:",
         )
-        receipt_guard = re.compile(
+        checkout_guard = re.compile(
             r"if actual_head != pull_head:\n\s+raise SystemExit\("
+        )
+        receipt_guard = re.compile(
+            r'"pull_head_sha":\s*pull_head,\s*'
+            r'"event_sha":\s*os\.getenv\("GITHUB_EVENT_SHA"\),\s*'
+            r'"checkout_sha":\s*actual_head'
         )
         test_run = "-m unittest discover"
         guard_step = re.compile(
@@ -89,6 +94,7 @@ class CohortUnionTests(unittest.TestCase):
             # let a mutant that removes one copy pass undetected.
             for item in required:
                 self.assertEqual(source.count(item), 1, item)
+            self.assertEqual(len(checkout_guard.findall(source)), 1)
             self.assertEqual(len(receipt_guard.findall(source)), 1)
             # The shell guard must fail fast before the tests run; the Python
             # receipt check runs afterwards under always() and cannot.
@@ -110,7 +116,8 @@ class CohortUnionTests(unittest.TestCase):
             workflow.replace(required[2], "echo skipped", 1),
             workflow.replace(required[3], "actual_head = pull_head  #", 1),
             workflow.replace(required[6], "if False:", 1),
-            receipt_guard.sub("if actual_head != pull_head:\n    print(", workflow),
+            checkout_guard.sub("if actual_head != pull_head:\n    print(", workflow),
+            workflow.replace('"checkout_sha": actual_head', '"checkout_sha": pull_head', 1),
             workflow + "\n# " + required[6] + "\n",
             without_guard,
             guard_after_tests,
