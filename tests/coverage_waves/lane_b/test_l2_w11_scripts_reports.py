@@ -3,9 +3,9 @@
 import functools
 import json
 import sys
+import types
 from datetime import datetime as real_datetime
 
-import matplotlib
 import pytest
 
 from ._l2_loader import load
@@ -13,8 +13,62 @@ from ._l2_loader import load
 mx = load("scripts/markdown_exec_runner.py")
 rr = load("scripts/report_repo_relevance.py")
 
-with matplotlib.rc_context():
-    mc = load("scripts/generate_metrics_charts.py")
+
+class _Recorder:
+    """Stand-in for matplotlib figures/axes: records every call it receives.
+
+    The CI unit-test matrix does not install matplotlib, so the chart script is
+    exercised against this recorder instead of the real library.
+    """
+
+    def __init__(self, log, name):
+        self._log = log
+        self._name = name
+
+    def __getattr__(self, attr):
+        return _Recorder(self._log, self._name + "." + attr)
+
+    def __call__(self, *args, **kwargs):
+        self._log.append((self._name, args, kwargs))
+        return _Recorder(self._log, self._name + "()")
+
+
+class _Figure(_Recorder):
+    def savefig(self, path, **kwargs):
+        self._log.append(("fig.savefig", (path,), kwargs))
+        with open(path, "w", encoding="utf-8") as handle:
+            handle.write("<svg xmlns='http://www.w3.org/2000/svg'/>")
+
+
+def _fake_matplotlib():
+    log = []
+    open_figs = []
+    mpl = types.ModuleType("matplotlib")
+    plt = types.ModuleType("matplotlib.pyplot")
+    mpl.use = lambda backend: log.append(("use", (backend,), {}))
+    mpl.pyplot = plt
+    plt.rcParams = {}
+
+    def subplots(**kwargs):
+        fig = _Figure(log, "fig")
+        open_figs.append(fig)
+        log.append(("subplots", (), kwargs))
+        return fig, _Recorder(log, "ax")
+
+    def close(fig):
+        open_figs.remove(fig)
+
+    plt.subplots = subplots
+    plt.close = close
+    plt.get_fignums = lambda: list(range(len(open_figs)))
+    return mpl, plt, log
+
+
+_mpl, _plt, CHART_LOG = _fake_matplotlib()
+mc = load(
+    "scripts/generate_metrics_charts.py",
+    deps={"matplotlib": _mpl, "matplotlib.pyplot": _plt},
+)
 
 FIXED = real_datetime(2026, 1, 2, 3, 4, 5)
 
@@ -281,7 +335,9 @@ CHARTS = [
 
 
 def test_chart_module_uses_agg_and_accessible_palette():
-    assert matplotlib.get_backend().lower() == "agg"
+    assert ("use", ("Agg",), {}) in CHART_LOG
+    assert mc.plt.rcParams["axes.grid"] is True
+    assert mc.plt.rcParams["figure.facecolor"] == mc.BG
     assert set(mc.PALETTE) == {
         "define",
         "measure",
@@ -297,10 +353,19 @@ def test_chart_module_uses_agg_and_accessible_palette():
 @pytest.mark.parametrize("func,name", CHARTS)
 def test_chart_writes_svg(tmp_path, monkeypatch, capsys, func, name):
     monkeypatch.setattr(mc, "OUT_DIR", str(tmp_path))
-    with matplotlib.rc_context():
-        getattr(mc, func)()
+    start = len(CHART_LOG)
+    getattr(mc, func)()
+    calls = CHART_LOG[start:]
     svg = tmp_path / (name + ".svg")
-    content = svg.read_text(encoding="utf-8")
-    assert "<svg" in content
+    assert "<svg" in svg.read_text(encoding="utf-8")
     assert name + ".svg" in capsys.readouterr().out
     assert mc.plt.get_fignums() == []
+    saves = [c for c in calls if c[0] == "fig.savefig"]
+    assert saves == [
+        (
+            "fig.savefig",
+            (str(svg),),
+            {"format": "svg", "bbox_inches": "tight", "dpi": 150},
+        )
+    ]
+    assert any(c[0] == "ax.set_title" for c in calls)
