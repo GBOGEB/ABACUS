@@ -2,9 +2,9 @@
 
 # MIP v2 — Federated closed-loop control
 
-Status: implementation pulse 1  
-Predecessor: MIP v1 receipt-protection + exact-SHA self-index, 8/8 PASS -> CONTROL  
-Scope: `mip_v2_federated_closed_loop_control`  
+Status: implementation pulse 1
+Predecessor: MIP v1 receipt-protection + exact-SHA self-index, 8/8 PASS -> CONTROL
+Scope: `mip_v2_federated_closed_loop_control`
 Fixed denominator: 10 gates
 
 ## Architectural intent
