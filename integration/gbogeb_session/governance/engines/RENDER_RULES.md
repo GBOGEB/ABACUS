@@ -1,8 +1,8 @@
 # RENDER_RULES.md — GBOGEB/ABACUS Rendering Governance
 
-> **Version:** 1.0.0  
-> **Authority:** GBOGEB Governance Board  
-> **Enforcement:** Automated via `RENDER_LINTER.py` + CI/CD pipeline  
+> **Version:** 1.0.0
+> **Authority:** GBOGEB Governance Board
+> **Enforcement:** Automated via `RENDER_LINTER.py` + CI/CD pipeline
 > **Principle:** *"Generated outputs are NEVER canonical."*
 
 ---

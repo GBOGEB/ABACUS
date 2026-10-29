@@ -309,4 +309,3 @@ def test_b5_tests_directory_classifier_without_test_basename():
     )
     assert census["lanes"]["B5-tests"]["findings"] == 1
     assert census["lanes"]["B3-subprocess"]["findings"] == 0
-

@@ -1,7 +1,7 @@
 # Markdown Versioning and Timestamp Fix Report
 
-**Version:** 2.3.0  
-**Generated:** 2025-11-08T19:36:34.436870+00:00  
+**Version:** 2.3.0
+**Generated:** 2025-11-08T19:36:34.436870+00:00
 **Generated:** 2025-11-08T19:30:28.524152+00:00
 **Fixer Version:** 2.3.0
 
