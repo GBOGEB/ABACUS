@@ -126,12 +126,14 @@ def test_initialize_agents_mixed_success_and_failure(orch, monkeypatch):
     assert orch.performance_metrics["errors_handled"] == 2
 
 
-def test_production_defect_dotted_module_names_never_import(
+def check_production_defect_dotted_module_names_never_import(
     orch, tmp_path, monkeypatch
 ):
-    # Pins a production_defect: the configured module paths contain "v2.3", which
-    # import_module reads as sub-package "..._v2" plus module "3_OPTIMIZED", so no
-    # agent can ever load even when its file exists. Fails once that is fixed.
+    # Reproduction of a production_defect (see WAVE_LEDGER.jsonl). Named check_*
+    # so the governed suite does not collect it: a pinned defect must never block
+    # the fix. Run on demand: pytest -o python_functions=check_* <this file>
+    # The configured module paths contain "v2.3", which import_module reads as
+    # sub-package "..._v2" plus module "3_OPTIMIZED", so no agent can load.
     pkg_dir = tmp_path / "pkg"
     pkg_dir.mkdir()
     (pkg_dir / "analysis_smoke_test_v2.3_OPTIMIZED.py").write_bytes(

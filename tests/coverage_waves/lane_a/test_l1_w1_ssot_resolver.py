@@ -150,7 +150,7 @@ def test_roundtrip_ssot_zero_delta_receipt(spine_root):
 
 def test_roundtrip_ssot_rejects_non_bytes_transport(spine_root):
     with pytest.raises(TypeError, match="must return bytes"):
-        fzd.roundtrip_ssot(spine_root, "spine", transport=lambda p: bytearray(p))
+        fzd.roundtrip_ssot(spine_root, "spine", transport=bytearray)
 
 
 def test_roundtrip_ssot_detects_mutation(spine_root):

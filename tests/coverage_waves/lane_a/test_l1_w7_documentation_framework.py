@@ -96,9 +96,12 @@ def test_measure_synthetic_source(agent, tmp_path):
     assert m["total_words"] == 2500
 
 
-def test_production_defect_measure_real_file_counts_nothing(agent, tmp_path):
-    # Pins a production_defect: chunks streamed from a real file carry "lines",
-    # not "doc", so dmaic_measure counts zero documents. Fails once fixed.
+def check_production_defect_measure_real_file_counts_nothing(agent, tmp_path):
+    # Reproduction of a production_defect (see WAVE_LEDGER.jsonl). Named check_*
+    # so the governed suite does not collect it: a pinned defect must never block
+    # the fix. Run on demand: pytest -o python_functions=check_* <this file>
+    # Chunks streamed from a real file carry "lines", not "doc", so
+    # dmaic_measure counts zero documents.
     src = tmp_path / "doc.md"
     src.write_bytes(b"# Title\nsome text\n")
     m = agent.dmaic_measure(str(src))

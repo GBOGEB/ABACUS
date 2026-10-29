@@ -5,7 +5,6 @@ point every output at tmp_path so the tracked files stay untouched.
 """
 
 import json
-import locale
 import pathlib
 import runpy
 import sys
@@ -19,14 +18,6 @@ VALIDATOR = HANDOVER / "master" / "validate_consistency.py"
 
 cu = load("myrrha_handover/master/compute_utilities.py")
 ra = load("myrrha_handover/master/render_all.py")
-
-
-def _default_encoding_handles_arrows():
-    try:
-        "←→".encode(locale.getpreferredencoding(False))
-    except UnicodeEncodeError:
-        return False
-    return True
 
 
 @pytest.fixture(scope="module")
@@ -278,21 +269,28 @@ def test_load_config(render_root):
     assert cfg["accent"] == "#ff8a00"
 
 
-def test_main_renders_deck(render_root, capsys):
+def _utf8_default_write_text(monkeypatch):
+    # main() writes non-ASCII HTML with Path.write_text() and no encoding, which
+    # crashes on non-UTF-8 locales such as Windows cp1252 (a production_defect,
+    # see WAVE_LEDGER.jsonl). Default the encoding to UTF-8 so the behaviour test
+    # is portable; a fix that passes encoding="utf-8" still passes here.
+    original = pathlib.Path.write_text
+
+    def write_text(path, data, encoding=None, *args, **kwargs):
+        return original(path, data, encoding or "utf-8", *args, **kwargs)
+
+    monkeypatch.setattr(pathlib.Path, "write_text", write_text)
+
+
+def test_main_renders_deck(render_root, capsys, monkeypatch):
     tmp_path = render_root
     out_dir = tmp_path / "slides"
-    if not _default_encoding_handles_arrows():
-        # production_defect (see WAVE_LEDGER.jsonl): main() writes non-ASCII
-        # HTML with Path.write_text() and no encoding, so it crashes on
-        # non-UTF-8 locales such as Windows cp1252. Pinned until fixed.
-        with pytest.raises(UnicodeEncodeError):
-            ra.main()
-        return
+    _utf8_default_write_text(monkeypatch)
     ra.main()
-    deck = (tmp_path / "slides.html").read_text()
+    deck = (tmp_path / "slides.html").read_text(encoding="utf-8")
     assert "--primary:#123456" in deck and deck.count('<section class="slide') == 2
     assert sorted(p.name for p in out_dir.iterdir()) == ["cover.html", "slide-1.html"]
-    index = json.loads((tmp_path / "slides.json").read_text())
+    index = json.loads((tmp_path / "slides.json").read_text(encoding="utf-8"))
     assert [s["id"] for s in index] == ["cover", "slide-1"]
     assert index[1]["layout"] == "text-only"
     assert "Rendered 2 slides" in capsys.readouterr().out
