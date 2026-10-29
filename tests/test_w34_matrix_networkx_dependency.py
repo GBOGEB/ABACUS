@@ -12,7 +12,8 @@ CANONICAL_B0 = ROOT / ".github/workflows/mip-coverage-evidence.yml"
 SPINE = ROOT / "MIP/G3CS_CONVERGENCE_V2/observatory/w10/build_spine_neural_w13.py"
 W13_TESTS = ROOT / "MIP/G3CS_CONVERGENCE_V2/observatory/w10/tests/test_neural_spine_w13.py"
 
-PIN_310 = 'networkx==3.4.2; python_version < "3.11"'
+PIN_39 = 'networkx==3.2.1; python_version < "3.10"'
+PIN_310 = 'networkx==3.4.2; python_version >= "3.10" and python_version < "3.11"'
 PIN_NEW = 'networkx==3.6.1; python_version >= "3.11"'
 
 
@@ -24,9 +25,9 @@ def _scope(lines: str) -> list[str]:
 def test_matrix_and_b0_use_identical_interpreter_bound_pins():
     test = TEST_REQUIREMENTS.read_text(encoding="utf-8")
     dev = DEV_REQUIREMENTS.read_text(encoding="utf-8")
-    assert _scope(test) == [PIN_310, PIN_NEW]
-    assert _scope(dev) == [PIN_310, PIN_NEW]
-    assert len(set(_scope(test))) == 2
+    assert _scope(test) == [PIN_39, PIN_310, PIN_NEW]
+    assert _scope(dev) == [PIN_39, PIN_310, PIN_NEW]
+    assert len(set(_scope(test))) == 3
 
 
 def test_broad_native_matrix_really_installs_the_test_requirements():
@@ -56,15 +57,15 @@ def test_mutation_wrong_or_unpinned_matrix_package_is_caught():
     for bogus in ("networkx", "networkx>=3", "networkx==3.6.1",
                   "networkx==3.7.0", "networkx==3.4.2"):
         mutated = valid.replace(PIN_NEW, bogus)
-        assert _scope(mutated) != [PIN_310, PIN_NEW]
+        assert _scope(mutated) != [PIN_39, PIN_310, PIN_NEW]
     for bogus in ("networkx", "networkx>=3", "networkx==3.6.1",
                   "networkx==3.7.0", "networkx==3.4.2"):
         mutated = valid.replace(PIN_310, bogus)
-        assert _scope(mutated) != [PIN_310, PIN_NEW]
+        assert _scope(mutated) != [PIN_39, PIN_310, PIN_NEW]
 
 
 def test_no_duplicate_or_extra_networkx_requirement():
     original = TEST_REQUIREMENTS.read_text(encoding="utf-8")
     duplicated = original + "\n" + PIN_NEW + "\n"
     assert len(_scope(duplicated)) != 2
-    assert len(_scope(original)) == 2
+    assert len(_scope(original)) == 3
