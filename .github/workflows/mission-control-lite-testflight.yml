@@ -14,6 +14,8 @@ on:
       - 'scripts/validate_changed_docs.py'
       - 'tests/test_validate_changed_docs_selector.py'
       - 'tests/test_bd_telemetry.py'
+      - 'tests/test_mcl_gate_census.py'
+      - 'tests/test_mcl_job_first_red.py'
       - 'DMAIC_V3/requirements.txt'
       - '.github/workflows/mission-control-lite-testflight.yml'
 permissions:
@@ -27,7 +29,7 @@ jobs:
         with:
           ref: ${{ github.event.pull_request.head.sha || github.sha }}
           persist-credentials: false
-      - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97
+      - uses: actions/setup-python@6d4fd22b20465ccc0f7354476588e8df7c9ca0e0
         with:
           python-version: '3.11'
       - name: Focused tests and timed coverage stages
@@ -71,6 +73,18 @@ jobs:
             -m unittest discover -s tests \
             -p test_bd_telemetry.py -v \
             > evidence/telemetry-tests.log 2>&1
+          python -m mission_control_lite.timing_pulse measure \
+            --output evidence/phase-times.json --phase gate-census-tests -- \
+            python -m coverage run --append --branch \
+            --source=mission_control_lite \
+            -m unittest discover -s tests -p test_mcl_gate_census.py -v \
+            > evidence/gate-census-tests.log 2>&1
+          python -m mission_control_lite.timing_pulse measure \
+            --output evidence/phase-times.json --phase first-red-tests -- \
+            python -m coverage run --append --branch \
+            --source=mission_control_lite \
+            -m unittest discover -s tests -p test_mcl_job_first_red.py -v \
+            > evidence/first-red-tests.log 2>&1
           python -m mission_control_lite.timing_pulse measure \
             --output evidence/phase-times.json --phase recovery-tests -- \
             python -m coverage run --append --branch \
@@ -120,6 +134,8 @@ jobs:
             --metrics-log evidence/metrics-tests.log \
             --timing-tests-log evidence/timing-tests.log \
             --telemetry-tests-log evidence/telemetry-tests.log \
+            --gate-census-tests-log evidence/gate-census-tests.log \
+            --job-first-red-tests-log evidence/first-red-tests.log \
             --recovery-tests-log evidence/recovery-tests.log \
             --runner-wait-tests-log evidence/runner-wait-tests.log \
             --adversarial-family-tests-log \
@@ -181,6 +197,8 @@ jobs:
             --output evidence/metrics-tests.log \
             --output evidence/timing-tests.log \
             --output evidence/telemetry-tests.log \
+            --output evidence/gate-census-tests.log \
+            --output evidence/first-red-tests.log \
             --output evidence/recovery-tests.log \
             --output evidence/runner-wait-tests.log \
             --output evidence/adversarial-family-tests.log \

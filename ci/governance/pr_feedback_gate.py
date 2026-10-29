@@ -154,7 +154,6 @@ CONDITIONAL_WORKFLOW_PATHS = {
         "governance/dab/**",
         "governance/proposals/**",
         "DMAIC_V3/**/*.py",
-        "MINERVA_PID/**/*.py",
         "tools/**/*.py",
         "integration_DOW_KEB_MASTER/**/*.py",
         "DMAIC_V3/tests/**",

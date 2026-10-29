@@ -1,0 +1,254 @@
+{
+  "$schema": "https://gbogeb.dev/schemas/knowledge-topology-v1.json",
+  "schema_version": "1.0.0",
+  "last_updated": "2026-05-20T10:00:00Z",
+  "description": "Cross-repository knowledge topology mapping GBA (ABACUS) and GBC (CODEX) nodes, their relationships, and dependency graph.",
+
+  "repositories": {
+    "GBA": {
+      "full_name": "GBOGEB/ABACUS",
+      "role": "Governance & Processing Engine",
+      "description": "Deterministic engineering publication compiler — validates, transforms, and renders content with full lineage tracking.",
+      "url": "https://github.com/GBOGEB/ABACUS"
+    },
+    "GBC": {
+      "full_name": "GBOGEB/CODEX",
+      "role": "Design & Theme Blueprint",
+      "description": "Canonical source of truth for design tokens, theme definitions, and binary master assets.",
+      "url": "https://github.com/GBOGEB/CODEX"
+    }
+  },
+
+  "nodes": [
+    {
+      "id": "GBA-GOV-001",
+      "repo": "GBA",
+      "label": "Render Rules Engine",
+      "category": "governance",
+      "path": "engines/RENDER_RULES.md",
+      "description": "Master specification for all rendering governance rules (overflow, contrast, heading hierarchy, orphan bullets, figure refs).",
+      "outputs": ["GBA-GOV-002", "GBA-GOV-005"],
+      "cross_repo_deps": []
+    },
+    {
+      "id": "GBA-GOV-002",
+      "repo": "GBA",
+      "label": "Render Linter",
+      "category": "governance",
+      "path": "engines/RENDER_LINTER.py",
+      "description": "Python linter enforcing RENDER_RULES against Markdown/HTML content.",
+      "outputs": ["GBA-CI-001"],
+      "cross_repo_deps": []
+    },
+    {
+      "id": "GBA-GOV-003",
+      "repo": "GBA",
+      "label": "WCAG Contrast Checker",
+      "category": "governance",
+      "path": "engines/WCAG_CONTRAST_CHECKER.py",
+      "description": "Validates WCAG AA contrast ratios across all theme color pairs.",
+      "outputs": ["GBA-CI-001"],
+      "cross_repo_deps": ["GBC-THEME-001"]
+    },
+    {
+      "id": "GBA-GOV-004",
+      "repo": "GBA",
+      "label": "Slide ID Enforcer",
+      "category": "governance",
+      "path": "engines/SLIDE_ID_ENFORCER.py",
+      "description": "Validates slide ID format (XX-YYY-NNN), uniqueness, and immutability.",
+      "outputs": ["GBA-CI-001"],
+      "cross_repo_deps": []
+    },
+    {
+      "id": "GBA-GOV-005",
+      "repo": "GBA",
+      "label": "Semantic Theme",
+      "category": "theme",
+      "path": "engines/SEMANTIC_THEME.yaml",
+      "description": "CSS custom property token definitions for light/dark themes with WCAG AA compliance.",
+      "outputs": ["GBA-GOV-003", "GBA-WEB-001", "GBA-EX-001"],
+      "cross_repo_deps": ["GBC-THEME-001"]
+    },
+    {
+      "id": "GBA-GOV-006",
+      "repo": "GBA",
+      "label": "Layout Contracts",
+      "category": "governance",
+      "path": "engines/LAYOUT_CONTRACTS.yaml",
+      "description": "Deterministic spacing, typography scale, and layout rules.",
+      "outputs": ["GBA-WEB-001"],
+      "cross_repo_deps": ["GBC-LAYOUT-001"]
+    },
+    {
+      "id": "GBA-GOV-007",
+      "repo": "GBA",
+      "label": "Lineage Schema",
+      "category": "lineage",
+      "path": "engines/LINEAGE_SCHEMA.yaml",
+      "description": "JSON Schema for lineage_manifest.json — asset tracking structure.",
+      "outputs": ["GBA-LIN-001"],
+      "cross_repo_deps": []
+    },
+    {
+      "id": "GBA-LIN-001",
+      "repo": "GBA",
+      "label": "Verification Hook",
+      "category": "lineage",
+      "path": "engines/verification_hook.py",
+      "description": "Binary asset processor — SHA256 hashing, .mock sidecar creation, manifest management.",
+      "outputs": ["GBA-LIN-002"],
+      "cross_repo_deps": ["GBC-ASSET-001"]
+    },
+    {
+      "id": "GBA-LIN-002",
+      "repo": "GBA",
+      "label": "Lineage Manifest",
+      "category": "lineage",
+      "path": "_data/lineage_manifest.json",
+      "description": "Central registry of all processed binary assets with SHA256 hashes and metadata.",
+      "outputs": [],
+      "cross_repo_deps": []
+    },
+    {
+      "id": "GBA-CI-001",
+      "repo": "GBA",
+      "label": "Governance Validation Pipeline",
+      "category": "ci_cd",
+      "path": ".github/workflows/governance-validation.yml",
+      "description": "CI/CD workflow: lint, contrast, slide-ids, tests — runs on PR and push to main.",
+      "outputs": [],
+      "cross_repo_deps": []
+    },
+    {
+      "id": "GBA-CI-002",
+      "repo": "GBA",
+      "label": "Asset Verification Pipeline",
+      "category": "ci_cd",
+      "path": ".github/workflows/asset-verification.yml",
+      "description": "CI/CD workflow for Input_Master/ binary asset verification and manifest integrity.",
+      "outputs": [],
+      "cross_repo_deps": []
+    },
+    {
+      "id": "GBA-CI-003",
+      "repo": "GBA",
+      "label": "Archive & Deploy Pipeline",
+      "category": "ci_cd",
+      "path": ".github/workflows/archive-deploy.yml",
+      "description": "Generates workspace_bundle.tar.gz and deploys web/ to GitHub Pages.",
+      "outputs": ["GBA-WEB-001"],
+      "cross_repo_deps": []
+    },
+    {
+      "id": "GBA-WEB-001",
+      "repo": "GBA",
+      "label": "Hub Landing Page",
+      "category": "web",
+      "path": "web/index.html",
+      "description": "Central navigation hub with download banner, topology cards, and links to all outputs.",
+      "outputs": [],
+      "cross_repo_deps": []
+    },
+    {
+      "id": "GBA-EX-001",
+      "repo": "GBA",
+      "label": "Multi-View Engineering Tool",
+      "category": "example",
+      "path": "examples/multi_view_workspace/",
+      "description": "SPA demonstrating split-pane YAML→render pipeline with HMI, Marp, and report views.",
+      "outputs": [],
+      "cross_repo_deps": []
+    },
+    {
+      "id": "GBA-CFG-001",
+      "repo": "GBA",
+      "label": "Governance Tuning",
+      "category": "config",
+      "path": "config/governance_tuning.yaml",
+      "description": "Central configuration for governance strictness, linter rules, contrast thresholds.",
+      "outputs": ["GBA-GOV-002", "GBA-GOV-003", "GBA-GOV-004"],
+      "cross_repo_deps": []
+    },
+    {
+      "id": "GBA-CFG-002",
+      "repo": "GBA",
+      "label": "Knowledge Topology",
+      "category": "config",
+      "path": "config/knowledge_topology.json",
+      "description": "This file — cross-repository node mapping and dependency graph.",
+      "outputs": ["GBA-WEB-001"],
+      "cross_repo_deps": []
+    },
+    {
+      "id": "GBA-CFG-003",
+      "repo": "GBA",
+      "label": "Stakeholder Registry",
+      "category": "config",
+      "path": "config/stakeholder_registry.yaml",
+      "description": "Communication routes mapping stakeholder groups to preferred output formats.",
+      "outputs": [],
+      "cross_repo_deps": []
+    },
+    {
+      "id": "GBC-THEME-001",
+      "repo": "GBC",
+      "label": "Design Tokens",
+      "category": "theme",
+      "path": "themes/tokens.yaml",
+      "description": "Canonical color palette, typography scale, and spacing tokens defined in CODEX.",
+      "outputs": ["GBA-GOV-005"],
+      "cross_repo_deps": []
+    },
+    {
+      "id": "GBC-LAYOUT-001",
+      "repo": "GBC",
+      "label": "Layout Blueprints",
+      "category": "layout",
+      "path": "layouts/",
+      "description": "Master layout specifications and grid definitions from CODEX.",
+      "outputs": ["GBA-GOV-006"],
+      "cross_repo_deps": []
+    },
+    {
+      "id": "GBC-ASSET-001",
+      "repo": "GBC",
+      "label": "Binary Master Assets",
+      "category": "asset",
+      "path": "exports/",
+      "description": "Source PPTX, PDF, and image files exported from CODEX for ABACUS processing.",
+      "outputs": ["GBA-LIN-001"],
+      "cross_repo_deps": []
+    }
+  ],
+
+  "edges": [
+    {"from": "GBC-ASSET-001", "to": "GBA-LIN-001", "type": "cross_repo", "label": "Binary asset export"},
+    {"from": "GBC-THEME-001", "to": "GBA-GOV-005", "type": "cross_repo", "label": "Design token sync"},
+    {"from": "GBC-LAYOUT-001", "to": "GBA-GOV-006", "type": "cross_repo", "label": "Layout blueprint sync"},
+    {"from": "GBA-GOV-001", "to": "GBA-GOV-002", "type": "internal", "label": "Rules → Linter implementation"},
+    {"from": "GBA-GOV-005", "to": "GBA-GOV-003", "type": "internal", "label": "Theme → Contrast validation"},
+    {"from": "GBA-GOV-002", "to": "GBA-CI-001", "type": "internal", "label": "Linter → CI pipeline"},
+    {"from": "GBA-GOV-003", "to": "GBA-CI-001", "type": "internal", "label": "Contrast → CI pipeline"},
+    {"from": "GBA-GOV-004", "to": "GBA-CI-001", "type": "internal", "label": "Slide IDs → CI pipeline"},
+    {"from": "GBA-LIN-001", "to": "GBA-LIN-002", "type": "internal", "label": "Hook → Manifest update"},
+    {"from": "GBA-GOV-007", "to": "GBA-LIN-001", "type": "internal", "label": "Schema → Hook validation"},
+    {"from": "GBA-CFG-001", "to": "GBA-GOV-002", "type": "internal", "label": "Tuning → Linter config"},
+    {"from": "GBA-CFG-002", "to": "GBA-WEB-001", "type": "internal", "label": "Topology → Hub rendering"},
+    {"from": "GBA-GOV-005", "to": "GBA-WEB-001", "type": "internal", "label": "Theme tokens → Hub styling"},
+    {"from": "GBA-GOV-005", "to": "GBA-EX-001", "type": "internal", "label": "Theme tokens → Example SPA"},
+    {"from": "GBA-CI-003", "to": "GBA-WEB-001", "type": "internal", "label": "Deploy → GitHub Pages"}
+  ],
+
+  "categories": {
+    "governance": {"color": "#6d28d9", "icon": "fa-shield-halved", "label": "Governance Engine"},
+    "lineage":    {"color": "#0891b2", "icon": "fa-link",           "label": "Knowledge Lineage"},
+    "theme":      {"color": "#d946ef", "icon": "fa-palette",        "label": "Theme & Design"},
+    "ci_cd":      {"color": "#f59e0b", "icon": "fa-gears",          "label": "CI/CD Pipeline"},
+    "web":        {"color": "#10b981", "icon": "fa-globe",           "label": "Web Interface"},
+    "example":    {"color": "#3b82f6", "icon": "fa-flask",           "label": "Example / Demo"},
+    "config":     {"color": "#64748b", "icon": "fa-sliders",         "label": "Configuration"},
+    "layout":     {"color": "#ec4899", "icon": "fa-table-columns",   "label": "Layout"},
+    "asset":      {"color": "#ef4444", "icon": "fa-file-zipper",     "label": "Binary Asset"}
+  }
+}

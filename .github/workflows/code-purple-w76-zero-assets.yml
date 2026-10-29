@@ -1,0 +1,81 @@
+name: CODE PURPLE W76 Zero-Covered Asset Recovery
+
+on:
+  pull_request:
+    paths:
+      - 'ci/w76_zero_coverage.py'
+      - 'ci/w76_zero_coverage_baseline.json'
+      - 'tests/test_w76_zero_*.py'
+      - '.github/workflows/code-purple-w76-zero-assets.yml'
+      - 'DMAIC_V3/agents/health_checker.py'
+      - 'DMAIC_V3/agents/style_extractor.py'
+      - 'DMAIC_V3/agents/framework.py'
+      - 'DMAIC_V3/agents/context_manager.py'
+      - 'DMAIC_V3/agents/iteration_tracker.py'
+      - 'DMAIC_V3/agents/dependency_graph.py'
+      - 'DMAIC_V3/agents/performance_tracker.py'
+      - 'DMAIC_V3/product_version.py'
+      - 'integration/codespace_jyperter/src/federation.py'
+      - 'integration/cryoplant_project/src/federation.py'
+  workflow_dispatch: {}
+
+permissions:
+  contents: read
+
+concurrency:
+  group: w76-zero-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  zero-asset-proof:
+    name: W76 proof (${{ matrix.os }}, Python ${{ matrix.python-version }})
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 12
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-24.04, windows-2025]
+        python-version: ['3.11', '3.12']
+    steps:
+      - name: Checkout exact PR HEAD with read-only permissions
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          persist-credentials: false
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+      - name: Python runtime
+        uses: actions/setup-python@6d4fd22b20465ccc0f7354476588e8df7c9ca0e0
+        with:
+          python-version: ${{ matrix.python-version }}
+      - name: Install baseline-matched coverage instrumenter
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -m pip install --disable-pip-version-check 'coverage==7.16.2'
+          python -m coverage --version
+      - name: Exact-head tests and bounded source-blob/denominator census
+        shell: bash
+        env:
+          EXPECTED_HEAD: ${{ github.event.pull_request.head.sha || github.sha }}
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$EXPECTED_HEAD"
+          mkdir -p w76-evidence
+          cp ci/w76_zero_coverage_baseline.json w76-evidence/baseline.json
+          python -m coverage run --branch -m unittest discover \
+            -s tests -p 'test_w76_zero_*.py' -q \
+            2>&1 | tee w76-evidence/unittest.log
+          python -m coverage json -o w76-evidence/coverage.json
+          python ci/w76_zero_coverage.py \
+            --baseline w76-evidence/baseline.json \
+            --coverage-json w76-evidence/coverage.json \
+            --unittest-log w76-evidence/unittest.log \
+            --expected-head "$EXPECTED_HEAD" \
+            --repository-root . --out w76-evidence
+      - name: Upload bytes for independent verification; not admission
+        if: always()
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9
+        with:
+          name: w76-${{ matrix.os }}-py${{ matrix.python-version }}
+          path: w76-evidence/
+          if-no-files-found: warn
+          retention-days: 30

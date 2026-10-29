@@ -1,0 +1,349 @@
+<!doctype html>
+<html lang="en"><head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>MT-11: Kaeser HCC Technical Requirements</title>
+<style>
+  body { font-family: Arial, sans-serif; margin: 0; padding: 20px; background: #fff; color: #1a1a1a; line-height: 1.6; }
+  .page { max-width: 900px; margin: 0 auto; page-break-after: always; }
+  h1 { font-size: 24px; border-bottom: 3px solid #d62828; padding-bottom: 10px; margin-bottom: 20px; }
+  h2 { font-size: 18px; border-bottom: 2px solid #e0e0e0; padding-bottom: 8px; margin-top: 20px; margin-bottom: 12px; }
+  h3 { font-size: 14px; color: #333; margin-top: 16px; margin-bottom: 8px; }
+  table { width: 100%; border-collapse: collapse; margin: 12px 0; font-size: 13px; }
+  th { background: #f5f5f5; padding: 10px; text-align: left; border: 1px solid #ccc; font-weight: 600; }
+  td { padding: 10px; border: 1px solid #e0e0e0; }
+  tr:hover { background: #fafafa; }
+  .box { border: 1px solid #d62828; background: #fff5f5; padding: 12px; margin: 12px 0; border-left: 4px solid #d62828; }
+  .ok { color: #2ecc71; font-weight: 600; }
+  .warn { color: #f39c12; font-weight: 600; }
+  .critical { color: #e74c3c; font-weight: 600; }
+  .section { page-break-inside: avoid; }
+  .signature { margin-top: 40px; border-top: 1px solid #ccc; padding-top: 10px; }
+  @media print { body { margin: 0; padding: 10px; } .page { margin: 0; padding: 20px; } }
+</style>
+</head><body>
+<a href="#main-content" class="skip-link">Skip to main content</a>
+
+<div class="page">
+  <h1>MT-11: Kaeser HCC Technical Requirements</h1>
+  <p><strong>MYRRHA WCS Handover v0.4.6 · Request for Quotation (RFQ)</strong></p>
+  <p style="color: #666; font-size: 12px;">
+    Date: 2025-05-18<br>
+    Project: MYRRHA Helium Conditioning Circuit (HCC)<br>
+    Classification: Technical Procurement Specification<br>
+    Version: Final (MT-13: 400V Power Analysis Complete)
+  </p>
+
+  <div class="box">
+    <strong style="color: #d62828;">⚡ CRITICAL CONSTRAINT: 400V 3-Phase AC Supply</strong><br>
+    All equipment MUST be specified for 400V 3-phase 50 Hz AC with variable frequency drive (VFD) capability (50–72 Hz).
+    No 690V or 11 kV alternatives without explicit approval and step-up transformer design.
+  </div>
+
+  <h2>1. Project Overview</h2>
+  <p>
+    The MYRRHA (MYRRHA is a research reactor facility) Helium Conditioning Circuit requires high-capacity compressed air recovery
+    and processing to achieve 350 g/s helium flow at 300 °C and 20 bar outlet pressure. The HCC shall consist of three (3) identical
+    oil-free screw compressors (LP→HP stages) with integrated variable frequency drives (VFDs), soft-start contactor, cooling systems,
+    and pressure control instrumentation.
+  </p>
+  <p>
+    <strong>Primary objective:</strong> Supply three (3) FSD-series screw compressors (oil-free, preferred) capable of delivering
+    316 g/s helium flow at approximately 63–68 Hz operating frequency. Redundancy: N+2 (any two units can sustain 50% flow).
+  </p>
+
+  <h2>2. Operational Requirements</h2>
+  
+  <h3>2.1 Flow & Pressure</h3>
+  <table>
+    <tr><th>Parameter</th><th>Value</th><th>Notes</th></tr>
+    <tr><td>Total helium flow (baseline)</td><td>350 g/s @ delivery</td><td>After PVPS reduces inventory; HCC provides 300 g/s</td></tr>
+    <tr><td>HCC contribution</td><td>300 g/s (distributed across 3 units)</td><td>100 g/s per unit @ design frequency</td></tr>
+    <tr><td>Suction pressure</td><td>1.05 barA</td><td>Recovery compressor inlet; slight positive gage</td></tr>
+    <tr><td>Discharge pressure (HP)</td><td>14 barG typical; 10–17 barG range</td><td>Proportional relief valve; adjustable</td></tr>
+    <tr><td>Operating frequency range</td><td>50–72 Hz (variable)</td><td>50 Hz: minimum capacity (~50 g/s per unit)<br>72 Hz: maximum capacity (~112 g/s per unit)</td></tr>
+    <tr><td>Design point (baseline)</td><td>~63–68 Hz</td><td>Achieves 300 g/s total (100 g/s × 3)</td></tr>
+  </table>
+
+  <h3>2.2 Temperature Profile</h3>
+  <table>
+    <tr><th>Stage</th><th>Inlet Temp (°C)</th><th>Outlet Temp (°C)</th><th>Cooling Duty</th></tr>
+    <tr><td>LP suction (isothermal recovery)</td><td>~50</td><td>~50</td><td>Isothermal compression</td></tr>
+    <tr><td>LP discharge</td><td>~50</td><td>~140</td><td>LP heat removal: ~180 kW per unit (total 540 kW)</td></tr>
+    <tr><td>Intercooler (IP inlet)</td><td>~40–45</td><td>~40–45</td><td>IP suction cooling: ~95 kW per unit (total 285 kW)</td></tr>
+    <tr><td>HP discharge</td><td>~85</td><td>~180–200</td><td>HP post-cooling (HX3): ~283 kW per unit (total 850 kW)</td></tr>
+    <tr><td>Final outlet (post-HX3)</td><td>180</td><td>40</td><td><strong>Note: HX3 outlet = 40 °C; heated to 300 °C downstream in cryogenic unit</strong></td></tr>
+  </table>
+
+  <h3>2.3 Operating Conditions</h3>
+  <ul>
+    <li><strong>Duty cycle:</strong> Continuous operation, 24/7 (some turndown scenarios possible; see §2.4)</li>
+    <li><strong>Ambient air inlet:</strong> 15–25 °C, ≤70% relative humidity (IP54 air filters; assumes climate-controlled room)</li>
+    <li><strong>Coolant inlet (HX1, HX3):</strong> Circulating chiller: 12 °C, ~0.5 m³/min flow per unit</li>
+    <li><strong>Elevation:</strong> ~200 m above sea level (minimal air density correction; ≈2% loss)</li>
+    <li><strong>Vibration limits:</strong> ISO 10816-3 Group 1 (&lt;7.1 mm/s RMS velocity at 10–200 Hz)</li>
+    <li><strong>Noise limit:</strong> ≤85 dB(A) @ 1 m (oil-free compressors typically 78–82 dB; confirms requirement)</li>
+  </ul>
+
+  <h3>2.4 Turndown & Transient Operation</h3>
+  <table>
+    <tr><th>Scenario</th><th>Load (%)</th><th>Frequency</th><th>Notes</th></tr>
+    <tr><td>Baseline (normal)</td><td>100%</td><td>~68 Hz</td><td>300 g/s; nominal power ~1,080 kW (3×360 kW)</td></tr>
+    <tr><td>Reduced (off-design)</td><td>80%</td><td>~55 Hz</td><td>240 g/s; reduced helium inventory or experimental turndown</td></tr>
+    <tr><td>Turndown limit</td><td>50%</td><td>50 Hz</td><td>150 g/s; minimum frequency before efficiency loss</td></tr>
+    <tr><td>Emergency shutdown</td><td>0%</td><td>0 Hz</td><td>Soft-stop via soft-starter; coast-down time ~10 s expected</td></tr>
+    <tr><td>N+1 failure recovery</td><td>67%</td><td>~76 Hz (overspeed)</td><td>Two units reach 68 Hz + 8 Hz margin; thermal limits TBD</td></tr>
+  </table>
+
+  <h2>3. Mechanical Specifications</h2>
+
+  <h3>3.1 Compressor Type & Configuration</h3>
+  <table>
+    <tr><th>Specification</th><th>Value</th><th>Rationale</th></tr>
+    <tr><td><span class="critical">✘ Primary choice</span></td><td>FSD 575 SFC oil-free</td><td>Helium: ISO 8573-1 Class 1 required (no hydrocarbon contamination)</td></tr>
+    <tr><td>Secondary (if unavailable)</td><td>FSD 475 SFC oil-free</td><td>Smaller, but 2–3 units may be needed; review if capacity match possible</td></tr>
+    <tr><td>Tertiary (cost-driven)</td><td>FSD 575 direct oil-flooded + interstage dry compressor</td><td>Requires high-efficiency coalescence filtration; oil-free preferred</td></tr>
+    <tr><td>Configuration</td><td>Three (3) independent packages</td><td>Parallel piping; individual solenoid valve isolation; independent cooling</td></tr>
+    <tr><td>Motor coupling</td><td>Direct flexible coupling</td><td>Rubber or elastomeric spider; no flexible hose needed</td></tr>
+    <tr><td>Base/mounting</td><td>Vibration-isolated frame</td><td>Neoprene or natural rubber isolators; ISO 10816 Group 1 target</td></tr>
+  </table>
+
+  <h3>3.2 Dimensional Requirements</h3>
+  <table>
+    <tr><th>Unit</th><th>Est. Footprint (L × W × H)</th><th>Weight</th><th>Floor Loading</th></tr>
+    <tr><td>FSD 575 SFC package</td><td>~3.2 m × 2.1 m × 2.3 m</td><td>~2–2.5 t</td><td>~100 kPa (acceptable on reinforced concrete ≥30 cm)</td></tr>
+    <tr><td>Oil separator (per unit, if flooded option)</td><td>~1.2 m × 0.6 m × 1.5 m</td><td>~0.4 t</td><td>Additional space for oil drain, filter change</td></tr>
+    <tr><td>Cooling manifold (HX1 + HX3)</td><td>~0.8 m × 0.6 m × 0.5 m</td><td>~0.3 t</td><td>Wall-mounted or equipment rack</td></tr>
+  </table>
+
+  <h3>3.3 Material Compatibility</h3>
+  <ul>
+    <li><strong>Gas path (helium contact):</strong> Stainless steel (304/316) or aluminium alloy; no carbon steel or ferrous in discharge pathways</li>
+    <li><strong>Valves (solenoid, relief, check):</strong> 316 stainless or brass; PTFE seals for helium permeability</li>
+    <li><strong>Gaskets/seals:</strong> PTFE, EPDM, or equivalent low-outgassing (helium-compatible); no nitrile (permeability loss)</li>
+    <li><strong>Cooling circuit (HX tubes):</strong> Cupro-nickel (90/10) or titanium preferred; aluminium acceptable if inhibitor treatment applied</li>
+  </ul>
+
+  <h2>4. Electrical Specifications (MT-13: 400V Power Analysis)</h2>
+
+  <h3>4.1 Supply Voltage & Frequency</h3>
+  <div class="box">
+    <strong>400V 3-phase 50 Hz AC grid supply (European standard)</strong><br>
+    VFD capability: 50–72 Hz variable operation<br>
+    <strong>Confirm:</strong> Motor nameplate shows 400V 3-phase 50 Hz; rotor winding is VFD-duty (thermally de-rated if required)
+  </div>
+
+  <h3>4.2 Motor Specifications (Per Unit)</h3>
+  <table>
+    <tr><th>Parameter</th><th>Value @ 68 Hz Design</th><th>Notes</th></tr>
+    <tr><td>Rated power (continuous)</td><td>~360 kW</td><td>Interpolated; confirm exact from Kaeser performance curve</td></tr>
+    <tr><td>Voltage</td><td>400V 3-phase AC</td><td>±10% tolerance acceptable (360–440V)</td></tr>
+    <tr><td>Frequency</td><td>50 Hz (grid) → VFD out: 50–72 Hz</td><td>No > 72 Hz operation @ 400V (flux saturation limit)</td></tr>
+    <tr><td>Power factor</td><td>~0.90 lagging (uncorrected)</td><td>Improved to ~0.92–0.95 with site PFC capacitor bank</td></tr>
+    <tr><td>Efficiency (motor alone)</td><td>≥93%</td><td>IE3 (premium) or IE4 (super-premium) preferred</td></tr>
+    <tr><td>Service factor</td><td>≥1.15</td><td>Allows 15% overload for 1 hour (N+1 redundancy scenario)</td></tr>
+    <tr><td>Insulation class</td><td>F (155 °C)</td><td>Thermal margin > 30 °C above case operating temperature</td></tr>
+    <tr><td>Cooling</td><td>IC81W (water-cooled) or TEFC (air-cooled)</td><td>Confirm: Kaeser standard configuration</td></tr>
+    <tr><td>Terminal box</td><td>IP54 or higher</td><td>Protects against dust and moisture in compressor room</td></tr>
+  </table>
+
+  <h3>4.3 VFD Requirements (Integrated or Separate?)</h3>
+  <p><strong>Primary requirement:</strong> Confirm whether Kaeser supplies integrated VFD drives or recommends external sourcing.</p>
+  <table>
+    <tr><th>Component</th><th>Specification</th><th>Critical Questions</th></tr>
+    <tr><td>VFD type</td><td>6-pulse or higher (12-pulse AFE preferred)</td><td>Does Kaeser supply? What harmonic profile?</td></tr>
+    <tr><td>Output: Soft-start</td><td>Ramp-up time 3–10 seconds (selectable)</td><td>Reduces inrush current to ~2×rated</td></tr>
+    <tr><td>Control signal</td><td>0–10 VDC command or Modbus RTU</td><td>Must integrate with site PLC</td></tr>
+    <tr><td>Protection (VFD):</td><td>Overcurrent, overvoltage, phase loss, overtemp</td><td>Auto-reset or manual? SIL rating?</td></tr>
+    <tr><td>Filter (input)</td><td>dU/dt filter (standard); harmonic filter (see MT-13)</td><td>Is harmonic filter integrated or external?</td></tr>
+    <tr><td>Thermal derating</td><td>If motor class F + VFD, confirm continuous rating</td><td>No de-rating assumed at 50–72 Hz band</td></tr>
+  </table>
+
+  <h3>4.4 Electrical Safety & Protection</h3>
+  <ul>
+    <li><strong>Motor protection (thermal):</strong> Embedded PTC thermistor or RTD sensor; cutout at 155 °C winding temp</li>
+    <li><strong>Pressure relief (safety):</strong> Set @ 17 bar; manual bleed valve for service</li>
+    <li><strong>Check valve (non-return):</strong> Prevents backflow if motor stalls; cracking pressure 0.5 bar above discharge</li>
+    <li><strong>Solenoid isolation valve:</strong> Pilot-operated, 24 VDC coil; manual override for emergency venting</li>
+    <li><strong>Soft-starter contactor:</strong> 3-phase soft-start unit; limits inrush to ≤3× rated current (coordinate with site electrical designer)</li>
+  </ul>
+
+  <h2>5. Cooling & Heat Rejection</h2>
+
+  <h3>5.1 Cooling Duty Breakdown (Per Unit @ Baseline)</h3>
+  <table>
+    <tr><th>Heat Source</th><th>Duty (kW)</th><th>Temperature (°C)</th><th>Removal Path</th></tr>
+    <tr><td>LP compression heat</td><td>~180</td><td>140 °C discharge</td><td>HX1 (oil cooler) → chiller</td></tr>
+    <tr><td>IP compression heat</td><td>~95</td><td>Intercooler outlet</td><td>HX1 sensible cooling</td></tr>
+    <tr><td>HP compression heat</td><td>~283</td><td>180 °C discharge → 85 °C</td><td>HX3 (post-cooler) → chiller</td></tr>
+    <tr><td style="font-weight: 600"><td>Total per unit</td><td>~558 kW</td><td>—</td><td>Combined cooling circuit</td></tr>
+  </table>
+
+  <h3>5.2 Cooler Specifications</h3>
+  <p><strong>Option A: Single integrated cooler (HX1+HX3 combined)</strong></p>
+  <table>
+    <tr><th>Parameter</th><th>Value</th><th>Notes</th></tr>
+    <tr><td>Type</td><td>Plate-frame heat exchanger</td><td>High duty density; easy maintenance (plate removal)</td></tr>
+    <tr><td>Total duty</td><td>~283 kW per unit (HX3 post-cooling)</td><td>Assumes HX1/IP cooling handled separately or within motor cooler</td></tr>
+    <tr><td>Approach (ΔT)</td><td>5 °C (outlet = 40 °C if inlet = 12 °C)</td><td>Confirms 85 °C → 40 °C outlet target</td></tr>
+    <tr><td>Coolant inlet (chiller)</td><td>12 °C, ~0.5 m³/min per unit</td><td>Flow rate depends on ΔT; confirm exact from Kaeser data</td></tr>
+    <tr><td>Material</td><td>Titanium plates (preferred) or stainless steel (min.)</td><td>Helium + water = no corrosion</td></tr>
+    <tr><td>Pressure drop (He side)</td><td>&lt;0.5 bar</td><td>Minimises load on discharge pressur system</td></tr>
+  </table>
+
+  <p><strong>Option B: Motor cooler integrated</strong></p>
+  <ul>
+    <li>Kaeser-supplied water-cooled motor jacket; cools motor + bearing oil simultaneously</li>
+    <li>Reduces separate equipment footprint</li>
+    <li>Confirm: Integrated or remote cooler option available?</li>
+  </ul>
+
+  <h3>5.3 Coolant Circulation</h3>
+  <ul>
+    <li><strong>Source:</strong> Central chiller (site-supplied), 12 °C setpoint, 0.5–1.0 m³/min per unit</li>
+    <li><strong>Piping:</strong> 1.0″ (25 mm) stainless steel or aluminium alloy; insulated to prevent condensation</li>
+    <li><strong>Temperature sensor:</strong> Outlet thermistor (4–20 mA output); alarm if &gt;50 °C (cooler fouling indicator)</li>
+    <li><strong>Flow switch:</strong> Normally-open switch @ inlet; closes if flow drops below 0.3 m³/min (pump failure detection)</li>
+    <li><strong>Isolation valves:</strong> Ball valves (manual) on inlet/outlet per cooler for service isolation</li>
+  </ul>
+
+  <h2>6. Instrumentation & Control</h2>
+
+  <h3>6.1 Required Sensors (Per Unit)</h3>
+  <table>
+    <tr><th>Parameter</th><th>Sensor Type</th><th>Output Signal</th><th>Setpoint/Alarm</th></tr>
+    <tr><td>Suction pressure</td><td>0–2 bar gauge pressure transmitter</td><td>4–20 mA</td><td>Monitor: ≥0.8 bar (inlet starvation alarm)</td></tr>
+    <tr><td>Discharge pressure (HP)</td><td>0–25 bar gauge transmitter</td><td>4–20 mA</td><td>Set relief: 17 bar; alarm: &gt;18 bar (overpressure)</td></tr>
+    <tr><td>Motor winding temperature</td><td>PTC thermistor or RTD Pt100</td><td>Resistance or 4–20 mA (via converter)</td><td>Trip: 155 °C; Warning: 145 °C</td></tr>
+    <tr><td>Cooler outlet temp. (He)</td><td>RTD Pt100 or thermocouple K</td><td>4–20 mA or Modbus</td><td>Monitor: 40 °C nominal; alarm &gt;50 °C</td></tr>
+    <tr><td>Cooler inlet flow rate</td><td>Turbine or gear flow meter</td><td>Pulse count or 4–20 mA</td><td>Alarm: &lt;0.3 m³/min (pump failure)</td></tr>
+    <tr><td>Vibration (bearing condition)</td><td>Accelerometer (optional)</td><td>FFT or overall RMS (4–20 mA)</td><td>Alarm: &gt;7.1 mm/s RMS (ISO 10816)</td></tr>
+  </table>
+
+  <h3>6.2 Control Interface</h3>
+  <ul>
+    <li><strong>Frequency command:</strong> 0–10 VDC input (0 Hz = 0V, 72 Hz = 10V); site PLC provides ramp</li>
+    <li><strong>Status feedback:</strong> Modbus RTU gateway (optional); allows remote diagnostics</li>
+    <li><strong>Interlocks:</strong>
+      <ul style="margin: 6px 0 0;">
+        <li>Coolant inlet flow switch → must close before motor start (prevents thermal overshoot)</li>
+        <li>Motor overtemp → soft-stop command (ramp down over 30 s)</li>
+        <li>Discharge overpressure (>18 bar) → proportional relief opens automatically</li>
+        <li>Any safety trip → solenoid isolation valve closes (vents gas to safe exhaust)</li>
+      </ul>
+    </li>
+  </ul>
+
+  <h2>7. Performance Requirements & Verification</h2>
+
+  <h3>7.1 Flow & Pressure Curve (Mandatory Datasheet Item)</h3>
+  <p><strong>Kaeser must provide for FSD 575 SFC (oil-free, 400V VFD duty):</strong></p>
+  <ul>
+    <li>Compressor flow (g/s He) vs. VFD frequency (50, 55, 60, 65, 68, 72 Hz)</li>
+    <li>Motor power (kW) vs. frequency (same points)</li>
+    <li>Discharge pressure (barG) @ constant load (helium isothermal assumed)</li>
+    <li>Motor efficiency (%) vs. frequency</li>
+    <li>Noise level (dB(A) @ 1 m) vs. frequency</li>
+    <li>Thermal capacity margin (winding temp rise @ continuous duty, 50–72 Hz range)</li>
+  </ul>
+
+  <h3>7.2 Efficiency Guarantees</h3>
+  <table>
+    <tr><th>Metric</th><th>Target / Guarantee</th><th>Test Method</th></tr>
+    <tr><td>Isothermal efficiency (compression alone)</td><td>≥50%</td><td>Calculated from flow/pressure/power data; Kaeser datasheet</td></tr>
+    <tr><td>Motor efficiency (IE3 premium)</td><td>≥93%</td><td>IEC 60034-2-1 test; nameplate declared</td></tr>
+    <tr><td>Overall plant efficiency (motor + compressor)</td><td>≥46.5% (0.93 × 0.50)</td><td>Derived; used for payback ROI analysis</td></tr>
+    <tr><td>Cooler effectiveness (ε = ΔT_actual / ΔT_max)</td><td>≥80%</td><td>Cooler performance chart from vendor</td></tr>
+  </table>
+
+  <h3>7.3 Redundancy & MTBF</h3>
+  <ul>
+    <li><strong>Configuration:</strong> N+2 redundancy (any 2 of 3 units maintain 50% flow)</li>
+    <li><strong>MTBF (Mean Time Between Failures):</strong> Target ≥15,000 hours (continuous duty, 24/7)</li>
+    <li><strong>MTTR (Mean Time To Repair):</strong> ≤8 hours (module swap-out with spares on site)</li>
+    <li><strong>Warranty:</strong> Minimum 2 years parts + labour; 3–5 years optional extended coverage</li>
+  </ul>
+
+  <h2>8. Delivery & Installation</h2>
+
+  <h3>8.1 Scope of Supply (Kaeser)</h3>
+  <ul>
+    <li>Three (3) complete FSD 575 SFC packages: compressor + motor + VFD (if integrated) + cooler + controls + pressure relief</li>
+    <li>Soft-start contractor (if not Kaeser-integrated, separate quotation)</li>
+    <li>Vibration isolators + base frame for each unit</li>
+    <li>High-pressure hose assemblies (discharge: compressor → manifold/cooler)</li>
+    <li>Low-pressure hose assemblies (suction recovery: inlet → compressor)</li>
+    <li>Coolant hoses + fittings (from chiller to cooler)</li>
+    <li>Electrical: Power cable terminations, control wiring harnesses, 24 VDC sensor wiring</li>
+    <li>Spare parts kit: Oil seals (if oil-flooded option), V-belts (if used), compressor valve plates</li>
+    <li>Technical documentation: Manuals, performance curves, wiring diagrams, parts lists, CAD drawings (3D STEP preferred)</li>
+  </ul>
+
+  <h3>8.2 Delivery & Site Preparation</h3>
+  <ul>
+    <li><strong>Delivery location:</strong> MYRRHA site, Belgium (transport via EUR pallet)</li>
+    <li><strong>Delivery schedule:</strong> Lead time 8–12 weeks from order (to be confirmed); expedite options available at cost</li>
+    <li><strong>Packaging:</strong> Wooden skid with load straps; protective covers on all openings</li>
+    <li><strong>Site infrastructure (owner-supplied):</strong> Concrete floor (≥300 mm, reinforced); 400V 3-phase power supply; coolant circulation pump + chiller</li>
+  </ul>
+
+  <h3>8.3 Commissioning & Testing</h3>
+  <ul>
+    <li><strong>Factory acceptance test (FAT):</strong> Kaeser to perform idle run + pressure relief venting @ rated discharge pressure</li>
+    <li><strong>Site acceptance test (SAT):</strong> Full load test @ 68 Hz; verify flow, pressure, temperature, motor current within ±5% of guarantee</li>
+    <li><strong>Performance acceptance:</strong> Cooling water temperature rise matches ±5% of design; motor winding temp &lt;145 °C (continuous)</li>
+  </ul>
+
+  <h2>9. Cost & Schedule</h2>
+
+  <h3>9.1 Quotation Format (Requested from Kaeser)</h3>
+  <table>
+    <tr><th>Item</th><th>Qty</th><th>Unit</th><th>Price (€)</th><th>Lead Time</th></tr>
+    <tr><td>FSD 575 SFC Oil-Free, 400V VFD duty, complete package</td><td>3</td><td>ea</td><td>___</td><td>___ weeks</td></tr>
+    <tr><td>Soft-start contractor (3-phase, 3 × ~2,000A)</td><td>3</td><td>ea</td><td>___</td><td>___ weeks</td></tr>
+    <tr><td>Spare parts kit (year 1 service)</td><td>1</td><td>set</td><td>___</td><td>included</td></tr>
+    <tr><td>Documentation package (manuals, drawings, CAD)</td><td>1</td><td>set</td><td>___</td><td>included</td></tr>
+    <tr><td>Training (on-site commissioning, 2 days)</td><td>1</td><td>ea</td><td>___</td><td>TBD</td></tr>
+    <tr style="font-weight: 600"><td>TOTAL (3 × FSD 575 + accessories)</td><td>—</td><td>—</td><td><strong>€___</strong></td><td>—</td></tr>
+  </table>
+
+  <h3>9.2 Timeline (Indicative)</h3>
+  <ul>
+    <li><strong>Week 1:</strong> RFQ issued; Kaeser response (5 calendar days)</li>
+    <li><strong>Week 2–3:</strong> Technical clarifications; cost negotiation</li>
+    <li><strong>Week 4:</strong> Purchase order release; factory production start</li>
+    <li><strong>Week 12–14:</strong> Equipment delivery to site</li>
+    <li><strong>Week 15–16:</strong> Site installation & commissioning</li>
+    <li><strong>Week 17:</strong> Performance testing & acceptance</li>
+  </ul>
+
+  <h2>10. Questions for Kaeser (RFQ Response)</h2>
+  <div class="box">
+    <ol style="margin: 0; padding-left: 20px;">
+      <li>Are FSD 575 SFC units available in 400V 3-phase 50 Hz with VFD capability (50–72 Hz)?</li>
+      <li>What is the motor nameplate power @ 68 Hz? (Expected ~360 kW, confirm exactly)</li>
+      <li>Does Kaeser supply integrated VFD drives, or must external drives be sourced?</li>
+      <li>What harmonic distortion profile (THD %) do your VFDs produce? (Must meet IEEE 519 &lt;5% with filtering)</li>
+      <li>Are cooling circuits integrated (motor + HP discharge) or separate?</li>
+      <li>What is the expected motor winding temperature rise @ continuous 68 Hz operation? (Should be &lt;30 K above 155 °C class F limit)</li>
+      <li>Confirm MTBF, warranty period, and spare parts availability.</li>
+      <li>Can you provide 3D CAD (STEP format) for layout coordination?</li>
+    </ol>
+  </div>
+
+  <h2 style="page-break-before: always;">Signature & Approval</h2>
+  <div class="signature">
+    <p>
+      <strong>Prepared by:</strong> MYRRHA WCS Engineering Team<br>
+      <strong>Date:</strong> 2025-05-18<br>
+      <strong>Version:</strong> v1.0 (Final)<br>
+      <strong>Approval:</strong> Project Manager __________ Date __________
+    </p>
+    <p style="margin-top: 20px; font-size: 12px; color: #666;">
+      This document is the basis for MT-11 vendor engagement. Kaeser's response must address all critical constraints,
+      especially 400V 3-phase 50–72 Hz VFD capability and harmonic compliance (IEEE 519).
+    </p>
+  </div>
+</div>
+
+</body></html>

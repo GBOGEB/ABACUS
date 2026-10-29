@@ -1,0 +1,96 @@
+<!doctype html>
+<html lang="en"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>MYRRHA WCS · Cross-Reference Matrix</title>
+<link rel="icon" href="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><text y='26' font-size='26'>🔗</text></svg>">
+<link rel="stylesheet" href="assets/style.css">
+<script src="assets/common.js" defer></script>
+<style>
+.breadcrumb{font-size:12px;color:var(--fg2);margin-bottom:12px}.breadcrumb a{color:var(--accent2)}
+.xref td,.xref th{font-size:12px;padding:6px 8px;text-align:center}
+.xref td:first-child,.xref th:first-child{text-align:left;font-weight:600;min-width:180px}
+.xref .link{background:var(--accent);color:#fff;border-radius:4px;padding:1px 6px;font-size:10px;cursor:default}
+.xref .link.g{background:#378ADD}.xref .link.t{background:#7F77DD}.xref .link.e{background:#D85A30}
+.label-card{background:var(--bg2);border:1px solid var(--border);border-radius:8px;padding:12px;margin:6px 0}
+.label-card h4{margin:0 0 4px;font-size:13px}.label-card .refs{font-size:12px;color:var(--fg2)}
+.cat-header{display:inline-block;padding:3px 10px;border-radius:4px;font-size:12px;font-weight:700;color:#fff;margin:4px 2px}
+.cat-B{background:#378ADD}.cat-G{background:#1D9E75}.cat-T{background:#7F77DD}.cat-E{background:#D85A30}
+.filter-row{display:flex;gap:6px;margin:12px 0;flex-wrap:wrap}
+.filter-row button{background:var(--bg);border:1px solid var(--border);border-radius:6px;padding:5px 10px;font-size:12px;cursor:pointer;font-family:inherit;color:var(--fg)}
+.filter-row button.active{border-color:var(--accent);color:var(--accent);font-weight:600}
+</style>
+</head><body>
+<div class="container">
+<p class="breadcrumb"><a href="index.html">Hub</a> › <a href="review-dmaic.html">DMAIC</a> › Cross-Reference Matrix</p>
+<h1>🔗 Cross-Reference Matrix</h1>
+<p class="muted">Traceability between all smart labels: <span class="cat-header cat-B">B — Baseline</span> <span class="cat-header cat-G">G — Graph</span> <span class="cat-header cat-T">T — Table</span> <span class="cat-header cat-E">E — Equation</span></p>
+
+<div class="filter-row">
+  <button class="active" onclick="filterCat('all',this)">All Labels</button>
+  <button onclick="filterCat('B',this)">B — Baseline (7)</button>
+  <button onclick="filterCat('G',this)">G — Graph (8)</button>
+  <button onclick="filterCat('T',this)">T — Table (6)</button>
+  <button onclick="filterCat('E',this)">E — Equation (5)</button>
+</div>
+
+<h2>Full Traceability Matrix</h2>
+<div class="card" style="overflow-x:auto">
+<table class="xref">
+<thead>
+<tr><th>Label</th><th>Description</th><th>Source View</th><th>Links to</th><th>data.json Key</th><th>Verified</th></tr>
+</thead>
+<tbody>
+<!-- B labels -->
+<tr data-cat="B"><td><span class="cat-header cat-B">B1</span></td><td>Baseline design point 350 g/s @ 14 barG</td><td><a href="truth.html">truth.html</a></td><td><span class="link g">G1</span> <span class="link t">T1</span> <span class="link e">E1</span></td><td>baseline.*</td><td>✓</td></tr>
+<tr data-cat="B"><td><span class="cat-header cat-B">B2</span></td><td>ALaT FSD 575 — 2 units @ 72 Hz → 220 g/s</td><td><a href="reports.html">reports.html</a></td><td><span class="link g">G1</span> <span class="link g">G2</span> <span class="link t">T1</span> <span class="link t">T2</span></td><td>operating_points[0]</td><td>✓</td></tr>
+<tr data-cat="B"><td><span class="cat-header cat-B">B3</span></td><td>LKT FSD 475 — 3 units @ 57 Hz → 264 g/s</td><td><a href="reports.html">reports.html</a></td><td><span class="link g">G1</span> <span class="link g">G2</span> <span class="link t">T1</span> <span class="link t">T2</span></td><td>operating_points[1]</td><td>✓</td></tr>
+<tr data-cat="B"><td><span class="cat-header cat-B">B4</span></td><td>RCW cooling ΔT=25°C, 30→55°C (max 85°C)</td><td><a href="hx-sizing.html">hx-sizing.html</a></td><td><span class="link g">G4</span> <span class="link t">T3</span> <span class="link e">E3</span></td><td>rcw.*</td><td>✓</td></tr>
+<tr data-cat="B"><td><span class="cat-header cat-B">B5</span></td><td>PVPS 2×5 N+1 config, γ=50 g/s target</td><td><a href="pvps.html">pvps.html</a></td><td><span class="link g">G5</span> <span class="link t">T4</span> <span class="link e">E4</span></td><td>lcc_pvps.*</td><td>⚠ Placeholder</td></tr>
+<tr data-cat="B"><td><span class="cat-header cat-B">B6</span></td><td>COMBI units — fixed 64 Hz concept</td><td><a href="hx-sizing.html">hx-sizing.html</a></td><td><span class="link g">G6</span> <span class="link t">T5</span></td><td>—</td><td>⚠ Concept</td></tr>
+<tr data-cat="B"><td><span class="cat-header cat-B">B7</span></td><td>3-skid architecture (HCC + PVPS + COMBI)</td><td><a href="reports.html">reports.html</a></td><td><span class="link g">G7</span> <span class="link t">T6</span> <span class="link e">E5</span></td><td>—</td><td>✓</td></tr>
+<!-- G labels -->
+<tr data-cat="G"><td><span class="cat-header cat-G">G1</span></td><td>Mass flow comparison (ALaT vs LKT)</td><td><a href="graphs.html">graphs.html</a></td><td><span class="link">B1</span> <span class="link">B2</span> <span class="link">B3</span></td><td>models.*</td><td>✓</td></tr>
+<tr data-cat="G"><td><span class="cat-header cat-G">G2</span></td><td>Power consumption curves</td><td><a href="graphs.html">graphs.html</a></td><td><span class="link">B2</span> <span class="link">B3</span> <span class="link t">T2</span></td><td>models.*.motor</td><td>✓</td></tr>
+<tr data-cat="G"><td><span class="cat-header cat-G">G3</span></td><td>Energy waterfall / Sankey</td><td><a href="thermo-analysis.html">thermo-analysis.html</a></td><td><span class="link e">E1</span> <span class="link e">E2</span></td><td>—</td><td>✓</td></tr>
+<tr data-cat="G"><td><span class="cat-header cat-G">G4</span></td><td>RCW heat exchanger sizing curves</td><td><a href="hx-sizing.html">hx-sizing.html</a></td><td><span class="link">B4</span> <span class="link t">T3</span></td><td>rcw.*</td><td>⚠ Partial</td></tr>
+<tr data-cat="G"><td><span class="cat-header cat-G">G5</span></td><td>PVPS unit performance map</td><td><a href="pvps.html">pvps.html</a></td><td><span class="link">B5</span> <span class="link t">T4</span></td><td>PVPS.*</td><td>⚠ Placeholder</td></tr>
+<tr data-cat="G"><td><span class="cat-header cat-G">G6</span></td><td>COMBI operating envelope</td><td><a href="hx-sizing.html">hx-sizing.html</a></td><td><span class="link">B6</span> <span class="link t">T5</span></td><td>—</td><td>⚠ Concept</td></tr>
+<tr data-cat="G"><td><span class="cat-header cat-G">G7</span></td><td>β/γ 3D operating window</td><td><a href="operations.html">operations.html</a></td><td><span class="link">B7</span> <span class="link e">E5</span></td><td>—</td><td>✓</td></tr>
+<tr data-cat="G"><td><span class="cat-header cat-G">G8</span></td><td>Exergy sunburst / T-s diagram</td><td><a href="thermo-analysis.html">thermo-analysis.html</a></td><td><span class="link e">E2</span> <span class="link e">E5</span></td><td>—</td><td>✓</td></tr>
+<!-- T labels -->
+<tr data-cat="T"><td><span class="cat-header cat-T">T1</span></td><td>Compressor spec comparison table</td><td><a href="tables.html">tables.html</a></td><td><span class="link">B1</span> <span class="link">B2</span> <span class="link">B3</span></td><td>models.*</td><td>✓</td></tr>
+<tr data-cat="T"><td><span class="cat-header cat-T">T2</span></td><td>Utility requirements summary</td><td><a href="tables.html">tables.html</a></td><td><span class="link">B2</span> <span class="link">B3</span> <span class="link g">G2</span></td><td>models.*.cw, .motor</td><td>✓</td></tr>
+<tr data-cat="T"><td><span class="cat-header cat-T">T3</span></td><td>RCW heat exchanger data</td><td><a href="hx-sizing.html">hx-sizing.html</a></td><td><span class="link">B4</span> <span class="link g">G4</span> <span class="link e">E3</span></td><td>rcw.*</td><td>⚠ Partial</td></tr>
+<tr data-cat="T"><td><span class="cat-header cat-T">T4</span></td><td>PVPS unit roster (LP1-LP10)</td><td><a href="pvps.html">pvps.html</a></td><td><span class="link">B5</span> <span class="link g">G5</span></td><td>PVPS.units[]</td><td>⚠ Placeholder</td></tr>
+<tr data-cat="T"><td><span class="cat-header cat-T">T5</span></td><td>COMBI configuration table</td><td><a href="hx-sizing.html">hx-sizing.html</a></td><td><span class="link">B6</span> <span class="link g">G6</span></td><td>—</td><td>⚠ Concept</td></tr>
+<tr data-cat="T"><td><span class="cat-header cat-T">T6</span></td><td>Config C24/C30 operating modes</td><td><a href="operations.html">operations.html</a></td><td><span class="link">B7</span> <span class="link g">G7</span> <span class="link e">E5</span></td><td>—</td><td>✓</td></tr>
+<!-- E labels -->
+<tr data-cat="E"><td><span class="cat-header cat-E">E1</span></td><td>Ideal gas compression work (W = mRT ln(P₂/P₁))</td><td><a href="utilities.html">utilities.html</a></td><td><span class="link">B1</span> <span class="link g">G3</span></td><td>—</td><td>✓</td></tr>
+<tr data-cat="E"><td><span class="cat-header cat-E">E2</span></td><td>Exergy balance (Ψ = H - T₀S)</td><td><a href="thermo-analysis.html">thermo-analysis.html</a></td><td><span class="link g">G3</span> <span class="link g">G8</span></td><td>—</td><td>✓</td></tr>
+<tr data-cat="E"><td><span class="cat-header cat-E">E3</span></td><td>LMTD heat exchanger sizing (Q = UA·LMTD)</td><td><a href="hx-sizing.html">hx-sizing.html</a></td><td><span class="link">B4</span> <span class="link t">T3</span></td><td>rcw.*</td><td>✓</td></tr>
+<tr data-cat="E"><td><span class="cat-header cat-E">E4</span></td><td>PVPS compression ratio & isothermal work</td><td><a href="pvps.html">pvps.html</a></td><td><span class="link">B5</span> <span class="link t">T4</span></td><td>PVPS.isothermal_efficiency</td><td>⚠ Placeholder</td></tr>
+<tr data-cat="E"><td><span class="cat-header cat-E">E5</span></td><td>Total system efficiency (η_sys = Σ η_comp × η_HX)</td><td><a href="thermo-analysis.html">thermo-analysis.html</a></td><td><span class="link">B7</span> <span class="link g">G7</span> <span class="link g">G8</span> <span class="link t">T6</span></td><td>—</td><td>✓</td></tr>
+</tbody></table>
+</div>
+
+<h2>Verification Summary</h2>
+<div class="card">
+<div class="kpi-grid" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:10px">
+  <div class="metric"><div class="l">Verified ✓</div><div class="v" style="color:#1D9E75">17</div></div>
+  <div class="metric"><div class="l">Placeholder ⚠</div><div class="v" style="color:#D85A30">7</div></div>
+  <div class="metric"><div class="l">Concept ⚠</div><div class="v" style="color:#C0392B">2</div></div>
+  <div class="metric"><div class="l">Total Labels</div><div class="v">26</div></div>
+</div>
+</div>
+
+</div>
+<script>
+function filterCat(cat,btn){
+  document.querySelectorAll('.filter-row button').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  document.querySelectorAll('.xref tbody tr').forEach(r=>{
+    r.style.display=(cat==='all'||r.dataset.cat===cat)?'':'none';
+  });
+}
+</script>
+</body></html>

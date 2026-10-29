@@ -16,17 +16,21 @@ import numpy as np
 OUT_DIR = os.path.join(os.path.dirname(__file__), "..", "docs", "assets", "charts")
 
 # ── shared style ──────────────────────────────────────────────────────────────
+# Colour-blind-safe palette mirroring docs/assets/abacus_chart_theme.js (light).
+# Every colour clears WCAG AA graphic contrast (>=3:1) vs the white/near-white
+# background and the hues stay distinguishable under deuteranopia/protanopia
+# (no red-vs-green dependency).
 PALETTE = {
-    "define":    "#1a73e8",
-    "measure":   "#34a853",
-    "analyze":   "#fbbc04",
-    "improve":   "#ea4335",
-    "control":   "#9c27b0",
-    "infra":     "#00bcd4",
-    "accent":    "#ff5722",
+    "define":    "#0051a2",  # blue        7.78:1
+    "measure":   "#117733",  # green       5.66:1
+    "analyze":   "#8a6d00",  # dark amber  4.92:1 (replaces pale yellow #fbbc04)
+    "improve":   "#b2182b",  # red         6.87:1
+    "control":   "#762a83",  # purple      8.64:1
+    "infra":     "#006d77",  # teal        6.08:1
+    "accent":    "#bf5b17",  # burnt-orange 4.45:1
 }
-BG = "#f8f9fa"
-GRID = "#dadce0"
+BG = "#ffffff"
+GRID = "#c7ccd1"
 FONT = "DejaVu Sans"
 
 plt.rcParams.update({

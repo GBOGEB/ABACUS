@@ -1,22 +1,34 @@
 <!DOCTYPE html>
 <html lang="en"><head>
   <meta charset="utf-8"/>
-  <title>DMAIC Metrics – 2026-10-05</title>
+  <title>DMAIC Metrics – 2026-10-27</title>
   <script src="https://cdn.plot.ly/plotly-2.27.0.min.js"></script>
   <style>body{font-family:system-ui,sans-serif;margin:0;background:#0d1117;color:#e6edf3}
-  .header{padding:1.5rem 2rem;background:#161b22;border-bottom:1px solid #30363d}
+  .header{
+    padding:1.5rem 2rem;
+    background:#161b22;
+    border-bottom:1px solid #30363d
+  }
   h1{margin:0;font-size:1.5rem}
   .sub{color:#8b949e;font-size:.9rem;margin-top:.3rem}
   .qs{font-size:2rem;font-weight:700;color:#58a6ff;display:inline-block;margin-left:1rem}
-  .charts{display:grid;grid-template-columns:1fr 1fr;gap:1.5rem;padding:1.5rem 2rem}
+  .charts{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:1.5rem;
+    padding:1.5rem 2rem
+  }
   @media(max-width:700px){.charts{grid-template-columns:1fr}}</style>
 </head><body>
 <div class="header">
   <h1>DMAIC Phase Metrics
-    <span class="qs">81.0/100</span>
+    <span class="qs">80.0/100</span>
   </h1>
-  <div class="sub">SHA: fa9089ba84da · Generated: 2026-10-05 09:42:33 UTC
-    · Commits (30d): 1767 / 4336 total
+  <div class="sub">
+    SHA: b92e22831a5a ·
+    Generated: 2026-10-27 22:35:38 UTC ·
+    Commits (30d): 4156 /
+    7742 total
   </div>
 </div>
 <div class="charts">
@@ -27,14 +39,19 @@
 </div>
 <script>
 const phases   = ["Define", "Measure", "Analyze", "Improve", "Control"];
-const scores   = [100, 100, 100, 45, 10];
-const files    = [22, 67, 180, 9, 2];
+const scores   = [100, 100, 100, 45, 5];
+const files    = [23, 84, 198, 9, 1];
 const radarScores = [...scores, scores[0]];
 const radarLabels = [...phases, phases[0]];
 
 Plotly.newPlot('radar', [{
-  type:'scatterpolar', r:radarScores, theta:radarLabels, fill:'toself',
-  line:{color:'#58a6ff'}, fillcolor:'rgba(88,166,255,0.2)', name:'Phase score'
+  type:'scatterpolar',
+  r:radarScores,
+  theta:radarLabels,
+  fill:'toself',
+  line:{color:'#58a6ff'},
+  fillcolor:'rgba(88,166,255,0.2)',
+  name:'Phase score'
 }], {
   polar:{radialaxis:{visible:true,range:[0,100]}},
   paper_bgcolor:'#161b22', font:{color:'#e6edf3'},
@@ -63,23 +80,27 @@ Plotly.newPlot('coverage', [{
 }, {responsive:true});
 
 const meta = {
-  'Total commits':    4336,
-  'Recent (30d)':     1767,
-  'Python files':     786,
-  'Test files':       260,
-  'HTML docs':        37,
-  'Markdown docs':    880,
-  'Workflows':        151,
-  'Total LOC':        165766,
+  'Total commits':    7742,
+  'Recent (30d)':     4156,
+  'Python files':     1415,
+  'Test files':       655,
+  'HTML docs':        45,
+  'Markdown docs':    1038,
+  'Workflows':        219,
+  'Total LOC':        280583,
 };
 Plotly.newPlot('activity', [{
   type:'bar', x:Object.keys(meta), y:Object.values(meta),
   marker:{color:'#58a6ff'}, orientation:'v'
 }], {
   paper_bgcolor:'#161b22', plot_bgcolor:'#0d1117',
-  font:{color:'#e6edf3'}, xaxis:{gridcolor:'#30363d',tickangle:-30},
+  font:{color:'#e6edf3'},
+  xaxis:{gridcolor:'#30363d',tickangle:-30},
   yaxis:{gridcolor:'#30363d'},
-  title:{text:'Repository Activity Snapshot', font:{color:'#e6edf3'}}
+  title:{
+    text:'Repository Activity Snapshot',
+    font:{color:'#e6edf3'}
+  }
 }, {responsive:true});
 </script>
 </body></html>

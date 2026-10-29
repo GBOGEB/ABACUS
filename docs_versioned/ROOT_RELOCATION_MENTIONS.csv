@@ -1,0 +1,7 @@
+consumer_path,old_path,reason
+12_ORGANIZED_BY_CATEGORY/TRACKING/MULTI_REPO_TRACKER.yaml,COMPLETION_SUMMARY.md,lists another package's COMPLETION_SUMMARY.md (13.7 KB) as a deliverable; not the root file
+golden_thread_integration/gloob_integration/MULTI_REPO_TRACKER.yaml,COMPLETION_SUMMARY.md,copy of the tracker above; another package's file of the same name
+tests/test_dow_first_red_census.py,DMAIC_ITERATION_3_ERROR_ANALYSIS.md,"frozen pre-commit log line in a parser fixture; history, not a path the code opens"
+DMAIC_V3/tests/test_full_pipeline_orchestrator_runtime_coverage.py,EXECUTION_SUMMARY.md,a file of the same name under tmp_path/DMAIC_V3_OUTPUT/iteration_4
+DMAIC_V3/generators/documentation_aligner.py,IMPLEMENTATION_SUMMARY.md,"resolved under master_document_system/ (docs_dir), not the repository root"
+DMAIC_V3/generators/master_reconciliation.py,IMPLEMENTATION_SUMMARY.md,resolved under master_doc_dir and written as a link inside that folder

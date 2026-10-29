@@ -1,0 +1,117 @@
+{
+  "coverage_version": "7.16.2",
+  "files": {
+    "DMAIC_V3/debug_pipeline.py": {
+      "blob": "730cab72408ac473fb89123d9d76bb7a2edb075e",
+      "branches": {
+        "3.10": 116,
+        "3.12": 116
+      },
+      "category": "carried",
+      "covered": {
+        "3.10": 94,
+        "3.12": 94
+      },
+      "floor": 94,
+      "role": "kpi"
+    },
+    "DMAIC_V3/phases/phase4_improve.py": {
+      "blob": "18bec722fef537aa74b85295954cf66a002695d0",
+      "branches": {
+        "3.10": 132,
+        "3.12": 132
+      },
+      "category": "carried",
+      "covered": {
+        "3.10": 51,
+        "3.12": 51
+      },
+      "floor": 42,
+      "role": "kpi"
+    },
+    "DMAIC_V3/phases/phase8_todo_management.py": {
+      "blob": "d5ab3ea15a720c70b635910e5ced203e2c486353",
+      "branches": {
+        "3.10": 118,
+        "3.12": 118
+      },
+      "category": "carried",
+      "covered": {
+        "3.10": 63,
+        "3.12": 63
+      },
+      "floor": 63,
+      "role": "kpi"
+    },
+    "cicd_github_orchestrator.py": {
+      "blob": "82a9a707115c58721a2c13c41a7b7baebde6b2c1",
+      "branches": {
+        "3.10": 98,
+        "3.12": 98
+      },
+      "category": "carried",
+      "covered": {
+        "3.10": 23,
+        "3.12": 23
+      },
+      "floor": 23,
+      "role": "kpi"
+    },
+    "scripts/g3a_bounded_mission.py": {
+      "blob": "73742d3ad9ca5e791cfa294e01a083b20922580c",
+      "branches": {
+        "3.10": 116,
+        "3.12": 116
+      },
+      "category": "control",
+      "covered": {
+        "3.10": 105,
+        "3.12": 105
+      },
+      "floor": 105,
+      "role": "control"
+    }
+  },
+  "kpi_python": "3.12",
+  "lineage": [
+    "G3A_W16_V2_PHASE4_REPAIRED",
+    "G3A_W16_V3_MAIN_44CACCF7"
+  ],
+  "min_tests": 121,
+  "pinned_main_sha": "88f13a7824066b2fce09160577052a765847a388",
+  "pythons": [
+    "3.10",
+    "3.12"
+  ],
+  "schema": "code-purple.g3a.w16.epoch.v1",
+  "source_epoch": "G3A_W16_V4_MAIN_88F13A78",
+  "status": "PINNED",
+  "workflows": {
+    "by_cluster": {
+      "automation": 13,
+      "bridge_federation": 20,
+      "ci_governance": 2,
+      "core_test": 23,
+      "delivery": 9,
+      "dmaic": 9,
+      "documentation": 7,
+      "dow": 22,
+      "full_regression": 1,
+      "legacy": 2,
+      "runtime_governance": 31,
+      "security": 13,
+      "specialised": 46,
+      "statistics": 19
+    },
+    "by_lifecycle": {
+      "manual": 5,
+      "post_merge": 15,
+      "pr_domain": 170,
+      "pr_fast": 13,
+      "retire": 1,
+      "scheduled": 13
+    },
+    "population": 217,
+    "unclassified": []
+  }
+}

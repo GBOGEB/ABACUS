@@ -19,7 +19,7 @@ jobs:
       matrix:
         python: ['3.11', '3.12']
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
         with:
           ref: ${{ github.event.pull_request.head.sha || github.sha }}
           persist-credentials: false
@@ -27,7 +27,7 @@ jobs:
         env:
           EXPECTED_HEAD: ${{ github.event.pull_request.head.sha || github.sha }}
         run: test "$(git rev-parse HEAD)" = "$EXPECTED_HEAD"
-      - uses: actions/setup-python@v5
+      - uses: actions/setup-python@v7
         with:
           python-version: ${{ matrix.python }}
       - run: python -m pip install 'networkx==3.6.1' 'coverage==7.13.3'
@@ -65,7 +65,7 @@ jobs:
           cmp -s build/w13-neural/W13_NEURAL_SPINE_DATA.json "$root/W13_NEURAL_SPINE_DATA.json"
           cmp -s build/w13-neural/W13_NEURAL_SPINE_INTERACTIVE.html "$root/W13_NEURAL_SPINE_INTERACTIVE.html"
           { git rev-parse HEAD; sha256sum build/w13-neural/*.json build/w13-neural/*.html; } > build/w13-neural/source_sha256.txt
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v7
         if: always()
         with:
           name: abacus-w13-spine-${{ matrix.python }}-${{ github.run_id }}-${{ github.run_attempt }}

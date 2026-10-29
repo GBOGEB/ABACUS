@@ -1,0 +1,191 @@
+{
+  "schema": "abacus.qps_line_s.contract_tables.v1",
+  "label": "RTM-292/293/061 and Table 7",
+  "purpose": "Source binding for the Line S RTM: verbatim RTM-292 (QRB.S flow conditions), RTM-293 (minimum pressure), RTM-061 (failure classes behind REQ-130/131) and Table 7 (operational flow conditions, incl. the TS-SB band) from the cryoplant-project W365 contract extraction. tests/test_rtm292_contract.py binds ssot_heat_loads.yaml, scenarios.json and qplant REQ-130/131 to these records.",
+  "source": {
+    "repository": "GBOGEB/cryoplant-project",
+    "commit": "b0dddd9b35cd952780c0f3ba3017c0100593d15b",
+    "path": "triage/w365/qpsdeck_icd_family/inputs/contract/addendum2_rev146.json",
+    "git_blob": "130a11899f56632296bd3434f25116e5414a6418",
+    "sha256": "16b56d57a70034614a8b95ddb92e47aafb0d3328d99a6d9b7e46aa8729ee2779",
+    "contract_docx_revision": 146,
+    "contract_docx_sha256": "8bd6c3db5452766526737da0af98a995068733be025b23f3d38b582c43531d4d",
+    "contract_pdf_sha256": "ed6be3349c5bcd94d71a7357e911f4d4f4c86a1ccf99b7aa7661889eb6d084a9"
+  },
+  "extraction": {
+    "date": "2026-10-25",
+    "commands": [
+      "git -C cryoplant-project show b0dddd9b35cd952780c0f3ba3017c0100593d15b:triage/w365/qpsdeck_icd_family/inputs/contract/addendum2_rev146.json > addendum2_rev146.json",
+      "python -c \"import json,hashlib; d=json.load(open('addendum2_rev146.json',encoding='utf-8')); h=lambda o: hashlib.sha256(json.dumps(o,sort_keys=True,separators=(',',':'),ensure_ascii=True).encode()).hexdigest(); r=[d['requirements'][i] for i in ('RTM-292','RTM-293','RTM-061')]; t=[x for x in d['tables'] if (x['caption'] or '').startswith('Table 7.')]; print(h(r)); print(h(t))\""
+    ],
+    "sha256_rule": "sha256 of json.dumps(obj, sort_keys=True, separators=(',', ':'), ensure_ascii=True)"
+  },
+  "requirement_ids": [
+    "RTM-292",
+    "RTM-293",
+    "RTM-061"
+  ],
+  "requirements_sha256": "f22398f359cce8d07c6b42e6eb1b8a821a5f281dd9d0bae27959c82ccaf535f7",
+  "requirements": [
+    {
+      "id": "RTM-292",
+      "text": "The flow conditions at QRB.S shall be:",
+      "bullets": [
+        "Nominal flow temperature: ambient temperature \u00b1 15 K",
+        "Nominal return pressure: 1.1 bar \u00b15 mbar",
+        "Minimum allowable pressure: 1.05 bar",
+        "Helium mass flow rate capabilities (use cases):",
+        "Residual/erratic return flow: \u22640.1 g/s continuous",
+        "Uncontrolled reheating at the Cryogenic Users: 100 g/s nominal with spikes to 150 g/s during 6-8 h",
+        "Sudden and total break of insulation vacuum at the Cryogenic Users (QVE): transient return flow spike up to 200 g/s for ~100 s.",
+        "Helium quality: clean helium suitable for direct use, in accordance with the QPS helium cleanliness requirements."
+      ],
+      "section": "Technical Requirements > Interfaces with cryogenic infrastructure > Warm Piping System (WPS) > Specificities for Line S interface",
+      "body_index": 1416,
+      "page": 68
+    },
+    {
+      "id": "RTM-293",
+      "text": "The QPS design and operating sequences shall not cause the pressure at the WPS.S side of the interface from dropping below the minimum allowable pressure specified in RTM-292.",
+      "bullets": [],
+      "section": "Technical Requirements > Interfaces with cryogenic infrastructure > Warm Piping System (WPS) > Specificities for Line S interface",
+      "body_index": 1425,
+      "page": 69
+    },
+    {
+      "id": "RTM-061",
+      "text": "The Contractor shall include the following failure classes in its Availability & Reliability Assessment:",
+      "bullets": [
+        "Class A \u2013 Failure of sustaining 2 K Operation",
+        "While operating in scenario 2K-OP, the failure causes loss of scenario 2K-OP.",
+        "Transition to scenario 2K-SB remains possible.",
+        "Full restoration to 2K-OP is achieved within 24 hours.",
+        "The temperature of each QCELL shall remain at or below the defined Thermal Shield temperature limit for the entire duration of the failure event.",
+        "Class B \u2013 Failure of sustaining 2 K refrigeration",
+        "The failure prevents sustained 2 K refrigeration by impeding scenarios 2K-OP or 2K-SB.",
+        "The scenarios 4K-SB or TS-SB remain possible.",
+        "Recovery from this failure is achieved within 5 days.",
+        "The temperature of each QCELL shall remain at or below the defined Thermal Shield temperature limit for the entire duration of the failure event.",
+        "Class C \u2013 Failure of sustaining cryogenic refrigeration",
+        "The failure prevents sustained cryogenic refrigeration by impeding scenarios 2K-OP, 2K-SB, 4K-SB, and TS-SB:",
+        "The QPS is forced to transition to scenarios RT-SB or WSTOP.",
+        "The temperature of each QCELL may exceed the defined Thermal Shield temperature limit during the failure event."
+      ],
+      "section": "Technical Requirements > Global Design Criteria > Availability & Reliability",
+      "body_index": 549,
+      "page": 38
+    }
+  ],
+  "table_captions": [
+    "Table 7."
+  ],
+  "tables_sha256": "271ccfa77be09798aed46d0719c22ac7d51d816eef4fedda5b4253f0f0bd014f",
+  "tables": [
+    {
+      "index": 9,
+      "caption": "Table 7. Operational Flow Conditions.",
+      "section": "Technical Requirements > Process and Functional Requirements > Operational Condition Ranges",
+      "rows": [
+        [
+          "Scenario",
+          "Line ID",
+          "A",
+          "B",
+          "D",
+          "E",
+          "W"
+        ],
+        [
+          "2K-OP",
+          "p (bar)\n[range | stability]",
+          "3.0 | \u00b10.015",
+          "\u2264 0.026 | -0.0005+0",
+          "~14 \u2021 | \u00b13% *",
+          "~13 \u2021 | \u00b13% *",
+          "1.03-1.1 | \u00b10.010"
+        ],
+        [
+          "2K-OP",
+          "T (K)\n[range | stability]",
+          "\u22644.5 | \u00b10.05",
+          "3.6-4.0 | \u00b10.25",
+          "~40 \u2021 | \u00b11.5",
+          "~60 \u2021 | \u00b15",
+          "300 \u2020"
+        ],
+        [
+          "2K-SB",
+          "p (bar)\n[range | stability]",
+          "3.0 | \u00b10.050",
+          "\u22640.026 | -0.002+0.001",
+          "~14 \u2021 | \u00b13% *",
+          "~13 \u2021 | \u00b13% *",
+          "1.03-1.1 | \u00b10.015"
+        ],
+        [
+          "2K-SB",
+          "T (K)\n[range | stability]",
+          "\u22644.5 | \u00b10.15",
+          "3.9-4.4 | \u00b10.25",
+          "~40 \u2021 | \u00b12.5",
+          "~60 \u2021 | \u00b15",
+          "300 \u2020"
+        ],
+        [
+          "4K-SB",
+          "p (bar)\n[range | stability]",
+          "Same as in\n2K-SB",
+          "\u22641.2 | -0.05+0",
+          "Same as in \n2K-SB",
+          "Same as in \n2K-SB",
+          "Same as in \n2K-SB"
+        ],
+        [
+          "4K-SB",
+          "T (K)\n[range | stability]",
+          "Same as in\n2K-SB",
+          "4.5-5.5 | \u00b10.25",
+          "Same as in \n2K-SB",
+          "Same as in \n2K-SB",
+          "Same as in \n2K-SB"
+        ],
+        [
+          "10K-SB",
+          "p (bar)\n[range | stability]",
+          "Same as in\n2K-SB",
+          "Same as in \n4K-SB",
+          "Same as in \n2K-SB",
+          "Same as in \n2K-SB",
+          "Same as in \n2K-SB"
+        ],
+        [
+          "10K-SB",
+          "T (K)\n[range | stability]",
+          "6-12 | \u00b10.10",
+          "7.0-18.0 | \u00b10.50",
+          "Same as in \n2K-SB",
+          "Same as in \n2K-SB",
+          "Same as in \n2K-SB"
+        ],
+        [
+          "TS-SB",
+          "p (bar)\n[range | stability]",
+          "n/a",
+          "n/a",
+          "~14 \u2021 | \u00b10.100",
+          "~13 \u2021 | \u00b10.100",
+          "n/a"
+        ],
+        [
+          "TS-SB",
+          "T (K)\n[range | stability]",
+          "n/a",
+          "n/a",
+          "~40 \u2021 | \u00b15",
+          "~60 \u2021 | \u00b110",
+          "n/a"
+        ]
+      ]
+    }
+  ]
+}

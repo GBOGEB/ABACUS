@@ -1,0 +1,167 @@
+<!doctype html>
+<html lang="en"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>MYRRHA WCS · Testing Strategy</title>
+<link rel="icon" href="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><text y='26' font-size='26'>🧪</text></svg>">
+<link rel="stylesheet" href="assets/style.css">
+<script src="https://cdn.plot.ly/plotly-2.27.0.min.js"></script>
+<script src="assets/common.js" defer></script>
+<style>
+.breadcrumb{font-size:12px;color:var(--fg2);margin-bottom:12px}.breadcrumb a{color:var(--accent2)}
+
+.risk-critical{color:#C0392B;font-weight:700}.risk-high{color:#D85A30;font-weight:700}
+.risk-medium{color:#E5A100;font-weight:700}.risk-low{color:#378ADD}
+.effort-bar{display:inline-block;height:8px;border-radius:4px;vertical-align:middle;margin-left:8px}
+.test-card{background:var(--bg2);border-left:4px solid var(--accent);border-radius:0 var(--radius) var(--radius) 0;padding:16px;margin:12px 0}
+.test-card h4{margin:0 0 8px;font-size:14px}
+.test-card .test-types{display:flex;gap:6px;flex-wrap:wrap;margin:8px 0}
+.test-type{display:inline-block;padding:3px 10px;border-radius:999px;font-size:11px;font-weight:600;border:1px solid}
+.test-unit{border-color:#1565C0;color:#1565C0;background:#E3F2FD}
+.test-integ{border-color:#2E7D32;color:#2E7D32;background:#E8F5E9}
+.test-e2e{border-color:#C0392B;color:#C0392B;background:#FFEBEE}
+.test-visual{border-color:#7B1FA2;color:#7B1FA2;background:#F3E5F5}
+.test-schema{border-color:#E65100;color:#E65100;background:#FFF3E0}
+.test-manual{border-color:#455A64;color:#455A64;background:#ECEFF1}
+[data-theme=dark] .test-unit{background:#0D3059}[data-theme=dark] .test-integ{background:#1B3A1B}
+[data-theme=dark] .test-e2e{background:#3E1515}[data-theme=dark] .test-visual{background:#2A1540}
+[data-theme=dark] .test-schema{background:#3E2A10}[data-theme=dark] .test-manual{background:#263238}
+.alloc-chart{width:100%;min-height:350px;margin:14px 0}
+.coverage-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px;margin:14px 0}
+.coverage-card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);padding:16px;text-align:center}
+.coverage-card .ring{width:80px;height:80px;margin:0 auto 8px;position:relative}
+.coverage-card .ring svg{width:80px;height:80px;transform:rotate(-90deg)}
+.coverage-card .ring-label{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);font-size:16px;font-weight:700;font-family:var(--mono)}
+.stats-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px;margin:14px 0}
+.stats-card{text-align:center;padding:14px;background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius)}
+.stats-card .big{font-size:24px;font-weight:700;font-family:var(--mono)}
+.stats-card .lbl{font-size:11px;color:var(--fg2);text-transform:uppercase;margin-top:4px}
+.priority-table td{vertical-align:top;padding:10px}
+
+</style>
+</head><body>
+<div class="container">
+<p class="breadcrumb"><a href="index.html">Hub</a> › <a href="artifact-tracker.html">Artifacts</a> › Testing Strategy</p>
+<h1>🧪 Risk-Weighted Testing Strategy</h1>
+<p class="muted">Testing frequency and effort weighted by interaction score · 100 hours/release cycle · v0.4.4</p>
+
+<div class="stats-grid">
+  <div class="stats-card"><div class="big">100h</div><div class="lbl">Total Test Budget</div></div>
+  <div class="stats-card"><div class="big">60h</div><div class="lbl">Critical/High (60%)</div></div>
+  <div class="stats-card"><div class="big">30h</div><div class="lbl">Medium (30%)</div></div>
+  <div class="stats-card"><div class="big">10h</div><div class="lbl">Low (10%)</div></div>
+</div>
+
+<!-- TESTING FREQUENCY MATRIX -->
+<h2>Testing Frequency Matrix</h2>
+<div class="card">
+<table class="priority-table">
+<thead><tr><th>Artifact</th><th>Score</th><th>Risk</th><th>Frequency</th><th>Test Types</th><th>Hours</th></tr></thead>
+<tbody>
+  <tr><td style="font-family:var(--mono);font-weight:600">assets/style.css</td><td>56</td><td class="risk-critical">🔴 Critical</td><td>Every commit</td>
+    <td><span class="test-type test-visual">Visual Regression</span> <span class="test-type test-e2e">Responsive</span> <span class="test-type test-manual">Manual Review</span></td><td>18h</td></tr>
+  <tr><td style="font-family:var(--mono);font-weight:600">assets/common.js</td><td>50</td><td class="risk-critical">🔴 Critical</td><td>Every commit</td>
+    <td><span class="test-type test-unit">Unit</span> <span class="test-type test-integ">Integration</span> <span class="test-type test-e2e">E2E</span></td><td>18h</td></tr>
+  <tr><td style="font-family:var(--mono);font-weight:600">index.html</td><td>80</td><td class="risk-critical">🔴 Critical</td><td>Every release</td>
+    <td><span class="test-type test-integ">Link Check</span> <span class="test-type test-e2e">Navigation</span> <span class="test-type test-manual">Manual</span></td><td>6h</td></tr>
+  <tr><td style="font-family:var(--mono);font-weight:600">master/data.json</td><td>28</td><td class="risk-high">🟠 High</td><td>Every data change</td>
+    <td><span class="test-type test-schema">Schema Validation</span> <span class="test-type test-integ">Integrity</span></td><td>12h</td></tr>
+  <tr><td style="font-family:var(--mono);font-weight:600">master/render_all.py</td><td>10</td><td class="risk-medium">🟡 Medium</td><td>Every code change</td>
+    <td><span class="test-type test-unit">Unit</span> <span class="test-type test-integ">Snapshot</span></td><td>6h</td></tr>
+  <tr><td style="font-family:var(--mono);font-weight:600">bt-ranking.html</td><td>8</td><td class="risk-low">🔵 Low</td><td>Every release</td>
+    <td><span class="test-type test-unit">BT Algorithm</span> <span class="test-type test-integ">Plotly Render</span></td><td>4h</td></tr>
+  <tr><td style="font-family:var(--mono);font-weight:600">action-tracker.html</td><td>21</td><td class="risk-high">🟠 High</td><td>Every release</td>
+    <td><span class="test-type test-integ">Data Binding</span> <span class="test-type test-e2e">Filters</span></td><td>4h</td></tr>
+  <tr><td style="font-family:var(--mono);font-weight:600">vendor-kaeser.html</td><td>8</td><td class="risk-low">🔵 Low</td><td>Major releases</td>
+    <td><span class="test-type test-integ">Chart Render</span> <span class="test-type test-manual">Data Check</span></td><td>3h</td></tr>
+  <tr><td style="font-family:var(--mono);font-weight:600">ci-cd-pipeline.html</td><td>29</td><td class="risk-high">🟠 High</td><td>Every release</td>
+    <td><span class="test-type test-integ">Link Check</span> <span class="test-type test-manual">Manual</span></td><td>3h</td></tr>
+  <tr><td class="muted" colspan="5">... 26 remaining artifacts</td><td>26h</td></tr>
+</tbody>
+</table>
+</div>
+
+<!-- TEST EFFORT ALLOCATION -->
+<h2>Test Effort Allocation</h2>
+<div class="gridq">
+  <div class="card"><div id="pieChart" class="alloc-chart"></div></div>
+  <div class="card"><div id="barChart" class="alloc-chart"></div></div>
+</div>
+
+<!-- COVERAGE TARGETS -->
+<h2>Test Coverage Targets by Risk Level</h2>
+<div class="coverage-grid">
+  <div class="coverage-card">
+    <div class="ring"><svg viewBox="0 0 36 36"><path d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" fill="none" stroke="#eee" stroke-width="3"/><path d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" fill="none" stroke="#C0392B" stroke-width="3" stroke-dasharray="95, 100"/></svg><div class="ring-label">95%</div></div>
+    <h4>🔴 Critical</h4><p class="muted">Code Coverage ≥ 95%<br>20+ integration scenarios<br>Every release manual test</p>
+  </div>
+  <div class="coverage-card">
+    <div class="ring"><svg viewBox="0 0 36 36"><path d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" fill="none" stroke="#eee" stroke-width="3"/><path d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" fill="none" stroke="#D85A30" stroke-width="3" stroke-dasharray="85, 100"/></svg><div class="ring-label">85%</div></div>
+    <h4>🟠 High</h4><p class="muted">Code Coverage ≥ 85%<br>10+ integration scenarios<br>Major release manual test</p>
+  </div>
+  <div class="coverage-card">
+    <div class="ring"><svg viewBox="0 0 36 36"><path d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" fill="none" stroke="#eee" stroke-width="3"/><path d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" fill="none" stroke="#E5A100" stroke-width="3" stroke-dasharray="70, 100"/></svg><div class="ring-label">70%</div></div>
+    <h4>🟡 Medium</h4><p class="muted">Code Coverage ≥ 70%<br>5+ integration scenarios<br>As needed manual test</p>
+  </div>
+  <div class="coverage-card">
+    <div class="ring"><svg viewBox="0 0 36 36"><path d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" fill="none" stroke="#eee" stroke-width="3"/><path d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" fill="none" stroke="#378ADD" stroke-width="3" stroke-dasharray="50, 100"/></svg><div class="ring-label">50%</div></div>
+    <h4>🔵 Low</h4><p class="muted">Code Coverage ≥ 50%<br>2+ integration scenarios<br>Spot checks only</p>
+  </div>
+</div>
+
+<!-- AUTOMATED TEST PRIORITIES -->
+<h2>Automated Test Prioritization</h2>
+<div class="card">
+<ol>
+  <li><strong>common.js</strong> → Test navigation, breadcrumbs, theme toggle, version display on ALL 25 consuming views</li>
+  <li><strong>style.css</strong> → Visual regression tests on 5 representative views (mobile + desktop): index, bt-ranking, vendor-kaeser, tables, thermo-analysis</li>
+  <li><strong>data.json</strong> → Schema validation (JSON Schema), value range checks, consistency across 14 consuming views</li>
+  <li><strong>render_all.py</strong> → Snapshot tests: input master sources → expected output HTML diffs</li>
+  <li><strong>index.html</strong> → Link checking (all 30 outgoing), card navigation, search functionality</li>
+  <li><strong>bt-ranking.html</strong> → BT algorithm unit tests, MLE convergence, CI calculation, Plotly chart rendering</li>
+  <li><strong>action-tracker.html</strong> → Filter/sort, data binding to 29 actions, severity badge rendering</li>
+</ol>
+</div>
+
+<!-- REGRESSION TEST PLAN -->
+<h2>Regression Test Plan (per Release)</h2>
+<div class="card">
+<table>
+<thead><tr><th>Phase</th><th>Scope</th><th>Duration</th><th>Automated?</th></tr></thead>
+<tbody>
+  <tr><td>1. Smoke</td><td>Load all 31 HTML views, check for JS errors</td><td>10 min</td><td>✅ Playwright</td></tr>
+  <tr><td>2. Unit</td><td>common.js functions, BT algorithm, data.json schema</td><td>5 min</td><td>✅ Jest</td></tr>
+  <tr><td>3. Integration</td><td>Navigation flows, theme persistence, data binding</td><td>20 min</td><td>✅ Playwright</td></tr>
+  <tr><td>4. Visual</td><td>5 representative views × 2 themes × 2 viewports</td><td>15 min</td><td>✅ Percy/Playwright</td></tr>
+  <tr><td>5. E2E</td><td>Full user journey: Hub → Action Tracker → BT Ranking → Export</td><td>30 min</td><td>⚠ Semi-auto</td></tr>
+  <tr><td>6. Manual</td><td>Stakeholder review of top 5 critical views</td><td>60 min</td><td>❌ Manual</td></tr>
+</tbody>
+</table>
+</div>
+
+<script>
+const pCfg = {font:{family:'Aptos,sans-serif',size:11},margin:{l:50,r:30,t:40,b:40},
+  plot_bgcolor:'rgba(0,0,0,0)',paper_bgcolor:'rgba(0,0,0,0)'};
+
+// Pie chart - effort allocation
+Plotly.newPlot('pieChart',[{
+  labels:['Critical (Top 3)','High (5 artifacts)','Medium (10 artifacts)','Low (17 artifacts)'],
+  values:[42, 22, 18, 18],
+  type:'pie', hole:0.4,
+  marker:{colors:['#C0392B','#D85A30','#E5A100','#378ADD']},
+  textinfo:'label+percent', textposition:'outside',
+  textfont:{size:10}
+}],{...pCfg, title:{text:'Test Effort Allocation',font:{size:14}}, height:350,
+  showlegend:false},{responsive:true});
+
+// Bar chart - hours per artifact
+const arts = ['style.css','common.js','index.html','data.json','render_all.py','ci-cd.html','bt-ranking','action-trk','kaeser','others'];
+const hrs = [18,18,6,12,6,3,4,4,3,26];
+Plotly.newPlot('barChart',[{
+  x:arts, y:hrs, type:'bar',
+  marker:{color:['#C0392B','#C0392B','#C0392B','#D85A30','#E5A100','#D85A30','#378ADD','#D85A30','#378ADD','#7F77DD']},
+  text:hrs.map(h=>h+'h'), textposition:'outside'
+}],{...pCfg, title:{text:'Hours per Artifact',font:{size:14}}, height:350,
+  yaxis:{title:'Hours'}, xaxis:{tickangle:30}},{responsive:true});
+</script>
+</div>
+</body></html>

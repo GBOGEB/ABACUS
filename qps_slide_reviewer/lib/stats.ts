@@ -2,6 +2,21 @@
  * Statistics helpers: Bradley–Terry ranking (MM algorithm), PCA (power iteration),
  * DMAIC-style KPI computation and a minimal YAML serializer.
  * Pure TypeScript — no external dependencies so it runs in the standalone build.
+ *
+ * ──────────────────────────────────────────────────────────────────────────
+ * FEDERATION CONVERGENCE NOTICE (action P1)
+ * The Bradley–Terry and PCA maths below are a hand-rolled re-implementation of
+ * the federation's CANONICAL statistics engine, `GBOGEB/CODEX:pca_engine`
+ * (the only tested copy — 20/20 incl. a parity harness). This file is slated to
+ * CONSUME `pca_engine` rather than re-derive the algorithms. Parity between this
+ * implementation and the canonical one is pinned by
+ * `CODEX/pca_engine/tests/test_parity_spoke_stats.py`:
+ *   • same Hunter (2004) MM update;
+ *   • divergence is ONLY the regularisation prior (here `prior = 0.1`) and the
+ *     normalisation basis (here geometric mean = 1; canonical arithmetic mean = 1).
+ * Before changing the maths here, keep that parity test green.
+ * See docs/STATS_CONVERGENCE.md and docs/INTEGRATION_REPORT.md §4 item 1.
+ * ──────────────────────────────────────────────────────────────────────────
  */
 
 export interface SlideRow {

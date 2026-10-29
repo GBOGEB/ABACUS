@@ -27,6 +27,15 @@ v2.1 (Production Baseline)
 - [Handover Book](handover_book/) — 12-Chapter comprehensive handover
 - [Migration Guides](#migration-paths) — Version-to-version migration paths
 - [Deprecation Notices](DEPRECATION_NOTICES.md) — What changed between versions
+- [Handover and session notes](handover/) — past handovers, moved from
+  the repository root (W2)
+- [Generated run reports](generated_reports/) — timestamped tool outputs,
+  moved from the repository root (W1)
+- [Status and completion reports](status_reports/) — unversioned status
+  summaries, moved from the repository root (W3)
+- [Root relocation map](ROOT_RELOCATION_MAP.csv) — every file moved off
+  the root, old → new path; the
+  [repository map](../docs/repo-structure/index.html) searches it
 
 ## Migration Paths
 - [v2.1 → v0.31](v2.1/migration/to_v031.md)

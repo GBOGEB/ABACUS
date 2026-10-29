@@ -1,0 +1,321 @@
+<!doctype html>
+<html lang="en"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>MYRRHA WCS · Artifact Tracker</title>
+<link rel="icon" href="data:image/svg+xml;utf8,<svg xmlns='https://i0.wp.com/css-tricks.com/wp-content/uploads/2020/03/favicon-emoji-svg.png' viewBox='0 0 32 32'><text y='26' font-size='26'>📦</text></svg>">
+<link rel="stylesheet" href="assets/style.css">
+<script src="assets/common.js" defer></script>
+<style>
+.breadcrumb{font-size:12px;color:var(--fg2);margin-bottom:12px}.breadcrumb a{color:var(--accent2)}
+.phase-badge{display:inline-block;padding:2px 8px;border-radius:4px;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:#fff}
+.ph-d{background:#378ADD}.ph-m{background:#7F77DD}.ph-a{background:#E5A100;color:#1a1d23}.ph-i{background:#D85A30}.ph-c{background:#1D9E75}
+.stab-dot{display:inline-block;width:10px;height:10px;border-radius:50%;margin-right:4px;vertical-align:middle}
+.stab-stable{background:#1D9E75}.stab-evolving{background:#E5A100}.stab-unstable{background:#C0392B}
+.type-badge{font-size:10px;padding:2px 6px;border-radius:3px;font-family:var(--mono);background:var(--bg);border:1px solid var(--border)}
+.bug-count{font-family:var(--mono);font-weight:700;font-size:13px}
+.bug-0{color:#1D9E75}.bug-warn{color:#E5A100}.bug-bad{color:#C0392B}
+.val-pass{color:#1D9E75;font-weight:700}.val-partial{color:#E5A100;font-weight:700}.val-fail{color:#C0392B;font-weight:700}
+.ci-pass{color:#1D9E75}.ci-fail{color:#C0392B}
+.dmaic-flow{display:flex;gap:0;margin:18px 0;flex-wrap:wrap}
+.dmaic-step{flex:1;min-width:120px;text-align:center;padding:14px 8px;position:relative;font-size:13px;font-weight:600;color:#fff}
+.dmaic-step:first-child{border-radius:8px 0 0 8px}.dmaic-step:last-child{border-radius:0 8px 8px 0}
+.dmaic-step .count{font-size:22px;font-weight:700;display:block;margin-bottom:2px}
+.dmaic-step .sub{font-size:10px;font-weight:400;opacity:.8}
+table.art{font-size:12px}
+table.art td,table.art th{padding:6px 8px;vertical-align:middle}
+.filter-bar{display:flex;gap:8px;flex-wrap:wrap;margin:14px 0}
+.filter-bar button{background:var(--bg);color:var(--fg);border:1px solid var(--border);border-radius:6px;padding:6px 12px;font-size:12px;cursor:pointer;font-family:inherit;transition:all .15s}
+.filter-bar button.active{background:var(--accent);color:#fff;border-color:var(--accent)}
+.summary-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:10px;margin:14px 0}
+.summary-card{text-align:center;padding:12px 8px;border-radius:8px;border:1px solid var(--border);background:var(--bg2)}
+.summary-card .num{font-size:28px;font-weight:700}.summary-card .lbl{font-size:11px;color:var(--fg2);text-transform:uppercase}
+@media(max-width:780px){.summary-grid{grid-template-columns:repeat(2,1fr)}.dmaic-flow{flex-direction:column}}
+</style>
+</head><body>
+<div class="container">
+<p class="breadcrumb"><a href="index.html">Hub</a> › <a href="review-dmaic.html">DMAIC</a> › Artifact Tracker</p>
+<h1>📦 Artifact Tracker — Per-Artifact DMAIC</h1>
+<p class="muted">Every file tracked through Define → Measure → Analyse → Improve → Control · v0.4.2</p>
+
+<!-- DMAIC PHASE SUMMARY -->
+<div class="dmaic-flow">
+  <div class="dmaic-step" style="background:#378ADD"><span class="count">3</span>Define<div class="sub">Requirements set</div></div>
+  <div class="dmaic-step" style="background:#7F77DD"><span class="count">5</span>Measure<div class="sub">Data collection</div></div>
+  <div class="dmaic-step" style="background:#E5A100"><span class="count">8</span>Analyse<div class="sub">Gap assessment</div></div>
+  <div class="dmaic-step" style="background:#D85A30"><span class="count">10</span>Improve<div class="sub">Active dev</div></div>
+  <div class="dmaic-step" style="background:#1D9E75"><span class="count">9</span>Control<div class="sub">Stable/locked</div></div>
+</div>
+
+<!-- SUMMARY CARDS -->
+<div class="summary-grid">
+  <div class="summary-card"><div class="num" style="color:#1D9E75">35</div><div class="lbl">Total Artifacts</div></div>
+  <div class="summary-card"><div class="num" style="color:#1D9E75">23</div><div class="lbl">Validated ✓</div></div>
+  <div class="summary-card"><div class="num" style="color:#E5A100">9</div><div class="lbl">Partial ⚠</div></div>
+  <div class="summary-card"><div class="num" style="color:#C0392B">3</div><div class="lbl">Open Bugs</div></div>
+  <div class="summary-card"><div class="num" style="color:#378ADD">27</div><div class="lbl">CI/CD Ready</div></div>
+</div>
+
+<!-- FILTERS -->
+<div class="filter-bar">
+  <button class="active" onclick="filterArt('all',this)">All (35)</button>
+  <button onclick="filterArt('code',this)">Code</button>
+  <button onclick="filterArt('html',this)">HTML</button>
+  <button onclick="filterArt('data',this)">Data</button>
+  <button onclick="filterArt('docs',this)">Docs</button>
+  <button onclick="filterArt('assets',this)">Assets</button>
+  <button onclick="filterArt('stable',this)">🟢 Stable</button>
+  <button onclick="filterArt('evolving',this)">🟡 Evolving</button>
+  <button onclick="filterArt('unstable',this)">🔴 Unstable</button>
+</div>
+
+<!-- STABILITY LEGEND -->
+<div style="font-size:12px;color:var(--fg2);margin:6px 0">
+  <span class="stab-dot stab-stable"></span> <b>Stable:</b> Locked, no changes expected &nbsp;|&nbsp;
+  <span class="stab-dot stab-evolving"></span> <b>Evolving:</b> Active development &nbsp;|&nbsp;
+  <span class="stab-dot stab-unstable"></span> <b>Unstable:</b> Major refactoring
+</div>
+
+<!-- ========== CODE ARTIFACTS ========== -->
+<h2>Code Artifacts</h2>
+<div class="card" style="overflow-x:auto">
+<table class="art">
+<thead><tr><th>Artifact</th><th>Type</th><th>DMAIC</th><th>Status</th><th>Version</th><th>Stability</th><th>Bugs</th><th>Validated</th><th>CI/CD</th><th>Notes</th></tr></thead>
+<tbody>
+<tr data-type="code" data-stab="stable"><td><code>master/render_all.py</code></td><td><span class="type-badge">PY</span></td><td><span class="phase-badge ph-c">Control</span></td><td>🟢 Stable</td><td>v0.4.0</td><td><span class="stab-dot stab-stable"></span> Stable</td><td class="bug-count bug-0">0</td><td class="val-pass">✓</td><td class="ci-pass">✓</td><td>Render pipeline — no changes since v0.4</td></tr>
+</tbody></table>
+</div>
+
+<!-- ========== HTML ARTIFACTS ========== -->
+<h2>HTML View Artifacts</h2>
+<div class="card" style="overflow-x:auto">
+<table class="art">
+<thead><tr><th>Artifact</th><th>Type</th><th>DMAIC</th><th>Status</th><th>Version</th><th>Stability</th><th>Bugs</th><th>Validated</th><th>CI/CD</th><th>Notes</th></tr></thead>
+<tbody>
+<tr data-type="html" data-stab="evolving"><td><code>index.html</code></td><td><span class="type-badge">HTML</span></td><td><span class="phase-badge ph-i">Improve</span></td><td>🟡 Active</td><td>v0.4.2</td><td><span class="stab-dot stab-evolving"></span> Evolving</td><td class="bug-count bug-0">0</td><td class="val-pass">✓</td><td class="ci-pass">✓</td><td>Nav updated for new views</td></tr>
+<tr data-type="html" data-stab="stable"><td><code>slides.html</code></td><td><span class="type-badge">HTML</span></td><td><span class="phase-badge ph-c">Control</span></td><td>🟢 Stable</td><td>v0.4.0</td><td><span class="stab-dot stab-stable"></span> Stable</td><td class="bug-count bug-0">0</td><td class="val-pass">✓</td><td class="ci-pass">✓</td><td>Slide deck locked</td></tr>
+<tr data-type="html" data-stab="stable"><td><code>slide-editor.html</code></td><td><span class="type-badge">HTML</span></td><td><span class="phase-badge ph-c">Control</span></td><td>🟢 Stable</td><td>v0.4.0</td><td><span class="stab-dot stab-stable"></span> Stable</td><td class="bug-count bug-0">0</td><td class="val-pass">✓</td><td class="ci-pass">✓</td><td>Dual-pane editor</td></tr>
+<tr data-type="html" data-stab="stable"><td><code>reports.html</code></td><td><span class="type-badge">HTML</span></td><td><span class="phase-badge ph-c">Control</span></td><td>🟢 Stable</td><td>v0.4.0</td><td><span class="stab-dot stab-stable"></span> Stable</td><td class="bug-count bug-0">0</td><td class="val-pass">✓</td><td class="ci-pass">✓</td><td>B1–B4 arguments</td></tr>
+<tr data-type="html" data-stab="stable"><td><code>tables.html</code></td><td><span class="type-badge">HTML</span></td><td><span class="phase-badge ph-c">Control</span></td><td>🟢 Stable</td><td>v0.3.0</td><td><span class="stab-dot stab-stable"></span> Stable</td><td class="bug-count bug-0">0</td><td class="val-pass">✓</td><td class="ci-pass">✓</td><td>Spec tables locked</td></tr>
+<tr data-type="html" data-stab="stable"><td><code>graphs.html</code></td><td><span class="type-badge">HTML</span></td><td><span class="phase-badge ph-i">Improve</span></td><td>🟡 Active</td><td>v0.3.0</td><td><span class="stab-dot stab-stable"></span> Stable</td><td class="bug-count bug-0">0</td><td class="val-partial">⚠</td><td class="ci-pass">✓</td><td>ST-6 batch export pending</td></tr>
+<tr data-type="html" data-stab="evolving"><td><code>status.html</code></td><td><span class="type-badge">HTML</span></td><td><span class="phase-badge ph-i">Improve</span></td><td>🟡 Active</td><td>v0.4.2</td><td><span class="stab-dot stab-evolving"></span> Evolving</td><td class="bug-count bug-0">0</td><td class="val-pass">✓</td><td class="ci-pass">✓</td><td>Updated with new metrics</td></tr>
+<tr data-type="html" data-stab="stable"><td><code>truth.html</code></td><td><span class="type-badge">HTML</span></td><td><span class="phase-badge ph-c">Control</span></td><td>🟢 Stable</td><td>v0.4.0</td><td><span class="stab-dot stab-stable"></span> Stable</td><td class="bug-count bug-0">0</td><td class="val-pass">✓</td><td class="ci-pass">✓</td><td>Source of truth — locked</td></tr>
+<tr data-type="html" data-stab="stable"><td><code>utilities.html</code></td><td><span class="type-badge">HTML</span></td><td><span class="phase-badge ph-c">Control</span></td><td>🟢 Stable</td><td>v0.4.0</td><td><span class="stab-dot stab-stable"></span> Stable</td><td class="bug-count bug-0">0</td><td class="val-pass">✓</td><td class="ci-pass">✓</td><td>Math proofs locked</td></tr>
+<tr data-type="html" data-stab="evolving"><td><code>pvps.html</code></td><td><span class="type-badge">HTML</span></td><td><span class="phase-badge ph-a">Analyse</span></td><td>🟡 Active</td><td>v0.4.0</td><td><span class="stab-dot stab-evolving"></span> Evolving</td><td class="bug-count bug-warn">1</td><td class="val-partial">⚠</td><td class="ci-pass">✓</td><td>Awaiting vendor data (MT-1/12)</td></tr>
+<tr data-type="html" data-stab="stable"><td><code>hx-sizing.html</code></td><td><span class="type-badge">HTML</span></td><td><span class="phase-badge ph-i">Improve</span></td><td>🟡 Active</td><td>v0.4.0</td><td><span class="stab-dot stab-stable"></span> Stable</td><td class="bug-count bug-0">0</td><td class="val-pass">✓</td><td class="ci-pass">✓</td><td>Plotly interactive — stable</td></tr>
+<tr data-type="html" data-stab="stable"><td><code>thermo-analysis.html</code></td><td><span class="type-badge">HTML</span></td><td><span class="phase-badge ph-i">Improve</span></td><td>🟡 Active</td><td>v0.4.0</td><td><span class="stab-dot stab-stable"></span> Stable</td><td class="bug-count bug-0">0</td><td class="val-pass">✓</td><td class="ci-pass">✓</td><td>Sankey + exergy sunburst</td></tr>
+<tr data-type="html" data-stab="stable"><td><code>operations.html</code></td><td><span class="type-badge">HTML</span></td><td><span class="phase-badge ph-i">Improve</span></td><td>🟡 Active</td><td>v0.4.0</td><td><span class="stab-dot stab-stable"></span> Stable</td><td class="bug-count bug-0">0</td><td class="val-pass">✓</td><td class="ci-pass">✓</td><td>3D operating window</td></tr>
+<tr data-type="html" data-stab="stable"><td><code>handover.html</code></td><td><span class="type-badge">HTML</span></td><td><span class="phase-badge ph-c">Control</span></td><td>🟢 Stable</td><td>v0.4.0</td><td><span class="stab-dot stab-stable"></span> Stable</td><td class="bug-count bug-0">0</td><td class="val-pass">✓</td><td class="ci-pass">✓</td><td>Agent handover protocol</td></tr>
+<tr data-type="html" data-stab="evolving"><td><code>review-dmaic.html</code></td><td><span class="type-badge">HTML</span></td><td><span class="phase-badge ph-i">Improve</span></td><td>🟡 Active</td><td>v0.4.1</td><td><span class="stab-dot stab-evolving"></span> Evolving</td><td class="bug-count bug-0">0</td><td class="val-pass">✓</td><td class="ci-pass">✓</td><td>DMAIC dashboard</td></tr>
+<tr data-type="html" data-stab="evolving"><td><code>missed-opportunities.html</code></td><td><span class="type-badge">HTML</span></td><td><span class="phase-badge ph-a">Analyse</span></td><td>🟡 Active</td><td>v0.4.1</td><td><span class="stab-dot stab-evolving"></span> Evolving</td><td class="bug-count bug-0">0</td><td class="val-pass">✓</td><td class="ci-pass">✓</td><td>30 gaps identified</td></tr>
+<tr data-type="html" data-stab="unstable"><td><code>action-tracker.html</code></td><td><span class="type-badge">HTML</span></td><td><span class="phase-badge ph-i">Improve</span></td><td>🔴 Active</td><td>v0.4.2</td><td><span class="stab-dot stab-unstable"></span> Unstable</td><td class="bug-count bug-0">0</td><td class="val-partial">⚠</td><td class="ci-pass">✓</td><td>Major enhancement — severity + vendor scouts</td></tr>
+<tr data-type="html" data-stab="stable"><td><code>xref-matrix.html</code></td><td><span class="type-badge">HTML</span></td><td><span class="phase-badge ph-c">Control</span></td><td>🟢 Stable</td><td>v0.4.1</td><td><span class="stab-dot stab-stable"></span> Stable</td><td class="bug-count bug-0">0</td><td class="val-pass">✓</td><td class="ci-pass">✓</td><td>Cross-reference locked</td></tr>
+<tr data-type="html" data-stab="stable"><td><code>verification-checklist.html</code></td><td><span class="type-badge">HTML</span></td><td><span class="phase-badge ph-c">Control</span></td><td>🟢 Stable</td><td>v0.4.1</td><td><span class="stab-dot stab-stable"></span> Stable</td><td class="bug-count bug-0">0</td><td class="val-pass">✓</td><td class="ci-pass">✓</td><td>4/6 PASS verified</td></tr>
+<tr data-type="html" data-stab="stable"><td><code>qa-checklist.html</code></td><td><span class="type-badge">HTML</span></td><td><span class="phase-badge ph-a">Analyse</span></td><td>🟢 Stable</td><td>v0.4.1</td><td><span class="stab-dot stab-stable"></span> Stable</td><td class="bug-count bug-0">0</td><td class="val-pass">✓</td><td class="ci-pass">✓</td><td>38-item QA suite</td></tr>
+<tr data-type="html" data-stab="stable"><td><code>search-index.html</code></td><td><span class="type-badge">HTML</span></td><td><span class="phase-badge ph-c">Control</span></td><td>🟢 Stable</td><td>v0.4.1</td><td><span class="stab-dot stab-stable"></span> Stable</td><td class="bug-count bug-0">0</td><td class="val-pass">✓</td><td class="ci-pass">✓</td><td>Full-text search</td></tr>
+<!-- NEW v0.4.2 views -->
+<tr data-type="html" data-stab="unstable"><td><code>artifact-tracker.html</code></td><td><span class="type-badge">HTML</span></td><td><span class="phase-badge ph-d">Define</span></td><td>🔴 New</td><td>v0.4.2</td><td><span class="stab-dot stab-unstable"></span> Unstable</td><td class="bug-count bug-0">0</td><td class="val-partial">⚠</td><td class="ci-pass">✓</td><td>This file — initial release</td></tr>
+<tr data-type="html" data-stab="unstable"><td><code>diff-tracker.html</code></td><td><span class="type-badge">HTML</span></td><td><span class="phase-badge ph-d">Define</span></td><td>🔴 New</td><td>v0.4.2</td><td><span class="stab-dot stab-unstable"></span> Unstable</td><td class="bug-count bug-0">0</td><td class="val-partial">⚠</td><td class="ci-pass">✓</td><td>Change tracking — initial</td></tr>
+<tr data-type="html" data-stab="unstable"><td><code>ci-cd-pipeline.html</code></td><td><span class="type-badge">HTML</span></td><td><span class="phase-badge ph-d">Define</span></td><td>🔴 New</td><td>v0.4.2</td><td><span class="stab-dot stab-unstable"></span> Unstable</td><td class="bug-count bug-0">0</td><td class="val-partial">⚠</td><td class="ci-pass">✓</td><td>CI/CD strategy — initial</td></tr>
+<tr data-type="html" data-stab="unstable"><td><code>weighted-priority.html</code></td><td><span class="type-badge">HTML</span></td><td><span class="phase-badge ph-d">Define</span></td><td>🔴 New</td><td>v0.4.2</td><td><span class="stab-dot stab-unstable"></span> Unstable</td><td class="bug-count bug-0">0</td><td class="val-partial">⚠</td><td class="ci-pass">✓</td><td>Priority scoring — initial</td></tr>
+</tbody></table>
+</div>
+
+<!-- ========== DATA ARTIFACTS ========== -->
+<h2>Data Artifacts</h2>
+<div class="card" style="overflow-x:auto">
+<table class="art">
+<thead><tr><th>Artifact</th><th>Type</th><th>DMAIC</th><th>Status</th><th>Version</th><th>Stability</th><th>Bugs</th><th>Validated</th><th>CI/CD</th><th>Notes</th></tr></thead>
+<tbody>
+<tr data-type="data" data-stab="evolving"><td><code>master/data.json</code></td><td><span class="type-badge">JSON</span></td><td><span class="phase-badge ph-m">Measure</span></td><td>🟡 Active</td><td>v0.4.1</td><td><span class="stab-dot stab-evolving"></span> Evolving</td><td class="bug-count bug-0">0</td><td class="val-pass">✓</td><td class="ci-pass">✓</td><td>Master data — vendor updates pending</td></tr>
+<tr data-type="data" data-stab="stable"><td><code>master/config.yaml</code></td><td><span class="type-badge">YAML</span></td><td><span class="phase-badge ph-c">Control</span></td><td>🟢 Stable</td><td>v0.4.0</td><td><span class="stab-dot stab-stable"></span> Stable</td><td class="bug-count bug-0">0</td><td class="val-pass">✓</td><td class="ci-pass">✓</td><td>Render config locked</td></tr>
+<tr data-type="data" data-stab="stable"><td><code>slides.json</code></td><td><span class="type-badge">JSON</span></td><td><span class="phase-badge ph-c">Control</span></td><td>🟢 Stable</td><td>v0.4.0</td><td><span class="stab-dot stab-stable"></span> Stable</td><td class="bug-count bug-0">0</td><td class="val-pass">✓</td><td class="ci-pass">✓</td><td>Slide metadata</td></tr>
+</tbody></table>
+</div>
+
+<!-- ========== DOCS ARTIFACTS ========== -->
+<h2>Documentation Artifacts</h2>
+<div class="card" style="overflow-x:auto">
+<table class="art">
+<thead><tr><th>Artifact</th><th>Type</th><th>DMAIC</th><th>Status</th><th>Version</th><th>Stability</th><th>Bugs</th><th>Validated</th><th>CI/CD</th><th>Notes</th></tr></thead>
+<tbody>
+<tr data-type="docs" data-stab="stable"><td><code>master/slides.md</code></td><td><span class="type-badge">MD</span></td><td><span class="phase-badge ph-m">Measure</span></td><td>🟡 Active</td><td>v0.4.0</td><td><span class="stab-dot stab-stable"></span> Stable</td><td class="bug-count bug-0">0</td><td class="val-pass">✓</td><td class="ci-pass">✓</td><td>Slide source markdown</td></tr>
+<tr data-type="docs" data-stab="stable"><td><code>master/truth.md</code></td><td><span class="type-badge">MD</span></td><td><span class="phase-badge ph-m">Measure</span></td><td>🟡 Active</td><td>v0.4.0</td><td><span class="stab-dot stab-stable"></span> Stable</td><td class="bug-count bug-0">0</td><td class="val-pass">✓</td><td class="ci-pass">✓</td><td>Design decisions source</td></tr>
+<tr data-type="docs" data-stab="stable"><td><code>docs/design-guide.md</code></td><td><span class="type-badge">MD</span></td><td><span class="phase-badge ph-m">Measure</span></td><td>🟢 Stable</td><td>v0.4.0</td><td><span class="stab-dot stab-stable"></span> Stable</td><td class="bug-count bug-0">0</td><td class="val-pass">✓</td><td class="ci-pass">✓</td><td>Design system guide</td></tr>
+<tr data-type="docs" data-stab="stable"><td><code>docs/editing-guide.md</code></td><td><span class="type-badge">MD</span></td><td><span class="phase-badge ph-m">Measure</span></td><td>🟢 Stable</td><td>v0.4.0</td><td><span class="stab-dot stab-stable"></span> Stable</td><td class="bug-count bug-0">0</td><td class="val-pass">✓</td><td class="ci-pass">✓</td><td>Editing workflow</td></tr>
+<tr data-type="docs" data-stab="stable"><td><code>docs/slide-notes-guide.md</code></td><td><span class="type-badge">MD</span></td><td><span class="phase-badge ph-m">Measure</span></td><td>🟢 Stable</td><td>v0.4.0</td><td><span class="stab-dot stab-stable"></span> Stable</td><td class="bug-count bug-0">0</td><td class="val-pass">✓</td><td class="ci-pass">✓</td><td>Slide notes conventions</td></tr>
+<tr data-type="docs" data-stab="evolving"><td><code>README.md</code></td><td><span class="type-badge">MD</span></td><td><span class="phase-badge ph-i">Improve</span></td><td>🟡 Active</td><td>v0.4.2</td><td><span class="stab-dot stab-evolving"></span> Evolving</td><td class="bug-count bug-0">0</td><td class="val-pass">✓</td><td class="ci-pass">✓</td><td>Project readme</td></tr>
+<tr data-type="docs" data-stab="stable"><td><code>SUMMARY.md</code></td><td><span class="type-badge">MD</span></td><td><span class="phase-badge ph-a">Analyse</span></td><td>🟢 Stable</td><td>v0.4.0</td><td><span class="stab-dot stab-stable"></span> Stable</td><td class="bug-count bug-0">0</td><td class="val-pass">✓</td><td class="ci-pass">✓</td><td>Project summary</td></tr>
+</tbody></table>
+</div>
+
+<!-- ========== ASSET ARTIFACTS ========== -->
+<h2>Asset Artifacts</h2>
+<div class="card" style="overflow-x:auto">
+<table class="art">
+<thead><tr><th>Artifact</th><th>Type</th><th>DMAIC</th><th>Status</th><th>Version</th><th>Stability</th><th>Bugs</th><th>Validated</th><th>CI/CD</th><th>Notes</th></tr></thead>
+<tbody>
+<tr data-type="assets" data-stab="evolving"><td><code>assets/style.css</code></td><td><span class="type-badge">CSS</span></td><td><span class="phase-badge ph-a">Analyse</span></td><td>🟡 Active</td><td>v0.4.0</td><td><span class="stab-dot stab-evolving"></span> Evolving</td><td class="bug-count bug-warn">1</td><td class="val-partial">⚠</td><td class="ci-pass">✓</td><td>Shared styles — mobile breakpoints needed</td></tr>
+<tr data-type="assets" data-stab="evolving"><td><code>assets/common.js</code></td><td><span class="type-badge">JS</span></td><td><span class="phase-badge ph-a">Analyse</span></td><td>🟡 Active</td><td>v0.4.2</td><td><span class="stab-dot stab-evolving"></span> Evolving</td><td class="bug-count bug-0">0</td><td class="val-pass">✓</td><td class="ci-pass">✓</td><td>Chrome + nav — updated for v0.4.2</td></tr>
+<tr data-type="assets" data-stab="stable"><td><code>assets/js/live-render.js</code></td><td><span class="type-badge">JS</span></td><td><span class="phase-badge ph-a">Analyse</span></td><td>🟢 Stable</td><td>v0.4.0</td><td><span class="stab-dot stab-stable"></span> Stable</td><td class="bug-count bug-warn">1</td><td class="val-partial">⚠</td><td class="ci-pass">✓</td><td>Live markdown render for editor</td></tr>
+<tr data-type="assets" data-stab="stable"><td><code>slides/*.html</code> (5)</td><td><span class="type-badge">HTML</span></td><td><span class="phase-badge ph-a">Analyse</span></td><td>🟢 Stable</td><td>v0.4.0</td><td><span class="stab-dot stab-stable"></span> Stable</td><td class="bug-count bug-0">0</td><td class="val-pass">✓</td><td class="ci-pass">✓</td><td>cover, exec-summary, hierarchy, baseline, roadmap</td></tr>
+</tbody></table>
+</div>
+
+<!-- BUG SUMMARY -->
+<div class="card">
+<h3 style="margin-top:0">🐛 Open Bug Summary</h3>
+<table style="font-size:12.5px">
+<thead><tr><th>Bug #</th><th>Artifact</th><th>Severity</th><th>Description</th><th>Impact</th></tr></thead>
+<tbody>
+<tr><td>BUG-001</td><td><code>pvps.html</code></td><td><span class="sev-badge sev-3" style="font-size:10px;padding:1px 5px">3</span></td><td>PVPS efficiency assumes 50% isothermal — unvalidated</td><td>Sizing error if actual η differs</td></tr>
+<tr><td>BUG-002</td><td><code>assets/style.css</code></td><td><span class="sev-badge sev-2" style="font-size:10px;padding:1px 5px">2</span></td><td>Mobile breakpoint at 780px clips 4-col grid content</td><td>Poor mobile layout</td></tr>
+<tr><td>BUG-003</td><td><code>assets/js/live-render.js</code></td><td><span class="sev-badge sev-2" style="font-size:10px;padding:1px 5px">2</span></td><td>LaTeX rendering lag on large slide markdown</td><td>Editor delay &gt;500ms</td></tr>
+</tbody></table>
+</div>
+
+<!-- NAV -->
+<div class="card">
+<h3 style="margin-top:0">Related Views</h3>
+<div class="grid4">
+<a class="card" href="action-tracker.html"><h4 style="margin-top:0">📌 Action Tracker</h4></a>
+<a class="card" href="diff-tracker.html"><h4 style="margin-top:0">🔀 Diff Tracker</h4></a>
+<a class="card" href="ci-cd-pipeline.html"><h4 style="margin-top:0">🚀 CI/CD Pipeline</h4></a>
+<a class="card" href="weighted-priority.html"><h4 style="margin-top:0">⚖ Weighted Priority</h4></a>
+</div>
+</div>
+</div>
+
+<script>
+function filterArt(cat,btn){
+  document.querySelectorAll('.filter-bar button').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  document.querySelectorAll('table.art tbody tr').forEach(row=>{
+    const tp=row.dataset.type,st=row.dataset.stab;
+    if(cat==='all') row.style.display='';
+    else if(['code','html','data','docs','assets'].includes(cat)) row.style.display=tp===cat?'':'none';
+    else if(cat==='stable') row.style.display=st==='stable'?'':'none';
+    else if(cat==='evolving') row.style.display=st==='evolving'?'':'none';
+    else if(cat==='unstable') row.style.display=st==='unstable'?'':'none';
+    else row.style.display='';
+  });
+}
+</script>
+
+<!-- ===== TOP 5 HIGH-INTERACTION ARTIFACTS: DMAIC + KPI ===== -->
+<style>
+.top5-section{margin:30px 0;border-top:3px solid var(--accent);padding-top:24px}
+.top5-artifact{background:var(--bg2);border:2px solid var(--border);border-radius:var(--radius);padding:20px;margin:18px 0;box-shadow:var(--shadow)}
+.top5-artifact h3{margin:0 0 14px;font-size:17px;display:flex;align-items:center;gap:8px}
+.top5-artifact .score-pill{display:inline-block;padding:3px 10px;border-radius:999px;font-size:12px;font-weight:700;font-family:var(--mono);color:#fff;background:#C0392B}
+.dmaic-mini{display:grid;grid-template-columns:repeat(5,1fr);gap:6px;margin:12px 0}
+.dmaic-mini .dm-cell{padding:8px;border-radius:6px;font-size:11px;text-align:center}
+.dm-d{background:#E3F2FD;color:#1565C0;border:1px solid #90CAF9}.dm-m{background:#E8F5E9;color:#2E7D32;border:1px solid #A5D6A7}
+.dm-a{background:#FFF8E1;color:#F57F17;border:1px solid #FFE082}.dm-i{background:#FBE9E7;color:#BF360C;border:1px solid #FFAB91}
+.dm-c{background:#F3E5F5;color:#7B1FA2;border:1px solid #CE93D8}
+[data-theme=dark] .dm-d{background:#0D3059;border-color:#1565C0}[data-theme=dark] .dm-m{background:#1B3A1B;border-color:#2E7D32}
+[data-theme=dark] .dm-a{background:#3E2A10;border-color:#F57F17}[data-theme=dark] .dm-i{background:#3E1515;border-color:#BF360C}
+[data-theme=dark] .dm-c{background:#2A1540;border-color:#7B1FA2}
+.kpi-bars{margin:12px 0}.kpi-row{display:flex;align-items:center;gap:10px;margin:6px 0;font-size:12px}
+.kpi-row .kpi-label{min-width:120px;color:var(--fg2)}.kpi-row .kpi-bar{flex:1;height:8px;background:var(--border);border-radius:4px;overflow:hidden;position:relative}
+.kpi-row .kpi-fill{height:100%;border-radius:4px;transition:width .5s}.kpi-row .kpi-target{position:absolute;top:-2px;height:12px;width:2px;background:#C0392B}
+.kpi-row .kpi-val{min-width:45px;font-family:var(--mono);font-weight:600;text-align:right}
+</style>
+
+<div class="top5-section">
+<h2>🏆 Top 5 High-Interaction Artifacts — DMAIC & KPI Dashboard</h2>
+<p class="muted">Dedicated tracking for the 5 highest-interaction artifacts identified via <a href="interaction-analysis.html">dependency analysis</a>.</p>
+
+<!-- #1 index.html -->
+<div class="top5-artifact">
+  <h3>📍 #1 index.html <span class="score-pill">Score: 80</span> <span class="type-badge">html</span></h3>
+  <p class="muted">Central hub linking to all 30 other views · 25 incoming refs · 30 outgoing links</p>
+  <div class="dmaic-mini">
+    <div class="dm-cell dm-d"><strong>D</strong><br>100%<br><small>Hub navigation</small></div>
+    <div class="dm-cell dm-m"><strong>M</strong><br>90%<br><small>Link checks</small></div>
+    <div class="dm-cell dm-a"><strong>A</strong><br>85%<br><small>6 missing cards</small></div>
+    <div class="dm-cell dm-i"><strong>I</strong><br>70%<br><small>Add new views</small></div>
+    <div class="dm-cell dm-c"><strong>C</strong><br>60%<br><small>CI link audit</small></div>
+  </div>
+  <div class="kpi-bars">
+    <div class="kpi-row"><span class="kpi-label">Link Health</span><div class="kpi-bar"><div class="kpi-fill" style="width:94%;background:#2E7D32"></div><div class="kpi-target" style="left:100%"></div></div><span class="kpi-val">94%</span></div>
+    <div class="kpi-row"><span class="kpi-label">Card Coverage</span><div class="kpi-bar"><div class="kpi-fill" style="width:86%;background:#E5A100"></div><div class="kpi-target" style="left:100%"></div></div><span class="kpi-val">86%</span></div>
+    <div class="kpi-row"><span class="kpi-label">Mobile Layout</span><div class="kpi-bar"><div class="kpi-fill" style="width:80%;background:#E5A100"></div><div class="kpi-target" style="left:95%"></div></div><span class="kpi-val">80%</span></div>
+  </div>
+</div>
+
+<!-- #2 assets/style.css -->
+<div class="top5-artifact">
+  <h3>🎨 #2 assets/style.css <span class="score-pill">Score: 56</span> <span class="type-badge">asset</span></h3>
+  <p class="muted">Global stylesheet · 28 HTML views depend on it · 0 outgoing deps</p>
+  <div class="dmaic-mini">
+    <div class="dm-cell dm-d"><strong>D</strong><br>100%<br><small>Design system</small></div>
+    <div class="dm-cell dm-m"><strong>M</strong><br>80%<br><small>~140 selectors</small></div>
+    <div class="dm-cell dm-a"><strong>A</strong><br>75%<br><small>Dark mode gaps</small></div>
+    <div class="dm-cell dm-i"><strong>I</strong><br>50%<br><small>CSS variables</small></div>
+    <div class="dm-cell dm-c"><strong>C</strong><br>40%<br><small>Visual regression</small></div>
+  </div>
+  <div class="kpi-bars">
+    <div class="kpi-row"><span class="kpi-label">CSS Coverage</span><div class="kpi-bar"><div class="kpi-fill" style="width:72%;background:#E5A100"></div><div class="kpi-target" style="left:90%"></div></div><span class="kpi-val">72%</span></div>
+    <div class="kpi-row"><span class="kpi-label">Dark Mode</span><div class="kpi-bar"><div class="kpi-fill" style="width:65%;background:#D85A30"></div><div class="kpi-target" style="left:95%"></div></div><span class="kpi-val">65%</span></div>
+    <div class="kpi-row"><span class="kpi-label">Responsive</span><div class="kpi-bar"><div class="kpi-fill" style="width:58%;background:#D85A30"></div><div class="kpi-target" style="left:85%"></div></div><span class="kpi-val">58%</span></div>
+  </div>
+</div>
+
+<!-- #3 assets/common.js -->
+<div class="top5-artifact">
+  <h3>⚙ #3 assets/common.js <span class="score-pill">Score: 50</span> <span class="type-badge">code</span></h3>
+  <p class="muted">Navigation chrome, theme/font toggle · 25 HTML views load it · ~450 LOC</p>
+  <div class="dmaic-mini">
+    <div class="dm-cell dm-d"><strong>D</strong><br>100%<br><small>Nav + theme</small></div>
+    <div class="dm-cell dm-m"><strong>M</strong><br>70%<br><small>12 functions</small></div>
+    <div class="dm-cell dm-a"><strong>A</strong><br>65%<br><small>No error handling</small></div>
+    <div class="dm-cell dm-i"><strong>I</strong><br>40%<br><small>ES6 modules</small></div>
+    <div class="dm-cell dm-c"><strong>C</strong><br>30%<br><small>Unit tests needed</small></div>
+  </div>
+  <div class="kpi-bars">
+    <div class="kpi-row"><span class="kpi-label">Test Coverage</span><div class="kpi-bar"><div class="kpi-fill" style="width:45%;background:#C0392B"></div><div class="kpi-target" style="left:95%"></div></div><span class="kpi-val">45%</span></div>
+    <div class="kpi-row"><span class="kpi-label">Load Time</span><div class="kpi-bar"><div class="kpi-fill" style="width:90%;background:#2E7D32"></div><div class="kpi-target" style="left:100%"></div></div><span class="kpi-val">45ms</span></div>
+    <div class="kpi-row"><span class="kpi-label">Maintainability</span><div class="kpi-bar"><div class="kpi-fill" style="width:68%;background:#E5A100"></div><div class="kpi-target" style="left:85%"></div></div><span class="kpi-val">68</span></div>
+  </div>
+</div>
+
+<!-- #4 master/data.json -->
+<div class="top5-artifact">
+  <h3>📊 #4 master/data.json <span class="score-pill" style="background:#D85A30">Score: 28</span> <span class="type-badge">data</span></h3>
+  <p class="muted">Central data source · 14 HTML views consume it · config/spec data</p>
+  <div class="dmaic-mini">
+    <div class="dm-cell dm-d"><strong>D</strong><br>100%<br><small>Data schema</small></div>
+    <div class="dm-cell dm-m"><strong>M</strong><br>85%<br><small>14 consumers</small></div>
+    <div class="dm-cell dm-a"><strong>A</strong><br>80%<br><small>No schema validation</small></div>
+    <div class="dm-cell dm-i"><strong>I</strong><br>60%<br><small>JSON Schema</small></div>
+    <div class="dm-cell dm-c"><strong>C</strong><br>50%<br><small>CI validation</small></div>
+  </div>
+  <div class="kpi-bars">
+    <div class="kpi-row"><span class="kpi-label">Schema Valid</span><div class="kpi-bar"><div class="kpi-fill" style="width:100%;background:#2E7D32"></div><div class="kpi-target" style="left:100%"></div></div><span class="kpi-val">100%</span></div>
+    <div class="kpi-row"><span class="kpi-label">Completeness</span><div class="kpi-bar"><div class="kpi-fill" style="width:78%;background:#E5A100"></div><div class="kpi-target" style="left:95%"></div></div><span class="kpi-val">78%</span></div>
+    <div class="kpi-row"><span class="kpi-label">Consumer Health</span><div class="kpi-bar"><div class="kpi-fill" style="width:86%;background:#E5A100"></div><div class="kpi-target" style="left:100%"></div></div><span class="kpi-val">86%</span></div>
+  </div>
+</div>
+
+<!-- #5 ci-cd-pipeline.html -->
+<div class="top5-artifact">
+  <h3>🚀 #5 ci-cd-pipeline.html <span class="score-pill" style="background:#D85A30">Score: 29</span> <span class="type-badge">html</span></h3>
+  <p class="muted">CI/CD pipeline design · 25 outgoing links · references all deployment artifacts</p>
+  <div class="dmaic-mini">
+    <div class="dm-cell dm-d"><strong>D</strong><br>100%<br><small>Pipeline design</small></div>
+    <div class="dm-cell dm-m"><strong>M</strong><br>75%<br><small>25 links</small></div>
+    <div class="dm-cell dm-a"><strong>A</strong><br>70%<br><small>No actual CI</small></div>
+    <div class="dm-cell dm-i"><strong>I</strong><br>30%<br><small>GitHub Actions</small></div>
+    <div class="dm-cell dm-c"><strong>C</strong><br>20%<br><small>Not deployed</small></div>
+  </div>
+  <div class="kpi-bars">
+    <div class="kpi-row"><span class="kpi-label">Link Health</span><div class="kpi-bar"><div class="kpi-fill" style="width:96%;background:#2E7D32"></div><div class="kpi-target" style="left:100%"></div></div><span class="kpi-val">96%</span></div>
+    <div class="kpi-row"><span class="kpi-label">CI Coverage</span><div class="kpi-bar"><div class="kpi-fill" style="width:0%;background:#C0392B"></div><div class="kpi-target" style="left:80%"></div></div><span class="kpi-val">0%</span></div>
+    <div class="kpi-row"><span class="kpi-label">Doc Quality</span><div class="kpi-bar"><div class="kpi-fill" style="width:75%;background:#E5A100"></div><div class="kpi-target" style="left:90%"></div></div><span class="kpi-val">75%</span></div>
+  </div>
+</div>
+
+<p class="muted" style="margin-top:18px;font-size:12px">See <a href="interaction-analysis.html">Interaction Analysis</a> for full dependency tornado · <a href="testing-strategy.html">Testing Strategy</a> for risk-weighted test plans · <a href="code-quality.html">Code Quality</a> for modernization roadmap.</p>
+</div>
+
+</body></html>

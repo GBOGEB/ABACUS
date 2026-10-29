@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>GBOGEB/ABACUS — Hub</title>
+<meta name="description" content="GBOGEB/ABACUS governance hub — navigate engines, examples, and documentation.">
+<link rel="stylesheet" href="static/css/hub.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+</head>
+<body>
+
+<!-- ═══════════════════════════════════════════════════════════════════════
+     HEADER
+     ═══════════════════════════════════════════════════════════════════════ -->
+<header class="hub-header">
+  <h1>
+    <i class="fas fa-atom logo-icon"></i>
+    GBOGEB / ABACUS
+    <span class="repo-tag">GBA</span>
+  </h1>
+  <nav class="hub-nav">
+    <a href="#topology"><i class="fas fa-project-diagram"></i> Topology</a>
+    <a href="#quicklinks"><i class="fas fa-bolt"></i> Quick Links</a>
+    <a href="#architecture"><i class="fas fa-sitemap"></i> Architecture</a>
+    <a href="../examples/multi_view_workspace/output/documents/index.html"><i class="fas fa-flask"></i> Multi-View Tool</a>
+    <a href="../docs/ARCHITECTURE.md"><i class="fas fa-book"></i> Docs</a>
+  </nav>
+</header>
+
+<!-- ═══════════════════════════════════════════════════════════════════════
+     HERO — Download Banner
+     ═══════════════════════════════════════════════════════════════════════ -->
+<section class="hero">
+  <h2>Deterministic Engineering Publication Compiler</h2>
+  <p>
+    Transform design blueprints into governed, accessible, and traceable engineering publications.
+    Validate content with A6 engines, track lineage with SHA256 hashes, and render with semantic themes.
+  </p>
+  <a href="workspace_bundle.tar.gz" class="download-btn" id="downloadBtn">
+    <i class="fas fa-download"></i>
+    Download workspace_bundle.tar.gz
+  </a>
+  <div class="download-meta">
+    Includes: engineering_data.yaml · physics_validator.py · index.html · report.md · report.pdf
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════════════════════════════
+     QUICK LINKS
+     ═══════════════════════════════════════════════════════════════════════ -->
+<section class="section" id="quicklinks">
+  <div class="section-title"><i class="fas fa-bolt"></i> Quick Links</div>
+  <div class="section-subtitle">Jump directly to key resources across the repository.</div>
+
+  <div class="link-grid">
+    <a href="../examples/multi_view_workspace/output/documents/index.html" class="link-card">
+      <i class="fas fa-tachometer-alt"></i>
+      <div>
+        <div class="link-label">Interactive HMI Dashboard</div>
+        <div class="link-sub">Split-pane SPA with live YAML→render pipeline</div>
+      </div>
+    </a>
+    <a href="../examples/multi_view_workspace/output/documents/report.md" class="link-card">
+      <i class="fas fa-file-alt"></i>
+      <div>
+        <div class="link-label">Technical Report</div>
+        <div class="link-sub">Heat load analysis with equations &amp; flowcharts</div>
+      </div>
+    </a>
+    <a href="../examples/multi_view_workspace/output/documents/report.pdf" class="link-card">
+      <i class="fas fa-file-pdf"></i>
+      <div>
+        <div class="link-label">PDF Report</div>
+        <div class="link-sub">WeasyPrint-generated, themed PDF output</div>
+      </div>
+    </a>
+    <a href="../examples/multi_view_workspace/output/context/engineering_data.yaml" class="link-card">
+      <i class="fas fa-database"></i>
+      <div>
+        <div class="link-label">SSOT YAML Config</div>
+        <div class="link-sub">Single Source of Truth — engineering data</div>
+      </div>
+    </a>
+    <a href="../examples/multi_view_workspace/output/context/physics_validator.py" class="link-card">
+      <i class="fab fa-python"></i>
+      <div>
+        <div class="link-label">Physics Validator</div>
+        <div class="link-sub">He-4 property engine &amp; mass balance</div>
+      </div>
+    </a>
+    <a href="../docs/ARCHITECTURE.md" class="link-card">
+      <i class="fas fa-sitemap"></i>
+      <div>
+        <div class="link-label">Architecture Docs</div>
+        <div class="link-sub">Full system design &amp; A6 engine specs</div>
+      </div>
+    </a>
+    <a href="../docs/STAKEHOLDER_ROUTING.md" class="link-card">
+      <i class="fas fa-route"></i>
+      <div>
+        <div class="link-label">Stakeholder Routing</div>
+        <div class="link-sub">[KEB] / [DOW] / [ALL] distribution logic</div>
+      </div>
+    </a>
+    <a href="../docs/CODEX_BRIDGE.md" class="link-card">
+      <i class="fas fa-bridge"></i>
+      <div>
+        <div class="link-label">CODEX Bridge</div>
+        <div class="link-sub">GBA ↔ GBC cross-repo protocol</div>
+      </div>
+    </a>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════════════════════════════
+     KNOWLEDGE TOPOLOGY
+     ═══════════════════════════════════════════════════════════════════════ -->
+<section class="section" id="topology">
+  <div class="section-title"><i class="fas fa-project-diagram"></i> Knowledge Topology</div>
+  <div class="section-subtitle">
+    Cross-repository node map — GBA (ABACUS) governance nodes and GBC (CODEX) dependencies.
+    <span id="statsInfo" style="font-family:var(--hub-mono);color:var(--hub-cyan);"></span>
+  </div>
+
+  <!-- Filter buttons -->
+  <div style="display:flex;gap:6px;margin-bottom:16px;flex-wrap:wrap;">
+    <button data-filter="all" class="hub-nav-btn active" style="padding:4px 12px;font-size:12px;font-weight:600;border:1px solid var(--hub-border);border-radius:4px;background:var(--hub-surface-raised);color:var(--hub-text);cursor:pointer;">All</button>
+    <button data-filter="gba" class="hub-nav-btn" style="padding:4px 12px;font-size:12px;font-weight:600;border:1px solid var(--hub-border);border-radius:4px;background:transparent;color:var(--hub-primary);cursor:pointer;">GBA only</button>
+    <button data-filter="gbc" class="hub-nav-btn" style="padding:4px 12px;font-size:12px;font-weight:600;border:1px solid var(--hub-border);border-radius:4px;background:transparent;color:var(--hub-purple);cursor:pointer;">GBC only</button>
+    <button data-filter="governance" class="hub-nav-btn" style="padding:4px 12px;font-size:12px;font-weight:600;border:1px solid var(--hub-border);border-radius:4px;background:transparent;color:var(--hub-text-muted);cursor:pointer;">Governance</button>
+    <button data-filter="lineage" class="hub-nav-btn" style="padding:4px 12px;font-size:12px;font-weight:600;border:1px solid var(--hub-border);border-radius:4px;background:transparent;color:var(--hub-text-muted);cursor:pointer;">Lineage</button>
+    <button data-filter="ci_cd" class="hub-nav-btn" style="padding:4px 12px;font-size:12px;font-weight:600;border:1px solid var(--hub-border);border-radius:4px;background:transparent;color:var(--hub-text-muted);cursor:pointer;">CI/CD</button>
+    <button data-filter="config" class="hub-nav-btn" style="padding:4px 12px;font-size:12px;font-weight:600;border:1px solid var(--hub-border);border-radius:4px;background:transparent;color:var(--hub-text-muted);cursor:pointer;">Config</button>
+  </div>
+
+  <div class="node-grid" id="topologyGrid">
+    <!-- Dynamic cards rendered by hub.js from knowledge_topology.json -->
+    <!-- Static fallback below for no-JS environments -->
+    <noscript>
+      <div class="node-card" style="--node-color:#6d28d9;">
+        <div class="card-header">
+          <div class="card-icon"><i class="fas fa-shield-halved"></i></div>
+          <div><div class="card-id">GBA-GOV-001</div><div class="card-title">Render Rules Engine</div></div>
+        </div>
+        <div class="card-desc">Master specification for all rendering governance rules.</div>
+        <code class="card-path">engines/RENDER_RULES.md</code>
+      </div>
+      <div class="node-card" style="--node-color:#6d28d9;">
+        <div class="card-header">
+          <div class="card-icon"><i class="fas fa-shield-halved"></i></div>
+          <div><div class="card-id">GBA-GOV-002</div><div class="card-title">Render Linter</div></div>
+        </div>
+        <div class="card-desc">Python linter enforcing RENDER_RULES against content.</div>
+        <code class="card-path">engines/RENDER_LINTER.py</code>
+      </div>
+      <div class="node-card" style="--node-color:#0891b2;">
+        <div class="card-header">
+          <div class="card-icon"><i class="fas fa-link"></i></div>
+          <div><div class="card-id">GBA-LIN-001</div><div class="card-title">Verification Hook</div></div>
+        </div>
+        <div class="card-desc">Binary asset processor — SHA256 hashing and manifest management.</div>
+        <code class="card-path">engines/verification_hook.py</code>
+      </div>
+      <div class="node-card" style="--node-color:#3b82f6;">
+        <div class="card-header">
+          <div class="card-icon"><i class="fas fa-flask"></i></div>
+          <div><div class="card-id">GBA-EX-001</div><div class="card-title">Multi-View Engineering Tool</div></div>
+        </div>
+        <div class="card-desc">SPA demonstrating split-pane YAML→render pipeline.</div>
+        <code class="card-path">examples/multi_view_workspace/</code>
+      </div>
+    </noscript>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════════════════════════════
+     ARCHITECTURE OVERVIEW
+     ═══════════════════════════════════════════════════════════════════════ -->
+<section class="section" id="architecture">
+  <div class="section-title"><i class="fas fa-sitemap"></i> Repository Architecture</div>
+  <div class="section-subtitle">File system layout of the GBOGEB/ABACUS repository.</div>
+
+  <div class="arch-diagram">
+    <pre>
+GBOGEB/ABACUS (GBA)
+├── .github/
+│   ├── workflows/
+│   │   ├── governance-validation.yml    ← Lint, contrast, slide-IDs, tests
+│   │   ├── asset-verification.yml       ← Binary asset SHA256 verification
+│   │   └── archive-deploy.yml           ← Bundle generation + GitHub Pages
+│   ├── CODEOWNERS
+│   └── PULL_REQUEST_TEMPLATE.md
+├── _data/
+│   └── lineage_manifest.json            ← Asset lineage registry
+├── _layouts/
+│   ├── default.html                     ← Jekyll base template
+│   └── slide.html                       ← Slide rendering template
+├── assets/
+│   ├── css/main.css                     ← WCAG AA semantic stylesheet
+│   └── js/theme.js                      ← Light/dark theme switcher
+├── config/
+│   ├── governance_tuning.yaml           ← Governance rule configuration
+│   ├── knowledge_topology.json          ← Cross-repo node mapping (NEW)
+│   └── stakeholder_registry.yaml        ← Communication routes (NEW)
+├── docs/
+│   ├── ARCHITECTURE.md                  ← System design documentation
+│   ├── CODEX_BRIDGE.md                  ← GBA ↔ GBC protocol
+│   └── STAKEHOLDER_ROUTING.md           ← Distribution tag logic
+├── engines/                             ← A6 Governance Engines
+│   ├── RENDER_RULES.md                  ← Rule specifications
+│   ├── RENDER_LINTER.py                 ← Content linter
+│   ├── SEMANTIC_THEME.yaml              ← Theme token definitions
+│   ├── LAYOUT_CONTRACTS.yaml            ← Spacing & typography
+│   ├── LINEAGE_SCHEMA.yaml              ← Manifest JSON Schema
+│   ├── WCAG_CONTRAST_CHECKER.py         ← Accessibility checker
+│   ├── SLIDE_ID_ENFORCER.py             ← Slide ID validator
+│   ├── RENDER_TEST_SUITE.md             ← Test scenario reference
+│   └── verification_hook.py             ← Binary asset processor
+├── examples/
+│   └── multi_view_workspace/            ← Engineering Tool SPA
+│       ├── output/context/              ← YAML + Python engine
+│       ├── output/documents/            ← HTML, MD, PDF outputs
+│       └── scripts/                     ← PDF generation
+├── tests/                               ← 79 unit + integration tests
+├── web/                                 ← Hub landing page (NEW)
+│   ├── index.html                       ← Central navigation hub
+│   └── static/{css,js}/                 ← Hub theme & interactivity
+├── Input_Master/                        ← Binary asset drop zone
+├── README.md
+├── CONTRIBUTING.md
+├── CHANGELOG.md
+└── _config.yml                          ← Jekyll configuration
+    </pre>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════════════════════════════
+     FOOTER
+     ═══════════════════════════════════════════════════════════════════════ -->
+<footer class="hub-footer">
+  <div class="footer-links">
+    <a href="../README.md">README</a>
+    <a href="../CONTRIBUTING.md">Contributing</a>
+    <a href="../CHANGELOG.md">Changelog</a>
+    <a href="../docs/ARCHITECTURE.md">Architecture</a>
+    <a href="https://github.com/GBOGEB/ABACUS">GitHub</a>
+  </div>
+  <p>GBOGEB/ABACUS v1.1.0 · Generated outputs are NEVER canonical — source of truth is GBOGEB/CODEX</p>
+</footer>
+
+<script src="static/js/hub.js"></script>
+</body>
+</html>
