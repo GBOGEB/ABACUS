@@ -7,7 +7,7 @@ from DMAIC_V3.core.twelve_cluster_orchestrator import TwelveClusterOrchestrator
 
 orch = TwelveClusterOrchestrator(max_workers=12, use_keb=True, use_gbogeb=True)
 # Clusters 1-2: Define phase scanning
-# Clusters 3-4: Measure analysis  
+# Clusters 3-4: Measure analysis
 # Clusters 5-6: Analyze/Improve
 # Clusters 7-8: Control/Knowledge
 # Clusters 9-10: Action Tracking

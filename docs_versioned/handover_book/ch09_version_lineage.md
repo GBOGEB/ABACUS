@@ -8,7 +8,7 @@
 2025-Q4: v0.31 (Canonical Foundation)
     │      └─ Established canonical indexes
     │
-2025-Q4: v0.32 (Production Pipeline)  
+2025-Q4: v0.32 (Production Pipeline)
     │      └─ Extended DMAIC to 10 phases
     │
 2025-Q4: ABACUS-UNIFIED (Merged Knowledge Base)

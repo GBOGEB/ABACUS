@@ -4,7 +4,7 @@
 
 **Issue**: Merge conflicts in `.gitignore` and PowerShell script execution problems
 
-**Solution**: 
+**Solution**:
 1. ✅ Resolved `.gitignore` merge conflict
 2. ✅ Created simplified `sync_github_simple.ps1` script
 3. ✅ Created `QUICK_START.txt` with copy-paste commands
@@ -127,8 +127,8 @@ Then follow `QUICK_START.txt` for Azure deployment!
 
 ---
 
-**Repository**: https://github.com/GBOGEB/ABACUS.git  
-**Branch**: main  
+**Repository**: https://github.com/GBOGEB/ABACUS.git
+**Branch**: main
 **Latest Commit**: 568461a - "Add simplified GitHub sync script and quick start guide"
 
 🎉 **You're all set!**

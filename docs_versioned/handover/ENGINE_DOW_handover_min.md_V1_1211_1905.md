@@ -1,8 +1,8 @@
 
 # ENGINE.DOW v0.5 — Minimal Handover (Single Markdown → Repo)
 
-**Owner:** @8bv7jng4xj  
-**Date:** 2025-11-12 (Europe/Brussels)  
+**Owner:** @8bv7jng4xj
+**Date:** 2025-11-12 (Europe/Brussels)
 **Goal:** One markdown to generate a *lean* repo, including a **short GLOB** and minimal **config/task**. Tangling writes files from fenced blocks with `file=...`.
 
 ---

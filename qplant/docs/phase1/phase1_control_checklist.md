@@ -1,9 +1,9 @@
 # Phase 1 Control Checklist — Ongoing Maintenance
 
-> **Purpose:** Prevent regression of Phase 1 improvements through systematic checks  
-> **Frequency:** Before each release / after each significant change  
-> **Project:** MYRRHA QPLANT Cryogenic Dashboard v4.0.0+  
-> **Created:** 2026-05-12  
+> **Purpose:** Prevent regression of Phase 1 improvements through systematic checks
+> **Frequency:** Before each release / after each significant change
+> **Project:** MYRRHA QPLANT Cryogenic Dashboard v4.0.0+
+> **Created:** 2026-05-12
 
 ---
 
@@ -159,5 +159,5 @@ echo "=== Validation Complete ==="
 
 ---
 
-**Total Controls:** 31 items (original 19 + 12 new from Phase 2 retrospective)  
+**Total Controls:** 31 items (original 19 + 12 new from Phase 2 retrospective)
 **Review Cadence:** Weekly (automated), Monthly (manual review)
