@@ -1,7 +1,7 @@
 # Phase 4 Implementation Guide
 
-**Project:** MYRRHA QPLANT Cryogenic System  
-**Version:** v4.4.0 — Production Ready  
+**Project:** MYRRHA QPLANT Cryogenic System
+**Version:** v4.4.0 — Production Ready
 **Date:** 2026-05-17
 
 ---

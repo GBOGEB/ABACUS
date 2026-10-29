@@ -1,8 +1,8 @@
 # Cryo Dashboard v0.3.0
 
-**Status:** Canonical source — developed here, deployed to GitHub Pages via PR  
-**Data source:** NIST REFPROP 10 (Helium-4 & Liquid Nitrogen)  
-**Domain:** Cryogenic / Superconducting LINAC systems  
+**Status:** Canonical source — developed here, deployed to GitHub Pages via PR
+**Data source:** NIST REFPROP 10 (Helium-4 & Liquid Nitrogen)
+**Domain:** Cryogenic / Superconducting LINAC systems
 **Live URL:** https://gbogeb.github.io/Q_engineering_tools/cryo_dashboard_v0_3_0/
 
 ---

@@ -1,8 +1,8 @@
 # Phase 1 Lessons Learned — Process Improvement Insights
 
-> **Project:** MYRRHA QPLANT Cryogenic Dashboard v4.0.0  
-> **Phase:** 1 — Stabilization & Alignment  
-> **Date:** 2026-05-12  
+> **Project:** MYRRHA QPLANT Cryogenic Dashboard v4.0.0
+> **Phase:** 1 — Stabilization & Alignment
+> **Date:** 2026-05-12
 
 ---
 

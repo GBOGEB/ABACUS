@@ -1,8 +1,8 @@
 # Python Coding Agent Handover
 
 
-**Version:** 2.3.0  
-**Generated:** 2025-11-08T19:22:20.318046+00:00  
+**Version:** 2.3.0
+**Generated:** 2025-11-08T19:22:20.318046+00:00
 ## Critical Information for Python Agents
 
 ### Purpose
@@ -199,8 +199,8 @@ def process_scenario(name):
 ```markdown
 ## Results
 
-✓ Baseline: 1234.5 W  
-✓ High-Power: 2345.6 W  
+✓ Baseline: 1234.5 W
+✓ High-Power: 2345.6 W
 ⚠ Margin applied: 20%
 ```
 
@@ -341,6 +341,6 @@ python selfsmoke_test.py
 
 ---
 
-**Version**: 3.0.0  
-**Date**: 2025-11-08  
+**Version**: 3.0.0
+**Date**: 2025-11-08
 **Status**: Production Ready

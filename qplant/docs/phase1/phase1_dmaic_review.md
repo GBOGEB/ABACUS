@@ -1,10 +1,10 @@
 # Phase 1 DMAIC Review — QPLANT Cryogenic Dashboard v4.0.0
 
-> **Framework:** Six Sigma DMAIC (Define → Measure → Analyze → Improve → Control)  
-> **Project:** MYRRHA QPLANT Helium Refrigeration Leak-Rate Dashboard  
-> **Phase Reviewed:** Phase 1 — Stabilization & Alignment  
-> **Review Date:** 2026-05-12  
-> **Prepared By:** Engineering Quality Team  
+> **Framework:** Six Sigma DMAIC (Define → Measure → Analyze → Improve → Control)
+> **Project:** MYRRHA QPLANT Helium Refrigeration Leak-Rate Dashboard
+> **Phase Reviewed:** Phase 1 — Stabilization & Alignment
+> **Review Date:** 2026-05-12
+> **Prepared By:** Engineering Quality Team
 
 ---
 
@@ -159,7 +159,7 @@
 
 ### 3.1 Root Cause Analysis — Version Misalignment
 
-**Symptom:** `docs/index.html` showed v3.1.0; heroes showed v2.1.0  
+**Symptom:** `docs/index.html` showed v3.1.0; heroes showed v2.1.0
 **Root Cause:** Version labels were hardcoded in HTML templates inside Python generators rather than being injected from SSoT. When `VERSION.json` and `config.yaml` were updated to v4.0.0, the HTML-generating scripts were not updated simultaneously.
 
 ```
@@ -179,7 +179,7 @@ Root Cause Tree:
 
 ### 3.2 Root Cause Analysis — Configuration Out of Sync
 
-**Symptom:** HTML pages referenced 4 compressors, 400 kW, €820k despite config.yaml specifying 3/315 kW/€600k  
+**Symptom:** HTML pages referenced 4 compressors, 400 kW, €820k despite config.yaml specifying 3/315 kW/€600k
 **Root Cause:** Two Python generators (`build_dense_slides.py`, `build_v3_1.py`) contained hardcoded values in HTML template strings rather than reading from `config_loader.py`.
 
 ```
@@ -201,7 +201,7 @@ Root Cause Tree:
 
 ### 3.3 Root Cause Analysis — Fragmented Build Process
 
-**Symptom:** 7+ independent Python scripts, no unified build  
+**Symptom:** 7+ independent Python scripts, no unified build
 **Root Cause:** Each visualization module was developed as a standalone script. No build orchestration was implemented because development was iterative and incremental.
 
 **Contributing Factors:**
@@ -381,7 +381,7 @@ See companion document: `/home/ubuntu/phase1_control_checklist.md`
 
 ## 6. Post-Phase 2 Retrospective
 
-> **Added:** 2026-05-12 — After completion of Phase 2 (Integration & Automation)  
+> **Added:** 2026-05-12 — After completion of Phase 2 (Integration & Automation)
 > **Purpose:** Evaluate Phase 1 controls through the lens of Phase 2 execution
 
 ### 6.1 Cross-Phase Insights
