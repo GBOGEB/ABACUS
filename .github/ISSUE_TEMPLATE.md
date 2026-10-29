@@ -18,7 +18,7 @@ Paste the exact error message here
 **Token Configuration**
 - [ ] I have a GitHub Personal Access Token
 - [ ] Token has `repo` scope enabled
-- [ ] Token has `workflow` scope enabled  
+- [ ] Token has `workflow` scope enabled
 - [ ] Token is set as `GITHUB_TOKEN` environment variable
 
 **Repository Access**

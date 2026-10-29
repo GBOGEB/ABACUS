@@ -277,10 +277,10 @@ Total System Footprint | -        | 210MB   | ✅
 ## Version Mapping
 
 ```
-V1.0 (pre-2025) 
+V1.0 (pre-2025)
   ↓
 V2.0 (DMAIC V2)
-  ↓  
+  ↓
 V2.1 (CRYO_LINAC_HANDOVER Foundation) ✅
   ↓
 V2.2 (12-CLUSTER Integration - Current) 🔄
