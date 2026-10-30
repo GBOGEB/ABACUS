@@ -1,7 +1,7 @@
 # Technical Design Report — Cryogenic Heat Load Analysis
 
-**Document:** ESS-CRYO-TDR-2026-001 · **Revision:** A · **Date:** 2026-05-20  
-**Author:** GBOGEB Engineering Team · **Classification:** Internal  
+**Document:** ESS-CRYO-TDR-2026-001 · **Revision:** A · **Date:** 2026-05-20
+**Author:** GBOGEB Engineering Team · **Classification:** Internal
 **GBOGEB/ABACUS Schema:** v2.1.0 · **Governance:** `verification_hook` validated
 
 ---

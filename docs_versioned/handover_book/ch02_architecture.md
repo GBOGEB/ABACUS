@@ -2,7 +2,7 @@
 
 ## 2.1 Architecture Overview
 
-The 12-Cluster Architecture is the **core functioning model** of ABACUS. It organizes all 
+The 12-Cluster Architecture is the **core functioning model** of ABACUS. It organizes all
 system components into 12 functional clusters across 4 tiers:
 
 ```
@@ -72,7 +72,7 @@ IDLE → INITIALIZING → ACTIVE → PROCESSING → COMPLETED
 
 Each cluster maintains:
 - Task execution count
-- Failure count  
+- Failure count
 - Priority level (1-10)
 - Current status
 - Phase assignment

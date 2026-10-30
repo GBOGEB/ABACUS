@@ -22,4 +22,3 @@ _spec.loader.exec_module(_contracts)
 
 class TestG3CSConvergence(_contracts.ConvergenceContract):
     """Run all provider contracts in the native repository test population."""
-

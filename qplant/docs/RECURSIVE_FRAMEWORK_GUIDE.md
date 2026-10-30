@@ -1,10 +1,10 @@
 # Recursive Versioning Framework — Complete Guide
 
-> **Version:** 1.0  
-> **Date:** 2026-05-12  
-> **Project:** MYRRHA QPLANT Cryogenic Leak Rate Dashboard  
-> **Framework:** Edit_WORD_Roundtrip  
-> **SSOT:** QPS (Addendum II)_Master.docx (Rev. 52)  
+> **Version:** 1.0
+> **Date:** 2026-05-12
+> **Project:** MYRRHA QPLANT Cryogenic Leak Rate Dashboard
+> **Framework:** Edit_WORD_Roundtrip
+> **SSOT:** QPS (Addendum II)_Master.docx (Rev. 52)
 
 ---
 
