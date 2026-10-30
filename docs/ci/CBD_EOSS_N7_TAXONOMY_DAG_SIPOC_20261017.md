@@ -13,9 +13,9 @@ DAG edges indicate real process sequence or dashed observational relationships. 
 
 ## Local / repo / federation glossary
 **LOCAL:** import isolation, pytest/coverage.py, monotonic build clocks,
-development wheelhouse, pre-push.  
+development wheelhouse, pre-push.
 **REPO:** head SHA, run/attempt/job/step, terminal source proof, B0 canonical
-coverage, documented first-red.  
+coverage, documented first-red.
 **FEDERATION:** cross-repo owner map, DAG, SIPOC, REX, Mission Control,
 independent admission.
 

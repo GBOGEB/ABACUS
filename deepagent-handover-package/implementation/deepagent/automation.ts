@@ -76,7 +76,7 @@ export class AutomationEngine {
           execution.status = 'failed';
           execution.endTime = new Date();
           execution.error = stepResult.message;
-          
+
           await this.handleWorkflowFailure(workflow, execution, stepResult);
           return {
             success: false,
@@ -91,7 +91,7 @@ export class AutomationEngine {
 
       execution.status = 'completed';
       execution.endTime = new Date();
-      
+
       await this.handleWorkflowSuccess(workflow, execution);
       return {
         success: true,
@@ -104,7 +104,7 @@ export class AutomationEngine {
       execution.status = 'error';
       execution.endTime = new Date();
       execution.error = error instanceof Error ? error.message : String(error);
-      
+
       throw new AutomationError(
         `Workflow execution failed: ${error instanceof Error ? error.message : String(error)}`,
         workflowName
@@ -119,12 +119,12 @@ export class AutomationEngine {
     execution: IWorkflowExecution
   ): Promise<IStepExecutionResult> {
     const startTime = new Date();
-    
+
     try {
       console.log(`Executing step: ${step.name} with action: ${step.action}`);
-      
+
       const result = await this.executeAction(step.action, step.parameters, context);
-      
+
       return {
         stepName: step.name,
         action: step.action,
@@ -161,7 +161,7 @@ export class AutomationEngine {
 
     // Replace parameter placeholders with context values
     const resolvedParameters = this.resolveParameters(parameters, context);
-    
+
     return await actionHandler.execute(resolvedParameters, context);
   }
 
@@ -170,11 +170,11 @@ export class AutomationEngine {
     if (typeof parameters === 'string') {
       return this.replaceVariables(parameters, context);
     }
-    
+
     if (Array.isArray(parameters)) {
       return parameters.map(param => this.resolveParameters(param, context));
     }
-    
+
     if (typeof parameters === 'object' && parameters !== null) {
       const resolved: any = {};
       for (const [key, value] of Object.entries(parameters)) {
@@ -182,7 +182,7 @@ export class AutomationEngine {
       }
       return resolved;
     }
-    
+
     return parameters;
   }
 
@@ -196,7 +196,7 @@ export class AutomationEngine {
   private getContextValue(path: string, context: IWorkflowContext): any {
     const parts = path.split('.');
     let current: any = context;
-    
+
     for (const part of parts) {
       if (current && typeof current === 'object' && part in current) {
         current = current[part];
@@ -204,7 +204,7 @@ export class AutomationEngine {
         return undefined;
       }
     }
-    
+
     return current;
   }
 
@@ -236,7 +236,7 @@ export class AutomationEngine {
 
   public async emitEvent(event: IEvent): Promise<void> {
     const handlers = this.eventListeners.get(event.type) || [];
-    
+
     for (const handler of handlers) {
       try {
         await handler(event);
@@ -292,7 +292,7 @@ export class AutomationEngine {
   ): Promise<void> {
     // Implementation would integrate with approval system
     console.log(`Approval requested for workflow: ${workflow.name}`);
-    
+
     await this.emitEvent({
       id: this.generateEventId(),
       type: 'automation_triggered',
@@ -311,7 +311,7 @@ export class AutomationEngine {
     execution: IWorkflowExecution
   ): Promise<void> {
     console.log(`Workflow completed successfully: ${workflow.name}`);
-    
+
     await this.emitEvent({
       id: this.generateEventId(),
       type: 'automation_triggered',
@@ -332,7 +332,7 @@ export class AutomationEngine {
     failedStep: IStepExecutionResult
   ): Promise<void> {
     console.error(`Workflow failed: ${workflow.name} at step: ${failedStep.stepName}`);
-    
+
     await this.emitEvent({
       id: this.generateEventId(),
       type: 'automation_triggered',
@@ -366,7 +366,7 @@ export class AutomationEngine {
   }
 
   public getActiveExecutions(): IWorkflowExecution[] {
-    return this.executionHistory.filter(exec => 
+    return this.executionHistory.filter(exec =>
       exec.status === 'running' || exec.status === 'pending_approval'
     );
   }
@@ -466,7 +466,7 @@ class RunTestsHandler implements IActionHandler {
     return {
       success: true,
       message: `${parameters.test_type} tests completed`,
-      data: { 
+      data: {
         testType: parameters.test_type,
         coverage: parameters.coverage_threshold,
         passed: 95,
@@ -483,7 +483,7 @@ class BuildAppHandler implements IActionHandler {
     return {
       success: true,
       message: `Application built successfully`,
-      data: { 
+      data: {
         buildCommand: parameters.build_command,
         outputDirectory: parameters.output_directory
       },
@@ -498,7 +498,7 @@ class SecurityScanHandler implements IActionHandler {
     return {
       success: true,
       message: `Security scan completed with ${parameters.scanner}`,
-      data: { 
+      data: {
         scanner: parameters.scanner,
         vulnerabilities: 0,
         severity: parameters.severity_threshold
@@ -514,7 +514,7 @@ class StoreArtifactsHandler implements IActionHandler {
     return {
       success: true,
       message: `Artifacts stored successfully`,
-      data: { 
+      data: {
         artifacts: parameters.artifacts,
         retentionDays: parameters.retention_days
       },
@@ -529,7 +529,7 @@ class DeployApplicationHandler implements IActionHandler {
     return {
       success: true,
       message: `Application deployed using ${parameters.deployment_strategy}`,
-      data: { 
+      data: {
         strategy: parameters.deployment_strategy,
         healthCheckUrl: parameters.health_check_url
       },
@@ -544,7 +544,7 @@ class RunSmokeTestsHandler implements IActionHandler {
     return {
       success: true,
       message: `Smoke tests completed successfully`,
-      data: { 
+      data: {
         testSuite: parameters.test_suite,
         passed: 10,
         failed: 0
@@ -560,7 +560,7 @@ class SendNotificationHandler implements IActionHandler {
     return {
       success: true,
       message: `Notifications sent to ${parameters.channels.join(', ')}`,
-      data: { 
+      data: {
         channels: parameters.channels,
         message: parameters.message
       },
@@ -575,7 +575,7 @@ class CollectMetricsHandler implements IActionHandler {
     return {
       success: true,
       message: `Metrics collected from ${parameters.sources.join(', ')}`,
-      data: { 
+      data: {
         sources: parameters.sources,
         metrics: parameters.metrics,
         dataPoints: 100
@@ -591,7 +591,7 @@ class AnalyzeTrendsHandler implements IActionHandler {
     return {
       success: true,
       message: `Trend analysis completed for ${parameters.time_window}`,
-      data: { 
+      data: {
         timeWindow: parameters.time_window,
         algorithms: parameters.algorithms,
         anomalies: 2
@@ -607,7 +607,7 @@ class GenerateAlertsHandler implements IActionHandler {
     return {
       success: true,
       message: `Alert generation completed`,
-      data: { 
+      data: {
         conditions: parameters.conditions,
         alertsGenerated: 1
       },
@@ -622,7 +622,7 @@ class UpdateDashboardsHandler implements IActionHandler {
     return {
       success: true,
       message: `Dashboards updated: ${parameters.dashboards.join(', ')}`,
-      data: { 
+      data: {
         dashboards: parameters.dashboards,
         refreshInterval: parameters.refresh_interval
       },

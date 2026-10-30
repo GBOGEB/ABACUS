@@ -16,7 +16,7 @@
 
 ```
 v2.1 (Production Baseline)
- └─→ v0.31 (Canonical Foundation) 
+ └─→ v0.31 (Canonical Foundation)
       └─→ v0.32 (Production Pipeline, extends phases 0-5 → 0-9)
            └─→ ABACUS-UNIFIED (Merged Knowledge, 92.5/100 quality)
                 └─→ v2.3 (MCP Integration, Agent Framework)

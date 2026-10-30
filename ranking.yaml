@@ -15,7 +15,7 @@ criteria:
       medium: 1048576      # 1 MB
       small: 102400        # 100 KB
       tiny: 10240          # 10 KB
-      
+
   importance:
     weight: 0.3
     description: "File importance in pipeline"
@@ -25,7 +25,7 @@ criteria:
       medium: 15          # Standard files
       low: 10             # Optional files
       minimal: 5          # Auxiliary files
-      
+
   dow_integration:
     weight: 0.2
     description: "DOW structure compliance"
@@ -34,7 +34,7 @@ criteria:
       partial: 10         # Some DOW components present
       minimal: 5          # Basic structure only
       none: 0             # No DOW structure
-      
+
   quality:
     weight: 0.2
     description: "Output quality assessment"
@@ -50,7 +50,7 @@ scoring:
   max_score: 100
   pass_threshold: 50
   convergence_threshold: 0.95
-  
+
   # Quality Score Components
   quality_components:
     metadata_present: 0.2
@@ -65,17 +65,17 @@ categories:
     min_score: 90
     max_count: 10
     description: "Mission-critical files"
-    
+
   high:
     min_score: 70
     max_count: 30
     description: "High-priority files"
-    
+
   medium:
     min_score: 50
     max_count: 50
     description: "Standard priority files"
-    
+
   low:
     min_score: 0
     max_count: 100
@@ -88,7 +88,7 @@ output:
   include_details: true
   include_metrics: true
   include_recommendations: true
-  
+
   # Output Structure
   structure:
     - ranking_version
@@ -116,14 +116,14 @@ targets:
   secondary:
     - "DMAIC_V3_OUTPUT/iteration_*"
     - "DMAIC_V3_OUTPUT/sprints/iteration_*"
-  
+
   # File Patterns to Include
   include_patterns:
     - "*.json"
     - "phase*.json"
     - "*_metrics.json"
     - "*_analysis.json"
-  
+
   # File Patterns to Exclude
   exclude_patterns:
     - "*_backup.json"
@@ -140,14 +140,14 @@ dow_checks:
       - phase
       - generator
       - dow_compliant
-    
+
   recursive_hooks:
     required_fields:
       - consumed_from
       - feeds_into
       - iteration_lineage
       - version_history
-    
+
   convergence_metrics:
     required_fields:
       - quality_score
@@ -155,7 +155,7 @@ dow_checks:
       - improvement_from_previous
       - convergence_status
       - calculated_at
-    
+
   knowledge_gain:
     required_fields:
       - patterns_discovered
@@ -167,21 +167,21 @@ dow_checks:
 # Convergence Detection
 convergence:
   enabled: true
-  
+
   # Convergence Criteria
   criteria:
     min_quality_score: 0.95
     min_completeness: 0.95
     max_improvement_delta: 0.01
     consecutive_stable_iterations: 3
-  
+
   # Convergence Actions
   actions:
     on_converged:
       - log_convergence
       - generate_report
       - notify_completion
-    
+
     on_degrading:
       - log_warning
       - generate_alert
@@ -190,14 +190,14 @@ convergence:
 # Reporting Configuration
 reporting:
   enabled: true
-  
+
   # Report Types
   types:
     - summary
     - detailed
     - convergence
     - recommendations
-  
+
   # Report Destinations
   destinations:
     - file: "ranking_report.md"
@@ -212,31 +212,31 @@ logging:
   enabled: true
   level: "INFO"
   format: "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
-  
+
   # Log Destinations
   destinations:
     - type: "file"
       path: "logs/ranking.log"
       max_size: 10485760  # 10 MB
       backup_count: 5
-    
+
     - type: "console"
       level: "WARNING"
 
 # Notification Configuration
 notifications:
   enabled: false
-  
+
   # Notification Channels
   channels:
     email:
       enabled: false
       recipients: []
-    
+
     slack:
       enabled: false
       webhook_url: ""
-    
+
     teams:
       enabled: false
       webhook_url: ""
@@ -247,13 +247,13 @@ advanced:
   parallel_processing:
     enabled: false
     max_workers: 4
-  
+
   # Caching
   caching:
     enabled: true
     cache_dir: ".cache/ranking"
     ttl: 3600  # 1 hour
-  
+
   # Performance
   performance:
     batch_size: 100

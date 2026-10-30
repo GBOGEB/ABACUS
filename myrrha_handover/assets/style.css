@@ -75,19 +75,19 @@ details[open] > summary{margin-bottom:8px}
     min-height: 300px;
     overflow-x: auto;
   }
-  
+
   /* Force Plotly to redraw responsive */
   .js-plotly-plot {
     width: 100% !important;
     max-width: 100% !important;
   }
-  
+
   /* Adjust chart config for mobile */
   .plotly .main-svg {
     max-width: 100%;
     height: auto;
   }
-  
+
   /* Vendor charts specifically */
   .vendor-chart {
     width: 100% !important;
@@ -100,7 +100,7 @@ details[open] > summary{margin-bottom:8px}
   .heatmap-container {
     position: relative;
   }
-  
+
   .heatmap-thumbnail {
     display: block;
     max-width: 100%;
@@ -108,11 +108,11 @@ details[open] > summary{margin-bottom:8px}
     cursor: pointer;
     border-radius: var(--radius);
   }
-  
+
   .heatmap-full {
     display: none;
   }
-  
+
   .zoom-label {
     position: absolute;
     top: 10px;
@@ -191,11 +191,11 @@ details[open] > summary{margin-bottom:8px}
     border: 1px solid var(--border);
     border-radius: var(--radius);
   }
-  
+
   .data-table {
     min-width: 600px;
   }
-  
+
   .data-table-container::after {
     content: "← Swipe to see more →";
     display: block;
@@ -215,7 +215,7 @@ details[open] > summary{margin-bottom:8px}
     overflow-x: auto;
     -webkit-overflow-scrolling: touch;
   }
-  
+
   table {
     min-width: 600px;
   }
@@ -235,29 +235,29 @@ details[open] > summary{margin-bottom:8px}
   .container {
     padding: 12px;
   }
-  
+
   .topbar {
     padding: 8px 12px;
     font-size: 13px;
   }
-  
+
   h1 {
     font-size: 22px;
   }
-  
+
   h2 {
     font-size: 18px;
   }
-  
+
   h3 {
     font-size: 15px;
   }
-  
+
   .card {
     padding: 14px;
     margin: 10px 0;
   }
-  
+
   table th, table td {
     padding: 6px 8px;
     font-size: 12px;

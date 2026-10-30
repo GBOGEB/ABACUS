@@ -1,6 +1,6 @@
 # MASTER HANDOVER INDEX
-**Version:** V2.3.0  
-**Updated:** 2026-05-28  
+**Version:** V2.3.0
+**Updated:** 2026-05-28
 **Status:** ✅ ACTIVE
 
 ---

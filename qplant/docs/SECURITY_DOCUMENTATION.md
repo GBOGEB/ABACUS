@@ -1,7 +1,7 @@
 # Security Documentation
 
-**Project:** MYRRHA QPLANT Cryogenic System  
-**Version:** v4.4.0  
+**Project:** MYRRHA QPLANT Cryogenic System
+**Version:** v4.4.0
 **Classification:** Security Architecture
 
 ---

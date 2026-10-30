@@ -4,10 +4,10 @@
 param(
     [Parameter(Mandatory=$false)]
     [string]$RepoUrl,
-    
+
     [Parameter(Mandatory=$false)]
     [switch]$SkipGitignore,
-    
+
     [Parameter(Mandatory=$false)]
     [switch]$DryRun
 )
@@ -36,7 +36,7 @@ if ($remoteExists) {
     Write-Host ""
     Write-Host "✓ Remote 'origin' already configured:" -ForegroundColor Green
     Write-Host "  $remoteExists" -ForegroundColor White
-    
+
     $response = Read-Host "Do you want to update it? (y/N)"
     if ($response -eq 'y' -or $response -eq 'Y') {
         if (-not $DryRun) {
@@ -66,7 +66,7 @@ if (-not $RepoUrl) {
 }
 
 # Validate URL format
-if ($RepoUrl -notmatch '^https://github\.com/[\w-]+/[\w-]+\.git$' -and 
+if ($RepoUrl -notmatch '^https://github\.com/[\w-]+/[\w-]+\.git$' -and
     $RepoUrl -notmatch '^git@github\.com:[\w-]+/[\w-]+\.git$') {
     Write-Host "⚠ Warning: URL format may be incorrect" -ForegroundColor Yellow
     Write-Host "  Expected: https://github.com/username/repo.git" -ForegroundColor White

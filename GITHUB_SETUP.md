@@ -9,7 +9,7 @@ To give your codeLLM (ABACUS) correct access to the full repository, your GitHub
 ### Classic Personal Access Token Scopes
 - ✅ **repo** (Full control of private repositories)
   - repo:status
-  - repo_deployment 
+  - repo_deployment
   - public_repo
   - repo:invite
   - security_events
@@ -30,7 +30,7 @@ If using fine-grained tokens, ensure these repository permissions are granted:
 
 ### Step 1: Create a Personal Access Token
 1. Go to GitHub Settings > Developer settings > Personal access tokens
-2. Choose either "Tokens (classic)" or "Fine-grained tokens" 
+2. Choose either "Tokens (classic)" or "Fine-grained tokens"
 3. Click "Generate new token"
 4. Set appropriate expiration date
 5. Select the required scopes listed above
@@ -63,7 +63,7 @@ curl -H "Authorization: token $GITHUB_TOKEN" https://api.github.com/repos/GBOGEB
 - **Cause**: Token missing `repo` scope permissions
 - **Solution**: Regenerate token with full `repo` scope
 
-### "Bad credentials"  
+### "Bad credentials"
 - **Cause**: Invalid or expired token
 - **Solution**: Generate new token and update environment variable
 
