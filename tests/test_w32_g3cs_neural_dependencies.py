@@ -16,7 +16,7 @@ MOD=ROOT/"MIP/G3CS_CONVERGENCE_V2/observatory/w10/build_spine_neural_w13.py"
 
 
 def exact_pins(text):
-    found=re.findall(r'^networkx==([0-9]+(?:\\.[0-9]+){2}); python_version .+$',
+    found=re.findall(r'^networkx==([0-9]+(?:\.[0-9]+){2}); python_version .+$',
                      text,re.MULTILINE)
     return sorted(found)
 
