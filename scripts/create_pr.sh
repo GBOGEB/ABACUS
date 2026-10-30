@@ -21,16 +21,16 @@ echo ""
 if [[ $REMOTE_URL =~ github\.com[:/]([^/]+)/([^/.]+) ]]; then
     OWNER="${BASH_REMATCH[1]}"
     REPO="${BASH_REMATCH[2]}"
-    
+
     PR_URL="https://github.com/$OWNER/$REPO/compare/main...$CURRENT_BRANCH?expand=1"
-    
+
     echo "=========================================="
     echo "Pull Request URL:"
     echo "$PR_URL"
     echo "=========================================="
     echo ""
     echo "Opening in browser..."
-    
+
     # Try to open in browser
     if command -v start &> /dev/null; then
         start "$PR_URL"
@@ -42,7 +42,7 @@ if [[ $REMOTE_URL =~ github\.com[:/]([^/]+)/([^/.]+) ]]; then
         echo "Please open this URL manually in your browser:"
         echo "$PR_URL"
     fi
-    
+
     echo ""
     echo "=========================================="
     echo "PR Details to Use:"

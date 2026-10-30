@@ -501,6 +501,6 @@ Original Design: [V1.0 Summary](V1_SUMMARY.md)
 
 ---
 
-**DMAIC V3.1 - Recursive Documentation Framework**  
-**Build on Past • Iterate • Follow Core Principles**  
+**DMAIC V3.1 - Recursive Documentation Framework**
+**Build on Past • Iterate • Follow Core Principles**
 **Knowledge Must Grow, Never Dilute** 🚀

@@ -1,7 +1,7 @@
 # ABACUS v2.1 Canonical Definitions & Terminology
 
-**Version:** 1.0.0  
-**Generated:** 2025-11-23  
+**Version:** 1.0.0
+**Generated:** 2025-11-23
 **Status:** CANONICAL REFERENCE
 
 ---
@@ -382,19 +382,19 @@ POST-CD COMPLETE: ⏳ PENDING (0% complete)
 
 **Example 1: Describing Current Status**
 ```
-"ABACUS v2.1 is currently in the PRE-CD phase (Stage 1.2.4), 
+"ABACUS v2.1 is currently in the PRE-CD phase (Stage 1.2.4),
 with local development 100% complete and GitHub integration pending."
 ```
 
 **Example 2: Describing Transition**
 ```
-"Upon completion of Stage 1.5, the system will transition from 
+"Upon completion of Stage 1.5, the system will transition from
 PRE-CD to POST-CD phase, beginning with GitHub repository creation."
 ```
 
 **Example 3: Describing Deployment**
 ```
-"Production deployment is a POST-CD activity that occurs in Stage 3, 
+"Production deployment is a POST-CD activity that occurs in Stage 3,
 after CI/CD integration is complete."
 ```
 
@@ -403,21 +403,21 @@ after CI/CD integration is complete."
 **Example 1: Premature Production Claim**
 ```
 ❌ "ABACUS v2.1 is production-ready"
-✅ "ABACUS v2.1 local development is complete (PRE-CD), 
+✅ "ABACUS v2.1 local development is complete (PRE-CD),
    with POST-CD production deployment pending"
 ```
 
 **Example 2: Confusing Phases**
 ```
 ❌ "System is deployed to production"
-✅ "System is deployed locally (PRE-CD), 
+✅ "System is deployed locally (PRE-CD),
    with GitHub production deployment pending (POST-CD)"
 ```
 
 **Example 3: Misusing Readiness**
 ```
 ❌ "100% deployment readiness means production-ready"
-✅ "100% deployment readiness for local environment (PRE-CD), 
+✅ "100% deployment readiness for local environment (PRE-CD),
    POST-CD validation required for production"
 ```
 
@@ -485,6 +485,6 @@ Documentation is created **AFTER** validation is complete, not before.
 
 ---
 
-*Canonical Definitions v1.0.0*  
-*Generated: 2025-11-23*  
+*Canonical Definitions v1.0.0*
+*Generated: 2025-11-23*
 *Status: AUTHORITATIVE REFERENCE*

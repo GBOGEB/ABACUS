@@ -1,7 +1,7 @@
 # QSYS System Analysis Report
 
-**Generated:** 2025-09-09T20:51:00.266717  
-**Total Presentations:** 19  
+**Generated:** 2025-09-09T20:51:00.266717
+**Total Presentations:** 19
 **Total Slides:** 389
 
 ## Executive Summary
@@ -80,14 +80,14 @@ This report provides a comprehensive analysis of 19 QSYS-related PowerPoint pres
 The following slides have been identified as particularly important based on content richness, visual elements, and technical significance:
 
 ### QSYS - IADR Overview.pptx::5
-- **Title**: 
+- **Title**:
 - **Importance Score**: 7
 - **Components**: Buildings, Top-level System
 - **Lifecycle Phases**: LCP 4 - Construction
 - **Visual Elements**: images, tables
 
 ### QSYS Process and Utilities Overview.pptx::5
-- **Title**: 
+- **Title**:
 - **Importance Score**: 7
 - **Components**: Process Utilities
 - **Lifecycle Phases**: None
@@ -101,119 +101,119 @@ The following slides have been identified as particularly important based on con
 - **Visual Elements**: images
 
 ### QSYS - Commissioning Overview.pptx::12
-- **Title**: 
+- **Title**:
 - **Importance Score**: 6
 - **Components**: He Recovery, Piping Pressure, Commissioning
 - **Lifecycle Phases**: LCP 5 - Installation, LCP 6 - Operation
 - **Visual Elements**: images
 
 ### QSYS - Commissioning Overview.pptx::13
-- **Title**: 
+- **Title**:
 - **Importance Score**: 6
 - **Components**: He Recovery, Commissioning
 - **Lifecycle Phases**: LCP 3 - Procurement, LCP 5 - Installation, LCP 6 - Operation
 - **Visual Elements**: images
 
 ### QSYS - He Recovery.pptx::2
-- **Title**: 
+- **Title**:
 - **Importance Score**: 6
 - **Components**: He Recovery, Piping Pressure
 - **Lifecycle Phases**: LCP 6 - Operation
 - **Visual Elements**: images
 
 ### QSYS - He Recovery_fontnorm.pptx::2
-- **Title**: 
+- **Title**:
 - **Importance Score**: 6
 - **Components**: He Recovery, Piping Pressure
 - **Lifecycle Phases**: LCP 6 - Operation
 - **Visual Elements**: images
 
 ### QSYS - Installation Overview.pptx::17
-- **Title**: 
+- **Title**:
 - **Importance Score**: 6
 - **Components**: Installation, Commissioning
 - **Lifecycle Phases**: LCP 3 - Procurement, LCP 5 - Installation
 - **Visual Elements**: images
 
 ### QSYS - Installation Overview.pptx::18
-- **Title**: 
+- **Title**:
 - **Importance Score**: 6
 - **Components**: Piping Pressure, Installation, Commissioning
 - **Lifecycle Phases**: LCP 2 - Detailed Design, LCP 3 - Procurement, LCP 5 - Installation
 - **Visual Elements**: images
 
 ### QSYS - Installation Overview.pptx::19
-- **Title**: 
+- **Title**:
 - **Importance Score**: 6
 - **Components**: Architecture, Piping Pressure, Buildings, Installation, Commissioning
 - **Lifecycle Phases**: LCP 1 - Conceptual Design, LCP 5 - Installation
 - **Visual Elements**: images
 
 ### QSYS - Installation Overview.pptx::20
-- **Title**: 
+- **Title**:
 - **Importance Score**: 6
 - **Components**: Installation, Commissioning, Process Utilities
 - **Lifecycle Phases**: LCP 1 - Conceptual Design, LCP 3 - Procurement, LCP 5 - Installation, LCP 6 - Operation
 - **Visual Elements**: images
 
 ### QSYS - Installation Overview.pptx::22
-- **Title**: 
+- **Title**:
 - **Importance Score**: 6
 - **Components**: Buildings, Installation, Process Utilities
 - **Lifecycle Phases**: LCP 1 - Conceptual Design, LCP 3 - Procurement, LCP 5 - Installation, LCP 6 - Operation
 - **Visual Elements**: images
 
 ### QSYS - Installation Overview.pptx::23
-- **Title**: 
+- **Title**:
 - **Importance Score**: 6
 - **Components**: He Recovery, Piping Pressure, Buildings, Installation, Commissioning, ATS Database, Process Utilities
 - **Lifecycle Phases**: LCP 3 - Procurement, LCP 5 - Installation, LCP 6 - Operation
 - **Visual Elements**: images
 
 ### QSYS - ATS Database Management System.pptx::3
-- **Title**: 
+- **Title**:
 - **Importance Score**: 5
 - **Components**: Buildings, Installation
 - **Lifecycle Phases**: LCP 4 - Construction
 - **Visual Elements**: tables
 
 ### QSYS - ATS Database Management System.pptx::4
-- **Title**: 
+- **Title**:
 - **Importance Score**: 5
 - **Components**: Buildings
 - **Lifecycle Phases**: LCP 4 - Construction
 - **Visual Elements**: images
 
 ### QSYS - ATS Database Management System.pptx::8
-- **Title**: 
+- **Title**:
 - **Importance Score**: 5
 - **Components**: ATS Database, Naming Conventions
 - **Lifecycle Phases**: None
 - **Visual Elements**: images
 
 ### QSYS - ATS Database Management System.pptx::9
-- **Title**: 
+- **Title**:
 - **Importance Score**: 5
 - **Components**: ATS Database, Naming Conventions
 - **Lifecycle Phases**: None
 - **Visual Elements**: images
 
 ### QSYS - Commissioning Overview.pptx::5
-- **Title**: 
+- **Title**:
 - **Importance Score**: 5
 - **Components**: Commissioning
 - **Lifecycle Phases**: LCP 3 - Procurement, LCP 5 - Installation
 - **Visual Elements**: images
 
 ### QSYS - Commissioning Overview.pptx::8
-- **Title**: 
+- **Title**:
 - **Importance Score**: 5
 - **Components**: Installation
 - **Lifecycle Phases**: LCP 5 - Installation
 - **Visual Elements**: images
 
 ### QSYS - Installation Overview.pptx::4
-- **Title**: 
+- **Title**:
 - **Importance Score**: 5
 - **Components**: Buildings, Installation
 - **Lifecycle Phases**: LCP 4 - Construction
@@ -852,46 +852,46 @@ Based on the analysis, the following hierarchical structure is recommended for t
 
 #### ATS Database (31 slides)
 - QSYS - ATS Database Management System.pptx::1: QSYS – ATS Database Management System
-- QSYS - ATS Database Management System.pptx::8: 
-- QSYS - ATS Database Management System.pptx::9: 
+- QSYS - ATS Database Management System.pptx::8:
+- QSYS - ATS Database Management System.pptx::9:
 - QSYS - Architecture for MINERVA.pptx::1: QSYS Architecture(MINERVA Cryogenic System)
 - QSYS - Architecture for MINERVA.pptx::55: Previous version
 - QSYS - Architecture for MINERVA_fontnorm.pptx::1: QSYS Architecture(MINERVA Cryogenic System)
 - QSYS - Architecture for MINERVA_fontnorm.pptx::5: Previous version
 - QSYS - Commissioning Overview.pptx::1: QSYS – Qualification and Commissioning Overview
-- QSYS - Commissioning Overview.pptx::27: 
-- QSYS - He Recovery.pptx::7: 
+- QSYS - Commissioning Overview.pptx::27:
+- QSYS - He Recovery.pptx::7:
 - ... and 21 more slides
 
 #### Buildings (55 slides)
-- QSYS - ATS Database Management System.pptx::3: 
-- QSYS - ATS Database Management System.pptx::4: 
-- QSYS - Architecture for MINERVA.pptx::4: 
-- QSYS - Architecture for MINERVA.pptx::6: 
-- QSYS - Architecture for MINERVA.pptx::7: 
-- QSYS - Architecture for MINERVA.pptx::8: 
-- QSYS - Architecture for MINERVA.pptx::9: 
-- QSYS - Architecture for MINERVA.pptx::10: 
-- QSYS - Architecture for MINERVA.pptx::50: 
-- QSYS - Architecture for MINERVA.pptx::51: 
+- QSYS - ATS Database Management System.pptx::3:
+- QSYS - ATS Database Management System.pptx::4:
+- QSYS - Architecture for MINERVA.pptx::4:
+- QSYS - Architecture for MINERVA.pptx::6:
+- QSYS - Architecture for MINERVA.pptx::7:
+- QSYS - Architecture for MINERVA.pptx::8:
+- QSYS - Architecture for MINERVA.pptx::9:
+- QSYS - Architecture for MINERVA.pptx::10:
+- QSYS - Architecture for MINERVA.pptx::50:
+- QSYS - Architecture for MINERVA.pptx::51:
 - ... and 45 more slides
 
 #### Installation (32 slides)
-- QSYS - ATS Database Management System.pptx::3: 
-- QSYS - Architecture for MINERVA.pptx::4: 
-- QSYS - Architecture for MINERVA.pptx::51: 
-- QSYS - Architecture for MINERVA.pptx::54: 
-- QSYS - Architecture for MINERVA_fontnorm.pptx::4: 
-- QSYS - Commissioning Overview.pptx::4: 
-- QSYS - Commissioning Overview.pptx::8: 
+- QSYS - ATS Database Management System.pptx::3:
+- QSYS - Architecture for MINERVA.pptx::4:
+- QSYS - Architecture for MINERVA.pptx::51:
+- QSYS - Architecture for MINERVA.pptx::54:
+- QSYS - Architecture for MINERVA_fontnorm.pptx::4:
+- QSYS - Commissioning Overview.pptx::4:
+- QSYS - Commissioning Overview.pptx::8:
 - QSYS - Commissioning Overview.pptx::11: Paper 1
-- QSYS - Commissioning Overview.pptx::15: 
+- QSYS - Commissioning Overview.pptx::15:
 - QSYS - Commissioning Overview.pptx::18: QPLANT + QDB SAT overview
 - ... and 22 more slides
 
 #### Naming Conventions (43 slides)
-- QSYS - ATS Database Management System.pptx::8: 
-- QSYS - ATS Database Management System.pptx::9: 
+- QSYS - ATS Database Management System.pptx::8:
+- QSYS - ATS Database Management System.pptx::9:
 - QSYS - Architecture for MINERVA.pptx::2: MINERVA’s Cryo-Architecture
 - QSYS - Architecture for MINERVA.pptx::3: MINERVA’s Cryo-Architecture
 - QSYS - Architecture for MINERVA.pptx::56: MINERVA’s Cryo-architecture(DD MYR-24488)
@@ -908,46 +908,46 @@ Based on the analysis, the following hierarchical structure is recommended for t
 - QSYS - Architecture for MINERVA.pptx::57: MINERVA’s Cryo-architecture(NEW Version – work in progress)
 - QSYS - Architecture for MINERVA_fontnorm.pptx::6: MINERVA’s Cryo-architecture(DD MYR-24488)
 - QSYS - Architecture for MINERVA_fontnorm.pptx::7: MINERVA’s Cryo-architecture(NEW Version – work in progress)
-- QSYS - Commissioning Overview.pptx::4: 
+- QSYS - Commissioning Overview.pptx::4:
 - QSYS - Commissioning Overview.pptx::10: Other papers from ESS (Philipp)
-- QSYS - Commissioning Overview.pptx::15: 
-- QSYS - Commissioning Overview.pptx::16: 
-- QSYS - Commissioning Overview.pptx::20: 
+- QSYS - Commissioning Overview.pptx::15:
+- QSYS - Commissioning Overview.pptx::16:
+- QSYS - Commissioning Overview.pptx::20:
 - ... and 27 more slides
 
 #### Architecture (47 slides)
 - QSYS - Architecture for MINERVA.pptx::1: QSYS Architecture(MINERVA Cryogenic System)
 - QSYS - Architecture for MINERVA.pptx::2: MINERVA’s Cryo-Architecture
 - QSYS - Architecture for MINERVA.pptx::3: MINERVA’s Cryo-Architecture
-- QSYS - Architecture for MINERVA.pptx::4: 
-- QSYS - Architecture for MINERVA.pptx::5: 
-- QSYS - Architecture for MINERVA.pptx::6: 
-- QSYS - Architecture for MINERVA.pptx::7: 
-- QSYS - Architecture for MINERVA.pptx::8: 
-- QSYS - Architecture for MINERVA.pptx::9: 
-- QSYS - Architecture for MINERVA.pptx::10: 
+- QSYS - Architecture for MINERVA.pptx::4:
+- QSYS - Architecture for MINERVA.pptx::5:
+- QSYS - Architecture for MINERVA.pptx::6:
+- QSYS - Architecture for MINERVA.pptx::7:
+- QSYS - Architecture for MINERVA.pptx::8:
+- QSYS - Architecture for MINERVA.pptx::9:
+- QSYS - Architecture for MINERVA.pptx::10:
 - ... and 37 more slides
 
 #### Commissioning (23 slides)
-- QSYS - Architecture for MINERVA.pptx::4: 
-- QSYS - Architecture for MINERVA.pptx::51: 
-- QSYS - Architecture for MINERVA.pptx::54: 
-- QSYS - Architecture for MINERVA_fontnorm.pptx::4: 
+- QSYS - Architecture for MINERVA.pptx::4:
+- QSYS - Architecture for MINERVA.pptx::51:
+- QSYS - Architecture for MINERVA.pptx::54:
+- QSYS - Architecture for MINERVA_fontnorm.pptx::4:
 - QSYS - Commissioning Overview.pptx::1: QSYS – Qualification and Commissioning Overview
-- QSYS - Commissioning Overview.pptx::4: 
-- QSYS - Commissioning Overview.pptx::5: 
+- QSYS - Commissioning Overview.pptx::4:
+- QSYS - Commissioning Overview.pptx::5:
 - QSYS - Commissioning Overview.pptx::10: Other papers from ESS (Philipp)
-- QSYS - Commissioning Overview.pptx::12: 
-- QSYS - Commissioning Overview.pptx::13: 
+- QSYS - Commissioning Overview.pptx::12:
+- QSYS - Commissioning Overview.pptx::13:
 - ... and 13 more slides
 
 #### Top-level System (19 slides)
 - QSYS - Commissioning Overview.pptx::1: QSYS – Qualification and Commissioning Overview
 - QSYS - Commissioning Overview.pptx::18: QPLANT + QDB SAT overview
 - QSYS - IADR Overview.pptx::1: QSYS – IADR Overview
-- QSYS - IADR Overview.pptx::5: 
-- QSYS - IADR Overview.pptx::6: 
-- QSYS - IADR Overview.pptx::7: 
+- QSYS - IADR Overview.pptx::5:
+- QSYS - IADR Overview.pptx::6:
+- QSYS - IADR Overview.pptx::7:
 - QSYS - Installation Overview.pptx::1: QSYS – Installation Overview
 - QSYS - Pipping Pressure Overview.pptx::1: QSYS – Pipping Pressure Overview
 - QSYS - Pipping Pressure Overview_fontnorm.pptx::1: QSYS – Pipping Pressure Overview
@@ -956,41 +956,41 @@ Based on the analysis, the following hierarchical structure is recommended for t
 
 #### He Recovery (16 slides)
 - QSYS - Commissioning Overview.pptx::10: Other papers from ESS (Philipp)
-- QSYS - Commissioning Overview.pptx::12: 
-- QSYS - Commissioning Overview.pptx::13: 
+- QSYS - Commissioning Overview.pptx::12:
+- QSYS - Commissioning Overview.pptx::13:
 - QSYS - He Recovery.pptx::1: QSYS - He Recovery Scenarios
-- QSYS - He Recovery.pptx::2: 
-- QSYS - He Recovery.pptx::7: 
+- QSYS - He Recovery.pptx::2:
+- QSYS - He Recovery.pptx::7:
 - QSYS - He Recovery_fontnorm.pptx::1: QSYS - He Recovery Scenarios
-- QSYS - He Recovery_fontnorm.pptx::2: 
-- QSYS - He Recovery_fontnorm.pptx::7: 
-- QSYS - Installation Overview.pptx::23: 
+- QSYS - He Recovery_fontnorm.pptx::2:
+- QSYS - He Recovery_fontnorm.pptx::7:
+- QSYS - Installation Overview.pptx::23:
 - ... and 6 more slides
 
 #### Piping Pressure (39 slides)
 - QSYS - Commissioning Overview.pptx::11: Paper 1
-- QSYS - Commissioning Overview.pptx::12: 
-- QSYS - He Recovery.pptx::2: 
-- QSYS - He Recovery.pptx::10: 
-- QSYS - He Recovery_fontnorm.pptx::2: 
-- QSYS - He Recovery_fontnorm.pptx::10: 
-- QSYS - Installation Overview.pptx::13: 
-- QSYS - Installation Overview.pptx::18: 
-- QSYS - Installation Overview.pptx::19: 
-- QSYS - Installation Overview.pptx::23: 
+- QSYS - Commissioning Overview.pptx::12:
+- QSYS - He Recovery.pptx::2:
+- QSYS - He Recovery.pptx::10:
+- QSYS - He Recovery_fontnorm.pptx::2:
+- QSYS - He Recovery_fontnorm.pptx::10:
+- QSYS - Installation Overview.pptx::13:
+- QSYS - Installation Overview.pptx::18:
+- QSYS - Installation Overview.pptx::19:
+- QSYS - Installation Overview.pptx::23:
 - ... and 29 more slides
 
 #### IADR (13 slides)
-- QSYS - He Recovery.pptx::7: 
-- QSYS - He Recovery.pptx::10: 
-- QSYS - He Recovery_fontnorm.pptx::7: 
-- QSYS - He Recovery_fontnorm.pptx::10: 
+- QSYS - He Recovery.pptx::7:
+- QSYS - He Recovery.pptx::10:
+- QSYS - He Recovery_fontnorm.pptx::7:
+- QSYS - He Recovery_fontnorm.pptx::10:
 - QSYS - IADR Overview.pptx::1: QSYS – IADR Overview
 - QSYS - IADR Overview.pptx::4: IADR with “ACC NF”
 - QSYS - IADR Overview.pptx::8: IADR with “CIS”
 - QSYS - IADR Overview.pptx::9: IADR with “ACC PS”
-- QSYS - Top-level system description.pptx::28: 
-- QSYS - Top-level system description.pptx::29: 
+- QSYS - Top-level system description.pptx::28:
+- QSYS - Top-level system description.pptx::29:
 - ... and 3 more slides
 
 

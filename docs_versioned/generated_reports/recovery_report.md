@@ -57,7 +57,7 @@
 #### Recovery Strategy
 The file exists in 4 variants:
 1. `full_pipeline_orchestrator.py` (552 lines) — ✅ Importable, working
-2. `full_pipeline_orchestrator_clean.py` (554 lines) — ✅ Importable, working  
+2. `full_pipeline_orchestrator_clean.py` (554 lines) — ✅ Importable, working
 3. `full_pipeline_orchestrator_corrupted.py` (672 lines) — ❌ Merge conflicts
 4. `full_pipeline_orchestrator_fixed.py` (658 lines) — ❌ Missing docstring prefix, syntax error
 

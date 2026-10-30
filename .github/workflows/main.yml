@@ -45,7 +45,7 @@ jobs:
     strategy:
       matrix:
         python-version: ['3.11', '3.12']
-    
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v7
@@ -84,7 +84,7 @@ jobs:
   build:
     runs-on: ubuntu-latest
     needs: test
-    
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v7
@@ -118,7 +118,7 @@ jobs:
   quality:
     runs-on: ubuntu-latest
     needs: quick-checks
-    
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v7
@@ -154,7 +154,7 @@ jobs:
     runs-on: ubuntu-latest
     needs: [test, build, quality]
     if: github.ref == 'refs/heads/main' || github.ref == 'refs/heads/develop'
-    
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v7
