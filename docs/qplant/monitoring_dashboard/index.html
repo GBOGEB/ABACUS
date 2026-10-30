@@ -155,7 +155,7 @@ tr:hover{background:rgba(59,130,246,.05)}
 
 <!-- Tab Content: Overview -->
 <div class="grid" id="tab-overview">
-  
+
   <!-- Build Status Card -->
   <div class="card">
     <div class="card-header">
@@ -440,17 +440,17 @@ function refreshAll() {
   const badge = document.getElementById('status-badge');
   badge.textContent = 'REFRESHING';
   badge.className = 'badge badge-yellow refreshing';
-  
+
   setTimeout(() => {
     badge.textContent = 'HEALTHY';
     badge.className = 'badge badge-green';
-    document.getElementById('last-refresh').textContent = 
+    document.getElementById('last-refresh').textContent =
       'Last refresh: ' + new Date().toLocaleTimeString();
   }, 1500);
 }
 
 // Auto-refresh timestamp
-document.getElementById('last-refresh').textContent = 
+document.getElementById('last-refresh').textContent =
   'Last refresh: ' + new Date().toLocaleTimeString();
 
 // Auto-refresh every 60 seconds

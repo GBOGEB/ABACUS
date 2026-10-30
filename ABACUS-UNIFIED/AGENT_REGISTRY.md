@@ -1,15 +1,15 @@
 # Agent Registry - v032.1
 
-**Generated:** 2025-11-13 11:25:03  
+**Generated:** 2025-11-13 11:25:03
 **Total Agents:** 6
 
 ---
 
 ## ValidatorAgent
 
-**Role:** Quality Assurance & Compliance  
-**DMAIC Score:** 95.0/100  
-**Phases:** Phase 5, Phase 7, Phase 8  
+**Role:** Quality Assurance & Compliance
+**DMAIC Score:** 95.0/100
+**Phases:** Phase 5, Phase 7, Phase 8
 **Version:** v032.1
 
 ### Responsibilities
@@ -34,9 +34,9 @@
 
 ## AnalyzerAgent
 
-**Role:** Pattern Detection & Complexity Analysis  
-**DMAIC Score:** 92.5/100  
-**Phases:** Phase 2, Phase 3  
+**Role:** Pattern Detection & Complexity Analysis
+**DMAIC Score:** 92.5/100
+**Phases:** Phase 2, Phase 3
 **Version:** v032.1
 
 ### Responsibilities
@@ -61,9 +61,9 @@
 
 ## KnowledgeAgent
 
-**Role:** Learning Extraction & Preservation  
-**DMAIC Score:** 90.0/100  
-**Phases:** Phase 6, Phase 8  
+**Role:** Learning Extraction & Preservation
+**DMAIC Score:** 90.0/100
+**Phases:** Phase 6, Phase 8
 **Version:** v032.1
 
 ### Responsibilities
@@ -88,9 +88,9 @@
 
 ## BuilderAgent
 
-**Role:** Artifact Creation & Code Generation  
-**DMAIC Score:** 88.0/100  
-**Phases:** Phase 4, Phase 7  
+**Role:** Artifact Creation & Code Generation
+**DMAIC Score:** 88.0/100
+**Phases:** Phase 4, Phase 7
 **Version:** v032.1
 
 ### Responsibilities
@@ -115,9 +115,9 @@
 
 ## IntegrationAgent
 
-**Role:** System Integration & Coherence  
-**DMAIC Score:** 87.5/100  
-**Phases:** Phase 7  
+**Role:** System Integration & Coherence
+**DMAIC Score:** 87.5/100
+**Phases:** Phase 7
 **Version:** v032.1
 
 ### Responsibilities
@@ -142,9 +142,9 @@
 
 ## ReportingAgent
 
-**Role:** Documentation & Reporting  
-**DMAIC Score:** 85.0/100  
-**Phases:** Phase 8  
+**Role:** Documentation & Reporting
+**DMAIC Score:** 85.0/100
+**Phases:** Phase 8
 **Version:** v032.1
 
 ### Responsibilities
@@ -166,4 +166,3 @@
 - BookGenerator
 
 ---
-

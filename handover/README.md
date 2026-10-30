@@ -200,5 +200,5 @@ git push -u origin main
 
 ---
 
-**Last Updated**: 2025-01-15  
+**Last Updated**: 2025-01-15
 **Version**: 0.4.0 ENTERPRISE
