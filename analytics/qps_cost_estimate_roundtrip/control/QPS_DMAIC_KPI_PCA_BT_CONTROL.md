@@ -1,8 +1,8 @@
 <!-- markdownlint-disable MD013 MD060 -->
 # QPS COST_Master DMAIC / KPI / PCA / Bradley-Terry Control
 
-Control: GOV-001  
-Scope: remaining Phase 2–4 execution after Phase 5 source-side closure  
+Control: GOV-001
+Scope: remaining Phase 2–4 execution after Phase 5 source-side closure
 Release disposition: **HOLD** until physical Windows/OneDrive acceptance gates pass.
 
 ## 1. Measurement boundary

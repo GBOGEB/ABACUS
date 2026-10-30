@@ -1,9 +1,9 @@
 # GITHUB ENTERPRISE FULL REPOSITORY HANDOVER
 
-**Bundle**: `dmaic_v3_github_enterprise_full.tar.gz`  
-**Target**: GitHub Enterprise (preferred) or GitHub.com  
-**Organization**: GBOGEB  
-**Date**: 2025-01-15  
+**Bundle**: `dmaic_v3_github_enterprise_full.tar.gz`
+**Target**: GitHub Enterprise (preferred) or GitHub.com
+**Organization**: GBOGEB
+**Date**: 2025-01-15
 **Version**: 0.4.0 ENTERPRISE
 
 ---
@@ -134,15 +134,15 @@ jobs:
     strategy:
       matrix:
         python-version: ['3.9', '3.10', '3.11', '3.12']
-    
+
     steps:
     - uses: actions/checkout@v4
-    
+
     - name: Set up Python ${{ matrix.python-version }}
       uses: actions/setup-python@v4
       with:
         python-version: ${{ matrix.python-version }}
-    
+
     - name: Cache pip packages
       uses: actions/cache@v3
       with:
@@ -150,27 +150,27 @@ jobs:
         key: ${{ runner.os }}-pip-${{ hashFiles('**/requirements.txt') }}
         restore-keys: |
           ${{ runner.os }}-pip-
-    
+
     - name: Install dependencies
       run: |
         python -m pip install --upgrade pip
         pip install -r requirements.txt
         pip install -r requirements-dev.txt || pip install pytest pytest-cov pytest-mock
-    
+
     - name: Lint with ruff
       run: |
         pip install ruff
         ruff check DMAIC_V3/ --select=E9,F63,F7,F82 --show-source
-    
+
     - name: Type check with mypy
       run: |
         pip install mypy
         mypy DMAIC_V3/ --ignore-missing-imports || true
-    
+
     - name: Test with pytest
       run: |
         pytest DMAIC_V3/tests/ -v --cov=DMAIC_V3 --cov-report=xml --cov-report=term
-    
+
     - name: Upload coverage to Codecov
       uses: codecov/codecov-action@v3
       with:
@@ -181,20 +181,20 @@ jobs:
   build:
     runs-on: ubuntu-latest
     needs: test
-    
+
     steps:
     - uses: actions/checkout@v4
-    
+
     - name: Set up Python
       uses: actions/setup-python@v4
       with:
         python-version: '3.11'
-    
+
     - name: Build package
       run: |
         python -m pip install --upgrade pip build
         python -m build
-    
+
     - name: Upload artifacts
       uses: actions/upload-artifact@v3
       with:
@@ -224,21 +224,21 @@ jobs:
       matrix:
         os: [ubuntu-latest, windows-latest, macos-latest]
         python-version: ['3.9', '3.11']
-    
+
     steps:
     - uses: actions/checkout@v4
-    
+
     - name: Set up Python
       uses: actions/setup-python@v4
       with:
         python-version: ${{ matrix.python-version }}
-    
+
     - name: Install dependencies
       run: |
         python -m pip install --upgrade pip
         pip install -r requirements.txt
         pip install pytest pytest-cov pytest-mock pytest-asyncio
-    
+
     - name: Run pytest
       run: |
         pytest DMAIC_V3/tests/ -v --tb=short
@@ -254,28 +254,28 @@ on: [push, pull_request]
 jobs:
   lint:
     runs-on: ubuntu-latest
-    
+
     steps:
     - uses: actions/checkout@v4
-    
+
     - name: Set up Python
       uses: actions/setup-python@v4
       with:
         python-version: '3.11'
-    
+
     - name: Install linters
       run: |
         pip install ruff black isort mypy
-    
+
     - name: Check formatting with black
       run: black --check DMAIC_V3/
-    
+
     - name: Check imports with isort
       run: isort --check-only DMAIC_V3/
-    
+
     - name: Lint with ruff
       run: ruff check DMAIC_V3/
-    
+
     - name: Type check with mypy
       run: mypy DMAIC_V3/ --ignore-missing-imports
 ```

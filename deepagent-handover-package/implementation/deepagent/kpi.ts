@@ -37,7 +37,7 @@ export class KPIManager {
   public registerKPI(kpi: IKPI): void {
     this.kpis.set(kpi.name, kpi);
     this.metrics.set(kpi.name, []);
-    
+
     // Parse and set thresholds
     const threshold = this.parseKPITarget(kpi.target);
     if (threshold) {
@@ -63,7 +63,7 @@ export class KPIManager {
   }
 
   public getKPIsByCategory(categoryName: string): IKPI[] {
-    return this.getAllKPIs().filter(kpi => 
+    return this.getAllKPIs().filter(kpi =>
       kpi.name.toLowerCase().includes(categoryName.toLowerCase())
     );
   }
@@ -107,7 +107,7 @@ export class KPIManager {
     const promises = Object.entries(data).map(([kpiName, value]) =>
       this.collectMetric(kpiName, value, 'batch_collection')
     );
-    
+
     await Promise.all(promises);
   }
 
@@ -123,7 +123,7 @@ export class KPIManager {
       if (!kpi) continue;
 
       const interval = this.getCollectionInterval(kpi.frequency);
-      
+
       setInterval(async () => {
         try {
           const value = await collector.collect();
@@ -138,12 +138,12 @@ export class KPIManager {
   // Analysis and Reporting
   public getKPIHistory(kpiName: string, timeRange?: ITimeRange): IPerformanceMetric[] {
     const metrics = this.metrics.get(kpiName) || [];
-    
+
     if (!timeRange) {
       return metrics;
     }
 
-    return metrics.filter(metric => 
+    return metrics.filter(metric =>
       metric.timestamp >= timeRange.start && metric.timestamp <= timeRange.end
     );
   }
@@ -156,16 +156,16 @@ export class KPIManager {
 
     const recent = metrics.slice(-periods);
     const values = recent.map(m => typeof m.value === 'number' ? m.value : 0);
-    
+
     // Simple trend calculation using linear regression slope
     const n = values.length;
     const sumX = (n * (n - 1)) / 2;
     const sumY = values.reduce((a, b) => a + b, 0);
     const sumXY = values.reduce((sum, y, x) => sum + x * y, 0);
     const sumX2 = values.reduce((sum, _, x) => sum + x * x, 0);
-    
+
     const slope = (n * sumXY - sumX * sumY) / (n * sumX2 - sumX * sumX);
-    
+
     if (slope > 0.1) return 'improving';
     if (slope < -0.1) return 'declining';
     return 'stable';
@@ -220,7 +220,7 @@ export class KPIManager {
   // Dashboard and Visualization
   public generateDashboardData(): IKPIDashboardData {
     const kpis = this.getAllKPIs();
-    
+
     return {
       overview: {
         totalKPIs: kpis.length,
@@ -236,7 +236,7 @@ export class KPIManager {
 
   private groupKPIsByCategory(): { [category: string]: IKPI[] } {
     const categories: { [category: string]: IKPI[] } = {};
-    
+
     for (const kpi of this.kpis.values()) {
       // Extract category from KPI name or owner
       const category = this.extractCategory(kpi);
@@ -245,7 +245,7 @@ export class KPIManager {
       }
       categories[category].push(kpi);
     }
-    
+
     return categories;
   }
 
@@ -288,7 +288,7 @@ export class KPIManager {
     if (!threshold) return 'on_target';
 
     const isThresholdMet = this.evaluateThreshold(currentValue, threshold.operator, threshold.value);
-    
+
     if (isThresholdMet) {
       return 'on_target';
     }
@@ -359,7 +359,7 @@ export class KPIManager {
       'Per project': 0,       // Event-driven
       'Hourly': 3600000       // 1 hour
     };
-    
+
     return intervals[frequency] || 3600000; // Default to hourly
   }
 

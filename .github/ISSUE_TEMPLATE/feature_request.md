@@ -26,7 +26,7 @@ assignees: ''
 
 <!-- How does this feature align with the 12-Cluster Architecture? -->
 - **Target cluster(s)**: (e.g., C1–C4 Analysis, C9 KEB)
-- **Impact on other clusters**: 
+- **Impact on other clusters**:
 
 ## Acceptance Criteria
 

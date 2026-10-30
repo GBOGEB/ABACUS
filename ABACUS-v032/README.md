@@ -4,9 +4,9 @@
 
 This directory contains all documentation for the ABACUS v0.32 roundtrip completion and production deployment readiness.
 
-**Last Updated**: November 17, 2025  
-**Version**: 0.32  
-**Branch**: roundtrip/20251117_042931  
+**Last Updated**: November 17, 2025
+**Version**: 0.32
+**Branch**: roundtrip/20251117_042931
 **Status**: ✅ Production Ready
 
 ---
@@ -239,10 +239,10 @@ This comprehensive documentation suite provides everything needed for successful
 
 ---
 
-**Document**: Documentation Index  
-**Version**: 1.0  
-**Date**: November 17, 2025  
-**Status**: Final  
+**Document**: Documentation Index
+**Version**: 1.0
+**Date**: November 17, 2025
+**Status**: Final
 **Next Review**: December 17, 2025
 
 ---

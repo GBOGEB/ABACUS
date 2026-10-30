@@ -20,8 +20,8 @@ This document validates the requested V2.3/V3.0 gaps before implementation. It t
 
 ### 1. Orchestrator V3.0
 
-**Status:** RENAMED  
-**Confidence:** HIGH  
+**Status:** RENAMED
+**Confidence:** HIGH
 **Recommendation:** retain the existing orchestrators; refactor documentation and entrypoint naming instead of creating a new orchestrator.
 
 **Determination:** An orchestrator already exists under more than one lineage. The strongest direct match is `local_mcp/agent_orchestrator_v3.0.py`, which defines `AgentOrchestratorV3` and explicitly describes itself as an Agent Orchestrator V3.0 for V2.3 agents. The production DMAIC runtime also has `FullPipelineOrchestrator`, and the parallel/cluster runtime has `TwelveClusterOrchestrator`.
@@ -40,8 +40,8 @@ This document validates the requested V2.3/V3.0 gaps before implementation. It t
 
 ### 2. KEB integration
 
-**Status:** PARTIAL  
-**Confidence:** HIGH  
+**Status:** PARTIAL
+**Confidence:** HIGH
 **Recommendation:** retain the current KEB implementation; refactor imports and package boundaries before adding features.
 
 **Determination:** KEB is implemented as a core execution backbone and is referenced by orchestration and knowledge layers. The integration is partial because some code uses top-level imports (`from keb import KEB`) that depend on path manipulation or execution context, while canonical code lives under `core/keb/keb.py`.
@@ -62,8 +62,8 @@ This document validates the requested V2.3/V3.0 gaps before implementation. It t
 
 ### 3. GBOGEB integration
 
-**Status:** PARTIAL  
-**Confidence:** HIGH  
+**Status:** PARTIAL
+**Confidence:** HIGH
 **Recommendation:** retain the current GBOGEB implementation and bridge; replace stale workflow paths and archive superseded references.
 
 **Determination:** GBOGEB exists as a core observability/governance component, bridge implementation, workflow integration, and repository namespace. It is partial because the active workflow points to root-level bridge/test/config paths while the current bridge implementation is under `staging/`.
@@ -83,8 +83,8 @@ This document validates the requested V2.3/V3.0 gaps before implementation. It t
 
 ### 4. Recursive hooks
 
-**Status:** PARTIAL  
-**Confidence:** HIGH  
+**Status:** PARTIAL
+**Confidence:** HIGH
 **Recommendation:** retain current artifact-level recursive hooks and stop-rule utilities; add/refactor a retrieval API only if consumers require V2.2 API parity.
 
 **Determination:** V2.2-style recursive behavior migrated into multiple current forms: artifact hook injection, phase-level registration, convergence/stop-rule utilities, and 12-cluster temporal hooks. The lost or incomplete portion is a dedicated active `get_recursive_hooks()` retrieval API, already documented as a gap in the parity audit.
@@ -111,8 +111,8 @@ This document validates the requested V2.3/V3.0 gaps before implementation. It t
 
 ### 5. Deployment
 
-**Status:** COMPLETE  
-**Confidence:** HIGH  
+**Status:** COMPLETE
+**Confidence:** HIGH
 **Recommendation:** retain active workflows, reconcile duplicate CI/CD names, and archive disabled or pending scaffolds.
 
 **Determination:** CI and deployment workflows are present and active. There are also pending and legacy workflow locations that should not be treated as missing implementation.

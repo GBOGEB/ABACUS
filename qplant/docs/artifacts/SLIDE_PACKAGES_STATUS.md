@@ -1,8 +1,8 @@
 # SLIDE_PACKAGES_STATUS.md
 
-> **Generated:** 2026-05-12  
-> **Project:** MYRRHA QPLANT Cryo Leak-Rate Dashboard  
-> **Scope:** All HTML presentation/slide files — inventory, canonical status, v4.0.0 alignment, and action plan  
+> **Generated:** 2026-05-12
+> **Project:** MYRRHA QPLANT Cryo Leak-Rate Dashboard
+> **Scope:** All HTML presentation/slide files — inventory, canonical status, v4.0.0 alignment, and action plan
 
 ---
 

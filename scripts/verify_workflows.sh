@@ -18,9 +18,9 @@ echo ""
 for workflow in "$WORKFLOWS_DIR"/*.yml; do
     TOTAL=$((TOTAL + 1))
     filename=$(basename "$workflow")
-    
+
     echo -n "[$TOTAL] $filename ... "
-    
+
     # Check YAML syntax
     if python -c "import yaml; yaml.safe_load(open('$workflow', encoding='utf-8'))" 2>/dev/null; then
         echo "[PASS] Valid YAML"

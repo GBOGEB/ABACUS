@@ -41,16 +41,16 @@ jobs:
   validate-setup:
     name: 🔍 Validate Integration Setup
     runs-on: ubuntu-latest
-    
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v7
-      
+
       - name: Set up Python ${{ env.PYTHON_VERSION }}
         uses: actions/setup-python@v7
         with:
           python-version: ${{ env.PYTHON_VERSION }}
-      
+
       - name: Verify integration files exist
         run: |
           echo "Checking for required integration files..."
@@ -59,13 +59,13 @@ jobs:
           test -f UNIFIED_GLOB_CONFIG.yaml || exit 1
           test -f INTEGRATION_GUIDE.md || exit 1
           echo "✓ All required files present"
-      
+
       - name: Validate YAML configuration
         run: |
           python -m pip install pyyaml
           python -c "import yaml; yaml.safe_load(open('UNIFIED_GLOB_CONFIG.yaml'))"
           echo "✓ YAML configuration valid"
-      
+
       - name: Check Python syntax
         run: |
           python -m py_compile GBOGEB_ABACUS_DOW_INTEGRATION_BRIDGE.py
@@ -76,31 +76,31 @@ jobs:
     name: 🎨 Lint & Code Quality
     runs-on: ubuntu-latest
     needs: validate-setup
-    
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v7
-      
+
       - name: Set up Python ${{ env.PYTHON_VERSION }}
         uses: actions/setup-python@v7
         with:
           python-version: ${{ env.PYTHON_VERSION }}
-      
+
       - name: Install linting tools
         run: |
           python -m pip install --upgrade pip
           pip install ruff black pylint mypy
-      
+
       - name: Run ruff linter
         run: |
           ruff check GBOGEB_ABACUS_DOW_INTEGRATION_BRIDGE.py test_integration_bridge.py --output-format=github
         continue-on-error: true
-      
+
       - name: Run black formatter check
         run: |
           black --check GBOGEB_ABACUS_DOW_INTEGRATION_BRIDGE.py test_integration_bridge.py
         continue-on-error: true
-      
+
       - name: Run pylint
         run: |
           pylint GBOGEB_ABACUS_DOW_INTEGRATION_BRIDGE.py test_integration_bridge.py --exit-zero
@@ -111,38 +111,38 @@ jobs:
     runs-on: ubuntu-latest
     needs: lint-and-format
     if: ${{ !inputs.skip_tests }}
-    
+
     strategy:
       matrix:
         python-version: ['3.9', '3.10', '3.11', '3.12']
-    
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v7
-      
+
       - name: Set up Python ${{ matrix.python-version }}
         uses: actions/setup-python@v7
         with:
           python-version: ${{ matrix.python-version }}
-      
+
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
           pip install pyyaml pytest pytest-cov
-      
+
       - name: Create required directories
         run: |
           mkdir -p DOW/outputs
           mkdir -p DMAIC_V3_OUTPUT
           mkdir -p INTEGRATED_OUTPUT
           mkdir -p gbogeg_handover
-      
+
       - name: Run integration test suite
         id: test_suite
         run: |
           python test_integration_bridge.py
         continue-on-error: false
-      
+
       - name: Upload test report
         if: always()
         uses: actions/upload-artifact@v7
@@ -157,26 +157,26 @@ jobs:
     name: 🔵 Test DOW-Only Mode
     runs-on: ubuntu-latest
     needs: test-integration-bridge
-    
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v7
-      
+
       - name: Set up Python ${{ env.PYTHON_VERSION }}
         uses: actions/setup-python@v7
         with:
           python-version: ${{ env.PYTHON_VERSION }}
-      
+
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
           pip install pyyaml
-      
+
       - name: Create required directories
         run: |
           mkdir -p DOW/outputs
           mkdir -p INTEGRATED_OUTPUT
-      
+
       - name: Execute DOW-only mode
         run: |
           python -c "
@@ -187,7 +187,7 @@ jobs:
           print(f'Status: {results[\"status\"]}')
           assert results['status'] in ['completed', 'failed']
           "
-      
+
       - name: Upload DOW-only results
         if: always()
         uses: actions/upload-artifact@v7
@@ -200,27 +200,27 @@ jobs:
     name: 🟢 Test Unified Mode
     runs-on: ubuntu-latest
     needs: test-integration-bridge
-    
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v7
-      
+
       - name: Set up Python ${{ env.PYTHON_VERSION }}
         uses: actions/setup-python@v7
         with:
           python-version: ${{ env.PYTHON_VERSION }}
-      
+
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
           pip install pyyaml
-      
+
       - name: Create required directories
         run: |
           mkdir -p DOW/outputs
           mkdir -p DMAIC_V3_OUTPUT
           mkdir -p INTEGRATED_OUTPUT
-      
+
       - name: Execute unified mode
         run: |
           python -c "
@@ -236,7 +236,7 @@ jobs:
           print(f'Status: {results[\"status\"]}')
           print(f'Duration: {results.get(\"duration_seconds\", 0):.2f}s')
           "
-      
+
       - name: Upload unified mode results
         if: always()
         uses: actions/upload-artifact@v7
@@ -249,27 +249,27 @@ jobs:
     name: 📦 Test Handover Assimilation
     runs-on: ubuntu-latest
     needs: validate-setup
-    
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v7
-      
+
       - name: Set up Python ${{ env.PYTHON_VERSION }}
         uses: actions/setup-python@v7
         with:
           python-version: ${{ env.PYTHON_VERSION }}
-      
+
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
           pip install pyyaml
-      
+
       - name: Create handover directory structure
         run: |
           mkdir -p gbogeg_handover
           echo "# Test README" > gbogeg_handover/README.md
           echo "project: {name: test}" > gbogeg_handover/glob.yaml
-      
+
       - name: Test handover assimilation
         run: |
           python -c "
@@ -283,33 +283,33 @@ jobs:
     name: 🔄 Integration Roundtrip Test
     runs-on: ubuntu-latest
     needs: [test-dow-only-mode, test-unified-mode, test-handover-assimilation]
-    
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v7
-      
+
       - name: Set up Python ${{ env.PYTHON_VERSION }}
         uses: actions/setup-python@v7
         with:
           python-version: ${{ env.PYTHON_VERSION }}
-      
+
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
           pip install pyyaml
-      
+
       - name: Create required directories
         run: |
           mkdir -p DOW/outputs
           mkdir -p DMAIC_V3_OUTPUT
           mkdir -p INTEGRATED_OUTPUT
           mkdir -p gbogeg_handover
-      
+
       - name: Execute full roundtrip test
         id: roundtrip
         run: |
           echo "=== ROUNDTRIP TEST START ==="
-          
+
           # Test 1: DOW-only mode
           echo "Test 1: DOW-only mode"
           python -c "
@@ -320,7 +320,7 @@ jobs:
           assert results['status'] in ['completed', 'failed']
           print('✓ DOW-only mode test passed')
           "
-          
+
           # Test 2: Unified mode
           echo "Test 2: Unified mode"
           python -c "
@@ -330,7 +330,7 @@ jobs:
           results = bridge.execute_integrated_pipeline()
           print('✓ Unified mode test passed')
           "
-          
+
           # Test 3: Configuration validation
           echo "Test 3: Configuration validation"
           python -c "
@@ -346,7 +346,7 @@ jobs:
           assert config_dict['iterations'] == 3
           print('✓ Configuration validation passed')
           "
-          
+
           # Test 4: Metrics tracking
           echo "Test 4: Metrics tracking"
           python -c "
@@ -356,57 +356,57 @@ jobs:
           assert 'successful_executions' in bridge.metrics
           print('✓ Metrics tracking test passed')
           "
-          
+
           echo "=== ROUNDTRIP TEST COMPLETE ==="
           echo "✓ All roundtrip tests passed"
-      
+
       - name: Generate roundtrip report
         if: always()
         run: |
           cat > ROUNDTRIP_TEST_REPORT.md << 'EOF'
           # Integration Roundtrip Test Report
-          
+
           **Date:** $(date -u +"%Y-%m-%d %H:%M:%S UTC")
           **Workflow:** ${{ github.workflow }}
           **Run ID:** ${{ github.run_id }}
           **Commit:** ${{ github.sha }}
-          
+
           ## Test Results
-          
+
           | Test | Status |
           |------|--------|
           | DOW-only mode | ✅ PASSED |
           | Unified mode | ✅ PASSED |
           | Configuration validation | ✅ PASSED |
           | Metrics tracking | ✅ PASSED |
-          
+
           ## Summary
-          
+
           - **Total Tests:** 4
           - **Passed:** 4
           - **Failed:** 0
           - **Success Rate:** 100%
-          
+
           ## Integration Status
-          
+
           ✅ Integration bridge is fully operational
           ✅ All execution modes working correctly
           ✅ Configuration system validated
           ✅ Metrics tracking functional
-          
+
           ## Next Steps
-          
+
           1. Review generated artifacts
           2. Validate convergence metrics
           3. Deploy to production
-          
+
           ---
-          
+
           *Generated by GBOGEB/ABACUS ↔ DOW Integration CI/CD*
           EOF
-          
+
           cat ROUNDTRIP_TEST_REPORT.md
-      
+
       - name: Upload roundtrip report
         if: always()
         uses: actions/upload-artifact@v7
@@ -421,39 +421,39 @@ jobs:
     name: ⚡ Performance Benchmark
     runs-on: ubuntu-latest
     needs: integration-roundtrip-test
-    
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v7
-      
+
       - name: Set up Python ${{ env.PYTHON_VERSION }}
         uses: actions/setup-python@v7
         with:
           python-version: ${{ env.PYTHON_VERSION }}
-      
+
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
           pip install pyyaml
-      
+
       - name: Create required directories
         run: |
           mkdir -p DOW/outputs
           mkdir -p INTEGRATED_OUTPUT
-      
+
       - name: Run performance benchmark
         run: |
           python -c "
           import time
           from GBOGEB_ABACUS_DOW_INTEGRATION_BRIDGE import GBOGEBAbacusDOWBridge, IntegrationConfig, IntegrationMode
-          
+
           # Benchmark DOW-only mode
           start = time.time()
           config = IntegrationConfig(mode=IntegrationMode.DOW_ONLY, iterations=1)
           bridge = GBOGEBAbacusDOWBridge(config=config)
           results = bridge.execute_integrated_pipeline()
           duration = time.time() - start
-          
+
           print(f'Performance Benchmark Results:')
           print(f'  Mode: DOW-only')
           print(f'  Duration: {duration:.2f}s')
@@ -466,11 +466,11 @@ jobs:
     runs-on: ubuntu-latest
     needs: [integration-roundtrip-test, performance-benchmark]
     if: github.ref == 'refs/heads/main' && github.event_name == 'push'
-    
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v7
-      
+
       - name: Create deployment package
         run: |
           mkdir -p deployment
@@ -478,59 +478,59 @@ jobs:
           cp UNIFIED_GLOB_CONFIG.yaml deployment/
           cp INTEGRATION_GUIDE.md deployment/
           cp test_integration_bridge.py deployment/
-          
+
           cd deployment
           tar -czf gbogeb-abacus-integration-v${{ env.INTEGRATION_VERSION }}.tar.gz *
-      
+
       - name: Upload deployment package
         uses: actions/upload-artifact@v7
         with:
           name: integration-deployment-package
           path: deployment/gbogeb-abacus-integration-v${{ env.INTEGRATION_VERSION }}.tar.gz
           retention-days: 90
-      
+
       - name: Generate deployment report
         run: |
           cat > DEPLOYMENT_REPORT.md << 'EOF'
           # Integration Deployment Report
-          
+
           **Version:** ${{ env.INTEGRATION_VERSION }}
           **Date:** $(date -u +"%Y-%m-%d %H:%M:%S UTC")
           **Commit:** ${{ github.sha }}
-          
+
           ## Deployment Package Contents
-          
+
           - GBOGEB_ABACUS_DOW_INTEGRATION_BRIDGE.py
           - UNIFIED_GLOB_CONFIG.yaml
           - INTEGRATION_GUIDE.md
           - test_integration_bridge.py
-          
+
           ## Deployment Status
-          
+
           ✅ Package created successfully
           ✅ All tests passed
           ✅ Ready for production deployment
-          
+
           ## Installation Instructions
-          
+
           ```bash
           # Extract package
           tar -xzf gbogeb-abacus-integration-v${{ env.INTEGRATION_VERSION }}.tar.gz
-          
+
           # Run tests
           python test_integration_bridge.py
-          
+
           # Execute integration
           python GBOGEB_ABACUS_DOW_INTEGRATION_BRIDGE.py --mode unified --iterations 3
           ```
-          
+
           ---
-          
+
           *Deployed by GBOGEB/ABACUS ↔ DOW Integration CI/CD*
           EOF
-          
+
           cat DEPLOYMENT_REPORT.md
-      
+
       - name: Upload deployment report
         uses: actions/upload-artifact@v7
         with:
@@ -543,7 +543,7 @@ jobs:
     runs-on: ubuntu-latest
     needs: [deploy-integration]
     if: always()
-    
+
     steps:
       - name: Generate completion summary
         run: |

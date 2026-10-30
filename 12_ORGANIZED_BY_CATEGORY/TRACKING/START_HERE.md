@@ -7,7 +7,7 @@ Quick reference for everything produced this session and where to view it.
 
 ## 1. ABACUS QPS Line S Pipeline — runtime output
 
-Generated outputs are **committed to main** (`8b3f2e4`) — no need to re-run unless the register changes.  
+Generated outputs are **committed to main** (`8b3f2e4`) — no need to re-run unless the register changes.
 To regenerate: `py -3.12 -m rextools.populate_package` from `C:\repos\ABACUS`.
 
 | File | Path | What it shows |

@@ -1869,7 +1869,7 @@ deepagent-handover-package/analysis/qsys_analysis_report.md:194:### QSYS - ATS D
 deepagent-handover-package/analysis/qsys_analysis_report.md:201:### QSYS - Commissioning Overview.pptx::5
 deepagent-handover-package/analysis/qsys_analysis_report.md:208:### QSYS - Commissioning Overview.pptx::8
 deepagent-handover-package/analysis/qsys_analysis_report.md:215:### QSYS - Installation Overview.pptx::4
-deepagent-handover-package/analysis/qsys_analysis_report.md:458:| QSYS - ATS Database Management System.pptx::1 | QSYS – 
+deepagent-handover-package/analysis/qsys_analysis_report.md:458:| QSYS - ATS Database Management System.pptx::1 | QSYS –
 deepagent-handover-package/analysis/qsys_analysis_report.md:460:| QSYS - ATS Database Management System.pptx::2 |  | Index slide |  |  |  |  |
 deepagent-handover-package/analysis/qsys_analysis_report.md:461:| QSYS - ATS Database Management System.pptx::3 |  | Graphic Slide | Buildings; Installation | LCP 4 - Construction | Mechanical | TBL |
 deepagent-handover-package/analysis/qsys_analysis_report.md:462:| QSYS - ATS Database Management System.pptx::4 |  | Text Slide | Buildings | LCP 4 - Construction |  | IMG |
@@ -1955,7 +1955,7 @@ deepagent-handover-package/analysis/qsys_analysis_report.md:546:| QSYS - Archite
 deepagent-handover-package/analysis/qsys_analysis_report.md:547:| QSYS - Architecture for MINERVA_fontnorm.pptx::6 | MINERVA’s Cryo-architecture
 deepagent-handover-package/analysis/qsys_analysis_report.md:549:| QSYS - Architecture for MINERVA_fontnorm.pptx::7 | MINERVA’s Cryo-architecture
 deepagent-handover-package/analysis/qsys_analysis_report.md:551:| QSYS - Architecture for MINERVA_fontnorm.pptx::8 | MINERVA’s Cryo-Architecture
-deepagent-handover-package/analysis/qsys_analysis_report.md:553:| QSYS - Commissioning Overview.pptx::1 | QSYS – 
+deepagent-handover-package/analysis/qsys_analysis_report.md:553:| QSYS - Commissioning Overview.pptx::1 | QSYS –
 deepagent-handover-package/analysis/qsys_analysis_report.md:555:| QSYS - Commissioning Overview.pptx::2 |  | Text Slide | Buildings |  |  |  |
 deepagent-handover-package/analysis/qsys_analysis_report.md:556:| QSYS - Commissioning Overview.pptx::3 | Definitions | Titel Slide 5 |  |  |  |  |
 deepagent-handover-package/analysis/qsys_analysis_report.md:557:| QSYS - Commissioning Overview.pptx::4 |  | Text Slide | Installation; Commissioning... | LCP 2 - Detailed Design; LCP 5 - Installation... | Control Systems; Monitoring... |  |
@@ -1983,7 +1983,7 @@ deepagent-handover-package/analysis/qsys_analysis_report.md:578:| QSYS - Commiss
 deepagent-handover-package/analysis/qsys_analysis_report.md:579:| QSYS - Commissioning Overview.pptx::26 | Test system vs simulator | Text Slide 2 |  |  |  |  |
 deepagent-handover-package/analysis/qsys_analysis_report.md:580:| QSYS - Commissioning Overview.pptx::27 |  | Blank footer | ATS Database |  | Civil/Structural |  |
 deepagent-handover-package/analysis/qsys_analysis_report.md:581:| QSYS - Commissioning Overview.pptx::28 |  | Text Slide |  |  |  | IMG |
-deepagent-handover-package/analysis/qsys_analysis_report.md:582:| QSYS - He Recovery.pptx::1 | QSYS - 
+deepagent-handover-package/analysis/qsys_analysis_report.md:582:| QSYS - He Recovery.pptx::1 | QSYS -
 deepagent-handover-package/analysis/qsys_analysis_report.md:584:| QSYS - He Recovery.pptx::2 |  | Text Slide | He Recovery; Piping Pressure | LCP 6 - Operation | Safety Systems; Mechanical | IMG |
 deepagent-handover-package/analysis/qsys_analysis_report.md:585:| QSYS - He Recovery.pptx::3 |  | Text Slide |  |  | Safety Systems |  |
 deepagent-handover-package/analysis/qsys_analysis_report.md:586:| QSYS - He Recovery.pptx::4 |  | Text Slide |  |  | Safety Systems |  |
@@ -1997,7 +1997,7 @@ deepagent-handover-package/analysis/qsys_analysis_report.md:593:| QSYS - He Reco
 deepagent-handover-package/analysis/qsys_analysis_report.md:594:| QSYS - He Recovery.pptx::12 |  | Text Slide |  |  | Safety Systems |  |
 deepagent-handover-package/analysis/qsys_analysis_report.md:595:| QSYS - He Recovery.pptx::13 |  | Text Slide 2 | Architecture |  |  | IMG |
 deepagent-handover-package/analysis/qsys_analysis_report.md:596:| QSYS - He Recovery.pptx::14 |  | Text Slide 2 |  |  |  |  |
-deepagent-handover-package/analysis/qsys_analysis_report.md:597:| QSYS - He Recovery_fontnorm.pptx::1 | QSYS - 
+deepagent-handover-package/analysis/qsys_analysis_report.md:597:| QSYS - He Recovery_fontnorm.pptx::1 | QSYS -
 deepagent-handover-package/analysis/qsys_analysis_report.md:599:| QSYS - He Recovery_fontnorm.pptx::2 |  | Text Slide | He Recovery; Piping Pressure | LCP 6 - Operation | Safety Systems; Mechanical | IMG |
 deepagent-handover-package/analysis/qsys_analysis_report.md:600:| QSYS - He Recovery_fontnorm.pptx::3 |  | Text Slide |  |  | Safety Systems |  |
 deepagent-handover-package/analysis/qsys_analysis_report.md:601:| QSYS - He Recovery_fontnorm.pptx::4 |  | Text Slide |  |  | Safety Systems |  |
@@ -2021,7 +2021,7 @@ deepagent-handover-package/analysis/qsys_analysis_report.md:618:| QSYS - IADR Ov
 deepagent-handover-package/analysis/qsys_analysis_report.md:619:| QSYS - IADR Overview.pptx::8 | IADR with “CIS” | Titel Slide 5 | IADR |  |  |  |
 deepagent-handover-package/analysis/qsys_analysis_report.md:620:| QSYS - IADR Overview.pptx::9 | IADR with “ACC PS” | Titel Slide 5 | IADR |  |  |  |
 deepagent-handover-package/analysis/qsys_analysis_report.md:621:| QSYS - IADR Overview.pptx::10 |  | Blank footer | ATS Database |  | Civil/Structural |  |
-deepagent-handover-package/analysis/qsys_analysis_report.md:622:| QSYS - Installation Overview.pptx::1 | QSYS – 
+deepagent-handover-package/analysis/qsys_analysis_report.md:622:| QSYS - Installation Overview.pptx::1 | QSYS –
 deepagent-handover-package/analysis/qsys_analysis_report.md:624:| QSYS - Installation Overview.pptx::2 |  | Text Slide |  |  |  | TBL |
 deepagent-handover-package/analysis/qsys_analysis_report.md:625:| QSYS - Installation Overview.pptx::3 |  | Text Slide | Buildings |  |  |  |
 deepagent-handover-package/analysis/qsys_analysis_report.md:626:| QSYS - Installation Overview.pptx::4 |  | Graphic Slide | Buildings; Installation | LCP 4 - Construction | Mechanical | TBL |
@@ -2114,7 +2114,7 @@ deepagent-handover-package/analysis/qsys_analysis_report.md:715:| QSYS Buildings
 deepagent-handover-package/analysis/qsys_analysis_report.md:716:| QSYS Buildings Overview.pptx::19 |  | Graphic Slide | Architecture; Piping Pressure... | LCP 1 - Conceptual Design; LCP 3 - Procurement... | Mechanical |  |
 deepagent-handover-package/analysis/qsys_analysis_report.md:717:| QSYS Buildings Overview.pptx::20 | 2b. Buildings for QDB | Subtitel slide 3 | Buildings | LCP 4 - Construction |  |  |
 deepagent-handover-package/analysis/qsys_analysis_report.md:718:| QSYS Buildings Overview.pptx::21 | 2c. LTU (QSYS specific) | Subtitel slide 3 |  |  |  |  |
-deepagent-handover-package/analysis/qsys_analysis_report.md:719:| QSYS Buildings Overview.pptx::22 | 3a. CCB Building 
+deepagent-handover-package/analysis/qsys_analysis_report.md:719:| QSYS Buildings Overview.pptx::22 | 3a. CCB Building
 deepagent-handover-package/analysis/qsys_analysis_report.md:721:| QSYS Buildings Overview.pptx::23 |  | Text Slide 2 |  | LCP 3 - Procurement; LCP 4 - Construction | Mechanical; Electrical | IMG |
 deepagent-handover-package/analysis/qsys_analysis_report.md:722:| QSYS Buildings Overview.pptx::24 |  | Text Slide 2 |  |  | Electrical | IMG |
 deepagent-handover-package/analysis/qsys_analysis_report.md:723:| QSYS Buildings Overview.pptx::25 |  | Text Slide 2 | Piping Pressure |  |  | IMG |
@@ -2158,7 +2158,7 @@ deepagent-handover-package/analysis/qsys_analysis_report.md:762:| QSYS Buildings
 deepagent-handover-package/analysis/qsys_analysis_report.md:763:| QSYS Buildings Overview_fontnorm.pptx::19 |  | Graphic Slide | Architecture; Piping Pressure... | LCP 1 - Conceptual Design; LCP 3 - Procurement... | Mechanical |  |
 deepagent-handover-package/analysis/qsys_analysis_report.md:764:| QSYS Buildings Overview_fontnorm.pptx::20 | 2b. Buildings for QDB | Subtitel slide 3 | Buildings | LCP 4 - Construction |  |  |
 deepagent-handover-package/analysis/qsys_analysis_report.md:765:| QSYS Buildings Overview_fontnorm.pptx::21 | 2c. LTU (QSYS specific) | Subtitel slide 3 |  |  |  |  |
-deepagent-handover-package/analysis/qsys_analysis_report.md:766:| QSYS Buildings Overview_fontnorm.pptx::22 | 3a. CCB Building 
+deepagent-handover-package/analysis/qsys_analysis_report.md:766:| QSYS Buildings Overview_fontnorm.pptx::22 | 3a. CCB Building
 deepagent-handover-package/analysis/qsys_analysis_report.md:768:| QSYS Buildings Overview_fontnorm.pptx::23 |  | Text Slide 2 |  | LCP 3 - Procurement; LCP 4 - Construction | Mechanical; Electrical | IMG |
 deepagent-handover-package/analysis/qsys_analysis_report.md:769:| QSYS Buildings Overview_fontnorm.pptx::24 |  | Text Slide 2 |  |  | Electrical | IMG |
 deepagent-handover-package/analysis/qsys_analysis_report.md:770:| QSYS Buildings Overview_fontnorm.pptx::25 |  | Text Slide 2 | Piping Pressure |  |  | IMG |
@@ -2258,38 +2258,38 @@ deepagent-handover-package/analysis/qsys_analysis_report.md:869:| Values_Commitm
 deepagent-handover-package/analysis/qsys_analysis_report.md:870:| Values_Commitments_v1 2025-06-05 19_04_08.pptx::3 | 📊 Proof & Progress | Title and Content |  |  | Safety Systems |  |
 deepagent-handover-package/analysis/qsys_analysis_report.md:871:| redrawn_figure5.pptx::1 |  | Title Only | Architecture | LCP 6 - Operation | Control Systems; Safety Systems... |  |
 deepagent-handover-package/analysis/qsys_analysis_report.md:872:| redrawn_figure5_fontnorm.pptx::1 |  | Title Only | Architecture | LCP 6 - Operation | Control Systems; Safety Systems... |  |
-deepagent-handover-package/analysis/qsys_analysis_report.md:880:- QSYS - ATS Database Management System.pptx::1: QSYS – 
-deepagent-handover-package/analysis/qsys_analysis_report.md:882:- QSYS - ATS Database Management System.pptx::8: 
-deepagent-handover-package/analysis/qsys_analysis_report.md:883:- QSYS - ATS Database Management System.pptx::9: 
+deepagent-handover-package/analysis/qsys_analysis_report.md:880:- QSYS - ATS Database Management System.pptx::1: QSYS –
+deepagent-handover-package/analysis/qsys_analysis_report.md:882:- QSYS - ATS Database Management System.pptx::8:
+deepagent-handover-package/analysis/qsys_analysis_report.md:883:- QSYS - ATS Database Management System.pptx::9:
 deepagent-handover-package/analysis/qsys_analysis_report.md:884:- QSYS - Architecture for MINERVA.pptx::1: QSYS Architecture
 deepagent-handover-package/analysis/qsys_analysis_report.md:886:- QSYS - Architecture for MINERVA.pptx::55: Previous version
 deepagent-handover-package/analysis/qsys_analysis_report.md:887:- QSYS - Architecture for MINERVA_fontnorm.pptx::1: QSYS Architecture
 deepagent-handover-package/analysis/qsys_analysis_report.md:889:- QSYS - Architecture for MINERVA_fontnorm.pptx::5: Previous version
-deepagent-handover-package/analysis/qsys_analysis_report.md:890:- QSYS - Commissioning Overview.pptx::1: QSYS – 
-deepagent-handover-package/analysis/qsys_analysis_report.md:892:- QSYS - Commissioning Overview.pptx::27: 
-deepagent-handover-package/analysis/qsys_analysis_report.md:893:- QSYS - He Recovery.pptx::7: 
-deepagent-handover-package/analysis/qsys_analysis_report.md:897:- QSYS - ATS Database Management System.pptx::3: 
-deepagent-handover-package/analysis/qsys_analysis_report.md:898:- QSYS - ATS Database Management System.pptx::4: 
-deepagent-handover-package/analysis/qsys_analysis_report.md:899:- QSYS - Architecture for MINERVA.pptx::4: 
-deepagent-handover-package/analysis/qsys_analysis_report.md:900:- QSYS - Architecture for MINERVA.pptx::6: 
-deepagent-handover-package/analysis/qsys_analysis_report.md:901:- QSYS - Architecture for MINERVA.pptx::7: 
-deepagent-handover-package/analysis/qsys_analysis_report.md:902:- QSYS - Architecture for MINERVA.pptx::8: 
-deepagent-handover-package/analysis/qsys_analysis_report.md:903:- QSYS - Architecture for MINERVA.pptx::9: 
-deepagent-handover-package/analysis/qsys_analysis_report.md:904:- QSYS - Architecture for MINERVA.pptx::10: 
-deepagent-handover-package/analysis/qsys_analysis_report.md:905:- QSYS - Architecture for MINERVA.pptx::50: 
-deepagent-handover-package/analysis/qsys_analysis_report.md:906:- QSYS - Architecture for MINERVA.pptx::51: 
-deepagent-handover-package/analysis/qsys_analysis_report.md:910:- QSYS - ATS Database Management System.pptx::3: 
-deepagent-handover-package/analysis/qsys_analysis_report.md:911:- QSYS - Architecture for MINERVA.pptx::4: 
-deepagent-handover-package/analysis/qsys_analysis_report.md:912:- QSYS - Architecture for MINERVA.pptx::51: 
-deepagent-handover-package/analysis/qsys_analysis_report.md:913:- QSYS - Architecture for MINERVA.pptx::54: 
-deepagent-handover-package/analysis/qsys_analysis_report.md:914:- QSYS - Architecture for MINERVA_fontnorm.pptx::4: 
-deepagent-handover-package/analysis/qsys_analysis_report.md:915:- QSYS - Commissioning Overview.pptx::4: 
-deepagent-handover-package/analysis/qsys_analysis_report.md:916:- QSYS - Commissioning Overview.pptx::8: 
+deepagent-handover-package/analysis/qsys_analysis_report.md:890:- QSYS - Commissioning Overview.pptx::1: QSYS –
+deepagent-handover-package/analysis/qsys_analysis_report.md:892:- QSYS - Commissioning Overview.pptx::27:
+deepagent-handover-package/analysis/qsys_analysis_report.md:893:- QSYS - He Recovery.pptx::7:
+deepagent-handover-package/analysis/qsys_analysis_report.md:897:- QSYS - ATS Database Management System.pptx::3:
+deepagent-handover-package/analysis/qsys_analysis_report.md:898:- QSYS - ATS Database Management System.pptx::4:
+deepagent-handover-package/analysis/qsys_analysis_report.md:899:- QSYS - Architecture for MINERVA.pptx::4:
+deepagent-handover-package/analysis/qsys_analysis_report.md:900:- QSYS - Architecture for MINERVA.pptx::6:
+deepagent-handover-package/analysis/qsys_analysis_report.md:901:- QSYS - Architecture for MINERVA.pptx::7:
+deepagent-handover-package/analysis/qsys_analysis_report.md:902:- QSYS - Architecture for MINERVA.pptx::8:
+deepagent-handover-package/analysis/qsys_analysis_report.md:903:- QSYS - Architecture for MINERVA.pptx::9:
+deepagent-handover-package/analysis/qsys_analysis_report.md:904:- QSYS - Architecture for MINERVA.pptx::10:
+deepagent-handover-package/analysis/qsys_analysis_report.md:905:- QSYS - Architecture for MINERVA.pptx::50:
+deepagent-handover-package/analysis/qsys_analysis_report.md:906:- QSYS - Architecture for MINERVA.pptx::51:
+deepagent-handover-package/analysis/qsys_analysis_report.md:910:- QSYS - ATS Database Management System.pptx::3:
+deepagent-handover-package/analysis/qsys_analysis_report.md:911:- QSYS - Architecture for MINERVA.pptx::4:
+deepagent-handover-package/analysis/qsys_analysis_report.md:912:- QSYS - Architecture for MINERVA.pptx::51:
+deepagent-handover-package/analysis/qsys_analysis_report.md:913:- QSYS - Architecture for MINERVA.pptx::54:
+deepagent-handover-package/analysis/qsys_analysis_report.md:914:- QSYS - Architecture for MINERVA_fontnorm.pptx::4:
+deepagent-handover-package/analysis/qsys_analysis_report.md:915:- QSYS - Commissioning Overview.pptx::4:
+deepagent-handover-package/analysis/qsys_analysis_report.md:916:- QSYS - Commissioning Overview.pptx::8:
 deepagent-handover-package/analysis/qsys_analysis_report.md:917:- QSYS - Commissioning Overview.pptx::11: Paper 1
-deepagent-handover-package/analysis/qsys_analysis_report.md:918:- QSYS - Commissioning Overview.pptx::15: 
+deepagent-handover-package/analysis/qsys_analysis_report.md:918:- QSYS - Commissioning Overview.pptx::15:
 deepagent-handover-package/analysis/qsys_analysis_report.md:919:- QSYS - Commissioning Overview.pptx::18: QPLANT + QDB SAT overview
-deepagent-handover-package/analysis/qsys_analysis_report.md:923:- QSYS - ATS Database Management System.pptx::8: 
-deepagent-handover-package/analysis/qsys_analysis_report.md:924:- QSYS - ATS Database Management System.pptx::9: 
+deepagent-handover-package/analysis/qsys_analysis_report.md:923:- QSYS - ATS Database Management System.pptx::8:
+deepagent-handover-package/analysis/qsys_analysis_report.md:924:- QSYS - ATS Database Management System.pptx::9:
 deepagent-handover-package/analysis/qsys_analysis_report.md:925:- QSYS - Architecture for MINERVA.pptx::2: MINERVA’s Cryo-Architecture
 deepagent-handover-package/analysis/qsys_analysis_report.md:926:- QSYS - Architecture for MINERVA.pptx::3: MINERVA’s Cryo-Architecture
 deepagent-handover-package/analysis/qsys_analysis_report.md:927:- QSYS - Architecture for MINERVA.pptx::56: MINERVA’s Cryo-architecture
@@ -2303,71 +2303,71 @@ deepagent-handover-package/analysis/qsys_analysis_report.md:941:- QSYS - Archite
 deepagent-handover-package/analysis/qsys_analysis_report.md:943:- QSYS - Architecture for MINERVA.pptx::57: MINERVA’s Cryo-architecture
 deepagent-handover-package/analysis/qsys_analysis_report.md:945:- QSYS - Architecture for MINERVA_fontnorm.pptx::6: MINERVA’s Cryo-architecture
 deepagent-handover-package/analysis/qsys_analysis_report.md:947:- QSYS - Architecture for MINERVA_fontnorm.pptx::7: MINERVA’s Cryo-architecture
-deepagent-handover-package/analysis/qsys_analysis_report.md:949:- QSYS - Commissioning Overview.pptx::4: 
+deepagent-handover-package/analysis/qsys_analysis_report.md:949:- QSYS - Commissioning Overview.pptx::4:
 deepagent-handover-package/analysis/qsys_analysis_report.md:950:- QSYS - Commissioning Overview.pptx::10: Other papers from ESS (Philipp)
-deepagent-handover-package/analysis/qsys_analysis_report.md:951:- QSYS - Commissioning Overview.pptx::15: 
-deepagent-handover-package/analysis/qsys_analysis_report.md:952:- QSYS - Commissioning Overview.pptx::16: 
-deepagent-handover-package/analysis/qsys_analysis_report.md:953:- QSYS - Commissioning Overview.pptx::20: 
+deepagent-handover-package/analysis/qsys_analysis_report.md:951:- QSYS - Commissioning Overview.pptx::15:
+deepagent-handover-package/analysis/qsys_analysis_report.md:952:- QSYS - Commissioning Overview.pptx::16:
+deepagent-handover-package/analysis/qsys_analysis_report.md:953:- QSYS - Commissioning Overview.pptx::20:
 deepagent-handover-package/analysis/qsys_analysis_report.md:957:- QSYS - Architecture for MINERVA.pptx::1: QSYS Architecture
 deepagent-handover-package/analysis/qsys_analysis_report.md:959:- QSYS - Architecture for MINERVA.pptx::2: MINERVA’s Cryo-Architecture
 deepagent-handover-package/analysis/qsys_analysis_report.md:960:- QSYS - Architecture for MINERVA.pptx::3: MINERVA’s Cryo-Architecture
-deepagent-handover-package/analysis/qsys_analysis_report.md:961:- QSYS - Architecture for MINERVA.pptx::4: 
-deepagent-handover-package/analysis/qsys_analysis_report.md:962:- QSYS - Architecture for MINERVA.pptx::5: 
-deepagent-handover-package/analysis/qsys_analysis_report.md:963:- QSYS - Architecture for MINERVA.pptx::6: 
-deepagent-handover-package/analysis/qsys_analysis_report.md:964:- QSYS - Architecture for MINERVA.pptx::7: 
-deepagent-handover-package/analysis/qsys_analysis_report.md:965:- QSYS - Architecture for MINERVA.pptx::8: 
-deepagent-handover-package/analysis/qsys_analysis_report.md:966:- QSYS - Architecture for MINERVA.pptx::9: 
-deepagent-handover-package/analysis/qsys_analysis_report.md:967:- QSYS - Architecture for MINERVA.pptx::10: 
-deepagent-handover-package/analysis/qsys_analysis_report.md:971:- QSYS - Architecture for MINERVA.pptx::4: 
-deepagent-handover-package/analysis/qsys_analysis_report.md:972:- QSYS - Architecture for MINERVA.pptx::51: 
-deepagent-handover-package/analysis/qsys_analysis_report.md:973:- QSYS - Architecture for MINERVA.pptx::54: 
-deepagent-handover-package/analysis/qsys_analysis_report.md:974:- QSYS - Architecture for MINERVA_fontnorm.pptx::4: 
-deepagent-handover-package/analysis/qsys_analysis_report.md:975:- QSYS - Commissioning Overview.pptx::1: QSYS – 
-deepagent-handover-package/analysis/qsys_analysis_report.md:977:- QSYS - Commissioning Overview.pptx::4: 
-deepagent-handover-package/analysis/qsys_analysis_report.md:978:- QSYS - Commissioning Overview.pptx::5: 
+deepagent-handover-package/analysis/qsys_analysis_report.md:961:- QSYS - Architecture for MINERVA.pptx::4:
+deepagent-handover-package/analysis/qsys_analysis_report.md:962:- QSYS - Architecture for MINERVA.pptx::5:
+deepagent-handover-package/analysis/qsys_analysis_report.md:963:- QSYS - Architecture for MINERVA.pptx::6:
+deepagent-handover-package/analysis/qsys_analysis_report.md:964:- QSYS - Architecture for MINERVA.pptx::7:
+deepagent-handover-package/analysis/qsys_analysis_report.md:965:- QSYS - Architecture for MINERVA.pptx::8:
+deepagent-handover-package/analysis/qsys_analysis_report.md:966:- QSYS - Architecture for MINERVA.pptx::9:
+deepagent-handover-package/analysis/qsys_analysis_report.md:967:- QSYS - Architecture for MINERVA.pptx::10:
+deepagent-handover-package/analysis/qsys_analysis_report.md:971:- QSYS - Architecture for MINERVA.pptx::4:
+deepagent-handover-package/analysis/qsys_analysis_report.md:972:- QSYS - Architecture for MINERVA.pptx::51:
+deepagent-handover-package/analysis/qsys_analysis_report.md:973:- QSYS - Architecture for MINERVA.pptx::54:
+deepagent-handover-package/analysis/qsys_analysis_report.md:974:- QSYS - Architecture for MINERVA_fontnorm.pptx::4:
+deepagent-handover-package/analysis/qsys_analysis_report.md:975:- QSYS - Commissioning Overview.pptx::1: QSYS –
+deepagent-handover-package/analysis/qsys_analysis_report.md:977:- QSYS - Commissioning Overview.pptx::4:
+deepagent-handover-package/analysis/qsys_analysis_report.md:978:- QSYS - Commissioning Overview.pptx::5:
 deepagent-handover-package/analysis/qsys_analysis_report.md:979:- QSYS - Commissioning Overview.pptx::10: Other papers from ESS (Philipp)
-deepagent-handover-package/analysis/qsys_analysis_report.md:980:- QSYS - Commissioning Overview.pptx::12: 
-deepagent-handover-package/analysis/qsys_analysis_report.md:981:- QSYS - Commissioning Overview.pptx::13: 
-deepagent-handover-package/analysis/qsys_analysis_report.md:985:- QSYS - Commissioning Overview.pptx::1: QSYS – 
+deepagent-handover-package/analysis/qsys_analysis_report.md:980:- QSYS - Commissioning Overview.pptx::12:
+deepagent-handover-package/analysis/qsys_analysis_report.md:981:- QSYS - Commissioning Overview.pptx::13:
+deepagent-handover-package/analysis/qsys_analysis_report.md:985:- QSYS - Commissioning Overview.pptx::1: QSYS –
 deepagent-handover-package/analysis/qsys_analysis_report.md:987:- QSYS - Commissioning Overview.pptx::18: QPLANT + QDB SAT overview
 deepagent-handover-package/analysis/qsys_analysis_report.md:988:- QSYS - IADR Overview.pptx::1: QSYS – IADR Overview
-deepagent-handover-package/analysis/qsys_analysis_report.md:989:- QSYS - IADR Overview.pptx::5: 
-deepagent-handover-package/analysis/qsys_analysis_report.md:990:- QSYS - IADR Overview.pptx::6: 
-deepagent-handover-package/analysis/qsys_analysis_report.md:991:- QSYS - IADR Overview.pptx::7: 
-deepagent-handover-package/analysis/qsys_analysis_report.md:992:- QSYS - Installation Overview.pptx::1: QSYS – 
+deepagent-handover-package/analysis/qsys_analysis_report.md:989:- QSYS - IADR Overview.pptx::5:
+deepagent-handover-package/analysis/qsys_analysis_report.md:990:- QSYS - IADR Overview.pptx::6:
+deepagent-handover-package/analysis/qsys_analysis_report.md:991:- QSYS - IADR Overview.pptx::7:
+deepagent-handover-package/analysis/qsys_analysis_report.md:992:- QSYS - Installation Overview.pptx::1: QSYS –
 deepagent-handover-package/analysis/qsys_analysis_report.md:994:- QSYS - Pipping Pressure Overview.pptx::1: QSYS – Pipping Pressure Overview
 deepagent-handover-package/analysis/qsys_analysis_report.md:995:- QSYS - Pipping Pressure Overview_fontnorm.pptx::1: QSYS – Pipping Pressure Overview
 deepagent-handover-package/analysis/qsys_analysis_report.md:996:- QSYS - Top-level system description.pptx::1: ACC CRYO
 deepagent-handover-package/analysis/qsys_analysis_report.md:1001:- QSYS - Commissioning Overview.pptx::10: Other papers from ESS (Philipp)
-deepagent-handover-package/analysis/qsys_analysis_report.md:1002:- QSYS - Commissioning Overview.pptx::12: 
-deepagent-handover-package/analysis/qsys_analysis_report.md:1003:- QSYS - Commissioning Overview.pptx::13: 
-deepagent-handover-package/analysis/qsys_analysis_report.md:1004:- QSYS - He Recovery.pptx::1: QSYS - 
-deepagent-handover-package/analysis/qsys_analysis_report.md:1006:- QSYS - He Recovery.pptx::2: 
-deepagent-handover-package/analysis/qsys_analysis_report.md:1007:- QSYS - He Recovery.pptx::7: 
-deepagent-handover-package/analysis/qsys_analysis_report.md:1008:- QSYS - He Recovery_fontnorm.pptx::1: QSYS - 
-deepagent-handover-package/analysis/qsys_analysis_report.md:1010:- QSYS - He Recovery_fontnorm.pptx::2: 
-deepagent-handover-package/analysis/qsys_analysis_report.md:1011:- QSYS - He Recovery_fontnorm.pptx::7: 
-deepagent-handover-package/analysis/qsys_analysis_report.md:1012:- QSYS - Installation Overview.pptx::23: 
+deepagent-handover-package/analysis/qsys_analysis_report.md:1002:- QSYS - Commissioning Overview.pptx::12:
+deepagent-handover-package/analysis/qsys_analysis_report.md:1003:- QSYS - Commissioning Overview.pptx::13:
+deepagent-handover-package/analysis/qsys_analysis_report.md:1004:- QSYS - He Recovery.pptx::1: QSYS -
+deepagent-handover-package/analysis/qsys_analysis_report.md:1006:- QSYS - He Recovery.pptx::2:
+deepagent-handover-package/analysis/qsys_analysis_report.md:1007:- QSYS - He Recovery.pptx::7:
+deepagent-handover-package/analysis/qsys_analysis_report.md:1008:- QSYS - He Recovery_fontnorm.pptx::1: QSYS -
+deepagent-handover-package/analysis/qsys_analysis_report.md:1010:- QSYS - He Recovery_fontnorm.pptx::2:
+deepagent-handover-package/analysis/qsys_analysis_report.md:1011:- QSYS - He Recovery_fontnorm.pptx::7:
+deepagent-handover-package/analysis/qsys_analysis_report.md:1012:- QSYS - Installation Overview.pptx::23:
 deepagent-handover-package/analysis/qsys_analysis_report.md:1016:- QSYS - Commissioning Overview.pptx::11: Paper 1
-deepagent-handover-package/analysis/qsys_analysis_report.md:1017:- QSYS - Commissioning Overview.pptx::12: 
-deepagent-handover-package/analysis/qsys_analysis_report.md:1018:- QSYS - He Recovery.pptx::2: 
-deepagent-handover-package/analysis/qsys_analysis_report.md:1019:- QSYS - He Recovery.pptx::10: 
-deepagent-handover-package/analysis/qsys_analysis_report.md:1020:- QSYS - He Recovery_fontnorm.pptx::2: 
-deepagent-handover-package/analysis/qsys_analysis_report.md:1021:- QSYS - He Recovery_fontnorm.pptx::10: 
-deepagent-handover-package/analysis/qsys_analysis_report.md:1022:- QSYS - Installation Overview.pptx::13: 
-deepagent-handover-package/analysis/qsys_analysis_report.md:1023:- QSYS - Installation Overview.pptx::18: 
-deepagent-handover-package/analysis/qsys_analysis_report.md:1024:- QSYS - Installation Overview.pptx::19: 
-deepagent-handover-package/analysis/qsys_analysis_report.md:1025:- QSYS - Installation Overview.pptx::23: 
-deepagent-handover-package/analysis/qsys_analysis_report.md:1029:- QSYS - He Recovery.pptx::7: 
-deepagent-handover-package/analysis/qsys_analysis_report.md:1030:- QSYS - He Recovery.pptx::10: 
-deepagent-handover-package/analysis/qsys_analysis_report.md:1031:- QSYS - He Recovery_fontnorm.pptx::7: 
-deepagent-handover-package/analysis/qsys_analysis_report.md:1032:- QSYS - He Recovery_fontnorm.pptx::10: 
+deepagent-handover-package/analysis/qsys_analysis_report.md:1017:- QSYS - Commissioning Overview.pptx::12:
+deepagent-handover-package/analysis/qsys_analysis_report.md:1018:- QSYS - He Recovery.pptx::2:
+deepagent-handover-package/analysis/qsys_analysis_report.md:1019:- QSYS - He Recovery.pptx::10:
+deepagent-handover-package/analysis/qsys_analysis_report.md:1020:- QSYS - He Recovery_fontnorm.pptx::2:
+deepagent-handover-package/analysis/qsys_analysis_report.md:1021:- QSYS - He Recovery_fontnorm.pptx::10:
+deepagent-handover-package/analysis/qsys_analysis_report.md:1022:- QSYS - Installation Overview.pptx::13:
+deepagent-handover-package/analysis/qsys_analysis_report.md:1023:- QSYS - Installation Overview.pptx::18:
+deepagent-handover-package/analysis/qsys_analysis_report.md:1024:- QSYS - Installation Overview.pptx::19:
+deepagent-handover-package/analysis/qsys_analysis_report.md:1025:- QSYS - Installation Overview.pptx::23:
+deepagent-handover-package/analysis/qsys_analysis_report.md:1029:- QSYS - He Recovery.pptx::7:
+deepagent-handover-package/analysis/qsys_analysis_report.md:1030:- QSYS - He Recovery.pptx::10:
+deepagent-handover-package/analysis/qsys_analysis_report.md:1031:- QSYS - He Recovery_fontnorm.pptx::7:
+deepagent-handover-package/analysis/qsys_analysis_report.md:1032:- QSYS - He Recovery_fontnorm.pptx::10:
 deepagent-handover-package/analysis/qsys_analysis_report.md:1033:- QSYS - IADR Overview.pptx::1: QSYS – IADR Overview
 deepagent-handover-package/analysis/qsys_analysis_report.md:1034:- QSYS - IADR Overview.pptx::4: IADR with “ACC NF”
 deepagent-handover-package/analysis/qsys_analysis_report.md:1035:- QSYS - IADR Overview.pptx::8: IADR with “CIS”
 deepagent-handover-package/analysis/qsys_analysis_report.md:1036:- QSYS - IADR Overview.pptx::9: IADR with “ACC PS”
-deepagent-handover-package/analysis/qsys_analysis_report.md:1037:- QSYS - Top-level system description.pptx::28: 
-deepagent-handover-package/analysis/qsys_analysis_report.md:1038:- QSYS - Top-level system description.pptx::29: 
+deepagent-handover-package/analysis/qsys_analysis_report.md:1037:- QSYS - Top-level system description.pptx::28:
+deepagent-handover-package/analysis/qsys_analysis_report.md:1038:- QSYS - Top-level system description.pptx::29:
 deepagent-handover-package/analysis/qsys_slide_dump.json:10:      "filepath": "/home/ubuntu/Uploads/QSYS - ATS Database Management System.pptx",
 deepagent-handover-package/analysis/qsys_slide_dump.json:11:      "filename": "QSYS - ATS Database Management System.pptx",
 deepagent-handover-package/analysis/qsys_slide_dump.json:3108:      "filepath": "/home/ubuntu/Uploads/QSYS - Architecture for MINERVA.pptx",
@@ -2610,7 +2610,7 @@ myrrha_handover/bt-artifacts.html:145:  {name:'slide-notes-guide.docx',type:'Doc
 myrrha_handover/bt-artifacts.html:148:  {name:'SUMMARY.docx',type:'Docs',importance:'Low',stability:'Stable',facing:false,btO:0.532,btT:0.710,interaction:2},
 qplant/CHANGELOG.md:119:  - Parsed QPS (Addendum II)_Master.docx (1,347 requirements, 89 equations)
 qplant/canonical_master/slices/flows_only.html:11:<p>Extracted from QPS (Addendum II)_Master.docx — 6 flow-related tables identified</p><h2>Table TBL-009 (6×5)</h2><table><tr><th>Operational Scenario</th><th>QCAV (W)</th><th>QTS (W)</th><th>mCPLR (g/s)</th><th>QB (W)</th></tr><tr><td>2 K Operation (2K-OP)</td><td>380-770</td><td>4800-8200</td><td>1.2-2.3</td><td>49-81</td></tr><tr><td>2 K Standby (2K-SB)</td><td>250-460</td><td>4800-8200</td><td>0-1.8</td><td>49-81</td></tr><tr><td>4 K Standby (4K-SB)</td><td>250-460</td><td>4800-8200</td><td>0-1.8</td><td>49-81</td></tr><tr><td>10 K Standby (10K-SB)</td><td>250-460</td><td>4800-8200</td><td>0-1.8</td><td>49-81</td></tr><tr><td>TS Standby (TS-SB)</td><td>-</td><td>4800-8200</td><td>-</td><td>-</td></tr></table><h2>Table TBL-011 (3×6)</h2><table><tr><th>Condition type</th><th>Operational Scenario</th><th>QCAV (W)</th><th>QTS (W)</th><th>mCPLR (g/s)</th><th>QB (W)</th></tr><tr><td>QPLANT Design Point</td><td>2K-OP (2 K Operation)</td><td>770</td><td>8200</td><td>2.3</td><td>81</td></tr>
-qplant/docs/RECURSIVE_FRAMEWORK_GUIDE.md:7:> **SSOT:** QPS (Addendum II)_Master.docx (Rev. 52)  
+qplant/docs/RECURSIVE_FRAMEWORK_GUIDE.md:7:> **SSOT:** QPS (Addendum II)_Master.docx (Rev. 52)
 qplant/docs/phase3/SSOT_LINEAGE_REPORT.md:17:| **Original Name** | QPS (Addendum II)_Master.docx |
 qplant/docs/phase3/SSOT_LINEAGE_REPORT.md:248:*SSOT: QPS (Addendum II)_Master.docx — SCK CEN/90508872*
 qplant/phase3_physics_validation/physics_validation_report.md:3:*Generated: 2026-05-12 | SSOT Version: v4.3.0 | Baseline: QPS (Addendum II)_Master.docx*
