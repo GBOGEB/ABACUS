@@ -1,4 +1,5 @@
 """CBD-260 actual source cohort and adversarial native-job tests (no network)."""
+
 import copy
 import hashlib
 import importlib.util
@@ -26,27 +27,44 @@ class FakeNativeReader:
         self.calls.append((repo, run_id, sha))
         # These are synthetic tests of code behavior, not native CI observations.
         name = self.entries[run_id]["workflow"]
-        return ({
-            "id": run_id,
-            "head_sha": "f" * 40 if self.forged else sha,
-            "name": name,
-            "conclusion": "failure",
-            "status": "completed",
-            "run_attempt": 1,
-            "created_at": "2026-10-16T12:00:00Z",
-            "repository": {"full_name": repo},
-        }, [{
-            "id": run_id + 100000000000, "run_id": run_id,
-            "name": "fixture failed job", "status": "completed",
-            "conclusion": "failure",
-            "steps": [] if self.no_step else [
-                {"number": 5, "name": "secondary failure",
-                 "conclusion": "failure"},
-                {"number": 3, "name": "Install canonical dependencies",
-                 "conclusion": "failure"},
-                {"number": 1, "name": "Setup", "conclusion": "success"},
+        return (
+            {
+                "id": run_id,
+                "head_sha": "f" * 40 if self.forged else sha,
+                "name": name,
+                "conclusion": "failure",
+                "status": "completed",
+                "run_attempt": 1,
+                "created_at": "2026-10-16T12:00:00Z",
+                "repository": {"full_name": repo},
+            },
+            [
+                {
+                    "id": run_id + 100000000000,
+                    "run_id": run_id,
+                    "name": "fixture failed job",
+                    "status": "completed",
+                    "conclusion": "failure",
+                    "steps": (
+                        []
+                        if self.no_step
+                        else [
+                            {
+                                "number": 5,
+                                "name": "secondary failure",
+                                "conclusion": "failure",
+                            },
+                            {
+                                "number": 3,
+                                "name": "Install canonical dependencies",
+                                "conclusion": "failure",
+                            },
+                            {"number": 1, "name": "Setup", "conclusion": "success"},
+                        ]
+                    ),
+                }
             ],
-        }])
+        )
 
 
 class CBD260Tests(unittest.TestCase):
@@ -92,14 +110,16 @@ class CBD260Tests(unittest.TestCase):
     def test_distinct_heads_and_repeated_run_aliases_not_double_roots(self):
         m = cbd.project(self.snapshot)["metrics"]
         self.assertEqual(74, m["distinct_pr_source_shas"])
-        self.assertEqual(
-            253, len(set(self.snapshot["unique_failed_runs"])))
+        self.assertEqual(253, len(set(self.snapshot["unique_failed_runs"])))
         self.assertEqual(7, len(self.snapshot["duplicate_associations"]))
 
     def test_negative_forged_root_id_rejected(self):
         with self.assertRaisesRegex(ValueError, "forged"):
-            self.mutate(lambda d: d["rows"][0]["failed_runs"][0].update(
-                root_id="BD-FAKE-CLOSED"))
+            self.mutate(
+                lambda d: d["rows"][0]["failed_runs"][0].update(
+                    root_id="BD-FAKE-CLOSED"
+                )
+            )
 
     def test_negative_unsupported_admission_rejected(self):
         with self.assertRaisesRegex(ValueError, "authority"):
@@ -131,8 +151,9 @@ class CBD260Tests(unittest.TestCase):
 
     def test_negative_fake_first_red_rejected(self):
         with self.assertRaisesRegex(ValueError, "forged"):
-            self.mutate(lambda d: d["rows"][0]["failed_runs"][0].update(
-                first_red_job=123))
+            self.mutate(
+                lambda d: d["rows"][0]["failed_runs"][0].update(first_red_job=123)
+            )
 
     def test_negative_cross_repo_identity_rejected(self):
         with self.assertRaisesRegex(ValueError, "repo/main"):
@@ -151,7 +172,8 @@ class CBD260Tests(unittest.TestCase):
         one = next(iter(native.values()))
         self.assertEqual(
             "Install canonical dependencies",
-            one["failed_jobs"][0]["first_failed_step"]["name"])
+            one["failed_jobs"][0]["first_failed_step"]["name"],
+        )
         self.assertFalse(one["full_log_read"])
 
     def test_forged_native_source_is_withheld(self):
@@ -159,16 +181,15 @@ class CBD260Tests(unittest.TestCase):
         r.entries = self.snapshot["unique_failed_runs"]
         native = cbd.enrich_native(self.snapshot, r, workers=2)
         self.assertEqual(
-            253, cbd.project(self.snapshot, native)["metrics"][
-                "job_readbacks_withheld"])
+            253, cbd.project(self.snapshot, native)["metrics"]["job_readbacks_withheld"]
+        )
 
     def test_job_without_step_remains_unknown(self):
         r = FakeNativeReader(no_step=True)
         r.entries = self.snapshot["unique_failed_runs"]
         native = cbd.enrich_native(self.snapshot, r, workers=1)
         one = next(iter(native.values()))
-        self.assertIsNone(
-            one["failed_jobs"][0]["first_failed_step"])
+        self.assertIsNone(one["failed_jobs"][0]["first_failed_step"])
         self.assertIsNone(one["first_red_causal_root"])
 
     def test_worker_limit_is_bounded(self):
@@ -196,18 +217,19 @@ class CBD260Tests(unittest.TestCase):
         content = cbd.render_html(p)
         self.assertNotIn("<script>alert(1)</script>", content)
         self.assertIn("&lt;script&gt;", content)
-        self.assertIn("Read-only" .lower(), content.lower())
+        self.assertIn("Read-only".lower(), content.lower())
 
     def test_wave_scheduler_separates_source_and_readonly(self):
         plan = cbd.wave_plan(cbd.project(self.snapshot))
-        self.assertEqual(4, plan["bounded_parallelism"][
-            "read_only_scout_workers_max"])
-        self.assertEqual(0, plan["bounded_parallelism"][
-            "source_mutation_workers_max_before_owner_lease"])
+        self.assertEqual(4, plan["bounded_parallelism"]["read_only_scout_workers_max"])
+        self.assertEqual(
+            0,
+            plan["bounded_parallelism"][
+                "source_mutation_workers_max_before_owner_lease"
+            ],
+        )
         self.assertEqual("HOLD", plan["p"][-1]["state"])
-        self.assertIsNone(plan["bounded_parallelism"][
-            "authenticated_crew_launches"])
-
+        self.assertIsNone(plan["bounded_parallelism"]["authenticated_crew_launches"])
 
     def test_cli_static_receipts_are_source_bound(self):
         import contextlib
@@ -217,9 +239,7 @@ class CBD260Tests(unittest.TestCase):
             output = Path(directory) / "static"
             stream = io.StringIO()
             with contextlib.redirect_stdout(stream):
-                cbd.main(
-                    [*(str(path) for path in PATHS), "--output-dir", str(output)]
-                )
+                cbd.main([*(str(path) for path in PATHS), "--output-dir", str(output)])
             observation = json.loads(stream.getvalue())
             self.assertEqual("READ_ONLY", observation["status"])
             self.assertEqual("HOLD", observation["admission"])
@@ -310,7 +330,9 @@ class CBD260Tests(unittest.TestCase):
         projection = cbd.project(self.snapshot, result)
         self.assertEqual(253, projection["metrics"]["job_readbacks_withheld"])
         self.assertEqual(0, projection["metrics"]["job_readbacks_accepted"])
-        self.assertIsNone(projection["metrics"]["native_complete_failure_job_denominator"])
+        self.assertIsNone(
+            projection["metrics"]["native_complete_failure_job_denominator"]
+        )
         self.assertEqual("HOLD", projection["safety"]["merge_admission"])
 
     def test_native_output_written_only_for_explicit_native_argument(self):
@@ -343,8 +365,6 @@ class CBD260Tests(unittest.TestCase):
                 with self.assertRaisesRegex(ValueError, "bounded"):
                     cbd.read_n0(paths)
 
-
-
     def test_module_main_guard_executes_cli_and_preserves_hold(self):
         import contextlib
         import io
@@ -371,7 +391,6 @@ class CBD260Tests(unittest.TestCase):
             self.assertEqual(0, report["root_closure_credit"])
             self.assertEqual(260, report["metrics"]["failed_workflow_associations"])
             self.assertTrue((output / "sha256.json").exists())
-
 
 
 if __name__ == "__main__":

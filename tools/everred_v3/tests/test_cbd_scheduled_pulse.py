@@ -1,4 +1,5 @@
 """Governed scheduled-DAG negative/reverse tests (all observations synthetic)."""
+
 import copy
 import hashlib
 import importlib.util
@@ -21,7 +22,8 @@ def fixture(queued=6, running=2):
         "repository": "GBOGEB/ABACUS",
         "source_sha": "1" * 40,
         "capacity": {"queued": queued, "in_progress": running},
-        "authority_transfer": False, "security_waiver": False,
+        "authority_transfer": False,
+        "security_waiver": False,
         "merge_admission": "HOLD",
     }
 
@@ -56,15 +58,15 @@ class ScheduledDAGTests(unittest.TestCase):
         self.assertEqual("none", result["execute_mode"])
 
     def test_exact_threshold_is_eligible_one_more_is_not(self):
-        self.assertEqual("BOUNDED_READ_ONLY", pulse.plan(
-            fixture(40, 12), "everred"
-        )["gate"])
-        self.assertEqual("QUEUE_SATURATED", pulse.plan(
-            fixture(41, 12), "everred"
-        )["gate"])
-        self.assertEqual("QUEUE_SATURATED", pulse.plan(
-            fixture(40, 13), "everred"
-        )["gate"])
+        self.assertEqual(
+            "BOUNDED_READ_ONLY", pulse.plan(fixture(40, 12), "everred")["gate"]
+        )
+        self.assertEqual(
+            "QUEUE_SATURATED", pulse.plan(fixture(41, 12), "everred")["gate"]
+        )
+        self.assertEqual(
+            "QUEUE_SATURATED", pulse.plan(fixture(40, 13), "everred")["gate"]
+        )
 
     def test_full_never_schedules_without_real_manual_ack(self):
         blocked = pulse.plan(fixture(), "full", event="schedule", full_ack=True)
@@ -87,19 +89,19 @@ class ScheduledDAGTests(unittest.TestCase):
         self.assertEqual({"N0", "N1", "N2"}, e_ids)
 
     def test_graph_dependencies_never_infer_approvals(self):
-        result = pulse.plan(fixture(), "full", event="workflow_dispatch",
-                            full_ack=True)
+        result = pulse.plan(fixture(), "full", event="workflow_dispatch", full_ack=True)
         graph = result["dag"]
         self.assertTrue(any(x["target"] == "N5" for x in graph["edges"]))
-        self.assertTrue(all(x["accepted_root_closures"] is None
-                            for x in result["stages"]))
-        self.assertTrue(all(x["human_approval"] is None
-                            for x in result["stages"]))
+        self.assertTrue(
+            all(x["accepted_root_closures"] is None for x in result["stages"])
+        )
+        self.assertTrue(all(x["human_approval"] is None for x in result["stages"]))
         self.assertEqual(0, result["metrics"]["source_writers_without_lease"])
 
     def test_inverted_security_claim_rejected(self):
         for key, value in (
-            ("security_waiver", True), ("authority_transfer", True),
+            ("security_waiver", True),
+            ("authority_transfer", True),
             ("merge_admission", "PASS"),
         ):
             observation = fixture()
@@ -164,7 +166,6 @@ class ScheduledDAGTests(unittest.TestCase):
         self.assertNotIn("<script>alert(1)</script>", rendered)
         self.assertIn("&lt;script&gt;", rendered)
 
-
     def test_cli_direct_entrypoint_with_github_output_receipt(self):
         import contextlib
         import io
@@ -180,12 +181,18 @@ class ScheduledDAGTests(unittest.TestCase):
             github_output = base / "github-output.txt"
             argv = [
                 str(ROOT / "scripts" / "cbd_scheduled_pulse.py"),
-                "--observation", str(observation),
-                "--output-dir", str(destination),
-                "--method", "gogreen",
-                "--utc-day", "2026-10-19",
-                "--event", "workflow_dispatch",
-                "--github-output", str(github_output),
+                "--observation",
+                str(observation),
+                "--output-dir",
+                str(destination),
+                "--method",
+                "gogreen",
+                "--utc-day",
+                "2026-10-19",
+                "--event",
+                "workflow_dispatch",
+                "--github-output",
+                str(github_output),
             ]
             with mock.patch.object(sys, "argv", argv):
                 with contextlib.redirect_stdout(io.StringIO()) as stream:
@@ -193,8 +200,7 @@ class ScheduledDAGTests(unittest.TestCase):
                         str(ROOT / "scripts" / "cbd_scheduled_pulse.py"),
                         run_name="__main__",
                     )
-            self.assertEqual("BOUNDED_READ_ONLY",
-                             json.loads(stream.getvalue())["gate"])
+            self.assertEqual("BOUNDED_READ_ONLY", json.loads(stream.getvalue())["gate"])
             self.assertIn("execute_mode=gogreen", github_output.read_text())
             self.assertTrue((destination / "sha256.json").exists())
 
@@ -212,11 +218,16 @@ class ScheduledDAGTests(unittest.TestCase):
             destination = base / "output"
             argv = [
                 str(ROOT / "scripts" / "cbd_scheduled_pulse.py"),
-                "--observation", str(observation),
-                "--output-dir", str(destination),
-                "--method", "everred",
-                "--utc-day", "2026-10-20",
-                "--event", "schedule",
+                "--observation",
+                str(observation),
+                "--output-dir",
+                str(destination),
+                "--method",
+                "everred",
+                "--utc-day",
+                "2026-10-20",
+                "--event",
+                "schedule",
             ]
             with mock.patch.object(sys, "argv", argv):
                 with contextlib.redirect_stdout(io.StringIO()) as stream:
@@ -226,10 +237,12 @@ class ScheduledDAGTests(unittest.TestCase):
                     )
             report = json.loads(stream.getvalue())
             self.assertEqual("QUEUE_SATURATED", report["gate"])
-            self.assertEqual("none", json.loads(
-                (destination / "pulse-plan.json").read_text()
-            )["execute_mode"])
-
+            self.assertEqual(
+                "none",
+                json.loads((destination / "pulse-plan.json").read_text())[
+                    "execute_mode"
+                ],
+            )
 
 
 if __name__ == "__main__":
