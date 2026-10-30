@@ -184,4 +184,3 @@ async def test_week3_measurement_covers_all_three_production_modules(
     assert metrics.total_tests == 8
     assert metrics.passed_tests == 8
     assert metrics.coverage_score == 75.0
-

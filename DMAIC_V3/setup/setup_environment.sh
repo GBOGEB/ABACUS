@@ -99,7 +99,7 @@ fi
 if [ ! -d "$VENV_PATH" ]; then
     print_info "  Creating virtual environment: $VENV_PATH"
     $PYTHON_CMD -m venv "$VENV_PATH"
-    
+
     if [ $? -eq 0 ]; then
         print_success "  ✓ Virtual environment created"
     else
@@ -141,7 +141,7 @@ fi
 # Install dependencies
 if [ "$SKIP_DEPENDENCIES" = false ]; then
     print_info "[6/7] Installing dependencies..."
-    
+
     # Check for requirements.txt
     REQUIREMENTS_FILE=""
     if [ -f "$SCRIPT_DIR/DMAIC_V3/requirements.txt" ]; then
@@ -149,11 +149,11 @@ if [ "$SKIP_DEPENDENCIES" = false ]; then
     elif [ -f "$SCRIPT_DIR/requirements.txt" ]; then
         REQUIREMENTS_FILE="$SCRIPT_DIR/requirements.txt"
     fi
-    
+
     if [ -n "$REQUIREMENTS_FILE" ]; then
         print_info "  Installing from: $REQUIREMENTS_FILE"
         python -m pip install -r "$REQUIREMENTS_FILE"
-        
+
         if [ $? -eq 0 ]; then
             print_success "  ✓ Dependencies installed"
         else
@@ -211,7 +211,7 @@ echo ""
 if [ "$VALIDATE" = true ]; then
     print_info "Running Phase 0 validation..."
     echo ""
-    
+
     PHASE0_SCRIPT="$SCRIPT_DIR/DMAIC_V3/phases/phase0_setup.py"
     if [ -f "$PHASE0_SCRIPT" ]; then
         python "$PHASE0_SCRIPT"

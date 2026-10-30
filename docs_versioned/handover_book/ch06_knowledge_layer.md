@@ -1,7 +1,7 @@
 # Chapter 6: Clusters 9-12 — Knowledge Layer
 
 ## 6.1 Overview
-The Knowledge Layer provides the foundation services: task scheduling, governance, 
+The Knowledge Layer provides the foundation services: task scheduling, governance,
 temporal tracking, and metrics collection.
 
 ## 6.2 Cluster 9 (C9): KEB — Entity & Execution Bridge
@@ -12,12 +12,12 @@ temporal tracking, and metrics collection.
 ```
 KEB (Knowledge Execution Bridge)
 ├── Task Scheduling — Priority-based task queue
-├── Resource Monitoring — Memory, CPU tracking  
+├── Resource Monitoring — Memory, CPU tracking
 ├── Agent Registry — Agent capability mapping
 └── Execution Bridge — Task → Agent → Result pipeline
 ```
 
-**Key Feature:** Idempotency pattern — all tool outputs are idempotent, ensuring 
+**Key Feature:** Idempotency pattern — all tool outputs are idempotent, ensuring
 safe re-execution without side effects.
 
 **Known Issue:** Timeout issues reported in KEB execution (blocker for full pipeline)

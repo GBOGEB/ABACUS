@@ -19,7 +19,7 @@ Run the automated test to identify issues:
 1. **Check token scopes**:
    - Go to [GitHub Settings > Personal access tokens](https://github.com/settings/tokens)
    - Find your token and verify it has `repo` scope checked
-   
+
 2. **Regenerate token with correct scopes**:
    ```bash
    # Delete old token in GitHub settings
@@ -86,11 +86,11 @@ git config --global credential.helper "!f() { test \"\$1\" = get && echo \"passw
 
 **Issue**: Token works for personal repos but not organization repos.
 
-**Solution**: 
+**Solution**:
 1. Check if organization requires token approval:
    - Go to organization settings
    - Check "Third-party application access policy"
-   
+
 2. Request approval from organization admin:
    - Admin must approve your personal access token
    - Or organization must enable token access
@@ -121,7 +121,7 @@ If using fine-grained tokens:
 ### 1. Check Environment Variables
 ```bash
 # Verify all required variables are set
-echo "GITHUB_TOKEN: ${GITHUB_TOKEN:0:10}..." 
+echo "GITHUB_TOKEN: ${GITHUB_TOKEN:0:10}..."
 echo "GITHUB_USER: $GITHUB_USER"
 echo "GITHUB_REPO: $GITHUB_REPO"
 ```

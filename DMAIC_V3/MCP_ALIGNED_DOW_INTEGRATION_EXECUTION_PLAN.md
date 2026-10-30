@@ -1,7 +1,7 @@
 # MCP-ALIGNED DOW INTEGRATION EXECUTION PLAN
 
-**Date:** 2025-01-15  
-**Version:** 1.0  
+**Date:** 2025-01-15
+**Version:** 1.0
 **Purpose:** Execute DOW integration improvements via MCP runners, workers, and YAML-driven orchestration
 
 ---
@@ -84,17 +84,17 @@ from typing import Dict, List, Any
 
 class DOWMetadataInjector:
     """Agent to inject DOW metadata into JSON files"""
-    
+
     def __init__(self, config_path: str = "orchestrator_config.yaml"):
         self.config_path = config_path
         self.logger = logging.getLogger(__name__)
-        
+
     def inject_metadata(self, file_path: Path, iteration: int, phase: str) -> Dict[str, Any]:
         """Inject DOW metadata into JSON file"""
         try:
             with open(file_path, 'r', encoding='utf-8') as f:
                 data = json.load(f)
-            
+
             data['metadata'] = {
                 'version': '3.3.0',
                 'timestamp': datetime.now().isoformat(),
@@ -103,17 +103,17 @@ class DOWMetadataInjector:
                 'generator': f'phase{phase}_generator.py',
                 'dow_compliant': True
             }
-            
+
             with open(file_path, 'w', encoding='utf-8') as f:
                 json.dump(data, f, indent=2)
-            
+
             self.logger.info(f"✅ Metadata injected: {file_path}")
             return {'status': 'success', 'file': str(file_path)}
-            
+
         except Exception as e:
             self.logger.error(f"❌ Metadata injection failed: {e}")
             return {'status': 'error', 'error': str(e)}
-    
+
     def inject_batch(self, file_paths: List[Path], iteration: int) -> Dict[str, Any]:
         """Inject metadata into multiple files"""
         results = []
@@ -121,14 +121,14 @@ class DOWMetadataInjector:
             phase = self._extract_phase(file_path)
             result = self.inject_metadata(file_path, iteration, phase)
             results.append(result)
-        
+
         return {
             'total': len(file_paths),
             'success': sum(1 for r in results if r['status'] == 'success'),
             'failed': sum(1 for r in results if r['status'] == 'error'),
             'results': results
         }
-    
+
     def _extract_phase(self, file_path: Path) -> str:
         """Extract phase from file path"""
         name = file_path.stem
@@ -149,10 +149,10 @@ class DOWMetadataInjector:
 if __name__ == "__main__":
     logging.basicConfig(level=logging.INFO)
     injector = DOWMetadataInjector()
-    
+
     canonical_output = Path("DMAIC_CANONICAL_OUTPUT")
     json_files = list(canonical_output.glob("*.json"))
-    
+
     result = injector.inject_batch(json_files, iteration=1)
     print(f"✅ Metadata injection complete: {result['success']}/{result['total']} files")
 ```
@@ -173,12 +173,12 @@ from typing import Dict, List, Any
 
 class DOWRecursiveHooksInjector:
     """Agent to inject recursive hooks into JSON files"""
-    
+
     def __init__(self, config_path: str = "orchestrator_config.yaml"):
         self.config_path = config_path
         self.logger = logging.getLogger(__name__)
         self.dependency_map = self._build_dependency_map()
-        
+
     def _build_dependency_map(self) -> Dict[str, Dict[str, List[str]]]:
         """Build dependency map for recursive hooks"""
         return {
@@ -211,54 +211,54 @@ class DOWRecursiveHooksInjector:
                 'feeds_into': ['next_iteration']
             }
         }
-    
+
     def inject_recursive_hooks(self, file_path: Path, iteration: int) -> Dict[str, Any]:
         """Inject recursive hooks into JSON file"""
         try:
             with open(file_path, 'r', encoding='utf-8') as f:
                 data = json.load(f)
-            
+
             file_name = file_path.name
             dependencies = self.dependency_map.get(file_name, {
                 'consumed_from': [],
                 'feeds_into': []
             })
-            
+
             data['recursive_hooks'] = {
                 'consumed_from': dependencies['consumed_from'],
                 'feeds_into': dependencies['feeds_into'],
                 'iteration_lineage': self._get_iteration_lineage(iteration),
                 'version_history': self._get_version_history(file_path)
             }
-            
+
             with open(file_path, 'w', encoding='utf-8') as f:
                 json.dump(data, f, indent=2)
-            
+
             self.logger.info(f"✅ Recursive hooks injected: {file_path}")
             return {'status': 'success', 'file': str(file_path)}
-            
+
         except Exception as e:
             self.logger.error(f"❌ Recursive hooks injection failed: {e}")
             return {'status': 'error', 'error': str(e)}
-    
+
     def inject_batch(self, file_paths: List[Path], iteration: int) -> Dict[str, Any]:
         """Inject recursive hooks into multiple files"""
         results = []
         for file_path in file_paths:
             result = self.inject_recursive_hooks(file_path, iteration)
             results.append(result)
-        
+
         return {
             'total': len(file_paths),
             'success': sum(1 for r in results if r['status'] == 'success'),
             'failed': sum(1 for r in results if r['status'] == 'error'),
             'results': results
         }
-    
+
     def _get_iteration_lineage(self, current_iteration: int) -> List[int]:
         """Get iteration lineage"""
         return list(range(0, current_iteration + 1))
-    
+
     def _get_version_history(self, file_path: Path) -> List[str]:
         """Get version history"""
         return ['3.2.0', '3.3.0']
@@ -266,10 +266,10 @@ class DOWRecursiveHooksInjector:
 if __name__ == "__main__":
     logging.basicConfig(level=logging.INFO)
     injector = DOWRecursiveHooksInjector()
-    
+
     canonical_output = Path("DMAIC_CANONICAL_OUTPUT")
     json_files = list(canonical_output.glob("*.json"))
-    
+
     result = injector.inject_batch(json_files, iteration=1)
     print(f"✅ Recursive hooks injection complete: {result['success']}/{result['total']} files")
 ```
@@ -291,27 +291,27 @@ import numpy as np
 
 class DOWConvergenceCalculator:
     """Agent to calculate convergence metrics"""
-    
+
     def __init__(self, config_path: str = "orchestrator_config.yaml"):
         self.config_path = config_path
         self.logger = logging.getLogger(__name__)
-        
+
     def calculate_convergence(self, current_file: Path, previous_file: Optional[Path] = None) -> Dict[str, Any]:
         """Calculate convergence metrics"""
         try:
             with open(current_file, 'r', encoding='utf-8') as f:
                 current_data = json.load(f)
-            
+
             previous_data = None
             if previous_file and previous_file.exists():
                 with open(previous_file, 'r', encoding='utf-8') as f:
                     previous_data = json.load(f)
-            
+
             quality_score = self._calculate_quality_score(current_data)
             completeness = self._calculate_completeness(current_data)
             improvement = self._calculate_improvement(current_data, previous_data)
             status = self._determine_convergence_status(improvement)
-            
+
             convergence_metrics = {
                 'quality_score': quality_score,
                 'completeness': completeness,
@@ -319,59 +319,59 @@ class DOWConvergenceCalculator:
                 'convergence_status': status,
                 'calculated_at': datetime.now().isoformat()
             }
-            
+
             current_data['convergence_metrics'] = convergence_metrics
-            
+
             with open(current_file, 'w', encoding='utf-8') as f:
                 json.dump(current_data, f, indent=2)
-            
+
             self.logger.info(f"✅ Convergence metrics calculated: {current_file}")
             return {'status': 'success', 'file': str(current_file), 'metrics': convergence_metrics}
-            
+
         except Exception as e:
             self.logger.error(f"❌ Convergence calculation failed: {e}")
             return {'status': 'error', 'error': str(e)}
-    
+
     def _calculate_quality_score(self, data: Dict[str, Any]) -> float:
         """Calculate quality score based on data completeness and structure"""
         score = 0.0
-        
+
         if 'metadata' in data:
             score += 0.2
         if 'recursive_hooks' in data:
             score += 0.2
         if 'knowledge_gain' in data:
             score += 0.2
-        
+
         if isinstance(data, dict):
             keys_count = len(data.keys())
             if keys_count > 10:
                 score += 0.2
             if keys_count > 20:
                 score += 0.1
-        
+
         data_size = len(json.dumps(data))
         if data_size > 10000:
             score += 0.1
-        
+
         return min(score, 1.0)
-    
+
     def _calculate_completeness(self, data: Dict[str, Any]) -> float:
         """Calculate completeness score"""
         required_fields = ['metadata', 'recursive_hooks', 'convergence_metrics', 'knowledge_gain']
         present_fields = sum(1 for field in required_fields if field in data)
         return present_fields / len(required_fields)
-    
+
     def _calculate_improvement(self, current_data: Dict[str, Any], previous_data: Optional[Dict[str, Any]]) -> float:
         """Calculate improvement from previous iteration"""
         if not previous_data:
             return 0.0
-        
+
         current_quality = self._calculate_quality_score(current_data)
         previous_quality = self._calculate_quality_score(previous_data)
-        
+
         return current_quality - previous_quality
-    
+
     def _determine_convergence_status(self, improvement: float) -> str:
         """Determine convergence status"""
         if improvement > 0.1:
@@ -386,10 +386,10 @@ class DOWConvergenceCalculator:
 if __name__ == "__main__":
     logging.basicConfig(level=logging.INFO)
     calculator = DOWConvergenceCalculator()
-    
+
     canonical_output = Path("DMAIC_CANONICAL_OUTPUT")
     current_file = canonical_output / "phase1_define.json"
-    
+
     result = calculator.calculate_convergence(current_file)
     print(f"✅ Convergence calculation complete: {result['metrics']}")
 ```
@@ -411,22 +411,22 @@ import re
 
 class DOWKnowledgeExtractor:
     """Agent to extract knowledge from JSON files"""
-    
+
     def __init__(self, config_path: str = "orchestrator_config.yaml"):
         self.config_path = config_path
         self.logger = logging.getLogger(__name__)
-        
+
     def extract_knowledge(self, file_path: Path) -> Dict[str, Any]:
         """Extract knowledge from JSON file"""
         try:
             with open(file_path, 'r', encoding='utf-8') as f:
                 data = json.load(f)
-            
+
             patterns = self._discover_patterns(data)
             insights = self._generate_insights(data)
             learnings = self._capture_learnings(data)
             improvements = self._suggest_improvements(data)
-            
+
             knowledge_gain = {
                 'patterns_discovered': patterns,
                 'insights_generated': insights,
@@ -434,40 +434,40 @@ class DOWKnowledgeExtractor:
                 'improvements_suggested': improvements,
                 'extracted_at': datetime.now().isoformat()
             }
-            
+
             data['knowledge_gain'] = knowledge_gain
-            
+
             with open(file_path, 'w', encoding='utf-8') as f:
                 json.dump(data, f, indent=2)
-            
+
             self.logger.info(f"✅ Knowledge extracted: {file_path}")
             return {'status': 'success', 'file': str(file_path), 'knowledge': knowledge_gain}
-            
+
         except Exception as e:
             self.logger.error(f"❌ Knowledge extraction failed: {e}")
             return {'status': 'error', 'error': str(e)}
-    
+
     def _discover_patterns(self, data: Dict[str, Any]) -> List[str]:
         """Discover patterns in data"""
         patterns = []
-        
+
         if 'metadata' in data:
             patterns.append("Metadata structure present")
-        
+
         if 'recursive_hooks' in data:
             patterns.append("Recursive hooks implemented")
-        
+
         if isinstance(data, dict):
             keys_count = len(data.keys())
             if keys_count > 20:
                 patterns.append(f"Complex data structure with {keys_count} keys")
-        
+
         return patterns
-    
+
     def _generate_insights(self, data: Dict[str, Any]) -> List[str]:
         """Generate insights from data"""
         insights = []
-        
+
         if 'convergence_metrics' in data:
             metrics = data['convergence_metrics']
             quality = metrics.get('quality_score', 0)
@@ -475,43 +475,43 @@ class DOWKnowledgeExtractor:
                 insights.append("High quality output achieved")
             elif quality < 0.5:
                 insights.append("Quality improvement needed")
-        
+
         return insights
-    
+
     def _capture_learnings(self, data: Dict[str, Any]) -> List[str]:
         """Capture learnings from data"""
         learnings = []
-        
+
         if 'metadata' in data and 'recursive_hooks' in data:
             learnings.append("DOW structure successfully implemented")
-        
+
         return learnings
-    
+
     def _suggest_improvements(self, data: Dict[str, Any]) -> List[str]:
         """Suggest improvements"""
         improvements = []
-        
+
         if 'metadata' not in data:
             improvements.append("Add metadata structure")
-        
+
         if 'recursive_hooks' not in data:
             improvements.append("Add recursive hooks")
-        
+
         if 'convergence_metrics' not in data:
             improvements.append("Add convergence metrics")
-        
+
         if 'knowledge_gain' not in data:
             improvements.append("Add knowledge gain tracking")
-        
+
         return improvements
 
 if __name__ == "__main__":
     logging.basicConfig(level=logging.INFO)
     extractor = DOWKnowledgeExtractor()
-    
+
     canonical_output = Path("DMAIC_CANONICAL_OUTPUT")
     json_files = list(canonical_output.glob("*.json"))
-    
+
     for json_file in json_files:
         result = extractor.extract_knowledge(json_file)
         print(f"✅ Knowledge extracted from {json_file.name}")
@@ -526,22 +526,22 @@ if __name__ == "__main__":
 
 agents:
   # ... existing agents ...
-  
+
   dow_metadata_injector:
     file: "DMAIC_V3/local_mcp/agents/dow_metadata_injector.py"
     timeout: 120
     priority: critical
-    
+
   dow_recursive_hooks_injector:
     file: "DMAIC_V3/local_mcp/agents/dow_recursive_hooks_injector.py"
     timeout: 180
     priority: critical
-    
+
   dow_convergence_calculator:
     file: "DMAIC_V3/local_mcp/agents/dow_convergence_calculator.py"
     timeout: 120
     priority: high
-    
+
   dow_knowledge_extractor:
     file: "DMAIC_V3/local_mcp/agents/dow_knowledge_extractor.py"
     timeout: 180
@@ -549,7 +549,7 @@ agents:
 
 pipelines:
   # ... existing pipelines ...
-  
+
   dow_integration:
     description: "DOW Integration Pipeline"
     stages:
@@ -558,19 +558,19 @@ pipelines:
           - dow_metadata_injector
         parallel: false
         critical: true
-        
+
       - name: "recursive_hooks_injection"
         agents:
           - dow_recursive_hooks_injector
         parallel: false
         critical: true
-        
+
       - name: "convergence_calculation"
         agents:
           - dow_convergence_calculator
         parallel: false
         critical: true
-        
+
       - name: "knowledge_extraction"
         agents:
           - dow_knowledge_extractor
@@ -595,7 +595,7 @@ criteria:
       large: 10485760  # 10 MB
       medium: 1048576  # 1 MB
       small: 102400    # 100 KB
-      
+
   importance:
     weight: 0.3
     levels:
@@ -603,14 +603,14 @@ criteria:
       high: 20
       medium: 15
       low: 10
-      
+
   dow_integration:
     weight: 0.2
     levels:
       full: 20
       partial: 10
       none: 0
-      
+
   quality:
     weight: 0.2
     levels:
@@ -623,20 +623,20 @@ criteria:
 scoring:
   max_score: 100
   pass_threshold: 50
-  
+
 categories:
   critical:
     min_score: 90
     max_count: 10
-    
+
   high:
     min_score: 70
     max_count: 30
-    
+
   medium:
     min_score: 50
     max_count: 50
-    
+
   low:
     min_score: 0
     max_count: 100
@@ -645,7 +645,7 @@ output:
   format: "json"
   destination: "ranking.json"
   include_details: true
-  
+
 execution:
   runner: "DMAIC_V3/local_mcp/agents/recursive_self_ranking_v2.3_OPTIMIZED.py"
   schedule: "after_each_iteration"
@@ -947,37 +947,37 @@ on:
 jobs:
   dow-integration:
     runs-on: ubuntu-latest
-    
+
     steps:
       - uses: actions/checkout@v3
-      
+
       - name: Setup Python
         uses: actions/setup-python@v4
         with:
           python-version: '3.11'
-      
+
       - name: Install Dependencies
         run: |
           pip install -r requirements.txt
-      
+
       - name: Run DOW Integration Pipeline
         run: |
           python DMAIC_V3/temporal_phase_runner.py \
             --pipeline=dow_integration \
             --iteration=${{ github.event.inputs.iteration || '1' }} \
             --config=orchestrator_config.yaml
-      
+
       - name: Run Ranking
         run: |
           python DMAIC_V3/local_mcp/agents/recursive_self_ranking_v2.3_OPTIMIZED.py \
             --config=ranking.yaml \
             --output=ranking.json
-      
+
       - name: Run Validation
         run: |
           python local_mcp/agents/smoke_test_runner_ULTRA_OPTIMIZED.py \
             --test-suite=dow_integration
-      
+
       - name: Upload Artifacts
         uses: actions/upload-artifact@v3
         with:
@@ -1053,7 +1053,7 @@ jobs:
 
 **Status:** 📋 READY FOR EXECUTION
 
-**Prepared By:** DOW Integration Team  
-**Date:** 2025-01-15  
-**Version:** 1.0  
+**Prepared By:** DOW Integration Team
+**Date:** 2025-01-15
+**Version:** 1.0
 **Next Step:** Execute Phase 1 - MCP Infrastructure Setup

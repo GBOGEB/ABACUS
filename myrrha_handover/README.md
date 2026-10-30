@@ -2,8 +2,8 @@
 
 A self-contained HTML ecosystem for the **MYRRHA QPLANT Warm Compressor Station (WCS)** — comparing ALaT FSD 575 SFC vs LKT FSD 475 SFC compressor configurations.
 
-> **Project:** C1393 – MYRRHA · SCK-CEN/CEA  
-> **Scope:** Warm-end compressor pre-study comparison, technical requirements, vendor datasheets, and engineering decision support  
+> **Project:** C1393 – MYRRHA · SCK-CEN/CEA
+> **Scope:** Warm-end compressor pre-study comparison, technical requirements, vendor datasheets, and engineering decision support
 > **Status:** 96 % complete — production-ready handover package
 
 ---

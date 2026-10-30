@@ -117,7 +117,7 @@ TRUSTED_WORKFLOW_IDENTITIES = {
         289633215,
         ".github/workflows/yaml-validation.yml",
     ),
-} 
+}
 
 TRUSTED_WORKFLOW_INPUTS = {
     "DELTA_1 CodeQL": (

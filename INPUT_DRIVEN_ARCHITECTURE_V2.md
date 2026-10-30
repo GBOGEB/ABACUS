@@ -309,12 +309,12 @@ parallel_versions:
     phase: MEASURE
     status: ACTIVE
     branch: main
-  
+
   v3.0.0_DMAIC_20251103_025015:
     phase: ANALYZE
     status: ACTIVE
     branch: dmaic_v3
-  
+
   PHASE1B_BACKUP_20251105_210933:
     phase: ANALYZE
     status: BACKUP
@@ -339,20 +339,20 @@ class DocxGenerator:
     def __init__(self, master_template: str):
         self.template = Document(master_template)
         self.style_map = self.extract_styles()
-    
+
     def generate(self, content: dict, timestamp: str) -> str:
         doc = Document(self.template)
-        
+
         for section in content['sections']:
             self.add_section(doc, section)
-        
+
         doc.core_properties.created = datetime.now()
         doc.custom_properties['generation_timestamp'] = timestamp
         doc.custom_properties['parent_document'] = 'QPLANT_SoR_0511_1452'
         doc.custom_properties['dmaic_phase'] = content['dmaic_phase']
-        
+
         self.apply_master_styles(doc)
-        
+
         output_path = f"Report_{timestamp}_PY.docx"
         doc.save(output_path)
         return output_path
@@ -363,11 +363,11 @@ class DocxGenerator:
 class XlsxGenerator:
     def __init__(self, pivot_style_ref: str):
         self.style_ref = openpyxl.load_workbook(pivot_style_ref)
-    
+
     def generate(self, data: dict, timestamp: str) -> str:
         wb = openpyxl.Workbook()
         ws = wb.active
-        
+
         self.populate_data(ws, data)
         self.apply_pivot_style(ws)
         self.inject_vba_macros(wb, [
@@ -375,10 +375,10 @@ class XlsxGenerator:
             'Button_ExportPDF',
             'Button_UpdateRTM'
         ])
-        
+
         wb.properties.created = datetime.now()
         wb.custom_doc_props['generation_timestamp'] = timestamp
-        
+
         output_path = f"Report_{timestamp}_PY.xlsx"
         wb.save(output_path)
         return output_path
@@ -389,10 +389,10 @@ class XlsxGenerator:
 class MarkdownGenerator:
     def __init__(self):
         self.md = markdown.Markdown(extensions=[
-            'extra', 'codehilite', 'toc', 'tables', 
+            'extra', 'codehilite', 'toc', 'tables',
             'fenced_code', 'attr_list'
         ])
-    
+
     def generate(self, content: dict, timestamp: str) -> tuple:
         frontmatter = f"""---
 generation_timestamp: {timestamp}
@@ -403,21 +403,21 @@ dmaic_phase: {content['dmaic_phase']}
 """
         md_content = self.build_markdown(content)
         md_full = frontmatter + md_content
-        
+
         md_full = self.embed_mermaid(md_full, content.get('diagrams', []))
         md_full = self.embed_ascii_art(md_full, content.get('ascii_diagrams', []))
-        
+
         md_path = f"Report_{timestamp}.md"
         with open(md_path, 'w', encoding='utf-8') as f:
             f.write(md_full)
-        
+
         html_content = self.md.convert(md_full)
         html_styled = self.apply_html_template(html_content, timestamp)
-        
+
         html_path = f"Report_{timestamp}.html"
         with open(html_path, 'w', encoding='utf-8') as f:
             f.write(html_styled)
-        
+
         return md_path, html_path
 ```
 
@@ -431,7 +431,7 @@ class RTMGenerator:
     def __init__(self, master_docx: str):
         self.master = master_docx
         self.requirements = self.extract_requirements()
-    
+
     def generate_json_rtm(self, timestamp: str) -> str:
         rtm = {
             'metadata': {
@@ -452,21 +452,21 @@ class RTMGenerator:
                 for req in self.requirements
             ]
         }
-        
+
         output_path = f"RTM_{timestamp}.json"
         with open(output_path, 'w') as f:
             json.dump(rtm, f, indent=2)
         return output_path
-    
+
     def generate_excel_rtm_with_vba(self, timestamp: str) -> str:
         wb = openpyxl.Workbook()
         ws = wb.active
         ws.title = "RTM"
-        
-        headers = ['Req ID', 'Text', 'Section', 'Priority', 'Status', 
+
+        headers = ['Req ID', 'Text', 'Section', 'Priority', 'Status',
                    'Linked Artefacts', 'Verification Method']
         ws.append(headers)
-        
+
         for req in self.requirements:
             ws.append([
                 req['id'], req['text'], req['section'],
@@ -474,10 +474,10 @@ class RTMGenerator:
                 ', '.join(req['linked_artefacts']),
                 req['verification_method']
             ])
-        
+
         self.apply_pivot_style(ws)
         self.inject_rtm_vba_macros(wb)
-        
+
         output_path = f"RTM_{timestamp}.xlsx"
         wb.save(output_path)
         return output_path
@@ -575,13 +575,13 @@ outputs = engine.generate(
 Sub GenerateReport()
     Dim engine As New MasterEngine
     Dim timestamp As String
-    
+
     timestamp = Format(Now, "YYYYMMDD_HHMMSS")
-    
+
     engine.Initialize _
         MasterTemplate:="canonical_sources\QPLANT_SoR\Addendum II - Cryoplant Technical Requirements0511_1452.docx", _
         DMAICPhase:="ANALYZE"
-    
+
     Dim outputs As Variant
     outputs = engine.Generate( _
         OutputFormats:=Array("docx", "xlsx", "json", "markdown", "html"), _

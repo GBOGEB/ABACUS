@@ -1,8 +1,8 @@
 # DMAIC v2.1 - QUICK TROUBLESHOOTING GUIDE
 
 
-**Version:** 2.3.0  
-**Generated:** 2025-11-08T19:22:18.814266+00:00  
+**Version:** 2.3.0
+**Generated:** 2025-11-08T19:22:18.814266+00:00
 ## 🚨 **IMPORT TIMEOUT - IMMEDIATE FIX**
 
 ### **Problem:**
@@ -215,6 +215,6 @@ python -c "import sys; sys.path.insert(0, '.'); print('Path OK')"
 
 ---
 
-**Last Updated:** 2025-01-XX  
-**Status:** Ready for testing once import works  
+**Last Updated:** 2025-01-XX
+**Status:** Ready for testing once import works
 **Next Action:** Copy to C:\Temp and test import
