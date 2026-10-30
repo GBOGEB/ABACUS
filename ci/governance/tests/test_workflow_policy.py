@@ -27,6 +27,19 @@ class WorkflowPolicyTests(unittest.TestCase):
         self.assertEqual({}, report["multiple_matches"])
         self.assertEqual([], report["missing_canonical"])
 
+    def test_bridge_federation_and_bt_workflows_have_unique_owners(self):
+        expected = {
+            "federation-bridge-contract.yml": "bridge_federation",
+            "qps-bt-admission.yml": "statistics",
+        }
+        for filename, cluster in expected.items():
+            with self.subTest(filename=filename):
+                rule, matches = MODULE.classify(filename, self.policy)
+                self.assertEqual(1, len(matches), "ambiguous workflow ownership")
+                self.assertEqual(cluster, rule["cluster"])
+                self.assertEqual("pr_domain", rule["lifecycle"])
+                self.assertEqual("keep", rule["disposition"])
+
     def test_code_purple_mip_rules_have_unique_domain_owners(self):
         expected = {
             "code-purple-dashboard-v31.yml": "runtime_governance",
