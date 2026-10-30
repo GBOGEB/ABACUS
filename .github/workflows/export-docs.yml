@@ -16,13 +16,22 @@ jobs:
       - name: Export
         run: |
           mkdir -p out
-          for f in $(git ls-files 'docs/**/*.md'); do
-            base=$(basename "$f" .md)
+          # A NUL-delimited tracked manifest preserves spaces/newlines in paths,
+          # while source-relative output names prevent duplicate basename loss.
+          manifest="$RUNNER_TEMP/export-docs.paths0"
+          python scripts/export_docs_manifest.py --repo . --out "$manifest"
+          count=0
+          while IFS= read -r -d '' f; do
+            relative="${f#docs/}"
+            stem="${relative%.md}"
+            mkdir -p "out/$(dirname "$stem")"
             docker run --rm -v "$PWD:/data" pandoc/latex:3.1 \
-              --pdf-engine=xelatex "$f" -o "out/${base}.pdf"
+              --pdf-engine=xelatex "$f" -o "out/${stem}.pdf"
             docker run --rm -v "$PWD:/data" pandoc/core:3.1 \
-              "$f" -o "out/${base}.docx"
-          done
+              "$f" -o "out/${stem}.docx"
+            count=$((count+1))
+          done < "$manifest"
+          test "$count" -gt 0
       - uses: actions/upload-artifact@v7
         with:
           name: exported-docs
