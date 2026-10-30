@@ -120,7 +120,7 @@ The project is **release-ready at 95% completion** — the remaining items are m
 
 A huge thank you to everyone who contributed to making ABACUS v4.4.0 a reality. This release represents months of dedicated work on architecture, implementation, documentation, and automation.
 
-**Star ⭐ the repo** if you find it useful!  
+**Star ⭐ the repo** if you find it useful!
 **Contribute** by checking our [open issues](https://github.com/GBOGEB/ABACUS/issues)!
 
 ---

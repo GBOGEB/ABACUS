@@ -94,8 +94,8 @@ Phase 4  ███████████████████░   95%  Pro
 
 ---
 
-*Issued: May 18, 2026*  
-*Repository: [github.com/GBOGEB/ABACUS](https://github.com/GBOGEB/ABACUS)*  
+*Issued: May 18, 2026*
+*Repository: [github.com/GBOGEB/ABACUS](https://github.com/GBOGEB/ABACUS)*
 *Documentation: [gbogeb.github.io/ABACUS](https://gbogeb.github.io/ABACUS/)*
 
 ## ═══════════════════════════════════════════

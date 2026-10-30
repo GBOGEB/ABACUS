@@ -1,7 +1,7 @@
 # Kubernetes Production Deployment Guide
 
-**Project:** MYRRHA QPLANT Cryogenic System  
-**Version:** v4.4.0  
+**Project:** MYRRHA QPLANT Cryogenic System
+**Version:** v4.4.0
 **Date:** 2026-05-17
 
 ---

@@ -447,8 +447,8 @@ Next Month Focus: [Priorities]
 
 ---
 
-**Document Version**: 1.0  
-**Last Updated**: November 17, 2025  
-**Next Review**: December 17, 2025  
-**Owner**: Operations Team  
+**Document Version**: 1.0
+**Last Updated**: November 17, 2025
+**Next Review**: December 17, 2025
+**Owner**: Operations Team
 **Approver**: Engineering Lead

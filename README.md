@@ -70,10 +70,10 @@ reference it from spokes. Companion analysis: CODEX PR **#1188** (W59 cross-repo
 [![workflows](https://img.shields.io/badge/dynamic/json?url=https%3A%2F%2Fraw.githubusercontent.com%2FGBOGEB%2FABACUS%2Fmain%2Fdocs%2Fapi%2Fdmaic_metrics.json&query=%24.workflows&label=workflows&color=purple&style=flat-square)](docs/api/dmaic_metrics.json)
 [![metrics SHA](https://img.shields.io/badge/dynamic/json?url=https%3A%2F%2Fraw.githubusercontent.com%2FGBOGEB%2FABACUS%2Fmain%2Fdocs%2Fapi%2Fdmaic_metrics.json&query=%24.sha&label=metrics%20SHA&color=lightgrey&style=flat-square)](docs/api/dmaic_metrics.json)
 
-**Project:** Multi-Agent Cryogenic Engineering Analysis System  
-**Current Version:** main declares v5.0.0 in [`pyproject.toml`](pyproject.toml) (the release identity SSOT); the last published release is v4.4.0 — active mainline hardening and completeness-census evolution  
-**Historical v4.4.0 Quality Score:** 92.1/100 (release snapshot; not a current-main score)  
-**Live-State Reference:** `main@329562a6da8d8d6f724036ed11267f51a1855483`  
+**Project:** Multi-Agent Cryogenic Engineering Analysis System
+**Current Version:** main declares v5.0.0 in [`pyproject.toml`](pyproject.toml) (the release identity SSOT); the last published release is v4.4.0 — active mainline hardening and completeness-census evolution
+**Historical v4.4.0 Quality Score:** 92.1/100 (release snapshot; not a current-main score)
+**Live-State Reference:** `main@329562a6da8d8d6f724036ed11267f51a1855483`
 **Last Updated:** 2026-10-02
 
 > A recursive, self-improving multi-agent system applying DMAIC methodology to cryogenic engineering analysis, built around a 12-Cluster Architecture with DOW governance, KEB execution, and GBOGEB observability.
@@ -386,8 +386,8 @@ Master_Input/
 ## 🎯 VERSION OVERVIEW (Historical Lineage Snapshot)
 
 ### V2.2 (COMPLETE - ARCHIVED) ✅
-**Status:** 21/21 tasks (100%)  
-**Date:** November 2025  
+**Status:** 21/21 tasks (100%)
+**Date:** November 2025
 **Archive:** `docs_versioned/v2.2_archived/`
 
 **Delivered:**
@@ -406,8 +406,8 @@ Master_Input/
 - No CI/CD deployment
 
 ### V2.3 (Historical Development Snapshot + Current Verification) 📚
-**Status:** Historical snapshot was 4/15 tasks (26.7%); runtime and CI/CD checks below are now verified operational.  
-**Date:** Started 2025-11-11  
+**Status:** Historical snapshot was 4/15 tasks (26.7%); runtime and CI/CD checks below are now verified operational.
+**Date:** Started 2025-11-11
 **Docs:** `docs_versioned/v2.3_active/`
 
 **Progress (current verification):**
@@ -427,33 +427,33 @@ Master_Input/
 ## 🔥 CRITICAL DOCUMENTS (READ THESE FIRST)
 
 ### 1. ⭐ MASTER_HANDOVER_INDEX.md
-**Location:** `docs_versioned/handover/MASTER_HANDOVER_INDEX.md`  
-**Purpose:** One-page overview with links to all key documents  
-**Time:** 5 minutes  
+**Location:** `docs_versioned/handover/MASTER_HANDOVER_INDEX.md`
+**Purpose:** One-page overview with links to all key documents
+**Time:** 5 minutes
 **Who:** Everyone - start here!
 
 ### 2. COMPREHENSIVE_VERSION_ANALYSIS_20251111.md
-**Location:** `docs_versioned/handover/COMPREHENSIVE_VERSION_ANALYSIS_20251111.md`  
-**Purpose:** Complete version alignment, gaps, action plan  
-**Time:** 10 minutes  
+**Location:** `docs_versioned/handover/COMPREHENSIVE_VERSION_ANALYSIS_20251111.md`
+**Purpose:** Complete version alignment, gaps, action plan
+**Time:** 10 minutes
 **Who:** Technical leads, project managers
 
 ### 3. V2.3_CANONICAL_STATUS.md
-**Location:** `docs_versioned/v2.3_active/V2.3_CANONICAL_STATUS.md`  
-**Purpose:** Historical development status before the v4.4.0 release  
-**Time:** 5 minutes  
+**Location:** `docs_versioned/v2.3_active/V2.3_CANONICAL_STATUS.md`
+**Purpose:** Historical development status before the v4.4.0 release
+**Time:** 5 minutes
 **Who:** Developers, active contributors
 
 ### 4. V2.2_FINAL_ARCHIVE_STATUS.md
-**Location:** `docs_versioned/v2.2_archived/V2.2_FINAL_ARCHIVE_STATUS.md`  
-**Purpose:** V2.2 completion record and archival summary  
-**Time:** 5 minutes  
+**Location:** `docs_versioned/v2.2_archived/V2.2_FINAL_ARCHIVE_STATUS.md`
+**Purpose:** V2.2 completion record and archival summary
+**Time:** 5 minutes
 **Who:** Historical reference, new team members
 
 ### 5. V2.3_EVOLUTION_PLAN_20251111.md
-**Location:** `docs_versioned/v2.3_active/V2.3_EVOLUTION_PLAN_20251111.md`  
-**Purpose:** Historical roadmap used to reach the v4.4.0 release  
-**Time:** 15 minutes  
+**Location:** `docs_versioned/v2.3_active/V2.3_EVOLUTION_PLAN_20251111.md`
+**Purpose:** Historical roadmap used to reach the v4.4.0 release
+**Time:** 15 minutes
 **Who:** Project planning, long-term contributors
 
 ---
@@ -638,9 +638,9 @@ This snapshot remains historical evidence only. See `tracking_v2.3/V2.3_COMPLETI
 
 ## 🔄 VERSION CONTROL
 
-**Current Version:** v4.4.0 published baseline; `main` carries post-release hardening beyond the tag  
-**Previous Major Milestone:** V2.3.0 (archived in docs_versioned)  
-**Git Status:** Active exact-head MIP/CI hardening; `#1671` is the sole current rank-1 `ci-enhanced.yml` lane; workflow state is governed by live policy/census evidence; branch-protection proof remains separate  
+**Current Version:** v4.4.0 published baseline; `main` carries post-release hardening beyond the tag
+**Previous Major Milestone:** V2.3.0 (archived in docs_versioned)
+**Git Status:** Active exact-head MIP/CI hardening; `#1671` is the sole current rank-1 `ci-enhanced.yml` lane; workflow state is governed by live policy/census evidence; branch-protection proof remains separate
 **Last Major Update:** 2026-10-02 (`#1667` merged; duplicate `#1670` superseded; `#1671` executing exact-head admission for the measured rank-1 false-green debt)
 
 ---
@@ -698,9 +698,9 @@ This project follows **recursive, evolutionary, DMAIC-driven** principles:
 
 ---
 
-**Project Status:** ✅ v4.4.0 published baseline / 🚧 current-main hardening continues under exact-head evidence  
-**Current Focus:** Admit and close `#1671`, the sole measured `ci-enhanced.yml` rank-1 INFRA/CHECK lane, without relaxing test, coverage or raw false-green controls  
-**Next Milestone:** `#1671` exact-head GREEN → merge → post-merge TC0-TC4/DAB recensus → consume the next measured `TEST_ADMISSION`/`NO_TEST`/`COVERAGE`/`STATIC_ANALYSIS` residual; prove branch-protection/refactor/deployment gates separately  
+**Project Status:** ✅ v4.4.0 published baseline / 🚧 current-main hardening continues under exact-head evidence
+**Current Focus:** Admit and close `#1671`, the sole measured `ci-enhanced.yml` rank-1 INFRA/CHECK lane, without relaxing test, coverage or raw false-green controls
+**Next Milestone:** `#1671` exact-head GREEN → merge → post-merge TC0-TC4/DAB recensus → consume the next measured `TEST_ADMISSION`/`NO_TEST`/`COVERAGE`/`STATIC_ANALYSIS` residual; prove branch-protection/refactor/deployment gates separately
 **Last Updated:** 2026-10-02
 
 ---

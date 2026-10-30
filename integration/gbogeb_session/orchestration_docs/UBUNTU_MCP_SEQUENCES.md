@@ -234,7 +234,7 @@ cd /home/ubuntu/gbogeb_abacus
 
 python3 engines/RENDER_LINTER.py docs/ --format json 2>/dev/null || \
   python3 -c "
-import sys; sys.path.insert(0, '.'); 
+import sys; sys.path.insert(0, '.');
 from engines.RENDER_LINTER import lint_file
 import glob
 for f in glob.glob('docs/*.md'):
