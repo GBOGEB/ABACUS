@@ -2,12 +2,12 @@
 
 # ABACUS CI workflow rationalisation
 
-Policy: `ABACUS-CI-SSOT-001`
-Policy SHA-256 (canonical sorted JSON bytes of `ci/governance/workflow_policy.json`): `1defcfa7781d884191163f0dfd945976d3729c8412fe98066ba52bc033ce92e3`
+Policy: `ABACUS-CI-SSOT-001`  
+Policy SHA-256 (canonical sorted JSON bytes of `ci/governance/workflow_policy.json`): `df7b87bdd4764c8358663931e1bd17ff71377bf3d8b8936fd16e24a5a1dd3e14`
 
 ## Outcome
 
-The repository currently contains **218 workflow definitions**. All **218** are assigned to one primary functional cluster and lifecycle stage.
+The repository currently contains **219 workflow definitions**. All **219** are assigned to one primary functional cluster and lifecycle stage.
 
 The observed baseline that motivated this control was PR #681 with 119 check runs (111 queued, 8 skipped) and main with 122 check runs.
 
@@ -28,7 +28,7 @@ The observed baseline that motivated this control was PR #681 with 119 check run
 |---|---|---:|---|
 | `core_test` | `ci-abacus.yml` | 23 | Fast cross-version unit, pre-commit and smoke evidence. |
 | `full_regression` | `ci-cd-tests.yml` | 1 | Broad OS/version/integration/coverage regression for code changes. |
-| `statistics` | `ci-cd.yml` | 19 | Bootstrap, AHT, performance and statistical validation. |
+| `statistics` | `ci-cd.yml` | 20 | Bootstrap, AHT, performance and statistical validation. |
 | `bridge_federation` | `bridge-ci.yml` | 21 | CODEX/ABACUS bridge contract and federation smoke evidence. |
 | `dmaic` | `dmaic-enterprise-ci.yml` | 9 | DMAIC phase, convergence and maturity execution. |
 | `dow` | `dow-integration.yml` | 22 | DOW parent mechanics, integration, monitoring and warm-up. |
@@ -237,6 +237,7 @@ Make PR-triggered workflows with write-class GitHub token scopes explicit and re
 | 20 | `pr_domain` | `statistics` | `g3a-n14-matched-arc-flight.yml` | pull_request, workflow_dispatch | 1 | `keep` | — |
 | 20 | `pr_domain` | `statistics` | `mip-py310-combined-head-probe.yml` | pull_request, workflow_dispatch | 1 | `keep` | — |
 | 20 | `pr_domain` | `statistics` | `mip2-method-qualification.yml` | pull_request, workflow_dispatch, push | 1 | `keep` | — |
+| 20 | `pr_domain` | `statistics` | `qps-bt-admission.yml` | pull_request, workflow_dispatch | 1 | `keep` | — |
 | 20 | `pr_domain` | `statistics` | `w13-neural-spine.yml` | pull_request, workflow_dispatch | 1 | `keep` | — |
 | 20 | `pr_domain` | `statistics` | `w26-testpilot-matched-coverage.yml` | pull_request, workflow_dispatch | 1 | `keep` | — |
 | 20 | `pr_domain` | `statistics` | `w29-cbd-temporal-matched-coverage.yml` | pull_request, workflow_dispatch | 1 | `keep` | — |
@@ -283,7 +284,7 @@ Make PR-triggered workflows with write-class GitHub token scopes explicit and re
 
 ## Repeated quality/test commands
 
-- `python -m pytest -q \` — `ariana-cicd.yml`, `ci-abacus.yml`, `code-purple-w40-binary-penetration.yml`, `code-purple-w42-remaining-arcs.yml`, `code-purple-w43-matched-proof.yml`, `code-purple-w44-matched-proof.yml`, `leg5-federation-dashboard-proof.yml`, `w29-disjoint-frontier-coverage.yml`
+- `python -m pytest -q \` — `ariana-cicd.yml`, `ci-abacus.yml`, `code-purple-w40-binary-penetration.yml`, `code-purple-w42-remaining-arcs.yml`, `code-purple-w43-matched-proof.yml`, `code-purple-w44-matched-proof.yml`, `federation-bridge-contract.yml`, `leg5-federation-dashboard-proof.yml`, `w29-disjoint-frontier-coverage.yml`
 - `python -m pip install pytest` — `branch-hygiene.yml`, `cryoplant-federation.yml`, `federation-bridge-contract.yml`, `v5-w62-twelve-cluster-requalification.yml`, `w306-dow-typed-findings-proof.yml`
 - `python -m pip install pytest numpy` — `abacus-missioncontrol-stage-contract-qa.yml`, `bd-w1-three-pulse-regression.yml`, `book-build.yml`, `dow-w1-coverage-contract-qa.yml`, `leg5-federation-dashboard-proof.yml`
 - `python -m pytest \` — `bridge-ci.yml`, `codespace-federation.yml`, `governance.yml`, `mip-coverage-evidence.yml`, `validation.yml`
