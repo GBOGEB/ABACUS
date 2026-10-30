@@ -4,7 +4,8 @@
 
 # W13 graph/SPINE uses NetworkX; B0 native pytest imports the provider at collection.
 # Mirror W13 owner workflow for Python 3.11+, retain 3.10 testpilot compatibility.
-networkx==3.4.2; python_version < "3.11"
+networkx==3.2.1; python_version < "3.10"
+networkx==3.4.2; python_version >= "3.10" and python_version < "3.11"
 networkx==3.6.1; python_version >= "3.11"
 
 # Ariana/DOW source-bound JUnit/XML evidence and pytest collection contract.
