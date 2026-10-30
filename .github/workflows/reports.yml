@@ -138,7 +138,7 @@ jobs:
       - name: Generate comprehensive metrics
         run: |
           echo "📊 Generating comprehensive weekly metrics..."
-          
+
           # Count files by type
           echo "## Weekly Repository Metrics" > weekly_report.md
           echo "" >> weekly_report.md
@@ -147,12 +147,12 @@ jobs:
           echo "- Markdown files: $(find . -name '*.md' -not -path './.*' | wc -l)" >> weekly_report.md
           echo "- YAML files: $(find . -name '*.yml' -o -name '*.yaml' -not -path './.*' | wc -l)" >> weekly_report.md
           echo "" >> weekly_report.md
-          
+
           # Recent activity
           echo "### Recent Activity (Last 7 Days)" >> weekly_report.md
           git log --since='7 days ago' --oneline | wc -l | xargs echo "- Commits:" >> weekly_report.md
           git log --since='7 days ago' --pretty=format:'%an' | sort | uniq | wc -l | xargs echo "- Contributors:" >> weekly_report.md
-          
+
           cat weekly_report.md
 
       - name: Upload weekly report

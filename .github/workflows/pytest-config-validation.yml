@@ -18,27 +18,27 @@ on:
 jobs:
   validate-config:
     runs-on: ubuntu-latest
-    
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v7
-      
+
       - name: Set up Python
         uses: actions/setup-python@v7
         with:
           python-version: '3.12'
-      
+
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
           python -m pip install -r requirements-dev.txt
-      
+
       - name: Verify pytest config sync
         run: python verify_pytest_sync.py
-      
+
       - name: Validate markers (strict mode)
         run: pytest --strict-markers --collect-only
-      
+
       - name: Check for marker drift
         run: |
           python sync_pytest_config.py --dry-run
@@ -46,10 +46,10 @@ jobs:
             echo "⚠️  Marker configuration drift detected!"
             exit 1
           fi
-      
+
       - name: Generate marker usage report
         run: python .dmaic/scripts/marker_usage_report.py
-      
+
       - name: Upload marker report
         uses: actions/upload-artifact@v7
         with:
