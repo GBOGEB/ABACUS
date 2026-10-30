@@ -1,6 +1,6 @@
 # CODE PURPLE — Operationally lossless handover
 
-**Snapshot:** 17 October 2026, latest GitHub readback.  
+**Snapshot:** 17 October 2026, latest GitHub readback.
 **Fidelity:** verified operational continuity; **not** a verbatim transcript,
 not a new source of truth, and **not** a proof of governed merge admission.
 
