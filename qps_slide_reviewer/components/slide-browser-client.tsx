@@ -20,23 +20,24 @@ export function SlideBrowserClient() {
   const [focusIdx, setFocusIdx] = useState(0);
   const [expandedSlide, setExpandedSlide] = useState<SlideData | null>(null);
 
-  const fetchSlides = useCallback(async () => {
-    try {
-      const res = await fetch('/api/slides');
-      if (res?.ok) {
-        const data = await res?.json();
-        setSlides(data ?? []);
-      }
-    } catch (err: any) {
-      console.error('Failed to fetch slides:', err);
-    } finally {
-      setLoading(false);
-    }
-  }, []);
-
   useEffect(() => {
-    fetchSlides();
-  }, [fetchSlides]);
+    let active = true;
+    fetch('/api/slides')
+      .then(async (res) => {
+        if (!res?.ok) return;
+        const data = await res.json();
+        if (active) setSlides(data ?? []);
+      })
+      .catch((err: any) => {
+        console.error('Failed to fetch slides:', err);
+      })
+      .finally(() => {
+        if (active) setLoading(false);
+      });
+    return () => {
+      active = false;
+    };
+  }, []);
 
   const handleStar = useCallback(async (id: number) => {
     try {
@@ -88,9 +89,14 @@ export function SlideBrowserClient() {
     }
   }, [slides, group, filter]);
 
-  useEffect(() => {
+  // Back to the first slide whenever the group, filter or view changes;
+  // adjusting state during render avoids an effect-driven extra render.
+  const selection = `${group}|${filter}|${view}`;
+  const [prevSelection, setPrevSelection] = useState(selection);
+  if (selection !== prevSelection) {
+    setPrevSelection(selection);
     setFocusIdx(0);
-  }, [group, filter, view]);
+  }
 
   const focusSlide = filteredSlides[Math.min(focusIdx, Math.max(0, filteredSlides.length - 1))] ?? null;
 

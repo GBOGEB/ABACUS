@@ -1,0 +1,83 @@
+name: QPS slide reviewer dependency build
+
+# Proves a qps_slide_reviewer dependency change installs, builds and lints
+# under Yarn 4, and publishes the lockfile Yarn resolved so it can be
+# committed without a local install.
+on:
+  pull_request:
+    paths:
+      - 'qps_slide_reviewer/**'
+      - '.github/workflows/qps-slide-reviewer-deps.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: qps-slide-reviewer-deps-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build-and-lint:
+    name: QPS slide reviewer install, build and lint
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    defaults:
+      run:
+        working-directory: qps_slide_reviewer
+    env:
+      YARN_VERSION: '4.18.1'
+      COREPACK_ENABLE_DOWNLOAD_PROMPT: '0'
+      NEXT_TELEMETRY_DISABLED: '1'
+    steps:
+      # actions/checkout v7, pinned to the full commit SHA.
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          persist-credentials: false
+
+      # actions/setup-node v7.1.0, pinned to the full commit SHA.
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1
+        with:
+          node-version: '24'
+
+      - name: Activate Yarn 4
+        run: |
+          corepack enable
+          corepack prepare "yarn@${YARN_VERSION}" --activate
+          yarn --version
+
+      # Not immutable: package.json changes must be allowed to re-resolve
+      # the lockfile. The last step fails if the result is not committed.
+      - name: Install
+        env:
+          YARN_ENABLE_IMMUTABLE_INSTALLS: 'false'
+        run: yarn install
+
+      - name: Upload resolved yarn.lock
+        if: always()
+        # actions/upload-artifact v7, pinned to the full commit SHA.
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9
+        with:
+          name: qps-slide-reviewer-yarn-lock-${{ github.sha }}
+          path: qps_slide_reviewer/yarn.lock
+          if-no-files-found: warn
+
+      # next build type-checks against the generated Prisma client; no
+      # database is needed to generate it.
+      - name: Generate Prisma client
+        run: yarn prisma generate
+
+      - name: Build
+        run: yarn build
+
+      - name: Lint
+        run: yarn lint
+
+      - name: Resolved lockfile is committed
+        if: always()
+        run: |
+          if ! git diff --exit-code -- yarn.lock; then
+            msg="yarn.lock differs from the committed file"
+            echo "::error::${msg}; commit the uploaded artifact."
+            exit 1
+          fi
