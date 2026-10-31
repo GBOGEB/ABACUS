@@ -63,7 +63,7 @@ curl -H "Authorization: token $GITHUB_TOKEN" https://api.github.com/repos/GBOGEB
 - **Cause**: Token missing `repo` scope permissions
 - **Solution**: Regenerate token with full `repo` scope
 
-### "Bad credentials"
+### "Bad credentials"  
 - **Cause**: Invalid or expired token
 - **Solution**: Generate new token and update environment variable
 

@@ -1,7 +1,7 @@
 # Status Report: Workflow Installation
 
-**Date:** 2026-05-20
-**Repository:** [GBOGEB/ABACUS](https://github.com/GBOGEB/ABACUS)
+**Date:** 2026-05-20  
+**Repository:** [GBOGEB/ABACUS](https://github.com/GBOGEB/ABACUS)  
 **Branch:** `phase4-workflow-installation`
 
 ---

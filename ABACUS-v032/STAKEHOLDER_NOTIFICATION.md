@@ -2,9 +2,9 @@
 
 ## 📢 Release Announcement
 
-**Date**: November 17, 2025
-**Version**: ABACUS v0.32
-**Status**: Production Ready
+**Date**: November 17, 2025  
+**Version**: ABACUS v0.32  
+**Status**: Production Ready  
 **Priority**: High
 
 ---
@@ -330,15 +330,15 @@ Special thanks to:
 
 ---
 
-**Document Version**: 1.0
-**Date**: November 17, 2025
-**Author**: ABACUS Project Team
-**Distribution**: All Stakeholders
+**Document Version**: 1.0  
+**Date**: November 17, 2025  
+**Author**: ABACUS Project Team  
+**Distribution**: All Stakeholders  
 **Classification**: Internal
 
 ---
 
-For questions or concerns, please contact:
-**Project Lead**: gbogeb@abacus-project.com
-**Phone**: [Contact Number]
+For questions or concerns, please contact:  
+**Project Lead**: gbogeb@abacus-project.com  
+**Phone**: [Contact Number]  
 **Slack**: @gbogeb

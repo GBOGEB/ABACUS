@@ -1,9 +1,9 @@
 # GITHUB INTEGRATION WORKFLOW - GBOGEB/ABACUS
 
-**Project**: DMAIC_V3 Code Digital Twin
-**Organization**: GBOGEB
-**Target Repo**: GBOGEB/ABACUS (or other defined space)
-**Bundle**: `dmaic_v3_code_editor_v0.3.tar.gz`
+**Project**: DMAIC_V3 Code Digital Twin  
+**Organization**: GBOGEB  
+**Target Repo**: GBOGEB/ABACUS (or other defined space)  
+**Bundle**: `dmaic_v3_code_editor_v0.3.tar.gz`  
 **Date**: 2025-01-15
 
 ---

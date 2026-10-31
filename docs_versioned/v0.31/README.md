@@ -5,7 +5,7 @@
 v0.31 is the foundational layer for ALL subsequent versions. Its canonical indexes and DOW
 configuration are CRITICAL dependencies.
 
-## Key Artifacts
+## Key Artifacts  
 | File | Purpose | Size |
 |------|---------|------|
 | `canonical.index.json` | Machine-readable artifact registry | 111KB |

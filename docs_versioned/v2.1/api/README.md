@@ -7,7 +7,7 @@
 - `ABACUSv21SmokeTests` — Smoke test runner class
 - `run_all_tests()` — Execute full smoke test battery
 
-### Session Analyzer (`abacus_v21_session_tuple_analyzer.py`)
+### Session Analyzer (`abacus_v21_session_tuple_analyzer.py`)  
 - `SessionTupleAnalyzer` — Analyze session data tuples
 - `analyze_session()` — Process session artifacts from workspace
 

@@ -1,8 +1,8 @@
 # DMAIC SPRINT 5 - PLANNING DOCUMENT
 
-**Sprint:** 5 - Data Format Fixes & Enhancements
-**Start Date:** November 13, 2025
-**Target Completion:** TBD
+**Sprint:** 5 - Data Format Fixes & Enhancements  
+**Start Date:** November 13, 2025  
+**Target Completion:** TBD  
 **Status:** 📋 PLANNING
 
 ---
@@ -37,8 +37,8 @@
 
 ### Task 1: Fix Data Format Standardization (HIGH PRIORITY)
 
-**Estimated Effort:** 2-3 hours
-**Dependencies:** None
+**Estimated Effort:** 2-3 hours  
+**Dependencies:** None  
 **Risk Level:** Medium
 
 #### Subtasks
@@ -83,8 +83,8 @@
 
 ### Task 2: Enhance Metrics Collection (MEDIUM PRIORITY)
 
-**Estimated Effort:** 3-4 hours
-**Dependencies:** Task 1 (recommended)
+**Estimated Effort:** 3-4 hours  
+**Dependencies:** Task 1 (recommended)  
 **Risk Level:** Low
 
 #### Subtasks
@@ -130,8 +130,8 @@
 
 ### Task 3: Implement Automated Testing (MEDIUM PRIORITY)
 
-**Estimated Effort:** 4-6 hours
-**Dependencies:** Task 1 (recommended)
+**Estimated Effort:** 4-6 hours  
+**Dependencies:** Task 1 (recommended)  
 **Risk Level:** Low
 
 #### Subtasks
@@ -179,8 +179,8 @@
 
 ### Task 4: Run Iteration 3 (LOW PRIORITY)
 
-**Estimated Effort:** ~4 minutes execution + validation
-**Dependencies:** Tasks 1, 2 (recommended)
+**Estimated Effort:** ~4 minutes execution + validation  
+**Dependencies:** Tasks 1, 2 (recommended)  
 **Risk Level:** Low
 
 #### Subtasks
@@ -350,7 +350,7 @@ Task 3 (Testing) ----→ Sprint Complete
 
 ---
 
-**Document Created:** November 13, 2025
-**Sprint Status:** 📋 PLANNING
-**Next Action:** Begin Task 1 - Fix Data Format Standardization
+**Document Created:** November 13, 2025  
+**Sprint Status:** 📋 PLANNING  
+**Next Action:** Begin Task 1 - Fix Data Format Standardization  
 **Estimated Sprint Duration:** 1-2 weeks

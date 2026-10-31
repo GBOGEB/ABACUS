@@ -4,11 +4,11 @@
 
 Policy: `ABACUS-CI-SSOT-001`
 
-Policy SHA-256 (canonical sorted JSON bytes of `ci/governance/workflow_policy.json`): `df7b87bdd4764c8358663931e1bd17ff71377bf3d8b8936fd16e24a5a1dd3e14`
+Policy SHA-256 (canonical sorted JSON bytes of `ci/governance/workflow_policy.json`): `5e00694807e909bce0509f83acc2bef7baae368b13c16661a3a3831c65964b2c`
 
 ## Outcome
 
-The repository currently contains **219 workflow definitions**. All **219** are assigned to one primary functional cluster and lifecycle stage.
+The repository currently contains **218 workflow definitions**. All **218** are assigned to one primary functional cluster and lifecycle stage.
 
 The observed baseline that motivated this control was PR #681 with 119 check runs (111 queued, 8 skipped) and main with 122 check runs.
 
@@ -35,7 +35,7 @@ The observed baseline that motivated this control was PR #681 with 119 check run
 | `dow` | `dow-integration.yml` | 22 | DOW parent mechanics, integration, monitoring and warm-up. |
 | `runtime_governance` | `governance.yml` | 31 | Runtime evidence, governance, review artifacts and schema validation. |
 | `security` | `security-scan.yml` | 13 | Ruff PR security, scheduled Bandit, CodeQL, dependency and supply-chain scanning. |
-| `delivery` | `cd-pipeline.yml` | 9 | Build, release, deployment and publication. |
+| `delivery` | `cd-pipeline.yml` | 8 | Build, release, deployment and publication. |
 | `documentation` | `docs-build.yml` | 7 | Documentation validation, rendering, export and Pages. |
 | `automation` | `post-merge-pr-summary.yml` | 13 | Repository maintenance, reporting, branch and PR automation. |
 | `specialised` | `qps-cost-roundtrip-contract.yml` | 46 | Bounded product or historical pipelines retained outside core CI. |
@@ -56,7 +56,7 @@ Make PR-triggered workflows with write-class GitHub token scopes explicit and re
 
 | Control | Workflows |
 |---|---|
-| PR write exceptions | `bootstrap-integration.yml`, `branch-hygiene.yml`, `ci-cd.yml`, `code-quality-pilot.yml`, `codeql.yml`, `dependency-review.yml`, `gloob-causal-responder.yml`, `osv-scanner.yml`, `post-merge-pr-summary.yml`, `pr-feedback-gate.yml`, `semgrep.yml`, `w67-measured-id-pulse.yml` |
+| PR write exceptions | `bootstrap-integration.yml`, `branch-hygiene.yml`, `ci-cd.yml`, `code-quality-pilot.yml`, `codeql.yml`, `dependency-review.yml`, `deploy-docs.yml`, `gloob-causal-responder.yml`, `osv-scanner.yml`, `post-merge-pr-summary.yml`, `pr-feedback-gate.yml`, `semgrep.yml`, `w67-measured-id-pulse.yml` |
 | `pull_request_target` write exceptions | none |
 
 ## Workflow inventory
@@ -254,10 +254,9 @@ Make PR-triggered workflows with write-class GitHub token scopes explicit and re
 | 30 | `post_merge` | `delivery` | `delta-1-deploy.yml` | workflow_dispatch | 1 | `keep` | — |
 | 30 | `post_merge` | `delivery` | `delta-1-release.yml` | workflow_dispatch | 1 | `keep` | — |
 | 30 | `post_merge` | `delivery` | `history-purge-20260827.yml` | push | 1 | `keep` | — |
-| 30 | `post_merge` | `delivery` | `nextjs.yml` | push, workflow_dispatch | 2 | `keep` | — |
 | 30 | `post_merge` | `delivery` | `release.yml` | push, workflow_dispatch | 2 | `keep` | — |
 | 30 | `post_merge` | `delivery` | `remove-public-binaries.yml` | push | 1 | `keep` | — |
-| 30 | `post_merge` | `documentation` | `deploy-docs.yml` | push, workflow_dispatch | 3 | `keep` | — |
+| 30 | `post_merge` | `documentation` | `deploy-docs.yml` | push, pull_request, workflow_dispatch | 2 | `keep` | — |
 | 30 | `post_merge` | `documentation` | `docs-build.yml` | push | 1 | `keep` | — |
 | 30 | `post_merge` | `documentation` | `export-docs.yml` | push, workflow_dispatch | 1 | `keep` | — |
 | 30 | `post_merge` | `documentation` | `pages.yml` | workflow_dispatch | 1 | `keep` | — |

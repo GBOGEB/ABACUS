@@ -1,7 +1,7 @@
 # ABACUS v2.1 Canonical Definitions & Terminology
 
-**Version:** 1.0.0
-**Generated:** 2025-11-23
+**Version:** 1.0.0  
+**Generated:** 2025-11-23  
 **Status:** CANONICAL REFERENCE
 
 ---
@@ -485,6 +485,6 @@ Documentation is created **AFTER** validation is complete, not before.
 
 ---
 
-*Canonical Definitions v1.0.0*
-*Generated: 2025-11-23*
+*Canonical Definitions v1.0.0*  
+*Generated: 2025-11-23*  
 *Status: AUTHORITATIVE REFERENCE*

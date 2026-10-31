@@ -59,8 +59,8 @@ Before `CI/CD Test Suite` becomes a required check, note that
 - **ABACUS DOW/CD**: [run 40092397997][r-dow], job 120867592752.
   Pre-commit modifies files and TestPilot preflight fails; downstream
   skipped.
-- **ABACUS EVERRED** (schedule event): [run 40094315794][r-er], job
-  120873270178. Black/isort gate; no-push patch proposal
+- **ABACUS EVERRED** (schedule event): [run 40094315794][r-er],
+  job 120873270178. Black/isort gate; no-push patch proposal
   [artifact 12559279700][a-er] with eight paths. Possibly the same
   formatting root as the DOW pre-commit mutation (suspected, not proven).
 - **CODEX OSV**: [run 39983531098][r-osv], job 120516695586. `certifi`

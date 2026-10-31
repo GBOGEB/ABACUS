@@ -1,6 +1,6 @@
 # Phase B — Recursive Hooks Parity Audit (v4.4.0)
 
-**Execution Slot:** Sprint 1 / Wave 2 / Phase B
+**Execution Slot:** Sprint 1 / Wave 2 / Phase B  
 **Date:** 2026-05-28
 
 ## Scope

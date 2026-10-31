@@ -1,7 +1,7 @@
 # DMAIC OPERATIONAL EXCELLENCE FRAMEWORK
 
-**Document Version:** 1.0
-**Last Updated:** November 14, 2025
+**Document Version:** 1.0  
+**Last Updated:** November 14, 2025  
 **Purpose:** Document DMAIC methodology implementation and continuous improvement practices
 
 ---
@@ -39,7 +39,7 @@ This document captures the operational excellence framework implemented in the D
 Validate system readiness before beginning DMAIC cycle
 
 ### Implementation
-**Duration:** ~3 seconds
+**Duration:** ~3 seconds  
 **Success Rate:** 100%
 
 ### Key Activities
@@ -77,8 +77,8 @@ Validate system readiness before beginning DMAIC cycle
 Define the scope by scanning and categorizing the codebase
 
 ### Implementation
-**Duration:** ~90 seconds for 129K files
-**Performance:** 1,457 files/second
+**Duration:** ~90 seconds for 129K files  
+**Performance:** 1,457 files/second  
 **Success Rate:** 100%
 
 ### Key Activities
@@ -129,7 +129,7 @@ Define the scope by scanning and categorizing the codebase
 Collect comprehensive baseline metrics for comparison
 
 ### Implementation
-**Duration:** ~77 seconds
+**Duration:** ~77 seconds  
 **Success Rate:** 100% (post-Sprint 5 fixes)
 
 ### Key Activities
@@ -210,7 +210,7 @@ safe_write_json(results, metrics_file)
 Analyze collected metrics to identify issues and patterns
 
 ### Implementation
-**Duration:** ~10 seconds
+**Duration:** ~10 seconds  
 **Success Rate:** 100% (post-Sprint 5 fixes)
 
 ### Key Activities
@@ -299,7 +299,7 @@ Gap: 7 minutes between Iteration 2 completion and fixes
 Generate and apply improvement recommendations
 
 ### Implementation
-**Duration:** ~6 seconds
+**Duration:** ~6 seconds  
 **Success Rate:** 100%
 
 ### Key Activities
@@ -355,7 +355,7 @@ safe_write_json(improvement_result, phase4_file)
 Establish control mechanisms and validate improvements
 
 ### Implementation
-**Duration:** ~20 seconds
+**Duration:** ~20 seconds  
 **Success Rate:** 100%
 
 ### Key Activities
@@ -581,33 +581,33 @@ Better    Better    Better    Better    Better    Better
 ### Common Issues & Solutions
 
 #### Issue: Phase handoff failures
-**Symptom:** Phase N can't find Phase N-1 output
-**Root Cause:** Inconsistent output file locations
-**Solution:** Standardize output locations, use dual saves
+**Symptom:** Phase N can't find Phase N-1 output  
+**Root Cause:** Inconsistent output file locations  
+**Solution:** Standardize output locations, use dual saves  
 **Status:** ✅ RESOLVED (Sprint 5)
 
 #### Issue: Unicode encoding errors
-**Symptom:** 'charmap' codec errors on Windows
-**Root Cause:** Windows console using cp1252 encoding
-**Solution:** UTF-8 TextIOWrapper on stdout/stderr
+**Symptom:** 'charmap' codec errors on Windows  
+**Root Cause:** Windows console using cp1252 encoding  
+**Solution:** UTF-8 TextIOWrapper on stdout/stderr  
 **Status:** ✅ RESOLVED (Sprint 1)
 
 #### Issue: Module import failures
-**Symptom:** RuntimeWarning about module loading
-**Root Cause:** subprocess with `-m` flag issues
-**Solution:** Direct imports instead of subprocess
+**Symptom:** RuntimeWarning about module loading  
+**Root Cause:** subprocess with `-m` flag issues  
+**Solution:** Direct imports instead of subprocess  
 **Status:** ✅ RESOLVED (Sprint 3)
 
 #### Issue: Zero issue counts
-**Symptom:** Phase 3 shows 0 files analyzed, 0 issues
-**Root Cause:** Data format mismatch (Phase 2 → Phase 3)
-**Solution:** Add file_metrics dictionary to Phase 2
+**Symptom:** Phase 3 shows 0 files analyzed, 0 issues  
+**Root Cause:** Data format mismatch (Phase 2 → Phase 3)  
+**Solution:** Add file_metrics dictionary to Phase 2  
 **Status:** ✅ RESOLVED (Sprint 5)
 
 #### Issue: "11 problems" mystery
-**Symptom:** Only 11 problems found in 129K files
-**Root Cause:** Test run before fixes applied (timing)
-**Solution:** Run Iteration 3 with fixes, validate timing
+**Symptom:** Only 11 problems found in 129K files  
+**Root Cause:** Test run before fixes applied (timing)  
+**Solution:** Run Iteration 3 with fixes, validate timing  
 **Status:** ✅ EXPLAINED & RESOLVED (Sprint 5)
 
 ---
@@ -661,8 +661,8 @@ Better    Better    Better    Better    Better    Better
 
 ---
 
-**Document Version:** 1.0
-**Last Updated:** November 14, 2025
-**Maintained By:** DMAIC Sprint System
-**Review Frequency:** After each sprint completion
+**Document Version:** 1.0  
+**Last Updated:** November 14, 2025  
+**Maintained By:** DMAIC Sprint System  
+**Review Frequency:** After each sprint completion  
 **Next Review:** Sprint 6 completion

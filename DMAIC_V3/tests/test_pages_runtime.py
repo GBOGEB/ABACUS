@@ -1,10 +1,9 @@
-from pathlib import Path
 import json
+from pathlib import Path
 
 from build_qplant_visualization import build_qplant_visualization
 from scripts.validate_runtime_foundation import validate_runtime_foundation
 from scripts.write_runtime_governance_status import build_status
-
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
 
@@ -14,7 +13,9 @@ def test_docs_index_exists() -> None:
 
 
 def test_generated_visualization_contains_expected_title(tmp_path: Path) -> None:
-    generated_path = build_qplant_visualization(output_path=tmp_path / "qplant_visualization.html")
+    generated_path = build_qplant_visualization(
+        output_path=tmp_path / "qplant_visualization.html"
+    )
     generated_html = generated_path.read_text(encoding="utf-8")
     assert "<title>QPLANT Visualization</title>" in generated_html
 
@@ -23,7 +24,10 @@ def test_workflow_yaml_present() -> None:
     workflow_path = REPO_ROOT / ".github" / "workflows" / "pages.yml"
     assert workflow_path.exists()
     workflow_text = workflow_path.read_text(encoding="utf-8")
-    assert "cp dist/qplant_visualization.html docs/qplant_visualization.html" in workflow_text
+    assert (
+        "cp dist/qplant_visualization.html docs/qplant_visualization.html"
+        in workflow_text
+    )
     # Manual evidence only: deploy-docs.yml is the sole Pages publisher.
     assert "deploy-pages" not in workflow_text
 
@@ -31,8 +35,17 @@ def test_workflow_yaml_present() -> None:
 def test_deploy_docs_is_sole_publisher_and_keeps_docs_homepage() -> None:
     workflow_path = REPO_ROOT / ".github" / "workflows" / "deploy-docs.yml"
     workflow_text = workflow_path.read_text(encoding="utf-8")
-    assert "actions/deploy-pages" in workflow_text
-    assert "cp dist/qplant_visualization.html docs/qplant_visualization.html" in workflow_text
+    # Pages is deployed by the hub reusable deploy (JADE contract) from the docs/ bundle.
+    assert (
+        "pipeline-automation-hub/.github/workflows/jade-reusable-deploy.yml@"
+        in workflow_text
+    )
+    assert "artifact-path: docs" in workflow_text
+    assert "deploy-pages@" not in workflow_text
+    assert (
+        "cp dist/qplant_visualization.html docs/qplant_visualization.html"
+        in workflow_text
+    )
     assert "cp dist/qplant_visualization.html docs/index.html" not in workflow_text
 
 
