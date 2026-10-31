@@ -10,13 +10,12 @@ Comprehensive DOW Deployment Orchestrator
 Executes: Git/GitHub roundtrip, CI/CD, Sprint 5, DMAIC Phase 0-9, MCP iteration
 """
 
-import json
 import subprocess
 import sys
-import time
-from datetime import datetime
+import json
 from pathlib import Path
-
+from datetime import datetime
+import time
 
 class DeploymentOrchestrator:
     def __init__(self):
@@ -27,7 +26,7 @@ class DeploymentOrchestrator:
             "dmaic_phases": {},
             "mcp_iteration": {},
             "cicd_pipeline": {},
-            "self_improvement": {},
+            "self_improvement": {}
         }
 
     def log(self, message: str, level: str = "INFO"):
@@ -37,7 +36,7 @@ class DeploymentOrchestrator:
             "SUCCESS": "✅",
             "ERROR": "❌",
             "RUNNING": "🔄",
-            "STEP": "📍",
+            "STEP": "📍"
         }.get(level, "  ")
         print(f"[{timestamp}] {prefix} {message}")
 
@@ -45,13 +44,18 @@ class DeploymentOrchestrator:
         """Run shell command and return result"""
         try:
             result = subprocess.run(
-                cmd, shell=True, cwd=cwd, capture_output=capture, text=True, timeout=300
+                cmd,
+                shell=True,
+                cwd=cwd,
+                capture_output=capture,
+                text=True,
+                timeout=300
             )
             return {
                 "success": result.returncode == 0,
                 "stdout": result.stdout if capture else "",
                 "stderr": result.stderr if capture else "",
-                "returncode": result.returncode,
+                "returncode": result.returncode
             }
         except subprocess.TimeoutExpired:
             return {"success": False, "error": "Command timeout"}
@@ -104,7 +108,7 @@ class DeploymentOrchestrator:
         self.log("Executing Sprint 5 via orchestrator...", "RUNNING")
         result = self.run_command(
             "python dmaic_v23_master_orchestrator.py --action run-sprint --sprint 5",
-            capture=False,
+            capture=False
         )
 
         if result["success"]:
@@ -125,11 +129,7 @@ class DeploymentOrchestrator:
             ("Phase 0", "Initialization", "run_cicd_integration.py"),
             ("Phase 1-5", "Full DMAIC", "run_full_dmaic_pipeline_v2_with_agents.py"),
             ("Phase 4+", "Ranking & Improvement", "run_phase4_phase5.py"),
-            (
-                "Direct Improvements",
-                "Quality Enhancement",
-                "run_direct_improvements.py",
-            ),
+            ("Direct Improvements", "Quality Enhancement", "run_direct_improvements.py")
         ]
 
         completed_phases = 0
@@ -142,7 +142,9 @@ class DeploymentOrchestrator:
                 continue
 
             result = self.run_command(
-                f"python {script}", cwd="ABACUS-v031", capture=True
+                f"python {script}",
+                cwd="ABACUS-v031",
+                capture=True
             )
 
             if result["success"]:
@@ -153,9 +155,7 @@ class DeploymentOrchestrator:
 
         self.results["dmaic_phases"]["completed"] = completed_phases
         self.results["dmaic_phases"]["total"] = len(phases)
-        self.results["dmaic_phases"]["status"] = (
-            "completed" if completed_phases > 0 else "failed"
-        )
+        self.results["dmaic_phases"]["status"] = "completed" if completed_phases > 0 else "failed"
 
         self.log(f"DMAIC phases: {completed_phases}/{len(phases)} completed", "SUCCESS")
         return completed_phases > 0
@@ -173,7 +173,9 @@ class DeploymentOrchestrator:
             self.log(f"MCP Iteration {i}/{iterations}...", "RUNNING")
 
             result = self.run_command(
-                "python run_direct_improvements.py", cwd="ABACUS-v031", capture=True
+                "python run_direct_improvements.py",
+                cwd="ABACUS-v031",
+                capture=True
             )
 
             if result["success"]:
@@ -182,7 +184,7 @@ class DeploymentOrchestrator:
 
                 self.run_command(
                     f'git add -A && git commit -m "[MCP] Iteration {i} - Automated improvements"',
-                    capture=True,
+                    capture=True
                 )
             else:
                 self.log(f"Iteration {i} failed", "ERROR")
@@ -194,13 +196,9 @@ class DeploymentOrchestrator:
 
         self.results["mcp_iteration"]["completed"] = successful_iterations
         self.results["mcp_iteration"]["total"] = iterations
-        self.results["mcp_iteration"]["status"] = (
-            "completed" if successful_iterations > 0 else "failed"
-        )
+        self.results["mcp_iteration"]["status"] = "completed" if successful_iterations > 0 else "failed"
 
-        self.log(
-            f"MCP iterations: {successful_iterations}/{iterations} completed", "SUCCESS"
-        )
+        self.log(f"MCP iterations: {successful_iterations}/{iterations} completed", "SUCCESS")
         return successful_iterations > 0
 
     def step_5_self_improvement(self):
@@ -212,13 +210,11 @@ class DeploymentOrchestrator:
         rankings_file = Path("ABACUS-v031/artifact_rankings.json")
         if rankings_file.exists():
             try:
-                with open(rankings_file, "r") as f:
+                with open(rankings_file, 'r') as f:
                     rankings = json.load(f)
 
                 if isinstance(rankings, list) and len(rankings) > 0:
-                    scores = [
-                        r.get("metrics", {}).get("overall_score", 0) for r in rankings
-                    ]
+                    scores = [r.get("metrics", {}).get("overall_score", 0) for r in rankings]
                     avg_score = sum(scores) / len(scores) if scores else 0
 
                     self.results["self_improvement"]["avg_score"] = avg_score
@@ -227,14 +223,11 @@ class DeploymentOrchestrator:
                     self.log(f"Average quality score: {avg_score:.3f}")
 
                     if avg_score < 0.5:
-                        self.log(
-                            "Quality below target - running additional improvement",
-                            "INFO",
-                        )
+                        self.log("Quality below target - running additional improvement", "INFO")
                         result = self.run_command(
                             "python run_direct_improvements.py",
                             cwd="ABACUS-v031",
-                            capture=True,
+                            capture=True
                         )
                         if result["success"]:
                             self.log("Additional improvement completed", "SUCCESS")
@@ -259,7 +252,7 @@ class DeploymentOrchestrator:
             ".github/workflows/ci.yml",
             ".github/workflows/cd.yml",
             ".pre-commit-config.yaml",
-            "ABACUS-v031/.pre-commit-config.yaml",
+            "ABACUS-v031/.pre-commit-config.yaml"
         ]
 
         found_configs = []
@@ -272,9 +265,7 @@ class DeploymentOrchestrator:
         self.results["cicd_pipeline"]["configs"] = found_configs
 
         if found_configs:
-            self.log(
-                f"CI/CD configuration validated ({len(found_configs)} files)", "SUCCESS"
-            )
+            self.log(f"CI/CD configuration validated ({len(found_configs)} files)", "SUCCESS")
             self.results["cicd_pipeline"]["status"] = "validated"
         else:
             self.log("No CI/CD configuration found", "INFO")
@@ -308,64 +299,36 @@ class DeploymentOrchestrator:
         print(f"📅 Timestamp: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
 
         print("\n📊 EXECUTION SUMMARY:")
-        print(
-            f"  1. Git Integration:      {self.results['git_integration'].get('status', 'N/A')}"
-        )
-        print(
-            f"  2. Sprint 5:             {self.results['sprint_5'].get('status', 'N/A')}"
-        )
-        print(
-            f"  3. DMAIC Phases:         {self.results['dmaic_phases'].get('completed', 0)}/{self.results['dmaic_phases'].get('total', 0)}"
-        )
-        print(
-            f"  4. MCP Iteration:        {self.results['mcp_iteration'].get('completed', 0)}/{self.results['mcp_iteration'].get('total', 0)}"
-        )
-        print(
-            f"  5. Self-Improvement:     {self.results['self_improvement'].get('status', 'N/A')}"
-        )
-        print(
-            f"  6. CI/CD Validation:     {self.results['cicd_pipeline'].get('status', 'N/A')}"
-        )
+        print(f"  1. Git Integration:      {self.results['git_integration'].get('status', 'N/A')}")
+        print(f"  2. Sprint 5:             {self.results['sprint_5'].get('status', 'N/A')}")
+        print(f"  3. DMAIC Phases:         {self.results['dmaic_phases'].get('completed', 0)}/{self.results['dmaic_phases'].get('total', 0)}")
+        print(f"  4. MCP Iteration:        {self.results['mcp_iteration'].get('completed', 0)}/{self.results['mcp_iteration'].get('total', 0)}")
+        print(f"  5. Self-Improvement:     {self.results['self_improvement'].get('status', 'N/A')}")
+        print(f"  6. CI/CD Validation:     {self.results['cicd_pipeline'].get('status', 'N/A')}")
 
         if "avg_score" in self.results["self_improvement"]:
             print(f"\n📈 QUALITY METRICS:")
-            print(
-                f"  Average Score:     {self.results['self_improvement']['avg_score']:.3f}"
-            )
-            print(
-                f"  Total Artifacts:   {self.results['self_improvement']['total_artifacts']}"
-            )
+            print(f"  Average Score:     {self.results['self_improvement']['avg_score']:.3f}")
+            print(f"  Total Artifacts:   {self.results['self_improvement']['total_artifacts']}")
 
         if self.results["git_integration"].get("branch"):
             print(f"\n🌿 GIT STATUS:")
             print(f"  Branch:            {self.results['git_integration']['branch']}")
-            print(
-                f"  Modified Files:    {self.results['git_integration'].get('modified_files', 0)}"
-            )
-            print(
-                f"  Remote:            {'Yes' if self.results['git_integration'].get('has_remote') else 'No'}"
-            )
+            print(f"  Modified Files:    {self.results['git_integration'].get('modified_files', 0)}")
+            print(f"  Remote:            {'Yes' if self.results['git_integration'].get('has_remote') else 'No'}")
 
         if self.results["cicd_pipeline"].get("ready_to_push"):
             print(f"\n🚀 READY FOR DEPLOYMENT:")
-            print(
-                f"  Remote URL:        {self.results['cicd_pipeline'].get('remote_url', 'N/A')}"
-            )
-            print(
-                f"  CI/CD Configs:     {self.results['cicd_pipeline'].get('configs_found', 0)} found"
-            )
+            print(f"  Remote URL:        {self.results['cicd_pipeline'].get('remote_url', 'N/A')}")
+            print(f"  CI/CD Configs:     {self.results['cicd_pipeline'].get('configs_found', 0)} found")
 
         report_file = Path("deployment_report.json")
-        with open(report_file, "w") as f:
-            json.dump(
-                {
-                    "timestamp": datetime.now().isoformat(),
-                    "duration_seconds": duration,
-                    "results": self.results,
-                },
-                f,
-                indent=2,
-            )
+        with open(report_file, 'w') as f:
+            json.dump({
+                "timestamp": datetime.now().isoformat(),
+                "duration_seconds": duration,
+                "results": self.results
+            }, f, indent=2)
 
         print(f"\n📄 Full report saved: {report_file}")
         print("\n" + "=" * 80)
@@ -401,7 +364,6 @@ class DeploymentOrchestrator:
         except Exception as e:
             self.log(f"Deployment failed: {e}", "ERROR")
             return 1
-
 
 if __name__ == "__main__":
     orchestrator = DeploymentOrchestrator()

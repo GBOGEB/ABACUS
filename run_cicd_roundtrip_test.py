@@ -12,18 +12,19 @@ Version: 1.0.0
 Purpose: Simulate GitHub Actions workflow locally for testing
 """
 
-import json
-import logging
 import os
-import subprocess
 import sys
+import json
 import time
-from datetime import datetime
+import logging
+import subprocess
 from pathlib import Path
+from datetime import datetime
 from typing import Dict, List, Optional, Tuple
 
 logging.basicConfig(
-    level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s"
+    level=logging.INFO,
+    format='%(asctime)s - %(levelname)s - %(message)s'
 )
 logger = logging.getLogger(__name__)
 
@@ -43,7 +44,11 @@ class CICDTestRunner:
 
         try:
             result = subprocess.run(
-                command, shell=True, capture_output=True, text=True, timeout=300
+                command,
+                shell=True,
+                capture_output=True,
+                text=True,
+                timeout=300
             )
 
             success = result.returncode == 0
@@ -66,11 +71,15 @@ class CICDTestRunner:
 
     def job_validate_setup(self) -> Dict:
         """Job: Validate Integration Setup"""
-        logger.info("\n" + "=" * 80)
+        logger.info("\n" + "="*80)
         logger.info("JOB: Validate Integration Setup")
-        logger.info("=" * 80)
+        logger.info("="*80)
 
-        job_results = {"name": "validate-setup", "steps": [], "status": "running"}
+        job_results = {
+            "name": "validate-setup",
+            "steps": [],
+            "status": "running"
+        }
 
         # Step 1: Verify integration files exist
         step1_success = True
@@ -78,7 +87,7 @@ class CICDTestRunner:
             "GBOGEB_ABACUS_DOW_INTEGRATION_BRIDGE.py",
             "test_integration_bridge.py",
             "UNIFIED_GLOB_CONFIG.yaml",
-            "INTEGRATION_GUIDE.md",
+            "INTEGRATION_GUIDE.md"
         ]
 
         for file in required_files:
@@ -88,68 +97,75 @@ class CICDTestRunner:
             else:
                 logger.info(f"✓ Found: {file}")
 
-        job_results["steps"].append(
-            {"name": "Verify integration files", "success": step1_success}
-        )
+        job_results["steps"].append({
+            "name": "Verify integration files",
+            "success": step1_success
+        })
 
         # Step 2: Validate YAML configuration
         success, output = self.run_command(
             "python -c \"import yaml; yaml.safe_load(open('UNIFIED_GLOB_CONFIG.yaml'))\"",
-            "Validate YAML configuration",
+            "Validate YAML configuration"
         )
-        job_results["steps"].append({"name": "Validate YAML", "success": success})
+        job_results["steps"].append({
+            "name": "Validate YAML",
+            "success": success
+        })
 
         # Step 3: Check Python syntax
         success, output = self.run_command(
             "python -m py_compile GBOGEB_ABACUS_DOW_INTEGRATION_BRIDGE.py",
-            "Check Python syntax",
+            "Check Python syntax"
         )
-        job_results["steps"].append({"name": "Check Python syntax", "success": success})
+        job_results["steps"].append({
+            "name": "Check Python syntax",
+            "success": success
+        })
 
-        job_results["status"] = (
-            "passed" if all(s["success"] for s in job_results["steps"]) else "failed"
-        )
+        job_results["status"] = "passed" if all(s["success"] for s in job_results["steps"]) else "failed"
         return job_results
 
     def job_test_integration_bridge(self) -> Dict:
         """Job: Test Integration Bridge"""
-        logger.info("\n" + "=" * 80)
+        logger.info("\n" + "="*80)
         logger.info("JOB: Test Integration Bridge")
-        logger.info("=" * 80)
+        logger.info("="*80)
 
         job_results = {
             "name": "test-integration-bridge",
             "steps": [],
-            "status": "running",
+            "status": "running"
         }
 
         # Create required directories
-        for dir_path in [
-            "DOW/outputs",
-            "DMAIC_V3_OUTPUT",
-            "INTEGRATED_OUTPUT",
-            "gbogeg_handover",
-        ]:
+        for dir_path in ["DOW/outputs", "DMAIC_V3_OUTPUT", "INTEGRATED_OUTPUT", "gbogeg_handover"]:
             Path(dir_path).mkdir(parents=True, exist_ok=True)
 
         # Run integration test suite
         success, output = self.run_command(
-            "python test_integration_bridge.py", "Run integration test suite"
+            "python test_integration_bridge.py",
+            "Run integration test suite"
         )
-        job_results["steps"].append(
-            {"name": "Run test suite", "success": success, "output": output[:500]}
-        )
+        job_results["steps"].append({
+            "name": "Run test suite",
+            "success": success,
+            "output": output[:500]
+        })
 
         job_results["status"] = "passed" if success else "failed"
         return job_results
 
     def job_test_dow_only_mode(self) -> Dict:
         """Job: Test DOW-Only Mode"""
-        logger.info("\n" + "=" * 80)
+        logger.info("\n" + "="*80)
         logger.info("JOB: Test DOW-Only Mode")
-        logger.info("=" * 80)
+        logger.info("="*80)
 
-        job_results = {"name": "test-dow-only-mode", "steps": [], "status": "running"}
+        job_results = {
+            "name": "test-dow-only-mode",
+            "steps": [],
+            "status": "running"
+        }
 
         # Create required directories
         Path("DOW/outputs").mkdir(parents=True, exist_ok=True)
@@ -166,26 +182,29 @@ assert results['status'] in ['completed', 'failed']
 """
 
         success, output = self.run_command(
-            f'python -c "{test_code}"', "Execute DOW-only mode"
+            f'python -c "{test_code}"',
+            "Execute DOW-only mode"
         )
-        job_results["steps"].append(
-            {
-                "name": "Execute DOW-only mode",
-                "success": success,
-                "output": output[:500],
-            }
-        )
+        job_results["steps"].append({
+            "name": "Execute DOW-only mode",
+            "success": success,
+            "output": output[:500]
+        })
 
         job_results["status"] = "passed" if success else "failed"
         return job_results
 
     def job_test_unified_mode(self) -> Dict:
         """Job: Test Unified Mode"""
-        logger.info("\n" + "=" * 80)
+        logger.info("\n" + "="*80)
         logger.info("JOB: Test Unified Mode")
-        logger.info("=" * 80)
+        logger.info("="*80)
 
-        job_results = {"name": "test-unified-mode", "steps": [], "status": "running"}
+        job_results = {
+            "name": "test-unified-mode",
+            "steps": [],
+            "status": "running"
+        }
 
         # Create required directories
         for dir_path in ["DOW/outputs", "DMAIC_V3_OUTPUT", "INTEGRATED_OUTPUT"]:
@@ -207,34 +226,32 @@ print(f'Duration: {results.get("duration_seconds", 0):.2f}s')
 """
 
         success, output = self.run_command(
-            f'python -c "{test_code}"', "Execute unified mode"
+            f'python -c "{test_code}"',
+            "Execute unified mode"
         )
-        job_results["steps"].append(
-            {"name": "Execute unified mode", "success": success, "output": output[:500]}
-        )
+        job_results["steps"].append({
+            "name": "Execute unified mode",
+            "success": success,
+            "output": output[:500]
+        })
 
         job_results["status"] = "passed" if success else "failed"
         return job_results
 
     def job_integration_roundtrip_test(self) -> Dict:
         """Job: Integration Roundtrip Test"""
-        logger.info("\n" + "=" * 80)
+        logger.info("\n" + "="*80)
         logger.info("JOB: Integration Roundtrip Test")
-        logger.info("=" * 80)
+        logger.info("="*80)
 
         job_results = {
             "name": "integration-roundtrip-test",
             "steps": [],
-            "status": "running",
+            "status": "running"
         }
 
         # Create required directories
-        for dir_path in [
-            "DOW/outputs",
-            "DMAIC_V3_OUTPUT",
-            "INTEGRATED_OUTPUT",
-            "gbogeg_handover",
-        ]:
+        for dir_path in ["DOW/outputs", "DMAIC_V3_OUTPUT", "INTEGRATED_OUTPUT", "gbogeg_handover"]:
             Path(dir_path).mkdir(parents=True, exist_ok=True)
 
         # Test 1: DOW-only mode
@@ -247,9 +264,13 @@ assert results['status'] in ['completed', 'failed']
 print('✓ DOW-only mode test passed')
 """
         success1, output1 = self.run_command(
-            f'python -c "{test1_code}"', "Test 1: DOW-only mode"
+            f'python -c "{test1_code}"',
+            "Test 1: DOW-only mode"
         )
-        job_results["steps"].append({"name": "Test DOW-only mode", "success": success1})
+        job_results["steps"].append({
+            "name": "Test DOW-only mode",
+            "success": success1
+        })
 
         # Test 2: Unified mode
         test2_code = """
@@ -260,9 +281,13 @@ results = bridge.execute_integrated_pipeline()
 print('✓ Unified mode test passed')
 """
         success2, output2 = self.run_command(
-            f'python -c "{test2_code}"', "Test 2: Unified mode"
+            f'python -c "{test2_code}"',
+            "Test 2: Unified mode"
         )
-        job_results["steps"].append({"name": "Test unified mode", "success": success2})
+        job_results["steps"].append({
+            "name": "Test unified mode",
+            "success": success2
+        })
 
         # Test 3: Configuration validation
         test3_code = """
@@ -279,9 +304,13 @@ assert config_dict['iterations'] == 3
 print('✓ Configuration validation passed')
 """
         success3, output3 = self.run_command(
-            f'python -c "{test3_code}"', "Test 3: Configuration validation"
+            f'python -c "{test3_code}"',
+            "Test 3: Configuration validation"
         )
-        job_results["steps"].append({"name": "Test configuration", "success": success3})
+        job_results["steps"].append({
+            "name": "Test configuration",
+            "success": success3
+        })
 
         # Test 4: Metrics tracking
         test4_code = """
@@ -292,22 +321,22 @@ assert 'successful_executions' in bridge.metrics
 print('✓ Metrics tracking test passed')
 """
         success4, output4 = self.run_command(
-            f'python -c "{test4_code}"', "Test 4: Metrics tracking"
+            f'python -c "{test4_code}"',
+            "Test 4: Metrics tracking"
         )
-        job_results["steps"].append(
-            {"name": "Test metrics tracking", "success": success4}
-        )
+        job_results["steps"].append({
+            "name": "Test metrics tracking",
+            "success": success4
+        })
 
-        job_results["status"] = (
-            "passed" if all(s["success"] for s in job_results["steps"]) else "failed"
-        )
+        job_results["status"] = "passed" if all(s["success"] for s in job_results["steps"]) else "failed"
         return job_results
 
     def generate_roundtrip_report(self, all_results: List[Dict]):
         """Generate roundtrip test report"""
-        logger.info("\n" + "=" * 80)
+        logger.info("\n" + "="*80)
         logger.info("Generating Roundtrip Test Report")
-        logger.info("=" * 80)
+        logger.info("="*80)
 
         total_jobs = len(all_results)
         passed_jobs = sum(1 for r in all_results if r["status"] == "passed")
@@ -372,7 +401,7 @@ print('✓ Metrics tracking test passed')
 """
 
         report_file = Path("CICD_ROUNDTRIP_TEST_REPORT.md")
-        with open(report_file, "w", encoding="utf-8") as f:
+        with open(report_file, 'w', encoding='utf-8') as f:
             f.write(report)
 
         logger.info(f"Report saved to: {report_file}")
@@ -385,9 +414,9 @@ print('✓ Metrics tracking test passed')
 
     def run_full_pipeline(self):
         """Run full CI/CD pipeline"""
-        logger.info("\n" + "=" * 80)
+        logger.info("\n" + "="*80)
         logger.info("STARTING LOCAL CI/CD PIPELINE")
-        logger.info("=" * 80)
+        logger.info("="*80)
 
         all_results = []
 
@@ -423,13 +452,11 @@ print('✓ Metrics tracking test passed')
         total_passed = sum(1 for r in all_results if r["status"] == "passed")
         total_jobs = len(all_results)
 
-        logger.info("\n" + "=" * 80)
+        logger.info("\n" + "="*80)
         logger.info("CI/CD PIPELINE COMPLETE")
         logger.info(f"Passed: {total_passed}/{total_jobs}")
-        logger.info(
-            f"Duration: {(datetime.now() - self.start_time).total_seconds():.2f}s"
-        )
-        logger.info("=" * 80)
+        logger.info(f"Duration: {(datetime.now() - self.start_time).total_seconds():.2f}s")
+        logger.info("="*80)
 
         return total_passed == total_jobs
 
