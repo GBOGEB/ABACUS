@@ -8,31 +8,34 @@ Date: 2025-01-26
 Purpose: Docker orchestration for DMAIC V3 services
 """
 
-import docker
-import time
 import logging
-from typing import Dict, List, Optional, Tuple
+import time
 from dataclasses import dataclass
 from enum import Enum
+from typing import Dict, List, Optional, Tuple
+
+import docker
 
 
 class ServiceType(Enum):
     """Types of services in DMAIC V3 infrastructure"""
-    LISTENING = "listening"              # Always open, listening for requests
-    MONITORING = "monitoring"            # Always open, monitoring system health
-    QUALITY_ASSURANCE = "qa"             # Always open, quality checks
-    DEBUGGING = "debugging"              # On-demand, debugging support
-    BACKGROUND_CHECKS = "background"     # Slow background processes
-    RECURSIVE_HOOKS = "recursive"        # Recursive pipeline hooks
-    REPORTING = "reporting"              # Report generation
-    RECONCILING = "reconciling"          # Data reconciliation
-    HOUSEKEEPING = "housekeeping"        # Maintenance tasks
-    TURN_BASED = "turn_based"            # Turn-based execution
+
+    LISTENING = "listening"  # Always open, listening for requests
+    MONITORING = "monitoring"  # Always open, monitoring system health
+    QUALITY_ASSURANCE = "qa"  # Always open, quality checks
+    DEBUGGING = "debugging"  # On-demand, debugging support
+    BACKGROUND_CHECKS = "background"  # Slow background processes
+    RECURSIVE_HOOKS = "recursive"  # Recursive pipeline hooks
+    REPORTING = "reporting"  # Report generation
+    RECONCILING = "reconciling"  # Data reconciliation
+    HOUSEKEEPING = "housekeeping"  # Maintenance tasks
+    TURN_BASED = "turn_based"  # Turn-based execution
 
 
 @dataclass
 class ServiceConfig:
     """Configuration for a DMAIC service"""
+
     name: str
     service_type: ServiceType
     image: str
@@ -68,7 +71,7 @@ class PortManager:
         ServiceType.HOUSEKEEPING: (8600, 8699),
         ServiceType.RECURSIVE_HOOKS: (8700, 8799),
         ServiceType.RECONCILING: (8800, 8899),
-        ServiceType.TURN_BASED: (8900, 8999)
+        ServiceType.TURN_BASED: (8900, 8999),
     }
 
     def __init__(self):
@@ -134,8 +137,7 @@ class DockerInfrastructureManager:
         for internal_port, external_port in config.ports.items():
             if external_port == 0:  # Auto-allocate
                 external_port = self.port_manager.allocate_port(
-                    f"{config.name}:{internal_port}",
-                    config.service_type
+                    f"{config.name}:{internal_port}", config.service_type
                 )
                 config.ports[internal_port] = external_port
 
@@ -154,8 +156,7 @@ class DockerInfrastructureManager:
         try:
             # Check if container already exists
             existing = self.client.containers.list(
-                all=True,
-                filters={"name": config.name}
+                all=True, filters={"name": config.name}
             )
 
             if existing:
@@ -179,7 +180,7 @@ class DockerInfrastructureManager:
                 environment=config.environment,
                 volumes=config.volumes,
                 detach=True,
-                restart_policy={"Name": config.restart_policy}
+                restart_policy={"Name": config.restart_policy},
             )
 
             self.containers[service_name] = container
@@ -233,7 +234,7 @@ class DockerInfrastructureManager:
 
         try:
             container = self.containers[service_name]
-            return container.logs(tail=tail).decode('utf-8')
+            return container.logs(tail=tail).decode("utf-8")
         except Exception as e:
             self.logger.error(f"Failed to get logs for {service_name}: {e}")
             return ""
@@ -276,7 +277,7 @@ DMAIC_SERVICES = {
         ports={"8000": 0},  # Auto-allocate
         environment={"DMAIC_MODE": "api"},
         volumes={},
-        always_running=True
+        always_running=True,
     ),
     "dmaic_monitor": ServiceConfig(
         name="dmaic_monitor",
@@ -285,7 +286,7 @@ DMAIC_SERVICES = {
         ports={"8100": 0},
         environment={"DMAIC_MODE": "monitor"},
         volumes={},
-        always_running=True
+        always_running=True,
     ),
     "dmaic_qa": ServiceConfig(
         name="dmaic_qa",
@@ -294,7 +295,7 @@ DMAIC_SERVICES = {
         ports={"8200": 0},
         environment={"DMAIC_MODE": "qa"},
         volumes={},
-        always_running=True
+        always_running=True,
     ),
     "dmaic_debugger": ServiceConfig(
         name="dmaic_debugger",
@@ -303,7 +304,7 @@ DMAIC_SERVICES = {
         ports={"8300": 0},
         environment={"DMAIC_MODE": "debug"},
         volumes={},
-        always_running=False
+        always_running=False,
     ),
     "dmaic_background": ServiceConfig(
         name="dmaic_background",
@@ -312,7 +313,7 @@ DMAIC_SERVICES = {
         ports={"8400": 0},
         environment={"DMAIC_MODE": "background"},
         volumes={},
-        always_running=True
+        always_running=True,
     ),
     "dmaic_reporter": ServiceConfig(
         name="dmaic_reporter",
@@ -321,7 +322,7 @@ DMAIC_SERVICES = {
         ports={"8500": 0},
         environment={"DMAIC_MODE": "reporting"},
         volumes={},
-        always_running=False
+        always_running=False,
     ),
     "dmaic_reconciler": ServiceConfig(
         name="dmaic_reconciler",
@@ -330,7 +331,7 @@ DMAIC_SERVICES = {
         ports={"8800": 0},
         environment={"DMAIC_MODE": "reconcile"},
         volumes={},
-        always_running=True
+        always_running=True,
     ),
     "dmaic_housekeeping": ServiceConfig(
         name="dmaic_housekeeping",
@@ -339,8 +340,8 @@ DMAIC_SERVICES = {
         ports={"8600": 0},
         environment={"DMAIC_MODE": "housekeeping"},
         volumes={},
-        always_running=True
-    )
+        always_running=True,
+    ),
 }
 
 

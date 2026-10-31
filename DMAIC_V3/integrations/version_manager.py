@@ -11,12 +11,11 @@ Manages version bumping, changelog integration, and release tagging.
 
 import json
 import re
+from dataclasses import asdict, dataclass
 from datetime import datetime
+from enum import Enum
 from pathlib import Path
 from typing import List, Optional
-from dataclasses import dataclass, asdict
-from enum import Enum
-
 
 VERSION = "3.2.0"
 
@@ -40,34 +39,54 @@ class VersionInfo:
             version += f"-{self.prerelease}"
         return version
 
-    def __lt__(self, other: 'VersionInfo') -> bool:
+    def __lt__(self, other: "VersionInfo") -> bool:
         if not isinstance(other, VersionInfo):
             return NotImplemented
-        return (self.major, self.minor, self.patch) < (other.major, other.minor, other.patch)
+        return (self.major, self.minor, self.patch) < (
+            other.major,
+            other.minor,
+            other.patch,
+        )
 
-    def __le__(self, other: 'VersionInfo') -> bool:
+    def __le__(self, other: "VersionInfo") -> bool:
         if not isinstance(other, VersionInfo):
             return NotImplemented
-        return (self.major, self.minor, self.patch) <= (other.major, other.minor, other.patch)
+        return (self.major, self.minor, self.patch) <= (
+            other.major,
+            other.minor,
+            other.patch,
+        )
 
-    def __gt__(self, other: 'VersionInfo') -> bool:
+    def __gt__(self, other: "VersionInfo") -> bool:
         if not isinstance(other, VersionInfo):
             return NotImplemented
-        return (self.major, self.minor, self.patch) > (other.major, other.minor, other.patch)
+        return (self.major, self.minor, self.patch) > (
+            other.major,
+            other.minor,
+            other.patch,
+        )
 
-    def __ge__(self, other: 'VersionInfo') -> bool:
+    def __ge__(self, other: "VersionInfo") -> bool:
         if not isinstance(other, VersionInfo):
             return NotImplemented
-        return (self.major, self.minor, self.patch) >= (other.major, other.minor, other.patch)
+        return (self.major, self.minor, self.patch) >= (
+            other.major,
+            other.minor,
+            other.patch,
+        )
 
     def __eq__(self, other: object) -> bool:
         if not isinstance(other, VersionInfo):
             return NotImplemented
-        return (self.major, self.minor, self.patch) == (other.major, other.minor, other.patch)
+        return (self.major, self.minor, self.patch) == (
+            other.major,
+            other.minor,
+            other.patch,
+        )
 
     @classmethod
-    def parse(cls, version_string: str) -> 'VersionInfo':
-        pattern = r'^(\d+)\.(\d+)\.(\d+)(?:-(.+))?$'
+    def parse(cls, version_string: str) -> "VersionInfo":
+        pattern = r"^(\d+)\.(\d+)\.(\d+)(?:-(.+))?$"
         match = re.match(pattern, version_string)
 
         if not match:
@@ -76,7 +95,7 @@ class VersionInfo:
         major, minor, patch, prerelease = match.groups()
         return cls(int(major), int(minor), int(patch), prerelease)
 
-    def bump(self, bump_type: BumpType) -> 'VersionInfo':
+    def bump(self, bump_type: BumpType) -> "VersionInfo":
         if bump_type == BumpType.MAJOR:
             return VersionInfo(self.major + 1, 0, 0)
         elif bump_type == BumpType.MINOR:
@@ -101,7 +120,9 @@ class VersionManager:
     def __init__(self, workspace_path: Optional[Path] = None):
         self.workspace_path = workspace_path or Path.cwd()
         self.config_path = self.workspace_path / "DMAIC_V3" / "config.py"
-        self.version_history_path = self.workspace_path / "config" / "version_history.json"
+        self.version_history_path = (
+            self.workspace_path / "config" / "version_history.json"
+        )
 
         self.history: List[VersionHistory] = []
         self.load_history()
@@ -111,7 +132,7 @@ class VersionManager:
             return VersionInfo(3, 2, 0)
 
         try:
-            with open(self.config_path, 'r', encoding='utf-8') as f:
+            with open(self.config_path, "r", encoding="utf-8") as f:
                 content = f.read()
 
             match = re.search(r'VERSION\s*=\s*["\']([^"\']+)["\']', content)
@@ -127,14 +148,14 @@ class VersionManager:
             return False
 
         try:
-            with open(file_path, 'r', encoding='utf-8') as f:
+            with open(file_path, "r", encoding="utf-8") as f:
                 content = f.read()
 
             patterns = [
                 (r'VERSION\s*=\s*["\'][^"\']+["\']', f'VERSION = "{new_version}"'),
                 (r'version:\s*["\'][^"\']+["\']', f'version: "{new_version}"'),
-                (r'version:\s*[\d\.]+', f'version: {new_version}'),
-                (r'Version:\s*[\d\.]+', f'Version: {new_version}'),
+                (r"version:\s*[\d\.]+", f"version: {new_version}"),
+                (r"Version:\s*[\d\.]+", f"Version: {new_version}"),
             ]
 
             modified = False
@@ -144,7 +165,7 @@ class VersionManager:
                     modified = True
 
             if modified:
-                with open(file_path, 'w', encoding='utf-8') as f:
+                with open(file_path, "w", encoding="utf-8") as f:
                     f.write(content)
                 return True
 
@@ -153,7 +174,9 @@ class VersionManager:
 
         return False
 
-    def bump_version(self, bump_type: BumpType, changes: Optional[List[str]] = None) -> VersionInfo:
+    def bump_version(
+        self, bump_type: BumpType, changes: Optional[List[str]] = None
+    ) -> VersionInfo:
         current = self.get_current_version()
         new_version = current.bump(bump_type)
 
@@ -178,7 +201,7 @@ class VersionManager:
             return
 
         try:
-            with open(self.version_history_path, 'r', encoding='utf-8') as f:
+            with open(self.version_history_path, "r", encoding="utf-8") as f:
                 data = json.load(f)
                 self.history = [VersionHistory(**item) for item in data]
         except Exception as e:
@@ -188,17 +211,19 @@ class VersionManager:
     def save_history(self) -> None:
         self.version_history_path.parent.mkdir(parents=True, exist_ok=True)
 
-        with open(self.version_history_path, 'w', encoding='utf-8') as f:
+        with open(self.version_history_path, "w", encoding="utf-8") as f:
             json.dump(
-                [asdict(item) for item in self.history],
-                f,
-                indent=2,
-                ensure_ascii=False
+                [asdict(item) for item in self.history], f, indent=2, ensure_ascii=False
             )
 
-    def record_version(self, version: VersionInfo, changes: List[str],
-                      iteration: Optional[int] = None, convergence: Optional[float] = None,
-                      maturity: Optional[int] = None) -> None:
+    def record_version(
+        self,
+        version: VersionInfo,
+        changes: List[str],
+        iteration: Optional[int] = None,
+        convergence: Optional[float] = None,
+        maturity: Optional[int] = None,
+    ) -> None:
 
         if iteration is None:
             iteration = self.get_current_iteration()
@@ -213,7 +238,7 @@ class VersionManager:
             iteration=iteration,
             changes=changes,
             convergence_score=convergence,
-            maturity_level=maturity
+            maturity_level=maturity,
         )
 
         self.history.append(history_entry)
@@ -224,9 +249,10 @@ class VersionManager:
         if tasks_path.exists():
             try:
                 import yaml
-                with open(tasks_path, 'r', encoding='utf-8') as f:
+
+                with open(tasks_path, "r", encoding="utf-8") as f:
                     data = yaml.safe_load(f)
-                    return data.get('metadata', {}).get('iteration', 0)
+                    return data.get("metadata", {}).get("iteration", 0)
             except Exception:
                 pass
         return 0
@@ -236,9 +262,10 @@ class VersionManager:
         if tasks_path.exists():
             try:
                 import yaml
-                with open(tasks_path, 'r', encoding='utf-8') as f:
+
+                with open(tasks_path, "r", encoding="utf-8") as f:
                     data = yaml.safe_load(f)
-                    return data.get('metadata', {}).get('convergence_score', 0.0)
+                    return data.get("metadata", {}).get("convergence_score", 0.0)
             except Exception:
                 pass
         return 0.0
@@ -248,22 +275,29 @@ class VersionManager:
         if tasks_path.exists():
             try:
                 import yaml
-                with open(tasks_path, 'r', encoding='utf-8') as f:
+
+                with open(tasks_path, "r", encoding="utf-8") as f:
                     data = yaml.safe_load(f)
-                    return data.get('metadata', {}).get('maturity_level', 0)
+                    return data.get("metadata", {}).get("maturity_level", 0)
             except Exception:
                 pass
         return 0
 
     def suggest_bump_type(self, changes: List[str]) -> BumpType:
-        major_keywords = ['breaking', 'incompatible', 'major', 'rewrite', 'redesign']
-        minor_keywords = ['feature', 'add', 'new', 'enhance', 'implement']
+        major_keywords = ["breaking", "incompatible", "major", "rewrite", "redesign"]
+        minor_keywords = ["feature", "add", "new", "enhance", "implement"]
 
         changes_lower = [c.lower() for c in changes]
 
-        if any(any(keyword in change for keyword in major_keywords) for change in changes_lower):
+        if any(
+            any(keyword in change for keyword in major_keywords)
+            for change in changes_lower
+        ):
             return BumpType.MAJOR
-        elif any(any(keyword in change for keyword in minor_keywords) for change in changes_lower):
+        elif any(
+            any(keyword in change for keyword in minor_keywords)
+            for change in changes_lower
+        ):
             return BumpType.MINOR
         else:
             return BumpType.PATCH
@@ -288,25 +322,25 @@ class VersionManager:
         entry = self.generate_changelog_entry(version, changes)
 
         if changelog_path.exists():
-            with open(changelog_path, 'r', encoding='utf-8') as f:
+            with open(changelog_path, "r", encoding="utf-8") as f:
                 content = f.read()
 
-            lines = content.split('\n')
+            lines = content.split("\n")
             insert_index = 0
             for i, line in enumerate(lines):
-                if line.startswith('## ['):
+                if line.startswith("## ["):
                     insert_index = i
                     break
 
             if insert_index > 0:
                 lines.insert(insert_index, entry)
-                new_content = '\n'.join(lines)
+                new_content = "\n".join(lines)
             else:
                 new_content = entry + content
         else:
             new_content = f"# Changelog\n\n{entry}"
 
-        with open(changelog_path, 'w', encoding='utf-8') as f:
+        with open(changelog_path, "w", encoding="utf-8") as f:
             f.write(new_content)
 
         print(f"[OK] Updated CHANGELOG.md")
@@ -330,8 +364,10 @@ class VersionManager:
             print("VERSION HISTORY")
             print("-" * 78)
             for entry in self.history[-5:]:
-                print(f"{entry.version:10} | {entry.timestamp[:10]} | "
-                      f"Iter {entry.iteration} | Conv {entry.convergence_score:.0f}")
+                print(
+                    f"{entry.version:10} | {entry.timestamp[:10]} | "
+                    f"Iter {entry.iteration} | Conv {entry.convergence_score:.0f}"
+                )
                 if entry.changes:
                     for change in entry.changes[:2]:
                         print(f"  - {change}")
@@ -351,13 +387,13 @@ def main():
     if len(sys.argv) > 1:
         command = sys.argv[1]
 
-        if command == 'status':
+        if command == "status":
             manager.print_status()
 
-        elif command == 'current':
+        elif command == "current":
             print(manager.get_current_version())
 
-        elif command == 'bump' and len(sys.argv) >= 3:
+        elif command == "bump" and len(sys.argv) >= 3:
             bump_type_str = sys.argv[2].upper()
             bump_type = BumpType[bump_type_str]
 
@@ -368,7 +404,7 @@ def main():
             new_version = manager.bump_version(bump_type, changes)
             print(f"[OK] Version bumped to: {new_version}")
 
-        elif command == 'suggest' and len(sys.argv) > 2:
+        elif command == "suggest" and len(sys.argv) > 2:
             changes = sys.argv[2:]
             suggested = manager.suggest_bump_type(changes)
             print(f"Suggested bump type: {suggested.value}")
@@ -384,5 +420,5 @@ def main():
         manager.print_status()
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()

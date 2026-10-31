@@ -14,6 +14,7 @@ def test_fix_1_workspace_scope():
     """Test FIX-1: Workspace scope expansion"""
     print("\n[TEST 1] Verifying workspace scope...")
     import config
+
     cfg = config.DMAICConfig()
     workspace = Path(cfg.workspace_root)
 
@@ -21,7 +22,7 @@ def test_fix_1_workspace_scope():
     print(f"  Workspace exists: {workspace.exists()}")
     print(f"  Is Master_Input: {'Master_Input' in str(workspace)}")
 
-    if 'Master_Input' in str(workspace):
+    if "Master_Input" in str(workspace):
         print("  ✅ PASS: Workspace scope expanded to Master_Input")
         return True
     else:
@@ -32,8 +33,9 @@ def test_fix_1_workspace_scope():
 def test_fix_2_chunking():
     """Test FIX-2: Chunking implementation"""
     print("\n[TEST 2] Verifying chunking implementation...")
-    import config
     from phases import phase2_measure
+
+    import config
     from core.state import StateManager
 
     cfg = config.DMAICConfig()
@@ -42,7 +44,7 @@ def test_fix_2_chunking():
 
     print(f"  Max files per chunk: {phase2.max_files_per_chunk}")
 
-    if hasattr(phase2, 'max_files_per_chunk') and phase2.max_files_per_chunk == 5000:
+    if hasattr(phase2, "max_files_per_chunk") and phase2.max_files_per_chunk == 5000:
         print("  ✅ PASS: Chunking implemented with 5000 files per chunk")
         return True
     else:
@@ -53,8 +55,9 @@ def test_fix_2_chunking():
 def test_fix_3_improvements():
     """Test FIX-3: Increased improvement count"""
     print("\n[TEST 3] Verifying improvement count...")
-    import config
     from phases import phase4_improve
+
+    import config
     from core.state import StateManager
 
     cfg = config.DMAICConfig()
@@ -74,15 +77,16 @@ def test_fix_3_improvements():
 def test_fix_4_quality_gates():
     """Test FIX-4: Quality gate enforcement"""
     print("\n[TEST 4] Verifying quality gate enforcement...")
-    import config
     from phases import phase5_control
+
+    import config
     from core.state import StateManager
 
     cfg = config.DMAICConfig()
     state_manager = StateManager(cfg.paths.state_dir)
     phase5 = phase5_control.Phase5Control(cfg, state_manager)
 
-    has_check_method = hasattr(phase5, '_check_quality_gates')
+    has_check_method = hasattr(phase5, "_check_quality_gates")
 
     print(f"  Has _check_quality_gates method: {has_check_method}")
 
@@ -97,15 +101,16 @@ def test_fix_4_quality_gates():
 def test_fix_5_knowledge_extraction():
     """Test FIX-5: Knowledge extraction"""
     print("\n[TEST 5] Verifying knowledge extraction...")
-    import config
     from phases import phase6_knowledge
+
+    import config
     from core.state import StateManager
 
     cfg = config.DMAICConfig()
     state_mgr = StateManager(cfg.paths.state_dir)
     phase6 = phase6_knowledge.Phase6Knowledge(cfg, state_mgr)
 
-    has_extract_method = hasattr(phase6, '_extract_improvement_knowledge')
+    has_extract_method = hasattr(phase6, "_extract_improvement_knowledge")
 
     print(f"  Has _extract_improvement_knowledge method: {has_extract_method}")
 
@@ -120,15 +125,16 @@ def test_fix_5_knowledge_extraction():
 def test_fix_6_action_collection():
     """Test FIX-6: Action collection"""
     print("\n[TEST 6] Verifying action collection...")
-    import config
     from phases import phase7_action_tracking
+
+    import config
     from core.state import StateManager
 
     cfg = config.DMAICConfig()
     state_mgr = StateManager(cfg.paths.state_dir)
     phase7 = phase7_action_tracking.Phase7ActionTracking(cfg, state_mgr)
 
-    has_collect_method = hasattr(phase7, '_collect_phase_actions')
+    has_collect_method = hasattr(phase7, "_collect_phase_actions")
 
     print(f"  Has _collect_phase_actions method: {has_collect_method}")
 
@@ -143,15 +149,16 @@ def test_fix_6_action_collection():
 def test_fix_7_todo_scanning():
     """Test FIX-7: TODO scanning"""
     print("\n[TEST 7] Verifying TODO scanning...")
-    import config
     from phases import phase8_todo_management
+
+    import config
     from core.state import StateManager
 
     cfg = config.DMAICConfig()
     state_mgr = StateManager(cfg.paths.state_dir)
     phase8 = phase8_todo_management.Phase8TODOManagement(cfg, state_mgr)
 
-    has_collect_method = hasattr(phase8, '_collect_phase_todos')
+    has_collect_method = hasattr(phase8, "_collect_phase_todos")
 
     print(f"  Has _collect_phase_todos method: {has_collect_method}")
 
@@ -165,9 +172,9 @@ def test_fix_7_todo_scanning():
 
 def main():
     """Run all verification tests"""
-    print("="*80)
+    print("=" * 80)
     print("DMAIC V3.3 - Fixes Verification")
-    print("="*80)
+    print("=" * 80)
 
     tests = [
         test_fix_1_workspace_scope,
@@ -176,7 +183,7 @@ def main():
         test_fix_4_quality_gates,
         test_fix_5_knowledge_extraction,
         test_fix_6_action_collection,
-        test_fix_7_todo_scanning
+        test_fix_7_todo_scanning,
     ]
 
     results = []
@@ -187,12 +194,13 @@ def main():
         except Exception as e:
             print(f"  ❌ ERROR: {e}")
             import traceback
+
             traceback.print_exc()
             results.append(False)
 
-    print("\n" + "="*80)
+    print("\n" + "=" * 80)
     print("VERIFICATION SUMMARY")
-    print("="*80)
+    print("=" * 80)
     passed = sum(results)
     total = len(results)
     print(f"Tests passed: {passed}/{total}")

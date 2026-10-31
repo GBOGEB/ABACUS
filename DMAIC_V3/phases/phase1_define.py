@@ -10,17 +10,18 @@ Phase 1: DEFINE - Scan all supported file types with change detection
 - Artifact ranking (if Phase 2 results exist)
 """
 
-import os
 import json
-from pathlib import Path
-from typing import Dict, List, Tuple, Any, Optional
-from datetime import datetime
+import os
 from collections import defaultdict
+from datetime import datetime
+from pathlib import Path
+from typing import Any, Dict, List, Optional, Tuple
 
 # from ..convergence.change_detector import ChangeDetector  # DISABLED for performance
 from ..config import DMAICConfig
 from ..core.state import StateManager
 from ..core.utils import ensure_directory, safe_write_json
+
 # from ..utils.file_utils import (  # DISABLED - utils module doesn't exist
 #     read_file_safe,
 #     categorize_file,
@@ -51,44 +52,60 @@ class Phase1Define:
         self.max_total_files = 130000
 
         self.file_type_map = {
-            '.py': 'code',
-            '.js': 'code',
-            '.jsx': 'code',
-            '.ts': 'code',
-            '.tsx': 'code',
-            '.java': 'code',
-            '.c': 'code',
-            '.cpp': 'code',
-            '.h': 'code',
-            '.hpp': 'code',
-            '.cs': 'code',
-            '.go': 'code',
-            '.rs': 'code',
-            '.rb': 'code',
-            '.php': 'code',
-            '.swift': 'code',
-            '.kt': 'code',
-            '.scala': 'code',
-            '.ipynb': 'notebooks',
-            '.md': 'docs',
-            '.txt': 'docs',
-            '.rst': 'docs',
-            '.json': 'data',
-            '.yaml': 'data',
-            '.yml': 'data',
-            '.csv': 'data',
-            '.xlsx': 'data',
-            '.xml': 'data',
-            '.toml': 'data',
+            ".py": "code",
+            ".js": "code",
+            ".jsx": "code",
+            ".ts": "code",
+            ".tsx": "code",
+            ".java": "code",
+            ".c": "code",
+            ".cpp": "code",
+            ".h": "code",
+            ".hpp": "code",
+            ".cs": "code",
+            ".go": "code",
+            ".rs": "code",
+            ".rb": "code",
+            ".php": "code",
+            ".swift": "code",
+            ".kt": "code",
+            ".scala": "code",
+            ".ipynb": "notebooks",
+            ".md": "docs",
+            ".txt": "docs",
+            ".rst": "docs",
+            ".json": "data",
+            ".yaml": "data",
+            ".yml": "data",
+            ".csv": "data",
+            ".xlsx": "data",
+            ".xml": "data",
+            ".toml": "data",
         }
 
         self.skip_dirs = {
-            '.git', '__pycache__', 'node_modules', '.venv', 'venv',
-            '.pytest_cache', '__MACOSX', 'dist', 'build', '.tox',
-            '.mypy_cache', '.ruff_cache', 'htmlcov', '.coverage',
-            'DMAIC_V3_OUTPUT', '.vscode', '.idea', 'site-packages',
-            'ariana_trace_project', 'ABACUS',
-            'QPLANT_GitHub_Integration', 'pipeline-automation-hub'
+            ".git",
+            "__pycache__",
+            "node_modules",
+            ".venv",
+            "venv",
+            ".pytest_cache",
+            "__MACOSX",
+            "dist",
+            "build",
+            ".tox",
+            ".mypy_cache",
+            ".ruff_cache",
+            "htmlcov",
+            ".coverage",
+            "DMAIC_V3_OUTPUT",
+            ".vscode",
+            ".idea",
+            "site-packages",
+            "ariana_trace_project",
+            "ABACUS",
+            "QPLANT_GitHub_Integration",
+            "pipeline-automation-hub",
         }
 
         # Initialize change detector (DISABLED for performance)
@@ -101,7 +118,7 @@ class Phase1Define:
     def get_file_type(self, file_path: Path) -> str:
         """Get file type category"""
         suffix = file_path.suffix.lower()
-        return self.file_type_map.get(suffix, 'unknown')
+        return self.file_type_map.get(suffix, "unknown")
 
     def _normalize_execute_results(self, results: Any) -> Dict:
         """Normalize execute() payload to a dictionary."""
@@ -116,31 +133,39 @@ class Phase1Define:
         ):
             normalized = dict(results[1])
         else:
-            raise TypeError(f"Unexpected execute results type: {type(results).__name__}")
+            raise TypeError(
+                f"Unexpected execute results type: {type(results).__name__}"
+            )
 
-        categorized = normalized.get('categorized')
+        categorized = normalized.get("categorized")
         if not isinstance(categorized, dict):
             categorized = {}
-        normalized['code_files'] = normalized.get('code_files', categorized.get('code', 0))
-        normalized['documentation_files'] = normalized.get('documentation_files', categorized.get('docs', 0))
+        normalized["code_files"] = normalized.get(
+            "code_files", categorized.get("code", 0)
+        )
+        normalized["documentation_files"] = normalized.get(
+            "documentation_files", categorized.get("docs", 0)
+        )
         return normalized
 
-    def save_scan_progress(self, chunk_num: int, last_path: str, accumulated_data: Dict):
+    def save_scan_progress(
+        self, chunk_num: int, last_path: str, accumulated_data: Dict
+    ):
         """Save scan progress for resumption"""
         progress = {
-            'chunk_num': chunk_num,
-            'last_path': last_path,
-            'timestamp': datetime.now().isoformat(),
-            'accumulated_data': accumulated_data
+            "chunk_num": chunk_num,
+            "last_path": last_path,
+            "timestamp": datetime.now().isoformat(),
+            "accumulated_data": accumulated_data,
         }
         self.scan_progress_file.parent.mkdir(parents=True, exist_ok=True)
-        with open(self.scan_progress_file, 'w') as f:
+        with open(self.scan_progress_file, "w") as f:
             json.dump(progress, f, indent=2)
 
     def load_scan_progress(self) -> Optional[Dict]:
         """Load previous scan progress"""
         if self.scan_progress_file.exists():
-            with open(self.scan_progress_file, 'r') as f:
+            with open(self.scan_progress_file, "r") as f:
                 return json.load(f)
         return None
 
@@ -149,7 +174,9 @@ class Phase1Define:
         if self.scan_progress_file.exists():
             self.scan_progress_file.unlink()
 
-    def scan_files_chunked(self) -> Tuple[List[str], List[Path], Dict, Dict, List, List, List]:
+    def scan_files_chunked(
+        self,
+    ) -> Tuple[List[str], List[Path], Dict, Dict, List, List, List]:
         """
         Scan files in chunks to handle large codebases
 
@@ -165,16 +192,16 @@ class Phase1Define:
         progress = self.load_scan_progress()
         if progress:
             print(f"  [i] Resuming from chunk {progress['chunk_num']}")
-            accumulated = progress['accumulated_data']
-            all_files = accumulated['all_files']
-            all_file_paths = [Path(p) for p in accumulated['all_file_paths']]
-            categorized = defaultdict(int, accumulated['categorized'])
-            folder_structure = accumulated['folder_structure']
-            markdown_files = accumulated['markdown_files']
-            python_files = accumulated['python_files']
-            notebook_files = accumulated['notebook_files']
-            chunk_num = progress['chunk_num'] + 1
-            resume_from = progress['last_path']
+            accumulated = progress["accumulated_data"]
+            all_files = accumulated["all_files"]
+            all_file_paths = [Path(p) for p in accumulated["all_file_paths"]]
+            categorized = defaultdict(int, accumulated["categorized"])
+            folder_structure = accumulated["folder_structure"]
+            markdown_files = accumulated["markdown_files"]
+            python_files = accumulated["python_files"]
+            notebook_files = accumulated["notebook_files"]
+            chunk_num = progress["chunk_num"] + 1
+            resume_from = progress["last_path"]
         else:
             all_files = []
             all_file_paths = []
@@ -212,27 +239,34 @@ class Phase1Define:
                 total_scanned += 1
 
                 if chunk_file_count % 1000 == 0:
-                    print(f"  Chunk {chunk_num}: Scanned {chunk_file_count}/{self.max_files_per_chunk} files (Total: {total_scanned})...", flush=True)
+                    print(
+                        f"  Chunk {chunk_num}: Scanned {chunk_file_count}/{self.max_files_per_chunk} files (Total: {total_scanned})...",
+                        flush=True,
+                    )
 
                 # Check total limit FIRST
                 if total_scanned >= self.max_total_files:
-                    print(f"\n  [!] Reached total file limit ({self.max_total_files}). Stopping scan.")
+                    print(
+                        f"\n  [!] Reached total file limit ({self.max_total_files}). Stopping scan."
+                    )
                     break
 
                 # Check if chunk limit reached
                 if chunk_file_count >= self.max_files_per_chunk:
-                    print(f"\n  [i] Chunk {chunk_num} complete ({chunk_file_count} files)")
+                    print(
+                        f"\n  [i] Chunk {chunk_num} complete ({chunk_file_count} files)"
+                    )
                     print(f"  [i] Saving progress and preparing next chunk...")
 
                     # Save progress
                     accumulated_data = {
-                        'all_files': all_files,
-                        'all_file_paths': [str(p) for p in all_file_paths],
-                        'categorized': dict(categorized),
-                        'folder_structure': folder_structure,
-                        'markdown_files': markdown_files,
-                        'python_files': python_files,
-                        'notebook_files': notebook_files
+                        "all_files": all_files,
+                        "all_file_paths": [str(p) for p in all_file_paths],
+                        "categorized": dict(categorized),
+                        "folder_structure": folder_structure,
+                        "markdown_files": markdown_files,
+                        "python_files": python_files,
+                        "notebook_files": notebook_files,
                     }
                     self.save_scan_progress(chunk_num, str(file_path), accumulated_data)
 
@@ -257,11 +291,11 @@ class Phase1Define:
                 folder_structure[folder].append(rel_path)
 
                 # Collect specific file types
-                if file_type == 'docs' and file.endswith('.md'):
+                if file_type == "docs" and file.endswith(".md"):
                     markdown_files.append(rel_path)
-                elif file_type == 'code' and file.endswith('.py'):
+                elif file_type == "code" and file.endswith(".py"):
                     python_files.append(rel_path)
-                elif file_type == 'notebooks':
+                elif file_type == "notebooks":
                     notebook_files.append(rel_path)
 
             # Break outer loop if limit reached
@@ -279,24 +313,35 @@ class Phase1Define:
         print(f"     - Data: {categorized['data']}")
         print(f"     - Notebooks: {categorized['notebooks']}")
 
-        return all_files, all_file_paths, dict(categorized), folder_structure, markdown_files, python_files, notebook_files
+        return (
+            all_files,
+            all_file_paths,
+            dict(categorized),
+            folder_structure,
+            markdown_files,
+            python_files,
+            notebook_files,
+        )
 
     def calculate_artifact_ranking(self, iteration: int) -> Optional[Dict]:
         """Calculate artifact rankings if available"""
         try:
             ranking_file = self.config.paths.output_root / "artifact_rankings.json"
             if ranking_file.exists():
-                with open(ranking_file, 'r') as f:
+                with open(ranking_file, "r") as f:
                     return json.load(f)
             return None
         except Exception as e:
             print(f"  [!] Error calculating rankings: {e}")
             return None
-    def _generate_define_book(self, results: Dict, output_dir: Path, iteration: int) -> Path:
+
+    def _generate_define_book(
+        self, results: Dict, output_dir: Path, iteration: int
+    ) -> Path:
         """Generate comprehensive DEFINE book with all scan results"""
         book_path = output_dir / f"DEFINE_BOOK_iteration_{iteration}.md"
 
-        with open(book_path, 'w', encoding='utf-8') as f:
+        with open(book_path, "w", encoding="utf-8") as f:
             f.write(f"# DEFINE BOOK - Iteration {iteration}\n\n")
             f.write(f"**Generated:** {datetime.now().isoformat()}\n\n")
             f.write("---\n\n")
@@ -304,47 +349,55 @@ class Phase1Define:
             f.write("## Executive Summary\n\n")
             f.write(f"- **Total Files Scanned:** {results['total_files']}\n")
             f.write(f"- **Folders Scanned:** {results['folders_scanned']}\n")
-            f.write(f"- **Documentation Files:** {results['categorized'].get('Documentation', 0)}\n")
+            f.write(
+                f"- **Documentation Files:** {results['categorized'].get('Documentation', 0)}\n"
+            )
             f.write(f"- **Code Files:** {results['categorized'].get('Code', 0)}\n")
             f.write(f"- **Data Files:** {results['categorized'].get('Data', 0)}\n")
-            f.write(f"- **Notebook Files:** {results['categorized'].get('Notebooks', 0)}\n\n")
+            f.write(
+                f"- **Notebook Files:** {results['categorized'].get('Notebooks', 0)}\n\n"
+            )
 
-            if results.get('changes'):
+            if results.get("changes"):
                 f.write("## Change Detection\n\n")
                 f.write(f"- **Added:** {results['changes']['added']}\n")
                 f.write(f"- **Modified:** {results['changes']['modified']}\n")
                 f.write(f"- **Deleted:** {results['changes']['deleted']}\n")
                 f.write(f"- **Total Changes:** {results['changes']['total']}\n\n")
 
-            if results.get('artifact_rankings'):
+            if results.get("artifact_rankings"):
                 f.write("## Artifact Rankings\n\n")
-                f.write(f"Total artifacts ranked: {results['artifact_rankings']['total_ranked']}\n\n")
+                f.write(
+                    f"Total artifacts ranked: {results['artifact_rankings']['total_ranked']}\n\n"
+                )
 
             f.write("---\n\n")
             f.write("*End of DEFINE Book*\n")
 
         return book_path
 
-    def _generate_ranking_yaml(self, results: Dict, output_dir: Path, iteration: int) -> Path:
+    def _generate_ranking_yaml(
+        self, results: Dict, output_dir: Path, iteration: int
+    ) -> Path:
         """Generate YAML file with top 30 and bottom 30 artifacts"""
         yaml_path = output_dir / f"ranking_iteration_{iteration}.yaml"
 
-        with open(yaml_path, 'w', encoding='utf-8') as f:
+        with open(yaml_path, "w", encoding="utf-8") as f:
             f.write(f"# Artifact Rankings - Iteration {iteration}\n")
             f.write(f"# Generated: {datetime.now().isoformat()}\n\n")
 
-            if results.get('artifact_rankings'):
-                rankings = results['artifact_rankings']
+            if results.get("artifact_rankings"):
+                rankings = results["artifact_rankings"]
                 f.write("top_30:\n")
                 f.write("  # Top 30 artifacts by ranking score\n")
-                for i in range(min(30, rankings.get('total_ranked', 0))):
+                for i in range(min(30, rankings.get("total_ranked", 0))):
                     f.write(f"  - rank: {i+1}\n")
                     f.write(f"    artifact: placeholder_{i+1}\n")
                     f.write(f"    score: 0.0\n\n")
 
                 f.write("\nbottom_30:\n")
                 f.write("  # Bottom 30 artifacts by ranking score\n")
-                for i in range(min(30, rankings.get('total_ranked', 0))):
+                for i in range(min(30, rankings.get("total_ranked", 0))):
                     f.write(f"  - rank: {i+1}\n")
                     f.write(f"    artifact: placeholder_{i+1}\n")
                     f.write(f"    score: 0.0\n\n")
@@ -354,11 +407,13 @@ class Phase1Define:
 
         return yaml_path
 
-    def _generate_analysis_report(self, results: Dict, output_dir: Path, iteration: int) -> Path:
+    def _generate_analysis_report(
+        self, results: Dict, output_dir: Path, iteration: int
+    ) -> Path:
         """Generate detailed analysis report with recommendations"""
         report_path = output_dir / f"analysis_report_iteration_{iteration}.md"
 
-        with open(report_path, 'w', encoding='utf-8') as f:
+        with open(report_path, "w", encoding="utf-8") as f:
             f.write(f"# Analysis Report - Iteration {iteration}\n\n")
             f.write(f"**Generated:** {datetime.now().isoformat()}\n\n")
             f.write("---\n\n")
@@ -367,8 +422,12 @@ class Phase1Define:
             f.write(f"Total files analyzed: {results['total_files']}\n\n")
 
             f.write("### File Distribution\n\n")
-            for category, count in results['categorized'].items():
-                percentage = (count / results['total_files'] * 100) if results['total_files'] > 0 else 0
+            for category, count in results["categorized"].items():
+                percentage = (
+                    (count / results["total_files"] * 100)
+                    if results["total_files"] > 0
+                    else 0
+                )
                 f.write(f"- **{category}:** {count} ({percentage:.1f}%)\n")
 
             f.write("\n### Recommendations\n\n")
@@ -405,9 +464,9 @@ class Phase1Define:
             Tuple of (success: bool, results: Dict) with phase execution results
         """
         start_time = datetime.now()
-        print("\n" + "="*80)
+        print("\n" + "=" * 80)
         print(f"PHASE 1: DEFINE (Iteration {iteration})")
-        print("="*80)
+        print("=" * 80)
         print(f"Timestamp: {start_time.isoformat()}")
         print()
 
@@ -416,18 +475,30 @@ class Phase1Define:
             print("\n[1.0] Loading feedback from previous iteration...")
             feedback = self._load_previous_feedback(iteration)
             if feedback:
-                print(f"  Found feedback from iteration {feedback.get('source_iteration')}")
+                print(
+                    f"  Found feedback from iteration {feedback.get('source_iteration')}"
+                )
                 print(f"  Pending actions: {len(feedback.get('pending_actions', []))}")
                 print(f"  Recommendations: {len(feedback.get('recommendations', []))}")
             else:
-                print(f"  No feedback from previous iteration (this is normal for iteration 1)")
+                print(
+                    f"  No feedback from previous iteration (this is normal for iteration 1)"
+                )
 
             # Step 1: Scan all files using chunked scanning
-            all_files, all_file_paths, categorized, folder_structure, markdown_files, python_files, notebook_files = self.scan_files_chunked()
+            (
+                all_files,
+                all_file_paths,
+                categorized,
+                folder_structure,
+                markdown_files,
+                python_files,
+                notebook_files,
+            ) = self.scan_files_chunked()
 
             # Step 2: Detect changes (DISABLED for performance)
             print("\n[1.2] Detecting changes... SKIPPED (performance optimization)")
-            change_summary = {'added': 0, 'modified': 0, 'deleted': 0, 'total': 0}
+            change_summary = {"added": 0, "modified": 0, "deleted": 0, "total": 0}
 
             print(f"  [i] Change detection disabled for large workspace")
             file_relationships = []
@@ -456,12 +527,14 @@ class Phase1Define:
                 for py_file in py_by_dir.get(md_dir, []):
                     py_base = Path(py_file).stem.lower()
                     if md_base in py_base or py_base in md_base:
-                        file_relationships.append({
-                            'markdown': md_file,
-                            'code': py_file,
-                            'relationship': 'documentation',
-                            'confidence': 'high'
-                        })
+                        file_relationships.append(
+                            {
+                                "markdown": md_file,
+                                "code": py_file,
+                                "relationship": "documentation",
+                                "confidence": "high",
+                            }
+                        )
                         relationship_count += 1
                         if relationship_count >= max_relationships:
                             break
@@ -470,12 +543,14 @@ class Phase1Define:
                     for nb_file in nb_by_dir.get(md_dir, []):
                         nb_base = Path(nb_file).stem.lower()
                         if md_base in nb_base or nb_base in md_base:
-                            file_relationships.append({
-                                'markdown': md_file,
-                                'notebook': nb_file,
-                                'relationship': 'documentation',
-                                'confidence': 'high'
-                            })
+                            file_relationships.append(
+                                {
+                                    "markdown": md_file,
+                                    "notebook": nb_file,
+                                    "relationship": "documentation",
+                                    "confidence": "high",
+                                }
+                            )
                             relationship_count += 1
                             if relationship_count >= max_relationships:
                                 break
@@ -492,36 +567,44 @@ class Phase1Define:
 
             # Prepare results
             results = {
-                'phase': 'DEFINE',
-                'iteration': iteration,
-                'timestamp': end_time.isoformat(),
-                'duration': duration,
-                'total_files': len(all_files),
-                'code_files': categorized.get('code', 0),
-                'documentation_files': categorized.get('docs', 0),
-                'categorized': dict(categorized),
-                'files': all_files,
-                'folder_structure': folder_structure,
-                'markdown_files': markdown_files,
-                'python_files': python_files,
-                'notebook_files': notebook_files,
-                'file_relationships': file_relationships,
-                'folders_scanned': len(folder_structure),
-                'artifact_rankings': artifact_rankings,
-                'changes': {
-                    'added': change_summary.get('added', 0),
-                    'modified': change_summary.get('modified', 0),
-                    'deleted': change_summary.get('deleted', 0),
-                    'total': change_summary.get('total', 0)
-                }
+                "phase": "DEFINE",
+                "iteration": iteration,
+                "timestamp": end_time.isoformat(),
+                "duration": duration,
+                "total_files": len(all_files),
+                "code_files": categorized.get("code", 0),
+                "documentation_files": categorized.get("docs", 0),
+                "categorized": dict(categorized),
+                "files": all_files,
+                "folder_structure": folder_structure,
+                "markdown_files": markdown_files,
+                "python_files": python_files,
+                "notebook_files": notebook_files,
+                "file_relationships": file_relationships,
+                "folders_scanned": len(folder_structure),
+                "artifact_rankings": artifact_rankings,
+                "changes": {
+                    "added": change_summary.get("added", 0),
+                    "modified": change_summary.get("modified", 0),
+                    "deleted": change_summary.get("deleted", 0),
+                    "total": change_summary.get("total", 0),
+                },
             }
-            results['code_files'] = results.get('code_files', results['categorized'].get('code', 0))
-            results['documentation_files'] = results.get('documentation_files', results['categorized'].get('docs', 0))
+            results["code_files"] = results.get(
+                "code_files", results["categorized"].get("code", 0)
+            )
+            results["documentation_files"] = results.get(
+                "documentation_files", results["categorized"].get("docs", 0)
+            )
 
             print("\n[1.5] Saving results...")
 
             # Save results
-            output_dir = self.config.paths.output_root / f"iteration_{iteration}" / "phase1_define"
+            output_dir = (
+                self.config.paths.output_root
+                / f"iteration_{iteration}"
+                / "phase1_define"
+            )
             ensure_directory(output_dir)
 
             # Save JSON
@@ -535,10 +618,12 @@ class Phase1Define:
             report_path = self._generate_analysis_report(results, output_dir, iteration)
 
             print()
-            print("="*80)
+            print("=" * 80)
             print("PHASE 1 SUMMARY")
-            print("="*80)
-            print(f"[OK] Scanned {len(all_files)} files across {len(folder_structure)} folders")
+            print("=" * 80)
+            print(
+                f"[OK] Scanned {len(all_files)} files across {len(folder_structure)} folders"
+            )
             for cat, count in categorized.items():
                 print(f"  {cat}: {count}")
             print(f"  Markdown files: {len(markdown_files)}")
@@ -554,7 +639,7 @@ class Phase1Define:
             print(f"  - Analysis Report: {report_path}")
             print()
             print("[OK] PHASE 1 PASSED")
-            print("="*80)
+            print("=" * 80)
             print()
 
             return True, self._normalize_execute_results(results)
@@ -562,28 +647,29 @@ class Phase1Define:
         except Exception as e:
             print(f"\n[X] Phase 1 failed: {e}")
             import traceback
+
             traceback.print_exc()
             end_time = datetime.now()
             duration = (end_time - start_time).total_seconds()
             return False, {
-                'phase': 'DEFINE',
-                'iteration': iteration,
-                'timestamp': end_time.isoformat(),
-                'duration': duration,
-                'error': str(e),
-                'total_files': 0,
-                'categorized': {},
-                'code_files': 0,
-                'documentation_files': 0,
-                'files': [],
-                'folder_structure': [],
-                'markdown_files': [],
-                'python_files': [],
-                'notebook_files': [],
-                'file_relationships': [],
-                'folders_scanned': 0,
-                'artifact_rankings': {},
-                'changes': {}
+                "phase": "DEFINE",
+                "iteration": iteration,
+                "timestamp": end_time.isoformat(),
+                "duration": duration,
+                "error": str(e),
+                "total_files": 0,
+                "categorized": {},
+                "code_files": 0,
+                "documentation_files": 0,
+                "files": [],
+                "folder_structure": [],
+                "markdown_files": [],
+                "python_files": [],
+                "notebook_files": [],
+                "file_relationships": [],
+                "folders_scanned": 0,
+                "artifact_rankings": {},
+                "changes": {},
             }
 
     def _load_previous_feedback(self, iteration: int) -> Optional[Dict[str, Any]]:
@@ -600,11 +686,13 @@ class Phase1Define:
             return None
 
         prev_iteration = iteration - 1
-        feedback_file = Path(f"DMAIC_V3_OUTPUT/iteration_{prev_iteration}/phase7_action_tracking/feedback_for_next_iteration.json")
+        feedback_file = Path(
+            f"DMAIC_V3_OUTPUT/iteration_{prev_iteration}/phase7_action_tracking/feedback_for_next_iteration.json"
+        )
 
         if feedback_file.exists():
             try:
-                with open(feedback_file, 'r') as f:
+                with open(feedback_file, "r") as f:
                     return json.load(f)
             except Exception as e:
                 print(f"  Warning: Failed to load feedback: {e}")

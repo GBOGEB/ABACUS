@@ -1,6 +1,6 @@
 """DMAIC engine generation 3 package for ABACUS."""
 
-from .config import DMAICConfig, ExecutionMode, VERSION
+from .config import VERSION, DMAICConfig, ExecutionMode
 
 __version__ = VERSION
 

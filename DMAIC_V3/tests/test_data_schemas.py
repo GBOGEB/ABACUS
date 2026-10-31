@@ -5,11 +5,12 @@ Version: 1.0.0
 Date: 2025-11-26
 """
 
-import pytest
-from pathlib import Path
 import json
 import sys
-from typing import Dict, Any
+from pathlib import Path
+from typing import Any, Dict
+
+import pytest
 
 sys.path.insert(0, str(Path(__file__).parent.parent.parent))
 
@@ -19,15 +20,21 @@ sys.path.insert(0, str(Path(__file__).parent.parent.parent))
 # ============================================================================
 
 DMAIC_OUTPUT_SCHEMA = {
-    "required_fields": ["version", "run_id", "phases_completed", "final_metrics", "timestamp"],
+    "required_fields": [
+        "version",
+        "run_id",
+        "phases_completed",
+        "final_metrics",
+        "timestamp",
+    ],
     "optional_fields": ["artifacts", "errors", "warnings"],
     "types": {
         "version": str,
         "run_id": str,
         "phases_completed": int,
         "final_metrics": dict,
-        "timestamp": str
-    }
+        "timestamp": str,
+    },
 }
 
 DOW_KNOWLEDGE_SCHEMA = {
@@ -37,20 +44,14 @@ DOW_KNOWLEDGE_SCHEMA = {
         "level": int,
         "component": str,
         "knowledge_entries": list,
-        "metadata": dict
-    }
+        "metadata": dict,
+    },
 }
 
 HANDOVER_MANIFEST_SCHEMA = {
     "required_fields": ["from", "to", "data", "status", "timestamp"],
     "optional_fields": ["priority", "metadata"],
-    "types": {
-        "from": str,
-        "to": str,
-        "data": dict,
-        "status": str,
-        "timestamp": str
-    }
+    "types": {"from": str, "to": str, "data": dict, "status": str, "timestamp": str},
 }
 
 
@@ -66,7 +67,9 @@ def validate_schema(data: Dict[str, Any], schema: Dict[str, Any]) -> tuple[bool,
     # Check types
     for field, expected_type in schema["types"].items():
         if field in data and not isinstance(data[field], expected_type):
-            errors.append(f"Field '{field}' has wrong type: expected {expected_type}, got {type(data[field])}")
+            errors.append(
+                f"Field '{field}' has wrong type: expected {expected_type}, got {type(data[field])}"
+            )
 
     return len(errors) == 0, errors
 
@@ -74,6 +77,7 @@ def validate_schema(data: Dict[str, Any], schema: Dict[str, Any]) -> tuple[bool,
 # ============================================================================
 # DMAIC Output Schema Tests
 # ============================================================================
+
 
 @pytest.mark.schema
 @pytest.mark.unit
@@ -86,7 +90,7 @@ class TestDMAICOutputSchema:
             "run_id": "run_20251126_001",
             "phases_completed": 5,
             "final_metrics": {"quality_score": 95.0},
-            "timestamp": "2025-11-26T10:00:00Z"
+            "timestamp": "2025-11-26T10:00:00Z",
         }
 
         valid, errors = validate_schema(dmaic_output, DMAIC_OUTPUT_SCHEMA)
@@ -99,7 +103,7 @@ class TestDMAICOutputSchema:
             "run_id": "run_20251126_001",
             # Missing phases_completed
             "final_metrics": {"quality_score": 95.0},
-            "timestamp": "2025-11-26T10:00:00Z"
+            "timestamp": "2025-11-26T10:00:00Z",
         }
 
         valid, errors = validate_schema(dmaic_output, DMAIC_OUTPUT_SCHEMA)
@@ -113,7 +117,7 @@ class TestDMAICOutputSchema:
             "run_id": "run_20251126_001",
             "phases_completed": "5",  # Should be int
             "final_metrics": {"quality_score": 95.0},
-            "timestamp": "2025-11-26T10:00:00Z"
+            "timestamp": "2025-11-26T10:00:00Z",
         }
 
         valid, errors = validate_schema(dmaic_output, DMAIC_OUTPUT_SCHEMA)
@@ -129,7 +133,7 @@ class TestDMAICOutputSchema:
             "final_metrics": {"quality_score": 95.0},
             "timestamp": "2025-11-26T10:00:00Z",
             "artifacts": ["control_plan.json"],
-            "warnings": []
+            "warnings": [],
         }
 
         valid, errors = validate_schema(dmaic_output, DMAIC_OUTPUT_SCHEMA)
@@ -140,6 +144,7 @@ class TestDMAICOutputSchema:
 # DOW Knowledge Schema Tests
 # ============================================================================
 
+
 @pytest.mark.schema
 @pytest.mark.unit
 class TestDOWKnowledgeSchema:
@@ -149,10 +154,8 @@ class TestDOWKnowledgeSchema:
         dow_knowledge = {
             "level": 5,
             "component": "KEB",
-            "knowledge_entries": [
-                {"id": "K001", "content": "Best practice 1"}
-            ],
-            "metadata": {"source": "DMAIC_Phase5"}
+            "knowledge_entries": [{"id": "K001", "content": "Best practice 1"}],
+            "metadata": {"source": "DMAIC_Phase5"},
         }
 
         valid, errors = validate_schema(dow_knowledge, DOW_KNOWLEDGE_SCHEMA)
@@ -164,7 +167,7 @@ class TestDOWKnowledgeSchema:
             "level": 10,  # Should be 0-5
             "component": "KEB",
             "knowledge_entries": [],
-            "metadata": {}
+            "metadata": {},
         }
 
         # Level range validation would need custom validator
@@ -176,7 +179,7 @@ class TestDOWKnowledgeSchema:
             "level": 3,
             "component": "DMAIC",
             "knowledge_entries": [],
-            "metadata": {}
+            "metadata": {},
         }
 
         valid, errors = validate_schema(dow_knowledge, DOW_KNOWLEDGE_SCHEMA)
@@ -186,6 +189,7 @@ class TestDOWKnowledgeSchema:
 # ============================================================================
 # Handover Manifest Schema Tests
 # ============================================================================
+
 
 @pytest.mark.schema
 @pytest.mark.unit
@@ -198,7 +202,7 @@ class TestHandoverManifestSchema:
             "to": "DOW_Level5_KEB",
             "data": {"results": "success"},
             "status": "ready",
-            "timestamp": "2025-11-26T10:00:00Z"
+            "timestamp": "2025-11-26T10:00:00Z",
         }
 
         valid, errors = validate_schema(manifest, HANDOVER_MANIFEST_SCHEMA)
@@ -212,7 +216,7 @@ class TestHandoverManifestSchema:
             "data": {"requirements": ["REQ-001"]},
             "status": "ready",
             "timestamp": "2025-11-26T10:00:00Z",
-            "priority": "high"
+            "priority": "high",
         }
 
         valid, errors = validate_schema(manifest, HANDOVER_MANIFEST_SCHEMA)
@@ -225,7 +229,7 @@ class TestHandoverManifestSchema:
             "to": "KEB",
             "data": {},
             "status": "invalid_status",  # Should be ready/pending/failed
-            "timestamp": "2025-11-26T10:00:00Z"
+            "timestamp": "2025-11-26T10:00:00Z",
         }
 
         # Status enum validation would need custom validator
@@ -236,6 +240,7 @@ class TestHandoverManifestSchema:
 # ============================================================================
 # JSON File I/O Schema Tests
 # ============================================================================
+
 
 @pytest.mark.schema
 @pytest.mark.integration
@@ -248,7 +253,7 @@ class TestJSONFileSchemas:
             "run_id": "run_001",
             "phases_completed": 5,
             "final_metrics": {"quality": 95.0},
-            "timestamp": "2025-11-26T10:00:00Z"
+            "timestamp": "2025-11-26T10:00:00Z",
         }
 
         output_file = tmp_path / "dmaic_output.json"
@@ -266,7 +271,7 @@ class TestJSONFileSchemas:
             "to": "KEB",
             "data": {"key": "value"},
             "status": "ready",
-            "timestamp": "2025-11-26T10:00:00Z"
+            "timestamp": "2025-11-26T10:00:00Z",
         }
 
         manifest_file = tmp_path / "handover.json"
@@ -289,6 +294,7 @@ class TestJSONFileSchemas:
 # Cross-Component Schema Compatibility Tests
 # ============================================================================
 
+
 @pytest.mark.schema
 @pytest.mark.integration
 class TestCrossComponentSchemas:
@@ -300,7 +306,7 @@ class TestCrossComponentSchemas:
             "run_id": "run_001",
             "phases_completed": 5,
             "final_metrics": {"quality": 95.0},
-            "timestamp": "2025-11-26T10:00:00Z"
+            "timestamp": "2025-11-26T10:00:00Z",
         }
 
         # Convert to DOW knowledge format
@@ -313,8 +319,8 @@ class TestCrossComponentSchemas:
             "metadata": {
                 "source": "DMAIC",
                 "version": dmaic_output["version"],
-                "timestamp": dmaic_output["timestamp"]
-            }
+                "timestamp": dmaic_output["timestamp"],
+            },
         }
 
         valid, errors = validate_schema(dow_knowledge, DOW_KNOWLEDGE_SCHEMA)
@@ -328,7 +334,7 @@ class TestCrossComponentSchemas:
             "knowledge_entries": [
                 {"id": "K001", "type": "best_practice", "content": "Use idempotency"}
             ],
-            "metadata": {"source": "KEB"}
+            "metadata": {"source": "KEB"},
         }
 
         # Convert to DMAIC input format
@@ -338,7 +344,7 @@ class TestCrossComponentSchemas:
             "phases_completed": 0,
             "final_metrics": {},
             "timestamp": "2025-11-26T10:00:00Z",
-            "knowledge_base": dow_knowledge["knowledge_entries"]
+            "knowledge_base": dow_knowledge["knowledge_entries"],
         }
 
         valid, errors = validate_schema(dmaic_input, DMAIC_OUTPUT_SCHEMA)
@@ -348,6 +354,7 @@ class TestCrossComponentSchemas:
 # ============================================================================
 # Schema Evolution Tests
 # ============================================================================
+
 
 @pytest.mark.schema
 @pytest.mark.unit
@@ -360,7 +367,7 @@ class TestSchemaEvolution:
             "run_id": "run_v2_001",
             "phases_completed": 5,
             "final_metrics": {"quality": 90.0},
-            "timestamp": "2025-11-26T10:00:00Z"
+            "timestamp": "2025-11-26T10:00:00Z",
         }
 
         # v3 schema should accept v2 format
@@ -376,7 +383,7 @@ class TestSchemaEvolution:
             "final_metrics": {"quality": 95.0},
             "timestamp": "2025-11-26T10:00:00Z",
             "new_field": "future_feature",
-            "experimental": {"feature": "value"}
+            "experimental": {"feature": "value"},
         }
 
         valid, errors = validate_schema(future_output, DMAIC_OUTPUT_SCHEMA)
@@ -386,6 +393,7 @@ class TestSchemaEvolution:
 # ============================================================================
 # Performance Schema Tests
 # ============================================================================
+
 
 @pytest.mark.schema
 @pytest.mark.performance
@@ -399,7 +407,7 @@ class TestSchemaPerformance:
             "knowledge_entries": [
                 {"id": f"K{i:04d}", "content": f"Entry {i}"} for i in range(1000)
             ],
-            "metadata": {"count": 1000}
+            "metadata": {"count": 1000},
         }
 
         valid, errors = validate_schema(large_knowledge, DOW_KNOWLEDGE_SCHEMA)
@@ -411,17 +419,9 @@ class TestSchemaPerformance:
         nested_data = {
             "from": "DMAIC",
             "to": "KEB",
-            "data": {
-                "level1": {
-                    "level2": {
-                        "level3": {
-                            "level4": {"value": "deep"}
-                        }
-                    }
-                }
-            },
+            "data": {"level1": {"level2": {"level3": {"level4": {"value": "deep"}}}}},
             "status": "ready",
-            "timestamp": "2025-11-26T10:00:00Z"
+            "timestamp": "2025-11-26T10:00:00Z",
         }
 
         valid, errors = validate_schema(nested_data, HANDOVER_MANIFEST_SCHEMA)

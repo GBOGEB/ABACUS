@@ -15,6 +15,7 @@ from datetime import datetime
 
 from .config import DMAICConfig
 from .core.state import StateManager
+
 try:
     from .phases.phase2_measure import Phase2Measure
     from .phases.phase3_analyze import Phase3Analyze
@@ -54,14 +55,15 @@ def main():
                 ok, results = exec_result
             else:
                 results = exec_result
-                ok = not results.get('error') and not results.get('skipped', False)
+                ok = not results.get("error") and not results.get("skipped", False)
 
             # Persist minimal report to reports dir
             reports_dir = cfg.paths.reports_dir
             reports_dir.mkdir(parents=True, exist_ok=True)
-            (reports_dir / f"phase6_results_{datetime.now().strftime('%Y%m%d_%H%M%S')}.json").write_text(
-                json.dumps(results, indent=2), encoding="utf-8"
-            )
+            (
+                reports_dir
+                / f"phase6_results_{datetime.now().strftime('%Y%m%d_%H%M%S')}.json"
+            ).write_text(json.dumps(results, indent=2), encoding="utf-8")
             return 0 if ok else 2
         # ...existing code for other phases...
         pass
@@ -78,6 +80,7 @@ def main():
             print(f"[WARN] Phase 6 execution skipped/failed: {_e}")
         # ...existing code...
         pass
+
 
 if __name__ == "__main__":
     raise SystemExit(main())

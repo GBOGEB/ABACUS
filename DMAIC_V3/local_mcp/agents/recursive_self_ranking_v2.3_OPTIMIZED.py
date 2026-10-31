@@ -14,9 +14,7 @@ from pathlib import Path
 from typing import Any
 
 ROOT_DIR = Path(__file__).resolve().parents[3]
-PARENT_RANKING_PATH = (
-    ROOT_DIR / "DMAIC_V3" / "agents" / "self_ranking.py"
-)
+PARENT_RANKING_PATH = ROOT_DIR / "DMAIC_V3" / "agents" / "self_ranking.py"
 
 
 def _load_parent_self_ranking():
@@ -26,9 +24,7 @@ def _load_parent_self_ranking():
         PARENT_RANKING_PATH,
     )
     if spec is None or spec.loader is None:
-        raise ImportError(
-            f"Cannot load parent ranking module: {PARENT_RANKING_PATH}"
-        )
+        raise ImportError(f"Cannot load parent ranking module: {PARENT_RANKING_PATH}")
     module = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(module)
     return module.SelfRankingAgent

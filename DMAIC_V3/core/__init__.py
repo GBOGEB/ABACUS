@@ -6,7 +6,7 @@ Core utilities and modules for the DMAIC engine
 __version__ = "3.0.0"
 __author__ = "DMAIC Team"
 
-from .state import StateManager, PhaseStatus, PhaseState, IterationState
+from .state import IterationState, PhaseState, PhaseStatus, StateManager
 
 __all__ = [
     "StateManager",

@@ -15,13 +15,14 @@ import functools
 import hashlib
 import json
 import tempfile
+from datetime import datetime
 from pathlib import Path
 from typing import Any, Callable, Dict, Optional
-from datetime import datetime
 
 
 class IdempotencyConfig:
     """Configuration for idempotency behavior"""
+
     def __init__(self, enabled: bool = True, cache_dir: Path = None):
         self.enabled = enabled
         self.cache_dir = cache_dir or Path(".dmaic_cache")
@@ -48,10 +49,7 @@ class IdempotentPhaseWrapper:
 
     def _compute_input_hash(self, *args, **kwargs) -> str:
         """Compute hash of input parameters"""
-        input_data = {
-            'args': str(args),
-            'kwargs': str(sorted(kwargs.items()))
-        }
+        input_data = {"args": str(args), "kwargs": str(sorted(kwargs.items()))}
         data_str = json.dumps(input_data, sort_keys=True)
         return hashlib.sha256(data_str.encode()).hexdigest()[:16]
 
@@ -60,7 +58,7 @@ class IdempotentPhaseWrapper:
         if not cache_file.exists():
             return None
         try:
-            with open(cache_file, 'r') as f:
+            with open(cache_file, "r") as f:
                 return json.load(f)
         except Exception:
             return None
@@ -71,59 +69,56 @@ class IdempotentPhaseWrapper:
             return value
         if isinstance(value, bytes):
             return {
-                '__dmaic_cache_type__': 'bytes',
-                'data': base64.b64encode(value).decode('ascii')
+                "__dmaic_cache_type__": "bytes",
+                "data": base64.b64encode(value).decode("ascii"),
             }
         if isinstance(value, Path):
-            return {
-                '__dmaic_cache_type__': 'path',
-                'data': str(value)
-            }
+            return {"__dmaic_cache_type__": "path", "data": str(value)}
         if isinstance(value, tuple):
             return {
-                '__dmaic_cache_type__': 'tuple',
-                'items': [self._encode_cache_value(item) for item in value]
+                "__dmaic_cache_type__": "tuple",
+                "items": [self._encode_cache_value(item) for item in value],
             }
         if isinstance(value, list):
             return {
-                '__dmaic_cache_type__': 'list',
-                'items': [self._encode_cache_value(item) for item in value]
+                "__dmaic_cache_type__": "list",
+                "items": [self._encode_cache_value(item) for item in value],
             }
         if isinstance(value, set):
             return {
-                '__dmaic_cache_type__': 'set',
-                'items': [self._encode_cache_value(item) for item in value]
+                "__dmaic_cache_type__": "set",
+                "items": [self._encode_cache_value(item) for item in value],
             }
         if isinstance(value, dict):
             return {
-                '__dmaic_cache_type__': 'dict',
-                'items': [
+                "__dmaic_cache_type__": "dict",
+                "items": [
                     [self._encode_cache_value(key), self._encode_cache_value(item)]
                     for key, item in value.items()
-                ]
+                ],
             }
         raise TypeError(f"Unsupported cache value type: {type(value).__name__}")
 
     def _decode_cache_value(self, value: Any) -> Any:
         """Recursively restore values encoded by _encode_cache_value."""
-        if not isinstance(value, dict) or '__dmaic_cache_type__' not in value:
+        if not isinstance(value, dict) or "__dmaic_cache_type__" not in value:
             return value
 
-        value_type = value['__dmaic_cache_type__']
-        if value_type == 'bytes':
-            return base64.b64decode(value['data'].encode('ascii'))
-        if value_type == 'path':
-            return Path(value['data'])
-        if value_type == 'tuple':
-            return tuple(self._decode_cache_value(item) for item in value['items'])
-        if value_type == 'list':
-            return [self._decode_cache_value(item) for item in value['items']]
-        if value_type == 'set':
-            return {self._decode_cache_value(item) for item in value['items']}
-        if value_type == 'dict':
+        value_type = value["__dmaic_cache_type__"]
+        if value_type == "bytes":
+            return base64.b64decode(value["data"].encode("ascii"))
+        if value_type == "path":
+            return Path(value["data"])
+        if value_type == "tuple":
+            return tuple(self._decode_cache_value(item) for item in value["items"])
+        if value_type == "list":
+            return [self._decode_cache_value(item) for item in value["items"]]
+        if value_type == "set":
+            return {self._decode_cache_value(item) for item in value["items"]}
+        if value_type == "dict":
             return {
                 self._decode_cache_value(key): self._decode_cache_value(item)
-                for key, item in value['items']
+                for key, item in value["items"]
             }
         raise ValueError(f"Unknown cache value type: {value_type}")
 
@@ -139,16 +134,16 @@ class IdempotentPhaseWrapper:
             except PermissionError:
                 if attempt == attempts - 1:
                     raise
-                time.sleep(0.01 * (2 ** attempt))
+                time.sleep(0.01 * (2**attempt))
 
     def _save_cache(self, cache_file: Path, result: Any, input_hash: str) -> bool:
         """Save supported results atomically; unsupported values remain uncached."""
         try:
             encoded_result = self._encode_cache_value(result)
             cache_data = {
-                'timestamp': datetime.now().isoformat(),
-                'input_hash': input_hash,
-                'result': encoded_result
+                "timestamp": datetime.now().isoformat(),
+                "input_hash": input_hash,
+                "result": encoded_result,
             }
             payload = json.dumps(cache_data, indent=2)
         except (TypeError, ValueError, RecursionError):
@@ -157,11 +152,11 @@ class IdempotentPhaseWrapper:
         temp_file = None
         try:
             with tempfile.NamedTemporaryFile(
-                mode='w',
-                encoding='utf-8',
+                mode="w",
+                encoding="utf-8",
                 dir=cache_file.parent,
                 prefix=f".{cache_file.name}.",
-                suffix='.tmp',
+                suffix=".tmp",
                 delete=False,
             ) as handle:
                 temp_file = Path(handle.name)
@@ -175,7 +170,7 @@ class IdempotentPhaseWrapper:
 
     def _restore_cached_result(self, cached: Dict) -> Any:
         """Restore the cached value without changing the public return contract."""
-        return self._decode_cache_value(cached.get('result'))
+        return self._decode_cache_value(cached.get("result"))
 
     def idempotent(self, phase_name: str):
         """
@@ -184,10 +179,11 @@ class IdempotentPhaseWrapper:
         Args:
             phase_name: Name of the phase (e.g., 'phase1_define')
         """
+
         def decorator(func: Callable):
             @functools.wraps(func)
             def wrapper(*args, **kwargs):
-                iteration = kwargs.get('iteration', 1)
+                iteration = kwargs.get("iteration", 1)
 
                 if not self.config.enabled:
                     print(f"[IDEMPOTENCY] Disabled - executing {phase_name}")
@@ -197,8 +193,10 @@ class IdempotentPhaseWrapper:
                 input_hash = self._compute_input_hash(*args, **kwargs)
 
                 cached = self._load_cache(cache_file)
-                if cached and cached.get('input_hash') == input_hash:
-                    print(f"[IDEMPOTENCY] [OK] Cache hit for {phase_name} iteration {iteration}")
+                if cached and cached.get("input_hash") == input_hash:
+                    print(
+                        f"[IDEMPOTENCY] [OK] Cache hit for {phase_name} iteration {iteration}"
+                    )
                     print(f"[IDEMPOTENCY] Skipping execution - returning cached result")
                     return self._restore_cached_result(cached)
 
@@ -209,6 +207,7 @@ class IdempotentPhaseWrapper:
                 return result
 
             return wrapper
+
         return decorator
 
 

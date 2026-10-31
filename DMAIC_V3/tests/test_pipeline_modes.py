@@ -5,9 +5,10 @@ Version: 1.0.0
 Date: 2025-11-26
 """
 
-import pytest
-from pathlib import Path
 import sys
+from pathlib import Path
+
+import pytest
 
 sys.path.insert(0, str(Path(__file__).parent.parent.parent))
 
@@ -22,6 +23,7 @@ def config():
 # ============================================================================
 # Execution Mode Tests
 # ============================================================================
+
 
 @pytest.mark.orchestration
 @pytest.mark.unit
@@ -64,6 +66,7 @@ class TestExecutionModes:
 # Pipeline Orchestration Tests
 # ============================================================================
 
+
 @pytest.mark.orchestration
 @pytest.mark.integration
 class TestPipelineOrchestration:
@@ -75,7 +78,7 @@ class TestPipelineOrchestration:
             "phase2_measure",
             "phase3_analyze",
             "phase4_improve",
-            "phase5_control"
+            "phase5_control",
         ]
 
         executed_phases = []
@@ -92,7 +95,7 @@ class TestPipelineOrchestration:
             "level2_abacus",
             "level3_dmaic",
             "level4_cluster12",
-            "level5_keb"
+            "level5_keb",
         ]
 
         executed_levels = []
@@ -109,7 +112,7 @@ class TestPipelineOrchestration:
             "dmaic_phase2",
             "dow_level2",
             "dmaic_phase3",
-            "dow_level3"
+            "dow_level3",
         ]
 
         assert len(unified_components) == 6
@@ -120,6 +123,7 @@ class TestPipelineOrchestration:
 # ============================================================================
 # Quality Gate Orchestration Tests
 # ============================================================================
+
 
 @pytest.mark.orchestration
 @pytest.mark.integration
@@ -168,6 +172,7 @@ class TestQualityGateOrchestration:
 # ============================================================================
 # Iteration and Recursion Tests
 # ============================================================================
+
 
 @pytest.mark.orchestration
 @pytest.mark.integration
@@ -228,6 +233,7 @@ class TestIterationOrchestration:
 # Parallel Execution Tests
 # ============================================================================
 
+
 @pytest.mark.orchestration
 @pytest.mark.integration
 class TestParallelExecution:
@@ -236,7 +242,7 @@ class TestParallelExecution:
         """Test phases can execute in parallel"""
         parallel_phases = [
             {"phase": "phase2_measure", "status": "running"},
-            {"phase": "phase3_analyze", "status": "running"}
+            {"phase": "phase3_analyze", "status": "running"},
         ]
 
         assert len(parallel_phases) == 2
@@ -246,7 +252,7 @@ class TestParallelExecution:
         """Test DOW levels can execute in parallel"""
         parallel_levels = [
             {"level": 1, "component": "GBOGEB", "status": "running"},
-            {"level": 2, "component": "ABACUS", "status": "running"}
+            {"level": 2, "component": "ABACUS", "status": "running"},
         ]
 
         assert len(parallel_levels) == 2
@@ -256,7 +262,7 @@ class TestParallelExecution:
         parallel_tasks = [
             {"task": "task1", "completed": True},
             {"task": "task2", "completed": True},
-            {"task": "task3", "completed": True}
+            {"task": "task3", "completed": True},
         ]
 
         all_completed = all(t["completed"] for t in parallel_tasks)
@@ -266,6 +272,7 @@ class TestParallelExecution:
 # ============================================================================
 # Error Handling in Orchestration Tests
 # ============================================================================
+
 
 @pytest.mark.orchestration
 @pytest.mark.integration
@@ -305,16 +312,19 @@ class TestOrchestrationErrorHandling:
         """Test orchestration graceful degradation"""
         components = [
             {"name": "core", "status": "running", "critical": True},
-            {"name": "optional", "status": "failed", "critical": False}
+            {"name": "optional", "status": "failed", "critical": False},
         ]
 
-        critical_failed = any(c["status"] == "failed" and c["critical"] for c in components)
+        critical_failed = any(
+            c["status"] == "failed" and c["critical"] for c in components
+        )
         assert not critical_failed
 
 
 # ============================================================================
 # State Management in Orchestration Tests
 # ============================================================================
+
 
 @pytest.mark.orchestration
 @pytest.mark.integration
@@ -361,6 +371,7 @@ class TestOrchestrationStateManagement:
         # Simulate cleanup
         if state_file.exists():
             import json
+
             state = json.loads(state_file.read_text())
             if state.get("completed"):
                 # Cleanup would happen here

@@ -19,15 +19,15 @@ Victory Conditions:
     - JSON/YAML reports generated and linked
 """
 
-import sys
 import argparse
+import sys
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).parent.parent.parent))
 
-from DMAIC_V3.generators.execution_tracker import ExecutionTracker
-from DMAIC_V3.generators.documentation_aligner import DocumentationAligner
 from DMAIC_V3.generators import VERSION_INFO
+from DMAIC_V3.generators.documentation_aligner import DocumentationAligner
+from DMAIC_V3.generators.execution_tracker import ExecutionTracker
 
 
 def cmd_execute(args):
@@ -36,12 +36,9 @@ def cmd_execute(args):
     print("DMAIC V3 GENERATORS - EXECUTION MODE")
     print(f"{'='*80}\n")
 
-    tracker = ExecutionTracker(
-        output_dir=args.output_dir,
-        timeout=args.timeout
-    )
+    tracker = ExecutionTracker(output_dir=args.output_dir, timeout=args.timeout)
 
-    patterns = args.patterns if args.patterns else ['**/*.py', '**/*.bas']
+    patterns = args.patterns if args.patterns else ["**/*.py", "**/*.bas"]
 
     tracker.scan_and_execute(args.root, patterns=patterns)
 
@@ -120,7 +117,9 @@ def cmd_full_run(args):
         print("🎉 FULL RUN SUCCESSFUL - ALL VICTORY CONDITIONS MET! 🎉\n")
         return 0
     else:
-        print("[WARN] Full run completed with some issues. Check reports for details.\n")
+        print(
+            "[WARN] Full run completed with some issues. Check reports for details.\n"
+        )
         return 1
 
 
@@ -137,14 +136,14 @@ def cmd_version(args):
     print(f"{'='*80}\n")
 
     print("Victory Conditions:")
-    for condition, description in VERSION_INFO['victory_conditions'].items():
+    for condition, description in VERSION_INFO["victory_conditions"].items():
         print(f"  - {condition}: {description}")
     print(f"\n{'='*80}\n")
 
     print("Changelog:")
-    for entry in VERSION_INFO['changelog']:
+    for entry in VERSION_INFO["changelog"]:
         print(f"\n  Version {entry['version']} ({entry['date']}):")
-        for change in entry['changes']:
+        for change in entry["changes"]:
             print(f"    - {change}")
     print(f"\n{'='*80}\n")
 
@@ -154,7 +153,7 @@ def cmd_version(args):
 def main():
     """Main CLI entry point"""
     parser = argparse.ArgumentParser(
-        description='DMAIC V3 Document Generation and Execution Framework',
+        description="DMAIC V3 Document Generation and Execution Framework",
         formatter_class=argparse.RawDescriptionHelpFormatter,
         epilog="""
 Examples:
@@ -169,41 +168,115 @@ Examples:
 
   # Display version information
   python -m DMAIC_V3.generators version
-        """
+        """,
     )
 
-    parser.add_argument('--version', action='version', version=f"DMAIC V3 Generators {VERSION_INFO['version']}")
+    parser.add_argument(
+        "--version",
+        action="version",
+        version=f"DMAIC V3 Generators {VERSION_INFO['version']}",
+    )
 
-    subparsers = parser.add_subparsers(dest='command', help='Command to execute')
+    subparsers = parser.add_subparsers(dest="command", help="Command to execute")
 
-    execute_parser = subparsers.add_parser('execute', help='Execute all Python and VBA files')
-    execute_parser.add_argument('--root', type=Path, default=Path.cwd(), help='Root directory to scan')
-    execute_parser.add_argument('--output-dir', type=Path, default=Path('output/execution_reports'), help='Output directory for reports')
-    execute_parser.add_argument('--timeout', type=int, default=30, help='Execution timeout in seconds')
-    execute_parser.add_argument('--patterns', nargs='+', help='File patterns to match (e.g., **/*.py **/*.bas)')
-    execute_parser.add_argument('--export-json', action='store_true', default=True, help='Export JSON report')
-    execute_parser.add_argument('--export-yaml', action='store_true', default=True, help='Export YAML report')
-    execute_parser.add_argument('--export-markdown', action='store_true', default=True, help='Export Markdown report')
+    execute_parser = subparsers.add_parser(
+        "execute", help="Execute all Python and VBA files"
+    )
+    execute_parser.add_argument(
+        "--root", type=Path, default=Path.cwd(), help="Root directory to scan"
+    )
+    execute_parser.add_argument(
+        "--output-dir",
+        type=Path,
+        default=Path("output/execution_reports"),
+        help="Output directory for reports",
+    )
+    execute_parser.add_argument(
+        "--timeout", type=int, default=30, help="Execution timeout in seconds"
+    )
+    execute_parser.add_argument(
+        "--patterns", nargs="+", help="File patterns to match (e.g., **/*.py **/*.bas)"
+    )
+    execute_parser.add_argument(
+        "--export-json", action="store_true", default=True, help="Export JSON report"
+    )
+    execute_parser.add_argument(
+        "--export-yaml", action="store_true", default=True, help="Export YAML report"
+    )
+    execute_parser.add_argument(
+        "--export-markdown",
+        action="store_true",
+        default=True,
+        help="Export Markdown report",
+    )
     execute_parser.set_defaults(func=cmd_execute)
 
-    align_parser = subparsers.add_parser('align-docs', help='Align documentation files')
-    align_parser.add_argument('--docs-dir', type=Path, default=Path('master_document_system'), help='Documentation directory')
-    align_parser.add_argument('--export-json', action='store_true', default=True, help='Export version info JSON')
-    align_parser.add_argument('--export-yaml', action='store_true', default=True, help='Export version info YAML')
+    align_parser = subparsers.add_parser("align-docs", help="Align documentation files")
+    align_parser.add_argument(
+        "--docs-dir",
+        type=Path,
+        default=Path("master_document_system"),
+        help="Documentation directory",
+    )
+    align_parser.add_argument(
+        "--export-json",
+        action="store_true",
+        default=True,
+        help="Export version info JSON",
+    )
+    align_parser.add_argument(
+        "--export-yaml",
+        action="store_true",
+        default=True,
+        help="Export version info YAML",
+    )
     align_parser.set_defaults(func=cmd_align_docs)
 
-    full_parser = subparsers.add_parser('full-run', help='Run full execution and documentation alignment')
-    full_parser.add_argument('--root', type=Path, default=Path.cwd(), help='Root directory to scan')
-    full_parser.add_argument('--docs-dir', type=Path, default=Path('master_document_system'), help='Documentation directory')
-    full_parser.add_argument('--output-dir', type=Path, default=Path('output/execution_reports'), help='Output directory for reports')
-    full_parser.add_argument('--timeout', type=int, default=30, help='Execution timeout in seconds')
-    full_parser.add_argument('--patterns', nargs='+', help='File patterns to match')
-    full_parser.add_argument('--export-json', action='store_true', default=True, help='Export reports as JSON')
-    full_parser.add_argument('--export-yaml', action='store_true', default=True, help='Export reports as YAML')
-    full_parser.add_argument('--export-markdown', action='store_true', default=True, help='Export reports as Markdown')
+    full_parser = subparsers.add_parser(
+        "full-run", help="Run full execution and documentation alignment"
+    )
+    full_parser.add_argument(
+        "--root", type=Path, default=Path.cwd(), help="Root directory to scan"
+    )
+    full_parser.add_argument(
+        "--docs-dir",
+        type=Path,
+        default=Path("master_document_system"),
+        help="Documentation directory",
+    )
+    full_parser.add_argument(
+        "--output-dir",
+        type=Path,
+        default=Path("output/execution_reports"),
+        help="Output directory for reports",
+    )
+    full_parser.add_argument(
+        "--timeout", type=int, default=30, help="Execution timeout in seconds"
+    )
+    full_parser.add_argument("--patterns", nargs="+", help="File patterns to match")
+    full_parser.add_argument(
+        "--export-json",
+        action="store_true",
+        default=True,
+        help="Export reports as JSON",
+    )
+    full_parser.add_argument(
+        "--export-yaml",
+        action="store_true",
+        default=True,
+        help="Export reports as YAML",
+    )
+    full_parser.add_argument(
+        "--export-markdown",
+        action="store_true",
+        default=True,
+        help="Export reports as Markdown",
+    )
     full_parser.set_defaults(func=cmd_full_run)
 
-    version_parser = subparsers.add_parser('version', help='Display version information')
+    version_parser = subparsers.add_parser(
+        "version", help="Display version information"
+    )
     version_parser.set_defaults(func=cmd_version)
 
     args = parser.parse_args()
@@ -220,9 +293,10 @@ Examples:
     except Exception as e:
         print(f"\n[X] Error: {e}")
         import traceback
+
         traceback.print_exc()
         return 1
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     sys.exit(main())

@@ -19,4 +19,6 @@ class DocumentConsumerAgent:
 
     def execute(self, *args, **kwargs):
         """Execute agent logic - TO BE IMPLEMENTED"""
-        raise NotImplementedError(f"{self.__class__.__name__} is a stub and needs implementation")
+        raise NotImplementedError(
+            f"{self.__class__.__name__} is a stub and needs implementation"
+        )

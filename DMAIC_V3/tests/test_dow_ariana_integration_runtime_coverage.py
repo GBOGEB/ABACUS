@@ -16,9 +16,7 @@ class _Bridge:
     def run_tests_parallel(self, tests, max_workers=2):
         self.calls.append((tests, max_workers))
         return {
-            test["name"]: SimpleNamespace(
-                success=self.success, duration_seconds=0.01
-            )
+            test["name"]: SimpleNamespace(success=self.success, duration_seconds=0.01)
             for test in tests
         }
 
@@ -27,9 +25,7 @@ class _Bridge:
 def integration(tmp_path):
     config = SimpleNamespace(
         version="test-version",
-        paths=SimpleNamespace(
-            workspace_root=tmp_path, output_root=tmp_path / "output"
-        ),
+        paths=SimpleNamespace(workspace_root=tmp_path, output_root=tmp_path / "output"),
     )
     state = SimpleNamespace(state_dir=tmp_path / "state")
     bridge = _Bridge()
@@ -152,9 +148,7 @@ def test_registry_output_fallback_list_and_transition_metadata(integration):
         "ready", "smoke_test", "phase0", {"source": "test"}
     )
     assert event["metadata"]["source"] == "test"
-    transition = integration.track_phase_transition(
-        "phase0", "phase1", ["smoke_test"]
-    )
+    transition = integration.track_phase_transition("phase0", "phase1", ["smoke_test"])
     assert transition["agents_involved"] == ["smoke_test"]
     assert transition["metadata"] == {}
     assert len(integration.metrics.phase_transitions) == 1
@@ -162,8 +156,16 @@ def test_registry_output_fallback_list_and_transition_metadata(integration):
 
 def test_registry_missing_and_unexpected_entries_fail_to_match(integration):
     assert integration._load_agents_registry() == {"agents": {}}
-    assert integration._get_agent_info({"agents": {"bad": "not a mapping"}}, "target") is None
-    assert integration._get_agent_info({"agents": [{"name": "other"}, "invalid"]}, "target") is None
+    assert (
+        integration._get_agent_info({"agents": {"bad": "not a mapping"}}, "target")
+        is None
+    )
+    assert (
+        integration._get_agent_info(
+            {"agents": [{"name": "other"}, "invalid"]}, "target"
+        )
+        is None
+    )
     assert integration._get_agent_info({"agents": None}, "target") is None
 
 
@@ -194,12 +196,16 @@ def test_custom_report_destination_and_empty_trace_log(integration, tmp_path):
 
 
 def test_registry_dict_lookup_skips_unnamed_and_nonmatching_agents(integration):
-    registry = {"agents": {
-        "bad": {"version": "1"},
-        "other": {"name": "other"},
-        "target": {"name": "target", "version": "3"},
-    }}
-    assert integration._get_agent_info(registry, "target") == registry["agents"]["target"]
+    registry = {
+        "agents": {
+            "bad": {"version": "1"},
+            "other": {"name": "other"},
+            "target": {"name": "target", "version": "3"},
+        }
+    }
+    assert (
+        integration._get_agent_info(registry, "target") == registry["agents"]["target"]
+    )
     assert integration._get_agent_info(registry, "absent") is None
 
 
