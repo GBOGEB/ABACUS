@@ -116,6 +116,19 @@ jobs:
             --cov-report=term \
             -n "$PYTEST_WORKERS"
 
+      - name: G family tests (misc)
+        # CODE PURPLE vector G (2026-10-31): three single-file families no
+        # main-branch job collected. EXPECTED_MIN 23 = 14 + 8 + 1 from local
+        # --collect-only at f131a81a, no platform skips.
+        if: ${{ !cancelled() }}
+        shell: bash
+        run: |
+          python scripts/ci/family_collect_guard.py \
+            --family misc --expected-min 23 -- \
+            delta1_bridge/tests/test_delta1_bridge.py \
+            handover/cbd_20261016/test_binder.py \
+            qps/human_rendition/w276/test_review_profile.py
+
       - name: Preserve native unit and coverage evidence
         if: always()
         uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9
