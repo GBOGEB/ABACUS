@@ -2,6 +2,7 @@
 
 The report is telemetry, never a required-check waiver or merge authority.
 """
+
 import argparse
 import hashlib
 import json
@@ -54,8 +55,9 @@ def elapsed(start, end):
 
 def family(name):
     lower = name.lower()
-    return next((k for k, words in FAMILIES.items()
-                 if any(w in lower for w in words)), "OTHER")
+    return next(
+        (k for k, words in FAMILIES.items() if any(w in lower for w in words)), "OTHER"
+    )
 
 
 def percentile(values, share):
@@ -65,8 +67,7 @@ def percentile(values, share):
     position = (len(ordered) - 1) * share
     low = int(position)
     high = min(low + 1, len(ordered) - 1)
-    return round(ordered[low] + (ordered[high] - ordered[low])
-                 * (position - low), 3)
+    return round(ordered[low] + (ordered[high] - ordered[low]) * (position - low), 3)
 
 
 def job_metrics(jobs):
@@ -116,15 +117,20 @@ def job_metrics(jobs):
         "queue_total_s_sample": round(sum(queue), 3) if queue else None,
         "execution_total_s_sample": round(sum(active), 3) if active else None,
         "queue_p50_s": round(statistics.median(queue), 3) if len(queue) >= 5 else None,
-        "queue_p95_s": percentile(queue, .95),
+        "queue_p95_s": percentile(queue, 0.95),
         "execution_p50_s": (
             round(statistics.median(active), 3) if len(active) >= 5 else None
         ),
-        "execution_p95_s": percentile(active, .95),
+        "execution_p95_s": percentile(active, 0.95),
         "peak_concurrent_jobs_sample": peak if intervals else None,
         "timing_class": "JOB_API_OBSERVED_SAMPLE",
-        "unmeasured": ["dependency_download", "installation", "test_body",
-                       "upload", "runner_boot"],
+        "unmeasured": [
+            "dependency_download",
+            "installation",
+            "test_body",
+            "upload",
+            "runner_boot",
+        ],
     }
 
 
@@ -144,12 +150,17 @@ def summarize(repo, sha, response, job_records, max_jobs_runs):
     for run in records:
         require(run.get("head_sha") == sha, "run source SHA mismatch")
         number = run.get("id")
-        require(type(number) is int and number not in identifiers,
-                "duplicate run ID")
+        require(type(number) is int and number not in identifiers, "duplicate run ID")
         identifiers.add(number)
-        manifest.append({"run_id": number, "workflow_id": run.get("workflow_id"),
-                         "name": run.get("name"), "status": run.get("status"),
-                         "conclusion": run.get("conclusion")})
+        manifest.append(
+            {
+                "run_id": number,
+                "workflow_id": run.get("workflow_id"),
+                "name": run.get("name"),
+                "status": run.get("status"),
+                "conclusion": run.get("conclusion"),
+            }
+        )
         state = run.get("status", "unknown")
         conclusion = run.get("conclusion") or "none"
         states[state + "/" + conclusion] += 1
@@ -175,8 +186,9 @@ def summarize(repo, sha, response, job_records, max_jobs_runs):
         "terminal_run_count": terminal,
         "run_states": dict(sorted(states.items())),
         "run_manifest": manifest,
-        "family_run_states": {k: dict(sorted(v.items()))
-                              for k, v in sorted(by_family.items())},
+        "family_run_states": {
+            k: dict(sorted(v.items())) for k, v in sorted(by_family.items())
+        },
         "job_sampling": {
             "selected_run_count": len(job_records),
             "sampling_limit": max_jobs_runs,
@@ -201,9 +213,12 @@ def summarize(repo, sha, response, job_records, max_jobs_runs):
 
 def api_get(url, token):
     request = urllib.request.Request(
-        url, headers={"Accept": "application/vnd.github+json",
-                      "Authorization": "Bearer " + token,
-                      "X-GitHub-Api-Version": "2022-11-28"},
+        url,
+        headers={
+            "Accept": "application/vnd.github+json",
+            "Authorization": "Bearer " + token,
+            "X-GitHub-Api-Version": "2022-11-28",
+        },
     )
     with urllib.request.urlopen(request, timeout=25) as response:
         return json.load(response)
@@ -211,8 +226,10 @@ def api_get(url, token):
 
 def snapshot(repo, sha, token, max_jobs_runs=15, get=api_get):
     require(REPO.fullmatch(repo) and SHA.fullmatch(sha), "invalid target")
-    require(type(max_jobs_runs) is int and 0 <= max_jobs_runs <= 40,
-            "invalid sampling limit")
+    require(
+        type(max_jobs_runs) is int and 0 <= max_jobs_runs <= 40,
+        "invalid sampling limit",
+    )
     base = "https://api.github.com/repos/" + repo + "/actions"
     runs = get(base + "/runs?head_sha=" + sha + "&per_page=100", token)
     checked = runs.get("workflow_runs", [])
@@ -228,25 +245,41 @@ def snapshot(repo, sha, token, max_jobs_runs=15, get=api_get):
     report = summarize(repo, sha, runs, jobs, max_jobs_runs)
     report["job_sampling"]["job_page_limit"] = 100
     report["job_sampling"]["possible_truncation"] = any(
-        len(v) == 100 for v in jobs.values())
+        len(v) == 100 for v in jobs.values()
+    )
     return report
 
 
 def make_markdown(report):
-    rows = ["# Mission Control CI telemetry", "",
-            "Read-only exact-SHA sample; not a merge or recovery authorization.", "",
-            "| Measurement | Observed |", "|---|---:|",
-            "| Repository | `" + report["repo"] + "` |",
-            "| Source SHA | `" + report["sha"] + "` |",
-            "| Workflow runs returned | " + str(report["run_count"]) + " |",
-            "| Run census complete | " + str(report["run_census_complete"]) + " |",
-            "| Terminal runs | " + str(report["terminal_run_count"]) + " |",
-            "| Jobs sampled | " + str(report["job_metrics"]["sampled_jobs"]) + " |"]
-    for field in ("queue_p50_s", "queue_p95_s", "execution_p50_s",
-                  "execution_p95_s", "peak_concurrent_jobs_sample"):
+    rows = [
+        "# Mission Control CI telemetry",
+        "",
+        "Read-only exact-SHA sample; not a merge or recovery authorization.",
+        "",
+        "| Measurement | Observed |",
+        "|---|---:|",
+        "| Repository | `" + report["repo"] + "` |",
+        "| Source SHA | `" + report["sha"] + "` |",
+        "| Workflow runs returned | " + str(report["run_count"]) + " |",
+        "| Run census complete | " + str(report["run_census_complete"]) + " |",
+        "| Terminal runs | " + str(report["terminal_run_count"]) + " |",
+        "| Jobs sampled | " + str(report["job_metrics"]["sampled_jobs"]) + " |",
+    ]
+    for field in (
+        "queue_p50_s",
+        "queue_p95_s",
+        "execution_p50_s",
+        "execution_p95_s",
+        "peak_concurrent_jobs_sample",
+    ):
         value = report["job_metrics"][field]
-        rows.append("| " + field + " | " +
-                    (str(value) if value is not None else "UNKNOWN") + " |")
+        rows.append(
+            "| "
+            + field
+            + " | "
+            + (str(value) if value is not None else "UNKNOWN")
+            + " |"
+        )
     rows.extend(["", "## Run states", ""])
     for key, value in sorted(report["run_states"].items()):
         rows.append("- " + key + ": " + str(value))
@@ -256,8 +289,9 @@ def make_markdown(report):
 
 def main():
     parser = argparse.ArgumentParser()
-    parser.add_argument("--target", action="append", required=True,
-                        help="GBOGEB/repo@40hexsha")
+    parser.add_argument(
+        "--target", action="append", required=True, help="GBOGEB/repo@40hexsha"
+    )
     parser.add_argument("--output-dir", required=True)
     parser.add_argument("--max-jobs-runs", type=int, default=15)
     args = parser.parse_args()
@@ -271,27 +305,42 @@ def main():
         try:
             records.append(snapshot(repo, sha, token, args.max_jobs_runs))
         except (urllib.error.HTTPError, urllib.error.URLError) as exc:
-            records.append({"repo": repo, "sha": sha, "status": "UNKNOWN",
-                            "reason": "API_UNAVAILABLE_OR_UNAUTHORIZED",
-                            "http_status": getattr(exc, "code", None)})
+            records.append(
+                {
+                    "repo": repo,
+                    "sha": sha,
+                    "status": "UNKNOWN",
+                    "reason": "API_UNAVAILABLE_OR_UNAUTHORIZED",
+                    "http_status": getattr(exc, "code", None),
+                }
+            )
     path = Path(args.output_dir)
     path.mkdir(parents=True, exist_ok=True)
-    package = {"schema": SCHEMA, "observations": records,
-               "federation_verified_breadth": sum(
-                   "run_count" in r for r in records),
-               "admission_authority": False}
+    package = {
+        "schema": SCHEMA,
+        "observations": records,
+        "federation_verified_breadth": sum("run_count" in r for r in records),
+        "admission_authority": False,
+    }
     source = json.dumps(package, indent=2, sort_keys=True) + "\n"
     (path / "mission_ci_snapshot.json").write_text(source, encoding="utf-8")
     (path / "mission_ci_snapshot.sha256").write_text(
-        hashlib.sha256(source.encode()).hexdigest() + "\n", encoding="utf-8")
+        hashlib.sha256(source.encode()).hexdigest() + "\n", encoding="utf-8"
+    )
     complete = [r for r in records if "job_metrics" in r]
     if complete:
         (path / "mission_ci_summary.md").write_text(
-            "\n---\n".join(make_markdown(r) for r in complete),
-            encoding="utf-8")
-    print(json.dumps({"observed_repos": len(complete),
-                      "targets": len(records),
-                      "admission_authority": False}))
+            "\n---\n".join(make_markdown(r) for r in complete), encoding="utf-8"
+        )
+    print(
+        json.dumps(
+            {
+                "observed_repos": len(complete),
+                "targets": len(records),
+                "admission_authority": False,
+            }
+        )
+    )
 
 
 if __name__ == "__main__":

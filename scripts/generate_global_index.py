@@ -10,15 +10,16 @@ DMAIC V3 - GLOBAL Index Generator
 Creates a single navigable index of all artifacts, versions, and dependencies
 """
 
-import os
-import json
-import yaml
-import hashlib
-from pathlib import Path
-from datetime import datetime
-from typing import Dict, List, Any, Optional
-from dataclasses import dataclass, asdict
 import ast
+import hashlib
+import json
+import os
+from dataclasses import asdict, dataclass
+from datetime import datetime
+from pathlib import Path
+from typing import Any, Dict, List, Optional
+
+import yaml
 
 
 @dataclass
@@ -43,46 +44,46 @@ class ArtifactInfo:
 
 class GlobalIndexGenerator:
     def __init__(self):
-        self.workspace = Path('.')
-        self.output_dir = Path('DMAIC_V3_OUTPUT')
+        self.workspace = Path(".")
+        self.output_dir = Path("DMAIC_V3_OUTPUT")
         self.output_dir.mkdir(exist_ok=True)
 
         self.exclude_patterns = [
-            '__pycache__',
-            '.pyc',
-            'DMAIC_V3_OUTPUT',
-            'DMAIC_V23_OUTPUT',
-            '.pytest_cache',
-            'node_modules',
-            '.venv',
-            'temp_venv',
-            '.log',
-            '.git'
+            "__pycache__",
+            ".pyc",
+            "DMAIC_V3_OUTPUT",
+            "DMAIC_V23_OUTPUT",
+            ".pytest_cache",
+            "node_modules",
+            ".venv",
+            "temp_venv",
+            ".log",
+            ".git",
         ]
 
         self.maturity_mapping = self._load_maturity_mapping()
 
     def _load_maturity_mapping(self) -> Dict[str, int]:
         mapping = {
-            'DMAIC_V3/core/': 1,
-            'DMAIC_V3/phases/phase0': 1,
-            'DMAIC_V3/phases/phase1': 1,
-            'DMAIC_V3/config.py': 1,
-            'DMAIC_V3/phases/phase2': 2,
-            'DMAIC_V3/phases/phase3': 2,
-            'DMAIC_V3/phases/phase4': 2,
-            'DMAIC_V3/phases/phase5': 2,
-            'DMAIC_V3/phases/phase6': 3,
-            'DMAIC_V3/convergence/': 3,
-            'DMAIC_V3/integrations/': 2,
+            "DMAIC_V3/core/": 1,
+            "DMAIC_V3/phases/phase0": 1,
+            "DMAIC_V3/phases/phase1": 1,
+            "DMAIC_V3/config.py": 1,
+            "DMAIC_V3/phases/phase2": 2,
+            "DMAIC_V3/phases/phase3": 2,
+            "DMAIC_V3/phases/phase4": 2,
+            "DMAIC_V3/phases/phase5": 2,
+            "DMAIC_V3/phases/phase6": 3,
+            "DMAIC_V3/convergence/": 3,
+            "DMAIC_V3/integrations/": 2,
         }
         return mapping
 
     def calculate_file_hash(self, file_path: Path) -> str:
         sha256 = hashlib.sha256()
         try:
-            with open(file_path, 'rb') as f:
-                for chunk in iter(lambda: f.read(4096), b''):
+            with open(file_path, "rb") as f:
+                for chunk in iter(lambda: f.read(4096), b""):
                     sha256.update(chunk)
             return sha256.hexdigest()
         except Exception:
@@ -95,12 +96,12 @@ class GlobalIndexGenerator:
         return 0
 
     def get_stable_iterations(self, file_path: str) -> int:
-        hash_file = self.output_dir / '.file_hashes.json'
+        hash_file = self.output_dir / ".file_hashes.json"
         if not hash_file.exists():
             return 0
 
         try:
-            with open(hash_file, 'r') as f:
+            with open(hash_file, "r") as f:
                 history = json.load(f)
 
                 if len(history) < 2:
@@ -110,7 +111,7 @@ class GlobalIndexGenerator:
                 stable_count = 0
 
                 for entry in reversed(history):
-                    file_hash = entry['hashes'].get(file_path)
+                    file_hash = entry["hashes"].get(file_path)
                     if file_hash is None:
                         break
 
@@ -127,27 +128,23 @@ class GlobalIndexGenerator:
             return 0
 
     def extract_code_elements(self, file_path: Path) -> Dict[str, List[str]]:
-        result = {
-            'functions': [],
-            'classes': [],
-            'imports': []
-        }
+        result = {"functions": [], "classes": [], "imports": []}
 
         try:
-            with open(file_path, 'r', encoding='utf-8') as f:
+            with open(file_path, "r", encoding="utf-8") as f:
                 tree = ast.parse(f.read())
 
                 for node in ast.walk(tree):
                     if isinstance(node, ast.FunctionDef):
-                        result['functions'].append(node.name)
+                        result["functions"].append(node.name)
                     elif isinstance(node, ast.ClassDef):
-                        result['classes'].append(node.name)
+                        result["classes"].append(node.name)
                     elif isinstance(node, ast.Import):
                         for alias in node.names:
-                            result['imports'].append(alias.name)
+                            result["imports"].append(alias.name)
                     elif isinstance(node, ast.ImportFrom):
                         if node.module:
-                            result['imports'].append(node.module)
+                            result["imports"].append(node.module)
         except Exception:
             pass
 
@@ -160,7 +157,7 @@ class GlobalIndexGenerator:
         test_patterns = [
             f"tests/test_{file_name}.py",
             f"test_{file_name}.py",
-            f"{file_name}_test.py"
+            f"{file_name}_test.py",
         ]
 
         for pattern in test_patterns:
@@ -174,7 +171,7 @@ class GlobalIndexGenerator:
         dependencies = []
 
         for imp in imports:
-            if imp.startswith('DMAIC_V3'):
+            if imp.startswith("DMAIC_V3"):
                 dependencies.append(imp)
 
         return dependencies
@@ -183,7 +180,7 @@ class GlobalIndexGenerator:
         artifacts = []
         artifact_counter = 1
 
-        for file in self.workspace.rglob('*.py'):
+        for file in self.workspace.rglob("*.py"):
             if any(pattern in str(file) for pattern in self.exclude_patterns):
                 continue
 
@@ -195,7 +192,11 @@ class GlobalIndexGenerator:
             maturity_level = self.determine_maturity_level(file_str)
             stable_iterations = self.get_stable_iterations(file_str)
 
-            status = "STABLE" if stable_iterations >= 3 else "ACTIVE" if stable_iterations > 0 else "NEW"
+            status = (
+                "STABLE"
+                if stable_iterations >= 3
+                else "ACTIVE" if stable_iterations > 0 else "NEW"
+            )
 
             code_elements = self.extract_code_elements(file)
 
@@ -208,11 +209,11 @@ class GlobalIndexGenerator:
                 stable_iterations=stable_iterations,
                 size_bytes=file.stat().st_size,
                 last_modified=datetime.fromtimestamp(file.stat().st_mtime).isoformat(),
-                functions=code_elements['functions'],
-                classes=code_elements['classes'],
-                imports=code_elements['imports'],
+                functions=code_elements["functions"],
+                classes=code_elements["classes"],
+                imports=code_elements["imports"],
                 tests=self.find_test_files(file_str),
-                dependencies=self.analyze_dependencies(code_elements['imports'])
+                dependencies=self.analyze_dependencies(code_elements["imports"]),
             )
 
             artifacts.append(artifact)
@@ -221,12 +222,12 @@ class GlobalIndexGenerator:
         return artifacts
 
     def get_convergence_metrics(self) -> Optional[Dict]:
-        metrics_file = self.output_dir / '.convergence_history.json'
+        metrics_file = self.output_dir / ".convergence_history.json"
         if not metrics_file.exists():
             return None
 
         try:
-            with open(metrics_file, 'r') as f:
+            with open(metrics_file, "r") as f:
                 history = json.load(f)
                 if history:
                     return history[-1]
@@ -236,22 +237,19 @@ class GlobalIndexGenerator:
         return None
 
     def get_knowledge_summary(self) -> Dict[str, int]:
-        knowledge_dir = self.output_dir / 'knowledge'
+        knowledge_dir = self.output_dir / "knowledge"
         if not knowledge_dir.exists():
-            return {'total_packs': 0, 'total_iterations': 0}
+            return {"total_packs": 0, "total_iterations": 0}
 
-        packs = list(knowledge_dir.glob('**/*.json'))
+        packs = list(knowledge_dir.glob("**/*.json"))
         iterations = set()
 
         for pack in packs:
-            if 'ITERATION_' in str(pack):
-                iteration = str(pack).split('ITERATION_')[1].split('/')[0]
+            if "ITERATION_" in str(pack):
+                iteration = str(pack).split("ITERATION_")[1].split("/")[0]
                 iterations.add(iteration)
 
-        return {
-            'total_packs': len(packs),
-            'total_iterations': len(iterations)
-        }
+        return {"total_packs": len(packs), "total_iterations": len(iterations)}
 
     def generate_index(self) -> Path:
         print("=" * 80)
@@ -277,49 +275,49 @@ class GlobalIndexGenerator:
         print("[4/4] Generating GLOBAL index...")
 
         maturity_stats = {0: 0, 1: 0, 2: 0, 3: 0}
-        status_stats = {'NEW': 0, 'ACTIVE': 0, 'STABLE': 0}
+        status_stats = {"NEW": 0, "ACTIVE": 0, "STABLE": 0}
 
         for artifact in artifacts:
             maturity_stats[artifact.maturity_level] += 1
             status_stats[artifact.status] += 1
 
         index = {
-            'metadata': {
-                'version': '3.2.0',
-                'generated_at': datetime.now().isoformat(),
-                'iteration': convergence['iteration'] if convergence else 1,
-                'convergence_score': convergence['convergence_score'] if convergence else 0.0,
-                'maturity_level': convergence['maturity_level'] if convergence else 0,
-                'total_artifacts': len(artifacts),
-                'total_knowledge_packs': knowledge['total_packs']
+            "metadata": {
+                "version": "3.2.0",
+                "generated_at": datetime.now().isoformat(),
+                "iteration": convergence["iteration"] if convergence else 1,
+                "convergence_score": (
+                    convergence["convergence_score"] if convergence else 0.0
+                ),
+                "maturity_level": convergence["maturity_level"] if convergence else 0,
+                "total_artifacts": len(artifacts),
+                "total_knowledge_packs": knowledge["total_packs"],
             },
-            'statistics': {
-                'by_maturity': {
-                    'level_0_planning': maturity_stats[0],
-                    'level_1_foundation': maturity_stats[1],
-                    'level_2_development': maturity_stats[2],
-                    'level_3_production': maturity_stats[3]
+            "statistics": {
+                "by_maturity": {
+                    "level_0_planning": maturity_stats[0],
+                    "level_1_foundation": maturity_stats[1],
+                    "level_2_development": maturity_stats[2],
+                    "level_3_production": maturity_stats[3],
                 },
-                'by_status': status_stats,
-                'total_functions': sum(len(a.functions) for a in artifacts),
-                'total_classes': sum(len(a.classes) for a in artifacts),
-                'total_tests': sum(len(a.tests) for a in artifacts)
+                "by_status": status_stats,
+                "total_functions": sum(len(a.functions) for a in artifacts),
+                "total_classes": sum(len(a.classes) for a in artifacts),
+                "total_tests": sum(len(a.tests) for a in artifacts),
             },
-            'artifacts': {
-                artifact.path: artifact.to_dict() for artifact in artifacts
-            },
-            'convergence': convergence,
-            'knowledge': knowledge,
-            'maturity_levels': {
+            "artifacts": {artifact.path: artifact.to_dict() for artifact in artifacts},
+            "convergence": convergence,
+            "knowledge": knowledge,
+            "maturity_levels": {
                 0: [a.path for a in artifacts if a.maturity_level == 0],
                 1: [a.path for a in artifacts if a.maturity_level == 1],
                 2: [a.path for a in artifacts if a.maturity_level == 2],
-                3: [a.path for a in artifacts if a.maturity_level == 3]
-            }
+                3: [a.path for a in artifacts if a.maturity_level == 3],
+            },
         }
 
-        index_path = self.workspace / 'GLOBAL_index.json'
-        with open(index_path, 'w', encoding='utf-8') as f:
+        index_path = self.workspace / "GLOBAL_index.json"
+        with open(index_path, "w", encoding="utf-8") as f:
             json.dump(index, f, indent=2)
 
         print()

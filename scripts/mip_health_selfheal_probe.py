@@ -24,10 +24,7 @@ sys.path.insert(0, str(ROOT))
 from DMAIC_V3.quick_error_fix import QuickFixer  # noqa: E402
 
 BEFORE = "from typing import Any, Dict, List\n\nrecords: List[Dict] = []\n"
-AFTER = (
-    "from typing import Any, Dict, List\n\n"
-    "records: List[Dict[str, Any]] = []\n"
-)
+AFTER = "from typing import Any, Dict, List\n\n" "records: List[Dict[str, Any]] = []\n"
 WEAK_PATTERN = "List[Dict]"
 
 
@@ -57,9 +54,7 @@ def _recompute_verification(receipt: dict[str, Any]) -> None:
     verification = "PASS" if not failed else "FAIL"
     receipt["failed_checks"] = failed
     receipt["verification"] = verification
-    receipt["return_state"] = (
-        "IMPROVED" if verification == "PASS" else "REGRESSED"
-    )
+    receipt["return_state"] = "IMPROVED" if verification == "PASS" else "REGRESSED"
 
 
 def build_receipt() -> dict[str, Any]:
@@ -109,9 +104,7 @@ def build_receipt() -> dict[str, Any]:
         "verification": "FAIL",
         "exact_sha": exact_sha,
         "execution_context": "transient_controlled_fixture",
-        "source_primitive": (
-            "DMAIC_V3.quick_error_fix.QuickFixer.fix_type_hints"
-        ),
+        "source_primitive": ("DMAIC_V3.quick_error_fix.QuickFixer.fix_type_hints"),
         "repair_class": "test_gap",
         "before_metric": before_metric,
         "after_metric": after_metric,
@@ -147,9 +140,7 @@ def main() -> int:
         )
 
     checkout_final = git("status", "--porcelain")
-    receipt["checks"]["source_checkout_clean_after_output"] = (
-        checkout_final == ""
-    )
+    receipt["checks"]["source_checkout_clean_after_output"] = checkout_final == ""
     receipt["source_checkout_unchanged"] = (
         receipt["source_checkout_unchanged"] and checkout_final == ""
     )

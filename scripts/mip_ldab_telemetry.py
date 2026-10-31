@@ -43,13 +43,13 @@ def _path(value: Any) -> str:
 def _candidate_class(path: str) -> str:
     """Versioned lexical triage; never treat file names as executed tools."""
     tokens = set(re.split(r"[^a-z0-9]+", path.lower())) - {""}
-    if tokens.intersection({
-        "debug", "lldb", "dap", "diagnostic", "diagnostics", "observability"
-    }):
+    if tokens.intersection(
+        {"debug", "lldb", "dap", "diagnostic", "diagnostics", "observability"}
+    ):
         return "explicit_debug"
-    if tokens.intersection({
-        "log", "logs", "logger", "logging", "trace", "tracing", "traceability"
-    }):
+    if tokens.intersection(
+        {"log", "logs", "logger", "logging", "trace", "tracing", "traceability"}
+    ):
         return "telemetry_logs_trace"
     return "lexical_incidental"
 
@@ -63,7 +63,8 @@ def _source_census(receipt: dict[str, Any], location: str) -> dict[str, Any]:
     count = lane.get("signals")
     samples = lane.get("sample_paths")
     _require(
-        type(count) is int and count >= 0
+        type(count) is int
+        and count >= 0
         and isinstance(samples, list)
         and len(samples) <= count,
         location + " LDAB denominator invalid",
@@ -95,8 +96,7 @@ def _source_census(receipt: dict[str, Any], location: str) -> dict[str, Any]:
         )
         full_paths = [_path(value) for value in full]
         _require(
-            full_paths == sorted(set(full_paths))
-            and full_paths[:len(paths)] == paths,
+            full_paths == sorted(set(full_paths)) and full_paths[: len(paths)] == paths,
             location + " full source inventory order/sample mismatch",
         )
         counts = {
@@ -180,13 +180,15 @@ def summarize(
             "nested diagnostic identity or contract mismatch",
         )
         _require(
-            isinstance(checks, dict) and len(checks) > 0
+            isinstance(checks, dict)
+            and len(checks) > 0
             and all(type(value) is bool for value in checks.values()),
             "nested diagnostic check denominator invalid",
         )
         failed = sorted(name for name, result in checks.items() if not result)
         _require(
-            not failed and diagnostic.get("failed_checks") == []
+            not failed
+            and diagnostic.get("failed_checks") == []
             and diagnostic.get("verification") == "PASS",
             "nested executed federation diagnostic failed",
         )

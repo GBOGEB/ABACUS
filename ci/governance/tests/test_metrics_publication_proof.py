@@ -1,16 +1,33 @@
 """Exact native job gates must not turn workflow green-by-skip into proof."""
+
 import copy
 import unittest
+
 from ci.governance.metrics_publication_proof import JOB_NAME, qualify
 
 SHA = "a" * 40
-RUN = {"id": 39231364355, "run_attempt": 1, "head_sha": SHA,
-       "status": "completed", "conclusion": "success"}
-PUBLISH = {"id": 117990038296, "run_id": RUN["id"],
-           "name": JOB_NAME, "status": "completed", "conclusion": "skipped"}
-RECEIPT = {"source_sha": SHA, "run_id": RUN["id"], "run_attempt": 1,
-           "job_id": PUBLISH["id"], "destination_pr_number": 42,
-           "artifact_sha256": "b" * 64}
+RUN = {
+    "id": 39231364355,
+    "run_attempt": 1,
+    "head_sha": SHA,
+    "status": "completed",
+    "conclusion": "success",
+}
+PUBLISH = {
+    "id": 117990038296,
+    "run_id": RUN["id"],
+    "name": JOB_NAME,
+    "status": "completed",
+    "conclusion": "skipped",
+}
+RECEIPT = {
+    "source_sha": SHA,
+    "run_id": RUN["id"],
+    "run_attempt": 1,
+    "job_id": PUBLISH["id"],
+    "destination_pr_number": 42,
+    "artifact_sha256": "b" * 64,
+}
 
 
 class MetricsPublicationProofTests(unittest.TestCase):
@@ -22,8 +39,12 @@ class MetricsPublicationProofTests(unittest.TestCase):
 
     def test_actual_failed_publish_job_is_red_even_if_other_jobs_green(self):
         fail_run = {**RUN, "id": 39230999906, "conclusion": "failure"}
-        fail_job = {**PUBLISH, "id": 117989706278,
-                    "run_id": fail_run["id"], "conclusion": "failure"}
+        fail_job = {
+            **PUBLISH,
+            "id": 117989706278,
+            "run_id": fail_run["id"],
+            "conclusion": "failure",
+        }
         q = qualify(fail_run, [fail_job])
         self.assertEqual(q["qualifier"], "NATIVE_PUBLICATION_FAILED")
         self.assertFalse(q["proof_of_native_publication"])

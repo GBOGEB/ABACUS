@@ -9,8 +9,8 @@
 Export summary to Markdown format.
 """
 
-import sqlite3
 import json
+import sqlite3
 from pathlib import Path
 
 DB_PATH = Path("ledger/runs.sqlite")
@@ -50,7 +50,9 @@ def main():
                     metrics_preview = "invalid metrics JSON"
                     print(f"Warning: failed to parse metrics JSON for run {rid}: {e}")
 
-            f.write(f"| `{rid}` | {started} | {status} | `{git_sha}` | {metrics_preview} |\n")
+            f.write(
+                f"| `{rid}` | {started} | {status} | `{git_sha}` | {metrics_preview} |\n"
+            )
 
     print(f"Summary written to: {OUTPUT_PATH}")
 

@@ -247,8 +247,7 @@ def build_payload(args: argparse.Namespace) -> dict[str, Any]:
     # falsely looks like a verified absence of new findings. This is still
     # input qualification only, never scanner-exit or independent CI proof.
     incomplete_tools = sorted(
-        name for name, receipt in tools.items()
-        if receipt.get("status") != "parsed"
+        name for name, receipt in tools.items() if receipt.get("status") != "parsed"
     )
     if changed is None:
         qualification = "NO_PR_CONTEXT"
@@ -262,7 +261,8 @@ def build_payload(args: argparse.Namespace) -> dict[str, Any]:
         qualification = "QUALIFIED_INPUTS_ONLY"
     touched_upper_bound = (
         sum(touched_count(tool) for tool in tools.values())
-        if qualification == "QUALIFIED_INPUTS_ONLY" else None
+        if qualification == "QUALIFIED_INPUTS_ONLY"
+        else None
     )
     return {
         "schema": SCHEMA,

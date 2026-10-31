@@ -81,9 +81,7 @@ def validate_envelope(
                 errors.append("proposal_workers.range")
             if proposal_workers.get("mode") != expected_workers.get("mode"):
                 errors.append("proposal_workers.mode")
-            if proposal_workers.get("scalable") is not expected_workers.get(
-                "scalable"
-            ):
+            if proposal_workers.get("scalable") is not expected_workers.get("scalable"):
                 errors.append("proposal_workers.scalable")
 
         mutation_writer = worker.get("mutation_writer")
@@ -134,8 +132,10 @@ def valid_empty_queue(payload: dict[str, Any]) -> bool:
     }:
         return False
     source_sha = payload.get("source_sha")
-    if not isinstance(source_sha, str) or len(source_sha) != 40 or any(
-        ch not in "0123456789abcdef" for ch in source_sha
+    if (
+        not isinstance(source_sha, str)
+        or len(source_sha) != 40
+        or any(ch not in "0123456789abcdef" for ch in source_sha)
     ):
         return False
 
@@ -278,7 +278,9 @@ def main() -> int:
         if errors:
             raise SystemExit("invalid emitted MIP envelope: " + ",".join(errors))
         args.out.parent.mkdir(parents=True, exist_ok=True)
-        args.out.write_text(json.dumps(envelope, indent=2, sort_keys=True) + "\n", encoding="utf-8")
+        args.out.write_text(
+            json.dumps(envelope, indent=2, sort_keys=True) + "\n", encoding="utf-8"
+        )
         print(json.dumps(envelope, indent=2, sort_keys=True))
         return 0
 

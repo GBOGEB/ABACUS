@@ -15,10 +15,15 @@ MANIFEST_FILE = DOCS_DIR / "manifest.yml"
 
 def _parse_manifest() -> Dict[str, Any]:
     if not MANIFEST_FILE.exists():
-        return {"site": {"title": "ABACUS Docs", "version": "unknown"}, "articles": [], "smoke_tested_repos": []}
+        return {
+            "site": {"title": "ABACUS Docs", "version": "unknown"},
+            "articles": [],
+            "smoke_tested_repos": [],
+        }
 
     try:
         import yaml
+
         return yaml.safe_load(MANIFEST_FILE.read_text(encoding="utf-8")) or {}
     except ImportError:
         pass
@@ -60,14 +65,23 @@ def _build_index_html(manifest: Dict[str, Any]) -> str:
     site = manifest.get("site", {}) if isinstance(manifest, dict) else {}
     title = site.get("title", "ABACUS Project Docs")
     version = site.get("version", "unknown")
-    articles: List[str] = manifest.get("articles", []) if isinstance(manifest, dict) else []
-    repos: List[str] = manifest.get("smoke_tested_repos", []) if isinstance(manifest, dict) else []
-    article_links = "\n".join(
-        f'<li><a href="{a}">{a}</a></li>' for a in articles
-    ) or "<li>No articles listed</li>"
-    repo_links = "\n".join(
-        f'<li><a href="https://github.com/{r}" target="_blank" rel="noopener">{r}</a></li>' for r in repos
-    ) or "<li>No repositories listed</li>"
+    articles: List[str] = (
+        manifest.get("articles", []) if isinstance(manifest, dict) else []
+    )
+    repos: List[str] = (
+        manifest.get("smoke_tested_repos", []) if isinstance(manifest, dict) else []
+    )
+    article_links = (
+        "\n".join(f'<li><a href="{a}">{a}</a></li>' for a in articles)
+        or "<li>No articles listed</li>"
+    )
+    repo_links = (
+        "\n".join(
+            f'<li><a href="https://github.com/{r}" target="_blank" rel="noopener">{r}</a></li>'
+            for r in repos
+        )
+        or "<li>No repositories listed</li>"
+    )
 
     return f"""<!doctype html>
 <html lang="en">
@@ -113,12 +127,24 @@ def _build_index_html(manifest: Dict[str, Any]) -> str:
 
 def _build_dashboard_html(manifest: Dict[str, Any]) -> str:
     maturity = _safe_read_json(ROOT_DIR / "maturity_assessment.json")
-    convergence = _safe_read_json(ROOT_DIR / "DMAIC_V3" / "state" / "convergence_status.json")
+    convergence = _safe_read_json(
+        ROOT_DIR / "DMAIC_V3" / "state" / "convergence_status.json"
+    )
 
-    maturity_score = maturity.get("overall_score", "n/a") if isinstance(maturity, dict) else "n/a"
-    convergence_status = convergence.get("status", "unknown") if isinstance(convergence, dict) else "unknown"
-    repos_count = len(manifest.get("smoke_tested_repos", [])) if isinstance(manifest, dict) else 0
-    articles_count = len(manifest.get("articles", [])) if isinstance(manifest, dict) else 0
+    maturity_score = (
+        maturity.get("overall_score", "n/a") if isinstance(maturity, dict) else "n/a"
+    )
+    convergence_status = (
+        convergence.get("status", "unknown")
+        if isinstance(convergence, dict)
+        else "unknown"
+    )
+    repos_count = (
+        len(manifest.get("smoke_tested_repos", [])) if isinstance(manifest, dict) else 0
+    )
+    articles_count = (
+        len(manifest.get("articles", [])) if isinstance(manifest, dict) else 0
+    )
 
     return f"""<!doctype html>
 <html lang="en">
@@ -166,7 +192,9 @@ def main() -> int:
     DOCS_DIR.mkdir(parents=True, exist_ok=True)
     manifest = _parse_manifest()
     (DOCS_DIR / "index.html").write_text(_build_index_html(manifest), encoding="utf-8")
-    (DOCS_DIR / "dashboard.html").write_text(_build_dashboard_html(manifest), encoding="utf-8")
+    (DOCS_DIR / "dashboard.html").write_text(
+        _build_dashboard_html(manifest), encoding="utf-8"
+    )
     print("[OK] Generated docs/index.html and docs/dashboard.html")
     return 0
 

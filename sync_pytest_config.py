@@ -4,6 +4,7 @@ pytest.ini is the canonical marker source. A secondary pyproject marker
 declaration, when present, must match it exactly. Absent secondary configuration
 is reported as single-source validation, never as synchronization evidence.
 """
+
 from __future__ import annotations
 
 import argparse
@@ -73,20 +74,27 @@ def validate(root=ROOT):
             if secondary != canonical:
                 missing = sorted(set(canonical) - set(secondary))
                 extra = sorted(set(secondary) - set(canonical))
-                changed = sorted(k for k in set(canonical) & set(secondary)
-                                 if canonical[k] != secondary[k])
+                changed = sorted(
+                    k
+                    for k in set(canonical) & set(secondary)
+                    if canonical[k] != secondary[k]
+                )
                 raise ValueError(
                     f"Pytest marker configuration drift: missing={missing} "
                     f"extra={extra} changed={changed}"
                 )
     return {
         "schema": "abacus.pytest-markers-validation.v1",
-        "status": "SYNCHRONIZED" if secondary is not None
-                  else "SINGLE_CANONICAL_SOURCE_VALIDATED",
+        "status": (
+            "SYNCHRONIZED"
+            if secondary is not None
+            else "SINGLE_CANONICAL_SOURCE_VALIDATED"
+        ),
         "canonical": "pytest.ini",
         "marker_count": len(canonical),
-        "secondary_config": "pyproject.toml" if secondary is not None
-                            else "NOT_DECLARED",
+        "secondary_config": (
+            "pyproject.toml" if secondary is not None else "NOT_DECLARED"
+        ),
         "source_mutation": False,
     }
 

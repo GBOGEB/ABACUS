@@ -116,7 +116,8 @@ def validate(documents: list[dict]) -> list[dict]:
                 status = job.get("status")
                 conclusion = job.get("conclusion")
                 require(
-                    status in ("completed", "queued", "in_progress", "waiting", "pending")
+                    status
+                    in ("completed", "queued", "in_progress", "waiting", "pending")
                     and conclusion
                     in ("success", "failure", "cancelled", "skipped", None),
                     "unsupported job status",

@@ -3,9 +3,9 @@
 
 import argparse
 import json
+import sys
 from datetime import datetime, timezone
 from pathlib import Path
-import sys
 
 ROOT_DIR = Path(__file__).resolve().parents[1]
 # src/ holds the `dmaic` package; ROOT_DIR itself holds the top-level `DMAIC_V3`
@@ -25,7 +25,11 @@ def main() -> int:
     parser.add_argument("--output", help="Optional validated artifact output path")
     args = parser.parse_args()
 
-    input_path = ROOT_DIR / args.input if not Path(args.input).is_absolute() else Path(args.input)
+    input_path = (
+        ROOT_DIR / args.input
+        if not Path(args.input).is_absolute()
+        else Path(args.input)
+    )
     payload = json.loads(input_path.read_text(encoding="utf-8"))
     errors = validate_tracker_payload(payload)
     if errors:
@@ -34,13 +38,19 @@ def main() -> int:
         return 1
 
     if args.output:
-        output = ROOT_DIR / args.output if not Path(args.output).is_absolute() else Path(args.output)
+        output = (
+            ROOT_DIR / args.output
+            if not Path(args.output).is_absolute()
+            else Path(args.output)
+        )
         output.parent.mkdir(parents=True, exist_ok=True)
         output.write_text(
             json.dumps(
                 {
                     "source": str(input_path),
-                    "validated_at": datetime.now(timezone.utc).isoformat().replace("+00:00", "Z"),
+                    "validated_at": datetime.now(timezone.utc)
+                    .isoformat()
+                    .replace("+00:00", "Z"),
                     "status_schema": payload.get("status_schema", []),
                     "tuple_metadata": payload.get("tuple_metadata", []),
                 },

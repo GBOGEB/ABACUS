@@ -17,7 +17,9 @@ from dmaic.contract import validate_contract  # noqa: E402
 
 
 def main() -> int:
-    parser = argparse.ArgumentParser(description="Validate DMAIC canonical metadata contract")
+    parser = argparse.ArgumentParser(
+        description="Validate DMAIC canonical metadata contract"
+    )
     parser.add_argument(
         "--target",
         default="DMAIC_CANONICAL_OUTPUT",
@@ -30,7 +32,11 @@ def main() -> int:
     )
     args = parser.parse_args()
 
-    target = (ROOT_DIR / args.target).resolve() if not Path(args.target).is_absolute() else Path(args.target)
+    target = (
+        (ROOT_DIR / args.target).resolve()
+        if not Path(args.target).is_absolute()
+        else Path(args.target)
+    )
     if not target.exists():
         LOGGER.warning("Target does not exist: %s", target)
         return 0 if args.allow_empty else 1
