@@ -1,9 +1,10 @@
-"""Guard: the trailing-whitespace hook must keep Markdown two-space hard breaks.
+"""Guard: trailing-whitespace must keep Markdown two-space hard breaks.
 
 U16 (#2505) normalised trailing whitespace repo-wide without
 ``--markdown-linebreak-ext=md`` and stripped the hard breaks that
 tests/test_pandoc_glossary_source.py relies on.
 """
+
 import unittest
 from pathlib import Path
 
