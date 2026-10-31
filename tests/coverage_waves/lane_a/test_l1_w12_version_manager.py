@@ -1,6 +1,7 @@
 """Wave 12 lane A behaviour tests for DMAIC_V3/integrations/version_manager.py."""
 
 import json
+import operator
 
 import pytest
 
@@ -32,12 +33,18 @@ def test_version_info_str_parse_and_compare():
     assert str(vm.VersionInfo(1, 0, 0)) == "1.0.0"
     a = vm.VersionInfo(1, 2, 3)
     b = vm.VersionInfo(1, 3, 0)
-    assert a < b
-    assert a <= b
-    assert b > a
-    assert b >= a
-    assert a == v  # prerelease ignored for equality
-    assert a != b
+    # Each rich comparison is its own method under test; a table keeps them
+    # independent instead of chained comparisons CodeQL reads as redundant.
+    cases = [
+        (operator.lt, a, b),
+        (operator.le, a, b),
+        (operator.gt, b, a),
+        (operator.ge, b, a),
+        (operator.eq, a, v),  # prerelease ignored for equality
+        (operator.ne, a, b),
+    ]
+    for op, left, right in cases:
+        assert op(left, right), op.__name__
     with pytest.raises(ValueError):
         vm.VersionInfo.parse("1.2")
 
