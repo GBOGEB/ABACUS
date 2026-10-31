@@ -10,7 +10,9 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        python-version: ["3.10", "3.11"]
+        # pyproject.toml requires-python >=3.11; 3.10 is not a supported runtime
+        # (source modules use datetime.UTC, added in 3.11).
+        python-version: ["3.11"]
 
     steps:
       - name: Checkout code
