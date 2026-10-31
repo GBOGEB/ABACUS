@@ -87,3 +87,8 @@ class HandoverV2Smoke(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+
+def test_zz_g_ab_red_canary():
+    """Throwaway red canary (method vector D); never merge."""
+    assert False
