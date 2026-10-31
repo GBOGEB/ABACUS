@@ -3,6 +3,7 @@
 Validates endpoint responses, request/response schemas,
 and integration with the Python physics engine.
 """
+
 import sys
 from pathlib import Path
 
@@ -17,8 +18,9 @@ if str(PROJECT_ROOT) not in sys.path:
 @pytest.fixture
 def client():
     """Create a test client for the FastAPI app."""
-    from fastapi.testclient import TestClient
     from api.main import app
+    from fastapi.testclient import TestClient
+
     return TestClient(app)
 
 
@@ -68,11 +70,14 @@ def test_config_section_not_found(client):
 
 def test_leak_rate_calculation(client):
     """Leak rate endpoint should compute correct values."""
-    r = client.post("/api/v1/leak-rate", json={
-        "leak_rate_mbar_l_s": 1.0,
-        "temperature_k": 300,
-        "pressure_bar_abs": 1.0,
-    })
+    r = client.post(
+        "/api/v1/leak-rate",
+        json={
+            "leak_rate_mbar_l_s": 1.0,
+            "temperature_k": 300,
+            "pressure_bar_abs": 1.0,
+        },
+    )
     assert r.status_code == 200
     data = r.json()
     assert data["pa_m3_s"] > 0
@@ -83,13 +88,24 @@ def test_leak_rate_calculation(client):
 
 def test_leak_rate_batch(client):
     """Batch leak rate should process multiple items."""
-    r = client.post("/api/v1/leak-rate/batch", json={
-        "items": [
-            {"leak_rate_mbar_l_s": 1e-6, "temperature_k": 300, "pressure_bar_abs": 1.0},
-            {"leak_rate_mbar_l_s": 1e-5, "temperature_k": 4.2, "pressure_bar_abs": 14.0},
-        ],
-        "he_price_eur_kg": 120.0,
-    })
+    r = client.post(
+        "/api/v1/leak-rate/batch",
+        json={
+            "items": [
+                {
+                    "leak_rate_mbar_l_s": 1e-6,
+                    "temperature_k": 300,
+                    "pressure_bar_abs": 1.0,
+                },
+                {
+                    "leak_rate_mbar_l_s": 1e-5,
+                    "temperature_k": 4.2,
+                    "pressure_bar_abs": 14.0,
+                },
+            ],
+            "he_price_eur_kg": 120.0,
+        },
+    )
     assert r.status_code == 200
     data = r.json()
     assert len(data["results"]) == 2
@@ -98,10 +114,13 @@ def test_leak_rate_batch(client):
 
 def test_monte_carlo_simulation(client):
     """Monte Carlo should return statistical results."""
-    r = client.post("/api/v1/monte-carlo", json={
-        "n_simulations": 1000,
-        "include_histogram": True,
-    })
+    r = client.post(
+        "/api/v1/monte-carlo",
+        json={
+            "n_simulations": 1000,
+            "include_histogram": True,
+        },
+    )
     assert r.status_code == 200
     data = r.json()
     assert data["n_simulations"] == 1000
@@ -112,13 +131,16 @@ def test_monte_carlo_simulation(client):
 
 def test_compressor_reliability(client):
     """Compressor reliability should calculate availability."""
-    r = client.post("/api/v1/compressors/reliability", json={
-        "total_units": 3,
-        "required_units": 2,
-        "mtbf_hours": 8760,
-        "mttr_hours": 8,
-        "has_vfd": True,
-    })
+    r = client.post(
+        "/api/v1/compressors/reliability",
+        json={
+            "total_units": 3,
+            "required_units": 2,
+            "mtbf_hours": 8760,
+            "mttr_hours": 8,
+            "has_vfd": True,
+        },
+    )
     assert r.status_code == 200
     data = r.json()
     assert data["availability_pct"] > 99.0

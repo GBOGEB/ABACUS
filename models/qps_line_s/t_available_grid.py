@@ -58,16 +58,22 @@ def build_grid(rows: list[dict[str, str]]) -> list[dict[str, float | str]]:
         energy = float(row[COL_DPDT_ENERGY])
         for p_limit in P_LIMIT_CANDIDATES_BAR:
             dpa = p_limit - P_INITIAL_BAR
-            grid.append({
-                "V_eff_m3": veff,
-                "case": case,
-                "P_LIMIT_bar": p_limit,
-                "P_initial_bar": P_INITIAL_BAR,
-                "dP_allowed_bar": dpa,
-                "t_avail_energy_min": t_available_min(p_limit, P_INITIAL_BAR, energy),
-                "t_avail_isothermal_min": t_available_min(p_limit, P_INITIAL_BAR, iso),
-                "basis": BASIS,
-            })
+            grid.append(
+                {
+                    "V_eff_m3": veff,
+                    "case": case,
+                    "P_LIMIT_bar": p_limit,
+                    "P_initial_bar": P_INITIAL_BAR,
+                    "dP_allowed_bar": dpa,
+                    "t_avail_energy_min": t_available_min(
+                        p_limit, P_INITIAL_BAR, energy
+                    ),
+                    "t_avail_isothermal_min": t_available_min(
+                        p_limit, P_INITIAL_BAR, iso
+                    ),
+                    "basis": BASIS,
+                }
+            )
     return grid
 
 

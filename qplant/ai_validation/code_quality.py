@@ -25,6 +25,7 @@ logger = logging.getLogger(__name__)
 @dataclass
 class QualityIssue:
     """A code quality finding."""
+
     file: str
     line: int
     severity: str  # info, warning, error, critical
@@ -37,6 +38,7 @@ class QualityIssue:
 @dataclass
 class FileReport:
     """Quality report for a single file."""
+
     path: str
     lines: int = 0
     functions: int = 0
@@ -55,8 +57,16 @@ class CodeQualityAnalyser:
     SECURITY_PATTERNS = [
         (r"eval\s*\(", "Use of eval() — potential code injection", "critical"),
         (r"exec\s*\(", "Use of exec() — potential code injection", "critical"),
-        (r"subprocess\.call.*shell\s*=\s*True", "Shell=True in subprocess — command injection risk", "error"),
-        (r"pickle\.loads?\(", "Use of pickle — deserialization vulnerability", "warning"),
+        (
+            r"subprocess\.call.*shell\s*=\s*True",
+            "Shell=True in subprocess — command injection risk",
+            "error",
+        ),
+        (
+            r"pickle\.loads?\(",
+            "Use of pickle — deserialization vulnerability",
+            "warning",
+        ),
         (r"password\s*=\s*['\"]", "Hardcoded password detected", "critical"),
         (r"api_key\s*=\s*['\"]", "Hardcoded API key detected", "critical"),
         (r"secret\s*=\s*['\"]", "Hardcoded secret detected", "error"),
@@ -64,8 +74,16 @@ class CodeQualityAnalyser:
 
     # Performance anti-patterns
     PERF_PATTERNS = [
-        (r"for\s+.*\s+in\s+range\(len\(", "Use enumerate() instead of range(len())", "info"),
-        (r"\.append\(.*\)\s*$", "Consider list comprehension for loop-append patterns", "info"),
+        (
+            r"for\s+.*\s+in\s+range\(len\(",
+            "Use enumerate() instead of range(len())",
+            "info",
+        ),
+        (
+            r"\.append\(.*\)\s*$",
+            "Consider list comprehension for loop-append patterns",
+            "info",
+        ),
         (r"time\.sleep\(", "Blocking sleep — consider async alternatives", "info"),
     ]
 
@@ -84,11 +102,15 @@ class CodeQualityAnalyser:
         try:
             tree = ast.parse(source)
         except SyntaxError as e:
-            report.issues.append(QualityIssue(
-                file=str(path), line=e.lineno or 0,
-                severity="error", category="syntax",
-                message=f"Syntax error: {e.msg}",
-            ))
+            report.issues.append(
+                QualityIssue(
+                    file=str(path),
+                    line=e.lineno or 0,
+                    severity="error",
+                    category="syntax",
+                    message=f"Syntax error: {e.msg}",
+                )
+            )
             report.score = 0
             return report
 
@@ -101,7 +123,9 @@ class CodeQualityAnalyser:
         complexities = self._analyse_complexity(tree, str(path))
         report.issues.extend(complexities["issues"])
         if complexities["values"]:
-            report.avg_complexity = sum(complexities["values"]) / len(complexities["values"])
+            report.avg_complexity = sum(complexities["values"]) / len(
+                complexities["values"]
+            )
             report.max_complexity = max(complexities["values"])
 
         # Documentation coverage
@@ -123,7 +147,9 @@ class CodeQualityAnalyser:
 
         return report
 
-    def analyse_directory(self, dir_path: str, pattern: str = "**/*.py") -> Dict[str, Any]:
+    def analyse_directory(
+        self, dir_path: str, pattern: str = "**/*.py"
+    ) -> Dict[str, Any]:
         """Analyse all Python files in a directory."""
         reports = []
         for py_file in Path(dir_path).glob(pattern):
@@ -187,7 +213,9 @@ class CodeQualityAnalyser:
             if isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef)):
                 complexity = 1
                 for child in ast.walk(node):
-                    if isinstance(child, (ast.If, ast.While, ast.For, ast.ExceptHandler)):
+                    if isinstance(
+                        child, (ast.If, ast.While, ast.For, ast.ExceptHandler)
+                    ):
                         complexity += 1
                     elif isinstance(child, ast.BoolOp):
                         complexity += len(child.values) - 1
@@ -195,19 +223,27 @@ class CodeQualityAnalyser:
                 values.append(complexity)
 
                 if complexity > 15:
-                    issues.append(QualityIssue(
-                        file=file_path, line=node.lineno,
-                        severity="error", category="complexity",
-                        message=f"High complexity ({complexity}) in {node.name}",
-                        suggestion="Consider breaking into smaller functions",
-                    ))
+                    issues.append(
+                        QualityIssue(
+                            file=file_path,
+                            line=node.lineno,
+                            severity="error",
+                            category="complexity",
+                            message=f"High complexity ({complexity}) in {node.name}",
+                            suggestion="Consider breaking into smaller functions",
+                        )
+                    )
                 elif complexity > 10:
-                    issues.append(QualityIssue(
-                        file=file_path, line=node.lineno,
-                        severity="warning", category="complexity",
-                        message=f"Moderate complexity ({complexity}) in {node.name}",
-                        suggestion="Review for possible simplification",
-                    ))
+                    issues.append(
+                        QualityIssue(
+                            file=file_path,
+                            line=node.lineno,
+                            severity="warning",
+                            category="complexity",
+                            message=f"Moderate complexity ({complexity}) in {node.name}",
+                            suggestion="Review for possible simplification",
+                        )
+                    )
 
         return {"values": values, "issues": issues}
 
@@ -221,12 +257,16 @@ class CodeQualityAnalyser:
         if ast.get_docstring(tree):
             documented += 1
         else:
-            issues.append(QualityIssue(
-                file=file_path, line=1,
-                severity="info", category="documentation",
-                message="Missing module-level docstring",
-                suggestion="Add a module docstring describing the file's purpose",
-            ))
+            issues.append(
+                QualityIssue(
+                    file=file_path,
+                    line=1,
+                    severity="info",
+                    category="documentation",
+                    message="Missing module-level docstring",
+                    suggestion="Add a module docstring describing the file's purpose",
+                )
+            )
         total += 1
 
         for node in ast.walk(tree):
@@ -237,12 +277,16 @@ class CodeQualityAnalyser:
                 if ast.get_docstring(node):
                     documented += 1
                 else:
-                    issues.append(QualityIssue(
-                        file=file_path, line=node.lineno,
-                        severity="info", category="documentation",
-                        message=f"Missing docstring for {node.name}",
-                        suggestion=f"Add docstring to {node.name}",
-                    ))
+                    issues.append(
+                        QualityIssue(
+                            file=file_path,
+                            line=node.lineno,
+                            severity="info",
+                            category="documentation",
+                            message=f"Missing docstring for {node.name}",
+                            suggestion=f"Add docstring to {node.name}",
+                        )
+                    )
 
         coverage = documented / total if total > 0 else 1.0
         return {"coverage": coverage, "issues": issues}
@@ -253,12 +297,16 @@ class CodeQualityAnalyser:
         for pattern, message, severity in self.SECURITY_PATTERNS:
             for i, line in enumerate(source.split("\n"), 1):
                 if re.search(pattern, line) and not line.strip().startswith("#"):
-                    issues.append(QualityIssue(
-                        file=file_path, line=i,
-                        severity=severity, category="security",
-                        message=message,
-                        suggestion="Review and remediate the security concern",
-                    ))
+                    issues.append(
+                        QualityIssue(
+                            file=file_path,
+                            line=i,
+                            severity=severity,
+                            category="security",
+                            message=message,
+                            suggestion="Review and remediate the security concern",
+                        )
+                    )
         return issues
 
     def _performance_scan(self, source: str, file_path: str) -> List[QualityIssue]:
@@ -267,12 +315,16 @@ class CodeQualityAnalyser:
         for pattern, message, severity in self.PERF_PATTERNS:
             for i, line in enumerate(source.split("\n"), 1):
                 if re.search(pattern, line) and not line.strip().startswith("#"):
-                    issues.append(QualityIssue(
-                        file=file_path, line=i,
-                        severity=severity, category="performance",
-                        message=message,
-                        confidence=0.5,
-                    ))
+                    issues.append(
+                        QualityIssue(
+                            file=file_path,
+                            line=i,
+                            severity=severity,
+                            category="performance",
+                            message=message,
+                            confidence=0.5,
+                        )
+                    )
         return issues
 
     def _style_checks(self, source: str, file_path: str) -> List[QualityIssue]:
@@ -280,12 +332,16 @@ class CodeQualityAnalyser:
         issues = []
         for i, line in enumerate(source.split("\n"), 1):
             if len(line) > 120:
-                issues.append(QualityIssue(
-                    file=file_path, line=i,
-                    severity="info", category="style",
-                    message=f"Line too long ({len(line)} > 120 chars)",
-                    confidence=0.9,
-                ))
+                issues.append(
+                    QualityIssue(
+                        file=file_path,
+                        line=i,
+                        severity="info",
+                        category="style",
+                        message=f"Line too long ({len(line)} > 120 chars)",
+                        confidence=0.9,
+                    )
+                )
         return issues
 
     def _calculate_score(self, report: FileReport) -> float:

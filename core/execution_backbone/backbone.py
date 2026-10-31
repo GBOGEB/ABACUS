@@ -9,6 +9,7 @@ Queue admission is capped to the number of configured workers. In particular,
 pending low-priority work does not silently disappear into an unbounded executor
 queue ahead of subsequently submitted high-priority work.
 """
+
 from __future__ import annotations
 
 import math
@@ -24,7 +25,7 @@ from typing import Any, Callable, Dict, List, Optional
 def _p95(samples: list[float]) -> float | None:
     if not samples:
         return None
-    return round(sorted(samples)[math.ceil(.95 * len(samples)) - 1], 4)
+    return round(sorted(samples)[math.ceil(0.95 * len(samples)) - 1], 4)
 
 
 @dataclass(order=True)
@@ -35,8 +36,9 @@ class _PriorityTask:
     func: Callable = field(compare=False)
     args: tuple = field(compare=False, default_factory=tuple)
     kwargs: dict = field(compare=False, default_factory=dict)
-    submitted_at: str = field(compare=False,
-                              default_factory=lambda: datetime.now().isoformat())
+    submitted_at: str = field(
+        compare=False, default_factory=lambda: datetime.now().isoformat()
+    )
     submitted_monotonic: float = field(compare=False, default_factory=time.monotonic)
 
 
@@ -135,9 +137,14 @@ class ExecutionBackbone:
             self._sequence += 1
             seq = self._sequence
             self.tasks_submitted += 1
-        task = _PriorityTask(priority=priority, sequence=seq,
-                             task_id=task_id, func=func, args=args,
-                             kwargs=kwargs or {})
+        task = _PriorityTask(
+            priority=priority,
+            sequence=seq,
+            task_id=task_id,
+            func=func,
+            args=args,
+            kwargs=kwargs or {},
+        )
         self.task_queue.put(task)
 
     def get_metrics(self) -> Dict[str, Any]:
@@ -167,7 +174,7 @@ class ExecutionBackbone:
                 "max_memory_mb": self.max_memory_mb,
                 "max_memory_mb_is_advisory": True,
                 "configured_local_pool_slots": self.max_workers,
-                "local_pool_utilization_pct": round(100*active/self.max_workers, 2),
+                "local_pool_utilization_pct": round(100 * active / self.max_workers, 2),
                 "remote_runner_capacity_slots": None,
                 "queue_wait_p95_seconds": _p95(self._queue_wait_samples),
                 "service_p95_seconds": _p95(self._service_samples),
@@ -175,7 +182,9 @@ class ExecutionBackbone:
                 "service_sample_n": len(self._service_samples),
                 "executor_pending_bound": self.max_workers,
                 "running": self._running,
-                "uptime_seconds": round(time.time()-(self._start_time or time.time()), 2),
+                "uptime_seconds": round(
+                    time.time() - (self._start_time or time.time()), 2
+                ),
                 "merge_admission": "HOLD",
                 "remote_dispatch_enabled": False,
                 "authority_transfer": False,
@@ -246,7 +255,7 @@ class ExecutionBackbone:
             self._active += 1
             self._peak_active = max(self._peak_active, self._active)
             self._queue_wait_samples.append(
-                max(0.0, time.monotonic()-task.submitted_monotonic)
+                max(0.0, time.monotonic() - task.submitted_monotonic)
             )
         started = time.monotonic()
         try:
@@ -261,7 +270,7 @@ class ExecutionBackbone:
             return None
         finally:
             with self._lock:
-                self._service_samples.append(max(0.0, time.monotonic()-started))
+                self._service_samples.append(max(0.0, time.monotonic() - started))
                 self._active -= 1
                 self._admitted -= 1
             self._slots.release()

@@ -1,4 +1,5 @@
 """Strict source-bound E0-E3 pulse telemetry contract."""
+
 from __future__ import annotations
 
 import hashlib
@@ -18,17 +19,30 @@ ARTIFACT_DIGEST = re.compile(r"sha256:[0-9a-f]{64}")
 
 def validate(record: dict[str, Any]) -> dict[str, Any]:
     required = (
-        "schema", "mode", "source_sha", "base_sha", "root_id", "attempt",
-        "artifact_digest", "line_covered", "line_total", "branch_covered",
-        "branch_total", "queue_seconds", "result",
+        "schema",
+        "mode",
+        "source_sha",
+        "base_sha",
+        "root_id",
+        "attempt",
+        "artifact_digest",
+        "line_covered",
+        "line_total",
+        "branch_covered",
+        "branch_total",
+        "queue_seconds",
+        "result",
     )
     if not isinstance(record, dict):
         raise ValueError("telemetry must be an object")
     missing = [field for field in required if field not in record]
     if missing:
         raise ValueError("missing telemetry fields: " + ", ".join(missing))
-    if (record["schema"] != SCHEMA or not isinstance(record["mode"], str)
-            or record["mode"] not in MODES):
+    if (
+        record["schema"] != SCHEMA
+        or not isinstance(record["mode"], str)
+        or record["mode"] not in MODES
+    ):
         raise ValueError("unsupported schema or emulation mode")
     if not isinstance(record["result"], str) or record["result"] not in RESULTS:
         raise ValueError("unsupported result")
@@ -46,24 +60,34 @@ def validate(record: dict[str, Any]) -> dict[str, Any]:
     if type(record["attempt"]) is not int or record["attempt"] < 1:
         raise ValueError("attempt must be a positive integer")
     for covered, total in (
-        ("line_covered", "line_total"), ("branch_covered", "branch_total")
+        ("line_covered", "line_total"),
+        ("branch_covered", "branch_total"),
     ):
         numerator, denominator = record[covered], record[total]
         if numerator is None or denominator is None:
             if numerator is not None or denominator is not None:
                 raise ValueError("partial coverage ratio")
-        elif (type(numerator) is not int or type(denominator) is not int
-              or denominator <= 0 or not 0 <= numerator <= denominator):
+        elif (
+            type(numerator) is not int
+            or type(denominator) is not int
+            or denominator <= 0
+            or not 0 <= numerator <= denominator
+        ):
             raise ValueError("invalid coverage numerator/denominator")
     q = record["queue_seconds"]
     if q is not None and (
-        type(q) not in (int, float) or q < 0
+        type(q) not in (int, float)
+        or q < 0
         or (type(q) is float and not math.isfinite(q))
     ):
         raise ValueError("invalid queue seconds")
     if record["mode"] == "E3" and record["result"] == "PASS":
-        if (record["artifact_digest"] is None or record["line_total"] is None
-                or record["branch_total"] is None or q is None):
+        if (
+            record["artifact_digest"] is None
+            or record["line_total"] is None
+            or record["branch_total"] is None
+            or q is None
+        ):
             raise ValueError("native PASS needs complete evidence")
     return record
 
@@ -85,10 +109,7 @@ def summarize_series(records: list[dict[str, Any]]) -> dict[str, Any]:
     """
     if not isinstance(records, list):
         raise ValueError("pulse series must be a list")
-    modes = {
-        mode: {result: 0 for result in sorted(RESULTS)}
-        for mode in sorted(MODES)
-    }
+    modes = {mode: {result: 0 for result in sorted(RESULTS)} for mode in sorted(MODES)}
     seen = set()
     queue_samples = []
     coverage_samples = []
@@ -99,8 +120,11 @@ def summarize_series(records: list[dict[str, Any]]) -> dict[str, Any]:
     for record in records:
         validate(record)
         key = (
-            record["source_sha"], record["base_sha"], record["root_id"],
-            record["mode"], record["attempt"],
+            record["source_sha"],
+            record["base_sha"],
+            record["root_id"],
+            record["mode"],
+            record["attempt"],
         )
         if key in seen:
             raise ValueError("duplicate source-bound pulse observation")
@@ -118,32 +142,36 @@ def summarize_series(records: list[dict[str, Any]]) -> dict[str, Any]:
             known_branches = record["branch_total"] is not None
             line_known += int(known_lines)
             branch_known += int(known_branches)
-            coverage_samples.append({
-                "source_sha": record["source_sha"],
-                "root_id": record["root_id"],
-                "attempt": record["attempt"],
-                "result": record["result"],
-                "line_covered": record["line_covered"],
-                "line_total": record["line_total"],
-                "branch_covered": record["branch_covered"],
-                "branch_total": record["branch_total"],
-                "line_percent": (
-                    round(100 * record["line_covered"] / record["line_total"], 4)
-                    if known_lines else None
-                ),
-                "branch_percent": (
-                    round(100 * record["branch_covered"] / record["branch_total"], 4)
-                    if known_branches else None
-                ),
-            })
+            coverage_samples.append(
+                {
+                    "source_sha": record["source_sha"],
+                    "root_id": record["root_id"],
+                    "attempt": record["attempt"],
+                    "result": record["result"],
+                    "line_covered": record["line_covered"],
+                    "line_total": record["line_total"],
+                    "branch_covered": record["branch_covered"],
+                    "branch_total": record["branch_total"],
+                    "line_percent": (
+                        round(100 * record["line_covered"] / record["line_total"], 4)
+                        if known_lines
+                        else None
+                    ),
+                    "branch_percent": (
+                        round(
+                            100 * record["branch_covered"] / record["branch_total"], 4
+                        )
+                        if known_branches
+                        else None
+                    ),
+                }
+            )
     queue_samples.sort()
     native = modes["E3"]
     native_total = sum(native.values())
     observed = len(queue_samples)
     coverage_samples.sort(
-        key=lambda item: (
-            item["source_sha"], item["root_id"], item["attempt"]
-        )
+        key=lambda item: (item["source_sha"], item["root_id"], item["attempt"])
     )
     return {
         "schema": ROLLUP_SCHEMA,
@@ -161,8 +189,7 @@ def summarize_series(records: list[dict[str, Any]]) -> dict[str, Any]:
             "missing": len(records) - observed,
             "median": statistics.median(queue_samples) if observed else None,
             "p95_nearest_rank": (
-                queue_samples[math.ceil(0.95 * observed) - 1]
-                if observed else None
+                queue_samples[math.ceil(0.95 * observed) - 1] if observed else None
             ),
             "p95_qualified": observed >= 20,
         },

@@ -26,11 +26,12 @@ from typing import Any, Optional
 
 import yaml
 
-
 _ROOT = Path(__file__).resolve().parent.parent
 _PROJECT_ROOT = _ROOT.parent
 _RUNTIME_CONFIG = os.getenv("SSOT_CONFIG_PATH") or os.getenv("QPLANT_CONFIG_PATH")
-_DEFAULT_CONFIG = Path(_RUNTIME_CONFIG) if _RUNTIME_CONFIG else _PROJECT_ROOT / "config.yaml"
+_DEFAULT_CONFIG = (
+    Path(_RUNTIME_CONFIG) if _RUNTIME_CONFIG else _PROJECT_ROOT / "config.yaml"
+)
 
 
 class ConfigLoader:

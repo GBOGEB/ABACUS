@@ -26,17 +26,17 @@ OUT = ROOT / "docs" / "qps_line_s_recovery" / "generated"
 
 @dataclass
 class Config:
-    m_liq0_kg: float = 400.0       # RFI: liquid helium inventory anchor
-    m_metal_kg: float = 10000.0    # RFI: 2 K-stage effective metal mass
-    p_suction_bar: float = 1.05    # RFI: WCS compressor suction basis
-    comp_cap_kgs: float = 0.112    # RFI: WCS capacity, 112 g/s
-    comp_start_s: float = 120.0    # RFI: compressor start delay
-    balloon_vol_m3: float = 80.0   # RFI: interim warm buffer volume
+    m_liq0_kg: float = 400.0  # RFI: liquid helium inventory anchor
+    m_metal_kg: float = 10000.0  # RFI: 2 K-stage effective metal mass
+    p_suction_bar: float = 1.05  # RFI: WCS compressor suction basis
+    comp_cap_kgs: float = 0.112  # RFI: WCS capacity, 112 g/s
+    comp_start_s: float = 120.0  # RFI: compressor start delay
+    balloon_vol_m3: float = 80.0  # RFI: interim warm buffer volume
     balloon_fill_bar: float = 1.0
     balloon_T_K: float = 300.0
-    p_open_bar: float = 1.5        # RFI: control-valve / relief-opening basis
-    p_psv_bar: float = 1.7         # RFI: PSV cap basis
-    ramp_s: float = 300.0          # RFI: boil-off rise time to peak
+    p_open_bar: float = 1.5  # RFI: control-valve / relief-opening basis
+    p_psv_bar: float = 1.7  # RFI: PSV cap basis
+    ramp_s: float = 300.0  # RFI: boil-off rise time to peak
     dt_s: float = 1.0
     t_max_s: float = 7200.0
 
@@ -84,7 +84,9 @@ def boiloff(t: float, peak_kgs: float, cfg: Config) -> float:
     return peak_kgs * min(1.0, t / cfg.ramp_s) if cfg.ramp_s > 0 else peak_kgs
 
 
-def simulate(peak_kgs: float, cfg: Config | None = None, blocked_in: bool = False) -> dict[str, Any]:
+def simulate(
+    peak_kgs: float, cfg: Config | None = None, blocked_in: bool = False
+) -> dict[str, Any]:
     require_coolprop()
     cfg = Config() if cfg is None else cfg
     comp_cap = 0.0 if blocked_in else cfg.comp_cap_kgs
@@ -149,7 +151,15 @@ def default_rows(cfg: Config | None = None) -> list[dict[str, Any]]:
 
 def write_outputs(rows: list[dict[str, Any]], out_dir: Path = OUT) -> None:
     out_dir.mkdir(parents=True, exist_ok=True)
-    cols = ["peak_g_s", "mode", "verdict", "t_relief_min", "p_peak_bar", "kg_recovered", "kg_vented"]
+    cols = [
+        "peak_g_s",
+        "mode",
+        "verdict",
+        "t_relief_min",
+        "p_peak_bar",
+        "kg_recovered",
+        "kg_vented",
+    ]
     with (out_dir / "recovery_matrix.csv").open("w", newline="") as f:
         writer = csv.DictWriter(f, fieldnames=cols)
         writer.writeheader()
@@ -169,7 +179,15 @@ def write_outputs(rows: list[dict[str, Any]], out_dir: Path = OUT) -> None:
 
 
 def print_table(rows: list[dict[str, Any]]) -> None:
-    cols = ["peak_g_s", "mode", "verdict", "t_relief_min", "p_peak_bar", "kg_recovered", "kg_vented"]
+    cols = [
+        "peak_g_s",
+        "mode",
+        "verdict",
+        "t_relief_min",
+        "p_peak_bar",
+        "kg_recovered",
+        "kg_vented",
+    ]
     print("\t".join(cols))
     for row in rows:
         print("\t".join(str(row[col]) for col in cols))

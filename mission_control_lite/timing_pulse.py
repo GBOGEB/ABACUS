@@ -2,6 +2,7 @@
 
 Native phase durations and hosted-run queuing are deliberately separate.
 """
+
 from __future__ import annotations
 
 import argparse
@@ -46,7 +47,9 @@ def completed_run_metrics(run, job):
     if not isinstance(source_sha, str) or not re.fullmatch(r"[0-9a-f]{40}", source_sha):
         raise ValueError("missing or invalid run SHA")
     created, started, ended = (
-        run.get("created_at"), run.get("run_started_at"), run.get("updated_at")
+        run.get("created_at"),
+        run.get("run_started_at"),
+        run.get("updated_at"),
     )
     job_started, job_ended = job.get("started_at"), job.get("completed_at")
     wall = _seconds(created, ended)
@@ -61,20 +64,27 @@ def completed_run_metrics(run, job):
     for item in job.get("steps", []):
         if not item.get("started_at") or not item.get("completed_at"):
             continue
-        steps.append({
-            "name": item.get("name"),
-            "seconds": _seconds(item["started_at"], item["completed_at"]),
-            "conclusion": item.get("conclusion"),
-        })
+        steps.append(
+            {
+                "name": item.get("name"),
+                "seconds": _seconds(item["started_at"], item["completed_at"]),
+                "conclusion": item.get("conclusion"),
+            }
+        )
     return {
-        "schema": SCHEMA, "source_sha": run["head_sha"],
-        "run_id": str(run["id"]), "job_id": str(job["id"]),
-        "wall_seconds": wall, "run_queue_seconds": queue,
-        "run_to_job_seconds": pre_job, "job_seconds": execution,
+        "schema": SCHEMA,
+        "source_sha": run["head_sha"],
+        "run_id": str(run["id"]),
+        "job_id": str(job["id"]),
+        "wall_seconds": wall,
+        "run_queue_seconds": queue,
+        "run_to_job_seconds": pre_job,
+        "job_seconds": execution,
         "finalization_seconds": after_job,
         "non_job_seconds": round(wall - execution, 3),
         "runner_fraction": round(execution / wall, 6) if wall else None,
-        "steps": steps, "merge_admission": "HOLD",
+        "steps": steps,
+        "merge_admission": "HOLD",
     }
 
 
@@ -95,8 +105,7 @@ def measure(output, phase, command):
     except OSError:
         rc = 127
     elapsed = round((time.perf_counter_ns() - clock) / 1_000_000_000, 6)
-    previous.append({"phase": phase, "duration_seconds": elapsed,
-                     "exit_code": rc})
+    previous.append({"phase": phase, "duration_seconds": elapsed, "exit_code": rc})
     path.parent.mkdir(parents=True, exist_ok=True)
     path.write_text(json.dumps(previous, sort_keys=True, indent=2) + "\n")
     return rc
@@ -123,9 +132,19 @@ def main():
         json.loads(args.run_json.read_text()), json.loads(args.job_json.read_text())
     )
     args.output.write_text(json.dumps(data, indent=2, sort_keys=True) + "\n")
-    print(json.dumps({k: data[k] for k in (
-        "source_sha", "wall_seconds", "non_job_seconds", "job_seconds"
-    )}))
+    print(
+        json.dumps(
+            {
+                k: data[k]
+                for k in (
+                    "source_sha",
+                    "wall_seconds",
+                    "non_job_seconds",
+                    "job_seconds",
+                )
+            }
+        )
+    )
 
 
 if __name__ == "__main__":

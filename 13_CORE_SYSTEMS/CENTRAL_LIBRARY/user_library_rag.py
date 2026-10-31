@@ -1,4 +1,5 @@
 """User Library RAG – document indexing and retrieval for the ABACUS test surface."""
+
 from __future__ import annotations
 
 import json
@@ -106,9 +107,7 @@ class UserLibraryRAG:
         if epic is not None:
             candidates = [c for c in candidates if c.epic == epic]
         if topics is not None:
-            candidates = [
-                c for c in candidates if any(t in c.topics for t in topics)
-            ]
+            candidates = [c for c in candidates if any(t in c.topics for t in topics)]
         results: list[QueryResult] = []
         for chunk in candidates:
             score = self._calculate_relevance(query, chunk)
@@ -129,9 +128,7 @@ class UserLibraryRAG:
         ids = self.doc_to_chunks.get(doc_id, [])
         return [self.chunks[i] for i in ids if i in self.chunks]
 
-    def get_related_chunks(
-        self, chunk_id: str, top_k: int = 3
-    ) -> list[DocumentChunk]:
+    def get_related_chunks(self, chunk_id: str, top_k: int = 3) -> list[DocumentChunk]:
         if chunk_id not in self.chunks:
             return []
         source = self.chunks[chunk_id]
@@ -223,9 +220,7 @@ class UserLibraryRAG:
     # ------------------------------------------------------------------
 
     @staticmethod
-    def _split_text(
-        text: str, chunk_size: int, chunk_overlap: int
-    ) -> list[str]:
+    def _split_text(text: str, chunk_size: int, chunk_overlap: int) -> list[str]:
         if len(text) <= chunk_size:
             return [text]
         chunks: list[str] = []

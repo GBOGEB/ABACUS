@@ -4,12 +4,13 @@ Analysis Smoke Test Agent V2.3.0
 Memory-optimized DMAIC-based smoke test for V2.3 component integrity
 Designed for 4M memory constraint with DMAIC-structured health checks
 """
+
 import json
 import sys
 import time
 import traceback
-from pathlib import Path
 from datetime import datetime
+from pathlib import Path
 from typing import Any, Dict, List, Tuple
 
 __version__ = "v2.3.0"
@@ -169,6 +170,7 @@ class MemoryEfficientSmokeTestV23:
             # Try loading via spec to validate the class exists without polluting sys.path
             try:
                 import importlib.util as _ilu
+
                 spec = _ilu.spec_from_file_location(agent_name, agent_file)
                 mod = _ilu.module_from_spec(spec)  # type: ignore[arg-type]
                 spec.loader.exec_module(mod)  # type: ignore[union-attr]
@@ -195,7 +197,9 @@ class MemoryEfficientSmokeTestV23:
         if orch_path.exists():
             check_results.append(self._pass(orch_label))
         else:
-            check_results.append(self._fail(orch_label, "local_mcp/agent_orchestrator_v3.0.py not found"))
+            check_results.append(
+                self._fail(orch_label, "local_mcp/agent_orchestrator_v3.0.py not found")
+            )
 
         # --- Tracking database validity check ---
         tasks_path = self._repo_root / "tracking_v2.3" / "tasks" / "tasks.json"
@@ -246,7 +250,9 @@ class MemoryEfficientSmokeTestV23:
         self._log_dmaic("IMPROVE", f"{len(hints)} remediation hints generated")
         return {"hints": hints, "hint_count": len(hints)}
 
-    def dmaic_control(self, analysis: Dict[str, Any], improvements: Dict[str, Any]) -> Dict[str, Any]:
+    def dmaic_control(
+        self, analysis: Dict[str, Any], improvements: Dict[str, Any]
+    ) -> Dict[str, Any]:
         """CONTROL: Produce a summary and set quality gate status."""
         self._log_dmaic("CONTROL", "Establishing quality gate")
 
@@ -293,7 +299,9 @@ class MemoryEfficientSmokeTestV23:
             result = {
                 "agent": self.name,
                 "version": self.version,
-                "status": "success" if control.get("gate_status") == "PASS" else "failure",
+                "status": (
+                    "success" if control.get("gate_status") == "PASS" else "failure"
+                ),
                 "timestamp": datetime.now().isoformat(),
                 "execution_time": execution_time,
                 "dmaic_results": {
@@ -309,7 +317,9 @@ class MemoryEfficientSmokeTestV23:
 
             self.results.append(result)
             self._save_results(result)
-            self._log_dmaic("COMPLETE", f"Smoke-test cycle finished in {execution_time:.2f}s")
+            self._log_dmaic(
+                "COMPLETE", f"Smoke-test cycle finished in {execution_time:.2f}s"
+            )
             return result
 
         except Exception as exc:

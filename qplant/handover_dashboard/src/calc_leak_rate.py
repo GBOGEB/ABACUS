@@ -3,6 +3,7 @@
 This module converts helium leak-rate specifications from mbar·L/s to
 mass-flow units using first principles from ideal-gas throughput.
 """
+
 from __future__ import annotations
 
 from dataclasses import dataclass
@@ -31,6 +32,7 @@ class LeakState:
 # ----------------------------
 # Unit conversion primitives
 # ----------------------------
+
 
 def mbar_l_s_to_pa_m3_s(leak_rate_mbar_l_s: float) -> float:
     """Convert mbar·L/s -> Pa·m³/s.
@@ -100,6 +102,7 @@ def normal_m3_per_day_to_kg_per_year(normal_m3_per_day: float) -> float:
 # Thermodynamic/context helpers
 # ----------------------------
 
+
 def helium_density_kg_m3(temperature_k: float, pressure_bar_abs: float) -> float:
     p_pa = pressure_bar_abs * 1e5
     return p_pa * MOLAR_MASS_HE_KG_PER_MOL / (R_UNIVERSAL * temperature_k)
@@ -119,7 +122,9 @@ def sonic_flow_indicators(
     """Simple notional leak-path flow indicators for triage context."""
     rho = helium_density_kg_m3(temperature_k, upstream_pressure_bar)
     m_dot_kg_s = (
-        leak_rate_to_mass_flow_g_s(leak_rate_mbar_l_s, temperature_k, upstream_pressure_bar)
+        leak_rate_to_mass_flow_g_s(
+            leak_rate_mbar_l_s, temperature_k, upstream_pressure_bar
+        )
         / 1000.0
     )
     area_m2 = pi * (leak_diameter_m**2) / 4.0
@@ -129,7 +134,9 @@ def sonic_flow_indicators(
     critical_ratio = choked_flow_critical_ratio()
     is_choked = pressure_ratio <= critical_ratio
 
-    a_sound_m_s = sqrt(max(HE_GAMMA * (8.314462618 / MOLAR_MASS_HE_KG_PER_MOL) * temperature_k, 1e-12))
+    a_sound_m_s = sqrt(
+        max(HE_GAMMA * (8.314462618 / MOLAR_MASS_HE_KG_PER_MOL) * temperature_k, 1e-12)
+    )
     mach = velocity_m_s / a_sound_m_s
 
     return {
@@ -146,6 +153,7 @@ def sonic_flow_indicators(
 # ----------------------------
 # Tabular builders
 # ----------------------------
+
 
 def build_conversion_grid(
     leak_classes: Iterable[float],
@@ -172,7 +180,9 @@ def build_conversion_grid(
     return pd.DataFrame(rows)
 
 
-def dimensional_proof(leak_rate_mbar_l_s: float, temperature_k: float, pressure_bar_abs: float) -> dict[str, float]:
+def dimensional_proof(
+    leak_rate_mbar_l_s: float, temperature_k: float, pressure_bar_abs: float
+) -> dict[str, float]:
     """Return full worked conversion chain for transparency pages/tests."""
     q_pa_m3_s = mbar_l_s_to_pa_m3_s(leak_rate_mbar_l_s)
     pressure_ratio = pressure_bar_abs / 1.0

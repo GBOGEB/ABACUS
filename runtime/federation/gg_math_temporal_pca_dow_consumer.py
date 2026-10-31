@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 """Fail-closed ABACUS/DOW consumer for CODEX/KEB gg_MATH temporal-PCA bindings."""
+
 from __future__ import annotations
 
 import argparse
@@ -60,7 +61,8 @@ def federation_followup_valid(binding: dict) -> bool:
         return True
     followup = binding.get("federation_followup")
     return isinstance(followup, dict) and all(
-        followup.get(key) == expected for key, expected in EXPECTED_FEDERATION_FOLLOWUP.items()
+        followup.get(key) == expected
+        for key, expected in EXPECTED_FEDERATION_FOLLOWUP.items()
     )
 
 
@@ -73,13 +75,18 @@ def evaluate(binding: dict | None) -> tuple[bool, dict]:
         "binding_present": True,
         "semantic_owner_valid": binding.get("semantic_owner") == "CODEX/KEB",
         "keb_status_accept": binding.get("status") == "ACCEPT",
-        "provider_exact_sha_valid": bool(SHA_RE.fullmatch(str(binding.get("source_sha", "")))),
-        "provider_artifact_digest_valid": bool(SHA256_RE.fullmatch(str(binding.get("source_artifact_digest", "")))),
+        "provider_exact_sha_valid": bool(
+            SHA_RE.fullmatch(str(binding.get("source_sha", "")))
+        ),
+        "provider_artifact_digest_valid": bool(
+            SHA256_RE.fullmatch(str(binding.get("source_artifact_digest", "")))
+        ),
         "provider_runtime_pass": binding.get("provider_runtime_result") == "PASS",
         "all_required_challenges_present": REQUIRED_CHALLENGES <= challenges,
         "all_required_diagnostics_present": REQUIRED_DIAGNOSTICS <= diagnostics,
         "authority_transfer_false": binding.get("authority_transfer") is False,
-        "hard_gate_compensation_false": binding.get("hard_gate_compensation_allowed") is False,
+        "hard_gate_compensation_false": binding.get("hard_gate_compensation_allowed")
+        is False,
         "authority_cap_a3": binding.get("authority_cap") == "A3_SYNTHETIC_ONLY",
     }
     if "federation_followup" in binding:
@@ -101,7 +108,11 @@ def consume(binding: dict | None) -> dict:
         "producer_exact_head_sha": source_sha,
         "source_artifact_digest": source_digest,
         "status": "ACCEPT" if accept else "DEFER",
-        "reason": "EXACT_KEB_TEMPORAL_PCA_BINDING_ACCEPT" if accept else "KEB_TEMPORAL_PCA_BINDING_NOT_PROMOTABLE",
+        "reason": (
+            "EXACT_KEB_TEMPORAL_PCA_BINDING_ACCEPT"
+            if accept
+            else "KEB_TEMPORAL_PCA_BINDING_NOT_PROMOTABLE"
+        ),
         "checks": checks,
         "emit_for_qps_bounded_consumption": accept,
         "interpretation_guards": {
@@ -120,7 +131,9 @@ def consume(binding: dict | None) -> dict:
     }
     if binding and "federation_followup" in binding:
         dow["federation_followup"] = binding["federation_followup"]
-    dow["receipt_sha256"] = hashlib.sha256(json.dumps(dow, sort_keys=True).encode()).hexdigest()
+    dow["receipt_sha256"] = hashlib.sha256(
+        json.dumps(dow, sort_keys=True).encode()
+    ).hexdigest()
     return dow
 
 

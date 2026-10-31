@@ -30,18 +30,19 @@ The generated .pptx file can be used directly or as a Pandoc reference template.
 
 import argparse
 from pathlib import Path
+
 from pptx import Presentation
+from pptx.dml.color import RGBColor
 from pptx.enum.shapes import MSO_AUTO_SHAPE_TYPE
 from pptx.enum.text import PP_ALIGN
 from pptx.util import Inches, Pt
-from pptx.dml.color import RGBColor
 
 # SCK CEN Corporate Color Palette
 # These colors define the visual identity for official presentations
-PRIMARY_COLOR = RGBColor(0, 63, 114)    # Deep blue used for title bars and headers
-ACCENT_COLOR = RGBColor(0, 134, 192)    # Cyan accent for callouts and links
-SAND_COLOR = RGBColor(232, 231, 226)    # Light neutral background for content
-TEXT_COLOR = RGBColor(34, 34, 34)       # Dark gray for readable body text
+PRIMARY_COLOR = RGBColor(0, 63, 114)  # Deep blue used for title bars and headers
+ACCENT_COLOR = RGBColor(0, 134, 192)  # Cyan accent for callouts and links
+SAND_COLOR = RGBColor(232, 231, 226)  # Light neutral background for content
+TEXT_COLOR = RGBColor(34, 34, 34)  # Dark gray for readable body text
 
 # Typography constants - Calibri is the SCK CEN standard font
 TITLE_FONT = "Calibri"
@@ -52,8 +53,18 @@ SLIDE_WIDTH = Inches(13.33)
 SLIDE_HEIGHT = Inches(7.5)
 
 
-def _text_box(slide, left, top, width, height, text="", font_size=18, bold=False,
-              color=TEXT_COLOR, align=PP_ALIGN.LEFT):
+def _text_box(
+    slide,
+    left,
+    top,
+    width,
+    height,
+    text="",
+    font_size=18,
+    bold=False,
+    color=TEXT_COLOR,
+    align=PP_ALIGN.LEFT,
+):
     """Create a formatted text box on a slide.
 
     This is a helper function that simplifies adding text to slides with
@@ -209,7 +220,9 @@ def _agenda_slide(prs, doc_number):
     slide = prs.slides.add_slide(prs.slide_layouts[6])
     _title_block(slide, "Agenda", "Reusable section outline")
 
-    content = slide.shapes.add_textbox(Inches(0.8), Inches(1.8), prs.slide_width - Inches(1.6), Inches(4.5))
+    content = slide.shapes.add_textbox(
+        Inches(0.8), Inches(1.8), prs.slide_width - Inches(1.6), Inches(4.5)
+    )
     tf = content.text_frame
     tf.text = "1. Executive summary\n2. System scope and constraints\n3. Integration timeline\n4. Interfaces and dependencies\n5. Risks and mitigations\n6. Next actions"
     for p in tf.paragraphs:
@@ -333,7 +346,14 @@ def _architecture_slide(prs, doc_number):
     canvas.line.color.rgb = PRIMARY_COLOR
 
     # Sample component blocks - replace with actual system components
-    for idx, title in enumerate(["Helium storage", "Compression train", "Cold box", "Distribution to cryomodules"]):
+    for idx, title in enumerate(
+        [
+            "Helium storage",
+            "Compression train",
+            "Cold box",
+            "Distribution to cryomodules",
+        ]
+    ):
         block = slide.shapes.add_shape(
             MSO_AUTO_SHAPE_TYPE.ROUNDED_RECTANGLE,
             Inches(1.0 + idx * 1.8),  # Horizontal spacing
@@ -383,7 +403,11 @@ def _timeline_slide(prs, doc_number):
         The created slide object
     """
     slide = prs.slides.add_slide(prs.slide_layouts[6])
-    _title_block(slide, "Schedule & milestones", "Quarterly checkpoints with owner and dependencies")
+    _title_block(
+        slide,
+        "Schedule & milestones",
+        "Quarterly checkpoints with owner and dependencies",
+    )
 
     # Sample quarterly milestones - replace with actual project timeline
     milestones = [
@@ -458,23 +482,39 @@ def _risk_slide(prs, doc_number):
         The created slide object
     """
     slide = prs.slides.add_slide(prs.slide_layouts[6])
-    _title_block(slide, "Risk and mitigation register", "Keep the table; replace rows with your current items")
+    _title_block(
+        slide,
+        "Risk and mitigation register",
+        "Keep the table; replace rows with your current items",
+    )
 
     # Sample risk entries - replace with actual project risks
     rows = [
-        ("Cryogenic valve lead time", "Vendor lead time exceeds site window", "Place advance order; keep dual suppliers"),
-        ("Interface firmware", "PLC safety libraries misaligned", "Synchronize versions with SCK CEN validation bench"),
-        ("Site readiness", "Utility hook-ups delayed", "Stage temporary utilities; pre-commission compressors"),
+        (
+            "Cryogenic valve lead time",
+            "Vendor lead time exceeds site window",
+            "Place advance order; keep dual suppliers",
+        ),
+        (
+            "Interface firmware",
+            "PLC safety libraries misaligned",
+            "Synchronize versions with SCK CEN validation bench",
+        ),
+        (
+            "Site readiness",
+            "Utility hook-ups delayed",
+            "Stage temporary utilities; pre-commission compressors",
+        ),
     ]
 
     # Create table with header row + data rows
     table = slide.shapes.add_table(
         len(rows) + 1,  # +1 for header row
-        3,              # 3 columns: Risk, Impact, Mitigation
+        3,  # 3 columns: Risk, Impact, Mitigation
         Inches(0.6),
         Inches(1.9),
         prs.slide_width - Inches(1.2),
-        Inches(3.6)
+        Inches(3.6),
     ).table
 
     # Set column widths for balanced display
@@ -602,7 +642,9 @@ def build_template(output_path: Path, doc_number: str = "SCK CEN/0000") -> None:
 
 
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser(description="Generate the QPLANT/SCK CEN slide template")
+    parser = argparse.ArgumentParser(
+        description="Generate the QPLANT/SCK CEN slide template"
+    )
     parser.add_argument(
         "--doc-number",
         default="SCK CEN/0000",
