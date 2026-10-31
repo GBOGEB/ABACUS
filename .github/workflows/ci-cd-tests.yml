@@ -302,7 +302,7 @@ jobs:
       fail-fast: false
       matrix:
         os: [ubuntu-latest, windows-latest, macos-latest]
-        # pyproject.toml requires-python >=3.11; 3.10 is not a supported runtime.
+        # pyproject.toml requires-python >=3.11; 3.10 is unsupported.
         python-version: ['3.11', '3.12']
 
     steps:
@@ -899,7 +899,7 @@ jobs:
             echo "- Safety: \`$SAFETY\`"
           } >> "$GITHUB_STEP_SUMMARY"
           if [[ "$FULL_SCAN" != "required" ]]; then
-            echo "- Admission (${EVENT}): Bandit ratchet above; Safety enforced" \
+            echo "- Admission (${EVENT}): Bandit ratchet; Safety enforced" \
               >> "$GITHUB_STEP_SUMMARY"
             if [[ "$SAFETY" != "success" ]]; then
               echo "::error::Safety is red."
