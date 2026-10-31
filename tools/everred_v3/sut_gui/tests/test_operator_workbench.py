@@ -1,5 +1,4 @@
 """W45 real local Git checkout, authorization, clone, binary I/O and HTTP tests."""
-
 import hashlib
 import importlib.util
 import json
@@ -10,15 +9,13 @@ import tempfile
 import threading
 import time
 import unittest
-from http.client import HTTPConnection
 from http.server import ThreadingHTTPServer
+from http.client import HTTPConnection
 from urllib.error import HTTPError
 from urllib.request import Request, urlopen
 
 HERE = pathlib.Path(__file__).resolve().parents[1]
-spec = importlib.util.spec_from_file_location(
-    "w45_operator", HERE / "operator_workbench.py"
-)
+spec = importlib.util.spec_from_file_location("w45_operator", HERE / "operator_workbench.py")
 operator_module = importlib.util.module_from_spec(spec)
 spec.loader.exec_module(operator_module)
 app_spec = importlib.util.spec_from_file_location("w45_server", HERE / "server.py")
@@ -70,26 +67,18 @@ class WorkbenchContracts(unittest.TestCase):
             "(out/'pipeline.json').write_text('{\"status\":\"PASS\"}')\n"
         )
         subprocess.run(["git", "init", "-q", str(self.root)], check=True)
-        for key, value in (
-            ("user.email", "qa@example.invalid"),
-            ("user.name", "W45 Unit QA"),
-        ):
-            subprocess.run(
-                ["git", "-C", str(self.root), "config", key, value], check=True
-            )
+        for key, value in (("user.email", "qa@example.invalid"),
+                           ("user.name", "W45 Unit QA")):
+            subprocess.run(["git", "-C", str(self.root), "config", key, value],
+                           check=True)
         subprocess.run(["git", "-C", str(self.root), "add", "."], check=True)
-        subprocess.run(
-            ["git", "-C", str(self.root), "commit", "-q", "-m", "fixture"], check=True
-        )
+        subprocess.run(["git", "-C", str(self.root), "commit", "-q", "-m", "fixture"],
+                       check=True)
         self.inbox = self.base / "inbox"
         self.inbox.mkdir()
         self.receipts = self.base / "receipts"
         self.manager = operator_module.OperatorWorkbench(
-            self.root,
-            self.inbox,
-            self.receipts,
-            enabled=True,
-            token="w45-token",
+            self.root, self.inbox, self.receipts, enabled=True, token="w45-token",
             timeout_seconds=30,
         )
         self.sha = operator_module._git_head(self.root)
@@ -104,38 +93,22 @@ class WorkbenchContracts(unittest.TestCase):
             row = self.manager.get_run(rid)
             if row["receipt_sha256"] is not None:
                 return row
-            time.sleep(0.04)
+            time.sleep(.04)
         self.fail("local testflight timed out")
 
-    def submit(
-        self,
-        profile,
-        filename=None,
-        input_sha=None,
-        delay=0,
-        consent=True,
-        sha=None,
-        token="w45-token",
-    ):
+    def submit(self, profile, filename=None, input_sha=None, delay=0, consent=True,
+               sha=None, token="w45-token"):
         return self.manager.submit(
-            profile,
-            filename,
-            self.sha if sha is None else sha,
-            input_sha,
-            consent,
-            delay,
-            token,
+            profile, filename, self.sha if sha is None else sha, input_sha,
+            consent, delay, token,
         )
 
     def test_nonbinary_profiles_plan_without_binary_filename(self):
         # W45 native run 39173795497: eager binary command construction
         # raised TypeError for filename=None, surfacing as HTTP 400.
         for profile in (
-            "python-tests",
-            "runner-tests",
-            "debug-compile",
-            "task-census",
-            "pipeline-3p",
+            "python-tests", "runner-tests", "debug-compile",
+            "task-census", "pipeline-3p",
         ):
             with self.subTest(profile=profile):
                 plan = self.manager.plan(profile)
@@ -143,7 +116,8 @@ class WorkbenchContracts(unittest.TestCase):
                 self.assertIsNone(plan["input"])
                 self.assertEqual(plan["source_sha"], self.sha)
                 self.assertNotIn("operator-input/None", repr(plan["argv"]))
-                self.assertTrue(all(command[0] == "python" for command in plan["argv"]))
+                self.assertTrue(all(command[0] == "python"
+                                    for command in plan["argv"]))
         with self.assertRaisesRegex(ValueError, "verified local input"):
             self.manager._steps("binary-bridge", None, self.sha)
 
@@ -166,14 +140,9 @@ class WorkbenchContracts(unittest.TestCase):
             with self.subTest(delay=bad):
                 self.assertEqual(self.submit("python-tests", delay=bad)[0], 400)
         disabled = operator_module.OperatorWorkbench(
-            self.root, self.inbox, self.receipts, token="w45-token"
-        )
-        self.assertEqual(
-            disabled.submit("python-tests", None, self.sha, None, True, 0, "w45-token")[
-                0
-            ],
-            403,
-        )
+            self.root, self.inbox, self.receipts, token="w45-token")
+        self.assertEqual(disabled.submit("python-tests", None, self.sha, None,
+                                         True, 0, "w45-token")[0], 403)
 
     def test_clone_testflight_and_append_only_receipt(self):
         code, row = self.submit("python-tests")
@@ -198,7 +167,8 @@ class WorkbenchContracts(unittest.TestCase):
         original.write_bytes(contents)
         plan = self.manager.plan("binary-bridge", original.name)
         self.assertEqual(plan["input"]["sha256"], hashlib.sha256(contents).hexdigest())
-        code, row = self.submit("binary-bridge", original.name, plan["input"]["sha256"])
+        code, row = self.submit("binary-bridge", original.name,
+                                plan["input"]["sha256"])
         self.assertEqual(code, 202)
         result = self.wait(row["id"])
         self.assertEqual(result["status"], "PASS_LOCAL_ONLY", result["steps"])
@@ -209,7 +179,8 @@ class WorkbenchContracts(unittest.TestCase):
         self.assertEqual(art["sha256"], operator_module.file_hash(path))
         self.assertEqual(self.manager.artifact(row["id"], 0)[1], path.read_bytes())
         self.assertEqual(json.loads(path.read_text())["original"], original.name)
-        self.assertEqual(result["originals_disposition"], "KEEP_AWAIT_USER_APPROVAL")
+        self.assertEqual(result["originals_disposition"],
+                         "KEEP_AWAIT_USER_APPROVAL")
         path.write_bytes(b"CORRUPTED_OUTPUT")
         self.assertIsNone(self.manager.artifact(row["id"], 0))
 
@@ -238,9 +209,8 @@ class WorkbenchContracts(unittest.TestCase):
             link.symlink_to(target)
         except OSError:
             self.skipTest("Symlink creation blocked by local Windows policy")
-        self.assertNotIn(
-            "alias.pdf", [item["name"] for item in self.manager.available_inputs()]
-        )
+        self.assertNotIn("alias.pdf",
+                         [item["name"] for item in self.manager.available_inputs()])
         with self.assertRaises(ValueError):
             self.manager.plan("binary-bridge", "alias.pdf")
 
@@ -269,9 +239,8 @@ class WorkbenchContracts(unittest.TestCase):
                 self.assertEqual(code, 202)
                 final = self.wait(row["id"])
                 self.assertEqual(final["status"], "PASS_LOCAL_ONLY", final["steps"])
-                self.assertTrue(
-                    any(x["path"].endswith(artifact_suffix) for x in final["artifacts"])
-                )
+                self.assertTrue(any(x["path"].endswith(artifact_suffix)
+                                    for x in final["artifacts"]))
         code, row = self.submit("debug-compile")
         self.assertEqual(code, 202)
         self.assertEqual(self.wait(row["id"])["status"], "PASS_LOCAL_ONLY")
@@ -287,16 +256,12 @@ class OperatorHTTP(WorkbenchContracts):
         *branch* coverage gate unchanged. No GitHub, arbitrary shell or
         security policy bypass is involved.
         """
-        handler = type(
-            "W49NegativeHandler",
-            (server_module.Handler,),
-            {
-                "manager": server_module.RunManager(self.root),
-                "operator": self.manager,
-                "public_index": HERE / "index.html",
-                "operator_page": HERE / "operator.html",
-            },
-        )
+        handler = type("W49NegativeHandler", (server_module.Handler,), {
+            "manager": server_module.RunManager(self.root),
+            "operator": self.manager,
+            "public_index": HERE / "index.html",
+            "operator_page": HERE / "operator.html",
+        })
         server = ThreadingHTTPServer(("127.0.0.1", 0), handler)
         worker = threading.Thread(target=server.serve_forever, daemon=True)
         worker.start()
@@ -311,12 +276,8 @@ class OperatorHTTP(WorkbenchContracts):
             # or dynamic URL open. This is a native HTTP denial-path test.
             conn = HTTPConnection("127.0.0.1", server.server_port, timeout=7)
             try:
-                conn.request(
-                    "POST" if body is not None else "GET",
-                    route,
-                    body=body,
-                    headers=opts,
-                )
+                conn.request("POST" if body is not None else "GET", route,
+                             body=body, headers=opts)
                 response = conn.getresponse()
                 response.read()
                 return response.status
@@ -328,76 +289,46 @@ class OperatorHTTP(WorkbenchContracts):
             self.assertEqual(http_status("/api/operator/runs/not-present"), 404)
             self.assertEqual(http_status("/api/runs/not-present"), 404)
             self.assertEqual(http_status("/api/operator/unknown"), 404)
-            self.assertEqual(
-                http_status(
-                    "/api/operator/artifacts/malformed",
-                    headers={"X-SUT-Token": "w45-token"},
-                ),
-                404,
-            )
+            self.assertEqual(http_status(
+                "/api/operator/artifacts/malformed",
+                headers={"X-SUT-Token": "w45-token"}), 404)
             self.assertEqual(http_status("/api/unknown", body=b"{}"), 404)
-            self.assertEqual(
-                http_status(
-                    "/api/operator/plan",
-                    body=b'{"profile":"python-tests"}',
-                    headers={"Host": "attacker.invalid"},
-                ),
-                403,
-            )
-            self.assertEqual(
-                http_status(
-                    "/api/operator/plan",
-                    body=b'{"profile":"python-tests"}',
-                    headers={"Content-Type": "text/plain"},
-                ),
-                415,
-            )
+            self.assertEqual(http_status(
+                "/api/operator/plan", body=b'{"profile":"python-tests"}',
+                headers={"Host": "attacker.invalid"}), 403)
+            self.assertEqual(http_status(
+                "/api/operator/plan", body=b'{"profile":"python-tests"}',
+                headers={"Content-Type": "text/plain"}), 415)
             for payload in (
-                b"",
-                b"[]",
-                b'{"profile":"python-tests","extra":1}',
-                b'{"profile":"../../invalid"}',
-                b"{}",
+                b"", b"[]", b'{"profile":"python-tests","extra":1}',
+                b'{"profile":"../../invalid"}', b"{}",
             ):
                 with self.subTest(payload=payload):
                     self.assertEqual(
-                        http_status("/api/operator/plan", body=payload), 400
-                    )
+                        http_status("/api/operator/plan", body=payload), 400)
         finally:
             server.shutdown()
             server.server_close()
 
     def test_loopback_api_plan_consent_run_cancel_and_html(self):
-        handler = type(
-            "OperatorTestHandler",
-            (server_module.Handler,),
-            {
-                "manager": server_module.RunManager(self.root),
-                "operator": self.manager,
-                "public_index": HERE / "index.html",
-                "operator_page": HERE / "operator.html",
-            },
-        )
+        handler = type("OperatorTestHandler", (server_module.Handler,), {
+            "manager": server_module.RunManager(self.root),
+            "operator": self.manager,
+            "public_index": HERE / "index.html",
+            "operator_page": HERE / "operator.html",
+        })
         server = ThreadingHTTPServer(("127.0.0.1", 0), handler)
         thread = threading.Thread(target=server.serve_forever, daemon=True)
         thread.start()
         base = "http://127.0.0.1:" + str(server.server_port)
-
         def post(route, obj, origin=None, token=None):
-            headers = {
-                "Content-Type": "application/json",
-                "Origin": base if origin is None else origin,
-            }
+            headers = {"Content-Type": "application/json",
+                       "Origin": base if origin is None else origin}
             if token is not None:
                 headers["X-SUT-Token"] = token
-            req = Request(
-                base + route,
-                data=json.dumps(obj).encode(),
-                headers=headers,
-                method="POST",
-            )
+            req = Request(base + route, data=json.dumps(obj).encode(),
+                          headers=headers, method="POST")
             return urlopen(req, timeout=7)
-
         try:
             page = urlopen(base + "/operator").read()
             self.assertIn(b"codepurple.operator.workbench.v1", page)
@@ -406,32 +337,19 @@ class OperatorHTTP(WorkbenchContracts):
             self.assertTrue(info["execution_enabled"])
             self.assertEqual(info["source_sha"], self.sha)
             with self.assertRaises(HTTPError) as bad_host:
-                urlopen(
-                    Request(
-                        base + "/api/operator/catalog",
-                        headers={"Host": "attacker.invalid"},
-                    )
-                )
+                urlopen(Request(base + "/api/operator/catalog",
+                                headers={"Host": "attacker.invalid"}))
             self.assertEqual(bad_host.exception.code, 403)
             with self.assertRaises(HTTPError) as foreign:
-                post(
-                    "/api/operator/plan",
-                    {"profile": "python-tests"},
-                    origin="http://evil.invalid",
-                )
+                post("/api/operator/plan", {"profile": "python-tests"},
+                     origin="http://evil.invalid")
             self.assertEqual(foreign.exception.code, 403)
-            plan = json.load(post("/api/operator/plan", {"profile": "python-tests"}))[
-                "result"
-            ]
+            plan = json.load(post("/api/operator/plan",
+                                  {"profile": "python-tests"}))["result"]
             self.assertEqual(plan["source_sha"], self.sha)
-            request = {
-                "profile": "python-tests",
-                "input_name": None,
-                "source_sha": plan["source_sha"],
-                "input_sha256": None,
-                "consent": True,
-                "after_seconds": 0,
-            }
+            request = {"profile": "python-tests", "input_name": None,
+                       "source_sha": plan["source_sha"], "input_sha256": None,
+                       "consent": True, "after_seconds": 0}
             with self.assertRaises(HTTPError) as no_token:
                 post("/api/operator/run", request)
             self.assertEqual(no_token.exception.code, 403)
@@ -440,26 +358,15 @@ class OperatorHTTP(WorkbenchContracts):
                 post("/api/operator/run", request, token="w45-token")
             self.assertEqual(no_consent.exception.code, 403)
             request["consent"] = True
-            row = json.load(post("/api/operator/run", request, token="w45-token"))[
-                "result"
-            ]
+            row = json.load(post("/api/operator/run", request, token="w45-token"))["result"]
             self.assertEqual(self.wait(row["id"])["status"], "PASS_LOCAL_ONLY")
             retrieved = json.load(urlopen(base + "/api/operator/runs/" + row["id"]))
-            self.assertEqual(
-                retrieved["receipt_sha256"],
-                self.manager.get_run(row["id"])["receipt_sha256"],
-            )
+            self.assertEqual(retrieved["receipt_sha256"],
+                             self.manager.get_run(row["id"])["receipt_sha256"])
             # Generated artifacts are private to token-bearing local readbacks.
-            stat = json.load(
-                post(
-                    "/api/operator/run",
-                    {
-                        **request,
-                        "profile": "task-census",
-                    },
-                    token="w45-token",
-                )
-            )["result"]
+            stat = json.load(post("/api/operator/run", {
+                **request, "profile": "task-census",
+            }, token="w45-token"))["result"]
             finished = self.wait(stat["id"])
             self.assertEqual(finished["status"], "PASS_LOCAL_ONLY")
             artifact_route = base + "/api/operator/artifacts/" + stat["id"] + "/0"
@@ -467,21 +374,16 @@ class OperatorHTTP(WorkbenchContracts):
                 urlopen(artifact_route, timeout=5)
             self.assertEqual(absent_token.exception.code, 403)
             authorized = Request(artifact_route, headers={"X-SUT-Token": "w45-token"})
-            self.assertEqual(
-                urlopen(authorized, timeout=5).read(), b"LOCAL_FAKE_RECEIPT"
-            )
+            self.assertEqual(urlopen(authorized, timeout=5).read(),
+                             b"LOCAL_FAKE_RECEIPT")
             with self.assertRaises(HTTPError) as missing_output:
-                urlopen(
-                    Request(
-                        base + "/api/operator/artifacts/" + stat["id"] + "/999",
-                        headers={"X-SUT-Token": "w45-token"},
-                    ),
-                    timeout=5,
-                )
+                urlopen(Request(base + "/api/operator/artifacts/" + stat["id"] + "/999",
+                                headers={"X-SUT-Token": "w45-token"}), timeout=5)
             self.assertEqual(missing_output.exception.code, 404)
         finally:
             server.shutdown()
             server.server_close()
+
 
 
 class OperatorSurfaceQA(unittest.TestCase):
@@ -533,13 +435,9 @@ class OperatorSurfaceQA(unittest.TestCase):
         self.assertIn("input_sha256", script)
         self.assertIn("/api/operator/artifacts/", script)
         if shutil.which("node"):
-            completed = subprocess.run(
-                ["node", "--check"],
-                input=script,
-                text=True,
-                capture_output=True,
-                timeout=10,
-            )
+            completed = subprocess.run(["node", "--check"], input=script,
+                                       text=True, capture_output=True,
+                                       timeout=10)
             self.assertEqual(completed.returncode, 0, completed.stderr)
 
 

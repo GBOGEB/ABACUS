@@ -1,5 +1,4 @@
 """Offline human + machine acceptance debt dashboards and immutable receipts."""
-
 from __future__ import annotations
 
 import hashlib
@@ -30,171 +29,90 @@ def markdown_debt(projection):
         ev = "[x]" if item["evidence_checked"] else "[ ]"
         adm = "[x]" if item["admission_checked"] else "[ ]"
         title = item["title"].replace("|", "\\|").replace("\n", " ")
-        lines.append(
-            "| "
-            + " | ".join(
-                (item["id"], ev, adm, item["repo"], title, item["evidence_state"])
-            )
-            + " |"
-        )
+        lines.append("| " + " | ".join((item["id"], ev, adm, item["repo"],
+                                       title, item["evidence_state"])) + " |")
     lines.extend(["", "## Evidence links (source-bound observation only)", ""])
     for item in projection["obligations"]:
         if item["latest_evidence_url"]:
-            lines.append(
-                "- "
-                + item["id"]
-                + ": [read native source]("
-                + item["latest_evidence_url"]
-                + ") on head `"
-                + item["latest_subject_sha"]
-                + "`; status `"
-                + item["evidence_state"]
-                + "`."
-            )
-    lines.extend(
-        [
-            "",
-            "Unknown values are `null`, not zero. Root closure,",
-            "Crew dispatch, current-main and diff coverage are unverified.",
-            "",
-        ]
-    )
+            lines.append("- " + item["id"] + ": [read native source](" +
+                         item["latest_evidence_url"] + ") on head `" +
+                         item["latest_subject_sha"] + "`; status `" +
+                         item["evidence_state"] + "`.")
+    lines.extend(["", "Unknown values are `null`, not zero. Root closure,",
+                  "Crew dispatch, current-main and diff coverage are unverified.", ""])
     return "\n".join(lines)
 
 
 def render_html(projection, graph, sipoc, temporal, local_testflight=None):
     metrics = projection["metrics"]
-    require(
-        projection["admission"] == "HOLD" and sipoc["admission"] == "HOLD",
-        "dashboard cannot represent unadmitted source as accepted",
-    )
+    require(projection["admission"] == "HOLD" and sipoc["admission"] == "HOLD",
+            "dashboard cannot represent unadmitted source as accepted")
     cards = [
-        (
-            "Evidence observed",
-            str(metrics["evidence_observed"]) + " / " + str(metrics["obligations"]),
-        ),
+        ("Evidence observed", str(metrics["evidence_observed"]) + " / " + str(metrics["obligations"])),
         ("Current stale", metrics["evidence_stale"]),
         ("Blocked / dependencies", metrics["evidence_blocked"]),
         ("Admission", "HOLD"),
         ("Main coverage", "UNKNOWN"),
     ]
-    kpis = "".join(
-        "<article class='kpi'><span>" + esc(name) + "</span>"
-        "<strong>" + esc(value) + "</strong></article>"
-        for name, value in cards
-    )
+    kpis = "".join("<article class='kpi'><span>" + esc(name) + "</span>"
+                   "<strong>" + esc(value) + "</strong></article>"
+                   for name, value in cards)
     rows = []
     for item in projection["obligations"]:
         observed = " checked" if item["evidence_checked"] else ""
         admitted = " checked" if item["admission_checked"] else ""
-        link = (
-            "<a target='_blank' rel='noopener noreferrer' href='"
-            + esc(item["latest_evidence_url"])
-            + "'>Evidence source</a>"
-            if item["latest_evidence_url"]
-            else "<span class='muted'>No receipt</span>"
-        )
+        link = ("<a target='_blank' rel='noopener noreferrer' href='" +
+                esc(item["latest_evidence_url"]) + "'>Evidence source</a>"
+                if item["latest_evidence_url"] else "<span class='muted'>No receipt</span>")
         evidence = item["latest_evidence_url"] or ""
         rows.append(
-            "<article class='debt' data-repo='"
-            + esc(item["repo"])
-            + "' data-status='"
-            + esc(item["evidence_state"])
-            + "' data-kind='"
-            + esc(item["kind"])
-            + "'><div class='debt-head'><div>"
-            "<span class='micro'>"
-            + esc(item["id"])
-            + " &middot; "
-            + esc(item["repo"])
-            + "</span><h3>"
-            + esc(item["title"])
-            + "</h3></div><span class='pill state-"
-            + esc(item["evidence_state"])
-            + "'>"
-            + esc(item["evidence_state"])
-            + "</span></div>"
+            "<article class='debt' data-repo='" + esc(item["repo"]) +
+            "' data-status='" + esc(item["evidence_state"]) + "' data-kind='" +
+            esc(item["kind"]) + "'><div class='debt-head'><div>"
+            "<span class='micro'>" + esc(item["id"]) + " &middot; " +
+            esc(item["repo"]) + "</span><h3>" + esc(item["title"]) +
+            "</h3></div><span class='pill state-" + esc(item["evidence_state"]) +
+            "'>" + esc(item["evidence_state"]) + "</span></div>"
             "<div class='checks'><label title='Structural evidence captured, not authenticated approval'>"
-            "<input type='checkbox' disabled"
-            + observed
-            + "> Evidence captured</label><label title='Never automatically marked by this projection'>"
-            "<input type='checkbox' disabled"
-            + admitted
-            + "> Independently admitted</label></div>"
+            "<input type='checkbox' disabled" + observed +
+            "> Evidence captured</label><label title='Never automatically marked by this projection'>"
+            "<input type='checkbox' disabled" + admitted +
+            "> Independently admitted</label></div>"
             "<details><summary>Provenance and dependency detail</summary><p>"
-            "Scope: <code>"
-            + esc(item["scope"])
-            + "</code> &middot; Kind: <code>"
-            + esc(item["kind"])
-            + "</code></p><p>Requires: "
-            + esc(", ".join(item["depends_on"]) or "none")
-            + "</p>"
-            "<p>Observed head: <code>"
-            + esc(item["latest_subject_sha"] or "UNKNOWN")
-            + "</code></p><p>Epoch: <code>"
-            + esc(
-                item["latest_epoch"] if item["latest_epoch"] is not None else "UNKNOWN"
-            )
-            + "</code></p><p>"
-            + link
-            + "</p></details></article>"
+            "Scope: <code>" + esc(item["scope"]) + "</code> &middot; Kind: <code>" +
+            esc(item["kind"]) + "</code></p><p>Requires: " +
+            esc(", ".join(item["depends_on"]) or "none") + "</p>"
+            "<p>Observed head: <code>" + esc(item["latest_subject_sha"] or "UNKNOWN") +
+            "</code></p><p>Epoch: <code>" + esc(item["latest_epoch"] if item["latest_epoch"] is not None else "UNKNOWN") +
+            "</code></p><p>" + link + "</p></details></article>"
         )
     frontier = "".join(
-        "<tr><td>"
-        + esc(x["id"])
-        + "</td><td>"
-        + esc(x["observed_state"])
-        + "</td><td>"
-        + esc(x["downstream_dependency_reach"])
-        + "</td></tr>"
+        "<tr><td>" + esc(x["id"]) + "</td><td>" +
+        esc(x["observed_state"]) + "</td><td>" +
+        esc(x["downstream_dependency_reach"]) + "</td></tr>"
         for x in graph["blocked_frontier"][:14]
     )
     pulse_rows = "".join(
-        "<tr><td>"
-        + esc(x["pulse"])
-        + "</td><td>"
-        + esc(x["observed_evidence"])
-        + "/"
-        + esc(x["obligations"])
-        + "</td><td>"
-        + esc(
-            x["state_changes_from_previous"]
-            if x["state_changes_from_previous"] is not None
-            else "UNKNOWN"
-        )
-        + "</td><td>"
-        + esc(
-            round(x["descriptive_status_stability"] * 100, 1)
-            if x["descriptive_status_stability"] is not None
-            else "UNKNOWN"
-        )
-        + "</td></tr>"
-        for x in temporal["pulses"]
+        "<tr><td>" + esc(x["pulse"]) + "</td><td>" +
+        esc(x["observed_evidence"]) + "/" + esc(x["obligations"]) +
+        "</td><td>" + esc(x["state_changes_from_previous"] if x["state_changes_from_previous"] is not None else "UNKNOWN") +
+        "</td><td>" + esc(round(x["descriptive_status_stability"] * 100, 1)
+                              if x["descriptive_status_stability"] is not None else "UNKNOWN") +
+        "</td></tr>" for x in temporal["pulses"]
     )
     sipoc_rows = "".join(
-        "<tr><td>"
-        + esc(repo)
-        + "</td><td>"
-        + esc(s["plane"])
-        + "</td><td>"
-        + esc(s["consumer"])
-        + "</td></tr>"
+        "<tr><td>" + esc(repo) + "</td><td>" + esc(s["plane"]) +
+        "</td><td>" + esc(s["consumer"]) + "</td></tr>"
         for repo, s in sipoc["sources"].items()
     )
-    tests = (
-        ""
-        if not local_testflight
-        else (
-            "<p class='muted'>Local standalone testflight: "
-            + esc(local_testflight.get("tests_passed", "UNKNOWN"))
-            + " cases, "
-            + esc(local_testflight.get("coverage_percent", "UNKNOWN"))
-            + "% module statement/branch coverage; not GitHub admission.</p>"
-        )
+    tests = "" if not local_testflight else (
+        "<p class='muted'>Local standalone testflight: " +
+        esc(local_testflight.get("tests_passed", "UNKNOWN")) + " cases, " +
+        esc(local_testflight.get("coverage_percent", "UNKNOWN")) +
+        "% module statement/branch coverage; not GitHub admission.</p>"
     )
     # All snapshot values are escaped server-side; no dynamic remote fetch is used.
-    return (
-        """<!doctype html><html lang='en'><head><meta charset='utf-8'>
+    return """<!doctype html><html lang='en'><head><meta charset='utf-8'>
 <meta name='viewport' content='width=device-width,initial-scale=1'>
 <meta name='referrer' content='no-referrer'>
 <title>CODE PURPLE | Acceptance debt and federation DAG</title>
@@ -226,34 +144,22 @@ code{overflow-wrap:anywhere;font-size:12px}table{width:100%;border-collapse:coll
 </style></head><body>
 <header><div class='eyebrow'>ABACUS / CODEX / QPS  |  DMAIC + MIP</div><h1>Acceptance debt &amp; federation evidence</h1>
 <p>Source-bound, human-readable and machine-readable obligations. Two separate controls: evidence captured and independently admitted. This is a frozen review snapshot, not live GitHub CI.</p></header><main>
-<section class='cards'>"""
-        + kpis
-        + """</section>
+<section class='cards'>""" + kpis + """</section>
 <div class='warning'><strong>Admission HOLD.</strong> A recorded pass is not a certified pass. Previous-head receipts become stale when the source/base/policy/epoch changes; no reviewer or security approval is manufactured.</div>
 <h2>Acceptance debt register</h2><div class='filters'>
 <label class='filter' for='repoFilter'>Repository<select id='repoFilter'><option value='all'>All federation repos</option><option value='GBOGEB/ABACUS'>ABACUS</option><option value='GBOGEB/CODEX'>CODEX</option><option value='GBOGEB/cryoplant-project'>QPS</option></select></label>
 <label class='filter' for='stateFilter'>Evidence state<select id='stateFilter'><option value='all'>All states</option><option>OBSERVED</option><option>MISSING</option><option>STALE</option><option>BLOCKED</option><option>WITHHELD</option><option>BLOCKED_DEPENDENCY</option></select></label>
 <label class='filter' for='searchFilter'>Search title or ID<input type='search' id='searchFilter' placeholder='Filter debts'></label></div>
-<p class='muted' id='shownCount' aria-live='polite'></p><div class='debts' id='debtItems'>"""
-        + "".join(rows)
-        + """</div>
+<p class='muted' id='shownCount' aria-live='polite'></p><div class='debts' id='debtItems'>""" + "".join(rows) + """</div>
 <h2>DAG dependency frontier &amp; change waves</h2><div class='columns'><section class='panel'><h3>Unblocking reach (descriptive)</h3>
 <p class='muted'>Downstream node count, not number of roots fixed or probability of success.</p>
-<table><thead><tr><th>Debt</th><th>State</th><th>Reach</th></tr></thead><tbody>"""
-        + frontier
-        + """</tbody></table>
+<table><thead><tr><th>Debt</th><th>State</th><th>Reach</th></tr></thead><tbody>""" + frontier + """</tbody></table>
 </section><section class='panel'><h3>Three local replay pulses</h3>
 <p class='muted'>Frozen evidence revealed in stages. Not three independent Github experiments.</p>
-<table><thead><tr><th>Pulse</th><th>Evidence</th><th>State changes</th><th>Stable %</th></tr></thead><tbody>"""
-        + pulse_rows
-        + """</tbody></table></section></div>
-<h2>SIPOC and authority planes</h2><div class='panel'><table><thead><tr><th>Supplier</th><th>Plane</th><th>Consumer</th></tr></thead><tbody>"""
-        + sipoc_rows
-        + """</tbody></table>
+<table><thead><tr><th>Pulse</th><th>Evidence</th><th>State changes</th><th>Stable %</th></tr></thead><tbody>""" + pulse_rows + """</tbody></table></section></div>
+<h2>SIPOC and authority planes</h2><div class='panel'><table><thead><tr><th>Supplier</th><th>Plane</th><th>Consumer</th></tr></thead><tbody>""" + sipoc_rows + """</tbody></table>
 <p class='muted'>All source-bound edges are observations, never automatic security approval or root closure.</p></div>
-"""
-        + tests
-        + """
+""" + tests + """
 <footer>Data provenance: exact-source observation ledger; no network calls; SHA-256 receipts accompany the bundle. Independent trial count, current-main coverage, diff coverage, root closures and authenticated dispatch remain UNKNOWN.</footer>
 </main><script>
 (function(){'use strict';const repo=document.getElementById('repoFilter'),state=document.getElementById('stateFilter'),query=document.getElementById('searchFilter');
@@ -263,7 +169,6 @@ const ok=(repo.value==='all'||card.dataset.repo===repo.value)&&(state.value==='a
 card.hidden=!ok;if(ok)seen++;}counter.textContent=seen+' of '+cards.length+' acceptance obligations shown';}
 for(const el of [repo,state,query])el.addEventListener('input',update);update();})();
 </script></body></html>\n"""
-    )
 
 
 def write_bundle(output, projection, graph, sipoc, temporal, local_testflight=None):
@@ -271,10 +176,7 @@ def write_bundle(output, projection, graph, sipoc, temporal, local_testflight=No
     output.mkdir(parents=True, exist_ok=True)
     records = projection["ledger"]
     data = {
-        "acceptance.json": canonical(
-            {k: v for k, v in projection.items() if k != "ledger"}
-        )
-        + "\n",
+        "acceptance.json": canonical({k: v for k, v in projection.items() if k != "ledger"}) + "\n",
         "dag.json": canonical(graph) + "\n",
         "sipoc.json": canonical(sipoc) + "\n",
         "dmaic_mip_pulses.json": canonical(temporal) + "\n",
@@ -284,9 +186,7 @@ def write_bundle(output, projection, graph, sipoc, temporal, local_testflight=No
     }
     for name, content in data.items():
         (output / name).write_text(content, encoding="utf-8")
-    hashes = {
-        k: hashlib.sha256(value.encode("utf-8")).hexdigest()
-        for k, value in sorted(data.items())
-    }
+    hashes = {k: hashlib.sha256(value.encode("utf-8")).hexdigest()
+              for k, value in sorted(data.items())}
     (output / "sha256.json").write_text(canonical(hashes) + "\n", encoding="utf-8")
     return hashes

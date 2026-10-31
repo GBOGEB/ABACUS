@@ -5,10 +5,10 @@ Without an explicit config override, --include is ignored, reporting global
 repository coverage as if it were SUT server coverage. This test is independent
 of the execution environment and preserves strict threshold semantics.
 """
-
 import re
 import unittest
 from pathlib import Path
+
 
 ROOT = Path(__file__).resolve().parents[4]
 WORKFLOW = ROOT / ".github" / "workflows" / "code-purple-sut-gui.yml"

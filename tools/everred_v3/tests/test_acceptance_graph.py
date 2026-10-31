@@ -1,8 +1,9 @@
 import copy
 import unittest
 
-from acceptance import core, graph
 from test_acceptance_core import fixture
+
+from acceptance import core, graph
 
 
 class GraphAndFederationTests(unittest.TestCase):

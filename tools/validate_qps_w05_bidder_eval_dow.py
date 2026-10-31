@@ -3,7 +3,6 @@ from __future__ import annotations
 
 import argparse
 from pathlib import Path
-
 import yaml
 
 REQUIRED = {
@@ -49,10 +48,7 @@ def main() -> int:
     for finding in data["typed_findings"]:
         if finding.get("qps_authority") is not False:
             raise SystemExit("parent finding incorrectly claims QPS authority")
-        if (
-            finding.get("recommended_child_action")
-            != "review_and_disposition_ACCEPT_REJECT_DEFER"
-        ):
+        if finding.get("recommended_child_action") != "review_and_disposition_ACCEPT_REJECT_DEFER":
             raise SystemExit("missing governed child disposition contract")
     print("W05 DOW RECEIPT VALIDATION PASSED")
     return 0
