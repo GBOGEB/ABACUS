@@ -1,11 +1,23 @@
 """Lane A wave 12: DMAIC V3.3 fix verification script with stubbed phases."""
 
+import importlib
 import sys
 import types
 
 import pytest
 
-from DMAIC_V3 import verify_fixes as vf
+
+def _import_restoring_sys_path():
+    # verify_fixes inserts DMAIC_V3/ at sys.path[0] on import; left in place it
+    # makes DMAIC_V3/tools shadow the repo's tools package for later collection.
+    saved = list(sys.path)
+    try:
+        return importlib.import_module("DMAIC_V3.verify_fixes")
+    finally:
+        sys.path[:] = saved
+
+
+vf = _import_restoring_sys_path()
 
 
 class _Cfg:
