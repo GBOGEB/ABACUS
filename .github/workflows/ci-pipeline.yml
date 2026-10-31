@@ -127,6 +127,11 @@ jobs:
         if: ${{ !cancelled() }}
         shell: bash
         run: |
+          # FastAPI/httpx ranges come from qplant/requirements.txt; the rest of
+          # that file pins old numpy/pandas/pytest and would downgrade the job.
+          grep -E '^(fastapi|httpx)' qplant/requirements.txt \
+            | xargs python -m pip install
+          python -c 'import fastapi, httpx, pydantic'
           python scripts/ci/family_collect_guard.py \
             --family qplant --expected-min 124 -- \
             qplant/ai_validation/tests/test_ai_validation.py \
