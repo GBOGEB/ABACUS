@@ -151,7 +151,7 @@ GATE_DOMAINS = (
 )
 _ENTERPRISE_JOBS = tuple(
     f"Test Python {version} on {operating_system}"
-    for version in ("3.9", "3.10", "3.11", "3.12")
+    for version in ("3.10", "3.11", "3.12")
     for operating_system in ("ubuntu-latest", "windows-latest", "macos-latest")
 )
 _WORKFLOW_GATE_SPECS = {

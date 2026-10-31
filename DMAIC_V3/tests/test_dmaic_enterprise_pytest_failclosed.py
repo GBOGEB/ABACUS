@@ -12,7 +12,6 @@ def test_enterprise_pytest_is_required_on_all_supported_versions():
     workflow = yaml.safe_load(WORKFLOW.read_text(encoding="utf-8"))
     job = workflow["jobs"]["test"]
     assert job["strategy"]["matrix"]["python-version"] == [
-        "3.9",
         "3.10",
         "3.11",
         "3.12",
