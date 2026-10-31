@@ -14,9 +14,7 @@ summary. Conflicts between the pre-existing handover numbers and the ICD are
 reported as findings (informational) -- they are expected until views are
 migrated, and are listed so nothing is silently stale.
 """
-
 from __future__ import annotations
-
 import json
 import re
 from pathlib import Path
@@ -63,28 +61,17 @@ for v in ACTIVE_VIEWS:
     name = v.name
     # 350 g/s presented as design anchor without legacy label nearby
     for m in re.finditer(r"350\s*g/?s", txt):
-        window = txt[max(0, m.start() - 160) : m.end() + 160]
-        if re.search(
-            r"design|baseline|anchor|nominal", window, re.I
-        ) and not LEGACY_OK.search(window):
-            finding(
-                name,
-                "stale_anchor_350",
-                "350 g/s shown as design/baseline without a legacy/superseded label",
-            )
+        window = txt[max(0, m.start() - 160): m.end() + 160]
+        if re.search(r"design|baseline|anchor|nominal", window, re.I) and not LEGACY_OK.search(window):
+            finding(name, "stale_anchor_350",
+                    "350 g/s shown as design/baseline without a legacy/superseded label")
             break
     if ADDITIVE_RE.search(txt):
-        finding(
-            name,
-            "additive_flow",
-            "HP + PVPS appears summed into a single total flow (should be separate drivers)",
-        )
+        finding(name, "additive_flow",
+                "HP + PVPS appears summed into a single total flow (should be separate drivers)")
     if ISO_RE.search(txt):
-        finding(
-            name,
-            "isothermal_basis",
-            "isothermal/efficiency electrical basis present (superseded by ICD-bound power)",
-        )
+        finding(name, "isothermal_basis",
+                "isothermal/efficiency electrical basis present (superseded by ICD-bound power)")
 
 report = {
     "pass": not failures,
@@ -94,8 +81,7 @@ report = {
     "note": "findings are informational migration flags; failures are hard gates.",
 }
 (MASTER / "consistency_report.json").write_text(
-    json.dumps(report, indent=2, ensure_ascii=False), encoding="utf-8"
-)
+    json.dumps(report, indent=2, ensure_ascii=False), encoding="utf-8")
 
 print("CONSISTENCY VALIDATOR")
 print("  hard failures :", len(failures))

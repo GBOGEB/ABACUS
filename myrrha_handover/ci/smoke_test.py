@@ -8,7 +8,6 @@ Actions. From the repo root (or anywhere), run:
 
 Exit code 0 = all checks passed, non-zero = at least one failure.
 """
-
 from __future__ import annotations
 
 import glob
@@ -74,10 +73,7 @@ def _check_render() -> int:
         capture_output=True,
         text=True,
     )
-    print(
-        ("OK   render" if rc.returncode == 0 else "FAIL render"),
-        rc.stdout.strip()[:120],
-    )
+    print(("OK   render" if rc.returncode == 0 else "FAIL render"), rc.stdout.strip()[:120])
     return rc.returncode
 
 

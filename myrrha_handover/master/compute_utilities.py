@@ -20,9 +20,7 @@ Run standalone to emit the icd_bound_utilities JSON block:
     python3 master/compute_utilities.py            # prints JSON
     python3 master/compute_utilities.py --write     # patches master/data.json
 """
-
 from __future__ import annotations
-
 import json
 import sys
 from pathlib import Path
@@ -34,8 +32,8 @@ ICD_PATH = MASTER / "icd_inputs.yaml"
 DATA_PATH = MASTER / "data.json"
 
 # --- named engine constants / assumptions (documented, non-ICD) --------------
-MAX_FREQUENCY_HZ = 72.0  # hard electrical limit (400 V, flux saturation)
-MAX_HP_UNITS = 4  # installed HP units
+MAX_FREQUENCY_HZ = 72.0          # hard electrical limit (400 V, flux saturation)
+MAX_HP_UNITS = 4                 # installed HP units
 # Default PVPS running count is an EXPLICIT ASSUMPTION -- running count is OPEN
 # in the ICD (PVPS-RUN-COUNT). Flagged downstream, never presented as closed.
 ASSUMED_PVPS_RUNNING = 4
@@ -74,10 +72,9 @@ def hp_fleet(mdot_HP_total_g_s: float, active_units: int, icd: dict) -> dict:
     per_unit_kW = hp_per_unit_power_kW(flow_per_unit, icd)
     per_unit_rec = hp_per_unit_recoverable_kW(flow_per_unit, icd)
     freq = hp_frequency_Hz(flow_per_unit, icd)
-    per_unit_input = icd["hp_compressor"]["package_input_power_kW_at_design"] * (
-        flow_per_unit / icd["hp_compressor"]["max_flow_per_unit_g_s_at_72Hz"]
-    )
-    residual_per_unit = per_unit_input - per_unit_rec  # non-water rejected heat
+    per_unit_input = icd["hp_compressor"]["package_input_power_kW_at_design"] * \
+        (flow_per_unit / icd["hp_compressor"]["max_flow_per_unit_g_s_at_72Hz"])
+    residual_per_unit = per_unit_input - per_unit_rec   # non-water rejected heat
     feasible = freq <= MAX_FREQUENCY_HZ + 1e-9 and active_units <= MAX_HP_UNITS
     return {
         "mdot_HP_total_g_s": mdot_HP_total_g_s,
@@ -90,11 +87,8 @@ def hp_fleet(mdot_HP_total_g_s: float, active_units: int, icd: dict) -> dict:
         "fleet_recoverable_heat_kW": round(per_unit_rec * active_units, 1),
         "fleet_residual_heat_kW": round(residual_per_unit * active_units, 1),
         "feasible": feasible,
-        "feasibility_note": (
-            "OK"
-            if feasible
-            else f">{MAX_FREQUENCY_HZ:.0f} Hz or >{MAX_HP_UNITS} units -- infeasible, not extrapolated"
-        ),
+        "feasibility_note": "OK" if feasible
+        else f">{MAX_FREQUENCY_HZ:.0f} Hz or >{MAX_HP_UNITS} units -- infeasible, not extrapolated",
     }
 
 
@@ -107,7 +101,8 @@ def pvps_fleet(n_running: int, icd: dict) -> dict:
         "running_count_status": "OPEN (PVPS-RUN-COUNT): not source-closed",
         "motor_power_kW_each": kW_each,
         "fleet_motor_power_kW": round(kW_each * n_running, 1),
-        "table19_envelope_note": "Electrical ICD shows ~150 kW/station x4 vs ONE 150 kW Table 19 row -- conflict EL-R04 OPEN",
+        "table19_envelope_note":
+            "Electrical ICD shows ~150 kW/station x4 vs ONE 150 kW Table 19 row -- conflict EL-R04 OPEN",
     }
 
 
@@ -129,8 +124,8 @@ def cooling_water_flow_m3h(heat_kW: float, icd: dict) -> float:
     rho = cw["assumed_density_kg_m3"]
     cp = cw["assumed_cp_kJ_kgK"]
     dT = cw["deltaT_K"]
-    mdot_kg_s = heat_kW / (cp * dT)  # kW / (kJ/kgK * K) = kg/s
-    return (mdot_kg_s / rho) * 3600.0  # m3/h
+    mdot_kg_s = heat_kW / (cp * dT)          # kW / (kJ/kgK * K) = kg/s
+    return (mdot_kg_s / rho) * 3600.0         # m3/h
 
 
 def build_utilities(icd: dict) -> dict:
@@ -139,8 +134,7 @@ def build_utilities(icd: dict) -> dict:
     for cand in icd["nominal_2K_OP_anchor"]["configuration_candidates"]:
         f = hp_fleet(anchor, cand["active_units"], icd)
         f["cw_flow_m3h_from_recoverable"] = round(
-            cooling_water_flow_m3h(f["fleet_recoverable_heat_kW"], icd), 1
-        )
+            cooling_water_flow_m3h(f["fleet_recoverable_heat_kW"], icd), 1)
         f["hvac_residual_heat_kW"] = f["fleet_residual_heat_kW"]
         configs[cand["id"]] = f
 
@@ -199,11 +193,8 @@ def main() -> int:
         if "PVPS" in data and "utilities" in data["PVPS"]:
             data["PVPS"]["utilities"]["_DEPRECATED"] = (
                 "Superseded by top-level icd_bound_utilities. Electricity is now "
-                "ICD-bound, not isothermal/efficiency-derived."
-            )
-        DATA_PATH.write_text(
-            json.dumps(data, indent=2, ensure_ascii=False), encoding="utf-8"
-        )
+                "ICD-bound, not isothermal/efficiency-derived.")
+        DATA_PATH.write_text(json.dumps(data, indent=2, ensure_ascii=False), encoding="utf-8")
         print(f"Patched {DATA_PATH} with icd_bound_utilities.")
     else:
         print(json.dumps(block, indent=2, ensure_ascii=False))

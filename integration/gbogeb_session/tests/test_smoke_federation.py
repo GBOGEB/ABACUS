@@ -1,5 +1,4 @@
 """Smoke test for the gbogeb_session integration node."""
-
 import sys
 from pathlib import Path
 

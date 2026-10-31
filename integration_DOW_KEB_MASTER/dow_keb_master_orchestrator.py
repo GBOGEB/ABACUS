@@ -135,9 +135,7 @@ class DOWKEBMasterOrchestrator:
                     self._format_dict_as_table(
                         {
                             "document": self.master_doc_path.name,
-                            "status": self.state.get(
-                                "integration_status", "INITIALIZED"
-                            ),
+                            "status": self.state.get("integration_status", "INITIALIZED"),
                         }
                     ),
                 ]

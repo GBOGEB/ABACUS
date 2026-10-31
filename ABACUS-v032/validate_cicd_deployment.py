@@ -27,7 +27,7 @@ class CICDValidator:
             "config": {},
             "alignment": {},
             "ports": {},
-            "overall": "PENDING",
+            "overall": "PENDING"
         }
 
     def validate_docker_config(self) -> bool:
@@ -41,16 +41,15 @@ class CICDValidator:
             self.results["docker"]["dockerfile"] = "MISSING"
             return False
 
-        with open(dockerfile, "r") as f:
+        with open(dockerfile, 'r') as f:
             content = f.read()
             checks = {
                 "v033_version": "v033" in content,
                 "canonical_aligned": "CANONICAL ALIGNED" in content,
                 "sprint_tested": "SPRINT TESTED" in content,
                 "dow_tested": "DOW TESTED" in content,
-                "correct_entrypoint": "execute_full_dmaic_phases_0_to_9_v033.py"
-                in content,
-                "ports_exposed": "EXPOSE" in content,
+                "correct_entrypoint": "execute_full_dmaic_phases_0_to_9_v033.py" in content,
+                "ports_exposed": "EXPOSE" in content
             }
 
             for check, passed in checks.items():
@@ -65,16 +64,15 @@ class CICDValidator:
             self.results["docker"]["compose"] = "MISSING"
             return False
 
-        with open(compose_file, "r") as f:
+        with open(compose_file, 'r') as f:
             content = f.read()
             compose_checks = {
                 "v033_container": "abacus-v033" in content,
                 "canonical_env": "CANONICAL" in content,
-                "correct_command": "execute_full_dmaic_phases_0_to_9_v033.py"
-                in content,
+                "correct_command": "execute_full_dmaic_phases_0_to_9_v033.py" in content,
                 "prometheus": "prometheus" in content,
                 "grafana": "grafana" in content,
-                "networks": "abacus-network" in content,
+                "networks": "abacus-network" in content
             }
 
             for check, passed in compose_checks.items():
@@ -101,7 +99,7 @@ class CICDValidator:
             self.results["cicd"]["ci"] = "MISSING"
             return False
 
-        with open(ci_file, "r") as f:
+        with open(ci_file, 'r') as f:
             ci_content = f.read()
             ci_checks = {
                 "v033_version": "v033" in ci_content,
@@ -109,7 +107,7 @@ class CICDValidator:
                 "sprint_tests": "test_sprint_readiness.py" in ci_content,
                 "dow_tests": "test_dow_phases.py" in ci_content,
                 "docker_build": "docker build" in ci_content,
-                "security_scan": "bandit" in ci_content or "safety" in ci_content,
+                "security_scan": "bandit" in ci_content or "safety" in ci_content
             }
 
             for check, passed in ci_checks.items():
@@ -124,7 +122,7 @@ class CICDValidator:
             self.results["cicd"]["cd"] = "MISSING"
             return False
 
-        with open(cd_file, "r") as f:
+        with open(cd_file, 'r') as f:
             cd_content = f.read()
             cd_checks = {
                 "v033_version": "v033" in cd_content,
@@ -132,7 +130,7 @@ class CICDValidator:
                 "staging_deploy": "staging" in cd_content,
                 "production_deploy": "production" in cd_content,
                 "docker_push": "docker/build-push-action" in cd_content,
-                "health_check": "health" in cd_content.lower(),
+                "health_check": "health" in cd_content.lower()
             }
 
             for check, passed in cd_checks.items():
@@ -152,7 +150,7 @@ class CICDValidator:
             self.results["config"]["sprint_config"] = "MISSING"
             return False
 
-        with open(config_file, "r") as f:
+        with open(config_file, 'r') as f:
             config = json.load(f)
 
             config_checks = {
@@ -161,8 +159,7 @@ class CICDValidator:
                 "dow_tested": config.get("dow_tested") == True,
                 "canonical_aligned": config.get("canonical_aligned") == True,
                 "phase_9_present": "Phase 9" in str(config.get("phases", [])),
-                "v033_engine": "execute_full_dmaic_phases_0_to_9_v033.py"
-                in str(config.get("abacus_engines", {})),
+                "v033_engine": "execute_full_dmaic_phases_0_to_9_v033.py" in str(config.get("abacus_engines", {}))
             }
 
             for check, passed in config_checks.items():
@@ -179,7 +176,7 @@ class CICDValidator:
         alignment_docs = [
             "CANONICAL_ALIGNMENT_v032_v033.md",
             "ALIGNMENT_SUMMARY.md",
-            "DEPLOYMENT_EXECUTION_SUMMARY.md",
+            "DEPLOYMENT_EXECUTION_SUMMARY.md"
         ]
 
         all_present = True
@@ -203,11 +200,11 @@ class CICDValidator:
             "8000": "Main API",
             "8080": "Alternative API",
             "9090": "Prometheus",
-            "3000": "Grafana",
+            "3000": "Grafana"
         }
 
         compose_file = self.base_dir / "docker-compose.yml"
-        with open(compose_file, "r") as f:
+        with open(compose_file, 'r') as f:
             content = f.read()
 
             for port, service in expected_ports.items():
@@ -230,7 +227,7 @@ class CICDValidator:
                 cwd=self.base_dir,
                 capture_output=True,
                 text=True,
-                timeout=60,
+                timeout=60
             )
 
             if result.returncode == 0 or "dry-run" in result.stderr.lower():
@@ -260,7 +257,7 @@ class CICDValidator:
                 cwd=self.base_dir,
                 capture_output=True,
                 text=True,
-                timeout=30,
+                timeout=30
             )
 
             if result.returncode == 0:
@@ -282,15 +279,18 @@ class CICDValidator:
 
     def generate_report(self) -> Dict:
         """Generate validation report."""
-        print("\n" + "=" * 60)
+        print("\n" + "="*60)
         print("📊 VALIDATION REPORT")
-        print("=" * 60)
+        print("="*60)
 
         # Calculate overall status
         all_checks = []
         for category, checks in self.results.items():
             if category != "overall" and isinstance(checks, dict):
-                all_checks.extend([v for v in checks.values() if isinstance(v, bool)])
+                all_checks.extend([
+                    v for v in checks.values()
+                    if isinstance(v, bool)
+                ])
 
         if all(all_checks):
             self.results["overall"] = "✅ ALL CHECKS PASSED"
@@ -306,11 +306,7 @@ class CICDValidator:
         print("\n📋 Summary by Category:")
         for category, checks in self.results.items():
             if category != "overall" and isinstance(checks, dict):
-                passed = sum(
-                    1
-                    for v in checks.values()
-                    if v == True or v == "PRESENT" or v == "CONFIGURED" or v == "VALID"
-                )
+                passed = sum(1 for v in checks.values() if v == True or v == "PRESENT" or v == "CONFIGURED" or v == "VALID")
                 total = len(checks)
                 print(f"  {category.upper()}: {passed}/{total} checks passed")
 
@@ -319,17 +315,17 @@ class CICDValidator:
     def save_report(self):
         """Save validation report to file."""
         report_file = self.base_dir / "CICD_VALIDATION_REPORT.json"
-        with open(report_file, "w") as f:
+        with open(report_file, 'w') as f:
             json.dump(self.results, f, indent=2)
         print(f"\n💾 Report saved to: {report_file}")
 
     def run_all_validations(self) -> bool:
         """Run all validation checks."""
-        print("=" * 60)
+        print("="*60)
         print("🚀 ABACUS v032/v033 CI/CD VALIDATION")
-        print("=" * 60)
+        print("="*60)
         print("CANONICAL ALIGNED | SPRINT TESTED | DOW TESTED")
-        print("=" * 60)
+        print("="*60)
 
         validations = [
             ("Docker Configuration", self.validate_docker_config),
@@ -338,7 +334,7 @@ class CICDValidator:
             ("Canonical Alignment", self.validate_canonical_alignment),
             ("Port Configuration", self.validate_ports),
             ("Docker Build Test", self.test_docker_build),
-            ("Docker Compose Test", self.test_docker_compose_config),
+            ("Docker Compose Test", self.test_docker_compose_config)
         ]
 
         results = []
@@ -362,7 +358,6 @@ def main():
     success = validator.run_all_validations()
 
     sys.exit(0 if success else 1)
-
 
 if __name__ == "__main__":
     main()

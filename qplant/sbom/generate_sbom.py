@@ -29,9 +29,7 @@ def get_python_packages() -> List[Dict[str, Any]]:
     try:
         result = subprocess.run(
             [sys.executable, "-m", "pip", "list", "--format=json"],
-            capture_output=True,
-            text=True,
-            timeout=30,
+            capture_output=True, text=True, timeout=30,
         )
         pip_list = json.loads(result.stdout)
     except Exception:
@@ -46,9 +44,7 @@ def get_python_packages() -> List[Dict[str, Any]]:
         try:
             show = subprocess.run(
                 [sys.executable, "-m", "pip", "show", name],
-                capture_output=True,
-                text=True,
-                timeout=10,
+                capture_output=True, text=True, timeout=10,
             )
             for line in show.stdout.splitlines():
                 if line.startswith("License:"):
@@ -57,16 +53,14 @@ def get_python_packages() -> List[Dict[str, Any]]:
         except Exception:
             pass
 
-        packages.append(
-            {
-                "type": "library",
-                "name": name,
-                "version": version,
-                "language": "python",
-                "license": license_info,
-                "purl": f"pkg:pypi/{name}@{version}",
-            }
-        )
+        packages.append({
+            "type": "library",
+            "name": name,
+            "version": version,
+            "language": "python",
+            "license": license_info,
+            "purl": f"pkg:pypi/{name}@{version}",
+        })
 
     return packages
 
@@ -92,16 +86,14 @@ def get_requirements_packages(req_path: str) -> List[Dict[str, Any]]:
             name = line
             version = "*"
 
-        packages.append(
-            {
-                "type": "library",
-                "name": name.strip(),
-                "version": version.strip(),
-                "language": "python",
-                "scope": "required",
-                "purl": f"pkg:pypi/{name.strip()}@{version.strip()}",
-            }
-        )
+        packages.append({
+            "type": "library",
+            "name": name.strip(),
+            "version": version.strip(),
+            "language": "python",
+            "scope": "required",
+            "purl": f"pkg:pypi/{name.strip()}@{version.strip()}",
+        })
 
     return packages
 
@@ -111,31 +103,21 @@ def scan_vulnerabilities(packages: List[Dict[str, Any]]) -> List[Dict[str, Any]]
     vulns = []
     try:
         result = subprocess.run(
-            [
-                sys.executable,
-                "-m",
-                "pip_audit",
-                "--format=json",
-                "--progress-spinner=off",
-            ],
-            capture_output=True,
-            text=True,
-            timeout=120,
+            [sys.executable, "-m", "pip_audit", "--format=json", "--progress-spinner=off"],
+            capture_output=True, text=True, timeout=120,
         )
         if result.returncode == 0:
             data = json.loads(result.stdout)
             for dep in data.get("dependencies", []):
                 for vuln in dep.get("vulns", []):
-                    vulns.append(
-                        {
-                            "package": dep.get("name"),
-                            "version": dep.get("version"),
-                            "id": vuln.get("id"),
-                            "description": vuln.get("description", ""),
-                            "fix_versions": vuln.get("fix_versions", []),
-                            "severity": "medium",
-                        }
-                    )
+                    vulns.append({
+                        "package": dep.get("name"),
+                        "version": dep.get("version"),
+                        "id": vuln.get("id"),
+                        "description": vuln.get("description", ""),
+                        "fix_versions": vuln.get("fix_versions", []),
+                        "severity": "medium",
+                    })
     except (FileNotFoundError, subprocess.TimeoutExpired, json.JSONDecodeError):
         pass
     return vulns
@@ -259,20 +241,7 @@ def generate_sbom_report(sbom: Dict[str, Any], output: str = "sbom_report.md") -
 
     lic_rows = ""
     for lic, count in sorted(licenses.items(), key=lambda x: -x[1]):
-        risk = (
-            "✅ Low"
-            if lic
-            in (
-                "MIT",
-                "Apache-2.0",
-                "BSD-3-Clause",
-                "BSD",
-                "Apache Software License",
-                "MIT License",
-                "BSD License",
-            )
-            else "⚠️ Review"
-        )
+        risk = "✅ Low" if lic in ("MIT", "Apache-2.0", "BSD-3-Clause", "BSD", "Apache Software License", "MIT License", "BSD License") else "⚠️ Review"
         lic_rows += f"| {lic} | {count} | {risk} |\n"
 
     direct_list = "\n".join(f"- {c['name']}=={c['version']}" for c in direct[:30])
@@ -339,9 +308,7 @@ def main() -> None:
     parser = argparse.ArgumentParser(description="Generate QPLANT SBOM")
     parser.add_argument("--output", default="cyclonedx_sbom.json")
     parser.add_argument("--report", default="sbom_report.md")
-    parser.add_argument(
-        "--requirements", default="/home/ubuntu/handover_dashboard/requirements.txt"
-    )
+    parser.add_argument("--requirements", default="/home/ubuntu/handover_dashboard/requirements.txt")
     args = parser.parse_args()
 
     sbom = generate_cyclonedx_sbom(req_path=args.requirements)
@@ -358,7 +325,6 @@ def main() -> None:
     releases_dir = Path("releases/v4.4.0")
     releases_dir.mkdir(parents=True, exist_ok=True)
     import shutil
-
     shutil.copy2(args.output, str(releases_dir / "cyclonedx_sbom.json"))
     shutil.copy2(args.report, str(releases_dir / "sbom_report.md"))
 
