@@ -302,7 +302,7 @@ jobs:
       fail-fast: false
       matrix:
         os: [ubuntu-latest, windows-latest, macos-latest]
-        # pyproject.toml requires-python >=3.11; 3.10 is not a supported runtime.
+        # pyproject.toml requires-python >=3.11; 3.10 is unsupported.
         python-version: ['3.11', '3.12']
 
     steps:
@@ -835,18 +835,30 @@ jobs:
             security-red-root-delta.json
           if-no-files-found: warn
 
-      # On a pull request, Bandit admission is the new-debt ratchet: the
-      # PR's changed Python files must not gain Bandit findings. Safety is
-      # not relaxed: its outcome is enforced on every event.
-      - name: PR new-debt ratchet (Bandit)
+      # On every event, Bandit admission is the new-debt ratchet: changed
+      # Python files must not gain Bandit findings. On main pushes,
+      # schedules and manual runs the baseline is the previous main tip; the
+      # full Bandit scan stays census. Safety is not relaxed: its outcome is
+      # enforced on every event.
+      - name: New-debt ratchet (Bandit)
         id: bandit_ratchet
-        if: github.event_name == 'pull_request'
         env:
+          EVENT: ${{ github.event_name }}
           BASE_SHA: ${{ github.event.pull_request.base.sha }}
+          BEFORE_SHA: ${{ github.event.before }}
         # The base revision's ratchet runs, as in Code Quality, against the
         # merge commit's first parent rather than the event's stale base.sha.
         run: |
-          if git cat-file -e 'HEAD^2^{commit}' 2>/dev/null; then
+          if [[ "$EVENT" != "pull_request" ]]; then
+            base="$(git rev-parse 'HEAD^1')"
+            # A push compares with the tip it replaced; a new or rewritten
+            # ref falls back to the first parent.
+            if [[ "$EVENT" == "push" && -n "$BEFORE_SHA" &&
+                  ! "$BEFORE_SHA" =~ ^0+$ ]] &&
+               git fetch --no-tags --depth=1 origin "$BEFORE_SHA"; then
+              base="$BEFORE_SHA"
+            fi
+          elif git cat-file -e 'HEAD^2^{commit}' 2>/dev/null; then
             base="$(git rev-parse 'HEAD^1')"
           else
             git fetch --no-tags --depth=1 origin "$BASE_SHA"
@@ -886,9 +898,8 @@ jobs:
             echo "- Bandit: \`$BANDIT\`"
             echo "- Safety: \`$SAFETY\`"
           } >> "$GITHUB_STEP_SUMMARY"
-          if [[ "$EVENT" == "pull_request" &&
-                "$FULL_SCAN" != "required" ]]; then
-            echo "- PR admission: Bandit ratchet above; Safety enforced" \
+          if [[ "$FULL_SCAN" != "required" ]]; then
+            echo "- Admission (${EVENT}): Bandit ratchet; Safety enforced" \
               >> "$GITHUB_STEP_SUMMARY"
             if [[ "$SAFETY" != "success" ]]; then
               echo "::error::Safety is red."
