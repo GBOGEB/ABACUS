@@ -81,9 +81,7 @@ def test_t0_all_probes_run(tmp_path, monkeypatch, capsys):
 
 def test_t0_everything_skipped_or_failed(tmp_path, monkeypatch, capsys):
     (tmp_path / "x.yaml").write_text("a: 1\n", encoding="utf-8")
-    mod, calls = _load_t0(
-        tmp_path, monkeypatch, "l2_w14_t0_skip", run_result=2, which=None
-    )
+    _load_t0(tmp_path, monkeypatch, "l2_w14_t0_skip", run_result=2, which=None)
     probes = {p["name"]: p for p in json.loads(capsys.readouterr().out)["probes"]}
     assert probes["yaml_parse"]["status"] == "failed"
     assert probes["yaml_parse"]["detail"] == {"returncode": 2}

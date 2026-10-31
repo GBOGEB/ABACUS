@@ -439,6 +439,13 @@ class _Dims(dict):
         super().__init__()
         self.groups = []
 
+    def __eq__(self, other):
+        return dict.__eq__(self, other) and self.groups == getattr(
+            other, "groups", None
+        )
+
+    __hash__ = None
+
     def __missing__(self, key):
         value = types.SimpleNamespace(width=None, height=None)
         self[key] = value
