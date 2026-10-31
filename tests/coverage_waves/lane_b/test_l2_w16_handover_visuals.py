@@ -568,23 +568,41 @@ def test_monte_carlo_pca_and_correlation(gsp):
     assert np.allclose(np.diag(corr.values), 1.0)
 
 
-def test_first_order_sensitivity_indices_overshoot_one(gsp):
-    """production_defect: generate_standards_stats.py:564 multiplies
-    Var(E[Y|Xi]) by the bin count, so first-order indices saturate at the 1.0
-    clamp and sum far above 1 (they must sum to at most 1); this test fails
-    once fixed."""
+def test_first_order_sensitivity_indices_bounded(gsp):
+    """First-order indices are Var(E[Y|Xi]) / Var(Y): each lies in [0, 1],
+    none saturates at the clamp, and they sum to about 1 at most (sampling
+    noise at N=400 allows a small overshoot)."""
     _mc_df, _stats, sens = gs.run_monte_carlo()
-    finite = [v for v in sens.values() if np.isfinite(v)]
-    assert sum(finite) > 1.05
-    assert max(finite) == 1.0
+    values = list(sens.values())
+    assert all(np.isfinite(v) and 0.0 <= v < 1.0 for v in values)
+    assert sum(values) <= 1.15
+    assert max(sens, key=sens.get) == "valve_failure_rate"
 
 
-def test_binary_material_sensitivity_is_nan(gsp):
-    """production_defect: generate_standards_stats.py:562 qcut of the binary
-    material input collapses to one bin, so its sensitivity index is NaN
-    (written as invalid JSON NaN); this test fails once fixed."""
+def test_binary_material_sensitivity_is_finite(gsp):
+    """The binary material input is grouped by raw value, so its index is
+    finite and positive and the indices serialise as strict JSON."""
     _mc_df, _stats, sens = gs.run_monte_carlo()
-    assert np.isnan(sens["material_uhmwpe"])
+    assert np.isfinite(sens["material_uhmwpe"])
+    assert 0.0 < sens["material_uhmwpe"] < 1.0
+    json.dumps(sens, allow_nan=False)
+
+
+def test_sensitivity_single_group_falls_back_to_zero(gsp, monkeypatch):
+    """An input with fewer than 2 groups gets 0.0, never NaN."""
+    rng = gs.RNG
+
+    class _ConstantIntegers:
+        def __getattr__(self, name):
+            return getattr(rng, name)
+
+        def integers(self, low, high, size):
+            return np.zeros(size, dtype=int)
+
+    monkeypatch.setattr(gs, "RNG", _ConstantIntegers())
+    _mc_df, _stats, sens = gs.run_monte_carlo()
+    assert sens["material_uhmwpe"] == 0.0
+    assert sens["leak_class_idx"] == 0.0
 
 
 def test_pca_handles_constant_column():
