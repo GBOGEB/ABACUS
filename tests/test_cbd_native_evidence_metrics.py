@@ -1,5 +1,4 @@
 """Native GitHub evidence replay: positive, negative and boundary tests."""
-
 import copy
 import json
 import sys
@@ -114,9 +113,7 @@ class NativeEvidenceMetricsTests(unittest.TestCase):
         self.assert_rejected("numerator/denominator")
 
     def test_first_red_identity_invalid_rejected(self):
-        row = next(
-            r for r in self.data["run_evidence"] if r["jobs"]["first_failed_step"]
-        )
+        row = next(r for r in self.data["run_evidence"] if r["jobs"]["first_failed_step"])
         row["jobs"]["first_failed_step"]["step_number"] = True
         self.assert_rejected("first-red step")
 
@@ -126,20 +123,14 @@ class NativeEvidenceMetricsTests(unittest.TestCase):
         self.assert_rejected("log/first-red")
 
     def test_resolver_signature_requires_log_text(self):
-        row = next(
-            r
-            for r in self.data["run_evidence"]
-            if "MATPLOTLIB_RESOLVER" in r.get("log_evidence", {}).get("signals", [])
-        )
+        row = next(r for r in self.data["run_evidence"]
+                   if "MATPLOTLIB_RESOLVER" in r.get("log_evidence", {}).get("signals", []))
         row["log_evidence"]["excerpt"] = []
         self.assert_rejected("supporting log text")
 
     def test_resolver_signature_requires_install_step(self):
-        row = next(
-            r
-            for r in self.data["run_evidence"]
-            if "MATPLOTLIB_RESOLVER" in r.get("log_evidence", {}).get("signals", [])
-        )
+        row = next(r for r in self.data["run_evidence"]
+                   if "MATPLOTLIB_RESOLVER" in r.get("log_evidence", {}).get("signals", []))
         row["jobs"]["first_failed_step"]["step_name"] = "Run unrelated step"
         self.assert_rejected("resolver step")
 

@@ -4,24 +4,26 @@
 # Description: Auto-generated version header
 """
 
-import asyncio
-import json
-import platform
-import socket
-import subprocess
-import tempfile
-import time
-from datetime import datetime
-from pathlib import Path
-from typing import Dict, List
-
-import aiohttp
 import pytest
 import pytest_asyncio
+import subprocess
+import socket
+import time
 import requests
+import asyncio
+import aiohttp
+import platform
+import tempfile
+from pathlib import Path
+from typing import Dict, List
+from datetime import datetime
+import json
+
 
 WINDOWS_DOCKER_LINUX_BASE_UNAVAILABLE = platform.system() == "Windows"
-WINDOWS_DOCKER_LINUX_BASE_REASON = "Linux python:3.11-slim base image is not available from the Windows Docker daemon in CI"
+WINDOWS_DOCKER_LINUX_BASE_REASON = (
+    "Linux python:3.11-slim base image is not available from the Windows Docker daemon in CI"
+)
 
 
 class TestDockerConfiguration:
@@ -55,12 +57,15 @@ class TestDockerConfiguration:
         dockerignore = Path(".dockerignore")
         content = dockerignore.read_text()
 
-        required_patterns = ["__pycache__", "*.pyc", ".env", "*.log"]
+        required_patterns = [
+            "__pycache__",
+            "*.pyc",
+            ".env",
+            "*.log"
+        ]
 
         for pattern in required_patterns:
-            assert any(
-                pattern in line for line in content.split("\n")
-            ), f"Missing pattern: {pattern}"
+            assert any(pattern in line for line in content.split('\n')), f"Missing pattern: {pattern}"
 
     @pytest.mark.benchmark
     def test_dockerfile_layer_optimization(self, benchmark):
@@ -69,18 +74,11 @@ class TestDockerConfiguration:
         content = dockerfile.read_text()
 
         def count_layers():
-            return len(
-                [
-                    line
-                    for line in content.split("\n")
-                    if line.strip().startswith(("RUN", "COPY", "ADD"))
-                ]
-            )
+            return len([line for line in content.split('\n')
+                       if line.strip().startswith(('RUN', 'COPY', 'ADD'))])
 
         layer_count = benchmark(count_layers)
-        assert (
-            layer_count < 15
-        ), f"Too many layers: {layer_count}. Consider optimization."
+        assert layer_count < 15, f"Too many layers: {layer_count}. Consider optimization."
 
 
 class TestDockerCompose:
@@ -123,9 +121,7 @@ class TestDockerCompose:
         services = config.get("services", {})
         for service_name, service_config in services.items():
             if service_name in ["app", "db", "redis"]:
-                assert (
-                    "healthcheck" in service_config
-                ), f"Missing healthcheck for {service_name}"
+                assert "healthcheck" in service_config, f"Missing healthcheck for {service_name}"
 
 
 class TestPortAvailability:
@@ -143,14 +139,14 @@ class TestPortAvailability:
 
     def test_port_5432_available(self):
         sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        result = sock.connect_ex(("localhost", 5432))
+        result = sock.connect_ex(('localhost', 5432))
         sock.close()
 
         assert result != 0, "Port 5432 should be available (not in use)"
 
     def test_port_6379_available(self):
         sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        result = sock.connect_ex(("localhost", 6379))
+        result = sock.connect_ex(('localhost', 6379))
         sock.close()
 
         assert result != 0, "Port 6379 should be available (not in use)"
@@ -163,9 +159,7 @@ class TestPortAvailability:
 
 
 @pytest.mark.integration
-@pytest.mark.skipif(
-    WINDOWS_DOCKER_LINUX_BASE_UNAVAILABLE, reason=WINDOWS_DOCKER_LINUX_BASE_REASON
-)
+@pytest.mark.skipif(WINDOWS_DOCKER_LINUX_BASE_UNAVAILABLE, reason=WINDOWS_DOCKER_LINUX_BASE_REASON)
 class TestDockerBuild:
 
     @pytest.mark.slow
@@ -174,7 +168,7 @@ class TestDockerBuild:
             ["docker", "build", "-t", "test-master-input", "."],
             capture_output=True,
             text=True,
-            timeout=300,
+            timeout=300
         )
 
         assert result.returncode == 0, f"Docker build failed: {result.stderr}"
@@ -184,7 +178,7 @@ class TestDockerBuild:
         result = subprocess.run(
             ["docker", "images", "test-master-input", "--format", "{{.Size}}"],
             capture_output=True,
-            text=True,
+            text=True
         )
 
         if result.returncode == 0 and result.stdout.strip():
@@ -201,7 +195,7 @@ class TestDockerContainer:
         result = subprocess.run(
             ["docker", "run", "-d", "-p", "8000:8000", "test-master-input"],
             capture_output=True,
-            text=True,
+            text=True
         )
 
         if result.returncode == 0:
@@ -222,15 +216,13 @@ class TestDockerContainer:
         subprocess.run(
             ["docker", "ps", "-q", "-f", f"id={container_id}"],
             capture_output=True,
-            text=True,
+            text=True
         )
 
 
 @pytest.mark.slow
 @pytest.mark.integration
-@pytest.mark.skipif(
-    WINDOWS_DOCKER_LINUX_BASE_UNAVAILABLE, reason=WINDOWS_DOCKER_LINUX_BASE_REASON
-)
+@pytest.mark.skipif(WINDOWS_DOCKER_LINUX_BASE_UNAVAILABLE, reason=WINDOWS_DOCKER_LINUX_BASE_REASON)
 class TestDockerContainerIntegration:
     """Slow integration tests for actual Docker container operations"""
 
@@ -238,11 +230,7 @@ class TestDockerContainerIntegration:
     async def test_docker_build_async(self):
         """Test Docker image build asynchronously."""
         proc = await asyncio.create_subprocess_exec(
-            "docker",
-            "build",
-            "-t",
-            "test-app:latest",
-            ".",
+            "docker", "build", "-t", "test-app:latest", ".",
             stdout=asyncio.subprocess.PIPE,
             stderr=asyncio.subprocess.PIPE,
         )
@@ -252,18 +240,15 @@ class TestDockerContainerIntegration:
         assert proc.returncode == 0, f"Docker build failed: {stderr.decode()}"
 
         inspect_proc = await asyncio.create_subprocess_exec(
-            "docker",
-            "image",
-            "inspect",
-            "test-app:latest",
+            "docker", "image", "inspect", "test-app:latest",
             stdout=asyncio.subprocess.PIPE,
             stderr=asyncio.subprocess.PIPE,
         )
         inspect_stdout, inspect_stderr = await inspect_proc.communicate()
 
-        assert (
-            inspect_proc.returncode == 0
-        ), f"Built image is not inspectable: {inspect_stderr.decode()}"
+        assert inspect_proc.returncode == 0, (
+            f"Built image is not inspectable: {inspect_stderr.decode()}"
+        )
         assert inspect_stdout.strip(), "Built image inspect output should not be empty"
 
     @pytest.mark.asyncio
@@ -271,11 +256,7 @@ class TestDockerContainerIntegration:
         """Test container health check asynchronously."""
         container_name = f"test-container-{time.time_ns()}"
         proc = await asyncio.create_subprocess_exec(
-            "docker",
-            "run",
-            "-d",
-            "--name",
-            container_name,
+            "docker", "run", "-d", "--name", container_name,
             "test-app:latest",
             stdout=asyncio.subprocess.PIPE,
             stderr=asyncio.subprocess.PIPE,
@@ -291,10 +272,7 @@ class TestDockerContainerIntegration:
             await asyncio.sleep(5)
 
             inspect_proc = await asyncio.create_subprocess_exec(
-                "docker",
-                "inspect",
-                "--format={{.State.Health.Status}}",
-                container_id,
+                "docker", "inspect", "--format={{.State.Health.Status}}", container_id,
                 stdout=asyncio.subprocess.PIPE,
                 stderr=asyncio.subprocess.PIPE,
             )
@@ -302,28 +280,23 @@ class TestDockerContainerIntegration:
             inspect_stdout, inspect_stderr = await inspect_proc.communicate()
             health_status = inspect_stdout.decode().strip()
 
-            assert (
-                inspect_proc.returncode == 0
-            ), f"Docker inspect failed: {inspect_stderr.decode()}"
-            assert health_status in [
-                "healthy",
-                "starting",
-            ], f"Container unhealthy: {health_status}"
+            assert inspect_proc.returncode == 0, (
+                f"Docker inspect failed: {inspect_stderr.decode()}"
+            )
+            assert health_status in ["healthy", "starting"], (
+                f"Container unhealthy: {health_status}"
+            )
 
         finally:
             stop_proc = await asyncio.create_subprocess_exec(
-                "docker",
-                "stop",
-                container_id,
+                "docker", "stop", container_id,
                 stdout=asyncio.subprocess.PIPE,
                 stderr=asyncio.subprocess.PIPE,
             )
             await stop_proc.communicate()
 
             rm_proc = await asyncio.create_subprocess_exec(
-                "docker",
-                "rm",
-                container_id,
+                "docker", "rm", container_id,
                 stdout=asyncio.subprocess.PIPE,
                 stderr=asyncio.subprocess.PIPE,
             )
@@ -339,46 +312,33 @@ class TestDockerContainerIntegration:
 
         try:
             build_proc = await asyncio.create_subprocess_exec(
-                "docker",
-                "build",
-                "-t",
-                image_tag,
-                ".",
+                "docker", "build", "-t", image_tag, ".",
                 stdout=asyncio.subprocess.PIPE,
                 stderr=asyncio.subprocess.PIPE,
             )
             _, build_stderr = await build_proc.communicate()
-            assert (
-                build_proc.returncode == 0
-            ), f"Docker prerequisite image build failed: {build_stderr.decode()}"
+            assert build_proc.returncode == 0, (
+                f"Docker prerequisite image build failed: {build_stderr.decode()}"
+            )
             image_built = True
 
             run_proc = await asyncio.create_subprocess_exec(
-                "docker",
-                "run",
-                "--rm",
-                "--pull=never",
-                "-v",
-                f"{test_file.absolute()}:/data/test.txt",
-                image_tag,
-                "cat",
-                "/data/test.txt",
+                "docker", "run", "--rm", "--pull=never",
+                "-v", f"{test_file.absolute()}:/data/test.txt",
+                image_tag, "cat", "/data/test.txt",
                 stdout=asyncio.subprocess.PIPE,
                 stderr=asyncio.subprocess.PIPE,
             )
             run_stdout, run_stderr = await run_proc.communicate()
-            assert (
-                run_proc.returncode == 0
-            ), f"Docker volume run failed: {run_stderr.decode()}"
+            assert run_proc.returncode == 0, (
+                f"Docker volume run failed: {run_stderr.decode()}"
+            )
             assert run_stdout.decode().strip() == "test data", "Volume mount failed"
         finally:
             test_file.unlink(missing_ok=True)
             if image_built:
                 cleanup_proc = await asyncio.create_subprocess_exec(
-                    "docker",
-                    "image",
-                    "rm",
-                    image_tag,
+                    "docker", "image", "rm", image_tag,
                     stdout=asyncio.subprocess.PIPE,
                     stderr=asyncio.subprocess.PIPE,
                 )
@@ -389,18 +349,14 @@ class TestDockerContainerIntegration:
         """Test container network connectivity in an isolated Docker network."""
         # xdist may schedule this test before the separate image-build test.
         build_proc = await asyncio.create_subprocess_exec(
-            "docker",
-            "build",
-            "-t",
-            "test-app:latest",
-            ".",
+            "docker", "build", "-t", "test-app:latest", ".",
             stdout=asyncio.subprocess.PIPE,
             stderr=asyncio.subprocess.PIPE,
         )
         _, build_stderr = await build_proc.communicate()
-        assert (
-            build_proc.returncode == 0
-        ), f"Docker prerequisite image build failed: {build_stderr.decode()}"
+        assert build_proc.returncode == 0, (
+            f"Docker prerequisite image build failed: {build_stderr.decode()}"
+        )
 
         suffix = time.time_ns()
         network_name = f"test-network-{suffix}"
@@ -409,51 +365,39 @@ class TestDockerContainerIntegration:
         container_ids = []
 
         network_proc = await asyncio.create_subprocess_exec(
-            "docker",
-            "network",
-            "create",
-            network_name,
+            "docker", "network", "create", network_name,
             stdout=asyncio.subprocess.PIPE,
             stderr=asyncio.subprocess.PIPE,
         )
         _, network_stderr = await network_proc.communicate()
-        assert (
-            network_proc.returncode == 0
-        ), f"Docker network create failed: {network_stderr.decode()}"
+        assert network_proc.returncode == 0, (
+            f"Docker network create failed: {network_stderr.decode()}"
+        )
 
         try:
             for container_name in (container1_name, container2_name):
                 run_proc = await asyncio.create_subprocess_exec(
-                    "docker",
-                    "run",
-                    "-d",
-                    "--name",
-                    container_name,
-                    "--network",
-                    network_name,
-                    "test-app:latest",
+                    "docker", "run", "-d", "--name", container_name,
+                    "--network", network_name, "test-app:latest",
                     stdout=asyncio.subprocess.PIPE,
                     stderr=asyncio.subprocess.PIPE,
                 )
                 run_stdout, run_stderr = await run_proc.communicate()
                 container_id = run_stdout.decode().strip()
 
-                assert (
-                    run_proc.returncode == 0
-                ), f"Docker run failed for {container_name}: {run_stderr.decode()}"
-                assert (
-                    container_id
-                ), f"Docker run should return an ID for {container_name}"
+                assert run_proc.returncode == 0, (
+                    f"Docker run failed for {container_name}: {run_stderr.decode()}"
+                )
+                assert container_id, (
+                    f"Docker run should return an ID for {container_name}"
+                )
                 container_ids.append(container_id)
 
             await asyncio.sleep(2)
 
             connectivity_proc = await asyncio.create_subprocess_exec(
-                "docker",
-                "exec",
-                container_ids[0],
-                "python",
-                "-c",
+                "docker", "exec", container_ids[0],
+                "python", "-c",
                 (
                     "import socket,time; "
                     "deadline=time.monotonic()+10; "
@@ -474,27 +418,21 @@ class TestDockerContainerIntegration:
             )
             _, connectivity_stderr = await connectivity_proc.communicate()
 
-            assert (
-                connectivity_proc.returncode == 0
-            ), f"Network connectivity failed: {connectivity_stderr.decode()}"
+            assert connectivity_proc.returncode == 0, (
+                f"Network connectivity failed: {connectivity_stderr.decode()}"
+            )
 
         finally:
             for container_name in (container1_name, container2_name):
                 rm_proc = await asyncio.create_subprocess_exec(
-                    "docker",
-                    "rm",
-                    "-f",
-                    container_name,
+                    "docker", "rm", "-f", container_name,
                     stdout=asyncio.subprocess.PIPE,
                     stderr=asyncio.subprocess.PIPE,
                 )
                 await rm_proc.communicate()
 
             network_rm_proc = await asyncio.create_subprocess_exec(
-                "docker",
-                "network",
-                "rm",
-                network_name,
+                "docker", "network", "rm", network_name,
                 stdout=asyncio.subprocess.PIPE,
                 stderr=asyncio.subprocess.PIPE,
             )
@@ -507,7 +445,9 @@ class TestDockerComposeDeploy:
     @pytest.mark.slow
     def test_docker_compose_up(self):
         result = subprocess.run(
-            ["docker", "compose", "config"], capture_output=True, text=True
+            ["docker", "compose", "config"],
+            capture_output=True,
+            text=True
         )
 
         assert result.returncode == 0, f"docker compose config failed: {result.stderr}"
@@ -517,11 +457,11 @@ class TestDockerComposeDeploy:
         result = subprocess.run(
             ["docker", "compose", "config", "--services"],
             capture_output=True,
-            text=True,
+            text=True
         )
 
         if result.returncode == 0:
-            services = result.stdout.strip().split("\n")
+            services = result.stdout.strip().split('\n')
             assert "app" in services, "App service should be defined"
 
 
@@ -558,9 +498,8 @@ class TestDockerNetworking:
 
         for service_name, service_config in services.items():
             if "depends_on" in service_config:
-                assert isinstance(
-                    service_config["depends_on"], list
-                ), f"depends_on should be a list for {service_name}"
+                assert isinstance(service_config["depends_on"], list), \
+                    f"depends_on should be a list for {service_name}"
 
 
 class TestDockerSecurity:
@@ -569,20 +508,23 @@ class TestDockerSecurity:
         dockerfile = Path("Dockerfile")
         content = dockerfile.read_text()
 
-        forbidden_patterns = ["password=", "secret=", "token=", "api_key="]
+        forbidden_patterns = [
+            "password=",
+            "secret=",
+            "token=",
+            "api_key="
+        ]
 
         for pattern in forbidden_patterns:
-            assert (
-                pattern.lower() not in content.lower()
-            ), f"Hardcoded secret pattern found: {pattern}"
+            assert pattern.lower() not in content.lower(), \
+                f"Hardcoded secret pattern found: {pattern}"
 
     def test_environment_variables_used(self):
         compose_file = Path("docker-compose.yml")
         content = compose_file.read_text()
 
-        assert (
-            "${" in content or "environment:" in content
-        ), "Should use environment variables"
+        assert "${" in content or "environment:" in content, \
+            "Should use environment variables"
 
     def test_docker_compose_env_file(self):
         compose_file = Path("docker-compose.yml")
@@ -600,28 +542,20 @@ class TestDockerPerformance:
     def test_dockerfile_layer_optimization(self):
         dockerfile = Path("Dockerfile")
         content = dockerfile.read_text()
-        lines = content.split("\n")
+        lines = content.split('\n')
 
-        copy_count = sum(1 for line in lines if line.strip().startswith("COPY"))
+        copy_count = sum(1 for line in lines if line.strip().startswith('COPY'))
         assert copy_count <= 3, "Too many COPY layers, consider optimization"
 
     def test_dockerfile_uses_cache(self):
         dockerfile = Path("Dockerfile")
         content = dockerfile.read_text()
 
-        assert (
-            "requirements.txt" in content
-        ), "Should copy requirements.txt separately for caching"
+        assert "requirements.txt" in content, "Should copy requirements.txt separately for caching"
 
-        lines = content.split("\n")
-        req_line = next(
-            (i for i, line in enumerate(lines) if "requirements.txt" in line), None
-        )
-        copy_all_line = next(
-            (i for i, line in enumerate(lines) if "COPY . ." in line), None
-        )
+        lines = content.split('\n')
+        req_line = next((i for i, line in enumerate(lines) if 'requirements.txt' in line), None)
+        copy_all_line = next((i for i, line in enumerate(lines) if 'COPY . .' in line), None)
 
         if req_line and copy_all_line:
-            assert (
-                req_line < copy_all_line
-            ), "requirements.txt should be copied before source code"
+            assert req_line < copy_all_line, "requirements.txt should be copied before source code"

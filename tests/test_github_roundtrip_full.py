@@ -4,21 +4,20 @@
 # Description: Auto-generated version header
 """
 
-import asyncio
+import pytest
 import json
 import time
-from datetime import datetime
+import asyncio
 from pathlib import Path
-from unittest.mock import MagicMock, Mock, patch
-
-import pytest
+from unittest.mock import Mock, patch, MagicMock
+from datetime import datetime
 
 
 class TestGitHubRoundtripIntegration:
 
     @pytest.fixture
     def github_client(self):
-        with patch("github.Github") as mock_github:
+        with patch('github.Github') as mock_github:
             mock_repo = Mock()
             mock_repo.name = "test_repo"
             mock_repo.full_name = "test_owner/test_repo"
@@ -31,7 +30,7 @@ class TestGitHubRoundtripIntegration:
             "root": tmp_path,
             "data": tmp_path / "data",
             "logs": tmp_path / "logs",
-            "sync": tmp_path / ".sync",
+            "sync": tmp_path / ".sync"
         }
         for path in workspace.values():
             if isinstance(path, Path):
@@ -43,7 +42,7 @@ class TestGitHubRoundtripIntegration:
         test_data = {
             "id": 1,
             "content": "Test content",
-            "created_at": datetime.now().isoformat(),
+            "created_at": datetime.now().isoformat()
         }
         test_file.write_text(json.dumps(test_data, indent=2))
 
@@ -78,7 +77,6 @@ class TestGitHubRoundtripIntegration:
         test_file.write_text(json.dumps(test_data))
 
         from github import Github
-
         client = Github("test_token")
         client.get_repo("test_owner/test_repo")
 
@@ -86,7 +84,7 @@ class TestGitHubRoundtripIntegration:
             "file": test_file.name,
             "status": "success",
             "commit_sha": "abc123",
-            "timestamp": datetime.now().isoformat(),
+            "timestamp": datetime.now().isoformat()
         }
 
         assert push_result["status"] == "success"
@@ -95,14 +93,17 @@ class TestGitHubRoundtripIntegration:
     def test_step5_webhook_reception(self):
         webhook_payload = {
             "action": "push",
-            "repository": {"name": "test_repo", "full_name": "test_owner/test_repo"},
+            "repository": {
+                "name": "test_repo",
+                "full_name": "test_owner/test_repo"
+            },
             "commits": [
                 {
                     "id": "abc123",
                     "message": "Update test_document.json",
-                    "timestamp": datetime.now().isoformat(),
+                    "timestamp": datetime.now().isoformat()
                 }
-            ],
+            ]
         }
 
         assert webhook_payload["action"] == "push"
@@ -112,7 +113,7 @@ class TestGitHubRoundtripIntegration:
         remote_data = {
             "id": 2,
             "content": "Remote content",
-            "updated_at": datetime.now().isoformat(),
+            "updated_at": datetime.now().isoformat()
         }
 
         local_file = local_workspace["data"] / "pulled_file.json"
@@ -127,14 +128,14 @@ class TestGitHubRoundtripIntegration:
             "id": 1,
             "version": 1,
             "content": "Local content",
-            "modified_at": datetime.now().isoformat(),
+            "modified_at": datetime.now().isoformat()
         }
 
         remote_data = {
             "id": 1,
             "version": 2,
             "content": "Remote content",
-            "modified_at": datetime.now().isoformat(),
+            "modified_at": datetime.now().isoformat()
         }
 
         if remote_data["version"] > local_data["version"]:
@@ -151,7 +152,7 @@ class TestGitHubRoundtripIntegration:
             "last_sync": datetime.now().isoformat(),
             "files_synced": 5,
             "conflicts_resolved": 1,
-            "status": "completed",
+            "status": "completed"
         }
         state_file.write_text(json.dumps(state_data, indent=2))
 
@@ -164,7 +165,7 @@ class TestGitHubRoundtripIntegration:
             "local_files": 10,
             "remote_files": 10,
             "in_sync": True,
-            "last_verified": datetime.now().isoformat(),
+            "last_verified": datetime.now().isoformat()
         }
 
         assert verification_result["in_sync"] is True
@@ -215,7 +216,7 @@ class TestBidirectionalSync:
         return {
             "local_path": tmp_path / "local",
             "remote_path": tmp_path / "remote",
-            "sync_state": tmp_path / "sync_state.json",
+            "sync_state": tmp_path / "sync_state.json"
         }
 
     def test_local_to_remote_sync(self, sync_manager):
@@ -246,7 +247,7 @@ class TestBidirectionalSync:
             "last_remote_to_local": datetime.now().isoformat(),
             "files_synced_l2r": 5,
             "files_synced_r2l": 3,
-            "total_synced": 8,
+            "total_synced": 8
         }
 
         sync_manager["sync_state"].parent.mkdir(parents=True, exist_ok=True)
@@ -269,7 +270,7 @@ class TestBidirectionalSync:
             sync_file("file1.txt", "l2r"),
             sync_file("file2.txt", "r2l"),
             sync_file("file3.txt", "l2r"),
-            sync_file("file4.txt", "r2l"),
+            sync_file("file4.txt", "r2l")
         ]
 
         results = await asyncio.gather(*tasks)
@@ -293,7 +294,11 @@ class TestIntegrationResilience:
         assert retry_count <= max_retries
 
     def test_rate_limit_handling(self):
-        rate_limit = {"limit": 5000, "remaining": 100, "reset_time": time.time() + 3600}
+        rate_limit = {
+            "limit": 5000,
+            "remaining": 100,
+            "reset_time": time.time() + 3600
+        }
 
         if rate_limit["remaining"] < 200:
             action = "throttle"
@@ -306,7 +311,7 @@ class TestIntegrationResilience:
         token_info = {
             "token": "test_token",
             "expires_at": time.time() + 3600,
-            "refresh_token": "refresh_token",
+            "refresh_token": "refresh_token"
         }
 
         current_time = time.time()
@@ -325,7 +330,7 @@ class TestIntegrationResilience:
 
         while attempt < max_attempts and not success:
             attempt += 1
-            backoff_time = 0.01 * (2**attempt)
+            backoff_time = 0.01 * (2 ** attempt)
             await asyncio.sleep(backoff_time)
 
             if attempt == 2:
@@ -355,7 +360,10 @@ class TestComprehensiveValidation:
             "id": 1,
             "type": "document",
             "content": "test",
-            "metadata": {"created_at": datetime.now().isoformat(), "version": "1.0"},
+            "metadata": {
+                "created_at": datetime.now().isoformat(),
+                "version": "1.0"
+            }
         }
 
         required_fields = ["id", "type", "content", "metadata"]
@@ -367,13 +375,12 @@ class TestComprehensiveValidation:
             "sync_duration": 1.5,
             "files_processed": 100,
             "throughput": 66.67,
-            "error_rate": 0.01,
+            "error_rate": 0.01
         }
 
         assert metrics["sync_duration"] < 5.0
         assert metrics["error_rate"] < 0.05
         assert metrics["throughput"] > 50
-
 
 if __name__ == "__main__":
     pytest.main([__file__, "-v", "--tb=short"])

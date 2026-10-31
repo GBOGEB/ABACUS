@@ -54,12 +54,12 @@ __status__ = "Production"
 __dmaic_phase__ = "Measure & Control"
 __test_count__ = 28
 
-import json
-import subprocess
 import sys
-from datetime import datetime
+import subprocess
+import json
 from pathlib import Path
-from typing import Any, Dict, List, Tuple
+from datetime import datetime
+from typing import Dict, List, Any, Tuple
 
 SCRIPT_DIR = Path(__file__).resolve().parent
 PROJECT_ROOT = SCRIPT_DIR.parent
@@ -91,7 +91,7 @@ class BootstrapBridge:
             "timestamp": datetime.now().isoformat(),
             "dmaic_phase": __dmaic_phase__,
             "status": "unknown",
-            "metrics": {},
+            "metrics": {}
         }
 
     def validate_prerequisites(self) -> Tuple[bool, List[str]]:
@@ -126,9 +126,7 @@ class BootstrapBridge:
         # Check conftest.py exists
         conftest = SCRIPT_DIR / "conftest.py"
         if not conftest.exists():
-            messages.append(
-                f"[WARN] conftest.py not found (fixtures unavailable): {conftest}"
-            )
+            messages.append(f"[WARN] conftest.py not found (fixtures unavailable): {conftest}")
         else:
             messages.append(f"[PASS] conftest.py found")
 
@@ -145,22 +143,20 @@ class BootstrapBridge:
         Returns:
             Test execution results with metrics
         """
-        print("\n" + "=" * 80)
+        print("\n" + "="*80)
         print("BOOTSTRAP BRIDGE: Running Tests")
-        print("=" * 80 + "\n")
+        print("="*80 + "\n")
 
         # Build pytest command
         cmd = [
-            sys.executable,
-            "-m",
-            "pytest",
+            sys.executable, "-m", "pytest",
             str(self.test_file),
             "-v" if verbose else "",
             "--tb=short",
             "--color=yes",
             f"--junit-xml={self.report_dir / 'junit.xml'}",
             f"--html={self.report_dir / 'report.html'}",
-            "--self-contained-html",
+            "--self-contained-html"
         ]
 
         if markers:
@@ -177,7 +173,7 @@ class BootstrapBridge:
                 "capture_output": True,
                 "text": True,
                 "timeout": 300,
-                "cwd": str(PROJECT_ROOT),
+                "cwd": str(PROJECT_ROOT)
             }
 
             # Prevent console window popup on Windows
@@ -193,9 +189,7 @@ class BootstrapBridge:
             # Extract metrics from output
             metrics = self._parse_pytest_output(output)
 
-            self.test_results["status"] = (
-                "passed" if result.returncode == 0 else "failed"
-            )
+            self.test_results["status"] = "passed" if result.returncode == 0 else "failed"
             self.test_results["metrics"] = metrics
             self.test_results["return_code"] = result.returncode
 
@@ -227,7 +221,7 @@ class BootstrapBridge:
             "failed": 0,
             "skipped": 0,
             "errors": 0,
-            "duration": 0.0,
+            "duration": 0.0
         }
 
         # Parse test summary line
@@ -285,15 +279,15 @@ class BootstrapBridge:
         Returns:
             DMAIC phase report
         """
-        print("\n" + "=" * 80)
+        print("\n" + "="*80)
         print("DMAIC REPORT: Bootstrap Statistics")
-        print("=" * 80 + "\n")
+        print("="*80 + "\n")
 
         dmaic_report = {
             "timestamp": datetime.now().isoformat(),
             "bridge": "bootstrap_statistics",
             "test_file": str(self.test_file),
-            "phases": {},
+            "phases": {}
         }
 
         # Phase 1: Define
@@ -304,10 +298,10 @@ class BootstrapBridge:
                 "Validate bootstrap_ci_diff_means() for group comparisons",
                 "Validate data loading functions (CSV, folders)",
                 "Validate integration workflows",
-                "Ensure edge case handling",
+                "Ensure edge case handling"
             ],
             "test_count": 28,
-            "markers": ["bootstrap_stats", "data_loading", "integration", "edge_cases"],
+            "markers": ["bootstrap_stats", "data_loading", "integration", "edge_cases"]
         }
 
         # Phase 2: Measure (run tests)
@@ -331,11 +325,8 @@ class BootstrapBridge:
         dmaic_report["phases"]["control"] = control_results
 
         # Save report
-        report_file = (
-            self.report_dir
-            / f"dmaic_report_{datetime.now().strftime('%Y%m%d_%H%M%S')}.json"
-        )
-        with open(report_file, "w") as f:
+        report_file = self.report_dir / f"dmaic_report_{datetime.now().strftime('%Y%m%d_%H%M%S')}.json"
+        with open(report_file, 'w') as f:
             json.dump(dmaic_report, f, indent=2)
 
         print(f"\n[SUCCESS] DMAIC report saved: {report_file}")
@@ -352,13 +343,9 @@ class BootstrapBridge:
 
         analysis = {
             "pass_rate": pass_rate,
-            "health_status": (
-                "excellent"
-                if pass_rate >= 95
-                else "good" if pass_rate >= 80 else "poor"
-            ),
+            "health_status": "excellent" if pass_rate >= 95 else "good" if pass_rate >= 80 else "poor",
             "coverage": "complete" if total >= 28 else "incomplete",
-            "performance": "acceptable" if metrics.get("duration", 0) < 60 else "slow",
+            "performance": "acceptable" if metrics.get("duration", 0) < 60 else "slow"
         }
 
         print(f"  Pass Rate: {pass_rate:.1f}% ({passed}/{total})")
@@ -396,14 +383,14 @@ class BootstrapBridge:
                 "Run bootstrap tests on every commit",
                 "Monitor test execution time (target < 60s)",
                 "Track pass rate (target 100%)",
-                "Review failed tests within 24h",
+                "Review failed tests within 24h"
             ],
             "thresholds": {
                 "min_pass_rate": 95.0,
                 "max_duration": 60.0,
-                "required_test_count": 28,
+                "required_test_count": 28
             },
-            "status": results.get("status", "unknown"),
+            "status": results.get("status", "unknown")
         }
 
         print("  Control Measures:")
@@ -415,9 +402,9 @@ class BootstrapBridge:
 
 def main():
     """Main execution for standalone bootstrap bridge testing"""
-    print("\n" + "=" * 80)
+    print("\n" + "="*80)
     print("BOOTSTRAP STATISTICS BRIDGE - DMAIC Integration")
-    print("=" * 80 + "\n")
+    print("="*80 + "\n")
 
     bridge = BootstrapBridge()
 
@@ -437,25 +424,17 @@ def main():
     dmaic_report = bridge.generate_dmaic_report()
 
     # Summary
-    print("\n" + "=" * 80)
+    print("\n" + "="*80)
     print("BOOTSTRAP BRIDGE SUMMARY")
-    print("=" * 80)
-    print(
-        f"Status: {dmaic_report['phases']['measure'].get('status', 'unknown').upper()}"
-    )
-    print(
-        f"Tests: {dmaic_report['phases']['measure'].get('metrics', {}).get('total', 0)}"
-    )
-    print(
-        f"Passed: {dmaic_report['phases']['measure'].get('metrics', {}).get('passed', 0)}"
-    )
+    print("="*80)
+    print(f"Status: {dmaic_report['phases']['measure'].get('status', 'unknown').upper()}")
+    print(f"Tests: {dmaic_report['phases']['measure'].get('metrics', {}).get('total', 0)}")
+    print(f"Passed: {dmaic_report['phases']['measure'].get('metrics', {}).get('passed', 0)}")
     print(f"Pass Rate: {dmaic_report['phases']['analyze'].get('pass_rate', 0):.1f}%")
-    print(
-        f"Health: {dmaic_report['phases']['analyze'].get('health_status', 'unknown')}"
-    )
-    print("=" * 80 + "\n")
+    print(f"Health: {dmaic_report['phases']['analyze'].get('health_status', 'unknown')}")
+    print("="*80 + "\n")
 
-    return 0 if dmaic_report["phases"]["measure"].get("status") == "passed" else 1
+    return 0 if dmaic_report['phases']['measure'].get('status') == 'passed' else 1
 
 
 if __name__ == "__main__":

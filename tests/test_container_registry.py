@@ -9,15 +9,14 @@
 Container Registry Integration Tests - Docker Hub, Container Scanning, Multi-arch Builds
 """
 
-import hashlib
+import pytest
+import subprocess
 import json
 import os
-import subprocess
-from dataclasses import asdict, dataclass
 from pathlib import Path
-from typing import Any, Dict, List, Optional
-
-import pytest
+from typing import Dict, List, Any, Optional
+from dataclasses import dataclass, asdict
+import hashlib
 
 
 @dataclass
@@ -40,13 +39,8 @@ class ContainerRegistryManager:
         self.namespace = namespace
         self.images: List[ContainerImage] = []
 
-    def build_image(
-        self,
-        dockerfile_path: Path,
-        image_name: str,
-        tag: str = "latest",
-        platform: Optional[str] = None,
-    ) -> Dict[str, Any]:
+    def build_image(self, dockerfile_path: Path, image_name: str, tag: str = "latest",
+                   platform: Optional[str] = None) -> Dict[str, Any]:
         try:
             cmd = ["docker", "build", "-t", f"{image_name}:{tag}"]
 
@@ -62,35 +56,21 @@ class ContainerRegistryManager:
                 "image": f"{image_name}:{tag}",
                 "platform": platform or "linux/amd64",
                 "output": result.stdout,
-                "error": result.stderr if result.returncode != 0 else None,
+                "error": result.stderr if result.returncode != 0 else None
             }
         except subprocess.TimeoutExpired:
-            return {
-                "success": False,
-                "image": f"{image_name}:{tag}",
-                "error": "Build timeout",
-            }
+            return {"success": False, "image": f"{image_name}:{tag}", "error": "Build timeout"}
         except Exception as e:
             return {"success": False, "image": f"{image_name}:{tag}", "error": str(e)}
 
-    def build_multiarch(
-        self,
-        dockerfile_path: Path,
-        image_name: str,
-        tag: str = "latest",
-        platforms: List[str] = None,
-    ) -> Dict[str, Any]:
+    def build_multiarch(self, dockerfile_path: Path, image_name: str, tag: str = "latest",
+                       platforms: List[str] = None) -> Dict[str, Any]:
         if platforms is None:
             platforms = ["linux/amd64", "linux/arm64"]
 
         results = []
         for platform in platforms:
-            result = self.build_image(
-                dockerfile_path,
-                image_name,
-                f"{tag}-{platform.replace('/', '-')}",
-                platform,
-            )
+            result = self.build_image(dockerfile_path, image_name, f"{tag}-{platform.replace('/', '-')}", platform)
             results.append(result)
 
         success_count = sum(1 for r in results if r["success"])
@@ -100,7 +80,7 @@ class ContainerRegistryManager:
             "platforms": platforms,
             "results": results,
             "success_count": success_count,
-            "total_count": len(platforms),
+            "total_count": len(platforms)
         }
 
     def scan_image(self, image_name: str, tag: str = "latest") -> Dict[str, Any]:
@@ -111,7 +91,7 @@ class ContainerRegistryManager:
             "high": 0,
             "medium": 0,
             "low": 0,
-            "negligible": 0,
+            "negligible": 0
         }
 
         try:
@@ -119,7 +99,7 @@ class ContainerRegistryManager:
                 ["docker", "inspect", image_ref],
                 capture_output=True,
                 text=True,
-                timeout=30,
+                timeout=30
             )
 
             if result.returncode == 0:
@@ -129,29 +109,23 @@ class ContainerRegistryManager:
                     "success": True,
                     "image": image_ref,
                     "vulnerabilities": vulnerabilities,
-                    "scan_date": (
-                        inspect_data[0].get("Created", "unknown")
-                        if inspect_data
-                        else "unknown"
-                    ),
-                    "size_mb": (
-                        round(inspect_data[0].get("Size", 0) / (1024 * 1024), 2)
-                        if inspect_data
-                        else 0
-                    ),
+                    "scan_date": inspect_data[0].get("Created", "unknown") if inspect_data else "unknown",
+                    "size_mb": round(inspect_data[0].get("Size", 0) / (1024 * 1024), 2) if inspect_data else 0
                 }
             else:
                 return {
                     "success": False,
                     "image": image_ref,
-                    "error": "Image not found or inspection failed",
+                    "error": "Image not found or inspection failed"
                 }
         except Exception as e:
-            return {"success": False, "image": image_ref, "error": str(e)}
+            return {
+                "success": False,
+                "image": image_ref,
+                "error": str(e)
+            }
 
-    def push_image(
-        self, image_name: str, tag: str = "latest", dry_run: bool = True
-    ) -> Dict[str, Any]:
+    def push_image(self, image_name: str, tag: str = "latest", dry_run: bool = True) -> Dict[str, Any]:
         image_ref = f"{self.registry}/{self.namespace}/{image_name}:{tag}"
 
         if dry_run:
@@ -159,7 +133,7 @@ class ContainerRegistryManager:
                 "success": True,
                 "dry_run": True,
                 "image": image_ref,
-                "message": "Dry run - image would be pushed",
+                "message": "Dry run - image would be pushed"
             }
 
         try:
@@ -167,21 +141,23 @@ class ContainerRegistryManager:
                 ["docker", "push", image_ref],
                 capture_output=True,
                 text=True,
-                timeout=600,
+                timeout=600
             )
 
             return {
                 "success": result.returncode == 0,
                 "image": image_ref,
                 "output": result.stdout,
-                "error": result.stderr if result.returncode != 0 else None,
+                "error": result.stderr if result.returncode != 0 else None
             }
         except Exception as e:
-            return {"success": False, "image": image_ref, "error": str(e)}
+            return {
+                "success": False,
+                "image": image_ref,
+                "error": str(e)
+            }
 
-    def tag_image(
-        self, source_image: str, source_tag: str, target_tag: str
-    ) -> Dict[str, Any]:
+    def tag_image(self, source_image: str, source_tag: str, target_tag: str) -> Dict[str, Any]:
         source_ref = f"{source_image}:{source_tag}"
         target_ref = f"{source_image}:{target_tag}"
 
@@ -190,21 +166,21 @@ class ContainerRegistryManager:
                 ["docker", "tag", source_ref, target_ref],
                 capture_output=True,
                 text=True,
-                timeout=30,
+                timeout=30
             )
 
             return {
                 "success": result.returncode == 0,
                 "source": source_ref,
                 "target": target_ref,
-                "error": result.stderr if result.returncode != 0 else None,
+                "error": result.stderr if result.returncode != 0 else None
             }
         except Exception as e:
             return {
                 "success": False,
                 "source": source_ref,
                 "target": target_ref,
-                "error": str(e),
+                "error": str(e)
             }
 
     def get_image_digest(self, image_name: str, tag: str = "latest") -> Optional[str]:
@@ -215,7 +191,7 @@ class ContainerRegistryManager:
                 ["docker", "inspect", "--format={{.Id}}", image_ref],
                 capture_output=True,
                 text=True,
-                timeout=30,
+                timeout=30
             )
 
             if result.returncode == 0:
@@ -252,7 +228,11 @@ class TestContainerBuild:
 
     @pytest.mark.slow
     def test_build_image_success(self, registry_manager, sample_dockerfile):
-        result = registry_manager.build_image(sample_dockerfile, "test-image", "v1.0.0")
+        result = registry_manager.build_image(
+            sample_dockerfile,
+            "test-image",
+            "v1.0.0"
+        )
 
         assert "success" in result
         assert "image" in result
@@ -260,7 +240,9 @@ class TestContainerBuild:
 
     def test_build_image_nonexistent_dockerfile(self, registry_manager):
         result = registry_manager.build_image(
-            Path("/nonexistent/Dockerfile"), "test-image", "v1.0.0"
+            Path("/nonexistent/Dockerfile"),
+            "test-image",
+            "v1.0.0"
         )
 
         assert result["success"] is False
@@ -269,7 +251,10 @@ class TestContainerBuild:
     @pytest.mark.slow
     def test_build_multiarch_dry_run(self, registry_manager, sample_dockerfile):
         result = registry_manager.build_multiarch(
-            sample_dockerfile, "test-multiarch", "v1.0.0", platforms=["linux/amd64"]
+            sample_dockerfile,
+            "test-multiarch",
+            "v1.0.0",
+            platforms=["linux/amd64"]
         )
 
         assert "platforms" in result
@@ -329,13 +314,14 @@ class TestContainerRegistry:
 
 class TestMultiArchBuilds:
 
-    def test_multiarch_platforms_configuration(
-        self, registry_manager, sample_dockerfile
-    ):
+    def test_multiarch_platforms_configuration(self, registry_manager, sample_dockerfile):
         platforms = ["linux/amd64", "linux/arm64", "linux/arm/v7"]
 
         result = registry_manager.build_multiarch(
-            sample_dockerfile, "test-multiarch", "v1.0.0", platforms=platforms
+            sample_dockerfile,
+            "test-multiarch",
+            "v1.0.0",
+            platforms=platforms
         )
 
         assert result["platforms"] == platforms
@@ -343,7 +329,9 @@ class TestMultiArchBuilds:
 
     def test_multiarch_default_platforms(self, registry_manager, sample_dockerfile):
         result = registry_manager.build_multiarch(
-            sample_dockerfile, "test-multiarch", "v1.0.0"
+            sample_dockerfile,
+            "test-multiarch",
+            "v1.0.0"
         )
 
         assert "linux/amd64" in result["platforms"]
@@ -351,7 +339,10 @@ class TestMultiArchBuilds:
 
     def test_multiarch_results_structure(self, registry_manager, sample_dockerfile):
         result = registry_manager.build_multiarch(
-            sample_dockerfile, "test-multiarch", "v1.0.0", platforms=["linux/amd64"]
+            sample_dockerfile,
+            "test-multiarch",
+            "v1.0.0",
+            platforms=["linux/amd64"]
         )
 
         assert "results" in result
@@ -368,7 +359,7 @@ class TestContainerImageMetadata:
             digest="sha256:abc123",
             size_mb=150.5,
             architectures=["linux/amd64", "linux/arm64"],
-            created_at="2024-01-22T10:00:00Z",
+            created_at="2024-01-22T10:00:00Z"
         )
 
         assert image.name == "test-image"
@@ -383,7 +374,7 @@ class TestContainerImageMetadata:
             size_mb=150.5,
             architectures=["linux/amd64"],
             created_at="2024-01-22T10:00:00Z",
-            vulnerabilities={"critical": 0, "high": 1},
+            vulnerabilities={"critical": 0, "high": 1}
         )
 
         data = image.to_dict()

@@ -3,7 +3,6 @@
 Every observation is diagnostic only. These tests neither authorize auto-fix on
 real source trees nor promote a reproduced symptom to a root closure.
 """
-
 import contextlib
 import io
 import json
@@ -52,29 +51,21 @@ class DebuggerBranchFlight(unittest.TestCase):
         (self.root / "DMAIC_V3_OUTPUT/iteration_1/phase0_init").mkdir(parents=True)
         self.write("DMAIC_V3_OUTPUT/iteration_1/phase1_define/bad.json", "not-json")
         self.write("DMAIC_V3_OUTPUT/iteration_1/phase2_measure/empty.json", "{}")
-        self.write(
-            "DMAIC_V3_OUTPUT/iteration_1/phase3_analyze/good.json", '{"ok":true}'
-        )
+        self.write("DMAIC_V3_OUTPUT/iteration_1/phase3_analyze/good.json", '{"ok":true}')
         result = self.check(self.debug._check_empty_phases)
         self.assertEqual(result["status"], "warning")
-        self.assertEqual(
-            {v["reason"] for v in result["empty_phases"]},
-            {"no_json_files", "invalid_json", "empty_json"},
-        )
+        self.assertEqual({v["reason"] for v in result["empty_phases"]},
+                         {"no_json_files", "invalid_json", "empty_json"})
 
     def test_empty_phase_skips_invalid_iteration_with_warning(self):
-        (self.root / "DMAIC_V3_OUTPUT/iteration_nonnumeric/phase0_x").mkdir(
-            parents=True
-        )
+        (self.root / "DMAIC_V3_OUTPUT/iteration_nonnumeric/phase0_x").mkdir(parents=True)
         result = self.check(self.debug._check_empty_phases)
         self.assertEqual(result["status"], "ok")
         self.assertTrue(any(x["category"] == "empty_phases" for x in self.debug.issues))
 
     def test_failed_iterations_reports_incomplete_but_not_complete(self):
         for i in range(9):
-            (self.root / f"DMAIC_V3_OUTPUT/iteration_1/phase{i}_ready").mkdir(
-                parents=True
-            )
+            (self.root / f"DMAIC_V3_OUTPUT/iteration_1/phase{i}_ready").mkdir(parents=True)
         (self.root / "DMAIC_V3_OUTPUT/iteration_2/phase0_only").mkdir(parents=True)
         (self.root / "DMAIC_V3_OUTPUT/iteration_bad").mkdir()
         result = self.check(self.debug._check_failed_iterations)
@@ -96,27 +87,20 @@ class DebuggerBranchFlight(unittest.TestCase):
         bad = self.check(self.debug._check_common_errors)
         self.assertEqual(bad["status"], "error")
         self.assertEqual(len(bad["errors"]), 1)
-        file.write_text(
-            "from ..core.utils import ensure_directory\nensure_directory('x')\n"
-        )
+        file.write_text("from ..core.utils import ensure_directory\nensure_directory('x')\n")
         good = self.check(self.debug._check_common_errors)
         self.assertEqual(good["status"], "ok")
 
     def test_log_scan_handles_failures_success_and_malformed_json(self):
-        self.write(
-            "DMAIC_V3_OUTPUT/iteration_5/phase0_a/error.json", '{"error":"disk"}'
-        )
-        self.write(
-            "DMAIC_V3_OUTPUT/iteration_5/phase1_b/fail.json", '{"success":false}'
-        )
+        self.write("DMAIC_V3_OUTPUT/iteration_5/phase0_a/error.json", '{"error":"disk"}')
+        self.write("DMAIC_V3_OUTPUT/iteration_5/phase1_b/fail.json", '{"success":false}')
         self.write("DMAIC_V3_OUTPUT/iteration_5/phase2_c/invalid.json", "not-json")
         self.write("DMAIC_V3_OUTPUT/iteration_5/phase3_d/ok.json", '{"success":true}')
         result = self.check(self.debug._analyze_logs)
         self.assertEqual(result["status"], "warning")
         self.assertEqual(len(result["recent_errors"]), 2)
-        self.assertEqual(
-            {x["error"] for x in result["recent_errors"]}, {"disk", "Unknown failure"}
-        )
+        self.assertEqual({x["error"] for x in result["recent_errors"]},
+                         {"disk", "Unknown failure"})
 
     def test_auto_fix_only_creates_missing_sandbox_templates(self):
         with contextlib.redirect_stdout(io.StringIO()):
@@ -125,22 +109,16 @@ class DebuggerBranchFlight(unittest.TestCase):
         self.assertEqual(len(first), 4)
         self.assertEqual(second, [])
         self.assertTrue((self.root / "DMAIC_V3_OUTPUT").is_dir())
-        self.assertEqual(
-            json.loads((self.root / "index.json").read_text())["dmaic_version"], "3.3"
-        )
+        self.assertEqual(json.loads((self.root / "index.json").read_text())["dmaic_version"], "3.3")
 
     def test_auto_fix_inserts_phase1_import_once(self):
-        source = self.write(
-            "DMAIC_V3/phases/phase1_define.py",
-            "from ..core.state import StateManager\nensure_directory('x')\n",
-        )
+        source = self.write("DMAIC_V3/phases/phase1_define.py",
+                            "from ..core.state import StateManager\nensure_directory('x')\n")
         with contextlib.redirect_stdout(io.StringIO()):
             first = self.debug.auto_fix()
             self.debug.auto_fix()
         self.assertTrue(any("ensure_directory" in note for note in first))
-        self.assertEqual(
-            source.read_text().count("from ..core.utils import ensure_directory"), 1
-        )
+        self.assertEqual(source.read_text().count("from ..core.utils import ensure_directory"), 1)
 
     def test_phase_census_mixes_executable_missing_and_incomplete(self):
         self.write("DMAIC_V3/phases/phase0_init.py", "def execute(self):\n    pass\n")

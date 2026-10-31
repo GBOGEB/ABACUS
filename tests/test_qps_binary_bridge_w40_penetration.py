@@ -3,14 +3,13 @@
 The tests exercise real parsers and bytes (not mocked extractor outcomes).
 Only self-contained synthetic fixtures; no test exclusions or remote writes.
 """
-
 from __future__ import annotations
 
 import html
 import importlib.util
 import json
-import zipfile
 from pathlib import Path
+import zipfile
 
 import pytest
 
@@ -38,7 +37,7 @@ def _package(path: Path, family: str, token: str = "Baseline") -> str:
         parts = {
             member: (
                 f'<w:document xmlns:w="{W}"><w:body><w:p>'
-                f"<w:r><w:t>{safe}</w:t></w:r></w:p></w:body></w:document>"
+                f'<w:r><w:t>{safe}</w:t></w:r></w:p></w:body></w:document>'
             )
         }
     elif family == "xlsx":
@@ -47,17 +46,17 @@ def _package(path: Path, family: str, token: str = "Baseline") -> str:
             member: (
                 f'<workbook xmlns="{S}" xmlns:r="{R}"><sheets>'
                 '<sheet name="Main" sheetId="1" r:id="rId1"/>'
-                "</sheets></workbook>"
+                '</sheets></workbook>'
             ),
             "xl/_rels/workbook.xml.rels": (
                 f'<Relationships xmlns="{REL}"><Relationship Id="rId1" '
                 'Type="worksheet" Target="worksheets/sheet1.xml"/>'
-                "</Relationships>"
+                '</Relationships>'
             ),
             "xl/worksheets/sheet1.xml": (
                 f'<worksheet xmlns="{S}"><sheetData><row r="1">'
                 f'<c r="A1" t="inlineStr"><is><t>{safe}</t></is></c>'
-                "</row></sheetData></worksheet>"
+                '</row></sheetData></worksheet>'
             ),
         }
     elif family == "pptx":
@@ -65,8 +64,8 @@ def _package(path: Path, family: str, token: str = "Baseline") -> str:
         parts = {
             member: (
                 f'<p:sld xmlns:p="{P}" xmlns:a="{A}"><p:cSld>'
-                f"<a:p><a:r><a:t>{safe}</a:t></a:r></a:p>"
-                "</p:cSld></p:sld>"
+                f'<a:p><a:r><a:t>{safe}</a:t></a:r></a:p>'
+                '</p:cSld></p:sld>'
             )
         }
     else:
@@ -79,19 +78,15 @@ def _package(path: Path, family: str, token: str = "Baseline") -> str:
 
 def _normalized(path: Path):
     return bridge.normalize_source(
-        path,
-        authority="DERIVED_CHILD",
-        lifecycle_status="CURRENT",
-        trace_links=["W40-REVERSE-ORACLE"],
-        supersedes=["W32"],
+        path, authority="DERIVED_CHILD", lifecycle_status="CURRENT",
+        trace_links=["W40-REVERSE-ORACLE"], supersedes=["W32"],
         producer_commit="a" * 40,
     )
 
 
 @pytest.mark.parametrize("family", ("docx", "xlsx", "pptx"))
 @pytest.mark.parametrize(
-    "attack,invalid",
-    (
+    "attack,invalid", (
         ("not_a_zip", b"not a ZIP or Office source"),
         ("truncated_directory", b"PK\x03\x04truncated"),
         ("empty_xml", b""),
@@ -123,7 +118,9 @@ def test_ooxml_corrupted_container_or_xml_rejected(tmp_path, family, attack, inv
 
 @pytest.mark.parametrize("family", ("docx", "xlsx", "pptx"))
 @pytest.mark.parametrize("token", ("CAPEX", "OPEX", "helium-2K", "Ωmega & <stress>"))
-def test_ooxml_single_semantic_token_flip_changes_both_digests(tmp_path, family, token):
+def test_ooxml_single_semantic_token_flip_changes_both_digests(
+    tmp_path, family, token
+):
     """12 matched reverse controls: a real OOXML text mutation changes both hashes."""
     source = tmp_path / ("same-path." + family)
     _package(source, family, token)
@@ -142,22 +139,13 @@ def test_ooxml_single_semantic_token_flip_changes_both_digests(tmp_path, family,
 
 
 @pytest.mark.parametrize(
-    "suffix,markup,visible,hidden",
-    (
+    "suffix,markup,visible,hidden", (
         (".html", "<head>PRIVATE</head><main>Public</main>", "Public", "PRIVATE"),
         (".htm", "<script>EXFIL</script><p>Safe</p>", "Safe", "EXFIL"),
-        (
-            ".html",
-            "<style>HIDDEN</style><section>Section</section>",
-            "Section",
-            "HIDDEN",
-        ),
-        (
-            ".htm",
-            "<template>OPAQUE</template><article>Article</article>",
-            "Article",
-            "OPAQUE",
-        ),
+        (".html", "<style>HIDDEN</style><section>Section</section>",
+         "Section", "HIDDEN"),
+        (".htm", "<template>OPAQUE</template><article>Article</article>",
+         "Article", "OPAQUE"),
         (".html", "<div id='root'>A<img src='x'>B</div>", "A B", "NOT-A-TOKEN"),
         (".htm", "<p id='entity'>A &amp; B</p>", "A & B", "NOT-A-TOKEN"),
     ),
@@ -177,8 +165,7 @@ def test_html_visibility_and_void_reverse_controls(
 
 
 @pytest.mark.parametrize(
-    "pages,literal",
-    (
+    "pages,literal", (
         (1, "QPS_HOT"),
         (1, "QPS_COLD"),
         (2, "AUX_LOOP"),
@@ -187,20 +174,19 @@ def test_html_visibility_and_void_reverse_controls(
         (4, "RECEIPT_W40"),
     ),
 )
-def test_pdf_uncompressed_fallback_is_explicitly_degraded(tmp_path, pages, literal):
+def test_pdf_uncompressed_fallback_is_explicitly_degraded(
+    tmp_path, pages, literal
+):
     """6 actual byte-stream fallback controls: distinguish degraded from structured."""
     source = tmp_path / "fallback.pdf"
     source.write_bytes(
         b"%PDF-1.4\n"
         + b"\n".join(b"1 0 obj << /Type /Page >> endobj" for _ in range(pages))
-        + b"\nBT ("
-        + literal.encode("ascii")
-        + b") Tj ET\n%%EOF\n"
+        + b"\nBT (" + literal.encode("ascii") + b") Tj ET\n%%EOF\n"
     )
     result = bridge._pdf_literal_fallback(source)
     assert result["extraction_quality"] == {
-        "status": "FALLBACK",
-        "parser": "pdf_literal_strings",
+        "status": "FALLBACK", "parser": "pdf_literal_strings"
     }
     assert len(result["pages"]) == pages
     assert [p["number"] for p in result["pages"]] == list(range(1, pages + 1))

@@ -9,25 +9,23 @@ DMAIC-Based Test Orchestration Framework
 Implements Define-Measure-Analyze-Improve-Control for test management
 """
 
-import asyncio
-import json
-import os
-import sys
-import time
-import uuid
-from dataclasses import asdict, dataclass
-from datetime import datetime
-from enum import Enum
-from pathlib import Path
-from typing import Dict, List, Tuple
-
 import pytest
 import pytest_asyncio
+import asyncio
+import json
+import time
+import sys
+import os
+import uuid
+from pathlib import Path
+from typing import Dict, List, Tuple
+from datetime import datetime
+from dataclasses import dataclass, asdict
+from enum import Enum
 
 
 class DMAICPhase(Enum):
     """DMAIC phases for test orchestration"""
-
     DEFINE = "define"
     MEASURE = "measure"
     ANALYZE = "analyze"
@@ -56,7 +54,6 @@ class TestMetrics:
 @dataclass
 class DMAICMetrics:
     """DMAIC-specific metrics"""
-
     phase: DMAICPhase
     total_tests: int
     passed_tests: int
@@ -75,8 +72,8 @@ class DMAICMetrics:
 
     def to_dict(self) -> Dict:
         data = asdict(self)
-        data["phase"] = self.phase.value
-        data["pass_rate"] = self.pass_rate()
+        data['phase'] = self.phase.value
+        data['pass_rate'] = self.pass_rate()
         return data
 
 
@@ -107,14 +104,14 @@ class DMAICTestOrchestrator:
                 "Maintain 95%+ test pass rate",
                 "Keep average test duration < 1s",
                 "Zero critical failures",
-                "100% async test support",
+                "100% async test support"
             ],
             "success_criteria": {
                 "coverage_threshold": 80.0,
                 "pass_rate_threshold": 95.0,
                 "max_avg_duration": 1.0,
                 "max_critical_failures": 0,
-                "async_support": 100.0,
+                "async_support": 100.0
             },
             "scope": {
                 "unit_tests": True,
@@ -122,9 +119,9 @@ class DMAICTestOrchestrator:
                 "performance_tests": True,
                 "security_tests": True,
                 "docker_tests": True,
-                "yaml_tests": True,
+                "yaml_tests": True
             },
-            "timestamp": datetime.now().isoformat(),
+            "timestamp": datetime.now().isoformat()
         }
 
         self._save_phase_data(DMAICPhase.DEFINE, objectives)
@@ -139,9 +136,7 @@ class DMAICTestOrchestrator:
         "tests/test_action_tracker.py": "action_tracker",
         # The Week 3 integration exercises these three production modules.
         "tests/test_week3_integration.py": (
-            "master_doc_manager",
-            "user_library_rag",
-            "action_tracker",
+            "master_doc_manager", "user_library_rag", "action_tracker"
         ),
     }
 
@@ -161,9 +156,7 @@ class DMAICTestOrchestrator:
         return [f"--cov={source}" for source in sources]
 
     # MEASURE Phase
-    async def measure_test_performance(
-        self, test_suite: str = "tests/"
-    ) -> DMAICMetrics:
+    async def measure_test_performance(self, test_suite: str = "tests/") -> DMAICMetrics:
         """
         Measure: Collect baseline metrics from test execution
         """
@@ -175,15 +168,13 @@ class DMAICTestOrchestrator:
         report_file = run_dir / "test_report.json"
         coverage_file = run_dir / "coverage.json"
         cmd = [
-            sys.executable,
-            "-m",
-            "pytest",
+            sys.executable, "-m", "pytest",
             test_suite,
             *self._coverage_options_for_suite(test_suite),
             f"--cov-report=json:{coverage_file}",
             "--json-report",
             f"--json-report-file={report_file}",
-            "-v",
+            "-v"
         ]
 
         start_time = time.time()
@@ -192,18 +183,13 @@ class DMAICTestOrchestrator:
             # Nested pytest shall discover the SUT-local coverage configuration.
             # Inherited CI config may omit the entire temporary workspace.
             if key.startswith("COV_CORE_") or key in (
-                "COVERAGE_PROCESS_START",
-                "COVERAGE_RCFILE",
+                "COVERAGE_PROCESS_START", "COVERAGE_RCFILE"
             ):
                 env.pop(key, None)
         env["COVERAGE_FILE"] = str(run_dir / ".coverage")
         result = subprocess.run(
-            cmd,
-            capture_output=True,
-            text=True,
-            cwd=self.workspace_path,
-            env=env,
-            timeout=300,
+            cmd, capture_output=True, text=True, cwd=self.workspace_path,
+            env=env, timeout=300,
         )
         duration = time.time() - start_time
         (run_dir / "stdout.log").write_text(result.stdout, encoding="utf-8")
@@ -225,20 +211,20 @@ class DMAICTestOrchestrator:
 
         test_data = self._parse_test_report(report_file)
         coverage_data = self._parse_coverage_report(coverage_file)
-        if test_data["total"] <= 0:
+        if test_data['total'] <= 0:
             raise RuntimeError(f"Measurement collected no tests; evidence: {run_dir}")
 
         metrics = DMAICMetrics(
             phase=DMAICPhase.MEASURE,
-            total_tests=test_data["total"],
-            passed_tests=test_data["passed"],
-            failed_tests=test_data["failed"],
-            skipped_tests=test_data["skipped"],
-            avg_duration=duration / max(test_data["total"], 1),
-            coverage_score=coverage_data["coverage_percent"],
+            total_tests=test_data['total'],
+            passed_tests=test_data['passed'],
+            failed_tests=test_data['failed'],
+            skipped_tests=test_data['skipped'],
+            avg_duration=duration / max(test_data['total'], 1),
+            coverage_score=coverage_data['coverage_percent'],
             quality_score=self._calculate_quality_score(test_data, coverage_data),
             improvement_score=0.0,  # Baseline
-            timestamp=datetime.now().isoformat(),
+            timestamp=datetime.now().isoformat()
         )
 
         self.dmaic_metrics[DMAICPhase.MEASURE] = metrics
@@ -263,12 +249,12 @@ class DMAICTestOrchestrator:
                 "pass_rate": measure_metrics.pass_rate(),
                 "coverage_gap": 80.0 - measure_metrics.coverage_score,
                 "avg_test_duration": measure_metrics.avg_duration,
-                "quality_score": measure_metrics.quality_score,
+                "quality_score": measure_metrics.quality_score
             },
             "bottlenecks": self._identify_bottlenecks(measure_metrics),
             "failure_patterns": self._analyze_failure_patterns(),
             "coverage_gaps": self._identify_coverage_gaps(),
-            "recommendations": self._generate_recommendations(measure_metrics),
+            "recommendations": self._generate_recommendations(measure_metrics)
         }
 
         self._save_phase_data(DMAICPhase.ANALYZE, analysis)
@@ -284,25 +270,26 @@ class DMAICTestOrchestrator:
             "timestamp": datetime.now().isoformat(),
             "actions_taken": [],
             "before_metrics": self.dmaic_metrics[DMAICPhase.MEASURE].to_dict(),
-            "after_metrics": {},
+            "after_metrics": {}
         }
 
         # Apply improvements
-        for recommendation in analysis["recommendations"]:
+        for recommendation in analysis['recommendations']:
             action_result = await self._apply_improvement(recommendation)
-            improvements["actions_taken"].append(action_result)
+            improvements['actions_taken'].append(action_result)
 
         # Re-measure after improvements
         improved_metrics = await self.measure_test_performance()
-        improvements["after_metrics"] = improved_metrics.to_dict()
+        improvements['after_metrics'] = improved_metrics.to_dict()
 
         # Calculate improvement score
         improvement_score = self._calculate_improvement_score(
-            self.dmaic_metrics[DMAICPhase.MEASURE], improved_metrics
+            self.dmaic_metrics[DMAICPhase.MEASURE],
+            improved_metrics
         )
 
-        improvements["improvement_score"] = improvement_score
-        improvements["improvement_percentage"] = improvement_score * 100
+        improvements['improvement_score'] = improvement_score
+        improvements['improvement_percentage'] = improvement_score * 100
 
         self._save_phase_data(DMAICPhase.IMPROVE, improvements)
         self.improvement_history.append(improvements)
@@ -322,24 +309,24 @@ class DMAICTestOrchestrator:
                 "code_coverage",
                 "test_duration",
                 "failure_rate",
-                "async_test_coverage",
+                "async_test_coverage"
             ],
             "alert_thresholds": {
                 "pass_rate_min": 95.0,
                 "coverage_min": 80.0,
                 "duration_max": 1.0,
-                "failure_rate_max": 5.0,
+                "failure_rate_max": 5.0
             },
             "continuous_improvement": {
                 "review_frequency": "daily",
                 "improvement_cycles": len(self.improvement_history),
-                "next_review": self._calculate_next_review(),
+                "next_review": self._calculate_next_review()
             },
             "quality_gates": {
                 "pre_commit": ["unit_tests", "linting"],
                 "pre_merge": ["integration_tests", "coverage_check"],
-                "pre_deploy": ["all_tests", "performance_tests", "security_tests"],
-            },
+                "pre_deploy": ["all_tests", "performance_tests", "security_tests"]
+            }
         }
 
         self._save_phase_data(DMAICPhase.CONTROL, control_plan)
@@ -349,17 +336,17 @@ class DMAICTestOrchestrator:
     def _parse_test_report(self, report_file: Path) -> Dict:
         """Parse pytest JSON report"""
         if not report_file.exists():
-            return {"total": 0, "passed": 0, "failed": 0, "skipped": 0}
+            return {'total': 0, 'passed': 0, 'failed': 0, 'skipped': 0}
 
         with open(report_file) as f:
             data = json.load(f)
 
-        summary = data.get("summary", {})
+        summary = data.get('summary', {})
         return {
-            "total": summary.get("total", 0),
-            "passed": summary.get("passed", 0),
-            "failed": summary.get("failed", 0),
-            "skipped": summary.get("skipped", 0),
+            'total': summary.get('total', 0),
+            'passed': summary.get('passed', 0),
+            'failed': summary.get('failed', 0),
+            'skipped': summary.get('skipped', 0)
         }
 
     def _parse_coverage_report(self, coverage_file: Path) -> Dict:
@@ -372,26 +359,30 @@ class DMAICTestOrchestrator:
         """
         if not coverage_file.exists():
             return {
-                "coverage_percent": 0.0,
-                "combined_coverage_percent": 0.0,
+                'coverage_percent': 0.0,
+                'combined_coverage_percent': 0.0,
             }
 
         with open(coverage_file) as f:
             data = json.load(f)
 
-        totals = data.get("totals", {})
-        statements = int(totals.get("num_statements", 0) or 0)
-        covered_lines = int(totals.get("covered_lines", 0) or 0)
-        line_percent = (covered_lines / statements) * 100.0 if statements else 0.0
+        totals = data.get('totals', {})
+        statements = int(totals.get('num_statements', 0) or 0)
+        covered_lines = int(totals.get('covered_lines', 0) or 0)
+        line_percent = (
+            (covered_lines / statements) * 100.0 if statements else 0.0
+        )
         return {
-            "coverage_percent": line_percent,
-            "combined_coverage_percent": totals.get("percent_covered", line_percent),
+            'coverage_percent': line_percent,
+            'combined_coverage_percent': totals.get(
+                'percent_covered', line_percent
+            ),
         }
 
     def _calculate_quality_score(self, test_data: Dict, coverage_data: Dict) -> float:
         """Calculate overall quality score"""
-        pass_rate = (test_data["passed"] / max(test_data["total"], 1)) * 100
-        coverage = coverage_data["coverage_percent"]
+        pass_rate = (test_data['passed'] / max(test_data['total'], 1)) * 100
+        coverage = coverage_data['coverage_percent']
 
         # Weighted average: 60% pass rate, 40% coverage
         quality_score = (pass_rate * 0.6) + (coverage * 0.4)
@@ -402,34 +393,28 @@ class DMAICTestOrchestrator:
         bottlenecks = []
 
         if metrics.avg_duration > 1.0:
-            bottlenecks.append(
-                {
-                    "type": "performance",
-                    "severity": "high",
-                    "description": f"Average test duration ({metrics.avg_duration:.2f}s) exceeds threshold (1.0s)",
-                    "recommendation": "Optimize slow tests or use parallel execution",
-                }
-            )
+            bottlenecks.append({
+                "type": "performance",
+                "severity": "high",
+                "description": f"Average test duration ({metrics.avg_duration:.2f}s) exceeds threshold (1.0s)",
+                "recommendation": "Optimize slow tests or use parallel execution"
+            })
 
         if metrics.coverage_score < 80.0:
-            bottlenecks.append(
-                {
-                    "type": "coverage",
-                    "severity": "high",
-                    "description": f"Coverage ({metrics.coverage_score:.1f}%) below target (80%)",
-                    "recommendation": "Add tests for uncovered code paths",
-                }
-            )
+            bottlenecks.append({
+                "type": "coverage",
+                "severity": "high",
+                "description": f"Coverage ({metrics.coverage_score:.1f}%) below target (80%)",
+                "recommendation": "Add tests for uncovered code paths"
+            })
 
         if metrics.pass_rate() < 95.0:
-            bottlenecks.append(
-                {
-                    "type": "reliability",
-                    "severity": "critical",
-                    "description": f"Pass rate ({metrics.pass_rate():.1f}%) below threshold (95%)",
-                    "recommendation": "Fix failing tests immediately",
-                }
-            )
+            bottlenecks.append({
+                "type": "reliability",
+                "severity": "critical",
+                "description": f"Pass rate ({metrics.pass_rate():.1f}%) below threshold (95%)",
+                "recommendation": "Fix failing tests immediately"
+            })
 
         return bottlenecks
 
@@ -440,7 +425,7 @@ class DMAICTestOrchestrator:
             {
                 "pattern": "async_tests_skipped",
                 "count": 10,
-                "recommendation": "Install pytest-asyncio and enable async tests",
+                "recommendation": "Install pytest-asyncio and enable async tests"
             }
         ]
 
@@ -451,7 +436,7 @@ class DMAICTestOrchestrator:
                 "module": "scripts/",
                 "coverage": 0.0,
                 "priority": "high",
-                "recommendation": "Add unit tests for script modules",
+                "recommendation": "Add unit tests for script modules"
             }
         ]
 
@@ -460,32 +445,28 @@ class DMAICTestOrchestrator:
         recommendations = []
 
         if metrics.coverage_score < 80.0:
-            recommendations.append(
-                {
-                    "priority": "high",
-                    "action": "increase_coverage",
-                    "target": "80%",
-                    "steps": [
-                        "Identify uncovered modules",
-                        "Write unit tests for core functionality",
-                        "Add integration tests for workflows",
-                    ],
-                }
-            )
+            recommendations.append({
+                "priority": "high",
+                "action": "increase_coverage",
+                "target": "80%",
+                "steps": [
+                    "Identify uncovered modules",
+                    "Write unit tests for core functionality",
+                    "Add integration tests for workflows"
+                ]
+            })
 
         if metrics.pass_rate() < 95.0:
-            recommendations.append(
-                {
-                    "priority": "critical",
-                    "action": "fix_failing_tests",
-                    "target": "95% pass rate",
-                    "steps": [
-                        "Review failed test logs",
-                        "Fix root causes",
-                        "Re-run test suite",
-                    ],
-                }
-            )
+            recommendations.append({
+                "priority": "critical",
+                "action": "fix_failing_tests",
+                "target": "95% pass rate",
+                "steps": [
+                    "Review failed test logs",
+                    "Fix root causes",
+                    "Re-run test suite"
+                ]
+            })
 
         return recommendations
 
@@ -495,12 +476,10 @@ class DMAICTestOrchestrator:
         return {
             "recommendation": recommendation,
             "status": "applied",
-            "timestamp": datetime.now().isoformat(),
+            "timestamp": datetime.now().isoformat()
         }
 
-    def _calculate_improvement_score(
-        self, before: DMAICMetrics, after: DMAICMetrics
-    ) -> float:
+    def _calculate_improvement_score(self, before: DMAICMetrics, after: DMAICMetrics) -> float:
         """Calculate improvement score"""
         coverage_improvement = (after.coverage_score - before.coverage_score) / 100
         pass_rate_improvement = (after.pass_rate() - before.pass_rate()) / 100
@@ -511,17 +490,13 @@ class DMAICTestOrchestrator:
     def _calculate_next_review(self) -> str:
         """Calculate next review date"""
         from datetime import timedelta
-
         next_review = datetime.now() + timedelta(days=1)
         return next_review.isoformat()
 
     def _save_phase_data(self, phase: DMAICPhase, data: Dict):
         """Save phase data to file"""
-        filename = (
-            self.metrics_dir
-            / f"dmaic_{phase.value}_{datetime.now().strftime('%Y%m%d_%H%M%S')}.json"
-        )
-        with open(filename, "w") as f:
+        filename = self.metrics_dir / f"dmaic_{phase.value}_{datetime.now().strftime('%Y%m%d_%H%M%S')}.json"
+        with open(filename, 'w') as f:
             json.dump(data, f, indent=2)
 
     def generate_dmaic_report(self) -> Dict:
@@ -533,21 +508,16 @@ class DMAICTestOrchestrator:
             "summary": {
                 "total_improvements": len(self.improvement_history),
                 "current_quality_score": 0.0,
-                "improvement_trend": "stable",
-            },
+                "improvement_trend": "stable"
+            }
         }
 
         for phase, metrics in self.dmaic_metrics.items():
-            report["phases"][phase.value] = (
-                metrics.to_dict() if isinstance(metrics, DMAICMetrics) else metrics
-            )
+            report['phases'][phase.value] = metrics.to_dict() if isinstance(metrics, DMAICMetrics) else metrics
 
         # Save report
-        report_file = (
-            self.metrics_dir
-            / f"dmaic_report_{datetime.now().strftime('%Y%m%d_%H%M%S')}.json"
-        )
-        with open(report_file, "w") as f:
+        report_file = self.metrics_dir / f"dmaic_report_{datetime.now().strftime('%Y%m%d_%H%M%S')}.json"
+        with open(report_file, 'w') as f:
             json.dump(report, f, indent=2)
 
         return report
@@ -561,17 +531,15 @@ class TestDMAICOrchestration:
         orchestrator = DMAICTestOrchestrator()
         objectives = orchestrator.define_test_objectives()
 
-        assert objectives["phase"] == DMAICPhase.DEFINE.value
-        assert "objectives" in objectives
-        assert "success_criteria" in objectives
-        assert objectives["success_criteria"]["coverage_threshold"] == 80.0
+        assert objectives['phase'] == DMAICPhase.DEFINE.value
+        assert 'objectives' in objectives
+        assert 'success_criteria' in objectives
+        assert objectives['success_criteria']['coverage_threshold'] == 80.0
 
     @pytest.mark.asyncio
     async def test_measure_phase(self):
         orchestrator = DMAICTestOrchestrator()
-        metrics = await orchestrator.measure_test_performance(
-            "tests/test_docker_integration.py"
-        )
+        metrics = await orchestrator.measure_test_performance("tests/test_docker_integration.py")
 
         assert metrics.phase == DMAICPhase.MEASURE
         assert metrics.total_tests >= 0
@@ -592,23 +560,23 @@ class TestDMAICOrchestration:
             coverage_score=75.0,
             quality_score=80.0,
             improvement_score=0.0,
-            timestamp=datetime.now().isoformat(),
+            timestamp=datetime.now().isoformat()
         )
 
         analysis = orchestrator.analyze_test_results()
 
-        assert analysis["phase"] == DMAICPhase.ANALYZE.value
-        assert "bottlenecks" in analysis
-        assert "recommendations" in analysis
+        assert analysis['phase'] == DMAICPhase.ANALYZE.value
+        assert 'bottlenecks' in analysis
+        assert 'recommendations' in analysis
 
     def test_control_phase(self):
         orchestrator = DMAICTestOrchestrator()
         control_plan = orchestrator.control_test_quality()
 
-        assert control_plan["phase"] == DMAICPhase.CONTROL.value
-        assert "monitoring_metrics" in control_plan
-        assert "alert_thresholds" in control_plan
-        assert "quality_gates" in control_plan
+        assert control_plan['phase'] == DMAICPhase.CONTROL.value
+        assert 'monitoring_metrics' in control_plan
+        assert 'alert_thresholds' in control_plan
+        assert 'quality_gates' in control_plan
 
     def test_generate_dmaic_report(self):
         orchestrator = DMAICTestOrchestrator()
@@ -616,9 +584,9 @@ class TestDMAICOrchestration:
 
         report = orchestrator.generate_dmaic_report()
 
-        assert report["report_type"] == "DMAIC Test Orchestration"
-        assert "phases" in report
-        assert "summary" in report
+        assert report['report_type'] == "DMAIC Test Orchestration"
+        assert 'phases' in report
+        assert 'summary' in report
 
 
 class TestWeek3ComponentIntegration:
@@ -628,9 +596,7 @@ class TestWeek3ComponentIntegration:
     async def test_master_doc_manager_metrics(self):
         """Test Master Doc Manager integration with DMAIC metrics"""
         orchestrator = DMAICTestOrchestrator()
-        metrics = await orchestrator.measure_test_performance(
-            "tests/test_master_doc_manager.py"
-        )
+        metrics = await orchestrator.measure_test_performance("tests/test_master_doc_manager.py")
 
         assert metrics.phase == DMAICPhase.MEASURE
         assert metrics.total_tests >= 10
@@ -641,9 +607,7 @@ class TestWeek3ComponentIntegration:
     async def test_user_library_rag_metrics(self):
         """Test User Library RAG integration with DMAIC metrics"""
         orchestrator = DMAICTestOrchestrator()
-        metrics = await orchestrator.measure_test_performance(
-            "tests/test_user_library_rag.py"
-        )
+        metrics = await orchestrator.measure_test_performance("tests/test_user_library_rag.py")
 
         assert metrics.phase == DMAICPhase.MEASURE
         assert metrics.total_tests >= 10
@@ -654,18 +618,14 @@ class TestWeek3ComponentIntegration:
     async def test_action_tracker_metrics(self):
         """Test Action Tracker integration with DMAIC metrics"""
         orchestrator = DMAICTestOrchestrator()
-        metrics = await orchestrator.measure_test_performance(
-            "tests/test_action_tracker.py"
-        )
+        metrics = await orchestrator.measure_test_performance("tests/test_action_tracker.py")
 
         assert metrics.phase == DMAICPhase.MEASURE
         assert metrics.total_tests >= 10
         assert metrics.coverage_score >= 80.0
         assert metrics.pass_rate() >= 95.0
 
-    def test_parse_coverage_report_keeps_line_metric_under_branch_coverage(
-        self, tmp_path
-    ):
+    def test_parse_coverage_report_keeps_line_metric_under_branch_coverage(self, tmp_path):
         """Branch coverage must not silently redefine DMAIC line coverage."""
         report = tmp_path / "coverage.json"
         report.write_text(
@@ -692,9 +652,7 @@ class TestWeek3ComponentIntegration:
     async def test_week3_integration_metrics(self):
         """Test Week 3 integration tests with DMAIC metrics"""
         orchestrator = DMAICTestOrchestrator()
-        metrics = await orchestrator.measure_test_performance(
-            "tests/test_week3_integration.py"
-        )
+        metrics = await orchestrator.measure_test_performance("tests/test_week3_integration.py")
 
         assert metrics.phase == DMAICPhase.MEASURE
         assert metrics.total_tests == 8
@@ -706,25 +664,22 @@ class TestWeek3ComponentIntegration:
         orchestrator = DMAICTestOrchestrator()
         objectives = orchestrator.define_test_objectives()
 
-        assert objectives["phase"] == DMAICPhase.DEFINE.value
-        assert "objectives" in objectives
+        assert objectives['phase'] == DMAICPhase.DEFINE.value
+        assert 'objectives' in objectives
 
         objectives_text = str(objectives)
-        assert any(
-            keyword in objectives_text.lower()
-            for keyword in ["master", "doc", "rag", "action", "tracker"]
-        )
+        assert any(keyword in objectives_text.lower() for keyword in ['master', 'doc', 'rag', 'action', 'tracker'])
 
     def test_week3_components_quality_gates(self):
         """Test Week 3 components meet quality gates"""
         orchestrator = DMAICTestOrchestrator()
         control_plan = orchestrator.control_test_quality()
 
-        quality_gates = control_plan["quality_gates"]
+        quality_gates = control_plan['quality_gates']
 
-        assert quality_gates["coverage_gate"] >= 80.0
-        assert quality_gates["pass_rate_gate"] >= 95.0
-        assert quality_gates["performance_gate"] <= 1.0
+        assert quality_gates['coverage_gate'] >= 80.0
+        assert quality_gates['pass_rate_gate'] >= 95.0
+        assert quality_gates['performance_gate'] <= 1.0
 
     @pytest.mark.asyncio
     async def test_week3_full_dmaic_cycle(self):
@@ -732,20 +687,18 @@ class TestWeek3ComponentIntegration:
         orchestrator = DMAICTestOrchestrator()
 
         objectives = orchestrator.define_test_objectives()
-        assert objectives["phase"] == DMAICPhase.DEFINE.value
+        assert objectives['phase'] == DMAICPhase.DEFINE.value
 
-        metrics = await orchestrator.measure_test_performance(
-            "tests/test_week3_integration.py"
-        )
+        metrics = await orchestrator.measure_test_performance("tests/test_week3_integration.py")
         assert metrics.phase == DMAICPhase.MEASURE
 
         orchestrator.dmaic_metrics[DMAICPhase.MEASURE] = metrics
         analysis = orchestrator.analyze_test_results()
-        assert analysis["phase"] == DMAICPhase.ANALYZE.value
+        assert analysis['phase'] == DMAICPhase.ANALYZE.value
 
         control_plan = orchestrator.control_test_quality()
-        assert control_plan["phase"] == DMAICPhase.CONTROL.value
+        assert control_plan['phase'] == DMAICPhase.CONTROL.value
 
         report = orchestrator.generate_dmaic_report()
-        assert "phases" in report
-        assert len(report["phases"]) >= 3
+        assert 'phases' in report
+        assert len(report['phases']) >= 3

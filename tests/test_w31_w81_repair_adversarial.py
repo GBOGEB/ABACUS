@@ -3,7 +3,6 @@
 All synthetic receipts are generated under tmp_path. No GitHub outcome, model
 authority, merge admission, or independent review is manufactured by tests.
 """
-
 from __future__ import annotations
 
 import copy
@@ -55,11 +54,8 @@ def project_receipt():
 def test_projection_has_frozen_deterministic_score_without_refit():
     r = project_receipt()
     score = w81.project(
-        r,
-        ["f1", "f2"],
-        np.array([0.0, 0.0]),
-        np.array([1.0, 2.0]),
-        np.array([0.6, 0.8]),
+        r, ["f1", "f2"], np.array([0.0, 0.0]),
+        np.array([1.0, 2.0]), np.array([0.6, 0.8]),
     )
     assert score == pytest.approx(1.4)
     assert r == project_receipt()
@@ -73,11 +69,7 @@ def test_projection_has_frozen_deterministic_score_without_refit():
         ("execution_state", "FAIL", "semantic parity"),
         ("semantic_parity_with_w72", False, "semantic parity"),
         ("semantic_work_vector", {"f1": 2}, "feature set mismatch"),
-        (
-            "semantic_work_vector",
-            {"f1": 2, "f2": 3, "extra": 1},
-            "feature set mismatch",
-        ),
+        ("semantic_work_vector", {"f1": 2, "f2": 3, "extra": 1}, "feature set mismatch"),
     ],
 )
 def test_projection_rejects_fabricated_or_noncomparable_receipts(
@@ -87,11 +79,8 @@ def test_projection_rejects_fabricated_or_noncomparable_receipts(
     r[invalid_field] = replacement
     with pytest.raises(ValueError, match=error):
         w81.project(
-            r,
-            ["f1", "f2"],
-            np.array([0.0, 0.0]),
-            np.array([1.0, 1.0]),
-            np.array([1.0, 0.0]),
+            r, ["f1", "f2"], np.array([0.0, 0.0]),
+            np.array([1.0, 1.0]), np.array([1.0, 0.0]),
         )
 
 
@@ -132,18 +121,12 @@ def synthetic_scene(tmp_path):
 
 def call_cli(monkeypatch, contract_file, verify_file, receipts, output):
     monkeypatch.setattr(
-        sys,
-        "argv",
-        [
+        sys, "argv", [
             "w81_repair_outcome_block.py",
-            "--contract",
-            str(contract_file),
-            "--verification",
-            str(verify_file),
-            "--receipts-dir",
-            str(receipts),
-            "--out",
-            str(output),
+            "--contract", str(contract_file),
+            "--verification", str(verify_file),
+            "--receipts-dir", str(receipts),
+            "--out", str(output),
         ],
     )
     return w81.main()

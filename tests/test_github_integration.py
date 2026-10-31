@@ -4,22 +4,24 @@
 # Description: Auto-generated version header
 """
 
+import pytest
 import json
 from pathlib import Path
-from unittest.mock import MagicMock, Mock, patch
-
-import pytest
-
+from unittest.mock import Mock, patch, MagicMock
 
 class TestGitHubIntegration:
 
     @pytest.fixture
     def github_config(self):
-        return {"token": "test_token", "repo": "test_owner/test_repo", "branch": "main"}
+        return {
+            "token": "test_token",
+            "repo": "test_owner/test_repo",
+            "branch": "main"
+        }
 
     @pytest.fixture
     def mock_github(self):
-        with patch("github.Github") as mock:
+        with patch('github.Github') as mock:
             yield mock
 
     def test_github_connection(self, github_config, mock_github):
@@ -36,7 +38,6 @@ class TestGitHubIntegration:
         mock_github.return_value.get_repo.return_value = mock_repo
 
         from github import Github
-
         client = Github(github_config["token"])
         repo = client.get_repo(github_config["repo"])
 
@@ -51,12 +52,13 @@ class TestGitHubIntegration:
         mock_github.return_value.get_repo.return_value = mock_repo
 
         from github import Github
-
         client = Github(github_config["token"])
         repo = client.get_repo(github_config["repo"])
 
         result = repo.create_file(
-            path="test.txt", message="Test commit", content=test_file.read_text()
+            path="test.txt",
+            message="Test commit",
+            content=test_file.read_text()
         )
 
         assert "commit" in result
@@ -71,7 +73,6 @@ class TestGitHubIntegration:
         mock_github.return_value.get_repo.return_value = mock_repo
 
         from github import Github
-
         client = Github(github_config["token"])
         repo = client.get_repo(github_config["repo"])
 
@@ -87,7 +88,6 @@ class TestGitHubIntegration:
         mock_github.return_value.get_repo.return_value = mock_repo
 
         from github import Github
-
         client = Github(github_config["token"])
         repo = client.get_repo(github_config["repo"])
 
@@ -104,7 +104,6 @@ class TestGitHubIntegration:
         mock_github.return_value.get_repo.return_value = mock_repo
 
         from github import Github
-
         client = Github(github_config["token"])
         repo = client.get_repo(github_config["repo"])
 
@@ -122,12 +121,14 @@ class TestGitHubIntegration:
         mock_github.return_value.get_repo.return_value = mock_repo
 
         from github import Github
-
         client = Github(github_config["token"])
         repo = client.get_repo(github_config["repo"])
 
         pr = repo.create_pull(
-            title="Test PR", body="Test description", head="feature-branch", base="main"
+            title="Test PR",
+            body="Test description",
+            head="feature-branch",
+            base="main"
         )
 
         assert pr.number == 1
@@ -143,11 +144,13 @@ class TestGitHubIntegration:
         mock_github.return_value.get_repo.return_value = mock_repo
 
         from github import Github
-
         client = Github(github_config["token"])
         repo = client.get_repo(github_config["repo"])
 
-        issue = repo.create_issue(title="Test Issue", body="Test description")
+        issue = repo.create_issue(
+            title="Test Issue",
+            body="Test description"
+        )
 
         assert issue.number == 1
         assert issue.title == "Test Issue"
@@ -155,7 +158,10 @@ class TestGitHubIntegration:
     def test_webhook_handling(self, github_config):
         webhook_payload = {
             "action": "opened",
-            "pull_request": {"number": 1, "title": "Test PR"},
+            "pull_request": {
+                "number": 1,
+                "title": "Test PR"
+            }
         }
 
         assert webhook_payload["action"] == "opened"
@@ -165,14 +171,12 @@ class TestGitHubIntegration:
         mock_github.return_value.get_repo.side_effect = Exception("API Error")
 
         from github import Github
-
         client = Github(github_config["token"])
 
         with pytest.raises(Exception) as exc_info:
             client.get_repo(github_config["repo"])
 
         assert "API Error" in str(exc_info.value)
-
 
 class TestGitHubRoundtrip:
 
@@ -181,7 +185,7 @@ class TestGitHubRoundtrip:
         return {
             "local_path": Path("./data"),
             "remote_repo": "test_owner/test_repo",
-            "sync_interval": 300,
+            "sync_interval": 300
         }
 
     def test_full_sync_cycle(self, integration_system):
@@ -213,7 +217,7 @@ class TestGitHubRoundtrip:
         sync_status = {
             "last_sync": "2024-01-01T00:00:00Z",
             "files_synced": 10,
-            "errors": 0,
+            "errors": 0
         }
 
         assert sync_status["errors"] == 0

@@ -8,39 +8,24 @@ from cicd_github_orchestrator import CICDGitHubOrchestrator
 def test_git_tool_configuration_and_verification(tmp_path):
     vscode = tmp_path / ".vscode"
     vscode.mkdir()
-    (vscode / "settings.json").write_text(
-        json.dumps(
-            {
-                "gitlens.plusFeatures.enabled": True,
-                "gitlens.graph.layout": "editor",
-                "gitlens.ai.experimental.provider": "openai",
-            }
-        ),
-        encoding="utf-8",
-    )
+    (vscode / "settings.json").write_text(json.dumps({
+        "gitlens.plusFeatures.enabled": True,
+        "gitlens.graph.layout": "editor",
+        "gitlens.ai.experimental.provider": "openai",
+    }), encoding="utf-8")
     (vscode / "extensions.json").write_text("{}", encoding="utf-8")
     gitkraken = tmp_path / ".gitkraken"
     gitkraken.mkdir()
-    (gitkraken / "config.json").write_text(
-        json.dumps(
-            {
-                "authentication": {
-                    "gitlens": {"enabled": True, "pro_token": "test-token"}
-                }
-            }
-        ),
-        encoding="utf-8",
-    )
+    (gitkraken / "config.json").write_text(json.dumps({
+        "authentication": {"gitlens": {"enabled": True, "pro_token": "test-token"}}
+    }), encoding="utf-8")
     orchestrator = CICDGitHubOrchestrator(tmp_path)
     verification = orchestrator.verify_git_tools()
     assert verification["gitlens"] == {
-        "configured": True,
-        "graph_enabled": True,
-        "ai_enabled": True,
+        "configured": True, "graph_enabled": True, "ai_enabled": True,
     }
     assert verification["gitkraken"] == {
-        "configured": True,
-        "pro_token_set": True,
+        "configured": True, "pro_token_set": True,
     }
     assert verification["vscode_extensions"]["extensions_json_exists"] is True
 
