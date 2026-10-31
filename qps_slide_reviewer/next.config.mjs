@@ -1,5 +1,8 @@
-/** @type {import('next').NextConfig} */
-const path = require('path');
+import fs from 'node:fs';
+import path from 'node:path';
+import { fileURLToPath } from 'node:url';
+
+const configDir = path.dirname(fileURLToPath(import.meta.url));
 
 const allowedDevOrigins = process.env.NEXT_ALLOWED_DEV_ORIGINS
   ? process.env.NEXT_ALLOWED_DEV_ORIGINS.split(',')
@@ -7,12 +10,13 @@ const allowedDevOrigins = process.env.NEXT_ALLOWED_DEV_ORIGINS
       .filter(Boolean)
   : ['127.0.0.1', 'localhost'];
 
+/** @type {import('next').NextConfig} */
 const nextConfig = {
   distDir: process.env.NEXT_DIST_DIR || '.next',
   output: process.env.NEXT_OUTPUT_MODE,
   poweredByHeader: false,
   productionBrowserSourceMaps: false,
-  outputFileTracingRoot: process.env.NEXT_OUTPUT_MODE ? path.join(__dirname, '../') : '/',
+  outputFileTracingRoot: process.env.NEXT_OUTPUT_MODE ? path.join(configDir, '../') : '/',
   images: { unoptimized: true },
   // Next 16 BLOCKS unlisted origins on /_next/* and /__nextjs* in dev — including the /_next/hmr
   // WEBSOCKET upgrade, and Turbopack gates client module wiring on that socket, so a blocked origin
@@ -27,8 +31,7 @@ const nextConfig = {
   allowedDevOrigins,
 };
 
-const fs = require('fs');
-const userConfigPath = path.join(__dirname, 'next.config.user.json');
+const userConfigPath = path.join(configDir, 'next.config.user.json');
 const userConfigAllowedKeys = { skipTrailingSlashRedirect: 'boolean', trailingSlash: 'boolean' };
 if (fs.existsSync(userConfigPath)) {
   const userConfig = JSON.parse(fs.readFileSync(userConfigPath, 'utf8'));
@@ -40,4 +43,4 @@ if (fs.existsSync(userConfigPath)) {
   }
 }
 
-module.exports = nextConfig;
+export default nextConfig;
