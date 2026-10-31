@@ -1,5 +1,6 @@
 import pathlib
 import sqlite3
+
 import pytest
 
 pytestmark = [pytest.mark.db, pytest.mark.integration]

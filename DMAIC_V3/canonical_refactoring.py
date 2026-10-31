@@ -4,17 +4,18 @@ Organizes all markdown documentation with versioning and creates knowledge books
 Uses temporal engine for time-aware knowledge management
 """
 
-from pathlib import Path
-from typing import Dict, List, Any
-from datetime import datetime
-from collections import defaultdict
+import hashlib
 import json
 import re
-import hashlib
+from collections import defaultdict
+from datetime import datetime
+from pathlib import Path
+from typing import Any, Dict, List
 
 
 class DocumentCategory:
     """Document category with versioning"""
+
     DMAIC = "DMAIC"
     ABACUS = "ABACUS"
     SPRINT = "Sprint_Reports"
@@ -27,9 +28,17 @@ class DocumentCategory:
 
     @classmethod
     def all_categories(cls) -> List[str]:
-        return [cls.DMAIC, cls.ABACUS, cls.SPRINT, cls.EXECUTION,
-                cls.ARCHITECTURE, cls.PLANNING, cls.ASSESSMENT,
-                cls.REFERENCE, cls.CHANGELOG]
+        return [
+            cls.DMAIC,
+            cls.ABACUS,
+            cls.SPRINT,
+            cls.EXECUTION,
+            cls.ARCHITECTURE,
+            cls.PLANNING,
+            cls.ASSESSMENT,
+            cls.REFERENCE,
+            cls.CHANGELOG,
+        ]
 
 
 class CanonicalDocumentRefactorer:
@@ -48,45 +57,36 @@ class CanonicalDocumentRefactorer:
             DocumentCategory.DMAIC: [
                 r"DMAIC.*\.md$",
                 r".*dmaic.*\.md$",
-                r".*phase\d+.*\.md$"
+                r".*phase\d+.*\.md$",
             ],
-            DocumentCategory.ABACUS: [
-                r"ABACUS.*\.md$",
-                r".*abacus.*\.md$"
-            ],
-            DocumentCategory.SPRINT: [
-                r".*SPRINT.*\.md$",
-                r".*sprint.*\.md$"
-            ],
+            DocumentCategory.ABACUS: [r"ABACUS.*\.md$", r".*abacus.*\.md$"],
+            DocumentCategory.SPRINT: [r".*SPRINT.*\.md$", r".*sprint.*\.md$"],
             DocumentCategory.EXECUTION: [
                 r".*EXECUTION.*\.md$",
                 r".*execution.*\.md$",
-                r".*SESSION.*\.md$"
+                r".*SESSION.*\.md$",
             ],
             DocumentCategory.ARCHITECTURE: [
                 r".*ARCHITECTURE.*\.md$",
                 r".*architecture.*\.md$",
-                r".*LIFECYCLE.*\.md$"
+                r".*LIFECYCLE.*\.md$",
             ],
             DocumentCategory.PLANNING: [
                 r".*PLAN.*\.md$",
                 r".*ROADMAP.*\.md$",
-                r".*TODO.*\.md$"
+                r".*TODO.*\.md$",
             ],
             DocumentCategory.ASSESSMENT: [
                 r".*ASSESSMENT.*\.md$",
                 r".*MATURITY.*\.md$",
-                r".*AUDIT.*\.md$"
+                r".*AUDIT.*\.md$",
             ],
             DocumentCategory.REFERENCE: [
                 r".*REFERENCE.*\.md$",
                 r".*QUICK.*\.md$",
-                r".*INDEX.*\.md$"
+                r".*INDEX.*\.md$",
             ],
-            DocumentCategory.CHANGELOG: [
-                r"CHANGELOG.*\.md$",
-                r".*changelog.*\.md$"
-            ]
+            DocumentCategory.CHANGELOG: [r"CHANGELOG.*\.md$", r".*changelog.*\.md$"],
         }
 
         self.document_registry: Dict[str, Dict[str, Any]] = {}
@@ -136,14 +136,14 @@ class CanonicalDocumentRefactorer:
         content_hash = self._calculate_content_hash(doc_path)
 
         doc_metadata = {
-            'doc_id': doc_id,
-            'path': str(doc_path.relative_to(self.workspace_root)),
-            'category': category,
-            'filename': doc_path.name,
-            'size_bytes': stats.st_size,
-            'modified_time': datetime.fromtimestamp(stats.st_mtime).isoformat(),
-            'content_hash': content_hash,
-            'registered_at': datetime.now().isoformat()
+            "doc_id": doc_id,
+            "path": str(doc_path.relative_to(self.workspace_root)),
+            "category": category,
+            "filename": doc_path.name,
+            "size_bytes": stats.st_size,
+            "modified_time": datetime.fromtimestamp(stats.st_mtime).isoformat(),
+            "content_hash": content_hash,
+            "registered_at": datetime.now().isoformat(),
         }
 
         self.document_registry[doc_id] = doc_metadata
@@ -157,12 +157,14 @@ class CanonicalDocumentRefactorer:
         """Generate unique document ID"""
         rel_path = doc_path.relative_to(self.workspace_root)
         # Legacy registry key only; content integrity uses SHA-256 below.
-        return hashlib.md5(str(rel_path).encode(), usedforsecurity=False).hexdigest()[:12]
+        return hashlib.md5(str(rel_path).encode(), usedforsecurity=False).hexdigest()[
+            :12
+        ]
 
     def _calculate_content_hash(self, doc_path: Path) -> str:
         """Calculate content hash for versioning"""
         try:
-            content = doc_path.read_text(encoding='utf-8')
+            content = doc_path.read_text(encoding="utf-8")
             return hashlib.sha256(content.encode()).hexdigest()[:16]
         except Exception:
             return "error"
@@ -196,10 +198,14 @@ class CanonicalDocumentRefactorer:
                 latest_dir = category_dir / "latest"
                 latest_dir.mkdir(exist_ok=True, parents=True)
 
-        total_categories = len(set(list(DocumentCategory.all_categories()) + list(categorized_docs.keys())))
+        total_categories = len(
+            set(list(DocumentCategory.all_categories()) + list(categorized_docs.keys()))
+        )
         print(f"[CANONICAL] [OK] Created {total_categories} category directories")
 
-    def create_knowledge_books(self, categorized_docs: Dict[str, List[Path]]) -> Dict[str, Path]:
+    def create_knowledge_books(
+        self, categorized_docs: Dict[str, List[Path]]
+    ) -> Dict[str, Path]:
         """Create knowledge books from canonical document sets"""
         print(f"\n[CANONICAL] Creating knowledge books...")
 
@@ -215,7 +221,7 @@ class CanonicalDocumentRefactorer:
 
         # Create master index book
         master_book = self._create_master_index_book(categorized_docs)
-        books_created['MASTER_INDEX'] = master_book
+        books_created["MASTER_INDEX"] = master_book
         print(f"[CANONICAL] [OK] Created MASTER_INDEX book")
 
         return books_created
@@ -226,7 +232,7 @@ class CanonicalDocumentRefactorer:
         book_filename = f"{category}_BOOK_{timestamp}.md"
         book_path = self.canonical_root / category / book_filename
 
-        with open(book_path, 'w', encoding='utf-8') as book:
+        with open(book_path, "w", encoding="utf-8") as book:
             # Write book header
             book.write(f"# {category} Knowledge Book\n\n")
             book.write(f"**Generated:** {datetime.now().isoformat()}\n")
@@ -246,7 +252,7 @@ class CanonicalDocumentRefactorer:
                 book.write(f"**Source:** `{doc.relative_to(self.workspace_root)}`\n\n")
 
                 try:
-                    content = doc.read_text(encoding='utf-8')
+                    content = doc.read_text(encoding="utf-8")
                     book.write(content)
                 except Exception as e:
                     book.write(f"*Error reading document: {e}*\n")
@@ -255,15 +261,19 @@ class CanonicalDocumentRefactorer:
 
         return book_path
 
-    def _create_master_index_book(self, categorized_docs: Dict[str, List[Path]]) -> Path:
+    def _create_master_index_book(
+        self, categorized_docs: Dict[str, List[Path]]
+    ) -> Path:
         """Create master index book"""
         timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
         book_path = self.canonical_root / f"MASTER_INDEX_{timestamp}.md"
 
-        with open(book_path, 'w', encoding='utf-8') as book:
+        with open(book_path, "w", encoding="utf-8") as book:
             book.write("# Master Documentation Index\n\n")
             book.write(f"**Generated:** {datetime.now().isoformat()}\n")
-            book.write(f"**Total Documents:** {sum(len(docs) for docs in categorized_docs.values())}\n")
+            book.write(
+                f"**Total Documents:** {sum(len(docs) for docs in categorized_docs.values())}\n"
+            )
             book.write(f"**Categories:** {len(categorized_docs)}\n\n")
             book.write("---\n\n")
 
@@ -282,36 +292,44 @@ class CanonicalDocumentRefactorer:
             book.write("## Document Registry\n\n")
             book.write("| Doc ID | Category | Filename | Size | Modified |\n")
             book.write("|--------|----------|----------|------|----------|\n")
-            for doc_id, metadata in sorted(self.document_registry.items(),
-                                          key=lambda x: x[1]['category']):
-                book.write(f"| {doc_id} | {metadata['category']} | "
-                          f"{metadata['filename']} | {metadata['size_bytes']} | "
-                          f"{metadata['modified_time'][:10]} |\n")
+            for doc_id, metadata in sorted(
+                self.document_registry.items(), key=lambda x: x[1]["category"]
+            ):
+                book.write(
+                    f"| {doc_id} | {metadata['category']} | "
+                    f"{metadata['filename']} | {metadata['size_bytes']} | "
+                    f"{metadata['modified_time'][:10]} |\n"
+                )
 
         return book_path
 
     def _make_anchor(self, text: str) -> str:
         """Create markdown anchor from text"""
-        return re.sub(r'[^\w\s-]', '', text.lower()).replace(' ', '-')
+        return re.sub(r"[^\w\s-]", "", text.lower()).replace(" ", "-")
 
     def save_registry(self):
         """Save document registry and version history"""
         registry_file = self.canonical_root / "document_registry.json"
-        with open(registry_file, 'w', encoding='utf-8') as f:
-            json.dump({
-                'registry': self.document_registry,
-                'version_history': self.version_history,
-                'generated_at': datetime.now().isoformat()
-            }, f, indent=2)
+        with open(registry_file, "w", encoding="utf-8") as f:
+            json.dump(
+                {
+                    "registry": self.document_registry,
+                    "version_history": self.version_history,
+                    "generated_at": datetime.now().isoformat(),
+                },
+                f,
+                indent=2,
+            )
 
         print(f"[CANONICAL] [OK] Saved registry: {registry_file}")
 
-    def generate_summary_report(self, categorized_docs: Dict[str, List[Path]],
-                               books_created: Dict[str, Path]) -> Path:
+    def generate_summary_report(
+        self, categorized_docs: Dict[str, List[Path]], books_created: Dict[str, Path]
+    ) -> Path:
         """Generate summary report"""
         report_path = self.canonical_root / "REFACTORING_SUMMARY.md"
 
-        with open(report_path, 'w', encoding='utf-8') as report:
+        with open(report_path, "w", encoding="utf-8") as report:
             report.write("# Canonical Documentation Refactoring Summary\n\n")
             report.write(f"**Generated:** {datetime.now().isoformat()}\n")
             report.write(f"**Workspace:** `{self.workspace_root}`\n\n")
@@ -323,7 +341,9 @@ class CanonicalDocumentRefactorer:
             report.write(f"- **Total Documents Processed:** {total_docs}\n")
             report.write(f"- **Categories:** {len(categorized_docs)}\n")
             report.write(f"- **Knowledge Books Created:** {len(books_created)}\n")
-            report.write(f"- **Documents Registered:** {len(self.document_registry)}\n\n")
+            report.write(
+                f"- **Documents Registered:** {len(self.document_registry)}\n\n"
+            )
 
             # Category breakdown
             report.write("## Category Breakdown\n\n")
@@ -337,7 +357,9 @@ class CanonicalDocumentRefactorer:
             # Books created
             report.write("## Knowledge Books Created\n\n")
             for category, book_path in books_created.items():
-                report.write(f"- **{category}:** `{book_path.relative_to(self.canonical_root)}`\n")
+                report.write(
+                    f"- **{category}:** `{book_path.relative_to(self.canonical_root)}`\n"
+                )
 
             report.write("\n---\n\n")
             report.write("## Next Steps\n\n")
@@ -354,9 +376,9 @@ def run_canonical_refactoring(workspace_root: str = ".") -> Dict[str, Any]:
     """
     Main entry point for canonical documentation refactoring
     """
-    print("="*80)
+    print("=" * 80)
     print("CANONICAL DOCUMENTATION REFACTORING SYSTEM")
-    print("="*80)
+    print("=" * 80)
 
     refactorer = CanonicalDocumentRefactorer(Path(workspace_root))
 
@@ -375,18 +397,20 @@ def run_canonical_refactoring(workspace_root: str = ".") -> Dict[str, Any]:
     # Generate summary report
     summary_report = refactorer.generate_summary_report(categorized_docs, books_created)
 
-    print("\n" + "="*80)
+    print("\n" + "=" * 80)
     print("REFACTORING COMPLETE")
-    print("="*80)
+    print("=" * 80)
     print(f"[OK] Canonical root: {refactorer.canonical_root}")
     print(f"[OK] Summary report: {summary_report}")
 
     return {
-        'canonical_root': str(refactorer.canonical_root),
-        'categorized_docs': {k: [str(p) for p in v] for k, v in categorized_docs.items()},
-        'books_created': {k: str(v) for k, v in books_created.items()},
-        'summary_report': str(summary_report),
-        'total_documents': sum(len(docs) for docs in categorized_docs.values())
+        "canonical_root": str(refactorer.canonical_root),
+        "categorized_docs": {
+            k: [str(p) for p in v] for k, v in categorized_docs.items()
+        },
+        "books_created": {k: str(v) for k, v in books_created.items()},
+        "summary_report": str(summary_report),
+        "total_documents": sum(len(docs) for docs in categorized_docs.values()),
     }
 
 

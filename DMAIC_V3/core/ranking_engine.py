@@ -14,15 +14,16 @@ Date: 2025-01-12
 
 import json
 import sqlite3
-from pathlib import Path
-from typing import Dict, List, Any, Optional
-from datetime import datetime
 from dataclasses import dataclass
+from datetime import datetime
 from enum import Enum
+from pathlib import Path
+from typing import Any, Dict, List, Optional
 
 
 class RankingCategory(Enum):
     """Categories for ranking"""
+
     QUALITY = "quality"
     COMPLEXITY = "complexity"
     MAINTAINABILITY = "maintainability"
@@ -35,6 +36,7 @@ class RankingCategory(Enum):
 
 class RankingScope(Enum):
     """Scope of ranking"""
+
     FILE = "file"
     MODULE = "module"
     PACKAGE = "package"
@@ -46,6 +48,7 @@ class RankingScope(Enum):
 @dataclass
 class RankingScore:
     """Individual ranking score"""
+
     category: str
     score: float  # 0.0 to 1.0
     weight: float  # 0.0 to 1.0
@@ -62,6 +65,7 @@ class RankingScore:
 @dataclass
 class GlobalRanking:
     """Global ranking for an entity"""
+
     entity_id: str
     entity_type: str  # file, module, package, etc.
     entity_path: str
@@ -84,6 +88,7 @@ class GlobalRanking:
 @dataclass
 class SelfRanking:
     """Self-assessment ranking"""
+
     entity_id: str
     entity_path: str
     self_score: float  # 0.0 to 1.0
@@ -203,17 +208,28 @@ class RankingEngine:
         """)
 
         # Create indexes
-        cursor.execute("CREATE INDEX IF NOT EXISTS idx_entity_type ON global_rankings(entity_type)")
-        cursor.execute("CREATE INDEX IF NOT EXISTS idx_rank_position ON global_rankings(rank_position)")
-        cursor.execute("CREATE INDEX IF NOT EXISTS idx_overall_score ON global_rankings(overall_score DESC)")
-        cursor.execute("CREATE INDEX IF NOT EXISTS idx_category ON category_scores(category)")
-        cursor.execute("CREATE INDEX IF NOT EXISTS idx_history_entity ON ranking_history(entity_id)")
+        cursor.execute(
+            "CREATE INDEX IF NOT EXISTS idx_entity_type ON global_rankings(entity_type)"
+        )
+        cursor.execute(
+            "CREATE INDEX IF NOT EXISTS idx_rank_position ON global_rankings(rank_position)"
+        )
+        cursor.execute(
+            "CREATE INDEX IF NOT EXISTS idx_overall_score ON global_rankings(overall_score DESC)"
+        )
+        cursor.execute(
+            "CREATE INDEX IF NOT EXISTS idx_category ON category_scores(category)"
+        )
+        cursor.execute(
+            "CREATE INDEX IF NOT EXISTS idx_history_entity ON ranking_history(entity_id)"
+        )
 
         conn.commit()
         conn.close()
 
-    def calculate_self_ranking(self, entity_path: Path,
-                              metrics: Dict[str, Any]) -> SelfRanking:
+    def calculate_self_ranking(
+        self, entity_path: Path, metrics: Dict[str, Any]
+    ) -> SelfRanking:
         """
         Calculate self-ranking for an entity
 
@@ -227,17 +243,17 @@ class RankingEngine:
         entity_id = self._generate_entity_id(entity_path)
 
         # Extract metrics
-        quality_score = metrics.get('quality_score', 0.5)
-        complexity = metrics.get('complexity', 0.5)
-        coverage = metrics.get('test_coverage', 0.0)
-        doc_coverage = metrics.get('doc_coverage', 0.0)
+        quality_score = metrics.get("quality_score", 0.5)
+        complexity = metrics.get("complexity", 0.5)
+        coverage = metrics.get("test_coverage", 0.0)
+        doc_coverage = metrics.get("doc_coverage", 0.0)
 
         # Calculate self score (weighted average)
         self_score = (
-            quality_score * 0.3 +
-            (1.0 - complexity) * 0.2 +  # Lower complexity is better
-            coverage * 0.3 +
-            doc_coverage * 0.2
+            quality_score * 0.3
+            + (1.0 - complexity) * 0.2  # Lower complexity is better
+            + coverage * 0.3
+            + doc_coverage * 0.2
         )
 
         # Identify improvement areas
@@ -270,19 +286,26 @@ class RankingEngine:
             if quality_score < 0.7:
                 recommendations.append("Run linters and fix code quality issues")
             if complexity > 0.7:
-                recommendations.append("Break down complex functions into smaller units")
+                recommendations.append(
+                    "Break down complex functions into smaller units"
+                )
             if coverage < 0.8:
                 recommendations.append("Add unit tests to increase coverage")
             if doc_coverage < 0.6:
                 recommendations.append("Add docstrings and inline comments")
 
         # Calculate confidence based on data availability
-        confidence = min(1.0, sum([
-            0.25 if 'quality_score' in metrics else 0.0,
-            0.25 if 'complexity' in metrics else 0.0,
-            0.25 if 'test_coverage' in metrics else 0.0,
-            0.25 if 'doc_coverage' in metrics else 0.0,
-        ]))
+        confidence = min(
+            1.0,
+            sum(
+                [
+                    0.25 if "quality_score" in metrics else 0.0,
+                    0.25 if "complexity" in metrics else 0.0,
+                    0.25 if "test_coverage" in metrics else 0.0,
+                    0.25 if "doc_coverage" in metrics else 0.0,
+                ]
+            ),
+        )
 
         self_ranking = SelfRanking(
             entity_id=entity_id,
@@ -293,16 +316,19 @@ class RankingEngine:
             recommendations=recommendations,
             confidence=confidence,
             timestamp=datetime.now().isoformat(),
-            version=self.version
+            version=self.version,
         )
 
         self._save_self_ranking(self_ranking)
         return self_ranking
 
-    def calculate_global_ranking(self, entity_path: Path,
-                                entity_type: str,
-                                category_metrics: Dict[str, Dict[str, Any]],
-                                custom_weights: Optional[Dict[str, float]] = None) -> GlobalRanking:
+    def calculate_global_ranking(
+        self,
+        entity_path: Path,
+        entity_type: str,
+        category_metrics: Dict[str, Dict[str, Any]],
+        custom_weights: Optional[Dict[str, float]] = None,
+    ) -> GlobalRanking:
         """
         Calculate global ranking for an entity
 
@@ -324,9 +350,9 @@ class RankingEngine:
         total_weight = 0.0
 
         for category, metrics in category_metrics.items():
-            score = metrics.get('score', 0.5)
-            confidence = metrics.get('confidence', 1.0)
-            evidence = metrics.get('evidence', {})
+            score = metrics.get("score", 0.5)
+            confidence = metrics.get("confidence", 1.0)
+            evidence = metrics.get("evidence", {})
             weight = weights.get(category, 0.1)
 
             ranking_score = RankingScore(
@@ -336,7 +362,7 @@ class RankingEngine:
                 confidence=confidence,
                 evidence=evidence,
                 timestamp=datetime.now().isoformat(),
-                version=self.version
+                version=self.version,
             )
 
             category_scores[category] = ranking_score
@@ -362,16 +388,15 @@ class RankingEngine:
             total_entities=total_entities,
             timestamp=datetime.now().isoformat(),
             version=self.version,
-            metadata={
-                'weights': weights,
-                'total_weight': total_weight
-            }
+            metadata={"weights": weights, "total_weight": total_weight},
         )
 
         self._save_global_ranking(global_ranking)
         return global_ranking
 
-    def update_rankings_for_all_entities(self, entity_type: Optional[str] = None) -> Any:
+    def update_rankings_for_all_entities(
+        self, entity_type: Optional[str] = None
+    ) -> Any:
         """
         Update rank positions and percentiles for all entities
 
@@ -398,27 +423,40 @@ class RankingEngine:
         for rank_position, (entity_id, overall_score) in enumerate(results, start=1):
             percentile = ((total_entities - rank_position + 1) / total_entities) * 100.0
 
-            cursor.execute("""
+            cursor.execute(
+                """
                 UPDATE global_rankings
                 SET rank_position = ?, percentile = ?, total_entities = ?
                 WHERE entity_id = ?
-            """, (rank_position, percentile, total_entities, entity_id))
+            """,
+                (rank_position, percentile, total_entities, entity_id),
+            )
 
             # Add to history
-            cursor.execute("""
+            cursor.execute(
+                """
                 INSERT INTO ranking_history (entity_id,
                     overall_score,
                     rank_position,
                     timestamp,
                     version)
                 VALUES (?, ?, ?, ?, ?)
-            """, (entity_id, overall_score, rank_position, datetime.now().isoformat(), self.version))
+            """,
+                (
+                    entity_id,
+                    overall_score,
+                    rank_position,
+                    datetime.now().isoformat(),
+                    self.version,
+                ),
+            )
 
         conn.commit()
         conn.close()
 
-    def get_top_ranked(self, entity_type: Optional[str] = None,
-                      limit: int = 10) -> List[GlobalRanking]:
+    def get_top_ranked(
+        self, entity_type: Optional[str] = None, limit: int = 10
+    ) -> List[GlobalRanking]:
         """
         Get top ranked entities
 
@@ -460,14 +498,15 @@ class RankingEngine:
                 total_entities=row[6],
                 timestamp=row[7],
                 version=row[8],
-                metadata=json.loads(row[9]) if row[9] else {}
+                metadata=json.loads(row[9]) if row[9] else {},
             )
             rankings.append(ranking)
 
         return rankings
 
-    def get_ranking_history(self, entity_id: str,
-                           limit: int = 10) -> List[Dict[str, Any]]:
+    def get_ranking_history(
+        self, entity_id: str, limit: int = 10
+    ) -> List[Dict[str, Any]]:
         """
         Get ranking history for an entity
 
@@ -481,30 +520,36 @@ class RankingEngine:
         conn = sqlite3.connect(self.db_path)
         cursor = conn.cursor()
 
-        cursor.execute("""
+        cursor.execute(
+            """
             SELECT overall_score, rank_position, timestamp, version
             FROM ranking_history
             WHERE entity_id = ?
             ORDER BY timestamp DESC
             LIMIT ?
-        """, (entity_id, limit))
+        """,
+            (entity_id, limit),
+        )
 
         results = cursor.fetchall()
         conn.close()
 
         history = []
         for row in results:
-            history.append({
-                'overall_score': row[0],
-                'rank_position': row[1],
-                'timestamp': row[2],
-                'version': row[3]
-            })
+            history.append(
+                {
+                    "overall_score": row[0],
+                    "rank_position": row[1],
+                    "timestamp": row[2],
+                    "version": row[3],
+                }
+            )
 
         return history
 
-    def generate_ranking_report(self, output_path: Path,
-                               entity_type: Optional[str] = None) -> Any:
+    def generate_ranking_report(
+        self, output_path: Path, entity_type: Optional[str] = None
+    ) -> Any:
         """
         Generate comprehensive ranking report
 
@@ -515,67 +560,76 @@ class RankingEngine:
         top_ranked = self.get_top_ranked(entity_type=entity_type, limit=50)
 
         report = {
-            'metadata': {
-                'generated_at': datetime.now().isoformat(),
-                'version': self.version,
-                'workspace_root': str(self.workspace_root),
-                'entity_type_filter': entity_type,
-                'total_entities': top_ranked[0].total_entities if top_ranked else 0
+            "metadata": {
+                "generated_at": datetime.now().isoformat(),
+                "version": self.version,
+                "workspace_root": str(self.workspace_root),
+                "entity_type_filter": entity_type,
+                "total_entities": top_ranked[0].total_entities if top_ranked else 0,
             },
-            'top_ranked': [],
-            'statistics': self._calculate_statistics(entity_type)
+            "top_ranked": [],
+            "statistics": self._calculate_statistics(entity_type),
         }
 
         for ranking in top_ranked:
-            report['top_ranked'].append({
-                'entity_id': ranking.entity_id,
-                'entity_type': ranking.entity_type,
-                'entity_path': ranking.entity_path,
-                'overall_score': ranking.overall_score,
-                'rank_position': ranking.rank_position,
-                'percentile': ranking.percentile,
-                'category_scores': {
-                    cat: {
-                        'score': score.score,
-                        'weight': score.weight,
-                        'confidence': score.confidence,
-                        'weighted_score': score.weighted_score()
-                    }
-                    for cat, score in ranking.category_scores.items()
-                },
-                'timestamp': ranking.timestamp
-            })
+            report["top_ranked"].append(
+                {
+                    "entity_id": ranking.entity_id,
+                    "entity_type": ranking.entity_type,
+                    "entity_path": ranking.entity_path,
+                    "overall_score": ranking.overall_score,
+                    "rank_position": ranking.rank_position,
+                    "percentile": ranking.percentile,
+                    "category_scores": {
+                        cat: {
+                            "score": score.score,
+                            "weight": score.weight,
+                            "confidence": score.confidence,
+                            "weighted_score": score.weighted_score(),
+                        }
+                        for cat, score in ranking.category_scores.items()
+                    },
+                    "timestamp": ranking.timestamp,
+                }
+            )
 
         output_path.parent.mkdir(parents=True, exist_ok=True)
-        with open(output_path, 'w', encoding='utf-8') as f:
+        with open(output_path, "w", encoding="utf-8") as f:
             json.dump(report, f, indent=2)
 
     def _generate_entity_id(self, entity_path: Path) -> str:
         """Generate unique entity ID"""
-        rel_path = entity_path.relative_to(self.workspace_root) if entity_path.is_relative_to(self.workspace_root) else entity_path
-        return str(rel_path).replace('\\', '/').replace('/', '__')
+        rel_path = (
+            entity_path.relative_to(self.workspace_root)
+            if entity_path.is_relative_to(self.workspace_root)
+            else entity_path
+        )
+        return str(rel_path).replace("\\", "/").replace("/", "__")
 
     def _save_self_ranking(self, self_ranking: SelfRanking) -> Any:
         """Save self ranking to database"""
         conn = sqlite3.connect(self.db_path)
         cursor = conn.cursor()
 
-        cursor.execute("""
+        cursor.execute(
+            """
             INSERT OR REPLACE INTO self_rankings
             (entity_id, entity_path, self_score, improvement_areas, strengths,
              recommendations, confidence, timestamp, version)
             VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
-        """, (
-            self_ranking.entity_id,
-            self_ranking.entity_path,
-            self_ranking.self_score,
-            json.dumps(self_ranking.improvement_areas),
-            json.dumps(self_ranking.strengths),
-            json.dumps(self_ranking.recommendations),
-            self_ranking.confidence,
-            self_ranking.timestamp,
-            self_ranking.version
-        ))
+        """,
+            (
+                self_ranking.entity_id,
+                self_ranking.entity_path,
+                self_ranking.self_score,
+                json.dumps(self_ranking.improvement_areas),
+                json.dumps(self_ranking.strengths),
+                json.dumps(self_ranking.recommendations),
+                self_ranking.confidence,
+                self_ranking.timestamp,
+                self_ranking.version,
+            ),
+        )
 
         conn.commit()
         conn.close()
@@ -586,40 +640,46 @@ class RankingEngine:
         cursor = conn.cursor()
 
         # Save global ranking
-        cursor.execute("""
+        cursor.execute(
+            """
             INSERT OR REPLACE INTO global_rankings
             (entity_id, entity_type, entity_path, overall_score, rank_position,
              percentile, total_entities, timestamp, version, metadata)
             VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-        """, (
-            global_ranking.entity_id,
-            global_ranking.entity_type,
-            global_ranking.entity_path,
-            global_ranking.overall_score,
-            global_ranking.rank_position,
-            global_ranking.percentile,
-            global_ranking.total_entities,
-            global_ranking.timestamp,
-            global_ranking.version,
-            json.dumps(global_ranking.metadata)
-        ))
+        """,
+            (
+                global_ranking.entity_id,
+                global_ranking.entity_type,
+                global_ranking.entity_path,
+                global_ranking.overall_score,
+                global_ranking.rank_position,
+                global_ranking.percentile,
+                global_ranking.total_entities,
+                global_ranking.timestamp,
+                global_ranking.version,
+                json.dumps(global_ranking.metadata),
+            ),
+        )
 
         # Save category scores
         for category, score in global_ranking.category_scores.items():
-            cursor.execute("""
+            cursor.execute(
+                """
                 INSERT INTO category_scores
                 (entity_id, category, score, weight, confidence, evidence, timestamp, version)
                 VALUES (?, ?, ?, ?, ?, ?, ?, ?)
-            """, (
-                global_ranking.entity_id,
-                category,
-                score.score,
-                score.weight,
-                score.confidence,
-                json.dumps(score.evidence),
-                score.timestamp,
-                score.version
-            ))
+            """,
+                (
+                    global_ranking.entity_id,
+                    category,
+                    score.score,
+                    score.weight,
+                    score.confidence,
+                    json.dumps(score.evidence),
+                    score.timestamp,
+                    score.version,
+                ),
+            )
 
         conn.commit()
         conn.close()
@@ -629,11 +689,14 @@ class RankingEngine:
         conn = sqlite3.connect(self.db_path)
         cursor = conn.cursor()
 
-        cursor.execute("""
+        cursor.execute(
+            """
             SELECT category, score, weight, confidence, evidence, timestamp, version
             FROM category_scores
             WHERE entity_id = ?
-        """, (entity_id,))
+        """,
+            (entity_id,),
+        )
 
         results = cursor.fetchall()
         conn.close()
@@ -647,12 +710,14 @@ class RankingEngine:
                 confidence=row[3],
                 evidence=json.loads(row[4]) if row[4] else {},
                 timestamp=row[5],
-                version=row[6]
+                version=row[6],
             )
 
         return category_scores
 
-    def _calculate_statistics(self, entity_type: Optional[str] = None) -> Dict[str, Any]:
+    def _calculate_statistics(
+        self, entity_type: Optional[str] = None
+    ) -> Dict[str, Any]:
         """Calculate ranking statistics"""
         conn = sqlite3.connect(self.db_path)
         cursor = conn.cursor()
@@ -671,10 +736,13 @@ class RankingEngine:
             return {}
 
         return {
-            'count': len(scores),
-            'mean': sum(scores) / len(scores),
-            'min': min(scores),
-            'max': max(scores),
-            'median': sorted(scores)[len(scores) // 2],
-            'std_dev': (sum((x - sum(scores) / len(scores)) ** 2 for x in scores) / len(scores)) ** 0.5
+            "count": len(scores),
+            "mean": sum(scores) / len(scores),
+            "min": min(scores),
+            "max": max(scores),
+            "median": sorted(scores)[len(scores) // 2],
+            "std_dev": (
+                sum((x - sum(scores) / len(scores)) ** 2 for x in scores) / len(scores)
+            )
+            ** 0.5,
         }

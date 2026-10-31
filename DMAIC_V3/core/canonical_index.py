@@ -13,16 +13,18 @@ Date: 2025-01-12
 """
 
 import json
-import yaml
-from pathlib import Path
-from typing import Dict, List, Any, Optional
+from dataclasses import asdict, dataclass, field
 from datetime import datetime
-from dataclasses import dataclass, asdict, field
 from enum import Enum
+from pathlib import Path
+from typing import Any, Dict, List, Optional
+
+import yaml
 
 
 class ArtifactType(Enum):
     """Types of artifacts"""
+
     FILE = "file"
     MODULE = "module"
     PACKAGE = "package"
@@ -36,6 +38,7 @@ class ArtifactType(Enum):
 
 class VersionStatus(Enum):
     """Version status"""
+
     DRAFT = "draft"
     ACTIVE = "active"
     DEPRECATED = "deprecated"
@@ -45,6 +48,7 @@ class VersionStatus(Enum):
 @dataclass
 class CanonicalVersion:
     """Canonical version information"""
+
     major: int
     minor: int
     patch: int
@@ -61,33 +65,35 @@ class CanonicalVersion:
         return version
 
     @classmethod
-    def from_string(cls, version_str: str) -> 'CanonicalVersion':
+    def from_string(cls, version_str: str) -> "CanonicalVersion":
         """Parse version string"""
         # Handle build metadata
-        if '+' in version_str:
-            version_str, build = version_str.split('+', 1)
+        if "+" in version_str:
+            version_str, build = version_str.split("+", 1)
         else:
             build = None
 
         # Handle prerelease
-        if '-' in version_str:
-            version_str, prerelease = version_str.split('-', 1)
+        if "-" in version_str:
+            version_str, prerelease = version_str.split("-", 1)
         else:
             prerelease = None
 
         # Parse major.minor.patch
-        parts = version_str.split('.')
+        parts = version_str.split(".")
         major = int(parts[0]) if len(parts) > 0 else 0
         minor = int(parts[1]) if len(parts) > 1 else 0
         patch = int(parts[2]) if len(parts) > 2 else 0
 
-        return cls(major=major, minor=minor, patch=patch,
-                  build=build, prerelease=prerelease)
+        return cls(
+            major=major, minor=minor, patch=patch, build=build, prerelease=prerelease
+        )
 
 
 @dataclass
 class CanonicalMetadata:
     """Canonical metadata for artifacts"""
+
     canonical_name: str  # e.g., "dmaic_v3_engine"
     display_name: str  # e.g., "DMAIC V3 Engine"
     version: CanonicalVersion
@@ -106,13 +112,14 @@ class CanonicalMetadata:
     def to_dict(self) -> Dict[str, Any]:
         """Convert to dictionary"""
         data = asdict(self)
-        data['version'] = str(self.version)
+        data["version"] = str(self.version)
         return data
 
 
 @dataclass
 class IndexEntry:
     """Entry in canonical index"""
+
     canonical_id: str  # Unique identifier
     canonical_name: str
     display_name: str
@@ -128,7 +135,7 @@ class IndexEntry:
     def to_dict(self) -> Dict[str, Any]:
         """Convert to dictionary"""
         data = asdict(self)
-        data['metadata'] = self.metadata.to_dict()
+        data["metadata"] = self.metadata.to_dict()
         return data
 
 
@@ -165,18 +172,18 @@ class CanonicalIndexSystem:
 
         # Naming conventions
         self.naming_rules = {
-            'canonical_name': {
-                'pattern': r'^[a-z][a-z0-9_]*$',
-                'description': 'Lowercase with underscores, starts with letter'
+            "canonical_name": {
+                "pattern": r"^[a-z][a-z0-9_]*$",
+                "description": "Lowercase with underscores, starts with letter",
             },
-            'display_name': {
-                'pattern': r'^[A-Z].*$',
-                'description': 'Human-readable, starts with capital letter'
+            "display_name": {
+                "pattern": r"^[A-Z].*$",
+                "description": "Human-readable, starts with capital letter",
             },
-            'version': {
-                'pattern': r'^\d+\.\d+\.\d+(-[a-z0-9]+)?(\+[a-z0-9]+)?$',
-                'description': 'Semantic versioning: major.minor.patch[-prerelease][+build]'
-            }
+            "version": {
+                "pattern": r"^\d+\.\d+\.\d+(-[a-z0-9]+)?(\+[a-z0-9]+)?$",
+                "description": "Semantic versioning: major.minor.patch[-prerelease][+build]",
+            },
         }
 
         self.index: Dict[str, IndexEntry] = {}
@@ -185,42 +192,42 @@ class CanonicalIndexSystem:
     def _load_index(self) -> Any:
         """Load master index from JSON"""
         if self.master_index_json.exists():
-            with open(self.master_index_json, 'r', encoding='utf-8') as f:
+            with open(self.master_index_json, "r", encoding="utf-8") as f:
                 data = json.load(f)
 
-            for entry_data in data.get('entries', []):
-                metadata_data = entry_data['metadata']
-                version = CanonicalVersion.from_string(metadata_data['version'])
+            for entry_data in data.get("entries", []):
+                metadata_data = entry_data["metadata"]
+                version = CanonicalVersion.from_string(metadata_data["version"])
 
                 metadata = CanonicalMetadata(
-                    canonical_name=metadata_data['canonical_name'],
-                    display_name=metadata_data['display_name'],
+                    canonical_name=metadata_data["canonical_name"],
+                    display_name=metadata_data["display_name"],
                     version=version,
-                    artifact_type=metadata_data['artifact_type'],
-                    status=metadata_data['status'],
-                    created_at=metadata_data['created_at'],
-                    updated_at=metadata_data['updated_at'],
-                    author=metadata_data.get('author', 'DMAIC V3 System'),
-                    description=metadata_data.get('description', ''),
-                    tags=metadata_data.get('tags', []),
-                    dependencies=metadata_data.get('dependencies', []),
-                    related_artifacts=metadata_data.get('related_artifacts', []),
-                    quality_score=metadata_data.get('quality_score', 0.0),
-                    rank_position=metadata_data.get('rank_position', 0)
+                    artifact_type=metadata_data["artifact_type"],
+                    status=metadata_data["status"],
+                    created_at=metadata_data["created_at"],
+                    updated_at=metadata_data["updated_at"],
+                    author=metadata_data.get("author", "DMAIC V3 System"),
+                    description=metadata_data.get("description", ""),
+                    tags=metadata_data.get("tags", []),
+                    dependencies=metadata_data.get("dependencies", []),
+                    related_artifacts=metadata_data.get("related_artifacts", []),
+                    quality_score=metadata_data.get("quality_score", 0.0),
+                    rank_position=metadata_data.get("rank_position", 0),
                 )
 
                 entry = IndexEntry(
-                    canonical_id=entry_data['canonical_id'],
-                    canonical_name=entry_data['canonical_name'],
-                    display_name=entry_data['display_name'],
-                    version=entry_data['version'],
-                    artifact_type=entry_data['artifact_type'],
-                    file_path=entry_data['file_path'],
-                    status=entry_data['status'],
+                    canonical_id=entry_data["canonical_id"],
+                    canonical_name=entry_data["canonical_name"],
+                    display_name=entry_data["display_name"],
+                    version=entry_data["version"],
+                    artifact_type=entry_data["artifact_type"],
+                    file_path=entry_data["file_path"],
+                    status=entry_data["status"],
                     metadata=metadata,
-                    checksum=entry_data['checksum'],
-                    size_bytes=entry_data['size_bytes'],
-                    timestamp=entry_data['timestamp']
+                    checksum=entry_data["checksum"],
+                    size_bytes=entry_data["size_bytes"],
+                    timestamp=entry_data["timestamp"],
                 )
 
                 self.index[entry.canonical_id] = entry
@@ -228,32 +235,35 @@ class CanonicalIndexSystem:
     def _save_index(self) -> Any:
         """Save master index to JSON and YAML"""
         data = {
-            'metadata': {
-                'version': str(self.version),
-                'generated_at': datetime.now().isoformat(),
-                'workspace_root': str(self.workspace_root),
-                'total_entries': len(self.index)
+            "metadata": {
+                "version": str(self.version),
+                "generated_at": datetime.now().isoformat(),
+                "workspace_root": str(self.workspace_root),
+                "total_entries": len(self.index),
             },
-            'naming_rules': self.naming_rules,
-            'entries': [entry.to_dict() for entry in self.index.values()]
+            "naming_rules": self.naming_rules,
+            "entries": [entry.to_dict() for entry in self.index.values()],
         }
 
         # Save JSON
-        with open(self.master_index_json, 'w', encoding='utf-8') as f:
+        with open(self.master_index_json, "w", encoding="utf-8") as f:
             json.dump(data, f, indent=2)
 
         # Save YAML
-        with open(self.master_index_yaml, 'w', encoding='utf-8') as f:
+        with open(self.master_index_yaml, "w", encoding="utf-8") as f:
             yaml.dump(data, f, default_flow_style=False, sort_keys=False)
 
-    def register_artifact(self, file_path: Path,
-                         canonical_name: str,
-                         display_name: str,
-                         artifact_type: ArtifactType,
-                         version: Optional[CanonicalVersion] = None,
-                         description: str = "",
-                         tags: Optional[List[str]] = None,
-                         dependencies: Optional[List[str]] = None) -> IndexEntry:
+    def register_artifact(
+        self,
+        file_path: Path,
+        canonical_name: str,
+        display_name: str,
+        artifact_type: ArtifactType,
+        version: Optional[CanonicalVersion] = None,
+        description: str = "",
+        tags: Optional[List[str]] = None,
+        dependencies: Optional[List[str]] = None,
+    ) -> IndexEntry:
         """
         Register artifact in canonical index
 
@@ -293,7 +303,7 @@ class CanonicalIndexSystem:
             updated_at=datetime.now().isoformat(),
             description=description,
             tags=tags or [],
-            dependencies=dependencies or []
+            dependencies=dependencies or [],
         )
 
         # Create index entry
@@ -308,7 +318,7 @@ class CanonicalIndexSystem:
             metadata=metadata,
             checksum=checksum,
             size_bytes=size_bytes,
-            timestamp=datetime.now().isoformat()
+            timestamp=datetime.now().isoformat(),
         )
 
         # Add to index
@@ -317,11 +327,14 @@ class CanonicalIndexSystem:
 
         return entry
 
-    def update_artifact(self, canonical_id: str,
-                       version: Optional[CanonicalVersion] = None,
-                       status: Optional[VersionStatus] = None,
-                       quality_score: Optional[float] = None,
-                       rank_position: Optional[int] = None):
+    def update_artifact(
+        self,
+        canonical_id: str,
+        version: Optional[CanonicalVersion] = None,
+        status: Optional[VersionStatus] = None,
+        quality_score: Optional[float] = None,
+        rank_position: Optional[int] = None,
+    ):
         """
         Update artifact in index
 
@@ -366,11 +379,13 @@ class CanonicalIndexSystem:
         """Get artifact by canonical ID"""
         return self.index.get(canonical_id)
 
-    def search_artifacts(self,
-                        artifact_type: Optional[ArtifactType] = None,
-                        status: Optional[VersionStatus] = None,
-                        tags: Optional[List[str]] = None,
-                        min_quality_score: Optional[float] = None) -> List[IndexEntry]:
+    def search_artifacts(
+        self,
+        artifact_type: Optional[ArtifactType] = None,
+        status: Optional[VersionStatus] = None,
+        tags: Optional[List[str]] = None,
+        min_quality_score: Optional[float] = None,
+    ) -> List[IndexEntry]:
         """
         Search artifacts by criteria
 
@@ -417,7 +432,8 @@ class CanonicalIndexSystem:
             List of IndexEntry objects sorted by version (newest first)
         """
         entries = [
-            entry for entry in self.index.values()
+            entry
+            for entry in self.index.values()
             if entry.canonical_name == canonical_name
         ]
 
@@ -454,18 +470,18 @@ class CanonicalIndexSystem:
         canonical = display_name.lower()
 
         # Replace spaces and special characters with underscores
-        canonical = ''.join(c if c.isalnum() else '_' for c in canonical)
+        canonical = "".join(c if c.isalnum() else "_" for c in canonical)
 
         # Remove consecutive underscores
-        while '__' in canonical:
-            canonical = canonical.replace('__', '_')
+        while "__" in canonical:
+            canonical = canonical.replace("__", "_")
 
         # Remove leading/trailing underscores
-        canonical = canonical.strip('_')
+        canonical = canonical.strip("_")
 
         # Ensure starts with letter
         if canonical and not canonical[0].isalpha():
-            canonical = 'artifact_' + canonical
+            canonical = "artifact_" + canonical
 
         return canonical
 
@@ -480,14 +496,14 @@ class CanonicalIndexSystem:
             Display name (Human Readable)
         """
         # Split by underscores
-        words = canonical_name.split('_')
+        words = canonical_name.split("_")
 
         # Capitalize each word
-        display = ' '.join(word.capitalize() for word in words)
+        display = " ".join(word.capitalize() for word in words)
 
         return display
 
-    def export_index_report(self, output_path: Path, format: str = 'json'):
+    def export_index_report(self, output_path: Path, format: str = "json"):
         """
         Export index report
 
@@ -496,34 +512,47 @@ class CanonicalIndexSystem:
             format: Format ('json' or 'yaml')
         """
         report = {
-            'metadata': {
-                'version': str(self.version),
-                'generated_at': datetime.now().isoformat(),
-                'workspace_root': str(self.workspace_root),
-                'total_entries': len(self.index)
+            "metadata": {
+                "version": str(self.version),
+                "generated_at": datetime.now().isoformat(),
+                "workspace_root": str(self.workspace_root),
+                "total_entries": len(self.index),
             },
-            'statistics': {
-                'by_type': self._count_by_field('artifact_type'),
-                'by_status': self._count_by_field('status'),
-                'avg_quality_score': sum(e.metadata.quality_score for e in self.index.values()) / len(self.index) if self.index else 0.0
+            "statistics": {
+                "by_type": self._count_by_field("artifact_type"),
+                "by_status": self._count_by_field("status"),
+                "avg_quality_score": (
+                    sum(e.metadata.quality_score for e in self.index.values())
+                    / len(self.index)
+                    if self.index
+                    else 0.0
+                ),
             },
-            'entries': [entry.to_dict() for entry in sorted(
-                self.index.values(),
-                key=lambda e: e.metadata.rank_position if e.metadata.rank_position > 0 else 999999
-            )]
+            "entries": [
+                entry.to_dict()
+                for entry in sorted(
+                    self.index.values(),
+                    key=lambda e: (
+                        e.metadata.rank_position
+                        if e.metadata.rank_position > 0
+                        else 999999
+                    ),
+                )
+            ],
         }
 
         output_path.parent.mkdir(parents=True, exist_ok=True)
 
-        if format == 'json':
-            with open(output_path, 'w', encoding='utf-8') as f:
+        if format == "json":
+            with open(output_path, "w", encoding="utf-8") as f:
                 json.dump(report, f, indent=2)
-        elif format == 'yaml':
-            with open(output_path, 'w', encoding='utf-8') as f:
+        elif format == "yaml":
+            with open(output_path, "w", encoding="utf-8") as f:
                 yaml.dump(report, f, default_flow_style=False, sort_keys=False)
 
-    def _generate_canonical_id(self, canonical_name: str,
-                              version: CanonicalVersion) -> str:
+    def _generate_canonical_id(
+        self, canonical_name: str, version: CanonicalVersion
+    ) -> str:
         """Generate unique canonical ID"""
         return f"{canonical_name}__v{version}"
 
@@ -535,7 +564,7 @@ class CanonicalIndexSystem:
             return ""
 
         sha256 = hashlib.sha256()
-        with open(file_path, 'rb') as f:
+        with open(file_path, "rb") as f:
             for chunk in iter(lambda: f.read(4096), b""):
                 sha256.update(chunk)
 
@@ -557,7 +586,7 @@ class CanonicalIndexSystem:
         Args:
             output_path: Path to save JSON file
         """
-        self.export_index_report(output_path, format='json')
+        self.export_index_report(output_path, format="json")
 
     def export_to_yaml(self, output_path: Path):
         """
@@ -566,4 +595,4 @@ class CanonicalIndexSystem:
         Args:
             output_path: Path to save YAML file
         """
-        self.export_index_report(output_path, format='yaml')
+        self.export_index_report(output_path, format="yaml")

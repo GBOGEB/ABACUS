@@ -5,15 +5,15 @@ Injects DOW structure into all JSON outputs
 
 import json
 import logging
-from pathlib import Path
-from typing import Dict, List, Any
 import sys
+from pathlib import Path
+from typing import Any, Dict, List
 
 ROOT_DIR = Path(__file__).resolve().parents[3]
 sys.path.insert(0, str(ROOT_DIR))
 sys.path.insert(0, str(ROOT_DIR / "src"))
-from dmaic.contract import ensure_contract
 from dmaic import idempotency
+from dmaic.contract import ensure_contract
 
 
 class DOWMetadataInjector:
@@ -23,10 +23,12 @@ class DOWMetadataInjector:
         self.config_path = config_path
         self.logger = logging.getLogger(__name__)
 
-    def inject_metadata(self, file_path: Path, iteration: int, phase: str) -> Dict[str, Any]:
+    def inject_metadata(
+        self, file_path: Path, iteration: int, phase: str
+    ) -> Dict[str, Any]:
         """Inject DOW metadata into JSON file"""
         try:
-            with open(file_path, 'r', encoding='utf-8') as f:
+            with open(file_path, "r", encoding="utf-8") as f:
                 data = json.load(f)
 
             input_hash = idempotency.hash_json(data)
@@ -35,22 +37,22 @@ class DOWMetadataInjector:
                 iteration=iteration,
                 phase=phase,
                 version="3.3.0",
-                generator=f'phase{phase}_generator.py',
+                generator=f"phase{phase}_generator.py",
                 input_hash=input_hash,
             )
-            data['lineage']['artifact_path'] = str(file_path)
-            data['idempotency']['input_hash'] = input_hash
-            data['idempotency']['output_hash'] = idempotency.hash_json(data)
+            data["lineage"]["artifact_path"] = str(file_path)
+            data["idempotency"]["input_hash"] = input_hash
+            data["idempotency"]["output_hash"] = idempotency.hash_json(data)
 
-            with open(file_path, 'w', encoding='utf-8') as f:
+            with open(file_path, "w", encoding="utf-8") as f:
                 json.dump(data, f, indent=2)
 
             self.logger.info(f"✅ Metadata injected: {file_path}")
-            return {'status': 'success', 'file': str(file_path)}
+            return {"status": "success", "file": str(file_path)}
 
         except Exception as e:
             self.logger.error(f"❌ Metadata injection failed: {e}")
-            return {'status': 'error', 'error': str(e)}
+            return {"status": "error", "error": str(e)}
 
     def inject_batch(self, file_paths: List[Path], iteration: int) -> Dict[str, Any]:
         """Inject metadata into multiple files"""
@@ -61,44 +63,46 @@ class DOWMetadataInjector:
             results.append(result)
 
         return {
-            'total': len(file_paths),
-            'success': sum(1 for r in results if r['status'] == 'success'),
-            'failed': sum(1 for r in results if r['status'] == 'error'),
-            'results': results
+            "total": len(file_paths),
+            "success": sum(1 for r in results if r["status"] == "success"),
+            "failed": sum(1 for r in results if r["status"] == "error"),
+            "results": results,
         }
 
     def _extract_phase(self, file_path: Path) -> str:
         """Extract phase from file path"""
         name = file_path.stem
-        if 'phase1' in name:
-            return 'phase1'
-        elif 'phase2' in name:
-            return 'phase2'
-        elif 'phase3' in name:
-            return 'phase3'
-        elif 'phase4' in name:
-            return 'phase4'
-        elif 'phase5' in name:
-            return 'phase5'
-        elif 'phase6' in name:
-            return 'phase6'
-        return 'unknown'
+        if "phase1" in name:
+            return "phase1"
+        elif "phase2" in name:
+            return "phase2"
+        elif "phase3" in name:
+            return "phase3"
+        elif "phase4" in name:
+            return "phase4"
+        elif "phase5" in name:
+            return "phase5"
+        elif "phase6" in name:
+            return "phase6"
+        return "unknown"
 
 
 def main():
     """Main entry point"""
     import argparse
 
-    parser = argparse.ArgumentParser(description='DOW Metadata Injector')
-    parser.add_argument('--iteration', type=int, default=1, help='Iteration number')
-    parser.add_argument('--target', type=str, default='DMAIC_CANONICAL_OUTPUT', help='Target directory')
-    parser.add_argument('--verbose', action='store_true', help='Verbose output')
+    parser = argparse.ArgumentParser(description="DOW Metadata Injector")
+    parser.add_argument("--iteration", type=int, default=1, help="Iteration number")
+    parser.add_argument(
+        "--target", type=str, default="DMAIC_CANONICAL_OUTPUT", help="Target directory"
+    )
+    parser.add_argument("--verbose", action="store_true", help="Verbose output")
 
     args = parser.parse_args()
 
     logging.basicConfig(
         level=logging.INFO if args.verbose else logging.WARNING,
-        format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
+        format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
     )
 
     injector = DOWMetadataInjector()
@@ -122,9 +126,10 @@ def main():
     print(f"   Success: {result['success']}")
     print(f"   Failed: {result['failed']}")
 
-    if result['failed'] > 0:
+    if result["failed"] > 0:
         print(f"\n❌ Some files failed. Check logs for details.")
         sys.exit(1)
+
 
 if __name__ == "__main__":
     main()

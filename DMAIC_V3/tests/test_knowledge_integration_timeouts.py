@@ -47,7 +47,9 @@ def test_schedule_agent_task_timeout_records_metric_in_fallback(monkeypatch, tmp
         timeout=1,
     )
 
-    timeout_metrics = [m for m in ki.metrics_cache if m["metric_name"] == "task_timeout"]
+    timeout_metrics = [
+        m for m in ki.metrics_cache if m["metric_name"] == "task_timeout"
+    ]
     assert len(timeout_metrics) >= 1
     assert timeout_metrics[-1]["tags"]["mode"] == "fallback"
 
@@ -77,7 +79,9 @@ def test_schedule_agent_task_timeout_non_blocking_under_scale(tmp_path):
             future.result()
 
     elapsed = time.time() - start
-    timeout_metrics = [m for m in ki.metrics_cache if m["metric_name"] == "task_timeout"]
+    timeout_metrics = [
+        m for m in ki.metrics_cache if m["metric_name"] == "task_timeout"
+    ]
 
     assert elapsed < 3
     assert len(timeout_metrics) >= 20

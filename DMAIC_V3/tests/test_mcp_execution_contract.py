@@ -42,14 +42,22 @@ def test_worker_parent_mutation_is_isolated_and_rejected():
 def test_same_finding_has_same_digest():
     payload1 = {"x": 1}
     payload2 = {"x": 1}
-    _, first = execute_mcp(MCPRequest("T4", "BACKGROUND", payload1, sha256_json(payload1)), lambda p: {"a": 1})
-    _, second = execute_mcp(MCPRequest("T4", "BACKGROUND", payload2, sha256_json(payload2)), lambda p: {"a": 1})
+    _, first = execute_mcp(
+        MCPRequest("T4", "BACKGROUND", payload1, sha256_json(payload1)),
+        lambda p: {"a": 1},
+    )
+    _, second = execute_mcp(
+        MCPRequest("T4", "BACKGROUND", payload2, sha256_json(payload2)),
+        lambda p: {"a": 1},
+    )
     assert first.finding_sha256 == second.finding_sha256
 
 
 def test_worker_timeout_fails_closed():
     payload = {"x": 1}
-    request = MCPRequest("T5", "TRIGGERED", payload, sha256_json(payload), timeout_seconds=0.01)
+    request = MCPRequest(
+        "T5", "TRIGGERED", payload, sha256_json(payload), timeout_seconds=0.01
+    )
 
     def blocked(_):
         time.sleep(0.05)

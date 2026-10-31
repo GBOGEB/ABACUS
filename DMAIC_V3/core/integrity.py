@@ -7,11 +7,11 @@ explicit and testable.
 
 from __future__ import annotations
 
-from dataclasses import asdict, dataclass
 import hashlib
 import json
-from pathlib import Path
 import subprocess
+from dataclasses import asdict, dataclass
+from pathlib import Path
 from typing import Any
 
 
@@ -79,7 +79,9 @@ def git_identity(root: Path) -> GitIdentity:
     )
 
 
-def payload_receipt(root: Path, payload: Any, *, payload_kind: str = "json") -> IntegrityReceipt:
+def payload_receipt(
+    root: Path, payload: Any, *, payload_kind: str = "json"
+) -> IntegrityReceipt:
     if payload_kind == "json":
         payload_sha = sha256_json(payload)
     elif payload_kind == "text":

@@ -4,8 +4,9 @@ from pathlib import Path
 
 import yaml
 
-
-WORKFLOW = Path(__file__).resolve().parents[2] / ".github/workflows/dmaic-enterprise-ci.yml"
+WORKFLOW = (
+    Path(__file__).resolve().parents[2] / ".github/workflows/dmaic-enterprise-ci.yml"
+)
 
 
 def test_enterprise_pytest_is_required_on_all_supported_versions():

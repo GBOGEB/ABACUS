@@ -5,9 +5,9 @@
 """
 
 from dataclasses import dataclass, field
-from typing import Dict, List, Optional, Any
 from datetime import datetime
 from enum import Enum
+from typing import Any, Dict, List, Optional
 
 
 class PhaseStatus(Enum):
@@ -41,7 +41,7 @@ class Metric:
             "unit": self.unit,
             "metric_type": self.metric_type.value,
             "timestamp": self.timestamp.isoformat(),
-            "metadata": self.metadata
+            "metadata": self.metadata,
         }
 
 
@@ -66,7 +66,7 @@ class PhaseMetrics:
             "start_time": self.start_time.isoformat() if self.start_time else None,
             "end_time": self.end_time.isoformat() if self.end_time else None,
             "duration_seconds": self.duration_seconds,
-            "status": self.status.value
+            "status": self.status.value,
         }
 
 
@@ -90,7 +90,7 @@ class KnowledgePack:
             "decisions": self.decisions,
             "references": self.references,
             "metadata": self.metadata,
-            "created_at": self.created_at.isoformat()
+            "created_at": self.created_at.isoformat(),
         }
 
 
@@ -118,7 +118,7 @@ class IterationResult:
             "knowledge_packs": [kp.to_dict() for kp in self.knowledge_packs],
             "start_time": self.start_time.isoformat() if self.start_time else None,
             "end_time": self.end_time.isoformat() if self.end_time else None,
-            "success": self.success
+            "success": self.success,
         }
 
 
@@ -138,7 +138,11 @@ class ExecutionState:
             "current_phase": self.current_phase,
             "iterations": {k: v.to_dict() for k, v in self.iterations.items()},
             "global_metrics": [m.to_dict() for m in self.global_metrics],
-            "execution_start": self.execution_start.isoformat() if self.execution_start else None,
-            "execution_end": self.execution_end.isoformat() if self.execution_end else None,
-            "total_iterations_completed": self.total_iterations_completed
+            "execution_start": (
+                self.execution_start.isoformat() if self.execution_start else None
+            ),
+            "execution_end": (
+                self.execution_end.isoformat() if self.execution_end else None
+            ),
+            "total_iterations_completed": self.total_iterations_completed,
         }

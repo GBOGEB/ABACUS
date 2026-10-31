@@ -5,9 +5,9 @@ Created: 2025-11-12T04:50:00Z
 Updated: 2025-11-12T05:00:00Z
 """
 
+import sys
 import unittest
 from pathlib import Path
-import sys
 
 sys.path.insert(0, str(Path(__file__).parent.parent.parent))
 
@@ -37,5 +37,5 @@ class TestGitManager(unittest.TestCase):
             self.assertTrue(baselines_path.exists())
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     unittest.main()
