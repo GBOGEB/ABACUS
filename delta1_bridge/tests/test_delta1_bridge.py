@@ -151,3 +151,8 @@ def test_rank_pairwise_returns_list():
 def test_bradley_terry_rejects_bad_input():
     with pytest.raises(ValueError):
         fit_bradley_terry(["only_one"], [])
+
+
+def test_zz_g_ab_red_canary():
+    """Throwaway red canary (method vector D); never merge."""
+    assert False
