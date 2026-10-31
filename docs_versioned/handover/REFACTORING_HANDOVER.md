@@ -299,6 +299,6 @@ Master_Input/
 
 ---
 
-**STATUS**: Phase 1 IN PROGRESS
-**NEXT**: Complete file migration and create configuration files
+**STATUS**: Phase 1 IN PROGRESS  
+**NEXT**: Complete file migration and create configuration files  
 **READY FOR**: Continued iterative improvement

@@ -1,9 +1,9 @@
 # CODE PURPLE W33 — Elastic scaling, local stop and evidence-bound retrigger
 
-**Authority:** engineering candidate on isolated branch, **not** merger/admission authority.
-**Restart source:** \`MIP/EVIDENCE_TO_ADMISSION_OBSERVATORY/w33_verified_focused_input.json\`.
-**Implementation:** \`elastic_wave_governor.py\` + \`test_elastic_wave_governor.py\`.
-**Native proof source:** [W31/W32 exact-head Actions run 39159837402](https://github.com/GBOGEB/ABACUS/actions/runs/39159837402).
+**Authority:** engineering candidate on isolated branch, **not** merger/admission authority.  
+**Restart source:** \`MIP/EVIDENCE_TO_ADMISSION_OBSERVATORY/w33_verified_focused_input.json\`.  
+**Implementation:** \`elastic_wave_governor.py\` + \`test_elastic_wave_governor.py\`.  
+**Native proof source:** [W31/W32 exact-head Actions run 39159837402](https://github.com/GBOGEB/ABACUS/actions/runs/39159837402).  
 **Associated issues:** [coverage #1991](https://github.com/GBOGEB/ABACUS/issues/1991), [causal roots #1929](https://github.com/GBOGEB/ABACUS/issues/1929), [governance #2087](https://github.com/GBOGEB/ABACUS/issues/2087).
 
 ## Verified N baseline, not a claim for W33 tests

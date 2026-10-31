@@ -41,7 +41,7 @@ The `QPLANT_RTM.xlsx` contains 16 formal requirements tracked across the DMAIC l
 
 ## 1.5 Document Conventions
 - 🟢 = Working/Implemented
-- 🟡 = Partial/In Progress
+- 🟡 = Partial/In Progress  
 - 🔴 = Broken/Blocked
 - ⚠️ = Requires Attention
 - > *Reconstructed from code* = Content inferred from analysis

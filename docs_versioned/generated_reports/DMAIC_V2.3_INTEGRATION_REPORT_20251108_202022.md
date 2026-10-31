@@ -1,7 +1,7 @@
 # DMAIC V2.3 Integration Report
 
-**Version:** 2.3.0
-**Generated:** 2025-11-08T19:22:19.926594+00:00
+**Version:** 2.3.0  
+**Generated:** 2025-11-08T19:22:19.926594+00:00  
 **Generated:** 2025-11-08T19:20:22.278251+00:00
 **Tracker Version:** 2.3.0
 **Workspace:** C:\Users\gbonthuy\OneDrive - Studiecentrum voor Kernenergie\Master_Input

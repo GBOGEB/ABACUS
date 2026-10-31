@@ -1,6 +1,6 @@
 # STAKEHOLDER_ROUTING.md — Distribution Logic
 
-> **Version:** 1.0.0
+> **Version:** 1.0.0  
 > **References:** RULE-150 through RULE-153 (RENDER_RULES.md)
 
 ---

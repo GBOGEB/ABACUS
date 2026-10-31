@@ -1,6 +1,6 @@
 # Session activity scorecard — DMAIC, PCA, BT and CI coverage
 
-Snapshot: 2026-08-29
+Snapshot: 2026-08-29  
 Scope: `GBOGEB/ABACUS`, with read-only status comparison to `GBOGEB/CODEX` and `GBOGEB/DOCX_RTM_Automation`.
 
 ## Direct status

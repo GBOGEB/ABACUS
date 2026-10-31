@@ -1,5 +1,11 @@
 name: Deploy Documentation to GitHub Pages
 
+# JADE deploy contract, option A: the hub reusable CI runs the Pages contract
+# tests, builds the docs/ bundle once and hashes every file into
+# jade-manifest.json; the hub reusable deploy admits main only, verifies the
+# digests, deploys to Pages and reads the served files back.
+# The tests replace the old `validate` job; the readback replaces `post-deploy`.
+
 on:
   push:
     branches: [main]
@@ -15,138 +21,75 @@ on:
       - 'content/qplant/**'
       - 'renderers/**'
       - 'rtm/**'
+      - 'tests/test_pages_bundle.py'
+      - '.github/workflows/pages.yml'
+      - '.github/workflows/deploy-docs.yml'
+  pull_request:
+    paths:
+      - 'docs/**'
+      - 'cryo_dashboard_v0_3_0/**'
+      - 'docs_versioned/**'
+      - 'build_qplant_visualization.py'
+      - 'scripts/validate_runtime_foundation.py'
+      - 'scripts/write_runtime_governance_status.py'
+      - 'tools/gate_rollup.py'
+      - 'logs/**'
+      - 'content/qplant/**'
+      - 'renderers/**'
+      - 'rtm/**'
+      - 'tests/test_pages_bundle.py'
       - '.github/workflows/pages.yml'
       - '.github/workflows/deploy-docs.yml'
   workflow_dispatch:
 
 permissions:
   contents: read
-  pages: write
-  id-token: write
 
 concurrency:
-  group: pages
-  cancel-in-progress: false
+  group: deploy-docs-${{ github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 
 jobs:
-  validate:
-    name: Validate HTML / CSS / JS
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v7
-
-      - name: Check HTML files exist
-        run: |
-          echo "=== Validating documentation structure ==="
-          for f in docs/index.html docs/handover_book.html \
-              docs/deep_analysis_dashboard.html docs/dashboard.html; do
-            if [ ! -f "$f" ]; then
-              echo "❌ Missing: $f"
-              exit 1
-            fi
-            echo "✅ Found: $f"
-          done
-
-      - name: Validate HTML syntax
-        run: |
-          echo "=== Basic HTML validation ==="
-          for f in $(find docs -name '*.html' -type f); do
-            if ! grep -q '</html>' "$f"; then
-              echo "❌ Malformed HTML: $f"
-              exit 1
-            fi
-            echo "✅ Valid: $f"
-          done
-
-      - name: Check for broken internal links
-        run: |
-          echo "=== Checking internal link targets ==="
-          ERRORS=0
-          while IFS= read -r f; do
-            while IFS= read -r href; do
-              dir=$(dirname "$f")
-              target="$dir/$href"
-              target="${target%%#*}"
-              target="${target%%\?*}"
-              if [ -n "$target" ] && [ ! -e "$target" ]; then
-                echo "⚠️  Broken link in $f → $href"
-                ERRORS=$((ERRORS+1))
-              fi
-            done < <(grep -oP 'href="\K[^"]+' "$f" \
-              | grep -v '^http' | grep -v '^#' | grep -v '^mailto')
-          done < <(find docs -name '*.html' -type f)
-          echo "Link check complete. Warnings: $ERRORS"
+  ci:
+    uses: GBOGEB/pipeline-automation-hub/.github/workflows/jade-reusable-ci.yml@77bac410de6b34afa5df665608611ad9e8db5c84  # yamllint disable-line rule:line-length
+    with:
+      python-version: '3.12'
+      install: python -m pip install --disable-pip-version-check pytest
+      test-runner: pytest
+      # --noconftest: tests/conftest.py imports numpy; the bundle
+      # tests need only pytest.
+      test-args: -q -p no:cacheprovider --noconftest tests/test_pages_bundle.py
+      min-tests: 3
+      # Same steps as the old deploy job. docs/ stays the site root, so the
+      # entry page is unchanged. Dotfiles are removed because
+      # upload-pages-artifact never published them (it skips hidden files).
+      build-command: |
+        python -m pip install --disable-pip-version-check pyyaml
+        python build_qplant_visualization.py
+        cp dist/qplant_visualization.html docs/qplant_visualization.html
+        python tools/gate_rollup.py
+        mkdir -p docs/api docs/reports
+        cp rtm/trace_matrix.json docs/api/rtm_trace_matrix.json
+        cp reports/*.json docs/reports/ 2>/dev/null || true
+        python scripts/validate_runtime_foundation.py
+        python scripts/write_runtime_governance_status.py \
+          --output docs/reports/runtime_governance_status.json
+        find docs -mindepth 1 -name '.*' -prune -exec rm -rf {} +
+        test -f docs/index.html
+      artifact-path: docs
+      artifact-name: abacus-docs-pages
 
   deploy:
-    name: Deploy to GitHub Pages
-    needs: validate
-    runs-on: ubuntu-latest
-    environment:
-      name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
-    steps:
-      - uses: actions/checkout@v7
-
-      # One canonical site artifact: the checked-out docs homepage remains
-      # authoritative; QPLANT is built as a separate route.
-      - name: Setup Python for QPLANT
-        # actions/setup-python v7.0.0, pinned by SHA
-        uses: actions/setup-python@6d4fd22b20465ccc0f7354476588e8df7c9ca0e0
-        with:
-          python-version: '3.12'
-
-      - name: Install QPLANT build dependency
-        run: python -m pip install pyyaml
-
-      - name: Build QPLANT visualization
-        run: |
-          python build_qplant_visualization.py
-          cp dist/qplant_visualization.html docs/qplant_visualization.html
-
-      - name: Build runtime governance feeds
-        run: |
-          python tools/gate_rollup.py
-          mkdir -p docs/api docs/reports
-          cp rtm/trace_matrix.json docs/api/rtm_trace_matrix.json
-          cp reports/*.json docs/reports/ 2>/dev/null || true
-          python scripts/validate_runtime_foundation.py
-          python scripts/write_runtime_governance_status.py \
-            --output docs/reports/runtime_governance_status.json
-
-      - name: Setup Pages
-        uses: actions/configure-pages@v6
-
-      - name: Upload artifact
-        uses: actions/upload-pages-artifact@v5
-        with:
-          path: docs
-
-      - name: Deploy to GitHub Pages
-        id: deployment
-        uses: actions/deploy-pages@v5
-
-  post-deploy:
-    name: Post-Deployment Verification
-    needs: deploy
-    runs-on: ubuntu-latest
-    steps:
-      - name: Verify pages URL
-        run: |
-          # Derive the Pages URL dynamically from repo context
-          OWNER=$(echo "${{ github.repository_owner }}" \
-            | tr '[:upper:]' '[:lower:]')
-          REPO="${{ github.event.repository.name }}"
-          # Use the URL produced by deploy-pages when available,
-          # fall back to computed URL
-          PAGES_URL="${{ steps.deployment.outputs.page_url }}"
-          PAGES_URL="${PAGES_URL:-https://${OWNER}.github.io/${REPO}/}"
-          echo "Waiting 30s for deployment propagation..."
-          sleep 30
-          STATUS=$(curl -s -o /dev/null -w "%{http_code}" "$PAGES_URL" \
-            || echo "000")
-          echo "Status: $STATUS for $PAGES_URL"
-          if [ "$STATUS" = "200" ] || [ "$STATUS" = "304" ]; then
-            echo "✅ GitHub Pages is live!"
-          else
-            echo "⚠️  Pages returned HTTP $STATUS — may still be propagating."
-          fi
+    if: github.event_name != 'pull_request' && github.ref == 'refs/heads/main'
+    needs: ci
+    permissions:
+      contents: read
+      pages: write
+      id-token: write
+    uses: GBOGEB/pipeline-automation-hub/.github/workflows/jade-reusable-deploy.yml@77bac410de6b34afa5df665608611ad9e8db5c84  # yamllint disable-line rule:line-length
+    with:
+      environment: production
+      target: pages
+      artifact-name: ${{ needs.ci.outputs.artifact-name }}
+      manifest-sha256: ${{ needs.ci.outputs.manifest-sha256 }}
+      tests-ran: ${{ fromJSON(needs.ci.outputs.tests-ran) }}

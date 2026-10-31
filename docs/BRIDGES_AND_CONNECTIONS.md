@@ -5,7 +5,7 @@
 
 > This document maps explicit connections between validated tuples, handoff logs, metadata workflows, and CI/CD pipelines across the ABACUS system. Each bridge is documented with source, target, validation method, and current status.
 
-**Last Updated:** 2026-05-18
+**Last Updated:** 2026-05-18  
 **Related:** [README.md](../README.md) | [Progress Tracker](progress_tracker.html) | [Tool Ecosystem](../tool_ecosystem_map.md)
 
 ---
@@ -31,7 +31,7 @@ tuple_metadata.py  →  validate_tuple_metadata.py  →  01_conversation_tuple_d
                                                    →  04_handover_manifest.yaml
 ```
 
-**Required Fields:** `tuple_id`, `source`, `validation_log`, `downstream_consumer`, `status`
+**Required Fields:** `tuple_id`, `source`, `validation_log`, `downstream_consumer`, `status`  
 **Valid Statuses:** `planned`, `in_progress`, `validated`, `blocked`, `released`
 
 ---

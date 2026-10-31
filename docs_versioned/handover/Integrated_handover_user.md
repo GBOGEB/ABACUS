@@ -339,14 +339,14 @@ and also a **patch-style block** you can reference from `ADR_CODE_001` (so you d
 
 This document defines the **global meta-structure** of the DMAIC_V3 code twin using explicit **levels**, with the following conventions:
 
-- **Level 7 — USER**
-- **Level 6 — GLOBAL / GOD / DOW**
-- **Level 5 — SYSTEM**
-- **Level 4 — PILLARS (GBOGEB, KEB)**
-- **Level 3 — ENGINES & ARCHITECTURE**
-- **Level 2 — CLUSTERS (12-cluster view)**
-- **Level 1 — REPO / MODULES**
-- **Level 0 — DOX (Documents)**
+- **Level 7 — USER**  
+- **Level 6 — GLOBAL / GOD / DOW**  
+- **Level 5 — SYSTEM**  
+- **Level 4 — PILLARS (GBOGEB, KEB)**  
+- **Level 3 — ENGINES & ARCHITECTURE**  
+- **Level 2 — CLUSTERS (12-cluster view)**  
+- **Level 1 — REPO / MODULES**  
+- **Level 0 — DOX (Documents)**  
 
 This overlays the existing SBS and ADR_code so everything is consistent and traceable.
 
@@ -381,7 +381,7 @@ This overlays the existing SBS and ADR_code so everything is consistent and trac
   - `DOW/sprints.yaml`
   - Any future `DOW/*.yaml` or `DOW/*.md` that steer the overall engine.
 
-**Role:**
+**Role:**  
 Level 6 interprets user intent and long-range objectives and turns them into structured work and constraints for Level 5 and below.
 
 ### 1.3 Level 5 — SYSTEM
@@ -407,7 +407,7 @@ Level 6 interprets user intent and long-range objectives and turns them into str
 
 Two conceptual pillars that the system stands on:
 
-- **Pillar P1 — GBOGEB**
+- **Pillar P1 — GBOGEB**  
   - Your overarching “company / practice” pillar:
     - Ethics
     - Engineering discipline
@@ -417,7 +417,7 @@ Two conceptual pillars that the system stands on:
     - RTM / CRM rigor
     - DOW governance
 
-- **Pillar P2 — KEB**
+- **Pillar P2 — KEB**  
   - Knowledge, Engineering, and Business pillar:
     - Knowledge management & cryogenic domain understanding
     - Engineering quality and traceability
@@ -427,7 +427,7 @@ Two conceptual pillars that the system stands on:
     - Documentation engine
     - DMAIC engine’s “Analyze” and “Control” phases.
 
-**Implementation hint:**
+**Implementation hint:**  
 These pillars are **conceptual tags** that can be reflected in:
 
 - ADR_code requirement categories (e.g. tag some as `pillar: GBOGEB`, others `pillar: KEB`).
@@ -509,17 +509,17 @@ At this level we define the **major engines** and architectural components the s
 - The 12 clusters are defined by the **12-Cluster Engine**, E1.
 - Example conceptual clusters (you can rename later):
 
-  1. Requirements & SoR
-  2. Cryogenic Process & Operation
-  3. Safety & Protections
-  4. Controls & Automation
-  5. Data & Metrics
-  6. Documentation & Compliance
-  7. Testing & Validation
-  8. DMAIC Pipeline Execution
-  9. Convergence & Stability
-  10. Knowledge & Models
-  11. CI/CD & Release
+  1. Requirements & SoR  
+  2. Cryogenic Process & Operation  
+  3. Safety & Protections  
+  4. Controls & Automation  
+  5. Data & Metrics  
+  6. Documentation & Compliance  
+  7. Testing & Validation  
+  8. DMAIC Pipeline Execution  
+  9. Convergence & Stability  
+  10. Knowledge & Models  
+  11. CI/CD & Release  
   12. Handover & Lifecycle
 
 - Each requirement (ADR_code) and each module can be tagged with one or more clusters.
@@ -554,7 +554,7 @@ At this level we define the **major engines** and architectural components the s
   - SoR/MASTER-style specs (project side).
   - Code twin docs (ADR_code, OCE_code, GLOBAL structure, RTMs).
   - Handover docs in `handover/**`.
-- **Interpretation:**
+- **Interpretation:**  
   DOX is conceptually the **lowest level**, but it carries the **highest semantic density**:
   - It represents the “book of record” about what the above levels mean.
 
@@ -743,35 +743,35 @@ It mirrors the structure of the project’s SoR / MASTER.doc, but for **code, en
 
 We model the system in 8 levels:
 
-- **Level 7 — USER**
+- **Level 7 — USER**  
   You (and other human operators).
 
-- **Level 6 — GLOBAL / GOD / DOW**
-  `DOW` = global AI / planning engine.
+- **Level 6 — GLOBAL / GOD / DOW**  
+  `DOW` = global AI / planning engine.  
   Artefacts: `DOW/actions.yaml`, `DOW/sprints.yaml`.
 
-- **Level 5 — SYSTEM**
-  The DMAIC system and its code twin.
+- **Level 5 — SYSTEM**  
+  The DMAIC system and its code twin.  
   Artefacts: `DMAIC_V3/**`, `DMAIC_CANONICAL_*`, `DMAIC_PRODUCTION_*`, `DMAIC_TEST_*`, `dmaic_metrics/**`.
 
-- **Level 4 — PILLARS (GBOGEB, KEB)**
+- **Level 4 — PILLARS (GBOGEB, KEB)**  
   Conceptual pillars for ethics, engineering discipline, knowledge, and business.
 
-- **Level 3 — ENGINES & ARCHITECTURE**
-  - 12-Cluster Engine: `DMAIC_V3/core/twelve_cluster_orchestrator.py`
-  - DMAIC Engine: `DMAIC_V3/dmaic_v3_engine.py`, DMAIC_* outputs
-  - Recursive Engine: convergence + temporal/SUT logic
-  - Knowledge Engine: canonical index, models, metrics
-  - Documentation Engine: docs, reports, “books”
+- **Level 3 — ENGINES & ARCHITECTURE**  
+  - 12-Cluster Engine: `DMAIC_V3/core/twelve_cluster_orchestrator.py`  
+  - DMAIC Engine: `DMAIC_V3/dmaic_v3_engine.py`, DMAIC_* outputs  
+  - Recursive Engine: convergence + temporal/SUT logic  
+  - Knowledge Engine: canonical index, models, metrics  
+  - Documentation Engine: docs, reports, “books”  
   - ADR/Architecture Engine: ADR_code, orchestration scripts
 
-- **Level 2 — CLUSTERS (12-cluster view)**
+- **Level 2 — CLUSTERS (12-cluster view)**  
   Functional clusters (requirements, cryo process, safety, data, docs, testing, CI/CD, etc.).
 
-- **Level 1 — REPO / MODULES**
+- **Level 1 — REPO / MODULES**  
   GitHub-visible code layout: `DMAIC_V3/agents`, `DMAIC_V3/convergence`, `DMAIC_V3/core`, `.github/workflows`, docs folders.
 
-- **Level 0 — DOX (Documents)**
+- **Level 0 — DOX (Documents)**  
   All markdown, JSON, YAML, reports, and handover docs (SoR-style records).
 
 The detailed definition of these levels lives in:
@@ -782,13 +782,13 @@ The detailed definition of these levels lives in:
 
 The code twin is defined and operated through these key documents:
 
-- **Architecture & Requirements (ADR_code)**
+- **Architecture & Requirements (ADR_code)**  
   - `DMAIC_V3_DOCS/ADR_CODE_001_CANONICAL_RECURSIVE_CHECK.md`
 
-- **Operational Concept & Execution (OCE_code)**
+- **Operational Concept & Execution (OCE_code)**  
   - `DMAIC_V3_DOCS/OCE_CODE_001_DIGITAL_TWIN_OPERATION.md`
 
-- **Code Requirements Matrix (CRM / code_RTM)**
+- **Code Requirements Matrix (CRM / code_RTM)**  
   - `DMAIC_V3_DOCS/code_RTM.yaml`
 
 Together, these form a **virtual SoR for the code**, linking:
@@ -799,8 +799,8 @@ Together, these form a **virtual SoR for the code**, linking:
 
 Handover artefacts and copy rules are defined by:
 
-- `.GLOOB.yaml` (root)
-- `handover/COPY_GLOBS.txt`
+- `.GLOOB.yaml` (root)  
+- `handover/COPY_GLOBS.txt`  
 - `handover/*.md` (handover, troubleshooting, roundtrip guides)
 
 A canonical handover bundle can be created as:

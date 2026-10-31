@@ -1,6 +1,6 @@
 # CODEX_BRIDGE.md — CODEX↔ABACUS Bridge Architecture
 
-> **Version:** 1.0.0
+> **Version:** 1.0.0  
 > **Purpose:** Documents the relationship and data flow between GBOGEB/CODEX and GBOGEB/ABACUS
 
 ---
