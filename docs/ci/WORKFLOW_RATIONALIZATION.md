@@ -2,7 +2,8 @@
 
 # ABACUS CI workflow rationalisation
 
-Policy: `ABACUS-CI-SSOT-001`  
+Policy: `ABACUS-CI-SSOT-001`
+
 Policy SHA-256 (canonical sorted JSON bytes of `ci/governance/workflow_policy.json`): `df7b87bdd4764c8358663931e1bd17ff71377bf3d8b8936fd16e24a5a1dd3e14`
 
 ## Outcome
