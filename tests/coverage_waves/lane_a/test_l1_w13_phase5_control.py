@@ -85,12 +85,13 @@ def test_run_all_gates_pass_writes_output(tmp_path):
     assert res["all_gates_passed"] is True
     assert res["quality_gates"]["code_quality"]["value"] == 4
     assert res["quality_gates"]["documentation"]["value"] == 2
-    assert res["controls"] == {
-        "total_gates": 4,
-        "passed": 4,
-        "failed": 0,
-        "gates_details": res["quality_gates"],
-    }
+    expected_controls = dict(
+        total_gates=4,
+        passed=4,
+        failed=0,
+        gates_details=res["quality_gates"],
+    )
+    assert res["controls"] == expected_controls
     assert len(res["validation_checkpoints"]) == 4
     assert res["validation_checkpoints"][0]["name"] == "code_quality_checkpoint"
     out = tmp_path / "out" / "iteration_1" / "phase5_control" / "phase5_control.json"
@@ -125,15 +126,15 @@ def test_documentation_and_placeholder_gates(tmp_path):
 
 
 def test_validation_checkpoint_defaults(tmp_path):
-    cps = _phase(tmp_path)._create_validation_checkpoints({"g": {"passed": False}}, 1)
+    cps = _phase(tmp_path)._create_validation_checkpoints({"g": dict(passed=False)}, 1)
     assert cps == [
-        {
-            "name": "g_checkpoint",
-            "description": "Validation checkpoint for g",
-            "passed": False,
-            "value": 0,
-            "message": "",
-        }
+        dict(
+            name="g_checkpoint",
+            description="Validation checkpoint for g",
+            passed=False,
+            value=0,
+            message="",
+        )
     ]
 
 
