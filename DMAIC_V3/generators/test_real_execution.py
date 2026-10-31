@@ -5,13 +5,13 @@ Tests Python code execution in real environment with venv and requirements.txt
 Includes top-level scripts AND core modules
 """
 
-import json
 import os
-import subprocess
 import sys
+import subprocess
+from pathlib import Path
+import json
 import time
 from datetime import datetime
-from pathlib import Path
 
 
 def run_python_file(file_path: Path, root_dir: Path) -> dict:
@@ -28,10 +28,10 @@ def run_python_file(file_path: Path, root_dir: Path) -> dict:
         if root_dir:
             python_path_parts.append(str(root_dir.resolve()))
         python_path_parts.append(str(file_path.parent.resolve()))
-        existing_py = env.get("PYTHONPATH", "")
+        existing_py = env.get('PYTHONPATH', '')
         if existing_py:
             python_path_parts.insert(0, existing_py)
-        env["PYTHONPATH"] = os.pathsep.join(python_path_parts)
+        env['PYTHONPATH'] = os.pathsep.join(python_path_parts)
 
         if "core" in str(file_path):
             module_name = file_path.stem
@@ -42,16 +42,12 @@ def run_python_file(file_path: Path, root_dir: Path) -> dict:
 
             print(f"Testing import: {module_path}")
             result = subprocess.run(
-                [
-                    sys.executable,
-                    "-c",
-                    f"import {module_path}; print('Module imported successfully')",
-                ],
+                [sys.executable, "-c", f"import {module_path}; print('Module imported successfully')"],
                 capture_output=True,
                 text=True,
                 timeout=60,
                 cwd=str(root_dir.resolve()),
-                env=env,
+                env=env
             )
         else:
             result = subprocess.run(
@@ -60,7 +56,7 @@ def run_python_file(file_path: Path, root_dir: Path) -> dict:
                 text=True,
                 timeout=60,
                 cwd=str(root_dir.resolve()),
-                env=env,
+                env=env
             )
 
         execution_time = time.time() - start_time
@@ -83,7 +79,7 @@ def run_python_file(file_path: Path, root_dir: Path) -> dict:
             "exit_code": result.returncode,
             "stdout": result.stdout,
             "stderr": result.stderr,
-            "error": None if success else result.stderr,
+            "error": None if success else result.stderr
         }
 
     except subprocess.TimeoutExpired:
@@ -95,7 +91,7 @@ def run_python_file(file_path: Path, root_dir: Path) -> dict:
             "status": "TIMEOUT",
             "execution_time": execution_time,
             "exit_code": -1,
-            "error": "Execution timeout (60s)",
+            "error": "Execution timeout (60s)"
         }
 
     except Exception as e:
@@ -107,19 +103,19 @@ def run_python_file(file_path: Path, root_dir: Path) -> dict:
             "status": "ERROR",
             "execution_time": execution_time,
             "exit_code": -1,
-            "error": str(e),
+            "error": str(e)
         }
 
 
 def main():
-    print("=" * 80)
+    print("="*80)
     print("DMAIC V3 - REAL EXECUTION TEST (ALL 9 PYTHON FILES)")
-    print("=" * 80)
+    print("="*80)
     print(f"Version: 3.1.0")
     print(f"DMAIC Version: V3")
     print(f"Integration Mode: BIDIRECTIONAL")
     print(f"Timestamp: {datetime.now().isoformat()}")
-    print("=" * 80)
+    print("="*80)
 
     root_dir = Path(__file__).parent.parent.parent
     master_doc_dir = root_dir / "master_document_system"
@@ -147,9 +143,9 @@ def main():
         result = run_python_file(py_file, root_dir)
         results.append(result)
 
-    print("\n" + "=" * 80)
+    print("\n" + "="*80)
     print("EXECUTION SUMMARY")
-    print("=" * 80)
+    print("="*80)
 
     total = len(results)
     successful = sum(1 for r in results if r["status"] == "SUCCESS")
@@ -163,7 +159,7 @@ def main():
     print(f"Timeout:        {timeout}")
     print(f"Error:          {error}")
     print(f"Success Rate:   {(successful/total*100):.1f}%")
-    print("=" * 80)
+    print("="*80)
 
     report_dir = root_dir / "output" / "execution_reports"
     report_dir.mkdir(parents=True, exist_ok=True)
@@ -177,25 +173,24 @@ def main():
             "dmaic_version": "V3",
             "timestamp": datetime.now().isoformat(),
             "total_files": total,
-            "python_files": total,
+            "python_files": total
         },
         "summary": {
             "successful": successful,
             "failed": failed,
             "timeout": timeout,
             "error": error,
-            "success_rate": f"{(successful/total*100):.1f}%",
+            "success_rate": f"{(successful/total*100):.1f}%"
         },
-        "results": results,
+        "results": results
     }
 
-    with open(report_file, "w", encoding="utf-8") as f:
+    with open(report_file, 'w', encoding='utf-8') as f:
         json.dump(report, f, indent=2, ensure_ascii=False)
 
     print(f"\nReport saved to: {report_file}")
 
     sys.exit(0 if successful == total else 1)
-
 
 if __name__ == "__main__":
     main()

@@ -80,7 +80,11 @@ def summarize_static_analysis(
         "schema": "dmaic.static_analysis_diagnostics.v1",
         "status": status,
         "returncode": returncode,
-        "cause": ("nonzero scanner exit" if returncode != 0 else "scanner exit zero"),
+        "cause": (
+            "nonzero scanner exit"
+            if returncode != 0
+            else "scanner exit zero"
+        ),
         "findings": findings,
         "finding_count": count if isinstance(output, str) else None,
         "truncated": count > max_findings if isinstance(output, str) else None,

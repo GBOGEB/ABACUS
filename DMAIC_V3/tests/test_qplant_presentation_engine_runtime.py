@@ -1,6 +1,6 @@
-import json
 import subprocess
 import sys
+import json
 from pathlib import Path
 
 from src.qplant_presentation_engine import runtime
@@ -73,20 +73,12 @@ def test_runtime_generates_governance_metric_snapshots(tmp_path, monkeypatch):
     assert exit_code == 0
     assert all(line.startswith("[OK]") for line in report)
 
-    pca_snapshot = json.loads(
-        (tmp_path / "reports" / "pca_snapshot.json").read_text(encoding="utf-8")
-    )
-    geti_snapshot = json.loads(
-        (tmp_path / "reports" / "geti_snapshot.json").read_text(encoding="utf-8")
-    )
+    pca_snapshot = json.loads((tmp_path / "reports" / "pca_snapshot.json").read_text(encoding="utf-8"))
+    geti_snapshot = json.loads((tmp_path / "reports" / "geti_snapshot.json").read_text(encoding="utf-8"))
     truth_snapshot = json.loads(
-        (tmp_path / "reports" / "truth_matrix_snapshot.json").read_text(
-            encoding="utf-8"
-        )
+        (tmp_path / "reports" / "truth_matrix_snapshot.json").read_text(encoding="utf-8")
     )
 
     assert {"forward_pca", "backward_pca", "generated_at"} <= set(pca_snapshot)
     assert {"geti", "truth_score", "generated_at"} <= set(geti_snapshot)
-    assert {"principles", "truth_score", "evidence", "generated_at"} <= set(
-        truth_snapshot
-    )
+    assert {"principles", "truth_score", "evidence", "generated_at"} <= set(truth_snapshot)

@@ -69,7 +69,9 @@ def test_nonzero_exit_without_matching_findings_remains_red():
 
 
 def test_zero_exit_is_only_scanner_receipt_not_deployment_admission():
-    report = summarize_static_analysis({"flake8": {"returncode": 0, "output": ""}})
+    report = summarize_static_analysis(
+        {"flake8": {"returncode": 0, "output": ""}}
+    )
     assert report["status"] == "PASS"
     assert "deployment_ready" not in report
     assert "merge_admission" not in report

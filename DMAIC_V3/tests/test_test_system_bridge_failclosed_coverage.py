@@ -117,7 +117,9 @@ def test_required_artifact_is_not_hidden_by_zero_exit(bridge, monkeypatch, tmp_p
     monkeypatch.setattr(
         bridge_module.subprocess,
         "run",
-        lambda *_args, **_kwargs: SimpleNamespace(returncode=0, stdout="ok", stderr=""),
+        lambda *_args, **_kwargs: SimpleNamespace(
+            returncode=0, stdout="ok", stderr=""
+        ),
     )
     failed = bridge.run_test(
         "artifact_negative", ["test"], expected_artifacts=["proof.json"], cwd=tmp_path
@@ -207,11 +209,7 @@ def test_real_report_distinguishes_success_failed_and_error_receipts(bridge, tmp
         duration_seconds=0.75,
     )
     metrics = bridge.generate_deployment_metrics()
-    assert (metrics.tests_total, metrics.tests_passed, metrics.tests_failed) == (
-        2,
-        1,
-        1,
-    )
+    assert (metrics.tests_total, metrics.tests_passed, metrics.tests_failed) == (2, 1, 1)
     assert metrics.execution_time_seconds == pytest.approx(1.0)
     assert len(metrics.runtime_errors) == 1
     assert metrics.deployment_ready is False

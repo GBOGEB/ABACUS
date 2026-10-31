@@ -1,8 +1,8 @@
+import pytest
 import xml.etree.ElementTree as ET
 
-import pytest
-
 from renderers.process_flow_renderer import ProcessFlowRenderer
+
 
 VALID_SCHEMA = {
     "type": "process_flow",

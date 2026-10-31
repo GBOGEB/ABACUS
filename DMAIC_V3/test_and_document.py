@@ -4,17 +4,17 @@ DMAIC V3 Test Runner and Documentation Generator
 Executes pipeline and generates comprehensive documentation from actual execution
 """
 
-import json
 import sys
+import json
 import time
-from datetime import datetime
 from pathlib import Path
-from typing import Any, Dict
+from datetime import datetime
+from typing import Dict, Any
 
 sys.path.insert(0, str(Path(__file__).parent.parent))
 
-from DMAIC_V3.config import DMAICConfig
 from DMAIC_V3.full_pipeline_orchestrator import FullPipelineOrchestrator
+from DMAIC_V3.config import DMAICConfig
 
 
 class TestAndDocumentRunner:
@@ -35,7 +35,7 @@ class TestAndDocumentRunner:
             enable_idempotency_flag=True,
             enable_git_commits=False,
             verbose=True,
-            debug_port=None,
+            debug_port=None
         )
 
         success = orchestrator.execute_full_pipeline(iteration=iteration)
@@ -43,16 +43,14 @@ class TestAndDocumentRunner:
         duration = time.time() - start_time
 
         result = {
-            "iteration": iteration,
-            "success": success,
-            "duration_seconds": duration,
-            "timestamp": datetime.now().isoformat(),
-            "statistics": (
-                orchestrator.statistics if hasattr(orchestrator, "statistics") else {}
-            ),
+            'iteration': iteration,
+            'success': success,
+            'duration_seconds': duration,
+            'timestamp': datetime.now().isoformat(),
+            'statistics': orchestrator.statistics if hasattr(orchestrator, 'statistics') else {}
         }
 
-        self.test_results[f"iteration_{iteration}"] = result
+        self.test_results[f'iteration_{iteration}'] = result
         self.execution_log.append(result)
 
         return result
@@ -62,37 +60,33 @@ class TestAndDocumentRunner:
         output_dir = self.config.paths.output_root / f"iteration_{iteration}"
 
         analysis = {
-            "iteration": iteration,
-            "output_directory": str(output_dir),
-            "phases": {},
-            "artifacts": [],
-            "agents_used": [],
+            'iteration': iteration,
+            'output_directory': str(output_dir),
+            'phases': {},
+            'artifacts': [],
+            'agents_used': []
         }
 
         if not output_dir.exists():
-            analysis["error"] = "Output directory not found"
+            analysis['error'] = 'Output directory not found'
             return analysis
 
         for phase_dir in sorted(output_dir.iterdir()):
             if phase_dir.is_dir():
                 phase_name = phase_dir.name
-                phase_files = list(phase_dir.glob("**/*"))
+                phase_files = list(phase_dir.glob('**/*'))
 
-                analysis["phases"][phase_name] = {
-                    "directory": str(phase_dir),
-                    "file_count": len([f for f in phase_files if f.is_file()]),
-                    "files": [
-                        str(f.relative_to(output_dir))
-                        for f in phase_files
-                        if f.is_file()
-                    ],
+                analysis['phases'][phase_name] = {
+                    'directory': str(phase_dir),
+                    'file_count': len([f for f in phase_files if f.is_file()]),
+                    'files': [str(f.relative_to(output_dir)) for f in phase_files if f.is_file()]
                 }
 
-        agent_registry = self.config.paths.output_root / "agent_registry.json"
+        agent_registry = self.config.paths.output_root / 'agent_registry.json'
         if agent_registry.exists():
             with open(agent_registry) as f:
                 agents_data = json.load(f)
-                analysis["agents_used"] = list(agents_data.get("agents", {}).keys())
+                analysis['agents_used'] = list(agents_data.get('agents', {}).keys())
 
         return analysis
 
@@ -243,10 +237,10 @@ Generated: {datetime.now().isoformat()}
 - **Timestamp**: {result['timestamp']}
 
 """
-            if "statistics" in result and result["statistics"]:
-                stats = result["statistics"]
-                if "orchestration" in stats:
-                    orch = stats["orchestration"]
+            if 'statistics' in result and result['statistics']:
+                stats = result['statistics']
+                if 'orchestration' in stats:
+                    orch = stats['orchestration']
                     report += f"""
 #### Orchestration Statistics
 - Total Phases: {orch.get('total_phases', 0)}
@@ -260,16 +254,18 @@ Generated: {datetime.now().isoformat()}
 
     def save_documentation(self):
         """Save all generated documentation"""
-        docs_dir = Path("DMAIC_V3_DOCS")
+        docs_dir = Path('DMAIC_V3_DOCS')
         docs_dir.mkdir(exist_ok=True)
 
-        (docs_dir / "ARCHITECTURE_DIAGRAM.txt").write_text(
+        (docs_dir / 'ARCHITECTURE_DIAGRAM.txt').write_text(
             self.generate_architecture_diagram()
         )
 
-        (docs_dir / "EXECUTION_REPORT.md").write_text(self.generate_execution_report())
+        (docs_dir / 'EXECUTION_REPORT.md').write_text(
+            self.generate_execution_report()
+        )
 
-        (docs_dir / "test_results.json").write_text(
+        (docs_dir / 'test_results.json').write_text(
             json.dumps(self.test_results, indent=2)
         )
 
@@ -298,8 +294,7 @@ def main():
 
     runner.save_documentation()
 
-    return 0 if result["success"] else 1
-
+    return 0 if result['success'] else 1
 
 if __name__ == "__main__":
     sys.exit(main())

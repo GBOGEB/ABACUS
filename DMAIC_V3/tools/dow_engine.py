@@ -10,15 +10,14 @@ Input: Document workspace paths
 Output: Classification results, SUT hierarchy, metadata
 """
 
+from pathlib import Path
+from typing import Dict, List, Any, Optional
 from dataclasses import dataclass
 from enum import Enum
-from pathlib import Path
-from typing import Any, Dict, List, Optional
 
 
 class DocumentType(Enum):
     """Types of documents in DOW"""
-
     MILESTONE = "milestone"
     SPECIFICATION = "specification"
     DESIGN = "design"
@@ -33,7 +32,6 @@ class DocumentType(Enum):
 @dataclass
 class DocumentMetadata:
     """Metadata for a classified document"""
-
     path: str
     doc_type: DocumentType
     immutable: bool
@@ -74,13 +72,13 @@ class DOWEngine:
             Classification results with document metadata
         """
         results = {
-            "total_documents": 0,
-            "classified": {
-                "historic": {"count": 0, "documents": []},
-                "current": {"count": 0, "documents": []},
-                "ui_content": {"count": 0, "screenshots": [], "snippets": []},
+            'total_documents': 0,
+            'classified': {
+                'historic': {'count': 0, 'documents': []},
+                'current': {'count': 0, 'documents': []},
+                'ui_content': {'count': 0, 'screenshots': [], 'snippets': []}
             },
-            "sut_hierarchy": self.sut_hierarchy,
+            'sut_hierarchy': self.sut_hierarchy
         }
 
         # Classify historic documents
@@ -88,35 +86,33 @@ class DOWEngine:
         if historic_path.exists():
             for doc_file in historic_path.rglob("*.md"):
                 metadata = self._classify_document(doc_file, immutable=True)
-                results["classified"]["historic"]["documents"].append(metadata)
-                results["classified"]["historic"]["count"] += 1
-                results["total_documents"] += 1
+                results['classified']['historic']['documents'].append(metadata)
+                results['classified']['historic']['count'] += 1
+                results['total_documents'] += 1
 
         # Classify current documents
         current_path = workspace_path / "docs" / "current"
         if current_path.exists():
             for doc_file in current_path.rglob("*.md"):
                 metadata = self._classify_document(doc_file, immutable=False)
-                results["classified"]["current"]["documents"].append(metadata)
-                results["classified"]["current"]["count"] += 1
-                results["total_documents"] += 1
+                results['classified']['current']['documents'].append(metadata)
+                results['classified']['current']['count'] += 1
+                results['total_documents'] += 1
 
         # Classify UI content
         screenshots_path = workspace_path / "screenshots"
         if screenshots_path.exists():
             for screenshot in screenshots_path.rglob("*.png"):
-                results["classified"]["ui_content"]["screenshots"].append(
-                    str(screenshot)
-                )
-                results["classified"]["ui_content"]["count"] += 1
-                results["total_documents"] += 1
+                results['classified']['ui_content']['screenshots'].append(str(screenshot))
+                results['classified']['ui_content']['count'] += 1
+                results['total_documents'] += 1
 
         snippets_path = workspace_path / "snippets"
         if snippets_path.exists():
             for snippet in snippets_path.rglob("*.py"):
-                results["classified"]["ui_content"]["snippets"].append(str(snippet))
-                results["classified"]["ui_content"]["count"] += 1
-                results["total_documents"] += 1
+                results['classified']['ui_content']['snippets'].append(str(snippet))
+                results['classified']['ui_content']['count'] += 1
+                results['total_documents'] += 1
 
         return results
 
@@ -125,29 +121,29 @@ class DOWEngine:
         doc_type = self._determine_document_type(doc_path)
 
         return {
-            "path": str(doc_path),
-            "type": doc_type.value,
-            "immutable": immutable,
-            "editable": not immutable,
-            "protection_level": "read_only" if immutable else "read_write",
-            "audit_enabled": immutable,
+            'path': str(doc_path),
+            'type': doc_type.value,
+            'immutable': immutable,
+            'editable': not immutable,
+            'protection_level': 'read_only' if immutable else 'read_write',
+            'audit_enabled': immutable
         }
 
     def _determine_document_type(self, doc_path: Path) -> DocumentType:
         """Determine document type from path and content"""
         name_lower = doc_path.name.lower()
 
-        if "milestone" in name_lower:
+        if 'milestone' in name_lower:
             return DocumentType.MILESTONE
-        elif "spec" in name_lower:
+        elif 'spec' in name_lower:
             return DocumentType.SPECIFICATION
-        elif "design" in name_lower:
+        elif 'design' in name_lower:
             return DocumentType.DESIGN
-        elif "requirement" in name_lower or "req" in name_lower:
+        elif 'requirement' in name_lower or 'req' in name_lower:
             return DocumentType.REQUIREMENTS
-        elif "test" in name_lower:
+        elif 'test' in name_lower:
             return DocumentType.TEST
-        elif "report" in name_lower:
+        elif 'report' in name_lower:
             return DocumentType.REPORT
         else:
             return DocumentType.UNKNOWN
@@ -155,34 +151,34 @@ class DOWEngine:
     def _load_classification_rules(self) -> Dict[str, Any]:
         """Load document classification rules"""
         return {
-            "historic": {
-                "patterns": ["milestone_*", "release_*", "delivery_*"],
-                "immutable": True,
+            'historic': {
+                'patterns': ['milestone_*', 'release_*', 'delivery_*'],
+                'immutable': True
             },
-            "current": {
-                "patterns": ["working_*", "draft_*", "wip_*"],
-                "immutable": False,
-            },
+            'current': {
+                'patterns': ['working_*', 'draft_*', 'wip_*'],
+                'immutable': False
+            }
         }
 
     def _load_sut_hierarchy(self) -> Dict[str, Any]:
         """Load SUT hierarchy definition"""
         return {
-            "system": "DMAIC_V3",
-            "subsystems": [
-                "monitoring",
-                "orchestration",
-                "analysis",
-                "bridges",
-                "infrastructure",
+            'system': 'DMAIC_V3',
+            'subsystems': [
+                'monitoring',
+                'orchestration',
+                'analysis',
+                'bridges',
+                'infrastructure'
             ],
-            "components": {
-                "monitoring": ["log_monitor", "metrics", "alerts"],
-                "orchestration": ["pipeline", "phases", "state"],
-                "analysis": ["data_schemas", "validation"],
-                "bridges": ["dow_bridge", "keb_bridge", "handover"],
-                "infrastructure": ["docker", "ports", "services"],
-            },
+            'components': {
+                'monitoring': ['log_monitor', 'metrics', 'alerts'],
+                'orchestration': ['pipeline', 'phases', 'state'],
+                'analysis': ['data_schemas', 'validation'],
+                'bridges': ['dow_bridge', 'keb_bridge', 'handover'],
+                'infrastructure': ['docker', 'ports', 'services']
+            }
         }
 
 
