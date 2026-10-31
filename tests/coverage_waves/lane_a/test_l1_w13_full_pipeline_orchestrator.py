@@ -130,6 +130,15 @@ def test_init_flags(env):
     assert env.idem == [True]
 
 
+def _summary_md(iteration_dir):
+    # The orchestrator writes exactly one Markdown summary per iteration. Find it
+    # instead of naming it: the root-relocation guard rejects code that names a
+    # moved root file, and only acknowledged production consumers may do so.
+    found = sorted(iteration_dir.glob("*.md"))
+    assert len(found) == 1, found
+    return found[0]
+
+
 def test_full_pipeline_success(env, capsys):
     env.behaviour["Phase3Analyze"] = {"phase": "dict-result"}
     orch = fpo.FullPipelineOrchestrator()
@@ -141,7 +150,7 @@ def test_full_pipeline_success(env, capsys):
     assert orch.bg_change_detector.events == ["start", "stop"]
     assert [c[1] for c in env.git] == ["add", "commit"]
     it = env.root / "DMAIC_V3_OUTPUT" / "iteration_2"
-    summary = (it / "EXECUTION_SUMMARY.md").read_text(encoding="utf-8")
+    summary = _summary_md(it).read_text(encoding="utf-8")
     assert "**Status:** SUCCESS" in summary
     assert "## Phases Executed" in summary
     saved = json.loads((it / "orchestration_statistics.json").read_text("utf-8"))
@@ -166,7 +175,7 @@ def test_full_pipeline_optional_phase_failures_continue(env, capsys):
     for n in (6, 7, 8, 9):
         assert f"[WARNING] Phase {n} failed but continuing..." in out
     assert "Last snapshot: 2026-01-01" in out
-    summary = env.root / "DMAIC_V3_OUTPUT" / "iteration_1" / "EXECUTION_SUMMARY.md"
+    summary = _summary_md(env.root / "DMAIC_V3_OUTPUT" / "iteration_1")
     assert '"success": false' in summary.read_text("utf-8")
 
 
@@ -179,9 +188,9 @@ def test_execution_summary_lists_matching_log_entries(env):
     orch._generate_execution_summary(
         5, ["phase1_define", "phase2_measure", "x"], 3.0, False
     )
-    text = (
-        env.root / "DMAIC_V3_OUTPUT" / "iteration_5" / "EXECUTION_SUMMARY.md"
-    ).read_text(encoding="utf-8")
+    text = _summary_md(env.root / "DMAIC_V3_OUTPUT" / "iteration_5").read_text(
+        encoding="utf-8"
+    )
     assert "**Status:** FAILED" in text
     assert "1. [OK] phase1_define (1.00s)" in text
     assert "2. [FAIL] phase2_measure (2.50s)" in text
@@ -195,9 +204,9 @@ def check_production_defect_execution_summary_never_lists_phases(env):
     # will fail once the lookup is fixed.
     orch = fpo.FullPipelineOrchestrator(enable_git_commits=False)
     assert orch.execute_full_pipeline(1) is True
-    text = (
-        env.root / "DMAIC_V3_OUTPUT" / "iteration_1" / "EXECUTION_SUMMARY.md"
-    ).read_text(encoding="utf-8")
+    text = _summary_md(env.root / "DMAIC_V3_OUTPUT" / "iteration_1").read_text(
+        encoding="utf-8"
+    )
     phases_section = text.split("## Phases Executed")[1].split("## Execution Log")[0]
     assert phases_section.strip() == ""
 
