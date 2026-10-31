@@ -4,7 +4,7 @@
 
 ABACUS is a recursive, DMAIC-driven multi-agent system for analyzing cryogenic engineering data, technical documents, and project artifacts. It's built for the 12-cluster cryoplant analysis workflow using Python 3.8+.
 
-**Current Version:** V2.3.0 (Active Development)
+**Current Version:** V2.3.0 (Active Development)  
 **Tech Stack:** Python, YAML, GitHub Actions, pytest, DMAIC methodology
 
 ## Quick Reference Commands
@@ -272,5 +272,5 @@ python -c "import yaml; yaml.safe_load(open('.github/workflows/ci.yml'))"
 
 ---
 
-**Last Updated:** 2025-11-22
+**Last Updated:** 2025-11-22  
 **For Questions:** See issue templates in `.github/ISSUE_TEMPLATE.md`

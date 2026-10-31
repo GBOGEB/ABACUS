@@ -1,6 +1,6 @@
 # Phase C — Deployment Activation Checklist (v4.4.0)
 
-**Execution Slot:** Sprint 1 / Wave 2 / Phase C
+**Execution Slot:** Sprint 1 / Wave 2 / Phase C  
 **Date:** 2026-05-28
 
 ## Objective

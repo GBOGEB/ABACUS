@@ -1,7 +1,7 @@
 # OAuth2 / JWT Authentication — Future Specification
 
-**Status:** PLANNED (v5.0.0)
-**Current:** API Key authentication (v4.4.0)
+**Status:** PLANNED (v5.0.0)  
+**Current:** API Key authentication (v4.4.0)  
 **Target:** OAuth2 + JWT tokens for enterprise multi-tenant access
 
 ---

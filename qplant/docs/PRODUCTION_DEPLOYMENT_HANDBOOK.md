@@ -1,7 +1,7 @@
 # Production Deployment Handbook
 
-**Project:** MYRRHA QPLANT Cryogenic System
-**Version:** v4.4.0
+**Project:** MYRRHA QPLANT Cryogenic System  
+**Version:** v4.4.0  
 **Classification:** Operations Manual
 
 ---

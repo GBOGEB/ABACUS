@@ -342,6 +342,6 @@ For issues or questions:
 
 ---
 
-**Version**: 1.0.0
-**Last Updated**: 2025-01-19
+**Version**: 1.0.0  
+**Last Updated**: 2025-01-19  
 **Status**: Active

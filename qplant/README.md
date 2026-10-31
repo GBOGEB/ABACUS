@@ -1,7 +1,7 @@
 # MYRRHA QPLANT Cryogenic Dashboard
 
-**Version:** v4.4.0 — Production Ready
-**Maturity:** 9.2/10
+**Version:** v4.4.0 — Production Ready  
+**Maturity:** 9.2/10  
 **Status:** ✅ Certified for Production Deployment
 
 ## 🎯 Overview
@@ -110,7 +110,7 @@ See [REPOSITORY_STRUCTURE.md](REPOSITORY_STRUCTURE.md) for detailed architecture
 
 ## 🔐 API Authentication
 
-All API endpoints in the production profile require authentication.
+All API endpoints in the production profile require authentication.  
 If upgrading from earlier unauthenticated/internal deployments, this is a breaking client behavior change and existing callers must add an API key header.
 
 ```bash
@@ -181,12 +181,12 @@ Proprietary — MYRRHA/SCK-CEN
 
 ## 👥 Team
 
-**Project:** MYRRHA QPLANT Cryogenic Dashboard
-**Organization:** GBOGEB
+**Project:** MYRRHA QPLANT Cryogenic Dashboard  
+**Organization:** GBOGEB  
 **Repository:** https://github.com/GBOGEB/ABACUS
 
 ---
 
-**Version:** v4.4.0
-**Last Updated:** 2026-05-17
+**Version:** v4.4.0  
+**Last Updated:** 2026-05-17  
 **Maturity:** Production Ready (9.2/10)

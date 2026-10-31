@@ -12,6 +12,7 @@ repos:
         exclude: (^|/)LICENSE$|^(MIP/G3CS_CONVERGENCE_V2/observatory/w10/(build_global_spine_w10|refresh_w10_spine|test_w10_spine)\.py|MIP/G3CS_CONVERGENCE_V2/output/G3CS_CONVERGENCE_DASHBOARD\.html|handover/mc2/everred_20261014/DROPIN\.md|tools/everred_v3/sut_gui/dashboard_v3\.html)$
       - id: trailing-whitespace
         exclude: ^(MIP/G3CS_CONVERGENCE_V2/observatory/w10/(build_global_spine_w10|refresh_w10_spine|test_w10_spine)\.py|MIP/G3CS_CONVERGENCE_V2/output/G3CS_CONVERGENCE_DASHBOARD\.html|handover/mc2/everred_20261014/DROPIN\.md|tools/everred_v3/sut_gui/dashboard_v3\.html)$
+        args: [--markdown-linebreak-ext=md]
   - repo: local
     hooks:
       - id: guard-public-repo-binaries

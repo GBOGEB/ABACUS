@@ -63,7 +63,7 @@ Each iteration executes 6 stages with 10 coordinated phases:
 See `START_HERE_DMAIC_INTEGRATION.md` for complete details.
 ```
 
-**Base branch:** `main`
+**Base branch:** `main`  
 **Compare branch:** `feature/dow-integration`
 
 ### Option 2: Using GitHub CLI (if installed)
@@ -204,8 +204,8 @@ git ls-remote origin feature/dow-integration
 
 ---
 
-**Status:** ✅ Ready to create PR
-**Branch:** feature/dow-integration
-**Commit:** e963a8a
-**Files:** 8 added, 3,710 insertions
+**Status:** ✅ Ready to create PR  
+**Branch:** feature/dow-integration  
+**Commit:** e963a8a  
+**Files:** 8 added, 3,710 insertions  
 **Next:** Create PR on GitHub

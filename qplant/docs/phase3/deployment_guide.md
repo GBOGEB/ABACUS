@@ -1,8 +1,8 @@
 # QPLANT Cryogenic Dashboard — Deployment Guide
 
-> **Version:** 4.4.0
-> **Date:** 2026-05-12
-> **Environments:** Development, Staging, Production, Disaster Recovery
+> **Version:** 4.4.0  
+> **Date:** 2026-05-12  
+> **Environments:** Development, Staging, Production, Disaster Recovery  
 
 ---
 

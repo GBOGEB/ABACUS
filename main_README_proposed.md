@@ -1,7 +1,7 @@
 # ABACUS — 12-Cluster Cryogenic Engineering Analysis System
 
-**Project:** Multi-Agent DMAIC-Driven Analysis for QPLANT Cryoplant (SCK CEN)
-**Architecture:** 12-Cluster Parallel Agent Orchestration
+**Project:** Multi-Agent DMAIC-Driven Analysis for QPLANT Cryoplant (SCK CEN)  
+**Architecture:** 12-Cluster Parallel Agent Orchestration  
 **Governance:** DOW (Design of Work) — Omnipotent Oversight Layer
 
 ---

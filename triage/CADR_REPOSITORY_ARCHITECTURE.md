@@ -2,7 +2,7 @@
 
 # cADR — ABACUS repository architecture
 
-**ID:** TRIAGE-CADR-ABACUS-001
+**ID:** TRIAGE-CADR-ABACUS-001  
 **Decision:** `GBOGEB/ABACUS` is the TRIAGE DOW analytical/runtime parent.
 
 ## QPS authority source

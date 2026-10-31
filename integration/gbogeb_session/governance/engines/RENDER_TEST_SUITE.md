@@ -1,7 +1,7 @@
 # RENDER_TEST_SUITE.md — Comprehensive Test Scenarios
 
-> **Version:** 1.0.0
-> **Coverage:** All RENDER_RULES.md rules
+> **Version:** 1.0.0  
+> **Coverage:** All RENDER_RULES.md rules  
 > **Automation:** `pytest tests/` or `python -m pytest tests/ -v`
 
 ---
