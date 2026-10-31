@@ -84,10 +84,11 @@ def test_missing_or_drifted_minimal_parser_fails_closed() -> None:
 
 
 def test_ariana_junit_reader_uses_secure_entity_policy() -> None:
-    source = (ROOT / "scripts/ci/ariana_dow_evidence.py").read_text(encoding="utf-8")
+    source = (ROOT / "scripts/ci/ariana_dow_evidence.py").read_text(
+        encoding="utf-8"
+    )
     assert "from defusedxml import ElementTree as ET" in source
     assert "forbid_dtd=True, forbid_entities=True, forbid_external=True" in source
-
 
 def test_real_ariana_reader_preserves_failures_and_skips() -> None:
     from scripts.ci.ariana_dow_evidence import read_junit
