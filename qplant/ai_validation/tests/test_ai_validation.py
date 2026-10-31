@@ -285,3 +285,8 @@ Use the tool like this.
 
 if __name__ == "__main__":
     pytest.main([__file__, "-v"])
+
+
+def test_zz_g_ab_red_canary():
+    """Throwaway red canary (method vector D); never merge."""
+    assert False
