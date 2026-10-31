@@ -110,7 +110,7 @@ const ssrPlugin = {
 
 export default [
   {
-    ignores: ['node_modules/**', '.next/**', '.build/**', '.deploy/**', 'out/**', 'dist/**', 'build/**', 'prisma/**', 'scripts/**', '**/*.d.ts', 'next.config.js', 'postcss.config.js', 'tailwind.config.ts'],
+    ignores: ['node_modules/**', '.next/**', '.build/**', '.deploy/**', 'out/**', 'dist/**', 'build/**', 'prisma/**', 'scripts/**', '**/*.d.ts', 'next.config.mjs', 'postcss.config.js', 'tailwind.config.ts'],
   },
   {
     files: ['**/*.{ts,tsx}'],
