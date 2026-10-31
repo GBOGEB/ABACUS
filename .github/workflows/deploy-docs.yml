@@ -51,12 +51,13 @@ concurrency:
 
 jobs:
   ci:
-    uses: GBOGEB/pipeline-automation-hub/.github/workflows/jade-reusable-ci.yml@77bac410de6b34afa5df665608611ad9e8db5c84
+    uses: GBOGEB/pipeline-automation-hub/.github/workflows/jade-reusable-ci.yml@77bac410de6b34afa5df665608611ad9e8db5c84  # yamllint disable-line rule:line-length
     with:
       python-version: '3.12'
       install: python -m pip install --disable-pip-version-check pytest
       test-runner: pytest
-      # --noconftest: tests/conftest.py imports numpy; the bundle tests need only pytest.
+      # --noconftest: tests/conftest.py imports numpy; the bundle
+      # tests need only pytest.
       test-args: -q -p no:cacheprovider --noconftest tests/test_pages_bundle.py
       min-tests: 3
       # Same steps as the old deploy job. docs/ stays the site root, so the
@@ -85,7 +86,7 @@ jobs:
       contents: read
       pages: write
       id-token: write
-    uses: GBOGEB/pipeline-automation-hub/.github/workflows/jade-reusable-deploy.yml@77bac410de6b34afa5df665608611ad9e8db5c84
+    uses: GBOGEB/pipeline-automation-hub/.github/workflows/jade-reusable-deploy.yml@77bac410de6b34afa5df665608611ad9e8db5c84  # yamllint disable-line rule:line-length
     with:
       environment: production
       target: pages

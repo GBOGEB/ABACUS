@@ -31,7 +31,10 @@ def test_workflow_yaml_present() -> None:
 def test_deploy_docs_is_sole_publisher_and_keeps_docs_homepage() -> None:
     workflow_path = REPO_ROOT / ".github" / "workflows" / "deploy-docs.yml"
     workflow_text = workflow_path.read_text(encoding="utf-8")
-    assert "actions/deploy-pages" in workflow_text
+    # Pages is deployed by the hub reusable deploy (JADE contract) from the docs/ bundle.
+    assert "pipeline-automation-hub/.github/workflows/jade-reusable-deploy.yml@" in workflow_text
+    assert "artifact-path: docs" in workflow_text
+    assert "deploy-pages@" not in workflow_text
     assert "cp dist/qplant_visualization.html docs/qplant_visualization.html" in workflow_text
     assert "cp dist/qplant_visualization.html docs/index.html" not in workflow_text
 

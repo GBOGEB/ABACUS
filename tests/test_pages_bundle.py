@@ -64,7 +64,11 @@ def test_required_html_page_exists(name):
 def test_every_docs_html_file_is_closed():
     pages = _docs_html()
     assert pages, "no HTML files under docs/"
-    unclosed = [p.relative_to(ROOT).as_posix() for p in pages if b"</html>" not in p.read_bytes()]
+    unclosed = [
+        p.relative_to(ROOT).as_posix()
+        for p in pages
+        if b"</html>" not in p.read_bytes()
+    ]
     assert unclosed == []
 
 
@@ -86,7 +90,9 @@ def test_internal_links_into_the_bundle_resolve():
                 continue
             if any(tok in href for tok in ("'", '"', "+", "${")):
                 continue
-            target = f"{page.parent.as_posix()}/{href}".split("#", 1)[0].split("?", 1)[0]
+            target = f"{page.parent.as_posix()}/{href}".split("#", 1)[0].split("?", 1)[
+                0
+            ]
             if os.path.exists(target):
                 continue
             where = (page.relative_to(ROOT).as_posix(), href)
@@ -115,7 +121,9 @@ def test_build_input_exists(rel):
 
 
 def _load_gate_rollup():
-    spec = importlib.util.spec_from_file_location("gate_rollup", ROOT / "tools" / "gate_rollup.py")
+    spec = importlib.util.spec_from_file_location(
+        "gate_rollup", ROOT / "tools" / "gate_rollup.py"
+    )
     module = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(module)
     return module
@@ -126,11 +134,25 @@ def test_gate_rollup_writes_the_dashboard_feed(tmp_path):
     gate_rollup = _load_gate_rollup()
     log = tmp_path / "ci-runs.jsonl"
     rows = [
-        {"pr_id": "12", "gate_name": "lint", "exit_code": 1, "timestamp": "2026-10-30T12:00:00Z"},
-        {"pr_id": "12", "gate_name": "tests", "exit_code": 0, "timestamp": "2026-10-30T12:05:00Z"},
+        {
+            "pr_id": "12",
+            "gate_name": "lint",
+            "exit_code": 1,
+            "timestamp": "2026-10-30T12:00:00Z",
+        },
+        {
+            "pr_id": "12",
+            "gate_name": "tests",
+            "exit_code": 0,
+            "timestamp": "2026-10-30T12:05:00Z",
+        },
     ]
-    log.write_text("\n".join(json.dumps(r) for r in rows) + "\nnot json\n", encoding="utf-8")
-    out = gate_rollup.write_gate_rollup(output_path=tmp_path / "dashboard-gates.json", log_path=log)
+    log.write_text(
+        "\n".join(json.dumps(r) for r in rows) + "\nnot json\n", encoding="utf-8"
+    )
+    out = gate_rollup.write_gate_rollup(
+        output_path=tmp_path / "dashboard-gates.json", log_path=log
+    )
     payload = json.loads(out.read_text(encoding="utf-8"))
     assert payload["schema_version"] == 1
     assert payload["source"]["records_read"] == 3
