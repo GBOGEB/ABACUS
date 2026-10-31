@@ -6,6 +6,7 @@ inputs are stubbed so results never depend on wall-clock durations.
 
 import json
 import sys
+from pathlib import Path
 
 import pytest
 
@@ -208,7 +209,7 @@ def test_phase_9_converged(orch, monkeypatch):
     )
     p = orch.execute_phase_9_recursive_loop(2, [_it(1, 100), _it(2, 100)])
     assert p.metrics["converged"] is True
-    report = open(p.output_files[0], encoding="utf-8").read()
+    report = Path(p.output_files[0]).read_text(encoding="utf-8")
     assert "CONVERGED" in report
 
 

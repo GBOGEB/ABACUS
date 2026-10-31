@@ -9,6 +9,7 @@ import io
 import json
 import os
 import sys
+from pathlib import Path
 
 import pytest
 
@@ -195,7 +196,7 @@ def test_phase_3_success(orch):
         "bottlenecks": 2,
         "root_causes": 2,
     }
-    assert "Analyze Report" in open(p.output_files[0]).read()
+    assert "Analyze Report" in Path(p.output_files[0]).read_text()
 
 
 def test_phase_4_success_and_prioritisation(orch):
@@ -209,7 +210,7 @@ def test_phase_4_success_and_prioritisation(orch):
         [{"id": 1, "impact": "low"}, {"id": 2, "impact": "high"}]
     )
     assert {r["id"]: r["priority"] for r in ranked} == {1: "medium", 2: "high"}
-    assert "Improve Report" in open(p.output_files[0]).read()
+    assert "Improve Report" in Path(p.output_files[0]).read_text()
 
 
 def test_phase_5_success(orch):
@@ -221,7 +222,7 @@ def test_phase_5_success(orch):
         "validation_rules": 3,
         "feedback_loops": 2,
     }
-    assert "Control Report" in open(p.output_files[0]).read()
+    assert "Control Report" in Path(p.output_files[0]).read_text()
 
 
 def test_phase_6_success_preserves_knowledge(orch):
@@ -240,7 +241,7 @@ def test_phase_6_success_preserves_knowledge(orch):
     index = json.loads((pres / "knowledge_index.json").read_text())
     assert index["total_packs"] == 2
     # the report is written before the status flips to completed
-    assert "## Status: RUNNING" in open(p.output_files[1]).read()
+    assert "## Status: RUNNING" in Path(p.output_files[1]).read_text()
 
 
 def test_knowledge_helpers(orch):
@@ -258,9 +259,9 @@ def test_phase_7_success(orch):
     assert p.metrics["tests_passed"] == 45 and p.metrics["tests_failed"] == 2
     assert p.metrics["coherence_score"] == 92.5
     assert p.metrics["dependencies_resolved"] == 18
-    imap = json.loads(open(p.output_files[0]).read())
+    imap = json.loads(Path(p.output_files[0]).read_text())
     assert len(imap["phases"]) == 9
-    assert "Integration Report" in open(p.output_files[1]).read()
+    assert "Integration Report" in Path(p.output_files[1]).read_text()
 
 
 def test_phase_8_success_writes_reports(orch, tmp_path):
