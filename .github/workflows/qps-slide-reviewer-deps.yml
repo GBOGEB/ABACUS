@@ -59,6 +59,11 @@ jobs:
           path: qps_slide_reviewer/yarn.lock
           if-no-files-found: warn
 
+      # next build type-checks against the generated Prisma client; no
+      # database is needed to generate it.
+      - name: Generate Prisma client
+        run: yarn prisma generate
+
       - name: Build
         run: yarn build
 
