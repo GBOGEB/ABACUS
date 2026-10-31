@@ -1,9 +1,9 @@
 # GITHUB ENTERPRISE FULL REPOSITORY HANDOVER
 
-**Bundle**: `dmaic_v3_github_enterprise_full.tar.gz`
-**Target**: GitHub Enterprise (preferred) or GitHub.com
-**Organization**: GBOGEB
-**Date**: 2025-01-15
+**Bundle**: `dmaic_v3_github_enterprise_full.tar.gz`  
+**Target**: GitHub Enterprise (preferred) or GitHub.com  
+**Organization**: GBOGEB  
+**Date**: 2025-01-15  
 **Version**: 0.4.0 ENTERPRISE
 
 ---

@@ -1,9 +1,9 @@
 # QPLANT Cryogenic System - Requirements Traceability Matrix
 ## Engineering Handover Document
 
-**Document Version:** 1.0
-**Generated:** 2025-09-24 10:46:33
-**Project:** MYRRHA Phase 1 - Cryoplant Technical Requirements
+**Document Version:** 1.0  
+**Generated:** 2025-09-24 10:46:33  
+**Project:** MYRRHA Phase 1 - Cryoplant Technical Requirements  
 **Document ID:** QPLANT-RTM-001
 
 ---
@@ -28,7 +28,7 @@ The QPLANT system is organized according to the following hierarchical structure
 - **QSYS**: Complete Cryogenic System
 - **QSYS-PR**: Project Requirements
 
-### Level 1 - Major Subsystems
+### Level 1 - Major Subsystems  
 - **QPLANT**: Main cryogenic refrigeration plant
 - **QINFRA**: CSS cryogenic supply system infrastructure
 - **QCELL**: CSS cryogenic USER - individual cryomodule and valve box combinations
@@ -57,13 +57,13 @@ The QPLANT system is organized according to the following hierarchical structure
 
 **SBS Assignment:** QSYS → QPLANT → WCS
 
-**Type:** Performance
-**Priority:** High
-**Verification Method:** Test
-**Acceptance Criteria:** Temperature condition: 2K; Value shall meet 90
+**Type:** Performance  
+**Priority:** High  
+**Verification Method:** Test  
+**Acceptance Criteria:** Temperature condition: 2K; Value shall meet 90  
 **Rationale:** Required for proper system functionality
 
-**Child Requirements:** RTM-02, RTM-03, RTM-04
+**Child Requirements:** RTM-02, RTM-03, RTM-04  
 ---
 
 #### RTM-04
@@ -71,13 +71,13 @@ The QPLANT system is organized according to the following hierarchical structure
 
 **SBS Assignment:** QSYS → QPLANT → WCS
 
-**Type:** Functional
-**Priority:** High
-**Verification Method:** Test
-**Acceptance Criteria:** Value shall meet 50 wa; Temperature condition: 300K; Temperature condition: 2K
+**Type:** Functional  
+**Priority:** High  
+**Verification Method:** Test  
+**Acceptance Criteria:** Value shall meet 50 wa; Temperature condition: 300K; Temperature condition: 2K  
 **Rationale:** Required for proper system functionality
 
-**Parent Requirements:** RTM-01
+**Parent Requirements:** RTM-01  
 ---
 
 #### RTM-05
@@ -85,10 +85,10 @@ The QPLANT system is organized according to the following hierarchical structure
 
 **SBS Assignment:** QSYS → QPLANT → WCS
 
-**Type:** Functional
-**Priority:** High
-**Verification Method:** Demonstration
-**Acceptance Criteria:** Temperature condition: 4.5K; Temperature condition: 2K; Temperature condition: 2K
+**Type:** Functional  
+**Priority:** High  
+**Verification Method:** Demonstration  
+**Acceptance Criteria:** Temperature condition: 4.5K; Temperature condition: 2K; Temperature condition: 2K  
 **Rationale:** Required for proper operational flexibility and system control
 
 ---
@@ -98,13 +98,13 @@ The QPLANT system is organized according to the following hierarchical structure
 
 **SBS Assignment:** QSYS → QPLANT → WCS
 
-**Type:** Functional
-**Priority:** High
-**Verification Method:** Test
-**Acceptance Criteria:** Value shall meet 6
+**Type:** Functional  
+**Priority:** High  
+**Verification Method:** Test  
+**Acceptance Criteria:** Value shall meet 6  
 **Rationale:** Required for proper operational flexibility and system control
 
-**Child Requirements:** RTM-07, RTM-08, RTM-09, RTM-010, RTM-011, RTM-012
+**Child Requirements:** RTM-07, RTM-08, RTM-09, RTM-010, RTM-011, RTM-012  
 ---
 
 #### RTM-08
@@ -112,13 +112,13 @@ The QPLANT system is organized according to the following hierarchical structure
 
 **SBS Assignment:** QSYS → QCELL →
 
-**Type:** Functional
-**Priority:** High
-**Verification Method:** Test
-**Acceptance Criteria:** Compliance with requirement as specified
+**Type:** Functional  
+**Priority:** High  
+**Verification Method:** Test  
+**Acceptance Criteria:** Compliance with requirement as specified  
 **Rationale:** Required for proper system functionality
 
-**Parent Requirements:** RTM-06
+**Parent Requirements:** RTM-06  
 ---
 
 #### RTM-09
@@ -126,13 +126,13 @@ The QPLANT system is organized according to the following hierarchical structure
 
 **SBS Assignment:** QSYS → QCELL →
 
-**Type:** Functional
-**Priority:** High
-**Verification Method:** Test
-**Acceptance Criteria:** Temperature condition: 70K; Temperature condition: 10K
+**Type:** Functional  
+**Priority:** High  
+**Verification Method:** Test  
+**Acceptance Criteria:** Temperature condition: 70K; Temperature condition: 10K  
 **Rationale:** Required for proper system functionality
 
-**Parent Requirements:** RTM-06
+**Parent Requirements:** RTM-06  
 ---
 
 #### RTM-010
@@ -140,13 +140,13 @@ The QPLANT system is organized according to the following hierarchical structure
 
 **SBS Assignment:** QSYS → QDIST →
 
-**Type:** Functional
-**Priority:** High
-**Verification Method:** Test
-**Acceptance Criteria:** Temperature condition: 50K
+**Type:** Functional  
+**Priority:** High  
+**Verification Method:** Test  
+**Acceptance Criteria:** Temperature condition: 50K  
 **Rationale:** Required for proper system functionality
 
-**Parent Requirements:** RTM-06
+**Parent Requirements:** RTM-06  
 ---
 
 #### RTM-011
@@ -154,13 +154,13 @@ The QPLANT system is organized according to the following hierarchical structure
 
 **SBS Assignment:** QSYS → QPLANT → WCS
 
-**Type:** Functional
-**Priority:** High
-**Verification Method:** Test
-**Acceptance Criteria:** Temperature condition: 2K; Temperature condition: 300K; Value shall meet 5
+**Type:** Functional  
+**Priority:** High  
+**Verification Method:** Test  
+**Acceptance Criteria:** Temperature condition: 2K; Temperature condition: 300K; Value shall meet 5  
 **Rationale:** Required for proper system functionality
 
-**Parent Requirements:** RTM-06
+**Parent Requirements:** RTM-06  
 ---
 
 #### RTM-012
@@ -168,13 +168,13 @@ The QPLANT system is organized according to the following hierarchical structure
 
 **SBS Assignment:** QSYS → QCELL →
 
-**Type:** Functional
-**Priority:** High
-**Verification Method:** Test
-**Acceptance Criteria:** Value shall meet 6
+**Type:** Functional  
+**Priority:** High  
+**Verification Method:** Test  
+**Acceptance Criteria:** Value shall meet 6  
 **Rationale:** Required for proper system functionality
 
-**Parent Requirements:** RTM-06
+**Parent Requirements:** RTM-06  
 ---
 
 #### RTM-013
@@ -182,13 +182,13 @@ The QPLANT system is organized according to the following hierarchical structure
 
 **SBS Assignment:** QSYS → QPLANT → WCS
 
-**Type:** Functional
-**Priority:** Medium
-**Verification Method:** Test
-**Acceptance Criteria:** Compliance with requirement as specified
+**Type:** Functional  
+**Priority:** Medium  
+**Verification Method:** Test  
+**Acceptance Criteria:** Compliance with requirement as specified  
 **Rationale:** Required for proper system functionality
 
-**Child Requirements:** RTM-014, RTM-015, RTM-016
+**Child Requirements:** RTM-014, RTM-015, RTM-016  
 ---
 
 ### Maintenance Requirements
@@ -198,13 +198,13 @@ The QPLANT system is organized according to the following hierarchical structure
 
 **SBS Assignment:** QSYS → QPLANT → WCS
 
-**Type:** Functional
-**Priority:** High
-**Verification Method:** Test
-**Acceptance Criteria:** Value shall meet 6 m; Value shall meet 10 ; Temperature condition: 2K
+**Type:** Functional  
+**Priority:** High  
+**Verification Method:** Test  
+**Acceptance Criteria:** Value shall meet 6 m; Value shall meet 10 ; Temperature condition: 2K  
 **Rationale:** Required for proper system functionality
 
-**Parent Requirements:** RTM-01
+**Parent Requirements:** RTM-01  
 ---
 
 ### Lifetime Requirements
@@ -214,13 +214,13 @@ The QPLANT system is organized according to the following hierarchical structure
 
 **SBS Assignment:** QSYS-PR → QPLANT → WCS
 
-**Type:** Design
-**Priority:** High
-**Verification Method:** Test
-**Acceptance Criteria:** Value shall meet 40
+**Type:** Design  
+**Priority:** High  
+**Verification Method:** Test  
+**Acceptance Criteria:** Value shall meet 40  
 **Rationale:** Required to meet project lifetime objectives
 
-**Parent Requirements:** RTM-01
+**Parent Requirements:** RTM-01  
 ---
 
 ### Performance Requirements
@@ -230,13 +230,13 @@ The QPLANT system is organized according to the following hierarchical structure
 
 **SBS Assignment:** QSYS → QPLANT → WCS
 
-**Type:** Performance
-**Priority:** High
-**Verification Method:** Test
-**Acceptance Criteria:** Compliance with requirement as specified
+**Type:** Performance  
+**Priority:** High  
+**Verification Method:** Test  
+**Acceptance Criteria:** Compliance with requirement as specified  
 **Rationale:** Required to meet operational performance targets
 
-**Parent Requirements:** RTM-06
+**Parent Requirements:** RTM-06  
 ---
 
 #### RTM-015
@@ -244,13 +244,13 @@ The QPLANT system is organized according to the following hierarchical structure
 
 **SBS Assignment:** QSYS → QCELL →
 
-**Type:** Performance
-**Priority:** High
-**Verification Method:** Test
-**Acceptance Criteria:** Value shall meet 0.8 g; Value shall meet 24 g
+**Type:** Performance  
+**Priority:** High  
+**Verification Method:** Test  
+**Acceptance Criteria:** Value shall meet 0.8 g; Value shall meet 24 g  
 **Rationale:** Required for proper system functionality
 
-**Parent Requirements:** RTM-013
+**Parent Requirements:** RTM-013  
 ---
 
 #### RTM-016
@@ -258,13 +258,13 @@ The QPLANT system is organized according to the following hierarchical structure
 
 **SBS Assignment:** QSYS → QPLANT → WCS
 
-**Type:** Functional
-**Priority:** High
-**Verification Method:** Test
-**Acceptance Criteria:** Value shall meet 2 ; Value shall meet 900
+**Type:** Functional  
+**Priority:** High  
+**Verification Method:** Test  
+**Acceptance Criteria:** Value shall meet 2 ; Value shall meet 900  
 **Rationale:** Required for proper system functionality
 
-**Parent Requirements:** RTM-013
+**Parent Requirements:** RTM-013  
 ---
 
 ### Safety Requirements
@@ -274,13 +274,13 @@ The QPLANT system is organized according to the following hierarchical structure
 
 **SBS Assignment:** QSYS → QPLANT → WCS
 
-**Type:** Performance
-**Priority:** High
-**Verification Method:** Test
-**Acceptance Criteria:** Compliance with requirement as specified
+**Type:** Performance  
+**Priority:** High  
+**Verification Method:** Test  
+**Acceptance Criteria:** Compliance with requirement as specified  
 **Rationale:** Required for safe operation of cryogenic system
 
-**Parent Requirements:** RTM-013
+**Parent Requirements:** RTM-013  
 ---
 
 
@@ -300,7 +300,7 @@ The QPLANT system is organized according to the following hierarchical structure
 This RTM is prepared for integration with the existing GitHub infrastructure:
 
 - **GBOGEB/DOCX_RTM_Automation**: Ready for automated RTM updates
-- **GBOGEB/ABACUS**: Compatible with existing project structure
+- **GBOGEB/ABACUS**: Compatible with existing project structure  
 - **pipeline-automation-hub**: Ready for CI/CD integration
 - **KEB Digital Twin**: Requirements mapped to system components
 - **HEPAK projects**: Traceability established for cryogenic properties

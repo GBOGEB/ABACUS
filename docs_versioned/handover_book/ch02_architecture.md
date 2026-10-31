@@ -72,7 +72,7 @@ IDLE → INITIALIZING → ACTIVE → PROCESSING → COMPLETED
 
 Each cluster maintains:
 - Task execution count
-- Failure count
+- Failure count  
 - Priority level (1-10)
 - Current status
 - Phase assignment

@@ -1,7 +1,7 @@
 # Migration Plan: API Keys → OAuth2/JWT
 
-**From:** API Key authentication (v4.4.0)
-**To:** OAuth2 + JWT (v5.0.0)
+**From:** API Key authentication (v4.4.0)  
+**To:** OAuth2 + JWT (v5.0.0)  
 **Duration:** Estimated 2–3 sprints
 
 ---

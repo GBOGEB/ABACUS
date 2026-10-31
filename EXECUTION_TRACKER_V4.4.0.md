@@ -1,7 +1,7 @@
 # ABACUS v4.4.0 Execution Tracker (Sprint/Wave/Phase)
 
-**Kickoff Date:** 2026-05-28
-**Execution Mode:** Sprint + Wave + DMAIC Phase
+**Kickoff Date:** 2026-05-28  
+**Execution Mode:** Sprint + Wave + DMAIC Phase  
 **Scope:** Historical gaps cleanup and active backlog execution
 
 ---

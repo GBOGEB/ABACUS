@@ -1,8 +1,8 @@
 # Phase 2 Integration Guide — QPLANT Cryogenic Dashboard
 
-> **Version:** 4.0.0 → 4.1.0
-> **Date:** 2026-05-12
-> **Scope:** API Integration, Presentation Automation, Monitoring, Cross-Linking
+> **Version:** 4.0.0 → 4.1.0  
+> **Date:** 2026-05-12  
+> **Scope:** API Integration, Presentation Automation, Monitoring, Cross-Linking  
 
 ---
 

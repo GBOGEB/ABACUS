@@ -1,8 +1,8 @@
 # Phase 2 Completion Report — QPLANT Cryogenic Dashboard
 
-> **Version:** 4.0.0 → 4.1.0
-> **Date:** 2026-05-12
-> **Phase:** 2 of 3 (Integration & Automation)
+> **Version:** 4.0.0 → 4.1.0  
+> **Date:** 2026-05-12  
+> **Phase:** 2 of 3 (Integration & Automation)  
 
 ---
 
