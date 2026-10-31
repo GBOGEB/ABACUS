@@ -21,19 +21,18 @@ Features:
 - Knowledge preservation confirmation
 """
 
-import sys
-import os
 import json
-import time
-import subprocess
-from pathlib import Path
-from datetime import datetime
-from typing import Dict, List, Any, Optional
 import logging
+import os
+import subprocess
+import sys
+import time
+from datetime import datetime
+from pathlib import Path
+from typing import Any, Dict, List, Optional
 
 logging.basicConfig(
-    level=logging.INFO,
-    format='%(asctime)s - %(levelname)s - %(message)s'
+    level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s"
 )
 logger = logging.getLogger(__name__)
 
@@ -52,24 +51,32 @@ class ABACUSv21Deployment:
             "deployment_steps": {},
             "monitoring_results": {},
             "health_checks": {},
-            "production_metrics": {}
+            "production_metrics": {},
         }
 
     def execute_deployment(self):
         """Execute v2.1 deployment"""
-        logger.info("="*80)
+        logger.info("=" * 80)
         logger.info("ABACUS v2.1 DEPLOYMENT EXECUTION")
-        logger.info("="*80)
+        logger.info("=" * 80)
 
         steps = [
             ("step_1", "Verify DOW Orchestrator", self._verify_dow_orchestrator),
             ("step_2", "Deploy ABACUS Versions", self._deploy_abacus_versions),
             ("step_3", "Monitor System Health", self._monitor_system_health),
-            ("step_4", "Validate Production Metrics", self._validate_production_metrics),
+            (
+                "step_4",
+                "Validate Production Metrics",
+                self._validate_production_metrics,
+            ),
             ("step_5", "Monitor Recursive Engine", self._monitor_recursive_engine),
             ("step_6", "Validate Temporal Engine", self._validate_temporal_engine),
-            ("step_7", "Confirm Knowledge Preservation", self._confirm_knowledge_preservation),
-            ("step_8", "Generate Deployment Report", self._generate_deployment_report)
+            (
+                "step_7",
+                "Confirm Knowledge Preservation",
+                self._confirm_knowledge_preservation,
+            ),
+            ("step_8", "Generate Deployment Report", self._generate_deployment_report),
         ]
 
         for step_id, step_name, step_func in steps:
@@ -83,7 +90,7 @@ class ABACUSv21Deployment:
                     "name": step_name,
                     "status": "completed",
                     "result": result,
-                    "timestamp": datetime.now().isoformat()
+                    "timestamp": datetime.now().isoformat(),
                 }
                 logger.info(f"✅ {step_name} - COMPLETED")
             except Exception as e:
@@ -92,7 +99,7 @@ class ABACUSv21Deployment:
                     "name": step_name,
                     "status": "failed",
                     "error": str(e),
-                    "timestamp": datetime.now().isoformat()
+                    "timestamp": datetime.now().isoformat(),
                 }
 
     def _verify_dow_orchestrator(self) -> Dict[str, Any]:
@@ -101,15 +108,15 @@ class ABACUSv21Deployment:
 
         result = {
             "dow_orchestrator_exists": dow_path.exists(),
-            "dow_orchestrator_path": str(dow_path)
+            "dow_orchestrator_path": str(dow_path),
         }
 
         if dow_path.exists():
             logger.info(f"  ✅ DOW Orchestrator found: {dow_path}")
-            with open(dow_path, 'r', encoding='utf-8') as f:
+            with open(dow_path, "r", encoding="utf-8") as f:
                 content = f.read()
                 result["dow_orchestrator_size"] = len(content)
-                result["dow_orchestrator_lines"] = content.count('\n')
+                result["dow_orchestrator_lines"] = content.count("\n")
         else:
             logger.warning(f"  ⚠️  DOW Orchestrator not found at: {dow_path}")
 
@@ -119,10 +126,7 @@ class ABACUSv21Deployment:
         """Deploy ABACUS versions"""
         versions = ["ABACUS-UNIFIED", "ABACUS-v031", "ABACUS-v032"]
 
-        result = {
-            "versions_deployed": [],
-            "deployment_status": {}
-        }
+        result = {"versions_deployed": [], "deployment_status": {}}
 
         for version in versions:
             version_path = self.workspace_root / version
@@ -133,13 +137,13 @@ class ABACUSv21Deployment:
                 result["deployment_status"][version] = {
                     "status": "deployed",
                     "python_files": len(py_files),
-                    "path": str(version_path)
+                    "path": str(version_path),
                 }
                 logger.info(f"  ✅ {version} deployed ({len(py_files)} Python files)")
             else:
                 result["deployment_status"][version] = {
                     "status": "not_found",
-                    "path": str(version_path)
+                    "path": str(version_path),
                 }
                 logger.warning(f"  ⚠️  {version} not found")
 
@@ -147,16 +151,13 @@ class ABACUSv21Deployment:
 
     def _monitor_system_health(self) -> Dict[str, Any]:
         """Monitor system health post-deployment"""
-        result = {
-            "timestamp": datetime.now().isoformat(),
-            "health_checks": {}
-        }
+        result = {"timestamp": datetime.now().isoformat(), "health_checks": {}}
 
         checks = [
             ("recursive_engine", self._check_recursive_engine_health),
             ("temporal_engine", self._check_temporal_engine_health),
             ("dow_integration", self._check_dow_integration_health),
-            ("knowledge_preservation", self._check_knowledge_preservation_health)
+            ("knowledge_preservation", self._check_knowledge_preservation_health),
         ]
 
         for check_name, check_func in checks:
@@ -164,13 +165,13 @@ class ABACUSv21Deployment:
                 check_result = check_func()
                 result["health_checks"][check_name] = {
                     "status": "healthy",
-                    "details": check_result
+                    "details": check_result,
                 }
                 logger.info(f"  ✅ {check_name}: HEALTHY")
             except Exception as e:
                 result["health_checks"][check_name] = {
                     "status": "unhealthy",
-                    "error": str(e)
+                    "error": str(e),
                 }
                 logger.warning(f"  ⚠️  {check_name}: UNHEALTHY - {e}")
 
@@ -181,7 +182,7 @@ class ABACUSv21Deployment:
         """Check recursive engine health"""
         recursive_paths = [
             self.workspace_root / "DMAIC_V3" / "core" / "recursive_engine.py",
-            self.workspace_root / "ABACUS-v032" / "recursive_engine"
+            self.workspace_root / "ABACUS-v032" / "recursive_engine",
         ]
 
         result = {"components_found": 0, "components": []}
@@ -195,20 +196,23 @@ class ABACUSv21Deployment:
 
     def _check_temporal_engine_health(self) -> Dict[str, Any]:
         """Check temporal engine health"""
-        temporal_path = self.workspace_root / "DMAIC_V3" / "core" / "temporal_metadata_engine.py"
+        temporal_path = (
+            self.workspace_root / "DMAIC_V3" / "core" / "temporal_metadata_engine.py"
+        )
 
         result = {
             "temporal_engine_found": temporal_path.exists(),
-            "temporal_engine_path": str(temporal_path)
+            "temporal_engine_path": str(temporal_path),
         }
 
         if temporal_path.exists():
-            with open(temporal_path, 'r', encoding='utf-8') as f:
+            with open(temporal_path, "r", encoding="utf-8") as f:
                 content = f.read()
                 result["has_datetime"] = "datetime" in content
                 result["has_timestamp"] = "timestamp" in content
                 result["has_metadata_classes"] = all(
-                    cls in content for cls in ["FileMetadata", "FolderMetadata", "ExecutionMetadata"]
+                    cls in content
+                    for cls in ["FileMetadata", "FolderMetadata", "ExecutionMetadata"]
                 )
 
         return result
@@ -219,15 +223,21 @@ class ABACUSv21Deployment:
 
         result = {
             "dow_orchestrator_found": dow_path.exists(),
-            "dow_orchestrator_path": str(dow_path)
+            "dow_orchestrator_path": str(dow_path),
         }
 
         if dow_path.exists():
-            with open(dow_path, 'r', encoding='utf-8') as f:
+            with open(dow_path, "r", encoding="utf-8") as f:
                 content = f.read()
-                result["has_abacus_unified"] = "ABACUS-UNIFIED" in content or "ABACUS_UNIFIED" in content
-                result["has_abacus_v031"] = "ABACUS-v031" in content or "v031" in content
-                result["has_abacus_v032"] = "ABACUS-v032" in content or "v032" in content
+                result["has_abacus_unified"] = (
+                    "ABACUS-UNIFIED" in content or "ABACUS_UNIFIED" in content
+                )
+                result["has_abacus_v031"] = (
+                    "ABACUS-v031" in content or "v031" in content
+                )
+                result["has_abacus_v032"] = (
+                    "ABACUS-v032" in content or "v032" in content
+                )
 
         return result
 
@@ -235,10 +245,7 @@ class ABACUSv21Deployment:
         """Check knowledge preservation health"""
         versions = ["ABACUS-UNIFIED", "ABACUS-v031", "ABACUS-v032"]
 
-        result = {
-            "total_artifacts": 0,
-            "versions": {}
-        }
+        result = {"total_artifacts": 0, "versions": {}}
 
         for version in versions:
             version_path = self.workspace_root / version
@@ -250,7 +257,7 @@ class ABACUSv21Deployment:
                 result["versions"][version] = {
                     "python_files": len(py_files),
                     "documentation_files": len(md_files),
-                    "total_artifacts": total
+                    "total_artifacts": total,
                 }
                 result["total_artifacts"] += total
 
@@ -258,23 +265,32 @@ class ABACUSv21Deployment:
 
     def _validate_production_metrics(self) -> Dict[str, Any]:
         """Validate production metrics"""
-        result = {
-            "timestamp": datetime.now().isoformat(),
-            "metrics": {}
-        }
+        result = {"timestamp": datetime.now().isoformat(), "metrics": {}}
 
-        migration_report = self.workspace_root / "ABACUS_V21_MIGRATION_OUTPUT" / "ABACUS_V21_MIGRATION_REPORT.json"
+        migration_report = (
+            self.workspace_root
+            / "ABACUS_V21_MIGRATION_OUTPUT"
+            / "ABACUS_V21_MIGRATION_REPORT.json"
+        )
 
         if migration_report.exists():
-            with open(migration_report, 'r', encoding='utf-8') as f:
+            with open(migration_report, "r", encoding="utf-8") as f:
                 migration_data = json.load(f)
 
                 result["metrics"]["migration_completed"] = True
-                result["metrics"]["deployment_readiness"] = migration_data.get("phases", {}).get("phase_8", {}).get("readiness_score", 0)
-                result["metrics"]["total_phases"] = len(migration_data.get("phases", {}))
+                result["metrics"]["deployment_readiness"] = (
+                    migration_data.get("phases", {})
+                    .get("phase_8", {})
+                    .get("readiness_score", 0)
+                )
+                result["metrics"]["total_phases"] = len(
+                    migration_data.get("phases", {})
+                )
 
                 logger.info(f"  ✅ Migration report validated")
-                logger.info(f"  📊 Deployment readiness: {result['metrics']['deployment_readiness']}%")
+                logger.info(
+                    f"  📊 Deployment readiness: {result['metrics']['deployment_readiness']}%"
+                )
         else:
             result["metrics"]["migration_completed"] = False
             logger.warning(f"  ⚠️  Migration report not found")
@@ -284,62 +300,73 @@ class ABACUSv21Deployment:
 
     def _monitor_recursive_engine(self) -> Dict[str, Any]:
         """Monitor recursive engine performance"""
-        result = {
-            "timestamp": datetime.now().isoformat(),
-            "performance_metrics": {}
-        }
+        result = {"timestamp": datetime.now().isoformat(), "performance_metrics": {}}
 
         recursive_paths = [
             self.workspace_root / "DMAIC_V3" / "core" / "recursive_engine.py",
-            self.workspace_root / "ABACUS-v032" / "recursive_engine"
+            self.workspace_root / "ABACUS-v032" / "recursive_engine",
         ]
 
         for path in recursive_paths:
             if path.exists():
                 if path.is_file():
-                    with open(path, 'r', encoding='utf-8', errors='ignore') as f:
+                    with open(path, "r", encoding="utf-8", errors="ignore") as f:
                         content = f.read()
                         result["performance_metrics"][str(path)] = {
                             "size_bytes": len(content),
-                            "lines": content.count('\n'),
-                            "has_recursive_logic": "recursive" in content.lower()
+                            "lines": content.count("\n"),
+                            "has_recursive_logic": "recursive" in content.lower(),
                         }
                         logger.info(f"  ✅ Recursive engine monitored: {path.name}")
                 elif path.is_dir():
                     py_files = list(path.rglob("*.py"))
                     result["performance_metrics"][str(path)] = {
                         "python_files": len(py_files),
-                        "is_directory": True
+                        "is_directory": True,
                     }
-                    logger.info(f"  ✅ Recursive engine directory monitored: {path.name} ({len(py_files)} files)")
+                    logger.info(
+                        f"  ✅ Recursive engine directory monitored: {path.name} ({len(py_files)} files)"
+                    )
 
         self.deployment_status["monitoring_results"]["recursive_engine"] = result
         return result
 
     def _validate_temporal_engine(self) -> Dict[str, Any]:
         """Validate temporal engine date tracking"""
-        result = {
-            "timestamp": datetime.now().isoformat(),
-            "validation_results": {}
-        }
+        result = {"timestamp": datetime.now().isoformat(), "validation_results": {}}
 
-        temporal_path = self.workspace_root / "DMAIC_V3" / "core" / "temporal_metadata_engine.py"
+        temporal_path = (
+            self.workspace_root / "DMAIC_V3" / "core" / "temporal_metadata_engine.py"
+        )
 
         if temporal_path.exists():
-            with open(temporal_path, 'r', encoding='utf-8') as f:
+            with open(temporal_path, "r", encoding="utf-8") as f:
                 content = f.read()
 
-                date_keywords = ['datetime', 'timestamp', 'created_at', 'modified_at', 'accessed_at']
+                date_keywords = [
+                    "datetime",
+                    "timestamp",
+                    "created_at",
+                    "modified_at",
+                    "accessed_at",
+                ]
                 for keyword in date_keywords:
                     count = content.count(keyword)
                     result["validation_results"][keyword] = {
                         "count": count,
-                        "validated": count > 0
+                        "validated": count > 0,
                     }
                     if count > 0:
-                        logger.info(f"  ✅ Date tracking validated: {keyword} ({count} occurrences)")
+                        logger.info(
+                            f"  ✅ Date tracking validated: {keyword} ({count} occurrences)"
+                        )
 
-                metadata_classes = ['FileMetadata', 'FolderMetadata', 'ExecutionMetadata', 'DigitalTwinState']
+                metadata_classes = [
+                    "FileMetadata",
+                    "FolderMetadata",
+                    "ExecutionMetadata",
+                    "DigitalTwinState",
+                ]
                 result["validation_results"]["metadata_classes"] = {}
                 for cls_name in metadata_classes:
                     found = cls_name in content
@@ -354,10 +381,7 @@ class ABACUSv21Deployment:
 
     def _confirm_knowledge_preservation(self) -> Dict[str, Any]:
         """Confirm knowledge preservation"""
-        result = {
-            "timestamp": datetime.now().isoformat(),
-            "preservation_status": {}
-        }
+        result = {"timestamp": datetime.now().isoformat(), "preservation_status": {}}
 
         versions = ["ABACUS-UNIFIED", "ABACUS-v031", "ABACUS-v032"]
         total_artifacts = 0
@@ -373,7 +397,7 @@ class ABACUSv21Deployment:
                     "python_files": len(py_files),
                     "documentation_files": len(md_files),
                     "total_artifacts": total,
-                    "status": "preserved"
+                    "status": "preserved",
                 }
                 total_artifacts += total
 
@@ -389,15 +413,12 @@ class ABACUSv21Deployment:
 
     def _generate_deployment_report(self) -> Dict[str, Any]:
         """Generate deployment report"""
-        result = {
-            "timestamp": datetime.now().isoformat(),
-            "report_generated": False
-        }
+        result = {"timestamp": datetime.now().isoformat(), "report_generated": False}
 
         report_path = self.deployment_output / "ABACUS_V21_DEPLOYMENT_REPORT.json"
 
         try:
-            with open(report_path, 'w', encoding='utf-8') as f:
+            with open(report_path, "w", encoding="utf-8") as f:
                 json.dump(self.deployment_status, f, indent=2)
 
             result["report_generated"] = True
@@ -407,7 +428,7 @@ class ABACUSv21Deployment:
 
             markdown_report = self._generate_markdown_report()
             markdown_path = self.deployment_output / "ABACUS_V21_DEPLOYMENT_REPORT.md"
-            with open(markdown_path, 'w', encoding='utf-8') as f:
+            with open(markdown_path, "w", encoding="utf-8") as f:
                 f.write(markdown_report)
 
             result["markdown_report_path"] = str(markdown_path)
@@ -446,7 +467,9 @@ This report documents the deployment execution and post-deployment monitoring fo
 """
 
         if "health_checks" in self.deployment_status:
-            for check_name, check_data in self.deployment_status["health_checks"].get("health_checks", {}).items():
+            for check_name, check_data in (
+                self.deployment_status["health_checks"].get("health_checks", {}).items()
+            ):
                 status_icon = "✅" if check_data["status"] == "healthy" else "⚠️"
                 report += f"- {status_icon} **{check_name}**: {check_data['status'].upper()}\n"
 
@@ -469,8 +492,13 @@ This report documents the deployment execution and post-deployment monitoring fo
 
 """
 
-        if "monitoring_results" in self.deployment_status and "recursive_engine" in self.deployment_status["monitoring_results"]:
-            recursive_data = self.deployment_status["monitoring_results"]["recursive_engine"]
+        if (
+            "monitoring_results" in self.deployment_status
+            and "recursive_engine" in self.deployment_status["monitoring_results"]
+        ):
+            recursive_data = self.deployment_status["monitoring_results"][
+                "recursive_engine"
+            ]
             report += f"**Timestamp:** {recursive_data['timestamp']}\n\n"
             for path, metrics in recursive_data.get("performance_metrics", {}).items():
                 report += f"- **{Path(path).name}**: {metrics}\n"
@@ -481,10 +509,17 @@ This report documents the deployment execution and post-deployment monitoring fo
 
 """
 
-        if "monitoring_results" in self.deployment_status and "temporal_engine" in self.deployment_status["monitoring_results"]:
-            temporal_data = self.deployment_status["monitoring_results"]["temporal_engine"]
+        if (
+            "monitoring_results" in self.deployment_status
+            and "temporal_engine" in self.deployment_status["monitoring_results"]
+        ):
+            temporal_data = self.deployment_status["monitoring_results"][
+                "temporal_engine"
+            ]
             report += f"**Timestamp:** {temporal_data['timestamp']}\n\n"
-            for keyword, validation in temporal_data.get("validation_results", {}).items():
+            for keyword, validation in temporal_data.get(
+                "validation_results", {}
+            ).items():
                 if isinstance(validation, dict) and "validated" in validation:
                     status_icon = "✅" if validation["validated"] else "❌"
                     report += f"- {status_icon} **{keyword}**: {validation.get('count', 0)} occurrences\n"
@@ -513,11 +548,11 @@ def main():
     deployment = ABACUSv21Deployment()
     deployment.execute_deployment()
 
-    logger.info("\n" + "="*80)
+    logger.info("\n" + "=" * 80)
     logger.info("ABACUS v2.1 DEPLOYMENT COMPLETED")
-    logger.info("="*80)
+    logger.info("=" * 80)
     logger.info(f"Reports saved to: {deployment.deployment_output}")
-    logger.info("="*80 + "\n")
+    logger.info("=" * 80 + "\n")
 
     return 0
 

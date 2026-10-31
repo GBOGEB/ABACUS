@@ -11,12 +11,12 @@ Monitors CI/CD status and creates issues for failures
 Uses GitHub CLI authentication (gh auth) for secure access
 """
 
+import argparse
+import json
 import os
+import subprocess
 import sys
 import time
-import json
-import argparse
-import subprocess
 from datetime import datetime
 from typing import Dict, Optional
 
@@ -38,10 +38,7 @@ def get_github_token():
     # Try GitHub CLI first (most secure)
     try:
         result = subprocess.run(
-            ['gh', 'auth', 'token'],
-            capture_output=True,
-            text=True,
-            check=True
+            ["gh", "auth", "token"], capture_output=True, text=True, check=True
         )
         token = result.stdout.strip()
         if token:
@@ -50,7 +47,7 @@ def get_github_token():
         pass
 
     # Try environment variable
-    token = os.environ.get('GITHUB_TOKEN')
+    token = os.environ.get("GITHUB_TOKEN")
     if token:
         return token, "Environment Variable"
 
@@ -85,7 +82,7 @@ class LocalCIMonitor:
             "total": 0,
             "passed": 0,
             "failed": 0,
-            "pending": 0
+            "pending": 0,
         }
 
         for check in check_runs:
@@ -93,7 +90,7 @@ class LocalCIMonitor:
                 "name": check.name,
                 "status": check.status,
                 "conclusion": check.conclusion,
-                "url": check.html_url
+                "url": check.html_url,
             }
             status["checks"].append(check_info)
             status["total"] += 1
@@ -129,11 +126,13 @@ class LocalCIMonitor:
         print(f"   ❌ Failed: {status['failed']}")
         print(f"   ⏳ Pending: {status['pending']}")
 
-        if status['checks']:
+        if status["checks"]:
             print(f"\n🔧 Check Details:")
-            for check in status['checks']:
-                icon = self._get_check_icon(check['conclusion'])
-                print(f"   {icon} {check['name']}: {check['conclusion'] or check['status']}")
+            for check in status["checks"]:
+                icon = self._get_check_icon(check["conclusion"])
+                print(
+                    f"   {icon} {check['name']}: {check['conclusion'] or check['status']}"
+                )
 
         print("=" * 70)
 
@@ -175,15 +174,14 @@ class LocalCIMonitor:
 
         # Get workflow runs
         runs = self.repo.get_workflow_runs(
-            head_sha=latest_commit.sha,
-            status="completed"
+            head_sha=latest_commit.sha, status="completed"
         )
 
         for run in runs:
             # Get artifacts
             artifacts = run.get_artifacts()
             for artifact in artifacts:
-                if 'test' in artifact.name.lower():
+                if "test" in artifact.name.lower():
                     print(f"   Found artifact: {artifact.name}")
                     # Note: Downloading artifacts requires additional authentication
                     # For now, we'll rely on the GitHub Actions workflow
@@ -192,26 +190,28 @@ class LocalCIMonitor:
 
     def create_issues_from_failures(self, status: Dict):
         """Create GitHub issues for failing checks"""
-        if status['failed'] == 0:
+        if status["failed"] == 0:
             print("\n✅ No failures to create issues for")
             return
 
         print(f"\n🔧 Creating issues for {status['failed']} failing check(s)...")
 
-        for check in status['checks']:
-            if check['conclusion'] == 'failure':
+        for check in status["checks"]:
+            if check["conclusion"] == "failure":
                 self._create_issue_for_check(check)
 
     def _create_issue_for_check(self, check: Dict):
         """Create issue for a failing check"""
-        check_name = check['name']
+        check_name = check["name"]
 
         # Check for existing issues
         query = f'repo:{self.repo.full_name} is:issue is:open label:ci-failure "{check_name}"'
         existing = list(self.github.search_issues(query))
 
         if existing:
-            print(f"   ℹ️  Issue already exists for {check_name}: #{existing[0].number}")
+            print(
+                f"   ℹ️  Issue already exists for {check_name}: #{existing[0].number}"
+            )
             return
 
         # Create issue
@@ -264,12 +264,14 @@ class LocalCIMonitor:
             issue = self.repo.create_issue(
                 title=title,
                 body=body,
-                labels=['ci-failure', 'automated', 'priority:high']
+                labels=["ci-failure", "automated", "priority:high"],
             )
             print(f"   ✅ Created issue #{issue.number}: {title}")
 
             # Add comment to PR
-            self.pr.create_issue_comment(f"🔗 Created issue #{issue.number} for failing check: {check_name}")
+            self.pr.create_issue_comment(
+                f"🔗 Created issue #{issue.number} for failing check: {check_name}"
+            )
 
         except GithubException as e:
             print(f"   ❌ Failed to create issue: {e}")
@@ -284,11 +286,13 @@ class LocalCIMonitor:
                 status = self.get_ci_status()
                 self.display_status(status)
 
-                if status['status'] == 'success':
+                if status["status"] == "success":
                     print("\n🎉 All checks passed!")
                     break
-                elif status['status'] == 'failed':
-                    print("\n⚠️  Some checks failed. Run with --create-issues to create GitHub issues.")
+                elif status["status"] == "failed":
+                    print(
+                        "\n⚠️  Some checks failed. Run with --create-issues to create GitHub issues."
+                    )
                     break
 
                 print(f"\n⏳ Waiting {interval}s before next check...")
@@ -303,35 +307,24 @@ def main():
     parser = argparse.ArgumentParser(
         description="Monitor CI/CD status and create issues for failures"
     )
+    parser.add_argument("--pr", type=int, required=True, help="Pull request number")
     parser.add_argument(
-        '--pr',
-        type=int,
-        required=True,
-        help='Pull request number'
+        "--watch", action="store_true", help="Watch CI/CD status continuously"
     )
     parser.add_argument(
-        '--watch',
-        action='store_true',
-        help='Watch CI/CD status continuously'
+        "--create-issues", action="store_true", help="Create GitHub issues for failures"
     )
     parser.add_argument(
-        '--create-issues',
-        action='store_true',
-        help='Create GitHub issues for failures'
-    )
-    parser.add_argument(
-        '--interval',
+        "--interval",
         type=int,
         default=30,
-        help='Watch interval in seconds (default: 30)'
+        help="Watch interval in seconds (default: 30)",
     )
     parser.add_argument(
-        '--token',
-        help='GitHub token (optional - will use gh CLI if not provided)'
+        "--token", help="GitHub token (optional - will use gh CLI if not provided)"
     )
     parser.add_argument(
-        '--repo',
-        help='Repository name (owner/repo) (or set GITHUB_REPOSITORY env var)'
+        "--repo", help="Repository name (owner/repo) (or set GITHUB_REPOSITORY env var)"
     )
 
     args = parser.parse_args()
@@ -354,26 +347,29 @@ def main():
     print(f"✅ Authenticated via: {auth_method}")
 
     # Get repo name
-    repo_name = args.repo or os.environ.get('GITHUB_REPOSITORY')
+    repo_name = args.repo or os.environ.get("GITHUB_REPOSITORY")
     if not repo_name:
         # Try to get from git remote
         try:
             result = subprocess.run(
-                ['git', 'remote', 'get-url', 'origin'],
-                capture_output=True,
-                text=True
+                ["git", "remote", "get-url", "origin"], capture_output=True, text=True
             )
             if result.returncode == 0:
                 url = result.stdout.strip()
                 # Parse GitHub URL
-                if 'github.com' in url:
-                    parts = url.split('github.com')[-1].strip('/:').replace('.git', '')
+                if "github.com" in url:
+                    parts = url.split("github.com")[-1].strip("/:").replace(".git", "")
                     repo_name = parts
         except OSError as e:
-            print(f"⚠️ Could not determine repository from git remote: {e}", file=sys.stderr)
+            print(
+                f"⚠️ Could not determine repository from git remote: {e}",
+                file=sys.stderr,
+            )
 
     if not repo_name:
-        print("❌ Repository name required. Set GITHUB_REPOSITORY env var or use --repo")
+        print(
+            "❌ Repository name required. Set GITHUB_REPOSITORY env var or use --repo"
+        )
         sys.exit(1)
 
     print(f"📦 Repository: {repo_name}")
@@ -395,5 +391,5 @@ def main():
         monitor.watch_ci(args.interval)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()

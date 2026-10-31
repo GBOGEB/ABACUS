@@ -1,4 +1,5 @@
 """Negative controls for solo-maintainer exception evidence."""
+
 import importlib.util
 import pathlib
 import unittest
@@ -25,23 +26,25 @@ def fixture():
             "reason": "Explicitly accept bounded formatting debt for one wave.",
             "recorded_at_utc": "2026-10-15T09:00:00Z",
         },
-        "checks": [{
-            "name": "format-check",
-            "state": "failure",
-            "category": "formatting",
-            "head_sha": SHA,
-            "run_url": URL + "actions/runs/100",
-            "exception": {
-                "issue_url": URL + "issues/100",
-                "root_id": "BD-FORMAT-001",
-                "owner": "GBO",
-                "reason": "Known formatter differences in old test files.",
-                "impact": "Does not alter production runtime behavior.",
-                "mitigation": "Native formatting repair PR with exact-head CI.",
-                "risk": "low",
-                "expires_at_utc": "2026-10-17T09:00:00Z",
-            },
-        }],
+        "checks": [
+            {
+                "name": "format-check",
+                "state": "failure",
+                "category": "formatting",
+                "head_sha": SHA,
+                "run_url": URL + "actions/runs/100",
+                "exception": {
+                    "issue_url": URL + "issues/100",
+                    "root_id": "BD-FORMAT-001",
+                    "owner": "GBO",
+                    "reason": "Known formatter differences in old test files.",
+                    "impact": "Does not alter production runtime behavior.",
+                    "mitigation": "Native formatting repair PR with exact-head CI.",
+                    "risk": "low",
+                    "expires_at_utc": "2026-10-17T09:00:00Z",
+                },
+            }
+        ],
         "pulses": [],
     }
 
@@ -130,15 +133,22 @@ class SoloAmberTests(unittest.TestCase):
     def test_comparable_pulse_and_unknown_are_distinct(self):
         x = fixture()
         x["pulses"] = [
-            {"wave_id": "W1", "head_sha": SHA, "coverage": {"status": "UNKNOWN"},
-             "tests": {"passed": 8, "failed": 0, "skipped": 0},
-             "root_counts": {"open": 2},
-             "first_reds": []},
-            {"wave_id": "W2", "head_sha": SHA,
-             "coverage": {"status": "COMPARABLE", "delta_pp": 0.25},
-             "tests": {"passed": 10, "failed": 0, "skipped": 0},
-             "root_counts": {"open": 1},
-             "first_reds": []},
+            {
+                "wave_id": "W1",
+                "head_sha": SHA,
+                "coverage": {"status": "UNKNOWN"},
+                "tests": {"passed": 8, "failed": 0, "skipped": 0},
+                "root_counts": {"open": 2},
+                "first_reds": [],
+            },
+            {
+                "wave_id": "W2",
+                "head_sha": SHA,
+                "coverage": {"status": "COMPARABLE", "delta_pp": 0.25},
+                "tests": {"passed": 10, "failed": 0, "skipped": 0},
+                "root_counts": {"open": 1},
+                "first_reds": [],
+            },
         ]
         r = M.assess(x)
         self.assertIsNone(r["pulses"][0]["coverage_delta_pp"])
@@ -146,8 +156,11 @@ class SoloAmberTests(unittest.TestCase):
 
     def test_duplicate_pulse_rejected(self):
         x = fixture()
-        p = {"wave_id": "W1", "head_sha": SHA,
-             "tests": {"passed": 1, "failed": 0, "skipped": 0}}
+        p = {
+            "wave_id": "W1",
+            "head_sha": SHA,
+            "tests": {"passed": 1, "failed": 0, "skipped": 0},
+        }
         x["pulses"] = [p, deepcopy(p)]
         with self.assertRaises(ValueError):
             M.assess(x)

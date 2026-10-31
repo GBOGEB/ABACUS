@@ -3,6 +3,7 @@
 Never promotes a source declaration, proposal, skipped job or comment to proof.
 Upstream producers must bind received inputs to GitHub job/artifact identity.
 """
+
 from __future__ import annotations
 
 import json
@@ -10,8 +11,13 @@ import re
 
 SHA = re.compile(r"^[0-9a-f]{40}$")
 HASH = re.compile(r"^[0-9a-f]{64}$")
-KNOWN = {"success": "PASS", "failure": "FAIL", "skipped": "SKIPPED",
-         "cancelled": "CANCELLED", "timed_out": "FAIL"}
+KNOWN = {
+    "success": "PASS",
+    "failure": "FAIL",
+    "skipped": "SKIPPED",
+    "cancelled": "CANCELLED",
+    "timed_out": "FAIL",
+}
 
 
 def require_sha(value):
@@ -32,9 +38,12 @@ def native(row, sha):
         raise ValueError("native run/job IDs required")
     if not str(row.get("url", "")).startswith("https://github.com/"):
         raise ValueError("native evidence URL required")
-    return {"status": KNOWN.get(row.get("conclusion"), "UNKNOWN"),
-            "run_id": row["run_id"], "job_id": row["job_id"],
-            "url": row["url"]}
+    return {
+        "status": KNOWN.get(row.get("conclusion"), "UNKNOWN"),
+        "run_id": row["run_id"],
+        "job_id": row["job_id"],
+        "url": row["url"],
+    }
 
 
 def coverage(row, sha, base=None):
@@ -43,31 +52,41 @@ def coverage(row, sha, base=None):
     if row.get("sha") != sha or (base is not None and row.get("base_sha") != base):
         raise ValueError("coverage head/base mismatch")
     covered, eligible = row.get("covered"), row.get("eligible")
-    if (type(covered) is not int or type(eligible) is not int
-            or eligible <= 0 or not 0 <= covered <= eligible):
+    if (
+        type(covered) is not int
+        or type(eligible) is not int
+        or eligible <= 0
+        or not 0 <= covered <= eligible
+    ):
         raise ValueError("coverage numerator/denominator invalid")
-    if not (isinstance(row.get("config_sha256"), str)
-            and HASH.fullmatch(row["config_sha256"])
-            and row.get("scope_id")
-            and type(row.get("run_id")) is int
-            and type(row.get("artifact_id")) is int):
+    if not (
+        isinstance(row.get("config_sha256"), str)
+        and HASH.fullmatch(row["config_sha256"])
+        and row.get("scope_id")
+        and type(row.get("run_id")) is int
+        and type(row.get("artifact_id")) is int
+    ):
         raise ValueError("coverage provenance incomplete")
-    return {"status": "MEASURED", "covered": covered, "eligible": eligible,
-            "percent": round(100 * covered / eligible, 6),
-            "scope_id": row["scope_id"], "config_sha256": row["config_sha256"],
-            "run_id": row["run_id"], "artifact_id": row["artifact_id"]}
+    return {
+        "status": "MEASURED",
+        "covered": covered,
+        "eligible": eligible,
+        "percent": round(100 * covered / eligible, 6),
+        "scope_id": row["scope_id"],
+        "config_sha256": row["config_sha256"],
+        "run_id": row["run_id"],
+        "artifact_id": row["artifact_id"],
+    }
 
 
 def bd_roots(row, sha):
     """Counts root IDs, not scanner findings. Explicit native closed receipts."""
     if row is None:
-        return {"status": "UNKNOWN", "opened": None, "closed": None,
-                "reopened": None}
+        return {"status": "UNKNOWN", "opened": None, "closed": None, "reopened": None}
     if row.get("sha") != sha:
         raise ValueError("BD head mismatch")
     if row.get("complete") is not True or not row.get("scanner_config_sha256"):
-        return {"status": "UNKNOWN", "opened": None, "closed": None,
-                "reopened": None}
+        return {"status": "UNKNOWN", "opened": None, "closed": None, "reopened": None}
     if not HASH.fullmatch(str(row["scanner_config_sha256"])):
         raise ValueError("BD config fingerprint invalid")
     groups = {}
@@ -79,21 +98,35 @@ def bd_roots(row, sha):
             if not isinstance(value, str) or not value.startswith("BD-"):
                 raise ValueError("BD root identifier invalid")
         groups[category] = set(vals)
-    if any(groups[a] & groups[b] for a, b in
-           (("opened", "closed"), ("opened", "reopened"), ("closed", "reopened"))):
+    if any(
+        groups[a] & groups[b]
+        for a, b in (
+            ("opened", "closed"),
+            ("opened", "reopened"),
+            ("closed", "reopened"),
+        )
+    ):
         raise ValueError("BD root transitions overlap")
     if not all(row.get(k) for k in ("run_id", "job_id", "evidence_url")):
         raise ValueError("BD native provenance missing")
-    return {"status": "RECONCILED", **{k: len(v) for k, v in groups.items()},
-            "scan_scope": row["scanner_config_sha256"],
-            "run_id": row["run_id"], "job_id": row["job_id"]}
+    return {
+        "status": "RECONCILED",
+        **{k: len(v) for k, v in groups.items()},
+        "scan_scope": row["scanner_config_sha256"],
+        "run_id": row["run_id"],
+        "job_id": row["job_id"],
+    }
 
 
 def crew(row, sha):
     """Authenticated returns require attested executor, matching job and REX."""
     if row is None:
-        return {"status": "UNKNOWN", "verified_launches": None,
-                "accepted_rex": None, "ldab_sessions": None}
+        return {
+            "status": "UNKNOWN",
+            "verified_launches": None,
+            "accepted_rex": None,
+            "ldab_sessions": None,
+        }
     if row.get("sha") != sha:
         raise ValueError("Crew source mismatch")
     if row.get("authority_verified") is not True:
@@ -108,10 +141,13 @@ def crew(row, sha):
         if not rid or rid in ids:
             raise ValueError("Missing or duplicate authenticated launch ID")
         ids.add(rid)
-        if not (receipt.get("executor_identity_verified") is True
-                and receipt.get("run_sha") == sha
-                and receipt.get("run_id") and receipt.get("job_id")
-                and receipt.get("receipt_url")):
+        if not (
+            receipt.get("executor_identity_verified") is True
+            and receipt.get("run_sha") == sha
+            and receipt.get("run_id")
+            and receipt.get("job_id")
+            and receipt.get("receipt_url")
+        ):
             raise ValueError("Unauthenticated Crew receipt")
         counts["verified_launches"] += 1
         if receipt.get("rex_status") == "ACCEPTED":
@@ -132,15 +168,20 @@ def review(row, sha):
         raise ValueError("review head mismatch")
     if row.get("reviewer_eligibility_verified") is not True:
         return {"status": "HOLD", "eligible_approval": None}
-    approvals = [r for r in row.get("reviews", []) if
-                 r.get("state") == "APPROVED" and
-                 r.get("commit_id") == sha and
-                 r.get("eligible") is True and
-                 r.get("author") != row.get("pr_author")]
-    return {"status": "APPROVAL_OBSERVED" if approvals else "HOLD",
-            "eligible_approval": len(approvals) > 0,
-            "approval_count": len(approvals),
-            "merge_authorized": False}
+    approvals = [
+        r
+        for r in row.get("reviews", [])
+        if r.get("state") == "APPROVED"
+        and r.get("commit_id") == sha
+        and r.get("eligible") is True
+        and r.get("author") != row.get("pr_author")
+    ]
+    return {
+        "status": "APPROVAL_OBSERVED" if approvals else "HOLD",
+        "eligible_approval": len(approvals) > 0,
+        "approval_count": len(approvals),
+        "merge_authorized": False,
+    }
 
 
 def reconcile(bundle):
@@ -150,7 +191,8 @@ def reconcile(bundle):
     jobs = bundle.get("native_jobs", {})
     return {
         "schema": "abacus.recovery.five-lane.v1",
-        "main_sha": main, "head_sha": head,
+        "main_sha": main,
+        "head_sha": head,
         "canonical_main_coverage": coverage(bundle.get("main_coverage"), main),
         "changed_line_coverage": coverage(bundle.get("diff_coverage"), head, main),
         "bd_distinct_roots": bd_roots(bundle.get("bd_receipt"), head),
@@ -170,10 +212,12 @@ def reconcile(bundle):
 if __name__ == "__main__":
     import argparse
     from pathlib import Path
+
     p = argparse.ArgumentParser()
     p.add_argument("--input", required=True, type=Path)
     p.add_argument("--output", required=True, type=Path)
     args = p.parse_args()
     report = reconcile(json.loads(args.input.read_text(encoding="utf-8")))
-    args.output.write_text(json.dumps(report, sort_keys=True, indent=2) + "\n",
-                           encoding="utf-8")
+    args.output.write_text(
+        json.dumps(report, sort_keys=True, indent=2) + "\n", encoding="utf-8"
+    )

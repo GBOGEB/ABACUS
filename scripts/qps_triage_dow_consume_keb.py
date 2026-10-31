@@ -16,7 +16,6 @@ import json
 from pathlib import Path
 from typing import Any
 
-
 KEB_CONTRACT_VERSION = "qps-triage-keb-contract/1.0.0"
 PRODUCER_REPO = "GBOGEB/CODEX"
 CONSUMER_REPO = "GBOGEB/ABACUS"
@@ -70,8 +69,10 @@ def validate_keb_receipt(receipt: dict[str, Any]) -> list[str]:
         errors.append("authority_transfer")
 
     source_object_ids = receipt.get("source_object_ids")
-    if not isinstance(source_object_ids, list) or not source_object_ids or not all(
-        isinstance(item, str) and item.strip() for item in source_object_ids
+    if (
+        not isinstance(source_object_ids, list)
+        or not source_object_ids
+        or not all(isinstance(item, str) and item.strip() for item in source_object_ids)
     ):
         errors.append("source_object_ids")
 
@@ -85,7 +86,9 @@ def validate_keb_receipt(receipt: dict[str, Any]) -> list[str]:
     if not _is_sha(digest, 64):
         errors.append("receipt_sha256")
     else:
-        basis = {key: value for key, value in receipt.items() if key != "receipt_sha256"}
+        basis = {
+            key: value for key, value in receipt.items() if key != "receipt_sha256"
+        }
         if canonical_digest(basis) != str(digest).lower():
             errors.append("receipt_sha256_mismatch")
 
@@ -107,16 +110,20 @@ def validate_challenge(challenge: dict[str, Any], receipt: dict[str, Any]) -> li
     }
     errors = sorted(required - set(challenge))
 
-    if not isinstance(challenge.get("challenge_or_execution"), str) or not challenge.get(
-        "challenge_or_execution", ""
-    ).strip():
+    if (
+        not isinstance(challenge.get("challenge_or_execution"), str)
+        or not challenge.get("challenge_or_execution", "").strip()
+    ):
         errors.append("challenge_or_execution")
     result = challenge.get("result")
     if result not in {"PASS", "FAIL", "DEFER"}:
         errors.append("result")
     if result == "PASS" and not _positive_int(challenge.get("executed_steps")):
         errors.append("executed_steps")
-    if not isinstance(challenge.get("reason"), str) or not challenge.get("reason", "").strip():
+    if (
+        not isinstance(challenge.get("reason"), str)
+        or not challenge.get("reason", "").strip()
+    ):
         errors.append("reason")
 
     if challenge.get("private_evidence_copied") is not False:
@@ -135,11 +142,17 @@ def validate_challenge(challenge: dict[str, Any], receipt: dict[str, Any]) -> li
             errors.append("first_red")
 
     expected_merge = challenge.get("expected_producer_merge_sha")
-    if expected_merge is not None and receipt.get("producer_merge_sha") != expected_merge:
+    if (
+        expected_merge is not None
+        and receipt.get("producer_merge_sha") != expected_merge
+    ):
         errors.append("expected_producer_merge_sha")
 
     expected_manifest = challenge.get("expected_source_manifest_sha256")
-    if expected_manifest is not None and receipt.get("source_manifest_sha256") != expected_manifest:
+    if (
+        expected_manifest is not None
+        and receipt.get("source_manifest_sha256") != expected_manifest
+    ):
         errors.append("expected_source_manifest_sha256")
 
     expected_objects = challenge.get("expected_source_object_ids")
@@ -195,7 +208,9 @@ def finalize_dow_receipt(
         "child_reentry_target": CHILD_REENTRY_TARGET,
         "authority_transfer": False,
         "scope": "COMPONENT_ANALYTICS_CONTRACT_ONLY",
-        "system_consequence_withheld": bool(challenge.get("system_consequence_withheld")),
+        "system_consequence_withheld": bool(
+            challenge.get("system_consequence_withheld")
+        ),
         "table10_rate_per_year": challenge.get("table10_rate_per_year"),
         "first_red": challenge.get("first_red"),
     }
@@ -231,7 +246,9 @@ def main() -> int:
         return 1
 
     args.output.parent.mkdir(parents=True, exist_ok=True)
-    args.output.write_text(json.dumps(value, indent=2, sort_keys=True) + "\n", encoding="utf-8")
+    args.output.write_text(
+        json.dumps(value, indent=2, sort_keys=True) + "\n", encoding="utf-8"
+    )
     print(json.dumps(value, indent=2, sort_keys=True))
     return 0
 

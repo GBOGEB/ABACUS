@@ -120,9 +120,7 @@ TRUSTED_WORKFLOW_IDENTITIES = {
 }
 
 TRUSTED_WORKFLOW_INPUTS = {
-    "DELTA_1 CodeQL": (
-        ".github/codeql/codeql-config.yml",
-    ),
+    "DELTA_1 CodeQL": (".github/codeql/codeql-config.yml",),
 }
 
 CONDITIONAL_WORKFLOW_PATHS = {
@@ -163,9 +161,7 @@ CONDITIONAL_WORKFLOW_PATHS = {
     ),
 }
 GOOD_CONCLUSIONS = {"success", "neutral", "skipped"}
-DEFERRED_COMMENT_RULES = (
-    ("No snapshots were found for the head SHA", 1736),
-)
+DEFERRED_COMMENT_RULES = (("No snapshots were found for the head SHA", 1736),)
 CODEX_BOT_LOGIN = "chatgpt-codex-connector[bot]"
 CODEX_BOT_ID = 199175422
 CODEX_APP_ID = 1144995
@@ -193,19 +189,13 @@ class Evidence:
         reasons: list[str] = []
         reasons.extend(self.blocking_review_items)
         if self.unresolved_threads and not self.review_deferral_valid:
-            reasons.append(
-                f"{self.unresolved_threads} unresolved review thread(s)"
-            )
+            reasons.append(f"{self.unresolved_threads} unresolved review thread(s)")
         reasons.extend(self.ci_failed)
         reasons.extend(
-            item
-            for item in self.review_deferral_details
-            if "has no open issue" in item
+            item for item in self.review_deferral_details if "has no open issue" in item
         )
         reasons.extend(
-            item
-            for item in self.deferred_comments
-            if "has no open issue" in item
+            item for item in self.deferred_comments if "has no open issue" in item
         )
         return tuple(reasons)
 
@@ -214,10 +204,7 @@ class Evidence:
         reasons: list[str] = []
         if not self.code_review_complete and not self.review_deferral_valid:
             reasons.append("Codex code review is not complete on current head")
-        if (
-            not self.security_review_complete
-            and not self.review_deferral_valid
-        ):
+        if not self.security_review_complete and not self.review_deferral_valid:
             reasons.append("Codex security review is not complete on current head")
         if self.security_sensitive and not self.security_review_complete:
             reasons.append(
@@ -323,7 +310,9 @@ class GitHub:
             cache[login] = (data or {}).get("permission") in {
                 "admin",
                 "write",
-            } or (data or {}).get("role_name") in WRITE_ROLES
+            } or (
+                data or {}
+            ).get("role_name") in WRITE_ROLES
         return cache[login]
 
     def pull(self, number: int) -> dict[str, Any]:
@@ -339,9 +328,7 @@ class GitHub:
         return changed_paths_from_files(self.pull_file_records(number))
 
     def issue_comments(self, number: int) -> list[dict[str, Any]]:
-        return self.paged(
-            f"/repos/{self.repository}/issues/{number}/comments"
-        )
+        return self.paged(f"/repos/{self.repository}/issues/{number}/comments")
 
     def actions_runs(self, head_sha: str) -> list[dict[str, Any]]:
         encoded = urllib.parse.quote(head_sha)
@@ -401,9 +388,7 @@ class GitHub:
                     },
                 },
             )
-            threads = data["data"]["repository"]["pullRequest"][
-                "reviewThreads"
-            ]
+            threads = data["data"]["repository"]["pullRequest"]["reviewThreads"]
             nodes.extend(threads["nodes"])
             page_info = threads["pageInfo"]
             if not page_info["hasNextPage"]:
@@ -423,15 +408,12 @@ class GitHub:
         )
 
     def open_pulls(self) -> list[dict[str, Any]]:
-        return self.paged(
-            f"/repos/{self.repository}/pulls?state=open&base=main"
-        )
+        return self.paged(f"/repos/{self.repository}/pulls?state=open&base=main")
 
     def check_runs(self, head_sha: str) -> list[dict[str, Any]]:
         data = self.request(
             "GET",
-            f"/repos/{self.repository}/commits/{head_sha}/check-runs"
-            "?per_page=100",
+            f"/repos/{self.repository}/commits/{head_sha}/check-runs" "?per_page=100",
         )
         return list(data.get("check_runs", []))
 
@@ -450,9 +432,7 @@ class GitHub:
             if check.get("name") == GATE_NAME
         ]
         existing.sort(
-            key=lambda item: item.get("started_at")
-            or item.get("created_at")
-            or "",
+            key=lambda item: item.get("started_at") or item.get("created_at") or "",
             reverse=True,
         )
         if census_started is not None and existing:
@@ -496,9 +476,7 @@ class GitHub:
 
         if reusable is not None:
             update_payload = {
-                key: value
-                for key, value in payload.items()
-                if key != "head_sha"
+                key: value for key, value in payload.items() if key != "head_sha"
             }
             self.request(
                 "PATCH",
@@ -570,9 +548,7 @@ def latest_codex_summary(
         return None
     return max(
         candidates,
-        key=lambda item: item.get("updated_at")
-        or item.get("created_at")
-        or "",
+        key=lambda item: item.get("updated_at") or item.get("created_at") or "",
     )
 
 
@@ -600,8 +576,7 @@ def codex_code_review_complete(
     short = head_sha[:7]
     pattern = re.compile(
         r"\|\s*📝\s*\*\*Code Review\*\*\s*"
-        r"\|\s*✅\s*\*\*Completed\*\*[^\n]*"
-        + re.escape(chr(96) + short + chr(96))
+        r"\|\s*✅\s*\*\*Completed\*\*[^\n]*" + re.escape(chr(96) + short + chr(96))
     )
     return bool(pattern.search(body))
 
@@ -613,9 +588,7 @@ def codex_security_review_complete(
     marker = re.compile(r"codex-security-review:v1\s+(\{.*?\})\s*-->")
     for comment in sorted(
         comments,
-        key=lambda item: item.get("updated_at")
-        or item.get("created_at")
-        or "",
+        key=lambda item: item.get("updated_at") or item.get("created_at") or "",
         reverse=True,
     ):
         if not is_trusted_codex_comment(comment):
@@ -628,8 +601,7 @@ def codex_security_review_complete(
         except json.JSONDecodeError:
             continue
         return (
-            payload.get("headSha") == head_sha
-            and payload.get("status") == "completed"
+            payload.get("headSha") == head_sha and payload.get("status") == "completed"
         )
     return False
 
@@ -655,17 +627,19 @@ OWNER_ATTESTATION_MARKER = re.compile(
 # exact, complete comment body (whitespace-trimmed). A review that merely
 # quotes these sentences is not an outage. If Codex rewords them, the fallback
 # stops activating (fail-closed) until these strings are updated.
-CODEX_UNAVAILABLE_BODIES = frozenset({
-    "You have reached your Codex usage limits for code reviews. You can see "
-    "your limits in the [Codex usage dashboard]"
-    "(https://chatgpt.com/codex/cloud/settings/usage).",
-    "This security review couldn\u2019t start because the paying account has "
-    "exhausted its Codex allowance and has insufficient available credits. "
-    "The payer can check their balance and add credits in the [Codex usage "
-    "dashboard](https://chatgpt.com/codex/cloud/settings/usage), then try "
-    "again. If you do not manage the paying account, contact this "
-    "repository's admins.",
-})
+CODEX_UNAVAILABLE_BODIES = frozenset(
+    {
+        "You have reached your Codex usage limits for code reviews. You can see "
+        "your limits in the [Codex usage dashboard]"
+        "(https://chatgpt.com/codex/cloud/settings/usage).",
+        "This security review couldn\u2019t start because the paying account has "
+        "exhausted its Codex allowance and has insufficient available credits. "
+        "The payer can check their balance and add credits in the [Codex usage "
+        "dashboard](https://chatgpt.com/codex/cloud/settings/usage), then try "
+        "again. If you do not manage the paying account, contact this "
+        "repository's admins.",
+    }
+)
 
 
 def is_codex_outage_notice(comment: dict[str, Any]) -> bool:
@@ -673,6 +647,8 @@ def is_codex_outage_notice(comment: dict[str, Any]) -> bool:
         is_trusted_codex_comment(comment)
         and (comment.get("body") or "").strip() in CODEX_UNAVAILABLE_BODIES
     )
+
+
 OWNER_ATTESTATION_SCOPE = "code+security"
 
 
@@ -720,16 +696,13 @@ def head_reused_across_transitions(
     This is a re-evaluation guard, NOT an atomic GitHub merge protection.
     """
     events = sorted(
-        (
-            run.get("created_at"), run.get("head_sha")
-        )
+        (run.get("created_at"), run.get("head_sha"))
         for run in runs
         if run.get("event") == "pull_request"
         and run.get("created_at")
         and run.get("head_sha")
         and any(
-            item.get("number") is not None
-            and int(item["number"]) == pr_number
+            item.get("number") is not None and int(item["number"]) == pr_number
             for item in run.get("pull_requests") or []
         )
     )
@@ -826,9 +799,7 @@ def owner_attestation_complete(
     """
     for comment in sorted(
         comments,
-        key=lambda item: item.get("updated_at")
-        or item.get("created_at")
-        or "",
+        key=lambda item: item.get("updated_at") or item.get("created_at") or "",
         reverse=True,
     ):
         user = comment.get("user") or {}
@@ -894,9 +865,8 @@ WRITE_ROLES = frozenset({"admin", "maintain", "write"})
 def trusted_writer(github: GitHub, item: dict[str, Any]) -> bool:
     """Association pre-filter, then the author's effective permission."""
     if (
-        (item.get("author_association") or "").upper()
-        not in TRUSTED_AUTHOR_ASSOCIATIONS
-    ):
+        item.get("author_association") or ""
+    ).upper() not in TRUSTED_AUTHOR_ASSOCIATIONS:
         return False
     login = (item.get("user") or {}).get("login")
     return isinstance(login, str) and bool(login) and github.can_write(login)
@@ -934,9 +904,7 @@ NON_SENSITIVE_SUFFIXES = (
 
 
 def security_sensitive_change(paths: list[str]) -> bool:
-    return any(
-        not path.lower().endswith(NON_SENSITIVE_SUFFIXES) for path in paths
-    )
+    return any(not path.lower().endswith(NON_SENSITIVE_SUFFIXES) for path in paths)
 
 
 def file_census_complete(
@@ -961,9 +929,7 @@ def required_workflows_for_paths(paths: list[str]) -> tuple[str, ...]:
     required = set(ALWAYS_REQUIRED_WORKFLOWS)
     for workflow, patterns in CONDITIONAL_WORKFLOW_PATHS.items():
         if any(
-            github_path_match(path, pattern)
-            for path in paths
-            for pattern in patterns
+            github_path_match(path, pattern) for path in paths for pattern in patterns
         ):
             required.add(workflow)
     return tuple(sorted(required))
@@ -1067,9 +1033,7 @@ def deferred_comment_evidence(
                 f"deferred warning {pattern!r} has no open issue #{issue_number}"
             )
         else:
-            evidence.append(
-                f"deferred warning tracked by open issue #{issue_number}"
-            )
+            evidence.append(f"deferred warning tracked by open issue #{issue_number}")
     return tuple(evidence)
 
 
@@ -1097,9 +1061,7 @@ def review_deferral_evidence(
 
     comment, match = max(
         candidates,
-        key=lambda item: item[0].get("updated_at")
-        or item[0].get("created_at")
-        or "",
+        key=lambda item: item[0].get("updated_at") or item[0].get("created_at") or "",
     )
     try:
         disposition = json.loads(match.group(1))
@@ -1137,11 +1099,7 @@ def review_deferral_evidence(
             return False, (), ("review deferral has an invalid or duplicate item",)
         classifications[thread_id] = classification
 
-    unresolved_threads = [
-        thread
-        for thread in threads
-        if not thread.get("isResolved")
-    ]
+    unresolved_threads = [thread for thread in threads if not thread.get("isResolved")]
     unresolved_ids = {
         thread.get("id")
         for thread in unresolved_threads
@@ -1161,9 +1119,7 @@ def review_deferral_evidence(
     truncated = sorted(
         thread["id"]
         for thread in unresolved_threads
-        if ((thread.get("comments") or {}).get("pageInfo") or {}).get(
-            "hasNextPage"
-        )
+        if ((thread.get("comments") or {}).get("pageInfo") or {}).get("hasNextPage")
     )
     if truncated:
         # Comments past the first page cannot be checked against the
@@ -1191,10 +1147,7 @@ def review_deferral_evidence(
         return (
             False,
             (),
-            (
-                "review thread changed after its classification: "
-                + ", ".join(changed),
-            ),
+            ("review thread changed after its classification: " + ", ".join(changed),),
         )
 
     blocking_items = tuple(
@@ -1211,10 +1164,7 @@ def review_deferral_evidence(
             blocking_items,
             ("deferred Codex code review must be marked DEFERRED_BUDGET",),
         )
-    if (
-        deferred_security_review
-        and "CODEX_SECURITY_REVIEW=DEFERRED_BUDGET" not in body
-    ):
+    if deferred_security_review and "CODEX_SECURITY_REVIEW=DEFERRED_BUDGET" not in body:
         return (
             False,
             blocking_items,
@@ -1224,10 +1174,7 @@ def review_deferral_evidence(
     requires_tracking = (
         deferred_code_review
         or deferred_security_review
-        or any(
-            classifications[thread_id] == "S2"
-            for thread_id in unresolved_ids
-        )
+        or any(classifications[thread_id] == "S2" for thread_id in unresolved_ids)
     )
     if not requires_tracking:
         return True, blocking_items, ()
@@ -1253,9 +1200,7 @@ def review_deferral_evidence(
         issue_metadata = json.loads(issue_marker.group(1)) if issue_marker else {}
     except json.JSONDecodeError:
         issue_metadata = {}
-    source_pr = (
-        issue_metadata.get("pr") if isinstance(issue_metadata, dict) else None
-    )
+    source_pr = issue_metadata.get("pr") if isinstance(issue_metadata, dict) else None
     issue_matches = (
         issue.get("state") == "open"
         and issue.get("number", issue_number) == issue_number
@@ -1355,15 +1300,10 @@ def deferred_debt_problem(
     if missing:
         return "does not retain S2 item(s): " + ", ".join(missing)
     downgraded = sorted(
-        thread_id
-        for thread_id in s2_thread_ids
-        if recorded[thread_id] != "S2"
+        thread_id for thread_id in s2_thread_ids if recorded[thread_id] != "S2"
     )
     if downgraded:
-        return (
-            "downgrades S2 item(s) from the PR disposition: "
-            + ", ".join(downgraded)
-        )
+        return "downgrades S2 item(s) from the PR disposition: " + ", ".join(downgraded)
     return None
 
 
@@ -1390,10 +1330,7 @@ def evaluate(
         # Fail closed: an incomplete census cannot prove a workflow is
         # not applicable, so every conditional workflow is required.
         else tuple(
-            sorted(
-                set(ALWAYS_REQUIRED_WORKFLOWS)
-                | set(CONDITIONAL_WORKFLOW_PATHS)
-            )
+            sorted(set(ALWAYS_REQUIRED_WORKFLOWS) | set(CONDITIONAL_WORKFLOW_PATHS))
         )
     )
     pending, failed, seen = classify_runs(
@@ -1429,16 +1366,14 @@ def evaluate(
         comments,
         head_sha,
     )
-    deferral_valid, blocking_items, deferral_details = (
-        review_deferral_evidence(
-            github,
-            number,
-            head_sha,
-            comments,
-            threads,
-            code_review_complete,
-            security_review_complete,
-        )
+    deferral_valid, blocking_items, deferral_details = review_deferral_evidence(
+        github,
+        number,
+        head_sha,
+        comments,
+        threads,
+        code_review_complete,
+        security_review_complete,
     )
     return Evidence(
         head_sha=head_sha,
@@ -1561,9 +1496,7 @@ def tracking_issue_pr_numbers(
                 metadata = json.loads(match.group(1))
             except json.JSONDecodeError:
                 continue
-            source_pr = (
-                metadata.get("pr") if isinstance(metadata, dict) else None
-            )
+            source_pr = metadata.get("pr") if isinstance(metadata, dict) else None
             if (
                 isinstance(source_pr, int)
                 and not isinstance(source_pr, bool)
@@ -1646,11 +1579,7 @@ def event_pr_numbers(
         if head_sha:
             linked = github.pulls_for_commit(head_sha)
             return sorted(
-                {
-                    int(item["number"])
-                    for item in linked
-                    if item.get("state") == "open"
-                }
+                {int(item["number"]) for item in linked if item.get("state") == "open"}
             )
     return sorted(int(item["number"]) for item in github.open_pulls())
 
@@ -1794,8 +1723,7 @@ def main() -> int:
                 head_sha,
                 "pending",
                 f"PR #{number} feedback gate: EVALUATING",
-                f"head={head_sha}\nstate=pending\n"
-                f"census_started={census_started}",
+                f"head={head_sha}\nstate=pending\n" f"census_started={census_started}",
                 "Current-head evidence census is in progress.",
                 census_started=census_started,
             )

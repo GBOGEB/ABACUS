@@ -11,13 +11,13 @@ Analyzes past GitHub Actions workflows to identify missed opportunities
 Reviews CI/CD history and suggests improvements
 """
 
-import os
-import sys
 import json
+import os
 import subprocess
+import sys
+from collections import defaultdict
 from datetime import datetime, timedelta
 from typing import Dict, List, Optional
-from collections import defaultdict
 
 try:
     from github import Github
@@ -58,7 +58,7 @@ class WorkflowAnalyzer:
                     "event": run.event,
                     "head_branch": run.head_branch,
                     "head_sha": run.head_sha[:7] if run.head_sha else "",
-                    "url": run.html_url
+                    "url": run.html_url,
                 }
 
                 runs.append(run_data)
@@ -89,8 +89,16 @@ class WorkflowAnalyzer:
             "failure_rate": (total_failures / len(runs) * 100) if runs else 0,
             "failures_by_workflow": dict(failures_by_workflow),
             "failures_by_branch": dict(failures_by_branch),
-            "most_failing_workflow": max(failures_by_workflow.items(), key=lambda x: x[1])[0] if failures_by_workflow else None,
-            "most_failing_branch": max(failures_by_branch.items(), key=lambda x: x[1])[0] if failures_by_branch else None
+            "most_failing_workflow": (
+                max(failures_by_workflow.items(), key=lambda x: x[1])[0]
+                if failures_by_workflow
+                else None
+            ),
+            "most_failing_branch": (
+                max(failures_by_branch.items(), key=lambda x: x[1])[0]
+                if failures_by_branch
+                else None
+            ),
         }
 
         return analysis
@@ -103,78 +111,93 @@ class WorkflowAnalyzer:
 
         failure_runs = [r for r in runs if r["conclusion"] == "failure"]
         if len(failure_runs) > len(runs) * 0.2:
-            opportunities.append({
-                "type": "high_failure_rate",
-                "severity": "high",
-                "description": f"High failure rate detected: {len(failure_runs)}/{len(runs)} runs failed",
-                "recommendation": "Review test stability, consider flaky test detection",
-                "action_items": [
-                    "Identify and fix flaky tests",
-                    "Add retry logic for unstable tests",
-                    "Review test environment setup"
-                ]
-            })
+            opportunities.append(
+                {
+                    "type": "high_failure_rate",
+                    "severity": "high",
+                    "description": f"High failure rate detected: {len(failure_runs)}/{len(runs)} runs failed",
+                    "recommendation": "Review test stability, consider flaky test detection",
+                    "action_items": [
+                        "Identify and fix flaky tests",
+                        "Add retry logic for unstable tests",
+                        "Review test environment setup",
+                    ],
+                }
+            )
 
         workflow_names = set(r["name"] for r in runs)
         if "test" not in " ".join(workflow_names).lower():
-            opportunities.append({
-                "type": "missing_tests",
-                "severity": "critical",
-                "description": "No test workflow detected",
-                "recommendation": "Add automated testing workflow",
-                "action_items": [
-                    "Create test workflow",
-                    "Add unit tests",
-                    "Add integration tests"
-                ]
-            })
+            opportunities.append(
+                {
+                    "type": "missing_tests",
+                    "severity": "critical",
+                    "description": "No test workflow detected",
+                    "recommendation": "Add automated testing workflow",
+                    "action_items": [
+                        "Create test workflow",
+                        "Add unit tests",
+                        "Add integration tests",
+                    ],
+                }
+            )
 
-        if "deploy" not in " ".join(workflow_names).lower() and "cd" not in " ".join(workflow_names).lower():
-            opportunities.append({
-                "type": "missing_cd",
-                "severity": "medium",
-                "description": "No deployment workflow detected",
-                "recommendation": "Add continuous deployment workflow",
-                "action_items": [
-                    "Create deployment workflow",
-                    "Set up staging environment",
-                    "Add production deployment"
-                ]
-            })
+        if (
+            "deploy" not in " ".join(workflow_names).lower()
+            and "cd" not in " ".join(workflow_names).lower()
+        ):
+            opportunities.append(
+                {
+                    "type": "missing_cd",
+                    "severity": "medium",
+                    "description": "No deployment workflow detected",
+                    "recommendation": "Add continuous deployment workflow",
+                    "action_items": [
+                        "Create deployment workflow",
+                        "Set up staging environment",
+                        "Add production deployment",
+                    ],
+                }
+            )
 
         long_runs = [r for r in runs if r["status"] == "completed"]
         if long_runs:
-            opportunities.append({
-                "type": "workflow_optimization",
-                "severity": "low",
-                "description": "Workflow runtime could be optimized",
-                "recommendation": "Consider caching dependencies, parallel jobs",
-                "action_items": [
-                    "Add dependency caching",
-                    "Parallelize test execution",
-                    "Optimize build steps"
-                ]
-            })
+            opportunities.append(
+                {
+                    "type": "workflow_optimization",
+                    "severity": "low",
+                    "description": "Workflow runtime could be optimized",
+                    "recommendation": "Consider caching dependencies, parallel jobs",
+                    "action_items": [
+                        "Add dependency caching",
+                        "Parallelize test execution",
+                        "Optimize build steps",
+                    ],
+                }
+            )
 
         pr_runs = [r for r in runs if r["event"] == "pull_request"]
         push_runs = [r for r in runs if r["event"] == "push"]
 
         if len(pr_runs) < len(push_runs) * 0.5:
-            opportunities.append({
-                "type": "insufficient_pr_checks",
-                "severity": "medium",
-                "description": "Few PR checks compared to push events",
-                "recommendation": "Ensure all PRs trigger CI checks",
-                "action_items": [
-                    "Review workflow triggers",
-                    "Add required status checks",
-                    "Enable branch protection"
-                ]
-            })
+            opportunities.append(
+                {
+                    "type": "insufficient_pr_checks",
+                    "severity": "medium",
+                    "description": "Few PR checks compared to push events",
+                    "recommendation": "Ensure all PRs trigger CI checks",
+                    "action_items": [
+                        "Review workflow triggers",
+                        "Add required status checks",
+                        "Enable branch protection",
+                    ],
+                }
+            )
 
         return opportunities
 
-    def generate_recommendations(self, analysis: Dict, opportunities: List[Dict]) -> List[str]:
+    def generate_recommendations(
+        self, analysis: Dict, opportunities: List[Dict]
+    ) -> List[str]:
         """Generate actionable recommendations"""
         recommendations = []
 
@@ -192,11 +215,17 @@ class WorkflowAnalyzer:
 
         for opp in opportunities:
             if opp["severity"] == "critical":
-                recommendations.append(f"🔴 CRITICAL: {opp['description']} - {opp['recommendation']}")
+                recommendations.append(
+                    f"🔴 CRITICAL: {opp['description']} - {opp['recommendation']}"
+                )
             elif opp["severity"] == "high":
-                recommendations.append(f"🟠 HIGH: {opp['description']} - {opp['recommendation']}")
+                recommendations.append(
+                    f"🟠 HIGH: {opp['description']} - {opp['recommendation']}"
+                )
             elif opp["severity"] == "medium":
-                recommendations.append(f"🟡 MEDIUM: {opp['description']} - {opp['recommendation']}")
+                recommendations.append(
+                    f"🟡 MEDIUM: {opp['description']} - {opp['recommendation']}"
+                )
 
         return recommendations
 
@@ -207,7 +236,7 @@ class WorkflowAnalyzer:
         if not runs:
             return {
                 "error": "No workflow runs found",
-                "recommendations": ["Add GitHub Actions workflows to enable CI/CD"]
+                "recommendations": ["Add GitHub Actions workflows to enable CI/CD"],
             }
 
         analysis = self.analyze_failure_patterns(runs)
@@ -221,7 +250,7 @@ class WorkflowAnalyzer:
             "summary": analysis,
             "missed_opportunities": opportunities,
             "recommendations": recommendations,
-            "workflow_runs": runs
+            "workflow_runs": runs,
         }
 
         return report
@@ -258,7 +287,7 @@ class WorkflowAnalyzer:
                 "critical": "🔴",
                 "high": "🟠",
                 "medium": "🟡",
-                "low": "🟢"
+                "low": "🟢",
             }.get(opp["severity"], "ℹ️")
 
             print(f"\n{severity_icon} {opp['type'].upper()} ({opp['severity']})")
@@ -274,9 +303,11 @@ class WorkflowAnalyzer:
 
         print("\n" + "=" * 80)
 
-    def save_report(self, report: Dict, filename: str = "workflow_analysis_report.json"):
+    def save_report(
+        self, report: Dict, filename: str = "workflow_analysis_report.json"
+    ):
         """Save analysis report to file"""
-        with open(filename, 'w') as f:
+        with open(filename, "w") as f:
             json.dump(report, f, indent=2)
 
         print(f"\n✅ Analysis report saved to {filename}")
@@ -285,14 +316,16 @@ class WorkflowAnalyzer:
 def get_github_token():
     """Get GitHub token from gh CLI or environment"""
     try:
-        result = subprocess.run(['gh', 'auth', 'token'], capture_output=True, text=True, check=True)
+        result = subprocess.run(
+            ["gh", "auth", "token"], capture_output=True, text=True, check=True
+        )
         token = result.stdout.strip()
         if token:
             return token, "GitHub CLI"
     except (subprocess.SubprocessError, OSError):
         pass
 
-    token = os.environ.get('GITHUB_TOKEN')
+    token = os.environ.get("GITHUB_TOKEN")
     if token:
         return token, "Environment Variable"
 
@@ -304,10 +337,12 @@ def main():
     import argparse
 
     parser = argparse.ArgumentParser(description="GitHub Workflow Analyzer")
-    parser.add_argument('--days', type=int, default=30, help='Number of days to analyze (default: 30)')
-    parser.add_argument('--save-report', help='Save report to file')
-    parser.add_argument('--repo', help='Repository name (owner/repo)')
-    parser.add_argument('--token', help='GitHub token')
+    parser.add_argument(
+        "--days", type=int, default=30, help="Number of days to analyze (default: 30)"
+    )
+    parser.add_argument("--save-report", help="Save report to file")
+    parser.add_argument("--repo", help="Repository name (owner/repo)")
+    parser.add_argument("--token", help="GitHub token")
 
     args = parser.parse_args()
 
@@ -327,14 +362,16 @@ def main():
 
     print(f"✅ Authenticated via: {auth_method}")
 
-    repo_name = args.repo or os.environ.get('GITHUB_REPOSITORY')
+    repo_name = args.repo or os.environ.get("GITHUB_REPOSITORY")
     if not repo_name:
         try:
-            result = subprocess.run(['git', 'remote', 'get-url', 'origin'], capture_output=True, text=True)
+            result = subprocess.run(
+                ["git", "remote", "get-url", "origin"], capture_output=True, text=True
+            )
             if result.returncode == 0:
                 url = result.stdout.strip()
-                if 'github.com' in url:
-                    parts = url.split('github.com')[-1].strip('/:').replace('.git', '')
+                if "github.com" in url:
+                    parts = url.split("github.com")[-1].strip("/:").replace(".git", "")
                     repo_name = parts
         except (subprocess.SubprocessError, OSError):
             pass
@@ -356,5 +393,5 @@ def main():
         analyzer.save_report(report)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()

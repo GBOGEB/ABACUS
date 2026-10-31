@@ -167,13 +167,11 @@ def assess(record):
             continue
         link(exception.get("issue_url"), "issues")
         require(
-            isinstance(exception.get("root_id"), str)
-            and exception["root_id"].strip(),
+            isinstance(exception.get("root_id"), str) and exception["root_id"].strip(),
             "missing root ID",
         )
         require(
-            isinstance(exception.get("owner"), str)
-            and exception["owner"].strip(),
+            isinstance(exception.get("owner"), str) and exception["owner"].strip(),
             "missing carry owner",
         )
         for field in ("reason", "impact", "mitigation"):
@@ -202,8 +200,14 @@ def assess(record):
                 "mitigation": exception["mitigation"],
             }
         )
-    state = "RED_HOLD" if hard else "UNKNOWN_HOLD" if unresolved else (
-        "AMBER_REQUESTED" if carried else "GREEN_EVIDENCE_ONLY"
+    state = (
+        "RED_HOLD"
+        if hard
+        else (
+            "UNKNOWN_HOLD"
+            if unresolved
+            else ("AMBER_REQUESTED" if carried else "GREEN_EVIDENCE_ONLY")
+        )
     )
     return {
         "schema": SCHEMA,

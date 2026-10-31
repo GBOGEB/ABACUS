@@ -1,4 +1,5 @@
 """Negative resource leases and DAG guards; NO worker launch authority."""
+
 import copy
 import importlib.util
 import unittest
@@ -19,30 +20,58 @@ def sample():
     return {
         "schema": "codepurple.g3g_disjoint_plan.v1",
         "cohort": "G3G_READ_ONLY_TEST",
-        "merge_admission": "HOLD", "authority_transfer": False,
-        "active_workers_launched": None, "human_worker_hours": None,
+        "merge_admission": "HOLD",
+        "authority_transfer": False,
+        "active_workers_launched": None,
+        "human_worker_hours": None,
         "parents": [{"id": x, "accepted_closed": False} for x in PARENTS],
         "lanes": [
-            {"id": "gov", "repo": "GBOGEB/ABACUS", "parent": "GOVERNANCE",
-             "head_sha": SHA, "state": "NATIVE_PASS", "depends_on": [],
-             "lease_paths": ["ci/governance/tests/new.py"],
-             "receipt": {"source_sha": SHA, "run_id": 100,
-                         "attempt": 1, "job_id": 200, "conclusion": "success"},
-             "first_red_fingerprint": None, "accepted_root_id": None,
-             "worker_hours": None, "worker_capacity": None},
-            {"id": "cred", "repo": "GBOGEB/pipeline-automation-hub",
-             "parent": "CREDENTIALS", "head_sha": SHA,
-             "state": "HOLD_OWNER", "depends_on": ["gov"],
-             "lease_paths": [],
-             "first_red_fingerprint": "NO_CROSS_REPO_READ_TOKEN",
-             "observed_occurrences": 3, "accepted_root_id": None,
-             "worker_hours": None, "worker_capacity": None},
-            {"id": "probe", "repo": "GBOGEB/pipeline-automation-hub",
-             "parent": "FEDERATION", "head_sha": SHA,
-             "state": "READ_ONLY_PROBE", "depends_on": ["gov"],
-             "lease_paths": ["mission-control/qa/probe.py"],
-             "accepted_root_id": None, "worker_hours": None,
-             "worker_capacity": None},
+            {
+                "id": "gov",
+                "repo": "GBOGEB/ABACUS",
+                "parent": "GOVERNANCE",
+                "head_sha": SHA,
+                "state": "NATIVE_PASS",
+                "depends_on": [],
+                "lease_paths": ["ci/governance/tests/new.py"],
+                "receipt": {
+                    "source_sha": SHA,
+                    "run_id": 100,
+                    "attempt": 1,
+                    "job_id": 200,
+                    "conclusion": "success",
+                },
+                "first_red_fingerprint": None,
+                "accepted_root_id": None,
+                "worker_hours": None,
+                "worker_capacity": None,
+            },
+            {
+                "id": "cred",
+                "repo": "GBOGEB/pipeline-automation-hub",
+                "parent": "CREDENTIALS",
+                "head_sha": SHA,
+                "state": "HOLD_OWNER",
+                "depends_on": ["gov"],
+                "lease_paths": [],
+                "first_red_fingerprint": "NO_CROSS_REPO_READ_TOKEN",
+                "observed_occurrences": 3,
+                "accepted_root_id": None,
+                "worker_hours": None,
+                "worker_capacity": None,
+            },
+            {
+                "id": "probe",
+                "repo": "GBOGEB/pipeline-automation-hub",
+                "parent": "FEDERATION",
+                "head_sha": SHA,
+                "state": "READ_ONLY_PROBE",
+                "depends_on": ["gov"],
+                "lease_paths": ["mission-control/qa/probe.py"],
+                "accepted_root_id": None,
+                "worker_hours": None,
+                "worker_capacity": None,
+            },
         ],
     }
 
@@ -54,8 +83,9 @@ class G3GDisjointCrewTests(unittest.TestCase):
         self.assertEqual(x["read_only_unblocked_lanes"], ["probe"])
         self.assertEqual(x["graph_edges"], 2)
         self.assertEqual(x["max_dependency_depth_nodes_not_duration"], 2)
-        self.assertEqual(x["source_observed_occurrences"],
-                         {"NO_CROSS_REPO_READ_TOKEN": 3})
+        self.assertEqual(
+            x["source_observed_occurrences"], {"NO_CROSS_REPO_READ_TOKEN": 3}
+        )
         self.assertIsNone(x["effective_runner_slots"])
         self.assertFalse(x["source_write_permission_granted_by_viewer"])
 
@@ -73,8 +103,7 @@ class G3GDisjointCrewTests(unittest.TestCase):
 
     def test_overlapping_nested_source_paths_rejected(self):
         data = sample()
-        data["lanes"][1]["lease_paths"] = [
-            "mission-control/qa"]
+        data["lanes"][1]["lease_paths"] = ["mission-control/qa"]
         with self.assertRaisesRegex(ValueError, "overlapping source lease"):
             m.assess(data)
 
@@ -132,18 +161,28 @@ class G3GDisjointCrewTests(unittest.TestCase):
         data["lanes"][2]["observed_occurrences"] = 2
         x = m.assess(data)
         self.assertEqual(x["distinct_first_red_fingerprints"], 1)
-        self.assertEqual(x["fingerprint_manifestations_by_lane"][
-            "NO_CROSS_REPO_READ_TOKEN"], 2)
-        self.assertEqual(x["source_observed_occurrences"][
-            "NO_CROSS_REPO_READ_TOKEN"], 5)
+        self.assertEqual(
+            x["fingerprint_manifestations_by_lane"]["NO_CROSS_REPO_READ_TOKEN"], 2
+        )
+        self.assertEqual(
+            x["source_observed_occurrences"]["NO_CROSS_REPO_READ_TOKEN"], 5
+        )
         self.assertEqual(x["accepted_causal_root_closures"], 0)
 
     def test_w78_g3g_rejects_unsafe_cross_platform_paths(self):
         paths = (
-            chr(47) + "tmp/outside.py", "C:/repo/file.py",
-            r"ci\governance\probe.py", "a//b.py", "a/./b.py",
-            "a/../b.py", "a/", "a/\x00unsafe.py", "a/\x7funsafe.py",
-            "a:file.py", "folder.", "folder ",
+            chr(47) + "tmp/outside.py",
+            "C:/repo/file.py",
+            r"ci\governance\probe.py",
+            "a//b.py",
+            "a/./b.py",
+            "a/../b.py",
+            "a/",
+            "a/\x00unsafe.py",
+            "a/\x7funsafe.py",
+            "a:file.py",
+            "folder.",
+            "folder ",
         )
         for path in paths:
             with self.subTest(path=path):
@@ -154,7 +193,8 @@ class G3GDisjointCrewTests(unittest.TestCase):
 
     def test_w78_g3g_case_alias_or_parent_lease_fails_closed(self):
         paths = (
-            "ci/governance/tests", "CI/GOVERNANCE/TESTS/NEW.PY",
+            "ci/governance/tests",
+            "CI/GOVERNANCE/TESTS/NEW.PY",
             "ci/governance/tests/new.py/nested",
             "ci/governance/tests/new.py",
         )
@@ -163,9 +203,7 @@ class G3GDisjointCrewTests(unittest.TestCase):
                 doc = sample()
                 doc["lanes"][2]["repo"] = "gbogeb/abacus"
                 doc["lanes"][2]["lease_paths"] = [path]
-                with self.assertRaisesRegex(
-                    ValueError, "overlapping source lease"
-                ):
+                with self.assertRaisesRegex(ValueError, "overlapping source lease"):
                     m.assess(doc)
 
     def test_w78_g3g_rejects_intra_lane_overlap(self):
@@ -196,9 +234,7 @@ class G3GDisjointCrewTests(unittest.TestCase):
                 doc["lanes"][2]["lease_paths"] = [neighbor]
                 output = m.assess(doc)
                 self.assertTrue(output["source_path_leases_disjoint"])
-                self.assertFalse(
-                    output["source_write_permission_granted_by_viewer"]
-                )
+                self.assertFalse(output["source_write_permission_granted_by_viewer"])
 
     def test_w78_g3g_aba_invalid_lease_never_authenticates_worker(self):
         baseline = sample()
@@ -221,7 +257,6 @@ class G3GDisjointCrewTests(unittest.TestCase):
                     m.assess(doc)
 
 
-
 class G3GSutSourceLeaseTests(unittest.TestCase):
     """SUT targets and test-file edits require separate collision proofs."""
 
@@ -236,8 +271,7 @@ class G3GSutSourceLeaseTests(unittest.TestCase):
         self.assertTrue(result["source_path_leases_disjoint"])
         self.assertIsNone(result["sut_source_leases_disjoint"])
         self.assertFalse(result["sut_lease_census_complete"])
-        self.assertEqual(result["sut_unreported_lane_ids"],
-                         ["cred", "gov", "probe"])
+        self.assertEqual(result["sut_unreported_lane_ids"], ["cred", "gov", "probe"])
 
     def test_explicit_disjoint_sut_lease_is_positive_control(self):
         result = m.assess(self.declared())
@@ -279,24 +313,25 @@ class G3GSutSourceLeaseTests(unittest.TestCase):
     def test_repository_name_case_does_not_hide_lease_collisions(self):
         data = sample()
         data["lanes"][2]["repo"] = "GBOGEB/abacus"
-        data["lanes"][2]["lease_paths"] = list(
-            data["lanes"][0]["lease_paths"])
+        data["lanes"][2]["lease_paths"] = list(data["lanes"][0]["lease_paths"])
         with self.assertRaisesRegex(ValueError, "overlapping source lease"):
             m.assess(data)
 
         data = self.declared()
         data["lanes"][2]["repo"] = "GBOGEB/abacus"
-        data["lanes"][2]["sut_paths"] = list(
-            data["lanes"][0]["sut_paths"])
-        with self.assertRaisesRegex(ValueError,
-                                    "overlapping SUT source target"):
+        data["lanes"][2]["sut_paths"] = list(data["lanes"][0]["sut_paths"])
+        with self.assertRaisesRegex(ValueError, "overlapping SUT source target"):
             m.assess(data)
 
     def test_traversal_or_malformed_target_inventory_rejected(self):
-        for targets in ("integration/shared.py", ["../secret.py"],
-                        ["integration/./shared.py"], ["integration/shared.py"] * 2,
-                        ["C:/work/ABACUS/DMAIC_V3/analyze_recent_files.py"],
-                        ["DMAIC_V3/analyze_recent_files.py\x00"]):
+        for targets in (
+            "integration/shared.py",
+            ["../secret.py"],
+            ["integration/./shared.py"],
+            ["integration/shared.py"] * 2,
+            ["C:/work/ABACUS/DMAIC_V3/analyze_recent_files.py"],
+            ["DMAIC_V3/analyze_recent_files.py\x00"],
+        ):
             with self.subTest(targets=targets):
                 data = self.declared()
                 data["lanes"][0]["sut_paths"] = targets

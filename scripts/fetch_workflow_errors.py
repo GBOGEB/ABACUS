@@ -20,10 +20,7 @@ def get_workflow_runs():
     try:
         # Get the latest commit SHA
         result = subprocess.run(
-            ['git', 'rev-parse', 'HEAD'],
-            capture_output=True,
-            text=True,
-            check=True
+            ["git", "rev-parse", "HEAD"], capture_output=True, text=True, check=True
         )
         commit_sha = result.stdout.strip()
 
@@ -40,7 +37,7 @@ def get_workflow_runs():
 
 def analyze_workflow_files():
     """Analyze workflow files for common issues"""
-    workflow_dir = Path('.github/workflows')
+    workflow_dir = Path(".github/workflows")
 
     if not workflow_dir.exists():
         print("❌ No .github/workflows directory found")
@@ -50,48 +47,58 @@ def analyze_workflow_files():
 
     issues_found = []
 
-    for workflow_file in workflow_dir.glob('*.yml'):
+    for workflow_file in workflow_dir.glob("*.yml"):
         print(f"📄 Checking: {workflow_file.name}")
 
         try:
-            with open(workflow_file, 'r', encoding='utf-8') as f:
+            with open(workflow_file, "r", encoding="utf-8") as f:
                 content = f.read()
 
             # Check for common issues
             file_issues = []
 
             # Check 1: Missing required files
-            if 'requirements.txt' in content:
-                if not Path('requirements.txt').exists():
-                    file_issues.append("❌ References requirements.txt but file doesn't exist")
+            if "requirements.txt" in content:
+                if not Path("requirements.txt").exists():
+                    file_issues.append(
+                        "❌ References requirements.txt but file doesn't exist"
+                    )
 
-            if 'setup.py' in content:
-                if not Path('setup.py').exists():
+            if "setup.py" in content:
+                if not Path("setup.py").exists():
                     file_issues.append("❌ References setup.py but file doesn't exist")
 
-            if 'pyproject.toml' in content:
-                if not Path('pyproject.toml').exists():
-                    file_issues.append("❌ References pyproject.toml but file doesn't exist")
+            if "pyproject.toml" in content:
+                if not Path("pyproject.toml").exists():
+                    file_issues.append(
+                        "❌ References pyproject.toml but file doesn't exist"
+                    )
 
             # Check 2: Python version compatibility
-            if 'python-version' in content:
-                if '3.11' in content or '3.12' in content:
-                    file_issues.append("⚠️  Uses Python 3.11/3.12 - may have compatibility issues")
+            if "python-version" in content:
+                if "3.11" in content or "3.12" in content:
+                    file_issues.append(
+                        "⚠️  Uses Python 3.11/3.12 - may have compatibility issues"
+                    )
 
             # Check 3: Missing test directories
-            if 'pytest' in content or 'test' in content.lower():
-                if not Path('tests').exists() and not Path('test').exists():
-                    file_issues.append("⚠️  References tests but no tests/ directory found")
+            if "pytest" in content or "test" in content.lower():
+                if not Path("tests").exists() and not Path("test").exists():
+                    file_issues.append(
+                        "⚠️  References tests but no tests/ directory found"
+                    )
 
             # Check 4: Docker without Dockerfile
-            if 'docker' in content.lower():
-                if not Path('Dockerfile').exists():
+            if "docker" in content.lower():
+                if not Path("Dockerfile").exists():
                     file_issues.append("❌ References Docker but no Dockerfile found")
 
             # Check 5: Missing pre-commit config
-            if 'pre-commit' in content:
-                if not Path('.pre-commit-config.yaml').exists():
-                    file_issues.append("❌ References pre-commit but no .pre-commit-config.yaml found")
+            if "pre-commit" in content:
+                if not Path(".pre-commit-config.yaml").exists():
+                    file_issues.append(
+                        "❌ References pre-commit but no .pre-commit-config.yaml found"
+                    )
 
             if file_issues:
                 issues_found.append((workflow_file.name, file_issues))
@@ -113,14 +120,14 @@ def check_required_files():
     print("\n📋 Checking for required files...\n")
 
     required_files = {
-        'requirements.txt': 'Python dependencies',
-        'setup.py': 'Python package setup',
-        'pyproject.toml': 'Python project config',
-        'pytest.ini': 'Pytest configuration',
-        '.pre-commit-config.yaml': 'Pre-commit hooks',
-        'Dockerfile': 'Docker configuration',
-        'tests/': 'Test directory',
-        'docs/': 'Documentation directory',
+        "requirements.txt": "Python dependencies",
+        "setup.py": "Python package setup",
+        "pyproject.toml": "Python project config",
+        "pytest.ini": "Pytest configuration",
+        ".pre-commit-config.yaml": "Pre-commit hooks",
+        "Dockerfile": "Docker configuration",
+        "tests/": "Test directory",
+        "docs/": "Documentation directory",
     }
 
     missing = []
@@ -182,19 +189,19 @@ def generate_report():
     if missing_files:
         print("1. Create missing required files:")
         for missing in missing_files:
-            if 'requirements.txt' in missing:
+            if "requirements.txt" in missing:
                 print("   - Create requirements.txt with project dependencies")
-            elif 'setup.py' in missing:
+            elif "setup.py" in missing:
                 print("   - Create setup.py for package installation")
-            elif 'pyproject.toml' in missing:
+            elif "pyproject.toml" in missing:
                 print("   - Create pyproject.toml for modern Python config")
-            elif 'pytest.ini' in missing:
+            elif "pytest.ini" in missing:
                 print("   - Create pytest.ini for test configuration")
-            elif '.pre-commit-config.yaml' in missing:
+            elif ".pre-commit-config.yaml" in missing:
                 print("   - Create .pre-commit-config.yaml for code quality")
-            elif 'Dockerfile' in missing:
+            elif "Dockerfile" in missing:
                 print("   - Create Dockerfile for containerization")
-            elif 'tests/' in missing:
+            elif "tests/" in missing:
                 print("   - Create tests/ directory with test files")
 
     print("\n2. View detailed logs on GitHub:")
@@ -211,7 +218,8 @@ def generate_report():
 
     print("\n" + "=" * 80)
 
-if __name__ == '__main__':
+
+if __name__ == "__main__":
     try:
         generate_report()
     except KeyboardInterrupt:

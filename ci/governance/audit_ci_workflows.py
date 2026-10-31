@@ -13,7 +13,6 @@ from collections import Counter, defaultdict
 from dataclasses import dataclass
 from pathlib import Path
 
-
 ROOT = Path(__file__).resolve().parents[2]
 DEFAULT_POLICY = ROOT / "ci/governance/workflow_policy.json"
 DEFAULT_WORKFLOWS = ROOT / ".github/workflows"
@@ -97,7 +96,11 @@ def parse_workflow(path: Path) -> Workflow:
 
 
 def classify(filename: str, policy: dict) -> tuple[dict | None, list[int]]:
-    matches = [i for i, rule in enumerate(policy["rules"]) if re.search(rule["pattern"], filename)]
+    matches = [
+        i
+        for i, rule in enumerate(policy["rules"])
+        if re.search(rule["pattern"], filename)
+    ]
     if not matches:
         return None, []
     return policy["rules"][matches[0]], matches
@@ -118,7 +121,11 @@ def audit(workflow_dir: Path, policy: dict) -> dict:
         if len(matches) > 1:
             multiple_matches[workflow.file] = matches
         for command in workflow.commands:
-            if re.search(r"\b(pytest|ruff|flake8|pylint|mypy|black|bandit|semgrep|osv-scanner|pre-commit)\b", command, re.I):
+            if re.search(
+                r"\b(pytest|ruff|flake8|pylint|mypy|black|bandit|semgrep|osv-scanner|pre-commit)\b",
+                command,
+                re.I,
+            ):
                 command_owners[command].append(workflow.file)
         records.append(
             {
@@ -151,15 +158,23 @@ def audit(workflow_dir: Path, policy: dict) -> dict:
 
     return {
         "policy_id": policy["policy_id"],
-        "policy_sha256": hashlib.sha256(json.dumps(policy, sort_keys=True).encode()).hexdigest(),
+        "policy_sha256": hashlib.sha256(
+            json.dumps(policy, sort_keys=True).encode()
+        ).hexdigest(),
         "workflow_count": len(workflows),
         "classified_count": len(records),
         "unclassified": unclassified,
         "multiple_matches": multiple_matches,
         "missing_canonical": missing_canonical,
-        "cluster_counts": dict(sorted(Counter(row["cluster"] for row in records).items())),
-        "lifecycle_counts": dict(sorted(Counter(row["lifecycle"] for row in records).items())),
-        "disposition_counts": dict(sorted(Counter(row["disposition"] for row in records).items())),
+        "cluster_counts": dict(
+            sorted(Counter(row["cluster"] for row in records).items())
+        ),
+        "lifecycle_counts": dict(
+            sorted(Counter(row["lifecycle"] for row in records).items())
+        ),
+        "disposition_counts": dict(
+            sorted(Counter(row["disposition"] for row in records).items())
+        ),
         "repeated_quality_commands": repeated,
         "workflows": records,
     }
@@ -198,13 +213,23 @@ def render_markdown(report: dict, policy: dict) -> str:
         "manual": "Diagnostic or migration comparison only",
         "retire": "Remove after replacement evidence is accepted",
     }
-    for lifecycle, order in sorted(policy["lifecycle_order"].items(), key=lambda item: item[1]):
+    for lifecycle, order in sorted(
+        policy["lifecycle_order"].items(), key=lambda item: item[1]
+    ):
         lines.append(f"| {order} | `{lifecycle}` | {purpose[lifecycle]} |")
 
-    lines += ["", "## Cluster ownership", "", "| Cluster | Canonical workflow | Definitions | Intent |", "|---|---|---:|---|"]
+    lines += [
+        "",
+        "## Cluster ownership",
+        "",
+        "| Cluster | Canonical workflow | Definitions | Intent |",
+        "|---|---|---:|---|",
+    ]
     for cluster, data in policy["clusters"].items():
         canonical = f"`{data['canonical']}`" if data.get("canonical") else "—"
-        lines.append(f"| `{cluster}` | {canonical} | {report['cluster_counts'].get(cluster, 0)} | {data['intent']} |")
+        lines.append(
+            f"| `{cluster}` | {canonical} | {report['cluster_counts'].get(cluster, 0)} | {data['intent']} |"
+        )
 
     lines += [
         "",
@@ -223,11 +248,18 @@ def render_markdown(report: dict, policy: dict) -> str:
         "| Control | Workflows |",
         "|---|---|",
         "| PR write exceptions | "
-        + ", ".join(f"`{name}`" for name in policy["permission_controls"]["pr_write_allowed"])
+        + ", ".join(
+            f"`{name}`" for name in policy["permission_controls"]["pr_write_allowed"]
+        )
         + " |",
         "| `pull_request_target` write exceptions | "
         + (
-            ", ".join(f"`{name}`" for name in policy["permission_controls"]["pull_request_target_write_allowed"])
+            ", ".join(
+                f"`{name}`"
+                for name in policy["permission_controls"][
+                    "pull_request_target_write_allowed"
+                ]
+            )
             or "none"
         )
         + " |",
@@ -248,7 +280,9 @@ def render_markdown(report: dict, policy: dict) -> str:
     lines += ["", "## Repeated quality/test commands", ""]
     if report["repeated_quality_commands"]:
         for row in report["repeated_quality_commands"][:20]:
-            lines.append(f"- `{row['command']}` — {', '.join(f'`{x}`' for x in row['workflows'])}")
+            lines.append(
+                f"- `{row['command']}` — {', '.join(f'`{x}`' for x in row['workflows'])}"
+            )
     else:
         lines.append("No repeated quality/test commands detected.")
 
@@ -279,7 +313,9 @@ def main() -> int:
 
     if args.json_output:
         args.json_output.parent.mkdir(parents=True, exist_ok=True)
-        args.json_output.write_text(json.dumps(report, indent=2) + "\n", encoding="utf-8")
+        args.json_output.write_text(
+            json.dumps(report, indent=2) + "\n", encoding="utf-8"
+        )
     errors = []
     if args.markdown_output:
         if args.check:
@@ -308,14 +344,35 @@ def main() -> int:
 
     if report["unclassified"]:
         errors.append(f"unclassified workflows: {', '.join(report['unclassified'])}")
-    if policy["quality_gates"]["allow_multiple_rule_matches"] is False and report["multiple_matches"]:
+    if (
+        policy["quality_gates"]["allow_multiple_rule_matches"] is False
+        and report["multiple_matches"]
+    ):
         errors.append(f"multiple policy matches: {report['multiple_matches']}")
-    if policy["quality_gates"]["require_existing_canonical"] and report["missing_canonical"]:
-        errors.append(f"missing canonical workflows: {', '.join(report['missing_canonical'])}")
+    if (
+        policy["quality_gates"]["require_existing_canonical"]
+        and report["missing_canonical"]
+    ):
+        errors.append(
+            f"missing canonical workflows: {', '.join(report['missing_canonical'])}"
+        )
     if errors:
         print("CI governance failed: " + "; ".join(errors), file=sys.stderr)
         return 1
-    print(json.dumps({key: report[key] for key in ("workflow_count", "cluster_counts", "lifecycle_counts", "disposition_counts")}, indent=2))
+    print(
+        json.dumps(
+            {
+                key: report[key]
+                for key in (
+                    "workflow_count",
+                    "cluster_counts",
+                    "lifecycle_counts",
+                    "disposition_counts",
+                )
+            },
+            indent=2,
+        )
+    )
     return 0
 
 

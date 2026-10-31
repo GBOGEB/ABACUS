@@ -6,6 +6,7 @@ pending stamps, A-B-A replay guard, event subscriptions or review obligations.
 A zero-routed event is a measured routing outcome, not permission to suppress
 future review/CI events or close an engineering root.
 """
+
 from __future__ import annotations
 
 import argparse
@@ -19,15 +20,31 @@ from pathlib import Path
 REPOSITORY = "GBOGEB/ABACUS"
 SCHEMA = "abacus.cbd.feedback-route-yield.w38.v1"
 SHA = re.compile(r"[0-9a-f]{40}\Z")
-DIRECT_EVENTS = frozenset({
-    "issues", "issue_comment", "pull_request", "pull_request_review",
-    "pull_request_review_comment", "schedule", "workflow_dispatch"
-})
+DIRECT_EVENTS = frozenset(
+    {
+        "issues",
+        "issue_comment",
+        "pull_request",
+        "pull_request_review",
+        "pull_request_review_comment",
+        "schedule",
+        "workflow_dispatch",
+    }
+)
 ALLOWED_EVENTS = DIRECT_EVENTS | {"workflow_run"}
-TERMINAL = frozenset({
-    "success", "failure", "cancelled", "timed_out",
-    "neutral", "skipped", "action_required", "startup_failure", "stale"
-})
+TERMINAL = frozenset(
+    {
+        "success",
+        "failure",
+        "cancelled",
+        "timed_out",
+        "neutral",
+        "skipped",
+        "action_required",
+        "startup_failure",
+        "stale",
+    }
+)
 
 
 def require(predicate: bool, reason: str) -> None:
@@ -36,8 +53,10 @@ def require(predicate: bool, reason: str) -> None:
 
 
 def canonical(value: object) -> bytes:
-    return (json.dumps(value, sort_keys=True, separators=(",", ":"),
-                       ensure_ascii=True) + "\n").encode("ascii")
+    return (
+        json.dumps(value, sort_keys=True, separators=(",", ":"), ensure_ascii=True)
+        + "\n"
+    ).encode("ascii")
 
 
 def identity(value: object, name: str) -> int:
@@ -63,17 +82,26 @@ def parse_route_output(raw: str) -> list[int]:
     return sorted(rows)
 
 
-def build(event: dict, *, route_output: str, event_name: str,
-          repository: str, main_sha: str, gate_run_id: int,
-          gate_attempt: int, observed_utc: str) -> dict:
+def build(
+    event: dict,
+    *,
+    route_output: str,
+    event_name: str,
+    repository: str,
+    main_sha: str,
+    gate_run_id: int,
+    gate_attempt: int,
+    observed_utc: str,
+) -> dict:
     require(type(event) is dict, "EVENT_PAYLOAD_REQUIRED")
     require(repository == REPOSITORY, "OWNER_BOUNDARY")
     main_sha = sha(main_sha, "FEEDBACK_HEAD")
     identity(gate_run_id, "GATE_RUN_ID")
     identity(gate_attempt, "GATE_ATTEMPT")
     require(event_name in ALLOWED_EVENTS, "EVENT_NOT_SUBSCRIBED")
-    require(type(observed_utc) is str and observed_utc.endswith("Z"),
-            "UTC_SOURCE_TIMESTAMP")
+    require(
+        type(observed_utc) is str and observed_utc.endswith("Z"), "UTC_SOURCE_TIMESTAMP"
+    )
     try:
         t = dt.datetime.fromisoformat(observed_utc.replace("Z", "+00:00"))
     except ValueError as exc:
@@ -85,8 +113,10 @@ def build(event: dict, *, route_output: str, event_name: str,
     if event_name == "workflow_run":
         run = event.get("workflow_run")
         require(type(run) is dict, "UPSTREAM_RUN_REQUIRED")
-        require(run.get("status") == "completed"
-                and run.get("conclusion") in TERMINAL, "UPSTREAM_TERMINAL_REQUIRED")
+        require(
+            run.get("status") == "completed" and run.get("conclusion") in TERMINAL,
+            "UPSTREAM_TERMINAL_REQUIRED",
+        )
         upstream = {
             "run_id": identity(run.get("id"), "UPSTREAM_RUN_ID"),
             "attempt": identity(run.get("run_attempt"), "UPSTREAM_ATTEMPT"),
@@ -130,32 +160,38 @@ def build(event: dict, *, route_output: str, event_name: str,
 
 
 def verify(receipt: dict) -> None:
-    require(type(receipt) is dict and receipt.get("schema") == SCHEMA,
-            "RECEIPT_SCHEMA")
+    require(type(receipt) is dict and receipt.get("schema") == SCHEMA, "RECEIPT_SCHEMA")
     expected = receipt.get("receipt_sha256")
-    require(type(expected) is str and re.fullmatch(r"[0-9a-f]{64}", expected),
-            "RECEIPT_HASH")
+    require(
+        type(expected) is str and re.fullmatch(r"[0-9a-f]{64}", expected),
+        "RECEIPT_HASH",
+    )
     source = {k: v for k, v in receipt.items() if k != "receipt_sha256"}
-    require(hashlib.sha256(canonical(source)).hexdigest() == expected,
-            "RECEIPT_DRIFT")
-    require(receipt.get("merge_admission") == "HOLD"
-            and receipt.get("security_waiver") is False
-            and receipt.get("eligible_suppression") is False
-            and receipt.get("formal_root_closures") is None
-            and receipt.get("authority_transfer") is False
-            and receipt.get("remote_dispatch") is False,
-            "AUTHORITY_PROMOTION")
-    require(receipt.get("source_repository") == REPOSITORY
-            and type(receipt.get("github_event_sha")) is str
-            and SHA.fullmatch(receipt["github_event_sha"])
-            and receipt.get("main_head_verified") is False,
-            "EVENT_SHA_NOT_MAIN_ATTESTATION")
-    require(receipt.get("route_stage") == "ROUTE_OUTPUT_OBSERVED"
-            and receipt.get("evaluated_pr_count") is None
-            and receipt.get("published_check_count") is None
-            and receipt.get("rerun_reduction_verified") is None
-            and receipt.get("source_coverage_delta") is None,
-            "ROUTE_NOT_EVALUATION_PROOF")
+    require(hashlib.sha256(canonical(source)).hexdigest() == expected, "RECEIPT_DRIFT")
+    require(
+        receipt.get("merge_admission") == "HOLD"
+        and receipt.get("security_waiver") is False
+        and receipt.get("eligible_suppression") is False
+        and receipt.get("formal_root_closures") is None
+        and receipt.get("authority_transfer") is False
+        and receipt.get("remote_dispatch") is False,
+        "AUTHORITY_PROMOTION",
+    )
+    require(
+        receipt.get("source_repository") == REPOSITORY
+        and type(receipt.get("github_event_sha")) is str
+        and SHA.fullmatch(receipt["github_event_sha"])
+        and receipt.get("main_head_verified") is False,
+        "EVENT_SHA_NOT_MAIN_ATTESTATION",
+    )
+    require(
+        receipt.get("route_stage") == "ROUTE_OUTPUT_OBSERVED"
+        and receipt.get("evaluated_pr_count") is None
+        and receipt.get("published_check_count") is None
+        and receipt.get("rerun_reduction_verified") is None
+        and receipt.get("source_coverage_delta") is None,
+        "ROUTE_NOT_EVALUATION_PROOF",
+    )
     identity(receipt.get("gate_run_id"), "GATE_RUN_ID")
     identity(receipt.get("gate_attempt"), "GATE_ATTEMPT")
     require(receipt.get("event") in ALLOWED_EVENTS, "RECEIPT_EVENT")
@@ -163,22 +199,29 @@ def verify(receipt: dict) -> None:
     require(type(prs) is list and len(prs) <= 300, "RECEIPT_ROUTE_LIST")
     for pr in prs:
         identity(pr, "ROUTED_PR")
-    require(len(prs) == len(set(prs)) and prs == sorted(prs),
-            "RECEIPT_DUPLICATE_OR_UNORDERED")
+    require(
+        len(prs) == len(set(prs)) and prs == sorted(prs),
+        "RECEIPT_DUPLICATE_OR_UNORDERED",
+    )
     upstream = receipt.get("upstream")
     if receipt["event"] == "workflow_run":
-        require(type(upstream) is dict
-                and upstream.get("conclusion") in TERMINAL,
-                "RECEIPT_UPSTREAM_TERMINAL")
+        require(
+            type(upstream) is dict and upstream.get("conclusion") in TERMINAL,
+            "RECEIPT_UPSTREAM_TERMINAL",
+        )
         identity(upstream.get("run_id"), "UPSTREAM_RUN_ID")
         identity(upstream.get("attempt"), "UPSTREAM_ATTEMPT")
         sha(upstream.get("head_sha"), "UPSTREAM_HEAD")
     else:
         require(upstream is None, "UNEXPECTED_UPSTREAM")
-    require(receipt["routed_unique_pr_count"] ==
-            len(receipt["routed_pr_numbers"]), "ROUTE_COUNT_DRIFT")
-    require(receipt["zero_route_observed"] ==
-            (receipt["routed_unique_pr_count"] == 0), "FALSE_NOOP")
+    require(
+        receipt["routed_unique_pr_count"] == len(receipt["routed_pr_numbers"]),
+        "ROUTE_COUNT_DRIFT",
+    )
+    require(
+        receipt["zero_route_observed"] == (receipt["routed_unique_pr_count"] == 0),
+        "FALSE_NOOP",
+    )
 
 
 def main() -> None:

@@ -41,7 +41,9 @@ class WorkspaceUtilities:
     def save_json(data: Any, path: Path | str) -> None:
         output_path = Path(path)
         output_path.parent.mkdir(parents=True, exist_ok=True)
-        output_path.write_text(json.dumps(data, indent=2, default=str), encoding="utf-8")
+        output_path.write_text(
+            json.dumps(data, indent=2, default=str), encoding="utf-8"
+        )
 
     @staticmethod
     def save_yaml(data: Any, path: Path | str) -> None:
@@ -85,7 +87,9 @@ class PathUtilities:
         excluded = set(exclude_dirs or [])
         files: list[Path] = []
         for pattern in patterns:
-            candidates = root_path.rglob(pattern) if recursive else root_path.glob(pattern)
+            candidates = (
+                root_path.rglob(pattern) if recursive else root_path.glob(pattern)
+            )
             for candidate in candidates:
                 if not candidate.is_file():
                     continue
@@ -111,7 +115,9 @@ class LoggingUtilities:
         if not logger.handlers:
             handler = logging.StreamHandler()
             suffix = f" [{session_id}]" if session_id else ""
-            handler.setFormatter(logging.Formatter(f"%(levelname)s:%(name)s{suffix}: %(message)s"))
+            handler.setFormatter(
+                logging.Formatter(f"%(levelname)s:%(name)s{suffix}: %(message)s")
+            )
             logger.addHandler(handler)
         return logger
 

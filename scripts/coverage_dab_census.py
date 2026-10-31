@@ -9,7 +9,6 @@ import os
 from pathlib import Path
 from typing import Any
 
-
 SOURCE_ROOTS = {
     "13_CORE_SYSTEMS",
     "DMAIC_V3",
@@ -138,13 +137,17 @@ def build_census(
         if branch_total_raw is None or branch_covered_raw is None:
             branch_total = branch_covered = branch_missed = None
         else:
-            branch_total, branch_covered = int(branch_total_raw), int(branch_covered_raw)
+            branch_total, branch_covered = int(branch_total_raw), int(
+                branch_covered_raw
+            )
             if not 0 <= branch_covered <= branch_total:
                 raise ValueError(f"{path}: invalid measured branch counts")
             branch_missed = branch_total - branch_covered
         contexts = measured_contexts(data)
         source_class = classify_source(path, entries)
-        metadata = entries.get(path, {}) if isinstance(entries.get(path, {}), dict) else {}
+        metadata = (
+            entries.get(path, {}) if isinstance(entries.get(path, {}), dict) else {}
+        )
         tier = str(metadata.get("criticality", "WITHHELD"))
 
         matched_outcomes = [
@@ -200,9 +203,7 @@ def build_census(
                 "disposition": disposition,
                 "test_state": test_state,
                 "test_state_evidence": (
-                    "JUNIT_CONTEXT_JOIN (MEASURED)"
-                    if matched_outcomes
-                    else "WITHHELD"
+                    "JUNIT_CONTEXT_JOIN (MEASURED)" if matched_outcomes else "WITHHELD"
                 ),
                 "existing_test_surface": contexts,
                 "existing_test_surface_evidence": surface_evidence,
@@ -232,17 +233,18 @@ def build_census(
     active_statements = sum(row["statements"] for row in active)
     active_covered = sum(row["covered_statements"] for row in active)
     branches_complete = bool(active) and all(
-        row["eligible_branches"] is not None
-        and row["covered_branches"] is not None
+        row["eligible_branches"] is not None and row["covered_branches"] is not None
         for row in active
     )
     active_branch_total = (
         sum(int(row["eligible_branches"]) for row in active)
-        if branches_complete else None
+        if branches_complete
+        else None
     )
     active_branch_covered = (
         sum(int(row["covered_branches"]) for row in active)
-        if branches_complete else None
+        if branches_complete
+        else None
     )
     active_pct = (
         100.0 * active_covered / active_statements if active_statements else 0.0
@@ -270,7 +272,9 @@ def build_census(
         "schema": "abacus-coverage-dab/1.0.0",
         "exact_sha": exact_sha or os.environ.get("GITHUB_SHA", "WITHHELD"),
         "measurement": {
-            "branch_coverage": bool(coverage.get("meta", {}).get("branch_coverage", False)),
+            "branch_coverage": bool(
+                coverage.get("meta", {}).get("branch_coverage", False)
+            ),
             "dynamic_context": "test_function",
             "test_source_mapping": "DYNAMIC_CONTEXT",
         },
@@ -284,7 +288,8 @@ def build_census(
             "covered_branches": active_branch_covered,
             "missed_branches": (
                 active_branch_total - active_branch_covered
-                if branches_complete else None
+                if branches_complete
+                else None
             ),
         },
         "full_measurement": coverage.get("totals", {}),

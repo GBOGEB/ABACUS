@@ -1,19 +1,25 @@
 #!/usr/bin/env python3
 """Independent DOW recomputation of QPS W285 federation depth."""
+
 from __future__ import annotations
-import hashlib, json, math
+
+import hashlib
+import json
+import math
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
-DEPTH = ROOT/"federation/w285/source/QPS_W285_FEDERATION_FUNCTION_DEPTH_v0.1.json"
-TOPO = ROOT/"federation/w285/source/QPS_REPO_FUNCTION_TOPOLOGY_v1.yaml"
+DEPTH = ROOT / "federation/w285/source/QPS_W285_FEDERATION_FUNCTION_DEPTH_v0.1.json"
+TOPO = ROOT / "federation/w285/source/QPS_REPO_FUNCTION_TOPOLOGY_v1.yaml"
 EXPECTED_DEPTH = "691680cdf11289142b402a0ae02c95d46a246473"
 EXPECTED_TOPO = "df0ee845697578cd644691b81eafb2465249d772"
 
 
 def git_blob(path):
     b = path.read_bytes()
-    return hashlib.sha1(f"blob {len(b)}\0".encode()+b, usedforsecurity=False).hexdigest()
+    return hashlib.sha1(
+        f"blob {len(b)}\0".encode() + b, usedforsecurity=False
+    ).hexdigest()
 
 
 def current_use(text):
@@ -27,7 +33,8 @@ def current_use(text):
         elif line.startswith("    function:"):
             fn = line.split(":", 1)[1].strip()
             inside = False
-            if fn != "NONE": out.setdefault(fn, [])
+            if fn != "NONE":
+                out.setdefault(fn, [])
         elif line == "    current_use:":
             inside = fn in out
         elif inside and line.startswith("      - "):
@@ -50,18 +57,29 @@ def recompute():
         n = sum(bool(a["credited"]) for a in atoms)
         m = len(atoms)
         assert n == f["numerator"] and m == f["denominator"]
-        per.append(n/m)
+        per.append(n / m)
         cred += n
         den += m
-    D = sum(per)/len(per)
-    pooled = cred/den
-    B = len(d["covered_functions"])/(len(d["covered_functions"])+len(d["uncovered_functions"]))
-    PEN = B*D
-    assert math.isclose(B, 1/3, abs_tol=1e-12)
+    D = sum(per) / len(per)
+    pooled = cred / den
+    B = len(d["covered_functions"]) / (
+        len(d["covered_functions"]) + len(d["uncovered_functions"])
+    )
+    PEN = B * D
+    assert math.isclose(B, 1 / 3, abs_tol=1e-12)
     assert math.isclose(D, 0.6, abs_tol=1e-12)
-    assert math.isclose(pooled, 9/16, abs_tol=1e-12)
+    assert math.isclose(pooled, 9 / 16, abs_tol=1e-12)
     assert math.isclose(PEN, 0.2, abs_tol=1e-12)
-    return {"status": "PASS_INDEPENDENT_RECOMPUTE", "B": B, "D_equal_function": D, "pooled_atom_ratio": pooled, "PEN": PEN, "credited_atoms": cred, "atom_denominator": den}
+    return {
+        "status": "PASS_INDEPENDENT_RECOMPUTE",
+        "B": B,
+        "D_equal_function": D,
+        "pooled_atom_ratio": pooled,
+        "PEN": PEN,
+        "credited_atoms": cred,
+        "atom_denominator": den,
+    }
+
 
 if __name__ == "__main__":
     print(json.dumps(recompute(), sort_keys=True))

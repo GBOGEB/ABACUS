@@ -3,6 +3,7 @@
 Historical totals, current queue totals and sampled workflow names have distinct
 denominators. Default-branch completions are NOT assumed to be no-ops.
 """
+
 from __future__ import annotations
 
 import argparse
@@ -57,14 +58,23 @@ def _queue(name, payload, expected_sha=None):
             raise ValueError(name + " workflow identity missing")
         if expected_sha is not None and run.get("head_sha") != expected_sha:
             raise ValueError(name + " source SHA mismatch")
-        clean.append({"id": ident, "name": run["name"],
-                      "event": run.get("event", "UNKNOWN"),
-                      "head_sha": run.get("head_sha"),
-                      "head_branch": run.get("head_branch"),
-                      "created_at": run.get("created_at")})
+        clean.append(
+            {
+                "id": ident,
+                "name": run["name"],
+                "event": run.get("event", "UNKNOWN"),
+                "head_sha": run.get("head_sha"),
+                "head_branch": run.get("head_branch"),
+                "created_at": run.get("created_at"),
+            }
+        )
     clean.sort(key=lambda r: r["id"])
-    return {"total": total, "sampled": len(clean),
-            "complete": len(clean) == total, "runs": clean}
+    return {
+        "total": total,
+        "sampled": len(clean),
+        "complete": len(clean) == total,
+        "runs": clean,
+    }
 
 
 def analyze(data):
@@ -80,11 +90,16 @@ def analyze(data):
     main = _queue("main", data.get("main_queued"), sha)
     if main["total"] > repository["total"]:
         raise ValueError("main queue cannot exceed repository queue")
-    sampled_feedback = [r for r in main["runs"] if
-                        r["name"] == FEEDBACK and r["event"] == "workflow_run"]
+    sampled_feedback = [
+        r
+        for r in main["runs"]
+        if r["name"] == FEEDBACK and r["event"] == "workflow_run"
+    ]
     return {
-        "schema": SCHEMA + ".receipt", "source_repository": REPO,
-        "main_sha": sha, "observed_at": data["observed_at"],
+        "schema": SCHEMA + ".receipt",
+        "source_repository": REPO,
+        "main_sha": sha,
+        "observed_at": data["observed_at"],
         "repo_queued_total": repository["total"],
         "main_queued_total": main["total"],
         "main_feedback_workflow_run_sample": len(sampled_feedback),
@@ -95,8 +110,8 @@ def analyze(data):
         ),
         "feedback_fraction_of_main_queued_pct": (
             round(100 * len(sampled_feedback) / main["total"], 2)
-            if main["complete"] and main["total"] else
-            (0.0 if main["complete"] else None)
+            if main["complete"] and main["total"]
+            else (0.0 if main["complete"] else None)
         ),
         "feedback_runs": sampled_feedback,
         "skip_eligibility": "UNKNOWN_UNTIL_EXACT_OPEN_PR_LINKAGE_PROVEN",
@@ -116,12 +131,13 @@ def emit(data, output):
     # on Windows, so the manifest would not bind the receipt on disk.
     report = (canonical(result) + "\n").encode("utf-8")
     (output / "pressure.json").write_bytes(report)
-    manifest = {"schema": SCHEMA + ".manifest",
-                "sha256": {"pressure.json": hashlib.sha256(report).hexdigest()},
-                "source_sha": result["main_sha"], "authority_transfer": False}
-    (output / "manifest.json").write_bytes(
-        (canonical(manifest) + "\n").encode("utf-8")
-    )
+    manifest = {
+        "schema": SCHEMA + ".manifest",
+        "sha256": {"pressure.json": hashlib.sha256(report).hexdigest()},
+        "source_sha": result["main_sha"],
+        "authority_transfer": False,
+    }
+    (output / "manifest.json").write_bytes((canonical(manifest) + "\n").encode("utf-8"))
     return result
 
 
@@ -141,9 +157,14 @@ def collect_live(expected_sha, observed_at):
     base = "/repos/" + REPO + "/actions/runs?status=queued"
     repository = github.request("GET", base + suffix)
     main = github.request("GET", base + "&head_sha=" + expected_sha + suffix)
-    return {"schema": SCHEMA, "repository": REPO,
-            "main_sha": expected_sha, "observed_at": observed_at,
-            "repository_queued": repository, "main_queued": main}
+    return {
+        "schema": SCHEMA,
+        "repository": REPO,
+        "main_sha": expected_sha,
+        "observed_at": observed_at,
+        "repository_queued": repository,
+        "main_queued": main,
+    }
 
 
 def main():
@@ -153,8 +174,11 @@ def main():
     parser.add_argument("--fixture", type=Path)
     parser.add_argument("--output", type=Path, required=True)
     args = parser.parse_args()
-    input_data = (json.loads(args.fixture.read_text(encoding="utf-8"))
-                  if args.fixture else collect_live(args.sha, args.observed_at))
+    input_data = (
+        json.loads(args.fixture.read_text(encoding="utf-8"))
+        if args.fixture
+        else collect_live(args.sha, args.observed_at)
+    )
     if input_data["main_sha"] != args.sha:
         raise ValueError("expected SHA differs from input")
     print(canonical(emit(input_data, args.output)))

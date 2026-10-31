@@ -10,21 +10,21 @@ DMAIC V3.3 - Code Health Check Script
 Runs comprehensive health checks on all Python files
 """
 
-import subprocess
 import json
-from pathlib import Path
-from datetime import datetime
+import subprocess
 import sys
+from datetime import datetime
+from pathlib import Path
 
 
 def run_pylint_check(file_path: Path) -> dict:
     """Run pylint on a Python file"""
     try:
         result = subprocess.run(
-            ['python', '-m', 'pylint', str(file_path), '--output-format=json'],
+            ["python", "-m", "pylint", str(file_path), "--output-format=json"],
             capture_output=True,
             text=True,
-            timeout=30
+            timeout=30,
         )
         if result.stdout:
             try:
@@ -40,8 +40,8 @@ def run_pylint_check(file_path: Path) -> dict:
 def run_syntax_check(file_path: Path) -> tuple:
     """Check Python syntax"""
     try:
-        with open(file_path, 'r', encoding='utf-8') as f:
-            compile(f.read(), str(file_path), 'exec')
+        with open(file_path, "r", encoding="utf-8") as f:
+            compile(f.read(), str(file_path), "exec")
         return True, None
     except SyntaxError as e:
         return False, f"Line {e.lineno}: {e.msg}"
@@ -52,35 +52,36 @@ def run_syntax_check(file_path: Path) -> tuple:
 def count_lines(file_path: Path) -> dict:
     """Count lines of code"""
     try:
-        with open(file_path, 'r', encoding='utf-8') as f:
+        with open(file_path, "r", encoding="utf-8") as f:
             lines = f.readlines()
 
         total = len(lines)
-        code = sum(1 for line in lines if line.strip() and not line.strip().startswith('#'))
-        comments = sum(1 for line in lines if line.strip().startswith('#'))
+        code = sum(
+            1 for line in lines if line.strip() and not line.strip().startswith("#")
+        )
+        comments = sum(1 for line in lines if line.strip().startswith("#"))
         blank = total - code - comments
 
-        return {
-            'total': total,
-            'code': code,
-            'comments': comments,
-            'blank': blank
-        }
+        return {"total": total, "code": code, "comments": comments, "blank": blank}
     except Exception:
-        return {'total': 0, 'code': 0, 'comments': 0, 'blank': 0}
+        return {"total": 0, "code": 0, "comments": 0, "blank": 0}
 
 
 def main():
-    print("="*80)
+    print("=" * 80)
     print("DMAIC V3.3 - Code Health Check")
-    print("="*80)
+    print("=" * 80)
     print()
 
     python_files = []
-    for pattern in ['DMAIC_V3/**/*.py', 'src/**/*.py']:
-        python_files.extend(Path('.').glob(pattern))
+    for pattern in ["DMAIC_V3/**/*.py", "src/**/*.py"]:
+        python_files.extend(Path(".").glob(pattern))
 
-    python_files = [f for f in python_files if f.exists() and 'venv' not in str(f) and '__pycache__' not in str(f)]
+    python_files = [
+        f
+        for f in python_files
+        if f.exists() and "venv" not in str(f) and "__pycache__" not in str(f)
+    ]
 
     print(f"Found {len(python_files)} Python files to check")
     print()
@@ -96,12 +97,12 @@ def main():
         pylint_issues = run_pylint_check(file_path)
 
         file_result = {
-            'file': str(file_path),
-            'syntax_ok': syntax_ok,
-            'syntax_error': syntax_error,
-            'line_counts': line_counts,
-            'pylint_issues': len(pylint_issues),
-            'pylint_details': pylint_issues[:5] if pylint_issues else []
+            "file": str(file_path),
+            "syntax_ok": syntax_ok,
+            "syntax_error": syntax_error,
+            "line_counts": line_counts,
+            "pylint_issues": len(pylint_issues),
+            "pylint_details": pylint_issues[:5] if pylint_issues else [],
         }
 
         results.append(file_result)
@@ -115,13 +116,13 @@ def main():
             print(f"  ✅ OK ({line_counts['code']} LOC)")
 
     print()
-    print("="*80)
+    print("=" * 80)
     print("CODE HEALTH SUMMARY")
-    print("="*80)
+    print("=" * 80)
     print()
 
-    syntax_errors = sum(1 for r in results if not r['syntax_ok'])
-    total_loc = sum(r['line_counts']['code'] for r in results)
+    syntax_errors = sum(1 for r in results if not r["syntax_ok"])
+    total_loc = sum(r["line_counts"]["code"] for r in results)
 
     print(f"Total Files: {len(results)}")
     print(f"Total LOC: {total_loc}")
@@ -129,22 +130,22 @@ def main():
     print(f"Total Pylint Issues: {total_issues}")
     print()
 
-    output_file = Path('artifacts/json/code_health_report.json')
+    output_file = Path("artifacts/json/code_health_report.json")
     output_file.parent.mkdir(parents=True, exist_ok=True)
 
     health_report = {
-        'timestamp': datetime.now().isoformat(),
-        'version': '3.3.0-enhanced',
-        'summary': {
-            'total_files': len(results),
-            'total_loc': total_loc,
-            'syntax_errors': syntax_errors,
-            'pylint_issues': total_issues
+        "timestamp": datetime.now().isoformat(),
+        "version": "3.3.0-enhanced",
+        "summary": {
+            "total_files": len(results),
+            "total_loc": total_loc,
+            "syntax_errors": syntax_errors,
+            "pylint_issues": total_issues,
         },
-        'files': results
+        "files": results,
     }
 
-    with open(output_file, 'w', encoding='utf-8') as f:
+    with open(output_file, "w", encoding="utf-8") as f:
         json.dump(health_report, f, indent=2)
 
     print(f"✅ Code health report saved to: {output_file}")
@@ -157,5 +158,6 @@ def main():
     print()
     print("✅ All files passed syntax check!")
 
-if __name__ == '__main__':
+
+if __name__ == "__main__":
     main()

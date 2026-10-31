@@ -14,7 +14,9 @@ from typing import Any
 try:
     from scripts import ci_false_green_lint as false_green
     from scripts import coverage_dab_census as dab
-except ModuleNotFoundError:  # direct execution: python scripts/mip_test_check_completeness.py
+except (
+    ModuleNotFoundError
+):  # direct execution: python scripts/mip_test_check_completeness.py
     import ci_false_green_lint as false_green
     import coverage_dab_census as dab
 
@@ -45,8 +47,12 @@ def load_json(path: Path | None) -> dict[str, Any]:
 
 def git_head(root: Path) -> str:
     result = subprocess.run(
-        ["git", "rev-parse", "HEAD"], cwd=root, text=True,
-        stdout=subprocess.PIPE, stderr=subprocess.PIPE, check=False,
+        ["git", "rev-parse", "HEAD"],
+        cwd=root,
+        text=True,
+        stdout=subprocess.PIPE,
+        stderr=subprocess.PIPE,
+        check=False,
     )
     return result.stdout.strip() if result.returncode == 0 else "WITHHELD"
 
@@ -57,7 +63,9 @@ def contains_pytest_tests(path: Path) -> bool:
     except (OSError, SyntaxError, UnicodeDecodeError):
         return False
     for node in module.body:
-        if isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef)) and node.name.startswith("test_"):
+        if isinstance(
+            node, (ast.FunctionDef, ast.AsyncFunctionDef)
+        ) and node.name.startswith("test_"):
             return True
         if isinstance(node, ast.ClassDef) and node.name.startswith("Test"):
             if any(
@@ -70,18 +78,22 @@ def contains_pytest_tests(path: Path) -> bool:
 
 
 def discover_inventory(root: Path) -> dict[str, Any]:
-    files = [path for path in root.rglob("*") if path.is_file() and ".git" not in path.parts]
+    files = [
+        path for path in root.rglob("*") if path.is_file() and ".git" not in path.parts
+    ]
     workflows = sorted(
-        path for path in files
-        if path.parent == root / ".github" / "workflows" and path.suffix in {".yml", ".yaml"}
+        path
+        for path in files
+        if path.parent == root / ".github" / "workflows"
+        and path.suffix in {".yml", ".yaml"}
     )
     test_like = sorted(
-        path for path in files
-        if path.suffix == ".py" and contains_pytest_tests(path)
+        path for path in files if path.suffix == ".py" and contains_pytest_tests(path)
     )
     canonical = [path for path in test_like if path.is_relative_to(root / "tests")]
     report_only = [
-        path for path in test_like
+        path
+        for path in test_like
         if path.is_relative_to(root / "DMAIC_V3" / "tests")
         or (
             path.is_relative_to(root / "integration")
@@ -92,10 +104,12 @@ def discover_inventory(root: Path) -> dict[str, Any]:
     orphan = [path for path in test_like if path not in known]
     test_set = set(test_like)
     source = [
-        path for path in files
+        path
+        for path in files
         if path.suffix == ".py"
         and path not in test_set
-        and dab.classify_source(path.relative_to(root).as_posix(), {}) == "ACTIVE_SOURCE"
+        and dab.classify_source(path.relative_to(root).as_posix(), {})
+        == "ACTIVE_SOURCE"
     ]
     return {
         "file_count": len(files),
@@ -144,8 +158,12 @@ def workflow_triggers(text: str) -> list[str]:
 def workflow_shape(path: Path, root: Path) -> dict[str, Any]:
     text = path.read_text(encoding="utf-8")
     jobs = top_level_block(text.splitlines(), "jobs")
-    job_count = sum(bool(re.match(r"^  [A-Za-z0-9_.-]+:\s*(?:#.*)?$", line)) for line in jobs[1:])
-    step_count = sum(bool(re.match(r"^\s{4,}-\s+(?:name|uses|run):", line)) for line in jobs[1:])
+    job_count = sum(
+        bool(re.match(r"^  [A-Za-z0-9_.-]+:\s*(?:#.*)?$", line)) for line in jobs[1:]
+    )
+    step_count = sum(
+        bool(re.match(r"^\s{4,}-\s+(?:name|uses|run):", line)) for line in jobs[1:]
+    )
     reusable = sum(bool(re.match(r"^\s{4}uses:\s+", line)) for line in jobs[1:])
     triggers = workflow_triggers(text)
     return {
@@ -219,7 +237,9 @@ def semantic_false_green_kind(row: dict[str, Any], root: Path) -> dict[str, Any]
         ("grep -c" in lower or "wc -l" in lower) and "|| true" in lower
     ):
         kind = "DEFAULT_VALUE_TELEMETRY"
-    elif "git commit " in lower and ("no changes" in lower or "nothing to commit" in lower):
+    elif "git commit " in lower and (
+        "no changes" in lower or "nothing to commit" in lower
+    ):
         kind = "IDEMPOTENT_NOOP"
     elif "pip install" in lower or "uv sync" in lower or "poetry install" in lower:
         kind = "DEPENDENCY_MASK"
@@ -298,7 +318,9 @@ def build_report(
     residual_limit: int = 250,
 ) -> dict[str, Any]:
     inventory = discover_inventory(root)
-    workflow_rows = [workflow_shape(root / rel, root) for rel in inventory["workflow_paths"]]
+    workflow_rows = [
+        workflow_shape(root / rel, root) for rel in inventory["workflow_paths"]
+    ]
     tc4 = false_green_report or false_green_census(root, inventory["workflow_paths"])
     unguarded = [
         semantic_false_green_kind(row, root)
@@ -306,20 +328,47 @@ def build_report(
         if isinstance(row, dict) and not row.get("allowed", False)
     ]
     semantic_false_green = [row for row in unguarded if row["semantic_false_green"]]
-    coverage_rows = [row for row in coverage_dab.get("rows", []) if isinstance(row, dict)]
-    active = [row for row in coverage_rows if row.get("source_class") == "ACTIVE_SOURCE"]
+    coverage_rows = [
+        row for row in coverage_dab.get("rows", []) if isinstance(row, dict)
+    ]
+    active = [
+        row for row in coverage_rows if row.get("source_class") == "ACTIVE_SOURCE"
+    ]
     with_context = [row for row in active if row.get("existing_test_surface")]
     without_context = [row for row in active if not row.get("existing_test_surface")]
-    evidence_rows = [row for row in test_evidence.get("rows", []) if isinstance(row, dict)]
+    evidence_rows = [
+        row for row in test_evidence.get("rows", []) if isinstance(row, dict)
+    ]
     admission_rows = [row for row in admission.get("rows", []) if isinstance(row, dict)]
 
     queue: list[dict[str, Any]] = []
     for row in workflow_rows:
         if not row["triggers"]:
-            queue.append(residual("INFRA/CHECK", row["path"], "workflow has no detected trigger", magnitude=1000))
+            queue.append(
+                residual(
+                    "INFRA/CHECK",
+                    row["path"],
+                    "workflow has no detected trigger",
+                    magnitude=1000,
+                )
+            )
         if not row["static_executable"]:
-            queue.append(residual("INFRA/CHECK", row["path"], "workflow has no executable job/step", magnitude=900))
-    mip_row = next((row for row in workflow_rows if row["path"].endswith("mip-coverage-evidence.yml")), None)
+            queue.append(
+                residual(
+                    "INFRA/CHECK",
+                    row["path"],
+                    "workflow has no executable job/step",
+                    magnitude=900,
+                )
+            )
+    mip_row = next(
+        (
+            row
+            for row in workflow_rows
+            if row["path"].endswith("mip-coverage-evidence.yml")
+        ),
+        None,
+    )
     if mip_row and "push" not in mip_row["triggers"]:
         queue.append(
             residual(
@@ -365,7 +414,8 @@ def build_report(
     for path in inventory["orphan_test_files"]:
         queue.append(
             residual(
-                "TEST_ADMISSION", path,
+                "TEST_ADMISSION",
+                path,
                 "pytest test surface exists outside canonical or governed report-only roots",
                 magnitude=1,
             )
@@ -375,10 +425,14 @@ def build_report(
         if state != "TEST_GREEN":
             queue.append(
                 residual(
-                    "TEST_ADMISSION", str(row.get("path", "WITHHELD")),
+                    "TEST_ADMISSION",
+                    str(row.get("path", "WITHHELD")),
                     f"report-only admission state is {state}",
                     magnitude=100 if state == "TEST_FAILING" else 10,
-                    evidence={"test_state": state, "collection_status": row.get("collection_status")},
+                    evidence={
+                        "test_state": state,
+                        "collection_status": row.get("collection_status"),
+                    },
                 )
             )
 
@@ -391,9 +445,15 @@ def build_report(
         no_test_keys.add(path)
         queue.append(
             residual(
-                "NO_TEST", path, "active source has no measured dynamic test context",
-                criticality=str(row.get("criticality", "WITHHELD")), magnitude=missed,
-                evidence={"coverage_pct": row.get("coverage_pct"), "disposition": row.get("disposition")},
+                "NO_TEST",
+                path,
+                "active source has no measured dynamic test context",
+                criticality=str(row.get("criticality", "WITHHELD")),
+                magnitude=missed,
+                evidence={
+                    "coverage_pct": row.get("coverage_pct"),
+                    "disposition": row.get("disposition"),
+                },
             )
         )
 
@@ -403,7 +463,9 @@ def build_report(
     if missing_lines or missing_branches:
         queue.append(
             residual(
-                "COVERAGE", "<repository>", "repository branch/line coverage gap",
+                "COVERAGE",
+                "<repository>",
+                "repository branch/line coverage gap",
                 magnitude=missing_lines + missing_branches,
                 evidence={
                     "missing_lines": missing_lines,
@@ -420,9 +482,11 @@ def build_report(
             continue
         queue.append(
             residual(
-                "COVERAGE", path,
+                "COVERAGE",
+                path,
                 "measured test context exists but statement coverage remains incomplete",
-                criticality=str(row.get("criticality", "WITHHELD")), magnitude=missed,
+                criticality=str(row.get("criticality", "WITHHELD")),
+                magnitude=missed,
                 evidence={"coverage_pct": row.get("coverage_pct")},
             )
         )
@@ -431,9 +495,14 @@ def build_report(
     if static_total:
         queue.append(
             residual(
-                "STATIC_ANALYSIS", "flake8:<repository>", "repository-wide Flake8 debt remains",
+                "STATIC_ANALYSIS",
+                "flake8:<repository>",
+                "repository-wide Flake8 debt remains",
                 magnitude=static_total,
-                evidence={"total": static_total, "families": static_census.get("families", {})},
+                evidence={
+                    "total": static_total,
+                    "families": static_census.get("families", {}),
+                },
             )
         )
 
@@ -471,14 +540,19 @@ def build_report(
             "without_measured_test_context": len(without_context),
             "measurement": coverage_dab.get("measurement", {}),
             "user_directed_high_without_context": [
-                row.get("path") for row in without_context
+                row.get("path")
+                for row in without_context
                 if row.get("criticality") == "USER_DIRECTED_HIGH"
             ],
         },
         "tc3_workflow_census": {
             "workflow_count": len(workflow_rows),
-            "static_executable_count": sum(row["static_executable"] for row in workflow_rows),
-            "zero_step_or_non_executable_count": sum(not row["static_executable"] for row in workflow_rows),
+            "static_executable_count": sum(
+                row["static_executable"] for row in workflow_rows
+            ),
+            "zero_step_or_non_executable_count": sum(
+                not row["static_executable"] for row in workflow_rows
+            ),
             "manual_only_count": sum(row["manual_only"] for row in workflow_rows),
             "rows": workflow_rows,
         },
@@ -506,7 +580,9 @@ def build_report(
     }
 
 
-def main(argv: list[str] | None = None) -> int:  # pragma: no cover - workflow integration owns CLI
+def main(
+    argv: list[str] | None = None,
+) -> int:  # pragma: no cover - workflow integration owns CLI
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--root", type=Path, default=Path("."))
     parser.add_argument("--coverage-dab", type=Path, required=True)
@@ -522,14 +598,23 @@ def main(argv: list[str] | None = None) -> int:  # pragma: no cover - workflow i
     root = args.root.resolve()
     actual_sha = git_head(root)
     if actual_sha != args.exact_sha:
-        raise SystemExit(f"exact-head mismatch: expected={args.exact_sha} actual={actual_sha}")
+        raise SystemExit(
+            f"exact-head mismatch: expected={args.exact_sha} actual={actual_sha}"
+        )
     report = build_report(
-        root, args.exact_sha, load_json(args.coverage_dab), load_json(args.test_evidence),
-        load_json(args.admission_census), load_json(args.false_green_census),
-        load_json(args.static_census), args.residual_limit,
+        root,
+        args.exact_sha,
+        load_json(args.coverage_dab),
+        load_json(args.test_evidence),
+        load_json(args.admission_census),
+        load_json(args.false_green_census),
+        load_json(args.static_census),
+        args.residual_limit,
     )
     args.out.parent.mkdir(parents=True, exist_ok=True)
-    args.out.write_text(json.dumps(report, indent=2, sort_keys=True) + "\n", encoding="utf-8")
+    args.out.write_text(
+        json.dumps(report, indent=2, sort_keys=True) + "\n", encoding="utf-8"
+    )
     print(json.dumps(report, indent=2, sort_keys=True))
     return 0
 
@@ -557,8 +642,11 @@ def classify_test_nodeid(nodeid: str) -> tuple[str, ...]:
     if not isinstance(nodeid, str) or not nodeid.strip():
         raise ValueError("Nonempty pytest nodeid required")
     lowered = nodeid.lower()
-    matched = tuple(name for name, tokens in TEST_CATEGORY_RULES
-                    if any(token in lowered for token in tokens))
+    matched = tuple(
+        name
+        for name, tokens in TEST_CATEGORY_RULES
+        if any(token in lowered for token in tokens)
+    )
     return matched or ("C2_CORE",)
 
 
@@ -573,17 +661,25 @@ def summarize_test_nodeids(nodeids: list[str]) -> dict[str, object]:
     for nodeid in unique:
         for category in classify_test_nodeid(nodeid):
             categories[category] += 1
-    return {"schema": "abacus-test-taxonomy/1.0", "collected_unique": len(unique),
-            "duplicate_entries": len(nodeids) - len(unique),
-            "categories": categories, "source": "provided-nodeids",
-            "admission_proof": False}
+    return {
+        "schema": "abacus-test-taxonomy/1.0",
+        "collected_unique": len(unique),
+        "duplicate_entries": len(nodeids) - len(unique),
+        "categories": categories,
+        "source": "provided-nodeids",
+        "admission_proof": False,
+    }
 
 
 # Wave 2: advisory execution planning. Never substitutes for required CI gates.
-def plan_test_execution(changed_paths: list[str], failed_categories: list[str] | None = None) -> dict[str, object]:
+def plan_test_execution(
+    changed_paths: list[str], failed_categories: list[str] | None = None
+) -> dict[str, object]:
     """Fail closed to thorough proof when change classification is uncertain."""
-    if not isinstance(changed_paths, list) or not changed_paths or any(
-        not isinstance(p, str) or not p.strip() for p in changed_paths
+    if (
+        not isinstance(changed_paths, list)
+        or not changed_paths
+        or any(not isinstance(p, str) or not p.strip() for p in changed_paths)
     ):
         raise ValueError("Nonempty changed-path list required")
     failures = failed_categories or []
@@ -591,10 +687,17 @@ def plan_test_execution(changed_paths: list[str], failed_categories: list[str] |
     if not isinstance(failures, list) or any(f not in known for f in failures):
         raise ValueError("Unknown failing test category")
     normalized = [p.replace("\\", "/").lower() for p in changed_paths]
-    critical = any(p.startswith((".github/", "governance/", "ci/")) or
-                   p.endswith(("pyproject.toml", "requirements.txt", "setup.py", "tox.ini")) or
-                   "security" in p or "bandit" in p for p in normalized)
-    escalation = sorted(set(failures) & {"C0_SECURITY", "C1_GOVERNANCE", "C4_RUNTIME", "C5_COMPATIBILITY"})
+    critical = any(
+        p.startswith((".github/", "governance/", "ci/"))
+        or p.endswith(("pyproject.toml", "requirements.txt", "setup.py", "tox.ini"))
+        or "security" in p
+        or "bandit" in p
+        for p in normalized
+    )
+    escalation = sorted(
+        set(failures)
+        & {"C0_SECURITY", "C1_GOVERNANCE", "C4_RUNTIME", "C5_COMPATIBILITY"}
+    )
     thorough = critical or bool(escalation)
     return {
         "schema": "abacus-test-execution-plan/1.0",

@@ -1,4 +1,5 @@
 """Structural, negative and dimensional controls for queue-pressure pulses."""
+
 from __future__ import annotations
 
 import copy
@@ -17,26 +18,40 @@ SHA = "a" * 40
 
 
 def row(n, created="2026-10-15T08:15:00Z"):
-    return {"id": n, "name": "PR Feedback Gate Evaluator", "event": "workflow_run",
-            "head_sha": SHA, "created_at": created}
+    return {
+        "id": n,
+        "name": "PR Feedback Gate Evaluator",
+        "event": "workflow_run",
+        "head_sha": SHA,
+        "created_at": created,
+    }
 
 
 def receipt(at, total=6, main=2, runs=None, complete=True):
     runs = [row(1), row(2)] if runs is None else runs
     sample = len(runs)
-    return {"schema": mod.INPUT_SCHEMA, "source_repository": "GBOGEB/ABACUS",
-            "main_sha": SHA, "observed_at": at,
-            "repo_queued_total": total, "main_queued_total": main,
-            "main_sample_complete": complete, "main_sample_size": main if complete else sample,
-            "main_feedback_workflow_run_sample": sample,
-            "main_feedback_queued_total": sample if complete else None,
-            "feedback_runs": runs, "admission": "HOLD",
-            "authority_transfer": False, "remote_mutation_authorized": False}
+    return {
+        "schema": mod.INPUT_SCHEMA,
+        "source_repository": "GBOGEB/ABACUS",
+        "main_sha": SHA,
+        "observed_at": at,
+        "repo_queued_total": total,
+        "main_queued_total": main,
+        "main_sample_complete": complete,
+        "main_sample_size": main if complete else sample,
+        "main_feedback_workflow_run_sample": sample,
+        "main_feedback_queued_total": sample if complete else None,
+        "feedback_runs": runs,
+        "admission": "HOLD",
+        "authority_transfer": False,
+        "remote_mutation_authorized": False,
+    }
 
 
 def pair():
-    return receipt("2026-10-15T08:17:00Z"), receipt("2026-10-15T08:18:00Z", total=8,
-                                                       main=3, runs=[row(2), row(3), row(4)])
+    return receipt("2026-10-15T08:17:00Z"), receipt(
+        "2026-10-15T08:18:00Z", total=8, main=3, runs=[row(2), row(3), row(4)]
+    )
 
 
 class TrendTests(unittest.TestCase):
@@ -167,19 +182,25 @@ class TrendTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as d:
             mod.emit(a, b, Path(d))
             m = json.loads((Path(d) / "manifest.json").read_text())
-            self.assertEqual(m["sha256"]["trends.json"],
-                             hashlib.sha256((Path(d) / "trends.json").read_bytes()).hexdigest())
+            self.assertEqual(
+                m["sha256"]["trends.json"],
+                hashlib.sha256((Path(d) / "trends.json").read_bytes()).hexdigest(),
+            )
 
     def test_deterministic_emit(self):
         a, b = pair()
         rev = copy.deepcopy(b)
         rev["feedback_runs"].reverse()
-        with tempfile.TemporaryDirectory() as left, tempfile.TemporaryDirectory() as right:
+        with (
+            tempfile.TemporaryDirectory() as left,
+            tempfile.TemporaryDirectory() as right,
+        ):
             mod.emit(a, b, Path(left))
             mod.emit(a, rev, Path(right))
-            self.assertEqual((Path(left) / "trends.json").read_bytes(),
-                             (Path(right) / "trends.json").read_bytes())
-
+            self.assertEqual(
+                (Path(left) / "trends.json").read_bytes(),
+                (Path(right) / "trends.json").read_bytes(),
+            )
 
     def test_reject_bad_schema(self):
         a, b = pair()
@@ -283,6 +304,7 @@ class TrendTests(unittest.TestCase):
         a, b = pair()
         import subprocess
         import sys
+
         with tempfile.TemporaryDirectory() as d:
             root = Path(d)
             old = root / "old.json"
@@ -290,12 +312,25 @@ class TrendTests(unittest.TestCase):
             old.write_text(json.dumps(a))
             new.write_text(json.dumps(b))
             output = root / "output"
-            done = subprocess.run([sys.executable, str(PATH), "--previous", str(old),
-                                   "--current", str(new), "--out", str(output)],
-                                  check=True, capture_output=True, text=True)
-            self.assertEqual(json.loads(done.stdout)["main_feedback"]["state"], "MEASURED")
+            done = subprocess.run(
+                [
+                    sys.executable,
+                    str(PATH),
+                    "--previous",
+                    str(old),
+                    "--current",
+                    str(new),
+                    "--out",
+                    str(output),
+                ],
+                check=True,
+                capture_output=True,
+                text=True,
+            )
+            self.assertEqual(
+                json.loads(done.stdout)["main_feedback"]["state"], "MEASURED"
+            )
             self.assertTrue((output / "manifest.json").exists())
-
 
     def test_cli_main_entrypoint_under_coverage(self):
         a, b = pair()
@@ -304,12 +339,21 @@ class TrendTests(unittest.TestCase):
         import runpy
         import sys
         from unittest import mock
+
         with tempfile.TemporaryDirectory() as d:
             root = Path(d)
             old, new, out = root / "before.json", root / "after.json", root / "out"
             old.write_text(json.dumps(a))
             new.write_text(json.dumps(b))
-            argv = [str(PATH), "--previous", str(old), "--current", str(new), "--out", str(out)]
+            argv = [
+                str(PATH),
+                "--previous",
+                str(old),
+                "--current",
+                str(new),
+                "--out",
+                str(out),
+            ]
             buff = io.StringIO()
             with mock.patch.object(sys, "argv", argv), contextlib.redirect_stdout(buff):
                 runpy.run_path(str(PATH), run_name="__main__")

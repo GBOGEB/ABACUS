@@ -42,7 +42,8 @@ def _ensure_github_client():
     print("Installing PyGithub...")
     subprocess.check_call([sys.executable, "-m", "pip", "install", "-q", "PyGithub"])
 
-    from github import Github as github_client, GithubException as github_exception
+    from github import Github as github_client
+    from github import GithubException as github_exception
 
     Github = github_client
     GithubException = github_exception
@@ -66,7 +67,7 @@ class CIIssueCreator:
             print(f"⚠️  Test report not found: {report_path}")
             return {"tests": [], "summary": {}}
 
-        with open(report_path, 'r') as f:
+        with open(report_path, "r") as f:
             return json.load(f)
 
     def get_existing_issues(self, test_name: str) -> List:
@@ -76,9 +77,9 @@ class CIIssueCreator:
 
     def create_issue_for_test(self, test: Dict) -> Optional[str]:
         """Create a GitHub issue for a failing test"""
-        test_name = test.get('nodeid', 'Unknown Test')
-        test_file = test_name.split('::')[0] if '::' in test_name else 'Unknown'
-        test_function = test_name.split('::')[-1] if '::' in test_name else test_name
+        test_name = test.get("nodeid", "Unknown Test")
+        test_file = test_name.split("::")[0] if "::" in test_name else "Unknown"
+        test_function = test_name.split("::")[-1] if "::" in test_name else test_name
 
         # Check for existing issues
         existing = self.get_existing_issues(test_name)
@@ -87,8 +88,10 @@ class CIIssueCreator:
             return None
 
         # Extract failure information
-        failure_message = test.get('call', {}).get('longrepr', 'No error message available')
-        duration = test.get('call', {}).get('duration', 0)
+        failure_message = test.get("call", {}).get(
+            "longrepr", "No error message available"
+        )
+        duration = test.get("call", {}).get("duration", 0)
 
         # Determine priority based on test type
         priority = self._determine_priority(test_name, failure_message)
@@ -102,23 +105,19 @@ class CIIssueCreator:
             test_file=test_file,
             failure_message=failure_message,
             duration=duration,
-            pr_number=self.pr_number
+            pr_number=self.pr_number,
         )
 
         # Create labels
-        labels = ['ci-failure', 'automated', priority]
-        if 'integration' in test_name.lower():
-            labels.append('integration-test')
-        elif 'unit' in test_name.lower():
-            labels.append('unit-test')
+        labels = ["ci-failure", "automated", priority]
+        if "integration" in test_name.lower():
+            labels.append("integration-test")
+        elif "unit" in test_name.lower():
+            labels.append("unit-test")
 
         try:
             # Create the issue
-            issue = self.repo.create_issue(
-                title=title,
-                body=body,
-                labels=labels
-            )
+            issue = self.repo.create_issue(title=title, body=body, labels=labels)
 
             print(f"✅ Created issue #{issue.number}: {title}")
             self.created_issues.append(issue.number)
@@ -153,15 +152,21 @@ class CIIssueCreator:
     def _determine_priority(self, test_name: str, failure_message: str) -> str:
         """Determine issue priority based on test characteristics"""
         # Critical: Integration tests, core functionality
-        if any(keyword in test_name.lower() for keyword in ['integration', 'core', 'critical']):
-            return 'priority:high'
+        if any(
+            keyword in test_name.lower()
+            for keyword in ["integration", "core", "critical"]
+        ):
+            return "priority:high"
 
         # High: Import errors, syntax errors
-        if any(keyword in failure_message.lower() for keyword in ['importerror', 'syntaxerror', 'modulenotfounderror']):
-            return 'priority:high'
+        if any(
+            keyword in failure_message.lower()
+            for keyword in ["importerror", "syntaxerror", "modulenotfounderror"]
+        ):
+            return "priority:high"
 
         # Medium: Most other failures
-        return 'priority:medium'
+        return "priority:medium"
 
     def _create_issue_body(
         self,
@@ -169,7 +174,7 @@ class CIIssueCreator:
         test_file: str,
         failure_message: str,
         duration: float,
-        pr_number: Optional[int]
+        pr_number: Optional[int],
     ) -> str:
         """Create detailed issue body"""
         body = f"""## 🔴 CI/CD Test Failure
@@ -260,15 +265,15 @@ This issue was automatically created by the CI monitoring system. The test faile
         # Parse test report
         report = self.parse_test_report(report_path)
 
-        if not report.get('tests'):
+        if not report.get("tests"):
             print("ℹ️  No test results found")
             return
 
         # Get summary
-        summary = report.get('summary', {})
-        total = summary.get('total', 0)
-        passed = summary.get('passed', 0)
-        failed = summary.get('failed', 0)
+        summary = report.get("summary", {})
+        total = summary.get("total", 0)
+        passed = summary.get("passed", 0)
+        failed = summary.get("failed", 0)
 
         print(f"\n📊 Test Summary:")
         print(f"   Total: {total}")
@@ -277,9 +282,9 @@ This issue was automatically created by the CI monitoring system. The test faile
         print()
 
         # Close issues for tests that are now passing
-        for test in report.get('tests', []):
-            if test.get('outcome') == 'passed':
-                self.close_issue_for_test(test.get('nodeid', ''))
+        for test in report.get("tests", []):
+            if test.get("outcome") == "passed":
+                self.close_issue_for_test(test.get("nodeid", ""))
 
         if failed == 0:
             print("✅ All tests passing! No issues to create.")
@@ -288,24 +293,26 @@ This issue was automatically created by the CI monitoring system. The test faile
         # Process each failing test
         print(f"🔍 Processing {failed} failing test(s)...\n")
 
-        for test in report.get('tests', []):
-            if test.get('outcome') == 'failed':
+        for test in report.get("tests", []):
+            if test.get("outcome") == "failed":
                 self.create_issue_for_test(test)
 
         # Summary
         print("\n" + "=" * 60)
         print(f"✅ Created {len(self.created_issues)} issue(s)")
         if self.created_issues:
-            print(f"   Issue numbers: {', '.join(f'#{n}' for n in self.created_issues)}")
+            print(
+                f"   Issue numbers: {', '.join(f'#{n}' for n in self.created_issues)}"
+            )
         print("=" * 60)
 
 
 def main():
     """Main entry point"""
     # Get environment variables
-    token = os.environ.get('GITHUB_TOKEN')
-    repo_name = os.environ.get('GITHUB_REPOSITORY')
-    pr_number = os.environ.get('PR_NUMBER')
+    token = os.environ.get("GITHUB_TOKEN")
+    repo_name = os.environ.get("GITHUB_REPOSITORY")
+    pr_number = os.environ.get("PR_NUMBER")
 
     if not token:
         print("❌ GITHUB_TOKEN not found in environment")
@@ -325,5 +332,5 @@ def main():
     creator.process_test_results()
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()

@@ -6,50 +6,46 @@ Executes deployment tests with idempotency and provenance tracking
 Version: 1.0.0  Date: 2025-11-25
 """
 
-import sys
 import argparse
+import sys
 from pathlib import Path
 
 # sys.path must be modified before local imports can resolve
 sys.path.insert(0, str(Path(__file__).parent))  # noqa: E402
 
 from DMAIC_V3.config import DMAICConfig  # noqa: E402
-from DMAIC_V3.core.state import StateManager  # noqa: E402
 from DMAIC_V3.core.handover_bridge import HandoverBridge  # noqa: E402
+from DMAIC_V3.core.state import StateManager  # noqa: E402
 from DMAIC_V3.core.test_system_bridge import TestSystemBridge  # noqa: E402
 
 
 def parse_args():
     """Parse command line arguments"""
-    parser = argparse.ArgumentParser(
-        description='Run DMAIC V3 deployment test system'
+    parser = argparse.ArgumentParser(description="Run DMAIC V3 deployment test system")
+
+    parser.add_argument(
+        "--test-suite",
+        choices=["all", "smoke", "unit", "integration"],
+        default="all",
+        help="Test suite to run",
     )
 
     parser.add_argument(
-        '--test-suite',
-        choices=['all', 'smoke', 'unit', 'integration'],
-        default='all',
-        help='Test suite to run'
+        "--skip-static", action="store_true", help="Skip static analysis"
     )
 
     parser.add_argument(
-        '--skip-static',
-        action='store_true',
-        help='Skip static analysis'
-    )
-
-    parser.add_argument(
-        '--version',
+        "--version",
         type=str,
-        default='dev',
-        help='Version identifier for this deployment'
+        default="dev",
+        help="Version identifier for this deployment",
     )
 
     parser.add_argument(
-        '--output-dir',
+        "--output-dir",
         type=Path,
         default=None,
-        help='Output directory for test results'
+        help="Output directory for test results",
     )
 
     return parser.parse_args()
@@ -87,27 +83,24 @@ def main():
     # Run test suite
     print(f"\n▶ Running {args.test_suite} test suite...")
 
-    if args.test_suite == 'smoke' or args.test_suite == 'all':
+    if args.test_suite == "smoke" or args.test_suite == "all":
         print("\n  → Running smoke tests...")
         result = test_bridge.run_pytest_suite(
-            'DMAIC_V3/tests/test_bridge_integration.py',
-            markers='smoke'
+            "DMAIC_V3/tests/test_bridge_integration.py", markers="smoke"
         )
         print(f"  ✓ Smoke tests: {'PASSED' if result.success else 'FAILED'}")
 
-    if args.test_suite == 'unit' or args.test_suite == 'all':
+    if args.test_suite == "unit" or args.test_suite == "all":
         print("\n  → Running unit tests...")
         result = test_bridge.run_pytest_suite(
-            'DMAIC_V3/tests/test_bridge_integration.py',
-            markers='unit'
+            "DMAIC_V3/tests/test_bridge_integration.py", markers="unit"
         )
         print(f"  ✓ Unit tests: {'PASSED' if result.success else 'FAILED'}")
 
-    if args.test_suite == 'integration' or args.test_suite == 'all':
+    if args.test_suite == "integration" or args.test_suite == "all":
         print("\n  → Running integration tests...")
         result = test_bridge.run_pytest_suite(
-            'DMAIC_V3/tests/test_bridge_integration.py',
-            markers='integration'
+            "DMAIC_V3/tests/test_bridge_integration.py", markers="integration"
         )
         print(f"  ✓ Integration tests: {'PASSED' if result.success else 'FAILED'}")
 
@@ -122,9 +115,9 @@ def main():
         metrics.static_analysis_passed = True
         # Recalculate deployment_ready with updated static analysis status
         metrics.deployment_ready = (
-            metrics.tests_passed == metrics.tests_total and
-            len(metrics.runtime_errors) == 0 and
-            metrics.static_analysis_passed
+            metrics.tests_passed == metrics.tests_total
+            and len(metrics.runtime_errors) == 0
+            and metrics.static_analysis_passed
         )
         test_bridge.deployment_metrics = metrics
     else:
@@ -132,7 +125,7 @@ def main():
 
     # Save deployment report
     if args.output_dir is not None:
-        output_path = args.output_dir / 'deployment_report.json'
+        output_path = args.output_dir / "deployment_report.json"
     else:
         output_path = None
     report_path = test_bridge.save_deployment_report(output_path)
@@ -148,7 +141,9 @@ def main():
     print(f"Runtime Errors: {len(metrics.runtime_errors)}")
 
     if not args.skip_static:
-        print(f"Static Analysis: {'PASSED' if metrics.static_analysis_passed else 'FAILED'}")
+        print(
+            f"Static Analysis: {'PASSED' if metrics.static_analysis_passed else 'FAILED'}"
+        )
         evidence = getattr(test_bridge, "static_analysis_evidence", None)
         if not metrics.static_analysis_passed and isinstance(evidence, dict):
             print(
@@ -178,5 +173,5 @@ def main():
         return 1
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     sys.exit(main())

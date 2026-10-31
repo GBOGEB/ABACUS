@@ -8,9 +8,8 @@ An assertion failure must keep the calling GitHub Actions step red.
 import hashlib
 import json
 import os
-from pathlib import Path
 import xml.etree.ElementTree as ET
-
+from pathlib import Path
 
 SOURCE_SUFFIX = "tools/qps_binary_bridge.py"
 
@@ -18,9 +17,7 @@ SOURCE_SUFFIX = "tools/qps_binary_bridge.py"
 def source_summary(report_path):
     report = json.loads(report_path.read_text())
     keys = [
-        key
-        for key in report["files"]
-        if key.replace("\\", "/").endswith(SOURCE_SUFFIX)
+        key for key in report["files"] if key.replace("\\", "/").endswith(SOURCE_SUFFIX)
     ]
     assert len(keys) == 1, "missing/ambiguous source-bound measured module"
     return keys[0], report["files"][keys[0]]["summary"]
@@ -70,9 +67,9 @@ def main():
     ]
     assert len(w40) == 42, ("W40 denominator mismatch", len(w40))
     assert len(w41) == 12, ("W41 denominator mismatch", len(w41))
-    assert len(tests) == len(baseline_tests) + 54, (
-        "unmatched test populations or culled tests"
-    )
+    assert (
+        len(tests) == len(baseline_tests) + 54
+    ), "unmatched test populations or culled tests"
 
     source_sha = os.environ["EXACT_HEAD"]
     assert len(source_sha) == 40 and all(
@@ -98,9 +95,7 @@ def main():
         "baseline_junit_cases": len(baseline_tests),
         "baseline_statement_covered": before["covered_lines"],
         "baseline_branch_covered": before["covered_branches"],
-        "delta_statement_covered": (
-            after["covered_lines"] - before["covered_lines"]
-        ),
+        "delta_statement_covered": (after["covered_lines"] - before["covered_lines"]),
         "delta_branch_covered": (
             after["covered_branches"] - before["covered_branches"]
         ),
@@ -110,9 +105,7 @@ def main():
         "matched_before_covered": (
             before["covered_lines"] + before["covered_branches"]
         ),
-        "matched_after_covered": (
-            after["covered_lines"] + after["covered_branches"]
-        ),
+        "matched_after_covered": (after["covered_lines"] + after["covered_branches"]),
         "coverage_scope": "tools/qps_binary_bridge.py only",
         "source_file_key": source_key,
         "formal_main_uplift": None,

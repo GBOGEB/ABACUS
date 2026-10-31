@@ -8,7 +8,6 @@ import sys
 from pathlib import Path
 from typing import Any, Dict, List, Mapping, Optional
 
-
 REPO_ROOT = Path(__file__).resolve().parents[1]
 MANIFEST_PATH = REPO_ROOT / "docs" / "runtime-artifact-manifest.json"
 TRACE_MATRIX_PATH = REPO_ROOT / "docs" / "api" / "rtm_trace_matrix.json"
@@ -33,7 +32,9 @@ def _relative(path: Path, repo_root: Path) -> str:
         return str(path)
 
 
-def _load_json(path: Path, repo_root: Path, errors: List[str]) -> Optional[Dict[str, Any]]:
+def _load_json(
+    path: Path, repo_root: Path, errors: List[str]
+) -> Optional[Dict[str, Any]]:
     if not path.exists():
         errors.append(f"missing JSON artifact: {_relative(path, repo_root)}")
         return None
@@ -48,7 +49,9 @@ def _load_json(path: Path, repo_root: Path, errors: List[str]) -> Optional[Dict[
     return data
 
 
-def _validate_manifest(manifest: Mapping[str, Any], repo_root: Path, errors: List[str]) -> None:
+def _validate_manifest(
+    manifest: Mapping[str, Any], repo_root: Path, errors: List[str]
+) -> None:
     if manifest.get("wave") != "W007":
         errors.append("runtime manifest wave must be W007")
 
@@ -102,13 +105,20 @@ def _validate_manifest(manifest: Mapping[str, Any], repo_root: Path, errors: Lis
         errors.append(f"runtime manifest missing capability: {capability}")
 
 
-def _validate_trace_matrix(trace_matrix: Mapping[str, Any], repo_root: Path, errors: List[str]) -> None:
+def _validate_trace_matrix(
+    trace_matrix: Mapping[str, Any], repo_root: Path, errors: List[str]
+) -> None:
     rows = trace_matrix.get("rows")
     if not isinstance(rows, list) or not rows:
         errors.append("RTM trace matrix must contain traceability rows")
         return
 
-    required_fields = {"requirement_id", "evidence_id", "evidence_artifact", "available"}
+    required_fields = {
+        "requirement_id",
+        "evidence_id",
+        "evidence_artifact",
+        "available",
+    }
     missing_evidence: List[str] = []
     for index, row in enumerate(rows, start=1):
         if not isinstance(row, dict):
@@ -117,7 +127,9 @@ def _validate_trace_matrix(trace_matrix: Mapping[str, Any], repo_root: Path, err
 
         missing_fields = sorted(required_fields - set(row))
         if missing_fields:
-            errors.append(f"RTM trace row #{index} missing fields: {', '.join(missing_fields)}")
+            errors.append(
+                f"RTM trace row #{index} missing fields: {', '.join(missing_fields)}"
+            )
 
         evidence_id = str(row.get("evidence_id", f"row-{index}"))
         evidence_artifact = row.get("evidence_artifact")
@@ -128,7 +140,9 @@ def _validate_trace_matrix(trace_matrix: Mapping[str, Any], repo_root: Path, err
             continue
 
         if not isinstance(evidence_artifact, str) or not evidence_artifact:
-            errors.append(f"RTM trace row #{index} evidence_artifact must be a non-empty string")
+            errors.append(
+                f"RTM trace row #{index} evidence_artifact must be a non-empty string"
+            )
             missing_evidence.append(evidence_id)
             continue
 
@@ -137,7 +151,9 @@ def _validate_trace_matrix(trace_matrix: Mapping[str, Any], repo_root: Path, err
             missing_evidence.append(evidence_id)
 
     if missing_evidence:
-        errors.append(f"RTM trace matrix has unavailable or missing evidence: {', '.join(missing_evidence)}")
+        errors.append(
+            f"RTM trace matrix has unavailable or missing evidence: {', '.join(missing_evidence)}"
+        )
 
 
 def _validate_runtime_portal(portal_path: Path, errors: List[str]) -> None:

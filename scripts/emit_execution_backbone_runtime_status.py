@@ -11,7 +11,6 @@ from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any, Dict, List
 
-
 ROOT = Path(__file__).resolve().parents[1]
 DEFAULT_OUTPUT = ROOT / "reports" / "execution_backbone_runtime_status.json"
 if str(ROOT) not in sys.path:
@@ -20,7 +19,9 @@ if str(ROOT) not in sys.path:
 from core.execution_backbone import ExecutionBackbone
 
 
-def _feedback_task(events: List[Dict[str, Any]], direction: str, payload: str) -> Dict[str, str]:
+def _feedback_task(
+    events: List[Dict[str, Any]], direction: str, payload: str
+) -> Dict[str, str]:
     event = {
         "direction": direction,
         "payload": payload,
@@ -31,7 +32,9 @@ def _feedback_task(events: List[Dict[str, Any]], direction: str, payload: str) -
     return event
 
 
-def _wait_for_completion(backbone: ExecutionBackbone, expected_tasks: int, timeout_seconds: float) -> str:
+def _wait_for_completion(
+    backbone: ExecutionBackbone, expected_tasks: int, timeout_seconds: float
+) -> str:
     deadline = time.time() + timeout_seconds
     while time.time() < deadline:
         metrics = backbone.get_metrics()
@@ -42,7 +45,9 @@ def _wait_for_completion(backbone: ExecutionBackbone, expected_tasks: int, timeo
     return "timeout"
 
 
-def build_execution_backbone_runtime_status(timeout_seconds: float = 5.0) -> Dict[str, Any]:
+def build_execution_backbone_runtime_status(
+    timeout_seconds: float = 5.0,
+) -> Dict[str, Any]:
     """Run a minimal execution-backbone pulse and return runtime evidence."""
     feedback_events: List[Dict[str, Any]] = []
     backbone = ExecutionBackbone(max_workers=2, max_memory_mb=256)
@@ -62,7 +67,9 @@ def build_execution_backbone_runtime_status(timeout_seconds: float = 5.0) -> Dic
             priority=2,
             args=(feedback_events, "KEB_TO_DOW", "feedback loop closed"),
         )
-        completion_status = _wait_for_completion(backbone, expected_tasks=2, timeout_seconds=timeout_seconds)
+        completion_status = _wait_for_completion(
+            backbone, expected_tasks=2, timeout_seconds=timeout_seconds
+        )
         running_metrics = backbone.get_metrics()
     finally:
         backbone.stop(wait=True, timeout=timeout_seconds)
@@ -71,13 +78,19 @@ def build_execution_backbone_runtime_status(timeout_seconds: float = 5.0) -> Dic
     expected_directions = {"DOW_TO_KEB", "KEB_TO_DOW"}
     observed_directions = {event["direction"] for event in feedback_events}
     bridge_complete = expected_directions <= observed_directions
-    task_complete = final_metrics["tasks_executed"] == 2 and final_metrics["tasks_failed"] == 0
+    task_complete = (
+        final_metrics["tasks_executed"] == 2 and final_metrics["tasks_failed"] == 0
+    )
 
     return {
         "schema_version": "0.1.0",
         "generated_at": datetime.now(timezone.utc).isoformat(),
         "started_at": started_at,
-        "status": "ok" if completion_status == "completed" and bridge_complete and task_complete else "attention",
+        "status": (
+            "ok"
+            if completion_status == "completed" and bridge_complete and task_complete
+            else "attention"
+        ),
         "completion_status": completion_status,
         "runtime": {
             "max_workers": final_metrics["max_workers"],
@@ -129,9 +142,13 @@ def main(argv: List[str] | None = None) -> int:
     parser.add_argument("--timeout-seconds", type=float, default=5.0)
     args = parser.parse_args(argv)
 
-    report = build_execution_backbone_runtime_status(timeout_seconds=args.timeout_seconds)
+    report = build_execution_backbone_runtime_status(
+        timeout_seconds=args.timeout_seconds
+    )
     args.output.parent.mkdir(parents=True, exist_ok=True)
-    args.output.write_text(json.dumps(report, indent=2, sort_keys=True) + "\n", encoding="utf-8")
+    args.output.write_text(
+        json.dumps(report, indent=2, sort_keys=True) + "\n", encoding="utf-8"
+    )
     print(json.dumps(report, indent=2, sort_keys=True))
     return 0 if report["status"] == "ok" else 1
 

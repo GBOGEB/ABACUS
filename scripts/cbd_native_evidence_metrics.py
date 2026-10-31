@@ -3,6 +3,7 @@
 This is a validation/projection worker, not the canonical BD ledger or a
 GitHub-origin attestation. Raw native API capture remains source-bound.
 """
+
 from __future__ import annotations
 
 import argparse
@@ -10,7 +11,9 @@ import json
 import re
 from pathlib import Path
 
-SOURCE = Path(__file__).resolve().parents[1] / "docs/ci/CBD_W2_NATIVE_EVIDENCE_20261017.json"
+SOURCE = (
+    Path(__file__).resolve().parents[1] / "docs/ci/CBD_W2_NATIVE_EVIDENCE_20261017.json"
+)
 _SHA = re.compile(r"[0-9a-f]{40}\Z")
 
 
@@ -26,14 +29,18 @@ def replay(snapshot: dict) -> dict:
         raise ValueError("native snapshot schema")
     if snapshot.get("repository") != "GBOGEB/ABACUS":
         raise ValueError("foreign repository")
-    if snapshot.get("observation_scope") != (
-        "NONATOMIC_FROZEN_COHORT_AND_LATEST_RUN_ATTEMPTS"
-    ) or snapshot.get("source_snapshot_rate_eligible") is not False:
+    if (
+        snapshot.get("observation_scope")
+        != ("NONATOMIC_FROZEN_COHORT_AND_LATEST_RUN_ATTEMPTS")
+        or snapshot.get("source_snapshot_rate_eligible") is not False
+    ):
         raise ValueError("false atomic or fleet-rate inference")
     gate = snapshot.get("authority", {})
-    if gate.get("merge_admission") != "HOLD" or gate.get(
-        "security_waiver"
-    ) is not False or gate.get("source_mutation_authorized") is not False:
+    if (
+        gate.get("merge_admission") != "HOLD"
+        or gate.get("security_waiver") is not False
+        or gate.get("source_mutation_authorized") is not False
+    ):
         raise ValueError("unauthorized merge, waiver or mutation")
 
     metrics = snapshot.get("metrics")
@@ -81,13 +88,16 @@ def replay(snapshot: dict) -> dict:
             raise ValueError("unsupported latest-attempt verdict")
 
         jobs = row.get("jobs")
-        if not isinstance(jobs, dict) or jobs.get("complete") is not True or jobs.get(
-            "job_attempt_verified"
-        ) is not True:
+        if (
+            not isinstance(jobs, dict)
+            or jobs.get("complete") is not True
+            or jobs.get("job_attempt_verified") is not True
+        ):
             raise ValueError("missing exact-attempt job proof")
         if not (
             _integer(jobs.get("jobs_returned"))
-            and jobs.get("jobs_returned") == jobs.get("jobs_reported")
+            and jobs.get("jobs_returned")
+            == jobs.get("jobs_reported")
             == jobs.get("provenance_aligned_jobs")
         ):
             raise ValueError("incomplete job denominator")
@@ -125,11 +135,13 @@ def replay(snapshot: dict) -> dict:
                 raise ValueError("invalid log signals")
             if "MATPLOTLIB_RESOLVER" in signals:
                 if first["step_name"] not in (
-                    "Install tooling", "Install canonical dependencies"
+                    "Install tooling",
+                    "Install canonical dependencies",
                 ):
                     raise ValueError("unsupported resolver step")
                 if not any(
-                    "No matching distribution found for matplotlib" in ex.get("value", "")
+                    "No matching distribution found for matplotlib"
+                    in ex.get("value", "")
                     for ex in log.get("excerpt", [])
                 ):
                     raise ValueError("resolver signal without supporting log text")
@@ -144,21 +156,34 @@ def replay(snapshot: dict) -> dict:
         if h["pr"] in manifest_ids:
             raise ValueError("duplicate head manifest")
         manifest_ids.add(h["pr"])
-        if not all(isinstance(h.get(k), str) and _SHA.fullmatch(h[k]) for k in (
-            "source_sha", "current_sha"
-        )):
+        if not all(
+            isinstance(h.get(k), str) and _SHA.fullmatch(h[k])
+            for k in ("source_sha", "current_sha")
+        ):
             raise ValueError("malformed head SHA")
         if h.get("head_matches") is not (h["source_sha"] == h["current_sha"]):
             raise ValueError("false current-head indication")
         if not h["head_matches"]:
             stale_heads.append(h["pr"])
-    if not all(_integer(metrics.get(key)) for key in (
-        "declared_source_rows", "unique_runs", "aliases", "manifest_prs",
-        "heads_matching", "native_latest_failure", "latest_nonterminal",
-        "fully_aligned_jobsets", "failed_jobs", "failed_steps",
-        "observed_first_failed_step", "downloaded_logs",
-        "matplotlib_signature_runs", "accepted_closed_roots",
-    )):
+    if not all(
+        _integer(metrics.get(key))
+        for key in (
+            "declared_source_rows",
+            "unique_runs",
+            "aliases",
+            "manifest_prs",
+            "heads_matching",
+            "native_latest_failure",
+            "latest_nonterminal",
+            "fully_aligned_jobsets",
+            "failed_jobs",
+            "failed_steps",
+            "observed_first_failed_step",
+            "downloaded_logs",
+            "matplotlib_signature_runs",
+            "accepted_closed_roots",
+        )
+    ):
         raise ValueError("noninteger metric denominator")
     measured = {
         "unique_runs": len(seen_runs),
@@ -178,8 +203,7 @@ def replay(snapshot: dict) -> dict:
     if (
         metrics["declared_source_rows"] != len(rows) + metrics["aliases"]
         or sorted(metrics.get("heads_stale", [])) != sorted(stale_heads)
-        or sorted(metrics.get("matplotlib_affected_prs", []))
-        != sorted(signature_prs)
+        or sorted(metrics.get("matplotlib_affected_prs", [])) != sorted(signature_prs)
     ):
         raise ValueError("inconsistent aliases, stale heads or signature reach")
     root = snapshot.get("root_assessment", {})
@@ -195,8 +219,11 @@ def replay(snapshot: dict) -> dict:
         raise ValueError("unmatched frozen manifest denominator")
 
     def fraction(num: int, denominator: int) -> dict:
-        return {"numerator": num, "denominator": denominator,
-                "percent": round(100 * num / denominator, 3) if denominator else None}
+        return {
+            "numerator": num,
+            "denominator": denominator,
+            "percent": round(100 * num / denominator, 3) if denominator else None,
+        }
 
     return {
         "schema": "cbd.read_only_native_pulse.v1",
@@ -216,19 +243,29 @@ def replay(snapshot: dict) -> dict:
         "failed_jobs": failed_jobs,
         "failed_steps": failed_steps,
         "candidate_symptom_buckets": dict(sorted(symptom_buckets.items())),
-        "dag": ["cohort", "native_run_attempt", "job", "first_red_step",
-                "sampled_log", "source_owner", "native_retest", "admission"],
-        "sipoc": {"supplier": "GitHub Actions", "input": "source SHA/run/attempt",
-                  "process": "observe/classify/retest",
-                  "output": "non-admitting receipt",
-                  "customer": "canonical BD-LDAB issue 1929"},
+        "dag": [
+            "cohort",
+            "native_run_attempt",
+            "job",
+            "first_red_step",
+            "sampled_log",
+            "source_owner",
+            "native_retest",
+            "admission",
+        ],
+        "sipoc": {
+            "supplier": "GitHub Actions",
+            "input": "source SHA/run/attempt",
+            "process": "observe/classify/retest",
+            "output": "non-admitting receipt",
+            "customer": "canonical BD-LDAB issue 1929",
+        },
         "matched_statement_coverage": None,
         "matched_branch_coverage": None,
         "queue_p95_seconds": None,
         "accepted_closures": 0,
         "admission": "HOLD",
     }
-
 
 
 SUPPLEMENT = (
@@ -241,33 +278,49 @@ def classify_supplement_first_red(record: dict) -> str:
     """Classify only step-bound, witnessed failures, never incidental tool names."""
     text = "\n".join(record.get("diagnostic_tail_sanitized", []))
     step = record.get("first_failed_step")
-    if (step == "Fail closed on governance red"
-            and "policy_outcome=failure" in text
-            and "inventory_outcome=failure" in text):
+    if (
+        step == "Fail closed on governance red"
+        and "policy_outcome=failure" in text
+        and "inventory_outcome=failure" in text
+    ):
         return "GOVERNANCE_POLICY_INVENTORY"
-    if (step == "Generate governance inventory as evidence"
-            and "CI governance failed: unclassified workflows" in text):
+    if (
+        step == "Generate governance inventory as evidence"
+        and "CI governance failed: unclassified workflows" in text
+    ):
         return "GOVERNANCE_UNCLASSIFIED_WORKFLOW"
     if step == "Enforce security red roots" and "##[error]Safety is red." in text:
         return "SAFETY_NONZERO"
-    if (step == "Tender guard (new or changed files only)"
-            and "restricted term in content" in text):
+    if (
+        step == "Tender guard (new or changed files only)"
+        and "restricted term in content" in text
+    ):
         return "A10_RESTRICTED"
-    if (step == "Run canonical exact-head coverage surface"
-            and "test_change_detector_legacy_windows_snapshot_does_not_create_phantom_change" in text):
+    if (
+        step == "Run canonical exact-head coverage surface"
+        and "test_change_detector_legacy_windows_snapshot_does_not_create_phantom_change"
+        in text
+    ):
         return "TEST_PATH_NORMALIZATION"
-    if (step == "Install dependencies"
-            and "No matching distribution found for matplotlib" in text):
+    if (
+        step == "Install dependencies"
+        and "No matching distribution found for matplotlib" in text
+    ):
         return "MATPLOTLIB_RESOLVER"
     if step == "Verify committed Black and isort styles" and "would reformat" in text:
         return "BLACK_REFORMAT"
     if step == "Validate changed docs" and "error MD013/line-length" in text:
         return "MARKDOWN_MD013"
-    if step == "Upload to code-scanning" and "API rate limit exceeded for installation" in text:
+    if (
+        step == "Upload to code-scanning"
+        and "API rate limit exceeded for installation" in text
+    ):
         return "GITHUB_API_RATE_LIMIT"
-    if (step == "Enforce code-quality red roots"
-            and "Required BLACK full scan failed." in text
-            and "Required ISORT full scan failed." in text):
+    if (
+        step == "Enforce code-quality red roots"
+        and "Required BLACK full scan failed." in text
+        and "Required ISORT full scan failed." in text
+    ):
         return "QUALITY_BLACK_ISORT"
     return "UNCLASSIFIED_REQUIRES_REVIEW"
 
@@ -275,14 +328,17 @@ def classify_supplement_first_red(record: dict) -> str:
 def replay_supplement(snapshot: dict, supplement: dict) -> dict:
     """Join nonoverlapping, targeted log evidence without creating new authority."""
     baseline = replay(snapshot)
-    if not isinstance(supplement, dict) or supplement.get("schema") != (
-        "cbd.native_log_supplement.v2"
-    ) or supplement.get("repository") != "GBOGEB/ABACUS":
+    if (
+        not isinstance(supplement, dict)
+        or supplement.get("schema") != ("cbd.native_log_supplement.v2")
+        or supplement.get("repository") != "GBOGEB/ABACUS"
+    ):
         raise ValueError("supplement source schema or repository")
     if supplement.get("source_snapshot_sha") != snapshot.get("source_ref"):
         raise ValueError("wrong evidence checkpoint")
     if (
-        supplement.get("selection_bias") != "TARGETED_STRATA_NOT_RANDOM_FREQUENCY_SAMPLE"
+        supplement.get("selection_bias")
+        != "TARGETED_STRATA_NOT_RANDOM_FREQUENCY_SAMPLE"
         or supplement.get("untrusted_search_hits_are_not_root_categories") is not True
         or supplement.get("admission") != "HOLD"
         or supplement.get("accepted_root_closures") != 0
@@ -320,13 +376,16 @@ def replay_supplement(snapshot: dict, supplement: dict) -> dict:
         if not isinstance(record.get("diagnostic_tail_sanitized"), list):
             raise ValueError("missing log witness snippets")
         identity = classify_supplement_first_red(record)
-        if identity != record.get("validated_signature") or identity == (
-            "UNCLASSIFIED_REQUIRES_REVIEW"
-        ) or record.get("signature_grounded_in_sanitized_witness") is not True:
+        if (
+            identity != record.get("validated_signature")
+            or identity == ("UNCLASSIFIED_REQUIRES_REVIEW")
+            or record.get("signature_grounded_in_sanitized_witness") is not True
+        ):
             raise ValueError("unsupported first-red root signature")
-        if record.get("causal_root_admission") is not False or record.get(
-            "rerun_admission"
-        ) is not False:
+        if (
+            record.get("causal_root_admission") is not False
+            or record.get("rerun_admission") is not False
+        ):
             raise ValueError("false root or rerun acceptance")
         classified[identity] = classified.get(identity, 0) + 1
         if identity == "MATPLOTLIB_RESOLVER":
@@ -334,7 +393,8 @@ def replay_supplement(snapshot: dict, supplement: dict) -> dict:
     if (
         supplement.get("new_log_rows") != len(records)
         or supplement.get("new_logs_downloaded") != len(records)
-        or supplement.get("baseline_logged_runs") != baseline["log_sampling_reach"]["numerator"]
+        or supplement.get("baseline_logged_runs")
+        != baseline["log_sampling_reach"]["numerator"]
         or supplement.get("baseline_unique_runs") != len(base_runs)
         or supplement.get("uniquely_new") is not True
         or supplement.get("all_records_have_witness") is not True
@@ -357,7 +417,6 @@ def replay_supplement(snapshot: dict, supplement: dict) -> dict:
     return baseline
 
 
-
 def main() -> None:
     parser = argparse.ArgumentParser()
     parser.add_argument("--source", type=Path, default=SOURCE)
@@ -365,8 +424,13 @@ def main() -> None:
     parser.add_argument("--supplement", type=Path)
     args = parser.parse_args()
     source = json.loads(args.source.read_text(encoding="utf-8"))
-    result = (replay_supplement(source, json.loads(args.supplement.read_text(encoding="utf-8")))
-              if args.supplement else replay(source))
+    result = (
+        replay_supplement(
+            source, json.loads(args.supplement.read_text(encoding="utf-8"))
+        )
+        if args.supplement
+        else replay(source)
+    )
     encoded = json.dumps(result, indent=2, sort_keys=True) + "\n"
     if args.output:
         args.output.parent.mkdir(parents=True, exist_ok=True)

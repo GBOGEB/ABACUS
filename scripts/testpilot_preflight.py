@@ -4,6 +4,7 @@ Purpose: catch deterministic defects before GitHub Actions without weakening
 the authoritative CI gates.  Fast mode is suitable for pre-commit; full/gate
 modes reproduce progressively stronger local checks.
 """
+
 from __future__ import annotations
 
 import argparse
@@ -15,10 +16,12 @@ import re
 import subprocess
 import sys
 import time
+
 try:
     import tomllib
 except ModuleNotFoundError:  # Python 3.10 compatibility
     import tomli as tomllib
+
 from pathlib import Path
 
 import yaml
@@ -34,7 +37,6 @@ CONFLICT_END_RE = re.compile(r"^>>>>>>> .+$", re.MULTILINE)
 
 class GitProbeError(RuntimeError):
     """A Git census failure is never equivalent to an empty changed-file set."""
-
 
 
 def run(cmd: list[str], *, cwd: Path = ROOT) -> dict:
@@ -69,9 +71,13 @@ def git_lines(*args: str) -> list[str]:
             ["git", *args], cwd=ROOT, text=True, capture_output=True, check=False
         )
     except OSError as exc:
-        raise GitProbeError(f"git {args[0] if args else 'probe'} unavailable: {type(exc).__name__}") from exc
+        raise GitProbeError(
+            f"git {args[0] if args else 'probe'} unavailable: {type(exc).__name__}"
+        ) from exc
     if proc.returncode != 0:
-        raise GitProbeError(f"git {args[0] if args else 'probe'} exited {proc.returncode}")
+        raise GitProbeError(
+            f"git {args[0] if args else 'probe'} exited {proc.returncode}"
+        )
     return [line.strip() for line in proc.stdout.splitlines() if line.strip()]
 
 
@@ -170,7 +176,12 @@ def check_configs(files: list[Path]) -> dict:
                 tomllib.loads(text)
             else:
                 yaml.safe_load(text)
-        except (json.JSONDecodeError, tomllib.TOMLDecodeError, yaml.YAMLError, OSError) as exc:
+        except (
+            json.JSONDecodeError,
+            tomllib.TOMLDecodeError,
+            yaml.YAMLError,
+            OSError,
+        ) as exc:
             bad.append({"file": str(p.relative_to(ROOT)), "error": str(exc)})
     return {
         "name": "config_parse",
@@ -222,7 +233,9 @@ def targeted_pytest() -> list[dict]:
             "--maxfail=1",
         ],
     ]
-    return [dict(run(cmd), name=f"pytest_targeted_{i+1}") for i, cmd in enumerate(commands)]
+    return [
+        dict(run(cmd), name=f"pytest_targeted_{i+1}") for i, cmd in enumerate(commands)
+    ]
 
 
 def coverage_check(floor: float) -> dict:
@@ -243,11 +256,16 @@ def coverage_check(floor: float) -> dict:
 
 def source_sha() -> str | None:
     values = git_lines("rev-parse", "HEAD")
-    return values[0] if len(values) == 1 and re.fullmatch(r"[0-9a-f]{40}", values[0]) else None
+    return (
+        values[0]
+        if len(values) == 1 and re.fullmatch(r"[0-9a-f]{40}", values[0])
+        else None
+    )
 
 
-
-def receipt_outcome(checks: list[dict], mode: str, *, parity: bool = False) -> tuple[str, int]:
+def receipt_outcome(
+    checks: list[dict], mode: str, *, parity: bool = False
+) -> tuple[str, int]:
     """Unexecuted checks cannot be reported as complete, especially in gate mode."""
     if not checks:
         return "FAIL", 1
@@ -260,12 +278,15 @@ def receipt_outcome(checks: list[dict], mode: str, *, parity: bool = False) -> t
     return "PASS", 0
 
 
-
 def main() -> int:
     ap = argparse.ArgumentParser()
     ap.add_argument("--mode", choices=["fast", "full", "gate"], default="fast")
     ap.add_argument("--fix", action="store_true", help="apply only safe ruff fixes")
-    ap.add_argument("--parity", action="store_true", help="validate TestPilot implementation/config only")
+    ap.add_argument(
+        "--parity",
+        action="store_true",
+        help="validate TestPilot implementation/config only",
+    )
     ap.add_argument("--coverage-floor", type=float)
     ap.add_argument("--receipt", default=str(DEFAULT_RECEIPT))
     args = ap.parse_args()
@@ -283,17 +304,31 @@ def main() -> int:
         files = parity_subject_files() if args.parity else changed_files()
     except GitProbeError as exc:
         files = []
-        git_checks.append({"name": "git_changed_files", "status": "FAIL", "reason": str(exc)})
+        git_checks.append(
+            {"name": "git_changed_files", "status": "FAIL", "reason": str(exc)}
+        )
     try:
         verified_sha = source_sha()
     except GitProbeError as exc:
         verified_sha = None
-        git_checks.append({"name": "git_source_sha", "status": "FAIL", "reason": str(exc)})
-    if not isinstance(verified_sha, str) or re.fullmatch(r"[0-9a-f]{40}", verified_sha) is None:
+        git_checks.append(
+            {"name": "git_source_sha", "status": "FAIL", "reason": str(exc)}
+        )
+    if (
+        not isinstance(verified_sha, str)
+        or re.fullmatch(r"[0-9a-f]{40}", verified_sha) is None
+    ):
         verified_sha = None
-    if verified_sha is None and not any(c["name"] == "git_source_sha" for c in git_checks):
-        git_checks.append({"name": "git_source_sha", "status": "FAIL",
-                           "reason": "missing or malformed exact HEAD SHA"})
+    if verified_sha is None and not any(
+        c["name"] == "git_source_sha" for c in git_checks
+    ):
+        git_checks.append(
+            {
+                "name": "git_source_sha",
+                "status": "FAIL",
+                "reason": "missing or malformed exact HEAD SHA",
+            }
+        )
     checks: list[dict] = git_checks + [
         check_conflicts(files),
         check_python_compile(files),
@@ -304,7 +339,9 @@ def main() -> int:
 
     if args.mode in {"full", "gate"}:
         default_floor = 25.0 if args.mode == "full" else 75.0
-        floor = args.coverage_floor if args.coverage_floor is not None else default_floor
+        floor = (
+            args.coverage_floor if args.coverage_floor is not None else default_floor
+        )
         checks.append(coverage_check(floor))
 
     failures = [c for c in checks if c.get("status") == "FAIL"]

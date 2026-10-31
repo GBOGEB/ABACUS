@@ -7,7 +7,6 @@ import tempfile
 import unittest
 from unittest import mock
 
-
 MODULE_PATH = pathlib.Path(__file__).resolve().parents[1] / "pr_feedback_gate.py"
 SPEC = importlib.util.spec_from_file_location("pr_feedback_gate", MODULE_PATH)
 gate = importlib.util.module_from_spec(SPEC)
@@ -38,7 +37,7 @@ class FeedbackGateTests(unittest.TestCase):
             {
                 "body": (
                     "<!-- codex-pull-request-review-summary -->\n"
-                    '<!-- codex-security-review:v1 '
+                    "<!-- codex-security-review:v1 "
                     '{"headSha":"abcdef0123456789abcdef0123456789abcdef01",'
                     '"status":"completed"} -->\n'
                     "| Review | Status | Commit | Review trigger |\n"
@@ -59,9 +58,7 @@ class FeedbackGateTests(unittest.TestCase):
         ]
         self.assertTrue(gate.codex_code_review_complete(comments, head))
         colliding_prefix = "abcdef0fffffffffffffffffffffffffffffffff"
-        self.assertFalse(
-            gate.codex_code_review_complete(comments, colliding_prefix)
-        )
+        self.assertFalse(gate.codex_code_review_complete(comments, colliding_prefix))
 
     def test_code_review_rejects_colliding_display_prefix(self):
         head = "abcdef0123456789abcdef0123456789abcdef01"
@@ -71,7 +68,9 @@ class FeedbackGateTests(unittest.TestCase):
                 "body": (
                     "<!-- codex-pull-request-review-summary -->\n"
                     "<!-- codex-security-review:v1 "
-                    + '{"headSha":"' + other + '","status":"completed"} -->\n'
+                    + '{"headSha":"'
+                    + other
+                    + '","status":"completed"} -->\n'
                     "| Review | Status | Commit | Review trigger |\n"
                     "| --- | --- | --- | --- |\n"
                     "| 📝 **Code Review** | ✅ **Completed** now | "
@@ -95,7 +94,7 @@ class FeedbackGateTests(unittest.TestCase):
         comments = [
             {
                 "body": (
-                    '<!-- codex-security-review:v1 '
+                    "<!-- codex-security-review:v1 "
                     '{"headSha":"abcdef0123456789abcdef0123456789abcdef01",'
                     '"status":"completed"} -->'
                 ),
@@ -111,15 +110,13 @@ class FeedbackGateTests(unittest.TestCase):
             }
         ]
         self.assertTrue(gate.codex_security_review_complete(comments, head))
-        self.assertFalse(
-            gate.codex_security_review_complete(comments, "0" * 40)
-        )
+        self.assertFalse(gate.codex_security_review_complete(comments, "0" * 40))
 
     def test_forged_codex_markers_are_rejected(self):
         head = "abcdef0123456789abcdef0123456789abcdef01"
         body = (
             "<!-- codex-pull-request-review-summary -->\n"
-            '<!-- codex-security-review:v1 '
+            "<!-- codex-security-review:v1 "
             '{"headSha":"abcdef0123456789abcdef0123456789abcdef01",'
             '"status":"completed"} -->\n'
             "| Review | Status | Commit | Review trigger |\n"
@@ -143,7 +140,7 @@ class FeedbackGateTests(unittest.TestCase):
         forged = {
             "body": (
                 "<!-- codex-pull-request-review-summary -->\n"
-                '<!-- codex-security-review:v1 '
+                "<!-- codex-security-review:v1 "
                 '{"headSha":"abcdef0123456789abcdef0123456789abcdef01",'
                 '"status":"completed"} -->\n'
                 "| Review | Status | Commit | Review trigger |\n"
@@ -161,7 +158,7 @@ class FeedbackGateTests(unittest.TestCase):
     def test_wrong_codex_app_identity_is_rejected(self):
         head = "abcdef0123456789abcdef0123456789abcdef01"
         comment = self.trusted_codex_comment(
-            '<!-- codex-security-review:v1 '
+            "<!-- codex-security-review:v1 "
             '{"headSha":"abcdef0123456789abcdef0123456789abcdef01",'
             '"status":"completed"} -->'
         )
@@ -275,14 +272,8 @@ class FeedbackGateTests(unittest.TestCase):
 
     def test_push_run_cannot_satisfy_required_pr_workflow(self):
         runs = self.blocking_runs()
-        runs = [
-            run
-            for run in runs
-            if run["name"] != "CI - ABACUS Matrix"
-        ]
-        workflow_id, path = gate.TRUSTED_WORKFLOW_IDENTITIES[
-            "CI - ABACUS Matrix"
-        ]
+        runs = [run for run in runs if run["name"] != "CI - ABACUS Matrix"]
+        workflow_id, path = gate.TRUSTED_WORKFLOW_IDENTITIES["CI - ABACUS Matrix"]
         runs.append(
             {
                 "name": "CI - ABACUS Matrix",
@@ -300,9 +291,7 @@ class FeedbackGateTests(unittest.TestCase):
 
     def test_push_failure_does_not_poison_green_pr_run(self):
         runs = self.blocking_runs()
-        workflow_id, path = gate.TRUSTED_WORKFLOW_IDENTITIES[
-            "CI - ABACUS Matrix"
-        ]
+        workflow_id, path = gate.TRUSTED_WORKFLOW_IDENTITIES["CI - ABACUS Matrix"]
         runs.append(
             {
                 "name": "CI - ABACUS Matrix",
@@ -320,13 +309,9 @@ class FeedbackGateTests(unittest.TestCase):
 
     def test_other_pr_same_sha_cannot_satisfy_required_workflow(self):
         runs = [
-            run
-            for run in self.blocking_runs()
-            if run["name"] != "CI - ABACUS Matrix"
+            run for run in self.blocking_runs() if run["name"] != "CI - ABACUS Matrix"
         ]
-        workflow_id, path = gate.TRUSTED_WORKFLOW_IDENTITIES[
-            "CI - ABACUS Matrix"
-        ]
+        workflow_id, path = gate.TRUSTED_WORKFLOW_IDENTITIES["CI - ABACUS Matrix"]
         runs.append(
             {
                 "name": "CI - ABACUS Matrix",
@@ -348,9 +333,7 @@ class FeedbackGateTests(unittest.TestCase):
 
     def test_other_pr_same_sha_failure_does_not_poison_current_pr(self):
         runs = self.blocking_runs()
-        workflow_id, path = gate.TRUSTED_WORKFLOW_IDENTITIES[
-            "CI - ABACUS Matrix"
-        ]
+        workflow_id, path = gate.TRUSTED_WORKFLOW_IDENTITIES["CI - ABACUS Matrix"]
         runs.append(
             {
                 "name": "CI - ABACUS Matrix",
@@ -436,11 +419,7 @@ class FeedbackGateTests(unittest.TestCase):
 
     def test_missing_required_workflow_fails_closed_as_pending(self):
         runs = self.blocking_runs()
-        runs = [
-            run
-            for run in runs
-            if run["name"] != "DAB Flake8 Census"
-        ]
+        runs = [run for run in runs if run["name"] != "DAB Flake8 Census"]
         pending, failed, seen = gate.classify_runs(
             runs,
             required_workflows=(
@@ -495,10 +474,10 @@ class FeedbackGateTests(unittest.TestCase):
 
     HEAD_AT = "2026-10-11T19:00:00Z"
 
-    def current_head_request(self, at="2026-10-11T19:10:00Z",
-                             head=None, **overrides):
+    def current_head_request(self, at="2026-10-11T19:10:00Z", head=None, **overrides):
         comment = {
-            "body": "@codex security review\n\nExact head \\`%s\\`" % (head or self.HEAD),
+            "body": "@codex security review\n\nExact head \\`%s\\`"
+            % (head or self.HEAD),
             "created_at": at,
             "updated_at": at,
             "user": {"login": "GBOGEB", "type": "User"},
@@ -526,9 +505,7 @@ class FeedbackGateTests(unittest.TestCase):
             self.current_head_request(user={"login": "attacker", "type": "User"}),
         ):
             self.assertFalse(
-                gate.current_head_codex_request(
-                    [wrong], self.HEAD, since, outage_at
-                )
+                gate.current_head_codex_request([wrong], self.HEAD, since, outage_at)
             )
 
     def test_delayed_old_head_outage_does_not_enable_fallback(self):
@@ -543,35 +520,46 @@ class FeedbackGateTests(unittest.TestCase):
                     self_outer.outage(),
                     self_outer.owner_comment(self_outer.valid_payload()),
                 ]
+
             def review_threads(self, number):
                 return []
+
             def actions_runs(self, head_sha):
-                return [{
-                    "event": "pull_request", "head_sha": self_outer.HEAD,
-                    "created_at": self_outer.HEAD_AT,
-                    "pull_requests": [{"number": 1}],
-                }]
+                return [
+                    {
+                        "event": "pull_request",
+                        "head_sha": self_outer.HEAD,
+                        "created_at": self_outer.HEAD_AT,
+                        "pull_requests": [{"number": 1}],
+                    }
+                ]
+
             def pull_files(self, number):
                 return ["README.md"]
 
             def pull_file_records(self, number):
                 return [{"filename": "README.md"}]
+
             def issue(self, number):
                 return {"state": "open"}
+
         self_outer = self
         pull = {
-            "state": "open", "base": {"ref": "main"},
-            "head": {"sha": self.HEAD}, "changed_files": 1,
+            "state": "open",
+            "base": {"ref": "main"},
+            "head": {"sha": self.HEAD},
+            "changed_files": 1,
         }
         evidence = gate.evaluate(FakeGitHub(), 1, pull)
         self.assertEqual(evidence.review_source, "codex")
         self.assertFalse(evidence.security_review_complete)
 
     def test_outage_without_explicit_current_head_request_fails_closed(self):
-        self.assertFalse(gate.current_head_codex_request(
-            [self.outage()], self.HEAD, self.HEAD_AT,
-            "2026-10-11T19:30:00Z"
-        ))
+        self.assertFalse(
+            gate.current_head_codex_request(
+                [self.outage()], self.HEAD, self.HEAD_AT, "2026-10-11T19:30:00Z"
+            )
+        )
 
     def outage(self, at="2026-10-11T19:30:00Z"):
         comment = self.trusted_codex_comment(
@@ -635,16 +623,36 @@ class FeedbackGateTests(unittest.TestCase):
 
     def test_head_time_comes_from_server_runs_not_commit_metadata(self):
         runs = [
-            {"event": "pull_request", "head_sha": self.HEAD,
-             "created_at": "2026-10-11T19:05:00Z", "pull_requests": [{"number": 7}]},
-            {"event": "pull_request", "head_sha": self.HEAD,
-             "created_at": "2026-10-11T19:00:00Z", "pull_requests": [{"number": 7}]},
-            {"event": "push", "head_sha": self.HEAD,
-             "created_at": "2026-10-11T10:00:00Z", "pull_requests": []},
-            {"event": "pull_request", "head_sha": self.HEAD,
-             "created_at": "2026-10-11T09:00:00Z", "pull_requests": [{"number": 8}]},
-            {"event": "pull_request", "head_sha": "f" * 40,
-             "created_at": "2026-10-11T08:00:00Z", "pull_requests": [{"number": 7}]},
+            {
+                "event": "pull_request",
+                "head_sha": self.HEAD,
+                "created_at": "2026-10-11T19:05:00Z",
+                "pull_requests": [{"number": 7}],
+            },
+            {
+                "event": "pull_request",
+                "head_sha": self.HEAD,
+                "created_at": "2026-10-11T19:00:00Z",
+                "pull_requests": [{"number": 7}],
+            },
+            {
+                "event": "push",
+                "head_sha": self.HEAD,
+                "created_at": "2026-10-11T10:00:00Z",
+                "pull_requests": [],
+            },
+            {
+                "event": "pull_request",
+                "head_sha": self.HEAD,
+                "created_at": "2026-10-11T09:00:00Z",
+                "pull_requests": [{"number": 8}],
+            },
+            {
+                "event": "pull_request",
+                "head_sha": "f" * 40,
+                "created_at": "2026-10-11T08:00:00Z",
+                "pull_requests": [{"number": 7}],
+            },
         ]
         self.assertEqual(
             gate.head_current_since(runs, self.HEAD, 7), "2026-10-11T19:05:00Z"
@@ -654,10 +662,18 @@ class FeedbackGateTests(unittest.TestCase):
         # A ran at 18:00, B got an outage at 18:30, PR force-pushed back to A
         # at 19:00 (fresh runs). The 18:30 outage must not cover A.
         runs = [
-            {"event": "pull_request", "head_sha": self.HEAD,
-             "created_at": "2026-10-11T18:00:00Z", "pull_requests": [{"number": 7}]},
-            {"event": "pull_request", "head_sha": self.HEAD,
-             "created_at": "2026-10-11T19:00:00Z", "pull_requests": [{"number": 7}]},
+            {
+                "event": "pull_request",
+                "head_sha": self.HEAD,
+                "created_at": "2026-10-11T18:00:00Z",
+                "pull_requests": [{"number": 7}],
+            },
+            {
+                "event": "pull_request",
+                "head_sha": self.HEAD,
+                "created_at": "2026-10-11T19:00:00Z",
+                "pull_requests": [{"number": 7}],
+            },
         ]
         since = gate.head_current_since(runs, self.HEAD, 7)
         self.assertFalse(
@@ -668,9 +684,24 @@ class FeedbackGateTests(unittest.TestCase):
         h1 = self.HEAD
         h2 = "f" * 40
         runs = [
-            {"event": "pull_request", "head_sha": h1, "created_at": "2026-10-11T18:00:00Z", "pull_requests": [{"number": 7}]},
-            {"event": "pull_request", "head_sha": h2, "created_at": "2026-10-11T18:20:00Z", "pull_requests": [{"number": 7}]},
-            {"event": "pull_request", "head_sha": h1, "created_at": "2026-10-11T19:00:00Z", "pull_requests": [{"number": 7}]},
+            {
+                "event": "pull_request",
+                "head_sha": h1,
+                "created_at": "2026-10-11T18:00:00Z",
+                "pull_requests": [{"number": 7}],
+            },
+            {
+                "event": "pull_request",
+                "head_sha": h2,
+                "created_at": "2026-10-11T18:20:00Z",
+                "pull_requests": [{"number": 7}],
+            },
+            {
+                "event": "pull_request",
+                "head_sha": h1,
+                "created_at": "2026-10-11T19:00:00Z",
+                "pull_requests": [{"number": 7}],
+            },
         ]
         self.assertTrue(gate.head_reused_across_transitions(runs, h1, 7))
         self.assertFalse(gate.head_reused_across_transitions(runs[:1], h1, 7))
@@ -729,9 +760,7 @@ class FeedbackGateTests(unittest.TestCase):
     def test_outage_timestamp_tie_with_head_is_rejected(self):
         # GitHub timestamps have one-second resolution: ties prove no order.
         self.assertFalse(
-            gate.codex_unavailable(
-                [self.outage(at=self.HEAD_AT)], self.HEAD_AT
-            )
+            gate.codex_unavailable([self.outage(at=self.HEAD_AT)], self.HEAD_AT)
         )
 
     def test_attestation_timestamp_tie_with_outage_is_rejected(self):
@@ -770,8 +799,10 @@ class FeedbackGateTests(unittest.TestCase):
                 return {"state": "open"}
 
         pull = {
-            "state": "open", "base": {"ref": "main"},
-            "head": {"sha": self.HEAD}, "changed_files": 1,
+            "state": "open",
+            "base": {"ref": "main"},
+            "head": {"sha": self.HEAD},
+            "changed_files": 1,
         }
         attested = self.owner_comment(self.valid_payload())
 
@@ -790,7 +821,8 @@ class FeedbackGateTests(unittest.TestCase):
 
         with_outage = gate.evaluate(
             FakeGitHub([self.current_head_request(), self.outage(), attested]),
-            1, pull,
+            1,
+            pull,
         )
         # Security regression: outage + exact-head owner attestation must never
         # replace independent code/security review, even when all evidence is fresh.
@@ -800,7 +832,6 @@ class FeedbackGateTests(unittest.TestCase):
         # CI is still required: with no runs the gate stays pending, never green.
         self.assertEqual(with_outage.state, "pending")
         self.assertTrue(any("CI missing" in r for r in with_outage.pending_reasons))
-
 
     def test_gate_state_order_is_failure_then_pending_then_success(self):
         base = dict(
@@ -836,7 +867,6 @@ class FeedbackGateTests(unittest.TestCase):
         failed = dict(pending)
         failed["unresolved_threads"] = 1
         self.assertEqual(gate.Evidence(**failed).state, "failure")
-
 
     def test_deferred_review_can_satisfy_non_sensitive_pending_review(self):
         base = dict(
@@ -900,14 +930,10 @@ class FeedbackGateTests(unittest.TestCase):
 
     def test_security_sensitive_path_classifier(self):
         self.assertTrue(
-            gate.security_sensitive_change(
-                [".github/workflows/pr-feedback-gate.yml"]
-            )
+            gate.security_sensitive_change([".github/workflows/pr-feedback-gate.yml"])
         )
         self.assertTrue(
-            gate.security_sensitive_change(
-                ["ci/governance/pr_feedback_gate.py"]
-            )
+            gate.security_sensitive_change(["ci/governance/pr_feedback_gate.py"])
         )
         self.assertFalse(
             gate.security_sensitive_change(["docs/img/ordinary-figure.png"])
@@ -916,7 +942,7 @@ class FeedbackGateTests(unittest.TestCase):
     def test_review_deferral_requires_classifications_and_exact_open_issue(self):
         head = "a" * 40
         issue_body = (
-            '<!-- abacus-deferred-security:v1 '
+            "<!-- abacus-deferred-security:v1 "
             + json.dumps(self.full_debt_metadata(head))
             + " -->"
         )
@@ -951,9 +977,7 @@ class FeedbackGateTests(unittest.TestCase):
             "body": (
                 "CODEX_CODE_REVIEW=DEFERRED_BUDGET\n"
                 "CODEX_SECURITY_REVIEW=DEFERRED_BUDGET\n"
-                "<!-- abacus-review-disposition:v2 "
-                + json.dumps(marker)
-                + " -->"
+                "<!-- abacus-review-disposition:v2 " + json.dumps(marker) + " -->"
             ),
         }
         threads = [{"id": "THREAD-1", "isResolved": False}]
@@ -974,9 +998,7 @@ class FeedbackGateTests(unittest.TestCase):
             {
                 "id": "THREAD-1",
                 "isResolved": False,
-                "comments": {
-                    "nodes": [{"createdAt": "2026-10-11T14:00:00Z"}]
-                },
+                "comments": {"nodes": [{"createdAt": "2026-10-11T14:00:00Z"}]},
             }
         ]
         evidence = gate.review_deferral_evidence(
@@ -1086,9 +1108,7 @@ class FeedbackGateTests(unittest.TestCase):
         comment["body"] = (
             "CODEX_CODE_REVIEW=DEFERRED_BUDGET\n"
             "CODEX_SECURITY_REVIEW=DEFERRED_BUDGET\n"
-            "<!-- abacus-review-disposition:v2 "
-            + json.dumps(marker)
-            + " -->"
+            "<!-- abacus-review-disposition:v2 " + json.dumps(marker) + " -->"
         )
         evidence = gate.review_deferral_evidence(
             FakeGitHub(issue_body),
@@ -1130,9 +1150,7 @@ class FeedbackGateTests(unittest.TestCase):
         comment_author="owner",
     ):
         head = "a" * 40
-        body = (
-            "<!-- abacus-deferred-security:v1 " + json.dumps(metadata) + " -->"
-        )
+        body = "<!-- abacus-deferred-security:v1 " + json.dumps(metadata) + " -->"
 
         class FakeGitHub:
             def issue(self, number):
@@ -1160,9 +1178,7 @@ class FeedbackGateTests(unittest.TestCase):
             "body": (
                 "CODEX_CODE_REVIEW=DEFERRED_BUDGET\n"
                 "CODEX_SECURITY_REVIEW=DEFERRED_BUDGET\n"
-                "<!-- abacus-review-disposition:v2 "
-                + json.dumps(marker)
-                + " -->"
+                "<!-- abacus-review-disposition:v2 " + json.dumps(marker) + " -->"
             ),
         }
         comment["user"]["login"] = comment_author
@@ -1178,9 +1194,7 @@ class FeedbackGateTests(unittest.TestCase):
 
     def test_marker_only_tracking_issue_is_rejected(self):
         head = "a" * 40
-        evidence = self.deferral_result(
-            {"pr": 42, "headSha": head, "status": "OPEN"}
-        )
+        evidence = self.deferral_result({"pr": 42, "headSha": head, "status": "OPEN"})
         self.assertFalse(evidence[0])
         self.assertIn("deferral reason", evidence[2][0])
 
@@ -1299,9 +1313,7 @@ class FeedbackGateTests(unittest.TestCase):
         self.assertTrue(gate.security_sensitive_change(paths))
         self.assertFalse(
             gate.security_sensitive_change(
-                gate.changed_paths_from_files(
-                    [{"filename": "docs/img/figure.png"}]
-                )
+                gate.changed_paths_from_files([{"filename": "docs/img/figure.png"}])
             )
         )
 
@@ -1444,9 +1456,7 @@ class FeedbackGateTests(unittest.TestCase):
                 "body": marker,
             },
         }
-        self.assertEqual(
-            gate.event_pr_numbers(FakeGitHub(), closed, None), [1847]
-        )
+        self.assertEqual(gate.event_pr_numbers(FakeGitHub(), closed, None), [1847])
         # Only an older, superseded result cites #1849: ignore the edit.
         self.assertEqual(
             gate.event_pr_numbers(
@@ -1488,9 +1498,7 @@ class FeedbackGateTests(unittest.TestCase):
                 "body": "no marker here",
             },
         }
-        self.assertEqual(
-            gate.event_pr_numbers(FakeGitHub(), plain_issue, None), []
-        )
+        self.assertEqual(gate.event_pr_numbers(FakeGitHub(), plain_issue, None), [])
         untrusted_issue = {
             "action": "edited",
             "issue": {
@@ -1499,9 +1507,7 @@ class FeedbackGateTests(unittest.TestCase):
                 "body": marker,
             },
         }
-        self.assertEqual(
-            gate.event_pr_numbers(FakeGitHub(), untrusted_issue, None), []
-        )
+        self.assertEqual(gate.event_pr_numbers(FakeGitHub(), untrusted_issue, None), [])
         read_only_member = {
             "action": "edited",
             "issue": {
@@ -1523,9 +1529,7 @@ class FeedbackGateTests(unittest.TestCase):
             },
             "comment": {"author_association": "NONE", "body": "spam"},
         }
-        self.assertEqual(
-            gate.event_pr_numbers(FakeGitHub(), public_comment, None), []
-        )
+        self.assertEqual(gate.event_pr_numbers(FakeGitHub(), public_comment, None), [])
 
     def test_workflow_subscribes_to_tracking_issue_lifecycle(self):
         workflow = (
@@ -1535,8 +1539,7 @@ class FeedbackGateTests(unittest.TestCase):
             / "pr-feedback-gate.yml"
         ).read_text(encoding="utf-8")
         self.assertIn(
-            "issues:\n    types: [edited, closed, reopened, deleted, "
-            "transferred]",
+            "issues:\n    types: [edited, closed, reopened, deleted, " "transferred]",
             workflow,
         )
         self.assertIn(
@@ -1558,9 +1561,7 @@ class FeedbackGateTests(unittest.TestCase):
             "      cancel-in-progress: false",
             workflow,
         )
-        self.assertEqual(
-            workflow.count('args+=(--pr-number "$PR_NUMBER")'), 4
-        )
+        self.assertEqual(workflow.count('args+=(--pr-number "$PR_NUMBER")'), 4)
         # A tracking-issue event invalidates the check outside the PR's
         # census queue, so a census already running cannot leave a success
         # computed from the old issue standing.
@@ -1577,9 +1578,7 @@ class FeedbackGateTests(unittest.TestCase):
             "pull_request:\n    types: [opened, synchronize, reopened]",
             workflow,
         )
-        self.assertIn(
-            "ref: ${{ github.event.repository.default_branch }}", invalidate
-        )
+        self.assertIn("ref: ${{ github.event.repository.default_branch }}", invalidate)
         # The same event's census runs after its invalidation, so the
         # invalidator's newer stamp cannot reject the census result.
         evaluate = workflow.split("  evaluate:\n", 1)[1]
@@ -1642,9 +1641,7 @@ class FeedbackGateTests(unittest.TestCase):
         self.assertEqual(result.state, "failure")
         # An unchanged re-census confirms the success.
         with mock.patch.object(gate, "evaluate", return_value=deferred):
-            self.assertEqual(
-                gate.revalidated_evidence(object(), 1, deferred), deferred
-            )
+            self.assertEqual(gate.revalidated_evidence(object(), 1, deferred), deferred)
         # Evidence that keeps changing never publishes success.
         flapping = [evidence(ci_seen=n) for n in range(2, 6)]
         with mock.patch.object(gate, "evaluate", side_effect=flapping):
@@ -1659,23 +1656,15 @@ class FeedbackGateTests(unittest.TestCase):
             review_deferral_valid=False,
         )
         with mock.patch.object(gate, "evaluate") as evaluate:
-            self.assertEqual(
-                gate.revalidated_evidence(object(), 1, reviewed), reviewed
-            )
+            self.assertEqual(gate.revalidated_evidence(object(), 1, reviewed), reviewed)
         evaluate.assert_not_called()
 
     def test_incomplete_file_census_fails_closed(self):
         records = [{"filename": "docs/note.md"}]
-        self.assertTrue(
-            gate.file_census_complete(records, {"changed_files": 1})
-        )
-        self.assertFalse(
-            gate.file_census_complete(records, {"changed_files": 3001})
-        )
+        self.assertTrue(gate.file_census_complete(records, {"changed_files": 1}))
+        self.assertFalse(gate.file_census_complete(records, {"changed_files": 3001}))
         self.assertFalse(gate.file_census_complete(records, {}))
-        self.assertFalse(
-            gate.file_census_complete(records, {"changed_files": True})
-        )
+        self.assertFalse(gate.file_census_complete(records, {"changed_files": True}))
 
     def test_truncated_census_blocks_deferral_and_requires_all_ci(self):
         head = "a" * 40
@@ -1708,10 +1697,7 @@ class FeedbackGateTests(unittest.TestCase):
         evidence = gate.evaluate(FakeGitHub(), 42, pull)
         self.assertTrue(evidence.security_sensitive)
         self.assertTrue(
-            any(
-                "incomplete PR file census" in item
-                for item in evidence.ci_failed
-            )
+            any("incomplete PR file census" in item for item in evidence.ci_failed)
         )
         self.assertEqual(evidence.state, "failure")
         for workflow in gate.CONDITIONAL_WORKFLOW_PATHS:
@@ -1767,9 +1753,7 @@ class FeedbackGateTests(unittest.TestCase):
             )
         )
         self.assertEqual(calls[0][0], "PATCH")
-        self.assertEqual(
-            gate.census_started_from("a=1\ncensus_started=X\n"), "X"
-        )
+        self.assertEqual(gate.census_started_from("a=1\ncensus_started=X\n"), "X")
         self.assertIsNone(gate.census_started_from("state=pending"))
 
     def test_census_stamps_are_fixed_width(self):
@@ -1835,15 +1819,20 @@ class FeedbackGateTests(unittest.TestCase):
             path.write_text(json.dumps(event), encoding="utf-8")
             argv = [
                 "pr_feedback_gate.py",
-                "--event-path", str(path),
-                "--pr-number", "7",
-                "--census-started", "2026-10-17T20:00:00.000000Z",
+                "--event-path",
+                str(path),
+                "--pr-number",
+                "7",
+                "--census-started",
+                "2026-10-17T20:00:00.000000Z",
                 "--mark-pending-only",
             ]
             env = {"GITHUB_REPOSITORY": "o/r", "GITHUB_TOKEN": "t"}
-            with mock.patch.object(gate, "GitHub", FakeGitHub), \
-                    mock.patch.object(sys, "argv", argv), \
-                    mock.patch.dict(os.environ, env):
+            with (
+                mock.patch.object(gate, "GitHub", FakeGitHub),
+                mock.patch.object(sys, "argv", argv),
+                mock.patch.dict(os.environ, env),
+            ):
                 self.assertEqual(gate.main(), 0)
         self.assertEqual(
             [(sha, state) for sha, state, _ in published],
