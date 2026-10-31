@@ -249,7 +249,10 @@ def test_execute_phase_with_tracking_variants(env):
     ok, res = orch._execute_phase_with_tracking(DictNoPhase(), "P", 1)
     assert ok is False
     assert res == {"other": 1}
-    ok, res = orch._execute_phase_with_tracking(DictNoPhase(), "P", 1)
+    assert orch._execute_phase_with_tracking(DictNoPhase(), "P", 1) == (
+        False,
+        {"other": 1},
+    )
     p = orch.statistics["phases"]["P"]
     assert (p["executions"], p["failures"], p["successes"]) == (2, 2, 0)
     assert p["avg_duration"] == pytest.approx(p["total_duration"] / 2)
