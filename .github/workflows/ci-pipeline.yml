@@ -116,6 +116,40 @@ jobs:
             --cov-report=term \
             -n "$PYTEST_WORKERS"
 
+      - name: G family tests (qplant)
+        # CODE PURPLE vector G (2026-10-31): no main-branch job collected these
+        # 12 files (pytest.ini norecursedirs excludes qplant). 132 collected at
+        # f131a81a; EXPECTED_MIN 124 = 132 minus 8 deselected tests that read
+        # generated data/*.json and docs/ outputs absent from git (.gitignore
+        # *.json; build_all.sh needs a missing VERSION file). Defect
+        # G-AB-QPLANT-HD-ARTIFACTS: reported, not pinned (--max-xfails 0).
+        # qplant/ai_validation/test_generator.py is a production module, not a test.
+        if: ${{ !cancelled() }}
+        shell: bash
+        run: |
+          python scripts/ci/family_collect_guard.py \
+            --family qplant --expected-min 124 -- \
+            qplant/ai_validation/tests/test_ai_validation.py \
+            qplant/authentication/tests/test_api_endpoints_auth.py \
+            qplant/authentication/tests/test_api_key_manager.py \
+            qplant/authentication/tests/test_rate_limiter.py \
+            qplant/config_service/tests/test_config_service.py \
+            qplant/handover_dashboard/tests/test_api.py \
+            qplant/handover_dashboard/tests/test_calculations.py \
+            qplant/handover_dashboard/tests/test_config_loader.py \
+            qplant/handover_dashboard/tests/test_data_integrity.py \
+            qplant/handover_dashboard/tests/test_engineering.py \
+            qplant/handover_dashboard/tests/test_outputs.py \
+            qplant/monitoring_dashboard/tests/test_monitoring.py \
+            --deselect=qplant/handover_dashboard/tests/test_api.py::test_visualization_catalog \
+            --deselect=qplant/handover_dashboard/tests/test_data_integrity.py::test_standards_json_schema \
+            --deselect=qplant/handover_dashboard/tests/test_data_integrity.py::test_helium_properties \
+            --deselect=qplant/handover_dashboard/tests/test_data_integrity.py::test_compressor_specs \
+            --deselect=qplant/handover_dashboard/tests/test_engineering.py::test_baseline_scenario_total_range \
+            --deselect=qplant/handover_dashboard/tests/test_outputs.py::test_all_expected_files_exist \
+            --deselect=qplant/handover_dashboard/tests/test_outputs.py::test_html_renders \
+            --deselect=qplant/handover_dashboard/tests/test_outputs.py::test_json_valid
+
       - name: Preserve native unit and coverage evidence
         if: always()
         uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9
