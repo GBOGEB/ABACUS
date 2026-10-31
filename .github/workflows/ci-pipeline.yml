@@ -116,6 +116,22 @@ jobs:
             --cov-report=term \
             -n "$PYTEST_WORKERS"
 
+      - name: G family tests (mip_g3cs)
+        # CODE PURPLE vector G (2026-10-31): no main-branch job collected these
+        # 6 files. EXPECTED_MIN 155 = local --collect-only at f131a81a, no
+        # platform skips.
+        if: ${{ !cancelled() }}
+        shell: bash
+        run: |
+          python scripts/ci/family_collect_guard.py \
+            --family mip_g3cs --expected-min 155 -- \
+            MIP/G3CS_CONVERGENCE_V2/observatory/w10/test_w11_spine_contract.py \
+            MIP/G3CS_CONVERGENCE_V2/observatory/w10/test_w12_dependency_metrics.py \
+            MIP/G3CS_CONVERGENCE_V2/observatory/w10/test_w12_trigger_events.py \
+            MIP/G3CS_CONVERGENCE_V2/tests/test_compare_snapshots.py \
+            MIP/G3CS_CONVERGENCE_V2/tests/test_converge.py \
+            MIP/G3CS_CONVERGENCE_V2/tests/test_postmerge_gate_receipt.py
+
       - name: Preserve native unit and coverage evidence
         if: always()
         uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9
