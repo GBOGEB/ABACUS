@@ -137,17 +137,31 @@ jobs:
           path: test_reports/code-quality/
           if-no-files-found: warn
 
+      # Every event is governed by the new-debt ratchet. On main pushes,
+      # schedules and manual runs the baseline is the previous main tip, so
+      # only debt a push adds fails; the full scans above stay census.
       - name: Per-tool code-quality new-debt ratchet
         id: quality_ratchet
-        if: github.event_name == 'pull_request'
         shell: bash
         env:
+          EVENT: ${{ github.event_name }}
           BASE_SHA: ${{ github.event.pull_request.base.sha }}
+          BEFORE_SHA: ${{ github.event.before }}
         run: |
           set -euo pipefail
+          if [[ "$EVENT" != "pull_request" ]]; then
+            base="$(git rev-parse 'HEAD^1')"
+            # A push compares with the tip it replaced, so a multi-commit
+            # push is judged as a whole; a new or rewritten ref falls back
+            # to the first parent.
+            if [[ "$EVENT" == "push" && -n "$BEFORE_SHA" &&
+                  ! "$BEFORE_SHA" =~ ^0+$ ]] &&
+               git fetch --no-tags --depth=1 origin "$BEFORE_SHA"; then
+              base="$BEFORE_SHA"
+            fi
           # The event's base.sha goes stale once the base branch moves; the
           # merge commit's first parent is the base tip the PR merges into.
-          if git cat-file -e 'HEAD^2^{commit}' 2>/dev/null; then
+          elif git cat-file -e 'HEAD^2^{commit}' 2>/dev/null; then
             base="$(git rev-parse 'HEAD^1')"
           else
             git fetch --no-tags --depth=1 origin "$BASE_SHA"
@@ -198,32 +212,26 @@ jobs:
             echo "- Flake8 critical: \`$FLAKE8\`"
             echo "- Pylint: telemetry / exit-zero"
           } >> "$GITHUB_STEP_SUMMARY"
-          if [[ "$EVENT" == "pull_request" ]]; then
-            failed=0
-            for tool in BLACK ISORT FLAKE8; do
-              flag_name="${tool}_FULL_SCAN"
-              actual="${!tool}"
-              fallback="${!flag_name}"
-              if [[ "$fallback" == "required" ]]; then
-                echo "- ${tool}: config changed; full scan=${actual}" \
-                  >> "$GITHUB_STEP_SUMMARY"
-                if [[ "$actual" != "success" ]]; then
-                  echo "::error::Required ${tool} full scan failed."
-                  failed=1
-                fi
-              else
-                echo "- ${tool}: per-tool new-debt ratchet governs" \
-                  >> "$GITHUB_STEP_SUMMARY"
+          echo "- Admission (${EVENT}): per-tool new-debt ratchet" \
+            >> "$GITHUB_STEP_SUMMARY"
+          failed=0
+          for tool in BLACK ISORT FLAKE8; do
+            flag_name="${tool}_FULL_SCAN"
+            actual="${!tool}"
+            fallback="${!flag_name}"
+            if [[ "$fallback" == "required" ]]; then
+              echo "- ${tool}: config changed; full scan=${actual}" \
+                >> "$GITHUB_STEP_SUMMARY"
+              if [[ "$actual" != "success" ]]; then
+                echo "::error::Required ${tool} full scan failed."
+                failed=1
               fi
-            done
-            exit "$failed"
-          fi
-          if [[ "$BLACK" != "success" ||
-                "$ISORT" != "success" ||
-                "$FLAKE8" != "success" ]]; then
-            echo "::error::One or more code-quality roots are red."
-            exit 1
-          fi
+            else
+              echo "- ${tool}: per-tool new-debt ratchet governs" \
+                >> "$GITHUB_STEP_SUMMARY"
+            fi
+          done
+          exit "$failed"
 
   ratchet-tool-backed:
     name: DAB T2 tool-installed ratchet detection
@@ -302,7 +310,7 @@ jobs:
       fail-fast: false
       matrix:
         os: [ubuntu-latest, windows-latest, macos-latest]
-        # pyproject.toml requires-python >=3.11; 3.10 is not a supported runtime.
+        # pyproject.toml requires-python >=3.11; 3.10 is unsupported.
         python-version: ['3.11', '3.12']
 
     steps:
