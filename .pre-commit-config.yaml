@@ -7,13 +7,27 @@ repos:
       - id: check-yaml
         args: [--allow-multiple-documents]
       - id: check-toml
-      # U16 (#2505): byte-pinned by historical evidence (manifests/receipts); keep bytes exact.
+      # U16 (#2505): byte-pinned by historical evidence (manifests/receipts);
+      # keep bytes exact.
       - id: end-of-file-fixer
-        exclude: (^|/)LICENSE$|^(MIP/G3CS_CONVERGENCE_V2/observatory/w10/(build_global_spine_w10|refresh_w10_spine|test_w10_spine)\.py|MIP/G3CS_CONVERGENCE_V2/output/G3CS_CONVERGENCE_DASHBOARD\.html|handover/mc2/everred_20261014/DROPIN\.md|tools/everred_v3/sut_gui/dashboard_v3\.html)$
+        exclude: |
+          (?x)(^|/)LICENSE$|
+          ^(MIP/G3CS_CONVERGENCE_V2/observatory/w10/
+            (build_global_spine_w10|refresh_w10_spine|test_w10_spine)\.py
+          |MIP/G3CS_CONVERGENCE_V2/output/G3CS_CONVERGENCE_DASHBOARD\.html
+          |handover/mc2/everred_20261014/DROPIN\.md
+          |tools/everred_v3/sut_gui/dashboard_v3\.html)$
       - id: trailing-whitespace
-        # Keep Markdown two-space hard breaks (stripping them broke the EOSS N7 glossary).
+        # Keep Markdown two-space hard breaks (U16 stripped the EOSS N7
+        # glossary's, which tests/test_pandoc_glossary_source.py pins).
         args: [--markdown-linebreak-ext=md]
-        exclude: ^(MIP/G3CS_CONVERGENCE_V2/observatory/w10/(build_global_spine_w10|refresh_w10_spine|test_w10_spine)\.py|MIP/G3CS_CONVERGENCE_V2/output/G3CS_CONVERGENCE_DASHBOARD\.html|handover/mc2/everred_20261014/DROPIN\.md|tools/everred_v3/sut_gui/dashboard_v3\.html)$
+        exclude: |
+          (?x)
+          ^(MIP/G3CS_CONVERGENCE_V2/observatory/w10/
+            (build_global_spine_w10|refresh_w10_spine|test_w10_spine)\.py
+          |MIP/G3CS_CONVERGENCE_V2/output/G3CS_CONVERGENCE_DASHBOARD\.html
+          |handover/mc2/everred_20261014/DROPIN\.md
+          |tools/everred_v3/sut_gui/dashboard_v3\.html)$
   - repo: local
     hooks:
       - id: guard-public-repo-binaries
@@ -30,14 +44,18 @@ repos:
         stages: [pre-commit]
       - id: cbd-e2e-pre-commit
         name: CBD TestPilot source-bound pre-commit atom checks
-        entry: python scripts/cbd_e2e_stage.py --stage pre-commit --receipt .testpilot/e2e/pre_commit.json
+        entry: >-
+          python scripts/cbd_e2e_stage.py --stage pre-commit
+          --receipt .testpilot/e2e/pre_commit.json
         language: system
         pass_filenames: false
         always_run: true
         stages: [pre-commit]
       - id: cbd-e2e-pre-push
         name: CBD TestPilot source-bound pre-push and pytest proof
-        entry: python scripts/cbd_e2e_stage.py --stage pre-push --receipt .testpilot/e2e/pre_push.json
+        entry: >-
+          python scripts/cbd_e2e_stage.py --stage pre-push
+          --receipt .testpilot/e2e/pre_push.json
         language: system
         pass_filenames: false
         always_run: true
@@ -58,8 +76,21 @@ repos:
         stages: [pre-commit]
       - id: abacus-floating-staging-testflight
         name: ABACUS floating reconnection staged regression
-        entry: python -m unittest -q tests.test_floating_testflight tests.test_mip_v3_frontier tests.test_mip_v3_temporal tests.test_floating_accelerator_receiver tests.test_floating_rollup_adversarial
+        entry: >-
+          python -m unittest -q tests.test_floating_testflight
+          tests.test_mip_v3_frontier tests.test_mip_v3_temporal
+          tests.test_floating_accelerator_receiver
+          tests.test_floating_rollup_adversarial
         language: system
         pass_filenames: false
-        files: ^(tools/triage/(floating_testflight|floating_evidence_join|mip_pulse_rollup)\.py|tests/test_(floating_testflight|floating_evidence_join|mip_pulse_rollup|mip_v3_frontier|mip_v3_temporal|floating_accelerator_receiver|floating_rollup_adversarial)\.py|scripts/coverage_dab_census\.py|\.github/workflows/floating-reconnection-testflight\.yml)$
+        files: |
+          (?x)^(
+            tools/triage/
+              (floating_testflight|floating_evidence_join|mip_pulse_rollup)\.py
+          |tests/test_
+              (floating_testflight|floating_evidence_join|mip_pulse_rollup
+              |mip_v3_frontier|mip_v3_temporal|floating_accelerator_receiver
+              |floating_rollup_adversarial)\.py
+          |scripts/coverage_dab_census\.py
+          |\.github/workflows/floating-reconnection-testflight\.yml)$
         stages: [pre-commit]
