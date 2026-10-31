@@ -123,8 +123,8 @@
     "node": ">=20.9.0"
   },
   "resolutions": {
-    "motion-dom": "12.23.12",
-    "motion-utils": "12.23.6",
+    "motion-dom": "14.3.0",
+    "motion-utils": "14.1.1",
     "brace-expansion@^2.0.2": "2.1.7",
     "brace-expansion@^5.0.8": "5.0.12",
     "postcss-selector-parser@^7.0.0": "7.1.6"
