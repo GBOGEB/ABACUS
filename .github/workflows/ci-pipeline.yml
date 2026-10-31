@@ -116,6 +116,55 @@ jobs:
             --cov-report=term \
             -n "$PYTEST_WORKERS"
 
+      - name: G family tests (everred_v3)
+        # CODE PURPLE vector G (2026-10-31): no main-branch job collected these
+        # 38 files. EXPECTED_MIN 485 = local --collect-only at f131a81a. Linux
+        # only: src/everred.py and src/control.py import fcntl (POSIX), so 8
+        # modules cannot import on Windows.
+        if: ${{ !cancelled() && runner.os == 'Linux' }}
+        shell: bash
+        run: |
+          python scripts/ci/family_collect_guard.py \
+            --family everred_v3 --expected-min 485 -- \
+            tools/everred_v3/sut_gui/tests/test_coverage_workflow_contract.py \
+            tools/everred_v3/sut_gui/tests/test_http_and_guards.py \
+            tools/everred_v3/sut_gui/tests/test_operator_workbench.py \
+            tools/everred_v3/sut_gui/tests/test_server.py \
+            tools/everred_v3/sut_gui/tests/test_telemetry.py \
+            tools/everred_v3/tests/test_acceptance_cli.py \
+            tools/everred_v3/tests/test_acceptance_core.py \
+            tools/everred_v3/tests/test_acceptance_graph.py \
+            tools/everred_v3/tests/test_acceptance_render.py \
+            tools/everred_v3/tests/test_acceptance_telemetry.py \
+            tools/everred_v3/tests/test_bd_queue_dashboard.py \
+            tools/everred_v3/tests/test_bridge_binding.py \
+            tools/everred_v3/tests/test_cbd_260.py \
+            tools/everred_v3/tests/test_cbd_ggmath_bridge.py \
+            tools/everred_v3/tests/test_cbd_job_graph.py \
+            tools/everred_v3/tests/test_cbd_scheduled_pulse.py \
+            tools/everred_v3/tests/test_ci_latency.py \
+            tools/everred_v3/tests/test_code_purple_w1_growth.py \
+            tools/everred_v3/tests/test_dashboard_leaves.py \
+            tools/everred_v3/tests/test_everred.py \
+            tools/everred_v3/tests/test_everred_ci_dependencies.py \
+            tools/everred_v3/tests/test_four_planes.py \
+            tools/everred_v3/tests/test_git_transactions.py \
+            tools/everred_v3/tests/test_ingest_red_trace.py \
+            tools/everred_v3/tests/test_join_adapter.py \
+            tools/everred_v3/tests/test_joined_census.py \
+            tools/everred_v3/tests/test_live_spine.py \
+            tools/everred_v3/tests/test_mass_signal_join.py \
+            tools/everred_v3/tests/test_metric_hierarchy_registry.py \
+            tools/everred_v3/tests/test_metrics.py \
+            tools/everred_v3/tests/test_mission_cycle.py \
+            tools/everred_v3/tests/test_mission_cycle_html.py \
+            tools/everred_v3/tests/test_model_readiness.py \
+            tools/everred_v3/tests/test_obligation_lineage.py \
+            tools/everred_v3/tests/test_spine_census.py \
+            tools/everred_v3/tests/test_temporal_vector.py \
+            tools/everred_v3/tests/test_top21_rollout.py \
+            tools/everred_v3/tests/test_v3_pipeline.py
+
       - name: Preserve native unit and coverage evidence
         if: always()
         uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9
