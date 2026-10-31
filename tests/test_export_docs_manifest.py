@@ -1,15 +1,15 @@
 """Source+fixture proof for lossless, fail-closed Pandoc export enumeration."""
+
 from __future__ import annotations
 
 import importlib.util
-from contextlib import contextmanager
-from pathlib import Path
 import subprocess
 import tempfile
-from types import SimpleNamespace
 import unittest
+from contextlib import contextmanager
+from pathlib import Path
+from types import SimpleNamespace
 from unittest import mock
-
 
 ROOT = Path(__file__).resolve().parents[1]
 MODULE = ROOT / "scripts/export_docs_manifest.py"
@@ -25,16 +25,20 @@ class ExportManifestLosslessness(unittest.TestCase):
         self.tmp = tempfile.TemporaryDirectory()
         self.addCleanup(self.tmp.cleanup)
         self.repo = Path(self.tmp.name)
-        subprocess.run(["git", "init", "-q", str(self.repo)], check=True,
-                       capture_output=True)
+        subprocess.run(
+            ["git", "init", "-q", str(self.repo)], check=True, capture_output=True
+        )
 
     def stage(self, *paths):
         for rel in paths:
             path = self.repo / rel
             path.parent.mkdir(parents=True, exist_ok=True)
             path.write_text("# test\n", encoding="utf-8")
-        subprocess.run(["git", "-C", str(self.repo), "add", "--", "docs"],
-                       check=True, capture_output=True)
+        subprocess.run(
+            ["git", "-C", str(self.repo), "add", "--", "docs"],
+            check=True,
+            capture_output=True,
+        )
 
     @contextmanager
     def synthetic_git_index(self, *paths):
@@ -45,7 +49,9 @@ class ExportManifestLosslessness(unittest.TestCase):
         """
         raw = ("\0".join(paths) + "\0").encode("utf-8")
         with (
-            mock.patch.object(manifest.subprocess, "run", return_value=SimpleNamespace(stdout=raw)),
+            mock.patch.object(
+                manifest.subprocess, "run", return_value=SimpleNamespace(stdout=raw)
+            ),
             mock.patch.object(Path, "is_symlink", return_value=False),
             mock.patch.object(Path, "is_file", return_value=True),
         ):
@@ -57,13 +63,15 @@ class ExportManifestLosslessness(unittest.TestCase):
 
     def test_spaces_and_nested_identical_basenames_remain_distinct(self):
         self.stage("docs/one/a b.md", "docs/two/a b.md")
-        self.assertEqual(manifest.tracked_markdown(self.repo),
-                         ["docs/one/a b.md", "docs/two/a b.md"])
+        self.assertEqual(
+            manifest.tracked_markdown(self.repo), ["docs/one/a b.md", "docs/two/a b.md"]
+        )
 
     def test_root_docs_markdown_is_included_not_only_double_star_glob(self):
         self.stage("docs/README.md", "docs/nested/b.md", "docs/nested/ignored.txt")
-        self.assertEqual(manifest.tracked_markdown(self.repo),
-                         ["docs/README.md", "docs/nested/b.md"])
+        self.assertEqual(
+            manifest.tracked_markdown(self.repo), ["docs/README.md", "docs/nested/b.md"]
+        )
 
     def test_source_newline_does_not_split_nul_manifest(self):
         with self.synthetic_git_index("docs/line\nname.md", "docs/ordinary.md"):
@@ -81,8 +89,11 @@ class ExportManifestLosslessness(unittest.TestCase):
                 manifest.tracked_markdown(self.repo)
 
     def test_truncated_nul_protocol_rejected_before_path_processing(self):
-        with mock.patch.object(manifest.subprocess, "run",
-                               return_value=SimpleNamespace(stdout=b"docs/a.md")):
+        with mock.patch.object(
+            manifest.subprocess,
+            "run",
+            return_value=SimpleNamespace(stdout=b"docs/a.md"),
+        ):
             with self.assertRaisesRegex(ValueError, "TRUNCATED_NUL_GIT_MANIFEST"):
                 manifest.tracked_markdown(self.repo)
 
@@ -114,8 +125,8 @@ class ExportManifestLosslessness(unittest.TestCase):
         self.assertIn("python scripts/export_docs_manifest.py", src)
         self.assertIn("while IFS= read -r -d '' f", src)
         self.assertIn('relative="${f#docs/}"', src)
-        self.assertIn('out/${stem}.pdf', src)
-        self.assertIn('out/${stem}.docx', src)
+        self.assertIn("out/${stem}.pdf", src)
+        self.assertIn("out/${stem}.docx", src)
         self.assertIn('test "$count" -gt 0', src)
         self.assertNotIn("for f in $(git ls-files", src)
         self.assertIn("pandoc/latex:3.1", src)

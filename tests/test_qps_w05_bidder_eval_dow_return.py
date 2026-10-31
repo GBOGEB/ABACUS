@@ -21,17 +21,21 @@ class TestW05DowReturn(unittest.TestCase):
         self.request = runtime.load(runtime.REQUEST)
         self.snapshot = runtime.load(runtime.SNAPSHOT)
 
-    def execute(self, request: dict | None = None, snapshot: dict | None = None) -> dict:
+    def execute(
+        self, request: dict | None = None, snapshot: dict | None = None
+    ) -> dict:
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory)
             request_path = root / "request.yaml"
             snapshot_path = root / "snapshot.yaml"
             output_path = root / "receipt.yaml"
             request_path.write_text(
-                yaml.safe_dump(request or self.request, sort_keys=False), encoding="utf-8"
+                yaml.safe_dump(request or self.request, sort_keys=False),
+                encoding="utf-8",
             )
             snapshot_path.write_text(
-                yaml.safe_dump(snapshot or self.snapshot, sort_keys=False), encoding="utf-8"
+                yaml.safe_dump(snapshot or self.snapshot, sort_keys=False),
+                encoding="utf-8",
             )
             with (
                 mock.patch.object(runtime, "REQUEST", request_path),
@@ -44,9 +48,13 @@ class TestW05DowReturn(unittest.TestCase):
 
     def test_all_requested_operations_execute_real_mechanics(self) -> None:
         receipt = self.execute()
-        self.assertEqual(receipt["requested_operations"], receipt["executed_operations"])
+        self.assertEqual(
+            receipt["requested_operations"], receipt["executed_operations"]
+        )
         self.assertEqual(receipt["receipt_contract_version"], "0.2.0")
-        self.assertEqual(len(receipt["typed_findings"]), len(receipt["requested_operations"]))
+        self.assertEqual(
+            len(receipt["typed_findings"]), len(receipt["requested_operations"])
+        )
         for status in receipt["operation_status"].values():
             self.assertEqual(status["status"], "PASS_EXECUTED_MECHANIC")
             self.assertRegex(status["result_sha256"], r"^[0-9a-f]{64}$")

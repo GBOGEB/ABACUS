@@ -117,7 +117,9 @@ class CohortUnionTests(unittest.TestCase):
             workflow.replace(required[3], "actual_head = pull_head  #", 1),
             workflow.replace(required[6], "if False:", 1),
             checkout_guard.sub("if actual_head != pull_head:\n    print(", workflow),
-            workflow.replace('"checkout_sha": actual_head', '"checkout_sha": pull_head', 1),
+            workflow.replace(
+                '"checkout_sha": actual_head', '"checkout_sha": pull_head', 1
+            ),
             workflow + "\n# " + required[6] + "\n",
             without_guard,
             guard_after_tests,

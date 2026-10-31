@@ -4,13 +4,14 @@
 # Description: Auto-generated version header
 """
 
-import pytest
 import asyncio
 import json
 import time
-from pathlib import Path
-from unittest.mock import Mock, patch, AsyncMock, MagicMock
 from datetime import datetime
+from pathlib import Path
+from unittest.mock import AsyncMock, MagicMock, Mock, patch
+
+import pytest
 
 
 class TestPhase0Initialization:
@@ -19,7 +20,7 @@ class TestPhase0Initialization:
         env_config = {
             "python_version": "3.10+",
             "dependencies_installed": True,
-            "workspace_ready": True
+            "workspace_ready": True,
         }
         assert env_config["dependencies_installed"] is True
         assert env_config["workspace_ready"] is True
@@ -29,7 +30,7 @@ class TestPhase0Initialization:
             "github_token": "test_token",
             "repository": "test_owner/test_repo",
             "branch": "main",
-            "sync_enabled": True
+            "sync_enabled": True,
         }
         assert config["sync_enabled"] is True
         assert config["github_token"] is not None
@@ -39,18 +40,14 @@ class TestPhase0Initialization:
             tmp_path / "data",
             tmp_path / "logs",
             tmp_path / ".ariana",
-            tmp_path / "DOW"
+            tmp_path / "DOW",
         ]
         for dir_path in required_dirs:
             dir_path.mkdir(parents=True, exist_ok=True)
             assert dir_path.exists()
 
     def test_logging_initialization(self):
-        log_config = {
-            "level": "INFO",
-            "format": "json",
-            "output": ["file", "console"]
-        }
+        log_config = {"level": "INFO", "format": "json", "output": ["file", "console"]}
         assert log_config["level"] in ["DEBUG", "INFO", "WARNING", "ERROR"]
         assert "file" in log_config["output"]
 
@@ -61,17 +58,13 @@ class TestPhase1BridgeInitialization:
         bridge_config = {
             "name": "ArianaDOWBridge",
             "version": "1.0.0",
-            "status": "initialized"
+            "status": "initialized",
         }
         assert bridge_config["status"] == "initialized"
         assert bridge_config["version"] == "1.0.0"
 
     def test_dow_detection(self):
-        dow_status = {
-            "detected": True,
-            "level": 3,
-            "path": "./DOW"
-        }
+        dow_status = {"detected": True, "level": 3, "path": "./DOW"}
         assert dow_status["detected"] is True
         assert dow_status["level"] == 3
 
@@ -81,8 +74,8 @@ class TestPhase1BridgeInitialization:
             "checks": {
                 "config_loaded": True,
                 "dow_registered": True,
-                "connections_active": True
-            }
+                "connections_active": True,
+            },
         }
         assert health["status"] == "healthy"
         assert all(health["checks"].values())
@@ -91,7 +84,7 @@ class TestPhase1BridgeInitialization:
         registration = {
             "agent_id": f"ariana_{datetime.now().strftime('%Y%m%d_%H%M%S')}",
             "registered": True,
-            "timestamp": datetime.now().isoformat()
+            "timestamp": datetime.now().isoformat(),
         }
         assert registration["registered"] is True
         assert "ariana_" in registration["agent_id"]
@@ -104,7 +97,7 @@ class TestPhase2AgentRegistration:
             "id": "ariana_agent_001",
             "type": "integration_agent",
             "capabilities": ["sync", "monitor", "validate"],
-            "status": "active"
+            "status": "active",
         }
         assert agent["status"] == "active"
         assert len(agent["capabilities"]) > 0
@@ -114,7 +107,7 @@ class TestPhase2AgentRegistration:
             "github_sync": True,
             "file_monitoring": True,
             "health_reporting": True,
-            "trace_logging": True
+            "trace_logging": True,
         }
         assert all(capabilities.values())
 
@@ -125,7 +118,7 @@ class TestPhase2AgentRegistration:
                 {
                     "id": "ariana_001",
                     "registered_at": datetime.now().isoformat(),
-                    "status": "active"
+                    "status": "active",
                 }
             ]
         }
@@ -139,7 +132,7 @@ class TestPhase2AgentRegistration:
             "session_id": f"session_{int(time.time())}",
             "created_at": datetime.now().isoformat(),
             "status": "active",
-            "agent_id": "ariana_001"
+            "agent_id": "ariana_001",
         }
         assert session["status"] == "active"
         assert "session_" in session["session_id"]
@@ -154,18 +147,14 @@ class TestPhase3HealthMonitoring:
             "components": {
                 "github": "healthy",
                 "database": "healthy",
-                "cache": "healthy"
-            }
+                "cache": "healthy",
+            },
         }
         assert health["status"] == "healthy"
         assert all(v == "healthy" for v in health["components"].values())
 
     def test_health_monitoring_interval(self):
-        monitor_config = {
-            "enabled": True,
-            "interval_seconds": 30,
-            "alert_threshold": 3
-        }
+        monitor_config = {"enabled": True, "interval_seconds": 30, "alert_threshold": 3}
         assert monitor_config["enabled"] is True
         assert monitor_config["interval_seconds"] > 0
 
@@ -174,7 +163,7 @@ class TestPhase3HealthMonitoring:
         health_data = {
             "status": "healthy",
             "timestamp": datetime.now().isoformat(),
-            "checks": {"all": "passed"}
+            "checks": {"all": "passed"},
         }
         health_file.write_text(json.dumps(health_data, indent=2))
         assert health_file.exists()
@@ -183,7 +172,7 @@ class TestPhase3HealthMonitoring:
         alert_config = {
             "enabled": True,
             "channels": ["log", "file"],
-            "severity_levels": ["warning", "error", "critical"]
+            "severity_levels": ["warning", "error", "critical"],
         }
         assert alert_config["enabled"] is True
         assert "error" in alert_config["severity_levels"]
@@ -199,9 +188,9 @@ class TestPhase4StateSynchronization:
                 "session_state",
                 "trace_logs",
                 "health_status",
-                "phase_checkpoints"
+                "phase_checkpoints",
             ],
-            "fallback_to_file": True
+            "fallback_to_file": True,
         }
         assert sync_config["enabled"] is True
         assert len(sync_config["sync_targets"]) > 0
@@ -211,7 +200,7 @@ class TestPhase4StateSynchronization:
         state_data = {
             "phase": 4,
             "status": "syncing",
-            "last_sync": datetime.now().isoformat()
+            "last_sync": datetime.now().isoformat(),
         }
         state_file.write_text(json.dumps(state_data, indent=2))
         assert state_file.exists()
@@ -222,16 +211,13 @@ class TestPhase4StateSynchronization:
         targets = {
             "session_state": {"synced": True, "last_sync": time.time()},
             "trace_logs": {"synced": True, "last_sync": time.time()},
-            "health_status": {"synced": True, "last_sync": time.time()}
+            "health_status": {"synced": True, "last_sync": time.time()},
         }
         assert all(t["synced"] for t in targets.values())
 
     @pytest.mark.asyncio
     async def test_async_sync_operation(self):
-        sync_result = {
-            "started": time.time(),
-            "status": "in_progress"
-        }
+        sync_result = {"started": time.time(), "status": "in_progress"}
         await asyncio.sleep(0.01)
         sync_result["status"] = "completed"
         sync_result["completed"] = time.time()
@@ -249,9 +235,9 @@ class TestPhase5TraceLogging:
                     "function": "_run_impl",
                     "status": "success",
                     "duration": 0.006078,
-                    "timestamp": datetime.now().isoformat()
+                    "timestamp": datetime.now().isoformat(),
                 }
-            ]
+            ],
         }
         trace_file.write_text(json.dumps(trace_data, indent=2))
         assert trace_file.exists()
@@ -263,7 +249,7 @@ class TestPhase5TraceLogging:
             "status": "success",
             "duration": 0.123,
             "timestamp": datetime.now().isoformat(),
-            "metadata": {"key": "value"}
+            "metadata": {"key": "value"},
         }
         assert trace_entry["status"] in ["success", "failure", "pending"]
         assert trace_entry["duration"] >= 0
@@ -272,7 +258,7 @@ class TestPhase5TraceLogging:
         traces = [
             {"duration": 0.1, "status": "success"},
             {"duration": 0.2, "status": "success"},
-            {"duration": 0.15, "status": "success"}
+            {"duration": 0.15, "status": "success"},
         ]
         avg_duration = sum(t["duration"] for t in traces) / len(traces)
         assert avg_duration > 0
@@ -282,7 +268,7 @@ class TestPhase5TraceLogging:
         all_traces = [
             {"level": "INFO", "message": "test1"},
             {"level": "ERROR", "message": "test2"},
-            {"level": "DEBUG", "message": "test3"}
+            {"level": "DEBUG", "message": "test3"},
         ]
         error_traces = [t for t in all_traces if t["level"] == "ERROR"]
         assert len(error_traces) == 1
@@ -299,7 +285,7 @@ class TestPhase6ExecutionFlow:
             "validate",
             "execute",
             "persist",
-            "complete"
+            "complete",
         ]
         completed = []
         for step in pipeline_steps:
@@ -313,7 +299,7 @@ class TestPhase6ExecutionFlow:
             "session_id": "exec_001",
             "user": "test_user",
             "environment": "test",
-            "started_at": datetime.now().isoformat()
+            "started_at": datetime.now().isoformat(),
         }
         assert context["session_id"] is not None
         assert context["environment"] == "test"
@@ -323,7 +309,7 @@ class TestPhase6ExecutionFlow:
             "status": "completed",
             "duration": 1.234,
             "output": {"key": "value"},
-            "errors": []
+            "errors": [],
         }
         assert result["status"] == "completed"
         assert len(result["errors"]) == 0
@@ -346,7 +332,7 @@ class TestPhase7ResultPersistence:
             "session_id": "result_001",
             "status": "completed",
             "timestamp": datetime.now().isoformat(),
-            "data": {"processed": 100, "errors": 0}
+            "data": {"processed": 100, "errors": 0},
         }
         result_file.write_text(json.dumps(result_data, indent=2))
         assert result_file.exists()
@@ -357,7 +343,7 @@ class TestPhase7ResultPersistence:
         result = {
             "status": "completed",
             "data": {"items": 10},
-            "metadata": {"version": "1.0"}
+            "metadata": {"version": "1.0"},
         }
         assert "status" in result
         assert "data" in result
@@ -384,11 +370,7 @@ class TestPhase8ErrorHandling:
         try:
             raise ValueError("Test error")
         except ValueError as e:
-            error_info = {
-                "type": type(e).__name__,
-                "message": str(e),
-                "handled": True
-            }
+            error_info = {"type": type(e).__name__, "message": str(e), "handled": True}
             assert error_info["handled"] is True
             assert error_info["type"] == "ValueError"
 
@@ -419,12 +401,10 @@ class TestPhase8ErrorHandling:
     def test_graceful_degradation(self):
         services = {
             "critical": {"available": True, "required": True},
-            "optional": {"available": False, "required": False}
+            "optional": {"available": False, "required": False},
         }
 
-        can_operate = all(
-            s["available"] for s in services.values() if s["required"]
-        )
+        can_operate = all(s["available"] for s in services.values() if s["required"])
         assert can_operate is True
 
 
@@ -442,7 +422,7 @@ class TestPhase9EndToEndIntegration:
             "Phase 6: Execution",
             "Phase 7: Result Persistence",
             "Phase 8: Error Handling",
-            "Phase 9: Integration Complete"
+            "Phase 9: Integration Complete",
         ]
 
         completed_phases = []
@@ -462,7 +442,7 @@ class TestPhase9EndToEndIntegration:
             "trace_logging_enabled": True,
             "execution_successful": True,
             "results_persisted": True,
-            "error_handling_tested": True
+            "error_handling_tested": True,
         }
         assert all(validation_results.values())
 
@@ -472,7 +452,7 @@ class TestPhase9EndToEndIntegration:
             "agent_startup_time": 0.5,
             "execution_time": 0.006,
             "total_e2e_time": 2.0,
-            "memory_usage_mb": 50
+            "memory_usage_mb": 50,
         }
         assert metrics["total_e2e_time"] < 5.0
         assert metrics["memory_usage_mb"] < 100
@@ -488,7 +468,7 @@ class TestPhase9EndToEndIntegration:
             "security_addressed": True,
             "monitoring_active": True,
             "state_persistence_working": True,
-            "cicd_pipeline_ready": True
+            "cicd_pipeline_ready": True,
         }
 
         confidence_level = sum(readiness_checks.values()) / len(readiness_checks)
@@ -504,7 +484,7 @@ class TestPhase9EndToEndIntegration:
             "github_webhook_received",
             "remote_change_pulled",
             "local_state_updated",
-            "sync_verified"
+            "sync_verified",
         ]
 
         completed = []
@@ -529,11 +509,12 @@ class TestPhase9EndToEndIntegration:
             "error_handling": {"status": "robust"},
             "fallback_modes": {"status": "functional"},
             "result_persistence": {"status": "working"},
-            "log_management": {"status": "active"}
+            "log_management": {"status": "active"},
         }
 
         assert all("status" in point for point in integration_points.values())
         assert integration_points["dow_hierarchy"]["level"] == 3
+
 
 if __name__ == "__main__":
     pytest.main([__file__, "-v", "--tb=short"])

@@ -15,7 +15,9 @@ def _phase(tmp_path):
 def test_calculate_artifact_ranking_reads_existing_json(tmp_path):
     phase = _phase(tmp_path)
     payload = {"total_ranked": 4, "items": [{"name": "a"}]}
-    (tmp_path / "artifact_rankings.json").write_text(json.dumps(payload), encoding="utf-8")
+    (tmp_path / "artifact_rankings.json").write_text(
+        json.dumps(payload), encoding="utf-8"
+    )
 
     assert phase.calculate_artifact_ranking(7) == payload
 

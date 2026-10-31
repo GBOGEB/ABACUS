@@ -1,4 +1,5 @@
 """ABACUS native stage-only fail-closed contract tests."""
+
 from __future__ import annotations
 
 import importlib.util
@@ -6,8 +7,14 @@ from pathlib import Path
 
 import pytest
 
-MODULE = Path(__file__).resolve().parents[1] / "scripts" / "abacus_missioncontrol_stage_only.py"
-spec = importlib.util.spec_from_file_location("abacus_missioncontrol_stage_only", MODULE)
+MODULE = (
+    Path(__file__).resolve().parents[1]
+    / "scripts"
+    / "abacus_missioncontrol_stage_only.py"
+)
+spec = importlib.util.spec_from_file_location(
+    "abacus_missioncontrol_stage_only", MODULE
+)
 assert spec and spec.loader
 module = importlib.util.module_from_spec(spec)
 spec.loader.exec_module(module)
@@ -16,10 +23,13 @@ HEAD = "a" * 40
 
 def runtime() -> dict[str, str]:
     return {
-        "GITHUB_REPOSITORY": "GBOGEB/ABACUS", "GITHUB_ACTOR": "GBOGEB",
-        "GITHUB_SHA": HEAD, "GITHUB_REF": "refs/heads/main",
+        "GITHUB_REPOSITORY": "GBOGEB/ABACUS",
+        "GITHUB_ACTOR": "GBOGEB",
+        "GITHUB_SHA": HEAD,
+        "GITHUB_REF": "refs/heads/main",
         "GITHUB_EVENT_NAME": "workflow_dispatch",
-        "GITHUB_RUN_ID": "123", "GITHUB_RUN_ATTEMPT": "1",
+        "GITHUB_RUN_ID": "123",
+        "GITHUB_RUN_ATTEMPT": "1",
     }
 
 
@@ -36,19 +46,22 @@ def test_stage_receipt_has_no_mutation_credit() -> None:
     assert len(result["request_sha256"]) == 64
 
 
-@pytest.mark.parametrize(("key", "bad"), [
-    ("GITHUB_REPOSITORY", "GBOGEB/CODEX"),
-    ("GITHUB_ACTOR", "untrusted-runner"),
-    ("GITHUB_EVENT_NAME", "pull_request"),
-    ("GITHUB_EVENT_NAME", "issue_comment"),
-    ("GITHUB_REF", "refs/heads/feature"),
-    ("GITHUB_SHA", "b" * 40),
-    ("GITHUB_SHA", "not-a-sha"),
-    ("GITHUB_RUN_ID", "0"),
-    ("GITHUB_RUN_ID", "not-an-int"),
-    ("GITHUB_RUN_ATTEMPT", "0"),
-    ("GITHUB_RUN_ATTEMPT", "not-an-int"),
-])
+@pytest.mark.parametrize(
+    ("key", "bad"),
+    [
+        ("GITHUB_REPOSITORY", "GBOGEB/CODEX"),
+        ("GITHUB_ACTOR", "untrusted-runner"),
+        ("GITHUB_EVENT_NAME", "pull_request"),
+        ("GITHUB_EVENT_NAME", "issue_comment"),
+        ("GITHUB_REF", "refs/heads/feature"),
+        ("GITHUB_SHA", "b" * 40),
+        ("GITHUB_SHA", "not-a-sha"),
+        ("GITHUB_RUN_ID", "0"),
+        ("GITHUB_RUN_ID", "not-an-int"),
+        ("GITHUB_RUN_ATTEMPT", "0"),
+        ("GITHUB_RUN_ATTEMPT", "not-an-int"),
+    ],
+)
 def test_rejects_invalid_native_context(key: str, bad: str) -> None:
     data = runtime()
     data[key] = bad

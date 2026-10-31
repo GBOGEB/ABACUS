@@ -1,4 +1,5 @@
 """Negative controls for exact-head, right-censored queue and execution telemetry."""
+
 import unittest
 
 from mission_control_lite.runner_wait import summarize
@@ -8,15 +9,25 @@ CUT = "2026-10-17T16:30:00Z"
 
 
 def job(job_id=1, status="queued", **extra):
-    row = {"run_id": 42, "job_id": job_id, "attempt": 1,
-           "head_sha": SHA, "status": status, "conclusion": None,
-           "job_created_at": "2026-10-17T16:20:00Z",
-           "job_started_at": None, "job_completed_at": None}
+    row = {
+        "run_id": 42,
+        "job_id": job_id,
+        "attempt": 1,
+        "head_sha": SHA,
+        "status": status,
+        "conclusion": None,
+        "job_created_at": "2026-10-17T16:20:00Z",
+        "job_started_at": None,
+        "job_completed_at": None,
+    }
     if status == "in_progress":
         row["job_started_at"] = "2026-10-17T16:25:00Z"
     if status == "completed":
-        row.update(job_started_at="2026-10-17T16:25:00Z",
-                   job_completed_at="2026-10-17T16:27:00Z", conclusion="success")
+        row.update(
+            job_started_at="2026-10-17T16:25:00Z",
+            job_completed_at="2026-10-17T16:27:00Z",
+            conclusion="success",
+        )
     row.update(extra)
     return row
 
@@ -49,8 +60,7 @@ class RunnerWaitTests(unittest.TestCase):
 
     def test_unordered_inputs_are_deterministic(self):
         a, b, c = job(3, "completed"), job(1), job(2, "in_progress")
-        self.assertEqual(summarize(SHA, CUT, [a, b, c]),
-                         summarize(SHA, CUT, [c, a, b]))
+        self.assertEqual(summarize(SHA, CUT, [a, b, c]), summarize(SHA, CUT, [c, a, b]))
 
     def test_head_drift_rejected(self):
         with self.assertRaisesRegex(ValueError, "head drift"):
@@ -83,11 +93,19 @@ class RunnerWaitTests(unittest.TestCase):
 
     def test_impossible_start_order_rejected(self):
         with self.assertRaisesRegex(ValueError, "impossible job start"):
-            summarize(SHA, CUT, [job(status="completed", job_started_at="2026-10-17T16:15:00Z")])
+            summarize(
+                SHA,
+                CUT,
+                [job(status="completed", job_started_at="2026-10-17T16:15:00Z")],
+            )
 
     def test_impossible_completion_order_rejected(self):
         with self.assertRaisesRegex(ValueError, "impossible completion"):
-            summarize(SHA, CUT, [job(status="completed", job_completed_at="2026-10-17T16:35:00Z")])
+            summarize(
+                SHA,
+                CUT,
+                [job(status="completed", job_completed_at="2026-10-17T16:35:00Z")],
+            )
 
     def test_queued_with_start_or_terminal_result_rejected(self):
         with self.assertRaisesRegex(ValueError, "queued job cannot"):
@@ -97,7 +115,11 @@ class RunnerWaitTests(unittest.TestCase):
 
     def test_nonterminal_completion_and_terminal_missing_conclusion_rejected(self):
         with self.assertRaisesRegex(ValueError, "running job cannot"):
-            summarize(SHA, CUT, [job(status="in_progress", job_completed_at="2026-10-17T16:27:00Z")])
+            summarize(
+                SHA,
+                CUT,
+                [job(status="in_progress", job_completed_at="2026-10-17T16:27:00Z")],
+            )
         with self.assertRaisesRegex(ValueError, "missing terminal conclusion"):
             summarize(SHA, CUT, [job(status="completed", conclusion=None)])
 

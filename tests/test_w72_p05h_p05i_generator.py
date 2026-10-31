@@ -3,7 +3,6 @@ from pathlib import Path
 
 from models.qps_line_b.run_p05h_p05i_receipts import DEFAULT_SOURCE, emit
 
-
 ROOT = Path(__file__).resolve().parents[1]
 CURRENT = ROOT / "docs/qps_line_b/generated"
 

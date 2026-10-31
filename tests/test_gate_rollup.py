@@ -15,7 +15,9 @@ def test_build_gate_rollup_handles_missing_log_file(tmp_path: Path) -> None:
     assert payload["source"]["malformed_lines"] == 0
 
 
-def test_build_gate_rollup_parses_failures_and_first_failed_gate(tmp_path: Path) -> None:
+def test_build_gate_rollup_parses_failures_and_first_failed_gate(
+    tmp_path: Path,
+) -> None:
     log_path = tmp_path / "ci-runs.jsonl"
     log_path.write_text(
         "\n".join(
@@ -46,7 +48,9 @@ def test_build_gate_rollup_parses_failures_and_first_failed_gate(tmp_path: Path)
                     }
                 ),
                 json.dumps({"pr_id": 12, "gate_name": "security", "exit_code": 9}),
-                json.dumps({"pr_id": 12, "timestamp": "2026-06-01T10:03:00Z", "exit_code": 1}),
+                json.dumps(
+                    {"pr_id": 12, "timestamp": "2026-06-01T10:03:00Z", "exit_code": 1}
+                ),
                 json.dumps(
                     {
                         "pr_id": 13,

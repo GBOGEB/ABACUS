@@ -3,6 +3,7 @@
 Tests only temporary files. A failing pre-repair test demonstrates a specific
 behavioral red, not root admission. A source repair must pass all old tests.
 """
+
 import ast
 import importlib.util
 import tempfile
@@ -28,14 +29,18 @@ class N14AliasSafeImportRepair(unittest.TestCase):
         return result, rendered, path
 
     def test_mixed_from_import_must_preserve_used_binding(self):
-        _, text, path = self.transform("from math import sqrt, floor\nvalue = floor(3.2)\n")
+        _, text, path = self.transform(
+            "from math import sqrt, floor\nvalue = floor(3.2)\n"
+        )
         self.assertIn("from math import", text)
         namespace = {}
         exec(compile(text, str(path), "exec"), namespace)
         self.assertEqual(namespace["value"], 3)
 
     def test_alias_from_import_must_preserve_used_alias(self):
-        _, text, path = self.transform("from math import sqrt as root, floor as down\nvalue = down(3.2)\n")
+        _, text, path = self.transform(
+            "from math import sqrt as root, floor as down\nvalue = down(3.2)\n"
+        )
         namespace = {}
         exec(compile(text, str(path), "exec"), namespace)
         self.assertEqual(namespace["value"], 3)
@@ -47,7 +52,9 @@ class N14AliasSafeImportRepair(unittest.TestCase):
         self.assertEqual(namespace["value"], 3)
 
     def test_aliased_import_must_preserve_used_alias(self):
-        _, text, path = self.transform("import json as serializer, math as unused\nvalue = serializer.dumps({'a': 1})\n")
+        _, text, path = self.transform(
+            "import json as serializer, math as unused\nvalue = serializer.dumps({'a': 1})\n"
+        )
         namespace = {}
         exec(compile(text, str(path), "exec"), namespace)
         self.assertIn('"a": 1', namespace["value"])

@@ -1,4 +1,5 @@
 """Temporal atom tests: exact-head joins, inverted clocks, quantiles, no queue claims."""
+
 import copy
 import json
 from pathlib import Path
@@ -58,18 +59,19 @@ def test_inverted_skip_timestamp_does_not_go_negative(data):
     assert job["attributes"]["started_at"] > job["attributes"]["completed_at"]
 
 
-
 def test_skipped_clock_anomaly_is_one_cluster_ten_manifestations(data):
     result = temporal.augment(*data)
     nodes = [x for x in result["nodes"] if x["kind"] == "temporal_anomaly"]
     assert len(nodes) == 1
     assert nodes[0]["attributes"]["observed_count"] == 10
-    links = [e for e in result["edges"]
-             if e["relationship"] == "skipped_job_clock_inversion_observed"]
+    links = [
+        e
+        for e in result["edges"]
+        if e["relationship"] == "skipped_job_clock_inversion_observed"
+    ]
     assert len(links) == 10
     assert len({e["source"] for e in links}) == 10
-    assert all(e["evidence"] == "OBSERVED" and not e["causal_confirmed"]
-               for e in links)
+    assert all(e["evidence"] == "OBSERVED" and not e["causal_confirmed"] for e in links)
     assert result["metrics"]["node_count"] == 499
 
 
@@ -87,7 +89,8 @@ def test_second_enrichment_is_identical_and_no_duplicate_atoms(data):
 def test_partial_preexisting_anomaly_rejected(data):
     graph, timelines = data
     graph["edges"] = [
-        e for e in graph["edges"]
+        e
+        for e in graph["edges"]
         if e["relationship"] != "skipped_job_clock_inversion_observed"
     ]
     with pytest.raises(ValueError, match="temporal anomaly denominator"):
@@ -97,7 +100,8 @@ def test_partial_preexisting_anomaly_rejected(data):
 def test_duplicate_derived_evidence_rejected(data):
     graph, timelines = data
     edge = next(
-        e for e in graph["edges"]
+        e
+        for e in graph["edges"]
         if e["relationship"] == "skipped_job_clock_inversion_observed"
     )
     graph["edges"].append(copy.deepcopy(edge))
@@ -107,9 +111,11 @@ def test_duplicate_derived_evidence_rejected(data):
 
 def test_duplicate_anomaly_node_rejected(data):
     graph, timelines = data
-    graph["nodes"].append(copy.deepcopy(next(
-        n for n in graph["nodes"] if n["kind"] == "temporal_anomaly"
-    )))
+    graph["nodes"].append(
+        copy.deepcopy(
+            next(n for n in graph["nodes"] if n["kind"] == "temporal_anomaly")
+        )
+    )
     with pytest.raises(ValueError, match="duplicate graph node identity"):
         temporal.augment(graph, timelines)
 
@@ -156,12 +162,15 @@ def test_forged_security_waiver_rejected(data):
         temporal.augment(graph, timeline)
 
 
-@pytest.mark.parametrize("values,probability,expected", [
-    ([10, 20, 30], 0.5, 20),
-    ([10, 20, 30], 0.95, 30),
-    ([10], 0.95, 10),
-    ([], 0.95, None),
-])
+@pytest.mark.parametrize(
+    "values,probability,expected",
+    [
+        ([10, 20, 30], 0.5, 20),
+        ([10, 20, 30], 0.95, 30),
+        ([10], 0.95, 10),
+        ([], 0.95, None),
+    ],
+)
 def test_nearest_rank_declared_estimator(values, probability, expected):
     assert temporal.quantile_nearest(values, probability) == expected
 

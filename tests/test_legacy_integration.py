@@ -4,11 +4,12 @@
 # Description: Auto-generated version header
 """
 
-import pytest
+import json
 import sys
 from pathlib import Path
-from typing import Dict, List, Any
-import json
+from typing import Any, Dict, List
+
+import pytest
 import yaml
 
 pytestmark = [
@@ -16,7 +17,7 @@ pytestmark = [
     pytest.mark.legacy,
     pytest.mark.dow,
     pytest.mark.dmaic_phase_4,
-    pytest.mark.ci_core
+    pytest.mark.ci_core,
 ]
 
 
@@ -29,10 +30,10 @@ class TestLegacySystemIntegration:
             "compatibility_version": "1.0",
             "migration_status": "in_progress",
             "deprecated_features": ["old_api", "legacy_auth"],
-            "supported_until": "2025-12-31"
+            "supported_until": "2025-12-31",
         }
         config_file = tmp_path / "legacy_config.yaml"
-        with open(config_file, 'w') as f:
+        with open(config_file, "w") as f:
             yaml.dump(config, f)
         return config_file
 
@@ -41,17 +42,16 @@ class TestLegacySystemIntegration:
         data_dir = tmp_path / "legacy_data"
         data_dir.mkdir()
 
-        (data_dir / "old_format.json").write_text(json.dumps({
-            "version": "1.0",
-            "data": [1, 2, 3, 4, 5]
-        }))
+        (data_dir / "old_format.json").write_text(
+            json.dumps({"version": "1.0", "data": [1, 2, 3, 4, 5]})
+        )
 
         (data_dir / "deprecated.txt").write_text("Legacy content")
 
         return data_dir
 
     def test_legacy_config_loading(self, legacy_config):
-        with open(legacy_config, 'r') as f:
+        with open(legacy_config, "r") as f:
             config = yaml.safe_load(f)
 
         assert config["legacy_mode"] is True
@@ -62,7 +62,7 @@ class TestLegacySystemIntegration:
         old_format_file = legacy_data_dir / "old_format.json"
         assert old_format_file.exists()
 
-        with open(old_format_file, 'r') as f:
+        with open(old_format_file, "r") as f:
             data = json.load(f)
 
         assert data["version"] == "1.0"
@@ -70,11 +70,8 @@ class TestLegacySystemIntegration:
 
         new_format = {
             "version": "2.0",
-            "metadata": {
-                "migrated_from": "1.0",
-                "migration_date": "2024-11-23"
-            },
-            "data": data["data"]
+            "metadata": {"migrated_from": "1.0", "migration_date": "2024-11-23"},
+            "data": data["data"],
         }
 
         assert new_format["version"] == "2.0"
@@ -86,7 +83,7 @@ class TestLegacySystemIntegration:
                 "status": "success",
                 "endpoint": endpoint,
                 "params": params,
-                "compatibility_mode": "legacy_v1"
+                "compatibility_mode": "legacy_v1",
             }
 
         result = legacy_api_call("/api/v1/data", {"id": 123})
@@ -116,11 +113,7 @@ class TestLegacySystemIntegration:
 
     def test_legacy_database_schema_migration(self):
         legacy_schema = {
-            "users": {
-                "id": "INTEGER",
-                "name": "VARCHAR(100)",
-                "email": "VARCHAR(100)"
-            }
+            "users": {"id": "INTEGER", "name": "VARCHAR(100)", "email": "VARCHAR(100)"}
         }
 
         modern_schema = {
@@ -129,7 +122,7 @@ class TestLegacySystemIntegration:
                 "name": "VARCHAR(255)",
                 "email": "VARCHAR(255)",
                 "created_at": "TIMESTAMP",
-                "updated_at": "TIMESTAMP"
+                "updated_at": "TIMESTAMP",
             }
         }
 
@@ -139,7 +132,9 @@ class TestLegacySystemIntegration:
                 if table in old_schema:
                     for field, field_type in fields.items():
                         if field not in old_schema[table]:
-                            migration_steps.append(f"ALTER TABLE {table} ADD COLUMN {field} {field_type}")
+                            migration_steps.append(
+                                f"ALTER TABLE {table} ADD COLUMN {field} {field_type}"
+                            )
             return {"steps": migration_steps}
 
         migration = migrate_schema(legacy_schema, modern_schema)
@@ -155,13 +150,11 @@ class TestLegacySystemIntegration:
         assert content == "Legacy content"
 
         modern_file = legacy_data_dir / "modern.json"
-        modern_file.write_text(json.dumps({
-            "content": content,
-            "format": "modern",
-            "migrated": True
-        }))
+        modern_file.write_text(
+            json.dumps({"content": content, "format": "modern", "migrated": True})
+        )
 
-        with open(modern_file, 'r') as f:
+        with open(modern_file, "r") as f:
             modern_data = json.load(f)
 
         assert modern_data["content"] == "Legacy content"
@@ -189,7 +182,7 @@ class TestLegacySystemIntegration:
         legacy_metrics = {
             "response_time_ms": 500,
             "throughput_rps": 100,
-            "error_rate": 0.05
+            "error_rate": 0.05,
         }
 
         modern_metrics = {
@@ -198,14 +191,15 @@ class TestLegacySystemIntegration:
             "response_time_p99": 500,
             "throughput_rps": 100,
             "error_rate": 0.05,
-            "availability": 0.99
+            "availability": 0.99,
         }
 
         def compare_metrics(legacy: Dict, modern: Dict) -> Dict:
             return {
                 "legacy_response_time": legacy["response_time_ms"],
                 "modern_response_time_p99": modern["response_time_p99"],
-                "improvement": legacy["response_time_ms"] >= modern["response_time_p99"]
+                "improvement": legacy["response_time_ms"]
+                >= modern["response_time_p99"],
             }
 
         comparison = compare_metrics(legacy_metrics, modern_metrics)
@@ -222,7 +216,7 @@ class TestLegacySystemIntegration:
                 "migration_progress": 0.65,
                 "deprecated_features_count": 2,
                 "compatibility_issues": 0,
-                "tests_passing": True
+                "tests_passing": True,
             }
 
         health = health_check()
@@ -242,7 +236,7 @@ class TestLegacyDOWIntegration:
         legacy_artifacts = [
             {"name": "old_module.py", "dow_tag": "[DOW]", "score": 0.45},
             {"name": "deprecated_api.py", "dow_tag": "[DOW]", "score": 0.38},
-            {"name": "legacy_db.py", "dow_tag": "[DOW]", "score": 0.52}
+            {"name": "legacy_db.py", "dow_tag": "[DOW]", "score": 0.52},
         ]
 
         tagged_count = sum(1 for a in legacy_artifacts if "[DOW]" in a["dow_tag"])
@@ -275,7 +269,7 @@ class TestLegacyDOWIntegration:
                 "gbgeb_format": True,
                 "source": "legacy",
                 "data": legacy_data,
-                "bridge_version": "1.0"
+                "bridge_version": "1.0",
             }
 
         legacy_input = {"id": 1, "value": "test"}
@@ -295,7 +289,7 @@ class TestLegacyDeprecationWarnings:
             warnings.warn(
                 "This function is deprecated and will be removed in v2.0",
                 DeprecationWarning,
-                stacklevel=2
+                stacklevel=2,
             )
             return "legacy_result"
 
@@ -313,8 +307,8 @@ class TestLegacyDeprecationWarnings:
                 "migration_steps": [
                     "Update imports",
                     "Replace function calls",
-                    "Update tests"
-                ]
+                    "Update tests",
+                ],
             }
         }
 

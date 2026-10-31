@@ -78,7 +78,9 @@ class PythonDependencyMIPTests(unittest.TestCase):
             for line in source.splitlines()
             if line.startswith("pylint")
         ]
-        self.assertEqual(len(requirements), 3)  # explicit legacy pre-3.9 + supported lanes
+        self.assertEqual(
+            len(requirements), 3
+        )  # explicit legacy pre-3.9 + supported lanes
         for lane, valid, excluded in (
             ("3.8", "3.2.6", "3.3.9"),
             ("3.9", "3.3.9", "4.1.3"),

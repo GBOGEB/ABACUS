@@ -9,19 +9,21 @@ Self-Improvement and Ranking System for Test Suite
 Implements self-ranking, global ranking, and continuous improvement
 """
 
-import pytest
-import pytest_asyncio
 import asyncio
 import json
+from dataclasses import asdict, dataclass
+from datetime import datetime
+from enum import Enum
 from pathlib import Path
 from typing import Dict, List, Tuple
-from datetime import datetime
-from dataclasses import dataclass, asdict
-from enum import Enum
+
+import pytest
+import pytest_asyncio
 
 
 class RankingCategory(Enum):
     """Test ranking categories"""
+
     PERFORMANCE = "performance"
     RELIABILITY = "reliability"
     COVERAGE = "coverage"
@@ -44,13 +46,14 @@ class TestRanking:
 
     def to_dict(self) -> Dict:
         data = asdict(self)
-        data['category'] = self.category.value
+        data["category"] = self.category.value
         return data
 
 
 @dataclass
 class GlobalRanking:
     """Global test suite ranking"""
+
     suite_name: str
     overall_score: float
     global_rank: int
@@ -86,46 +89,52 @@ class SelfImprovementEngine:
             "performance_metrics": {},
             "improvement_opportunities": [],
             "strengths": [],
-            "weaknesses": []
+            "weaknesses": [],
         }
 
         # Calculate performance metrics
-        durations = [r.get('duration', 0) for r in test_results]
-        pass_count = sum(1 for r in test_results if r.get('status') == 'passed')
+        durations = [r.get("duration", 0) for r in test_results]
+        pass_count = sum(1 for r in test_results if r.get("status") == "passed")
 
-        analysis['performance_metrics'] = {
+        analysis["performance_metrics"] = {
             "avg_duration": sum(durations) / len(durations) if durations else 0,
             "max_duration": max(durations) if durations else 0,
             "min_duration": min(durations) if durations else 0,
-            "pass_rate": (pass_count / len(test_results) * 100) if test_results else 0
+            "pass_rate": (pass_count / len(test_results) * 100) if test_results else 0,
         }
 
         # Identify slow tests
-        slow_tests = [r for r in test_results if r.get('duration', 0) > 1.0]
+        slow_tests = [r for r in test_results if r.get("duration", 0) > 1.0]
         if slow_tests:
-            analysis['improvement_opportunities'].append({
-                "type": "performance",
-                "description": f"{len(slow_tests)} tests exceed 1s duration",
-                "recommendation": "Optimize slow tests or use mocking",
-                "priority": "high"
-            })
+            analysis["improvement_opportunities"].append(
+                {
+                    "type": "performance",
+                    "description": f"{len(slow_tests)} tests exceed 1s duration",
+                    "recommendation": "Optimize slow tests or use mocking",
+                    "priority": "high",
+                }
+            )
 
         # Identify flaky tests
-        failed_tests = [r for r in test_results if r.get('status') == 'failed']
+        failed_tests = [r for r in test_results if r.get("status") == "failed"]
         if failed_tests:
-            analysis['weaknesses'].append({
-                "type": "reliability",
-                "description": f"{len(failed_tests)} tests failed",
-                "impact": "high"
-            })
+            analysis["weaknesses"].append(
+                {
+                    "type": "reliability",
+                    "description": f"{len(failed_tests)} tests failed",
+                    "impact": "high",
+                }
+            )
 
         # Identify strengths
-        if analysis['performance_metrics']['pass_rate'] > 95:
-            analysis['strengths'].append({
-                "type": "reliability",
-                "description": "High pass rate (>95%)",
-                "value": analysis['performance_metrics']['pass_rate']
-            })
+        if analysis["performance_metrics"]["pass_rate"] > 95:
+            analysis["strengths"].append(
+                {
+                    "type": "reliability",
+                    "description": "High pass rate (>95%)",
+                    "value": analysis["performance_metrics"]["pass_rate"],
+                }
+            )
 
         return analysis
 
@@ -134,23 +143,25 @@ class SelfImprovementEngine:
         rankings = []
 
         # Rank by performance
-        sorted_by_duration = sorted(test_results, key=lambda x: x.get('duration', 0))
+        sorted_by_duration = sorted(test_results, key=lambda x: x.get("duration", 0))
         for idx, test in enumerate(sorted_by_duration):
             ranking = TestRanking(
-                test_name=test.get('name', 'unknown'),
+                test_name=test.get("name", "unknown"),
                 category=RankingCategory.PERFORMANCE,
-                score=1.0 / (test.get('duration', 1) + 0.001),  # Inverse duration
+                score=1.0 / (test.get("duration", 1) + 0.001),  # Inverse duration
                 rank=idx + 1,
                 total_tests=len(test_results),
                 percentile=(idx + 1) / len(test_results) * 100,
-                timestamp=datetime.now().isoformat()
+                timestamp=datetime.now().isoformat(),
             )
             rankings.append(ranking)
 
         self.test_rankings.extend(rankings)
         return rankings
 
-    def calculate_global_rank(self, suite_name: str, test_results: List[Dict]) -> GlobalRanking:
+    def calculate_global_rank(
+        self, suite_name: str, test_results: List[Dict]
+    ) -> GlobalRanking:
         """Calculate global ranking for test suite"""
         # Calculate category scores
         category_scores = {
@@ -158,7 +169,7 @@ class SelfImprovementEngine:
             "reliability": self._calculate_reliability_score(test_results),
             "coverage": self._calculate_coverage_score(),
             "complexity": self._calculate_complexity_score(test_results),
-            "maintainability": self._calculate_maintainability_score()
+            "maintainability": self._calculate_maintainability_score(),
         }
 
         # Calculate overall score (weighted average)
@@ -167,12 +178,11 @@ class SelfImprovementEngine:
             "reliability": 0.30,
             "coverage": 0.25,
             "complexity": 0.10,
-            "maintainability": 0.10
+            "maintainability": 0.10,
         }
 
         overall_score = sum(
-            category_scores[cat] * weights[cat]
-            for cat in category_scores
+            category_scores[cat] * weights[cat] for cat in category_scores
         )
 
         # Determine improvement trend
@@ -185,7 +195,7 @@ class SelfImprovementEngine:
             total_suites=1,
             category_scores=category_scores,
             improvement_trend=improvement_trend,
-            timestamp=datetime.now().isoformat()
+            timestamp=datetime.now().isoformat(),
         )
 
         self.global_rankings.append(global_ranking)
@@ -196,45 +206,51 @@ class SelfImprovementEngine:
         suggestions = []
 
         # Performance improvements
-        if analysis['performance_metrics']['avg_duration'] > 0.5:
-            suggestions.append({
-                "category": "performance",
-                "priority": "high",
-                "suggestion": "Use pytest-xdist for parallel test execution",
-                "expected_improvement": "50-70% reduction in total test time",
-                "implementation": [
-                    "Install pytest-xdist",
-                    "Run tests with -n auto flag",
-                    "Ensure tests are thread-safe"
-                ]
-            })
+        if analysis["performance_metrics"]["avg_duration"] > 0.5:
+            suggestions.append(
+                {
+                    "category": "performance",
+                    "priority": "high",
+                    "suggestion": "Use pytest-xdist for parallel test execution",
+                    "expected_improvement": "50-70% reduction in total test time",
+                    "implementation": [
+                        "Install pytest-xdist",
+                        "Run tests with -n auto flag",
+                        "Ensure tests are thread-safe",
+                    ],
+                }
+            )
 
         # Reliability improvements
-        if analysis['performance_metrics']['pass_rate'] < 95:
-            suggestions.append({
-                "category": "reliability",
-                "priority": "critical",
-                "suggestion": "Fix failing tests immediately",
-                "expected_improvement": "Increase pass rate to >95%",
-                "implementation": [
-                    "Review failed test logs",
-                    "Fix root causes",
-                    "Add retry logic for flaky tests"
-                ]
-            })
+        if analysis["performance_metrics"]["pass_rate"] < 95:
+            suggestions.append(
+                {
+                    "category": "reliability",
+                    "priority": "critical",
+                    "suggestion": "Fix failing tests immediately",
+                    "expected_improvement": "Increase pass rate to >95%",
+                    "implementation": [
+                        "Review failed test logs",
+                        "Fix root causes",
+                        "Add retry logic for flaky tests",
+                    ],
+                }
+            )
 
         # Coverage improvements
-        suggestions.append({
-            "category": "coverage",
-            "priority": "medium",
-            "suggestion": "Increase code coverage to 80%+",
-            "expected_improvement": "Better test coverage",
-            "implementation": [
-                "Identify uncovered code paths",
-                "Write unit tests for core modules",
-                "Add integration tests for workflows"
-            ]
-        })
+        suggestions.append(
+            {
+                "category": "coverage",
+                "priority": "medium",
+                "suggestion": "Increase code coverage to 80%+",
+                "expected_improvement": "Better test coverage",
+                "implementation": [
+                    "Identify uncovered code paths",
+                    "Write unit tests for core modules",
+                    "Add integration tests for workflows",
+                ],
+            }
+        )
 
         return suggestions
 
@@ -245,7 +261,7 @@ class SelfImprovementEngine:
             "status": "applied",
             "timestamp": datetime.now().isoformat(),
             "before_metrics": {},
-            "after_metrics": {}
+            "after_metrics": {},
         }
 
         # Simulate improvement application
@@ -263,19 +279,25 @@ class SelfImprovementEngine:
             "total_improvements": len(self.improvement_history),
             "improvements_by_category": {},
             "success_rate": 0.0,
-            "trend": "improving"
+            "trend": "improving",
         }
 
         # Group by category
         for improvement in self.improvement_history:
-            category = improvement['suggestion']['category']
-            progress['improvements_by_category'][category] = \
-                progress['improvements_by_category'].get(category, 0) + 1
+            category = improvement["suggestion"]["category"]
+            progress["improvements_by_category"][category] = (
+                progress["improvements_by_category"].get(category, 0) + 1
+            )
 
         # Calculate success rate
-        successful = sum(1 for i in self.improvement_history if i['status'] == 'applied')
-        progress['success_rate'] = (successful / len(self.improvement_history) * 100) \
-            if self.improvement_history else 0
+        successful = sum(
+            1 for i in self.improvement_history if i["status"] == "applied"
+        )
+        progress["success_rate"] = (
+            (successful / len(self.improvement_history) * 100)
+            if self.improvement_history
+            else 0
+        )
 
         return progress
 
@@ -285,7 +307,7 @@ class SelfImprovementEngine:
         if not test_results:
             return 0.0
 
-        durations = [r.get('duration', 0) for r in test_results]
+        durations = [r.get("duration", 0) for r in test_results]
         avg_duration = sum(durations) / len(durations)
 
         # Score: 100 for <0.1s, 0 for >2s
@@ -301,7 +323,7 @@ class SelfImprovementEngine:
         if not test_results:
             return 0.0
 
-        pass_count = sum(1 for r in test_results if r.get('status') == 'passed')
+        pass_count = sum(1 for r in test_results if r.get("status") == "passed")
         return (pass_count / len(test_results)) * 100
 
     def _calculate_coverage_score(self) -> float:
@@ -313,7 +335,7 @@ class SelfImprovementEngine:
         try:
             with open(coverage_file) as f:
                 data = json.load(f)
-            return data.get('totals', {}).get('percent_covered', 0.0)
+            return data.get("totals", {}).get("percent_covered", 0.0)
         except (AttributeError, OSError, UnicodeError, json.JSONDecodeError, TypeError):
             return 0.0
 
@@ -334,7 +356,7 @@ class SelfImprovementEngine:
             return "stable"
 
         recent_improvements = self.improvement_history[-5:]
-        successful = sum(1 for i in recent_improvements if i['status'] == 'applied')
+        successful = sum(1 for i in recent_improvements if i["status"] == "applied")
 
         if successful >= 4:
             return "improving"
@@ -351,24 +373,31 @@ class SelfImprovementEngine:
             "summary": {
                 "total_improvements": len(self.improvement_history),
                 "success_rate": 0.0,
-                "current_trend": "stable"
+                "current_trend": "stable",
             },
             "rankings": {
                 "test_rankings": [r.to_dict() for r in self.test_rankings[-10:]],
-                "global_rankings": [r.to_dict() for r in self.global_rankings[-5:]]
+                "global_rankings": [r.to_dict() for r in self.global_rankings[-5:]],
             },
             "improvement_history": self.improvement_history[-10:],
-            "recommendations": []
+            "recommendations": [],
         }
 
         # Calculate success rate
         if self.improvement_history:
-            successful = sum(1 for i in self.improvement_history if i['status'] == 'applied')
-            report['summary']['success_rate'] = (successful / len(self.improvement_history)) * 100
+            successful = sum(
+                1 for i in self.improvement_history if i["status"] == "applied"
+            )
+            report["summary"]["success_rate"] = (
+                successful / len(self.improvement_history)
+            ) * 100
 
         # Save report
-        report_file = self.metrics_dir / f"improvement_report_{datetime.now().strftime('%Y%m%d_%H%M%S')}.json"
-        with open(report_file, 'w') as f:
+        report_file = (
+            self.metrics_dir
+            / f"improvement_report_{datetime.now().strftime('%Y%m%d_%H%M%S')}.json"
+        )
+        with open(report_file, "w") as f:
             json.dump(report, f, indent=2)
 
         return report
@@ -384,14 +413,14 @@ class TestSelfImprovement:
         test_results = [
             {"name": "test1", "duration": 0.5, "status": "passed"},
             {"name": "test2", "duration": 1.5, "status": "passed"},
-            {"name": "test3", "duration": 0.2, "status": "failed"}
+            {"name": "test3", "duration": 0.2, "status": "failed"},
         ]
 
         analysis = engine.analyze_test_performance(test_results)
 
-        assert 'performance_metrics' in analysis
-        assert 'improvement_opportunities' in analysis
-        assert analysis['total_tests'] == 3
+        assert "performance_metrics" in analysis
+        assert "improvement_opportunities" in analysis
+        assert analysis["total_tests"] == 3
 
     def test_test_ranking(self):
         """Test test ranking system"""
@@ -400,7 +429,7 @@ class TestSelfImprovement:
         test_results = [
             {"name": "test1", "duration": 0.5, "status": "passed"},
             {"name": "test2", "duration": 0.2, "status": "passed"},
-            {"name": "test3", "duration": 1.0, "status": "passed"}
+            {"name": "test3", "duration": 1.0, "status": "passed"},
         ]
 
         rankings = engine.rank_tests(test_results)
@@ -415,35 +444,32 @@ class TestSelfImprovement:
 
         test_results = [
             {"name": "test1", "duration": 0.5, "status": "passed"},
-            {"name": "test2", "duration": 0.3, "status": "passed"}
+            {"name": "test2", "duration": 0.3, "status": "passed"},
         ]
 
         global_rank = engine.calculate_global_rank("test_suite", test_results)
 
         assert global_rank.suite_name == "test_suite"
         assert 0 <= global_rank.overall_score <= 100
-        assert 'performance' in global_rank.category_scores
-        assert 'reliability' in global_rank.category_scores
+        assert "performance" in global_rank.category_scores
+        assert "reliability" in global_rank.category_scores
 
     def test_improvement_suggestions(self):
         """Test improvement suggestion generation"""
         engine = SelfImprovementEngine()
 
         analysis = {
-            'performance_metrics': {
-                'avg_duration': 0.8,
-                'pass_rate': 90.0
-            },
-            'improvement_opportunities': [],
-            'strengths': [],
-            'weaknesses': []
+            "performance_metrics": {"avg_duration": 0.8, "pass_rate": 90.0},
+            "improvement_opportunities": [],
+            "strengths": [],
+            "weaknesses": [],
         }
 
         suggestions = engine.suggest_improvements(analysis)
 
         assert len(suggestions) > 0
-        assert all('category' in s for s in suggestions)
-        assert all('priority' in s for s in suggestions)
+        assert all("category" in s for s in suggestions)
+        assert all("priority" in s for s in suggestions)
 
     @pytest.mark.asyncio
     async def test_apply_improvement(self):
@@ -453,13 +479,13 @@ class TestSelfImprovement:
         suggestion = {
             "category": "performance",
             "priority": "high",
-            "suggestion": "Use parallel execution"
+            "suggestion": "Use parallel execution",
         }
 
         result = await engine.apply_improvement(suggestion)
 
-        assert result['status'] == 'applied'
-        assert 'timestamp' in result
+        assert result["status"] == "applied"
+        assert "timestamp" in result
 
     def test_improvement_tracking(self):
         """Test improvement progress tracking"""
@@ -469,14 +495,14 @@ class TestSelfImprovement:
         engine.improvement_history = [
             {"suggestion": {"category": "performance"}, "status": "applied"},
             {"suggestion": {"category": "reliability"}, "status": "applied"},
-            {"suggestion": {"category": "coverage"}, "status": "applied"}
+            {"suggestion": {"category": "coverage"}, "status": "applied"},
         ]
 
         progress = engine.track_improvement_progress()
 
-        assert progress['total_improvements'] == 3
-        assert progress['success_rate'] == 100.0
-        assert 'improvements_by_category' in progress
+        assert progress["total_improvements"] == 3
+        assert progress["success_rate"] == 100.0
+        assert "improvements_by_category" in progress
 
     def test_improvement_report_generation(self):
         """Test improvement report generation"""
@@ -484,7 +510,7 @@ class TestSelfImprovement:
 
         report = engine.generate_improvement_report()
 
-        assert report['report_type'] == "Self-Improvement Analysis"
-        assert 'summary' in report
-        assert 'rankings' in report
-        assert 'improvement_history' in report
+        assert report["report_type"] == "Self-Improvement Analysis"
+        assert "summary" in report
+        assert "rankings" in report
+        assert "improvement_history" in report

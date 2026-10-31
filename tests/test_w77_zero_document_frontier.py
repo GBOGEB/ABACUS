@@ -261,7 +261,8 @@ def test_mixed_phase_iteration_json_missing_both_contracts(recent):
 
 def test_complete_phase_iteration_json_has_no_gaps(recent, tmp_path):
     _file(
-        tmp_path, "phase_iteration.json",
+        tmp_path,
+        "phase_iteration.json",
         '{"metadata":{},"timestamp":"2026-10-26T00:00:00Z",'
         '"version":"v1","iteration_number":1,"convergence_metrics":{}}',
     )

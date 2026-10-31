@@ -9,14 +9,15 @@
 Advanced Security Tests - SAST, Dependency Scanning, License Compliance
 """
 
-import pytest
-import subprocess
 import json
 import re
-from pathlib import Path
-from typing import Dict, List, Any, Optional, Set
-from dataclasses import dataclass, asdict
+import subprocess
+from dataclasses import asdict, dataclass
 from datetime import datetime
+from pathlib import Path
+from typing import Any, Dict, List, Optional, Set
+
+import pytest
 
 
 @dataclass
@@ -70,30 +71,39 @@ class SASTScanner:
         patterns = {
             "hardcoded_password": r'password\s*=\s*["\'][^"\']+["\']',
             "sql_injection": r'execute\s*\(\s*["\'].*%s.*["\']',
-            "command_injection": r'os\.system\s*\(',
-            "eval_usage": r'\beval\s*\(',
-            "pickle_usage": r'pickle\.loads?\s*\(',
+            "command_injection": r"os\.system\s*\(",
+            "eval_usage": r"\beval\s*\(",
+            "pickle_usage": r"pickle\.loads?\s*\(",
         }
 
         for py_file in python_files:
-            if py_file.name.startswith("test_") or "tests" in py_file.parts or "venv" in py_file.parts:
+            if (
+                py_file.name.startswith("test_")
+                or "tests" in py_file.parts
+                or "venv" in py_file.parts
+            ):
                 continue
 
             try:
-                content = py_file.read_text(encoding='utf-8')
-                lines = content.split('\n')
+                content = py_file.read_text(encoding="utf-8")
+                lines = content.split("\n")
 
                 for line_num, line in enumerate(lines, 1):
                     for pattern_name, pattern in patterns.items():
                         if re.search(pattern, line, re.IGNORECASE):
                             finding = SecurityFinding(
-                                severity="high" if pattern_name in ["sql_injection", "command_injection"] else "medium",
+                                severity=(
+                                    "high"
+                                    if pattern_name
+                                    in ["sql_injection", "command_injection"]
+                                    else "medium"
+                                ),
                                 category=pattern_name.replace("_", " ").title(),
                                 description=f"Potential {pattern_name.replace('_', ' ')} detected",
                                 file_path=str(py_file.relative_to(self.project_root)),
                                 line_number=line_num,
                                 cwe_id=self._get_cwe_id(pattern_name),
-                                recommendation=self._get_recommendation(pattern_name)
+                                recommendation=self._get_recommendation(pattern_name),
                             )
                             findings.append(finding)
             except Exception:
@@ -105,7 +115,7 @@ class SASTScanner:
             "total_files_scanned": len(python_files),
             "total_findings": len(findings),
             "findings_by_severity": self._group_by_severity(findings),
-            "findings": [f.to_dict() for f in findings[:10]]
+            "findings": [f.to_dict() for f in findings[:10]],
         }
 
     def _get_cwe_id(self, pattern_name: str) -> str:
@@ -114,7 +124,7 @@ class SASTScanner:
             "sql_injection": "CWE-89",
             "command_injection": "CWE-78",
             "eval_usage": "CWE-95",
-            "pickle_usage": "CWE-502"
+            "pickle_usage": "CWE-502",
         }
         return cwe_mapping.get(pattern_name, "CWE-Unknown")
 
@@ -124,14 +134,16 @@ class SASTScanner:
             "sql_injection": "Use parameterized queries",
             "command_injection": "Use subprocess with list arguments",
             "eval_usage": "Avoid eval(), use ast.literal_eval() or safer alternatives",
-            "pickle_usage": "Use JSON or other safer serialization formats"
+            "pickle_usage": "Use JSON or other safer serialization formats",
         }
         return recommendations.get(pattern_name, "Review and remediate")
 
     def _group_by_severity(self, findings: List[SecurityFinding]) -> Dict[str, int]:
         severity_counts = {"critical": 0, "high": 0, "medium": 0, "low": 0}
         for finding in findings:
-            severity_counts[finding.severity] = severity_counts.get(finding.severity, 0) + 1
+            severity_counts[finding.severity] = (
+                severity_counts.get(finding.severity, 0) + 1
+            )
         return severity_counts
 
 
@@ -144,10 +156,7 @@ class DependencyScanner:
         requirements_file = self.project_root / "requirements.txt"
 
         if not requirements_file.exists():
-            return {
-                "success": False,
-                "error": "requirements.txt not found"
-            }
+            return {"success": False, "error": "requirements.txt not found"}
 
         try:
             content = requirements_file.read_text()
@@ -155,9 +164,21 @@ class DependencyScanner:
 
             vulnerabilities = []
             known_vulns = {
-                "requests": {"version": "2.25.0", "cve": "CVE-2021-33503", "severity": "high"},
-                "django": {"version": "3.1.0", "cve": "CVE-2021-35042", "severity": "critical"},
-                "flask": {"version": "1.0.0", "cve": "CVE-2019-1010083", "severity": "medium"}
+                "requests": {
+                    "version": "2.25.0",
+                    "cve": "CVE-2021-33503",
+                    "severity": "high",
+                },
+                "django": {
+                    "version": "3.1.0",
+                    "cve": "CVE-2021-35042",
+                    "severity": "critical",
+                },
+                "flask": {
+                    "version": "1.0.0",
+                    "cve": "CVE-2019-1010083",
+                    "severity": "medium",
+                },
             }
 
             for pkg_name, pkg_version in packages.items():
@@ -169,7 +190,7 @@ class DependencyScanner:
                         vulnerable_version_range=f"<={vuln_info['version']}",
                         severity=vuln_info["severity"],
                         cve_id=vuln_info["cve"],
-                        fixed_version="latest"
+                        fixed_version="latest",
                     )
                     vulnerabilities.append(vuln)
 
@@ -180,28 +201,27 @@ class DependencyScanner:
                 "total_packages": len(packages),
                 "vulnerable_packages": len(vulnerabilities),
                 "vulnerabilities_by_severity": self._group_by_severity(vulnerabilities),
-                "vulnerabilities": [v.to_dict() for v in vulnerabilities]
+                "vulnerabilities": [v.to_dict() for v in vulnerabilities],
             }
         except Exception as e:
-            return {
-                "success": False,
-                "error": str(e)
-            }
+            return {"success": False, "error": str(e)}
 
     def _parse_requirements(self, content: str) -> Dict[str, str]:
         packages = {}
-        for line in content.split('\n'):
+        for line in content.split("\n"):
             line = line.strip()
-            if line and not line.startswith('#'):
-                if '==' in line:
-                    pkg_name, version = line.split('==', 1)
+            if line and not line.startswith("#"):
+                if "==" in line:
+                    pkg_name, version = line.split("==", 1)
                     packages[pkg_name.strip()] = version.strip()
-                elif '>=' in line:
-                    pkg_name = line.split('>=', 1)[0].strip()
+                elif ">=" in line:
+                    pkg_name = line.split(">=", 1)[0].strip()
                     packages[pkg_name] = "unknown"
         return packages
 
-    def _group_by_severity(self, vulnerabilities: List[DependencyVulnerability]) -> Dict[str, int]:
+    def _group_by_severity(
+        self, vulnerabilities: List[DependencyVulnerability]
+    ) -> Dict[str, int]:
         severity_counts = {"critical": 0, "high": 0, "medium": 0, "low": 0}
         for vuln in vulnerabilities:
             severity_counts[vuln.severity] = severity_counts.get(vuln.severity, 0) + 1
@@ -214,22 +234,22 @@ class LicenseComplianceChecker:
         self.licenses: List[LicenseInfo] = []
 
         self.approved_licenses = {
-            "MIT", "Apache-2.0", "BSD-3-Clause", "BSD-2-Clause",
-            "ISC", "Python-2.0", "PSF"
+            "MIT",
+            "Apache-2.0",
+            "BSD-3-Clause",
+            "BSD-2-Clause",
+            "ISC",
+            "Python-2.0",
+            "PSF",
         }
 
-        self.restricted_licenses = {
-            "GPL-3.0", "AGPL-3.0", "LGPL-3.0"
-        }
+        self.restricted_licenses = {"GPL-3.0", "AGPL-3.0", "LGPL-3.0"}
 
     def check_licenses(self) -> Dict[str, Any]:
         requirements_file = self.project_root / "requirements.txt"
 
         if not requirements_file.exists():
-            return {
-                "success": False,
-                "error": "requirements.txt not found"
-            }
+            return {"success": False, "error": "requirements.txt not found"}
 
         try:
             content = requirements_file.read_text()
@@ -243,7 +263,7 @@ class LicenseComplianceChecker:
                 "django": "BSD-3-Clause",
                 "numpy": "BSD-3-Clause",
                 "pandas": "BSD-3-Clause",
-                "matplotlib": "PSF"
+                "matplotlib": "PSF",
             }
 
             for pkg_name, pkg_version in packages.items():
@@ -255,7 +275,7 @@ class LicenseComplianceChecker:
                     version=pkg_version,
                     license_type=license_type,
                     is_compliant=is_compliant,
-                    license_url=f"https://pypi.org/project/{pkg_name}/"
+                    license_url=f"https://pypi.org/project/{pkg_name}/",
                 )
                 licenses.append(license_info)
 
@@ -269,26 +289,25 @@ class LicenseComplianceChecker:
                 "total_packages": len(licenses),
                 "compliant_packages": compliant_count,
                 "non_compliant_packages": len(non_compliant),
-                "compliance_rate": round(compliant_count / len(licenses) * 100, 2) if licenses else 0,
+                "compliance_rate": (
+                    round(compliant_count / len(licenses) * 100, 2) if licenses else 0
+                ),
                 "non_compliant": [lic.to_dict() for lic in non_compliant],
-                "license_distribution": self._get_license_distribution(licenses)
+                "license_distribution": self._get_license_distribution(licenses),
             }
         except Exception as e:
-            return {
-                "success": False,
-                "error": str(e)
-            }
+            return {"success": False, "error": str(e)}
 
     def _parse_requirements(self, content: str) -> Dict[str, str]:
         packages = {}
-        for line in content.split('\n'):
+        for line in content.split("\n"):
             line = line.strip()
-            if line and not line.startswith('#'):
-                if '==' in line:
-                    pkg_name, version = line.split('==', 1)
+            if line and not line.startswith("#"):
+                if "==" in line:
+                    pkg_name, version = line.split("==", 1)
                     packages[pkg_name.strip()] = version.strip()
-                elif '>=' in line:
-                    pkg_name = line.split('>=', 1)[0].strip()
+                elif ">=" in line:
+                    pkg_name = line.split(">=", 1)[0].strip()
                     packages[pkg_name] = "unknown"
         return packages
 
@@ -478,7 +497,7 @@ class TestSecurityDataClasses:
             description="Potential SQL injection",
             file_path="src/db.py",
             line_number=42,
-            cwe_id="CWE-89"
+            cwe_id="CWE-89",
         )
 
         assert finding.severity == "high"
@@ -490,7 +509,7 @@ class TestSecurityDataClasses:
             installed_version="2.25.0",
             vulnerable_version_range="<=2.25.0",
             severity="high",
-            cve_id="CVE-2021-33503"
+            cve_id="CVE-2021-33503",
         )
 
         assert vuln.package_name == "requests"
@@ -501,7 +520,7 @@ class TestSecurityDataClasses:
             package_name="pytest",
             version="7.0.0",
             license_type="MIT",
-            is_compliant=True
+            is_compliant=True,
         )
 
         assert license_info.is_compliant is True
@@ -510,7 +529,9 @@ class TestSecurityDataClasses:
 
 class TestSecurityIntegration:
 
-    def test_full_security_scan(self, project_root, sample_python_file, sample_requirements):
+    def test_full_security_scan(
+        self, project_root, sample_python_file, sample_requirements
+    ):
         sast_scanner = SASTScanner(project_root)
         dep_scanner = DependencyScanner(project_root)
         license_checker = LicenseComplianceChecker(project_root)
@@ -523,7 +544,9 @@ class TestSecurityIntegration:
         assert dep_result["success"] is True
         assert license_result["success"] is True
 
-    def test_security_report_generation(self, project_root, sample_python_file, sample_requirements):
+    def test_security_report_generation(
+        self, project_root, sample_python_file, sample_requirements
+    ):
         sast_scanner = SASTScanner(project_root)
         dep_scanner = DependencyScanner(project_root)
         license_checker = LicenseComplianceChecker(project_root)
@@ -536,7 +559,7 @@ class TestSecurityIntegration:
             "scan_date": datetime.now().isoformat(),
             "sast": sast_result,
             "dependencies": dep_result,
-            "licenses": license_result
+            "licenses": license_result,
         }
 
         assert "scan_date" in report

@@ -1,4 +1,5 @@
 """W48 native-local behavioral, mutation and negative RECURSE tests."""
+
 from __future__ import annotations
 
 import copy
@@ -32,7 +33,9 @@ class RecurseFanoutW48Tests(unittest.TestCase):
 
     def test_positive_structural_reach_is_not_causal_credit(self):
         result = self.compile()
-        root = next(x for x in result["graph"]["observations"] if x["id"] == "event_main")
+        root = next(
+            x for x in result["graph"]["observations"] if x["id"] == "event_main"
+        )
         self.assertEqual(root["direct_outdegree"], 3)
         self.assertEqual(root["reachable_nodes"], 8)
         self.assertIn("javascript", root["reached_segments"])
@@ -43,7 +46,13 @@ class RecurseFanoutW48Tests(unittest.TestCase):
 
     def test_two_fixed_blob_coverage_pairs_are_measured_only_as_candidate(self):
         m = self.compile()["matched_coverage_candidates"][0]
-        self.assertEqual((m["measures"]["statements"]["before"], m["measures"]["statements"]["after"]), (184, 212))
+        self.assertEqual(
+            (
+                m["measures"]["statements"]["before"],
+                m["measures"]["statements"]["after"],
+            ),
+            (184, 212),
+        )
         self.assertEqual(m["measures"]["branches"]["delta"], 12)
         self.assertEqual(m["measures"]["statements"]["eligible"], 214)
         self.assertEqual(m["acceptance"], "CANDIDATE_LOCAL_VALIDATION_ONLY")
@@ -140,7 +149,9 @@ class RecurseFanoutW48Tests(unittest.TestCase):
         self.fail("digest")
 
     def test_reject_forged_artifact_run_binding(self):
-        self.node("python_after")["coverage"]["artifact_url"] = "https://github.com/GBOGEB/ABACUS/actions/runs/999/artifacts/991"
+        self.node("python_after")["coverage"][
+            "artifact_url"
+        ] = "https://github.com/GBOGEB/ABACUS/actions/runs/999/artifacts/991"
         self.fail("artifact URL")
 
     def test_reject_coverage_with_no_native_job(self):
@@ -168,11 +179,15 @@ class RecurseFanoutW48Tests(unittest.TestCase):
         self.fail("not matched")
 
     def test_reject_orphan_edge(self):
-        self.data["edges"].append({"from": "absent", "to": "python_base", "kind": "depends_on"})
+        self.data["edges"].append(
+            {"from": "absent", "to": "python_base", "kind": "depends_on"}
+        )
         self.fail("orphan")
 
     def test_reject_cyclic_edge(self):
-        self.data["edges"].append({"from": "security_red", "to": "event_main", "kind": "depends_on"})
+        self.data["edges"].append(
+            {"from": "security_red", "to": "event_main", "kind": "depends_on"}
+        )
         self.fail("cyclic")
 
     def test_reject_duplicate_typed_edge(self):
@@ -186,7 +201,12 @@ class RecurseFanoutW48Tests(unittest.TestCase):
 
     def test_reject_task_absolute_and_traversal_paths(self):
         task = next(t for t in self.data["tasks"] if t["id"] == "t20_py")
-        for path in ("../source.py", "C:\\not_allowed.py", "/absolute/denied_path", "x//y"):
+        for path in (
+            "../source.py",
+            "C:\\not_allowed.py",
+            "/absolute/denied_path",
+            "x//y",
+        ):
             task["paths"] = [path]
             self.fail("paths")
 

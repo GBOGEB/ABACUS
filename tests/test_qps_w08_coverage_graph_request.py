@@ -59,7 +59,13 @@ def test_graph_request_has_required_checks_and_return_fields():
         "G07_DASHBOARD_REVIEW_ONLY",
     }
     required = set(data["expected_return_fields"])
-    assert {"finding_id", "workstream_id", "check_id", "recommended_child_disposition", "no_credit_statement"} <= required
+    assert {
+        "finding_id",
+        "workstream_id",
+        "check_id",
+        "recommended_child_disposition",
+        "no_credit_statement",
+    } <= required
     assert data["return_contract"]["sanitized_only"] is True
     assert data["return_contract"]["no_credit_statement_required"] is True
 
@@ -72,7 +78,10 @@ def test_dashboard_and_html_presentation_are_review_only_not_ssot():
     assert dashboard["display_controls"]["completion_credit_allowed"] is False
     assert presenter["visual_controls"]["html_is_review_surface_only"] is True
     assert presenter["visual_controls"]["html_is_child_ssot"] is False
-    assert presenter["visual_controls"]["html_may_embed_confidential_bidder_payload"] is False
+    assert (
+        presenter["visual_controls"]["html_may_embed_confidential_bidder_payload"]
+        is False
+    )
     assert presenter["visual_controls"]["html_may_promote_parent_credit"] is False
     assert presenter["visual_controls"]["html_may_grant_completion_credit"] is False
 
@@ -84,7 +93,9 @@ def test_pr_head_aht_snapshot_embeds_failed_check_threshold():
     assert snapshot["status"] == "THRESHOLD_BREACHED"
     assert snapshot["evidence_class"] == "SOURCE-SUPPORTED"
     assert snapshot["threshold_policy"]["threshold_reached"] is True
-    assert snapshot["aht_statistics_bridge"]["method"] == "classify_failed_check_threshold"
+    assert (
+        snapshot["aht_statistics_bridge"]["method"] == "classify_failed_check_threshold"
+    )
     assert snapshot["measure"]["failed_checks"] == 7
     assert snapshot["measure"]["blocker_checks"] == 7
     assert snapshot["measure"]["total_decisive_checks"] == 16

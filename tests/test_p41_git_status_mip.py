@@ -6,8 +6,8 @@ from types import SimpleNamespace
 
 import pytest
 
-from cicd_github_orchestrator import CICDGitHubOrchestrator
 import cicd_github_orchestrator as cli
+from cicd_github_orchestrator import CICDGitHubOrchestrator
 
 
 @pytest.mark.parametrize(
@@ -55,9 +55,7 @@ def test_status_columns_and_raw_path_spellings(
 
 def _fake_status(monkeypatch, stdout="", stderr="", returncode=0):
     def fake_run(*args, **kwargs):
-        return SimpleNamespace(
-            returncode=returncode, stdout=stdout, stderr=stderr
-        )
+        return SimpleNamespace(returncode=returncode, stdout=stdout, stderr=stderr)
 
     monkeypatch.setattr("cicd_github_orchestrator.subprocess.run", fake_run)
 
@@ -104,8 +102,11 @@ def test_bad_status_blocks_pipeline_before_any_refactoring(monkeypatch, tmp_path
     target = CICDGitHubOrchestrator(tmp_path)
     monkeypatch.setattr(target, "verify_git_tools", lambda: {})
     sample = SimpleNamespace(
-        total_files=0, python_files=0, total_lines=0,
-        duplicate_files=0, import_issues=0,
+        total_files=0,
+        python_files=0,
+        total_lines=0,
+        duplicate_files=0,
+        import_issues=0,
     )
     monkeypatch.setattr(target, "collect_metrics", lambda _: sample)
     monkeypatch.setattr(target, "save_metrics", lambda *args: None)
@@ -117,8 +118,10 @@ def test_bad_status_blocks_pipeline_before_any_refactoring(monkeypatch, tmp_path
         pytest.fail("Mutation or planning entered after failed status")
 
     for name in (
-        "analyze_refactoring_needs", "execute_refactoring",
-        "git_commit_push", "git_pull",
+        "analyze_refactoring_needs",
+        "execute_refactoring",
+        "git_commit_push",
+        "git_pull",
     ):
         monkeypatch.setattr(target, name, forbidden)
     result = target.execute_full_pipeline(dry_run=False)
@@ -147,8 +150,11 @@ def test_unknown_or_inconsistent_scan_blocks_before_mutation(
     target = CICDGitHubOrchestrator(tmp_path)
     monkeypatch.setattr(target, "verify_git_tools", lambda: {})
     sample = SimpleNamespace(
-        total_files=0, python_files=0, total_lines=0,
-        duplicate_files=0, import_issues=0,
+        total_files=0,
+        python_files=0,
+        total_lines=0,
+        duplicate_files=0,
+        import_issues=0,
     )
     monkeypatch.setattr(target, "collect_metrics", lambda _label: sample)
     monkeypatch.setattr(target, "save_metrics", lambda *args: None)
@@ -158,8 +164,11 @@ def test_unknown_or_inconsistent_scan_blocks_before_mutation(
         pytest.fail("Untrusted status reached a mutating/planning stage")
 
     for stage in (
-        "analyze_refactoring_needs", "execute_refactoring",
-        "git_commit_push", "git_pull", "compare_metrics",
+        "analyze_refactoring_needs",
+        "execute_refactoring",
+        "git_commit_push",
+        "git_pull",
+        "compare_metrics",
         "validate_post_roundtrip",
     ):
         monkeypatch.setattr(target, stage, forbidden)
@@ -170,9 +179,7 @@ def test_unknown_or_inconsistent_scan_blocks_before_mutation(
 
 
 @pytest.mark.parametrize("dry_run", [False, True])
-@pytest.mark.parametrize(
-    "terminal_status", ["BLOCKED_GIT_STATUS", "DENIED", "UNKNOWN"]
-)
+@pytest.mark.parametrize("terminal_status", ["BLOCKED_GIT_STATUS", "DENIED", "UNKNOWN"])
 def test_cli_rejects_explicit_non_success_statuses(
     monkeypatch, tmp_path, capsys, dry_run, terminal_status
 ):
@@ -202,7 +209,8 @@ def test_cli_rejects_missing_pipeline_receipt(monkeypatch, tmp_path, capsys, dry
         argv.append("--dry-run")
     monkeypatch.setattr(sys, "argv", argv)
     monkeypatch.setattr(
-        CICDGitHubOrchestrator, "execute_full_pipeline",
+        CICDGitHubOrchestrator,
+        "execute_full_pipeline",
         lambda self, dry_run: None,
     )
     assert cli.main() == 2
@@ -219,7 +227,8 @@ def test_cli_success_path_retains_zero_exit(
         argv.append("--dry-run")
     monkeypatch.setattr(sys, "argv", argv)
     monkeypatch.setattr(
-        CICDGitHubOrchestrator, "execute_full_pipeline",
+        CICDGitHubOrchestrator,
+        "execute_full_pipeline",
         lambda self, dry_run: receipt,
     )
     assert cli.main() == 0

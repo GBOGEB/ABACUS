@@ -168,25 +168,38 @@ def test_first_red_manifestation_recurrence_not_root_closure():
     failures = []
     for job_id in (1, 2):
         native_job = job(
-            job_id, conclusion="failure",
+            job_id,
+            conclusion="failure",
             steps_marker=[
-                {"name": "setup", "status": "completed",
-                 "conclusion": "success", "number": 1},
-                {"name": "pytest", "status": "completed",
-                 "conclusion": "failure", "number": 2},
+                {
+                    "name": "setup",
+                    "status": "completed",
+                    "conclusion": "success",
+                    "number": 1,
+                },
+                {
+                    "name": "pytest",
+                    "status": "completed",
+                    "conclusion": "failure",
+                    "number": 2,
+                },
             ],
         )
         native_job["name"] = "test-py311"
         failures.append(native_job)
     unattributed = job(
-        3, conclusion="failure",
+        3,
+        conclusion="failure",
         steps_marker=[step("pytest", conclusion="failure")],
     )
     unattributed["name"] = "test-py311"
-    result = summarize({
-        "source_sha": SHA, "runs": [native],
-        "jobs": failures + [unattributed],
-    })
+    result = summarize(
+        {
+            "source_sha": SHA,
+            "runs": [native],
+            "jobs": failures + [unattributed],
+        }
+    )
     assert result["first_red_unique_signatures"] == 1
     assert result["first_red_repeated_signatures"] == 1
     assert len(result["first_red_manifestations"]) == 2
@@ -200,12 +213,23 @@ def test_first_red_manifestation_recurrence_not_root_closure():
 def test_first_red_order_follows_native_step_number_not_list_order():
     native = run(conclusion="failure")
     native["path"] = ".github/workflows/ci.yml"
-    item = job(conclusion="failure", steps_marker=[
-        {"name": "later", "status": "completed",
-         "conclusion": "failure", "number": 5},
-        {"name": "earlier", "status": "completed",
-         "conclusion": "failure", "number": 3},
-    ])
+    item = job(
+        conclusion="failure",
+        steps_marker=[
+            {
+                "name": "later",
+                "status": "completed",
+                "conclusion": "failure",
+                "number": 5,
+            },
+            {
+                "name": "earlier",
+                "status": "completed",
+                "conclusion": "failure",
+                "number": 3,
+            },
+        ],
+    )
     item["name"] = "test-suite"
     result = summarize({"source_sha": SHA, "runs": [native], "jobs": [item]})
     assert result["first_red_signatures"][0]["step_number"] == 3

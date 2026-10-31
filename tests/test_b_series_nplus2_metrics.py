@@ -2,6 +2,7 @@
 
 Tests use copied native evidence fixtures; mutations are synthetic tests only.
 """
+
 from __future__ import annotations
 
 import copy
@@ -46,18 +47,14 @@ class BSeriesFivePulse(unittest.TestCase):
 
     def test_exact_b1_fingerprint_persistence(self):
         result = self.result()["five_pulse_metrics"]
-        self.assertEqual(
-            result["b1_fingerprint_jaccard_to_baseline"], [1.0] * 5
-        )
+        self.assertEqual(result["b1_fingerprint_jaccard_to_baseline"], [1.0] * 5)
         self.assertEqual(result["b1_unique_reference_fingerprints"], 139)
         self.assertEqual(result["b1_new_fingerprints"], [0] * 5)
         self.assertEqual(result["b1_missing_fingerprints"], [0] * 5)
 
     def test_scanned_population_drift_visible(self):
         result = self.result()["five_pulse_metrics"]
-        self.assertEqual(
-            result["b1_scanned_workflow_files"], [160, 161, 160, 160, 160]
-        )
+        self.assertEqual(result["b1_scanned_workflow_files"], [160, 161, 160, 160, 160])
         self.assertEqual(
             result["b1_scope_status"], "SCANNED_WORKFLOW_DENOMINATOR_DRIFT"
         )
@@ -164,9 +161,7 @@ class BSeriesFivePulse(unittest.TestCase):
         doc["observations"][1]["b1_scanned_files"] = 160
         ref["comparison"][1]["scanned_files"] = 160
         state = self.result(data=doc, b1=ref)["five_pulse_metrics"]
-        self.assertEqual(
-            state["b1_scope_status"], "IDENTICAL_SCANNED_FILE_COUNTS_ONLY"
-        )
+        self.assertEqual(state["b1_scope_status"], "IDENTICAL_SCANNED_FILE_COUNTS_ONLY")
 
 
 if __name__ == "__main__":

@@ -1,6 +1,6 @@
-from pathlib import Path
 import subprocess
 import sys
+from pathlib import Path
 
 from scripts import test_evidence_census as census
 
@@ -121,9 +121,11 @@ def test_cli_stamps_explicit_pr_head_despite_synthetic_github_sha(
     )
     assert result.returncode == 0, result.stdout + result.stderr
     import json
+
     receipt = json.loads(result_file.read_text())
     assert receipt["exact_sha"] == "4" * 40
     assert receipt["ratchet_status"] == "PASS"
+
 
 def test_direct_script_execution_resolves_sibling_plugin(tmp_path: Path):
     junit = tmp_path / "junit.xml"
@@ -172,9 +174,9 @@ def test_explicit_sha_overrides_synthetic_merge_sha(tmp_path: Path, monkeypatch)
     )
     monkeypatch.setenv("GITHUB_SHA", "b" * 40)
 
-    assert census.main(
-        ["--junit", str(junit), "--out", str(out), "--exact-sha", sha]
-    ) == 0
+    assert (
+        census.main(["--junit", str(junit), "--out", str(out), "--exact-sha", sha]) == 0
+    )
     receipt = json.loads(out.read_text(encoding="utf-8"))
     assert receipt["exact_sha"] == sha
     assert receipt["ratchet_status"] == "PASS"
@@ -198,7 +200,9 @@ def test_exact_sha_cli_rejects_invalid_identity(tmp_path: Path, capsys):
     assert not out.exists()
 
 
-def test_explicit_sha_preserves_fail_closed_uncategorized_skip(tmp_path: Path, monkeypatch):
+def test_explicit_sha_preserves_fail_closed_uncategorized_skip(
+    tmp_path: Path, monkeypatch
+):
     import json
 
     junit = tmp_path / "junit.xml"
@@ -210,9 +214,9 @@ def test_explicit_sha_preserves_fail_closed_uncategorized_skip(tmp_path: Path, m
     )
     monkeypatch.setenv("GITHUB_SHA", "d" * 40)
 
-    assert census.main(
-        ["--junit", str(junit), "--out", str(out), "--exact-sha", sha]
-    ) == 1
+    assert (
+        census.main(["--junit", str(junit), "--out", str(out), "--exact-sha", sha]) == 1
+    )
     receipt = json.loads(out.read_text(encoding="utf-8"))
     assert receipt["exact_sha"] == sha
     assert receipt["ratchet_status"] == "FAIL"

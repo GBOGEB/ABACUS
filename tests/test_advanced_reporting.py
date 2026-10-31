@@ -9,14 +9,15 @@
 Advanced Reporting Tests - Trend Analysis, Historical Metrics, Performance Regression Detection
 """
 
-import pytest
 import json
-import time
-from pathlib import Path
-from datetime import datetime, timedelta
-from typing import Dict, List, Any
-from dataclasses import dataclass, asdict
 import statistics
+import time
+from dataclasses import asdict, dataclass
+from datetime import datetime, timedelta
+from pathlib import Path
+from typing import Any, Dict, List
+
+import pytest
 
 
 @dataclass
@@ -34,44 +35,58 @@ class PerformanceMetric:
 
 class TrendAnalyzer:
     def __init__(self, history_file: Path = None):
-        self.history_file = history_file or Path("test_metrics/performance_history.json")
+        self.history_file = history_file or Path(
+            "test_metrics/performance_history.json"
+        )
         self.history_file.parent.mkdir(parents=True, exist_ok=True)
         self.metrics: List[PerformanceMetric] = []
         self._load_history()
 
     def _load_history(self):
         if self.history_file.exists():
-            with open(self.history_file, 'r') as f:
+            with open(self.history_file, "r") as f:
                 data = json.load(f)
                 self.metrics = [PerformanceMetric(**m) for m in data]
 
     def _save_history(self):
-        with open(self.history_file, 'w') as f:
+        with open(self.history_file, "w") as f:
             json.dump([m.to_dict() for m in self.metrics], f, indent=2)
 
     def record_metric(self, metric: PerformanceMetric):
         self.metrics.append(metric)
         self._save_history()
 
-    def get_trend(self, test_name: str, metric_name: str, window: int = 10) -> Dict[str, Any]:
+    def get_trend(
+        self, test_name: str, metric_name: str, window: int = 10
+    ) -> Dict[str, Any]:
         test_metrics = [m for m in self.metrics if m.test_name == test_name]
 
         if len(test_metrics) < 2:
-            return {"trend": "insufficient_data", "direction": "stable", "change_percent": 0.0}
+            return {
+                "trend": "insufficient_data",
+                "direction": "stable",
+                "change_percent": 0.0,
+            }
 
         recent = test_metrics[-window:]
         values = [getattr(m, metric_name) for m in recent]
 
         if len(values) < 2:
-            return {"trend": "insufficient_data", "direction": "stable", "change_percent": 0.0}
+            return {
+                "trend": "insufficient_data",
+                "direction": "stable",
+                "change_percent": 0.0,
+            }
 
-        first_half = values[:len(values)//2]
-        second_half = values[len(values)//2:]
+        first_half = values[: len(values) // 2]
+        second_half = values[len(values) // 2 :]
 
         avg_first = statistics.mean(first_half)
         avg_second = statistics.mean(second_half)
 
-        change_percent = ((avg_second - avg_first) / avg_first * 100) if avg_first > 0 else 0.0
+        change_percent = (
+            ((avg_second - avg_first) / avg_first * 100) if avg_first > 0 else 0.0
+        )
 
         if abs(change_percent) < 5:
             direction = "stable"
@@ -86,10 +101,12 @@ class TrendAnalyzer:
             "change_percent": round(change_percent, 2),
             "avg_first_half": round(avg_first, 2),
             "avg_second_half": round(avg_second, 2),
-            "sample_size": len(values)
+            "sample_size": len(values),
         }
 
-    def detect_regression(self, test_name: str, threshold_percent: float = 20.0) -> Dict[str, Any]:
+    def detect_regression(
+        self, test_name: str, threshold_percent: float = 20.0
+    ) -> Dict[str, Any]:
         test_metrics = [m for m in self.metrics if m.test_name == test_name]
 
         if len(test_metrics) < 2:
@@ -101,7 +118,11 @@ class TrendAnalyzer:
         baseline_time = statistics.mean([m.execution_time_ms for m in baseline])
         current_time = current.execution_time_ms
 
-        time_increase = ((current_time - baseline_time) / baseline_time * 100) if baseline_time > 0 else 0.0
+        time_increase = (
+            ((current_time - baseline_time) / baseline_time * 100)
+            if baseline_time > 0
+            else 0.0
+        )
 
         regression_detected = time_increase > threshold_percent
 
@@ -111,7 +132,11 @@ class TrendAnalyzer:
             "current_ms": round(current_time, 2),
             "increase_percent": round(time_increase, 2),
             "threshold_percent": threshold_percent,
-            "severity": "critical" if time_increase > 50 else "warning" if time_increase > 20 else "normal"
+            "severity": (
+                "critical"
+                if time_increase > 50
+                else "warning" if time_increase > 20 else "normal"
+            ),
         }
 
     def get_historical_summary(self, test_name: str = None) -> Dict[str, Any]:
@@ -131,25 +156,29 @@ class TrendAnalyzer:
             "total_runs": len(metrics),
             "date_range": {
                 "first": metrics[0].timestamp,
-                "last": metrics[-1].timestamp
+                "last": metrics[-1].timestamp,
             },
             "execution_time_ms": {
                 "min": round(min(execution_times), 2),
                 "max": round(max(execution_times), 2),
                 "avg": round(statistics.mean(execution_times), 2),
                 "median": round(statistics.median(execution_times), 2),
-                "stdev": round(statistics.stdev(execution_times), 2) if len(execution_times) > 1 else 0.0
+                "stdev": (
+                    round(statistics.stdev(execution_times), 2)
+                    if len(execution_times) > 1
+                    else 0.0
+                ),
             },
             "memory_usage_mb": {
                 "min": round(min(memory_usage), 2),
                 "max": round(max(memory_usage), 2),
-                "avg": round(statistics.mean(memory_usage), 2)
+                "avg": round(statistics.mean(memory_usage), 2),
             },
             "pass_rate": {
                 "min": round(min(pass_rates), 2),
                 "max": round(max(pass_rates), 2),
-                "avg": round(statistics.mean(pass_rates), 2)
-            }
+                "avg": round(statistics.mean(pass_rates), 2),
+            },
         }
 
 
@@ -171,7 +200,7 @@ def sample_metrics():
             execution_time_ms=100.0 + i * 2,
             memory_usage_mb=50.0 + i * 0.5,
             cpu_usage_percent=30.0 + i * 0.3,
-            pass_rate=95.0 + (i % 5)
+            pass_rate=95.0 + (i % 5),
         )
         metrics.append(metric)
 
@@ -191,7 +220,7 @@ class TestTrendAnalysis:
             execution_time_ms=150.0,
             memory_usage_mb=60.0,
             cpu_usage_percent=35.0,
-            pass_rate=98.5
+            pass_rate=98.5,
         )
 
         trend_analyzer.record_metric(metric)
@@ -205,7 +234,7 @@ class TestTrendAnalysis:
             execution_time_ms=100.0,
             memory_usage_mb=50.0,
             cpu_usage_percent=30.0,
-            pass_rate=95.0
+            pass_rate=95.0,
         )
         trend_analyzer.record_metric(metric)
 
@@ -230,7 +259,7 @@ class TestTrendAnalysis:
                 execution_time_ms=100.0 + (i % 2),
                 memory_usage_mb=50.0,
                 cpu_usage_percent=30.0,
-                pass_rate=95.0
+                pass_rate=95.0,
             )
             trend_analyzer.record_metric(metric)
 
@@ -247,7 +276,7 @@ class TestTrendAnalysis:
                 execution_time_ms=100.0 + i * 0.5,
                 memory_usage_mb=50.0,
                 cpu_usage_percent=30.0,
-                pass_rate=95.0
+                pass_rate=95.0,
             )
             trend_analyzer.record_metric(metric)
 
@@ -263,11 +292,13 @@ class TestTrendAnalysis:
                 execution_time_ms=100.0 if i < 9 else 200.0,
                 memory_usage_mb=50.0,
                 cpu_usage_percent=30.0,
-                pass_rate=95.0
+                pass_rate=95.0,
             )
             trend_analyzer.record_metric(metric)
 
-        regression = trend_analyzer.detect_regression("test_regressed", threshold_percent=20.0)
+        regression = trend_analyzer.detect_regression(
+            "test_regressed", threshold_percent=20.0
+        )
         assert regression["regression_detected"] is True
         assert regression["severity"] in ["warning", "critical"]
 
@@ -292,7 +323,7 @@ class TestTrendAnalysis:
             execution_time_ms=200.0,
             memory_usage_mb=80.0,
             cpu_usage_percent=40.0,
-            pass_rate=90.0
+            pass_rate=90.0,
         )
         trend_analyzer.record_metric(metric2)
 
@@ -309,7 +340,7 @@ class TestTrendAnalysis:
             execution_time_ms=150.0,
             memory_usage_mb=60.0,
             cpu_usage_percent=35.0,
-            pass_rate=98.5
+            pass_rate=98.5,
         )
         analyzer1.record_metric(metric)
 
@@ -329,7 +360,7 @@ class TestPerformanceRegression:
                 execution_time_ms=100.0 if i < 9 else 300.0,
                 memory_usage_mb=50.0,
                 cpu_usage_percent=30.0,
-                pass_rate=95.0
+                pass_rate=95.0,
             )
             trend_analyzer.record_metric(metric)
 
@@ -346,7 +377,7 @@ class TestPerformanceRegression:
                 execution_time_ms=100.0 if i < 9 else 130.0,
                 memory_usage_mb=50.0,
                 cpu_usage_percent=30.0,
-                pass_rate=95.0
+                pass_rate=95.0,
             )
             trend_analyzer.record_metric(metric)
 
@@ -363,11 +394,13 @@ class TestPerformanceRegression:
                 execution_time_ms=100.0 if i < 9 else 115.0,
                 memory_usage_mb=50.0,
                 cpu_usage_percent=30.0,
-                pass_rate=95.0
+                pass_rate=95.0,
             )
             trend_analyzer.record_metric(metric)
 
-        regression = trend_analyzer.detect_regression("test_custom", threshold_percent=10.0)
+        regression = trend_analyzer.detect_regression(
+            "test_custom", threshold_percent=10.0
+        )
         assert regression["regression_detected"] is True
 
 

@@ -5,7 +5,6 @@ import pytest
 
 from scripts import mip_v2_federated_controller as control
 
-
 HEAD = "a" * 40
 DIGEST = "b" * 64
 
@@ -95,13 +94,17 @@ def test_keb_pass_requires_integer_step_count_not_boolean_or_coercion():
 
 def test_dow_pass_requires_integer_step_count_not_boolean_or_coercion():
     for steps in (True, False, None, "1", 1.0, 0, -1):
-        result = control.evaluate(keb_receipt(), challenge(executed_steps=steps), head_sha=HEAD)
+        result = control.evaluate(
+            keb_receipt(), challenge(executed_steps=steps), head_sha=HEAD
+        )
         assert result["controller_state"] == "REPAIR_OR_WITHDRAW", repr(steps)
         assert result["first_red"] == "DOW_CHALLENGE_CONTRACT"
 
 
 def test_one_real_step_remains_sufficient_for_pass():
-    result = control.evaluate(keb_receipt(executed_steps=1), challenge(executed_steps=1), head_sha=HEAD)
+    result = control.evaluate(
+        keb_receipt(executed_steps=1), challenge(executed_steps=1), head_sha=HEAD
+    )
     assert result["controller_state"] == "WAIT_CHILD_REENTRY"
     assert result["dow_receipt"]["disposition"] == "ACCEPT"
     assert result["global_project_dov"] == "WITHHELD"
@@ -471,12 +474,9 @@ def _baseline_payloads():
         ("child_binding", "unexpected child binding schema"),
     ],
 )
-def test_validate_baseline_fails_closed_for_each_guard(
-    monkeypatch, case, message
-):
+def test_validate_baseline_fails_closed_for_each_guard(monkeypatch, case, message):
     payloads = {
-        path: copy.deepcopy(value)
-        for path, value in _baseline_payloads().items()
+        path: copy.deepcopy(value) for path, value in _baseline_payloads().items()
     }
 
     if case == "scope_id":
@@ -484,9 +484,7 @@ def test_validate_baseline_fails_closed_for_each_guard(
     elif case == "gate_count":
         payloads[control.SCOPE_PATH]["fixed_goalpost"]["gate_count"] = 9
     elif case == "closed_gate_count":
-        payloads[control.V1_ACCEPTANCE_PATH]["fixed_goalpost"][
-            "closed_gate_count"
-        ] = 7
+        payloads[control.V1_ACCEPTANCE_PATH]["fixed_goalpost"]["closed_gate_count"] = 7
     elif case == "acceptance_status":
         payloads[control.V1_ACCEPTANCE_PATH]["fixed_goalpost"]["status"] = "FAIL"
     elif case == "cleanup_status":
@@ -498,17 +496,11 @@ def test_validate_baseline_fails_closed_for_each_guard(
     elif case == "dow_repo":
         payloads[control.DOW_CONTRACT_PATH]["repo"] = "GBOGEB/WRONG"
     elif case == "dow_authority":
-        payloads[control.DOW_CONTRACT_PATH]["authority"][
-            "final_qps_disposition"
-        ] = True
+        payloads[control.DOW_CONTRACT_PATH]["authority"]["final_qps_disposition"] = True
     elif case == "keb_binding":
-        payloads[control.SCOPE_PATH]["contract_bindings"]["keb"][
-            "schema"
-        ] = "wrong"
+        payloads[control.SCOPE_PATH]["contract_bindings"]["keb"]["schema"] = "wrong"
     elif case == "child_binding":
-        payloads[control.SCOPE_PATH]["contract_bindings"]["child"][
-            "schema"
-        ] = "wrong"
+        payloads[control.SCOPE_PATH]["contract_bindings"]["child"]["schema"] = "wrong"
     else:
         raise AssertionError(case)
 
@@ -639,12 +631,8 @@ def test_coverage_pressure_covers_schema_rows_fallbacks_and_limit():
     result = control.build_coverage_pressure(census, HEAD, limit=1)
 
     assert result["status"] == "MEASURED"
-    assert [row["path"] for row in result["priority_queue"]] == [
-        "src/a.py"
-    ]
-    assert result["zero_coverage_disposition_queue"][0]["path"] == (
-        "src/a.py"
-    )
+    assert [row["path"] for row in result["priority_queue"]] == ["src/a.py"]
+    assert result["zero_coverage_disposition_queue"][0]["path"] == ("src/a.py")
 
 
 def test_test_pressure_covers_bad_rows_non_dict_green_and_unknown_state():
@@ -696,9 +684,7 @@ def test_test_pressure_covers_bad_rows_non_dict_green_and_unknown_state():
         ("disposition", "disposition"),
     ],
 )
-def test_child_feedback_validation_fails_closed(
-    mutation, expected_error
-):
+def test_child_feedback_validation_fails_closed(mutation, expected_error):
     partial = control.evaluate(keb_receipt(), challenge(), head_sha=HEAD)
     dow = partial["dow_receipt"]
     child = {
@@ -736,9 +722,7 @@ def test_evaluate_child_invalid_accept_and_reject_paths():
         "disposition": "ACCEPT",
         "reason": "fixture",
     }
-    result = control.evaluate(
-        keb_receipt(), challenge(), invalid, head_sha=HEAD
-    )
+    result = control.evaluate(keb_receipt(), challenge(), invalid, head_sha=HEAD)
     assert result["controller_state"] == "REPAIR_OR_WITHDRAW"
     assert result["first_red"] == "CHILD_REENTRY_CONTRACT"
 
@@ -749,21 +733,15 @@ def test_evaluate_child_invalid_accept_and_reject_paths():
         "disposition": "ACCEPT",
         "reason": "fixture",
     }
-    result = control.evaluate(
-        keb_receipt(), challenge(), accepted, head_sha=HEAD
-    )
+    result = control.evaluate(keb_receipt(), challenge(), accepted, head_sha=HEAD)
     assert result["controller_state"] == "REPEAT_DISTINCT_SHA"
 
     rejected = dict(accepted, disposition="REJECT")
-    result = control.evaluate(
-        keb_receipt(), challenge(), rejected, head_sha=HEAD
-    )
+    result = control.evaluate(keb_receipt(), challenge(), rejected, head_sha=HEAD)
     assert result["controller_state"] == "REPAIR_OR_WITHDRAW"
 
 
-def test_main_consumes_all_optional_receipts_and_pressures(
-    tmp_path, monkeypatch
-):
+def test_main_consumes_all_optional_receipts_and_pressures(tmp_path, monkeypatch):
     summary = tmp_path / "summary.json"
     keb_path = tmp_path / "keb.json"
     challenge_path = tmp_path / "challenge.json"
@@ -779,9 +757,7 @@ def test_main_consumes_all_optional_receipts_and_pressures(
             {
                 "parent_repo": "GBOGEB/ABACUS",
                 "parent_head_sha": HEAD,
-                "parent_receipt_sha256": partial["dow_receipt"][
-                    "receipt_sha256"
-                ],
+                "parent_receipt_sha256": partial["dow_receipt"]["receipt_sha256"],
                 "disposition": "DEFER",
                 "reason": "fixture",
             }
@@ -839,9 +815,7 @@ def test_main_consumes_all_optional_receipts_and_pressures(
     assert written["controller_state"] == "ROUTE_FIRST_RED"
 
 
-def test_main_fails_closed_on_expected_sha_mismatch(
-    tmp_path, monkeypatch
-):
+def test_main_fails_closed_on_expected_sha_mismatch(tmp_path, monkeypatch):
     summary = tmp_path / "summary.json"
     monkeypatch.setattr(control, "git_head", lambda: HEAD)
     monkeypatch.setenv("EXPECTED_SHA", "d" * 40)

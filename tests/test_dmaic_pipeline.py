@@ -4,9 +4,10 @@
 # Description: Auto-generated version header
 """
 
-import pytest
 import sys
 from pathlib import Path
+
+import pytest
 
 
 def test_dmaic_pipeline_imports():
@@ -21,15 +22,13 @@ def test_dmaic_pipeline_imports():
 def test_output_directories_exist():
     """Test that required output directories exist"""
     base_path = Path(__file__).parent.parent
-    required_dirs = [
-        "DMAIC_V3_OUTPUT",
-        "PIPELINE_OUTPUT",
-        "DMAIC_ITERATIONS_OUTPUT"
-    ]
+    required_dirs = ["DMAIC_V3_OUTPUT", "PIPELINE_OUTPUT", "DMAIC_ITERATIONS_OUTPUT"]
 
     for dir_name in required_dirs:
         dir_path = base_path / dir_name
-        assert dir_path.exists() or True, f"Directory {dir_name} should exist or be creatable"
+        assert (
+            dir_path.exists() or True
+        ), f"Directory {dir_name} should exist or be creatable"
 
 
 def test_dmaic_execution_entrypoints_exist():
@@ -40,7 +39,9 @@ def test_dmaic_execution_entrypoints_exist():
         base_path / "DMAIC_V3" / "full_pipeline_orchestrator.py",
     ]
 
-    missing = [str(path.relative_to(base_path)) for path in entrypoints if not path.is_file()]
+    missing = [
+        str(path.relative_to(base_path)) for path in entrypoints if not path.is_file()
+    ]
     assert not missing, f"Current DMAIC execution entrypoints missing: {missing}"
 
 

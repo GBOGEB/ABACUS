@@ -1,4 +1,5 @@
 """Prevent forged previous-wave coverage from earning a false DoV gain."""
+
 from __future__ import annotations
 
 import unittest
@@ -10,21 +11,33 @@ class PreviousWaveGuardTests(unittest.TestCase):
     def setUp(self):
         self.previous = {
             "schema": "mcw.federation.rollup.v1",
-            "nodes": [{
-                "id": "A", "repository": "GBOGEB/ABACUS",
-                "source_sha": "a" * 40, "family": "MCL",
-                "proof": {"coverage": {
-                    "scope_id": "MCL", "config_sha256": "b" * 64,
-                    "files": ["x.py"], "covered_lines": 6,
-                    "total_lines": 10, "covered_branches": 3,
-                    "total_branches": 5, "line_percent": 60.0,
-                    "branch_percent": 60.0,
-                }},
-            }],
+            "nodes": [
+                {
+                    "id": "A",
+                    "repository": "GBOGEB/ABACUS",
+                    "source_sha": "a" * 40,
+                    "family": "MCL",
+                    "proof": {
+                        "coverage": {
+                            "scope_id": "MCL",
+                            "config_sha256": "b" * 64,
+                            "files": ["x.py"],
+                            "covered_lines": 6,
+                            "total_lines": 10,
+                            "covered_branches": 3,
+                            "total_branches": 5,
+                            "line_percent": 60.0,
+                            "branch_percent": 60.0,
+                        }
+                    },
+                }
+            ],
         }
         self.input = {
             "schema": "mcw.federation.input.v1",
-            "wave_id": "W-Guard", "nodes": [], "edges": [],
+            "wave_id": "W-Guard",
+            "nodes": [],
+            "edges": [],
         }
 
     def test_valid_previous_report_is_accepted(self):

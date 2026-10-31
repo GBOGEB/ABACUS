@@ -1,4 +1,5 @@
 """W31 W29 comparator CLI must run under the source-root module namespace."""
+
 from __future__ import annotations
 
 import subprocess
@@ -17,19 +18,29 @@ class NativeW29EntrypointTests(unittest.TestCase):
         self.assertNotIn("python tools/recovery/w29_temporal_native_compare.py", text)
 
     def test_pinned_module_import_is_resolvable_from_repository_root(self):
-        command = [sys.executable, "-m",
-                   "tools.recovery.w29_temporal_native_compare", "--help"]
-        run = subprocess.run(command, cwd=ROOT, capture_output=True,
-                             text=True, check=False, timeout=20)
+        command = [
+            sys.executable,
+            "-m",
+            "tools.recovery.w29_temporal_native_compare",
+            "--help",
+        ]
+        run = subprocess.run(
+            command, cwd=ROOT, capture_output=True, text=True, check=False, timeout=20
+        )
         self.assertEqual(run.returncode, 0, run.stderr)
         self.assertIn("--exact-head", run.stdout)
 
     def test_no_coverage_or_sha_guard_omitted(self):
         text = WORKFLOW.read_text(encoding="utf-8")
         for required in (
-            "--before-cov", "--after-cov", "--before-junit",
-            "--after-junit", "--exact-head", "--out w29-matched-coverage.json",
-            "if-no-files-found: error", "git rev-parse HEAD",
+            "--before-cov",
+            "--after-cov",
+            "--before-junit",
+            "--after-junit",
+            "--exact-head",
+            "--out w29-matched-coverage.json",
+            "if-no-files-found: error",
+            "git rev-parse HEAD",
         ):
             with self.subTest(required=required):
                 self.assertIn(required, text)

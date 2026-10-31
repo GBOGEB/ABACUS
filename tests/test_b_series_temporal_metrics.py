@@ -1,4 +1,5 @@
 """Contract tests mutate a historical fixture in memory; synthetic cases are not live CI."""
+
 import copy
 import importlib.util
 import json
@@ -105,7 +106,6 @@ class BSeriesTemporalTests(unittest.TestCase):
         self.assertIn("39029208988", s)
         self.assertIn("not an admission", s.casefold())
 
-
     def test_cli_roundtrip_creates_machine_and_markdown_receipts(self):
         import tempfile
         from unittest import mock
@@ -116,8 +116,15 @@ class BSeriesTemporalTests(unittest.TestCase):
             target = root / "out" / "result.json"
             report = root / "out" / "result.md"
             source.write_text(json.dumps(self.fixture), encoding="utf-8")
-            args = ["bseries", "--input", str(source), "--json-out",
-                    str(target), "--markdown-out", str(report)]
+            args = [
+                "bseries",
+                "--input",
+                str(source),
+                "--json-out",
+                str(target),
+                "--markdown-out",
+                str(report),
+            ]
             with mock.patch("sys.argv", args):
                 self.assertEqual(MODULE.main(), 0)
             result = json.loads(target.read_text(encoding="utf-8"))
@@ -135,8 +142,15 @@ class BSeriesTemporalTests(unittest.TestCase):
             target = root / "out.json"
             report = root / "out.md"
             source.write_text(json.dumps(self.fixture), encoding="utf-8")
-            argv = ["bseries", "--input", str(source), "--json-out",
-                    str(target), "--markdown-out", str(report)]
+            argv = [
+                "bseries",
+                "--input",
+                str(source),
+                "--json-out",
+                str(target),
+                "--markdown-out",
+                str(report),
+            ]
             with mock.patch("sys.argv", argv):
                 MODULE.main()
                 json_one = target.read_bytes()
@@ -234,7 +248,9 @@ class BSeriesTemporalTests(unittest.TestCase):
 
     def test_reject_duplicate_timestamp_even_with_distinct_runs(self):
         doc = copy.deepcopy(self.fixture)
-        doc["observations"][1]["observation_at"] = doc["observations"][0]["observation_at"]
+        doc["observations"][1]["observation_at"] = doc["observations"][0][
+            "observation_at"
+        ]
         with self.assertRaises(MODULE.EvidenceError):
             MODULE.build(doc)
 

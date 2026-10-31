@@ -1,9 +1,10 @@
 """Adversarial accounting tests: issue housekeeping != causal-root closure."""
+
 import copy
 import importlib.util
 import json
-from pathlib import Path
 import unittest
+from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 s = importlib.util.spec_from_file_location(
@@ -17,8 +18,7 @@ class BDPulseTwoContracts(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         cls.data = json.loads(
-            (ROOT / "triage/ABACUS_BD_PULSE2_20261017.json")
-            .read_text(encoding="utf-8")
+            (ROOT / "triage/ABACUS_BD_PULSE2_20261017.json").read_text(encoding="utf-8")
         )
 
     def test_native_closure_math(self):
@@ -71,9 +71,9 @@ class BDPulseTwoContracts(unittest.TestCase):
 
     def test_duplicate_native_ticket_never_counts_twice(self):
         d = copy.deepcopy(self.data)
-        d["closure_evidence"]["nine_this_pulse"][1]["issue"] = (
-            d["closure_evidence"]["nine_this_pulse"][0]["issue"]
-        )
+        d["closure_evidence"]["nine_this_pulse"][1]["issue"] = d["closure_evidence"][
+            "nine_this_pulse"
+        ][0]["issue"]
         with self.assertRaises(ValueError):
             engine.validate(d)
 
