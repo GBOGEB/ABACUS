@@ -731,6 +731,12 @@
       "cluster": "statistics",
       "lifecycle": "pr_domain",
       "disposition": "keep"
+    },
+    {
+      "pattern": "^qps-slide-reviewer-deps\\.yml$",
+      "cluster": "security",
+      "lifecycle": "pr_domain",
+      "disposition": "keep"
     }
   ],
   "quality_gates": {
