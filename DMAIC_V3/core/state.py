@@ -9,19 +9,20 @@ DMAIC V3.0 - State Management for Idempotency
 Handles execution state, checkpoints, and resume capability
 """
 
-import json
 import hashlib
-from pathlib import Path
-from typing import Dict, Any, Optional, List
-from datetime import datetime
+import json
 from dataclasses import dataclass
+from datetime import datetime
 from enum import Enum
+from pathlib import Path
+from typing import Any, Dict, List, Optional
 
 from .models import IterationResult
 
 
 class PhaseStatus(Enum):
     """Phase execution status"""
+
     PENDING = "pending"
     RUNNING = "running"
     COMPLETED = "completed"
@@ -32,6 +33,7 @@ class PhaseStatus(Enum):
 @dataclass
 class PhaseState:
     """State of a single phase execution"""
+
     phase_id: str
     phase_number: int
     status: PhaseStatus
@@ -54,6 +56,7 @@ class PhaseState:
 @dataclass
 class IterationState:
     """State of a complete iteration"""
+
     iteration_number: int
     start_time: str
     end_time: Optional[str] = None
@@ -100,7 +103,7 @@ class StateManager:
         """Load state from disk"""
         if self.state_file.exists():
             try:
-                with open(self.state_file, 'r') as f:
+                with open(self.state_file, "r") as f:
                     data = json.load(f)
                     self._deserialize_state(data)
             except Exception as e:
@@ -110,7 +113,7 @@ class StateManager:
         """Save state to disk"""
         try:
             data = self._serialize_state()
-            with open(self.state_file, 'w') as f:
+            with open(self.state_file, "w") as f:
                 json.dump(data, f, indent=2)
         except Exception as e:
             print(f"[STATE] Error: Could not save state: {e}")
@@ -118,9 +121,15 @@ class StateManager:
     def _serialize_state(self) -> Dict[str, Any]:
         """Serialize state to dictionary"""
         return {
-            "current_iteration": self._serialize_iteration(self.current_iteration) if self.current_iteration else None,
-            "execution_history": [self._serialize_iteration(it) for it in self.execution_history],
-            "last_updated": datetime.now().isoformat()
+            "current_iteration": (
+                self._serialize_iteration(self.current_iteration)
+                if self.current_iteration
+                else None
+            ),
+            "execution_history": [
+                self._serialize_iteration(it) for it in self.execution_history
+            ],
+            "last_updated": datetime.now().isoformat(),
         }
 
     def _serialize_iteration(self, iteration: IterationState) -> Dict[str, Any]:
@@ -133,7 +142,7 @@ class StateManager:
             "phases": {
                 phase_id: self._serialize_phase(phase)
                 for phase_id, phase in iteration.phases.items()
-            }
+            },
         }
 
     def _serialize_phase(self, phase: PhaseState) -> Dict[str, Any]:
@@ -149,13 +158,15 @@ class StateManager:
             "output_hash": phase.output_hash,
             "error_message": phase.error_message,
             "checkpoint_data": phase.checkpoint_data,
-            "metrics": phase.metrics
+            "metrics": phase.metrics,
         }
 
     def _deserialize_state(self, data: Dict[str, Any]):
         """Deserialize state from dictionary"""
         if data.get("current_iteration"):
-            self.current_iteration = self._deserialize_iteration(data["current_iteration"])
+            self.current_iteration = self._deserialize_iteration(
+                data["current_iteration"]
+            )
 
         self.execution_history = [
             self._deserialize_iteration(it_data)
@@ -174,7 +185,7 @@ class StateManager:
             start_time=data["start_time"],
             end_time=data.get("end_time"),
             status=data.get("status", "running"),
-            phases=phases
+            phases=phases,
         )
 
     def _deserialize_phase(self, data: Dict[str, Any]) -> PhaseState:
@@ -190,7 +201,7 @@ class StateManager:
             output_hash=data.get("output_hash"),
             error_message=data.get("error_message"),
             checkpoint_data=data.get("checkpoint_data", {}),
-            metrics=data.get("metrics", {})
+            metrics=data.get("metrics", {}),
         )
 
     def compute_hash(self, data: Any) -> str:
@@ -209,7 +220,7 @@ class StateManager:
             data_str = str(data)
 
         hasher = hashlib.new(self.hash_algorithm)
-        hasher.update(data_str.encode('utf-8'))
+        hasher.update(data_str.encode("utf-8"))
         return hasher.hexdigest()
 
     def start_iteration(self, iteration_number: int):
@@ -217,7 +228,7 @@ class StateManager:
         self.current_iteration = IterationState(
             iteration_number=iteration_number,
             start_time=datetime.now().isoformat(),
-            status="running"
+            status="running",
         )
         self._save_state()
 
@@ -240,14 +251,20 @@ class StateManager:
             phase_number=phase_number,
             status=PhaseStatus.RUNNING,
             start_time=datetime.now().isoformat(),
-            input_hash=self.compute_hash(input_data) if input_data else None
+            input_hash=self.compute_hash(input_data) if input_data else None,
         )
 
         self.current_iteration.phases[phase_id] = phase_state
         self._save_state()
 
-    def end_phase(self, phase_id: str, status: PhaseStatus, output_data: Any = None,
-                  error: Optional[str] = None, metrics: Optional[Dict] = None):
+    def end_phase(
+        self,
+        phase_id: str,
+        status: PhaseStatus,
+        output_data: Any = None,
+        error: Optional[str] = None,
+        metrics: Optional[Dict] = None,
+    ):
         """End phase execution"""
         if not self.current_iteration:
             raise RuntimeError("No active iteration")
@@ -332,7 +349,7 @@ class StateManager:
         return {
             "metrics": phase.metrics,
             "checkpoint_data": phase.checkpoint_data,
-            "output_hash": phase.output_hash
+            "output_hash": phase.output_hash,
         }
 
     def get_resume_point(self) -> Optional[int]:
@@ -347,7 +364,7 @@ class StateManager:
 
         return None
 
-    def add_iteration_result(self, result: 'IterationResult'):
+    def add_iteration_result(self, result: "IterationResult"):
         """
         Add an iteration result to the state
 
@@ -362,11 +379,19 @@ class StateManager:
             "total_duration_seconds": result.total_duration_seconds,
             "metrics": {k: v.to_dict() for k, v in (result.metrics or {}).items()},
             "knowledge_packs": [kp.to_dict() for kp in (result.knowledge_packs or [])],
-            "start_time": result.start_time.isoformat() if getattr(result, "start_time", None) else None,
-            "end_time": result.end_time.isoformat() if getattr(result, "end_time", None) else None
+            "start_time": (
+                result.start_time.isoformat()
+                if getattr(result, "start_time", None)
+                else None
+            ),
+            "end_time": (
+                result.end_time.isoformat()
+                if getattr(result, "end_time", None)
+                else None
+            ),
         }
 
-        if not hasattr(self, 'iteration_results'):
+        if not hasattr(self, "iteration_results"):
             self.iteration_results = []
 
         self.iteration_results.append(result_data)
@@ -374,14 +399,22 @@ class StateManager:
         # Also append a lightweight entry to execution_history for visibility in summaries
         try:
             iter_status = getattr(result, "status", "completed")
-            iter_start = result.start_time.isoformat() if getattr(result, "start_time", None) else None
-            iter_end = result.end_time.isoformat() if getattr(result, "end_time", None) else None
+            iter_start = (
+                result.start_time.isoformat()
+                if getattr(result, "start_time", None)
+                else None
+            )
+            iter_end = (
+                result.end_time.isoformat()
+                if getattr(result, "end_time", None)
+                else None
+            )
             iteration_state = IterationState(
                 iteration_number=result.iteration,
                 start_time=iter_start,
                 end_time=iter_end,
                 status=iter_status,
-                phases={}
+                phases={},
             )
             self.execution_history.append(iteration_state)
         except Exception:
@@ -395,7 +428,7 @@ class StateManager:
         summary: Dict[str, Any] = {
             "total_iterations": len(self.execution_history),
             "current_iteration": None,
-            "history": []
+            "history": [],
         }
 
         if self.current_iteration:
@@ -403,22 +436,25 @@ class StateManager:
                 "iteration_number": self.current_iteration.iteration_number,
                 "status": self.current_iteration.status,
                 "phases_completed": sum(
-                    1 for p in self.current_iteration.phases.values()
+                    1
+                    for p in self.current_iteration.phases.values()
                     if p.status == PhaseStatus.COMPLETED
                 ),
-                "phases_total": len(self.current_iteration.phases)
+                "phases_total": len(self.current_iteration.phases),
             }
 
         for iteration in self.execution_history:
-            summary["history"].append({
-                "iteration_number": iteration.iteration_number,
-                "status": iteration.status,
-                "start_time": iteration.start_time,
-                "end_time": iteration.end_time
-            })
+            summary["history"].append(
+                {
+                    "iteration_number": iteration.iteration_number,
+                    "status": iteration.status,
+                    "start_time": iteration.start_time,
+                    "end_time": iteration.end_time,
+                }
+            )
 
         # Include any collected iteration_results for richer reporting
-        if hasattr(self, 'iteration_results'):
+        if hasattr(self, "iteration_results"):
             summary["iteration_results_count"] = len(self.iteration_results)
 
         return summary
@@ -426,9 +462,9 @@ class StateManager:
 
 if __name__ == "__main__":
     # Example usage
-    print("="*80)
+    print("=" * 80)
     print("DMAIC V3.0 - State Manager Test")
-    print("="*80)
+    print("=" * 80)
 
     state_dir = Path("test_state")
     manager = StateManager(state_dir)
@@ -446,9 +482,12 @@ if __name__ == "__main__":
     print("[OK] Saved checkpoint")
 
     # End phase
-    manager.end_phase("phase0_setup", PhaseStatus.COMPLETED,
-                     output_data={"result": "success"},
-                     metrics={"checks_passed": 5})
+    manager.end_phase(
+        "phase0_setup",
+        PhaseStatus.COMPLETED,
+        output_data={"result": "success"},
+        metrics={"checks_passed": 5},
+    )
     print("[OK] Completed Phase 0")
 
     # Check if can skip
@@ -465,4 +504,4 @@ if __name__ == "__main__":
     manager.end_iteration("completed")
     print("\n[OK] Ended iteration 1")
 
-    print("\n" + "="*80)
+    print("\n" + "=" * 80)

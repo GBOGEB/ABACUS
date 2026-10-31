@@ -4,8 +4,8 @@ Canonical runtime: ``local_mcp/agents/analysis_artifact_analyzer_v2.3_OPTIMIZED.
 This file deliberately owns no agent implementation.
 """
 
-from pathlib import Path
 import runpy
+from pathlib import Path
 
 CANONICAL_AGENT = (
     Path(__file__).resolve().parents[3]

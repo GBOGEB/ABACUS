@@ -7,7 +7,10 @@ from renderers.svg_renderer import SVGRenderer
 def test_svg_generation_and_root_validation():
     renderer = SVGRenderer(scale=1.5)
     svg = renderer.render(
-        nodes=[{"id": "A", "label": "Compressor"}, {"id": "B", "label": "Heat Exchanger"}],
+        nodes=[
+            {"id": "A", "label": "Compressor"},
+            {"id": "B", "label": "Heat Exchanger"},
+        ],
         edges=[{"from": "A", "to": "B"}],
         title="Example Process",
     )
@@ -39,9 +42,14 @@ def test_empty_graph_handling_returns_valid_svg_with_message():
 
 
 def test_svg_generation_supports_style_hook_overrides():
-    renderer = SVGRenderer(style_hooks={"node_class": "custom-node", "edge_class": "custom-edge"})
+    renderer = SVGRenderer(
+        style_hooks={"node_class": "custom-node", "edge_class": "custom-edge"}
+    )
     svg = renderer.render(
-        nodes=[{"id": "A", "label": "Compressor"}, {"id": "B", "label": "Heat Exchanger"}],
+        nodes=[
+            {"id": "A", "label": "Compressor"},
+            {"id": "B", "label": "Heat Exchanger"},
+        ],
         edges=[{"from": "A", "to": "B"}],
         title="Styled",
     )

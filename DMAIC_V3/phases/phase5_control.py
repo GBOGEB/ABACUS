@@ -4,10 +4,9 @@ Quality gates and GBOGEB integration
 """
 
 import json
+from datetime import datetime
 from pathlib import Path
 from typing import Dict, List, Tuple
-from datetime import datetime
-
 
 try:
     import sys
@@ -285,6 +284,7 @@ class Phase5Control:
 def main():
     """Test Phase 5 - for manual testing only"""
     import sys
+
     from ..config import DMAICConfig
     from ..core.state import StateManager
 

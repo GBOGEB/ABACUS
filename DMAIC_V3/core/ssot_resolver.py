@@ -4,6 +4,7 @@ The YAML manifest remains the human-maintained authority map. ``ssot/index.json`
 its normalized runtime view. Resolution fails closed when a logical ID is absent,
 has more than one authority candidate, or is stale versus the manifest digest.
 """
+
 from __future__ import annotations
 
 import json
@@ -35,7 +36,9 @@ def load_index(root: Path) -> dict[str, Any]:
         raise AuthorityResolutionError("SSOT index is not bound to ssot/manifest.yaml")
     expected_manifest_sha = data.get("source_sha256")
     if not expected_manifest_sha:
-        raise AuthorityResolutionError("SSOT index is missing ssot/manifest.yaml SHA256")
+        raise AuthorityResolutionError(
+            "SSOT index is missing ssot/manifest.yaml SHA256"
+        )
     actual_manifest_sha = manifest_sha256(root)
     if expected_manifest_sha != actual_manifest_sha:
         raise AuthorityResolutionError("SSOT index is stale versus ssot/manifest.yaml")
@@ -52,7 +55,11 @@ def duplicate_authorities(index: dict[str, Any]) -> dict[str, list[dict[str, Any
         if not logical_id:
             raise AuthorityResolutionError("authority entry missing logical_id")
         grouped.setdefault(logical_id, []).append(entry)
-    return {logical_id: entries for logical_id, entries in grouped.items() if len(entries) > 1}
+    return {
+        logical_id: entries
+        for logical_id, entries in grouped.items()
+        if len(entries) > 1
+    }
 
 
 def validate_index(index: dict[str, Any]) -> None:
@@ -73,5 +80,7 @@ def resolve_ssot(root: Path, logical_id: str) -> Path:
         )
     path = Path(root) / matches[0]["path"]
     if not path.exists():
-        raise AuthorityResolutionError(f"authority path does not exist: {matches[0]['path']}")
+        raise AuthorityResolutionError(
+            f"authority path does not exist: {matches[0]['path']}"
+        )
     return path

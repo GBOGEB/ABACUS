@@ -21,12 +21,20 @@ def test_added_modified_deleted_files_keep_distinct_receipts(tmp_path):
     ignored.write_bytes(b"not a source file")
     detector = BackgroundChangeDetector(workspace, state)
 
-    assert detector.get_summary() == {"total": 0, "added": 0, "modified": 0, "deleted": 0}
+    assert detector.get_summary() == {
+        "total": 0,
+        "added": 0,
+        "modified": 0,
+        "deleted": 0,
+    }
     detector._take_snapshot()
     summary = detector.get_summary()
-    assert (summary["total"], summary["added"], summary["modified"], summary["deleted"]) == (
-        1, 1, 0, 0
-    )
+    assert (
+        summary["total"],
+        summary["added"],
+        summary["modified"],
+        summary["deleted"],
+    ) == (1, 1, 0, 0)
     assert json.loads(detector.changes_file.read_text())["changes"] == [
         {"path": "DMAIC_V3/source.py", "type": "added"}
     ]
@@ -34,22 +42,33 @@ def test_added_modified_deleted_files_keep_distinct_receipts(tmp_path):
     os.utime(target, (original_mtime + 3, original_mtime + 3))
     detector._take_snapshot()
     summary = detector.get_summary()
-    assert (summary["total"], summary["added"], summary["modified"], summary["deleted"]) == (
-        1, 0, 1, 0
-    )
+    assert (
+        summary["total"],
+        summary["added"],
+        summary["modified"],
+        summary["deleted"],
+    ) == (1, 0, 1, 0)
     target.unlink()
     detector._take_snapshot()
     summary = detector.get_summary()
-    assert (summary["total"], summary["added"], summary["modified"], summary["deleted"]) == (
-        1, 0, 0, 1
-    )
+    assert (
+        summary["total"],
+        summary["added"],
+        summary["modified"],
+        summary["deleted"],
+    ) == (1, 0, 0, 1)
 
 
 def test_missing_scan_directories_do_not_fabricate_changes(tmp_path):
     checker = BackgroundChangeDetector(tmp_path / "empty", tmp_path / "state")
     checker._take_snapshot()
     assert json.loads(checker.snapshot_file.read_text()) == {}
-    assert checker.get_summary() == {"total": 0, "added": 0, "modified": 0, "deleted": 0}
+    assert checker.get_summary() == {
+        "total": 0,
+        "added": 0,
+        "modified": 0,
+        "deleted": 0,
+    }
 
 
 def test_corrupt_state_snapshot_and_summary_fail_closed(tmp_path):
@@ -62,12 +81,22 @@ def test_corrupt_state_snapshot_and_summary_fail_closed(tmp_path):
     checker._take_snapshot()
     assert checker.get_summary()["added"] == 1
     checker.changes_file.write_text("bad json", encoding="utf-8")
-    assert checker.get_summary() == {"total": 0, "added": 0, "modified": 0, "deleted": 0}
+    assert checker.get_summary() == {
+        "total": 0,
+        "added": 0,
+        "modified": 0,
+        "deleted": 0,
+    }
     checker.changes_file.write_text(
         json.dumps({"changes": [{"unknown_key": "missing type"}]}),
         encoding="utf-8",
     )
-    assert checker.get_summary() == {"total": 0, "added": 0, "modified": 0, "deleted": 0}
+    assert checker.get_summary() == {
+        "total": 0,
+        "added": 0,
+        "modified": 0,
+        "deleted": 0,
+    }
 
 
 def test_summary_reports_each_change_family_and_optional_timestamp(tmp_path):
@@ -87,12 +116,17 @@ def test_summary_reports_each_change_family_and_optional_timestamp(tmp_path):
         encoding="utf-8",
     )
     assert checker.get_summary() == {
-        "total": 4, "added": 2, "modified": 1, "deleted": 1,
+        "total": 4,
+        "added": 2,
+        "modified": 1,
+        "deleted": 1,
         "timestamp": "2026-10-16T09:30:00",
     }
 
 
-def test_detection_loop_catches_errors_and_stops_without_busy_wait(tmp_path, monkeypatch):
+def test_detection_loop_catches_errors_and_stops_without_busy_wait(
+    tmp_path, monkeypatch
+):
     checker = BackgroundChangeDetector(tmp_path, tmp_path / "state")
     checker.running = True
     checker.snapshot_interval = 2
@@ -159,7 +193,9 @@ def test_non_mapping_legacy_snapshot_is_ignored_safely(tmp_path):
     target = tracked / "current.txt"
     target.write_text("current", encoding="utf-8")
     checker = BackgroundChangeDetector(workspace, tmp_path / "state")
-    checker.snapshot_file.write_text(json.dumps(["legacy", "invalid"]), encoding="utf-8")
+    checker.snapshot_file.write_text(
+        json.dumps(["legacy", "invalid"]), encoding="utf-8"
+    )
 
     checker._take_snapshot()
 

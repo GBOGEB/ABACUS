@@ -29,7 +29,6 @@ class GitHubQualityCheck:
         "master_document_system/core/style_extractor.py",
         "master_document_system/core/temporal_tracker.py",
         "master_document_system/core/__init__.py",
-
         # DMAIC V3 Generators (KEEP)
         "DMAIC_V3/generators/execution_tracker.py",
         "DMAIC_V3/generators/documentation_aligner.py",
@@ -46,35 +45,29 @@ class GitHubQualityCheck:
         "**/*_test.py",
         "**/temp_*.py",
         "**/*_temp.py",
-
         # Backup files
         "**/*_backup*.py",
         "**/*_old.py",
         "**/*_v1.py",
         "**/*_v2.py",
-
         # Analysis/debug files
         "**/analyze_*.py",
         "**/debug_*.py",
         "**/fix_*.py",
         "**/quick_*.py",
         "**/simple_*.py",
-
         # Jupyter notebooks
         "**/*.ipynb",
-
         # Python cache
         "**/__pycache__",
         "**/*.pyc",
         "**/*.pyo",
         "**/*.pyd",
-
         # IDE files
         "**/.vscode",
         "**/.idea",
         "**/*.swp",
         "**/*.swo",
-
         # OS files
         "**/.DS_Store",
         "**/Thumbs.db",
@@ -83,12 +76,32 @@ class GitHubQualityCheck:
 
     # Binary extensions to exclude from git
     BINARY_EXTENSIONS = {
-        ".exe", ".dll", ".so", ".dylib", ".bin",
-        ".pdf", ".docx", ".xlsx", ".pptx",
-        ".png", ".jpg", ".jpeg", ".gif", ".bmp",
-        ".zip", ".tar", ".gz", ".7z", ".rar",
-        ".mp4", ".avi", ".mov", ".wmv",
-        ".mp3", ".wav", ".flac",
+        ".exe",
+        ".dll",
+        ".so",
+        ".dylib",
+        ".bin",
+        ".pdf",
+        ".docx",
+        ".xlsx",
+        ".pptx",
+        ".png",
+        ".jpg",
+        ".jpeg",
+        ".gif",
+        ".bmp",
+        ".zip",
+        ".tar",
+        ".gz",
+        ".7z",
+        ".rar",
+        ".mp4",
+        ".avi",
+        ".mov",
+        ".wmv",
+        ".mp3",
+        ".wav",
+        ".flac",
     }
 
     def __init__(self, root_dir: Path):
@@ -100,14 +113,14 @@ class GitHubQualityCheck:
             "removed_files": [],
             "kept_files": [],
             "quality_checks": {},
-            "git_status": {}
+            "git_status": {},
         }
 
     def cleanup_temporary_files(self) -> Any:
         """Remove temporary and test files"""
-        print("\n" + "="*80)
+        print("\n" + "=" * 80)
         print("CLEANUP: Removing temporary files")
-        print("="*80)
+        print("=" * 80)
 
         removed_count = 0
 
@@ -145,9 +158,9 @@ class GitHubQualityCheck:
 
     def validate_core_files(self) -> Any:
         """Validate that all core files exist and are valid Python"""
-        print("\n" + "="*80)
+        print("\n" + "=" * 80)
         print("VALIDATION: Checking core Python files")
-        print("="*80)
+        print("=" * 80)
 
         valid_count = 0
         invalid_count = 0
@@ -162,7 +175,7 @@ class GitHubQualityCheck:
 
             # Check if valid Python syntax
             try:
-                with open(file_path, 'r', encoding='utf-8') as f:
+                with open(file_path, "r", encoding="utf-8") as f:
                     ast.parse(f.read())  # syntax check only — result never executed
                 print(f"[VALID] {core_file}")
                 self.report["kept_files"].append(core_file)
@@ -177,21 +190,26 @@ class GitHubQualityCheck:
 
     def run_linting(self) -> Any:
         """Run flake8 linting on core files"""
-        print("\n" + "="*80)
+        print("\n" + "=" * 80)
         print("LINTING: Running flake8")
-        print("="*80)
+        print("=" * 80)
 
         try:
             result = subprocess.run(
-                [sys.executable, "-m", "flake8",
-                 "master_document_system", "DMAIC_V3/generators",
-                 "--max-line-length=120",
-                 "--ignore=E501,W503,E203",
-                 "--count",
-                 "--statistics"],
+                [
+                    sys.executable,
+                    "-m",
+                    "flake8",
+                    "master_document_system",
+                    "DMAIC_V3/generators",
+                    "--max-line-length=120",
+                    "--ignore=E501,W503,E203",
+                    "--count",
+                    "--statistics",
+                ],
                 capture_output=True,
                 text=True,
-                cwd=str(self.root_dir)
+                cwd=str(self.root_dir),
             )
 
             print(result.stdout)
@@ -207,19 +225,24 @@ class GitHubQualityCheck:
 
     def run_formatting_check(self) -> Any:
         """Check code formatting with black"""
-        print("\n" + "="*80)
+        print("\n" + "=" * 80)
         print("FORMATTING: Checking with black")
-        print("="*80)
+        print("=" * 80)
 
         try:
             result = subprocess.run(
-                [sys.executable, "-m", "black",
-                 "--check",
-                 "--line-length=120",
-                 "master_document_system", "DMAIC_V3/generators"],
+                [
+                    sys.executable,
+                    "-m",
+                    "black",
+                    "--check",
+                    "--line-length=120",
+                    "master_document_system",
+                    "DMAIC_V3/generators",
+                ],
                 capture_output=True,
                 text=True,
-                cwd=str(self.root_dir)
+                cwd=str(self.root_dir),
             )
 
             print(result.stdout)
@@ -235,19 +258,24 @@ class GitHubQualityCheck:
 
     def run_type_checking(self) -> Any:
         """Run mypy type checking"""
-        print("\n" + "="*80)
+        print("\n" + "=" * 80)
         print("TYPE CHECKING: Running mypy")
-        print("="*80)
+        print("=" * 80)
 
         try:
             result = subprocess.run(
-                [sys.executable, "-m", "mypy",
-                 "master_document_system", "DMAIC_V3/generators",
-                 "--ignore-missing-imports",
-                 "--no-strict-optional"],
+                [
+                    sys.executable,
+                    "-m",
+                    "mypy",
+                    "master_document_system",
+                    "DMAIC_V3/generators",
+                    "--ignore-missing-imports",
+                    "--no-strict-optional",
+                ],
                 capture_output=True,
                 text=True,
-                cwd=str(self.root_dir)
+                cwd=str(self.root_dir),
             )
 
             print(result.stdout)
@@ -263,9 +291,9 @@ class GitHubQualityCheck:
 
     def create_gitignore(self) -> Any:
         """Create comprehensive .gitignore"""
-        print("\n" + "="*80)
+        print("\n" + "=" * 80)
         print("GIT: Creating .gitignore")
-        print("="*80)
+        print("=" * 80)
 
         gitignore_content = """# DMAIC V3 - .gitignore
 
@@ -359,7 +387,7 @@ logs/
 """
 
         gitignore_path = self.root_dir / ".gitignore"
-        with open(gitignore_path, 'w', encoding='utf-8') as f:
+        with open(gitignore_path, "w", encoding="utf-8") as f:
             f.write(gitignore_content)
 
         print("[CREATED] .gitignore")
@@ -367,9 +395,9 @@ logs/
 
     def create_gitattributes(self) -> Any:
         """Create .gitattributes for LFS and line endings"""
-        print("\n" + "="*80)
+        print("\n" + "=" * 80)
         print("GIT: Creating .gitattributes")
-        print("="*80)
+        print("=" * 80)
 
         gitattributes_content = """# DMAIC V3 - .gitattributes
 
@@ -401,7 +429,7 @@ logs/
 """
 
         gitattributes_path = self.root_dir / ".gitattributes"
-        with open(gitattributes_path, 'w', encoding='utf-8') as f:
+        with open(gitattributes_path, "w", encoding="utf-8") as f:
             f.write(gitattributes_content)
 
         print("[CREATED] .gitattributes")
@@ -409,9 +437,9 @@ logs/
 
     def initialize_git_repo(self) -> Any:
         """Initialize git repository if not exists"""
-        print("\n" + "="*80)
+        print("\n" + "=" * 80)
         print("GIT: Initializing repository")
-        print("="*80)
+        print("=" * 80)
 
         git_dir = self.root_dir / ".git"
 
@@ -421,19 +449,13 @@ logs/
             return
 
         try:
-            subprocess.run(
-                ["git", "init"],
-                cwd=str(self.root_dir),
-                check=True
-            )
+            subprocess.run(["git", "init"], cwd=str(self.root_dir), check=True)
             print("[CREATED] Git repository initialized")
             self.report["git_status"]["repo_initialized"] = True
 
             # Set default branch to main
             subprocess.run(
-                ["git", "branch", "-M", "main"],
-                cwd=str(self.root_dir),
-                check=True
+                ["git", "branch", "-M", "main"], cwd=str(self.root_dir), check=True
             )
             print("[CONFIGURED] Default branch set to 'main'")
 
@@ -443,9 +465,9 @@ logs/
 
     def create_requirements_txt(self) -> Any:
         """Create comprehensive requirements.txt"""
-        print("\n" + "="*80)
+        print("\n" + "=" * 80)
         print("DEPENDENCIES: Creating requirements.txt")
-        print("="*80)
+        print("=" * 80)
 
         requirements_content = """# DMAIC V3 - Python Dependencies
 
@@ -493,7 +515,7 @@ tqdm>=4.66.0
 """
 
         requirements_path = self.root_dir / "requirements.txt"
-        with open(requirements_path, 'w', encoding='utf-8') as f:
+        with open(requirements_path, "w", encoding="utf-8") as f:
             f.write(requirements_content)
 
         print("[CREATED] requirements.txt")
@@ -501,9 +523,9 @@ tqdm>=4.66.0
 
     def create_setup_py(self) -> Any:
         """Create setup.py for package installation"""
-        print("\n" + "="*80)
+        print("\n" + "=" * 80)
         print("PACKAGE: Creating setup.py")
-        print("="*80)
+        print("=" * 80)
 
         setup_content = """#!/usr/bin/env python3
 \"\"\"
@@ -550,7 +572,7 @@ setup(
 """
 
         setup_path = self.root_dir / "setup.py"
-        with open(setup_path, 'w', encoding='utf-8') as f:
+        with open(setup_path, "w", encoding="utf-8") as f:
             f.write(setup_content)
 
         print("[CREATED] setup.py")
@@ -564,16 +586,16 @@ setup(
         timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
         report_file = report_dir / f"github_quality_report_{timestamp}.json"
 
-        with open(report_file, 'w', encoding='utf-8') as f:
+        with open(report_file, "w", encoding="utf-8") as f:
             json.dump(self.report, f, indent=2, ensure_ascii=False)
 
         print(f"\n[REPORT] Saved to: {report_file}")
 
     def print_summary(self) -> Any:
         """Print quality check summary"""
-        print("\n" + "="*80)
+        print("\n" + "=" * 80)
         print("GITHUB QUALITY CHECK SUMMARY")
-        print("="*80)
+        print("=" * 80)
 
         print("\nCleanup:")
         print(f"  Removed files: {len(self.report['removed_files'])}")
@@ -587,9 +609,9 @@ setup(
         for key, value in self.report["git_status"].items():
             print(f"  {key}: {value}")
 
-        print("\n" + "="*80)
+        print("\n" + "=" * 80)
         print("NEXT STEPS:")
-        print("="*80)
+        print("=" * 80)
         print("1. Review removed files list")
         print("2. Fix any linting/formatting issues")
         print("3. Run: git add .")
@@ -598,15 +620,15 @@ setup(
         print("6. Run: git push -u origin main")
         print("7. Enable GitHub Actions in repository settings")
         print("8. Install pre-commit hooks: pre-commit install")
-        print("="*80)
+        print("=" * 80)
 
     def run_all_checks(self) -> Any:
         """Run all quality checks"""
-        print("="*80)
+        print("=" * 80)
         print("DMAIC V3 - GITHUB QUALITY CHECK & CLEANUP")
-        print("="*80)
+        print("=" * 80)
         print(f"Timestamp: {self.report['timestamp']}")
-        print("="*80)
+        print("=" * 80)
 
         # Cleanup
         self.cleanup_temporary_files()

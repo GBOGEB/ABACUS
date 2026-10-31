@@ -123,13 +123,17 @@ def test_full_pipeline_success_runs_all_phases_and_finalizes(tmp_path, monkeypat
     ]
 
     summary = tmp_path / "DMAIC_V3_OUTPUT" / "iteration_4" / "EXECUTION_SUMMARY.md"
-    stats = tmp_path / "DMAIC_V3_OUTPUT" / "iteration_4" / "orchestration_statistics.json"
+    stats = (
+        tmp_path / "DMAIC_V3_OUTPUT" / "iteration_4" / "orchestration_statistics.json"
+    )
     assert "Status:** SUCCESS" in summary.read_text(encoding="utf-8")
     payload = json.loads(stats.read_text(encoding="utf-8"))
     assert payload["orchestration"]["total_phases"] == 10
 
 
-def test_core_phase_failure_stops_pipeline_but_detector_always_finalizes(tmp_path, monkeypatch):
+def test_core_phase_failure_stops_pipeline_but_detector_always_finalizes(
+    tmp_path, monkeypatch
+):
     monkeypatch.chdir(tmp_path)
     _patch_phases(monkeypatch, failing="Phase2Measure")
     orch = _orchestrator()
@@ -146,11 +150,15 @@ def test_core_phase_failure_stops_pipeline_but_detector_always_finalizes(tmp_pat
 def test_phase_tracking_handles_dict_false_and_crash_without_false_green():
     orch = _orchestrator()
 
-    ok, result = orch._execute_phase_with_tracking(Phase(result={"phase": "define"}), "Define", 1)
+    ok, result = orch._execute_phase_with_tracking(
+        Phase(result={"phase": "define"}), "Define", 1
+    )
     assert ok is True
     assert result["phase"] == "define"
 
-    ok, result = orch._execute_phase_with_tracking(Phase(result={"not_phase": True}), "Malformed", 1)
+    ok, result = orch._execute_phase_with_tracking(
+        Phase(result={"not_phase": True}), "Malformed", 1
+    )
     assert ok is False
     assert result == {"not_phase": True}
 

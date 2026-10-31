@@ -14,16 +14,18 @@ Integrates: V2.3 time engine, Ranking systems, Self-validation
 """
 
 import json
-import yaml
+from dataclasses import dataclass
+from datetime import datetime
 from pathlib import Path
 from typing import Dict, List, Optional
-from datetime import datetime
-from dataclasses import dataclass
+
+import yaml
 
 
 @dataclass
 class PlanningItem:
     """Single planning item"""
+
     id: str
     description: str
     status: str  # PLANNED, IN_PROGRESS, COMPLETED, BLOCKED, CANCELLED
@@ -63,33 +65,33 @@ class PlanningMatrixTracker:
     def _load_matrix(self) -> Dict:
         """Load planning matrix"""
         if self.matrix_file.exists():
-            with open(self.matrix_file, 'r') as f:
+            with open(self.matrix_file, "r") as f:
                 return json.load(f)
         return {
-            'version': '3.3.0',
-            'last_updated': datetime.now().isoformat(),
-            'planned': [],
-            'actual': [],
-            'current': [],
-            'possible': []
+            "version": "3.3.0",
+            "last_updated": datetime.now().isoformat(),
+            "planned": [],
+            "actual": [],
+            "current": [],
+            "possible": [],
         }
 
     def _load_history(self) -> List[Dict]:
         """Load planning history"""
         if self.history_file.exists():
-            with open(self.history_file, 'r') as f:
+            with open(self.history_file, "r") as f:
                 return json.load(f)
         return []
 
     def _save_matrix(self):
         """Save planning matrix"""
-        self.matrix['last_updated'] = datetime.now().isoformat()
-        with open(self.matrix_file, 'w') as f:
+        self.matrix["last_updated"] = datetime.now().isoformat()
+        with open(self.matrix_file, "w") as f:
             json.dump(self.matrix, f, indent=2)
 
     def _save_history(self):
         """Save planning history"""
-        with open(self.history_file, 'w') as f:
+        with open(self.history_file, "w") as f:
             json.dump(self.history, f, indent=2)
 
     def load_from_todo_yaml(self) -> Dict:
@@ -100,10 +102,10 @@ class PlanningMatrixTracker:
             Dict with parsed TODO items
         """
         if not self.todo_file.exists():
-            return {'planned': [], 'error': 'TODO file not found'}
+            return {"planned": [], "error": "TODO file not found"}
 
         try:
-            with open(self.todo_file, 'r', encoding='utf-8') as f:
+            with open(self.todo_file, "r", encoding="utf-8") as f:
                 todo_data = yaml.safe_load(f)
 
             planned_items = []
@@ -114,28 +116,31 @@ class PlanningMatrixTracker:
 
                 for item in items:
                     if isinstance(item, dict):
-                        planned_items.append({
-                            'id': item.get('id', f"{category}_{len(planned_items)}"),
-                            'description': item.get('description', item.get('task', 'Unknown')),
-                            'status': 'PLANNED',
-                            'priority': item.get('priority', 'MEDIUM').upper(),
-                            'category': category,
-                            'planned_iteration': item.get('iteration', 1),
-                            'estimated_hours': item.get('estimated_hours', 2.0),
-                            'dependencies': item.get('dependencies', []),
-                            'created_at': datetime.now().isoformat()
-                        })
+                        planned_items.append(
+                            {
+                                "id": item.get(
+                                    "id", f"{category}_{len(planned_items)}"
+                                ),
+                                "description": item.get(
+                                    "description", item.get("task", "Unknown")
+                                ),
+                                "status": "PLANNED",
+                                "priority": item.get("priority", "MEDIUM").upper(),
+                                "category": category,
+                                "planned_iteration": item.get("iteration", 1),
+                                "estimated_hours": item.get("estimated_hours", 2.0),
+                                "dependencies": item.get("dependencies", []),
+                                "created_at": datetime.now().isoformat(),
+                            }
+                        )
 
-            self.matrix['planned'] = planned_items
+            self.matrix["planned"] = planned_items
             self._save_matrix()
 
-            return {
-                'planned_count': len(planned_items),
-                'planned_items': planned_items
-            }
+            return {"planned_count": len(planned_items), "planned_items": planned_items}
 
         except Exception as e:
-            return {'error': str(e), 'planned': []}
+            return {"error": str(e), "planned": []}
 
     def scan_actual_state(self, output_dir: Path) -> Dict:
         """
@@ -151,7 +156,7 @@ class PlanningMatrixTracker:
 
         for iteration_dir in output_dir.glob("iteration_*"):
             try:
-                iteration_num = int(iteration_dir.name.split('_')[1])
+                iteration_num = int(iteration_dir.name.split("_")[1])
             except (ValueError, IndexError):
                 # Skip directories that don't follow the expected pattern like iteration_x or malformed names
                 continue
@@ -161,26 +166,25 @@ class PlanningMatrixTracker:
                 phase_file = phase_dir / f"{phase_name}.json"
 
                 if phase_file.exists():
-                    with open(phase_file, 'r') as f:
+                    with open(phase_file, "r") as f:
                         phase_data = json.load(f)
 
-                    actual_items.append({
-                        'id': f"iter{iteration_num}_{phase_name}",
-                        'description': f"{phase_name.replace('_', ' ').title()} completed",
-                        'status': 'COMPLETED',
-                        'iteration': iteration_num,
-                        'timestamp': phase_data.get('timestamp'),
-                        'duration': phase_data.get('duration_seconds'),
-                        'success': phase_data.get('success', True)
-                    })
+                    actual_items.append(
+                        {
+                            "id": f"iter{iteration_num}_{phase_name}",
+                            "description": f"{phase_name.replace('_', ' ').title()} completed",
+                            "status": "COMPLETED",
+                            "iteration": iteration_num,
+                            "timestamp": phase_data.get("timestamp"),
+                            "duration": phase_data.get("duration_seconds"),
+                            "success": phase_data.get("success", True),
+                        }
+                    )
 
-        self.matrix['actual'] = actual_items
+        self.matrix["actual"] = actual_items
         self._save_matrix()
 
-        return {
-            'actual_count': len(actual_items),
-            'actual_items': actual_items
-        }
+        return {"actual_count": len(actual_items), "actual_items": actual_items}
 
     def determine_current_state(self) -> Dict:
         """
@@ -190,25 +194,25 @@ class PlanningMatrixTracker:
             Dict with current state analysis
         """
         current_state = {
-            'completed': [],
-            'in_progress': [],
-            'pending': [],
-            'blocked': []
+            "completed": [],
+            "in_progress": [],
+            "pending": [],
+            "blocked": [],
         }
 
-        actual_ids = {item['id'] for item in self.matrix['actual']}
+        actual_ids = {item["id"] for item in self.matrix["actual"]}
 
-        for planned in self.matrix['planned']:
-            if planned['id'] in actual_ids:
-                current_state['completed'].append(planned)
-            elif planned.get('status') == 'BLOCKED':
-                current_state['blocked'].append(planned)
-            elif planned.get('status') == 'IN_PROGRESS':
-                current_state['in_progress'].append(planned)
+        for planned in self.matrix["planned"]:
+            if planned["id"] in actual_ids:
+                current_state["completed"].append(planned)
+            elif planned.get("status") == "BLOCKED":
+                current_state["blocked"].append(planned)
+            elif planned.get("status") == "IN_PROGRESS":
+                current_state["in_progress"].append(planned)
             else:
-                current_state['pending'].append(planned)
+                current_state["pending"].append(planned)
 
-        self.matrix['current'] = current_state
+        self.matrix["current"] = current_state
         self._save_matrix()
 
         return current_state
@@ -225,51 +229,59 @@ class PlanningMatrixTracker:
         """
         possible_next = []
 
-        completed_ids = {item['id'] for item in self.matrix['current'].get('completed', [])}
+        completed_ids = {
+            item["id"] for item in self.matrix["current"].get("completed", [])
+        }
 
-        for pending in self.matrix['current'].get('pending', []):
-            dependencies = pending.get('dependencies', [])
+        for pending in self.matrix["current"].get("pending", []):
+            dependencies = pending.get("dependencies", [])
 
             if all(dep in completed_ids for dep in dependencies):
-                possible_next.append({
-                    'id': pending['id'],
-                    'description': pending['description'],
-                    'priority': pending['priority'],
-                    'category': pending['category'],
-                    'estimated_hours': pending.get('estimated_hours', 2.0),
-                    'ready': True,
-                    'reason': 'All dependencies completed'
-                })
+                possible_next.append(
+                    {
+                        "id": pending["id"],
+                        "description": pending["description"],
+                        "priority": pending["priority"],
+                        "category": pending["category"],
+                        "estimated_hours": pending.get("estimated_hours", 2.0),
+                        "ready": True,
+                        "reason": "All dependencies completed",
+                    }
+                )
             elif not dependencies:
-                possible_next.append({
-                    'id': pending['id'],
-                    'description': pending['description'],
-                    'priority': pending['priority'],
-                    'category': pending['category'],
-                    'estimated_hours': pending.get('estimated_hours', 2.0),
-                    'ready': True,
-                    'reason': 'No dependencies'
-                })
+                possible_next.append(
+                    {
+                        "id": pending["id"],
+                        "description": pending["description"],
+                        "priority": pending["priority"],
+                        "category": pending["category"],
+                        "estimated_hours": pending.get("estimated_hours", 2.0),
+                        "ready": True,
+                        "reason": "No dependencies",
+                    }
+                )
             else:
-                possible_next.append({
-                    'id': pending['id'],
-                    'description': pending['description'],
-                    'priority': pending['priority'],
-                    'category': pending['category'],
-                    'estimated_hours': pending.get('estimated_hours', 2.0),
-                    'ready': False,
-                    'reason': f"Blocked by: {', '.join(dependencies)}"
-                })
+                possible_next.append(
+                    {
+                        "id": pending["id"],
+                        "description": pending["description"],
+                        "priority": pending["priority"],
+                        "category": pending["category"],
+                        "estimated_hours": pending.get("estimated_hours", 2.0),
+                        "ready": False,
+                        "reason": f"Blocked by: {', '.join(dependencies)}",
+                    }
+                )
 
-        possible_next.sort(key=lambda x: (x['ready'], x['priority']), reverse=True)
+        possible_next.sort(key=lambda x: (x["ready"], x["priority"]), reverse=True)
 
-        self.matrix['possible'] = possible_next
+        self.matrix["possible"] = possible_next
         self._save_matrix()
 
         return {
-            'possible_count': len(possible_next),
-            'ready_count': sum(1 for p in possible_next if p['ready']),
-            'possible_items': possible_next
+            "possible_count": len(possible_next),
+            "ready_count": sum(1 for p in possible_next if p["ready"]),
+            "possible_items": possible_next,
         }
 
     def generate_report(self) -> str:
@@ -288,17 +300,17 @@ class PlanningMatrixTracker:
 
         report.append("=== PLANNED ===")
         report.append(f"Total Planned: {len(self.matrix['planned'])}")
-        for item in self.matrix['planned'][:5]:
+        for item in self.matrix["planned"][:5]:
             report.append(f"  [{item['priority']}] {item['description']}")
         report.append("")
 
         report.append("=== ACTUAL ===")
         report.append(f"Total Completed: {len(self.matrix['actual'])}")
-        for item in self.matrix['actual'][:5]:
+        for item in self.matrix["actual"][:5]:
             report.append(f"  [OK] {item['description']}")
         report.append("")
 
-        current = self.matrix.get('current', {})
+        current = self.matrix.get("current", {})
         report.append("=== CURRENT ===")
         report.append(f"Completed: {len(current.get('completed', []))}")
         report.append(f"In Progress: {len(current.get('in_progress', []))}")
@@ -307,8 +319,8 @@ class PlanningMatrixTracker:
         report.append("")
 
         report.append("=== POSSIBLE NEXT ===")
-        possible = self.matrix.get('possible', [])
-        ready = [p for p in possible if p.get('ready')]
+        possible = self.matrix.get("possible", [])
+        ready = [p for p in possible if p.get("ready")]
         report.append(f"Ready to Start: {len(ready)}")
         for item in ready[:5]:
             report.append(f"  → [{item['priority']}] {item['description']}")
@@ -326,9 +338,9 @@ class PlanningMatrixTracker:
             iteration: Current iteration number
         """
         snapshot = {
-            'iteration': iteration,
-            'timestamp': datetime.now().isoformat(),
-            'matrix': self.matrix.copy()
+            "iteration": iteration,
+            "timestamp": datetime.now().isoformat(),
+            "matrix": self.matrix.copy(),
         }
 
         self.history.append(snapshot)
@@ -341,11 +353,11 @@ class PlanningMatrixTracker:
         Returns:
             Percentage (0-100)
         """
-        total_planned = len(self.matrix['planned'])
+        total_planned = len(self.matrix["planned"])
         if total_planned == 0:
             return 0.0
 
-        completed = len(self.matrix.get('current', {}).get('completed', []))
+        completed = len(self.matrix.get("current", {}).get("completed", []))
         return round((completed / total_planned) * 100, 2)
 
 

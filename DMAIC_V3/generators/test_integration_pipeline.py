@@ -1,4 +1,5 @@
 from typing import Any
+
 #!/usr/bin/env python3
 """
 DMAIC V3 - Integration Pipeline Test (Makefile-ready)
@@ -6,14 +7,14 @@ Tests ALL 9 Python files with REAL I/O, not just imports
 Includes: unit tests, integration tests, I/O validation, CI/CD readiness
 """
 
-import os
-import sys
-import subprocess
-from pathlib import Path
 import json
+import os
+import shutil
+import subprocess
+import sys
 import time
 from datetime import datetime
-import shutil
+from pathlib import Path
 
 
 class IntegrationPipelineTest:
@@ -43,7 +44,7 @@ class IntegrationPipelineTest:
 
         try:
             env = os.environ.copy()
-            env['PYTHONPATH'] = str(self.root_dir)
+            env["PYTHONPATH"] = str(self.root_dir)
 
             result = subprocess.run(
                 [sys.executable, str(script_path)],
@@ -51,7 +52,7 @@ class IntegrationPipelineTest:
                 text=True,
                 timeout=60,
                 cwd=str(self.root_dir),
-                env=env
+                env=env,
             )
 
             execution_time = time.time() - start_time
@@ -73,9 +74,9 @@ class IntegrationPipelineTest:
                 "execution_time": execution_time,
                 "exit_code": result.returncode,
                 "output_files": output_files,
-                "stdout_lines": len(result.stdout.split('\n')),
-                "stderr_lines": len(result.stderr.split('\n')) if result.stderr else 0,
-                "io_validated": len(output_files) > 0
+                "stdout_lines": len(result.stdout.split("\n")),
+                "stderr_lines": len(result.stderr.split("\n")) if result.stderr else 0,
+                "io_validated": len(output_files) > 0,
             }
 
         except Exception as e:
@@ -84,7 +85,7 @@ class IntegrationPipelineTest:
                 "type": "top_level_script",
                 "test_method": "real_execution",
                 "status": "ERROR",
-                "error": str(e)
+                "error": str(e),
             }
 
     def test_core_module_with_io(self, module_path: Path) -> dict:
@@ -101,7 +102,7 @@ class IntegrationPipelineTest:
 
         try:
             env = os.environ.copy()
-            env['PYTHONPATH'] = str(self.root_dir)
+            env["PYTHONPATH"] = str(self.root_dir)
 
             result = subprocess.run(
                 [sys.executable, "-c", test_script],
@@ -109,7 +110,7 @@ class IntegrationPipelineTest:
                 text=True,
                 timeout=60,
                 cwd=str(self.root_dir),
-                env=env
+                env=env,
             )
 
             execution_time = time.time() - start_time
@@ -131,10 +132,10 @@ class IntegrationPipelineTest:
                 "status": "SUCCESS" if success else "FAILED",
                 "execution_time": execution_time,
                 "exit_code": result.returncode,
-                "tests_run": test_results.get('tests_run', 0),
-                "tests_passed": test_results.get('tests_passed', 0),
-                "io_operations": test_results.get('io_operations', 0),
-                "io_validated": test_results.get('io_operations', 0) > 0
+                "tests_run": test_results.get("tests_run", 0),
+                "tests_passed": test_results.get("tests_passed", 0),
+                "io_operations": test_results.get("io_operations", 0),
+                "io_validated": test_results.get("io_operations", 0) > 0,
             }
 
         except Exception as e:
@@ -143,7 +144,7 @@ class IntegrationPipelineTest:
                 "type": "core_module",
                 "test_method": "real_io_test",
                 "status": "ERROR",
-                "error": str(e)
+                "error": str(e),
             }
 
     def _create_module_test_script(self, module_name: str) -> str:
@@ -398,19 +399,15 @@ print("IO_OPERATIONS:0")
 
     def _parse_test_output(self, stdout: str) -> dict:
         """Parse test output to extract metrics"""
-        results = {
-            "tests_run": 0,
-            "tests_passed": 0,
-            "io_operations": 0
-        }
+        results = {"tests_run": 0, "tests_passed": 0, "io_operations": 0}
 
-        for line in stdout.split('\n'):
+        for line in stdout.split("\n"):
             if line.startswith("TESTS_RUN:"):
-                results["tests_run"] = int(line.split(':')[1])
+                results["tests_run"] = int(line.split(":")[1])
             elif line.startswith("TESTS_PASSED:"):
-                results["tests_passed"] = int(line.split(':')[1])
+                results["tests_passed"] = int(line.split(":")[1])
             elif line.startswith("IO_OPERATIONS:"):
-                results["io_operations"] = int(line.split(':')[1])
+                results["io_operations"] = int(line.split(":")[1])
 
         return results
 
@@ -429,14 +426,14 @@ print("IO_OPERATIONS:0")
 
     def run_all_tests(self) -> Any:
         """Run all integration tests"""
-        print("="*80)
+        print("=" * 80)
         print("DMAIC V3 - INTEGRATION PIPELINE TEST (MAKEFILE-READY)")
-        print("="*80)
+        print("=" * 80)
         print(f"Version: 3.1.0")
         print(f"DMAIC Version: V3")
         print(f"Test Type: REAL I/O (not just imports)")
         print(f"Timestamp: {datetime.now().isoformat()}")
-        print("="*80)
+        print("=" * 80)
 
         # Top-level scripts (4)
         top_level_scripts = [
@@ -471,9 +468,9 @@ print("IO_OPERATIONS:0")
 
     def print_summary(self) -> Any:
         """Print test summary"""
-        print("\n" + "="*80)
+        print("\n" + "=" * 80)
         print("INTEGRATION PIPELINE SUMMARY")
-        print("="*80)
+        print("=" * 80)
 
         total = len(self.results)
         successful = sum(1 for r in self.results if r["status"] == "SUCCESS")
@@ -499,7 +496,7 @@ print("IO_OPERATIONS:0")
         print(f"Makefile-ready:        {'YES' if successful == total else 'NO'}")
         print(f"Pre-commit ready:      {'YES' if successful == total else 'NO'}")
         print(f"GitHub Actions ready:  {'YES' if successful == total else 'NO'}")
-        print("="*80)
+        print("=" * 80)
 
     def save_report(self) -> Any:
         """Save integration pipeline report"""
@@ -521,7 +518,7 @@ print("IO_OPERATIONS:0")
                 "version": "3.1.0",
                 "dmaic_version": "V3",
                 "timestamp": datetime.now().isoformat(),
-                "test_type": "integration_pipeline_real_io"
+                "test_type": "integration_pipeline_real_io",
             },
             "summary": {
                 "total_files": total,
@@ -532,12 +529,12 @@ print("IO_OPERATIONS:0")
                 "total_tests_run": total_tests,
                 "total_tests_passed": total_passed,
                 "total_io_operations": total_io_ops,
-                "ci_cd_ready": successful == total
+                "ci_cd_ready": successful == total,
             },
-            "results": self.results
+            "results": self.results,
         }
 
-        with open(report_file, 'w', encoding='utf-8') as f:
+        with open(report_file, "w", encoding="utf-8") as f:
             json.dump(report, f, indent=2, ensure_ascii=False)
 
         print(f"\nReport saved to: {report_file}")
@@ -549,6 +546,7 @@ def main() -> Any:
     root_dir = Path(__file__).parent.parent.parent
     tester = IntegrationPipelineTest(root_dir)
     tester.run_all_tests()
+
 
 if __name__ == "__main__":
     main()

@@ -4,11 +4,11 @@ Lightweight, non-blocking file change detection that runs continuously
 """
 
 import json
-import time
 import threading
-from pathlib import Path, PureWindowsPath
+import time
 from datetime import datetime
-from typing import Dict, Any
+from pathlib import Path, PureWindowsPath
+from typing import Any, Dict
 
 
 class BackgroundChangeDetector:
@@ -39,7 +39,9 @@ class BackgroundChangeDetector:
         self.running = True
         self.thread = threading.Thread(target=self._detection_loop, daemon=True)
         self.thread.start()
-        print(f"[Background Change Detector] Started (snapshot every {self.snapshot_interval}s)")
+        print(
+            f"[Background Change Detector] Started (snapshot every {self.snapshot_interval}s)"
+        )
 
     def stop(self):
         """Stop background change detection"""
@@ -71,7 +73,7 @@ class BackgroundChangeDetector:
         prev_snapshot = {}
         if self.snapshot_file.exists():
             try:
-                with open(self.snapshot_file, 'r') as f:
+                with open(self.snapshot_file, "r") as f:
                     loaded = json.load(f)
                     # Upgrade legacy Windows keys without fabricating deletions.
                     if isinstance(loaded, dict):
@@ -85,7 +87,7 @@ class BackgroundChangeDetector:
         # Quick scan of key directories only
         scan_dirs = [
             self.workspace_root / "DMAIC_V3",
-            self.workspace_root / "DMAIC_V3_OUTPUT"
+            self.workspace_root / "DMAIC_V3_OUTPUT",
         ]
 
         file_count = 0
@@ -98,7 +100,7 @@ class BackgroundChangeDetector:
                     continue
 
                 # Skip large binary files
-                if file_path.suffix.lower() in ['.pyc', '.pyo', '.so', '.dll', '.exe']:
+                if file_path.suffix.lower() in [".pyc", ".pyo", ".so", ".dll", ".exe"]:
                     continue
 
                 try:
@@ -109,9 +111,9 @@ class BackgroundChangeDetector:
 
                     # Detect changes
                     if rel_path not in prev_snapshot:
-                        changes.append({'path': rel_path, 'type': 'added'})
+                        changes.append({"path": rel_path, "type": "added"})
                     elif abs(mtime - prev_snapshot.get(rel_path, 0)) > 1:
-                        changes.append({'path': rel_path, 'type': 'modified'})
+                        changes.append({"path": rel_path, "type": "modified"})
 
                     file_count += 1
 
@@ -125,21 +127,21 @@ class BackgroundChangeDetector:
         # Detect deletions
         for prev_path in prev_snapshot:
             if prev_path not in snapshot:
-                changes.append({'path': prev_path, 'type': 'deleted'})
+                changes.append({"path": prev_path, "type": "deleted"})
 
         # Save snapshot
         try:
-            with open(self.snapshot_file, 'w') as f:
+            with open(self.snapshot_file, "w") as f:
                 json.dump(snapshot, f)
 
             # Save changes
             if changes:
                 change_data = {
-                    'timestamp': datetime.now().isoformat(),
-                    'total_changes': len(changes),
-                    'changes': changes
+                    "timestamp": datetime.now().isoformat(),
+                    "total_changes": len(changes),
+                    "changes": changes,
                 }
-                with open(self.changes_file, 'w') as f:
+                with open(self.changes_file, "w") as f:
                     json.dump(change_data, f, indent=2)
         except (OSError, TypeError):
             pass
@@ -147,19 +149,19 @@ class BackgroundChangeDetector:
     def get_summary(self) -> Dict[str, Any]:
         """Get current change summary"""
         if not self.changes_file.exists():
-            return {'total': 0, 'added': 0, 'modified': 0, 'deleted': 0}
+            return {"total": 0, "added": 0, "modified": 0, "deleted": 0}
 
         try:
-            with open(self.changes_file, 'r') as f:
+            with open(self.changes_file, "r") as f:
                 data = json.load(f)
 
-            changes = data.get('changes', [])
+            changes = data.get("changes", [])
             return {
-                'total': len(changes),
-                'added': sum(1 for c in changes if c['type'] == 'added'),
-                'modified': sum(1 for c in changes if c['type'] == 'modified'),
-                'deleted': sum(1 for c in changes if c['type'] == 'deleted'),
-                'timestamp': data.get('timestamp', '')
+                "total": len(changes),
+                "added": sum(1 for c in changes if c["type"] == "added"),
+                "modified": sum(1 for c in changes if c["type"] == "modified"),
+                "deleted": sum(1 for c in changes if c["type"] == "deleted"),
+                "timestamp": data.get("timestamp", ""),
             }
         except (OSError, json.JSONDecodeError, KeyError, TypeError):
-            return {'total': 0, 'added': 0, 'modified': 0, 'deleted': 0}
+            return {"total": 0, "added": 0, "modified": 0, "deleted": 0}

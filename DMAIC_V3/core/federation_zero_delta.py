@@ -1,4 +1,5 @@
 """W63 P3 manifest-resolved federation zero-delta contract."""
+
 from __future__ import annotations
 
 from dataclasses import asdict, dataclass
@@ -53,5 +54,9 @@ def roundtrip_ssot(
         payload_sha256=before,
         returned_payload_sha256=after,
         zero_delta=True,
-        boundary=transport.__name__ if hasattr(transport, "__name__") else "callable_transport",
+        boundary=(
+            transport.__name__
+            if hasattr(transport, "__name__")
+            else "callable_transport"
+        ),
     )

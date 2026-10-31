@@ -1,6 +1,7 @@
 import os
 import shutil
 import subprocess
+
 import pytest
 
 pytestmark = [
@@ -16,7 +17,8 @@ def docker_enabled():
 
 
 @pytest.mark.skipif(
-    not docker_enabled(), reason="TEST_BLOCKED_CONFIG: DMAIC_DOCKER_TESTS != 1; docker tests disabled"
+    not docker_enabled(),
+    reason="TEST_BLOCKED_CONFIG: DMAIC_DOCKER_TESTS != 1; docker tests disabled",
 )
 def test_docker_binary_available():
     """Verify docker CLI is available in PATH."""
@@ -24,7 +26,8 @@ def test_docker_binary_available():
 
 
 @pytest.mark.skipif(
-    not docker_enabled(), reason="TEST_BLOCKED_CONFIG: DMAIC_DOCKER_TESTS != 1; docker tests disabled"
+    not docker_enabled(),
+    reason="TEST_BLOCKED_CONFIG: DMAIC_DOCKER_TESTS != 1; docker tests disabled",
 )
 def test_docker_version_runs():
     """Verify docker --version command executes successfully."""
@@ -39,7 +42,8 @@ def test_docker_version_runs():
 
 
 @pytest.mark.skipif(
-    not docker_enabled(), reason="TEST_BLOCKED_CONFIG: DMAIC_DOCKER_TESTS != 1; docker tests disabled"
+    not docker_enabled(),
+    reason="TEST_BLOCKED_CONFIG: DMAIC_DOCKER_TESTS != 1; docker tests disabled",
 )
 def test_docker_info_accessible():
     """Verify docker info command works (daemon is running)."""
@@ -51,11 +55,14 @@ def test_docker_info_accessible():
     )
     if result.returncode != 0:
         pytest.skip(f"Docker daemon not running: {result.stderr}")
-    assert "Server Version" in result.stdout or "server version" in result.stdout.lower()
+    assert (
+        "Server Version" in result.stdout or "server version" in result.stdout.lower()
+    )
 
 
 @pytest.mark.skipif(
-    not docker_enabled(), reason="TEST_BLOCKED_CONFIG: DMAIC_DOCKER_TESTS != 1; docker tests disabled"
+    not docker_enabled(),
+    reason="TEST_BLOCKED_CONFIG: DMAIC_DOCKER_TESTS != 1; docker tests disabled",
 )
 def test_docker_hello_world_image():
     """Test pulling and running hello-world image (if enabled)."""
