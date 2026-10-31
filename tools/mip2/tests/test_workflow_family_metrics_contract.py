@@ -1,12 +1,18 @@
 """Bounded source-owned MIP2 qualification of repeat-aware workflow accounting."""
+
 import pytest
 
 from tools.mip2.workflow_family_metrics import summarize_families
 
 
 def run(ident, workflow, status="completed", conclusion="success", attempt=1):
-    return {"id": ident, "workflow_id": workflow, "run_attempt": attempt,
-            "status": status, "conclusion": conclusion}
+    return {
+        "id": ident,
+        "workflow_id": workflow,
+        "run_attempt": attempt,
+        "status": status,
+        "conclusion": conclusion,
+    }
 
 
 def test_twelve_qps_runs_are_one_family():

@@ -4,6 +4,7 @@
 Projects exact-source work vectors onto the frozen W79 PCA basis. It does not
 refit PCA and does not create Bradley-Terry pairwise evidence.
 """
+
 from __future__ import annotations
 
 import argparse
@@ -151,7 +152,9 @@ def validate_ledger(ledger: dict) -> list[dict]:
     return states
 
 
-def frozen_pc1(matrix: np.ndarray) -> tuple[np.ndarray, np.ndarray, np.ndarray, float, float]:
+def frozen_pc1(
+    matrix: np.ndarray,
+) -> tuple[np.ndarray, np.ndarray, np.ndarray, float, float]:
     means = matrix.mean(axis=0)
     sds = matrix.std(axis=0, ddof=1)
     if np.any(sds <= 0):
@@ -212,7 +215,10 @@ def evaluate(w79_source: dict, ledger: dict) -> dict:
         dtype=float,
     )
     semantic_train = np.asarray(
-        [[row["semantic_work_vector"][f] for f in semantic_features] for row in normalized],
+        [
+            [row["semantic_work_vector"][f] for f in semantic_features]
+            for row in normalized
+        ],
         dtype=float,
     )
 

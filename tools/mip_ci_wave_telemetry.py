@@ -21,7 +21,6 @@ from datetime import datetime
 from pathlib import Path
 from statistics import median
 
-
 HEX40 = re.compile(r"^[0-9a-f]{40}$")
 NONTERMINAL_STATUSES = {
     "queued",
@@ -137,7 +136,6 @@ def _peak_overlap(intervals):
     return peak if intervals else None
 
 
-
 # Exact workflow identities, not interchangeable green labels. Bandit, Safety,
 # and independent review require their own separately owned evidence; this
 # execution-structure producer deliberately cannot promote them.
@@ -240,7 +238,8 @@ def independent_gate_vector(payload, run_index, jobs, source_sha):
                     row["run_url"] = expected_url
                     row["evidence_class"] = "NATIVE_RUN_JOB_OBSERVATION"
                     selected_jobs = [
-                        job for job in jobs
+                        job
+                        for job in jobs
                         if job["run_id"] == rid and job["run_attempt"] == attempt
                     ]
                     names = [job.get("name") for job in selected_jobs]
@@ -254,10 +253,10 @@ def independent_gate_vector(payload, run_index, jobs, source_sha):
                         name for name in spec["jobs"] if name not in by_name
                     ]
                     row["blocking_jobs"] = [
-                        job["name"] for job in selected_jobs
-                        if job["conclusion"] in (
-                            "failure", "timed_out", "startup_failure"
-                        )
+                        job["name"]
+                        for job in selected_jobs
+                        if job["conclusion"]
+                        in ("failure", "timed_out", "startup_failure")
                     ]
                     status = native.get("status")
                     conclusion = native.get("conclusion")
@@ -287,15 +286,15 @@ def independent_gate_vector(payload, run_index, jobs, source_sha):
                                         )
                                         continue
                                     observed = [
-                                        step for step in steps
+                                        step
+                                        for step in steps
                                         if isinstance(step, dict)
                                         and step.get("name") == step_name
                                     ]
                                     if len(observed) == 1 and (
                                         observed[0].get("status") == "completed"
-                                        and observed[0].get("conclusion") in (
-                                            "failure", "timed_out", "startup_failure"
-                                        )
+                                        and observed[0].get("conclusion")
+                                        in ("failure", "timed_out", "startup_failure")
                                     ):
                                         row["blocking_steps"].append(
                                             job["name"] + ":" + step_name
@@ -326,17 +325,18 @@ def independent_gate_vector(payload, run_index, jobs, source_sha):
             / len(GATE_DOMAINS)
         ),
         "domain_terminal_fraction": (
-            sum(row["status"] in ("PASS", "FAIL", "BLOCKED")
-                for row in results.values())
+            sum(
+                row["status"] in ("PASS", "FAIL", "BLOCKED") for row in results.values()
+            )
             / len(GATE_DOMAINS)
         ),
         "red_domains": sorted(
-            name for name, row in results.items()
+            name
+            for name, row in results.items()
             if row["status"] in ("FAIL", "BLOCKED")
         ),
         "unknown_domains": sorted(
-            name for name, row in results.items()
-            if row["status"] == "UNKNOWN"
+            name for name, row in results.items() if row["status"] == "UNKNOWN"
         ),
         "admission": "HOLD",
         "coverage_artifact_verified": None,
@@ -447,41 +447,60 @@ def summarize(payload):
                     raise ValueError("native step status required")
 
         if state == "terminal" and conclusion in (
-            "failure", "timed_out", "startup_failure"
+            "failure",
+            "timed_out",
+            "startup_failure",
         ):
             red_job_count += 1
             native_run = runs.get(run_key, {})
             native_steps = job.get("steps")
             red_steps = []
-            if isinstance(native_steps, list) and all(
-                isinstance(step, dict)
-                and type(step.get("number")) is int
-                and step["number"] > 0
-                for step in native_steps
-            ) and len({step["number"] for step in native_steps}) == len(native_steps):
-                red_steps = [step for step in native_steps if step.get("conclusion")
-                             in ("failure", "timed_out", "startup_failure")]
+            if (
+                isinstance(native_steps, list)
+                and all(
+                    isinstance(step, dict)
+                    and type(step.get("number")) is int
+                    and step["number"] > 0
+                    for step in native_steps
+                )
+                and len({step["number"] for step in native_steps}) == len(native_steps)
+            ):
+                red_steps = [
+                    step
+                    for step in native_steps
+                    if step.get("conclusion")
+                    in ("failure", "timed_out", "startup_failure")
+                ]
             if red_steps:
                 first = min(red_steps, key=lambda x: x["number"])
-                if all(isinstance(value, str) and value.strip() for value in (
-                    native_run.get("path"), job.get("name"), first.get("name")
-                )):
+                if all(
+                    isinstance(value, str) and value.strip()
+                    for value in (
+                        native_run.get("path"),
+                        job.get("name"),
+                        first.get("name"),
+                    )
+                ):
                     semantic = {
                         "workflow_path": native_run["path"],
                         "job_name": job["name"],
                         "step_name": first["name"],
                         "step_number": first["number"],
                     }
-                    fingerprint = hashlib.sha256(json.dumps(
-                        semantic, sort_keys=True, separators=(",", ":")
-                    ).encode("utf-8")).hexdigest()
-                    first_red_events.append({
-                        "fingerprint": fingerprint,
-                        "run_id": job["run_id"],
-                        "run_attempt": job["run_attempt"],
-                        "job_id": job["id"],
-                        **semantic,
-                    })
+                    fingerprint = hashlib.sha256(
+                        json.dumps(
+                            semantic, sort_keys=True, separators=(",", ":")
+                        ).encode("utf-8")
+                    ).hexdigest()
+                    first_red_events.append(
+                        {
+                            "fingerprint": fingerprint,
+                            "run_id": job["run_id"],
+                            "run_attempt": job["run_attempt"],
+                            "job_id": job["id"],
+                            **semantic,
+                        }
+                    )
 
         if state != "terminal":
             continue
@@ -526,9 +545,13 @@ def summarize(payload):
         fingerprint = event["fingerprint"]
         if fingerprint not in first_red_groups:
             first_red_groups[fingerprint] = {
-                key: event[key] for key in (
-                    "fingerprint", "workflow_path", "job_name",
-                    "step_name", "step_number"
+                key: event[key]
+                for key in (
+                    "fingerprint",
+                    "workflow_path",
+                    "job_name",
+                    "step_name",
+                    "step_number",
                 )
             }
             first_red_groups[fingerprint]["manifestations"] = 0
@@ -556,14 +579,11 @@ def summarize(payload):
         "terminal_by_outcome": counts,
         "nonterminal": pending,
         "step_detail_jobs_observed": step_detail_jobs,
-        "step_detail_job_fraction": (
-            step_detail_jobs / len(jobs) if jobs else None
-        ),
+        "step_detail_job_fraction": (step_detail_jobs / len(jobs) if jobs else None),
         "steps_observed": observed_steps,
         "first_red_manifestations": sorted(
-            first_red_events, key=lambda row: (
-                row["run_id"], row["run_attempt"], row["job_id"]
-            )
+            first_red_events,
+            key=lambda row: (row["run_id"], row["run_attempt"], row["job_id"]),
         ),
         "first_red_signatures": [
             first_red_groups[key] for key in sorted(first_red_groups)
@@ -582,9 +602,7 @@ def summarize(payload):
         "step_terminal_by_outcome": step_outcomes,
         "step_nonterminal": step_nonterminal,
         "job_run_links_observed": job_run_links_observed,
-        "job_run_link_fraction": (
-            job_run_links_observed / len(jobs) if jobs else None
-        ),
+        "job_run_link_fraction": (job_run_links_observed / len(jobs) if jobs else None),
         "native_runner_detail_jobs_observed": runner_detail_jobs,
         "native_runner_detail_job_fraction": (
             runner_detail_jobs / len(jobs) if jobs else None
@@ -592,9 +610,7 @@ def summarize(payload):
         "native_runner_assignments_observed": (
             runner_assignments if runner_detail_jobs else None
         ),
-        "native_runner_ids_observed": (
-            len(runner_ids) if runner_detail_jobs else None
-        ),
+        "native_runner_ids_observed": (len(runner_ids) if runner_detail_jobs else None),
         "queue_basis": (
             "job.created_at -> job.started_at; "
             "fallback workflow_run.created_at -> job.started_at"

@@ -13,6 +13,7 @@ This tool is intentionally stdlib-only so it can be copied into an exact-SHA
 checkout and used to remeasure historical repository states without changing
 those historical trees.
 """
+
 from __future__ import annotations
 
 import argparse
@@ -24,13 +25,33 @@ from pathlib import Path
 
 SCHEMA_VERSION = "W72-SEMANTIC-CENSUS-2.0.0"
 TEXT_SUFFIXES = {
-    ".py", ".yml", ".yaml", ".json", ".md", ".toml", ".txt", ".ini",
-    ".cfg", ".html", ".js", ".ts", ".tsx", ".jsx", ".ps1", ".sh",
+    ".py",
+    ".yml",
+    ".yaml",
+    ".json",
+    ".md",
+    ".toml",
+    ".txt",
+    ".ini",
+    ".cfg",
+    ".html",
+    ".js",
+    ".ts",
+    ".tsx",
+    ".jsx",
+    ".ps1",
+    ".sh",
 }
 ID_RE = re.compile(r"\b[A-Z][A-Z0-9_-]{1,80}\b")
 SKIP_PARTS = {
-    ".git", ".venv", "venv", "node_modules", "dist", "build",
-    ".pytest_cache", "__pycache__",
+    ".git",
+    ".venv",
+    "venv",
+    "node_modules",
+    "dist",
+    "build",
+    ".pytest_cache",
+    "__pycache__",
 }
 SKIP_PREFIXES = (
     "architecture/w66/receipts/",
@@ -112,9 +133,7 @@ def gap_bindings(root: Path) -> dict[str, str]:
 def semantic_refs(root: Path) -> set[str]:
     text = read_text(root / "ssot/semantic_traceability.yaml")
     out: set[str] = set()
-    for match in re.finditer(
-        r"\b(?:ssot|gaps):\s*(?:\[([^\]]*)\]|([^\s#]+))", text
-    ):
+    for match in re.finditer(r"\b(?:ssot|gaps):\s*(?:\[([^\]]*)\]|([^\s#]+))", text):
         raw = match.group(1) or match.group(2) or ""
         out.update(value.strip() for value in raw.split(",") if value.strip())
     return out
@@ -129,7 +148,9 @@ def consumer_hits(root: Path, bindings: dict[str, str]) -> dict[str, set[str]]:
         if any(part in SKIP_PARTS for part in path.parts):
             continue
         rel = path.relative_to(root).as_posix()
-        if rel.startswith("ssot/") or any(rel.startswith(prefix) for prefix in SKIP_PREFIXES):
+        if rel.startswith("ssot/") or any(
+            rel.startswith(prefix) for prefix in SKIP_PREFIXES
+        ):
             continue
         text = read_text(path)
         for key, bound_path in bindings.items():
@@ -156,7 +177,9 @@ def measure(root: Path, source_sha: str) -> tuple[dict[str, dict], dict]:
     indexed = indexed_bindings(root)
     domain = {
         key: value
-        for key, value in parse_id_records(root / "ssot/ssot_items.yaml", "source").items()
+        for key, value in parse_id_records(
+            root / "ssot/ssot_items.yaml", "source"
+        ).items()
     }
     gaps = gap_bindings(root)
 
@@ -169,7 +192,9 @@ def measure(root: Path, source_sha: str) -> tuple[dict[str, dict], dict]:
     registry_total = len(authority_ids)
     registry_open = len(registry_findings)
 
-    unresolved = sorted(ref for ref in refs if ref not in known and ID_RE.fullmatch(ref))
+    unresolved = sorted(
+        ref for ref in refs if ref not in known and ID_RE.fullmatch(ref)
+    )
     reference_total = len(refs)
     reference_open = len(unresolved)
 
@@ -202,7 +227,9 @@ def measure(root: Path, source_sha: str) -> tuple[dict[str, dict], dict]:
     for left, right in edges:
         degree[left] = degree.get(left, 0) + 1
         degree[right] = degree.get(right, 0) + 1
-    isolated = sorted(node for node, degree_value in degree.items() if degree_value == 0)
+    isolated = sorted(
+        node for node, degree_value in degree.items() if degree_value == 0
+    )
     graph_total = len(nodes)
     graph_open = len(isolated)
 
@@ -272,7 +299,9 @@ def measure(root: Path, source_sha: str) -> tuple[dict[str, dict], dict]:
         "measurement_schema": SCHEMA_VERSION,
         "source_sha": source_sha,
         "registry_gap_rate": finite_rate(registry_open / max(registry_total, 1)),
-        "unresolved_reference_rate": finite_rate(reference_open / max(reference_total, 1)),
+        "unresolved_reference_rate": finite_rate(
+            reference_open / max(reference_total, 1)
+        ),
         "consumer_penetration_rate": finite_rate(
             (consumer_total - consumer_open) / max(consumer_total, 1)
         ),
@@ -296,8 +325,8 @@ def main() -> None:
     if not out.is_absolute():
         out = Path.cwd() / out
     out.mkdir(parents=True, exist_ok=True)
-    source_sha = args.source_sha or os.getenv("SOURCE_SHA") or os.getenv(
-        "GITHUB_SHA", "LOCAL"
+    source_sha = (
+        args.source_sha or os.getenv("SOURCE_SHA") or os.getenv("GITHUB_SHA", "LOCAL")
     )
 
     receipts, row = measure(root, source_sha)

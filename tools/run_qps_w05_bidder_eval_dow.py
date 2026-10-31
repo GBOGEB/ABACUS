@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 """Produce a deterministic, sanitized QPS W05 bidder-evaluation DOW receipt."""
+
 from __future__ import annotations
 
 import hashlib
@@ -80,7 +81,9 @@ def main() -> int:
         if operation.startswith("compare_bidders"):
             result = {
                 "bidder_edge_counts": counts,
-                "family_count_each": {b: len(family_sets[i]) for i, b in enumerate(bidders)},
+                "family_count_each": {
+                    b: len(family_sets[i]) for i, b in enumerate(bidders)
+                },
                 "cross_bidder_substitution": False,
             }
         elif operation.startswith("measure_priority_family_source_coverage"):
@@ -128,10 +131,16 @@ def main() -> int:
                 for b in bidders
             }
         elif operation.startswith("retest_reverse_load"):
-            result = {"reverse_load_nodes": snapshot.get("priority", {}).get("reverse_load", [])}
+            result = {
+                "reverse_load_nodes": snapshot.get("priority", {}).get(
+                    "reverse_load", []
+                )
+            }
         elif operation.startswith("produce_PCA_ready"):
             result = {
-                "review_pca_cumulative_3pc": snapshot.get("review_metrics", {}).get("review_pca_cumulative_3pc"),
+                "review_pca_cumulative_3pc": snapshot.get("review_metrics", {}).get(
+                    "review_pca_cumulative_3pc"
+                ),
                 "candidate_features": [
                     "edge_type_density",
                     "phase_span",
@@ -185,7 +194,11 @@ def main() -> int:
         "child_disposition_placeholder": "UNSET",
         "authority_boundary": "ABACUS returns structural findings only; QPS child owns engineering/compliance disposition",
     }
-    payload = json.dumps({k: v for k, v in receipt.items() if k != "output_hash"}, sort_keys=True, separators=(",", ":")).encode()
+    payload = json.dumps(
+        {k: v for k, v in receipt.items() if k != "output_hash"},
+        sort_keys=True,
+        separators=(",", ":"),
+    ).encode()
     receipt["output_hash"] = hashlib.sha256(payload).hexdigest()
     OUTPUT.parent.mkdir(parents=True, exist_ok=True)
     OUTPUT.write_text(yaml.safe_dump(receipt, sort_keys=False), encoding="utf-8")

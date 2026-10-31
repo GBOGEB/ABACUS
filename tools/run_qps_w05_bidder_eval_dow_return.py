@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 """Execute the governed W05 DOW mechanics and emit a deterministic receipt."""
+
 from __future__ import annotations
 
 import hashlib
@@ -13,12 +14,8 @@ import yaml
 
 CORR = "QPS-FED-W05-BIDDER-EVAL"
 REQUEST = Path("federation/qps/QPS_FED_W05_BIDDER_EVAL_DOW_REQUEST.yaml")
-SNAPSHOT = Path(
-    "federation/qps/snapshots/QPS_FED_W05_BIDDER_EVAL_SANITIZED_v0.1.yaml"
-)
-OUT = Path(
-    "federation/qps/runtime/QPS_FED_W05_BIDDER_EVAL_DOW_RUNTIME_RECEIPT.yaml"
-)
+SNAPSHOT = Path("federation/qps/snapshots/QPS_FED_W05_BIDDER_EVAL_SANITIZED_v0.1.yaml")
+OUT = Path("federation/qps/runtime/QPS_FED_W05_BIDDER_EVAL_DOW_RUNTIME_RECEIPT.yaml")
 BLOCKING_EDGES = {
     "CONTRADICTS",
     "ALLOCATION_SHIFT",
@@ -61,7 +58,11 @@ def git_sha(root: Path = Path(".")) -> str:
             head = loose.read_text(encoding="utf-8").strip()
         else:
             packed = (root / ".git" / "packed-refs").read_text(encoding="utf-8")
-            matches = [line.split()[0] for line in packed.splitlines() if line.endswith(" " + ref)]
+            matches = [
+                line.split()[0]
+                for line in packed.splitlines()
+                if line.endswith(" " + ref)
+            ]
             if len(matches) != 1:
                 raise SystemExit("unable to resolve parent git SHA")
             head = matches[0]
@@ -90,10 +91,14 @@ def family_phases(snapshot: dict[str, Any]) -> dict[str, list[str]]:
     return phases
 
 
-def validate_inputs(request: dict[str, Any], snapshot: dict[str, Any]) -> tuple[list[str], list[str], list[str]]:
+def validate_inputs(
+    request: dict[str, Any], snapshot: dict[str, Any]
+) -> tuple[list[str], list[str], list[str]]:
     if request.get("correlation_id") != CORR or snapshot.get("correlation_id") != CORR:
         raise SystemExit("W05 correlation mismatch")
-    if request.get("input_contract", {}).get("source_wave") != snapshot.get("source_wave"):
+    if request.get("input_contract", {}).get("source_wave") != snapshot.get(
+        "source_wave"
+    ):
         raise SystemExit("request/snapshot source-wave mismatch")
     child = request.get("child", {})
     source = snapshot.get("source_child", {})
@@ -120,8 +125,10 @@ def validate_inputs(request: dict[str, Any], snapshot: dict[str, Any]) -> tuple[
     if any(confidentiality.get(key) is not True for key in required_redactions):
         raise SystemExit("sanitized snapshot redaction contract failed")
     operations = request.get("requested_DOW_operations")
-    if not isinstance(operations, list) or not operations or not all(
-        isinstance(operation, str) and operation for operation in operations
+    if (
+        not isinstance(operations, list)
+        or not operations
+        or not all(isinstance(operation, str) and operation for operation in operations)
     ):
         raise SystemExit("requested_DOW_operations must be a non-empty string list")
     if len(operations) != len(set(operations)):
@@ -149,7 +156,9 @@ def build_handlers(
 
     def compare_bidders() -> dict[str, Any]:
         return {
-            "edge_histograms": {bidder: edge_histogram(snapshot, bidder) for bidder in bidders},
+            "edge_histograms": {
+                bidder: edge_histogram(snapshot, bidder) for bidder in bidders
+            },
             "family_edge_sets": {
                 family: {bidder: bidder_edges[bidder][family] for bidder in bidders}
                 for family in families
@@ -172,7 +181,8 @@ def build_handlers(
                 bidder: bidder_edges[bidder]["ADDENDUM_I_C_AND_L"] for bidder in bidders
             },
             "operation_maintenance_present": any(
-                phase in snapshot.get("lifecycle", {}) for phase in ("OPERATION", "MAINTENANCE")
+                phase in snapshot.get("lifecycle", {})
+                for phase in ("OPERATION", "MAINTENANCE")
             ),
         }
 
@@ -201,13 +211,20 @@ def build_handlers(
             family: {
                 "phases": phases.get(family, []),
                 "bidder_blocking_edges": {
-                    bidder: [edge for edge in bidder_edges[bidder][family] if edge in BLOCKING_EDGES]
+                    bidder: [
+                        edge
+                        for edge in bidder_edges[bidder][family]
+                        if edge in BLOCKING_EDGES
+                    ]
                     for bidder in bidders
                 },
             }
             for family in families
             if {"L4", "L5"}.intersection(phases.get(family, []))
-            and any(BLOCKING_EDGES.intersection(bidder_edges[bidder][family]) for bidder in bidders)
+            and any(
+                BLOCKING_EDGES.intersection(bidder_edges[bidder][family])
+                for bidder in bidders
+            )
         }
 
     def iso9001_scope() -> dict[str, Any]:
@@ -244,7 +261,8 @@ def build_handlers(
 
     def pca_ready_features() -> dict[str, Any]:
         reverse_families = {
-            str(node["family"]) for node in snapshot.get("priority", {}).get("reverse_load", [])
+            str(node["family"])
+            for node in snapshot.get("priority", {}).get("reverse_load", [])
         }
         rows = []
         for bidder in bidders:
@@ -312,7 +330,8 @@ def main() -> int:
         }
         findings.append(
             {
-                "stable_finding_id": "ABACUS-W05-" + sha256_bytes(operation.encode())[:12],
+                "stable_finding_id": "ABACUS-W05-"
+                + sha256_bytes(operation.encode())[:12],
                 "source_correlation_id": CORR,
                 "finding_type": "DOW_EXECUTED_ANALYSIS_RESULT",
                 "affected_family_and_child_nodes": families,

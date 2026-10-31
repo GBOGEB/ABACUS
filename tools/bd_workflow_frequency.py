@@ -4,6 +4,7 @@
 This is an operational BD signal only. It does not grant engineering, release,
 compliance, or negotiation credit.
 """
+
 from __future__ import annotations
 
 import argparse
@@ -102,9 +103,9 @@ def metrics_for_family(name: str, paths: list[str], runs: list[dict]) -> dict:
         "total_invocations": total,
         "unique_input_tuples": unique_input_count,
         "unique_input_tuple_ratio": ratio(unique_input_count, total),
-        "invocations_per_unique_input": round(total / unique_input_count, 6)
-        if unique_input_count
-        else 0.0,
+        "invocations_per_unique_input": (
+            round(total / unique_input_count, 6) if unique_input_count else 0.0
+        ),
         "observable_noop_invocations": skipped,
         "observable_noop_rate": ratio(skipped, total),
         "same_sha_repeat_invocations": same_sha_repeat_invocations,
@@ -182,10 +183,13 @@ def main() -> int:
     out_md = Path(args.out_md)
     out_json.parent.mkdir(parents=True, exist_ok=True)
     out_md.parent.mkdir(parents=True, exist_ok=True)
-    out_json.write_text(json.dumps(payload, indent=2, sort_keys=True) + "\n", encoding="utf-8")
+    out_json.write_text(
+        json.dumps(payload, indent=2, sort_keys=True) + "\n", encoding="utf-8"
+    )
     out_md.write_text(render_markdown(payload) + "\n", encoding="utf-8")
     print(render_markdown(payload))
     return 0
+
 
 if __name__ == "__main__":
     raise SystemExit(main())

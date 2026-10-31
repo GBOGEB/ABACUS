@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 """Project exact-SHA W74 pairs onto frozen retained runtime/semantic PC1 axes."""
+
 from __future__ import annotations
 
 import argparse
@@ -62,8 +63,7 @@ def frozen_scores(
     scores = {}
     for row in rows:
         score = sum(
-            ((float(row[feature]) - means[feature]) / sds[feature])
-            * vector[feature]
+            ((float(row[feature]) - means[feature]) / sds[feature]) * vector[feature]
             for feature in features
         )
         scores[str(row["source_sha"])] = round(score, 6)

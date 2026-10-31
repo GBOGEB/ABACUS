@@ -4,6 +4,7 @@ All security decisions remain fail-closed. This module cannot waive Safety, atte
 a reviewer, or grant merge admission. Supplied metadata is source-reported unless
 its artifact bytes are independently compared.
 """
+
 from __future__ import annotations
 
 import argparse
@@ -32,20 +33,27 @@ def _scan(report, expected_scope):
     exit_code = report.get("exit_code")
     packages = report.get("installed_packages")
     require(type(exit_code) is int and exit_code >= 0, "invalid Safety exit")
-    require(type(packages) is int and packages >= 0, "unknown installed package denominator")
+    require(
+        type(packages) is int and packages >= 0, "unknown installed package denominator"
+    )
     findings = report.get("findings")
     require(isinstance(findings, list), "missing findings denominator")
     seen = set()
     for item in findings:
         require(isinstance(item, dict), "invalid finding")
         name, version, cve = (item.get(k) for k in ("package", "version", "cve"))
-        require(all(isinstance(v, str) and v.strip() for v in (name, version, cve)),
-                "finding identity missing")
+        require(
+            all(isinstance(v, str) and v.strip() for v in (name, version, cve)),
+            "finding identity missing",
+        )
         require(bool(CVE.fullmatch(cve)), "invalid CVE identity")
         ident = (name.casefold(), version, cve)
         require(ident not in seen, "duplicate scanner manifestation")
         seen.add(ident)
-    require(len({x[0] for x in seen}) <= packages, "findings exceed installed package population")
+    require(
+        len({x[0] for x in seen}) <= packages,
+        "findings exceed installed package population",
+    )
     require(exit_code != 0 or not findings, "Safety falsely green with findings")
     return {
         "scope": expected_scope,
@@ -61,25 +69,35 @@ def _scan(report, expected_scope):
 def summarize(payload, *, archive_bytes=None):
     require(isinstance(payload, dict), "invalid evidence envelope")
     sha = payload.get("exact_sha")
-    require(isinstance(sha, str) and bool(SHA40.fullmatch(sha)), "invalid exact source SHA")
+    require(
+        isinstance(sha, str) and bool(SHA40.fullmatch(sha)), "invalid exact source SHA"
+    )
     for key in ("run_id", "run_attempt", "job_id"):
         _positive(payload.get(key), key)
     scanner, scanner_items = _scan(payload.get("scanner"), "scanner_environment")
     application_raw = payload.get("application_runtime")
     application, app_items = (
         _scan(application_raw, "application_runtime")
-        if application_raw is not None else (None, None)
+        if application_raw is not None
+        else (None, None)
     )
     claimed = payload.get("scanner_artifact_sha256")
-    require(claimed is None or (isinstance(claimed, str) and bool(DIGEST.fullmatch(claimed))),
-            "invalid declared artifact digest")
+    require(
+        claimed is None
+        or (isinstance(claimed, str) and bool(DIGEST.fullmatch(claimed))),
+        "invalid declared artifact digest",
+    )
     artifact_match = None
     if archive_bytes is not None:
-        require(type(archive_bytes) is bytes and len(archive_bytes) > 0,
-                "missing artifact bytes")
+        require(
+            type(archive_bytes) is bytes and len(archive_bytes) > 0,
+            "missing artifact bytes",
+        )
         require(claimed is not None, "missing declared digest for artifact")
-        require(hashlib.sha256(archive_bytes).hexdigest() == claimed,
-                "artifact SHA256 mismatch")
+        require(
+            hashlib.sha256(archive_bytes).hexdigest() == claimed,
+            "artifact SHA256 mismatch",
+        )
         artifact_match = True
     return {
         "schema": "abacus.cbd.safety-domain-provenance.v1",
@@ -102,7 +120,9 @@ def summarize(payload, *, archive_bytes=None):
         "causal_roots_closed": None,
         "security_waiver": False,
         "merge_admission": "HOLD",
-        "evidence_class": "HASH_MATCH_ONLY" if artifact_match else "SOURCE_REPORTED_UNVERIFIED",
+        "evidence_class": (
+            "HASH_MATCH_ONLY" if artifact_match else "SOURCE_REPORTED_UNVERIFIED"
+        ),
     }
 
 
@@ -113,11 +133,13 @@ def main(argv=None):
     parser.add_argument("--out", type=Path, required=True)
     args = parser.parse_args(argv)
     blob = args.artifact.read_bytes() if args.artifact else None
-    result = summarize(json.loads(args.evidence.read_text(encoding="utf-8")),
-                       archive_bytes=blob)
+    result = summarize(
+        json.loads(args.evidence.read_text(encoding="utf-8")), archive_bytes=blob
+    )
     args.out.parent.mkdir(parents=True, exist_ok=True)
-    args.out.write_text(json.dumps(result, sort_keys=True, indent=2) + "\n",
-                        encoding="utf-8")
+    args.out.write_text(
+        json.dumps(result, sort_keys=True, indent=2) + "\n", encoding="utf-8"
+    )
     return 0
 
 

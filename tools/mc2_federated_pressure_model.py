@@ -6,6 +6,7 @@ semantic observations are not paired samples. Each axis must independently have
 PC1 retained by PA95. No joint score, allocation authority or BT evidence is
 created.
 """
+
 from __future__ import annotations
 
 import argparse
@@ -49,9 +50,11 @@ def main() -> None:
     semantic_pc1 = pc1(semantic_block)
 
     gates = {
-        "runtime_pca_measured": runtime_block.get("status") == "MEASURED_PCA_DIAGNOSTIC",
+        "runtime_pca_measured": runtime_block.get("status")
+        == "MEASURED_PCA_DIAGNOSTIC",
         "runtime_pc1_pa95_retained": retained(runtime_pa),
-        "semantic_pca_measured": semantic_block.get("status") == "MEASURED_PCA_DIAGNOSTIC",
+        "semantic_pca_measured": semantic_block.get("status")
+        == "MEASURED_PCA_DIAGNOSTIC",
         "semantic_pc1_pa95_retained": retained(semantic_pa),
     }
     ready = all(gates.values()) and runtime_pc1 is not None and semantic_pc1 is not None
@@ -59,9 +62,7 @@ def main() -> None:
     receipt = {
         "schema_version": "MC2-FEDERATED-PRESSURE-MODEL-0.1.0",
         "status": (
-            "MEASURED_TWO_AXIS_DIAGNOSTIC"
-            if ready
-            else "WITHHELD_AXIS_RETENTION_GATE"
+            "MEASURED_TWO_AXIS_DIAGNOSTIC" if ready else "WITHHELD_AXIS_RETENTION_GATE"
         ),
         "gates": gates,
         "model_class": "TWO_AXIS_UNPAIRED_DIAGNOSTIC",

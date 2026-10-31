@@ -19,7 +19,6 @@ import urllib.request
 import zipfile
 
 from defusedxml.ElementTree import fromstring as safe_xml_fromstring
-
 from everred import SCHEMA, InvalidEvidence, digest, valid_sha
 
 GH_RE = re.compile(r"^[A-Za-z0-9_.-]+/[A-Za-z0-9_.-]+$")

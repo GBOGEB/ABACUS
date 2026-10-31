@@ -3,9 +3,8 @@ import tempfile
 import unittest
 from pathlib import Path
 
-from test_acceptance_core import fixture
-
 from acceptance import cli, core
+from test_acceptance_core import fixture
 
 
 class ReadOnlyCLITests(unittest.TestCase):

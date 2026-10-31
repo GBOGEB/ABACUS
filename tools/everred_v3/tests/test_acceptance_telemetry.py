@@ -1,9 +1,8 @@
 import copy
 import unittest
 
-from test_acceptance_core import fixture
-
 from acceptance import core, graph, telemetry
+from test_acceptance_core import fixture
 
 
 def snapshot(pulse, observations, ctx=None):

@@ -1,4 +1,5 @@
 """Negative controls for sequential V2 pulse and federation summaries."""
+
 from __future__ import annotations
 
 import copy
@@ -19,20 +20,35 @@ def state(sha: str = SHA_A) -> dict:
     return {
         "subject": {"repository": "GBOGEB/ABACUS", "head_sha": sha},
         "snapshot": {"captured_at_utc": "2026-10-15T08:00:00Z"},
-        "metrics": [], "unknowns": [], "gates": [], "blockers": [],
-        "authority": {"merge_decision": "HOLD", "independent_approval": "NOT_ESTABLISHED",
-                      "effective_branch_protection": "UNKNOWN"},
+        "metrics": [],
+        "unknowns": [],
+        "gates": [],
+        "blockers": [],
+        "authority": {
+            "merge_decision": "HOLD",
+            "independent_approval": "NOT_ESTABLISHED",
+            "effective_branch_protection": "UNKNOWN",
+        },
     }
 
 
 def ratio(sha=SHA_A, *, covered=8, eligible=10, config="0" * 64):
     return {
-        "id": "scope.branch", "state": "MEASURED", "measure_type": "RATIO",
-        "source_sha": sha, "numerator": covered, "denominator": eligible,
-        "basis": {"scope_id": "scope", "paths": ["scripts/x.py"],
-                  "unit_definition": "branch-arc", "instrumentor": "coverage.py",
-                  "instrumentor_version": "7.16.2", "configuration_sha256": config,
-                  "selection": "tests/test_x.py"},
+        "id": "scope.branch",
+        "state": "MEASURED",
+        "measure_type": "RATIO",
+        "source_sha": sha,
+        "numerator": covered,
+        "denominator": eligible,
+        "basis": {
+            "scope_id": "scope",
+            "paths": ["scripts/x.py"],
+            "unit_definition": "branch-arc",
+            "instrumentor": "coverage.py",
+            "instrumentor_version": "7.16.2",
+            "configuration_sha256": config,
+            "selection": "tests/test_x.py",
+        },
     }
 
 
@@ -94,16 +110,28 @@ class WaveTelemetryTests(unittest.TestCase):
 
     def test_unlinked_root_not_counted_as_burndown(self):
         s = state()
-        s["blockers"] = [{"id": "B1", "classification": "ROOT",
-                          "disposition": "RESOLVED", "root_cause_fingerprint": None}]
+        s["blockers"] = [
+            {
+                "id": "B1",
+                "classification": "ROOT",
+                "disposition": "RESOLVED",
+                "root_cause_fingerprint": None,
+            }
+        ]
         r = telemetry.summarize_state(s, ROOT)
         self.assertIsNone(r["roots"]["closed_count"])
         self.assertIsNone(r["roots"]["fingerprinted_count"])
 
     def test_unknown_disappearance_not_claimed_as_root_closure(self):
         a, b = state(), state(SHA_B)
-        a["unknowns"] = [{"id": "missing_ci", "owner": "O",
-                          "reason": "missing", "acquisition": "check CI"}]
+        a["unknowns"] = [
+            {
+                "id": "missing_ci",
+                "owner": "O",
+                "reason": "missing",
+                "acquisition": "check CI",
+            }
+        ]
         d = telemetry.compare_states(a, b, ROOT, "e" * 64)
         self.assertEqual(d["unknown_net_reduction"], 1)
         self.assertIsNone(d["root_burndown"])
@@ -117,8 +145,9 @@ class WaveTelemetryTests(unittest.TestCase):
 
     def test_federation_counts_only_supplied_verified_capsules(self):
         r = telemetry.summarize_state(state(), ROOT)
-        out = telemetry.federate([r], ["GBOGEB/ABACUS", "GBOGEB/CODEX",
-                                       "GBOGEB/cryoplant-project"])
+        out = telemetry.federate(
+            [r], ["GBOGEB/ABACUS", "GBOGEB/CODEX", "GBOGEB/cryoplant-project"]
+        )
         self.assertEqual(out["verified_local_capsules"], 1)
         self.assertEqual(out["target_count"], 3)
         self.assertEqual(out["breadth_percent"], 33.3333)
@@ -151,8 +180,15 @@ class WaveTelemetryTests(unittest.TestCase):
 
     def test_current_gate_requires_exact_sha(self):
         s = state()
-        s["gates"] = [{"id": "b0", "scope": "EXACT_HEAD", "status": "PASS",
-                        "required_for_admission": True, "source_sha": SHA_B}]
+        s["gates"] = [
+            {
+                "id": "b0",
+                "scope": "EXACT_HEAD",
+                "status": "PASS",
+                "required_for_admission": True,
+                "source_sha": SHA_B,
+            }
+        ]
         r = telemetry.summarize_state(s, ROOT)
         self.assertFalse(r["gates"]["required_all_pass"])
         self.assertEqual(r["admission"], "HOLD")
@@ -169,12 +205,20 @@ class WaveTelemetryTests(unittest.TestCase):
 
     def test_unknown_observation_retains_missing_reason(self):
         s = state()
-        s["metrics"] = [{"id": "unknown.branch", "state": "UNKNOWN",
-                         "numerator": None, "denominator": None, "value": None,
-                         "missing_reason": "No native receipt"}]
+        s["metrics"] = [
+            {
+                "id": "unknown.branch",
+                "state": "UNKNOWN",
+                "numerator": None,
+                "denominator": None,
+                "value": None,
+                "missing_reason": "No native receipt",
+            }
+        ]
         v = telemetry.summarize_state(s, ROOT)
-        self.assertEqual(v["metrics"]["unknown"]["unknown.branch"]["reason"],
-                         "No native receipt")
+        self.assertEqual(
+            v["metrics"]["unknown"]["unknown.branch"]["reason"], "No native receipt"
+        )
 
     def test_unsupported_observation_state_rejected(self):
         s = state()
@@ -183,8 +227,14 @@ class WaveTelemetryTests(unittest.TestCase):
             telemetry.summarize_state(s, ROOT)
 
     def test_invalid_ratio_counts_rejected(self):
-        for numerator, denominator in ((True, 3), (4, 3), (-1, 1), (0, 0),
-                                       (2.0, 3), (1, None)):
+        for numerator, denominator in (
+            (True, 3),
+            (4, 3),
+            (-1, 1),
+            (0, 0),
+            (2.0, 3),
+            (1, None),
+        ):
             with self.subTest(n=numerator, d=denominator):
                 x = ratio()
                 x["numerator"], x["denominator"] = numerator, denominator
@@ -193,19 +243,33 @@ class WaveTelemetryTests(unittest.TestCase):
 
     def test_duplicate_gate_id_rejected(self):
         s = state()
-        g = {"id": "B0", "scope": "EXACT_HEAD", "status": "PASS",
-             "source_sha": SHA_A, "required_for_admission": True}
+        g = {
+            "id": "B0",
+            "scope": "EXACT_HEAD",
+            "status": "PASS",
+            "source_sha": SHA_A,
+            "required_for_admission": True,
+        }
         s["gates"] = [g, copy.deepcopy(g)]
         with self.assertRaisesRegex(ValueError, "duplicate current gate"):
             telemetry.summarize_state(s, ROOT)
 
     def test_derived_admission_is_only_candidate_not_approval(self):
         s = state()
-        s["authority"] = {"merge_decision": "ADMIT", "independent_approval":
-                          "ESTABLISHED", "effective_branch_protection": "VERIFIED"}
-        s["gates"] = [{"id": "governance", "scope": "EXACT_HEAD",
-                       "status": "PASS", "required_for_admission": True,
-                       "source_sha": SHA_A}]
+        s["authority"] = {
+            "merge_decision": "ADMIT",
+            "independent_approval": "ESTABLISHED",
+            "effective_branch_protection": "VERIFIED",
+        }
+        s["gates"] = [
+            {
+                "id": "governance",
+                "scope": "EXACT_HEAD",
+                "status": "PASS",
+                "required_for_admission": True,
+                "source_sha": SHA_A,
+            }
+        ]
         out = telemetry.summarize_state(s, ROOT)
         self.assertEqual(out["admission"], "CANDIDATE_ONLY_REQUIRES_LIVE_AUTHORITY")
         self.assertFalse(out["authority_transfer"])
@@ -219,12 +283,21 @@ class WaveTelemetryTests(unittest.TestCase):
     def test_cli_pulse_with_verified_capsule_stub(self):
         from tempfile import TemporaryDirectory
         from unittest.mock import patch
+
         with TemporaryDirectory() as tmp:
             out = Path(tmp) / "pulse.json"
-            with patch.object(telemetry, "load_capsule", return_value=(
-                state(), {"manifest_root_sha256": ROOT})), patch.object(
-                    sys, "argv", ["wave_telemetry.py", "pulse", "--capsule", tmp,
-                                  "--out", str(out)]):
+            with (
+                patch.object(
+                    telemetry,
+                    "load_capsule",
+                    return_value=(state(), {"manifest_root_sha256": ROOT}),
+                ),
+                patch.object(
+                    sys,
+                    "argv",
+                    ["wave_telemetry.py", "pulse", "--capsule", tmp, "--out", str(out)],
+                ),
+            ):
                 telemetry.main()
             row = json.loads(out.read_text())
             self.assertEqual(row["schema"], telemetry.SCHEMA)
@@ -233,13 +306,33 @@ class WaveTelemetryTests(unittest.TestCase):
     def test_cli_compare_with_verified_capsule_stubs(self):
         from tempfile import TemporaryDirectory
         from unittest.mock import patch
+
         with TemporaryDirectory() as tmp:
             out = Path(tmp) / "delta.json"
-            with patch.object(telemetry, "load_capsule", side_effect=[
-                    (state(), {"manifest_root_sha256": ROOT}),
-                    (state(SHA_B), {"manifest_root_sha256": "e" * 64})
-                ]), patch.object(sys, "argv", ["wave_telemetry.py", "compare",
-                     "--before", tmp, "--after", tmp, "--out", str(out)]):
+            with (
+                patch.object(
+                    telemetry,
+                    "load_capsule",
+                    side_effect=[
+                        (state(), {"manifest_root_sha256": ROOT}),
+                        (state(SHA_B), {"manifest_root_sha256": "e" * 64}),
+                    ],
+                ),
+                patch.object(
+                    sys,
+                    "argv",
+                    [
+                        "wave_telemetry.py",
+                        "compare",
+                        "--before",
+                        tmp,
+                        "--after",
+                        tmp,
+                        "--out",
+                        str(out),
+                    ],
+                ),
+            ):
                 telemetry.main()
             row = json.loads(out.read_text())
             self.assertEqual(row["schema"], "handover.wave.delta.v1")
@@ -248,13 +341,31 @@ class WaveTelemetryTests(unittest.TestCase):
     def test_cli_federation_with_verified_capsule_stub(self):
         from tempfile import TemporaryDirectory
         from unittest.mock import patch
+
         with TemporaryDirectory() as tmp:
             out = Path(tmp) / "federation.json"
-            with patch.object(telemetry, "load_capsule", return_value=(
-                state(), {"manifest_root_sha256": ROOT})), patch.object(sys,
-                "argv", ["wave_telemetry.py", "federate", "--capsules", tmp,
-                         "--repositories", "GBOGEB/ABACUS", "GBOGEB/CODEX",
-                         "--out", str(out)]):
+            with (
+                patch.object(
+                    telemetry,
+                    "load_capsule",
+                    return_value=(state(), {"manifest_root_sha256": ROOT}),
+                ),
+                patch.object(
+                    sys,
+                    "argv",
+                    [
+                        "wave_telemetry.py",
+                        "federate",
+                        "--capsules",
+                        tmp,
+                        "--repositories",
+                        "GBOGEB/ABACUS",
+                        "GBOGEB/CODEX",
+                        "--out",
+                        str(out),
+                    ],
+                ),
+            ):
                 telemetry.main()
             row = json.loads(out.read_text())
             self.assertEqual(row["breadth_percent"], 50.0)
@@ -263,10 +374,21 @@ class WaveTelemetryTests(unittest.TestCase):
     def test_cli_federation_without_capsules_keeps_unknown(self):
         from tempfile import TemporaryDirectory
         from unittest.mock import patch
+
         with TemporaryDirectory() as tmp:
             out = Path(tmp) / "federation.json"
-            with patch.object(sys, "argv", ["wave_telemetry.py", "federate",
-                           "--repositories", "GBOGEB/ABACUS", "--out", str(out)]):
+            with patch.object(
+                sys,
+                "argv",
+                [
+                    "wave_telemetry.py",
+                    "federate",
+                    "--repositories",
+                    "GBOGEB/ABACUS",
+                    "--out",
+                    str(out),
+                ],
+            ):
                 telemetry.main()
             row = json.loads(out.read_text())
             self.assertEqual(row["verified_local_capsules"], 0)
@@ -301,10 +423,21 @@ class WaveTelemetryTests(unittest.TestCase):
         import runpy
         from tempfile import TemporaryDirectory
         from unittest.mock import patch
+
         with TemporaryDirectory() as tmp:
             out = Path(tmp) / "cli.json"
-            with patch.object(sys, "argv", ["wave_telemetry.py", "federate",
-                     "--repositories", "GBOGEB/ABACUS", "--out", str(out)]):
+            with patch.object(
+                sys,
+                "argv",
+                [
+                    "wave_telemetry.py",
+                    "federate",
+                    "--repositories",
+                    "GBOGEB/ABACUS",
+                    "--out",
+                    str(out),
+                ],
+            ):
                 runpy.run_path(str(Path(telemetry.__file__)), run_name="__main__")
             self.assertEqual(json.loads(out.read_text())["target_count"], 1)
 

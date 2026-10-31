@@ -3,6 +3,7 @@
 Only local files are hashed. A generated binary remains pending until an
 independent QPS build provides actual bytes, QA and provenance receipts.
 """
+
 from __future__ import annotations
 
 import argparse
@@ -16,15 +17,24 @@ from urllib.parse import quote
 
 SHA = re.compile(r"[0-9a-f]{40}\Z")
 SHA256 = re.compile(r"[0-9a-f]{64}\Z")
-FORMATS = {"json", "yaml", "yml", "md", "html", "xlsx", "docx", "pptx",
-           "pdf", "otter"}
+FORMATS = {"json", "yaml", "yml", "md", "html", "xlsx", "docx", "pptx", "pdf", "otter"}
 ROLES = {"repository_source", "generated_output", "controlled_input"}
 REPO = "GBOGEB/ABACUS"
 SCHEMA = "mcw.artifact.catalog.v1"
 REPORT_SCHEMA = "mcw.artifact.coldbuild.v1"
 BINARY = {"xlsx", "docx", "pptx", "pdf"}
-DAG = ("CENSUS", "SSOT_PIN", "SOURCE_FREEZE", "NORMALIZE", "MODEL",
-       "DERIVE", "RENDER", "TYPE_QA", "HASH_REPLAY", "RELEASE_REVIEW")
+DAG = (
+    "CENSUS",
+    "SSOT_PIN",
+    "SOURCE_FREEZE",
+    "NORMALIZE",
+    "MODEL",
+    "DERIVE",
+    "RENDER",
+    "TYPE_QA",
+    "HASH_REPLAY",
+    "RELEASE_REVIEW",
+)
 
 
 def require(condition, message):
@@ -37,19 +47,28 @@ def digest(raw):
 
 
 def relative(root, value):
-    require(isinstance(value, str) and value and "\\" not in value,
-            "invalid relative path")
+    require(
+        isinstance(value, str) and value and "\\" not in value, "invalid relative path"
+    )
     path = Path(value)
-    require(not path.is_absolute() and not any(p in ("..", ".") for p in path.parts)
-            and not value.startswith("~"), "unsafe path")
+    require(
+        not path.is_absolute()
+        and not any(p in ("..", ".") for p in path.parts)
+        and not value.startswith("~"),
+        "unsafe path",
+    )
     candidate = (root / path).resolve()
     require(candidate.is_relative_to(root), "path escapes checkout")
     return candidate
 
 
 def git_head(root):
-    result = subprocess.run(["git", "-C", str(root), "rev-parse", "HEAD"],
-                            capture_output=True, text=True, check=True)
+    result = subprocess.run(
+        ["git", "-C", str(root), "rev-parse", "HEAD"],
+        capture_output=True,
+        text=True,
+        check=True,
+    )
     return result.stdout.strip()
 
 
@@ -61,60 +80,96 @@ def classify(root, node):
         require(target.is_file(), "source absent: " + path)
         raw = target.read_bytes()
         require(raw, "empty source: " + path)
-        return {"state": "LOCAL_BYTES_VERIFIED", "sha256": digest(raw),
-                "bytes": len(raw), "source_path": path,
-                "preview": raw[:420].decode("utf-8", "replace")}
+        return {
+            "state": "LOCAL_BYTES_VERIFIED",
+            "sha256": digest(raw),
+            "bytes": len(raw),
+            "source_path": path,
+            "preview": raw[:420].decode("utf-8", "replace"),
+        }
     if role == "controlled_input":
         if path is None:
-            return {"state": "CONTROLLED_EXTERNAL_UNKNOWN", "sha256": None,
-                    "bytes": None, "source_path": None}
+            return {
+                "state": "CONTROLLED_EXTERNAL_UNKNOWN",
+                "sha256": None,
+                "bytes": None,
+                "source_path": None,
+            }
         target = relative(root, path)
         if target.is_file():
             raw = target.read_bytes()
             require(raw, "controlled input empty")
             pinned = node.get("expected_sha256")
-            require(pinned is not None and SHA256.fullmatch(pinned),
-                    "controlled input needs pinned SHA-256")
+            require(
+                pinned is not None and SHA256.fullmatch(pinned),
+                "controlled input needs pinned SHA-256",
+            )
             require(digest(raw) == pinned, "immutable input hash changed")
-            return {"state": "INPUT_HASH_VERIFIED_UNCHANGED", "sha256": pinned,
-                    "bytes": len(raw), "source_path": path}
-        return {"state": "CONTROLLED_INPUT_NOT_MOUNTED", "sha256": None,
-                "bytes": None, "source_path": path}
+            return {
+                "state": "INPUT_HASH_VERIFIED_UNCHANGED",
+                "sha256": pinned,
+                "bytes": len(raw),
+                "source_path": path,
+            }
+        return {
+            "state": "CONTROLLED_INPUT_NOT_MOUNTED",
+            "sha256": None,
+            "bytes": None,
+            "source_path": path,
+        }
     require(role == "generated_output", "unsupported role")
     require(fmt in BINARY or fmt == "html", "generated format unsupported")
     require(node.get("generator"), "generated output missing producer")
     target = relative(root, node["generator"])
     require(target.is_file(), "generator absent: " + node["generator"])
-    return {"state": "NOT_GENERATED_IN_COLD_VIEW", "sha256": None,
-            "bytes": None, "source_path": node["generator"]}
+    return {
+        "state": "NOT_GENERATED_IN_COLD_VIEW",
+        "sha256": None,
+        "bytes": None,
+        "source_path": node["generator"],
+    }
 
 
 def evaluate(root, catalog, style, sha):
     root = Path(root).resolve()
     require(catalog.get("schema") == SCHEMA, "catalog schema mismatch")
     require(isinstance(sha, str) and SHA.fullmatch(sha), "invalid exact commit")
-    require(style.get("palette", {}).get("tokens", {}).get("define"),
-            "missing canonical palette")
+    require(
+        style.get("palette", {}).get("tokens", {}).get("define"),
+        "missing canonical palette",
+    )
     require(isinstance(catalog.get("artifacts"), list), "artifacts must be array")
     ids, entries = set(), []
     for node in catalog["artifacts"]:
         require(isinstance(node, dict), "invalid artifact")
         ident = node.get("id")
-        require(isinstance(ident, str) and re.fullmatch(r"[A-Za-z0-9_-]{2,80}", ident)
-                and ident not in ids, "duplicate/invalid artifact ID")
+        require(
+            isinstance(ident, str)
+            and re.fullmatch(r"[A-Za-z0-9_-]{2,80}", ident)
+            and ident not in ids,
+            "duplicate/invalid artifact ID",
+        )
         ids.add(ident)
-        require(node.get("format") in FORMATS and node.get("role") in ROLES,
-                "invalid artifact format or role")
-        require(isinstance(node.get("title"), str) and bool(node["title"]),
-                "artifact title required")
+        require(
+            node.get("format") in FORMATS and node.get("role") in ROLES,
+            "invalid artifact format or role",
+        )
+        require(
+            isinstance(node.get("title"), str) and bool(node["title"]),
+            "artifact title required",
+        )
         entries.append({**node, "evidence": classify(root, node)})
     for node in entries:
         links = node.get("depends_on", [])
-        require(isinstance(links, list) and len(links) == len(set(links))
-                and all(link in ids and link != node["id"] for link in links),
-                "invalid artifact dependency")
+        require(
+            isinstance(links, list)
+            and len(links) == len(set(links))
+            and all(link in ids and link != node["id"] for link in links),
+            "invalid artifact dependency",
+        )
     visiting, visited = set(), set()
     index = {node["id"]: node for node in entries}
+
     def walk(ident):
         require(ident not in visiting, "cyclic artifact dependencies")
         if ident in visited:
@@ -124,26 +179,46 @@ def evaluate(root, catalog, style, sha):
             walk(dep)
         visiting.remove(ident)
         visited.add(ident)
+
     for ident in ids:
         walk(ident)
-    require(catalog.get("triggers") and isinstance(catalog["triggers"], list),
-            "missing trigger contract")
+    require(
+        catalog.get("triggers") and isinstance(catalog["triggers"], list),
+        "missing trigger contract",
+    )
     for trigger in catalog["triggers"]:
-        require(trigger.get("stage") in DAG and isinstance(trigger.get("event"), str)
-                and bool(trigger["event"]), "invalid trigger")
+        require(
+            trigger.get("stage") in DAG
+            and isinstance(trigger.get("event"), str)
+            and bool(trigger["event"]),
+            "invalid trigger",
+        )
     role_counts = {role: sum(x["role"] == role for x in entries) for role in ROLES}
-    states = {s: sum(x["evidence"]["state"] == s for x in entries)
-              for s in sorted(set(x["evidence"]["state"] for x in entries))}
-    return {"schema": REPORT_SCHEMA, "repository": REPO, "source_sha": sha,
-            "catalog_schema": SCHEMA, "style_version": style.get("version"),
-            "style_sha256": digest(json.dumps(style, sort_keys=True,
-                               separators=(",", ":")).encode()),
-            "artifacts": entries, "role_counts": role_counts, "states": states,
-            "triggers": catalog["triggers"], "stages": list(DAG),
-            "binary_release_admitted": False, "authority_transfer": False,
-            "merge_admission": "HOLD", "evidence_grade": "LOCAL_COLD_CHECK_ONLY",
-            "semantic_delta_zero_proves_byte_identity": False,
-            "note": "External binaries and generated outputs remain unverified."}
+    states = {
+        s: sum(x["evidence"]["state"] == s for x in entries)
+        for s in sorted(set(x["evidence"]["state"] for x in entries))
+    }
+    return {
+        "schema": REPORT_SCHEMA,
+        "repository": REPO,
+        "source_sha": sha,
+        "catalog_schema": SCHEMA,
+        "style_version": style.get("version"),
+        "style_sha256": digest(
+            json.dumps(style, sort_keys=True, separators=(",", ":")).encode()
+        ),
+        "artifacts": entries,
+        "role_counts": role_counts,
+        "states": states,
+        "triggers": catalog["triggers"],
+        "stages": list(DAG),
+        "binary_release_admitted": False,
+        "authority_transfer": False,
+        "merge_admission": "HOLD",
+        "evidence_grade": "LOCAL_COLD_CHECK_ONLY",
+        "semantic_delta_zero_proves_byte_identity": False,
+        "note": "External binaries and generated outputs remain unverified.",
+    }
 
 
 def render(report, style):
@@ -155,34 +230,96 @@ def render(report, style):
         state = evidence["state"]
         is_verified = state in ("LOCAL_BYTES_VERIFIED", "INPUT_HASH_VERIFIED_UNCHANGED")
         state_class = "ok" if is_verified else "pending"
-        local = item.get("path") if item["role"] == "repository_source" else item.get("generator")
-        ref = "https://github.com/" + REPO + "/blob/" + report["source_sha"] + "/" + quote(local, safe="/") if local else ""
-        link = ('<a href="' + esc(ref) + '" target="_blank" rel="noopener noreferrer">Open source ↗</a>') if ref else "<span>Controlled input — no public link</span>"
+        local = (
+            item.get("path")
+            if item["role"] == "repository_source"
+            else item.get("generator")
+        )
+        ref = (
+            "https://github.com/"
+            + REPO
+            + "/blob/"
+            + report["source_sha"]
+            + "/"
+            + quote(local, safe="/")
+            if local
+            else ""
+        )
+        link = (
+            (
+                '<a href="'
+                + esc(ref)
+                + '" target="_blank" rel="noopener noreferrer">Open source ↗</a>'
+            )
+            if ref
+            else "<span>Controlled input — no public link</span>"
+        )
         hashtext = evidence["sha256"] or "UNKNOWN — no output bytes"
         preview = evidence.get("preview")
-        leaf = ('<details class="leaf"><summary>Inspect source excerpt</summary>'
-                '<pre>' + esc(preview) + '</pre></details>') if preview else ""
-        cards.append(
-            '<article class="artifact" data-search="' + esc((" ".join([item["title"], item["format"], item["role"], state])).lower()) +
-            '" data-type="' + esc(item["format"]) + '" id="' + esc(item["id"]) + '">'
-            '<div class="card-top"><span class="type">' + esc(item["format"].upper()) +
-            '</span><span class="state ' + state_class + '">' + esc(state.replace("_", " ")) +
-            '</span></div><h3>' + esc(item["title"]) + '</h3><p>' + esc(item.get("description", "")) +
-            '</p><div class="facts"><span>Role</span><strong>' + esc(item["role"].replace("_", " ")) +
-            '</strong><span>SHA-256</span><code title="' + esc(hashtext) + '">' + esc(hashtext) +
-            '</code><span>Inputs</span><strong>' + esc(", ".join(item.get("depends_on", [])) or "No declared upstream") +
-            '</strong></div>' + leaf + '<div class="card-foot">' + link +
-            '<a href="#process">View build sequence ↓</a></div></article>'
+        leaf = (
+            (
+                '<details class="leaf"><summary>Inspect source excerpt</summary>'
+                "<pre>" + esc(preview) + "</pre></details>"
+            )
+            if preview
+            else ""
         )
-    stages = "".join('<li><span class="step-index">' + str(i + 1) + '</span><span>' +
-                     esc(stage.replace("_", " ")) + '</span></li>'
-                     for i, stage in enumerate(report["stages"]))
-    triggers = "".join('<tr><td>' + esc(item["event"]) + '</td><td>' +
-                       esc(item["stage"]) + '</td><td>' +
-                       esc(item.get("action", "")) + '</td></tr>'
-                       for item in report["triggers"])
-    warning = ("This is a cold-build snapshot. Generated binaries and remote "
-               "attestation are NOT proven.")
+        cards.append(
+            '<article class="artifact" data-search="'
+            + esc(
+                (" ".join([item["title"], item["format"], item["role"], state])).lower()
+            )
+            + '" data-type="'
+            + esc(item["format"])
+            + '" id="'
+            + esc(item["id"])
+            + '">'
+            '<div class="card-top"><span class="type">'
+            + esc(item["format"].upper())
+            + '</span><span class="state '
+            + state_class
+            + '">'
+            + esc(state.replace("_", " "))
+            + "</span></div><h3>"
+            + esc(item["title"])
+            + "</h3><p>"
+            + esc(item.get("description", ""))
+            + '</p><div class="facts"><span>Role</span><strong>'
+            + esc(item["role"].replace("_", " "))
+            + '</strong><span>SHA-256</span><code title="'
+            + esc(hashtext)
+            + '">'
+            + esc(hashtext)
+            + "</code><span>Inputs</span><strong>"
+            + esc(", ".join(item.get("depends_on", [])) or "No declared upstream")
+            + "</strong></div>"
+            + leaf
+            + '<div class="card-foot">'
+            + link
+            + '<a href="#process">View build sequence ↓</a></div></article>'
+        )
+    stages = "".join(
+        '<li><span class="step-index">'
+        + str(i + 1)
+        + "</span><span>"
+        + esc(stage.replace("_", " "))
+        + "</span></li>"
+        for i, stage in enumerate(report["stages"])
+    )
+    triggers = "".join(
+        "<tr><td>"
+        + esc(item["event"])
+        + "</td><td>"
+        + esc(item["stage"])
+        + "</td><td>"
+        + esc(item.get("action", ""))
+        + "</td></tr>"
+        for item in report["triggers"]
+    )
+    warning = (
+        "This is a cold-build snapshot. Generated binaries and remote "
+        "attestation are NOT proven."
+    )
     missing = report.get("missing_style_probes")
     if missing:
         warning += " Missing style probes: " + ", ".join(missing) + "."
@@ -261,16 +398,31 @@ document.getElementById("query").addEventListener("input",filter);
 document.getElementById("format").addEventListener("change",filter);filter();
 </script></body></html>
 """ % (
-       color["define"], color["measure"], color["analyze"], color["improve"],
-       color["control"], color["critical"], esc(warning),
-       len(report["artifacts"]), report["states"].get("LOCAL_BYTES_VERIFIED", 0),
-       report["role_counts"]["generated_output"], report["role_counts"]["controlled_input"],
-       "".join('<option value="' + esc(fmt) + '">' + esc(fmt.upper()) + "</option>"
-               for fmt in sorted({x["format"] for x in report["artifacts"]})),
-       "".join(cards), stages, triggers, esc(report["repository"]), esc(report["source_sha"]),
-       esc(report["style_version"]), esc(report["style_sha256"]),
-       esc(report.get("style_file_sha256") or "UNKNOWN"),
-       esc(report.get("catalog_file_sha256") or "UNKNOWN"), esc(report["evidence_grade"])
+        color["define"],
+        color["measure"],
+        color["analyze"],
+        color["improve"],
+        color["control"],
+        color["critical"],
+        esc(warning),
+        len(report["artifacts"]),
+        report["states"].get("LOCAL_BYTES_VERIFIED", 0),
+        report["role_counts"]["generated_output"],
+        report["role_counts"]["controlled_input"],
+        "".join(
+            '<option value="' + esc(fmt) + '">' + esc(fmt.upper()) + "</option>"
+            for fmt in sorted({x["format"] for x in report["artifacts"]})
+        ),
+        "".join(cards),
+        stages,
+        triggers,
+        esc(report["repository"]),
+        esc(report["source_sha"]),
+        esc(report["style_version"]),
+        esc(report["style_sha256"]),
+        esc(report.get("style_file_sha256") or "UNKNOWN"),
+        esc(report.get("catalog_file_sha256") or "UNKNOWN"),
+        esc(report["evidence_grade"]),
     )
 
 
@@ -285,8 +437,12 @@ def main():
     p.add_argument("--receipt", type=Path, required=True)
     a = p.parse_args()
     root = a.root.resolve()
-    report = evaluate(root, json.loads(a.catalog.read_text()),
-                      json.loads(a.style.read_text()), a.sha or git_head(root))
+    report = evaluate(
+        root,
+        json.loads(a.catalog.read_text()),
+        json.loads(a.style.read_text()),
+        a.sha or git_head(root),
+    )
     report["style_file_sha256"] = digest(a.style.read_bytes())
     report["catalog_file_sha256"] = digest(a.catalog.read_bytes())
     if a.style_status:
@@ -304,8 +460,15 @@ def main():
     a.html.write_text(content, encoding="utf-8")
     report["html_sha256"] = digest(content.encode())
     a.receipt.write_text(json.dumps(report, indent=2, sort_keys=True) + "\n")
-    print(json.dumps({"artifacts": len(report["artifacts"]), "html_sha256":
-                      report["html_sha256"], "merge_admission": "HOLD"}))
+    print(
+        json.dumps(
+            {
+                "artifacts": len(report["artifacts"]),
+                "html_sha256": report["html_sha256"],
+                "merge_admission": "HOLD",
+            }
+        )
+    )
 
 
 if __name__ == "__main__":
