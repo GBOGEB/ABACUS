@@ -5,7 +5,6 @@ from build_qplant_visualization import build_qplant_visualization
 from scripts.validate_runtime_foundation import validate_runtime_foundation
 from scripts.write_runtime_governance_status import build_status
 
-
 REPO_ROOT = Path(__file__).resolve().parents[2]
 
 
