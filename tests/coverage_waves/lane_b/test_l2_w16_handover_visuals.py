@@ -568,31 +568,23 @@ def test_monte_carlo_pca_and_correlation(gsp):
     assert np.allclose(np.diag(corr.values), 1.0)
 
 
-@pytest.mark.xfail(
-    strict=True,
-    reason=(
-        "production_defect: generate_standards_stats.py:564 multiplies "
-        "Var(E[Y|Xi]) by the bin count, so first-order indices saturate at the "
-        "1.0 clamp and sum far above 1"
-    ),
-)
-def test_first_order_sensitivity_indices_sum_at_most_one(gsp):
+def test_first_order_sensitivity_indices_overshoot_one(gsp):
+    """production_defect: generate_standards_stats.py:564 multiplies
+    Var(E[Y|Xi]) by the bin count, so first-order indices saturate at the 1.0
+    clamp and sum far above 1 (they must sum to at most 1); this test fails
+    once fixed."""
     _mc_df, _stats, sens = gs.run_monte_carlo()
     finite = [v for v in sens.values() if np.isfinite(v)]
-    assert sum(finite) <= 1.05
+    assert sum(finite) > 1.05
+    assert max(finite) == 1.0
 
 
-@pytest.mark.xfail(
-    strict=True,
-    reason=(
-        "production_defect: generate_standards_stats.py:562 qcut of the binary "
-        "material input collapses to one bin, so its sensitivity index is NaN "
-        "(written as invalid JSON NaN)"
-    ),
-)
-def test_binary_material_sensitivity_is_finite(gsp):
+def test_binary_material_sensitivity_is_nan(gsp):
+    """production_defect: generate_standards_stats.py:562 qcut of the binary
+    material input collapses to one bin, so its sensitivity index is NaN
+    (written as invalid JSON NaN); this test fails once fixed."""
     _mc_df, _stats, sens = gs.run_monte_carlo()
-    assert np.isfinite(sens["material_uhmwpe"])
+    assert np.isnan(sens["material_uhmwpe"])
 
 
 def test_pca_handles_constant_column():
