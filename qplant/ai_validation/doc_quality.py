@@ -24,6 +24,7 @@ logger = logging.getLogger(__name__)
 @dataclass
 class DocIssue:
     """A documentation quality finding."""
+
     file: str
     line: int
     severity: str  # info, warning, error
@@ -35,6 +36,7 @@ class DocIssue:
 @dataclass
 class DocReport:
     """Documentation quality report for a single file."""
+
     path: str
     format: str  # markdown, html, restructuredtext
     lines: int = 0
@@ -55,9 +57,16 @@ class DocQualityAnalyser:
 
     # Expected sections for engineering docs
     EXPECTED_SECTIONS_MD = [
-        "overview", "introduction", "setup", "usage",
-        "configuration", "architecture", "api", "testing",
-        "deployment", "troubleshooting",
+        "overview",
+        "introduction",
+        "setup",
+        "usage",
+        "configuration",
+        "architecture",
+        "api",
+        "testing",
+        "deployment",
+        "troubleshooting",
     ]
 
     def analyse_file(self, file_path: str) -> DocReport:
@@ -87,7 +96,9 @@ class DocQualityAnalyser:
 
         return report
 
-    def analyse_directory(self, dir_path: str, patterns: List[str] = None) -> Dict[str, Any]:
+    def analyse_directory(
+        self, dir_path: str, patterns: List[str] = None
+    ) -> Dict[str, Any]:
         """Analyse all documentation files in a directory."""
         if patterns is None:
             patterns = ["**/*.md", "**/*.html"]
@@ -100,7 +111,9 @@ class DocQualityAnalyser:
                 reports.append(self.analyse_file(str(doc_file)))
 
         total_words = sum(r.words for r in reports)
-        avg_score = sum(r.overall_score for r in reports) / len(reports) if reports else 0
+        avg_score = (
+            sum(r.overall_score for r in reports) / len(reports) if reports else 0
+        )
 
         return {
             "summary": {
@@ -109,7 +122,12 @@ class DocQualityAnalyser:
                 "total_issues": sum(len(r.issues) for r in reports),
                 "average_score": round(avg_score, 2),
                 "average_readability": round(
-                    sum(r.readability_score for r in reports) / len(reports) if reports else 0, 2
+                    (
+                        sum(r.readability_score for r in reports) / len(reports)
+                        if reports
+                        else 0
+                    ),
+                    2,
                 ),
             },
             "files": {
@@ -124,8 +142,12 @@ class DocQualityAnalyser:
                     "overall_score": round(r.overall_score, 2),
                     "issue_count": len(r.issues),
                     "issues": [
-                        {"line": i.line, "severity": i.severity,
-                         "category": i.category, "message": i.message}
+                        {
+                            "line": i.line,
+                            "severity": i.severity,
+                            "category": i.category,
+                            "message": i.message,
+                        }
                         for i in r.issues
                     ],
                 }
@@ -155,15 +177,17 @@ class DocQualityAnalyser:
         report.code_blocks = content.count("```") // 2
 
         # Links
-        links = re.findall(r'\[([^\]]+)\]\(([^)]+)\)', content)
+        links = re.findall(r"\[([^\]]+)\]\(([^)]+)\)", content)
         report.links = len(links)
 
         # Images
-        images = re.findall(r'!\[([^\]]*)\]\(([^)]+)\)', content)
+        images = re.findall(r"!\[([^\]]*)\]\(([^)]+)\)", content)
         report.images = len(images)
 
         # Tables
-        table_lines = [line for line in lines if line.strip().startswith("|") and "|" in line[1:]]
+        table_lines = [
+            line for line in lines if line.strip().startswith("|") and "|" in line[1:]
+        ]
         report.tables = max(0, len(table_lines) // 3)  # Approximate
 
         # Check completeness
@@ -174,17 +198,26 @@ class DocQualityAnalyser:
                 if expected in ht:
                     found.add(expected)
                     break
-        report.completeness_score = len(found) / len(self.EXPECTED_SECTIONS_MD) if self.EXPECTED_SECTIONS_MD else 1.0
+        report.completeness_score = (
+            len(found) / len(self.EXPECTED_SECTIONS_MD)
+            if self.EXPECTED_SECTIONS_MD
+            else 1.0
+        )
 
         # Issue detection
         # Empty headers
         for i, line in enumerate(lines, 1):
-            if re.match(r'^#+\s*$', line):
-                report.issues.append(DocIssue(
-                    file=report.path, line=i, severity="warning",
-                    category="completeness", message="Empty header",
-                    suggestion="Add header text or remove the header",
-                ))
+            if re.match(r"^#+\s*$", line):
+                report.issues.append(
+                    DocIssue(
+                        file=report.path,
+                        line=i,
+                        severity="warning",
+                        category="completeness",
+                        message="Empty header",
+                        suggestion="Add header text or remove the header",
+                    )
+                )
 
         # Very long paragraphs
         paragraph = []
@@ -194,55 +227,77 @@ class DocQualityAnalyser:
             elif paragraph:
                 text = " ".join(paragraph)
                 if len(text.split()) > 100:
-                    report.issues.append(DocIssue(
-                        file=report.path, line=i - len(paragraph), severity="info",
-                        category="clarity", message=f"Long paragraph ({len(text.split())} words)",
-                        suggestion="Consider breaking into shorter paragraphs",
-                    ))
+                    report.issues.append(
+                        DocIssue(
+                            file=report.path,
+                            line=i - len(paragraph),
+                            severity="info",
+                            category="clarity",
+                            message=f"Long paragraph ({len(text.split())} words)",
+                            suggestion="Consider breaking into shorter paragraphs",
+                        )
+                    )
                 paragraph = []
 
         # Broken link patterns
-        for match in re.finditer(r'\[([^\]]+)\]\(\s*\)', content):
-            line_num = content[:match.start()].count("\n") + 1
-            report.issues.append(DocIssue(
-                file=report.path, line=line_num, severity="error",
-                category="links", message=f"Empty link target for '{match.group(1)}'",
-            ))
+        for match in re.finditer(r"\[([^\]]+)\]\(\s*\)", content):
+            line_num = content[: match.start()].count("\n") + 1
+            report.issues.append(
+                DocIssue(
+                    file=report.path,
+                    line=line_num,
+                    severity="error",
+                    category="links",
+                    message=f"Empty link target for '{match.group(1)}'",
+                )
+            )
 
         # Missing alt text for images
-        for match in re.finditer(r'!\[\]\(', content):
-            line_num = content[:match.start()].count("\n") + 1
-            report.issues.append(DocIssue(
-                file=report.path, line=line_num, severity="warning",
-                category="completeness", message="Image missing alt text",
-            ))
+        for match in re.finditer(r"!\[\]\(", content):
+            line_num = content[: match.start()].count("\n") + 1
+            report.issues.append(
+                DocIssue(
+                    file=report.path,
+                    line=line_num,
+                    severity="warning",
+                    category="completeness",
+                    message="Image missing alt text",
+                )
+            )
 
     def _analyse_html(self, content: str, report: DocReport) -> None:
         """Analyse HTML-specific elements."""
-        report.headers = len(re.findall(r'<h[1-6][^>]*>', content))
-        report.code_blocks = len(re.findall(r'<(pre|code)[^>]*>', content))
-        report.links = len(re.findall(r'<a\s+[^>]*href=', content))
-        report.images = len(re.findall(r'<img\s+', content))
-        report.tables = len(re.findall(r'<table[^>]*>', content))
+        report.headers = len(re.findall(r"<h[1-6][^>]*>", content))
+        report.code_blocks = len(re.findall(r"<(pre|code)[^>]*>", content))
+        report.links = len(re.findall(r"<a\s+[^>]*href=", content))
+        report.images = len(re.findall(r"<img\s+", content))
+        report.tables = len(re.findall(r"<table[^>]*>", content))
 
         # Check for images without alt
-        for match in re.finditer(r'<img\s+(?![^>]*alt=)', content):
-            line_num = content[:match.start()].count("\n") + 1
-            report.issues.append(DocIssue(
-                file=report.path, line=line_num, severity="warning",
-                category="completeness", message="Image missing alt attribute",
-            ))
+        for match in re.finditer(r"<img\s+(?![^>]*alt=)", content):
+            line_num = content[: match.start()].count("\n") + 1
+            report.issues.append(
+                DocIssue(
+                    file=report.path,
+                    line=line_num,
+                    severity="warning",
+                    category="completeness",
+                    message="Image missing alt attribute",
+                )
+            )
 
-        report.completeness_score = min(1.0, report.headers / 5) if report.headers else 0.0
+        report.completeness_score = (
+            min(1.0, report.headers / 5) if report.headers else 0.0
+        )
 
     def _calculate_readability(self, content: str) -> float:
         """Calculate approximate Flesch-Kincaid readability score."""
         # Strip markdown/HTML
-        text = re.sub(r'<[^>]+>', '', content)
-        text = re.sub(r'[#*`\[\]()!|]', '', text)
-        text = re.sub(r'\s+', ' ', text).strip()
+        text = re.sub(r"<[^>]+>", "", content)
+        text = re.sub(r"[#*`\[\]()!|]", "", text)
+        text = re.sub(r"\s+", " ", text).strip()
 
-        sentences = re.split(r'[.!?]+', text)
+        sentences = re.split(r"[.!?]+", text)
         sentences = [s.strip() for s in sentences if s.strip()]
         words = text.split()
 
@@ -264,7 +319,7 @@ class DocQualityAnalyser:
         word = word.lower().strip(".,!?;:")
         if len(word) <= 3:
             return 1
-        count = len(re.findall(r'[aeiouy]+', word))
+        count = len(re.findall(r"[aeiouy]+", word))
         if word.endswith("e"):
             count -= 1
         return max(1, count)

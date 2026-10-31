@@ -19,9 +19,9 @@ from __future__ import annotations
 
 import os
 import sys
-from typing import Dict, Any
+from typing import Any, Dict
 
-from fastapi import Security, HTTPException, status, Request
+from fastapi import HTTPException, Request, Security, status
 from fastapi.security import APIKeyHeader
 
 # Ensure the authentication package is importable
@@ -39,6 +39,7 @@ rate_limiter = RateLimiter()
 
 
 # ── Dependency ───────────────────────────────────────────────────────────────
+
 
 async def verify_api_key(
     api_key: str | None = Security(api_key_header),

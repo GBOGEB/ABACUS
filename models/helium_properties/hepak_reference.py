@@ -3,13 +3,19 @@
 The licensed HEPAK runtime is deliberately not bundled. An engineer-generated
 CSV may be committed with provenance. Absence is UNVALIDATED, never PASS.
 """
+
 from __future__ import annotations
 
 import csv
 from pathlib import Path
 from typing import Any
 
-DEFAULT_REFERENCE = Path(__file__).resolve().parents[2] / "docs" / "qps_line_s_recovery" / "he_reference_hepak.csv"
+DEFAULT_REFERENCE = (
+    Path(__file__).resolve().parents[2]
+    / "docs"
+    / "qps_line_s_recovery"
+    / "he_reference_hepak.csv"
+)
 REQUIRED_COLUMNS = {"temperature_K", "pressure_Pa", "density_kg_m3", "enthalpy_J_kg"}
 
 
@@ -26,7 +32,11 @@ def load_reference(path: Path = DEFAULT_REFERENCE) -> list[dict[str, Any]]:
 
 def reference_status(path: Path = DEFAULT_REFERENCE) -> dict[str, Any]:
     if not path.exists():
-        return {"status": "UNVALIDATED", "reason": "HEPAK_REFERENCE_MISSING", "path": str(path)}
+        return {
+            "status": "UNVALIDATED",
+            "reason": "HEPAK_REFERENCE_MISSING",
+            "path": str(path),
+        }
     try:
         rows = load_reference(path)
     except ValueError as exc:

@@ -4,6 +4,7 @@
 The YAML catalog declares ownership and dependency edges. A staged proposal is
 NOT a GitHub run, reviewer action, accepted root closure, or CI admission.
 """
+
 from __future__ import annotations
 
 import argparse
@@ -14,7 +15,6 @@ import subprocess
 from pathlib import Path
 
 import yaml
-
 
 HEAD = re.compile(r"^[a-f0-9]{40}$")
 SCHEMA = "abacus.governed_recovery.stage.v1"
@@ -38,18 +38,23 @@ def plan(head_sha: str, config: dict) -> dict:
     if scheduler.get("moniker") != "DELTA_1":
         raise ValueError("CANONICAL_SCHEDULER_DRIFT")
     wave = scheduler.get("governed_recovery_wave", {})
-    if (wave.get("action_class") != "STAGE_ONLY"
-            or wave.get("merge_admission") != "HOLD"
-            or wave.get("auto_merge") is not False
-            or wave.get("worker_dispatch_authorized") is not False):
+    if (
+        wave.get("action_class") != "STAGE_ONLY"
+        or wave.get("merge_admission") != "HOLD"
+        or wave.get("auto_merge") is not False
+        or wave.get("worker_dispatch_authorized") is not False
+    ):
         raise ValueError("UNAUTHORIZED_SCHEDULER_ESCALATION")
 
     resources = wave.get("resources", {})
     slots = resources.get("proposal_worker_slots")
     if type(slots) is not int or not 1 <= slots <= 8:
         raise ValueError("INVALID_WORKER_CAPACITY")
-    for key in ("human_approval_slots", "secret_configuration_slots",
-                "admission_slots"):
+    for key in (
+        "human_approval_slots",
+        "secret_configuration_slots",
+        "admission_slots",
+    ):
         if resources.get(key) != 0:
             raise ValueError("UNVERIFIED_EXTERNAL_AUTHORITY")
 
@@ -65,11 +70,13 @@ def plan(head_sha: str, config: dict) -> dict:
             raise ValueError("INVALID_LANE_ID")
         if key in by_id:
             raise ValueError("DUPLICATE_LANE")
-        if (lane.get("resource") not in ("technical", "owner", "proof", "admission")
-                or type(lane.get("priority")) is not int
-                or lane["priority"] not in (0, 1, 2)
-                or not isinstance(lane.get("source_owner"), str)
-                or not isinstance(lane.get("needs"), list)):
+        if (
+            lane.get("resource") not in ("technical", "owner", "proof", "admission")
+            or type(lane.get("priority")) is not int
+            or lane["priority"] not in (0, 1, 2)
+            or not isinstance(lane.get("source_owner"), str)
+            or not isinstance(lane.get("needs"), list)
+        ):
             raise ValueError("INVALID_LANE_CONTRACT")
         by_id[key] = lane
 
@@ -117,12 +124,17 @@ def plan(head_sha: str, config: dict) -> dict:
             chosen.append(key)
             owners.append(owner)
             state = "DISJOINT_PROPOSAL_ONLY"
-        rows.append({
-            "id": key, "priority": lane["priority"],
-            "resource": resource, "source_owner": lane["source_owner"],
-            "needs": list(lane["needs"]), "evidence_needed": lane["evidence"],
-            "state": state,
-        })
+        rows.append(
+            {
+                "id": key,
+                "priority": lane["priority"],
+                "resource": resource,
+                "source_owner": lane["source_owner"],
+                "needs": list(lane["needs"]),
+                "evidence_needed": lane["evidence"],
+                "state": state,
+            }
+        )
 
     result = {
         "schema": SCHEMA,
@@ -156,16 +168,18 @@ def verify(payload: dict) -> None:
     raw = {k: v for k, v in payload.items() if k != "proposal_sha256"}
     if claimed != hashlib.sha256(_canonical(raw)).hexdigest():
         raise ValueError("PROPOSAL_DIGEST_MISMATCH")
-    if (payload.get("schema") != SCHEMA
-            or payload.get("action_class") != "STAGE_ONLY"
-            or payload.get("merge_admission") != "HOLD"
-            or payload.get("observed_dispatches") != 0
-            or payload.get("verified_distinct_roots_closed") != 0
-            or payload.get("formal_credit_delta") != 0
-            or payload.get("engineering_credit_delta") != 0
-            or payload.get("mutation_enabled") is not False
-            or payload.get("worker_dispatch_authorized") is not False
-            or payload.get("authority_transfer") is not False):
+    if (
+        payload.get("schema") != SCHEMA
+        or payload.get("action_class") != "STAGE_ONLY"
+        or payload.get("merge_admission") != "HOLD"
+        or payload.get("observed_dispatches") != 0
+        or payload.get("verified_distinct_roots_closed") != 0
+        or payload.get("formal_credit_delta") != 0
+        or payload.get("engineering_credit_delta") != 0
+        or payload.get("mutation_enabled") is not False
+        or payload.get("worker_dispatch_authorized") is not False
+        or payload.get("authority_transfer") is not False
+    ):
         raise ValueError("FALSE_DISPATCH_OR_ADMISSION")
 
 
@@ -176,8 +190,11 @@ def main() -> int:
     parser.add_argument("--out", type=Path, required=True)
     args = parser.parse_args()
     actual = subprocess.run(
-        ["git", "rev-parse", "--verify", "HEAD"], cwd=args.root,
-        capture_output=True, text=True, check=False,
+        ["git", "rev-parse", "--verify", "HEAD"],
+        cwd=args.root,
+        capture_output=True,
+        text=True,
+        check=False,
     )
     if actual.returncode or actual.stdout.strip() != args.expected_head:
         raise SystemExit("OWNER_EXACT_HEAD_MISMATCH")
@@ -186,11 +203,18 @@ def main() -> int:
     verify(result)
     args.out.parent.mkdir(parents=True, exist_ok=True)
     args.out.write_bytes(_canonical(result))
-    print(json.dumps({
-        "planned_workers": len(result["selected_disjoint_proposals"]),
-        "lanes": result["lane_count"], "edges": result["edge_count"],
-        "observed_dispatches": 0, "merge_admission": "HOLD",
-    }, sort_keys=True))
+    print(
+        json.dumps(
+            {
+                "planned_workers": len(result["selected_disjoint_proposals"]),
+                "lanes": result["lane_count"],
+                "edges": result["edge_count"],
+                "observed_dispatches": 0,
+                "merge_admission": "HOLD",
+            },
+            sort_keys=True,
+        )
+    )
     return 0
 
 

@@ -20,12 +20,14 @@ Contract (both paths):
     returns {"strengths": {id: float}, "ranking": [ids high->low],
              "iterations": int, "engine": "canonical"|"fallback"}
 """
+
 from __future__ import annotations
 
 from typing import Any, Sequence
 
 try:  # canonical implementation (CODEX pca_engine), optional
     from pca_engine.bradley_terry import fit_bradley_terry as _canonical_fit
+
     CANONICAL_BT_AVAILABLE = True
 except Exception:  # pragma: no cover - depends on install layout
     _canonical_fit = None
@@ -64,8 +66,9 @@ def _wins_matrix(names: list[str], comparisons: Sequence[dict[str, Any]]):
     return wins
 
 
-def _fallback_fit(ids, comparisons, iterations: int = 2000,
-                  tolerance: float = 1.0e-11) -> dict:
+def _fallback_fit(
+    ids, comparisons, iterations: int = 2000, tolerance: float = 1.0e-11
+) -> dict:
     """Pure-Python Bradley-Terry via MM updates (no NumPy)."""
     names = _validate(ids, comparisons)
     n = len(names)
@@ -94,11 +97,17 @@ def _fallback_fit(ids, comparisons, iterations: int = 2000,
 
     strengths = {names[i]: p[i] for i in range(n)}
     ranking = sorted(strengths, key=lambda k: strengths[k], reverse=True)
-    return {"strengths": strengths, "ranking": ranking,
-            "iterations": used, "engine": "fallback"}
+    return {
+        "strengths": strengths,
+        "ranking": ranking,
+        "iterations": used,
+        "engine": "fallback",
+    }
 
 
-def _normalize_for_canonical(comparisons: Sequence[dict[str, Any]]) -> list[dict[str, Any]]:
+def _normalize_for_canonical(
+    comparisons: Sequence[dict[str, Any]],
+) -> list[dict[str, Any]]:
     """Rescale each comparison's scores so a_score + b_score == 1.
 
     The federation contract accepts raw/absolute scores (e.g. 2 vs 1); the
@@ -115,28 +124,32 @@ def _normalize_for_canonical(comparisons: Sequence[dict[str, Any]]) -> list[dict
         else:
             a_norm = a_score / total
             b_norm = b_score / total
-        out.append({"a": row["a"], "b": row["b"],
-                    "a_score": a_norm, "b_score": b_norm})
+        out.append({"a": row["a"], "b": row["b"], "a_score": a_norm, "b_score": b_norm})
     return out
 
 
-def fit_bradley_terry(ids, comparisons, iterations: int = 2000,
-                      tolerance: float = 1.0e-11) -> dict:
+def fit_bradley_terry(
+    ids, comparisons, iterations: int = 2000, tolerance: float = 1.0e-11
+) -> dict:
     """Rank items by pairwise comparisons (canonical engine if available)."""
     if CANONICAL_BT_AVAILABLE and _canonical_fit is not None:
-        result = _canonical_fit(ids, _normalize_for_canonical(comparisons),
-                                iterations=iterations, tolerance=tolerance)
+        result = _canonical_fit(
+            ids,
+            _normalize_for_canonical(comparisons),
+            iterations=iterations,
+            tolerance=tolerance,
+        )
         if isinstance(result, dict):
             result.setdefault("engine", "canonical")
             if "strengths" in result and "ranking" not in result:
                 strengths = result["strengths"]
-                result["ranking"] = sorted(strengths, key=lambda k: strengths[k],
-                                           reverse=True)
+                result["ranking"] = sorted(
+                    strengths, key=lambda k: strengths[k], reverse=True
+                )
             return result
         # Unexpected canonical shape -> wrap defensively.
         return {"strengths": result, "engine": "canonical"}
-    return _fallback_fit(ids, comparisons, iterations=iterations,
-                         tolerance=tolerance)
+    return _fallback_fit(ids, comparisons, iterations=iterations, tolerance=tolerance)
 
 
 def rank_pairwise(ids, comparisons, **kwargs) -> list[str]:

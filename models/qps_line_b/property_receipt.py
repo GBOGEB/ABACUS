@@ -4,7 +4,8 @@ Normal-fluid execution may use the governed He-4 provider. He-II/sub-lambda stat
 remain fail-closed unless an independently validated low-temperature provider/reference
 is available. No fallback constants are permitted.
 """
-from dataclasses import dataclass, asdict
+
+from dataclasses import asdict, dataclass
 
 
 @dataclass(frozen=True)
@@ -24,15 +25,31 @@ class PropertyReceipt:
             raise ValueError("positive T and absolute P required")
         if self.density_kg_m3 <= 0 or self.viscosity_Pa_s <= 0:
             raise ValueError("positive density and viscosity required")
-        if not all((self.provider_id, self.provider_version, self.validity_regime, self.source_sha)):
+        if not all(
+            (
+                self.provider_id,
+                self.provider_version,
+                self.validity_regime,
+                self.source_sha,
+            )
+        ):
             raise ValueError("provider provenance and source SHA required")
-        if "HEII" in self.validity_regime.upper() and "VALIDATED" not in self.validity_regime.upper():
+        if (
+            "HEII" in self.validity_regime.upper()
+            and "VALIDATED" not in self.validity_regime.upper()
+        ):
             raise ValueError("He-II receipt requires independent validation")
         return asdict(self)
 
 
-def from_provider_state(state: dict, *, provider_id: str, provider_version: str,
-                        validity_regime: str, source_sha: str) -> PropertyReceipt:
+def from_provider_state(
+    state: dict,
+    *,
+    provider_id: str,
+    provider_version: str,
+    validity_regime: str,
+    source_sha: str,
+) -> PropertyReceipt:
     """Create the typed receipt from an already-governed provider state.
 
     This adapter intentionally does not invent properties or invoke an ungoverned

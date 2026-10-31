@@ -3,7 +3,9 @@
 Mirrors the convention of integration/cryoplant_project/src/federation.py.
 Provides assimilate() returning a summary of the session node for smoke tests.
 """
+
 from __future__ import annotations
+
 from pathlib import Path
 from typing import Any, Dict
 

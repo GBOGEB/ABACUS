@@ -6,8 +6,8 @@ Confirms all open actions are aligned and tested
 """
 
 import json
-from pathlib import Path
 from datetime import datetime
+from pathlib import Path
 
 
 def verify_alignment():
@@ -23,7 +23,7 @@ def verify_alignment():
     print("[1/10] Checking v033 file exists...")
     v033_file = workspace / "execute_full_dmaic_phases_0_to_9_v033.py"
     if v033_file.exists():
-        content = v033_file.read_text(encoding='utf-8')
+        content = v033_file.read_text(encoding="utf-8")
 
         has_sprint_marker = "SPRINT TESTED" in content
         has_dow_marker = "DOW TESTED" in content
@@ -124,23 +124,22 @@ def verify_alignment():
     sprint_reports = list(workspace.glob("SPRINT_READINESS_REPORT_*.json"))
     has_sprint_report = len(sprint_reports) > 0
     checks.append(("Sprint test report exists", has_sprint_report))
-    print(f"   {'✅' if has_sprint_report else '❌'} Sprint test report ({len(sprint_reports)} found)")
+    print(
+        f"   {'✅' if has_sprint_report else '❌'} Sprint test report ({len(sprint_reports)} found)"
+    )
 
     print()
     print("[8/10] Checking DOW test results...")
     dow_reports = list(workspace.glob("DOW_PHASE_TEST_REPORT_*.json"))
     has_dow_report = len(dow_reports) > 0
     checks.append(("DOW test report exists", has_dow_report))
-    print(f"   {'✅' if has_dow_report else '❌'} DOW test report ({len(dow_reports)} found)")
+    print(
+        f"   {'✅' if has_dow_report else '❌'} DOW test report ({len(dow_reports)} found)"
+    )
 
     print()
     print("[9/10] Checking deployment files...")
-    deploy_files = [
-        "deploy.py",
-        "docker-compose.yml",
-        "Dockerfile",
-        "requirements.txt"
-    ]
+    deploy_files = ["deploy.py", "docker-compose.yml", "Dockerfile", "requirements.txt"]
 
     for file in deploy_files:
         exists = (workspace / file).exists()
@@ -149,12 +148,7 @@ def verify_alignment():
 
     print()
     print("[10/10] Checking output directories...")
-    output_dirs = [
-        "STATS",
-        "logs",
-        "output",
-        "pipeline_output"
-    ]
+    output_dirs = ["STATS", "logs", "output", "pipeline_output"]
 
     for dir_name in output_dirs:
         exists = (workspace / dir_name).exists()
@@ -200,6 +194,8 @@ def verify_alignment():
     print()
     print("=" * 80)
 
+
 if __name__ == "__main__":
     import sys
+
     sys.exit(verify_alignment())

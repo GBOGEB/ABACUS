@@ -11,13 +11,13 @@ Features:
 - Key rotation
 """
 
-import secrets
 import hashlib
 import json
 import logging
+import secrets
 from datetime import datetime, timedelta
 from pathlib import Path
-from typing import Optional, Tuple, Dict, Any
+from typing import Any, Dict, Optional, Tuple
 
 logger = logging.getLogger(__name__)
 
@@ -53,7 +53,9 @@ class APIKeyManager:
     """
 
     def __init__(self, keys_db_path: Optional[str] = None) -> None:
-        self.keys_db = Path(keys_db_path) if keys_db_path else Path(default_keys_db_path())
+        self.keys_db = (
+            Path(keys_db_path) if keys_db_path else Path(default_keys_db_path())
+        )
         self._ensure_db()
 
     # ── Key lifecycle ────────────────────────────────────────────────────
@@ -95,7 +97,12 @@ class APIKeyManager:
         db[key_id] = metadata
         self._save_db(db)
 
-        logger.info("Generated API key '%s' (id=%s, expires=%s)", name, key_id, metadata["expires_at"])
+        logger.info(
+            "Generated API key '%s' (id=%s, expires=%s)",
+            name,
+            key_id,
+            metadata["expires_at"],
+        )
         return key_id, api_key
 
     def validate_key(self, api_key: str) -> Dict[str, Any]:

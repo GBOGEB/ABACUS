@@ -39,7 +39,9 @@ def validate_tuple_metadata(entries: Any) -> List[str]:
     known_tuple_ids = {
         entry.get("tuple_id")
         for entry in entries
-        if isinstance(entry, dict) and isinstance(entry.get("tuple_id"), str) and entry.get("tuple_id").strip()
+        if isinstance(entry, dict)
+        and isinstance(entry.get("tuple_id"), str)
+        and entry.get("tuple_id").strip()
     }
 
     for idx, entry in enumerate(entries):
@@ -73,7 +75,9 @@ def validate_tracker_payload(payload: Dict[str, Any]) -> List[str]:
 
     status_schema = payload.get("status_schema")
     if status_schema != sorted(STATUS_VALUES):
-        errors.append("status_schema must equal ['blocked', 'in_progress', 'planned', 'released', 'validated']")
+        errors.append(
+            "status_schema must equal ['blocked', 'in_progress', 'planned', 'released', 'validated']"
+        )
 
     branches = payload.get("branches")
     if not isinstance(branches, list):

@@ -19,8 +19,8 @@ import os
 import statistics
 import time
 from collections import defaultdict, deque
-from dataclasses import dataclass, field, asdict
-from datetime import datetime, timezone, timedelta
+from dataclasses import asdict, dataclass, field
+from datetime import datetime, timedelta, timezone
 from enum import Enum
 from pathlib import Path
 from typing import Any, Callable, Dict, List, Optional, Tuple
@@ -29,6 +29,7 @@ logger = logging.getLogger(__name__)
 
 
 # ── Alert System ─────────────────────────────────────────────────────────────
+
 
 class AlertLevel(str, Enum):
     INFO = "INFO"
@@ -123,6 +124,7 @@ class AlertManager:
 
 # ── Statistical Process Control ──────────────────────────────────────────────
 
+
 class SPCMonitor:
     """Statistical Process Control for metric monitoring.
 
@@ -136,10 +138,16 @@ class SPCMonitor:
     def __init__(self, window_size: int = 30, z_threshold: float = 3.0):
         self.window_size = window_size
         self.z_threshold = z_threshold
-        self.series: Dict[str, deque] = defaultdict(lambda: deque(maxlen=window_size * 10))
-        self.timestamps: Dict[str, deque] = defaultdict(lambda: deque(maxlen=window_size * 10))
+        self.series: Dict[str, deque] = defaultdict(
+            lambda: deque(maxlen=window_size * 10)
+        )
+        self.timestamps: Dict[str, deque] = defaultdict(
+            lambda: deque(maxlen=window_size * 10)
+        )
 
-    def add_observation(self, metric: str, value: float, ts: Optional[str] = None) -> Dict[str, Any]:
+    def add_observation(
+        self, metric: str, value: float, ts: Optional[str] = None
+    ) -> Dict[str, Any]:
         """Add an observation and return analysis."""
         self.series[metric].append(value)
         self.timestamps[metric].append(ts or datetime.now(timezone.utc).isoformat())
@@ -173,7 +181,7 @@ class SPCMonitor:
             result["anomaly"] = abs(z_score) > self.z_threshold
 
         # Moving average
-        window = data[-self.window_size:]
+        window = data[-self.window_size :]
         result["moving_avg"] = round(statistics.mean(window), 4)
 
         # Trend detection (linear regression on recent window)
@@ -216,18 +224,20 @@ class SPCMonitor:
         if len(data) < 5:
             return []
 
-        slope = self._linear_trend(data[-self.window_size:])
+        slope = self._linear_trend(data[-self.window_size :])
         last_value = data[-1]
         predictions = []
 
         for i in range(1, steps + 1):
             predicted = last_value + slope * i
             confidence = max(0.5, 1.0 - (i * 0.1))  # Confidence decreases with distance
-            predictions.append({
-                "step": i,
-                "predicted_value": round(predicted, 4),
-                "confidence": round(confidence, 4),
-            })
+            predictions.append(
+                {
+                    "step": i,
+                    "predicted_value": round(predicted, 4),
+                    "confidence": round(confidence, 4),
+                }
+            )
 
         return predictions
 
@@ -245,28 +255,35 @@ class SPCMonitor:
 
 # ── Performance Monitor ─────────────────────────────────────────────────────
 
+
 class PerformanceMonitor:
     """Track performance metrics: API latency, build times, resource usage."""
 
     def __init__(self, max_entries: int = 10000):
-        self.latencies: Dict[str, deque] = defaultdict(lambda: deque(maxlen=max_entries))
+        self.latencies: Dict[str, deque] = defaultdict(
+            lambda: deque(maxlen=max_entries)
+        )
         self.build_times: deque = deque(maxlen=1000)
 
     def record_latency(self, endpoint: str, duration_ms: float) -> None:
         """Record an API call latency."""
-        self.latencies[endpoint].append({
-            "duration_ms": duration_ms,
-            "timestamp": datetime.now(timezone.utc).isoformat(),
-        })
+        self.latencies[endpoint].append(
+            {
+                "duration_ms": duration_ms,
+                "timestamp": datetime.now(timezone.utc).isoformat(),
+            }
+        )
 
     def record_build_time(self, duration_s: float, steps: int, passed: int) -> None:
         """Record a build pipeline execution."""
-        self.build_times.append({
-            "duration_s": duration_s,
-            "steps": steps,
-            "passed": passed,
-            "timestamp": datetime.now(timezone.utc).isoformat(),
-        })
+        self.build_times.append(
+            {
+                "duration_s": duration_s,
+                "steps": steps,
+                "passed": passed,
+                "timestamp": datetime.now(timezone.utc).isoformat(),
+            }
+        )
 
     def get_latency_stats(self, endpoint: Optional[str] = None) -> Dict[str, Any]:
         """Get latency statistics (p50, p95, p99)."""
@@ -303,8 +320,14 @@ class PerformanceMonitor:
             "avg_duration_s": round(statistics.mean(durations), 2),
             "min_duration_s": round(min(durations), 2),
             "max_duration_s": round(max(durations), 2),
-            "trend": "stable" if len(durations) < 3 else (
-                "degrading" if durations[-1] > statistics.mean(durations) * 1.2 else "healthy"
+            "trend": (
+                "stable"
+                if len(durations) < 3
+                else (
+                    "degrading"
+                    if durations[-1] > statistics.mean(durations) * 1.2
+                    else "healthy"
+                )
             ),
         }
 
@@ -312,6 +335,7 @@ class PerformanceMonitor:
         """Get current resource usage (best effort)."""
         try:
             import psutil
+
             return {
                 "cpu_percent": psutil.cpu_percent(interval=0.1),
                 "memory_percent": psutil.virtual_memory().percent,
@@ -333,6 +357,7 @@ class PerformanceMonitor:
 
 # ── Time Series Store ────────────────────────────────────────────────────────
 
+
 class TimeSeriesStore:
     """Simple file-based time-series storage for historical analysis."""
 
@@ -340,7 +365,9 @@ class TimeSeriesStore:
         self.storage_path = Path(storage_path)
         self.storage_path.mkdir(parents=True, exist_ok=True)
 
-    def append(self, metric: str, value: float, metadata: Optional[Dict] = None) -> None:
+    def append(
+        self, metric: str, value: float, metadata: Optional[Dict] = None
+    ) -> None:
         """Append a data point to the time series."""
         entry = {
             "timestamp": datetime.now(timezone.utc).isoformat(),
@@ -366,15 +393,17 @@ class TimeSeriesStore:
                     results.append(entry)
         return results
 
-    def get_correlation(self, metric1: str, metric2: str, hours: int = 24) -> Optional[float]:
+    def get_correlation(
+        self, metric1: str, metric2: str, hours: int = 24
+    ) -> Optional[float]:
         """Calculate Pearson correlation between two metrics."""
         data1 = self.query(metric1, hours)
         data2 = self.query(metric2, hours)
         if len(data1) < 3 or len(data2) < 3:
             return None
 
-        vals1 = [d["value"] for d in data1[:min(len(data1), len(data2))]]
-        vals2 = [d["value"] for d in data2[:min(len(data1), len(data2))]]
+        vals1 = [d["value"] for d in data1[: min(len(data1), len(data2))]]
+        vals2 = [d["value"] for d in data2[: min(len(data1), len(data2))]]
         n = min(len(vals1), len(vals2))
         vals1 = vals1[:n]
         vals2 = vals2[:n]
@@ -415,6 +444,7 @@ class TimeSeriesStore:
 
 # ── Integrated Monitor ───────────────────────────────────────────────────────
 
+
 class AdvancedMonitor:
     """Integrated monitoring system combining SPC, alerts, performance, and storage."""
 
@@ -431,7 +461,9 @@ class AdvancedMonitor:
             "compliance_score": {"warning": 9.0, "critical": 8.0},
         }
 
-    def observe(self, metric: str, value: float, source: str = "system") -> Dict[str, Any]:
+    def observe(
+        self, metric: str, value: float, source: str = "system"
+    ) -> Dict[str, Any]:
         """Record an observation and check thresholds."""
         # SPC analysis
         analysis = self.spc.add_observation(metric, value)
@@ -446,38 +478,63 @@ class AdvancedMonitor:
 
             if is_inverse:
                 if value < th.get("critical", float("-inf")):
-                    self.alerts.fire(Alert(
-                        level=AlertLevel.CRITICAL, source=source, metric=metric,
-                        value=value, threshold=th["critical"],
-                        message=f"{metric} dropped to {value} (critical: {th['critical']})"
-                    ))
+                    self.alerts.fire(
+                        Alert(
+                            level=AlertLevel.CRITICAL,
+                            source=source,
+                            metric=metric,
+                            value=value,
+                            threshold=th["critical"],
+                            message=f"{metric} dropped to {value} (critical: {th['critical']})",
+                        )
+                    )
                 elif value < th.get("warning", float("-inf")):
-                    self.alerts.fire(Alert(
-                        level=AlertLevel.WARNING, source=source, metric=metric,
-                        value=value, threshold=th["warning"],
-                        message=f"{metric} dropped to {value} (warning: {th['warning']})"
-                    ))
+                    self.alerts.fire(
+                        Alert(
+                            level=AlertLevel.WARNING,
+                            source=source,
+                            metric=metric,
+                            value=value,
+                            threshold=th["warning"],
+                            message=f"{metric} dropped to {value} (warning: {th['warning']})",
+                        )
+                    )
             else:
                 if value > th.get("critical", float("inf")):
-                    self.alerts.fire(Alert(
-                        level=AlertLevel.CRITICAL, source=source, metric=metric,
-                        value=value, threshold=th["critical"],
-                        message=f"{metric} exceeded {th['critical']} (current: {value})"
-                    ))
+                    self.alerts.fire(
+                        Alert(
+                            level=AlertLevel.CRITICAL,
+                            source=source,
+                            metric=metric,
+                            value=value,
+                            threshold=th["critical"],
+                            message=f"{metric} exceeded {th['critical']} (current: {value})",
+                        )
+                    )
                 elif value > th.get("warning", float("inf")):
-                    self.alerts.fire(Alert(
-                        level=AlertLevel.WARNING, source=source, metric=metric,
-                        value=value, threshold=th["warning"],
-                        message=f"{metric} exceeded {th['warning']} (current: {value})"
-                    ))
+                    self.alerts.fire(
+                        Alert(
+                            level=AlertLevel.WARNING,
+                            source=source,
+                            metric=metric,
+                            value=value,
+                            threshold=th["warning"],
+                            message=f"{metric} exceeded {th['warning']} (current: {value})",
+                        )
+                    )
 
         # Anomaly alert
         if analysis.get("anomaly"):
-            self.alerts.fire(Alert(
-                level=AlertLevel.WARNING, source=source, metric=metric,
-                value=value, threshold=self.spc.z_threshold,
-                message=f"Anomaly detected: {metric}={value} (z={analysis.get('z_score', 0)})"
-            ))
+            self.alerts.fire(
+                Alert(
+                    level=AlertLevel.WARNING,
+                    source=source,
+                    metric=metric,
+                    value=value,
+                    threshold=self.spc.z_threshold,
+                    message=f"Anomaly detected: {metric}={value} (z={analysis.get('z_score', 0)})",
+                )
+            )
 
         # Predictive alert
         predictions = self.spc.predict(metric, steps=3)
@@ -487,11 +544,16 @@ class AdvancedMonitor:
                 if metric in self.thresholds:
                     th = self.thresholds[metric]
                     if predicted > th.get("critical", float("inf")):
-                        self.alerts.fire(Alert(
-                            level=AlertLevel.PREDICTIVE, source=source, metric=metric,
-                            value=predicted, threshold=th["critical"],
-                            message=f"PREDICTION: {metric} may reach {predicted:.2f} in {pred['step']} steps"
-                        ))
+                        self.alerts.fire(
+                            Alert(
+                                level=AlertLevel.PREDICTIVE,
+                                source=source,
+                                metric=metric,
+                                value=predicted,
+                                threshold=th["critical"],
+                                message=f"PREDICTION: {metric} may reach {predicted:.2f} in {pred['step']} steps",
+                            )
+                        )
                         break
 
         analysis["alerts"] = self.alerts.get_summary()
@@ -537,6 +599,7 @@ if __name__ == "__main__":
 
     # Simulate observations
     import random
+
     for i in range(50):
         lat = 50 + random.gauss(0, 20)
         result = monitor.observe("api_latency_ms", lat, source="demo")

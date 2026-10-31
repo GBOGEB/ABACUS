@@ -14,8 +14,8 @@ from typing import Any, Dict, List, Optional, Tuple, Union
 
 from pydantic import BaseModel, Field, field_validator
 
-
 # ── Enums ────────────────────────────────────────────────────────────────────
+
 
 class Environment(str, Enum):
     DEV = "dev"
@@ -33,6 +33,7 @@ class DistributionType(str, Enum):
 
 # ── Sub-Models ───────────────────────────────────────────────────────────────
 
+
 class SystemInfo(BaseModel):
     name: str = Field(..., description="System name")
     design_basis: str = Field(..., description="Design basis reference")
@@ -41,7 +42,9 @@ class SystemInfo(BaseModel):
 
 class WcsHpFlow(BaseModel):
     design_flow_gs: float = Field(..., gt=0, description="Max user demand (g/s)")
-    expected_flow_gs: float = Field(..., gt=0, description="Expected operational flow (g/s)")
+    expected_flow_gs: float = Field(
+        ..., gt=0, description="Expected operational flow (g/s)"
+    )
     max_flow_gs: float = Field(..., gt=0, description="WCS.HCC|WCS.HP limit (g/s)")
     redundancy_formula: str = Field(..., description="Redundancy formula")
 
@@ -156,6 +159,7 @@ class Compliance(BaseModel):
 
 # ── Root Config Model ────────────────────────────────────────────────────────
 
+
 class QplantConfig(BaseModel):
     """Root configuration model for QPLANT Cryogenic System."""
 
@@ -182,11 +186,16 @@ class QplantConfig(BaseModel):
 
 # ── Change Audit Models ─────────────────────────────────────────────────────
 
+
 class ConfigChange(BaseModel):
     """Records a single configuration change."""
+
     timestamp: str
     user: str = "system"
-    path: str = Field(..., description="Dot-notation path e.g. 'compressor_specifications.hp_compressors.count'")
+    path: str = Field(
+        ...,
+        description="Dot-notation path e.g. 'compressor_specifications.hp_compressors.count'",
+    )
     old_value: Any
     new_value: Any
     reason: str = ""
@@ -194,6 +203,7 @@ class ConfigChange(BaseModel):
 
 class ConfigVersion(BaseModel):
     """A versioned snapshot of configuration."""
+
     version: str
     timestamp: str
     changes: List[ConfigChange] = []
@@ -202,10 +212,12 @@ class ConfigVersion(BaseModel):
 
 class ConfigHistory(BaseModel):
     """Full version history of config changes."""
+
     versions: List[ConfigVersion] = []
 
 
 # ── Schema Export ────────────────────────────────────────────────────────────
+
 
 def export_json_schema(output_path: Optional[str] = None) -> dict:
     """Export the full JSON Schema for external validation."""

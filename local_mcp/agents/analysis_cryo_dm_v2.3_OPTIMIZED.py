@@ -4,6 +4,7 @@ Analysis - Cryo DM V2.3.0
 Memory-efficient DMAIC cryogenic heat-load analysis with streaming.
 Designed for the 4M memory constraint.
 """
+
 import json
 import math
 import random
@@ -78,6 +79,7 @@ class MemoryEfficientCryoAnalyzerV23:
         self, data_source: str = None, chunk_size: int = 10
     ) -> Iterator[Dict[str, Any]]:
         """Yield chunks of cryo measurements, staying within memory limits."""
+
         def _iter_samples_from_json_array(path: Path) -> Iterator[Dict[str, Any]]:
             decoder = json.JSONDecoder()
             with open(path, encoding="utf-8") as fh:
@@ -146,7 +148,9 @@ class MemoryEfficientCryoAnalyzerV23:
                 elif first_char == "{":
                     with open(source_path, encoding="utf-8") as fh:
                         raw = json.load(fh)
-                    sample_iter = iter(raw if isinstance(raw, list) else raw.get("samples", []))
+                    sample_iter = iter(
+                        raw if isinstance(raw, list) else raw.get("samples", [])
+                    )
                 else:
                     sample_iter = _iter_samples_from_json_lines(source_path)
             else:
@@ -158,7 +162,11 @@ class MemoryEfficientCryoAnalyzerV23:
                 chunk.append(sample)
                 if len(chunk) >= chunk_size:
                     self.performance_metrics["memory_chunks_processed"] += 1
-                    yield {"samples": chunk, "chunk_index": chunk_index, "size": len(chunk)}
+                    yield {
+                        "samples": chunk,
+                        "chunk_index": chunk_index,
+                        "size": len(chunk),
+                    }
                     chunk = []
                     chunk_index += 1
             if chunk:
@@ -230,7 +238,9 @@ class MemoryEfficientCryoAnalyzerV23:
         if analysis.get("std_dev_w", 0) > 1.0:
             recommendations.append("Stabilise heat-load inputs")
         self.performance_metrics["dmaic_phases_completed"] += 1
-        return {"recommendations": recommendations or ["System within normal parameters"]}
+        return {
+            "recommendations": recommendations or ["System within normal parameters"]
+        }
 
     def dmaic_control(self, improvements: Dict[str, Any]) -> Dict[str, Any]:
         self._log_dmaic("CONTROL", "Define control thresholds")

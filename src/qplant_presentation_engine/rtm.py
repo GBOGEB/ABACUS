@@ -9,7 +9,6 @@ from typing import Any, Dict, List, Mapping, Optional
 
 import yaml
 
-
 REPORTS_DIRNAME = "reports"
 RTM_DIRNAME = "rtm"
 REQUIREMENTS_FILENAME = "requirements.yaml"
@@ -143,7 +142,9 @@ def _requirements() -> List[Dict[str, Any]]:
 def _evidence_catalog(reports_dir: Path, repo_dir: Path) -> Dict[str, Dict[str, Any]]:
     runtime_status_path = _resolve_runtime_status_path(reports_dir)
     schema_path = repo_dir / "patterns" / "scientific_visualization" / "schema.json"
-    validation_rules_path = repo_dir / "patterns" / "scientific_visualization" / "validation_rules.yaml"
+    validation_rules_path = (
+        repo_dir / "patterns" / "scientific_visualization" / "validation_rules.yaml"
+    )
     process_flow_path = repo_dir / "content" / "qplant" / "process_flow.yaml"
     thermodynamics_path = repo_dir / "content" / "qplant" / "thermodynamics.yaml"
 
@@ -212,7 +213,9 @@ def _generate_summary(
     uncovered = [r["id"] for r in requirements if not r.get("evidence")]
     coverage_ratio = (reqs_with_evidence / total) if total > 0 else 0.0
 
-    row_pairs = [(row["requirement_id"], row["evidence_id"]) for row in trace_matrix_rows]
+    row_pairs = [
+        (row["requirement_id"], row["evidence_id"]) for row in trace_matrix_rows
+    ]
     no_duplicates = len(row_pairs) == len(set(row_pairs))
 
     validation_passed = coverage_ratio == 1.0 and no_duplicates

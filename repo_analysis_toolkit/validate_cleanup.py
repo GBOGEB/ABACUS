@@ -35,7 +35,6 @@ import sys
 from datetime import datetime, timezone
 from pathlib import Path
 
-
 SECTION_KEY_DIRS = {"docs", "src", "tests", "scripts", "tools"}
 
 
@@ -72,12 +71,16 @@ def check_docs(repo: Path) -> dict:
     if items["readme_at_root"]:
         score += 5
 
-    contributing = (repo / "CONTRIBUTING.md").exists() or (repo / ".github" / "CONTRIBUTING.md").exists()
+    contributing = (repo / "CONTRIBUTING.md").exists() or (
+        repo / ".github" / "CONTRIBUTING.md"
+    ).exists()
     items["contributing"] = contributing
     if contributing:
         score += 5
 
-    items["license"] = any((repo / n).exists() for n in ("LICENSE", "LICENSE.md", "LICENSE.txt"))
+    items["license"] = any(
+        (repo / n).exists() for n in ("LICENSE", "LICENSE.md", "LICENSE.txt")
+    )
     if items["license"]:
         score += 5
 
@@ -120,8 +123,11 @@ def check_organization(repo: Path) -> dict:
 
     # Consistent naming heuristic — ratio-based and tolerant of versioned names.
     py_files = [
-        p for p in repo.rglob("*.py")
-        if ".git" not in p.parts and ".venv" not in p.parts and "__pycache__" not in p.parts
+        p
+        for p in repo.rglob("*.py")
+        if ".git" not in p.parts
+        and ".venv" not in p.parts
+        and "__pycache__" not in p.parts
     ]
     compliant = sum(1 for p in py_files if is_python_name_compliant(p.name))
     compliance_ratio = (compliant / len(py_files)) if py_files else 1.0
@@ -148,7 +154,9 @@ def check_automation(repo: Path) -> dict:
     score = 0
     items: dict = {}
     wf_dir = repo / ".github" / "workflows"
-    workflows = [p.name for p in wf_dir.iterdir() if p.is_file()] if wf_dir.is_dir() else []
+    workflows = (
+        [p.name for p in wf_dir.iterdir() if p.is_file()] if wf_dir.is_dir() else []
+    )
     items["workflow_count"] = len(workflows)
     items["workflows"] = workflows
 
@@ -157,8 +165,14 @@ def check_automation(repo: Path) -> dict:
     elif len(workflows) >= 3:
         score += 5
 
-    expected = {"ci.yml", "deploy-docs.yml", "release.yml", "dashboard-health.yml",
-                "update-docs.yml", "dmaic-commit-metrics.yml"}
+    expected = {
+        "ci.yml",
+        "deploy-docs.yml",
+        "release.yml",
+        "dashboard-health.yml",
+        "update-docs.yml",
+        "dmaic-commit-metrics.yml",
+    }
     found_expected = expected.intersection(workflows)
     items["expected_workflows_found"] = sorted(found_expected)
     if "deploy-docs.yml" in workflows or any("deploy" in w for w in workflows):
@@ -168,7 +182,12 @@ def check_automation(repo: Path) -> dict:
     if any("health" in w for w in workflows) or any("metrics" in w for w in workflows):
         score += 5
 
-    return {"category": "automation", "score": min(score, 25), "max": 25, "items": items}
+    return {
+        "category": "automation",
+        "score": min(score, 25),
+        "max": 25,
+        "items": items,
+    }
 
 
 def check_governance(repo: Path) -> dict:
@@ -180,14 +199,18 @@ def check_governance(repo: Path) -> dict:
         score += 5
 
     it_dir = repo / ".github" / "ISSUE_TEMPLATE"
-    issue_templates = [p.name for p in it_dir.iterdir() if p.is_file()] if it_dir.is_dir() else []
+    issue_templates = (
+        [p.name for p in it_dir.iterdir() if p.is_file()] if it_dir.is_dir() else []
+    )
     items["issue_templates"] = issue_templates
     if len(issue_templates) >= 4:
         score += 5
     elif len(issue_templates) >= 1:
         score += 2
 
-    items["codeowners"] = (repo / ".github" / "CODEOWNERS").exists() or (repo / "CODEOWNERS").exists()
+    items["codeowners"] = (repo / ".github" / "CODEOWNERS").exists() or (
+        repo / "CODEOWNERS"
+    ).exists()
     if items["codeowners"]:
         score += 5
 
@@ -195,8 +218,9 @@ def check_governance(repo: Path) -> dict:
     if items["security_md"]:
         score += 5
 
-    items["maintenance_schedule"] = (repo / "MAINTENANCE_SCHEDULE.md").exists() or \
-                                    (repo / "docs" / "MAINTENANCE_SCHEDULE.md").exists()
+    items["maintenance_schedule"] = (repo / "MAINTENANCE_SCHEDULE.md").exists() or (
+        repo / "docs" / "MAINTENANCE_SCHEDULE.md"
+    ).exists()
     if items["maintenance_schedule"]:
         score += 5
 
@@ -204,7 +228,9 @@ def check_governance(repo: Path) -> dict:
 
 
 def main(argv: list[str] | None = None) -> int:
-    ap = argparse.ArgumentParser(description="DMAIC validator — score a cleaned-up repo against the rubric")
+    ap = argparse.ArgumentParser(
+        description="DMAIC validator — score a cleaned-up repo against the rubric"
+    )
     ap.add_argument("--repo", required=True)
     ap.add_argument("--out", default="reports/validation.json")
     args = ap.parse_args(argv)
@@ -222,10 +248,13 @@ def main(argv: list[str] | None = None) -> int:
     ]
     total = sum(s["score"] for s in sections)
     band = (
-        "Excellent" if total >= 90 else
-        "Good" if total >= 75 else
-        "Needs improvement" if total >= 60 else
-        "Critical"
+        "Excellent"
+        if total >= 90
+        else (
+            "Good"
+            if total >= 75
+            else "Needs improvement" if total >= 60 else "Critical"
+        )
     )
 
     payload = {

@@ -40,15 +40,21 @@ def load_config(path: str | None) -> dict:
 def git(repo: Path, *args: str) -> str:
     out = subprocess.run(
         ["git", "-C", str(repo), *args],
-        capture_output=True, text=True, check=False,
+        capture_output=True,
+        text=True,
+        check=False,
     )
     return out.stdout
 
 
 def collect_tags(repo: Path) -> list[dict]:
-    raw = git(repo, "for-each-ref", "--sort=creatordate",
-              "--format=%(refname:short)|%(creatordate:iso8601)|%(objectname:short)",
-              "refs/tags")
+    raw = git(
+        repo,
+        "for-each-ref",
+        "--sort=creatordate",
+        "--format=%(refname:short)|%(creatordate:iso8601)|%(objectname:short)",
+        "refs/tags",
+    )
     tags: list[dict] = []
     for line in raw.splitlines():
         if not line.strip():
@@ -60,9 +66,14 @@ def collect_tags(repo: Path) -> list[dict]:
 
 
 def collect_branches(repo: Path, abandoned_after_days: int) -> list[dict]:
-    raw = git(repo, "for-each-ref", "--sort=-committerdate",
-              "--format=%(refname:short)|%(committerdate:iso8601)|%(authorname)",
-              "refs/heads", "refs/remotes")
+    raw = git(
+        repo,
+        "for-each-ref",
+        "--sort=-committerdate",
+        "--format=%(refname:short)|%(committerdate:iso8601)|%(authorname)",
+        "refs/heads",
+        "refs/remotes",
+    )
     branches: list[dict] = []
     now = datetime.now(timezone.utc)
     for line in raw.splitlines():
@@ -85,18 +96,21 @@ def collect_branches(repo: Path, abandoned_after_days: int) -> list[dict]:
                 dt = dt.replace(tzinfo=timezone.utc)
             if dt and (now - dt).days > abandoned_after_days:
                 abandoned = True
-        branches.append({
-            "name": name,
-            "date": date,
-            "author": author,
-            "abandoned": abandoned,
-        })
+        branches.append(
+            {
+                "name": name,
+                "date": date,
+                "author": author,
+                "abandoned": abandoned,
+            }
+        )
     return branches
 
 
 def collect_history(repo: Path, limit: int = 1000) -> list[dict]:
-    raw = git(repo, "log", "--all", f"--max-count={limit}",
-              "--pretty=format:%H|%ai|%an|%s")
+    raw = git(
+        repo, "log", "--all", f"--max-count={limit}", "--pretty=format:%H|%ai|%an|%s"
+    )
     commits: list[dict] = []
     for line in raw.splitlines():
         sha, _, rest = line.partition("|")
@@ -120,12 +134,19 @@ def build_mermaid(tags: list[dict], branches: list[dict], tag_limit: int) -> str
         lines.append("| Branch | Last commit | Author | Abandoned? |")
         lines.append("| ------ | ----------- | ------ | ---------- |")
         for b in branches[:30]:
-            lines.append(f"| `{b['name']}` | {b['date'][:10]} | {b['author']} | {'YES' if b['abandoned'] else 'no'} |")
+            lines.append(
+                f"| `{b['name']}` | {b['date'][:10]} | {b['author']} | {'YES' if b['abandoned'] else 'no'} |"
+            )
     return "\n".join(lines)
 
 
-def render_markdown(repo: Path, tags: list[dict], branches: list[dict],
-                    commits: list[dict], mermaid: str) -> str:
+def render_markdown(
+    repo: Path,
+    tags: list[dict],
+    branches: list[dict],
+    commits: list[dict],
+    mermaid: str,
+) -> str:
     n_abandoned = sum(1 for b in branches if b["abandoned"])
     n_commits = len(commits)
     first = commits[-1] if commits else None
@@ -142,21 +163,36 @@ def render_markdown(repo: Path, tags: list[dict], branches: list[dict],
         f"- Commits sampled: **{n_commits}** (most recent 1 000)",
     ]
     if first and last:
-        md.append(f"- First commit (within sample): `{first['sha'][:10]}` — {first['date'][:10]} — {first['author']}")
-        md.append(f"- Latest commit: `{last['sha'][:10]}` — {last['date'][:10]} — {last['author']}")
+        md.append(
+            f"- First commit (within sample): `{first['sha'][:10]}` — {first['date'][:10]} — {first['author']}"
+        )
+        md.append(
+            f"- Latest commit: `{last['sha'][:10]}` — {last['date'][:10]} — {last['author']}"
+        )
 
-    md += ["", "## Tag timeline", "", mermaid, "", "## Recent commits", "",
-           "| SHA | Date | Author | Subject |",
-           "| --- | ---- | ------ | ------- |"]
+    md += [
+        "",
+        "## Tag timeline",
+        "",
+        mermaid,
+        "",
+        "## Recent commits",
+        "",
+        "| SHA | Date | Author | Subject |",
+        "| --- | ---- | ------ | ------- |",
+    ]
     for c in commits[:25]:
         subj = c["subject"].replace("|", "\\|")
         md.append(f"| `{c['sha'][:8]}` | {c['date'][:10]} | {c['author']} | {subj} |")
 
-    md += ["", "## Notes",
-           "",
-           "Branches flagged 'abandoned' have not received commits in the configured threshold (default 180 days). "
-           "Review each before deleting or archiving.",
-           ""]
+    md += [
+        "",
+        "## Notes",
+        "",
+        "Branches flagged 'abandoned' have not received commits in the configured threshold (default 180 days). "
+        "Review each before deleting or archiving.",
+        "",
+    ]
     return "\n".join(md)
 
 
@@ -164,7 +200,9 @@ def maybe_render_svg(mermaid_block: str, diagram_path: Path) -> None:
     """If mermaid-cli (mmdc) is on PATH, render the diagram to an SVG."""
     mmdc = shutil.which("mmdc")
     if not mmdc:
-        sys.stderr.write("[generate_lineage] mermaid-cli (mmdc) not found; skipping SVG.\n")
+        sys.stderr.write(
+            "[generate_lineage] mermaid-cli (mmdc) not found; skipping SVG.\n"
+        )
         return
     # Extract content between code fences.
     inner = mermaid_block
@@ -181,7 +219,9 @@ def main(argv: list[str] | None = None) -> int:
     ap = argparse.ArgumentParser(description="DMAIC Phase 2 — version lineage tracer")
     ap.add_argument("--repo", required=True)
     ap.add_argument("--out", default="reports/lineage.md")
-    ap.add_argument("--diagram", default=None, help="Optional SVG output path (requires mmdc)")
+    ap.add_argument(
+        "--diagram", default=None, help="Optional SVG output path (requires mmdc)"
+    )
     ap.add_argument("--config", default=None)
     args = ap.parse_args(argv)
 
@@ -210,7 +250,9 @@ def main(argv: list[str] | None = None) -> int:
 
     print(f"[generate_lineage] wrote {out_path}")
     print(f"  tags        = {len(tags)}")
-    print(f"  branches    = {len(branches)}  (abandoned: {sum(1 for b in branches if b['abandoned'])})")
+    print(
+        f"  branches    = {len(branches)}  (abandoned: {sum(1 for b in branches if b['abandoned'])})"
+    )
     print(f"  commits     = {len(commits)} (sampled)")
     return 0
 
