@@ -13,13 +13,14 @@ def test_init_creates_nested_workspace(tmp_path, capsys):
     engine = _engine(tmp_path)
     assert engine.workspace.is_dir()
     assert "Initialized workspace" in capsys.readouterr().out
-    assert engine.get_summary() == {
-        "total_metrics": 0,
-        "agents_tracked": [],
-        "compliance_checks": 0,
-        "compliance_pass": 0,
-        "compliance_fail": 0,
-    }
+    expected = dict(
+        total_metrics=0,
+        agents_tracked=[],
+        compliance_checks=0,
+        compliance_pass=0,
+        compliance_fail=0,
+    )
+    assert engine.get_summary() == expected
 
 
 def test_collect_metric_records_entries(tmp_path, capsys):
@@ -62,12 +63,13 @@ def test_export_metrics_writes_payload(tmp_path):
     assert path == engine.workspace / "out.json"
     payload = json.loads(path.read_text(encoding="utf-8"))
     assert payload["start_time"] == engine._start_time
-    assert payload["summary"] == {
-        "total_metrics": 1,
-        "total_compliance_checks": 2,
-        "compliance_pass": 1,
-        "compliance_fail": 1,
-    }
+    expected = dict(
+        total_metrics=1,
+        total_compliance_checks=2,
+        compliance_pass=1,
+        compliance_fail=1,
+    )
+    assert payload["summary"] == expected
     assert payload["metrics"][0]["metric_name"] == "m"
 
 
