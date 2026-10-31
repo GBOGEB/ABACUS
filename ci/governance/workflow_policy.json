@@ -79,7 +79,7 @@
       "yaml-validation.yml",
       "recursive-build.yml",
       "docs-build.yml",
-      "nextjs.yml"
+      "deploy-docs.yml"
     ]
   },
   "permission_controls": {
@@ -91,6 +91,7 @@
       "code-quality-pilot.yml",
       "codeql.yml",
       "dependency-review.yml",
+      "deploy-docs.yml",
       "gloob-causal-responder.yml",
       "osv-scanner.yml",
       "post-merge-pr-summary.yml",
