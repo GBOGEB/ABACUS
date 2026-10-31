@@ -8,14 +8,18 @@ import pytest
 from DMAIC_V3.core import agent_health_monitor as ahm
 
 
-def _iso(seconds_ago):
-    return (datetime.now() - timedelta(seconds=seconds_ago)).isoformat()
+def _iso(seconds_ago, now=None):
+    now = now or datetime.now()
+    return (now - timedelta(seconds=seconds_ago)).isoformat()
 
 
 def _agent(age_s, last_ago_s=10, total=10, exec_times=None):
+    # One reference time for both stamps: separate now() calls differ by
+    # microseconds on Linux/macOS, which turns age 0 into a huge frequency.
+    now = datetime.now()
     data = {
-        "first_execution": _iso(last_ago_s + age_s),
-        "last_execution": _iso(last_ago_s),
+        "first_execution": _iso(last_ago_s + age_s, now),
+        "last_execution": _iso(last_ago_s, now),
         "total_executions": total,
         "iterations": [1, 2],
     }
