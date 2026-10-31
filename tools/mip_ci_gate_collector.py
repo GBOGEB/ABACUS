@@ -82,8 +82,10 @@ def collect_gate_input(source_sha, selected, *, getter=github_get):
     """Collect only bound run attempts and every job page; reject partial sets."""
     if not isinstance(source_sha, str) or HEX40.fullmatch(source_sha) is None:
         raise ValueError("exact lowercase source SHA required")
-    if not isinstance(selected, dict) or not selected or (
-        set(selected) - set(RUN_TYPES)
+    if (
+        not isinstance(selected, dict)
+        or not selected
+        or (set(selected) - set(RUN_TYPES))
     ):
         raise ValueError("explicit supported gate selections required")
 
@@ -93,10 +95,7 @@ def collect_gate_input(source_sha, selected, *, getter=github_get):
         if domain not in selected:
             continue
         pair = selected[domain]
-        if (
-            not isinstance(pair, (tuple, list))
-            or len(pair) != 2
-        ):
+        if not isinstance(pair, (tuple, list)) or len(pair) != 2:
             raise ValueError("run and attempt pair required")
         run_id, attempt = pair
         _positive(run_id, "run ID")
@@ -116,13 +115,22 @@ def collect_gate_input(source_sha, selected, *, getter=github_get):
             != f"https://github.com/{REPO}/actions/runs/{run_id}"
         ):
             raise ValueError("native gate run identity/SHA/workflow mismatch")
-        runs.append({
-            field: native.get(field)
-            for field in (
-                "id", "run_attempt", "head_sha", "name", "path", "html_url",
-                "created_at", "status", "conclusion",
-            )
-        })
+        runs.append(
+            {
+                field: native.get(field)
+                for field in (
+                    "id",
+                    "run_attempt",
+                    "head_sha",
+                    "name",
+                    "path",
+                    "html_url",
+                    "created_at",
+                    "status",
+                    "conclusion",
+                )
+            }
+        )
 
         received, total = [], None
         for page in range(1, MAX_PAGES + 1):
@@ -171,8 +179,15 @@ def collect_gate_input(source_sha, selected, *, getter=github_get):
             record = {
                 field: native_job.get(field)
                 for field in (
-                    "id", "run_id", "run_attempt", "head_sha", "name",
-                    "status", "conclusion", "created_at", "started_at",
+                    "id",
+                    "run_id",
+                    "run_attempt",
+                    "head_sha",
+                    "name",
+                    "status",
+                    "conclusion",
+                    "created_at",
+                    "started_at",
                     "completed_at",
                 )
             }
@@ -195,8 +210,10 @@ def collect_gate_input(source_sha, selected, *, getter=github_get):
     }
     # Validate join, statuses and gate IDs before writing any measurement.
     projection = summarize(payload)
-    if (projection["merge_authorized"] is not False
-            or projection["independent_gates"]["admission"] != "HOLD"):
+    if (
+        projection["merge_authorized"] is not False
+        or projection["independent_gates"]["admission"] != "HOLD"
+    ):
         raise ValueError("collector projection must retain independent HOLD")
     return payload, projection
 

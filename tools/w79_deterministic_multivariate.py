@@ -4,6 +4,7 @@
 This is derived operational analysis only.  It cannot grant engineering,
 compliance, release, BT, or autonomous allocation authority.
 """
+
 from __future__ import annotations
 
 import argparse
@@ -13,7 +14,6 @@ from pathlib import Path
 from typing import Iterable
 
 import numpy as np
-
 from w78_deterministic_work_probe import SEMANTIC_WORK_FEATURES, WORK_FEATURES
 
 SCHEMA_VERSION = "MC2-W79-DETERMINISTIC-MULTIVARIATE-0.1.0"
@@ -186,8 +186,12 @@ def analyze_panel(
 
 
 def evaluate(
-    rows: list[dict], *, w78_run_id: str, w78_head_sha: str, w78_artifact_id: str,
-    w78_artifact_digest: str
+    rows: list[dict],
+    *,
+    w78_run_id: str,
+    w78_head_sha: str,
+    w78_artifact_id: str,
+    w78_artifact_digest: str,
 ) -> dict:
     ordered = validate_rows(rows)
     bound_inputs = [
@@ -259,7 +263,9 @@ def main() -> None:
     )
     out = Path(args.out)
     out.parent.mkdir(parents=True, exist_ok=True)
-    out.write_text(json.dumps(result, indent=2, sort_keys=True) + "\n", encoding="utf-8")
+    out.write_text(
+        json.dumps(result, indent=2, sort_keys=True) + "\n", encoding="utf-8"
+    )
     print(json.dumps(result, sort_keys=True))
 
 

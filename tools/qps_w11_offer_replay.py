@@ -12,7 +12,6 @@ import re
 from dataclasses import dataclass
 from typing import Iterable
 
-
 ID_RE = re.compile(r"\b(RTM|OFFER)-(\d+)\b", re.IGNORECASE)
 SHA256_RE = re.compile(r"^[a-f0-9]{64}$")
 
@@ -73,19 +72,35 @@ def classify_bidder_position(stated_status: str, text: str) -> str:
         return "DEVIATION"
     if "deviation" in combined or "not standard" in combined or "cannot" in combined:
         return "DEVIATION"
-    if any(marker in combined for marker in ("excluded", "not included", "outside scope")):
+    if any(
+        marker in combined for marker in ("excluded", "not included", "outside scope")
+    ):
         return "EXCLUSION"
     if "suggestion" in combined or "modify to" in combined:
         return "SUGGESTION"
     if "clarification" in combined or "to be clarified" in combined:
         return "CLARIFICATION"
-    if any(marker in combined for marker in ("subject to", "provided that", "provided by customer", "to be agreed")):
+    if any(
+        marker in combined
+        for marker in (
+            "subject to",
+            "provided that",
+            "provided by customer",
+            "to be agreed",
+        )
+    ):
         return "QUALIFICATION"
 
-    positive = any(marker in combined for marker in ("compliant", "accepted", "without exception"))
+    positive = any(
+        marker in combined for marker in ("compliant", "accepted", "without exception")
+    )
     if positive and "refer to" in combined:
         return "COMPLIANT_WITH_REFERENCE"
-    if positive and not any(marker in combined for marker in LIMITING_MARKERS) and not _EXCEPT_RE.search(combined):
+    if (
+        positive
+        and not any(marker in combined for marker in LIMITING_MARKERS)
+        and not _EXCEPT_RE.search(combined)
+    ):
         return "ACCEPT_UNCONDITIONAL"
     return "MISSING_EVIDENCE"
 
@@ -115,7 +130,9 @@ def relation_type(source_role: str, target_type: str) -> str:
     return "DIRECT_OFFER"
 
 
-def candidate_from_record(record: ReplayRecord, atom_id: str) -> tuple[dict, list[dict]]:
+def candidate_from_record(
+    record: ReplayRecord, atom_id: str
+) -> tuple[dict, list[dict]]:
     """Create a candidate evidence atom plus explicit relations.
 
     The result remains parent-candidate-only. No semantic/PCA/BT score and no
@@ -123,7 +140,9 @@ def candidate_from_record(record: ReplayRecord, atom_id: str) -> tuple[dict, lis
     """
     validate_record(record)
     position = classify_bidder_position(record.stated_status, record.extracted_text)
-    evidence_class = "CONTROLLED" if record.source_role.upper() == "CONTRACT" else "SOURCE_SUPPORTED"
+    evidence_class = (
+        "CONTROLLED" if record.source_role.upper() == "CONTRACT" else "SOURCE_SUPPORTED"
+    )
 
     atom = {
         "atom_id": atom_id,
@@ -140,7 +159,9 @@ def candidate_from_record(record: ReplayRecord, atom_id: str) -> tuple[dict, lis
     }
 
     relations = []
-    for index, (target_type, target_id) in enumerate(explicit_targets(record.extracted_text), start=1):
+    for index, (target_type, target_id) in enumerate(
+        explicit_targets(record.extracted_text), start=1
+    ):
         relations.append(
             {
                 "relation_id": f"{atom_id}-REL-{index:02d}",

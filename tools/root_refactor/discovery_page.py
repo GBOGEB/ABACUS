@@ -15,6 +15,7 @@ rendered from two sources of truth so it never drifts:
 Output is deterministic (no timestamps), self-contained (inline CSS and JS,
 no external fetches) and works from disk (file://) and from GitHub Pages.
 """
+
 from __future__ import annotations
 
 import argparse

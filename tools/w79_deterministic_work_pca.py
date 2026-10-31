@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 """W79 deterministic complexity PCA/PA95 over the governed W78 work census."""
+
 from __future__ import annotations
 
 import argparse
@@ -147,12 +148,10 @@ def _fit_block(
         "sample_size": len(rows),
         "centered_matrix_rank": int(np.linalg.matrix_rank(z)),
         "feature_means": {
-            feature: round(float(means[idx]), 6)
-            for idx, feature in enumerate(features)
+            feature: round(float(means[idx]), 6) for idx, feature in enumerate(features)
         },
         "feature_sample_sds": {
-            feature: round(float(sds[idx]), 6)
-            for idx, feature in enumerate(features)
+            feature: round(float(sds[idx]), 6) for idx, feature in enumerate(features)
         },
         "components": components,
         "retained_pcs": retained,
@@ -308,7 +307,9 @@ def main() -> None:
     )
     out = Path(args.out)
     out.parent.mkdir(parents=True, exist_ok=True)
-    out.write_text(json.dumps(result, indent=2, sort_keys=True) + "\n", encoding="utf-8")
+    out.write_text(
+        json.dumps(result, indent=2, sort_keys=True) + "\n", encoding="utf-8"
+    )
     print(json.dumps(result, sort_keys=True))
 
 
