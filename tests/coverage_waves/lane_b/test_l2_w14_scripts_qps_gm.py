@@ -681,8 +681,11 @@ def test_main_builds_all_outputs(tmp_path, monkeypatch, capsys):
     assert "const ROWS=" in html
 
 
+@pytest.mark.TEST_BLOCKED_DEPENDENCY
 def test_build_xlsx_with_real_openpyxl(tmp_path):
-    openpyxl = pytest.importorskip("openpyxl")
+    openpyxl = pytest.importorskip(
+        "openpyxl", reason="TEST_BLOCKED_DEPENDENCY: openpyxl not installed"
+    )
     real = load("scripts/build_qps_ssot_views.py", name="l2_w14_build_qps_real")
     out = tmp_path / "x" / "v.xlsx"
     real.build_xlsx(ROWS, out, "abc", real.load_style(None))
