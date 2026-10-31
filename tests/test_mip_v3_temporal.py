@@ -1,14 +1,10 @@
 """V3 temporal synthetic adversarial and N+2 forecast tests."""
-import importlib.util
-from pathlib import Path
-import unittest
 
-FILE = (
-    Path(__file__).resolve().parents[1]
-    / "tools"
-    / "triage"
-    / "mip_v3_temporal.py"
-)
+import importlib.util
+import unittest
+from pathlib import Path
+
+FILE = Path(__file__).resolve().parents[1] / "tools" / "triage" / "mip_v3_temporal.py"
 SPEC = importlib.util.spec_from_file_location("mip_v3_temporal", FILE)
 mip = importlib.util.module_from_spec(SPEC)
 SPEC.loader.exec_module(mip)

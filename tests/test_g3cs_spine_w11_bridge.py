@@ -4,6 +4,7 @@ Source suites stay in their owning package. Their native test methods are expose
 individually to canonical pytest/JUnit/coverage, rather than being hidden in a
 single subprocess/test wrapper. Missing source is fatal at collection time.
 """
+
 from __future__ import annotations
 
 import importlib.util
@@ -27,11 +28,27 @@ def _get(relative, name):
 
 # Preserve tests, original expected outcomes and fail-closed semantics. Expose
 # each original unittest method separately in the canonical B0 JUnit inventory.
-TestG3CSConvergence = _get(Path("tests/test_converge.py"), "converge").ConvergenceContract
-TestG3CSTemporalMatching = _get(Path("tests/test_compare_snapshots.py"), "compare").NativeComparatorTests
-TestG3CSPostmerge = _get(Path("tests/test_postmerge_gate_receipt.py"), "postmerge").W7ReceiptTests
-TestG3CSW10Release = _get(Path("observatory/w10/test_w10_spine.py"), "w10").GlobalSpineW10Tests
-TestG3CSW11Spine = _get(Path("observatory/w10/test_w11_spine_contract.py"), "w11").SpineW11ContractTests
-TestG3CSW12Metrics = _get(Path("observatory/w10/test_w12_dependency_metrics.py"), "w12").DependencyW12Tests
-TestG3CSW12Trigger = _get(Path("observatory/w10/test_w12_trigger_events.py"), "w12trigger").TriggerEventW12Tests
-TestG3CSW13Neural = _get(Path("observatory/w10/tests/test_neural_spine_w13.py"), "w13neural").NeuralW13
+TestG3CSConvergence = _get(
+    Path("tests/test_converge.py"), "converge"
+).ConvergenceContract
+TestG3CSTemporalMatching = _get(
+    Path("tests/test_compare_snapshots.py"), "compare"
+).NativeComparatorTests
+TestG3CSPostmerge = _get(
+    Path("tests/test_postmerge_gate_receipt.py"), "postmerge"
+).W7ReceiptTests
+TestG3CSW10Release = _get(
+    Path("observatory/w10/test_w10_spine.py"), "w10"
+).GlobalSpineW10Tests
+TestG3CSW11Spine = _get(
+    Path("observatory/w10/test_w11_spine_contract.py"), "w11"
+).SpineW11ContractTests
+TestG3CSW12Metrics = _get(
+    Path("observatory/w10/test_w12_dependency_metrics.py"), "w12"
+).DependencyW12Tests
+TestG3CSW12Trigger = _get(
+    Path("observatory/w10/test_w12_trigger_events.py"), "w12trigger"
+).TriggerEventW12Tests
+TestG3CSW13Neural = _get(
+    Path("observatory/w10/tests/test_neural_spine_w13.py"), "w13neural"
+).NeuralW13

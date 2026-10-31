@@ -8,8 +8,8 @@ import copy
 import inspect
 import unittest
 
-from scripts import cbd_matched_coverage_delta as matched
 from scripts import cbd_coverage_temporal_gate as temporal
+from scripts import cbd_matched_coverage_delta as matched
 
 HEAD = "a" * 40
 HASH_A = "b" * 64
@@ -31,39 +31,70 @@ def make_manifest(run=100, attempt=1, checkout=HEAD):
     }
 
 
-def coverage(a_lines=100, b_lines=70, a_branches=30, b_branches=20,
-             at="2026-10-18T10:10:00Z"):
+def coverage(
+    a_lines=100, b_lines=70, a_branches=30, b_branches=20, at="2026-10-18T10:10:00Z"
+):
     return {
         "meta": {"branch_coverage": True, "timestamp": at},
         "files": {
-            A: {"summary": {"covered_lines": a_lines, "num_statements": 165,
-                            "covered_branches": a_branches, "num_branches": 56}},
-            B: {"summary": {"covered_lines": b_lines, "num_statements": 104,
-                            "covered_branches": b_branches, "num_branches": 38}},
+            A: {
+                "summary": {
+                    "covered_lines": a_lines,
+                    "num_statements": 165,
+                    "covered_branches": a_branches,
+                    "num_branches": 56,
+                }
+            },
+            B: {
+                "summary": {
+                    "covered_lines": b_lines,
+                    "num_statements": 104,
+                    "covered_branches": b_branches,
+                    "num_branches": 38,
+                }
+            },
         },
     }
 
 
-def measured(run=100, attempt=1, a_lines=100, b_lines=70,
-             a_branches=30, b_branches=20):
+def measured(run=100, attempt=1, a_lines=100, b_lines=70, a_branches=30, b_branches=20):
     return matched.make_snapshot(
         coverage(a_lines, b_lines, a_branches, b_branches),
-        make_manifest(run=run, attempt=attempt), [A, B],
+        make_manifest(run=run, attempt=attempt),
+        [A, B],
     )
 
 
-def junit(tests=2, cases=None, when="2026-10-18T10:00:00Z", elapsed="60",
-          failures=0, errors=0, skipped=0):
+def junit(
+    tests=2,
+    cases=None,
+    when="2026-10-18T10:00:00Z",
+    elapsed="60",
+    failures=0,
+    errors=0,
+    skipped=0,
+):
     if cases is None:
         cases = (
             '<testcase classname="contract" name="one"/>'
             '<testcase classname="contract" name="two"/>'
         )
     return (
-        '<testsuites><testsuite tests="' + str(tests) + '" failures="'
-        + str(failures) + '" errors="' + str(errors) + '" skipped="'
-        + str(skipped) + '" timestamp="' + when + '" time="'
-        + elapsed + '">' + cases + '</testsuite></testsuites>'
+        '<testsuites><testsuite tests="'
+        + str(tests)
+        + '" failures="'
+        + str(failures)
+        + '" errors="'
+        + str(errors)
+        + '" skipped="'
+        + str(skipped)
+        + '" timestamp="'
+        + when
+        + '" time="'
+        + elapsed
+        + '">'
+        + cases
+        + "</testsuite></testsuites>"
     )
 
 
@@ -71,7 +102,8 @@ def evaluate(c=None, j=None, coverage_head=HEAD, test_head=HEAD):
     return temporal.measure(
         coverage() if c is None else c,
         junit() if j is None else j,
-        {"exact_sha": coverage_head}, {"exact_sha": test_head},
+        {"exact_sha": coverage_head},
+        {"exact_sha": test_head},
         expected_sha=HEAD,
     )
 
@@ -79,8 +111,9 @@ def evaluate(c=None, j=None, coverage_head=HEAD, test_head=HEAD):
 class SourceMatchedDifferentialProof(unittest.TestCase):
     def test_two_module_improvement_with_exact_denominators(self):
         before = measured()
-        after = measured(run=101, attempt=2, a_lines=130, b_lines=85,
-                         a_branches=42, b_branches=31)
+        after = measured(
+            run=101, attempt=2, a_lines=130, b_lines=85, a_branches=42, b_branches=31
+        )
         result = matched.compare(before, after)
         self.assertEqual(result["status"], "IMPROVED")
         self.assertEqual(result["modules"][A]["statement"]["before"], [100, 165])
@@ -100,7 +133,7 @@ class SourceMatchedDifferentialProof(unittest.TestCase):
 
     def test_regression_operator_mutant_is_killed(self):
         source = inspect.getsource(matched.compare)
-        needle = 'regression |= new[nkey] < old[nkey]'
+        needle = "regression |= new[nkey] < old[nkey]"
         self.assertEqual(source.count(needle), 1)
         # Independently calculate the wrong-sign mutant's outcome without
         # executing generated code or introducing a new security-scanner debt.
@@ -114,8 +147,13 @@ class SourceMatchedDifferentialProof(unittest.TestCase):
 
     def test_source_and_denominator_mutations_rejected(self):
         old = measured()
-        for label in ("source", "statement_denominator", "branch_denominator",
-                      "missing_module", "different_scope"):
+        for label in (
+            "source",
+            "statement_denominator",
+            "branch_denominator",
+            "missing_module",
+            "different_scope",
+        ):
             with self.subTest(label=label):
                 changed = measured(run=101, attempt=2)
                 if label == "source":
@@ -139,8 +177,14 @@ class SourceMatchedDifferentialProof(unittest.TestCase):
 
     def test_manifest_and_counter_faults_do_not_produce_snapshot(self):
         original = make_manifest()
-        for label in ("wrong_checkout", "bad_run", "bad_checksum",
-                      "traversal", "windows_path", "bad_counter"):
+        for label in (
+            "wrong_checkout",
+            "bad_run",
+            "bad_checksum",
+            "traversal",
+            "windows_path",
+            "bad_counter",
+        ):
             with self.subTest(label=label):
                 m = copy.deepcopy(original)
                 c = coverage()
@@ -165,10 +209,13 @@ class TemporalAndJUnitIntegrity(unittest.TestCase):
     def test_valid_native_fixture_is_review_only(self):
         out = evaluate()
         self.assertEqual(out["status"], "ELIGIBLE_FOR_MATCHED_COVERAGE_REVIEW")
-        self.assertEqual([out["covered_target_statements"], out["eligible_target_statements"]],
-                         [170, 269])
-        self.assertEqual([out["covered_target_branches"], out["eligible_target_branches"]],
-                         [50, 94])
+        self.assertEqual(
+            [out["covered_target_statements"], out["eligible_target_statements"]],
+            [170, 269],
+        )
+        self.assertEqual(
+            [out["covered_target_branches"], out["eligible_target_branches"]], [50, 94]
+        )
         self.assertIsNone(out["accepted_coverage_uplift"])
         self.assertEqual(out["merge_admission"], "HOLD")
 
@@ -181,8 +228,10 @@ class TemporalAndJUnitIntegrity(unittest.TestCase):
         self.assertEqual(stale["coverage_provenance"], "STALE_BEFORE_TEST_COMPLETION")
 
     def test_duplicate_junit_case_cannot_count_twice(self):
-        double = ('<testcase classname="same" name="duplicate"/>'
-                  '<testcase classname="same" name="duplicate"/>')
+        double = (
+            '<testcase classname="same" name="duplicate"/>'
+            '<testcase classname="same" name="duplicate"/>'
+        )
         out = evaluate(j=junit(cases=double))
         self.assertEqual(out["junit_count_integrity"], "MISMATCH")
         self.assertEqual(out["status"], "HOLD")
@@ -225,13 +274,13 @@ class TemporalAndJUnitIntegrity(unittest.TestCase):
                     evaluate(c=c, coverage_head=cov_head, test_head=test_head)
 
 
-
 class W44EvidenceRejectionGuards(unittest.TestCase):
     def test_same_native_run_attempt_rollback_is_rejected(self):
         prior = measured(run=401, attempt=3)
         older = measured(run=401, attempt=2, a_lines=120)
         with self.assertRaisesRegex(
-            matched.EvidenceError, "attempt rollback",
+            matched.EvidenceError,
+            "attempt rollback",
         ):
             matched.compare(prior, older)
         # A *new* native run identity is separately declared, but never
@@ -258,19 +307,23 @@ class W44EvidenceRejectionGuards(unittest.TestCase):
     def test_timezone_normalization_and_seconds_boundary(self):
         suite = junit(when="2026-10-18T10:00:00+02:00", elapsed="60")
         boundary = evaluate(
-            c=coverage(at="2026-10-18T08:01:00Z"), j=suite,
+            c=coverage(at="2026-10-18T08:01:00Z"),
+            j=suite,
         )
         self.assertEqual(boundary["time_gap_seconds"], 0)
         self.assertEqual(
-            boundary["status"], "ELIGIBLE_FOR_MATCHED_COVERAGE_REVIEW",
+            boundary["status"],
+            "ELIGIBLE_FOR_MATCHED_COVERAGE_REVIEW",
         )
         before = evaluate(
-            c=coverage(at="2026-10-18T08:00:59Z"), j=suite,
+            c=coverage(at="2026-10-18T08:00:59Z"),
+            j=suite,
         )
         self.assertEqual(before["status"], "HOLD")
         self.assertEqual(before["time_gap_seconds"], -1)
         after = evaluate(
-            c=coverage(at="2026-10-18T08:01:01Z"), j=suite,
+            c=coverage(at="2026-10-18T08:01:01Z"),
+            j=suite,
         )
         self.assertEqual(after["status"], "ELIGIBLE_FOR_MATCHED_COVERAGE_REVIEW")
         self.assertEqual(after["time_gap_seconds"], 1)
@@ -279,8 +332,7 @@ class W44EvidenceRejectionGuards(unittest.TestCase):
         case = '<testcase classname="same" name="duplicated"/>'
         suite = (
             '<testsuite tests="1" failures="0" errors="0" skipped="0" '
-            'timestamp="2026-10-18T10:00:00Z" time="60">'
-            + case + '</testsuite>'
+            'timestamp="2026-10-18T10:00:00Z" time="60">' + case + "</testsuite>"
         )
         result = evaluate(j="<testsuites>" + suite + suite + "</testsuites>")
         self.assertEqual(result["junit_test_cases_declared"], 2)
@@ -288,7 +340,6 @@ class W44EvidenceRejectionGuards(unittest.TestCase):
         self.assertEqual(result["junit_count_integrity"], "MISMATCH")
         self.assertEqual(result["status"], "HOLD")
         self.assertIsNone(result["accepted_coverage_uplift"])
-
 
 
 if __name__ == "__main__":

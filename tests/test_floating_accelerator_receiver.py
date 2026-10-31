@@ -2,6 +2,7 @@
 
 No live cross-repo data, credentials, external files, or network writes.
 """
+
 from __future__ import annotations
 
 import contextlib
@@ -28,14 +29,16 @@ def fixture():
         "target_repo": "GBOGEB/ABACUS",
         "source_sha": SOURCE,
         "target_sha": TARGET,
-        "mapping_rows": [{
-            "source_requirement_id": "SYNTHETIC-REQ-1",
-            "source_requirement_sha256": REQ_HASH,
-            "target_artifact": "triage/synthetic-demo.txt",
-            "target_test_or_evidence": "SYNTHETIC-EVIDENCE",
-            "relation_type": "trace-candidate",
-            "disposition": "DEFER",
-        }],
+        "mapping_rows": [
+            {
+                "source_requirement_id": "SYNTHETIC-REQ-1",
+                "source_requirement_sha256": REQ_HASH,
+                "target_artifact": "triage/synthetic-demo.txt",
+                "target_test_or_evidence": "SYNTHETIC-EVIDENCE",
+                "relation_type": "trace-candidate",
+                "disposition": "DEFER",
+            }
+        ],
     }
 
 
@@ -43,9 +46,17 @@ def run_receiver(root, payload, *, source=SOURCE, target=TARGET):
     input_path = root / "synthetic-input.json"
     output_path = root / "bounded-output.json"
     input_path.write_text(json.dumps(payload), encoding="utf-8")
-    args = ["receiver", "--payload", str(input_path),
-            "--expected-source-sha", source, "--expected-target-sha", target,
-            "--output", str(output_path)]
+    args = [
+        "receiver",
+        "--payload",
+        str(input_path),
+        "--expected-source-sha",
+        source,
+        "--expected-target-sha",
+        target,
+        "--output",
+        str(output_path),
+    ]
     with mock.patch.object(sys, "argv", args):
         with contextlib.redirect_stdout(io.StringIO()):
             receiver.main()
@@ -65,15 +76,22 @@ class ReceiverQualificationTests(unittest.TestCase):
             self.assertFalse(output["release_credit"])
             self.assertFalse(output["compliance_credit"])
             self.assertEqual(output["authority_effect"], "NONE")
-            self.assertEqual(output["payload_sha256"],
-                             hashlib.sha256((root / "synthetic-input.json").read_bytes()).hexdigest())
+            self.assertEqual(
+                output["payload_sha256"],
+                hashlib.sha256(
+                    (root / "synthetic-input.json").read_bytes()
+                ).hexdigest(),
+            )
 
     def test_receiver_supports_multiple_rows_without_acceptance_promotion(self):
         with tempfile.TemporaryDirectory() as d:
             p = fixture()
             for state in ("REJECT", "ACCEPT"):
-                row = dict(p["mapping_rows"][0], disposition=state,
-                           source_requirement_id=f"SYNTHETIC-{state}")
+                row = dict(
+                    p["mapping_rows"][0],
+                    disposition=state,
+                    source_requirement_id=f"SYNTHETIC-{state}",
+                )
                 p["mapping_rows"].append(row)
             result, _ = run_receiver(Path(d), p)
             self.assertEqual(result["mapping_rows"], 3)
@@ -81,8 +99,10 @@ class ReceiverQualificationTests(unittest.TestCase):
 
     def test_schema_and_source_owner_must_match(self):
         for key, invalid in [
-            ("schema", "unknown"), ("source_repo", "wrong/source"),
-            ("target_repo", "wrong/target"), ("source_sha", "0" * 40),
+            ("schema", "unknown"),
+            ("source_repo", "wrong/source"),
+            ("target_repo", "wrong/target"),
+            ("source_sha", "0" * 40),
             ("target_sha", "0" * 40),
         ]:
             with self.subTest(key=key), tempfile.TemporaryDirectory() as d:
@@ -95,7 +115,7 @@ class ReceiverQualificationTests(unittest.TestCase):
     def test_bad_expected_ref_fails_closed(self):
         for field in ("source", "target"):
             with self.subTest(field=field), tempfile.TemporaryDirectory() as d:
-                args = (dict(source="bad") if field == "source" else dict(target="bad"))
+                args = dict(source="bad") if field == "source" else dict(target="bad")
                 with self.assertRaises(SystemExit):
                     run_receiver(Path(d), fixture(), **args)
                 self.assertFalse((Path(d) / "bounded-output.json").exists())

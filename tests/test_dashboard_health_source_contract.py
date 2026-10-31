@@ -4,13 +4,14 @@ Execute the real workflow shell scanner against isolated synthetic HTML to
 qualify exact dynamic-expression suppression while retaining true missing
 link failures. The runtime generator must remain the existing W007 source.
 """
+
 from __future__ import annotations
 
 import os
-from pathlib import Path
 import subprocess
 import tempfile
 import unittest
+from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 WORKFLOW = ROOT / ".github" / "workflows" / "dashboard-health.yml"
@@ -43,8 +44,7 @@ def _fixture_scan(*, malicious_link: str) -> tuple[str, str]:
             '<a href="present.html">available</a>'
             '<a href="missing.html">missing</a>'
             '<a href="https://github.com">external</a>'
-            '<a href="#inside">anchor</a>'
-            + malicious_link,
+            '<a href="#inside">anchor</a>' + malicious_link,
             encoding="utf-8",
         )
         output = folder / "output.txt"
@@ -53,7 +53,9 @@ def _fixture_scan(*, malicious_link: str) -> tuple[str, str]:
         if os.name == "nt":
             bash_exe = (
                 Path(os.environ.get("ProgramFiles", r"C:\Program Files"))
-                / "Git" / "bin" / "bash.exe"
+                / "Git"
+                / "bin"
+                / "bash.exe"
             )
             if not bash_exe.is_file():
                 raise AssertionError("Git for Windows Bash is required")
@@ -137,7 +139,9 @@ class DashboardHealthContracts(unittest.TestCase):
         )
         manifest = MANIFEST.read_text(encoding="utf-8")
         self.assertIn('"status": "runtime_generated"', manifest)
-        self.assertIn('"producer": "scripts/write_runtime_governance_status.py"', manifest)
+        self.assertIn(
+            '"producer": "scripts/write_runtime_governance_status.py"', manifest
+        )
 
     def test_required_exit_on_missing_links_not_weakened(self):
         workflow = WORKFLOW.read_text(encoding="utf-8")

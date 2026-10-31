@@ -1,12 +1,8 @@
 import json
 
-from scripts.proposal_compatibility import (
-    emit_mip,
-    iter_envelopes,
-    main as validate_main,
-    valid_empty_queue,
-    validate_envelope,
-)
+from scripts.proposal_compatibility import emit_mip, iter_envelopes
+from scripts.proposal_compatibility import main as validate_main
+from scripts.proposal_compatibility import valid_empty_queue, validate_envelope
 
 
 def contract():

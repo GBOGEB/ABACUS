@@ -26,16 +26,32 @@ def test_six_sigma_event_reopens_immediately():
 
 
 def test_pca_sign_flip_is_still_same_component():
-    anchor = {"loadings": [0.6, 0.5, 0.4], "explained_variance": 0.48, "semantic_label": "authority_risk"}
-    current = {"loadings": [-0.61, -0.49, -0.39], "explained_variance": 0.47, "semantic_label": "authority_risk"}
+    anchor = {
+        "loadings": [0.6, 0.5, 0.4],
+        "explained_variance": 0.48,
+        "semantic_label": "authority_risk",
+    }
+    current = {
+        "loadings": [-0.61, -0.49, -0.39],
+        "explained_variance": 0.47,
+        "semantic_label": "authority_risk",
+    }
     r = pca_status(current, anchor)
     assert r["status"] == "CONTROLLED"
     assert r["cosine_similarity"] > 0.99
 
 
 def test_pca_repeated_breach_reopens():
-    anchor = {"loadings": [0.8, 0.1, 0.1], "explained_variance": 0.50, "semantic_label": "authority_risk"}
-    current = {"loadings": [0.1, 0.8, 0.1], "explained_variance": 0.35, "semantic_label": "authority_risk"}
+    anchor = {
+        "loadings": [0.8, 0.1, 0.1],
+        "explained_variance": 0.50,
+        "semantic_label": "authority_risk",
+    }
+    current = {
+        "loadings": [0.1, 0.8, 0.1],
+        "explained_variance": 0.35,
+        "semantic_label": "authority_risk",
+    }
     r = pca_status(current, anchor, ["BREACH"])
     assert r["status"] == "DRIFT"
     assert r["reopen_analyze"] is True

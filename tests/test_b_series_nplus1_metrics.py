@@ -1,4 +1,5 @@
 """Four-pulse source-config/temporal edge tests; mutated cases are synthetic."""
+
 from __future__ import annotations
 
 import copy
@@ -29,8 +30,12 @@ class BSeriesNPlusOne(unittest.TestCase):
     def test_b1_stable_with_four_unique_native_receipts(self):
         r = metrics.extend(self.doc)
         self.assertEqual(r["four_pulse_metrics"]["b1_raw_unguarded_counts"], [139] * 4)
-        self.assertEqual(r["four_pulse_metrics"]["b1_velocity_findings_per_hour"], [0.0] * 3)
-        self.assertEqual(r["four_pulse_metrics"]["b1_acceleration_findings_per_hour2"], [0.0] * 2)
+        self.assertEqual(
+            r["four_pulse_metrics"]["b1_velocity_findings_per_hour"], [0.0] * 3
+        )
+        self.assertEqual(
+            r["four_pulse_metrics"]["b1_acceleration_findings_per_hour2"], [0.0] * 2
+        )
 
     def test_runtime_baseline_not_overwritten(self):
         r = metrics.extend(self.doc)

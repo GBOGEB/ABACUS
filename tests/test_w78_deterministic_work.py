@@ -29,9 +29,7 @@ def synthetic_receipts(distinct: bool = True) -> list[dict]:
     for index in range(15):
         work_vector = {
             feature: (
-                (index + 1) * (feature_index + 2)
-                if distinct
-                else feature_index + 2
+                (index + 1) * (feature_index + 2) if distinct else feature_index + 2
             )
             for feature_index, feature in enumerate(w78_probe.WORK_FEATURES)
         }
@@ -85,9 +83,7 @@ def test_replay_mismatch_fails_closed() -> None:
     rows = synthetic_receipts()
     rows[1]["work_vector"] = dict(rows[1]["work_vector"])
     rows[1]["work_vector"]["scanned_text_files"] += 1
-    rows[1]["work_vector_sha256"] = w78_probe.canonical_sha256(
-        rows[1]["work_vector"]
-    )
+    rows[1]["work_vector_sha256"] = w78_probe.canonical_sha256(rows[1]["work_vector"])
     try:
         w78.validate(rows)
     except ValueError as exc:

@@ -8,10 +8,11 @@ Tests for architecture documentation validation including diagrams,
 links, ASCII art structures, and documentation-code alignment.
 """
 
-import pytest
-from pathlib import Path
 import re
+from pathlib import Path
 from typing import List, Set
+
+import pytest
 
 
 @pytest.fixture
@@ -29,7 +30,7 @@ def architecture_files(workspace_root):
         "ARCHITECTURE_DIAGRAM.md",
         "ARCHITECTURE_LINKS.md",
         "DMAIC_V3_ARCHITECTURE_DIAGRAM.md",
-        "ABACUS_V21_SYSTEM_ARCHITECTURE.md"
+        "ABACUS_V21_SYSTEM_ARCHITECTURE.md",
     ]
 
     for pattern in patterns:
@@ -85,10 +86,7 @@ class TestArchitectureDocumentation:
 
     def test_system_architecture_exists(self, workspace_root):
         """Test that system architecture documentation exists"""
-        system_arch_patterns = [
-            "*SYSTEM_ARCHITECTURE*.md",
-            "*ARCHITECTURE_DIAGRAM*.md"
-        ]
+        system_arch_patterns = ["*SYSTEM_ARCHITECTURE*.md", "*ARCHITECTURE_DIAGRAM*.md"]
 
         system_arch_files = []
         for pattern in system_arch_patterns:
@@ -108,7 +106,7 @@ class TestArchitectureLinkIntegrity:
             links_file = links_files[0]
             assert links_file.exists()
 
-            content = links_file.read_text(encoding='utf-8')
+            content = links_file.read_text(encoding="utf-8")
             assert len(content) > 0
 
     def test_markdown_links_format(self, workspace_root):
@@ -117,9 +115,9 @@ class TestArchitectureLinkIntegrity:
 
         if links_files:
             links_file = links_files[0]
-            content = links_file.read_text(encoding='utf-8')
+            content = links_file.read_text(encoding="utf-8")
 
-            markdown_link_pattern = r'\[([^\]]+)\]\(([^\)]+)\)'
+            markdown_link_pattern = r"\[([^\]]+)\]\(([^\)]+)\)"
             matches = re.findall(markdown_link_pattern, content)
 
             assert len(matches) >= 0
@@ -134,7 +132,7 @@ class TestASCIIArtStructures:
             "*ASCII*.txt",
             "*ASCII*.md",
             "*HIERARCHY*.txt",
-            "*WORKFLOW*.txt"
+            "*WORKFLOW*.txt",
         ]
 
         ascii_files = []
@@ -151,12 +149,12 @@ class TestASCIIArtStructures:
         if ascii_files:
             for ascii_file in ascii_files[:5]:
                 if ascii_file.exists():
-                    content = ascii_file.read_text(encoding='utf-8', errors='ignore')
+                    content = ascii_file.read_text(encoding="utf-8", errors="ignore")
 
-                    box_chars = ['│', '─', '┌', '┐', '└', '┘', '├', '┤', '┬', '┴', '┼']
+                    box_chars = ["│", "─", "┌", "┐", "└", "┘", "├", "┤", "┬", "┴", "┼"]
                     has_box_chars = any(char in content for char in box_chars)
 
-                    ascii_chars = ['|', '-', '+', '/', '\\']
+                    ascii_chars = ["|", "-", "+", "/", "\\"]
                     has_ascii_chars = any(char in content for char in ascii_chars)
 
                     assert has_box_chars or has_ascii_chars
@@ -180,5 +178,5 @@ class TestDocumentationCodeAlignment:
         assert len(dmaic_py_files) > 0, "No DMAIC/DOW Python files found"
 
 
-if __name__ == '__main__':
-    pytest.main([__file__, '-v'])
+if __name__ == "__main__":
+    pytest.main([__file__, "-v"])

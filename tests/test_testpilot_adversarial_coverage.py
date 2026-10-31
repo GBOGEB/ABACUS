@@ -3,6 +3,7 @@
 The real preflight entrypoint is exercised through bounded dependency injection.
 Each negative/reverse/force-trip test asserts fail-closed or explicit partial status.
 """
+
 from __future__ import annotations
 
 import json
@@ -11,6 +12,7 @@ from pathlib import Path
 from types import SimpleNamespace
 
 import pytest
+
 from scripts import testpilot_preflight as pilot
 
 
@@ -27,30 +29,46 @@ def _proc(stdout: str = "", stderr: str = "", code: int = 0):
 
 def _main_receipt(monkeypatch, tmp_path, *argv, outcomes=None):
     output = tmp_path / "receipt.json"
-    monkeypatch.setattr(sys, "argv", ["testpilot_preflight.py", *argv, "--receipt", str(output)])
+    monkeypatch.setattr(
+        sys, "argv", ["testpilot_preflight.py", *argv, "--receipt", str(output)]
+    )
     monkeypatch.setattr(pilot, "changed_files", lambda: [])
     monkeypatch.setattr(pilot, "parity_subject_files", lambda: [])
-    monkeypatch.setattr(pilot, "targeted_pytest", lambda: outcomes if outcomes is not None else [{"name": "targeted", "status": "PASS"}])
+    monkeypatch.setattr(
+        pilot,
+        "targeted_pytest",
+        lambda: (
+            outcomes
+            if outcomes is not None
+            else [{"name": "targeted", "status": "PASS"}]
+        ),
+    )
     monkeypatch.setattr(pilot, "source_sha", lambda: "a" * 40)
     return output
 
 
 def test_positive_git_lines_strips_and_drops_empty(monkeypatch):
-    monkeypatch.setattr(pilot.subprocess, "run", lambda *a, **k: _proc(" a.py\n\n b.py \n"))
+    monkeypatch.setattr(
+        pilot.subprocess, "run", lambda *a, **k: _proc(" a.py\n\n b.py \n")
+    )
     assert pilot.git_lines("ls-files") == ["a.py", "b.py"]
 
 
 def test_negative_git_lines_failure_not_misclassified_as_changed_files(monkeypatch):
-    monkeypatch.setattr(pilot.subprocess, "run", lambda *a, **k: _proc("a.py", "fatal", 128))
+    monkeypatch.setattr(
+        pilot.subprocess, "run", lambda *a, **k: _proc("a.py", "fatal", 128)
+    )
     with pytest.raises(pilot.GitProbeError, match="git diff exited 128"):
         pilot.git_lines("diff")
 
 
 def test_positive_run_receipt_records_exit_and_bounded_tails(monkeypatch):
     got = {}
+
     def fake(cmd, **kw):
         got.update(kw)
         return _proc("x" * 5100, "y" * 5200, 3)
+
     monkeypatch.setattr(pilot.subprocess, "run", fake)
     monkeypatch.setattr(pilot.time, "monotonic", iter([4.0, 5.2351]).__next__)
     receipt = pilot.run(["tool", "--check"])
@@ -88,12 +106,15 @@ def test_positive_parity_subjects_only_existing_files(monkeypatch, tmp_path):
     assert results == ["scripts/testpilot_preflight.py", "pytest.ini"]
 
 
-@pytest.mark.parametrize("text,expected", [
-    ("<<<<<<< HEAD\na\n=======\nb\n>>>>>>> other\n", "FAIL"),
-    ("<<<<<<< HEAD\na\n=======\n", "PASS"),
-    ("literal <<<<<<< and >>>>>>> in a sentence", "PASS"),
-    ("ordinary Markdown\n", "PASS"),
-])
+@pytest.mark.parametrize(
+    "text,expected",
+    [
+        ("<<<<<<< HEAD\na\n=======\nb\n>>>>>>> other\n", "FAIL"),
+        ("<<<<<<< HEAD\na\n=======\n", "PASS"),
+        ("literal <<<<<<< and >>>>>>> in a sentence", "PASS"),
+        ("ordinary Markdown\n", "PASS"),
+    ],
+)
 def test_conflict_triplet_only_when_complete(monkeypatch, tmp_path, text, expected):
     monkeypatch.setattr(pilot, "ROOT", tmp_path)
     p = _mk(tmp_path, "README.md", text)
@@ -117,7 +138,12 @@ def test_reverse_conflicts_binary_extension_not_scanned(monkeypatch, tmp_path):
 def test_positive_python_compile_valid_file(monkeypatch, tmp_path):
     monkeypatch.setattr(pilot, "ROOT", tmp_path)
     p = _mk(tmp_path, "valid.py", "def f():\n    return 1\n")
-    assert pilot.check_python_compile([p]) == {"name": "python_compile", "status": "PASS", "checked": 1, "failures": []}
+    assert pilot.check_python_compile([p]) == {
+        "name": "python_compile",
+        "status": "PASS",
+        "checked": 1,
+        "failures": [],
+    }
 
 
 def test_negative_python_compile_invalid_file_records_error(monkeypatch, tmp_path):
@@ -134,16 +160,21 @@ def test_reverse_compile_non_python_not_counted(monkeypatch, tmp_path):
     assert pilot.check_python_compile([p])["checked"] == 0
 
 
-@pytest.mark.parametrize("filename,content,valid", [
-    ("v.json", '{"valid": true}', True),
-    ("e.json", "{incomplete", False),
-    ("v.toml", '[example]\nvalue=12\n', True),
-    ("e.toml", '[example\nvalue=1\n', False),
-    ("v.yaml", 'items:\n  - one\n', True),
-    ("e.yaml", '[unclosed\n', False),
-    ("v.yml", 'valid: yes\n', True),
-])
-def test_configs_detect_parser_failure_not_false_green(monkeypatch, tmp_path, filename, content, valid):
+@pytest.mark.parametrize(
+    "filename,content,valid",
+    [
+        ("v.json", '{"valid": true}', True),
+        ("e.json", "{incomplete", False),
+        ("v.toml", "[example]\nvalue=12\n", True),
+        ("e.toml", "[example\nvalue=1\n", False),
+        ("v.yaml", "items:\n  - one\n", True),
+        ("e.yaml", "[unclosed\n", False),
+        ("v.yml", "valid: yes\n", True),
+    ],
+)
+def test_configs_detect_parser_failure_not_false_green(
+    monkeypatch, tmp_path, filename, content, valid
+):
     monkeypatch.setattr(pilot, "ROOT", tmp_path)
     got = pilot.check_configs([_mk(tmp_path, filename, content)])
     assert got["checked"] == 1
@@ -163,14 +194,22 @@ def test_reverse_config_unknown_extension_not_counted(monkeypatch, tmp_path):
     assert got["status"] == "PASS" and got["checked"] == 0
 
 
-def test_positive_ruff_no_python_files_is_complete_without_command(monkeypatch, tmp_path):
+def test_positive_ruff_no_python_files_is_complete_without_command(
+    monkeypatch, tmp_path
+):
     monkeypatch.setattr(pilot, "ROOT", tmp_path)
     assert pilot.ruff_check([_mk(tmp_path, "readme.md", "x")], fix=False) == {
-        "name": "ruff", "status": "PASS", "checked": 0, "fix": False}
+        "name": "ruff",
+        "status": "PASS",
+        "checked": 0,
+        "fix": False,
+    }
 
 
 @pytest.mark.parametrize("fix,expected", [(False, "SKIP"), (True, "FAIL")])
-def test_negative_ruff_missing_tool_preserves_parity(monkeypatch, tmp_path, fix, expected):
+def test_negative_ruff_missing_tool_preserves_parity(
+    monkeypatch, tmp_path, fix, expected
+):
     monkeypatch.setattr(pilot, "ROOT", tmp_path)
     monkeypatch.setattr(pilot.importlib.util, "find_spec", lambda name: None)
     got = pilot.ruff_check([_mk(tmp_path, "app.py", "x=1")], fix=fix)
@@ -182,9 +221,11 @@ def test_positive_ruff_command_does_not_bypass_verification(monkeypatch, tmp_pat
     monkeypatch.setattr(pilot, "ROOT", tmp_path)
     monkeypatch.setattr(pilot.importlib.util, "find_spec", lambda name: object())
     seen = []
+
     def fake(cmd, **kw):
         seen.append(cmd)
         return {"status": "FAIL", "returncode": 1}
+
     monkeypatch.setattr(pilot, "run", fake)
     got = pilot.ruff_check([_mk(tmp_path, "app.py", "x=1")], fix=fix)
     assert got["status"] == "FAIL" and got["checked"] == 1
@@ -195,9 +236,11 @@ def test_positive_ruff_command_does_not_bypass_verification(monkeypatch, tmp_pat
 
 def test_positive_targeted_pytest_two_explicit_commands(monkeypatch):
     seen = []
+
     def fake(cmd, **kw):
         seen.append(cmd)
         return {"status": "PASS"}
+
     monkeypatch.setattr(pilot, "run", fake)
     got = pilot.targeted_pytest()
     assert [x["name"] for x in got] == ["pytest_targeted_1", "pytest_targeted_2"]
@@ -212,9 +255,11 @@ def test_negative_targeted_pytest_records_first_red(monkeypatch):
 def test_positive_coverage_floor_not_lowered(monkeypatch, tmp_path):
     monkeypatch.setattr(pilot, "ROOT", tmp_path)
     called = []
+
     def fake(cmd, **kw):
         called.append((cmd, kw))
         return {"status": "PASS"}
+
     monkeypatch.setattr(pilot, "run", fake)
     result = pilot.coverage_check(84.5)
     assert "--cov-fail-under=84.5" in called[0][0]
@@ -222,12 +267,15 @@ def test_positive_coverage_floor_not_lowered(monkeypatch, tmp_path):
     assert result["coverage_floor_pct"] == 84.5
 
 
-@pytest.mark.parametrize("mode,parity,outcome", [
-    ("fast", False, ("PARTIAL", 0)),
-    ("full", False, ("PARTIAL", 0)),
-    ("fast", True, ("FAIL", 1)),
-    ("gate", False, ("FAIL", 1)),
-])
+@pytest.mark.parametrize(
+    "mode,parity,outcome",
+    [
+        ("fast", False, ("PARTIAL", 0)),
+        ("full", False, ("PARTIAL", 0)),
+        ("fast", True, ("FAIL", 1)),
+        ("gate", False, ("FAIL", 1)),
+    ],
+)
 def test_reverse_skips_cannot_inflate_gate_success(mode, parity, outcome):
     assert pilot.receipt_outcome([{"status": "SKIP"}], mode, parity=parity) == outcome
 
@@ -237,7 +285,10 @@ def test_force_trip_unknown_status_is_never_green():
 
 
 def test_force_trip_explicit_failure_dominates_skips():
-    assert pilot.receipt_outcome([{"status": "SKIP"}, {"status": "FAIL"}], "fast") == ("FAIL", 1)
+    assert pilot.receipt_outcome([{"status": "SKIP"}, {"status": "FAIL"}], "fast") == (
+        "FAIL",
+        1,
+    )
 
 
 def test_positive_source_sha_from_git_only(monkeypatch):
@@ -261,7 +312,11 @@ def test_positive_main_fast_verified_receipt(monkeypatch, tmp_path):
 
 def test_negative_main_full_preserves_failed_coverage(monkeypatch, tmp_path):
     receipt_path = _main_receipt(monkeypatch, tmp_path, "--mode", "full")
-    monkeypatch.setattr(pilot, "coverage_check", lambda floor: {"status": "FAIL", "coverage_floor_pct": floor})
+    monkeypatch.setattr(
+        pilot,
+        "coverage_check",
+        lambda floor: {"status": "FAIL", "coverage_floor_pct": floor},
+    )
     assert pilot.main() == 1
     a = json.loads(receipt_path.read_text())
     assert a["status"] == "FAIL" and a["failure_count"] == 1
@@ -270,14 +325,26 @@ def test_negative_main_full_preserves_failed_coverage(monkeypatch, tmp_path):
 
 def test_reverse_main_gate_floor_minimum_preserved(monkeypatch, tmp_path):
     receipt_path = _main_receipt(monkeypatch, tmp_path, "--mode", "gate")
-    monkeypatch.setattr(pilot, "coverage_check", lambda floor: {"status": "PASS", "coverage_floor_pct": floor})
+    monkeypatch.setattr(
+        pilot,
+        "coverage_check",
+        lambda floor: {"status": "PASS", "coverage_floor_pct": floor},
+    )
     assert pilot.main() == 0
-    assert json.loads(receipt_path.read_text())["checks"][-1]["coverage_floor_pct"] == 75.0
+    assert (
+        json.loads(receipt_path.read_text())["checks"][-1]["coverage_floor_pct"] == 75.0
+    )
 
 
 def test_force_trip_main_gate_unknown_check_fails_closed(monkeypatch, tmp_path):
-    receipt_path = _main_receipt(monkeypatch, tmp_path, "--mode", "gate", outcomes=[{"status": "UNKNOWN"}])
-    monkeypatch.setattr(pilot, "coverage_check", lambda floor: {"status": "PASS", "coverage_floor_pct": floor})
+    receipt_path = _main_receipt(
+        monkeypatch, tmp_path, "--mode", "gate", outcomes=[{"status": "UNKNOWN"}]
+    )
+    monkeypatch.setattr(
+        pilot,
+        "coverage_check",
+        lambda floor: {"status": "PASS", "coverage_floor_pct": floor},
+    )
     assert pilot.main() == 1
     assert json.loads(receipt_path.read_text())["unverified_check_count"] == 1
 

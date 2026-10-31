@@ -1,4 +1,5 @@
 """Canonical-suite coverage proof for the DOW/Ariana changed output line."""
+
 from types import SimpleNamespace
 
 from DMAIC_V3.core.dow_ariana_integration import DOWArianaIntegration
@@ -36,7 +37,8 @@ def test_empty_bridge_results_cannot_claim_pipeline_success(tmp_path, monkeypatc
     state = SimpleNamespace(state_dir=tmp_path / "state")
     integration = DOWArianaIntegration(config, state, _Bridge())
     monkeypatch.setattr(
-        integration.test_bridge, "run_tests_parallel",
+        integration.test_bridge,
+        "run_tests_parallel",
         lambda tests, max_workers=2: {},
     )
     result = integration.execute_dow_pipeline_with_ariana(1, 2)
@@ -49,6 +51,7 @@ def test_empty_bridge_results_cannot_claim_pipeline_success(tmp_path, monkeypatc
     assert summary["results_complete"] is False
     assert summary["all_passed"] is False
     import json
+
     receipt = integration.dow_dir / "phase1_iteration2_result.json"
     assert json.loads(receipt.read_text())["success"] is False
 
@@ -82,8 +85,10 @@ def test_unexpected_bridge_result_rejected(tmp_path, monkeypatch):
     integration = DOWArianaIntegration(config, state, _Bridge())
 
     def extraneous(tests, max_workers=2):
-        result = {test["name"]: SimpleNamespace(success=True, duration_seconds=0.01)
-                  for test in tests}
+        result = {
+            test["name"]: SimpleNamespace(success=True, duration_seconds=0.01)
+            for test in tests
+        }
         result["not_requested"] = SimpleNamespace(success=True, duration_seconds=0.01)
         return result
 

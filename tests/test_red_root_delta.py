@@ -136,7 +136,9 @@ class RedRootDeltaTest(unittest.TestCase):
         self.assertEqual(payload["config_changes"], ["pyproject.toml"])
         self.assertEqual(payload["changed_python_files"], [])
         self.assertIsNone(payload["touched_findings_upper_bound"])
-        self.assertEqual(payload["touched_findings_qualification"], "INDETERMINATE_CONFIG_CHANGE")
+        self.assertEqual(
+            payload["touched_findings_qualification"], "INDETERMINATE_CONFIG_CHANGE"
+        )
         text = summary.read_text(encoding="utf-8")
         self.assertIn("Attribution indeterminate", text)
         self.assertNotIn("Elsewhere (inherited)", text)
@@ -219,7 +221,9 @@ class RedRootDeltaTest(unittest.TestCase):
     def test_valid_empty_scanner_is_qualified_zero(self) -> None:
         payload = self._run("HEAD~1", flake8_log="")
         self.assertEqual(payload["touched_findings_upper_bound"], 0)
-        self.assertEqual(payload["touched_findings_qualification"], "QUALIFIED_INPUTS_ONLY")
+        self.assertEqual(
+            payload["touched_findings_qualification"], "QUALIFIED_INPUTS_ONLY"
+        )
         self.assertEqual(payload["incomplete_tools"], [])
 
     def test_absent_black_log_is_unknown_even_with_valid_flake8(self) -> None:
@@ -227,28 +231,41 @@ class RedRootDeltaTest(unittest.TestCase):
         empty = self.tmp / "valid_flake8.log"
         empty.write_text("", encoding="utf-8")
         argv = [
-            "--lane", "mixed", "--root", str(self.repo),
-            "--base", "HEAD~1",
-            "--flake8-log", str(empty),
-            "--black-log", str(self.tmp / "missing_black.log"),
-            "--out", str(out),
+            "--lane",
+            "mixed",
+            "--root",
+            str(self.repo),
+            "--base",
+            "HEAD~1",
+            "--flake8-log",
+            str(empty),
+            "--black-log",
+            str(self.tmp / "missing_black.log"),
+            "--out",
+            str(out),
         ]
         self.assertEqual(red_root_delta.main(argv), 0)
         payload = json.loads(out.read_text(encoding="utf-8"))
         self.assertIsNone(payload["touched_findings_upper_bound"])
-        self.assertEqual(payload["touched_findings_qualification"], "INCOMPLETE_SCANNER_INPUTS")
+        self.assertEqual(
+            payload["touched_findings_qualification"], "INCOMPLETE_SCANNER_INPUTS"
+        )
         self.assertEqual(payload["incomplete_tools"], ["black"])
 
     def test_unparseable_bandit_never_yields_verified_zero(self) -> None:
         payload = self._run("HEAD~1", bandit_json="{")
         self.assertIsNone(payload["touched_findings_upper_bound"])
-        self.assertEqual(payload["touched_findings_qualification"], "INCOMPLETE_SCANNER_INPUTS")
+        self.assertEqual(
+            payload["touched_findings_qualification"], "INCOMPLETE_SCANNER_INPUTS"
+        )
         self.assertEqual(payload["incomplete_tools"], ["bandit"])
 
     def test_no_selected_scanners_is_unknown(self) -> None:
         payload = self._run("HEAD~1")
         self.assertIsNone(payload["touched_findings_upper_bound"])
-        self.assertEqual(payload["touched_findings_qualification"], "NO_SCANNERS_SELECTED")
+        self.assertEqual(
+            payload["touched_findings_qualification"], "NO_SCANNERS_SELECTED"
+        )
 
     def test_valid_positive_finding_retains_bound(self) -> None:
         payload = self._run(
@@ -256,7 +273,9 @@ class RedRootDeltaTest(unittest.TestCase):
             flake8_log="pkg/new.py:3:1: F821 undefined name 'missing'\\n",
         )
         self.assertEqual(payload["touched_findings_upper_bound"], 1)
-        self.assertEqual(payload["touched_findings_qualification"], "QUALIFIED_INPUTS_ONLY")
+        self.assertEqual(
+            payload["touched_findings_qualification"], "QUALIFIED_INPUTS_ONLY"
+        )
 
     def test_unknown_bound_is_explicit_in_summary(self) -> None:
         payload = self._run("HEAD~1", bandit_json="{broken")

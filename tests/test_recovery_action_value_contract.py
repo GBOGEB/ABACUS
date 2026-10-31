@@ -1,4 +1,5 @@
 """Fail-closed source and HTML contracts for the recovery-action value view."""
+
 from __future__ import annotations
 
 import json
@@ -72,10 +73,8 @@ class RecoveryActionValueTests(unittest.TestCase):
         self.assertEqual(d["job_conclusion"], "success")
         self.assertEqual(d["after_findings"], 0)
         self.assertTrue(SHA.fullmatch(d["head_sha"]))
-        self.assertIn('const recorded=c.comparison_status===', self.html)
-        self.assertIsNone(
-            self.data["metrics_contract"]["verified_closed_bd_roots"]
-        )
+        self.assertIn("const recorded=c.comparison_status===", self.html)
+        self.assertIsNone(self.data["metrics_contract"]["verified_closed_bd_roots"])
 
     def test_native_scoped_ruff_receipt_is_not_full_dow_clearance(self):
         r = self.data["candidates"]["dow_ruff"]
@@ -98,7 +97,7 @@ class RecoveryActionValueTests(unittest.TestCase):
         self.assertIsNone(
             self.data["metrics_contract"]["verified_unblocked_downstream_jobs"]
         )
-        self.assertIn('r.before_findings===11&&r.after_findings===0', self.html)
+        self.assertIn("r.before_findings===11&&r.after_findings===0", self.html)
 
     def test_main_coverage_is_measured_not_baseline_comparable(self):
         m = self.data["coverage"]["measured_main_at_sha"]
@@ -108,8 +107,10 @@ class RecoveryActionValueTests(unittest.TestCase):
         self.assertEqual(m["num_statements"], 30735)
         self.assertEqual(m["covered_branches"], 4200)
         self.assertEqual(m["num_branches"], 8290)
-        combined = 100 * (m["covered_lines"] + m["covered_branches"]) / (
-            m["num_statements"] + m["num_branches"]
+        combined = (
+            100
+            * (m["covered_lines"] + m["covered_branches"])
+            / (m["num_statements"] + m["num_branches"])
         )
         self.assertAlmostEqual(m["percent_combined_covered"], combined, places=2)
         self.assertEqual(m["scope_vs_historical_main"], "NOT_RECONCILED")
@@ -119,25 +120,31 @@ class RecoveryActionValueTests(unittest.TestCase):
             self.data["coverage"]["latest_main_measured_pct"], 54.65392575180766
         )
         current = self.data["coverage"]["current_main_measured"]
-        self.assertEqual(current["exact_main_sha"], self.data["coverage"]["latest_main_readback_sha"])
+        self.assertEqual(
+            current["exact_main_sha"], self.data["coverage"]["latest_main_readback_sha"]
+        )
         self.assertEqual(current["covered_lines"], 17158)
         self.assertEqual(current["num_statements"], 30815)
         self.assertEqual(current["covered_branches"], 4233)
         self.assertEqual(current["num_branches"], 8324)
-        self.assertEqual(current["source_additions"], ["scripts/dow_first_red_census.py"])
+        self.assertEqual(
+            current["source_additions"], ["scripts/dow_first_red_census.py"]
+        )
         self.assertEqual(current["existing_file_coverage_changed_count"], 0)
         cohort = self.data["coverage"]["sequential_main_comparison"]
         self.assertAlmostEqual(cohort["delta_percentage_points"], 0.1042780900523752)
         self.assertEqual(cohort["common_files"], 298)
         self.assertFalse(cohort["same_source_denominator"])
         self.assertIn("currentMeasure.exact_main_sha===liveSha", self.html)
-        self.assertIn('liveSha===m.exact_main_sha', self.html)
-        self.assertIn('main advanced since measured source', self.html)
+        self.assertIn("liveSha===m.exact_main_sha", self.html)
+        self.assertIn("main advanced since measured source", self.html)
         self.assertIn("historical comparison NOT COMPARABLE", self.html)
 
     def test_current_main_reds_do_not_erase_pr_scoped_repairs(self):
         d = self.data["current_main_first_reds"]
-        self.assertEqual(d["exact_main_sha"], self.data["coverage"]["latest_main_readback_sha"])
+        self.assertEqual(
+            d["exact_main_sha"], self.data["coverage"]["latest_main_readback_sha"]
+        )
         self.assertEqual(d["docs"]["finding_count"], 33)
         self.assertEqual(len(d["docs"]["files"]), 2)
         self.assertIsNone(d["docs"]["verified_after_count"])
@@ -164,7 +171,7 @@ class RecoveryActionValueTests(unittest.TestCase):
         self.assertIn("main protected=true", self.html)
         self.assertIn("required CI checks NOT observed", self.html)
         self.assertIn('active.enforcement!=="active"', self.html)
-        self.assertIn('liveSha===gov.observed_main_sha', self.html)
+        self.assertIn("liveSha===gov.observed_main_sha", self.html)
         self.assertIn("#governance", self.dom.hrefs)
         self.assertIn("governance", self.dom.ids)
 

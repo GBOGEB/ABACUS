@@ -1,4 +1,5 @@
 """W32 source-owned root/manifestation negative and reverse tests."""
+
 from __future__ import annotations
 
 import copy
@@ -10,21 +11,39 @@ from tools.recovery import w32_root_census as census
 HEAD = "a" * 40
 
 
-def job(n, *, status="completed", conclusion="failure", root="MATPLOTLIB",
-        family="python310", sha=HEAD):
+def job(
+    n,
+    *,
+    status="completed",
+    conclusion="failure",
+    root="MATPLOTLIB",
+    family="python310",
+    sha=HEAD,
+):
     return {
-        "run_id": 39100000000 + n, "attempt": 1, "job_id": 117000000000 + n,
-        "status": status, "conclusion": conclusion, "root_id": root,
-        "source_family": family, "head_sha": sha,
+        "run_id": 39100000000 + n,
+        "attempt": 1,
+        "job_id": 117000000000 + n,
+        "status": status,
+        "conclusion": conclusion,
+        "root_id": root,
+        "source_family": family,
+        "head_sha": sha,
     }
 
 
 def sample():
-    return {"exact_head": HEAD, "jobs": [
-        job(1), job(2, family="windows310"),
-        job(3, root="SAFETY"), job(4, conclusion="success", root=None),
-        job(5, status="queued", conclusion=None, root=None),
-    ], "previous_root_ids": ["MATPLOTLIB", "SAFETY", "OLD_ROOT"]}
+    return {
+        "exact_head": HEAD,
+        "jobs": [
+            job(1),
+            job(2, family="windows310"),
+            job(3, root="SAFETY"),
+            job(4, conclusion="success", root=None),
+            job(5, status="queued", conclusion=None, root=None),
+        ],
+        "previous_root_ids": ["MATPLOTLIB", "SAFETY", "OLD_ROOT"],
+    }
 
 
 def test_two_shared_failures_are_one_root():
@@ -54,9 +73,15 @@ def test_nonterminal_is_not_failed_or_success():
 
 
 def test_no_failed_jobs_not_automatically_formal_closure():
-    receipt = census.summarize({"exact_head": HEAD, "jobs": [
-        job(1, conclusion="success", root=None),
-    ], "previous_root_ids": ["SAFETY"]})
+    receipt = census.summarize(
+        {
+            "exact_head": HEAD,
+            "jobs": [
+                job(1, conclusion="success", root=None),
+            ],
+            "previous_root_ids": ["SAFETY"],
+        }
+    )
     assert receipt["root_count"] == 0
     assert receipt["root_amplification"] is None
     assert receipt["formal_roots_closed"] is None
@@ -71,16 +96,19 @@ def test_unclassified_first_red_is_unknown_not_zero():
     assert receipt["root_count"] == 2
 
 
-@pytest.mark.parametrize("field,value,reason", [
-    ("head_sha", "b" * 40, "cross-head"),
-    ("run_id", 0, "invalid run"),
-    ("attempt", 0, "invalid run"),
-    ("job_id", True, "invalid run"),
-    ("source_family", "", "source family"),
-    ("status", "mystery", "unknown job"),
-    ("conclusion", None, "terminal job"),
-    ("root_id", "", "malformed root"),
-])
+@pytest.mark.parametrize(
+    "field,value,reason",
+    [
+        ("head_sha", "b" * 40, "cross-head"),
+        ("run_id", 0, "invalid run"),
+        ("attempt", 0, "invalid run"),
+        ("job_id", True, "invalid run"),
+        ("source_family", "", "source family"),
+        ("status", "mystery", "unknown job"),
+        ("conclusion", None, "terminal job"),
+        ("root_id", "", "malformed root"),
+    ],
+)
 def test_bad_native_record_fails_closed(field, value, reason):
     data = sample()
     data["jobs"][0][field] = value

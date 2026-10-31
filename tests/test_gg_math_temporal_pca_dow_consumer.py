@@ -8,8 +8,16 @@ import pathlib
 
 ROOT = pathlib.Path(__file__).resolve().parents[1]
 MODULE = ROOT / "runtime" / "federation" / "gg_math_temporal_pca_dow_consumer.py"
-LIVE_FIXTURE = ROOT / "runtime" / "federation" / "fixtures" / "gg_math_temporal_pca_exact_live_binding.json"
-spec = importlib.util.spec_from_file_location("gg_math_temporal_pca_dow_consumer", MODULE)
+LIVE_FIXTURE = (
+    ROOT
+    / "runtime"
+    / "federation"
+    / "fixtures"
+    / "gg_math_temporal_pca_exact_live_binding.json"
+)
+spec = importlib.util.spec_from_file_location(
+    "gg_math_temporal_pca_dow_consumer", MODULE
+)
 mod = importlib.util.module_from_spec(spec)
 assert spec and spec.loader
 spec.loader.exec_module(mod)
@@ -46,7 +54,10 @@ def test_exact_live_gg_math_receipt_is_independently_consumable():
     binding = live_binding()
     followup = binding["federation_followup"]
     assert binding["source_sha"] == "a99d7cacd03ed3a392c063a1b3f8dbffdba0d060"
-    assert binding["source_artifact_digest"] == "sha256:876c55c759de33392985f693f1735cdc0d38dda7d7b7a6c80ee80aee33fd8405"
+    assert (
+        binding["source_artifact_digest"]
+        == "sha256:876c55c759de33392985f693f1735cdc0d38dda7d7b7a6c80ee80aee33fd8405"
+    )
     assert followup == mod.EXPECTED_FEDERATION_FOLLOWUP
     receipt = mod.consume(binding)
     assert receipt["status"] == "ACCEPT"

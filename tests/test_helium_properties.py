@@ -19,7 +19,9 @@ def test_missing_hepak_reference_is_not_pass():
 
 @pytest.mark.TEST_BLOCKED_DEPENDENCY
 def test_property_provider_has_no_formal_credit():
-    pytest.importorskip("CoolProp", reason="TEST_BLOCKED_DEPENDENCY: CoolProp is unavailable")
+    pytest.importorskip(
+        "CoolProp", reason="TEST_BLOCKED_DEPENDENCY: CoolProp is unavailable"
+    )
     state = state_tp(300.0, 1.05e5)
     assert state.formal_credit_delta == 0
     assert state.backend == "CoolProp"
@@ -28,6 +30,8 @@ def test_property_provider_has_no_formal_credit():
 
 @pytest.mark.TEST_BLOCKED_DEPENDENCY
 def test_envelope_fails_closed():
-    pytest.importorskip("CoolProp", reason="TEST_BLOCKED_DEPENDENCY: CoolProp is unavailable")
+    pytest.importorskip(
+        "CoolProp", reason="TEST_BLOCKED_DEPENDENCY: CoolProp is unavailable"
+    )
     with pytest.raises(ValueError):
         state_tp(301.0, 1.05e5)

@@ -1,4 +1,5 @@
 """Adversarial regressions for changed-doc source selection."""
+
 import os
 import subprocess
 import tempfile
@@ -46,15 +47,18 @@ class ChangedDocsSelectionTests(unittest.TestCase):
         return tmp, root, git, ancestor, base, head
 
     def _select(self, root, base, head):
-        with patch.object(mod, "REPO_ROOT", root), patch.dict(
-            os.environ,
-            {
-                "GITHUB_EVENT_NAME": "pull_request",
-                "GITHUB_BASE_SHA": base,
-                "GITHUB_SHA": head,
-                "GITHUB_BASE_REF": "main",
-            },
-            clear=False,
+        with (
+            patch.object(mod, "REPO_ROOT", root),
+            patch.dict(
+                os.environ,
+                {
+                    "GITHUB_EVENT_NAME": "pull_request",
+                    "GITHUB_BASE_SHA": base,
+                    "GITHUB_SHA": head,
+                    "GITHUB_BASE_REF": "main",
+                },
+                clear=False,
+            ),
         ):
             # Production resolves git merge-base against HEAD, so the fixture
             # must execute in the same checked-out revision as the event.

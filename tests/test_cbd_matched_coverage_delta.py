@@ -1,12 +1,15 @@
 """Negative/positive contracts; no GitHub actions, remote work or dependencies."""
+
 import importlib.util
 import json
-from copy import deepcopy
-from pathlib import Path
 import tempfile
 import unittest
+from copy import deepcopy
+from pathlib import Path
 
-MODULE = Path(__file__).resolve().parents[1] / "scripts" / "cbd_matched_coverage_delta.py"
+MODULE = (
+    Path(__file__).resolve().parents[1] / "scripts" / "cbd_matched_coverage_delta.py"
+)
 spec = importlib.util.spec_from_file_location("cbd_matched_coverage_delta", MODULE)
 metric = importlib.util.module_from_spec(spec)
 spec.loader.exec_module(metric)
@@ -16,16 +19,31 @@ HASH = "b" * 64
 
 
 def manifest():
-    return {"schema": "cbd.native-checkout-declaration.v1", "repository": "GBOGEB/ABACUS",
-            "head_sha": SHA, "checkout_sha": SHA, "run_id": 123, "run_attempt": 2,
-            "job_id": 456, "source_sha256": {PATH: HASH}}
+    return {
+        "schema": "cbd.native-checkout-declaration.v1",
+        "repository": "GBOGEB/ABACUS",
+        "head_sha": SHA,
+        "checkout_sha": SHA,
+        "run_id": 123,
+        "run_attempt": 2,
+        "job_id": 456,
+        "source_sha256": {PATH: HASH},
+    }
 
 
 def coverage(lines=0, branches=0):
-    return {"files": {PATH: {"summary": {"covered_lines": lines,
-                                             "num_statements": 165,
-                                             "covered_branches": branches,
-                                             "num_branches": 56}}}}
+    return {
+        "files": {
+            PATH: {
+                "summary": {
+                    "covered_lines": lines,
+                    "num_statements": 165,
+                    "covered_branches": branches,
+                    "num_branches": 56,
+                }
+            }
+        }
+    }
 
 
 def snap(lines=0, branches=0, *, attempt=2):
@@ -45,10 +63,15 @@ class MatchedCoverage(unittest.TestCase):
         self.assertEqual(result["formal_root_closure"], 0)
 
     def test_stable_numerator_returns_unchanged(self):
-        self.assertEqual(metric.compare(snap(99, 31), snap(99, 31))["status"], "UNCHANGED")
+        self.assertEqual(
+            metric.compare(snap(99, 31), snap(99, 31))["status"], "UNCHANGED"
+        )
 
     def test_regression_not_hidden_by_other_improvement(self):
-        self.assertEqual(metric.compare(snap(85, 40), snap(90, 39, attempt=3))["status"], "REGRESSION")
+        self.assertEqual(
+            metric.compare(snap(85, 40), snap(90, 39, attempt=3))["status"],
+            "REGRESSION",
+        )
 
     def test_source_change_is_not_matched(self):
         other = snap(120, 38)
@@ -75,14 +98,18 @@ class MatchedCoverage(unittest.TestCase):
             metric.make_snapshot(coverage(), m, [PATH])
 
     def test_missing_module_rejected(self):
-        with self.assertRaisesRegex(metric.EvidenceError, "coverage or checksum missing"):
+        with self.assertRaisesRegex(
+            metric.EvidenceError, "coverage or checksum missing"
+        ):
             metric.make_snapshot(coverage(), manifest(), ["DMAIC_V3/absent.py"])
 
     def test_branch_free_module_not_fake_100_percent(self):
         c = coverage(2, 0)
         c["files"][PATH]["summary"].update(num_statements=5, num_branches=0)
         a = metric.make_snapshot(c, manifest(), [PATH])
-        self.assertIsNone(metric.compare(a, a)["modules"][PATH]["branch"]["after_percent"])
+        self.assertIsNone(
+            metric.compare(a, a)["modules"][PATH]["branch"]["after_percent"]
+        )
 
     def test_out_of_range_numerator_rejected(self):
         with self.assertRaisesRegex(metric.EvidenceError, "numerator exceeds"):
@@ -93,22 +120,60 @@ class MatchedCoverage(unittest.TestCase):
             root = Path(tmp)
             (root / "coverage.json").write_text(json.dumps(coverage(120, 38)))
             (root / "manifest.json").write_text(json.dumps(manifest()))
-            self.assertEqual(metric.main(["snapshot", "--coverage", str(root / "coverage.json"),
-                                          "--manifest", str(root / "manifest.json"),
-                                          "--module", PATH, "--out", str(root / "before.json")]), 0)
-            self.assertEqual(metric.main(["compare", "--before", str(root / "before.json"),
-                                          "--after", str(root / "before.json"),
-                                          "--out", str(root / "delta.json")]), 0)
-            self.assertEqual(json.loads((root / "delta.json").read_text())["merge_admission"], "HOLD")
+            self.assertEqual(
+                metric.main(
+                    [
+                        "snapshot",
+                        "--coverage",
+                        str(root / "coverage.json"),
+                        "--manifest",
+                        str(root / "manifest.json"),
+                        "--module",
+                        PATH,
+                        "--out",
+                        str(root / "before.json"),
+                    ]
+                ),
+                0,
+            )
+            self.assertEqual(
+                metric.main(
+                    [
+                        "compare",
+                        "--before",
+                        str(root / "before.json"),
+                        "--after",
+                        str(root / "before.json"),
+                        "--out",
+                        str(root / "delta.json"),
+                    ]
+                ),
+                0,
+            )
+            self.assertEqual(
+                json.loads((root / "delta.json").read_text())["merge_admission"], "HOLD"
+            )
 
     def test_cli_regression_returns_nonzero(self):
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp)
             (root / "a.json").write_text(json.dumps(snap(100, 40)))
             (root / "b.json").write_text(json.dumps(snap(99, 40, attempt=3)))
-            code = metric.main(["compare", "--before", str(root / "a.json"), "--after", str(root / "b.json"), "--out", str(root / "delta.json")])
+            code = metric.main(
+                [
+                    "compare",
+                    "--before",
+                    str(root / "a.json"),
+                    "--after",
+                    str(root / "b.json"),
+                    "--out",
+                    str(root / "delta.json"),
+                ]
+            )
             self.assertEqual(code, 1)
-            self.assertEqual(json.loads((root / "delta.json").read_text())["status"], "REGRESSION")
+            self.assertEqual(
+                json.loads((root / "delta.json").read_text())["status"], "REGRESSION"
+            )
 
     def test_malformed_input_json_object_rejected(self):
         with tempfile.TemporaryDirectory() as tmp:
@@ -121,7 +186,11 @@ class MatchedCoverage(unittest.TestCase):
         for path in ("../escape.py", "/absolute.py", "./unstable.py", "back\\slash.py"):
             with self.subTest(path=path), self.assertRaises(metric.EvidenceError):
                 metric.valid_path(path)
-        for key, bad in (("schema", "bad"), ("repository", "wrong"), ("head_sha", "bad")):
+        for key, bad in (
+            ("schema", "bad"),
+            ("repository", "wrong"),
+            ("head_sha", "bad"),
+        ):
             m = manifest()
             m[key] = bad
             with self.subTest(key=key), self.assertRaises(metric.EvidenceError):
@@ -141,8 +210,11 @@ class MatchedCoverage(unittest.TestCase):
             metric.make_snapshot({"files": {PATH: {}}}, manifest(), [PATH])
 
     def test_bad_counts_rejected(self):
-        for k, val in (("num_statements", 0), ("covered_lines", -1),
-                       ("covered_branches", "5")):
+        for k, val in (
+            ("num_statements", 0),
+            ("covered_lines", -1),
+            ("covered_branches", "5"),
+        ):
             c = coverage(1, 0)
             c["files"][PATH]["summary"][k] = val
             with self.subTest(counter=k), self.assertRaises(metric.EvidenceError):
@@ -150,8 +222,11 @@ class MatchedCoverage(unittest.TestCase):
 
     def test_snapshot_schema_and_authority_rejected(self):
         a = snap()
-        for key, value in (("scope", "ALL_FILES"), ("merge_admission", "PASS"),
-                           ("formal_root_closure", 1)):
+        for key, value in (
+            ("scope", "ALL_FILES"),
+            ("merge_admission", "PASS"),
+            ("formal_root_closure", 1),
+        ):
             other = deepcopy(a)
             other[key] = value
             with self.subTest(field=key), self.assertRaises(metric.EvidenceError):
@@ -190,14 +265,25 @@ class MatchedCoverage(unittest.TestCase):
         delta = metric.compare(before, after)
         self.assertEqual(delta["status"], "IMPROVED")
         self.assertEqual(delta["modules"][PATH]["statement"]["delta_covered_items"], 1)
-        self.assertEqual(delta["modules"][PATH]["statement"]["delta_percentage_points"], 0)
+        self.assertEqual(
+            delta["modules"][PATH]["statement"]["delta_percentage_points"], 0
+        )
 
     def test_cli_missing_files_fail_closed(self):
         with tempfile.TemporaryDirectory() as tmp:
             path = Path(tmp) / "missing.json"
             with self.assertRaises(SystemExit) as exit_info:
-                metric.main(["compare", "--before", str(path),
-                             "--after", str(path), "--out", str(path)])
+                metric.main(
+                    [
+                        "compare",
+                        "--before",
+                        str(path),
+                        "--after",
+                        str(path),
+                        "--out",
+                        str(path),
+                    ]
+                )
             self.assertEqual(exit_info.exception.code, 2)
 
 

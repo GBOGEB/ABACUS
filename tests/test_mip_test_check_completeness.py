@@ -12,10 +12,16 @@ def write(path: Path, text: str) -> None:
 
 def test_inventory_detects_orphan_pytest_surface(tmp_path):
     write(tmp_path / "tests" / "test_ok.py", "def test_ok():\n    assert True\n")
-    write(tmp_path / "integration" / "demo" / "tests" / "test_report.py", "def test_report():\n    assert True\n")
+    write(
+        tmp_path / "integration" / "demo" / "tests" / "test_report.py",
+        "def test_report():\n    assert True\n",
+    )
     write(tmp_path / "stray_test.py", "def test_stray():\n    assert True\n")
     write(tmp_path / "src" / "mod.py", "VALUE = 1\n")
-    write(tmp_path / ".github" / "workflows" / "a.yml", "on: [push]\njobs:\n  t:\n    runs-on: ubuntu-latest\n    steps:\n      - run: echo ok\n")
+    write(
+        tmp_path / ".github" / "workflows" / "a.yml",
+        "on: [push]\njobs:\n  t:\n    runs-on: ubuntu-latest\n    steps:\n      - run: echo ok\n",
+    )
 
     inventory = mip.discover_inventory(tmp_path.resolve())
 
@@ -114,7 +120,11 @@ jobs:
     coverage = {
         "schema": "abacus-post-b0-coverage-dab/1.0.0",
         "measurement": {"dynamic_context": "test_function"},
-        "active_source": {"statements": 2, "covered_statements": 0, "missed_statements": 2},
+        "active_source": {
+            "statements": 2,
+            "covered_statements": 0,
+            "missed_statements": 2,
+        },
         "full_measurement": {
             "missing_lines": 2,
             "missing_branches": 1,
@@ -165,9 +175,9 @@ jobs:
     assert "NO_TEST" in categories
     assert "COVERAGE" in categories
     assert categories[-1] == "STATIC_ANALYSIS"
-    assert report["tc2_dynamic_context_crosswalk"]["user_directed_high_without_context"] == [
-        "src/critical.py"
-    ]
+    assert report["tc2_dynamic_context_crosswalk"][
+        "user_directed_high_without_context"
+    ] == ["src/critical.py"]
     assert report["tc4_false_green"]["syntactic_unguarded_count"] == 1
     assert report["tc4_false_green"]["semantic_false_green_count"] == 1
     assert report["tc4_false_green"]["semantic_counts"]["TEST_MASK"] == 1
@@ -221,9 +231,24 @@ jobs:
     )
     base = {"path": rel, "line": 7}
     cases = [
-        ("cp result.json artifacts/result.json || true", [], "OPTIONAL_ARTIFACT", False),
-        ("COUNT=$(grep -c foo report.txt || true)", [], "DEFAULT_VALUE_TELEMETRY", False),
-        ("git commit -m snapshot || echo 'nothing to commit'", [], "IDEMPOTENT_NOOP", False),
+        (
+            "cp result.json artifacts/result.json || true",
+            [],
+            "OPTIONAL_ARTIFACT",
+            False,
+        ),
+        (
+            "COUNT=$(grep -c foo report.txt || true)",
+            [],
+            "DEFAULT_VALUE_TELEMETRY",
+            False,
+        ),
+        (
+            "git commit -m snapshot || echo 'nothing to commit'",
+            [],
+            "IDEMPOTENT_NOOP",
+            False,
+        ),
         ("pip install -r requirements.txt || true", [], "DEPENDENCY_MASK", True),
         ("ruff check . || true", [], "STATIC_ANALYSIS_MASK", True),
         ("semgrep --config auto . || true", [], "SECURITY_MASK", True),
@@ -246,13 +271,33 @@ jobs:
 @pytest.mark.parametrize(
     ("text", "patterns", "expected_kind", "is_false_green"),
     [
-        ("cp report.json artifacts/output/ || true", ["shell_or_true"], "OPTIONAL_ARTIFACT", False),
-        ("grep -c ERROR app.log || true", ["shell_or_true"], "DEFAULT_VALUE_TELEMETRY", False),
-        ('git commit -m "snapshot" || echo "no changes"', ["shell_or_echo"], "IDEMPOTENT_NOOP", False),
+        (
+            "cp report.json artifacts/output/ || true",
+            ["shell_or_true"],
+            "OPTIONAL_ARTIFACT",
+            False,
+        ),
+        (
+            "grep -c ERROR app.log || true",
+            ["shell_or_true"],
+            "DEFAULT_VALUE_TELEMETRY",
+            False,
+        ),
+        (
+            'git commit -m "snapshot" || echo "no changes"',
+            ["shell_or_echo"],
+            "IDEMPOTENT_NOOP",
+            False,
+        ),
         ("pip install . || true", ["shell_or_true"], "DEPENDENCY_MASK", True),
         ("ruff check . || true", ["shell_or_true"], "STATIC_ANALYSIS_MASK", True),
         ("semgrep scan || true", ["shell_or_true"], "SECURITY_MASK", True),
-        ('test -f output.json || echo "missing"', ["shell_or_echo"], "ASSERTION_MASK", True),
+        (
+            'test -f output.json || echo "missing"',
+            ["shell_or_echo"],
+            "ASSERTION_MASK",
+            True,
+        ),
         ("git push || true", ["shell_or_true"], "PUBLISH_MASK", True),
         ("custom advisory command", ["continue_on_error"], "CONTINUE_ON_ERROR", True),
         ("set +e", ["shell_set_plus_e"], "ERROR_MODE_DISABLED", True),
@@ -289,9 +334,12 @@ def test_workflow_step_name_missing_file_is_withheld(tmp_path):
 # Wave 1 taxonomy regression contract.
 def test_taxonomy_unique_denominator_with_overlapping_categories():
     from scripts.mip_test_check_completeness import summarize_test_nodeids
-    rows = ["tests/test_bandit_security.py::test_regression",
-            "tests/test_bandit_security.py::test_regression",
-            "tests/test_mip_integration.py::test_bridge"]
+
+    rows = [
+        "tests/test_bandit_security.py::test_regression",
+        "tests/test_bandit_security.py::test_regression",
+        "tests/test_mip_integration.py::test_bridge",
+    ]
     result = summarize_test_nodeids(rows)
     assert result["collected_unique"] == 2
     assert result["duplicate_entries"] == 1
@@ -303,7 +351,9 @@ def test_taxonomy_unique_denominator_with_overlapping_categories():
 
 def test_taxonomy_rejects_malformed_nodeids():
     import pytest
+
     from scripts.mip_test_check_completeness import summarize_test_nodeids
+
     for invalid in (None, "test_a", [""], [None], ["ok", " "]):
         with pytest.raises(ValueError):
             summarize_test_nodeids(invalid)
@@ -311,6 +361,7 @@ def test_taxonomy_rejects_malformed_nodeids():
 
 def test_taxonomy_fallback_and_order_invariant():
     from scripts.mip_test_check_completeness import summarize_test_nodeids
+
     a = ["tests/test_unclassified.py::test_a", "tests/test_runtime.py::test_b"]
     first = summarize_test_nodeids(a)
     assert first == summarize_test_nodeids(list(reversed(a)))
@@ -320,6 +371,7 @@ def test_taxonomy_fallback_and_order_invariant():
 
 def test_execution_plan_fast_and_security_escalation():
     from scripts.mip_test_check_completeness import plan_test_execution
+
     fast = plan_test_execution(["docs/readme.md"])
     assert fast["mode"] == "fast-advisory"
     assert fast["python_versions"] == ["3.12"]
@@ -332,16 +384,21 @@ def test_execution_plan_fast_and_security_escalation():
 
 def test_execution_plan_unknown_inputs_fail_closed():
     import pytest
+
     from scripts.mip_test_check_completeness import plan_test_execution
+
     for paths, failures in (([], []), ([""], []), (["ok"], ["UNKNOWN"])):
         with pytest.raises(ValueError):
             plan_test_execution(paths, failures)
-    assert plan_test_execution([".github/workflows/ci-abacus.yml"])["mode"] == "thorough"
+    assert (
+        plan_test_execution([".github/workflows/ci-abacus.yml"])["mode"] == "thorough"
+    )
 
 
 def test_taxonomy_rejects_blank_nodeid_directly():
     """Exercise the fail-closed classifier guard on changed source line 558."""
     import pytest
+
     from scripts.mip_test_check_completeness import classify_test_nodeid
 
     for invalid in (None, "", "   "):

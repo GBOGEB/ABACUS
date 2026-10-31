@@ -2,11 +2,13 @@
 Comprehensive Unit Tests for AHT Statistics Bridge
 """
 
-import pytest
-import numpy as np
 import json
 import tempfile
 from pathlib import Path
+
+import numpy as np
+import pytest
+
 from aht_statistics_bridge import AHTStatisticsBridge
 
 
@@ -26,8 +28,7 @@ class TestAHTBridgeInitialization:
             log_path = Path(tmpdir) / "custom_log.log"
 
             bridge = AHTStatisticsBridge(
-                learnings_db_path=db_path,
-                aht_log_path=log_path
+                learnings_db_path=db_path, aht_log_path=log_path
             )
 
             assert bridge.learnings_db_path == db_path
@@ -51,12 +52,12 @@ class TestSingleSampleHypothesis:
                 hypothesis="System achieves 85% target",
                 observed_data=data,
                 expected_value=85.0,
-                alpha=0.05
+                alpha=0.05,
             )
 
-            assert result['status'] in ['SUPPORTED', 'ACCEPTED']
-            assert 'conclusion' in result
-            assert 'observed' in result
+            assert result["status"] in ["SUPPORTED", "ACCEPTED"]
+            assert "conclusion" in result
+            assert "observed" in result
 
     def test_hypothesis_rejected(self):
         """Test hypothesis that should be rejected"""
@@ -71,11 +72,11 @@ class TestSingleSampleHypothesis:
                 hypothesis="System achieves 90% target",
                 observed_data=data,
                 expected_value=90.0,
-                alpha=0.05
+                alpha=0.05,
             )
 
-            assert result['status'] == 'REJECTED'
-            assert 'deviation' in result
+            assert result["status"] == "REJECTED"
+            assert "deviation" in result
 
     def test_hypothesis_exceeded(self):
         """Test hypothesis where performance exceeds expectation"""
@@ -90,10 +91,10 @@ class TestSingleSampleHypothesis:
                 hypothesis="System achieves 80% target",
                 observed_data=data,
                 expected_value=80.0,
-                alpha=0.05
+                alpha=0.05,
             )
 
-            assert result['status'] in ['EXCEEDED', 'SUPPORTED']
+            assert result["status"] in ["EXCEEDED", "SUPPORTED"]
 
 
 class TestTwoSampleComparison:
@@ -113,12 +114,12 @@ class TestTwoSampleComparison:
                 hypothesis="New version outperforms baseline",
                 observed_data=observed,
                 reference_group=reference,
-                alpha=0.05
+                alpha=0.05,
             )
 
-            assert 'reference' in result
-            assert 'comparison' in result
-            assert result['comparison']['includes_zero'] == False
+            assert "reference" in result
+            assert "comparison" in result
+            assert result["comparison"]["includes_zero"] == False
 
     def test_no_significant_difference(self):
         """Test comparison with no significant difference"""
@@ -134,11 +135,11 @@ class TestTwoSampleComparison:
                 hypothesis="Versions have similar performance",
                 observed_data=observed,
                 reference_group=reference,
-                alpha=0.05
+                alpha=0.05,
             )
 
-            assert result['status'] == 'INCONCLUSIVE'
-            assert result['comparison']['includes_zero'] == True
+            assert result["status"] == "INCONCLUSIVE"
+            assert result["comparison"]["includes_zero"] == True
 
 
 class TestLearningsDatabase:
@@ -153,22 +154,18 @@ class TestLearningsDatabase:
             data = [85, 87, 86, 88, 84]
 
             bridge.test_hypothesis_with_bootstrap(
-                hypothesis="Test hypothesis 1",
-                observed_data=data,
-                expected_value=85.0
+                hypothesis="Test hypothesis 1", observed_data=data, expected_value=85.0
             )
 
             bridge.test_hypothesis_with_bootstrap(
-                hypothesis="Test hypothesis 2",
-                observed_data=data,
-                expected_value=90.0
+                hypothesis="Test hypothesis 2", observed_data=data, expected_value=90.0
             )
 
             learnings = bridge.load_learnings()
 
             assert len(learnings) == 2
-            assert learnings[0]['hypothesis'] == "Test hypothesis 1"
-            assert learnings[1]['hypothesis'] == "Test hypothesis 2"
+            assert learnings[0]["hypothesis"] == "Test hypothesis 1"
+            assert learnings[1]["hypothesis"] == "Test hypothesis 2"
 
     def test_append_to_existing_learnings(self):
         """Test appending to existing learnings database"""
@@ -177,16 +174,14 @@ class TestLearningsDatabase:
 
             bridge1 = AHTStatisticsBridge(learnings_db_path=db_path)
             bridge1.test_hypothesis_with_bootstrap(
-                hypothesis="First test",
-                observed_data=[80, 82, 81],
-                expected_value=80.0
+                hypothesis="First test", observed_data=[80, 82, 81], expected_value=80.0
             )
 
             bridge2 = AHTStatisticsBridge(learnings_db_path=db_path)
             bridge2.test_hypothesis_with_bootstrap(
                 hypothesis="Second test",
                 observed_data=[90, 92, 91],
-                expected_value=90.0
+                expected_value=90.0,
             )
 
             learnings = bridge2.load_learnings()
@@ -330,11 +325,11 @@ class TestConfidenceLevels:
                     hypothesis=f"Test with alpha {alpha}",
                     observed_data=data,
                     expected_value=85.0,
-                    alpha=alpha
+                    alpha=alpha,
                 )
 
-                assert result['alpha'] == alpha
-                assert 'observed' in result
+                assert result["alpha"] == alpha
+                assert "observed" in result
 
 
 class TestContextMetadata:
@@ -351,18 +346,18 @@ class TestContextMetadata:
             context = {
                 "repository": "ABACUS",
                 "commit_sha": "abc123",
-                "test_suite": "unit_tests"
+                "test_suite": "unit_tests",
             }
 
             result = bridge.test_hypothesis_with_bootstrap(
                 hypothesis="Context-aware test",
                 observed_data=data,
                 expected_value=85.0,
-                context=context
+                context=context,
             )
 
-            assert result['context'] == context
-            assert 'repository' in result['context']
+            assert result["context"] == context
+            assert "repository" in result["context"]
 
 
 class TestEdgeCases:
@@ -378,13 +373,11 @@ class TestEdgeCases:
             data = [85, 87, 86]
 
             result = bridge.test_hypothesis_with_bootstrap(
-                hypothesis="Small sample test",
-                observed_data=data,
-                expected_value=85.0
+                hypothesis="Small sample test", observed_data=data, expected_value=85.0
             )
 
-            assert 'observed' in result
-            assert result['observed']['n'] == 3
+            assert "observed" in result
+            assert result["observed"]["n"] == 3
 
     def test_high_variance_data(self):
         """Test with high variance data"""
@@ -396,13 +389,11 @@ class TestEdgeCases:
             data = [50, 100, 75, 90, 60, 85]
 
             result = bridge.test_hypothesis_with_bootstrap(
-                hypothesis="High variance test",
-                observed_data=data,
-                expected_value=75.0
+                hypothesis="High variance test", observed_data=data, expected_value=75.0
             )
 
-            assert 'observed' in result
-            assert result['observed']['std'] > 15
+            assert "observed" in result
+            assert result["observed"]["std"] > 15
 
 
 class TestIntegration:
@@ -423,9 +414,7 @@ class TestIntegration:
             results = []
             for hypothesis, data, expected in hypotheses:
                 result = bridge.test_hypothesis_with_bootstrap(
-                    hypothesis=hypothesis,
-                    observed_data=data,
-                    expected_value=expected
+                    hypothesis=hypothesis, observed_data=data, expected_value=expected
                 )
                 results.append(result)
 

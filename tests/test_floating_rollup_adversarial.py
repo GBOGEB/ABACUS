@@ -1,4 +1,5 @@
 """Negative and reverse pulse controls; fixtures never native attestation."""
+
 from __future__ import annotations
 
 import json
@@ -6,8 +7,8 @@ import tempfile
 import unittest
 from pathlib import Path
 
-from tools.triage import mip_pulse_rollup as model
 from tests.test_mip_pulse_rollup import receipt
+from tools.triage import mip_pulse_rollup as model
 
 
 def measured(value):
@@ -43,14 +44,15 @@ class AdditionalPulseGuards(unittest.TestCase):
 
     def test_coverage_counts_fail_closed(self):
         invalid = [
-            (True, 100), (-1, 100), (101, 100), (0, True),
+            (True, 100),
+            (-1, 100),
+            (101, 100),
+            (0, True),
         ]
         for covered, eligible in invalid:
             with self.subTest(covered=covered, eligible=eligible):
                 r = receipt(0)
-                r["coverage"]["statements"] = {
-                    "covered": covered, "eligible": eligible
-                }
+                r["coverage"]["statements"] = {"covered": covered, "eligible": eligible}
                 with self.assertRaises(ValueError):
                     measured(r)
 
@@ -58,15 +60,20 @@ class AdditionalPulseGuards(unittest.TestCase):
         r = receipt(0)
         r["workers"] = [
             {"owner": "alpha", "paths": ["src"], "queue_seconds": 1},
-            {"owner": "beta", "paths": ["src/submodule.py"],
-             "execution_seconds": 1},
+            {"owner": "beta", "paths": ["src/submodule.py"], "execution_seconds": 1},
         ]
         with self.assertRaisesRegex(ValueError, "overlapping"):
             measured(r)
 
     def test_disjoint_workers_reject_unsafe_platform_paths(self):
-        for path in ("../secrets", "src/./a.py", "C:/secret",
-                     "src\\windows.py", "src//a.py", "/etc/shadow"):
+        for path in (
+            "../secrets",
+            "src/./a.py",
+            "C:/secret",
+            "src\\windows.py",
+            "src//a.py",
+            "/etc/shadow",
+        ):
             with self.subTest(path=path):
                 r = receipt(0)
                 r["workers"][0]["paths"] = [path]
@@ -99,8 +106,7 @@ class AdditionalPulseGuards(unittest.TestCase):
         move = model.transition(a, b)
         self.assertGreater(move["coverage_gain_pp"], 0)
         self.assertLess(move["branch_gain_pp"], 0)
-        self.assertEqual(model.rollup([a, b])["control"],
-                         "RESTART_COVERAGE_REGRESSION")
+        self.assertEqual(model.rollup([a, b])["control"], "RESTART_COVERAGE_REGRESSION")
 
     def test_non_saturated_stagnation_is_reranking(self):
         states = [receipt(i) for i in range(4)]
@@ -122,8 +128,7 @@ class AdditionalPulseGuards(unittest.TestCase):
         for n, item in enumerate(states):
             item["coverage"]["branches"]["covered"] = 20
             item["native"] = {"run_id": 300 + n, "attempt": 1}
-        self.assertEqual(model.rollup(states)["control"],
-                         "RESTART_ROOT_RED_INCREASE")
+        self.assertEqual(model.rollup(states)["control"], "RESTART_ROOT_RED_INCREASE")
 
     def test_all_four_receipts_require_healthy_terminal_test_outcomes(self):
         states = [receipt(i, covered=100) for i in range(4)]
@@ -132,18 +137,22 @@ class AdditionalPulseGuards(unittest.TestCase):
             item["native"] = {"run_id": 300 + n, "attempt": 1}
         states[0]["tests"]["skipped"] = 1
         states[0]["tests"]["passed"] = 9
-        self.assertEqual(model.rollup(states)["control"],
-                         "RESTART_SKIPPED_TESTS")
+        self.assertEqual(model.rollup(states)["control"], "RESTART_SKIPPED_TESTS")
         states[0]["tests"] = {
-            "executed": 10, "passed": 10, "failed": 0,
-            "errors": 0, "skipped": 0,
+            "executed": 10,
+            "passed": 10,
+            "failed": 0,
+            "errors": 0,
+            "skipped": 0,
         }
         states[0]["terminal"] = False
-        self.assertEqual(model.rollup(states)["control"],
-                         "HOLD_UNVERIFIED_TEST_OUTCOMES")
+        self.assertEqual(
+            model.rollup(states)["control"], "HOLD_UNVERIFIED_TEST_OUTCOMES"
+        )
         with self.assertRaisesRegex(ValueError, "test outcomes missing"):
-            measured({key: value for key, value in receipt(0).items()
-                      if key != "tests"})
+            measured(
+                {key: value for key, value in receipt(0).items() if key != "tests"}
+            )
 
     def test_native_identities_allow_candidate_not_authority(self):
         states = [receipt(i, covered=100) for i in range(4)]
@@ -162,8 +171,9 @@ class AdditionalPulseGuards(unittest.TestCase):
         for item in states:
             item["coverage"]["branches"]["covered"] = 20
             item["native"] = {"run_id": 300, "attempt": 1}
-        self.assertEqual(model.rollup(states)["control"],
-                         "HOLD_UNVERIFIED_NATIVE_IDENTITIES")
+        self.assertEqual(
+            model.rollup(states)["control"], "HOLD_UNVERIFIED_NATIVE_IDENTITIES"
+        )
 
     def test_p95_worker_seconds_has_nearest_rank_and_null_unknown(self):
         self.assertIsNone(model.p95([]))

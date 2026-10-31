@@ -1,4 +1,5 @@
 """Governed EOSS source-only projection tests, including negative custody cases."""
+
 from __future__ import annotations
 
 import copy
@@ -6,8 +7,8 @@ import json
 import math
 import os
 import sys
-import zipfile
 import xml.etree.ElementTree as ET
+import zipfile
 from pathlib import Path
 
 import pytest
@@ -39,18 +40,22 @@ def native(tmp_path_factory):
                 attrs["condition-coverage"] = f"{hits * 50}% ({hits}/2)"
             ET.SubElement(lines, "line", **attrs)
     sha = "36d628f9c9deb0efcc11e3aa9ffc164075b75470"
-    rows = [{"outcome":"pass","test":name+"::test_"+str(k)}
-            for name, n in zip(eoss.TARGET_TESTS, (9,24,14))
-            for k in range(n)]
+    rows = [
+        {"outcome": "pass", "test": name + "::test_" + str(k)}
+        for name, n in zip(eoss.TARGET_TESTS, (9, 24, 14))
+        for k in range(n)
+    ]
     with zipfile.ZipFile(archive, "w") as z:
         z.writestr("coverage.xml", ET.tostring(root))
-        z.writestr("test-evidence.json", json.dumps({"exact_sha":sha,"rows":rows}))
-        z.writestr("coverage-dab.json", json.dumps({"exact_sha":sha}))
+        z.writestr("test-evidence.json", json.dumps({"exact_sha": sha, "rows": rows}))
+        z.writestr("coverage-dab.json", json.dumps({"exact_sha": sha}))
     global ZIP
     ZIP = archive
     return eoss.native_coverage_artifact(
-        archive, artifact_id=12098690913, expected_head=HEAD,
-        blob_parity={name:True for name in eoss.TARGETS},
+        archive,
+        artifact_id=12098690913,
+        expected_head=HEAD,
+        blob_parity={name: True for name in eoss.TARGETS},
     )
 
 
@@ -81,15 +86,22 @@ def test_native_target_split(native):
     data = native["modules"]
     assert data["DMAIC_V3/quick_error_fix.py"]["covered_branches"] == 52
     assert data["DMAIC_V3/quick_error_lister.py"]["covered_branches"] == 38
-    assert [native["test_cases_by_file"][name] for name in eoss.TARGET_TESTS] == [9,24,14]
+    assert [native["test_cases_by_file"][name] for name in eoss.TARGET_TESTS] == [
+        9,
+        24,
+        14,
+    ]
 
 
 @pytest.mark.parametrize("bad_id", [0, -1, True, 1.0, None])
 def test_native_artifact_identity_requires_positive_integer(bad_id):
     with pytest.raises(ValueError):
-        eoss.native_coverage_artifact(ZIP, artifact_id=bad_id,
-                                     expected_head=HEAD,
-                                     blob_parity={name: True for name in eoss.TARGETS})
+        eoss.native_coverage_artifact(
+            ZIP,
+            artifact_id=bad_id,
+            expected_head=HEAD,
+            blob_parity={name: True for name in eoss.TARGETS},
+        )
 
 
 @pytest.mark.parametrize("input_value", [None, True, 1, "z" * 40, "a" * 39, "A" * 40])
@@ -100,15 +112,19 @@ def test_sha_requires_full_lowercase_identity(input_value):
 
 def test_invalid_blob_parity_requires_both_measured_paths():
     with pytest.raises(ValueError):
-        eoss.native_coverage_artifact(ZIP, artifact_id=12098690913,
-                                     expected_head=HEAD, blob_parity={})
+        eoss.native_coverage_artifact(
+            ZIP, artifact_id=12098690913, expected_head=HEAD, blob_parity={}
+        )
 
 
 def test_blob_parity_boolean_only_rejects_truthiness():
     with pytest.raises(ValueError):
-        eoss.native_coverage_artifact(ZIP, artifact_id=12098690913,
-                                     expected_head=HEAD,
-                                     blob_parity={name: 1 for name in eoss.TARGETS})
+        eoss.native_coverage_artifact(
+            ZIP,
+            artifact_id=12098690913,
+            expected_head=HEAD,
+            blob_parity={name: 1 for name in eoss.TARGETS},
+        )
 
 
 def test_unmatched_blob_is_unqualified_and_never_admitted(native):
@@ -123,7 +139,9 @@ def test_duplicate_or_missing_real_evidence_rejected(tmp_path):
         z.writestr("coverage.xml", "<coverage/>")
     with pytest.raises(ValueError, match="missing native"):
         eoss.native_coverage_artifact(
-            path, artifact_id=1, expected_head=HEAD,
+            path,
+            artifact_id=1,
+            expected_head=HEAD,
             blob_parity={name: True for name in eoss.TARGETS},
         )
 
@@ -133,16 +151,23 @@ def test_bad_native_artifact_is_rejected(tmp_path):
     path.write_text("not a ZIP")
     with pytest.raises(zipfile.BadZipFile):
         eoss.native_coverage_artifact(
-            path, artifact_id=1, expected_head=HEAD,
+            path,
+            artifact_id=1,
+            expected_head=HEAD,
             blob_parity={name: True for name in eoss.TARGETS},
         )
 
 
 def three():
     return [
-        {"id": f"P{i}", "status": "PLANNED_ONLY", "planned": {"x": 1},
-         "actual": {"x": None}, "narrative": "scope-bound"}
-        for i in (1,2,3)
+        {
+            "id": f"P{i}",
+            "status": "PLANNED_ONLY",
+            "planned": {"x": 1},
+            "actual": {"x": None},
+            "narrative": "scope-bound",
+        }
+        for i in (1, 2, 3)
     ]
 
 
@@ -151,17 +176,20 @@ def test_three_pulses_accept_pending_as_null():
     assert len(out) == 3 and out[0]["actual"]["x"] is None
 
 
-@pytest.mark.parametrize("change", [
-    lambda s: s.pop(),
-    lambda s: s[1].update(id="P1"),
-    lambda s: s[2].update(status="ACCEPTED"),
-    lambda s: s[0].update(narrative=""),
-    lambda s: s[0].update(actual={"y": 1}),
-    lambda s: s[0]["planned"].update(x=True),
-    lambda s: s[1]["actual"].update(x=-1),
-    lambda s: s[1]["actual"].update(x=float("nan")),
-    lambda s: s[1]["actual"].update(x="infinite"),
-])
+@pytest.mark.parametrize(
+    "change",
+    [
+        lambda s: s.pop(),
+        lambda s: s[1].update(id="P1"),
+        lambda s: s[2].update(status="ACCEPTED"),
+        lambda s: s[0].update(narrative=""),
+        lambda s: s[0].update(actual={"y": 1}),
+        lambda s: s[0]["planned"].update(x=True),
+        lambda s: s[1]["actual"].update(x=-1),
+        lambda s: s[1]["actual"].update(x=float("nan")),
+        lambda s: s[1]["actual"].update(x="infinite"),
+    ],
+)
 def test_fails_closed_for_invalid_planned_actual(change):
     sample = three()
     change(sample)
@@ -183,8 +211,11 @@ def test_snapshot_separates_run_associations_signatures_and_closures(snapshot):
 
 def test_existing_temporal_sample_still_censored(snapshot):
     t = snapshot["temporal"]
-    assert (t["measured_completed_job_durations"],t["censored_or_inverted"]) == (293,10)
-    assert (t["duration_p50_seconds"],t["duration_p95_seconds"]) == (121,267)
+    assert (t["measured_completed_job_durations"], t["censored_or_inverted"]) == (
+        293,
+        10,
+    )
+    assert (t["duration_p50_seconds"], t["duration_p95_seconds"]) == (121, 267)
     assert t["actual_runner_queue_wait_seconds"] is None
     assert t["cache_preload_saved_seconds"] is None
     assert t["coolprop_wheel_saved_seconds"] is None
@@ -213,11 +244,11 @@ def test_snapshot_rejects_rebased_denominator(native):
 
 
 def test_mermaid_dag_and_sipoc_are_explicit_and_never_claim_waiver():
-    d,s,c = eoss.mermaid_dag(),eoss.mermaid_sipoc(),eoss.mermaid_clock()
+    d, s, c = eoss.mermaid_dag(), eoss.mermaid_sipoc(), eoss.mermaid_clock()
     assert "flowchart LR" in d
-    for stage in ("E0","E1","E2","E3","E4","E5","E6"):
+    for stage in ("E0", "E1", "E2", "E3", "E4", "E5", "E6"):
         assert stage in d
-    for part in ("SUPPLIERS","INPUTS","PROCESS","OUTPUTS","CUSTOMERS"):
+    for part in ("SUPPLIERS", "INPUTS", "PROCESS", "OUTPUTS", "CUSTOMERS"):
         assert part in s
     assert "Cache key" in c
     assert "300 s saved" in c
@@ -225,9 +256,9 @@ def test_mermaid_dag_and_sipoc_are_explicit_and_never_claim_waiver():
 
 
 def test_html_xss_payload_escaped_and_no_external_js(snapshot):
-    s=copy.deepcopy(snapshot)
-    s["generated_from"]="<script>alert('x')</script>"
-    page=eoss.emit_html(s)
+    s = copy.deepcopy(snapshot)
+    s["generated_from"] = "<script>alert('x')</script>"
+    page = eoss.emit_html(s)
     assert "<script>alert('x')</script>" not in page
     assert "\\u003cscript\\u003ealert" in page
     assert 'id="eoss-source"' in page
@@ -236,8 +267,14 @@ def test_html_xss_payload_escaped_and_no_external_js(snapshot):
 
 
 def test_html_contains_full_review_family(snapshot):
-    page=eoss.emit_html(snapshot)
-    for surface in ('id="dag"','id="sipoc"','id="runtime"','id="glossary"','id="overview"'):
+    page = eoss.emit_html(snapshot)
+    for surface in (
+        'id="dag"',
+        'id="sipoc"',
+        'id="runtime"',
+        'id="glossary"',
+        'id="overview"',
+    ):
         assert surface in page
     assert 'aria-label="Review surfaces"' in page
     assert 'id="pulseRows"' in page
@@ -245,23 +282,25 @@ def test_html_contains_full_review_family(snapshot):
 
 
 def test_markdown_has_narrative_under_each_diagram(snapshot):
-    md=eoss.emit_markdown(snapshot)
+    md = eoss.emit_markdown(snapshot)
     assert md.count("```mermaid") == 3
     for tag in ("DAG narrative", "SIPOC narrative", "Execution-clock narrative"):
         assert tag in md
     assert "## Global execution glossary" in md
     assert "## User cheat-sheet" in md
-    assert "no diagram" in md.lower() or "no merge" in md.lower() or "remain" in md.lower()
+    assert (
+        "no diagram" in md.lower() or "no merge" in md.lower() or "remain" in md.lower()
+    )
 
 
 def test_cli_emits_reproducible_non_authoritative_outputs(tmp_path, capsys, native):
-    argv=["--coverage-zip",str(ZIP),"--out",str(tmp_path)]
+    argv = ["--coverage-zip", str(ZIP), "--out", str(tmp_path)]
     eoss.main(argv)
-    first={p.name:p.read_bytes() for p in tmp_path.iterdir()}
-    assert len(first)==7
+    first = {p.name: p.read_bytes() for p in tmp_path.iterdir()}
+    assert len(first) == 7
     assert b'"state": "HOLD"' in first["eoss_snapshot.json"]
     eoss.main(argv)
-    assert first=={p.name:p.read_bytes() for p in tmp_path.iterdir()}
+    assert first == {p.name: p.read_bytes() for p in tmp_path.iterdir()}
     assert "CONTENT_EQUIVALENT_MODULE_SCOPE" in capsys.readouterr().out
-    manifest=json.loads((tmp_path/"SHA256SUMS.json").read_text())
-    assert all(len(v)==64 for v in manifest.values())
+    manifest = json.loads((tmp_path / "SHA256SUMS.json").read_text())
+    assert all(len(v) == 64 for v in manifest.values())

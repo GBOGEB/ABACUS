@@ -115,48 +115,63 @@ def test_bounded_relationship_exact_limit_is_inspected(tmp_path):
     assert "OOXML_RELATIONSHIP_OVERSIZE" not in rules(receipt)
 
 
-def test_cli_emits_a_real_receipt_and_blocks_invalid_package(tmp_path, monkeypatch, capsys):
+def test_cli_emits_a_real_receipt_and_blocks_invalid_package(
+    tmp_path, monkeypatch, capsys
+):
     import json
     import sys
+
     good = make_zip(tmp_path / "safe.docx", {"word/document.xml": b"<w/>"})
     bad = tmp_path / "broken.docx"
     bad.write_bytes(b"this is not a valid zip")
     out = tmp_path / "evidence" / "scan.json"
-    monkeypatch.setattr(sys, "argv", [
-        "ooxml_scan", str(good), str(bad), "--output", str(out), "--fail-on", "high"
-    ])
+    monkeypatch.setattr(
+        sys,
+        "argv",
+        ["ooxml_scan", str(good), str(bad), "--output", str(out), "--fail-on", "high"],
+    )
     assert M.main() == 1
     data = json.loads(out.read_text(encoding="utf-8"))
     assert data["package_count"] == 2
     assert data["severity"]["HIGH"] >= 1
     assert data["merge_authorized"] is False
     assert json.loads(capsys.readouterr().out)["output"] == str(out)
-    monkeypatch.setattr(sys, "argv", [
-        "ooxml_scan", str(good), "--output", str(out), "--fail-on", "high"
-    ])
+    monkeypatch.setattr(
+        sys,
+        "argv",
+        ["ooxml_scan", str(good), "--output", str(out), "--fail-on", "high"],
+    )
     assert M.main() == 0
 
 
 def test_cli_medium_findings_remain_blocking_only_when_selected(tmp_path, monkeypatch):
     import json
     import sys
+
     macro = make_zip(tmp_path / "macro.docm", {"word/vbaProject.bin": b"x"})
     out = tmp_path / "macro.json"
-    monkeypatch.setattr(sys, "argv", [
-        "ooxml_scan", str(macro), "--output", str(out), "--fail-on", "medium"
-    ])
+    monkeypatch.setattr(
+        sys,
+        "argv",
+        ["ooxml_scan", str(macro), "--output", str(out), "--fail-on", "medium"],
+    )
     assert M.main() == 1
     receipt = json.loads(out.read_text())
     assert receipt["severity"]["MEDIUM"] >= 1
     assert receipt["severity"]["HIGH"] == 0
-    monkeypatch.setattr(sys, "argv", [
-        "ooxml_scan", str(macro), "--output", str(out), "--fail-on", "high"
-    ])
+    monkeypatch.setattr(
+        sys,
+        "argv",
+        ["ooxml_scan", str(macro), "--output", str(out), "--fail-on", "high"],
+    )
     assert M.main() == 0
 
 
-def test_git_discovery_filters_tracked_ooxml_and_fails_on_git_error(tmp_path, monkeypatch):
+def test_git_discovery_filters_tracked_ooxml_and_fails_on_git_error(
+    tmp_path, monkeypatch
+):
     from types import SimpleNamespace
+
     good = make_zip(tmp_path / "tracked.docx", {"word/document.xml": b"<w/>"})
     (tmp_path / "notes.txt").write_text("not OOXML", encoding="utf-8")
 
@@ -164,22 +179,28 @@ def test_git_discovery_filters_tracked_ooxml_and_fails_on_git_error(tmp_path, mo
         assert cmd == ["git", "ls-files", "-z"]
         assert kwargs["cwd"] == tmp_path
         return SimpleNamespace(returncode=0, stdout=b"tracked.docx\0notes.txt\0")
+
     monkeypatch.setattr(M.subprocess, "run", listed)
     assert M.discover_git(tmp_path) == [good]
 
     def failed(cmd, **kwargs):
         return SimpleNamespace(returncode=1, stdout=b"")
+
     monkeypatch.setattr(M.subprocess, "run", failed)
     import pytest
+
     with pytest.raises(RuntimeError, match="git ls-files failed"):
         M.discover_git(tmp_path)
 
 
 def test_archive_metadata_limits_emit_high_findings(tmp_path, monkeypatch):
-    path = make_zip(tmp_path / "limits.docx", {
-        "word/document.xml": b"<x/>",
-        "word/styles.xml": b"<y/>",
-    })
+    path = make_zip(
+        tmp_path / "limits.docx",
+        {
+            "word/document.xml": b"<x/>",
+            "word/styles.xml": b"<y/>",
+        },
+    )
     monkeypatch.setattr(M, "MAX_ENTRIES", 1)
     monkeypatch.setattr(M, "MAX_TOTAL_UNCOMPRESSED", 1)
     receipt = M.scan_package(path)

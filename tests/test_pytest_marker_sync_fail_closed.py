@@ -1,4 +1,5 @@
 """Adversarial proof that pytest marker checks cannot return false green."""
+
 from __future__ import annotations
 
 import tempfile
@@ -8,7 +9,6 @@ from unittest import mock
 
 import sync_pytest_config as sync
 import verify_pytest_sync as legacy
-
 
 CANONICAL = (
     "[pytest]\n"
@@ -39,17 +39,19 @@ class PytestMarkerSyncFailClosedTests(unittest.TestCase):
             root = Path(name)
             self._files(
                 root,
-                toml='[tool.pytest.ini_options]\n'
-                     'markers = ["smoke: Smoke tests", '
-                     '"integration: Integration tests"]\n',
+                toml="[tool.pytest.ini_options]\n"
+                'markers = ["smoke: Smoke tests", '
+                '"integration: Integration tests"]\n',
             )
             self.assertEqual(sync.validate(root)["status"], "SYNCHRONIZED")
 
     def test_missing_secondary_marker_fails_closed(self):
         with tempfile.TemporaryDirectory() as name:
             root = Path(name)
-            self._files(root, toml='[tool.pytest.ini_options]\n'
-                                   'markers = ["smoke: Smoke tests"]\n')
+            self._files(
+                root,
+                toml="[tool.pytest.ini_options]\n" 'markers = ["smoke: Smoke tests"]\n',
+            )
             with self.assertRaisesRegex(ValueError, "missing="):
                 sync.validate(root)
 
@@ -58,9 +60,9 @@ class PytestMarkerSyncFailClosedTests(unittest.TestCase):
             root = Path(name)
             self._files(
                 root,
-                toml='[tool.pytest.ini_options]\n'
-                     'markers = ["smoke: Changed description", '
-                     '"integration: Integration tests"]\n',
+                toml="[tool.pytest.ini_options]\n"
+                'markers = ["smoke: Changed description", '
+                '"integration: Integration tests"]\n',
             )
             with self.assertRaisesRegex(ValueError, "changed="):
                 sync.validate(root)
