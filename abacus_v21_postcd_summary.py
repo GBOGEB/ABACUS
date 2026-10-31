@@ -11,8 +11,8 @@ Comprehensive summary of all POST-CD activities and deliverables
 """
 
 import json
-from datetime import datetime
 from pathlib import Path
+from datetime import datetime
 
 
 def generate_postcd_summary():
@@ -400,7 +400,7 @@ The POST-CD phase has been successfully completed with all critical infrastructu
     output_dir.mkdir(exist_ok=True)
 
     summary_path = output_dir / "POST_CD_SUMMARY.md"
-    with open(summary_path, "w", encoding="utf-8") as f:
+    with open(summary_path, 'w', encoding='utf-8') as f:
         f.write(summary)
 
     print("=" * 80)
@@ -417,7 +417,6 @@ The POST-CD phase has been successfully completed with all critical infrastructu
     print("\n✅ POST-CD Phase: COMPLETED")
     print("🟢 System Status: PRODUCTION READY")
     print("\n" + "=" * 80)
-
 
 if __name__ == "__main__":
     generate_postcd_summary()

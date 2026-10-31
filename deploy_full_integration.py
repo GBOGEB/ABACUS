@@ -21,18 +21,19 @@ This script handles:
 - Automated alerts configuration
 """
 
-import json
-import logging
 import os
-import subprocess
 import sys
+import json
 import time
-from datetime import datetime
+import logging
+import subprocess
 from pathlib import Path
+from datetime import datetime
 from typing import Dict, List, Optional, Tuple
 
 logging.basicConfig(
-    level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s"
+    level=logging.INFO,
+    format='%(asctime)s - %(levelname)s - %(message)s'
 )
 logger = logging.getLogger(__name__)
 
@@ -51,7 +52,7 @@ class FullIntegrationDeployer:
             "performance_benchmarked": False,
             "production_deployed": False,
             "monitoring_configured": False,
-            "alerts_configured": False,
+            "alerts_configured": False
         }
 
     def run_command(self, command: str, description: str) -> Tuple[bool, str]:
@@ -60,7 +61,11 @@ class FullIntegrationDeployer:
 
         try:
             result = subprocess.run(
-                command, shell=True, capture_output=True, text=True, timeout=600
+                command,
+                shell=True,
+                capture_output=True,
+                text=True,
+                timeout=600
             )
 
             success = result.returncode == 0
@@ -72,14 +77,12 @@ class FullIntegrationDeployer:
                 logger.error(f"✗ {description} - FAILED")
                 logger.error(f"Output: {output[:500]}")
 
-            self.deployment_log.append(
-                {
-                    "timestamp": datetime.now().isoformat(),
-                    "description": description,
-                    "success": success,
-                    "output": output[:1000],
-                }
-            )
+            self.deployment_log.append({
+                "timestamp": datetime.now().isoformat(),
+                "description": description,
+                "success": success,
+                "output": output[:1000]
+            })
 
             return success, output
 
@@ -89,9 +92,9 @@ class FullIntegrationDeployer:
 
     def step_1_deploy_staging(self) -> bool:
         """Step 1: Deploy to staging environment"""
-        logger.info("\n" + "=" * 80)
+        logger.info("\n" + "="*80)
         logger.info("STEP 1: DEPLOY TO STAGING ENVIRONMENT")
-        logger.info("=" * 80)
+        logger.info("="*80)
 
         # Create staging directory structure
         staging_dirs = [
@@ -99,7 +102,7 @@ class FullIntegrationDeployer:
             "staging/DMAIC_V3",
             "staging/INTEGRATED_OUTPUT",
             "staging/logs",
-            "staging/config",
+            "staging/config"
         ]
 
         for dir_path in staging_dirs:
@@ -110,13 +113,12 @@ class FullIntegrationDeployer:
         integration_files = [
             "GBOGEB_ABACUS_DOW_INTEGRATION_BRIDGE.py",
             "UNIFIED_GLOB_CONFIG.yaml",
-            "test_integration_bridge.py",
+            "test_integration_bridge.py"
         ]
 
         for file in integration_files:
             if Path(file).exists():
                 import shutil
-
                 shutil.copy(file, f"staging/{file}")
                 logger.info(f"✓ Copied to staging: {file}")
 
@@ -128,10 +130,10 @@ class FullIntegrationDeployer:
             "iterations": 3,
             "enable_agents": True,
             "enable_convergence": True,
-            "enable_monitoring": True,
+            "enable_monitoring": True
         }
 
-        with open("staging/config/staging_config.json", "w") as f:
+        with open("staging/config/staging_config.json", 'w') as f:
             json.dump(staging_config, f, indent=2)
 
         logger.info("✓ Staging configuration created")
@@ -142,34 +144,37 @@ class FullIntegrationDeployer:
 
     def step_2_run_full_integration_tests(self) -> bool:
         """Step 2: Run full integration tests with DOW pipeline"""
-        logger.info("\n" + "=" * 80)
+        logger.info("\n" + "="*80)
         logger.info("STEP 2: RUN FULL INTEGRATION TESTS WITH DOW PIPELINE")
-        logger.info("=" * 80)
+        logger.info("="*80)
 
         test_scenarios = [
             {
                 "name": "DOW-only Mode Test",
-                "command": "python -c \"from GBOGEB_ABACUS_DOW_INTEGRATION_BRIDGE import GBOGEBAbacusDOWBridge, IntegrationConfig, IntegrationMode; config = IntegrationConfig(mode=IntegrationMode.DOW_ONLY, iterations=2); bridge = GBOGEBAbacusDOWBridge(config=config); results = bridge.execute_integrated_pipeline(); print(f'Status: {results[\\\"status\\\"]}'); assert results['status'] in ['completed', 'failed']\"",
+                "command": 'python -c "from GBOGEB_ABACUS_DOW_INTEGRATION_BRIDGE import GBOGEBAbacusDOWBridge, IntegrationConfig, IntegrationMode; config = IntegrationConfig(mode=IntegrationMode.DOW_ONLY, iterations=2); bridge = GBOGEBAbacusDOWBridge(config=config); results = bridge.execute_integrated_pipeline(); print(f\'Status: {results[\\\"status\\\"]}\'); assert results[\'status\'] in [\'completed\', \'failed\']"'
             },
             {
                 "name": "Unified Mode Test",
-                "command": 'python -c "from GBOGEB_ABACUS_DOW_INTEGRATION_BRIDGE import GBOGEBAbacusDOWBridge, IntegrationConfig, IntegrationMode; config = IntegrationConfig(mode=IntegrationMode.UNIFIED, iterations=2); bridge = GBOGEBAbacusDOWBridge(config=config); results = bridge.execute_integrated_pipeline(); print(f\'Status: {results[\\"status\\"]}\'); print(f\'Duration: {results.get(\\"duration_seconds\\", 0):.2f}s\')"',
+                "command": 'python -c "from GBOGEB_ABACUS_DOW_INTEGRATION_BRIDGE import GBOGEBAbacusDOWBridge, IntegrationConfig, IntegrationMode; config = IntegrationConfig(mode=IntegrationMode.UNIFIED, iterations=2); bridge = GBOGEBAbacusDOWBridge(config=config); results = bridge.execute_integrated_pipeline(); print(f\'Status: {results[\\\"status\\\"]}\'); print(f\'Duration: {results.get(\\\"duration_seconds\\\", 0):.2f}s\')"'
             },
             {
                 "name": "Parallel Mode Test",
-                "command": 'python -c "from GBOGEB_ABACUS_DOW_INTEGRATION_BRIDGE import GBOGEBAbacusDOWBridge, IntegrationConfig, IntegrationMode; config = IntegrationConfig(mode=IntegrationMode.PARALLEL, iterations=1); bridge = GBOGEBAbacusDOWBridge(config=config); results = bridge.execute_integrated_pipeline(); print(f\'Status: {results[\\"status\\"]}\')"',
+                "command": 'python -c "from GBOGEB_ABACUS_DOW_INTEGRATION_BRIDGE import GBOGEBAbacusDOWBridge, IntegrationConfig, IntegrationMode; config = IntegrationConfig(mode=IntegrationMode.PARALLEL, iterations=1); bridge = GBOGEBAbacusDOWBridge(config=config); results = bridge.execute_integrated_pipeline(); print(f\'Status: {results[\\\"status\\\"]}\')"'
             },
             {
                 "name": "Sequential Mode Test",
-                "command": 'python -c "from GBOGEB_ABACUS_DOW_INTEGRATION_BRIDGE import GBOGEBAbacusDOWBridge, IntegrationConfig, IntegrationMode; config = IntegrationConfig(mode=IntegrationMode.SEQUENTIAL, iterations=1); bridge = GBOGEBAbacusDOWBridge(config=config); results = bridge.execute_integrated_pipeline(); print(f\'Status: {results[\\"status\\"]}\')"',
-            },
+                "command": 'python -c "from GBOGEB_ABACUS_DOW_INTEGRATION_BRIDGE import GBOGEBAbacusDOWBridge, IntegrationConfig, IntegrationMode; config = IntegrationConfig(mode=IntegrationMode.SEQUENTIAL, iterations=1); bridge = GBOGEBAbacusDOWBridge(config=config); results = bridge.execute_integrated_pipeline(); print(f\'Status: {results[\\\"status\\\"]}\')"'
+            }
         ]
 
         passed_tests = 0
         total_tests = len(test_scenarios)
 
         for scenario in test_scenarios:
-            success, output = self.run_command(scenario["command"], scenario["name"])
+            success, output = self.run_command(
+                scenario["command"],
+                scenario["name"]
+            )
             if success:
                 passed_tests += 1
 
@@ -186,9 +191,9 @@ class FullIntegrationDeployer:
 
     def step_3_validate_convergence(self) -> bool:
         """Step 3: Validate convergence metrics"""
-        logger.info("\n" + "=" * 80)
+        logger.info("\n" + "="*80)
         logger.info("STEP 3: VALIDATE CONVERGENCE METRICS")
-        logger.info("=" * 80)
+        logger.info("="*80)
 
         # Run convergence validation test
         convergence_test = """
@@ -221,7 +226,8 @@ if 'unified_results' in results and results['unified_results']:
 """
 
         success, output = self.run_command(
-            f'python -c "{convergence_test}"', "Convergence Validation Test"
+            f'python -c "{convergence_test}"',
+            "Convergence Validation Test"
         )
 
         # Analyze convergence metrics
@@ -238,18 +244,26 @@ if 'unified_results' in results and results['unified_results']:
 
     def step_4_performance_benchmark(self) -> bool:
         """Step 4: Review performance benchmarks"""
-        logger.info("\n" + "=" * 80)
+        logger.info("\n" + "="*80)
         logger.info("STEP 4: PERFORMANCE BENCHMARKING")
-        logger.info("=" * 80)
+        logger.info("="*80)
 
         benchmark_tests = [
-            {"name": "Quick Execution Benchmark", "iterations": 1, "target_time": 5.0},
+            {
+                "name": "Quick Execution Benchmark",
+                "iterations": 1,
+                "target_time": 5.0
+            },
             {
                 "name": "Standard Execution Benchmark",
                 "iterations": 2,
-                "target_time": 10.0,
+                "target_time": 10.0
             },
-            {"name": "Full Execution Benchmark", "iterations": 3, "target_time": 15.0},
+            {
+                "name": "Full Execution Benchmark",
+                "iterations": 3,
+                "target_time": 15.0
+            }
         ]
 
         benchmark_results = []
@@ -273,64 +287,54 @@ print(f'Status: {{results["status"]}}')
 """
 
             success, output = self.run_command(
-                f'python -c "{test_cmd}"', benchmark["name"]
+                f'python -c "{test_cmd}"',
+                benchmark["name"]
             )
 
             duration = time.time() - start
 
-            benchmark_results.append(
-                {
-                    "name": benchmark["name"],
-                    "iterations": benchmark["iterations"],
-                    "duration": duration,
-                    "target": benchmark["target_time"],
-                    "passed": duration
-                    <= benchmark["target_time"] * 1.5,  # 50% tolerance
-                }
-            )
+            benchmark_results.append({
+                "name": benchmark["name"],
+                "iterations": benchmark["iterations"],
+                "duration": duration,
+                "target": benchmark["target_time"],
+                "passed": duration <= benchmark["target_time"] * 1.5  # 50% tolerance
+            })
 
         # Generate benchmark report
         logger.info("\n📊 Performance Benchmark Results:")
         for result in benchmark_results:
             status = "✓" if result["passed"] else "✗"
-            logger.info(
-                f"  {status} {result['name']}: {result['duration']:.2f}s (target: {result['target']}s)"
-            )
+            logger.info(f"  {status} {result['name']}: {result['duration']:.2f}s (target: {result['target']}s)")
 
         passed_benchmarks = sum(1 for r in benchmark_results if r["passed"])
-        self.metrics["performance_benchmarked"] = (
-            passed_benchmarks >= len(benchmark_results) * 0.66
-        )
+        self.metrics["performance_benchmarked"] = passed_benchmarks >= len(benchmark_results) * 0.66
 
         # Save benchmark report
-        with open("PERFORMANCE_BENCHMARK_REPORT.json", "w") as f:
-            json.dump(
-                {
-                    "timestamp": datetime.now().isoformat(),
-                    "benchmarks": benchmark_results,
-                    "passed": passed_benchmarks,
-                    "total": len(benchmark_results),
-                    "success_rate": passed_benchmarks / len(benchmark_results),
-                },
-                f,
-                indent=2,
-            )
+        with open("PERFORMANCE_BENCHMARK_REPORT.json", 'w') as f:
+            json.dump({
+                "timestamp": datetime.now().isoformat(),
+                "benchmarks": benchmark_results,
+                "passed": passed_benchmarks,
+                "total": len(benchmark_results),
+                "success_rate": passed_benchmarks / len(benchmark_results)
+            }, f, indent=2)
 
         logger.info("✅ PERFORMANCE BENCHMARKING COMPLETE")
         return True
 
     def step_5_deploy_production(self) -> bool:
         """Step 5: Deploy to production"""
-        logger.info("\n" + "=" * 80)
+        logger.info("\n" + "="*80)
         logger.info("STEP 5: DEPLOY TO PRODUCTION")
-        logger.info("=" * 80)
+        logger.info("="*80)
 
         # Verify all prerequisites
         prerequisites = [
             ("Staging Deployed", self.metrics["staging_deployed"]),
             ("Integration Tests Passed", self.metrics["integration_tests_passed"]),
             ("Convergence Validated", self.metrics["convergence_validated"]),
-            ("Performance Benchmarked", self.metrics["performance_benchmarked"]),
+            ("Performance Benchmarked", self.metrics["performance_benchmarked"])
         ]
 
         logger.info("\n📋 Production Deployment Prerequisites:")
@@ -342,9 +346,7 @@ print(f'Status: {{results["status"]}}')
                 all_met = False
 
         if not all_met:
-            logger.warning(
-                "\n⚠️ NOT ALL PREREQUISITES MET - SKIPPING PRODUCTION DEPLOYMENT"
-            )
+            logger.warning("\n⚠️ NOT ALL PREREQUISITES MET - SKIPPING PRODUCTION DEPLOYMENT")
             return False
 
         # Create production directory structure
@@ -354,7 +356,7 @@ print(f'Status: {{results["status"]}}')
             "production/INTEGRATED_OUTPUT",
             "production/logs",
             "production/config",
-            "production/monitoring",
+            "production/monitoring"
         ]
 
         for dir_path in production_dirs:
@@ -365,13 +367,12 @@ print(f'Status: {{results["status"]}}')
         production_files = [
             "GBOGEB_ABACUS_DOW_INTEGRATION_BRIDGE.py",
             "UNIFIED_GLOB_CONFIG.yaml",
-            "INTEGRATION_GUIDE.md",
+            "INTEGRATION_GUIDE.md"
         ]
 
         for file in production_files:
             if Path(file).exists():
                 import shutil
-
                 shutil.copy(file, f"production/{file}")
                 logger.info(f"✓ Deployed to production: {file}")
 
@@ -386,10 +387,10 @@ print(f'Status: {{results["status"]}}')
             "enable_monitoring": True,
             "enable_alerts": True,
             "enable_git_commits": True,
-            "enable_idempotency": True,
+            "enable_idempotency": True
         }
 
-        with open("production/config/production_config.json", "w") as f:
+        with open("production/config/production_config.json", 'w') as f:
             json.dump(production_config, f, indent=2)
 
         logger.info("✓ Production configuration created")
@@ -400,9 +401,9 @@ print(f'Status: {{results["status"]}}')
 
     def step_6_setup_monitoring(self) -> bool:
         """Step 6: Set up continuous monitoring"""
-        logger.info("\n" + "=" * 80)
+        logger.info("\n" + "="*80)
         logger.info("STEP 6: SET UP CONTINUOUS MONITORING")
-        logger.info("=" * 80)
+        logger.info("="*80)
 
         # Create monitoring configuration
         monitoring_config = {
@@ -413,21 +414,24 @@ print(f'Status: {{results["status"]}}')
                 "convergence_rate",
                 "average_execution_time",
                 "error_rate",
-                "artifact_generation_rate",
+                "artifact_generation_rate"
             ],
             "thresholds": {
                 "min_success_rate": 0.80,
                 "max_execution_time": 30.0,
                 "max_error_rate": 0.20,
-                "min_convergence_rate": 0.70,
+                "min_convergence_rate": 0.70
             },
-            "alert_channels": ["log_file", "metrics_file"],
+            "alert_channels": [
+                "log_file",
+                "metrics_file"
+            ]
         }
 
         monitoring_dir = Path("production/monitoring")
         monitoring_dir.mkdir(parents=True, exist_ok=True)
 
-        with open(monitoring_dir / "monitoring_config.json", "w") as f:
+        with open(monitoring_dir / "monitoring_config.json", 'w') as f:
             json.dump(monitoring_config, f, indent=2)
 
         logger.info("✓ Monitoring configuration created")
@@ -458,7 +462,7 @@ while True:
     time.sleep(300)  # Check every 5 minutes
 """
 
-        with open(monitoring_dir / "monitor.py", "w") as f:
+        with open(monitoring_dir / "monitor.py", 'w') as f:
             f.write(monitoring_script)
 
         logger.info("✓ Monitoring script created")
@@ -469,9 +473,9 @@ while True:
 
     def step_7_configure_alerts(self) -> bool:
         """Step 7: Configure automated alerts"""
-        logger.info("\n" + "=" * 80)
+        logger.info("\n" + "="*80)
         logger.info("STEP 7: CONFIGURE AUTOMATED ALERTS")
-        logger.info("=" * 80)
+        logger.info("="*80)
 
         # Create alerts configuration
         alerts_config = {
@@ -481,37 +485,37 @@ while True:
                     "name": "High Error Rate",
                     "condition": "error_rate > 0.20",
                     "severity": "critical",
-                    "action": "log_and_notify",
+                    "action": "log_and_notify"
                 },
                 {
                     "name": "Low Success Rate",
                     "condition": "success_rate < 0.80",
                     "severity": "warning",
-                    "action": "log",
+                    "action": "log"
                 },
                 {
                     "name": "Slow Execution",
                     "condition": "execution_time > 30.0",
                     "severity": "warning",
-                    "action": "log",
+                    "action": "log"
                 },
                 {
                     "name": "Convergence Failure",
                     "condition": "convergence_rate < 0.70",
                     "severity": "warning",
-                    "action": "log",
-                },
+                    "action": "log"
+                }
             ],
             "notification_channels": {
                 "log_file": "production/logs/alerts.log",
-                "metrics_file": "production/monitoring/alerts_history.json",
-            },
+                "metrics_file": "production/monitoring/alerts_history.json"
+            }
         }
 
         alerts_dir = Path("production/monitoring")
         alerts_dir.mkdir(parents=True, exist_ok=True)
 
-        with open(alerts_dir / "alerts_config.json", "w") as f:
+        with open(alerts_dir / "alerts_config.json", 'w') as f:
             json.dump(alerts_config, f, indent=2)
 
         logger.info("✓ Alerts configuration created")
@@ -551,14 +555,15 @@ if __name__ == '__main__':
     trigger_alert('Test Alert', 'info', 'Alert system initialized')
 """
 
-        with open(alerts_dir / "alert_handler.py", "w") as f:
+        with open(alerts_dir / "alert_handler.py", 'w') as f:
             f.write(alert_script)
 
         logger.info("✓ Alert handler script created")
 
         # Test alert system
         success, output = self.run_command(
-            "python production/monitoring/alert_handler.py", "Test Alert System"
+            "python production/monitoring/alert_handler.py",
+            "Test Alert System"
         )
 
         self.metrics["alerts_configured"] = success
@@ -567,9 +572,9 @@ if __name__ == '__main__':
 
     def generate_deployment_report(self):
         """Generate comprehensive deployment report"""
-        logger.info("\n" + "=" * 80)
+        logger.info("\n" + "="*80)
         logger.info("GENERATING DEPLOYMENT REPORT")
-        logger.info("=" * 80)
+        logger.info("="*80)
 
         duration = (datetime.now() - self.start_time).total_seconds()
 
@@ -611,9 +616,7 @@ Total Actions: {len(self.deployment_log)}
 
         for i, log_entry in enumerate(self.deployment_log[-20:], 1):  # Last 20 entries
             status = "✓" if log_entry["success"] else "✗"
-            report += (
-                f"{i}. {status} {log_entry['description']} ({log_entry['timestamp']})\n"
-            )
+            report += f"{i}. {status} {log_entry['description']} ({log_entry['timestamp']})\n"
 
         report += f"""
 
@@ -677,7 +680,7 @@ Total Actions: {len(self.deployment_log)}
 """
 
         report_file = Path("FULL_DEPLOYMENT_REPORT.md")
-        with open(report_file, "w", encoding="utf-8") as f:
+        with open(report_file, 'w', encoding='utf-8') as f:
             f.write(report)
 
         logger.info(f"✓ Deployment report saved: {report_file}")
@@ -686,9 +689,9 @@ Total Actions: {len(self.deployment_log)}
 
     def run_full_deployment(self):
         """Execute complete deployment pipeline"""
-        logger.info("\n" + "=" * 80)
+        logger.info("\n" + "="*80)
         logger.info("STARTING FULL INTEGRATION DEPLOYMENT")
-        logger.info("=" * 80)
+        logger.info("="*80)
 
         steps = [
             ("Deploy to Staging", self.step_1_deploy_staging),
@@ -697,7 +700,7 @@ Total Actions: {len(self.deployment_log)}
             ("Performance Benchmark", self.step_4_performance_benchmark),
             ("Deploy to Production", self.step_5_deploy_production),
             ("Setup Monitoring", self.step_6_setup_monitoring),
-            ("Configure Alerts", self.step_7_configure_alerts),
+            ("Configure Alerts", self.step_7_configure_alerts)
         ]
 
         for step_name, step_func in steps:
@@ -723,13 +726,11 @@ Total Actions: {len(self.deployment_log)}
         completed_steps = sum(1 for v in self.metrics.values() if v)
         total_steps = len(self.metrics)
 
-        logger.info("\n" + "=" * 80)
+        logger.info("\n" + "="*80)
         logger.info("DEPLOYMENT COMPLETE")
         logger.info(f"Steps Completed: {completed_steps}/{total_steps}")
-        logger.info(
-            f"Duration: {(datetime.now() - self.start_time).total_seconds():.2f}s"
-        )
-        logger.info("=" * 80)
+        logger.info(f"Duration: {(datetime.now() - self.start_time).total_seconds():.2f}s")
+        logger.info("="*80)
 
         return completed_steps == total_steps
 

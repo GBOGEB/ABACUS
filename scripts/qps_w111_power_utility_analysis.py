@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
 """Deterministic W111 analysis consuming exact QPS, KEB and CoolProp receipts."""
-
 from __future__ import annotations
 
 import hashlib
@@ -13,20 +12,12 @@ R_HE_KJ_KG_K = 2.077
 GAMMA_IDEAL_HE = 5.0 / 3.0
 ROOT = Path(__file__).resolve().parents[1]
 PAYLOAD_PATH = ROOT / "triage" / "payloads" / "QPS_W111_POWER_UTILITY_SANITIZED_v1.json"
-KEB_RECEIPT_PATH = (
-    ROOT / "triage" / "receipts" / "KEB_W111_POWER_UTILITY_INPUT_RECEIPT.json"
-)
-COOLPROP_RECEIPT_PATH = (
-    ROOT / "triage" / "receipts" / "COOLPROP_W111_POWER_UTILITY_THERMO_RECEIPT.json"
-)
-EXPECTED_PAYLOAD_SHA256 = (
-    "cb66708b29a57abd8cd2721e40706a114f74e1941c1692af8c465370d96e124b"
-)
+KEB_RECEIPT_PATH = ROOT / "triage" / "receipts" / "KEB_W111_POWER_UTILITY_INPUT_RECEIPT.json"
+COOLPROP_RECEIPT_PATH = ROOT / "triage" / "receipts" / "COOLPROP_W111_POWER_UTILITY_THERMO_RECEIPT.json"
+EXPECTED_PAYLOAD_SHA256 = "cb66708b29a57abd8cd2721e40706a114f74e1941c1692af8c465370d96e124b"
 EXPECTED_CHILD_SSOT_BLOB = "d19975a150a3530cc4db3bd2fbbf4180f757c2a4"
 EXPECTED_KEB_ARTIFACT_ID = 10266200791
-EXPECTED_COOLPROP_RECEIPT_SHA256 = (
-    "85c8a7c0796fa031381c3b2144820af7adff4bab3e4bf31e41b89b2649f5a022"
-)
+EXPECTED_COOLPROP_RECEIPT_SHA256 = "85c8a7c0796fa031381c3b2144820af7adff4bab3e4bf31e41b89b2649f5a022"
 ISOTHERMAL_CROSSCHECK_TOLERANCE = 0.001
 ISENTROPIC_MODEL_CROSSCHECK_TOLERANCE = 0.002
 
@@ -43,9 +34,7 @@ class CompressionPoint:
 
 
 def canonical_payload_sha256(body: dict) -> str:
-    encoded = json.dumps(
-        body, sort_keys=True, separators=(",", ":"), ensure_ascii=True
-    ).encode("utf-8")
+    encoded = json.dumps(body, sort_keys=True, separators=(",", ":"), ensure_ascii=True).encode("utf-8")
     return hashlib.sha256(encoded).hexdigest()
 
 
@@ -68,11 +57,7 @@ def load_payload() -> tuple[dict, str]:
     if declared != EXPECTED_PAYLOAD_SHA256:
         raise ValueError("unexpected W111 payload digest")
     confidentiality = body.get("confidentiality", {})
-    for flag in (
-        "raw_bidder_pdf_included",
-        "raw_offer_text_included",
-        "commercial_price_table_included",
-    ):
+    for flag in ("raw_bidder_pdf_included", "raw_offer_text_included", "commercial_price_table_included"):
         if confidentiality.get(flag) is not False:
             raise ValueError(f"forbidden payload flag: {flag}")
     return body, declared
@@ -86,10 +71,7 @@ def load_and_verify_keb(payload_sha256: str) -> dict:
         raise ValueError("unexpected KEB artifact id")
     if receipt.get("receipt_id") != "KEB-W111-POWER-UTILITY":
         raise ValueError("wrong KEB receipt id")
-    if (
-        receipt.get("semantic_checks") != "PASS"
-        or receipt.get("provenance_checks") != "PASS"
-    ):
+    if receipt.get("semantic_checks") != "PASS" or receipt.get("provenance_checks") != "PASS":
         raise ValueError("KEB semantic/provenance receipt not PASS")
     if receipt.get("confidentiality_checks") != "PASS":
         raise ValueError("KEB confidentiality receipt not PASS")
@@ -122,18 +104,9 @@ def load_and_verify_coolprop() -> dict:
     if qps.get("source_ssot_git_blob_sha") != EXPECTED_CHILD_SSOT_BLOB:
         raise ValueError("CoolProp child SSOT identity mismatch")
     inp = receipt.get("input", {})
-    if not (
-        inp.get("mass_flow_kg_s") == 0.0815
-        and inp.get("P1_Pa") == 105000.0
-        and inp.get("P2_Pa") == 1400000.0
-        and inp.get("T1_K") == 298.0
-        and inp.get("package_input_kW") == 203.5
-    ):
+    if not (inp.get("mass_flow_kg_s") == 0.0815 and inp.get("P1_Pa") == 105000.0 and inp.get("P2_Pa") == 1400000.0 and inp.get("T1_K") == 298.0 and inp.get("package_input_kW") == 203.5):
         raise ValueError("CoolProp same-point input mismatch")
-    if (
-        receipt.get("isentropic_reference", {}).get("classification")
-        != "REFERENCE_ONLY_FOR_INTERCOOLED_PACKAGE"
-    ):
+    if receipt.get("isentropic_reference", {}).get("classification") != "REFERENCE_ONLY_FOR_INTERCOOLED_PACKAGE":
         raise ValueError("CoolProp isentropic boundary guard missing")
     return envelope
 
@@ -147,17 +120,10 @@ def atom_value(atoms: dict[str, dict], atom_id: str) -> float:
 
 
 def ideal_isothermal_power_kW(point: CompressionPoint) -> float:
-    return (
-        point.mass_flow_kg_s
-        * R_HE_KJ_KG_K
-        * point.T1_K
-        * math.log(point.P2_bara / point.P1_bara)
-    )
+    return point.mass_flow_kg_s * R_HE_KJ_KG_K * point.T1_K * math.log(point.P2_bara / point.P1_bara)
 
 
-def ideal_isentropic_reference_power_kW(
-    point: CompressionPoint, gamma: float = GAMMA_IDEAL_HE
-) -> float:
+def ideal_isentropic_reference_power_kW(point: CompressionPoint, gamma: float = GAMMA_IDEAL_HE) -> float:
     cp = gamma / (gamma - 1.0) * R_HE_KJ_KG_K
     exponent = (gamma - 1.0) / gamma
     ratio = point.P2_bara / point.P1_bara
@@ -175,9 +141,7 @@ def isentropic_boundary_diagnostic(point: CompressionPoint) -> dict[str, object]
     return {
         "ideal_isentropic_reference_kW": ideal,
         "apparent_full_ratio_efficiency": apparent,
-        "classification": (
-            "CANDIDATE_IF_CONTROL_VOLUME_MATCHES" if applicable else "REFERENCE_ONLY"
-        ),
+        "classification": "CANDIDATE_IF_CONTROL_VOLUME_MATCHES" if applicable else "REFERENCE_ONLY",
         "reason": (
             "Full 1.05->14 bara HP package is strongly intercooled/multistage; an apparent efficiency above one proves "
             "the single adiabatic-stage reference does not match the package work/control-volume boundary."
@@ -210,20 +174,16 @@ def analyze() -> dict[str, object]:
         atom_value(atoms, "SUPPLIER_B_HP_ELECTRICAL_2KOP") / 4.0,
         atom_value(atoms, "SUPPLIER_B_HP_FREQUENCY_2KOP"),
     )
-    max_ref = CompressionPoint(
-        "SUPPLIER_B_HP_72Hz_each", 0.112, 298.0, 1.05, 14.0, 357.0, 72.0
-    )
+    max_ref = CompressionPoint("SUPPLIER_B_HP_72Hz_each", 0.112, 298.0, 1.05, 14.0, 357.0, 72.0)
 
     points = []
     for point in (normal, max_ref):
-        points.append(
-            {
-                "input": asdict(point),
-                "ideal_isothermal_kW": ideal_isothermal_power_kW(point),
-                "package_isothermal_efficiency": package_isothermal_efficiency(point),
-                "isentropic_reference": isentropic_boundary_diagnostic(point),
-            }
-        )
+        points.append({
+            "input": asdict(point),
+            "ideal_isothermal_kW": ideal_isothermal_power_kW(point),
+            "package_isothermal_efficiency": package_isothermal_efficiency(point),
+            "isentropic_reference": isentropic_boundary_diagnostic(point),
+        })
 
     cp_receipt = coolprop["receipt"]
     cp_iso = float(cp_receipt["isothermal_reference"]["ideal_power_kW"])
@@ -236,9 +196,7 @@ def analyze() -> dict[str, object]:
     qeq = atom_value(atoms, "SUPPLIER_B_INV_COP_QEQ_MARGIN")
     controlled_subtotal = atom_value(atoms, "SUPPLIER_B_CONTROLLED_OPERATING_SUBTOTAL")
     bidder_invCOP = atom_value(atoms, "SUPPLIER_B_INV_COP_REFERENCE")
-    bidder_implied_total = atom_value(
-        atoms, "SUPPLIER_B_INV_COP_IMPLIED_TOTAL_ELECTRICAL"
-    )
+    bidder_implied_total = atom_value(atoms, "SUPPLIER_B_INV_COP_IMPLIED_TOTAL_ELECTRICAL")
     residual = atom_value(atoms, "SUPPLIER_B_UNRECONCILED_ELECTRICAL")
 
     return {
@@ -315,10 +273,7 @@ def validate_receipt(receipt: dict[str, object]) -> None:
     cross = receipt["independent_thermophysical_crosscheck"]
     assert abs(cross["isothermal_relative_delta"]) < ISOTHERMAL_CROSSCHECK_TOLERANCE
     assert abs(cross["efficiency_relative_delta"]) < ISOTHERMAL_CROSSCHECK_TOLERANCE
-    assert (
-        abs(cross["isentropic_reference_relative_delta"])
-        < ISENTROPIC_MODEL_CROSSCHECK_TOLERANCE
-    )
+    assert abs(cross["isentropic_reference_relative_delta"]) < ISENTROPIC_MODEL_CROSSCHECK_TOLERANCE
     inv = receipt["invCOP_screen"]
     assert abs(inv["bidder_implied_total_electrical_kW"] - 1061.13) < 1e-6
     assert abs(inv["unreconciled_electrical_kW"] - 153.13) < 1e-6

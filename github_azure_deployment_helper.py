@@ -10,13 +10,13 @@ ABACUS v2.1 - GitHub Sync & Azure Deployment Helper
 Handles bidirectional GitHub sync and Azure cloud deployment
 """
 
-import json
 import os
-import subprocess
 import sys
-from datetime import datetime
+import json
+import subprocess
 from pathlib import Path
-from typing import Any, Dict, List, Optional
+from datetime import datetime
+from typing import Dict, List, Any, Optional
 
 
 class GitHubAzureDeploymentHelper:
@@ -25,15 +25,17 @@ class GitHubAzureDeploymentHelper:
         self.results = {
             "timestamp": datetime.now().isoformat(),
             "steps": [],
-            "status": "in_progress",
+            "status": "in_progress"
         }
 
     def log(self, message: str, status: str = "INFO"):
         timestamp = datetime.now().strftime("%H:%M:%S")
         print(f"[{timestamp}] [{status}] {message}")
-        self.results["steps"].append(
-            {"timestamp": timestamp, "status": status, "message": message}
-        )
+        self.results["steps"].append({
+            "timestamp": timestamp,
+            "status": status,
+            "message": message
+        })
 
     def run_command(self, cmd: List[str], check: bool = False) -> tuple:
         try:
@@ -42,8 +44,8 @@ class GitHubAzureDeploymentHelper:
                 capture_output=True,
                 text=True,
                 check=check,
-                encoding="utf-8",
-                errors="replace",
+                encoding='utf-8',
+                errors='replace'
             )
             return result.returncode, result.stdout, result.stderr
         except subprocess.CalledProcessError as e:
@@ -54,9 +56,9 @@ class GitHubAzureDeploymentHelper:
     def check_git_remote(self) -> Optional[str]:
         code, stdout, stderr = self.run_command(["git", "remote", "-v"])
         if code == 0 and stdout:
-            lines = stdout.strip().split("\n")
+            lines = stdout.strip().split('\n')
             for line in lines:
-                if "origin" in line and "(fetch)" in line:
+                if 'origin' in line and '(fetch)' in line:
                     parts = line.split()
                     if len(parts) >= 2:
                         return parts[1]
@@ -87,9 +89,9 @@ class GitHubAzureDeploymentHelper:
         self.log(f"Current branch: {current_branch}", "INFO")
 
         self.log("Pulling changes with rebase strategy...", "INFO")
-        code, stdout, stderr = self.run_command(
-            ["git", "pull", "--rebase", "origin", current_branch]
-        )
+        code, stdout, stderr = self.run_command([
+            "git", "pull", "--rebase", "origin", current_branch
+        ])
 
         if code != 0:
             if "conflict" in stderr.lower() or "conflict" in stdout.lower():
@@ -120,7 +122,7 @@ class GitHubAzureDeploymentHelper:
             self.log("No local changes to commit", "INFO")
             return True
 
-        changes = stdout.strip().split("\n")
+        changes = stdout.strip().split('\n')
         self.log(f"Found {len(changes)} changed files", "INFO")
 
         self.log("Adding ABACUS deployment files...", "INFO")
@@ -128,7 +130,7 @@ class GitHubAzureDeploymentHelper:
             "ABACUS_V21_DEPLOYMENT_PACKAGE/",
             "ABACUS_V21_DEPLOYMENT_COMPLETE_SUMMARY.md",
             "ABACUS_V21_REALISTIC_DEPLOYMENT_ROADMAP.md",
-            "abacus_v21_*.py",
+            "abacus_v21_*.py"
         ]
 
         for pattern in files_to_add:
@@ -138,7 +140,9 @@ class GitHubAzureDeploymentHelper:
 
         self.log("Creating commit...", "INFO")
         commit_msg = f"ABACUS v2.1 Deployment Package - {datetime.now().strftime('%Y-%m-%d %H:%M')}"
-        code, stdout, stderr = self.run_command(["git", "commit", "-m", commit_msg])
+        code, stdout, stderr = self.run_command([
+            "git", "commit", "-m", commit_msg
+        ])
 
         if code == 0:
             self.log(f"Commit created: {commit_msg}", "SUCCESS")
@@ -159,9 +163,9 @@ class GitHubAzureDeploymentHelper:
         current_branch = stdout.strip() if code == 0 else "main"
 
         self.log(f"Pushing to origin/{current_branch}...", "INFO")
-        code, stdout, stderr = self.run_command(
-            ["git", "push", "origin", current_branch]
-        )
+        code, stdout, stderr = self.run_command([
+            "git", "push", "origin", current_branch
+        ])
 
         if code != 0:
             if "rejected" in stderr.lower():
@@ -403,10 +407,8 @@ if __name__ == "__main__":
         print("\\n❌ Deployment failed. Check errors above.")
 """
 
-        azure_script_path = (
-            self.project_root / "ABACUS_V21_DEPLOYMENT_PACKAGE" / "azure_deployment.py"
-        )
-        with open(azure_script_path, "w", encoding="utf-8") as f:
+        azure_script_path = self.project_root / "ABACUS_V21_DEPLOYMENT_PACKAGE" / "azure_deployment.py"
+        with open(azure_script_path, 'w', encoding='utf-8') as f:
             f.write(azure_script)
 
         os.chmod(azure_script_path, 0o755)
@@ -468,16 +470,10 @@ jobs:
         echo "🌐 URL: http://${{ env.AZURE_WEBAPP_NAME }}.westeurope.azurecontainer.io:8000"
 """
 
-        workflow_path = (
-            self.project_root
-            / "ABACUS_V21_DEPLOYMENT_PACKAGE"
-            / ".github"
-            / "workflows"
-            / "azure-deploy.yml"
-        )
+        workflow_path = self.project_root / "ABACUS_V21_DEPLOYMENT_PACKAGE" / ".github" / "workflows" / "azure-deploy.yml"
         workflow_path.parent.mkdir(parents=True, exist_ok=True)
 
-        with open(workflow_path, "w", encoding="utf-8") as f:
+        with open(workflow_path, 'w', encoding='utf-8') as f:
             f.write(workflow)
 
         self.log(f"Created: {workflow_path}", "SUCCESS")
@@ -617,10 +613,8 @@ For detailed documentation, see:
 ═══════════════════════════════════════════════════════════════════════════════
 """
 
-        instructions_file = (
-            self.project_root / "GITHUB_AZURE_DEPLOYMENT_INSTRUCTIONS.txt"
-        )
-        with open(instructions_file, "w", encoding="utf-8") as f:
+        instructions_file = self.project_root / "GITHUB_AZURE_DEPLOYMENT_INSTRUCTIONS.txt"
+        with open(instructions_file, 'w', encoding='utf-8') as f:
             f.write(instructions)
 
         print(instructions)
@@ -630,27 +624,19 @@ For detailed documentation, see:
         report_file = self.project_root / "GITHUB_SYNC_REPORT.json"
         self.results["status"] = "completed"
 
-        with open(report_file, "w", encoding="utf-8") as f:
+        with open(report_file, 'w', encoding='utf-8') as f:
             json.dump(self.results, f, indent=2)
 
         self.log(f"Report saved: {report_file}", "SUCCESS")
 
     def run(self):
-        print(
-            "╔══════════════════════════════════════════════════════════════════════════════╗"
-        )
-        print(
-            "║        ABACUS v2.1 - GitHub Sync & Azure Deployment Helper                 ║"
-        )
-        print(
-            "╚══════════════════════════════════════════════════════════════════════════════╝\n"
-        )
+        print("╔══════════════════════════════════════════════════════════════════════════════╗")
+        print("║        ABACUS v2.1 - GitHub Sync & Azure Deployment Helper                 ║")
+        print("╚══════════════════════════════════════════════════════════════════════════════╝\n")
 
         # Step 1: Pull from GitHub
         if not self.sync_with_github_pull():
-            self.log(
-                "GitHub pull failed or has conflicts - resolve manually", "WARNING"
-            )
+            self.log("GitHub pull failed or has conflicts - resolve manually", "WARNING")
             return False
 
         # Step 2: Prepare local changes
@@ -677,7 +663,6 @@ For detailed documentation, see:
         print("📖 See GITHUB_AZURE_DEPLOYMENT_INSTRUCTIONS.txt for next steps")
 
         return True
-
 
 if __name__ == "__main__":
     helper = GitHubAzureDeploymentHelper()
