@@ -5,6 +5,7 @@ The graph is derived evidence only. It links known SSOT logical IDs, source path
 linked artifacts and semantic references so unresolved identifiers become visible
 without promoting any candidate to authority.
 """
+
 from __future__ import annotations
 
 import argparse
@@ -70,7 +71,9 @@ def parse_semantic_traceability(text: str) -> list[tuple[str, str, str]]:
     return edges
 
 
-def add_node(nodes: dict[str, dict[str, object]], node_id: str, kind: str, **attrs: object) -> None:
+def add_node(
+    nodes: dict[str, dict[str, object]], node_id: str, kind: str, **attrs: object
+) -> None:
     node = nodes.setdefault(node_id, {"id": node_id, "kind": kind})
     for key, value in attrs.items():
         if value not in (None, "", []):
@@ -83,7 +86,9 @@ def build(root: Path) -> dict[str, object]:
     if not isinstance(authorities, list):
         authorities = []
     items = parse_ssot_items(read_text(root / "ssot/ssot_items.yaml"))
-    semantic = parse_semantic_traceability(read_text(root / "ssot/semantic_traceability.yaml"))
+    semantic = parse_semantic_traceability(
+        read_text(root / "ssot/semantic_traceability.yaml")
+    )
 
     nodes: dict[str, dict[str, object]] = {}
     edges: list[dict[str, str]] = []
@@ -112,7 +117,13 @@ def build(root: Path) -> dict[str, object]:
         if not logical_id:
             continue
         declared_ids.add(logical_id)
-        add_node(nodes, logical_id, "logical_id", name=item.get("name"), status=item.get("status"))
+        add_node(
+            nodes,
+            logical_id,
+            "logical_id",
+            name=item.get("name"),
+            status=item.get("status"),
+        )
         source = str(item.get("source", "")).strip()
         if source:
             source_id = f"path:{source}"
@@ -124,7 +135,9 @@ def build(root: Path) -> dict[str, object]:
                 artifact_path = str(artifact)
                 artifact_id = f"path:{artifact_path}"
                 add_node(nodes, artifact_id, "artifact", path=artifact_path)
-                edges.append({"from": logical_id, "type": "links_artifact", "to": artifact_id})
+                edges.append(
+                    {"from": logical_id, "type": "links_artifact", "to": artifact_id}
+                )
 
     for source, relation, target in semantic:
         referenced_ids.add(target)
@@ -133,24 +146,30 @@ def build(root: Path) -> dict[str, object]:
         edges.append({"from": source, "type": relation, "to": target})
 
     known_ids = indexed_ids | declared_ids
-    unresolved_refs = sorted(x for x in referenced_ids if x not in known_ids and ID_RE.match(x))
+    unresolved_refs = sorted(
+        x for x in referenced_ids if x not in known_ids and ID_RE.match(x)
+    )
     declared_not_indexed = sorted(declared_ids - indexed_ids)
     indexed_not_declared = sorted(indexed_ids - declared_ids)
 
     for logical_id in declared_not_indexed:
-        atoms.append({
-            "atom": "declared_not_indexed",
-            "id": logical_id,
-            "severity": "action",
-            "claim_guard": "Registry mismatch only; no authority promotion implied.",
-        })
+        atoms.append(
+            {
+                "atom": "declared_not_indexed",
+                "id": logical_id,
+                "severity": "action",
+                "claim_guard": "Registry mismatch only; no authority promotion implied.",
+            }
+        )
     for logical_id in unresolved_refs:
-        atoms.append({
-            "atom": "unresolved_reference",
-            "id": logical_id,
-            "severity": "discovery",
-            "claim_guard": "Reference exists but no matching indexed/declared logical ID was found.",
-        })
+        atoms.append(
+            {
+                "atom": "unresolved_reference",
+                "id": logical_id,
+                "severity": "discovery",
+                "claim_guard": "Reference exists but no matching indexed/declared logical ID was found.",
+            }
+        )
 
     return {
         "schema_version": "W64-DISCOVERY-GRAPH-1.0.0",
@@ -192,7 +211,9 @@ def main(argv: Iterable[str] | None = None) -> int:
         out = root / out
     out.parent.mkdir(parents=True, exist_ok=True)
     report = build(root)
-    out.write_text(json.dumps(report, indent=2, sort_keys=True) + "\n", encoding="utf-8")
+    out.write_text(
+        json.dumps(report, indent=2, sort_keys=True) + "\n", encoding="utf-8"
+    )
     print(json.dumps(report["summary"], sort_keys=True))
     return 0
 

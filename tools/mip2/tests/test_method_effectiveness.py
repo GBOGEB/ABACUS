@@ -1,4 +1,5 @@
 """Source-bound method effectiveness: complete labels and strict non-promotion."""
+
 import hashlib
 import json
 import pathlib
@@ -20,15 +21,30 @@ def fixture():
     assert len(cases) == 2
     return {
         "schema": "mip2.method-observations.v1",
-        "repository": "GBOGEB/ABACUS", "source_sha": "a" * 40,
-        "method_id": "sast", "tool_name": "Bandit", "tool_version": "1.9.4",
-        "config_sha256": "b" * 64, "corpus_sha256": hashlib.sha256(CORPUS).hexdigest(),
-        "artifact_sha256": hashlib.sha256(ARTIFACT).hexdigest(), "run_id": 123, "run_attempt": 1, "job_id": 456,
+        "repository": "GBOGEB/ABACUS",
+        "source_sha": "a" * 40,
+        "method_id": "sast",
+        "tool_name": "Bandit",
+        "tool_version": "1.9.4",
+        "config_sha256": "b" * 64,
+        "corpus_sha256": hashlib.sha256(CORPUS).hexdigest(),
+        "artifact_sha256": hashlib.sha256(ARTIFACT).hexdigest(),
+        "run_id": 123,
+        "run_attempt": 1,
+        "job_id": 456,
         "observations": [
-            {"case_id": cases[0], "detected": True, "runtime_ms": 9.0,
-             "fingerprints": [FINGERPRINT]},
-            {"case_id": cases[1], "detected": False, "runtime_ms": 3.0,
-             "fingerprints": []},
+            {
+                "case_id": cases[0],
+                "detected": True,
+                "runtime_ms": 9.0,
+                "fingerprints": [FINGERPRINT],
+            },
+            {
+                "case_id": cases[1],
+                "detected": False,
+                "runtime_ms": 3.0,
+                "fingerprints": [],
+            },
         ],
     }
 
@@ -55,14 +71,17 @@ def test_missing_case_is_unknown_not_false_negative():
     assert len(result["missing_cases"]) == 1
 
 
-@pytest.mark.parametrize("field,bad,error", [
-    ("source_sha", "abc", "SOURCE_SHA_INVALID"),
-    ("config_sha256", "abc", "CONFIG_SHA256_INVALID"),
-    ("corpus_sha256", "f" * 64, "CORPUS_BYTES_MISMATCH"),
-    ("run_id", 0, "RUN_ID_INVALID"),
-    ("run_attempt", False, "RUN_ATTEMPT_INVALID"),
-    ("repository", "forged/owner", "REPOSITORY_NOT_IN_FEDERATION_SCOPE"),
-])
+@pytest.mark.parametrize(
+    "field,bad,error",
+    [
+        ("source_sha", "abc", "SOURCE_SHA_INVALID"),
+        ("config_sha256", "abc", "CONFIG_SHA256_INVALID"),
+        ("corpus_sha256", "f" * 64, "CORPUS_BYTES_MISMATCH"),
+        ("run_id", 0, "RUN_ID_INVALID"),
+        ("run_attempt", False, "RUN_ATTEMPT_INVALID"),
+        ("repository", "forged/owner", "REPOSITORY_NOT_IN_FEDERATION_SCOPE"),
+    ],
+)
 def test_invalid_identity_rejected(field, bad, error):
     e = fixture()
     e[field] = bad
@@ -130,8 +149,13 @@ def test_runtime_family_without_negative_controls_remains_unknown():
     e = fixture()
     e["method_id"] = "runtime"
     e["observations"] = [
-        {"case_id": "RUNTIME_REPRODUCER", "detected": True,
-         "runtime_ms": 2.0, "fingerprints": [FINGERPRINT]}]
+        {
+            "case_id": "RUNTIME_REPRODUCER",
+            "detected": True,
+            "runtime_ms": 2.0,
+            "fingerprints": [FINGERPRINT],
+        }
+    ]
     result = evaluate(e, CORPUS, ARTIFACT)
     assert result["state"] == "INSUFFICIENT_EVIDENCE"
     assert result["confusion"] is None
@@ -139,12 +163,21 @@ def test_runtime_family_without_negative_controls_remains_unknown():
 
 def test_cli_missing_receipt_fails_closed(tmp_path):
     out = tmp_path / "result.json"
-    code = main(["--observations", str(tmp_path / "missing.json"),
-                 "--artifact", str(tmp_path / "missing-artifact.json"), "--output", str(out)])
+    code = main(
+        [
+            "--observations",
+            str(tmp_path / "missing.json"),
+            "--artifact",
+            str(tmp_path / "missing-artifact.json"),
+            "--output",
+            str(out),
+        ]
+    )
     assert code == 2
     receipt = json.loads(out.read_text(encoding="utf-8"))
     assert receipt["state"] == "INVALID"
     assert receipt["merge_authorized"] is False
+
 
 def test_missing_scanner_artifact_bytes_rejected():
     with pytest.raises(ValueError, match="ARTIFACT_BYTES_MISSING"):

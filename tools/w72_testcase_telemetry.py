@@ -4,6 +4,7 @@ Actual JUnit output is the evidence; GitHub Actions success alone does not
 establish collection size or native testcase duration. No statistical trial
 independence is asserted from a job matrix on one source revision.
 """
+
 from __future__ import annotations
 
 import argparse
@@ -60,22 +61,37 @@ def parse_junit(raw: bytes) -> dict:
         for element in suite.iter("testcase"):
             classname = element.attrib.get("classname", "")
             name = element.attrib.get("name", "")
-            if not isinstance(classname, str) or not name or len(classname) + len(name) > MAX_NAME:
+            if (
+                not isinstance(classname, str)
+                or not name
+                or len(classname) + len(name) > MAX_NAME
+            ):
                 raise ValueError("invalid testcase identity")
             case_id = classname + "::" + name
             if case_id in seen:
                 raise ValueError("duplicate testcase identity without parameterization")
             seen.add(case_id)
-            terminal = [node.tag for node in element if node.tag in ("failure", "error", "skipped")]
+            terminal = [
+                node.tag
+                for node in element
+                if node.tag in ("failure", "error", "skipped")
+            ]
             if len(terminal) > 1:
                 raise ValueError("conflicting testcase conclusions")
-            status = {"failure": "failed", "error": "error", "skipped": "skipped"}.get(
-                terminal[0], "passed") if terminal else "passed"
+            status = (
+                {"failure": "failed", "error": "error", "skipped": "skipped"}.get(
+                    terminal[0], "passed"
+                )
+                if terminal
+                else "passed"
+            )
             counts[status] += 1
             item = {"case_id": case_id, "status": status, "duration_s": _time(element)}
             if status == "skipped":
                 skip = next(c for c in element if c.tag == "skipped")
-                item["skip_reason_present"] = bool((skip.attrib.get("message") or skip.text or "").strip())
+                item["skip_reason_present"] = bool(
+                    (skip.attrib.get("message") or skip.text or "").strip()
+                )
                 # Do not copy environment/private skip text into release receipts.
                 item["skip_class"] = "UNCLASSIFIED_REQUIRES_OWNER"
             cases.append(item)
@@ -97,24 +113,36 @@ def parse_junit(raw: bytes) -> dict:
                 # pytest + unittest subTest may count subtest iterations in
                 # suite.tests without emitting a separate testcase XML node.
                 # Preserve this gap explicitly, never manufacture testcase IDs.
-                pytest_subtests = (tree.tag == "testsuites"
+                pytest_subtests = (
+                    tree.tag == "testsuites"
                     and tree.attrib.get("name") == "pytest tests"
                     and suite.attrib.get("name") == "pytest"
-                    and declared > observed and declared <= MAX_CASES)
+                    and declared > observed
+                    and declared <= MAX_CASES
+                )
                 if not pytest_subtests:
                     raise ValueError("declared suite test count mismatch")
                 reported_subtests_without_case_nodes += declared - observed
     cases.sort(key=lambda c: c["case_id"])
     durations = sorted(c["duration_s"] for c in cases if c["duration_s"] is not None)
-    p95 = durations[min(len(durations) - 1, math.ceil(0.95 * len(durations)) - 1)] if durations else None
+    p95 = (
+        durations[min(len(durations) - 1, math.ceil(0.95 * len(durations)) - 1)]
+        if durations
+        else None
+    )
     return {
         "schema": SCHEMA,
-        "counts": {"collected": len(cases), "passed": counts["passed"],
-                   "failed": counts["failed"], "errors": counts["error"],
-                   "skipped": counts["skipped"]},
+        "counts": {
+            "collected": len(cases),
+            "passed": counts["passed"],
+            "failed": counts["failed"],
+            "errors": counts["error"],
+            "skipped": counts["skipped"],
+        },
         "duration_observations": len(durations),
         "unmaterialized_pytest_unittest_subtests": reported_subtests_without_case_nodes,
-        "reported_total_test_iterations": len(cases) + reported_subtests_without_case_nodes,
+        "reported_total_test_iterations": len(cases)
+        + reported_subtests_without_case_nodes,
         "case_identity_census_complete": reported_subtests_without_case_nodes == 0,
         "duration_p50_s": statistics.median(durations) if durations else None,
         "duration_p95_s": p95,
@@ -131,25 +159,37 @@ def parse_junit(raw: bytes) -> dict:
 def compare(before: dict, after: dict) -> dict:
     if before.get("schema") != SCHEMA or after.get("schema") != SCHEMA:
         raise ValueError("unknown JUnit schema")
+
     def keyed(src):
         rows = src.get("cases")
-        if not isinstance(rows, list) or len(rows) != src.get("counts", {}).get("collected"):
+        if not isinstance(rows, list) or len(rows) != src.get("counts", {}).get(
+            "collected"
+        ):
             raise ValueError("invalid testcase denominator")
         result = {c["case_id"]: c["status"] for c in rows}
         if len(result) != len(rows) or any(v not in STATUS for v in result.values()):
             raise ValueError("duplicate/unknown test identity or status")
         return result
+
     b, a = keyed(before), keyed(after)
     common = set(a) & set(b)
-    recovered = sorted(x for x in common if b[x] in ("failed", "error") and a[x] == "passed")
-    regressed = sorted(x for x in common if b[x] == "passed" and a[x] in ("failed", "error"))
+    recovered = sorted(
+        x for x in common if b[x] in ("failed", "error") and a[x] == "passed"
+    )
+    regressed = sorted(
+        x for x in common if b[x] == "passed" and a[x] in ("failed", "error")
+    )
     missing = sorted(set(b) - set(a))
     added = sorted(set(a) - set(b))
     return {
         "schema": "abacus.w72.junit-comparison.v1",
-        "before_cases": len(b), "after_cases": len(a), "common_cases": len(common),
-        "added_cases": len(added), "missing_cases": len(missing),
-        "recovered_cases": len(recovered), "regressed_cases": len(regressed),
+        "before_cases": len(b),
+        "after_cases": len(a),
+        "common_cases": len(common),
+        "added_cases": len(added),
+        "missing_cases": len(missing),
+        "recovered_cases": len(recovered),
+        "regressed_cases": len(regressed),
         "recovered_case_ids": recovered,
         "regressed_case_ids": regressed,
         "missing_case_ids": missing,
@@ -169,8 +209,15 @@ def main():
     payload = parse_junit(o.junit.read_bytes())
     o.out.parent.mkdir(parents=True, exist_ok=True)
     o.out.write_text(json.dumps(payload, sort_keys=True, indent=2) + "\n")
-    print(json.dumps({"collected": payload["counts"]["collected"],
-                      "skipped": payload["counts"]["skipped"]}, sort_keys=True))
+    print(
+        json.dumps(
+            {
+                "collected": payload["counts"]["collected"],
+                "skipped": payload["counts"]["skipped"],
+            },
+            sort_keys=True,
+        )
+    )
 
 
 if __name__ == "__main__":

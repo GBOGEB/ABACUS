@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 """Run diagnostic PCA over W73 exact-SHA semantic-topology rows."""
+
 from __future__ import annotations
 
 import argparse
@@ -45,11 +46,14 @@ def main() -> None:
     semantic = pca_block(rows, FEATURES)
     # PCA sign is arbitrary. Orient semantic PC1 so higher penetration is positive.
     if semantic.get("status") == "MEASURED_PCA_DIAGNOSTIC":
-        pc1 = next(component for component in semantic["components"] if component["pc"] == 1)
+        pc1 = next(
+            component for component in semantic["components"] if component["pc"] == 1
+        )
         if pc1["loadings"].get("consumer_penetration_rate", 0.0) < 0:
             for component in semantic["components"]:
                 component["loadings"] = {
-                    key: round(-value, 6) for key, value in component["loadings"].items()
+                    key: round(-value, 6)
+                    for key, value in component["loadings"].items()
                 }
     receipt = {
         "schema_version": "MC2-W73-SEMANTIC-TOPOLOGY-PCA-0.1.0",

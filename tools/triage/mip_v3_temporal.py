@@ -4,6 +4,7 @@
 This parser cannot authenticate native GitHub evidence. It never dispatches,
 promotes coverage, approves, changes admission rules, or merges.
 """
+
 from __future__ import annotations
 
 import argparse
@@ -32,9 +33,7 @@ def integer(value, name, minimum=0):
 
 def quantity(value, name):
     need(
-        type(value) in (int, float)
-        and math.isfinite(value)
-        and value >= 0,
+        type(value) in (int, float) and math.isfinite(value) and value >= 0,
         name + " must be finite nonnegative",
     )
     return float(value)
@@ -96,7 +95,10 @@ def disjoint(workers):
     for worker in workers:
         need(isinstance(worker, dict), "worker object required")
         name = worker.get("owner")
-        need(isinstance(name, str) and bool(name) and name not in owners, "worker owner collision")
+        need(
+            isinstance(name, str) and bool(name) and name not in owners,
+            "worker owner collision",
+        )
         owners.add(name)
         paths = worker.get("paths")
         need(isinstance(paths, list) and bool(paths), "worker paths missing")
@@ -191,13 +193,19 @@ def comparable(a, b):
 
 
 def validate_forecast(item, by_index):
-    need(isinstance(item, dict) and item.get("schema") == FORECAST_SCHEMA, "forecast schema")
+    need(
+        isinstance(item, dict) and item.get("schema") == FORECAST_SCHEMA,
+        "forecast schema",
+    )
     issued_after = integer(item.get("issued_after"), "issued_after")
     target = integer(item.get("target_index"), "target_index")
     need(target in (issued_after + 1, issued_after + 2), "forecast outside N+2")
     need(issued_after in by_index, "forecast issuer absent")
     issued = timestamp(item.get("issued_at"))
-    need(issued >= timestamp(by_index[issued_after]["observed_at"]), "forecast predates issuer")
+    need(
+        issued >= timestamp(by_index[issued_after]["observed_at"]),
+        "forecast predates issuer",
+    )
     if target in by_index:
         need(
             issued < timestamp(by_index[target]["observed_at"]),
@@ -207,8 +215,14 @@ def validate_forecast(item, by_index):
     upper = signed_quantity(item.get("gain_upper"), "gain_upper")
     need(lower <= upper, "inverted interval")
     digest(item.get("issuer_head_sha"), SHA40)
-    need(item["issuer_head_sha"] == by_index[issued_after]["head_sha"], "issuer head drift")
-    need(isinstance(item.get("rule_id"), str) and bool(item["rule_id"]), "forecast rule missing")
+    need(
+        item["issuer_head_sha"] == by_index[issued_after]["head_sha"],
+        "issuer head drift",
+    )
+    need(
+        isinstance(item.get("rule_id"), str) and bool(item["rule_id"]),
+        "forecast rule missing",
+    )
     return item
 
 
@@ -246,9 +260,7 @@ def rollup(observations, forecasts=None):
         "nonmonotone observation times",
     )
     transitions = []
-    for a, b, av, bv in zip(
-        observations, observations[1:], checked, checked[1:]
-    ):
+    for a, b, av, bv in zip(observations, observations[1:], checked, checked[1:]):
         matched = comparable(a, b) and av["native_success"] and bv["native_success"]
         delta = bv["covered"] - av["covered"] if matched else None
         root_delta = None
@@ -273,9 +285,11 @@ def rollup(observations, forecasts=None):
                 "to_pulse": bv["pulse"],
                 "matched": matched,
                 "covered_delta": delta,
-                "gain_pp": round(100 * delta / bv["eligible"], 6)
-                if matched and bv["eligible"]
-                else None,
+                "gain_pp": (
+                    round(100 * delta / bv["eligible"], 6)
+                    if matched and bv["eligible"]
+                    else None
+                ),
                 "root_closed_net": root_delta,
                 "dispositions_delta": disposition_delta,
             }
@@ -294,9 +308,8 @@ def rollup(observations, forecasts=None):
             for x in transitions
             if row["issued_after"] < x["to_pulse"] <= row["target_index"]
         ]
-        eligible = (
-            len(steps) == row["target_index"] - row["issued_after"]
-            and all(x["covered_delta"] is not None for x in steps)
+        eligible = len(steps) == row["target_index"] - row["issued_after"] and all(
+            x["covered_delta"] is not None for x in steps
         )
         delta = sum(x["covered_delta"] for x in steps) if eligible else None
         scored.append(
@@ -305,15 +318,23 @@ def rollup(observations, forecasts=None):
                 "target_index": row["target_index"],
                 "rule_id": row["rule_id"],
                 "actual_covered_delta": delta,
-                "absolute_error": None
-                if delta is None
-                else round(abs(delta - (row["gain_lower"] + row["gain_upper"]) / 2), 6),
-                "interval_hit": None
-                if delta is None
-                else row["gain_lower"] <= delta <= row["gain_upper"],
+                "absolute_error": (
+                    None
+                    if delta is None
+                    else round(
+                        abs(delta - (row["gain_lower"] + row["gain_upper"]) / 2), 6
+                    )
+                ),
+                "interval_hit": (
+                    None
+                    if delta is None
+                    else row["gain_lower"] <= delta <= row["gain_upper"]
+                ),
             }
         )
-    regression = any(t["covered_delta"] is not None and t["covered_delta"] < 0 for t in transitions)
+    regression = any(
+        t["covered_delta"] is not None and t["covered_delta"] < 0 for t in transitions
+    )
     plateau = len(transitions) >= 3 and all(
         t["matched"]
         and t["covered_delta"] == 0
@@ -327,13 +348,19 @@ def rollup(observations, forecasts=None):
     control = (
         "ESCALATE_MERGE_WITHOUT_PROOF"
         if merged_unproved
-        else "REPAIR_COVERAGE_REGRESSION"
-        if regression
-        else "STOP_LOCAL_PLATEAU"
-        if plateau
-        else "NEED_COMPARABLE_NATIVE_EVIDENCE"
-        if not transitions or not transitions[-1]["matched"]
-        else "CONTINUE_OR_REALLOCATE"
+        else (
+            "REPAIR_COVERAGE_REGRESSION"
+            if regression
+            else (
+                "STOP_LOCAL_PLATEAU"
+                if plateau
+                else (
+                    "NEED_COMPARABLE_NATIVE_EVIDENCE"
+                    if not transitions or not transitions[-1]["matched"]
+                    else "CONTINUE_OR_REALLOCATE"
+                )
+            )
+        )
     )
     queue = [
         float(w["queue_seconds"])
