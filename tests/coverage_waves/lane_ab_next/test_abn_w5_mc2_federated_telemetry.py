@@ -285,7 +285,7 @@ def test_main_writes_receipt(tmp_path, monkeypatch, capsys):
     receipt = json.loads(out.read_text(encoding="utf-8"))
     assert receipt["rows_total"] == 11
     assert receipt["class_counts"] == {"runtime": 5, "semantic": 6}
-    assert receipt["runtime_state_counts"] == {"PASS": 5}
+    assert receipt["runtime_state_counts"] == dict(PASS=5)
     assert receipt["runtime_pca"]["status"] == "MEASURED_PCA_DIAGNOSTIC"
     # semantic has 6 rows over only 5 distinct SHAs (se-solo reuses _sha(2))
     assert receipt["semantic_pca"]["reason"] == "ONE_OBSERVATION_PER_SHA_REQUIRED"

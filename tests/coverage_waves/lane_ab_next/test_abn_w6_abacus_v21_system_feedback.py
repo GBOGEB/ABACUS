@@ -115,7 +115,7 @@ def test_generate_recommendations_full_branches(gen):
             ]
         },
     }
-    recs = gen.generate_recommendations(results, {"pass_rate": 100})
+    recs = gen.generate_recommendations(results, dict(pass_rate=100))
     titles = [r["title"] for r in recs]
     assert titles == [
         "Ready for POST-CD Phase",
@@ -129,7 +129,7 @@ def test_generate_recommendations_full_branches(gen):
 
 
 def test_generate_recommendations_minimal(gen):
-    recs = gen.generate_recommendations({}, {"pass_rate": 50})
+    recs = gen.generate_recommendations({}, dict(pass_rate=50))
     assert [r["category"] for r in recs] == ["MONITORING", "DOCUMENTATION"]
 
 
