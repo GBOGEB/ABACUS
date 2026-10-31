@@ -116,6 +116,18 @@ jobs:
             --cov-report=term \
             -n "$PYTEST_WORKERS"
 
+      - name: G family tests (handover_v2)
+        # CODE PURPLE vector G (2026-10-31): no main-branch job collected these
+        # 2 files. EXPECTED_MIN 43 = local --collect-only at f131a81a, no
+        # platform skips.
+        if: ${{ !cancelled() }}
+        shell: bash
+        run: |
+          python scripts/ci/family_collect_guard.py \
+            --family handover_v2 --expected-min 43 -- \
+            tools/handover_v2/tests/test_contract.py \
+            tools/handover_v2/tests/test_wave_telemetry.py
+
       - name: Preserve native unit and coverage evidence
         if: always()
         uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9
