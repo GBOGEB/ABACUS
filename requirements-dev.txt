@@ -19,8 +19,12 @@ pytest-json-report>=1.5
 pytest-timeout>=2.1.0
 jsonschema>=4.0.0
 CoolProp==7.2.0
-black==26.10.1
-isort==9.0.2
+# black 26 and isort 7+ need Python >= 3.10; the DMAIC V3 Enterprise CI
+# matrix still runs 3.9, so it gets the last releases that support it.
+black==25.11.0; python_version < "3.10"
+black==26.10.1; python_version >= "3.10"
+isort==6.1.0; python_version < "3.10"
+isort==9.0.2; python_version >= "3.10"
 flake8>=6.0.0
 mypy>=1.4.0
 bandit>=1.7.5
