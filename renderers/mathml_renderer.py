@@ -4,7 +4,6 @@ import json
 import xml.etree.ElementTree as ET
 from typing import Dict, Mapping, Optional
 
-
 _GREEK_SYMBOLS = {
     "alpha": "α",
     "beta": "β",
@@ -70,12 +69,16 @@ class MathMLRenderer:
         ET.SubElement(equation_row, "mo").text = ":"
         equation_row.append(self._render_node(definition["expression"]))
 
-        metadata = ET.SubElement(semantics, "annotation", {"encoding": "application/json"})
+        metadata = ET.SubElement(
+            semantics, "annotation", {"encoding": "application/json"}
+        )
         metadata.text = json.dumps(self._lineage_payload(lineage), sort_keys=True)
 
         return ET.tostring(root, encoding="unicode")
 
-    def validate_definition(self, equation_definition: Mapping[str, object]) -> Dict[str, object]:
+    def validate_definition(
+        self, equation_definition: Mapping[str, object]
+    ) -> Dict[str, object]:
         if not isinstance(equation_definition, Mapping):
             raise ValueError("equation definition must be a mapping")
 
@@ -198,7 +201,9 @@ class MathMLRenderer:
 
         raise ValueError(f"unsupported node type: {node_type}")
 
-    def _lineage_payload(self, lineage: Optional[Mapping[str, object]]) -> Dict[str, object]:
+    def _lineage_payload(
+        self, lineage: Optional[Mapping[str, object]]
+    ) -> Dict[str, object]:
         payload = {
             "wave": "W003",
             "renderer": "mathml",

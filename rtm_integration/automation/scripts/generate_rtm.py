@@ -4,12 +4,12 @@ QPLANT RTM Generation Script for GitHub Automation
 Backward compatibility wrapper for the new RTM generator package
 """
 
-import sys
-import os
 import logging
+import os
+import sys
 
 # Add the automation directory to Python path
-sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..'))
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), ".."))
 
 from rtm_generator.generator import RTMGenerator
 
@@ -28,6 +28,7 @@ def main():
     except Exception as e:
         logger.error(f"RTM generation failed: {e}")
         return False
+
 
 if __name__ == "__main__":
     success = main()

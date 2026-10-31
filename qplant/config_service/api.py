@@ -51,7 +51,12 @@ app.add_middleware(
 
 CONFIG_PATH = os.environ.get(
     "QPLANT_CONFIG_PATH",
-    str(Path(__file__).resolve().parent.parent / "handover_dashboard" / "data" / "config.yaml"),
+    str(
+        Path(__file__).resolve().parent.parent
+        / "handover_dashboard"
+        / "data"
+        / "config.yaml"
+    ),
 )
 ENV = Environment(os.environ.get("QPLANT_ENV", "dev"))
 
@@ -71,8 +76,12 @@ _start_time = time.time()
 
 # ── Request/Response Models ──────────────────────────────────────────────────
 
+
 class SetValueRequest(BaseModel):
-    path: str = Field(..., description="Dot-notation path e.g. 'compressor_specifications.hp_compressors.count'")
+    path: str = Field(
+        ...,
+        description="Dot-notation path e.g. 'compressor_specifications.hp_compressors.count'",
+    )
     value: Any = Field(..., description="New value to set")
     user: str = Field(default="api", description="User making the change")
     reason: str = Field(default="", description="Reason for change")
@@ -88,6 +97,7 @@ class ExportRequest(BaseModel):
 
 
 # ── Endpoints ────────────────────────────────────────────────────────────────
+
 
 @app.get("/")
 async def root():

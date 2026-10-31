@@ -2,6 +2,7 @@
 
 Advisory observations only: no externally authenticated proof or admission.
 """
+
 from __future__ import annotations
 
 import math
@@ -10,8 +11,17 @@ from datetime import datetime, timezone
 
 SHA = re.compile(r"[0-9a-f]{40}\Z")
 STATUS = {"queued", "in_progress", "completed"}
-TERMINAL = {"success", "failure", "cancelled", "skipped", "neutral",
-            "timed_out", "action_required", "stale", "startup_failure"}
+TERMINAL = {
+    "success",
+    "failure",
+    "cancelled",
+    "skipped",
+    "neutral",
+    "timed_out",
+    "action_required",
+    "stale",
+    "startup_failure",
+}
 
 
 def _time(value, field):
@@ -77,11 +87,17 @@ def summarize(head_sha, cutoff, jobs):
         completed_value = job.get("job_completed_at")
         if created > end:
             raise ValueError("job creation after observation cutoff")
-        row = {"run_id": run_id, "job_id": job_id, "attempt": attempt,
-               "status": status, "conclusion": conclusion,
-               "wait_seconds": None, "wait_censored_lower_bound_seconds": None,
-               "execution_seconds": None,
-               "execution_censored_lower_bound_seconds": None}
+        row = {
+            "run_id": run_id,
+            "job_id": job_id,
+            "attempt": attempt,
+            "status": status,
+            "conclusion": conclusion,
+            "wait_seconds": None,
+            "wait_censored_lower_bound_seconds": None,
+            "execution_seconds": None,
+            "execution_censored_lower_bound_seconds": None,
+        }
         if status == "queued":
             if started_value is not None or completed_value is not None:
                 raise ValueError("queued job cannot contain started/completed times")
@@ -124,18 +140,25 @@ def summarize(head_sha, cutoff, jobs):
         "runner_wait_observed_n": n,
         "runner_wait_right_censored_n": len(censored_wait),
         "runner_wait_p50_nearest_rank_seconds": (
-            observed_wait[math.ceil(n * 0.50) - 1] if n else None),
+            observed_wait[math.ceil(n * 0.50) - 1] if n else None
+        ),
         "runner_wait_p95_nearest_rank_seconds": (
-            observed_wait[math.ceil(n * 0.95) - 1] if n else None),
+            observed_wait[math.ceil(n * 0.95) - 1] if n else None
+        ),
         "runner_wait_p95_qualified": n >= 20 and not censored_wait,
         "runner_wait_censored_lower_bound_max_seconds": (
-            censored_wait[-1] if censored_wait else None),
+            censored_wait[-1] if censored_wait else None
+        ),
         "execution_completed_n": len(completed_execution),
         "execution_right_censored_n": len(censored_execution),
         "execution_p95_completed_only_seconds": (
             completed_execution[math.ceil(0.95 * len(completed_execution)) - 1]
-            if completed_execution else None),
-        "records": sorted(records, key=lambda r: (r["run_id"], r["attempt"], r["job_id"])),
+            if completed_execution
+            else None
+        ),
+        "records": sorted(
+            records, key=lambda r: (r["run_id"], r["attempt"], r["job_id"])
+        ),
         "independent_trials_assumed": False,
         "external_receipts_authenticated": False,
         "verified_root_closures": 0,

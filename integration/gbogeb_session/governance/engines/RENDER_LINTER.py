@@ -114,30 +114,35 @@ class LintResults:
 
 # ── Rule Implementations ──
 
+
 def rule_no_overflow(content: str, filepath: str, results: LintResults) -> None:
     """RULE-010: Detect potential overflow indicators in content."""
     lines = content.split("\n")
     for i, line in enumerate(lines, 1):
         # Check for extremely long lines (potential overflow)
         if len(line) > 200:
-            results.add(LintFinding(
-                rule="no_overflow",
-                severity=Severity.WARNING,
-                file=filepath,
-                line=i,
-                message=f"Line exceeds 200 characters ({len(line)} chars) — potential overflow risk.",
-                context=line[:80] + "...",
-            ))
+            results.add(
+                LintFinding(
+                    rule="no_overflow",
+                    severity=Severity.WARNING,
+                    file=filepath,
+                    line=i,
+                    message=f"Line exceeds 200 characters ({len(line)} chars) — potential overflow risk.",
+                    context=line[:80] + "...",
+                )
+            )
         # Check for CSS overflow: hidden (masking overflow)
         if re.search(r"overflow\s*:\s*hidden", line, re.IGNORECASE):
-            results.add(LintFinding(
-                rule="no_overflow",
-                severity=Severity.ERROR,
-                file=filepath,
-                line=i,
-                message="CSS 'overflow: hidden' detected — content must paginate, not truncate (RULE-011).",
-                context=line.strip(),
-            ))
+            results.add(
+                LintFinding(
+                    rule="no_overflow",
+                    severity=Severity.ERROR,
+                    file=filepath,
+                    line=i,
+                    message="CSS 'overflow: hidden' detected — content must paginate, not truncate (RULE-011).",
+                    context=line.strip(),
+                )
+            )
 
 
 def rule_no_orphan_bullets(content: str, filepath: str, results: LintResults) -> None:
@@ -154,14 +159,16 @@ def rule_no_orphan_bullets(content: str, filepath: str, results: LintResults) ->
                 count += 1
                 i += 1
             if count == 1:
-                results.add(LintFinding(
-                    rule="no_orphan_bullets",
-                    severity=Severity.WARNING,
-                    file=filepath,
-                    line=list_start + 1,
-                    message="Orphan bullet — single-item list detected (RULE-080).",
-                    context=lines[list_start].strip(),
-                ))
+                results.add(
+                    LintFinding(
+                        rule="no_orphan_bullets",
+                        severity=Severity.WARNING,
+                        file=filepath,
+                        line=list_start + 1,
+                        message="Orphan bullet — single-item list detected (RULE-080).",
+                        context=lines[list_start].strip(),
+                    )
+                )
             continue
         # Detect ordered list items
         if re.match(r"^\d+\.\s+", line):
@@ -171,19 +178,23 @@ def rule_no_orphan_bullets(content: str, filepath: str, results: LintResults) ->
                 count += 1
                 i += 1
             if count == 1:
-                results.add(LintFinding(
-                    rule="no_orphan_bullets",
-                    severity=Severity.WARNING,
-                    file=filepath,
-                    line=list_start + 1,
-                    message="Orphan numbered item — single-item ordered list detected.",
-                    context=lines[list_start].strip(),
-                ))
+                results.add(
+                    LintFinding(
+                        rule="no_orphan_bullets",
+                        severity=Severity.WARNING,
+                        file=filepath,
+                        line=list_start + 1,
+                        message="Orphan numbered item — single-item ordered list detected.",
+                        context=lines[list_start].strip(),
+                    )
+                )
             continue
         i += 1
 
 
-def rule_stable_heading_hierarchy(content: str, filepath: str, results: LintResults) -> None:
+def rule_stable_heading_hierarchy(
+    content: str, filepath: str, results: LintResults
+) -> None:
     """RULE-030: Heading levels must be strictly sequential."""
     lines = content.split("\n")
     last_level = 0
@@ -197,60 +208,72 @@ def rule_stable_heading_hierarchy(content: str, filepath: str, results: LintResu
                 h1_count += 1
             # Check for skipped levels
             if last_level > 0 and level > last_level + 1:
-                results.add(LintFinding(
-                    rule="stable_heading_hierarchy",
-                    severity=Severity.ERROR,
-                    file=filepath,
-                    line=i,
-                    message=f"Heading level skipped: H{last_level} → H{level} (RULE-030).",
-                    context=line.strip(),
-                ))
+                results.add(
+                    LintFinding(
+                        rule="stable_heading_hierarchy",
+                        severity=Severity.ERROR,
+                        file=filepath,
+                        line=i,
+                        message=f"Heading level skipped: H{last_level} → H{level} (RULE-030).",
+                        context=line.strip(),
+                    )
+                )
             last_level = level
 
     # Check for multiple H1s (only for slide-like content)
     if filepath.endswith(".md") and h1_count > 1:
-        results.add(LintFinding(
-            rule="stable_heading_hierarchy",
-            severity=Severity.INFO,
-            file=filepath,
-            line=None,
-            message=f"Multiple H1 headings detected ({h1_count}). Ensure each slide has exactly one H1 (RULE-031).",
-        ))
+        results.add(
+            LintFinding(
+                rule="stable_heading_hierarchy",
+                severity=Severity.INFO,
+                file=filepath,
+                line=None,
+                message=f"Multiple H1 headings detected ({h1_count}). Ensure each slide has exactly one H1 (RULE-031).",
+            )
+        )
 
 
-def rule_figure_reference_required(content: str, filepath: str, results: LintResults) -> None:
+def rule_figure_reference_required(
+    content: str, filepath: str, results: LintResults
+) -> None:
     """RULE-090/091: Every figure must be referenced and every reference must exist."""
     # Find figure definitions (Markdown image syntax or HTML fig tags)
     fig_defs = set(re.findall(r'fig-id[=:]\s*["\']?(\w+)', content))
-    fig_defs.update(re.findall(r'!\[([^\]]*)\]\(', content))
+    fig_defs.update(re.findall(r"!\[([^\]]*)\]\(", content))
 
     # Find figure references in text
-    fig_refs = set(re.findall(r'(?:Figure|Fig\.?)\s+(\w+)', content, re.IGNORECASE))
+    fig_refs = set(re.findall(r"(?:Figure|Fig\.?)\s+(\w+)", content, re.IGNORECASE))
 
     # Figures defined but not referenced
     for fig_id in fig_defs - fig_refs:
         if fig_id:  # skip empty alt texts
-            results.add(LintFinding(
-                rule="figure_reference_required",
-                severity=Severity.WARNING,
-                file=filepath,
-                line=None,
-                message=f"Figure '{fig_id}' is defined but not referenced in text (RULE-091).",
-            ))
+            results.add(
+                LintFinding(
+                    rule="figure_reference_required",
+                    severity=Severity.WARNING,
+                    file=filepath,
+                    line=None,
+                    message=f"Figure '{fig_id}' is defined but not referenced in text (RULE-091).",
+                )
+            )
 
     # Figures referenced but not defined
     for fig_id in fig_refs - fig_defs:
         if fig_id and not fig_id.isdigit():
-            results.add(LintFinding(
-                rule="figure_reference_required",
-                severity=Severity.ERROR,
-                file=filepath,
-                line=None,
-                message=f"Figure '{fig_id}' is referenced but not defined (RULE-091).",
-            ))
+            results.add(
+                LintFinding(
+                    rule="figure_reference_required",
+                    severity=Severity.ERROR,
+                    file=filepath,
+                    line=None,
+                    message=f"Figure '{fig_id}' is referenced but not defined (RULE-091).",
+                )
+            )
 
 
-def rule_speaker_notes_required(content: str, filepath: str, results: LintResults) -> None:
+def rule_speaker_notes_required(
+    content: str, filepath: str, results: LintResults
+) -> None:
     """RULE-100: Every slide must have speaker notes ≥50 characters."""
     # Check YAML front matter for speaker_notes
     yaml_match = re.match(r"^---\n(.*?)\n---", content, re.DOTALL)
@@ -260,32 +283,40 @@ def rule_speaker_notes_required(content: str, filepath: str, results: LintResult
             if isinstance(front_matter, dict):
                 notes = front_matter.get("speaker_notes", "")
                 if not notes or len(str(notes)) < 50:
-                    results.add(LintFinding(
-                        rule="speaker_notes_required",
-                        severity=Severity.WARNING,
-                        file=filepath,
-                        line=1,
-                        message=f"Speaker notes missing or too short ({len(str(notes or ''))} chars, minimum 50) (RULE-100).",
-                    ))
+                    results.add(
+                        LintFinding(
+                            rule="speaker_notes_required",
+                            severity=Severity.WARNING,
+                            file=filepath,
+                            line=1,
+                            message=f"Speaker notes missing or too short ({len(str(notes or ''))} chars, minimum 50) (RULE-100).",
+                        )
+                    )
                 return
         except yaml.YAMLError:
             pass
 
     # Check for speaker notes HTML comment pattern
-    notes_pattern = re.findall(r"<!--\s*speaker[_-]?notes?\s*:?\s*(.*?)-->", content, re.DOTALL | re.IGNORECASE)
+    notes_pattern = re.findall(
+        r"<!--\s*speaker[_-]?notes?\s*:?\s*(.*?)-->", content, re.DOTALL | re.IGNORECASE
+    )
     if not notes_pattern:
         # Only flag for slide-like Markdown files
         if filepath.endswith(".md") and "slide" in filepath.lower():
-            results.add(LintFinding(
-                rule="speaker_notes_required",
-                severity=Severity.WARNING,
-                file=filepath,
-                line=None,
-                message="No speaker notes detected (RULE-100).",
-            ))
+            results.add(
+                LintFinding(
+                    rule="speaker_notes_required",
+                    severity=Severity.WARNING,
+                    file=filepath,
+                    line=None,
+                    message="No speaker notes detected (RULE-100).",
+                )
+            )
 
 
-def rule_semantic_card_required(content: str, filepath: str, results: LintResults) -> None:
+def rule_semantic_card_required(
+    content: str, filepath: str, results: LintResults
+) -> None:
     """RULE-101: Every slide must include a semantic card."""
     yaml_match = re.match(r"^---\n(.*?)\n---", content, re.DOTALL)
     if yaml_match:
@@ -295,25 +326,29 @@ def rule_semantic_card_required(content: str, filepath: str, results: LintResult
                 required_fields = ["slide_id", "purpose", "audience"]
                 missing = [f for f in required_fields if f not in front_matter]
                 if missing:
-                    results.add(LintFinding(
-                        rule="semantic_card_required",
-                        severity=Severity.ERROR,
-                        file=filepath,
-                        line=1,
-                        message=f"Semantic card missing fields: {', '.join(missing)} (RULE-101).",
-                    ))
+                    results.add(
+                        LintFinding(
+                            rule="semantic_card_required",
+                            severity=Severity.ERROR,
+                            file=filepath,
+                            line=1,
+                            message=f"Semantic card missing fields: {', '.join(missing)} (RULE-101).",
+                        )
+                    )
                 return
         except yaml.YAMLError:
             pass
 
     if filepath.endswith(".md") and "slide" in filepath.lower():
-        results.add(LintFinding(
-            rule="semantic_card_required",
-            severity=Severity.ERROR,
-            file=filepath,
-            line=None,
-            message="No semantic card (YAML front matter) detected (RULE-101).",
-        ))
+        results.add(
+            LintFinding(
+                rule="semantic_card_required",
+                severity=Severity.ERROR,
+                file=filepath,
+                line=None,
+                message="No semantic card (YAML front matter) detected (RULE-101).",
+            )
+        )
 
 
 def rule_no_low_contrast(content: str, filepath: str, results: LintResults) -> None:
@@ -321,20 +356,22 @@ def rule_no_low_contrast(content: str, filepath: str, results: LintResults) -> N
     lines = content.split("\n")
     # Pattern: detect inline color + background combos that might be low contrast
     color_pattern = re.compile(
-        r'(?:color|background(?:-color)?)\s*:\s*(#[0-9a-fA-F]{3,8}|rgb\([^)]+\))',
+        r"(?:color|background(?:-color)?)\s*:\s*(#[0-9a-fA-F]{3,8}|rgb\([^)]+\))",
         re.IGNORECASE,
     )
     for i, line in enumerate(lines, 1):
         matches = color_pattern.findall(line)
         if len(matches) >= 2:
-            results.add(LintFinding(
-                rule="no_low_contrast",
-                severity=Severity.INFO,
-                file=filepath,
-                line=i,
-                message="Inline color definitions detected — run WCAG_CONTRAST_CHECKER.py for validation (RULE-060).",
-                context=line.strip()[:100],
-            ))
+            results.add(
+                LintFinding(
+                    rule="no_low_contrast",
+                    severity=Severity.INFO,
+                    file=filepath,
+                    line=i,
+                    message="Inline color definitions detected — run WCAG_CONTRAST_CHECKER.py for validation (RULE-060).",
+                    context=line.strip()[:100],
+                )
+            )
 
 
 # ── Rule Registry ──
@@ -358,13 +395,15 @@ def lint_file(filepath: str, enabled_rules: list[str] | None = None) -> LintResu
     path = Path(filepath)
 
     if not path.exists():
-        results.add(LintFinding(
-            rule="file_access",
-            severity=Severity.ERROR,
-            file=filepath,
-            line=None,
-            message=f"File not found: {filepath}",
-        ))
+        results.add(
+            LintFinding(
+                rule="file_access",
+                severity=Severity.ERROR,
+                file=filepath,
+                line=None,
+                message=f"File not found: {filepath}",
+            )
+        )
         return results
 
     if path.suffix not in LINTABLE_EXTENSIONS:
@@ -373,13 +412,15 @@ def lint_file(filepath: str, enabled_rules: list[str] | None = None) -> LintResu
     try:
         content = path.read_text(encoding="utf-8")
     except (UnicodeDecodeError, PermissionError) as e:
-        results.add(LintFinding(
-            rule="file_access",
-            severity=Severity.ERROR,
-            file=filepath,
-            line=None,
-            message=f"Cannot read file: {e}",
-        ))
+        results.add(
+            LintFinding(
+                rule="file_access",
+                severity=Severity.ERROR,
+                file=filepath,
+                line=None,
+                message=f"Cannot read file: {e}",
+            )
+        )
         return results
 
     rules_to_run = enabled_rules or list(RULES.keys())
@@ -391,27 +432,34 @@ def lint_file(filepath: str, enabled_rules: list[str] | None = None) -> LintResu
     return results
 
 
-def lint_directory(directory: str, enabled_rules: list[str] | None = None) -> LintResults:
+def lint_directory(
+    directory: str, enabled_rules: list[str] | None = None
+) -> LintResults:
     """Recursively lint all files in a directory."""
     results = LintResults()
     root = Path(directory)
 
     if not root.exists():
-        results.add(LintFinding(
-            rule="directory_access",
-            severity=Severity.ERROR,
-            file=directory,
-            line=None,
-            message=f"Directory not found: {directory}",
-        ))
+        results.add(
+            LintFinding(
+                rule="directory_access",
+                severity=Severity.ERROR,
+                file=directory,
+                line=None,
+                message=f"Directory not found: {directory}",
+            )
+        )
         return results
 
     for path in sorted(root.rglob("*")):
         if path.is_file() and path.suffix in LINTABLE_EXTENSIONS:
             # Skip build artifacts and hidden directories
             rel = str(path.relative_to(root))
-            if any(part.startswith(".") or part in ("_site", "node_modules", "vendor", "__pycache__")
-                   for part in path.parts):
+            if any(
+                part.startswith(".")
+                or part in ("_site", "node_modules", "vendor", "__pycache__")
+                for part in path.parts
+            ):
                 continue
             file_results = lint_file(str(path), enabled_rules)
             results.findings.extend(file_results.findings)
@@ -477,13 +525,15 @@ Examples:
             file_results = lint_file(str(path), enabled_rules)
             all_results.findings.extend(file_results.findings)
         else:
-            all_results.add(LintFinding(
-                rule="path_access",
-                severity=Severity.ERROR,
-                file=str(path),
-                line=None,
-                message=f"Path not found: {target}",
-            ))
+            all_results.add(
+                LintFinding(
+                    rule="path_access",
+                    severity=Severity.ERROR,
+                    file=str(path),
+                    line=None,
+                    message=f"Path not found: {target}",
+                )
+            )
 
     # Promote warnings to errors in strict mode
     if args.strict:

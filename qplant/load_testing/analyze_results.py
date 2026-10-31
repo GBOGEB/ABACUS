@@ -79,28 +79,34 @@ def grade_performance(
         ep_score = 100.0
         if baseline:
             if p95 > baseline.get("p95_ms", 999999):
-                regression = f"{name}: p95={p95}ms exceeds baseline {baseline['p95_ms']}ms"
+                regression = (
+                    f"{name}: p95={p95}ms exceeds baseline {baseline['p95_ms']}ms"
+                )
                 regressions.append(regression)
                 ep_score -= 20
             if p99 > baseline.get("p99_ms", 999999):
                 ep_score -= 10
             if error_rate > float(str(baseline.get("error_rate_pct", "1")).rstrip("%")):
-                regressions.append(f"{name}: error_rate={error_rate:.2f}% exceeds baseline")
+                regressions.append(
+                    f"{name}: error_rate={error_rate:.2f}% exceeds baseline"
+                )
                 ep_score -= 30
 
         ep_score = max(0, ep_score)
         total_score += ep_score
         count += 1
 
-        endpoint_results.append({
-            "name": name,
-            "p50_ms": p50,
-            "p95_ms": p95,
-            "p99_ms": p99,
-            "error_rate_pct": round(error_rate, 2),
-            "requests": req_count,
-            "score": ep_score,
-        })
+        endpoint_results.append(
+            {
+                "name": name,
+                "p50_ms": p50,
+                "p95_ms": p95,
+                "p99_ms": p99,
+                "error_rate_pct": round(error_rate, 2),
+                "requests": req_count,
+                "score": ep_score,
+            }
+        )
 
     avg_score = total_score / max(count, 1)
 
@@ -120,7 +126,9 @@ def grade_performance(
     if regressions:
         recommendations.append("Investigate performance regressions listed above")
     if avg_score < 85:
-        recommendations.append("Consider scaling up resources or optimizing slow endpoints")
+        recommendations.append(
+            "Consider scaling up resources or optimizing slow endpoints"
+        )
 
     return {
         "grade": grade,
@@ -166,7 +174,9 @@ def main() -> None:
     for ep in result["endpoints"]:
         status = "✅" if ep["score"] >= 80 else "⚠️" if ep["score"] >= 50 else "❌"
         print(f"  {status} {ep['name']}")
-        print(f"     p50={ep['p50_ms']}ms  p95={ep['p95_ms']}ms  err={ep['error_rate_pct']}%")
+        print(
+            f"     p50={ep['p50_ms']}ms  p95={ep['p95_ms']}ms  err={ep['error_rate_pct']}%"
+        )
 
     if result["regressions"]:
         print(f"\n⚠️  Regressions:")

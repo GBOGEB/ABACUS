@@ -2,6 +2,7 @@
 
 Synthetic test pulses are controller oracles, NOT GitHub-native evidence.
 """
+
 from __future__ import annotations
 
 import copy
@@ -20,15 +21,19 @@ HEAD = "a" * 40
 
 def pulse(n, covered, *, family="W82", eligible=215):
     return {
-        "wave": n, "run_id": 800000 + n + (1 if family == "W81" else 0),
+        "wave": n,
+        "run_id": 800000 + n + (1 if family == "W81" else 0),
         "source_sha": f"{1000+n+(1 if family == 'W81' else 0):040x}",
         "artifact_sha256": f"{90000+n+(1 if family == 'W81' else 0):064x}",
         "source_slice": f"{family}-independent-attack-{n}",
-        "covered": covered, "eligible": eligible,
+        "covered": covered,
+        "eligible": eligible,
         "cohort_id": f"{family}-stable-fixed-source-opportunities",
         "configuration_id": f"{family}-matched-branch-coverage-config",
-        "terminal": True, "native_receipts_valid": True,
-        "attempted_new_behavior": True, "failed_tests": 0,
+        "terminal": True,
+        "native_receipts_valid": True,
+        "attempted_new_behavior": True,
+        "failed_tests": 0,
     }
 
 
@@ -41,41 +46,69 @@ def specimen():
     ]
     return {
         "schema": "codepurple.elastic_wave_input.v1",
-        "repository": "GBOGEB/ABACUS", "snapshot_source_sha": HEAD,
+        "repository": "GBOGEB/ABACUS",
+        "snapshot_source_sha": HEAD,
         "families": [
-            {"id": f, "paths": [p], "eligible": e, "covered": c,
-             "target_percent": 95.0, "first_reds": [],
-             "source_sha": HEAD, "native_observed": True, "history": []}
+            {
+                "id": f,
+                "paths": [p],
+                "eligible": e,
+                "covered": c,
+                "target_percent": 95.0,
+                "first_reds": [],
+                "source_sha": HEAD,
+                "native_observed": True,
+                "history": [],
+            }
             for f, p, e, c in families
         ],
         "capacity": {
-            "queue_population_complete": True, "queue_p95_seconds": 150.0,
+            "queue_population_complete": True,
+            "queue_p95_seconds": 150.0,
             "head_stable": True,
             "queue_population_run_id": 90000,
             "queue_population_source_sha": HEAD,
-            "queue_soft_seconds": 600, "queue_hard_seconds": 900,
-            "evidence_yield": 1.0, "previous_observation_lanes": 1,
-            "maximum_observation_lanes": 8, "available_runner_slots": 8,
-            "ready_disjoint_source_leases": 4, "source_owner_slots": 2,
-            "outstanding_native_jobs": 0, "latest_terminal_run_id": 90000,
+            "queue_soft_seconds": 600,
+            "queue_hard_seconds": 900,
+            "evidence_yield": 1.0,
+            "previous_observation_lanes": 1,
+            "maximum_observation_lanes": 8,
+            "available_runner_slots": 8,
+            "ready_disjoint_source_leases": 4,
+            "source_owner_slots": 2,
+            "outstanding_native_jobs": 0,
+            "latest_terminal_run_id": 90000,
             "latest_terminal_source_sha": HEAD,
-            "last_scaled_run_id": None, "last_scaled_source_sha": None,
+            "last_scaled_run_id": None,
+            "last_scaled_source_sha": None,
         },
         "artifact_types": [
-            {"kind": name, "expected": 2, "native_verified": 2,
-             "source_sha": HEAD, "consumer_attested": None}
+            {
+                "kind": name,
+                "expected": 2,
+                "native_verified": 2,
+                "source_sha": HEAD,
+                "consumer_attested": None,
+            }
             for name in ("junit.xml", "coverage.json", "coverage.xml", "manifest.json")
         ],
-        "events": [], "seen_event_keys": [],
+        "events": [],
+        "seen_event_keys": [],
         "global_acceptance": {
-            "head_stable": None, "canonical_b0_exact_head": False,
-            "accepted_roots_remaining": None, "repositories": 3,
-            "source_attested_repositories": None, "required_artifacts": 12,
-            "valid_artifacts": None, "independent_stable_pulses": None,
+            "head_stable": None,
+            "canonical_b0_exact_head": False,
+            "accepted_roots_remaining": None,
+            "repositories": 3,
+            "source_attested_repositories": None,
+            "required_artifacts": 12,
+            "valid_artifacts": None,
+            "independent_stable_pulses": None,
             "no_special_cause_variation": False,
             "gates": {
-                "branch_protection": False, "eligible_independent_review": False,
-                "required_checks": False, "negative_red_canary": False,
+                "branch_protection": False,
+                "eligible_independent_review": False,
+                "required_checks": False,
+                "negative_red_canary": False,
                 "security": False,
             },
         },
@@ -89,14 +122,18 @@ def family(doc, family_id="W82"):
 def test_actual_four_module_source_frontier_is_arithmetic_not_main_credit():
     r = g.evaluate(specimen())
     assert {f["id"]: (f["covered"], f["eligible"]) for f in r["families"]} == {
-        "W75": (219, 221), "W64": (123, 125),
-        "W81": (154, 162), "W82": (164, 215),
+        "W75": (219, 221),
+        "W64": (123, 125),
+        "W81": (154, 162),
+        "W82": (164, 215),
     }
     assert sum(f["covered"] for f in r["families"]) == 660
     assert sum(f["eligible"] for f in r["families"]) == 723
     assert r["next_pilot"] == "W82"
     assert family_result(r, "W82")["covered_opportunities_needed_for_target"] == 41
-    assert family_result(r, "W82")["covered_percent"] == pytest.approx(76.27907, abs=1e-5)
+    assert family_result(r, "W82")["covered_percent"] == pytest.approx(
+        76.27907, abs=1e-5
+    )
     assert r["governed_merge_admission"] == "HOLD"
     assert r["formal_acceptance_claim"] is False
 
@@ -123,11 +160,18 @@ def test_incomplete_queue_downscales_to_one_read_only_and_zero_runners():
     assert r["capacity"]["proposed_native_runner_lanes"] == 0
 
 
-@pytest.mark.parametrize("q,previous,expected,mode", [
-    (905, 8, 4, "THROTTLE"), (1200, 4, 2, "THROTTLE"),
-    (800, 4, 4, "HOLD_CAPACITY"), (601, 2, 2, "HOLD_CAPACITY"),
-])
-def test_queue_pressure_decelerates_without_claiming_stability(q, previous, expected, mode):
+@pytest.mark.parametrize(
+    "q,previous,expected,mode",
+    [
+        (905, 8, 4, "THROTTLE"),
+        (1200, 4, 2, "THROTTLE"),
+        (800, 4, 4, "HOLD_CAPACITY"),
+        (601, 2, 2, "HOLD_CAPACITY"),
+    ],
+)
+def test_queue_pressure_decelerates_without_claiming_stability(
+    q, previous, expected, mode
+):
     doc = specimen()
     doc["capacity"]["queue_p95_seconds"] = q
     doc["capacity"]["previous_observation_lanes"] = previous
@@ -138,7 +182,7 @@ def test_queue_pressure_decelerates_without_claiming_stability(q, previous, expe
 
 def test_artifact_yield_less_than_one_forces_halving():
     doc = specimen()
-    doc["capacity"]["evidence_yield"] = .99
+    doc["capacity"]["evidence_yield"] = 0.99
     doc["capacity"]["previous_observation_lanes"] = 8
     r = g.evaluate(doc)
     assert r["capacity"]["state"] == "THROTTLE"
@@ -146,7 +190,11 @@ def test_artifact_yield_less_than_one_forces_halving():
 
 
 def test_missing_capacity_never_invents_runner_slots():
-    for key in ("available_runner_slots", "ready_disjoint_source_leases", "source_owner_slots"):
+    for key in (
+        "available_runner_slots",
+        "ready_disjoint_source_leases",
+        "source_owner_slots",
+    ):
         doc = specimen()
         doc["capacity"][key] = None
         assert g.evaluate(doc)["capacity"]["proposed_native_runner_lanes"] == 0
@@ -162,9 +210,13 @@ def test_three_independent_pulses_with_two_positive_deltas_double_lanes_once():
     doc = specimen()
     family(doc)["history"] = [pulse(1, 164), pulse(2, 170), pulse(3, 173)]
     doc["capacity"]["latest_terminal_run_id"] = 800003
-    doc["capacity"]["latest_terminal_source_sha"] = family(doc)["history"][-1]["source_sha"]
+    doc["capacity"]["latest_terminal_source_sha"] = family(doc)["history"][-1][
+        "source_sha"
+    ]
     doc["capacity"]["queue_population_run_id"] = 800003
-    doc["capacity"]["queue_population_source_sha"] = family(doc)["history"][-1]["source_sha"]
+    doc["capacity"]["queue_population_source_sha"] = family(doc)["history"][-1][
+        "source_sha"
+    ]
     r = g.evaluate(doc)
     assert r["capacity"]["state"] == "GEOMETRIC_SCALE"
     assert r["capacity"]["recommended_read_only_observation_lanes"] == 2
@@ -179,10 +231,16 @@ def test_geometric_ramp_is_bounded_one_two_four_eight():
         family(doc)["history"] = [pulse(1, 164), pulse(2, 170), pulse(3, 173)]
         doc["capacity"]["previous_observation_lanes"] = previous
         doc["capacity"]["latest_terminal_run_id"] = 800003
-        doc["capacity"]["latest_terminal_source_sha"] = family(doc)["history"][-1]["source_sha"]
+        doc["capacity"]["latest_terminal_source_sha"] = family(doc)["history"][-1][
+            "source_sha"
+        ]
         doc["capacity"]["queue_population_run_id"] = 800003
-        doc["capacity"]["queue_population_source_sha"] = family(doc)["history"][-1]["source_sha"]
-        observed.append(g.evaluate(doc)["capacity"]["recommended_read_only_observation_lanes"])
+        doc["capacity"]["queue_population_source_sha"] = family(doc)["history"][-1][
+            "source_sha"
+        ]
+        observed.append(
+            g.evaluate(doc)["capacity"]["recommended_read_only_observation_lanes"]
+        )
     assert observed == [2, 4, 8, 8]
 
 
@@ -190,11 +248,17 @@ def test_repeated_observation_cannot_double_capacity_again():
     doc = specimen()
     family(doc)["history"] = [pulse(1, 164), pulse(2, 170), pulse(3, 173)]
     doc["capacity"]["latest_terminal_run_id"] = 800003
-    doc["capacity"]["latest_terminal_source_sha"] = family(doc)["history"][-1]["source_sha"]
+    doc["capacity"]["latest_terminal_source_sha"] = family(doc)["history"][-1][
+        "source_sha"
+    ]
     doc["capacity"]["queue_population_run_id"] = 800003
-    doc["capacity"]["queue_population_source_sha"] = family(doc)["history"][-1]["source_sha"]
+    doc["capacity"]["queue_population_source_sha"] = family(doc)["history"][-1][
+        "source_sha"
+    ]
     doc["capacity"]["last_scaled_run_id"] = doc["capacity"]["latest_terminal_run_id"]
-    doc["capacity"]["last_scaled_source_sha"] = doc["capacity"]["latest_terminal_source_sha"]
+    doc["capacity"]["last_scaled_source_sha"] = doc["capacity"][
+        "latest_terminal_source_sha"
+    ]
     r = g.evaluate(doc)
     assert r["capacity"]["state"] == "HOLD_CAPACITY"
     assert r["capacity"]["recommended_read_only_observation_lanes"] == 1
@@ -213,7 +277,7 @@ def test_source_owner_and_runner_capacity_remain_separate():
 def test_three_zero_delta_transitions_require_four_fresh_pulses():
     doc = specimen()
     for n in (1, 2, 3):
-        family(doc)["history"] = [pulse(i, 164) for i in range(1, n+1)]
+        family(doc)["history"] = [pulse(i, 164) for i in range(1, n + 1)]
         result = g.evaluate(doc)
         assert family_result(result, "W82")["state"] != "LOCAL_PLATEAU_PIVOT"
     family(doc)["history"].append(pulse(4, 164))
@@ -225,28 +289,49 @@ def test_three_zero_delta_transitions_require_four_fresh_pulses():
 
 def test_one_real_gain_resets_plateau_streak():
     doc = specimen()
-    family(doc)["history"] = [pulse(1, 164), pulse(2, 164), pulse(3, 170), pulse(4, 170)]
+    family(doc)["history"] = [
+        pulse(1, 164),
+        pulse(2, 164),
+        pulse(3, 170),
+        pulse(4, 170),
+    ]
     r = g.evaluate(doc)
     assert family_result(r, "W82")["pulse_evidence"]["zero_gain_transitions"] == 1
     assert family_result(r, "W82")["state"] == "EXPAND_BEHAVIORAL_TESTS"
 
 
-@pytest.mark.parametrize("kind,value", [
-    ("replay_source", None), ("replay_run", None), ("replay_artifact", None),
-    ("replay_slice", None), ("gap_wave", None), ("mutated_cohort", None),
-    ("mutated_config", None), ("mutated_denominator", None),
-])
+@pytest.mark.parametrize(
+    "kind,value",
+    [
+        ("replay_source", None),
+        ("replay_run", None),
+        ("replay_artifact", None),
+        ("replay_slice", None),
+        ("gap_wave", None),
+        ("mutated_cohort", None),
+        ("mutated_config", None),
+        ("mutated_denominator", None),
+    ],
+)
 def test_forbid_false_plateau_from_replays_or_unmatched_cohorts(kind, value):
     doc = specimen()
     history = [pulse(1, 164), pulse(2, 164), pulse(3, 164), pulse(4, 164)]
-    if kind == "replay_source": history[2]["source_sha"] = history[1]["source_sha"]
-    elif kind == "replay_run": history[2]["run_id"] = history[1]["run_id"]
-    elif kind == "replay_artifact": history[2]["artifact_sha256"] = history[1]["artifact_sha256"]
-    elif kind == "replay_slice": history[2]["source_slice"] = history[1]["source_slice"]
-    elif kind == "gap_wave": history[2]["wave"] = 5
-    elif kind == "mutated_cohort": history[2]["cohort_id"] = "other"
-    elif kind == "mutated_config": history[2]["configuration_id"] = "other"
-    else: history[2]["eligible"] = 216
+    if kind == "replay_source":
+        history[2]["source_sha"] = history[1]["source_sha"]
+    elif kind == "replay_run":
+        history[2]["run_id"] = history[1]["run_id"]
+    elif kind == "replay_artifact":
+        history[2]["artifact_sha256"] = history[1]["artifact_sha256"]
+    elif kind == "replay_slice":
+        history[2]["source_slice"] = history[1]["source_slice"]
+    elif kind == "gap_wave":
+        history[2]["wave"] = 5
+    elif kind == "mutated_cohort":
+        history[2]["cohort_id"] = "other"
+    elif kind == "mutated_config":
+        history[2]["configuration_id"] = "other"
+    else:
+        history[2]["eligible"] = 216
     family(doc)["history"] = history
     if kind.startswith("mutated"):
         r = g.evaluate(doc)
@@ -256,10 +341,15 @@ def test_forbid_false_plateau_from_replays_or_unmatched_cohorts(kind, value):
             g.evaluate(doc)
 
 
-@pytest.mark.parametrize("key,value", [
-    ("terminal", False), ("native_receipts_valid", None),
-    ("attempted_new_behavior", False), ("failed_tests", 1),
-])
+@pytest.mark.parametrize(
+    "key,value",
+    [
+        ("terminal", False),
+        ("native_receipts_valid", None),
+        ("attempted_new_behavior", False),
+        ("failed_tests", 1),
+    ],
+)
 def test_nonterminal_or_failed_pulse_is_not_silent_zero_change(key, value):
     doc = specimen()
     p = pulse(1, 164)
@@ -270,9 +360,14 @@ def test_nonterminal_or_failed_pulse_is_not_silent_zero_change(key, value):
 
 
 def event(kind, *, identity=HEAD, fingerprint="root-evidence-v1", delta=None):
-    return {"kind": kind, "family": "W75", "source_sha": identity,
-            "fingerprint": fingerprint, "terminal_exact_head_evidence": True,
-            "verified_opportunity_delta": delta}
+    return {
+        "kind": kind,
+        "family": "W75",
+        "source_sha": identity,
+        "fingerprint": fingerprint,
+        "terminal_exact_head_evidence": True,
+        "verified_opportunity_delta": delta,
+    }
 
 
 def test_critical_first_red_reopens_local_control_with_small_pilot_only():
@@ -298,10 +393,14 @@ def test_replayed_trigger_key_or_duplicate_in_one_batch_never_restarts_work():
     assert family_result(r2, "W75")["state"] == "LOCAL_COVERAGE_TARGET"
 
 
-@pytest.mark.parametrize("kind,delta", [
-    ("NEW_ELIGIBLE_FRONTIER", None), ("NEW_ELIGIBLE_FRONTIER", 0),
-    ("COVERAGE_REGRESSION", 1),
-])
+@pytest.mark.parametrize(
+    "kind,delta",
+    [
+        ("NEW_ELIGIBLE_FRONTIER", None),
+        ("NEW_ELIGIBLE_FRONTIER", 0),
+        ("COVERAGE_REGRESSION", 1),
+    ],
+)
 def test_new_scope_or_regression_needs_signed_measured_delta(kind, delta):
     doc = specimen()
     doc["events"] = [event(kind, delta=delta)]
@@ -347,10 +446,17 @@ def make_global_ready(doc):
     for f in doc["families"]:
         f["covered"] = f["eligible"]
     e = doc["global_acceptance"]
-    e.update({"accepted_roots_remaining": 0, "source_attested_repositories": 3,
-              "valid_artifacts": 12, "independent_stable_pulses": 8,
-              "no_special_cause_variation": True,
-              "head_stable": True, "canonical_b0_exact_head": True})
+    e.update(
+        {
+            "accepted_roots_remaining": 0,
+            "source_attested_repositories": 3,
+            "valid_artifacts": 12,
+            "independent_stable_pulses": 8,
+            "no_special_cause_variation": True,
+            "head_stable": True,
+            "canonical_b0_exact_head": True,
+        }
+    )
     e["gates"] = dict.fromkeys(e["gates"], True)
     for row in doc["artifact_types"]:
         row["consumer_attested"] = True
@@ -367,11 +473,24 @@ def test_only_all_families_and_independent_governance_allow_global_control():
     assert r["governed_merge_admission"] == "HOLD"
 
 
-@pytest.mark.parametrize("corruption", [
-    "family", "root", "repo", "artifact", "stability", "branch_protection",
-    "eligible_independent_review", "required_checks", "negative_red_canary", "security",
-    "canonical_b0_exact_head", "head_stable", "consumer_receipt",
-])
+@pytest.mark.parametrize(
+    "corruption",
+    [
+        "family",
+        "root",
+        "repo",
+        "artifact",
+        "stability",
+        "branch_protection",
+        "eligible_independent_review",
+        "required_checks",
+        "negative_red_canary",
+        "security",
+        "canonical_b0_exact_head",
+        "head_stable",
+        "consumer_receipt",
+    ],
+)
 def test_no_global_stop_on_partial_target_or_missing_proof(corruption):
     doc = specimen()
     make_global_ready(doc)
@@ -395,11 +514,23 @@ def test_no_global_stop_on_partial_target_or_missing_proof(corruption):
     assert g.evaluate(doc)["programme"]["stop_entire_program"] is False
 
 
-@pytest.mark.parametrize("defect", [
-    "overlapping_paths", "duplicate_families", "mixed_sha", "negative_covered",
-    "covered_above_eligible", "zero_eligible", "target_zero", "target_above_100",
-    "bad_queue_p95", "bad_evidence_yield", "head_short", "bad_capacity",
-])
+@pytest.mark.parametrize(
+    "defect",
+    [
+        "overlapping_paths",
+        "duplicate_families",
+        "mixed_sha",
+        "negative_covered",
+        "covered_above_eligible",
+        "zero_eligible",
+        "target_zero",
+        "target_above_100",
+        "bad_queue_p95",
+        "bad_evidence_yield",
+        "head_short",
+        "bad_capacity",
+    ],
+)
 def test_invalid_input_rejects_instead_of_silently_scaling(defect):
     doc = specimen()
     if defect == "overlapping_paths":
@@ -443,7 +574,9 @@ def test_stale_queue_run_identity_blocks_scaling_even_with_green_history():
     doc = specimen()
     family(doc)["history"] = [pulse(1, 164), pulse(2, 168), pulse(3, 172)]
     doc["capacity"]["latest_terminal_run_id"] = 800003
-    doc["capacity"]["latest_terminal_source_sha"] = family(doc)["history"][-1]["source_sha"]
+    doc["capacity"]["latest_terminal_source_sha"] = family(doc)["history"][-1][
+        "source_sha"
+    ]
     # The queue sample remains for a different run/SHA: no scaling credit.
     result = g.evaluate(doc)
     assert result["capacity"]["state"] == "OBSERVE_ONLY"
@@ -471,6 +604,7 @@ def test_unrelated_terminal_run_does_not_double_source_specific_wave_budget():
 
 def test_existing_observatory_consumer_exposes_pinned_policy_without_main_credit():
     import wave_metrics
+
     here = Path(__file__).resolve().parent
     snapshot = json.loads((here / "evidence.json").read_text(encoding="utf-8"))
     history = json.loads((here / "wave_history.json").read_text(encoding="utf-8"))
@@ -510,12 +644,21 @@ def test_single_lost_manifest_file_changes_artifact_type_yield_not_root_disposit
     assert types["status"] == "NATIVE_INCOMPLETE"
     assert types["native_verified"] == 7
     assert types["native_expected"] == 8
-    assert types["native_yield"] == .875
+    assert types["native_yield"] == 0.875
     assert r["programme"]["stop_entire_program"] is False
 
 
-@pytest.mark.parametrize("defect", ["duplicate_type", "foreign_sha", "negative",
-                                    "overclaim", "invalid_consumer", "no_types"])
+@pytest.mark.parametrize(
+    "defect",
+    [
+        "duplicate_type",
+        "foreign_sha",
+        "negative",
+        "overclaim",
+        "invalid_consumer",
+        "no_types",
+    ],
+)
 def test_artifact_type_census_fails_closed_on_invalid_or_missing_scope(defect):
     doc = specimen()
     if defect == "duplicate_type":
@@ -534,13 +677,26 @@ def test_artifact_type_census_fails_closed_on_invalid_or_missing_scope(defect):
         g.evaluate(doc)
 
 
-@pytest.mark.parametrize("attack", [
-    "/repo/absolute.py", "C:/repo/file.py", r"src\renamed.py",
-    "src//module.py", "src/./module.py", "src/../module.py",
-    "src/module.", "src/module ",
-    "src/", "src/\x00secret.py", "src/\x7fsecret.py",
-    "src:alternate.py", "", None, True,
-])
+@pytest.mark.parametrize(
+    "attack",
+    [
+        "/repo/absolute.py",
+        "C:/repo/file.py",
+        r"src\renamed.py",
+        "src//module.py",
+        "src/./module.py",
+        "src/../module.py",
+        "src/module.",
+        "src/module ",
+        "src/",
+        "src/\x00secret.py",
+        "src/\x7fsecret.py",
+        "src:alternate.py",
+        "",
+        None,
+        True,
+    ],
+)
 def test_w78_unsafe_lease_path_fails_closed(attack):
     doc = specimen()
     family(doc, "W81")["paths"] = [attack]
@@ -548,13 +704,16 @@ def test_w78_unsafe_lease_path_fails_closed(attack):
         g.evaluate(doc)
 
 
-@pytest.mark.parametrize("attack", [
-    "tools",
-    "TOOLS",
-    "tools/w82_semantic_diversity_diagnostic.py/child",
-    "TOOLS/W82_SEMANTIC_DIVERSITY_DIAGNOSTIC.PY",
-    "tools/w82_semantic_diversity_diagnostic.py",
-])
+@pytest.mark.parametrize(
+    "attack",
+    [
+        "tools",
+        "TOOLS",
+        "tools/w82_semantic_diversity_diagnostic.py/child",
+        "TOOLS/W82_SEMANTIC_DIVERSITY_DIAGNOSTIC.PY",
+        "tools/w82_semantic_diversity_diagnostic.py",
+    ],
+)
 def test_w78_nested_or_casefolded_cross_family_overlap_is_not_disjoint(attack):
     doc = specimen()
     family(doc, "W81")["paths"] = [attack]
@@ -562,11 +721,14 @@ def test_w78_nested_or_casefolded_cross_family_overlap_is_not_disjoint(attack):
         g.evaluate(doc)
 
 
-@pytest.mark.parametrize("paths", [
-    ["safe", "safe/module.py"],
-    ["safe/Module.py", "SAFE/module.py"],
-    ["safe", "SAFE"],
-])
+@pytest.mark.parametrize(
+    "paths",
+    [
+        ["safe", "safe/module.py"],
+        ["safe/Module.py", "SAFE/module.py"],
+        ["safe", "SAFE"],
+    ],
+)
 def test_w78_overlap_within_one_family_fails_closed(paths):
     doc = specimen()
     family(doc, "W81")["paths"] = paths
@@ -574,11 +736,14 @@ def test_w78_overlap_within_one_family_fails_closed(paths):
         g.evaluate(doc)
 
 
-@pytest.mark.parametrize("neighbor", [
-    "tools/w82_semantic_diversity_diagnostic.py-old",
-    "tools/w82_semantic_diversity_diagnostic2.py",
-    "src/sibling.py",
-])
+@pytest.mark.parametrize(
+    "neighbor",
+    [
+        "tools/w82_semantic_diversity_diagnostic.py-old",
+        "tools/w82_semantic_diversity_diagnostic2.py",
+        "src/sibling.py",
+    ],
+)
 def test_w78_segment_distinct_siblings_are_not_false_conflicts(neighbor):
     doc = specimen()
     family(doc, "W81")["paths"] = [neighbor]

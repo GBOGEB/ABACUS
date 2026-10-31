@@ -15,7 +15,7 @@ import subprocess
 import sys
 from datetime import datetime
 from pathlib import Path
-from typing import Dict, Any
+from typing import Any, Dict
 
 SCENARIOS: Dict[str, Dict[str, Any]] = {
     "smoke_test": {
@@ -76,14 +76,21 @@ def run_scenario(
 
     cmd = [
         "locust",
-        "-f", "locustfile.py",
-        "--host", host,
+        "-f",
+        "locustfile.py",
+        "--host",
+        host,
         "--headless",
-        "--users", str(scenario["users"]),
-        "--spawn-rate", str(scenario["spawn_rate"]),
-        "--run-time", scenario["run_time"],
-        "--html", report_file,
-        "--csv", csv_prefix,
+        "--users",
+        str(scenario["users"]),
+        "--spawn-rate",
+        str(scenario["spawn_rate"]),
+        "--run-time",
+        scenario["run_time"],
+        "--html",
+        report_file,
+        "--csv",
+        csv_prefix,
     ]
 
     if scenario.get("tags"):
@@ -92,7 +99,9 @@ def run_scenario(
 
     print(f"🔥 Running scenario: {name}")
     print(f"   {scenario['description']}")
-    print(f"   Users: {scenario['users']}, Spawn: {scenario['spawn_rate']}/s, Duration: {scenario['run_time']}")
+    print(
+        f"   Users: {scenario['users']}, Spawn: {scenario['spawn_rate']}/s, Duration: {scenario['run_time']}"
+    )
     print(f"   Report: {report_file}")
     print()
 

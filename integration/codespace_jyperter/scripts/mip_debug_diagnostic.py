@@ -43,7 +43,9 @@ def file_digest(path: Path) -> str:
 def build_receipt() -> dict[str, Any]:
     parent_sha = git("rev-parse", "HEAD")
     integration_manifest = SURFACE_ROOT / "federation" / "manifest.yaml"
-    federation_spec = REPO_ROOT / "runtime" / "federation" / "codex-abacus-federation.yaml"
+    federation_spec = (
+        REPO_ROOT / "runtime" / "federation" / "codex-abacus-federation.yaml"
+    )
     global_manifest = REPO_ROOT / "federation" / "manifest.yaml"
     smoke_contract = SURFACE_ROOT / "tests" / "test_smoke_federation.py"
 
@@ -64,7 +66,9 @@ def build_receipt() -> dict[str, Any]:
 
     if str(REPO_ROOT) not in sys.path:
         sys.path.insert(0, str(REPO_ROOT))
-    federation = importlib.import_module("integration.codespace_jyperter.src.federation")
+    federation = importlib.import_module(
+        "integration.codespace_jyperter.src.federation"
+    )
     assimilated = federation.assimilate(
         context={"session": "mip-debug-diagnostic", "parent_sha": parent_sha}
     )
@@ -76,7 +80,8 @@ def build_receipt() -> dict[str, Any]:
         "smoke_contract_exists": smoke_contract.is_file(),
         "integration_manifest_has_federation": "federation" in integration_text,
         "integration_manifest_lists_self": INTEGRATION_MEMBER in integration_text,
-        "global_manifest_registers_notebook_surface": detected_global_member is not None,
+        "global_manifest_registers_notebook_surface": detected_global_member
+        is not None,
         "assimilate_returns_mapping": isinstance(assimilated, dict),
         "assimilate_repo": assimilated.get("repo") == INTEGRATION_MEMBER,
         "assimilate_plane": assimilated.get("plane") == "auxiliary",
@@ -95,7 +100,9 @@ def build_receipt() -> dict[str, Any]:
         "surface": SURFACE_PATH,
         "parent_sha": parent_sha,
         "source_contract": SOURCE_CONTRACT,
-        "source_contract_sha256": file_digest(smoke_contract) if smoke_contract.is_file() else None,
+        "source_contract_sha256": (
+            file_digest(smoke_contract) if smoke_contract.is_file() else None
+        ),
         "checks": checks,
         "failed_checks": failed,
         "observations": {

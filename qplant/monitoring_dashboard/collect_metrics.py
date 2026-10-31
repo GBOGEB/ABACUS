@@ -36,6 +36,7 @@ def collect_version_info() -> Dict[str, Any]:
     # config.yaml
     try:
         import yaml
+
         config_path = PROJECT_ROOT / "data" / "config.yaml"
         with open(config_path) as f:
             config = yaml.safe_load(f)
@@ -54,9 +55,13 @@ def collect_version_info() -> Dict[str, Any]:
     try:
         result = subprocess.run(
             ["git", "rev-parse", "--short", "HEAD"],
-            capture_output=True, text=True, cwd=str(PROJECT_ROOT)
+            capture_output=True,
+            text=True,
+            cwd=str(PROJECT_ROOT),
         )
-        versions["git_commit"] = result.stdout.strip() if result.returncode == 0 else "unknown"
+        versions["git_commit"] = (
+            result.stdout.strip() if result.returncode == 0 else "unknown"
+        )
     except Exception:
         versions["git_commit"] = "unknown"
 
@@ -69,7 +74,10 @@ def collect_test_results() -> Dict[str, Any]:
     try:
         result = subprocess.run(
             [sys.executable, "-m", "pytest", "tests/", "-v", "--tb=short", "-q"],
-            capture_output=True, text=True, cwd=str(PROJECT_ROOT), timeout=60
+            capture_output=True,
+            text=True,
+            cwd=str(PROJECT_ROOT),
+            timeout=60,
         )
         output = result.stdout
         # Parse test counts
@@ -80,6 +88,7 @@ def collect_test_results() -> Dict[str, Any]:
         failed = 0
         if "passed" in last_line:
             import re
+
             m = re.search(r"(\d+) passed", last_line)
             if m:
                 passed = int(m.group(1))
@@ -96,7 +105,13 @@ def collect_test_results() -> Dict[str, Any]:
             "status": "pass" if failed == 0 else "fail",
         }
     except Exception as e:
-        return {"passed": 0, "failed": 0, "total": 0, "pass_rate": 0, "status": f"error: {e}"}
+        return {
+            "passed": 0,
+            "failed": 0,
+            "total": 0,
+            "pass_rate": 0,
+            "status": f"error: {e}",
+        }
 
 
 def collect_compliance() -> Dict[str, Any]:
@@ -114,6 +129,7 @@ def collect_config_drift() -> List[Dict[str, Any]]:
     """Check for configuration drift between SSoT and expectations."""
     try:
         from src.config_loader import ConfigLoader
+
         cfg = ConfigLoader()
 
         checks = [
@@ -128,12 +144,14 @@ def collect_config_drift() -> List[Dict[str, Any]]:
         results = []
         for path, expected in checks:
             actual = cfg.get(path)
-            results.append({
-                "parameter": path,
-                "expected": expected,
-                "actual": actual,
-                "aligned": actual == expected,
-            })
+            results.append(
+                {
+                    "parameter": path,
+                    "expected": expected,
+                    "actual": actual,
+                    "aligned": actual == expected,
+                }
+            )
 
         return results
     except Exception as e:
@@ -168,6 +186,7 @@ def collect_todo_status() -> Dict[str, Any]:
     done_count = content.count("✅ DONE")
     # Count total items (lines with | C- or | H- or | M- or | L-)
     import re
+
     items = re.findall(r"\| [CHML]-\d+", content)
     total = len(items)
 
@@ -197,6 +216,7 @@ def collect_all_metrics() -> Dict[str, Any]:
 def main():
     """CLI entry point."""
     import argparse
+
     parser = argparse.ArgumentParser(description="QPLANT Metrics Collector")
     parser.add_argument("--output", choices=["json", "report"], default="json")
     parser.add_argument("--check", action="store_true", help="Run health checks only")
@@ -210,7 +230,11 @@ def main():
         issues.append("Version mismatch")
     if metrics["tests"].get("failed", 0) > 0:
         issues.append(f"{metrics['tests']['failed']} tests failing")
-    drift_issues = [d for d in metrics["config_drift"] if isinstance(d, dict) and not d.get("aligned", True)]
+    drift_issues = [
+        d
+        for d in metrics["config_drift"]
+        if isinstance(d, dict) and not d.get("aligned", True)
+    ]
     if drift_issues:
         issues.append(f"{len(drift_issues)} config drift(s)")
 

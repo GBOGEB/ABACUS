@@ -23,24 +23,26 @@ _REPO_ROOT = Path(__file__).resolve().parent.parent.parent.parent
 _INTEGRATION_MANIFEST = (
     _REPO_ROOT / "integration" / "codespace_jyperter" / "federation" / "manifest.yaml"
 )
-_FEDERATION_SPEC = _REPO_ROOT / "runtime" / "federation" / "codex-abacus-federation.yaml"
+_FEDERATION_SPEC = (
+    _REPO_ROOT / "runtime" / "federation" / "codex-abacus-federation.yaml"
+)
 _GLOBAL_MANIFEST = _REPO_ROOT / "federation" / "manifest.yaml"
 
 
 @pytest.mark.smoke
 def test_integration_manifest_exists():
     """integration/codespace_jyperter/federation/manifest.yaml must be present."""
-    assert _INTEGRATION_MANIFEST.is_file(), (
-        f"Missing codespace_jyperter integration manifest: {_INTEGRATION_MANIFEST}"
-    )
+    assert (
+        _INTEGRATION_MANIFEST.is_file()
+    ), f"Missing codespace_jyperter integration manifest: {_INTEGRATION_MANIFEST}"
 
 
 @pytest.mark.smoke
 def test_federation_spec_exists():
     """runtime/federation/codex-abacus-federation.yaml must be present."""
-    assert _FEDERATION_SPEC.is_file(), (
-        f"Missing DELTA_1 federation spec: {_FEDERATION_SPEC}"
-    )
+    assert (
+        _FEDERATION_SPEC.is_file()
+    ), f"Missing DELTA_1 federation spec: {_FEDERATION_SPEC}"
 
 
 @pytest.mark.smoke
@@ -67,9 +69,9 @@ def test_integration_manifest_lists_self():
 
     data = yaml.safe_load(_INTEGRATION_MANIFEST.read_text(encoding="utf-8"))
     member_self = data["federation"].get("member_self", {})
-    assert member_self.get("name") == "GBOGEB/codespace_jyperter", (
-        "member_self.name must be 'GBOGEB/codespace_jyperter'"
-    )
+    assert (
+        member_self.get("name") == "GBOGEB/codespace_jyperter"
+    ), "member_self.name must be 'GBOGEB/codespace_jyperter'"
     assert member_self.get("plane") == "auxiliary"
 
 
@@ -130,9 +132,9 @@ def test_notebook_identity_rejects_case_variants_and_duplicate_aliases():
     names = [m["name"] for m in global_data["federation"]["member_repos"]]
     canonical = "GBOGEB/CODESPACES_jyperter"
     aliases = [name for name in names if name.casefold() == canonical.casefold()]
-    assert aliases == [canonical], (
-        "notebook identity collision or noncanonical case: " + repr(aliases)
-    )
-    assert len(names) == len(set(name.casefold() for name in names)), (
-        "federation members contain case-insensitive duplicate identities"
-    )
+    assert aliases == [
+        canonical
+    ], "notebook identity collision or noncanonical case: " + repr(aliases)
+    assert len(names) == len(
+        set(name.casefold() for name in names)
+    ), "federation members contain case-insensitive duplicate identities"

@@ -54,23 +54,28 @@ Version: 033
 Date: 2025-11-17
 """
 
-import os
-import sys
 import io
 import json
-import yaml
-import time
+import os
 import subprocess
-from pathlib import Path
+import sys
+import time
+from dataclasses import asdict, dataclass
 from datetime import datetime
-from typing import Dict, List, Any, Optional
-from dataclasses import dataclass, asdict
+from pathlib import Path
+from typing import Any, Dict, List, Optional
+
+import yaml
 
 try:
     if hasattr(sys.stdout, "buffer"):
-        sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding='utf-8', errors='replace')
+        sys.stdout = io.TextIOWrapper(
+            sys.stdout.buffer, encoding="utf-8", errors="replace"
+        )
     else:
-        sys.stdout = io.TextIOWrapper(sys.__stdout__.buffer, encoding='utf-8', errors='replace')
+        sys.stdout = io.TextIOWrapper(
+            sys.__stdout__.buffer, encoding="utf-8", errors="replace"
+        )
 except Exception:
     os.environ.setdefault("PYTHONIOENCODING", "utf-8")
 
@@ -138,7 +143,7 @@ class FullDMAICOrchestrator:
             phase_number=0,
             phase_name="Initialization",
             status="running",
-            start_time=start_time.isoformat()
+            start_time=start_time.isoformat(),
         )
 
         try:
@@ -149,11 +154,13 @@ class FullDMAICOrchestrator:
 
             print("[Step 2/5] Initializing temporal metadata engine...")
             temporal_initialized = self._initialize_temporal_engine()
-            print(f"   [OK] Temporal engine: {'Active' if temporal_initialized else 'Inactive'}")
+            print(
+                f"   [OK] Temporal engine: {'Active' if temporal_initialized else 'Inactive'}"
+            )
 
             print("[Step 3/5] Loading configuration...")
             config = self._load_configuration()
-            phase.metrics['config_loaded'] = len(config)
+            phase.metrics["config_loaded"] = len(config)
             print(f"   [OK] Loaded {len(config)} configuration items")
 
             print("[Step 4/5] Setting up output directories...")
@@ -162,7 +169,7 @@ class FullDMAICOrchestrator:
 
             print("[Step 5/5] Initializing orchestrators...")
             orchestrators = self._initialize_orchestrators()
-            phase.metrics['orchestrators'] = len(orchestrators)
+            phase.metrics["orchestrators"] = len(orchestrators)
             print(f"   [OK] Initialized {len(orchestrators)} orchestrators")
 
             phase.status = "completed"
@@ -173,7 +180,7 @@ class FullDMAICOrchestrator:
 
         except Exception as e:
             phase.status = "failed"
-            phase.metrics['error'] = str(e)
+            phase.metrics["error"] = str(e)
             print(f"\n[ERROR] Phase 0 failed: {e}")
 
         self.phase_executions.append(phase)
@@ -189,7 +196,7 @@ class FullDMAICOrchestrator:
             phase_number=1,
             phase_name="Define",
             status="running",
-            start_time=start_time.isoformat()
+            start_time=start_time.isoformat(),
         )
 
         try:
@@ -215,7 +222,7 @@ class FullDMAICOrchestrator:
 
         except Exception as e:
             phase.status = "failed"
-            phase.metrics['error'] = str(e)
+            phase.metrics["error"] = str(e)
             print(f"\n[ERROR] Phase 1 failed: {e}")
 
         self.phase_executions.append(phase)
@@ -231,23 +238,25 @@ class FullDMAICOrchestrator:
             phase_number=2,
             phase_name="Measure",
             status="running",
-            start_time=start_time.isoformat()
+            start_time=start_time.isoformat(),
         )
 
         try:
             print("[Step 1/4] Analyzing artifact complexity...")
             complexity_metrics = self._analyze_artifact_complexity()
-            phase.metrics['complexity_score'] = complexity_metrics['avg_complexity']
-            print(f"   [OK] Average complexity: {complexity_metrics['avg_complexity']:.2f}")
+            phase.metrics["complexity_score"] = complexity_metrics["avg_complexity"]
+            print(
+                f"   [OK] Average complexity: {complexity_metrics['avg_complexity']:.2f}"
+            )
 
             print("[Step 2/4] Measuring code quality...")
             quality_metrics = self._measure_code_quality()
-            phase.metrics['quality_score'] = quality_metrics['avg_quality']
+            phase.metrics["quality_score"] = quality_metrics["avg_quality"]
             print(f"   [OK] Quality score: {quality_metrics['avg_quality']:.1f}%")
 
             print("[Step 3/4] Establishing baselines...")
             baselines = self._establish_baselines()
-            phase.metrics['baselines'] = len(baselines)
+            phase.metrics["baselines"] = len(baselines)
             print(f"   [OK] Established {len(baselines)} baselines")
 
             print("[Step 4/4] Generating metrics report...")
@@ -263,7 +272,7 @@ class FullDMAICOrchestrator:
 
         except Exception as e:
             phase.status = "failed"
-            phase.metrics['error'] = str(e)
+            phase.metrics["error"] = str(e)
             print(f"\n[ERROR] Phase 2 failed: {e}")
 
         self.phase_executions.append(phase)
@@ -279,28 +288,28 @@ class FullDMAICOrchestrator:
             phase_number=3,
             phase_name="Analyze",
             status="running",
-            start_time=start_time.isoformat()
+            start_time=start_time.isoformat(),
         )
 
         try:
             print("[Step 1/5] Detecting patterns...")
             patterns = self._detect_patterns()
-            phase.metrics['patterns_found'] = len(patterns)
+            phase.metrics["patterns_found"] = len(patterns)
             print(f"   [OK] Found {len(patterns)} patterns")
 
             print("[Step 2/5] Analyzing dependencies...")
             dependencies = self._analyze_dependencies()
-            phase.metrics['dependencies'] = len(dependencies)
+            phase.metrics["dependencies"] = len(dependencies)
             print(f"   [OK] Analyzed {len(dependencies)} dependencies")
 
             print("[Step 3/5] Identifying bottlenecks...")
             bottlenecks = self._identify_bottlenecks()
-            phase.metrics['bottlenecks'] = len(bottlenecks)
+            phase.metrics["bottlenecks"] = len(bottlenecks)
             print(f"   [OK] Identified {len(bottlenecks)} bottlenecks")
 
             print("[Step 4/5] Root cause analysis...")
             root_causes = self._perform_root_cause_analysis()
-            phase.metrics['root_causes'] = len(root_causes)
+            phase.metrics["root_causes"] = len(root_causes)
             print(f"   [OK] Found {len(root_causes)} root causes")
 
             print("[Step 5/5] Generating analysis report...")
@@ -316,7 +325,7 @@ class FullDMAICOrchestrator:
 
         except Exception as e:
             phase.status = "failed"
-            phase.metrics['error'] = str(e)
+            phase.metrics["error"] = str(e)
             print(f"\n[ERROR] Phase 3 failed: {e}")
 
         self.phase_executions.append(phase)
@@ -332,29 +341,37 @@ class FullDMAICOrchestrator:
             phase_number=4,
             phase_name="Improve",
             status="running",
-            start_time=start_time.isoformat()
+            start_time=start_time.isoformat(),
         )
 
         try:
             print("[Step 1/5] Generating improvement proposals...")
             proposals = self._generate_improvement_proposals()
-            phase.metrics['proposals'] = len(proposals)
+            phase.metrics["proposals"] = len(proposals)
             print(f"   [OK] Generated {len(proposals)} proposals")
 
             print("[Step 2/5] Prioritizing improvements...")
             prioritized = self._prioritize_improvements(proposals)
-            phase.metrics['high_priority'] = len([p for p in prioritized if p['priority'] == 'high'])
-            print(f"   [OK] {phase.metrics['high_priority']} high-priority improvements")
+            phase.metrics["high_priority"] = len(
+                [p for p in prioritized if p["priority"] == "high"]
+            )
+            print(
+                f"   [OK] {phase.metrics['high_priority']} high-priority improvements"
+            )
 
             print("[Step 3/5] Creating implementation plans...")
             plans = self._create_implementation_plans(prioritized)
-            phase.metrics['plans'] = len(plans)
+            phase.metrics["plans"] = len(plans)
             print(f"   [OK] Created {len(plans)} implementation plans")
 
             print("[Step 4/5] Simulating improvements...")
             simulation_results = self._simulate_improvements(plans)
-            phase.metrics['expected_improvement'] = simulation_results['avg_improvement']
-            print(f"   [OK] Expected improvement: {simulation_results['avg_improvement']:.1f}%")
+            phase.metrics["expected_improvement"] = simulation_results[
+                "avg_improvement"
+            ]
+            print(
+                f"   [OK] Expected improvement: {simulation_results['avg_improvement']:.1f}%"
+            )
 
             print("[Step 5/5] Generating improvement report...")
             improvement_report = self._generate_improvement_report(phase)
@@ -369,7 +386,7 @@ class FullDMAICOrchestrator:
 
         except Exception as e:
             phase.status = "failed"
-            phase.metrics['error'] = str(e)
+            phase.metrics["error"] = str(e)
             print(f"\n[ERROR] Phase 4 failed: {e}")
 
         self.phase_executions.append(phase)
@@ -385,28 +402,28 @@ class FullDMAICOrchestrator:
             phase_number=5,
             phase_name="Control",
             status="running",
-            start_time=start_time.isoformat()
+            start_time=start_time.isoformat(),
         )
 
         try:
             print("[Step 1/5] Establishing control mechanisms...")
             controls = self._establish_control_mechanisms()
-            phase.metrics['controls'] = len(controls)
+            phase.metrics["controls"] = len(controls)
             print(f"   [OK] Established {len(controls)} control mechanisms")
 
             print("[Step 2/5] Setting up monitoring...")
             monitors = self._setup_monitoring()
-            phase.metrics['monitors'] = len(monitors)
+            phase.metrics["monitors"] = len(monitors)
             print(f"   [OK] Set up {len(monitors)} monitors")
 
             print("[Step 3/5] Creating validation rules...")
             validation_rules = self._create_validation_rules()
-            phase.metrics['validation_rules'] = len(validation_rules)
+            phase.metrics["validation_rules"] = len(validation_rules)
             print(f"   [OK] Created {len(validation_rules)} validation rules")
 
             print("[Step 4/5] Implementing feedback loops...")
             feedback_loops = self._implement_feedback_loops()
-            phase.metrics['feedback_loops'] = len(feedback_loops)
+            phase.metrics["feedback_loops"] = len(feedback_loops)
             print(f"   [OK] Implemented {len(feedback_loops)} feedback loops")
 
             print("[Step 5/5] Generating control report...")
@@ -422,7 +439,7 @@ class FullDMAICOrchestrator:
 
         except Exception as e:
             phase.status = "failed"
-            phase.metrics['error'] = str(e)
+            phase.metrics["error"] = str(e)
             print(f"\n[ERROR] Phase 5 failed: {e}")
 
         self.phase_executions.append(phase)
@@ -430,7 +447,9 @@ class FullDMAICOrchestrator:
 
     def execute_phase_6_knowledge_devour(self) -> PhaseExecution:
         print("\n" + "=" * 80)
-        print("PHASE 6: KNOWLEDGE DEVOUR - DOW (Devourer of Worlds) - MasterAI Integration")
+        print(
+            "PHASE 6: KNOWLEDGE DEVOUR - DOW (Devourer of Worlds) - MasterAI Integration"
+        )
         print("Principle: KNOWLEDGE MUST GROW, NEVER DILUTE")
         print("=" * 80)
 
@@ -439,18 +458,18 @@ class FullDMAICOrchestrator:
             phase_number=6,
             phase_name="Knowledge Devour",
             status="running",
-            start_time=start_time.isoformat()
+            start_time=start_time.isoformat(),
         )
 
         try:
             print("[Step 1/7] Extracting learning from previous phases...")
             learning = self._extract_learning()
-            phase.metrics['knowledge_items'] = len(learning)
+            phase.metrics["knowledge_items"] = len(learning)
             print(f"   [OK] Extracted {len(learning)} knowledge items")
 
             print("[Step 2/7] Creating knowledge packs...")
             knowledge_packs = self._create_knowledge_packs(learning)
-            phase.metrics['knowledge_packs'] = len(knowledge_packs)
+            phase.metrics["knowledge_packs"] = len(knowledge_packs)
             print(f"   [OK] Created {len(knowledge_packs)} knowledge packs")
 
             print("[Step 3/7] Building knowledge index...")
@@ -459,16 +478,18 @@ class FullDMAICOrchestrator:
 
             print("[Step 4/7] Establishing recall mechanisms...")
             recall_keys = self._establish_recall_mechanisms(knowledge_packs)
-            phase.metrics['recall_keys'] = len(recall_keys)
+            phase.metrics["recall_keys"] = len(recall_keys)
             print(f"   [OK] Established {len(recall_keys)} recall keys")
 
             print("[Step 5/7] Testing recall system...")
             recall_accuracy = self._test_recall_system(recall_keys)
-            phase.metrics['recall_accuracy'] = recall_accuracy
+            phase.metrics["recall_accuracy"] = recall_accuracy
             print(f"   [OK] Recall accuracy: {recall_accuracy:.1f}%")
 
             print("[Step 6/7] Preserving knowledge for next iteration...")
-            preservation_dir = self._preserve_knowledge(knowledge_packs, knowledge_index)
+            preservation_dir = self._preserve_knowledge(
+                knowledge_packs, knowledge_index
+            )
             phase.output_files.append(str(preservation_dir))
             print(f"   [OK] Preserved to: {preservation_dir}")
 
@@ -487,7 +508,7 @@ class FullDMAICOrchestrator:
 
         except Exception as e:
             phase.status = "failed"
-            phase.metrics['error'] = str(e)
+            phase.metrics["error"] = str(e)
             print(f"\n[ERROR] Phase 6 failed: {e}")
 
         self.phase_executions.append(phase)
@@ -503,30 +524,34 @@ class FullDMAICOrchestrator:
             phase_number=7,
             phase_name="Integration",
             status="running",
-            start_time=start_time.isoformat()
+            start_time=start_time.isoformat(),
         )
 
         try:
             print("[Step 1/6] Integrating improvements...")
             integrations = self._integrate_improvements()
-            phase.metrics['integrations'] = len(integrations)
+            phase.metrics["integrations"] = len(integrations)
             print(f"   [OK] Integrated {len(integrations)} improvements")
 
             print("[Step 2/6] Running validation tests...")
             validation_results = self._run_validation_tests()
-            phase.metrics['tests_passed'] = validation_results['passed']
-            phase.metrics['tests_failed'] = validation_results['failed']
-            print(f"   [OK] Tests: {validation_results['passed']} passed, {validation_results['failed']} failed")
+            phase.metrics["tests_passed"] = validation_results["passed"]
+            phase.metrics["tests_failed"] = validation_results["failed"]
+            print(
+                f"   [OK] Tests: {validation_results['passed']} passed, {validation_results['failed']} failed"
+            )
 
             print("[Step 3/6] Verifying system coherence...")
             coherence_score = self._verify_system_coherence()
-            phase.metrics['coherence_score'] = coherence_score
+            phase.metrics["coherence_score"] = coherence_score
             print(f"   [OK] Coherence score: {coherence_score:.1f}%")
 
             print("[Step 4/6] Checking cross-phase dependencies...")
             dependency_check = self._check_cross_phase_dependencies()
-            phase.metrics['dependencies_resolved'] = dependency_check['resolved']
-            print(f"   [OK] Dependencies resolved: {dependency_check['resolved']}/{dependency_check['total']}")
+            phase.metrics["dependencies_resolved"] = dependency_check["resolved"]
+            print(
+                f"   [OK] Dependencies resolved: {dependency_check['resolved']}/{dependency_check['total']}"
+            )
 
             print("[Step 5/6] Generating integration map...")
             integration_map = self._generate_integration_map()
@@ -546,7 +571,7 @@ class FullDMAICOrchestrator:
 
         except Exception as e:
             phase.status = "failed"
-            phase.metrics['error'] = str(e)
+            phase.metrics["error"] = str(e)
             print(f"\n[ERROR] Phase 7 failed: {e}")
 
         self.phase_executions.append(phase)
@@ -562,7 +587,7 @@ class FullDMAICOrchestrator:
             phase_number=8,
             phase_name="Results & Reports",
             status="running",
-            start_time=start_time.isoformat()
+            start_time=start_time.isoformat(),
         )
 
         try:
@@ -604,7 +629,7 @@ class FullDMAICOrchestrator:
 
         except Exception as e:
             phase.status = "failed"
-            phase.metrics['error'] = str(e)
+            phase.metrics["error"] = str(e)
             print(f"\n[ERROR] Phase 8 failed: {e}")
 
         self.phase_executions.append(phase)
@@ -614,7 +639,7 @@ class FullDMAICOrchestrator:
         agents = []
         agent_dirs = [
             self.workspace_root / "DMAIC_V3" / "agents",
-            self.workspace_root / "local_mcp" / "agents"
+            self.workspace_root / "local_mcp" / "agents",
         ]
 
         for agent_dir in agent_dirs:
@@ -637,7 +662,7 @@ class FullDMAICOrchestrator:
             "workspace_root": str(self.workspace_root),
             "output_dir": str(self.output_dir),
             "execution_id": self.execution_id,
-            "version": "v032"
+            "version": "v032",
         }
         return config
 
@@ -648,25 +673,33 @@ class FullDMAICOrchestrator:
             self.canonical_dir,
             self.output_dir / "knowledge",
             self.output_dir / "metrics",
-            self.output_dir / "artifacts"
+            self.output_dir / "artifacts",
         ]
         for d in dirs:
             d.mkdir(exist_ok=True, parents=True)
 
     def _initialize_orchestrators(self) -> List[str]:
-        return ["FullPipelineOrchestrator", "RecursiveDMAICOrchestrator", "MasterIntegrationOrchestrator"]
+        return [
+            "FullPipelineOrchestrator",
+            "RecursiveDMAICOrchestrator",
+            "MasterIntegrationOrchestrator",
+        ]
 
     def _scan_artifacts(self) -> List[Dict]:
         artifacts = []
         for ext in [".py", ".md", ".json", ".yaml", ".yml"]:
             for file in self.workspace_root.rglob(f"*{ext}"):
                 if ".git" not in str(file) and "venv" not in str(file):
-                    artifacts.append({
-                        "path": str(file.relative_to(self.workspace_root)),
-                        "type": ext[1:],
-                        "size": file.stat().st_size,
-                        "modified": datetime.fromtimestamp(file.stat().st_mtime).isoformat()
-                    })
+                    artifacts.append(
+                        {
+                            "path": str(file.relative_to(self.workspace_root)),
+                            "type": ext[1:],
+                            "size": file.stat().st_size,
+                            "modified": datetime.fromtimestamp(
+                                file.stat().st_mtime
+                            ).isoformat(),
+                        }
+                    )
         return artifacts
 
     def _create_canonical_index(self, artifacts: List[Dict]) -> Path:
@@ -676,9 +709,9 @@ class FullDMAICOrchestrator:
             "generated_at": datetime.now().isoformat(),
             "execution_id": self.execution_id,
             "total_artifacts": len(artifacts),
-            "artifacts": artifacts
+            "artifacts": artifacts,
         }
-        with open(index_file, 'w') as f:
+        with open(index_file, "w") as f:
             json.dump(index, f, indent=2)
         return index_file
 
@@ -688,20 +721,22 @@ class FullDMAICOrchestrator:
             "phase": phase,
             "timestamp": datetime.now().isoformat(),
             "artifacts_count": len(artifacts),
-            "execution_id": self.execution_id
+            "execution_id": self.execution_id,
         }
-        with open(metadata_file, 'w') as f:
+        with open(metadata_file, "w") as f:
             json.dump(metadata, f, indent=2)
 
     def _extract_learning(self) -> List[Dict]:
         learning = []
         for phase_exec in self.phase_executions:
-            learning.append({
-                "phase": phase_exec.phase_name,
-                "metrics": phase_exec.metrics,
-                "duration": phase_exec.duration_seconds,
-                "status": phase_exec.status
-            })
+            learning.append(
+                {
+                    "phase": phase_exec.phase_name,
+                    "metrics": phase_exec.metrics,
+                    "duration": phase_exec.duration_seconds,
+                    "status": phase_exec.status,
+                }
+            )
         return learning
 
     def _create_knowledge_packs(self, learning: List[Dict]) -> List[Dict]:
@@ -710,9 +745,9 @@ class FullDMAICOrchestrator:
             pack = {
                 "pack_id": f"pack_{i:03d}",
                 "name": f"Knowledge Pack {i+1}",
-                "phase": item['phase'],
-                "metrics": item['metrics'],
-                "created_at": datetime.now().isoformat()
+                "phase": item["phase"],
+                "metrics": item["metrics"],
+                "created_at": datetime.now().isoformat(),
             }
             packs.append(pack)
         return packs
@@ -721,7 +756,7 @@ class FullDMAICOrchestrator:
         index = {
             "total_packs": len(knowledge_packs),
             "packs": knowledge_packs,
-            "created_at": datetime.now().isoformat()
+            "created_at": datetime.now().isoformat(),
         }
         return index
 
@@ -735,21 +770,27 @@ class FullDMAICOrchestrator:
     def _test_recall_system(self, recall_keys: List[str]) -> float:
         return 95.0  # Simulated recall accuracy
 
-    def _preserve_knowledge(self, knowledge_packs: List[Dict], knowledge_index: Dict) -> Path:
-        preservation_dir = self.output_dir / "knowledge" / f"iteration_{self.execution_id}"
+    def _preserve_knowledge(
+        self, knowledge_packs: List[Dict], knowledge_index: Dict
+    ) -> Path:
+        preservation_dir = (
+            self.output_dir / "knowledge" / f"iteration_{self.execution_id}"
+        )
         preservation_dir.mkdir(exist_ok=True, parents=True)
 
-        with open(preservation_dir / "knowledge_packs.json", 'w') as f:
+        with open(preservation_dir / "knowledge_packs.json", "w") as f:
             json.dump(knowledge_packs, f, indent=2)
 
-        with open(preservation_dir / "knowledge_index.json", 'w') as f:
+        with open(preservation_dir / "knowledge_index.json", "w") as f:
             json.dump(knowledge_index, f, indent=2)
 
         return preservation_dir
 
     def _generate_phase_6_report(self, phase: PhaseExecution) -> Path:
-        report_file = self.reports_dir / f"phase_6_knowledge_devour_{self.execution_id}.md"
-        with open(report_file, 'w') as f:
+        report_file = (
+            self.reports_dir / f"phase_6_knowledge_devour_{self.execution_id}.md"
+        )
+        with open(report_file, "w") as f:
             f.write(f"# Phase 6: Knowledge Devour Report\n\n")
             f.write(f"**Execution ID:** {self.execution_id}\n")
             f.write(f"**Generated:** {datetime.now().isoformat()}\n\n")
@@ -763,9 +804,13 @@ class FullDMAICOrchestrator:
         summary = {
             "execution_id": self.execution_id,
             "total_phases": len(self.phase_executions),
-            "completed_phases": sum(1 for p in self.phase_executions if p.status == "completed"),
-            "failed_phases": sum(1 for p in self.phase_executions if p.status == "failed"),
-            "total_duration": sum(p.duration_seconds for p in self.phase_executions)
+            "completed_phases": sum(
+                1 for p in self.phase_executions if p.status == "completed"
+            ),
+            "failed_phases": sum(
+                1 for p in self.phase_executions if p.status == "failed"
+            ),
+            "total_duration": sum(p.duration_seconds for p in self.phase_executions),
         }
         return summary
 
@@ -780,7 +825,7 @@ class FullDMAICOrchestrator:
                 agent_involvement[agent]["phases"].append(phase.phase_name)
                 agent_involvement[agent]["total_invocations"] += 1
 
-        with open(report_file, 'w') as f:
+        with open(report_file, "w") as f:
             json.dump(agent_involvement, f, indent=2)
 
     def _analyze_artifact_complexity(self) -> Dict:
@@ -793,12 +838,12 @@ class FullDMAICOrchestrator:
         return [
             {"metric": "complexity", "baseline": 3.5},
             {"metric": "quality", "baseline": 85.0},
-            {"metric": "coverage", "baseline": 75.0}
+            {"metric": "coverage", "baseline": 75.0},
         ]
 
     def _generate_metrics_report(self, phase: PhaseExecution) -> Path:
         report_file = self.reports_dir / f"phase_2_measure_{self.execution_id}.md"
-        with open(report_file, 'w') as f:
+        with open(report_file, "w") as f:
             f.write(f"# Phase 2: Measure Report\n\n")
             f.write(f"**Execution ID:** {self.execution_id}\n")
             f.write(f"**Generated:** {datetime.now().isoformat()}\n\n")
@@ -811,30 +856,30 @@ class FullDMAICOrchestrator:
         return [
             {"pattern": "singleton", "occurrences": 5},
             {"pattern": "factory", "occurrences": 3},
-            {"pattern": "observer", "occurrences": 2}
+            {"pattern": "observer", "occurrences": 2},
         ]
 
     def _analyze_dependencies(self) -> List[Dict]:
         return [
             {"from": "module_a", "to": "module_b", "type": "import"},
-            {"from": "module_b", "to": "module_c", "type": "import"}
+            {"from": "module_b", "to": "module_c", "type": "import"},
         ]
 
     def _identify_bottlenecks(self) -> List[Dict]:
         return [
             {"location": "data_processing.py:45", "severity": "high"},
-            {"location": "api_handler.py:120", "severity": "medium"}
+            {"location": "api_handler.py:120", "severity": "medium"},
         ]
 
     def _perform_root_cause_analysis(self) -> List[Dict]:
         return [
             {"issue": "slow_performance", "root_cause": "inefficient_algorithm"},
-            {"issue": "high_memory", "root_cause": "memory_leak"}
+            {"issue": "high_memory", "root_cause": "memory_leak"},
         ]
 
     def _generate_analysis_report(self, phase: PhaseExecution) -> Path:
         report_file = self.reports_dir / f"phase_3_analyze_{self.execution_id}.md"
-        with open(report_file, 'w') as f:
+        with open(report_file, "w") as f:
             f.write(f"# Phase 3: Analyze Report\n\n")
             f.write(f"**Execution ID:** {self.execution_id}\n")
             f.write(f"**Generated:** {datetime.now().isoformat()}\n\n")
@@ -847,23 +892,26 @@ class FullDMAICOrchestrator:
         return [
             {"id": 1, "title": "Optimize algorithm", "impact": "high"},
             {"id": 2, "title": "Refactor module", "impact": "medium"},
-            {"id": 3, "title": "Add caching", "impact": "high"}
+            {"id": 3, "title": "Add caching", "impact": "high"},
         ]
 
     def _prioritize_improvements(self, proposals: List[Dict]) -> List[Dict]:
         for p in proposals:
-            p['priority'] = 'high' if p['impact'] == 'high' else 'medium'
-        return sorted(proposals, key=lambda x: x['priority'], reverse=True)
+            p["priority"] = "high" if p["impact"] == "high" else "medium"
+        return sorted(proposals, key=lambda x: x["priority"], reverse=True)
 
     def _create_implementation_plans(self, proposals: List[Dict]) -> List[Dict]:
-        return [{"proposal_id": p['id'], "steps": 5, "estimated_hours": 8} for p in proposals]
+        return [
+            {"proposal_id": p["id"], "steps": 5, "estimated_hours": 8}
+            for p in proposals
+        ]
 
     def _simulate_improvements(self, plans: List[Dict]) -> Dict:
         return {"avg_improvement": 35.0, "best_case": 50.0, "worst_case": 20.0}
 
     def _generate_improvement_report(self, phase: PhaseExecution) -> Path:
         report_file = self.reports_dir / f"phase_4_improve_{self.execution_id}.md"
-        with open(report_file, 'w') as f:
+        with open(report_file, "w") as f:
             f.write(f"# Phase 4: Improve Report\n\n")
             f.write(f"**Execution ID:** {self.execution_id}\n")
             f.write(f"**Generated:** {datetime.now().isoformat()}\n\n")
@@ -876,32 +924,32 @@ class FullDMAICOrchestrator:
         return [
             {"mechanism": "automated_testing", "coverage": 85},
             {"mechanism": "code_review", "frequency": "daily"},
-            {"mechanism": "performance_monitoring", "threshold": 100}
+            {"mechanism": "performance_monitoring", "threshold": 100},
         ]
 
     def _setup_monitoring(self) -> List[Dict]:
         return [
             {"monitor": "performance", "interval": "5min"},
             {"monitor": "errors", "interval": "1min"},
-            {"monitor": "resources", "interval": "10min"}
+            {"monitor": "resources", "interval": "10min"},
         ]
 
     def _create_validation_rules(self) -> List[Dict]:
         return [
             {"rule": "complexity_limit", "threshold": 10},
             {"rule": "test_coverage", "threshold": 80},
-            {"rule": "code_quality", "threshold": 85}
+            {"rule": "code_quality", "threshold": 85},
         ]
 
     def _implement_feedback_loops(self) -> List[Dict]:
         return [
             {"loop": "performance_feedback", "action": "auto_optimize"},
-            {"loop": "error_feedback", "action": "alert_team"}
+            {"loop": "error_feedback", "action": "alert_team"},
         ]
 
     def _generate_control_report(self, phase: PhaseExecution) -> Path:
         report_file = self.reports_dir / f"phase_5_control_{self.execution_id}.md"
-        with open(report_file, 'w') as f:
+        with open(report_file, "w") as f:
             f.write(f"# Phase 5: Control Report\n\n")
             f.write(f"**Execution ID:** {self.execution_id}\n")
             f.write(f"**Generated:** {datetime.now().isoformat()}\n\n")
@@ -913,7 +961,7 @@ class FullDMAICOrchestrator:
     def _integrate_improvements(self) -> List[Dict]:
         return [
             {"improvement": "algorithm_optimization", "status": "integrated"},
-            {"improvement": "caching_layer", "status": "integrated"}
+            {"improvement": "caching_layer", "status": "integrated"},
         ]
 
     def _run_validation_tests(self) -> Dict:
@@ -932,16 +980,16 @@ class FullDMAICOrchestrator:
             "connections": [
                 {"from": "Phase 0", "to": "Phase 1"},
                 {"from": "Phase 1", "to": "Phase 2"},
-                {"from": "Phase 2", "to": "Phase 3"}
-            ]
+                {"from": "Phase 2", "to": "Phase 3"},
+            ],
         }
-        with open(map_file, 'w') as f:
+        with open(map_file, "w") as f:
             json.dump(integration_map, f, indent=2)
         return map_file
 
     def _generate_phase_7_report(self, phase: PhaseExecution) -> Path:
         report_file = self.reports_dir / f"phase_7_integration_{self.execution_id}.md"
-        with open(report_file, 'w') as f:
+        with open(report_file, "w") as f:
             f.write(f"# Phase 7: Integration Report\n\n")
             f.write(f"**Execution ID:** {self.execution_id}\n")
             f.write(f"**Generated:** {datetime.now().isoformat()}\n\n")
@@ -959,11 +1007,13 @@ class FullDMAICOrchestrator:
         for py_file in python_files[:10]:  # Limit to first 10 for demo
             if ".git" not in str(py_file) and "venv" not in str(py_file):
                 book_file = self.canonical_dir / f"{py_file.stem}_governance.md"
-                with open(book_file, 'w') as f:
+                with open(book_file, "w") as f:
                     f.write(f"# Canonical Governance Book: {py_file.name}\n\n")
                     f.write(f"**File:** `{py_file.relative_to(self.workspace_root)}`\n")
                     f.write(f"**Generated:** {datetime.now().isoformat()}\n\n")
-                    f.write(f"## Purpose\n\nGovernance documentation for {py_file.name}\n\n")
+                    f.write(
+                        f"## Purpose\n\nGovernance documentation for {py_file.name}\n\n"
+                    )
                     f.write(f"## Maturity Level\n\nLevel 3 - Conditional Autonomy\n\n")
                     f.write(f"## Version\n\nv032\n\n")
                 books.append(book_file)
@@ -972,7 +1022,7 @@ class FullDMAICOrchestrator:
 
     def _create_changelog(self) -> Path:
         changelog_file = self.output_dir / f"CHANGELOG_{self.execution_id}.md"
-        with open(changelog_file, 'w') as f:
+        with open(changelog_file, "w") as f:
             f.write(f"# Changelog - Execution {self.execution_id}\n\n")
             f.write(f"**Date:** {datetime.now().isoformat()}\n\n")
             f.write(f"## Changes\n\n")
@@ -993,16 +1043,16 @@ class FullDMAICOrchestrator:
                 "level_2": 10,
                 "level_3": 50,
                 "level_4": 30,
-                "level_5": 10
-            }
+                "level_5": 10,
+            },
         }
-        with open(maturity_file, 'w') as f:
+        with open(maturity_file, "w") as f:
             json.dump(maturity, f, indent=2)
         return maturity_file
 
     def _generate_final_execution_report(self) -> Path:
         report_file = self.reports_dir / f"EXECUTION_REPORT_{self.execution_id}.md"
-        with open(report_file, 'w') as f:
+        with open(report_file, "w") as f:
             f.write(f"# ABACUS v033 - Full Execution Report\n\n")
             f.write(f"**Execution ID:** {self.execution_id}\n")
             f.write(f"**Generated:** {datetime.now().isoformat()}\n\n")
@@ -1023,7 +1073,9 @@ class FullDMAICOrchestrator:
 
         return report_file
 
-    def execute_phase_9_recursive_loop(self, iteration_num: int, all_iterations: List[Dict]) -> PhaseExecution:
+    def execute_phase_9_recursive_loop(
+        self, iteration_num: int, all_iterations: List[Dict]
+    ) -> PhaseExecution:
         """Phase 9: Recursive Loop - Convergence Tracking & Continuous Improvement"""
         phase_name = "Recursive Loop"
         phase_num = 9
@@ -1037,19 +1089,23 @@ class FullDMAICOrchestrator:
             phase_number=phase_num,
             phase_name=phase_name,
             status="running",
-            start_time=start_time.isoformat()
+            start_time=start_time.isoformat(),
         )
 
         try:
             # Step 1: Calculate convergence metrics
             print("[Step 1/8] Calculating convergence metrics...")
             convergence_metrics = self._calculate_convergence_metrics(all_iterations)
-            print(f"   [OK] Convergence score: {convergence_metrics['convergence_score']:.1f}%")
+            print(
+                f"   [OK] Convergence score: {convergence_metrics['convergence_score']:.1f}%"
+            )
 
             # Step 2: Analyze improvement deltas
             print("[Step 2/8] Analyzing improvement deltas...")
             improvement_deltas = self._analyze_improvement_deltas(all_iterations)
-            print(f"   [OK] Average improvement: {improvement_deltas['average_improvement']:.1f}%")
+            print(
+                f"   [OK] Average improvement: {improvement_deltas['average_improvement']:.1f}%"
+            )
 
             # Step 3: Track knowledge accumulation
             print("[Step 3/8] Tracking knowledge accumulation...")
@@ -1058,8 +1114,12 @@ class FullDMAICOrchestrator:
 
             # Step 4: Detect convergence
             print("[Step 4/8] Detecting convergence...")
-            convergence_status = self._detect_convergence(convergence_metrics, improvement_deltas)
-            print(f"   [OK] Convergence: {'✅ Achieved' if convergence_status['converged'] else '⏳ In Progress'}")
+            convergence_status = self._detect_convergence(
+                convergence_metrics, improvement_deltas
+            )
+            print(
+                f"   [OK] Convergence: {'✅ Achieved' if convergence_status['converged'] else '⏳ In Progress'}"
+            )
 
             # Step 5: Generate iteration comparison
             print("[Step 5/8] Generating iteration comparison...")
@@ -1068,12 +1128,16 @@ class FullDMAICOrchestrator:
 
             # Step 6: Update convergence tracking
             print("[Step 6/8] Updating convergence tracking...")
-            tracking_file = self._update_convergence_tracking(iteration_num, convergence_metrics, convergence_status)
+            tracking_file = self._update_convergence_tracking(
+                iteration_num, convergence_metrics, convergence_status
+            )
             print(f"   [OK] Tracking file: {tracking_file}")
 
             # Step 7: Generate recommendations
             print("[Step 7/8] Generating recommendations...")
-            recommendations = self._generate_convergence_recommendations(convergence_status, improvement_deltas)
+            recommendations = self._generate_convergence_recommendations(
+                convergence_status, improvement_deltas
+            )
             print(f"   [OK] Generated {len(recommendations)} recommendations")
 
             # Step 8: Generate Phase 9 report
@@ -1084,7 +1148,7 @@ class FullDMAICOrchestrator:
                 improvement_deltas,
                 knowledge_growth,
                 convergence_status,
-                recommendations
+                recommendations,
             )
             print(f"   [OK] Report: {report_file}")
 
@@ -1093,18 +1157,24 @@ class FullDMAICOrchestrator:
             phase_exec.end_time = datetime.now().isoformat()
             phase_exec.duration_seconds = (datetime.now() - start_time).total_seconds()
             phase_exec.metrics = {
-                "convergence_score": convergence_metrics['convergence_score'],
-                "converged": convergence_status['converged'],
-                "improvement_delta": improvement_deltas['average_improvement'],
-                "knowledge_items": knowledge_growth['total_items']
+                "convergence_score": convergence_metrics["convergence_score"],
+                "converged": convergence_status["converged"],
+                "improvement_delta": improvement_deltas["average_improvement"],
+                "knowledge_items": knowledge_growth["total_items"],
             }
-            phase_exec.output_files = [str(report_file), str(comparison_report), str(tracking_file)]
+            phase_exec.output_files = [
+                str(report_file),
+                str(comparison_report),
+                str(tracking_file),
+            ]
 
             self.phase_executions.append(phase_exec)
 
             print(f"\n[PASS] Phase 9 completed in {phase_exec.duration_seconds:.2f}s")
             print(f"   Convergence: {convergence_metrics['convergence_score']:.1f}%")
-            print(f"   Status: {'✅ Converged' if convergence_status['converged'] else '⏳ Iterating'}")
+            print(
+                f"   Status: {'✅ Converged' if convergence_status['converged'] else '⏳ Iterating'}"
+            )
 
             return phase_exec
 
@@ -1123,36 +1193,60 @@ class FullDMAICOrchestrator:
                 "convergence_score": 0.0,
                 "quality_trend": "insufficient_data",
                 "duration_trend": "insufficient_data",
-                "stability_score": 0.0
+                "stability_score": 0.0,
             }
 
         # Calculate quality trend
-        quality_scores = [it.get('quality_score', 0) for it in all_iterations]
-        quality_improvement = quality_scores[-1] - quality_scores[0] if quality_scores else 0
+        quality_scores = [it.get("quality_score", 0) for it in all_iterations]
+        quality_improvement = (
+            quality_scores[-1] - quality_scores[0] if quality_scores else 0
+        )
 
         # Calculate duration trend
-        durations = [it.get('duration', 0) for it in all_iterations]
-        duration_improvement = ((durations[0] - durations[-1]) / durations[0] * 100) if durations[0] > 0 else 0
+        durations = [it.get("duration", 0) for it in all_iterations]
+        duration_improvement = (
+            ((durations[0] - durations[-1]) / durations[0] * 100)
+            if durations[0] > 0
+            else 0
+        )
 
         # Calculate stability (variance in last 3 iterations)
-        recent_quality = quality_scores[-3:] if len(quality_scores) >= 3 else quality_scores
-        quality_variance = sum((q - sum(recent_quality)/len(recent_quality))**2 for q in recent_quality) / len(recent_quality) if recent_quality else 0
+        recent_quality = (
+            quality_scores[-3:] if len(quality_scores) >= 3 else quality_scores
+        )
+        quality_variance = (
+            sum(
+                (q - sum(recent_quality) / len(recent_quality)) ** 2
+                for q in recent_quality
+            )
+            / len(recent_quality)
+            if recent_quality
+            else 0
+        )
         stability_score = max(0, 100 - quality_variance)
 
         # Overall convergence score
         convergence_score = (
-            (quality_scores[-1] if quality_scores else 0) * 0.5 +  # Current quality
-            stability_score * 0.3 +  # Stability
-            min(100, max(0, duration_improvement)) * 0.2  # Efficiency
+            (quality_scores[-1] if quality_scores else 0) * 0.5  # Current quality
+            + stability_score * 0.3  # Stability
+            + min(100, max(0, duration_improvement)) * 0.2  # Efficiency
         )
 
         return {
             "convergence_score": convergence_score,
-            "quality_trend": "improving" if quality_improvement > 0 else "stable" if quality_improvement == 0 else "declining",
-            "duration_trend": "improving" if duration_improvement > 0 else "stable" if duration_improvement == 0 else "declining",
+            "quality_trend": (
+                "improving"
+                if quality_improvement > 0
+                else "stable" if quality_improvement == 0 else "declining"
+            ),
+            "duration_trend": (
+                "improving"
+                if duration_improvement > 0
+                else "stable" if duration_improvement == 0 else "declining"
+            ),
             "stability_score": stability_score,
             "quality_improvement": quality_improvement,
-            "duration_improvement": duration_improvement
+            "duration_improvement": duration_improvement,
         }
 
     def _analyze_improvement_deltas(self, all_iterations: List[Dict]) -> Dict:
@@ -1162,13 +1256,13 @@ class FullDMAICOrchestrator:
                 "average_improvement": 0.0,
                 "max_improvement": 0.0,
                 "min_improvement": 0.0,
-                "trend": "insufficient_data"
+                "trend": "insufficient_data",
             }
 
         deltas = []
         for i in range(1, len(all_iterations)):
-            prev_quality = all_iterations[i-1].get('quality_score', 0)
-            curr_quality = all_iterations[i].get('quality_score', 0)
+            prev_quality = all_iterations[i - 1].get("quality_score", 0)
+            curr_quality = all_iterations[i].get("quality_score", 0)
             delta = curr_quality - prev_quality
             deltas.append(delta)
 
@@ -1178,8 +1272,12 @@ class FullDMAICOrchestrator:
             "average_improvement": avg_improvement,
             "max_improvement": max(deltas) if deltas else 0,
             "min_improvement": min(deltas) if deltas else 0,
-            "trend": "improving" if avg_improvement > 0 else "stable" if avg_improvement == 0 else "declining",
-            "deltas": deltas
+            "trend": (
+                "improving"
+                if avg_improvement > 0
+                else "stable" if avg_improvement == 0 else "declining"
+            ),
+            "deltas": deltas,
         }
 
     def _track_knowledge_accumulation(self, all_iterations: List[Dict]) -> Dict:
@@ -1200,31 +1298,43 @@ class FullDMAICOrchestrator:
         return {
             "total_items": total_items,
             "items_by_iteration": items_by_iteration,
-            "growth_rate": (items_by_iteration[-1] - items_by_iteration[0]) / items_by_iteration[0] * 100 if len(items_by_iteration) > 1 and items_by_iteration[0] > 0 else 0
+            "growth_rate": (
+                (items_by_iteration[-1] - items_by_iteration[0])
+                / items_by_iteration[0]
+                * 100
+                if len(items_by_iteration) > 1 and items_by_iteration[0] > 0
+                else 0
+            ),
         }
 
-    def _detect_convergence(self, convergence_metrics: Dict, improvement_deltas: Dict) -> Dict:
+    def _detect_convergence(
+        self, convergence_metrics: Dict, improvement_deltas: Dict
+    ) -> Dict:
         """Detect if system has converged"""
         # Convergence criteria
         CONVERGENCE_THRESHOLD = 95.0  # 95% convergence score
-        STABILITY_THRESHOLD = 90.0    # 90% stability
-        IMPROVEMENT_THRESHOLD = 1.0   # < 1% improvement delta
+        STABILITY_THRESHOLD = 90.0  # 90% stability
+        IMPROVEMENT_THRESHOLD = 1.0  # < 1% improvement delta
 
-        convergence_score = convergence_metrics.get('convergence_score', 0)
-        stability_score = convergence_metrics.get('stability_score', 0)
-        avg_improvement = abs(improvement_deltas.get('average_improvement', 100))
+        convergence_score = convergence_metrics.get("convergence_score", 0)
+        stability_score = convergence_metrics.get("stability_score", 0)
+        avg_improvement = abs(improvement_deltas.get("average_improvement", 100))
 
         converged = (
-            convergence_score >= CONVERGENCE_THRESHOLD and
-            stability_score >= STABILITY_THRESHOLD and
-            avg_improvement < IMPROVEMENT_THRESHOLD
+            convergence_score >= CONVERGENCE_THRESHOLD
+            and stability_score >= STABILITY_THRESHOLD
+            and avg_improvement < IMPROVEMENT_THRESHOLD
         )
 
         reasons = []
         if convergence_score < CONVERGENCE_THRESHOLD:
-            reasons.append(f"Convergence score {convergence_score:.1f}% < {CONVERGENCE_THRESHOLD}%")
+            reasons.append(
+                f"Convergence score {convergence_score:.1f}% < {CONVERGENCE_THRESHOLD}%"
+            )
         if stability_score < STABILITY_THRESHOLD:
-            reasons.append(f"Stability score {stability_score:.1f}% < {STABILITY_THRESHOLD}%")
+            reasons.append(
+                f"Stability score {stability_score:.1f}% < {STABILITY_THRESHOLD}%"
+            )
         if avg_improvement >= IMPROVEMENT_THRESHOLD:
             reasons.append(f"Still improving by {avg_improvement:.1f}%")
 
@@ -1234,14 +1344,18 @@ class FullDMAICOrchestrator:
             "stability_score": stability_score,
             "improvement_delta": avg_improvement,
             "reasons": reasons if not converged else ["All convergence criteria met"],
-            "recommendation": "Continue iterating" if not converged else "System has converged"
+            "recommendation": (
+                "Continue iterating" if not converged else "System has converged"
+            ),
         }
 
     def _generate_iteration_comparison(self, all_iterations: List[Dict]) -> Path:
         """Generate iteration comparison report"""
-        comparison_file = self.reports_dir / f"iteration_comparison_{self.execution_id}.md"
+        comparison_file = (
+            self.reports_dir / f"iteration_comparison_{self.execution_id}.md"
+        )
 
-        with open(comparison_file, 'w', encoding='utf-8') as f:
+        with open(comparison_file, "w", encoding="utf-8") as f:
             f.write("# Iteration Comparison Report\n\n")
             f.write(f"**Generated:** {datetime.now().isoformat()}\n")
             f.write(f"**Total Iterations:** {len(all_iterations)}\n\n")
@@ -1251,19 +1365,23 @@ class FullDMAICOrchestrator:
             f.write("|-----------|----------|--------|---------|--------|\n")
 
             for iteration in all_iterations:
-                iter_num = iteration.get('iteration', 0)
-                duration = iteration.get('duration', 0)
-                phases = iteration.get('phases_completed', 0)
-                quality = iteration.get('quality_score', 0)
-                passed = "✅ Pass" if iteration.get('quality_passed', False) else "❌ Fail"
+                iter_num = iteration.get("iteration", 0)
+                duration = iteration.get("duration", 0)
+                phases = iteration.get("phases_completed", 0)
+                quality = iteration.get("quality_score", 0)
+                passed = (
+                    "✅ Pass" if iteration.get("quality_passed", False) else "❌ Fail"
+                )
 
-                f.write(f"| {iter_num} | {duration:.2f}s | {phases}/9 | {quality:.1f} | {passed} |\n")
+                f.write(
+                    f"| {iter_num} | {duration:.2f}s | {phases}/9 | {quality:.1f} | {passed} |\n"
+                )
 
             f.write("\n## Trends\n\n")
 
             if len(all_iterations) >= 2:
-                first_quality = all_iterations[0].get('quality_score', 0)
-                last_quality = all_iterations[-1].get('quality_score', 0)
+                first_quality = all_iterations[0].get("quality_score", 0)
+                last_quality = all_iterations[-1].get("quality_score", 0)
                 quality_change = last_quality - first_quality
 
                 f.write(f"- **Quality Change:** {quality_change:+.1f} points\n")
@@ -1272,7 +1390,9 @@ class FullDMAICOrchestrator:
 
         return comparison_file
 
-    def _update_convergence_tracking(self, iteration_num: int, convergence_metrics: Dict, convergence_status: Dict) -> Path:
+    def _update_convergence_tracking(
+        self, iteration_num: int, convergence_metrics: Dict, convergence_status: Dict
+    ) -> Path:
         """Update convergence tracking file"""
         tracking_file = self.output_dir / "convergence_tracking.json"
 
@@ -1281,12 +1401,12 @@ class FullDMAICOrchestrator:
             "timestamp": datetime.now().isoformat(),
             "iteration": iteration_num,
             "convergence_metrics": convergence_metrics,
-            "convergence_status": convergence_status
+            "convergence_status": convergence_status,
         }
 
         # Append to existing tracking
         if tracking_file.exists():
-            with open(tracking_file, 'r') as f:
+            with open(tracking_file, "r") as f:
                 existing_data = json.load(f)
             if not isinstance(existing_data, list):
                 existing_data = [existing_data]
@@ -1295,68 +1415,110 @@ class FullDMAICOrchestrator:
         else:
             tracking_data = [tracking_data]
 
-        with open(tracking_file, 'w') as f:
+        with open(tracking_file, "w") as f:
             json.dump(tracking_data, f, indent=2)
 
         return tracking_file
 
-    def _generate_convergence_recommendations(self, convergence_status: Dict, improvement_deltas: Dict) -> List[str]:
+    def _generate_convergence_recommendations(
+        self, convergence_status: Dict, improvement_deltas: Dict
+    ) -> List[str]:
         """Generate recommendations based on convergence status"""
         recommendations = []
 
-        if convergence_status['converged']:
+        if convergence_status["converged"]:
             recommendations.append("✅ System has converged - Ready for production")
             recommendations.append("📊 Archive current state as baseline")
             recommendations.append("🔄 Consider v034 enhancements")
         else:
-            if convergence_status['convergence_score'] < 95:
-                recommendations.append("⚠️ Continue iterations to improve convergence score")
-            if convergence_status['stability_score'] < 90:
+            if convergence_status["convergence_score"] < 95:
+                recommendations.append(
+                    "⚠️ Continue iterations to improve convergence score"
+                )
+            if convergence_status["stability_score"] < 90:
                 recommendations.append("⚠️ Focus on stability improvements")
-            if abs(improvement_deltas.get('average_improvement', 0)) >= 1.0:
-                recommendations.append("📈 System still improving - continue iterations")
+            if abs(improvement_deltas.get("average_improvement", 0)) >= 1.0:
+                recommendations.append(
+                    "📈 System still improving - continue iterations"
+                )
 
-            recommendations.append("🔍 Review phase execution logs for optimization opportunities")
+            recommendations.append(
+                "🔍 Review phase execution logs for optimization opportunities"
+            )
             recommendations.append("📝 Update canonical governance based on learnings")
 
         return recommendations
 
-    def _generate_phase_9_report(self, iteration_num: int, convergence_metrics: Dict,
-                                  improvement_deltas: Dict, knowledge_growth: Dict,
-                                  convergence_status: Dict, recommendations: List[str]) -> Path:
+    def _generate_phase_9_report(
+        self,
+        iteration_num: int,
+        convergence_metrics: Dict,
+        improvement_deltas: Dict,
+        knowledge_growth: Dict,
+        convergence_status: Dict,
+        recommendations: List[str],
+    ) -> Path:
         """Generate Phase 9 comprehensive report"""
-        report_file = self.reports_dir / f"phase_9_recursive_loop_{self.execution_id}.md"
+        report_file = (
+            self.reports_dir / f"phase_9_recursive_loop_{self.execution_id}.md"
+        )
 
-        with open(report_file, 'w', encoding='utf-8') as f:
+        with open(report_file, "w", encoding="utf-8") as f:
             f.write("# Phase 9: Recursive Loop - Convergence Report\n\n")
             f.write(f"**Generated:** {datetime.now().isoformat()}\n")
             f.write(f"**Iteration:** {iteration_num}\n")
             f.write(f"**Execution ID:** {self.execution_id}\n\n")
 
             f.write("## Convergence Status\n\n")
-            f.write(f"- **Converged:** {'✅ Yes' if convergence_status['converged'] else '⏳ No'}\n")
-            f.write(f"- **Convergence Score:** {convergence_status['convergence_score']:.1f}%\n")
-            f.write(f"- **Stability Score:** {convergence_status['stability_score']:.1f}%\n")
-            f.write(f"- **Improvement Delta:** {convergence_status['improvement_delta']:.2f}%\n\n")
+            f.write(
+                f"- **Converged:** {'✅ Yes' if convergence_status['converged'] else '⏳ No'}\n"
+            )
+            f.write(
+                f"- **Convergence Score:** {convergence_status['convergence_score']:.1f}%\n"
+            )
+            f.write(
+                f"- **Stability Score:** {convergence_status['stability_score']:.1f}%\n"
+            )
+            f.write(
+                f"- **Improvement Delta:** {convergence_status['improvement_delta']:.2f}%\n\n"
+            )
 
             f.write("## Convergence Metrics\n\n")
-            f.write(f"- **Quality Trend:** {convergence_metrics.get('quality_trend', 'N/A')}\n")
-            f.write(f"- **Duration Trend:** {convergence_metrics.get('duration_trend', 'N/A')}\n")
-            f.write(f"- **Quality Improvement:** {convergence_metrics.get('quality_improvement', 0):+.1f}\n")
-            f.write(f"- **Duration Improvement:** {convergence_metrics.get('duration_improvement', 0):+.1f}%\n\n")
+            f.write(
+                f"- **Quality Trend:** {convergence_metrics.get('quality_trend', 'N/A')}\n"
+            )
+            f.write(
+                f"- **Duration Trend:** {convergence_metrics.get('duration_trend', 'N/A')}\n"
+            )
+            f.write(
+                f"- **Quality Improvement:** {convergence_metrics.get('quality_improvement', 0):+.1f}\n"
+            )
+            f.write(
+                f"- **Duration Improvement:** {convergence_metrics.get('duration_improvement', 0):+.1f}%\n\n"
+            )
 
             f.write("## Improvement Analysis\n\n")
-            f.write(f"- **Average Improvement:** {improvement_deltas.get('average_improvement', 0):.2f}%\n")
-            f.write(f"- **Max Improvement:** {improvement_deltas.get('max_improvement', 0):.2f}%\n")
-            f.write(f"- **Min Improvement:** {improvement_deltas.get('min_improvement', 0):.2f}%\n")
+            f.write(
+                f"- **Average Improvement:** {improvement_deltas.get('average_improvement', 0):.2f}%\n"
+            )
+            f.write(
+                f"- **Max Improvement:** {improvement_deltas.get('max_improvement', 0):.2f}%\n"
+            )
+            f.write(
+                f"- **Min Improvement:** {improvement_deltas.get('min_improvement', 0):.2f}%\n"
+            )
             f.write(f"- **Trend:** {improvement_deltas.get('trend', 'N/A')}\n\n")
 
             f.write("## Knowledge Accumulation\n\n")
-            f.write(f"- **Total Knowledge Items:** {knowledge_growth.get('total_items', 0)}\n")
-            f.write(f"- **Growth Rate:** {knowledge_growth.get('growth_rate', 0):+.1f}%\n\n")
+            f.write(
+                f"- **Total Knowledge Items:** {knowledge_growth.get('total_items', 0)}\n"
+            )
+            f.write(
+                f"- **Growth Rate:** {knowledge_growth.get('growth_rate', 0):+.1f}%\n\n"
+            )
 
             f.write("## Convergence Reasons\n\n")
-            for reason in convergence_status.get('reasons', []):
+            for reason in convergence_status.get("reasons", []):
                 f.write(f"- {reason}\n")
             f.write("\n")
 
@@ -1366,12 +1528,18 @@ class FullDMAICOrchestrator:
             f.write("\n")
 
             f.write("---\n\n")
-            f.write(f"**Status:** {'✅ CONVERGED' if convergence_status['converged'] else '⏳ IN PROGRESS'}\n")
-            f.write(f"**Next Action:** {convergence_status.get('recommendation', 'N/A')}\n")
+            f.write(
+                f"**Status:** {'✅ CONVERGED' if convergence_status['converged'] else '⏳ IN PROGRESS'}\n"
+            )
+            f.write(
+                f"**Next Action:** {convergence_status.get('recommendation', 'N/A')}\n"
+            )
 
         return report_file
 
-    def _run_single_iteration(self, iteration_num: int, all_iterations: List[Dict] = None) -> Dict:
+    def _run_single_iteration(
+        self, iteration_num: int, all_iterations: List[Dict] = None
+    ) -> Dict:
         if all_iterations is None:
             all_iterations = []
 
@@ -1396,9 +1564,13 @@ class FullDMAICOrchestrator:
         iteration_summary = {
             "iteration": iteration_num,
             "duration": iteration_duration,
-            "phases_completed": sum(1 for p in self.phase_executions if p.status == "completed"),
-            "phases_failed": sum(1 for p in self.phase_executions if p.status == "failed"),
-            "timestamp": datetime.now().isoformat()
+            "phases_completed": sum(
+                1 for p in self.phase_executions if p.status == "completed"
+            ),
+            "phases_failed": sum(
+                1 for p in self.phase_executions if p.status == "failed"
+            ),
+            "timestamp": datetime.now().isoformat(),
         }
 
         return iteration_summary
@@ -1407,17 +1579,19 @@ class FullDMAICOrchestrator:
         quality_score = 0
         issues = []
 
-        if iteration_summary['phases_failed'] == 0:
+        if iteration_summary["phases_failed"] == 0:
             quality_score += 40
         else:
             issues.append(f"{iteration_summary['phases_failed']} phases failed")
 
-        if iteration_summary['phases_completed'] >= 8:
+        if iteration_summary["phases_completed"] >= 8:
             quality_score += 30
         else:
-            issues.append(f"Only {iteration_summary['phases_completed']} phases completed")
+            issues.append(
+                f"Only {iteration_summary['phases_completed']} phases completed"
+            )
 
-        if iteration_summary['duration'] < 300:
+        if iteration_summary["duration"] < 300:
             quality_score += 30
         else:
             issues.append(f"Duration too long: {iteration_summary['duration']:.1f}s")
@@ -1426,7 +1600,7 @@ class FullDMAICOrchestrator:
             "quality_score": quality_score,
             "passed": quality_score >= 70,
             "issues": issues,
-            "recommendations": self._generate_recommendations(issues)
+            "recommendations": self._generate_recommendations(issues),
         }
 
     def _generate_recommendations(self, issues: List[str]) -> List[str]:
@@ -1444,7 +1618,7 @@ class FullDMAICOrchestrator:
         print(f"\n🔧 Applying tweaks based on iteration {iteration_num} results...")
 
         tweaks_applied = []
-        for rec in quality_check.get('recommendations', []):
+        for rec in quality_check.get("recommendations", []):
             if "errors" in rec.lower():
                 print("   - Adjusting error handling")
                 tweaks_applied.append("error_handling_improved")
@@ -1456,19 +1630,25 @@ class FullDMAICOrchestrator:
                 tweaks_applied.append("dependencies_reconfigured")
 
         tweak_file = self.output_dir / f"tweaks_iteration_{iteration_num}.json"
-        with open(tweak_file, 'w') as f:
-            json.dump({
-                "iteration": iteration_num,
-                "tweaks": tweaks_applied,
-                "timestamp": datetime.now().isoformat()
-            }, f, indent=2)
+        with open(tweak_file, "w") as f:
+            json.dump(
+                {
+                    "iteration": iteration_num,
+                    "tweaks": tweaks_applied,
+                    "timestamp": datetime.now().isoformat(),
+                },
+                f,
+                indent=2,
+            )
 
         print(f"   [OK] Applied {len(tweaks_applied)} tweaks")
 
     def _update_canonical_input(self, iteration_num: int, iteration_summary: Dict):
         print(f"\n[DOCS] Updating canonical input (v032.{iteration_num})...")
 
-        canonical_file = self.canonical_dir / f"canonical_input_v032_{iteration_num}.json"
+        canonical_file = (
+            self.canonical_dir / f"canonical_input_v032_{iteration_num}.json"
+        )
 
         canonical_data = {
             "version": f"v032.{iteration_num}",
@@ -1478,16 +1658,18 @@ class FullDMAICOrchestrator:
             "summary": iteration_summary,
             "artifacts": {
                 "total": len(self.phase_executions),
-                "by_phase": {p.phase_name: p.artifacts_processed for p in self.phase_executions}
+                "by_phase": {
+                    p.phase_name: p.artifacts_processed for p in self.phase_executions
+                },
             },
             "metrics": {
-                "total_duration": iteration_summary['duration'],
-                "success_rate": (iteration_summary['phases_completed'] / 9) * 100
+                "total_duration": iteration_summary["duration"],
+                "success_rate": (iteration_summary["phases_completed"] / 9) * 100,
             },
-            "next_steps": self._generate_next_steps(iteration_num, iteration_summary)
+            "next_steps": self._generate_next_steps(iteration_num, iteration_summary),
         }
 
-        with open(canonical_file, 'w') as f:
+        with open(canonical_file, "w") as f:
             json.dump(canonical_data, f, indent=2)
 
         self._update_changelog(iteration_num, canonical_data)
@@ -1498,32 +1680,44 @@ class FullDMAICOrchestrator:
     def _update_changelog(self, iteration_num: int, canonical_data: Dict):
         changelog_file = self.canonical_dir / "CHANGELOG.md"
 
-        mode = 'a' if changelog_file.exists() else 'w'
+        mode = "a" if changelog_file.exists() else "w"
         with open(changelog_file, mode) as f:
-            if mode == 'w':
+            if mode == "w":
                 f.write("# ABACUS v033 - Changelog\n\n")
 
-            f.write(f"## Version v032.{iteration_num} - {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}\n\n")
+            f.write(
+                f"## Version v032.{iteration_num} - {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}\n\n"
+            )
             f.write(f"### Iteration {iteration_num} Summary\n\n")
-            f.write(f"- **Phases Completed:** {canonical_data['summary']['phases_completed']}/9\n")
-            f.write(f"- **Phases Failed:** {canonical_data['summary']['phases_failed']}\n")
+            f.write(
+                f"- **Phases Completed:** {canonical_data['summary']['phases_completed']}/9\n"
+            )
+            f.write(
+                f"- **Phases Failed:** {canonical_data['summary']['phases_failed']}\n"
+            )
             f.write(f"- **Duration:** {canonical_data['summary']['duration']:.2f}s\n")
-            f.write(f"- **Success Rate:** {canonical_data['metrics']['success_rate']:.1f}%\n\n")
+            f.write(
+                f"- **Success Rate:** {canonical_data['metrics']['success_rate']:.1f}%\n\n"
+            )
 
             f.write(f"### Changes\n\n")
             for phase in self.phase_executions:
-                f.write(f"- Phase {phase.phase_number} ({phase.phase_name}): {phase.status}\n")
+                f.write(
+                    f"- Phase {phase.phase_number} ({phase.phase_name}): {phase.status}\n"
+                )
 
             f.write(f"\n### Next Steps\n\n")
-            for step in canonical_data['next_steps']:
+            for step in canonical_data["next_steps"]:
                 f.write(f"- {step}\n")
 
             f.write(f"\n---\n\n")
 
-    def _generate_next_steps(self, iteration_num: int, iteration_summary: Dict) -> List[str]:
+    def _generate_next_steps(
+        self, iteration_num: int, iteration_summary: Dict
+    ) -> List[str]:
         next_steps = []
 
-        if iteration_summary.get('phases_failed', 0) > 0:
+        if iteration_summary.get("phases_failed", 0) > 0:
             next_steps.append(f"Fix {iteration_summary['phases_failed']} failed phases")
 
         if iteration_num < 3:
@@ -1543,7 +1737,7 @@ class FullDMAICOrchestrator:
 
         tracker_file = self.output_dir / "GLOBAL_TASK_TRACKER.md"
 
-        with open(tracker_file, 'w') as f:
+        with open(tracker_file, "w") as f:
             f.write("# ABACUS v033 - Global Task Tracker\n\n")
             f.write(f"**Generated:** {datetime.now().isoformat()}\n")
             f.write(f"**Execution ID:** {self.execution_id}\n\n")
@@ -1554,15 +1748,19 @@ class FullDMAICOrchestrator:
                 f.write(f"- Duration: {iter_summary['duration']:.2f}s\n")
                 f.write(f"- Completed: {iter_summary['phases_completed']}/9\n")
                 f.write(f"- Failed: {iter_summary['phases_failed']}\n")
-                f.write(f"- Quality Score: {iter_summary.get('quality_score', 'N/A')}\n\n")
+                f.write(
+                    f"- Quality Score: {iter_summary.get('quality_score', 'N/A')}\n\n"
+                )
 
             f.write("## Overall Progress\n\n")
-            total_phases = sum(i['phases_completed'] for i in all_iterations)
-            total_failed = sum(i['phases_failed'] for i in all_iterations)
+            total_phases = sum(i["phases_completed"] for i in all_iterations)
+            total_failed = sum(i["phases_failed"] for i in all_iterations)
             f.write(f"- Total Phases Executed: {total_phases}\n")
             f.write(f"- Total Failures: {total_failed}\n")
             f.write(f"- Total Iterations: {len(all_iterations)}\n")
-            f.write(f"- Average Success Rate: {(total_phases / (len(all_iterations) * 9)) * 100:.1f}%\n\n")
+            f.write(
+                f"- Average Success Rate: {(total_phases / (len(all_iterations) * 9)) * 100:.1f}%\n\n"
+            )
 
             f.write("## Next Steps\n\n")
             f.write("- [ ] Review all iteration reports\n")
@@ -1588,11 +1786,13 @@ class FullDMAICOrchestrator:
         report_file = self.reports_dir / f"FINAL_REPORT_{self.execution_id}.md"
 
         total_iterations = len(all_iterations)
-        successful_iterations = sum(1 for it in all_iterations if it.get('quality_passed', False))
-        total_phases = sum(it['phases_completed'] for it in all_iterations)
-        total_failed = sum(it['phases_failed'] for it in all_iterations)
+        successful_iterations = sum(
+            1 for it in all_iterations if it.get("quality_passed", False)
+        )
+        total_phases = sum(it["phases_completed"] for it in all_iterations)
+        total_failed = sum(it["phases_failed"] for it in all_iterations)
 
-        with open(report_file, 'w', encoding='utf-8') as f:
+        with open(report_file, "w", encoding="utf-8") as f:
             f.write("# ABACUS v033 - Final Execution Report\n\n")
             f.write(f"**Generated:** {datetime.now().isoformat()}\n")
             f.write(f"**Execution ID:** {self.execution_id}\n")
@@ -1601,14 +1801,20 @@ class FullDMAICOrchestrator:
             f.write("## Executive Summary\n\n")
             f.write(f"- **Total Iterations:** {total_iterations}\n")
             f.write(f"- **Successful Iterations:** {successful_iterations}\n")
-            f.write(f"- **Success Rate:** {(successful_iterations/total_iterations*100):.1f}%\n")
+            f.write(
+                f"- **Success Rate:** {(successful_iterations/total_iterations*100):.1f}%\n"
+            )
             f.write(f"- **Total Phases Executed:** {total_phases}\n")
             f.write(f"- **Total Failures:** {total_failed}\n")
-            f.write(f"- **Phase Success Rate:** {((total_phases/(total_iterations*9))*100):.1f}%\n\n")
+            f.write(
+                f"- **Phase Success Rate:** {((total_phases/(total_iterations*9))*100):.1f}%\n\n"
+            )
 
             f.write("## Principle\n\n")
             f.write("**KNOWLEDGE MUST GROW, NEVER DILUTE**\n\n")
-            f.write("This orchestrator implements recursive improvement where each iteration:\n")
+            f.write(
+                "This orchestrator implements recursive improvement where each iteration:\n"
+            )
             f.write("1. Initializes agents and discovers artifacts\n")
             f.write("2. Measures quality and establishes baselines\n")
             f.write("3. Analyzes patterns and identifies root causes\n")
@@ -1622,18 +1828,31 @@ class FullDMAICOrchestrator:
             for iter_summary in all_iterations:
                 f.write(f"### Iteration {iter_summary['iteration']}\n\n")
                 f.write(f"- **Duration:** {iter_summary['duration']:.2f}s\n")
-                f.write(f"- **Phases Completed:** {iter_summary['phases_completed']}/9\n")
+                f.write(
+                    f"- **Phases Completed:** {iter_summary['phases_completed']}/9\n"
+                )
                 f.write(f"- **Phases Failed:** {iter_summary['phases_failed']}\n")
-                f.write(f"- **Quality Score:** {iter_summary.get('quality_score', 'N/A')}\n")
-                f.write(f"- **Quality Passed:** {'✅ Yes' if iter_summary.get('quality_passed', False) else '❌ No'}\n\n")
+                f.write(
+                    f"- **Quality Score:** {iter_summary.get('quality_score', 'N/A')}\n"
+                )
+                f.write(
+                    f"- **Quality Passed:** {'✅ Yes' if iter_summary.get('quality_passed', False) else '❌ No'}\n\n"
+                )
 
                 f.write("#### Phase Results\n\n")
                 f.write("| Phase | Status | Duration | Metrics |\n")
                 f.write("|-------|--------|----------|----------|\n")
-                for phase in iter_summary.get('phases', []):
-                    status = "✅" if phase['status'] == 'completed' else "❌"
-                    metrics_str = ", ".join([f"{k}: {v}" for k, v in list(phase.get('metrics', {}).items())[:2]])
-                    f.write(f"| Phase {phase['phase_number']} | {status} | {phase['duration_seconds']:.2f}s | {metrics_str} |\n")
+                for phase in iter_summary.get("phases", []):
+                    status = "✅" if phase["status"] == "completed" else "❌"
+                    metrics_str = ", ".join(
+                        [
+                            f"{k}: {v}"
+                            for k, v in list(phase.get("metrics", {}).items())[:2]
+                        ]
+                    )
+                    f.write(
+                        f"| Phase {phase['phase_number']} | {status} | {phase['duration_seconds']:.2f}s | {metrics_str} |\n"
+                    )
                 f.write("\n")
 
             f.write("## Key Achievements\n\n")
@@ -1649,10 +1868,16 @@ class FullDMAICOrchestrator:
             f.write("## Quality Metrics\n\n")
             if all_iterations:
                 last_iter = all_iterations[-1]
-                f.write(f"- **Final Quality Score:** {last_iter.get('quality_score', 'N/A')}\n")
+                f.write(
+                    f"- **Final Quality Score:** {last_iter.get('quality_score', 'N/A')}\n"
+                )
                 f.write(f"- **Code Quality:** {last_iter.get('code_quality', 'N/A')}\n")
-                f.write(f"- **Test Coverage:** {last_iter.get('test_coverage', 'N/A')}\n")
-                f.write(f"- **Documentation:** {last_iter.get('documentation', 'N/A')}\n")
+                f.write(
+                    f"- **Test Coverage:** {last_iter.get('test_coverage', 'N/A')}\n"
+                )
+                f.write(
+                    f"- **Documentation:** {last_iter.get('documentation', 'N/A')}\n"
+                )
                 f.write(f"- **Complexity:** {last_iter.get('complexity', 'N/A')}\n\n")
 
             f.write("## Output Artifacts\n\n")
@@ -1680,7 +1905,9 @@ class FullDMAICOrchestrator:
 
     def execute_all_phases(self):
         print("\n" + "=" * 80)
-        print("[DEPLOY] ABACUS v033 - ITERATIVE DMAIC EXECUTION WITH CONVERGENCE (MAX 5 ITERATIONS)")
+        print(
+            "[DEPLOY] ABACUS v033 - ITERATIVE DMAIC EXECUTION WITH CONVERGENCE (MAX 5 ITERATIONS)"
+        )
         print("=" * 80)
         print()
 
@@ -1694,23 +1921,25 @@ class FullDMAICOrchestrator:
             iteration_summary = self._run_single_iteration(iteration, all_iterations)
 
             quality_check = self._check_iteration_quality(iteration_summary)
-            iteration_summary['quality_score'] = quality_check['quality_score']
-            iteration_summary['quality_passed'] = quality_check['passed']
-            iteration_summary['phases'] = [asdict(p) for p in self.phase_executions]
+            iteration_summary["quality_score"] = quality_check["quality_score"]
+            iteration_summary["quality_passed"] = quality_check["passed"]
+            iteration_summary["phases"] = [asdict(p) for p in self.phase_executions]
 
             all_iterations.append(iteration_summary)
 
             # Execute Phase 9 after first iteration
             if iteration >= 1:
-                phase_9_exec = self.execute_phase_9_recursive_loop(iteration, all_iterations)
+                phase_9_exec = self.execute_phase_9_recursive_loop(
+                    iteration, all_iterations
+                )
 
                 # Check convergence
-                if phase_9_exec.metrics.get('converged', False):
+                if phase_9_exec.metrics.get("converged", False):
                     converged = True
                     print(f"\n[CONVERGENCE] System converged in iteration {iteration}!")
                     break
 
-            if quality_check['passed'] and not converged:
+            if quality_check["passed"] and not converged:
                 print(f"\n[SUCCESS] Quality gates passed in iteration {iteration}")
                 # Continue one more iteration to confirm convergence
                 if iteration < max_iterations:
@@ -1718,8 +1947,10 @@ class FullDMAICOrchestrator:
                     continue
                 else:
                     break
-            elif not quality_check['passed']:
-                print(f"\n[INFO] Quality gates not passed. Continuing to iteration {iteration + 1}...")
+            elif not quality_check["passed"]:
+                print(
+                    f"\n[INFO] Quality gates not passed. Continuing to iteration {iteration + 1}..."
+                )
 
         final_report = self._generate_final_report(all_iterations)
         print(f"\n[COMPLETE] Final report: {final_report}")
@@ -1755,15 +1986,19 @@ def main():
 
         # Check convergence
         last_phase_9 = None
-        for phase in results[-1].get('phases', []):
-            if phase.get('phase_number') == 9:
+        for phase in results[-1].get("phases", []):
+            if phase.get("phase_number") == 9:
                 last_phase_9 = phase
                 break
 
         if last_phase_9:
-            converged = last_phase_9.get('metrics', {}).get('converged', False)
-            convergence_score = last_phase_9.get('metrics', {}).get('convergence_score', 0)
-            print(f"Convergence status: {'✅ Converged' if converged else '⏳ In Progress'}")
+            converged = last_phase_9.get("metrics", {}).get("converged", False)
+            convergence_score = last_phase_9.get("metrics", {}).get(
+                "convergence_score", 0
+            )
+            print(
+                f"Convergence status: {'✅ Converged' if converged else '⏳ In Progress'}"
+            )
             print(f"Convergence score: {convergence_score:.1f}%")
 
         return 0
@@ -1771,8 +2006,10 @@ def main():
     except Exception as e:
         print(f"\n[ERROR] Execution failed: {e}")
         import traceback
+
         traceback.print_exc()
         return 1
+
 
 if __name__ == "__main__":
     sys.exit(main())

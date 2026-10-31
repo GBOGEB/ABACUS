@@ -9,6 +9,7 @@ Uses the source-bound aggregate operating point from the QPS offer SSOT:
 The 112 g/s / 357 kW FSD575 point is retained only as a 72 Hz maximum-reference
 sensitivity. It shall not be promoted to the nominal 2K-OP operating point.
 """
+
 from __future__ import annotations
 
 import json
@@ -17,7 +18,9 @@ import math
 R_HE_IDEAL = 2077.0  # J/kg/K screening ideal-gas constant
 
 
-def isothermal_power_kW(mdot_g_s: float, T_K: float, P1_bara: float, P2_bara: float) -> float:
+def isothermal_power_kW(
+    mdot_g_s: float, T_K: float, P1_bara: float, P2_bara: float
+) -> float:
     mdot = mdot_g_s / 1000.0
     return mdot * R_HE_IDEAL * T_K * math.log(P2_bara / P1_bara) / 1000.0
 
@@ -41,12 +44,14 @@ def report() -> dict:
 
     configs = []
     for active in (3, 4):
-        configs.append({
-            "active_units": active,
-            "flow_per_unit_g_s": mdot_total / active,
-            "electrical_power_per_unit_if_equal_share_kW": source_power / active,
-            "status": "CONFIGURATION_DIAGNOSTIC_ONLY_PENDING_SOURCE_BOUND_RUNNING_CONFIGURATION",
-        })
+        configs.append(
+            {
+                "active_units": active,
+                "flow_per_unit_g_s": mdot_total / active,
+                "electrical_power_per_unit_if_equal_share_kW": source_power / active,
+                "status": "CONFIGURATION_DIAGNOSTIC_ONLY_PENDING_SOURCE_BOUND_RUNNING_CONFIGURATION",
+            }
+        )
 
     return {
         "schema": "qps-w53-p05m-hp-power-receipt/v1",

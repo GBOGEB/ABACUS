@@ -1,4 +1,5 @@
 """Fail-closed action policy; agents never hold merge or admin authority."""
+
 ALLOWED = frozenset({"inspect", "test", "collect_receipt"})
 
 

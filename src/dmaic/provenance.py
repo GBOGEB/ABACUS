@@ -7,14 +7,13 @@ import json
 import os
 from datetime import datetime
 from pathlib import Path
-from typing import Dict, List, Any, Optional
-
+from typing import Any, Dict, List, Optional
 
 # In-memory storage for provenance data (used when DMAIC_PROVENANCE_DB is not set)
 _provenance_db: Dict[str, List[Dict[str, Any]]] = {
-    'runs': [],
-    'phases': [],
-    'artifacts': []
+    "runs": [],
+    "phases": [],
+    "artifacts": [],
 }
 
 
@@ -35,7 +34,7 @@ def _load_db() -> Dict[str, Any]:
                 return json.load(fh)
         except (json.JSONDecodeError, OSError):
             pass
-    return {'runs': [], 'phases': [], 'artifacts': []}
+    return {"runs": [], "phases": [], "artifacts": []}
 
 
 def _save_db(data: Dict[str, Any]) -> None:
@@ -55,7 +54,7 @@ def ensure_schema():
     """
     path = _db_path()
     if path is not None and not path.exists():
-        _save_db({'runs': [], 'phases': [], 'artifacts': []})
+        _save_db({"runs": [], "phases": [], "artifacts": []})
 
 
 def begin_run(config_hash: str, inputs_hash: str) -> str:
@@ -69,21 +68,23 @@ def begin_run(config_hash: str, inputs_hash: str) -> str:
     run_id = f"{timestamp}_{config_hash[:8]}"
 
     db = _load_db()
-    db['runs'].append({
-        'run_id': run_id,
-        'config_hash': config_hash,
-        'inputs_hash': inputs_hash,
-        'start_time': timestamp,
-        'status': 'running',
-        'end_time': None,
-        'metrics': {}
-    })
+    db["runs"].append(
+        {
+            "run_id": run_id,
+            "config_hash": config_hash,
+            "inputs_hash": inputs_hash,
+            "start_time": timestamp,
+            "status": "running",
+            "end_time": None,
+            "metrics": {},
+        }
+    )
 
     path = _db_path()
     if path is not None:
         _save_db(db)
     else:
-        _provenance_db['runs'] = db['runs']
+        _provenance_db["runs"] = db["runs"]
 
     return run_id
 
@@ -93,66 +94,81 @@ def finish_run(run_id: str, status: str, total_metrics: Dict[str, Any]):
     Finish a run in the provenance ledger.
     """
     db = _load_db()
-    for run in db['runs']:
-        if run['run_id'] == run_id:
-            run['status'] = status
-            run['end_time'] = datetime.now().isoformat()
-            run['metrics'] = total_metrics
+    for run in db["runs"]:
+        if run["run_id"] == run_id:
+            run["status"] = status
+            run["end_time"] = datetime.now().isoformat()
+            run["metrics"] = total_metrics
             break
 
     path = _db_path()
     if path is not None:
         _save_db(db)
     else:
-        _provenance_db['runs'] = db['runs']
+        _provenance_db["runs"] = db["runs"]
 
 
-def record_phase(run_id: str, phase_name: str, iteration: int,
-                 status: str, inputs_hash: str, outputs_hash: str,
-                 metrics: Dict[str, Any]):
+def record_phase(
+    run_id: str,
+    phase_name: str,
+    iteration: int,
+    status: str,
+    inputs_hash: str,
+    outputs_hash: str,
+    metrics: Dict[str, Any],
+):
     """Record phase execution in provenance ledger."""
     db = _load_db()
-    db['phases'].append({
-        'run_id': run_id,
-        'phase_name': phase_name,
-        'iteration': iteration,
-        'status': status,
-        'inputs_hash': inputs_hash,
-        'outputs_hash': outputs_hash,
-        'metrics': metrics,
-        'timestamp': datetime.now().isoformat()
-    })
+    db["phases"].append(
+        {
+            "run_id": run_id,
+            "phase_name": phase_name,
+            "iteration": iteration,
+            "status": status,
+            "inputs_hash": inputs_hash,
+            "outputs_hash": outputs_hash,
+            "metrics": metrics,
+            "timestamp": datetime.now().isoformat(),
+        }
+    )
 
     path = _db_path()
     if path is not None:
         _save_db(db)
     else:
-        _provenance_db['phases'] = db['phases']
+        _provenance_db["phases"] = db["phases"]
 
 
-def record_artifact(run_id: str, phase: str, kind: str,
-                    path: str, bytes_hash: str,
-                    meta: Optional[Dict] = None) -> str:
+def record_artifact(
+    run_id: str,
+    phase: str,
+    kind: str,
+    path: str,
+    bytes_hash: str,
+    meta: Optional[Dict] = None,
+) -> str:
     """Record artifact in provenance ledger."""
     artifact_id = f"{run_id}_{phase}_{kind}_{bytes_hash[:8]}"
 
     db = _load_db()
-    db['artifacts'].append({
-        'artifact_id': artifact_id,
-        'run_id': run_id,
-        'phase': phase,
-        'kind': kind,
-        'path': path,
-        'bytes_hash': bytes_hash,
-        'meta': meta or {},
-        'timestamp': datetime.now().isoformat()
-    })
+    db["artifacts"].append(
+        {
+            "artifact_id": artifact_id,
+            "run_id": run_id,
+            "phase": phase,
+            "kind": kind,
+            "path": path,
+            "bytes_hash": bytes_hash,
+            "meta": meta or {},
+            "timestamp": datetime.now().isoformat(),
+        }
+    )
 
     file_path = _db_path()
     if file_path is not None:
         _save_db(db)
     else:
-        _provenance_db['artifacts'] = db['artifacts']
+        _provenance_db["artifacts"] = db["artifacts"]
 
     return artifact_id
 
@@ -160,13 +176,13 @@ def record_artifact(run_id: str, phase: str, kind: str,
 def get_recent_runs(limit: int = 10) -> List[Dict[str, Any]]:
     """Get recent runs from provenance ledger."""
     db = _load_db()
-    return db['runs'][-limit:]
+    return db["runs"][-limit:]
 
 
 def get_run(run_id: str) -> Optional[Dict[str, Any]]:
     """Get a specific run by ID."""
     db = _load_db()
-    for run in db['runs']:
-        if run['run_id'] == run_id:
+    for run in db["runs"]:
+        if run["run_id"] == run_id:
             return run
     return None

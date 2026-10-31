@@ -10,19 +10,20 @@ Knowledge Integration V2.3 - ExecutionBackbone/GBOGEB Integration Layer
 Connects V2.3 agents with the execution backbone and GBOGEB knowledge services
 """
 
-import sys
-import json
 import concurrent.futures
-from pathlib import Path
-from typing import Dict, List, Any, Optional
+import json
+import sys
+from dataclasses import asdict, dataclass
 from datetime import datetime
-from dataclasses import dataclass, asdict
+from pathlib import Path
+from typing import Any, Dict, List, Optional
 
 sys.path.insert(0, str(Path(__file__).parent.parent))
 
 try:
     from core.execution_backbone import ExecutionBackbone
     from core.gbogeb.gbogeb import GBOGEB
+
     EXECUTION_BACKBONE_AVAILABLE = True
 except ImportError:
     print("Warning: execution-backbone/GBOGEB modules not found; using fallback mode")
@@ -49,6 +50,7 @@ def _run_with_timeout(func, timeout: float):
 @dataclass
 class KnowledgeEntry:
     """Knowledge base entry"""
+
     entry_id: str
     source: str
     category: str
@@ -72,7 +74,9 @@ class KnowledgeIntegrationV23:
         self.gbogeb_enabled = EXECUTION_BACKBONE_AVAILABLE
 
         if self.execution_backbone_enabled:
-            self.execution_backbone = ExecutionBackbone(max_workers=2, max_memory_mb=2048)
+            self.execution_backbone = ExecutionBackbone(
+                max_workers=2, max_memory_mb=2048
+            )
             self.gbogeb = GBOGEB(workspace=str(self.workspace / "gbogeb"))
         else:
             self.execution_backbone = None
@@ -101,10 +105,10 @@ class KnowledgeIntegrationV23:
                 "content": {
                     "name": "DMAIC Cycle",
                     "phases": ["Define", "Measure", "Analyze", "Improve", "Control"],
-                    "description": "Six Sigma quality improvement methodology"
+                    "description": "Six Sigma quality improvement methodology",
                 },
                 "confidence": 1.0,
-                "tags": {"version": "v3.0", "type": "core"}
+                "tags": {"version": "v3.0", "type": "core"},
             },
             {
                 "entry_id": "kb_002",
@@ -112,11 +116,16 @@ class KnowledgeIntegrationV23:
                 "category": "architecture",
                 "content": {
                     "name": "12-Cluster System",
-                    "clusters": ["Analysis", "Documentation", "Recursive", "Monitoring"],
-                    "description": "Multi-agent cryogenic analysis framework"
+                    "clusters": [
+                        "Analysis",
+                        "Documentation",
+                        "Recursive",
+                        "Monitoring",
+                    ],
+                    "description": "Multi-agent cryogenic analysis framework",
                 },
                 "confidence": 1.0,
-                "tags": {"version": "v2.3", "type": "architecture"}
+                "tags": {"version": "v2.3", "type": "architecture"},
             },
             {
                 "entry_id": "kb_003",
@@ -125,11 +134,18 @@ class KnowledgeIntegrationV23:
                 "content": {
                     "name": "Cryogenic Engineering",
                     "focus": "Helium systems, heat loads, cooldown analysis",
-                    "data_sources": ["DOW", "KEB", "GBOGEB", "HEPAK", "CoolProp", "NIST"]
+                    "data_sources": [
+                        "DOW",
+                        "KEB",
+                        "GBOGEB",
+                        "HEPAK",
+                        "CoolProp",
+                        "NIST",
+                    ],
                 },
                 "confidence": 1.0,
-                "tags": {"domain": "cryogenics", "type": "domain"}
-            }
+                "tags": {"domain": "cryogenics", "type": "domain"},
+            },
         ]
 
         for entry in canonical_knowledge:
@@ -139,12 +155,18 @@ class KnowledgeIntegrationV23:
                 category=entry["category"],
                 content=entry["content"],
                 confidence=entry["confidence"],
-                tags=entry["tags"]
+                tags=entry["tags"],
             )
 
-    def add_knowledge_entry(self, entry_id: str, source: str, category: str,
-                           content: Any, confidence: float = 1.0,
-                           tags: Dict[str, str] = None):
+    def add_knowledge_entry(
+        self,
+        entry_id: str,
+        source: str,
+        category: str,
+        content: Any,
+        confidence: float = 1.0,
+        tags: Dict[str, str] = None,
+    ):
         """Add knowledge entry to the knowledge base"""
         entry = KnowledgeEntry(
             entry_id=entry_id,
@@ -153,7 +175,7 @@ class KnowledgeIntegrationV23:
             content=content,
             timestamp=datetime.now().isoformat(),
             confidence=confidence,
-            tags=tags or {}
+            tags=tags or {},
         )
 
         self.knowledge_cache.append(entry)
@@ -164,12 +186,15 @@ class KnowledgeIntegrationV23:
                 agent="knowledge_integration",
                 metric_name="knowledge_entries_added",
                 metric_value=1,
-                tags={"category": category, "source": source}
+                tags={"category": category, "source": source},
             )
 
-    def query_knowledge(self, category: Optional[str] = None,
-                       source: Optional[str] = None,
-                       tags: Optional[Dict[str, str]] = None) -> List[KnowledgeEntry]:
+    def query_knowledge(
+        self,
+        category: Optional[str] = None,
+        source: Optional[str] = None,
+        tags: Optional[Dict[str, str]] = None,
+    ) -> List[KnowledgeEntry]:
         """Query knowledge base"""
         results = self.knowledge_cache
 
@@ -180,21 +205,26 @@ class KnowledgeIntegrationV23:
             results = [e for e in results if e.source == source]
 
         if tags:
-            results = [e for e in results if all(
-                e.tags.get(k) == v for k, v in tags.items()
-            )]
+            results = [
+                e for e in results if all(e.tags.get(k) == v for k, v in tags.items())
+            ]
 
         return results
 
-    def collect_agent_metric(self, agent_name: str, metric_name: str,
-                            metric_value: Any, tags: Dict[str, str] = None):
+    def collect_agent_metric(
+        self,
+        agent_name: str,
+        metric_name: str,
+        metric_value: Any,
+        tags: Dict[str, str] = None,
+    ):
         """Collect metric from agent"""
         if self.gbogeb_enabled:
             self.gbogeb.collect_metric(
                 agent=agent_name,
                 metric_name=metric_name,
                 metric_value=metric_value,
-                tags=tags or {}
+                tags=tags or {},
             )
         else:
             metric = {
@@ -202,15 +232,21 @@ class KnowledgeIntegrationV23:
                 "metric_name": metric_name,
                 "metric_value": metric_value,
                 "timestamp": datetime.now().isoformat(),
-                "tags": tags or {}
+                "tags": tags or {},
             }
             self.metrics_cache.append(metric)
             print(f"[METRIC] {agent_name}.{metric_name} = {metric_value}")
 
-    def schedule_agent_task(self, task_id: str, agent_name: str,
-                           task_func: callable, priority: int = 5,
-                           args: tuple = (), kwargs: dict = None,
-                           timeout: float = None):
+    def schedule_agent_task(
+        self,
+        task_id: str,
+        agent_name: str,
+        task_func: callable,
+        priority: int = 5,
+        args: tuple = (),
+        kwargs: dict = None,
+        timeout: float = None,
+    ):
         """Schedule an agent task via ExecutionBackbone with an optional timeout."""
         if self.execution_backbone_enabled and self.execution_backbone:
             self.execution_backbone.schedule_task(
@@ -218,30 +254,39 @@ class KnowledgeIntegrationV23:
                 func=task_func,
                 priority=priority,
                 args=args,
-                kwargs=kwargs or {}
+                kwargs=kwargs or {},
             )
         else:
             print(f"[TASK] Scheduled: {agent_name}.{task_id} (priority: {priority})")
             try:
                 if timeout is not None:
-                    _run_with_timeout(lambda: task_func(*args, **(kwargs or {})), timeout)
+                    _run_with_timeout(
+                        lambda: task_func(*args, **(kwargs or {})), timeout
+                    )
                 else:
                     task_func(*args, **(kwargs or {}))
             except OperationTimeoutError:
-                self.metrics_cache.append({
-                    "agent": agent_name,
-                    "metric_name": "task_timeout",
-                    "metric_value": 1,
-                    "tags": {"task_id": task_id, "mode": "fallback"},
-                    "timestamp": datetime.now().isoformat(),
-                })
+                self.metrics_cache.append(
+                    {
+                        "agent": agent_name,
+                        "metric_name": "task_timeout",
+                        "metric_value": 1,
+                        "tags": {"task_id": task_id, "mode": "fallback"},
+                        "timestamp": datetime.now().isoformat(),
+                    }
+                )
                 print(f"[TIMEOUT] Task {task_id} timed out after {timeout}s")
             except Exception as e:
                 print(f"[ERROR] Task {task_id} failed: {e}")
 
-    def check_compliance(self, rule_name: str, check_func: callable,
-                        severity: str = "info", timeout: float = None,
-                        max_retries: int = 5) -> bool:
+    def check_compliance(
+        self,
+        rule_name: str,
+        check_func: callable,
+        severity: str = "info",
+        timeout: float = None,
+        max_retries: int = 5,
+    ) -> bool:
         """Check compliance rule, with optional timeout and automatic retries."""
         if self.gbogeb_enabled:
             return self.gbogeb.check_compliance(rule_name, check_func, severity)
@@ -258,7 +303,9 @@ class KnowledgeIntegrationV23:
                 if attempt >= max_retries:
                     print(f"[COMPLIANCE] {rule_name}: TIMEOUT after {attempt} attempts")
                     return False
-                print(f"[COMPLIANCE] {rule_name}: timeout, retry {attempt}/{max_retries}")
+                print(
+                    f"[COMPLIANCE] {rule_name}: timeout, retry {attempt}/{max_retries}"
+                )
             except Exception as e:
                 print(f"[COMPLIANCE] {rule_name}: ERROR - {e}")
                 return False
@@ -279,7 +326,7 @@ class KnowledgeIntegrationV23:
             "sources": sources,
             "execution_backbone_enabled": self.execution_backbone_enabled,
             "gbogeb_enabled": self.gbogeb_enabled,
-            "metrics_collected": len(self.metrics_cache)
+            "metrics_collected": len(self.metrics_cache),
         }
 
     def _save_knowledge_entry(self, entry: KnowledgeEntry):
@@ -288,7 +335,7 @@ class KnowledgeIntegrationV23:
         kb_dir.mkdir(exist_ok=True)
 
         entry_file = kb_dir / f"{entry.entry_id}.json"
-        with open(entry_file, 'w') as f:
+        with open(entry_file, "w") as f:
             json.dump(asdict(entry), f, indent=2)
 
     def export_knowledge_base(self, output_file: str = "knowledge_export.json"):
@@ -297,11 +344,11 @@ class KnowledgeIntegrationV23:
             "exported_at": datetime.now().isoformat(),
             "summary": self.get_knowledge_summary(),
             "entries": [asdict(e) for e in self.knowledge_cache],
-            "metrics": self.metrics_cache
+            "metrics": self.metrics_cache,
         }
 
         export_path = self.workspace / output_file
-        with open(export_path, 'w') as f:
+        with open(export_path, "w") as f:
             json.dump(export_data, f, indent=2)
 
         print(f"Knowledge base exported to: {export_path}")
@@ -323,7 +370,7 @@ def main():
         category="testing",
         content={"test": "data", "value": 42},
         confidence=0.95,
-        tags={"test": "true", "version": "v2.3"}
+        tags={"test": "true", "version": "v2.3"},
     )
 
     print("\n[TEST 2] Querying knowledge base")
@@ -337,14 +384,12 @@ def main():
         agent_name="test_agent",
         metric_name="test_metric",
         metric_value=100,
-        tags={"test": "true"}
+        tags={"test": "true"},
     )
 
     print("\n[TEST 4] Compliance check")
     ki.check_compliance(
-        rule_name="memory_limit",
-        check_func=lambda: True,
-        severity="warning"
+        rule_name="memory_limit", check_func=lambda: True, severity="warning"
     )
 
     print("\n[TEST 5] Knowledge summary")

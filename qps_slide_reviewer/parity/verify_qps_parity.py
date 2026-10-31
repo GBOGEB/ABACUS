@@ -8,7 +8,9 @@ Exit 0 and prints "PARITY OK ..." on success; non-zero on any parity breach.
 Synthetic data only. Non-authoritative: no engineering/compliance/release authority
 is implied, consistent with mission/QPS/QPS_TRIAGE_PCA_MATH_APPLICATION.md.
 """
+
 from __future__ import annotations
+
 import os
 import sys
 
@@ -22,9 +24,9 @@ import json
 import math
 import random
 
-from kernels.pca_reference import pca_reference, parallel_analysis
 from kernels.bradley_terry import rank_pairs
-from slide_reviewer_port import sr_pca, sr_bradley_terry
+from kernels.pca_reference import parallel_analysis, pca_reference
+from slide_reviewer_port import sr_bradley_terry, sr_pca
 
 SEED = 20260925
 rng = random.Random(SEED)
@@ -38,10 +40,10 @@ ids = list(range(1, N_SLIDES + 1))
 for _ in ids:
     q = rng.gauss(0, 1)
     row = [
-        q + rng.gauss(0, 0.4),            # evidence ~ quality
-        0.8 * q + rng.gauss(0, 0.5),      # reliability ~ quality
-        rng.gauss(0, 1),                  # delivery ~ independent
-        0.5 * q + rng.gauss(0, 0.7),      # visual ~ weak quality
+        q + rng.gauss(0, 0.4),  # evidence ~ quality
+        0.8 * q + rng.gauss(0, 0.5),  # reliability ~ quality
+        rng.gauss(0, 1),  # delivery ~ independent
+        0.5 * q + rng.gauss(0, 0.7),  # visual ~ weak quality
     ]
     matrix.append(row)
 
@@ -58,6 +60,7 @@ canon_evr = canon["explained_variance_ratio"][:3]
 sr_evr = sr["explained_variance"]
 evr_absdiff = [abs(a - b) for a, b in zip(canon_evr, sr_evr)]
 
+
 # ---- synthetic pairwise comparisons from the latent quality ----
 def build_comps(repeats, upset_rate):
     out = []
@@ -68,14 +71,26 @@ def build_comps(repeats, upset_rate):
                 sj = matrix[j][0] + matrix[j][1]
                 upset = rng.random() < upset_rate
                 a_wins = (si > sj) != upset
-                out.append({
-                    "slideAId": ids[i], "slideBId": ids[j],
-                    "winnerId": ids[i] if a_wins else ids[j], "isTie": False,
-                })
+                out.append(
+                    {
+                        "slideAId": ids[i],
+                        "slideBId": ids[j],
+                        "winnerId": ids[i] if a_wins else ids[j],
+                        "isTie": False,
+                    }
+                )
     return out
 
+
 def canon_pairs_of(cmps):
-    return [(c["winnerId"], c["slideBId"] if c["winnerId"] == c["slideAId"] else c["slideAId"]) for c in cmps]
+    return [
+        (
+            c["winnerId"],
+            c["slideBId"] if c["winnerId"] == c["slideAId"] else c["slideAId"],
+        )
+        for c in cmps
+    ]
+
 
 # Case A: single round-robin, 15% upsets -> may not be strongly connected (fail-closed)
 comps_sparse = build_comps(1, 0.15)
@@ -87,14 +102,18 @@ comps = build_comps(4, 0.25)
 canon_bt = rank_pairs(canon_pairs_of(comps))
 sr_bt = sr_bradley_terry(ids, comps)
 
-canon_order = list(canon_bt["scores"].keys()) if canon_bt["status"] == "PASS_TESTABLE_ENGINE" else []
+canon_order = (
+    list(canon_bt["scores"].keys())
+    if canon_bt["status"] == "PASS_TESTABLE_ENGINE"
+    else []
+)
 sr_order = [k for k, _ in sorted(sr_bt.items(), key=lambda kv: kv[1], reverse=True)]
 
 out = {
     "schema": "gg-math-qps-parity/v1",
     "seed": SEED,
     "note": "Synthetic reference vector. Non-authoritative; verifies numerical parity "
-            "between gg_MATH canonical kernels and the QPS slide-reviewer consumer.",
+    "between gg_MATH canonical kernels and the QPS slide-reviewer consumer.",
     "features": FEATURES,
     "slide_ids": ids,
     "matrix": matrix,
@@ -112,9 +131,10 @@ out = {
         "comparisons": len(comps_sparse),
         "canonical_status": canon_bt_sparse["status"],
         "note": "Canonical fails closed when the directed win-graph is not strongly "
-                "connected (Ford condition); the slide-reviewer's prior=0.1 masks this.",
+        "connected (Ford condition); the slide-reviewer's prior=0.1 masks this.",
         "slide_reviewer_still_returns_ranking": [
-            k for k, _ in sorted(sr_bt_sparse.items(), key=lambda kv: kv[1], reverse=True)
+            k
+            for k, _ in sorted(sr_bt_sparse.items(), key=lambda kv: kv[1], reverse=True)
         ],
     },
     "bradley_terry_convergent_case": {
@@ -135,8 +155,14 @@ max_eig = max(eig_absdiff)
 max_evr = max(evr_absdiff)
 assert max_eig < 1e-6, f"PCA eigenvalue parity failed: {eig_absdiff}"
 assert max_evr < 1e-6, f"PCA explained-variance parity failed: {evr_absdiff}"
-assert canon_bt["status"] == "PASS_TESTABLE_ENGINE", f"convergent BT should pass: {canon_bt['status']}"
+assert (
+    canon_bt["status"] == "PASS_TESTABLE_ENGINE"
+), f"convergent BT should pass: {canon_bt['status']}"
 assert canon_order == sr_order, f"BT order mismatch: {canon_order} vs {sr_order}"
 import sys
-print(f"\nPARITY OK  max|dEig|={max_eig:.2e}  max|dEVR|={max_evr:.2e}  "
-      f"fail_closed={canon_bt_sparse['status']}  convergent_BT_order_match={canon_order==sr_order}", file=sys.stderr)
+
+print(
+    f"\nPARITY OK  max|dEig|={max_eig:.2e}  max|dEVR|={max_evr:.2e}  "
+    f"fail_closed={canon_bt_sparse['status']}  convergent_BT_order_match={canon_order==sr_order}",
+    file=sys.stderr,
+)

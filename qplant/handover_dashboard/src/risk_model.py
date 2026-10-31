@@ -2,9 +2,11 @@
 
 Models geopolitical risks, operational scenarios, and beam availability impact.
 """
+
 from __future__ import annotations
-from typing import Dict, List, Any
+
 from dataclasses import dataclass
+from typing import Any, Dict, List
 
 
 @dataclass
@@ -13,56 +15,140 @@ class RiskItem:
     category: str
     title: str
     description: str
-    likelihood: int      # 1-5
-    impact: int          # 1-5
-    risk_score: int      # likelihood × impact
+    likelihood: int  # 1-5
+    impact: int  # 1-5
+    risk_score: int  # likelihood × impact
     mitigation: str
-    status: str          # OPEN, MITIGATED, ACCEPTED, MONITOR
+    status: str  # OPEN, MITIGATED, ACCEPTED, MONITOR
     owner: str
 
+
 RISK_REGISTER: List[RiskItem] = [
-    RiskItem("RISK-001", "Geopolitical", "Iran Conflict → Helium Supply",
-             "Military escalation disrupts Qatar/Iran helium production (30% global supply). "
-             "Algeria and US sources insufficient to cover shortfall. Price spike 2-3x.",
-             4, 5, 20, "Strategic helium reserve (3-month buffer), dual-source contracts, "
-             "helium recovery system optimization", "MONITOR", "Procurement"),
-    RiskItem("RISK-002", "Geopolitical", "LNG/LPG Market Coupling",
-             "Helium is byproduct of LNG processing. LNG market disruption cascades to He supply.",
-             3, 4, 12, "Monitor LNG futures, establish He-specific supply agreements decoupled from LNG spot",
-             "MONITOR", "Procurement"),
-    RiskItem("RISK-003", "Operational", "LOOP Event (Loss of Instrument Air)",
-             "Loss of compressed air supply causes all pneumatic valves to fail-safe position. "
-             "QPLANT trip, proton beam shutdown.",
-             2, 5, 10, "Backup air supply (accumulator tank), fail-safe valve positions verified, "
-             "LOOP recovery procedure tested annually", "MITIGATED", "Operations"),
-    RiskItem("RISK-004", "Operational", "Cascade Valve Failure",
-             "Single valve leak increases system pressure → accelerates wear on adjacent valves → cascade.",
-             2, 4, 8, "Pressure relief valves, leak monitoring system, predictive maintenance schedule",
-             "MITIGATED", "Engineering"),
-    RiskItem("RISK-005", "Supply Chain", "Extended MTTR (Spare Parts)",
-             "Vendor lead times extend from 4h to 8h+ due to supply chain disruption (post-COVID effects).",
-             3, 3, 9, "On-site spare inventory (10% cold, 5% warm), multiple qualified suppliers",
-             "ACCEPTED", "Maintenance"),
-    RiskItem("RISK-006", "Technical", "Warm Valve Leak Rate Derogation",
-             "Meca Inox valves do NOT meet 1×10⁻⁹ mbar·l/s spec. Higher He losses to ambient accepted.",
-             3, 3, 9, "GBO calculation to verify acceptable loss rate, new sub-class with higher allowable rate, "
-             "evaluate Cryoworld variants", "OPEN", "Engineering"),
-    RiskItem("RISK-007", "Technical", "Seal Degradation under Radiation",
-             "HDPE/UHMWPE seals may degrade faster under sustained radiation exposure.",
-             2, 3, 6, "Radiation testing program, preventive seal replacement at PM intervals",
-             "MONITOR", "Engineering"),
-    RiskItem("RISK-008", "Financial", "Helium Price Volatility",
-             "Market helium price fluctuates €117-300/kg. Budget uncertainty for annual operations.",
-             4, 3, 12, "Monte Carlo cost modeling, budget contingency at P90, hedging contracts",
-             "ACCEPTED", "Finance"),
-    RiskItem("RISK-009", "Regulatory", "ASME/PED Compliance Gap",
-             "Valve derogation from leak spec may conflict with pressure equipment directive.",
-             2, 4, 8, "Legal review of PED 2014/68/EU applicability, document derogation rationale",
-             "MONITOR", "Quality"),
-    RiskItem("RISK-010", "Operational", "Beam Downtime from Valve Failure",
-             "Each QPLANT trip causes proton beam downtime. Estimated 12h MDT per event.",
-             3, 5, 15, "Redundant valve paths, hot standby valves, rapid isolation procedures",
-             "MITIGATED", "Operations"),
+    RiskItem(
+        "RISK-001",
+        "Geopolitical",
+        "Iran Conflict → Helium Supply",
+        "Military escalation disrupts Qatar/Iran helium production (30% global supply). "
+        "Algeria and US sources insufficient to cover shortfall. Price spike 2-3x.",
+        4,
+        5,
+        20,
+        "Strategic helium reserve (3-month buffer), dual-source contracts, "
+        "helium recovery system optimization",
+        "MONITOR",
+        "Procurement",
+    ),
+    RiskItem(
+        "RISK-002",
+        "Geopolitical",
+        "LNG/LPG Market Coupling",
+        "Helium is byproduct of LNG processing. LNG market disruption cascades to He supply.",
+        3,
+        4,
+        12,
+        "Monitor LNG futures, establish He-specific supply agreements decoupled from LNG spot",
+        "MONITOR",
+        "Procurement",
+    ),
+    RiskItem(
+        "RISK-003",
+        "Operational",
+        "LOOP Event (Loss of Instrument Air)",
+        "Loss of compressed air supply causes all pneumatic valves to fail-safe position. "
+        "QPLANT trip, proton beam shutdown.",
+        2,
+        5,
+        10,
+        "Backup air supply (accumulator tank), fail-safe valve positions verified, "
+        "LOOP recovery procedure tested annually",
+        "MITIGATED",
+        "Operations",
+    ),
+    RiskItem(
+        "RISK-004",
+        "Operational",
+        "Cascade Valve Failure",
+        "Single valve leak increases system pressure → accelerates wear on adjacent valves → cascade.",
+        2,
+        4,
+        8,
+        "Pressure relief valves, leak monitoring system, predictive maintenance schedule",
+        "MITIGATED",
+        "Engineering",
+    ),
+    RiskItem(
+        "RISK-005",
+        "Supply Chain",
+        "Extended MTTR (Spare Parts)",
+        "Vendor lead times extend from 4h to 8h+ due to supply chain disruption (post-COVID effects).",
+        3,
+        3,
+        9,
+        "On-site spare inventory (10% cold, 5% warm), multiple qualified suppliers",
+        "ACCEPTED",
+        "Maintenance",
+    ),
+    RiskItem(
+        "RISK-006",
+        "Technical",
+        "Warm Valve Leak Rate Derogation",
+        "Meca Inox valves do NOT meet 1×10⁻⁹ mbar·l/s spec. Higher He losses to ambient accepted.",
+        3,
+        3,
+        9,
+        "GBO calculation to verify acceptable loss rate, new sub-class with higher allowable rate, "
+        "evaluate Cryoworld variants",
+        "OPEN",
+        "Engineering",
+    ),
+    RiskItem(
+        "RISK-007",
+        "Technical",
+        "Seal Degradation under Radiation",
+        "HDPE/UHMWPE seals may degrade faster under sustained radiation exposure.",
+        2,
+        3,
+        6,
+        "Radiation testing program, preventive seal replacement at PM intervals",
+        "MONITOR",
+        "Engineering",
+    ),
+    RiskItem(
+        "RISK-008",
+        "Financial",
+        "Helium Price Volatility",
+        "Market helium price fluctuates €117-300/kg. Budget uncertainty for annual operations.",
+        4,
+        3,
+        12,
+        "Monte Carlo cost modeling, budget contingency at P90, hedging contracts",
+        "ACCEPTED",
+        "Finance",
+    ),
+    RiskItem(
+        "RISK-009",
+        "Regulatory",
+        "ASME/PED Compliance Gap",
+        "Valve derogation from leak spec may conflict with pressure equipment directive.",
+        2,
+        4,
+        8,
+        "Legal review of PED 2014/68/EU applicability, document derogation rationale",
+        "MONITOR",
+        "Quality",
+    ),
+    RiskItem(
+        "RISK-010",
+        "Operational",
+        "Beam Downtime from Valve Failure",
+        "Each QPLANT trip causes proton beam downtime. Estimated 12h MDT per event.",
+        3,
+        5,
+        15,
+        "Redundant valve paths, hot standby valves, rapid isolation procedures",
+        "MITIGATED",
+        "Operations",
+    ),
 ]
 
 OPERATIONAL_SCENARIOS: List[Dict[str, Any]] = [
@@ -121,10 +207,16 @@ def risk_matrix_data() -> List[Dict[str, Any]]:
     """Return risk register as list of dicts for visualization."""
     return [
         {
-            "id": r.id, "category": r.category, "title": r.title,
-            "description": r.description, "likelihood": r.likelihood,
-            "impact": r.impact, "risk_score": r.risk_score,
-            "mitigation": r.mitigation, "status": r.status, "owner": r.owner,
+            "id": r.id,
+            "category": r.category,
+            "title": r.title,
+            "description": r.description,
+            "likelihood": r.likelihood,
+            "impact": r.impact,
+            "risk_score": r.risk_score,
+            "mitigation": r.mitigation,
+            "status": r.status,
+            "owner": r.owner,
         }
         for r in RISK_REGISTER
     ]
