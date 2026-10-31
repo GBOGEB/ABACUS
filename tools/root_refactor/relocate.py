@@ -20,6 +20,7 @@ frozen log line) is acknowledged one consumer at a time, with a reason, in
 ROOT_RELOCATION_MENTIONS.csv; an acknowledgement that no longer matches fails too.
 Nothing is ever deleted.
 """
+
 from __future__ import annotations
 
 import argparse

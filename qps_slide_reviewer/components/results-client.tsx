@@ -83,6 +83,16 @@ function Phase({ title, children }: { title: string; children: React.ReactNode }
   );
 }
 
+async function loadAnalytics(): Promise<Analytics | null> {
+  try {
+    const res = await fetch('/api/analytics', { cache: 'no-store' });
+    if (res?.ok) return (await res.json()) as Analytics;
+  } catch (err) {
+    console.error('Failed to fetch analytics:', err);
+  }
+  return null;
+}
+
 export function ResultsClient() {
   const [data, setData] = useState<Analytics | null>(null);
   const [loading, setLoading] = useState(true);
@@ -91,19 +101,24 @@ export function ResultsClient() {
 
   const fetchResults = useCallback(async () => {
     setLoading(true);
-    try {
-      const res = await fetch('/api/analytics', { cache: 'no-store' });
-      if (res?.ok) setData((await res.json()) as Analytics);
-    } catch (err) {
-      console.error('Failed to fetch analytics:', err);
-    } finally {
-      setLoading(false);
-    }
+    const next = await loadAnalytics();
+    if (next) setData(next);
+    setLoading(false);
   }, []);
 
+  // Initial load: loading already starts true, so state is set only once
+  // the request settles.
   useEffect(() => {
-    fetchResults();
-  }, [fetchResults]);
+    let active = true;
+    loadAnalytics().then((next) => {
+      if (!active) return;
+      if (next) setData(next);
+      setLoading(false);
+    });
+    return () => {
+      active = false;
+    };
+  }, []);
 
   const sorted = useMemo(() => {
     const safe = [...(data?.slides ?? [])];

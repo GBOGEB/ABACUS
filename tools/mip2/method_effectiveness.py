@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 """Read-only MIP2 detection-effectiveness scorer. Never promotes maturity or closes roots."""
+
 from __future__ import annotations
 
 import argparse
@@ -16,18 +17,36 @@ SHA256 = re.compile(r"[0-9a-f]{64}\Z")
 SCHEMA = "mip2.method-observations.v1"
 
 
-def checked_identity(evidence: dict, raw_corpus: bytes, raw_artifact: Optional[bytes]) -> None:
+def checked_identity(
+    evidence: dict, raw_corpus: bytes, raw_artifact: Optional[bytes]
+) -> None:
     if not isinstance(evidence, dict) or evidence.get("schema") != SCHEMA:
         raise ValueError("OBSERVATION_SCHEMA_INVALID")
-    required = ("repository", "source_sha", "method_id", "tool_name", "tool_version",
-                "config_sha256", "corpus_sha256", "artifact_sha256", "run_id",
-                "run_attempt", "job_id", "observations")
+    required = (
+        "repository",
+        "source_sha",
+        "method_id",
+        "tool_name",
+        "tool_version",
+        "config_sha256",
+        "corpus_sha256",
+        "artifact_sha256",
+        "run_id",
+        "run_attempt",
+        "job_id",
+        "observations",
+    )
     if any(key not in evidence or evidence[key] is None for key in required):
         raise ValueError("OBSERVATION_IDENTITY_MISSING")
-    if evidence["repository"] not in ("GBOGEB/ABACUS", "GBOGEB/CODEX",
-                                      "GBOGEB/cryoplant-project"):
+    if evidence["repository"] not in (
+        "GBOGEB/ABACUS",
+        "GBOGEB/CODEX",
+        "GBOGEB/cryoplant-project",
+    ):
         raise ValueError("REPOSITORY_NOT_IN_FEDERATION_SCOPE")
-    if not isinstance(evidence["source_sha"], str) or not SHA40.fullmatch(evidence["source_sha"]):
+    if not isinstance(evidence["source_sha"], str) or not SHA40.fullmatch(
+        evidence["source_sha"]
+    ):
         raise ValueError("SOURCE_SHA_INVALID")
     for key in ("config_sha256", "corpus_sha256", "artifact_sha256"):
         value = evidence[key]
@@ -49,13 +68,18 @@ def checked_identity(evidence: dict, raw_corpus: bytes, raw_artifact: Optional[b
             raise ValueError(key.upper() + "_INVALID")
 
 
-def evaluate(evidence: dict, raw_corpus: bytes, raw_artifact: Optional[bytes] = None) -> dict:
+def evaluate(
+    evidence: dict, raw_corpus: bytes, raw_artifact: Optional[bytes] = None
+) -> dict:
     checked_identity(evidence, raw_corpus, raw_artifact)
     try:
         corpus = json.loads(raw_corpus)
     except (ValueError, UnicodeDecodeError) as exc:
         raise ValueError("CORPUS_JSON_INVALID") from exc
-    if not isinstance(corpus, dict) or corpus.get("schema") != "mip2.method-regression-corpus.v1":
+    if (
+        not isinstance(corpus, dict)
+        or corpus.get("schema") != "mip2.method-regression-corpus.v1"
+    ):
         raise ValueError("CORPUS_SCHEMA_INVALID")
     cases = corpus.get("cases")
     if not isinstance(cases, list):
@@ -107,63 +131,120 @@ def evaluate(evidence: dict, raw_corpus: bytes, raw_artifact: Optional[bytes] = 
     missing = sorted(set(expected) - set(observed))
     positives = sum(v == "positive" for v in expected.values())
     negatives = sum(v == "negative" for v in expected.values())
-    result = {"schema": "mip2.method-effectiveness.v1", "repository": evidence["repository"],
-              "source_sha": evidence["source_sha"], "method_id": evidence["method_id"],
-              "tool_name": evidence["tool_name"], "tool_version": evidence["tool_version"],
-              "run_id": evidence["run_id"], "run_attempt": evidence["run_attempt"],
-              "job_id": evidence["job_id"], "artifact_sha256": evidence["artifact_sha256"],
-              "corpus_sha256": evidence["corpus_sha256"],
-              "expected_cases": len(expected), "observed_cases": len(observed),
-              "positive_controls": positives, "negative_controls": negatives,
-              "missing_cases": missing, "unique_fingerprints": len(fingerprints),
-              "runtime_ms": round(total_runtime_ms, 3),
-              "merge_authorized": False, "root_closure_credited": False,
-              "maturity_promotion": "NOT_ATTESTED"}
+    result = {
+        "schema": "mip2.method-effectiveness.v1",
+        "repository": evidence["repository"],
+        "source_sha": evidence["source_sha"],
+        "method_id": evidence["method_id"],
+        "tool_name": evidence["tool_name"],
+        "tool_version": evidence["tool_version"],
+        "run_id": evidence["run_id"],
+        "run_attempt": evidence["run_attempt"],
+        "job_id": evidence["job_id"],
+        "artifact_sha256": evidence["artifact_sha256"],
+        "corpus_sha256": evidence["corpus_sha256"],
+        "expected_cases": len(expected),
+        "observed_cases": len(observed),
+        "positive_controls": positives,
+        "negative_controls": negatives,
+        "missing_cases": missing,
+        "unique_fingerprints": len(fingerprints),
+        "runtime_ms": round(total_runtime_ms, 3),
+        "merge_authorized": False,
+        "root_closure_credited": False,
+        "maturity_promotion": "NOT_ATTESTED",
+    }
     if missing or not positives or not negatives:
-        result.update({"state": "INSUFFICIENT_EVIDENCE", "confusion": None,
-                       "recall_wilson95": None})
+        result.update(
+            {
+                "state": "INSUFFICIENT_EVIDENCE",
+                "confusion": None,
+                "recall_wilson95": None,
+            }
+        )
         return result
     tp = sum(expected[k] == "positive" and v for k, v in observed.items())
     fn = sum(expected[k] == "positive" and not v for k, v in observed.items())
     fp = sum(expected[k] == "negative" and v for k, v in observed.items())
     tn = sum(expected[k] == "negative" and not v for k, v in observed.items())
-    result.update({"state": "CORPUS_MEASURED_NOT_QUALIFIED",
-                   "confusion": metrics(tp, fp, fn, tn),
-                   "recall_wilson95": wilson(tp, tp + fn)})
+    result.update(
+        {
+            "state": "CORPUS_MEASURED_NOT_QUALIFIED",
+            "confusion": metrics(tp, fp, fn, tn),
+            "recall_wilson95": wilson(tp, tp + fn),
+        }
+    )
     return result
 
 
 def comparable_delta(before: dict, after: dict) -> dict:
-    keys = ("repository", "source_sha", "method_id", "corpus_sha256",
-            "expected_cases", "positive_controls", "negative_controls")
-    comparable = (all(before.get(k) == after.get(k) for k in keys) and
-                  before.get("state") == after.get("state") == "CORPUS_MEASURED_NOT_QUALIFIED")
+    keys = (
+        "repository",
+        "source_sha",
+        "method_id",
+        "corpus_sha256",
+        "expected_cases",
+        "positive_controls",
+        "negative_controls",
+    )
+    comparable = (
+        all(before.get(k) == after.get(k) for k in keys)
+        and before.get("state") == after.get("state") == "CORPUS_MEASURED_NOT_QUALIFIED"
+    )
     if not comparable:
-        return {"comparable": False, "delta_recall_pp": None,
-                "delta_precision_pp": None, "reason": "SOURCE_OR_CORPUS_MISMATCH"}
+        return {
+            "comparable": False,
+            "delta_recall_pp": None,
+            "delta_precision_pp": None,
+            "reason": "SOURCE_OR_CORPUS_MISMATCH",
+        }
     a, b = before["confusion"], after["confusion"]
-    return {"comparable": True,
-            "delta_recall_pp": ((b["recall"] - a["recall"]) * 100
-                                if b["recall"] is not None and a["recall"] is not None else None),
-            "delta_precision_pp": ((b["precision"] - a["precision"]) * 100
-                                   if b["precision"] is not None and a["precision"] is not None else None),
-            "merge_authorized": False}
+    return {
+        "comparable": True,
+        "delta_recall_pp": (
+            (b["recall"] - a["recall"]) * 100
+            if b["recall"] is not None and a["recall"] is not None
+            else None
+        ),
+        "delta_precision_pp": (
+            (b["precision"] - a["precision"]) * 100
+            if b["precision"] is not None and a["precision"] is not None
+            else None
+        ),
+        "merge_authorized": False,
+    }
 
 
 def main(argv=None):
     p = argparse.ArgumentParser()
     p.add_argument("--observations", type=Path, required=True)
-    p.add_argument("--artifact", type=Path, required=True,
-                   help="actual native scanner artifact bytes; path is independently supplied")
-    p.add_argument("--corpus", type=Path, default=Path(__file__).with_name("method_regression_corpus.json"))
+    p.add_argument(
+        "--artifact",
+        type=Path,
+        required=True,
+        help="actual native scanner artifact bytes; path is independently supplied",
+    )
+    p.add_argument(
+        "--corpus",
+        type=Path,
+        default=Path(__file__).with_name("method_regression_corpus.json"),
+    )
     p.add_argument("--output", type=Path)
     args = p.parse_args(argv)
     try:
-        value = evaluate(json.loads(args.observations.read_bytes()),
-                         args.corpus.read_bytes(), args.artifact.read_bytes())
+        value = evaluate(
+            json.loads(args.observations.read_bytes()),
+            args.corpus.read_bytes(),
+            args.artifact.read_bytes(),
+        )
     except (OSError, UnicodeDecodeError, ValueError, TypeError) as exc:
-        value = {"schema": "mip2.method-effectiveness.v1", "state": "INVALID",
-                 "reason": str(exc), "merge_authorized": False, "root_closure_credited": False}
+        value = {
+            "schema": "mip2.method-effectiveness.v1",
+            "state": "INVALID",
+            "reason": str(exc),
+            "merge_authorized": False,
+            "root_closure_credited": False,
+        }
     output = json.dumps(value, sort_keys=True, indent=2) + "\n"
     if args.output:
         args.output.write_text(output, encoding="utf-8")

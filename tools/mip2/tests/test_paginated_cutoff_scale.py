@@ -3,12 +3,14 @@
 These scenarios exercise parser reach. They never attest 5000 native GitHub
 runs, reproduce an independent failure, or confer release/merge authority.
 """
+
 from __future__ import annotations
 
 from urllib.parse import quote
 
 from tools.mip2.paginated_head_census import API, analyze_head_pages
-from tools.mip2.tests.test_paginated_head_census import row, throws, build as raw_build
+from tools.mip2.tests.test_paginated_head_census import build as raw_build
+from tools.mip2.tests.test_paginated_head_census import row, throws
 
 
 def build(rows, *, cutoff, sha="a" * 40, total=None):
@@ -18,6 +20,7 @@ def build(rows, *, cutoff, sha="a" * 40, total=None):
         page["api_url"] += "&created=" + quote("<=" + cutoff, safe="")
     return doc
 
+
 # N+2: actual creation-window and 50-page *synthetic* scale controls.
 CUTOFF = "2026-10-18T17:50:00Z"
 EARLIER = "2026-10-18T17:40:00Z"
@@ -25,16 +28,16 @@ LATER = "2026-10-18T17:55:00Z"
 
 
 def cutoff_rows(n, *, wf=10):
-    return [{**row(i, wf=wf), "created_at": EARLIER}
-            for i in range(1, n + 1)]
+    return [{**row(i, wf=wf), "created_at": EARLIER} for i in range(1, n + 1)]
 
 
 def test_positive_creation_cutoff_six_pages_and_repeat_denominator():
     rows = cutoff_rows(503)
     for i in range(443):
         rows[i]["workflow_id"] = 374064896
-        rows[i]["event"] = "workflow_run" if i < 407 else (
-            "issue_comment" if i < 438 else "schedule")
+        rows[i]["event"] = (
+            "workflow_run" if i < 407 else ("issue_comment" if i < 438 else "schedule")
+        )
     for i in range(443, 464):
         rows[i]["workflow_id"] = 352924517
     for i in range(464, 473):
@@ -97,7 +100,9 @@ def test_negative_cutoff_with_query_injection():
 
 def test_negative_wrong_cutoff_query_binding():
     payload = build(cutoff_rows(1), cutoff=CUTOFF)
-    payload["pages"][0]["api_url"] = payload["pages"][0]["api_url"].replace("%3C%3D", "")
+    payload["pages"][0]["api_url"] = payload["pages"][0]["api_url"].replace(
+        "%3C%3D", ""
+    )
     throws(payload, "unbound API page URL")
 
 

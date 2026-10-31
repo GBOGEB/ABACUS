@@ -3,12 +3,13 @@
 Accepts complete, saved REST API run and job-list responses. Output is read-only
 CI metadata: neither Crew authentication nor accepted REX or merge authority.
 """
+
 from __future__ import annotations
 
 import argparse
 import datetime as dt
-import html
 import hashlib
+import html
 import json
 import math
 import re
@@ -17,10 +18,19 @@ from pathlib import Path
 SCHEMA = "abacus.mip.native-fanout.v1"
 SHA = re.compile(r"^[0-9a-f]{40}$")
 WORKER_PREFIX = "DAB proposal worker "
-CONCLUSIONS = frozenset({
-    "success", "failure", "cancelled", "timed_out", "neutral",
-    "skipped", "action_required", "stale", "startup_failure",
-})
+CONCLUSIONS = frozenset(
+    {
+        "success",
+        "failure",
+        "cancelled",
+        "timed_out",
+        "neutral",
+        "skipped",
+        "action_required",
+        "stale",
+        "startup_failure",
+    }
+)
 
 
 def require(value: bool, reason: str) -> None:
@@ -39,6 +49,7 @@ def instant(value: object) -> dt.datetime:
     require(when.tzinfo is not None, "timestamp timezone missing")
     return when
 
+
 def nearest_rank(values: list[float], quantile: float) -> float:
     """Exact nearest-rank percentile, never extrapolating missing jobs."""
     require(bool(values), "empty percentile population")
@@ -48,8 +59,13 @@ def nearest_rank(values: list[float], quantile: float) -> float:
 
 def observe(run: dict, collection: dict) -> dict:
     """Measure completed native jobs with full API enumeration."""
-    require(isinstance(run, dict) and isinstance(collection, dict), "invalid API response")
-    require(run.get("repository", {}).get("full_name") == "GBOGEB/ABACUS", "repository mismatch")
+    require(
+        isinstance(run, dict) and isinstance(collection, dict), "invalid API response"
+    )
+    require(
+        run.get("repository", {}).get("full_name") == "GBOGEB/ABACUS",
+        "repository mismatch",
+    )
     sha = run.get("head_sha")
     require(isinstance(sha, str) and SHA.fullmatch(sha) is not None, "invalid SHA")
     rid = run.get("id")
@@ -60,13 +76,18 @@ def observe(run: dict, collection: dict) -> dict:
     require(type(attempt) is int and attempt > 0, "invalid run attempt")
     jobs = collection.get("jobs")
     count = collection.get("total_count")
-    require(isinstance(jobs, list) and type(count) is int and count == len(jobs), "truncated jobs")
+    require(
+        isinstance(jobs, list) and type(count) is int and count == len(jobs),
+        "truncated jobs",
+    )
     seen = set()
     selected = []
     for job in jobs:
         require(isinstance(job, dict), "invalid job")
         jid = job.get("id")
-        require(type(jid) is int and jid > 0 and jid not in seen, "duplicate job identity")
+        require(
+            type(jid) is int and jid > 0 and jid not in seen, "duplicate job identity"
+        )
         seen.add(jid)
         require(job.get("run_id") == rid, "job-run mismatch")
         require(job.get("head_sha") in (None, sha), "job SHA mismatch")
@@ -83,15 +104,17 @@ def observe(run: dict, collection: dict) -> dict:
             created_at = instant(created)
             require(start >= created_at, "negative created-to-start duration")
             delay = (start - created_at).total_seconds()
-        selected.append({
-            "job_id": jid,
-            "name": job["name"],
-            "conclusion": job.get("conclusion"),
-            "start": start,
-            "end": end,
-            "duration_seconds": (end - start).total_seconds(),
-            "created_to_start_seconds": delay,
-        })
+        selected.append(
+            {
+                "job_id": jid,
+                "name": job["name"],
+                "conclusion": job.get("conclusion"),
+                "start": start,
+                "end": end,
+                "duration_seconds": (end - start).total_seconds(),
+                "created_to_start_seconds": delay,
+            }
+        )
     require(bool(selected), "no DAB worker observations")
     events = []
     for row in selected:
@@ -111,12 +134,16 @@ def observe(run: dict, collection: dict) -> dict:
     wall = (events[-1][0] - events[0][0]).total_seconds()
     total = sum(item["duration_seconds"] for item in selected)
     require(wall > 0 and total > 0, "nonmeasurable fanout")
-    outcomes = {name: sum(
-        job["conclusion"] == name for job in selected
-    ) for name in sorted(CONCLUSIONS)}
+    outcomes = {
+        name: sum(job["conclusion"] == name for job in selected)
+        for name in sorted(CONCLUSIONS)
+    }
     ids = sorted(job["job_id"] for job in selected)
-    delays = [job["created_to_start_seconds"] for job in selected
-              if job["created_to_start_seconds"] is not None]
+    delays = [
+        job["created_to_start_seconds"]
+        for job in selected
+        if job["created_to_start_seconds"] is not None
+    ]
     complete_delay = len(delays) == len(selected)
     return {
         "schema": SCHEMA,
@@ -160,87 +187,121 @@ def observe(run: dict, collection: dict) -> dict:
         "merge_admission": "HOLD",
     }
 
+
 def validate_observation(row: dict) -> None:
     """Reverse-check locally constructed observations before any comparison."""
     require(isinstance(row, dict), "invalid fanout observation")
     require(row.get("schema") == SCHEMA, "native fanout receipt required")
     require(row.get("repository") == "GBOGEB/ABACUS", "repository mismatch")
     require(row.get("worker_kind") == "DAB_PROPOSAL_ONLY", "worker type mismatch")
-    require(row.get("source_kind") == "NATIVE_GITHUB_API_METADATA",
-            "source kind mismatch")
+    require(
+        row.get("source_kind") == "NATIVE_GITHUB_API_METADATA", "source kind mismatch"
+    )
     sha = row.get("head_sha")
     require(isinstance(sha, str) and SHA.fullmatch(sha) is not None, "invalid SHA")
     rid = row.get("run_id")
     require(type(rid) is int and rid > 0, "invalid run ID")
-    require(row.get("run_url") ==
-            f"https://github.com/GBOGEB/ABACUS/actions/runs/{rid}",
-            "forged run URL")
-    require(type(row.get("run_attempt")) is int and
-            row["run_attempt"] > 0, "invalid run attempt")
+    require(
+        row.get("run_url") == f"https://github.com/GBOGEB/ABACUS/actions/runs/{rid}",
+        "forged run URL",
+    )
+    require(
+        type(row.get("run_attempt")) is int and row["run_attempt"] > 0,
+        "invalid run attempt",
+    )
     require(row.get("run_conclusion") in CONCLUSIONS, "invalid run conclusion")
-    integer_fields = ("worker_count", "successful_workers", "failed_workers",
-                      "non_success_workers", "peak_concurrency",
-                      "queue_observation_count")
+    integer_fields = (
+        "worker_count",
+        "successful_workers",
+        "failed_workers",
+        "non_success_workers",
+        "peak_concurrency",
+        "queue_observation_count",
+    )
     for field in integer_fields:
-        require(type(row.get(field)) is int and row[field] >= 0,
-                "invalid count: " + field)
+        require(
+            type(row.get(field)) is int and row[field] >= 0, "invalid count: " + field
+        )
     count = row["worker_count"]
-    require(count > 0 and 1 <= row["peak_concurrency"] <= count,
-            "invalid worker census")
-    require(0 <= row["successful_workers"] <= count and
-            row["failed_workers"] <= row["non_success_workers"] and
-            row["non_success_workers"] == count - row["successful_workers"],
-            "inconsistent worker outcomes")
+    require(
+        count > 0 and 1 <= row["peak_concurrency"] <= count, "invalid worker census"
+    )
+    require(
+        0 <= row["successful_workers"] <= count
+        and row["failed_workers"] <= row["non_success_workers"]
+        and row["non_success_workers"] == count - row["successful_workers"],
+        "inconsistent worker outcomes",
+    )
     conclusions = row.get("worker_conclusions")
-    require(isinstance(conclusions, dict) and
-            set(conclusions) == CONCLUSIONS and
-            all(type(value) is int and value >= 0
-                for value in conclusions.values()) and
-            sum(conclusions.values()) == count and
-            conclusions["success"] == row["successful_workers"] and
-            conclusions["failure"] == row["failed_workers"],
-            "invalid conclusion census")
+    require(
+        isinstance(conclusions, dict)
+        and set(conclusions) == CONCLUSIONS
+        and all(type(value) is int and value >= 0 for value in conclusions.values())
+        and sum(conclusions.values()) == count
+        and conclusions["success"] == row["successful_workers"]
+        and conclusions["failure"] == row["failed_workers"],
+        "invalid conclusion census",
+    )
     ids = row.get("worker_job_ids")
-    require(isinstance(ids, list) and
-            all(type(i) is int and i > 0 for i in ids) and
-            ids == sorted(set(ids)) and len(ids) == count,
-            "invalid worker job IDs")
+    require(
+        isinstance(ids, list)
+        and all(type(i) is int and i > 0 for i in ids)
+        and ids == sorted(set(ids))
+        and len(ids) == count,
+        "invalid worker job IDs",
+    )
     fingerprint = hashlib.sha256(
         ",".join(str(i) for i in ids).encode("ascii")
     ).hexdigest()
-    require(row.get("worker_job_ids_sha256") == fingerprint,
-            "invalid worker identity digest")
-    for field in ("summed_job_seconds", "first_to_last_seconds",
-                  "idle_gap_seconds", "active_span_seconds",
-                  "overlap_factor", "execution_p95_seconds"):
+    require(
+        row.get("worker_job_ids_sha256") == fingerprint,
+        "invalid worker identity digest",
+    )
+    for field in (
+        "summed_job_seconds",
+        "first_to_last_seconds",
+        "idle_gap_seconds",
+        "active_span_seconds",
+        "overlap_factor",
+        "execution_p95_seconds",
+    ):
         value = row.get(field)
-        require(type(value) in (int, float) and math.isfinite(value) and
-                value >= 0, "invalid duration: " + field)
+        require(
+            type(value) in (int, float) and math.isfinite(value) and value >= 0,
+            "invalid duration: " + field,
+        )
     wall = row["first_to_last_seconds"]
-    require(wall > 0 and row["summed_job_seconds"] > 0 and
-            row["idle_gap_seconds"] <= wall and
-            abs(row["active_span_seconds"] -
-                (wall - row["idle_gap_seconds"])) < 0.01 and
-            abs(row["overlap_factor"] -
-                row["summed_job_seconds"] / wall) < 0.001,
-            "inconsistent duration census")
+    require(
+        wall > 0
+        and row["summed_job_seconds"] > 0
+        and row["idle_gap_seconds"] <= wall
+        and abs(row["active_span_seconds"] - (wall - row["idle_gap_seconds"])) < 0.01
+        and abs(row["overlap_factor"] - row["summed_job_seconds"] / wall) < 0.001,
+        "inconsistent duration census",
+    )
     observed = row["queue_observation_count"]
     require(observed <= count, "invalid queue population")
     p95 = row.get("created_to_start_p95_seconds")
     if observed == count:
-        require(type(p95) in (int, float) and math.isfinite(p95) and
-                p95 >= 0 and
-                row.get("queue_qualification") == "COMPLETE_JOB_METADATA",
-                "incomplete queue evidence")
+        require(
+            type(p95) in (int, float)
+            and math.isfinite(p95)
+            and p95 >= 0
+            and row.get("queue_qualification") == "COMPLETE_JOB_METADATA",
+            "incomplete queue evidence",
+        )
     else:
-        require(p95 is None and
-                row.get("queue_qualification") == "INCOMPLETE_JOB_METADATA",
-                "unknown queue latency must remain null")
-    require(row.get("merge_admission") == "HOLD" and
-            row.get("authenticated_crew_dispatches") is None and
-            row.get("root_closures") is None and
-            row.get("coverage_gain_pp") is None,
-            "unverified operational credit")
+        require(
+            p95 is None and row.get("queue_qualification") == "INCOMPLETE_JOB_METADATA",
+            "unknown queue latency must remain null",
+        )
+    require(
+        row.get("merge_admission") == "HOLD"
+        and row.get("authenticated_crew_dispatches") is None
+        and row.get("root_closures") is None
+        and row.get("coverage_gain_pp") is None,
+        "unverified operational credit",
+    )
 
 
 def compare(before: dict, after: dict) -> dict:
@@ -248,24 +309,33 @@ def compare(before: dict, after: dict) -> dict:
     for row in (before, after):
         validate_observation(row)
     require(before["run_id"] != after["run_id"], "distinct runs required")
-    fields = ("worker_count", "successful_workers", "non_success_workers",
-              "summed_job_seconds", "first_to_last_seconds",
-              "idle_gap_seconds", "peak_concurrency", "overlap_factor",
-              "execution_p95_seconds")
+    fields = (
+        "worker_count",
+        "successful_workers",
+        "non_success_workers",
+        "summed_job_seconds",
+        "first_to_last_seconds",
+        "idle_gap_seconds",
+        "peak_concurrency",
+        "overlap_factor",
+        "execution_p95_seconds",
+    )
     queue_delta = (
-        round(after["created_to_start_p95_seconds"] -
-              before["created_to_start_p95_seconds"], 4)
-        if before["created_to_start_p95_seconds"] is not None and
-        after["created_to_start_p95_seconds"] is not None else None
+        round(
+            after["created_to_start_p95_seconds"]
+            - before["created_to_start_p95_seconds"],
+            4,
+        )
+        if before["created_to_start_p95_seconds"] is not None
+        and after["created_to_start_p95_seconds"] is not None
+        else None
     )
     return {
         "schema": "abacus.mip.native-fanout-comparison.v1",
         "before": before,
         "after": after,
-        "delta": {
-            field: round(after[field] - before[field], 4)
-            for field in fields
-        } | {"created_to_start_p95_seconds": queue_delta},
+        "delta": {field: round(after[field] - before[field], 4) for field in fields}
+        | {"created_to_start_p95_seconds": queue_delta},
         "matched_population": "DAB_PROPOSAL_WORKERS",
         "causal_explanation": None,
         "operational_root_closure": None,
@@ -278,9 +348,11 @@ def render_markdown(report: dict) -> str:
     """Emit concise wave metrics with audit links and explicit missing credit."""
     a, b, change = (report["before"], report["after"], report["delta"])
     lines = [
-        "# MIP native fan-out: per-wave comparison", "",
+        "# MIP native fan-out: per-wave comparison",
+        "",
         "> GitHub API metadata only; not a Crew dispatch, merge, root closure,",
-        "> security attestation or proof of artifact bytes.", "",
+        "> security attestation or proof of artifact bytes.",
+        "",
         "| Metric | Previous wave | Current wave | Delta |",
         "| --- | ---: | ---: | ---: |",
     ]
@@ -304,12 +376,17 @@ def render_markdown(report: dict) -> str:
             f"| {label} | {first if first is not None else 'UNKNOWN'} | "
             f"{latest if latest is not None else 'UNKNOWN'} | {shown_delta} |"
         )
-    lines.extend([
-        "", f"Before: {a['run_url']} @ \\u0060{a['head_sha']}\\u0060",
-        f"After: {b['run_url']} @ \\u0060{b['head_sha']}\\u0060",
-        "", "First-red causality: UNKNOWN. Coverage and BD-root closure: UNKNOWN.",
-        "No main admission or CODEX-to-ABACUS transport authority is granted.", "",
-    ])
+    lines.extend(
+        [
+            "",
+            f"Before: {a['run_url']} @ \\u0060{a['head_sha']}\\u0060",
+            f"After: {b['run_url']} @ \\u0060{b['head_sha']}\\u0060",
+            "",
+            "First-red causality: UNKNOWN. Coverage and BD-root closure: UNKNOWN.",
+            "No main admission or CODEX-to-ABACUS transport authority is granted.",
+            "",
+        ]
+    )
     return "\n".join(lines).replace("\\u0060", "`")
 
 
@@ -331,7 +408,9 @@ def render_html(report: dict) -> str:
         first, latest = a[key], b[key]
         delta = report["delta"][key]
         cards.append(
-            "<section class='metric'><small>" + html.escape(label) + "</small>"
+            "<section class='metric'><small>"
+            + html.escape(label)
+            + "</small>"
             + f"<strong>{latest:g}{unit}</strong>"
             + f"<span>Before {first:g}{unit} · Δ {delta:+g}{unit}</span></section>"
         )
@@ -342,7 +421,9 @@ def render_html(report: dict) -> str:
         width = 100 * value / max_elapsed
         idle = 100 * row["idle_gap_seconds"] / value
         bars.append(
-            "<div class='measure'><div class='line'><b>" + title + "</b>"
+            "<div class='measure'><div class='line'><b>"
+            + title
+            + "</b>"
             + f"<span>{value:g}s · idle {row['idle_gap_seconds']:g}s</span></div>"
             + f"<div class='track' style='width:{width:.2f}%'>"
             + f"<div class='idle' style='width:{idle:.2f}%'></div>"
@@ -351,8 +432,13 @@ def render_html(report: dict) -> str:
     latest_p95 = b["created_to_start_p95_seconds"]
     p95_label = str(latest_p95) + "s" if latest_p95 is not None else "UNKNOWN"
     links = "".join(
-        "<a href='" + html.escape(row["run_url"], quote=True) + "'>"
-        + label + " run " + str(row["run_id"]) + "</a>"
+        "<a href='"
+        + html.escape(row["run_url"], quote=True)
+        + "'>"
+        + label
+        + " run "
+        + str(row["run_id"])
+        + "</a>"
         for label, row in (("Previous", a), ("Current", b))
     )
     return (
@@ -374,10 +460,12 @@ def render_html(report: dict) -> str:
         "<p>Read-only GitHub Actions job metadata. No Crew dispatch, root "
         "closure, security clearance or merge admission is inferred.</p>"
         "<div class='metrics'>" + "".join(cards) + "</div>"
-        "<p>Created-to-start p95 (current wave): " + p95_label
+        "<p>Created-to-start p95 (current wave): "
+        + p95_label
         + ". Missing job timestamps mean UNKNOWN, not zero. "
         "This is not complete workflow queue time.</p><h2>Elapsed time"
-        " and idle gaps</h2>" + "".join(bars)
+        " and idle gaps</h2>"
+        + "".join(bars)
         + "<p>Blue: active time; amber: no proposal job active inside the"
         " observed span. Scheduling cause remains UNKNOWN.</p>"
         "<div class='links'>" + links + "</div></html>"

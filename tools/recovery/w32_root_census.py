@@ -3,6 +3,7 @@
 A failed job is a manifestation, not automatically a distinct causal root.
 Missing first-red evidence is UNKNOWN, never a successful or closed root.
 """
+
 from __future__ import annotations
 
 import argparse
@@ -37,8 +38,10 @@ def summarize(payload: dict) -> dict:
         _need(isinstance(job, dict), "invalid job record")
         _need(job.get("head_sha") == head, "cross-head job not admitted")
         run, attempt, jobid = (job.get(k) for k in ("run_id", "attempt", "job_id"))
-        _need(all(type(v) is int and v > 0 for v in (run, attempt, jobid)),
-              "invalid run / attempt / job ID")
+        _need(
+            all(type(v) is int and v > 0 for v in (run, attempt, jobid)),
+            "invalid run / attempt / job ID",
+        )
         identity = (run, attempt, jobid)
         _need(identity not in seen, "duplicate run / attempt / job identity")
         seen.add(identity)
@@ -65,9 +68,11 @@ def summarize(payload: dict) -> dict:
         else:
             _need(root is None, "root claimed on non-failed observation")
     previous = payload.get("previous_root_ids", [])
-    _need(isinstance(previous, list) and
-          all(isinstance(v, str) and bool(v) for v in previous),
-          "invalid prior root IDs")
+    _need(
+        isinstance(previous, list)
+        and all(isinstance(v, str) and bool(v) for v in previous),
+        "invalid prior root IDs",
+    )
     _need(len(previous) == len(set(previous)), "duplicate prior root IDs")
     missing_old = sorted(set(previous) - set(roots))
     report_roots = {
@@ -89,7 +94,8 @@ def summarize(payload: dict) -> dict:
         "root_manifestations": sum(len(v) for v in roots.values()),
         "root_amplification": (
             round(sum(len(v) for v in roots.values()) / len(roots), 4)
-            if roots else None
+            if roots
+            else None
         ),
         "roots": report_roots,
         "prior_roots_not_observed_here": missing_old,
@@ -107,8 +113,9 @@ def main(argv=None) -> int:
     args = ap.parse_args(argv)
     result = summarize(json.loads(args.input.read_text(encoding="utf-8")))
     args.output.parent.mkdir(parents=True, exist_ok=True)
-    args.output.write_text(json.dumps(result, indent=2, sort_keys=True) + "\n",
-                           encoding="utf-8")
+    args.output.write_text(
+        json.dumps(result, indent=2, sort_keys=True) + "\n", encoding="utf-8"
+    )
     return 0
 
 

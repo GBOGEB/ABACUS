@@ -3,6 +3,7 @@
 Consumes a normalized snapshot and optional SARIF files. Review summaries are
 metadata, not findings. Manifestations are never equated with causal roots.
 """
+
 from __future__ import annotations
 
 import argparse
@@ -12,7 +13,12 @@ from collections import Counter, defaultdict
 from pathlib import Path
 
 SCHEMA = "code-maroon.snapshot.v1"
-STATUSES = {"OPEN_ACTIVE", "CLOSED_IMPLEMENTED", "DEFERRED_OWNER", "IMPLEMENTED_UNRESOLVED"}
+STATUSES = {
+    "OPEN_ACTIVE",
+    "CLOSED_IMPLEMENTED",
+    "DEFERRED_OWNER",
+    "IMPLEMENTED_UNRESOLVED",
+}
 IMPLEMENTATION_STATES = {"IMPLEMENTED", "NOT_IMPLEMENTED", "NOT_APPLICABLE"}
 THREAD_STATES = {"OPEN", "RESOLVED"}
 DISPOSITIONS = {"ACTIVE", "CLOSED", "DEFERRED"}
@@ -102,7 +108,9 @@ def _summary(snapshot: dict) -> dict:
     roots = snapshot["roots"]
     return {
         "manifestations_total": len(manifestations),
-        "implemented": sum(row["implementation_state"] == "IMPLEMENTED" for row in manifestations),
+        "implemented": sum(
+            row["implementation_state"] == "IMPLEMENTED" for row in manifestations
+        ),
         "closed": sum(row["thread_state"] == "RESOLVED" for row in manifestations),
         "deferred": sum(row["disposition"] == "DEFERRED" for row in manifestations),
         "outstanding": sum(row["thread_state"] != "RESOLVED" for row in manifestations),
@@ -128,17 +136,12 @@ def _sarif_results(path: Path) -> list[dict]:
         for result_index, result in enumerate(run.get("results", [])):
             rule = result.get("ruleId") or "UNKNOWN_RULE"
             locations = result.get("locations") or []
-            physical = (
-                locations[0].get("physicalLocation", {})
-                if locations
-                else {}
-            )
+            physical = locations[0].get("physicalLocation", {}) if locations else {}
             artifact = physical.get("artifactLocation", {}).get("uri")
             region = physical.get("region", {})
             fingerprints = result.get("partialFingerprints") or {}
-            stable_fp = (
-                fingerprints.get("primaryLocationLineHash")
-                or fingerprints.get("primaryLocationStartColumnFingerprint")
+            stable_fp = fingerprints.get("primaryLocationLineHash") or fingerprints.get(
+                "primaryLocationStartColumnFingerprint"
             )
             results.append(
                 {
@@ -221,9 +224,7 @@ def reconcile(snapshot: dict, sarif_paths: list[Path] | None = None) -> dict:
         "summary": calculated,
         "by_source": dict(by_source),
         "outstanding_roots": [
-            root
-            for root in snapshot["roots"]
-            if root["status"] != "CLOSED_IMPLEMENTED"
+            root for root in snapshot["roots"] if root["status"] != "CLOSED_IMPLEMENTED"
         ],
         "root_manifestations": dict(root_manifestations),
         "control_events": snapshot.get("control_events", []),

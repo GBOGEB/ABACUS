@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 """Produce a source-bound, fail-closed QPS W04 DOW runtime receipt."""
+
 from __future__ import annotations
 
 import argparse
@@ -17,8 +18,7 @@ CORR = "QPS-FED-W04-T10-SAFE-CTRL"
 REQUEST = Path("federation/qps/QPS_FED_W04_DOW_REQUEST.yaml")
 QA = Path("ssot/qps_w04_dow_qa_actions.yaml")
 SNAPSHOT = Path(
-    "federation/qps/snapshots/"
-    "QPS_FED_W04_SANITIZED_PARENT_SNAPSHOT_v0.2.yaml"
+    "federation/qps/snapshots/" "QPS_FED_W04_SANITIZED_PARENT_SNAPSHOT_v0.2.yaml"
 )
 TERMS = {
     "decompose_support_system_dependency_graph": [
@@ -121,8 +121,7 @@ def locate(root: Path, name: str) -> Path:
     matches = list(root.rglob(name))
     if len(matches) != 1:
         raise SystemExit(
-            f"expected exactly one child artifact {name}; "
-            f"found {len(matches)}"
+            f"expected exactly one child artifact {name}; " f"found {len(matches)}"
         )
     return matches[0]
 
@@ -162,12 +161,9 @@ def trigger_decision(
             r"[0-9a-f]{64}",
             prior_artifact_set_sha256,
         ):
-            raise SystemExit(
-                "--prior-artifact-set-sha256 must be a full SHA-256"
-            )
+            raise SystemExit("--prior-artifact-set-sha256 must be a full SHA-256")
         artifact_hash_changed: bool | None = (
-            current_artifact_set_sha256
-            != prior_artifact_set_sha256
+            current_artifact_set_sha256 != prior_artifact_set_sha256
         )
     else:
         artifact_hash_changed = None
@@ -176,10 +172,7 @@ def trigger_decision(
         return "DOW_ANALYSIS", artifact_hash_changed
 
     if prior_artifact_set_sha256 is None:
-        raise SystemExit(
-            "lineage-only refresh requires "
-            "--prior-artifact-set-sha256"
-        )
+        raise SystemExit("lineage-only refresh requires " "--prior-artifact-set-sha256")
 
     if artifact_hash_changed:
         return "LINEAGE_REFRESH_ONLY", True
@@ -191,25 +184,17 @@ def build_findings(
     requested: list[str],
     evidence: list[Path],
 ) -> tuple[dict[str, dict[str, Any]], list[dict[str, Any]]]:
-    corpus = "\n".join(
-        path.read_text(encoding="utf-8")
-        for path in evidence
-    )
+    corpus = "\n".join(path.read_text(encoding="utf-8") for path in evidence)
     status: dict[str, dict[str, Any]] = {}
     findings: list[dict[str, Any]] = []
     for operation in requested:
         hits = sorted(
-            {
-                term
-                for term in TERMS[operation]
-                if term.lower() in corpus.lower()
-            }
+            {term for term in TERMS[operation] if term.lower() in corpus.lower()}
         )
         status[operation] = {
             "stage_id": operation,
             "mechanic_path": (
-                "tools/run_qps_w04_dow_return.py"
-                "::controlled_evidence_scan"
+                "tools/run_qps_w04_dow_return.py" "::controlled_evidence_scan"
             ),
             "executed": True,
             "status": "PASS",
@@ -221,21 +206,13 @@ def build_findings(
         findings.append(
             {
                 "finding_id": (
-                    "ABACUS-W04-"
-                    + hashlib.sha256(
-                        operation.encode()
-                    ).hexdigest()[:12]
+                    "ABACUS-W04-" + hashlib.sha256(operation.encode()).hexdigest()[:12]
                 ),
                 "finding_type": "DOW_candidate_observation",
                 "affected_child_atom_or_domain": operation,
-                "evidence_basis": [
-                    path.as_posix()
-                    for path in evidence
-                ],
+                "evidence_basis": [path.as_posix() for path in evidence],
                 "observed_cues": hits,
-                "confidence_or_status": (
-                    "deterministic_candidate_scan"
-                ),
+                "confidence_or_status": ("deterministic_candidate_scan"),
                 "recommended_child_action": (
                     "review_and_disposition_candidate; "
                     "no automatic engineering promotion"
@@ -256,10 +233,7 @@ def main() -> int:
     )
     parser.add_argument(
         "--output",
-        default=(
-            "federation/qps/runtime/"
-            "QPS_FED_W04_DOW_RUNTIME_RECEIPT.yaml"
-        ),
+        default=("federation/qps/runtime/" "QPS_FED_W04_DOW_RUNTIME_RECEIPT.yaml"),
     )
     parser.add_argument(
         "--prior-artifact-set-sha256",
@@ -277,44 +251,29 @@ def main() -> int:
     args = parser.parse_args()
 
     if not re.fullmatch(r"[0-9a-f]{40}", args.child_sha):
-        raise SystemExit(
-            "--child-sha must be a full commit SHA"
-        )
+        raise SystemExit("--child-sha must be a full commit SHA")
 
     request = load(REQUEST)
     load(QA)
     requested = request.get("requested_DOW_operations")
-    if (
-        not isinstance(requested, list)
-        or set(requested) != set(TERMS)
-    ):
+    if not isinstance(requested, list) or set(requested) != set(TERMS):
         raise SystemExit(
-            "controlled request operations do not match "
-            "implemented mechanics"
+            "controlled request operations do not match " "implemented mechanics"
         )
 
     if args.child_root:
-        names = (
-            request.get("input_contract", {})
-            .get("child_artifacts", [])
-        )
-        evidence = [
-            locate(Path(args.child_root), str(name))
-            for name in names
-        ]
+        names = request.get("input_contract", {}).get("child_artifacts", [])
+        evidence = [locate(Path(args.child_root), str(name)) for name in names]
         input_mode = "private_child"
     else:
         snap = Path(args.snapshot)
         data = load(snap)
         if (
             data.get("correlation_id") != CORR
-            or data.get("source_identity", {})
-            .get("authoritative_child_sha")
+            or data.get("source_identity", {}).get("authoritative_child_sha")
             != args.child_sha
         ):
-            raise SystemExit(
-                "sanitized snapshot lineage mismatch"
-            )
+            raise SystemExit("sanitized snapshot lineage mismatch")
         evidence = [snap]
         input_mode = "sanitized_snapshot"
 
@@ -322,24 +281,14 @@ def main() -> int:
     artifact_set_sha = canonical_sha256(identities)
     decision, artifact_hash_changed = trigger_decision(
         current_artifact_set_sha256=artifact_set_sha,
-        prior_artifact_set_sha256=(
-            args.prior_artifact_set_sha256
-        ),
+        prior_artifact_set_sha256=(args.prior_artifact_set_sha256),
         semantic_change=args.semantic_change,
         analysis_requested=args.analysis_requested,
     )
 
     available_scope = list(requested)
-    requested_scope = (
-        list(requested)
-        if args.analysis_requested
-        else []
-    )
-    semantic_trigger_scope = (
-        list(requested)
-        if args.semantic_change
-        else []
-    )
+    requested_scope = list(requested) if args.analysis_requested else []
+    semantic_trigger_scope = list(requested) if args.semantic_change else []
 
     if decision == "DOW_ANALYSIS":
         status, findings = build_findings(
@@ -348,22 +297,16 @@ def main() -> int:
         )
         executed_scope = list(requested)
         executed_stages = list(requested)
-        fail_closed_status = (
-            "PASS_ALL_DECLARED_MECHANICS_EXECUTED"
-        )
+        fail_closed_status = "PASS_ALL_DECLARED_MECHANICS_EXECUTED"
     else:
         status = {}
         findings = []
         executed_scope = []
         executed_stages = []
         if decision == "LINEAGE_REFRESH_ONLY":
-            fail_closed_status = (
-                "PASS_HASH_ONLY_LINEAGE_REFRESH_NO_ANALYSIS"
-            )
+            fail_closed_status = "PASS_HASH_ONLY_LINEAGE_REFRESH_NO_ANALYSIS"
         else:
-            fail_closed_status = (
-                "PASS_IDEMPOTENT_NOOP_NO_ANALYSIS"
-            )
+            fail_closed_status = "PASS_IDEMPOTENT_NOOP_NO_ANALYSIS"
 
     inputs = [REQUEST, QA, *evidence]
     lineage_state = {
@@ -377,20 +320,12 @@ def main() -> int:
 
     receipt: dict[str, Any] = {
         "run_id": (
-            "ABACUS-W04-"
-            + datetime.now(
-                timezone.utc
-            ).strftime("%Y%m%dT%H%M%SZ")
+            "ABACUS-W04-" + datetime.now(timezone.utc).strftime("%Y%m%dT%H%M%SZ")
         ),
-        "artifact_id": (
-            "ABACUS-W04-DOW-RUNTIME-RECEIPT"
-        ),
+        "artifact_id": ("ABACUS-W04-DOW-RUNTIME-RECEIPT"),
         "parent_repository": "GBOGEB/ABACUS",
         "parent_commit_sha": git_sha(),
-        "child_source_ref": (
-            "GBOGEB/cryoplant-project@"
-            + args.child_sha
-        ),
+        "child_source_ref": ("GBOGEB/cryoplant-project@" + args.child_sha),
         "authoritative_child_sha": args.child_sha,
         "input_mode": input_mode,
         "correlation_id": CORR,
@@ -398,18 +333,14 @@ def main() -> int:
         "input_snapshot_hash": sha256(evidence),
         "source_artifact_identities": identities,
         "source_artifact_set_sha256": artifact_set_sha,
-        "prior_source_artifact_set_sha256": (
-            args.prior_artifact_set_sha256
-        ),
+        "prior_source_artifact_set_sha256": (args.prior_artifact_set_sha256),
         "trigger_semantics": {
             "artifact_hash_changed": artifact_hash_changed,
             "semantic_change": args.semantic_change,
             "analysis_requested": args.analysis_requested,
         },
         "analysis_decision": decision,
-        "lineage_state_hash": canonical_sha256(
-            lineage_state
-        ),
+        "lineage_state_hash": canonical_sha256(lineage_state),
         "available_analysis_scope": available_scope,
         "requested_analysis_scope": requested_scope,
         "semantic_trigger_scope": semantic_trigger_scope,
@@ -420,23 +351,16 @@ def main() -> int:
         "typed_findings": findings,
         "child_disposition_placeholder": "UNSET",
         "authority_boundary": (
-            "ABACUS_returns_DOW_findings_only_"
-            "QPS_child_disposes"
+            "ABACUS_returns_DOW_findings_only_" "QPS_child_disposes"
         ),
         "output_hash": "PENDING",
     }
     payload = json.dumps(
-        {
-            key: value
-            for key, value in receipt.items()
-            if key != "output_hash"
-        },
+        {key: value for key, value in receipt.items() if key != "output_hash"},
         sort_keys=True,
         separators=(",", ":"),
     ).encode()
-    receipt["output_hash"] = hashlib.sha256(
-        payload
-    ).hexdigest()
+    receipt["output_hash"] = hashlib.sha256(payload).hexdigest()
 
     out = Path(args.output)
     out.parent.mkdir(

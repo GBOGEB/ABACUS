@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 """Build W75 repeated runtime rows with explicit timing decomposition."""
+
 from __future__ import annotations
 
 import argparse

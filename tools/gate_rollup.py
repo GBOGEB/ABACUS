@@ -9,7 +9,6 @@ from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any, Dict, List, Optional, Tuple
 
-
 REPO_ROOT = Path(__file__).resolve().parents[1]
 LOG_PATH = REPO_ROOT / "logs" / "ci-runs.jsonl"
 OUTPUT_PATH = REPO_ROOT / "docs" / "dashboard-gates.json"
@@ -75,7 +74,9 @@ def build_gate_rollup(log_path: Path = LOG_PATH) -> Dict[str, Any]:
     if not lines:
         return payload
 
-    failures_by_pr: Dict[str, List[Tuple[Tuple[int, Any], int, str]]] = defaultdict(list)
+    failures_by_pr: Dict[str, List[Tuple[Tuple[int, Any], int, str]]] = defaultdict(
+        list
+    )
     unique_gates_by_pr: Dict[str, set[str]] = defaultdict(set)
     last_updated_by_pr: Dict[str, datetime] = {}
     malformed_lines = 0
@@ -126,7 +127,9 @@ def build_gate_rollup(log_path: Path = LOG_PATH) -> Dict[str, Any]:
     pr_ids = set(unique_gates_by_pr).union(failures_by_pr).union(last_updated_by_pr)
     rows = []
     for pr_id in sorted(pr_ids, key=_pr_sort_key):
-        failures = sorted(failures_by_pr.get(pr_id, []), key=lambda item: (item[0], item[1], item[2]))
+        failures = sorted(
+            failures_by_pr.get(pr_id, []), key=lambda item: (item[0], item[1], item[2])
+        )
         failed_gates: List[str] = []
         for _, _, gate_name in failures:
             if gate_name not in failed_gates:
@@ -152,10 +155,14 @@ def build_gate_rollup(log_path: Path = LOG_PATH) -> Dict[str, Any]:
     return payload
 
 
-def write_gate_rollup(output_path: Path = OUTPUT_PATH, log_path: Path = LOG_PATH) -> Path:
+def write_gate_rollup(
+    output_path: Path = OUTPUT_PATH, log_path: Path = LOG_PATH
+) -> Path:
     output_path.parent.mkdir(parents=True, exist_ok=True)
     payload = build_gate_rollup(log_path=log_path)
-    output_path.write_text(json.dumps(payload, indent=2, sort_keys=False), encoding="utf-8")
+    output_path.write_text(
+        json.dumps(payload, indent=2, sort_keys=False), encoding="utf-8"
+    )
     return output_path
 
 

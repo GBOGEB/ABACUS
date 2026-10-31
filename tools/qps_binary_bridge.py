@@ -16,15 +16,14 @@ from __future__ import annotations
 
 import argparse
 import hashlib
-from html.parser import HTMLParser
 import json
-from pathlib import Path
 import re
 import subprocess
-from typing import Any
 import xml.etree.ElementTree as ET
 import zipfile
-
+from html.parser import HTMLParser
+from pathlib import Path
+from typing import Any
 
 SCHEMA = "abacus-binary-bridge/v1"
 PARSER_VERSION = "1.1.0"
@@ -34,8 +33,7 @@ REPOSITORY_ROOT = Path(__file__).resolve().parents[1]
 NS = {
     "a": "http://schemas.openxmlformats.org/drawingml/2006/main",
     "p": "http://schemas.openxmlformats.org/presentationml/2006/main",
-    "r": "http://schemas.openxmlformats.org/officeDocument/2006/"
-    "relationships",
+    "r": "http://schemas.openxmlformats.org/officeDocument/2006/" "relationships",
     "rel": "http://schemas.openxmlformats.org/package/2006/relationships",
     "s": "http://schemas.openxmlformats.org/spreadsheetml/2006/main",
     "w": "http://schemas.openxmlformats.org/wordprocessingml/2006/main",
@@ -76,11 +74,7 @@ def _inline_text(
     namespaces: dict[str, str],
 ) -> str:
     """Join formatting runs without inventing whitespace between them."""
-    parts = [
-        item.text or ""
-        for item in node.findall(xpath, namespaces)
-        if item.text
-    ]
+    parts = [item.text or "" for item in node.findall(xpath, namespaces) if item.text]
     return " ".join("".join(parts).split())
 
 
@@ -156,9 +150,7 @@ def extract_docx(path: Path) -> dict[str, Any]:
                 continue
             style = child.find("./w:pPr/w:pStyle", NS)
             style_id = (
-                style.attrib.get(f"{{{NS['w']}}}val")
-                if style is not None
-                else None
+                style.attrib.get(f"{{{NS['w']}}}val") if style is not None else None
             )
             index += 1
             blocks.append(
@@ -202,10 +194,7 @@ def _xlsx_shared_strings(archive: zipfile.ZipFile) -> list[str]:
     if member not in archive.namelist():
         return []
     root = _zip_xml(archive, member)
-    return [
-        _inline_text(item, ".//s:t", NS)
-        for item in root.findall("./s:si", NS)
-    ]
+    return [_inline_text(item, ".//s:t", NS) for item in root.findall("./s:si", NS)]
 
 
 def _xlsx_sheet_map(archive: zipfile.ZipFile) -> list[tuple[str, str]]:
@@ -260,9 +249,7 @@ def extract_xlsx(path: Path) -> dict[str, Any]:
                         "anchor": f"{name}!{ref}",
                         "value": value,
                         "formula": (
-                            formula_node.text
-                            if formula_node is not None
-                            else None
+                            formula_node.text if formula_node is not None else None
                         ),
                         "formula_type": (
                             formula_node.attrib.get("t")
@@ -556,9 +543,7 @@ def normalize_source(
         "trace_links": trace_links,
         "producer_repository": PRODUCER_REPOSITORY,
         "producer_commit": producer_commit,
-        "parser_or_builder_version": (
-            f"qps_binary_bridge/{PARSER_VERSION}"
-        ),
+        "parser_or_builder_version": (f"qps_binary_bridge/{PARSER_VERSION}"),
         "artifact_hashes": {
             "source_sha256": sha256_bytes(raw),
             "semantic_sha256": semantic_sha,
