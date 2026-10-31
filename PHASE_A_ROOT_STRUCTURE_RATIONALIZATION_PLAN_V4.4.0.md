@@ -1,6 +1,6 @@
 # Phase A — Root Structure Rationalization Plan (v4.4.0)
 
-**Execution Slot:** Sprint 1 / Wave 2 / Phase A
+**Execution Slot:** Sprint 1 / Wave 2 / Phase A  
 **Date:** 2026-05-28
 
 ## Baseline

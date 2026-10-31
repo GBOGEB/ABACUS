@@ -1,6 +1,6 @@
 # QPS v6 ABACUS Local Preflight / Human Review Entry
 
-Parent: `GBOGEB/cryoplant-project#1379`
+Parent: `GBOGEB/cryoplant-project#1379`  
 ABACUS support issue: `GBOGEB/ABACUS#1256`
 
 ABACUS supplies analytical/runtime/review evidence and UX. It does not become QPS domain authority.

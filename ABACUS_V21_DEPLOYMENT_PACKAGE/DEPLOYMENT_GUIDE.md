@@ -153,6 +153,6 @@ sudo chown -R $USER:$USER .
 
 ---
 
-**Version**: 2.1.0
-**Last Updated**: 2025-11-23
+**Version**: 2.1.0  
+**Last Updated**: 2025-11-23  
 **Status**: Production Ready

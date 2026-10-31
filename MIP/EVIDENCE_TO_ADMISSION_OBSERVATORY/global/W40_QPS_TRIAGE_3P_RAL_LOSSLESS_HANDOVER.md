@@ -1,9 +1,9 @@
 # CODE PURPLE / QPS TRIAGE — W40 3P-RAL + P3R/3PM lossless handover
 
-**Control class:** SOURCE-BOUND CONTINUITY CANDIDATE; append-only, non-promoting.
-**Capture:** 19 October 2026, from GitHub run/branch observations on 18 October 2026.
-**Wave:** W40 continuation of W29→W39, not a newly accepted global release.
-**Execution selector:** `EXECUTION_WAVE_TYPE=PARTIAL`; 3PR → conditional MIP → 3PC; one 3P3 only after independently demonstrated propagation.
+**Control class:** SOURCE-BOUND CONTINUITY CANDIDATE; append-only, non-promoting.  
+**Capture:** 19 October 2026, from GitHub run/branch observations on 18 October 2026.  
+**Wave:** W40 continuation of W29→W39, not a newly accepted global release.  
+**Execution selector:** `EXECUTION_WAVE_TYPE=PARTIAL`; 3PR → conditional MIP → 3PC; one 3P3 only after independently demonstrated propagation.  
 **Global decision:** `MERGE_ADMISSION=HOLD`, `GLOBAL_CONTROL=false`, `authority_transfer=false`, `formal_credit_delta=0`, `engineering_credit_delta=0`, `security_waiver=false`.
 
 ## 0. Read these, in this order, before continuing

@@ -12,7 +12,7 @@ temporal tracking, and metrics collection.
 ```
 KEB (Knowledge Execution Bridge)
 ├── Task Scheduling — Priority-based task queue
-├── Resource Monitoring — Memory, CPU tracking
+├── Resource Monitoring — Memory, CPU tracking  
 ├── Agent Registry — Agent capability mapping
 └── Execution Bridge — Task → Agent → Result pipeline
 ```

@@ -25,6 +25,7 @@ jobs:
             relative="${f#docs/}"
             stem="${relative%.md}"
             mkdir -p "out/$(dirname "$stem")"
+            echo "export-docs: $f"
             docker run --rm -v "$PWD:/data" pandoc/latex:3.1 \
               --pdf-engine=xelatex "$f" -o "out/${stem}.pdf"
             docker run --rm -v "$PWD:/data" pandoc/core:3.1 \

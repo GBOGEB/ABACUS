@@ -1,6 +1,6 @@
 # DMAIC V2.3 Quick Start Guide
-**Version:** 2.3.0
-**Generated:** {timestamp}
+**Version:** 2.3.0  
+**Generated:** {timestamp}  
 **Status:** PRODUCTION READY
 
 ## 🎯 Overview

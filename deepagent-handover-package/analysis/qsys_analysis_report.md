@@ -1,7 +1,7 @@
 # QSYS System Analysis Report
 
-**Generated:** 2025-09-09T20:51:00.266717
-**Total Presentations:** 19
+**Generated:** 2025-09-09T20:51:00.266717  
+**Total Presentations:** 19  
 **Total Slides:** 389
 
 ## Executive Summary
