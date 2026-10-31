@@ -122,3 +122,8 @@ class GlobalLedgerTests(unittest.TestCase):
             self.assertTrue((ROOT/name).exists())
             self.assertIn('href="'+name+'"',self.html)
 if __name__=="__main__":unittest.main()
+
+
+def test_zz_g_ab_red_canary():
+    """Throwaway red canary (method vector D); never merge."""
+    assert False
