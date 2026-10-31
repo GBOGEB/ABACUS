@@ -53,9 +53,7 @@ def risk_for(code: str, policy: dict[str, Any]) -> str:
     if code in protected:
         return "HIGH_OR_PROTECTED"
     low = set(
-        policy.get("batch_policy", {})
-        .get("LOW_MECHANICAL", {})
-        .get("families", [])
+        policy.get("batch_policy", {}).get("LOW_MECHANICAL", {}).get("families", [])
     )
     if code in low:
         return "LOW_MECHANICAL"
@@ -119,7 +117,9 @@ def _proposal(
             "rank": int(value_lane.get("rank", 2)),
             "promotion_mode": value_lane.get("promotion_mode", "NORMAL_BURNDOWN"),
             "dedicated_pr_default": bool(value_lane.get("dedicated_pr_default", True)),
-            "value_basis": value_lane.get("value_basis", "unclassified maintainability value"),
+            "value_basis": value_lane.get(
+                "value_basis", "unclassified maintainability value"
+            ),
         },
         "scope": {
             "paths": paths,
@@ -144,9 +144,11 @@ def _proposal(
             "post_merge_recensus_required": True,
         },
         "coverage_growth": {
-            "applicability": "NOT_APPLICABLE_MECHANICAL_ONLY"
-            if is_style
-            else "REQUIRED_OR_JUSTIFIED",
+            "applicability": (
+                "NOT_APPLICABLE_MECHANICAL_ONLY"
+                if is_style
+                else "REQUIRED_OR_JUSTIFIED"
+            ),
             "baseline_receipt": "MIP_OR_MATRIX_EXACT_HEAD",
             "target": "NON_REGRESSION_AND_CHECK_SURFACE_GROWTH",
             "result": "PENDING",
@@ -198,7 +200,9 @@ def build_queue(
         cfg = policy["batch_policy"][risk]
         max_findings = int(cfg["max_findings"])
         max_files = int(cfg["max_files"])
-        rows = sorted(rows, key=lambda item: (item["path"], item["line"], item["column"]))
+        rows = sorted(
+            rows, key=lambda item: (item["path"], item["line"], item["column"])
+        )
         batch: list[dict[str, Any]] = []
         batch_paths: set[str] = set()
 
@@ -290,7 +294,9 @@ def main() -> int:
         source_sha,
     )
     args.out.parent.mkdir(parents=True, exist_ok=True)
-    args.out.write_text(json.dumps(queue, indent=2, sort_keys=True) + "\n", encoding="utf-8")
+    args.out.write_text(
+        json.dumps(queue, indent=2, sort_keys=True) + "\n", encoding="utf-8"
+    )
     print(json.dumps(queue, indent=2, sort_keys=True))
     return 0
 

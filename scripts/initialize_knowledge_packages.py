@@ -12,12 +12,14 @@ This script initializes knowledge packages for AI agents, providing them with:
 """
 
 import json
-import yaml
-from pathlib import Path
 from datetime import datetime
-from typing import Dict, List, Any
+from pathlib import Path
+from typing import Any, Dict, List
+
+import yaml
 
 VERSION = "3.3.0"
+
 
 def _write_if_changed(path: Path, content: str) -> str:
     """Write content only if changed; returns 'created' | 'updated' | 'skipped'"""
@@ -29,6 +31,7 @@ def _write_if_changed(path: Path, content: str) -> str:
         return "updated"
     path.write_text(content, encoding="utf-8")
     return "created"
+
 
 class KnowledgePackageInitializer:
     """Initialize and manage knowledge packages for AI agents"""
@@ -46,7 +49,6 @@ class KnowledgePackageInitializer:
             "version": VERSION,
             "created": datetime.now().isoformat(),
             "description": "Core DMAIC V3.3 process knowledge for AI agents",
-
             "process_overview": {
                 "methodology": "DMAIC (Define, Measure, Analyze, Improve, Control)",
                 "version": "3.3.0",
@@ -55,90 +57,107 @@ class KnowledgePackageInitializer:
                         "id": "phase0",
                         "name": "Setup & Initialization",
                         "purpose": "Validate environment and dependencies",
-                        "outputs": ["system_checks", "environment_validation"]
+                        "outputs": ["system_checks", "environment_validation"],
                     },
                     {
                         "id": "phase1",
                         "name": "Define",
                         "purpose": "Scan and categorize workspace files",
-                        "outputs": ["file_inventory", "categorization", "relationships"]
+                        "outputs": [
+                            "file_inventory",
+                            "categorization",
+                            "relationships",
+                        ],
                     },
                     {
                         "id": "phase2",
                         "name": "Measure",
                         "purpose": "Analyze code metrics and quality",
-                        "outputs": ["code_metrics", "complexity_analysis", "dependencies"]
+                        "outputs": [
+                            "code_metrics",
+                            "complexity_analysis",
+                            "dependencies",
+                        ],
                     },
                     {
                         "id": "phase3",
                         "name": "Analyze",
                         "purpose": "Identify patterns and issues",
-                        "outputs": ["quality_assessment", "pattern_detection", "issue_identification"]
+                        "outputs": [
+                            "quality_assessment",
+                            "pattern_detection",
+                            "issue_identification",
+                        ],
                     },
                     {
                         "id": "phase4",
                         "name": "Improve",
                         "purpose": "Generate improvement recommendations",
-                        "outputs": ["refactoring_suggestions", "optimization_opportunities"]
+                        "outputs": [
+                            "refactoring_suggestions",
+                            "optimization_opportunities",
+                        ],
                     },
                     {
                         "id": "phase5",
                         "name": "Control",
                         "purpose": "Establish quality gates and monitoring",
-                        "outputs": ["quality_gates", "monitoring_rules", "control_mechanisms"]
+                        "outputs": [
+                            "quality_gates",
+                            "monitoring_rules",
+                            "control_mechanisms",
+                        ],
                     },
                     {
                         "id": "phase6",
                         "name": "Knowledge",
                         "purpose": "Capture and distribute learnings",
-                        "outputs": ["knowledge_packages", "best_practices", "lessons_learned"]
-                    }
-                ]
+                        "outputs": [
+                            "knowledge_packages",
+                            "best_practices",
+                            "lessons_learned",
+                        ],
+                    },
+                ],
             },
-
             "key_concepts": {
                 "idempotency": "All operations can be safely re-executed without side effects",
                 "ranking": "Artifacts are classified and prioritized based on importance",
                 "metrics": "Comprehensive KPIs track process health and progress",
-                "change_detection": "Only modified components are re-processed"
+                "change_detection": "Only modified components are re-processed",
             },
-
             "file_structure": {
                 "DMAIC_V3/": "Core engine and phase implementations",
                 "DMAIC_V3_OUTPUT/": "Execution results and metrics",
                 ".github/workflows/": "CI/CD pipeline definitions",
                 "artifacts/": "Generated artifacts and reports",
-                "knowledge_packages/": "AI agent knowledge bases"
+                "knowledge_packages/": "AI agent knowledge bases",
             },
-
             "quality_gates": {
                 "complexity_threshold": 500,
                 "file_size_limit": 500,
                 "import_limit": 20,
-                "test_coverage_minimum": 80
+                "test_coverage_minimum": 80,
             },
-
             "best_practices": [
                 "Always run Phase 0 before other phases",
                 "Review metrics after each execution",
                 "Update rankings regularly",
                 "Maintain idempotency in all operations",
-                "Document all changes and decisions"
+                "Document all changes and decisions",
             ],
-
             "common_commands": {
                 "dry_run": "python -m DMAIC_V3.dmaic_v3_engine --mode dry-run",
                 "full_cycle": "python -m DMAIC_V3.dmaic_v3_engine --mode full --iterations 1",
                 "single_phase": "python -m DMAIC_V3.dmaic_v3_engine --mode single --phase phase1_define",
-                "check_metrics": "python scripts/check_convergence.py"
+                "check_metrics": "python scripts/check_convergence.py",
             },
-
             "troubleshooting": {
                 "version_error": "Check python_min_version in DMAIC_V3/config.py",
                 "import_error": "Verify all dependencies in requirements.txt",
                 "phase_failure": "Review logs in DMAIC_V3_OUTPUT/iteration_*/phase*/",
-                "metrics_missing": "Ensure ENABLE_METRICS=true in environment"
-            }
+                "metrics_missing": "Ensure ENABLE_METRICS=true in environment",
+            },
         }
 
         return package
@@ -150,49 +169,45 @@ class KnowledgePackageInitializer:
             "agent_role": "DMAIC Process Assistant",
             "version": VERSION,
             "created": datetime.now().isoformat(),
-
             "capabilities": [
                 "Execute DMAIC phases",
                 "Analyze code quality",
                 "Generate metrics and reports",
                 "Provide improvement recommendations",
-                "Update artifact rankings"
+                "Update artifact rankings",
             ],
-
             "guidelines": {
                 "code_analysis": [
                     "Focus on maintainability and readability",
                     "Identify complexity hotspots",
                     "Suggest refactoring opportunities",
-                    "Respect existing patterns and conventions"
+                    "Respect existing patterns and conventions",
                 ],
                 "metrics_interpretation": [
                     "Compare against quality gates",
                     "Identify trends over time",
                     "Highlight critical issues",
-                    "Provide actionable insights"
+                    "Provide actionable insights",
                 ],
                 "recommendations": [
                     "Be specific and actionable",
                     "Prioritize by impact and effort",
                     "Consider team capacity",
-                    "Align with project goals"
-                ]
+                    "Align with project goals",
+                ],
             },
-
             "response_templates": {
                 "phase_completion": "Phase {phase} completed successfully. {summary}",
                 "issue_found": "Issue detected in {location}: {description}. Recommendation: {action}",
                 "metric_alert": "Metric {metric} exceeded threshold: {value} > {threshold}",
-                "improvement_suggestion": "Improvement opportunity: {description}. Expected benefit: {benefit}"
+                "improvement_suggestion": "Improvement opportunity: {description}. Expected benefit: {benefit}",
             },
-
             "knowledge_sources": [
                 "docs_versioned/status_reports/DMAIC_TEMPORAL_MAPPING_COMPLETE.md",
                 "DMAIC_V3_3_IMPLEMENTATION_SUMMARY.md",
                 "DMAIC_V3_EXECUTION_SUMMARY.md",
-                "CONVERGENCE_QUICK_REFERENCE.md"
-            ]
+                "CONVERGENCE_QUICK_REFERENCE.md",
+            ],
         }
 
         return context
@@ -216,9 +231,15 @@ class KnowledgePackageInitializer:
         # YAML
         dmaic_yaml_path = self.knowledge_dir / "dmaic_core_knowledge.yaml"
         agent_yaml_path = self.knowledge_dir / "agent_context.yaml"
-        res = _write_if_changed(dmaic_yaml_path, yaml.safe_dump(dmaic_package, default_flow_style=False, sort_keys=False))
+        res = _write_if_changed(
+            dmaic_yaml_path,
+            yaml.safe_dump(dmaic_package, default_flow_style=False, sort_keys=False),
+        )
         print(f"✅ {res.title()}: {dmaic_yaml_path}")
-        res = _write_if_changed(agent_yaml_path, yaml.safe_dump(agent_context, default_flow_style=False, sort_keys=False))
+        res = _write_if_changed(
+            agent_yaml_path,
+            yaml.safe_dump(agent_context, default_flow_style=False, sort_keys=False),
+        )
         print(f"✅ {res.title()}: {agent_yaml_path}")
 
         # README
@@ -282,6 +303,7 @@ For questions or updates, refer to:
 
         print(f"\n✅ Knowledge package initialization complete!")
         print(f"📦 {len(list(self.knowledge_dir.glob('*')))} files present")
+
 
 if __name__ == "__main__":
     initializer = KnowledgePackageInitializer()

@@ -8,12 +8,15 @@ from html import escape
 from pathlib import Path
 from typing import Any, Dict, Mapping, Optional
 
-
 REPO_ROOT = Path(__file__).resolve().parent
 DEFAULT_ROLLUP_PATH = REPO_ROOT / "metrics" / "federation" / "federation_rollup.json"
 DEFAULT_SCREE_PATH = REPO_ROOT / "metrics" / "federation" / "federation_scree.json"
-DEFAULT_RUNTIME_REGISTRY_PATH = REPO_ROOT / "metrics" / "federation" / "runtime_registry.json"
-DEFAULT_RUNTIME_REGISTRY_REPORT_PATH = REPO_ROOT / "reports" / "runtime_registry_report.json"
+DEFAULT_RUNTIME_REGISTRY_PATH = (
+    REPO_ROOT / "metrics" / "federation" / "runtime_registry.json"
+)
+DEFAULT_RUNTIME_REGISTRY_REPORT_PATH = (
+    REPO_ROOT / "reports" / "runtime_registry_report.json"
+)
 DEFAULT_BOTTLENECK_PATH = REPO_ROOT / "bottleneck_report.json"
 DEFAULT_OUTPUT_PATH = REPO_ROOT / "docs" / "dashboard.html"
 DEFAULT_STATUS_OUTPUT_PATH = REPO_ROOT / "reports" / "dashboard_status.json"
@@ -60,7 +63,9 @@ def _extract_federation_status(rollup: Mapping[str, Any]) -> Dict[str, Any]:
 
 
 def _extract_scree(scree_payload: Mapping[str, Any]) -> Dict[str, Dict[str, Any]]:
-    components = _pick_value(scree_payload, "components", "scree", "principal_components")
+    components = _pick_value(
+        scree_payload, "components", "scree", "principal_components"
+    )
     items = components if isinstance(components, list) else []
     indexed: Dict[str, Mapping[str, Any]] = {}
     for component in items:
@@ -76,7 +81,9 @@ def _extract_scree(scree_payload: Mapping[str, Any]) -> Dict[str, Dict[str, Any]
         result[key] = {
             "variance": _pick_value(source, "variance", "explained_variance"),
             "rank": _pick_value(source, "rank"),
-            "cumulative variance": _pick_value(source, "cumulative_variance", "cumulative variance"),
+            "cumulative variance": _pick_value(
+                source, "cumulative_variance", "cumulative variance"
+            ),
         }
     return result
 
@@ -100,7 +107,9 @@ def _extract_repo_runtime_registry(
     runtime_registry: Mapping[str, Any], runtime_report: Mapping[str, Any]
 ) -> Dict[str, Mapping[str, Any]]:
     registry_repos = _pick_value(runtime_registry, "repositories", "repos", "registry")
-    report_repos = _pick_value(runtime_report, "repositories", "repos", "runtime_report")
+    report_repos = _pick_value(
+        runtime_report, "repositories", "repos", "runtime_report"
+    )
     registry_map = registry_repos if isinstance(registry_repos, Mapping) else {}
     report_map = report_repos if isinstance(report_repos, Mapping) else {}
 
@@ -119,7 +128,9 @@ def _extract_repo_runtime_registry(
 
 def _extract_runtime_evidence(rows: Mapping[str, Mapping[str, Any]]) -> Dict[str, Any]:
     return {
-        repo: _pick_value(data, "runtime_evidence", "evidence", "runtime_status", "status")
+        repo: _pick_value(
+            data, "runtime_evidence", "evidence", "runtime_status", "status"
+        )
         for repo, data in rows.items()
     }
 
@@ -133,14 +144,18 @@ def _extract_truth_matrix(rows: Mapping[str, Mapping[str, Any]]) -> Dict[str, An
 
 def _extract_renderability(rows: Mapping[str, Mapping[str, Any]]) -> Dict[str, Any]:
     return {
-        repo: _pick_value(data, "renderability", "renderability_status", "render_status")
+        repo: _pick_value(
+            data, "renderability", "renderability_status", "render_status"
+        )
         for repo, data in rows.items()
     }
 
 
 def _extract_runtime_coverage(rows: Mapping[str, Mapping[str, Any]]) -> Dict[str, Any]:
     return {
-        repo: _pick_value(data, "runtime_coverage", "coverage", "runtime_coverage_pct", "coverage_pct")
+        repo: _pick_value(
+            data, "runtime_coverage", "coverage", "runtime_coverage_pct", "coverage_pct"
+        )
         for repo, data in rows.items()
     }
 
@@ -165,7 +180,8 @@ def _parse_percent(value: Any) -> Optional[int]:
 
 def _render_key_value_table(title: str, rows: Mapping[str, Any]) -> str:
     row_html = "".join(
-        f"<tr><th>{escape(str(k))}</th><td>{escape(str(v))}</td></tr>" for k, v in rows.items()
+        f"<tr><th>{escape(str(k))}</th><td>{escape(str(v))}</td></tr>"
+        for k, v in rows.items()
     )
     return f"""
     <section class=\"card\">
@@ -205,7 +221,7 @@ def _render_runtime_coverage_gauges(runtime_coverage: Mapping[str, Any]) -> str:
         if pct is None:
             gauge_html = "N/A"
         else:
-            gauge_html = f"<progress max=\"100\" value=\"{pct}\"></progress> {pct}%"
+            gauge_html = f'<progress max="100" value="{pct}"></progress> {pct}%'
         rows.append(
             "<tr>"
             f"<th>{escape(repo)}</th>"
@@ -381,7 +397,9 @@ def build_federation_dashboard(
     resolved_rollup = rollup_path or DEFAULT_ROLLUP_PATH
     resolved_scree = scree_path or DEFAULT_SCREE_PATH
     resolved_runtime_registry = runtime_registry_path or DEFAULT_RUNTIME_REGISTRY_PATH
-    resolved_runtime_registry_report = runtime_registry_report_path or DEFAULT_RUNTIME_REGISTRY_REPORT_PATH
+    resolved_runtime_registry_report = (
+        runtime_registry_report_path or DEFAULT_RUNTIME_REGISTRY_REPORT_PATH
+    )
     resolved_bottleneck = bottleneck_path or DEFAULT_BOTTLENECK_PATH
     resolved_output = output_path or DEFAULT_OUTPUT_PATH
     resolved_status = status_output_path or DEFAULT_STATUS_OUTPUT_PATH
@@ -391,7 +409,9 @@ def build_federation_dashboard(
     runtime_registry = _read_json(resolved_runtime_registry)
     runtime_registry_report = _read_json(resolved_runtime_registry_report)
     bottleneck = _read_json(resolved_bottleneck)
-    repo_runtime_rows = _extract_repo_runtime_registry(runtime_registry, runtime_registry_report)
+    repo_runtime_rows = _extract_repo_runtime_registry(
+        runtime_registry, runtime_registry_report
+    )
 
     html = _render_dashboard(
         _extract_program_overview(rollup),
@@ -408,9 +428,12 @@ def build_federation_dashboard(
     resolved_output.parent.mkdir(parents=True, exist_ok=True)
     resolved_output.write_text(html, encoding="utf-8")
 
-    all_inputs_present = all(path.exists() for path in (resolved_rollup, resolved_scree, resolved_bottleneck))
+    all_inputs_present = all(
+        path.exists() for path in (resolved_rollup, resolved_scree, resolved_bottleneck)
+    )
     runtime_registry_consumed = all(
-        path.exists() for path in (resolved_runtime_registry, resolved_runtime_registry_report)
+        path.exists()
+        for path in (resolved_runtime_registry, resolved_runtime_registry_report)
     )
     status_payload = {
         "wave": "W005.2",

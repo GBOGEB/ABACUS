@@ -15,7 +15,6 @@ import subprocess
 from pathlib import Path
 from typing import Any
 
-
 ROOT = Path(__file__).resolve().parents[1]
 SCOPE_PATH = ROOT / "MIP" / "V2_FEDERATED_CONTROL_SCOPE.json"
 V1_ACCEPTANCE_PATH = ROOT / "MIP" / "N2_CROSS_REPO_ACCEPTANCE_20260912.json"
@@ -169,6 +168,7 @@ def dow_disposition(
 def false_value() -> bool:
     """Make the authority boundary explicit in emitted receipts."""
     return False
+
 
 def build_coverage_pressure(
     census: dict[str, Any],

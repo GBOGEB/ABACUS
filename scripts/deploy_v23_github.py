@@ -10,12 +10,13 @@ GitHub Deployment & Roundtrip Script for V2.3
 Handles: commit, push, PR creation, issue tracking, CI/CD verification
 """
 
+import json
 import subprocess
 import sys
-import json
-from pathlib import Path
 from datetime import datetime
-from typing import Dict, List, Any
+from pathlib import Path
+from typing import Any, Dict, List
+
 
 class GitHubDeploymentV23:
     """GitHub deployment automation for V2.3"""
@@ -32,16 +33,14 @@ class GitHubDeploymentV23:
         self.deployment_log.append(log_entry)
         print(log_entry)
 
-    def run_command(self, cmd: List[str], check: bool = True) -> subprocess.CompletedProcess:
+    def run_command(
+        self, cmd: List[str], check: bool = True
+    ) -> subprocess.CompletedProcess:
         """Run shell command"""
         self.log(f"Running: {' '.join(cmd)}")
         try:
             result = subprocess.run(
-                cmd,
-                capture_output=True,
-                text=True,
-                check=check,
-                cwd=self.repo_root
+                cmd, capture_output=True, text=True, check=check, cwd=self.repo_root
             )
             if result.stdout:
                 self.log(f"Output: {result.stdout.strip()}", "DEBUG")
@@ -68,7 +67,7 @@ class GitHubDeploymentV23:
             "PRODUCTION_ROADMAP.md",
             "QUICK_REFERENCE.md",
             "README.md",
-            "VALIDATION_REPORT.md"
+            "VALIDATION_REPORT.md",
         ]
 
         abacus_dir = self.repo_root / "ABACUS-UNIFIED"
@@ -100,7 +99,7 @@ class GitHubDeploymentV23:
             "local_mcp/agents/documentation_framework_v2.3_OPTIMIZED.py",
             "local_mcp/agents/recursive_framework_v2.3_OPTIMIZED.py",
             ".github/workflows/v23-cicd.yml",
-            "ABACUS-UNIFIED/"
+            "ABACUS-UNIFIED/",
         ]
 
         for file in files_to_stage:
@@ -310,13 +309,22 @@ This PR delivers the complete V2.3 system with all agents upgraded, orchestrator
             self.run_command(["gh", "--version"])
 
             # Create PR
-            result = self.run_command([
-                "gh", "pr", "create",
-                "--title", pr_title,
-                "--body", pr_body,
-                "--base", "main",
-                "--head", self.branch
-            ], check=False)
+            result = self.run_command(
+                [
+                    "gh",
+                    "pr",
+                    "create",
+                    "--title",
+                    pr_title,
+                    "--body",
+                    pr_body,
+                    "--base",
+                    "main",
+                    "--head",
+                    self.branch,
+                ],
+                check=False,
+            )
 
             if result.returncode == 0:
                 self.log("✅ PR created successfully")
@@ -337,29 +345,37 @@ This PR delivers the complete V2.3 system with all agents upgraded, orchestrator
             {
                 "title": "[V2.3] End-to-End Testing Required",
                 "body": "Run comprehensive end-to-end tests with orchestrator v3.0 and all 6 agents.\n\n**Test Scenarios:**\n- Multi-agent coordination\n- DMAIC cycle execution\n- Knowledge base integration\n- Performance metrics\n- Error handling\n\n**Acceptance Criteria:**\n- All agents execute successfully\n- Orchestrator coordinates properly\n- Knowledge integration works\n- Metrics collected correctly",
-                "labels": ["testing", "v2.3", "high-priority"]
+                "labels": ["testing", "v2.3", "high-priority"],
             },
             {
                 "title": "[V2.3] Production Deployment Monitoring",
                 "body": "Monitor V2.3 system in production environment.\n\n**Monitoring Points:**\n- Agent performance\n- Memory usage\n- DMAIC cycle completion\n- Knowledge base queries\n- Error rates\n\n**Actions:**\n- Set up dashboards\n- Configure alerts\n- Track metrics",
-                "labels": ["monitoring", "v2.3", "production"]
+                "labels": ["monitoring", "v2.3", "production"],
             },
             {
                 "title": "[V2.3] Documentation Review",
                 "body": "Review and update all V2.3 documentation.\n\n**Files to Review:**\n- README.md\n- ABACUS-UNIFIED docs\n- Agent documentation\n- API documentation\n\n**Tasks:**\n- Verify accuracy\n- Update examples\n- Add troubleshooting guides",
-                "labels": ["documentation", "v2.3"]
-            }
+                "labels": ["documentation", "v2.3"],
+            },
         ]
 
         created_count = 0
         for issue in issues:
             try:
-                result = self.run_command([
-                    "gh", "issue", "create",
-                    "--title", issue["title"],
-                    "--body", issue["body"],
-                    "--label", ",".join(issue["labels"])
-                ], check=False)
+                result = self.run_command(
+                    [
+                        "gh",
+                        "issue",
+                        "create",
+                        "--title",
+                        issue["title"],
+                        "--body",
+                        issue["body"],
+                        "--label",
+                        ",".join(issue["labels"]),
+                    ],
+                    check=False,
+                )
 
                 if result.returncode == 0:
                     created_count += 1
@@ -417,13 +433,13 @@ This PR delivers the complete V2.3 system with all agents upgraded, orchestrator
                 "knowledge_integration": "✅ Deployed",
                 "agents_upgraded": "6/6 ✅",
                 "ci_cd_pipeline": "✅ Active",
-                "documentation": "✅ Complete"
+                "documentation": "✅ Complete",
             },
-            "deployment_log": self.deployment_log
+            "deployment_log": self.deployment_log,
         }
 
         report_file = self.repo_root / "v23_deployment_report.json"
-        with open(report_file, 'w') as f:
+        with open(report_file, "w") as f:
             json.dump(report, f, indent=2)
 
         self.log(f"✅ Deployment report saved: {report_file}")

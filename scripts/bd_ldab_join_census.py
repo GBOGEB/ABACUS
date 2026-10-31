@@ -47,8 +47,11 @@ def need_url(value, field):
 def safe_path(value):
     need_text(value, "source_path")
     raw = value.replace("\\", "/")
-    if (raw.startswith("/") or (len(raw) >= 2 and raw[1] == ":")
-            or any(part == ".." for part in raw.split("/"))):
+    if (
+        raw.startswith("/")
+        or (len(raw) >= 2 and raw[1] == ":")
+        or any(part == ".." for part in raw.split("/"))
+    ):
         raise ValueError("Unsafe source_path")
     path = "/".join(part for part in raw.split("/") if part and part != ".")
     if not path:
@@ -62,7 +65,10 @@ def digest(parts):
 
 
 def collect_disjoint(disjoint, sha):
-    if not isinstance(disjoint, dict) or disjoint.get("schema") != "bandit.disjoint.census.v1":
+    if (
+        not isinstance(disjoint, dict)
+        or disjoint.get("schema") != "bandit.disjoint.census.v1"
+    ):
         raise ValueError("Unsupported disjoint Bandit schema")
     if need_sha(disjoint.get("exact_sha"), "disjoint.exact_sha") != sha:
         raise ValueError("Disjoint census SHA differs from source head")
@@ -92,7 +98,9 @@ def collect_disjoint(disjoint, sha):
             owners[path] = lane
             current_paths.add(path)
             rows.append((fp, path, item["rule"], item["line"], lane))
-        if block.get("findings") != len(block["items"]) or block.get("files") != len(current_paths):
+        if block.get("findings") != len(block["items"]) or block.get("files") != len(
+            current_paths
+        ):
             raise ValueError(f"Denominator mismatch in {lane}")
     if disjoint.get("total_unique") != len(rows):
         raise ValueError("Full Bandit total does not reconcile")
@@ -118,14 +126,24 @@ def join(bundle):
         root = "BD-" + digest([repo, config, fp])
         by_fp[fp] = root
         roots[root] = {
-            "root_id": root, "category": "BANDIT",
-            "fingerprint": fp, "source_path": path,
-            "rule_or_error_code": rule, "line": line, "owner_lane": lane,
-            "observations": [{
-                "repository": repo, "source_sha": sha,
-                "run_id": run, "job_id": job, "evidence_url": url,
-                "source": "bandit_disjoint", "scan_configuration": config,
-            }],
+            "root_id": root,
+            "category": "BANDIT",
+            "fingerprint": fp,
+            "source_path": path,
+            "rule_or_error_code": rule,
+            "line": line,
+            "owner_lane": lane,
+            "observations": [
+                {
+                    "repository": repo,
+                    "source_sha": sha,
+                    "run_id": run,
+                    "job_id": job,
+                    "evidence_url": url,
+                    "source": "bandit_disjoint",
+                    "scan_configuration": config,
+                }
+            ],
             "disposition": "OPEN_UNREVIEWED",
         }
 
@@ -144,7 +162,11 @@ def join(bundle):
         this_run = need_integer(obs.get("run_id"), "CI.run_id")
         this_job = need_integer(obs.get("job_id"), "CI.job_id")
         this_url = need_url(obs.get("evidence_url"), "CI.evidence_url")
-        path = safe_path(obs["source_path"]) if obs.get("source_path") is not None else None
+        path = (
+            safe_path(obs["source_path"])
+            if obs.get("source_path") is not None
+            else None
+        )
         fp = obs.get("related_bandit_fingerprint")
         if fp is not None:
             if fp not in by_fp or obs_repo != repo or obs_sha != sha:
@@ -152,37 +174,63 @@ def join(bundle):
             root = by_fp[fp]
         else:
             root = "CI-" + digest([obs_repo, path, code, signature])
-            roots.setdefault(root, {
-                "root_id": root, "category": "CI", "fingerprint": None,
-                "source_path": path, "rule_or_error_code": code,
-                "line": None,
-                "owner_lane": owners.get(path) if obs_repo == repo and obs_sha == sha else None,
-                "observations": [], "disposition": "UNCLASSIFIED_FIRST_RED",
-            })
-        roots[root]["observations"].append({
-            "repository": obs_repo, "source_sha": obs_sha,
-            "run_id": this_run, "job_id": this_job, "evidence_url": this_url,
-            "source": "ci_failure", "signature": signature,
-        })
+            roots.setdefault(
+                root,
+                {
+                    "root_id": root,
+                    "category": "CI",
+                    "fingerprint": None,
+                    "source_path": path,
+                    "rule_or_error_code": code,
+                    "line": None,
+                    "owner_lane": (
+                        owners.get(path)
+                        if obs_repo == repo and obs_sha == sha
+                        else None
+                    ),
+                    "observations": [],
+                    "disposition": "UNCLASSIFIED_FIRST_RED",
+                },
+            )
+        roots[root]["observations"].append(
+            {
+                "repository": obs_repo,
+                "source_sha": obs_sha,
+                "run_id": this_run,
+                "job_id": this_job,
+                "evidence_url": this_url,
+                "source": "ci_failure",
+                "signature": signature,
+            }
+        )
 
     for obs in debugger:
         if not isinstance(obs, dict):
             raise ValueError("Invalid debugger observation")
         obs_repo = need_text(obs.get("repository"), "debug.repository")
         obs_sha = need_sha(obs.get("source_sha"), "debug.source_sha")
-        steps = need_integer(obs.get("real_probe_steps"), "debug.real_probe_steps", minimum=0)
+        steps = need_integer(
+            obs.get("real_probe_steps"), "debug.real_probe_steps", minimum=0
+        )
         receipt = {
-            "repository": obs_repo, "source_sha": obs_sha,
+            "repository": obs_repo,
+            "source_sha": obs_sha,
             "run_id": need_integer(obs.get("run_id"), "debug.run_id"),
             "job_id": need_integer(obs.get("job_id"), "debug.job_id"),
             "evidence_url": need_url(obs.get("evidence_url"), "debug.evidence_url"),
-            "session_id": obs.get("session_id"), "real_probe_steps": steps,
-            "runner_id": obs.get("runner_id"), "port_lease_id": obs.get("port_lease_id"),
-            "container_id": obs.get("container_id"), "image_digest": obs.get("image_digest"),
+            "session_id": obs.get("session_id"),
+            "real_probe_steps": steps,
+            "runner_id": obs.get("runner_id"),
+            "port_lease_id": obs.get("port_lease_id"),
+            "container_id": obs.get("container_id"),
+            "image_digest": obs.get("image_digest"),
             "host_binding": obs.get("host_binding"),
             "source": "debug_receipt",
-            "proof_level": "REPORTED_UNVERIFIED" if steps > 0 and obs.get("session_id") and obs.get("runner_id")
-                else "PARTIAL",
+            "proof_level": (
+                "REPORTED_UNVERIFIED"
+                if steps > 0 and obs.get("session_id") and obs.get("runner_id")
+                else "PARTIAL"
+            ),
         }
         fp = obs.get("related_bandit_fingerprint")
         if fp is not None:
@@ -198,7 +246,10 @@ def join(bundle):
     if previous is not None:
         if not isinstance(previous, dict):
             raise ValueError("Invalid historical comparison manifest")
-        if previous.get("scan_configuration") != config or previous.get("repository") != repo:
+        if (
+            previous.get("scan_configuration") != config
+            or previous.get("repository") != repo
+        ):
             raise ValueError("Historical scan configuration/repository mismatch")
         prev_sha = need_sha(previous.get("head_sha"), "previous.head_sha")
         if prev_sha == sha:
@@ -207,18 +258,27 @@ def join(bundle):
         before = {x[0] for x in old_rows}
         after = set(by_fp)
         comparable = {
-            "before_sha": prev_sha, "after_sha": sha,
-            "before_unique": len(before), "after_unique": len(after),
-            "new": len(after - before), "resolved": len(before - after),
+            "before_sha": prev_sha,
+            "after_sha": sha,
+            "before_unique": len(before),
+            "after_unique": len(after),
+            "new": len(after - before),
+            "resolved": len(before - after),
             "net_reduction": len(before) - len(after),
             "scan_configuration": config,
             "status": "FINGERPRINT_DELTA_ONLY_REVIEW_REQUIRED",
         }
     for item in roots.values():
-        item["observations"].sort(key=lambda o: (
-            o["repository"], o["source_sha"], o["run_id"], o["job_id"],
-            o["source"], o["evidence_url"],
-        ))
+        item["observations"].sort(
+            key=lambda o: (
+                o["repository"],
+                o["source_sha"],
+                o["run_id"],
+                o["job_id"],
+                o["source"],
+                o["evidence_url"],
+            )
+        )
     return {
         "schema": "bd.ldab.joined.census.v1",
         "scope": dict(sorted(scope.items())),
@@ -230,18 +290,26 @@ def join(bundle):
             "debug_receipts": len(debugger),
             "debug_reported_sessions": sum(
                 o["proof_level"] == "REPORTED_UNVERIFIED" for o in unmatched_debug
-            ) + sum(
+            )
+            + sum(
                 o.get("proof_level") == "REPORTED_UNVERIFIED"
-                for root in roots.values() for o in root["observations"]
+                for root in roots.values()
+                for o in root["observations"]
             ),
             "comparable_delta": comparable,
             "changed_line_coverage": None,
             "active_workers": None,
         },
         "roots": [roots[k] for k in sorted(roots)],
-        "unlinked_debug_receipts": sorted(unmatched_debug, key=lambda o: (
-            o["repository"], o["source_sha"], o["run_id"], o["job_id"],
-        )),
+        "unlinked_debug_receipts": sorted(
+            unmatched_debug,
+            key=lambda o: (
+                o["repository"],
+                o["source_sha"],
+                o["run_id"],
+                o["job_id"],
+            ),
+        ),
         "merge_admission": "HOLD",
         "security_disposition": "INDEPENDENT_REVIEW_REQUIRED",
         "authority_transfer": False,

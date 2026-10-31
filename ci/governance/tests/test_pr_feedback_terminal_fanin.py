@@ -5,14 +5,15 @@ test disposition and fan out redundant evaluators. Direct PR and review events
 still establish immediate pending/invalidation semantics.
 """
 
-from pathlib import Path
 import re
 import unittest
-
+from pathlib import Path
 
 WORKFLOW = (
     Path(__file__).resolve().parents[3]
-    / ".github" / "workflows" / "pr-feedback-gate.yml"
+    / ".github"
+    / "workflows"
+    / "pr-feedback-gate.yml"
 )
 
 

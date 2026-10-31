@@ -5,10 +5,11 @@
 # Description: Auto-generated version header
 """
 
-import sys
-import shutil
 import json
+import shutil
+import sys
 from pathlib import Path
+
 
 def main():
     info = {
@@ -20,11 +21,12 @@ def main():
             "root": str(Path(__file__).resolve().parents[1]),
             "reports": "DMAIC_V3_OUTPUT/reports",
             "knowledge": "knowledge_packages",
-        }
+        },
     }
     # Python deps
     try:
         import yaml  # noqa
+
         info["deps"]["pyyaml"] = True
     except Exception:
         info["deps"]["pyyaml"] = False
@@ -35,6 +37,7 @@ def main():
 
     print(json.dumps(info, indent=2))
     return 0 if info["python_ok"] and info["deps"]["pyyaml"] else 1
+
 
 if __name__ == "__main__":
     raise SystemExit(main())

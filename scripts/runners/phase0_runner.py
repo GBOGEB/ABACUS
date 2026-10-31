@@ -66,8 +66,7 @@ def run_smoke(workspace: Path, scratch: Path) -> dict[str, Any]:
     canonical = phase._setup_canonical_files()
     required = ("VERSION", "README")
     canonical_pass = all(
-        bool(canonical.get(name, {}).get("exists"))
-        for name in required
+        bool(canonical.get(name, {}).get("exists")) for name in required
     )
     steps.append(
         {

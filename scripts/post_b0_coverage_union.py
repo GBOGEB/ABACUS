@@ -19,7 +19,9 @@ from typing import Any
 
 try:
     from scripts import coverage_dab_census as dab
-except ModuleNotFoundError:  # direct execution: python scripts/post_b0_coverage_union.py
+except (
+    ModuleNotFoundError
+):  # direct execution: python scripts/post_b0_coverage_union.py
     import coverage_dab_census as dab
 
 
@@ -177,9 +179,7 @@ def merge_coverage_payloads(
     total_opportunities = total_statements + total_branches
     total_covered = total_covered_lines + total_covered_branches
     total_percent = (
-        100.0 * total_covered / total_opportunities
-        if total_opportunities
-        else 100.0
+        100.0 * total_covered / total_opportunities if total_opportunities else 100.0
     )
 
     return {
@@ -276,9 +276,7 @@ def main(argv: list[str] | None = None) -> int:
         matrix_baseline=(
             _load_json(args.matrix_baseline) if args.matrix_baseline else {}
         ),
-        test_evidence=(
-            _load_json(args.test_evidence) if args.test_evidence else {}
-        ),
+        test_evidence=(_load_json(args.test_evidence) if args.test_evidence else {}),
     )
     args.out.parent.mkdir(parents=True, exist_ok=True)
     args.out.write_text(

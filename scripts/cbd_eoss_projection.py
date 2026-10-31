@@ -3,6 +3,7 @@
 All visual surfaces are derived from immutable identity-bearing receipts.
 No workflow is dispatched and no source-of-truth state is mutated.
 """
+
 from __future__ import annotations
 
 import argparse
@@ -11,8 +12,8 @@ import html
 import json
 import math
 import re
-import zipfile
 import xml.etree.ElementTree as ET
+import zipfile
 from collections import Counter
 from pathlib import Path
 
@@ -56,19 +57,27 @@ def digest(d):
 def native_coverage_artifact(zip_path, *, artifact_id, expected_head, blob_parity):
     """Read a bounded subset of a ZIP; never extract untrusted members or contexts."""
     sha(expected_head)
-    require(isinstance(blob_parity, dict) and set(blob_parity) == set(TARGETS),
-            "source blob parity must cover the exact measured modules")
-    require(all(type(v) is bool for v in blob_parity.values()),
-            "source blob proof must be explicit booleans")
+    require(
+        isinstance(blob_parity, dict) and set(blob_parity) == set(TARGETS),
+        "source blob parity must cover the exact measured modules",
+    )
+    require(
+        all(type(v) is bool for v in blob_parity.values()),
+        "source blob proof must be explicit booleans",
+    )
     num(artifact_id, 1)
     with zipfile.ZipFile(zip_path) as z:
         require(z.testzip() is None, "artifact ZIP corrupt")
         names = set(z.namelist())
-        require({"coverage.xml", "test-evidence.json", "coverage-dab.json"} <= names,
-                "missing native coverage evidence")
-        for name, limit in (("coverage.xml", 3_000_000),
-                            ("test-evidence.json", 2_000_000),
-                            ("coverage-dab.json", 2_000_000)):
+        require(
+            {"coverage.xml", "test-evidence.json", "coverage-dab.json"} <= names,
+            "missing native coverage evidence",
+        )
+        for name, limit in (
+            ("coverage.xml", 3_000_000),
+            ("test-evidence.json", 2_000_000),
+            ("coverage-dab.json", 2_000_000),
+        ):
             require(z.getinfo(name).file_size <= limit, "oversize evidence member")
         native = json.loads(z.read("test-evidence.json"))
         dab = json.loads(z.read("coverage-dab.json"))
@@ -94,8 +103,10 @@ def native_coverage_artifact(zip_path, *, artifact_id, expected_head, blob_parit
                 require(0 <= n <= d and d > 0, "invalid branch counts")
                 branch_hits += n
                 branches += d
-        require((stmts, branches) == TARGETS[filename],
-                "unexpected coverage scope denominator")
+        require(
+            (stmts, branches) == TARGETS[filename],
+            "unexpected coverage scope denominator",
+        )
         out[filename] = {
             "eligible_statements": stmts,
             "covered_statements": covered,
@@ -104,14 +115,21 @@ def native_coverage_artifact(zip_path, *, artifact_id, expected_head, blob_parit
             "source_blob_equal_to_pr_head": blob_parity[filename],
         }
     require(found == set(TARGETS), "target module absent from artifact")
-    relevant = [r for r in native.get("rows", [])
-                if any(word in r.get("test", "") for word in TARGET_TESTS)]
-    require(relevant and all(r.get("outcome") == "pass" for r in relevant),
-            "targeted behavioral tests not all passing")
+    relevant = [
+        r
+        for r in native.get("rows", [])
+        if any(word in r.get("test", "") for word in TARGET_TESTS)
+    ]
+    require(
+        relevant and all(r.get("outcome") == "pass" for r in relevant),
+        "targeted behavioral tests not all passing",
+    )
     assertions = Counter()
     for group in TARGET_TESTS:
         assertions[group] = sum(group in r.get("test", "") for r in relevant)
-    require(sum(assertions.values()) == len(relevant), "test IDs overlap across families")
+    require(
+        sum(assertions.values()) == len(relevant), "test IDs overlap across families"
+    )
     line_total = sum(v["eligible_statements"] for v in out.values())
     line_hit = sum(v["covered_statements"] for v in out.values())
     branch_total = sum(v["eligible_branches"] for v in out.values())
@@ -122,9 +140,15 @@ def native_coverage_artifact(zip_path, *, artifact_id, expected_head, blob_parit
         "pr_head_sha_at_check": expected_head,
         "sha_identity_match": artifact_sha == expected_head,
         "all_measured_source_blobs_equal": all(blob_parity.values()),
-        "evidence_tier": ("EXACT_HEAD" if artifact_sha == expected_head
-                          else "CONTENT_EQUIVALENT_MODULE_SCOPE" if all(blob_parity.values())
-                          else "UNQUALIFIED_SHA_MISMATCH"),
+        "evidence_tier": (
+            "EXACT_HEAD"
+            if artifact_sha == expected_head
+            else (
+                "CONTENT_EQUIVALENT_MODULE_SCOPE"
+                if all(blob_parity.values())
+                else "UNQUALIFIED_SHA_MISMATCH"
+            )
+        ),
         "acceptance_credit": None,
         "modules": out,
         "test_cases_passed": len(relevant),
@@ -141,36 +165,58 @@ def native_coverage_artifact(zip_path, *, artifact_id, expected_head, blob_parit
 
 
 def validate_pulses(pulses):
-    require(isinstance(pulses, list) and len(pulses) == 3,
-            "exactly three planned pulses required")
+    require(
+        isinstance(pulses, list) and len(pulses) == 3,
+        "exactly three planned pulses required",
+    )
     ids = set()
     for i, p in enumerate(pulses, start=1):
         require(p.get("id") == f"P{i}", "nonsequential pulse IDs")
-        require(p.get("status") in ("SOURCE_EQUIVALENT", "HISTORICAL_OBSERVATION",
-                                    "PLANNED_ONLY", "DEFERRED"), "pulse status invalid")
+        require(
+            p.get("status")
+            in (
+                "SOURCE_EQUIVALENT",
+                "HISTORICAL_OBSERVATION",
+                "PLANNED_ONLY",
+                "DEFERRED",
+            ),
+            "pulse status invalid",
+        )
         planned, actual = p.get("planned"), p.get("actual")
-        require(isinstance(planned, dict) and isinstance(actual, dict),
-                "planned and actual must be separate mappings")
+        require(
+            isinstance(planned, dict) and isinstance(actual, dict),
+            "planned and actual must be separate mappings",
+        )
         require(set(planned) == set(actual), "planned/actual measurement keys drift")
-        require(isinstance(p.get("narrative"), str) and p["narrative"],
-                "missing narrative accompanying visual evidence")
+        require(
+            isinstance(p.get("narrative"), str) and p["narrative"],
+            "missing narrative accompanying visual evidence",
+        )
         ids.add(p["id"])
         for key, value in actual.items():
             if value is not None:
-                require(type(value) in (int, float) and math.isfinite(value),
-                        "actual must be numeric or null")
+                require(
+                    type(value) in (int, float) and math.isfinite(value),
+                    "actual must be numeric or null",
+                )
                 require(value >= 0, "negative measurements not accepted")
         for key, value in planned.items():
-            require(value is None or (type(value) in (int, float)
-                    and math.isfinite(value) and value >= 0),
-                    "planned target must be numeric or null")
+            require(
+                value is None
+                or (
+                    type(value) in (int, float) and math.isfinite(value) and value >= 0
+                ),
+                "planned target must be numeric or null",
+            )
     require(len(ids) == 3, "duplicate pulse identities")
     return pulses
 
 
 def construct_snapshot(native, *, observed=None):
-    require(native.get("eligible_lines") == 269 and native.get("eligible_branches") == 94,
-            "unexpected historical source scope")
+    require(
+        native.get("eligible_lines") == 269 and native.get("eligible_branches") == 94,
+        "unexpected historical source scope",
+    )
     require(native.get("acceptance_credit") is None, "illegitimate admission promotion")
     ratio = native["covered_branches"] / native["eligible_branches"]
     require(0 <= ratio <= 1, "bad branch fraction")
@@ -191,9 +237,12 @@ def construct_snapshot(native, *, observed=None):
         "untested_total_repository_lines": None,
         "unknown_total_repository_lines": None,
     }
-    require(backlog["distinct_run_ids_with_first_page_job_readbacks"]
-            + backlog["distinct_run_ids_not_yet_scanned_by_this_projection"]
-            == backlog["distinct_historical_run_ids"], "N0 run census mismatch")
+    require(
+        backlog["distinct_run_ids_with_first_page_job_readbacks"]
+        + backlog["distinct_run_ids_not_yet_scanned_by_this_projection"]
+        == backlog["distinct_historical_run_ids"],
+        "N0 run census mismatch",
+    )
     temporal = {
         "historical_temporal_jobs": 303,
         "measured_completed_job_durations": 293,
@@ -208,51 +257,117 @@ def construct_snapshot(native, *, observed=None):
         "clock_basis": "native job started_at to completed_at, nearest-rank on uncensored",
         "source_bound_cohort": "ABACUS #2090 temporal tests / historic 16 native-job snapshots",
     }
-    require(temporal["measured_completed_job_durations"]
-            + temporal["censored_or_inverted"]
-            == temporal["historical_temporal_jobs"], "temporal denominator mismatch")
-    pulses = validate_pulses([
-        {"id": "P1", "status": "SOURCE_EQUIVALENT", "scope": "LOCAL_TO_REPO",
-         "title": "Coverage and expanded behavioral tests",
-         "planned": {"eligible_lines_covered_pct": 80, "eligible_branches_covered_pct": 75,
-                     "new_test_cases_recorded": 9},
-         "actual": {"eligible_lines_covered_pct": native["line_pct"],
+    require(
+        temporal["measured_completed_job_durations"] + temporal["censored_or_inverted"]
+        == temporal["historical_temporal_jobs"],
+        "temporal denominator mismatch",
+    )
+    pulses = validate_pulses(
+        [
+            {
+                "id": "P1",
+                "status": "SOURCE_EQUIVALENT",
+                "scope": "LOCAL_TO_REPO",
+                "title": "Coverage and expanded behavioral tests",
+                "planned": {
+                    "eligible_lines_covered_pct": 80,
+                    "eligible_branches_covered_pct": 75,
+                    "new_test_cases_recorded": 9,
+                },
+                "actual": {
+                    "eligible_lines_covered_pct": native["line_pct"],
                     "eligible_branches_covered_pct": native["branch_pct"],
-                    "new_test_cases_recorded": native["test_cases_by_file"].get(TARGET_TESTS[0], 0)},
-         "narrative": "Two historically zero-covered DMAIC utilities now have source-content-matched Python 3.12 evidence; exact commit SHA differs and security/admission remain HOLD."},
-        {"id": "P2", "status": "HISTORICAL_OBSERVATION", "scope": "REPO",
-         "title": "N0 historical run/first-step attribution",
-         "planned": {"unique_runs_read": 60, "job_readbacks": 350},
-         "actual": {"unique_runs_read": backlog["distinct_run_ids_with_first_page_job_readbacks"],
-                    "job_readbacks": 387},
-         "narrative": "60 distinct run IDs in four non-overlapping receipts; 118 failed jobs yield 56 candidate signatures, not formal root closures."},
-        {"id": "P3", "status": "HISTORICAL_OBSERVATION", "scope": "REPO_TO_FEDERATION",
-         "title": "Execution clock, testflight and cache controls",
-         "planned": {"native_job_durations_captured": 293, "target_p95_job_seconds": 240.3,
-                     "actual_warm_cache_saved_seconds": None},
-         "actual": {"native_job_durations_captured": temporal["measured_completed_job_durations"],
+                    "new_test_cases_recorded": native["test_cases_by_file"].get(
+                        TARGET_TESTS[0], 0
+                    ),
+                },
+                "narrative": "Two historically zero-covered DMAIC utilities now have source-content-matched Python 3.12 evidence; exact commit SHA differs and security/admission remain HOLD.",
+            },
+            {
+                "id": "P2",
+                "status": "HISTORICAL_OBSERVATION",
+                "scope": "REPO",
+                "title": "N0 historical run/first-step attribution",
+                "planned": {"unique_runs_read": 60, "job_readbacks": 350},
+                "actual": {
+                    "unique_runs_read": backlog[
+                        "distinct_run_ids_with_first_page_job_readbacks"
+                    ],
+                    "job_readbacks": 387,
+                },
+                "narrative": "60 distinct run IDs in four non-overlapping receipts; 118 failed jobs yield 56 candidate signatures, not formal root closures.",
+            },
+            {
+                "id": "P3",
+                "status": "HISTORICAL_OBSERVATION",
+                "scope": "REPO_TO_FEDERATION",
+                "title": "Execution clock, testflight and cache controls",
+                "planned": {
+                    "native_job_durations_captured": 293,
+                    "target_p95_job_seconds": 240.3,
+                    "actual_warm_cache_saved_seconds": None,
+                },
+                "actual": {
+                    "native_job_durations_captured": temporal[
+                        "measured_completed_job_durations"
+                    ],
                     "target_p95_job_seconds": temporal["duration_p95_seconds"],
-                    "actual_warm_cache_saved_seconds": None},
-         "narrative": "Prior historical job-duration cohort p95 was 267 s. A 10% p95 reduction to 240.3 s is a proposed next-run target; no wheel-cache or CoolProp speedup has been authenticated."},
-    ])
+                    "actual_warm_cache_saved_seconds": None,
+                },
+                "narrative": "Prior historical job-duration cohort p95 was 267 s. A 10% p95 reduction to 240.3 s is a proposed next-run target; no wheel-cache or CoolProp speedup has been authenticated.",
+            },
+        ]
+    )
     return {
         "schema": SCHEMA,
         "generated_from": "source-bound native coverage artifact plus frozen owner-specific historical receipts",
         "source_of_truth_created": False,
         "observation_is_atomic": False,
-        "acceptance": {"security_waiver": False, "authority_transfer": False,
-                       "main_merge_authorized": False, "state": "HOLD"},
+        "acceptance": {
+            "security_waiver": False,
+            "authority_transfer": False,
+            "main_merge_authorized": False,
+            "state": "HOLD",
+        },
         "native_coverage": native,
         "backlog": backlog,
         "temporal": temporal,
         "pulses": pulses,
         "taxonomy": [
-            {"level": "LOCAL", "primary": "E0-E2 pre-commit/pre-push", "owner": "TestPilot/developer",
-             "surfaces": ["hook telemetry", "cache key", "test selection", "source tree digest"]},
-            {"level": "REPO", "primary": "E3-E5 exact PR head/run/job/step", "owner": "ABACUS/EVERRED/CBD",
-             "surfaces": ["DAG", "SIPOC", "BD queue", "coverage ledger", "native CI timeline"]},
-            {"level": "FEDERATION", "primary": "E6 review and cross-repo gates", "owner": "Mission Control CODEX / ABACUS governance",
-             "surfaces": ["repo portfolio", "REX", "root-owner crosswalk", "admission gates"]},
+            {
+                "level": "LOCAL",
+                "primary": "E0-E2 pre-commit/pre-push",
+                "owner": "TestPilot/developer",
+                "surfaces": [
+                    "hook telemetry",
+                    "cache key",
+                    "test selection",
+                    "source tree digest",
+                ],
+            },
+            {
+                "level": "REPO",
+                "primary": "E3-E5 exact PR head/run/job/step",
+                "owner": "ABACUS/EVERRED/CBD",
+                "surfaces": [
+                    "DAG",
+                    "SIPOC",
+                    "BD queue",
+                    "coverage ledger",
+                    "native CI timeline",
+                ],
+            },
+            {
+                "level": "FEDERATION",
+                "primary": "E6 review and cross-repo gates",
+                "owner": "Mission Control CODEX / ABACUS governance",
+                "surfaces": [
+                    "repo portfolio",
+                    "REX",
+                    "root-owner crosswalk",
+                    "admission gates",
+                ],
+            },
         ],
         "provenance": {
             "coverage_pr": 2099,
@@ -343,13 +458,22 @@ def emit_markdown(s):
         "",
         "## Architecture and diagram narrative",
         "",
-        "```mermaid", mermaid_dag().rstrip(), "```", "",
+        "```mermaid",
+        mermaid_dag().rstrip(),
+        "```",
+        "",
         "**DAG narrative.** Local E0-E2 guards establish the source tree and cached dependency identity. Repo E3-E5 binds the exact PR head to run/attempt/job/step and fresh-clone parity. E6 is an independent federation admission gate. Dashed edges to dashboards are observations and may not be read as confirmed causes.",
         "",
-        "```mermaid", mermaid_sipoc().rstrip(), "```", "",
+        "```mermaid",
+        mermaid_sipoc().rstrip(),
+        "```",
+        "",
         "**SIPOC narrative.** Source suppliers produce versioned, immutable evidence. The process validates identities and denominators. Its outputs are review projections for owners and reviewers, not an alternate root ledger.",
         "",
-        "```mermaid", mermaid_clock().rstrip(), "```", "",
+        "```mermaid",
+        mermaid_clock().rstrip(),
+        "```",
+        "",
         "**Execution-clock narrative.** Warm-cache results only become speedup evidence when cold/warm runs share OS, Python ABI, dependency/wheel hashes, selected tests, runner class and observation windows. Queue delay, runtime and wall-clock elapsed are separate metrics.",
         "",
         "## Three pulses: planned versus actual",
@@ -358,69 +482,107 @@ def emit_markdown(s):
         "|---|---|---|---|",
     ]
     for p in s["pulses"]:
-        targets = ", ".join(f"{k}={v if v is not None else 'UNKNOWN'}" for k,v in p["planned"].items())
-        actual = ", ".join(f"{k}={v if v is not None else 'UNKNOWN'}" for k,v in p["actual"].items())
+        targets = ", ".join(
+            f"{k}={v if v is not None else 'UNKNOWN'}" for k, v in p["planned"].items()
+        )
+        actual = ", ".join(
+            f"{k}={v if v is not None else 'UNKNOWN'}" for k, v in p["actual"].items()
+        )
         out.append(f"| {p['id']} | {targets} | {actual} | {p['status']} |")
-    out += ["", "**Coverage scope.** The two selected DMAIC files have "
-            f"{n['covered_lines']}/{n['eligible_lines']} measured statements and "
-            f"{n['covered_branches']}/{n['eligible_branches']} measured branches "
-            f"({n['line_pct']}% and {n['branch_pct']}%). Executing commit {n['artifact_exact_sha']} "
-            f"differs from PR head {n['pr_head_sha_at_check']}, though measured file blobs match. "
-            "Only content-equivalent module proof is supported, not accepted exact-head main/diff coverage.",
-            "", "**BD / unknowns.** "
-            f"{b['distinct_run_ids_with_first_page_job_readbacks']} of "
-            f"{b['distinct_historical_run_ids']} historical runs have a limited first-page latest-attempt "
-            f"job readback; {b['distinct_run_ids_not_yet_scanned_by_this_projection']} have not. "
-            f"{b['candidate_step_signatures']} candidate signatures are not 56 confirmed roots. "
-            "Untested and unenumerated counts remain UNKNOWN until censused.",
-            "", "**Time evidence.** Prior temporal samples record "
-            f"{t['measured_completed_job_durations']} measured job durations, "
-            f"{t['censored_or_inverted']} censored/inverted timestamps, "
-            f"p50={t['duration_p50_seconds']} s, p95={t['duration_p95_seconds']} s; "
-            "actual runner queue waiting and any CoolProp/wheel cache time savings are UNKNOWN.",
-            "", "## Surface family taxonomy", "",
-            "| Tier | Authority owner | Recommended surface family |",
-            "|---|---|---|",
+    out += [
+        "",
+        "**Coverage scope.** The two selected DMAIC files have "
+        f"{n['covered_lines']}/{n['eligible_lines']} measured statements and "
+        f"{n['covered_branches']}/{n['eligible_branches']} measured branches "
+        f"({n['line_pct']}% and {n['branch_pct']}%). Executing commit {n['artifact_exact_sha']} "
+        f"differs from PR head {n['pr_head_sha_at_check']}, though measured file blobs match. "
+        "Only content-equivalent module proof is supported, not accepted exact-head main/diff coverage.",
+        "",
+        "**BD / unknowns.** "
+        f"{b['distinct_run_ids_with_first_page_job_readbacks']} of "
+        f"{b['distinct_historical_run_ids']} historical runs have a limited first-page latest-attempt "
+        f"job readback; {b['distinct_run_ids_not_yet_scanned_by_this_projection']} have not. "
+        f"{b['candidate_step_signatures']} candidate signatures are not 56 confirmed roots. "
+        "Untested and unenumerated counts remain UNKNOWN until censused.",
+        "",
+        "**Time evidence.** Prior temporal samples record "
+        f"{t['measured_completed_job_durations']} measured job durations, "
+        f"{t['censored_or_inverted']} censored/inverted timestamps, "
+        f"p50={t['duration_p50_seconds']} s, p95={t['duration_p95_seconds']} s; "
+        "actual runner queue waiting and any CoolProp/wheel cache time savings are UNKNOWN.",
+        "",
+        "## Surface family taxonomy",
+        "",
+        "| Tier | Authority owner | Recommended surface family |",
+        "|---|---|---|",
     ]
     for tier in s["taxonomy"]:
-        out.append(f"| {tier['level']} | {tier['owner']} | {', '.join(tier['surfaces'])} |")
-    out += ["", "## Global execution glossary", "",
-            "- **EOSS:** Evidence & Observability Surface Suite; a proposed umbrella name for DAG/SIPOC, run ledger, CBD burndown, dashboard, atlas, metric telemetry and review receipts.",
-            "- **SSOT:** canonical governed system of record; generated HTML, charts and ledgers are projections unless explicitly promoted.",
-            "- **DAG / edge / atom:** Directed acyclic process topology / typed relationship / smallest version-bound run, attempt, job, step, test or evidence record. Co-occurrence is not causality.",
-            "- **SIPOC:** Supplier-Input-Process-Output-Customer diagram, including responsible repository boundaries.",
-            "- **BD / CBD:** Burndown / causal burndown; outstanding symptom associations, confirmed roots and accepted closures require independent denominators.",
-            "- **First-red:** earliest authenticated failing job step in a precise workflow run attempt; a candidate step signature is only a grouping.",
-            "- **Collected / executed / passed:** three distinct test counts; asserting a collected test exists is not evidence it passed.",
-            "- **Statements / branches / diff coverage:** eligible executable statements, branch opportunities and changed-line scope; do not combine incompatible denominators.",
-            "- **Unenumerated / untested / unknown / queued:** not yet listed, code lacking measured test coverage, missing value, and scheduled pending execution. These are not interchangeable or zeros.",
-            "- **CPU time / wall time / queue / job runtime:** different clocks. Use monotonic process clocks and native GitHub job.created/start/end timestamps; never infer runner queue wait from run creation.",
-            "- **Asyncio:** bounded I/O concurrency for scouts, not a substitute for parallel CPU execution or an authenticated dispatcher. Cap read-only scouts and source-owner leases.",
-            "- **Wheelhouse / cache key:** prebuilt hashed Python wheels and a key spanning OS, Python ABI, lock digest, dependency index and wheel digest. Verify before offline reinstall.",
-            "- **Planned / predicted / actual:** predeclared target, frozen future estimate, and subsequently source-bound measurement. Score only a prediction issued before the measured target.",
-            "- **A10 / security / governance / review:** independent HOLD gates; no diagram or statistical plateau can waive these.",
-            "", "## User cheat-sheet: broad surface prompt", "",
-            "> Build or update the **CODE PURPLE EOSS** across **LOCAL / REPO / FEDERATION**: Mermaid process DAG, causal-candidate versus verified graph, SIPOC with narrative, interactive HTML evidence atlas, CI/clock/cache timeline, coverage heatmap and numerator/denominator ledger, CBD queue with known/unknown/unlisted/untested states, planned/predicted/actual three-pulse DMAIC chart, glossary and command cheat-sheet. Bind every panel to repo/PR/head/run/attempt/job/step/coverage source. Include visual QA screenshots, responsive interaction tests, hashes and independent HOLD gates. Separate historical, current-head, content-equivalent and unverified evidence; never claim merges, root closures, or performance gains without source-bound proof.",
-            "", "## Reproducible operator commands", "",
-            "```bash",
-            "# Native evidence adapter: requires a previously downloaded authenticated GitHub ZIP",
-            "python scripts/cbd_eoss_projection.py --coverage-zip /path/to/native-test-evidence.zip --out ./eoss_out",
-            "# Targeted negative + execution contracts, with explicit branch coverage",
-            "python -m pytest -q tests/test_cbd_eoss_projection.py tests/test_cbd_eoss_runtime_probe.py --cov=scripts.cbd_eoss_projection --cov=scripts.cbd_eoss_runtime_probe --cov-branch",
-            "# CI job evidence: bind the exact PR head and run:attempt; do not assert queue wait from run-created timestamps",
-            "```", "",
-            "**Wheelhouse and asyncio:** `scripts/cbd_eoss_runtime_probe.py` implements a deterministic lock/ABI/OS/wheel cache key, a fail-closed cold/warm pairing contract (at least three matched trials), and a read-only asyncio scout with a hard maximum concurrency of four. These are tested local contracts; no GitHub Crew launch, package preload, 300-second speedup or runner-time improvement is claimed.",
-            "", "## Scope and source receipt", "",
-            "```json", json.dumps({"schema": s["schema"], "provenance": s["provenance"],
-                                    "acceptance": s["acceptance"]}, sort_keys=True, indent=2), "```", "",
-            "**Residual gates:** GitHub exact-head native coverage, broad main/diff numerator/denominator, verified forecast scoring, independent security/A10/reviewer checks, effective branch protection, and actual wheel/cache cold-warm measurement."]
+        out.append(
+            f"| {tier['level']} | {tier['owner']} | {', '.join(tier['surfaces'])} |"
+        )
+    out += [
+        "",
+        "## Global execution glossary",
+        "",
+        "- **EOSS:** Evidence & Observability Surface Suite; a proposed umbrella name for DAG/SIPOC, run ledger, CBD burndown, dashboard, atlas, metric telemetry and review receipts.",
+        "- **SSOT:** canonical governed system of record; generated HTML, charts and ledgers are projections unless explicitly promoted.",
+        "- **DAG / edge / atom:** Directed acyclic process topology / typed relationship / smallest version-bound run, attempt, job, step, test or evidence record. Co-occurrence is not causality.",
+        "- **SIPOC:** Supplier-Input-Process-Output-Customer diagram, including responsible repository boundaries.",
+        "- **BD / CBD:** Burndown / causal burndown; outstanding symptom associations, confirmed roots and accepted closures require independent denominators.",
+        "- **First-red:** earliest authenticated failing job step in a precise workflow run attempt; a candidate step signature is only a grouping.",
+        "- **Collected / executed / passed:** three distinct test counts; asserting a collected test exists is not evidence it passed.",
+        "- **Statements / branches / diff coverage:** eligible executable statements, branch opportunities and changed-line scope; do not combine incompatible denominators.",
+        "- **Unenumerated / untested / unknown / queued:** not yet listed, code lacking measured test coverage, missing value, and scheduled pending execution. These are not interchangeable or zeros.",
+        "- **CPU time / wall time / queue / job runtime:** different clocks. Use monotonic process clocks and native GitHub job.created/start/end timestamps; never infer runner queue wait from run creation.",
+        "- **Asyncio:** bounded I/O concurrency for scouts, not a substitute for parallel CPU execution or an authenticated dispatcher. Cap read-only scouts and source-owner leases.",
+        "- **Wheelhouse / cache key:** prebuilt hashed Python wheels and a key spanning OS, Python ABI, lock digest, dependency index and wheel digest. Verify before offline reinstall.",
+        "- **Planned / predicted / actual:** predeclared target, frozen future estimate, and subsequently source-bound measurement. Score only a prediction issued before the measured target.",
+        "- **A10 / security / governance / review:** independent HOLD gates; no diagram or statistical plateau can waive these.",
+        "",
+        "## User cheat-sheet: broad surface prompt",
+        "",
+        "> Build or update the **CODE PURPLE EOSS** across **LOCAL / REPO / FEDERATION**: Mermaid process DAG, causal-candidate versus verified graph, SIPOC with narrative, interactive HTML evidence atlas, CI/clock/cache timeline, coverage heatmap and numerator/denominator ledger, CBD queue with known/unknown/unlisted/untested states, planned/predicted/actual three-pulse DMAIC chart, glossary and command cheat-sheet. Bind every panel to repo/PR/head/run/attempt/job/step/coverage source. Include visual QA screenshots, responsive interaction tests, hashes and independent HOLD gates. Separate historical, current-head, content-equivalent and unverified evidence; never claim merges, root closures, or performance gains without source-bound proof.",
+        "",
+        "## Reproducible operator commands",
+        "",
+        "```bash",
+        "# Native evidence adapter: requires a previously downloaded authenticated GitHub ZIP",
+        "python scripts/cbd_eoss_projection.py --coverage-zip /path/to/native-test-evidence.zip --out ./eoss_out",
+        "# Targeted negative + execution contracts, with explicit branch coverage",
+        "python -m pytest -q tests/test_cbd_eoss_projection.py tests/test_cbd_eoss_runtime_probe.py --cov=scripts.cbd_eoss_projection --cov=scripts.cbd_eoss_runtime_probe --cov-branch",
+        "# CI job evidence: bind the exact PR head and run:attempt; do not assert queue wait from run-created timestamps",
+        "```",
+        "",
+        "**Wheelhouse and asyncio:** `scripts/cbd_eoss_runtime_probe.py` implements a deterministic lock/ABI/OS/wheel cache key, a fail-closed cold/warm pairing contract (at least three matched trials), and a read-only asyncio scout with a hard maximum concurrency of four. These are tested local contracts; no GitHub Crew launch, package preload, 300-second speedup or runner-time improvement is claimed.",
+        "",
+        "## Scope and source receipt",
+        "",
+        "```json",
+        json.dumps(
+            {
+                "schema": s["schema"],
+                "provenance": s["provenance"],
+                "acceptance": s["acceptance"],
+            },
+            sort_keys=True,
+            indent=2,
+        ),
+        "```",
+        "",
+        "**Residual gates:** GitHub exact-head native coverage, broad main/diff numerator/denominator, verified forecast scoring, independent security/A10/reviewer checks, effective branch protection, and actual wheel/cache cold-warm measurement.",
+    ]
     return "\n".join(out) + "\n"
 
 
 def emit_html(s):
     """Single-file accessible review view, offline, with bounded local interaction."""
     data = canonical(s).replace("<", "\\u003c").replace(">", "\\u003e")
-    return Path(__file__).with_name("cbd_eoss_dashboard_template.html").read_text(encoding="utf-8").replace("__EOSS_SOURCE_JSON__", data)
+    return (
+        Path(__file__)
+        .with_name("cbd_eoss_dashboard_template.html")
+        .read_text(encoding="utf-8")
+        .replace("__EOSS_SOURCE_JSON__", data)
+    )
 
 
 def main(argv=None):
@@ -431,7 +593,8 @@ def main(argv=None):
     args.out.mkdir(parents=True, exist_ok=True)
     blob_parity = {name: True for name in TARGETS}
     native = native_coverage_artifact(
-        args.coverage_zip, artifact_id=12098690913,
+        args.coverage_zip,
+        artifact_id=12098690913,
         expected_head="fe05c6865f00d40def80996390ff0cf7c002562f",
         blob_parity=blob_parity,
     )
@@ -446,12 +609,23 @@ def main(argv=None):
     }
     for name, content in outputs.items():
         (args.out / name).write_text(content, encoding="utf-8")
-    registry = {name: hashlib.sha256(content.encode()).hexdigest()
-                for name, content in sorted(outputs.items())}
+    registry = {
+        name: hashlib.sha256(content.encode()).hexdigest()
+        for name, content in sorted(outputs.items())
+    }
     (args.out / "SHA256SUMS.json").write_text(
-        json.dumps(registry, sort_keys=True, indent=2) + "\n", encoding="utf-8")
-    print(canonical({"outputs": len(outputs), "ledger_sha256": registry["eoss_snapshot.json"],
-                     "coverage_evidence": native["evidence_tier"], "admission": "HOLD"}))
+        json.dumps(registry, sort_keys=True, indent=2) + "\n", encoding="utf-8"
+    )
+    print(
+        canonical(
+            {
+                "outputs": len(outputs),
+                "ledger_sha256": registry["eoss_snapshot.json"],
+                "coverage_evidence": native["evidence_tier"],
+                "admission": "HOLD",
+            }
+        )
+    )
 
 
 # HTML_TEMPLATE is appended by the UI generator in the same source module.

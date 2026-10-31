@@ -6,6 +6,7 @@
 
 import os
 
+
 def generate_markdown_index(directory):
     """
     Generate a markdown index file for all markdown files in the given directory.
@@ -16,7 +17,7 @@ def generate_markdown_index(directory):
     Returns:
         str: The generated markdown index content.
     """
-    markdown_files = [f for f in os.listdir(directory) if f.endswith('.md')]
+    markdown_files = [f for f in os.listdir(directory) if f.endswith(".md")]
     markdown_files.sort()
 
     index_content = "# Markdown Index\n\n"
@@ -25,6 +26,7 @@ def generate_markdown_index(directory):
         index_content += f"- [{file}]({file_path})\n"
 
     return index_content
+
 
 def save_index_file(directory, content):
     """
@@ -37,6 +39,7 @@ def save_index_file(directory, content):
     index_file_path = os.path.join(directory, "INDEX.md")
     with open(index_file_path, "w") as index_file:
         index_file.write(content)
+
 
 if __name__ == "__main__":
     target_directory = os.path.dirname(os.path.abspath(__file__))

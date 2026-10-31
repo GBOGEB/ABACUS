@@ -3,6 +3,7 @@
 No GitHub calls or mutation. Output is NOT admission or causal-root closure.
 Composite weights measure execution receipt completeness, not security/quality.
 """
+
 from __future__ import annotations
 
 import argparse
@@ -78,19 +79,39 @@ def validate(doc):
         k = _integer(row.get("job_success"), "job_success")
         if k > n:
             raise EvidenceError("successful jobs exceed eligible jobs")
-        for name in ("b0_test_job_id", "b1_job_id", "b0_coverage_artifact_id", "b1_artifact_id"):
+        for name in (
+            "b0_test_job_id",
+            "b1_job_id",
+            "b0_coverage_artifact_id",
+            "b1_artifact_id",
+        ):
             _integer(row.get(name), name, min_value=1)
-        for name in ("b0_tests_passed", "b0_tests_failed", "b0_tests_skipped",
-                     "b1_unguarded", "dab_proposal_jobs_success", "dab_proposal_jobs_total"):
+        for name in (
+            "b0_tests_passed",
+            "b0_tests_failed",
+            "b0_tests_skipped",
+            "b1_unguarded",
+            "dab_proposal_jobs_success",
+            "dab_proposal_jobs_total",
+        ):
             _integer(row.get(name), name)
         if row["dab_proposal_jobs_success"] > row["dab_proposal_jobs_total"]:
             raise EvidenceError("DAB numerator exceeds denominator")
         if type(row.get("fanin_success")) is not bool:
             raise EvidenceError("fan-in outcome not boolean")
-        if row.get("authenticated_crew_launch") is not None or row.get("root_closure_count") is not None:
-            raise EvidenceError("native B-series cannot assert Crew launch or root closure")
+        if (
+            row.get("authenticated_crew_launch") is not None
+            or row.get("root_closure_count") is not None
+        ):
+            raise EvidenceError(
+                "native B-series cannot assert Crew launch or root closure"
+            )
         duration = row.get("b0_test_duration_seconds")
-        if type(duration) not in (int, float) or not math.isfinite(duration) or duration <= 0:
+        if (
+            type(duration) not in (int, float)
+            or not math.isfinite(duration)
+            or duration <= 0
+        ):
             raise EvidenceError("invalid test duration")
         if row.get("b1_schema") != "abacus-ci-false-green-census/1.1.0":
             raise EvidenceError("B1 scanner schema drift")
@@ -104,7 +125,9 @@ def _family_scores(row):
     return {
         "b0": _fraction(row["job_success"], row["job_total"]),
         "b1": 1.0 if row["b1_job_id"] and row["b1_artifact_id"] else None,
-        "dab": _fraction(row["dab_proposal_jobs_success"], row["dab_proposal_jobs_total"]),
+        "dab": _fraction(
+            row["dab_proposal_jobs_success"], row["dab_proposal_jobs_total"]
+        ),
         "fanin": 1.0 if row["fanin_success"] else 0.0,
     }
 
@@ -120,24 +143,33 @@ def build(doc):
     pulses = []
     for row in rows:
         scores = _family_scores(row)
-        pulses.append({
-            "pulse": row["pulse"], "pr": row["pr"], "source_sha": row["source_sha"],
-            "run_id": row["run_id"], "run_attempt": row["run_attempt"],
-            "clock": row["observation_at"],
-            "job_success": [row["job_success"], row["job_total"]],
-            "job_success_pct": round(100 * scores["b0"], 4),
-            "b1_unguarded_count": row["b1_unguarded"],
-            "tests_passed": row["b0_tests_passed"],
-            "tests_failed": row["b0_tests_failed"],
-            "tests_skipped": row["b0_tests_skipped"],
-            "test_duration_seconds": row["b0_test_duration_seconds"],
-            "dab_jobs": [row["dab_proposal_jobs_success"], row["dab_proposal_jobs_total"]],
-            "producer_receipt_completeness_index": _composite(scores),
-            "native_job_id": row["b0_test_job_id"], "b1_job_id": row["b1_job_id"],
-            "coverage_artifact_id": row["b0_coverage_artifact_id"],
-            "b1_artifact_id": row["b1_artifact_id"],
-            "admission": "HOLD",
-        })
+        pulses.append(
+            {
+                "pulse": row["pulse"],
+                "pr": row["pr"],
+                "source_sha": row["source_sha"],
+                "run_id": row["run_id"],
+                "run_attempt": row["run_attempt"],
+                "clock": row["observation_at"],
+                "job_success": [row["job_success"], row["job_total"]],
+                "job_success_pct": round(100 * scores["b0"], 4),
+                "b1_unguarded_count": row["b1_unguarded"],
+                "tests_passed": row["b0_tests_passed"],
+                "tests_failed": row["b0_tests_failed"],
+                "tests_skipped": row["b0_tests_skipped"],
+                "test_duration_seconds": row["b0_test_duration_seconds"],
+                "dab_jobs": [
+                    row["dab_proposal_jobs_success"],
+                    row["dab_proposal_jobs_total"],
+                ],
+                "producer_receipt_completeness_index": _composite(scores),
+                "native_job_id": row["b0_test_job_id"],
+                "b1_job_id": row["b1_job_id"],
+                "coverage_artifact_id": row["b0_coverage_artifact_id"],
+                "b1_artifact_id": row["b1_artifact_id"],
+                "admission": "HOLD",
+            }
+        )
     durations = [p["test_duration_seconds"] for p in pulses]
     median = statistics.median(durations)
     mad = statistics.median(abs(t - median) for t in durations)
@@ -148,17 +180,30 @@ def build(doc):
     )
     run_success = sum(p["job_success"][0] == p["job_success"][1] for p in pulses)
     return {
-        "schema": OUT_SCHEMA, "source_schema": SCHEMA, "scope": doc["scope"],
+        "schema": OUT_SCHEMA,
+        "source_schema": SCHEMA,
+        "scope": doc["scope"],
         "sample_design": doc["sampling"],
         "hierarchy": {
             "federation": {"observed": None, "reason": "No federation census"},
-            "repo": {"name": "GBOGEB/ABACUS", "global_ci_share": None,
-                     "reason": "Sample does not enumerate all workflows"},
-            "workflow": {"name": "MIP B0 Test Admission and Coverage Evidence",
-                         "run_sample": len(pulses),
-                         "families": ["B0", "B1", "DAB_READ_ONLY", "B0_FANIN"]},
-            "leaves": ["B0 job outcome", "B0 tests", "B0 duration",
-                       "B1 census", "DAB proposal jobs", "B0 fan-in"],
+            "repo": {
+                "name": "GBOGEB/ABACUS",
+                "global_ci_share": None,
+                "reason": "Sample does not enumerate all workflows",
+            },
+            "workflow": {
+                "name": "MIP B0 Test Admission and Coverage Evidence",
+                "run_sample": len(pulses),
+                "families": ["B0", "B1", "DAB_READ_ONLY", "B0_FANIN"],
+            },
+            "leaves": [
+                "B0 job outcome",
+                "B0 tests",
+                "B0 duration",
+                "B1 census",
+                "DAB proposal jobs",
+                "B0 fan-in",
+            ],
         },
         "pulses": pulses,
         "execution_composite": {
@@ -172,7 +217,8 @@ def build(doc):
             "sampled_run_success_rate": _fraction(run_success, len(pulses)),
             "b1_raw_counts": b1_values,
             "b1_comparable_velocity": (
-                0.0 if comparable_b1 and len(b1_values) > 1 and len(set(b1_values)) == 1
+                0.0
+                if comparable_b1 and len(b1_values) > 1 and len(set(b1_values)) == 1
                 else None
             ),
             "b1_forecast_error": None,
@@ -181,7 +227,9 @@ def build(doc):
             "test_count_growth_rate": None,
             "test_count_acceleration": None,
             "test_population_comparability": "NOT_MATCHED_DIFFERENT_SOURCE_HEADS",
-            "b1_config_comparability": "MATCHED" if comparable_b1 else "UNVERIFIED_CONFIG_DIGEST",
+            "b1_config_comparability": (
+                "MATCHED" if comparable_b1 else "UNVERIFIED_CONFIG_DIGEST"
+            ),
             "branch_coverage_delta": None,
             "main_coverage_delta": None,
             "root_leverage": None,
@@ -195,15 +243,20 @@ def build(doc):
         },
         "unknown_families": ["B2", "B3", "B4", "B5", "B6_PLUS"],
         "unknown_families_meaning": "Not observed as named jobs in this canonical B0 workflow; global presence unverified",
-        "authenticated_crew_launches": None, "formal_root_closures": None,
-        "merge_admission": "HOLD", "authority_transfer": False, "security_waiver": False,
+        "authenticated_crew_launches": None,
+        "formal_root_closures": None,
+        "merge_admission": "HOLD",
+        "authority_transfer": False,
+        "security_waiver": False,
     }
 
 
 def render_markdown(report):
     lines = [
-        "# B-series three-pulse temporal metric readout", "",
-        "**Read-only native historical sample.** Not an admission or fleet-wide rate.", "",
+        "# B-series three-pulse temporal metric readout",
+        "",
+        "**Read-only native historical sample.** Not an admission or fleet-wide rate.",
+        "",
         "| Pulse | PR | Native run | B0 jobs | B1 findings | Passed | Duration s | Evidence index |",
         "|:--|--:|--:|--:|--:|--:|--:|--:|",
     ]
@@ -215,16 +268,21 @@ def render_markdown(report):
             f"{p['test_duration_seconds']:.2f} | "
             f"{p['producer_receipt_completeness_index']:.2f} |"
         )
-    lines.extend([
-        "", "## Interpretation", "",
-        "- B0 and DAB execution remain green in this selected sample.",
-        "- B1 reports 139 unguarded constructs per scan; B1 PASS does not mean zero findings.",
-        "- Test counts and runtimes across distinct heads are descriptive, NOT matched velocity.",
-        "- The native run/job/artifact provenance and source SHAs are in companion JSON.",
-        "- Composite index is execution-receipt completeness, not a quality/security score.",
-        "- Missing B2+ named stages in this workflow is not proof of global absence.",
-        "- No Crew launch, accepted root closure, waiver, or main coverage uplift inferred.", "",
-    ])
+    lines.extend(
+        [
+            "",
+            "## Interpretation",
+            "",
+            "- B0 and DAB execution remain green in this selected sample.",
+            "- B1 reports 139 unguarded constructs per scan; B1 PASS does not mean zero findings.",
+            "- Test counts and runtimes across distinct heads are descriptive, NOT matched velocity.",
+            "- The native run/job/artifact provenance and source SHAs are in companion JSON.",
+            "- Composite index is execution-receipt completeness, not a quality/security score.",
+            "- Missing B2+ named stages in this workflow is not proof of global absence.",
+            "- No Crew launch, accepted root closure, waiver, or main coverage uplift inferred.",
+            "",
+        ]
+    )
     return "\n".join(lines)
 
 
@@ -237,9 +295,19 @@ def main(argv=None):
     result = build(json.loads(args.input.read_text(encoding="utf-8")))
     args.json_out.parent.mkdir(parents=True, exist_ok=True)
     args.markdown_out.parent.mkdir(parents=True, exist_ok=True)
-    args.json_out.write_text(json.dumps(result, indent=2, sort_keys=True) + "\n", encoding="utf-8")
+    args.json_out.write_text(
+        json.dumps(result, indent=2, sort_keys=True) + "\n", encoding="utf-8"
+    )
     args.markdown_out.write_text(render_markdown(result), encoding="utf-8")
-    print(json.dumps({"status": "OBSERVED_SAMPLE_ONLY", "pulses": len(result["pulses"]), "admission": result["merge_admission"]}))
+    print(
+        json.dumps(
+            {
+                "status": "OBSERVED_SAMPLE_ONLY",
+                "pulses": len(result["pulses"]),
+                "admission": result["merge_admission"],
+            }
+        )
+    )
     return 0
 
 

@@ -21,7 +21,11 @@ SUPPORTED = {"Swift", "Python", "JavaScript", "TypeScript"}
 
 
 def validate(path: Path) -> dict[str, object]:
-    rows = [json.loads(line) for line in path.read_text(encoding="utf-8").splitlines() if line.strip()]
+    rows = [
+        json.loads(line)
+        for line in path.read_text(encoding="utf-8").splitlines()
+        if line.strip()
+    ]
     if not rows:
         raise ValueError("empty federation trace")
 

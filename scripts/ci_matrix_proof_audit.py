@@ -36,8 +36,7 @@ def load_json(path: Path) -> dict[str, Any]:
             result[key] = value
         return result
 
-    value = json.loads(path.read_text(encoding="utf-8"),
-                       object_pairs_hook=unique_pairs)
+    value = json.loads(path.read_text(encoding="utf-8"), object_pairs_hook=unique_pairs)
     if not isinstance(value, dict):
         raise ValueError(f"{path}: expected object")
     return value
@@ -48,7 +47,9 @@ def expected_versions(mode: str, secondary: str) -> list[str]:
         return ["3.11", "3.12"]
     if mode == "sampled":
         if secondary != "3.11":
-            raise ValueError("sampled secondary must be the independent Python 3.11 cell")
+            raise ValueError(
+                "sampled secondary must be the independent Python 3.11 cell"
+            )
         return sorted({"3.12", secondary})
     if mode == "sentinel":
         return ["3.12"]
@@ -65,8 +66,10 @@ def audit(
     rows: list[dict[str, Any]] = []
     versions = expected_versions(mode, secondary)
 
-    if not isinstance(expected_sha, str) or len(expected_sha) != 40 or any(
-        ch not in "0123456789abcdef" for ch in expected_sha
+    if (
+        not isinstance(expected_sha, str)
+        or len(expected_sha) != 40
+        or any(ch not in "0123456789abcdef" for ch in expected_sha)
     ):
         errors.append("EXPECTED_SHA_INVALID")
 
@@ -131,7 +134,9 @@ def main() -> int:
 
     result = audit(args.dir, args.mode, args.secondary, args.expected_sha)
     args.out.parent.mkdir(parents=True, exist_ok=True)
-    args.out.write_text(json.dumps(result, indent=2, sort_keys=True) + "\n", encoding="utf-8")
+    args.out.write_text(
+        json.dumps(result, indent=2, sort_keys=True) + "\n", encoding="utf-8"
+    )
     print(json.dumps(result, indent=2, sort_keys=True))
     return 0 if result["status"] == "PASS" else 1
 
