@@ -403,6 +403,12 @@
       "disposition": "keep"
     },
     {
+      "pattern": "^ldab-scale-fanout\\.yml$",
+      "cluster": "specialised",
+      "lifecycle": "manual",
+      "disposition": "keep"
+    },
+    {
       "pattern": "^testpilot-preflight\\.yml$",
       "cluster": "core_test",
       "lifecycle": "pr_fast",

@@ -4,11 +4,11 @@
 
 Policy: `ABACUS-CI-SSOT-001`
 
-Policy SHA-256 (canonical sorted JSON bytes of `ci/governance/workflow_policy.json`): `496c5d85e45f1ce79b4bba0fe5d545da0c8924c363a6ed718a2fa74de16138c6`
+Policy SHA-256 (canonical sorted JSON bytes of `ci/governance/workflow_policy.json`): `27640194c314847230519a56167d5db5cdb6dfce27eed9db582ce242e3b99159`
 
 ## Outcome
 
-The repository currently contains **219 workflow definitions**. All **219** are assigned to one primary functional cluster and lifecycle stage.
+The repository currently contains **220 workflow definitions**. All **220** are assigned to one primary functional cluster and lifecycle stage.
 
 The observed baseline that motivated this control was PR #681 with 119 check runs (111 queued, 8 skipped) and main with 122 check runs.
 
@@ -38,7 +38,7 @@ The observed baseline that motivated this control was PR #681 with 119 check run
 | `delivery` | `cd-pipeline.yml` | 8 | Build, release, deployment and publication. |
 | `documentation` | `docs-build.yml` | 7 | Documentation validation, rendering, export and Pages. |
 | `automation` | `post-merge-pr-summary.yml` | 13 | Repository maintenance, reporting, branch and PR automation. |
-| `specialised` | `qps-cost-roundtrip-contract.yml` | 46 | Bounded product or historical pipelines retained outside core CI. |
+| `specialised` | `qps-cost-roundtrip-contract.yml` | 47 | Bounded product or historical pipelines retained outside core CI. |
 | `ci_governance` | `ci-governance.yml` | 2 | This policy, inventory, overlap and staleness gate. |
 | `legacy` | — | 2 | Superseded workflows kept temporarily for manual comparison before deletion. |
 
@@ -281,6 +281,7 @@ Make PR-triggered workflows with write-class GitHub token scopes explicit and re
 | 50 | `manual` | `bridge_federation` | `qps-metric-census-receiver.yml` | workflow_dispatch | 2 | `keep` | — |
 | 50 | `manual` | `core_test` | `code-purple-quality-ratchet-proof.yml` | push, workflow_dispatch | 1 | `keep` | — |
 | 50 | `manual` | `legacy` | `ci.yml` | workflow_dispatch | 3 | `consolidate` | `bridge-ci.yml` |
+| 50 | `manual` | `specialised` | `ldab-scale-fanout.yml` | workflow_dispatch | 3 | `keep` | — |
 | 90 | `retire` | `legacy` | `ci-codex.yml` | workflow_dispatch | 1 | `retire` | `CODEX/.github workflows via versioned manifest; no ABACUS-to-CODEX dispatch` |
 
 ## Repeated quality/test commands
@@ -304,7 +305,7 @@ Make PR-triggered workflows with write-class GitHub token scopes explicit and re
 - `pytest --benchmark-disable -v --cov=. --cov-report=term-missing` — `cd-unified.yml`, `ci-codex.yml`
 - `pytest==9.1.1 pytest-cov==5.0.0 coverage==7.16.2 \` — `code-purple-w40-binary-penetration.yml`, `floating-reconnection-testflight.yml`
 - `python -m pip install 'pytest>=7.4,<10' 'numpy>=1.24,<3'` — `cbd-w6c-office-style-qa.yml`, `w4-dashboard-publication-qa.yml`
-- `python -m pip install pytest pyyaml` — `cryoplant-federation.yml`, `mip-qps-external-probe.yml`
+- `python -m pip install flake8` — `ldab-scale-fanout.yml`, `reusable-ci.yml`
 
 ## Control rule
 
