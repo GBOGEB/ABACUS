@@ -4,6 +4,7 @@ import importlib
 import sys
 import types
 
+import DMAIC_V3
 import pytest
 
 
@@ -29,6 +30,7 @@ def runner(monkeypatch):
     fake.FullPipelineOrchestrator = _FakeOrchestrator
     monkeypatch.setitem(sys.modules, "DMAIC_V3.full_pipeline_orchestrator", fake)
     monkeypatch.delitem(sys.modules, "DMAIC_V3.run_all_phases", raising=False)
+    monkeypatch.delattr(DMAIC_V3, "run_all_phases", raising=False)
     _FakeOrchestrator.instances = []
     _FakeOrchestrator.outcome = True
     module = importlib.import_module("DMAIC_V3.run_all_phases")

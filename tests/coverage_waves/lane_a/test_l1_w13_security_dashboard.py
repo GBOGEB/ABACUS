@@ -1,6 +1,5 @@
 """Lane A wave 13: .github/scripts/security_dashboard.py (network mocked)."""
 
-import json
 import sys
 
 import pytest
@@ -217,4 +216,4 @@ def test_main_writes_dashboard(sd, monkeypatch, tmp_path, capsys):
     out = capsys.readouterr().out
     assert "2 open alerts fetched" in out
     assert "SEC_ASSERT" in out and "[INFO]" in out
-    assert json.dumps(credential) not in out
+    assert credential not in out
