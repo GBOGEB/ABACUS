@@ -20,6 +20,7 @@ Usage:
 from __future__ import annotations
 
 import argparse
+import json
 import os
 import subprocess
 import sys
@@ -27,12 +28,35 @@ import xml.etree.ElementTree as ET
 from pathlib import Path
 
 
-def run_pytest(pytest_args: list[str], junit: Path) -> int:
+_xfail_reports: dict[str, str] = {}
+
+
+def pytest_runtest_logreport(report: object) -> None:
+    if hasattr(report, "wasxfail"):
+        outcome = "xpassed" if report.outcome == "passed" else "xfailed"
+        _xfail_reports[report.nodeid] = outcome
+
+
+def pytest_sessionfinish(session: object, exitstatus: int) -> None:
+    report_path = os.environ.get("G_FAMILY_XFAIL_REPORT")
+    if not report_path:
+        return
+    counts = {
+        outcome: sum(result == outcome for result in _xfail_reports.values())
+        for outcome in ("xfailed", "xpassed")
+    }
+    with open(report_path, "w", encoding="utf-8") as handle:
+        json.dump(counts, handle)
+
+
+def run_pytest(pytest_args: list[str], junit: Path, xfail_report: Path) -> int:
     junit.parent.mkdir(parents=True, exist_ok=True)
     cmd = [
         sys.executable,
         "-m",
         "pytest",
+        "-p",
+        "family_collect_guard",
         "-p",
         "no:cacheprovider",
         "-o",
@@ -45,10 +69,16 @@ def run_pytest(pytest_args: list[str], junit: Path) -> int:
         *pytest_args,
     ]
     print("+ " + " ".join(cmd), flush=True)
-    return subprocess.call(cmd)
+    env = os.environ.copy()
+    plugin_dir = str(Path(__file__).resolve().parent)
+    env["PYTHONPATH"] = os.pathsep.join(
+        part for part in (plugin_dir, env.get("PYTHONPATH", "")) if part
+    )
+    env["G_FAMILY_XFAIL_REPORT"] = str(xfail_report)
+    return subprocess.call(cmd, env=env)
 
 
-def tally(junit: Path) -> dict[str, int]:
+def tally(junit: Path, xfail_report: Path) -> dict[str, int]:
     counts = {
         "collected": 0,
         "passed": 0,
@@ -80,6 +110,11 @@ def tally(junit: Path) -> dict[str, int]:
                 counts["skipped"] += 1
         else:
             counts["passed"] += 1
+    if xfail_report.exists():
+        with open(xfail_report, encoding="utf-8") as handle:
+            xfail_counts = json.load(handle)
+        for outcome in ("xfailed", "xpassed"):
+            counts[outcome] = max(counts[outcome], int(xfail_counts.get(outcome, 0)))
     return counts
 
 
@@ -95,8 +130,11 @@ def main(argv: list[str] | None = None) -> int:
 
     slug = args.family.replace("/", "_")
     junit = args.junit or Path("ci-evidence") / f"g-family-{slug}.xml"
-    rc = run_pytest(args.pytest_args, junit)
-    counts = tally(junit)
+    xfail_report = junit.with_name(f"{junit.stem}.xfail.json")
+    if xfail_report.exists():
+        xfail_report.unlink()
+    rc = run_pytest(args.pytest_args, junit, xfail_report)
+    counts = tally(junit, xfail_report)
 
     reasons = []
     if rc != 0:
