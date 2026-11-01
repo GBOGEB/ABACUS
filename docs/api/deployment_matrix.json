@@ -1,41 +1,21 @@
 {
-  "generated_at": "2026-10-23T12:16:56.948437",
-  "dashboard_count": 40,
+  "generated_at": "2026-11-01T20:47:05.295687",
+  "dashboard_count": 45,
   "dashboards": [
     {
-      "path": "docs/repository_structure.html",
-      "size_bytes": 17840,
-      "name": "repository_structure"
+      "path": "docs/final_status_v4.4.0.html",
+      "size_bytes": 16092,
+      "name": "final_status_v4.4.0"
     },
     {
-      "path": "docs/dmaic-metrics.html",
-      "size_bytes": 18989,
-      "name": "dmaic-metrics"
+      "path": "docs/bridge_overview.html",
+      "size_bytes": 13725,
+      "name": "bridge_overview"
     },
     {
       "path": "docs/progress_tracker.html",
-      "size_bytes": 21993,
+      "size_bytes": 23710,
       "name": "progress_tracker"
-    },
-    {
-      "path": "docs/runtime.html",
-      "size_bytes": 4046,
-      "name": "runtime"
-    },
-    {
-      "path": "docs/index.html",
-      "size_bytes": 23496,
-      "name": "index"
-    },
-    {
-      "path": "docs/dashboard.html",
-      "size_bytes": 7267,
-      "name": "dashboard"
-    },
-    {
-      "path": "docs/deep_analysis_dashboard.html",
-      "size_bytes": 24302,
-      "name": "deep_analysis_dashboard"
     },
     {
       "path": "docs/file_review_tracker.html",
@@ -43,29 +23,34 @@
       "name": "file_review_tracker"
     },
     {
+      "path": "docs/dmaic-metrics.html",
+      "size_bytes": 19692,
+      "name": "dmaic-metrics"
+    },
+    {
       "path": "docs/everred-recovery.html",
-      "size_bytes": 6374,
+      "size_bytes": 6375,
       "name": "everred-recovery"
     },
     {
-      "path": "docs/handover_book.html",
-      "size_bytes": 82030,
-      "name": "handover_book"
-    },
-    {
-      "path": "docs/code_purple_execution_graph.html",
-      "size_bytes": 26199,
-      "name": "code_purple_execution_graph"
-    },
-    {
-      "path": "docs/final_status_v4.4.0.html",
-      "size_bytes": 16092,
-      "name": "final_status_v4.4.0"
-    },
-    {
       "path": "docs/metrics.html",
-      "size_bytes": 28039,
+      "size_bytes": 29019,
       "name": "metrics"
+    },
+    {
+      "path": "docs/runtime.html",
+      "size_bytes": 4046,
+      "name": "runtime"
+    },
+    {
+      "path": "docs/dashboard.html",
+      "size_bytes": 7167,
+      "name": "dashboard"
+    },
+    {
+      "path": "docs/handover_book.html",
+      "size_bytes": 82026,
+      "name": "handover_book"
     },
     {
       "path": "docs/FINAL_HANDOVER.html",
@@ -73,9 +58,24 @@
       "name": "FINAL_HANDOVER"
     },
     {
-      "path": "docs/code-purple-mcl-hub/index.html",
-      "size_bytes": 14988,
+      "path": "docs/deep_analysis_dashboard.html",
+      "size_bytes": 24302,
+      "name": "deep_analysis_dashboard"
+    },
+    {
+      "path": "docs/index.html",
+      "size_bytes": 23694,
       "name": "index"
+    },
+    {
+      "path": "docs/code_purple_execution_graph.html",
+      "size_bytes": 26200,
+      "name": "code_purple_execution_graph"
+    },
+    {
+      "path": "docs/repository_structure.html",
+      "size_bytes": 17840,
+      "name": "repository_structure"
     },
     {
       "path": "docs/tools/index.html",
@@ -83,18 +83,18 @@
       "name": "index"
     },
     {
-      "path": "docs/cryo_dashboard_v0_3_0/index.html",
-      "size_bytes": 34824,
-      "name": "index"
-    },
-    {
-      "path": "docs/12-cluster/index.html",
-      "size_bytes": 7332,
-      "name": "index"
+      "path": "docs/api/dmaic_metrics_chart.html",
+      "size_bytes": 3208,
+      "name": "dmaic_metrics_chart"
     },
     {
       "path": "docs/operator/index.html",
-      "size_bytes": 9455,
+      "size_bytes": 9456,
+      "name": "index"
+    },
+    {
+      "path": "docs/code-purple-w1/index.html",
+      "size_bytes": 21388,
       "name": "index"
     },
     {
@@ -103,29 +103,14 @@
       "name": "index"
     },
     {
-      "path": "docs/ci/CBD_EOSS_N6_REVIEW_ATLAS_20261017.html",
-      "size_bytes": 29590,
-      "name": "CBD_EOSS_N6_REVIEW_ATLAS_20261017"
-    },
-    {
-      "path": "docs/ci/CBD_W2_NATIVE_EVIDENCE_DASHBOARD_20261017.html",
-      "size_bytes": 9149,
-      "name": "CBD_W2_NATIVE_EVIDENCE_DASHBOARD_20261017"
-    },
-    {
       "path": "docs/ci/recovery_action_value.html",
       "size_bytes": 21409,
       "name": "recovery_action_value"
     },
     {
-      "path": "docs/ci/CBD_EOSS_N7_ATLAS_20261017.html",
-      "size_bytes": 11669,
-      "name": "CBD_EOSS_N7_ATLAS_20261017"
-    },
-    {
-      "path": "docs/ci/CBD_E2E_GRAPH_ATLAS_INTERACTIVE_20261017.html",
-      "size_bytes": 293221,
-      "name": "CBD_E2E_GRAPH_ATLAS_INTERACTIVE_20261017"
+      "path": "docs/ci/CBD_W2_NATIVE_EVIDENCE_DASHBOARD_20261017.html",
+      "size_bytes": 9150,
+      "name": "CBD_W2_NATIVE_EVIDENCE_DASHBOARD_20261017"
     },
     {
       "path": "docs/ci/CBD_EOSS_REVIEW_ATLAS_20261017.html",
@@ -133,13 +118,43 @@
       "name": "CBD_EOSS_REVIEW_ATLAS_20261017"
     },
     {
+      "path": "docs/ci/CBD_EOSS_N7_ATLAS_20261017.html",
+      "size_bytes": 11670,
+      "name": "CBD_EOSS_N7_ATLAS_20261017"
+    },
+    {
+      "path": "docs/ci/CBD_EOSS_N6_REVIEW_ATLAS_20261017.html",
+      "size_bytes": 29590,
+      "name": "CBD_EOSS_N6_REVIEW_ATLAS_20261017"
+    },
+    {
+      "path": "docs/ci/CBD_E2E_GRAPH_ATLAS_INTERACTIVE_20261017.html",
+      "size_bytes": 293222,
+      "name": "CBD_E2E_GRAPH_ATLAS_INTERACTIVE_20261017"
+    },
+    {
       "path": "docs/ci/g3a-control/index.html",
       "size_bytes": 9389,
       "name": "index"
     },
     {
-      "path": "docs/testing/index.html",
-      "size_bytes": 5758,
+      "path": "docs/code-purple-mcl-hub/index.html",
+      "size_bytes": 14988,
+      "name": "index"
+    },
+    {
+      "path": "docs/qa/fixtures/themed_bottom_legend.html",
+      "size_bytes": 1368,
+      "name": "themed_bottom_legend"
+    },
+    {
+      "path": "docs/qa/fixtures/naive_bottom_legend.html",
+      "size_bytes": 1710,
+      "name": "naive_bottom_legend"
+    },
+    {
+      "path": "docs/repo-structure/index.html",
+      "size_bytes": 317898,
       "name": "index"
     },
     {
@@ -148,18 +163,53 @@
       "name": "index"
     },
     {
-      "path": "docs/api/dmaic_metrics_chart.html",
-      "size_bytes": 3207,
-      "name": "dmaic_metrics_chart"
-    },
-    {
-      "path": "docs/Q3_Q4_Q5/review_deck.html",
-      "size_bytes": 327,
-      "name": "review_deck"
+      "path": "docs/testing/index.html",
+      "size_bytes": 5791,
+      "name": "index"
     },
     {
       "path": "docs/dow/index.html",
       "size_bytes": 7042,
+      "name": "index"
+    },
+    {
+      "path": "docs/12-cluster/index.html",
+      "size_bytes": 7332,
+      "name": "index"
+    },
+    {
+      "path": "docs/Q3_Q4_Q5/review_deck.html",
+      "size_bytes": 328,
+      "name": "review_deck"
+    },
+    {
+      "path": "docs/qplant/canonical_master/MASTER_Input_full.html",
+      "size_bytes": 378526,
+      "name": "MASTER_Input_full"
+    },
+    {
+      "path": "docs/qplant/canonical_master/slices/heat_loads.html",
+      "size_bytes": 10090,
+      "name": "heat_loads"
+    },
+    {
+      "path": "docs/qplant/canonical_master/slices/operational_scenarios.html",
+      "size_bytes": 10411,
+      "name": "operational_scenarios"
+    },
+    {
+      "path": "docs/qplant/canonical_master/slices/equations_library.html",
+      "size_bytes": 11488,
+      "name": "equations_library"
+    },
+    {
+      "path": "docs/qplant/canonical_master/slices/flows_only.html",
+      "size_bytes": 4662,
+      "name": "flows_only"
+    },
+    {
+      "path": "docs/qplant/monitoring_dashboard/index.html",
+      "size_bytes": 25225,
       "name": "index"
     },
     {
@@ -168,38 +218,13 @@
       "name": "filled_examples"
     },
     {
-      "path": "docs/qplant/canonical_master/MASTER_Input_full.html",
-      "size_bytes": 378573,
-      "name": "MASTER_Input_full"
-    },
-    {
-      "path": "docs/qplant/canonical_master/slices/heat_loads.html",
-      "size_bytes": 10089,
-      "name": "heat_loads"
-    },
-    {
-      "path": "docs/qplant/canonical_master/slices/equations_library.html",
-      "size_bytes": 11489,
-      "name": "equations_library"
-    },
-    {
-      "path": "docs/qplant/canonical_master/slices/operational_scenarios.html",
-      "size_bytes": 10412,
-      "name": "operational_scenarios"
-    },
-    {
-      "path": "docs/qplant/canonical_master/slices/flows_only.html",
-      "size_bytes": 4661,
-      "name": "flows_only"
-    },
-    {
-      "path": "docs/qplant/monitoring_dashboard/index.html",
-      "size_bytes": 25231,
+      "path": "docs/qps_line_s_recovery/index.html",
+      "size_bytes": 11481,
       "name": "index"
     },
     {
-      "path": "docs/code-purple-w1/index.html",
-      "size_bytes": 21387,
+      "path": "docs/cryo_dashboard_v0_3_0/index.html",
+      "size_bytes": 34824,
       "name": "index"
     }
   ]
