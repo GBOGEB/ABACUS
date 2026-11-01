@@ -33,20 +33,21 @@ SCHEMA = "ldab.scale.plan.v1"
 LINE_RE = re.compile(r"^(?P<path>.+?)\|(?P<line>\d+)\|(?P<code>[A-Z]\d{3})$")
 FMT = "%(path)s|%(row)d|%(code)s"
 SCAN_ARGS = ["--exit-zero", "--max-line-length=120", "--jobs=1", f"--format={FMT}"]
-SCAN_CMD = [
-    "flake8",
-    "--exit-zero",
-    "--max-line-length=120",
-    f"--format={FMT}",
-]  # identity string
+TIERS = ("LOW_MECHANICAL", "MEDIUM")
 ARGV_CHUNK = 200
 CONTAINER_PORT = 4711  # lldb-server port used by CODEX qps_docker_remote_lldb_probe.py
 HOLD = "HOLD"
 
 
 # ---------------------------------------------------------------- parsing
+DRIVE_RE = re.compile(r"^[A-Za-z]:")
+
+
 def norm_path(raw: str) -> str:
-    p = PurePosixPath(raw.replace("\\", "/"))
+    text = raw.replace("\\", "/")
+    if "\x00" in text or DRIVE_RE.match(text) or text.startswith("//"):
+        raise ValueError(f"unsafe path: {raw!r}")  # drive-qualified, UNC or NUL
+    p = PurePosixPath(text)
     parts = [x for x in p.parts if x not in (".", "")]
     if p.is_absolute() or ".." in parts or not parts:
         raise ValueError(f"unsafe path: {raw!r}")
@@ -74,6 +75,20 @@ def risk_for(code: str, policy: dict) -> str:
 
 
 # ---------------------------------------------------------------- planning
+def worker_cap(policy: dict, scope: tuple[str, ...]) -> int:
+    """Owner policy ceiling for read-only proposal workers in the selected tiers."""
+    caps = [policy["batch_policy"][tier]["proposal_workers"]["max"] for tier in scope]
+    return min(caps)
+
+
+def scope_tiers(risk: str) -> tuple[str, ...]:
+    if risk == "ALL":
+        return TIERS
+    if risk in TIERS:
+        return (risk,)
+    raise ValueError(f"risk must be ALL or one of {TIERS}")
+
+
 def assign_owners(weights: dict[str, int], workers: int) -> dict[str, int]:
     """Deterministic LPT: heaviest file first onto the lightest lane."""
     load = [0] * workers
@@ -85,7 +100,9 @@ def assign_owners(weights: dict[str, int], workers: int) -> dict[str, int]:
     return owner
 
 
-def make_batches(rows: list[tuple[str, int, str]], policy: dict) -> list[dict]:
+def make_batches(
+    rows: list[tuple[str, int, str]], policy: dict, scope: tuple[str, ...] = TIERS
+) -> list[dict]:
     bp = policy["batch_policy"]
     batches: list[dict] = []
 
@@ -101,7 +118,11 @@ def make_batches(rows: list[tuple[str, int, str]], policy: dict) -> list[dict]:
                 }
             )
 
-    low_rows = [r for r in rows if risk_for(r[2], policy) == "LOW_MECHANICAL"]
+    low_rows = [
+        r
+        for r in rows
+        if "LOW_MECHANICAL" in scope and risk_for(r[2], policy) == "LOW_MECHANICAL"
+    ]
     cfg = bp["LOW_MECHANICAL"]
     for fam in sorted({r[2] for r in low_rows}):  # one family per batch
         cur: list = []
@@ -117,7 +138,7 @@ def make_batches(rows: list[tuple[str, int, str]], policy: dict) -> list[dict]:
         flush("LOW_MECHANICAL", fam, cur)
 
     cfg = bp["MEDIUM"]
-    med = [r for r in rows if risk_for(r[2], policy) == "MEDIUM"]
+    med = [r for r in rows if "MEDIUM" in scope and risk_for(r[2], policy) == "MEDIUM"]
     for path in sorted({r[0] for r in med}):  # medium: exactly one file per batch
         cur = []
         for r in (x for x in med if x[0] == path):
@@ -142,9 +163,21 @@ def lease_for(sha: str, worker_id: str) -> dict:
     }
 
 
-def build_plan(findings, sha: str, workers: int, policy: dict) -> dict:
-    if not 1 <= workers <= 256:  # GitHub Actions matrix ceiling
-        raise ValueError("workers must be 1..256")
+def build_plan(
+    findings,
+    sha: str,
+    workers: int,
+    policy: dict,
+    risk: str = "ALL",
+    scan_command: str | None = None,
+    scanner_version: str | None = None,
+) -> dict:
+    scope = scope_tiers(risk)
+    cap = worker_cap(policy, scope)
+    if not 1 <= workers <= cap:
+        raise ValueError(
+            f"workers must be 1..{cap} for risk={risk} (DAB policy proposal_workers.max)"
+        )
     by_file: dict[str, list] = defaultdict(list)
     for f in findings:
         by_file[f[0]].append(f)
@@ -153,13 +186,26 @@ def build_plan(findings, sha: str, workers: int, policy: dict) -> dict:
         for p, rs in by_file.items()
         if any(risk_for(r[2], policy) == "HIGH_OR_PROTECTED" for r in rs)
     )
-    live = {p: len(rs) for p, rs in by_file.items() if p not in set(hold_files)}
+    hold_set = set(hold_files)
+
+    def in_scope(row) -> bool:
+        return risk_for(row[2], policy) in scope
+
+    # A file is dispatched only if it has at least one in-scope finding.
+    live = {
+        p: len(rs)
+        for p, rs in by_file.items()
+        if p not in hold_set and any(in_scope(r) for r in rs)
+    }
+    unassigned = sorted(p for p in by_file if p not in hold_set and p not in live)
     owner = assign_owners(live, workers)
     lanes = []
     for i in range(workers):
         wid = f"W{i:02d}"
         files = sorted(p for p, o in owner.items() if o == i)
         rows = [r for p in files for r in by_file[p]]
+        batches = make_batches(rows, policy, scope)
+        batched = sum(bt["findings"] for bt in batches)
         lanes.append(
             {
                 "worker_id": wid,
@@ -167,22 +213,33 @@ def build_plan(findings, sha: str, workers: int, policy: dict) -> dict:
                 "files": files,
                 "file_count": len(files),
                 "findings": len(rows),
-                "batches": make_batches(rows, policy),
+                "deferred_findings": len(rows) - batched,
+                "batches": batches,
                 "port_lease": lease_for(sha, wid),
             }
         )
     total = len(findings)
     hold_n = sum(len(by_file[p]) for p in hold_files)
+    unassigned_n = sum(len(by_file[p]) for p in unassigned)
     loads = [ln["findings"] for ln in lanes]
     mean = sum(loads) / workers if workers else 0
     plan = {
         "schema": SCHEMA,
         "exact_sha": sha,
-        "scan_command": " ".join(SCAN_CMD),
+        "scan_identity": {"command": scan_command, "scanner_version": scanner_version},
+        "risk_scope": list(scope),
+        "policy_worker_cap": cap,
+        "policy_snapshot": {
+            "low_families": sorted(
+                policy["batch_policy"]["LOW_MECHANICAL"]["families"]
+            ),
+            "protected": sorted(policy.get("protected_holds", {})),
+        },
         "workers": workers,
         "total_findings": total,
         "hold_findings": hold_n,
         "hold_files": hold_files,
+        "unassigned_findings": unassigned_n,
         "lanes": lanes,
         "mutation_writer": {
             "count": 1,
@@ -211,11 +268,15 @@ def check_plan(plan: dict) -> dict:
     overlap_hold = sorted(set(seen) & set(plan["hold_files"]))
     lane_sum = sum(ln["findings"] for ln in plan["lanes"])
     batch_sum = sum(b["findings"] for ln in plan["lanes"] for b in ln["batches"])
+    deferred = sum(ln["deferred_findings"] for ln in plan["lanes"])
     return {
         "disjoint_ownership": not dup and not overlap_hold,
-        "sum_lanes_plus_hold_equals_total": lane_sum + plan["hold_findings"]
+        "sum_lanes_plus_hold_plus_unassigned_equals_total": lane_sum
+        + plan["hold_findings"]
+        + plan["unassigned_findings"]
         == plan["total_findings"],
-        "batched_equals_lane_findings": batch_sum == lane_sum,
+        "batched_plus_deferred_equals_lane_findings": batch_sum + deferred == lane_sum,
+        "workers_within_policy_cap": plan["workers"] <= plan["policy_worker_cap"],
         "duplicate_files": dup,
     }
 
@@ -248,6 +309,15 @@ def run_scan(files: list[str], cwd: Path) -> list[tuple[str, int, str]]:
     return parse_raw(raw.getvalue().decode("utf-8"))
 
 
+def scanner_version() -> str | None:
+    try:
+        import flake8
+
+        return str(flake8.__version__)
+    except ImportError:
+        return None
+
+
 def lane_scan(plan: dict, worker_id: str, repo: Path) -> dict:
     lane = next(ln for ln in plan["lanes"] if ln["worker_id"] == worker_id)
     start = time.time()
@@ -259,6 +329,7 @@ def lane_scan(plan: dict, worker_id: str, repo: Path) -> dict:
         found += run_scan(owned[i:end], repo)
     stray = sorted({f[0] for f in found} - set(lane["files"]))
     return {
+        "scanner_version": scanner_version(),
         "worker_id": worker_id,
         "exact_sha": plan["exact_sha"],
         "start": t0,
@@ -274,19 +345,42 @@ def lane_scan(plan: dict, worker_id: str, repo: Path) -> dict:
 
 
 def reduce_lanes(plan: dict, results: list[dict]) -> dict:
-    ids = [r["worker_id"] for r in results]
+    ids = [r.get("worker_id") for r in results]
     expected = [ln["worker_id"] for ln in plan["lanes"]]
-    got = sum(r["findings"] for r in results)
-    want = plan["total_findings"] - plan["hold_findings"]
-    secs = [r["seconds"] for r in results]
+    got = sum(int(r.get("findings") or 0) for r in results)
+    want = plan["total_findings"] - plan["hold_findings"] - plan["unassigned_findings"]
+    secs = [r["seconds"] for r in results if isinstance(r.get("seconds"), (int, float))]
+    sha_bad = sorted(
+        str(r.get("worker_id"))
+        for r in results
+        if r.get("exact_sha") != plan["exact_sha"]
+    )
+    dup_ids = sorted({i for i in ids if ids.count(i) > 1})
+    want_ver = plan.get("scan_identity", {}).get("scanner_version")
+    versions = sorted({str(r.get("scanner_version")) for r in results})
+    if want_ver is None:
+        version_status = "UNKNOWN_plan_scanner_version_not_recorded"
+    elif versions == [str(want_ver)]:
+        version_status = "MATCH"
+    else:
+        version_status = "MISMATCH"
+    all_reported = sorted(ids) == sorted(expected) and not dup_ids
+    stray = [r.get("worker_id") for r in results if r.get("stray_paths")]
     return {
         "schema": "ldab.scale.reduce.v1",
         "exact_sha": plan["exact_sha"],
-        "all_lanes_reported": sorted(ids) == sorted(expected),
+        "all_lanes_reported": all_reported,
+        "duplicate_worker_ids": dup_ids,
+        "sha_mismatch_lanes": sha_bad,
+        "scanner_versions": versions,
+        "scanner_version_status": version_status,
         "sum_of_lanes": got,
-        "expected_non_hold": want,
-        "reconciled": got == want,
-        "stray_path_lanes": [r["worker_id"] for r in results if r["stray_paths"]],
+        "expected_in_lanes": want,
+        "reconciled": got == want
+        and all_reported
+        and not sha_bad
+        and version_status != "MISMATCH",
+        "stray_path_lanes": stray,
         "critical_path_seconds": max(secs) if secs else None,
         "sum_lane_seconds": round(sum(secs), 3) if secs else None,
         "parallel_efficiency": (
@@ -297,28 +391,64 @@ def reduce_lanes(plan: dict, results: list[dict]) -> dict:
     }
 
 
+def _in_scope_code(code: str, plan: dict) -> bool:
+    snap = plan["policy_snapshot"]
+    if code in snap["protected"]:
+        tier = "HIGH_OR_PROTECTED"
+    elif code in snap["low_families"]:
+        tier = "LOW_MECHANICAL"
+    else:
+        tier = "MEDIUM"
+    return tier in plan["risk_scope"]
+
+
 def verify(
-    plan: dict, results: list[dict], after_raw: str | None, after_command: str | None
+    plan: dict,
+    results: list[dict],
+    after_raw: str | None,
+    after_command: str | None,
+    after_version: str | None = None,
 ) -> dict:
-    """Ownership + delta check for repair runs. Deltas are UNKNOWN unless scan identity matches."""
+    """Ownership + delta check for repair runs.
+
+    Ownership needs explicit evidence: every result names a known worker and carries an
+    explicit `changed_paths` list ([] only when supplied). Deltas are UNKNOWN unless the
+    plan recorded its scan identity (command and scanner version) and the after-scan
+    reports an identical one.
+    """
     owned = {p: ln["worker_id"] for ln in plan["lanes"] for p in ln["files"]}
-    violations, touched = [], defaultdict(list)
+    known = {ln["worker_id"] for ln in plan["lanes"]}
+    violations, touched, missing = [], defaultdict(list), []
     for r in results:
-        for p in r.get("changed_paths", []):
+        wid = r.get("worker_id")
+        paths = r.get("changed_paths")
+        if wid not in known:
+            missing.append({"worker_id": wid, "reason": "unknown_worker"})
+            continue
+        if not isinstance(paths, list):
+            missing.append({"worker_id": wid, "reason": "changed_paths_not_supplied"})
+            continue
+        for p in paths:
             p = norm_path(p)
-            touched[p].append(r["worker_id"])
-            if owned.get(p) != r["worker_id"]:
-                violations.append(
-                    {"worker_id": r["worker_id"], "path": p, "owner": owned.get(p)}
-                )
+            touched[p].append(wid)
+            if owned.get(p) != wid:
+                violations.append({"worker_id": wid, "path": p, "owner": owned.get(p)})
     collisions = {p: w for p, w in touched.items() if len(set(w)) > 1}
     out = {
         "schema": "ldab.scale.verify.v1",
         "ownership_violations": violations,
         "write_collisions": collisions,
-        "proposal_valid": not violations and not collisions,
+        "missing_evidence": missing,
+        "proposal_valid": not violations and not collisions and not missing,
     }
-    comparable = after_raw is not None and after_command == plan["scan_command"]
+    ident = plan.get("scan_identity", {})
+    comparable = (
+        after_raw is not None
+        and ident.get("command") is not None
+        and ident.get("scanner_version") is not None
+        and after_command == ident["command"]
+        and after_version == ident["scanner_version"]
+    )
     if not comparable:
         out.update(
             opened=None,
@@ -333,8 +463,11 @@ def verify(
         for b in lane["batches"]
         for p, _, c in map(tuple, b["items"])
     )
-    hold = set(plan["hold_files"])  # HOLD files are out of scope on both sides
-    after = Counter((p, c) for p, _, c in parse_raw(after_raw) if p not in hold)
+    after = Counter(
+        (p, c)
+        for p, _, c in parse_raw(after_raw)
+        if p in owned and _in_scope_code(c, plan)
+    )
     opened = sum(max(0, after[k] - before[k]) for k in after)
     resolved = sum(max(0, before[k] - after[k]) for k in before)
     out.update(
@@ -361,7 +494,10 @@ def main(argv=None) -> int:
     a = sub.add_parser("plan")
     a.add_argument("--raw", required=True)
     a.add_argument("--sha", required=True)
-    a.add_argument("--workers", type=int, default=8)
+    a.add_argument("--workers", type=int, default=4)
+    a.add_argument("--risk", default="ALL", choices=("ALL",) + TIERS)
+    a.add_argument("--scan-command", default=None)
+    a.add_argument("--scanner-version", default=None)
     a.add_argument("--policy", required=True)
     a.add_argument("--out", required=True)
     a.add_argument("--matrix-out")
@@ -379,16 +515,24 @@ def main(argv=None) -> int:
     d.add_argument("--results", nargs="+", required=True)
     d.add_argument("--after-raw")
     d.add_argument("--after-command")
+    d.add_argument("--after-version")
     d.add_argument("--out", required=True)
     args = ap.parse_args(argv)
 
     if args.cmd == "plan":
-        plan = build_plan(
-            parse_raw(Path(args.raw).read_text()),
-            args.sha,
-            args.workers,
-            _load(args.policy),
-        )
+        try:
+            plan = build_plan(
+                parse_raw(Path(args.raw).read_text()),
+                args.sha,
+                args.workers,
+                _load(args.policy),
+                risk=args.risk,
+                scan_command=args.scan_command,
+                scanner_version=args.scanner_version,
+            )
+        except ValueError as exc:
+            print(f"plan rejected: {exc}", file=sys.stderr)
+            return 2
         _dump(plan, args.out)
         if args.matrix_out:
             _dump(
@@ -407,6 +551,8 @@ def main(argv=None) -> int:
                     "metrics": plan["metrics"],
                     "total": plan["total_findings"],
                     "hold": plan["hold_findings"],
+                    "unassigned": plan["unassigned_findings"],
+                    "policy_worker_cap": plan["policy_worker_cap"],
                 },
                 indent=2,
             )
@@ -436,6 +582,7 @@ def main(argv=None) -> int:
         res,
         Path(args.after_raw).read_text() if args.after_raw else None,
         args.after_command,
+        args.after_version,
     )
     _dump(rep, args.out)
     print(json.dumps(rep, indent=2))
