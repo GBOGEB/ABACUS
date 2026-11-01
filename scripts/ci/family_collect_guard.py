@@ -23,16 +23,32 @@ import argparse
 import os
 import subprocess
 import sys
+import tempfile
 import xml.etree.ElementTree as ET
 from pathlib import Path
 
 
-def run_pytest(pytest_args: list[str], junit: Path) -> int:
+def pytest_runtest_logreport(report: object) -> None:
+    if (
+        getattr(report, "when", None) != "call"
+        or not getattr(report, "passed", False)
+        or not hasattr(report, "wasxfail")
+    ):
+        return
+    xpass_file = os.environ.get("ABACUS_FAMILY_XPASS_FILE")
+    if xpass_file:
+        with open(xpass_file, "a", encoding="utf-8") as handle:
+            handle.write(f"{getattr(report, 'nodeid')}\n")
+
+
+def run_pytest(pytest_args: list[str], junit: Path, xpass_file: Path) -> int:
     junit.parent.mkdir(parents=True, exist_ok=True)
     cmd = [
         sys.executable,
         "-m",
         "pytest",
+        "-p",
+        "scripts.ci.family_collect_guard",
         "-p",
         "no:cacheprovider",
         "-o",
@@ -45,7 +61,9 @@ def run_pytest(pytest_args: list[str], junit: Path) -> int:
         *pytest_args,
     ]
     print("+ " + " ".join(cmd), flush=True)
-    return subprocess.call(cmd)
+    env = os.environ.copy()
+    env["ABACUS_FAMILY_XPASS_FILE"] = str(xpass_file)
+    return subprocess.call(cmd, env=env)
 
 
 def tally(junit: Path) -> dict[str, int]:
@@ -95,8 +113,13 @@ def main(argv: list[str] | None = None) -> int:
 
     slug = args.family.replace("/", "_")
     junit = args.junit or Path("ci-evidence") / f"g-family-{slug}.xml"
-    rc = run_pytest(args.pytest_args, junit)
-    counts = tally(junit)
+    with tempfile.TemporaryDirectory() as temp_dir:
+        xpass_file = Path(temp_dir) / "xpassed"
+        rc = run_pytest(args.pytest_args, junit, xpass_file)
+        counts = tally(junit)
+        if xpass_file.exists():
+            with xpass_file.open(encoding="utf-8") as handle:
+                counts["xpassed"] += sum(1 for _ in handle)
 
     reasons = []
     if rc != 0:
