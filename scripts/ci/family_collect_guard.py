@@ -33,7 +33,7 @@ _xfail_reports: dict[str, str] = {}
 
 def pytest_runtest_logreport(report: object) -> None:
     if hasattr(report, "wasxfail"):
-        outcome = "xpassed" if report.outcome == "passed" else "xfailed"
+        outcome = "xfailed" if report.outcome == "skipped" else "xpassed"
         _xfail_reports[report.nodeid] = outcome
 
 
