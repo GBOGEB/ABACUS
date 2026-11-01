@@ -1,0 +1,167 @@
+name: LDAB Scale Fan-out
+
+# Manual, proposal-only. plan -> N disjoint read-only lane scans -> reduce.
+# No repository mutation: a single writer applies accepted proposals elsewhere.
+on:
+  workflow_dispatch:
+    inputs:
+      workers:
+        description: >-
+          Lane count; the planner rejects counts above the DAB policy cap
+          (LOW_MECHANICAL 8, MEDIUM 4, ALL 4)
+        default: "8"
+      risk:
+        description: "Tier scope: LOW_MECHANICAL, MEDIUM or ALL"
+        default: "LOW_MECHANICAL"
+      exact_sha:
+        description: "Exact commit SHA to census (default: dispatched ref)"
+        required: false
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ldab-scale-fanout-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  EXACT_SHA: ${{ inputs.exact_sha || github.sha }}
+  WORKERS: ${{ inputs.workers || '8' }}
+  RISK: ${{ inputs.risk || 'LOW_MECHANICAL' }}
+
+jobs:
+  plan:
+    name: Plan disjoint lanes
+    runs-on: ubuntu-latest
+    outputs:
+      matrix: ${{ steps.m.outputs.matrix }}
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          ref: ${{ env.EXACT_SHA }}
+      - name: Verify exact checkout identity and worker count
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$EXACT_SHA"
+          [[ "$WORKERS" =~ ^[1-8]$ ]] || { echo "workers must be 1-8"; exit 2; }
+          if [[ ! "$RISK" =~ ^(ALL|LOW_MECHANICAL|MEDIUM)$ ]]; then
+            echo "bad risk"
+            exit 2
+          fi
+      - uses: actions/setup-python@v7
+        with:
+          python-version: "3.11"
+      - run: python -m pip install flake8
+      - name: Frozen global scan
+        run: |
+          flake8 . --exit-zero --max-line-length=120 \
+            --format='%(path)s|%(row)d|%(code)s' > global.raw
+      - name: Build plan (records the producer's scan identity)
+        run: |
+          python scripts/ldab_scale_plan.py plan --raw global.raw \
+            --sha "$EXACT_SHA" \
+            --workers "$WORKERS" --risk "$RISK" \
+            --policy governance/dab/DAB_FULL_RED_GATES.json \
+            --scan-command "flake8 . --exit-zero --max-line-length=120" \
+            --scanner-version "$(
+              python -c 'import flake8; print(flake8.__version__)'
+            )" \
+            --out plan.json --matrix-out matrix.json
+      - id: m
+        run: |
+          python - <<'PY' >> "$GITHUB_OUTPUT"
+          import json
+          from pathlib import Path
+
+          matrix = json.loads(Path("matrix.json").read_text())
+          print(f"matrix={json.dumps(matrix)}")
+          PY
+      - uses: actions/upload-artifact@v7
+        with:
+          name: ldab-plan
+          path: |
+            plan.json
+            global.raw
+          if-no-files-found: error
+
+  lane:
+    name: Lane ${{ matrix.worker }}
+    needs: plan
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      max-parallel: 8
+      matrix: ${{ fromJson(needs.plan.outputs.matrix) }}
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          ref: ${{ env.EXACT_SHA }}
+      - uses: actions/setup-python@v7
+        with:
+          python-version: "3.11"
+      - run: python -m pip install flake8
+      - uses: actions/download-artifact@v7
+        with:
+          name: ldab-plan
+      - name: Scan owned files only
+        run: |
+          python scripts/ldab_scale_plan.py lane-scan --plan plan.json \
+            --worker "${{ matrix.worker }}" \
+            --out "lane-${{ matrix.worker }}.json"
+      - uses: actions/upload-artifact@v7
+        with:
+          name: lane-${{ matrix.worker }}
+          path: lane-${{ matrix.worker }}.json
+          if-no-files-found: error
+
+  reduce:
+    name: Reconcile lanes
+    needs: [plan, lane]
+    if: always() && needs.plan.result == 'success'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          ref: ${{ env.EXACT_SHA }}
+      - uses: actions/download-artifact@v7
+        with:
+          pattern: lane-*
+          merge-multiple: true
+      - uses: actions/download-artifact@v7
+        with:
+          name: ldab-plan
+      - name: Reconcile (fails on missing lane, stray path or sum mismatch)
+        run: |
+          python scripts/ldab_scale_plan.py reduce --plan plan.json \
+            --results lane-W*.json --out reduce.json
+      - name: Summary
+        if: always()
+        run: |
+          python - <<'PY' >> "$GITHUB_STEP_SUMMARY"
+          import json
+          from pathlib import Path
+
+          p = Path("reduce.json")
+          if not p.exists():
+              print("### LDAB scale reduce\n- reduce.json missing: UNKNOWN")
+          else:
+              r = json.loads(p.read_text())
+              print("### LDAB scale reduce")
+              print(f"- exact SHA: `{r['exact_sha']}`")
+              print(f"- reconciled: **{r['reconciled']}**")
+              print(
+                  f"- sum of lanes: {r['sum_of_lanes']} / "
+                  f"expected {r['expected_in_lanes']}"
+              )
+              print(f"- lane SHA mismatches: {r['sha_mismatch_lanes']}")
+              print(f"- scanner version: {r['scanner_version_status']}")
+              print(f"- critical path: {r['critical_path_seconds']}s")
+              print(f"- parallel efficiency: {r['parallel_efficiency']}")
+          PY
+      - uses: actions/upload-artifact@v7
+        if: always()
+        with:
+          name: ldab-reduce
+          path: reduce.json
+          if-no-files-found: ignore
