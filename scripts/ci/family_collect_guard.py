@@ -26,6 +26,8 @@ import sys
 import xml.etree.ElementTree as ET
 from pathlib import Path
 
+import pytest
+
 
 def run_pytest(pytest_args: list[str], junit: Path) -> int:
     junit.parent.mkdir(parents=True, exist_ok=True)
@@ -33,6 +35,8 @@ def run_pytest(pytest_args: list[str], junit: Path) -> int:
         sys.executable,
         "-m",
         "pytest",
+        "-p",
+        "scripts.ci.family_collect_guard",
         "-p",
         "no:cacheprovider",
         "-o",
@@ -46,6 +50,20 @@ def run_pytest(pytest_args: list[str], junit: Path) -> int:
     ]
     print("+ " + " ".join(cmd), flush=True)
     return subprocess.call(cmd)
+
+
+@pytest.hookimpl(hookwrapper=True, tryfirst=True)
+def pytest_runtest_makereport(item, call):
+    outcome = yield
+    report = outcome.get_result()
+    if report.outcome == "passed" and getattr(report, "wasxfail", None):
+        property_value = str(report.wasxfail)
+        item.user_properties.append(
+            ("family_collect_guard_wasxfail", property_value)
+        )
+        report.user_properties.append(
+            ("family_collect_guard_wasxfail", property_value)
+        )
 
 
 def tally(junit: Path) -> dict[str, int]:
@@ -65,7 +83,14 @@ def tally(junit: Path) -> dict[str, int]:
         failure = case.find("failure")
         error = case.find("error")
         skipped = case.find("skipped")
-        if failure is not None:
+        properties = case.find("properties")
+        xpassed = properties is not None and any(
+            prop.get("name") == "family_collect_guard_wasxfail"
+            for prop in properties.findall("property")
+        )
+        if xpassed:
+            counts["xpassed"] += 1
+        elif failure is not None:
             message = failure.get("message", "")
             if "XPASS" in message:
                 counts["xpassed"] += 1
