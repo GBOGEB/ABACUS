@@ -462,6 +462,26 @@ def test_workflow_ratchets_against_the_merge_base_tip(job, step_id):
     assert '--base "$BASE_SHA"' not in run
     assert '"$BASE_SHA:' not in run
 
+    if step_id == "quality_ratchet":
+        assert step["env"]["FORCED"] == "${{ github.event.forced }}"
+        assert (
+            'if [[ "$FORCED" == "true" || "$BEFORE_SHA" =~ ^0+$ ]]; then'
+            in run
+        )
+        assert 'if [[ -z "$BEFORE_SHA" ]]; then' in run
+        assert (
+            'if ! git cat-file -e "$base^{commit}" 2>/dev/null; then'
+            in run
+        )
+        assert (
+            'git fetch --no-tags --depth=1 origin "$BEFORE_SHA"'
+            in run
+        )
+        assert (
+            'git fetch --no-tags --depth=1 origin "$BEFORE_SHA"; then'
+            not in run
+        )
+
 
 def test_security_push_baseline_fails_closed_for_unavailable_previous_tip():
     workflow = (
