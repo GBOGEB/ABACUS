@@ -1,6 +1,5 @@
 import importlib.util
 import json
-import random
 from pathlib import Path
 
 import pytest
@@ -25,12 +24,12 @@ POLICY = {
 
 
 def synth(n_files=60, seed=7):
-    rnd = random.Random(seed)
     codes = ["E302", "W293", "E501", "F401", "F841", "E722", "E231"]
     rows = []
     for i in range(n_files):
-        for _ in range(rnd.randint(1, 40)):
-            rows.append((f"pkg{i % 5}/m{i}.py", rnd.randint(1, 500), rnd.choice(codes)))
+        for j in range((i * 7 + seed) % 40 + 1):  # deterministic, no RNG
+            code = codes[(i * 3 + j * 5 + seed) % len(codes)]
+            rows.append((f"pkg{i % 5}/m{i}.py", (i * 31 + j * 17) % 500 + 1, code))
     rows.append(("pkg0/broken.py", 3, "E999"))
     rows.append(("pkg0/broken.py", 9, "E501"))  # same file as protected hold
     return sorted(rows)
