@@ -26,6 +26,16 @@ import sys
 import xml.etree.ElementTree as ET
 from pathlib import Path
 
+import pytest
+
+
+@pytest.hookimpl(hookwrapper=True)
+def pytest_runtest_makereport(item, call):
+    outcome = yield
+    report = outcome.get_result()
+    if report.when == "call" and report.passed and hasattr(report, "wasxfail"):
+        item.user_properties.append(("family_guard_xpassed", "true"))
+
 
 def run_pytest(pytest_args: list[str], junit: Path) -> int:
     junit.parent.mkdir(parents=True, exist_ok=True)
@@ -35,6 +45,8 @@ def run_pytest(pytest_args: list[str], junit: Path) -> int:
         "pytest",
         "-p",
         "no:cacheprovider",
+        "-p",
+        "family_collect_guard",
         "-o",
         "addopts=",
         "--strict-markers",
@@ -45,7 +57,11 @@ def run_pytest(pytest_args: list[str], junit: Path) -> int:
         *pytest_args,
     ]
     print("+ " + " ".join(cmd), flush=True)
-    return subprocess.call(cmd)
+    env = os.environ.copy()
+    env["PYTHONPATH"] = os.pathsep.join(
+        filter(None, [str(Path(__file__).resolve().parent), env.get("PYTHONPATH")])
+    )
+    return subprocess.call(cmd, env=env)
 
 
 def tally(junit: Path) -> dict[str, int]:
@@ -79,7 +95,12 @@ def tally(junit: Path) -> dict[str, int]:
             else:
                 counts["skipped"] += 1
         else:
-            counts["passed"] += 1
+            xpassed = any(
+                prop.get("name") == "family_guard_xpassed"
+                and prop.get("value") == "true"
+                for prop in case.findall("properties/property")
+            )
+            counts["xpassed" if xpassed else "passed"] += 1
     return counts
 
 
