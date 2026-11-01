@@ -1,4 +1,5 @@
 """Adversarial/positive unit proof for deterministic read-only testflight planning."""
+
 import copy
 import unittest
 
@@ -20,34 +21,88 @@ def fixture():
         "changed_paths": ["tools/foo.py", "tests/test_foo.py"],
         "max_parallel": 2,
         "tasks": [
-            {"id": "LINT", "kind": "static", "required": True, "priority": "P0", "needs": [], "paths": ["tools/foo.py"]},
-            {"id": "A10", "kind": "a10", "required": True, "priority": "P0", "needs": []},
-            {"id": "NEG", "kind": "negative", "required": True, "priority": "P1", "needs": ["LINT"], "paths": ["tests/test_foo.py"]},
-            {"id": "UNIT", "kind": "unit", "required": True, "priority": "P1", "needs": ["NEG"], "axes": ["linux39", "win312"]},
-            {"id": "COVERAGE", "kind": "coverage", "required": True, "priority": "P2", "needs": ["UNIT"]},
-            {"id": "REX", "kind": "rex", "required": True, "priority": "P0", "needs": ["COVERAGE"], "mode": "CONTROLLED_MUTATION"},
+            {
+                "id": "LINT",
+                "kind": "static",
+                "required": True,
+                "priority": "P0",
+                "needs": [],
+                "paths": ["tools/foo.py"],
+            },
+            {
+                "id": "A10",
+                "kind": "a10",
+                "required": True,
+                "priority": "P0",
+                "needs": [],
+            },
+            {
+                "id": "NEG",
+                "kind": "negative",
+                "required": True,
+                "priority": "P1",
+                "needs": ["LINT"],
+                "paths": ["tests/test_foo.py"],
+            },
+            {
+                "id": "UNIT",
+                "kind": "unit",
+                "required": True,
+                "priority": "P1",
+                "needs": ["NEG"],
+                "axes": ["linux39", "win312"],
+            },
+            {
+                "id": "COVERAGE",
+                "kind": "coverage",
+                "required": True,
+                "priority": "P2",
+                "needs": ["UNIT"],
+            },
+            {
+                "id": "REX",
+                "kind": "rex",
+                "required": True,
+                "priority": "P0",
+                "needs": ["COVERAGE"],
+                "mode": "CONTROLLED_MUTATION",
+            },
         ],
     }
 
 
 def job(task, source, result="success", axis="default", ident=1, checkout=None):
-    return {"task_id": task, "axis": axis, "source_sha": source,
-            "checkout_sha": checkout or source, "run_id": 100 + ident,
-            "run_attempt": 1, "job_id": 10000 + ident,
-            "status": "completed", "conclusion": result}
+    return {
+        "task_id": task,
+        "axis": axis,
+        "source_sha": source,
+        "checkout_sha": checkout or source,
+        "run_id": 100 + ident,
+        "run_attempt": 1,
+        "job_id": 10000 + ident,
+        "status": "completed",
+        "conclusion": result,
+    }
 
 
 def case_block(sha, cases, digest=DIGEST, complete=True):
-    return {"source_sha": sha, "selection_digest": digest,
-            "environment_digest": DIGEST, "definition_digest": DIGEST,
-            "complete": complete, "cases": cases}
+    return {
+        "source_sha": sha,
+        "selection_digest": digest,
+        "environment_digest": DIGEST,
+        "definition_digest": DIGEST,
+        "complete": complete,
+        "cases": cases,
+    }
 
 
 class PlanningProof(unittest.TestCase):
     def test_dag_and_nonmutating_control(self):
         r = compile_plan(fixture())
-        self.assertEqual([w["task_ids"] for w in r["waves"]],
-                         [["LINT", "A10"], ["NEG"], ["UNIT"], ["COVERAGE"]])
+        self.assertEqual(
+            [w["task_ids"] for w in r["waves"]],
+            [["LINT", "A10"], ["NEG"], ["UNIT"], ["COVERAGE"]],
+        )
         self.assertEqual(r["dispatch"], "NOT_PERFORMED_READ_ONLY_PLAN")
         self.assertEqual(r["admission"], "HOLD")
         self.assertIsNone(r["accepted_root_closures"])
@@ -55,7 +110,9 @@ class PlanningProof(unittest.TestCase):
         self.assertFalse(r["merge_authorized"])
         self.assertEqual(r["withheld_task_ids"], ["REX"])
         self.assertEqual(r["tasks"][0]["id"], "LINT")
-        self.assertEqual(r["tasks"][0]["decision"], "EXACT_HEAD_RETEST_OR_EVIDENCE_REQUIRED")
+        self.assertEqual(
+            r["tasks"][0]["decision"], "EXACT_HEAD_RETEST_OR_EVIDENCE_REQUIRED"
+        )
 
     def test_deterministic(self):
         self.assertEqual(compile_plan(fixture()), compile_plan(fixture()))
@@ -66,7 +123,9 @@ class PlanningProof(unittest.TestCase):
             t["estimate_seconds"] = 7
         r = compile_plan(p)
         self.assertEqual(r["waves"][0]["predicted_wall_seconds"], 7)
-        self.assertEqual(r["waves"][0]["timing_class"], "UNVALIDATED_ESTIMATE_NOT_NATIVE_DURATION")
+        self.assertEqual(
+            r["waves"][0]["timing_class"], "UNVALIDATED_ESTIMATE_NOT_NATIVE_DURATION"
+        )
         self.assertIsNone(r["spc_control_limit"])
 
     def test_explicit_previous_green_now_red(self):
@@ -128,43 +187,62 @@ class PlanningProof(unittest.TestCase):
 
     def test_case_regression_and_clearance(self):
         p = fixture()
-        p["previous_cases"] = case_block(PREVIOUS, [
-            {"id": "suite::green", "outcome": "PASS"},
-            {"id": "suite::red", "outcome": "FAIL"}])
-        p["current_cases"] = case_block(HEAD, [
-            {"id": "suite::green", "outcome": "FAIL"},
-            {"id": "suite::red", "outcome": "PASS"}])
+        p["previous_cases"] = case_block(
+            PREVIOUS,
+            [
+                {"id": "suite::green", "outcome": "PASS"},
+                {"id": "suite::red", "outcome": "FAIL"},
+            ],
+        )
+        p["current_cases"] = case_block(
+            HEAD,
+            [
+                {"id": "suite::green", "outcome": "FAIL"},
+                {"id": "suite::red", "outcome": "PASS"},
+            ],
+        )
         r = compile_plan(p)["test_case_comparison"]
         self.assertTrue(r["comparable"])
-        self.assertEqual([x["kind"] for x in r["events"]],
-                         ["PREVIOUS_GREEN_NOW_RED", "RED_CLEARED_TEST_ONLY"])
+        self.assertEqual(
+            [x["kind"] for x in r["events"]],
+            ["PREVIOUS_GREEN_NOW_RED", "RED_CLEARED_TEST_ONLY"],
+        )
 
     def test_unsafe_new_test_not_inferred_old_regression(self):
         p = fixture()
-        p["previous_cases"] = case_block(PREVIOUS, [{"id": "suite::old", "outcome": "PASS"}])
+        p["previous_cases"] = case_block(
+            PREVIOUS, [{"id": "suite::old", "outcome": "PASS"}]
+        )
         p["current_cases"] = case_block(HEAD, [{"id": "suite::new", "outcome": "FAIL"}])
         r = compile_plan(p)["test_case_comparison"]
-        self.assertEqual([x["kind"] for x in r["events"]],
-                         ["NEW_TEST_RED", "TEST_DISAPPEARED"])
+        self.assertEqual(
+            [x["kind"] for x in r["events"]], ["NEW_TEST_RED", "TEST_DISAPPEARED"]
+        )
 
     def test_skip_debt_retained(self):
         p = fixture()
         p["previous_cases"] = case_block(PREVIOUS, [{"id": "s::x", "outcome": "PASS"}])
         p["current_cases"] = case_block(HEAD, [{"id": "s::x", "outcome": "SKIP"}])
-        self.assertEqual(compile_plan(p)["test_case_comparison"]["events"][0]["kind"],
-                         "PASS_TO_SKIP_TEST_OBLIGATION_LOSS")
+        self.assertEqual(
+            compile_plan(p)["test_case_comparison"]["events"][0]["kind"],
+            "PASS_TO_SKIP_TEST_OBLIGATION_LOSS",
+        )
 
     def test_incomparable_test_selection_is_not_green_to_red(self):
         p = fixture()
         p["previous_cases"] = case_block(PREVIOUS, [{"id": "s::x", "outcome": "PASS"}])
-        p["current_cases"] = case_block(HEAD, [{"id": "s::x", "outcome": "ERROR"}], digest="e" * 64)
+        p["current_cases"] = case_block(
+            HEAD, [{"id": "s::x", "outcome": "ERROR"}], digest="e" * 64
+        )
         c = compile_plan(p)["test_case_comparison"]
         self.assertFalse(c["comparable"])
         self.assertEqual(c["events"][0]["kind"], "RED_UNMATCHED_COHORT")
 
     def test_unverified_case_collection_unknown(self):
         p = fixture()
-        p["previous_cases"] = case_block(PREVIOUS, [{"id": "s::x", "outcome": "PASS"}], complete=False)
+        p["previous_cases"] = case_block(
+            PREVIOUS, [{"id": "s::x", "outcome": "PASS"}], complete=False
+        )
         p["current_cases"] = case_block(HEAD, [{"id": "s::x", "outcome": "FAIL"}])
         self.assertEqual(compile_plan(p)["test_case_comparison"]["state"], "UNKNOWN")
 
@@ -176,18 +254,30 @@ class PlanningProof(unittest.TestCase):
 
     def test_descendant_of_withheld_authority_is_not_scheduled(self):
         p = fixture()
-        p["tasks"].append({"id": "AFTER_REX", "kind": "artifact", "required": True,
-                           "priority": "P0", "needs": ["REX"]})
+        p["tasks"].append(
+            {
+                "id": "AFTER_REX",
+                "kind": "artifact",
+                "required": True,
+                "priority": "P0",
+                "needs": ["REX"],
+            }
+        )
         r = compile_plan(p)
         self.assertEqual(r["withheld_task_ids"], ["AFTER_REX", "REX"])
-        self.assertEqual(next(t for t in r["tasks"] if t["id"] == "AFTER_REX")["decision"],
-                         "BLOCKED_BEHIND_WITHHELD_AUTHORITY")
+        self.assertEqual(
+            next(t for t in r["tasks"] if t["id"] == "AFTER_REX")["decision"],
+            "BLOCKED_BEHIND_WITHHELD_AUTHORITY",
+        )
 
     def test_measured_native_queue_and_runtime(self):
         p = fixture()
         x = job("LINT", HEAD)
-        x.update(created_at="2026-10-16T08:00:00Z", started_at="2026-10-16T08:04:00Z",
-                 completed_at="2026-10-16T08:04:13Z")
+        x.update(
+            created_at="2026-10-16T08:00:00Z",
+            started_at="2026-10-16T08:04:00Z",
+            completed_at="2026-10-16T08:04:13Z",
+        )
         p["current_jobs"] = [x]
         r = compile_plan(p)
         self.assertEqual(r["queue_seconds_p50"], 240)
@@ -239,7 +329,9 @@ class PlanningProof(unittest.TestCase):
         p["current_jobs"] = [n]
         t = next(x for x in compile_plan(p)["tasks"] if x["id"] == "LINT")
         self.assertEqual(t["transition"], "PREVIOUS_RED_NOW_GREEN_JOB")
-        self.assertEqual(t["artifact_receipt_identity"], "MISMATCH_REJECT_ARTIFACT_SOURCE")
+        self.assertEqual(
+            t["artifact_receipt_identity"], "MISMATCH_REJECT_ARTIFACT_SOURCE"
+        )
         self.assertEqual(t["decision"], "REPAIR_SOURCE_RECEIPT_IDENTITY")
 
     def test_unreported_receipt_stays_unknown(self):
@@ -254,7 +346,9 @@ class PlanningProof(unittest.TestCase):
         n["receipt_source_sha"] = HEAD
         p["current_jobs"] = [n]
         t = next(x for x in compile_plan(p)["tasks"] if x["id"] == "LINT")
-        self.assertEqual(t["artifact_receipt_identity"], "DECLARED_MATCH_BYTES_UNVERIFIED")
+        self.assertEqual(
+            t["artifact_receipt_identity"], "DECLARED_MATCH_BYTES_UNVERIFIED"
+        )
 
     def test_reject_duplicate_tasks(self):
         p = fixture()
@@ -329,16 +423,20 @@ class PlanningProof(unittest.TestCase):
 
     def test_reject_duplicate_test_id(self):
         p = fixture()
-        p["previous_cases"] = case_block(PREVIOUS, [{"id": "s::x", "outcome": "PASS"},
-                                                  {"id": "s::x", "outcome": "PASS"}])
+        p["previous_cases"] = case_block(
+            PREVIOUS,
+            [{"id": "s::x", "outcome": "PASS"}, {"id": "s::x", "outcome": "PASS"}],
+        )
         p["current_cases"] = case_block(HEAD, [{"id": "s::x", "outcome": "PASS"}])
         with self.assertRaises(ValueError):
             compile_plan(p)
 
     def test_reject_nonfinite_test_duration(self):
         p = fixture()
-        p["previous_cases"] = case_block(PREVIOUS, [{"id": "s::x", "outcome": "PASS",
-                                                     "duration_seconds": float("nan")}])
+        p["previous_cases"] = case_block(
+            PREVIOUS,
+            [{"id": "s::x", "outcome": "PASS", "duration_seconds": float("nan")}],
+        )
         p["current_cases"] = case_block(HEAD, [{"id": "s::x", "outcome": "PASS"}])
         with self.assertRaises(ValueError):
             compile_plan(p)
@@ -369,24 +467,30 @@ def lease_fixture(*claims, max_parallel=2, estimates=None, changed=None):
     value["changed_paths"] = ["src/main.py"] if changed is None else changed
     value["tasks"] = []
     for index, claim in enumerate(claims):
-        value["tasks"].append({
-            "id": chr(ord("A") + index),
-            "kind": "static",
-            "required": True,
-            "priority": "P0",
-            "needs": [],
-            "paths": claim if isinstance(claim, list) else [claim],
-            "estimate_seconds": (estimates[index] if estimates else 10),
-        })
+        value["tasks"].append(
+            {
+                "id": chr(ord("A") + index),
+                "kind": "static",
+                "required": True,
+                "priority": "P0",
+                "needs": [],
+                "paths": claim if isinstance(claim, list) else [claim],
+                "estimate_seconds": (estimates[index] if estimates else 10),
+            }
+        )
     return value
 
 
 class DisjointWaveRegression(unittest.TestCase):
     def test_parent_child_and_independent_lane_fill_free_slot(self):
-        plan = compile_plan(lease_fixture(
-            "src", "src/main.py", "docs/README.md",
-            estimates=[8, 12, 5],
-        ))
+        plan = compile_plan(
+            lease_fixture(
+                "src",
+                "src/main.py",
+                "docs/README.md",
+                estimates=[8, 12, 5],
+            )
+        )
         wave = plan["waves"][0]
         self.assertEqual(wave["batches"], [["A", "C"], ["B"]])
         self.assertEqual(wave["predicted_wall_seconds"], 20)
@@ -408,13 +512,16 @@ class DisjointWaveRegression(unittest.TestCase):
         self.assertEqual(plan["waves"][0]["batches"], [["A"], ["B"]])
 
     def test_exact_claim_collision_serializes_beyond_worker_capacity(self):
-        plan = compile_plan(lease_fixture(
-            "src/shared.py", "src/shared.py", "src/shared.py",
-            "src/shared.py", max_parallel=4,
-        ))
-        self.assertEqual(
-            plan["waves"][0]["batches"], [["A"], ["B"], ["C"], ["D"]]
+        plan = compile_plan(
+            lease_fixture(
+                "src/shared.py",
+                "src/shared.py",
+                "src/shared.py",
+                "src/shared.py",
+                max_parallel=4,
+            )
         )
+        self.assertEqual(plan["waves"][0]["batches"], [["A"], ["B"], ["C"], ["D"]])
         self.assertFalse(plan["merge_authorized"])
 
     def test_boundary_prefix_is_not_directory_ancestor(self):
@@ -427,10 +534,17 @@ class DisjointWaveRegression(unittest.TestCase):
         self.assertFalse(plan["merge_authorized"])
 
     def test_worker_cap_and_total_wall_estimate(self):
-        plan = compile_plan(lease_fixture(
-            "src/a", "src/b", "src/c", "src/d", "src/e",
-            max_parallel=2, estimates=[7, 11, 13, 17, 19],
-        ))
+        plan = compile_plan(
+            lease_fixture(
+                "src/a",
+                "src/b",
+                "src/c",
+                "src/d",
+                "src/e",
+                max_parallel=2,
+                estimates=[7, 11, 13, 17, 19],
+            )
+        )
         self.assertEqual(
             plan["waves"][0]["batches"],
             [["A", "B"], ["C", "D"], ["E"]],
@@ -454,7 +568,9 @@ class DisjointWaveRegression(unittest.TestCase):
 
     def test_changed_path_detects_casefold_and_parent_directory(self):
         value = lease_fixture(
-            "src", "docs/README.md", "SRC/main.py",
+            "src",
+            "docs/README.md",
+            "SRC/main.py",
             changed=["src/main.py"],
         )
         rows = compile_plan(value)["tasks"]
@@ -471,16 +587,19 @@ class DisjointWaveRegression(unittest.TestCase):
     def test_unknown_estimate_is_not_assumed_zero_wall_time(self):
         value = lease_fixture("src/a.py", "src/b.py")
         value["tasks"][1].pop("estimate_seconds")
-        self.assertIsNone(
-            compile_plan(value)["waves"][0]["predicted_wall_seconds"]
-        )
+        self.assertIsNone(compile_plan(value)["waves"][0]["predicted_wall_seconds"])
 
     def test_synthetic_adversarial_paths_rejected_before_lease(self):
         cases = (
-            "C:/Windows/system32", "src/\tsecret.py",
-            "src/\nnewline.py", "src/\rreturn.py",
-            "src/\x00nul.py", "src/\x7fdel.py",
-            "src/../escape", "src//alias", "src/./alias",
+            "C:/Windows/system32",
+            "src/\tsecret.py",
+            "src/\nnewline.py",
+            "src/\rreturn.py",
+            "src/\x00nul.py",
+            "src/\x7fdel.py",
+            "src/../escape",
+            "src//alias",
+            "src/./alias",
             "src/trailing/",
         )
         for claim in cases:

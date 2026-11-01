@@ -1,8 +1,8 @@
 """W45: fail-closed NetworkX collection dependency contract for legacy CI."""
-from pathlib import Path
+
 import re
 import unittest
-
+from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 WORKFLOW = ROOT / ".github" / "workflows" / "ci-pipeline.yml"

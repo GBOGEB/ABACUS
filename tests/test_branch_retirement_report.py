@@ -22,8 +22,12 @@ def test_selected_base_branch_is_always_kept() -> None:
 
 
 def test_closed_unmerged_pr_with_unique_commits_is_not_deleted(monkeypatch) -> None:
-    monkeypatch.setattr(brr, "run", lambda *args, **kwargs: SimpleNamespace(returncode=1))
-    pr = brr.PullRequest(17, "closed", "CLOSED", "topic", "main", "https://example.test/pr/17", "", None)
+    monkeypatch.setattr(
+        brr, "run", lambda *args, **kwargs: SimpleNamespace(returncode=1)
+    )
+    pr = brr.PullRequest(
+        17, "closed", "CLOSED", "topic", "main", "https://example.test/pr/17", "", None
+    )
 
     classification, rationale = brr.classify(
         "topic",

@@ -144,11 +144,14 @@ def test_closed_root_cannot_hide_active_unimplemented_manifestation():
 def test_native_cli_writes_hash_verified_root_receipt(tmp_path, monkeypatch, capsys):
     import hashlib
     import sys
+
     source = ROOT / "CODE_MAROON" / "snapshot_20261016.json"
     target = tmp_path / "nested" / "receipt"
-    monkeypatch.setattr(sys, "argv", [
-        "code_maroon_reconcile", "--snapshot", str(source), "--out", str(target)
-    ])
+    monkeypatch.setattr(
+        sys,
+        "argv",
+        ["code_maroon_reconcile", "--snapshot", str(source), "--out", str(target)],
+    )
     M.main()
     raw = (target / "code_maroon_receipt.json").read_bytes()
     digest = hashlib.sha256(raw).hexdigest()

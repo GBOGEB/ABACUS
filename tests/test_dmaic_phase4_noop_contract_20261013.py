@@ -52,9 +52,7 @@ def test_short_lines_are_left_unchanged(tmp_path: Path):
     "method",
     ["add_missing_docstrings", "add_type_hints", "remove_unused_imports"],
 )
-def test_invalid_python_fails_closed_without_writing(
-    tmp_path: Path, method: str
-):
+def test_invalid_python_fails_closed_without_writing(tmp_path: Path, method: str):
     source = tmp_path / "invalid.py"
     original = "def invalid(:\n"
     source.write_text(original, encoding="utf-8")

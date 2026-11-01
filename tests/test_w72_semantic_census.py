@@ -2,7 +2,6 @@ import importlib.util
 import json
 from pathlib import Path
 
-
 SPEC = importlib.util.spec_from_file_location(
     "w72_semantic_census", Path("tools/w72_semantic_census.py")
 )
@@ -95,9 +94,9 @@ def test_w72_does_not_count_entity_source_as_downstream_consumer(tmp_path):
     write(tmp_path, "docs/consumer.md", "No semantic bindings here.\n")
     write(tmp_path, "docs/domain.md", "# Q3\nSSOT-Q3 is its own source label.\n")
     receipts, _ = MODULE.measure(tmp_path, "e" * 40)
-    assert "SSOT-Q3" in receipts["C_consumer_penetration"]["findings"][
-        "unbound_consumers"
-    ]
+    assert (
+        "SSOT-Q3" in receipts["C_consumer_penetration"]["findings"]["unbound_consumers"]
+    )
 
 
 def test_w72_detects_real_authority_registry_mismatch(tmp_path):

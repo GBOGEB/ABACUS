@@ -3,6 +3,7 @@ from types import SimpleNamespace
 import pytest
 
 import DMAIC_V3.generators.github_quality_check as quality_module
+
 GitHubQualityCheck = quality_module.GitHubQualityCheck
 
 
@@ -82,7 +83,9 @@ def test_generated_repo_files_existing_git_and_report(tmp_path, capsys):
     assert checker.report["git_status"]["gitattributes_created"] is True
     assert checker.report["git_status"]["requirements_created"] is True
     assert checker.report["git_status"]["setup_created"] is True
-    assert list((tmp_path / "output" / "quality_reports").glob("github_quality_report_*.json"))
+    assert list(
+        (tmp_path / "output" / "quality_reports").glob("github_quality_report_*.json")
+    )
     assert "GITHUB QUALITY CHECK SUMMARY" in capsys.readouterr().out
 
 

@@ -7,7 +7,6 @@ from pathlib import Path
 
 import pandas as pd
 
-
 PROJECT_ROOT = Path(__file__).resolve().parent.parent
 MODULE_PATH = (
     PROJECT_ROOT
@@ -64,15 +63,22 @@ def test_current_rtm_generator_loads():
 def test_current_rtm_generator_classifies_requirement():
     generator = _load_generator_class()()
 
-    assert generator._determine_requirement_type(
-        "The QPLANT shall provide safe purge protection."
-    ) == "Safety"
-    assert generator._determine_priority(
-        "The QPLANT shall provide safe purge protection."
-    ) == "High"
-    assert generator._determine_verification_method(
-        "The QPLANT shall pass an acceptance test."
-    ) == "Test"
+    assert (
+        generator._determine_requirement_type(
+            "The QPLANT shall provide safe purge protection."
+        )
+        == "Safety"
+    )
+    assert (
+        generator._determine_priority("The QPLANT shall provide safe purge protection.")
+        == "High"
+    )
+    assert (
+        generator._determine_verification_method(
+            "The QPLANT shall pass an acceptance test."
+        )
+        == "Test"
+    )
 
 
 def test_current_rtm_generator_assigns_sbs():

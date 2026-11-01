@@ -49,9 +49,10 @@ def test_real_w80_is_negative_observed_outcome_validation() -> None:
     assert result["source_actions_run_receipt_sha256"] == (
         "1412820d9ccfb3eda94ce5deddfe0f25d68d3f7ba032b11a870490a4a0ecfb01"
     )
-    assert w80.file_sha256(w80.RUN_RECEIPT_PATH) == result[
-        "source_actions_run_receipt_sha256"
-    ]
+    assert (
+        w80.file_sha256(w80.RUN_RECEIPT_PATH)
+        == result["source_actions_run_receipt_sha256"]
+    )
     assert result["semantic_pc1"]["eigenvalue"] == 6.341341
     assert result["semantic_pc1"]["explained_variance_ratio"] == 0.905906
 
@@ -115,7 +116,9 @@ def test_missing_states_are_not_zero_imputed() -> None:
 def test_forged_observed_outcome_payload_fails_closed() -> None:
     w79_source, ledger = load_inputs()
     forged = copy.deepcopy(ledger)
-    observed = next(state for state in forged["states"] if state["status"] == "OBSERVED")
+    observed = next(
+        state for state in forged["states"] if state["status"] == "OBSERVED"
+    )
     observed["runs"][0]["conclusion"] = "failure"
     try:
         w80.evaluate(w79_source, forged)
@@ -140,9 +143,18 @@ def test_tampered_w79_source_fails_closed_before_outcome_credit() -> None:
 def test_range_restriction_blocks_promotion_even_with_observed_count_gate_met() -> None:
     result = real_result()
     coverage = result["outcome_coverage"]
-    assert coverage["observed_states"] >= result["predeclared_gate"]["minimum_observed_states"]
-    assert coverage["coverage_fraction"] >= result["predeclared_gate"]["minimum_coverage_fraction"]
-    assert coverage["pc1_range_coverage_fraction"] < result["predeclared_gate"]["minimum_pc1_range_coverage_fraction"]
+    assert (
+        coverage["observed_states"]
+        >= result["predeclared_gate"]["minimum_observed_states"]
+    )
+    assert (
+        coverage["coverage_fraction"]
+        >= result["predeclared_gate"]["minimum_coverage_fraction"]
+    )
+    assert (
+        coverage["pc1_range_coverage_fraction"]
+        < result["predeclared_gate"]["minimum_pc1_range_coverage_fraction"]
+    )
     assert result["predeclared_gate"]["pc1_range_gate_pass"] is False
     assert result["pc1_predictive_validation"] is False
     assert result["pairwise_events"] == []

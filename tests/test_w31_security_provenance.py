@@ -1,4 +1,5 @@
 """Adversarial/fault-injection W31 scanner provenance tests."""
+
 import hashlib
 import unittest
 
@@ -13,10 +14,13 @@ def finding(name, version, cve):
 
 def evidence():
     return {
-        "exact_sha": SHA, "run_id": 38783468698, "run_attempt": 3,
+        "exact_sha": SHA,
+        "run_id": 38783468698,
+        "run_attempt": 3,
         "job_id": 116932289578,
         "scanner": {
-            "scope": "scanner_environment", "exit_code": 64,
+            "scope": "scanner_environment",
+            "exit_code": 64,
             "installed_packages": 47,
             "findings": [
                 finding("nltk", "3.10.3", "CVE-2026-81726"),
@@ -41,9 +45,12 @@ class ScannerAttributionTests(unittest.TestCase):
 
     def test_empty_application_cannot_erase_scanner_red(self):
         item = evidence()
-        item["application_runtime"] = {"scope": "application_runtime",
-                                       "exit_code": 0, "installed_packages": 10,
-                                       "findings": []}
+        item["application_runtime"] = {
+            "scope": "application_runtime",
+            "exit_code": 0,
+            "installed_packages": 10,
+            "findings": [],
+        }
         out = sp.summarize(item)
         self.assertEqual(out["scanner_only_occurrences"], 2)
         self.assertEqual(out["shared_occurrences"], 0)
@@ -52,11 +59,15 @@ class ScannerAttributionTests(unittest.TestCase):
     def test_identical_finding_is_overlap_not_root_closure(self):
         item = evidence()
         item["application_runtime"] = {
-            "scope": "application_runtime", "exit_code": 64, "installed_packages": 15,
+            "scope": "application_runtime",
+            "exit_code": 64,
+            "installed_packages": 15,
             "findings": [item["scanner"]["findings"][0]],
         }
         out = sp.summarize(item)
-        self.assertEqual((out["scanner_only_occurrences"], out["shared_occurrences"]), (1, 1))
+        self.assertEqual(
+            (out["scanner_only_occurrences"], out["shared_occurrences"]), (1, 1)
+        )
         self.assertIsNone(out["causal_roots_closed"])
 
     def test_hash_match_is_not_content_or_security_attestation(self):
@@ -101,7 +112,9 @@ class ScannerAttributionTests(unittest.TestCase):
         item["scanner"]["exit_code"] = 0
         item["scanner"]["findings"] = []
         out = sp.summarize(item)
-        self.assertEqual(out["scanner_environment"]["gate_result"], "SCANNER_EXIT_ZERO_ONLY")
+        self.assertEqual(
+            out["scanner_environment"]["gate_result"], "SCANNER_EXIT_ZERO_ONLY"
+        )
         self.assertEqual(out["merge_admission"], "HOLD")
 
     def test_duplicate_manifestation_rejected(self):

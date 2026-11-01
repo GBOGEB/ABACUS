@@ -39,7 +39,9 @@ class NativeJobProjectionTests(unittest.TestCase):
 
     def test_job_family_counts_are_not_assumed_causes(self):
         report = native.project(self.documents)
-        groups = {item["symptom_family"]: item for item in report["candidate_job_families"]}
+        groups = {
+            item["symptom_family"]: item for item in report["candidate_job_families"]
+        }
         self.assertEqual(groups["SECURITY"]["failed_jobs"], 15)
         self.assertEqual(groups["QUALITY"]["failed_jobs"], 10)
         self.assertEqual(groups["COVERAGE"]["failed_jobs"], 1)

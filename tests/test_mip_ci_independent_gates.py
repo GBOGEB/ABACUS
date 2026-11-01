@@ -6,7 +6,6 @@ import pytest
 
 from tools.mip_ci_wave_telemetry import GATE_DOMAINS, summarize
 
-
 SHA = "a" * 40
 OTHER_SHA = "b" * 40
 ENTERPRISE = ".github/workflows/dmaic-enterprise-ci.yml"
@@ -151,9 +150,9 @@ def test_both_workflows_pass_but_a10_security_and_review_unknown():
 
 
 def test_a10_failure_is_independent_even_if_both_workflows_pass():
-    report = summarize(
-        input_payload("success", "success", a10="failure")
-    )["independent_gates"]
+    report = summarize(input_payload("success", "success", a10="failure"))[
+        "independent_gates"
+    ]
     assert report["domains"]["enterprise_ci"]["status"] == "PASS"
     assert report["domains"]["workflow_governance"]["status"] == "PASS"
     assert report["domains"]["a10_confidentiality"]["status"] == "FAIL"
@@ -161,15 +160,14 @@ def test_a10_failure_is_independent_even_if_both_workflows_pass():
 
 
 def test_passing_a10_does_not_supply_security_or_review_proof():
-    report = summarize(
-        input_payload("success", "success", a10="success")
-    )["independent_gates"]
+    report = summarize(input_payload("success", "success", a10="success"))[
+        "independent_gates"
+    ]
     assert report["domains"]["a10_confidentiality"]["status"] == "PASS"
     assert report["domains"]["bandit"]["status"] == "UNKNOWN"
     assert report["domains"]["safety"]["status"] == "UNKNOWN"
     assert report["domains"]["independent_review"]["status"] == "UNKNOWN"
     assert report["merge_authorized"] is False
-
 
 
 def test_observed_failing_step_is_red_even_when_run_and_job_claim_success():
@@ -196,8 +194,9 @@ def test_observation_fraction_differs_from_terminal_pass_fraction():
 def test_nine_matrix_jobs_mandatory_not_one_successful_job():
     payload = input_payload("success", "success")
     payload["jobs"] = [
-        item for item in payload["jobs"]
-        if item["name"] != "Test Python 3.10 on macos-latest"
+        item
+        for item in payload["jobs"]
+        if item["name"] != "Test Python 3.9 on macos-latest"
     ]
     result = gate(payload, "enterprise_ci")
     assert result["status"] == "UNKNOWN"
@@ -207,9 +206,7 @@ def test_nine_matrix_jobs_mandatory_not_one_successful_job():
 
 def test_cannot_count_green_when_final_ci_summary_missing():
     payload = input_payload("success", "success")
-    payload["jobs"] = [
-        item for item in payload["jobs"] if item["name"] != "CI Summary"
-    ]
+    payload["jobs"] = [item for item in payload["jobs"] if item["name"] != "CI Summary"]
     assert gate(payload, "enterprise_ci")["status"] == "UNKNOWN"
 
 
@@ -226,12 +223,21 @@ def test_missing_pytest_step_makes_enterprise_unknown_not_pass():
 def test_governance_workflow_final_red_dominates_advisory_green_steps():
     payload = input_payload()
     payload["jobs"][-1]["steps"] = [
-        {"name": "Validate workflow policy and retain first-red",
-         "status": "completed", "conclusion": "success"},
-        {"name": "Check governed inventory and retain first-red",
-         "status": "completed", "conclusion": "success"},
-        {"name": "Fail closed on governance red",
-         "status": "completed", "conclusion": "failure"},
+        {
+            "name": "Validate workflow policy and retain first-red",
+            "status": "completed",
+            "conclusion": "success",
+        },
+        {
+            "name": "Check governed inventory and retain first-red",
+            "status": "completed",
+            "conclusion": "success",
+        },
+        {
+            "name": "Fail closed on governance red",
+            "status": "completed",
+            "conclusion": "failure",
+        },
     ]
     assert gate(payload, "workflow_governance")["status"] == "FAIL"
 
@@ -302,9 +308,7 @@ def test_duplicate_job_names_in_one_gate_run_rejected():
 
 def test_run_url_must_bind_expected_repo_and_exact_run():
     payload = input_payload()
-    payload["runs"][0]["html_url"] = (
-        "https://github.com/GBOGEB/ABACUS/actions/runs/999"
-    )
+    payload["runs"][0]["html_url"] = "https://github.com/GBOGEB/ABACUS/actions/runs/999"
     with pytest.raises(ValueError, match="gate binding mismatches"):
         summarize(payload)
 

@@ -2,6 +2,7 @@
 
 No real pipelines or repository files are modified by these tests.
 """
+
 import importlib.util
 from pathlib import Path
 
@@ -21,7 +22,9 @@ def test_missing_log_returns_no_unverified_finding(tmp_path):
     assert load().scan_pipeline_log(tmp_path / "absent.log") == []
 
 
-@pytest.mark.parametrize("marker", ["ERROR", "FAIL", "Exception", "Traceback", "Error:"])
+@pytest.mark.parametrize(
+    "marker", ["ERROR", "FAIL", "Exception", "Traceback", "Error:"]
+)
 def test_runtime_first_red_has_one_based_line(marker, tmp_path):
     path = tmp_path / "pipeline.log"
     path.write_text("preceding\n" + marker + " root\nfollowing\n")
@@ -48,7 +51,9 @@ def test_source_scanner_separates_three_findings(tmp_path, monkeypatch):
     monkeypatch.chdir(tmp_path)
     found = load().scan_python_files()
     assert [(row["type"], row["line"]) for row in found] == [
-        ("type_hint", 1), ("type_hint", 2), ("attribute", 3)
+        ("type_hint", 1),
+        ("type_hint", 2),
+        ("attribute", 3),
     ]
 
 
@@ -80,7 +85,10 @@ def test_empty_report_preserves_zero_denominator(tmp_path):
 def test_report_truncation_retains_total_counts(tmp_path):
     output = tmp_path / "report.md"
     errors = [{"line": n, "message": "error " + str(n)} for n in range(1, 23)]
-    issues = [{"type": "type_hint", "file": "a.py", "line": n, "message": "bad"} for n in range(12)]
+    issues = [
+        {"type": "type_hint", "file": "a.py", "line": n, "message": "bad"}
+        for n in range(12)
+    ]
     assert load().generate_report(errors, issues, output) == 34
     text = output.read_text()
     assert "and 2 more errors" in text
@@ -100,8 +108,14 @@ def test_main_with_detected_issue_returns_red(tmp_path, monkeypatch):
     module = load()
     (tmp_path / "DMAIC_V3").mkdir()
     monkeypatch.chdir(tmp_path)
-    monkeypatch.setattr(module, "scan_python_files", lambda: [
-        {"type": "type_hint", "file": "a.py", "line": 1, "message": "bad type"}
-    ])
+    monkeypatch.setattr(
+        module,
+        "scan_python_files",
+        lambda: [
+            {"type": "type_hint", "file": "a.py", "line": 1, "message": "bad type"}
+        ],
+    )
     assert module.main() == 1
-    assert "bad type" in (tmp_path / "DMAIC_V3" / "ERROR_DETECTION_REPORT.md").read_text()
+    assert (
+        "bad type" in (tmp_path / "DMAIC_V3" / "ERROR_DETECTION_REPORT.md").read_text()
+    )

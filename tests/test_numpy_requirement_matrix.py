@@ -60,9 +60,7 @@ def _numpy_lanes(path: Path) -> list[dict]:
 
 def _project_min_python() -> tuple[int, int]:
     text = (ROOT / "pyproject.toml").read_text(encoding="utf-8")
-    match = re.search(
-        r'^requires-python\s*=\s*">=\s*(\d+)\.(\d+)', text, re.MULTILINE
-    )
+    match = re.search(r'^requires-python\s*=\s*">=\s*(\d+)\.(\d+)', text, re.MULTILINE)
     assert match, "pyproject.toml must declare requires-python >= X.Y"
     return int(match.group(1)), int(match.group(2))
 
@@ -142,9 +140,7 @@ def test_legacy_lane_rejects_floor_needing_newer_python():
     lanes = _numpy_lanes(CANONICAL)
     lanes[0] = {**lanes[0], "floor": "2.0.2", "upper": "2.1.0"}
     errors = _lane_floor_violations(lanes)
-    assert errors == [
-        "NumPy 2.0.2 needs Python (3, 9), lane is python_version < '3.9'"
-    ]
+    assert errors == ["NumPy 2.0.2 needs Python (3, 9), lane is python_version < '3.9'"]
 
 
 def test_numpy_25_is_only_selected_for_python_312_and_newer():

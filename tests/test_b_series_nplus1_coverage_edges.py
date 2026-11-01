@@ -2,6 +2,7 @@
 
 These are behavioral tests, not fabricated native receipts or a security waiver.
 """
+
 from __future__ import annotations
 
 import contextlib
@@ -57,9 +58,7 @@ class NPlusOneCoverageEdges(unittest.TestCase):
             original.write_text(json.dumps(self.valid), encoding="utf-8")
             stdout = io.StringIO()
             with contextlib.redirect_stdout(stdout):
-                code = adapter.main(
-                    ["--input", str(original), "--out", str(output)]
-                )
+                code = adapter.main(["--input", str(original), "--out", str(output)])
             self.assertEqual(code, 0)
             self.assertTrue(output.is_file())
             receipt = json.loads(output.read_text(encoding="utf-8"))

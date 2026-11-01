@@ -21,12 +21,16 @@ class ValidateSsotStyleTests(unittest.TestCase):
 
         errors = style.validate_manifest(manifest)
 
-        self.assertTrue(any("missing required HTML QA gate" in error for error in errors))
+        self.assertTrue(
+            any("missing required HTML QA gate" in error for error in errors)
+        )
 
     def test_federation_wave_requires_all_three_repos(self) -> None:
         manifest = copy.deepcopy(self.manifest)
         manifest["federation_wave"]["repos"] = [
-            repo for repo in manifest["federation_wave"]["repos"] if repo != "GBOGEB/cryoplant-project"
+            repo
+            for repo in manifest["federation_wave"]["repos"]
+            if repo != "GBOGEB/cryoplant-project"
         ]
 
         errors = style.validate_manifest(manifest)
@@ -44,7 +48,9 @@ class ValidateSsotStyleTests(unittest.TestCase):
     def test_federation_wave_rejects_missing_artifact_lane(self) -> None:
         manifest = copy.deepcopy(self.manifest)
         manifest["federation_wave"]["artifact_lanes"] = [
-            lane for lane in manifest["federation_wave"]["artifact_lanes"] if lane != "keb"
+            lane
+            for lane in manifest["federation_wave"]["artifact_lanes"]
+            if lane != "keb"
         ]
 
         errors = style.validate_manifest(manifest)
@@ -54,7 +60,9 @@ class ValidateSsotStyleTests(unittest.TestCase):
     def test_federation_wave_rejects_missing_priority_method(self) -> None:
         manifest = copy.deepcopy(self.manifest)
         manifest["federation_wave"]["methods"] = [
-            method for method in manifest["federation_wave"]["methods"] if method != "BT_PRIORITY"
+            method
+            for method in manifest["federation_wave"]["methods"]
+            if method != "BT_PRIORITY"
         ]
 
         errors = style.validate_manifest(manifest)
@@ -70,7 +78,9 @@ class ValidateSsotStyleTests(unittest.TestCase):
         errors = style.validate_manifest(manifest)
 
         self.assertIn("federation_wave.repos must be a list of strings", errors)
-        self.assertIn("federation_wave.artifact_lanes must be a list of strings", errors)
+        self.assertIn(
+            "federation_wave.artifact_lanes must be a list of strings", errors
+        )
         self.assertIn("federation_wave.methods must be a list of strings", errors)
 
     def test_federation_wave_blocks_credit_without_child_disposition(self) -> None:
@@ -79,11 +89,15 @@ class ValidateSsotStyleTests(unittest.TestCase):
 
         errors = style.validate_manifest(manifest)
 
-        self.assertIn("federation wave must block credit without child disposition", errors)
+        self.assertIn(
+            "federation wave must block credit without child disposition", errors
+        )
 
     def test_handoff_check_policy_requires_repair_pr_links(self) -> None:
         manifest = copy.deepcopy(self.manifest)
-        manifest["federation_wave"]["handoff_check_policy"]["linked_repair_prs"]["GBOGEB/CODEX"] = 274
+        manifest["federation_wave"]["handoff_check_policy"]["linked_repair_prs"][
+            "GBOGEB/CODEX"
+        ] = 274
 
         errors = style.validate_manifest(manifest)
 
@@ -111,7 +125,9 @@ class ValidateSsotStyleTests(unittest.TestCase):
 
         errors = style.validate_manifest(manifest)
 
-        self.assertIn("repository_feedback.from_codex must be a non-empty string", errors)
+        self.assertIn(
+            "repository_feedback.from_codex must be a non-empty string", errors
+        )
         self.assertIn("repository_feedback.to_codex must be a non-empty string", errors)
 
     def test_awake_probe_score_counts_existing_paths(self) -> None:
@@ -166,9 +182,9 @@ class ValidateSsotStyleTests(unittest.TestCase):
 
     def test_handoff_policy_requires_structured_all_clear_controls(self) -> None:
         manifest = copy.deepcopy(self.manifest)
-        manifest["federation_wave"]["handoff_check_policy"]["all_clear_requirements"].remove(
-            "repaired_sha_retested"
-        )
+        manifest["federation_wave"]["handoff_check_policy"][
+            "all_clear_requirements"
+        ].remove("repaired_sha_retested")
         errors = style.validate_manifest(manifest)
         self.assertIn("missing all-clear requirement(s): repaired_sha_retested", errors)
 
@@ -180,7 +196,9 @@ class ValidateSsotStyleTests(unittest.TestCase):
 
     def test_handoff_policy_allows_additional_repair_links(self) -> None:
         manifest = copy.deepcopy(self.manifest)
-        repair_prs = manifest["federation_wave"]["handoff_check_policy"]["linked_repair_prs"]
+        repair_prs = manifest["federation_wave"]["handoff_check_policy"][
+            "linked_repair_prs"
+        ]
         repair_prs["GBOGEB/ABACUS"].append(999)
         self.assertEqual([], style.validate_manifest(manifest))
 

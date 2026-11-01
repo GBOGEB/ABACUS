@@ -1,4 +1,5 @@
 """Legacy registry identities must work when security-mode MD5 is disabled."""
+
 import hashlib
 from pathlib import Path
 from unittest.mock import patch
@@ -23,8 +24,14 @@ def test_registry_ids_preserve_legacy_bytes_under_fips_policy(tmp_path):
     todo = TODOTracker(tmp_path)
     action_input = {"phase": "p7", "agent": "worker", "timestamp": "2026-10-19"}
     todo_input = {"phase": "p8", "description": "review", "timestamp": "2026-10-19"}
-    payloads = [str(Path("review.md")).encode(), b"p7_worker_2026-10-19", b"p8_review_2026-10-19"]
-    expected = [original(data, usedforsecurity=False).hexdigest()[:12] for data in payloads]
+    payloads = [
+        str(Path("review.md")).encode(),
+        b"p7_worker_2026-10-19",
+        b"p8_review_2026-10-19",
+    ]
+    expected = [
+        original(data, usedforsecurity=False).hexdigest()[:12] for data in payloads
+    ]
 
     with patch("hashlib.md5", nonsecurity_only):
         actual = [

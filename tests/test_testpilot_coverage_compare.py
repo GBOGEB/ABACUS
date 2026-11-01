@@ -1,14 +1,26 @@
 """W26 adversarial tests of exact-head scoped TestPilot coverage admission."""
+
 from __future__ import annotations
 
 import json
+
 import pytest
+
 from tools.mip2 import testpilot_coverage_compare as m
 
-
 SHA = "a" * 40
-B = {"num_statements": 154, "covered_lines": 88, "num_branches": 50, "covered_branches": 18}
-A = {"num_statements": 154, "covered_lines": 150, "num_branches": 50, "covered_branches": 48}
+B = {
+    "num_statements": 154,
+    "covered_lines": 88,
+    "num_branches": 50,
+    "covered_branches": 18,
+}
+A = {
+    "num_statements": 154,
+    "covered_lines": 150,
+    "num_branches": 50,
+    "covered_branches": 48,
+}
 J0 = {"tests": 14, "failures": 0, "errors": 0, "skipped": 0}
 J1 = {"tests": 66, "failures": 0, "errors": 0, "skipped": 0}
 
@@ -20,8 +32,17 @@ def _file(tmp_path, name, content):
 
 
 def _cov(tmp_path, name, totals, branch=True, path=m.EXPECTED_FILE):
-    return _file(tmp_path, name, json.dumps({"meta": {"branch_coverage": branch},
-                                            "files": {path: {"summary": totals}}, "totals": totals}))
+    return _file(
+        tmp_path,
+        name,
+        json.dumps(
+            {
+                "meta": {"branch_coverage": branch},
+                "files": {path: {"summary": totals}},
+                "totals": totals,
+            }
+        ),
+    )
 
 
 def test_positive_exact_head_matched_scoped_uplift():
@@ -107,18 +128,39 @@ def test_negative_coverage_zero_size_rejected(tmp_path):
 
 
 def test_positive_junit_parses_fail_closed(tmp_path):
-    path = _file(tmp_path, "junit.xml", '<testsuites><testsuite tests="14" failures="0" errors="0" skipped="0">' + ''.join(f'<testcase classname="suite" name="test_{i}"/>' for i in range(14)) + '</testsuite></testsuites>')
+    path = _file(
+        tmp_path,
+        "junit.xml",
+        '<testsuites><testsuite tests="14" failures="0" errors="0" skipped="0">'
+        + "".join(f'<testcase classname="suite" name="test_{i}"/>' for i in range(14))
+        + "</testsuite></testsuites>",
+    )
     result, digest = m.load_junit(path)
     assert result == J0 and len(digest) == 64
 
 
-@pytest.mark.parametrize("xml,reason", [
-    ('<testsuite tests="0" failures="0" errors="0" skipped="0"/>', "zero tests"),
-    ('<testsuite tests="1" failures="1" errors="0" skipped="0"><testcase classname="c" name="f"><failure/></testcase></testsuite>', "failing JUnit"),
-    ('<testsuite tests="1" failures="0" errors="1" skipped="0"><testcase classname="c" name="e"><error/></testcase></testsuite>', "failing JUnit"),
-    ('<testsuite tests="nan" failures="0" errors="0" skipped="0"/>', "invalid JUnit"),
-    ('<not-junit tests="1" failures="0" errors="0" skipped="0"/>', "JUnit root invalid"),
-])
+@pytest.mark.parametrize(
+    "xml,reason",
+    [
+        ('<testsuite tests="0" failures="0" errors="0" skipped="0"/>', "zero tests"),
+        (
+            '<testsuite tests="1" failures="1" errors="0" skipped="0"><testcase classname="c" name="f"><failure/></testcase></testsuite>',
+            "failing JUnit",
+        ),
+        (
+            '<testsuite tests="1" failures="0" errors="1" skipped="0"><testcase classname="c" name="e"><error/></testcase></testsuite>',
+            "failing JUnit",
+        ),
+        (
+            '<testsuite tests="nan" failures="0" errors="0" skipped="0"/>',
+            "invalid JUnit",
+        ),
+        (
+            '<not-junit tests="1" failures="0" errors="0" skipped="0"/>',
+            "JUnit root invalid",
+        ),
+    ],
+)
 def test_force_trip_junit_denies_false_green(tmp_path, xml, reason):
     path = _file(tmp_path, "junit.xml", xml)
     with pytest.raises(ValueError, match=reason):
@@ -126,8 +168,12 @@ def test_force_trip_junit_denies_false_green(tmp_path, xml, reason):
 
 
 def test_negative_xml_entity_expansion_rejected(tmp_path):
-    path = _file(tmp_path, "junit.xml", '<!DOCTYPE testsuite [<!ENTITY x "secret">]'
-                 '<testsuite tests="1" failures="0" errors="0" skipped="0">&x;</testsuite>')
+    path = _file(
+        tmp_path,
+        "junit.xml",
+        '<!DOCTYPE testsuite [<!ENTITY x "secret">]'
+        '<testsuite tests="1" failures="0" errors="0" skipped="0">&x;</testsuite>',
+    )
     with pytest.raises(Exception):
         m.load_junit(path)
 
@@ -155,23 +201,42 @@ def test_force_trip_coverage_summary_absent(tmp_path):
         m.load_coverage(path)
 
 
-@pytest.mark.parametrize("xml,reason", [
-    ('<testsuite tests="2" failures="0" errors="0" skipped="0">'
-     '<testcase classname="c" name="only"/></testsuite>', "testcase count"),
-    ('<testsuite tests="1" failures="0" errors="0" skipped="0">'
-     '<testcase classname="c"/></testsuite>', "identity missing"),
-    ('<testsuite tests="2" failures="0" errors="0" skipped="0">'
-     '<testcase classname="c" name="duplicate"/>'
-     '<testcase classname="c" name="duplicate"/></testsuite>', "duplicate JUnit"),
-    ('<testsuite tests="1" failures="0" errors="0" skipped="1">'
-     '<testcase classname="c" name="not_skipped"/></testsuite>', "testcase outcomes"),
-    ('<testsuite tests="1" failures="0" errors="0" skipped="0">'
-     '<testcase classname="c" name="failure"><failure/></testcase></testsuite>',
-     "testcase outcomes"),
-    ('<testsuite tests="1" failures="0" errors="0" skipped="0">'
-     '<testcase classname="c" name="conflict"><failure/><skipped/></testcase></testsuite>',
-     "conflicting JUnit"),
-])
+@pytest.mark.parametrize(
+    "xml,reason",
+    [
+        (
+            '<testsuite tests="2" failures="0" errors="0" skipped="0">'
+            '<testcase classname="c" name="only"/></testsuite>',
+            "testcase count",
+        ),
+        (
+            '<testsuite tests="1" failures="0" errors="0" skipped="0">'
+            '<testcase classname="c"/></testsuite>',
+            "identity missing",
+        ),
+        (
+            '<testsuite tests="2" failures="0" errors="0" skipped="0">'
+            '<testcase classname="c" name="duplicate"/>'
+            '<testcase classname="c" name="duplicate"/></testsuite>',
+            "duplicate JUnit",
+        ),
+        (
+            '<testsuite tests="1" failures="0" errors="0" skipped="1">'
+            '<testcase classname="c" name="not_skipped"/></testsuite>',
+            "testcase outcomes",
+        ),
+        (
+            '<testsuite tests="1" failures="0" errors="0" skipped="0">'
+            '<testcase classname="c" name="failure"><failure/></testcase></testsuite>',
+            "testcase outcomes",
+        ),
+        (
+            '<testsuite tests="1" failures="0" errors="0" skipped="0">'
+            '<testcase classname="c" name="conflict"><failure/><skipped/></testcase></testsuite>',
+            "conflicting JUnit",
+        ),
+    ],
+)
 def test_force_trip_unreliable_junit_manifest(tmp_path, xml, reason):
     with pytest.raises(ValueError, match=reason):
         m.load_junit(_file(tmp_path, "integrity.xml", xml))
@@ -187,14 +252,19 @@ def test_reverse_skipped_growth_is_not_executed_growth():
 def test_positive_real_executed_growth_excludes_skips():
     before = {"tests": 14, "failures": 0, "errors": 0, "skipped": 2}
     after = {"tests": 20, "failures": 0, "errors": 0, "skipped": 3}
-    assert m.compare(B, A, before, after, SHA)["uplift"]["additional_executed_tests"] == 5
+    assert (
+        m.compare(B, A, before, after, SHA)["uplift"]["additional_executed_tests"] == 5
+    )
 
 
 # W28: native Windows JSON separator qualification; preserve fail-closed scope.
-@pytest.mark.parametrize("key", [
-    "scripts/testpilot_preflight.py",
-    r"scripts\testpilot_preflight.py",
-])
+@pytest.mark.parametrize(
+    "key",
+    [
+        "scripts/testpilot_preflight.py",
+        r"scripts\testpilot_preflight.py",
+    ],
+)
 def test_native_platform_exact_source_key_is_accepted(tmp_path, key):
     source = _cov(tmp_path, "native-coverage.json", B, path=key)
     counts, raw_sha256 = m.load_coverage(source)
@@ -202,16 +272,19 @@ def test_native_platform_exact_source_key_is_accepted(tmp_path, key):
     assert len(raw_sha256) == 64
 
 
-@pytest.mark.parametrize("wrong", [
-    r"scripts\..\testpilot_preflight.py",
-    r"C:\repo\scripts\testpilot_preflight.py",
-    "./scripts/testpilot_preflight.py",
-    "../scripts/testpilot_preflight.py",
-    "/scripts/testpilot_preflight.py",
-    r"scripts\/testpilot_preflight.py",
-    r"scripts\TESTPILOT_preflight.py",
-    "scripts/testpilot_preflight.py/",
-])
+@pytest.mark.parametrize(
+    "wrong",
+    [
+        r"scripts\..\testpilot_preflight.py",
+        r"C:\repo\scripts\testpilot_preflight.py",
+        "./scripts/testpilot_preflight.py",
+        "../scripts/testpilot_preflight.py",
+        "/scripts/testpilot_preflight.py",
+        r"scripts\/testpilot_preflight.py",
+        r"scripts\TESTPILOT_preflight.py",
+        "scripts/testpilot_preflight.py/",
+    ],
+)
 def test_native_path_whitelist_rejects_aliases_or_traversal(tmp_path, wrong):
     source = _cov(tmp_path, "invalid-path.json", B, path=wrong)
     with pytest.raises(ValueError, match="only exact TestPilot"):

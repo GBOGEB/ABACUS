@@ -81,7 +81,9 @@ def test_manifest_identity_and_role_must_match_expected_matrix(tmp_path):
 
 def test_invalid_manifest_payload_is_fail_closed(tmp_path):
     import json
+
     import pytest
+
     from scripts.ci_matrix_proof_audit import expected_versions
 
     assert expected_versions("full", "3.11") == ["3.11", "3.12"]

@@ -285,13 +285,21 @@ def test_main_writes_receipt_and_needs_token(monkeypatch, tmp_path):
 @pytest.mark.parametrize("limit", [0, -1, 7])
 def test_live_sample_rejects_unbounded_limit(limit, monkeypatch, tmp_path):
     import sys
+
     listing = tmp_path / "w1.tsv"
     listing.write_text(f"branch\t{SHA}\tdelete\n", encoding="utf-8")
     monkeypatch.setenv("GITHUB_TOKEN", "test-only")
     monkeypatch.setattr(
-        sys, "argv",
-        ["hygiene", str(listing), "--repo", "GBOGEB/ABACUS",
-         "--sample-limit", str(limit)],
+        sys,
+        "argv",
+        [
+            "hygiene",
+            str(listing),
+            "--repo",
+            "GBOGEB/ABACUS",
+            "--sample-limit",
+            str(limit),
+        ],
     )
     with pytest.raises(SystemExit, match="sample-limit"):
         bh.main()
@@ -299,13 +307,22 @@ def test_live_sample_rejects_unbounded_limit(limit, monkeypatch, tmp_path):
 
 def test_live_sample_rejects_execute_even_when_bounded(monkeypatch, tmp_path):
     import sys
+
     listing = tmp_path / "w1.tsv"
     listing.write_text(f"branch\t{SHA}\tdelete\n", encoding="utf-8")
     monkeypatch.setenv("GITHUB_TOKEN", "test-only")
     monkeypatch.setattr(
-        sys, "argv",
-        ["hygiene", str(listing), "--repo", "GBOGEB/ABACUS",
-         "--sample-limit", "1", "--execute"],
+        sys,
+        "argv",
+        [
+            "hygiene",
+            str(listing),
+            "--repo",
+            "GBOGEB/ABACUS",
+            "--sample-limit",
+            "1",
+            "--execute",
+        ],
     )
     with pytest.raises(SystemExit, match="sample-limit"):
         bh.main()
@@ -325,9 +342,18 @@ def test_bounded_live_sample_only_gets_and_never_mutates(monkeypatch, tmp_path):
     monkeypatch.setenv("GITHUB_TOKEN", "test-only")
     monkeypatch.setattr(bh, "make_api", lambda *args, **kwargs: api)
     monkeypatch.setattr(
-        sys, "argv",
-        ["hygiene", str(listing), "--repo", "GBOGEB/ABACUS",
-         "--sample-limit", "3", "--receipt", str(receipt_path)],
+        sys,
+        "argv",
+        [
+            "hygiene",
+            str(listing),
+            "--repo",
+            "GBOGEB/ABACUS",
+            "--sample-limit",
+            "3",
+            "--receipt",
+            str(receipt_path),
+        ],
     )
     assert bh.main() == 0
     receipt = json.loads(receipt_path.read_text(encoding="utf-8"))

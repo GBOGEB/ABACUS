@@ -3,8 +3,7 @@ import math
 
 import pytest
 
-from models.qps_line_s import run_scenarios
-from models.qps_line_s import t_available_grid
+from models.qps_line_s import run_scenarios, t_available_grid
 
 
 def _scenario_config():
