@@ -86,7 +86,7 @@ def test_main_prints_report_paths(tmp_path, capsys):
     path = _write(tmp_path, _payload())
     root = tmp_path / "reports"
     assert mod.main(["--phase2-metadata", str(path), "--reports-root", str(root)]) == 0
-    printed = capsys.readouterr().out.split()
+    printed = capsys.readouterr().out.splitlines()
     assert len(printed) == 2
     assert printed[0].endswith(".json")
     assert printed[1].endswith(".md")
