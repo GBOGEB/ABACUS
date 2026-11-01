@@ -27,6 +27,13 @@ import xml.etree.ElementTree as ET
 from pathlib import Path
 
 
+def pytest_collection_modifyitems(items: list) -> None:
+    """Make every xfail strict, including explicitly non-strict markers."""
+    for item in items:
+        for marker in item.iter_markers(name="xfail"):
+            marker.kwargs["strict"] = True
+
+
 def run_pytest(pytest_args: list[str], junit: Path) -> int:
     junit.parent.mkdir(parents=True, exist_ok=True)
     cmd = [
@@ -35,6 +42,8 @@ def run_pytest(pytest_args: list[str], junit: Path) -> int:
         "pytest",
         "-p",
         "no:cacheprovider",
+        "-p",
+        "family_collect_guard",
         "-o",
         "addopts=",
         "--strict-markers",
@@ -45,7 +54,11 @@ def run_pytest(pytest_args: list[str], junit: Path) -> int:
         *pytest_args,
     ]
     print("+ " + " ".join(cmd), flush=True)
-    return subprocess.call(cmd)
+    env = os.environ.copy()
+    env["PYTHONPATH"] = os.pathsep.join(
+        filter(None, (str(Path(__file__).resolve().parent), env.get("PYTHONPATH")))
+    )
+    return subprocess.call(cmd, env=env)
 
 
 def tally(junit: Path) -> dict[str, int]:
