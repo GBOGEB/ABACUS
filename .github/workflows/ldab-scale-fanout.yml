@@ -6,8 +6,11 @@ on:
   workflow_dispatch:
     inputs:
       workers:
-        description: "Lane count 1-8 (DAB policy ceiling for read-only proposal workers)"
+        description: "Lane count; the planner rejects counts above the DAB policy cap (LOW_MECHANICAL 8, MEDIUM 4, ALL 4)"
         default: "8"
+      risk:
+        description: "Tier scope: LOW_MECHANICAL, MEDIUM or ALL"
+        default: "LOW_MECHANICAL"
       exact_sha:
         description: "Exact commit SHA to census (default: dispatched ref)"
         required: false
@@ -22,6 +25,7 @@ concurrency:
 env:
   EXACT_SHA: ${{ inputs.exact_sha || github.sha }}
   WORKERS: ${{ inputs.workers || '8' }}
+  RISK: ${{ inputs.risk || 'LOW_MECHANICAL' }}
 
 jobs:
   plan:
@@ -39,6 +43,7 @@ jobs:
           set -euo pipefail
           test "$(git rev-parse HEAD)" = "$EXACT_SHA"
           [[ "$WORKERS" =~ ^[1-8]$ ]] || { echo "workers must be 1-8"; exit 2; }
+          [[ "$RISK" =~ ^(ALL|LOW_MECHANICAL|MEDIUM)$ ]] || { echo "bad risk"; exit 2; }
       - uses: actions/setup-python@v7
         with:
           python-version: "3.11"
@@ -47,10 +52,13 @@ jobs:
         run: |
           flake8 . --exit-zero --max-line-length=120 \
             --format='%(path)s|%(row)d|%(code)s' > global.raw
-      - name: Build plan
+      - name: Build plan (records the producer's scan identity)
         run: |
           python scripts/ldab_scale_plan.py plan --raw global.raw --sha "$EXACT_SHA" \
-            --workers "$WORKERS" --policy governance/dab/DAB_FULL_RED_GATES.json \
+            --workers "$WORKERS" --risk "$RISK" \
+            --policy governance/dab/DAB_FULL_RED_GATES.json \
+            --scan-command "flake8 . --exit-zero --max-line-length=120" \
+            --scanner-version "$(python -c 'import flake8; print(flake8.__version__)')" \
             --out plan.json --matrix-out matrix.json
       - id: m
         run: echo "matrix=$(python -c 'import json;print(json.dumps(json.load(open("matrix.json"))))')" >> "$GITHUB_OUTPUT"
@@ -126,7 +134,9 @@ jobs:
               print("### LDAB scale reduce")
               print(f"- exact SHA: `{r['exact_sha']}`")
               print(f"- reconciled: **{r['reconciled']}**")
-              print(f"- sum of lanes: {r['sum_of_lanes']} / expected {r['expected_non_hold']}")
+              print(f"- sum of lanes: {r['sum_of_lanes']} / expected {r['expected_in_lanes']}")
+              print(f"- lane SHA mismatches: {r['sha_mismatch_lanes']}")
+              print(f"- scanner version: {r['scanner_version_status']}")
               print(f"- critical path: {r['critical_path_seconds']}s")
               print(f"- parallel efficiency: {r['parallel_efficiency']}")
           PY
