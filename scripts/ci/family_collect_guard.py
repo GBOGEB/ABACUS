@@ -34,6 +34,8 @@ def run_pytest(pytest_args: list[str], junit: Path) -> int:
         "-m",
         "pytest",
         "-p",
+        "scripts.pytest_test_state_plugin",
+        "-p",
         "no:cacheprovider",
         "-o",
         "addopts=",
@@ -79,7 +81,15 @@ def tally(junit: Path) -> dict[str, int]:
             else:
                 counts["skipped"] += 1
         else:
-            counts["passed"] += 1
+            properties = case.find("properties")
+            has_xfail_property = properties is not None and any(
+                prop.get("name") == "xfail" and prop.get("value") == "true"
+                for prop in properties.findall("property")
+            )
+            if has_xfail_property:
+                counts["xpassed"] += 1
+            else:
+                counts["passed"] += 1
     return counts
 
 
