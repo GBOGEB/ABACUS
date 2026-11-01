@@ -6,7 +6,6 @@ on:
     paths:
       - '**/*.py'
       - '**/*.pyi'
-      - '!ci/governance/**'
       - 'ci/governance/workflow_policy.json'
       - 'requirements*.txt'
       # Lint config anywhere in the tree (ci_pr_debt_ratchet.CONFIG_FILES).
@@ -27,7 +26,6 @@ on:
     paths:
       - '**/*.py'
       - '**/*.pyi'
-      - '!ci/governance/**'
       - 'ci/governance/workflow_policy.json'
       - 'requirements*.txt'
       # Lint config anywhere in the tree (ci_pr_debt_ratchet.CONFIG_FILES).
@@ -302,7 +300,7 @@ jobs:
       fail-fast: false
       matrix:
         os: [ubuntu-latest, windows-latest, macos-latest]
-        # pyproject.toml requires-python >=3.11; 3.10 is not a supported runtime.
+        # pyproject.toml requires-python >=3.11; 3.10 is unsupported.
         python-version: ['3.11', '3.12']
 
     steps:
@@ -752,14 +750,44 @@ jobs:
         run: |
           python -m pip install --upgrade pip
           python -m pip install --upgrade "setuptools>=83.0.0"
-          python -m pip install bandit safety
+          python -m pip install "bandit==1.8.6" safety
           python -m pip check
           python -m pip show setuptools nltk
 
       - name: Run Bandit
         id: bandit
         continue-on-error: true
-        run: bandit -r . -f json -o bandit-report.json
+        shell: bash
+        run: |
+          set +e
+          bandit -r . -f json -o bandit-report.json
+          bandit_status=$?
+          set -e
+          echo "exit_code=$bandit_status" >> "$GITHUB_OUTPUT"
+          report_valid=0
+          if python - <<'PY'
+          import json
+          from pathlib import Path
+
+          report = json.loads(
+              Path("bandit-report.json").read_text(encoding="utf-8")
+          )
+          if not isinstance(report, dict):
+              raise ValueError("Bandit report must be an object")
+          if not isinstance(report.get("results"), list):
+              raise ValueError("Bandit report is missing results")
+          if not isinstance(report.get("metrics"), dict):
+              raise ValueError("Bandit report is missing metrics")
+          PY
+          then
+            report_valid=1
+          fi
+          if [[ "$bandit_status" -gt 1 || "$report_valid" -ne 1 ]]; then
+            echo "scan_error=true" >> "$GITHUB_OUTPUT"
+            echo "::error::Bandit scan failed or produced an invalid report."
+            exit 2
+          fi
+          exit "$bandit_status"
 
       - name: Run Safety Check
         id: safety
@@ -835,18 +863,37 @@ jobs:
             security-red-root-delta.json
           if-no-files-found: warn
 
-      # On a pull request, Bandit admission is the new-debt ratchet: the
-      # PR's changed Python files must not gain Bandit findings. Safety is
-      # not relaxed: its outcome is enforced on every event.
-      - name: PR new-debt ratchet (Bandit)
+      # On every event, Bandit admission is the new-debt ratchet: changed
+      # Python files must not gain Bandit findings. On main pushes,
+      # schedules and manual runs the baseline is the previous main tip; the
+      # full Bandit scan stays census. Safety is not relaxed: its outcome is
+      # enforced on every event.
+      - name: New-debt ratchet (Bandit)
         id: bandit_ratchet
-        if: github.event_name == 'pull_request'
         env:
+          EVENT: ${{ github.event_name }}
           BASE_SHA: ${{ github.event.pull_request.base.sha }}
+          BEFORE_SHA: ${{ github.event.before }}
+          FORCED_PUSH: ${{ github.event.forced }}
         # The base revision's ratchet runs, as in Code Quality, against the
         # merge commit's first parent rather than the event's stale base.sha.
         run: |
-          if git cat-file -e 'HEAD^2^{commit}' 2>/dev/null; then
+          if [[ "$EVENT" != "pull_request" ]]; then
+            base="$(git rev-parse 'HEAD^1')"
+            # New and rewritten refs use the first-parent fallback. A normal
+            # push must compare with its replaced tip, or fail closed.
+            if [[ "$EVENT" == "push" ]]; then
+              if [[ "$FORCED_PUSH" != "true" && -n "$BEFORE_SHA" &&
+                    ! "$BEFORE_SHA" =~ ^0+$ ]]; then
+                if git fetch --no-tags --depth=1 origin "$BEFORE_SHA"; then
+                  base="$BEFORE_SHA"
+                else
+                  echo "::error::Could not fetch previous push tip $BEFORE_SHA."
+                  exit 1
+                fi
+              fi
+            fi
+          elif git cat-file -e 'HEAD^2^{commit}' 2>/dev/null; then
             base="$(git rev-parse 'HEAD^1')"
           else
             git fetch --no-tags --depth=1 origin "$BASE_SHA"
@@ -876,6 +923,7 @@ jobs:
         shell: bash
         env:
           BANDIT: ${{ steps.bandit.outcome }}
+          BANDIT_ERROR: ${{ steps.bandit.outputs.scan_error }}
           SAFETY: ${{ steps.safety.outcome }}
           EVENT: ${{ github.event_name }}
           FULL_SCAN: ${{ steps.bandit_ratchet.outputs.full_scan }}
@@ -886,9 +934,12 @@ jobs:
             echo "- Bandit: \`$BANDIT\`"
             echo "- Safety: \`$SAFETY\`"
           } >> "$GITHUB_STEP_SUMMARY"
-          if [[ "$EVENT" == "pull_request" &&
-                "$FULL_SCAN" != "required" ]]; then
-            echo "- PR admission: Bandit ratchet above; Safety enforced" \
+          if [[ "$BANDIT_ERROR" == "true" ]]; then
+            echo "::error::Bandit failed to execute or produce a valid report."
+            exit 1
+          fi
+          if [[ "$FULL_SCAN" != "required" ]]; then
+            echo "- Admission (${EVENT}): Bandit ratchet; Safety enforced" \
               >> "$GITHUB_STEP_SUMMARY"
             if [[ "$SAFETY" != "success" ]]; then
               echo "::error::Safety is red."

@@ -422,6 +422,17 @@ def test_quality_workflow_ratchets_each_tool_independently():
     assert 'fallback="${!flag_name}"' in workflow
 
 
+def test_security_workflow_includes_governance_python_paths():
+    workflow = (
+        Path(__file__).resolve().parents[1]
+        / ".github"
+        / "workflows"
+        / "ci-cd-tests.yml"
+    ).read_text(encoding="utf-8")
+    assert workflow.count("- '**/*.py'") == 2
+    assert "'!ci/governance/**'" not in workflow
+
+
 @pytest.mark.parametrize(
     "job, step_id",
     [("lint-and-format", "quality_ratchet"), ("security-scan", "bandit_ratchet")],
@@ -450,6 +461,31 @@ def test_workflow_ratchets_against_the_merge_base_tip(job, step_id):
     assert '--base "$base"' in run
     assert '--base "$BASE_SHA"' not in run
     assert '"$BASE_SHA:' not in run
+
+
+def test_security_push_baseline_fails_closed_for_unavailable_previous_tip():
+    workflow = (
+        Path(__file__).resolve().parents[1]
+        / ".github"
+        / "workflows"
+        / "ci-cd-tests.yml"
+    ).read_text(encoding="utf-8")
+    assert "FORCED_PUSH: ${{ github.event.forced }}" in workflow
+    assert "Could not fetch previous push tip" in workflow
+    assert '[[ "$FORCED_PUSH" != "true" && -n "$BEFORE_SHA" &&' in workflow
+
+
+def test_bandit_full_scan_is_pinned_and_report_errors_fail_closed():
+    workflow = (
+        Path(__file__).resolve().parents[1]
+        / ".github"
+        / "workflows"
+        / "ci-cd-tests.yml"
+    ).read_text(encoding="utf-8")
+    assert '"bandit==1.8.6"' in workflow
+    assert 'report.get("results"), list' in workflow
+    assert 'report.get("metrics"), dict' in workflow
+    assert "steps.bandit.outputs.scan_error" in workflow
 
 
 def test_per_tool_config_map_is_not_global_override(repo):
