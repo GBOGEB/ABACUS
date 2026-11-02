@@ -5379,8 +5379,8 @@ __metadata:
     recharts: "npm:3.10.1"
     sonner: "npm:1.5.0"
     swr: "npm:2.2.4"
-    tailwind-merge: "npm:3.7.0"
-    tailwind-scrollbar-hide: "npm:1.1.7"
+    tailwind-merge: "npm:2.5.2"
+    tailwind-scrollbar-hide: "npm:4.0.0"
     tailwindcss: "npm:3.4.0"
     tailwindcss-animate: "npm:1.0.7"
     ts-node: "npm:10.9.2"
@@ -10694,10 +10694,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"tailwind-scrollbar-hide@npm:1.1.7":
-  version: 1.1.7
-  resolution: "tailwind-scrollbar-hide@npm:1.1.7"
-  checksum: 10c0/1027ca724c51a43da9a9a9f730f707652bcaded6f94d82fd445e349ee19bd34d8c1312e3e075193ec89c0524d824e716a06d646ca757913f4df0f4f5faec8fe4
+"tailwind-scrollbar-hide@npm:4.0.0":
+  version: 4.0.0
+  resolution: "tailwind-scrollbar-hide@npm:4.0.0"
+  peerDependencies:
+    tailwindcss: ">=3.0.0 || >= 4.0.0 || >= 4.0.0-beta.8 || >= 4.0.0-alpha.20"
+  checksum: 10c0/f07d8d004b20093acfcbb35cd806c0d13013abfdc6c058e2a0ec65aefd1d5614d1b63f0a3db8b81d29e2858190b6a4d153d7817011665b6e8f838ec501fe1ca2
   languageName: node
   linkType: hard
 
