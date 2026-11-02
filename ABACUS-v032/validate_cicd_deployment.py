@@ -306,7 +306,11 @@ class CICDValidator:
         print("\n📋 Summary by Category:")
         for category, checks in self.results.items():
             if category != "overall" and isinstance(checks, dict):
-                passed = sum(1 for v in checks.values() if v == True or v == "PRESENT" or v == "CONFIGURED" or v == "VALID")
+                passed = sum(
+                    1
+                    for v in checks.values()
+                    if v == True or v == "PRESENT" or v == "CONFIGURED" or v == "VALID"
+                )
                 total = len(checks)
                 print(f"  {category.upper()}: {passed}/{total} checks passed")
 

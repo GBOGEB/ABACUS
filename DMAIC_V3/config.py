@@ -277,21 +277,21 @@ if __name__ == "__main__":
     config = DEFAULT_CONFIG
     print(f"\nVersion: {config.version}")
     print(f"Execution Mode: {config.execution_mode.value}")
-    print(f"\nCore Principles:")
+    print("\nCore Principles:")
     for principle in CORE_PRINCIPLES:
         print(f"  - {principle}")
 
-    print(f"\nPaths:")
+    print("\nPaths:")
     print(f"  Workspace: {config.paths.workspace_root}")
     print(f"  Output: {config.paths.output_root}")
     print(f"  State: {config.paths.state_dir}")
 
-    print(f"\nPhase 0 (Setup):")
+    print("\nPhase 0 (Setup):")
     print(f"  Enabled: {config.phase0.enabled}")
     print(f"  Python Min Version: {config.phase0.python_min_version}")
     print(f"  Auto Create Venv: {config.phase0.auto_create_venv}")
 
-    print(f"\nIdempotency:")
+    print("\nIdempotency:")
     print(f"  Enabled: {config.idempotency.enabled}")
     print(f"  Allow Resume: {config.idempotency.allow_resume}")
     print(f"  Verify Checksums: {config.idempotency.verify_checksums}")

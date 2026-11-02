@@ -210,7 +210,10 @@ def build(doc):
             "name": "PRODUCER_RECEIPT_COMPLETENESS_ONLY",
             "weights": WEIGHTS,
             "index_series": [p["producer_receipt_completeness_index"] for p in pulses],
-            "interpretation": "Evidence-producer execution readiness only; NOT risk reduction, coverage gain, admission or root closure",
+            "interpretation": (
+                "Evidence-producer execution readiness only; "
+                "NOT risk reduction, coverage gain, admission or root closure"
+            ),
         },
         "three_pulse_metrics": {
             "sampled_run_success": [run_success, len(pulses)],
@@ -242,7 +245,10 @@ def build(doc):
             "forecast_error": None,
         },
         "unknown_families": ["B2", "B3", "B4", "B5", "B6_PLUS"],
-        "unknown_families_meaning": "Not observed as named jobs in this canonical B0 workflow; global presence unverified",
+        "unknown_families_meaning": (
+            "Not observed as named jobs in this canonical B0 workflow; "
+            "global presence unverified"
+        ),
         "authenticated_crew_launches": None,
         "formal_root_closures": None,
         "merge_admission": "HOLD",
