@@ -141,11 +141,13 @@ mypy>=1.19.1,<2.0.0; python_version < "3.10"
 mypy>=2.4.1; python_version >= "3.10"
 
 # Documentation
-# Sphinx 8.x requires Python >=3.10 and 9.x requires Python >=3.12.
-# Keep Python 3.9 on the supported 7.x line.
+# Sphinx 9.2.0 dropped Python 3.12 support (Requires-Python >=3.13).
+# Keep Python 3.12 on the 9.1.1 compatible line; do not blanket-exclude docs.
+# Keep Python 3.9 on 7.x and Python 3.10-3.11 on 8.x.
 sphinx>=7.4.7,<8.0.0; python_version < '3.10'
 sphinx>=8.1.0,<9.0.0; python_version >= '3.10' and python_version < '3.12'
-sphinx>=9.2.0,<10.0.0; python_version >= '3.12'  # 9.2.0 requires Python >=3.13
+sphinx>=9.1.1,<9.2.0; python_version >= '3.12' and python_version < '3.13'
+sphinx>=9.2.0,<10.0.0; python_version >= '3.13'
 sphinx-rtd-theme>=3.1.0,<4.0.0
 
 # ============================================================================
