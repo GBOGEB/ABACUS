@@ -86,7 +86,7 @@ jobs:
       contents: read
       pages: write
       id-token: write
-    uses: GBOGEB/pipeline-automation-hub/.github/workflows/jade-reusable-deploy.yml@77bac410de6b34afa5df665608611ad9e8db5c84  # yamllint disable-line rule:line-length
+    uses: GBOGEB/pipeline-automation-hub/.github/workflows/jade-reusable-deploy.yml@908a34cf54cdd19c15730bf3931515e6a4642833  # yamllint disable-line rule:line-length
     with:
       environment: production
       target: pages
