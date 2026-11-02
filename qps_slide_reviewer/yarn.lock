@@ -1829,18 +1829,27 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@prisma/client@npm:6.7.0":
-  version: 6.7.0
-  resolution: "@prisma/client@npm:6.7.0"
+"@prisma/client-runtime-utils@npm:7.10.1":
+  version: 7.10.1
+  resolution: "@prisma/client-runtime-utils@npm:7.10.1"
+  checksum: 10c0/516f7d049381108d0f5d6014e206c5224878350ce08bc85ef63ff3a809321f559f03264b880fde88cd1fd04bd06779016428b7a032b1fa521aa57b54adebc93e
+  languageName: node
+  linkType: hard
+
+"@prisma/client@npm:7.10.1":
+  version: 7.10.1
+  resolution: "@prisma/client@npm:7.10.1"
+  dependencies:
+    "@prisma/client-runtime-utils": "npm:7.10.1"
   peerDependencies:
     prisma: "*"
-    typescript: ">=5.1.0"
+    typescript: ">=5.4.0"
   peerDependenciesMeta:
     prisma:
       optional: true
     typescript:
       optional: true
-  checksum: 10c0/863a8085800c8ada3247bc8b3f8a7056e341045f7f6fd73c7cd133b91298c8603f783869e5a7357d62394fa2ddac8c09ee27d7325bbb803a870edca5b914d33f
+  checksum: 10c0/742cf5c6c8a1160a8ef7c7e14e3dc1072d6430e4f258a47b41b4f1d96d39b2f0616691d597862cb78613efd72a99376e413c01dc6cebde3b89f7020b1d1fc74a
   languageName: node
   linkType: hard
 
@@ -5498,7 +5507,7 @@ __metadata:
     "@headlessui/react": "npm:2.2.10"
     "@hookform/resolvers": "npm:3.9.0"
     "@next/swc-wasm-nodejs": "npm:16.3.3"
-    "@prisma/client": "npm:6.7.0"
+    "@prisma/client": "npm:7.10.1"
     "@radix-ui/react-accordion": "npm:1.3.1"
     "@radix-ui/react-alert-dialog": "npm:1.1.1"
     "@radix-ui/react-aspect-ratio": "npm:1.2.0"
