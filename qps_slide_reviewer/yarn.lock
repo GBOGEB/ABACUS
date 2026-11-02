@@ -5317,7 +5317,7 @@ __metadata:
     recharts: "npm:2.15.3"
     sonner: "npm:1.5.0"
     swr: "npm:2.2.4"
-    tailwind-merge: "npm:2.5.2"
+    tailwind-merge: "npm:3.7.0"
     tailwind-scrollbar-hide: "npm:1.1.7"
     tailwindcss: "npm:3.4.0"
     tailwindcss-animate: "npm:1.0.7"
@@ -10119,10 +10119,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"tailwind-merge@npm:2.5.2":
-  version: 2.5.2
-  resolution: "tailwind-merge@npm:2.5.2"
-  checksum: 10c0/e43a9a468f7ba4ed5b4a399558d96d6270a3d8131dca111cccc803e71cc23885060d18d721f312a24fff0a75c567dbb30b2a87c18aba25eb4255df197d8170ab
+"tailwind-merge@npm:3.7.0":
+  version: 3.7.0
+  resolution: "tailwind-merge@npm:3.7.0"
+  checksum: 10c0/1b1439fe30b6ee63fc3abc1c985bf9beb8529eb2db21cc321bd8c7cf73f36cd4ec80846ea10af8ae09175810f385336c22a6ce355a0b5cce69432d49672f90c1
   languageName: node
   linkType: hard
 
