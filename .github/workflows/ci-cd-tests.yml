@@ -1054,7 +1054,7 @@ jobs:
       - uses: actions/checkout@v7
 
       - name: Download Dashboard Artifact
-        uses: actions/download-artifact@v8.0.2
+        uses: actions/download-artifact@v8
         with:
           name: test-dashboard
           path: dashboard/
