@@ -6,6 +6,7 @@ on:
     paths:
       - '**/*.py'
       - '**/*.pyi'
+      - '!ci/governance/**'
       - 'ci/governance/workflow_policy.json'
       - 'requirements*.txt'
       # Lint config anywhere in the tree (ci_pr_debt_ratchet.CONFIG_FILES).
@@ -26,6 +27,7 @@ on:
     paths:
       - '**/*.py'
       - '**/*.pyi'
+      - '!ci/governance/**'
       - 'ci/governance/workflow_policy.json'
       - 'requirements*.txt'
       # Lint config anywhere in the tree (ci_pr_debt_ratchet.CONFIG_FILES).
