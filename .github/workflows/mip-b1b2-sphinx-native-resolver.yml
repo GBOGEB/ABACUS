@@ -1,0 +1,54 @@
+name: MIP B1+B2 Sphinx Native Resolver Pilot
+
+on:
+  pull_request:
+    paths:
+      - 'DMAIC_V3/requirements.txt'
+      - 'tests/test_sphinx_requirement_compatibility.py'
+      - 'tests/test_matplotlib_requirement_compatibility.py'
+      - 'tests/test_mip_python_dependency_guard.py'
+      - '.github/workflows/mip-b1b2-sphinx-native-resolver.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  native-resolver:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 18
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: ['3.12', '3.13']
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+          persist-credentials: false
+      - uses: actions/setup-python@6d4fd22b20465ccc0f7354476588e8df7c9ca0e0
+        with:
+          python-version: ${{ matrix.python-version }}
+      - name: Confirm exact branch identity
+        env:
+          EXPECTED_SHA: ${{ github.event.pull_request.head.sha }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$EXPECTED_SHA"
+          python -m pip install --upgrade pip
+      - name: Resolve supported Sphinx interpreter cohort natively
+        shell: bash
+        run: |
+          set -euo pipefail
+          case "${{ matrix.python-version }}" in
+            3.12) python -m pip install 'sphinx>=9.1.1,<9.2.0' ;;
+            3.13) python -m pip install 'sphinx>=9.2.0,<10.0.0' ;;
+            *) exit 2 ;;
+          esac
+          python -m sphinx --version
+      - name: Probe canonical full requirement set
+        run: python -m pip install --dry-run -r DMAIC_V3/requirements.txt
+      - name: Verify Sphinx and asyncio static cohorts
+        run: |
+          python -m pip install packaging
+          python -m unittest -v tests/test_sphinx_requirement_compatibility.py tests/test_matplotlib_requirement_compatibility.py
