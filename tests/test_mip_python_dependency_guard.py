@@ -55,7 +55,7 @@ class PythonDependencyMIPTests(unittest.TestCase):
         for lane, valid, invalid in (
             ("3.8", "0.23.8", "1.2.0"),
             ("3.9", "1.2.0", "1.4.0"),
-            ("3.10", "1.4.0", "1.2.0"),
+            ("3.10", "1.4.1", "1.2.0"),
         ):
             with self.subTest(python=lane):
                 environment = MOD.default_environment()
