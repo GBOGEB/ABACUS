@@ -5324,7 +5324,7 @@ __metadata:
     ts-node: "npm:10.9.2"
     tsx: "npm:4.20.3"
     typescript: "npm:5.6.3"
-    vaul: "npm:1.0.0"
+    vaul: "npm:1.1.2"
     webpack: "npm:5.112.0"
     yup: "npm:1.3.0"
     zod: "npm:4.6.6"
@@ -10688,15 +10688,15 @@ __metadata:
   languageName: node
   linkType: hard
 
-"vaul@npm:1.0.0":
-  version: 1.0.0
-  resolution: "vaul@npm:1.0.0"
+"vaul@npm:1.1.2":
+  version: 1.1.2
+  resolution: "vaul@npm:1.1.2"
   dependencies:
     "@radix-ui/react-dialog": "npm:^1.1.1"
   peerDependencies:
-    react: ^16.8 || ^17.0 || ^18.0
-    react-dom: ^16.8 || ^17.0 || ^18.0
-  checksum: 10c0/7d5be0385044dc0952a3d3a2f1ee6eb7641b469e4e416f916fcced553a2fd8ed2f2bf9fde0cd9c41739fa1d626d5470b82bc9fde161663f4b1e31c8170ea7eb9
+    react: ^16.8 || ^17.0 || ^18.0 || ^19.0.0 || ^19.0.0-rc
+    react-dom: ^16.8 || ^17.0 || ^18.0 || ^19.0.0 || ^19.0.0-rc
+  checksum: 10c0/a6da539eb5576c0004a6b17e3673ea1db2c34e80355860131183abf53279ce025bbd016d542c345d1cc8464ad12f9dc9860949c751055d8a84961e8472a53707
   languageName: node
   linkType: hard
 
