@@ -102,6 +102,34 @@ def test_pip_inline_comment_preserves_marker_and_url_fragment():
         _requirements("pytest>==9  # malformed specifier must remain red\n")
 
 
+def test_sphinx_compatible_interpreter_matrix():
+    """Reject Sphinx 9.2 on Python 3.12 without weakening other lanes.
+
+    Upstream Sphinx 9.2.0 Requires-Python >=3.13; 9.1.1 supports 3.12.
+    These are marker-contract tests; native resolver and matrix CI still rule.
+    """
+    entries = _requirements(MANIFEST.read_text(encoding="utf-8"))
+    cases = {
+        "3.9": ("7.4.7", "8.1.0"),
+        "3.10": ("8.1.0", "9.1.1"),
+        "3.11": ("8.1.0", "9.1.1"),
+        "3.12": ("9.1.1", "9.2.0"),
+        "3.13": ("9.2.0", "9.1.1"),
+    }
+    for python_version, (allowed, excluded) in cases.items():
+        matching = _applicable(entries, "sphinx", python_version)
+        assert len(matching) == 1, (python_version, matching)
+        assert Version(allowed) in matching[0].specifier, python_version
+        assert Version(excluded) not in matching[0].specifier, python_version
+
+    # Fail closed on the historical gap and overlap regression.
+    bad = _requirements(
+        "sphinx>=9.2.0,<10; python_version >= '3.12'\\n"
+        "sphinx>=9.1.1,<9.2; python_version >= '3.12' and python_version < '3.13'\\n"
+    )
+    assert len(_applicable(bad, "sphinx", "3.12")) == 2
+
+
 def test_flake8_legacy_and_modern_interpreter_boundaries():
     entries = _requirements(MANIFEST.read_text(encoding="utf-8"))
     expectations = {
