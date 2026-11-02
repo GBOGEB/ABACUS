@@ -124,8 +124,8 @@ def test_sphinx_compatible_interpreter_matrix():
 
     # Fail closed on the historical gap and overlap regression.
     bad = _requirements(
-        "sphinx>=9.2.0,<10; python_version >= '3.12'\\n"
-        "sphinx>=9.1.1,<9.2; python_version >= '3.12' and python_version < '3.13'\\n"
+        "sphinx>=9.2.0,<10; python_version >= '3.12'\n"
+        "sphinx>=9.1.1,<9.2; python_version >= '3.12' and python_version < '3.13'\n"
     )
     assert len(_applicable(bad, "sphinx", "3.12")) == 2
 
