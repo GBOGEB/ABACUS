@@ -5260,7 +5260,7 @@ __metadata:
     "@radix-ui/react-select": "npm:2.1.1"
     "@radix-ui/react-separator": "npm:1.1.0"
     "@radix-ui/react-slider": "npm:1.2.0"
-    "@radix-ui/react-slot": "npm:1.1.0"
+    "@radix-ui/react-slot": "npm:1.5.0"
     "@radix-ui/react-switch": "npm:1.1.0"
     "@radix-ui/react-tabs": "npm:1.1.0"
     "@radix-ui/react-toast": "npm:1.3.1"
