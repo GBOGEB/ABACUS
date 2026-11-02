@@ -3,12 +3,11 @@
 This static marker test is not a substitute for native pip resolution.
 """
 
-from pathlib import Path
 import unittest
+from pathlib import Path
 
 from packaging.markers import default_environment
 from packaging.requirements import Requirement
-
 
 REQUIREMENTS = Path(__file__).resolve().parents[1] / "DMAIC_V3" / "requirements.txt"
 
@@ -48,7 +47,9 @@ class SphinxMarkerCompatibility(unittest.TestCase):
             "sphinx>=9.1.1,<9.2.0; python_version >= '3.12' and python_version < '3.13'",
             "sphinx>=9.2.0,<10.0.0; python_version >= '3.12' and python_version < '3.13'",
         )
-        self.assertNotEqual(broken, text, "negative-control fixture did not mutate policy")
+        self.assertNotEqual(
+            broken, text, "negative-control fixture did not mutate policy"
+        )
         active = active_sphinx_for("3.12", broken)
         self.assertEqual(len(active), 1)
         self.assertFalse(active[0].specifier.contains("9.1.1"))
