@@ -45,7 +45,7 @@ class WorkflowPolicyTests(unittest.TestCase):
         name = "mip-b1b2-sphinx-native-resolver.yml"
         rule, matches = MODULE.classify(name, self.policy)
         self.assertEqual(len(matches), 1)
-        self.assertEqual(rule["pattern"], "^mip-b1b2-sphinx-native-resolver\\\\.yml$")
+        self.assertEqual(rule["pattern"], r"^mip-b1b2-sphinx-native-resolver\.yml$")
         self.assertEqual(rule["cluster"], "statistics")
         self.assertEqual(rule["lifecycle"], "pr_domain")
         self.assertEqual(rule["disposition"], "keep")
