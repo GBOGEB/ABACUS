@@ -306,6 +306,19 @@ def test_declared_lane_must_match_ssot(tmp_path):
     assert run(root, "check") == 1
 
 
+def test_held_workflow_is_reported_not_rewritten(tmp_path, capsys):
+    root = make_repo(tmp_path, {"held.yml": "jobs:\n  j:\n    steps:\n"
+                                "      - uses: actions/setup-python@v7\n"
+                                "        with: {python-version: '3.21'}\n"})
+    ssot = root / "ssot/python_versions.yaml"
+    ssot.write_text(ssot.read_text() + "held_workflows:\n  .github/workflows/held.yml: needs review\n")
+    assert run(root, "sync") == 0
+    assert "'3.21'" in wf(root, "held.yml")  # untouched
+    capsys.readouterr()
+    assert run(root, "check") == 0
+    assert "HELD      .github/workflows/held.yml: needs review" in capsys.readouterr().out
+
+
 def test_sync_refuses_while_unhandled_sites_exist(tmp_path):
     root = make_repo(tmp_path, {"w.yml": "jobs:\n  j:\n    steps:\n      - run: uv python install 3.19\n"})
     assert run(root, "sync") == 2

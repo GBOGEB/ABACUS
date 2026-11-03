@@ -4,11 +4,11 @@
 
 Policy: `ABACUS-CI-SSOT-001`
 
-Policy SHA-256 (canonical sorted JSON bytes of `ci/governance/workflow_policy.json`): `27640194c314847230519a56167d5db5cdb6dfce27eed9db582ce242e3b99159`
+Policy SHA-256 (canonical sorted JSON bytes of `ci/governance/workflow_policy.json`): `de2c3dac93fa0bef51d4b668e30c4dd58d1068ab875e8b2c78a0bea798ec398f`
 
 ## Outcome
 
-The repository currently contains **220 workflow definitions**. All **220** are assigned to one primary functional cluster and lifecycle stage.
+The repository currently contains **222 workflow definitions**. All **222** are assigned to one primary functional cluster and lifecycle stage.
 
 The observed baseline that motivated this control was PR #681 with 119 check runs (111 queued, 8 skipped) and main with 122 check runs.
 
@@ -39,7 +39,7 @@ The observed baseline that motivated this control was PR #681 with 119 check run
 | `documentation` | `docs-build.yml` | 7 | Documentation validation, rendering, export and Pages. |
 | `automation` | `post-merge-pr-summary.yml` | 13 | Repository maintenance, reporting, branch and PR automation. |
 | `specialised` | `qps-cost-roundtrip-contract.yml` | 47 | Bounded product or historical pipelines retained outside core CI. |
-| `ci_governance` | `ci-governance.yml` | 2 | This policy, inventory, overlap and staleness gate. |
+| `ci_governance` | `ci-governance.yml` | 4 | This policy, inventory, overlap and staleness gate. |
 | `legacy` | — | 2 | Superseded workflows kept temporarily for manual comparison before deletion. |
 
 ## Immediate consolidation decisions
@@ -98,6 +98,7 @@ Make PR-triggered workflows with write-class GitHub token scopes explicit and re
 | 20 | `pr_domain` | `bridge_federation` | `w189f-federation-sample4-exact.yml` | pull_request, push | 1 | `keep` | — |
 | 20 | `pr_domain` | `bridge_federation` | `w286-gloob-pandoc-p1.yml` | pull_request, workflow_dispatch | 1 | `keep` | — |
 | 20 | `pr_domain` | `ci_governance` | `bd-workflow-frequency-telemetry.yml` | workflow_dispatch, schedule, pull_request | 1 | `keep` | — |
+| 20 | `pr_domain` | `ci_governance` | `python-version-ssot-guard.yml` | pull_request, push, workflow_dispatch | 1 | `keep` | — |
 | 20 | `pr_domain` | `core_test` | `bd-w1-three-pulse-regression.yml` | pull_request | 1 | `keep` | — |
 | 20 | `pr_domain` | `core_test` | `cbd-cohort-union-testflight.yml` | pull_request, workflow_dispatch | 1 | `keep` | — |
 | 20 | `pr_domain` | `core_test` | `cbd-e2e-graph-contract.yml` | pull_request, workflow_dispatch | 1 | `keep` | — |
@@ -273,6 +274,7 @@ Make PR-triggered workflows with write-class GitHub token scopes explicit and re
 | 40 | `scheduled` | `automation` | `dashboard-health.yml` | schedule, workflow_dispatch | 1 | `keep` | — |
 | 40 | `scheduled` | `automation` | `missioncontrol-issue-burndown.yml` | workflow_dispatch, schedule, pull_request | 1 | `keep` | — |
 | 40 | `scheduled` | `automation` | `post-merge-pr-summary.yml` | pull_request | 1 | `keep` | — |
+| 40 | `scheduled` | `ci_governance` | `python-next-canary.yml` | schedule, workflow_dispatch, pull_request | 1 | `keep` | — |
 | 40 | `scheduled` | `runtime_governance` | `cbd-scheduled-gated-pulse.yml` | schedule, workflow_dispatch | 1 | `keep` | — |
 | 40 | `scheduled` | `security` | `bandit.yml` | schedule, workflow_dispatch | 1 | `keep` | — |
 | 40 | `scheduled` | `security` | `code-quality-pilot.yml` | workflow_dispatch, pull_request, schedule | 3 | `keep` | — |

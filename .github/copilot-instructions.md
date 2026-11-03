@@ -78,10 +78,12 @@ ABACUS/
 
 ### Python Code Style
 
-- **Python Version:** the supported set, default and CI lanes live in `ssot/python_versions.yaml` (authority).
-  Never hard-code interpreter versions in workflows: write any value, then run
-  `python tools/ci/python_versions.py sync`. The `python-version-ssot-guard` workflow fails on drift.
-  Scripts that need versions read `ssot/python_versions.lanes.json` and declare `PYTHON_LANE`.
+- **Python Version:** supported set, default and CI lanes live in
+  `ssot/python_versions.yaml` (authority). Never hard-code interpreter
+  versions in workflows: write any value, then run
+  `python tools/ci/python_versions.py sync`; the
+  `python-version-ssot-guard` workflow fails on drift. Scripts that need
+  versions read `ssot/python_versions.lanes.json` and declare `PYTHON_LANE`.
 - **Formatting:** Use `black` for code formatting
 - **Linting:** Code must pass `flake8` and `pylint`
 - **Type Hints:** Use type hints for function signatures (checked with `mypy`)

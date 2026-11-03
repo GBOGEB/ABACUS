@@ -39,7 +39,7 @@ jobs:
             --out test_reports/n16/preflight.json
       - uses: actions/setup-python@v7
         with:
-          python-version: '3.13'
+          python-version: '3.12'
       - name: Source guard
         env:
           EXPECTED_HEAD: ${{ github.event.pull_request.head.sha || github.sha }}

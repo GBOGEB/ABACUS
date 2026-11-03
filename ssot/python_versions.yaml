@@ -30,6 +30,21 @@ canary_workflows:
 
 end_of_life: ["3.8", "3.9", "3.10"]
 
+# Workflows `sync` must not edit until a separate, owned step happens. `check`
+# reports them as HELD (not drift) and skips the end-of-life scan for them.
+held_workflows:
+  .github/workflows/qps-w05-bidder-eval-dow.yml: >
+    a10-guard re-reviews every edited version of tender-named files; bump its
+    pin in a separately reviewed change and add the new blob to
+    .a10_guard_allow.
+  .github/workflows/g3a-n15-python-matrix.yml: >
+    Bound to MIP/statistics/g3a_w16_epoch.json, which pins measured branch
+    counts per interpreter (3.10/3.12). Re-measure on the new lane and re-pin
+    with scripts/g3a_w16_repin.py, then release this hold.
+  .github/workflows/g3a-n14-matched-arc-flight.yml: >
+    Bound to the same W16 epoch (per-interpreter branch pins); release together
+    with g3a-n15-python-matrix.yml after the re-pin.
+
 # Lanes whose dependencies cannot run on every supported version yet. A workflow
 # file matching any pattern is capped at `max` for all its jobs.
 caps:

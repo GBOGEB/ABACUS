@@ -115,6 +115,7 @@ class Policy:
     caps: dict[str, dict]
     derived: list[dict]
     end_of_life: list[str] = field(default_factory=list)
+    held: dict[str, str] = field(default_factory=dict)
 
     @classmethod
     def load(cls, root: Path) -> "Policy":
@@ -127,7 +128,8 @@ class Policy:
                 raise SyncError(f"cap {name}: max must be one of supported")
         return cls(supported, data["default"], list(data.get("experimental", [])),
                    set(data.get("canary_workflows", [])), data.get("caps", {}),
-                   data.get("derived_files", []), list(data.get("end_of_life", [])))
+                   data.get("derived_files", []), list(data.get("end_of_life", [])),
+                   {k: " ".join(str(v).split()) for k, v in (data.get("held_workflows") or {}).items()})
 
     def lane(self, rel: str, text: str) -> Lane:
         if rel in self.canary:
@@ -537,7 +539,7 @@ def stray_literals(scan: FileScan, policy: Policy) -> list[str]:
             line = scan.text.count("\n", 0, m.start(1)) + 1
             found.append(f"L{line}: hard-coded python-version {m.group(1)} outside a managed site "
                          f"(read {LANES_VIEW_PATH.as_posix()} instead)")
-    if scan.rel not in policy.canary:
+    if scan.rel not in policy.canary and scan.rel not in policy.held:
         for m in LITERAL_RE.finditer(scan.text):
             if m.group(0) in policy.end_of_life and not covered(m.start()) and not comment(m.start()):
                 line_start = scan.text.rfind("\n", 0, m.start()) + 1
@@ -566,7 +568,10 @@ def problems_and_drift(root: Path, policy: Policy):
     for scan in scans:
         scan.problems += stray_literals(scan, policy) + lane_declarations(scan)
     problems = [f"{s.rel}: {p}" for s in scans for p in s.problems]
-    drift = [s for s in scans if s.synced_text() != s.text]
+    drift = [s for s in scans if s.synced_text() != s.text and s.rel not in policy.held]
+    for rel in policy.held:
+        if not (root / rel).exists():
+            problems.append(f"{rel}: held in SSOT but missing")
     derived = derived_updates(root, policy)
     view_path = root / LANES_VIEW_PATH
     view_old = view_path.read_text(encoding="utf-8") if view_path.exists() else ""
@@ -583,7 +588,7 @@ def problems_and_drift(root: Path, policy: Policy):
 
 
 def cmd_check(root: Path, policy: Policy) -> int:
-    _, problems, drift, derived_drift = problems_and_drift(root, policy)
+    scans, problems, drift, derived_drift = problems_and_drift(root, policy)
     for problem in problems:
         print(f"UNHANDLED {problem}")
     for scan in drift:
@@ -592,6 +597,9 @@ def cmd_check(root: Path, policy: Policy) -> int:
                 print(f"DRIFT     {scan.rel}:{site.line} {site.old.strip()[:60]} != {site.new.strip()[:60]}")
     for path, _, _ in derived_drift:
         print(f"DRIFT     {path.relative_to(root).as_posix()} (derived file)")
+    for scan in scans:
+        if scan.rel in policy.held and scan.synced_text() != scan.text:
+            print(f"HELD      {scan.rel}: {policy.held[scan.rel]}")
     if problems or drift or derived_drift:
         print("\nFix: python tools/ci/python_versions.py sync  (authority: ssot/python_versions.yaml)")
         return 1

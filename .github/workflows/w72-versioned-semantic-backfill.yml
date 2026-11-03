@@ -48,11 +48,14 @@ jobs:
 
       - name: Run W74 helper tests
         shell: bash
+        # The file holds pytest-style functions, which unittest discovery never
+        # collects; Python 3.12+ makes that a failure (exit 5, NO TESTS RAN)
+        # instead of the silent "Ran 0 tests" success earlier interpreters gave.
         run: |
           set -euo pipefail
-          python -m unittest discover \
-            -s tests \
-            -p 'test_w74_paired_pressure.py'
+          python -m pip install "pytest>=8.3.5,<9.2"
+          python -m pytest -q -p no:cacheprovider -o addopts="" --noconftest \
+            tests/test_w74_paired_pressure.py
 
       - name: Backfill five governed exact SHAs under W72 schema
         shell: bash

@@ -35,7 +35,9 @@ class EVERREDPytestDependencies(unittest.TestCase):
         lane = json.loads(
             (ROOT / "ssot" / "python_versions.lanes.json").read_text(encoding="utf-8")
         )["lanes"]["numpy-1x-pin"]
-        self.assertIn(f"python-version: ['{lane['oldest']}', '{lane['newest']}']", workflow)
+        self.assertIn(
+            f"python-version: ['{lane['oldest']}', '{lane['newest']}']", workflow
+        )
         self.assertIn(
             "python -m pytest -q ../../tests/test_bd_ldab_join_census.py", workflow
         )
