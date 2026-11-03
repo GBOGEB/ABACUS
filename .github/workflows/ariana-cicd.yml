@@ -48,6 +48,8 @@ permissions:
 
 env:
   SOURCE_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+  # Lane assigned by ssot/python_versions.yaml (installs the CoolProp oracle).
+  PYTHON_LANE: coolprop-oracle
 
 jobs:
   test-ariana:
@@ -57,7 +59,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        python-version: ['3.11', '3.12']
+        python-version: ['3.11', '3.14']
     steps:
       - name: Checkout exact source head
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
@@ -121,7 +123,7 @@ jobs:
       - name: Set up Python
         uses: actions/setup-python@6d4fd22b20465ccc0f7354476588e8df7c9ca0e0
         with:
-          python-version: '3.12'
+          python-version: '3.14'
       - name: Require both native lanes to be green
         env:
           MATRIX_OUTCOME: ${{ needs.test-ariana.result }}
@@ -160,7 +162,11 @@ jobs:
               assert record["governance"]["merge_admission"] == "HOLD"
               assert record["governance"]["authority_transfer"] is False
               versions.add(producer["python_version"])
-          assert versions == {"3.11", "3.12"}, "distinct Python lanes missing"
+          lane = json.loads(
+              Path("ssot/python_versions.lanes.json").read_text(encoding="utf-8")
+          )["lanes"][os.environ["PYTHON_LANE"]]
+          # The test-ariana matrix is the lane's [oldest, newest] edge pair.
+          assert versions == {lane["oldest"], lane["newest"]}, "distinct Python lanes missing"
           observations = [
               {
                   "python_version": p["producer"]["python_version"],

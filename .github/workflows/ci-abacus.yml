@@ -17,6 +17,12 @@ on:
 permissions:
   contents: read
 
+env:
+  # Interpreter lane assigned by ssot/python_versions.yaml. This workflow installs
+  # the CoolProp oracle, so it runs on the coolprop-oracle lane; the
+  # python-version-ssot-guard workflow fails if this ever disagrees with the SSOT.
+  PYTHON_LANE: coolprop-oracle
+
 # One active Matrix proof per PR/ref. A newer SHA supersedes an unfinished
 # older SHA, while completed receipts remain available in Actions history.
 concurrency:
@@ -33,6 +39,7 @@ jobs:
       mode: ${{ steps.plan.outputs.mode }}
       reason: ${{ steps.plan.outputs.reason }}
       secondary: ${{ steps.plan.outputs.secondary }}
+      sentinel: ${{ steps.plan.outputs.sentinel }}
     steps:
       - name: Checkout
         uses: actions/checkout@v7
@@ -51,9 +58,13 @@ jobs:
 
           mode="full"
           reason="non-PR events retain full compatibility recertification"
-          # pyproject.toml requires-python >=3.11: 3.11 is the only
-          # supported interpreter besides the 3.12 sentinel.
-          secondary="3.11"
+          # Interpreters come from the SSOT view, never from literals here:
+          # sentinel = lane pin, secondary = oldest supported (requires-python
+          # floor), full = every version in the lane.
+          lanes="ssot/python_versions.lanes.json"
+          sentinel="$(jq -er --arg l "${PYTHON_LANE}" '.lanes[$l].pin' "${lanes}")"
+          secondary="$(jq -er --arg l "${PYTHON_LANE}" '.lanes[$l].oldest' "${lanes}")"
+          full_label="$(jq -er --arg l "${PYTHON_LANE}" '.lanes[$l].versions | join(" / ")' "${lanes}")"
 
           if [[ "${EVENT_NAME}" == "pull_request" ]]; then
             mapfile -t changed < <(
@@ -118,11 +129,11 @@ jobs:
               reason+="this CI workflow changed"
             elif [[ "${python_delta}" == "true" ]]; then
               mode="sampled"
-              reason="Python changed: run 3.12 sentinel plus deterministic "
+              reason="Python changed: run ${sentinel} sentinel plus deterministic "
               reason+="compatibility sample"
             else
               mode="sentinel"
-              reason="no Python compatibility-sensitive delta: run 3.12 "
+              reason="no Python compatibility-sensitive delta: run ${sentinel} "
               reason+="sentinel; full matrix is recertified after merge "
               reason+="and weekly"
             fi
@@ -136,13 +147,13 @@ jobs:
               echo "- changed files: ${#changed[@]}"
               echo
               if [[ "${mode}" == "sentinel" ]]; then
-                echo "- Python 3.12: **EXECUTED / SENTINEL**"
-                echo "- Python 3.11: DEFERRED; recertify main/schedule"
+                echo "- Python ${sentinel}: **EXECUTED / SENTINEL**"
+                echo "- Python ${secondary}: DEFERRED; recertify main/schedule"
               elif [[ "${mode}" == "sampled" ]]; then
-                echo "- Python 3.12: **EXECUTED / SENTINEL**"
+                echo "- Python ${sentinel}: **EXECUTED / SENTINEL**"
                 echo "- Python ${secondary}: EXECUTED compatibility sample"
               else
-                echo "- Python 3.11 / 3.12: **EXECUTED / FULL_MATRIX**"
+                echo "- Python ${full_label}: **EXECUTED / FULL_MATRIX**"
               fi
               echo
               echo "<details><summary>Changed paths</summary>"
@@ -162,20 +173,25 @@ jobs:
               echo
               echo "- event: \`${EVENT_NAME}\`"
               echo "- mode: **full**"
-              echo "- Python 3.11 / 3.12: **EXECUTED / FULL_MATRIX**"
+              echo "- Python ${full_label}: **EXECUTED / FULL_MATRIX**"
               echo "- reason: ${reason}"
             } >> "${GITHUB_STEP_SUMMARY}"
           fi
 
           case "${mode}" in
             sentinel)
-              matrix='{"include":[{"os":"ubuntu-24.04","python-version":"3.12","proof-role":"sentinel"}]}'
+              matrix="$(jq -cn --arg s "${sentinel}" \
+                '{include: [{os: "ubuntu-24.04", "python-version": $s, "proof-role": "sentinel"}]}')"
               ;;
             sampled)
-              matrix="{\"include\":[{\"os\":\"ubuntu-24.04\",\"python-version\":\"3.12\",\"proof-role\":\"sentinel\"},{\"os\":\"ubuntu-24.04\",\"python-version\":\"${secondary}\",\"proof-role\":\"compatibility-sample\"}]}"
+              matrix="$(jq -cn --arg s "${sentinel}" --arg c "${secondary}" \
+                '{include: [{os: "ubuntu-24.04", "python-version": $s, "proof-role": "sentinel"},
+                            {os: "ubuntu-24.04", "python-version": $c, "proof-role": "compatibility-sample"}]}')"
               ;;
             full)
-              matrix='{"include":[{"os":"ubuntu-24.04","python-version":"3.11","proof-role":"full-matrix"},{"os":"ubuntu-24.04","python-version":"3.12","proof-role":"full-matrix"}]}'
+              matrix="$(jq -c --arg l "${PYTHON_LANE}" \
+                '{include: [.lanes[$l].versions[] | {os: "ubuntu-24.04", "python-version": ., "proof-role": "full-matrix"}]}' \
+                "${lanes}")"
               ;;
             *)
               echo "::error::Unknown CI proof mode: ${mode}"
@@ -187,6 +203,7 @@ jobs:
           echo "mode=${mode}" >> "${GITHUB_OUTPUT}"
           echo "reason=${reason}" >> "${GITHUB_OUTPUT}"
           echo "secondary=${secondary}" >> "${GITHUB_OUTPUT}"
+          echo "sentinel=${sentinel}" >> "${GITHUB_OUTPUT}"
 
   abacus:
     name: ABACUS - ${{ matrix.os }} - Python ${{ matrix.python-version }}
@@ -273,7 +290,7 @@ jobs:
 
       - name: Run canonical coverage and emit governed evidence
         id: canonical_coverage
-        if: matrix.python-version == '3.12'
+        if: matrix.python-version == needs.plan.outputs.sentinel
         shell: bash
         run: |
           set -euo pipefail
@@ -337,7 +354,7 @@ jobs:
 
       - name: Run functional compatibility proof
         id: functional_compatibility
-        if: matrix.python-version != '3.12'
+        if: matrix.python-version != needs.plan.outputs.sentinel
         shell: bash
         run: |
           set -euo pipefail
@@ -380,7 +397,7 @@ jobs:
 
       - name: Run truthful Phase0 smoke proof
         id: phase0
-        if: matrix.python-version == '3.12'
+        if: matrix.python-version == needs.plan.outputs.sentinel
         run: |
           set -euo pipefail
           evidence_dir="test_reports/python-${{ matrix.python-version }}"
@@ -389,7 +406,7 @@ jobs:
 
       - name: Test QPS W08 DOW contract (fail closed)
         id: qps_w08
-        if: matrix.python-version == '3.12'
+        if: matrix.python-version == needs.plan.outputs.sentinel
         run: python -m pytest -q tests/test_qps_w08_coverage_graph_request.py
 
       - name: Recursive build smoke test
@@ -445,6 +462,7 @@ jobs:
         shell: bash
         env:
           VERSION: ${{ matrix.python-version }}
+          SENTINEL: ${{ needs.plan.outputs.sentinel }}
           PROOF_ROLE: ${{ matrix.proof-role }}
           MODE: ${{ needs.plan.outputs.mode }}
           CANONICAL: ${{ steps.canonical_coverage.outcome }}
@@ -463,6 +481,7 @@ jobs:
           from pathlib import Path
 
           version = os.environ["VERSION"]
+          sentinel = os.environ["SENTINEL"]
 
           def classify(outcome: str, required: bool) -> str:
               if required:
@@ -478,19 +497,19 @@ jobs:
           checks = {
               "canonical_coverage": classify(
                   os.environ.get("CANONICAL", ""),
-                  version == "3.12",
+                  version == sentinel,
               ),
               "functional_compatibility": classify(
                   os.environ.get("FUNCTIONAL", ""),
-                  version != "3.12",
+                  version != sentinel,
               ),
               "phase0": classify(
                   os.environ.get("PHASE0", ""),
-                  version == "3.12",
+                  version == sentinel,
               ),
               "qps_w08": classify(
                   os.environ.get("QPS_W08", ""),
-                  version == "3.12",
+                  version == sentinel,
               ),
               "recursive_build": classify(
                   os.environ.get("RECURSIVE", ""),
@@ -544,7 +563,7 @@ jobs:
       - name: Setup Python
         uses: actions/setup-python@v7
         with:
-          python-version: "3.12"
+          python-version: "3.14"
 
       - name: Download Python proof manifests
         uses: actions/download-artifact@v8
@@ -560,6 +579,7 @@ jobs:
             --dir test_reports/proof-manifests \
             --mode "${{ needs.plan.outputs.mode }}" \
             --secondary "${{ needs.plan.outputs.secondary }}" \
+            --lane "${PYTHON_LANE}" \
             --expected-sha "${{ github.sha }}" \
             --out test_reports/python-proof-audit.json
 
@@ -631,17 +651,17 @@ jobs:
           fi
 
   benchmark-baseline:
-    name: Benchmark baseline - Python 3.12 - no coverage
+    name: Benchmark baseline - Python 3.14 - no coverage
     if: github.repository == 'GBOGEB/ABACUS'
     runs-on: ubuntu-24.04
     steps:
       - name: Checkout
         uses: actions/checkout@v7
 
-      - name: Setup Python 3.12
+      - name: Setup Python 3.14
         uses: actions/setup-python@v7
         with:
-          python-version: "3.12"
+          python-version: "3.14"
           cache: "pip"
           cache-dependency-path: |
             requirements.txt
@@ -707,17 +727,17 @@ jobs:
           if-no-files-found: error
 
   runner-migration-canary:
-    name: Runner migration canary - ubuntu-latest - Python 3.12
+    name: Runner migration canary - ubuntu-latest - Python 3.14
     if: github.event_name == 'schedule' && github.repository == 'GBOGEB/ABACUS'
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
         uses: actions/checkout@v7
 
-      - name: Setup Python 3.12
+      - name: Setup Python 3.14
         uses: actions/setup-python@v7
         with:
-          python-version: "3.12"
+          python-version: "3.14"
           cache: "pip"
           cache-dependency-path: |
             requirements.txt

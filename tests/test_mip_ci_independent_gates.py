@@ -4,11 +4,14 @@ import copy
 
 import pytest
 
-from tools.mip_ci_wave_telemetry import GATE_DOMAINS, summarize
+from tools.mip_ci_wave_telemetry import _ENTERPRISE_JOBS, GATE_DOMAINS, summarize
 
 SHA = "a" * 40
 OTHER_SHA = "b" * 40
 ENTERPRISE = ".github/workflows/dmaic-enterprise-ci.yml"
+# Matrix job names derive from the workflow (versions maintained from ssot/python_versions.yaml).
+MATRIX_JOBS = list(_ENTERPRISE_JOBS)
+PYTEST_STEP = "Run pytest --benchmark-disable with coverage"
 GOVERNANCE = ".github/workflows/ci-governance.yml"
 A10 = ".github/workflows/a10-guard.yml"
 
@@ -47,22 +50,12 @@ def job(identity, run_id, name, conclusion="success", attempt=1, *, steps=None):
     return result
 
 
-def enterprise_jobs(run_id=101, *, test_count=9, summary=True):
-    result = []
-    n = 0
-    for version in ("3.10", "3.11", "3.12"):
-        for operating_system in ("ubuntu-latest", "windows-latest", "macos-latest"):
-            if n >= test_count:
-                break
-            result.append(
-                job(
-                    1000 + n,
-                    run_id,
-                    f"Test Python {version} on {operating_system}",
-                    steps=["Run pytest --benchmark-disable with coverage"],
-                )
-            )
-            n += 1
+def enterprise_jobs(run_id=101, *, test_count=None, summary=True):
+    count = len(MATRIX_JOBS) if test_count is None else test_count
+    result = [
+        job(1000 + n, run_id, name, steps=[PYTEST_STEP])
+        for n, name in enumerate(MATRIX_JOBS[:count])
+    ]
     if summary:
         result.append(job(1100, run_id, "CI Summary"))
     return result
@@ -176,9 +169,7 @@ def test_observed_failing_step_is_red_even_when_run_and_job_claim_success():
     first["steps"][0]["conclusion"] = "failure"
     row = gate(payload, "enterprise_ci")
     assert row["status"] == "FAIL"
-    assert row["blocking_steps"] == [
-        "Test Python 3.10 on ubuntu-latest:Run pytest --benchmark-disable with coverage"
-    ]
+    assert row["blocking_steps"] == [f"{MATRIX_JOBS[0]}:{PYTEST_STEP}"]
     assert gate(payload, "workflow_governance")["status"] == "PASS"
 
 
@@ -191,16 +182,13 @@ def test_observation_fraction_differs_from_terminal_pass_fraction():
     assert result["admission"] == "HOLD"
 
 
-def test_nine_matrix_jobs_mandatory_not_one_successful_job():
+def test_every_matrix_job_mandatory_not_one_successful_job():
     payload = input_payload("success", "success")
-    payload["jobs"] = [
-        item
-        for item in payload["jobs"]
-        if item["name"] != "Test Python 3.9 on macos-latest"
-    ]
+    dropped = MATRIX_JOBS[-1]
+    payload["jobs"] = [item for item in payload["jobs"] if item["name"] != dropped]
     result = gate(payload, "enterprise_ci")
     assert result["status"] == "UNKNOWN"
-    assert result["missing_jobs"] == ["Test Python 3.10 on macos-latest"]
+    assert result["missing_jobs"] == [dropped]
     assert gate(payload, "workflow_governance")["status"] == "PASS"
 
 
@@ -215,9 +203,7 @@ def test_missing_pytest_step_makes_enterprise_unknown_not_pass():
     payload["jobs"][0].pop("steps")
     result = gate(payload, "enterprise_ci")
     assert result["status"] == "UNKNOWN"
-    assert result["missing_steps"] == [
-        "Test Python 3.10 on ubuntu-latest:Run pytest --benchmark-disable with coverage"
-    ]
+    assert result["missing_steps"] == [f"{MATRIX_JOBS[0]}:{PYTEST_STEP}"]
 
 
 def test_governance_workflow_final_red_dominates_advisory_green_steps():
