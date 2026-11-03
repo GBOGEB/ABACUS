@@ -21,7 +21,7 @@ jobs:
       matrix:
         python-version: ['3.12', '3.13']
     steps:
-      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1  # v7.0.1
         with:
           ref: ${{ github.event.pull_request.head.sha }}
           persist-credentials: false
@@ -51,4 +51,6 @@ jobs:
       - name: Verify Sphinx and asyncio static cohorts
         run: |
           python -m pip install packaging
-          python -m unittest -v tests/test_sphinx_requirement_compatibility.py tests/test_matplotlib_requirement_compatibility.py
+          python -m unittest -v \
+            tests/test_sphinx_requirement_compatibility.py \
+            tests/test_matplotlib_requirement_compatibility.py
