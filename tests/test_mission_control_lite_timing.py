@@ -13,18 +13,27 @@ SHA = "a" * 40
 
 def sample():
     run = {
-        "id": 17, "head_sha": SHA, "status": "completed",
+        "id": 17,
+        "head_sha": SHA,
+        "status": "completed",
         "created_at": "2026-10-15T00:00:00Z",
         "run_started_at": "2026-10-15T00:02:30Z",
         "updated_at": "2026-10-15T00:02:53Z",
     }
     job = {
-        "id": 19, "run_id": 17, "status": "completed",
+        "id": 19,
+        "run_id": 17,
+        "status": "completed",
         "started_at": "2026-10-15T00:02:45Z",
         "completed_at": "2026-10-15T00:02:52Z",
-        "steps": [{"name": "tests", "conclusion": "success",
-                   "started_at": "2026-10-15T00:02:47Z",
-                   "completed_at": "2026-10-15T00:02:48Z"}],
+        "steps": [
+            {
+                "name": "tests",
+                "conclusion": "success",
+                "started_at": "2026-10-15T00:02:47Z",
+                "completed_at": "2026-10-15T00:02:48Z",
+            }
+        ],
     }
     return run, job
 
@@ -60,9 +69,7 @@ class TimingPulseTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as directory:
             path = Path(directory) / "steps.json"
             ok = measure(path, "ok", [sys.executable, "-c", "pass"])
-            bad = measure(path, "fail", [
-                sys.executable, "-c", "raise SystemExit(3)"
-            ])
+            bad = measure(path, "fail", [sys.executable, "-c", "raise SystemExit(3)"])
             self.assertEqual((ok, bad), (0, 3))
             rows = json.loads(path.read_text())
             self.assertEqual([row["exit_code"] for row in rows], [0, 3])
@@ -70,13 +77,13 @@ class TimingPulseTests(unittest.TestCase):
             with self.assertRaises(ValueError):
                 measure(path, "ok", [sys.executable, "-c", "pass"])
 
-
     def test_rejects_malformed_or_noncanonical_source_identity(self):
         for bad_sha in ("g" * 40, "A" * 40, "f" * 39, 123, None):
             run, job = sample()
             run["head_sha"] = bad_sha
-            with self.subTest(bad_sha=bad_sha), self.assertRaisesRegex(
-                ValueError, "invalid run SHA"
+            with (
+                self.subTest(bad_sha=bad_sha),
+                self.assertRaisesRegex(ValueError, "invalid run SHA"),
             ):
                 completed_run_metrics(run, job)
 
@@ -95,9 +102,11 @@ class TimingPulseTests(unittest.TestCase):
     def test_duplicate_phase_cannot_reexecute_side_effect(self):
         with tempfile.TemporaryDirectory() as directory:
             output = Path(directory) / "steps.json"
-            output.write_text(json.dumps([
-                {"phase": "already", "duration_seconds": 0.1, "exit_code": 0}
-            ]))
+            output.write_text(
+                json.dumps(
+                    [{"phase": "already", "duration_seconds": 0.1, "exit_code": 0}]
+                )
+            )
             with patch.object(mod.subprocess, "run") as runner:
                 with self.assertRaisesRegex(ValueError, "duplicate phase"):
                     measure(output, "already", [sys.executable, "-c", "pass"])
@@ -118,14 +127,14 @@ class TimingPulseTests(unittest.TestCase):
             literal = "; touch " + str(marker)
             output = Path(directory) / "steps.json"
             command = [
-                sys.executable, "-c",
+                sys.executable,
+                "-c",
                 "import sys; assert sys.argv[1].startswith('; touch ')",
                 literal,
             ]
             self.assertEqual(measure(output, "argv-literal", command), 0)
             self.assertFalse(marker.exists())
             self.assertEqual(json.loads(output.read_text())[0]["exit_code"], 0)
-
 
 
 if __name__ == "__main__":

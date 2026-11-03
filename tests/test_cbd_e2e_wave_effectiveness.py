@@ -1,4 +1,5 @@
 """Wave metrics: evidence reach without causal, merge or fake coverage credit."""
+
 import copy
 import json
 from pathlib import Path
@@ -63,9 +64,12 @@ def test_native_job_duration_is_cost_evidence_not_saved_walltime(graph):
 
 def test_cooccurrence_support_and_jaccard_are_not_causal(graph):
     result = wave.project(graph)
-    pair = next(r for r in result["top_cooccurrence_edges"]
-                if {r["workflow_a"], r["workflow_b"]} ==
-                {"CI Workflow Governance", "CI/CD Test Suite"})
+    pair = next(
+        r
+        for r in result["top_cooccurrence_edges"]
+        if {r["workflow_a"], r["workflow_b"]}
+        == {"CI Workflow Governance", "CI/CD Test Suite"}
+    )
     assert pair["shared_prs"] == 9
     assert pair["jaccard"] == 0.5
     assert pair["confirmed_common_cause"] is None
@@ -78,9 +82,12 @@ def test_no_unearned_coverage_population_inference_or_merge(graph):
     assert result["observed"]["total_verified_causal_roots"] is None
     assert result["observed"]["total_verified_pr_unblocks"] is None
     assert result["authority"]["merge_admission"] == "HOLD"
-    assert result["metrics_policy"][
-        "nonrandom_pr_cohort_cannot_yield_fleet_confidence_interval"
-    ] is True
+    assert (
+        result["metrics_policy"][
+            "nonrandom_pr_cohort_cannot_yield_fleet_confidence_interval"
+        ]
+        is True
+    )
 
 
 def test_read_only_projection_is_deterministic(graph):
@@ -108,16 +115,14 @@ def test_wrong_observed_denominator_rejected(graph):
 
 
 def test_declared_stage_cannot_claim_observation(graph):
-    stage = next(e for e in graph["edges"]
-                 if e["evidence"] == "DECLARED")
+    stage = next(e for e in graph["edges"] if e["evidence"] == "DECLARED")
     stage["support"] = 1
     with pytest.raises(ValueError, match="declared edge"):
         wave.project(graph)
 
 
 def test_association_cannot_claim_root(graph):
-    assoc = next(e for e in graph["edges"]
-                 if e["evidence"] == "ASSOCIATION")
+    assoc = next(e for e in graph["edges"] if e["evidence"] == "ASSOCIATION")
     assoc["causal_confirmed"] = True
     with pytest.raises(ValueError, match="unproven causal edge"):
         wave.project(graph)
@@ -152,8 +157,9 @@ def test_changed_attempt_prevents_invalid_n_delta(graph):
 
 def test_missing_job_symptom_or_duplicate_family_edge_halts(graph):
     other = copy.deepcopy(graph)
-    e = next(edge for edge in other["edges"]
-             if edge["relationship"] == "failed_job_symptom")
+    e = next(
+        edge for edge in other["edges"] if edge["relationship"] == "failed_job_symptom"
+    )
     other["edges"].append(copy.deepcopy(e))
     other["metrics"]["edge_count"] += 1
     other["metrics"]["edge_evidence_classes"][e["evidence"]] += 1

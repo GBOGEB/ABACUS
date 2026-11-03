@@ -3,9 +3,9 @@ Idempotency Module - Stub Implementation
 Provides hashing and idempotent execution support
 """
 
-import json
-import hashlib
 import functools
+import hashlib
+import json
 from pathlib import Path
 from typing import Any, Callable, Dict
 
@@ -40,6 +40,7 @@ def idempotent(run_key_fn: Callable, cache_dir: Any = None) -> Callable:
     Returns:
         Decorator function
     """
+
     def decorator(func: Callable) -> Callable:
         in_memory_cache: Dict[str, Any] = {}
 
@@ -67,12 +68,15 @@ def idempotent(run_key_fn: Callable, cache_dir: Any = None) -> Callable:
             # Persist to disk when cache_dir is given
             if cache_dir is not None:
                 Path(cache_dir).mkdir(parents=True, exist_ok=True)
-                with open(Path(cache_dir) / f"{safe_key}.json", "w", encoding="utf-8") as fh:
+                with open(
+                    Path(cache_dir) / f"{safe_key}.json", "w", encoding="utf-8"
+                ) as fh:
                     json.dump(result, fh)
 
             return result
 
         return wrapper
+
     return decorator
 
 

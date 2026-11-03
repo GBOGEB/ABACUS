@@ -1,4 +1,5 @@
 """W34 disjoint native dependency contract (no test exclusions or false greens)."""
+
 from __future__ import annotations
 
 import re
@@ -10,7 +11,9 @@ DEV_REQUIREMENTS = ROOT / "requirements-dev.txt"
 BROAD_CI = ROOT / ".github/workflows/ci-cd-tests.yml"
 CANONICAL_B0 = ROOT / ".github/workflows/mip-coverage-evidence.yml"
 SPINE = ROOT / "MIP/G3CS_CONVERGENCE_V2/observatory/w10/build_spine_neural_w13.py"
-W13_TESTS = ROOT / "MIP/G3CS_CONVERGENCE_V2/observatory/w10/tests/test_neural_spine_w13.py"
+W13_TESTS = (
+    ROOT / "MIP/G3CS_CONVERGENCE_V2/observatory/w10/tests/test_neural_spine_w13.py"
+)
 
 PIN_39 = 'networkx==3.2.1; python_version < "3.10"'
 PIN_310 = 'networkx==3.4.2; python_version >= "3.10" and python_version < "3.11"'
@@ -18,8 +21,11 @@ PIN_NEW = 'networkx==3.6.1; python_version >= "3.11"'
 
 
 def _scope(lines: str) -> list[str]:
-    return [s.strip() for s in lines.splitlines()
-            if s.strip().startswith("networkx") and not s.lstrip().startswith("#")]
+    return [
+        s.strip()
+        for s in lines.splitlines()
+        if s.strip().startswith("networkx") and not s.lstrip().startswith("#")
+    ]
 
 
 def test_matrix_and_b0_use_identical_interpreter_bound_pins():
@@ -34,9 +40,9 @@ def test_broad_native_matrix_really_installs_the_test_requirements():
     text = BROAD_CI.read_text(encoding="utf-8")
     marker = "name: Unit Tests (Python"
     start = text.index(marker)
-    part = text[start:text.index("  coverage:", start)]
+    part = text[start : text.index("  coverage:", start)]
     assert "pip install -r requirements-test.txt" in part
-    assert "pytest tests/ -m \"not integration\"" in part
+    assert 'pytest tests/ -m "not integration"' in part
     assert "os: [ubuntu-latest, windows-latest, macos-latest]" in part
     assert "python-version: ['3.11', '3.12']" in part
     assert "continue-on-error: true" not in part
@@ -54,14 +60,24 @@ def test_canonical_b0_dev_install_and_w13_import_remain_mandatory():
 
 def test_mutation_wrong_or_unpinned_matrix_package_is_caught():
     valid = TEST_REQUIREMENTS.read_text(encoding="utf-8")
-    for bogus in ("networkx", "networkx>=3", "networkx==3.6.1",
-                  "networkx==3.7.0", "networkx==3.4.2"):
+    for bogus in (
+        "networkx",
+        "networkx>=3",
+        "networkx==3.6.1",
+        "networkx==3.7.0",
+        "networkx==3.4.2",
+    ):
         mutated = valid.replace(PIN_39, bogus)
         assert _scope(mutated) != [PIN_39, PIN_310, PIN_NEW]
         mutated = valid.replace(PIN_NEW, bogus)
         assert _scope(mutated) != [PIN_39, PIN_310, PIN_NEW]
-    for bogus in ("networkx", "networkx>=3", "networkx==3.6.1",
-                  "networkx==3.7.0", "networkx==3.4.2"):
+    for bogus in (
+        "networkx",
+        "networkx>=3",
+        "networkx==3.6.1",
+        "networkx==3.7.0",
+        "networkx==3.4.2",
+    ):
         mutated = valid.replace(PIN_310, bogus)
         assert _scope(mutated) != [PIN_39, PIN_310, PIN_NEW]
 

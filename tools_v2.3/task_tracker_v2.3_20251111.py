@@ -4,6 +4,7 @@ Task Tracker V2.3.0
 DMAIC-based task management for the V2.3 system
 Tracks the 15 V2.3 tasks with priority, phase, and status metadata
 """
+
 import argparse
 import json
 import sys
@@ -16,7 +17,9 @@ __version__ = "v2.3.0"
 __date__ = "2025-11-11"
 
 # Default task database location (relative to repo root)
-_DEFAULT_DB = Path(__file__).resolve().parent.parent / "tracking_v2.3" / "tasks" / "tasks.json"
+_DEFAULT_DB = (
+    Path(__file__).resolve().parent.parent / "tracking_v2.3" / "tasks" / "tasks.json"
+)
 
 # Valid status values
 _STATUSES = {"pending", "in_progress", "completed", "blocked", "skipped"}
@@ -47,6 +50,7 @@ def _find_task(tasks: List[Dict], task_id: str) -> Optional[Dict]:
 # ---------------------------------------------------------------------------
 # Public API
 # ---------------------------------------------------------------------------
+
 
 class TaskTrackerV23:
     """V2.3 Task tracker with DMAIC-structured task management."""
@@ -129,12 +133,15 @@ class TaskTrackerV23:
 # CLI
 # ---------------------------------------------------------------------------
 
+
 def _build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(
         description="Task Tracker V2.3 — manage V2.3 tasks",
         formatter_class=argparse.RawDescriptionHelpFormatter,
     )
-    parser.add_argument("--db", default=str(_DEFAULT_DB), help="Path to tasks.json database")
+    parser.add_argument(
+        "--db", default=str(_DEFAULT_DB), help="Path to tasks.json database"
+    )
     sub = parser.add_subparsers(dest="command")
 
     sub.add_parser("list", help="List all tasks")
@@ -143,7 +150,9 @@ def _build_parser() -> argparse.ArgumentParser:
     add_p = sub.add_parser("add", help="Add a new task")
     add_p.add_argument("id", help="Unique task ID (e.g. T-001)")
     add_p.add_argument("title", help="Short task title")
-    add_p.add_argument("phase", help="DMAIC phase (Define/Measure/Analyze/Improve/Control)")
+    add_p.add_argument(
+        "phase", help="DMAIC phase (Define/Measure/Analyze/Improve/Control)"
+    )
     add_p.add_argument("--priority", type=int, default=3, choices=[1, 2, 3, 4, 5])
     add_p.add_argument("--description", default="")
 
@@ -165,7 +174,9 @@ def main(argv: List[str] = None) -> int:
         if not tasks:
             print("No tasks found.")
         for t in tasks:
-            print(f"[{t['status'].upper():10s}] {t['id']} | P{t['priority']} | {t['title']}")
+            print(
+                f"[{t['status'].upper():10s}] {t['id']} | P{t['priority']} | {t['title']}"
+            )
         return 0
 
     if args.command == "summary":

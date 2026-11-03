@@ -20,6 +20,7 @@ from typing import Any, Dict, List, Optional
 
 try:
     from core.execution_backbone import ExecutionBackbone
+
     EXECUTION_BACKBONE_AVAILABLE = True
 except ImportError:
     EXECUTION_BACKBONE_AVAILABLE = False
@@ -27,6 +28,7 @@ except ImportError:
 
 try:
     from gbogeb import GBOGEB
+
     GBOGEB_AVAILABLE = True
 except ImportError:
     GBOGEB_AVAILABLE = False
@@ -62,8 +64,14 @@ class TwelveClusterOrchestrator:
     """
 
     PHASE_SEQUENCE = [
-        "phase1", "phase2", "phase3", "phase4",
-        "phase5", "phase6", "phase7", "phase8",
+        "phase1",
+        "phase2",
+        "phase3",
+        "phase4",
+        "phase5",
+        "phase6",
+        "phase7",
+        "phase8",
     ]
 
     def __init__(
@@ -99,7 +107,9 @@ class TwelveClusterOrchestrator:
             print("[12-CLUSTER] Initializing GBOGEB observability...")
             self.gbogeb = GBOGEB(workspace="DMAIC_V3_OUTPUT/12cluster_workspace")
 
-        print(f"[12-CLUSTER] Orchestrator initialized with {len(self.clusters)} clusters")
+        print(
+            f"[12-CLUSTER] Orchestrator initialized with {len(self.clusters)} clusters"
+        )
 
     def _initialize_clusters(self) -> Dict[int, ClusterConfig]:
         """Initialize the canonical 12 clusters with DMAIC phase mapping."""
@@ -152,7 +162,9 @@ class TwelveClusterOrchestrator:
         """Execute one DMAIC phase and return a keyed, fail-closed result map."""
         import math
 
-        print(f"\n[12-CLUSTER] Executing {phase} across clusters (iteration {iteration})")
+        print(
+            f"\n[12-CLUSTER] Executing {phase} across clusters (iteration {iteration})"
+        )
         phase_clusters = [c for c in self.clusters.values() if c.phase == phase]
         if not phase_clusters:
             raise ValueError(f"Unknown or unmapped phase: {phase}")
@@ -170,14 +182,18 @@ class TwelveClusterOrchestrator:
             }
 
         chunk_size = max(1, math.ceil(len(tasks) / len(phase_clusters)))
-        task_chunks = [tasks[i:i + chunk_size] for i in range(0, len(tasks), chunk_size)]
+        task_chunks = [
+            tasks[i : i + chunk_size] for i in range(0, len(tasks), chunk_size)
+        ]
         cluster_chunk_pairs = list(zip(phase_clusters, task_chunks))
         if len(task_chunks) > len(phase_clusters):
             overflow_cluster = phase_clusters[-1]
-            for extra_chunk in task_chunks[len(phase_clusters):]:
+            for extra_chunk in task_chunks[len(phase_clusters) :]:
                 cluster_chunk_pairs.append((overflow_cluster, extra_chunk))
 
-        print(f"[12-CLUSTER] Distributing {len(tasks)} tasks across {len(phase_clusters)} clusters")
+        print(
+            f"[12-CLUSTER] Distributing {len(tasks)} tasks across {len(phase_clusters)} clusters"
+        )
         print(f"[12-CLUSTER] Chunk size: ~{chunk_size} tasks per cluster")
         start_time = time.time()
 
@@ -220,7 +236,9 @@ class TwelveClusterOrchestrator:
             try:
                 for cluster, chunk in cluster_chunk_pairs:
                     cluster.status = "running"
-                    future = executor.submit(self._execute_cluster_tasks, cluster, chunk, phase)
+                    future = executor.submit(
+                        self._execute_cluster_tasks, cluster, chunk, phase
+                    )
                     futures[future] = cluster
                     chunk_by_future[future] = chunk
 
@@ -237,18 +255,22 @@ class TwelveClusterOrchestrator:
                     try:
                         cluster_result = future.result()
                         cluster_results.append(cluster_result)
-                        cluster.tasks_executed += cluster_result.get("tasks_executed", 0)
+                        cluster.tasks_executed += cluster_result.get(
+                            "tasks_executed", 0
+                        )
                         cluster.tasks_failed += cluster_result.get("tasks_failed", 0)
                         results_map.update(cluster_result.get("results_map", {}))
                     except Exception as exc:
                         chunk = chunk_by_future[future]
                         print(f"[12-CLUSTER] Cluster {cluster.name} failed: {exc}")
                         cluster.tasks_failed += len(chunk)
-                        cluster_results.append({
-                            "tasks_executed": 0,
-                            "tasks_failed": len(chunk),
-                            "results_map": {},
-                        })
+                        cluster_results.append(
+                            {
+                                "tasks_executed": 0,
+                                "tasks_failed": len(chunk),
+                                "results_map": {},
+                            }
+                        )
                     finally:
                         cluster.status = "idle"
 
@@ -259,13 +281,17 @@ class TwelveClusterOrchestrator:
                     cluster.tasks_failed += len(chunk)
                     cluster.status = "idle"
                     future.cancel()
-                    cluster_results.append({
-                        "tasks_executed": 0,
-                        "tasks_failed": len(chunk),
-                        "results_map": {},
-                    })
+                    cluster_results.append(
+                        {
+                            "tasks_executed": 0,
+                            "tasks_failed": len(chunk),
+                            "results_map": {},
+                        }
+                    )
 
-                total_executed = sum(r.get("tasks_executed", 0) for r in cluster_results)
+                total_executed = sum(
+                    r.get("tasks_executed", 0) for r in cluster_results
+                )
                 total_failed = sum(r.get("tasks_failed", 0) for r in cluster_results)
                 result = {
                     "success": total_failed == 0,
@@ -286,7 +312,10 @@ class TwelveClusterOrchestrator:
                 agent="12cluster_orchestrator",
                 metric_name=f"{phase}_execution",
                 metric_value=result["tasks_executed"],
-                tags={"iteration": str(iteration), "clusters": str(result["clusters_used"])},
+                tags={
+                    "iteration": str(iteration),
+                    "clusters": str(result["clusters_used"]),
+                },
             )
 
         print(
@@ -330,7 +359,9 @@ class TwelveClusterOrchestrator:
             return task_func(*task_args, **task_kwargs)
         return task
 
-    def run_phases_with_hooks(self, iteration: int, phase_task_factory) -> Dict[str, Any]:
+    def run_phases_with_hooks(
+        self, iteration: int, phase_task_factory
+    ) -> Dict[str, Any]:
         """Run the canonical phase sequence and emit run-scoped temporal hooks."""
         self.temporal_events = []
         phase_results: Dict[str, Dict[str, Any]] = {}
@@ -343,14 +374,16 @@ class TwelveClusterOrchestrator:
                 for cluster in self.clusters.values()
                 if cluster.phase == phase
             ]
-            self.temporal_events.append({
-                "event": "phase_start",
-                "phase": phase,
-                "iteration": iteration,
-                "status": "started",
-                "clusters": clusters,
-                "artifacts": [f"{phase}:start"],
-            })
+            self.temporal_events.append(
+                {
+                    "event": "phase_start",
+                    "phase": phase,
+                    "iteration": iteration,
+                    "status": "started",
+                    "clusters": clusters,
+                    "artifacts": [f"{phase}:start"],
+                }
+            )
 
             try:
                 tasks = list(phase_task_factory(phase) or [])
@@ -372,14 +405,16 @@ class TwelveClusterOrchestrator:
             artifacts = sorted(phase_result.get("results_map", {}).keys())
             if not artifacts:
                 artifacts = [f"{phase}:no-result-artifact"]
-            self.temporal_events.append({
-                "event": "phase_end",
-                "phase": phase,
-                "iteration": iteration,
-                "status": "completed" if phase_result.get("success") else "failed",
-                "clusters": clusters,
-                "artifacts": artifacts,
-            })
+            self.temporal_events.append(
+                {
+                    "event": "phase_end",
+                    "phase": phase,
+                    "iteration": iteration,
+                    "status": "completed" if phase_result.get("success") else "failed",
+                    "clusters": clusters,
+                    "artifacts": artifacts,
+                }
+            )
 
         success = total_failed == 0 and all(
             result.get("success", False) for result in phase_results.values()
@@ -437,12 +472,16 @@ def main():
     args = parser.parse_args()
 
     if args.test:
-        orchestrator = TwelveClusterOrchestrator(max_workers=12, use_keb=False, use_gbogeb=False)
+        orchestrator = TwelveClusterOrchestrator(
+            max_workers=12, use_keb=False, use_gbogeb=False
+        )
         test_tasks = [
             {"task_id": f"test-{i}", "func": lambda x=i: x * 2}
             for i in range(args.tasks)
         ]
-        results = orchestrator.execute_phase_parallel(args.phase, test_tasks, iteration=1)
+        results = orchestrator.execute_phase_parallel(
+            args.phase, test_tasks, iteration=1
+        )
         print("\n[12-CLUSTER] Test Results:")
         print(json.dumps(results, indent=2))
         print("\n[12-CLUSTER] Cluster Status:")

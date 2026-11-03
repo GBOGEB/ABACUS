@@ -2,7 +2,6 @@ from pathlib import Path
 
 import yaml
 
-
 ROOT = Path(__file__).resolve().parents[1]
 RECEIPT = ROOT / "governance" / "ABACUS_1000_PLUS_COMMIT_MATURITY_RECEIPT_v0.1.yaml"
 
@@ -26,7 +25,9 @@ def test_receipt_records_actual_1000_plus_commit_state():
 
 def test_receipt_is_not_a_vanity_commit_goal():
     data = load_receipt()
-    controlled_meaning = " ".join(data["milestone_interpretation"]["controlled_meaning"].split())
+    controlled_meaning = " ".join(
+        data["milestone_interpretation"]["controlled_meaning"].split()
+    )
 
     assert data["milestone_interpretation"]["observed_threshold_state"] == "EXCEEDED"
     assert data["controls"]["no_vanity_commit_goal"] is True

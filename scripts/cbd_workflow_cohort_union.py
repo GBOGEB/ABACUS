@@ -70,13 +70,17 @@ def produce_cohorts(sources: list[dict]) -> dict:
             if row["attempt"] is None and len(known) > 1:
                 raise ValueError("ambiguous unknown/known run attempt")
             canonical_attempt = (
-                row["attempt"] if row["attempt"] is not None else
-                (next(iter(known)) if known else None)
+                row["attempt"]
+                if row["attempt"] is not None
+                else (next(iter(known)) if known else None)
             )
             if row["attempt"] is None and canonical_attempt is not None:
                 joined_unknown_known_rows += 1
             native_identity = (
-                row["pr"], row["sha"], row["workflow"], canonical_attempt
+                row["pr"],
+                row["sha"],
+                row["workflow"],
+                canonical_attempt,
             )
             if rid in native_run_identity:
                 prior = native_run_identity[rid]
@@ -126,9 +130,7 @@ def produce_cohorts(sources: list[dict]) -> dict:
         "distinct_source_documents": len(set(source_digests)),
         "source_digests_sha256": sorted(source_digests),
         "declared_observation_rows": input_rows,
-        "distinct_run_attempts": (
-            len(rows_by_run) if missing_attempts == 0 else None
-        ),
+        "distinct_run_attempts": (len(rows_by_run) if missing_attempts == 0 else None),
         "distinct_declared_run_ids": len({key[0] for key in rows_by_run}),
         "unknown_attempt_associations": missing_attempts,
         "unknown_associations_joined_to_declared_known": joined_unknown_known_rows,
@@ -139,16 +141,15 @@ def produce_cohorts(sources: list[dict]) -> dict:
         "snapshots_without_head_manifests": missing_manifests,
         "distinct_manifested_pr_heads": len(manifests_by_pr),
         "manifested_zero_failure_prs": sorted(
-            pr for pr, head in manifests_by_pr.items()
+            pr
+            for pr, head in manifests_by_pr.items()
             if head["failed_associations_seen"] == 0
         ),
         "non_atomic_manifest_workflow_associations": sum(
-            head["workflow_associations_seen"]
-            for head in manifests_by_pr.values()
+            head["workflow_associations_seen"] for head in manifests_by_pr.values()
         ),
         "non_atomic_manifest_failed_associations": sum(
-            head["failed_associations_seen"]
-            for head in manifests_by_pr.values()
+            head["failed_associations_seen"] for head in manifests_by_pr.values()
         ),
         "manifest_comparability": "NOT_A_DENOMINATOR_FOR_UNION_PASS_RATE",
         "ingestion_pulses": ingestion_pulses,

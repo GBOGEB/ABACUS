@@ -26,10 +26,11 @@ Related Files:
   - tests/conftest.py: Shared fixtures
 """
 
-import pytest
 import sys
 from pathlib import Path
-from typing import Dict, Any
+from typing import Any, Dict
+
+import pytest
 
 # Setup paths for import
 SCRIPT_DIR = Path(__file__).resolve().parent
@@ -49,6 +50,7 @@ class TestBootstrapBridgeIntegration:
         """Test that bootstrap_bridge module can be imported"""
         try:
             from bootstrap_bridge import BootstrapBridge
+
             assert BootstrapBridge is not None
         except ImportError as e:
             pytest.fail(f"Failed to import bootstrap_bridge: {e}")
@@ -78,7 +80,10 @@ class TestBootstrapBridgeIntegration:
 
         # Check for expected validation checks
         validation_checks = "\n".join(messages)
-        assert "test_bootstrap_eval.py" in validation_checks or "Test file" in validation_checks
+        assert (
+            "test_bootstrap_eval.py" in validation_checks
+            or "Test file" in validation_checks
+        )
         assert "pytest" in validation_checks
 
     @pytest.mark.TEST_BLOCKED_SOURCE_MISSING
@@ -111,7 +116,9 @@ class TestBootstrapBridgeIntegration:
             assert phases["define"]["test_count"] == 28
 
         except Exception as e:
-            pytest.skip(f"TEST_BLOCKED_SOURCE_MISSING: Prerequisites not met for full DMAIC execution: {e}")
+            pytest.skip(
+                f"TEST_BLOCKED_SOURCE_MISSING: Prerequisites not met for full DMAIC execution: {e}"
+            )
 
     def test_governed_runner_includes_bootstrap_bridge(self):
         """Test that the governed integration runner includes bootstrap bridge modes."""
@@ -135,7 +142,9 @@ class TestBootstrapBridgeIntegration:
         success, messages = bridge.validate_prerequisites()
 
         if not success:
-            pytest.skip(f"TEST_BLOCKED_SOURCE_MISSING: Prerequisites not met: {messages}")
+            pytest.skip(
+                f"TEST_BLOCKED_SOURCE_MISSING: Prerequisites not met: {messages}"
+            )
 
         # Try to run tests with bootstrap_stats marker (subset)
         try:
@@ -146,7 +155,9 @@ class TestBootstrapBridgeIntegration:
             assert results["bridge"] == "bootstrap_statistics"
 
         except Exception as e:
-            pytest.skip(f"TEST_BLOCKED_SOURCE_MISSING: Test execution not available: {e}")
+            pytest.skip(
+                f"TEST_BLOCKED_SOURCE_MISSING: Test execution not available: {e}"
+            )
 
     def test_cross_bridge_compatibility(self):
         """Test bootstrap bridge is compatible with other bridge structures"""
@@ -260,7 +271,9 @@ class TestBootstrapBridgeHealthCheck:
 
     def test_bootstrap_workflow_documents_current_runner(self):
         """Verify the bootstrap workflow is bound to current integration surfaces."""
-        workflow_path = PROJECT_ROOT / ".github" / "workflows" / "bootstrap-integration.yml"
+        workflow_path = (
+            PROJECT_ROOT / ".github" / "workflows" / "bootstrap-integration.yml"
+        )
         assert workflow_path.is_file(), "bootstrap-integration.yml not found"
 
         content = workflow_path.read_text(encoding="utf-8")

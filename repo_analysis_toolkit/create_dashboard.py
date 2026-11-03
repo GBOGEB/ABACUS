@@ -145,8 +145,9 @@ HTML_TMPL = """<!DOCTYPE html>
 """
 
 
-def render(repo_name: str, baseline: dict, summary: dict, rows: list[dict],
-           lineage_md: str) -> str:
+def render(
+    repo_name: str, baseline: dict, summary: dict, rows: list[dict], lineage_md: str
+) -> str:
     files = baseline.get("files", {})
     git = baseline.get("git", {})
     docs = baseline.get("docs", {})
@@ -201,8 +202,14 @@ def render(repo_name: str, baseline: dict, summary: dict, rows: list[dict],
 
 
 def main(argv: list[str] | None = None) -> int:
-    ap = argparse.ArgumentParser(description="DMAIC visualization — build an HTML dashboard")
-    ap.add_argument("--reports", required=True, help="Reports directory containing baseline.json / classification.csv")
+    ap = argparse.ArgumentParser(
+        description="DMAIC visualization — build an HTML dashboard"
+    )
+    ap.add_argument(
+        "--reports",
+        required=True,
+        help="Reports directory containing baseline.json / classification.csv",
+    )
     ap.add_argument("--out", default="reports/dashboard.html")
     ap.add_argument("--repo-name", default=None)
     args = ap.parse_args(argv)
@@ -211,7 +218,13 @@ def main(argv: list[str] | None = None) -> int:
     baseline = read_baseline(rdir / "baseline.json")
     rows, summary = read_classification(rdir / "classification.csv")
     lineage_md = read_text_if_exists(rdir / "lineage.md")
-    html_out = render(args.repo_name or baseline.get("repo_name", "—"), baseline, summary, rows, lineage_md)
+    html_out = render(
+        args.repo_name or baseline.get("repo_name", "—"),
+        baseline,
+        summary,
+        rows,
+        lineage_md,
+    )
 
     out_path = Path(args.out)
     out_path.parent.mkdir(parents=True, exist_ok=True)

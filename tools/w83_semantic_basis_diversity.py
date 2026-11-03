@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 """Aggregate W83 semantic-basis probe receipts without fitting PCA."""
+
 from __future__ import annotations
 
 import argparse
@@ -23,7 +24,9 @@ def main() -> None:
     parser.add_argument("--out", required=True)
     args = parser.parse_args()
 
-    rows = [json.loads(Path(path).read_text(encoding="utf-8")) for path in args.receipts]
+    rows = [
+        json.loads(Path(path).read_text(encoding="utf-8")) for path in args.receipts
+    ]
     labels = {row["matrix_label"] for row in rows}
     expected = EXPECTED_W79 | EXPECTED_RECENT
     if labels != expected or len(rows) != len(expected):
@@ -35,22 +38,23 @@ def main() -> None:
 
     groups = {
         "w79_historical": [row for row in rows if row["matrix_label"] in EXPECTED_W79],
-        "recent_outcomes": [row for row in rows if row["matrix_label"] in EXPECTED_RECENT],
+        "recent_outcomes": [
+            row for row in rows if row["matrix_label"] in EXPECTED_RECENT
+        ],
         "all_states": rows,
     }
     summary = {}
     for name, group in groups.items():
         summary[name] = {
             "state_count": len(group),
-            "unique_feature_vectors": len({row["feature_vector_sha256"] for row in group}),
+            "unique_feature_vectors": len(
+                {row["feature_vector_sha256"] for row in group}
+            ),
             "unique_semantic_composition": len(
                 {row["block_sha256"]["semantic_composition"] for row in group}
             ),
             "unique_consumer_graph_distribution": len(
-                {
-                    row["block_sha256"]["consumer_graph_distribution"]
-                    for row in group
-                }
+                {row["block_sha256"]["consumer_graph_distribution"] for row in group}
             ),
             "unique_workflow_governance_composition": len(
                 {
@@ -72,7 +76,9 @@ def main() -> None:
     recent_variable = [
         feature
         for feature in feature_names
-        if len({int(row["feature_vector"][feature]) for row in groups["recent_outcomes"]})
+        if len(
+            {int(row["feature_vector"][feature]) for row in groups["recent_outcomes"]}
+        )
         > 1
     ]
     result = {

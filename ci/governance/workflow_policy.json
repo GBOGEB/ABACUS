@@ -403,6 +403,12 @@
       "disposition": "keep"
     },
     {
+      "pattern": "^ldab-scale-fanout\\.yml$",
+      "cluster": "specialised",
+      "lifecycle": "manual",
+      "disposition": "keep"
+    },
+    {
       "pattern": "^testpilot-preflight\\.yml$",
       "cluster": "core_test",
       "lifecycle": "pr_fast",
@@ -729,6 +735,12 @@
     {
       "pattern": "^qps-bt-admission\\.yml$",
       "cluster": "statistics",
+      "lifecycle": "pr_domain",
+      "disposition": "keep"
+    },
+    {
+      "pattern": "^qps-slide-reviewer-deps\\.yml$",
+      "cluster": "security",
       "lifecycle": "pr_domain",
       "disposition": "keep"
     }

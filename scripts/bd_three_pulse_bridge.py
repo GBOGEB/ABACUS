@@ -59,11 +59,7 @@ def _validate_root_census(roots, bandit_count, scope):
             raise ValueError("invalid canonical root category")
         bandit_roots += 1
         fp = root.get("fingerprint")
-        if (
-            not isinstance(fp, str)
-            or not FP.fullmatch(fp)
-            or fp in fingerprints
-        ):
+        if not isinstance(fp, str) or not FP.fullmatch(fp) or fp in fingerprints:
             raise ValueError("invalid Bandit fingerprint")
         fingerprints.add(fp)
         if (
@@ -80,19 +76,22 @@ def _validate_root_census(roots, bandit_count, scope):
         if not isinstance(rows, list):
             raise ValueError("missing Bandit observations")
         native = [
-            obs for obs in rows
+            obs
+            for obs in rows
             if isinstance(obs, dict) and obs.get("source") == "bandit_disjoint"
         ]
         if len(native) != 1:
             raise ValueError("Bandit root needs one source-bound observation")
         for field in (
-            "repository", "source_sha", "run_id", "job_id",
-            "evidence_url", "scan_configuration",
+            "repository",
+            "source_sha",
+            "run_id",
+            "job_id",
+            "evidence_url",
+            "scan_configuration",
         ):
             expected = (
-                scope.get("head_sha")
-                if field == "source_sha"
-                else scope.get(field)
+                scope.get("head_sha") if field == "source_sha" else scope.get(field)
             )
             if native[0].get(field) != expected:
                 raise ValueError("Bandit source mismatch: " + field)
@@ -158,7 +157,8 @@ def rollup(pulses):
                 "coverage": None,
                 "coverage_candidates_unverified": _coverage(pulse.get("coverage")),
                 "coverage_proof_state": (
-                    "UNVERIFIED" if pulse.get("coverage") is not None
+                    "UNVERIFIED"
+                    if pulse.get("coverage") is not None
                     else "NOT_SUPPLIED"
                 ),
             }
@@ -175,7 +175,10 @@ def rollup(pulses):
                 "reason": "NATIVE_COVERAGE_PROOF_NOT_AVAILABLE",
             }
             for name in (
-                "main_statement", "main_branch", "diff_statement", "diff_branch"
+                "main_statement",
+                "main_branch",
+                "diff_statement",
+                "diff_branch",
             )
         }
         movements.append(

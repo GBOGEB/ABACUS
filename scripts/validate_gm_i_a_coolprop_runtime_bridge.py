@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 """Fail-closed GM-I-A CoolProp FAST/HEAVY federation consumer."""
+
 from __future__ import annotations
 
 import argparse
@@ -78,7 +79,9 @@ def main() -> None:
         "consumer_repo": "GBOGEB/ABACUS",
         "provider_repo": "GBOGEB/CoolProp",
         "provider_source_head_sha": att["source_head_sha"],
-        "provider_attestation_commit_sha": manifest["provider"]["attestation_commit_sha"],
+        "provider_attestation_commit_sha": manifest["provider"][
+            "attestation_commit_sha"
+        ],
         "provider_attestation_sha256": digest,
         "provider_workflow_run_id": att["workflow"]["run_id"],
         "heavy_artifact_digest": att["heavy"]["artifact"]["digest"],

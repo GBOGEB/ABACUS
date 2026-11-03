@@ -3,6 +3,7 @@
 
 A source-present state is NOT execution, artifact proof, or merge admission.
 """
+
 from __future__ import annotations
 
 import argparse
@@ -15,15 +16,25 @@ SOURCES = {
     "phase2": {
         "path": "dow_phase2_statistics.py",
         "invocation": [
-            "python", "dow_phase2_statistics.py", "--results-dir", "test_data.csv",
-            "--dow-root", "dow_output", "--alpha", "0.05", "--mode", "csv",
+            "python",
+            "dow_phase2_statistics.py",
+            "--results-dir",
+            "test_data.csv",
+            "--dow-root",
+            "dow_output",
+            "--alpha",
+            "0.05",
+            "--mode",
+            "csv",
         ],
     },
     "phase3": {
         "path": "dow_phase3_reporting.py",
         "invocation": [
-            "python", "dow_phase3_reporting.py",
-            "--phase2-metadata", "<phase2_metadata_path>",
+            "python",
+            "dow_phase3_reporting.py",
+            "--phase2-metadata",
+            "<phase2_metadata_path>",
         ],
     },
 }
@@ -31,7 +42,9 @@ EXPECTED_OUTPUTS = {
     "phase2": ["dow_output/**/phase2_metadata.json"],
     "phase3": ["phase3_reports/**/*"],
     "upload_patterns": [
-        "dow_output/**/*.md", "dow_output/**/*.json", "dow_output/**/*.png",
+        "dow_output/**/*.md",
+        "dow_output/**/*.json",
+        "dow_output/**/*.png",
         "phase3_reports/**/*",
     ],
 }
@@ -58,8 +71,7 @@ def _source_state(root: Path, relative: str) -> dict:
 def census(root: Path) -> dict:
     """Report workflow expectations without assigning artificial PASS."""
     observed = {
-        name: _source_state(root, details["path"])
-        for name, details in SOURCES.items()
+        name: _source_state(root, details["path"]) for name, details in SOURCES.items()
     }
     failures = {
         name: row["state"]

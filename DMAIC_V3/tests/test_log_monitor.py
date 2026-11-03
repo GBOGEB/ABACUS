@@ -5,9 +5,10 @@ Version: 1.0.0
 Date: 2025-11-26
 """
 
-import pytest
-from pathlib import Path
 import sys
+from pathlib import Path
+
+import pytest
 
 sys.path.insert(0, str(Path(__file__).parent.parent.parent))
 
@@ -45,6 +46,7 @@ def sample_log_file(log_dir):
 # Initialization Tests
 # ============================================================================
 
+
 @pytest.mark.unit
 class TestLogMonitorInitialization:
 
@@ -56,24 +58,25 @@ class TestLogMonitorInitialization:
 
     def test_patterns_initialization(self, log_monitor):
         """Test regex patterns are initialized"""
-        assert 'error' in log_monitor.patterns
-        assert 'warning' in log_monitor.patterns
-        assert 'performance' in log_monitor.patterns
-        assert 'phase_start' in log_monitor.patterns
-        assert 'phase_end' in log_monitor.patterns
-        assert 'quality_gate' in log_monitor.patterns
+        assert "error" in log_monitor.patterns
+        assert "warning" in log_monitor.patterns
+        assert "performance" in log_monitor.patterns
+        assert "phase_start" in log_monitor.patterns
+        assert "phase_end" in log_monitor.patterns
+        assert "quality_gate" in log_monitor.patterns
 
     def test_thresholds_initialization(self, log_monitor):
         """Test anomaly thresholds are initialized"""
-        assert 'error_rate' in log_monitor.anomaly_thresholds
-        assert 'warning_rate' in log_monitor.anomaly_thresholds
-        assert 'avg_phase_duration' in log_monitor.anomaly_thresholds
-        assert 'quality_gate_pass_rate' in log_monitor.anomaly_thresholds
+        assert "error_rate" in log_monitor.anomaly_thresholds
+        assert "warning_rate" in log_monitor.anomaly_thresholds
+        assert "avg_phase_duration" in log_monitor.anomaly_thresholds
+        assert "quality_gate_pass_rate" in log_monitor.anomaly_thresholds
 
 
 # ============================================================================
 # Pattern Detection Tests
 # ============================================================================
+
 
 @pytest.mark.unit
 class TestPatternDetection:
@@ -85,54 +88,55 @@ class TestPatternDetection:
             "Exception occurred in phase 2",
             "Traceback (most recent call last):",
             "Failed to process request",
-            "Failure in validation"
+            "Failure in validation",
         ]
 
         for line in test_lines:
-            assert log_monitor.patterns['error'].search(line) is not None
+            assert log_monitor.patterns["error"].search(line) is not None
 
     def test_warning_pattern_detection(self, log_monitor):
         """Test warning pattern detection"""
         test_lines = [
             "WARNING: Low memory",
             "WARN: Deprecated function",
-            "Deprecated: Use new API"
+            "Deprecated: Use new API",
         ]
 
         for line in test_lines:
-            assert log_monitor.patterns['warning'].search(line) is not None
+            assert log_monitor.patterns["warning"].search(line) is not None
 
     def test_performance_pattern_detection(self, log_monitor):
         """Test performance pattern detection"""
         test_lines = [
             "Operation took 45.2 seconds",
             "Completed in 120 ms",
-            "Duration: 5 minutes"
+            "Duration: 5 minutes",
         ]
 
         for line in test_lines:
-            assert log_monitor.patterns['performance'].search(line) is not None
+            assert log_monitor.patterns["performance"].search(line) is not None
 
     def test_phase_pattern_detection(self, log_monitor):
         """Test phase start/end pattern detection"""
         start_line = "Starting Phase 3"
         end_line = "Completed Phase 3"
 
-        assert log_monitor.patterns['phase_start'].search(start_line) is not None
-        assert log_monitor.patterns['phase_end'].search(end_line) is not None
+        assert log_monitor.patterns["phase_start"].search(start_line) is not None
+        assert log_monitor.patterns["phase_end"].search(end_line) is not None
 
     def test_quality_gate_pattern_detection(self, log_monitor):
         """Test quality gate pattern detection"""
         passed_line = "Quality Gate check passed"
         failed_line = "Quality Gate check failed"
 
-        assert log_monitor.patterns['quality_gate'].search(passed_line) is not None
-        assert log_monitor.patterns['quality_gate'].search(failed_line) is not None
+        assert log_monitor.patterns["quality_gate"].search(passed_line) is not None
+        assert log_monitor.patterns["quality_gate"].search(failed_line) is not None
 
 
 # ============================================================================
 # Log Scanning Tests
 # ============================================================================
+
 
 @pytest.mark.integration
 class TestLogScanning:
@@ -141,25 +145,25 @@ class TestLogScanning:
         """Test scanning a single log file"""
         results = log_monitor.scan_logs([sample_log_file])
 
-        assert 'errors' in results
-        assert 'warnings' in results
-        assert 'summary' in results
-        assert 'timestamp' in results
+        assert "errors" in results
+        assert "warnings" in results
+        assert "summary" in results
+        assert "timestamp" in results
 
     def test_error_detection_in_logs(self, log_monitor, sample_log_file):
         """Test error detection in log files"""
         results = log_monitor.scan_logs([sample_log_file])
 
-        assert len(results['errors']) > 0
-        assert results['errors'][0]['file'] == str(sample_log_file)
-        assert 'ERROR' in results['errors'][0]['content']
+        assert len(results["errors"]) > 0
+        assert results["errors"][0]["file"] == str(sample_log_file)
+        assert "ERROR" in results["errors"][0]["content"]
 
     def test_warning_detection_in_logs(self, log_monitor, sample_log_file):
         """Test warning detection in log files"""
         results = log_monitor.scan_logs([sample_log_file])
 
-        assert len(results['warnings']) > 0
-        assert 'WARNING' in results['warnings'][0]['content']
+        assert len(results["warnings"]) > 0
+        assert "WARNING" in results["warnings"][0]["content"]
 
     def test_scan_multiple_log_files(self, log_monitor, log_dir):
         """Test scanning multiple log files"""
@@ -170,7 +174,7 @@ class TestLogScanning:
 
         results = log_monitor.scan_logs()
 
-        assert len(results['errors']) >= 3
+        assert len(results["errors"]) >= 3
 
     def test_scan_empty_log_file(self, log_monitor, log_dir):
         """Test scanning empty log file"""
@@ -179,13 +183,14 @@ class TestLogScanning:
 
         results = log_monitor.scan_logs([empty_log])
 
-        assert len(results['errors']) == 0
-        assert len(results['warnings']) == 0
+        assert len(results["errors"]) == 0
+        assert len(results["warnings"]) == 0
 
 
 # ============================================================================
 # Summary Generation Tests
 # ============================================================================
+
 
 @pytest.mark.unit
 class TestSummaryGeneration:
@@ -194,9 +199,9 @@ class TestSummaryGeneration:
         """Test summary generation"""
         results = log_monitor.scan_logs([sample_log_file])
 
-        assert 'total_errors' in results['summary']
-        assert 'total_warnings' in results['summary']
-        assert 'health_score' in results['summary']
+        assert "total_errors" in results["summary"]
+        assert "total_warnings" in results["summary"]
+        assert "health_score" in results["summary"]
 
     def test_health_score_calculation(self, log_monitor):
         """Test health score calculation"""
@@ -225,6 +230,7 @@ class TestSummaryGeneration:
 # Anomaly Detection Tests
 # ============================================================================
 
+
 @pytest.mark.integration
 class TestAnomalyDetection:
 
@@ -237,8 +243,8 @@ class TestAnomalyDetection:
 
         results = log_monitor.scan_logs([error_log])
 
-        assert len(results['anomalies']) > 0
-        assert any(a['type'] == 'high_error_rate' for a in results['anomalies'])
+        assert len(results["anomalies"]) > 0
+        assert any(a["type"] == "high_error_rate" for a in results["anomalies"])
 
     def test_high_warning_rate_anomaly(self, log_monitor, log_dir):
         """Test high warning rate anomaly detection"""
@@ -249,8 +255,8 @@ class TestAnomalyDetection:
 
         results = log_monitor.scan_logs([warning_log])
 
-        assert len(results['anomalies']) > 0
-        assert any(a['type'] == 'high_warning_rate' for a in results['anomalies'])
+        assert len(results["anomalies"]) > 0
+        assert any(a["type"] == "high_warning_rate" for a in results["anomalies"])
 
     def test_anomaly_severity_levels(self, log_monitor, log_dir):
         """Test anomaly severity levels"""
@@ -260,7 +266,9 @@ class TestAnomalyDetection:
 
         results = log_monitor.scan_logs([error_log])
 
-        critical_anomalies = [a for a in results['anomalies'] if a['severity'] == 'critical']
+        critical_anomalies = [
+            a for a in results["anomalies"] if a["severity"] == "critical"
+        ]
         assert len(critical_anomalies) > 0
 
     def test_no_anomalies_clean_logs(self, log_monitor, log_dir):
@@ -271,12 +279,13 @@ class TestAnomalyDetection:
 
         results = log_monitor.scan_logs([clean_log])
 
-        assert len(results['anomalies']) == 0
+        assert len(results["anomalies"]) == 0
 
 
 # ============================================================================
 # Report Generation Tests
 # ============================================================================
+
 
 @pytest.mark.integration
 class TestReportGeneration:
@@ -312,6 +321,7 @@ class TestReportGeneration:
 # Edge Cases and Error Handling Tests
 # ============================================================================
 
+
 @pytest.mark.unit
 class TestEdgeCasesAndErrors:
 
@@ -321,7 +331,7 @@ class TestEdgeCasesAndErrors:
         monitor = LogMonitor(nonexistent_dir)
 
         results = monitor.scan_logs()
-        assert len(results['errors']) == 0
+        assert len(results["errors"]) == 0
 
     def test_corrupted_log_file(self, log_monitor, log_dir):
         """Test handling of corrupted log file"""
@@ -330,7 +340,7 @@ class TestEdgeCasesAndErrors:
 
         # Should not crash
         results = log_monitor.scan_logs([corrupted_log])
-        assert 'errors' in results
+        assert "errors" in results
 
     def test_very_large_log_file(self, log_monitor, log_dir):
         """Test handling of large log file"""
@@ -339,20 +349,23 @@ class TestEdgeCasesAndErrors:
         large_log.write_text(large_content)
 
         results = log_monitor.scan_logs([large_log])
-        assert 'summary' in results
+        assert "summary" in results
 
     def test_unicode_in_logs(self, log_monitor, log_dir):
         """Test handling of unicode characters in logs"""
         unicode_log = log_dir / "unicode.log"
-        unicode_log.write_text("INFO: Test with émojis 🚀 and spëcial çhars", encoding='utf-8')
+        unicode_log.write_text(
+            "INFO: Test with émojis 🚀 and spëcial çhars", encoding="utf-8"
+        )
 
         results = log_monitor.scan_logs([unicode_log])
-        assert 'summary' in results
+        assert "summary" in results
 
 
 # ============================================================================
 # Integration with DMAIC Pipeline Tests
 # ============================================================================
+
 
 @pytest.mark.integration
 class TestDMAICIntegration:
@@ -375,7 +388,7 @@ Completed Phase 5: Control
         phase_log.write_text(phase_content)
 
         results = log_monitor.scan_logs([phase_log])
-        assert results['summary']['health_score'] > 90
+        assert results["summary"]["health_score"] > 90
 
     def test_monitor_quality_gates(self, log_monitor, log_dir):
         """Test monitoring quality gate logs"""
@@ -390,4 +403,4 @@ Quality Gate Phase 5: passed
         qg_log.write_text(qg_content)
 
         results = log_monitor.scan_logs([qg_log])
-        assert results['summary']['health_score'] == 100
+        assert results["summary"]["health_score"] == 100

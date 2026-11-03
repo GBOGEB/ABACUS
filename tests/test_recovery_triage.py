@@ -11,9 +11,14 @@ B = "b" * 40
 
 def obs(head=A, run=42, job=101, message="API rate limit exceeded for installation"):
     return {
-        "repository": "GBOGEB/ABACUS", "head_sha": head,
-        "run_id": run, "job_id": job, "attempt": 1,
-        "status": "completed", "conclusion": "failure", "first_red": message,
+        "repository": "GBOGEB/ABACUS",
+        "head_sha": head,
+        "run_id": run,
+        "job_id": job,
+        "attempt": 1,
+        "status": "completed",
+        "conclusion": "failure",
+        "first_red": message,
     }
 
 
@@ -36,15 +41,16 @@ class RecoveryTriageTests(unittest.TestCase):
         report = reconcile([common, independent])
         self.assertEqual(report["observations"], 2)
         self.assertEqual(report["distinct_causal_candidates"], 2)
-        self.assertEqual({x["root_id"] for x in report["roots"]},
-                         {"BANDIT", "SAFETY"})
+        self.assertEqual({x["root_id"] for x in report["roots"]}, {"BANDIT", "SAFETY"})
         self.assertEqual(report["merge_admission"], "HOLD")
 
     def test_dependency_graph_independent_from_quota(self):
         r = reconcile([obs(), obs(B, 99, 102, "Dependency review is not supported")])
         self.assertEqual(r["distinct_causal_candidates"], 2)
-        self.assertEqual({x["root_id"] for x in r["roots"]},
-                         {"API_QUOTA", "DEPENDENCY_GRAPH_DISABLED"})
+        self.assertEqual(
+            {x["root_id"] for x in r["roots"]},
+            {"API_QUOTA", "DEPENDENCY_GRAPH_DISABLED"},
+        )
 
     def test_recognizes_security_and_formatter_roots(self):
         for message, root in (
@@ -62,8 +68,7 @@ class RecoveryTriageTests(unittest.TestCase):
         self.assertFalse(r["automatic_retry_authorized"])
 
     def test_ambiguous_signature_remains_unknown(self):
-        self.assertEqual(fingerprint("Tender guard / Safety is red"),
-                         "UNCLASSIFIED")
+        self.assertEqual(fingerprint("Tender guard / Safety is red"), "UNCLASSIFIED")
 
     def test_missing_or_invalid_first_red_rejected(self):
         for message in (None, "", 5):
@@ -71,19 +76,23 @@ class RecoveryTriageTests(unittest.TestCase):
                 reconcile([obs(message=message)])
 
     def test_nonterminal_evidence_rejected(self):
-        for status, conclusion in (("in_progress", "failure"),
-                                   ("completed", "success")):
+        for status, conclusion in (
+            ("in_progress", "failure"),
+            ("completed", "success"),
+        ):
             row = obs()
             row.update(status=status, conclusion=conclusion)
-            with self.subTest(row=row), self.assertRaisesRegex(
-                ValueError, "terminal failing"
+            with (
+                self.subTest(row=row),
+                self.assertRaisesRegex(ValueError, "terminal failing"),
             ):
                 reconcile([row])
 
     def test_malformed_sha_rejected(self):
         for head in ("f" * 39, "G" * 40, True, "A" * 40):
-            with self.subTest(head=head), self.assertRaisesRegex(
-                ValueError, "source head"
+            with (
+                self.subTest(head=head),
+                self.assertRaisesRegex(ValueError, "source head"),
             ):
                 reconcile([obs(head=head)])
 
@@ -114,16 +123,20 @@ class RecoveryTriageTests(unittest.TestCase):
         self.assertFalse(r["quota_recovery_independently_verified"])
 
     def test_running_canary_never_authorizes_fanout(self):
-        canary = {"status": "IN_PROGRESS", "head_sha": A, "run_id": 1,
-                  "attempt": 2}
+        canary = {"status": "IN_PROGRESS", "head_sha": A, "run_id": 1, "attempt": 2}
         r = reconcile([obs()], canary)
         self.assertEqual(r["canary_status"], "IN_PROGRESS")
         self.assertFalse(r["canary_native_terminal"])
         self.assertFalse(r["automatic_fanout_authorized"])
 
     def test_success_declaration_still_requires_external_attestation(self):
-        c = {"status": "SUCCESS", "head_sha": A, "run_id": 1, "attempt": 2,
-             "receipt_ref": "github-actions-run-1"}
+        c = {
+            "status": "SUCCESS",
+            "head_sha": A,
+            "run_id": 1,
+            "attempt": 2,
+            "receipt_ref": "github-actions-run-1",
+        }
         r = reconcile([obs()], c)
         self.assertTrue(r["canary_native_terminal"])
         self.assertFalse(r["quota_recovery_independently_verified"])
@@ -135,10 +148,10 @@ class RecoveryTriageTests(unittest.TestCase):
             reconcile([obs()], c)
 
     def test_unknown_canary_and_malformed_canary_rejected(self):
-        for c in ([], {"status": "UP", "head_sha": A, "run_id": 1,
-                         "attempt": 2}):
-            with self.subTest(canary=c), self.assertRaisesRegex(
-                ValueError, "invalid canary"
+        for c in ([], {"status": "UP", "head_sha": A, "run_id": 1, "attempt": 2}):
+            with (
+                self.subTest(canary=c),
+                self.assertRaisesRegex(ValueError, "invalid canary"),
             ):
                 reconcile([], c)
 
@@ -149,8 +162,7 @@ class RecoveryTriageTests(unittest.TestCase):
             reconcile([None])
 
     def test_no_merges_waivers_or_security_root_closure(self):
-        r = reconcile([obs(), obs(B, 99, 102,
-                          "Dependency review is not supported")])
+        r = reconcile([obs(), obs(B, 99, 102, "Dependency review is not supported")])
         self.assertEqual(r["security_gates_waived"], 0)
         self.assertEqual(r["merge_admission"], "HOLD")
         self.assertFalse(r["automatic_retry_authorized"])

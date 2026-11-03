@@ -1,4 +1,5 @@
 """Plotly chart generation for cryogenic leak-rate dashboard."""
+
 from __future__ import annotations
 
 from pathlib import Path
@@ -24,9 +25,15 @@ def make_plot_1_leak_vs_loss(conversion_df: pd.DataFrame) -> go.Figure:
         log_y=True,
         markers=True,
         title="Plot 1 — Leak Rate vs Helium Loss (P=5 bar)",
-        labels={"mass_flow_g_year": "Mass loss (g/year)", "leak_rate_mbar_l_s": "Leak rate (mbar·L/s)", "temperature_K": "Temperature (K)"},
+        labels={
+            "mass_flow_g_year": "Mass loss (g/year)",
+            "leak_rate_mbar_l_s": "Leak rate (mbar·L/s)",
+            "temperature_K": "Temperature (K)",
+        },
     )
-    fig.update_traces(hovertemplate="Leak=%{x:.1e} mbar·L/s<br>T=%{customdata[0]} K<br>Loss=%{y:.3e} g/year")
+    fig.update_traces(
+        hovertemplate="Leak=%{x:.1e} mbar·L/s<br>T=%{customdata[0]} K<br>Loss=%{y:.3e} g/year"
+    )
     return fig
 
 
@@ -39,7 +46,11 @@ def make_plot_2_temp_effect(conversion_df: pd.DataFrame) -> go.Figure:
         color="pressure_bar_abs",
         markers=True,
         title="Plot 2 — Temperature Effect on Mass Loss (Leak class 1e-8)",
-        labels={"mass_flow_g_year": "Mass loss (g/year)", "temperature_K": "Temperature (K)", "pressure_bar_abs": "Pressure (bar abs)"},
+        labels={
+            "mass_flow_g_year": "Mass loss (g/year)",
+            "temperature_K": "Temperature (K)",
+            "pressure_bar_abs": "Pressure (bar abs)",
+        },
     )
     return fig
 
@@ -52,25 +63,52 @@ def make_plot_3_valve_comparison(cost_df: pd.DataFrame) -> go.Figure:
         barmode="group",
         title="Plot 3 — Valve Class CAPEX vs Helium-Loss Cost (40y)",
         labels={"value": "EUR", "variable": "Cost component"},
-        color_discrete_map={"valve_capex_eur": "#1f77b4", "helium_cost_over_life_eur": "#ff7f0e"},
+        color_discrete_map={
+            "valve_capex_eur": "#1f77b4",
+            "helium_cost_over_life_eur": "#ff7f0e",
+        },
     )
     return fig
 
 
-def make_plot_4_system_projection(inventory_df: pd.DataFrame, helium_price_eur_kg: float = 15.0) -> go.Figure:
+def make_plot_4_system_projection(
+    inventory_df: pd.DataFrame, helium_price_eur_kg: float = 15.0
+) -> go.Figure:
     base_loss_kg = inventory_df["mass_loss_g_year_total"].sum() / 1000.0
     scenarios = pd.DataFrame(
         [
             {"scenario": "Baseline mix", "annual_loss_kg": base_loss_kg},
-            {"scenario": "All leak-tight (1e-9)", "annual_loss_kg": base_loss_kg * 0.15},
-            {"scenario": "All standard warm (1e-5)", "annual_loss_kg": base_loss_kg * 1.85},
+            {
+                "scenario": "All leak-tight (1e-9)",
+                "annual_loss_kg": base_loss_kg * 0.15,
+            },
+            {
+                "scenario": "All standard warm (1e-5)",
+                "annual_loss_kg": base_loss_kg * 1.85,
+            },
         ]
     )
     scenarios["annual_cost_eur"] = scenarios["annual_loss_kg"] * helium_price_eur_kg
 
     fig = go.Figure()
-    fig.add_trace(go.Bar(name="Annual He loss (kg)", x=scenarios["scenario"], y=scenarios["annual_loss_kg"], marker_color="#17becf"))
-    fig.add_trace(go.Scatter(name="Annual He cost (EUR)", x=scenarios["scenario"], y=scenarios["annual_cost_eur"], yaxis="y2", mode="lines+markers", line=dict(color="#d62728", width=3)))
+    fig.add_trace(
+        go.Bar(
+            name="Annual He loss (kg)",
+            x=scenarios["scenario"],
+            y=scenarios["annual_loss_kg"],
+            marker_color="#17becf",
+        )
+    )
+    fig.add_trace(
+        go.Scatter(
+            name="Annual He cost (EUR)",
+            x=scenarios["scenario"],
+            y=scenarios["annual_cost_eur"],
+            yaxis="y2",
+            mode="lines+markers",
+            line=dict(color="#d62728", width=3),
+        )
+    )
     fig.update_layout(
         title="Plot 4 — System-Level Annual Loss Projection (210 cold + 200 warm)",
         yaxis=dict(title="Helium loss (kg/year)"),

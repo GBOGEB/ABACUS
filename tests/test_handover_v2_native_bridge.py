@@ -1,4 +1,5 @@
 """Expose nested V2 contract tests to root-level native pytest discovery."""
+
 from __future__ import annotations
 
 import importlib.util

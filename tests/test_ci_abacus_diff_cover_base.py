@@ -1,6 +1,5 @@
 from pathlib import Path
 
-
 WORKFLOW = Path(".github/workflows/ci-abacus.yml")
 
 
@@ -18,7 +17,7 @@ def test_abacus_proof_checkout_has_full_history_for_merge_base():
     text = WORKFLOW.read_text(encoding="utf-8")
     marker = "name: ABACUS - ${{ matrix.os }} - Python ${{ matrix.python-version }}"
     start = text.index(marker)
-    proof_job = text[start:text.index("  compatibility-gate:", start)]
+    proof_job = text[start : text.index("  compatibility-gate:", start)]
 
     assert "uses: actions/checkout@v7" in proof_job
     assert "fetch-depth: 0" in proof_job

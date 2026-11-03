@@ -143,7 +143,8 @@ class TestMissionBurndown(unittest.TestCase):
 
     def test_recent_bot_count_supersedes_stale_issue_body(self):
         original = item(
-            1885, "Dashboard health check failure",
+            1885,
+            "Dashboard health check failure",
             "Broken internal links | 53",
         )
         original["latest_dashboard_comment"] = {
@@ -210,9 +211,7 @@ class TestMissionBurndown(unittest.TestCase):
 
         connection = Connection()
         connection.response.status = 403
-        with patch.object(
-            mod.http.client, "HTTPSConnection", return_value=connection
-        ):
+        with patch.object(mod.http.client, "HTTPSConnection", return_value=connection):
             with self.assertRaisesRegex(ValueError, "GitHub API HTTP 403"):
                 mod.github_get("/repos/GBOGEB/ABACUS/issues", "test-token")
             self.assertTrue(connection.closed)
@@ -227,11 +226,12 @@ class TestMissionBurndown(unittest.TestCase):
         )
         second = [item(1929, "BD LDAB census")]
         next_url = (
-            '<https://api.github.com/repos/GBOGEB/ABACUS/issues'
+            "<https://api.github.com/repos/GBOGEB/ABACUS/issues"
             '?state=open&per_page=100&page=2>; rel="next"'
         )
         with patch.object(
-            mod, "github_get",
+            mod,
+            "github_get",
             side_effect=[(first, next_url), (second, "")],
         ) as api:
             issues = mod.list_open_issues("test-token")
@@ -240,7 +240,8 @@ class TestMissionBurndown(unittest.TestCase):
 
     def test_live_census_uses_latest_dashboard_bot_comment(self):
         incident = item(
-            1885, "Dashboard health check failure",
+            1885,
+            "Dashboard health check failure",
             "Broken internal links | 53",
         )
         ordinary = item(1929, "BD LDAB census")
@@ -261,8 +262,10 @@ class TestMissionBurndown(unittest.TestCase):
             if path.endswith("/branches/main"):
                 return {"commit": {"sha": SHA}, "protected": True}, ""
             if "/actions/runs?" in path:
-                return {"workflow_runs": [{"head_sha": SHA, "conclusion": "success"}],
-                        "total_count": 1}, ""
+                return {
+                    "workflow_runs": [{"head_sha": SHA, "conclusion": "success"}],
+                    "total_count": 1,
+                }, ""
             if path.endswith("/comments?per_page=100"):
                 return [latest], ""
             self.fail(f"unexpected GitHub API route: {path}")
@@ -278,8 +281,9 @@ class TestMissionBurndown(unittest.TestCase):
         self.assertEqual(rows[1885]["root_candidate"], "DASHBOARD_LINK_COUNTS:5:0")
         self.assertEqual(rows[1885]["latest_dashboard_comment_id"], 777)
         self.assertEqual(rows[1929]["source_class"], "ISSUE_BODY")
-        self.assertEqual(evidence["current_main_workflows"]["status_counts"],
-                         {"success": 1})
+        self.assertEqual(
+            evidence["current_main_workflows"]["status_counts"], {"success": 1}
+        )
 
     def test_dashboard_comment_malformed_api_fails_closed(self):
         with patch.object(mod, "github_get", return_value=({}, "")):

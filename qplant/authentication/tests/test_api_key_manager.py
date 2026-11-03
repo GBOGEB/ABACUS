@@ -2,13 +2,13 @@
 
 import json
 import os
+import sys
 import tempfile
 import time
 from datetime import datetime, timedelta
 from pathlib import Path
 
 import pytest
-import sys
 
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), ".."))
 from api_key_manager import APIKeyManager
@@ -27,6 +27,7 @@ def mgr(tmp_db):
 
 
 # ── Generation ───────────────────────────────────────────────────────
+
 
 class TestGeneration:
     def test_generate_returns_key_id_and_key(self, mgr):
@@ -62,6 +63,7 @@ class TestGeneration:
 
 
 # ── Validation ───────────────────────────────────────────────────────
+
 
 class TestValidation:
     def test_validate_valid_key(self, mgr):
@@ -110,6 +112,7 @@ class TestValidation:
 
 # ── Revocation ───────────────────────────────────────────────────────
 
+
 class TestRevocation:
     def test_revoke_existing_key(self, mgr):
         key_id, api_key = mgr.generate_key("Revoke Me")
@@ -129,6 +132,7 @@ class TestRevocation:
 
 
 # ── Rotation ─────────────────────────────────────────────────────────
+
 
 class TestRotation:
     def test_rotate_creates_new_revokes_old(self, mgr):
@@ -155,6 +159,7 @@ class TestRotation:
 
 
 # ── Listing ──────────────────────────────────────────────────────────
+
 
 class TestListing:
     def test_list_empty(self, mgr):

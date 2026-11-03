@@ -5,7 +5,6 @@ from typing import Any, Dict, Iterable, List, Sequence
 
 import yaml
 
-
 REPO_ROOT = Path(__file__).resolve().parents[1]
 REQUIRED_DOCS = (
     "docs/Q3_Q4_Q5/README.md",
@@ -21,8 +20,7 @@ REQUIRED_EXTERNALIZED_ARTIFACTS = {
         "original_path": "docs/Q3_Q4_Q5/WHAT_SUPPLIER_A_IS_REALLY_ASKING.md",
         "provenance_path": "tender_library/PROVENANCE.csv",
         "sha256": (
-            "03a0d496913d642102358492a2000363"
-            "e61fde352159dfc67fa43559584c3a45"
+            "03a0d496913d642102358492a2000363" "e61fde352159dfc67fa43559584c3a45"
         ),
     }
 }
@@ -162,36 +160,26 @@ def _validate_manifest(errors: List[str]) -> None:
             externalized_ids.add(artifact_id)
             expected = REQUIRED_EXTERNALIZED_ARTIFACTS.get(artifact_id)
             if expected is None:
-                errors.append(
-                    f"{artifact_id} is not an approved externalized artifact"
-                )
+                errors.append(f"{artifact_id} is not an approved externalized artifact")
             else:
                 for field, expected_value in expected.items():
                     if artifact.get(field) != expected_value:
-                        errors.append(
-                            f"{artifact_id} has unexpected {field}"
-                        )
+                        errors.append(f"{artifact_id} has unexpected {field}")
             continue
 
         _require_fields(errors, artifact_id, artifact, ("path",))
         if artifact.get("path"):
             paths.append(artifact["path"])
 
-    for missing_id in sorted(
-        set(REQUIRED_EXTERNALIZED_ARTIFACTS) - externalized_ids
-    ):
-        errors.append(
-            f"Manifest is missing externalized artifact: {missing_id}"
-        )
+    for missing_id in sorted(set(REQUIRED_EXTERNALIZED_ARTIFACTS) - externalized_ids):
+        errors.append(f"Manifest is missing externalized artifact: {missing_id}")
     for missing_domain in sorted(REQUIRED_DOMAINS - domains):
         errors.append(f"Manifest is missing domain: {missing_domain}")
     _validate_paths(errors, paths)
 
 
 def _validate_workflow(errors: List[str]) -> None:
-    workflow_path = (
-        REPO_ROOT / ".github/workflows/review-artifact-validation.yml"
-    )
+    workflow_path = REPO_ROOT / ".github/workflows/review-artifact-validation.yml"
     workflow = workflow_path.read_text(encoding="utf-8")
     for expected in (
         "scripts/validate_review_package.py",

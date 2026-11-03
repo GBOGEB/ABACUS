@@ -4,6 +4,7 @@ Analysis - Artifact Analyzer V2.3.0
 Memory-efficient workspace structure analysis and artifact categorisation.
 Designed for the 4M memory constraint with streaming directory traversal.
 """
+
 import json
 import os
 import time
@@ -95,11 +96,19 @@ class MemoryEfficientArtifactAnalyzerV23:
                     chunk.append(full)
                     if len(chunk) >= chunk_size:
                         self.performance_metrics["memory_chunks_processed"] += 1
-                        yield {"files": chunk, "chunk_index": self.performance_metrics["memory_chunks_processed"]}
+                        yield {
+                            "files": chunk,
+                            "chunk_index": self.performance_metrics[
+                                "memory_chunks_processed"
+                            ],
+                        }
                         chunk = []
             if chunk:
                 self.performance_metrics["memory_chunks_processed"] += 1
-                yield {"files": chunk, "chunk_index": self.performance_metrics["memory_chunks_processed"]}
+                yield {
+                    "files": chunk,
+                    "chunk_index": self.performance_metrics["memory_chunks_processed"],
+                }
         except Exception as exc:
             self.performance_metrics["errors_handled"] += 1
             self._log_dmaic("STREAM", f"Walk error: {exc}")
@@ -152,7 +161,9 @@ class MemoryEfficientArtifactAnalyzerV23:
         self.performance_metrics["dmaic_phases_completed"] += 1
         counts = {cat: data["count"] for cat, data in index.items()}
         samples = {
-            cat: data["sample_paths"] for cat, data in index.items() if data["sample_paths"]
+            cat: data["sample_paths"]
+            for cat, data in index.items()
+            if data["sample_paths"]
         }
         return {
             "category_counts": counts,

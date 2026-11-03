@@ -20,12 +20,12 @@ Tests:
 MANTRA: NO DOCUMENTATION BEFORE VALIDATION
 """
 
-import sys
 import json
+import sys
 import time
-from pathlib import Path
 from datetime import datetime
-from typing import Dict, List, Any
+from pathlib import Path
+from typing import Any, Dict, List
 
 
 class ABACUSv21SmokeTests:
@@ -50,10 +50,10 @@ class ABACUSv21SmokeTests:
 
         try:
             # Test Python standard library imports
-            import os
-            import sys
             import json
+            import os
             import pathlib
+            import sys
             from datetime import datetime
 
             # Test that critical directories exist
@@ -61,7 +61,7 @@ class ABACUSv21SmokeTests:
                 "DMAIC_V3",
                 "ABACUS_V21_MIGRATION_OUTPUT",
                 "ABACUS_V21_DEPLOYMENT_OUTPUT",
-                "ABACUS_SESSION_ANALYSIS"
+                "ABACUS_SESSION_ANALYSIS",
             ]
 
             missing_dirs = []
@@ -72,27 +72,31 @@ class ABACUSv21SmokeTests:
             if missing_dirs:
                 raise AssertionError(f"Missing critical directories: {missing_dirs}")
 
-            self.results.append({
-                "test_id": "1.3.1",
-                "test_name": "test_smoke_basic_import",
-                "status": "PASS",
-                "message": "All core imports successful, critical directories exist",
-                "duration_seconds": time.time() - self.start_time,
-                "timestamp": datetime.now().isoformat()
-            })
+            self.results.append(
+                {
+                    "test_id": "1.3.1",
+                    "test_name": "test_smoke_basic_import",
+                    "status": "PASS",
+                    "message": "All core imports successful, critical directories exist",
+                    "duration_seconds": time.time() - self.start_time,
+                    "timestamp": datetime.now().isoformat(),
+                }
+            )
             self.passed += 1
             self.log("  ✅ PASS: Basic imports validated", "SUCCESS")
             return True
 
         except Exception as e:
-            self.results.append({
-                "test_id": "1.3.1",
-                "test_name": "test_smoke_basic_import",
-                "status": "FAIL",
-                "message": str(e),
-                "duration_seconds": time.time() - self.start_time,
-                "timestamp": datetime.now().isoformat()
-            })
+            self.results.append(
+                {
+                    "test_id": "1.3.1",
+                    "test_name": "test_smoke_basic_import",
+                    "status": "FAIL",
+                    "message": str(e),
+                    "duration_seconds": time.time() - self.start_time,
+                    "timestamp": datetime.now().isoformat(),
+                }
+            )
             self.failed += 1
             self.log(f"  ❌ FAIL: {e}", "ERROR")
             return False
@@ -113,7 +117,7 @@ class ABACUSv21SmokeTests:
                 raise FileNotFoundError(f"DOW tracker not found: {json_file}")
 
             # Load and validate JSON
-            with open(json_file, 'r', encoding='utf-8') as f:
+            with open(json_file, "r", encoding="utf-8") as f:
                 tracker_data = json.load(f)
 
             # Validate structure (actual structure has "meta" and "stages")
@@ -122,28 +126,35 @@ class ABACUSv21SmokeTests:
             if missing_keys:
                 raise AssertionError(f"Missing keys in tracker: {missing_keys}")
 
-            self.results.append({
-                "test_id": "1.3.2",
-                "test_name": "test_smoke_config_load",
-                "status": "PASS",
-                "message": "Configuration files loaded and validated successfully",
-                "files_validated": ["ABACUS_V21_PROGRESS_TRACKER.yaml", "DOW_IMPLEMENTATION_TRACKER.json"],
-                "duration_seconds": time.time() - self.start_time,
-                "timestamp": datetime.now().isoformat()
-            })
+            self.results.append(
+                {
+                    "test_id": "1.3.2",
+                    "test_name": "test_smoke_config_load",
+                    "status": "PASS",
+                    "message": "Configuration files loaded and validated successfully",
+                    "files_validated": [
+                        "ABACUS_V21_PROGRESS_TRACKER.yaml",
+                        "DOW_IMPLEMENTATION_TRACKER.json",
+                    ],
+                    "duration_seconds": time.time() - self.start_time,
+                    "timestamp": datetime.now().isoformat(),
+                }
+            )
             self.passed += 1
             self.log("  ✅ PASS: Configuration loading validated", "SUCCESS")
             return True
 
         except Exception as e:
-            self.results.append({
-                "test_id": "1.3.2",
-                "test_name": "test_smoke_config_load",
-                "status": "FAIL",
-                "message": str(e),
-                "duration_seconds": time.time() - self.start_time,
-                "timestamp": datetime.now().isoformat()
-            })
+            self.results.append(
+                {
+                    "test_id": "1.3.2",
+                    "test_name": "test_smoke_config_load",
+                    "status": "FAIL",
+                    "message": str(e),
+                    "duration_seconds": time.time() - self.start_time,
+                    "timestamp": datetime.now().isoformat(),
+                }
+            )
             self.failed += 1
             self.log(f"  ❌ FAIL: {e}", "ERROR")
             return False
@@ -159,7 +170,7 @@ class ABACUSv21SmokeTests:
                 raise FileNotFoundError("DOW tracker not found")
 
             # Load tracker
-            with open(tracker_file, 'r', encoding='utf-8') as f:
+            with open(tracker_file, "r", encoding="utf-8") as f:
                 tracker = json.load(f)
 
             # Validate DOW components (actual structure has "stages")
@@ -174,34 +185,38 @@ class ABACUSv21SmokeTests:
             expected_dry_run_tests = 6
             expected_bridges = 4
 
-            self.results.append({
-                "test_id": "1.3.3",
-                "test_name": "test_smoke_dow_integration",
-                "status": "PASS",
-                "message": "DOW integration validated successfully",
-                "dow_components": {
-                    "workflows": expected_workflows,
-                    "smoke_tests": expected_smoke_tests,
-                    "dry_run_tests": expected_dry_run_tests,
-                    "bridges": expected_bridges
-                },
-                "stages_found": len(stages),
-                "duration_seconds": time.time() - self.start_time,
-                "timestamp": datetime.now().isoformat()
-            })
+            self.results.append(
+                {
+                    "test_id": "1.3.3",
+                    "test_name": "test_smoke_dow_integration",
+                    "status": "PASS",
+                    "message": "DOW integration validated successfully",
+                    "dow_components": {
+                        "workflows": expected_workflows,
+                        "smoke_tests": expected_smoke_tests,
+                        "dry_run_tests": expected_dry_run_tests,
+                        "bridges": expected_bridges,
+                    },
+                    "stages_found": len(stages),
+                    "duration_seconds": time.time() - self.start_time,
+                    "timestamp": datetime.now().isoformat(),
+                }
+            )
             self.passed += 1
             self.log("  ✅ PASS: DOW integration validated", "SUCCESS")
             return True
 
         except Exception as e:
-            self.results.append({
-                "test_id": "1.3.3",
-                "test_name": "test_smoke_dow_integration",
-                "status": "FAIL",
-                "message": str(e),
-                "duration_seconds": time.time() - self.start_time,
-                "timestamp": datetime.now().isoformat()
-            })
+            self.results.append(
+                {
+                    "test_id": "1.3.3",
+                    "test_name": "test_smoke_dow_integration",
+                    "status": "FAIL",
+                    "message": str(e),
+                    "duration_seconds": time.time() - self.start_time,
+                    "timestamp": datetime.now().isoformat(),
+                }
+            )
             self.failed += 1
             self.log(f"  ❌ FAIL: {e}", "ERROR")
             return False
@@ -222,7 +237,7 @@ class ABACUSv21SmokeTests:
                 "DMAIC_V3/tests/test_phase2_measure.py",
                 "DMAIC_V3/tests/test_phase3_analyze.py",
                 "DMAIC_V3/tests/test_phase4_improve.py",
-                "DMAIC_V3/tests/test_phase5_control.py"
+                "DMAIC_V3/tests/test_phase5_control.py",
             ]
 
             missing_files = []
@@ -231,37 +246,44 @@ class ABACUSv21SmokeTests:
                     missing_files.append(file_path)
 
             if missing_files:
-                self.log(f"  ⚠️  WARNING: Missing DMAIC test files: {missing_files}", "WARNING")
+                self.log(
+                    f"  ⚠️  WARNING: Missing DMAIC test files: {missing_files}",
+                    "WARNING",
+                )
 
             # Check DMAIC implementation status
             status_file = Path("DMAIC_V3_IMPLEMENTATION_STATUS.md")
             if not status_file.exists():
                 raise FileNotFoundError("DMAIC implementation status not found")
 
-            self.results.append({
-                "test_id": "1.3.4",
-                "test_name": "test_smoke_dmaic_engine",
-                "status": "PASS",
-                "message": "DMAIC V3 engine structure validated",
-                "dmaic_phases": 5,
-                "test_files_found": len(expected_files) - len(missing_files),
-                "test_files_expected": len(expected_files),
-                "duration_seconds": time.time() - self.start_time,
-                "timestamp": datetime.now().isoformat()
-            })
+            self.results.append(
+                {
+                    "test_id": "1.3.4",
+                    "test_name": "test_smoke_dmaic_engine",
+                    "status": "PASS",
+                    "message": "DMAIC V3 engine structure validated",
+                    "dmaic_phases": 5,
+                    "test_files_found": len(expected_files) - len(missing_files),
+                    "test_files_expected": len(expected_files),
+                    "duration_seconds": time.time() - self.start_time,
+                    "timestamp": datetime.now().isoformat(),
+                }
+            )
             self.passed += 1
             self.log("  ✅ PASS: DMAIC V3 engine validated", "SUCCESS")
             return True
 
         except Exception as e:
-            self.results.append({
-                "test_id": "1.3.4",
-                "test_name": "test_smoke_dmaic_engine",
-                "status": "FAIL",
-                "message": str(e),
-                "duration_seconds": time.time() - self.start_time,
-                "timestamp": datetime.now().isoformat()
-            })
+            self.results.append(
+                {
+                    "test_id": "1.3.4",
+                    "test_name": "test_smoke_dmaic_engine",
+                    "status": "FAIL",
+                    "message": str(e),
+                    "duration_seconds": time.time() - self.start_time,
+                    "timestamp": datetime.now().isoformat(),
+                }
+            )
             self.failed += 1
             self.log(f"  ❌ FAIL: {e}", "ERROR")
             return False
@@ -274,69 +296,87 @@ class ABACUSv21SmokeTests:
             # Check for recursive engine artifacts
             migration_output = Path("ABACUS_V21_MIGRATION_OUTPUT")
             if not migration_output.exists():
-                self.log("  ⚠️  WARNING: Migration output directory not found, creating placeholder", "WARNING")
+                self.log(
+                    "  ⚠️  WARNING: Migration output directory not found, creating placeholder",
+                    "WARNING",
+                )
                 migration_output.mkdir(exist_ok=True)
 
             # Check migration reports - if not found, validate based on existing structure
-            migration_report = migration_output / "abacus_v21_migration_test_report.json"
+            migration_report = (
+                migration_output / "abacus_v21_migration_test_report.json"
+            )
             if not migration_report.exists():
                 # Validate based on directory structure instead
-                self.log("  ℹ️  INFO: Migration report not found, validating structure", "INFO")
+                self.log(
+                    "  ℹ️  INFO: Migration report not found, validating structure",
+                    "INFO",
+                )
 
                 # Check for other migration artifacts
                 migration_files = list(migration_output.glob("*.md"))
                 if len(migration_files) == 0:
                     raise FileNotFoundError("No migration artifacts found")
 
-                self.results.append({
-                    "test_id": "1.3.5",
-                    "test_name": "test_smoke_recursive_engine",
-                    "status": "PASS",
-                    "message": "Recursive engine structure validated (report pending)",
-                    "migration_artifacts": len(migration_files),
-                    "note": "Full validation pending migration report generation",
-                    "duration_seconds": time.time() - self.start_time,
-                    "timestamp": datetime.now().isoformat()
-                })
+                self.results.append(
+                    {
+                        "test_id": "1.3.5",
+                        "test_name": "test_smoke_recursive_engine",
+                        "status": "PASS",
+                        "message": "Recursive engine structure validated (report pending)",
+                        "migration_artifacts": len(migration_files),
+                        "note": "Full validation pending migration report generation",
+                        "duration_seconds": time.time() - self.start_time,
+                        "timestamp": datetime.now().isoformat(),
+                    }
+                )
                 self.passed += 1
                 self.log("  ✅ PASS: Recursive engine structure validated", "SUCCESS")
                 return True
 
             # Load and validate migration report
-            with open(migration_report, 'r', encoding='utf-8') as f:
+            with open(migration_report, "r", encoding="utf-8") as f:
                 report = json.load(f)
 
             # Check for recursive knowledge preservation
             if "knowledge_preservation" not in report:
-                raise AssertionError("Missing knowledge_preservation in migration report")
+                raise AssertionError(
+                    "Missing knowledge_preservation in migration report"
+                )
 
             knowledge = report["knowledge_preservation"]
             if knowledge.get("artifacts_lost", 1) > 0:
-                raise AssertionError(f"Knowledge loss detected: {knowledge['artifacts_lost']} artifacts lost")
+                raise AssertionError(
+                    f"Knowledge loss detected: {knowledge['artifacts_lost']} artifacts lost"
+                )
 
-            self.results.append({
-                "test_id": "1.3.5",
-                "test_name": "test_smoke_recursive_engine",
-                "status": "PASS",
-                "message": "Recursive engine validated, knowledge preserved",
-                "artifacts_preserved": knowledge.get("artifacts_preserved", 0),
-                "artifacts_lost": knowledge.get("artifacts_lost", 0),
-                "duration_seconds": time.time() - self.start_time,
-                "timestamp": datetime.now().isoformat()
-            })
+            self.results.append(
+                {
+                    "test_id": "1.3.5",
+                    "test_name": "test_smoke_recursive_engine",
+                    "status": "PASS",
+                    "message": "Recursive engine validated, knowledge preserved",
+                    "artifacts_preserved": knowledge.get("artifacts_preserved", 0),
+                    "artifacts_lost": knowledge.get("artifacts_lost", 0),
+                    "duration_seconds": time.time() - self.start_time,
+                    "timestamp": datetime.now().isoformat(),
+                }
+            )
             self.passed += 1
             self.log("  ✅ PASS: Recursive engine validated", "SUCCESS")
             return True
 
         except Exception as e:
-            self.results.append({
-                "test_id": "1.3.5",
-                "test_name": "test_smoke_recursive_engine",
-                "status": "FAIL",
-                "message": str(e),
-                "duration_seconds": time.time() - self.start_time,
-                "timestamp": datetime.now().isoformat()
-            })
+            self.results.append(
+                {
+                    "test_id": "1.3.5",
+                    "test_name": "test_smoke_recursive_engine",
+                    "status": "FAIL",
+                    "message": str(e),
+                    "duration_seconds": time.time() - self.start_time,
+                    "timestamp": datetime.now().isoformat(),
+                }
+            )
             self.failed += 1
             self.log(f"  ❌ FAIL: {e}", "ERROR")
             return False
@@ -349,36 +389,44 @@ class ABACUSv21SmokeTests:
             # Check for temporal tracking
             session_analysis = Path("ABACUS_SESSION_ANALYSIS")
             if not session_analysis.exists():
-                self.log("  ⚠️  WARNING: Session analysis directory not found, creating placeholder", "WARNING")
+                self.log(
+                    "  ⚠️  WARNING: Session analysis directory not found, creating placeholder",
+                    "WARNING",
+                )
                 session_analysis.mkdir(exist_ok=True)
 
             # Check session analysis report
             analysis_report = session_analysis / "session_analysis_report.json"
             if not analysis_report.exists():
                 # Validate based on directory structure instead
-                self.log("  ℹ️  INFO: Session analysis report not found, validating structure", "INFO")
+                self.log(
+                    "  ℹ️  INFO: Session analysis report not found, validating structure",
+                    "INFO",
+                )
 
                 # Check for other analysis artifacts
                 analysis_files = list(session_analysis.glob("*.md"))
                 if len(analysis_files) == 0:
                     raise FileNotFoundError("No session analysis artifacts found")
 
-                self.results.append({
-                    "test_id": "1.3.6",
-                    "test_name": "test_smoke_temporal_engine",
-                    "status": "PASS",
-                    "message": "Temporal engine structure validated (report pending)",
-                    "analysis_artifacts": len(analysis_files),
-                    "note": "Full validation pending session analysis report generation",
-                    "duration_seconds": time.time() - self.start_time,
-                    "timestamp": datetime.now().isoformat()
-                })
+                self.results.append(
+                    {
+                        "test_id": "1.3.6",
+                        "test_name": "test_smoke_temporal_engine",
+                        "status": "PASS",
+                        "message": "Temporal engine structure validated (report pending)",
+                        "analysis_artifacts": len(analysis_files),
+                        "note": "Full validation pending session analysis report generation",
+                        "duration_seconds": time.time() - self.start_time,
+                        "timestamp": datetime.now().isoformat(),
+                    }
+                )
                 self.passed += 1
                 self.log("  ✅ PASS: Temporal engine structure validated", "SUCCESS")
                 return True
 
             # Load and validate analysis report
-            with open(analysis_report, 'r', encoding='utf-8') as f:
+            with open(analysis_report, "r", encoding="utf-8") as f:
                 report = json.load(f)
 
             # Check for temporal tracking
@@ -392,29 +440,33 @@ class ABACUSv21SmokeTests:
             # Check for recursive knowledge (optional)
             recursive_knowledge = report.get("recursive_knowledge", [])
 
-            self.results.append({
-                "test_id": "1.3.6",
-                "test_name": "test_smoke_temporal_engine",
-                "status": "PASS",
-                "message": "Temporal engine validated, session tracking active",
-                "conversation_tuples": len(tuples),
-                "recursive_knowledge_items": len(recursive_knowledge),
-                "duration_seconds": time.time() - self.start_time,
-                "timestamp": datetime.now().isoformat()
-            })
+            self.results.append(
+                {
+                    "test_id": "1.3.6",
+                    "test_name": "test_smoke_temporal_engine",
+                    "status": "PASS",
+                    "message": "Temporal engine validated, session tracking active",
+                    "conversation_tuples": len(tuples),
+                    "recursive_knowledge_items": len(recursive_knowledge),
+                    "duration_seconds": time.time() - self.start_time,
+                    "timestamp": datetime.now().isoformat(),
+                }
+            )
             self.passed += 1
             self.log("  ✅ PASS: Temporal engine validated", "SUCCESS")
             return True
 
         except Exception as e:
-            self.results.append({
-                "test_id": "1.3.6",
-                "test_name": "test_smoke_temporal_engine",
-                "status": "FAIL",
-                "message": str(e),
-                "duration_seconds": time.time() - self.start_time,
-                "timestamp": datetime.now().isoformat()
-            })
+            self.results.append(
+                {
+                    "test_id": "1.3.6",
+                    "test_name": "test_smoke_temporal_engine",
+                    "status": "FAIL",
+                    "message": str(e),
+                    "duration_seconds": time.time() - self.start_time,
+                    "timestamp": datetime.now().isoformat(),
+                }
+            )
             self.failed += 1
             self.log(f"  ❌ FAIL: {e}", "ERROR")
             return False
@@ -451,14 +503,14 @@ class ABACUSv21SmokeTests:
                 "passed": self.passed,
                 "failed": self.failed,
                 "pass_rate": pass_rate,
-                "status": "PASS" if self.failed == 0 else "FAIL"
+                "status": "PASS" if self.failed == 0 else "FAIL",
             },
-            "tests": self.results
+            "tests": self.results,
         }
 
         # Save JSON report
         json_report = self.output_dir / "abacus_v21_smoke_test_report.json"
-        with open(json_report, 'w', encoding='utf-8') as f:
+        with open(json_report, "w", encoding="utf-8") as f:
             json.dump(summary, f, indent=2)
 
         # Generate markdown report
@@ -473,8 +525,10 @@ class ABACUSv21SmokeTests:
         self.log(f"Failed: {self.failed} ❌", "ERROR" if self.failed > 0 else "INFO")
         self.log(f"Pass Rate: {pass_rate:.1f}%", "INFO")
         self.log(f"Duration: {duration:.3f}s", "INFO")
-        self.log(f"Status: {'✅ ALL TESTS PASSED' if self.failed == 0 else '❌ SOME TESTS FAILED'}",
-                "SUCCESS" if self.failed == 0 else "ERROR")
+        self.log(
+            f"Status: {'✅ ALL TESTS PASSED' if self.failed == 0 else '❌ SOME TESTS FAILED'}",
+            "SUCCESS" if self.failed == 0 else "ERROR",
+        )
         self.log("=" * 80, "INFO")
         self.log(f"Reports saved to: {self.output_dir}/", "INFO")
 
@@ -484,7 +538,7 @@ class ABACUSv21SmokeTests:
         """Generate markdown report"""
         md_report = self.output_dir / "abacus_v21_smoke_test_report.md"
 
-        with open(md_report, 'w', encoding='utf-8') as f:
+        with open(md_report, "w", encoding="utf-8") as f:
             f.write("# ABACUS v2.1 Smoke Test Report\n\n")
             f.write(f"**Stage:** 1.3 - Smoke Test Validation\n")
             f.write(f"**Phase:** PRE-CD (Pre-Continuous Deployment)\n")
@@ -499,8 +553,8 @@ class ABACUSv21SmokeTests:
             f.write(f"- **Status:** {summary['summary']['status']}\n\n")
 
             f.write("## Test Results\n\n")
-            for test in summary['tests']:
-                status_icon = "✅" if test['status'] == "PASS" else "❌"
+            for test in summary["tests"]:
+                status_icon = "✅" if test["status"] == "PASS" else "❌"
                 f.write(f"### {status_icon} {test['test_name']}\n\n")
                 f.write(f"- **Test ID:** {test['test_id']}\n")
                 f.write(f"- **Status:** {test['status']}\n")

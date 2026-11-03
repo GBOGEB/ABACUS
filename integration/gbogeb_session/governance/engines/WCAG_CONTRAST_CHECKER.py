@@ -23,7 +23,6 @@ from typing import Any
 
 import yaml
 
-
 # ── WCAG Constants ──
 CONTRAST_AA_NORMAL = 4.5
 CONTRAST_AA_LARGE = 3.0
@@ -32,6 +31,7 @@ CONTRAST_AAA_LARGE = 4.5
 
 
 # ── Color Utilities ──
+
 
 def hex_to_rgb(hex_color: str) -> tuple[int, int, int]:
     """Convert hex color to RGB tuple."""
@@ -51,6 +51,7 @@ def hex_to_rgb(hex_color: str) -> tuple[int, int, int]:
 
 def relative_luminance(r: int, g: int, b: int) -> float:
     """Calculate relative luminance per WCAG 2.1 definition."""
+
     def linearize(c: int) -> float:
         srgb = c / 255.0
         if srgb <= 0.04045:
@@ -76,13 +77,14 @@ def rgb_to_hex(r: int, g: int, b: int) -> str:
 
 # ── Finding Data ──
 
+
 @dataclass
 class ContrastFinding:
     foreground: str
     background: str
     ratio: float
     required_ratio: float
-    context_type: str   # "normal_text", "large_text", "ui_component"
+    context_type: str  # "normal_text", "large_text", "ui_component"
     location: str
     passed: bool
     level: str = "AA"
@@ -152,6 +154,7 @@ class ContrastResults:
 
 # ── Theme Checker ──
 
+
 def check_theme_file(theme_path: str) -> ContrastResults:
     """Validate contrast ratios in a SEMANTIC_THEME.yaml file."""
     results = ContrastResults()
@@ -183,15 +186,17 @@ def check_theme_file(theme_path: str) -> ContrastResults:
                 ratio = contrast_ratio(fg_rgb, bg_rgb)
 
                 # Normal text: 4.5:1
-                results.add(ContrastFinding(
-                    foreground=text_color,
-                    background=primary_bg,
-                    ratio=ratio,
-                    required_ratio=CONTRAST_AA_NORMAL,
-                    context_type="normal_text",
-                    location=f"themes.{theme_name}.text.{text_key} on surface.primary",
-                    passed=ratio >= CONTRAST_AA_NORMAL,
-                ))
+                results.add(
+                    ContrastFinding(
+                        foreground=text_color,
+                        background=primary_bg,
+                        ratio=ratio,
+                        required_ratio=CONTRAST_AA_NORMAL,
+                        context_type="normal_text",
+                        location=f"themes.{theme_name}.text.{text_key} on surface.primary",
+                        passed=ratio >= CONTRAST_AA_NORMAL,
+                    )
+                )
             except ValueError:
                 continue
 
@@ -207,15 +212,17 @@ def check_theme_file(theme_path: str) -> ContrastResults:
                 bg_rgb = hex_to_rgb(primary_bg)
                 ratio = contrast_ratio(fg_rgb, bg_rgb)
 
-                results.add(ContrastFinding(
-                    foreground=intent_color,
-                    background=primary_bg,
-                    ratio=ratio,
-                    required_ratio=CONTRAST_AA_LARGE,
-                    context_type="ui_component",
-                    location=f"themes.{theme_name}.intent.{intent_key} on surface.primary",
-                    passed=ratio >= CONTRAST_AA_LARGE,
-                ))
+                results.add(
+                    ContrastFinding(
+                        foreground=intent_color,
+                        background=primary_bg,
+                        ratio=ratio,
+                        required_ratio=CONTRAST_AA_LARGE,
+                        context_type="ui_component",
+                        location=f"themes.{theme_name}.intent.{intent_key} on surface.primary",
+                        passed=ratio >= CONTRAST_AA_LARGE,
+                    )
+                )
             except ValueError:
                 continue
 
@@ -231,15 +238,17 @@ def check_theme_file(theme_path: str) -> ContrastResults:
                 bg_rgb = hex_to_rgb(primary_bg)
                 ratio = contrast_ratio(fg_rgb, bg_rgb)
 
-                results.add(ContrastFinding(
-                    foreground=viz_color,
-                    background=primary_bg,
-                    ratio=ratio,
-                    required_ratio=CONTRAST_AA_LARGE,
-                    context_type="ui_component",
-                    location=f"themes.{theme_name}.data_viz.{viz_key} on surface.primary",
-                    passed=ratio >= CONTRAST_AA_LARGE,
-                ))
+                results.add(
+                    ContrastFinding(
+                        foreground=viz_color,
+                        background=primary_bg,
+                        ratio=ratio,
+                        required_ratio=CONTRAST_AA_LARGE,
+                        context_type="ui_component",
+                        location=f"themes.{theme_name}.data_viz.{viz_key} on surface.primary",
+                        passed=ratio >= CONTRAST_AA_LARGE,
+                    )
+                )
             except ValueError:
                 continue
 
@@ -277,11 +286,15 @@ def scan_css_file(css_path: str) -> ContrastResults:
 
     # Extract color/background-color pairs from CSS rules
     rule_pattern = re.compile(
-        r'\{([^}]+)\}',
+        r"\{([^}]+)\}",
         re.DOTALL,
     )
-    color_pattern = re.compile(r'(?:^|;)\s*color\s*:\s*(#[0-9a-fA-F]{3,8})', re.MULTILINE)
-    bg_pattern = re.compile(r'background(?:-color)?\s*:\s*(#[0-9a-fA-F]{3,8})', re.MULTILINE)
+    color_pattern = re.compile(
+        r"(?:^|;)\s*color\s*:\s*(#[0-9a-fA-F]{3,8})", re.MULTILINE
+    )
+    bg_pattern = re.compile(
+        r"background(?:-color)?\s*:\s*(#[0-9a-fA-F]{3,8})", re.MULTILINE
+    )
 
     for rule_match in rule_pattern.finditer(content):
         block = rule_match.group(1)

@@ -1,10 +1,12 @@
-from pathlib import Path
 import json
+from pathlib import Path
 
 from build_federation_dashboard import build_federation_dashboard
 
 
-def test_build_federation_dashboard_consumes_json_and_generates_html(tmp_path: Path) -> None:
+def test_build_federation_dashboard_consumes_json_and_generates_html(
+    tmp_path: Path,
+) -> None:
     metrics_dir = tmp_path / "metrics" / "federation"
     metrics_dir.mkdir(parents=True)
 
@@ -34,11 +36,36 @@ def test_build_federation_dashboard_consumes_json_and_generates_html(tmp_path: P
         json.dumps(
             {
                 "components": [
-                    {"pc": "PC1", "variance": "40%", "rank": 1, "cumulative_variance": "40%"},
-                    {"pc": "PC2", "variance": "25%", "rank": 2, "cumulative_variance": "65%"},
-                    {"pc": "PC3", "variance": "15%", "rank": 3, "cumulative_variance": "80%"},
-                    {"pc": "PC4", "variance": "12%", "rank": 4, "cumulative_variance": "92%"},
-                    {"pc": "PC5", "variance": "8%", "rank": 5, "cumulative_variance": "100%"},
+                    {
+                        "pc": "PC1",
+                        "variance": "40%",
+                        "rank": 1,
+                        "cumulative_variance": "40%",
+                    },
+                    {
+                        "pc": "PC2",
+                        "variance": "25%",
+                        "rank": 2,
+                        "cumulative_variance": "65%",
+                    },
+                    {
+                        "pc": "PC3",
+                        "variance": "15%",
+                        "rank": 3,
+                        "cumulative_variance": "80%",
+                    },
+                    {
+                        "pc": "PC4",
+                        "variance": "12%",
+                        "rank": 4,
+                        "cumulative_variance": "92%",
+                    },
+                    {
+                        "pc": "PC5",
+                        "variance": "8%",
+                        "rank": 5,
+                        "cumulative_variance": "100%",
+                    },
                 ]
             }
         ),
@@ -63,10 +90,26 @@ def test_build_federation_dashboard_consumes_json_and_generates_html(tmp_path: P
         json.dumps(
             {
                 "repositories": {
-                    "ABACUS": {"runtime_evidence": "verified", "truth_matrix": "pass", "renderability": "ready"},
-                    "ARTSTYLE": {"runtime_evidence": "verified", "truth_matrix": "pass", "renderability": "ready"},
-                    "QPLANT": {"runtime_evidence": "verified", "truth_matrix": "pass", "renderability": "ready"},
-                    "CODEX": {"runtime_evidence": "verified", "truth_matrix": "pass", "renderability": "ready"},
+                    "ABACUS": {
+                        "runtime_evidence": "verified",
+                        "truth_matrix": "pass",
+                        "renderability": "ready",
+                    },
+                    "ARTSTYLE": {
+                        "runtime_evidence": "verified",
+                        "truth_matrix": "pass",
+                        "renderability": "ready",
+                    },
+                    "QPLANT": {
+                        "runtime_evidence": "verified",
+                        "truth_matrix": "pass",
+                        "renderability": "ready",
+                    },
+                    "CODEX": {
+                        "runtime_evidence": "verified",
+                        "truth_matrix": "pass",
+                        "renderability": "ready",
+                    },
                 }
             }
         ),
@@ -136,7 +179,9 @@ def test_build_federation_dashboard_consumes_json_and_generates_html(tmp_path: P
     assert status["runtime_registry_consumed"] is True
 
 
-def test_build_federation_dashboard_runtime_registry_missing_sets_status_false(tmp_path: Path) -> None:
+def test_build_federation_dashboard_runtime_registry_missing_sets_status_false(
+    tmp_path: Path,
+) -> None:
     metrics_dir = tmp_path / "metrics" / "federation"
     metrics_dir.mkdir(parents=True)
     rollup_path = metrics_dir / "federation_rollup.json"
@@ -152,7 +197,9 @@ def test_build_federation_dashboard_runtime_registry_missing_sets_status_false(t
         rollup_path=rollup_path,
         scree_path=scree_path,
         runtime_registry_path=metrics_dir / "runtime_registry.json",
-        runtime_registry_report_path=tmp_path / "reports" / "runtime_registry_report.json",
+        runtime_registry_report_path=tmp_path
+        / "reports"
+        / "runtime_registry_report.json",
         bottleneck_path=bottleneck_path,
         output_path=output_path,
         status_output_path=status_output_path,

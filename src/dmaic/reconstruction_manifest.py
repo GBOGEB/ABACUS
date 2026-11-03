@@ -20,7 +20,13 @@ REQUIRED_COMPONENTS = (
     "MANTRA/DMAIC continuity",
 )
 
-REQUIRED_COMPONENT_FIELDS = ("name", "artifact", "file_refs", "workflow_refs", "test_refs")
+REQUIRED_COMPONENT_FIELDS = (
+    "name",
+    "artifact",
+    "file_refs",
+    "workflow_refs",
+    "test_refs",
+)
 
 
 def default_required_components() -> Sequence[str]:
@@ -52,7 +58,9 @@ def _validate_path_refs(refs: Any, key: str, repo_root: Path) -> List[str]:
     return errors
 
 
-def validate_reconstruction_manifest(payload: Dict[str, Any], repo_root: Path) -> List[str]:
+def validate_reconstruction_manifest(
+    payload: Dict[str, Any], repo_root: Path
+) -> List[str]:
     """Validate reconstruction manifest structure and mapped repository references."""
     errors: List[str] = []
     if not isinstance(payload, dict):
@@ -83,16 +91,22 @@ def validate_reconstruction_manifest(payload: Dict[str, Any], repo_root: Path) -
             else:
                 ref_p = Path(artifact_path)
                 if ref_p.is_absolute():
-                    errors.append(f"{apath}.path must be a relative path: {artifact_path}")
+                    errors.append(
+                        f"{apath}.path must be a relative path: {artifact_path}"
+                    )
                 else:
                     resolved = (repo_root / ref_p).resolve()
                     try:
                         resolved.relative_to(repo_root_resolved)
                     except ValueError:
-                        errors.append(f"{apath}.path traverses outside repository root: {artifact_path}")
+                        errors.append(
+                            f"{apath}.path traverses outside repository root: {artifact_path}"
+                        )
                     else:
                         if not resolved.exists():
-                            errors.append(f"{apath}.path does not exist: {artifact_path}")
+                            errors.append(
+                                f"{apath}.path does not exist: {artifact_path}"
+                            )
 
     component_map = payload.get("component_map")
     if not isinstance(component_map, list) or not component_map:
@@ -120,9 +134,21 @@ def validate_reconstruction_manifest(payload: Dict[str, Any], repo_root: Path) -
             errors.append(
                 f"{path} artifact '{artifact_ref}' is not declared in the artifacts list"
             )
-        errors.extend(_validate_path_refs(component.get("file_refs"), f"{path}.file_refs", repo_root))
-        errors.extend(_validate_path_refs(component.get("workflow_refs"), f"{path}.workflow_refs", repo_root))
-        errors.extend(_validate_path_refs(component.get("test_refs"), f"{path}.test_refs", repo_root))
+        errors.extend(
+            _validate_path_refs(
+                component.get("file_refs"), f"{path}.file_refs", repo_root
+            )
+        )
+        errors.extend(
+            _validate_path_refs(
+                component.get("workflow_refs"), f"{path}.workflow_refs", repo_root
+            )
+        )
+        errors.extend(
+            _validate_path_refs(
+                component.get("test_refs"), f"{path}.test_refs", repo_root
+            )
+        )
 
     for required in REQUIRED_COMPONENTS:
         if required not in present_components:

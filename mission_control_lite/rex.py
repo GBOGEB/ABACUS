@@ -2,6 +2,7 @@
 
 This index does not confirm causal roots, waive security, or authorize merge.
 """
+
 from __future__ import annotations
 
 import hashlib
@@ -13,7 +14,9 @@ def fingerprint(repository, producer, code, source_path, signature):
     fields = [repository, producer, code, source_path, signature]
     if not all(isinstance(x, str) and x for x in fields):
         raise ValueError("missing fingerprint field")
-    return hashlib.sha256(json.dumps(fields, separators=(",", ":")).encode()).hexdigest()
+    return hashlib.sha256(
+        json.dumps(fields, separators=(",", ":")).encode()
+    ).hexdigest()
 
 
 def build_index(events, roots, rex):
@@ -39,8 +42,15 @@ def build_index(events, roots, rex):
         if eid in seen:
             raise ValueError("duplicate event")
         seen.add(eid)
-        for field in ("repository", "source_sha", "run_id", "job_id",
-                      "topic_id", "fingerprint", "manifestation"):
+        for field in (
+            "repository",
+            "source_sha",
+            "run_id",
+            "job_id",
+            "topic_id",
+            "fingerprint",
+            "manifestation",
+        ):
             if not event.get(field):
                 raise ValueError("event provenance missing: " + field)
         rid = event.get("root_candidate_id")
@@ -50,13 +60,25 @@ def build_index(events, roots, rex):
         rex_id = root.get("rex_id") if root else None
         if rex_id is not None and rex_id not in by_rex:
             raise ValueError("unknown REX reference")
-        output.append({"event": event, "root_candidate": root,
-                       "rex": by_rex.get(rex_id),
-                       "root_confirmed": False, "merge_admission": "HOLD"})
-    return {"schema": "mcl.first_red_rex.index.v1", "events": output,
-            "event_count": len(output), "root_candidates": len(by_root),
-            "rex_entries": len(by_rex), "verified_root_closures": 0,
-            "authority_transfer": False, "merge_admission": "HOLD"}
+        output.append(
+            {
+                "event": event,
+                "root_candidate": root,
+                "rex": by_rex.get(rex_id),
+                "root_confirmed": False,
+                "merge_admission": "HOLD",
+            }
+        )
+    return {
+        "schema": "mcl.first_red_rex.index.v1",
+        "events": output,
+        "event_count": len(output),
+        "root_candidates": len(by_root),
+        "rex_entries": len(by_rex),
+        "verified_root_closures": 0,
+        "authority_transfer": False,
+        "merge_admission": "HOLD",
+    }
 
 
 def wave_delta(previous, current):
@@ -85,21 +107,36 @@ def wave_delta(previous, current):
         if prefix:
             n, d = "covered_branches", "total_branches"
         if coverage[n] and coverage[d]:
-            if any(coverage[n][s] > coverage[d][s] or coverage[d][s] == 0
-                   for s in ("before", "after")):
+            if any(
+                coverage[n][s] > coverage[d][s] or coverage[d][s] == 0
+                for s in ("before", "after")
+            ):
                 raise ValueError("invalid coverage denominator")
     before, after = set(a), set(b)
+
     def rate(n, d, side):
         if coverage[n] is None or coverage[d] is None:
             return None
         return coverage[n][side] / coverage[d][side]
-    l0, l1 = rate("covered_lines", "total_lines", "before"), rate("covered_lines", "total_lines", "after")
-    b0, b1 = rate("covered_branches", "total_branches", "before"), rate("covered_branches", "total_branches", "after")
-    return {"schema": "mcl.wave.delta.v1",
-            "opened": sorted(after - before), "resolved_candidates": sorted(before - after),
-            "persistent": sorted(before & after),
-            "net_open_change": len(after) - len(before),
-            "line_coverage_before": l0, "line_coverage_after": l1,
-            "line_coverage_delta_pp": None if l0 is None or l1 is None else 100 * (l1 - l0),
-            "branch_coverage_delta_pp": None if b0 is None or b1 is None else 100 * (b1 - b0),
-            "root_closure_credit": 0, "merge_admission": "HOLD"}
+
+    l0, l1 = rate("covered_lines", "total_lines", "before"), rate(
+        "covered_lines", "total_lines", "after"
+    )
+    b0, b1 = rate("covered_branches", "total_branches", "before"), rate(
+        "covered_branches", "total_branches", "after"
+    )
+    return {
+        "schema": "mcl.wave.delta.v1",
+        "opened": sorted(after - before),
+        "resolved_candidates": sorted(before - after),
+        "persistent": sorted(before & after),
+        "net_open_change": len(after) - len(before),
+        "line_coverage_before": l0,
+        "line_coverage_after": l1,
+        "line_coverage_delta_pp": None if l0 is None or l1 is None else 100 * (l1 - l0),
+        "branch_coverage_delta_pp": (
+            None if b0 is None or b1 is None else 100 * (b1 - b0)
+        ),
+        "root_closure_credit": 0,
+        "merge_admission": "HOLD",
+    }

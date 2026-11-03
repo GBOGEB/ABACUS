@@ -11,12 +11,12 @@ Controls for stopping and restarting pipeline runs:
 =====================================
 """
 
+import argparse
+import signal
 import sys
 import time
-import signal
-import argparse
-from pathlib import Path
 from datetime import datetime
+from pathlib import Path
 
 # Add parent directory to path
 sys.path.insert(0, str(Path(__file__).parent.parent))
@@ -50,9 +50,7 @@ class PipelineController:
         print(f"{'='*80}\n")
 
         self.orchestrator = FullPipelineOrchestrator(
-            enable_idempotency_flag=True,
-            enable_git_commits=True,
-            verbose=True
+            enable_idempotency_flag=True, enable_git_commits=True, verbose=True
         )
 
         start_time = time.time()
@@ -64,7 +62,9 @@ class PipelineController:
 
         return success
 
-    def run_n_iterations_with_stops(self, start_iter: int, n_iterations: int, stop_after_each: bool = False):
+    def run_n_iterations_with_stops(
+        self, start_iter: int, n_iterations: int, stop_after_each: bool = False
+    ):
         """Run N iterations with optional stops between each"""
         if start_iter < 1:
             raise ValueError("start_iter must be >= 1")
@@ -94,9 +94,7 @@ class PipelineController:
             self.current_iteration = iteration
 
             self.orchestrator = FullPipelineOrchestrator(
-                enable_idempotency_flag=True,
-                enable_git_commits=True,
-                verbose=True
+                enable_idempotency_flag=True, enable_git_commits=True, verbose=True
             )
 
             start_time = time.time()
@@ -105,19 +103,25 @@ class PipelineController:
                 success = self.orchestrator.execute_full_pipeline(iteration=iteration)
                 duration = time.time() - start_time
 
-                results.append({
-                    'iteration': iteration,
-                    'success': success,
-                    'duration': duration,
-                    'timestamp': datetime.now().isoformat()
-                })
+                results.append(
+                    {
+                        "iteration": iteration,
+                        "success": success,
+                        "duration": duration,
+                        "timestamp": datetime.now().isoformat(),
+                    }
+                )
 
                 status = "✓ PASS" if success else "✗ FAIL"
-                print(f"\n[{status}] Iteration {iteration} completed in {duration:.2f}s")
+                print(
+                    f"\n[{status}] Iteration {iteration} completed in {duration:.2f}s"
+                )
 
                 if stop_after_each and i < n_iterations - 1:
                     print(f"\n[PAUSE] Stopping after iteration {iteration}")
-                    print(f"To continue, run: python pipeline_control.py --resume {iteration + 1}")
+                    print(
+                        f"To continue, run: python pipeline_control.py --resume {iteration + 1}"
+                    )
                     break
 
                 # Brief pause between iterations
@@ -128,13 +132,16 @@ class PipelineController:
             except Exception as e:
                 print(f"\n[✗] Iteration {iteration} crashed: {e}")
                 import traceback
+
                 traceback.print_exc()
-                results.append({
-                    'iteration': iteration,
-                    'success': False,
-                    'error': str(e),
-                    'timestamp': datetime.now().isoformat()
-                })
+                results.append(
+                    {
+                        "iteration": iteration,
+                        "success": False,
+                        "error": str(e),
+                        "timestamp": datetime.now().isoformat(),
+                    }
+                )
 
                 if stop_after_each:
                     break
@@ -159,7 +166,7 @@ class PipelineController:
         print(f"Executed: {len(results)} iterations")
         print()
 
-        successful = sum(1 for r in results if r.get('success', False))
+        successful = sum(1 for r in results if r.get("success", False))
         failed = len(results) - successful
 
         print(f"Results:")
@@ -168,20 +175,30 @@ class PipelineController:
         print()
 
         for result in results:
-            status = "✓ PASS" if result.get('success', False) else "✗ FAIL"
-            duration = result.get('duration', 0)
+            status = "✓ PASS" if result.get("success", False) else "✗ FAIL"
+            duration = result.get("duration", 0)
             print(f"  Iteration {result['iteration']}: {status} ({duration:.2f}s)")
 
         print(f"{'='*80}\n")
 
 
 def main():
-    parser = argparse.ArgumentParser(description='DMAIC V3.3 Pipeline Control')
-    parser.add_argument('--single', type=int, metavar='N', help='Run single iteration N')
-    parser.add_argument('--run', type=int, metavar='N', help='Run N iterations starting from 1')
-    parser.add_argument('--resume', type=int, metavar='N', help='Resume from iteration N')
-    parser.add_argument('--count', type=int, default=3, help='Number of iterations to run (default: 3)')
-    parser.add_argument('--stop-after-each', action='store_true', help='Stop after each iteration')
+    parser = argparse.ArgumentParser(description="DMAIC V3.3 Pipeline Control")
+    parser.add_argument(
+        "--single", type=int, metavar="N", help="Run single iteration N"
+    )
+    parser.add_argument(
+        "--run", type=int, metavar="N", help="Run N iterations starting from 1"
+    )
+    parser.add_argument(
+        "--resume", type=int, metavar="N", help="Resume from iteration N"
+    )
+    parser.add_argument(
+        "--count", type=int, default=3, help="Number of iterations to run (default: 3)"
+    )
+    parser.add_argument(
+        "--stop-after-each", action="store_true", help="Stop after each iteration"
+    )
 
     args = parser.parse_args()
 
@@ -195,11 +212,9 @@ def main():
     elif args.run:
         # Run N iterations from start
         results = controller.run_n_iterations_with_stops(
-            start_iter=1,
-            n_iterations=args.run,
-            stop_after_each=args.stop_after_each
+            start_iter=1, n_iterations=args.run, stop_after_each=args.stop_after_each
         )
-        successful = sum(1 for r in results if r.get('success', False))
+        successful = sum(1 for r in results if r.get("success", False))
         sys.exit(0 if successful == args.run else 1)
 
     elif args.resume:
@@ -207,9 +222,9 @@ def main():
         results = controller.run_n_iterations_with_stops(
             start_iter=args.resume,
             n_iterations=args.count,
-            stop_after_each=args.stop_after_each
+            stop_after_each=args.stop_after_each,
         )
-        successful = sum(1 for r in results if r.get('success', False))
+        successful = sum(1 for r in results if r.get("success", False))
         sys.exit(0 if successful == args.count else 1)
 
     else:
@@ -217,11 +232,9 @@ def main():
         print("No arguments provided. Running 3 iterations by default.")
         print("Use --help for more options.\n")
         results = controller.run_n_iterations_with_stops(
-            start_iter=1,
-            n_iterations=3,
-            stop_after_each=False
+            start_iter=1, n_iterations=3, stop_after_each=False
         )
-        successful = sum(1 for r in results if r.get('success', False))
+        successful = sum(1 for r in results if r.get("success", False))
         sys.exit(0 if successful == 3 else 1)
 
 

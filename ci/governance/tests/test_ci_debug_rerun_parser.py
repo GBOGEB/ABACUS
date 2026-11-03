@@ -6,7 +6,6 @@ import textwrap
 import unittest
 from pathlib import Path
 
-
 WORKFLOW = (
     Path(__file__).resolve().parents[3]
     / ".github"
@@ -18,9 +17,7 @@ WORKFLOW = (
 def load_patterns():
     """Parse regex literals from the real workflow without executing its script."""
     yaml = WORKFLOW.read_text(encoding="utf-8")
-    embedded = yaml.split("python - << 'PYEOF'", 1)[1].split(
-        "\n          PYEOF", 1
-    )[0]
+    embedded = yaml.split("python - << 'PYEOF'", 1)[1].split("\n          PYEOF", 1)[0]
     module = ast.parse(textwrap.dedent(embedded))
     patterns = {}
     for node in ast.walk(module):
@@ -63,9 +60,7 @@ class DebugFailureParserTests(unittest.TestCase):
             self.patterns["nodeid_match"].search(output).group(1),
             "DMAIC_V3/tests/test_bridge.py::test_case",
         )
-        self.assertEqual(
-            self.patterns["file_line_match"].search(output).group(2), "27"
-        )
+        self.assertEqual(self.patterns["file_line_match"].search(output).group(2), "27")
         self.assertEqual(
             self.patterns["longrepr_match"].search(output).group(1),
             "AssertionError: expected 2",

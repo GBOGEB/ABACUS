@@ -8,6 +8,7 @@ This module deliberately separates two claims:
 The implied B is nevertheless useful for an explicitly-labelled engineering sensitivity run of the
 QCELL enthalpy balance. Low-temperature runtime properties remain non-independent until HEPAK validation.
 """
+
 from __future__ import annotations
 
 from dataclasses import asdict, dataclass

@@ -21,10 +21,10 @@ Features:
 """
 
 import json
-from pathlib import Path
-from typing import List, Any, Optional
+from dataclasses import asdict, dataclass, field
 from datetime import datetime
-from dataclasses import dataclass, asdict, field
+from pathlib import Path
+from typing import Any, List, Optional
 
 
 @dataclass
@@ -56,7 +56,9 @@ class MaturityAssessment:
     blockers: List[str]
     recommendations: List[str]
     timestamp: str
-    score_history: List[Any] = field(default_factory=list)  # [{timestamp, convergence_score}, ...]
+    score_history: List[Any] = field(
+        default_factory=list
+    )  # [{timestamp, convergence_score}, ...]
 
 
 @dataclass

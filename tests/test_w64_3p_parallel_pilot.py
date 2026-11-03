@@ -11,8 +11,12 @@ def test_parallel_pilot_executes_two_arms_with_stable_root_ids(tmp_path: Path) -
     root.mkdir()
     (root / "alpha").mkdir()
     (root / "beta").mkdir()
-    (root / "alpha" / "contract.yaml").write_text("authority: canonical\n", encoding="utf-8")
-    (root / "beta" / "contract.yaml").write_text("authority: candidate\n", encoding="utf-8")
+    (root / "alpha" / "contract.yaml").write_text(
+        "authority: canonical\n", encoding="utf-8"
+    )
+    (root / "beta" / "contract.yaml").write_text(
+        "authority: candidate\n", encoding="utf-8"
+    )
     (root / "consumer.py").write_text("PATH = 'contract.yaml'\n", encoding="utf-8")
 
     p2 = tmp_path / "p2.json"

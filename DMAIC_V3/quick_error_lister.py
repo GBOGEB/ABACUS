@@ -5,9 +5,9 @@ Lists all errors from the problems panel and pipeline logs
 """
 
 import sys
-from pathlib import Path
 from datetime import datetime
-from typing import List, Dict
+from pathlib import Path
+from typing import Dict, List
 
 
 def scan_pipeline_log(log_file: Path) -> List[Dict]:
@@ -16,16 +16,15 @@ def scan_pipeline_log(log_file: Path) -> List[Dict]:
         return []
 
     errors = []
-    with open(log_file, 'r', encoding='utf-8', errors='ignore') as f:
+    with open(log_file, "r", encoding="utf-8", errors="ignore") as f:
         lines = f.readlines()
 
     for i, line in enumerate(lines):
-        if any(keyword in line for keyword in ['ERROR', 'FAIL', 'Exception', 'Traceback', 'Error:']):
-            errors.append({
-                'line': i + 1,
-                'message': line.strip(),
-                'type': 'runtime'
-            })
+        if any(
+            keyword in line
+            for keyword in ["ERROR", "FAIL", "Exception", "Traceback", "Error:"]
+        ):
+            errors.append({"line": i + 1, "message": line.strip(), "type": "runtime"})
 
     return errors
 
@@ -33,49 +32,57 @@ def scan_pipeline_log(log_file: Path) -> List[Dict]:
 def scan_python_files() -> List[Dict]:
     """Scan Python files for common issues"""
     issues = []
-    dmaic_path = Path('DMAIC_V3')
+    dmaic_path = Path("DMAIC_V3")
 
     if not dmaic_path.exists():
         return issues
 
-    for py_file in dmaic_path.rglob('*.py'):
+    for py_file in dmaic_path.rglob("*.py"):
         try:
-            with open(py_file, 'r', encoding='utf-8') as f:
+            with open(py_file, "r", encoding="utf-8") as f:
                 content = f.read()
-                lines = content.split('\n')
+                lines = content.split("\n")
 
             for i, line in enumerate(lines, 1):
-                if 'Dict[str, ' in line and 'Dict[str, Any]' not in line:
-                    issues.append({
-                        'file': str(py_file),
-                        'line': i,
-                        'message': 'Incomplete Dict type hint',
-                        'type': 'type_hint'
-                    })
+                if "Dict[str, " in line and "Dict[str, Any]" not in line:
+                    issues.append(
+                        {
+                            "file": str(py_file),
+                            "line": i,
+                            "message": "Incomplete Dict type hint",
+                            "type": "type_hint",
+                        }
+                    )
 
-                if 'List[Dict]' in line and 'List[Dict[str, Any]]' not in line:
-                    issues.append({
-                        'file': str(py_file),
-                        'line': i,
-                        'message': 'Incomplete List[Dict] type hint',
-                        'type': 'type_hint'
-                    })
+                if "List[Dict]" in line and "List[Dict[str, Any]]" not in line:
+                    issues.append(
+                        {
+                            "file": str(py_file),
+                            "line": i,
+                            "message": "Incomplete List[Dict] type hint",
+                            "type": "type_hint",
+                        }
+                    )
 
-                if 'workspace_root' in line and 'config.workspace_root' in line:
-                    issues.append({
-                        'file': str(py_file),
-                        'line': i,
-                        'message': 'Should use config.paths.workspace_root',
-                        'type': 'attribute'
-                    })
+                if "workspace_root" in line and "config.workspace_root" in line:
+                    issues.append(
+                        {
+                            "file": str(py_file),
+                            "line": i,
+                            "message": "Should use config.paths.workspace_root",
+                            "type": "attribute",
+                        }
+                    )
 
         except Exception as e:
-            issues.append({
-                'file': str(py_file),
-                'line': 0,
-                'message': f'Error reading file: {e}',
-                'type': 'file_error'
-            })
+            issues.append(
+                {
+                    "file": str(py_file),
+                    "line": 0,
+                    "message": f"Error reading file: {e}",
+                    "type": "file_error",
+                }
+            )
 
     return issues
 
@@ -100,15 +107,19 @@ def generate_report(errors: List[Dict], issues: List[Dict], output_file: Path):
 
         by_type = {}
         for issue in issues:
-            issue_type = issue['type']
+            issue_type = issue["type"]
             if issue_type not in by_type:
                 by_type[issue_type] = []
             by_type[issue_type].append(issue)
 
         for issue_type, type_issues in by_type.items():
-            report.append(f"\n### {issue_type.replace('_', ' ').title()} ({len(type_issues)})\n")
+            report.append(
+                f"\n### {issue_type.replace('_', ' ').title()} ({len(type_issues)})\n"
+            )
             for issue in type_issues[:10]:
-                report.append(f"- {issue.get('file', 'unknown')}:{issue.get('line', 0)} - {issue['message']}")
+                report.append(
+                    f"- {issue.get('file', 'unknown')}:{issue.get('line', 0)} - {issue['message']}"
+                )
             if len(type_issues) > 10:
                 report.append(f"\n... and {len(type_issues) - 10} more")
 
@@ -118,23 +129,25 @@ def generate_report(errors: List[Dict], issues: List[Dict], output_file: Path):
     report.append("python -m mypy DMAIC_V3/ --no-error-summary 2>&1 | grep error")
     report.append("")
     report.append("# Run pipeline with logging")
-    report.append("python DMAIC_V3/full_pipeline_orchestrator.py --iteration 1 2>&1 | tee pipeline.log")
+    report.append(
+        "python DMAIC_V3/full_pipeline_orchestrator.py --iteration 1 2>&1 | tee pipeline.log"
+    )
     report.append("")
     report.append("# List errors from log")
     report.append("grep -E 'ERROR|FAIL|Exception' pipeline.log")
     report.append("```")
 
-    with open(output_file, 'w', encoding='utf-8') as f:
-        f.write('\n'.join(report))
+    with open(output_file, "w", encoding="utf-8") as f:
+        f.write("\n".join(report))
 
     return len(errors) + len(issues)
 
 
 def main():
     """Main execution"""
-    print("="*80)
+    print("=" * 80)
     print("DMAIC V3.3 - Quick Error Lister")
-    print("="*80)
+    print("=" * 80)
 
     print("\n[1/3] Scanning pipeline logs...")
     log_file = Path("pipeline.log")
@@ -150,12 +163,12 @@ def main():
     total = generate_report(errors, issues, report_file)
     print(f"  Report saved: {report_file}")
 
-    print("\n" + "="*80)
+    print("\n" + "=" * 80)
     print("SUMMARY")
-    print("="*80)
+    print("=" * 80)
     print(f"Total Issues: {total}")
     print(f"Report: {report_file}")
-    print("="*80)
+    print("=" * 80)
 
     if total > 0:
         print("\n⚠️  Issues detected. Review the report for details.")

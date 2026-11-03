@@ -111,7 +111,9 @@ def test_build_records_is_conservative_without_origin(monkeypatch, tmp_path):
     monkeypatch.setattr(brr, "fetch_prs", lambda repo, slug: {})
     rows, warnings = brr.build_records(
         tmp_path,
-        SimpleNamespace(no_fetch=True, base="main", protect_pr=[], stale_days=60, force_stale=False),
+        SimpleNamespace(
+            no_fetch=True, base="main", protect_pr=[], stale_days=60, force_stale=False
+        ),
     )
     assert rows == []
     assert any("No origin remote" in w for w in warnings)

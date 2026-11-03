@@ -8,7 +8,6 @@ import unittest
 from pathlib import Path
 from unittest.mock import MagicMock, Mock, patch
 
-
 ROOT = Path(__file__).resolve().parents[1]
 PROBE = ROOT / "scripts" / "diagnostic_kpi_probe.py"
 
@@ -57,7 +56,9 @@ class DiagnosticKpiProbeTests(unittest.TestCase):
         )
 
     def test_failed_command_is_not_silently_successful(self):
-        with patch.object(self.probe_subprocess, "run", return_value=Mock(returncode=7)):
+        with patch.object(
+            self.probe_subprocess, "run", return_value=Mock(returncode=7)
+        ):
             with self.assertRaisesRegex(RuntimeError, "nonzero"):
                 self.cmd_helper("git status")
 

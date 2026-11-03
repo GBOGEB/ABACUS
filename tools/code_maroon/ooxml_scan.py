@@ -3,6 +3,7 @@
 No extraction is performed. The scanner inspects ZIP metadata and bounded
 relationship XML bytes. It never authorizes merge.
 """
+
 from __future__ import annotations
 
 import argparse
@@ -21,7 +22,7 @@ MAX_REL_BYTES = 2 * 1024 * 1024
 MAX_RATIO = 1000.0
 
 EXTERNAL_REL = re.compile(
-    br"""TargetMode\s*=\s*["']External["']""",
+    rb"""TargetMode\s*=\s*["']External["']""",
     re.IGNORECASE,
 )
 
@@ -94,7 +95,11 @@ def scan_package(path: Path) -> dict:
             for info in infos:
                 name = info.filename.replace("\\", "/")
                 pure = PurePosixPath(name)
-                if pure.is_absolute() or ".." in pure.parts or re.match(r"^[A-Za-z]:", name):
+                if (
+                    pure.is_absolute()
+                    or ".." in pure.parts
+                    or re.match(r"^[A-Za-z]:", name)
+                ):
                     findings.append(
                         _finding(
                             "OOXML_PATH_TRAVERSAL",
@@ -264,7 +269,9 @@ def main() -> int:
 
     receipt = scan(paths)
     args.output.parent.mkdir(parents=True, exist_ok=True)
-    args.output.write_text(json.dumps(receipt, indent=2, sort_keys=True) + "\n", encoding="utf-8")
+    args.output.write_text(
+        json.dumps(receipt, indent=2, sort_keys=True) + "\n", encoding="utf-8"
+    )
     print(
         json.dumps(
             {

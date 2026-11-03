@@ -7,6 +7,7 @@ Consumes the engineer-generated child receipt emitted by cryoplant-project:
 This module never executes or embeds HEPAK. It verifies exact provenance and
 fails closed when the governing T <= 4.5 K receipt is absent or inconsistent.
 """
+
 from __future__ import annotations
 
 import csv
@@ -74,10 +75,16 @@ def _sha256_file(path: Path) -> str:
 
 
 def _manifest_path(csv_path: Path, explicit: Path | None) -> Path:
-    return explicit if explicit is not None else csv_path.with_suffix(csv_path.suffix + ".manifest.json")
+    return (
+        explicit
+        if explicit is not None
+        else csv_path.with_suffix(csv_path.suffix + ".manifest.json")
+    )
 
 
-def load_qplant_hepak_export(csv_path: Path, manifest_path: Path | None = None) -> HepakRuntimeReceipt:
+def load_qplant_hepak_export(
+    csv_path: Path, manifest_path: Path | None = None
+) -> HepakRuntimeReceipt:
     """Load the child governed HEPAK receipt and fail closed on any lineage gap."""
     manifest_path = _manifest_path(csv_path, manifest_path)
     if not csv_path.exists():
@@ -108,7 +115,9 @@ def load_qplant_hepak_export(csv_path: Path, manifest_path: Path | None = None) 
         reader = csv.DictReader(handle)
         missing_columns = REQUIRED_COLUMNS - set(reader.fieldnames or [])
         if missing_columns:
-            raise ValueError(f"HEPAK numeric export missing columns: {sorted(missing_columns)}")
+            raise ValueError(
+                f"HEPAK numeric export missing columns: {sorted(missing_columns)}"
+            )
         rows = list(reader)
 
     if not rows:
@@ -147,7 +156,11 @@ def receipt_status(csv_path: Path, manifest_path: Path | None = None) -> dict[st
     try:
         receipt = load_qplant_hepak_export(csv_path, manifest_path)
     except (FileNotFoundError, ValueError, json.JSONDecodeError) as exc:
-        return {"status": "BLOCKING_MUST_EXECUTE", "reason": str(exc), "formal_credit_delta": 0}
+        return {
+            "status": "BLOCKING_MUST_EXECUTE",
+            "reason": str(exc),
+            "formal_credit_delta": 0,
+        }
     return {
         "status": "GOVERNING_NUMERIC_RECEIPT_AVAILABLE",
         "rows": len(receipt.rows),

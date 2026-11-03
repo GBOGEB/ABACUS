@@ -20,6 +20,7 @@ A missing or unreadable baseline fails closed (nothing is grandfathered).
 
 Exit code 0 = clean, 1 = blocked files found.
 """
+
 from __future__ import annotations
 
 import hashlib
@@ -33,20 +34,38 @@ BASELINE_PATH = REPO_ROOT / "config" / "governance" / "public_binary_baseline.js
 
 # Binary classes that must never be committed to the public repo.
 BLOCKED_SUFFIXES = {
-    ".docx", ".docm", ".doc",
-    ".pptx", ".ppt",
-    ".xlsx", ".xlsm", ".xls",
+    ".docx",
+    ".docm",
+    ".doc",
+    ".pptx",
+    ".ppt",
+    ".xlsx",
+    ".xlsm",
+    ".xls",
     ".pdf",
-    ".zip", ".tar", ".tar.gz", ".tgz", ".7z", ".rar",
-    ".png", ".jpg", ".jpeg", ".bmp", ".tiff",
-    ".exe", ".msi", ".vsix",
+    ".zip",
+    ".tar",
+    ".tar.gz",
+    ".tgz",
+    ".7z",
+    ".rar",
+    ".png",
+    ".jpg",
+    ".jpeg",
+    ".bmp",
+    ".tiff",
+    ".exe",
+    ".msi",
+    ".vsix",
 }
 
 
 def staged_files() -> list[str]:
     out = subprocess.run(
         ["git", "diff", "--cached", "--name-only", "--diff-filter=AM"],
-        capture_output=True, text=True, check=False,
+        capture_output=True,
+        text=True,
+        check=False,
     )
     return [f for f in out.stdout.splitlines() if f.strip()]
 

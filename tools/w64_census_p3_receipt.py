@@ -5,6 +5,7 @@ This tool does not rerun P1/P2 and does not create release credit by itself. It
 summarizes the observed P2 blockers/warnings and records whether W64 remains
 blocked or is a candidate for further release-readiness review.
 """
+
 from __future__ import annotations
 
 import argparse
@@ -73,7 +74,9 @@ def main(argv: Iterable[str] | None = None) -> int:
     out = Path(args.out)
     out.parent.mkdir(parents=True, exist_ok=True)
     receipt = build_receipt(p1_path, p2_path)
-    out.write_text(json.dumps(receipt, indent=2, sort_keys=True) + "\n", encoding="utf-8")
+    out.write_text(
+        json.dumps(receipt, indent=2, sort_keys=True) + "\n", encoding="utf-8"
+    )
     print(json.dumps({"status": receipt["status"], "out": str(out)}, sort_keys=True))
     return 0
 

@@ -170,7 +170,7 @@ def mutate_valid_parent(monkeypatch, tmp_path, spec: str) -> str:
         "VALID_WITH:counts.missing=true",
         "VALID_WITH:counts.artefacts=2",
         "VALID_WITH:integrity.hash_matched=0",
-        "VALID_WITH:missing=[\"gone.txt\"]",
+        'VALID_WITH:missing=["gone.txt"]',
         "VALID_WITH:status=RED",
         "VALID_WITH:status=PASS-forged",
         "VALID_WITH:schema=abacus.recursive-build.v1",

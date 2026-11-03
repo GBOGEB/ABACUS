@@ -43,9 +43,7 @@ class ReviewGateClosureRecordTests(unittest.TestCase):
         self.record = yaml.safe_load(RECORD.read_text(encoding="utf-8"))
 
     def test_record_identity(self):
-        self.assertEqual(
-            self.record["schema"], "qps-triage-review-gate-closure/1.0.0"
-        )
+        self.assertEqual(self.record["schema"], "qps-triage-review-gate-closure/1.0.0")
         self.assertEqual(self.record["source_pr"], 1847)
         self.assertIs(self.record["authority_transfer"], False)
         self.assertRegex(self.record["source_pr_merge_commit"], FULL_SHA)
@@ -67,21 +65,17 @@ class ReviewGateClosureRecordTests(unittest.TestCase):
                     self.assertRegex(sha, FULL_SHA)
                 if item["disposition"] == "FIXED_IN_CURRENT_HEAD":
                     self.assertTrue(
-                        item.get("evidence_commits")
-                        or item.get("evidence_this_pr")
+                        item.get("evidence_commits") or item.get("evidence_this_pr")
                     )
                 if item["disposition"] == "ACCEPTED_NO_CHANGE_WITH_RATIONALE":
                     self.assertTrue(item.get("rationale", "").strip())
 
     def test_closed_issues_are_not_also_standing_controls(self):
         closed = {
-            number
-            for item in self.record["items"]
-            for number in item.get("closes", [])
+            number for item in self.record["items"] for number in item.get("closes", [])
         }
         standing = {
-            entry["issue"]
-            for entry in self.record["standing_controls_not_closed"]
+            entry["issue"] for entry in self.record["standing_controls_not_closed"]
         }
         self.assertEqual({1861, 1862, 1878, 1879}, closed)
         self.assertFalse(closed & standing)

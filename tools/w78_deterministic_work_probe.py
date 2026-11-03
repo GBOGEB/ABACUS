@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 """Emit deterministic algorithmic-work vectors for exact historical ABACUS states."""
+
 from __future__ import annotations
 
 import argparse

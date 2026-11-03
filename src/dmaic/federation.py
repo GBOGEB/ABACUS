@@ -51,7 +51,9 @@ def assimilate(context: Dict[str, Any] | None = None) -> Dict[str, Any]:
     if manifest_found:
         details.append(f"manifest OK: {FEDERATION_MANIFEST.relative_to(_REPO_ROOT)}")
     else:
-        details.append(f"manifest MISSING: {FEDERATION_MANIFEST.relative_to(_REPO_ROOT)}")
+        details.append(
+            f"manifest MISSING: {FEDERATION_MANIFEST.relative_to(_REPO_ROOT)}"
+        )
         errors += 1
 
     spec_found = FEDERATION_SPEC.is_file()

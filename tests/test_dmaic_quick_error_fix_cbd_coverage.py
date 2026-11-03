@@ -2,6 +2,7 @@
 
 Each subprocess call is stubbed and all filesystem changes occur in tmp_path.
 """
+
 import importlib.util
 from pathlib import Path
 from types import SimpleNamespace
@@ -25,30 +26,39 @@ def test_scanners_retain_separate_pylint_and_mypy_findings(monkeypatch):
     def run(command, **options):
         calls.append((command, options))
         if "pylint" in command:
-            return SimpleNamespace(returncode=1, stdout="error: syntax problem\nnoise\n")
+            return SimpleNamespace(
+                returncode=1, stdout="error: syntax problem\nnoise\n"
+            )
         return SimpleNamespace(returncode=1, stdout="a.py:5: error: wrong type\n")
 
     monkeypatch.setattr(module.subprocess, "run", run)
     errors, warnings = module.ErrorDetector().scan_for_errors()
     assert [e["type"] for e in errors] == ["pylint_error", "type_error"]
     assert warnings == [] and len(calls) == 2
-    assert all(kwargs.get("capture_output") and kwargs.get("text") for _, kwargs in calls)
+    assert all(
+        kwargs.get("capture_output") and kwargs.get("text") for _, kwargs in calls
+    )
 
 
 def test_clean_scans_are_not_counted_as_failures(monkeypatch):
     module = load()
-    monkeypatch.setattr(module.subprocess, "run", lambda *a, **kw:
-                        SimpleNamespace(returncode=0, stdout="no errors here"))
+    monkeypatch.setattr(
+        module.subprocess,
+        "run",
+        lambda *a, **kw: SimpleNamespace(returncode=0, stdout="no errors here"),
+    )
     errors, warnings = module.ErrorDetector().scan_for_errors()
     assert errors == [] and warnings == []
 
 
 def test_pylint_success_does_not_override_mypy_error(monkeypatch):
     module = load()
-    results = iter([
-        SimpleNamespace(returncode=0, stdout="error text but pylint is green"),
-        SimpleNamespace(returncode=0, stdout="x.py:7: error: wrong type"),
-    ])
+    results = iter(
+        [
+            SimpleNamespace(returncode=0, stdout="error text but pylint is green"),
+            SimpleNamespace(returncode=0, stdout="x.py:7: error: wrong type"),
+        ]
+    )
     monkeypatch.setattr(module.subprocess, "run", lambda *a, **kw: next(results))
     errors, _ = module.ErrorDetector().scan_for_errors()
     assert [x["type"] for x in errors] == ["type_error"]
@@ -69,18 +79,30 @@ def test_runtime_error_line_and_context(marker, tmp_path):
     assert "four" in result[0]["context"]
 
 
-@pytest.mark.parametrize("message,bucket", [
-    ("expected type str", "type_errors"),
-    ("ImportError: module absent", "import_errors"),
-    ("has no attribute", "attribute_errors"),
-    ("syntax error", "syntax_errors"),
-    ("plain runtime problem", "runtime_errors"),
-    ("unclassified", "other"),
-])
+@pytest.mark.parametrize(
+    "message,bucket",
+    [
+        ("expected type str", "type_errors"),
+        ("ImportError: module absent", "import_errors"),
+        ("has no attribute", "attribute_errors"),
+        ("syntax error", "syntax_errors"),
+        ("plain runtime problem", "runtime_errors"),
+        ("unclassified", "other"),
+    ],
+)
 def test_classification_preserves_single_bucket(message, bucket):
-    out = load().ErrorDetector().categorize_errors([
-        {"message": message, "type": "other" if bucket == "other" else "runtime_error"}
-    ])
+    out = (
+        load()
+        .ErrorDetector()
+        .categorize_errors(
+            [
+                {
+                    "message": message,
+                    "type": "other" if bucket == "other" else "runtime_error",
+                }
+            ]
+        )
+    )
     assert len(out[bucket]) == 1
     assert sum(len(rows) for rows in out.values()) == 1
 
@@ -90,7 +112,9 @@ def test_fix_report_retains_counts_and_fixes(tmp_path):
     d = module.ErrorDetector()
     d.errors = [{"message": "syntax problem " + str(n)} for n in range(7)]
     d.warnings = [{"message": "warning"}]
-    d.fixes_applied = [{"file": "a.py", "issue": "bad type", "fix": "add Any", "status": "SUCCESS"}]
+    d.fixes_applied = [
+        {"file": "a.py", "issue": "bad type", "fix": "add Any", "status": "SUCCESS"}
+    ]
     out = tmp_path / "report.md"
     d.generate_fix_report(out)
     text = out.read_text()
@@ -107,7 +131,6 @@ def test_type_fix_is_idempotent_and_receipted(tmp_path):
     assert "List[Dict[str, Any]]" in path.read_text()
     assert fixer.fix_type_hints(path) is False
     assert len(fixer.fixes_applied) == 1
-
 
 
 def test_type_fix_never_corrupts_already_parameterized_annotations(tmp_path):
@@ -162,6 +185,7 @@ def test_main_writes_report_and_preserves_exit_code(tmp_path, monkeypatch, has_e
     (tmp_path / "DMAIC_V3").mkdir()
     monkeypatch.chdir(tmp_path)
     errors = [{"type": "type_error", "message": "wrong type"}] if has_error else []
+
     def fake_scan(self):
         self.errors = list(errors)
         self.warnings = []
@@ -169,6 +193,6 @@ def test_main_writes_report_and_preserves_exit_code(tmp_path, monkeypatch, has_e
 
     monkeypatch.setattr(module.ErrorDetector, "scan_for_errors", fake_scan)
     assert module.main() == (1 if has_error else 0)
-    report = (tmp_path / "DMAIC_V3" / "ERROR_DETECTION_REPORT.md")
+    report = tmp_path / "DMAIC_V3" / "ERROR_DETECTION_REPORT.md"
     assert report.exists()
     assert ("wrong type" in report.read_text()) == has_error

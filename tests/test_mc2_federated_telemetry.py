@@ -29,8 +29,7 @@ def test_seed_runtime_pca_is_measured_but_allocation_is_withheld(tmp_path):
         "runner_allocated_fraction"
     ]
     assert (
-        receipt["runtime_pca"]["bt_status"]
-        == "WITHHELD_NO_OBSERVED_PAIRWISE_EVIDENCE"
+        receipt["runtime_pca"]["bt_status"] == "WITHHELD_NO_OBSERVED_PAIRWISE_EVIDENCE"
     )
     assert receipt["semantic_pca"]["status"] == "WITHHELD"
     assert receipt["semantic_pca"]["reason"] == "INSUFFICIENT_COMPARABLE_ROWS"
@@ -60,7 +59,4 @@ def test_duplicate_sha_cannot_fake_independent_pca(tmp_path):
     assert result.returncode == 0, result.stderr
     receipt = json.loads(out.read_text())
     assert receipt["runtime_pca"]["status"] == "WITHHELD"
-    assert (
-        receipt["runtime_pca"]["reason"]
-        == "PSEUDOREPLICATION_DISTINCT_SHA_GATE"
-    )
+    assert receipt["runtime_pca"]["reason"] == "PSEUDOREPLICATION_DISTINCT_SHA_GATE"

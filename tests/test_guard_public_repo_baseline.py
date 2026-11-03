@@ -1,4 +1,5 @@
 """Tests for the hash-pinned baseline in scripts/guard_public_repo.py (U16, #2505)."""
+
 from __future__ import annotations
 
 import hashlib
@@ -9,7 +10,8 @@ from pathlib import Path
 import pytest
 
 _SPEC = importlib.util.spec_from_file_location(
-    "guard_public_repo", Path(__file__).resolve().parents[1] / "scripts" / "guard_public_repo.py"
+    "guard_public_repo",
+    Path(__file__).resolve().parents[1] / "scripts" / "guard_public_repo.py",
 )
 guard = importlib.util.module_from_spec(_SPEC)
 _SPEC.loader.exec_module(guard)
@@ -21,8 +23,11 @@ def repo(tmp_path, monkeypatch):
     img.parent.mkdir(parents=True)
     img.write_bytes(b"\x89PNG original")
     baseline = tmp_path / "baseline.json"
-    baseline.write_text(json.dumps({"files": {
-        "docs/old.png": hashlib.sha256(img.read_bytes()).hexdigest()}}))
+    baseline.write_text(
+        json.dumps(
+            {"files": {"docs/old.png": hashlib.sha256(img.read_bytes()).hexdigest()}}
+        )
+    )
     monkeypatch.setattr(guard, "REPO_ROOT", tmp_path)
     monkeypatch.setattr(guard, "BASELINE_PATH", baseline)
     monkeypatch.setattr(guard.load_baseline, "__defaults__", (baseline,))

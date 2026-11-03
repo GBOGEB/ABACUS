@@ -9,7 +9,6 @@ from typing import Any, Dict, Mapping, Optional, Tuple
 
 from .dmaic import REPORTS_DIRNAME, build_dmaic_snapshot
 
-
 PHASE_ORDER = ("define", "measure", "analyze", "improve", "control")
 
 
@@ -39,7 +38,9 @@ def generate_governance_artifacts(
     dmaic_snapshot = build_dmaic_snapshot(reports_dir=resolved_reports_dir)
 
     phase_status = dmaic_snapshot.get("phase_status", {})
-    vector = _completion_vector(phase_status if isinstance(phase_status, Mapping) else {})
+    vector = _completion_vector(
+        phase_status if isinstance(phase_status, Mapping) else {}
+    )
     completed_phases = sum(vector.values())
     total_phases = len(PHASE_ORDER)
     governance_passed = completed_phases == total_phases
@@ -54,7 +55,11 @@ def generate_governance_artifacts(
     }
 
     source_metrics = dmaic_snapshot.get("source_metrics", {})
-    truth_principles = source_metrics.get("truth_principles", []) if isinstance(source_metrics, Mapping) else []
+    truth_principles = (
+        source_metrics.get("truth_principles", [])
+        if isinstance(source_metrics, Mapping)
+        else []
+    )
 
     governance_snapshot = {
         "artifact": "governance_snapshot",
@@ -68,17 +73,29 @@ def generate_governance_artifacts(
         "evidence": {
             "dmaic_snapshot": str(resolved_reports_dir / "dmaic_snapshot.json"),
             "dashboard_status": str(resolved_reports_dir / "dashboard_status.json"),
-            "runtime_registry_report": str(resolved_reports_dir / "runtime_registry_report.json"),
+            "runtime_registry_report": str(
+                resolved_reports_dir / "runtime_registry_report.json"
+            ),
         },
         "truth_matrix": {
             "integrated": bool(dmaic_snapshot.get("truth_matrix_integrated")),
-            "truth_score": source_metrics.get("truth_score") if isinstance(source_metrics, Mapping) else None,
-            "principles": truth_principles if isinstance(truth_principles, list) else [],
+            "truth_score": (
+                source_metrics.get("truth_score")
+                if isinstance(source_metrics, Mapping)
+                else None
+            ),
+            "principles": (
+                truth_principles if isinstance(truth_principles, list) else []
+            ),
         },
     }
 
-    resolved_governance_output = governance_output_path or (resolved_reports_dir / "governance_snapshot.json")
-    resolved_completion_output = completion_output_path or (resolved_reports_dir / "completion_vector.json")
+    resolved_governance_output = governance_output_path or (
+        resolved_reports_dir / "governance_snapshot.json"
+    )
+    resolved_completion_output = completion_output_path or (
+        resolved_reports_dir / "completion_vector.json"
+    )
     _write_json(resolved_governance_output, governance_snapshot)
     _write_json(resolved_completion_output, completion_vector)
 

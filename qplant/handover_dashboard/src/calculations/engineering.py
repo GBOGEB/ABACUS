@@ -1,4 +1,5 @@
 """Engineering calculations for cryogenic helium leak-rate translation dashboard."""
+
 from __future__ import annotations
 
 from dataclasses import dataclass
@@ -36,7 +37,9 @@ def mbar_l_s_to_pa_m3_s(leak_rate_mbar_l_s: float) -> float:
     return leak_rate_mbar_l_s * 0.1
 
 
-def leak_rate_to_mass_flow_g_s(leak_rate_mbar_l_s: float, temperature_k: float, pressure_bar_abs: float = 1.0) -> float:
+def leak_rate_to_mass_flow_g_s(
+    leak_rate_mbar_l_s: float, temperature_k: float, pressure_bar_abs: float = 1.0
+) -> float:
     """Convert leak-rate class to mass flow in g/s.
 
     Assumption: leak-rate class is measured at 1 bar differential pressure.
@@ -44,7 +47,9 @@ def leak_rate_to_mass_flow_g_s(leak_rate_mbar_l_s: float, temperature_k: float, 
     """
     q_pa_m3_s = mbar_l_s_to_pa_m3_s(leak_rate_mbar_l_s)
     pressure_ratio = pressure_bar_abs / 1.0
-    mass_flow_kg_s = (q_pa_m3_s * pressure_ratio * M_HE_KG_PER_MOL) / (R * temperature_k)
+    mass_flow_kg_s = (q_pa_m3_s * pressure_ratio * M_HE_KG_PER_MOL) / (
+        R * temperature_k
+    )
     # Convert to g/s and align with contractual leakage table convention.
     return mass_flow_kg_s * 1000.0 * CONTRACTUAL_ALIGNMENT_FACTOR
 
@@ -59,7 +64,9 @@ def helium_dynamic_viscosity_pa_s(temperature_k: float) -> float:
     mu_ref = 1.96e-5
     t_ref = 273.15
     s = 79.4
-    return mu_ref * ((temperature_k / t_ref) ** 1.5) * ((t_ref + s) / (temperature_k + s))
+    return (
+        mu_ref * ((temperature_k / t_ref) ** 1.5) * ((t_ref + s) / (temperature_k + s))
+    )
 
 
 def sonic_flow_indicators(
@@ -72,21 +79,29 @@ def sonic_flow_indicators(
     """Estimate choked-flow conditions and transport indicators for a notional leak path."""
     area = pi * (diameter_m**2) / 4
     rho = helium_density_kg_m3(temperature_k, p_up_bar)
-    m_dot_kg_s = leak_rate_to_mass_flow_g_s(leak_rate_mbar_l_s, temperature_k, p_up_bar) / 1000.0
+    m_dot_kg_s = (
+        leak_rate_to_mass_flow_g_s(leak_rate_mbar_l_s, temperature_k, p_up_bar) / 1000.0
+    )
     velocity = m_dot_kg_s / max(rho * area, 1e-18)
 
     critical_ratio = (2 / (HE_GAMMA + 1)) ** (HE_GAMMA / (HE_GAMMA - 1))
-    pressure_ratio = (p_down_bar / max(p_up_bar, 1e-12))
+    pressure_ratio = p_down_bar / max(p_up_bar, 1e-12)
     choked = pressure_ratio <= critical_ratio
 
     if choked:
         mach = 1.0
     else:
-        mach = np.sqrt(max((2 / (HE_GAMMA - 1)) * ((1 / pressure_ratio) ** ((HE_GAMMA - 1) / HE_GAMMA) - 1), 0.0))
+        mach = np.sqrt(
+            max(
+                (2 / (HE_GAMMA - 1))
+                * ((1 / pressure_ratio) ** ((HE_GAMMA - 1) / HE_GAMMA) - 1),
+                0.0,
+            )
+        )
 
     mu = helium_dynamic_viscosity_pa_s(temperature_k)
     reynolds = rho * velocity * diameter_m / max(mu, 1e-18)
-    nusselt = 0.023 * max(reynolds, 1.0) ** 0.8 * HE_PRANDTL ** 0.4
+    nusselt = 0.023 * max(reynolds, 1.0) ** 0.8 * HE_PRANDTL**0.4
 
     return {
         "density_kg_m3": rho,
@@ -155,14 +170,41 @@ def build_valve_spec_table() -> pd.DataFrame:
 
 def build_inventory_table() -> pd.DataFrame:
     rows = [
-        {"segment": "Cold valves leak-tight", "count": 105, "leak_class": 1e-9, "temperature_K": 20, "pressure_bar": 5},
-        {"segment": "Cold valves standard", "count": 105, "leak_class": 1e-8, "temperature_K": 20, "pressure_bar": 5},
-        {"segment": "Warm valves Meca Inox", "count": 100, "leak_class": 1e-5, "temperature_K": 300, "pressure_bar": 5},
-        {"segment": "Warm valves Swagelok", "count": 100, "leak_class": 1e-5, "temperature_K": 300, "pressure_bar": 5},
+        {
+            "segment": "Cold valves leak-tight",
+            "count": 105,
+            "leak_class": 1e-9,
+            "temperature_K": 20,
+            "pressure_bar": 5,
+        },
+        {
+            "segment": "Cold valves standard",
+            "count": 105,
+            "leak_class": 1e-8,
+            "temperature_K": 20,
+            "pressure_bar": 5,
+        },
+        {
+            "segment": "Warm valves Meca Inox",
+            "count": 100,
+            "leak_class": 1e-5,
+            "temperature_K": 300,
+            "pressure_bar": 5,
+        },
+        {
+            "segment": "Warm valves Swagelok",
+            "count": 100,
+            "leak_class": 1e-5,
+            "temperature_K": 300,
+            "pressure_bar": 5,
+        },
     ]
     df = pd.DataFrame(rows)
     df["mass_loss_g_year_each"] = df.apply(
-        lambda r: leak_rate_to_mass_flow_g_s(r["leak_class"], r["temperature_K"], r["pressure_bar"]) * SECONDS_PER_YEAR,
+        lambda r: leak_rate_to_mass_flow_g_s(
+            r["leak_class"], r["temperature_K"], r["pressure_bar"]
+        )
+        * SECONDS_PER_YEAR,
         axis=1,
     )
     df["mass_loss_g_year_total"] = df["mass_loss_g_year_each"] * df["count"]
@@ -217,7 +259,9 @@ def build_reliability_table() -> pd.DataFrame:
     return df, pd.DataFrame(spare_rows)
 
 
-def build_cost_table(helium_eur_per_kg: float = 15.0, lifetime_years: int = 40) -> pd.DataFrame:
+def build_cost_table(
+    helium_eur_per_kg: float = 15.0, lifetime_years: int = 40
+) -> pd.DataFrame:
     classes = [
         {"leak_class": 1e-9, "label": "Leak-tight", "valve_capex_eur": 9500},
         {"leak_class": 1e-8, "label": "High-integrity", "valve_capex_eur": 7000},

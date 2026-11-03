@@ -4,6 +4,7 @@ This is a SOURCE-REPORTED diagnostic, not GitHub authentication, independent
 review, branch-policy enforcement, or permission to merge/dispatch.
 No missing measurement is replaced with zero.
 """
+
 from __future__ import annotations
 
 import json
@@ -13,8 +14,16 @@ from pathlib import Path
 _SHA = re.compile(r"^[0-9a-f]{40}$")
 _REQUIRED_HEAD = ("B0", "MATRIX", "A10", "SECURITY")
 _REQUIRED_MAIN = ("B0", "MATRIX")
-_TERMINAL = {"success", "failure", "cancelled", "timed_out", "action_required",
-             "neutral", "skipped", "startup_failure"}
+_TERMINAL = {
+    "success",
+    "failure",
+    "cancelled",
+    "timed_out",
+    "action_required",
+    "neutral",
+    "skipped",
+    "startup_failure",
+}
 
 
 def _sha(value, field):
@@ -45,7 +54,14 @@ def _run(value, source_sha, field):
         raise ValueError(field + " is not bound to the selected source SHA")
     status = run.get("status")
     conclusion = run.get("conclusion")
-    if status not in ("queued", "pending", "waiting", "requested", "in_progress", "completed"):
+    if status not in (
+        "queued",
+        "pending",
+        "waiting",
+        "requested",
+        "in_progress",
+        "completed",
+    ):
         raise ValueError(field + " has an unknown workflow status")
     if status != "completed" and conclusion is not None:
         raise ValueError(field + " has a nonterminal conclusion")
@@ -69,7 +85,9 @@ def _ci_group(group, selected_sha, required, field):
             missing.append(name)
         native = (item["id"], item["attempt"])
         if native in ids:
-            raise ValueError(field + " reuses one workflow ID/attempt for different proof families")
+            raise ValueError(
+                field + " reuses one workflow ID/attempt for different proof families"
+            )
         ids.add(native)
     return not missing, missing
 
@@ -92,9 +110,13 @@ def _coverage_pair(pair, prev_sha, next_sha, field):
         for item in ("covered", "eligible"):
             val = measure.get(item)
             if type(val) is not int or val < 0:
-                raise ValueError(field + "." + side + "." + item + " requires an integer")
+                raise ValueError(
+                    field + "." + side + "." + item + " requires an integer"
+                )
         if not (0 < measure["eligible"] and measure["covered"] <= measure["eligible"]):
-            raise ValueError(field + "." + side + " has an invalid coverage denominator")
+            raise ValueError(
+                field + "." + side + " has an invalid coverage denominator"
+            )
         for hash_field in ("selection_sha256", "tool_sha256", "scope_sha256"):
             digest = measure.get(hash_field)
             if not isinstance(digest, str) or not re.fullmatch(r"[0-9a-f]{64}", digest):
@@ -105,8 +127,10 @@ def _coverage_pair(pair, prev_sha, next_sha, field):
     delta = 100 * (after["covered"] - before["covered"]) / before["eligible"]
     return {
         "status": "PAIRED_SOURCE_REPORTED",
-        "before": before["covered"], "after": after["covered"],
-        "eligible": before["eligible"], "delta_covered": after["covered"] - before["covered"],
+        "before": before["covered"],
+        "after": after["covered"],
+        "eligible": before["eligible"],
+        "delta_covered": after["covered"] - before["covered"],
         "delta_pp": round(delta, 6),
     }
 
@@ -133,12 +157,18 @@ def evaluate(packet):
         raise ValueError("PR URL and number disagree")
     # GitHub must independently validate merge parents/reviews/rules. Caller
     # assertions alone cannot confer approved admission.
-    head_ok, head_missing = _ci_group(packet.get("head_ci"), head, _REQUIRED_HEAD, "head_ci")
-    main_ok, main_missing = _ci_group(packet.get("main_ci"), main, _REQUIRED_MAIN, "main_ci")
+    head_ok, head_missing = _ci_group(
+        packet.get("head_ci"), head, _REQUIRED_HEAD, "head_ci"
+    )
+    main_ok, main_missing = _ci_group(
+        packet.get("main_ci"), main, _REQUIRED_MAIN, "main_ci"
+    )
     governance = _object(packet.get("governance"), "governance")
     checks = (
-        "required_statuses_enforced", "last_push_approval_enforced",
-        "thread_resolution_enforced", "red_canary_blocked",
+        "required_statuses_enforced",
+        "last_push_approval_enforced",
+        "thread_resolution_enforced",
+        "red_canary_blocked",
         "independent_security_review_verified",
     )
     unproven = [key for key in checks if governance.get(key) is not True]
@@ -146,7 +176,11 @@ def evaluate(packet):
     eligible = governance.get("eligible_approvals")
     if type(minimum) is not int or minimum < 1:
         unproven.append("required_approvals")
-    if type(eligible) is not int or eligible < 1 or (type(minimum) is int and eligible < minimum):
+    if (
+        type(eligible) is not int
+        or eligible < 1
+        or (type(minimum) is int and eligible < minimum)
+    ):
         unproven.append("eligible_approvals")
     coverage = _object(packet.get("coverage"), "coverage")
     # A historical 36.85%/36.92%/51% figure is NOT an equivalent scope receipt.
@@ -161,7 +195,9 @@ def evaluate(packet):
         raise ValueError("first_red.after must be a string or null")
     transition = "UNKNOWN"
     if before_red is not None and after_red is not None and head_ok:
-        transition = "SAME" if before_red == after_red else "CANDIDATE_DISPLACED_NOT_ROOT_CLOSED"
+        transition = (
+            "SAME" if before_red == after_red else "CANDIDATE_DISPLACED_NOT_ROOT_CLOSED"
+        )
     # Never promote source-reported claims into authoritative admission.
     reasons = ["independent server-side merge-admission attestation not present"]
     reasons += ["head_ci." + n for n in head_missing]
@@ -169,30 +205,40 @@ def evaluate(packet):
     reasons += ["governance." + n for n in unproven]
     return {
         "schema": "codepurple.g3cs.postmerge-evaluation.v1",
-        "repository": packet["repository"], "pr_number": number,
-        "head_sha": head, "parent_main_sha": base, "merge_main_sha": main,
+        "repository": packet["repository"],
+        "pr_number": number,
+        "head_sha": head,
+        "parent_main_sha": base,
+        "merge_main_sha": main,
         "merge_event": "SOURCE_REPORTED_MERGED",
-        "merge_admission": "HOLD", "governed_merge_credit": False,
+        "merge_admission": "HOLD",
+        "governed_merge_credit": False,
         "source_reported_proofs_complete": head_ok and main_ok and not unproven,
         "unmet_or_unverified": reasons,
-        "main_coverage": main_cov, "pr_broad_coverage": pr_broad,
-        "pr_diff_coverage": pr_diff, "first_red_transition": transition,
+        "main_coverage": main_cov,
+        "pr_broad_coverage": pr_broad,
+        "pr_diff_coverage": pr_diff,
+        "first_red_transition": transition,
         "accepted_causal_root_closures": None,
         "authenticated_crew_launch_ids": None,
         "accepted_rex_receipts": None,
-        "authority_transfer": False, "security_waiver": False,
+        "authority_transfer": False,
+        "security_waiver": False,
     }
 
 
 def main():
     import argparse
+
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--input", type=Path, required=True)
     parser.add_argument("--output", type=Path, required=True)
     args = parser.parse_args()
     result = evaluate(json.loads(args.input.read_text(encoding="utf-8")))
     args.output.parent.mkdir(parents=True, exist_ok=True)
-    args.output.write_text(json.dumps(result, indent=2, sort_keys=True) + "\n", encoding="utf-8")
+    args.output.write_text(
+        json.dumps(result, indent=2, sort_keys=True) + "\n", encoding="utf-8"
+    )
 
 
 if __name__ == "__main__":

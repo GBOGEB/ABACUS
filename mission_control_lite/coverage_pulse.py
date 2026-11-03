@@ -2,6 +2,7 @@
 
 Measurements never grant root closure or merge admission.
 """
+
 import argparse
 import hashlib
 import json
@@ -24,7 +25,9 @@ def _counts(summary, *, allow_empty=False):
     for field in fields:
         if type(summary.get(field)) is not int or summary[field] < 0:
             raise ValueError("invalid coverage " + field)
-    if (summary["num_statements"] == 0 and not allow_empty) or summary["covered_lines"] > summary["num_statements"]:
+    if (summary["num_statements"] == 0 and not allow_empty) or summary[
+        "covered_lines"
+    ] > summary["num_statements"]:
         raise ValueError("invalid line denominator")
     if summary["num_statements"] == 0 and summary["num_branches"] != 0:
         raise ValueError("invalid empty module branch denominator")
@@ -51,12 +54,14 @@ def compare(previous, current):
     if any(before[name] != after[name] for name in ("num_statements", "num_branches")):
         return {"status": "INCOMPARABLE", "reason": "coverage denominator changed"}
     suites_match = set(previous.get("tests_by_suite", {})) == set(
-        current.get("tests_by_suite", {}))
+        current.get("tests_by_suite", {})
+    )
     old_cases, new_cases = previous.get("test_case_ids"), current.get("test_case_ids")
     return {
         "status": "COMPARABLE",
-        "test_census_status": ("COMPARABLE" if suites_match else
-                               "INCOMPARABLE_SUITE_POPULATION"),
+        "test_census_status": (
+            "COMPARABLE" if suites_match else "INCOMPARABLE_SUITE_POPULATION"
+        ),
         "new_unique_case_ids": (
             len(set(new_cases) - set(old_cases))
             if suites_match and old_cases is not None and new_cases is not None
@@ -64,18 +69,16 @@ def compare(previous, current):
         ),
         "baseline_sha": previous["source_sha"],
         "current_sha": current["source_sha"],
-        "line_delta_pp": round(
-            current["line_percent"] - previous["line_percent"], 4
-        ),
+        "line_delta_pp": round(current["line_percent"] - previous["line_percent"], 4),
         "branch_delta_pp": (
-            None if current["branch_percent"] is None
+            None
+            if current["branch_percent"] is None
             else round(current["branch_percent"] - previous["branch_percent"], 4)
         ),
         "new_covered_lines": after["covered_lines"] - before["covered_lines"],
         "new_covered_branches": after["covered_branches"] - before["covered_branches"],
         "test_delta": (
-            current["tests_passed"] - previous["tests_passed"]
-            if suites_match else None
+            current["tests_passed"] - previous["tests_passed"] if suites_match else None
         ),
     }
 
@@ -123,8 +126,7 @@ def build(report, test_logs, source_sha, event_sha, run_id, previous=None, phase
         pairs = CASE.findall(text)
         if pairs and len(pairs) != counts[name]:
             raise ValueError("case identity count differs from native summary: " + name)
-        if any(not qualified.endswith("." + method)
-               for method, qualified in pairs):
+        if any(not qualified.endswith("." + method) for method, qualified in pairs):
             raise ValueError("malformed case identity: " + name)
         identities[name] = [qualified for _method, qualified in pairs] or None
     complete_ids = all(ids is not None for ids in identities.values())
@@ -132,8 +134,7 @@ def build(report, test_logs, source_sha, event_sha, run_id, previous=None, phase
     unique_ids = sorted(set(all_ids)) if complete_ids else None
     fields = ("covered_lines", "num_statements", "covered_branches", "num_branches")
     derived_totals = {
-        field: sum(files[name]["summary"][field] for name in names)
-        for field in fields
+        field: sum(files[name]["summary"][field] for name in names) for field in fields
     }
     if any(derived_totals[field] != totals[field] for field in fields):
         raise ValueError("coverage totals disagree with per-file bytes")
@@ -166,9 +167,15 @@ def build(report, test_logs, source_sha, event_sha, run_id, previous=None, phase
         "uncovered_branches": totals["num_branches"] - totals["covered_branches"],
         "coverage_backlog": backlog,
         "backlog_score_note": "Descriptive heuristic: missing lines + 2 * missing branches.",
-        "totals": {k: totals[k] for k in (
-            "covered_lines", "num_statements", "covered_branches", "num_branches"
-        )},
+        "totals": {
+            k: totals[k]
+            for k in (
+                "covered_lines",
+                "num_statements",
+                "covered_branches",
+                "num_branches",
+            )
+        },
         "line_percent": _percent(totals["covered_lines"], totals["num_statements"]),
         "branch_percent": _percent(totals["covered_branches"], totals["num_branches"]),
         "tests_by_suite": counts,
@@ -182,7 +189,8 @@ def build(report, test_logs, source_sha, event_sha, run_id, previous=None, phase
         ),
         "test_case_id_sha256": (
             hashlib.sha256("\n".join(unique_ids).encode("utf-8")).hexdigest()
-            if complete_ids else None
+            if complete_ids
+            else None
         ),
         "native_scope": "focused_unittest_only",
         "verified_root_closures": 0,
@@ -204,8 +212,12 @@ def build(report, test_logs, source_sha, event_sha, run_id, previous=None, phase
             seconds = phase.get("duration_seconds")
             if not isinstance(label, str) or not label or label in names:
                 raise ValueError("duplicate or missing native phase")
-            if (not isinstance(seconds, (int, float)) or isinstance(seconds, bool)
-                    or seconds < 0 or phase.get("exit_code") != 0):
+            if (
+                not isinstance(seconds, (int, float))
+                or isinstance(seconds, bool)
+                or seconds < 0
+                or phase.get("exit_code") != 0
+            ):
                 raise ValueError("invalid/failed native phase")
             names.add(label)
             elapsed += seconds
@@ -229,6 +241,7 @@ def render_summary(pulse):
     comparison = pulse["comparison"]
     delta = comparison.get("line_delta_pp")
     bdelta = comparison.get("branch_delta_pp")
+
     def display(value, suffix=""):
         return "UNKNOWN" if value is None else str(value) + suffix
 
@@ -241,20 +254,25 @@ def render_summary(pulse):
         "| Run ID | " + pulse["run_id"] + " |",
         "| Passed focused tests | " + str(pulse["tests_passed"]) + " |",
         "| Unique case IDs | " + display(pulse.get("unique_test_cases")) + " |",
-        "| Duplicate case executions | " + display(
-            pulse.get("duplicate_case_executions")) + " |",
+        "| Duplicate case executions | "
+        + display(pulse.get("duplicate_case_executions"))
+        + " |",
         "| Test ID evidence | " + pulse["test_id_status"] + " |",
-        "| Adversarial family reach | " + (
+        "| Adversarial family reach | "
+        + (
             str(pulse["adversarial_test_family"]["families_represented"]) + "/4"
-            if "adversarial_test_family" in pulse else "UNKNOWN"
-        ) + " |",
+            if "adversarial_test_family" in pulse
+            else "UNKNOWN"
+        )
+        + " |",
         "| Line coverage | " + display(pulse["line_percent"], "%") + " |",
         "| Branch coverage | " + display(pulse["branch_percent"], "%") + " |",
         "| Comparable baseline | " + comparison["status"] + " |",
         "| Line delta | " + display(delta, " pp") + " |",
         "| Branch delta | " + display(bdelta, " pp") + " |",
-        "| Timed native phases | " +
-        display(pulse.get("timed_execution_seconds"), " s") + " |",
+        "| Timed native phases | "
+        + display(pulse.get("timed_execution_seconds"), " s")
+        + " |",
         "| Runner queue | UNKNOWN (external run metadata needed) |",
         "| Verified root closures | 0 |",
         "| Merge admission | HOLD |",
@@ -266,9 +284,13 @@ def render_summary(pulse):
     ]
     for item in pulse.get("execution_phases", []):
         lines.append(
-            "| " + item["phase"] + " | " +
-            str(item["duration_seconds"]) + " | " +
-            str(item["exit_code"]) + " |"
+            "| "
+            + item["phase"]
+            + " | "
+            + str(item["duration_seconds"])
+            + " | "
+            + str(item["exit_code"])
+            + " |"
         )
     family = pulse.get("adversarial_test_family")
     if family is not None:
@@ -328,7 +350,8 @@ def main():
     if args.adversarial_family_tests_log:
         logs["adversarial_family"] = args.adversarial_family_tests_log.read_text()
     if args.require_penetration_suites and not {
-        "recovery_triage", "runner_wait"
+        "recovery_triage",
+        "runner_wait",
     } <= set(logs):
         parser.error("MCL penetration logs missing; refuse native credit")
     if args.gate_census_tests_log:
@@ -338,8 +361,13 @@ def main():
     old = json.loads(args.baseline.read_text()) if args.baseline else None
     phases = json.loads(args.timing_log.read_text()) if args.timing_log else None
     pulse = build(
-        json.loads(args.coverage_json.read_text()), logs,
-        args.source_sha, args.event_sha, args.run_id, old, phases,
+        json.loads(args.coverage_json.read_text()),
+        logs,
+        args.source_sha,
+        args.event_sha,
+        args.run_id,
+        old,
+        phases,
     )
     if args.require_case_ids and pulse["test_id_status"] != "COMPLETE":
         parser.error("native case identities missing; refuse to emit pulse")
@@ -357,14 +385,19 @@ def main():
     if args.summary:
         with args.summary.open("a") as summary:
             summary.write(render_summary(pulse))
-    print(json.dumps({
-        "source_sha": pulse["source_sha"],
-        "tests": pulse["tests_passed"],
-        "line_percent": pulse["line_percent"],
-        "branch_percent": pulse["branch_percent"],
-        "comparison": pulse["comparison"]["status"],
-        "merge_admission": "HOLD",
-    }, sort_keys=True))
+    print(
+        json.dumps(
+            {
+                "source_sha": pulse["source_sha"],
+                "tests": pulse["tests_passed"],
+                "line_percent": pulse["line_percent"],
+                "branch_percent": pulse["branch_percent"],
+                "comparison": pulse["comparison"]["status"],
+                "merge_admission": "HOLD",
+            },
+            sort_keys=True,
+        )
+    )
 
 
 if __name__ == "__main__":

@@ -1,12 +1,12 @@
 """Read-only handover binder negative and positive tests."""
+
 import copy
 import json
-from pathlib import Path
 import tempfile
 import unittest
+from pathlib import Path
 
 import binder
-
 
 BASE = Path(__file__).resolve().parent
 
@@ -26,8 +26,16 @@ class TestCBDHandoverBinder(unittest.TestCase):
 
     def test_canonical_pr_refs_and_unknowns(self):
         text = binder.markdown(self.doc)
-        for term in ("#1998", "#2045", "#2046", "#2027", "#2041",
-                     "PCA", "UNKNOWN", "41.31%"):
+        for term in (
+            "#1998",
+            "#2045",
+            "#2046",
+            "#2027",
+            "#2041",
+            "PCA",
+            "UNKNOWN",
+            "41.31%",
+        ):
             with self.subTest(term=term):
                 self.assertIn(term, text)
 

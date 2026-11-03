@@ -9,6 +9,7 @@ inbound-reference counts are a consumer census by file name (and module name
 for .py) over every tracked text file, so they over-count plain mentions on
 purpose: a move is only planned once every hit is explained.
 """
+
 from __future__ import annotations
 
 import argparse

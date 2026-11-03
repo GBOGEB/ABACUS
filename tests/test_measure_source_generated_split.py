@@ -4,8 +4,15 @@ import importlib.util
 import sys
 from pathlib import Path
 
-MODULE_PATH = Path(__file__).resolve().parents[1] / "tools" / "repo_health" / "measure_source_generated_split.py"
-spec = importlib.util.spec_from_file_location("measure_source_generated_split", MODULE_PATH)
+MODULE_PATH = (
+    Path(__file__).resolve().parents[1]
+    / "tools"
+    / "repo_health"
+    / "measure_source_generated_split.py"
+)
+spec = importlib.util.spec_from_file_location(
+    "measure_source_generated_split", MODULE_PATH
+)
 module = importlib.util.module_from_spec(spec)
 assert spec and spec.loader and spec.name
 sys.modules[spec.name] = module
@@ -18,7 +25,9 @@ def write(path: Path, text: str = "x") -> None:
     path.write_text(text, encoding="utf-8")
 
 
-def test_classifier_separates_source_generated_binary_and_controls(tmp_path: Path) -> None:
+def test_classifier_separates_source_generated_binary_and_controls(
+    tmp_path: Path,
+) -> None:
     write(tmp_path / "src" / "model.py")
     write(tmp_path / "build" / "report.json")
     write(tmp_path / "governance" / "receipt.yaml")

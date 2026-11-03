@@ -11,9 +11,9 @@ Centralized configuration for all DMAIC phases with support for:
 """
 
 from dataclasses import dataclass, field
-from pathlib import Path
-from typing import Dict, List, Any
 from enum import Enum
+from pathlib import Path
+from typing import Any, Dict, List
 
 VERSION = "3.4.0-rc1"
 PREVIOUS_VERSION = "3.3.1"
@@ -31,16 +31,18 @@ CORE_PRINCIPLES = [
 
 class ExecutionMode(Enum):
     """Execution modes for the engine"""
-    FULL = "full"                    # Execute all phases
-    SINGLE_PHASE = "single_phase"    # Execute single phase
-    RESUME = "resume"                # Resume from checkpoint
-    DRY_RUN = "dry_run"              # Validation only
-    SETUP_ONLY = "setup_only"        # Phase 0 only
+
+    FULL = "full"  # Execute all phases
+    SINGLE_PHASE = "single_phase"  # Execute single phase
+    RESUME = "resume"  # Resume from checkpoint
+    DRY_RUN = "dry_run"  # Validation only
+    SETUP_ONLY = "setup_only"  # Phase 0 only
 
 
 @dataclass
 class PathConfig:
     """Path configuration"""
+
     workspace_root: Path = Path(__file__).parent.parent.resolve()
     output_root: Path = Path("DMAIC_V3_OUTPUT")
     state_dir: Path = Path("DMAIC_V3_OUTPUT/state")
@@ -52,7 +54,7 @@ class PathConfig:
     def create_directories(self):
         """Create all required directories exactly once."""
         for attr_name in dir(self):
-            if attr_name.endswith('_dir') or attr_name.endswith('_root'):
+            if attr_name.endswith("_dir") or attr_name.endswith("_root"):
                 path = getattr(self, attr_name)
                 if isinstance(path, Path):
                     path.mkdir(parents=True, exist_ok=True)
@@ -61,6 +63,7 @@ class PathConfig:
 @dataclass
 class Phase0Config:
     """Phase 0: Setup & Initialization Configuration"""
+
     enabled: bool = True
     python_min_version: str = "3.10.0"
     required_disk_space_mb: int = 100
@@ -74,6 +77,7 @@ class Phase0Config:
 @dataclass
 class PhaseConfig:
     """Generic phase configuration"""
+
     enabled: bool = True
     timeout_seconds: int = 3600
     retry_on_failure: bool = False
@@ -85,6 +89,7 @@ class PhaseConfig:
 @dataclass
 class IdempotencyConfig:
     """Idempotency configuration"""
+
     enabled: bool = True
     state_file: str = "execution_state.json"
     checkpoint_interval: int = 60  # seconds
@@ -96,6 +101,7 @@ class IdempotencyConfig:
 @dataclass
 class MetricsConfig:
     """Metrics tracking configuration"""
+
     enabled: bool = True
     track_baseline: bool = True
     track_trends: bool = True
@@ -106,6 +112,7 @@ class MetricsConfig:
 @dataclass
 class KnowledgeConfig:
     """Knowledge management configuration"""
+
     enabled: bool = True
     pack_format: str = "json"
     compression: bool = True
@@ -116,6 +123,7 @@ class KnowledgeConfig:
 @dataclass
 class LoggingConfig:
     """Logging configuration"""
+
     level: str = "INFO"  # DEBUG, INFO, WARNING, ERROR, CRITICAL
     format: str = "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
     file_logging: bool = True
@@ -126,6 +134,7 @@ class LoggingConfig:
 @dataclass
 class DMAICConfig:
     """Main DMAIC Configuration"""
+
     version: str = VERSION
     execution_mode: ExecutionMode = ExecutionMode.FULL
     workspace_root: str = str(Path(__file__).parent.parent.resolve())
@@ -185,7 +194,7 @@ class DMAICConfig:
         }
 
     @classmethod
-    def from_dict(cls, data: Dict[str, Any]) -> 'DMAICConfig':
+    def from_dict(cls, data: Dict[str, Any]) -> "DMAICConfig":
         """Create configuration from dictionary"""
         # This is a simplified version - full implementation would handle nested objects
         config = cls()
@@ -251,7 +260,8 @@ def load_config(config_file: Path = None, environment: str = "default") -> DMAIC
     if config_file and config_file.exists():
         # Load from file (implementation depends on format)
         import json
-        with open(config_file, 'r') as f:
+
+        with open(config_file, "r") as f:
             data = json.load(f)
         return DMAICConfig.from_dict(data)
 
@@ -260,9 +270,9 @@ def load_config(config_file: Path = None, environment: str = "default") -> DMAIC
 
 if __name__ == "__main__":
     # Example usage and validation
-    print("="*80)
+    print("=" * 80)
     print(f"DMAIC V{VERSION} - Configuration")
-    print("="*80)
+    print("=" * 80)
 
     config = DEFAULT_CONFIG
     print(f"\nVersion: {config.version}")
@@ -286,4 +296,4 @@ if __name__ == "__main__":
     print(f"  Allow Resume: {config.idempotency.allow_resume}")
     print(f"  Verify Checksums: {config.idempotency.verify_checksums}")
 
-    print("\n" + "="*80)
+    print("\n" + "=" * 80)

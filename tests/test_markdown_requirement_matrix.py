@@ -1,6 +1,5 @@
 from pathlib import Path
 
-
 ROOT = Path(__file__).resolve().parents[1]
 CANONICAL = ROOT / "DMAIC_V3" / "requirements.txt"
 GENERATORS = ROOT / "DMAIC_V3" / "generators" / "requirements.txt"

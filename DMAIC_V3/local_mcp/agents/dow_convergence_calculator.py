@@ -5,16 +5,16 @@ Calculates convergence metrics for iterations
 
 import json
 import logging
+import sys
 from datetime import datetime
 from pathlib import Path
-from typing import Dict, List, Any, Optional
-import sys
+from typing import Any, Dict, List, Optional
 
 ROOT_DIR = Path(__file__).resolve().parents[3]
 sys.path.insert(0, str(ROOT_DIR))
 sys.path.insert(0, str(ROOT_DIR / "src"))
-from dmaic.contract import ensure_contract
 from dmaic import idempotency
+from dmaic.contract import ensure_contract
 
 
 class DOWConvergenceCalculator:
@@ -24,15 +24,17 @@ class DOWConvergenceCalculator:
         self.config_path = config_path
         self.logger = logging.getLogger(__name__)
 
-    def calculate_convergence(self, current_file: Path, previous_file: Optional[Path] = None) -> Dict[str, Any]:
+    def calculate_convergence(
+        self, current_file: Path, previous_file: Optional[Path] = None
+    ) -> Dict[str, Any]:
         """Calculate convergence metrics"""
         try:
-            with open(current_file, 'r', encoding='utf-8') as f:
+            with open(current_file, "r", encoding="utf-8") as f:
                 current_data = json.load(f)
 
             previous_data = None
             if previous_file and previous_file.exists():
-                with open(previous_file, 'r', encoding='utf-8') as f:
+                with open(previous_file, "r", encoding="utf-8") as f:
                     previous_data = json.load(f)
 
             current_data = ensure_contract(
@@ -50,27 +52,35 @@ class DOWConvergenceCalculator:
             status = self._determine_convergence_status(improvement)
 
             convergence_metrics = {
-                'quality_score': quality_score,
-                'completeness': completeness,
-                'improvement_from_previous': improvement,
-                'convergence_status': status,
-                'calculated_at': datetime.now().isoformat()
+                "quality_score": quality_score,
+                "completeness": completeness,
+                "improvement_from_previous": improvement,
+                "convergence_status": status,
+                "calculated_at": datetime.now().isoformat(),
             }
 
-            current_data['convergence_metrics'] = convergence_metrics
-            current_data['idempotency']['output_hash'] = idempotency.hash_json(current_data)
+            current_data["convergence_metrics"] = convergence_metrics
+            current_data["idempotency"]["output_hash"] = idempotency.hash_json(
+                current_data
+            )
 
-            with open(current_file, 'w', encoding='utf-8') as f:
+            with open(current_file, "w", encoding="utf-8") as f:
                 json.dump(current_data, f, indent=2)
 
             self.logger.info(f"✅ Convergence metrics calculated: {current_file}")
-            return {'status': 'success', 'file': str(current_file), 'metrics': convergence_metrics}
+            return {
+                "status": "success",
+                "file": str(current_file),
+                "metrics": convergence_metrics,
+            }
 
         except Exception as e:
             self.logger.error(f"❌ Convergence calculation failed: {e}")
-            return {'status': 'error', 'error': str(e)}
+            return {"status": "error", "error": str(e)}
 
-    def calculate_batch(self, file_paths: List[Path], previous_dir: Optional[Path] = None) -> Dict[str, Any]:
+    def calculate_batch(
+        self, file_paths: List[Path], previous_dir: Optional[Path] = None
+    ) -> Dict[str, Any]:
         """Calculate convergence metrics for multiple files"""
         results = []
         for file_path in file_paths:
@@ -82,21 +92,21 @@ class DOWConvergenceCalculator:
             results.append(result)
 
         return {
-            'total': len(file_paths),
-            'success': sum(1 for r in results if r['status'] == 'success'),
-            'failed': sum(1 for r in results if r['status'] == 'error'),
-            'results': results
+            "total": len(file_paths),
+            "success": sum(1 for r in results if r["status"] == "success"),
+            "failed": sum(1 for r in results if r["status"] == "error"),
+            "results": results,
         }
 
     def _calculate_quality_score(self, data: Dict[str, Any]) -> float:
         """Calculate quality score based on data completeness and structure"""
         score = 0.0
 
-        if 'metadata' in data:
+        if "metadata" in data:
             score += 0.2
-        if 'recursive_hooks' in data:
+        if "recursive_hooks" in data:
             score += 0.2
-        if 'knowledge_gain' in data:
+        if "knowledge_gain" in data:
             score += 0.2
 
         if isinstance(data, dict):
@@ -114,11 +124,18 @@ class DOWConvergenceCalculator:
 
     def _calculate_completeness(self, data: Dict[str, Any]) -> float:
         """Calculate completeness score"""
-        required_fields = ['metadata', 'recursive_hooks', 'convergence_metrics', 'knowledge_gain']
+        required_fields = [
+            "metadata",
+            "recursive_hooks",
+            "convergence_metrics",
+            "knowledge_gain",
+        ]
         present_fields = sum(1 for field in required_fields if field in data)
         return present_fields / len(required_fields)
 
-    def _calculate_improvement(self, current_data: Dict[str, Any], previous_data: Optional[Dict[str, Any]]) -> float:
+    def _calculate_improvement(
+        self, current_data: Dict[str, Any], previous_data: Optional[Dict[str, Any]]
+    ) -> float:
         """Calculate improvement from previous iteration"""
         if not previous_data:
             return 0.0
@@ -131,30 +148,34 @@ class DOWConvergenceCalculator:
     def _determine_convergence_status(self, improvement: float) -> str:
         """Determine convergence status"""
         if improvement > 0.1:
-            return 'improving'
+            return "improving"
         elif improvement > 0:
-            return 'stable'
+            return "stable"
         elif improvement == 0:
-            return 'converged'
+            return "converged"
         else:
-            return 'degrading'
+            return "degrading"
 
 
 def main():
     """Main entry point"""
     import argparse
 
-    parser = argparse.ArgumentParser(description='DOW Convergence Calculator')
-    parser.add_argument('--iteration', type=int, default=1, help='Current iteration number')
-    parser.add_argument('--target', type=str, default='DMAIC_CANONICAL_OUTPUT', help='Target directory')
-    parser.add_argument('--previous', type=str, help='Previous iteration directory')
-    parser.add_argument('--verbose', action='store_true', help='Verbose output')
+    parser = argparse.ArgumentParser(description="DOW Convergence Calculator")
+    parser.add_argument(
+        "--iteration", type=int, default=1, help="Current iteration number"
+    )
+    parser.add_argument(
+        "--target", type=str, default="DMAIC_CANONICAL_OUTPUT", help="Target directory"
+    )
+    parser.add_argument("--previous", type=str, help="Previous iteration directory")
+    parser.add_argument("--verbose", action="store_true", help="Verbose output")
 
     args = parser.parse_args()
 
     logging.basicConfig(
         level=logging.INFO if args.verbose else logging.WARNING,
-        format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
+        format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
     )
 
     calculator = DOWConvergenceCalculator()
@@ -180,9 +201,10 @@ def main():
     print(f"   Success: {result['success']}")
     print(f"   Failed: {result['failed']}")
 
-    if result['failed'] > 0:
+    if result["failed"] > 0:
         print(f"\n❌ Some files failed. Check logs for details.")
         sys.exit(1)
+
 
 if __name__ == "__main__":
     main()

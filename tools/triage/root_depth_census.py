@@ -6,6 +6,7 @@ Use a FULL recursive tree obtained by an authenticated operator/CI checkout:
     python tools/triage/root_depth_census.py --tree tree.json --head <HEAD> --out receipt.json
 This scanner does NOT fetch repositories, open archives or certify consumers.
 """
+
 from __future__ import annotations
 
 import argparse
@@ -17,13 +18,53 @@ from pathlib import Path, PurePosixPath
 SHA40 = re.compile(r"[0-9a-f]{40}\Z")
 REPO = "GBOGEB/ABACUS"
 SCHEMA = "codepurple.abacus.root-depth-census.v1"
-BINARY = {".pdf", ".ppt", ".pptx", ".pptm", ".doc", ".docx", ".docm",
-          ".xls", ".xlsx", ".xlsm", ".zip", ".7z", ".rar", ".tar",
-          ".gz", ".bz2", ".xz", ".png", ".jpg", ".jpeg", ".gif",
-          ".webp", ".bmp", ".ico", ".tif", ".tiff", ".exe", ".dll",
-          ".so", ".bin", ".sqlite", ".db", ".parquet", ".h5", ".hdf5"}
-PROJECT = {"pyproject.toml", "package.json", "Cargo.toml",
-           "go.mod", "pom.xml", "Pipfile", "setup.py", "setup.cfg"}
+BINARY = {
+    ".pdf",
+    ".ppt",
+    ".pptx",
+    ".pptm",
+    ".doc",
+    ".docx",
+    ".docm",
+    ".xls",
+    ".xlsx",
+    ".xlsm",
+    ".zip",
+    ".7z",
+    ".rar",
+    ".tar",
+    ".gz",
+    ".bz2",
+    ".xz",
+    ".png",
+    ".jpg",
+    ".jpeg",
+    ".gif",
+    ".webp",
+    ".bmp",
+    ".ico",
+    ".tif",
+    ".tiff",
+    ".exe",
+    ".dll",
+    ".so",
+    ".bin",
+    ".sqlite",
+    ".db",
+    ".parquet",
+    ".h5",
+    ".hdf5",
+}
+PROJECT = {
+    "pyproject.toml",
+    "package.json",
+    "Cargo.toml",
+    "go.mod",
+    "pom.xml",
+    "Pipfile",
+    "setup.py",
+    "setup.cfg",
+}
 
 
 def need(ok: bool, message: str) -> None:
@@ -79,8 +120,10 @@ def report(tree: dict, head: str) -> dict:
         kind = obj.get("type")
         mode = obj.get("mode")
         need(kind in ("blob", "tree", "commit"), "unrecognized Git object")
-        need(isinstance(obj.get("sha"), str) and SHA40.fullmatch(obj["sha"]),
-             "object SHA invalid")
+        need(
+            isinstance(obj.get("sha"), str) and SHA40.fullmatch(obj["sha"]),
+            "object SHA invalid",
+        )
         if kind == "blob":
             need(mode in ("100644", "100755", "120000"), "unknown blob mode")
             size = obj.get("size")
@@ -119,12 +162,12 @@ def report(tree: dict, head: str) -> dict:
         if PurePosixPath(path).name in PROJECT:
             marker_paths.append(path)
     duplicate_groups = [g for g in sha_groups.values() if len(g) > 1]
-    repeated_bytes = sum((len(group) - 1) * group[0][1]
-                         for group in duplicate_groups)
+    repeated_bytes = sum((len(group) - 1) * group[0][1] for group in duplicate_groups)
     need(sum(by_tranche.values()) == len(blobs), "tranche sum mismatch")
     extension_counts = dict(sorted(by_ext.items(), key=lambda row: (-row[1], row[0])))
-    high_duplicates = sorted(duplicate_groups, key=lambda group:
-                             -(len(group) - 1) * group[0][1])
+    high_duplicates = sorted(
+        duplicate_groups, key=lambda group: -(len(group) - 1) * group[0][1]
+    )
     return {
         "schema": SCHEMA,
         "repo": REPO,
@@ -144,14 +187,15 @@ def report(tree: dict, head: str) -> dict:
             "tracked_python_files": by_ext.get(".py", 0),
             "tracked_yaml_files": by_ext.get(".yaml", 0) + by_ext.get(".yml", 0),
             "tracked_workflow_yaml_files": sum(
-                1 for x in blobs if x["path"].startswith(".github/workflows/")
+                1
+                for x in blobs
+                if x["path"].startswith(".github/workflows/")
                 and extension(x["path"]) in (".yaml", ".yml")
             ),
         },
         "extensions": extension_counts,
         "tranches": dict(sorted(by_tranche.items())),
-        "root_counts": dict(sorted(by_root.items(),
-                                   key=lambda row: (-row[1], row[0]))),
+        "root_counts": dict(sorted(by_root.items(), key=lambda row: (-row[1], row[0]))),
         "gitlink_paths": gitlinks,
         "nested_git_paths": dotgit_paths,
         "nested_project_manifest_candidates": sorted(
@@ -162,8 +206,11 @@ def report(tree: dict, head: str) -> dict:
             for path, size in sorted(large_paths, key=lambda row: -row[1])[:20]
         ],
         "largest_duplicate_groups": [
-            {"copies": len(group), "bytes_per_copy": group[0][1],
-             "paths": [p for p, _ in group[:8]]}
+            {
+                "copies": len(group),
+                "bytes_per_copy": group[0][1],
+                "paths": [p for p, _ in group[:8]],
+            }
             for group in high_duplicates[:20]
         ],
         "untracked_ignored_local_artifacts": None,

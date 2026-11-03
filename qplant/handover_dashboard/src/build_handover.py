@@ -4,9 +4,8 @@ import json
 from pathlib import Path
 
 import pandas as pd
-from weasyprint import HTML
-
 from manifest import write_text_if_changed
+from weasyprint import HTML
 
 ROOT = Path(__file__).resolve().parents[1]
 DOCS_DIR = ROOT / "docs"
@@ -20,7 +19,9 @@ def _md_to_html(md_text: str) -> str:
 
         return markdown.markdown(md_text, extensions=["tables", "fenced_code"])
     except Exception:
-        escaped = md_text.replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;")
+        escaped = (
+            md_text.replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;")
+        )
         return f"<pre>{escaped}</pre>"
 
 
@@ -105,7 +106,11 @@ python src/build_all.py
 """
 
     rtm_md = trace_df.to_markdown(index=False)
-    rtm_md = "# RTM Traceability\n\n" + rtm_md + "\n\n## DMAIC View Note\n- DEFINE: requirement-to-implementation map.\n- MEASURE: all RTM rows captured with verification hooks.\n- ANALYZE: detects review/risk rows quickly.\n- IMPROVE: supports audit readiness.\n- CONTROL: generated deterministically from build script.\n"
+    rtm_md = (
+        "# RTM Traceability\n\n"
+        + rtm_md
+        + "\n\n## DMAIC View Note\n- DEFINE: requirement-to-implementation map.\n- MEASURE: all RTM rows captured with verification hooks.\n- ANALYZE: detects review/risk rows quickly.\n- IMPROVE: supports audit readiness.\n- CONTROL: generated deterministically from build script.\n"
+    )
 
     write_text_if_changed(SOURCE_DIR / "handover.md", handover_md)
     write_text_if_changed(SOURCE_DIR / "assumptions.md", assumptions_md)
@@ -135,7 +140,9 @@ python src/build_all.py
 </html>"""
 
     write_text_if_changed(DOCS_DIR / "handover.html", handover_html)
-    HTML(string=handover_html, base_url=str(ROOT)).write_pdf(str(DOCS_DIR / "handover.pdf"))
+    HTML(string=handover_html, base_url=str(ROOT)).write_pdf(
+        str(DOCS_DIR / "handover.pdf")
+    )
 
     return {
         "handover_md": str(SOURCE_DIR / "handover.md"),

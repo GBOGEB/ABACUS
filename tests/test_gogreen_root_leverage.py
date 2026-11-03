@@ -4,7 +4,6 @@ import unittest
 
 from scripts.gogreen_root_leverage import analyze
 
-
 SHA = "a" * 40
 ROOT_URL = "https://github.com/GBOGEB/ABACUS/issues/2026"
 
@@ -101,10 +100,12 @@ class RootLeverageTests(unittest.TestCase):
 
     def test_conflicting_owner_per_root_is_rejected(self):
         with self.assertRaisesRegex(ValueError, "conflicting root owner"):
-            analyze([
-                row(root=True),
-                dict(row(2077, run_id=101, root=True), root_owner="Other"),
-            ])
+            analyze(
+                [
+                    row(root=True),
+                    dict(row(2077, run_id=101, root=True), root_owner="Other"),
+                ]
+            )
 
     def test_nonfailure_cannot_claim_owner_root(self):
         item = row(root=True)
@@ -169,7 +170,9 @@ class RootLeverageTests(unittest.TestCase):
         from pathlib import Path
         from unittest.mock import patch
 
-        script = Path(__file__).resolve().parents[1] / "scripts" / "gogreen_root_leverage.py"
+        script = (
+            Path(__file__).resolve().parents[1] / "scripts" / "gogreen_root_leverage.py"
+        )
         with tempfile.TemporaryDirectory() as folder:
             inp = Path(folder) / "source.json"
             inp.write_text(json.dumps({"observations": [row()]}), encoding="utf-8")

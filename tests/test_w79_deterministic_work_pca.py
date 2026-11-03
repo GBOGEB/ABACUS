@@ -102,9 +102,7 @@ def test_rehashed_forged_row_payload_fails_closed() -> None:
     row = source["rows"][0]
     row["values"][-1] += 1
     work = dict(zip(source["work_features"], row["values"]))
-    semantic = {
-        feature: work[feature] for feature in source["semantic_work_features"]
-    }
+    semantic = {feature: work[feature] for feature in source["semantic_work_features"]}
     row["work_sha256"] = w79.canonical_sha256(work)
     row["semantic_sha256"] = w79.canonical_sha256(semantic)
     try:

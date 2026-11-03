@@ -9,13 +9,14 @@ DOW (Distributed Orchestration Workspace) Integration Tests
 Tests for global workspace integration, cross-SUT testing, and DOW engine validation
 """
 
-import pytest
-import pytest_asyncio
 import asyncio
 import json
+from datetime import datetime
 from pathlib import Path
 from typing import Dict, List
-from datetime import datetime
+
+import pytest
+import pytest_asyncio
 
 
 class DOWIntegrationTester:
@@ -35,11 +36,13 @@ class DOWIntegrationTester:
             try:
                 with open(config_file) as f:
                     config = json.load(f)
-                    components.append({
-                        "path": str(config_file),
-                        "config": config,
-                        "type": config.get("type", "unknown")
-                    })
+                    components.append(
+                        {
+                            "path": str(config_file),
+                            "config": config,
+                            "type": config.get("type", "unknown"),
+                        }
+                    )
             except Exception as e:
                 print(f"Failed to load {config_file}: {e}")
 
@@ -49,17 +52,17 @@ class DOWIntegrationTester:
         """Validate DOW component structure"""
         required_fields = ["type", "version", "agents", "workflows"]
         validation = {
-            "component": component['path'],
+            "component": component["path"],
             "valid": True,
             "missing_fields": [],
-            "errors": []
+            "errors": [],
         }
 
-        config = component.get('config', {})
+        config = component.get("config", {})
         for field in required_fields:
             if field not in config:
-                validation['valid'] = False
-                validation['missing_fields'].append(field)
+                validation["valid"] = False
+                validation["missing_fields"].append(field)
 
         return validation
 
@@ -70,7 +73,7 @@ class DOWIntegrationTester:
             "agent2": agent2,
             "status": "success",
             "latency_ms": 0.0,
-            "message_count": 0
+            "message_count": 0,
         }
 
         start_time = asyncio.get_event_loop().time()
@@ -79,8 +82,8 @@ class DOWIntegrationTester:
         await asyncio.sleep(0.1)  # Simulate network delay
 
         end_time = asyncio.get_event_loop().time()
-        result['latency_ms'] = (end_time - start_time) * 1000
-        result['message_count'] = 1
+        result["latency_ms"] = (end_time - start_time) * 1000
+        result["message_count"] = 1
 
         return result
 
@@ -91,7 +94,7 @@ class DOWIntegrationTester:
             "sut2": sut2,
             "integration_status": "success",
             "data_flow": "bidirectional",
-            "sync_status": "synchronized"
+            "sync_status": "synchronized",
         }
 
         # Test data flow
@@ -111,9 +114,9 @@ class TestDOWIntegration:
         assert isinstance(components, list)
         # Components may or may not exist, so we just check the structure
         for component in components:
-            assert 'path' in component
-            assert 'config' in component
-            assert 'type' in component
+            assert "path" in component
+            assert "config" in component
+            assert "type" in component
 
     def test_dow_structure_validation(self):
         """Test DOW structure validation"""
@@ -121,19 +124,19 @@ class TestDOWIntegration:
 
         # Create mock component
         mock_component = {
-            'path': 'test/DOW_CONFIG.json',
-            'config': {
-                'type': 'orchestrator',
-                'version': '1.0.0',
-                'agents': ['agent1', 'agent2'],
-                'workflows': ['workflow1']
-            }
+            "path": "test/DOW_CONFIG.json",
+            "config": {
+                "type": "orchestrator",
+                "version": "1.0.0",
+                "agents": ["agent1", "agent2"],
+                "workflows": ["workflow1"],
+            },
         }
 
         validation = tester.validate_dow_structure(mock_component)
 
-        assert validation['valid'] == True
-        assert len(validation['missing_fields']) == 0
+        assert validation["valid"] == True
+        assert len(validation["missing_fields"]) == 0
 
     @pytest.mark.asyncio
     async def test_dow_agent_communication(self):
@@ -142,9 +145,9 @@ class TestDOWIntegration:
 
         result = await tester.test_dow_agent_communication("agent1", "agent2")
 
-        assert result['status'] == 'success'
-        assert result['latency_ms'] > 0
-        assert result['message_count'] > 0
+        assert result["status"] == "success"
+        assert result["latency_ms"] > 0
+        assert result["message_count"] > 0
 
     @pytest.mark.asyncio
     async def test_cross_sut_integration(self):
@@ -153,9 +156,9 @@ class TestDOWIntegration:
 
         result = await tester.test_cross_sut_integration("SUT_A", "SUT_B")
 
-        assert result['integration_status'] == 'success'
-        assert result['data_flow'] in ['bidirectional', 'unidirectional']
-        assert result['sync_status'] in ['synchronized', 'pending']
+        assert result["integration_status"] == "success"
+        assert result["data_flow"] in ["bidirectional", "unidirectional"]
+        assert result["sync_status"] in ["synchronized", "pending"]
 
 
 class TestGlobalWorkspace:
@@ -165,11 +168,7 @@ class TestGlobalWorkspace:
         """Test workspace directory structure"""
         workspace = Path(".")
 
-        expected_dirs = [
-            "tests",
-            "scripts",
-            ".github/workflows"
-        ]
+        expected_dirs = ["tests", "scripts", ".github/workflows"]
 
         for dir_path in expected_dirs:
             full_path = workspace / dir_path
@@ -179,10 +178,7 @@ class TestGlobalWorkspace:
         """Test workspace configuration files"""
         workspace = Path(".")
 
-        config_files = [
-            "pytest.ini",
-            "requirements-test.txt"
-        ]
+        config_files = ["pytest.ini", "requirements-test.txt"]
 
         for config_file in config_files:
             full_path = workspace / config_file
@@ -197,7 +193,7 @@ class TestGlobalWorkspace:
             "docker-compose.yml",
             ".dockerignore",
             ".github/workflows/ci.yml",
-            ".github/workflows/cd.yml"
+            ".github/workflows/cd.yml",
         ]
 
         for file_path in integration_files:
@@ -250,16 +246,12 @@ class TestGlobalWorkspace:
         results = await asyncio.gather(*tasks)
 
         assert len(results) == 5
-        assert all(r['status'] == 'success' for r in results)
+        assert all(r["status"] == "success" for r in results)
 
     async def _async_workspace_operation(self, workspace: Path, task_id: int) -> Dict:
         """Simulate async workspace operation"""
         await asyncio.sleep(0.01 * task_id)
-        return {
-            "task_id": task_id,
-            "status": "success",
-            "workspace": str(workspace)
-        }
+        return {"task_id": task_id, "status": "success", "workspace": str(workspace)}
 
 
 class TestDOWMetrics:
@@ -272,12 +264,12 @@ class TestDOWMetrics:
             "active_agents": 5,
             "completed_workflows": 10,
             "pending_tasks": 3,
-            "system_health": "healthy"
+            "system_health": "healthy",
         }
 
-        assert metrics['active_agents'] > 0
-        assert metrics['completed_workflows'] >= 0
-        assert metrics['system_health'] in ['healthy', 'degraded', 'critical']
+        assert metrics["active_agents"] > 0
+        assert metrics["completed_workflows"] >= 0
+        assert metrics["system_health"] in ["healthy", "degraded", "critical"]
 
     def test_dow_performance_metrics(self):
         """Test DOW performance metrics"""
@@ -285,13 +277,13 @@ class TestDOWMetrics:
             "avg_response_time_ms": 150.0,
             "throughput_ops_per_sec": 100.0,
             "error_rate_percent": 0.5,
-            "resource_utilization_percent": 65.0
+            "resource_utilization_percent": 65.0,
         }
 
-        assert performance['avg_response_time_ms'] < 1000
-        assert performance['throughput_ops_per_sec'] > 0
-        assert performance['error_rate_percent'] < 5.0
-        assert 0 <= performance['resource_utilization_percent'] <= 100
+        assert performance["avg_response_time_ms"] < 1000
+        assert performance["throughput_ops_per_sec"] > 0
+        assert performance["error_rate_percent"] < 5.0
+        assert 0 <= performance["resource_utilization_percent"] <= 100
 
     @pytest.mark.asyncio
     async def test_dow_real_time_monitoring(self):
@@ -301,13 +293,15 @@ class TestDOWMetrics:
         # Simulate real-time monitoring
         for i in range(5):
             await asyncio.sleep(0.01)
-            monitoring_data.append({
-                "timestamp": datetime.now().isoformat(),
-                "metric": "cpu_usage",
-                "value": 50.0 + i * 2
-            })
+            monitoring_data.append(
+                {
+                    "timestamp": datetime.now().isoformat(),
+                    "metric": "cpu_usage",
+                    "value": 50.0 + i * 2,
+                }
+            )
 
         assert len(monitoring_data) == 5
-        assert all('timestamp' in d for d in monitoring_data)
-        assert all('metric' in d for d in monitoring_data)
-        assert all('value' in d for d in monitoring_data)
+        assert all("timestamp" in d for d in monitoring_data)
+        assert all("metric" in d for d in monitoring_data)
+        assert all("value" in d for d in monitoring_data)
