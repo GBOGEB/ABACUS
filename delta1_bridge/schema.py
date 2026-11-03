@@ -11,6 +11,7 @@ This module gives the federation a single validator so the schema cannot drift
 silently between publishers. It is intentionally permissive about extra keys
 (forward-compatible) and strict about the keys dashboards/badges depend on.
 """
+
 from __future__ import annotations
 
 import json
@@ -59,7 +60,9 @@ def validate_metrics(data: Mapping[str, Any]) -> list[str]:
 
     for key in _NUMERIC_KEYS:
         if key in data and not isinstance(data[key], (int, float)):
-            issues.append(f"key '{key}' must be numeric, got {type(data[key]).__name__}")
+            issues.append(
+                f"key '{key}' must be numeric, got {type(data[key]).__name__}"
+            )
 
     if "quality_score" in data and isinstance(data["quality_score"], (int, float)):
         if not 0 <= float(data["quality_score"]) <= 100:
@@ -88,14 +91,29 @@ def load_and_validate_metrics(path: str | Path) -> dict[str, Any]:
     """
     p = Path(path)
     if not p.is_file():
-        return {"path": str(p), "found": False, "valid": False,
-                "issues": [f"metrics file not found: {p}"], "data": None}
+        return {
+            "path": str(p),
+            "found": False,
+            "valid": False,
+            "issues": [f"metrics file not found: {p}"],
+            "data": None,
+        }
     try:
         data = json.loads(p.read_text(encoding="utf-8"))
     except (ValueError, OSError) as exc:
-        return {"path": str(p), "found": True, "valid": False,
-                "issues": [f"could not parse JSON: {exc}"], "data": None}
+        return {
+            "path": str(p),
+            "found": True,
+            "valid": False,
+            "issues": [f"could not parse JSON: {exc}"],
+            "data": None,
+        }
 
     issues = validate_metrics(data)
-    return {"path": str(p), "found": True, "valid": not issues,
-            "issues": issues, "data": data}
+    return {
+        "path": str(p),
+        "found": True,
+        "valid": not issues,
+        "issues": issues,
+        "data": data,
+    }

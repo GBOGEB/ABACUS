@@ -8,6 +8,7 @@ Provides:
 - check_compliance(): evaluate a governance rule against a callable predicate
 - export_metrics(): dump all collected data to JSON
 """
+
 import json
 import threading
 from datetime import datetime
@@ -67,11 +68,11 @@ class GBOGEB:
             Optional key-value labels for filtering (e.g. ``{"phase": "measure"}``).
         """
         entry = {
-            'timestamp': datetime.now().isoformat(),
-            'agent': agent,
-            'metric_name': metric_name,
-            'metric_value': metric_value,
-            'tags': tags or {},
+            "timestamp": datetime.now().isoformat(),
+            "agent": agent,
+            "metric_name": metric_name,
+            "metric_value": metric_value,
+            "tags": tags or {},
         }
         with self._lock:
             self._metrics.append(entry)
@@ -113,10 +114,10 @@ class GBOGEB:
 
         status = "PASS" if result else "FAIL"
         entry = {
-            'timestamp': datetime.now().isoformat(),
-            'rule_name': rule_name,
-            'status': status,
-            'severity': severity,
+            "timestamp": datetime.now().isoformat(),
+            "rule_name": rule_name,
+            "status": status,
+            "severity": severity,
         }
         with self._lock:
             self._compliance_log.append(entry)
@@ -136,24 +137,24 @@ class GBOGEB:
         """
         with self._lock:
             payload = {
-                'exported_at': datetime.now().isoformat(),
-                'start_time': self._start_time,
-                'metrics': list(self._metrics),
-                'compliance_log': list(self._compliance_log),
-                'summary': {
-                    'total_metrics': len(self._metrics),
-                    'total_compliance_checks': len(self._compliance_log),
-                    'compliance_pass': sum(
-                        1 for e in self._compliance_log if e['status'] == 'PASS'
+                "exported_at": datetime.now().isoformat(),
+                "start_time": self._start_time,
+                "metrics": list(self._metrics),
+                "compliance_log": list(self._compliance_log),
+                "summary": {
+                    "total_metrics": len(self._metrics),
+                    "total_compliance_checks": len(self._compliance_log),
+                    "compliance_pass": sum(
+                        1 for e in self._compliance_log if e["status"] == "PASS"
                     ),
-                    'compliance_fail': sum(
-                        1 for e in self._compliance_log if e['status'] == 'FAIL'
+                    "compliance_fail": sum(
+                        1 for e in self._compliance_log if e["status"] == "FAIL"
                     ),
                 },
             }
 
         output_path = self.workspace / filename
-        with open(output_path, 'w', encoding='utf-8') as f:
+        with open(output_path, "w", encoding="utf-8") as f:
             json.dump(payload, f, indent=2)
 
         print(f"[GBOGEB] Metrics exported to {output_path}")
@@ -162,15 +163,15 @@ class GBOGEB:
     def get_summary(self) -> Dict[str, Any]:
         """Return a lightweight summary without writing to disk."""
         with self._lock:
-            agents = {m['agent'] for m in self._metrics}
+            agents = {m["agent"] for m in self._metrics}
             return {
-                'total_metrics': len(self._metrics),
-                'agents_tracked': sorted(agents),
-                'compliance_checks': len(self._compliance_log),
-                'compliance_pass': sum(
-                    1 for e in self._compliance_log if e['status'] == 'PASS'
+                "total_metrics": len(self._metrics),
+                "agents_tracked": sorted(agents),
+                "compliance_checks": len(self._compliance_log),
+                "compliance_pass": sum(
+                    1 for e in self._compliance_log if e["status"] == "PASS"
                 ),
-                'compliance_fail': sum(
-                    1 for e in self._compliance_log if e['status'] == 'FAIL'
+                "compliance_fail": sum(
+                    1 for e in self._compliance_log if e["status"] == "FAIL"
                 ),
             }

@@ -5,6 +5,7 @@ D=14.12 bara/35 K, E=13.12 bara/55 K and quoted hD/hE. The 77.01 g/s flow
 was reconstructed from Q/delta-h, so this pulse is a property-consistency proof,
 not an independent physical residual closure.
 """
+
 from __future__ import annotations
 
 import json
@@ -54,7 +55,9 @@ def report() -> dict:
     bidder_pass = abs(bidder.residual_percent) <= ENERGY_TOLERANCE_PERCENT
     crosscheck_pass = abs(delta_h_delta_pct) <= DELTA_H_CROSSCHECK_TOLERANCE_PERCENT
     independent_flow_status = "PENDING_INDEPENDENT_EXACT_TS_FLOW"
-    independent_numeric_reference_status = "SUPPLIER_A_QUOTED_DELTA_H_CROSSCHECK_PASS" if crosscheck_pass else "FAIL"
+    independent_numeric_reference_status = (
+        "SUPPLIER_A_QUOTED_DELTA_H_CROSSCHECK_PASS" if crosscheck_pass else "FAIL"
+    )
     strict_pass = False
     return {
         "schema": "qps-w52-p2r-supplier-a-ts-strict-residual/v2",

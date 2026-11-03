@@ -1,6 +1,9 @@
 #!/usr/bin/env python3
 from __future__ import annotations
-import argparse, itertools, json
+
+import argparse
+import itertools
+import json
 from pathlib import Path
 
 SCHEMA = "MC2-W83-NG1-NONGOVERNANCE-OUTCOME-LEDGER-0.1.0"
@@ -15,7 +18,7 @@ def auc(labels, scores):
     for p in pos:
         for n in neg:
             wins += 1.0 if p > n else 0.5 if p == n else 0.0
-    return wins/(len(pos)*len(neg))
+    return wins / (len(pos) * len(neg))
 
 
 def evaluate(ledger):
@@ -29,12 +32,22 @@ def evaluate(ledger):
         raise ValueError("W83-NG1 requires exact s05..s15 population")
     labels = [int(r["outcome"]["docs_failure"]) for r in rows]
     if sum(labels) != 8:
-        raise ValueError("W83-NG1 requires governed 8-fail/3-pass docs outcome geometry")
-    if ledger["feature_policy"]["included_blocks"] != ["semantic_composition", "consumer_graph_distribution"]:
+        raise ValueError(
+            "W83-NG1 requires governed 8-fail/3-pass docs outcome geometry"
+        )
+    if ledger["feature_policy"]["included_blocks"] != [
+        "semantic_composition",
+        "consumer_graph_distribution",
+    ]:
         raise ValueError("W83-NG1 non-governance block contract drift")
-    if ledger["feature_policy"]["excluded_blocks"] != ["workflow_governance_composition"]:
+    if ledger["feature_policy"]["excluded_blocks"] != [
+        "workflow_governance_composition"
+    ]:
         raise ValueError("W83-NG1 governance exclusion drift")
-    if ledger["feature_policy"]["pca_fit_permitted"] is not False or ledger["feature_policy"]["bt_permitted"] is not False:
+    if (
+        ledger["feature_policy"]["pca_fit_permitted"] is not False
+        or ledger["feature_policy"]["bt_permitted"] is not False
+    ):
         raise ValueError("W83-NG1 must remain non-promotional")
 
     flat = []
@@ -44,15 +57,29 @@ def evaluate(ledger):
         if row["source_sha"] != row["outcome"]["source_sha"]:
             raise ValueError(f"source mismatch for {row['label']}")
         src = row["w83_source_receipt"]
-        if int(src["run_id"]) != 35577332406 or int(src["job_id"]) <= 0 or int(src["artifact_id"]) <= 0:
+        if (
+            int(src["run_id"]) != 35577332406
+            or int(src["job_id"]) <= 0
+            or int(src["artifact_id"]) <= 0
+        ):
             raise ValueError("W83 source receipt lineage missing")
         if not str(src["artifact_digest"]).startswith("sha256:"):
             raise ValueError("W83 source artifact digest missing")
         sem_hashes.add(src["semantic_block_sha256"])
         graph_hashes.add(src["consumer_graph_block_sha256"])
         f = {}
-        f.update({f"semantic_composition.{k}": int(v) for k, v in row["semantic_composition"].items()})
-        f.update({f"consumer_graph_distribution.{k}": int(v) for k, v in row["consumer_graph_distribution"].items()})
+        f.update(
+            {
+                f"semantic_composition.{k}": int(v)
+                for k, v in row["semantic_composition"].items()
+            }
+        )
+        f.update(
+            {
+                f"consumer_graph_distribution.{k}": int(v)
+                for k, v in row["consumer_graph_distribution"].items()
+            }
+        )
         flat.append(f)
     names = sorted(flat[0])
     if any(sorted(f) != names for f in flat):
@@ -63,39 +90,49 @@ def evaluate(ledger):
     for name in variable:
         scores = [f[name] for f in flat]
         observed = auc(labels, scores)
-        distance = abs(observed-0.5)
+        distance = abs(observed - 0.5)
         extreme = 0
         for chosen in combos:
-            candidate = [0]*len(rows)
+            candidate = [0] * len(rows)
             for idx in chosen:
                 candidate[idx] = 1
-            if abs(auc(candidate, scores)-0.5)+1e-12 >= distance:
+            if abs(auc(candidate, scores) - 0.5) + 1e-12 >= distance:
                 extreme += 1
-        stats.append({
-            "feature": name,
-            "distinct_value_count": len(set(scores)),
-            "auc": round(observed, 6),
-            "auc_distance_from_chance": round(distance, 6),
-            "exact_p": round(extreme/len(combos), 6),
-        })
-    stats.sort(key=lambda r: (r["exact_p"], -r["auc_distance_from_chance"], r["feature"]))
+        stats.append(
+            {
+                "feature": name,
+                "distinct_value_count": len(set(scores)),
+                "auc": round(observed, 6),
+                "auc_distance_from_chance": round(distance, 6),
+                "exact_p": round(extreme / len(combos), 6),
+            }
+        )
+    stats.sort(
+        key=lambda r: (r["exact_p"], -r["auc_distance_from_chance"], r["feature"])
+    )
     running = 0.0
     m = len(stats)
     for i, row in enumerate(stats):
-        running = max(running, min(1.0, row["exact_p"]*(m-i)))
+        running = max(running, min(1.0, row["exact_p"] * (m - i)))
         row["holm_adjusted_p"] = round(running, 6)
-        row["signal_candidate"] = row["holm_adjusted_p"] <= 0.05 and row["auc_distance_from_chance"] >= 0.25
+        row["signal_candidate"] = (
+            row["holm_adjusted_p"] <= 0.05 and row["auc_distance_from_chance"] >= 0.25
+        )
     significant = [r for r in stats if r["signal_candidate"]]
     strongest = stats[0]
     result = {
         "schema_version": "MC2-W83-NG1-NONGOVERNANCE-OUTCOME-DIAGNOSTIC-0.1.0",
-        "status": "NON_GOVERNANCE_SIGNAL_CANDIDATE_DIAGNOSTIC" if significant else "CONTROLLED_NEGATIVE_NON_GOVERNANCE_OUTCOME_DIAGNOSTIC",
+        "status": (
+            "NON_GOVERNANCE_SIGNAL_CANDIDATE_DIAGNOSTIC"
+            if significant
+            else "CONTROLLED_NEGATIVE_NON_GOVERNANCE_OUTCOME_DIAGNOSTIC"
+        ),
         "authority": "derived_operational_analysis_only",
         "measurement_basis": "harvested_exact_source_W83_non_governance_features_plus_independent_W80_docs_outcomes",
         "sample_geometry": {
             "state_count": len(rows),
             "docs_failure_count": sum(labels),
-            "docs_pass_count": len(rows)-sum(labels),
+            "docs_pass_count": len(rows) - sum(labels),
             "unique_semantic_vectors": len(sem_hashes),
             "unique_consumer_graph_vectors": len(graph_hashes),
             "variable_non_governance_feature_count": len(variable),
@@ -114,8 +151,8 @@ def evaluate(ledger):
         "interpretation": {
             "supported": (
                 "at least one predeclared non-governance feature survives exact multiplicity control as a diagnostic signal candidate"
-                if significant else
-                "measured non-governance semantic/consumer-graph variation does not discriminate the independent docs outcome after exact multiplicity control"
+                if significant
+                else "measured non-governance semantic/consumer-graph variation does not discriminate the independent docs outcome after exact multiplicity control"
             ),
             "strongest_raw_feature": strongest["feature"],
             "strongest_raw_auc": strongest["auc"],
@@ -145,8 +182,8 @@ def evaluate(ledger):
         },
         "next_frontier": (
             "replicate the signal on distinct exact-source outcome states before any multivariate or allocation use"
-            if significant else
-            "seek broader independent outcomes and/or change-delta features; do not fit PCA or BT to this negative small-sample block"
+            if significant
+            else "seek broader independent outcomes and/or change-delta features; do not fit PCA or BT to this negative small-sample block"
         ),
     }
     return result
@@ -159,8 +196,11 @@ def main():
     args = ap.parse_args()
     ledger = json.loads(Path(args.ledger).read_text(encoding="utf-8"))
     result = evaluate(ledger)
-    Path(args.out).write_text(json.dumps(result, indent=2, sort_keys=True)+"\n", encoding="utf-8")
+    Path(args.out).write_text(
+        json.dumps(result, indent=2, sort_keys=True) + "\n", encoding="utf-8"
+    )
     print(json.dumps(result, sort_keys=True))
+
 
 if __name__ == "__main__":
     main()

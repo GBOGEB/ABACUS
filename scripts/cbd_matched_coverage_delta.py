@@ -3,6 +3,7 @@
 A manifest is a declaration, not proof of GitHub's actual runner or source.
 The output is engineering telemetry, NEVER merge admission or root closure.
 """
+
 from __future__ import annotations
 
 import argparse
@@ -33,9 +34,14 @@ def positive_int(value, label):
 
 
 def valid_path(value):
-    if (not isinstance(value, str) or "\\" in value or not value
-            or PurePosixPath(value).is_absolute() or ".." in value.split("/")
-            or value.startswith("./")):
+    if (
+        not isinstance(value, str)
+        or "\\" in value
+        or not value
+        or PurePosixPath(value).is_absolute()
+        or ".." in value.split("/")
+        or value.startswith("./")
+    ):
         raise EvidenceError("module must be a stable relative repository path")
     return value
 
@@ -67,14 +73,22 @@ def _coverage_counts(summary, path):
     if not isinstance(summary, dict):
         raise EvidenceError(f"missing coverage summary for {path}")
     output = {}
-    for label in ("covered_lines", "num_statements", "covered_branches", "num_branches"):
+    for label in (
+        "covered_lines",
+        "num_statements",
+        "covered_branches",
+        "num_branches",
+    ):
         v = summary.get(label)
         if type(v) is not int or v < 0:
             raise EvidenceError(f"{path}: {label} missing or negative")
         output[label] = v
     if output["num_statements"] == 0:
         raise EvidenceError(f"{path}: zero statement denominator")
-    if output["covered_lines"] > output["num_statements"] or output["covered_branches"] > output["num_branches"]:
+    if (
+        output["covered_lines"] > output["num_statements"]
+        or output["covered_branches"] > output["num_branches"]
+    ):
         raise EvidenceError(f"{path}: numerator exceeds denominator")
     return output
 
@@ -109,18 +123,35 @@ def make_snapshot(coverage, manifest, modules):
 
 
 def _validate_snapshot(data):
-    if data.get("schema") != SNAPSHOT_SCHEMA or data.get("scope") != "EXPLICIT_MATCHED_MODULES_ONLY":
+    if (
+        data.get("schema") != SNAPSHOT_SCHEMA
+        or data.get("scope") != "EXPLICIT_MATCHED_MODULES_ONLY"
+    ):
         raise EvidenceError("incompatible snapshot schema/scope")
     modules = data.get("modules")
     if not isinstance(modules, dict) or not modules:
         raise EvidenceError("modules must be a non-empty mapping")
     if any(not isinstance(row, dict) for row in modules.values()):
         raise EvidenceError("invalid module row")
-    manifest = {k: data.get(k) for k in ("repository", "head_sha", "checkout_sha", "run_id", "run_attempt", "job_id")}
+    manifest = {
+        k: data.get(k)
+        for k in (
+            "repository",
+            "head_sha",
+            "checkout_sha",
+            "run_id",
+            "run_attempt",
+            "job_id",
+        )
+    }
     manifest["schema"] = "cbd.native-checkout-declaration.v1"
     manifest["source_sha256"] = {p: v.get("sha256") for p, v in modules.items()}
     validate_manifest(manifest)
-    if data.get("authority") != "DECLARED_INPUT_NOT_NATIVE_AUTHENTICATION" or data.get("merge_admission") != "HOLD" or data.get("formal_root_closure") != 0:
+    if (
+        data.get("authority") != "DECLARED_INPUT_NOT_NATIVE_AUTHENTICATION"
+        or data.get("merge_admission") != "HOLD"
+        or data.get("formal_root_closure") != 0
+    ):
         raise EvidenceError("admission/authority invariant violated")
     for p, v in data["modules"].items():
         _coverage_counts(v, p)
@@ -144,22 +175,31 @@ def compare(before, after):
         if old["sha256"] != new["sha256"]:
             raise EvidenceError(f"source changed; unmatched module: {path}")
         row = {"source_sha256": old["sha256"]}
-        for kind, nkey, dkey in (("statement", "covered_lines", "num_statements"), ("branch", "covered_branches", "num_branches")):
+        for kind, nkey, dkey in (
+            ("statement", "covered_lines", "num_statements"),
+            ("branch", "covered_branches", "num_branches"),
+        ):
             if old[dkey] != new[dkey]:
                 raise EvidenceError(f"denominator drift in {path}: {kind}")
             old_pct, new_pct = pct(old[nkey], old[dkey]), pct(new[nkey], new[dkey])
-            delta = (round(new_pct - old_pct, 6) if old_pct is not None else None)
+            delta = round(new_pct - old_pct, 6) if old_pct is not None else None
             if delta is not None:
                 regression |= new[nkey] < old[nkey]
                 improved |= new[nkey] > old[nkey]
-            row[kind] = {"before": [old[nkey], old[dkey]], "after": [new[nkey], new[dkey]],
-                         "before_percent": old_pct, "after_percent": new_pct,
-                         "delta_percentage_points": delta,
-                         "delta_covered_items": new[nkey] - old[nkey],
-                         "denominator_status": "MEASURED" if old[dkey] else "NOT_APPLICABLE"}
+            row[kind] = {
+                "before": [old[nkey], old[dkey]],
+                "after": [new[nkey], new[dkey]],
+                "before_percent": old_pct,
+                "after_percent": new_pct,
+                "delta_percentage_points": delta,
+                "delta_covered_items": new[nkey] - old[nkey],
+                "denominator_status": "MEASURED" if old[dkey] else "NOT_APPLICABLE",
+            }
         out[path] = row
-    if (before["run_id"] == after["run_id"]
-            and after["run_attempt"] < before["run_attempt"]):
+    if (
+        before["run_id"] == after["run_id"]
+        and after["run_attempt"] < before["run_attempt"]
+    ):
         raise EvidenceError("attempt rollback for identical native run")
     same_declared_attempt = (
         before["run_id"] == after["run_id"]
@@ -167,48 +207,74 @@ def compare(before, after):
     )
     if same_declared_attempt and any(
         a[path][key] != b[path][key]
-        for path in a for key in ("covered_lines", "covered_branches")
+        for path in a
+        for key in ("covered_lines", "covered_branches")
     ):
         raise EvidenceError(
             "same run/attempt cannot establish a temporal coverage delta"
         )
     state = "REGRESSION" if regression else ("IMPROVED" if improved else "UNCHANGED")
-    return {"schema": "cbd.matched-coverage-delta.v1", "repository": before["repository"],
-            "before_head": before["head_sha"], "after_head": after["head_sha"],
-            "before_run": [before["run_id"], before["run_attempt"], before["job_id"]],
-            "after_run": [after["run_id"], after["run_attempt"], after["job_id"]],
-            "status": state, "modules": out, "merge_admission": "HOLD",
-            "formal_root_closure": 0, "security_waiver": False,
-            "declared_run_attempt_relation": (
-                "SAME_DECLARED_RUN_ATTEMPT" if same_declared_attempt
-                else "DISTINCT_DECLARED_RUN_ATTEMPTS_NOT_AUTHENTICATED"
-            ), "accepted_matched_main_delta": None,
-            "authority": "DECLARED_INPUT_NOT_NATIVE_AUTHENTICATION"}
+    return {
+        "schema": "cbd.matched-coverage-delta.v1",
+        "repository": before["repository"],
+        "before_head": before["head_sha"],
+        "after_head": after["head_sha"],
+        "before_run": [before["run_id"], before["run_attempt"], before["job_id"]],
+        "after_run": [after["run_id"], after["run_attempt"], after["job_id"]],
+        "status": state,
+        "modules": out,
+        "merge_admission": "HOLD",
+        "formal_root_closure": 0,
+        "security_waiver": False,
+        "declared_run_attempt_relation": (
+            "SAME_DECLARED_RUN_ATTEMPT"
+            if same_declared_attempt
+            else "DISTINCT_DECLARED_RUN_ATTEMPTS_NOT_AUTHENTICATED"
+        ),
+        "accepted_matched_main_delta": None,
+        "authority": "DECLARED_INPUT_NOT_NATIVE_AUTHENTICATION",
+    }
 
 
 def main(argv=None):
     parser = argparse.ArgumentParser(description=__doc__)
     sub = parser.add_subparsers(dest="command", required=True)
-    p = sub.add_parser("snapshot", help="convert coverage.py JSON and exact-checkout declaration")
+    p = sub.add_parser(
+        "snapshot", help="convert coverage.py JSON and exact-checkout declaration"
+    )
     p.add_argument("--coverage", required=True)
     p.add_argument("--manifest", required=True)
     p.add_argument("--module", action="append", required=True)
     p.add_argument("--out", required=True)
-    q = sub.add_parser("compare", help="compare identical source hashes and denominators")
+    q = sub.add_parser(
+        "compare", help="compare identical source hashes and denominators"
+    )
     q.add_argument("--before", required=True)
     q.add_argument("--after", required=True)
     q.add_argument("--out", required=True)
     args = parser.parse_args(argv)
     try:
         if args.command == "snapshot":
-            result = make_snapshot(read_json(args.coverage), read_json(args.manifest), args.module)
+            result = make_snapshot(
+                read_json(args.coverage), read_json(args.manifest), args.module
+            )
         else:
             result = compare(read_json(args.before), read_json(args.after))
     except (EvidenceError, OSError, json.JSONDecodeError, KeyError, TypeError) as exc:
         parser.exit(2, f"HOLD: invalid or unmatched evidence: {exc}\n")
-    Path(args.out).write_text(json.dumps(result, sort_keys=True, indent=2) + "\n", encoding="utf-8")
-    print(json.dumps({"status": result.get("status", "SNAPSHOT_ONLY"),
-                      "output": args.out, "merge_admission": "HOLD"}, sort_keys=True))
+    Path(args.out).write_text(
+        json.dumps(result, sort_keys=True, indent=2) + "\n", encoding="utf-8"
+    )
+    print(
+        json.dumps(
+            {
+                "status": result.get("status", "SNAPSHOT_ONLY"),
+                "output": args.out,
+                "merge_admission": "HOLD",
+            },
+            sort_keys=True,
+        )
+    )
     return 1 if result.get("status") == "REGRESSION" else 0
 
 

@@ -42,7 +42,9 @@ def run_generators() -> None:
 
 
 def missing_artefacts() -> list[str]:
-    return [str(path.relative_to(ROOT)) for path in REQUIRED_ARTEFACTS if not path.exists()]
+    return [
+        str(path.relative_to(ROOT)) for path in REQUIRED_ARTEFACTS if not path.exists()
+    ]
 
 
 def read_register(path: Path = REGISTER) -> dict[str, Any]:
@@ -67,11 +69,13 @@ def open_gates(data: dict[str, Any] | None = None) -> list[dict[str, Any]]:
     for item in iter_gate_items(data):
         status = str(item.get("status", "")).upper()
         if item.get("gate") and status not in RESOLVED_STATES:
-            gates.append({
-                "id": item.get("id"),
-                "status": item.get("status"),
-                "severity": item.get("severity"),
-            })
+            gates.append(
+                {
+                    "id": item.get("id"),
+                    "status": item.get("status"),
+                    "severity": item.get("severity"),
+                }
+            )
     return gates
 
 

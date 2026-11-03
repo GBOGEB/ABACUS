@@ -12,23 +12,37 @@ RUN = 101
 
 def run():
     return {
-        "id": RUN, "run_attempt": 1, "head_sha": SHA,
+        "id": RUN,
+        "run_attempt": 1,
+        "head_sha": SHA,
         "path": collector.EXPECTED_PATHS["workflow_governance"],
         "html_url": f"https://github.com/GBOGEB/ABACUS/actions/runs/{RUN}",
-        "name": "CI Workflow Governance", "created_at": "2026-10-17T09:00:00Z",
-        "status": "completed", "conclusion": "success",
+        "name": "CI Workflow Governance",
+        "created_at": "2026-10-17T09:00:00Z",
+        "status": "completed",
+        "conclusion": "success",
     }
 
 
 def job(identity=201):
     return {
-        "id": identity, "run_id": RUN, "run_attempt": 1,
-        "head_sha": SHA, "name": "policy-and-inventory",
-        "status": "completed", "conclusion": "success",
+        "id": identity,
+        "run_id": RUN,
+        "run_attempt": 1,
+        "head_sha": SHA,
+        "name": "policy-and-inventory",
+        "status": "completed",
+        "conclusion": "success",
         "created_at": "2026-10-17T09:00:00Z",
         "started_at": "2026-10-17T09:01:00Z",
         "completed_at": "2026-10-17T09:02:00Z",
-        "steps": [{"name": "Run policy inventory", "status": "completed", "conclusion": "success"}],
+        "steps": [
+            {
+                "name": "Run policy inventory",
+                "status": "completed",
+                "conclusion": "success",
+            }
+        ],
     }
 
 
@@ -37,17 +51,21 @@ _DEFAULT = object()
 
 def getter(run_value=_DEFAULT, pages=None):
     run_value = run() if run_value is _DEFAULT else run_value
-    pages = ([{"total_count": 1, "jobs": [job()]}] if pages is None else pages)
+    pages = [{"total_count": 1, "jobs": [job()]}] if pages is None else pages
+
     def get(path):
         if "/jobs?" not in path:
             return copy.deepcopy(run_value)
         page = int(path.rsplit("page=", 1)[1])
         return copy.deepcopy(pages[min(page - 1, len(pages) - 1)])
+
     return get
 
 
 def collect(get):
-    return collector.collect_gate_input(SHA, {"workflow_governance": (RUN, 1)}, getter=get)
+    return collector.collect_gate_input(
+        SHA, {"workflow_governance": (RUN, 1)}, getter=get
+    )
 
 
 @pytest.mark.parametrize("selected", [None, {}, [], {"security": (RUN, 1)}])
@@ -56,10 +74,14 @@ def test_unknown_or_empty_gate_selection_never_infers_latest(selected):
         collector.collect_gate_input(SHA, selected, getter=getter())
 
 
-@pytest.mark.parametrize("pair", [None, RUN, (RUN,), (RUN, 1, 2), (True, 1), (RUN, False), (0, 1), (RUN, 0)])
+@pytest.mark.parametrize(
+    "pair", [None, RUN, (RUN,), (RUN, 1, 2), (True, 1), (RUN, False), (0, 1), (RUN, 0)]
+)
 def test_invalid_explicit_attempt_pair_is_rejected(pair):
     with pytest.raises(ValueError):
-        collector.collect_gate_input(SHA, {"workflow_governance": pair}, getter=getter())
+        collector.collect_gate_input(
+            SHA, {"workflow_governance": pair}, getter=getter()
+        )
 
 
 @pytest.mark.parametrize("replacement", [None, [], "unexpected", 123])
@@ -68,10 +90,16 @@ def test_non_object_native_run_fails_closed(replacement):
         collect(getter(run_value=replacement))
 
 
-@pytest.mark.parametrize("field,value", [
-    ("id", 102), ("head_sha", "b" * 40), ("run_attempt", 2),
-    ("path", ".github/workflows/unrelated.yml"), ("html_url", "https://invalid.example"),
-])
+@pytest.mark.parametrize(
+    "field,value",
+    [
+        ("id", 102),
+        ("head_sha", "b" * 40),
+        ("run_attempt", 2),
+        ("path", ".github/workflows/unrelated.yml"),
+        ("html_url", "https://invalid.example"),
+    ],
+)
 def test_run_identity_changes_do_not_cross_credit(field, value):
     native = run()
     native[field] = value
@@ -79,13 +107,18 @@ def test_run_identity_changes_do_not_cross_credit(field, value):
         collect(getter(run_value=native))
 
 
-@pytest.mark.parametrize("invalid_page", [
-    {}, {"total_count": True, "jobs": []}, {"total_count": -1, "jobs": []},
-    {"total_count": 1, "jobs": "not a list"},
-    {"total_count": 2001, "jobs": []},
-    {"total_count": 2, "jobs": []},
-    {"total_count": 1, "jobs": [job(i) for i in range(101)]},
-])
+@pytest.mark.parametrize(
+    "invalid_page",
+    [
+        {},
+        {"total_count": True, "jobs": []},
+        {"total_count": -1, "jobs": []},
+        {"total_count": 1, "jobs": "not a list"},
+        {"total_count": 2001, "jobs": []},
+        {"total_count": 2, "jobs": []},
+        {"total_count": 1, "jobs": [job(i) for i in range(101)]},
+    ],
+)
 def test_invalid_or_incomplete_job_page_rejected(invalid_page):
     with pytest.raises(ValueError):
         collect(getter(pages=[invalid_page]))
@@ -116,10 +149,16 @@ def test_non_object_native_job_is_rejected(native_job):
         collect(getter(pages=[{"total_count": 1, "jobs": [native_job]}]))
 
 
-@pytest.mark.parametrize("field,value", [
-    ("id", 0), ("id", True), ("run_id", 999),
-    ("run_attempt", 2), ("head_sha", "f" * 40),
-])
+@pytest.mark.parametrize(
+    "field,value",
+    [
+        ("id", 0),
+        ("id", True),
+        ("run_id", 999),
+        ("run_attempt", 2),
+        ("head_sha", "f" * 40),
+    ],
+)
 def test_job_identity_and_ambiguous_attempt_rejected(field, value):
     item = job()
     item[field] = value
@@ -134,10 +173,13 @@ def test_corrupt_step_detail_cannot_generate_green_receipt():
         collect(getter(pages=[{"total_count": 1, "jobs": [item]}]))
 
 
-@pytest.mark.parametrize("projection", [
-    {"merge_authorized": True, "independent_gates": {"admission": "HOLD"}},
-    {"merge_authorized": False, "independent_gates": {"admission": "PASS"}},
-])
+@pytest.mark.parametrize(
+    "projection",
+    [
+        {"merge_authorized": True, "independent_gates": {"admission": "HOLD"}},
+        {"merge_authorized": False, "independent_gates": {"admission": "PASS"}},
+    ],
+)
 def test_forged_projection_is_blocked(monkeypatch, projection):
     monkeypatch.setattr(collector, "summarize", lambda _: projection)
     with pytest.raises(ValueError, match="retain independent HOLD"):

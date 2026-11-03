@@ -7,7 +7,6 @@ import tempfile
 import unittest
 from pathlib import Path
 
-
 ROOT = Path(__file__).resolve().parents[3]
 AUDIT_SCRIPT = ROOT / "ci/governance/audit_ci_workflows.py"
 SPEC = importlib.util.spec_from_file_location("audit_ci_workflows", AUDIT_SCRIPT)
@@ -19,7 +18,9 @@ SPEC.loader.exec_module(MODULE)
 
 class WorkflowPolicyTests(unittest.TestCase):
     def setUp(self):
-        self.policy = json.loads((ROOT / "ci/governance/workflow_policy.json").read_text())
+        self.policy = json.loads(
+            (ROOT / "ci/governance/workflow_policy.json").read_text()
+        )
 
     def test_repository_workflows_are_classified_once(self):
         report = MODULE.audit(ROOT / ".github/workflows", self.policy)
@@ -55,7 +56,6 @@ class WorkflowPolicyTests(unittest.TestCase):
                 self.assertEqual("keep", rule["disposition"])
         self.assertEqual(0, self.policy["quality_gates"]["allow_unclassified"])
         self.assertFalse(self.policy["quality_gates"]["allow_multiple_rule_matches"])
-
 
     def test_w39_bounded_pool_and_g3cs_have_disjoint_source_owners(self):
         expected = {
@@ -97,7 +97,9 @@ class WorkflowPolicyTests(unittest.TestCase):
                 rule, matches = MODULE.classify(filename, self.policy)
                 self.assertEqual([rule], [self.policy["rules"][matches[0]]])
                 self.assertEqual(1, len(matches), "ambiguous ownership")
-                self.assertEqual(rule["pattern"], "^" + filename.replace(".", r"\.") + "$")
+                self.assertEqual(
+                    rule["pattern"], "^" + filename.replace(".", r"\.") + "$"
+                )
                 self.assertEqual(cluster, rule["cluster"])
                 self.assertEqual("pr_domain", rule["lifecycle"])
                 self.assertEqual("keep", rule["disposition"])
@@ -109,7 +111,9 @@ class WorkflowPolicyTests(unittest.TestCase):
         self.assertFalse(self.policy["quality_gates"]["allow_multiple_rule_matches"])
 
     def test_w26_matched_coverage_has_unique_statistics_owner(self):
-        rule, matches = MODULE.classify("w26-testpilot-matched-coverage.yml", self.policy)
+        rule, matches = MODULE.classify(
+            "w26-testpilot-matched-coverage.yml", self.policy
+        )
         self.assertEqual(1, len(matches))
         self.assertEqual("statistics", rule["cluster"])
         self.assertEqual("pr_domain", rule["lifecycle"])
@@ -162,7 +166,9 @@ class WorkflowPolicyTests(unittest.TestCase):
             self.assertEqual("stale report\n", report_path.read_text(encoding="utf-8"))
 
     def test_governance_runs_when_generated_inventory_changes(self):
-        workflow = (ROOT / ".github/workflows/ci-governance.yml").read_text(encoding="utf-8")
+        workflow = (ROOT / ".github/workflows/ci-governance.yml").read_text(
+            encoding="utf-8"
+        )
         governed_path = '- "docs/ci/WORKFLOW_RATIONALIZATION.md"'
         self.assertEqual(2, workflow.count(governed_path))
 
@@ -171,12 +177,16 @@ class WorkflowPolicyTests(unittest.TestCase):
         self.assertFalse((ROOT / "scripts/audit_ci_workflows.py").exists())
 
     def test_full_regression_excludes_governance_only_python(self):
-        workflow = (ROOT / ".github/workflows/ci-cd-tests.yml").read_text(encoding="utf-8")
+        workflow = (ROOT / ".github/workflows/ci-cd-tests.yml").read_text(
+            encoding="utf-8"
+        )
         self.assertEqual(2, workflow.count("- '!ci/governance/**'"))
 
     def test_control_surface_declares_policy_authority(self):
         control_surface = (ROOT / "ci/governance/README.md").read_text(encoding="utf-8")
-        self.assertIn("`workflow_policy.json` is the workflow-policy SSOT", control_surface)
+        self.assertIn(
+            "`workflow_policy.json` is the workflow-policy SSOT", control_surface
+        )
         self.assertIn("Queued checks are not counted as pass evidence", control_surface)
 
     def test_rendered_report_documents_hash_basis_and_lifecycle_column(self):

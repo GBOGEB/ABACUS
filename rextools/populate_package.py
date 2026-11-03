@@ -81,15 +81,17 @@ def assemble(status: dict) -> str:
     grid_md = (GEN / "t_available_grid.md").read_text(encoding="utf-8")
     rfi_md = (GEN / "applicant_rfi.md").read_text(encoding="utf-8")
 
-    return "".join([
-        _status_block(status),
-        "\n---\n\n",
-        skeleton,
-        _divider("Appendix G: T-available parametric grid (generated)"),
-        grid_md,
-        _divider("Appendix R: Open RFI items (generated)"),
-        rfi_md,
-    ])
+    return "".join(
+        [
+            _status_block(status),
+            "\n---\n\n",
+            skeleton,
+            _divider("Appendix G: T-available parametric grid (generated)"),
+            grid_md,
+            _divider("Appendix R: Open RFI items (generated)"),
+            rfi_md,
+        ]
+    )
 
 
 def main() -> int:
@@ -100,7 +102,10 @@ def main() -> int:
     verdict = status["verdict"]
 
     if verdict == "PIPELINE_FAIL":
-        print("PIPELINE_FAIL: generated artefacts missing — package not written", file=sys.stderr)
+        print(
+            "PIPELINE_FAIL: generated artefacts missing — package not written",
+            file=sys.stderr,
+        )
         return 2
 
     GEN.mkdir(parents=True, exist_ok=True)

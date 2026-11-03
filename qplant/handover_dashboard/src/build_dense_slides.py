@@ -5,9 +5,12 @@ Generates:
   docs/index_v3_1.html   – enhanced 40-slide dense master navigator
   docs/STAKEHOLDER_PRESENTATION.html – 10-slide executive summary
 """
-import json, hashlib, textwrap
-from pathlib import Path
+
+import hashlib
+import json
+import textwrap
 from datetime import datetime
+from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
 DOCS = ROOT / "docs"
@@ -151,7 +154,7 @@ def build_dense_slides():
     slides = []
 
     # SLIDE 1 – Overview
-    slides.append(f'''
+    slides.append(f"""
 <h2>OUTPUT_3.1.0 — Liquid Helium Operations &amp; HP Compressor Redundancy</h2>
 <div class="multi-col-60-40">
 <div>
@@ -192,10 +195,10 @@ def build_dense_slides():
 </p>
 </div>
 </div>
-''')
+""")
 
     # SLIDE 2 – System Architecture
-    slides.append('''
+    slides.append("""
 <h2>QPLANT Helium System Architecture</h2>
 <div class="multi-col-2">
 <div>
@@ -223,10 +226,10 @@ def build_dense_slides():
 </div>
 <div class="equation">System Mass Balance:  ṁ_supply = ṁ_demand + ṁ_leak + ṁ_boiloff
 Leak budget:  Q_total ≤ 1×10⁻⁵ mbar·L/s  →  ṁ_leak ≈ 3.6 g/yr @ 4K  →  NEGLIGIBLE</div>
-''')
+""")
 
     # SLIDE 3 – Deliverables
-    slides.append('''
+    slides.append("""
 <h2>v3.1.0 Deliverables &amp; File Map</h2>
 <div class="multi-col-2">
 <div>
@@ -255,10 +258,10 @@ Leak budget:  Q_total ≤ 1×10⁻⁵ mbar·L/s  →  ṁ_leak ≈ 3.6 g/yr @ 4K
 </table>
 </div>
 </div>
-''')
+""")
 
     # SLIDE 4 – Version History
-    slides.append(f'''
+    slides.append(f"""
 <h2>Version History &amp; DMAIC Tracking</h2>
 <div class="multi-col-60-40">
 <div>
@@ -283,10 +286,10 @@ Leak budget:  Q_total ≤ 1×10⁻⁵ mbar·L/s  →  ṁ_leak ≈ 3.6 g/yr @ 4K
 </table>
 </div>
 </div>
-''')
+""")
 
     # SLIDE 5 – Liquid He Properties (FULL TABLE)
-    slides.append('''
+    slides.append("""
 <h2>Liquid Helium-4 Thermophysical Properties (Full Grid)</h2>
 <div class="kpi-row">
   <div class="kpi"><div class="value">4.222 K</div><div class="label">NBP</div></div>
@@ -311,10 +314,10 @@ Leak budget:  Q_total ≤ 1×10⁻⁵ mbar·L/s  →  ṁ_leak ≈ 3.6 g/yr @ 4K
   <tr class="hl-red"><td>5.195</td><td>2.275</td><td>69.64</td><td>69.64</td><td>0</td><td>—</td><td>—</td><td>Critical point</td></tr>
 </table>
 <p style="font-size:.75em"><em>Data: NIST REFPROP He-4. λ-point: T_λ = 2.1768 K at SVP. μ = dynamic viscosity; k = thermal conductivity.</em></p>
-''')
+""")
 
     # SLIDE 6 – Superfluid He
-    slides.append('''
+    slides.append("""
 <h2>Helium Phase Diagram &amp; Superfluid Transition</h2>
 <div class="multi-col-2">
 <div>
@@ -348,10 +351,10 @@ Ratio 4K/300K = 300/4.222 = 71×
 Same leak rate: 71× more mass at 4K!</div>
 </div>
 </div>
-''')
+""")
 
     # SLIDE 7 – Leak Rate → Mass Loss Physics
-    slides.append('''
+    slides.append("""
 <h2>Leak Rate to Liquid Inventory Loss — Physics</h2>
 <div class="multi-col-60-40">
 <div>
@@ -390,10 +393,10 @@ Annual conversion:
 <p style="font-size:.8em">where Q in Pa·m³/s</p>
 </div>
 </div>
-''')
+""")
 
     # SLIDE 8 – Full Leak Rate Conversion Table
-    slides.append(f'''
+    slides.append(f"""
 <h2>Leak Rate Conversion Table (Full — All Temperatures)</h2>
 <p>Cost: €120/kg. ρ_liq = 124.96 kg/m³. P_upstream = 1 bar abs.</p>
 <div class="multi-col-2">
@@ -429,10 +432,10 @@ Annual conversion:
 Same leak rate → 71× LESS mass at 300K</div>
 </div>
 </div>
-''')
+""")
 
     # SLIDE 9 – RTM Compliance Matrix (Full)
-    slides.append(f'''
+    slides.append(f"""
 <h2>RTM Requirements Traceability Matrix (Full — 9 Requirements)</h2>
 <table>
   <tr><th>RTM ID</th><th>Requirement</th><th>Source</th><th>Spec Value</th><th>Actual/Calc</th><th>Margin</th><th>Test Method</th><th>Deliverable</th><th>Status</th></tr>
@@ -446,10 +449,10 @@ Same leak rate → 71× LESS mass at 300K</div>
   <tr><td>RTM-055</td><td>HP availability >99.99%</td><td>SoR §6.1</td><td>>99.99%</td><td>99.9997%</td><td>+0.0097%</td><td>Reliability calc</td><td>RAMS report</td><td>{_b("accept","ACCEPT")}</td></tr>
   <tr><td>RTM-056</td><td>VFD energy optimization</td><td>SoR §7.2</td><td>≥30% savings</td><td>57% @ 70% load</td><td>+27%</td><td>Energy audit</td><td>Energy report</td><td>{_b("new","NEW")}</td></tr>
 </table>
-''')
+""")
 
     # SLIDE 10 – Boil-off vs Leak Rate Chart + Data
-    slides.append(f'''
+    slides.append(f"""
 <h2>Boil-off Rate &amp; Cost vs Leak Rate — Chart + Data</h2>
 <div class="multi-col-60-40">
 <div>
@@ -472,10 +475,10 @@ Ratio 4K/80K = 19×
 <p>At typical valve leak rates (10⁻⁹ to 10⁻⁴), cost &lt; €5/yr. {_b("accept","NEGLIGIBLE")}</p>
 </div>
 </div>
-''')
+""")
 
     # SLIDE 11 – HP Compressor Overview
-    slides.append('''
+    slides.append("""
 <h2>HP Compressor Supply System</h2>
 <div class="kpi-row">
   <div class="kpi"><div class="value">14 barg</div><div class="label">HP Header</div></div>
@@ -512,10 +515,10 @@ P₂ = P₁ × (N₂/N₁)³
 At 70% speed: P = 0.7³ = 34.3% power</div>
 </div>
 </div>
-''')
+""")
 
     # SLIDE 12 – N=3 Baseline
-    slides.append('''
+    slides.append("""
 <h2>Baseline: N=3 Compressor Configuration</h2>
 <div class="multi-col-60-40">
 <div>
@@ -553,10 +556,10 @@ Downtime = (1−A)×8760
          = 79 sec/yr ✓</div>
 </div>
 </div>
-''')
+""")
 
     # SLIDE 13 – FSD575 VFD Full Specs
-    slides.append('''
+    slides.append("""
 <h2>FSD575 with Variable Frequency Drive — Full Specifications</h2>
 <div class="multi-col-2">
 <div>
@@ -600,10 +603,10 @@ Savings per compressor:
 
 3 compressors: 3 × €176,400 = €529,200/yr total energy savings</div>
 </div>
-''')
+""")
 
     # SLIDE 14 – HSD Twin Combi Full Specs
-    slides.append('''
+    slides.append("""
 <h2>HSD Twin Combi — Full Specifications</h2>
 <div class="multi-col-2">
 <div>
@@ -641,10 +644,10 @@ Savings per compressor:
   <tr><td>Lower noise</td><td>75–80 vs 85–90 dB(A) → better working environment</td></tr>
   <tr><td>Longer bearing life</td><td>50,000h vs 4,000h oil change interval</td></tr>
 </table>
-''')
+""")
 
     # SLIDE 15 – Full Reliability Comparison
-    slides.append('''
+    slides.append("""
 <h2>Reliability &amp; Availability Comparison (Full Table)</h2>
 <h3>Formulas</h3>
 <div class="equation">Single unit: A = MTBF/(MTBF+MTTR) = 8760/(8760+8) = 0.99909 = 99.91%
@@ -658,10 +661,10 @@ System MTBF: MTBF_sys ≈ 1/[M × (1−A)/MTBF × Π correction]</div>
   <tr><td>N+1 HSD Twin (1-of-2)</td><td>2×100%</td><td>1-of-2</td><td>99.9999%</td><td>0.007</td><td>26 sec</td><td>1,097</td><td>700,000</td><td>400</td></tr>
 </table>
 <p><strong>Recommended:</strong> <span class="badge badge-accept">N+1 FSD575 VFD (2-of-4)</span> — best availability + energy savings. All configs exceed 99.99% target.</p>
-''')
+""")
 
     # SLIDE 16 – Availability Chart + Worked Example
-    slides.append('''
+    slides.append("""
 <h2>Availability Comparison — Chart + Worked Example</h2>
 <div class="multi-col-60-40">
 <div>
@@ -699,10 +702,10 @@ Downtime = (1−0.999997)×8760
 </div>
 </div>
 </div>
-''')
+""")
 
     # SLIDE 17 – FSD575 vs HSD Trade-off (3-column)
-    slides.append('''
+    slides.append("""
 <h2>FSD575 vs HSD Trade-off Matrix (3-Column)</h2>
 <div class="multi-col-3">
 <div class="panel">
@@ -763,10 +766,10 @@ Downtime = (1−0.999997)×8760
 </table>
 </div>
 </div>
-''')
+""")
 
     # SLIDE 18 – VFD Energy Savings + Affinity Laws
-    slides.append('''
+    slides.append("""
 <h2>VFD Energy Savings — Affinity Laws &amp; Calculation</h2>
 <div class="multi-col-60-40">
 <div>
@@ -790,10 +793,10 @@ Power: W₂ = W₁ × (N₂/N₁)³</div>
 <p style="font-size:.78em"><strong>VFD adds 3% overhead at full load</strong> (power electronics loss), but saves massively at part load.</p>
 </div>
 </div>
-''')
+""")
 
     # SLIDE 19 – Redundancy Cost-Benefit
-    slides.append(f'''
+    slides.append(f"""
 <h2>Redundancy Cost-Benefit Analysis — Chart + Data</h2>
 <div class="multi-col-60-40">
 <div>
@@ -816,10 +819,10 @@ Power: W₂ = W₁ × (N₂/N₁)³</div>
 <p>{_b("accept","RECOMMENDED")}: N+1 FSD575 VFD — best TCO + VFD flexibility</p>
 </div>
 </div>
-''')
+""")
 
     # SLIDE 20 – WCS.HP Overview
-    slides.append('''
+    slides.append("""
 <h2>WCS.HP Supply Protection — Overview</h2>
 <div class="kpi-row">
   <div class="kpi"><div class="value">14 barg</div><div class="label">Nominal HP</div></div>
@@ -855,10 +858,10 @@ Q_available = Q_main + Q_cont
 Freed: 2e-6 (20%) for margin</div>
 </div>
 </div>
-''')
+""")
 
     # SLIDE 21 – Leak Budget
-    slides.append('''
+    slides.append("""
 <h2>Leak Rate Budget Allocation + Equations</h2>
 <div class="multi-col-60-40">
 <div>
@@ -884,10 +887,10 @@ Side (30 valves):
 q = 2e-6/30 = 6.7e-8 mbar·L/s</div>
 </div>
 </div>
-''')
+""")
 
     # SLIDE 22 – Interlock Logic Full Table
-    slides.append('''
+    slides.append("""
 <h2>Interlock Logic Table (Full)</h2>
 <table>
   <tr><th>Condition</th><th>Setpoint</th><th>Action</th><th>Purpose</th><th>Priority</th><th>Response Time</th></tr>
@@ -902,10 +905,10 @@ q = 2e-6/30 = 6.7e-8 mbar·L/s</div>
 </table>
 <div class="equation">Response time hierarchy: TRIP (immediate) > ALARM (&lt;30s) > WARNING (&lt;60s) > AUTO (configurable)
 All isolation valves: Normally-Closed (NC) — fail-safe on loss of signal/air</div>
-''')
+""")
 
     # SLIDE 23 – WCS.HP Architecture Diagram
-    slides.append('''
+    slides.append("""
 <h2>WCS.HP Supply Architecture — Block Diagram</h2>
 <iframe class="plot-frame" style="height:520px;" src="visualizations_v3/wcs_hp_architecture.html"></iframe>
 <div class="multi-col-2">
@@ -926,10 +929,10 @@ All isolation valves: Normally-Closed (NC) — fail-safe on loss of signal/air</
 </ul>
 </div>
 </div>
-''')
+""")
 
     # SLIDE 24 – WCS Scenario Analysis (All 4)
-    slides.append('''
+    slides.append("""
 <h2>WCS Scenario Analysis (All 4 Scenarios)</h2>
 <table>
   <tr><th>Scenario</th><th>Compressors</th><th>Capacity</th><th>HP Header</th><th>Sidestreams</th><th>Beam</th><th>Duration</th><th>Probability</th><th>Status</th></tr>
@@ -957,10 +960,10 @@ Beam availability = (8760−8.02)/8760
         = negligible (μg/h range)</div>
 </div>
 </div>
-''')
+""")
 
     # SLIDE 25 – Scenario 1
-    slides.append('''
+    slides.append("""
 <h2>Scenario 1: Normal Operation (Detailed)</h2>
 <div class="multi-col-2">
 <div>
@@ -996,10 +999,10 @@ Maint: 2 × €15k = €30k/yr
 Total: €368,400/yr</div>
 </div>
 </div>
-''')
+""")
 
     # SLIDE 26 – Scenario 2 WCS
-    slides.append('''
+    slides.append("""
 <h2>Scenario 2: WCS — 1 Compressor Failed</h2>
 <div class="multi-col-2">
 <div>
@@ -1035,10 +1038,10 @@ P = 1 − e^(−λ×MTTR)
 <p><span class="badge badge-review">WARNING</span> — No redundancy margin.</p>
 </div>
 </div>
-''')
+""")
 
     # SLIDE 27 – Scenario 3 Emergency
-    slides.append('''
+    slides.append("""
 <h2>Scenario 3: Emergency — 2 Compressors Failed</h2>
 <div class="multi-col-2">
 <div>
@@ -1078,10 +1081,10 @@ doesn't increase leak rate.
 Main risk: beam availability.</div>
 </div>
 </div>
-''')
+""")
 
     # SLIDE 28 – Warm Valve Derogation Context
-    slides.append('''
+    slides.append("""
 <h2>Warm Valve Leak Tightness Derogation — Context</h2>
 <div class="multi-col-2">
 <div>
@@ -1121,10 +1124,10 @@ Payback: €320,000 / €13/yr = 24,615 yr
 → DEROGATION JUSTIFIED ✓</div>
 </div>
 </div>
-''')
+""")
 
     # SLIDE 29 – Warm Valve Impact + Calc
-    slides.append(f'''
+    slides.append(f"""
 <h2>Impact of Derogation on Liquid He Inventory</h2>
 <div class="multi-col-60-40">
 <div>
@@ -1170,10 +1173,10 @@ Step 5: Cost (per valve)
 </div>
 </div>
 </div>
-''')
+""")
 
     # SLIDE 30 – CV Classification (Full)
-    slides.append('''
+    slides.append("""
 <h2>Control Valve Classification Table (Full — From Cryoworld Offer)</h2>
 <table>
   <tr><th>Parameter</th><th>Unit</th><th>CV Q1</th><th>CV Q2d</th><th>CV W1d</th><th>CV W3</th></tr>
@@ -1199,10 +1202,10 @@ Step 5: Cost (per valve)
   <tr><td>Comment</td><td>—</td><td></td><td></td><td></td><td>tbc asco/Bürkert 1LS</td></tr>
 </table>
 <p><em>Highlighted rows: leak rate specs subject to W1d derogation request. Source: Cryoworld Offer slide 15.</em></p>
-''')
+""")
 
     # SLIDE 31 – Derogation Recommendation
-    slides.append(f'''
+    slides.append(f"""
 <h2>Derogation Recommendation Summary</h2>
 <div class="multi-col-2">
 <div>
@@ -1237,10 +1240,10 @@ Step 5: Cost (per valve)
    (avoided CAPEX vs negligible He loss)</div>
 </div>
 </div>
-''')
+""")
 
     # SLIDE 32 – PED + ASME
-    slides.append('''
+    slides.append("""
 <h2>PED Classification &amp; ASME B31.3 Compliance</h2>
 <div class="multi-col-2">
 <div>
@@ -1279,10 +1282,10 @@ Step 5: Cost (per valve)
 </ul>
 </div>
 </div>
-''')
+""")
 
     # SLIDE 33 – EN 13458
-    slides.append('''
+    slides.append("""
 <h2>EN 13458 — Cryogenic Vessels (Full Compliance)</h2>
 <div class="multi-col-2">
 <div>
@@ -1321,10 +1324,10 @@ Ratio: 30,260 / 0.00385 = 7.9 MILLION ×
 → Static boil-off DOMINATES completely</div>
 </div>
 </div>
-''')
+""")
 
     # SLIDE 34 – EN 13185 Leak Detection + Worked Example
-    slides.append(f'''
+    slides.append(f"""
 <h2>EN 13185 — Leak Detection Methods + Worked Example</h2>
 <div class="multi-col-60-40">
 <div>
@@ -1367,10 +1370,10 @@ Step 4: Cost
 </div>
 </div>
 </div>
-''')
+""")
 
     # SLIDE 35 – Liquid Inventory Depletion + Equation
-    slides.append('''
+    slides.append("""
 <h2>Liquid He Inventory Depletion — Chart + Equations</h2>
 <div class="multi-col-60-40">
 <div>
@@ -1410,10 +1413,10 @@ At 1e-2 (significant leak):
 </div>
 </div>
 <p><strong>Conclusion:</strong> Valve leak rate has minimal impact on inventory. Derogation justified. Focus: economics, not depletion.</p>
-''')
+""")
 
     # SLIDE 36 – Standards Compliance Dashboard
-    slides.append(f'''
+    slides.append(f"""
 <h2>Standards Compliance Dashboard (Full)</h2>
 <table>
   <tr><th>Standard</th><th>Title</th><th>Applicability</th><th>Key Sections</th><th>Deliverable</th><th>Status</th></tr>
@@ -1446,10 +1449,10 @@ At 1e-2 (significant leak):
 </ul>
 </div>
 </div>
-''')
+""")
 
     # SLIDE 37 – Compressor Availability Worked Example
-    slides.append('''
+    slides.append("""
 <h2>Compressor Availability — Full Worked Example</h2>
 <div class="multi-col-2">
 <div>
@@ -1501,10 +1504,10 @@ Downtime = 0.264 h/yr = 15.8 min/yr</div>
 </div>
 </div>
 </div>
-''')
+""")
 
     # SLIDE 38 – Data Sources
-    slides.append(f'''
+    slides.append(f"""
 <h2>Data Sources &amp; Key Assumptions</h2>
 <div class="multi-col-2">
 <div>
@@ -1539,10 +1542,10 @@ Downtime = 0.264 h/yr = 15.8 min/yr</div>
 4. Leak rate class: ±€40/yr (negligible)</div>
 </div>
 </div>
-''')
+""")
 
     # SLIDE 39 – Open Items
-    slides.append(f'''
+    slides.append(f"""
 <h2>Open Items &amp; Next Steps</h2>
 <div class="multi-col-2">
 <div>
@@ -1581,10 +1584,10 @@ Downtime = 0.264 h/yr = 15.8 min/yr</div>
 </table>
 </div>
 </div>
-''')
+""")
 
     # SLIDE 40 – Conclusions & Recommendations
-    slides.append(f'''
+    slides.append(f"""
 <h2>Conclusions &amp; Recommendations</h2>
 <div class="multi-col-2">
 <div>
@@ -1631,7 +1634,7 @@ Downtime = 0.264 h/yr = 15.8 min/yr</div>
 </div>
 </div>
 </div>
-''')
+""")
 
     # ── Assemble HTML ───────────────────────────────────────────────────
     slides_html = "\n".join(
@@ -1754,7 +1757,7 @@ def build_stakeholder():
     slides = []
 
     # Slide 1 – Title + Executive Summary
-    slides.append('''
+    slides.append("""
 <h2>QPLANT Cryogenic Helium Leak Rate Analysis</h2>
 <div class="kpi-row">
   <div class="kpi"><div class="val">v3.1.0</div><div class="lbl">Version</div></div>
@@ -1774,10 +1777,10 @@ def build_stakeholder():
   <tr><td>Standards compliance</td><td>✅ 8 codes assessed</td></tr>
   <tr><td>Quality assurance</td><td>✅ 18/18 automated tests pass</td></tr>
 </table>
-''')
+""")
 
     # Slide 2 – Business Case
-    slides.append('''
+    slides.append("""
 <h2>Business Case — Investment Summary</h2>
 <div class="cols-2">
 <div>
@@ -1812,10 +1815,10 @@ def build_stakeholder():
 </div>
 </div>
 </div>
-''')
+""")
 
     # Slide 3 – Technical Summary
-    slides.append('''
+    slides.append("""
 <h2>Technical Summary — Plain Language</h2>
 <div class="box box-blue">
   <h3>What are helium leak rates?</h3>
@@ -1841,10 +1844,10 @@ def build_stakeholder():
   <h3>Key Insight</h3>
   <p>Valve leak rates have <strong>negligible impact</strong> on helium inventory. The warm valve derogation (cheaper HDPE valves instead of expensive bellow-sealed) saves <strong>€320,000 CAPEX</strong> with only <strong>€13/year</strong> extra helium cost.</p>
 </div>
-''')
+""")
 
     # Slide 4 – Compliance Dashboard
-    slides.append('''
+    slides.append("""
 <h2>Compliance Dashboard — International Standards</h2>
 <table>
   <tr><th>Standard</th><th>Title</th><th>Status</th><th>Next Step</th></tr>
@@ -1867,10 +1870,10 @@ def build_stakeholder():
   <p><strong>18/18 automated tests pass</strong><br>Calculations verified against NIST data<br>All conversion chains validated<br>Dimensional analysis confirmed</p>
 </div>
 </div>
-''')
+""")
 
     # Slide 5 – Risk Mitigation
-    slides.append('''
+    slides.append("""
 <h2>Risk Mitigation — System Reliability</h2>
 <div class="box box-green">
   <h3 style="font-size:1.3em">System Reliability: 99.9997% (Six Nines)</h3>
@@ -1891,10 +1894,10 @@ def build_stakeholder():
   <h3>Helium Inventory Risk: NEGLIGIBLE</h3>
   <p>Liquid helium lasts <strong>&gt;130 years</strong> at maximum leak rate. Focus is on <strong>economics</strong>, not inventory depletion. Static boil-off from insulation (30 tonnes/yr) completely dominates valve leaks (0.004 kg/yr).</p>
 </div>
-''')
+""")
 
     # Slide 6 – Procurement Recommendations
-    slides.append('''
+    slides.append("""
 <h2>Procurement Recommendations</h2>
 <div class="box box-green">
   <h3>✅ RECOMMENDED: HP Compressors</h3>
@@ -1927,10 +1930,10 @@ def build_stakeholder():
   </table>
 </div>
 </div>
-''')
+""")
 
     # Slide 7 – Timeline
-    slides.append('''
+    slides.append("""
 <h2>Project Timeline</h2>
 <table>
   <tr><th>Phase</th><th>Duration</th><th>Key Milestone</th><th>Status</th></tr>
@@ -1947,10 +1950,10 @@ def build_stakeholder():
 <div class="box box-blue" style="margin-top:12px">
   <p><strong>Total lead time:</strong> 10 months from RFQ to handover. Critical path: compressor manufacturing (4 months).</p>
 </div>
-''')
+""")
 
     # Slide 8 – Decision Points
-    slides.append('''
+    slides.append("""
 <h2>Decision Points — Approval Required</h2>
 <div class="box box-yellow">
   <h3>☐ Capital Expenditure Approval: €1.62M</h3>
@@ -1977,10 +1980,10 @@ def build_stakeholder():
   <p style="font-size:.85em">Hybrid saves €320k CAPEX with only €13/yr additional He cost.</p>
 </div>
 </div>
-''')
+""")
 
     # Slide 9 – Project Status
-    slides.append('''
+    slides.append("""
 <h2>Project Status Dashboard</h2>
 <table>
   <tr><th>Phase</th><th>Status</th><th>Quality Metric</th><th>Detail</th></tr>
@@ -1996,10 +1999,10 @@ def build_stakeholder():
   <h3 style="font-size:1.5em;margin:10px 0">Overall: READY FOR PROCUREMENT ✅</h3>
   <p style="font-size:1.1em">All analysis complete. All tests pass. Documentation package ready. Awaiting capital expenditure approval.</p>
 </div>
-''')
+""")
 
     # Slide 10 – Next Steps & Contacts
-    slides.append('''
+    slides.append("""
 <h2>Next Steps &amp; Contacts</h2>
 <div class="cols-2">
 <div>
@@ -2041,7 +2044,7 @@ def build_stakeholder():
 </div>
 </div>
 </div>
-''')
+""")
 
     # Assemble
     slides_html = "\n".join(

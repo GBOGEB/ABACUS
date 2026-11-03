@@ -8,7 +8,6 @@ import pytest
 
 from tools import mip_ci_gate_collector as collector
 
-
 SHA = "a" * 40
 
 
@@ -67,19 +66,26 @@ def enterprise_jobs():
 def build_getter(*, e="success", g="failure"):
     run_data = {
         10: native_run(
-            10, collector.EXPECTED_PATHS["enterprise_ci"],
-            "DMAIC V3 Enterprise CI", e,
+            10,
+            collector.EXPECTED_PATHS["enterprise_ci"],
+            "DMAIC V3 Enterprise CI",
+            e,
         ),
         11: native_run(
-            11, collector.EXPECTED_PATHS["workflow_governance"],
-            "CI Workflow Governance", g,
+            11,
+            collector.EXPECTED_PATHS["workflow_governance"],
+            "CI Workflow Governance",
+            g,
         ),
     }
     job_data = {
         10: enterprise_jobs(),
         11: [
             native_job(
-                522, 11, "policy-and-inventory", g,
+                522,
+                11,
+                "policy-and-inventory",
+                g,
                 steps=["Fail closed on governance red"],
             )
         ],
@@ -132,8 +138,11 @@ def test_native_transport_fixed_https_origin_no_redirects(monkeypatch):
     monkeypatch.setattr(collector, "HTTPSConnection", FakeConnection)
     # Ephemeral test-only token: no credential value is embedded in source.
     from secrets import token_hex
+
     ephemeral = token_hex(16)
-    result = collector.github_get("/repos/GBOGEB/ABACUS/actions/runs/123", token=ephemeral)
+    result = collector.github_get(
+        "/repos/GBOGEB/ABACUS/actions/runs/123", token=ephemeral
+    )
     assert result == {"id": 123}
     connection = connections[0]
     assert connection.host == "api.github.com"
@@ -228,9 +237,7 @@ def test_partial_job_page_rejected_not_silently_credited():
         return r
 
     with pytest.raises(ValueError, match="incomplete native jobs page"):
-        collector.collect_gate_input(
-            SHA, {"enterprise_ci": (10, 1)}, getter=short_get
-        )
+        collector.collect_gate_input(SHA, {"enterprise_ci": (10, 1)}, getter=short_get)
 
 
 def test_no_jobs_is_unknown_even_for_green_workflow():
@@ -240,8 +247,7 @@ def test_no_jobs_is_unknown_even_for_green_workflow():
         SHA, {"enterprise_ci": (10, 1)}, getter=getter
     )
     assert (
-        metrics["independent_gates"]["domains"]["enterprise_ci"]["status"]
-        == "UNKNOWN"
+        metrics["independent_gates"]["domains"]["enterprise_ci"]["status"] == "UNKNOWN"
     )
     assert metrics["independent_gates"]["admission"] == "HOLD"
 
@@ -255,8 +261,7 @@ def test_queued_run_preserves_pending_without_fabricating_fail():
         SHA, {"enterprise_ci": (10, 1)}, getter=getter
     )
     assert (
-        metrics["independent_gates"]["domains"]["enterprise_ci"]["status"]
-        == "PENDING"
+        metrics["independent_gates"]["domains"]["enterprise_ci"]["status"] == "PENDING"
     )
     assert metrics["independent_gates"]["domain_counts"]["FAIL"] == 0
 
@@ -264,8 +269,16 @@ def test_queued_run_preserves_pending_without_fabricating_fail():
 @pytest.mark.parametrize(
     "raw",
     [
-        "13", "13:", ":2", "a:2", "13:two", "0:1", "13:0", "-3:1",
-        "1:2:3", None,
+        "13",
+        "13:",
+        ":2",
+        "a:2",
+        "13:two",
+        "0:1",
+        "13:0",
+        "-3:1",
+        "1:2:3",
+        None,
     ],
 )
 def test_invalid_run_selector_never_chooses_latest(raw):
@@ -295,18 +308,26 @@ def test_collector_writes_scope_bound_artifacts(tmp_path, monkeypatch, capsys):
     monkeypatch.setattr(collector, "github_get", lambda url, token=None: getter(url))
     source_path = tmp_path / "native" / "runs.json"
     metrics_path = tmp_path / "metrics" / "vector.json"
-    assert collector.main([
-        "--sha", SHA,
-        "--enterprise-run", "10:1",
-        "--governance-run", "11:1",
-        "--out", str(source_path),
-        "--metrics-out", str(metrics_path),
-    ]) == 0
+    assert (
+        collector.main(
+            [
+                "--sha",
+                SHA,
+                "--enterprise-run",
+                "10:1",
+                "--governance-run",
+                "11:1",
+                "--out",
+                str(source_path),
+                "--metrics-out",
+                str(metrics_path),
+            ]
+        )
+        == 0
+    )
     source = json.loads(source_path.read_text(encoding="utf-8"))
     output = json.loads(metrics_path.read_text(encoding="utf-8"))
-    assert source["gate_bindings"]["enterprise_ci"] == {
-        "run_id": 10, "run_attempt": 1
-    }
+    assert source["gate_bindings"]["enterprise_ci"] == {"run_id": 10, "run_attempt": 1}
     assert (
         output["independent_gates"]["domains"]["workflow_governance"]["status"]
         == "FAIL"

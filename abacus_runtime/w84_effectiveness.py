@@ -5,6 +5,7 @@ No recommendation receives effectiveness credit without observed before/after
 counters and a completed exact-SHA parent chain. Debug-spine fields are optional
 telemetry and carry no authority.
 """
+
 from __future__ import annotations
 
 import argparse
@@ -13,11 +14,16 @@ from pathlib import Path
 
 REQUIRED = (
     "execution_effort",
-    "accepted_atoms_before", "accepted_atoms_after",
-    "dov_before", "dov_after",
-    "recommendations_executed", "recommendations_successful",
-    "retries", "successful_repaired_tasks",
-    "residual_before", "residual_after",
+    "accepted_atoms_before",
+    "accepted_atoms_after",
+    "dov_before",
+    "dov_after",
+    "recommendations_executed",
+    "recommendations_successful",
+    "retries",
+    "successful_repaired_tasks",
+    "residual_before",
+    "residual_after",
 )
 
 
@@ -36,14 +42,22 @@ def score(cycle: dict) -> dict:
         return {"status": "DEFER_INVALID_EFFORT", "execution_effort": effort}
     recs = int(cycle["recommendations_executed"])
     retries = int(cycle["retries"])
-    evidence_yield = (float(cycle["accepted_atoms_after"]) - float(cycle["accepted_atoms_before"])) / effort
+    evidence_yield = (
+        float(cycle["accepted_atoms_after"]) - float(cycle["accepted_atoms_before"])
+    ) / effort
     dov_yield = (float(cycle["dov_after"]) - float(cycle["dov_before"])) / effort
     hit_rate = int(cycle["recommendations_successful"]) / recs if recs else None
     retry_eff = int(cycle["successful_repaired_tasks"]) / retries if retries else None
-    pressure_reduction = float(cycle["residual_before"]) - float(cycle["residual_after"])
+    pressure_reduction = float(cycle["residual_before"]) - float(
+        cycle["residual_after"]
+    )
     positive = evidence_yield > 0 and pressure_reduction > 0 and dov_yield >= 0
     return {
-        "status": "PASS_POSITIVE_EFFECTIVENESS" if positive else "OBSERVED_NO_POSITIVE_EFFECTIVENESS",
+        "status": (
+            "PASS_POSITIVE_EFFECTIVENESS"
+            if positive
+            else "OBSERVED_NO_POSITIVE_EFFECTIVENESS"
+        ),
         "evidence_yield": evidence_yield,
         "dov_yield": dov_yield,
         "recommendation_hit_rate": hit_rate,

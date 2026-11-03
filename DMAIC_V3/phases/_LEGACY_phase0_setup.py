@@ -1,22 +1,24 @@
 from typing import Any
+
 """
 DMAIC V3.0 - Phase 0: Setup & Initialization
 Pre-flight checks and environment validation before DMAIC execution
 """
 
-import sys
 import os
-import subprocess
 import shutil
-from pathlib import Path
-from typing import Dict, List, Tuple
+import subprocess
+import sys
 from dataclasses import dataclass, field
 from datetime import datetime
+from pathlib import Path
+from typing import Dict, List, Tuple
 
 
 @dataclass
 class CheckResult:
     """Result of a single check"""
+
     name: str
     passed: bool
     message: str
@@ -58,9 +60,9 @@ class Phase0Setup:
         Returns:
             Tuple of (success, results_dict)
         """
-        print("="*80)
+        print("=" * 80)
         print("PHASE 0: SETUP & INITIALIZATION")
-        print("="*80)
+        print("=" * 80)
         print(f"Timestamp: {datetime.now().isoformat()}")
         print()
 
@@ -92,9 +94,13 @@ class Phase0Setup:
         print("[0.1] Checking Python version...")
 
         current_version = sys.version_info
-        required_version = tuple(map(int, self.phase0_config.python_min_version.split('.')))
+        required_version = tuple(
+            map(int, self.phase0_config.python_min_version.split("."))
+        )
 
-        version_str = f"{current_version.major}.{current_version.minor}.{current_version.micro}"
+        version_str = (
+            f"{current_version.major}.{current_version.minor}.{current_version.micro}"
+        )
         required_str = self.phase0_config.python_min_version
 
         if current_version >= required_version:
@@ -103,7 +109,7 @@ class Phase0Setup:
                 passed=True,
                 message=f"Python {version_str} meets requirement (>= {required_str})",
                 severity="info",
-                details={"current": version_str, "required": required_str}
+                details={"current": version_str, "required": required_str},
             )
             print(f"  [OK] {result.message}")
         else:
@@ -112,7 +118,7 @@ class Phase0Setup:
                 passed=False,
                 message=f"Python {version_str} does not meet requirement (>= {required_str})",
                 severity="error",
-                details={"current": version_str, "required": required_str}
+                details={"current": version_str, "required": required_str},
             )
             print(f"  [X] {result.message}")
 
@@ -128,6 +134,7 @@ class Phase0Setup:
 
         # Check architecture
         import platform
+
         arch = platform.machine()
         print(f"  • Architecture: {arch}")
 
@@ -136,7 +143,7 @@ class Phase0Setup:
             passed=True,
             message=f"System: {os_name} ({arch})",
             severity="info",
-            details={"os": os_name, "architecture": arch}
+            details={"os": os_name, "architecture": arch},
         )
         print(f"  [OK] System requirements checked")
 
@@ -148,7 +155,9 @@ class Phase0Setup:
 
         try:
             output_path = self.config.paths.output_root
-            stat = shutil.disk_usage(output_path.parent if output_path.exists() else Path.cwd())
+            stat = shutil.disk_usage(
+                output_path.parent if output_path.exists() else Path.cwd()
+            )
 
             available_mb = stat.free / (1024 * 1024)
             required_mb = self.phase0_config.required_disk_space_mb
@@ -159,7 +168,7 @@ class Phase0Setup:
                     passed=True,
                     message=f"Available: {available_mb:.0f} MB (required: {required_mb} MB)",
                     severity="info",
-                    details={"available_mb": available_mb, "required_mb": required_mb}
+                    details={"available_mb": available_mb, "required_mb": required_mb},
                 )
                 print(f"  [OK] {result.message}")
             else:
@@ -167,9 +176,8 @@ class Phase0Setup:
                     name="Disk Space",
                     passed=False,
                     message=f"Insufficient disk space: {available_mb:.0f} MB (required: {required_mb} MB)",
-
                     severity="warning",
-                    details={"available_mb": available_mb, "required_mb": required_mb}
+                    details={"available_mb": available_mb, "required_mb": required_mb},
                 )
                 print(f"  [!] {result.message}")
 
@@ -179,7 +187,7 @@ class Phase0Setup:
                 name="Disk Space",
                 passed=False,
                 message=f"Could not check disk space: {e}",
-                severity="warning"
+                severity="warning",
             )
             print(f"  [!] {result.message}")
             self._add_result(result)
@@ -193,10 +201,7 @@ class Phase0Setup:
 
         try:
             result_code = subprocess.run(
-                ["git", "--version"],
-                capture_output=True,
-                text=True,
-                timeout=5
+                ["git", "--version"], capture_output=True, text=True, timeout=5
             )
 
             if result_code.returncode == 0:
@@ -206,7 +211,7 @@ class Phase0Setup:
                     passed=True,
                     message=f"Git available: {version}",
                     severity="info",
-                    details={"version": version}
+                    details={"version": version},
                 )
                 print(f"  [OK] {result.message}")
             else:
@@ -214,7 +219,7 @@ class Phase0Setup:
                     name="Git Availability",
                     passed=False,
                     message="Git not available",
-                    severity="warning"
+                    severity="warning",
                 )
                 print(f"  [!] {result.message}")
 
@@ -224,7 +229,7 @@ class Phase0Setup:
                 name="Git Availability",
                 passed=False,
                 message=f"Git check failed: {e}",
-                severity="warning"
+                severity="warning",
             )
             print(f"  [!] {result.message}")
             self._add_result(result)
@@ -239,8 +244,8 @@ class Phase0Setup:
         venv_path = Path(self.phase0_config.venv_name)
 
         # Check if already in venv
-        in_venv = hasattr(sys, 'real_prefix') or (
-            hasattr(sys, 'base_prefix') and sys.base_prefix != sys.prefix
+        in_venv = hasattr(sys, "real_prefix") or (
+            hasattr(sys, "base_prefix") and sys.base_prefix != sys.prefix
         )
 
         if in_venv:
@@ -249,7 +254,7 @@ class Phase0Setup:
                 passed=True,
                 message="Already running in virtual environment",
                 severity="info",
-                details={"venv_path": sys.prefix}
+                details={"venv_path": sys.prefix},
             )
             print(f"  [OK] {result.message}")
             self._add_result(result)
@@ -262,7 +267,7 @@ class Phase0Setup:
                 passed=True,
                 message=f"Virtual environment exists: {venv_path}",
                 severity="info",
-                details={"venv_path": str(venv_path)}
+                details={"venv_path": str(venv_path)},
             )
             print(f"  [OK] {result.message}")
             print(f"  [i] To activate: source {venv_path}/bin/activate (Linux/Mac)")
@@ -273,7 +278,7 @@ class Phase0Setup:
                 passed=False,
                 message=f"Virtual environment not found: {venv_path}",
                 severity="warning",
-                details={"venv_path": str(venv_path)}
+                details={"venv_path": str(venv_path)},
             )
             print(f"  [!] {result.message}")
             print(f"  [i] Create with: python -m venv {venv_path}")
@@ -307,7 +312,7 @@ class Phase0Setup:
                 passed=True,
                 message=f"All {len(required_packages)} core dependencies available",
                 severity="info",
-                details={"checked": required_packages}
+                details={"checked": required_packages},
             )
             print(f"  [OK] {result.message}")
         else:
@@ -316,7 +321,7 @@ class Phase0Setup:
                 passed=False,
                 message=f"Missing dependencies: {', '.join(missing)}",
                 severity="error",
-                details={"missing": missing}
+                details={"missing": missing},
             )
             print(f"  [X] {result.message}")
 
@@ -344,7 +349,7 @@ class Phase0Setup:
                 name="Configuration",
                 passed=True,
                 message="Configuration valid",
-                severity="info"
+                severity="info",
             )
             print(f"  [OK] {result.message}")
         else:
@@ -353,7 +358,7 @@ class Phase0Setup:
                 passed=False,
                 message=f"Configuration issues: {', '.join(issues)}",
                 severity="error",
-                details={"issues": issues}
+                details={"issues": issues},
             )
             print(f"  [X] {result.message}")
 
@@ -370,7 +375,7 @@ class Phase0Setup:
                 name="Workspace",
                 passed=False,
                 message=f"Workspace does not exist: {workspace}",
-                severity="error"
+                severity="error",
             )
             print(f"  [X] {result.message}")
         elif not workspace.is_dir():
@@ -378,7 +383,7 @@ class Phase0Setup:
                 name="Workspace",
                 passed=False,
                 message=f"Workspace is not a directory: {workspace}",
-                severity="error"
+                severity="error",
             )
             print(f"  [X] {result.message}")
         else:
@@ -388,7 +393,7 @@ class Phase0Setup:
                     name="Workspace",
                     passed=False,
                     message=f"No read access to workspace: {workspace}",
-                    severity="error"
+                    severity="error",
                 )
                 print(f"  [X] {result.message}")
             else:
@@ -397,7 +402,7 @@ class Phase0Setup:
                     passed=True,
                     message=f"Workspace valid: {workspace}",
                     severity="info",
-                    details={"path": str(workspace)}
+                    details={"path": str(workspace)},
                 )
                 print(f"  [OK] {result.message}")
 
@@ -412,7 +417,7 @@ class Phase0Setup:
                 passed=True,
                 message=f"Output directory ready: {output_dir}",
                 severity="info",
-                details={"path": str(output_dir)}
+                details={"path": str(output_dir)},
             )
             print(f"  [OK] {result.message}")
         except Exception as e:
@@ -420,7 +425,7 @@ class Phase0Setup:
                 name="Output Directory",
                 passed=False,
                 message=f"Cannot create output directory: {e}",
-                severity="error"
+                severity="error",
             )
             print(f"  [X] {result.message}")
 
@@ -438,7 +443,7 @@ class Phase0Setup:
                 passed=True,
                 message=f"Previous state found: {state_file}",
                 severity="info",
-                details={"state_file": str(state_file), "can_resume": True}
+                details={"state_file": str(state_file), "can_resume": True},
             )
             print(f"  [OK] {result.message}")
             print(f"  [i] Use --resume to continue from previous execution")
@@ -448,7 +453,7 @@ class Phase0Setup:
                 passed=True,
                 message="No previous state (fresh start)",
                 severity="info",
-                details={"can_resume": False}
+                details={"can_resume": False},
             )
             print(f"  [OK] {result.message}")
 
@@ -457,11 +462,15 @@ class Phase0Setup:
     def _generate_report(self) -> Tuple[bool, Dict]:
         """Generate setup report"""
         print()
-        print("="*80)
+        print("=" * 80)
         print("PHASE 0 SUMMARY")
-        print("="*80)
+        print("=" * 80)
 
-        total_checks = len(self.checks_passed) + len(self.checks_failed) + len(self.checks_warnings)
+        total_checks = (
+            len(self.checks_passed)
+            + len(self.checks_failed)
+            + len(self.checks_warnings)
+        )
 
         print(f"Total Checks: {total_checks}")
         print(f"  [OK] Passed:   {len(self.checks_passed)}")
@@ -497,7 +506,7 @@ class Phase0Setup:
             print("[OK] PHASE 0 PASSED - Ready to proceed")
             success = True
 
-        print("="*80)
+        print("=" * 80)
         print()
 
         # Build results dictionary
@@ -508,10 +517,16 @@ class Phase0Setup:
             "warnings": len(self.checks_warnings),
             "failed": len(self.checks_failed),
             "checks": {
-                "passed": [{"name": c.name, "message": c.message} for c in self.checks_passed],
-                "warnings": [{"name": c.name, "message": c.message} for c in self.checks_warnings],
-                "failed": [{"name": c.name, "message": c.message} for c in self.checks_failed],
-            }
+                "passed": [
+                    {"name": c.name, "message": c.message} for c in self.checks_passed
+                ],
+                "warnings": [
+                    {"name": c.name, "message": c.message} for c in self.checks_warnings
+                ],
+                "failed": [
+                    {"name": c.name, "message": c.message} for c in self.checks_failed
+                ],
+            },
         }
 
         return success, results

@@ -1,4 +1,5 @@
 """Fail-closed synthetic negative/reverse tests for disjoint gap census."""
+
 from __future__ import annotations
 
 from copy import deepcopy
@@ -7,88 +8,131 @@ import pytest
 
 from tools.recovery.w46_gap_census import compare_zero_frontier, family, rollup
 
-SHA = 'a' * 40
+SHA = "a" * 40
 
 
 def sample():
-    return {'meta': {'branch_coverage': True}, 'files': {
-        'DMAIC_V3/a.py': {'summary': {'num_statements': 8, 'covered_lines': 3,
-                                     'missing_lines': 5, 'num_branches': 4,
-                                     'covered_branches': 1, 'missing_branches': 3}},
-        'mission_control_lite/b.py': {'summary': {'num_statements': 10,
-                                     'covered_lines': 0, 'missing_lines': 10,
-                                     'num_branches': 6, 'covered_branches': 0,
-                                     'missing_branches': 6}},
-        'DMAIC_V3/c.py': {'summary': {'num_statements': 4, 'covered_lines': 2,
-                                     'missing_lines': 2, 'num_branches': 0,
-                                     'covered_branches': 0, 'missing_branches': 0}}}}
+    return {
+        "meta": {"branch_coverage": True},
+        "files": {
+            "DMAIC_V3/a.py": {
+                "summary": {
+                    "num_statements": 8,
+                    "covered_lines": 3,
+                    "missing_lines": 5,
+                    "num_branches": 4,
+                    "covered_branches": 1,
+                    "missing_branches": 3,
+                }
+            },
+            "mission_control_lite/b.py": {
+                "summary": {
+                    "num_statements": 10,
+                    "covered_lines": 0,
+                    "missing_lines": 10,
+                    "num_branches": 6,
+                    "covered_branches": 0,
+                    "missing_branches": 6,
+                }
+            },
+            "DMAIC_V3/c.py": {
+                "summary": {
+                    "num_statements": 4,
+                    "covered_lines": 2,
+                    "missing_lines": 2,
+                    "num_branches": 0,
+                    "covered_branches": 0,
+                    "missing_branches": 0,
+                }
+            },
+        },
+    }
 
 
 def test_exact_covered_eligible_and_root_family_no_double_count():
     x = rollup(sample(), head_sha=SHA)
-    assert (x['covered'], x['eligible'], x['missing']) == (6, 32, 26)
-    assert x['file_count'] == 3 and x['zero_coverage_file_count'] == 1
-    assert x['owner_families']['DMAIC_V3']['files'] == 2
-    assert len(x['proposed_source_disjoint_lanes']) == 2
-    assert not x['source_overlap_in_proposals']
-    assert x['merge_admission'] == 'HOLD'
+    assert (x["covered"], x["eligible"], x["missing"]) == (6, 32, 26)
+    assert x["file_count"] == 3 and x["zero_coverage_file_count"] == 1
+    assert x["owner_families"]["DMAIC_V3"]["files"] == 2
+    assert len(x["proposed_source_disjoint_lanes"]) == 2
+    assert not x["source_overlap_in_proposals"]
+    assert x["merge_admission"] == "HOLD"
 
 
 def test_expected_source_totals_must_match():
     x = rollup(sample(), head_sha=SHA)
-    correct = {'covered_lines':5,'num_statements':22,'missing_lines':17,
-               'covered_branches':1,'num_branches':10,'missing_branches':9}
-    assert rollup(sample(), head_sha=SHA, expected_totals=correct)['eligible'] == 32
+    correct = {
+        "covered_lines": 5,
+        "num_statements": 22,
+        "missing_lines": 17,
+        "covered_branches": 1,
+        "num_branches": 10,
+        "missing_branches": 9,
+    }
+    assert rollup(sample(), head_sha=SHA, expected_totals=correct)["eligible"] == 32
     wrong = dict(correct, num_statements=23)
-    with pytest.raises(ValueError, match='scope / full measurement'):
+    with pytest.raises(ValueError, match="scope / full measurement"):
         rollup(sample(), head_sha=SHA, expected_totals=wrong)
 
 
-@pytest.mark.parametrize('key,new_value', [('covered_lines',9),('missing_lines',2),
-                                            ('num_branches',-1),('covered_branches',True),
-                                            ('missing_branches','0')])
-def test_tampered_counters_refused(key,new_value):
-    x=sample();x['files']['DMAIC_V3/a.py']['summary'][key]=new_value
-    with pytest.raises(ValueError, match='counters|population'):
-        rollup(x,head_sha=SHA)
+@pytest.mark.parametrize(
+    "key,new_value",
+    [
+        ("covered_lines", 9),
+        ("missing_lines", 2),
+        ("num_branches", -1),
+        ("covered_branches", True),
+        ("missing_branches", "0"),
+    ],
+)
+def test_tampered_counters_refused(key, new_value):
+    x = sample()
+    x["files"]["DMAIC_V3/a.py"]["summary"][key] = new_value
+    with pytest.raises(ValueError, match="counters|population"):
+        rollup(x, head_sha=SHA)
 
 
-@pytest.mark.parametrize('new_path', ['../private.py', 'dir\\inject.py', 'not_code.txt', ''])
+@pytest.mark.parametrize(
+    "new_path", ["../private.py", "dir\\inject.py", "not_code.txt", ""]
+)
 def test_foreign_or_unsafe_source_path_refused(new_path):
-    x=sample();x['files'][new_path]=x['files'].pop('DMAIC_V3/a.py')
-    with pytest.raises(ValueError, match='unsafe or foreign'):
-        rollup(x,head_sha=SHA)
+    x = sample()
+    x["files"][new_path] = x["files"].pop("DMAIC_V3/a.py")
+    with pytest.raises(ValueError, match="unsafe or foreign"):
+        rollup(x, head_sha=SHA)
 
 
 def test_missing_branch_mode_rejected():
-    x=sample();x['meta']['branch_coverage']=False
-    with pytest.raises(ValueError,match='branch coverage'):
-        rollup(x,head_sha=SHA)
+    x = sample()
+    x["meta"]["branch_coverage"] = False
+    with pytest.raises(ValueError, match="branch coverage"):
+        rollup(x, head_sha=SHA)
 
 
 def test_no_files_is_unknown_not_zero():
-    x=sample();x['files']={}
-    with pytest.raises(ValueError,match='missing measured'):
-        rollup(x,head_sha=SHA)
+    x = sample()
+    x["files"] = {}
+    with pytest.raises(ValueError, match="missing measured"):
+        rollup(x, head_sha=SHA)
 
 
 def test_wrong_head_rejected():
-    with pytest.raises(ValueError,match='invalid exact'):
-        rollup(sample(),head_sha='z'*40)
+    with pytest.raises(ValueError, match="invalid exact"):
+        rollup(sample(), head_sha="z" * 40)
 
 
 def test_no_more_than_proposal_cap():
-    x=rollup(sample(),head_sha=SHA,max_lanes=1)
-    assert len(x['proposed_source_disjoint_lanes']) == 1
-    with pytest.raises(ValueError,match='bounded lane cap'):
-        rollup(sample(),head_sha=SHA,max_lanes=11)
+    x = rollup(sample(), head_sha=SHA, max_lanes=1)
+    assert len(x["proposed_source_disjoint_lanes"]) == 1
+    with pytest.raises(ValueError, match="bounded lane cap"):
+        rollup(sample(), head_sha=SHA, max_lanes=11)
 
 
 def test_namespaces_are_explicit():
-    assert family('models/qps_line_s/closure_contract.py') == 'QPS_LINE_S'
-    assert family('mission_control_lite/coverage_pulse.py') == 'MISSION_CONTROL_LITE'
-    assert family('.github/workflows/thing.py') == 'GITHUB_CI'
-    assert family('script.py') == 'ROOT_EXECUTION'
+    assert family("models/qps_line_s/closure_contract.py") == "QPS_LINE_S"
+    assert family("mission_control_lite/coverage_pulse.py") == "MISSION_CONTROL_LITE"
+    assert family(".github/workflows/thing.py") == "GITHUB_CI"
+    assert family("script.py") == "ROOT_EXECUTION"
 
 
 # W51 source-matched first-touch / 100%-where-reachable controls.
@@ -104,7 +148,8 @@ def _w51_blobs(source):
 
 def _w51_compare(before, after, **overrides):
     params = {
-        "before_head": SHA, "after_head": "c" * 40,
+        "before_head": SHA,
+        "after_head": "c" * 40,
         "before_source_blobs": _w51_blobs(before),
         "after_source_blobs": _w51_blobs(after),
         "before_config_sha256": "a" * 64,
@@ -141,8 +186,14 @@ def test_w51_saturation_is_counted_only_for_positive_eligible_assets():
         x["covered_lines"], x["missing_lines"] = x["num_statements"], 0
         x["covered_branches"], x["missing_branches"] = x["num_branches"], 0
     after["files"]["README/__init__.py"] = {
-        "summary": dict(num_statements=0, covered_lines=0, missing_lines=0,
-                        num_branches=0, covered_branches=0, missing_branches=0)
+        "summary": dict(
+            num_statements=0,
+            covered_lines=0,
+            missing_lines=0,
+            num_branches=0,
+            covered_branches=0,
+            missing_branches=0,
+        )
     }
     before["files"]["README/__init__.py"] = deepcopy(
         after["files"]["README/__init__.py"]
@@ -188,8 +239,9 @@ def test_w51_changed_source_population_or_denominator_is_incomparable(alter):
 
 def test_w51_no_blobs_no_coverage_delta_not_a_zero_value():
     before = _w51_coverage()
-    output = compare_zero_frontier(before, deepcopy(before),
-                                   before_head=SHA, after_head="c" * 40)
+    output = compare_zero_frontier(
+        before, deepcopy(before), before_head=SHA, after_head="c" * 40
+    )
     assert output["comparison"] == "UNKNOWN_SOURCE_OR_CONFIG_IDENTITY"
     assert output["before_zero"] == output["after_zero"] == 1
     assert output["zero_count_delta"] is None
@@ -211,8 +263,9 @@ def test_w51_missing_after_instrumentation_version_is_unknown(fault):
     assert outcome["zero_count_delta"] is None
 
 
-@pytest.mark.parametrize("fault", ["wrong_config", "changed_source",
-                                   "no_instrumentation", "version_change"])
+@pytest.mark.parametrize(
+    "fault", ["wrong_config", "changed_source", "no_instrumentation", "version_change"]
+)
 def test_w51_mismatched_identifiers_fail_closed(fault):
     before = _w51_coverage()
     after = deepcopy(before)
@@ -229,7 +282,8 @@ def test_w51_mismatched_identifiers_fail_closed(fault):
         after["meta"]["version"] = "9.0.0"
     outcome = _w51_compare(before, after, **extra)
     assert outcome["comparison"] in {
-        "INCOMPARABLE_COVERAGE_CONFIG", "INCOMPARABLE_SOURCE_BLOBS",
+        "INCOMPARABLE_COVERAGE_CONFIG",
+        "INCOMPARABLE_SOURCE_BLOBS",
         "UNKNOWN_INSTRUMENTATION_VERSION",
         "INCOMPARABLE_INSTRUMENTATION_VERSION",
     }
@@ -259,11 +313,13 @@ def test_w51_remaining_zero_queue_is_disjoint_and_gain_is_unpredicted():
     outcome = _w51_compare(before, deepcopy(before))
     assert outcome["after_zero"] == 1
     assert outcome["zero_count_delta"] == 0
-    assert outcome["first_touch_queue"] == [{
-        "path": "mission_control_lite/b.py",
-        "owner_candidate": "MISSION_CONTROL_LITE",
-        "missed_opportunities": 16,
-        "predicted_coverage_gain": None,
-    }]
+    assert outcome["first_touch_queue"] == [
+        {
+            "path": "mission_control_lite/b.py",
+            "owner_candidate": "MISSION_CONTROL_LITE",
+            "missed_opportunities": 16,
+            "predicted_coverage_gain": None,
+        }
+    ]
     assert outcome["newly_touched"] == []
     assert outcome["newly_full"] == []

@@ -1,11 +1,13 @@
-import pytest
-from pathlib import Path
-import tempfile
-import shutil
 import json
-from DMAIC_V3.phases.phase3_analyze import Phase3Analyze
+import shutil
+import tempfile
+from pathlib import Path
+
+import pytest
+
 from DMAIC_V3.config import DMAICConfig
 from DMAIC_V3.core.state import StateManager
+from DMAIC_V3.phases.phase3_analyze import Phase3Analyze
 
 
 @pytest.fixture
@@ -40,35 +42,35 @@ def phase2_output(config):
     output_dir.mkdir(parents=True, exist_ok=True)
 
     phase2_data = {
-        'phase': 'MEASURE',
-        'iteration': 1,
-        'timestamp': '2025-01-10T10:00:00',
-        'statistics': {
-            'total_files_analyzed': 5,
-            'total_lines': 1000,
-            'total_functions': 50,
-            'total_classes': 10
+        "phase": "MEASURE",
+        "iteration": 1,
+        "timestamp": "2025-01-10T10:00:00",
+        "statistics": {
+            "total_files_analyzed": 5,
+            "total_lines": 1000,
+            "total_functions": 50,
+            "total_classes": 10,
         },
-        'file_metrics': {
-            'file1.py': {
-                'lines_of_code': 200,
-                'complexity': 150,
-                'function_count': 10,
-                'class_count': 2
+        "file_metrics": {
+            "file1.py": {
+                "lines_of_code": 200,
+                "complexity": 150,
+                "function_count": 10,
+                "class_count": 2,
             },
-            'file2.py': {
-                'lines_of_code': 300,
-                'complexity': 250,
-                'function_count': 15,
-                'class_count': 3
+            "file2.py": {
+                "lines_of_code": 300,
+                "complexity": 250,
+                "function_count": 15,
+                "class_count": 3,
             },
-            'file3.py': {
-                'lines_of_code': 500,
-                'complexity': 450,
-                'function_count': 25,
-                'class_count': 5
-            }
-        }
+            "file3.py": {
+                "lines_of_code": 500,
+                "complexity": 450,
+                "function_count": 25,
+                "class_count": 5,
+            },
+        },
     }
 
     phase2_file = output_dir / "phase2_metrics.json"
@@ -87,34 +89,34 @@ class TestPhase3Analyze:
         success, result = phase3.execute(iteration=1)
 
         assert success is True
-        assert result.get('summary') is not None
-        assert result.get('root_causes') is not None
+        assert result.get("summary") is not None
+        assert result.get("root_causes") is not None
 
     def test_identify_high_complexity_files(self, phase3, phase2_output):
         success, result = phase3.execute(iteration=1)
 
         assert success is True
-        assert result.get('summary') is not None
+        assert result.get("summary") is not None
 
     def test_execute_normalizes_nested_tuple_result(self, phase3, monkeypatch):
-        nested_result = (True, {'summary': {}, 'root_causes': []})
+        nested_result = (True, {"summary": {}, "root_causes": []})
         monkeypatch.setattr(phase3, "run", lambda iteration: (True, nested_result))
 
         success, result = phase3.execute(iteration=1)
 
         assert success is True
         assert isinstance(result, dict)
-        assert result.get('summary') is not None
+        assert result.get("summary") is not None
 
     def test_execute_normalizes_dict_result(self, phase3, monkeypatch):
-        legacy_result = {'success': True, 'summary': {}, 'root_causes': []}
+        legacy_result = {"success": True, "summary": {}, "root_causes": []}
         monkeypatch.setattr(phase3, "run", lambda iteration: legacy_result)
 
         success, result = phase3.execute(iteration=1)
 
         assert success is True
         assert isinstance(result, dict)
-        assert result.get('summary') is not None
+        assert result.get("summary") is not None
 
     def test_execute_rejects_non_dict_payload(self, phase3, monkeypatch):
         monkeypatch.setattr(phase3, "run", lambda iteration: (True, ["bad"]))
@@ -153,7 +155,7 @@ class TestPhase3Analyze:
     def test_calculate_statistics(self, phase3, phase2_output):
         success, result = phase3.execute(iteration=1)
 
-        summary = result.get('summary', {})
+        summary = result.get("summary", {})
         assert isinstance(summary, dict)
 
     def test_output_structure(self, phase3, phase2_output):
@@ -161,43 +163,43 @@ class TestPhase3Analyze:
         if isinstance(execution_result, tuple):
             success, result = execution_result
         else:
-            success = execution_result.get('success', True)
+            success = execution_result.get("success", True)
             result = execution_result
 
         assert success is True
-        assert 'summary' in result
-        assert 'root_causes' in result
-        assert 'output_file' in result
+        assert "summary" in result
+        assert "root_causes" in result
+        assert "output_file" in result
 
     def test_missing_phase2_output(self, phase3, config):
         success, result = phase3.execute(iteration=99)
 
         assert success is False
-        assert 'error' in result
+        assert "error" in result
 
     def test_issue_categorization(self, phase3, phase2_output):
         success, result = phase3.execute(iteration=1)
 
-        summary = result.get('summary', {})
-        if 'critical_issues' in summary:
-            assert isinstance(summary['critical_issues'], int)
-        if 'high_issues' in summary:
-            assert isinstance(summary['high_issues'], int)
-        if 'medium_issues' in summary:
-            assert isinstance(summary['medium_issues'], int)
+        summary = result.get("summary", {})
+        if "critical_issues" in summary:
+            assert isinstance(summary["critical_issues"], int)
+        if "high_issues" in summary:
+            assert isinstance(summary["high_issues"], int)
+        if "medium_issues" in summary:
+            assert isinstance(summary["medium_issues"], int)
 
     def test_analysis_recommendations(self, phase3, phase2_output):
         success, result = phase3.execute(iteration=1)
 
         assert success is True
-        assert 'summary' in result or 'root_causes' in result
+        assert "summary" in result or "root_causes" in result
 
     def test_file_saved_correctly(self, phase3, phase2_output, config):
         execution_result = phase3.execute(iteration=1)
         if isinstance(execution_result, tuple):
             success = execution_result[0]
         else:
-            success = execution_result.get('success', 'error' not in execution_result)
+            success = execution_result.get("success", "error" not in execution_result)
         assert success is True
 
         output_file = config.paths.output_root / "iteration_1" / "phase3_analysis.json"
@@ -205,8 +207,8 @@ class TestPhase3Analyze:
 
         with open(output_file) as f:
             data = json.load(f)
-            assert data['iteration'] == 1
-            assert 'summary' in data
+            assert data["iteration"] == 1
+            assert "summary" in data
 
     def test_multiple_iterations(self, phase3, config):
         for iteration in [1, 2]:
@@ -214,9 +216,9 @@ class TestPhase3Analyze:
             output_dir.mkdir(parents=True, exist_ok=True)
 
             phase2_data = {
-                'phase': 'MEASURE',
-                'iteration': iteration,
-                'file_metrics': {}
+                "phase": "MEASURE",
+                "iteration": iteration,
+                "file_metrics": {},
             }
 
             phase2_file = output_dir / "phase2_metrics.json"
@@ -226,7 +228,7 @@ class TestPhase3Analyze:
             if isinstance(execution_result, tuple):
                 success, result = execution_result
             else:
-                success = execution_result.get('success', True)
+                success = execution_result.get("success", True)
                 result = execution_result
             assert success is True
-            assert result.get('output_file') is not None
+            assert result.get("output_file") is not None

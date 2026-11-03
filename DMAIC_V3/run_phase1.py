@@ -19,12 +19,16 @@ def main():
 
     phase1 = Phase1Define(config, state_manager)
 
-    iteration = int(sys.argv[sys.argv.index('--iteration') + 1]) if '--iteration' in sys.argv else 1
+    iteration = (
+        int(sys.argv[sys.argv.index("--iteration") + 1])
+        if "--iteration" in sys.argv
+        else 1
+    )
 
     print(f"\n[SEARCH] Starting Phase 1 - Iteration {iteration}")
     result = phase1.run(iteration)
 
-    if result['success']:
+    if result["success"]:
         print(f"\n[OK] Phase 1 Complete!")
         print(f"   Files scanned: {result.get('files_scanned', 0)}")
         print(f"   Changes detected: {result.get('changes_detected', 0)}")
@@ -32,6 +36,7 @@ def main():
     else:
         print(f"\n[FAIL] Phase 1 Failed: {result.get('error', 'Unknown error')}")
         sys.exit(1)
+
 
 if __name__ == "__main__":
     main()

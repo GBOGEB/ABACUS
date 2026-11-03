@@ -3,7 +3,6 @@ import re
 import unittest
 from pathlib import Path
 
-
 ROOT = Path(__file__).resolve().parents[3]
 POLICY = ROOT / "ci/governance/workflow_policy.json"
 WORKFLOWS = ROOT / ".github/workflows"
@@ -41,13 +40,21 @@ class ExecutionTierTests(unittest.TestCase):
             self.assertNotIn("pull_request:", source, filename)
 
     def test_full_tier_retains_a_non_pr_trigger(self):
-        allowed = ("push:", "schedule:", "workflow_dispatch:", "workflow_run:", "deployment_status:")
+        allowed = (
+            "push:",
+            "schedule:",
+            "workflow_dispatch:",
+            "workflow_run:",
+            "deployment_status:",
+        )
         for filename in self.tiers["full"]["workflows"]:
             source = (WORKFLOWS / filename).read_text(encoding="utf-8")
             self.assertTrue(any(trigger in source for trigger in allowed), filename)
 
     def test_failure_issue_job_ignores_deployment_events(self):
-        source = (WORKFLOWS / "ci_monitor_and_issue_creator.yml").read_text(encoding="utf-8")
+        source = (WORKFLOWS / "ci_monitor_and_issue_creator.yml").read_text(
+            encoding="utf-8"
+        )
         condition = "github.event_name == 'workflow_run' && github.event.workflow_run.conclusion == 'failure'"
         self.assertIn(condition, source)
 
@@ -62,7 +69,9 @@ class ExecutionTierTests(unittest.TestCase):
         actual = set()
         for path in WORKFLOWS.glob("*.yml"):
             source = path.read_text(encoding="utf-8")
-            if "pull_request:" in source and any(scope in source for scope in WRITE_SCOPES):
+            if "pull_request:" in source and any(
+                scope in source for scope in WRITE_SCOPES
+            ):
                 actual.add(path.name)
         self.assertEqual(allowed, actual)
 
@@ -78,42 +87,49 @@ class ExecutionTierTests(unittest.TestCase):
         self.assertIn("github.ref == 'refs/heads/main'", telemetry)
 
     def test_pull_request_target_write_permissions_are_not_enabled(self):
-        allowed = set(self.policy["permission_controls"]["pull_request_target_write_allowed"])
+        allowed = set(
+            self.policy["permission_controls"]["pull_request_target_write_allowed"]
+        )
         actual = set()
         for path in WORKFLOWS.glob("*.yml"):
             source = path.read_text(encoding="utf-8")
-            if "pull_request_target:" in source and any(scope in source for scope in WRITE_SCOPES):
+            if "pull_request_target:" in source and any(
+                scope in source for scope in WRITE_SCOPES
+            ):
                 actual.add(path.name)
         self.assertEqual(allowed, actual)
-
 
     @staticmethod
     def _sarif_trust_boundary(pr_source, cd_source):
         """Pure negative oracle: PR can scan, only exact main push can publish."""
         marker = "\n  trusted-main-trivy-sarif:\n"
-        if (pr_source.count("  pull_request:") != 1
-                or "Scan Docker Image" not in pr_source
-                or "name: ci-trivy-sarif" not in pr_source
-                or "security-events: write" in pr_source
-                or "upload-sarif@" in pr_source):
+        if (
+            pr_source.count("  pull_request:") != 1
+            or "Scan Docker Image" not in pr_source
+            or "name: ci-trivy-sarif" not in pr_source
+            or "security-events: write" in pr_source
+            or "upload-sarif@" in pr_source
+        ):
             return False
         if "  pull_request:" in cd_source or cd_source.count(marker) != 1:
             return False
         # Keep requirements inside this job, not in a later unrelated job.
         publisher = re.split(
             r"(?m)^  [A-Za-z_][\w-]*:\s*$",
-            cd_source.split(marker, 1)[1], maxsplit=1,
+            cd_source.split(marker, 1)[1],
+            maxsplit=1,
         )[0]
         upload_pins = re.findall(
             r"(?m)^\s*(?:-\s*)?uses:\s*github/codeql-action/upload-sarif@"
-            r"([0-9a-f]{40})(?:\s+#.*)?\s*$", publisher,
+            r"([0-9a-f]{40})(?:\s+#.*)?\s*$",
+            publisher,
         )
         return (
             "if: github.event_name == 'push' && github.ref == 'refs/heads/main'"
             in publisher
             and "security-events: write" in publisher
-            and "test \"$GITHUB_REF\" = refs/heads/main" in publisher
-            and "test \"$(git rev-parse HEAD)\" = \"$GITHUB_SHA\"" in publisher
+            and 'test "$GITHUB_REF" = refs/heads/main' in publisher
+            and 'test "$(git rev-parse HEAD)" = "$GITHUB_SHA"' in publisher
             and upload_pins == ["9b3254085494b55a0f7c4c2b3d2d52cc712ce370"]
         )
 
@@ -134,32 +150,42 @@ class ExecutionTierTests(unittest.TestCase):
         pr = (WORKFLOWS / "ci-pipeline.yml").read_text(encoding="utf-8")
         cd = (WORKFLOWS / "cd-pipeline.yml").read_text(encoding="utf-8")
         self.assertTrue(self._sarif_trust_boundary(pr, cd))
-        self.assertFalse(self._sarif_trust_boundary(
-            pr.replace("      actions: read",
-                       "      actions: read\n      security-events: write", 1),
-            cd,
-        ))
+        self.assertFalse(
+            self._sarif_trust_boundary(
+                pr.replace(
+                    "      actions: read",
+                    "      actions: read\n      security-events: write",
+                    1,
+                ),
+                cd,
+            )
+        )
 
     def test_reverse_untrusted_main_publication_condition_trips(self):
         pr = (WORKFLOWS / "ci-pipeline.yml").read_text(encoding="utf-8")
         cd = (WORKFLOWS / "cd-pipeline.yml").read_text(encoding="utf-8")
         self.assertTrue(self._sarif_trust_boundary(pr, cd))
-        guard = (
-            "if: github.event_name == 'push' && github.ref == 'refs/heads/main'"
+        guard = "if: github.event_name == 'push' && github.ref == 'refs/heads/main'"
+        self.assertFalse(
+            self._sarif_trust_boundary(
+                pr, cd.replace(guard, "if: github.event_name == 'pull_request'", 1)
+            )
         )
-        self.assertFalse(self._sarif_trust_boundary(
-            pr, cd.replace(guard, "if: github.event_name == 'pull_request'", 1)
-        ))
 
     def test_force_trip_missing_exact_head_guard_trips(self):
         pr = (WORKFLOWS / "ci-pipeline.yml").read_text(encoding="utf-8")
         cd = (WORKFLOWS / "cd-pipeline.yml").read_text(encoding="utf-8")
         self.assertTrue(self._sarif_trust_boundary(pr, cd))
-        self.assertFalse(self._sarif_trust_boundary(
-            pr, cd.replace('test "$(git rev-parse HEAD)" = "$GITHUB_SHA"',
-                           'echo "unchecked SHA"', 1)
-        ))
-
+        self.assertFalse(
+            self._sarif_trust_boundary(
+                pr,
+                cd.replace(
+                    'test "$(git rev-parse HEAD)" = "$GITHUB_SHA"',
+                    'echo "unchecked SHA"',
+                    1,
+                ),
+            )
+        )
 
     def test_negative_mutable_or_unapproved_sarif_pin_trips(self):
         pr = (WORKFLOWS / "ci-pipeline.yml").read_text(encoding="utf-8")
@@ -168,8 +194,9 @@ class ExecutionTierTests(unittest.TestCase):
         approved = "9b3254085494b55a0f7c4c2b3d2d52cc712ce370"
         for replacement in ("v4", "0" * 40, "6f2ac81f5cd81fe351a197ba0b00d91d03cd2aee"):
             with self.subTest(replacement=replacement):
-                changed = cd.replace("upload-sarif@" + approved,
-                                     "upload-sarif@" + replacement, 1)
+                changed = cd.replace(
+                    "upload-sarif@" + approved, "upload-sarif@" + replacement, 1
+                )
                 self.assertNotEqual(cd, changed)
                 self.assertFalse(self._sarif_trust_boundary(pr, changed))
 
@@ -177,7 +204,7 @@ class ExecutionTierTests(unittest.TestCase):
         pr = (WORKFLOWS / "ci-pipeline.yml").read_text(encoding="utf-8")
         cd = (WORKFLOWS / "cd-pipeline.yml").read_text(encoding="utf-8")
         self.assertTrue(self._sarif_trust_boundary(pr, cd))
-        guard = "test \"$(git rev-parse HEAD)\" = \"$GITHUB_SHA\""
+        guard = 'test "$(git rev-parse HEAD)" = "$GITHUB_SHA"'
         changed = cd.replace(guard, 'echo "unchecked SHA"', 1)
         self.assertNotEqual(cd, changed)
         changed += "\n  unrelated-job:\n    steps:\n      - run: " + guard + "\n"

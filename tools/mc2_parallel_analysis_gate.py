@@ -5,6 +5,7 @@ This gate does not recompute PCA and does not grant allocation authority.
 It tests observed eigenvalues against a null distribution generated for the
 same sample size and feature count. Small-N output remains diagnostic only.
 """
+
 from __future__ import annotations
 
 import argparse
@@ -26,15 +27,10 @@ def standardize_matrix(matrix):
     sds = []
     for j, mean in enumerate(means):
         sds.append(
-            math.sqrt(
-                sum((row[j] - mean) ** 2 for row in matrix) / max(n - 1, 1)
-            )
+            math.sqrt(sum((row[j] - mean) ** 2 for row in matrix) / max(n - 1, 1))
         )
     return [
-        [
-            0.0 if sds[j] == 0 else (row[j] - means[j]) / sds[j]
-            for j in range(p)
-        ]
+        [0.0 if sds[j] == 0 else (row[j] - means[j]) / sds[j] for j in range(p)]
         for row in matrix
     ]
 
@@ -43,10 +39,7 @@ def covariance(z):
     n = len(z)
     p = len(z[0])
     return [
-        [
-            sum(z[i][a] * z[i][b] for i in range(n)) / max(n - 1, 1)
-            for b in range(p)
-        ]
+        [sum(z[i][a] * z[i][b] for i in range(n)) / max(n - 1, 1) for b in range(p)]
         for a in range(p)
     ]
 

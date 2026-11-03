@@ -4,6 +4,7 @@
 This is a read-only experimental policy comparator, not a replacement for the
 canonical CBD selector, MIP wave governor, CI or release admission.
 """
+
 from __future__ import annotations
 
 import argparse
@@ -56,17 +57,13 @@ def path_safe(path):
 def path_overlap(a, b):
     """Cross-platform conservative lexical leases; not realpath/ACL proof."""
     left, right = a.casefold(), b.casefold()
-    return (
-        left == right or left.startswith(right + "/")
-        or right.startswith(left + "/")
-    )
+    return left == right or left.startswith(right + "/") or right.startswith(left + "/")
 
 
 def validate(doc):
     require(isinstance(doc, dict) and doc.get("schema") == SCHEMA, "frontier schema")
     require(
-        isinstance(doc.get("source_sha"), str)
-        and SHA.fullmatch(doc["source_sha"]),
+        isinstance(doc.get("source_sha"), str) and SHA.fullmatch(doc["source_sha"]),
         "exact source SHA",
     )
     cap = doc.get("capacity")
@@ -105,8 +102,7 @@ def validate(doc):
         if missing is not None:
             count(missing, "missing opportunities")
         require(
-            row.get("evidence_ref") is None
-            or isinstance(row["evidence_ref"], str),
+            row.get("evidence_ref") is None or isinstance(row["evidence_ref"], str),
             "evidence reference",
         )
         tasks[name] = row
@@ -127,7 +123,8 @@ def validate(doc):
         require(gate.get("criticality") in CRITICAL, "gate criticality")
         prereqs = gate.get("requires")
         require(
-            isinstance(prereqs, list) and bool(prereqs)
+            isinstance(prereqs, list)
+            and bool(prereqs)
             and len(prereqs) == len(set(prereqs)),
             "gate prerequisites",
         )
@@ -138,10 +135,15 @@ def validate(doc):
     for pair in comparisons:
         require(isinstance(pair, dict), "comparison object")
         winner, loser = pair.get("winner"), pair.get("loser")
-        require(winner in tasks and loser in tasks and winner != loser, "pair endpoints")
+        require(
+            winner in tasks and loser in tasks and winner != loser, "pair endpoints"
+        )
         require(pair.get("status") == "NATIVE_MATCHED", "unqualified BT input")
         pair_id = pair.get("pair_id")
-        require(isinstance(pair_id, str) and bool(pair_id) and pair_id not in seen, "pair id")
+        require(
+            isinstance(pair_id, str) and bool(pair_id) and pair_id not in seen,
+            "pair id",
+        )
         seen.add(pair_id)
         require(
             isinstance(pair.get("metric_id"), str) and bool(pair["metric_id"]),
@@ -199,7 +201,8 @@ def fit_bt(ready, comparisons):
     if len(nodes) < 3 or len(comparisons) < 6:
         return {"status": "BT_INSUFFICIENT_PAIRS", "strengths": None}
     selected = [
-        pair for pair in comparisons
+        pair
+        for pair in comparisons
         if pair["winner"] in nodes and pair["loser"] in nodes
     ]
     contexts = {(p["cohort_id"], p["metric_id"]) for p in selected}
@@ -231,12 +234,8 @@ def fit_bt(ready, comparisons):
         if any(value <= 0 for value in proposed.values()):
             return {"status": "BT_NONFINITE_MLE", "strengths": None}
         mean_log = sum(math.log(value) for value in proposed.values()) / len(ids)
-        updated = {
-            name: math.exp(math.log(proposed[name]) - mean_log) for name in ids
-        }
-        distance = max(
-            abs(math.log(updated[name] / strengths[name])) for name in ids
-        )
+        updated = {name: math.exp(math.log(proposed[name]) - mean_log) for name in ids}
+        distance = max(abs(math.log(updated[name] / strengths[name])) for name in ids)
         strengths = updated
         if distance < 1e-9:
             converged = True
@@ -270,8 +269,12 @@ def reverse_key(name, scores):
     imm = x["immediate"]
     partial = x["partial"]
     return (
-        -imm["P0"], -imm["P1"], -imm["P2"],
-        -partial["P0"], -partial["P1"], -partial["P2"],
+        -imm["P0"],
+        -imm["P1"],
+        -imm["P2"],
+        -partial["P0"],
+        -partial["P1"],
+        -partial["P2"],
         -x["efficiency"] if x["efficiency"] is not None else float("inf"),
         name,
     )
@@ -340,9 +343,11 @@ def plan(doc):
     size = sorted(
         ready,
         key=lambda key: (
-            -scores[key]["missing_opportunities"]
-            if scores[key]["missing_opportunities"] is not None
-            else float("inf"),
+            (
+                -scores[key]["missing_opportunities"]
+                if scores[key]["missing_opportunities"] is not None
+                else float("inf")
+            ),
             key,
         ),
     )

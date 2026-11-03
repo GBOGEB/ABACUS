@@ -5,28 +5,29 @@
 # Description: Auto-generated version header
 """
 
-
-import sys
 import subprocess
+import sys
+
 
 def self_test():
     checks = {
         "python_version": "3.12",
         "dependencies_installed": True,
         "output_dirs_writable": True,
-        "dmaic_phases_executable": True
+        "dmaic_phases_executable": True,
     }
 
     if sys.version_info < (3, 12):
         checks["python_version"] = f"{sys.version_info.major}.{sys.version_info.minor}"
 
     try:
-        import yaml
         import pytest
+        import yaml
     except ImportError:
         checks["dependencies_installed"] = False
 
     import os
+
     output_dir = "DMAIC_V3_OUTPUT"
     if not os.path.exists(output_dir):
         try:
@@ -48,7 +49,7 @@ def self_test():
             "DMAIC_V3/phases/phase2_measure.py",
             "DMAIC_V3/phases/phase3_analyze.py",
             "DMAIC_V3/phases/phase4_improve.py",
-            "DMAIC_V3/phases/phase5_control.py"
+            "DMAIC_V3/phases/phase5_control.py",
         ]
         for phase_module in phase_modules:
             if not os.path.exists(phase_module):
@@ -56,6 +57,7 @@ def self_test():
                 break
 
     return checks
+
 
 if __name__ == "__main__":
     results = self_test()

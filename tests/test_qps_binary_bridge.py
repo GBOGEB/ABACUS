@@ -3,9 +3,8 @@ from __future__ import annotations
 import importlib.util
 import json
 import subprocess
-from pathlib import Path
 import zipfile
-
+from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 MODULE_PATH = ROOT / "tools" / "qps_binary_bridge.py"
@@ -57,9 +56,7 @@ def test_docx_bridge_extracts_text_and_minimum_tuple(tmp_path: Path) -> None:
     assert item["hierarchy_node"]["kind"] == "docx"
     assert item["hierarchy_node"]["blocks"][0]["text"] == "QPS System"
     assert item["hierarchy_node"]["blocks"][0]["style"] == "Heading1"
-    assert item["hierarchy_node"]["blocks"][1]["rows"] == [
-        ["RTM-001", "Requirement"]
-    ]
+    assert item["hierarchy_node"]["blocks"][1]["rows"] == [["RTM-001", "Requirement"]]
     assert item["source_sha256"]
     assert item["semantic_sha256"]
     assert item["authority"] == "SCK_CEN_CONTRACT"
@@ -333,9 +330,9 @@ def test_html_bridge_captures_visible_generic_container_text(
         "Direct callout Tail text",
         "Nested paragraph",
     }
-    assert next(block for block in blocks if block["kind"] == "div")[
-        "anchor"
-    ] == "callout"
+    assert (
+        next(block for block in blocks if block["kind"] == "div")["anchor"] == "callout"
+    )
 
 
 def test_html_bridge_does_not_retain_void_elements() -> None:
@@ -347,9 +344,7 @@ def test_html_bridge_does_not_retain_void_elements() -> None:
     )
 
     assert parser._stack == []
-    assert parser.blocks == [
-        {"anchor": "div:1", "kind": "div", "text": "A B"}
-    ]
+    assert parser.blocks == [{"anchor": "div:1", "kind": "div", "text": "A B"}]
 
 
 def test_git_sha_is_resolved_from_abacus_root(monkeypatch) -> None:

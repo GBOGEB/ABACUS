@@ -3,9 +3,10 @@
 The entrypoint must be executed as a module from repository root, retaining
 'scripts' importability. An isolated script-path invocation loses that context.
 """
-from pathlib import Path
+
 import subprocess
 import sys
+from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 WF = ROOT / ".github" / "workflows" / "w29-cbd-temporal-matched-coverage.yml"
@@ -14,7 +15,11 @@ WF = ROOT / ".github" / "workflows" / "w29-cbd-temporal-matched-coverage.yml"
 def test_module_entrypoint_can_import_temporal_contract():
     result = subprocess.run(
         [sys.executable, "-m", "tools.recovery.w29_temporal_native_compare", "--help"],
-        cwd=ROOT, text=True, capture_output=True, check=False, timeout=30,
+        cwd=ROOT,
+        text=True,
+        capture_output=True,
+        check=False,
+        timeout=30,
     )
     assert result.returncode == 0, result.stdout + "\n" + result.stderr
     assert "--before-cov" in result.stdout

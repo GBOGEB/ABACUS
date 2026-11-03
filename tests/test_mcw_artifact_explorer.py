@@ -1,4 +1,5 @@
 """Negative and UI checks for the cold artifact evidence browser."""
+
 import importlib.util
 import json
 import tempfile
@@ -12,24 +13,49 @@ SPEC = importlib.util.spec_from_file_location(
 M = importlib.util.module_from_spec(SPEC)
 SPEC.loader.exec_module(M)
 SHA = "a" * 40
-STYLE = {"version": "0.2", "palette": {"tokens": {
-    "define": "#562873", "measure": "#984A9C", "analyze": "#034694",
-    "improve": "#B5622A", "control": "#1D7A5F", "critical": "#B42318"
-}}}
+STYLE = {
+    "version": "0.2",
+    "palette": {
+        "tokens": {
+            "define": "#562873",
+            "measure": "#984A9C",
+            "analyze": "#034694",
+            "improve": "#B5622A",
+            "control": "#1D7A5F",
+            "critical": "#B42318",
+        }
+    },
+}
 
 
 def fixture():
-    return {"schema": M.SCHEMA, "triggers": [
-        {"event": "PR", "stage": "TYPE_QA", "action": "Cold checks"}
-    ], "artifacts": [
-        {"id": "ssot-json", "title": "Actual <SSOT> source",
-         "format": "json", "role": "repository_source", "path": "ssot.json"},
-        {"id": "derived-xlsx", "title": "Derived workbook", "format": "xlsx",
-         "role": "generated_output", "generator": "generator.py",
-         "depends_on": ["ssot-json"]},
-        {"id": "original-docx", "title": "Original docx", "format": "docx",
-         "role": "controlled_input"},
-    ]}
+    return {
+        "schema": M.SCHEMA,
+        "triggers": [{"event": "PR", "stage": "TYPE_QA", "action": "Cold checks"}],
+        "artifacts": [
+            {
+                "id": "ssot-json",
+                "title": "Actual <SSOT> source",
+                "format": "json",
+                "role": "repository_source",
+                "path": "ssot.json",
+            },
+            {
+                "id": "derived-xlsx",
+                "title": "Derived workbook",
+                "format": "xlsx",
+                "role": "generated_output",
+                "generator": "generator.py",
+                "depends_on": ["ssot-json"],
+            },
+            {
+                "id": "original-docx",
+                "title": "Original docx",
+                "format": "docx",
+                "role": "controlled_input",
+            },
+        ],
+    }
 
 
 class ColdBuildTests(unittest.TestCase):
@@ -53,9 +79,9 @@ class ColdBuildTests(unittest.TestCase):
             self.assertIn("Build DAG", page)
             self.assertIn("SHA-256", page)
             self.assertIn('id="format"', page)
-            self.assertIn('Inspect source excerpt', page)
-            self.assertIn('source', page)
-            self.assertIn('[hidden]{display:none!important}', page)
+            self.assertIn("Inspect source excerpt", page)
+            self.assertIn("source", page)
+            self.assertIn("[hidden]{display:none!important}", page)
             self.assertIn("Merge admission: HOLD", page)
             self.assertNotIn("<script src=", page)
 
@@ -89,8 +115,10 @@ class ColdBuildTests(unittest.TestCase):
             before = M.evaluate(root, catalog, STYLE, SHA)
             (root / "ssot.json").write_text('{"source": false}')
             after = M.evaluate(root, catalog, STYLE, SHA)
-            self.assertNotEqual(before["artifacts"][0]["evidence"]["sha256"],
-                                after["artifacts"][0]["evidence"]["sha256"])
+            self.assertNotEqual(
+                before["artifacts"][0]["evidence"]["sha256"],
+                after["artifacts"][0]["evidence"]["sha256"],
+            )
 
     def test_rejects_unsafe_source_and_generated_path(self):
         with tempfile.TemporaryDirectory() as d:
@@ -130,8 +158,10 @@ class ColdBuildTests(unittest.TestCase):
             item["path"] = "original.docx"
             item["expected_sha256"] = M.digest(original.read_bytes())
             result = M.evaluate(root, catalog, STYLE, SHA)
-            self.assertEqual(result["artifacts"][2]["evidence"]["state"],
-                             "INPUT_HASH_VERIFIED_UNCHANGED")
+            self.assertEqual(
+                result["artifacts"][2]["evidence"]["state"],
+                "INPUT_HASH_VERIFIED_UNCHANGED",
+            )
             self.assertFalse(result["semantic_delta_zero_proves_byte_identity"])
             original.write_bytes(b"tampered bytes")
             with self.assertRaisesRegex(ValueError, "immutable input hash"):
@@ -149,7 +179,9 @@ class ColdBuildTests(unittest.TestCase):
                 M.evaluate(root, catalog, {}, SHA)
 
     def test_real_repository_sample_paths_and_style_contract(self):
-        catalog = json.loads((ROOT / "docs" / "mcw" / "artifact_catalog.v1.json").read_text())
+        catalog = json.loads(
+            (ROOT / "docs" / "mcw" / "artifact_catalog.v1.json").read_text()
+        )
         style = json.loads((ROOT / "ssot" / "ssot_style.json").read_text())
         self.assertEqual(len(catalog["artifacts"]), 7)
         self.assertEqual(len(catalog["triggers"]), 9)

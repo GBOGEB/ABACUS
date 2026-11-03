@@ -9,15 +9,16 @@
 Performance Monitoring Tests - Benchmark Tracking, Performance Budgets, Regression Alerts
 """
 
-import pytest
-import time
+import functools
 import json
 import statistics
-from pathlib import Path
+import time
+from dataclasses import asdict, dataclass, field
 from datetime import datetime, timedelta
-from typing import Dict, List, Any, Optional, Callable
-from dataclasses import dataclass, asdict, field
-import functools
+from pathlib import Path
+from typing import Any, Callable, Dict, List, Optional
+
+import pytest
 
 
 @dataclass
@@ -70,20 +71,21 @@ class BenchmarkTracker:
 
     def _load_benchmarks(self):
         if self.storage_path.exists():
-            with open(self.storage_path, 'r') as f:
+            with open(self.storage_path, "r") as f:
                 data = json.load(f)
                 self.benchmarks = [PerformanceBenchmark(**b) for b in data]
 
     def _save_benchmarks(self):
-        with open(self.storage_path, 'w') as f:
+        with open(self.storage_path, "w") as f:
             json.dump([b.to_dict() for b in self.benchmarks], f, indent=2)
 
     def record_benchmark(self, benchmark: PerformanceBenchmark):
         self.benchmarks.append(benchmark)
         self._save_benchmarks()
 
-    def get_benchmarks(self, name: str = None, category: str = None,
-                      limit: int = None) -> List[PerformanceBenchmark]:
+    def get_benchmarks(
+        self, name: str = None, category: str = None, limit: int = None
+    ) -> List[PerformanceBenchmark]:
         filtered = self.benchmarks
 
         if name:
@@ -117,18 +119,22 @@ class BenchmarkTracker:
                 "median": round(statistics.median(exec_times), 2),
                 "p95": round(self._percentile(exec_times, 95), 2),
                 "p99": round(self._percentile(exec_times, 99), 2),
-                "stdev": round(statistics.stdev(exec_times), 2) if len(exec_times) > 1 else 0.0
+                "stdev": (
+                    round(statistics.stdev(exec_times), 2)
+                    if len(exec_times) > 1
+                    else 0.0
+                ),
             },
             "memory_usage_mb": {
                 "min": round(min(memory_usage), 2),
                 "max": round(max(memory_usage), 2),
-                "avg": round(statistics.mean(memory_usage), 2)
+                "avg": round(statistics.mean(memory_usage), 2),
             },
             "cpu_usage_percent": {
                 "min": round(min(cpu_usage), 2),
                 "max": round(max(cpu_usage), 2),
-                "avg": round(statistics.mean(cpu_usage), 2)
-            }
+                "avg": round(statistics.mean(cpu_usage), 2),
+            },
         }
 
     def _percentile(self, data: List[float], percentile: int) -> float:
@@ -136,26 +142,36 @@ class BenchmarkTracker:
         index = int(len(sorted_data) * percentile / 100)
         return sorted_data[min(index, len(sorted_data) - 1)]
 
-    def compare_with_baseline(self, name: str, baseline_window: int = 10) -> Dict[str, Any]:
+    def compare_with_baseline(
+        self, name: str, baseline_window: int = 10
+    ) -> Dict[str, Any]:
         benchmarks = self.get_benchmarks(name=name)
 
         if len(benchmarks) < baseline_window + 1:
             return {"error": "insufficient_data"}
 
-        baseline = benchmarks[-baseline_window-1:-1]
+        baseline = benchmarks[-baseline_window - 1 : -1]
         current = benchmarks[-1]
 
         baseline_time = statistics.mean([b.execution_time_ms for b in baseline])
         current_time = current.execution_time_ms
 
-        time_change = ((current_time - baseline_time) / baseline_time * 100) if baseline_time > 0 else 0.0
+        time_change = (
+            ((current_time - baseline_time) / baseline_time * 100)
+            if baseline_time > 0
+            else 0.0
+        )
 
         return {
             "name": name,
             "baseline_avg_ms": round(baseline_time, 2),
             "current_ms": round(current_time, 2),
             "change_percent": round(time_change, 2),
-            "trend": "regression" if time_change > 10 else "improvement" if time_change < -10 else "stable"
+            "trend": (
+                "regression"
+                if time_change > 10
+                else "improvement" if time_change < -10 else "stable"
+            ),
         }
 
 
@@ -168,13 +184,19 @@ class PerformanceBudgetManager:
 
     def _load_budgets(self):
         if self.storage_path.exists():
-            with open(self.storage_path, 'r') as f:
+            with open(self.storage_path, "r") as f:
                 data = json.load(f)
-                self.budgets = {name: PerformanceBudget(**budget) for name, budget in data.items()}
+                self.budgets = {
+                    name: PerformanceBudget(**budget) for name, budget in data.items()
+                }
 
     def _save_budgets(self):
-        with open(self.storage_path, 'w') as f:
-            json.dump({name: budget.to_dict() for name, budget in self.budgets.items()}, f, indent=2)
+        with open(self.storage_path, "w") as f:
+            json.dump(
+                {name: budget.to_dict() for name, budget in self.budgets.items()},
+                f,
+                indent=2,
+            )
 
     def set_budget(self, budget: PerformanceBudget):
         self.budgets[budget.name] = budget
@@ -187,47 +209,59 @@ class PerformanceBudgetManager:
         budget = self.get_budget(benchmark.name)
 
         if not budget:
-            return {
-                "within_budget": True,
-                "reason": "no_budget_defined"
-            }
+            return {"within_budget": True, "reason": "no_budget_defined"}
 
         violations = []
 
         if benchmark.execution_time_ms > budget.max_execution_time_ms:
-            exceeded_by = ((benchmark.execution_time_ms - budget.max_execution_time_ms) /
-                          budget.max_execution_time_ms * 100)
-            violations.append({
-                "metric": "execution_time_ms",
-                "current": benchmark.execution_time_ms,
-                "budget": budget.max_execution_time_ms,
-                "exceeded_by_percent": round(exceeded_by, 2)
-            })
+            exceeded_by = (
+                (benchmark.execution_time_ms - budget.max_execution_time_ms)
+                / budget.max_execution_time_ms
+                * 100
+            )
+            violations.append(
+                {
+                    "metric": "execution_time_ms",
+                    "current": benchmark.execution_time_ms,
+                    "budget": budget.max_execution_time_ms,
+                    "exceeded_by_percent": round(exceeded_by, 2),
+                }
+            )
 
         if benchmark.memory_usage_mb > budget.max_memory_mb:
-            exceeded_by = ((benchmark.memory_usage_mb - budget.max_memory_mb) /
-                          budget.max_memory_mb * 100)
-            violations.append({
-                "metric": "memory_usage_mb",
-                "current": benchmark.memory_usage_mb,
-                "budget": budget.max_memory_mb,
-                "exceeded_by_percent": round(exceeded_by, 2)
-            })
+            exceeded_by = (
+                (benchmark.memory_usage_mb - budget.max_memory_mb)
+                / budget.max_memory_mb
+                * 100
+            )
+            violations.append(
+                {
+                    "metric": "memory_usage_mb",
+                    "current": benchmark.memory_usage_mb,
+                    "budget": budget.max_memory_mb,
+                    "exceeded_by_percent": round(exceeded_by, 2),
+                }
+            )
 
         if benchmark.cpu_usage_percent > budget.max_cpu_percent:
-            exceeded_by = ((benchmark.cpu_usage_percent - budget.max_cpu_percent) /
-                          budget.max_cpu_percent * 100)
-            violations.append({
-                "metric": "cpu_usage_percent",
-                "current": benchmark.cpu_usage_percent,
-                "budget": budget.max_cpu_percent,
-                "exceeded_by_percent": round(exceeded_by, 2)
-            })
+            exceeded_by = (
+                (benchmark.cpu_usage_percent - budget.max_cpu_percent)
+                / budget.max_cpu_percent
+                * 100
+            )
+            violations.append(
+                {
+                    "metric": "cpu_usage_percent",
+                    "current": benchmark.cpu_usage_percent,
+                    "budget": budget.max_cpu_percent,
+                    "exceeded_by_percent": round(exceeded_by, 2),
+                }
+            )
 
         return {
             "within_budget": len(violations) == 0,
             "violations": violations,
-            "total_violations": len(violations)
+            "total_violations": len(violations),
         }
 
 
@@ -240,21 +274,24 @@ class RegressionAlertSystem:
 
     def _load_alerts(self):
         if self.storage_path.exists():
-            with open(self.storage_path, 'r') as f:
+            with open(self.storage_path, "r") as f:
                 data = json.load(f)
                 self.alerts = [PerformanceAlert(**a) for a in data]
 
     def _save_alerts(self):
-        with open(self.storage_path, 'w') as f:
+        with open(self.storage_path, "w") as f:
             json.dump([a.to_dict() for a in self.alerts], f, indent=2)
 
     def create_alert(self, alert: PerformanceAlert):
         self.alerts.append(alert)
         self._save_alerts()
 
-    def check_for_regressions(self, tracker: BenchmarkTracker,
-                             budget_manager: PerformanceBudgetManager,
-                             benchmark_name: str) -> List[PerformanceAlert]:
+    def check_for_regressions(
+        self,
+        tracker: BenchmarkTracker,
+        budget_manager: PerformanceBudgetManager,
+        benchmark_name: str,
+    ) -> List[PerformanceAlert]:
         benchmarks = tracker.get_benchmarks(name=benchmark_name)
 
         if not benchmarks:
@@ -270,7 +307,11 @@ class RegressionAlertSystem:
 
             if not budget_check["within_budget"]:
                 for violation in budget_check["violations"]:
-                    severity = "critical" if violation["exceeded_by_percent"] > 50 else "warning"
+                    severity = (
+                        "critical"
+                        if violation["exceeded_by_percent"] > 50
+                        else "warning"
+                    )
 
                     alert = PerformanceAlert(
                         benchmark_name=benchmark_name,
@@ -280,7 +321,7 @@ class RegressionAlertSystem:
                         current_value=violation["current"],
                         budget_value=violation["budget"],
                         exceeded_by_percent=violation["exceeded_by_percent"],
-                        timestamp=datetime.now().isoformat()
+                        timestamp=datetime.now().isoformat(),
                     )
                     new_alerts.append(alert)
                     self.create_alert(alert)
@@ -296,15 +337,16 @@ class RegressionAlertSystem:
                 current_value=comparison["current_ms"],
                 budget_value=comparison["baseline_avg_ms"],
                 exceeded_by_percent=comparison["change_percent"],
-                timestamp=datetime.now().isoformat()
+                timestamp=datetime.now().isoformat(),
             )
             new_alerts.append(alert)
             self.create_alert(alert)
 
         return new_alerts
 
-    def get_alerts(self, benchmark_name: str = None, severity: str = None,
-                  limit: int = None) -> List[PerformanceAlert]:
+    def get_alerts(
+        self, benchmark_name: str = None, severity: str = None, limit: int = None
+    ) -> List[PerformanceAlert]:
         filtered = self.alerts
 
         if benchmark_name:
@@ -336,14 +378,16 @@ def benchmark(name: str, category: str = "general"):
                 execution_time_ms=execution_time_ms,
                 memory_usage_mb=50.0,
                 cpu_usage_percent=30.0,
-                timestamp=datetime.now().isoformat()
+                timestamp=datetime.now().isoformat(),
             )
 
             tracker = BenchmarkTracker()
             tracker.record_benchmark(benchmark_data)
 
             return result
+
         return wrapper
+
     return decorator
 
 
@@ -377,7 +421,7 @@ def sample_benchmarks():
             execution_time_ms=100.0 + i * 5,
             memory_usage_mb=50.0 + i * 2,
             cpu_usage_percent=30.0 + i * 1,
-            timestamp=(base_time + timedelta(minutes=i)).isoformat()
+            timestamp=(base_time + timedelta(minutes=i)).isoformat(),
         )
         benchmarks.append(benchmark)
 
@@ -397,7 +441,7 @@ class TestBenchmarkTracking:
             execution_time_ms=150.0,
             memory_usage_mb=60.0,
             cpu_usage_percent=35.0,
-            timestamp=datetime.now().isoformat()
+            timestamp=datetime.now().isoformat(),
         )
 
         benchmark_tracker.record_benchmark(benchmark)
@@ -467,7 +511,7 @@ class TestBenchmarkTracking:
             execution_time_ms=150.0,
             memory_usage_mb=60.0,
             cpu_usage_percent=35.0,
-            timestamp=datetime.now().isoformat()
+            timestamp=datetime.now().isoformat(),
         )
         tracker1.record_benchmark(benchmark)
 
@@ -486,7 +530,7 @@ class TestPerformanceBudgets:
             name="test_function",
             max_execution_time_ms=200.0,
             max_memory_mb=100.0,
-            max_cpu_percent=50.0
+            max_cpu_percent=50.0,
         )
 
         budget_manager.set_budget(budget)
@@ -497,7 +541,7 @@ class TestPerformanceBudgets:
             name="test_function",
             max_execution_time_ms=200.0,
             max_memory_mb=100.0,
-            max_cpu_percent=50.0
+            max_cpu_percent=50.0,
         )
 
         budget_manager.set_budget(budget)
@@ -511,7 +555,7 @@ class TestPerformanceBudgets:
             name="test_function",
             max_execution_time_ms=200.0,
             max_memory_mb=100.0,
-            max_cpu_percent=50.0
+            max_cpu_percent=50.0,
         )
         budget_manager.set_budget(budget)
 
@@ -521,7 +565,7 @@ class TestPerformanceBudgets:
             execution_time_ms=150.0,
             memory_usage_mb=80.0,
             cpu_usage_percent=40.0,
-            timestamp=datetime.now().isoformat()
+            timestamp=datetime.now().isoformat(),
         )
 
         result = budget_manager.check_budget(benchmark)
@@ -532,7 +576,7 @@ class TestPerformanceBudgets:
             name="test_function",
             max_execution_time_ms=100.0,
             max_memory_mb=50.0,
-            max_cpu_percent=30.0
+            max_cpu_percent=30.0,
         )
         budget_manager.set_budget(budget)
 
@@ -542,7 +586,7 @@ class TestPerformanceBudgets:
             execution_time_ms=150.0,
             memory_usage_mb=80.0,
             cpu_usage_percent=40.0,
-            timestamp=datetime.now().isoformat()
+            timestamp=datetime.now().isoformat(),
         )
 
         result = budget_manager.check_budget(benchmark)
@@ -565,7 +609,7 @@ class TestRegressionAlerts:
             current_value=150.0,
             budget_value=100.0,
             exceeded_by_percent=50.0,
-            timestamp=datetime.now().isoformat()
+            timestamp=datetime.now().isoformat(),
         )
 
         alert_system.create_alert(alert)
@@ -580,7 +624,7 @@ class TestRegressionAlerts:
             current_value=150.0,
             budget_value=100.0,
             exceeded_by_percent=50.0,
-            timestamp=datetime.now().isoformat()
+            timestamp=datetime.now().isoformat(),
         )
 
         alert2 = PerformanceAlert(
@@ -591,7 +635,7 @@ class TestRegressionAlerts:
             current_value=200.0,
             budget_value=100.0,
             exceeded_by_percent=100.0,
-            timestamp=datetime.now().isoformat()
+            timestamp=datetime.now().isoformat(),
         )
 
         alert_system.create_alert(alert1)
@@ -609,7 +653,7 @@ class TestRegressionAlerts:
             current_value=200.0,
             budget_value=100.0,
             exceeded_by_percent=100.0,
-            timestamp=datetime.now().isoformat()
+            timestamp=datetime.now().isoformat(),
         )
 
         alert_system.create_alert(alert)
@@ -617,7 +661,9 @@ class TestRegressionAlerts:
         results = alert_system.get_alerts(severity="critical")
         assert len(results) == 1
 
-    def test_check_for_regressions(self, benchmark_tracker, budget_manager, alert_system, sample_benchmarks):
+    def test_check_for_regressions(
+        self, benchmark_tracker, budget_manager, alert_system, sample_benchmarks
+    ):
         for b in sample_benchmarks:
             benchmark_tracker.record_benchmark(b)
 
@@ -625,14 +671,12 @@ class TestRegressionAlerts:
             name="test_function",
             max_execution_time_ms=120.0,
             max_memory_mb=70.0,
-            max_cpu_percent=40.0
+            max_cpu_percent=40.0,
         )
         budget_manager.set_budget(budget)
 
         alerts = alert_system.check_for_regressions(
-            benchmark_tracker,
-            budget_manager,
-            "test_function"
+            benchmark_tracker, budget_manager, "test_function"
         )
 
         assert isinstance(alerts, list)

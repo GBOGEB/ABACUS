@@ -1,14 +1,23 @@
 import json
 import subprocess
 import sys
-import pytest
-import numpy as np
 from pathlib import Path
 from typing import Generator
 
+import numpy as np
+import pytest
+
 sys.path.insert(0, str(Path(__file__).parent.parent))
 sys.path.insert(0, str(Path(__file__).parent.parent / "13_CORE_SYSTEMS"))
-sys.path.insert(0, str(Path(__file__).parent.parent / "golden_thread_integration" / "github_repos" / "ABACUS"))
+sys.path.insert(
+    0,
+    str(
+        Path(__file__).parent.parent
+        / "golden_thread_integration"
+        / "github_repos"
+        / "ABACUS"
+    ),
+)
 
 
 def normalize_week3_legacy_counts(summary, returncode=0):
@@ -181,11 +190,7 @@ def two_group_data():
 @pytest.fixture
 def bootstrap_config():
     """Standard bootstrap configuration"""
-    return {
-        "n_bootstrap": 1000,
-        "alpha": 0.05,
-        "random_seed": 42
-    }
+    return {"n_bootstrap": 1000, "alpha": 0.05, "random_seed": 42}
 
 
 @pytest.fixture(scope="session")
@@ -199,7 +204,8 @@ def report_dir():
 def pytest_configure(config):
     """Register custom markers for test organization"""
     config.addinivalue_line(
-        "markers", "bootstrap_stats: Statistical computation tests (Bootstrap CI, Normal CI, etc.)"
+        "markers",
+        "bootstrap_stats: Statistical computation tests (Bootstrap CI, Normal CI, etc.)",
     )
     config.addinivalue_line(
         "markers", "data_loading: Data ingestion and loading tests (CSV, folders, etc.)"
@@ -213,15 +219,11 @@ def pytest_configure(config):
     config.addinivalue_line(
         "markers", "phase0: Phase 0 environment gate tests (DOW standard)"
     )
-    config.addinivalue_line(
-        "markers", "dow_core: DOW core smoke tests"
-    )
+    config.addinivalue_line("markers", "dow_core: DOW core smoke tests")
     config.addinivalue_line(
         "markers", "bridge: Bridge connectivity and synchronization tests"
     )
-    config.addinivalue_line(
-        "markers", "dmaic: DMAIC phase-aligned tests"
-    )
+    config.addinivalue_line("markers", "dmaic: DMAIC phase-aligned tests")
 
 
 def pytest_collection_modifyitems(items):

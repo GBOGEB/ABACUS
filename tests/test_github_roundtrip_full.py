@@ -382,5 +382,6 @@ class TestComprehensiveValidation:
         assert metrics["error_rate"] < 0.05
         assert metrics["throughput"] > 50
 
+
 if __name__ == "__main__":
     pytest.main([__file__, "-v", "--tb=short"])

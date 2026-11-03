@@ -3,6 +3,7 @@
 These cases exercise the canonical read-only producer, not the EVERRED V3
 prototype or CODEX's stage-only transport. Unknown metrics stay unknown.
 """
+
 from __future__ import annotations
 
 import importlib.util
@@ -25,7 +26,9 @@ URL = "https://github.com/GBOGEB/ABACUS/actions/runs/38531518523"
 
 def report(rows=None, sha=HEAD):
     if rows is None:
-        rows = [{"path": "scripts/one.py", "fingerprint": FP, "rule": "B603", "line": 3}]
+        rows = [
+            {"path": "scripts/one.py", "fingerprint": FP, "rule": "B603", "line": 3}
+        ]
     lanes = {}
     for name in census_module.LANES:
         items = [dict(row) for row in rows] if name == "B3-subprocess" else []
@@ -105,7 +108,9 @@ def test_integer_gate_rejects_missing_bools_and_non_ints(value):
         census_module.need_integer(value, "run")
 
 
-@pytest.mark.parametrize("value", [None, "", "http://github.com/a/b", "https://example.com/a/b"])
+@pytest.mark.parametrize(
+    "value", [None, "", "http://github.com/a/b", "https://example.com/a/b"]
+)
 def test_external_or_missing_evidence_urls_rejected(value):
     with pytest.raises(ValueError):
         census_module.need_url(value, "evidence")
@@ -209,7 +214,10 @@ def test_ci_producer_requires_observation_array(bad):
         census_module.join(item)
 
 
-@pytest.mark.parametrize("field,bad", [("source_sha", "no-sha"), ("job_id", False), ("source_path", "../private")])
+@pytest.mark.parametrize(
+    "field,bad",
+    [("source_sha", "no-sha"), ("job_id", False), ("source_path", "../private")],
+)
 def test_ci_observations_reject_untrusted_identity_and_paths(field, bad):
     item = source_bundle()
     item["ci_failures"] = [ci_observation(**{field: bad})]
@@ -219,8 +227,9 @@ def test_ci_observations_reject_untrusted_identity_and_paths(field, bad):
 
 def test_ci_cross_repo_cannot_inherit_bandit_ownership():
     item = source_bundle()
-    item["ci_failures"] = [ci_observation(
-        repository="GBOGEB/CODEX", source_sha="e" * 40)]
+    item["ci_failures"] = [
+        ci_observation(repository="GBOGEB/CODEX", source_sha="e" * 40)
+    ]
     out = census_module.join(item)
     ci_root = next(r for r in out["roots"] if r["category"] == "CI")
     assert ci_root["owner_lane"] is None
@@ -228,8 +237,15 @@ def test_ci_cross_repo_cannot_inherit_bandit_ownership():
     assert out["metrics"]["changed_line_coverage"] is None
 
 
-@pytest.mark.parametrize("field,bad", [("source_sha", "no-sha"), ("real_probe_steps", -1),
-                                      ("real_probe_steps", True), ("run_id", 0)])
+@pytest.mark.parametrize(
+    "field,bad",
+    [
+        ("source_sha", "no-sha"),
+        ("real_probe_steps", -1),
+        ("real_probe_steps", True),
+        ("run_id", 0),
+    ],
+)
 def test_debugger_provenance_rejects_invalid_identity_and_steps(field, bad):
     item = source_bundle()
     item["debug_receipts"] = [debug_observation(**{field: bad})]
@@ -252,7 +268,12 @@ def test_multiple_unverified_debug_sessions_do_not_become_active_workers():
 
 
 def test_old_and_new_fingerprint_sets_are_not_raw_count_assumptions():
-    old_finding = {"path": "scripts/old.py", "fingerprint": "f" * 64, "rule": "B603", "line": 8}
+    old_finding = {
+        "path": "scripts/old.py",
+        "fingerprint": "f" * 64,
+        "rule": "B603",
+        "line": 8,
+    }
     now = source_bundle()
     now["previous"] = {
         "repository": REPO,
@@ -291,4 +312,6 @@ def test_output_has_no_top21_worker_or_coverage_promotion_from_valid_receipts():
     assert out["engineering_credit_delta"] == 0
     assert out["metrics"]["changed_line_coverage"] is None
     assert out["metrics"]["active_workers"] is None
-    assert json.dumps(out, sort_keys=True) == json.dumps(census_module.join(item), sort_keys=True)
+    assert json.dumps(out, sort_keys=True) == json.dumps(
+        census_module.join(item), sort_keys=True
+    )

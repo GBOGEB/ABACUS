@@ -3,8 +3,8 @@ Metrics Module - Stub Implementation
 Provides metrics collection and aggregation
 """
 
-from typing import Dict, List, Any
 from datetime import datetime
+from typing import Any, Dict, List
 
 
 class MetricsCollector:
@@ -17,10 +17,9 @@ class MetricsCollector:
         """Record a metric"""
         if key not in self.metrics:
             self.metrics[key] = []
-        self.metrics[key].append({
-            'value': value,
-            'timestamp': datetime.now().isoformat()
-        })
+        self.metrics[key].append(
+            {"value": value, "timestamp": datetime.now().isoformat()}
+        )
 
     def get(self, key: str) -> List[Any]:
         """Get all values for a metric"""

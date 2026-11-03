@@ -6,9 +6,9 @@ Generates documentation books AFTER successful execution when code is bug-free a
 
 import json
 import sys
-from pathlib import Path
 from datetime import datetime
-from typing import Dict, List, Any, Tuple
+from pathlib import Path
+from typing import Any, Dict, List, Tuple
 
 
 class Phase9_DocumentationGeneration:
@@ -33,7 +33,9 @@ class Phase9_DocumentationGeneration:
             # Step 1: Verify execution success
             print("[9.1] Verifying execution success...")
             if not self._verify_execution_success(iteration):
-                print("  ❌ Execution not successful - SKIPPING documentation generation")
+                print(
+                    "  ❌ Execution not successful - SKIPPING documentation generation"
+                )
                 result = self._create_skip_result(iteration, "execution_not_successful")
                 self._save_results(iteration, result)
                 return False, result
@@ -43,7 +45,9 @@ class Phase9_DocumentationGeneration:
             print("\n[9.2] Verifying bug-free status...")
             bugs = self._verify_bug_free(iteration)
             if bugs:
-                print(f"  ⚠️ {len(bugs)} bugs detected - SKIPPING documentation generation")
+                print(
+                    f"  ⚠️ {len(bugs)} bugs detected - SKIPPING documentation generation"
+                )
                 result = self._create_skip_result(iteration, "bugs_detected", bugs)
                 self._save_results(iteration, result)
                 return False, result
@@ -64,7 +68,9 @@ class Phase9_DocumentationGeneration:
             if self.discrepancies_found:
                 print(f"  ⚠️ Found {len(self.discrepancies_found)} discrepancies")
                 for disc in self.discrepancies_found:
-                    print(f"    - {disc['field']}: {disc['canonical']} → {disc['actual']}")
+                    print(
+                        f"    - {disc['field']}: {disc['canonical']} → {disc['actual']}"
+                    )
             else:
                 print("  ✅ No discrepancies found")
 
@@ -99,6 +105,7 @@ class Phase9_DocumentationGeneration:
         except Exception as e:
             print(f"\n❌ Phase 9 failed: {str(e)}")
             import traceback
+
             traceback.print_exc()
             return False, {"error": str(e)}
 
@@ -111,10 +118,7 @@ class Phase9_DocumentationGeneration:
 
         # Check that MINIMUM phases have output (Phase 1, 2 are minimum)
         # Phase 5 is optional since it may not save output if no bugs found
-        minimum_phases = [
-            ("phase1_define",),
-            ("phase2_measure",)
-        ]
+        minimum_phases = [("phase1_define",), ("phase2_measure",)]
 
         for phase_variants in minimum_phases:
             found = False
@@ -136,35 +140,45 @@ class Phase9_DocumentationGeneration:
 
     def _verify_bug_free(self, iteration: int) -> List[Dict]:
         """Verify no bugs detected in Phase 5"""
-        phase5_file = self.output_dir / f"iteration_{iteration}" / "phase5_control" / "phase5_control.json"
+        phase5_file = (
+            self.output_dir
+            / f"iteration_{iteration}"
+            / "phase5_control"
+            / "phase5_control.json"
+        )
 
         if not phase5_file.exists():
             return []
 
-        with open(phase5_file, 'r') as f:
+        with open(phase5_file, "r") as f:
             phase5_data = json.load(f)
 
-        bugs = phase5_data.get('bugs', [])
-        open_bugs = [bug for bug in bugs if bug.get('status') == 'open']
+        bugs = phase5_data.get("bugs", [])
+        open_bugs = [bug for bug in bugs if bug.get("status") == "open"]
 
         return open_bugs
 
     def _verify_quality_gates(self, iteration: int) -> bool:
         """Verify quality gates passed in Phase 5 (if available)"""
-        phase5_file = self.output_dir / f"iteration_{iteration}" / "phase5_control" / "phase5_control.json"
+        phase5_file = (
+            self.output_dir
+            / f"iteration_{iteration}"
+            / "phase5_control"
+            / "phase5_control.json"
+        )
 
         if not phase5_file.exists():
             print("  ℹ️ Phase 5 output not found - skipping quality gate check")
             return True  # Pass if Phase 5 didn't run
 
-        with open(phase5_file, 'r') as f:
+        with open(phase5_file, "r") as f:
             phase5_data = json.load(f)
 
-        quality_gates = phase5_data.get('quality_gates', {})
+        quality_gates = phase5_data.get("quality_gates", {})
 
         # Check if all gates passed
         for gate_name, gate_data in quality_gates.items():
-            if not gate_data.get('passed', False):
+            if not gate_data.get("passed", False):
                 print(f"  ❌ Quality gate failed: {gate_name}")
                 return False
 
@@ -175,38 +189,57 @@ class Phase9_DocumentationGeneration:
         discrepancies = []
 
         # Load Phase 1 results
-        phase1_file = self.output_dir / f"iteration_{iteration}" / "phase1_define" / "phase1_define.json"
+        phase1_file = (
+            self.output_dir
+            / f"iteration_{iteration}"
+            / "phase1_define"
+            / "phase1_define.json"
+        )
         if phase1_file.exists():
-            with open(phase1_file, 'r') as f:
+            with open(phase1_file, "r") as f:
                 phase1_data = json.load(f)
 
             # Check total files
-            actual_files = phase1_data.get('total_files', 0)
+            actual_files = phase1_data.get("total_files", 0)
             canonical_files = 130000  # From canonical docs
 
-            if abs(actual_files - canonical_files) > canonical_files * 0.1:  # >10% difference
-                discrepancies.append({
-                    "field": "total_files",
-                    "canonical": canonical_files,
-                    "actual": actual_files,
-                    "difference": actual_files - canonical_files,
-                    "percentage": ((actual_files - canonical_files) / canonical_files) * 100,
-                    "severity": "high"
-                })
+            if (
+                abs(actual_files - canonical_files) > canonical_files * 0.1
+            ):  # >10% difference
+                discrepancies.append(
+                    {
+                        "field": "total_files",
+                        "canonical": canonical_files,
+                        "actual": actual_files,
+                        "difference": actual_files - canonical_files,
+                        "percentage": (
+                            (actual_files - canonical_files) / canonical_files
+                        )
+                        * 100,
+                        "severity": "high",
+                    }
+                )
 
             # Check Python files
-            actual_python = len(phase1_data.get('python_files', []))
+            actual_python = len(phase1_data.get("python_files", []))
             canonical_python = 12000  # From canonical docs
 
-            if abs(actual_python - canonical_python) > canonical_python * 0.1:  # >10% difference
-                discrepancies.append({
-                    "field": "python_files",
-                    "canonical": canonical_python,
-                    "actual": actual_python,
-                    "difference": actual_python - canonical_python,
-                    "percentage": ((actual_python - canonical_python) / canonical_python) * 100,
-                    "severity": "high"
-                })
+            if (
+                abs(actual_python - canonical_python) > canonical_python * 0.1
+            ):  # >10% difference
+                discrepancies.append(
+                    {
+                        "field": "python_files",
+                        "canonical": canonical_python,
+                        "actual": actual_python,
+                        "difference": actual_python - canonical_python,
+                        "percentage": (
+                            (actual_python - canonical_python) / canonical_python
+                        )
+                        * 100,
+                        "severity": "high",
+                    }
+                )
 
         return discrepancies
 
@@ -228,20 +261,29 @@ class Phase9_DocumentationGeneration:
         # Load results from all phases
         for phase_num in range(9):
             phase_name = self._get_phase_name(phase_num)
-            phase_file = self.output_dir / f"iteration_{iteration}" / phase_name / f"{phase_name}.json"
+            phase_file = (
+                self.output_dir
+                / f"iteration_{iteration}"
+                / phase_name
+                / f"{phase_name}.json"
+            )
 
             if phase_file.exists():
-                with open(phase_file, 'r') as f:
+                with open(phase_file, "r") as f:
                     phase_data = json.load(f)
 
                 book_content += f"\n### Phase {phase_num}: {phase_name.replace('_', ' ').title()}\n\n"
                 book_content += self._format_phase_summary(phase_num, phase_data)
 
         # Save book
-        book_path = self.canonical_dir / "DMAIC" / f"DMAIC_EXECUTION_BOOK_iteration_{iteration}.md"
+        book_path = (
+            self.canonical_dir
+            / "DMAIC"
+            / f"DMAIC_EXECUTION_BOOK_iteration_{iteration}.md"
+        )
         book_path.parent.mkdir(parents=True, exist_ok=True)
 
-        with open(book_path, 'w', encoding='utf-8') as f:
+        with open(book_path, "w", encoding="utf-8") as f:
             f.write(book_content)
 
         self.books_generated.append(str(book_path))
@@ -284,10 +326,14 @@ See: `DMAIC_V3/DOW_DMAIC_12CLUSTER_INTEGRATION_MASTER.md` for implementation pla
 """
 
         # Save book
-        book_path = self.canonical_dir / "Architecture" / f"12CLUSTER_BOOK_iteration_{iteration}.md"
+        book_path = (
+            self.canonical_dir
+            / "Architecture"
+            / f"12CLUSTER_BOOK_iteration_{iteration}.md"
+        )
         book_path.parent.mkdir(parents=True, exist_ok=True)
 
-        with open(book_path, 'w', encoding='utf-8') as f:
+        with open(book_path, "w", encoding="utf-8") as f:
             f.write(book_content)
 
         self.books_generated.append(str(book_path))
@@ -306,9 +352,14 @@ See: `DMAIC_V3/DOW_DMAIC_12CLUSTER_INTEGRATION_MASTER.md` for implementation pla
 """
 
         # Load Phase 2 metrics
-        phase2_file = self.output_dir / f"iteration_{iteration}" / "phase2_measure" / "phase2_measure.json"
+        phase2_file = (
+            self.output_dir
+            / f"iteration_{iteration}"
+            / "phase2_measure"
+            / "phase2_measure.json"
+        )
         if phase2_file.exists():
-            with open(phase2_file, 'r') as f:
+            with open(phase2_file, "r") as f:
                 phase2_data = json.load(f)
 
             book_content += f"""
@@ -321,12 +372,17 @@ See: `DMAIC_V3/DOW_DMAIC_12CLUSTER_INTEGRATION_MASTER.md` for implementation pla
 """
 
         # Load Phase 4 metrics
-        phase4_file = self.output_dir / f"iteration_{iteration}" / "phase4_improve" / "phase4_improve.json"
+        phase4_file = (
+            self.output_dir
+            / f"iteration_{iteration}"
+            / "phase4_improve"
+            / "phase4_improve.json"
+        )
         if phase4_file.exists():
-            with open(phase4_file, 'r') as f:
+            with open(phase4_file, "r") as f:
                 phase4_data = json.load(f)
 
-            modifications = phase4_data.get('modifications', [])
+            modifications = phase4_data.get("modifications", [])
             book_content += f"""
 ### Phase 4: Improve
 
@@ -338,17 +394,23 @@ See: `DMAIC_V3/DOW_DMAIC_12CLUSTER_INTEGRATION_MASTER.md` for implementation pla
             # Count modification types
             mod_types = {}
             for mod in modifications:
-                mod_type = mod.get('type', 'unknown')
+                mod_type = mod.get("type", "unknown")
                 mod_types[mod_type] = mod_types.get(mod_type, 0) + 1
 
-            for mod_type, count in sorted(mod_types.items(), key=lambda x: x[1], reverse=True):
+            for mod_type, count in sorted(
+                mod_types.items(), key=lambda x: x[1], reverse=True
+            ):
                 book_content += f"  - {mod_type}: {count}\n"
 
         # Save book
-        book_path = self.canonical_dir / "Execution_Logs" / f"EXECUTION_METRICS_BOOK_iteration_{iteration}.md"
+        book_path = (
+            self.canonical_dir
+            / "Execution_Logs"
+            / f"EXECUTION_METRICS_BOOK_iteration_{iteration}.md"
+        )
         book_path.parent.mkdir(parents=True, exist_ok=True)
 
-        with open(book_path, 'w', encoding='utf-8') as f:
+        with open(book_path, "w", encoding="utf-8") as f:
             f.write(book_content)
 
         self.books_generated.append(str(book_path))
@@ -367,12 +429,17 @@ See: `DMAIC_V3/DOW_DMAIC_12CLUSTER_INTEGRATION_MASTER.md` for implementation pla
 """
 
         # Load Phase 7 results
-        phase7_file = self.output_dir / f"iteration_{iteration}" / "phase7_action_tracking" / "phase7_action_tracking.json"
+        phase7_file = (
+            self.output_dir
+            / f"iteration_{iteration}"
+            / "phase7_action_tracking"
+            / "phase7_action_tracking.json"
+        )
         if phase7_file.exists():
-            with open(phase7_file, 'r') as f:
+            with open(phase7_file, "r") as f:
                 phase7_data = json.load(f)
 
-            actions = phase7_data.get('local_actions', [])
+            actions = phase7_data.get("local_actions", [])
             book_content += f"""
 ### Actions Tracked
 
@@ -383,16 +450,21 @@ See: `DMAIC_V3/DOW_DMAIC_12CLUSTER_INTEGRATION_MASTER.md` for implementation pla
             # Count by status
             status_counts = {}
             for action in actions:
-                status = action.get('status', 'unknown')
+                status = action.get("status", "unknown")
                 status_counts[status] = status_counts.get(status, 0) + 1
 
             for status, count in sorted(status_counts.items()):
                 book_content += f"  - {status}: {count}\n"
 
         # Load feedback for next iteration
-        feedback_file = self.output_dir / f"iteration_{iteration}" / "phase7_action_tracking" / "feedback_for_next_iteration.json"
+        feedback_file = (
+            self.output_dir
+            / f"iteration_{iteration}"
+            / "phase7_action_tracking"
+            / "feedback_for_next_iteration.json"
+        )
         if feedback_file.exists():
-            with open(feedback_file, 'r') as f:
+            with open(feedback_file, "r") as f:
                 feedback = json.load(f)
 
             book_content += f"""
@@ -405,10 +477,14 @@ See: `DMAIC_V3/DOW_DMAIC_12CLUSTER_INTEGRATION_MASTER.md` for implementation pla
 """
 
         # Save book
-        book_path = self.canonical_dir / "Planning" / f"ACTION_TRACKING_BOOK_iteration_{iteration}.md"
+        book_path = (
+            self.canonical_dir
+            / "Planning"
+            / f"ACTION_TRACKING_BOOK_iteration_{iteration}.md"
+        )
         book_path.parent.mkdir(parents=True, exist_ok=True)
 
-        with open(book_path, 'w', encoding='utf-8') as f:
+        with open(book_path, "w", encoding="utf-8") as f:
             f.write(book_content)
 
         self.books_generated.append(str(book_path))
@@ -420,7 +496,7 @@ See: `DMAIC_V3/DOW_DMAIC_12CLUSTER_INTEGRATION_MASTER.md` for implementation pla
             "iteration": iteration,
             "timestamp": datetime.now().isoformat(),
             "discrepancies": self.discrepancies_found,
-            "adjustments": []
+            "adjustments": [],
         }
 
         for discrepancy in self.discrepancies_found:
@@ -428,17 +504,22 @@ See: `DMAIC_V3/DOW_DMAIC_12CLUSTER_INTEGRATION_MASTER.md` for implementation pla
                 "field": discrepancy["field"],
                 "old_value": discrepancy["canonical"],
                 "new_value": discrepancy["actual"],
-                "reason": f"Updated to match iteration {iteration} execution results"
+                "reason": f"Updated to match iteration {iteration} execution results",
             }
 
             adjustment_report["adjustments"].append(adjustment)
             self.adjustments_made.append(adjustment)
 
         # Save adjustment report
-        report_path = self.output_dir / f"iteration_{iteration}" / "phase9_documentation_generation" / "canonical_adjustments.json"
+        report_path = (
+            self.output_dir
+            / f"iteration_{iteration}"
+            / "phase9_documentation_generation"
+            / "canonical_adjustments.json"
+        )
         report_path.parent.mkdir(parents=True, exist_ok=True)
 
-        with open(report_path, 'w', encoding='utf-8') as f:
+        with open(report_path, "w", encoding="utf-8") as f:
             json.dump(adjustment_report, f, indent=2)
 
         print(f"    ✅ Saved adjustment report: {report_path.name}")
@@ -454,7 +535,7 @@ See: `DMAIC_V3/DOW_DMAIC_12CLUSTER_INTEGRATION_MASTER.md` for implementation pla
             5: "phase5_control",
             6: "phase6_knowledge",
             7: "phase7_action_tracking",
-            8: "phase8_todo_management"
+            8: "phase8_todo_management",
         }
         return phase_names.get(phase_num, f"phase{phase_num}")
 
@@ -466,19 +547,25 @@ See: `DMAIC_V3/DOW_DMAIC_12CLUSTER_INTEGRATION_MASTER.md` for implementation pla
         if phase_num == 1:  # Define
             summary += f"- Total Files: {phase_data.get('total_files', 0):,}\n"
             summary += f"- Python Files: {len(phase_data.get('python_files', [])):,}\n"
-            summary += f"- Markdown Files: {len(phase_data.get('markdown_files', [])):,}\n"
+            summary += (
+                f"- Markdown Files: {len(phase_data.get('markdown_files', [])):,}\n"
+            )
 
         elif phase_num == 2:  # Measure
-            summary += f"- Files Analyzed: {phase_data.get('python_files_analyzed', 0):,}\n"
-            summary += f"- Success Rate: {phase_data.get('analysis_success_rate', 0):.1%}\n"
+            summary += (
+                f"- Files Analyzed: {phase_data.get('python_files_analyzed', 0):,}\n"
+            )
+            summary += (
+                f"- Success Rate: {phase_data.get('analysis_success_rate', 0):.1%}\n"
+            )
 
         elif phase_num == 4:  # Improve
-            mods = phase_data.get('modifications', [])
+            mods = phase_data.get("modifications", [])
             summary += f"- Modifications Made: {len(mods):,}\n"
 
         elif phase_num == 5:  # Control
-            gates = phase_data.get('quality_gates', {})
-            passed = sum(1 for g in gates.values() if g.get('passed', False))
+            gates = phase_data.get("quality_gates", {})
+            passed = sum(1 for g in gates.values() if g.get("passed", False))
             summary += f"- Quality Gates: {passed}/{len(gates)} passed\n"
 
         elif phase_num == 6:  # Knowledge
@@ -499,10 +586,12 @@ See: `DMAIC_V3/DOW_DMAIC_12CLUSTER_INTEGRATION_MASTER.md` for implementation pla
             "discrepancies_found": len(self.discrepancies_found),
             "discrepancies": self.discrepancies_found,
             "adjustments_made": len(self.adjustments_made),
-            "adjustments": self.adjustments_made
+            "adjustments": self.adjustments_made,
         }
 
-    def _create_skip_result(self, iteration: int, reason: str, details: Any = None) -> Dict:
+    def _create_skip_result(
+        self, iteration: int, reason: str, details: Any = None
+    ) -> Dict:
         """Create skip result"""
         return {
             "phase": "phase9_documentation_generation",
@@ -510,16 +599,20 @@ See: `DMAIC_V3/DOW_DMAIC_12CLUSTER_INTEGRATION_MASTER.md` for implementation pla
             "timestamp": datetime.now().isoformat(),
             "status": "skipped",
             "reason": reason,
-            "details": details
+            "details": details,
         }
 
     def _save_results(self, iteration: int, result: Dict):
         """Save Phase 9 results"""
-        output_dir = self.output_dir / f"iteration_{iteration}" / "phase9_documentation_generation"
+        output_dir = (
+            self.output_dir
+            / f"iteration_{iteration}"
+            / "phase9_documentation_generation"
+        )
         output_dir.mkdir(parents=True, exist_ok=True)
 
         output_file = output_dir / "phase9_documentation_generation.json"
-        with open(output_file, 'w', encoding='utf-8') as f:
+        with open(output_file, "w", encoding="utf-8") as f:
             json.dump(result, f, indent=2)
 
 

@@ -3,9 +3,9 @@
 QPLANT RTM Generation Script - Backward Compatibility Wrapper
 """
 
-import sys
-import os
 import logging
+import os
+import sys
 from pathlib import Path
 
 # Add package to path
@@ -33,6 +33,7 @@ def main():
         logger.error("RTM generation failed")
 
     return success
+
 
 if __name__ == "__main__":
     success = main()

@@ -56,8 +56,7 @@ def diagnostic():
         "repository": "GBOGEB/ABACUS",
         "diagnostic": "nested_debug_ldab",
         "parent_sha": SHA,
-        "source_contract":
-            "integration/codespace_jyperter/tests/test_smoke_federation.py",
+        "source_contract": "integration/codespace_jyperter/tests/test_smoke_federation.py",
         "source_contract_sha256": CHECKSUM,
         "verification": "PASS",
         "checks": {"contract": True, "assimilate": True, "manifest": True},
@@ -77,13 +76,14 @@ class LDABTelemetryTests(unittest.TestCase):
         self.assertFalse(result["source_census"]["combined_is_disjoint"])
         self.assertEqual(result["diagnostic_execution"]["contract_checks_total"], 3)
         self.assertEqual(result["diagnostic_execution"]["state"], "EXECUTED_PASS")
-        self.assertEqual(result["diagnostic_execution"]["diagnostic_scope"],
-                         "FEDERATION_CONTRACT_ONLY")
+        self.assertEqual(
+            result["diagnostic_execution"]["diagnostic_scope"],
+            "FEDERATION_CONTRACT_ONLY",
+        )
         self.assertIsNone(result["runtime"]["abacus_native_debug_sessions"])
         self.assertIsNone(result["runtime"]["authenticated_port_leases"])
         self.assertIsNone(result["runtime"]["ldab_verified_repairs"])
-        self.assertEqual(result["runtime"]["proof_state"],
-                         "UNKNOWN_NO_RUNTIME_RECEIPT")
+        self.assertEqual(result["runtime"]["proof_state"], "UNKNOWN_NO_RUNTIME_RECEIPT")
         self.assertFalse(result["authority_transfer"])
         self.assertEqual(result["merge_admission"], "HOLD")
 
@@ -157,8 +157,9 @@ class LDABTelemetryTests(unittest.TestCase):
 
     def test_rejects_duplicate_debug_source_paths(self):
         with self.assertRaisesRegex(ValueError, "sample conflicts"):
-            telemetry.summarize(root(count=2, paths=["src/debug.py", "src/debug.py"]),
-                                None, None, SHA)
+            telemetry.summarize(
+                root(count=2, paths=["src/debug.py", "src/debug.py"]), None, None, SHA
+            )
 
     def test_rejects_status_derived_from_file_presence_mismatch(self):
         a = root()
@@ -194,31 +195,31 @@ class LDABTelemetryTests(unittest.TestCase):
             telemetry.summarize(root(), None, None, SHA, "GBOGEB/CODEX")
 
     def test_full_inventory_classifies_debug_logs_and_incidental(self):
-        paths = ["DOW_LOGS/latest.json", "scripts/debug.py",
-                 "tools/build_catalog.py"]
+        paths = ["DOW_LOGS/latest.json", "scripts/debug.py", "tools/build_catalog.py"]
         a = root(count=3, paths=paths)
         a["assessments"][LANE]["all_candidate_paths"] = paths
         report = telemetry.summarize(a, None, None, SHA)
         scope = report["source_census"]["root"]
         self.assertTrue(scope["inventory_complete"])
         self.assertEqual(scope["source_taxonomy"], "ldab.lexical.v1")
-        self.assertEqual(scope["source_class_counts"], {
-            "explicit_debug": 1,
-            "telemetry_logs_trace": 1,
-            "lexical_incidental": 1,
-        })
+        self.assertEqual(
+            scope["source_class_counts"],
+            {
+                "explicit_debug": 1,
+                "telemetry_logs_trace": 1,
+                "lexical_incidental": 1,
+            },
+        )
         self.assertEqual(len(scope["full_source_inventory"]), 3)
 
     def test_broad_substrings_are_not_real_debuggers(self):
         classify = telemetry._candidate_class
-        self.assertEqual(classify("runtime/adaptive-governance.yaml"),
-                         "lexical_incidental")
-        self.assertEqual(classify("tools/build_catalog.py"),
-                         "lexical_incidental")
-        self.assertEqual(classify("src/semantic-topology.py"),
-                         "lexical_incidental")
-        self.assertEqual(classify("scripts/lldb_dap_probe.py"),
-                         "explicit_debug")
+        self.assertEqual(
+            classify("runtime/adaptive-governance.yaml"), "lexical_incidental"
+        )
+        self.assertEqual(classify("tools/build_catalog.py"), "lexical_incidental")
+        self.assertEqual(classify("src/semantic-topology.py"), "lexical_incidental")
+        self.assertEqual(classify("scripts/lldb_dap_probe.py"), "explicit_debug")
 
     def test_full_inventory_must_reconcile_denominator(self):
         a = root(count=3)
@@ -229,7 +230,8 @@ class LDABTelemetryTests(unittest.TestCase):
     def test_full_inventory_must_be_sorted_unique_and_match_sample(self):
         a = root(count=2, paths=["docs/debug.md", "scripts/debug.py"])
         a["assessments"][LANE]["all_candidate_paths"] = [
-            "scripts/debug.py", "docs/debug.md"
+            "scripts/debug.py",
+            "docs/debug.md",
         ]
         with self.assertRaisesRegex(ValueError, "order/sample mismatch"):
             telemetry.summarize(a, None, None, SHA)
@@ -237,9 +239,7 @@ class LDABTelemetryTests(unittest.TestCase):
     def test_nested_full_inventory_is_not_added_to_root(self):
         a = root(count=1, paths=["scripts/debug.py"])
         a["assessments"][LANE]["all_candidate_paths"] = ["scripts/debug.py"]
-        b = nested(
-            count=1, paths=["scripts/mip_debug_diagnostic.py"]
-        )
+        b = nested(count=1, paths=["scripts/mip_debug_diagnostic.py"])
         b["assessments"][LANE]["all_candidate_paths"] = [
             "scripts/mip_debug_diagnostic.py"
         ]
@@ -255,8 +255,15 @@ class LDABTelemetryTests(unittest.TestCase):
 
 
 forbidden_paths = (
-    "", ".", "./", "././", "../secrets", "/tmp/port",
-    "src/../secret", "src//debug.py", "C:\\\\temp\\\\debug.json",
+    "",
+    ".",
+    "./",
+    "././",
+    "../secrets",
+    "/tmp/port",
+    "src/../secret",
+    "src//debug.py",
+    "C:\\\\temp\\\\debug.json",
 )
 
 
@@ -264,6 +271,7 @@ def _add_invalid_path_case(path, index):
     def test_method(self):
         with self.assertRaises(ValueError):
             telemetry.summarize(root(count=1, paths=[path]), None, None, SHA)
+
     setattr(LDABTelemetryTests, f"test_invalid_path_{index:02d}", test_method)
 
 

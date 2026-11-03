@@ -19,23 +19,24 @@ import json
 import sys
 from datetime import datetime
 from pathlib import Path
-from typing import Dict, List, Optional, Any
+from typing import Any, Dict, List, Optional
 
 workspace_path = Path(__file__).parent.parent
 sys.path.insert(0, str(workspace_path))
 
 from DMAIC_V3.convergence.maturity_tracker import MaturityTracker
 from DMAIC_V3.convergence.stability_monitor import StabilityMonitor
-from DMAIC_V3.integrations.version_manager import VersionManager
 from DMAIC_V3.integrations.git_manager import GitManager
-
+from DMAIC_V3.integrations.version_manager import VersionManager
 
 VERSION = "3.2.0"
 TIMESTAMP = datetime.now().strftime("%Y%m%d_%H%M%S")
 
 
 class IterationReportGenerator:
-    def __init__(self, workspace_path: Optional[Path] = None, iteration: Optional[int] = None):
+    def __init__(
+        self, workspace_path: Optional[Path] = None, iteration: Optional[int] = None
+    ):
         self.workspace_path = workspace_path or Path.cwd()
         self.iteration = iteration or self.detect_iteration()
         self.timestamp = datetime.now()
@@ -50,9 +51,10 @@ class IterationReportGenerator:
         if tasks_path.exists():
             try:
                 import yaml
-                with open(tasks_path, 'r', encoding='utf-8') as f:
+
+                with open(tasks_path, "r", encoding="utf-8") as f:
                     data = yaml.safe_load(f)
-                    return data.get('metadata', {}).get('iteration', 0) + 1
+                    return data.get("metadata", {}).get("iteration", 0) + 1
             except Exception:
                 pass
         return 6
@@ -67,40 +69,40 @@ class IterationReportGenerator:
         git_status = self.git_manager.get_status()
 
         return {
-            'iteration': self.iteration,
-            'timestamp': self.timestamp.isoformat(),
-            'version': str(version),
-            'maturity': {
-                'current_level': maturity_report.current_level,
-                'convergence_score': maturity_report.convergence_score,
-                'overall_completion': maturity_report.overall_completion,
-                'levels': [
+            "iteration": self.iteration,
+            "timestamp": self.timestamp.isoformat(),
+            "version": str(version),
+            "maturity": {
+                "current_level": maturity_report.current_level,
+                "convergence_score": maturity_report.convergence_score,
+                "overall_completion": maturity_report.overall_completion,
+                "levels": [
                     {
-                        'level': level.level,
-                        'name': level.name,
-                        'completion': level.completion_percentage,
-                        'status': level.status,
-                        'convergence_achieved': level.convergence_achieved
+                        "level": level.level,
+                        "name": level.name,
+                        "completion": level.completion_percentage,
+                        "status": level.status,
+                        "convergence_achieved": level.convergence_achieved,
                     }
                     for level in maturity_report.levels
                 ],
-                'recommendations': maturity_report.recommendations,
-                'next_milestone': maturity_report.next_milestone
+                "recommendations": maturity_report.recommendations,
+                "next_milestone": maturity_report.next_milestone,
             },
-            'stability': {
-                'overall': stability_report.overall_stability,
-                'file': stability_report.file_stability,
-                'test': stability_report.test_stability,
-                'metric': stability_report.metric_stability,
-                'changes_detected': stability_report.changes_detected,
-                'alerts_count': len(stability_report.alerts)
+            "stability": {
+                "overall": stability_report.overall_stability,
+                "file": stability_report.file_stability,
+                "test": stability_report.test_stability,
+                "metric": stability_report.metric_stability,
+                "changes_detected": stability_report.changes_detected,
+                "alerts_count": len(stability_report.alerts),
             },
-            'git': {
-                'branch': git_status.branch,
-                'is_clean': git_status.is_clean,
-                'modified_files': len(git_status.modified_files),
-                'untracked_files': len(git_status.untracked_files)
-            }
+            "git": {
+                "branch": git_status.branch,
+                "is_clean": git_status.is_clean,
+                "modified_files": len(git_status.modified_files),
+                "untracked_files": len(git_status.untracked_files),
+            },
         }
 
     def generate_markdown_report(self, stats: Dict[str, Any]) -> str:
@@ -116,9 +118,15 @@ class IterationReportGenerator:
 
         md.append("## Executive Summary")
         md.append("")
-        md.append(f"- **Current Maturity Level:** {stats['maturity']['current_level']} - {stats['maturity']['levels'][stats['maturity']['current_level']]['name']}")
-        md.append(f"- **Convergence Score:** {stats['maturity']['convergence_score']:.1f}/100")
-        md.append(f"- **Overall Completion:** {stats['maturity']['overall_completion']:.1f}%")
+        md.append(
+            f"- **Current Maturity Level:** {stats['maturity']['current_level']} - {stats['maturity']['levels'][stats['maturity']['current_level']]['name']}"
+        )
+        md.append(
+            f"- **Convergence Score:** {stats['maturity']['convergence_score']:.1f}/100"
+        )
+        md.append(
+            f"- **Overall Completion:** {stats['maturity']['overall_completion']:.1f}%"
+        )
         md.append(f"- **Overall Stability:** {stats['stability']['overall']:.1f}%")
         md.append(f"- **Next Milestone:** {stats['maturity']['next_milestone']}")
         md.append("")
@@ -128,10 +136,16 @@ class IterationReportGenerator:
         md.append("| Level | Name | Completion | Status | Convergence |")
         md.append("|-------|------|------------|--------|-------------|")
 
-        for level in stats['maturity']['levels']:
-            status_icon = "✅" if level['status'] == "COMPLETED" else "🔄" if level['status'] in ["IN_PROGRESS", "ACTIVE"] else "⏳"
-            conv_icon = "✓" if level['convergence_achieved'] else "✗"
-            md.append(f"| {status_icon} {level['level']} | {level['name']} | {level['completion']:.1f}% | {level['status']} | {conv_icon} |")
+        for level in stats["maturity"]["levels"]:
+            status_icon = (
+                "✅"
+                if level["status"] == "COMPLETED"
+                else "🔄" if level["status"] in ["IN_PROGRESS", "ACTIVE"] else "⏳"
+            )
+            conv_icon = "✓" if level["convergence_achieved"] else "✗"
+            md.append(
+                f"| {status_icon} {level['level']} | {level['name']} | {level['completion']:.1f}% | {level['status']} | {conv_icon} |"
+            )
 
         md.append("")
 
@@ -147,7 +161,7 @@ class IterationReportGenerator:
 
         md.append("## Recommendations")
         md.append("")
-        for i, rec in enumerate(stats['maturity']['recommendations'], 1):
+        for i, rec in enumerate(stats["maturity"]["recommendations"], 1):
             md.append(f"{i}. {rec}")
         md.append("")
 
@@ -169,10 +183,12 @@ class IterationReportGenerator:
 
         md.append("---")
         md.append("")
-        md.append(f"*Report generated by DMAIC V3 Iteration Report Generator v{VERSION}*")
+        md.append(
+            f"*Report generated by DMAIC V3 Iteration Report Generator v{VERSION}*"
+        )
         md.append("")
 
-        return '\n'.join(md)
+        return "\n".join(md)
 
     def generate_reports(self) -> Dict[str, Path]:
         print("=" * 78)
@@ -187,14 +203,18 @@ class IterationReportGenerator:
         markdown_content = self.generate_markdown_report(stats)
 
         print("[3/5] Saving JSON report...")
-        json_path = self.workspace_path / f"iteration_{self.iteration}_report_{TIMESTAMP}.json"
-        with open(json_path, 'w', encoding='utf-8') as f:
+        json_path = (
+            self.workspace_path / f"iteration_{self.iteration}_report_{TIMESTAMP}.json"
+        )
+        with open(json_path, "w", encoding="utf-8") as f:
             json.dump(stats, f, indent=2, ensure_ascii=False)
         print(f"  ✅ Saved: {json_path.name}")
 
         print("[4/5] Saving Markdown report...")
-        md_path = self.workspace_path / f"iteration_{self.iteration}_report_{TIMESTAMP}.md"
-        with open(md_path, 'w', encoding='utf-8') as f:
+        md_path = (
+            self.workspace_path / f"iteration_{self.iteration}_report_{TIMESTAMP}.md"
+        )
+        with open(md_path, "w", encoding="utf-8") as f:
             f.write(markdown_content)
         print(f"  ✅ Saved: {md_path.name}")
 
@@ -222,29 +242,28 @@ class IterationReportGenerator:
         print("=" * 78)
 
         return {
-            'json': json_path,
-            'markdown': md_path,
-            'maturity': maturity_path,
-            'stability': stability_path
+            "json": json_path,
+            "markdown": md_path,
+            "maturity": maturity_path,
+            "stability": stability_path,
         }
 
 
 def main():
     import argparse
 
-    parser = argparse.ArgumentParser(description='Generate DMAIC V3 Iteration Report')
-    parser.add_argument('--iteration', type=int, help='Iteration number')
-    parser.add_argument('--workspace', type=Path, help='Workspace path')
+    parser = argparse.ArgumentParser(description="Generate DMAIC V3 Iteration Report")
+    parser.add_argument("--iteration", type=int, help="Iteration number")
+    parser.add_argument("--workspace", type=Path, help="Workspace path")
 
     args = parser.parse_args()
 
     generator = IterationReportGenerator(
-        workspace_path=args.workspace,
-        iteration=args.iteration
+        workspace_path=args.workspace, iteration=args.iteration
     )
 
     generator.generate_reports()
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()

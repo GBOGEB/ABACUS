@@ -3,6 +3,7 @@
 A reported rule and a claimed human review are NOT effective enforcement proof.
 Missing API access is UNKNOWN rather than zero; all outputs remain on HOLD.
 """
+
 from __future__ import annotations
 
 import argparse
@@ -29,7 +30,9 @@ def _status_rules(rules):
         require(isinstance(checks, list), "invalid status check population")
         for check in checks:
             name = check.get("context") if isinstance(check, dict) else None
-            require(isinstance(name, str) and bool(name.strip()), "invalid required context")
+            require(
+                isinstance(name, str) and bool(name.strip()), "invalid required context"
+            )
             statuses.append(name)
     require(len(statuses) == len(set(statuses)), "duplicate required context")
     return statuses
@@ -38,7 +41,9 @@ def _status_rules(rules):
 def observe(payload):
     require(isinstance(payload, dict), "invalid admission readback")
     sha = payload.get("exact_head")
-    require(isinstance(sha, str) and bool(SHA40.fullmatch(sha)), "invalid exact-head SHA")
+    require(
+        isinstance(sha, str) and bool(SHA40.fullmatch(sha)), "invalid exact-head SHA"
+    )
     require(payload.get("default_branch") == "main", "default branch not re-resolved")
     author = payload.get("pr_author")
     require(isinstance(author, str) and bool(author), "missing PR author")
@@ -46,13 +51,17 @@ def observe(payload):
     require(isinstance(ruleset, dict), "effective rules unavailable")
     rules = ruleset.get("rules")
     require(isinstance(rules, list), "missing raw rule population")
-    pr_rules = [v.get("parameters", {}) for v in rules if v.get("type") == "pull_request"]
+    pr_rules = [
+        v.get("parameters", {}) for v in rules if v.get("type") == "pull_request"
+    ]
     require(len(pr_rules) <= 1, "conflicting PR review rule")
     pr = pr_rules[0] if pr_rules else {}
     configured = _status_rules(rules)
     desired = payload.get("expected_status_contexts", [])
-    require(isinstance(desired, list) and all(isinstance(v, str) and v for v in desired),
-            "invalid expected contexts")
+    require(
+        isinstance(desired, list) and all(isinstance(v, str) and v for v in desired),
+        "invalid expected contexts",
+    )
     require(len(desired) == len(set(desired)), "duplicated expected contexts")
     checks = payload.get("check_runs")
     require(isinstance(checks, list), "check-run readback unavailable")
@@ -78,16 +87,22 @@ def observe(payload):
     candidates = 0
     for review in reviews:
         require(isinstance(review, dict), "invalid review metadata")
-        if (review.get("state") == "APPROVED"
-                and review.get("login") != author
-                and review.get("account_type") == "User"
-                and review.get("permission") in APPROVER_PERMISSIONS
-                and review.get("head_sha") == sha):
+        if (
+            review.get("state") == "APPROVED"
+            and review.get("login") != author
+            and review.get("account_type") == "User"
+            and review.get("permission") in APPROVER_PERMISSIONS
+            and review.get("head_sha") == sha
+        ):
             candidates += 1
     blockers = []
     if ruleset.get("enforcement") != "active":
         blockers.append("RULESET_NOT_ACTIVE")
-    if not pr_rules or type(pr.get("required_approving_review_count")) is not int or pr["required_approving_review_count"] < 1:
+    if (
+        not pr_rules
+        or type(pr.get("required_approving_review_count")) is not int
+        or pr["required_approving_review_count"] < 1
+    ):
         blockers.append("REVIEW_MINIMUM_NOT_CONFIGURED")
     if not pr.get("dismiss_stale_reviews_on_push"):
         blockers.append("STALE_REVIEW_PROTECTION_MISSING")
@@ -97,8 +112,11 @@ def observe(payload):
         blockers.append("THREAD_RESOLUTION_NOT_REQUIRED")
     if not configured or any(name not in configured for name in desired):
         blockers.append("REQUIRED_CHECK_CONTEXTS_INCOMPLETE")
-    bypass = [v for v in ruleset.get("bypass_actors", [])
-              if isinstance(v, dict) and v.get("bypass_mode") == "always"]
+    bypass = [
+        v
+        for v in ruleset.get("bypass_actors", [])
+        if isinstance(v, dict) and v.get("bypass_mode") == "always"
+    ]
     if bypass:
         blockers.append("ALWAYS_BYPASS_INTEGRATIONS")
     for name in configured:
@@ -106,7 +124,10 @@ def observe(payload):
             blockers.append("CHECK_RESULT_MISSING:" + name)
         else:
             matching = next(x for x in checks if x["name"] == name)
-            if matching.get("status") != "completed" or matching.get("conclusion") != "success":
+            if (
+                matching.get("status") != "completed"
+                or matching.get("conclusion") != "success"
+            ):
                 blockers.append("CHECK_NOT_GREEN:" + name)
     if candidates == 0:
         blockers.append("INDEPENDENT_REVIEW_NOT_OBSERVED")
@@ -144,8 +165,9 @@ def main(argv=None):
     a = p.parse_args(argv)
     result = observe(json.loads(a.evidence.read_text(encoding="utf-8")))
     a.out.parent.mkdir(parents=True, exist_ok=True)
-    a.out.write_text(json.dumps(result, sort_keys=True, indent=2) + "\n",
-                     encoding="utf-8")
+    a.out.write_text(
+        json.dumps(result, sort_keys=True, indent=2) + "\n", encoding="utf-8"
+    )
     return 0
 
 

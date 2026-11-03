@@ -6,7 +6,6 @@ Defines and validates a shared metadata contract across artifacts.
 from datetime import datetime
 from typing import Any, Dict, List, Optional
 
-
 CONTRACT_VERSION = "1.0.0"
 REQUIRED_TOP_LEVEL_FIELDS = [
     "metadata",

@@ -6,16 +6,16 @@ Extracts knowledge from phase outputs
 import hashlib
 import json
 import logging
+import sys
 from datetime import datetime
 from pathlib import Path
-from typing import Dict, List, Any
-import sys
+from typing import Any, Dict, List
 
 ROOT_DIR = Path(__file__).resolve().parents[3]
 sys.path.insert(0, str(ROOT_DIR))
 sys.path.insert(0, str(ROOT_DIR / "src"))
-from dmaic.contract import ensure_contract
 from dmaic import idempotency
+from dmaic.contract import ensure_contract
 
 
 class DOWKnowledgeExtractor:
@@ -28,7 +28,7 @@ class DOWKnowledgeExtractor:
     def extract_knowledge(self, file_path: Path) -> Dict[str, Any]:
         """Extract knowledge from JSON file"""
         try:
-            with open(file_path, 'r', encoding='utf-8') as f:
+            with open(file_path, "r", encoding="utf-8") as f:
                 data = json.load(f)
 
             data = ensure_contract(
@@ -53,28 +53,32 @@ class DOWKnowledgeExtractor:
             )
 
             knowledge_gain = {
-                'patterns_discovered': patterns,
-                'insights_generated': insights,
-                'learnings_captured': learnings,
-                'improvements_suggested': improvements,
-                'typed_findings': typed_findings,
-                'finding_telemetry': finding_telemetry,
-                'child_disposition': None,
-                'extracted_at': datetime.now().isoformat()
+                "patterns_discovered": patterns,
+                "insights_generated": insights,
+                "learnings_captured": learnings,
+                "improvements_suggested": improvements,
+                "typed_findings": typed_findings,
+                "finding_telemetry": finding_telemetry,
+                "child_disposition": None,
+                "extracted_at": datetime.now().isoformat(),
             }
 
-            data['knowledge_gain'] = knowledge_gain
-            data['idempotency']['output_hash'] = idempotency.hash_json(data)
+            data["knowledge_gain"] = knowledge_gain
+            data["idempotency"]["output_hash"] = idempotency.hash_json(data)
 
-            with open(file_path, 'w', encoding='utf-8') as f:
+            with open(file_path, "w", encoding="utf-8") as f:
                 json.dump(data, f, indent=2)
 
             self.logger.info(f"✅ Knowledge extracted: {file_path}")
-            return {'status': 'success', 'file': str(file_path), 'knowledge': knowledge_gain}
+            return {
+                "status": "success",
+                "file": str(file_path),
+                "knowledge": knowledge_gain,
+            }
 
         except Exception as e:
             self.logger.error(f"❌ Knowledge extraction failed: {e}")
-            return {'status': 'error', 'error': str(e)}
+            return {"status": "error", "error": str(e)}
 
     def extract_batch(self, file_paths: List[Path]) -> Dict[str, Any]:
         """Extract knowledge from multiple files"""
@@ -84,20 +88,20 @@ class DOWKnowledgeExtractor:
             results.append(result)
 
         return {
-            'total': len(file_paths),
-            'success': sum(1 for r in results if r['status'] == 'success'),
-            'failed': sum(1 for r in results if r['status'] == 'error'),
-            'results': results
+            "total": len(file_paths),
+            "success": sum(1 for r in results if r["status"] == "success"),
+            "failed": sum(1 for r in results if r["status"] == "error"),
+            "results": results,
         }
 
     def _discover_patterns(self, data: Dict[str, Any]) -> List[str]:
         """Discover patterns in data"""
         patterns = []
 
-        if 'metadata' in data:
+        if "metadata" in data:
             patterns.append("Metadata structure present")
 
-        if 'recursive_hooks' in data:
+        if "recursive_hooks" in data:
             patterns.append("Recursive hooks implemented")
 
         if isinstance(data, dict):
@@ -110,10 +114,10 @@ class DOWKnowledgeExtractor:
                 patterns.append(f"Deep nesting detected (depth: {nested_depth})")
 
         data_str = json.dumps(data)
-        if 'error' in data_str.lower():
+        if "error" in data_str.lower():
             patterns.append("Error handling present")
 
-        if 'test' in data_str.lower():
+        if "test" in data_str.lower():
             patterns.append("Testing artifacts present")
 
         return patterns
@@ -122,21 +126,21 @@ class DOWKnowledgeExtractor:
         """Generate insights from data"""
         insights = []
 
-        if 'convergence_metrics' in data:
-            metrics = data['convergence_metrics']
-            quality = metrics.get('quality_score', 0)
+        if "convergence_metrics" in data:
+            metrics = data["convergence_metrics"]
+            quality = metrics.get("quality_score", 0)
             if quality > 0.8:
                 insights.append("High quality output achieved")
             elif quality < 0.5:
                 insights.append("Quality improvement needed")
 
-            status = metrics.get('convergence_status', '')
-            if status == 'improving':
+            status = metrics.get("convergence_status", "")
+            if status == "improving":
                 insights.append("System is improving iteration over iteration")
-            elif status == 'degrading':
+            elif status == "degrading":
                 insights.append("System quality is degrading - investigation needed")
 
-        if 'metadata' in data and 'recursive_hooks' in data:
+        if "metadata" in data and "recursive_hooks" in data:
             insights.append("DOW structure fully implemented")
 
         data_size = len(json.dumps(data))
@@ -149,22 +153,28 @@ class DOWKnowledgeExtractor:
         """Capture learnings from data"""
         learnings = []
 
-        if 'metadata' in data and 'recursive_hooks' in data:
+        if "metadata" in data and "recursive_hooks" in data:
             learnings.append("DOW structure successfully implemented")
 
-        if 'convergence_metrics' in data:
-            metrics = data['convergence_metrics']
-            improvement = metrics.get('improvement_from_previous', 0)
+        if "convergence_metrics" in data:
+            metrics = data["convergence_metrics"]
+            improvement = metrics.get("improvement_from_previous", 0)
             if improvement > 0:
-                learnings.append(f"Positive improvement of {improvement:.2f} from previous iteration")
+                learnings.append(
+                    f"Positive improvement of {improvement:.2f} from previous iteration"
+                )
             elif improvement < 0:
-                learnings.append(f"Negative improvement of {improvement:.2f} - review needed")
+                learnings.append(
+                    f"Negative improvement of {improvement:.2f} - review needed"
+                )
 
-        if 'recursive_hooks' in data:
-            hooks = data['recursive_hooks']
-            consumed = len(hooks.get('consumed_from', []))
-            feeds = len(hooks.get('feeds_into', []))
-            learnings.append(f"Data flow: consumes from {consumed} sources, feeds into {feeds} targets")
+        if "recursive_hooks" in data:
+            hooks = data["recursive_hooks"]
+            consumed = len(hooks.get("consumed_from", []))
+            feeds = len(hooks.get("feeds_into", []))
+            learnings.append(
+                f"Data flow: consumes from {consumed} sources, feeds into {feeds} targets"
+            )
 
         return learnings
 
@@ -172,30 +182,32 @@ class DOWKnowledgeExtractor:
         """Suggest improvements"""
         improvements = []
 
-        if 'metadata' not in data:
+        if "metadata" not in data:
             improvements.append("Add metadata structure")
 
-        if 'recursive_hooks' not in data:
+        if "recursive_hooks" not in data:
             improvements.append("Add recursive hooks")
 
-        if 'convergence_metrics' not in data:
+        if "convergence_metrics" not in data:
             improvements.append("Add convergence metrics")
 
-        if 'knowledge_gain' not in data:
+        if "knowledge_gain" not in data:
             improvements.append("Add knowledge gain tracking")
 
-        if 'metadata' in data:
-            metadata = data['metadata']
-            if 'version' not in metadata:
+        if "metadata" in data:
+            metadata = data["metadata"]
+            if "version" not in metadata:
                 improvements.append("Add version to metadata")
-            if 'timestamp' not in metadata:
+            if "timestamp" not in metadata:
                 improvements.append("Add timestamp to metadata")
 
-        if 'convergence_metrics' in data:
-            metrics = data['convergence_metrics']
-            quality = metrics.get('quality_score', 0)
+        if "convergence_metrics" in data:
+            metrics = data["convergence_metrics"]
+            quality = metrics.get("quality_score", 0)
             if quality < 0.7:
-                improvements.append("Improve quality score (current: {:.2f})".format(quality))
+                improvements.append(
+                    "Improve quality score (current: {:.2f})".format(quality)
+                )
 
         return improvements
 
@@ -214,12 +226,8 @@ class DOWKnowledgeExtractor:
         engineering/compliance state; closure yield remains withheld until the
         child supplies an explicit disposition.
         """
-        candidates = [
-            ("OBSERVATION", text, 0.70, text)
-            for text in insights
-        ] + [
-            ("IMPROVEMENT", text, 0.80, text)
-            for text in improvements
+        candidates = [("OBSERVATION", text, 0.70, text) for text in insights] + [
+            ("IMPROVEMENT", text, 0.80, text) for text in improvements
         ]
 
         findings: List[Dict[str, Any]] = []
@@ -232,9 +240,12 @@ class DOWKnowledgeExtractor:
                 "finding_type": finding_type,
                 "proposed_action": proposed_action,
             }
-            finding_id = "DOW-" + hashlib.sha256(
-                json.dumps(identity, sort_keys=True).encode("utf-8")
-            ).hexdigest()[:16].upper()
+            finding_id = (
+                "DOW-"
+                + hashlib.sha256(json.dumps(identity, sort_keys=True).encode("utf-8"))
+                .hexdigest()[:16]
+                .upper()
+            )
             if finding_id in seen:
                 duplicates_dropped += 1
                 continue
@@ -275,12 +286,17 @@ class DOWKnowledgeExtractor:
         if isinstance(data, dict):
             if not data:
                 return current_depth
-            return max(self._calculate_nested_depth(v, current_depth + 1) for v in data.values())
+            return max(
+                self._calculate_nested_depth(v, current_depth + 1)
+                for v in data.values()
+            )
 
         if isinstance(data, list):
             if not data:
                 return current_depth
-            return max(self._calculate_nested_depth(item, current_depth + 1) for item in data)
+            return max(
+                self._calculate_nested_depth(item, current_depth + 1) for item in data
+            )
 
         return current_depth
 
@@ -289,15 +305,17 @@ def main():
     """Main entry point"""
     import argparse
 
-    parser = argparse.ArgumentParser(description='DOW Knowledge Extractor')
-    parser.add_argument('--target', type=str, default='DMAIC_CANONICAL_OUTPUT', help='Target directory')
-    parser.add_argument('--verbose', action='store_true', help='Verbose output')
+    parser = argparse.ArgumentParser(description="DOW Knowledge Extractor")
+    parser.add_argument(
+        "--target", type=str, default="DMAIC_CANONICAL_OUTPUT", help="Target directory"
+    )
+    parser.add_argument("--verbose", action="store_true", help="Verbose output")
 
     args = parser.parse_args()
 
     logging.basicConfig(
         level=logging.INFO if args.verbose else logging.WARNING,
-        format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
+        format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
     )
 
     extractor = DOWKnowledgeExtractor()
@@ -321,9 +339,10 @@ def main():
     print(f"   Success: {result['success']}")
     print(f"   Failed: {result['failed']}")
 
-    if result['failed'] > 0:
+    if result["failed"] > 0:
         print(f"\n❌ Some files failed. Check logs for details.")
         sys.exit(1)
+
 
 if __name__ == "__main__":
     main()

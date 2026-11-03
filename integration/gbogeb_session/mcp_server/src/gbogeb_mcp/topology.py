@@ -17,14 +17,15 @@ from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any
 
-
 # ============================================================================
 # Data classes
 # ============================================================================
 
+
 @dataclass
 class Node:
     """A single node in the knowledge topology."""
+
     id: str
     repo: str
     label: str
@@ -59,6 +60,7 @@ class Node:
 @dataclass
 class Edge:
     """A directed edge in the knowledge topology."""
+
     source: str
     target: str
     edge_type: str  # "cross_repo", "internal", or GBC relation types
@@ -78,6 +80,7 @@ class Edge:
 # ============================================================================
 # Topology Navigator
 # ============================================================================
+
 
 class TopologyNavigator:
     """
@@ -141,12 +144,14 @@ class TopologyNavigator:
 
         # Edges
         for e in data.get("edges", []):
-            self.edges.append(Edge(
-                source=e["from"],
-                target=e["to"],
-                edge_type=e.get("type", "unknown"),
-                label=e.get("label", ""),
-            ))
+            self.edges.append(
+                Edge(
+                    source=e["from"],
+                    target=e["to"],
+                    edge_type=e.get("type", "unknown"),
+                    label=e.get("label", ""),
+                )
+            )
 
     def _load_gbc_topology(self) -> None:
         """Load GBOGEB/CODEX topology (visual-asset-centric schema)."""
@@ -201,13 +206,15 @@ class TopologyNavigator:
 
         # GBC edges
         for e in data.get("edges", []):
-            self.edges.append(Edge(
-                source=e["from"],
-                target=e["to"],
-                edge_type=e.get("relation", "unknown"),
-                label=e.get("relation", ""),
-                description=e.get("description", ""),
-            ))
+            self.edges.append(
+                Edge(
+                    source=e["from"],
+                    target=e["to"],
+                    edge_type=e.get("relation", "unknown"),
+                    label=e.get("relation", ""),
+                    description=e.get("description", ""),
+                )
+            )
 
     # ------------------------------------------------------------------
     # Queries
@@ -240,15 +247,17 @@ class TopologyNavigator:
 
         for node in self.nodes.values():
             score = 0
-            searchable = " ".join([
-                node.label,
-                node.description,
-                node.category,
-                node.domain,
-                node.node_type,
-                " ".join(node.tags),
-                node.id,
-            ]).lower()
+            searchable = " ".join(
+                [
+                    node.label,
+                    node.description,
+                    node.category,
+                    node.domain,
+                    node.node_type,
+                    " ".join(node.tags),
+                    node.id,
+                ]
+            ).lower()
 
             for token in tokens:
                 if token in searchable:
@@ -276,8 +285,11 @@ class TopologyNavigator:
     def get_cross_repo_edges(self) -> list[Edge]:
         """Get all edges that cross repository boundaries."""
         self._ensure_loaded()
-        return [e for e in self.edges if e.edge_type == "cross_repo"
-                or self._is_cross_repo_edge(e)]
+        return [
+            e
+            for e in self.edges
+            if e.edge_type == "cross_repo" or self._is_cross_repo_edge(e)
+        ]
 
     def get_upstream(self, node_id: str) -> list[Node]:
         """Get all nodes that feed into the given node."""

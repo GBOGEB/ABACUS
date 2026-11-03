@@ -1,4 +1,5 @@
 """W31 admission readback negative/reverse/force-trip unit controls."""
+
 import copy
 import unittest
 
@@ -10,16 +11,23 @@ REQUIRED = ["PR Feedback Gate", "policy-and-inventory", "ABACUS compatibility ga
 
 def sample():
     return {
-        "exact_head": SHA, "default_branch": "main", "pr_author": "GBOGEB",
+        "exact_head": SHA,
+        "default_branch": "main",
+        "pr_author": "GBOGEB",
         "expected_status_contexts": REQUIRED,
         "ruleset": {
             "enforcement": "active",
-            "rules": [{"type": "pull_request", "parameters": {
-                "required_approving_review_count": 0,
-                "dismiss_stale_reviews_on_push": True,
-                "require_last_push_approval": False,
-                "required_review_thread_resolution": False,
-            }}],
+            "rules": [
+                {
+                    "type": "pull_request",
+                    "parameters": {
+                        "required_approving_review_count": 0,
+                        "dismiss_stale_reviews_on_push": True,
+                        "require_last_push_approval": False,
+                        "required_review_thread_resolution": False,
+                    },
+                }
+            ],
             "bypass_actors": [
                 {"actor_id": i, "actor_type": "Integration", "bypass_mode": "always"}
                 for i in range(6)
@@ -35,22 +43,33 @@ def sample():
 def with_green_configuration():
     row = sample()
     pr = row["ruleset"]["rules"][0]["parameters"]
-    pr.update(required_approving_review_count=1,
-              require_last_push_approval=True,
-              required_review_thread_resolution=True)
-    row["ruleset"]["rules"].append({
-        "type": "required_status_checks",
-        "parameters": {"required_status_checks": [{"context": name} for name in REQUIRED]},
-    })
+    pr.update(
+        required_approving_review_count=1,
+        require_last_push_approval=True,
+        required_review_thread_resolution=True,
+    )
+    row["ruleset"]["rules"].append(
+        {
+            "type": "required_status_checks",
+            "parameters": {
+                "required_status_checks": [{"context": name} for name in REQUIRED]
+            },
+        }
+    )
     row["ruleset"]["bypass_actors"] = []
     row["check_runs"] = [
         {"name": name, "head_sha": SHA, "status": "completed", "conclusion": "success"}
         for name in REQUIRED
     ]
-    row["reviews"] = [{
-        "state": "APPROVED", "login": "independent-user", "account_type": "User",
-        "permission": "write", "head_sha": SHA,
-    }]
+    row["reviews"] = [
+        {
+            "state": "APPROVED",
+            "login": "independent-user",
+            "account_type": "User",
+            "permission": "write",
+            "head_sha": SHA,
+        }
+    ]
     row["branch_protection_readback"] = {"resolved": True}
     row["rejected_red_canary"] = True
     return row
@@ -82,22 +101,30 @@ class AdmissionReadbackTests(unittest.TestCase):
     def test_bot_cannot_attest_independent_review(self):
         row = with_green_configuration()
         row["reviews"][0]["account_type"] = "Bot"
-        self.assertEqual(admission.observe(row)["eligible_review_metadata_candidates"], 0)
+        self.assertEqual(
+            admission.observe(row)["eligible_review_metadata_candidates"], 0
+        )
 
     def test_owner_self_review_never_qualifies(self):
         row = with_green_configuration()
         row["reviews"][0]["login"] = "GBOGEB"
-        self.assertEqual(admission.observe(row)["eligible_review_metadata_candidates"], 0)
+        self.assertEqual(
+            admission.observe(row)["eligible_review_metadata_candidates"], 0
+        )
 
     def test_stale_review_head_never_qualifies(self):
         row = with_green_configuration()
         row["reviews"][0]["head_sha"] = "a" * 40
-        self.assertEqual(admission.observe(row)["eligible_review_metadata_candidates"], 0)
+        self.assertEqual(
+            admission.observe(row)["eligible_review_metadata_candidates"], 0
+        )
 
     def test_missing_write_permission_denies_candidate(self):
         row = with_green_configuration()
         row["reviews"][0]["permission"] = "read"
-        self.assertEqual(admission.observe(row)["eligible_review_metadata_candidates"], 0)
+        self.assertEqual(
+            admission.observe(row)["eligible_review_metadata_candidates"], 0
+        )
 
     def test_queue_is_not_terminal_success(self):
         row = with_green_configuration()
@@ -117,8 +144,9 @@ class AdmissionReadbackTests(unittest.TestCase):
     def test_missing_required_check_is_distinct_unknown(self):
         row = with_green_configuration()
         row["check_runs"].pop(0)
-        self.assertIn("CHECK_RESULT_MISSING:PR Feedback Gate",
-                      admission.observe(row)["blockers"])
+        self.assertIn(
+            "CHECK_RESULT_MISSING:PR Feedback Gate", admission.observe(row)["blockers"]
+        )
 
     def test_wrong_source_check_refused(self):
         row = with_green_configuration()
@@ -135,14 +163,16 @@ class AdmissionReadbackTests(unittest.TestCase):
     def test_missing_red_canary_blocks(self):
         row = with_green_configuration()
         row["rejected_red_canary"] = None
-        self.assertIn("REJECTED_RED_CANARY_UNPROVEN",
-                      admission.observe(row)["blockers"])
+        self.assertIn(
+            "REJECTED_RED_CANARY_UNPROVEN", admission.observe(row)["blockers"]
+        )
 
     def test_missing_branch_protection_readback_blocks(self):
         row = with_green_configuration()
         row["branch_protection_readback"] = None
-        self.assertIn("EFFECTIVE_PROTECTION_UNKNOWN",
-                      admission.observe(row)["blockers"])
+        self.assertIn(
+            "EFFECTIVE_PROTECTION_UNKNOWN", admission.observe(row)["blockers"]
+        )
 
     def test_bypass_actor_disqualifies_unexceptioned_rules(self):
         row = with_green_configuration()
@@ -154,8 +184,9 @@ class AdmissionReadbackTests(unittest.TestCase):
     def test_missing_rule_or_requested_context_blocks(self):
         row = with_green_configuration()
         row["ruleset"]["rules"][1]["parameters"]["required_status_checks"].pop(0)
-        self.assertIn("REQUIRED_CHECK_CONTEXTS_INCOMPLETE",
-                      admission.observe(row)["blockers"])
+        self.assertIn(
+            "REQUIRED_CHECK_CONTEXTS_INCOMPLETE", admission.observe(row)["blockers"]
+        )
 
     def test_missing_head_rejected(self):
         row = with_green_configuration()

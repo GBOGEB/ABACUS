@@ -63,5 +63,6 @@ def recompute():
     assert math.isclose(PEN, 0.2, abs_tol=1e-12)
     return {"status": "PASS_INDEPENDENT_RECOMPUTE", "B": B, "D_equal_function": D, "pooled_atom_ratio": pooled, "PEN": PEN, "credited_atoms": cred, "atom_denominator": den}
 
+
 if __name__ == "__main__":
     print(json.dumps(recompute(), sort_keys=True))

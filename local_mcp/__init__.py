@@ -23,8 +23,16 @@ _DIR = Path(__file__).parent
 
 # Mapping: exported name → (loader alias, filename in package dir, class attribute)
 _LAZY_EXPORTS = {
-    "AgentOrchestratorV3": ("local_mcp._orchestrator", "agent_orchestrator_v3.0.py", "AgentOrchestratorV3"),
-    "KnowledgeIntegrationV23": ("local_mcp._knowledge", "knowledge_integration_v2.3.py", "KnowledgeIntegrationV23"),
+    "AgentOrchestratorV3": (
+        "local_mcp._orchestrator",
+        "agent_orchestrator_v3.0.py",
+        "AgentOrchestratorV3",
+    ),
+    "KnowledgeIntegrationV23": (
+        "local_mcp._knowledge",
+        "knowledge_integration_v2.3.py",
+        "KnowledgeIntegrationV23",
+    ),
 }
 
 

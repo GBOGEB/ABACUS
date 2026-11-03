@@ -5,21 +5,28 @@
 # Description: Auto-generated version header
 """
 
-import sys
-import os
 import json
+import os
 import shutil
 import subprocess
+import sys
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 
+
 def run(cmd):
     try:
         out = subprocess.run(cmd, capture_output=True, text=True, shell=os.name == "nt")
-        return {"cmd": cmd, "rc": out.returncode, "stdout": out.stdout.strip(), "stderr": out.stderr.strip()}
+        return {
+            "cmd": cmd,
+            "rc": out.returncode,
+            "stdout": out.stdout.strip(),
+            "stderr": out.stderr.strip(),
+        }
     except Exception as e:
         return {"cmd": cmd, "rc": 127, "stdout": "", "stderr": str(e)}
+
 
 def main():
     report = {
@@ -30,7 +37,7 @@ def main():
         "sys_path_head": sys.path[:5],
         "checks": {},
         "tools": {},
-        "actions": []
+        "actions": [],
     }
 
     # Check repo structure
@@ -42,12 +49,15 @@ def main():
     try:
         sys.path.insert(0, str(ROOT))
         import DMAIC_V3  # noqa
+
         report["checks"]["import_DMAIC_V3"] = True
     except Exception:
         report["checks"]["import_DMAIC_V3"] = False
         report["actions"].append("Create package marker: DMAIC_V3/__init__.py")
         report["actions"].append("Run from repo root: cd {}".format(report["root"]))
-        report["actions"].append("Add repo root to PYTHONPATH if running from elsewhere.")
+        report["actions"].append(
+            "Add repo root to PYTHONPATH if running from elsewhere."
+        )
 
     # External tools presence
     for tool in ["pandoc", "xelatex", "gh"]:
@@ -65,6 +75,7 @@ def main():
     # Fail if import is broken or engine version invocation fails
     ok = report["checks"]["import_DMAIC_V3"] and ev["rc"] == 0
     return 0 if ok else 2
+
 
 if __name__ == "__main__":
     raise SystemExit(main())

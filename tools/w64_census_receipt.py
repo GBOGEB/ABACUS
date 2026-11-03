@@ -13,6 +13,7 @@ Usage:
       --reverse-pressure architecture/w64/receipts/W64_TOTAL_REPO_CENSUS_P2_REVERSE_PRESSURE.json \
       --out architecture/w64/receipts/W64_TOTAL_REPO_CENSUS_P3_RECEIPT.json
 """
+
 from __future__ import annotations
 
 import argparse
@@ -53,7 +54,9 @@ def findings(reverse_pressure: dict[str, object]) -> list[dict[str, object]]:
     return [finding for finding in raw if isinstance(finding, dict)]
 
 
-def duplicate_authority_queue(items: list[dict[str, object]]) -> list[dict[str, object]]:
+def duplicate_authority_queue(
+    items: list[dict[str, object]],
+) -> list[dict[str, object]]:
     queue: list[dict[str, object]] = []
     for item in items:
         if item.get("type") != DUPLICATE_AUTHORITY_TYPE:
@@ -96,7 +99,11 @@ def build_receipt(
     items = findings(reverse_pressure)
     blocker_count = int(reverse_pressure.get("blocker_count", 0) or 0)
     warning_count = int(reverse_pressure.get("warning_count", 0) or 0)
-    status = "blocked_pending_resolution" if blocker_count else "receipt_candidate_no_blockers"
+    status = (
+        "blocked_pending_resolution"
+        if blocker_count
+        else "receipt_candidate_no_blockers"
+    )
 
     return {
         "schema_version": RECEIPT_SCHEMA_VERSION,
@@ -114,7 +121,11 @@ def build_receipt(
         "stale_generated_unknown_register": follow_up_register(items),
         "downstream_gate": {
             "w64_census_lane": status,
-            "binaries_release_regression_credit": "blocked" if blocker_count else "allowed_to_continue_to_next_receipt_gate",
+            "binaries_release_regression_credit": (
+                "blocked"
+                if blocker_count
+                else "allowed_to_continue_to_next_receipt_gate"
+            ),
             "requirement": "Downstream W64 DoV credit requires zero blockers or explicit source-bound waiver receipt.",
         },
         "non_claims": [
@@ -144,7 +155,9 @@ def main(argv: Iterable[str] | None = None) -> int:
         census_path,
         reverse_pressure_path,
     )
-    out.write_text(json.dumps(receipt, indent=2, sort_keys=True) + "\n", encoding="utf-8")
+    out.write_text(
+        json.dumps(receipt, indent=2, sort_keys=True) + "\n", encoding="utf-8"
+    )
     print(
         json.dumps(
             {

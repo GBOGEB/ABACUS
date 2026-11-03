@@ -3,7 +3,9 @@
 used ONLY to numerically compare the app's consumer implementation against the
 gg_MATH canonical kernels. Not committed to any repo as runtime code.
 """
+
 from __future__ import annotations
+
 import math
 
 
@@ -15,17 +17,17 @@ def sr_bradley_terry(ids, comps, iterations=200, prior=0.1):
     nij = [[0.0] * n for _ in range(n)]
     wij = [[0.0] * n for _ in range(n)]
     for c in comps:
-        a = idx.get(c['slideAId'])
-        b = idx.get(c['slideBId'])
+        a = idx.get(c["slideAId"])
+        b = idx.get(c["slideBId"])
         if a is None or b is None or a == b:
             continue
-        if c.get('isTie') or c.get('winnerId') is None:
+        if c.get("isTie") or c.get("winnerId") is None:
             wij[a][b] += 0.5
             wij[b][a] += 0.5
             nij[a][b] += 1
             nij[b][a] += 1
             continue
-        w = idx.get(c['winnerId'])
+        w = idx.get(c["winnerId"])
         if w is None:
             continue
         l = b if w == a else a
@@ -62,7 +64,10 @@ def sr_pca(ids, features, matrix, n_components=3):
         v = sum((r[j] - means[j]) ** 2 for r in matrix) / (n - 1)
         sds.append(math.sqrt(v) or 1.0)
     Z = [[(r[j] - means[j]) / sds[j] for j in range(m)] for r in matrix]
-    C = [[sum(Z[r][i] * Z[r][j] for r in range(n)) / (n - 1) for j in range(m)] for i in range(m)]
+    C = [
+        [sum(Z[r][i] * Z[r][j] for r in range(n)) / (n - 1) for j in range(m)]
+        for i in range(m)
+    ]
     total_var = sum(C[i][i] for i in range(m)) or 1.0
     comps = []
     eig = []
@@ -83,7 +88,7 @@ def sr_pca(ids, features, matrix, n_components=3):
         eig.append(lam)
         A = [[A[i][j] - lam * v[i] * v[j] for j in range(m)] for i in range(m)]
     return {
-        'explained_variance': [e / total_var for e in eig],
-        'eigenvalues': eig,
-        'components': comps,
+        "explained_variance": [e / total_var for e in eig],
+        "eigenvalues": eig,
+        "components": comps,
     }

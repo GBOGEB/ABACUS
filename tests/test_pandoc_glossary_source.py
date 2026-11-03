@@ -1,7 +1,7 @@
 """Source regression for the 26-Oct Pandoc XeLaTeX undefined \\n control."""
+
 import unittest
 from pathlib import Path
-
 
 ROOT = Path(__file__).resolve().parents[1]
 GLOSSARY = ROOT / "docs/ci/CBD_EOSS_N7_TAXONOMY_DAG_SIPOC_20261017.md"

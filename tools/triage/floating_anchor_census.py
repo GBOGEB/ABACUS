@@ -5,6 +5,7 @@ The scanner is intentionally path-first and dependency-free.  It does not
 claim semantic orphan status; it produces a conservative triage queue for the
 next evidence-linking pulse.
 """
+
 from __future__ import annotations
 
 import argparse
@@ -44,18 +45,25 @@ def linked_by_path(path: str, anchor: str) -> bool:
     lower = path.lower()
     anchor = anchor.lower()
     # A name is a discovery hint, never proof of an executable anchor edge.
-    return bool(re.search(r"(?<![a-z0-9])" + re.escape(anchor) + r"(?![a-z0-9])", lower))
+    return bool(
+        re.search(r"(?<![a-z0-9])" + re.escape(anchor) + r"(?![a-z0-9])", lower)
+    )
 
 
 def classify_path(path: str) -> str:
     lower = path.lower()
     if "workflows-pending/" in lower or "workflows-to-install/" in lower:
         return "staged_workflow"
-    if re.search(r"(^|/)(dmaic_v3|abacus-unified|abacus-v[0-9][^/]*|tools_v[^/]*|tracking_v[^/]*|vendor|[^/]*_snapshot)(/|$)", lower):
+    if re.search(
+        r"(^|/)(dmaic_v3|abacus-unified|abacus-v[0-9][^/]*|tools_v[^/]*|tracking_v[^/]*|vendor|[^/]*_snapshot)(/|$)",
+        lower,
+    ):
         return "embedded_version_or_subrepo"
     if re.search(r"(^|/)(local_mcp|agents|runtime|engine_dow|src/keb)(/|$)", lower):
         return "runtime_agent_surface"
-    if re.search(r"(handover|complete|status|deployment|integration|quick|report|plan)", lower):
+    if re.search(
+        r"(handover|complete|status|deployment|integration|quick|report|plan)", lower
+    ):
         return "status_or_handover_needs_review"
     return "engine_like_unlinked"
 
@@ -90,7 +98,10 @@ def build_report(root: Path, repo: str, anchor: str) -> dict:
             "floating_engine_like_files": len(floating),
         },
         "top_roots": sorted(roots.items(), key=lambda item: (-item[1], item[0]))[:20],
-        "floating_buckets": {key: {"count": len(value), "paths": value} for key, value in sorted(buckets.items())},
+        "floating_buckets": {
+            key: {"count": len(value), "paths": value}
+            for key, value in sorted(buckets.items())
+        },
         "anchor_named_engine_paths": linked_engine_like,
         "anchor_examples": anchor_named[:60],
         "control": {
@@ -106,7 +117,9 @@ def main() -> int:
     parser = argparse.ArgumentParser()
     parser.add_argument("--root", default=".")
     parser.add_argument("--repo", required=True)
-    parser.add_argument("--anchor", required=True, help="governing anchor such as KEB or DOW")
+    parser.add_argument(
+        "--anchor", required=True, help="governing anchor such as KEB or DOW"
+    )
     parser.add_argument("--out")
     args = parser.parse_args()
 

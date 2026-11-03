@@ -3,6 +3,7 @@
 Counts execution *intent* only. Synthetic cases are not field FPR/FNR,
 causal-root closure, authenticated artifact ingestion or merge admission.
 """
+
 from __future__ import annotations
 
 import hashlib
@@ -19,7 +20,9 @@ CASE = re.compile(
 CASE_LINE = re.compile(r"(?m)^test_\w+ \([^\n]*\) \.\.\. .+$")
 
 
-def audit_native_family_log(log: str, source_sha: str, run_id: int, *, min_per_family: int = 4) -> dict:
+def audit_native_family_log(
+    log: str, source_sha: str, run_id: int, *, min_per_family: int = 4
+) -> dict:
     """Verify one passing verbose-unittest census; never infer performance accuracy."""
     if not isinstance(source_sha, str) or not SHA.fullmatch(source_sha):
         raise ValueError("noncanonical exact source SHA")
@@ -45,7 +48,9 @@ def audit_native_family_log(log: str, source_sha: str, run_id: int, *, min_per_f
     for method, qualified in rows:
         if not qualified.endswith("." + method):
             raise ValueError("case method/qualified identity mismatch")
-        family = next((name for name in FAMILIES if method.startswith("test_" + name + "_")), None)
+        family = next(
+            (name for name in FAMILIES if method.startswith("test_" + name + "_")), None
+        )
         if family is None:
             raise ValueError("unclassified test family: " + method)
         identities.append(qualified)
@@ -60,7 +65,9 @@ def audit_native_family_log(log: str, source_sha: str, run_id: int, *, min_per_f
         "schema": SCHEMA,
         "source_sha": source_sha,
         "run_id": run_id,
-        "case_identity_sha256": hashlib.sha256("\n".join(unique).encode("utf-8")).hexdigest(),
+        "case_identity_sha256": hashlib.sha256(
+            "\n".join(unique).encode("utf-8")
+        ).hexdigest(),
         "native_case_executions": declared,
         "unique_case_ids": len(unique),
         "duplicate_case_executions": 0,

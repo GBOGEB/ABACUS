@@ -24,7 +24,9 @@ def test_dry_run_move_and_deletion_preserves_source(tmp_path):
     orchestrator = CICDGitHubOrchestrator(tmp_path)
     proposal = RefactoringPlan(
         moves=[{"from": "original.py", "to": "new/original.py"}],
-        renames=[], consolidations=[], deletions=["original.py"],
+        renames=[],
+        consolidations=[],
+        deletions=["original.py"],
     )
     result = orchestrator.execute_refactoring(proposal, dry_run=True)
     assert result["errors"] == []
@@ -35,16 +37,28 @@ def test_dry_run_move_and_deletion_preserves_source(tmp_path):
 def test_git_status_scopes_read_only_to_sandbox(monkeypatch, tmp_path):
     orchestrator = CICDGitHubOrchestrator(tmp_path)
     calls = []
+
     def fake_run(argv, **kwargs):
         calls.append((argv, kwargs))
-        return SimpleNamespace(returncode=0, stdout=" M demo.py\n?? new.py\n", stderr="")
+        return SimpleNamespace(
+            returncode=0, stdout=" M demo.py\n?? new.py\n", stderr=""
+        )
+
     monkeypatch.setattr("cicd_github_orchestrator.subprocess.run", fake_run)
     result = orchestrator.git_status()
     assert result["modified"] == ["demo.py"]
     assert result["untracked"] == ["new.py"]
-    assert calls == [(["git", "status", "--porcelain"], {
-        "cwd": tmp_path, "capture_output": True, "text": True, "timeout": 30,
-    })]
+    assert calls == [
+        (
+            ["git", "status", "--porcelain"],
+            {
+                "cwd": tmp_path,
+                "capture_output": True,
+                "text": True,
+                "timeout": 30,
+            },
+        )
+    ]
 
 
 @pytest.mark.parametrize(
@@ -59,7 +73,9 @@ def test_git_status_scopes_read_only_to_sandbox(monkeypatch, tmp_path):
         ("", {"modified": [], "added": [], "deleted": [], "untracked": []}),
     ],
 )
-def test_git_status_preserves_porcelain_columns(monkeypatch, tmp_path, porcelain, expected):
+def test_git_status_preserves_porcelain_columns(
+    monkeypatch, tmp_path, porcelain, expected
+):
     orchestrator = CICDGitHubOrchestrator(tmp_path)
 
     def fake_run(argv, **kwargs):
