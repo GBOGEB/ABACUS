@@ -46,11 +46,15 @@ jobs:
             *) exit 2 ;;
           esac
           python -m sphinx --version
-      - name: Probe canonical full requirement set
-        run: python -m pip install --dry-run -r DMAIC_V3/requirements.txt
+      - name: Resolve canonical full requirement set independently
+        # --ignore-installed prevents preinstalled Sphinx from masking a
+        # real conflict against any other requirement in this cohort.
+        run: python -m pip install --dry-run --ignore-installed -r DMAIC_V3/requirements.txt
       - name: Verify Sphinx and asyncio static cohorts
         run: |
           python -m pip install packaging
           python -m unittest -v \
             tests/test_sphinx_requirement_compatibility.py \
-            tests/test_matplotlib_requirement_compatibility.py
+            tests/test_matplotlib_requirement_compatibility.py \
+            tests/test_mip_python_dependency_guard.py \
+            tests/test_cbd_workflow_cohort_union.py
