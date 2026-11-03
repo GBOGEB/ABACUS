@@ -66,6 +66,7 @@ reports/*
 *.json
 !GLOBAL_index.json
 !OFFERS_ITT/QPS_ARTEFACT_LINEAGE.json
+!ssot/python_versions.lanes.json
 !reports/runtime_publish_status.json
 !reports/dashboard_status.json
 !reports/runtime_registry_report.json

@@ -1,0 +1,52 @@
+name: Python version SSOT guard
+
+# Fails when any workflow, composite action or derived file disagrees with
+# ssot/python_versions.yaml. Fix locally with:
+#   python tools/ci/python_versions.py sync
+
+on:
+  pull_request:
+    paths:
+      - .github/workflows/**
+      - .github/actions/**
+      - .github/security/security.toml
+      - .devcontainer/**
+      - .python-version
+      - Dockerfile
+      - pyproject.toml
+      - ssot/python_versions.yaml
+      - ssot/python_versions.lanes.json
+      - tools/ci/python_versions.py
+      - tests/test_python_versions_ssot.py
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  guard:
+    name: Python versions match ssot/python_versions.yaml
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+
+      - name: Set up Python 3.14
+        uses: actions/setup-python@v7
+        with:
+          python-version: '3.14'
+
+      - name: Install guard dependencies
+        run: python -m pip install "PyYAML>=6.0.3,<7.0" "pytest>=8.3.5,<9.2"
+
+      - name: Check workflows and derived files against the SSOT
+        run: python tools/ci/python_versions.py check
+
+      - name: Test the sync rules
+        run: python -m pytest -q -p no:cacheprovider -o addopts="" tests/test_python_versions_ssot.py
