@@ -176,11 +176,14 @@ class WorkflowPolicyTests(unittest.TestCase):
         self.assertTrue(AUDIT_SCRIPT.exists())
         self.assertFalse((ROOT / "scripts/audit_ci_workflows.py").exists())
 
-    def test_full_regression_excludes_governance_only_python(self):
+    def test_full_regression_runs_on_governance_python(self):
+        # 77240202 (Bandit ratchet hardening) removed the "!ci/governance/**"
+        # path exclusions on purpose: governance Python is now admitted
+        # through the Bandit ratchet, so it must trigger this workflow.
         workflow = (ROOT / ".github/workflows/ci-cd-tests.yml").read_text(
             encoding="utf-8"
         )
-        self.assertEqual(2, workflow.count("- '!ci/governance/**'"))
+        self.assertEqual(0, workflow.count("- '!ci/governance/**'"))
 
     def test_control_surface_declares_policy_authority(self):
         control_surface = (ROOT / "ci/governance/README.md").read_text(encoding="utf-8")
