@@ -48,7 +48,7 @@ class CohortUnionTests(unittest.TestCase):
 
         assert_marker_coverage(requirements)
         self.assertIn(
-            "pytest-asyncio>=1.4.0,<1.5; python_version >= '3.10'", requirements
+            "pytest-asyncio>=1.4.1,<1.5; python_version >= '3.10'", requirements
         )
         self.assertIn("pylint>=4.1.3,<5.0.0; python_version >= '3.10'", requirements)
         # Explicit A -> B -> A protection: neither old unconditional pin nor
