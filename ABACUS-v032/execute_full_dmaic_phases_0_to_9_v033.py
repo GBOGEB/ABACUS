@@ -844,10 +844,10 @@ class FullDMAICOrchestrator:
     def _generate_metrics_report(self, phase: PhaseExecution) -> Path:
         report_file = self.reports_dir / f"phase_2_measure_{self.execution_id}.md"
         with open(report_file, "w") as f:
-            f.write(f"# Phase 2: Measure Report\n\n")
+            f.write("# Phase 2: Measure Report\n\n")
             f.write(f"**Execution ID:** {self.execution_id}\n")
             f.write(f"**Generated:** {datetime.now().isoformat()}\n\n")
-            f.write(f"## Metrics\n\n")
+            f.write("## Metrics\n\n")
             for key, value in phase.metrics.items():
                 f.write(f"- **{key}:** {value}\n")
         return report_file
@@ -880,10 +880,10 @@ class FullDMAICOrchestrator:
     def _generate_analysis_report(self, phase: PhaseExecution) -> Path:
         report_file = self.reports_dir / f"phase_3_analyze_{self.execution_id}.md"
         with open(report_file, "w") as f:
-            f.write(f"# Phase 3: Analyze Report\n\n")
+            f.write("# Phase 3: Analyze Report\n\n")
             f.write(f"**Execution ID:** {self.execution_id}\n")
             f.write(f"**Generated:** {datetime.now().isoformat()}\n\n")
-            f.write(f"## Metrics\n\n")
+            f.write("## Metrics\n\n")
             for key, value in phase.metrics.items():
                 f.write(f"- **{key}:** {value}\n")
         return report_file
@@ -912,10 +912,10 @@ class FullDMAICOrchestrator:
     def _generate_improvement_report(self, phase: PhaseExecution) -> Path:
         report_file = self.reports_dir / f"phase_4_improve_{self.execution_id}.md"
         with open(report_file, "w") as f:
-            f.write(f"# Phase 4: Improve Report\n\n")
+            f.write("# Phase 4: Improve Report\n\n")
             f.write(f"**Execution ID:** {self.execution_id}\n")
             f.write(f"**Generated:** {datetime.now().isoformat()}\n\n")
-            f.write(f"## Metrics\n\n")
+            f.write("## Metrics\n\n")
             for key, value in phase.metrics.items():
                 f.write(f"- **{key}:** {value}\n")
         return report_file
@@ -950,10 +950,10 @@ class FullDMAICOrchestrator:
     def _generate_control_report(self, phase: PhaseExecution) -> Path:
         report_file = self.reports_dir / f"phase_5_control_{self.execution_id}.md"
         with open(report_file, "w") as f:
-            f.write(f"# Phase 5: Control Report\n\n")
+            f.write("# Phase 5: Control Report\n\n")
             f.write(f"**Execution ID:** {self.execution_id}\n")
             f.write(f"**Generated:** {datetime.now().isoformat()}\n\n")
-            f.write(f"## Metrics\n\n")
+            f.write("## Metrics\n\n")
             for key, value in phase.metrics.items():
                 f.write(f"- **{key}:** {value}\n")
         return report_file

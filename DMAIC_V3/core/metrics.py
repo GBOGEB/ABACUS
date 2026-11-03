@@ -269,7 +269,8 @@ class MetricsExporter:
 
             for metric in metrics.metrics:
                 f.write(
-                    f"{metric.name},{metric.value},{metric.unit},{metric.metric_type.value},{metric.timestamp.isoformat()}\n"
+                    f"{metric.name},{metric.value},{metric.unit},"
+                    f"{metric.metric_type.value},{metric.timestamp.isoformat()}\n"
                 )
 
         return output_file
