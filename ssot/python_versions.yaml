@@ -37,17 +37,18 @@ caps:
     max: "3.14"
     reason: >
       CoolProp==7.2.0 is the governed helium property oracle
-      (docs/qps_line_s_recovery/reference-registry.yaml) and publishes wheels for
-      cp39-cp314 only. Lifting this cap requires an oracle change with physics
-      sign-off, not a CI edit.
+      (docs/qps_line_s_recovery/reference-registry.yaml) and publishes
+      wheels for cp39-cp314 only. Lifting this cap requires an oracle
+      change with physics sign-off, not a CI edit.
     patterns:
       - '(?i)coolprop'
       - 'requirements-dev\.txt'
       - '--group[ =]dev'
       - '\buv sync\b'
 
-  # Exact evidence-tool pins inside workflows. The pins are left untouched (they
-  # are part of recorded evidence); the lane shrinks to what the pin can install.
+  # Exact evidence-tool pins inside workflows. The pins are left untouched
+  # (they are part of recorded evidence); the lane shrinks to what the pin
+  # can install.
   # Bump the pin in the workflow and delete the cap to lift it.
   numpy-1x-pin:
     max: "3.12"
@@ -70,7 +71,8 @@ caps:
     patterns:
       - '(?i)pyyaml==6\.0\.2\b'
 
-# Matrix mapping rules applied by `sync` (lane = supported versions under the cap):
+# Matrix mapping rules applied by `sync`
+# (lane = supported versions under the cap):
 #   flow list with >= 3 versions  -> every lane version (full matrix)
 #   flow list with 2 versions     -> [oldest, newest] of the lane (edges)
 #   flow list with 1 version      -> [default]

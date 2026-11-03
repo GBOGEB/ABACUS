@@ -49,4 +49,6 @@ jobs:
         run: python tools/ci/python_versions.py check
 
       - name: Test the sync rules
-        run: python -m pytest -q -p no:cacheprovider -o addopts="" tests/test_python_versions_ssot.py
+        run: >-
+          python -m pytest -q -p no:cacheprovider -o addopts="" --noconftest
+          tests/test_python_versions_ssot.py

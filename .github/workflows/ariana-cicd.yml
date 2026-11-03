@@ -162,11 +162,13 @@ jobs:
               assert record["governance"]["merge_admission"] == "HOLD"
               assert record["governance"]["authority_transfer"] is False
               versions.add(producer["python_version"])
-          lane = json.loads(
-              Path("ssot/python_versions.lanes.json").read_text(encoding="utf-8")
-          )["lanes"][os.environ["PYTHON_LANE"]]
+          view = Path("ssot/python_versions.lanes.json")
+          lane = json.loads(view.read_text(encoding="utf-8"))["lanes"][
+              os.environ["PYTHON_LANE"]
+          ]
           # The test-ariana matrix is the lane's [oldest, newest] edge pair.
-          assert versions == {lane["oldest"], lane["newest"]}, "distinct Python lanes missing"
+          edges = {lane["oldest"], lane["newest"]}
+          assert versions == edges, "distinct Python lanes missing"
           observations = [
               {
                   "python_version": p["producer"]["python_version"],

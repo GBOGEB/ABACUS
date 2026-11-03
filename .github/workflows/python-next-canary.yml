@@ -40,12 +40,13 @@ jobs:
           allow-prereleases: true
 
       - name: Record interpreter
-        run: |
-          python -VV
-          python -c "import sys; print('free-threaded:', not getattr(sys, '_is_gil_enabled', lambda: True)())"
+        run: python -VV
 
       - name: Byte-compile sources (syntax and removed-grammar check)
-        run: python -m compileall -q -x '(BACKUPS|node_modules|DMAIC_V3_OUTPUT)/' DMAIC_V3 scripts tools tests models
+        run: >-
+          python -m compileall -q
+          -x '(BACKUPS|node_modules|DMAIC_V3_OUTPUT)/'
+          DMAIC_V3 scripts tools tests models
 
       - name: Install runtime requirements (binary wheels only)
         id: install
@@ -55,7 +56,9 @@ jobs:
 
       - name: Run engine unit tests
         if: steps.install.outcome == 'success'
-        run: python -m pytest -q -p no:cacheprovider -o addopts="" -m "unit or smoke" --maxfail=25 tests
+        run: >-
+          python -m pytest -q -p no:cacheprovider -o addopts=""
+          -m "unit or smoke" --maxfail=25 tests
 
       - name: Summarise
         if: always()
@@ -63,5 +66,5 @@ jobs:
           {
             echo "### Python ${{ matrix.python-version }} canary"
             echo "- install (wheels only): \`${{ steps.install.outcome }}\`"
-            echo "- non-blocking; promote the version in ssot/python_versions.yaml once green"
+            echo "- non-blocking; promote via ssot/python_versions.yaml"
           } >> "$GITHUB_STEP_SUMMARY"

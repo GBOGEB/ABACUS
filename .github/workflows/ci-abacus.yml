@@ -18,9 +18,9 @@ permissions:
   contents: read
 
 env:
-  # Interpreter lane assigned by ssot/python_versions.yaml. This workflow installs
-  # the CoolProp oracle, so it runs on the coolprop-oracle lane; the
-  # python-version-ssot-guard workflow fails if this ever disagrees with the SSOT.
+  # Interpreter lane assigned by ssot/python_versions.yaml. This workflow
+  # installs the CoolProp oracle, so it runs on the coolprop-oracle lane; the
+  # python-version-ssot-guard workflow fails if this disagrees with the SSOT.
   PYTHON_LANE: coolprop-oracle
 
 # One active Matrix proof per PR/ref. A newer SHA supersedes an unfinished
@@ -62,9 +62,12 @@ jobs:
           # sentinel = lane pin, secondary = oldest supported (requires-python
           # floor), full = every version in the lane.
           lanes="ssot/python_versions.lanes.json"
-          sentinel="$(jq -er --arg l "${PYTHON_LANE}" '.lanes[$l].pin' "${lanes}")"
-          secondary="$(jq -er --arg l "${PYTHON_LANE}" '.lanes[$l].oldest' "${lanes}")"
-          full_label="$(jq -er --arg l "${PYTHON_LANE}" '.lanes[$l].versions | join(" / ")' "${lanes}")"
+          lane_q() {
+            jq -er --arg l "${PYTHON_LANE}" "$1" "${lanes}"
+          }
+          sentinel="$(lane_q '.lanes[$l].pin')"
+          secondary="$(lane_q '.lanes[$l].oldest')"
+          full_label="$(lane_q '.lanes[$l].versions | join(" / ")')"
 
           if [[ "${EVENT_NAME}" == "pull_request" ]]; then
             mapfile -t changed < <(
@@ -129,8 +132,8 @@ jobs:
               reason+="this CI workflow changed"
             elif [[ "${python_delta}" == "true" ]]; then
               mode="sampled"
-              reason="Python changed: run ${sentinel} sentinel plus deterministic "
-              reason+="compatibility sample"
+              reason="Python changed: run ${sentinel} sentinel plus "
+              reason+="deterministic compatibility sample"
             else
               mode="sentinel"
               reason="no Python compatibility-sensitive delta: run ${sentinel} "
@@ -180,18 +183,23 @@ jobs:
 
           case "${mode}" in
             sentinel)
-              matrix="$(jq -cn --arg s "${sentinel}" \
-                '{include: [{os: "ubuntu-24.04", "python-version": $s, "proof-role": "sentinel"}]}')"
+              matrix="$(jq -cn --arg s "${sentinel}" '
+                {include: [{os: "ubuntu-24.04", "python-version": $s,
+                            "proof-role": "sentinel"}]}')"
               ;;
             sampled)
-              matrix="$(jq -cn --arg s "${sentinel}" --arg c "${secondary}" \
-                '{include: [{os: "ubuntu-24.04", "python-version": $s, "proof-role": "sentinel"},
-                            {os: "ubuntu-24.04", "python-version": $c, "proof-role": "compatibility-sample"}]}')"
+              matrix="$(jq -cn --arg s "${sentinel}" --arg c "${secondary}" '
+                {include: [
+                  {os: "ubuntu-24.04", "python-version": $s,
+                   "proof-role": "sentinel"},
+                  {os: "ubuntu-24.04", "python-version": $c,
+                   "proof-role": "compatibility-sample"}]}')"
               ;;
             full)
-              matrix="$(jq -c --arg l "${PYTHON_LANE}" \
-                '{include: [.lanes[$l].versions[] | {os: "ubuntu-24.04", "python-version": ., "proof-role": "full-matrix"}]}' \
-                "${lanes}")"
+              matrix="$(jq -c --arg l "${PYTHON_LANE}" '
+                {include: [.lanes[$l].versions[]
+                  | {os: "ubuntu-24.04", "python-version": .,
+                     "proof-role": "full-matrix"}]}' "${lanes}")"
               ;;
             *)
               echo "::error::Unknown CI proof mode: ${mode}"
