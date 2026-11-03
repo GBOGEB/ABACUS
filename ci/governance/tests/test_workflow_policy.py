@@ -41,6 +41,15 @@ class WorkflowPolicyTests(unittest.TestCase):
                 self.assertEqual("pr_domain", rule["lifecycle"])
                 self.assertEqual("keep", rule["disposition"])
 
+    def test_native_sphinx_resolver_pilot_is_one_explicit_source_owner(self):
+        name = "mip-b1b2-sphinx-native-resolver.yml"
+        rule, matches = MODULE.classify(name, self.policy)
+        self.assertEqual(len(matches), 1)
+        self.assertEqual(rule["pattern"], r"^mip-b1b2-sphinx-native-resolver\.yml$")
+        self.assertEqual(rule["cluster"], "statistics")
+        self.assertEqual(rule["lifecycle"], "pr_domain")
+        self.assertEqual(rule["disposition"], "keep")
+
     def test_code_purple_mip_rules_have_unique_domain_owners(self):
         expected = {
             "code-purple-dashboard-v31.yml": "runtime_governance",
@@ -176,11 +185,13 @@ class WorkflowPolicyTests(unittest.TestCase):
         self.assertTrue(AUDIT_SCRIPT.exists())
         self.assertFalse((ROOT / "scripts/audit_ci_workflows.py").exists())
 
-    def test_full_regression_excludes_governance_only_python(self):
+    def test_full_regression_runs_on_governance_python(self):
+        # Owner #2585: earlier Bandit ratchet hardening deliberately admitted
+        # governance Python into broad regression; do not rewrite production paths.
         workflow = (ROOT / ".github/workflows/ci-cd-tests.yml").read_text(
             encoding="utf-8"
         )
-        self.assertEqual(2, workflow.count("- '!ci/governance/**'"))
+        self.assertEqual(0, workflow.count("- '!ci/governance/**'"))
 
     def test_control_surface_declares_policy_authority(self):
         control_surface = (ROOT / "ci/governance/README.md").read_text(encoding="utf-8")

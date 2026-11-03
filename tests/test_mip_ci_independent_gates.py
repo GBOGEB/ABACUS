@@ -196,7 +196,7 @@ def test_nine_matrix_jobs_mandatory_not_one_successful_job():
     payload["jobs"] = [
         item
         for item in payload["jobs"]
-        if item["name"] != "Test Python 3.9 on macos-latest"
+        if item["name"] != "Test Python 3.10 on macos-latest"
     ]
     result = gate(payload, "enterprise_ci")
     assert result["status"] == "UNKNOWN"
