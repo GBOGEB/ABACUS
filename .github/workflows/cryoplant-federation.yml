@@ -57,7 +57,7 @@ jobs:
         # actions/setup-python v7
         uses: actions/setup-python@6d4fd22b20465ccc0f7354476588e8df7c9ca0e0
         with:
-          python-version: "3.12"
+          python-version: "3.14"
 
       - name: Install dependencies
         run: python -m pip install pytest pyyaml
@@ -160,7 +160,7 @@ jobs:
         # actions/setup-python v7
         uses: actions/setup-python@6d4fd22b20465ccc0f7354476588e8df7c9ca0e0
         with:
-          python-version: "3.12"
+          python-version: "3.14"
 
       # Only hash-locked PyYAML is installed before the token is exposed,
       # so no unpinned package can plant code that runs in the probe.

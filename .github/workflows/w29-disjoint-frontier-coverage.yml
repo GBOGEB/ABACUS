@@ -46,7 +46,7 @@ jobs:
         # Branch pilots: one cell; PR qualification: two cells.
         python-version: >-
           ${{ fromJSON(github.event_name == 'push' &&
-          '["3.12"]' || '["3.10","3.12"]') }}
+          '["3.14"]' || '["3.11","3.15"]') }}
     steps:
       - name: Checkout exact PR source head
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
