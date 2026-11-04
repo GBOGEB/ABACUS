@@ -11,7 +11,7 @@ from DMAIC_V3.phases.phase1_define import Phase1Define
 
 
 def main():
-    print(f"=== DMAIC V3.3 - Phase 1: Define ===")
+    print("=== DMAIC V3.3 - Phase 1: Define ===")
     print(f"Version: {__version__}")
 
     config = DMAICConfig()
@@ -29,7 +29,7 @@ def main():
     result = phase1.run(iteration)
 
     if result["success"]:
-        print(f"\n[OK] Phase 1 Complete!")
+        print("\n[OK] Phase 1 Complete!")
         print(f"   Files scanned: {result.get('files_scanned', 0)}")
         print(f"   Changes detected: {result.get('changes_detected', 0)}")
         print(f"   Output: {result.get('output_file', 'N/A')}")

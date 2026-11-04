@@ -374,7 +374,7 @@ class DOWArianaIntegration:
 
             orchestration_report['agent_categories'][category] = category_agents
 
-        print(f"\n[ORCHESTRATION FLOW]")
+        print("\n[ORCHESTRATION FLOW]")
         orchestration_flow = [
             {
                 'step': 1,
@@ -415,7 +415,7 @@ class DOWArianaIntegration:
 
         orchestration_report['orchestration_flow'] = orchestration_flow
 
-        print(f"\n[INTEGRATION POINTS]")
+        print("\n[INTEGRATION POINTS]")
         integration_points = {
             'dow_pipeline': {
                 'status': 'active',

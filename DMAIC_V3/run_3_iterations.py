@@ -106,7 +106,7 @@ def run_3_iterations():
     successful = sum(1 for r in iteration_results if r.get("success", False))
     failed = len(iteration_results) - successful
 
-    print(f"Results:")
+    print("Results:")
     print(f"  ✓ Successful: {successful}/3")
     print(f"  ✗ Failed: {failed}/3")
     print()

@@ -210,10 +210,10 @@ class Phase7ActionTracking:
             print("PHASE 7 SUMMARY")
             print("=" * 80)
             print(f"[OK] Actions collected: {len(phase_actions)}")
-            print(f"[OK] Global registry updated")
-            print(f"[OK] Statistics generated")
+            print("[OK] Global registry updated")
+            print("[OK] Statistics generated")
             print(f"[OK] Action links created: {len(action_links)}")
-            print(f"[OK] Feedback created for next iteration")
+            print("[OK] Feedback created for next iteration")
             print(f"[OK] Results saved: {output_file}")
             print("\n[OK] PHASE 7 PASSED")
             print("=" * 80)
@@ -321,26 +321,26 @@ class Phase7ActionTracking:
     def _generate_action_report(self, results: Dict[str, Any], output_file: Path):
         """Generate a markdown report of actions"""
         report = []
-        report.append(f"# Phase 7: Action Tracking Report")
+        report.append("# Phase 7: Action Tracking Report")
         report.append(f"\n**Iteration:** {results['iteration']}")
         report.append(f"**Timestamp:** {results['timestamp']}")
-        report.append(f"\n## Summary")
+        report.append("\n## Summary")
         report.append(f"\n- Total Actions: {len(results['local_actions'])}")
 
         stats = results.get("global_statistics", {})
-        report.append(f"\n## Global Statistics")
+        report.append("\n## Global Statistics")
         report.append(
             f"\n- Total Actions (All Iterations): {stats.get('total_actions', 0)}"
         )
-        report.append(f"\n### By Phase")
+        report.append("\n### By Phase")
         for phase, count in stats.get("by_phase", {}).items():
             report.append(f"- {phase}: {count}")
 
-        report.append(f"\n### By Agent")
+        report.append("\n### By Agent")
         for agent, count in stats.get("by_agent", {}).items():
             report.append(f"- {agent}: {count}")
 
-        report.append(f"\n## Action Links")
+        report.append("\n## Action Links")
         links = results.get("action_links", {})
         report.append(f"\n- Agent Links: {len(links.get('agent_to_actions', {}))}")
         report.append(f"- Artifact Links: {len(links.get('artifact_to_actions', {}))}")

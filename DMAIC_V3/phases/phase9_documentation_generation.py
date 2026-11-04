@@ -628,10 +628,10 @@ def main():
     success, result = phase9.execute(iteration)
 
     if success:
-        print(f"\n✅ Phase 9 completed successfully")
+        print("\n✅ Phase 9 completed successfully")
         sys.exit(0)
     else:
-        print(f"\n❌ Phase 9 failed")
+        print("\n❌ Phase 9 failed")
         sys.exit(1)
 
 

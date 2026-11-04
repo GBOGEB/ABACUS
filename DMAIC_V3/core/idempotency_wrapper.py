@@ -197,7 +197,7 @@ class IdempotentPhaseWrapper:
                     print(
                         f"[IDEMPOTENCY] [OK] Cache hit for {phase_name} iteration {iteration}"
                     )
-                    print(f"[IDEMPOTENCY] Skipping execution - returning cached result")
+                    print("[IDEMPOTENCY] Skipping execution - returning cached result")
                     return self._restore_cached_result(cached)
 
                 print(f"[IDEMPOTENCY] Cache miss - executing {phase_name}")
@@ -250,4 +250,4 @@ def clear_cache(phase_name: Optional[str] = None, iteration: Optional[int] = Non
     else:
         for cache_file in cache_dir.glob("*.cache.json"):
             cache_file.unlink()
-        print(f"[IDEMPOTENCY] Cleared all caches")
+        print("[IDEMPOTENCY] Cleared all caches")

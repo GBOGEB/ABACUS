@@ -233,7 +233,7 @@ class Phase6Knowledge:
         """Generate human-readable knowledge report"""
         report_path = (
             self.output_dir
-            / f"phase6_knowledge"
+            / "phase6_knowledge"
             / f"KNOWLEDGE_REPORT_iter{iteration}.md"
         )
         report_path.parent.mkdir(parents=True, exist_ok=True)
@@ -241,7 +241,7 @@ class Phase6Knowledge:
         improvement_knowledge = improvement_knowledge or []
 
         with open(report_path, "w", encoding="utf-8") as f:
-            f.write(f"# Phase 6: Knowledge Management Report\n\n")
+            f.write("# Phase 6: Knowledge Management Report\n\n")
             f.write(f"**Iteration:** {iteration}\n")
             f.write(f"**Generated:** {datetime.now().isoformat()}\n")
             f.write(f"**Maturity Score:** {maturity_score}/100\n\n")
@@ -309,13 +309,13 @@ class Phase6Knowledge:
             """Generate human-readable knowledge report"""
             report_path = (
                 self.output_dir
-                / f"phase6_knowledge"
+                / "phase6_knowledge"
                 / f"KNOWLEDGE_REPORT_iter{iteration}.md"
             )
             report_path.parent.mkdir(parents=True, exist_ok=True)
 
             with open(report_path, "w", encoding="utf-8") as f:
-                f.write(f"# Phase 6: Knowledge Management Report\n\n")
+                f.write("# Phase 6: Knowledge Management Report\n\n")
                 f.write(f"**Iteration:** {iteration}\n")
                 f.write(f"**Generated:** {datetime.now().isoformat()}\n")
                 f.write(f"**Maturity Score:** {maturity_score}/100\n\n")
