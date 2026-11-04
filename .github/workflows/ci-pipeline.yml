@@ -123,7 +123,7 @@ jobs:
         # generated data/*.json and docs/ outputs absent from git (.gitignore
         # *.json; build_all.sh needs a missing VERSION file). Defect
         # G-AB-QPLANT-HD-ARTIFACTS: reported, not pinned (--max-xfails 0).
-        # qplant/ai_validation/test_generator.py is a production module, not a test.
+        # qplant/ai_validation/test_generator.py is production, not a test.
         if: ${{ !cancelled() }}
         shell: bash
         run: |
@@ -132,6 +132,11 @@ jobs:
           grep -E '^(fastapi|httpx)' qplant/requirements.txt \
             | xargs python -m pip install
           python -c 'import fastapi, httpx, pydantic'
+          dashboard=qplant/handover_dashboard/tests
+          api="$dashboard/test_api.py"
+          data="$dashboard/test_data_integrity.py"
+          engineering="$dashboard/test_engineering.py"
+          outputs="$dashboard/test_outputs.py"
           python scripts/ci/family_collect_guard.py \
             --family qplant --expected-min 124 -- \
             qplant/ai_validation/tests/test_ai_validation.py \
@@ -146,14 +151,14 @@ jobs:
             qplant/handover_dashboard/tests/test_engineering.py \
             qplant/handover_dashboard/tests/test_outputs.py \
             qplant/monitoring_dashboard/tests/test_monitoring.py \
-            --deselect=qplant/handover_dashboard/tests/test_api.py::test_visualization_catalog \
-            --deselect=qplant/handover_dashboard/tests/test_data_integrity.py::test_standards_json_schema \
-            --deselect=qplant/handover_dashboard/tests/test_data_integrity.py::test_helium_properties \
-            --deselect=qplant/handover_dashboard/tests/test_data_integrity.py::test_compressor_specs \
-            --deselect=qplant/handover_dashboard/tests/test_engineering.py::test_baseline_scenario_total_range \
-            --deselect=qplant/handover_dashboard/tests/test_outputs.py::test_all_expected_files_exist \
-            --deselect=qplant/handover_dashboard/tests/test_outputs.py::test_html_renders \
-            --deselect=qplant/handover_dashboard/tests/test_outputs.py::test_json_valid
+            "--deselect=${api}::test_visualization_catalog" \
+            "--deselect=${data}::test_standards_json_schema" \
+            "--deselect=${data}::test_helium_properties" \
+            "--deselect=${data}::test_compressor_specs" \
+            "--deselect=${engineering}::test_baseline_scenario_total_range" \
+            "--deselect=${outputs}::test_all_expected_files_exist" \
+            "--deselect=${outputs}::test_html_renders" \
+            "--deselect=${outputs}::test_json_valid"
 
       - name: Preserve native unit and coverage evidence
         if: always()
