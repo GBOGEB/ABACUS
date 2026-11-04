@@ -323,11 +323,7 @@ class MonitoringIntegration:
                     "name": "Integration Bridges",
                     "panels": [
                         {"title": "DMAIC-DOW Bridge", "type": "status", "metric": "dmaic_dow_coverage"},
-                        {
-                            "title": "Recursive-Temporal Bridge",
-                            "type": "counter",
-                            "metric": "recursive_temporal_artifacts",
-                        },
+                        {"title": "Recursive-Temporal Bridge", "type": "counter", "metric": "recursive_temporal_artifacts"},
                         {"title": "State-Config Bridge", "type": "gauge", "metric": "state_config_validity"},
                         {"title": "Output-Artifact Bridge", "type": "counter", "metric": "output_artifacts"}
                     ]

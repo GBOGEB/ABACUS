@@ -61,11 +61,7 @@ class CICDPipelineSetup:
                     "runs-on": "ubuntu-latest",
                     "steps": [
                         {"name": "Checkout code", "uses": "actions/checkout@v3"},
-                        {
-                            "name": "Set up Python",
-                            "uses": "actions/setup-python@v4",
-                            "with": {"python-version": "3.12"},
-                        },
+                        {"name": "Set up Python", "uses": "actions/setup-python@v4", "with": {"python-version": "3.12"}},
                         {"name": "Install dependencies", "run": "pip install -r requirements.txt"},
                         {"name": "Run smoke tests", "run": "python abacus_v21_smoke_tests.py"},
                         {"name": "Run dry-run tests", "run": "python abacus_v21_dry_run_tests.py"},
@@ -78,11 +74,7 @@ class CICDPipelineSetup:
                     "steps": [
                         {"name": "Checkout code", "uses": "actions/checkout@v3"},
                         {"name": "Build artifacts", "run": "python -m build"},
-                        {
-                            "name": "Upload artifacts",
-                            "uses": "actions/upload-artifact@v3",
-                            "with": {"name": "abacus-v21", "path": "dist/"},
-                        }
+                        {"name": "Upload artifacts", "uses": "actions/upload-artifact@v3", "with": {"name": "abacus-v21", "path": "dist/"}}
                     ]
                 },
                 "deploy": {
