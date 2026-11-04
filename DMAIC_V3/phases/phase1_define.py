@@ -258,7 +258,7 @@ class Phase1Define:
                     print(
                         f"\n  [i] Chunk {chunk_num} complete ({chunk_file_count} files)"
                     )
-                    print(f"  [i] Saving progress and preparing next chunk...")
+                    print("  [i] Saving progress and preparing next chunk...")
 
                     # Save progress
                     accumulated_data = {
@@ -307,7 +307,7 @@ class Phase1Define:
         # Clear progress after complete scan
         self.clear_scan_progress()
 
-        print(f"\n  [OK] Scan complete!")
+        print("\n  [OK] Scan complete!")
         print(f"     Total files scanned: {total_scanned}")
         print(f"     Total chunks: {chunk_num}")
         print(f"     - Documentation: {categorized['docs']}")
@@ -395,14 +395,14 @@ class Phase1Define:
                 for i in range(min(30, rankings.get("total_ranked", 0))):
                     f.write(f"  - rank: {i+1}\n")
                     f.write(f"    artifact: placeholder_{i+1}\n")
-                    f.write(f"    score: 0.0\n\n")
+                    f.write("    score: 0.0\n\n")
 
                 f.write("\nbottom_30:\n")
                 f.write("  # Bottom 30 artifacts by ranking score\n")
                 for i in range(min(30, rankings.get("total_ranked", 0))):
                     f.write(f"  - rank: {i+1}\n")
                     f.write(f"    artifact: placeholder_{i+1}\n")
-                    f.write(f"    score: 0.0\n\n")
+                    f.write("    score: 0.0\n\n")
             else:
                 f.write("top_30: []\n")
                 f.write("bottom_30: []\n")
@@ -484,7 +484,7 @@ class Phase1Define:
                 print(f"  Recommendations: {len(feedback.get('recommendations', []))}")
             else:
                 print(
-                    f"  No feedback from previous iteration (this is normal for iteration 1)"
+                    "  No feedback from previous iteration (this is normal for iteration 1)"
                 )
 
             # Step 1: Scan all files using chunked scanning
@@ -502,7 +502,7 @@ class Phase1Define:
             print("\n[1.2] Detecting changes... SKIPPED (performance optimization)")
             change_summary = {"added": 0, "modified": 0, "deleted": 0, "total": 0}
 
-            print(f"  [i] Change detection disabled for large workspace")
+            print("  [i] Change detection disabled for large workspace")
             file_relationships = []
 
             py_by_dir = defaultdict(list)
@@ -634,7 +634,7 @@ class Phase1Define:
             print(f"  File relationships detected: {len(file_relationships)}")
             if artifact_rankings:
                 print(f"  Artifacts ranked: {artifact_rankings['total_ranked']}")
-            print(f"\n[OK] Outputs generated:")
+            print("\n[OK] Outputs generated:")
             print(f"  - JSON: {output_file}")
             print(f"  - Book: {book_path}")
             print(f"  - Ranking YAML: {yaml_path}")

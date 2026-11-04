@@ -496,7 +496,7 @@ if __name__ == "__main__":
 
     # Get summary
     summary = manager.get_execution_summary()
-    print(f"\n[OK] Execution Summary:")
+    print("\n[OK] Execution Summary:")
     print(f"  Current Iteration: {summary['current_iteration']['iteration_number']}")
     print(f"  Phases Completed: {summary['current_iteration']['phases_completed']}")
 

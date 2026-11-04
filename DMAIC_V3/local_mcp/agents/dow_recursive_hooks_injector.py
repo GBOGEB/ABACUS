@@ -175,13 +175,13 @@ def main():
     print(f"🔄 Processing {len(json_files)} JSON files...")
     result = injector.inject_batch(json_files, iteration=args.iteration)
 
-    print(f"\n✅ Recursive hooks injection complete:")
+    print("\n✅ Recursive hooks injection complete:")
     print(f"   Total: {result['total']}")
     print(f"   Success: {result['success']}")
     print(f"   Failed: {result['failed']}")
 
     if result["failed"] > 0:
-        print(f"\n❌ Some files failed. Check logs for details.")
+        print("\n❌ Some files failed. Check logs for details.")
         sys.exit(1)
 
 
