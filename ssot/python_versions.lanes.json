@@ -1,0 +1,93 @@
+{
+  "schema": "abacus-python-lanes/1.0.0",
+  "authority": "ssot/python_versions.yaml",
+  "authority_state": "MATERIALIZED_VIEW",
+  "generated_by": "tools/ci/python_versions.py sync",
+  "supported": [
+    "3.11",
+    "3.12",
+    "3.13",
+    "3.14",
+    "3.15"
+  ],
+  "default": "3.14",
+  "experimental": [
+    "3.16"
+  ],
+  "lanes": {
+    "default": {
+      "versions": [
+        "3.11",
+        "3.12",
+        "3.13",
+        "3.14",
+        "3.15"
+      ],
+      "pin": "3.14",
+      "oldest": "3.11",
+      "midpoint": "3.13",
+      "newest": "3.15"
+    },
+    "coolprop-oracle": {
+      "versions": [
+        "3.11",
+        "3.12",
+        "3.13",
+        "3.14"
+      ],
+      "pin": "3.14",
+      "oldest": "3.11",
+      "midpoint": "3.13",
+      "newest": "3.14",
+      "reason": "CoolProp==7.2.0 is the governed helium property oracle (docs/qps_line_s_recovery/reference-registry.yaml) and publishes wheels for cp39-cp314 only. Lifting this cap requires an oracle change with physics sign-off, not a CI edit."
+    },
+    "numpy-1x-pin": {
+      "versions": [
+        "3.11",
+        "3.12"
+      ],
+      "pin": "3.12",
+      "oldest": "3.11",
+      "midpoint": "3.12",
+      "newest": "3.12",
+      "reason": "numpy 1.26.x publishes wheels for cp39-cp312 only."
+    },
+    "numpy-2.2-pin": {
+      "versions": [
+        "3.11",
+        "3.12",
+        "3.13"
+      ],
+      "pin": "3.13",
+      "oldest": "3.11",
+      "midpoint": "3.12",
+      "newest": "3.13",
+      "reason": "numpy 2.2.6 publishes wheels for cp310-cp313 only."
+    },
+    "numpy-2.3-pin": {
+      "versions": [
+        "3.11",
+        "3.12",
+        "3.13",
+        "3.14"
+      ],
+      "pin": "3.14",
+      "oldest": "3.11",
+      "midpoint": "3.13",
+      "newest": "3.14",
+      "reason": "numpy 2.3.x publishes wheels for cp311-cp314 only."
+    },
+    "pyyaml-6.0.2-pin": {
+      "versions": [
+        "3.11",
+        "3.12",
+        "3.13"
+      ],
+      "pin": "3.13",
+      "oldest": "3.11",
+      "midpoint": "3.12",
+      "newest": "3.13",
+      "reason": "PyYAML 6.0.2 publishes wheels up to cp313 (6.0.3 adds cp314)."
+    }
+  }
+}

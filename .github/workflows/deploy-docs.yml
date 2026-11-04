@@ -53,7 +53,7 @@ jobs:
   ci:
     uses: GBOGEB/pipeline-automation-hub/.github/workflows/jade-reusable-ci.yml@908a34cf54cdd19c15730bf3931515e6a4642833  # yamllint disable-line rule:line-length
     with:
-      python-version: '3.12'
+      python-version: '3.14'
       install: python -m pip install --disable-pip-version-check pytest
       test-runner: pytest
       # --noconftest: tests/conftest.py imports numpy; the bundle

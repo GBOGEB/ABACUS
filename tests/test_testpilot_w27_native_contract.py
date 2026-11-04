@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import json
 import re
 from pathlib import Path
 
@@ -11,6 +12,11 @@ WORKFLOW = (
     Path(__file__).resolve().parents[1]
     / ".github/workflows/w26-testpilot-matched-coverage.yml"
 )
+# The workflow pins numpy==2.2.6, so ssot/python_versions.yaml caps it to the
+# numpy-2.2-pin lane; cell versions are read from that lane, not literals.
+LANE = json.loads(
+    (Path(__file__).resolve().parents[1] / "ssot/python_versions.lanes.json").read_text(encoding="utf-8")
+)["lanes"]["numpy-2.2-pin"]
 
 
 def _job():
@@ -28,10 +34,10 @@ def test_positive_four_real_os_python_matrix_cells():
     cells = _job()["strategy"]["matrix"]["include"]
     assert len(cells) == 4
     assert {(c["os"], c["python"]) for c in cells} == {
-        ("ubuntu-latest", "3.10"),
-        ("ubuntu-latest", "3.11"),
-        ("ubuntu-latest", "3.12"),
-        ("windows-latest", "3.11"),
+        ("ubuntu-latest", LANE["oldest"]),
+        ("ubuntu-latest", LANE["midpoint"]),
+        ("ubuntu-latest", LANE["newest"]),
+        ("windows-latest", LANE["midpoint"]),
     }
 
 

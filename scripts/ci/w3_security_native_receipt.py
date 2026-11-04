@@ -14,7 +14,12 @@ from scripts.ci.ariana_dow_evidence import read_junit
 
 FULL_SHA = re.compile(r"[0-9a-f]{40}\Z")
 VALID_OS = frozenset({"ubuntu-24.04", "windows-2022", "macos-14"})
-VALID_PY = frozenset({"3.10", "3.11", "3.12"})
+# Supported interpreters come from the SSOT view (ssot/python_versions.yaml).
+VALID_PY = frozenset(
+    json.loads(
+        (Path(__file__).resolve().parents[2] / "ssot/python_versions.lanes.json").read_text(encoding="utf-8")
+    )["supported"]
+)
 
 
 def build_receipt(

@@ -51,7 +51,7 @@ jobs:
           fi
       - uses: actions/setup-python@v7
         with:
-          python-version: "3.11"
+          python-version: "3.14"
       - run: python -m pip install flake8
       - name: Frozen global scan
         run: |
@@ -99,7 +99,7 @@ jobs:
           ref: ${{ env.EXACT_SHA }}
       - uses: actions/setup-python@v7
         with:
-          python-version: "3.11"
+          python-version: "3.14"
       - run: python -m pip install flake8
       - uses: actions/download-artifact@v8
         with:

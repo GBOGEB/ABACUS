@@ -4,6 +4,8 @@ import pytest
 
 from scripts import mip_test_check_completeness as mip
 
+SSOT = mip._ssot_versions()
+
 
 def write(path: Path, text: str) -> None:
     path.parent.mkdir(parents=True, exist_ok=True)
@@ -374,11 +376,12 @@ def test_execution_plan_fast_and_security_escalation():
 
     fast = plan_test_execution(["docs/readme.md"])
     assert fast["mode"] == "fast-advisory"
-    assert fast["python_versions"] == ["3.12"]
+    assert fast["python_versions"] == [SSOT["default"]]
     assert fast["admission_proof"] is False
     escalated = plan_test_execution(["docs/readme.md"], ["C0_SECURITY"])
     assert escalated["mode"] == "thorough"
-    assert escalated["python_versions"] == ["3.9", "3.10", "3.11", "3.12"]
+    assert escalated["python_versions"] == SSOT["supported"]
+    assert not {"3.9", "3.10"} & set(escalated["python_versions"])
     assert escalated["required_checks_preserved"] is True
 
 

@@ -147,11 +147,28 @@ GATE_DOMAINS = (
     "safety",
     "independent_review",
 )
-_ENTERPRISE_JOBS = tuple(
-    f"Test Python {version} on {operating_system}"
-    for version in ("3.10", "3.11", "3.12")
-    for operating_system in ("ubuntu-latest", "windows-latest", "macos-latest")
-)
+_ENTERPRISE_WORKFLOW = Path(__file__).resolve().parents[1] / ".github/workflows/dmaic-enterprise-ci.yml"
+
+
+def _flow_list(text: str, key: str) -> list[str]:
+    match = re.search(rf"^\s+{re.escape(key)}:\s*\[([^\]]*)\]", text, re.M)
+    if match is None:
+        raise ValueError(f"{_ENTERPRISE_WORKFLOW.name}: matrix {key} list not found")
+    return [item.strip().strip("'\"") for item in match.group(1).split(",") if item.strip()]
+
+
+def _enterprise_jobs() -> tuple[str, ...]:
+    # Job names are read from the workflow matrix itself (versions there are
+    # maintained from ssot/python_versions.yaml), so the gate cannot drift.
+    text = _ENTERPRISE_WORKFLOW.read_text(encoding="utf-8")
+    return tuple(
+        f"Test Python {version} on {operating_system}"
+        for version in _flow_list(text, "python-version")
+        for operating_system in _flow_list(text, "os")
+    )
+
+
+_ENTERPRISE_JOBS = _enterprise_jobs()
 _WORKFLOW_GATE_SPECS = {
     "enterprise_ci": {
         "name": "DMAIC V3 Enterprise CI",
