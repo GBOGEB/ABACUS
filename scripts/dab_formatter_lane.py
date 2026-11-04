@@ -26,6 +26,7 @@ from pathlib import Path
 
 TIER = "FORMATTER_BULK"
 HASH_KEYS = re.compile(r"sha256|blob|source_sha|file_sha|content_sha")
+NOSEC = re.compile(r"#\s*nosec\b", re.IGNORECASE)
 PY_PATH = re.compile(r'"([A-Za-z0-9_./-]+\.py)"')
 HEX_LINE = re.compile(
     r"([A-Za-z0-9_./-]+\.py)\b[^\n]*?\b(?:[0-9a-f]{40}|[0-9a-f]{64})\b"
@@ -88,22 +89,38 @@ def bandit_files(report: dict) -> set[str]:
     return out
 
 
+def bandit_suppressed_files(root: Path, files: list[str]) -> set[str]:
+    """Files with inline Bandit suppressions, which the ratchet still scans."""
+    out: set[str] = set()
+    for name in files:
+        try:
+            text = (root / name).read_text(encoding="utf-8")
+        except (OSError, UnicodeDecodeError):
+            continue
+        if NOSEC.search(text):
+            out.add(name)
+    return out
+
+
 def eligible(
     files: list[str],
     cfg: dict,
     pins: set[str],
     hold: set[str],
     flagged: set[str] | None = None,
+    suppressed: set[str] | None = None,
 ) -> tuple[list[str], dict]:
     prefixes = tuple(cfg.get("excluded_path_prefixes", []))
     keep: list[str] = []
     flagged = flagged or set()
+    suppressed = suppressed or set()
     out: dict = {
         "prefix": [],
         "pinned": [],
         "hold": [],
         "not_python": [],
         "bandit_flagged": [],
+        "bandit_suppressed": [],
     }
     for path in sorted(files):
         if not path.endswith(".py"):
@@ -116,6 +133,8 @@ def eligible(
             out["pinned"].append(path)
         elif path in flagged:
             out["bandit_flagged"].append(path)
+        elif path in suppressed:
+            out["bandit_suppressed"].append(path)
         else:
             keep.append(path)
     return keep, out
@@ -142,13 +161,18 @@ def select(
     lane = next((x for x in plan["lanes"] if x["worker_id"] == worker), None)
     if lane is None:
         raise ValueError(f"worker {worker} is not in the plan")
-    flagged = bandit_files(bandit_report) if bandit_report else set()
+    has_bandit_report = bandit_report is not None
+    flagged = bandit_files(bandit_report) if has_bandit_report else set()
+    suppressed = (
+        bandit_suppressed_files(root, lane["files"]) if has_bandit_report else set()
+    )
     keep, excluded = eligible(
         lane["files"],
         cfg,
         collect_pins(root),
         set(plan.get("hold_files", [])),
         flagged,
+        suppressed,
     )
     return {
         "schema": "dab.formatter.selection.v1",
@@ -158,7 +182,7 @@ def select(
         "tool_args": cfg.get("tool_args", []),
         "lane_files": len(lane["files"]),
         "eligible_files": len(keep),
-        "bandit_report_used": bool(bandit_report),
+        "bandit_report_used": has_bandit_report,
         "excluded": {k: v for k, v in excluded.items()},
         "chunks": chunks(keep, int(cfg["max_files_per_lane_pr"])),
         "mutation_writer": 1,

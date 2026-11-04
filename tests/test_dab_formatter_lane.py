@@ -186,3 +186,12 @@ def test_select_with_bandit_report(tmp_path):
     assert sel["bandit_report_used"] is True
     assert sel["excluded"]["bandit_flagged"] == ["a.py"]
     assert [x for c in sel["chunks"] for x in c] == ["b.py"]
+
+
+def test_select_with_suppressed_only_bandit_report(tmp_path):
+    write(tmp_path / "a.py", 'eval("source")  # nosec B307\n')
+    write(tmp_path / "b.py", "x = 1\n")
+    report = {"results": []}
+    sel = F.select(plan_for(["a.py", "b.py"]), "W00", POLICY, tmp_path, report)
+    assert sel["excluded"]["bandit_suppressed"] == ["a.py"]
+    assert [x for c in sel["chunks"] for x in c] == ["b.py"]
