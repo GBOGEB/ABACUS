@@ -552,6 +552,41 @@ def latest_codex_summary(
     )
 
 
+
+# The trusted Codex app publishes per-lane state in its summary comment.
+# Do not infer success from the human-readable table or short SHA.
+CODEX_REVIEW_STATE_V1 = re.compile(
+    r"<!--\s*codex-review-state:v1\s+(\{[^\r\n]*\})\s*-->"
+)
+
+
+def codex_structured_lane_complete(
+    summary: dict[str, Any] | None, lane: str, head_sha: str
+) -> bool | None:
+    """None: legacy transport. False: v1 exists but is not accepted."""
+    if summary is None:
+        return None
+    body = summary.get("body") or ""
+    if "codex-review-state:v1" not in body:
+        return None
+    match = CODEX_REVIEW_STATE_V1.search(body)
+    if match is None:
+        return False
+    try:
+        data = json.loads(match.group(1))
+    except json.JSONDecodeError:
+        return False
+    detail = data.get(lane) if isinstance(data, dict) else None
+    return bool(
+        isinstance(detail, dict)
+        and detail.get("commit_sha") == head_sha
+        and detail.get("status") == "completed"
+        and detail.get("has_any_findings") is False
+        and detail.get("has_unresolved_findings") is False
+    )
+
+
+
 def codex_code_review_complete(
     comments: list[dict[str, Any]],
     head_sha: str,
@@ -559,6 +594,9 @@ def codex_code_review_complete(
     summary = latest_codex_summary(comments)
     if not summary:
         return False
+    structured = codex_structured_lane_complete(summary, "code_review", head_sha)
+    if structured is not None:
+        return structured
     body = summary.get("body", "")
     metadata_match = re.search(
         r"codex-security-review:v1\s+(\{.*?\})\s*-->",
@@ -585,6 +623,11 @@ def codex_security_review_complete(
     comments: list[dict[str, Any]],
     head_sha: str,
 ) -> bool:
+    structured = codex_structured_lane_complete(
+        latest_codex_summary(comments), "security_review", head_sha
+    )
+    if structured is not None:
+        return structured
     marker = re.compile(r"codex-security-review:v1\s+(\{.*?\})\s*-->")
     for comment in sorted(
         comments,
