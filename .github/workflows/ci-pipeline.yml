@@ -123,14 +123,15 @@ jobs:
         if: ${{ !cancelled() }}
         shell: bash
         run: |
+          root=MIP/EVIDENCE_TO_ADMISSION_OBSERVATORY
           python scripts/ci/family_collect_guard.py \
             --family mip_e2a --expected-min 173 -- \
-            MIP/EVIDENCE_TO_ADMISSION_OBSERVATORY/global/test_global_rollup.py \
-            MIP/EVIDENCE_TO_ADMISSION_OBSERVATORY/test_observatory.py \
-            MIP/EVIDENCE_TO_ADMISSION_OBSERVATORY/test_queue_telemetry.py \
-            MIP/EVIDENCE_TO_ADMISSION_OBSERVATORY/test_w30_collector_negative.py \
-            MIP/EVIDENCE_TO_ADMISSION_OBSERVATORY/test_wave_convergence.py \
-            MIP/EVIDENCE_TO_ADMISSION_OBSERVATORY/test_wave_metrics.py
+            "$root/global/test_global_rollup.py" \
+            "$root/test_observatory.py" \
+            "$root/test_queue_telemetry.py" \
+            "$root/test_w30_collector_negative.py" \
+            "$root/test_wave_convergence.py" \
+            "$root/test_wave_metrics.py
 
       - name: Preserve native unit and coverage evidence
         if: always()
