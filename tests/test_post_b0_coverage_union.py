@@ -4,15 +4,11 @@ import pytest
 
 from scripts import post_b0_coverage_union as union
 
-
 SHA = "a" * 40
 
 
 def _surface(executed, missing, context_prefix):
-    contexts = {
-        str(line): [f"{context_prefix}::test_path|run"]
-        for line in executed
-    }
+    contexts = {str(line): [f"{context_prefix}::test_path|run"] for line in executed}
     return {
         "meta": {"branch_coverage": True},
         "files": {
@@ -22,9 +18,7 @@ def _surface(executed, missing, context_prefix):
                 "excluded_lines": [],
                 "contexts": contexts,
                 "executed_branches": [[1, 2]] if 1 in executed else [],
-                "missing_branches": (
-                    [] if 1 in executed else [[1, 2]]
-                ),
+                "missing_branches": ([] if 1 in executed else [[1, 2]]),
                 "summary": {
                     "num_statements": len(executed) + len(missing),
                     "covered_lines": len(executed),
@@ -39,9 +33,7 @@ def test_union_uses_executed_line_sets_not_percentage_addition():
     canonical = _surface([1, 2], [3, 4], "tests.test_contract")
     b0 = _surface([2, 3], [1, 4], "DMAIC_V3.tests.test_contract")
 
-    merged = union.merge_coverage_payloads(
-        [("canonical", canonical), ("b0", b0)]
-    )
+    merged = union.merge_coverage_payloads([("canonical", canonical), ("b0", b0)])
     row = merged["files"]["src/dmaic/contract.py"]
 
     assert row["executed_lines"] == [1, 2, 3]
@@ -178,9 +170,7 @@ def test_union_rejects_bad_inputs_and_handles_sparse_surfaces(tmp_path):
     canonical["files"]["src/dmaic/contract.py"]["missing_branches"] = [[1, 2]]
     other = {"meta": {"branch_coverage": False}, "files": {}}
 
-    merged = union.merge_coverage_payloads(
-        [("canonical", canonical), ("other", other)]
-    )
+    merged = union.merge_coverage_payloads([("canonical", canonical), ("other", other)])
     assert merged["files"]["src/dmaic/contract.py"]["contexts"] == {}
     assert merged["_surface_stats"]["src/dmaic/contract.py"]["other"] == {
         "present": False,

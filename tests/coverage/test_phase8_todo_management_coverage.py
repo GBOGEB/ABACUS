@@ -27,12 +27,19 @@ def test_register_todo_persists_defaults_and_statistics(tmp_path):
 def test_tracker_filters_updates_and_deduplicates_registry(tmp_path):
     tracker = TODOTracker(tmp_path)
     first = {
-        "phase": "phase1", "description": "Define scope", "timestamp": "t1",
-        "priority": "high", "agent": "alpha",
+        "phase": "phase1",
+        "description": "Define scope",
+        "timestamp": "t1",
+        "priority": "high",
+        "agent": "alpha",
     }
     second = {
-        "phase": "phase2", "description": "Measure baseline", "timestamp": "t2",
-        "priority": "low", "status": "completed", "agent": "beta",
+        "phase": "phase2",
+        "description": "Measure baseline",
+        "timestamp": "t2",
+        "priority": "low",
+        "status": "completed",
+        "agent": "beta",
     }
     first_id = tracker.register_todo(first)
     second_id = tracker.register_todo(second)
@@ -50,10 +57,12 @@ def test_tracker_filters_updates_and_deduplicates_registry(tmp_path):
 def test_statistics_handles_unknown_fields_and_empty_input(tmp_path):
     tracker = TODOTracker(tmp_path)
     assert tracker._calculate_statistics([])["completion_rate"] == 0.0
-    stats = tracker._calculate_statistics([
-        {"status": "done", "priority": "high", "phase": "p1", "agent": "a1"},
-        {"status": "pending"},
-    ])
+    stats = tracker._calculate_statistics(
+        [
+            {"status": "done", "priority": "high", "phase": "p1", "agent": "a1"},
+            {"status": "pending"},
+        ]
+    )
     assert stats["by_status"] == {"done": 1, "pending": 1}
     assert stats["by_priority"] == {"high": 1, "unknown": 1}
     assert stats["completion_rate"] == 50.0

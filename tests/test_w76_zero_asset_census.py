@@ -1,12 +1,13 @@
 """W76 adversarial census tests: fail closed on false zero-reduction claims."""
+
 from __future__ import annotations
 
 import copy
 import hashlib
-import tempfile
 import importlib.util
 import json
 import pathlib
+import tempfile
 import unittest
 
 ROOT = pathlib.Path(__file__).resolve().parents[1]
@@ -24,9 +25,14 @@ def coverage_for(baseline=BASE, *, recovered=True):
     for record in baseline["files"]:
         s = record["eligible_statements"]
         b = record["eligible_branches"]
-        files[record["path"]] = {"summary": {
-            "num_statements": s, "covered_lines": min(s, 4) if recovered else 0,
-            "num_branches": b, "covered_branches": min(b, 2) if recovered else 0}}
+        files[record["path"]] = {
+            "summary": {
+                "num_statements": s,
+                "covered_lines": min(s, 4) if recovered else 0,
+                "num_branches": b,
+                "covered_branches": min(b, 2) if recovered else 0,
+            }
+        }
     return {"meta": {"branch_coverage": True, "version": "7.16.2"}, "files": files}
 
 
@@ -34,12 +40,16 @@ def examine(baseline=None, coverage=None, get_blob=None, log=LOG):
     current_baseline = copy.deepcopy(BASE) if baseline is None else baseline
     if coverage is None:
         coverage = coverage_for(current_baseline)
-    blob_by_path = {row["path"]: row["source_blob_sha"]
-                    for row in current_baseline["files"]}
-    return GATE.measure(current_baseline, coverage, SHA,
-                        get_blob if get_blob is not None
-                        else lambda p: blob_by_path[p],
-                        GATE.parse_terminal(log))
+    blob_by_path = {
+        row["path"]: row["source_blob_sha"] for row in current_baseline["files"]
+    }
+    return GATE.measure(
+        current_baseline,
+        coverage,
+        SHA,
+        get_blob if get_blob is not None else lambda p: blob_by_path[p],
+        GATE.parse_terminal(log),
+    )
 
 
 class W76ZeroAssetAuditTests(unittest.TestCase):
@@ -96,7 +106,10 @@ class W76ZeroAssetAuditTests(unittest.TestCase):
         for val in (-1, True, "5"):
             cov = coverage_for()
             cov["files"][BASE["files"][0]["path"]]["summary"]["covered_lines"] = val
-            with self.subTest(val=val), self.assertRaisesRegex(ValueError, "invalid count"):
+            with (
+                self.subTest(val=val),
+                self.assertRaisesRegex(ValueError, "invalid count"),
+            ):
                 examine(coverage=cov)
 
     def test_covered_count_cannot_exceed_eligible_count(self):
@@ -107,13 +120,19 @@ class W76ZeroAssetAuditTests(unittest.TestCase):
             examine(coverage=cov)
 
     def test_coverage_requires_exact_version_and_branch_instrumentation(self):
-        for key, bad in (("version", "7.15.0"),
-                         ("branch_coverage", False),
-                         ("branch_coverage", None)):
+        for key, bad in (
+            ("version", "7.15.0"),
+            ("branch_coverage", False),
+            ("branch_coverage", None),
+        ):
             cov = coverage_for()
             cov["meta"][key] = bad
-            with self.subTest(key=key, bad=bad), self.assertRaisesRegex(
-                    ValueError, "branch mode or coverage version drift"):
+            with (
+                self.subTest(key=key, bad=bad),
+                self.assertRaisesRegex(
+                    ValueError, "branch mode or coverage version drift"
+                ),
+            ):
                 examine(coverage=cov)
 
     def test_baseline_duplicate_path_fails_closed(self):
@@ -123,8 +142,14 @@ class W76ZeroAssetAuditTests(unittest.TestCase):
             examine(baseline=b)
 
     def test_baseline_paths_cannot_escape_or_alias_repository(self):
-        for path in ("../scope.py", "/abs.py", "src//evil.py",
-                     "src/.git/config.py", "src/./alias.py", "C:\\windows\\bad.py"):
+        for path in (
+            "../scope.py",
+            "/abs.py",
+            "src//evil.py",
+            "src/.git/config.py",
+            "src/./alias.py",
+            "C:\\windows\\bad.py",
+        ):
             with self.subTest(path=path):
                 b = copy.deepcopy(BASE)
                 b["files"][0]["path"] = path
@@ -132,13 +157,19 @@ class W76ZeroAssetAuditTests(unittest.TestCase):
                     examine(baseline=b, get_blob=lambda p: "a" * 40)
 
     def test_baseline_cannot_upgrade_or_replace_nonzero_initial_coverage(self):
-        for key, val in (("baseline_covered_statements", 1),
-                         ("baseline_covered_branches", 1),
-                         ("eligible_statements", 0)):
+        for key, val in (
+            ("baseline_covered_statements", 1),
+            ("baseline_covered_branches", 1),
+            ("eligible_statements", 0),
+        ):
             b = copy.deepcopy(BASE)
             b["files"][0][key] = val
-            with self.subTest(key=key), self.assertRaisesRegex(
-                    ValueError, "baseline must contain executable zero-covered"):
+            with (
+                self.subTest(key=key),
+                self.assertRaisesRegex(
+                    ValueError, "baseline must contain executable zero-covered"
+                ),
+            ):
                 examine(baseline=b)
 
     def test_baseline_cannot_transfer_authority(self):
@@ -149,24 +180,31 @@ class W76ZeroAssetAuditTests(unittest.TestCase):
                 examine(baseline=b)
 
     def test_unittest_terminal_requires_successful_unique_population(self):
-        logs = [b"Ran 2 tests in 0.01s\nFAILED (failures=1)\n",
-                b"Ran 0 tests in 0.01s\nOK\n",
-                b"Ran 2 tests in 0.01s\nOK (skipped=2)\n",
-                b"Ran 3 tests in 0.01s\nRan 3 tests in 0.02s\nOK\n"]
+        logs = [
+            b"Ran 2 tests in 0.01s\nFAILED (failures=1)\n",
+            b"Ran 0 tests in 0.01s\nOK\n",
+            b"Ran 2 tests in 0.01s\nOK (skipped=2)\n",
+            b"Ran 3 tests in 0.01s\nRan 3 tests in 0.02s\nOK\n",
+        ]
         for log in logs:
             with self.subTest(log=log), self.assertRaises(ValueError):
                 GATE.parse_terminal(log)
-        positive = GATE.parse_terminal(
-            b"Ran 9 tests in 0.04s\nOK (skipped=1)\n")
-        self.assertEqual(positive, {"executed": 9, "passed": 8,
-                                    "failed": 0, "skipped": 1})
+        positive = GATE.parse_terminal(b"Ran 9 tests in 0.04s\nOK (skipped=1)\n")
+        self.assertEqual(
+            positive, {"executed": 9, "passed": 8, "failed": 0, "skipped": 1}
+        )
 
     def test_missing_measurement_and_invalid_head_are_rejected(self):
         with self.assertRaisesRegex(ValueError, "source-file census"):
             examine(coverage={"meta": coverage_for()["meta"]})
         with self.assertRaisesRegex(ValueError, "source identity"):
-            GATE.measure(BASE, coverage_for(), "short",
-                         lambda p: "a"*40, GATE.parse_terminal(LOG))
+            GATE.measure(
+                BASE,
+                coverage_for(),
+                "short",
+                lambda p: "a" * 40,
+                GATE.parse_terminal(LOG),
+            )
 
     def test_pulse_never_estimates_worker_capacity_or_statistics(self):
         r = examine()
@@ -178,7 +216,6 @@ class W76ZeroAssetAuditTests(unittest.TestCase):
         self.assertEqual(r["pca"], "NOT_ASSESSABLE")
         self.assertEqual(r["bt"], "NOT_ASSESSABLE")
         self.assertFalse(r["native_artifact_bytes_verified"])
-
 
     def test_windows_backslash_paths_are_normalized_to_exact_roster(self):
         candidate = coverage_for()
@@ -195,10 +232,10 @@ class W76ZeroAssetAuditTests(unittest.TestCase):
         candidate = coverage_for()
         name = BASE["files"][0]["path"]
         candidate["files"][name.replace("/", "\\")] = copy.deepcopy(
-            candidate["files"][name])
+            candidate["files"][name]
+        )
         with self.assertRaisesRegex(ValueError, "duplicate normalized coverage"):
             examine(coverage=candidate)
-
 
     def test_detached_git_head_identity_and_ref_reverse(self):
         with tempfile.TemporaryDirectory(prefix="w76-head-") as temp:
@@ -207,8 +244,7 @@ class W76ZeroAssetAuditTests(unittest.TestCase):
             gitdir.mkdir()
             (gitdir / "HEAD").write_text("a" * 40 + "\n", encoding="ascii")
             self.assertEqual(GATE.exact_checkout_sha(root), "a" * 40)
-            (gitdir / "HEAD").write_text("ref: refs/heads/main\n",
-                                         encoding="ascii")
+            (gitdir / "HEAD").write_text("ref: refs/heads/main\n", encoding="ascii")
             with self.assertRaisesRegex(ValueError, "detached exact"):
                 GATE.exact_checkout_sha(root)
 
@@ -223,13 +259,9 @@ class W76ZeroAssetAuditTests(unittest.TestCase):
                 b"blob " + str(len(raw)).encode("ascii") + b"\0" + raw,
                 usedforsecurity=False,
             ).hexdigest()
-            self.assertEqual(
-                GATE.source_blob_sha(root, "src/demo.py"), expected
-            )
+            self.assertEqual(GATE.source_blob_sha(root, "src/demo.py"), expected)
             path.write_bytes(b"answer = 43\n")
-            self.assertNotEqual(
-                GATE.source_blob_sha(root, "src/demo.py"), expected
-            )
+            self.assertNotEqual(GATE.source_blob_sha(root, "src/demo.py"), expected)
 
     def test_source_blob_disallows_missing_symlink_and_traversal(self):
         with tempfile.TemporaryDirectory(prefix="w76-unsafe-") as temp:

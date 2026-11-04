@@ -1,6 +1,13 @@
 #!/usr/bin/env python3
 """Local T0 diagnostics. Never dispatches GitHub Actions; operational metrics only."""
-import glob, hashlib, json, os, shutil, subprocess, tempfile, time
+import glob
+import hashlib
+import json
+import os
+import shutil
+import subprocess
+import tempfile
+import time
 
 
 def probe(name, cmd=None, fn=None):

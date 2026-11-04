@@ -4,17 +4,17 @@
 Fix v033 file - Remove merge conflicts and add sprint/DOW test markers
 """
 
-from pathlib import Path
 import re
+from pathlib import Path
 
 
 def clean_and_update_v033():
     file_path = Path(__file__).parent / "execute_full_dmaic_phases_0_to_9_v033.py"
 
     print(f"Reading {file_path}...")
-    content = file_path.read_text(encoding='utf-8')
+    content = file_path.read_text(encoding="utf-8")
 
-    lines = content.split('\n')
+    lines = content.split("\n")
     cleaned_lines = []
     in_conflict = False
     first_header_done = False
@@ -23,17 +23,19 @@ def clean_and_update_v033():
     while i < len(lines):
         line = lines[i]
 
-        if '=======' in line or '>>>>>>>' in line or '<<<<<<< ' in line:
+        if "=======" in line or ">>>>>>>" in line or "<<<<<<< " in line:
             in_conflict = True
             i += 1
             continue
 
-        if not first_header_done and line.strip().startswith('#!/usr/bin/env python3'):
-            if cleaned_lines and cleaned_lines[-1].strip().startswith('#!/usr/bin/env python3'):
+        if not first_header_done and line.strip().startswith("#!/usr/bin/env python3"):
+            if cleaned_lines and cleaned_lines[-1].strip().startswith(
+                "#!/usr/bin/env python3"
+            ):
                 i += 1
                 continue
 
-        if i < 70 and ('=======' in line or line.strip() == ''):
+        if i < 70 and ("=======" in line or line.strip() == ""):
             if in_conflict:
                 i += 1
                 continue
@@ -41,7 +43,7 @@ def clean_and_update_v033():
         cleaned_lines.append(line)
         i += 1
 
-    cleaned_content = '\n'.join(cleaned_lines)
+    cleaned_content = "\n".join(cleaned_lines)
 
     header_replacement = '''#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
@@ -166,11 +168,13 @@ class FullDMAICOrchestrator:
         self.dow_tested = True
         self.canonical_aligned = True'''
 
-    pattern = re.compile(r'^#!/usr/bin/env python3.*?class FullDMAICOrchestrator:', re.DOTALL)
-    cleaned_content = pattern.sub(header_replacement + '\n', cleaned_content, count=1)
+    pattern = re.compile(
+        r"^#!/usr/bin/env python3.*?class FullDMAICOrchestrator:", re.DOTALL
+    )
+    cleaned_content = pattern.sub(header_replacement + "\n", cleaned_content, count=1)
 
     print(f"Writing cleaned content to {file_path}...")
-    file_path.write_text(cleaned_content, encoding='utf-8')
+    file_path.write_text(cleaned_content, encoding="utf-8")
 
     print("✅ File cleaned and updated successfully!")
     print("   - Removed merge conflict markers")
@@ -180,6 +184,7 @@ class FullDMAICOrchestrator:
     print("   - Added version history")
     print("   - Added sprint_tested and dow_tested fields to PhaseExecution")
     print("   - Added test status flags to FullDMAICOrchestrator")
+
 
 if __name__ == "__main__":
     clean_and_update_v033()

@@ -9,7 +9,6 @@ import re
 from pathlib import Path
 from typing import Any, Dict, Iterable, List, Tuple
 
-
 ROOT = Path(__file__).resolve().parents[1]
 DEFAULT_MANIFEST = ROOT / "ssot" / "ssot_style.json"
 HEX_RE = re.compile(r"^#[0-9A-Fa-f]{6}$")
@@ -39,7 +38,13 @@ REQUIRED_FEDERATION_METHODS = {
     "PCA_REVERSED_P5_TO_P1",
     "BT_PRIORITY",
 }
-REQUIRED_BLOCKING_CONCLUSIONS = {"failure", "timed_out", "action_required", "startup_failure", "stale"}
+REQUIRED_BLOCKING_CONCLUSIONS = {
+    "failure",
+    "timed_out",
+    "action_required",
+    "startup_failure",
+    "stale",
+}
 REQUIRED_MANUAL_REVIEW_CONCLUSIONS = {"cancelled"}
 REQUIRED_PENDING_STATUSES = {"queued", "in_progress", "requested", "waiting", "pending"}
 REQUIRED_REPAIR_PRS = {"GBOGEB/ABACUS": {754, 756}, "GBOGEB/CODEX": {298, 300}}
@@ -106,34 +111,76 @@ def validate_manifest(manifest: Dict[str, Any]) -> List[str]:
     _require(bool(manifest.get("purpose")), "purpose is required", errors)
 
     scope = manifest.get("scope", {})
-    _require(scope.get("primary_repo") == "GBOGEB/ABACUS", "primary_repo must be GBOGEB/ABACUS", errors)
-    bridge_repos = _string_set(scope.get("bridge_repos", []), "scope.bridge_repos", errors)
+    _require(
+        scope.get("primary_repo") == "GBOGEB/ABACUS",
+        "primary_repo must be GBOGEB/ABACUS",
+        errors,
+    )
+    bridge_repos = _string_set(
+        scope.get("bridge_repos", []), "scope.bridge_repos", errors
+    )
     _require("GBOGEB/CODEX" in bridge_repos, "CODEX bridge repo is required", errors)
-    _require("controlled-evidence-repo" in bridge_repos, "controlled evidence bridge repo is required", errors)
+    _require(
+        "controlled-evidence-repo" in bridge_repos,
+        "controlled evidence bridge repo is required",
+        errors,
+    )
 
     palette = manifest.get("palette", {}).get("tokens", {})
     _require(bool(palette), "palette tokens are required", errors)
     for name, value in palette.items():
-        _require(isinstance(value, str) and bool(HEX_RE.match(value)), f"palette token {name} must be #RRGGBB", errors)
+        _require(
+            isinstance(value, str) and bool(HEX_RE.match(value)),
+            f"palette token {name} must be #RRGGBB",
+            errors,
+        )
 
     artifacts = manifest.get("artifact_contract", {})
     missing_artifacts = REQUIRED_ARTIFACTS - set(artifacts)
-    _require(not missing_artifacts, f"missing artifact contract(s): {_format_missing(missing_artifacts)}", errors)
-    html_gates = _string_set(artifacts.get("html", []), "artifact_contract.html", errors)
+    _require(
+        not missing_artifacts,
+        f"missing artifact contract(s): {_format_missing(missing_artifacts)}",
+        errors,
+    )
+    html_gates = _string_set(
+        artifacts.get("html", []), "artifact_contract.html", errors
+    )
     missing_html_gates = REQUIRED_HTML_GATES - html_gates
-    _require(not missing_html_gates, f"missing required HTML QA gate(s): {_format_missing(missing_html_gates)}", errors)
+    _require(
+        not missing_html_gates,
+        f"missing required HTML QA gate(s): {_format_missing(missing_html_gates)}",
+        errors,
+    )
 
     wave = _mapping(manifest.get("federation_wave", {}), "federation_wave", errors)
-    _require(wave.get("id") == "SSOT-STYLE-W04", "federation_wave id must be SSOT-STYLE-W04", errors)
+    _require(
+        wave.get("id") == "SSOT-STYLE-W04",
+        "federation_wave id must be SSOT-STYLE-W04",
+        errors,
+    )
     repos = _string_set(wave.get("repos", []), "federation_wave.repos", errors)
     missing_repos = REQUIRED_FEDERATION_REPOS - repos
-    _require(not missing_repos, f"missing federation repo(s): {_format_missing(missing_repos)}", errors)
-    lanes = _string_set(wave.get("artifact_lanes", []), "federation_wave.artifact_lanes", errors)
+    _require(
+        not missing_repos,
+        f"missing federation repo(s): {_format_missing(missing_repos)}",
+        errors,
+    )
+    lanes = _string_set(
+        wave.get("artifact_lanes", []), "federation_wave.artifact_lanes", errors
+    )
     missing_lanes = REQUIRED_FEDERATION_LANES - lanes
-    _require(not missing_lanes, f"missing federation artifact lane(s): {_format_missing(missing_lanes)}", errors)
+    _require(
+        not missing_lanes,
+        f"missing federation artifact lane(s): {_format_missing(missing_lanes)}",
+        errors,
+    )
     methods = _string_set(wave.get("methods", []), "federation_wave.methods", errors)
     missing_methods = REQUIRED_FEDERATION_METHODS - methods
-    _require(not missing_methods, f"missing federation method(s): {_format_missing(missing_methods)}", errors)
+    _require(
+        not missing_methods,
+        f"missing federation method(s): {_format_missing(missing_methods)}",
+        errors,
+    )
     _require(
         wave.get("no_credit_without_child_disposition") is True,
         "federation wave must block credit without child disposition",
@@ -148,7 +195,11 @@ def validate_manifest(manifest: Dict[str, Any]) -> List[str]:
         for field in ("id", "path", "kind", "weight"):
             _require(field in probe, f"awake probe missing {field}: {probe}", errors)
         if "weight" in probe:
-            _require(isinstance(probe["weight"], int) and probe["weight"] > 0, f"probe weight must be positive: {probe}", errors)
+            _require(
+                isinstance(probe["weight"], int) and probe["weight"] > 0,
+                f"probe weight must be positive: {probe}",
+                errors,
+            )
 
     return errors
 
@@ -232,15 +283,43 @@ def _validate_handoff_check_policy(wave: Dict[str, Any], errors: List[str]) -> N
 
 def _validate_lineage_binding(manifest: Dict[str, Any], errors: List[str]) -> None:
     lineage = _mapping(manifest.get("lineage_binding", {}), "lineage_binding", errors)
-    _require(lineage.get("contract_version") == "0.2.0", "lineage contract_version must be 0.2.0", errors)
-    _require(lineage.get("status") == "pending_retest", "lineage status must be pending_retest", errors)
-    inputs = _mapping(lineage.get("baseline_inputs", {}), "lineage_binding.baseline_inputs", errors)
+    _require(
+        lineage.get("contract_version") == "0.2.0",
+        "lineage contract_version must be 0.2.0",
+        errors,
+    )
+    _require(
+        lineage.get("status") == "pending_retest",
+        "lineage status must be pending_retest",
+        errors,
+    )
+    inputs = _mapping(
+        lineage.get("baseline_inputs", {}), "lineage_binding.baseline_inputs", errors
+    )
     for repo in sorted(REQUIRED_FEDERATION_REPOS):
-        binding = _mapping(inputs.get(repo, {}), f"lineage_binding.baseline_inputs.{repo}", errors)
-        _require(bool(SHA_RE.fullmatch(str(binding.get("commit_sha", "")))), f"invalid commit SHA for {repo}", errors)
-        _require(bool(SHA256_RE.fullmatch(str(binding.get("manifest_sha256", "")))), f"invalid manifest SHA256 for {repo}", errors)
-        _require(binding.get("manifest_sha256") == REQUIRED_BASELINE_SHA256[repo], f"baseline manifest SHA256 mismatch for {repo}", errors)
-        _require(bool(binding.get("manifest_path")), f"manifest path missing for {repo}", errors)
+        binding = _mapping(
+            inputs.get(repo, {}), f"lineage_binding.baseline_inputs.{repo}", errors
+        )
+        _require(
+            bool(SHA_RE.fullmatch(str(binding.get("commit_sha", "")))),
+            f"invalid commit SHA for {repo}",
+            errors,
+        )
+        _require(
+            bool(SHA256_RE.fullmatch(str(binding.get("manifest_sha256", "")))),
+            f"invalid manifest SHA256 for {repo}",
+            errors,
+        )
+        _require(
+            binding.get("manifest_sha256") == REQUIRED_BASELINE_SHA256[repo],
+            f"baseline manifest SHA256 mismatch for {repo}",
+            errors,
+        )
+        _require(
+            bool(binding.get("manifest_path")),
+            f"manifest path missing for {repo}",
+            errors,
+        )
 
 
 def score_awake_probes(manifest: Dict[str, Any], root: Path = ROOT) -> Dict[str, Any]:
@@ -331,7 +410,13 @@ def _probe_depth(kind: str, path: Path) -> Tuple[int, int, List[str]]:
     elif kind in {"dow", "keb"}:
         for label, patterns in {
             "tests": ("def test_", "unittest", "pytest"),
-            "bidirectional": ("bidirectional", "cross_sut", "schedule_task", "DOW_TO_KEB", "KEB_TO_DOW"),
+            "bidirectional": (
+                "bidirectional",
+                "cross_sut",
+                "schedule_task",
+                "DOW_TO_KEB",
+                "KEB_TO_DOW",
+            ),
             "runtime": ("async", "start(", "stop(", "get_metrics"),
             "queue_feedback": ("queue_size", "tasks_executed", "feedback_loop"),
         }.items():
@@ -408,14 +493,20 @@ def score_artifact_contract(manifest: Dict[str, Any]) -> Dict[str, Any]:
     }
 
 
-def build_report(manifest_path: Path = DEFAULT_MANIFEST, root: Path = ROOT) -> Dict[str, Any]:
+def build_report(
+    manifest_path: Path = DEFAULT_MANIFEST, root: Path = ROOT
+) -> Dict[str, Any]:
     manifest = load_manifest(manifest_path)
     errors = validate_manifest(manifest)
     awake = score_awake_probes(manifest, root=root)
     penetration = score_penetration(manifest, root=root)
     contract = score_artifact_contract(manifest)
     return {
-        "manifest": str(manifest_path.relative_to(root) if manifest_path.is_relative_to(root) else manifest_path),
+        "manifest": str(
+            manifest_path.relative_to(root)
+            if manifest_path.is_relative_to(root)
+            else manifest_path
+        ),
         "valid": not errors,
         "errors": errors,
         "artifact_contract": contract,
@@ -437,7 +528,9 @@ def main(argv: Iterable[str] | None = None) -> int:
     print(json.dumps(report, indent=2, sort_keys=True))
     if args.output:
         args.output.parent.mkdir(parents=True, exist_ok=True)
-        args.output.write_text(json.dumps(report, indent=2, sort_keys=True) + "\n", encoding="utf-8")
+        args.output.write_text(
+            json.dumps(report, indent=2, sort_keys=True) + "\n", encoding="utf-8"
+        )
     return 0 if report["valid"] else 1
 
 

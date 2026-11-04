@@ -54,7 +54,10 @@ def pulse(i, include_bandit=False):
     return {
         "schema": "bd.ldab.joined.census.v1",
         "scope": scope,
-        "metrics": {"full_bandit_unique": i if include_bandit else 0, "comparable_delta": None},
+        "metrics": {
+            "full_bandit_unique": i if include_bandit else 0,
+            "comparable_delta": None,
+        },
         "roots": roots,
         "merge_admission": "HOLD",
         "security_disposition": "INDEPENDENT_REVIEW_REQUIRED",
@@ -134,7 +137,9 @@ def test_zero_and_nonzero_bandit_populations_are_distinct():
     for root in positive["roots"]:
         observation = root["observations"][0]
         assert observation["source_sha"] == positive["scope"]["head_sha"]
-        assert observation["scan_configuration"] == positive["scope"]["scan_configuration"]
+        assert (
+            observation["scan_configuration"] == positive["scope"]["scan_configuration"]
+        )
         assert observation["evidence_url"] == positive["scope"]["evidence_url"]
     result = m.rollup([zero, positive, third])
     assert [p["bandit_observations"] for p in result["pulses"]] == [0, 2, 0]
@@ -181,9 +186,7 @@ def test_same_denominator_cannot_promote_unverified_coverage():
 def test_reject_forged_coverage_verification_marker():
     rows = [pulse(i) for i in (1, 2, 3)]
     rows[0]["coverage"] = {
-        "main_branch": {
-            "covered": 17, "eligible": 20, "config": "v1", "verified": True
-        }
+        "main_branch": {"covered": 17, "eligible": 20, "config": "v1", "verified": True}
     }
     with pytest.raises(ValueError):
         m.rollup(rows)

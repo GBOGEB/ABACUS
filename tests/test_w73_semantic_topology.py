@@ -2,7 +2,6 @@ import importlib.util
 import json
 from pathlib import Path
 
-
 SPEC = importlib.util.spec_from_file_location(
     "w73_topology", Path("tools/w73_build_semantic_topology_rows.py")
 )

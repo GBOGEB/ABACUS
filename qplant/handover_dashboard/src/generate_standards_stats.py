@@ -553,17 +553,36 @@ def run_monte_carlo():
     }
 
     # Sobol-like sensitivity (variance-based)
-    total_var = mc_df["total_cost_eur"].var()
+    y = mc_df["total_cost_eur"]
+    total_var = y.var(ddof=0)
     input_cols = ["he_price_eur_kg", "valve_failure_rate", "mttr_hours",
                   "leak_class_idx", "material_uhmwpe", "valve_count"]
     sensitivity = {}
     for col in input_cols:
-        # First-order: Var(E[Y|Xi]) / Var(Y)
-        bins = pd.qcut(mc_df[col], q=min(20, mc_df[col].nunique()), duplicates="drop")
-        conditional_means = mc_df.groupby(bins, observed=False)["total_cost_eur"].mean()
-        var_conditional_mean = conditional_means.var() * len(conditional_means)
-        s1 = float(var_conditional_mean / max(total_var, 1e-12))
-        sensitivity[col] = min(s1, 1.0)
+        # First-order: Var(E[Y|Xi]) / Var(Y), with Var(E[Y|Xi]) the
+        # group-size-weighted variance of the conditional means (law of
+        # total variance), so 0 <= S1 <= 1.
+        # Discrete inputs (e.g. binary material) group by raw value; qcut
+        # would collapse them into a single bin.
+        if mc_df[col].nunique() <= 20:
+            groups = mc_df[col]
+        else:
+            groups = pd.qcut(mc_df[col], q=20, duplicates="drop")
+        grouped = y.groupby(groups, observed=True)
+        conditional_means = grouped.mean()
+        counts = grouped.size()
+        n_obs, k = int(counts.sum()), len(conditional_means)
+        if k < 2 or n_obs <= k or total_var <= 0:
+            sensitivity[col] = 0.0
+            continue
+        ss_between = float((counts * (conditional_means - y.mean()) ** 2).sum())
+        ss_within = float(total_var * n_obs - ss_between)
+        # Remove the (k - 1) * MS_within that pure sampling noise adds to the
+        # between-group sum of squares (ANOVA bias correction); without it
+        # small samples overstate every index.
+        var_conditional_mean = (ss_between - (k - 1) * ss_within / (n_obs - k)) / n_obs
+        s1 = var_conditional_mean / total_var
+        sensitivity[col] = float(min(max(s1, 0.0), 1.0)) if np.isfinite(s1) else 0.0
 
     return mc_df, stats, sensitivity
 

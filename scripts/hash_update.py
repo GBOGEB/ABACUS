@@ -9,7 +9,7 @@ import argparse
 import hashlib
 import json
 from pathlib import Path
-from typing import Dict, Any
+from typing import Any, Dict
 
 
 def sha256_file(p: Path) -> str:
@@ -37,7 +37,9 @@ def main() -> None:
             changed = True
 
     if changed:
-        idx_path.write_text(json.dumps(idx, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
+        idx_path.write_text(
+            json.dumps(idx, indent=2, ensure_ascii=False) + "\n", encoding="utf-8"
+        )
         print(f"[WROTE] {idx_path}")
     else:
         print("[OK] hashes up to date")

@@ -1,4 +1,5 @@
 """Regression tests for DOW log provenance, fan-out and UNKNOWN semantics."""
+
 from __future__ import annotations
 
 import sys
@@ -49,7 +50,10 @@ def test_classifies_three_failed_hooks_with_exact_identity():
     assert result["observation"]["failed_hook_signatures"] == 3
     assert result["observation"]["first_red"] == "end-of-file-fixer"
     assert {h["hook_id"] for h in result["observation"]["failed_hooks"]} == {
-        "end-of-file-fixer", "trailing-whitespace", "abacus-testpilot-fast"}
+        "end-of-file-fixer",
+        "trailing-whitespace",
+        "abacus-testpilot-fast",
+    }
     assert result["observation"]["unique_modified_files"] == 2
 
 
@@ -71,7 +75,9 @@ def test_rejects_partial_sha_and_unknown_edges():
     with pytest.raises(ValueError, match="40-character"):
         produce(sha="deadbeef")
     with pytest.raises(ValueError, match="Unknown dependency"):
-        downstream_jobs({"lint-and-validate": {}, "bad": {"needs": ["absent"]}}, "lint-and-validate")
+        downstream_jobs(
+            {"lint-and-validate": {}, "bad": {"needs": ["absent"]}}, "lint-and-validate"
+        )
 
 
 def test_deterministic_repeated_receipt():

@@ -29,7 +29,13 @@ def digest(data: bytes) -> str:
     return hashlib.sha256(data).hexdigest()
 
 def git_head(root: Path) -> str:
-    result = subprocess.run(["git", "rev-parse", "--verify", "HEAD"], cwd=root, capture_output=True, text=True, check=False)
+    result = subprocess.run(
+        ["git", "rev-parse", "--verify", "HEAD"],
+        cwd=root,
+        capture_output=True,
+        text=True,
+        check=False,
+    )
     sha = result.stdout.strip().lower() if result.returncode == 0 else ""
     return sha if SHA.fullmatch(sha) else ""
 
@@ -69,7 +75,15 @@ def observe(root: Path, repo: str, expected_sha: str, *, observed_sha: str | Non
     if actual != expected_sha:
         raise ValueError("EXACT_HEAD_MISMATCH")
     directory = root / ".github" / "workflows"
-    files = sorted(p for p in directory.iterdir() if p.is_file() and p.suffix in {".yaml", ".yml"}) if directory.is_dir() else []
+    files = (
+        sorted(
+            p
+            for p in directory.iterdir()
+            if p.is_file() and p.suffix in {".yaml", ".yml"}
+        )
+        if directory.is_dir()
+        else []
+    )
     actions = [ref for path in files for ref in parse_actions(path.read_text(encoding="utf-8"), path.name)]
     cfg = next((p for p in (root/".github"/"dependabot.yml", root/".github"/"dependabot.yaml") if p.is_file()), None)
     ecosystems = parse_config(cfg.read_text(encoding="utf-8")) if cfg else []

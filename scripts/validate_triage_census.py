@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 from pathlib import Path
-import sys, yaml
+import sys
+import yaml
 ROOT = Path(__file__).resolve().parents[1]
 P = ROOT/'triage'/'census'/'ABACUS.census.yaml'
 REQ = {'identity', 'locations', 'architecture', 'contracts', 'execution', 'pipeline', 'outward_products', 'automation', 'integration', 'governance'}

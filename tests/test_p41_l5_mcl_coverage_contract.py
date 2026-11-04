@@ -7,16 +7,20 @@ from mission_control_lite import coverage_pulse as pulse
 
 def minimal():
     return {
-        "schema": pulse.SCHEMA, "repository": "GBOGEB/ABACUS",
+        "schema": pulse.SCHEMA,
+        "repository": "GBOGEB/ABACUS",
         "scope_id": "mission_control_lite/branch-v1",
         "files": ["mission_control_lite/core.py"],
         "coverage_version": "7.16.2",
         "source_sha": "a" * 40,
         "totals": {
-            "covered_lines": 6, "num_statements": 10,
-            "covered_branches": 2, "num_branches": 4,
+            "covered_lines": 6,
+            "num_statements": 10,
+            "covered_branches": 2,
+            "num_branches": 4,
         },
-        "line_percent": 60.0, "branch_percent": 50.0,
+        "line_percent": 60.0,
+        "branch_percent": 50.0,
         "tests_by_suite": {"core": 3},
         "test_case_ids": ["a", "b", "c"],
         "tests_passed": 3,
@@ -56,14 +60,29 @@ def test_unknown_native_baseline_does_not_yield_zero_delta():
     assert "new_covered_lines" not in result
 
 
-@pytest.mark.parametrize("invalid", [
-    {"covered_lines": True, "num_statements": 10, "covered_branches": 0,
-     "num_branches": 1},
-    {"covered_lines": 11, "num_statements": 10, "covered_branches": 0,
-     "num_branches": 1},
-    {"covered_lines": 1, "num_statements": 10, "covered_branches": 2,
-     "num_branches": 1},
-])
+@pytest.mark.parametrize(
+    "invalid",
+    [
+        {
+            "covered_lines": True,
+            "num_statements": 10,
+            "covered_branches": 0,
+            "num_branches": 1,
+        },
+        {
+            "covered_lines": 11,
+            "num_statements": 10,
+            "covered_branches": 0,
+            "num_branches": 1,
+        },
+        {
+            "covered_lines": 1,
+            "num_statements": 10,
+            "covered_branches": 2,
+            "num_branches": 1,
+        },
+    ],
+)
 def test_invalid_coverage_is_rejected_not_silently_cast(invalid):
     with pytest.raises(ValueError):
         pulse._counts(invalid)

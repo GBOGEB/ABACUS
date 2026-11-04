@@ -1,7 +1,6 @@
 import json
 from pathlib import Path
 
-
 ROOT = Path(__file__).resolve().parents[1]
 CONTRACT = ROOT / "governance" / "qps_triage" / "DOW_CONTRACT_v1.json"
 
@@ -33,7 +32,14 @@ def test_dow_disposition_and_reentry_are_explicit():
     data = _load()
     assert data["disposition_enum"] == ["ACCEPT", "REJECT", "DEFER"]
     required = set(data["required_output_fields"])
-    assert {"consumer_pr", "consumer_head_sha", "producer_head_sha", "producer_receipt_sha256", "disposition", "child_reentry_target"} <= required
+    assert {
+        "consumer_pr",
+        "consumer_head_sha",
+        "producer_head_sha",
+        "producer_receipt_sha256",
+        "disposition",
+        "child_reentry_target",
+    } <= required
     assert data["predecessor"]["accepted_keb_receipt_pr"] == 1107
 
 

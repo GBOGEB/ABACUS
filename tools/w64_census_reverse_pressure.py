@@ -5,6 +5,7 @@ Consumes the P1 census JSON and turns conservative inventory signals into
 release-pressure findings. P2 does not migrate/delete anything; it separates
 blockers from warnings so P3 can emit a defensible release receipt.
 """
+
 from __future__ import annotations
 
 import argparse
@@ -154,9 +155,9 @@ def generated_inflation_findings(
                 "severity": "blocker",
                 "type": "generated_authority_collision",
                 "count": len(authority_like_generated),
-                "paths": sorted(
-                    path_text(asset) for asset in authority_like_generated
-                )[:250],
+                "paths": sorted(path_text(asset) for asset in authority_like_generated)[
+                    :250
+                ],
                 "reason": (
                     "Generated authority-like files cannot be counted as SSOT without "
                     "explicit upstream lineage."

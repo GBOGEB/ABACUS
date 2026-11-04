@@ -5,15 +5,16 @@ Version: 1.0.0
 Date: 2025-11-26
 """
 
-import pytest
-from pathlib import Path
 import json
 import sys
+from pathlib import Path
+
+import pytest
 
 sys.path.insert(0, str(Path(__file__).parent.parent.parent))
 
+from DMAIC_V3.config import VERSION, DMAICConfig
 from DMAIC_V3.core.handover_bridge import HandoverBridge
-from DMAIC_V3.config import DMAICConfig, VERSION
 from DMAIC_V3.core.state import StateManager
 
 
@@ -24,7 +25,7 @@ def config():
 
 @pytest.fixture
 def state_manager(config, tmp_path):
-    return StateManager(tmp_path / 'state')
+    return StateManager(tmp_path / "state")
 
 
 @pytest.fixture
@@ -36,12 +37,15 @@ def handover_bridge(config, state_manager):
 # DMAIC → DOW Bridge Tests
 # ============================================================================
 
+
 @pytest.mark.bridge
 @pytest.mark.bidirectional
 class TestDMAICToDOWBridge:
     """Test DMAIC output → DOW input data flow"""
 
-    def test_dmaic_phase_output_to_dow_knowledge_package(self, handover_bridge, tmp_path):
+    def test_dmaic_phase_output_to_dow_knowledge_package(
+        self, handover_bridge, tmp_path
+    ):
         """Test Phase 5 output converts to DOW knowledge package"""
         # Simulate DMAIC Phase 5 output
         dmaic_output = {
@@ -50,10 +54,10 @@ class TestDMAICToDOWBridge:
             "results": {
                 "control_plan": "Automated monitoring",
                 "metrics": {"quality_score": 95.5},
-                "recommendations": ["Deploy to production", "Enable monitoring"]
+                "recommendations": ["Deploy to production", "Enable monitoring"],
             },
             "iteration": 1,
-            "timestamp": "2025-11-26T10:00:00Z"
+            "timestamp": "2025-11-26T10:00:00Z",
         }
 
         # Convert to DOW knowledge package
@@ -64,9 +68,9 @@ class TestDMAICToDOWBridge:
         provenance = handover_bridge.get_provenance_trail()
         assert len(provenance) >= 2  # run_started + action
 
-        action_log = [p for p in provenance if p['event'] == 'action'][0]
-        assert action_log['phase'] == 'control'
-        assert action_log['details']['phase'] == 5
+        action_log = [p for p in provenance if p["event"] == "action"][0]
+        assert action_log["phase"] == "control"
+        assert action_log["details"]["phase"] == 5
 
     def test_dmaic_metrics_to_dow_metadata(self, handover_bridge):
         """Test DMAIC metrics convert to DOW metadata format"""
@@ -77,7 +81,7 @@ class TestDMAICToDOWBridge:
             "phase4_duration": 70.3,
             "phase5_duration": 40.1,
             "total_duration": 271.1,
-            "quality_score": 92.5
+            "quality_score": 92.5,
         }
 
         handover_bridge.begin_run("metrics_test")
@@ -85,7 +89,7 @@ class TestDMAICToDOWBridge:
 
         metrics_history = handover_bridge.get_metrics_history()
         assert len(metrics_history) == 1
-        assert metrics_history[0]['metrics']['quality_score'] == 92.5
+        assert metrics_history[0]["metrics"]["quality_score"] == 92.5
 
     def test_dmaic_results_to_handover_manifest(self, handover_bridge, tmp_path):
         """Test DMAIC results generate valid handover manifest"""
@@ -94,9 +98,7 @@ class TestDMAICToDOWBridge:
         # Simulate all 5 phases
         for phase in range(1, 6):
             handover_bridge.log_action(
-                f"phase{phase}",
-                "completed",
-                {"phase": phase, "status": "success"}
+                f"phase{phase}", "completed", {"phase": phase, "status": "success"}
             )
 
         handover_bridge.finish_run("success", {"total_phases": 5})
@@ -116,7 +118,7 @@ class TestDMAICToDOWBridge:
             "run_id": "test_001",
             "phases_completed": 5,
             "final_metrics": {"quality": 95.0},
-            "artifacts": ["control_plan.json", "metrics.json"]
+            "artifacts": ["control_plan.json", "metrics.json"],
         }
 
         # Schema validation
@@ -132,6 +134,7 @@ class TestDMAICToDOWBridge:
 # DOW → DMAIC Bridge Tests
 # ============================================================================
 
+
 @pytest.mark.bridge
 @pytest.mark.bidirectional
 class TestDOWToDMAICBridge:
@@ -145,12 +148,12 @@ class TestDOWToDMAICBridge:
             "component": "KEB",
             "knowledge_entries": [
                 {"id": "K001", "category": "quality", "content": "Best practice 1"},
-                {"id": "K002", "category": "process", "content": "Best practice 2"}
+                {"id": "K002", "category": "process", "content": "Best practice 2"},
             ],
             "metadata": {
                 "source": "DOW_Level5_KEB",
-                "timestamp": "2025-11-26T10:00:00Z"
-            }
+                "timestamp": "2025-11-26T10:00:00Z",
+            },
         }
 
         # Convert to DMAIC input
@@ -159,9 +162,9 @@ class TestDOWToDMAICBridge:
 
         # Validate conversion
         provenance = handover_bridge.get_provenance_trail()
-        action = [p for p in provenance if p['event'] == 'action'][0]
-        assert action['details']['level'] == 5
-        assert len(action['details']['knowledge_entries']) == 2
+        action = [p for p in provenance if p["event"] == "action"][0]
+        assert action["details"]["level"] == 5
+        assert len(action["details"]["knowledge_entries"]) == 2
 
     def test_dow_metadata_to_dmaic_config(self, config):
         """Test DOW metadata converts to DMAIC configuration"""
@@ -169,7 +172,7 @@ class TestDOWToDMAICBridge:
             "execution_mode": "unified",
             "dow_enabled": True,
             "quality_threshold": 85.0,
-            "max_iterations": 5
+            "max_iterations": 5,
         }
 
         # Apply to config
@@ -185,18 +188,20 @@ class TestDOWToDMAICBridge:
             "to": "DMAIC_Phase4",
             "data": {
                 "improvements": ["Optimize algorithm", "Reduce latency"],
-                "priority": "high"
+                "priority": "high",
             },
-            "status": "ready"
+            "status": "ready",
         }
 
         handover_bridge.begin_run("dow_handover")
-        handover_bridge.log_action("phase4_improve", "dow_handover_received", dow_handover)
+        handover_bridge.log_action(
+            "phase4_improve", "dow_handover_received", dow_handover
+        )
 
         provenance = handover_bridge.get_provenance_trail()
-        action = [p for p in provenance if p['event'] == 'action'][0]
-        assert action['details']['status'] == 'ready'
-        assert len(action['details']['data']['improvements']) == 2
+        action = [p for p in provenance if p["event"] == "action"][0]
+        assert action["details"]["status"] == "ready"
+        assert len(action["details"]["data"]["improvements"]) == 2
 
     def test_dow_output_schema_validation(self):
         """Test DOW output matches DMAIC input schema"""
@@ -205,7 +210,7 @@ class TestDOWToDMAICBridge:
             "component": "DMAIC",
             "phases_completed": 5,
             "results": {"quality_score": 92.0},
-            "handover_ready": True
+            "handover_ready": True,
         }
 
         # Schema validation
@@ -221,6 +226,7 @@ class TestDOWToDMAICBridge:
 # GBOGEB ↔ ABACUS Bridge Tests
 # ============================================================================
 
+
 @pytest.mark.bridge
 @pytest.mark.bidirectional
 class TestGBOGEBToABACUSBridge:
@@ -232,16 +238,16 @@ class TestGBOGEBToABACUSBridge:
             "level": 1,
             "component": "GBOGEB",
             "requirements": ["REQ-001", "REQ-002", "REQ-003"],
-            "status": "processed"
+            "status": "processed",
         }
 
         handover_bridge.begin_run("gbogeb_to_abacus")
         handover_bridge.log_action("level1_gbogeb", "handover_to_abacus", gbogeb_output)
 
         provenance = handover_bridge.get_provenance_trail()
-        action = [p for p in provenance if p['event'] == 'action'][0]
-        assert action['phase'] == 'level1_gbogeb'
-        assert len(action['details']['requirements']) == 3
+        action = [p for p in provenance if p["event"] == "action"][0]
+        assert action["phase"] == "level1_gbogeb"
+        assert len(action["details"]["requirements"]) == 3
 
     def test_abacus_to_gbogeb_reverse(self, handover_bridge):
         """Test ABACUS → GBOGEB feedback flow"""
@@ -251,23 +257,26 @@ class TestGBOGEBToABACUSBridge:
             "analysis_results": {
                 "requirements_validated": 3,
                 "issues_found": 1,
-                "feedback": "REQ-002 needs clarification"
+                "feedback": "REQ-002 needs clarification",
             },
-            "status": "feedback_ready"
+            "status": "feedback_ready",
         }
 
         handover_bridge.begin_run("abacus_to_gbogeb")
-        handover_bridge.log_action("level2_abacus", "feedback_to_gbogeb", abacus_feedback)
+        handover_bridge.log_action(
+            "level2_abacus", "feedback_to_gbogeb", abacus_feedback
+        )
 
         provenance = handover_bridge.get_provenance_trail()
-        action = [p for p in provenance if p['event'] == 'action'][0]
-        assert action['details']['status'] == 'feedback_ready'
-        assert action['details']['analysis_results']['issues_found'] == 1
+        action = [p for p in provenance if p["event"] == "action"][0]
+        assert action["details"]["status"] == "feedback_ready"
+        assert action["details"]["analysis_results"]["issues_found"] == 1
 
 
 # ============================================================================
 # DOW ↔ KEB Bridge Tests
 # ============================================================================
+
 
 @pytest.mark.bridge
 @pytest.mark.bidirectional
@@ -280,46 +289,47 @@ class TestDOWToKEBBridge:
             "source": "DOW_Level3_DMAIC",
             "knowledge_items": [
                 {"id": "K001", "type": "best_practice", "content": "Use idempotency"},
-                {"id": "K002", "type": "lesson_learned", "content": "Monitor logs"}
+                {"id": "K002", "type": "lesson_learned", "content": "Monitor logs"},
             ],
-            "timestamp": "2025-11-26T10:00:00Z"
+            "timestamp": "2025-11-26T10:00:00Z",
         }
 
         handover_bridge.begin_run("dow_to_keb")
         handover_bridge.log_action("level5_keb", "store_knowledge", dow_knowledge)
 
         provenance = handover_bridge.get_provenance_trail()
-        action = [p for p in provenance if p['event'] == 'action'][0]
-        assert len(action['details']['knowledge_items']) == 2
+        action = [p for p in provenance if p["event"] == "action"][0]
+        assert len(action["details"]["knowledge_items"]) == 2
 
     def test_keb_to_dow_knowledge_retrieval(self, handover_bridge):
         """Test KEB → DOW knowledge retrieval"""
         keb_query = {
             "query": "best practices for DMAIC Phase 4",
             "filters": {"type": "best_practice", "phase": 4},
-            "limit": 10
+            "limit": 10,
         }
 
         keb_results = {
             "query": keb_query,
             "results": [
                 {"id": "K010", "content": "Prioritize high-impact improvements"},
-                {"id": "K011", "content": "Validate with stakeholders"}
+                {"id": "K011", "content": "Validate with stakeholders"},
             ],
-            "count": 2
+            "count": 2,
         }
 
         handover_bridge.begin_run("dow_to_keb")
         handover_bridge.log_action("level5_keb", "retrieve_knowledge", keb_results)
 
         provenance = handover_bridge.get_provenance_trail()
-        action = [p for p in provenance if p['event'] == 'action'][0]
-        assert action['details']['count'] == 2
+        action = [p for p in provenance if p["event"] == "action"][0]
+        assert action["details"]["count"] == 2
 
 
 # ============================================================================
 # JSON/YAML I/O Bridge Tests
 # ============================================================================
+
 
 @pytest.mark.bridge
 @pytest.mark.bidirectional
@@ -331,7 +341,7 @@ class TestJSONYAMLBridges:
         dmaic_output = {
             "version": "3.0.0",
             "phases": [1, 2, 3, 4, 5],
-            "metrics": {"quality": 95.0}
+            "metrics": {"quality": 95.0},
         }
 
         output_file = tmp_path / "dmaic_output.json"
@@ -346,7 +356,7 @@ class TestJSONYAMLBridges:
         """Test JSON file reads into DMAIC input"""
         input_data = {
             "config": {"execution_mode": "unified"},
-            "initial_state": {"iteration": 1}
+            "initial_state": {"iteration": 1},
         }
 
         input_file = tmp_path / "dmaic_input.json"
@@ -375,6 +385,7 @@ class TestJSONYAMLBridges:
 # Idempotency & Error Handling Tests
 # ============================================================================
 
+
 @pytest.mark.bridge
 @pytest.mark.integration
 class TestBridgeIdempotencyAndErrors:
@@ -386,14 +397,12 @@ class TestBridgeIdempotencyAndErrors:
 
         # First execution
         result1 = handover_bridge.wrap_phase(
-            phase_name,
-            lambda: {"result": "success", "value": 42}
+            phase_name, lambda: {"result": "success", "value": 42}
         )
 
         # Second execution (should return cached result)
         result2 = handover_bridge.wrap_phase(
-            phase_name,
-            lambda: {"result": "different", "value": 99}
+            phase_name, lambda: {"result": "different", "value": 99}
         )
 
         # Results should be identical (cached)
@@ -407,14 +416,14 @@ class TestBridgeIdempotencyAndErrors:
         error_data = {
             "error_type": "ValidationError",
             "message": "Invalid schema",
-            "phase": "phase2_measure"
+            "phase": "phase2_measure",
         }
 
         handover_bridge.log_action("error_handler", "error_logged", error_data)
 
         provenance = handover_bridge.get_provenance_trail()
-        error_log = [p for p in provenance if p['event'] == 'action'][0]
-        assert error_log['details']['error_type'] == 'ValidationError'
+        error_log = [p for p in provenance if p["event"] == "action"][0]
+        assert error_log["details"]["error_type"] == "ValidationError"
 
     def test_bridge_data_integrity(self, handover_bridge, tmp_path):
         """Test data integrity across bridge transitions"""
@@ -422,7 +431,7 @@ class TestBridgeIdempotencyAndErrors:
             "id": "TEST-001",
             "value": 12345,
             "nested": {"key": "value"},
-            "list": [1, 2, 3]
+            "list": [1, 2, 3],
         }
 
         handover_bridge.begin_run("integrity_test")
@@ -433,9 +442,9 @@ class TestBridgeIdempotencyAndErrors:
         handover_bridge.save_provenance(manifest_path)
 
         loaded = json.loads(manifest_path.read_text())
-        action = [p for p in loaded if p['event'] == 'action'][0]
+        action = [p for p in loaded if p["event"] == "action"][0]
 
-        assert action['details']['id'] == original_data['id']
-        assert action['details']['value'] == original_data['value']
-        assert action['details']['nested'] == original_data['nested']
-        assert action['details']['list'] == original_data['list']
+        assert action["details"]["id"] == original_data["id"]
+        assert action["details"]["value"] == original_data["value"]
+        assert action["details"]["nested"] == original_data["nested"]
+        assert action["details"]["list"] == original_data["list"]

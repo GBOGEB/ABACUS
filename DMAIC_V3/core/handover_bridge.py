@@ -9,13 +9,14 @@ DMAIC V3 - Handover Bridge Module
 Bridges handover pipeline with DMAIC V3 structure
 """
 
-from pathlib import Path
-from typing import Dict, List, Any, Tuple, Optional
-from datetime import datetime
 import json
+from datetime import datetime
+from pathlib import Path
+from typing import Any, Dict, List, Optional, Tuple
+
+from src.dmaic import idempotency
 
 from .state import StateManager
-from src.dmaic import idempotency
 
 
 class IdempotentPhase:
@@ -82,12 +83,14 @@ class HandoverBridge:
         # Idempotency belongs to one run, not the lifetime of a reused bridge.
         self._phase_cache.clear()
         self.run_id = f"{datetime.now().strftime('%Y%m%d_%H%M%S')}_{inputs_hash[:8]}"
-        self.provenance_log.append({
-            'event': 'run_started',
-            'run_id': self.run_id,
-            'timestamp': datetime.now().isoformat(),
-            'inputs_hash': inputs_hash
-        })
+        self.provenance_log.append(
+            {
+                "event": "run_started",
+                "run_id": self.run_id,
+                "timestamp": datetime.now().isoformat(),
+                "inputs_hash": inputs_hash,
+            }
+        )
         return self.run_id
 
     def finish_run(self, status: str, total_metrics: dict):
@@ -98,13 +101,15 @@ class HandoverBridge:
             status: Run status (success/failed)
             total_metrics: Aggregated metrics across all phases
         """
-        self.provenance_log.append({
-            'event': 'run_finished',
-            'run_id': self.run_id,
-            'status': status,
-            'metrics': total_metrics,
-            'timestamp': datetime.now().isoformat()
-        })
+        self.provenance_log.append(
+            {
+                "event": "run_finished",
+                "run_id": self.run_id,
+                "status": status,
+                "metrics": total_metrics,
+                "timestamp": datetime.now().isoformat(),
+            }
+        )
 
     def wrap_phase(self, phase_name: str, phase_func, *args, **kwargs):
         """
@@ -126,7 +131,9 @@ class HandoverBridge:
             input_hash = idempotency.hash_json(
                 {
                     "args": [repr(arg) for arg in args],
-                    "kwargs": {key: repr(value) for key, value in sorted(kwargs.items())},
+                    "kwargs": {
+                        key: repr(value) for key, value in sorted(kwargs.items())
+                    },
                 }
             )
         cache_key = f"{phase_name}:{input_hash}"
@@ -149,14 +156,16 @@ class HandoverBridge:
             action: Action being performed
             details: Action details
         """
-        self.provenance_log.append({
-            'event': 'action',
-            'run_id': self.run_id,
-            'phase': phase_name,
-            'action': action,
-            'details': details,
-            'timestamp': datetime.now().isoformat()
-        })
+        self.provenance_log.append(
+            {
+                "event": "action",
+                "run_id": self.run_id,
+                "phase": phase_name,
+                "action": action,
+                "details": details,
+                "timestamp": datetime.now().isoformat(),
+            }
+        )
 
     def record_metrics(self, phase_name: str, metrics: Dict[str, Any]):
         """
@@ -166,12 +175,14 @@ class HandoverBridge:
             phase_name: Name of the phase
             metrics: Metrics dictionary
         """
-        self.metrics_log.append({
-            'run_id': self.run_id,
-            'phase': phase_name,
-            'metrics': metrics,
-            'timestamp': datetime.now().isoformat()
-        })
+        self.metrics_log.append(
+            {
+                "run_id": self.run_id,
+                "phase": phase_name,
+                "metrics": metrics,
+                "timestamp": datetime.now().isoformat(),
+            }
+        )
 
     def record_phase(
         self,
@@ -184,15 +195,15 @@ class HandoverBridge:
     ):
         """Record one phase execution in the bridge-local provenance ledger."""
         phase_record = {
-            'event': 'phase',
-            'run_id': self.run_id,
-            'phase': phase_name,
-            'iteration': iteration,
-            'status': status,
-            'inputs_hash': inputs_hash,
-            'outputs_hash': outputs_hash,
-            'metrics': metrics,
-            'timestamp': datetime.now().isoformat()
+            "event": "phase",
+            "run_id": self.run_id,
+            "phase": phase_name,
+            "iteration": iteration,
+            "status": status,
+            "inputs_hash": inputs_hash,
+            "outputs_hash": outputs_hash,
+            "metrics": metrics,
+            "timestamp": datetime.now().isoformat(),
         }
         self.provenance_log.append(phase_record)
         self.record_metrics(phase_name, metrics)
@@ -208,12 +219,12 @@ class HandoverBridge:
 
     def save_provenance(self, output_path: Path):
         """Save provenance trail to file"""
-        with open(output_path, 'w') as f:
+        with open(output_path, "w") as f:
             json.dump(self.provenance_log, f, indent=2)
 
     def save_metrics(self, output_path: Path):
         """Save metrics history to file"""
-        with open(output_path, 'w') as f:
+        with open(output_path, "w") as f:
             json.dump(self.metrics_log, f, indent=2)
 
     def make_idempotent(self, phase_name: str):
@@ -226,10 +237,13 @@ class HandoverBridge:
         Returns:
             Decorator function
         """
+
         def decorator(func):
             def wrapper(*args, **kwargs):
                 return self.wrap_phase(phase_name, func, *args, **kwargs)
+
             return wrapper
+
         return decorator
 
     def get_recent_runs(self, limit: int = 10):
@@ -242,10 +256,15 @@ class HandoverBridge:
         Returns:
             List of recent runs
         """
-        return self.provenance_log[-limit:] if len(self.provenance_log) > limit else self.provenance_log
+        return (
+            self.provenance_log[-limit:]
+            if len(self.provenance_log) > limit
+            else self.provenance_log
+        )
 
-    def should_stop_iteration(self, history: List[Dict[str, Any]],
-                             rules: List[Dict[str, Any]]) -> Tuple[bool, str]:
+    def should_stop_iteration(
+        self, history: List[Dict[str, Any]], rules: List[Dict[str, Any]]
+    ) -> Tuple[bool, str]:
         """
         Determine if iteration should stop based on rules
 
@@ -260,17 +279,17 @@ class HandoverBridge:
             return False, "No history available"
 
         for rule in rules:
-            rule_type = rule.get('type')
+            rule_type = rule.get("type")
 
-            if rule_type == 'max_iterations':
-                if len(history) >= rule.get('value', 10):
+            if rule_type == "max_iterations":
+                if len(history) >= rule.get("value", 10):
                     return True, f"Max iterations reached: {len(history)}"
 
-            elif rule_type == 'convergence':
-                threshold = rule.get('threshold', 0.01)
+            elif rule_type == "convergence":
+                threshold = rule.get("threshold", 0.01)
                 if len(history) >= 2:
-                    last_score = history[-1].get('quality_score', 0)
-                    prev_score = history[-2].get('quality_score', 0)
+                    last_score = history[-1].get("quality_score", 0)
+                    prev_score = history[-2].get("quality_score", 0)
                     if abs(last_score - prev_score) < threshold:
                         return True, f"Converged: score change < {threshold}"
 
@@ -287,21 +306,21 @@ class HandoverBridge:
             Convergence analysis results
         """
         if not history:
-            return {'converged': False, 'reason': 'No history'}
+            return {"converged": False, "reason": "No history"}
 
-        scores = [h.get('quality_score', 0) for h in history]
+        scores = [h.get("quality_score", 0) for h in history]
 
         if len(scores) < 2:
-            return {'converged': False, 'reason': 'Insufficient data'}
+            return {"converged": False, "reason": "Insufficient data"}
 
-        changes = [abs(scores[i] - scores[i-1]) for i in range(1, len(scores))]
+        changes = [abs(scores[i] - scores[i - 1]) for i in range(1, len(scores))]
         avg_change = sum(changes) / len(changes)
 
         return {
-            'converged': avg_change < 0.01,
-            'avg_change': avg_change,
-            'iterations': len(history),
-            'final_score': scores[-1]
+            "converged": avg_change < 0.01,
+            "avg_change": avg_change,
+            "iterations": len(history),
+            "final_score": scores[-1],
         }
 
 
@@ -341,20 +360,25 @@ class IdempotentPhaseExecutor:
         Returns:
             Phase execution results (tuple of success, results)
         """
+
         @self.idempotent_decorator
         def _execute(**exec_kwargs):
             result = self.phase.execute(iteration)
 
             if isinstance(result, tuple):
                 success, results = result
-                metrics = results.get('metrics', {}) if isinstance(results, dict) else {}
+                metrics = (
+                    results.get("metrics", {}) if isinstance(results, dict) else {}
+                )
             else:
                 success = True
                 results = result
-                metrics = result.get('metrics', {}) if isinstance(result, dict) else {}
+                metrics = result.get("metrics", {}) if isinstance(result, dict) else {}
 
-            inputs_hash = idempotency.hash_json({'iteration': iteration, **kwargs})
-            outputs_hash = idempotency.hash_json(results if isinstance(results, dict) else str(results))
+            inputs_hash = idempotency.hash_json({"iteration": iteration, **kwargs})
+            outputs_hash = idempotency.hash_json(
+                results if isinstance(results, dict) else str(results)
+            )
 
             self.bridge.record_phase(
                 self.phase_name,
@@ -398,20 +422,23 @@ def integrate_phase4_opportunities(phase4_instance, opportunities_path: Path):
         integrated = []
 
         for opp in opportunities:
-            integrated.append({
-                'opportunity_id': opp['id'],
-                'title': opp['title'],
-                'priority': opp['priority'],
-                'actions': opp['actions'],
-                'related_recommendations': [
-                    r for r in recommendations
-                    if _matches_opportunity(r, opp)
-                ]
-            })
+            integrated.append(
+                {
+                    "opportunity_id": opp["id"],
+                    "title": opp["title"],
+                    "priority": opp["priority"],
+                    "actions": opp["actions"],
+                    "related_recommendations": [
+                        r for r in recommendations if _matches_opportunity(r, opp)
+                    ],
+                }
+            )
 
         return integrated
 
-    phase4_instance.integrate_opportunities_with_recommendations = integrate_with_recommendations
+    phase4_instance.integrate_opportunities_with_recommendations = (
+        integrate_with_recommendations
+    )
 
     return phase4_instance
 
@@ -419,30 +446,30 @@ def integrate_phase4_opportunities(phase4_instance, opportunities_path: Path):
 def _parse_opportunities(path: Path) -> list:
     """Parse opportunities from markdown file"""
     opportunities: List[Dict[str, Any]] = []
-    content = path.read_text(encoding='utf-8')
+    content = path.read_text(encoding="utf-8")
 
     # Simple parsing - extract opportunity sections
-    lines = content.split('\n')
+    lines = content.split("\n")
     current_opp: Optional[Dict[str, Any]] = None
 
     for line in lines:
-        if line.startswith('## OPP-') or line.startswith('### OPP-'):
+        if line.startswith("## OPP-") or line.startswith("### OPP-"):
             if current_opp:
                 opportunities.append(current_opp)
 
-            opp_id = line.split(':')[0].strip('#').strip()
-            title = line.split(':')[1].strip() if ':' in line else ''
+            opp_id = line.split(":")[0].strip("#").strip()
+            title = line.split(":")[1].strip() if ":" in line else ""
             current_opp = {
-                'id': opp_id,
-                'title': title,
-                'priority': 'MEDIUM',
-                'actions': [],
-                'success_criteria': []
+                "id": opp_id,
+                "title": title,
+                "priority": "MEDIUM",
+                "actions": [],
+                "success_criteria": [],
             }
-        elif current_opp and line.startswith('**Priority:**'):
-            current_opp['priority'] = line.split('**Priority:**')[1].strip()
-        elif current_opp and line.strip().startswith('-'):
-            current_opp['actions'].append(line.strip()[1:].strip())
+        elif current_opp and line.startswith("**Priority:**"):
+            current_opp["priority"] = line.split("**Priority:**")[1].strip()
+        elif current_opp and line.strip().startswith("-"):
+            current_opp["actions"].append(line.strip()[1:].strip())
 
     if current_opp:
         opportunities.append(current_opp)
@@ -453,7 +480,7 @@ def _parse_opportunities(path: Path) -> list:
 def _matches_opportunity(recommendation: dict, opportunity: dict) -> bool:
     """Check if recommendation matches opportunity"""
     # Simple matching based on keywords
-    opp_keywords = opportunity['title'].lower().split()
-    rec_keywords = recommendation.get('issue_type', '').lower().split('_')
+    opp_keywords = opportunity["title"].lower().split()
+    rec_keywords = recommendation.get("issue_type", "").lower().split("_")
 
     return any(k in rec_keywords for k in opp_keywords)

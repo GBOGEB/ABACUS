@@ -35,7 +35,7 @@ jobs:
       - name: Set up Python
         uses: actions/setup-python@v7
         with:
-          python-version: "3.12"
+          python-version: "3.14"
 
       # Canonical kit from GBOGEB/CODEX: the 7 shareable files must match
       # CODEX's manifest byte-for-byte (CRLF-normalised). The manifest is
@@ -117,10 +117,10 @@ jobs:
       - name: Set up Python
         uses: actions/setup-python@v7
         with:
-          python-version: "3.12"
+          python-version: "3.14"
 
       - name: Download sanitized self-index evidence
-        uses: actions/download-artifact@v8.0.2
+        uses: actions/download-artifact@v8
         with:
           name: mip-n2-self-index-sanitized-${{ env.EXPECTED_SHA }}
           path: ${{ runner.temp }}/mip-n2-consumed

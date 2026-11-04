@@ -1,15 +1,17 @@
-import pytest
-from pathlib import Path
-import tempfile
-import shutil
 import json
+import shutil
+import tempfile
+from pathlib import Path
+
+import pytest
+
+from DMAIC_V3.config import DMAICConfig
+from DMAIC_V3.core.state import StateManager
 from DMAIC_V3.phases.phase1_define import Phase1Define
 from DMAIC_V3.phases.phase2_measure import Phase2Measure
 from DMAIC_V3.phases.phase3_analyze import Phase3Analyze
 from DMAIC_V3.phases.phase4_improve import Phase4Improve
 from DMAIC_V3.phases.phase5_control import Phase5Control
-from DMAIC_V3.config import DMAICConfig
-from DMAIC_V3.core.state import StateManager
 
 
 @pytest.fixture

@@ -4,6 +4,7 @@ Analysis - Document Consumer V2.3.0
 Memory-efficient document parsing with canonical value extraction.
 Designed for the 4M memory constraint with streaming support.
 """
+
 import json
 import re
 import time
@@ -45,7 +46,9 @@ class MemoryEfficientDocumentConsumerV23:
         self.dmaic_log: List[Dict[str, Any]] = []
         self.extracted_values: List[Dict[str, Any]] = []
 
-        self.output_dir = Path(self.config.get("output_dir", "document_consumer_outputs_v2.3"))
+        self.output_dir = Path(
+            self.config.get("output_dir", "document_consumer_outputs_v2.3")
+        )
         self.output_dir.mkdir(exist_ok=True)
 
     # ------------------------------------------------------------------
@@ -91,11 +94,21 @@ class MemoryEfficientDocumentConsumerV23:
                         lines.append(line.rstrip())
                         if len(lines) >= chunk_size:
                             self.performance_metrics["memory_chunks_processed"] += 1
-                            yield {"lines": lines, "chunk_index": self.performance_metrics["memory_chunks_processed"]}
+                            yield {
+                                "lines": lines,
+                                "chunk_index": self.performance_metrics[
+                                    "memory_chunks_processed"
+                                ],
+                            }
                             lines = []
                     if lines:
                         self.performance_metrics["memory_chunks_processed"] += 1
-                        yield {"lines": lines, "chunk_index": self.performance_metrics["memory_chunks_processed"]}
+                        yield {
+                            "lines": lines,
+                            "chunk_index": self.performance_metrics[
+                                "memory_chunks_processed"
+                            ],
+                        }
             else:
                 self.performance_metrics["memory_chunks_processed"] += 1
                 yield {"lines": self._synthetic_lines(), "chunk_index": 0}
@@ -176,7 +189,9 @@ class MemoryEfficientDocumentConsumerV23:
         if analysis.get("extracted_values", 0) == 0:
             recs.append("Add canonical markers (version, phase, status) to documents")
         self.performance_metrics["dmaic_phases_completed"] += 1
-        return {"recommendations": recs or ["Document structure meets canonical standards"]}
+        return {
+            "recommendations": recs or ["Document structure meets canonical standards"]
+        }
 
     def dmaic_control(self) -> Dict[str, Any]:
         self._log_dmaic("CONTROL", "Define document consumption controls")

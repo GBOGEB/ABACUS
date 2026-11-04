@@ -12,15 +12,16 @@ Detects and tracks file changes between iterations to enable:
 
 import hashlib
 import json
-from pathlib import Path
-from typing import Dict, List, Optional, Any
+from dataclasses import asdict, dataclass
 from datetime import datetime
-from dataclasses import dataclass, asdict
+from pathlib import Path
+from typing import Any, Dict, List, Optional
 
 
 @dataclass
 class FileChange:
     """Represents a file change"""
+
     path: str
     change_type: str  # 'added', 'modified', 'deleted'
     old_hash: Optional[str] = None
@@ -75,8 +76,8 @@ class ChangeDetector:
         """
         try:
             hasher = hashlib.sha256()
-            with open(file_path, 'rb') as f:
-                for chunk in iter(lambda: f.read(8192), b''):
+            with open(file_path, "rb") as f:
+                for chunk in iter(lambda: f.read(8192), b""):
                     hasher.update(chunk)
             return hasher.hexdigest()
         except (OSError, PermissionError, UnicodeDecodeError):
@@ -113,10 +114,10 @@ class ChangeDetector:
                 stat = file_path.stat()
 
                 snapshot[rel_path] = {
-                    'hash': self.compute_file_hash(file_path),
-                    'size': stat.st_size,
-                    'mtime': stat.st_mtime,
-                    'timestamp': datetime.now().isoformat()
+                    "hash": self.compute_file_hash(file_path),
+                    "size": stat.st_size,
+                    "mtime": stat.st_mtime,
+                    "timestamp": datetime.now().isoformat(),
                 }
             except Exception:
                 pass
@@ -135,14 +136,11 @@ class ChangeDetector:
             return {}
 
         try:
-            with open(self.snapshot_file, 'r', encoding='utf-8') as f:
+            with open(self.snapshot_file, "r", encoding="utf-8") as f:
                 loaded = json.load(f)
             if not isinstance(loaded, dict):
                 return {}
-            return {
-                key.replace(chr(92), '/'): value
-                for key, value in loaded.items()
-            }
+            return {key.replace(chr(92), "/"): value for key, value in loaded.items()}
         except Exception as e:
             print(f"  [!] Error loading previous snapshot: {e}")
             return {}
@@ -155,7 +153,7 @@ class ChangeDetector:
             snapshot: Snapshot dictionary to save
         """
         try:
-            with open(self.snapshot_file, 'w', encoding='utf-8') as f:
+            with open(self.snapshot_file, "w", encoding="utf-8") as f:
                 json.dump(snapshot, f, indent=2)
         except Exception as e:
             print(f"  [!] Error saving snapshot: {e}")
@@ -188,37 +186,43 @@ class ChangeDetector:
                 stat = file_path.stat()
 
                 self.current_snapshot[rel_path] = {
-                    'size': stat.st_size,
-                    'mtime': stat.st_mtime,
-                    'timestamp': datetime.now().isoformat()
+                    "size": stat.st_size,
+                    "mtime": stat.st_mtime,
+                    "timestamp": datetime.now().isoformat(),
                 }
 
                 if rel_path not in self.previous_snapshot:
-                    changes.append(FileChange(
-                        path=rel_path,
-                        change_type='added',
-                        new_size=stat.st_size
-                    ))
+                    changes.append(
+                        FileChange(
+                            path=rel_path, change_type="added", new_size=stat.st_size
+                        )
+                    )
                 else:
                     prev = self.previous_snapshot[rel_path]
-                    if (stat.st_size != prev.get('size') or
-                        abs(stat.st_mtime - prev.get('mtime', 0)) > 1):
-                        changes.append(FileChange(
-                            path=rel_path,
-                            change_type='modified',
-                            old_size=prev.get('size'),
-                            new_size=stat.st_size
-                        ))
+                    if (
+                        stat.st_size != prev.get("size")
+                        or abs(stat.st_mtime - prev.get("mtime", 0)) > 1
+                    ):
+                        changes.append(
+                            FileChange(
+                                path=rel_path,
+                                change_type="modified",
+                                old_size=prev.get("size"),
+                                new_size=stat.st_size,
+                            )
+                        )
             except Exception:
                 pass
 
         for prev_path in self.previous_snapshot:
             if prev_path not in current_paths:
-                changes.append(FileChange(
-                    path=prev_path,
-                    change_type='deleted',
-                    old_size=self.previous_snapshot[prev_path].get('size')
-                ))
+                changes.append(
+                    FileChange(
+                        path=prev_path,
+                        change_type="deleted",
+                        old_size=self.previous_snapshot[prev_path].get("size"),
+                    )
+                )
 
         self.save_snapshot(self.current_snapshot)
         self._save_changes(changes)
@@ -230,11 +234,11 @@ class ChangeDetector:
         """Save detected changes to disk"""
         try:
             data = {
-                'timestamp': datetime.now().isoformat(),
-                'total_changes': len(changes),
-                'changes': [asdict(c) for c in changes]
+                "timestamp": datetime.now().isoformat(),
+                "total_changes": len(changes),
+                "changes": [asdict(c) for c in changes],
             }
-            with open(self.changes_file, 'w', encoding='utf-8') as f:
+            with open(self.changes_file, "w", encoding="utf-8") as f:
                 json.dump(data, f, indent=2)
         except Exception as e:
             print(f"  [!] Error saving changes: {e}")
@@ -242,22 +246,22 @@ class ChangeDetector:
     def get_change_summary(self) -> Dict[str, Any]:
         """Get summary of detected changes"""
         if not self.changes_file.exists():
-            return {'total': 0, 'added': 0, 'modified': 0, 'deleted': 0}
+            return {"total": 0, "added": 0, "modified": 0, "deleted": 0}
 
         try:
-            with open(self.changes_file, 'r', encoding='utf-8') as f:
+            with open(self.changes_file, "r", encoding="utf-8") as f:
                 data = json.load(f)
 
-            changes = data.get('changes', [])
+            changes = data.get("changes", [])
             return {
-                'total': len(changes),
-                'added': sum(1 for c in changes if c['change_type'] == 'added'),
-                'modified': sum(1 for c in changes if c['change_type'] == 'modified'),
-                'deleted': sum(1 for c in changes if c['change_type'] == 'deleted'),
-                'timestamp': data.get('timestamp', '')
+                "total": len(changes),
+                "added": sum(1 for c in changes if c["change_type"] == "added"),
+                "modified": sum(1 for c in changes if c["change_type"] == "modified"),
+                "deleted": sum(1 for c in changes if c["change_type"] == "deleted"),
+                "timestamp": data.get("timestamp", ""),
             }
         except (OSError, json.JSONDecodeError, KeyError, TypeError):
-            return {'total': 0, 'added': 0, 'modified': 0, 'deleted': 0}
+            return {"total": 0, "added": 0, "modified": 0, "deleted": 0}
 
     def get_changed_files(self, file_types=None):
         """Get list of changed files, optionally filtered by type.
@@ -272,13 +276,13 @@ class ChangeDetector:
             return []
 
         try:
-            with open(self.changes_file, 'r', encoding='utf-8') as f:
+            with open(self.changes_file, "r", encoding="utf-8") as f:
                 data = json.load(f)
 
             changed_files = []
-            for change in data.get('changes', []):
-                if change['change_type'] != 'deleted':
-                    path = change['path']
+            for change in data.get("changes", []):
+                if change["change_type"] != "deleted":
+                    path = change["path"]
                     if file_types is None or Path(path).suffix in file_types:
                         changed_files.append(path)
 
@@ -294,8 +298,8 @@ class ChangeDetector:
             return True  # First run, consider everything changed
 
         try:
-            with open(self.changes_file, 'r', encoding='utf-8') as f:
+            with open(self.changes_file, "r", encoding="utf-8") as f:
                 data = json.load(f)
-            return data.get('total_changes', 0) > 0
+            return data.get("total_changes", 0) > 0
         except (OSError, json.JSONDecodeError, TypeError):
             return True

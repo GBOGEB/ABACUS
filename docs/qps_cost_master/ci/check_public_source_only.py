@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 """Fail when the public QPS bridge contains binaries or private offer data."""
+
 from __future__ import annotations
 
 import argparse
@@ -8,18 +9,53 @@ import re
 from pathlib import Path
 
 FORBIDDEN_EXTENSIONS = {
-    ".pptx", ".ppsx", ".xlsx", ".xlsm", ".docx", ".pdf",
-    ".png", ".jpg", ".jpeg", ".gif", ".webp", ".tif", ".tiff",
-    ".zip", ".tar", ".gz", ".tgz", ".7z", ".rar", ".bundle",
-    ".db", ".sqlite", ".parquet", ".h5", ".hdf5",
+    ".pptx",
+    ".ppsx",
+    ".xlsx",
+    ".xlsm",
+    ".docx",
+    ".pdf",
+    ".png",
+    ".jpg",
+    ".jpeg",
+    ".gif",
+    ".webp",
+    ".tif",
+    ".tiff",
+    ".zip",
+    ".tar",
+    ".gz",
+    ".tgz",
+    ".7z",
+    ".rar",
+    ".bundle",
+    ".db",
+    ".sqlite",
+    ".parquet",
+    ".h5",
+    ".hdf5",
 }
 PRIVATE_MARKERS = {
     "high_precision_decimal": re.compile(r"\b\d{1,3}\.\d{3,}\b"),
     "offer_identifier": re.compile(r"\b[A-Z]{2,10}\s*-\s*Offer\s+\d+\b"),
 }
 TEXT_EXTENSIONS = {
-    ".md", ".txt", ".json", ".yaml", ".yml", ".py", ".js", ".ts",
-    ".html", ".css", ".svg", ".toml", ".ini", ".cfg", ".sh", ".ps1",
+    ".md",
+    ".txt",
+    ".json",
+    ".yaml",
+    ".yml",
+    ".py",
+    ".js",
+    ".ts",
+    ".html",
+    ".css",
+    ".svg",
+    ".toml",
+    ".ini",
+    ".cfg",
+    ".sh",
+    ".ps1",
 }
 
 
@@ -40,14 +76,26 @@ def main() -> int:
             findings.append({"path": rel, "rule": "forbidden_binary_or_archive"})
             continue
         if path.stat().st_size > 2_000_000:
-            findings.append({"path": rel, "rule": "public_source_file_over_2MB", "size_bytes": path.stat().st_size})
+            findings.append(
+                {
+                    "path": rel,
+                    "rule": "public_source_file_over_2MB",
+                    "size_bytes": path.stat().st_size,
+                }
+            )
         if path.name == "check_public_source_only.py":
             continue
         if ext in TEXT_EXTENSIONS and path.stat().st_size < 2_000_000:
             text = path.read_text(encoding="utf-8", errors="ignore")
             for marker_name, marker_pattern in PRIVATE_MARKERS.items():
                 if marker_pattern.search(text):
-                    findings.append({"path": rel, "rule": "private_data_marker", "marker": marker_name})
+                    findings.append(
+                        {
+                            "path": rel,
+                            "rule": "private_data_marker",
+                            "marker": marker_name,
+                        }
+                    )
 
     result = {
         "schema": "qps-cost-master.public-source-policy.v1",

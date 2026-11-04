@@ -61,8 +61,17 @@ LANG_EXT = {
 }
 
 
-DEFAULT_EXCLUDES = {".git", "node_modules", "__pycache__", ".venv",
-                    ".mypy_cache", ".pytest_cache", ".next", "dist", "build"}
+DEFAULT_EXCLUDES = {
+    ".git",
+    "node_modules",
+    "__pycache__",
+    ".venv",
+    ".mypy_cache",
+    ".pytest_cache",
+    ".next",
+    "dist",
+    "build",
+}
 
 
 def load_config(path: str | None) -> dict:
@@ -84,7 +93,9 @@ def git(repo: Path, *args: str) -> str:
     try:
         out = subprocess.run(
             ["git", "-C", str(repo), *args],
-            capture_output=True, text=True, check=False,
+            capture_output=True,
+            text=True,
+            check=False,
         )
         return out.stdout.strip()
     except FileNotFoundError:
@@ -170,11 +181,19 @@ def scan_git(repo: Path) -> dict:
 
 
 def scan_docs(repo: Path) -> dict:
-    readmes = [p.name for p in repo.iterdir() if p.is_file() and p.name.lower().startswith("readme")]
+    readmes = [
+        p.name
+        for p in repo.iterdir()
+        if p.is_file() and p.name.lower().startswith("readme")
+    ]
     docs_dir = (repo / "docs").is_dir()
     docs_versioned = (repo / "docs_versioned").is_dir()
-    contributing = (repo / "CONTRIBUTING.md").exists() or (repo / ".github" / "CONTRIBUTING.md").exists()
-    license_present = any((repo / n).exists() for n in ("LICENSE", "LICENSE.md", "LICENSE.txt"))
+    contributing = (repo / "CONTRIBUTING.md").exists() or (
+        repo / ".github" / "CONTRIBUTING.md"
+    ).exists()
+    license_present = any(
+        (repo / n).exists() for n in ("LICENSE", "LICENSE.md", "LICENSE.txt")
+    )
     security = (repo / "SECURITY.md").exists()
     return {
         "readmes_at_root": readmes,
@@ -188,9 +207,17 @@ def scan_docs(repo: Path) -> dict:
 
 def scan_ci(repo: Path) -> dict:
     workflows_dir = repo / ".github" / "workflows"
-    workflows = [p.name for p in workflows_dir.iterdir() if p.is_file()] if workflows_dir.is_dir() else []
+    workflows = (
+        [p.name for p in workflows_dir.iterdir() if p.is_file()]
+        if workflows_dir.is_dir()
+        else []
+    )
     issue_templates_dir = repo / ".github" / "ISSUE_TEMPLATE"
-    issue_templates = [p.name for p in issue_templates_dir.iterdir() if p.is_file()] if issue_templates_dir.is_dir() else []
+    issue_templates = (
+        [p.name for p in issue_templates_dir.iterdir() if p.is_file()]
+        if issue_templates_dir.is_dir()
+        else []
+    )
     pr_template = (repo / ".github" / "PULL_REQUEST_TEMPLATE.md").exists()
     dependabot = (repo / ".github" / "dependabot.yml").exists()
     return {
@@ -202,7 +229,9 @@ def scan_ci(repo: Path) -> dict:
     }
 
 
-def estimate_score(file_stats: dict, git_stats: dict, doc_stats: dict, ci_stats: dict) -> int:
+def estimate_score(
+    file_stats: dict, git_stats: dict, doc_stats: dict, ci_stats: dict
+) -> int:
     """Rough 0-100 score; only used as a starting hint."""
     score = 0
     if doc_stats.get("readmes_at_root"):
@@ -252,7 +281,7 @@ def main(argv: list[str] | None = None) -> int:
         return 2
 
     excludes = set(DEFAULT_EXCLUDES)
-    for pat in (cfg.get("exclude_patterns") or []):
+    for pat in cfg.get("exclude_patterns") or []:
         # Best-effort: strip glob suffixes to support the same exclude style.
         for token in pat.split("/"):
             if token and token != "**" and "*" not in token:

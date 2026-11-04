@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 """Build a W75 repeat panel from three retained W74 artifact families."""
+
 from __future__ import annotations
 
 import argparse
@@ -46,9 +47,7 @@ def main() -> None:
                 str(paired["expected_member"]),
             )
         )
-        probes = {
-            str(item["source_sha"]): item for item in (run.get("probes") or [])
-        }
+        probes = {str(item["source_sha"]): item for item in (run.get("probes") or [])}
         if len(paired_rows) != 5 or len(probes) != 5:
             raise ValueError(f"repeat {repeat}: expected five paired rows and probes")
 
@@ -95,7 +94,9 @@ def main() -> None:
                     "probe_artifact_id": int(probe_meta["artifact_id"]),
                     "probe_artifact_digest": str(probe_meta["digest"]),
                     "probe_execute_seconds": intrinsic,
-                    "orchestration_overhead_seconds": round(max(wall - intrinsic, 0.0), 6),
+                    "orchestration_overhead_seconds": round(
+                        max(wall - intrinsic, 0.0), 6
+                    ),
                 }
             )
             rows.append(item)

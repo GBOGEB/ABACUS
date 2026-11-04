@@ -68,31 +68,49 @@ def measure(source: Path, destination: Path, alpha: float = 0.05) -> Path:
             scores, alpha=alpha, n_bootstrap=BOOTSTRAPS, random_state=SEED + index
         )
         summaries[name] = {
-            "n": len(scores), "mean": mean(scores), "sample_std": stdev(scores),
+            "n": len(scores),
+            "mean": mean(scores),
+            "sample_std": stdev(scores),
             "bootstrap_ci": [low, high],
         }
     comparisons = []
     for index, (left, right) in enumerate(combinations(sorted(groups), 2)):
         estimate, low, high = bootstrap_ci_diff_means(
-            groups[left], groups[right], alpha=alpha,
-            n_bootstrap=BOOTSTRAPS, random_state=SEED + 1000 + index,
+            groups[left],
+            groups[right],
+            alpha=alpha,
+            n_bootstrap=BOOTSTRAPS,
+            random_state=SEED + 1000 + index,
         )
-        comparisons.append({
-            "left": left, "right": right, "estimate_right_minus_left": estimate,
-            "bootstrap_ci": [low, high],
-        })
+        comparisons.append(
+            {
+                "left": left,
+                "right": right,
+                "estimate_right_minus_left": estimate,
+                "bootstrap_ci": [low, high],
+            }
+        )
     record = {
-        "schema": SCHEMA, "method": METHOD, "semantics_status": SEMANTICS,
-        "source_sha256": data_sha, "alpha": alpha,
-        "n_bootstrap": BOOTSTRAPS, "random_state": SEED,
-        "groups": summaries, "comparisons": comparisons,
-        "merge_admission": "HOLD", "formal_credit_delta": 0,
+        "schema": SCHEMA,
+        "method": METHOD,
+        "semantics_status": SEMANTICS,
+        "source_sha256": data_sha,
+        "alpha": alpha,
+        "n_bootstrap": BOOTSTRAPS,
+        "random_state": SEED,
+        "groups": summaries,
+        "comparisons": comparisons,
+        "merge_admission": "HOLD",
+        "formal_credit_delta": 0,
         "engineering_credit_delta": 0,
     }
     record["receipt_sha256"] = digest(record)
     target = destination / f"dataset-{data_sha[:12]}" / "phase2_metadata.json"
     target.parent.mkdir(parents=True, exist_ok=True)
-    target.write_text(json.dumps(record, indent=2, sort_keys=True, allow_nan=False) + "\n", encoding="utf-8")
+    target.write_text(
+        json.dumps(record, indent=2, sort_keys=True, allow_nan=False) + "\n",
+        encoding="utf-8",
+    )
     return target
 
 

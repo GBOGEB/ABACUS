@@ -138,8 +138,7 @@ def parent_problem(parent):
         return "lineage kind must be GENESIS or CHILD"
     source_sha = parent["source_sha"]
     if source_sha is not None and (
-        not isinstance(source_sha, str)
-        or not re.fullmatch(r"[0-9a-f]{40}", source_sha)
+        not isinstance(source_sha, str) or not re.fullmatch(r"[0-9a-f]{40}", source_sha)
     ):
         return "source_sha must be a 40-character SHA or null"
     receipt_date = parent["date"]
@@ -181,11 +180,11 @@ def parent_problem(parent):
     expected_status = (
         "VACUOUS"
         if counts["artefacts"] == 0
-        else "RED"
-        if counts["missing"] or integrity["hash_mismatched"]
-        else "UNVERIFIED"
-        if integrity["unhashed"]
-        else "PASS"
+        else (
+            "RED"
+            if counts["missing"] or integrity["hash_mismatched"]
+            else "UNVERIFIED" if integrity["unhashed"] else "PASS"
+        )
     )
     if parent["status"] != expected_status:
         return "status does not match receipt counts"
@@ -276,9 +275,7 @@ def build_receipt(artifacts, checked, parent=None, parent_sha=None):
             for field in fields
         }
         current = {**counts, **integrity}
-        delta = {
-            key: current[key] - before[key] for key in DELTA_FIELDS
-        }
+        delta = {key: current[key] - before[key] for key in DELTA_FIELDS}
     return {
         "schema": SCHEMA,
         "date": time.strftime("%Y-%m-%d", time.gmtime()),

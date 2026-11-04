@@ -6,6 +6,7 @@ It never zero-imputes missing values and never mixes authority classes.
 Runtime PCA is only emitted when >=5 comparable, distinct-SHA observations exist.
 BT remains WITHHELD unless observed pairwise evidence is supplied elsewhere.
 """
+
 from __future__ import annotations
 
 import argparse
@@ -142,9 +143,7 @@ def standardize(rows, features):
     for row in rows:
         z.append(
             [
-                0.0
-                if sds[j] == 0
-                else (float(row[features[j]]) - means[j]) / sds[j]
+                0.0 if sds[j] == 0 else (float(row[features[j]]) - means[j]) / sds[j]
                 for j in range(len(features))
             ]
         )
@@ -155,10 +154,7 @@ def covariance(z):
     n = len(z)
     p = len(z[0])
     return [
-        [
-            sum(z[i][a] * z[i][b] for i in range(n)) / max(n - 1, 1)
-            for b in range(p)
-        ]
+        [sum(z[i][a] * z[i][b] for i in range(n)) / max(n - 1, 1) for b in range(p)]
         for a in range(p)
     ]
 
@@ -181,9 +177,7 @@ def jacobi_eigen(matrix, max_iter=200, tol=1e-12):
         if a[p][p] == a[q][q]:
             theta = math.pi / 4
         else:
-            theta = 0.5 * math.atan2(
-                2 * a[p][q], a[q][q] - a[p][p]
-            )
+            theta = 0.5 * math.atan2(2 * a[p][q], a[q][q] - a[p][p])
         c, s = math.cos(theta), math.sin(theta)
         app, aqq, apq = a[p][p], a[q][q], a[p][q]
         a[p][p] = c * c * app - 2 * s * c * apq + s * s * aqq
@@ -313,9 +307,9 @@ def main():
         "child_engineering_promotion_authority": False,
         "allocation_state": "WITHHELD_PARENT_TRANSITION_GATE",
     }
-    canonical = json.dumps(
-        receipt, sort_keys=True, separators=(",", ":")
-    ).encode("utf-8")
+    canonical = json.dumps(receipt, sort_keys=True, separators=(",", ":")).encode(
+        "utf-8"
+    )
     receipt["receipt_sha256"] = hashlib.sha256(canonical).hexdigest()
     Path(args.out).write_text(
         json.dumps(receipt, indent=2, sort_keys=True) + "\n", encoding="utf-8"

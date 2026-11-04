@@ -48,7 +48,7 @@ class CohortUnionTests(unittest.TestCase):
 
         assert_marker_coverage(requirements)
         self.assertIn(
-            "pytest-asyncio>=1.4.0,<1.5; python_version >= '3.10'", requirements
+            "pytest-asyncio>=1.4.1,<1.5; python_version >= '3.10'", requirements
         )
         self.assertIn("pylint>=4.1.3,<5.0.0; python_version >= '3.10'", requirements)
         # Explicit A -> B -> A protection: neither old unconditional pin nor
@@ -117,7 +117,9 @@ class CohortUnionTests(unittest.TestCase):
             workflow.replace(required[3], "actual_head = pull_head  #", 1),
             workflow.replace(required[6], "if False:", 1),
             checkout_guard.sub("if actual_head != pull_head:\n    print(", workflow),
-            workflow.replace('"checkout_sha": actual_head', '"checkout_sha": pull_head', 1),
+            workflow.replace(
+                '"checkout_sha": actual_head', '"checkout_sha": pull_head', 1
+            ),
             workflow + "\n# " + required[6] + "\n",
             without_guard,
             guard_after_tests,

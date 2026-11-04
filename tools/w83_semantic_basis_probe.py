@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 """W83 deterministic semantic-basis diversity probe."""
+
 from __future__ import annotations
 
 import argparse
@@ -19,13 +20,14 @@ def canonical_sha256(value: object) -> str:
     return hashlib.sha256(raw).hexdigest()
 
 
-def parse_records(path: Path, key: str, fields: tuple[str, ...]) -> list[dict[str, str]]:
+def parse_records(
+    path: Path, key: str, fields: tuple[str, ...]
+) -> list[dict[str, str]]:
     records: list[dict[str, str]] = []
     current: dict[str, str] | None = None
     pattern = re.compile(rf"^\s*-\s+{re.escape(key)}:\s*(.+?)\s*$")
     field_patterns = {
-        field: re.compile(rf"^\s+{re.escape(field)}:\s*(.+?)\s*$")
-        for field in fields
+        field: re.compile(rf"^\s+{re.escape(field)}:\s*(.+?)\s*$") for field in fields
     }
     for raw in w72.read_text(path).splitlines():
         match = pattern.match(raw)
@@ -117,11 +119,7 @@ def probe(root: Path, source_sha: str, label: str) -> dict:
         ("path", "state", "migration"),
     )
     refs = w72.semantic_refs(root)
-    domain = {
-        row["id"]: row.get("source")
-        for row in domain_rows
-        if row.get("id")
-    }
+    domain = {row["id"]: row.get("source") for row in domain_rows if row.get("id")}
     gaps = {
         row["id"]: "ssot/contractual_gap_register.yaml"
         for row in gap_rows
@@ -247,7 +245,9 @@ def main() -> None:
     result = probe(Path(args.root).resolve(), args.source_sha, args.matrix_label)
     out = Path(args.out)
     out.parent.mkdir(parents=True, exist_ok=True)
-    out.write_text(json.dumps(result, indent=2, sort_keys=True) + "\n", encoding="utf-8")
+    out.write_text(
+        json.dumps(result, indent=2, sort_keys=True) + "\n", encoding="utf-8"
+    )
     print(json.dumps(result, sort_keys=True))
 
 

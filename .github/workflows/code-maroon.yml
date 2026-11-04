@@ -37,7 +37,7 @@ jobs:
         run: test "$(git rev-parse HEAD)" = "$EVALUATED_SOURCE_SHA"
       - uses: actions/setup-python@6d4fd22b20465ccc0f7354476588e8df7c9ca0e0
         with:
-          python-version: "3.12"
+          python-version: "3.14"
       - name: Preflight test discovery and runner
         run: python tools/code_maroon/testflight_guard.py preflight
       - name: Install bounded pytest runner

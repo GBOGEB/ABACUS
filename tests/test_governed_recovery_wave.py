@@ -1,4 +1,5 @@
 """Fail-closed disjoint CODE PURPLE resource/DAG stage controls."""
+
 import copy
 import hashlib
 import json
@@ -8,7 +9,6 @@ from pathlib import Path
 import yaml
 
 from runtime.execution import governed_recovery_wave as wave
-
 
 ROOT = Path(__file__).resolve().parents[1]
 CONFIG = ROOT / "runtime/execution/federated-execution-scheduler.yaml"
@@ -28,8 +28,12 @@ class RecoveryWaveTests(unittest.TestCase):
         self.assertEqual(result["planned_worker_slots"], 4)
         self.assertEqual(
             set(result["selected_disjoint_proposals"]),
-            {"PY39_RESOLVER", "SECURITY_DASHBOARD_403",
-             "GOVERNANCE_CLASSIFICATION", "MCL_RECEIPT_STAGING"},
+            {
+                "PY39_RESOLVER",
+                "SECURITY_DASHBOARD_403",
+                "GOVERNANCE_CLASSIFICATION",
+                "MCL_RECEIPT_STAGING",
+            },
         )
         self.assertEqual(result["observed_dispatches"], 0)
         self.assertFalse(result["mutation_enabled"])
@@ -39,8 +43,11 @@ class RecoveryWaveTests(unittest.TestCase):
     def test_owner_and_admission_never_run(self):
         result = wave.plan(HEAD, fixture())
         rows = {entry["id"]: entry for entry in result["lanes"]}
-        for key in ("DOW_FORMAT_DEBT", "METRICS_PR_CREDENTIAL",
-                    "EFFECTIVE_REPOSITORY_RULES"):
+        for key in (
+            "DOW_FORMAT_DEBT",
+            "METRICS_PR_CREDENTIAL",
+            "EFFECTIVE_REPOSITORY_RULES",
+        ):
             self.assertEqual(rows[key]["state"], "OWNER_ACTION_REQUIRED")
         self.assertEqual(rows["ADMISSION"]["state"], "ADMISSION_HOLD")
         self.assertEqual(

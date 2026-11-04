@@ -3,6 +3,7 @@
 This is a measured testflight comparator, not GitHub authentication, merge
 authority, security clearance, global-main coverage or changed-line coverage.
 """
+
 from __future__ import annotations
 
 import argparse
@@ -30,25 +31,36 @@ def coverage_from(path: Path):
     doc = json.loads(raw)
     require(isinstance(doc, dict), "invalid native coverage document")
     meta, files, totals = doc.get("meta"), doc.get("files"), doc.get("totals")
-    require(isinstance(meta, dict) and meta.get("branch_coverage") is True,
-            "branch instrumentation required")
-    require(isinstance(files, dict) and len(files) == 1
-            and next(iter(files)) in ALLOWED, "unexpected source path/scope")
+    require(
+        isinstance(meta, dict) and meta.get("branch_coverage") is True,
+        "branch instrumentation required",
+    )
+    require(
+        isinstance(files, dict) and len(files) == 1 and next(iter(files)) in ALLOWED,
+        "unexpected source path/scope",
+    )
     require(isinstance(totals, dict), "coverage totals unavailable")
     source = next(iter(files.values()))
     source_summary = source.get("summary") if isinstance(source, dict) else None
     require(isinstance(source_summary, dict), "source summary missing")
     for key in METRICS:
-        require(type(totals.get(key)) is int and totals[key] >= 0,
-                "invalid coverage counter: " + key)
-        require(type(source_summary.get(key)) is int
-                and source_summary[key] == totals[key],
-                "source/global counter mismatch: " + key)
-    require(totals["num_statements"] > 0 and totals["num_branches"] > 0,
-            "empty coverage denominator")
-    require(totals["covered_lines"] <= totals["num_statements"]
-            and totals["covered_branches"] <= totals["num_branches"],
-            "coverage numerator exceeds denominator")
+        require(
+            type(totals.get(key)) is int and totals[key] >= 0,
+            "invalid coverage counter: " + key,
+        )
+        require(
+            type(source_summary.get(key)) is int and source_summary[key] == totals[key],
+            "source/global counter mismatch: " + key,
+        )
+    require(
+        totals["num_statements"] > 0 and totals["num_branches"] > 0,
+        "empty coverage denominator",
+    )
+    require(
+        totals["covered_lines"] <= totals["num_statements"]
+        and totals["covered_branches"] <= totals["num_branches"],
+        "coverage numerator exceeds denominator",
+    )
     return (
         {key: totals[key] for key in METRICS},
         temporal._timestamp(meta.get("timestamp")),
@@ -66,17 +78,23 @@ def junit_from(path: Path):
 
 
 def compare(old_cov, new_cov, old_tests, new_tests, *, exact_head):
-    require(isinstance(exact_head, str) and bool(SHA40.fullmatch(exact_head)),
-            "invalid 40-character head")
+    require(
+        isinstance(exact_head, str) and bool(SHA40.fullmatch(exact_head)),
+        "invalid 40-character head",
+    )
     old, old_generated, old_hash = old_cov
     new, new_generated, new_hash = new_cov
     old_cases, old_finished, old_junit_hash = old_tests
     new_cases, new_finished, new_junit_hash = new_tests
-    require(old_generated >= old_finished and new_generated >= new_finished,
-            "coverage evidence predates native JUnit completion")
-    require(old["num_statements"] == new["num_statements"]
-            and old["num_branches"] == new["num_branches"],
-            "unmatched statement/branch denominators")
+    require(
+        old_generated >= old_finished and new_generated >= new_finished,
+        "coverage evidence predates native JUnit completion",
+    )
+    require(
+        old["num_statements"] == new["num_statements"]
+        and old["num_branches"] == new["num_branches"],
+        "unmatched statement/branch denominators",
+    )
     ds = new["covered_lines"] - old["covered_lines"]
     db = new["covered_branches"] - old["covered_branches"]
     dt = new_cases["executed"] - old_cases["executed"]
@@ -103,8 +121,10 @@ def compare(old_cov, new_cov, old_tests, new_tests, *, exact_head):
             "combined_delta_pp": round(100 * (covered_new - covered_old) / eligible, 6),
         },
         "input_sha256": {
-            "before_coverage": old_hash, "after_coverage": new_hash,
-            "before_junit": old_junit_hash, "after_junit": new_junit_hash,
+            "before_coverage": old_hash,
+            "after_coverage": new_hash,
+            "before_junit": old_junit_hash,
+            "after_junit": new_junit_hash,
         },
         "global_main_coverage_delta": None,
         "pr_changed_line_coverage_delta": None,
@@ -125,18 +145,25 @@ def main(argv=None):
     parser.add_argument("--out", type=Path, required=True)
     args = parser.parse_args(argv)
     receipt = compare(
-        coverage_from(args.before_cov), coverage_from(args.after_cov),
-        junit_from(args.before_junit), junit_from(args.after_junit),
+        coverage_from(args.before_cov),
+        coverage_from(args.after_cov),
+        junit_from(args.before_junit),
+        junit_from(args.after_junit),
         exact_head=args.exact_head,
     )
     source_bytes = Path(SOURCE).read_bytes()
     require(bool(source_bytes), "missing exact physical module")
     receipt["source_sha256"] = hashlib.sha256(source_bytes).hexdigest()
     args.out.parent.mkdir(parents=True, exist_ok=True)
-    args.out.write_text(json.dumps(receipt, sort_keys=True, indent=2) + "\n",
-                        encoding="utf-8")
-    print(json.dumps({"head": args.exact_head, "delta": receipt["delta"],
-                      "admission": "HOLD"}, sort_keys=True))
+    args.out.write_text(
+        json.dumps(receipt, sort_keys=True, indent=2) + "\n", encoding="utf-8"
+    )
+    print(
+        json.dumps(
+            {"head": args.exact_head, "delta": receipt["delta"], "admission": "HOLD"},
+            sort_keys=True,
+        )
+    )
     return 0
 
 

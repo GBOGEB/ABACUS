@@ -3,16 +3,17 @@ PyTest Integration Tests with Markers
 Tests full integration with pytest markers for artifact tracking
 """
 
-import pytest
-import numpy as np
-from pathlib import Path
-import tempfile
 import sys
+import tempfile
+from pathlib import Path
+
+import numpy as np
+import pytest
 
 sys.path.insert(0, str(Path(__file__).parent.parent))
 
-from bootstrap_eval import bootstrap_ci_mean
 from aht_statistics_bridge import AHTStatisticsBridge
+from bootstrap_eval import bootstrap_ci_mean
 
 
 @pytest.mark.bootstrap
@@ -81,10 +82,10 @@ class TestAHTIntegration:
             hypothesis="API meets 95% SLA target",
             observed_data=response_times,
             expected_value=95.0,
-            context={"service": "user_api", "environment": "production"}
+            context={"service": "user_api", "environment": "production"},
         )
 
-        assert result['status'] in ['SUPPORTED', 'ACCEPTED', 'EXCEEDED']
+        assert result["status"] in ["SUPPORTED", "ACCEPTED", "EXCEEDED"]
 
     @pytest.mark.artifact(name="new_algorithm", type="optimization")
     def test_algorithm_improvement_hypothesis(self, aht_bridge):
@@ -96,10 +97,10 @@ class TestAHTIntegration:
             hypothesis="New algorithm improves performance by 10%",
             observed_data=new_performance,
             reference_group=old_performance,
-            context={"algorithm": "v2", "baseline": "v1"}
+            context={"algorithm": "v2", "baseline": "v1"},
         )
 
-        assert 'comparison' in result
+        assert "comparison" in result
 
 
 @pytest.mark.dow
@@ -127,15 +128,15 @@ class TestDOWWorkflow:
             assert len(df) == 40
 
             results = {}
-            for group in df['group'].unique():
-                group_data = df[df['group'] == group]['score'].values
+            for group in df["group"].unique():
+                group_data = df[df["group"] == group]["score"].values
                 ci_low, ci_high, boot_means = bootstrap_ci_mean(
                     np.array(group_data), alpha=0.05
                 )
                 results[group] = {
-                    'ci_low': ci_low,
-                    'ci_high': ci_high,
-                    'mean': np.mean(group_data)
+                    "ci_low": ci_low,
+                    "ci_high": ci_high,
+                    "mean": np.mean(group_data),
                 }
 
             assert len(results) == 2
@@ -149,12 +150,12 @@ class TestDOWWorkflow:
                 "mean": 85.5,
                 "std": 10.2,
                 "ci_bootstrap_lower": 82.5,
-                "ci_bootstrap_upper": 88.5
+                "ci_bootstrap_upper": 88.5,
             }
         }
 
-        assert 'mean' in analysis_results['test_a']
-        assert analysis_results['test_a']['mean'] > 80
+        assert "mean" in analysis_results["test_a"]
+        assert analysis_results["test_a"]["mean"] > 80
 
 
 @pytest.mark.ci_cd
@@ -172,11 +173,11 @@ class TestCICDGates:
         mean = np.mean(performance_scores)
 
         MINIMUM_PERFORMANCE = 80
-        assert mean >= MINIMUM_PERFORMANCE, \
-            f"Performance below threshold: {mean} < {MINIMUM_PERFORMANCE}"
+        assert (
+            mean >= MINIMUM_PERFORMANCE
+        ), f"Performance below threshold: {mean} < {MINIMUM_PERFORMANCE}"
 
-        assert ci_low >= 75, \
-            "Lower confidence bound too low for production"
+        assert ci_low >= 75, "Lower confidence bound too low for production"
 
     @pytest.mark.artifact(name="reliability_gate", type="ci_gate")
     def test_reliability_gate(self):
@@ -188,8 +189,9 @@ class TestCICDGates:
         mean = np.mean(reliability_scores)
 
         MINIMUM_RELIABILITY = 90
-        assert mean >= MINIMUM_RELIABILITY, \
-            f"Reliability below threshold: {mean} < {MINIMUM_RELIABILITY}"
+        assert (
+            mean >= MINIMUM_RELIABILITY
+        ), f"Reliability below threshold: {mean} < {MINIMUM_RELIABILITY}"
 
 
 @pytest.mark.performance
@@ -237,11 +239,9 @@ class TestSmokeTests:
                 learnings_db_path=Path(tmpdir) / "smoke_test.json"
             )
             result = bridge.test_hypothesis_with_bootstrap(
-                hypothesis="Smoke test",
-                observed_data=[10, 12, 11],
-                expected_value=10.0
+                hypothesis="Smoke test", observed_data=[10, 12, 11], expected_value=10.0
             )
-            assert 'status' in result
+            assert "status" in result
 
 
 @pytest.mark.regression
@@ -259,7 +259,7 @@ class TestRegressionTests:
             result = bridge.test_hypothesis_with_bootstrap(
                 hypothesis="Test with special chars: ≤ ≥ ± →",
                 observed_data=[85, 87, 86],
-                expected_value=85.0
+                expected_value=85.0,
             )
 
             assert result is not None
@@ -283,16 +283,17 @@ class TestSecurityTests:
         """Test SQL injection prevention in data loading"""
         malicious_input = "'; DROP TABLE scores; --"
 
-        with tempfile.NamedTemporaryFile(mode='w', suffix='.csv', delete=False) as f:
+        with tempfile.NamedTemporaryFile(mode="w", suffix=".csv", delete=False) as f:
             f.write("group,score\n")
             f.write(f"{malicious_input},100\n")
             temp_path = f.name
 
         try:
             from bootstrap_eval import load_from_csv
+
             df = load_from_csv(temp_path)
 
-            assert malicious_input in df['group'].values
+            assert malicious_input in df["group"].values
         finally:
             Path(temp_path).unlink()
 

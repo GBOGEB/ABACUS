@@ -5,6 +5,7 @@ This script is intentionally conservative: it classifies files by path and
 extension into broad governance categories, emits machine-readable JSON, and
 never grants engineering or child-compliance credit.
 """
+
 from __future__ import annotations
 
 import argparse
@@ -153,7 +154,11 @@ def measure(root: Path) -> dict:
             size = file_path.stat().st_size
         except OSError:
             size = 0
-        records.append(FileRecord(file_path.relative_to(root).as_posix(), size, classify(file_path, root)))
+        records.append(
+            FileRecord(
+                file_path.relative_to(root).as_posix(), size, classify(file_path, root)
+            )
+        )
 
     by_category = Counter(record.category for record in records)
     bytes_by_category: defaultdict[str, int] = defaultdict(int)

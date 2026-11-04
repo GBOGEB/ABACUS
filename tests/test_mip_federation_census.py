@@ -60,15 +60,17 @@ class FederationCensusTests(unittest.TestCase):
         result = self.evaluate()
         self.assertEqual(24, result["total_domain_slots"])
         self.assertEqual(0, result["filled_receipt_slots"])
-        self.assertEqual("UNKNOWN", result["cells"][0]["locally_hash_verified_receipts"])
+        self.assertEqual(
+            "UNKNOWN", result["cells"][0]["locally_hash_verified_receipts"]
+        )
         self.assertEqual("UNKNOWN", result["authenticated_fanout"])
 
     def test_all_eight_domains_are_visible(self):
         result = self.evaluate()
         self.assertEqual(8, result["domain_breadth"])
-        self.assertEqual(set(MODULE.DOMAINS), {
-            cell["domain"] for cell in result["cells"]
-        })
+        self.assertEqual(
+            set(MODULE.DOMAINS), {cell["domain"] for cell in result["cells"]}
+        )
         self.assertIn("LDAB_LLDB", MODULE.markdown(result))
         self.assertIn("THREE_P", MODULE.markdown(result))
 
@@ -116,11 +118,13 @@ class FederationCensusTests(unittest.TestCase):
             self.evaluate()
 
     def test_two_repos_do_not_imply_authenticated_fanout(self):
-        self.manifest["repositories"].append({
-            "repository": "GBOGEB/CODEX",
-            "head_sha": "b" * 40,
-            "evidence": [],
-        })
+        self.manifest["repositories"].append(
+            {
+                "repository": "GBOGEB/CODEX",
+                "head_sha": "b" * 40,
+                "evidence": [],
+            }
+        )
         result = self.evaluate()
         self.assertEqual(result["repository_breadth"], 2)
         self.assertEqual(result["authenticated_fanout"], "UNKNOWN")
@@ -128,12 +132,16 @@ class FederationCensusTests(unittest.TestCase):
 
     def test_three_repositories_extend_breadth_without_rex_credit(self):
         """Three SHA observations are not three authenticated runtimes."""
-        self.manifest["repositories"].extend([
-            {"repository": "GBOGEB/CODEX", "head_sha": "b" * 40,
-             "evidence": []},
-            {"repository": "GBOGEB/cryoplant-project",
-             "head_sha": "c" * 40, "evidence": []},
-        ])
+        self.manifest["repositories"].extend(
+            [
+                {"repository": "GBOGEB/CODEX", "head_sha": "b" * 40, "evidence": []},
+                {
+                    "repository": "GBOGEB/cryoplant-project",
+                    "head_sha": "c" * 40,
+                    "evidence": [],
+                },
+            ]
+        )
         result = self.evaluate()
         self.assertEqual(result["repository_breadth"], 3)
         self.assertEqual(result["domain_breadth"], 8)
@@ -146,12 +154,16 @@ class FederationCensusTests(unittest.TestCase):
     def test_private_remote_repo_missing_is_unknown_not_zero(self):
         """A registered but unseen private repository must remain UNKNOWN."""
         result = self.evaluate()
-        cells = [row for row in result["cells"] if row["repository"]
-                 == "GBOGEB/cryoplant-project"]
+        cells = [
+            row
+            for row in result["cells"]
+            if row["repository"] == "GBOGEB/cryoplant-project"
+        ]
         self.assertEqual(len(cells), 8)
         self.assertTrue(all(x["head_sha"] == "UNKNOWN" for x in cells))
-        self.assertTrue(all(x["locally_hash_verified_receipts"]
-                            == "UNKNOWN" for x in cells))
+        self.assertTrue(
+            all(x["locally_hash_verified_receipts"] == "UNKNOWN" for x in cells)
+        )
 
     def test_cli_emits_three_deterministic_receipts(self):
         """Cover the executable entrypoint and verify its paired outputs."""
@@ -160,9 +172,12 @@ class FederationCensusTests(unittest.TestCase):
         source.write_text(json.dumps(self.manifest), encoding="utf-8")
         argv = [
             str(SOURCE),
-            "--input", str(source),
-            "--artifact-root", str(self.root),
-            "--output-dir", str(output),
+            "--input",
+            str(source),
+            "--artifact-root",
+            str(self.root),
+            "--output-dir",
+            str(output),
         ]
         with mock.patch.object(sys, "argv", argv):
             runpy.run_path(str(SOURCE), run_name="__main__")
@@ -181,15 +196,19 @@ class FederationCensusTests(unittest.TestCase):
         self.assertIn("GBOGEB/cryoplant-project", html_report)
         self.assertEqual(html_report.count("class='slot unknown'"), 24)
         before = (
-            json_path.read_bytes(), markdown_path.read_bytes(),
+            json_path.read_bytes(),
+            markdown_path.read_bytes(),
             html_path.read_bytes(),
         )
         with mock.patch.object(sys, "argv", argv):
             runpy.run_path(str(SOURCE), run_name="__main__")
         self.assertEqual(
             before,
-            (json_path.read_bytes(), markdown_path.read_bytes(),
-             html_path.read_bytes()),
+            (
+                json_path.read_bytes(),
+                markdown_path.read_bytes(),
+                html_path.read_bytes(),
+            ),
         )
 
     def test_cli_invalid_manifest_creates_no_census(self):
@@ -199,9 +218,12 @@ class FederationCensusTests(unittest.TestCase):
         source.write_text(json.dumps({"schema": "forged"}), encoding="utf-8")
         argv = [
             str(SOURCE),
-            "--input", str(source),
-            "--artifact-root", str(self.root),
-            "--output-dir", str(output),
+            "--input",
+            str(source),
+            "--artifact-root",
+            str(self.root),
+            "--output-dir",
+            str(output),
         ]
         with mock.patch.object(sys, "argv", argv):
             with self.assertRaisesRegex(ValueError, "invalid federation schema"):

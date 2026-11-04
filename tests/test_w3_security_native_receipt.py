@@ -6,7 +6,9 @@ from pathlib import Path
 import pytest
 from defusedxml.common import DefusedXmlException
 
-from scripts.ci.w3_security_native_receipt import build_receipt
+from scripts.ci.w3_security_native_receipt import VALID_PY, build_receipt
+
+SUPPORTED = sorted(VALID_PY, key=lambda v: tuple(map(int, v.split('.'))))
 
 SHA = "a" * 40
 
@@ -22,7 +24,7 @@ def write_junit(tmp_path: Path, cases: str | None = None) -> Path:
 def good_args(path: Path) -> dict:
     return dict(expected_head=SHA, observed_head=SHA,
                 run_id="39064371857", attempt=1,
-                os_cell="ubuntu-24.04", python_cell="3.10", junit_path=path)
+                os_cell="ubuntu-24.04", python_cell=SUPPORTED[0], junit_path=path)
 
 
 def test_exact_head_good_junit_preserves_nonpromotion(tmp_path):
@@ -47,6 +49,7 @@ def test_exact_head_good_junit_preserves_nonpromotion(tmp_path):
     ("attempt", False),
     ("os_cell", "UNKNOWN"),
     ("python_cell", "3.9"),
+    ("python_cell", "3.10"),
 ])
 def test_forged_or_stale_native_identity_fails_closed(tmp_path, name, value):
     args = good_args(write_junit(tmp_path))

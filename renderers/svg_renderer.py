@@ -4,7 +4,6 @@ import json
 import xml.etree.ElementTree as ET
 from typing import Dict, Iterable, Mapping, Optional
 
-
 DEFAULT_STYLE_HOOKS = {
     "svg_class": "abacus-svg-renderer",
     "node_class": "abacus-process-node",
@@ -17,7 +16,9 @@ DEFAULT_STYLE_HOOKS = {
 class SVGRenderer:
     """Render process flow graphs to SVG."""
 
-    def __init__(self, scale: float = 1.0, style_hooks: Optional[Mapping[str, str]] = None):
+    def __init__(
+        self, scale: float = 1.0, style_hooks: Optional[Mapping[str, str]] = None
+    ):
         if scale <= 0:
             raise ValueError("scale must be greater than zero")
         self.scale = float(scale)
@@ -41,8 +42,13 @@ class SVGRenderer:
         node_height = 72.0 * self.scale
         node_gap = 80.0 * self.scale
 
-        canvas_width = max(300.0 * self.scale, x_margin * 2 + len(node_list) * (node_width + node_gap) - node_gap)
-        canvas_height = max(200.0 * self.scale, y_margin * 2 + node_height + 40.0 * self.scale)
+        canvas_width = max(
+            300.0 * self.scale,
+            x_margin * 2 + len(node_list) * (node_width + node_gap) - node_gap,
+        )
+        canvas_height = max(
+            200.0 * self.scale, y_margin * 2 + node_height + 40.0 * self.scale
+        )
 
         svg = ET.Element(
             "svg",
@@ -155,14 +161,16 @@ class SVGRenderer:
     def to_html(self, svg: str, title: str = "Process Flow") -> str:
         return (
             "<!DOCTYPE html>"
-            "<html lang=\"en\"><head><meta charset=\"utf-8\">"
+            '<html lang="en"><head><meta charset="utf-8">'
             f"<title>{title}</title>"
             "</head><body>"
             f"{svg}"
             "</body></html>"
         )
 
-    def _lineage_payload(self, lineage: Optional[Mapping[str, object]]) -> Dict[str, object]:
+    def _lineage_payload(
+        self, lineage: Optional[Mapping[str, object]]
+    ) -> Dict[str, object]:
         payload = {
             "wave": "W003",
             "renderer": "process_flow",

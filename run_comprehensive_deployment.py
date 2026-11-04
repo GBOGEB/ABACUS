@@ -301,8 +301,14 @@ class DeploymentOrchestrator:
         print("\n📊 EXECUTION SUMMARY:")
         print(f"  1. Git Integration:      {self.results['git_integration'].get('status', 'N/A')}")
         print(f"  2. Sprint 5:             {self.results['sprint_5'].get('status', 'N/A')}")
-        print(f"  3. DMAIC Phases:         {self.results['dmaic_phases'].get('completed', 0)}/{self.results['dmaic_phases'].get('total', 0)}")
-        print(f"  4. MCP Iteration:        {self.results['mcp_iteration'].get('completed', 0)}/{self.results['mcp_iteration'].get('total', 0)}")
+        print(
+            f"  3. DMAIC Phases:         {self.results['dmaic_phases'].get('completed', 0)}"
+            f"/{self.results['dmaic_phases'].get('total', 0)}"
+        )
+        print(
+            f"  4. MCP Iteration:        {self.results['mcp_iteration'].get('completed', 0)}"
+            f"/{self.results['mcp_iteration'].get('total', 0)}"
+        )
         print(f"  5. Self-Improvement:     {self.results['self_improvement'].get('status', 'N/A')}")
         print(f"  6. CI/CD Validation:     {self.results['cicd_pipeline'].get('status', 'N/A')}")
 
@@ -364,6 +370,7 @@ class DeploymentOrchestrator:
         except Exception as e:
             self.log(f"Deployment failed: {e}", "ERROR")
             return 1
+
 
 if __name__ == "__main__":
     orchestrator = DeploymentOrchestrator()

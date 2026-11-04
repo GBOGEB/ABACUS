@@ -3,21 +3,21 @@
 
 No remote execution, remote trust promotion, deployment, or secondary SSOT.
 """
+
 from __future__ import annotations
 
 import argparse
 import hashlib
 import json
 import os
-from pathlib import Path
 import re
 import subprocess
 import sys
-from defusedxml import ElementTree as ET
-from defusedxml.common import DefusedXmlException
+from pathlib import Path
 
 import yaml
-
+from defusedxml import ElementTree as ET
+from defusedxml.common import DefusedXmlException
 
 SOURCE_PATH = Path("DMAIC_V3/core/dow_ariana_integration.py")
 BRIDGE_PATH = Path("DMAIC_V3/core/test_system_bridge.py")
@@ -74,14 +74,12 @@ def validate_local_contract(root: Path) -> dict:
         or namespace.get("intersection_must_be_empty") is not True
     ):
         raise ValueError("KEB status keys collide with action monikers")
-    if "promote_QPS_engineering_truth" not in dock.get("authority", {}).get("must_not", []):
-        raise ValueError("QPS engineering authority boundary not preserved")
-    receiver_authority = receiver.get("3pc_consumption", {}).get(
-        "authority", {}
-    )
-    if "promote_QPS_engineering_truth" not in receiver_authority.get(
+    if "promote_QPS_engineering_truth" not in dock.get("authority", {}).get(
         "must_not", []
     ):
+        raise ValueError("QPS engineering authority boundary not preserved")
+    receiver_authority = receiver.get("3pc_consumption", {}).get("authority", {})
+    if "promote_QPS_engineering_truth" not in receiver_authority.get("must_not", []):
         raise ValueError("QPS receiver authority boundary not preserved")
     return {
         "runtime_owner": dock["repo"],
@@ -124,8 +122,7 @@ def read_junit(path: Path) -> dict | None:
         for name, actual in measured.items():
             declared = node.get(name)
             if declared is not None and (
-                re.fullmatch(r"[0-9]{1,9}", declared) is None
-                or int(declared) != actual
+                re.fullmatch(r"[0-9]{1,9}", declared) is None or int(declared) != actual
             ):
                 raise ValueError(f"JUnit declared {name} contradicts testcases")
 
@@ -205,7 +202,9 @@ def build_receipt(root: Path, expected_sha: str, junit: Path, coverage: Path) ->
         "local_contract": local,
         "native_test_receipt": tests,
         "focused_coverage": measured,
-        "disposition": "LOCAL_TESTED_FEDERATION_HOLD" if proven else "EVIDENCE_WITHHELD",
+        "disposition": (
+            "LOCAL_TESTED_FEDERATION_HOLD" if proven else "EVIDENCE_WITHHELD"
+        ),
         "federation": {
             "DOW": {"owner": "GBOGEB/ABACUS", "status": "SOURCE_BOUND_LOCAL"},
             "KEB": {
@@ -219,22 +218,44 @@ def build_receipt(root: Path, expected_sha: str, junit: Path, coverage: Path) ->
             },
         },
         "dag": {
-            "nodes": ["ABACUS_SOURCE", "DOW_TEST_BRIDGE", "KEB_SEMANTICS", "QPS_ENGINEERING"],
+            "nodes": [
+                "ABACUS_SOURCE",
+                "DOW_TEST_BRIDGE",
+                "KEB_SEMANTICS",
+                "QPS_ENGINEERING",
+            ],
             "edges": [
-                {"source": "ABACUS_SOURCE", "target": "DOW_TEST_BRIDGE",
-                 "evidence": "NATIVE_LOCAL_TEST" if proven else "UNVERIFIED"},
-                {"source": "DOW_TEST_BRIDGE", "target": "KEB_SEMANTICS",
-                 "evidence": "DECLARED_NON_EXECUTED"},
-                {"source": "KEB_SEMANTICS", "target": "QPS_ENGINEERING",
-                 "evidence": "DECLARED_NON_EXECUTED"},
+                {
+                    "source": "ABACUS_SOURCE",
+                    "target": "DOW_TEST_BRIDGE",
+                    "evidence": "NATIVE_LOCAL_TEST" if proven else "UNVERIFIED",
+                },
+                {
+                    "source": "DOW_TEST_BRIDGE",
+                    "target": "KEB_SEMANTICS",
+                    "evidence": "DECLARED_NON_EXECUTED",
+                },
+                {
+                    "source": "KEB_SEMANTICS",
+                    "target": "QPS_ENGINEERING",
+                    "evidence": "DECLARED_NON_EXECUTED",
+                },
             ],
         },
         "sipoc": {
-            "suppliers": ["ABACUS_source_owner", "CODEX_KEB_semantic_owner", "QPS_child_owner"],
+            "suppliers": [
+                "ABACUS_source_owner",
+                "CODEX_KEB_semantic_owner",
+                "QPS_child_owner",
+            ],
             "inputs": ["exact_checkout", "local_DOW_bridge", "JUnit", "coverage_json"],
             "process": "source_preflight_then_real_tests_then_read_only_projection",
             "outputs": ["native_test_receipt", "focused_coverage", "DAG_projection"],
-            "customers": ["ABACUS_DOW", "CODEX_KEB", "QPS_child_for_later_independent_review"],
+            "customers": [
+                "ABACUS_DOW",
+                "CODEX_KEB",
+                "QPS_child_for_later_independent_review",
+            ],
         },
         "governance": {
             "merge_admission": "HOLD",
@@ -264,20 +285,33 @@ def main() -> int:
         if args.preflight:
             sha = exact_checkout(root, args.source_sha)
             contract = validate_local_contract(root)
-            print(json.dumps({"source_sha": sha, "preflight": "PASS",
-                              "contract": contract}, sort_keys=True))
+            print(
+                json.dumps(
+                    {"source_sha": sha, "preflight": "PASS", "contract": contract},
+                    sort_keys=True,
+                )
+            )
             return 0
         if args.junit is None or args.coverage is None or args.out is None:
             parser.error("receipt requires --junit, --coverage, and --out")
         receipt = build_receipt(root, args.source_sha, args.junit, args.coverage)
         args.out.parent.mkdir(parents=True, exist_ok=True)
-        args.out.write_text(json.dumps(receipt, sort_keys=True, indent=2) + "\n", encoding="utf-8")
+        args.out.write_text(
+            json.dumps(receipt, sort_keys=True, indent=2) + "\n", encoding="utf-8"
+        )
         print(f"ARIANA_DOW_RECEIPT={receipt['disposition']} / {args.out}")
         if args.strict and receipt["disposition"] != "LOCAL_TESTED_FEDERATION_HOLD":
             return 1
         return 0
-    except (OSError, ValueError, KeyError, TypeError, ET.ParseError, DefusedXmlException,
-            subprocess.SubprocessError) as error:
+    except (
+        OSError,
+        ValueError,
+        KeyError,
+        TypeError,
+        ET.ParseError,
+        DefusedXmlException,
+        subprocess.SubprocessError,
+    ) as error:
         print(f"ARIANA_DOW_FAIL_CLOSED: {error}", file=sys.stderr)
         return 2
 

@@ -98,15 +98,17 @@ def test_idempotent_memory_only_and_hash_helpers(tmp_path):
     assert run(x=4) == 8
     assert calls["count"] == 1
 
-    assert idempotency.hash_json([1, 2, 3]) == hashlib.sha256(
-        json.dumps([1, 2, 3]).encode()
-    ).hexdigest()
+    assert (
+        idempotency.hash_json([1, 2, 3])
+        == hashlib.sha256(json.dumps([1, 2, 3]).encode()).hexdigest()
+    )
 
     payload = tmp_path / "payload.bin"
     payload.write_bytes(b"ABACUS\x00pressure")
-    assert idempotency.compute_file_hash(payload) == hashlib.sha256(
-        b"ABACUS\x00pressure"
-    ).hexdigest()
+    assert (
+        idempotency.compute_file_hash(payload)
+        == hashlib.sha256(b"ABACUS\x00pressure").hexdigest()
+    )
 
 
 def test_provenance_file_backed_lifecycle_and_missing_run(tmp_path, monkeypatch):
@@ -123,7 +125,11 @@ def test_provenance_file_backed_lifecycle_and_missing_run(tmp_path, monkeypatch)
     run_id = provenance.begin_run("0123456789abcdef", "input-sha")
     provenance.record_phase(run_id, "analyze", 3, "ok", "in", "out", {"n": 3})
     artifact_id = provenance.record_artifact(
-        run_id, "analyze", "json", "result.json", "feedbead1234",
+        run_id,
+        "analyze",
+        "json",
+        "result.json",
+        "feedbead1234",
         meta={"origin": "file-backed"},
     )
     provenance.finish_run(run_id, "success", {"score": 9})

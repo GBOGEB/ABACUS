@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 """Compute comparable-run speedups and conservative stability status for 3P execution."""
+
 from __future__ import annotations
 
 import argparse
@@ -7,8 +8,6 @@ import json
 import math
 import statistics
 from pathlib import Path
-
-
 
 # A stable result requires actual, source-identifiable measurements, not defaults.
 POSITIVE_METRICS = (
@@ -91,18 +90,37 @@ def comparable(a: dict[str, object], b: dict[str, object]) -> bool:
     )
 
 
-def speed_view(base: dict[str, object], current: dict[str, object]) -> dict[str, object]:
+def speed_view(
+    base: dict[str, object], current: dict[str, object]
+) -> dict[str, object]:
     return {
-        "wall_speedup_x": ratio(run_metric(base, "wall_ms_per_root_item"), run_metric(current, "wall_ms_per_root_item")),
-        "AHT_speedup_x": ratio(run_metric(base, "AHT_ms_per_root_item"), run_metric(current, "AHT_ms_per_root_item")),
-        "throughput_gain_fraction": gain(run_metric(current, "terminal_items_per_worker_hour"), run_metric(base, "terminal_items_per_worker_hour")),
-        "evidence_yield_change_fraction": gain(run_metric(current, "evidence_yield_per_worker_minute"), run_metric(base, "evidence_yield_per_worker_minute")),
-        "rework_change_absolute": run_metric(current, "rework_rate") - run_metric(base, "rework_rate"),
+        "wall_speedup_x": ratio(
+            run_metric(base, "wall_ms_per_root_item"),
+            run_metric(current, "wall_ms_per_root_item"),
+        ),
+        "AHT_speedup_x": ratio(
+            run_metric(base, "AHT_ms_per_root_item"),
+            run_metric(current, "AHT_ms_per_root_item"),
+        ),
+        "throughput_gain_fraction": gain(
+            run_metric(current, "terminal_items_per_worker_hour"),
+            run_metric(base, "terminal_items_per_worker_hour"),
+        ),
+        "evidence_yield_change_fraction": gain(
+            run_metric(current, "evidence_yield_per_worker_minute"),
+            run_metric(base, "evidence_yield_per_worker_minute"),
+        ),
+        "rework_change_absolute": run_metric(current, "rework_rate")
+        - run_metric(base, "rework_rate"),
     }
 
 
-def classify(comparable_runs: list[dict[str, object]], current: dict[str, object]) -> tuple[str, list[str]]:
-    if measurement_errors(current) or any(measurement_errors(r) for r in comparable_runs):
+def classify(
+    comparable_runs: list[dict[str, object]], current: dict[str, object]
+) -> tuple[str, list[str]]:
+    if measurement_errors(current) or any(
+        measurement_errors(r) for r in comparable_runs
+    ):
         return "INSUFFICIENT_EVIDENCE", ["incomplete_or_invalid_run_metrics"]
     if len(comparable_runs) < 3:
         return "INSUFFICIENT_EVIDENCE", ["fewer_than_3_comparable_valid_runs"]
@@ -112,26 +130,49 @@ def classify(comparable_runs: list[dict[str, object]], current: dict[str, object
     quality_ok = (
         run_metric(current, "rework_rate") <= run_metric(baseline, "rework_rate") + 0.05
         and run_metric(current, "information_loss_failures") == 0
-        and run_metric(current, "evidence_yield_per_worker_minute") >= 0.9 * run_metric(baseline, "evidence_yield_per_worker_minute")
+        and run_metric(current, "evidence_yield_per_worker_minute")
+        >= 0.9 * run_metric(baseline, "evidence_yield_per_worker_minute")
     )
     recent = comparable_runs[-5:]
     positive = 0
     speedups = []
     for run in recent:
-        x = ratio(run_metric(baseline, "wall_ms_per_root_item"), run_metric(run, "wall_ms_per_root_item"))
+        x = ratio(
+            run_metric(baseline, "wall_ms_per_root_item"),
+            run_metric(run, "wall_ms_per_root_item"),
+        )
         if x is not None:
             speedups.append(x)
             positive += int(x > 1.0)
     rolling = statistics.median(speedups) if speedups else None
     if rolling is not None and rolling < 0.90:
         return "REGRESSION", ["rolling_median_speedup_below_0_90"]
-    if len(comparable_runs) >= 5 and positive >= 4 and rolling is not None and rolling >= 1.10 and quality_ok:
-        if run_metric(current, "DoV_gap_after") <= run_metric(baseline, "DoV_gap_after"):
-            return "STABLE_IMPROVEMENT", ["4_of_last_5_positive", "rolling_median_speedup_at_least_1_10", "quality_guards_pass"]
+    if (
+        len(comparable_runs) >= 5
+        and positive >= 4
+        and rolling is not None
+        and rolling >= 1.10
+        and quality_ok
+    ):
+        if run_metric(current, "DoV_gap_after") <= run_metric(
+            baseline, "DoV_gap_after"
+        ):
+            return "STABLE_IMPROVEMENT", [
+                "4_of_last_5_positive",
+                "rolling_median_speedup_at_least_1_10",
+                "quality_guards_pass",
+            ]
     if positive >= 3 and rolling is not None and rolling >= 1.05 and quality_ok:
-        return "PROVISIONALLY_STABLE", ["3_of_last_5_positive", "rolling_median_speedup_at_least_1_05", "quality_guards_pass"]
+        return "PROVISIONALLY_STABLE", [
+            "3_of_last_5_positive",
+            "rolling_median_speedup_at_least_1_05",
+            "quality_guards_pass",
+        ]
     if wall is not None and wall > 1.0 and quality_ok:
-        return "DIRECTIONAL_IMPROVEMENT", ["faster_than_fixed_baseline", "quality_guards_pass"]
+        return "DIRECTIONAL_IMPROVEMENT", [
+            "faster_than_fixed_baseline",
+            "quality_guards_pass",
+        ]
     return "NO_STABLE_GAIN_YET", ["speed_or_quality_gate_not_met"]
 
 
@@ -152,8 +193,7 @@ def main() -> int:
     current = rows[-1]
     invalid_current = measurement_errors(current)
     comp = [
-        row for row in rows
-        if not measurement_errors(row) and comparable(row, current)
+        row for row in rows if not measurement_errors(row) and comparable(row, current)
     ]
     if invalid_current or not comp:
         stability = "INSUFFICIENT_EVIDENCE"
@@ -165,11 +205,21 @@ def main() -> int:
         prior = comp[:-1][-5:]
         if prior:
             rolling_reference = {
-                "wall_ms_per_root_item": statistics.median(run_metric(r, "wall_ms_per_root_item") for r in prior),
-                "AHT_ms_per_root_item": statistics.median(run_metric(r, "AHT_ms_per_root_item") for r in prior),
-                "terminal_items_per_worker_hour": statistics.median(run_metric(r, "terminal_items_per_worker_hour") for r in prior),
-                "evidence_yield_per_worker_minute": statistics.median(run_metric(r, "evidence_yield_per_worker_minute") for r in prior),
-                "rework_rate": statistics.median(run_metric(r, "rework_rate") for r in prior),
+                "wall_ms_per_root_item": statistics.median(
+                    run_metric(r, "wall_ms_per_root_item") for r in prior
+                ),
+                "AHT_ms_per_root_item": statistics.median(
+                    run_metric(r, "AHT_ms_per_root_item") for r in prior
+                ),
+                "terminal_items_per_worker_hour": statistics.median(
+                    run_metric(r, "terminal_items_per_worker_hour") for r in prior
+                ),
+                "evidence_yield_per_worker_minute": statistics.median(
+                    run_metric(r, "evidence_yield_per_worker_minute") for r in prior
+                ),
+                "rework_rate": statistics.median(
+                    run_metric(r, "rework_rate") for r in prior
+                ),
             }
         else:
             rolling_reference = baseline
@@ -193,7 +243,9 @@ def main() -> int:
     }
     out = Path(args.out)
     out.parent.mkdir(parents=True, exist_ok=True)
-    out.write_text(json.dumps(result, indent=2, sort_keys=True) + "\n", encoding="utf-8")
+    out.write_text(
+        json.dumps(result, indent=2, sort_keys=True) + "\n", encoding="utf-8"
+    )
     print(json.dumps(result, sort_keys=True))
     return 0
 

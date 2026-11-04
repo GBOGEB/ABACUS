@@ -10,7 +10,6 @@ import re
 from collections import defaultdict
 from pathlib import Path
 
-
 SHA40 = re.compile(r"[0-9a-f]{40}\Z")
 ROOT_ID = re.compile(r"[A-Z][A-Z0-9_-]{2,79}\Z")
 GITHUB_EVIDENCE = re.compile(
@@ -41,8 +40,7 @@ def analyze(observations):
         if SHA40.fullmatch(item["head_sha"]) is None:
             raise ValueError("invalid PR/head SHA")
         if not all(
-            _positive(item.get(key))
-            for key in ("run_id", "run_attempt", "job_id")
+            _positive(item.get(key)) for key in ("run_id", "run_attempt", "job_id")
         ):
             raise ValueError("missing native run/job/attempt identity")
         if item.get("status") not in ("failure", "success", "skipped"):

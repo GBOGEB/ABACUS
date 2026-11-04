@@ -1,8 +1,9 @@
 """W45: fail-closed NetworkX collection dependency contract for legacy CI."""
-from pathlib import Path
+
+import json
 import re
 import unittest
-
+from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 WORKFLOW = ROOT / ".github" / "workflows" / "ci-pipeline.yml"
@@ -18,8 +19,16 @@ class NetworkXUnitCIContract(unittest.TestCase):
         )[0]
         cls.requirements = DEV_REQUIREMENTS.read_text(encoding="utf-8")
 
-    def test_unit_matrix_is_python_311(self):
-        self.assertRegex(self.unit_job, r"python-version:\s*\['3\.11'\]")
+    def test_unit_matrix_is_single_ssot_default_at_or_above_networkx_floor(self):
+        # Single-cell matrix on the SSOT default (ssot/python_versions.yaml);
+        # networkx==3.6.1 is the Python >= 3.11 pin, so the cell must stay >= 3.11.
+        default = json.loads(
+            (ROOT / "ssot" / "python_versions.lanes.json").read_text(encoding="utf-8")
+        )["default"]
+        match = re.search(r"python-version:\s*\['(3\.\d+)'\]", self.unit_job)
+        self.assertIsNotNone(match)
+        self.assertEqual(match.group(1), default)
+        self.assertGreaterEqual(tuple(map(int, default.split("."))), (3, 11))
 
     def test_graph_pin_matches_development_contract(self):
         match = re.search(

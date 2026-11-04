@@ -22,8 +22,10 @@ for every file, which a per-file comparison cannot attribute, so the ratchet
 does not admit it for the tools that file affects: it exits 3 and the
 full-repository result applies.
 
-The full-repository scans still run and are still enforced on main pushes,
-schedules and manual runs; see docs/ci/DAB_FULL_RED_GATES_AND_PROOF_GROWTH.md.
+The full-repository scans still run on every event. For Black, isort and
+Flake8 they are census on main pushes, schedules and manual runs too: there
+the ratchet compares with the previous main tip. Bandit's full scan is still
+enforced on those events; see docs/ci/DAB_FULL_RED_GATES_AND_PROOF_GROWTH.md.
 """
 
 from __future__ import annotations

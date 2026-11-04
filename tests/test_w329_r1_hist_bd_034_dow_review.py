@@ -2,7 +2,6 @@ from pathlib import Path
 
 import yaml
 
-
 ROOT = Path(__file__).resolve().parents[1]
 REVIEW = ROOT / "federation/qps/W329_R1_HIST_BD_034_DOW_REVIEW.yaml"
 
@@ -35,5 +34,8 @@ def test_w329_dow_perpetuate_waits_for_final_binding():
     assert data["mip"]["perpetuate"]["state"] == "HOLD_FINAL_BINDING"
     assert data["authority_transfer"] is False
     assert data["formal_credit_delta"] == 0
-    assert data["semantic_checks"]["BT0"]["protected_or_signed_owner_attestation_required"] is True
+    assert (
+        data["semantic_checks"]["BT0"]["protected_or_signed_owner_attestation_required"]
+        is True
+    )
     assert data["semantic_checks"]["BT2"]["decimal_residual_semantics_exact"] is True

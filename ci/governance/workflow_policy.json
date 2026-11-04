@@ -173,6 +173,18 @@
       "disposition": "keep"
     },
     {
+      "pattern": "^python-version-ssot-guard\\.yml$",
+      "cluster": "ci_governance",
+      "lifecycle": "pr_domain",
+      "disposition": "keep"
+    },
+    {
+      "pattern": "^python-next-canary\\.yml$",
+      "cluster": "ci_governance",
+      "lifecycle": "scheduled",
+      "disposition": "keep"
+    },
+    {
       "pattern": "^everred-v3-validation\\.yml$",
       "cluster": "runtime_governance",
       "lifecycle": "pr_domain",
@@ -400,6 +412,12 @@
       "pattern": "^dab-flake8-census\\.yml$",
       "cluster": "specialised",
       "lifecycle": "pr_domain",
+      "disposition": "keep"
+    },
+    {
+      "pattern": "^ldab-scale-fanout\\.yml$",
+      "cluster": "specialised",
+      "lifecycle": "manual",
       "disposition": "keep"
     },
     {
@@ -729,6 +747,12 @@
     {
       "pattern": "^qps-bt-admission\\.yml$",
       "cluster": "statistics",
+      "lifecycle": "pr_domain",
+      "disposition": "keep"
+    },
+    {
+      "pattern": "^qps-slide-reviewer-deps\\.yml$",
+      "cluster": "security",
       "lifecycle": "pr_domain",
       "disposition": "keep"
     }

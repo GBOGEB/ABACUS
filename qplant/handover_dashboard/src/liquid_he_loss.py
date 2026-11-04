@@ -14,8 +14,9 @@ Reference: NIST REFPROP He-4, ideal gas law with compressibility correction.
 """
 
 from __future__ import annotations
-import math
+
 import json
+import math
 from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Optional
@@ -24,24 +25,25 @@ import pandas as pd
 
 # ── Physical constants ──────────────────────────────────────────────
 R_UNIVERSAL = 8.314462618  # J/(mol·K)
-MOLAR_MASS_HE = 0.004003   # kg/mol (He-4)
+MOLAR_MASS_HE = 0.004003  # kg/mol (He-4)
 SECONDS_PER_YEAR = 365.25 * 24 * 3600  # 31,557,600 s
 SECONDS_PER_DAY = 86400
 
 # ── Liquid He reference properties (saturated, 1 atm, 4.222 K) ─────
-RHO_LIQ_DEFAULT = 124.96     # kg/m³
-H_VAP_DEFAULT = 20.9e3       # J/kg  (20.9 kJ/kg)
-T_NBP = 4.222                # K  normal boiling point
+RHO_LIQ_DEFAULT = 124.96  # kg/m³
+H_VAP_DEFAULT = 20.9e3  # J/kg  (20.9 kJ/kg)
+T_NBP = 4.222  # K  normal boiling point
 HE_PRICE_EUR_PER_KG = 120.0  # €/kg (2024 market estimate, varies)
 
 
 @dataclass(frozen=True)
 class LiquidHeState:
     """Operating condition for liquid He inventory loss calculation."""
-    leak_rate_mbar_l_s: float        # volumetric throughput leak rate
-    temperature_K: float = 4.222     # gas temperature at leak point
-    pressure_bar_abs: float = 1.0    # pressure at leak point
-    compressibility_Z: float = 1.0   # Z factor (≈1 for low-P gas)
+
+    leak_rate_mbar_l_s: float  # volumetric throughput leak rate
+    temperature_K: float = 4.222  # gas temperature at leak point
+    pressure_bar_abs: float = 1.0  # pressure at leak point
+    compressibility_Z: float = 1.0  # Z factor (≈1 for low-P gas)
     rho_liquid_kg_m3: float = RHO_LIQ_DEFAULT
     h_vap_J_kg: float = H_VAP_DEFAULT
     label: str = ""
@@ -53,8 +55,9 @@ def mbar_l_s_to_pa_m3_s(q: float) -> float:
     return q * 0.1
 
 
-def gas_mass_flow_kg_s(q_mbar_l_s: float, T_K: float, P_bar: float,
-                        Z: float = 1.0) -> float:
+def gas_mass_flow_kg_s(
+    q_mbar_l_s: float, T_K: float, P_bar: float, Z: float = 1.0
+) -> float:
     """
     Convert volumetric leak rate to mass flow.
 
@@ -73,8 +76,9 @@ def gas_mass_flow_kg_s(q_mbar_l_s: float, T_K: float, P_bar: float,
     return (Q_pa_m3_s * MOLAR_MASS_HE) / (Z * R_UNIVERSAL * T_K)
 
 
-def liquid_volume_loss_L_s(mass_flow_kg_s: float,
-                            rho_liq: float = RHO_LIQ_DEFAULT) -> float:
+def liquid_volume_loss_L_s(
+    mass_flow_kg_s: float, rho_liq: float = RHO_LIQ_DEFAULT
+) -> float:
     """Liquid volume loss rate in litres/s."""
     # 1 m³ = 1000 L
     return (mass_flow_kg_s / rho_liq) * 1000.0
@@ -239,7 +243,7 @@ def example_calculation():
         leak_rate_mbar_l_s=1e-5,
         temperature_K=4.0,
         pressure_bar_abs=1.0,
-        label="RTM-048 system max example"
+        label="RTM-048 system max example",
     )
     result = compute_liquid_loss(state)
     print(f"Leak rate: {result['leak_rate_mbar_l_s']:.0e} mbar·L/s")
@@ -255,4 +259,13 @@ if __name__ == "__main__":
     print()
     print("=== Standard Leak Rate Table ===")
     df = build_leak_rate_liquid_loss_table()
-    print(df[["leak_rate_mbar_l_s", "mass_flow_g_year", "liquid_loss_L_year", "cost_eur_year"]].to_string(index=False))
+    print(
+        df[
+            [
+                "leak_rate_mbar_l_s",
+                "mass_flow_g_year",
+                "liquid_loss_L_year",
+                "cost_eur_year",
+            ]
+        ].to_string(index=False)
+    )

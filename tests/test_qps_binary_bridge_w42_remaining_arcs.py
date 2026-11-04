@@ -4,12 +4,13 @@ Four disjoint native controls targeting *only* the five unexercised opportunitie
 in the W41 artifact: statements 371-372 and branch arcs [172,143],
 [462,-457], [463,462]. No exclusions or production source edits.
 """
+
 from __future__ import annotations
 
 import builtins
 import importlib.util
-from pathlib import Path
 import zipfile
+from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 SPEC = importlib.util.spec_from_file_location(
@@ -41,7 +42,8 @@ def test_missing_optional_pdf_reader_takes_explicit_degraded_path(
     monkeypatch.setattr(builtins, "__import__", deny_optional_reader)
     result = bridge.extract_pdf(source)
     assert result["extraction_quality"] == {
-        "status": "FALLBACK", "parser": "pdf_literal_strings",
+        "status": "FALLBACK",
+        "parser": "pdf_literal_strings",
     }
     assert result["pages"] == [
         {"anchor": "page:1", "number": 1, "text": "W42 reader missing"},
@@ -60,8 +62,12 @@ def test_docx_section_properties_do_not_emit_false_content(tmp_path):
         archive.writestr("word/document.xml", document)
     result = bridge.extract_docx(source)
     assert result["blocks"] == [
-        {"anchor": "paragraph:1", "kind": "paragraph",
-         "style": None, "text": "Visible"},
+        {
+            "anchor": "paragraph:1",
+            "kind": "paragraph",
+            "style": None,
+            "text": "Visible",
+        },
     ]
 
 
@@ -76,9 +82,7 @@ def test_html_no_capture_ancestor_drops_orphan_text_without_phantom_node():
 def test_html_non_capture_inner_run_returns_to_visible_parent():
     """Exercise false-then-true CAPTURE_TAGS path for legitimate nested formatting."""
     parser = bridge.SemanticHTMLParser()
-    parser.feed(
-        "<p id='visible'><em>First</em> and <strong>Second</strong></p>"
-    )
+    parser.feed("<p id='visible'><em>First</em> and <strong>Second</strong></p>")
     assert parser.blocks == [
         {"anchor": "visible", "kind": "p", "text": "First and Second"},
     ]

@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 """Generic 3P burndown discriminator, scout, preservation gate, and metric helper."""
+
 from __future__ import annotations
 
 import argparse
@@ -25,9 +26,27 @@ CAPABILITY_CODES = {
     SUBTASKS[4]: "RSK",
 }
 TEXT_SUFFIXES = {".py", ".md", ".yaml", ".yml", ".json", ".toml", ".ini", ".txt", ".sh"}
-AUTHORITY_WORDS = {"ssot", "authority", "contract", "schema", "registry", "manifest", "canonical"}
+AUTHORITY_WORDS = {
+    "ssot",
+    "authority",
+    "contract",
+    "schema",
+    "registry",
+    "manifest",
+    "canonical",
+}
 GENERATED_WORDS = {"generated", "dist", "build", "export", "rendered"}
-VERSION_WORDS = {"legacy", "archive", "deprecated", "stale", "old", "v0", "v1", "v2", "v3"}
+VERSION_WORDS = {
+    "legacy",
+    "archive",
+    "deprecated",
+    "stale",
+    "old",
+    "v0",
+    "v1",
+    "v2",
+    "v3",
+}
 
 
 def stable_item_id(item: dict[str, object]) -> str:
@@ -38,7 +57,9 @@ def stable_item_id(item: dict[str, object]) -> str:
     return hashlib.sha256(raw.encode("utf-8")).hexdigest()
 
 
-def facet_id(root_id: str, variant: str, pulse: str, capability: str, attempt: int = 1) -> str:
+def facet_id(
+    root_id: str, variant: str, pulse: str, capability: str, attempt: int = 1
+) -> str:
     variant = variant.upper()
     pulse = pulse.upper()
     capability = capability.upper()
@@ -46,8 +67,13 @@ def facet_id(root_id: str, variant: str, pulse: str, capability: str, attempt: i
 
 
 def statistical_eligibility(
-    *, terminal_n: int, paired_n: int, arm_n: int, complete_n: int,
-    variables_p: int, positive_outcomes: int
+    *,
+    terminal_n: int,
+    paired_n: int,
+    arm_n: int,
+    complete_n: int,
+    variables_p: int,
+    positive_outcomes: int,
 ) -> dict[str, object]:
     p = max(1, variables_p)
     covariance_n = max(30, 10 * p)
@@ -122,15 +148,20 @@ def identity_subtask(root: Path, members: list[str]) -> dict[str, object]:
             parent_text = parent.relative_to(root).as_posix()
         except ValueError:
             parent_text = str(parent)
-        records.append({
-            "path": member,
-            "exists": path.exists(),
-            "is_file": path.is_file(),
-            "suffix": path.suffix.lower(),
-            "parent": parent_text,
-            "size": path.stat().st_size if path.is_file() else None,
-        })
-    return {"records": records, "evidence_yield": sum(1 for x in records if x["exists"])}
+        records.append(
+            {
+                "path": member,
+                "exists": path.exists(),
+                "is_file": path.is_file(),
+                "suffix": path.suffix.lower(),
+                "parent": parent_text,
+                "size": path.stat().st_size if path.is_file() else None,
+            }
+        )
+    return {
+        "records": records,
+        "evidence_yield": sum(1 for x in records if x["exists"]),
+    }
 
 
 def relatives_subtask(root: Path, members: list[str]) -> dict[str, object]:
@@ -142,7 +173,9 @@ def relatives_subtask(root: Path, members: list[str]) -> dict[str, object]:
         text = read_text_safe(path).lower()
         for needle in needles:
             if needle and needle in text and rel not in member_set:
-                relatives.append({"path": rel, "edge": "references_or_documents", "needle": needle})
+                relatives.append(
+                    {"path": rel, "edge": "references_or_documents", "needle": needle}
+                )
                 break
     same_folder = []
     parents = {Path(member).parent.as_posix() for member in members}
@@ -161,14 +194,27 @@ def authority_subtask(root: Path, members: list[str]) -> dict[str, object]:
     records = []
     for member in members:
         path = root / member
-        text = (member + " " + read_text_safe(path)[:20000]).lower() if path.is_file() else member.lower()
-        records.append({
-            "path": member,
-            "authority_hits": sorted(word for word in AUTHORITY_WORDS if word in text),
-            "generated_hits": sorted(word for word in GENERATED_WORDS if word in text),
-            "version_hits": sorted(word for word in VERSION_WORDS if word in text),
-        })
-    return {"records": records, "evidence_yield": sum(bool(x["authority_hits"]) for x in records)}
+        text = (
+            (member + " " + read_text_safe(path)[:20000]).lower()
+            if path.is_file()
+            else member.lower()
+        )
+        records.append(
+            {
+                "path": member,
+                "authority_hits": sorted(
+                    word for word in AUTHORITY_WORDS if word in text
+                ),
+                "generated_hits": sorted(
+                    word for word in GENERATED_WORDS if word in text
+                ),
+                "version_hits": sorted(word for word in VERSION_WORDS if word in text),
+            }
+        )
+    return {
+        "records": records,
+        "evidence_yield": sum(bool(x["authority_hits"]) for x in records),
+    }
 
 
 def information_subtask(root: Path, members: list[str]) -> dict[str, object]:
@@ -178,7 +224,13 @@ def information_subtask(root: Path, members: list[str]) -> dict[str, object]:
         path = root / member
         digest = file_sha256(path) if path.is_file() else None
         hashes.append(digest)
-        records.append({"path": member, "sha256": digest, "size": path.stat().st_size if path.is_file() else None})
+        records.append(
+            {
+                "path": member,
+                "sha256": digest,
+                "size": path.stat().st_size if path.is_file() else None,
+            }
+        )
     valid_hashes = [h for h in hashes if h]
     return {
         "records": records,
@@ -198,7 +250,9 @@ def risk_subtask(root: Path, members: list[str]) -> dict[str, object]:
         if rel in member_set:
             continue
         text = read_text_safe(path).lower()
-        if any(name and name in text for name in names) or any(stem and stem in text for stem in stems):
+        if any(name and name in text for name in names) or any(
+            stem and stem in text for stem in stems
+        ):
             consumers.append(rel)
     unique = sorted(set(consumers))
     return {
@@ -209,8 +263,12 @@ def risk_subtask(root: Path, members: list[str]) -> dict[str, object]:
 
 
 def run_subtask(
-    root: Path, item: dict[str, object], subtask: str,
-    variant: str = "3PM", pulse: str = "P1", attempt: int = 1
+    root: Path,
+    item: dict[str, object],
+    subtask: str,
+    variant: str = "3PM",
+    pulse: str = "P1",
+    attempt: int = 1,
 ) -> dict[str, object]:
     if subtask not in SUBTASKS:
         raise ValueError(f"unknown subtask: {subtask}")
@@ -244,8 +302,12 @@ def run_subtask(
     }
 
 
-def run_all_subtasks(root: Path, item: dict[str, object], variant: str = "3PM") -> dict[str, object]:
-    results = [run_subtask(root, item, subtask, variant=variant) for subtask in SUBTASKS]
+def run_all_subtasks(
+    root: Path, item: dict[str, object], variant: str = "3PM"
+) -> dict[str, object]:
+    results = [
+        run_subtask(root, item, subtask, variant=variant) for subtask in SUBTASKS
+    ]
     durations = [float(x["duration_ms"]) for x in results]
     return {
         "root_item_id": item.get("item_id") or stable_item_id(item),
@@ -267,7 +329,15 @@ def preservation_disposition(result: dict[str, object]) -> dict[str, object]:
     post_tests = bool(result.get("post_reintroduction_tests_passed", False))
     all_atoms_reintroduced = len(atoms) == len(targets) and proof == "PASS"
     no_live_consumer = consumer == "PASS_NO_REQUIRED_CONSUMER"
-    remove_eligible = all([duplicate_proven, canonical_target, post_tests, all_atoms_reintroduced, no_live_consumer])
+    remove_eligible = all(
+        [
+            duplicate_proven,
+            canonical_target,
+            post_tests,
+            all_atoms_reintroduced,
+            no_live_consumer,
+        ]
+    )
     return {
         "remove_eligible": remove_eligible,
         "quarantine_required": not remove_eligible,
@@ -299,40 +369,44 @@ def build_plan(payload: dict[str, object], variant: str = "3PM") -> dict[str, ob
         tasks = []
         for subtask in SUBTASKS:
             cap = CAPABILITY_CODES[subtask]
-            tasks.append({
-                "root_item_id": root_id,
-                "facet_id": facet_id(root_id, variant, "P1", cap, 1),
-                "variant": variant,
-                "pulse": "P1",
-                "capability": cap,
-                "subtask": subtask,
-                "read_only": True,
-                "runner_may_parallelize": True,
-            })
+            tasks.append(
+                {
+                    "root_item_id": root_id,
+                    "facet_id": facet_id(root_id, variant, "P1", cap, 1),
+                    "variant": variant,
+                    "pulse": "P1",
+                    "capability": cap,
+                    "subtask": subtask,
+                    "read_only": True,
+                    "runner_may_parallelize": True,
+                }
+            )
         hints = []
         for member in members:
             hints.extend(relation_hints(member))
-        items.append({
-            "item_id": root_id,
-            "scope": raw.get("scope"),
-            "type": raw.get("type"),
-            "members": sorted(members),
-            "cluster": raw.get("cluster"),
-            "subtasks": tasks,
-            "relationship_hints": hints,
-            "disposition": "UNRESOLVED",
-            "preservation": {
-                "unique_information_atoms": [],
-                "reintroduction_targets": [],
-                "reintroduction_proof": "NOT_EXECUTED",
-                "consumer_dependency_check": "NOT_EXECUTED",
-                "duplicate_or_obsolete_role_proven": False,
-                "canonical_target_lineaged": False,
-                "post_reintroduction_tests_passed": False,
-                "remove_eligible": False,
-                "quarantine_required": True,
-            },
-        })
+        items.append(
+            {
+                "item_id": root_id,
+                "scope": raw.get("scope"),
+                "type": raw.get("type"),
+                "members": sorted(members),
+                "cluster": raw.get("cluster"),
+                "subtasks": tasks,
+                "relationship_hints": hints,
+                "disposition": "UNRESOLVED",
+                "preservation": {
+                    "unique_information_atoms": [],
+                    "reintroduction_targets": [],
+                    "reintroduction_proof": "NOT_EXECUTED",
+                    "consumer_dependency_check": "NOT_EXECUTED",
+                    "duplicate_or_obsolete_role_proven": False,
+                    "canonical_target_lineaged": False,
+                    "post_reintroduction_tests_passed": False,
+                    "remove_eligible": False,
+                    "quarantine_required": True,
+                },
+            }
+        )
     return {
         "schema_version": "GENERIC-3P-BURNDOWN-1.1.0",
         "variant": variant,
@@ -355,13 +429,15 @@ def evaluate_payload(payload: dict[str, object]) -> dict[str, object]:
         if not isinstance(preservation, dict):
             preservation = {}
         decision = preservation_disposition(preservation)
-        evaluated.append({
-            "item_id": item.get("item_id") or stable_item_id(item),
-            "disposition": decision["disposition"],
-            "remove_eligible": decision["remove_eligible"],
-            "quarantine_required": decision["quarantine_required"],
-            "checks": decision["checks"],
-        })
+        evaluated.append(
+            {
+                "item_id": item.get("item_id") or stable_item_id(item),
+                "disposition": decision["disposition"],
+                "remove_eligible": decision["remove_eligible"],
+                "quarantine_required": decision["quarantine_required"],
+                "checks": decision["checks"],
+            }
+        )
     return {
         "schema_version": "GENERIC-3P-BURNDOWN-EVAL-1.1.0",
         "item_count": len(evaluated),
@@ -390,8 +466,12 @@ def history_summary(records: list[dict[str, object]]) -> dict[str, object]:
         "variables_p": p,
         "positive_outcomes": positives,
         "statistical_eligibility": statistical_eligibility(
-            terminal_n=len(terminal), paired_n=len(paired), arm_n=len(arm),
-            complete_n=len(complete), variables_p=p, positive_outcomes=positives,
+            terminal_n=len(terminal),
+            paired_n=len(paired),
+            arm_n=len(arm),
+            complete_n=len(complete),
+            variables_p=p,
+            positive_outcomes=positives,
         ),
     }
 
@@ -410,7 +490,11 @@ def main(argv: Iterable[str] | None = None) -> int:
     args = parser.parse_args(list(argv) if argv is not None else None)
     input_path = Path(args.input)
     if args.history_summary:
-        records = [json.loads(line) for line in input_path.read_text(encoding="utf-8").splitlines() if line.strip()]
+        records = [
+            json.loads(line)
+            for line in input_path.read_text(encoding="utf-8").splitlines()
+            if line.strip()
+        ]
         result = history_summary(records)
     else:
         source = json.loads(input_path.read_text(encoding="utf-8"))
@@ -422,8 +506,11 @@ def main(argv: Iterable[str] | None = None) -> int:
             if not isinstance(item, dict):
                 raise TypeError("selected item must be an object")
             result = run_subtask(
-                Path(args.root).resolve(), item, args.subtask,
-                variant=args.variant, attempt=args.attempt,
+                Path(args.root).resolve(),
+                item,
+                args.subtask,
+                variant=args.variant,
+                attempt=args.attempt,
             )
         elif args.evaluate:
             result = evaluate_payload(source)
@@ -431,7 +518,9 @@ def main(argv: Iterable[str] | None = None) -> int:
             result = build_plan(source, variant=args.variant)
     out = Path(args.out)
     out.parent.mkdir(parents=True, exist_ok=True)
-    out.write_text(json.dumps(result, indent=2, sort_keys=True) + "\n", encoding="utf-8")
+    out.write_text(
+        json.dumps(result, indent=2, sort_keys=True) + "\n", encoding="utf-8"
+    )
     print(json.dumps({"out": str(out)}, sort_keys=True))
     return 0
 

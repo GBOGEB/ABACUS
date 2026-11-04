@@ -1,8 +1,8 @@
 """W46: prevent repeat networkx collection failures in enhanced CI."""
 
-from pathlib import Path
 import re
 import unittest
+from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 WORKFLOW = ROOT / ".github" / "workflows" / "ci-enhanced.yml"

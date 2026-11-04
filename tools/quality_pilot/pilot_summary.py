@@ -18,6 +18,7 @@ score TRIAGED_CSV
 
 Standard library only, so it runs anywhere CI has Python.
 """
+
 from __future__ import annotations
 
 import argparse
@@ -47,7 +48,11 @@ def _rel(path) -> str:
     """Make absolute paths (ruff emits them) repo-relative for readable reports."""
     p = str(path or "")
     try:
-        return str(Path(p).resolve().relative_to(Path.cwd().resolve())) if p.startswith("/") else p
+        return (
+            str(Path(p).resolve().relative_to(Path.cwd().resolve()))
+            if p.startswith("/")
+            else p
+        )
     except ValueError:
         return p
 
@@ -66,14 +71,21 @@ def _f(tool, rule, file, line, message, severity=""):
 def parse_ruff(d: Path):
     data = _load_json(d / "ruff.json") or []
     return [
-        _f("ruff", x.get("code"), x.get("filename"),
-           (x.get("location") or {}).get("row"), x.get("message"))
+        _f(
+            "ruff",
+            x.get("code"),
+            x.get("filename"),
+            (x.get("location") or {}).get("row"),
+            x.get("message"),
+        )
         for x in data
     ]
 
 
-MYPY_RE = re.compile(r"^(?P<file>[^:\n]+):(?P<line>\d+)(?::\d+)?: (?P<sev>error|warning): "
-                     r"(?P<msg>.*?)(?:\s+\[(?P<code>[\w-]+)\])?$")
+MYPY_RE = re.compile(
+    r"^(?P<file>[^:\n]+):(?P<line>\d+)(?::\d+)?: (?P<sev>error|warning): "
+    r"(?P<msg>.*?)(?:\s+\[(?P<code>[\w-]+)\])?$"
+)
 
 
 def parse_mypy(d: Path):
@@ -84,8 +96,16 @@ def parse_mypy(d: Path):
     for line in p.read_text(encoding="utf-8", errors="replace").splitlines():
         m = MYPY_RE.match(line.strip())
         if m:
-            out.append(_f("mypy", m["code"] or "misc", m["file"], m["line"],
-                          m["msg"], m["sev"]))
+            out.append(
+                _f(
+                    "mypy",
+                    m["code"] or "misc",
+                    m["file"],
+                    m["line"],
+                    m["msg"],
+                    m["sev"],
+                )
+            )
     return out
 
 
@@ -98,8 +118,16 @@ def parse_mypy_focus(d: Path):
     for line in p.read_text(encoding="utf-8", errors="replace").splitlines():
         m = MYPY_RE.match(line.strip())
         if m:
-            out.append(_f("mypy-focus", m["code"] or "misc", m["file"], m["line"],
-                          m["msg"], m["sev"]))
+            out.append(
+                _f(
+                    "mypy-focus",
+                    m["code"] or "misc",
+                    m["file"],
+                    m["line"],
+                    m["msg"],
+                    m["sev"],
+                )
+            )
     return out
 
 
@@ -121,16 +149,30 @@ def parse_pip_audit(d: Path):
                     continue
                 seen.add(key)
                 fix = ", ".join(v.get("fix_versions") or []) or "no fix yet"
-                out.append(_f("pip-audit", v.get("id"), f"{dep.get('name')}=={dep.get('version')}",
-                              0, f"fix: {fix} (from {p.stem})", "vuln"))
+                out.append(
+                    _f(
+                        "pip-audit",
+                        v.get("id"),
+                        f"{dep.get('name')}=={dep.get('version')}",
+                        0,
+                        f"fix: {fix} (from {p.stem})",
+                        "vuln",
+                    )
+                )
     return out
 
 
 def parse_gitleaks(d: Path):
     data = _load_json(d / "gitleaks.json") or []
     return [
-        _f("gitleaks", x.get("RuleID"), x.get("File"), x.get("StartLine"),
-           f"{x.get('Description', '')} (commit {str(x.get('Commit', ''))[:8]})", "secret")
+        _f(
+            "gitleaks",
+            x.get("RuleID"),
+            x.get("File"),
+            x.get("StartLine"),
+            f"{x.get('Description', '')} (commit {str(x.get('Commit', ''))[:8]})",
+            "secret",
+        )
         for x in data
     ]
 
@@ -140,9 +182,16 @@ def parse_opengrep(d: Path):
     out = []
     for r in data.get("results", []):
         rule = str(r.get("check_id", "")).split(".")[-1]
-        out.append(_f("opengrep", rule, r.get("path"), (r.get("start") or {}).get("line"),
-                      (r.get("extra") or {}).get("message"),
-                      (r.get("extra") or {}).get("severity")))
+        out.append(
+            _f(
+                "opengrep",
+                rule,
+                r.get("path"),
+                (r.get("start") or {}).get("line"),
+                (r.get("extra") or {}).get("message"),
+                (r.get("extra") or {}).get("severity"),
+            )
+        )
     return out
 
 
@@ -150,9 +199,16 @@ def parse_npm_audit(d: Path):
     data = _load_json(d / "npm-audit.json") or {}
     out = []
     for name, v in (data.get("vulnerabilities") or {}).items():
-        out.append(_f("npm-audit", v.get("severity"), name, 0,
-                      f"range {v.get('range', '?')}; fix available: {bool(v.get('fixAvailable'))}",
-                      v.get("severity")))
+        out.append(
+            _f(
+                "npm-audit",
+                v.get("severity"),
+                name,
+                0,
+                f"range {v.get('range', '?')}; fix available: {bool(v.get('fixAvailable'))}",
+                v.get("severity"),
+            )
+        )
     return out
 
 
@@ -166,22 +222,44 @@ def parse_code_scanning(d: Path):
         return []
     out = []
     for a in data:
-        tool = str((a.get("tool") or {}).get("name") or "code-scanning").lower().split()[0]
+        tool = (
+            str((a.get("tool") or {}).get("name") or "code-scanning").lower().split()[0]
+        )
         rule = a.get("rule") or {}
         inst = a.get("most_recent_instance") or {}
         loc = inst.get("location") or {}
-        out.append(_f(tool, rule.get("id"), loc.get("path"), loc.get("start_line"),
-                      (inst.get("message") or {}).get("text") or rule.get("description"),
-                      rule.get("security_severity_level") or rule.get("severity")))
+        out.append(
+            _f(
+                tool,
+                rule.get("id"),
+                loc.get("path"),
+                loc.get("start_line"),
+                (inst.get("message") or {}).get("text") or rule.get("description"),
+                rule.get("security_severity_level") or rule.get("severity"),
+            )
+        )
     return out
 
 
-PARSERS = [parse_ruff, parse_mypy, parse_mypy_focus, parse_pip_audit, parse_gitleaks, parse_opengrep,
-           parse_npm_audit, parse_code_scanning]
-REPORT_FILES = {"gitleaks": "gitleaks.json", "ruff": "ruff.json", "mypy": "mypy.txt",
-                "mypy-focus": "mypy-focus.txt",
-                "opengrep": "opengrep.json", "pip-audit": "pip-audit.json",
-                "npm-audit": "npm-audit.json"}
+PARSERS = [
+    parse_ruff,
+    parse_mypy,
+    parse_mypy_focus,
+    parse_pip_audit,
+    parse_gitleaks,
+    parse_opengrep,
+    parse_npm_audit,
+    parse_code_scanning,
+]
+REPORT_FILES = {
+    "gitleaks": "gitleaks.json",
+    "ruff": "ruff.json",
+    "mypy": "mypy.txt",
+    "mypy-focus": "mypy-focus.txt",
+    "opengrep": "opengrep.json",
+    "pip-audit": "pip-audit.json",
+    "npm-audit": "npm-audit.json",
+}
 
 
 def collect(reports: Path):
@@ -223,9 +301,13 @@ def read_timings(reports: Path):
         for line in p.read_text(encoding="utf-8").splitlines():
             parts = [x.strip() for x in line.split(",", 3)]
             if len(parts) >= 3 and parts[1].isdigit():
-                rows[parts[0]] = {"seconds": int(parts[1]),
-                                  "exit_code": int(parts[2]) if parts[2].lstrip("-").isdigit() else None,
-                                  "version": parts[3] if len(parts) > 3 else ""}
+                rows[parts[0]] = {
+                    "seconds": int(parts[1]),
+                    "exit_code": (
+                        int(parts[2]) if parts[2].lstrip("-").isdigit() else None
+                    ),
+                    "version": parts[3] if len(parts) > 3 else "",
+                }
     return rows
 
 
@@ -239,9 +321,13 @@ def write_telemetry(reports: Path, findings, run_id, phase):
         "run": run_id,
         "phase": phase,
         "total": len(findings),
-        "tools": {t: {"findings": per_tool.get(t, 0),
-                      "top_rules": dict(per_rule[t].most_common(10))}
-                  for t in sorted(set(per_tool) | set(read_timings(reports)))},
+        "tools": {
+            t: {
+                "findings": per_tool.get(t, 0),
+                "top_rules": dict(per_rule[t].most_common(10)),
+            }
+            for t in sorted(set(per_tool) | set(read_timings(reports)))
+        },
     }
     for t, timing in read_timings(reports).items():
         tel["tools"].setdefault(t, {"findings": 0, "top_rules": {}}).update(timing)
@@ -260,11 +346,19 @@ def trend(args):
         print("No telemetry files found.")
         return 0
     runs.sort(key=lambda t: int(t["run"]) if str(t.get("run", "")).isdigit() else 0)
-    runs = runs[-args.last:]
+    runs = runs[-args.last :]
     tools = sorted({t for r in runs for t in r["tools"]})
-    head = "| Tool | " + " | ".join(f"#{r['run']}" for r in runs) + " | Δ first→last | Status |"
-    lines = ["## Burn-in trend (findings per run)", "", head,
-             "|---|" + "---:|" * len(runs) + "---:|---|"]
+    head = (
+        "| Tool | "
+        + " | ".join(f"#{r['run']}" for r in runs)
+        + " | Δ first→last | Status |"
+    )
+    lines = [
+        "## Burn-in trend (findings per run)",
+        "",
+        head,
+        "|---|" + "---:|" * len(runs) + "---:|---|",
+    ]
     for t in tools:
         vals = [r["tools"].get(t, {}).get("findings") for r in runs]
         seen = [v for v in vals if v is not None]
@@ -283,7 +377,11 @@ def trend(args):
         cells = " | ".join("—" if v is None else str(v) for v in vals)
         lines.append(f"| {t} | {cells} | {delta:+d} | {status} |")
     secs = [sum((x.get("seconds") or 0) for x in r["tools"].values()) for r in runs]
-    lines += ["", "Scan seconds per run: " + ", ".join(f"#{r['run']}={s}s" for r, s in zip(runs, secs))]
+    lines += [
+        "",
+        "Scan seconds per run: "
+        + ", ".join(f"#{r['run']}={s}s" for r, s in zip(runs, secs)),
+    ]
     md = "\n".join(lines) + "\n"
     if args.out:
         Path(args.out).write_text(md, encoding="utf-8")
@@ -294,15 +392,26 @@ def trend(args):
 def summarize(args):
     reports = Path(args.reports)
     findings = collect(reports)
-    (reports / "findings.json").write_text(json.dumps(findings, indent=1), encoding="utf-8")
+    (reports / "findings.json").write_text(
+        json.dumps(findings, indent=1), encoding="utf-8"
+    )
     tel = write_telemetry(reports, findings, args.run, args.phase)
 
     per_tool = Counter(f["tool"] for f in findings)
-    lines = [f"# Quality pilot — run {args.run} ({args.phase})", "",
-             f"**Total findings:** {len(findings)}", "",
-             "| Tool | Findings | Top rules |", "|---|---:|---|"]
-    ran_here = [t for t, fn in REPORT_FILES.items()
-                if (reports / fn).exists() or (t == "pip-audit" and any(reports.glob("pip-audit*.json")))]
+    lines = [
+        f"# Quality pilot — run {args.run} ({args.phase})",
+        "",
+        f"**Total findings:** {len(findings)}",
+        "",
+        "| Tool | Findings | Top rules |",
+        "|---|---:|---|",
+    ]
+    ran_here = [
+        t
+        for t, fn in REPORT_FILES.items()
+        if (reports / fn).exists()
+        or (t == "pip-audit" and any(reports.glob("pip-audit*.json")))
+    ]
     existing = sorted(t for t in per_tool if t not in REPORT_FILES)
     for tool in ran_here + existing:
         rules = Counter(f["rule"] for f in findings if f["tool"] == tool).most_common(4)
@@ -313,19 +422,49 @@ def summarize(args):
         lines.append(f"| {tool}{origin}{timing} | {per_tool.get(tool, 0)} | {top} |")
 
     # de-duplicate (file, line) so overlapping tools (mypy + mypy-focus) don't double-count
-    hot = Counter(p for p, _ in {(f["file"], f["line"]) for f in findings if f["line"]}).most_common(5)
+    hot = Counter(
+        p for p, _ in {(f["file"], f["line"]) for f in findings if f["line"]}
+    ).most_common(5)
     if hot:
         lines += ["", "**Hotspot files:** " + ", ".join(f"`{p}` ({c})" for p, c in hot)]
 
     sample = stratified_sample(findings, args.sample, args.seed)
     with (reports / "triage_sample.csv").open("w", newline="", encoding="utf-8") as fh:
         w = csv.writer(fh)
-        w.writerow(["id", "tool", "rule", "file", "line", "message",
-                    "verdict(TP/FP/NOISE/WONTFIX)", "minutes", "notes"])
+        w.writerow(
+            [
+                "id",
+                "tool",
+                "rule",
+                "file",
+                "line",
+                "message",
+                "verdict(TP/FP/NOISE/WONTFIX)",
+                "minutes",
+                "notes",
+            ]
+        )
         for f in sample:
-            w.writerow([f["id"], f["tool"], f["rule"], f["file"], f["line"], f["message"], "", "", ""])
-    lines += ["", (f"Triage sample: {len(sample)} findings in `triage_sample.csv` "
-                   f"(seed {args.seed}). Fill verdict + minutes, then run `score`.")]
+            w.writerow(
+                [
+                    f["id"],
+                    f["tool"],
+                    f["rule"],
+                    f["file"],
+                    f["line"],
+                    f["message"],
+                    "",
+                    "",
+                    "",
+                ]
+            )
+    lines += [
+        "",
+        (
+            f"Triage sample: {len(sample)} findings in `triage_sample.csv` "
+            f"(seed {args.seed}). Fill verdict + minutes, then run `score`."
+        ),
+    ]
 
     md = "\n".join(lines) + "\n"
     (reports / "summary.md").write_text(md, encoding="utf-8")
@@ -336,7 +475,11 @@ def summarize(args):
 def score(args):
     with open(args.csv, newline="", encoding="utf-8") as fh:
         rows = list(csv.DictReader(fh))
-    vcol = next((c for c in rows[0] if c.startswith("verdict")), "verdict") if rows else "verdict"
+    vcol = (
+        next((c for c in rows[0] if c.startswith("verdict")), "verdict")
+        if rows
+        else "verdict"
+    )
     stats = defaultdict(lambda: Counter())
     minutes = defaultdict(float)
     skipped = 0
@@ -351,7 +494,9 @@ def score(args):
         except ValueError:
             pass
 
-    print(f"{'tool':<10} {'triaged':>7} {'TP':>4} {'precision':>9} {'min/TP':>7}  decision")
+    print(
+        f"{'tool':<10} {'triaged':>7} {'TP':>4} {'precision':>9} {'min/TP':>7}  decision"
+    )
     for tool, c in sorted(stats.items()):
         n = sum(c.values())
         tp = c["TP"]
@@ -374,7 +519,9 @@ def score(args):
 
 
 def main(argv=None):
-    p = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
+    p = argparse.ArgumentParser(
+        description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter
+    )
     sub = p.add_subparsers(dest="cmd", required=True)
     s = sub.add_parser("summarize")
     s.add_argument("reports")

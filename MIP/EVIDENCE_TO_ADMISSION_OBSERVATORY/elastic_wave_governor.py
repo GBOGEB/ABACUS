@@ -404,7 +404,11 @@ def artifact_type_census(doc):
             raise GovernorError("artifact type verified exceeds denominator")
         if row.get("source_sha") != doc.get("snapshot_source_sha"):
             raise GovernorError("artifact type SHA mismatch")
-        if row.get("consumer_attested") is not True and row.get("consumer_attested") is not False and row.get("consumer_attested") is not None:
+        if (
+            row.get("consumer_attested") is not True
+            and row.get("consumer_attested") is not False
+            and row.get("consumer_attested") is not None
+        ):
             raise GovernorError("consumer attestation must be boolean or UNKNOWN")
         out.append({"kind": kind, "expected": expected,
                     "native_verified": verified, "consumer_attested": row.get("consumer_attested"),
@@ -485,7 +489,10 @@ def evaluate(doc):
             "formal_acceptance_claim": False,
             "forecast_type": "POLICY_TARGET_NOT_PROBABILISTIC",
             "control_method": "AIMD_WITH_HYSTERESIS_AND_IDEMPOTENT_RETRIGGERS",
-            "caveat": "8 stable pulses plus negative canary is operational control, not a Six Sigma capability estimate"}
+            "caveat": (
+                "8 stable pulses plus negative canary is operational control, "
+                "not a Six Sigma capability estimate"
+            )}
 
 
 def main(argv=None):

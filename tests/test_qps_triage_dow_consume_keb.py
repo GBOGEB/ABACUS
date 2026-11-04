@@ -6,7 +6,6 @@ import pytest
 
 from scripts import qps_triage_dow_consume_keb as dow
 
-
 HEAD = "a" * 40
 PRODUCER_HEAD = "b" * 40
 PRODUCER_MERGE = "c" * 40
@@ -140,19 +139,20 @@ def test_pass_cannot_relax_system_boundary_or_authority():
 def test_real_w3_p2_offer11_receipt_replays_exactly():
     root = Path(__file__).resolve().parents[1]
     keb = json.loads(
-        (root / "governance/qps_triage/inputs/H4_QPS_TRIAGE_W3_P2_KEB_OFFER11.json").read_text(
-            encoding="utf-8"
-        )
+        (
+            root / "governance/qps_triage/inputs/H4_QPS_TRIAGE_W3_P2_KEB_OFFER11.json"
+        ).read_text(encoding="utf-8")
     )
     actual_challenge = json.loads(
-        (root / "governance/qps_triage/challenges/H4_QPS_TRIAGE_W3_P2_DOW_OFFER11.json").read_text(
-            encoding="utf-8"
-        )
+        (
+            root
+            / "governance/qps_triage/challenges/H4_QPS_TRIAGE_W3_P2_DOW_OFFER11.json"
+        ).read_text(encoding="utf-8")
     )
     expected = json.loads(
-        (root / "governance/qps_triage/receipts/H4_QPS_TRIAGE_W3_P2_DOW_OFFER11.json").read_text(
-            encoding="utf-8"
-        )
+        (
+            root / "governance/qps_triage/receipts/H4_QPS_TRIAGE_W3_P2_DOW_OFFER11.json"
+        ).read_text(encoding="utf-8")
     )
 
     actual = dow.finalize_dow_receipt(
@@ -164,7 +164,10 @@ def test_real_w3_p2_offer11_receipt_replays_exactly():
 
     assert actual == expected
     assert actual["disposition"] == "ACCEPT"
-    assert actual["receipt_sha256"] == "7e3d2efd498b89540392eef9da52cbf0a2dbd35d09b043200cb1e989e0262e44"
+    assert (
+        actual["receipt_sha256"]
+        == "7e3d2efd498b89540392eef9da52cbf0a2dbd35d09b043200cb1e989e0262e44"
+    )
     assert actual["first_red"] == "GHP03_N_MINUS_1_CAPACITY"
     assert actual["system_consequence_withheld"] is True
     assert actual["table10_rate_per_year"] == 0.0

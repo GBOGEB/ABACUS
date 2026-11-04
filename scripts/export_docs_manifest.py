@@ -5,18 +5,21 @@ Git is the only source of tracked paths. Preserve nested directory structure
 and reject missing/symlinked sources or case-folded output collisions before
 building any PDF or DOCX. Does not change repository content or grant release.
 """
+
 from __future__ import annotations
 
 import argparse
 import json
-from pathlib import Path, PurePosixPath
 import subprocess
+from pathlib import Path, PurePosixPath
 
 
 def tracked_markdown(repo: Path) -> list[str]:
     proc = subprocess.run(
         ["git", "ls-files", "-z", "--", "docs"],
-        cwd=repo, capture_output=True, check=True,
+        cwd=repo,
+        capture_output=True,
+        check=True,
     )
     raw = proc.stdout
     if raw and not raw.endswith(b"\0"):
@@ -30,9 +33,7 @@ def tracked_markdown(repo: Path) -> list[str]:
         if not name.endswith(".md"):
             continue
         bits = PurePosixPath(name).parts
-        if len(bits) < 2 or bits[0] != "docs" or any(
-            x in (".", "..") for x in bits
-        ):
+        if len(bits) < 2 or bits[0] != "docs" or any(x in (".", "..") for x in bits):
             raise ValueError("UNSAFE_TRACKED_SOURCE_PATH")
         source = repo / Path(*bits)
         if source.is_symlink() or not source.is_file():
@@ -55,12 +56,14 @@ def write_manifest(repo: Path, output: Path) -> dict:
     output.parent.mkdir(parents=True, exist_ok=True)
     raw = ("\0".join(paths) + "\0").encode("utf-8")
     output.write_bytes(raw)
-    return {"schema": "abacus.docs.export.manifest/v1",
-            "tracked_markdown_count": len(paths),
-            "expected_artifact_count": 2 * len(paths),
-            "path_encoding": "UTF8_NUL",
-            "hierarchy_preserved": True,
-            "formal_publication_credit": 0}
+    return {
+        "schema": "abacus.docs.export.manifest/v1",
+        "tracked_markdown_count": len(paths),
+        "expected_artifact_count": 2 * len(paths),
+        "path_encoding": "UTF8_NUL",
+        "hierarchy_preserved": True,
+        "formal_publication_credit": 0,
+    }
 
 
 def main(argv=None):

@@ -1,4 +1,5 @@
 """W32 DMAIC adaptive N-1/N/N+1 stop rule, 3.4 DPMO bound and negatives."""
+
 import copy
 import math
 
@@ -12,14 +13,23 @@ SOURCE = "b" * 64
 
 def wave(n, **overrides):
     row = {
-        "wave_id": "W" + str(n), "head_sha": ("%040x" % n),
-        "source_sha256": SOURCE, "scope_id": "production.module.A",
-        "covered": 80, "eligible": 100,
-        "open_root_ids": [], "unknown_roots": 0,
-        "terminal_jobs": 6, "successful_jobs": 6, "pending_jobs": 0,
-        "receipt_verified": True, "queue_p95_seconds": 120,
-        "quality_defects": None, "quality_opportunities": None,
-        "cohort_id": None, "cohort_verified": False,
+        "wave_id": "W" + str(n),
+        "head_sha": ("%040x" % n),
+        "source_sha256": SOURCE,
+        "scope_id": "production.module.A",
+        "covered": 80,
+        "eligible": 100,
+        "open_root_ids": [],
+        "unknown_roots": 0,
+        "terminal_jobs": 6,
+        "successful_jobs": 6,
+        "pending_jobs": 0,
+        "receipt_verified": True,
+        "queue_p95_seconds": 120,
+        "quality_defects": None,
+        "quality_opportunities": None,
+        "cohort_id": None,
+        "cohort_verified": False,
     }
     row.update(overrides)
     return row
@@ -126,9 +136,17 @@ def test_no_independent_defect_population_is_unknown():
 
 
 def test_zero_defects_100_trials_not_six_sigma():
-    out = decision([wave(1, quality_defects=0,
-                          quality_opportunities=100, cohort_id="unique-1",
-                          cohort_verified=True)])
+    out = decision(
+        [
+            wave(
+                1,
+                quality_defects=0,
+                quality_opportunities=100,
+                cohort_id="unique-1",
+                cohort_verified=True,
+            )
+        ]
+    )
     assert out["quality_bound"]["one_sided_95_upper_dpmo_zero_only"] > 10000
     assert out["quality_bound"]["reported_cohort_3_4_dpmo_target_met"] is False
 
@@ -140,9 +158,16 @@ def test_exact_binomial_required_denominator_conservative():
 
 
 def test_multiple_disjoint_large_cohorts_only_yield_candidate_not_certification():
-    waves = [wave(i, quality_defects=0,
-                  quality_opportunities=220300, cohort_id="cohort-" + str(i),
-                  cohort_verified=True) for i in range(1, 6)]
+    waves = [
+        wave(
+            i,
+            quality_defects=0,
+            quality_opportunities=220300,
+            cohort_id="cohort-" + str(i),
+            cohort_verified=True,
+        )
+        for i in range(1, 6)
+    ]
     quality = decision(waves)["quality_bound"]
     assert quality["reported_cohort_3_4_dpmo_target_met"] is True
     assert quality["formal_six_sigma_certification"] is False
@@ -150,37 +175,60 @@ def test_multiple_disjoint_large_cohorts_only_yield_candidate_not_certification(
 
 
 def test_repeated_cohort_not_double_counted():
-    waves = [wave(1, cohort_id="C", cohort_verified=True,
-                  quality_defects=0, quality_opportunities=100),
-             wave(2, cohort_id="C", cohort_verified=True,
-                  quality_defects=0, quality_opportunities=100)]
+    waves = [
+        wave(
+            1,
+            cohort_id="C",
+            cohort_verified=True,
+            quality_defects=0,
+            quality_opportunities=100,
+        ),
+        wave(
+            2,
+            cohort_id="C",
+            cohort_verified=True,
+            quality_defects=0,
+            quality_opportunities=100,
+        ),
+    ]
     with pytest.raises(ValueError, match="duplicate quality cohort"):
         decision(waves)
 
 
 def test_any_defect_blocks_zero_defect_bound_qualification():
-    data = [wave(i, quality_defects=0, quality_opportunities=200000,
-                 cohort_id=str(i), cohort_verified=True) for i in range(1, 6)]
+    data = [
+        wave(
+            i,
+            quality_defects=0,
+            quality_opportunities=200000,
+            cohort_id=str(i),
+            cohort_verified=True,
+        )
+        for i in range(1, 6)
+    ]
     data[3]["quality_defects"] = 1
     quality = decision(data)["quality_bound"]
     assert quality["one_sided_95_upper_dpmo_zero_only"] is None
     assert quality["reported_cohort_3_4_dpmo_target_met"] is False
 
 
-@pytest.mark.parametrize("field,value,reason", [
-    ("covered", 101, "coverage denominator"),
-    ("eligible", 0, "coverage denominator"),
-    ("unknown_roots", -1, "invalid unknown"),
-    ("terminal_jobs", True, "invalid terminal"),
-    ("successful_jobs", 7, "native successes"),
-    ("head_sha", "bad", "invalid head"),
-    ("source_sha256", "bad", "invalid source"),
-    ("scope_id", "", "invalid scope"),
-    ("open_root_ids", None, "root inventory"),
-    ("receipt_verified", None, "receipt status"),
-    ("quality_defects", 3, "quality opportunities"),
-    ("queue_p95_seconds", math.inf, "queue p95"),
-])
+@pytest.mark.parametrize(
+    "field,value,reason",
+    [
+        ("covered", 101, "coverage denominator"),
+        ("eligible", 0, "coverage denominator"),
+        ("unknown_roots", -1, "invalid unknown"),
+        ("terminal_jobs", True, "invalid terminal"),
+        ("successful_jobs", 7, "native successes"),
+        ("head_sha", "bad", "invalid head"),
+        ("source_sha256", "bad", "invalid source"),
+        ("scope_id", "", "invalid scope"),
+        ("open_root_ids", None, "root inventory"),
+        ("receipt_verified", None, "receipt status"),
+        ("quality_defects", 3, "quality opportunities"),
+        ("queue_p95_seconds", math.inf, "queue p95"),
+    ],
+)
 def test_bad_input_fails_closed(field, value, reason):
     with pytest.raises(ValueError, match=reason):
         decision([wave(1, **{field: value})])

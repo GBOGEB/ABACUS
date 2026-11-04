@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 """Evaluate W76 source-sensitive runtime candidates before any PCA fit."""
+
 from __future__ import annotations
 
 import argparse
@@ -44,9 +45,7 @@ def validate_panel(panel: dict) -> list[dict]:
         if len(subset) != 3 or {int(row["repeat"]) for row in subset} != {1, 2, 3}:
             raise ValueError(f"unbalanced repeat panel for {sha}")
         feature_hashes = {str(row["feature_row_sha256"]) for row in subset}
-        counters = {
-            json.dumps(row["work_counters"], sort_keys=True) for row in subset
-        }
+        counters = {json.dumps(row["work_counters"], sort_keys=True) for row in subset}
         if len(feature_hashes) != 1 or len(counters) != 1:
             raise ValueError(f"source-state identity drift across repeats for {sha}")
     observed = canonical_rows_sha256(rows)
@@ -165,7 +164,9 @@ def rank_stability(rows: list[dict], feature: str) -> dict:
                 "spearman_rho": rho,
             }
         )
-    observed = [item["spearman_rho"] for item in pairs if item["spearman_rho"] is not None]
+    observed = [
+        item["spearman_rho"] for item in pairs if item["spearman_rho"] is not None
+    ]
     return {
         "pairs": pairs,
         "median_spearman_rho": statistics.median(observed) if observed else None,
@@ -220,9 +221,7 @@ def evaluate(panel: dict) -> dict:
         CANDIDATES,
         key=lambda feature: (
             ranking_value(metrics[feature]["icc_one_way_single_measure"]),
-            ranking_value(
-                metrics[feature]["rank_stability"]["median_spearman_rho"]
-            ),
+            ranking_value(metrics[feature]["rank_stability"]["median_spearman_rho"]),
         ),
         reverse=True,
     )
