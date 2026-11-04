@@ -49,7 +49,9 @@ jobs:
       - name: Resolve canonical full requirement set independently
         # --ignore-installed prevents preinstalled Sphinx from masking a
         # real conflict against any other requirement in this cohort.
-        run: python -m pip install --dry-run --ignore-installed -r DMAIC_V3/requirements.txt
+        run: >-
+          python -m pip install --dry-run --ignore-installed
+          -r DMAIC_V3/requirements.txt
       - name: Verify Sphinx and asyncio static cohorts
         run: |
           python -m pip install packaging
