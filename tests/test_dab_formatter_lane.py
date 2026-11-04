@@ -195,3 +195,53 @@ def test_select_with_suppressed_only_bandit_report(tmp_path):
     sel = F.select(plan_for(["a.py", "b.py"]), "W00", POLICY, tmp_path, report)
     assert sel["excluded"]["bandit_suppressed"] == ["a.py"]
     assert [x for c in sel["chunks"] for x in c] == ["b.py"]
+
+
+def test_cli_select_excludes_in_repo_bandit_report_from_pins(tmp_path):
+    repo = tmp_path / "repo"
+    write(repo / "flagged.py", 'eval("source")\n')
+    write(repo / "clean.py", "value = 1\n")
+    report = repo / "bandit-report.json"
+    report.write_text(
+        json.dumps(
+            {
+                "results": [
+                    {"filename": "flagged.py", "code": 'value = "sha256"'}
+                ],
+                "metrics": {
+                    "_totals": {"loc": 2},
+                    "flagged.py": {"loc": 1},
+                    "clean.py": {"loc": 1},
+                },
+            }
+        ),
+        encoding="utf-8",
+    )
+    plan = tmp_path / "plan.json"
+    plan.write_text(
+        json.dumps(plan_for(["flagged.py", "clean.py"])), encoding="utf-8"
+    )
+    policy = tmp_path / "policy.json"
+    policy.write_text(json.dumps(POLICY), encoding="utf-8")
+    out = tmp_path / "selection.json"
+
+    args = [
+        "select",
+        "--plan",
+        str(plan),
+        "--worker",
+        "W00",
+        "--policy",
+        str(policy),
+        "--repo",
+        str(repo),
+        "--bandit-report",
+        str(report),
+        "--out",
+        str(out),
+    ]
+    assert F.main(args) == 0
+    selection = json.loads(out.read_text(encoding="utf-8"))
+    assert selection["excluded"]["pinned"] == []
+    assert selection["excluded"]["bandit_flagged"] == ["flagged.py"]
+    assert selection["chunks"] == [["clean.py"]]

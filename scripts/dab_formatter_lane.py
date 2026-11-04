@@ -47,7 +47,7 @@ def tier_cfg(policy: dict) -> dict:
     return cfg
 
 
-def collect_pins(root: Path) -> set[str]:
+def collect_pins(root: Path, exclude: Path | None = None) -> set[str]:
     """Every .py path named in a JSON file that carries hash/blob keys.
 
     Deliberately wide: a false positive only skips a file. It cannot see pins
@@ -55,8 +55,11 @@ def collect_pins(root: Path) -> set[str]:
     """
     pins: set[str] = set()
     skip = {".git", "node_modules", "__pycache__"}
+    excluded = exclude.resolve() if exclude is not None else None
     for path in root.rglob("*.json"):
         if skip & set(path.relative_to(root).parts):
+            continue
+        if excluded is not None and path.resolve() == excluded:
             continue
         try:
             text = path.read_text(encoding="utf-8")
@@ -156,6 +159,7 @@ def select(
     policy: dict,
     root: Path,
     bandit_report: dict | None = None,
+    bandit_report_path: Path | None = None,
 ) -> dict:
     cfg = tier_cfg(policy)
     lane = next((x for x in plan["lanes"] if x["worker_id"] == worker), None)
@@ -169,7 +173,7 @@ def select(
     keep, excluded = eligible(
         lane["files"],
         cfg,
-        collect_pins(root),
+        collect_pins(root, bandit_report_path),
         set(plan.get("hold_files", [])),
         flagged,
         suppressed,
@@ -236,13 +240,15 @@ def main(argv: list[str] | None = None) -> int:
     args = ap.parse_args(argv)
     try:
         if args.cmd == "select":
-            report = load_json(Path(args.bandit_report)) if args.bandit_report else None
+            report_path = Path(args.bandit_report) if args.bandit_report else None
+            report = load_json(report_path) if report_path else None
             sel = select(
                 load_json(Path(args.plan)),
                 args.worker,
                 load_json(Path(args.policy)),
                 Path(args.repo),
                 report,
+                report_path,
             )
             Path(args.out).write_text(
                 json.dumps(sel, indent=2, sort_keys=True) + "\n", encoding="utf-8"
