@@ -258,10 +258,7 @@ class EnvironmentPreparation:
             json.dump(deployment_checklist, f, indent=2)
 
         checklist["details"]["checklist_file"] = str(checklist_path)
-        checklist["details"]["total_tasks"] = sum(
-            len(deployment_checklist[phase])
-            for phase in ["pre_deployment", "deployment", "post_deployment"]
-        )
+        checklist["details"]["total_tasks"] = sum(len(deployment_checklist[phase]) for phase in ["pre_deployment", "deployment", "post_deployment"])
         checklist["message"] = f"Deployment checklist created with {checklist['details']['total_tasks']} tasks"
 
         return checklist

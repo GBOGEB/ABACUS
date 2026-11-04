@@ -280,10 +280,7 @@ class BackupRecovery:
 
         config["details"]["config_file"] = str(config_path)
         config["details"]["scenarios"] = len(recovery_procedures["recovery_scenarios"])
-        config["message"] = (
-            "Recovery procedures created with "
-            f"{len(recovery_procedures['recovery_scenarios'])} scenarios"
-        )
+        config["message"] = f"Recovery procedures created with {len(recovery_procedures['recovery_scenarios'])} scenarios"
 
         return config
 
