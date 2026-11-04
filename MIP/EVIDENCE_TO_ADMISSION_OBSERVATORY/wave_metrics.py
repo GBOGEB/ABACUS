@@ -499,7 +499,8 @@ def main(argv: list[str] | None = None) -> int:
         json.dumps(receipt, sort_keys=True, indent=2) + "\n", encoding="utf-8"
     )
     print(
-        f"WAVE_POLICY main={receipt['main_sha']} readonly_lanes={receipt['scale_policy']['read_only_parallel_lanes_max']} "
+        f"WAVE_POLICY main={receipt['main_sha']} "
+        f"readonly_lanes={receipt['scale_policy']['read_only_parallel_lanes_max']} "
         f"covered={receipt['historical_focus']['observations'][-1]['covered']}/"
         f"{receipt['historical_focus']['fixed_opportunity_denominator']}"
     )

@@ -240,7 +240,9 @@ class Phase1Define:
 
                 if chunk_file_count % 1000 == 0:
                     print(
-                        f"  Chunk {chunk_num}: Scanned {chunk_file_count}/{self.max_files_per_chunk} files (Total: {total_scanned})...",
+                        f"  Chunk {chunk_num}: Scanned "
+                        f"{chunk_file_count}/{self.max_files_per_chunk} files "
+                        f"(Total: {total_scanned})...",
                         flush=True,
                     )
 
