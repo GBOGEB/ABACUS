@@ -89,3 +89,38 @@ host is not evidence of runner speedup.
   and a regenerated rationalization report, and ships in a separate PR.
 - No mutation, repair or auto-merge. The worker ceiling is read from the DAB policy;
   raising it is an owner change to `governance/dab/DAB_FULL_RED_GATES.json`.
+
+## Formatter-bulk tier (`FORMATTER_BULK`)
+
+The small-batch tiers (LOW_MECHANICAL 12 findings / 3 files, MEDIUM 4 findings / 1
+file) cannot burn down a style backlog of several thousand findings: that is
+thousands of reviewable batches. `governance/dab/DAB_FULL_RED_GATES.json` therefore
+carries a third, style-only tier that implements the existing
+`promotion_policy.style_only.preferred_consumption` entry `FORMATTER_BASELINE_MIGRATION`.
+
+- Tool: Black (`--target-version py311`) with its AST-equivalence check on. No hand edits.
+- Bound: at most 40 files and 1,500 findings per lane PR, one lane per PR, no stacking.
+- Exactly one mutation writer. Selection is read-only.
+- Never formatted: `handover/`, `deepagent-handover-package/`, any file named in a JSON
+  manifest that carries `sha256`/`blob`/`source_sha` keys, and protected HOLD files (E999).
+  The manifest scan is a heuristic; pins kept in CSV, Markdown, YAML or code are not seen,
+  so the unit-test job on the PR is the real check.
+- Required per PR: unit tests green, `verify` with `ownership_violations=0` and
+  `write_collisions=0`, and `opened=0` or every opened finding explained.
+- Engineering credit stays `NONE`: raw count reduction earns none.
+
+Use:
+
+```text
+python scripts/ldab_scale_plan.py plan --risk ALL --workers 4 ... --out plan.json
+python scripts/dab_formatter_lane.py select --plan plan.json --worker W01 \
+    --policy governance/dab/DAB_FULL_RED_GATES.json --out sel_W01.json
+python scripts/dab_formatter_lane.py apply --selection sel_W01.json --chunk 0 --out res_W01.json
+python scripts/ldab_scale_plan.py verify --plan plan.json --results res_W01.json \
+    --after-raw after.raw --after-command "<same scan command>" --out verify.json
+```
+
+Measured on main `b6937c43` + later (flake8 7.4.1, local, not CI): Black over the 1,478
+files not excluded would take 10,190 findings to 3,710 with no new finding code. One
+lane chunk (W01 chunk 0, 22 files) resolved 664 and opened 2 with zero ownership
+violations and zero write collisions. The existing planner and queue code are unchanged.
