@@ -123,14 +123,15 @@ jobs:
         if: ${{ !cancelled() }}
         shell: bash
         run: |
+          root=MIP/G3CS_CONVERGENCE_V2
           python scripts/ci/family_collect_guard.py \
             --family mip_g3cs --expected-min 155 -- \
-            MIP/G3CS_CONVERGENCE_V2/observatory/w10/test_w11_spine_contract.py \
-            MIP/G3CS_CONVERGENCE_V2/observatory/w10/test_w12_dependency_metrics.py \
-            MIP/G3CS_CONVERGENCE_V2/observatory/w10/test_w12_trigger_events.py \
-            MIP/G3CS_CONVERGENCE_V2/tests/test_compare_snapshots.py \
-            MIP/G3CS_CONVERGENCE_V2/tests/test_converge.py \
-            MIP/G3CS_CONVERGENCE_V2/tests/test_postmerge_gate_receipt.py
+            "$root/observatory/w10/test_w11_spine_contract.py" \
+            "$root/observatory/w10/test_w12_dependency_metrics.py" \
+            "$root/observatory/w10/test_w12_trigger_events.py" \
+            "$root/tests/test_compare_snapshots.py" \
+            "$root/tests/test_converge.py" \
+            "$root/tests/test_postmerge_gate_receipt.py"
 
       - name: Preserve native unit and coverage evidence
         if: always()
