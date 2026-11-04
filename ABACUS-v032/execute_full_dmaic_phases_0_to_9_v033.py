@@ -1851,7 +1851,8 @@ class FullDMAICOrchestrator:
                         ]
                     )
                     f.write(
-                        f"| Phase {phase['phase_number']} | {status} | {phase['duration_seconds']:.2f}s | {metrics_str} |\n"
+                        f"| Phase {phase['phase_number']} | {status} | "
+                        f"{phase['duration_seconds']:.2f}s | {metrics_str} |\n"
                     )
                 f.write("\n")
 
