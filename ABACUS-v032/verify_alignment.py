@@ -40,7 +40,7 @@ def verify_alignment():
         checks.append(("sprint_tested field", has_sprint_field))
         checks.append(("dow_tested field", has_dow_field))
 
-        print(f"   ✅ File exists")
+        print("   ✅ File exists")
         print(f"   {'✅' if has_sprint_marker else '❌'} SPRINT TESTED marker")
         print(f"   {'✅' if has_dow_marker else '❌'} DOW TESTED marker")
         print(f"   {'✅' if has_canonical_marker else '❌'} CANONICAL ALIGNED marker")
@@ -73,7 +73,7 @@ def verify_alignment():
         checks.append(("canonical_aligned flag", has_canonical_aligned))
         checks.append(("v033 engine reference", has_v033_engine))
 
-        print(f"   ✅ File exists")
+        print("   ✅ File exists")
         print(f"   {'✅' if is_v033 else '❌'} Version is v033")
         print(f"   {'✅' if has_phase_9 else '❌'} Phase 9 included")
         print(f"   {'✅' if has_sprint_tested else '❌'} sprint_tested flag")

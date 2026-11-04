@@ -347,7 +347,11 @@ def rollup(pulses):
         and all(result == "GREEN" for result in outcomes),
         "release_ready": False,
         "formal_coverage_credit": False,
-        "note": "Read-only descriptive telemetry. Native receipts, source population identity and governed admission require independent validation.",
+        "note": (
+            "Read-only descriptive telemetry. Native receipts, source "
+            "population identity and governed admission require independent "
+            "validation."
+        ),
     }
 
 

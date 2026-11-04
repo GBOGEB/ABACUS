@@ -95,7 +95,7 @@ class LocalDeploymentRunner:
             if result.returncode == 0:
                 self.log("ABACUS v2.1 executed successfully", "SUCCESS")
             else:
-                self.log(f"ABACUS execution completed with warnings", "WARNING")
+                self.log("ABACUS execution completed with warnings", "WARNING")
         except subprocess.TimeoutExpired:
             self.log("ABACUS execution timeout (expected for long-running processes)", "INFO")
         except Exception as e:
