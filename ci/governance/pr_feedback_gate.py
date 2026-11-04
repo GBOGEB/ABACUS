@@ -623,11 +623,6 @@ def codex_security_review_complete(
     comments: list[dict[str, Any]],
     head_sha: str,
 ) -> bool:
-    structured = codex_structured_lane_complete(
-        latest_codex_summary(comments), "security_review", head_sha
-    )
-    if structured is not None:
-        return structured
     marker = re.compile(r"codex-security-review:v1\s+(\{.*?\})\s*-->")
     for comment in sorted(
         comments,
@@ -636,7 +631,14 @@ def codex_security_review_complete(
     ):
         if not is_trusted_codex_comment(comment):
             continue
-        match = marker.search(comment.get("body", ""))
+        body = comment.get("body", "")
+        if "codex-pull-request-review-summary" in body:
+            structured = codex_structured_lane_complete(
+                comment, "security_review", head_sha
+            )
+            if structured is not None:
+                return structured
+        match = marker.search(body)
         if not match:
             continue
         try:
@@ -644,7 +646,9 @@ def codex_security_review_complete(
         except json.JSONDecodeError:
             continue
         return (
-            payload.get("headSha") == head_sha and payload.get("status") == "completed"
+            isinstance(payload, dict)
+            and payload.get("headSha") == head_sha
+            and payload.get("status") == "completed"
         )
     return False
 

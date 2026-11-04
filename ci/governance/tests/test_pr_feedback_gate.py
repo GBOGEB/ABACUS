@@ -250,14 +250,29 @@ class FeedbackGateTests(unittest.TestCase):
             "<!-- codex-pull-request-review-summary -->\n"
             "<!-- codex-security-review:v1 "
             '{"headSha":"' + head + '","status":"completed"} -->\n'
-            "| Code Review | Completed | Manual request |",
+            "| 📝 **Code Review** | ✅ **Completed** now | "
+            "`abcdef0` | Manual request |",
             "2026-10-03T10:00:00Z",
         )
+        self.assertTrue(gate.codex_code_review_complete([old], head))
         current = self.structured_codex_summary({
             "code_review": dict(self.completed_lane(head), status="running"),
             "security_review": None,
         }, "2026-11-04T10:56:06Z")
         self.assertFalse(gate.codex_code_review_complete([old, current], head))
+        self.assertFalse(gate.codex_security_review_complete([old, current], head))
+
+    def test_newer_legacy_running_security_review_overrules_structured_completion(self):
+        head = "abcdef0123456789abcdef0123456789abcdef01"
+        old = self.structured_codex_summary({
+            "code_review": self.completed_lane(head),
+            "security_review": self.completed_lane(head),
+        }, "2026-10-03T10:00:00Z")
+        current = self.trusted_codex_comment(
+            "<!-- codex-security-review:v1 "
+            '{"headSha":"' + head + '","status":"running"} -->',
+            "2026-11-04T10:56:06Z",
+        )
         self.assertFalse(gate.codex_security_review_complete([old, current], head))
 
     def blocking_runs(self, overrides=None):
