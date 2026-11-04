@@ -252,11 +252,7 @@ class Phase8TODOManagement:
 
             # [8.10] Execute high-priority TODOs
             print("\n[8.10] Executing high-priority TODOs...")
-            high_priority_todos = [
-                t
-                for t in prioritized
-                if t.get('priority') == 'high' and t.get('status') == 'pending'
-            ][:5]
+            high_priority_todos = [t for t in prioritized if t.get('priority') == 'high' and t.get('status') == 'pending'][:5]
             execution_results = self._execute_todos(high_priority_todos, iteration)
             results['todo_executions'] = execution_results
             executed_count = len([r for r in execution_results if r.get('success')])
