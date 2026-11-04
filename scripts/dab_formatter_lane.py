@@ -27,6 +27,10 @@ from pathlib import Path
 TIER = "FORMATTER_BULK"
 HASH_KEYS = re.compile(r"sha256|blob|source_sha|file_sha|content_sha")
 PY_PATH = re.compile(r'"([A-Za-z0-9_./-]+\.py)"')
+HEX_LINE = re.compile(
+    r"([A-Za-z0-9_./-]+\.py)\b[^\n]*?\b(?:[0-9a-f]{40}|[0-9a-f]{64})\b"
+)
+TEXT_SUFFIXES = {".yml", ".yaml", ".sh"}
 
 
 def load_json(path: Path) -> dict:
@@ -60,15 +64,47 @@ def collect_pins(root: Path) -> set[str]:
         if HASH_KEYS.search(text):
             for name in PY_PATH.findall(text):
                 pins.add(name.removeprefix("./"))
+    for path in root.rglob("*"):
+        if path.suffix not in TEXT_SUFFIXES or not path.is_file():
+            continue
+        if skip & set(path.relative_to(root).parts):
+            continue
+        try:
+            text = path.read_text(encoding="utf-8")
+        except (OSError, UnicodeDecodeError):
+            continue
+        for match in HEX_LINE.finditer(text):
+            pins.add(match.group(1).removeprefix("./"))
     return pins
 
 
+def bandit_files(report: dict) -> set[str]:
+    """Paths with any Bandit result. The new-debt ratchet keys a finding by its
+    source text, so reflowing such a file makes unchanged findings look new."""
+    out: set[str] = set()
+    for item in report.get("results", []):
+        name = str(item.get("filename", "")).replace("\\", "/")
+        out.add(name.removeprefix("./"))
+    return out
+
+
 def eligible(
-    files: list[str], cfg: dict, pins: set[str], hold: set[str]
+    files: list[str],
+    cfg: dict,
+    pins: set[str],
+    hold: set[str],
+    flagged: set[str] | None = None,
 ) -> tuple[list[str], dict]:
     prefixes = tuple(cfg.get("excluded_path_prefixes", []))
     keep: list[str] = []
-    out: dict = {"prefix": [], "pinned": [], "hold": [], "not_python": []}
+    flagged = flagged or set()
+    out: dict = {
+        "prefix": [],
+        "pinned": [],
+        "hold": [],
+        "not_python": [],
+        "bandit_flagged": [],
+    }
     for path in sorted(files):
         if not path.endswith(".py"):
             out["not_python"].append(path)
@@ -78,6 +114,8 @@ def eligible(
             out["prefix"].append(path)
         elif path in pins:
             out["pinned"].append(path)
+        elif path in flagged:
+            out["bandit_flagged"].append(path)
         else:
             keep.append(path)
     return keep, out
@@ -93,13 +131,24 @@ def chunks(files: list[str], size: int) -> list[list[str]]:
     return out
 
 
-def select(plan: dict, worker: str, policy: dict, root: Path) -> dict:
+def select(
+    plan: dict,
+    worker: str,
+    policy: dict,
+    root: Path,
+    bandit_report: dict | None = None,
+) -> dict:
     cfg = tier_cfg(policy)
     lane = next((x for x in plan["lanes"] if x["worker_id"] == worker), None)
     if lane is None:
         raise ValueError(f"worker {worker} is not in the plan")
+    flagged = bandit_files(bandit_report) if bandit_report else set()
     keep, excluded = eligible(
-        lane["files"], cfg, collect_pins(root), set(plan.get("hold_files", []))
+        lane["files"],
+        cfg,
+        collect_pins(root),
+        set(plan.get("hold_files", [])),
+        flagged,
     )
     return {
         "schema": "dab.formatter.selection.v1",
@@ -109,6 +158,7 @@ def select(plan: dict, worker: str, policy: dict, root: Path) -> dict:
         "tool_args": cfg.get("tool_args", []),
         "lane_files": len(lane["files"]),
         "eligible_files": len(keep),
+        "bandit_report_used": bool(bandit_report),
         "excluded": {k: v for k, v in excluded.items()},
         "chunks": chunks(keep, int(cfg["max_files_per_lane_pr"])),
         "mutation_writer": 1,
@@ -152,6 +202,7 @@ def main(argv: list[str] | None = None) -> int:
     a.add_argument("--worker", required=True)
     a.add_argument("--policy", required=True)
     a.add_argument("--repo", default=".")
+    a.add_argument("--bandit-report", default=None)
     a.add_argument("--out", required=True)
     b = sub.add_parser("apply")
     b.add_argument("--selection", required=True)
@@ -161,11 +212,13 @@ def main(argv: list[str] | None = None) -> int:
     args = ap.parse_args(argv)
     try:
         if args.cmd == "select":
+            report = load_json(Path(args.bandit_report)) if args.bandit_report else None
             sel = select(
                 load_json(Path(args.plan)),
                 args.worker,
                 load_json(Path(args.policy)),
                 Path(args.repo),
+                report,
             )
             Path(args.out).write_text(
                 json.dumps(sel, indent=2, sort_keys=True) + "\n", encoding="utf-8"

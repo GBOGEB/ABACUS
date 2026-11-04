@@ -155,3 +155,34 @@ def test_cli_select_writes_selection_and_errors_exit_2(tmp_path, capsys):
     assert json.loads(out.read_text(encoding="utf-8"))["eligible_files"] == 1
     assert F.main(args + ["--worker", "W99"]) == 2
     assert "error:" in capsys.readouterr().err
+
+
+def test_collect_pins_reads_yaml_and_shell_hex_lines(tmp_path):
+    h40 = "270d5f7fae8b69dcbaf4eaeb00e6884371554954"
+    write(tmp_path / ".github/workflows/w.yml", f"  verify_blob scripts/a.py {h40}\n")
+    write(tmp_path / "ci/pin.sh", f"check b/c.py {h40}\n")
+    write(tmp_path / ".github/workflows/x.yml", "run: python scripts/d.py\n")
+    pins = F.collect_pins(tmp_path)
+    assert {"scripts/a.py", "b/c.py"} <= pins
+    assert "scripts/d.py" not in pins
+
+
+def test_bandit_files_and_eligible_skip_flagged():
+    report = {"results": [{"filename": "./pkg/a.py"}, {"filename": "pkg\\b.py"}]}
+    flagged = F.bandit_files(report)
+    assert flagged == {"pkg/a.py", "pkg/b.py"}
+    keep, out = F.eligible(
+        ["pkg/a.py", "pkg/b.py", "pkg/c.py"], CFG, set(), set(), flagged
+    )
+    assert keep == ["pkg/c.py"]
+    assert out["bandit_flagged"] == ["pkg/a.py", "pkg/b.py"]
+
+
+def test_select_with_bandit_report(tmp_path):
+    for n in ("a.py", "b.py"):
+        write(tmp_path / n, "x = 1\n")
+    report = {"results": [{"filename": "a.py"}]}
+    sel = F.select(plan_for(["a.py", "b.py"]), "W00", POLICY, tmp_path, report)
+    assert sel["bandit_report_used"] is True
+    assert sel["excluded"]["bandit_flagged"] == ["a.py"]
+    assert [x for c in sel["chunks"] for x in c] == ["b.py"]
