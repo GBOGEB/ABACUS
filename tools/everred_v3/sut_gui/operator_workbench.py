@@ -493,9 +493,8 @@ class OperatorWorkbench:
                         row["source_sha"],
                     ],
                 ):
-                    result = subprocess.run(
-                        cmd, env=env, text=True, capture_output=True, timeout=60
-                    )
+                    result = subprocess.run(cmd, env=env, text=True,
+                                            capture_output=True, timeout=60)
                     if result.returncode:
                         raise RuntimeError(
                             "Fresh git clone/checkout failed: " + result.stderr[-350:]
@@ -530,14 +529,9 @@ class OperatorWorkbench:
                             tempfile.TemporaryFile() as stdout_file,
                             tempfile.TemporaryFile() as stderr_file,
                         ):
-                            out = subprocess.run(
-                                args,
-                                cwd=clone,
-                                env=env,
-                                stdout=stdout_file,
-                                stderr=stderr_file,
-                                timeout=self.timeout_seconds,
-                            )
+                            out = subprocess.run(args, cwd=clone, env=env,
+                                stdout=stdout_file, stderr=stderr_file,
+                                timeout=self.timeout_seconds)
                             stdout_file.seek(max(0, stdout_file.tell() - 8000))
                             stderr_file.seek(max(0, stderr_file.tell() - 8000))
                             stdout_text = stdout_file.read().decode(

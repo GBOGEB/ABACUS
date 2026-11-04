@@ -39,9 +39,7 @@ TEXT_EXTS = {
 
 def run_git(args: list[str]) -> str | None:
     try:
-        return subprocess.check_output(
-            ["git", "-C", str(REPO_ROOT), *args], stderr=subprocess.DEVNULL, text=True
-        ).strip()
+        return subprocess.check_output(["git", "-C", str(REPO_ROOT), *args], stderr=subprocess.DEVNULL, text=True).strip()
     except (OSError, subprocess.CalledProcessError):
         return None
 

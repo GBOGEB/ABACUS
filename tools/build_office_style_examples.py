@@ -282,14 +282,7 @@ def main():
     create_xlsx(files[1])
     if not args.no_deck:
         deck = out / "CODE_PURPLE_Office_Style_Sample.pptx"
-        subprocess.run(
-            [
-                "node",
-                str(Path(__file__).with_name("build_office_style_deck.js")),
-                str(deck),
-            ],
-            check=True,
-        )
+        subprocess.run(["node", str(Path(__file__).with_name("build_office_style_deck.js")), str(deck)],check=True)
         files.append(deck)
     manifest = {
         "schema": "abacus.synthetic-office-inputs.v1",

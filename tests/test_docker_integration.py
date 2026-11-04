@@ -173,7 +173,7 @@ class TestDockerBuild:
             ["docker", "build", "-t", "test-master-input", "."],
             capture_output=True,
             text=True,
-            timeout=300,
+            timeout=300
         )
 
         assert result.returncode == 0, f"Docker build failed: {result.stderr}"
@@ -183,7 +183,7 @@ class TestDockerBuild:
         result = subprocess.run(
             ["docker", "images", "test-master-input", "--format", "{{.Size}}"],
             capture_output=True,
-            text=True,
+            text=True
         )
 
         if result.returncode == 0 and result.stdout.strip():
@@ -200,7 +200,7 @@ class TestDockerContainer:
         result = subprocess.run(
             ["docker", "run", "-d", "-p", "8000:8000", "test-master-input"],
             capture_output=True,
-            text=True,
+            text=True
         )
 
         if result.returncode == 0:
@@ -221,7 +221,7 @@ class TestDockerContainer:
         subprocess.run(
             ["docker", "ps", "-q", "-f", f"id={container_id}"],
             capture_output=True,
-            text=True,
+            text=True
         )
 
 
@@ -516,7 +516,7 @@ class TestDockerComposeDeploy:
         result = subprocess.run(
             ["docker", "compose", "config", "--services"],
             capture_output=True,
-            text=True,
+            text=True
         )
 
         if result.returncode == 0:

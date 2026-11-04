@@ -27,9 +27,7 @@ def run_block(lang: str, code: str) -> subprocess.CompletedProcess:
         with tempfile.NamedTemporaryFile("w", suffix=".py", delete=False) as tf:
             tf.write(code)
             tf.flush()
-            return subprocess.run(
-                [sys.executable, tf.name], capture_output=True, text=True
-            )
+            return subprocess.run([sys.executable, tf.name], capture_output=True, text=True)
     return subprocess.CompletedProcess(
         args=[], returncode=0, stdout="", stderr=f"Unsupported lang: {lang}"
     )
