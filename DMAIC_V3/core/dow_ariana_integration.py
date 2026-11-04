@@ -328,7 +328,13 @@ class DOWArianaIntegration:
         agents_registry = self._load_agents_registry()
         agents_dict = agents_registry.get('agents', {})
 
-        total_agents = len(agents_dict) if isinstance(agents_dict, dict) else len(agents_dict) if isinstance(agents_dict, list) else 0
+        total_agents = (
+            len(agents_dict)
+            if isinstance(agents_dict, dict)
+            else len(agents_dict)
+            if isinstance(agents_dict, list)
+            else 0
+        )
 
         orchestration_report = {
             'timestamp': datetime.now().isoformat(),
