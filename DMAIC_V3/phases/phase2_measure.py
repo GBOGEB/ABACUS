@@ -215,7 +215,12 @@ class Phase2Measure:
             print()
 
             # Load Phase 1 results
-            phase1_file = self.config.paths.output_root / f"iteration_{iteration}" / "phase1_define" / "phase1_define.json"
+            phase1_file = (
+                self.config.paths.output_root
+                / f"iteration_{iteration}"
+                / "phase1_define"
+                / "phase1_define.json"
+            )
 
             if not phase1_file.exists():
                 raise FileNotFoundError(f"Phase 1 results not found: {phase1_file}")
@@ -304,7 +309,10 @@ class Phase2Measure:
                     end_idx = min(start_idx + chunk_size, total_files)
                     chunk_files = python_files[start_idx:end_idx]
 
-                    print(f"  [EXEC-BACKBONE] Scheduling chunk {chunk_idx + 1}/{num_chunks} ({len(chunk_files)} files)...")
+                    print(
+                        f"  [EXEC-BACKBONE] Scheduling chunk {chunk_idx + 1}/{num_chunks} "
+                        f"({len(chunk_files)} files)..."
+                    )
 
                     for file_path in chunk_files:
                         task_id = f"analyze_{chunk_idx}_{file_path.replace('/', '_')[-50:]}"
@@ -323,7 +331,11 @@ class Phase2Measure:
                 time.sleep(2)
                 self.execution_backbone.stop()
 
-                print(f"  [EXEC-BACKBONE] Analysis complete: {self.execution_backbone.tasks_executed} executed, {self.execution_backbone.tasks_failed} failed")
+                print(
+                    "  [EXEC-BACKBONE] Analysis complete: "
+                    f"{self.execution_backbone.tasks_executed} executed, "
+                    f"{self.execution_backbone.tasks_failed} failed"
+                )
 
                 for file_path in python_files:
                     result = self.analyze_python_file(file_path)
