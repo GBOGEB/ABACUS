@@ -29,13 +29,7 @@ def digest(data: bytes) -> str:
     return hashlib.sha256(data).hexdigest()
 
 def git_head(root: Path) -> str:
-    result = subprocess.run(
-        ["git", "rev-parse", "--verify", "HEAD"],
-        cwd=root,
-        capture_output=True,
-        text=True,
-        check=False,
-    )
+    result = subprocess.run(["git", "rev-parse", "--verify", "HEAD"], cwd=root, capture_output=True, text=True, check=False)
     sha = result.stdout.strip().lower() if result.returncode == 0 else ""
     return sha if SHA.fullmatch(sha) else ""
 
