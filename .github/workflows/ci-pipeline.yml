@@ -131,7 +131,7 @@ jobs:
             "$root/test_queue_telemetry.py" \
             "$root/test_w30_collector_negative.py" \
             "$root/test_wave_convergence.py" \
-            "$root/test_wave_metrics.py
+            "$root/test_wave_metrics.py"
 
       - name: Preserve native unit and coverage evidence
         if: always()
