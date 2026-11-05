@@ -9,7 +9,7 @@ unique federation-wide, slugs only carry forward along lineage, and path
 boundaries inside a repo do not overlap.
 
 CLI (stdlib + PyYAML, ASCII output):
-  python scripts/wave_claims.py validate [.waves/WAVE_CLAIMS.yaml]
+  python scripts/wave_claims.py validate [.waves/WAVE_CLAIMS.yaml] --expected-repo GBOGEB/ABACUS
       Validate a repo's own claims file (run in the member repo; exit 1 on errors).
   python scripts/wave_claims.py propose --repo GBOGEB/NAME [--register PATH]
       Draft a claims file from the observed census for the owner to review.
@@ -211,6 +211,7 @@ def validate_claims(
             {
                 "key": key,
                 "name": name,
+                "aliases": aliases,
                 "parents": [str(p) for p in as_list(c.get("parent"))],
                 "paths": [str(p) for p in as_list(c.get("paths"))],
             }
@@ -225,6 +226,22 @@ def validate_claims(
                     "key claimed more than once in the same file",
                 )
             )
+    # Fail closed for collisions within this member's own file. The federation
+    # roll-up also checks across repositories, but cannot be the only gate.
+    canonical_by_tag = collections.defaultdict(set)
+    aliases_by_tag = collections.defaultdict(list)
+    for row in owned:
+        canonical_by_tag[tag(row["name"])].add(row["key"])
+        for alias in row["aliases"]:
+            aliases_by_tag[tag(alias)].append(row["key"])
+    for alias_tag, keys in aliases_by_tag.items():
+        if len(keys) > 1 or canonical_by_tag.get(alias_tag):
+            for key in sorted(set(keys)):
+                out.append(violation(
+                    "D3_ALIAS_CLASH", key, repo,
+                    "alias duplicates another alias or a canonical name in this claims file",
+                ))
+
     roles = set(rules["participant_roles"])
     for p in as_list(doc.get("participates")):
         key = str(p.get("key", ""))
@@ -373,8 +390,8 @@ def rollup(
         if len(keys) < 2:
             continue
         chain = sorted(keys, key=lambda k: (key_number(k) or 0, k))
-        for later in chain[1:]:
-            if not (parents[later] & set(chain)):
+        for position, later in enumerate(chain[1:], start=1):
+            if not (parents[later] & set(chain[:position])):
                 violations.append(
                     violation(
                         "D4_SLUG_NO_LINEAGE",
@@ -584,6 +601,8 @@ def main(argv: list[str] | None = None) -> int:
     v = sub.add_parser("validate")
     v.add_argument("path", nargs="?", default=CLAIMS_PATH)
     v.add_argument("--rules", default=str(RULES_FILE))
+    v.add_argument("--expected-repo", required=True,
+                   help="independently supplied owner/name, never read from the claims file")
     v.add_argument("--private", action="store_true", help="redact names in messages")
     p = sub.add_parser("propose")
     p.add_argument("--repo", required=True)
@@ -596,7 +615,7 @@ def main(argv: list[str] | None = None) -> int:
     if a.cmd == "validate":
         rules = load_naming_rules(Path(a.rules))
         doc = yaml.safe_load(Path(a.path).read_text(encoding="utf-8"))
-        found = validate_claims(doc, rules, (doc or {}).get("repo"), a.private)
+        found = validate_claims(doc, rules, a.expected_repo, a.private)
         for f in found:
             print(f"{f['severity'].upper()} {f['code']} {f['key']}: {f['detail']}")
         errors = sum(1 for f in found if f["severity"] == "error")
