@@ -104,7 +104,7 @@ def test_select_builds_chunks_from_the_plan(tmp_path):
     write(tmp_path / "pins.json", '{"sha256": "1", "f": "pkg/m0.py"}')
     cfg = {**CFG, "max_files_per_lane_pr": 2}
     policy = {"batch_policy": {F.TIER: cfg}}
-    sel = F.select(plan_for(names), "W00", policy, tmp_path)
+    sel = F.select(plan_for(names), "W00", policy, tmp_path, {"results": []})
     assert sel["lane_files"] == 5 and sel["eligible_files"] == 4
     assert sel["excluded"]["pinned"] == ["pkg/m0.py"]
     assert [len(c) for c in sel["chunks"]] == [2, 2]
@@ -113,7 +113,7 @@ def test_select_builds_chunks_from_the_plan(tmp_path):
 
 def test_select_rejects_unknown_worker(tmp_path):
     with pytest.raises(ValueError):
-        F.select(plan_for(["a.py"]), "W09", POLICY, tmp_path)
+        F.select(plan_for(["a.py"]), "W09", POLICY, tmp_path, {"results": []})
 
 
 def test_apply_formats_only_selection_and_is_idempotent(tmp_path):
@@ -121,7 +121,7 @@ def test_apply_formats_only_selection_and_is_idempotent(tmp_path):
     write(tmp_path / "a.py", "x=1;y=2\nd={'k':1}\n")
     write(tmp_path / "b.py", "z=3\n")
     write(tmp_path / "other.py", "q=1;r=2\n")
-    sel = F.select(plan_for(["a.py", "b.py"]), "W00", POLICY, tmp_path)
+    sel = F.select(plan_for(["a.py", "b.py"]), "W00", POLICY, tmp_path, {"results": []})
     res = F.apply_chunk(sel, 0, tmp_path)
     assert res["changed_paths"] == ["a.py", "b.py"]
     assert (tmp_path / "other.py").read_text(encoding="utf-8") == "q=1;r=2\n"
@@ -134,12 +134,21 @@ def test_apply_refuses_path_outside_selection_and_escape(tmp_path):
     sel = {
         "worker_id": "W00",
         "tool": "black",
+        "bandit_report_used": True,
         "chunks": [["a.py", "../escape.py"], ["a.py"]],
     }
     with pytest.raises(ValueError):
         F.apply_chunk(sel, 0, tmp_path)
     with pytest.raises(ValueError):
         F.apply_chunk({**sel, "tool": "autopep8"}, 1, tmp_path)
+
+
+def test_selection_and_apply_require_bandit_evidence(tmp_path):
+    write(tmp_path / "a.py", "x = 1\n")
+    with pytest.raises(ValueError, match="Bandit JSON report is required"):
+        F.select(plan_for(["a.py"]), "W00", POLICY, tmp_path)
+    with pytest.raises(ValueError, match="without Bandit evidence"):
+        F.apply_chunk({"tool": "black", "chunks": [["a.py"]]}, 0, tmp_path)
 
 
 def test_cli_select_writes_selection_and_errors_exit_2(tmp_path, capsys):
@@ -149,8 +158,10 @@ def test_cli_select_writes_selection_and_errors_exit_2(tmp_path, capsys):
     pol = tmp_path / "policy.json"
     pol.write_text(json.dumps(POLICY), encoding="utf-8")
     out = tmp_path / "sel.json"
+    report = tmp_path / "bandit.json"
+    report.write_text('{"results": []}', encoding="utf-8")
     args = ["select", "--plan", str(plan), "--policy", str(pol)]
-    args += ["--repo", str(tmp_path), "--out", str(out)]
+    args += ["--repo", str(tmp_path), "--bandit-report", str(report), "--out", str(out)]
     assert F.main(args + ["--worker", "W00"]) == 0
     assert json.loads(out.read_text(encoding="utf-8"))["eligible_files"] == 1
     assert F.main(args + ["--worker", "W99"]) == 2
