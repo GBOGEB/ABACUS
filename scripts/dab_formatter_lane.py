@@ -162,14 +162,16 @@ def select(
     bandit_report_path: Path | None = None,
 ) -> dict:
     cfg = tier_cfg(policy)
+    if bandit_report is None:
+        raise ValueError("Bandit JSON report is required; generate with --ignore-nosec")
     lane = next((x for x in plan["lanes"] if x["worker_id"] == worker), None)
     if lane is None:
         raise ValueError(f"worker {worker} is not in the plan")
-    has_bandit_report = bandit_report is not None
-    flagged = bandit_files(bandit_report) if has_bandit_report else set()
-    suppressed = (
-        bandit_suppressed_files(root, lane["files"]) if has_bandit_report else set()
-    )
+    # Bandit ratchet scans --ignore-nosec; conservatively exclude # nosec files
+    # even if a supplied report was generated with different suppression settings.
+    has_bandit_report = True
+    flagged = bandit_files(bandit_report)
+    suppressed = bandit_suppressed_files(root, lane["files"])
     keep, excluded = eligible(
         lane["files"],
         cfg,
@@ -196,6 +198,8 @@ def select(
 
 def apply_chunk(selection: dict, index: int, root: Path) -> dict:
     """Format one chunk in place. Only files of the selection are touched."""
+    if selection.get("bandit_report_used") is not True:
+        raise ValueError("refusing unqualified selection without Bandit evidence")
     import black  # lazy: selection must work where Black is not installed
 
     if selection.get("tool") != "black":
@@ -230,7 +234,7 @@ def main(argv: list[str] | None = None) -> int:
     a.add_argument("--worker", required=True)
     a.add_argument("--policy", required=True)
     a.add_argument("--repo", default=".")
-    a.add_argument("--bandit-report", default=None)
+    a.add_argument("--bandit-report", required=True, help="current-head Bandit JSON, scanned using --ignore-nosec")
     a.add_argument("--out", required=True)
     b = sub.add_parser("apply")
     b.add_argument("--selection", required=True)
