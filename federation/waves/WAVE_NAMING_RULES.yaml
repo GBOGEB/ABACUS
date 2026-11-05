@@ -1,0 +1,60 @@
+# Wave naming ruleset (MUST OBEY). Hand-maintained in CODEX; enforced by
+# scripts/wave_claims.py in every member repo and in the CODEX roll-up.
+#
+# Model
+#   - Prerogative: each repo declares the waves it OWNS in its own
+#     .waves/WAVE_CLAIMS.yaml (name, status, aliases, path boundaries) and the
+#     waves it only PARTICIPATES in (role). Nobody else may set those fields.
+#   - Roll-up: CODEX reads every repo's claims at an exact commit, merges them
+#     with the observed census (WAVE_REGISTER.yaml) and de-duplicates.
+#   - One number, one name: a canonical key (e.g. QPS:W364) has exactly one
+#     owner and exactly one canonical name, federation-wide and forever.
+#     Aliases are free to choose but must obey the alias convention below.
+schema: codex.wave_naming_rules/1.0
+claims_file: .waves/WAVE_CLAIMS.yaml
+claims_schema: gbogeb.wave_claims/1
+
+canonical_name:
+  # <W + 3-digit number of the key>_<SLUG>; SLUG = 1..6 upper-case ASCII words.
+  pattern: '^W(?P<num>\d{3})_(?P<slug>[A-Z0-9]+(?:_[A-Z0-9]+){0,5})$'
+  max_length: 48
+  number_must_match_key: true      # QPS:W364 -> name must start with W364_
+  namespaces: [QPS]                # other namespaces keep their native id as name
+  reserved_slug_tokens: [TMP, TEMP, COPY, FINAL, NEW, OLD, WIP, TEST, DRAFT, MISC]
+
+alias:
+  # Free to choose, but: lower-case kebab tag, ASCII, short, no foreign numbers.
+  pattern: '^[a-z0-9]+(?:-[a-z0-9]+){0,5}$'
+  max_length: 40
+  max_per_wave: 5
+  foreign_wave_numbers: forbidden  # an alias may mention its own number, never another wave's
+
+uniqueness:
+  key_owner: exactly_one           # D1 duplicate owner
+  canonical_name: global_forever   # D2 one name <-> one key, never reused
+  alias: global                    # D3 an alias resolves to one key; never equal to any canonical name
+  retired_reuse: forbidden         # CLOSED/SUPERSEDED names and aliases stay reserved
+
+numbering:
+  allocation: next_free            # new key = max(claimed or observed in namespace) + 1
+  backfill: observed_only          # a lower number may be claimed only if it is already observed
+  reuse: forbidden
+  increment:
+    # "The number can increment": a successor wave takes a NEW number and may
+    # carry the same slug forward only when it declares the earlier key as parent.
+    slug_carry_forward_requires: parent    # D4 slug reuse without lineage
+
+boundaries:
+  # paths: repo-relative prefixes a wave owns (worktree, workflow, generated assets).
+  path_overlap_within_repo: forbidden      # D5 unless the inner wave declares the outer as parent
+  nested_child_allowed: parent             # nesting = explicit lineage
+  cross_repo: participants                 # same key in another repo => that repo declares participates
+
+participant_roles: [producer, consumer, receiver, mirror, reviewer, executor]
+
+status_enum: [ACTIVE, HOLD, CLOSED, SUPERSEDED]   # owner-set; OBSERVED is generator-only
+
+privacy:
+  # Private repos: names and aliases are validated in full, but the roll-up
+  # publishes only sha256 digests of them (dedup still works on digests).
+  private_publish: [key, owner, status, participants, name_sha256, alias_sha256, path_count]
