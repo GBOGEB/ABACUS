@@ -2,7 +2,7 @@
 
 ## Project Overview
 
-ABACUS is a recursive, DMAIC-driven multi-agent system for analyzing cryogenic engineering data, technical documents, and project artifacts. It's built for the 12-cluster cryoplant analysis workflow using Python 3.8+.
+ABACUS is a recursive, DMAIC-driven multi-agent system for analyzing cryogenic engineering data, technical documents, and project artifacts. It's built for the 12-cluster cryoplant analysis workflow using Python 3.11+ (see `ssot/python_versions.yaml`).
 
 **Current Version:** V2.3.0 (Active Development)  
 **Tech Stack:** Python, YAML, GitHub Actions, pytest, DMAIC methodology
@@ -78,7 +78,12 @@ ABACUS/
 
 ### Python Code Style
 
-- **Python Version:** Python 3.8+ (support for 3.11, 3.12 in CI)
+- **Python Version:** supported set, default and CI lanes live in
+  `ssot/python_versions.yaml` (authority). Never hard-code interpreter
+  versions in workflows: write any value, then run
+  `python tools/ci/python_versions.py sync`; the
+  `python-version-ssot-guard` workflow fails on drift. Scripts that need
+  versions read `ssot/python_versions.lanes.json` and declare `PYTHON_LANE`.
 - **Formatting:** Use `black` for code formatting
 - **Linting:** Code must pass `flake8` and `pylint`
 - **Type Hints:** Use type hints for function signatures (checked with `mypy`)

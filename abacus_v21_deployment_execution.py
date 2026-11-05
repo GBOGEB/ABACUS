@@ -270,7 +270,11 @@ class ABACUSv21Deployment:
                 migration_data = json.load(f)
 
                 result["metrics"]["migration_completed"] = True
-                result["metrics"]["deployment_readiness"] = migration_data.get("phases", {}).get("phase_8", {}).get("readiness_score", 0)
+                result["metrics"]["deployment_readiness"] = (
+                    migration_data.get("phases", {})
+                    .get("phase_8", {})
+                    .get("readiness_score", 0)
+                )
                 result["metrics"]["total_phases"] = len(migration_data.get("phases", {}))
 
                 logger.info(f"  ✅ Migration report validated")
@@ -469,7 +473,10 @@ This report documents the deployment execution and post-deployment monitoring fo
 
 """
 
-        if "monitoring_results" in self.deployment_status and "recursive_engine" in self.deployment_status["monitoring_results"]:
+        if (
+            "monitoring_results" in self.deployment_status
+            and "recursive_engine" in self.deployment_status["monitoring_results"]
+        ):
             recursive_data = self.deployment_status["monitoring_results"]["recursive_engine"]
             report += f"**Timestamp:** {recursive_data['timestamp']}\n\n"
             for path, metrics in recursive_data.get("performance_metrics", {}).items():
@@ -481,7 +488,10 @@ This report documents the deployment execution and post-deployment monitoring fo
 
 """
 
-        if "monitoring_results" in self.deployment_status and "temporal_engine" in self.deployment_status["monitoring_results"]:
+        if (
+            "monitoring_results" in self.deployment_status
+            and "temporal_engine" in self.deployment_status["monitoring_results"]
+        ):
             temporal_data = self.deployment_status["monitoring_results"]["temporal_engine"]
             report += f"**Timestamp:** {temporal_data['timestamp']}\n\n"
             for keyword, validation in temporal_data.get("validation_results", {}).items():

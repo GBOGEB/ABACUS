@@ -85,6 +85,26 @@
       "proposal_workers": {"min": 1, "max": 4, "mode": "READ_ONLY"},
       "mutation_writers": 1
     },
+    "FORMATTER_BULK": {
+      "purpose": "Style-only burn-down by an AST-checked formatter, one lane per PR; implements promotion_policy.style_only FORMATTER_BASELINE_MIGRATION",
+      "tool": "black",
+      "tool_args": ["--target-version", "py311"],
+      "families": ["E111", "E127", "E128", "E203", "E225", "E231", "E301", "E302", "E303", "E305", "E501", "E701", "E702", "W291", "W293"],
+      "max_files_per_lane_pr": 40,
+      "max_findings_per_lane_pr": 1500,
+      "proposal_workers": {"min": 2, "max": 4, "mode": "READ_ONLY"},
+      "mutation_writers": 1,
+      "excluded_path_prefixes": ["handover/", "deepagent-handover-package/"],
+      "excluded_by_manifest": "any .py path named in a JSON file that carries sha256/blob/source_sha keys",
+      "requires": [
+        "unit_tests_green_on_the_pr",
+        "verify: ownership_violations=0 and write_collisions=0",
+        "opened=0 or every opened finding explained",
+        "one lane per PR; no stacking"
+      ],
+      "style_only": true,
+      "engineering_credit": "NONE; raw static-count reduction earns no engineering credit"
+    },
     "HIGH_OR_PROTECTED": {
       "max_findings": 1,
       "max_files": 1,

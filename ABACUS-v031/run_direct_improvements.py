@@ -78,7 +78,7 @@ def add_documentation_header(file_path: Path, artifact_type: str) -> bool:
         elif artifact_type == "yaml" or artifact_type == "text":
             header = f"# {file_path.stem.replace('_', ' ').title()}\n"
             header = f"# File: {file_path.name}\n"
-            header += f"# Purpose: Configuration file\n\n"
+            header += "# Purpose: Configuration file\n\n"
 
         if header:
             improved_content = header + content
@@ -178,16 +178,16 @@ def main():
         if artifact_type == "markdown":
             if improve_markdown_quality(file_path):
                 improved = True
-                print(f"                    ✓ Improved markdown quality")
+                print("                    ✓ Improved markdown quality")
 
             if add_documentation_header(file_path, "markdown"):
                 improved = True
-                print(f"                    ✓ Added documentation header")
+                print("                    ✓ Added documentation header")
 
         elif artifact_type == "code":
             if improve_code_quality(file_path):
                 improved = True
-                print(f"                    ✓ Improved code quality")
+                print("                    ✓ Improved code quality")
 
             if add_documentation_header(file_path, "code"):
                 improved = True

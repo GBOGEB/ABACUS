@@ -36,6 +36,12 @@ CRITICALITY_ORDER = {
 }
 
 
+def _ssot_versions() -> dict[str, Any]:
+    """Supported/default interpreters from the SSOT view (ssot/python_versions.yaml)."""
+    view = Path(__file__).resolve().parents[1] / "ssot" / "python_versions.lanes.json"
+    return json.loads(view.read_text(encoding="utf-8"))
+
+
 def load_json(path: Path | None) -> dict[str, Any]:
     if path is None:
         return {}
@@ -702,8 +708,8 @@ def plan_test_execution(
     return {
         "schema": "abacus-test-execution-plan/1.0",
         "mode": "thorough" if thorough else "fast-advisory",
-        "python_versions": ["3.9", "3.10", "3.11", "3.12"] if thorough else ["3.12"],
-        "python_3_9_role": "source-compatibility-only",
+        "python_versions": _ssot_versions()["supported"] if thorough else [_ssot_versions()["default"]],
+        "python_versions_authority": "ssot/python_versions.yaml",
         "triggered_categories": escalation,
         "required_checks_preserved": True,
         "admission_proof": False,

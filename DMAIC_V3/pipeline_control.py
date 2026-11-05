@@ -160,7 +160,7 @@ class PipelineController:
     def _print_summary(self, results, start_iter, n_iterations):
         """Print execution summary"""
         print(f"\n{'='*80}")
-        print(f"EXECUTION SUMMARY")
+        print("EXECUTION SUMMARY")
         print(f"{'='*80}")
         print(f"Planned: {n_iterations} iterations (from {start_iter})")
         print(f"Executed: {len(results)} iterations")
@@ -169,7 +169,7 @@ class PipelineController:
         successful = sum(1 for r in results if r.get("success", False))
         failed = len(results) - successful
 
-        print(f"Results:")
+        print("Results:")
         print(f"  ✓ Successful: {successful}/{len(results)}")
         print(f"  ✗ Failed: {failed}/{len(results)}")
         print()

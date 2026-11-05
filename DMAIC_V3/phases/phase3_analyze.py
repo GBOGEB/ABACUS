@@ -411,7 +411,7 @@ class Phase3Analyze:
         # Add output_file to the result
         analysis_result["output_file"] = str(output_file)
 
-        print(f"\n[*] Analysis Summary:")
+        print("\n[*] Analysis Summary:")
         print(f"   Total files: {len(metrics)}")
         print(f"   Critical issues: {analysis_result['summary']['critical_issues']}")
         print(f"   High issues: {analysis_result['summary']['high_issues']}")

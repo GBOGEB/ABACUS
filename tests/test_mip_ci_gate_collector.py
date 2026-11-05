@@ -46,20 +46,15 @@ def native_job(identity, run_id, name, conclusion="success", *, steps=None):
 
 
 def enterprise_jobs():
-    items = []
-    count = 0
-    for py in ("3.9", "3.10", "3.11", "3.12"):
-        for operating_system in ("ubuntu-latest", "windows-latest", "macos-latest"):
-            items.append(
-                native_job(
-                    500 + count,
-                    10,
-                    f"Test Python {py} on {operating_system}",
-                    steps=["Run pytest --benchmark-disable with coverage"],
-                )
-            )
-            count += 1
-    items.append(native_job(520, 10, "CI Summary"))
+    # Matrix job names are derived from dmaic-enterprise-ci.yml, whose versions are
+    # maintained from ssot/python_versions.yaml.
+    from tools.mip_ci_wave_telemetry import _ENTERPRISE_JOBS
+
+    items = [
+        native_job(500 + count, 10, name, steps=["Run pytest --benchmark-disable with coverage"])
+        for count, name in enumerate(_ENTERPRISE_JOBS)
+    ]
+    items.append(native_job(500 + len(items) + 100, 10, "CI Summary"))
     return items
 
 

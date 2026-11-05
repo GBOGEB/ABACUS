@@ -28,7 +28,10 @@ class TestNoOverflow:
         results = LintResults()
         rule_no_overflow(content, str(path), results)
         assert len(results.warnings) >= 1
-        assert "overflow" in results.warnings[0].message.lower() or "200" in results.warnings[0].message
+        assert (
+            "overflow" in results.warnings[0].message.lower()
+            or "200" in results.warnings[0].message
+        )
 
     def test_overflow_hidden_triggers_error(self, tmp_dir):
         content = "div { overflow: hidden; }\n"
@@ -110,16 +113,19 @@ class TestSemanticCardRequired:
         assert len(results.errors) == 0
 
     def test_missing_fields_flagged(self):
-        content = '---\nslide_id: test-intro-001\n---\n# Slide\n'
+        content = "---\nslide_id: test-intro-001\n---\n# Slide\n"
         results = LintResults()
         rule_semantic_card_required(content, "slide_test.md", results)
         assert len(results.errors) >= 1
-        assert "purpose" in results.errors[0].message or "audience" in results.errors[0].message
+        assert (
+            "purpose" in results.errors[0].message
+            or "audience" in results.errors[0].message
+        )
 
 
 class TestSpeakerNotesRequired:
     def test_sufficient_notes_pass(self):
-        content = '---\nspeaker_notes: "' + 'x' * 60 + '"\n---\n# Slide\n'
+        content = '---\nspeaker_notes: "' + "x" * 60 + '"\n---\n# Slide\n'
         results = LintResults()
         rule_speaker_notes_required(content, "test.md", results)
         assert len(results.warnings) == 0
@@ -160,17 +166,24 @@ class TestLintResults:
 
     def test_failed_with_errors(self):
         from engines.RENDER_LINTER import LintFinding
+
         results = LintResults()
-        results.add(LintFinding(
-            rule="test", severity=Severity.ERROR,
-            file="test.md", line=1, message="test error",
-        ))
+        results.add(
+            LintFinding(
+                rule="test",
+                severity=Severity.ERROR,
+                file="test.md",
+                line=1,
+                message="test error",
+            )
+        )
         assert not results.passed
 
     def test_json_output(self):
         results = LintResults()
         output = results.to_json()
         import json
+
         data = json.loads(output)
         assert data["passed"] is True
         assert data["total"] == 0

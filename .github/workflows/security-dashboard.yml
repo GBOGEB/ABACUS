@@ -25,7 +25,7 @@ jobs:
           persist-credentials: false
       - uses: actions/setup-python@v7
         with:
-          python-version: '3.10'
+          python-version: '3.14'
       - name: Generate aggregate-only dashboard
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

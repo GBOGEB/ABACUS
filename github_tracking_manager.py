@@ -44,7 +44,7 @@ class GitHubTrackingManager:
     def _load_state(self) -> Dict:
         """Load tracking state from JSON file"""
         if self.json_file.exists():
-            with open(self.json_file, 'r') as f:
+            with open(self.json_file, "r") as f:
                 return json.load(f)
         return self._create_empty_state()
 
@@ -55,27 +55,27 @@ class GitHubTrackingManager:
                 "version": "1.0.0",
                 "last_updated": datetime.utcnow().isoformat() + "Z",
                 "repository": self.repo_name,
-                "tracking_started": datetime.utcnow().isoformat() + "Z"
+                "tracking_started": datetime.utcnow().isoformat() + "Z",
             },
             "pull_requests": {},
             "issues": {},
             "ci_cd_history": {
                 "ci_runs": [],
                 "cd_deployments": [],
-                "missed_opportunities": []
+                "missed_opportunities": [],
             },
             "copilot_feedback_queue": [],
-            "action_items": []
+            "action_items": [],
         }
 
     def _save_state(self):
         """Save tracking state to both JSON and YAML"""
         self.state["metadata"]["last_updated"] = datetime.utcnow().isoformat() + "Z"
 
-        with open(self.json_file, 'w') as f:
+        with open(self.json_file, "w") as f:
             json.dump(self.state, f, indent=2)
 
-        with open(self.yaml_file, 'w') as f:
+        with open(self.yaml_file, "w") as f:
             yaml.dump(self.state, f, default_flow_style=False, sort_keys=False)
 
         print(f"✅ State saved to {self.json_file} and {self.yaml_file}")
@@ -107,13 +107,15 @@ class GitHubTrackingManager:
                 "copilot_feedback": [],
                 "post_merge_actions": [],
                 "lessons_learned": [],
-                "tags": []
+                "tags": [],
             }
 
         pr_data = self.state["pull_requests"][pr_key]
 
         pr_data["title"] = pr.title
-        pr_data["status"] = "merged" if pr.merged else ("closed" if pr.closed_at else "open")
+        pr_data["status"] = (
+            "merged" if pr.merged else ("closed" if pr.closed_at else "open")
+        )
 
         if pr.merged_at:
             pr_data["merged_at"] = pr.merged_at.isoformat() + "Z"
@@ -153,22 +155,29 @@ class GitHubTrackingManager:
                     "name": check.name,
                     "status": check.status,
                     "conclusion": check.conclusion,
-                    "started_at": check.started_at.isoformat() + "Z" if check.started_at else None,
-                    "completed_at": check.completed_at.isoformat() + "Z" if check.completed_at else None,
+                    "started_at": (
+                        check.started_at.isoformat() + "Z" if check.started_at else None
+                    ),
+                    "completed_at": (
+                        check.completed_at.isoformat() + "Z"
+                        if check.completed_at
+                        else None
+                    ),
                     "workflow": check.name,
-                    "url": check.html_url
+                    "url": check.html_url,
                 }
 
-                existing = next((r for r in pr_data["ci_runs"] if r.get("run_id") == check.id), None)
+                existing = next(
+                    (r for r in pr_data["ci_runs"] if r.get("run_id") == check.id), None
+                )
                 if existing:
                     existing.update(run_data)
                 else:
                     pr_data["ci_runs"].append(run_data)
 
-                self.state["ci_cd_history"]["ci_runs"].append({
-                    **run_data,
-                    "pr_number": pr_number
-                })
+                self.state["ci_cd_history"]["ci_runs"].append(
+                    {**run_data, "pr_number": pr_number}
+                )
 
             print(f"✅ Synced {len(list(check_runs))} CI runs")
 
@@ -177,8 +186,15 @@ class GitHubTrackingManager:
         except Exception as e:
             print(f"❌ Error syncing CI runs: {e}")
 
-    def capture_copilot_feedback(self, pr_number: int, feedback_type: str, message: str,
-                                  file: str = "", line: int = 0, source: str = "github_copilot"):
+    def capture_copilot_feedback(
+        self,
+        pr_number: int,
+        feedback_type: str,
+        message: str,
+        file: str = "",
+        line: int = 0,
+        source: str = "github_copilot",
+    ):
         """Capture Copilot or GitHub feedback"""
         print(f"\n📝 Capturing {feedback_type} feedback for PR #{pr_number}...")
 
@@ -196,23 +212,25 @@ class GitHubTrackingManager:
             "status": "pending",
             "reviewed_by": "",
             "reviewed_at": "",
-            "implementation_pr": None
+            "implementation_pr": None,
         }
 
         self.state["copilot_feedback_queue"].append(feedback)
 
         pr_key = str(pr_number)
         if pr_key in self.state["pull_requests"]:
-            self.state["pull_requests"][pr_key]["copilot_feedback"].append({
-                "timestamp": feedback["timestamp"],
-                "type": feedback_type,
-                "source": source,
-                "message": message,
-                "file": file,
-                "line": line,
-                "action_taken": False,
-                "action_details": ""
-            })
+            self.state["pull_requests"][pr_key]["copilot_feedback"].append(
+                {
+                    "timestamp": feedback["timestamp"],
+                    "type": feedback_type,
+                    "source": source,
+                    "message": message,
+                    "file": file,
+                    "line": line,
+                    "action_taken": False,
+                    "action_details": "",
+                }
+            )
 
         print(f"✅ Feedback captured: {feedback_id}")
 
@@ -220,8 +238,15 @@ class GitHubTrackingManager:
 
         return feedback_id
 
-    def create_action_item(self, title: str, description: str, priority: str = "medium",
-                          category: str = "general", related_pr: int = None, related_issue: int = None):
+    def create_action_item(
+        self,
+        title: str,
+        description: str,
+        priority: str = "medium",
+        category: str = "general",
+        related_pr: int = None,
+        related_issue: int = None,
+    ):
         """Create an action item"""
         print(f"\n📋 Creating action item: {title}...")
 
@@ -238,7 +263,7 @@ class GitHubTrackingManager:
             "assigned_to": "",
             "related_pr": related_pr,
             "related_issue": related_issue,
-            "category": category
+            "category": category,
         }
 
         self.state["action_items"].append(action)
@@ -265,41 +290,49 @@ class GitHubTrackingManager:
                     check_runs = list(latest_commit.get_check_runs())
 
                     if not check_runs:
-                        opportunities.append({
-                            "timestamp": datetime.utcnow().isoformat() + "Z",
-                            "type": "ci_missing",
-                            "description": "No CI checks found for this PR",
-                            "potential_impact": "Untested code merged to main branch",
-                            "action_item": "Add CI workflow to repository",
-                            "priority": "high"
-                        })
+                        opportunities.append(
+                            {
+                                "timestamp": datetime.utcnow().isoformat() + "Z",
+                                "type": "ci_missing",
+                                "description": "No CI checks found for this PR",
+                                "potential_impact": "Untested code merged to main branch",
+                                "action_item": "Add CI workflow to repository",
+                                "priority": "high",
+                            }
+                        )
 
                     failed_checks = [c for c in check_runs if c.conclusion == "failure"]
                     if failed_checks:
-                        opportunities.append({
-                            "timestamp": datetime.utcnow().isoformat() + "Z",
-                            "type": "ci_failure_merged",
-                            "description": f"PR merged with {len(failed_checks)} failing checks",
-                            "potential_impact": "Failed tests merged to main branch",
-                            "action_item": "Review and fix failing tests, consider branch protection",
-                            "priority": "critical"
-                        })
+                        opportunities.append(
+                            {
+                                "timestamp": datetime.utcnow().isoformat() + "Z",
+                                "type": "ci_failure_merged",
+                                "description": f"PR merged with {len(failed_checks)} failing checks",
+                                "potential_impact": "Failed tests merged to main branch",
+                                "action_item": "Review and fix failing tests, consider branch protection",
+                                "priority": "critical",
+                            }
+                        )
 
                     files = list(pr.get_files())
-                    test_files = [f for f in files if 'test' in f.filename.lower()]
+                    test_files = [f for f in files if "test" in f.filename.lower()]
 
                     if not test_files and len(files) > 0:
-                        opportunities.append({
-                            "timestamp": datetime.utcnow().isoformat() + "Z",
-                            "type": "test_coverage",
-                            "description": "No test files added/modified in PR",
-                            "potential_impact": "Reduced test coverage",
-                            "action_item": "Add tests for new functionality",
-                            "priority": "medium"
-                        })
+                        opportunities.append(
+                            {
+                                "timestamp": datetime.utcnow().isoformat() + "Z",
+                                "type": "test_coverage",
+                                "description": "No test files added/modified in PR",
+                                "potential_impact": "Reduced test coverage",
+                                "action_item": "Add tests for new functionality",
+                                "priority": "medium",
+                            }
+                        )
 
             if opportunities:
-                self.state["ci_cd_history"]["missed_opportunities"].extend(opportunities)
+                self.state["ci_cd_history"]["missed_opportunities"].extend(
+                    opportunities
+                )
                 print(f"⚠️  Found {len(opportunities)} missed opportunities")
                 for opp in opportunities:
                     print(f"   - {opp['type']}: {opp['description']}")
@@ -321,7 +354,7 @@ class GitHubTrackingManager:
             issue = self.repo.create_issue(
                 title=f"[Sub-Issue] {title}",
                 body=body,
-                labels=["sub-issue", "automated"]
+                labels=["sub-issue", "automated"],
             )
 
             parent_key = str(parent_issue)
@@ -339,7 +372,7 @@ class GitHubTrackingManager:
                     "sub_issues": [],
                     "ci_failure": False,
                     "cd_failure": False,
-                    "copilot_suggestion": False
+                    "copilot_suggestion": False,
                 }
 
             self.state["issues"][parent_key]["sub_issues"].append(issue.number)
@@ -357,7 +390,7 @@ class GitHubTrackingManager:
                 "sub_issues": [],
                 "ci_failure": False,
                 "cd_failure": False,
-                "copilot_suggestion": False
+                "copilot_suggestion": False,
             }
 
             print(f"✅ Sub-issue created: #{issue.number}")
@@ -375,7 +408,9 @@ class GitHubTrackingManager:
         print("\n📋 Reviewing Copilot Feedback Queue...")
         print("=" * 60)
 
-        pending = [f for f in self.state["copilot_feedback_queue"] if f["status"] == "pending"]
+        pending = [
+            f for f in self.state["copilot_feedback_queue"] if f["status"] == "pending"
+        ]
 
         if not pending:
             print("✅ No pending feedback items")
@@ -387,7 +422,7 @@ class GitHubTrackingManager:
             print(f"{i}. [{feedback['type'].upper()}] PR #{feedback['pr_number']}")
             print(f"   Source: {feedback['source']}")
             print(f"   Message: {feedback['message']}")
-            if feedback['file']:
+            if feedback["file"]:
                 print(f"   File: {feedback['file']}:{feedback['line']}")
             print(f"   Status: {feedback['status']}")
             print()
@@ -416,10 +451,18 @@ class GitHubTrackingManager:
             print(f"   Total PRs: {len(self.state['pull_requests'])}")
             print(f"   Total Issues: {len(self.state['issues'])}")
             print(f"   CI Runs: {len(self.state['ci_cd_history']['ci_runs'])}")
-            print(f"   CD Deployments: {len(self.state['ci_cd_history']['cd_deployments'])}")
-            print(f"   Missed Opportunities: {len(self.state['ci_cd_history']['missed_opportunities'])}")
-            print(f"   Pending Feedback: {len([f for f in self.state['copilot_feedback_queue'] if f['status'] == 'pending'])}")
-            print(f"   Action Items: {len([a for a in self.state['action_items'] if a['status'] == 'pending'])}")
+            print(
+                f"   CD Deployments: {len(self.state['ci_cd_history']['cd_deployments'])}"
+            )
+            print(
+                f"   Missed Opportunities: {len(self.state['ci_cd_history']['missed_opportunities'])}"
+            )
+            print(
+                f"   Pending Feedback: {len([f for f in self.state['copilot_feedback_queue'] if f['status'] == 'pending'])}"
+            )
+            print(
+                f"   Action Items: {len([a for a in self.state['action_items'] if a['status'] == 'pending'])}"
+            )
 
         print("=" * 60)
 
@@ -434,7 +477,7 @@ def get_github_token():
     except (subprocess.SubprocessError, OSError):
         pass
 
-    token = os.environ.get('GITHUB_TOKEN')
+    token = os.environ.get("GITHUB_TOKEN")
     if token:
         return token, "Environment Variable"
 
@@ -446,14 +489,20 @@ def main():
     import argparse
 
     parser = argparse.ArgumentParser(description="GitHub CI/CD Tracking Manager")
-    parser.add_argument('--pr', type=int, help='PR number to track')
-    parser.add_argument('--sync-pr', type=int, help='Sync PR data from GitHub')
-    parser.add_argument('--sync-ci', type=int, help='Sync CI runs for PR')
-    parser.add_argument('--analyze', type=int, help='Analyze PR for missed opportunities')
-    parser.add_argument('--report', action='store_true', help='Generate tracking report')
-    parser.add_argument('--review-feedback', action='store_true', help='Review pending feedback')
-    parser.add_argument('--repo', help='Repository name (owner/repo)')
-    parser.add_argument('--token', help='GitHub token')
+    parser.add_argument("--pr", type=int, help="PR number to track")
+    parser.add_argument("--sync-pr", type=int, help="Sync PR data from GitHub")
+    parser.add_argument("--sync-ci", type=int, help="Sync CI runs for PR")
+    parser.add_argument(
+        "--analyze", type=int, help="Analyze PR for missed opportunities"
+    )
+    parser.add_argument(
+        "--report", action="store_true", help="Generate tracking report"
+    )
+    parser.add_argument(
+        "--review-feedback", action="store_true", help="Review pending feedback"
+    )
+    parser.add_argument("--repo", help="Repository name (owner/repo)")
+    parser.add_argument("--token", help="GitHub token")
 
     args = parser.parse_args()
 
@@ -473,14 +522,14 @@ def main():
 
     print(f"✅ Authenticated via: {auth_method}")
 
-    repo_name = args.repo or os.environ.get('GITHUB_REPOSITORY')
+    repo_name = args.repo or os.environ.get("GITHUB_REPOSITORY")
     if not repo_name:
         try:
             result = subprocess.run(['git', 'remote', 'get-url', 'origin'], capture_output=True, text=True)
             if result.returncode == 0:
                 url = result.stdout.strip()
-                if 'github.com' in url:
-                    parts = url.split('github.com')[-1].strip('/:').replace('.git', '')
+                if "github.com" in url:
+                    parts = url.split("github.com")[-1].strip("/:").replace(".git", "")
                     repo_name = parts
         except (subprocess.SubprocessError, OSError):
             pass
@@ -508,9 +557,11 @@ def main():
     if args.report:
         manager.generate_report(args.pr)
 
-    if not any([args.sync_pr, args.sync_ci, args.analyze, args.review_feedback, args.report]):
+    if not any(
+        [args.sync_pr, args.sync_ci, args.analyze, args.review_feedback, args.report]
+    ):
         print("No action specified. Use --help for options.")
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()

@@ -22,10 +22,10 @@ jobs:
         with:
           ref: ${{ github.event.pull_request.head.sha || github.sha }}
           persist-credentials: false
-      - name: Setup Python 3.12
+      - name: Setup Python 3.14
         uses: actions/setup-python@v7
         with:
-          python-version: '3.12'
+          python-version: '3.14'
       - name: Install coverage only
         run: python -m pip install 'coverage>=7.7,<8'
       - name: Test control and measure native branch coverage
@@ -63,7 +63,7 @@ jobs:
           if-no-files-found: warn
 
   n13-four-source-canary:
-    name: N13 four-source branch canary Python 3.12
+    name: N13 four-source branch canary Python 3.13
     runs-on: ubuntu-latest
     steps:
       - name: Checkout exact PR head
@@ -82,10 +82,10 @@ jobs:
           test "$(git hash-object DMAIC_V3/phases/phase8_todo_management.py)" = e9e4edd4c2b5b23a850892efb40b0c256a9ce490
           test "$(git hash-object DMAIC_V3/debug_pipeline.py)" = 730cab72408ac473fb89123d9d76bb7a2edb075e
           test "$(git hash-object cicd_github_orchestrator.py)" = 2e0f80b8f476d6f4eab05defb52aae2f77e30c61
-      - name: Setup Python 3.12
+      - name: Setup Python 3.13
         uses: actions/setup-python@v7
         with:
-          python-version: '3.12'
+          python-version: '3.13'
       - name: Install narrow coverage and YAML tools
         run: python -m pip install --disable-pip-version-check 'coverage==7.16.2' 'PyYAML==6.0.2'
       - name: Run old and new tests in one branch-instrumented cohort

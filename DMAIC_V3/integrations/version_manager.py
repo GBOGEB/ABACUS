@@ -343,7 +343,7 @@ class VersionManager:
         with open(changelog_path, "w", encoding="utf-8") as f:
             f.write(new_content)
 
-        print(f"[OK] Updated CHANGELOG.md")
+        print("[OK] Updated CHANGELOG.md")
 
     def print_status(self) -> None:
         current = self.get_current_version()

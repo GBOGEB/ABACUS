@@ -20,7 +20,7 @@ on:
           - production
 
 env:
-  PYTHON_VERSION: '3.11'
+  PYTHON_VERSION: '3.14'
   DMAIC_ROOT: '13_CORE_SYSTEMS/DMAIC'
 
 jobs:
