@@ -21,7 +21,7 @@ from integration_DOW_KEB_MASTER.dow_keb_master_orchestrator import (
     DOWKEBMasterOrchestrator,
     DOWPhase,
     KEBArchitecture,
-    MasterDocType
+    MasterDocType,
 )
 
 
@@ -45,8 +45,7 @@ class TestDOWKEBMasterOrchestrator:
     @pytest.fixture
     def orchestrator(self, temp_workspace, mock_master_doc):
         return DOWKEBMasterOrchestrator(
-            workspace_root=temp_workspace,
-            master_doc_path=mock_master_doc
+            workspace_root=temp_workspace, master_doc_path=mock_master_doc
         )
 
     def test_initialization(self, orchestrator, temp_workspace, mock_master_doc):
@@ -76,7 +75,7 @@ class TestDOWKEBMasterOrchestrator:
         assert KEBArchitecture.EXEC_TIER.value in keb_baseline["architecture_tiers"]
         assert KEBArchitecture.DATA_TIER.value in keb_baseline["architecture_tiers"]
 
-    @patch('integration_DOW_KEB_MASTER.dow_keb_master_orchestrator.Document')
+    @patch("integration_DOW_KEB_MASTER.dow_keb_master_orchestrator.Document")
     def test_parse_master_document(self, mock_doc_class, orchestrator, mock_master_doc):
         mock_doc = MagicMock()
         mock_doc.paragraphs = []
@@ -123,7 +122,9 @@ class TestDOWKEBMasterOrchestrator:
     def test_execute_dow_phases(self, orchestrator):
         orchestrator.initialize_dow_framework()
         orchestrator.initialize_keb_baseline()
-        orchestrator.state["master_doc_index"] = {"content": {"headings": [], "requirements": []}}
+        orchestrator.state["master_doc_index"] = {
+            "content": {"headings": [], "requirements": []}
+        }
 
         phase_results = orchestrator.execute_dow_phases()
 
@@ -155,7 +156,10 @@ class TestDOWKEBMasterOrchestrator:
         assert result["status"] == "completed"
         assert "ranked_components" in result
         assert len(result["ranked_components"]) > 0
-        assert result["ranked_components"][0]["score"] >= result["ranked_components"][-1]["score"]
+        assert (
+            result["ranked_components"][0]["score"]
+            >= result["ranked_components"][-1]["score"]
+        )
 
     def test_integrate_kaezer_hpc(self, orchestrator):
         kaezer_integration = orchestrator.integrate_kaezer_hpc()
@@ -171,7 +175,12 @@ class TestDOWKEBMasterOrchestrator:
             "document_name": "test.docx",
             "document_type": "GENERIC",
             "statistics": {"paragraphs": 10, "tables": 2},
-            "content": {"headings": [], "requirements": [], "tables": [], "golden_thread": []}
+            "content": {
+                "headings": [],
+                "requirements": [],
+                "tables": [],
+                "golden_thread": [],
+            },
         }
         orchestrator.phase_results = {DOWPhase.INIT.value: {"status": "completed"}}
 
@@ -189,7 +198,7 @@ class TestDOWKEBMasterOrchestrator:
         assert "| key1 | value1 |" in table
         assert "| key2 | value2 |" in table
 
-    @patch('integration_DOW_KEB_MASTER.dow_keb_master_orchestrator.Document')
+    @patch("integration_DOW_KEB_MASTER.dow_keb_master_orchestrator.Document")
     def test_full_integration_workflow(self, mock_doc_class, orchestrator):
         mock_doc = MagicMock()
         mock_doc.paragraphs = []
@@ -235,6 +244,9 @@ class TestKEBArchitectureEnums:
 class TestMasterDocTypeEnums:
 
     def test_master_doc_type_enum_values(self):
-        assert MasterDocType.ADDENDUM_II_CRYOPLANT.value == "Addendum II - Cryoplant Technical Requirements"
+        assert (
+            MasterDocType.ADDENDUM_II_CRYOPLANT.value
+            == "Addendum II - Cryoplant Technical Requirements"
+        )
         assert MasterDocType.KAEZER_HPC.value == "KAEZER HPC Integration"
         assert MasterDocType.GENERIC.value == "Generic Master Document"
