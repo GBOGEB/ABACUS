@@ -27,10 +27,10 @@ import yaml
 # ============================================================================
 # Constants
 # ============================================================================
-LAMBDA_POINT_K: float = 2.1768          # He-4 superfluid transition
-CRITICAL_TEMP_K: float = 5.1953         # He-4 critical temperature
-CRITICAL_PRESS_BAR: float = 2.2746      # He-4 critical pressure
-R_SPECIFIC_HE: float = 2077.22         # J/(kg·K) — specific gas constant He-4
+LAMBDA_POINT_K: float = 2.1768  # He-4 superfluid transition
+CRITICAL_TEMP_K: float = 5.1953  # He-4 critical temperature
+CRITICAL_PRESS_BAR: float = 2.2746  # He-4 critical pressure
+R_SPECIFIC_HE: float = 2077.22  # J/(kg·K) — specific gas constant He-4
 
 
 # ============================================================================
@@ -38,35 +38,35 @@ R_SPECIFIC_HE: float = 2077.22         # J/(kg·K) — specific gas constant He-
 # ============================================================================
 # Enthalpy h(T) in J/g — fitted to REFPROP v10 isobaric data at ~1.2 bar
 ENTHALPY_COEFFS: list[float] = [
-    -1.48593e+00,   # a0
-     2.09441e+00,   # a1 · T
-    -6.31820e-01,   # a2 · T²
-     3.82714e-01,   # a3 · T³
-    -7.19620e-02,   # a4 · T⁴
-     6.84100e-03,   # a5 · T⁵
-    -2.55000e-04,   # a6 · T⁶
+    -1.48593e00,  # a0
+    2.09441e00,  # a1 · T
+    -6.31820e-01,  # a2 · T²
+    3.82714e-01,  # a3 · T³
+    -7.19620e-02,  # a4 · T⁴
+    6.84100e-03,  # a5 · T⁵
+    -2.55000e-04,  # a6 · T⁶
 ]
 
 # Density ρ(T) in kg/m³ — saturated liquid at ~1.2 bar
 DENSITY_COEFFS: list[float] = [
-     1.46200e+02,   # a0
-     1.23800e+01,   # a1 · T
-    -1.57600e+01,   # a2 · T²
-     5.42300e+00,   # a3 · T³
-    -9.31000e-01,   # a4 · T⁴
-     7.80000e-02,   # a5 · T⁵
-    -2.50000e-03,   # a6 · T⁶
+    1.46200e02,  # a0
+    1.23800e01,  # a1 · T
+    -1.57600e01,  # a2 · T²
+    5.42300e00,  # a3 · T³
+    -9.31000e-01,  # a4 · T⁴
+    7.80000e-02,  # a5 · T⁵
+    -2.50000e-03,  # a6 · T⁶
 ]
 
 # Dynamic viscosity μ(T) in μPa·s — He-I regime (T > λ)
 VISCOSITY_COEFFS: list[float] = [
-     3.67000e+00,
-    -1.14200e+00,
-     2.31000e-01,
+    3.67000e00,
+    -1.14200e00,
+    2.31000e-01,
     -2.52000e-02,
-     1.50000e-03,
+    1.50000e-03,
     -4.60000e-05,
-     5.70000e-07,
+    5.70000e-07,
 ]
 
 
@@ -136,6 +136,7 @@ class HeliumPropertyEngine:
 @dataclass
 class MassBalanceResult:
     """Structured result of a mass-balance check."""
+
     Q_static_W: float
     Q_dynamic_W: float
     Q_total_W: float
