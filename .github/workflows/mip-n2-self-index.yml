@@ -27,7 +27,7 @@ jobs:
     runs-on: ubuntu-latest
     env:
       EXPECTED_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
-      CODEX_KIT_REF: bfedc2754ce4b5ab8ca87f75f3761736d5840fd3  # kit 1.2.0
+      CODEX_KIT_REF: 00cbfe852eb45237c8f8c6509575fdae0845507f  # kit 1.2.1
     steps:
       - name: Check out exact evaluated SHA
         uses: actions/checkout@v7

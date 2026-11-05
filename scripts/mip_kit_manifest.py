@@ -29,7 +29,7 @@ ROOT = Path(__file__).resolve().parents[1]
 MANIFEST = ROOT / "MIP" / "kit" / "KIT_MANIFEST.json"
 
 KIT_NAME = "mip-repo-self-index"
-KIT_VERSION = "1.2.0"
+KIT_VERSION = "1.2.1"
 KIT_SOURCE = "GBOGEB/CODEX"
 KIT_FILES = (
     ".codex/skills/mip-repo-self-index/SKILL.md",
