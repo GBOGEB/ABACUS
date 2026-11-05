@@ -54,7 +54,13 @@ DOC_DIR = ROOT / "docs"
 DATA_DIR = ROOT / "docs" / "visualizations_v3" / "data"
 TABLES_DIR = ROOT / "outputs" / "tables_v31"
 
-for d in [VIZ_DIR, DATA_DIR, TABLES_DIR, DOC_DIR / "liquid_he", DOC_DIR / "compressors"]:
+for d in [
+    VIZ_DIR,
+    DATA_DIR,
+    TABLES_DIR,
+    DOC_DIR / "liquid_he",
+    DOC_DIR / "compressors",
+]:
     d.mkdir(parents=True, exist_ok=True)
 
 
@@ -83,9 +89,12 @@ def _save_chart(fig, name: str, title: str = ""):
     """Save Plotly figure as standalone HTML."""
     fig.update_layout(**PLOTLY_LAYOUT)
     path = VIZ_DIR / f"{name}.html"
-    fig.write_html(str(path), include_plotlyjs="cdn",
-                   full_html=True,
-                   config={"displayModeBar": True, "responsive": True})
+    fig.write_html(
+        str(path),
+        include_plotlyjs="cdn",
+        full_html=True,
+        config={"displayModeBar": True, "responsive": True},
+    )
     print(f"  ✓ {path.relative_to(ROOT)}")
     return path
 
@@ -93,6 +102,7 @@ def _save_chart(fig, name: str, title: str = ""):
 # ══════════════════════════════════════════════════════════════════
 # CHART 1: Liquid Inventory Depletion Over Time
 # ══════════════════════════════════════════════════════════════════
+
 
 def chart_liquid_inventory_depletion():
     """Plotly line chart: liquid He level vs time for multiple leak rates."""
@@ -122,15 +132,24 @@ def chart_liquid_inventory_depletion():
         else:
             label += " (>100yr to refill)"
 
-        fig.add_trace(go.Scatter(
-            x=df["day"], y=pct, mode="lines", name=label,
-            line=dict(color=colors_line[i], width=2.5),
-        ))
+        fig.add_trace(
+            go.Scatter(
+                x=df["day"],
+                y=pct,
+                mode="lines",
+                name=label,
+                line=dict(color=colors_line[i], width=2.5),
+            )
+        )
 
     # Threshold line
-    fig.add_hline(y=20, line_dash="dash", line_color="#e53e3e",
-                  annotation_text="20% — Min Operating Level",
-                  annotation_position="top right")
+    fig.add_hline(
+        y=20,
+        line_dash="dash",
+        line_color="#e53e3e",
+        annotation_text="20% — Min Operating Level",
+        annotation_position="top right",
+    )
 
     fig.update_layout(
         title="Liquid He Inventory Depletion — WSH 5,000 L Vessel",
@@ -140,14 +159,14 @@ def chart_liquid_inventory_depletion():
         xaxis=dict(range=[0, duration]),
     )
 
-    _save_chart(fig, "liquid_inventory_depletion",
-                "Liquid He Inventory Depletion")
+    _save_chart(fig, "liquid_inventory_depletion", "Liquid He Inventory Depletion")
     return fig
 
 
 # ══════════════════════════════════════════════════════════════════
 # CHART 2: HP Compressor Availability Comparison
 # ══════════════════════════════════════════════════════════════════
+
 
 def chart_compressor_availability():
     """Bar chart: system availability comparison."""
@@ -156,21 +175,36 @@ def chart_compressor_availability():
     # Use "nines" for log-friendly display
     fig = go.Figure()
 
-    fig.add_trace(go.Bar(
-        x=df["name"],
-        y=df["A_system_nines"],
-        marker_color=[COLORS["info"], COLORS["accent"],
-                      COLORS["success"], COLORS["primary"]],
-        text=[f'{a:.4f}%' for a in df["A_system_pct"]],
-        textposition="outside",
-    ))
+    fig.add_trace(
+        go.Bar(
+            x=df["name"],
+            y=df["A_system_nines"],
+            marker_color=[
+                COLORS["info"],
+                COLORS["accent"],
+                COLORS["success"],
+                COLORS["primary"],
+            ],
+            text=[f"{a:.4f}%" for a in df["A_system_pct"]],
+            textposition="outside",
+        )
+    )
 
     # Reference lines
-    for nines, label in [(2, "99% (2 nines)"), (3, "99.9% (3 nines)"),
-                          (4, "99.99% (4 nines)"), (5, "99.999% (5 nines)")]:
-        fig.add_hline(y=nines, line_dash="dot", line_color="#a0aec0",
-                      annotation_text=label, annotation_position="top left",
-                      annotation_font_size=10)
+    for nines, label in [
+        (2, "99% (2 nines)"),
+        (3, "99.9% (3 nines)"),
+        (4, "99.99% (4 nines)"),
+        (5, "99.999% (5 nines)"),
+    ]:
+        fig.add_hline(
+            y=nines,
+            line_dash="dot",
+            line_color="#a0aec0",
+            annotation_text=label,
+            annotation_position="top left",
+            annotation_font_size=10,
+        )
 
     fig.update_layout(
         title="HP Compressor System Availability Comparison",
@@ -180,14 +214,14 @@ def chart_compressor_availability():
         showlegend=False,
     )
 
-    _save_chart(fig, "compressor_availability_comparison",
-                "HP Compressor Availability")
+    _save_chart(fig, "compressor_availability_comparison", "HP Compressor Availability")
     return fig
 
 
 # ══════════════════════════════════════════════════════════════════
 # CHART 3: Boil-off Rate vs Leak Rate
 # ══════════════════════════════════════════════════════════════════
+
 
 def chart_boiloff_vs_leakrate():
     """Scatter plot: leak rate → liquid boil-off & cost."""
@@ -208,20 +242,32 @@ def chart_boiloff_vs_leakrate():
             losses_L_day.append(r["liquid_loss_L_day"])
             costs_eur_day.append(r["cost_eur_day"])
 
-        fig.add_trace(go.Scatter(
-            x=leak_rates, y=losses_L_day,
-            mode="lines", name=f"Boil-off ({label})",
-            line=dict(color=color, width=2),
-        ), secondary_y=False)
+        fig.add_trace(
+            go.Scatter(
+                x=leak_rates,
+                y=losses_L_day,
+                mode="lines",
+                name=f"Boil-off ({label})",
+                line=dict(color=color, width=2),
+            ),
+            secondary_y=False,
+        )
 
-        fig.add_trace(go.Scatter(
-            x=leak_rates, y=costs_eur_day,
-            mode="lines", name=f"Cost ({label})",
-            line=dict(color=color, width=1.5, dash="dot"),
-        ), secondary_y=True)
+        fig.add_trace(
+            go.Scatter(
+                x=leak_rates,
+                y=costs_eur_day,
+                mode="lines",
+                name=f"Cost ({label})",
+                line=dict(color=color, width=1.5, dash="dot"),
+            ),
+            secondary_y=True,
+        )
 
     fig.update_xaxes(type="log", title_text="Leak Rate (mbar·L/s)")
-    fig.update_yaxes(type="log", title_text="Liquid Boil-off (L/day)", secondary_y=False)
+    fig.update_yaxes(
+        type="log", title_text="Liquid Boil-off (L/day)", secondary_y=False
+    )
     fig.update_yaxes(type="log", title_text="Cost (€/day @ €120/kg)", secondary_y=True)
 
     fig.update_layout(
@@ -236,6 +282,7 @@ def chart_boiloff_vs_leakrate():
 # CHART 4: WCS.HP Reliability Block Diagram
 # ══════════════════════════════════════════════════════════════════
 
+
 def chart_wcs_hp_architecture():
     """Visual flowchart of HP supply architecture using Plotly shapes."""
     fig = go.Figure()
@@ -244,83 +291,181 @@ def chart_wcs_hp_architecture():
     W, H = 1000, 600
 
     # --- Draw compressor blocks ---
-    comp_names = ["Compressor A\n(Running)", "Compressor B\n(Running)", "Compressor C\n(Standby)"]
+    comp_names = [
+        "Compressor A\n(Running)",
+        "Compressor B\n(Running)",
+        "Compressor C\n(Standby)",
+    ]
     comp_colors = ["#38a169", "#38a169", "#d69e2e"]
     for i, (name, color) in enumerate(zip(comp_names, comp_colors)):
         x0 = 50
         y0 = 80 + i * 160
-        fig.add_shape(type="rect", x0=x0, y0=y0, x1=x0+180, y1=y0+100,
-                      fillcolor=color, line_color="#2d3748", line_width=2,
-                      opacity=0.85)
-        fig.add_annotation(x=x0+90, y=y0+50, text=name, showarrow=False,
-                           font=dict(color="white", size=11, family="Inter"))
+        fig.add_shape(
+            type="rect",
+            x0=x0,
+            y0=y0,
+            x1=x0 + 180,
+            y1=y0 + 100,
+            fillcolor=color,
+            line_color="#2d3748",
+            line_width=2,
+            opacity=0.85,
+        )
+        fig.add_annotation(
+            x=x0 + 90,
+            y=y0 + 50,
+            text=name,
+            showarrow=False,
+            font=dict(color="white", size=11, family="Inter"),
+        )
 
     # --- Check valves ---
     for i in range(3):
         x_cv = 260
         y_cv = 120 + i * 160
-        fig.add_shape(type="circle", x0=x_cv, y0=y_cv-15, x1=x_cv+30, y1=y_cv+15,
-                      fillcolor="#bee3f8", line_color="#2a4365")
-        fig.add_annotation(x=x_cv+15, y=y_cv, text="CV", showarrow=False,
-                           font=dict(size=9))
+        fig.add_shape(
+            type="circle",
+            x0=x_cv,
+            y0=y_cv - 15,
+            x1=x_cv + 30,
+            y1=y_cv + 15,
+            fillcolor="#bee3f8",
+            line_color="#2a4365",
+        )
+        fig.add_annotation(
+            x=x_cv + 15, y=y_cv, text="CV", showarrow=False, font=dict(size=9)
+        )
 
     # --- HP Header (main bus) ---
-    fig.add_shape(type="rect", x0=330, y0=50, x1=360, y1=530,
-                  fillcolor="#2b6cb0", line_color="#1a365d", line_width=3)
-    fig.add_annotation(x=345, y=30, text="HP Header\n14 barg",
-                       showarrow=False, font=dict(size=12, color="#1a365d"))
+    fig.add_shape(
+        type="rect",
+        x0=330,
+        y0=50,
+        x1=360,
+        y1=530,
+        fillcolor="#2b6cb0",
+        line_color="#1a365d",
+        line_width=3,
+    )
+    fig.add_annotation(
+        x=345,
+        y=30,
+        text="HP Header\n14 barg",
+        showarrow=False,
+        font=dict(size=12, color="#1a365d"),
+    )
 
     # --- Connection lines ---
     for i in range(3):
         y_line = 130 + i * 160
-        fig.add_shape(type="line", x0=230, y0=y_line, x1=260, y1=y_line,
-                      line_color="#4a5568", line_width=2)
-        fig.add_shape(type="line", x0=290, y0=y_line, x1=330, y1=y_line,
-                      line_color="#4a5568", line_width=2)
+        fig.add_shape(
+            type="line",
+            x0=230,
+            y0=y_line,
+            x1=260,
+            y1=y_line,
+            line_color="#4a5568",
+            line_width=2,
+        )
+        fig.add_shape(
+            type="line",
+            x0=290,
+            y0=y_line,
+            x1=330,
+            y1=y_line,
+            line_color="#4a5568",
+            line_width=2,
+        )
 
     # --- Main supply branch ---
-    fig.add_shape(type="line", x0=360, y0=150, x1=450, y1=150,
-                  line_color="#2b6cb0", line_width=3)
-    fig.add_shape(type="rect", x0=450, y0=110, x1=620, y1=190,
-                  fillcolor="#ebf8ff", line_color="#2b6cb0", line_width=2)
-    fig.add_annotation(x=535, y=150, text="Main Supply\nQVB / WSH / Beam\n(70% leak budget)",
-                       showarrow=False, font=dict(size=10))
+    fig.add_shape(
+        type="line", x0=360, y0=150, x1=450, y1=150, line_color="#2b6cb0", line_width=3
+    )
+    fig.add_shape(
+        type="rect",
+        x0=450,
+        y0=110,
+        x1=620,
+        y1=190,
+        fillcolor="#ebf8ff",
+        line_color="#2b6cb0",
+        line_width=2,
+    )
+    fig.add_annotation(
+        x=535,
+        y=150,
+        text="Main Supply\nQVB / WSH / Beam\n(70% leak budget)",
+        showarrow=False,
+        font=dict(size=10),
+    )
 
     # --- Sidestream branch ---
-    fig.add_shape(type="line", x0=360, y0=350, x1=420, y1=350,
-                  line_color="#d69e2e", line_width=2)
+    fig.add_shape(
+        type="line", x0=360, y0=350, x1=420, y1=350, line_color="#d69e2e", line_width=2
+    )
     # Isolation valve symbol (use path for diamond shape)
-    fig.add_shape(type="path",
-                  path="M 440 330 L 460 350 L 440 370 L 420 350 Z",
-                  fillcolor="#fefcbf", line_color="#d69e2e", line_width=2)
-    fig.add_annotation(x=440, y=350, text="IV", showarrow=False,
-                       font=dict(size=10))
-    fig.add_shape(type="line", x0=460, y0=350, x1=500, y1=350,
-                  line_color="#d69e2e", line_width=2)
-    fig.add_shape(type="rect", x0=500, y0=310, x1=670, y1=390,
-                  fillcolor="#fefcbf", line_color="#d69e2e", line_width=2)
-    fig.add_annotation(x=585, y=350,
-                       text="Sidestreams\nRecovery / Purif / Research\n(20% leak budget)",
-                       showarrow=False, font=dict(size=10))
+    fig.add_shape(
+        type="path",
+        path="M 440 330 L 460 350 L 440 370 L 420 350 Z",
+        fillcolor="#fefcbf",
+        line_color="#d69e2e",
+        line_width=2,
+    )
+    fig.add_annotation(x=440, y=350, text="IV", showarrow=False, font=dict(size=10))
+    fig.add_shape(
+        type="line", x0=460, y0=350, x1=500, y1=350, line_color="#d69e2e", line_width=2
+    )
+    fig.add_shape(
+        type="rect",
+        x0=500,
+        y0=310,
+        x1=670,
+        y1=390,
+        fillcolor="#fefcbf",
+        line_color="#d69e2e",
+        line_width=2,
+    )
+    fig.add_annotation(
+        x=585,
+        y=350,
+        text="Sidestreams\nRecovery / Purif / Research\n(20% leak budget)",
+        showarrow=False,
+        font=dict(size=10),
+    )
 
     # --- Pressure transmitters ---
-    fig.add_annotation(x=345, y=560, text="PT-101 / PT-102\n(redundant)",
-                       showarrow=True, ay=-30, font=dict(size=9, color="#718096"))
+    fig.add_annotation(
+        x=345,
+        y=560,
+        text="PT-101 / PT-102\n(redundant)",
+        showarrow=True,
+        ay=-30,
+        font=dict(size=9, color="#718096"),
+    )
 
     # --- Legend ---
-    fig.add_annotation(x=800, y=100, text="<b>WCS.HP Protection Logic</b><br>"
-                       "P < 13.5 barg → Close sidestream IV<br>"
-                       "P < 13.0 barg → Alarm + start standby<br>"
-                       "2 failed → Beam to 50%",
-                       showarrow=False, font=dict(size=10),
-                       align="left", bordercolor="#e2e8f0", borderwidth=1,
-                       bgcolor="white", borderpad=8)
+    fig.add_annotation(
+        x=800,
+        y=100,
+        text="<b>WCS.HP Protection Logic</b><br>"
+        "P < 13.5 barg → Close sidestream IV<br>"
+        "P < 13.0 barg → Alarm + start standby<br>"
+        "2 failed → Beam to 50%",
+        showarrow=False,
+        font=dict(size=10),
+        align="left",
+        bordercolor="#e2e8f0",
+        borderwidth=1,
+        bgcolor="white",
+        borderpad=8,
+    )
 
     fig.update_layout(
         title="WCS.HP Supply Architecture — Reliability Block Diagram",
         xaxis=dict(range=[0, W], visible=False),
         yaxis=dict(range=[H, 0], visible=False, scaleanchor="x"),
-        width=W, height=H,
+        width=W,
+        height=H,
         showlegend=False,
     )
 
@@ -332,30 +477,37 @@ def chart_wcs_hp_architecture():
 # CHART 5: Redundancy Cost-Benefit Analysis
 # ══════════════════════════════════════════════════════════════════
 
+
 def chart_redundancy_cost_benefit():
     """Scatter plot: capital cost vs availability, bubble = energy cost."""
     df = build_comparison_table()
 
     fig = go.Figure()
 
-    fig.add_trace(go.Scatter(
-        x=df["total_capex_eur"] / 1000,
-        y=df["A_system_nines"],
-        mode="markers+text",
-        text=df["name"],
-        textposition="top center",
-        marker=dict(
-            size=df["annual_energy_eur"] / 8000,
-            sizemin=10,
-            color=[COLORS["info"], COLORS["accent"],
-                   COLORS["success"], COLORS["primary"]],
-            line=dict(width=2, color="#2d3748"),
-        ),
-    ))
+    fig.add_trace(
+        go.Scatter(
+            x=df["total_capex_eur"] / 1000,
+            y=df["A_system_nines"],
+            mode="markers+text",
+            text=df["name"],
+            textposition="top center",
+            marker=dict(
+                size=df["annual_energy_eur"] / 8000,
+                sizemin=10,
+                color=[
+                    COLORS["info"],
+                    COLORS["accent"],
+                    COLORS["success"],
+                    COLORS["primary"],
+                ],
+                line=dict(width=2, color="#2d3748"),
+            ),
+        )
+    )
 
     fig.update_layout(
         title="Redundancy Cost-Benefit — Capital vs Availability<br>"
-              "<sub>Bubble size = annual energy cost</sub>",
+        "<sub>Bubble size = annual energy cost</sub>",
         xaxis_title="Total Capital Cost (k€)",
         yaxis_title="Availability (nines)",
     )
@@ -368,28 +520,34 @@ def chart_redundancy_cost_benefit():
 # CHART 6: VFD Energy Savings
 # ══════════════════════════════════════════════════════════════════
 
+
 def chart_vfd_energy_savings():
     """Bar chart: fixed-speed vs VFD power at various loads."""
     from src.config_loader import cfg as _cfg
-    _pkg_kw = _cfg.get('compressor_specifications.fsd575.package_power_kW', 348.54)
+
+    _pkg_kw = _cfg.get("compressor_specifications.fsd575.package_power_kW", 348.54)
     vfd_df = build_vfd_savings_table(full_load_kw=_pkg_kw)
 
     fig = go.Figure()
 
-    fig.add_trace(go.Bar(
-        x=vfd_df["load_pct"],
-        y=vfd_df["power_fixed_kw"],
-        name="Fixed Speed",
-        marker_color="#e53e3e",
-        opacity=0.7,
-    ))
-    fig.add_trace(go.Bar(
-        x=vfd_df["load_pct"],
-        y=vfd_df["power_vfd_kw"],
-        name="With VFD",
-        marker_color="#38a169",
-        opacity=0.85,
-    ))
+    fig.add_trace(
+        go.Bar(
+            x=vfd_df["load_pct"],
+            y=vfd_df["power_fixed_kw"],
+            name="Fixed Speed",
+            marker_color="#e53e3e",
+            opacity=0.7,
+        )
+    )
+    fig.add_trace(
+        go.Bar(
+            x=vfd_df["load_pct"],
+            y=vfd_df["power_vfd_kw"],
+            name="With VFD",
+            marker_color="#38a169",
+            opacity=0.85,
+        )
+    )
 
     # Add savings annotations
     for _, row in vfd_df.iterrows():
@@ -417,6 +575,7 @@ def chart_vfd_energy_savings():
 # DATA EXPORTS
 # ══════════════════════════════════════════════════════════════════
 
+
 def export_data():
     """Export calculation tables to CSV/JSON."""
     # Liquid loss table
@@ -430,7 +589,9 @@ def export_data():
     # Compressor comparison
     comp_df = build_comparison_table()
     comp_df.to_csv(TABLES_DIR / "compressor_comparison.csv", index=False)
-    comp_df.to_json(TABLES_DIR / "compressor_comparison.json", orient="records", indent=2)
+    comp_df.to_json(
+        TABLES_DIR / "compressor_comparison.json", orient="records", indent=2
+    )
     comp_df.to_csv(DATA_DIR / "compressor_comparison.csv", index=False)
 
     # VFD savings
@@ -457,12 +618,15 @@ def export_data():
     dep_df = inventory_depletion_timeseries()
     dep_df.to_csv(DATA_DIR / "inventory_depletion.csv", index=False)
 
-    print(f"  ✓ Data exported to {TABLES_DIR.relative_to(ROOT)} and {DATA_DIR.relative_to(ROOT)}")
+    print(
+        f"  ✓ Data exported to {TABLES_DIR.relative_to(ROOT)} and {DATA_DIR.relative_to(ROOT)}"
+    )
 
 
 # ══════════════════════════════════════════════════════════════════
 # DOCUMENTATION PAGES
 # ══════════════════════════════════════════════════════════════════
+
 
 def _page_template(title: str, body: str) -> str:
     """Standard HTML page wrapper."""
@@ -544,7 +708,7 @@ def build_liquid_operations_guide():
     threshold_rows = ""
     for q in [1e-9, 1e-8, 1e-5, 1e-4]:
         days = time_to_threshold(5000, q, 0.20)
-        if days > 365*1000:
+        if days > 365 * 1000:
             t_str = f">{days/365:.0e} years"
         elif days > 365:
             t_str = f"{days/365:.1f} years"
@@ -740,12 +904,22 @@ def build_wcs_hp_protection():
 
     int_rows = ""
     for _, r in int_df.iterrows():
-        badge_cls = {"WARNING": "review", "ALARM": "risk", "AUTO": "accept", "TRIP": "risk"}.get(r["priority"], "info")
+        badge_cls = {
+            "WARNING": "review",
+            "ALARM": "risk",
+            "AUTO": "accept",
+            "TRIP": "risk",
+        }.get(r["priority"], "info")
         int_rows += f"<tr><td>{r['condition']}</td><td>{r['setpoint']}</td><td>{r['action']}</td><td><span class='badge badge-{badge_cls}'>{r['priority']}</span></td></tr>\n"
 
     scn_rows = ""
     for _, r in scn_df.iterrows():
-        badge_cls = {"NOMINAL": "accept", "WARNING": "review", "ALARM": "risk", "TRIP": "risk"}.get(r["status"], "info")
+        badge_cls = {
+            "NOMINAL": "accept",
+            "WARNING": "review",
+            "ALARM": "risk",
+            "TRIP": "risk",
+        }.get(r["status"], "info")
         scn_rows += f"""<tr>
   <td><strong>{r['scenario']}</strong></td>
   <td>{r['compressors_running']}/{r['compressors_available']}</td>
@@ -828,6 +1002,7 @@ def build_wcs_hp_protection():
 # MASTER NAVIGATOR — index_v3_1.html (40 slides)
 # ══════════════════════════════════════════════════════════════════
 
+
 def build_navigator():
     """Build the 40-slide master navigator."""
     # Build slide content
@@ -841,7 +1016,7 @@ def build_navigator():
     # Build slide divs
     slide_html = ""
     for i, s in enumerate(slides):
-        active = ' active' if i == 0 else ''
+        active = " active" if i == 0 else ""
         slide_html += f'<div class="slide{active}" data-title="{s["title"]}">\n{s["content"]}\n</div>\n\n'
 
     # Section buttons
@@ -853,7 +1028,9 @@ def build_navigator():
 
     section_btns = ""
     for sec, idx in sections.items():
-        section_btns += f'<button class="nav-btn" onclick="goSlide({idx})">{sec}</button>\n'
+        section_btns += (
+            f'<button class="nav-btn" onclick="goSlide({idx})">{sec}</button>\n'
+        )
 
     html = f"""<!DOCTYPE html>
 <html lang="en">
@@ -992,7 +1169,11 @@ def _build_all_slides():
     slides = []
 
     # ── Section 1: Overview (slides 1-4) ──
-    slides.append({"title": "v3.1.0 Overview", "section": "Overview", "content": """
+    slides.append(
+        {
+            "title": "v3.1.0 Overview",
+            "section": "Overview",
+            "content": """
 <h2>OUTPUT_3.1.0 — Liquid Helium Operations & HP Compressor Redundancy</h2>
 <div class="kpi-row">
   <div class="kpi"><div class="value">v3.1.0</div><div class="label">Version</div></div>
@@ -1014,9 +1195,15 @@ def _build_all_slides():
   <a href="compressors/HP_Redundancy_Analysis.html">📄 HP Redundancy Analysis</a> ·
   <a href="compressors/WCS_HP_Protection.html">📄 WCS.HP Protection</a>
 </p>
-"""})
+""",
+        }
+    )
 
-    slides.append({"title": "System Architecture Overview", "section": "Overview", "content": """
+    slides.append(
+        {
+            "title": "System Architecture Overview",
+            "section": "Overview",
+            "content": """
 <h2>QPLANT Helium System Architecture</h2>
 <h3>Primary Mode: Liquid Helium at 4K</h3>
 <p>The QPLANT cryogenic system operates with <strong>liquid helium</strong> at 4K as the primary coolant.
@@ -1035,9 +1222,15 @@ def _build_all_slides():
   <tr><td>WSH capacity</td><td>5,000 L</td><td>Design basis</td></tr>
   <tr><td>He recovery target</td><td>200 g/s</td><td>RTM-054</td></tr>
 </table>
-"""})
+""",
+        }
+    )
 
-    slides.append({"title": "Deliverables Summary", "section": "Overview", "content": """
+    slides.append(
+        {
+            "title": "Deliverables Summary",
+            "section": "Overview",
+            "content": """
 <h2>v3.1.0 Deliverables</h2>
 <h3>New Files Created</h3>
 <table>
@@ -1058,9 +1251,15 @@ def _build_all_slides():
   <tr><td>Doc</td><td>WCS_HP_Protection.html</td><td>Supply protection analysis</td></tr>
   <tr><td>Nav</td><td>index_v3_1.html</td><td>40-slide master navigator</td></tr>
 </table>
-"""})
+""",
+        }
+    )
 
-    slides.append({"title": "Version History", "section": "Overview", "content": """
+    slides.append(
+        {
+            "title": "Version History",
+            "section": "Overview",
+            "content": """
 <h2>Version History</h2>
 <table>
   <tr><th>Version</th><th>Date</th><th>Description</th></tr>
@@ -1070,10 +1269,16 @@ def _build_all_slides():
   <tr><td><span class="badge badge-accept">v3.0</span></td><td>2026-05</td><td>Standards & statistical framework, PCA, compliance tables</td></tr>
   <tr><td><span class="badge badge-new">v3.1</span></td><td>2026-05</td><td>Liquid He operations, HP compressor redundancy, WCS.HP protection</td></tr>
 </table>
-"""})
+""",
+        }
+    )
 
     # ── Section 2: Liquid Helium Properties (slides 5-10) ──
-    slides.append({"title": "Liquid He Properties", "section": "Liquid He", "content": """
+    slides.append(
+        {
+            "title": "Liquid He Properties",
+            "section": "Liquid He",
+            "content": """
 <h2>Liquid Helium-4 Thermophysical Properties</h2>
 <div class="kpi-row">
   <div class="kpi"><div class="value">4.222 K</div><div class="label">Normal Boiling Point</div></div>
@@ -1094,9 +1299,15 @@ def _build_all_slides():
   <tr><td>5.19</td><td>2.27</td><td>69.64</td><td>69.64</td><td>0</td><td>Critical point</td></tr>
 </table>
 <p><em>Data source: NIST REFPROP He-4. Lambda point (superfluid transition): T_λ = 2.1768 K at SVP.</em></p>
-"""})
+""",
+        }
+    )
 
-    slides.append({"title": "Superfluid He & Phase Diagram", "section": "Liquid He", "content": """
+    slides.append(
+        {
+            "title": "Superfluid He & Phase Diagram",
+            "section": "Liquid He",
+            "content": """
 <h2>Helium Phase Diagram & Superfluid Transition</h2>
 <h3>Unique Properties of He-4</h3>
 <ul>
@@ -1114,9 +1325,15 @@ def _build_all_slides():
   <tr><td>Low viscosity (3.5 μPa·s)</td><td>High mobility through micro-cracks</td></tr>
   <tr><td>Low density (125 kg/m³)</td><td>Large volumes needed for modest mass</td></tr>
 </table>
-"""})
+""",
+        }
+    )
 
-    slides.append({"title": "Leak Rate → Liquid Loss Physics", "section": "Liquid He", "content": """
+    slides.append(
+        {
+            "title": "Leak Rate → Liquid Loss Physics",
+            "section": "Liquid He",
+            "content": """
 <h2>Leak Rate to Liquid Inventory Loss — Physics</h2>
 <h3>Mass Conservation Principle</h3>
 <p>A gas leak from the ullage space above liquid helium causes the liquid to boil off
@@ -1136,14 +1353,20 @@ Liquid volume loss rate:
   V̇_liq = ṁ / ρ_liq    (ρ_liq = 124.96 kg/m³ at NBP)</div>
 <p><strong>Key insight:</strong> Cold leaks (4K) lose more mass per mbar·L/s than warm leaks (300K),
    because n ∝ PV/T — more moles at lower T for same throughput.</p>
-"""})
+""",
+        }
+    )
 
     # Build the leak rate table for slide
     liq_table_rows = ""
     for _, r in liq_df.iterrows():
         liq_table_rows += f"<tr><td>{r['leak_rate_mbar_l_s']:.0e}</td><td>{r['mass_flow_g_year']:.4f}</td><td>{r['liquid_loss_L_year']:.6f}</td><td>€{r['cost_eur_year']:.4f}</td></tr>\n"
 
-    slides.append({"title": "Leak Rate → Liquid Loss Table", "section": "Liquid He", "content": f"""
+    slides.append(
+        {
+            "title": "Leak Rate → Liquid Loss Table",
+            "section": "Liquid He",
+            "content": f"""
 <h2>Standard Leak Rate → Liquid He Loss Conversion</h2>
 <p>Conditions: T = 4.222 K (NBP), P = 1 bar, ρ_liq = 125 kg/m³. Cost: €120/kg.</p>
 <table>
@@ -1157,9 +1380,15 @@ Liquid volume loss rate:
   <li>At 10⁻⁴ mbar·L/s (warm valve offer): 36 g/yr — 0.29 L/yr, still manageable</li>
   <li>At 10⁻² mbar·L/s (significant leak): 3,600 g/yr — 29 L/yr, needs attention</li>
 </ul>
-"""})
+""",
+        }
+    )
 
-    slides.append({"title": "Liquid Inventory Depletion Chart", "section": "Liquid He", "content": """
+    slides.append(
+        {
+            "title": "Liquid Inventory Depletion Chart",
+            "section": "Liquid He",
+            "content": """
 <h2>Liquid He Inventory Depletion — WSH 5,000 L Vessel</h2>
 <iframe class="plot-frame" src="visualizations_v3/liquid_inventory_depletion.html"></iframe>
 <p>Even at the least tight specification (10⁻⁴ mbar·L/s), liquid helium loss from valve leaks
@@ -1168,18 +1397,30 @@ Liquid volume loss rate:
 <p><strong>Conclusion:</strong> The valve leak rate specification has minimal impact on liquid inventory
    management. The derogation request for warm valves (higher leak rate) is justified from an
    inventory perspective.</p>
-"""})
+""",
+        }
+    )
 
-    slides.append({"title": "Boil-off vs Leak Rate Chart", "section": "Liquid He", "content": """
+    slides.append(
+        {
+            "title": "Boil-off vs Leak Rate Chart",
+            "section": "Liquid He",
+            "content": """
 <h2>Boil-off Rate & Cost vs Leak Rate</h2>
 <iframe class="plot-frame" src="visualizations_v3/boiloff_vs_leakrate.html"></iframe>
 <p>Three temperature regimes are shown: 4K (liquid space), 80K (radiation shield), 300K (ambient).
    The 4K curve represents the worst case (most mass per throughput unit).
    At typical valve leak rates (10⁻⁹ to 10⁻⁴), the cost impact is negligible (&lt; €5/year).</p>
-"""})
+""",
+        }
+    )
 
     # ── Section 3: HP Compressor (slides 11-20) ──
-    slides.append({"title": "HP Compressor Overview", "section": "HP Compressors", "content": """
+    slides.append(
+        {
+            "title": "HP Compressor Overview",
+            "section": "HP Compressors",
+            "content": """
 <h2>HP Compressor Supply System</h2>
 <div class="kpi-row">
   <div class="kpi"><div class="value">14 barg</div><div class="label">HP Header Pressure</div></div>
@@ -1198,9 +1439,15 @@ Liquid volume loss rate:
   <tr><td>Option A: FSD575 VFD</td><td>3× with Variable Frequency Drive</td><td>Oil-flooded screw + VFD</td></tr>
   <tr><td>Option B: HSD Twin</td><td>2× 100% each, 1 running + 1 standby</td><td>Oil-free centrifugal</td></tr>
 </table>
-"""})
+""",
+        }
+    )
 
-    slides.append({"title": "N=3 Baseline Configuration", "section": "HP Compressors", "content": """
+    slides.append(
+        {
+            "title": "N=3 Baseline Configuration",
+            "section": "HP Compressors",
+            "content": """
 <h2>Baseline: N=3 Compressor Configuration</h2>
 <h3>Configuration</h3>
 <ul>
@@ -1220,9 +1467,15 @@ Liquid volume loss rate:
 <div class="equation">A_single = MTBF/(MTBF+MTTR) = 8760/(8760+8) = 99.91%
 A_sys(2-of-3) = A²(3−2A) = 0.9991²(3−2×0.9991) = 99.9997%
 Downtime: 0.022 h/yr</div>
-"""})
+""",
+        }
+    )
 
-    slides.append({"title": "FSD575 VFD Specifications", "section": "HP Compressors", "content": """
+    slides.append(
+        {
+            "title": "FSD575 VFD Specifications",
+            "section": "HP Compressors",
+            "content": """
 <h2>FSD575 with Variable Frequency Drive — Specifications</h2>
 <table>
   <tr><th>Parameter</th><th>Value</th><th>Notes</th></tr>
@@ -1240,9 +1493,15 @@ Downtime: 0.022 h/yr</div>
   <tr><td>Capital cost</td><td>€175k-205k</td><td>VFD adds ~€30k</td></tr>
   <tr><td>Maintenance</td><td>Oil: 4,000h, Separator: 8,000h</td><td>Annual: ~€15k</td></tr>
 </table>
-"""})
+""",
+        }
+    )
 
-    slides.append({"title": "HSD Twin Combi Specifications", "section": "HP Compressors", "content": """
+    slides.append(
+        {
+            "title": "HSD Twin Combi Specifications",
+            "section": "HP Compressors",
+            "content": """
 <h2>HSD Twin Combi — Specifications</h2>
 <table>
   <tr><th>Parameter</th><th>Value</th><th>Notes</th></tr>
@@ -1262,14 +1521,20 @@ Downtime: 0.022 h/yr</div>
   <tr><td>Maintenance</td><td>Bearing: 50,000h</td><td>Annual: ~€10k</td></tr>
 </table>
 <p><strong>Assumption:</strong> "HSD Twin Combi" = 2 units, each a twin-head (2-stage) compressor, providing true N+1 redundancy.</p>
-"""})
+""",
+        }
+    )
 
     # Compressor comparison table
     comp_rows = ""
     for _, r in comp_df.iterrows():
         comp_rows += f"<tr><td>{r['name']}</td><td>{r['units']}</td><td>{r['redundancy']}</td><td>{r['A_system_pct']:.4f}%</td><td>{r['downtime_h_yr']:.4f}</td><td>{r['MTBF_system_years']:.0f}</td><td>€{r['total_capex_eur']:,}</td></tr>\n"
 
-    slides.append({"title": "Reliability Comparison Table", "section": "HP Compressors", "content": f"""
+    slides.append(
+        {
+            "title": "Reliability Comparison Table",
+            "section": "HP Compressors",
+            "content": f"""
 <h2>Reliability & Availability Comparison</h2>
 <h3>Formulas</h3>
 <div class="equation">Single unit: A = MTBF/(MTBF+MTTR) = 8760/(8760+8) = 99.91%
@@ -1280,16 +1545,28 @@ k-of-M system: A_sys = Σ(i=k..M) C(M,i) × Aⁱ × (1-A)^(M-i)</div>
 </table>
 <p>All configurations exceed 99.99% availability. The 2-of-4 option approaches 100% availability
    with two spare units.</p>
-"""})
+""",
+        }
+    )
 
-    slides.append({"title": "Availability Comparison Chart", "section": "HP Compressors", "content": """
+    slides.append(
+        {
+            "title": "Availability Comparison Chart",
+            "section": "HP Compressors",
+            "content": """
 <h2>HP Compressor Availability — Visual Comparison</h2>
 <iframe class="plot-frame" src="visualizations_v3/compressor_availability_comparison.html"></iframe>
 <p>Availability expressed in "nines" (−log₁₀(1−A)). Each additional "nine" represents a 10× reduction
    in downtime. All options exceed 4 nines (99.99%), with 2-of-4 reaching nearly 6 nines.</p>
-"""})
+""",
+        }
+    )
 
-    slides.append({"title": "FSD575 vs HSD Comparison", "section": "HP Compressors", "content": """
+    slides.append(
+        {
+            "title": "FSD575 vs HSD Comparison",
+            "section": "HP Compressors",
+            "content": """
 <h2>FSD575 VFD vs HSD Twin Combi — Trade-off Matrix</h2>
 <table>
   <tr><th>Parameter</th><th>3× FSD575 VFD</th><th>2× HSD Twin Combi</th></tr>
@@ -1304,9 +1581,15 @@ k-of-M system: A_sys = Σ(i=k..M) C(M,i) × Aⁱ × (1-A)^(M-i)</div>
   <tr><td>Oil contamination</td><td>Yes (requires oil removal)</td><td>No (oil-free)</td></tr>
   <tr><td>Complexity</td><td>Proven technology, simpler</td><td>Higher tech, magnetic bearings</td></tr>
 </table>
-"""})
+""",
+        }
+    )
 
-    slides.append({"title": "VFD Energy Savings", "section": "HP Compressors", "content": """
+    slides.append(
+        {
+            "title": "VFD Energy Savings",
+            "section": "HP Compressors",
+            "content": """
 <h2>VFD Energy Savings — FSD575 (400 kW)</h2>
 <iframe class="plot-frame" src="visualizations_v3/vfd_energy_savings.html"></iframe>
 <p>VFD provides significant energy savings at partial loads (affinity law: P ∝ Speed³).
@@ -1315,18 +1598,30 @@ k-of-M system: A_sys = Σ(i=k..M) C(M,i) × Aⁱ × (1-A)^(M-i)</div>
 <div class="equation">Annual savings at 70% avg load (per compressor):
   ΔE = (328 − 141) kW × 8,000 h = 1,496,000 kWh/yr
   Cost: 1,496,000 × €0.15 = €224k/yr per unit</div>
-"""})
+""",
+        }
+    )
 
-    slides.append({"title": "Redundancy Cost-Benefit", "section": "HP Compressors", "content": """
+    slides.append(
+        {
+            "title": "Redundancy Cost-Benefit",
+            "section": "HP Compressors",
+            "content": """
 <h2>Redundancy Cost-Benefit Analysis</h2>
 <iframe class="plot-frame" src="visualizations_v3/redundancy_cost_benefit.html"></iframe>
 <p>Bubble size represents annual energy cost. The HSD Twin Combi offers the best availability
    per euro of capital investment, while the FSD575 VFD options offer superior energy efficiency
    through variable-speed operation.</p>
-"""})
+""",
+        }
+    )
 
     # ── Section 4: WCS.HP Protection (slides 21-28) ──
-    slides.append({"title": "WCS.HP Overview", "section": "WCS.HP", "content": """
+    slides.append(
+        {
+            "title": "WCS.HP Overview",
+            "section": "WCS.HP",
+            "content": """
 <h2>WCS.HP Supply Protection — Overview</h2>
 <div class="kpi-row">
   <div class="kpi"><div class="value">14 barg</div><div class="label">Nominal HP Header</div></div>
@@ -1338,14 +1633,20 @@ k-of-M system: A_sys = Σ(i=k..M) C(M,i) × Aⁱ × (1-A)^(M-i)</div>
 <p><strong>WCS.HP</strong> (Worst Case Supply — High Pressure) ensures sidestream activities
    (recovery, purification, research taps) do <strong>not</strong> compromise the main 14 barg supply.
    Fail-safe isolation valves on sidestreams close automatically when HP header pressure drops.</p>
-"""})
+""",
+        }
+    )
 
     # Leak budget
     budget_rows = ""
     for _, r in budget_df.iterrows():
         budget_rows += f"<tr><td>{r['circuit']}</td><td>{r['budget_mbar_l_s']:.0e}</td><td>{r['fraction_pct']}%</td><td>{r['justification']}</td></tr>\n"
 
-    slides.append({"title": "Leak Budget Allocation", "section": "WCS.HP", "content": f"""
+    slides.append(
+        {
+            "title": "Leak Budget Allocation",
+            "section": "WCS.HP",
+            "content": f"""
 <h2>Leak Rate Budget Allocation</h2>
 <p>Total system budget: <strong>1×10⁻⁵ mbar·L/s</strong> (RTM-048 system cap)</p>
 <table>
@@ -1358,45 +1659,79 @@ k-of-M system: A_sys = Σ(i=k..M) C(M,i) × Aⁱ × (1-A)^(M-i)</div>
   <li><strong>WCS trigger:</strong> HP pressure < 13.5 barg → close sidestream valves, recover 20% budget</li>
   <li><strong>Emergency:</strong> HP pressure < 13.0 barg → alarm, start backup compressor, reduce beam</li>
 </ol>
-"""})
+""",
+        }
+    )
 
     # Interlock table
     int_rows = ""
     for _, r in int_df.iterrows():
-        badge_cls = {"WARNING": "review", "ALARM": "risk", "AUTO": "accept", "TRIP": "risk"}.get(r["priority"], "trace")
+        badge_cls = {
+            "WARNING": "review",
+            "ALARM": "risk",
+            "AUTO": "accept",
+            "TRIP": "risk",
+        }.get(r["priority"], "trace")
         int_rows += f"<tr><td>{r['condition']}</td><td>{r['setpoint']}</td><td>{r['action']}</td><td>{r['purpose']}</td><td><span class='badge badge-{badge_cls}'>{r['priority']}</span></td></tr>\n"
 
-    slides.append({"title": "Interlock Logic", "section": "WCS.HP", "content": f"""
+    slides.append(
+        {
+            "title": "Interlock Logic",
+            "section": "WCS.HP",
+            "content": f"""
 <h2>Interlock Logic Table</h2>
 <table>
   <tr><th>Condition</th><th>Setpoint</th><th>Action</th><th>Purpose</th><th>Priority</th></tr>
   {int_rows}
 </table>
-"""})
+""",
+        }
+    )
 
-    slides.append({"title": "WCS.HP Architecture Diagram", "section": "WCS.HP", "content": """
+    slides.append(
+        {
+            "title": "WCS.HP Architecture Diagram",
+            "section": "WCS.HP",
+            "content": """
 <h2>WCS.HP Supply Architecture — Block Diagram</h2>
 <iframe class="plot-frame" style="height:640px;" src="visualizations_v3/wcs_hp_architecture.html"></iframe>
 <p>Compressors in parallel feed the HP header at 14 barg. Check valves prevent backflow.
    The main supply branch (QVB/WSH/Beam) receives 70% of the leak budget.
    Sidestream branches have normally-closed isolation valves that close on low HP pressure.</p>
-"""})
+""",
+        }
+    )
 
     # Scenario table
     scn_rows = ""
     for _, r in scn_df.iterrows():
-        badge_cls = {"NOMINAL": "accept", "WARNING": "review", "ALARM": "risk", "TRIP": "risk"}.get(r["status"], "trace")
+        badge_cls = {
+            "NOMINAL": "accept",
+            "WARNING": "review",
+            "ALARM": "risk",
+            "TRIP": "risk",
+        }.get(r["status"], "trace")
         scn_rows += f"<tr><td>{r['scenario']}</td><td>{r['compressors_running']}/{r['compressors_available']}</td><td>{r['capacity_pct']:.0f}%</td><td>{r['hp_header_barg']}</td><td>{r['sidestreams']}</td><td>{r['beam_pct']:.0f}%</td><td><span class='badge badge-{badge_cls}'>{r['status']}</span></td></tr>\n"
 
-    slides.append({"title": "WCS Scenario Analysis", "section": "WCS.HP", "content": f"""
+    slides.append(
+        {
+            "title": "WCS Scenario Analysis",
+            "section": "WCS.HP",
+            "content": f"""
 <h2>WCS Scenario Analysis</h2>
 <table>
   <tr><th>Scenario</th><th>Compressors (run/avail)</th><th>Capacity</th><th>HP Header</th><th>Sidestreams</th><th>Beam</th><th>Status</th></tr>
   {scn_rows}
 </table>
-"""})
+""",
+        }
+    )
 
-    slides.append({"title": "Scenario 1: Normal Operation", "section": "WCS.HP", "content": """
+    slides.append(
+        {
+            "title": "Scenario 1: Normal Operation",
+            "section": "WCS.HP",
+            "content": """
 <h2>Scenario 1: Normal Operation</h2>
 <div class="kpi-row">
   <div class="kpi"><div class="value">3</div><div class="label">Compressors Available</div></div>
@@ -1413,9 +1748,15 @@ k-of-M system: A_sys = Σ(i=k..M) C(M,i) × Aⁱ × (1-A)^(M-i)</div>
   <li>Full beam operation at 100% intensity</li>
 </ul>
 <p><span class="badge badge-accept">NOMINAL</span> — System fully operational with margin.</p>
-"""})
+""",
+        }
+    )
 
-    slides.append({"title": "Scenario 2: WCS (1 Failed)", "section": "WCS.HP", "content": """
+    slides.append(
+        {
+            "title": "Scenario 2: WCS (1 Failed)",
+            "section": "WCS.HP",
+            "content": """
 <h2>Scenario 2: WCS — 1 Compressor Failed</h2>
 <div class="kpi-row">
   <div class="kpi"><div class="value">2</div><div class="label">Compressors Available</div></div>
@@ -1433,9 +1774,15 @@ k-of-M system: A_sys = Σ(i=k..M) C(M,i) × Aⁱ × (1-A)^(M-i)</div>
   <li>Maintenance team dispatched to repair failed compressor</li>
 </ul>
 <p><span class="badge badge-review">WARNING</span> — Operational but no redundancy margin.</p>
-"""})
+""",
+        }
+    )
 
-    slides.append({"title": "Scenario 3: Emergency (2 Failed)", "section": "WCS.HP", "content": """
+    slides.append(
+        {
+            "title": "Scenario 3: Emergency (2 Failed)",
+            "section": "WCS.HP",
+            "content": """
 <h2>Scenario 3: Emergency — 2 Compressors Failed</h2>
 <div class="kpi-row">
   <div class="kpi"><div class="value">1</div><div class="label">Compressor Available</div></div>
@@ -1453,10 +1800,16 @@ k-of-M system: A_sys = Σ(i=k..M) C(M,i) × Aⁱ × (1-A)^(M-i)</div>
   <li><strong>Priority repair</strong> of failed compressors</li>
 </ul>
 <p><span class="badge badge-risk">ALARM</span> — Degraded operation, immediate repair needed.</p>
-"""})
+""",
+        }
+    )
 
     # ── Section 5: Warm Valve Derogation (slides 29-32) ──
-    slides.append({"title": "Warm Valve Derogation Context", "section": "Derogation", "content": """
+    slides.append(
+        {
+            "title": "Warm Valve Derogation Context",
+            "section": "Derogation",
+            "content": """
 <h2>Warm Valve Leak Tightness Derogation</h2>
 <h3>Background (from Cryoworld Offer)</h3>
 <p>For warm On/Off valves (W1d), Cryoworld proposes <strong>pneumatic ball valves of Meca Inox</strong>
@@ -1475,9 +1828,15 @@ k-of-M system: A_sys = Σ(i=k..M) C(M,i) × Aⁱ × (1-A)^(M-i)</div>
   <tr><td>Swagelok SS-42GSE with UHMWPE seal</td><td>Instrumentation valves</td></tr>
 </table>
 <p>Both types are suitable for the specified radiation environment and are an economic solution.</p>
-"""})
+""",
+        }
+    )
 
-    slides.append({"title": "Warm Valve Impact Analysis", "section": "Derogation", "content": """
+    slides.append(
+        {
+            "title": "Warm Valve Impact Analysis",
+            "section": "Derogation",
+            "content": """
 <h2>Impact of Derogation on Liquid He Inventory</h2>
 <h3>Leak Rate Comparison: W1d Warm Valves</h3>
 <table>
@@ -1495,9 +1854,15 @@ k-of-M system: A_sys = Σ(i=k..M) C(M,i) × Aⁱ × (1-A)^(M-i)</div>
 <p><span class="badge badge-accept">ACCEPT</span> The derogation is justified.
    Even at 1×10⁻⁴ mbar·L/s, the liquid He inventory impact from warm valves is negligible.
    The economic solution (Meca Inox / Swagelok) is appropriate.</p>
-"""})
+""",
+        }
+    )
 
-    slides.append({"title": "Valve Classification Table", "section": "Derogation", "content": """
+    slides.append(
+        {
+            "title": "Valve Classification Table",
+            "section": "Derogation",
+            "content": """
 <h2>Control Valve Classification (CV Classes)</h2>
 <table>
   <tr><th>Class</th><th>CV</th><th>CV</th><th>CV</th><th>CV</th></tr>
@@ -1512,9 +1877,15 @@ k-of-M system: A_sys = Σ(i=k..M) C(M,i) × Aⁱ × (1-A)^(M-i)</div>
   <tr><td>Radiation hardness</td><td>required</td><td>required</td><td>required</td><td>not required</td></tr>
 </table>
 <p><em>Highlighted rows show the current leak rate specs that Cryoworld is requesting derogation for (W1d class).</em></p>
-"""})
+""",
+        }
+    )
 
-    slides.append({"title": "Derogation Recommendation", "section": "Derogation", "content": """
+    slides.append(
+        {
+            "title": "Derogation Recommendation",
+            "section": "Derogation",
+            "content": """
 <h2>Derogation Recommendation Summary</h2>
 <h3>Key Findings</h3>
 <ol>
@@ -1531,10 +1902,16 @@ k-of-M system: A_sys = Σ(i=k..M) C(M,i) × Aⁱ × (1-A)^(M-i)</div>
   <tr><td>3</td><td>Review Cryoworld proposed variants and validate</td><td>SCK CEN</td><td><span class="badge badge-review">PENDING</span></td></tr>
   <tr><td>4</td><td>Document derogation in SoR matrix</td><td>SCK CEN</td><td><span class="badge badge-trace">TODO</span></td></tr>
 </table>
-"""})
+""",
+        }
+    )
 
     # ── Section 6: Compliance (slides 33-36) ──
-    slides.append({"title": "PED Classification", "section": "Compliance", "content": """
+    slides.append(
+        {
+            "title": "PED Classification",
+            "section": "Compliance",
+            "content": """
 <h2>PED Classification — HP System at 14 barg</h2>
 <h3>Pressure Equipment Directive 2014/68/EU</h3>
 <p>The HP helium supply operates at <strong>15 bara (14 barg)</strong>, which places it in
@@ -1552,9 +1929,15 @@ k-of-M system: A_sys = Σ(i=k..M) C(M,i) × Aⁱ × (1-A)^(M-i)</div>
   <li>He at 4K: extreme cryogenic service → austenitic stainless steel (AISI 316L)</li>
   <li>Welding procedures per ASME IX, post-weld heat treatment not required for 316L</li>
 </ul>
-"""})
+""",
+        }
+    )
 
-    slides.append({"title": "EN 13458 Compliance", "section": "Compliance", "content": """
+    slides.append(
+        {
+            "title": "EN 13458 Compliance",
+            "section": "Compliance",
+            "content": """
 <h2>EN 13458 — Cryogenic Vessels</h2>
 <h3>Static Vacuum-Insulated Vessels</h3>
 <p>The WSH (Warm Storage Holder) containing 5,000 L liquid He must comply with EN 13458-2 for design
@@ -1568,9 +1951,15 @@ k-of-M system: A_sys = Σ(i=k..M) C(M,i) × Aⁱ × (1-A)^(M-i)</div>
   <tr><td>Leak testing</td><td>§9.3</td><td>He mass spectrometer, <1×10⁻⁸ mbar·L/s</td></tr>
   <tr><td>Documentation</td><td>§10</td><td>Design file, operating manual</td></tr>
 </table>
-"""})
+""",
+        }
+    )
 
-    slides.append({"title": "EN 13185 Leak Detection", "section": "Compliance", "content": """
+    slides.append(
+        {
+            "title": "EN 13185 Leak Detection",
+            "section": "Compliance",
+            "content": """
 <h2>EN 13185 — Leak Detection Methods</h2>
 <table>
   <tr><th>Method</th><th>Sensitivity (mbar·L/s)</th><th>Application</th></tr>
@@ -1583,9 +1972,15 @@ k-of-M system: A_sys = Σ(i=k..M) C(M,i) × Aⁱ × (1-A)^(M-i)</div>
 <p>If the derogation is approved to 1×10⁻⁵ or 1×10⁻⁴ mbar·L/s, sniffer testing is sufficient.
    This is significantly faster and cheaper than vacuum-mode mass spectrometer testing required
    for the 1×10⁻⁹ specification.</p>
-"""})
+""",
+        }
+    )
 
-    slides.append({"title": "RTM Traceability Update", "section": "Compliance", "content": """
+    slides.append(
+        {
+            "title": "RTM Traceability Update",
+            "section": "Compliance",
+            "content": """
 <h2>Requirements Traceability — v3.1.0 Updates</h2>
 <table>
   <tr><th>RTM ID</th><th>Requirement</th><th>v3.1 Update</th><th>Status</th></tr>
@@ -1597,10 +1992,16 @@ k-of-M system: A_sys = Σ(i=k..M) C(M,i) × Aⁱ × (1-A)^(M-i)</div>
   <tr><td>NEW</td><td>WCS protection logic</td><td>Interlock table defined</td><td><span class="badge badge-new">NEW</span></td></tr>
   <tr><td>NEW</td><td>VFD energy optimization</td><td>Savings calculated: €224k/yr/unit</td><td><span class="badge badge-new">NEW</span></td></tr>
 </table>
-"""})
+""",
+        }
+    )
 
     # ── Section 7: Data & Methodology (slides 37-40) ──
-    slides.append({"title": "Calculation Methodology", "section": "Methodology", "content": """
+    slides.append(
+        {
+            "title": "Calculation Methodology",
+            "section": "Methodology",
+            "content": """
 <h2>Calculation Methodology Summary</h2>
 <h3>Liquid He Loss (src/liquid_he_loss.py)</h3>
 <div class="equation">ṁ = Q_Pa_m3_s × M_He / (R × T)
@@ -1614,9 +2015,15 @@ MTBF_sys ≈ A_sys × MTTR / (1-A_sys)</div>
 <div class="equation">P_VFD = P_full × (load)³ / η_VFD     (affinity law)
 P_fixed ≈ P_full × (0.4 + 0.6 × load) (slide valve)
 ΔCost = ΔP × hours × €/kWh</div>
-"""})
+""",
+        }
+    )
 
-    slides.append({"title": "Data Sources & Assumptions", "section": "Methodology", "content": """
+    slides.append(
+        {
+            "title": "Data Sources & Assumptions",
+            "section": "Methodology",
+            "content": """
 <h2>Data Sources & Key Assumptions</h2>
 <table>
   <tr><th>Data</th><th>Source</th><th>Confidence</th></tr>
@@ -1637,9 +2044,15 @@ P_fixed ≈ P_full × (0.4 + 0.6 × load) (slide valve)
   <li>VFD affinity law: P ∝ Speed³ (approximate for screw compressors)</li>
   <li>WSH capacity: 5,000 L liquid (design basis, to be confirmed)</li>
 </ul>
-"""})
+""",
+        }
+    )
 
-    slides.append({"title": "Open Items & Next Steps", "section": "Methodology", "content": """
+    slides.append(
+        {
+            "title": "Open Items & Next Steps",
+            "section": "Methodology",
+            "content": """
 <h2>Open Items & Next Steps</h2>
 <table>
   <tr><th>#</th><th>Item</th><th>Priority</th><th>Owner</th></tr>
@@ -1652,9 +2065,15 @@ P_fixed ≈ P_full × (0.4 + 0.6 × load) (slide valve)
   <tr><td>7</td><td>PED category assessment for HP compressor vessels</td><td><span class="badge badge-trace">LOW</span></td><td>Design</td></tr>
   <tr><td>8</td><td>Common-cause failure analysis for compressors</td><td><span class="badge badge-trace">LOW</span></td><td>Reliability</td></tr>
 </table>
-"""})
+""",
+        }
+    )
 
-    slides.append({"title": "Conclusions & Recommendations", "section": "Methodology", "content": """
+    slides.append(
+        {
+            "title": "Conclusions & Recommendations",
+            "section": "Methodology",
+            "content": """
 <h2>Conclusions & Recommendations</h2>
 <h3>Liquid Helium Operations</h3>
 <ul>
@@ -1674,7 +2093,9 @@ P_fixed ≈ P_full × (0.4 + 0.6 × load) (slide valve)
   <li>Interlock logic ensures sidestream isolation before main supply is compromised</li>
   <li>System can maintain 100% beam at single compressor failure, 50% at double failure</li>
 </ul>
-"""})
+""",
+        }
+    )
 
     return slides
 
@@ -1682,6 +2103,7 @@ P_fixed ≈ P_full × (0.4 + 0.6 × load) (slide valve)
 # ══════════════════════════════════════════════════════════════════
 # MAIN BUILD
 # ══════════════════════════════════════════════════════════════════
+
 
 def main():
     print("╔══════════════════════════════════════════════════════════════╗")

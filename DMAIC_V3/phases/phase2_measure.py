@@ -225,7 +225,7 @@ class Phase2Measure:
             if not phase1_file.exists():
                 raise FileNotFoundError(f"Phase 1 results not found: {phase1_file}")
 
-            print(f"[2.1] Loading Phase 1 results...")
+            print("[2.1] Loading Phase 1 results...")
             with open(phase1_file, 'r', encoding='utf-8') as f:
                 phase1_data = json.load(f)
 
@@ -254,15 +254,15 @@ class Phase2Measure:
             print(f"  Number of chunks: {num_chunks}")
 
             if self.use_12cluster:
-                print(f"  [12-CLUSTER] Distributed analysis ENABLED (2 clusters)")
+                print("  [12-CLUSTER] Distributed analysis ENABLED (2 clusters)")
             elif self.use_execution_backbone:
-                print(f"  [EXEC-BACKBONE] Parallel analysis ENABLED (2 workers)")
+                print("  [EXEC-BACKBONE] Parallel analysis ENABLED (2 workers)")
             else:
-                print(f"  Sequential analysis mode")
+                print("  Sequential analysis mode")
             print()
 
             if self.use_12cluster and self.cluster_orchestrator:
-                print(f"  [12-CLUSTER] Distributing analysis across clusters...")
+                print("  [12-CLUSTER] Distributing analysis across clusters...")
 
                 tasks = [
                     {
@@ -323,7 +323,7 @@ class Phase2Measure:
                             args=(file_path,)
                         )
 
-                print(f"  [EXEC-BACKBONE] Waiting for analysis to complete...")
+                print("  [EXEC-BACKBONE] Waiting for analysis to complete...")
                 import time
                 while not self.execution_backbone.task_queue.empty():
                     time.sleep(0.5)

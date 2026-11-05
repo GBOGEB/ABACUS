@@ -239,6 +239,7 @@ def test_scanner_success_and_error_returns_source_bound_result(bridge, monkeypat
     green = bridge_module.TestSystemBridge.run_static_analysis(bridge)
     assert green["flake8"] == {"returncode": 0, "output": "static ok"}
     assert calls[0][0][1:3] == ["-m", "flake8"]
+    assert "--max-line-length=120" in calls[0][0]  # DAB census identity
 
     def missing_scanner(*_args, **_kwargs):
         raise FileNotFoundError("scanner binary unavailable")

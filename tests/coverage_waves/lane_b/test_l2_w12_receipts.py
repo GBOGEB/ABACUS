@@ -268,8 +268,11 @@ def test_p05m_isothermal_power():
     assert p05m.isothermal_power_kW(326, 298, 1.05, 14) == pytest.approx(expected)
     assert p05m.isothermal_power_kW(326, 298, 14, 14) == 0.0
     assert p05m.isothermal_power_kW(100, 300, 2, 1) < 0
-    with pytest.raises(ValueError, match="math domain error"):
-        p05m.isothermal_power_kW(100, 300, 1, 0)
+    # Python implementations may phrase the math.log domain ValueError
+    # differently. Validate the fail-closed input domain, not error wording.
+    for bad_discharge_bara in (0.0, -1.0):
+        with pytest.raises(ValueError):
+            p05m.isothermal_power_kW(100, 300, 1, bad_discharge_bara)
     with pytest.raises(ZeroDivisionError):
         p05m.isothermal_power_kW(100, 300, 0, 1)
 

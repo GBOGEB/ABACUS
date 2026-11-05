@@ -84,7 +84,7 @@ def run_python_file(file_path: Path, root_dir: Path) -> dict:
 
     except subprocess.TimeoutExpired:
         execution_time = time.time() - start_time
-        print(f"Status: TIMEOUT")
+        print("Status: TIMEOUT")
         print(f"Execution Time: {execution_time:.2f}s")
         return {
             "file_path": str(file_path.relative_to(root_dir)),
@@ -96,7 +96,7 @@ def run_python_file(file_path: Path, root_dir: Path) -> dict:
 
     except Exception as e:
         execution_time = time.time() - start_time
-        print(f"Status: ERROR")
+        print("Status: ERROR")
         print(f"Error: {str(e)}")
         return {
             "file_path": str(file_path.relative_to(root_dir)),
@@ -111,9 +111,9 @@ def main():
     print("="*80)
     print("DMAIC V3 - REAL EXECUTION TEST (ALL 9 PYTHON FILES)")
     print("="*80)
-    print(f"Version: 3.1.0")
-    print(f"DMAIC Version: V3")
-    print(f"Integration Mode: BIDIRECTIONAL")
+    print("Version: 3.1.0")
+    print("DMAIC Version: V3")
+    print("Integration Mode: BIDIRECTIONAL")
     print(f"Timestamp: {datetime.now().isoformat()}")
     print("="*80)
 

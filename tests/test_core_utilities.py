@@ -19,6 +19,7 @@ import tempfile
 import shutil
 
 import sys
+
 sys.path.insert(0, str(Path(__file__).parent.parent))
 
 from core_utilities import (
@@ -27,7 +28,7 @@ from core_utilities import (
     LoggingUtilities,
     MetricsUtilities,
     TemporalContext,
-    get_logger
+    get_logger,
 )
 
 
@@ -46,7 +47,7 @@ class TestWorkspaceUtilities:
         config_path = temp_workspace / "config.json"
         config_data = {"key": "value", "number": 42}
 
-        with open(config_path, 'w') as f:
+        with open(config_path, "w") as f:
             json.dump(config_data, f)
 
         loaded = WorkspaceUtilities.load_config(config_path)
@@ -57,7 +58,7 @@ class TestWorkspaceUtilities:
         config_path = temp_workspace / "config.yaml"
         config_data = {"key": "value", "list": [1, 2, 3]}
 
-        with open(config_path, 'w') as f:
+        with open(config_path, "w") as f:
             yaml.dump(config_data, f)
 
         loaded = WorkspaceUtilities.load_config(config_path)
@@ -148,9 +149,7 @@ class TestPathUtilities:
     def test_scan_files_single_pattern(self, temp_workspace):
         """Test scanning files with single pattern"""
         files = PathUtilities.scan_files(
-            root=temp_workspace,
-            patterns=["*.py"],
-            recursive=False
+            root=temp_workspace, patterns=["*.py"], recursive=False
         )
 
         file_names = [f.name for f in files]
@@ -160,9 +159,7 @@ class TestPathUtilities:
     def test_scan_files_multiple_patterns(self, temp_workspace):
         """Test scanning files with multiple patterns"""
         files = PathUtilities.scan_files(
-            root=temp_workspace,
-            patterns=["*.py", "*.md"],
-            recursive=False
+            root=temp_workspace, patterns=["*.py", "*.md"], recursive=False
         )
 
         file_names = [f.name for f in files]
@@ -173,9 +170,7 @@ class TestPathUtilities:
     def test_scan_files_recursive(self, temp_workspace):
         """Test recursive file scanning"""
         files = PathUtilities.scan_files(
-            root=temp_workspace,
-            patterns=["*.py"],
-            recursive=True
+            root=temp_workspace, patterns=["*.py"], recursive=True
         )
 
         file_names = [f.name for f in files]
@@ -188,7 +183,7 @@ class TestPathUtilities:
             root=temp_workspace,
             patterns=["*.py"],
             recursive=True,
-            exclude_dirs=["__pycache__"]
+            exclude_dirs=["__pycache__"],
         )
 
         file_names = [f.name for f in files]
@@ -217,8 +212,7 @@ class TestLoggingUtilities:
     def test_setup_logger_with_session(self):
         """Test logger with session ID"""
         logger = LoggingUtilities.setup_logger(
-            "test_logger_session",
-            session_id="test_session_123"
+            "test_logger_session", session_id="test_session_123"
         )
 
         assert logger.name == "test_logger_session"
@@ -236,9 +230,7 @@ class TestMetricsUtilities:
     def test_create_metrics_dict(self):
         """Test metrics dictionary creation"""
         metrics = MetricsUtilities.create_metrics_dict(
-            component_name="test_component",
-            session_id="test_session",
-            version="1.0.0"
+            component_name="test_component", session_id="test_session", version="1.0.0"
         )
 
         assert metrics["component"] == "test_component"
@@ -274,7 +266,7 @@ class TestTemporalContext:
             timestamp=datetime.now(),
             dow="Monday",
             week_number=50,
-            year=2024
+            year=2024,
         )
 
         assert context.session_id == "test_session"
