@@ -10,5 +10,5 @@ Promote an entry by moving it into `WAVE_CLAIMS.yaml` under `owns:`. Rename
 freely within the ruleset: `W<nnn>_<SLUG>`, kebab-case aliases, and `parent`
 for slug carry-forward.
 
-Validate with `python scripts/wave_claims.py validate .waves/WAVE_CLAIMS.yaml`
+Validate with `python scripts/wave_claims.py validate .waves/WAVE_CLAIMS.yaml --expected-repo GBOGEB/ABACUS`
 (shipped with MIP kit 1.2.0).
