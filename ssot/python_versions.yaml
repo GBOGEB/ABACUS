@@ -86,6 +86,18 @@ caps:
     patterns:
       - '(?i)pyyaml==6\.0\.2\b'
 
+  # Reviewed hash locks. pip --require-hashes --only-binary accepts only the
+  # wheels whose hashes were reviewed, so the lane stops at those wheels.
+  probe-hash-lock:
+    max: "3.12"
+    reason: >
+      integration/cryoplant_project/requirements-probe.txt is the reviewed
+      hash lock for the token-bearing Reciprocal Probe job and authorises
+      only the cp312 PyYAML wheel. Add a verified newer wheel hash in a
+      reviewed change, then raise or delete this cap.
+    patterns:
+      - 'requirements-probe\.txt'
+
 # Matrix mapping rules applied by `sync`
 # (lane = supported versions under the cap):
 #   flow list with >= 3 versions  -> every lane version (full matrix)
