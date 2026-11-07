@@ -275,9 +275,9 @@ jobs:
             --label "${CANDIDATE} on Python ${{ matrix.python-version }}" \
             --summary "${reports}/diff.md"
           {
-            cat "${reports}/diff.md"
             echo ""
             echo "| CoolProp | Model CLI | Exit | Last stderr line |"
             echo "|---|---|---:|---|"
             echo "${cli_rows}"
-          } >> "$GITHUB_STEP_SUMMARY"
+          } | tee -a "${reports}/diff.md"
+          cat "${reports}/diff.md" >> "$GITHUB_STEP_SUMMARY"
