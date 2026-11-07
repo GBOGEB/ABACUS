@@ -105,6 +105,32 @@ def bandit_suppressed_files(root: Path, files: list[str]) -> set[str]:
     return out
 
 
+def tender_flagged(files: list[str], root: Path) -> set[str]:
+    """Files the repo's own tender guard (tools/a10_guard.py) would block.
+
+    Reuses its ``reason`` rule (tender folders, tender-like names, restricted
+    terms), so the lane and the CI guard cannot disagree. Fails closed when the
+    guard is missing: a reformatted tender file blocks ``a10-guard`` on the PR.
+    """
+    import importlib.util
+
+    guard = root / "tools" / "a10_guard.py"
+    if not guard.is_file():
+        raise ValueError(f"tender guard not found: {guard}")
+    spec = importlib.util.spec_from_file_location("a10_guard_for_lane", guard)
+    mod = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(mod)
+    out: set[str] = set()
+    for rel in files:
+        try:
+            data = (root / rel).read_bytes()
+        except OSError:
+            data = None
+        if mod.reason(rel, data):
+            out.add(rel)
+    return out
+
+
 def eligible(
     files: list[str],
     cfg: dict,
@@ -112,11 +138,13 @@ def eligible(
     hold: set[str],
     flagged: set[str] | None = None,
     suppressed: set[str] | None = None,
+    tender: set[str] | None = None,
 ) -> tuple[list[str], dict]:
     prefixes = tuple(cfg.get("excluded_path_prefixes", []))
     keep: list[str] = []
     flagged = flagged or set()
     suppressed = suppressed or set()
+    tender = tender or set()
     out: dict = {
         "prefix": [],
         "pinned": [],
@@ -124,6 +152,7 @@ def eligible(
         "not_python": [],
         "bandit_flagged": [],
         "bandit_suppressed": [],
+        "tender": [],
     }
     for path in sorted(files):
         if not path.endswith(".py"):
@@ -132,6 +161,8 @@ def eligible(
             out["hold"].append(path)
         elif prefixes and path.startswith(prefixes):
             out["prefix"].append(path)
+        elif path in tender:
+            out["tender"].append(path)
         elif path in pins:
             out["pinned"].append(path)
         elif path in flagged:
@@ -179,6 +210,7 @@ def select(
         set(plan.get("hold_files", [])),
         flagged,
         suppressed,
+        tender_flagged(lane["files"], root),
     )
     return {
         "schema": "dab.formatter.selection.v1",
@@ -234,7 +266,11 @@ def main(argv: list[str] | None = None) -> int:
     a.add_argument("--worker", required=True)
     a.add_argument("--policy", required=True)
     a.add_argument("--repo", default=".")
-    a.add_argument("--bandit-report", required=True, help="current-head Bandit JSON, scanned using --ignore-nosec")
+    a.add_argument(
+        "--bandit-report",
+        required=True,
+        help="current-head Bandit JSON, scanned using --ignore-nosec",
+    )
     a.add_argument("--out", required=True)
     b = sub.add_parser("apply")
     b.add_argument("--selection", required=True)
