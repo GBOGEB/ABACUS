@@ -113,12 +113,20 @@ Use:
 
 ```text
 python scripts/ldab_scale_plan.py plan --risk ALL --workers 4 ... --out plan.json
+bandit -r . --ignore-nosec -f json -o bandit_W01.json
 python scripts/dab_formatter_lane.py select --plan plan.json --worker W01 \
-    --policy governance/dab/DAB_FULL_RED_GATES.json --out sel_W01.json
+    --policy governance/dab/DAB_FULL_RED_GATES.json \
+    --bandit-report bandit_W01.json --out sel_W01.json
 python scripts/dab_formatter_lane.py apply --selection sel_W01.json --chunk 0 --out res_W01.json
 python scripts/ldab_scale_plan.py verify --plan plan.json --results res_W01.json \
     --after-raw after.raw --after-command "<same scan command>" --out verify.json
 ```
+
+A Bandit scan returns status 1 when it found issues; retain its JSON findings
+for selection. A missing report or a scanner error must block selection.
+Recreate the report at the exact plan head and use the same `--ignore-nosec`
+semantics as the admission ratchet. Both flagged paths and inline
+`# nosec` paths are excluded from formatter selection.
 
 Measured on main `b6937c43` + later (flake8 7.4.1, local, not CI): Black over the 1,478
 files not excluded would take 10,190 findings to 3,710 with no new finding code. One
