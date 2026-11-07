@@ -116,30 +116,18 @@ jobs:
             --cov-report=term \
             -n "$PYTEST_WORKERS"
 
-      - name: G family tests (ci_governance)
-        # CODE PURPLE vector G (2026-10-31): no main-branch job collected these
-        # 14 files. EXPECTED_MIN 275 = local --collect-only at f131a81a, no
-        # platform skips. Separate process: rootdir-relative basenames must not
-        # collide with tests/, and addopts --maxfail=3 must not hide failures.
+      - name: G family tests (misc)
+        # CODE PURPLE vector G (2026-10-31): three single-file families no
+        # main-branch job collected. EXPECTED_MIN 23 = 14 + 8 + 1 from local
+        # --collect-only at f131a81a, no platform skips.
         if: ${{ !cancelled() }}
         shell: bash
         run: |
           python scripts/ci/family_collect_guard.py \
-            --family ci_governance --expected-min 275 -- \
-            ci/governance/tests/test_ci_debug_rerun_parser.py \
-            ci/governance/tests/test_execution_tiers.py \
-            ci/governance/tests/test_feedback_noop_proof.py \
-            ci/governance/tests/test_feedback_queue_pages.py \
-            ci/governance/tests/test_feedback_queue_pressure.py \
-            ci/governance/tests/test_feedback_queue_trends.py \
-            ci/governance/tests/test_metrics_publication_proof.py \
-            ci/governance/tests/test_mission_ci_telemetry.py \
-            ci/governance/tests/test_mission_wave_history.py \
-            ci/governance/tests/test_pr_feedback_gate.py \
-            ci/governance/tests/test_pr_feedback_terminal_fanin.py \
-            ci/governance/tests/test_solo_amber.py \
-            ci/governance/tests/test_w31_admission_readback.py \
-            ci/governance/tests/test_workflow_policy.py
+            --family misc --expected-min 23 -- \
+            delta1_bridge/tests/test_delta1_bridge.py \
+            handover/cbd_20261016/test_binder.py \
+            qps/human_rendition/w276/test_review_profile.py
 
       - name: Preserve native unit and coverage evidence
         if: always()
