@@ -23,18 +23,8 @@ import argparse
 import os
 import subprocess
 import sys
-import xml.etree.ElementTree as ET
+from defusedxml import ElementTree as ET
 from pathlib import Path
-
-import pytest
-
-
-@pytest.hookimpl(hookwrapper=True)
-def pytest_runtest_makereport(item, call):
-    outcome = yield
-    report = outcome.get_result()
-    if report.when == "call" and report.passed and hasattr(report, "wasxfail"):
-        item.user_properties.append(("family_guard_xpassed", "true"))
 
 
 def run_pytest(pytest_args: list[str], junit: Path) -> int:
@@ -44,9 +34,9 @@ def run_pytest(pytest_args: list[str], junit: Path) -> int:
         "-m",
         "pytest",
         "-p",
-        "no:cacheprovider",
+        "scripts.pytest_test_state_plugin",
         "-p",
-        "family_collect_guard",
+        "no:cacheprovider",
         "-o",
         "addopts=",
         "--strict-markers",
@@ -57,11 +47,7 @@ def run_pytest(pytest_args: list[str], junit: Path) -> int:
         *pytest_args,
     ]
     print("+ " + " ".join(cmd), flush=True)
-    env = os.environ.copy()
-    env["PYTHONPATH"] = os.pathsep.join(
-        filter(None, [str(Path(__file__).resolve().parent), env.get("PYTHONPATH")])
-    )
-    return subprocess.call(cmd, env=env)
+    return subprocess.call(cmd)
 
 
 def tally(junit: Path) -> dict[str, int]:
@@ -81,6 +67,10 @@ def tally(junit: Path) -> dict[str, int]:
         failure = case.find("failure")
         error = case.find("error")
         skipped = case.find("skipped")
+        properties = {
+            prop.get("name"): prop.get("value")
+            for prop in case.findall("./properties/property")
+        }
         if failure is not None:
             message = failure.get("message", "")
             if "XPASS" in message:
@@ -94,13 +84,10 @@ def tally(junit: Path) -> dict[str, int]:
                 counts["xfailed"] += 1
             else:
                 counts["skipped"] += 1
+        elif properties.get("xfail") == "true":
+            counts["xpassed"] += 1
         else:
-            xpassed = any(
-                prop.get("name") == "family_guard_xpassed"
-                and prop.get("value") == "true"
-                for prop in case.findall("properties/property")
-            )
-            counts["xpassed" if xpassed else "passed"] += 1
+            counts["passed"] += 1
     return counts
 
 
