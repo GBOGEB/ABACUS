@@ -1,0 +1,283 @@
+name: CoolProp next shadow (non-blocking)
+
+# Evidence for a CoolProp oracle move, without making one.
+#   record        run the test suite and the model CLIs under the governed
+#                 oracle (CoolProp==7.2.0, docs/qps_line_s_recovery/
+#                 reference-registry.yaml) and record every PropsSI call,
+#                 keeping exact argument values and types
+#   replay-control replay under the oracle again: must be bit-identical,
+#                 which proves the harness adds no noise
+#   replay-next   replay under the candidate on every supported interpreter
+#                 and classify each difference by helium temperature band
+# Nothing here gates a merge, edits the oracle pin or touches a model.
+
+on:
+  schedule:
+    - cron: "47 5 * * 2"
+  workflow_dispatch:
+    inputs:
+      candidate:
+        description: CoolProp version to replay against the 7.2.0 oracle
+        default: "8.0.0"
+  pull_request:
+    paths:
+      - tools/coolprop_shadow/**
+      - .github/workflows/coolprop-next-shadow.yml
+      - models/helium_properties/**
+      - models/qps_line_s/**
+      - models/qps_line_b/**
+      - models/qps_quantitative/**
+      - qplant/w53_p05s_qcell_jt_flash_receipt.py
+
+permissions:
+  contents: read
+
+concurrency:
+  group: coolprop-next-shadow-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  CANDIDATE: ${{ inputs.candidate || '8.0.0' }}
+
+jobs:
+  record:
+    name: Record PropsSI calls under the oracle (CoolProp 7.2.0)
+    runs-on: ubuntu-24.04
+    timeout-minutes: 60
+    steps:
+      - name: Checkout
+        # actions/checkout v7.0.1
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          persist-credentials: false
+
+      - name: Set up Python 3.14
+        # actions/setup-python v7.1.0
+        uses: actions/setup-python@6d4fd22b20465ccc0f7354476588e8df7c9ca0e0
+        with:
+          python-version: '3.14'
+
+      - name: Install the governed environment
+        run: python -m pip install -r requirements-dev.txt
+
+      - name: Confirm the oracle version
+        run: |
+          python - <<'PY'
+          import sys
+
+          import CoolProp
+
+          print("CoolProp", CoolProp.__version__)
+          sys.exit(CoolProp.__version__ != "7.2.0")
+          PY
+
+      - name: Run tests and model CLIs under the recorder
+        env:
+          COOLPROP_SHADOW_RECORD_DIR: ${{ runner.temp }}/records
+        run: |
+          hook="${GITHUB_WORKSPACE}/tools/coolprop_shadow/hook"
+          export PYTHONPATH="${hook}:${GITHUB_WORKSPACE}"
+          set +e
+          python -m pytest -o addopts="" -p no:cacheprovider -q -n auto \
+            tests DMAIC_V3/tests qplant/handover_dashboard/tests
+          tests_exit=$?
+          clis=(
+            "-m models.qps_line_s.recovery_model"
+            "models/qps_quantitative/p05j_quantitative.py"
+            "models/qps_line_b/run_measured_sensitivity.py"
+            "qplant/w53_p05s_qcell_jt_flash_receipt.py"
+          )
+          cli_report=""
+          for cli in "${clis[@]}"; do
+            # shellcheck disable=SC2086
+            python ${cli} > /dev/null
+            cli_report+="- \`${cli}\`: exit $?"$'\n'
+          done
+          set -e
+          files=$(find "${COOLPROP_SHADOW_RECORD_DIR}" -name 'calls-*.jsonl' \
+            | wc -l)
+          {
+            echo "### Recording under CoolProp 7.2.0"
+            echo "- test suite exit: ${tests_exit} (recorded regardless)"
+            echo "${cli_report}"
+            echo "- record files: ${files}"
+          } >> "$GITHUB_STEP_SUMMARY"
+          test "${files}" -gt 0
+
+      - name: Upload records
+        # actions/upload-artifact v7.0.2
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9
+        with:
+          name: coolprop-shadow-records
+          path: ${{ runner.temp }}/records
+          retention-days: 30
+
+  replay-control:
+    name: Control replay under CoolProp 7.2.0 (must be identical)
+    needs: record
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - name: Checkout
+        # actions/checkout v7.0.1
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          persist-credentials: false
+
+      - name: Set up Python 3.14
+        # actions/setup-python v7.1.0
+        uses: actions/setup-python@6d4fd22b20465ccc0f7354476588e8df7c9ca0e0
+        with:
+          python-version: '3.14'
+
+      - name: Install the oracle only
+        run: python -m pip install "CoolProp==7.2.0" numpy
+
+      - name: Download records
+        # actions/download-artifact v8.0.2
+        uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333
+        with:
+          name: coolprop-shadow-records
+          path: ${{ runner.temp }}/records
+
+      - name: Replay and require bit-identical outcomes
+        run: >-
+          python -I tools/coolprop_shadow/replay.py
+          --records "${RUNNER_TEMP}/records"
+          --out "${RUNNER_TEMP}/report/control.json"
+          --summary "${RUNNER_TEMP}/report/control.md"
+          --require-identical
+
+      - name: Publish summary
+        if: always()
+        run: cat "${RUNNER_TEMP}/report/control.md" >> "$GITHUB_STEP_SUMMARY"
+
+  replay-next:
+    name: Replay under CoolProp candidate - Python ${{ matrix.python-version }}
+    needs: record
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: ['3.11', '3.12', '3.13', '3.14', '3.15']
+    steps:
+      - name: Checkout
+        # actions/checkout v7.0.1
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          persist-credentials: false
+
+      - name: Set up Python ${{ matrix.python-version }}
+        # actions/setup-python v7.1.0
+        uses: actions/setup-python@6d4fd22b20465ccc0f7354476588e8df7c9ca0e0
+        with:
+          python-version: ${{ matrix.python-version }}
+
+      - name: Install the candidate
+        run: python -m pip install "CoolProp==${CANDIDATE}" numpy
+
+      - name: Download records
+        # actions/download-artifact v8.0.2
+        uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333
+        with:
+          name: coolprop-shadow-records
+          path: ${{ runner.temp }}/records
+
+      - name: Replay and classify (report-only)
+        run: >-
+          python -I tools/coolprop_shadow/replay.py
+          --records "${RUNNER_TEMP}/records"
+          --out "${RUNNER_TEMP}/report/next.json"
+          --summary "${RUNNER_TEMP}/report/next.md"
+
+      - name: Publish summary
+        if: always()
+        run: cat "${RUNNER_TEMP}/report/next.md" >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Upload report
+        if: always()
+        # actions/upload-artifact v7.0.2
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9
+        with:
+          name: >-
+            coolprop-shadow-${{ env.CANDIDATE }}-py${{ matrix.python-version }}
+          path: ${{ runner.temp }}/report
+          retention-days: 30
+
+  suite-next:
+    # Same commit, same interpreter, only CoolProp differs: every test whose
+    # outcome changes is attributable to the candidate. Where the oracle has
+    # no wheel (3.15) the candidate's failures are listed unbaselined.
+    name: Suite under CoolProp candidate - Python ${{ matrix.python-version }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 75
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: ['3.11', '3.12', '3.13', '3.14', '3.15']
+    steps:
+      - name: Checkout
+        # actions/checkout v7.0.1
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          persist-credentials: false
+
+      - name: Set up Python ${{ matrix.python-version }}
+        # actions/setup-python v7.1.0
+        uses: actions/setup-python@6d4fd22b20465ccc0f7354476588e8df7c9ca0e0
+        with:
+          python-version: ${{ matrix.python-version }}
+
+      - name: Install the governed environment without CoolProp
+        run: |
+          grep -viE '^coolprop' requirements-dev.txt \
+            > requirements-dev.candidate.txt
+          python -m pip install -r requirements-dev.candidate.txt
+
+      - name: Run the suite and CLIs under the oracle and the candidate
+        run: |
+          set +e
+          reports="${RUNNER_TEMP}/suite"
+          mkdir -p "${reports}"
+          suite() {
+            python -m pytest -o addopts="" -p no:cacheprovider -q -n auto \
+              tests DMAIC_V3/tests qplant/handover_dashboard/tests \
+              --junitxml "${reports}/$1.xml" > "${reports}/$1.log" 2>&1
+            tail -1 "${reports}/$1.log"
+          }
+          clis() {
+            for cli in "-m models.qps_line_s.recovery_model" \
+                       "models/qps_quantitative/p05j_quantitative.py" \
+                       "models/qps_line_b/run_measured_sensitivity.py" \
+                       "qplant/w53_p05s_qcell_jt_flash_receipt.py"; do
+              # shellcheck disable=SC2086
+              out="$(python ${cli} 2>&1 > /dev/null)"
+              code=$?
+              err="$(printf '%s\n' "${out}" | tail -1)"
+              echo "| $1 | \`${cli}\` | ${code} | ${err:0:160} |"
+            done
+          }
+          cli_rows=""
+          baseline=()
+          if python -m pip install --only-binary :all: "CoolProp==7.2.0"; then
+            echo "oracle: $(suite oracle)"
+            cli_rows+="$(clis 7.2.0)"$'\n'
+            baseline=(--baseline "${reports}/oracle.xml")
+          fi
+          python -m pip install --upgrade --only-binary :all: \
+            "CoolProp==${CANDIDATE}" || exit 1
+          echo "candidate: $(suite next)"
+          cli_rows+="$(clis "${CANDIDATE}")"
+          set -e
+          python -I tools/coolprop_shadow/suite_diff.py "${baseline[@]}" \
+            --candidate "${reports}/next.xml" \
+            --label "${CANDIDATE} on Python ${{ matrix.python-version }}" \
+            --summary "${reports}/diff.md"
+          {
+            cat "${reports}/diff.md"
+            echo ""
+            echo "| CoolProp | Model CLI | Exit | Last stderr line |"
+            echo "|---|---|---:|---|"
+            echo "${cli_rows}"
+          } >> "$GITHUB_STEP_SUMMARY"
