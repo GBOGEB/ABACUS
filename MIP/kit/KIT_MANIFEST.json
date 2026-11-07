@@ -2,7 +2,7 @@
   "schema_version": "0.1",
   "program": "MIP",
   "kit": "mip-repo-self-index",
-  "kit_version": "1.1.0",
+  "kit_version": "1.2.2",
   "source": "GBOGEB/CODEX",
   "files": [
     {
@@ -22,12 +22,16 @@
       "sha256": "ee492f7ee092c0109586dd04651dba561a710c12df811df2632e2c78d7c04422"
     },
     {
+      "path": "federation/waves/WAVE_NAMING_RULES.yaml",
+      "sha256": "5fcb2752b63bb488e193768580f7b225a4020dcde51b521e2bcbe004fbda9df3"
+    },
+    {
       "path": "scripts/mip_debug_diagnostic.py",
       "sha256": "5439cc41de92eb50b4f348f8cda474e3641148908f30f3bfcb44abdddaa0b947"
     },
     {
       "path": "scripts/mip_kit_manifest.py",
-      "sha256": "3d55a465beb0b55bad4a3614c549b015710c06528f36b141c633b5b6376edb91"
+      "sha256": "51a481db582683352451c467f36b3111f3291dd9c88ecdb6882a43edd53bd912"
     },
     {
       "path": "scripts/mip_repo_self_index.py",
@@ -36,9 +40,21 @@
     {
       "path": "scripts/mip_verify_self_index.py",
       "sha256": "46aeb20e947e73e51d84f04c62a233080e1c9c456b5ba44926a684152488d3ac"
+    },
+    {
+      "path": "scripts/wave_claims.py",
+      "sha256": "0f8ebde45bf7eae1ebf34fd84b37e26589d7444b1647c3cf6405407845149abd"
+    },
+    {
+      "path": "tests/test_wave_claims_contract.py",
+      "sha256": "71a3eb8e00e38ec81db05f344f162d109bf5e426714825e49f5bdf3798830a7c"
+    },
+    {
+      "path": "tests/test_wave_claims_portable.py",
+      "sha256": "ec6b3470a144d8c23fd739c629432896900dacf9efc915f5b2291a48a1d64c15"
     }
   ],
-  "kit_digest_sha256": "fc8476db0a15e067a98cb512e915f998ca3834d2564de935a95a7a89de7afcd8",
+  "kit_digest_sha256": "57fe6071c3bfc7d3673b8ab487293e91744e0e6d7df932c9bf12d35ebfcca4f1",
   "repo_local_files": [
     "MIP/mip_surface.json"
   ]
