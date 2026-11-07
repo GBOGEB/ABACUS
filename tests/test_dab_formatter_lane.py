@@ -27,6 +27,14 @@ def write(path: Path, text: str) -> None:
     path.write_text(text, encoding="utf-8")
 
 
+def with_guard(root: Path) -> None:
+    """Give a temp repo the real tender guard, as every real checkout has."""
+    write(
+        root / "tools" / "a10_guard.py",
+        (ROOT / "tools" / "a10_guard.py").read_text(encoding="utf-8"),
+    )
+
+
 def test_policy_tier_is_bounded_style_only_single_writer():
     assert CFG["tool"] == "black"
     assert CFG["mutation_writers"] == 1
@@ -104,6 +112,7 @@ def test_select_builds_chunks_from_the_plan(tmp_path):
     write(tmp_path / "pins.json", '{"sha256": "1", "f": "pkg/m0.py"}')
     cfg = {**CFG, "max_files_per_lane_pr": 2}
     policy = {"batch_policy": {F.TIER: cfg}}
+    with_guard(tmp_path)
     sel = F.select(plan_for(names), "W00", policy, tmp_path, {"results": []})
     assert sel["lane_files"] == 5 and sel["eligible_files"] == 4
     assert sel["excluded"]["pinned"] == ["pkg/m0.py"]
@@ -121,6 +130,7 @@ def test_apply_formats_only_selection_and_is_idempotent(tmp_path):
     write(tmp_path / "a.py", "x=1;y=2\nd={'k':1}\n")
     write(tmp_path / "b.py", "z=3\n")
     write(tmp_path / "other.py", "q=1;r=2\n")
+    with_guard(tmp_path)
     sel = F.select(plan_for(["a.py", "b.py"]), "W00", POLICY, tmp_path, {"results": []})
     res = F.apply_chunk(sel, 0, tmp_path)
     assert res["changed_paths"] == ["a.py", "b.py"]
@@ -162,6 +172,7 @@ def test_cli_select_writes_selection_and_errors_exit_2(tmp_path, capsys):
     report.write_text('{"results": []}', encoding="utf-8")
     args = ["select", "--plan", str(plan), "--policy", str(pol)]
     args += ["--repo", str(tmp_path), "--bandit-report", str(report), "--out", str(out)]
+    with_guard(tmp_path)
     assert F.main(args + ["--worker", "W00"]) == 0
     assert json.loads(out.read_text(encoding="utf-8"))["eligible_files"] == 1
     assert F.main(args + ["--worker", "W99"]) == 2
@@ -193,6 +204,7 @@ def test_select_with_bandit_report(tmp_path):
     for n in ("a.py", "b.py"):
         write(tmp_path / n, "x = 1\n")
     report = {"results": [{"filename": "a.py"}]}
+    with_guard(tmp_path)
     sel = F.select(plan_for(["a.py", "b.py"]), "W00", POLICY, tmp_path, report)
     assert sel["bandit_report_used"] is True
     assert sel["excluded"]["bandit_flagged"] == ["a.py"]
@@ -203,6 +215,7 @@ def test_select_with_suppressed_only_bandit_report(tmp_path):
     write(tmp_path / "a.py", 'eval("source")  # nosec B307\n')
     write(tmp_path / "b.py", "x = 1\n")
     report = {"results": []}
+    with_guard(tmp_path)
     sel = F.select(plan_for(["a.py", "b.py"]), "W00", POLICY, tmp_path, report)
     assert sel["excluded"]["bandit_suppressed"] == ["a.py"]
     assert [x for c in sel["chunks"] for x in c] == ["b.py"]
@@ -210,15 +223,14 @@ def test_select_with_suppressed_only_bandit_report(tmp_path):
 
 def test_cli_select_excludes_in_repo_bandit_report_from_pins(tmp_path):
     repo = tmp_path / "repo"
+    with_guard(repo)
     write(repo / "flagged.py", 'eval("source")\n')
     write(repo / "clean.py", "value = 1\n")
     report = repo / "bandit-report.json"
     report.write_text(
         json.dumps(
             {
-                "results": [
-                    {"filename": "flagged.py", "code": 'value = "sha256"'}
-                ],
+                "results": [{"filename": "flagged.py", "code": 'value = "sha256"'}],
                 "metrics": {
                     "_totals": {"loc": 2},
                     "flagged.py": {"loc": 1},
@@ -229,9 +241,7 @@ def test_cli_select_excludes_in_repo_bandit_report_from_pins(tmp_path):
         encoding="utf-8",
     )
     plan = tmp_path / "plan.json"
-    plan.write_text(
-        json.dumps(plan_for(["flagged.py", "clean.py"])), encoding="utf-8"
-    )
+    plan.write_text(json.dumps(plan_for(["flagged.py", "clean.py"])), encoding="utf-8")
     policy = tmp_path / "policy.json"
     policy.write_text(json.dumps(POLICY), encoding="utf-8")
     out = tmp_path / "selection.json"
@@ -251,8 +261,28 @@ def test_cli_select_excludes_in_repo_bandit_report_from_pins(tmp_path):
         "--out",
         str(out),
     ]
+    with_guard(tmp_path)
     assert F.main(args) == 0
     selection = json.loads(out.read_text(encoding="utf-8"))
     assert selection["excluded"]["pinned"] == []
     assert selection["excluded"]["bandit_flagged"] == ["flagged.py"]
     assert selection["chunks"] == [["clean.py"]]
+
+
+def test_select_skips_tender_material_like_the_ci_guard(tmp_path):
+    with_guard(tmp_path)
+    names = ["ok.py", "myrrha_handover/master/render_all.py", "pkg/tender_x.py"]
+    for n in names:
+        write(tmp_path / n, "x = 1\n")
+    sel = F.select(plan_for(names), "W00", POLICY, tmp_path, {"results": []})
+    assert sel["excluded"]["tender"] == [
+        "myrrha_handover/master/render_all.py",
+        "pkg/tender_x.py",
+    ]
+    assert [p for c in sel["chunks"] for p in c] == ["ok.py"]
+
+
+def test_select_fails_closed_when_the_guard_is_missing(tmp_path):
+    write(tmp_path / "a.py", "x = 1\n")
+    with pytest.raises(ValueError):
+        F.select(plan_for(["a.py"]), "W00", POLICY, tmp_path, {"results": []})
