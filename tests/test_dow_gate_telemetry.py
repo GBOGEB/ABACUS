@@ -1,4 +1,5 @@
 """Exact-head, graph fan-out and UNKNOWN regression controls for DOW telemetry."""
+
 from __future__ import annotations
 
 import io
@@ -12,8 +13,18 @@ from unittest.mock import patch
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "scripts"))
 from dow_gate_telemetry import (
-    affected, build, coverage, job_census, load, main, markdown, mermaid,
-    run_state, select_runs, workflow_dag, workflow_gate,
+    affected,
+    build,
+    coverage,
+    job_census,
+    load,
+    main,
+    markdown,
+    mermaid,
+    run_state,
+    select_runs,
+    workflow_dag,
+    workflow_gate,
 )
 
 MAIN = "a" * 40
@@ -44,19 +55,27 @@ jobs:
 
 
 def run(name, number, sha, state="completed", result="success"):
-    return {"name": name, "id": number, "head_sha": sha,
-            "status": state, "conclusion": result,
-            "created_at": "2026-10-14T15:00:00Z", "run_attempt": 1,
-            "html_url": f"https://github.com/GBOGEB/ABACUS/actions/runs/{number}"}
+    return {
+        "name": name,
+        "id": number,
+        "head_sha": sha,
+        "status": state,
+        "conclusion": result,
+        "created_at": "2026-10-14T15:00:00Z",
+        "run_attempt": 1,
+        "html_url": f"https://github.com/GBOGEB/ABACUS/actions/runs/{number}",
+    }
 
 
 def inputs(**overrides):
     kwargs = {
-        "main_sha": MAIN, "head_sha": HEAD,
+        "main_sha": MAIN,
+        "head_sha": HEAD,
         "main_branch": {"commit": {"sha": MAIN}, "protected": False},
         "main_runs": {"total_count": 0, "workflow_runs": []},
         "head_runs": {"total_count": 0, "workflow_runs": []},
-        "dow_jobs": None, "workflow": YAML,
+        "dow_jobs": None,
+        "workflow": YAML,
     }
     kwargs.update(overrides)
     return build(**kwargs)
@@ -71,7 +90,9 @@ class RemainingGateTests(unittest.TestCase):
         self.assertIsNone(result["gates"]["bd_distinct_roots"]["closed"])
         self.assertIsNone(result["gates"]["crew_ldb_rex"]["authenticated_launches"])
         self.assertFalse(result["admission"]["merge_authorized"])
-        self.assertEqual(result["gates"]["governance_owner"]["status"], "DEFERRED_OWNER_ACTION")
+        self.assertEqual(
+            result["gates"]["governance_owner"]["status"], "DEFERRED_OWNER_ACTION"
+        )
 
     def test_dow_dependency_centrality_six_distinct_descendants(self):
         result = inputs()
@@ -89,16 +110,31 @@ class RemainingGateTests(unittest.TestCase):
             ("Build Release Artifacts", "skipped"),
             ("Create GitHub Release", "skipped"),
         ]
-        payload = {"total_count": 7, "jobs": [
-            {"id": i + 100, "name": name, "status": "completed",
-             "conclusion": outcome,
-             "html_url": f"https://github.com/GBOGEB/ABACUS/actions/jobs/{i+100}"}
-            for i, (name, outcome) in enumerate(stages)
-        ]}
+        payload = {
+            "total_count": 7,
+            "jobs": [
+                {
+                    "id": i + 100,
+                    "name": name,
+                    "status": "completed",
+                    "conclusion": outcome,
+                    "html_url": f"https://github.com/GBOGEB/ABACUS/actions/jobs/{i+100}",
+                }
+                for i, (name, outcome) in enumerate(stages)
+            ],
+        }
         result = inputs(
-            main_runs={"total_count": 1, "workflow_runs": [run(
-                "DOW + Recursive DMAIC - Unified CD Pipeline", 921, MAIN,
-                result="failure")]},
+            main_runs={
+                "total_count": 1,
+                "workflow_runs": [
+                    run(
+                        "DOW + Recursive DMAIC - Unified CD Pipeline",
+                        921,
+                        MAIN,
+                        result="failure",
+                    )
+                ],
+            },
             dow_jobs=payload,
         )
         self.assertEqual(result["gates"]["lint-and-validate"]["status"], "FAIL")
@@ -108,14 +144,30 @@ class RemainingGateTests(unittest.TestCase):
         self.assertNotEqual(result["gates"]["dmaic-full-cycle"]["status"], "PASS")
 
     def test_queued_dow_does_not_infer_missing_runner_or_downstream(self):
-        partial_jobs = {"total_count": 1, "jobs": [
-            {"id": 555, "name": "Lint & Validate",
-             "status": "queued", "conclusion": None}
-        ]}
+        partial_jobs = {
+            "total_count": 1,
+            "jobs": [
+                {
+                    "id": 555,
+                    "name": "Lint & Validate",
+                    "status": "queued",
+                    "conclusion": None,
+                }
+            ],
+        }
         result = inputs(
-            main_runs={"total_count": 1, "workflow_runs": [run(
-                "DOW + Recursive DMAIC - Unified CD Pipeline", 921, MAIN,
-                state="queued", result=None)]},
+            main_runs={
+                "total_count": 1,
+                "workflow_runs": [
+                    run(
+                        "DOW + Recursive DMAIC - Unified CD Pipeline",
+                        921,
+                        MAIN,
+                        state="queued",
+                        result=None,
+                    )
+                ],
+            },
             dow_jobs=partial_jobs,
         )
         self.assertEqual(result["gates"]["lint-and-validate"]["status"], "QUEUED")
@@ -139,26 +191,49 @@ class RemainingGateTests(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, "Main ref drift"):
             inputs(main_branch={"commit": {"sha": HEAD}, "protected": False})
         with self.assertRaisesRegex(ValueError, "Mixed-SHA"):
-            inputs(head_runs={"total_count": 1, "workflow_runs": [run("CI/CD Test Suite", 1, MAIN)]})
+            inputs(
+                head_runs={
+                    "total_count": 1,
+                    "workflow_runs": [run("CI/CD Test Suite", 1, MAIN)],
+                }
+            )
         with self.assertRaisesRegex(ValueError, "40-character"):
             inputs(head_sha="short")
 
     def test_partial_page_never_proves_absence(self):
         result, complete = select_runs(
-            {"total_count": 11, "workflow_runs": [run("Semgrep", 3, HEAD)]}, HEAD)
+            {"total_count": 11, "workflow_runs": [run("Semgrep", 3, HEAD)]}, HEAD
+        )
         self.assertFalse(complete)
         self.assertEqual(len(result), 1)
-        self.assertEqual(inputs(head_runs={
-            "total_count": 11, "workflow_runs": [run("Semgrep", 3, HEAD)]
-        })["gates"]["full_ci"]["status"], "UNKNOWN")
+        self.assertEqual(
+            inputs(
+                head_runs={
+                    "total_count": 11,
+                    "workflow_runs": [run("Semgrep", 3, HEAD)],
+                }
+            )["gates"]["full_ci"]["status"],
+            "UNKNOWN",
+        )
 
     def test_comparable_coverage_requires_numerators_and_identity(self):
-        row = {"sha": MAIN, "kind": "canonical", "covered": 20_651,
-               "eligible": 38_223, "scope_id": "b0-combined",
-               "config_sha256": "c" * 64, "run_id": 123, "artifact_id": 987}
+        row = {
+            "sha": MAIN,
+            "kind": "canonical",
+            "covered": 20_651,
+            "eligible": 38_223,
+            "scope_id": "b0-combined",
+            "config_sha256": "c" * 64,
+            "run_id": 123,
+            "artifact_id": 987,
+        }
         result = inputs(coverage_data={"receipts": [row]})
-        self.assertEqual(result["gates"]["canonical_main_coverage"]["numerator"], 20_651)
-        self.assertEqual(result["gates"]["canonical_main_coverage"]["denominator"], 38_223)
+        self.assertEqual(
+            result["gates"]["canonical_main_coverage"]["numerator"], 20_651
+        )
+        self.assertEqual(
+            result["gates"]["canonical_main_coverage"]["denominator"], 38_223
+        )
         self.assertIsNone(result["gates"]["changed_line_coverage"]["numerator"])
         with self.assertRaisesRegex(ValueError, "invalid units"):
             coverage({"receipts": [dict(row, eligible=0)]}, MAIN, "canonical")
@@ -173,7 +248,6 @@ class RemainingGateTests(unittest.TestCase):
         self.assertIn("not a pass rate", report["observation_completeness"]["meaning"])
         self.assertIn("UNKNOWN", markdown(report))
 
-
     def test_load_optional_and_invalid_json_object(self):
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp)
@@ -187,10 +261,18 @@ class RemainingGateTests(unittest.TestCase):
     def test_run_state_all_nonterminal_and_unsupported(self):
         self.assertEqual(run_state({"status": "queued"}), "QUEUED")
         self.assertEqual(run_state({"status": "in_progress"}), "RUNNING")
-        self.assertEqual(run_state({"status": "completed", "conclusion": "cancelled"}), "CANCELLED")
-        self.assertEqual(run_state({"status": "completed", "conclusion": "neutral"}), "NEUTRAL")
-        self.assertEqual(run_state({"status": "completed", "conclusion": "failure"}), "FAIL")
-        self.assertEqual(run_state({"status": "completed", "conclusion": "unknown"}), "UNKNOWN")
+        self.assertEqual(
+            run_state({"status": "completed", "conclusion": "cancelled"}), "CANCELLED"
+        )
+        self.assertEqual(
+            run_state({"status": "completed", "conclusion": "neutral"}), "NEUTRAL"
+        )
+        self.assertEqual(
+            run_state({"status": "completed", "conclusion": "failure"}), "FAIL"
+        )
+        self.assertEqual(
+            run_state({"status": "completed", "conclusion": "unknown"}), "UNKNOWN"
+        )
 
     def test_workflow_gate_negative_state_priority(self):
         name = ("Gate",)
@@ -219,8 +301,14 @@ class RemainingGateTests(unittest.TestCase):
             ({"total_count": 1, "workflow_runs": [None]}, "Malformed"),
             ({"total_count": 1, "workflow_runs": [dict(item, name="")]}, "identity"),
             ({"total_count": 1, "workflow_runs": [dict(item, id="12")]}, "Run ID"),
-            ({"total_count": 1, "workflow_runs": [dict(item, run_attempt="1")]}, "Run ID"),
-            ({"total_count": 1, "workflow_runs": [dict(item, html_url="bogus")]}, "URL"),
+            (
+                {"total_count": 1, "workflow_runs": [dict(item, run_attempt="1")]},
+                "Run ID",
+            ),
+            (
+                {"total_count": 1, "workflow_runs": [dict(item, html_url="bogus")]},
+                "URL",
+            ),
         ]
         for payload, message in mutations:
             with self.subTest(message=message):
@@ -249,8 +337,13 @@ class RemainingGateTests(unittest.TestCase):
     def test_dow_job_receipt_validation_and_latest_job(self):
         dag = workflow_dag(YAML)
         dow = run("DOW + Recursive DMAIC - Unified CD Pipeline", 921, MAIN)
-        row = {"id": 123, "name": "Lint & Validate", "status": "completed",
-               "conclusion": "failure", "html_url": "https://github.com/ok"}
+        row = {
+            "id": 123,
+            "name": "Lint & Validate",
+            "status": "completed",
+            "conclusion": "failure",
+            "html_url": "https://github.com/ok",
+        }
         mutations = [
             ({"total_count": 0, "jobs": [row]}, "denominator"),
             ({"total_count": 1, "jobs": [None]}, "Invalid job ID"),
@@ -262,19 +355,22 @@ class RemainingGateTests(unittest.TestCase):
                 with self.assertRaisesRegex(ValueError, message):
                     job_census(payload, dow, dag)
         newer = dict(row, id=124, status="completed", conclusion="success")
-        data = job_census(
-            {"total_count": 2, "jobs": [row, newer]}, dow, dag
-        )
+        data = job_census({"total_count": 2, "jobs": [row, newer]}, dow, dag)
         self.assertEqual(data["jobs"]["lint-and-validate"]["job_id"], 124)
         self.assertEqual(data["jobs"]["lint-and-validate"]["status"], "PASS")
         self.assertEqual(data["jobs"]["ci-ubuntu"]["status"], "NOT_OBSERVED")
 
     def test_coverage_wrong_base_duplicate_and_diff_provenance(self):
         receipt = {
-            "kind": "diff", "sha": HEAD, "base_sha": MAIN,
-            "covered": 87, "eligible": 100,
-            "scope_id": "changed-lines", "config_sha256": "c" * 64,
-            "run_id": 10, "artifact_id": 12,
+            "kind": "diff",
+            "sha": HEAD,
+            "base_sha": MAIN,
+            "covered": 87,
+            "eligible": 100,
+            "scope_id": "changed-lines",
+            "config_sha256": "c" * 64,
+            "run_id": 10,
+            "artifact_id": 12,
         }
         self.assertEqual(
             coverage({"receipts": [receipt]}, HEAD, "diff", MAIN)["numerator"],
@@ -291,8 +387,9 @@ class RemainingGateTests(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, "receipts must be a list"):
             coverage({"receipts": "incorrect"}, HEAD, "diff", MAIN)
         with self.assertRaisesRegex(ValueError, "provenance"):
-            coverage({"receipts": [dict(receipt, artifact_id=None)]},
-                     HEAD, "diff", MAIN)
+            coverage(
+                {"receipts": [dict(receipt, artifact_id=None)]}, HEAD, "diff", MAIN
+            )
 
     def test_cli_writes_three_evidence_outputs_without_runtime_inference(self):
         with tempfile.TemporaryDirectory() as tmp:
@@ -312,9 +409,17 @@ class RemainingGateTests(unittest.TestCase):
             workflow = root / "dow.yml"
             workflow.write_text(YAML, encoding="utf-8")
             args = [
-                "dow_gate_telemetry.py", "--snapshot-dir", str(snapshot),
-                "--workflow", str(workflow), "--main-sha", MAIN,
-                "--head-sha", HEAD, "--output-dir", str(out),
+                "dow_gate_telemetry.py",
+                "--snapshot-dir",
+                str(snapshot),
+                "--workflow",
+                str(workflow),
+                "--main-sha",
+                MAIN,
+                "--head-sha",
+                HEAD,
+                "--output-dir",
+                str(out),
             ]
             with patch.object(sys, "argv", args), redirect_stdout(io.StringIO()):
                 self.assertEqual(main(), 0)
@@ -324,27 +429,32 @@ class RemainingGateTests(unittest.TestCase):
             self.assertEqual(payload["source"]["main_sha"], MAIN)
             self.assertEqual(payload["gates"]["ci-rhel-9"]["status"], "UNKNOWN")
             self.assertFalse(payload["admission"]["merge_authorized"])
-            self.assertIn("flowchart LR",
-                          (out / "remaining-gates.mmd").read_text())
-            self.assertIn("Highest dependency fan-out",
-                          (out / "remaining-gates.md").read_text())
+            self.assertIn("flowchart LR", (out / "remaining-gates.mmd").read_text())
+            self.assertIn(
+                "Highest dependency fan-out", (out / "remaining-gates.md").read_text()
+            )
 
     def test_markdown_includes_native_identifiers_and_distinct_denominators(self):
         report = inputs()
-        report["gates"]["lint-and-validate"].update({
-            "job_id": 391, "status": "FAIL", "downstream_count": 6,
-        })
-        report["gates"]["canonical_main_coverage"].update({
-            "numerator": 80, "denominator": 100,
-        })
+        report["gates"]["lint-and-validate"].update(
+            {
+                "job_id": 391,
+                "status": "FAIL",
+                "downstream_count": 6,
+            }
+        )
+        report["gates"]["canonical_main_coverage"].update(
+            {
+                "numerator": 80,
+                "denominator": 100,
+            }
+        )
         report["gates"]["bd_distinct_roots"]["closed"] = 2
         out = markdown(report)
         self.assertIn("job 391", out)
         self.assertIn("80/100", out)
         self.assertIn("closed roots 2", out)
         self.assertIn("potential descendants 6", out)
-
-
 
     def test_concurrent_pages_are_partial_not_false_terminal(self):
         first = run("CI/CD Test Suite", 20, HEAD)
@@ -367,10 +477,18 @@ class RemainingGateTests(unittest.TestCase):
             "total_count": 1,
             "source_complete": False,
             "jobs": [
-                {"id": 201, "name": "Lint & Validate",
-                 "status": "completed", "conclusion": "failure"},
-                {"id": 202, "name": "CI - RHEL 8",
-                 "status": "completed", "conclusion": "skipped"},
+                {
+                    "id": 201,
+                    "name": "Lint & Validate",
+                    "status": "completed",
+                    "conclusion": "failure",
+                },
+                {
+                    "id": 202,
+                    "name": "CI - RHEL 8",
+                    "status": "completed",
+                    "conclusion": "skipped",
+                },
             ],
         }
         result = job_census(snapshot, origin, dag)

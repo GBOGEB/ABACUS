@@ -1,4 +1,5 @@
 """N+1 read-only B-series adapter; consumes, never replaces, the canonical engine."""
+
 from __future__ import annotations
 
 import argparse
@@ -23,9 +24,7 @@ def extend(doc):
         raise core.EvidenceError("wrong N+1 evidence extension")
     if doc.get("versioned_from") != "docs/ci/B_SERIES_NATIVE_PULSES_20261017.json":
         raise core.EvidenceError("frozen N-2 to N source not referenced")
-    if len(rows) != 4 or [x["pulse"] for x in rows] != [
-        "N-2", "N-1", "N", "N+1"
-    ]:
+    if len(rows) != 4 or [x["pulse"] for x in rows] != ["N-2", "N-1", "N", "N+1"]:
         raise core.EvidenceError("unexpected four-pulse order")
     identities, clocks = set(), []
     for row in rows:
@@ -61,12 +60,10 @@ def extend(doc):
     if any(not math.isfinite(h) or h <= 0 for h in deltas):
         raise core.EvidenceError("nonpositive B1 clock delta")
     velocities = [
-        (values[i] - values[i - 1]) / deltas[i - 1]
-        for i in range(1, len(values))
+        (values[i] - values[i - 1]) / deltas[i - 1] for i in range(1, len(values))
     ]
     accelerations = [
-        (velocities[i] - velocities[i - 1])
-        / ((deltas[i - 1] + deltas[i]) / 2)
+        (velocities[i] - velocities[i - 1]) / ((deltas[i - 1] + deltas[i]) / 2)
         for i in range(1, len(velocities))
     ]
     durations = [row["b0_test_duration_seconds"] for row in rows]
@@ -81,31 +78,29 @@ def extend(doc):
     qualified_doc = {**doc, "observations": qualified}
     base_report = core.build(qualified_doc)
     frozen_three = core.build({**qualified_doc, "observations": qualified[:3]})
-    base_report["historical_engine_metrics"] = base_report.pop(
-        "three_pulse_metrics"
-    )
+    base_report["historical_engine_metrics"] = base_report.pop("three_pulse_metrics")
     base_report["schema"] = OUT_SCHEMA
     base_report["hierarchy"]["workflow"]["run_sample"] = 4
     base_report["four_pulse_metrics"] = {
         "sampled_run_success": [4, 4],
-        "native_b0_jobs": [sum(x["job_success"] for x in rows),
-                           sum(x["job_total"] for x in rows)],
+        "native_b0_jobs": [
+            sum(x["job_success"] for x in rows),
+            sum(x["job_total"] for x in rows),
+        ],
         "b1_source_config_identity": next(iter(identities)),
         "b1_scope": "SAME_SCANNER_SOURCE_AND_WORKFLOW_SOURCE_ONLY",
         "b1_raw_unguarded_counts": values,
         "b1_intervals_hours": [round(x, 6) for x in deltas],
         "b1_velocity_findings_per_hour": [round(x, 6) for x in velocities],
-        "b1_acceleration_findings_per_hour2": [
-            round(x, 6) for x in accelerations
-        ],
+        "b1_acceleration_findings_per_hour2": [round(x, 6) for x in accelerations],
         "b1_trend": "FLAT_UNGUARDED_FINDING_COUNT",
         "test_count_velocity": None,
         "test_count_population": "UNMATCHED_PR_HEADS",
         "duration_median_seconds": med,
         "duration_mad_seconds": round(mad, 3),
-        "duration_prior_three_median_seconds": frozen_three[
-            "three_pulse_metrics"
-        ]["duration_median_seconds"],
+        "duration_prior_three_median_seconds": frozen_three["three_pulse_metrics"][
+            "duration_median_seconds"
+        ],
         "accepted_matched_coverage_uplift": None,
         "source_root_closure": None,
         "global_ci_share": None,
@@ -135,10 +130,15 @@ def main(argv=None):
     args.out.write_text(
         json.dumps(result, sort_keys=True, indent=2) + "\n", encoding="utf-8"
     )
-    print(json.dumps({
-        "status": "DESCRIPTIVE_FOUR_PULSE_SOURCE_MATCHED_B1",
-        "pulses": 4, "admission": "HOLD"
-    }))
+    print(
+        json.dumps(
+            {
+                "status": "DESCRIPTIVE_FOUR_PULSE_SOURCE_MATCHED_B1",
+                "pulses": 4,
+                "admission": "HOLD",
+            }
+        )
+    )
     return 0
 
 

@@ -165,6 +165,116 @@ class FeedbackGateTests(unittest.TestCase):
         comment["performed_via_github_app"]["id"] = 1
         self.assertFalse(gate.codex_security_review_complete([comment], head))
 
+
+    @staticmethod
+    def structured_codex_summary(payload: dict, stamp="2026-11-04T10:56:06Z"):
+        body = (
+            "<!-- codex-pull-request-review-summary -->\n"
+            "<!-- codex-review-state:v1 "
+            + json.dumps(payload, sort_keys=True, separators=(",", ":"))
+            + " -->\n"
+        )
+        return FeedbackGateTests.trusted_codex_comment(body, stamp)
+
+    @staticmethod
+    def completed_lane(head: str):
+        return {
+            "commit_sha": head,
+            "status": "completed",
+            "has_any_findings": False,
+            "has_unresolved_findings": False,
+        }
+
+    def test_new_codex_state_binds_both_completed_lanes_to_exact_head(self):
+        head = "abcdef0123456789abcdef0123456789abcdef01"
+        payload = {
+            "code_review": self.completed_lane(head),
+            "security_review": self.completed_lane(head),
+        }
+        comments = [self.structured_codex_summary(payload)]
+        self.assertTrue(gate.codex_code_review_complete(comments, head))
+        self.assertTrue(gate.codex_security_review_complete(comments, head))
+        other = "abcdef0fffffffffffffffffffffffffffffffff"
+        self.assertFalse(gate.codex_code_review_complete(comments, other))
+        self.assertFalse(gate.codex_security_review_complete(comments, other))
+
+    def test_new_codex_state_never_accepts_running_or_unresolved(self):
+        head = "abcdef0123456789abcdef0123456789abcdef01"
+        valid = self.completed_lane(head)
+        for key, value in (
+            ("status", "running"),
+            ("status", None),
+            ("status", "failed"),
+            ("has_any_findings", True),
+            ("has_any_findings", None),
+            ("has_unresolved_findings", True),
+            ("has_unresolved_findings", None),
+            ("commit_sha", "abcdef0fffffffffffffffffffffffffffffffff"),
+            ("commit_sha", None),
+        ):
+            with self.subTest(key=key, value=value):
+                candidate = dict(valid, **{key: value})
+                payload = {"code_review": candidate, "security_review": candidate}
+                comments = [self.structured_codex_summary(payload)]
+                self.assertFalse(gate.codex_code_review_complete(comments, head))
+                self.assertFalse(gate.codex_security_review_complete(comments, head))
+
+    def test_new_codex_state_does_not_infer_missing_security_review(self):
+        head = "abcdef0123456789abcdef0123456789abcdef01"
+        comments = [self.structured_codex_summary({
+            "code_review": self.completed_lane(head), "security_review": None
+        })]
+        self.assertTrue(gate.codex_code_review_complete(comments, head))
+        self.assertFalse(gate.codex_security_review_complete(comments, head))
+
+    def test_new_codex_state_rejects_spoof_and_malformed_data(self):
+        head = "abcdef0123456789abcdef0123456789abcdef01"
+        payload = {
+            "code_review": self.completed_lane(head),
+            "security_review": self.completed_lane(head),
+        }
+        forged = self.structured_codex_summary(payload)
+        forged["performed_via_github_app"]["id"] = 1
+        self.assertFalse(gate.codex_code_review_complete([forged], head))
+        self.assertFalse(gate.codex_security_review_complete([forged], head))
+        malformed = self.trusted_codex_comment(
+            "<!-- codex-pull-request-review-summary -->\n"
+            "<!-- codex-review-state:v1 {invalid json} -->"
+        )
+        self.assertFalse(gate.codex_code_review_complete([malformed], head))
+        self.assertFalse(gate.codex_security_review_complete([malformed], head))
+
+    def test_latest_running_review_overrules_older_legacy_completion(self):
+        head = "abcdef0123456789abcdef0123456789abcdef01"
+        old = self.trusted_codex_comment(
+            "<!-- codex-pull-request-review-summary -->\n"
+            "<!-- codex-security-review:v1 "
+            '{"headSha":"' + head + '","status":"completed"} -->\n'
+            "| 📝 **Code Review** | ✅ **Completed** now | "
+            "`abcdef0` | Manual request |",
+            "2026-10-03T10:00:00Z",
+        )
+        self.assertTrue(gate.codex_code_review_complete([old], head))
+        current = self.structured_codex_summary({
+            "code_review": dict(self.completed_lane(head), status="running"),
+            "security_review": None,
+        }, "2026-11-04T10:56:06Z")
+        self.assertFalse(gate.codex_code_review_complete([old, current], head))
+        self.assertFalse(gate.codex_security_review_complete([old, current], head))
+
+    def test_newer_legacy_running_security_review_overrules_structured_completion(self):
+        head = "abcdef0123456789abcdef0123456789abcdef01"
+        old = self.structured_codex_summary({
+            "code_review": self.completed_lane(head),
+            "security_review": self.completed_lane(head),
+        }, "2026-10-03T10:00:00Z")
+        current = self.trusted_codex_comment(
+            "<!-- codex-security-review:v1 "
+            '{"headSha":"' + head + '","status":"running"} -->',
+            "2026-11-04T10:56:06Z",
+        )
+        self.assertFalse(gate.codex_security_review_complete([old, current], head))
+
     def blocking_runs(self, overrides=None):
         overrides = overrides or {}
         runs = []

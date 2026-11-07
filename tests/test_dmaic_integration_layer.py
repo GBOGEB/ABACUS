@@ -26,7 +26,7 @@ from rich_padding.dmaic_integration_layer import (
     DMAICIntegrationLayer,
     DMAICPhase,
     PhaseMetrics,
-    DMAICCycleStatus
+    DMAICCycleStatus,
 )
 
 
@@ -146,7 +146,7 @@ def test_export_metrics(dmaic_layer):
     reader_stats = {
         "files_processed": 10,
         "links_validated": 25,
-        "artifacts_discovered": 5
+        "artifacts_discovered": 5,
     }
 
     exported = dmaic_layer.export_metrics(reader_stats)
@@ -165,7 +165,7 @@ def test_save_integration_state(dmaic_layer, workspace):
 
     assert Path(output_path).exists()
 
-    with open(output_path, 'r') as f:
+    with open(output_path, "r") as f:
         state = json.load(f)
 
     assert "cycle_status" in state
