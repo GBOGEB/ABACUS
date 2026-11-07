@@ -27,7 +27,7 @@ jobs:
     runs-on: ubuntu-latest
     env:
       EXPECTED_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
-      CODEX_KIT_REF: 00cbfe852eb45237c8f8c6509575fdae0845507f  # kit 1.2.1
+      CODEX_KIT_REF: f63e7e0b2af7c78b43520f2499a4f322a6213ece  # kit 1.2.2
     steps:
       - name: Check out exact evaluated SHA
         uses: actions/checkout@v7
@@ -57,16 +57,20 @@ jobs:
             --canonical "${RUNNER_TEMP}/codex-kit-manifest.json" \
             --summary "${RUNNER_TEMP}/mip-kit-drift-summary.json"
 
-      # Kit 1.2.0: this repo's own wave claims must obey the federation
+      # Kit 1.2.x: this repo's own wave claims must obey the federation
       # naming ruleset (federation/waves/WAVE_NAMING_RULES.yaml).
       - name: Install wave claims validator dependency
         run: python -m pip install "pyyaml>=6.0"
 
       - name: Validate this repo's wave claims
-        run: python scripts/wave_claims.py validate .waves/WAVE_CLAIMS.yaml --expected-repo GBOGEB/ABACUS
+        run: >-
+          python scripts/wave_claims.py validate .waves/WAVE_CLAIMS.yaml
+          --expected-repo GBOGEB/ABACUS
 
       - name: Test wave claims validation negative controls
-        run: python -m unittest discover -s tests -p 'test_wave_claims_contract.py' -v
+        run: >-
+          python -m unittest discover -s tests
+          -p 'test_wave_claims_contract.py' -v
 
       - name: Test LDAB telemetry fail-closed contracts
         run: |

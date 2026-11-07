@@ -2,7 +2,7 @@
   "schema_version": "0.1",
   "program": "MIP",
   "kit": "mip-repo-self-index",
-  "kit_version": "1.2.1",
+  "kit_version": "1.2.2",
   "source": "GBOGEB/CODEX",
   "files": [
     {
@@ -31,7 +31,7 @@
     },
     {
       "path": "scripts/mip_kit_manifest.py",
-      "sha256": "6cb8fa921807e9d7506d598459f23a74151a5ea61f74866b2c572bcf178f734e"
+      "sha256": "6c3acc0411b3e5ed6d69e755666c5f38f2b8075f5436f46f468872fcb7a849af"
     },
     {
       "path": "scripts/mip_repo_self_index.py",
@@ -43,10 +43,10 @@
     },
     {
       "path": "scripts/wave_claims.py",
-      "sha256": "ef189a159d0486bbc68f76aa5a6b92fd96b052a3734e940dec1d08133512c69d"
+      "sha256": "0f8ebde45bf7eae1ebf34fd84b37e26589d7444b1647c3cf6405407845149abd"
     }
   ],
-  "kit_digest_sha256": "0ae76fb72cfb5978588ada4c62b0e477deeea64c0db67401c2e1d137d307188a",
+  "kit_digest_sha256": "277ddaa3cfc07858a1ee242b24657fd118b908dcc820770dce7dd7d998577781",
   "repo_local_files": [
     "MIP/mip_surface.json"
   ]

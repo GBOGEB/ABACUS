@@ -1,4 +1,5 @@
 """Fail-closed member-claims and federation wave-name controls (synthetic only)."""
+
 import contextlib
 import io
 import sys
@@ -10,7 +11,7 @@ import yaml
 
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "scripts"))
-import wave_claims as waves  # noqa: E402
+import wave_claims as waves
 
 RULES = waves.load_naming_rules()
 REPO = "GBOGEB/ABACUS"
@@ -28,8 +29,12 @@ def owned(number, slug="ALPHA", aliases=(), parents=()):
 
 
 def doc(*entries, repo=REPO):
-    return {"schema": RULES["claims_schema"], "repo": repo,
-            "owns": list(entries), "participates": []}
+    return {
+        "schema": RULES["claims_schema"],
+        "repo": repo,
+        "owns": list(entries),
+        "participates": [],
+    }
 
 
 def errors(payload):
@@ -50,7 +55,9 @@ class WaveClaimsContractTests(unittest.TestCase):
         self.assertIn("D3_ALIAS_CLASH", {r["code"] for r in result})
 
     def test_duplicate_aliases_across_owned_waves_are_rejected_locally(self):
-        result = errors(doc(owned(100, aliases=["shared"]), owned(101, "BETA", ["shared"])))
+        result = errors(
+            doc(owned(100, aliases=["shared"]), owned(101, "BETA", ["shared"]))
+        )
         self.assertIn("D3_ALIAS_CLASH", {r["code"] for r in result})
 
     def test_alias_matching_another_name_is_rejected(self):
@@ -65,8 +72,12 @@ class WaveClaimsContractTests(unittest.TestCase):
         )
         observed = {row["key"]: {REPO} for row in records["owns"]}
         _, found, _ = waves.rollup({REPO: (records, False)}, observed, set(), RULES)
-        self.assertTrue(any(v["code"] == "D4_SLUG_NO_LINEAGE"
-                            and v["key"] == "QPS:W200" for v in found))
+        self.assertTrue(
+            any(
+                v["code"] == "D4_SLUG_NO_LINEAGE" and v["key"] == "QPS:W200"
+                for v in found
+            )
+        )
 
     def test_successors_can_carry_slug_from_earlier_parent(self):
         records = doc(
@@ -81,11 +92,14 @@ class WaveClaimsContractTests(unittest.TestCase):
     def test_cli_requires_repo_identity_and_rejects_mismatch(self):
         with tempfile.TemporaryDirectory() as d:
             path = Path(d) / "claims.yaml"
-            path.write_text(yaml.safe_dump(doc(owned(100), repo="GBOGEB/OTHER")),
-                            encoding="utf-8")
-            with contextlib.redirect_stderr(io.StringIO()):
-                with self.assertRaises(SystemExit) as missing:
-                    waves.main(["validate", str(path)])
+            path.write_text(
+                yaml.safe_dump(doc(owned(100), repo="GBOGEB/OTHER")), encoding="utf-8"
+            )
+            with (
+                contextlib.redirect_stderr(io.StringIO()),
+                self.assertRaises(SystemExit) as missing,
+            ):
+                waves.main(["validate", str(path)])
             self.assertEqual(missing.exception.code, 2)
             with contextlib.redirect_stdout(io.StringIO()):
                 self.assertEqual(
@@ -93,8 +107,9 @@ class WaveClaimsContractTests(unittest.TestCase):
                 )
 
     def test_private_diagnostics_do_not_expose_alias_text(self):
-        result = waves.validate_claims(doc(owned(100, aliases=["w100-alpha"])),
-                                       RULES, REPO, private=True)
+        result = waves.validate_claims(
+            doc(owned(100, aliases=["w100-alpha"])), RULES, REPO, private=True
+        )
         self.assertTrue(any(v["code"] == "D3_ALIAS_CLASH" for v in result))
         self.assertFalse(any("w100-alpha" in v["detail"] for v in result))
 
