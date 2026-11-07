@@ -31,7 +31,7 @@
     },
     {
       "path": "scripts/mip_kit_manifest.py",
-      "sha256": "6c3acc0411b3e5ed6d69e755666c5f38f2b8075f5436f46f468872fcb7a849af"
+      "sha256": "51a481db582683352451c467f36b3111f3291dd9c88ecdb6882a43edd53bd912"
     },
     {
       "path": "scripts/mip_repo_self_index.py",
@@ -44,9 +44,17 @@
     {
       "path": "scripts/wave_claims.py",
       "sha256": "0f8ebde45bf7eae1ebf34fd84b37e26589d7444b1647c3cf6405407845149abd"
+    },
+    {
+      "path": "tests/test_wave_claims_contract.py",
+      "sha256": "71a3eb8e00e38ec81db05f344f162d109bf5e426714825e49f5bdf3798830a7c"
+    },
+    {
+      "path": "tests/test_wave_claims_portable.py",
+      "sha256": "ec6b3470a144d8c23fd739c629432896900dacf9efc915f5b2291a48a1d64c15"
     }
   ],
-  "kit_digest_sha256": "277ddaa3cfc07858a1ee242b24657fd118b908dcc820770dce7dd7d998577781",
+  "kit_digest_sha256": "57fe6071c3bfc7d3673b8ab487293e91744e0e6d7df932c9bf12d35ebfcca4f1",
   "repo_local_files": [
     "MIP/mip_surface.json"
   ]

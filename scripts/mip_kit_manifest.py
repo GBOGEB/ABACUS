@@ -43,6 +43,9 @@ KIT_FILES = (
     # 1.2.0: federation wave naming contract (validate a repo's .waves/WAVE_CLAIMS.yaml)
     "scripts/wave_claims.py",
     "federation/waves/WAVE_NAMING_RULES.yaml",
+    # 1.2.2: portable synthetic proofs for the validator (run by every consumer)
+    "tests/test_wave_claims_contract.py",
+    "tests/test_wave_claims_portable.py",
 )
 REPO_LOCAL_FILES = ("MIP/mip_surface.json",)
 

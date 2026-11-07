@@ -27,7 +27,7 @@ jobs:
     runs-on: ubuntu-latest
     env:
       EXPECTED_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
-      CODEX_KIT_REF: f63e7e0b2af7c78b43520f2499a4f322a6213ece  # kit 1.2.2
+      CODEX_KIT_REF: 95bd0f1ced955b2f25732378cf29e72d0071e7f8  # kit 1.2.2
     steps:
       - name: Check out exact evaluated SHA
         uses: actions/checkout@v7
@@ -71,6 +71,11 @@ jobs:
         run: >-
           python -m unittest discover -s tests
           -p 'test_wave_claims_contract.py' -v
+
+      - name: Test wave claims kit portable proofs
+        run: >-
+          python -m unittest discover -s tests
+          -p 'test_wave_claims_portable.py' -v
 
       - name: Test LDAB telemetry fail-closed contracts
         run: |
