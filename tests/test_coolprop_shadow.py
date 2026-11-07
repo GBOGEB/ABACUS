@@ -236,3 +236,48 @@ def test_bands_follow_the_helium_policy():
     assert replay.band(("T", "P", 1e5, "Q", 0, "Helium")) == "no-T input"
     assert replay.band(("GAS_CONSTANT", "Helium")) == "constant"
     assert replay.band(("D", "T", 300.0, "P", 1e5, "Nitrogen")) == "non-helium"
+
+
+# --------------------------------------------------------------------------- suite diff
+
+import suite_diff  # noqa: E402
+
+
+def junit(cases: dict[str, str]) -> str:
+    body = []
+    for name, outcome in cases.items():
+        cls, _, test = name.partition("::")
+        inner = {"failed": '<failure message="RuntimeError: CoolProp 7.2.0 required, got 8.0.0">tb</failure>',
+                 "error": '<error message="fixture boom">tb</error>',
+                 "skipped": '<skipped message="needs CoolProp"/>'}.get(outcome, "")
+        body.append(f'<testcase classname="{cls}" name="{test}">{inner}</testcase>')
+    return '<testsuites><testsuite name="pytest">' + "".join(body) + "</testsuite></testsuites>"
+
+
+def test_suite_diff_attributes_outcome_changes(tmp_path):
+    base = tmp_path / "oracle.xml"
+    cand = tmp_path / "next.xml"
+    base.write_text(junit({"m::guard": "passed", "m::flaky": "failed", "m::red": "failed",
+                           "m::skip": "skipped", "m::same": "passed"}))
+    cand.write_text(junit({"m::guard": "failed", "m::flaky": "passed", "m::red": "error",
+                           "m::skip": "passed", "m::same": "passed"}))
+    rows = {r["test"]: r for r in suite_diff.classify(suite_diff.load(base), suite_diff.load(cand))}
+    assert rows["m::guard"]["class"] == "BROKEN"
+    assert "CoolProp 7.2.0 required" in rows["m::guard"]["message"]
+    assert rows["m::flaky"]["class"] == "FIXED"
+    assert rows["m::red"]["class"] == "STILL_RED"
+    assert rows["m::skip"]["class"] == "SKIP_SHIFT"
+    assert "m::same" not in rows
+
+
+def test_suite_diff_without_baseline_and_fail_closed(tmp_path):
+    cand = tmp_path / "next.xml"
+    cand.write_text(junit({"m::a": "failed", "m::b": "passed"}))
+    rows = suite_diff.classify(None, suite_diff.load(cand))
+    assert [r["class"] for r in rows] == ["UNBASELINED"]
+    assert suite_diff.main(["--candidate", str(tmp_path / "missing.xml")]) == 2
+    (tmp_path / "empty.xml").write_text("<testsuites/>")
+    assert suite_diff.main(["--candidate", str(tmp_path / "empty.xml")]) == 2
+    out = tmp_path / "s.md"
+    assert suite_diff.main(["--candidate", str(cand), "--summary", str(out), "--label", "x"]) == 0
+    assert "UNBASELINED" in out.read_text()

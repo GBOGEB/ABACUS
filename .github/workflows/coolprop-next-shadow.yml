@@ -204,3 +204,80 @@ jobs:
             coolprop-shadow-${{ env.CANDIDATE }}-py${{ matrix.python-version }}
           path: ${{ runner.temp }}/report
           retention-days: 30
+
+  suite-next:
+    # Same commit, same interpreter, only CoolProp differs: every test whose
+    # outcome changes is attributable to the candidate. Where the oracle has
+    # no wheel (3.15) the candidate's failures are listed unbaselined.
+    name: Suite under CoolProp candidate - Python ${{ matrix.python-version }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 75
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: ['3.11', '3.12', '3.13', '3.14', '3.15']
+    steps:
+      - name: Checkout
+        # actions/checkout v7.0.1
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          persist-credentials: false
+
+      - name: Set up Python ${{ matrix.python-version }}
+        # actions/setup-python v7.1.0
+        uses: actions/setup-python@6d4fd22b20465ccc0f7354476588e8df7c9ca0e0
+        with:
+          python-version: ${{ matrix.python-version }}
+
+      - name: Install the governed environment without CoolProp
+        run: |
+          grep -viE '^coolprop' requirements-dev.txt \
+            > requirements-dev.candidate.txt
+          python -m pip install -r requirements-dev.candidate.txt
+
+      - name: Run the suite and CLIs under the oracle and the candidate
+        run: |
+          set +e
+          reports="${RUNNER_TEMP}/suite"
+          mkdir -p "${reports}"
+          suite() {
+            python -m pytest -o addopts="" -p no:cacheprovider -q -n auto \
+              tests DMAIC_V3/tests qplant/handover_dashboard/tests \
+              --junitxml "${reports}/$1.xml" > "${reports}/$1.log" 2>&1
+            tail -1 "${reports}/$1.log"
+          }
+          clis() {
+            for cli in "-m models.qps_line_s.recovery_model" \
+                       "models/qps_quantitative/p05j_quantitative.py" \
+                       "models/qps_line_b/run_measured_sensitivity.py" \
+                       "qplant/w53_p05s_qcell_jt_flash_receipt.py"; do
+              # shellcheck disable=SC2086
+              out="$(python ${cli} 2>&1 > /dev/null)"
+              code=$?
+              err="$(printf '%s\n' "${out}" | tail -1)"
+              echo "| $1 | \`${cli}\` | ${code} | ${err:0:160} |"
+            done
+          }
+          cli_rows=""
+          baseline=()
+          if python -m pip install --only-binary :all: "CoolProp==7.2.0"; then
+            echo "oracle: $(suite oracle)"
+            cli_rows+="$(clis 7.2.0)"$'\n'
+            baseline=(--baseline "${reports}/oracle.xml")
+          fi
+          python -m pip install --upgrade --only-binary :all: \
+            "CoolProp==${CANDIDATE}" || exit 1
+          echo "candidate: $(suite next)"
+          cli_rows+="$(clis "${CANDIDATE}")"
+          set -e
+          python -I tools/coolprop_shadow/suite_diff.py "${baseline[@]}" \
+            --candidate "${reports}/next.xml" \
+            --label "${CANDIDATE} on Python ${{ matrix.python-version }}" \
+            --summary "${reports}/diff.md"
+          {
+            cat "${reports}/diff.md"
+            echo ""
+            echo "| CoolProp | Model CLI | Exit | Last stderr line |"
+            echo "|---|---|---:|---|"
+            echo "${cli_rows}"
+          } >> "$GITHUB_STEP_SUMMARY"

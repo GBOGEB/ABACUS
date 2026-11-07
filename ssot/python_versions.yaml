@@ -64,6 +64,7 @@ caps:
     # are not limited by its wheels). `check` fails if an entry goes stale.
     exempt_jobs:
       - .github/workflows/coolprop-next-shadow.yml:replay-next
+      - .github/workflows/coolprop-next-shadow.yml:suite-next
 
   # Exact evidence-tool pins inside workflows. The pins are left untouched
   # (they are part of recorded evidence); the lane shrinks to what the pin
