@@ -297,16 +297,16 @@ class Scanner:
         self.add("expr", node, new, where)
 
     # -- resolution ------------------------------------------------------------
-    def value(self, node, where, *, step=None, job=None, matrix_keys=None):
-        """Classify a python-version input value."""
+    def value(self, node, where, *, step=None, job=None, matrix_keys=None) -> str | None:
+        """Classify a python-version input value; return the old version when it was pinned."""
         if node is None:
-            return
+            return None
         if isinstance(node, yaml.SequenceNode):
             self.flow_list(node, where)  # reusable-workflow input given a list
-            return
+            return None
         if not isinstance(node, yaml.ScalarNode):
             self.s.problems.append(f"{where}: unsupported python-version node")
-            return
+            return None
         raw = node.value.strip()
         if VERSION_RE.match(raw):
             return self.pin(node, where)
@@ -316,7 +316,7 @@ class Scanner:
             if ctx == "matrix":
                 if matrix_keys is not None:
                     matrix_keys.add(name)
-                return
+                return None
             target = None
             if ctx == "env":
                 for scope in (step, job, self.root):
@@ -333,14 +333,15 @@ class Scanner:
                     target = mget(mget(mget(self.root, "inputs"), name), "default")
             if isinstance(target, yaml.ScalarNode) and VERSION_RE.match(target.value.strip()):
                 return self.pin(target, f"{where} -> {ctx}.{name}")
-            elif target is not None and LITERAL_RE.search(getattr(target, "value", "") or ""):
+            if target is not None and LITERAL_RE.search(getattr(target, "value", "") or ""):
                 self.s.problems.append(f"{where}: {ctx}.{name} has an unrecognised version value")
-            return
+            return None
         if JSON_LIST_RE.search(raw):
             self.expr(node, where)
-            return
+            return None
         if LITERAL_RE.search(raw):
             self.s.problems.append(f"{where}: unrecognised version expression {raw!r}")
+        return None
 
     def steps(self, steps_node, where, job=None, matrix_keys=None) -> list[str]:
         pinned = []

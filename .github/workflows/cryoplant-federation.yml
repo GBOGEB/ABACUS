@@ -134,6 +134,94 @@ jobs:
           python -m pytest integration/cryoplant_project/tests
           -m smoke -v --tb=short -p no:cacheprovider
 
+  probe-lock:
+    # PR-safe proof that the reviewed hash lock installs on the interpreter
+    # the token-bearing probe uses. No secrets. The probe's setup-python
+    # version is read from this file, so the two cannot drift apart: when
+    # ssot/python_versions.yaml moves the probe, this job fails on that PR
+    # until a verified wheel hash for the new interpreter is reviewed in.
+    name: Probe hash lock covers the probe interpreter
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - name: Checkout
+        # actions/checkout v7.0.1
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          persist-credentials: false
+
+      - name: Set up Python 3.14
+        # actions/setup-python v7.1.0
+        uses: actions/setup-python@6d4fd22b20465ccc0f7354476588e8df7c9ca0e0
+        with:
+          python-version: "3.14"
+
+      - name: Resolve the probe interpreter
+        id: probe
+        run: |
+          python -m pip install "PyYAML>=6.0.3,<7.0"
+          python - <<'PY' >> "$GITHUB_OUTPUT"
+          import yaml
+          path = ".github/workflows/cryoplant-federation.yml"
+          with open(path, encoding="utf-8") as handle:
+              jobs = yaml.safe_load(handle)["jobs"]
+          steps = jobs["reciprocal-probe"]["steps"]
+          versions = [
+              str(step["with"]["python-version"])
+              for step in steps
+              if str(step.get("uses", "")).startswith("actions/setup-python@")
+          ]
+          assert len(versions) == 1, versions
+          print(f"python={versions[0]}")
+          PY
+
+      - name: Verify the reviewed hash lock on that interpreter
+        env:
+          PROBE_PYTHON: ${{ steps.probe.outputs.python }}
+          LOCK: integration/cryoplant_project/requirements-probe.txt
+        run: |
+          set -euo pipefail
+          tag="cp${PROBE_PYTHON/./}"
+          args=(--only-binary :all: --no-deps
+                --python-version "${PROBE_PYTHON}"
+                --implementation cp --abi "${tag}"
+                --platform manylinux_2_28_x86_64
+                --platform manylinux_2_17_x86_64
+                --platform manylinux2014_x86_64)
+          if python -m pip download --require-hashes "${args[@]}" \
+              -d "${RUNNER_TEMP}/locked" -r "${LOCK}"; then
+            echo "Reviewed lock covers the probe on Python ${PROBE_PYTHON}."
+            exit 0
+          fi
+          # Evidence for the reviewer: the wheel PyPI serves for this
+          # interpreter, hashed here, beside PyPI's published digest.
+          req="$(grep -oE '^[A-Za-z0-9_.-]+==[0-9.]+' "${LOCK}")"
+          python -m pip download "${args[@]}" \
+            -d "${RUNNER_TEMP}/fresh" "${req}"
+          for whl in "${RUNNER_TEMP}"/fresh/*.whl; do
+            digest="$(sha256sum "${whl}" | cut -d' ' -f1)"
+            echo "::error title=Lock lacks ${tag}::$(basename "${whl}")" \
+              "sha256=${digest}"
+          done
+          python - "${req%%==*}" "${req##*==}" "${tag}" <<'PY'
+          import json
+          import sys
+          import urllib.request
+
+          name, version, tag = sys.argv[1:]
+          url = f"https://pypi.org/pypi/{name}/{version}/json"
+          with urllib.request.urlopen(url, timeout=30) as response:
+              files = json.load(response)["urls"]
+          for item in files:
+              fname = item["filename"]
+              if f"-{tag}-{tag}-" in fname and "manylinux" in fname:
+                  if "x86_64" in fname:
+                      digest = item["digests"]["sha256"]
+                      print(f"::notice title=PyPI digest::{fname}")
+                      print(f"::notice title=PyPI sha256::{digest}")
+          PY
+          exit 1
+
   reciprocal-probe:
     name: Reciprocal Probe (ABACUS -> cryoplant-project)
     # Never on pull requests: this job hands the token to checked-out code,
