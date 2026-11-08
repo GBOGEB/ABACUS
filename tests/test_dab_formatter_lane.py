@@ -63,7 +63,10 @@ def test_tier_cfg_rejects_missing_tier_and_extra_writers():
 
 
 def test_collect_pins_reads_only_hash_bearing_json(tmp_path):
-    write(tmp_path / "m/pins.json", '{"a.py": {"sha256": "x"}, "b/c.py": "y"}')
+    write(
+        tmp_path / "m/pins.json",
+        '{"a.py": {"sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"}, "b/c.py": "y"}',
+    )
     write(tmp_path / "m/plain.json", '{"d.py": 1}')
     write(tmp_path / "node_modules/x.json", '{"sha256": 1, "e.py": 1}')
     pins = F.collect_pins(tmp_path)
@@ -72,7 +75,10 @@ def test_collect_pins_reads_only_hash_bearing_json(tmp_path):
 
 
 def test_collect_pins_strips_dot_slash(tmp_path):
-    write(tmp_path / "p.json", '{"blob": "1", "files": ["./x/y.py"]}')
+    write(
+        tmp_path / "p.json",
+        '{"blob": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa", "files": ["./x/y.py"]}',
+    )
     assert "x/y.py" in F.collect_pins(tmp_path)
 
 
@@ -109,7 +115,10 @@ def test_select_builds_chunks_from_the_plan(tmp_path):
     names = [f"pkg/m{i}.py" for i in range(5)]
     for n in names:
         write(tmp_path / n, "x = 1\n")
-    write(tmp_path / "pins.json", '{"sha256": "1", "f": "pkg/m0.py"}')
+    write(
+        tmp_path / "pins.json",
+        '{"sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa", "f": "pkg/m0.py"}',
+    )
     cfg = {**CFG, "max_files_per_lane_pr": 2}
     policy = {"batch_policy": {F.TIER: cfg}}
     with_guard(tmp_path)
@@ -286,3 +295,15 @@ def test_select_fails_closed_when_the_guard_is_missing(tmp_path):
     write(tmp_path / "a.py", "x = 1\n")
     with pytest.raises(ValueError):
         F.select(plan_for(["a.py"]), "W00", POLICY, tmp_path, {"results": []})
+
+
+def test_hash_key_words_without_a_digest_are_not_pins(tmp_path):
+    # Generated API docs list functions named sha256_bytes; they pin nothing.
+    write(
+        tmp_path / "docs/api.json",
+        '{"members": [{"name": "sha256_bytes", "file": "lib/hashing.py"}]}',
+    )
+    write(tmp_path / "m.json", '{"blob": "%s", "f": "real.py"}' % ("b" * 40))
+    pins = F.collect_pins(tmp_path)
+    assert "lib/hashing.py" not in pins
+    assert "real.py" in pins

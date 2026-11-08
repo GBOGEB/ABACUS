@@ -26,6 +26,12 @@ from pathlib import Path
 
 TIER = "FORMATTER_BULK"
 HASH_KEYS = re.compile(r"sha256|blob|source_sha|file_sha|content_sha")
+# A pin needs an actual digest value; a key word alone is not one (API docs list
+# functions named ``sha256_bytes``). Quoted hex of 12+ chars covers short git
+# blob ids; bare runs of 32+ hex chars cover md5/sha1/sha256 in any wrapper.
+DIGEST_VALUE = re.compile(
+    r'"(?:[A-Za-z0-9_-]{0,8}[:=-])?[0-9a-fA-F]{12,}"|\b[0-9a-fA-F]{32,}\b'
+)
 NOSEC = re.compile(r"#\s*nosec\b", re.IGNORECASE)
 PY_PATH = re.compile(r'"([A-Za-z0-9_./-]+\.py)"')
 HEX_LINE = re.compile(
@@ -48,7 +54,7 @@ def tier_cfg(policy: dict) -> dict:
 
 
 def collect_pins(root: Path, exclude: Path | None = None) -> set[str]:
-    """Every .py path named in a JSON file that carries hash/blob keys.
+    """Every .py path named in a JSON file that carries hash/blob keys and a digest.
 
     Deliberately wide: a false positive only skips a file. It cannot see pins
     kept in CSV, Markdown, YAML or code, so CI stays the real check.
@@ -65,7 +71,7 @@ def collect_pins(root: Path, exclude: Path | None = None) -> set[str]:
             text = path.read_text(encoding="utf-8")
         except (OSError, UnicodeDecodeError):
             continue
-        if HASH_KEYS.search(text):
+        if HASH_KEYS.search(text) and DIGEST_VALUE.search(text):
             for name in PY_PATH.findall(text):
                 pins.add(name.removeprefix("./"))
     for path in root.rglob("*"):
