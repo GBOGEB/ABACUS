@@ -141,6 +141,158 @@ jobs:
             ci/governance/tests/test_w31_admission_readback.py \
             ci/governance/tests/test_workflow_policy.py
 
+      - name: G family tests (mip_e2a)
+        # CODE PURPLE vector G (2026-10-31): no main-branch job collected these
+        # 6 files. EXPECTED_MIN 173 = local --collect-only at f131a81a, no
+        # platform skips.
+        if: ${{ !cancelled() }}
+        shell: bash
+        run: |
+          root=MIP/EVIDENCE_TO_ADMISSION_OBSERVATORY
+          python scripts/ci/family_collect_guard.py \
+            --family mip_e2a --expected-min 173 -- \
+            "$root/global/test_global_rollup.py" \
+            "$root/test_observatory.py" \
+            "$root/test_queue_telemetry.py" \
+            "$root/test_w30_collector_negative.py" \
+            "$root/test_wave_convergence.py" \
+            "$root/test_wave_metrics.py"
+
+      - name: G family tests (mip_g3cs)
+        # CODE PURPLE vector G (2026-10-31): no main-branch job collected these
+        # 6 files. EXPECTED_MIN 155 = local --collect-only at f131a81a, no
+        # platform skips.
+        if: ${{ !cancelled() }}
+        shell: bash
+        run: |
+          root=MIP/G3CS_CONVERGENCE_V2
+          python scripts/ci/family_collect_guard.py \
+            --family mip_g3cs --expected-min 155 -- \
+            "$root/observatory/w10/test_w11_spine_contract.py" \
+            "$root/observatory/w10/test_w12_dependency_metrics.py" \
+            "$root/observatory/w10/test_w12_trigger_events.py" \
+            "$root/tests/test_compare_snapshots.py" \
+            "$root/tests/test_converge.py" \
+            "$root/tests/test_postmerge_gate_receipt.py"
+
+      - name: G family tests (handover_v2)
+        # CODE PURPLE vector G (2026-10-31): no main-branch job collected these
+        # 2 files. EXPECTED_MIN 43 = local --collect-only at f131a81a, no
+        # platform skips.
+        if: ${{ !cancelled() }}
+        shell: bash
+        run: |
+          python scripts/ci/family_collect_guard.py \
+            --family handover_v2 --expected-min 43 -- \
+            tools/handover_v2/tests/test_contract.py \
+            tools/handover_v2/tests/test_wave_telemetry.py
+
+      - name: G family tests (misc)
+        # CODE PURPLE vector G (2026-10-31): three single-file families no
+        # main-branch job collected. EXPECTED_MIN 23 = 14 + 8 + 1 from local
+        # --collect-only at f131a81a, no platform skips.
+        if: ${{ !cancelled() }}
+        shell: bash
+        run: |
+          python scripts/ci/family_collect_guard.py \
+            --family misc --expected-min 23 -- \
+            delta1_bridge/tests/test_delta1_bridge.py \
+            handover/cbd_20261016/test_binder.py \
+            qps/human_rendition/w276/test_review_profile.py
+
+      - name: G family tests (qplant)
+        # CODE PURPLE vector G (2026-10-31): no main-branch job collected these
+        # 12 files (pytest.ini norecursedirs excludes qplant). 132 collected at
+        # f131a81a; EXPECTED_MIN 124 = 132 minus 8 deselected tests that read
+        # generated data/*.json and docs/ outputs absent from git (.gitignore
+        # *.json; build_all.sh needs a missing VERSION file). Defect
+        # G-AB-QPLANT-HD-ARTIFACTS: reported, not pinned (--max-xfails 0).
+        # qplant/ai_validation/test_generator.py is production, not a test.
+        if: ${{ !cancelled() }}
+        shell: bash
+        run: |
+          # FastAPI/httpx ranges come from qplant/requirements.txt; the rest of
+          # that file pins old numpy/pandas/pytest and would downgrade the job.
+          grep -E '^(fastapi|httpx)' qplant/requirements.txt \
+            | xargs python -m pip install
+          python -c 'import fastapi, httpx, pydantic'
+          dashboard=qplant/handover_dashboard/tests
+          api="$dashboard/test_api.py"
+          data="$dashboard/test_data_integrity.py"
+          engineering="$dashboard/test_engineering.py"
+          outputs="$dashboard/test_outputs.py"
+          python scripts/ci/family_collect_guard.py \
+            --family qplant --expected-min 124 -- \
+            qplant/ai_validation/tests/test_ai_validation.py \
+            qplant/authentication/tests/test_api_endpoints_auth.py \
+            qplant/authentication/tests/test_api_key_manager.py \
+            qplant/authentication/tests/test_rate_limiter.py \
+            qplant/config_service/tests/test_config_service.py \
+            qplant/handover_dashboard/tests/test_api.py \
+            qplant/handover_dashboard/tests/test_calculations.py \
+            qplant/handover_dashboard/tests/test_config_loader.py \
+            qplant/handover_dashboard/tests/test_data_integrity.py \
+            qplant/handover_dashboard/tests/test_engineering.py \
+            qplant/handover_dashboard/tests/test_outputs.py \
+            qplant/monitoring_dashboard/tests/test_monitoring.py \
+            "--deselect=${api}::test_visualization_catalog" \
+            "--deselect=${data}::test_standards_json_schema" \
+            "--deselect=${data}::test_helium_properties" \
+            "--deselect=${data}::test_compressor_specs" \
+            "--deselect=${engineering}::test_baseline_scenario_total_range" \
+            "--deselect=${outputs}::test_all_expected_files_exist" \
+            "--deselect=${outputs}::test_html_renders" \
+            "--deselect=${outputs}::test_json_valid"
+
+      - name: G family tests (everred_v3)
+        # CODE PURPLE vector G (2026-10-31): no main-branch job collected these
+        # 38 files. EXPECTED_MIN 485 = local --collect-only at f131a81a. Linux
+        # only: src/everred.py and src/control.py import fcntl (POSIX), so 8
+        # modules cannot import on Windows.
+        if: ${{ !cancelled() && runner.os == 'Linux' }}
+        shell: bash
+        run: |
+          python scripts/ci/family_collect_guard.py \
+            --family everred_v3 --expected-min 485 -- \
+            tools/everred_v3/sut_gui/tests/test_coverage_workflow_contract.py \
+            tools/everred_v3/sut_gui/tests/test_http_and_guards.py \
+            tools/everred_v3/sut_gui/tests/test_operator_workbench.py \
+            tools/everred_v3/sut_gui/tests/test_server.py \
+            tools/everred_v3/sut_gui/tests/test_telemetry.py \
+            tools/everred_v3/tests/test_acceptance_cli.py \
+            tools/everred_v3/tests/test_acceptance_core.py \
+            tools/everred_v3/tests/test_acceptance_graph.py \
+            tools/everred_v3/tests/test_acceptance_render.py \
+            tools/everred_v3/tests/test_acceptance_telemetry.py \
+            tools/everred_v3/tests/test_bd_queue_dashboard.py \
+            tools/everred_v3/tests/test_bridge_binding.py \
+            tools/everred_v3/tests/test_cbd_260.py \
+            tools/everred_v3/tests/test_cbd_ggmath_bridge.py \
+            tools/everred_v3/tests/test_cbd_job_graph.py \
+            tools/everred_v3/tests/test_cbd_scheduled_pulse.py \
+            tools/everred_v3/tests/test_ci_latency.py \
+            tools/everred_v3/tests/test_code_purple_w1_growth.py \
+            tools/everred_v3/tests/test_dashboard_leaves.py \
+            tools/everred_v3/tests/test_everred.py \
+            tools/everred_v3/tests/test_everred_ci_dependencies.py \
+            tools/everred_v3/tests/test_four_planes.py \
+            tools/everred_v3/tests/test_git_transactions.py \
+            tools/everred_v3/tests/test_ingest_red_trace.py \
+            tools/everred_v3/tests/test_join_adapter.py \
+            tools/everred_v3/tests/test_joined_census.py \
+            tools/everred_v3/tests/test_live_spine.py \
+            tools/everred_v3/tests/test_mass_signal_join.py \
+            tools/everred_v3/tests/test_metric_hierarchy_registry.py \
+            tools/everred_v3/tests/test_metrics.py \
+            tools/everred_v3/tests/test_mission_cycle.py \
+            tools/everred_v3/tests/test_mission_cycle_html.py \
+            tools/everred_v3/tests/test_model_readiness.py \
+            tools/everred_v3/tests/test_obligation_lineage.py \
+            tools/everred_v3/tests/test_spine_census.py \
+            tools/everred_v3/tests/test_temporal_vector.py \
+            tools/everred_v3/tests/test_top21_rollout.py \
+            tools/everred_v3/tests/test_v3_pipeline.py
+
       - name: Preserve native unit and coverage evidence
         if: always()
         uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9
