@@ -39,7 +39,7 @@ jobs:
             --out test_reports/n16/preflight.json
       - uses: actions/setup-python@v7
         with:
-          python-version: '3.12'
+          python-version: '3.14'
       - name: Source guard
         env:
           EXPECTED_HEAD: ${{ github.event.pull_request.head.sha || github.sha }}
@@ -51,7 +51,7 @@ jobs:
       - name: Install coverage and PyYAML
         run: |
           python -m pip install --disable-pip-version-check \
-            'coverage==7.16.2' 'PyYAML==6.0.2'
+            'coverage==7.16.2' 'PyYAML==6.0.3'
       - name: W16 source-epoch single-process branch flight
         run: |
           set -euo pipefail
