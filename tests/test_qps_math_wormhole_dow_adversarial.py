@@ -147,7 +147,13 @@ class DOWAdversarialTests(TestCase):
 
     def test_non_synthetic_and_unicode_population(self):
         for population in ("QPS_PRIVATE_BID", "SYNTHETIC_\u00e9"):
-            with self.subTest(population=population):
+            # The subTest label must stay ASCII: under -vv pytest echoes
+            # unittest SUBPASSED lines through the console stream while FD
+            # capture is still active, so on a cp1252 Windows console the
+            # raw "\u00e9" lands in the UTF-8 capture file as byte 0xe9 and
+            # the strict capture read raises UnicodeDecodeError. The value
+            # under test is unchanged; only its report label is escaped.
+            with self.subTest(population=ascii(population)):
                 self.check_mutation(
                     "method", "population_id", population, "UNSAFE_POPULATION"
                 )
