@@ -209,7 +209,7 @@ class Rollup(unittest.TestCase):
                         claim(364, slug="ICD", status="CLOSED"),
                         claim(366, slug="ICD"),
                         claim(50, slug="HOLE"),
-                        claim(382, slug="NEW_PLANT"),
+                        claim(382, slug="PLANT_SYNC"),
                     ],
                     [{"key": "QPS:W900", "role": "consumer"}],
                 ),
@@ -330,6 +330,134 @@ class Propose(unittest.TestCase):
             self.assertEqual(wc.validate_claims(body, RULES, "R"), [])
             plain = wc.propose(register, "R", RULES)
             self.assertIn("QPS:W368", plain["_proposal"]["needs_name"])
+
+
+class ReviewFindings(unittest.TestCase):
+    """Regression proofs for the kit 1.2.3 review findings."""
+
+    def test_non_qps_claim_needs_its_native_name(self):
+        for bad in (
+            {"key": "BOOT:Wave-0", "status": "HOLD"},
+            {"key": "BOOT:Wave-0", "name": "", "status": "HOLD"},
+        ):
+            found = wc.validate_claims(doc("R", [bad]), RULES, "R")
+            self.assertIn("C2_NAME", codes(found))
+
+    def test_local_slug_reuse_needs_declared_earlier_parent(self):
+        a, b = claim(100, slug="ALPHA"), claim(101, slug="ALPHA")
+        found = wc.validate_claims(doc("R", [a, b]), RULES, "R")
+        self.assertEqual(codes(found), ["D4_SLUG_NO_LINEAGE"])
+        self.assertEqual(found[0]["key"], "QPS:W101")
+        ok = dict(b, parent="QPS:W100")
+        self.assertEqual(wc.validate_claims(doc("R", [a, ok]), RULES, "R"), [])
+        backwards = dict(a, parent="QPS:W101")
+        found = wc.validate_claims(doc("R", [backwards, b]), RULES, "R")
+        self.assertEqual(codes(found), ["D4_SLUG_NO_LINEAGE"])
+        lineage = {"QPS:W101": {"QPS:W100"}}
+        self.assertEqual(
+            wc.validate_claims(doc("R", [a, b]), RULES, "R", lineage_parents=lineage),
+            [],
+        )
+
+    def test_rollup_reports_local_slug_reuse_once(self):
+        sets = {
+            "R": (doc("R", [claim(100, slug="ALPHA"), claim(101, slug="ALPHA")]), False)
+        }
+        _, found, _ = wc.rollup(
+            sets, {"QPS:W100": {"R"}, "QPS:W101": {"R"}}, set(), RULES
+        )
+        self.assertEqual(codes(found), ["D4_SLUG_NO_LINEAGE"])
+
+    def test_allocation_must_not_skip_next_free(self):
+        observed = {"QPS:W381": {"R"}}
+        good = {"R": (doc("R", [claim(382, slug="A"), claim(383, slug="B")]), False)}
+        _, found, census = wc.rollup(good, observed, set(), RULES)
+        self.assertEqual(found, [])
+        self.assertEqual(census["next_free"], {"QPS": "W384"})
+        skip = {"R": (doc("R", [claim(382, slug="A"), claim(999, slug="B")]), False)}
+        _, found, _ = wc.rollup(skip, observed, set(), RULES)
+        self.assertEqual(
+            [(f["code"], f["key"]) for f in found], [("N2_SKIP", "QPS:W999")]
+        )
+
+    def test_retired_names_and_aliases_stay_reserved(self):
+        first = {
+            "A": (
+                doc(
+                    "A",
+                    [
+                        claim(
+                            300,
+                            slug="LEGACY_PLANT",
+                            status="CLOSED",
+                            aliases=["legacy-plant"],
+                        )
+                    ],
+                ),
+                False,
+            )
+        }
+        _, found, census = wc.rollup(first, {"QPS:W300": {"A"}}, set(), RULES)
+        self.assertEqual(found, [])
+        reserved = census["reserved"]
+        self.assertEqual(
+            {(e["kind"], e["key"]) for e in reserved},
+            {("name", "QPS:W300"), ("alias", "QPS:W300")},
+        )
+        self.assertTrue(all(len(e["sha256"]) == 64 for e in reserved))
+        # W300's claim is gone; a new key reuses its name and alias.
+        later = {
+            "B": (
+                doc(
+                    "B",
+                    [
+                        {
+                            "key": "QPS:W301",
+                            "name": "W300_LEGACY_PLANT",
+                            "status": "ACTIVE",
+                            "aliases": ["legacy-plant"],
+                        }
+                    ],
+                ),
+                False,
+            )
+        }
+        _, found, census2 = wc.rollup(
+            later, {"QPS:W301": {"B"}}, set(), RULES, reserved=reserved
+        )
+        got = {(f["code"], f["key"]) for f in found}
+        self.assertIn(("D2_NAME_REUSE", "QPS:W301"), got)
+        self.assertIn(("D3_ALIAS_CLASH", "QPS:W301"), got)
+        self.assertTrue(
+            {(e["kind"], e["key"]) for e in census2["reserved"]}
+            >= {("name", "QPS:W300"), ("alias", "QPS:W300")}
+        )
+        # The original key may keep its own retired name.
+        again = {
+            "A": (doc("A", [claim(300, slug="LEGACY_PLANT", status="CLOSED")]), False)
+        }
+        _, found, _ = wc.rollup(
+            again, {"QPS:W300": {"A"}}, set(), RULES, reserved=reserved
+        )
+        self.assertEqual(found, [])
+
+    def test_paths_are_normalized_and_must_stay_in_the_repo(self):
+        self.assertEqual(wc.normalize_path("./src//a/"), "src/a/")
+        self.assertEqual(wc.normalize_path("src/a"), "src/a")
+        for bad in ("/etc", "src/x/../a", "..", "C:/x", "src\\a", "", "."):
+            self.assertIsNone(wc.normalize_path(bad), bad)
+        unsafe = claim(364, paths=["src/x/../a", "/abs"])
+        self.assertEqual(
+            codes(wc.validate_claims(doc("R", [unsafe]), RULES, "R")),
+            ["C9_PATH", "C9_PATH"],
+        )
+        # Syntactically different spellings of one prefix now overlap (D5).
+        one = claim(364, paths=["src/a"])
+        two = claim(365, slug="OTHER", paths=["./src//a/sub"])
+        self.assertEqual(
+            codes(wc.validate_claims(doc("R", [one, two]), RULES, "R")),
+            ["D5_PATH_OVERLAP"],
+        )
 
 
 class Cli(unittest.TestCase):

@@ -20,6 +20,7 @@ from __future__ import annotations
 import argparse
 import collections
 import hashlib
+import posixpath
 import re
 import subprocess
 import sys
@@ -85,8 +86,48 @@ def _overlaps(a: str, b: str) -> bool:
     return a.startswith(b) or b.startswith(a)
 
 
+def _checked_paths(c: dict, key: str, repo: str, out: list) -> list[str]:
+    """Normalized path boundaries of one claim; C9_PATH for unsafe ones."""
+    paths = []
+    for raw in as_list(c.get("paths")):
+        norm = normalize_path(raw)
+        if norm is None:
+            out.append(
+                violation(
+                    "C9_PATH",
+                    key,
+                    repo,
+                    "path must be repo-relative, without '..', '\\' or a leading '/'",
+                )
+            )
+        else:
+            paths.append(norm)
+    return paths
+
+
+def normalize_path(path: str) -> str | None:
+    """Repo-relative POSIX prefix, or None when it could escape or alias the repo."""
+    raw = str(path).strip()
+    if (
+        not raw
+        or "\\" in raw
+        or raw.startswith("/")
+        or re.match(r"^[A-Za-z]:", raw)
+        or ".." in raw.split("/")
+    ):
+        return None
+    norm = posixpath.normpath(raw)
+    if norm in (".", ""):
+        return None
+    return norm + "/" if raw.endswith("/") else norm
+
+
 def validate_claims(
-    doc: dict, rules: dict, repo: str | None = None, private: bool = False
+    doc: dict,
+    rules: dict,
+    repo: str | None = None,
+    private: bool = False,
+    lineage_parents: dict[str, set[str]] | None = None,
 ) -> list[dict]:
     """Rule checks that a single repo can run on its own claims file."""
     out: list[dict] = []
@@ -156,7 +197,7 @@ def validate_claims(
                             f"slug uses reserved tokens {sorted(bad)}",
                         )
                     )
-        elif name and name != km.group("id"):
+        elif name != km.group("id"):
             out.append(
                 violation(
                     "C2_NAME",
@@ -213,7 +254,7 @@ def validate_claims(
                 "name": name,
                 "aliases": aliases,
                 "parents": [str(p) for p in as_list(c.get("parent"))],
-                "paths": [str(p) for p in as_list(c.get("paths"))],
+                "paths": _checked_paths(c, key, repo, out),
             }
         )
     for key, n in seen_keys.items():
@@ -270,6 +311,30 @@ def validate_claims(
                     "a repo cannot own and participate in the same key",
                 )
             )
+    # D4: inside this file a slug carries forward only to a later number that
+    # declares an earlier holder of the slug as parent.
+    by_slug = collections.defaultdict(list)
+    for row in owned:
+        s = slug_of(row["name"], rules)
+        if s and key_number(row["key"]) is not None:
+            by_slug[s].append(row)
+    for rows in by_slug.values():
+        chain = sorted(rows, key=lambda r: (key_number(r["key"]), r["key"]))
+        for position, later in enumerate(chain[1:], start=1):
+            earlier = {r["key"] for r in chain[:position]}
+            known = set(later["parents"]) | (lineage_parents or {}).get(
+                later["key"], set()
+            )
+            if not earlier & known:
+                out.append(
+                    violation(
+                        "D4_SLUG_NO_LINEAGE",
+                        later["key"],
+                        repo,
+                        "slug carried forward without declaring an earlier holder as parent",
+                    )
+                )
+
     # D5: path boundaries inside one repo
     for i, a in enumerate(owned):
         for b in owned[i + 1 :]:
@@ -294,13 +359,25 @@ def rollup(
     observed: dict[str, set[str]],
     lineage: set[tuple[str, str]],
     rules: dict,
+    reserved: list[dict] | None = None,
 ) -> tuple[dict, list[dict], dict]:
-    """Merge every repo's claims; return (per-key claims, violations, census)."""
+    """Merge every repo's claims; return (per-key claims, violations, census).
+
+    reserved: the cumulative index of every name and alias ever claimed
+    ({"sha256", "key", "kind"}), normally the previous register's
+    dedup.reserved. Retired names and aliases stay bound to their key forever;
+    census["reserved"] returns the updated index.
+    """
     violations: list[dict] = []
     owners: dict[str, list[tuple[str, dict, bool]]] = collections.defaultdict(list)
     participants: dict[str, dict[str, str]] = collections.defaultdict(dict)
+    lineage_parents: dict[str, set[str]] = collections.defaultdict(set)
+    for child, parent in lineage:
+        lineage_parents[child].add(parent)
     for repo, (doc, private) in sorted(claim_sets.items()):
-        violations += validate_claims(doc, rules, repo, private)
+        violations += validate_claims(
+            doc, rules, repo, private, lineage_parents=lineage_parents
+        )
         if not isinstance(doc, dict):
             continue
         for c in as_list(doc.get("owns")):
@@ -359,8 +436,9 @@ def rollup(
             rec["name"] = name
             if aliases:
                 rec["aliases"] = aliases
-            if c.get("paths"):
-                rec["paths"] = [str(p) for p in as_list(c.get("paths"))]
+            norm = [normalize_path(p) for p in as_list(c.get("paths"))]
+            if any(norm):
+                rec["paths"] = [n for n in norm if n]
         if as_list(c.get("parent")):
             rec["parent"] = [str(p) for p in as_list(c.get("parent"))]
         if participants.get(key):
@@ -390,11 +468,43 @@ def rollup(
                         "alias also resolves to " + ", ".join(sorted(clash - {k})),
                     )
                 )
+    # Retired names and aliases stay reserved to the key that first held them.
+    held = {}
+    for entry in reserved or []:
+        held.setdefault((entry["sha256"], entry["kind"]), entry["key"])
+    for kind, index, code in (
+        ("name", name_index, "D2_NAME_REUSE"),
+        ("alias", alias_index, "D3_ALIAS_CLASH"),
+    ):
+        for d, keys in index.items():
+            for other_kind in ("name", "alias"):
+                owner = held.get((d, other_kind))
+                if owner is None:
+                    continue
+                for k in sorted(keys - {owner}):
+                    violations.append(
+                        violation(
+                            code,
+                            k,
+                            claimants[k],
+                            f"{kind} is reserved by {owner} ({other_kind}, retired names never return)",
+                        )
+                    )
+    for d, keys in name_index.items():
+        for k in keys:
+            held.setdefault((d, "name"), k)
+    for d, keys in alias_index.items():
+        for k in keys:
+            held.setdefault((d, "alias"), k)
+
+    flagged_d4 = {v["key"] for v in violations if v["code"] == "D4_SLUG_NO_LINEAGE"}
     for d, keys in slug_index.items():
         if len(keys) < 2:
             continue
         chain = sorted(keys, key=lambda k: (key_number(k) or 0, k))
         for position, later in enumerate(chain[1:], start=1):
+            if later in flagged_d4:
+                continue
             if not (parents[later] & set(chain[:position])):
                 violations.append(
                     violation(
@@ -419,6 +529,26 @@ def rollup(
                     f"unobserved number below the observed maximum W{top:03d}",
                 )
             )
+
+    # Numbering: new numbers above the observed maximum are allocated next_free,
+    # contiguously (W382, W383, ...); skipping ahead is not allowed.
+    fresh = sorted(
+        (key_number(k), k)
+        for k in claims
+        if key_number(k) is not None and k not in observed and key_number(k) > top
+    )
+    expected = top + 1
+    for n, key in fresh:
+        if n != expected:
+            violations.append(
+                violation(
+                    "N2_SKIP",
+                    key,
+                    claimants[key],
+                    f"allocation skips the next free number W{expected:03d}",
+                )
+            )
+        expected = max(expected, n) + 1
 
     # Overlap census: repos that touch an owned key without declaring a role.
     undeclared = 0
@@ -465,6 +595,12 @@ def rollup(
         "next_free": {
             "QPS": f"W{max(claimed_nums + observed_nums, default=9) + 1:03d}"
         },
+        "reserved": [
+            {"sha256": d, "kind": kind, "key": k}
+            for (d, kind), k in sorted(
+                held.items(), key=lambda kv: (kv[1], kv[0][1], kv[0][0])
+            )
+        ],
         "violations": {
             "error": sev.get("error", 0),
             "warning": sev.get("warning", 0),

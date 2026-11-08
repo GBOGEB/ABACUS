@@ -17,6 +17,7 @@ on:
       - ".waves/**"
       - "federation/waves/**"
       - "scripts/wave_claims.py"
+      - "tests/test_wave_claims_*.py"
   workflow_dispatch:
 
 permissions:
@@ -27,7 +28,7 @@ jobs:
     runs-on: ubuntu-latest
     env:
       EXPECTED_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
-      CODEX_KIT_REF: 95bd0f1ced955b2f25732378cf29e72d0071e7f8  # kit 1.2.2
+      CODEX_KIT_REF: 79a5585f93d48efe1bc3e44d3135bcdad35eb9f0  # kit 1.2.3
     steps:
       - name: Check out exact evaluated SHA
         uses: actions/checkout@v7
