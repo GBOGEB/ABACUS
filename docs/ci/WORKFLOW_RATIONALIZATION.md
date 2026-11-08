@@ -82,7 +82,7 @@ Make PR-triggered workflows with write-class GitHub token scopes explicit and re
 | 20 | `pr_domain` | `bridge_federation` | `bridge-ci.yml` | push, pull_request, workflow_dispatch | 6 | `keep` | — |
 | 20 | `pr_domain` | `bridge_federation` | `codespace-federation.yml` | push, pull_request, workflow_dispatch, repository_dispatch | 1 | `keep` | — |
 | 20 | `pr_domain` | `bridge_federation` | `creq-federation-ci.yml` | pull_request, workflow_dispatch | 1 | `keep` | — |
-| 20 | `pr_domain` | `bridge_federation` | `cryoplant-federation.yml` | push, pull_request, schedule, workflow_dispatch | 2 | `keep` | — |
+| 20 | `pr_domain` | `bridge_federation` | `cryoplant-federation.yml` | push, pull_request, schedule, workflow_dispatch | 3 | `keep` | — |
 | 20 | `pr_domain` | `bridge_federation` | `dependency-spine-peer-census.yml` | pull_request, push, workflow_dispatch, schedule | 1 | `keep` | — |
 | 20 | `pr_domain` | `bridge_federation` | `dependency-spine-stage-only.yml` | pull_request, workflow_dispatch | 1 | `keep` | — |
 | 20 | `pr_domain` | `bridge_federation` | `federation-bridge-contract.yml` | pull_request, workflow_dispatch | 1 | `keep` | — |
