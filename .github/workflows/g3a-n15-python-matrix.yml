@@ -24,7 +24,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        python-version: ['3.10', '3.12']
+        python-version: ['3.11', '3.12', '3.13', '3.14', '3.15']
     steps:
       - name: Checkout exact PR head
         uses: actions/checkout@v7
@@ -51,7 +51,7 @@ jobs:
         with:
           python-version: ${{ matrix.python-version }}
       - name: Install narrow compatibility tools
-        run: python -m pip install --disable-pip-version-check 'coverage[toml]==7.16.2' 'PyYAML==6.0.2' 'pytest>=8,<9'
+        run: python -m pip install --disable-pip-version-check 'coverage[toml]==7.16.2' 'PyYAML==6.0.3' 'pytest>=8,<9'
       - name: Run source-epoch W16 tests and measure the pinned five-file arcs
         shell: bash
         run: |
