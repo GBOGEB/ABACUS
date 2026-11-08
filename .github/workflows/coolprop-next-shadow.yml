@@ -84,7 +84,7 @@ jobs:
           clis=(
             "-m models.qps_line_s.recovery_model"
             "models/qps_quantitative/p05j_quantitative.py"
-            "models/qps_line_b/run_measured_sensitivity.py"
+            "-m models.qps_line_b.run_measured_sensitivity"
             "qplant/w53_p05s_qcell_jt_flash_receipt.py"
           )
           cli_report=""
@@ -249,7 +249,7 @@ jobs:
           clis() {
             for cli in "-m models.qps_line_s.recovery_model" \
                        "models/qps_quantitative/p05j_quantitative.py" \
-                       "models/qps_line_b/run_measured_sensitivity.py" \
+                       "-m models.qps_line_b.run_measured_sensitivity" \
                        "qplant/w53_p05s_qcell_jt_flash_receipt.py"; do
               # shellcheck disable=SC2086
               out="$(python ${cli} 2>&1 > /dev/null)"
