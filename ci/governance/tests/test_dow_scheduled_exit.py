@@ -13,7 +13,6 @@ import tempfile
 import unittest
 from pathlib import Path
 
-
 ROOT = Path(__file__).resolve().parents[3]
 WORKFLOW = ROOT / ".github/workflows/dow-scheduled.yml"
 
@@ -38,8 +37,8 @@ class DowScheduledExitContract(unittest.TestCase):
             root = Path(directory)
             stub = root / "python"
             stub.write_text(
-                "#!/bin/sh\nprintf '%s\\n' \"$*\" >> \"$DOW_STUB_LOG\"\n"
-                "exit \"$DOW_STUB_EXIT\"\n",
+                '#!/bin/sh\nprintf \'%s\\n\' "$*" >> "$DOW_STUB_LOG"\n'
+                'exit "$DOW_STUB_EXIT"\n',
                 encoding="utf-8",
             )
             stub.chmod(0o755)
@@ -53,7 +52,16 @@ class DowScheduledExitContract(unittest.TestCase):
                 }
             )
             result = subprocess.run(
-                ["bash", "--noprofile", "--norc", "-e", "-o", "pipefail", "-c", step_script(name)],
+                [
+                    "bash",
+                    "--noprofile",
+                    "--norc",
+                    "-e",
+                    "-o",
+                    "pipefail",
+                    "-c",
+                    step_script(name),
+                ],
                 cwd=root,
                 env=env,
                 check=False,
@@ -87,7 +95,9 @@ class DowScheduledExitContract(unittest.TestCase):
 
     def test_failure_diagnostics_are_kept_and_notified(self):
         source = WORKFLOW.read_text(encoding="utf-8")
-        self.assertRegex(source, r"- name: Upload execution logs\n        if: always\(\)")
+        self.assertRegex(
+            source, r"- name: Upload execution logs\n        if: always\(\)"
+        )
         self.assertRegex(source, r"- name: Notify on failure\n        if: failure\(\)")
 
 
