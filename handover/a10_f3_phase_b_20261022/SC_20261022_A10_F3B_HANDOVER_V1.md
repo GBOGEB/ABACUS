@@ -1,6 +1,8 @@
 # A10 F2+F3 phase B - lossless handover (20261022)
 
-Cut `A10-F3B-20261022-v1` · method `handover/mip/LOSSLESS_RESTART_PROTOCOL_V1.md` · state `SC_20261022_A10_F3B_STATE_V1.json` (authoritative over this text).
+Cut `A10-F3B-20261022-v1` · method `handover/mip/LOSSLESS_RESTART_PROTOCOL_V1.md` · state `SC_20261109_A10_F3B_STATE_V2.json` (new bounded continuation; live PR and ruleset evidence still outranks it).
+
+> **Correction recorded 2026-11-09:** the previously named 2026-10-22 V1 JSON state file was not present in the reviewed PR. No missing original state has been reconstructed or backdated. The new `SC_20261109_A10_F3B_STATE_V2.json` is a separately dated, bounded **observation at its parent head**, with unknowns explicitly retained; it is not proof of a private-source move, security acceptance or current-head native CI. Re-read GitHub after any commit.
 
 ## What changed
 - ABACUS `fix/a10-f3-phase-b-20261022` from main `44caccf716`: 13 files with offer figures or a restricted deck's identity removed; deck identity in `qps_slide_reviewer/lib/analytics.ts` moved to env vars; W05 evaluation workflow renamed; supplier/vendor codes that returned since phase A (#2075) re-aliased; 15 data/lineage files point at the private copies; catalog entry `qps-gate-yaml` is now `controlled_input`; 4 allow-list keys of removed versions dropped (guard stricter).
