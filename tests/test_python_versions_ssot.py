@@ -319,6 +319,40 @@ def test_held_workflow_is_reported_not_rewritten(tmp_path, capsys):
     assert "HELD      .github/workflows/held.yml: needs review" in capsys.readouterr().out
 
 
+def test_cap_exemption_is_per_job_and_fails_closed_when_stale(tmp_path, capsys):
+    workflow = """\
+    jobs:
+      oracle:
+        steps:
+          - run: pip install oraclepkg==7.2.0
+          - uses: actions/setup-python@v7
+            with: {python-version: '3.24'}
+      candidate:
+        strategy:
+          matrix:
+            python-version: ['3.20', '3.21', '3.22', '3.23', '3.24']
+        steps:
+          - run: pip install oraclepkg==8.0.0
+          - uses: actions/setup-python@v7
+            with: {python-version: '${{ matrix.python-version }}'}
+    """
+    root = make_repo(tmp_path, {"shadow.yml": workflow})
+    ssot = root / "ssot/python_versions.yaml"
+    ssot.write_text(ssot.read_text().replace(
+        "    patterns: ['(?i)oraclepkg']\n",
+        "    patterns: ['(?i)oraclepkg']\n"
+        "    exempt_jobs: [.github/workflows/shadow.yml:candidate]\n"))
+    assert run(root, "sync") == 0
+    text = wf(root, "shadow.yml")
+    assert "python-version: '3.23'" in text  # oracle job capped at 3.23
+    assert "['3.20', '3.21', '3.22', '3.23', '3.24']" in text  # exempt job keeps the full lane
+    assert run(root, "check") == 0
+    ssot.write_text(ssot.read_text().replace("shadow.yml:candidate", "shadow.yml:renamed"))
+    capsys.readouterr()
+    assert run(root, "check") == 1
+    assert "exempt job .github/workflows/shadow.yml:renamed does not exist" in capsys.readouterr().out
+
+
 def test_sync_refuses_while_unhandled_sites_exist(tmp_path):
     root = make_repo(tmp_path, {"w.yml": "jobs:\n  j:\n    steps:\n      - run: uv python install 3.19\n"})
     assert run(root, "sync") == 2

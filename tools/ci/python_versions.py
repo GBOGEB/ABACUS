@@ -131,11 +131,13 @@ class Policy:
                    data.get("derived_files", []), list(data.get("end_of_life", [])),
                    {k: " ".join(str(v).split()) for k, v in (data.get("held_workflows") or {}).items()})
 
-    def lane(self, rel: str, text: str) -> Lane:
+    def lane(self, rel: str, text: str, job: str | None = None) -> Lane:
         if rel in self.canary:
             return Lane(list(self.experimental), self.experimental[0], "experimental")
         cap, cap_name = None, None
         for name, spec in self.caps.items():
+            if job is not None and f"{rel}:{job}" in spec.get("exempt_jobs", []):
+                continue  # named job that does not use what this cap protects
             if any(re.search(p, text) for p in spec["patterns"]):
                 if cap is None or vkey(spec["max"]) < vkey(cap):
                     cap, cap_name = spec["max"], name
@@ -438,7 +440,7 @@ class Scanner:
             where = f"jobs.{key_node.value}"
             # Caps apply per job: workflow header (on/env) plus this job's own text.
             job_text = self.s.text[key_node.start_mark.index:job.end_mark.index]
-            self.lane = self.policy.lane(self.s.rel, header + job_text)
+            self.lane = self.policy.lane(self.s.rel, header + job_text, job=key_node.value)
             keys: set[str] = set()
             pinned = self.steps(mget(job, "steps"), where, job=job, matrix_keys=keys)
             with_ = mget(job, "with")  # reusable workflow call
@@ -573,6 +575,16 @@ def problems_and_drift(root: Path, policy: Policy):
     for rel in policy.held:
         if not (root / rel).exists():
             problems.append(f"{rel}: held in SSOT but missing")
+    for name, spec in policy.caps.items():
+        for entry in spec.get("exempt_jobs", []):
+            rel, _, job = entry.rpartition(":")
+            path = root / rel
+            jobs = {}
+            if path.exists():
+                loaded = yaml.safe_load(path.read_text(encoding="utf-8")) or {}
+                jobs = loaded.get("jobs") or {}
+            if job not in jobs:
+                problems.append(f"cap {name}: exempt job {entry} does not exist")
     derived = derived_updates(root, policy)
     view_path = root / LANES_VIEW_PATH
     view_old = view_path.read_text(encoding="utf-8") if view_path.exists() else ""
