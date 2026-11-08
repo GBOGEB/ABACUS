@@ -42,7 +42,7 @@ jobs:
       - name: Execute snapshot contract and negative tests
         run: |
           python -m coverage run --branch --include='*/scripts/cbd_e2e_graph_contract.py' -m pytest -q tests/test_cbd_e2e_graph_contract.py
-          python -m coverage json --output=/tmp/cbd-graph-contract-coverage.json
+          python -m coverage json -o /tmp/cbd-graph-contract-coverage.json
       - name: Require native source and graph denominators
         run: |
           python - <<'PY'
