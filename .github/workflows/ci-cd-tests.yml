@@ -765,7 +765,7 @@ jobs:
         run: |
           python -m pip install --upgrade pip
           python -m pip install --upgrade "setuptools>=83.0.0"
-          python -m pip install "bandit==1.8.6" safety
+          python -m pip install "bandit==1.9.4" safety
           python -m pip check
           python -m pip show setuptools nltk
 
@@ -780,21 +780,8 @@ jobs:
           set -e
           echo "exit_code=$bandit_status" >> "$GITHUB_OUTPUT"
           report_valid=0
-          if python - <<'PY'
-          import json
-          from pathlib import Path
-
-          report = json.loads(
-              Path("bandit-report.json").read_text(encoding="utf-8")
-          )
-          if not isinstance(report, dict):
-              raise ValueError("Bandit report must be an object")
-          if not isinstance(report.get("results"), list):
-              raise ValueError("Bandit report is missing results")
-          if not isinstance(report.get("metrics"), dict):
-              raise ValueError("Bandit report is missing metrics")
-          PY
-          then
+          # Scanner errors are not valid coverage, even with a JSON report.
+          if python scripts/ci/bandit_report_guard.py bandit-report.json; then
             report_valid=1
           fi
           if [[ "$bandit_status" -gt 1 || "$report_valid" -ne 1 ]]; then
