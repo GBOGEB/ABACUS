@@ -1951,5 +1951,122 @@ class FeedbackGateTests(unittest.TestCase):
         self.assertEqual(len({stamp for _, _, stamp in published}), 1)
 
 
+class ReviewWaitExpiryTests(unittest.TestCase):
+    HEAD = "1234567890abcdef1234567890abcdef12345678"
+    SINCE = "2026-11-08T12:00:00Z"
+
+    @staticmethod
+    def at(hours: float):
+        return gate.dt.datetime(2026, 11, 8, 12, tzinfo=gate.dt.UTC) + (
+            gate.dt.timedelta(hours=hours)
+        )
+
+    def evidence(self, **overrides):
+        fields = {
+            "head_sha": self.HEAD,
+            "code_review_complete": True,
+            "security_review_complete": False,
+            "unresolved_threads": 0,
+            "ci_pending": (),
+            "ci_failed": (),
+            "ci_seen": 15,
+            "deferred_comments": (),
+            "security_sensitive": True,
+        }
+        fields.update(overrides)
+        return gate.Evidence(**fields)
+
+    def test_review_wait_stays_pending_inside_ceiling(self):
+        evidence = self.evidence()
+        self.assertEqual(evidence.state, "pending")
+        self.assertEqual(
+            gate.review_wait_expiry(evidence, self.SINCE, self.at(5.99)), ""
+        )
+
+    def test_review_wait_fails_after_ceiling(self):
+        evidence = self.evidence()
+        reason = gate.review_wait_expiry(evidence, self.SINCE, self.at(6))
+        self.assertIn("not received within 6h", reason)
+        self.assertIn(self.HEAD[:12], reason)
+        expired = gate.replace(evidence, review_wait_expired=reason)
+        self.assertEqual(expired.state, "failure")
+        self.assertEqual(expired.failure_reasons[0], reason)
+        # The review waits stay visible next to the failure.
+        self.assertIn(gate.SECURITY_REVIEW_MANDATORY, expired.pending_reasons)
+        title, _, text = gate.render(2665, expired)
+        self.assertEqual(title, "PR #2665 feedback gate: FAILURE")
+        self.assertIn(reason, text)
+
+    def test_ci_still_pending_never_expires(self):
+        for overrides in (
+            {"ci_pending": ("CI pending: smoke-test [pull_request]",)},
+            {"ci_pending": ("CI missing: smoke-test",)},
+            {"ci_seen": 0},
+        ):
+            with self.subTest(overrides=overrides):
+                evidence = self.evidence(**overrides)
+                self.assertEqual(
+                    gate.review_wait_expiry(evidence, self.SINCE, self.at(48)), ""
+                )
+
+    def test_success_and_failure_are_untouched(self):
+        green = self.evidence(security_review_complete=True)
+        red = self.evidence(ci_failed=("CI not green: x = failure",))
+        for evidence in (green, red):
+            self.assertEqual(
+                gate.review_wait_expiry(evidence, self.SINCE, self.at(48)), ""
+            )
+
+    def test_unknown_or_bad_head_time_never_expires(self):
+        evidence = self.evidence()
+        self.assertEqual(gate.review_wait_expiry(evidence, "", self.at(48)), "")
+        self.assertEqual(
+            gate.review_wait_expiry(evidence, "not-a-time", self.at(48)), ""
+        )
+
+    def test_evaluate_applies_ceiling_from_head_arrival(self):
+        head = self.HEAD
+
+        class FakeGitHub:
+            def issue_comments(self, number):
+                return []
+
+            def review_threads(self, number):
+                return []
+
+            def actions_runs(self, head_sha):
+                return [
+                    {
+                        "name": "Advisory lint",
+                        "event": "pull_request",
+                        "head_sha": head,
+                        "status": "completed",
+                        "conclusion": "success",
+                        "created_at": "2026-11-08T12:00:00Z",
+                        "pull_requests": [{"number": 1}],
+                    }
+                ]
+
+            def pull_file_records(self, number):
+                return [{"filename": "README.md"}]
+
+            def issue(self, number):
+                return {"state": "open"}
+
+        pull = {
+            "state": "open",
+            "base": {"ref": "main"},
+            "head": {"sha": head},
+            "changed_files": 1,
+        }
+        with mock.patch.object(gate, "classify_runs", return_value=((), (), 3)):
+            early = gate.evaluate(FakeGitHub(), 1, pull, now=self.at(1))
+            late = gate.evaluate(FakeGitHub(), 1, pull, now=self.at(7))
+        self.assertEqual(early.state, "pending")
+        self.assertEqual(early.review_wait_expired, "")
+        self.assertEqual(late.state, "failure")
+        self.assertIn("since 2026-11-08T12:00:00Z", late.review_wait_expired)
+
+
 if __name__ == "__main__":
     unittest.main()

@@ -167,6 +167,23 @@ CODEX_BOT_ID = 199175422
 CODEX_APP_ID = 1144995
 CODEX_APP_SLUG = "chatgpt-codex-connector"
 
+# Pending reasons that wait on an external reviewer rather than on CI. A
+# check run created through the API has no runner and no timeout-minutes, so
+# without a ceiling a PR whose review never arrives shows "in progress"
+# forever. Once only these reasons remain for longer than
+# REVIEW_WAIT_CEILING after the head became current, the census concludes
+# the gate as failure. This never admits anything; the next census after the
+# review is posted re-evaluates and can still publish success.
+CODE_REVIEW_PENDING = "Codex code review is not complete on current head"
+SECURITY_REVIEW_PENDING = "Codex security review is not complete on current head"
+SECURITY_REVIEW_MANDATORY = (
+    "Codex security review is mandatory pre-merge for security-sensitive changes"
+)
+REVIEW_WAIT_REASONS = frozenset(
+    {CODE_REVIEW_PENDING, SECURITY_REVIEW_PENDING, SECURITY_REVIEW_MANDATORY}
+)
+REVIEW_WAIT_CEILING = dt.timedelta(hours=6)
+
 
 @dataclass(frozen=True)
 class Evidence:
@@ -183,10 +200,13 @@ class Evidence:
     blocking_review_items: tuple[str, ...] = ()
     review_deferral_details: tuple[str, ...] = ()
     review_source: str = "codex"
+    review_wait_expired: str = ""
 
     @property
     def failure_reasons(self) -> tuple[str, ...]:
         reasons: list[str] = []
+        if self.review_wait_expired:
+            reasons.append(self.review_wait_expired)
         reasons.extend(self.blocking_review_items)
         if self.unresolved_threads and not self.review_deferral_valid:
             reasons.append(f"{self.unresolved_threads} unresolved review thread(s)")
@@ -203,14 +223,11 @@ class Evidence:
     def pending_reasons(self) -> tuple[str, ...]:
         reasons: list[str] = []
         if not self.code_review_complete and not self.review_deferral_valid:
-            reasons.append("Codex code review is not complete on current head")
+            reasons.append(CODE_REVIEW_PENDING)
         if not self.security_review_complete and not self.review_deferral_valid:
-            reasons.append("Codex security review is not complete on current head")
+            reasons.append(SECURITY_REVIEW_PENDING)
         if self.security_sensitive and not self.security_review_complete:
-            reasons.append(
-                "Codex security review is mandatory pre-merge for "
-                "security-sensitive changes"
-            )
+            reasons.append(SECURITY_REVIEW_MANDATORY)
         if not self.ci_seen:
             reasons.append("no current-head GitHub Actions evidence found")
         reasons.extend(self.ci_pending)
@@ -1358,6 +1375,7 @@ def evaluate(
     github: GitHub,
     number: int,
     pull: dict[str, Any] | None = None,
+    now: dt.datetime | None = None,
 ) -> Evidence | None:
     pull = pull or github.pull(number)
     if pull.get("state") != "open":
@@ -1422,7 +1440,7 @@ def evaluate(
         code_review_complete,
         security_review_complete,
     )
-    return Evidence(
+    evidence = Evidence(
         head_sha=head_sha,
         code_review_complete=code_review_complete,
         security_review_complete=security_review_complete,
@@ -1440,6 +1458,47 @@ def evaluate(
         blocking_review_items=blocking_items,
         review_deferral_details=deferral_details,
         review_source="codex",
+    )
+    return replace(
+        evidence,
+        review_wait_expired=review_wait_expiry(
+            evidence,
+            head_current_since(runs, head_sha, number),
+            dt.datetime.now(dt.UTC) if now is None else now,
+        ),
+    )
+
+
+def review_wait_expiry(
+    evidence: Evidence,
+    head_since: str,
+    now: dt.datetime,
+    ceiling: dt.timedelta = REVIEW_WAIT_CEILING,
+) -> str:
+    """Failure reason once a review wait outlives ``ceiling``, else "".
+
+    Applies only when the gate would otherwise be pending and every pending
+    reason is a review wait: CI that is still running or missing keeps the
+    gate pending as before. The clock starts at ``head_since``, the
+    GitHub-server time the current head arrived on the PR, so a push
+    restarts it. With no such time the wait never expires (fail open to
+    pending, which still does not admit the PR).
+    """
+    if evidence.state != "pending" or not head_since:
+        return ""
+    if not set(evidence.pending_reasons) <= REVIEW_WAIT_REASONS:
+        return ""
+    try:
+        since = dt.datetime.fromisoformat(head_since)
+    except ValueError:
+        return ""
+    if now - since < ceiling:
+        return ""
+    hours = ceiling.total_seconds() / 3600
+    return (
+        f"Codex review not received within {hours:g}h of head "
+        f"{evidence.head_sha[:12]} becoming current (since {head_since}); "
+        "the gate re-evaluates when the review is posted"
     )
 
 
@@ -1512,6 +1571,10 @@ def render(number: int, evidence: Evidence) -> tuple[str, str, str]:
         "- no unresolved S0/S1 items; all other threads explicitly classified",
         "- current-head GitHub Actions terminal and green",
         "- S2/Codex deferrals linked to open exact-head issues",
+        (
+            "- a review wait with green CI concludes as failure after "
+            f"{REVIEW_WAIT_CEILING.total_seconds() / 3600:g}h on one head"
+        ),
     ]
     if not evidence.failure_reasons:
         lines[2] = "Failure reasons: none"
