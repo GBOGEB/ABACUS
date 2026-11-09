@@ -502,9 +502,12 @@ def test_bandit_full_scan_is_pinned_and_report_errors_fail_closed():
         / "workflows"
         / "ci-cd-tests.yml"
     ).read_text(encoding="utf-8")
-    assert '"bandit==1.8.6"' in workflow
-    assert 'report.get("results"), list' in workflow
-    assert 'report.get("metrics"), dict' in workflow
+    # The Python 3.14 security owner uses a compatible, pinned Bandit.
+    # The separate Python 3.12 DAB T2 compatibility fixture stays at 1.8.6.
+    assert 'python -m pip install "bandit==1.9.4" safety' in workflow
+    assert 'bandit==1.8.6' in workflow
+    assert 'python scripts/ci/bandit_report_guard.py bandit-report.json' in workflow
+    assert 'if [[ "$bandit_status" -gt 1 || "$report_valid" -ne 1 ]]; then' in workflow
     assert "steps.bandit.outputs.scan_error" in workflow
 
 
