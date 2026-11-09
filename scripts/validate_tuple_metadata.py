@@ -3,12 +3,18 @@
 
 import argparse
 import json
+import sys
 from datetime import datetime, timezone
 from pathlib import Path
-import sys
 
 ROOT_DIR = Path(__file__).resolve().parents[1]
-sys.path.insert(0, str(ROOT_DIR / "src"))
+# src/ holds the `dmaic` package; ROOT_DIR itself holds the top-level `DMAIC_V3`
+# package that `dmaic.config` imports. Both must be importable when this script is
+# run from the repo root (previously only `src` was added -> ModuleNotFoundError:
+# No module named 'DMAIC_V3').
+for _path in (str(ROOT_DIR), str(ROOT_DIR / "src")):
+    if _path not in sys.path:
+        sys.path.insert(0, _path)
 
 from dmaic.tuple_metadata import validate_tracker_payload  # noqa: E402
 
@@ -19,7 +25,11 @@ def main() -> int:
     parser.add_argument("--output", help="Optional validated artifact output path")
     args = parser.parse_args()
 
-    input_path = ROOT_DIR / args.input if not Path(args.input).is_absolute() else Path(args.input)
+    input_path = (
+        ROOT_DIR / args.input
+        if not Path(args.input).is_absolute()
+        else Path(args.input)
+    )
     payload = json.loads(input_path.read_text(encoding="utf-8"))
     errors = validate_tracker_payload(payload)
     if errors:
@@ -28,13 +38,19 @@ def main() -> int:
         return 1
 
     if args.output:
-        output = ROOT_DIR / args.output if not Path(args.output).is_absolute() else Path(args.output)
+        output = (
+            ROOT_DIR / args.output
+            if not Path(args.output).is_absolute()
+            else Path(args.output)
+        )
         output.parent.mkdir(parents=True, exist_ok=True)
         output.write_text(
             json.dumps(
                 {
                     "source": str(input_path),
-                    "validated_at": datetime.now(timezone.utc).isoformat().replace("+00:00", "Z"),
+                    "validated_at": datetime.now(timezone.utc)
+                    .isoformat()
+                    .replace("+00:00", "Z"),
                     "status_schema": payload.get("status_schema", []),
                     "tuple_metadata": payload.get("tuple_metadata", []),
                 },

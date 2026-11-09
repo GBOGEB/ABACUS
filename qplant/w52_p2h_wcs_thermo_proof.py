@@ -4,6 +4,7 @@ Uses the governed helium property provider for state properties and computes
 reference compression metrics for the current SUPPLIER_B FSD575 design point.
 The purpose is validation and reconciliation, not vendor-performance promotion.
 """
+
 from __future__ import annotations
 
 import json
@@ -45,7 +46,11 @@ def fsd575_design_proof(
     P1 = P1_bara * 1e5
     P2 = P2_bara * 1e5
     st1 = state_tp(T1_K, P1)
-    h2s = float(__import__("CoolProp.CoolProp", fromlist=["PropsSI"]).PropsSI("H", "P", P2, "S", st1.entropy_J_kgK, "Helium"))
+    h2s = float(
+        __import__("CoolProp.CoolProp", fromlist=["PropsSI"]).PropsSI(
+            "H", "P", P2, "S", st1.entropy_J_kgK, "Helium"
+        )
+    )
     p_is = mdot * (h2s - st1.enthalpy_J_kg) / 1000.0
     w_iso = R_HE_IDEAL * T1_K * math.log(P2 / P1)
     p_iso = mdot * w_iso / 1000.0
@@ -70,13 +75,15 @@ def fsd575_design_proof(
 def nominal_2kop_configurations(total_hp_flow_g_s: float = 326.0) -> list[dict]:
     out = []
     for active in (3, 4):
-        out.append({
-            "active_units": active,
-            "standby_units": 4 - active,
-            "total_hp_flow_g_s": total_hp_flow_g_s,
-            "flow_per_active_unit_g_s": total_hp_flow_g_s / active,
-            "status": "CANDIDATE_NOT_SELECTED",
-        })
+        out.append(
+            {
+                "active_units": active,
+                "standby_units": 4 - active,
+                "total_hp_flow_g_s": total_hp_flow_g_s,
+                "flow_per_active_unit_g_s": total_hp_flow_g_s / active,
+                "status": "CANDIDATE_NOT_SELECTED",
+            }
+        )
     return out
 
 

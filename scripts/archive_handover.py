@@ -9,9 +9,9 @@ import argparse
 import glob
 import json
 import tarfile
-from zipfile import ZipFile, ZIP_DEFLATED
 from pathlib import Path
 from typing import Iterable, List, Set
+from zipfile import ZIP_DEFLATED, ZipFile
 
 import yaml
 
@@ -72,10 +72,20 @@ def write_targz(files: List[Path], out_tgz: Path) -> None:
 
 
 def main():
-    ap = argparse.ArgumentParser(description="Build handover archives (.zip and .tar.gz) with correct relative paths.")
-    ap.add_argument("--spec", default=str(OUT_DIR / "GLOOB.yaml"), help="Path to GLOOB.yaml")
-    ap.add_argument("--copy", default=str(OUT_DIR / "COPY_GLOBS.txt"), help="Path to COPY_GLOBS.txt")
-    ap.add_argument("--name", default="DMAIC_V3_3_HANDOVER_ALL", help="Base name for archives (without extension)")
+    ap = argparse.ArgumentParser(
+        description="Build handover archives (.zip and .tar.gz) with correct relative paths."
+    )
+    ap.add_argument(
+        "--spec", default=str(OUT_DIR / "GLOOB.yaml"), help="Path to GLOOB.yaml"
+    )
+    ap.add_argument(
+        "--copy", default=str(OUT_DIR / "COPY_GLOBS.txt"), help="Path to COPY_GLOBS.txt"
+    )
+    ap.add_argument(
+        "--name",
+        default="DMAIC_V3_3_HANDOVER_ALL",
+        help="Base name for archives (without extension)",
+    )
     args = ap.parse_args()
 
     files: List[Path] = []
@@ -100,13 +110,19 @@ def main():
     write_zip(files, zip_path)
     write_targz(files, tgz_path)
 
-    print(json.dumps({
-        "root": str(ROOT),
-        "count": len(files),
-        "zip": str(zip_path),
-        "tar_gz": str(tgz_path)
-    }, indent=2))
+    print(
+        json.dumps(
+            {
+                "root": str(ROOT),
+                "count": len(files),
+                "zip": str(zip_path),
+                "tar_gz": str(tgz_path),
+            },
+            indent=2,
+        )
+    )
     return 0
+
 
 if __name__ == "__main__":
     raise SystemExit(main())

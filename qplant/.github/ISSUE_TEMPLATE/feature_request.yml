@@ -14,7 +14,7 @@ body:
         - Backlog
     validations:
       required: true
-  
+
   - type: textarea
     id: problem
     attributes:
@@ -22,7 +22,7 @@ body:
       description: What problem does this solve?
     validations:
       required: true
-  
+
   - type: textarea
     id: solution
     attributes:
@@ -30,7 +30,7 @@ body:
       description: How should we solve this?
     validations:
       required: true
-  
+
   - type: textarea
     id: alternatives
     attributes:

@@ -1852,7 +1852,7 @@ def safe_write_json(data, filepath):
     temp_file = filepath.with_suffix('.tmp')
     with open(temp_file, 'w', encoding='utf-8') as f:
         json.dump(data, f, indent=2)
-    
+
     # Atomic rename (atomic on POSIX, almost atomic on Windows)
     temp_file.replace(filepath)
 ```

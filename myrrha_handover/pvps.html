@@ -1,0 +1,101 @@
+<!doctype html>
+<html lang="en"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>MYRRHA · PVPS (WCS.LCC)</title>
+<link rel="stylesheet" href="assets/style.css">
+<script src="assets/common.js" defer></script>
+<style>
+.placeholder{background:#FFE9D6;border:1px solid #D85A30;color:#7a2f0e;border-radius:8px;padding:10px;margin:8px 0;font-size:13px}
+[data-theme=dark] .placeholder{background:#3a1d10;color:#ffb78a}
+.unit-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:10px;margin:14px 0}
+.unit{background:var(--bg2);border:1px solid var(--border);border-radius:8px;padding:14px;text-align:center}
+.unit .id{font-family:var(--mono);font-weight:bold;color:var(--accent);font-size:16px}
+.unit .flow{font-size:12px;color:var(--fg2)}
+.row-label{font-family:var(--mono);font-size:13px;color:var(--fg2);margin:8px 0 4px}
+.ascii-block{background:#0e1116;color:#e6edf3;padding:16px;border-radius:8px;font-family:Consolas,monospace;line-height:1.45;overflow-x:auto;white-space:pre}
+</style>
+</head><body>
+<div class="container">
+<h1>PVPS — Low-Pressure Compressor Station (WCS.LCC)</h1>
+<p class="muted">2×5 unit configuration · γ = 50 g/s baseline · N+1 redundancy <span class="tag">v0.4</span></p>
+<div class="placeholder"><b>Status:</b> v0.4 Baseline — Placeholder pending vendor confirmation. All sizing values derive from a 50 % isothermal efficiency assumption.</div>
+
+<div class="card">
+<h2 style="margin-top:0">System overview</h2>
+<p>The <b>PVPS</b> (Pumping / Vacuum Pre-compression Station) is the <b>low-pressure side</b> of the Warm Compressor Station (WCS.LCC). It handles helium return at sub-atmospheric pressure and lifts it to the HCC suction header at ~<b>1.05 barA</b>. Total target flow γ = <b>50 g/s</b> distributed across <b>10 identical units</b> (LP1…LP10) in a <b>2×5 layout</b> with <b>N+1 redundancy</b>.</p>
+<ul>
+  <li>Baseline: <b>10 units × 5.0 g/s</b> = 50 g/s (all online)</li>
+  <li>N+1 normal: <b>9 units × 5.56 g/s</b> = 50 g/s (1 standby) — VFD-driven</li>
+  <li>Degraded: <b>8 units × 6.25 g/s</b> = 50 g/s (1 maintenance + 1 standby)</li>
+</ul>
+</div>
+
+<div class="card">
+<h2 style="margin-top:0">2×5 configuration diagram</h2>
+<div class="row-label">Row A</div>
+<div class="unit-grid">
+  <div class="unit"><div class="id">LP1</div><div class="flow">5.0 g/s</div></div>
+  <div class="unit"><div class="id">LP2</div><div class="flow">5.0 g/s</div></div>
+  <div class="unit"><div class="id">LP3</div><div class="flow">5.0 g/s</div></div>
+  <div class="unit"><div class="id">LP4</div><div class="flow">5.0 g/s</div></div>
+  <div class="unit"><div class="id">LP5</div><div class="flow">5.0 g/s</div></div>
+</div>
+<div class="row-label">Row B</div>
+<div class="unit-grid">
+  <div class="unit"><div class="id">LP6</div><div class="flow">5.0 g/s</div></div>
+  <div class="unit"><div class="id">LP7</div><div class="flow">5.0 g/s</div></div>
+  <div class="unit"><div class="id">LP8</div><div class="flow">5.0 g/s</div></div>
+  <div class="unit"><div class="id">LP9</div><div class="flow">5.0 g/s</div></div>
+  <div class="unit"><div class="id">LP10</div><div class="flow">5.0 g/s</div></div>
+</div>
+
+<h3>ASCII layout (Consolas)</h3>
+<div class="ascii-block">QPLANT
+└── WCS (Warm Compressor Station)
+    ├── HCC  — High-pressure (HP1..HP4 · Kaeser FSD 475/575)
+    │         β = up to 350 g/s @ 14 barG
+    └── LCC  — Low-pressure  (PVPS · LP1..LP10)
+              γ = 50 g/s  @ ~1.05 barA discharge
+
+   PVPS Layout (2 × 5)
+   ┌─────┬─────┬─────┬─────┬─────┐
+A: │ LP1 │ LP2 │ LP3 │ LP4 │ LP5 │   →  ┐
+   ├─────┼─────┼─────┼─────┼─────┤      ├──► common discharge → HCC suction
+B: │ LP6 │ LP7 │ LP8 │ LP9 │ LP10│   →  ┘
+   └─────┴─────┴─────┴─────┴─────┘
+   suction header (~0.1 barA, from QRB return)</div>
+</div>
+
+<div class="card">
+<h2 style="margin-top:0">N+1 redundancy</h2>
+<p>The N+1 strategy allows continuous γ = 50 g/s with one unit offline. Two equivalent operating points:</p>
+<table><thead><tr><th>Mode</th><th>Running</th><th>Standby</th><th>Per-unit flow</th><th>Total</th></tr></thead><tbody>
+<tr><td>Normal (N+1, 1 standby)</td><td>9</td><td>1</td><td>5.56 g/s</td><td>50 g/s</td></tr>
+<tr><td>Full (all 10 online)</td><td>10</td><td>0</td><td>5.00 g/s</td><td>50 g/s</td></tr>
+<tr><td>Degraded (maint. + standby)</td><td>8</td><td>1</td><td>6.25 g/s</td><td>50 g/s</td></tr>
+</tbody></table>
+</div>
+
+<div class="card">
+<h2 style="margin-top:0">Operating scenarios — total WCS flow</h2>
+<table><thead><tr><th>Config</th><th>WCS.HCC (β)</th><th>WCS.LCC PVPS (γ)</th><th>Total WCS</th><th>Note</th></tr></thead><tbody>
+<tr><td>Config30</td><td>330 g/s</td><td>50 g/s</td><td><b>380 g/s</b></td><td>Expected normal</td></tr>
+<tr><td>Config24</td><td>304 g/s</td><td>50 g/s</td><td><b>354 g/s</b></td><td>Reduced HP scenario</td></tr>
+</tbody></table>
+</div>
+
+<div class="card">
+<h2 style="margin-top:0">TODO — next version</h2>
+<ul>
+<li>Vendor datasheets for actual PVPS units</li>
+<li>Suction pressure from coldbox QRB interface</li>
+<li>Validate 50 % isothermal efficiency assumption</li>
+<li>VFD turndown characteristics</li>
+<li>Noise levels and dimensions</li>
+<li>Specify C30(00,10) / C24(00,10) static / VFD splits</li>
+</ul>
+</div>
+
+<p class="muted">↩ <a href="index.html">Hub</a> · <a href="utilities.html">Utilities (math)</a> · <a href="tables.html">Tables</a> · <a href="reports.html">Reports (B5)</a></p>
+</div>
+</body></html>

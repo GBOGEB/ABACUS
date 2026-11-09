@@ -33,7 +33,6 @@ from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any, Dict, List, Optional
 
-
 # ---------------------------------------------------------------------------
 # Public types
 # ---------------------------------------------------------------------------
@@ -46,6 +45,7 @@ NotebookExtract = Dict[str, Any]  # see _EXTRACT_SCHEMA in contract YAML
 # ---------------------------------------------------------------------------
 # NotebookParser
 # ---------------------------------------------------------------------------
+
 
 class NotebookParser:
     """Parse a .ipynb file and emit ABACUS-compatible cell extract JSON."""
@@ -86,6 +86,8 @@ class NotebookParser:
         raw = path.read_bytes()
         sha256 = hashlib.sha256(raw).hexdigest()
         nb = json.loads(raw)
+        if not isinstance(nb, dict):
+            raise ValueError("Notebook JSON root must be an object")
 
         nbformat = nb.get("nbformat", 0)
         if nbformat not in self.SUPPORTED_NBFORMAT:
@@ -139,8 +141,7 @@ class NotebookParser:
             "nbformat": nbformat,
             "kernel_name": kernel_info.get("display_name", "unknown"),
             "language": (
-                language_info.get("name")
-                or kernel_info.get("language", "unknown")
+                language_info.get("name") or kernel_info.get("language", "unknown")
             ),
             "timestamp": datetime.now(tz=timezone.utc).isoformat(),
             "cells": cells,
@@ -216,6 +217,7 @@ class NotebookParser:
 # Internal helpers
 # ---------------------------------------------------------------------------
 
+
 def _sanitize_outputs(outputs: list) -> list:
     """Return outputs stripped of binary/image data to keep JSON compact."""
     clean = []
@@ -239,9 +241,13 @@ def _sanitize_outputs(outputs: list) -> list:
 # CLI entry point
 # ---------------------------------------------------------------------------
 
+
 def _main(argv: List[str]) -> int:
     if not argv:
-        print("Usage: python -m integration.codespace_jyperter.notebook_parser <notebook.ipynb>", file=sys.stderr)
+        print(
+            "Usage: python -m integration.codespace_jyperter.notebook_parser <notebook.ipynb>",
+            file=sys.stderr,
+        )
         return 1
     parser = NotebookParser()
     for nb_path in argv:

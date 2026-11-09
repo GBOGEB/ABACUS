@@ -1,0 +1,201 @@
+schema: cross_repo_integration.v1
+generated: "2026-10-25"
+generated_by: deepagent-cross-repo-analysis
+analysis_host: abacusai-agent-vm (python 3.11.17)
+verification_discipline: >
+  All statuses backed by commands run this session. Unverifiable items marked
+  UNKNOWN or BLOCKED. Unverifiable repo-doc claims (ROI, completion %, maintainers)
+  not reproduced as fact.
+
+target_resolution:
+  requested: GBOGEB/CODES
+  resolved_to: GBOGEB/CODEX
+  reason: >
+    No repo named CODES exists (GET /repos/GBOGEB/CODES -> 404 for all casings;
+    not found in 93-repo enumeration). CODEX is the only plausible target and is
+    part of the same DELTA_1 federation. Re-run if a different repo was intended.
+
+repos:
+  - name: ABACUS
+    full_name: GBOGEB/ABACUS
+    visibility: public
+    primary_language: "Python+Markdown+TypeScript"
+    default_branch: main
+    remote_branches: [main]
+    disk_size: "441MB"
+    last_commit_main: "2026-10-24"
+    federation_role: "DOW analytical / DMAIC runtime"
+    ci_workflow_count: 59
+    maturity: mature-active
+    entry_points:
+      - DMAIC_V3/core/twelve_cluster_orchestrator.py
+      - DMAIC_V3/phases/phase1_define.py
+      - scripts/validate_tuple_metadata.py
+    smoke_test:
+      status: PASS
+      commands:
+        - cmd: "pip install -r DMAIC_V3/requirements.txt"
+          result: "exit 0"
+        - cmd: "pytest --collect-only -q"
+          result: "236 collected, exit 0"
+        - cmd: "pytest -m smoke -q"
+          result: "35 passed, 201 deselected"
+  - name: CODEX
+    full_name: GBOGEB/CODEX
+    visibility: public
+    primary_language: Python
+    default_branch: main
+    remote_branches: [main]
+    disk_size: "47MB"
+    last_commit_main: "2026-10-25"
+    federation_role: "Governance plane / KEB semantic-provenance parent"
+    ci_workflow_count: 165
+    installable_package: "codex (pyproject v1.4.0)"
+    maturity: very-active
+    smoke_test:
+      status: PASS
+      commands:
+        - cmd: "pip install -r requirements.txt"
+          result: "exit 0"
+        - cmd: "pip install -e ."
+          result: "exit 0"
+        - cmd: "python -c 'import codex'"
+          result: "import OK"
+        - cmd: "pytest tests/ -q"
+          result: "all collected passed (few skips), exit 0"
+  - name: cryoplant-project
+    full_name: GBOGEB/cryoplant-project
+    visibility: private
+    primary_language: "HTML+Python"
+    default_branch: main
+    remote_branches: [main]
+    disk_size: "153MB"
+    last_commit_main: "2026-10-25"
+    federation_role: "QPS engineering SSOT / OCD-ADR / release authority"
+    ci_workflow_count: 148
+    release_train: "v6.0.0-rc.1 over stable canonical v5.3.0; Runtime GOLD WITHHELD"
+    maturity: active-governance-heavy
+    smoke_test:
+      status: PASS_AFTER_FIX
+      pre_fix:
+        cmd: "pytest tests/ --collect-only"
+        result: "1597 collected, 3 collection ERRORS (aborts suite)"
+        errors:
+          - "tests/test_acceptance_debt_dashboard.py: ModuleNotFoundError acceptance_debt_metrics"
+          - "tests/test_acceptance_debt_metrics.py: ModuleNotFoundError acceptance_debt_metrics"
+          - "tests/test_w366_codellm_cooldown_recovery.py: ModuleNotFoundError scipy"
+      fix: "root conftest.py (add federation/ to sys.path; skip scipy-only recovery module when scipy absent)"
+      post_fix:
+        - cmd: "pytest tests/ --collect-only"
+          result: "1625 collected, 0 errors"
+        - cmd: "pytest tests/ -m smoke (no --ignore)"
+          result: "32 passed, 7 skipped"
+        - cmd: "pytest tests/test_acceptance_debt_*.py"
+          result: "28 passed + 10 subtests"
+
+open_prs:
+  ABACUS:
+    - {number: 2368, title: "feat(test W51-C0): zero-to-positive coverage frontier", base: "fix/w50-cbd-cohort-evidence-contract-20261020"}
+    - {number: 2360, title: "test(cbd W50): source-match cohort manifest", base: main}
+  CODEX:
+    - {number: 1187, title: "feat(mycelium): recursive control entry and discovery page", base: main}
+  cryoplant-project:
+    - {number: 2083, title: "W372c: pump-down through He II to 2 K; correct He I flash formula", base: main}
+  ABACUS_558:
+    number: 558
+    state: closed_merged
+    merged_at: "2026-06-08"
+    merge_commit: d5d33d5
+    note: "Prior DeepAgent handover-TODO PR — landed on main"
+
+overlaps:
+  - id: 4.1
+    item: qps_contract_canonicalization
+    present_in: [CODEX, cryoplant-project]
+    nature: divergent-copy
+    detail: "CODEX 11 files vs cryoplant 27 files; shared schema.ts/validate.ts/package.json differ"
+    decision: assimilate
+    canonical_home: CODEX
+    merge_point: "extract shared schemas to CODEX; cryoplant consumes; keep cryoplant-only schemas until promoted"
+    risk: high
+    auto_merge: false
+  - id: 4.2
+    item: handover_packages
+    present_in: [ABACUS, CODEX, cryoplant-project]
+    nature: parallel-per-repo
+    decision: keep_separate_cross_reference
+    merge_point: "federation handover index in CODEX 99_handover"
+    risk: low
+  - id: 4.3
+    item: federation_delta1_workflows
+    present_in: [ABACUS, CODEX, cryoplant-project]
+    decision: keep_document_canonical_source
+    canonical_home: "CODEX .mesh/MESH_DOCK.yaml"
+    risk: low
+  - id: 4.4
+    item: dmaic_metrics_schema
+    present_in: [ABACUS, CODEX]
+    decision: keep_shared_schema_contract
+    canonical_home: CODEX
+    risk: low
+  - id: 4.5
+    item: cryoplant_triage_archive
+    present_in: [cryoplant-project]
+    size: "93MB"
+    biggest: ["triage/w367/archive_incubator 48MB", "triage/code_purple 21MB", "triage/w366/codellm_cooldown_recovery 679 files"]
+    decision: prune_or_archive
+    status: AWAITING_OWNER_APPROVAL
+    risk: medium
+    auto_executed: false
+  - id: 4.6
+    item: abacus_version_dirs
+    present_in: [ABACUS]
+    members: [ABACUS-UNIFIED, ABACUS-v031, ABACUS-v032, ABACUS_V21_DEPLOYMENT_PACKAGE]
+    decision: review_then_archive_superseded
+    status: AWAITING_OWNER_APPROVAL
+    risk: low
+  - id: 4.7
+    item: local_only_embedded_repo_audit
+    present_in: [CODEX, ABACUS]
+    files: [CODEX/EMBEDDED_REPOS.md, ABACUS_LOCAL_GROUND_TRUTH_AUDIT.ps1]
+    decision: blocked_user_action
+    reason: "nested .git / C:/ scan unreachable from VM"
+  - id: 4.8
+    item: cryoplant_pytest_collection_breakage
+    present_in: [cryoplant-project]
+    decision: fix_low_risk_pr
+    pr_ref: B
+    risk: low
+
+prune_candidates:
+  - {repo: cryoplant-project, path: "triage/ (recovery/incubator archive)", size: "93MB", approval: required}
+  - {repo: ABACUS, path: "superseded version snapshot dirs", approval: required}
+
+pull_requests_opened:
+  - id: A
+    repo: ABACUS
+    branch: docs/cross-repo-integration-report-20261025
+    base: main
+    purpose: "Add cross-repo integration report + manifest under docs/integration/"
+    merged: false
+    url: "https://github.com/GBOGEB/ABACUS/pull/2436"
+  - id: B
+    repo: cryoplant-project
+    branch: fix/pytest-root-conftest-collection-20261025
+    base: main
+    purpose: "Root conftest.py so plain `pytest tests/` collects cleanly"
+    merged: false
+    url: "https://github.com/GBOGEB/cryoplant-project/pull/2087"
+
+blockers:
+  - {id: 1, item: "Dependabot per-alert detail (all repos)", cause: "Alerts API 403, security_events scope not granted", action: "grant App security_events"}
+  - {id: 2, item: "cryoplant-project private access", status: "OK this session via connected App"}
+  - {id: 5, item: "cryoplant-project Dependabot", status: "1 high alert (#111) per push notification; per-alert detail BLOCKED"}
+  - {id: 3, item: "local-only audit (C:/repos, C:/DEV, nested .git)", action: "run Windows PowerShell audit"}
+  - {id: 4, item: "qps_contract_canonicalization canonicalization", action: "owner design decision + schema diff review"}
+
+constraints_observed:
+  - "PRs only — no PR merged"
+  - "no deletions/force-push to default branches"
+  - "prune candidates listed for approval only, not executed"
+  - "excluded generated .docx/.pdf and .logs/ from commits"

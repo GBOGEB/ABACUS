@@ -32,9 +32,7 @@ def validate_file(path: Path):
 
     missing = sorted(REQUIRED_TOP_LEVEL - set(data))
     if missing:
-        errors.append(
-            f"{path}: missing top-level keys: {', '.join(missing)}"
-        )
+        errors.append(f"{path}: missing top-level keys: {', '.join(missing)}")
 
     metadata = data.get("metadata")
     if not isinstance(metadata, dict):
@@ -126,10 +124,7 @@ def main() -> int:
             print(f" - {error}")
         return 1
 
-    print(
-        f"[OK] DOW Stage 6 validation passed for "
-        f"{len(files)} JSON artifact(s)"
-    )
+    print(f"[OK] DOW Stage 6 validation passed for " f"{len(files)} JSON artifact(s)")
     return 0
 
 

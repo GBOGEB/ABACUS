@@ -96,4 +96,3 @@ This session moves to **Control complete** only when:
 4. a code PR still exercises its relevant domain suites;
 5. the generated inventory/report is attached with the policy hash;
 6. no required status protection is silently removed (ABACUS `main` was observed unprotected at this snapshot).
-

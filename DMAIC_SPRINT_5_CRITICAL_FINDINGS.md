@@ -51,7 +51,7 @@
   "file_metrics": 0,            // ❌ EMPTY! (key missing)
   "Keys": [
     "phase",
-    "iteration", 
+    "iteration",
     "timestamp",
     "input_source",
     "statistics",

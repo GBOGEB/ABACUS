@@ -84,7 +84,7 @@
 
 ### Canonical Input Flow
 ```
-Config Files → Phase 0 Init → Phase 1 Scan → Phase 2 Measure → 
+Config Files → Phase 0 Init → Phase 1 Scan → Phase 2 Measure →
 Phase 3 Analyze → Phase 4 Improve → Phase 5 Control → Phase 6 Sustain
 ```
 

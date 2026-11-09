@@ -501,10 +501,10 @@ The TS mass is represented as a lumped thermal mass receiving heat loads from am
 
 The temperature-dependent properties of the masses and heat loads are specified in Appendix 11.2.
 
-Figure 6. Cryogenic User Circuitry Model for steady-state analysis. 
+Figure 6. Cryogenic User Circuitry Model for steady-state analysis.
 Simplified representation of the QDB and QMs as seen by the QPS.
 
-Figure 7. Cryogenic User Transient Model for transient analysis. 
+Figure 7. Cryogenic User Transient Model for transient analysis.
 Simplified representation of the QDB and QMs as seen by the QPS.
 
 
@@ -5308,7 +5308,7 @@ In their x, the Applicant shall submit a detailed schedule following these phase
 
 Table 22 Provisional contract execution milestones.
 
-“ED” = Earliest Date, “LD” = Latest Possible Date, “M” = months, “wks” = weeks, 
+“ED” = Earliest Date, “LD” = Latest Possible Date, “M” = months, “wks” = weeks,
 “BD” = Business Days, “CD” = Calendar Days.
 
 
@@ -5883,7 +5883,7 @@ Table 28. Static heat loads for the Cryogenic User Transient Model
 
 - All temperatures are expressed in Kelvin. All heat loads are expressed in Watts.
 
-Table 29. Specific enthalpy (weighted average) of the lumped masses 
+Table 29. Specific enthalpy (weighted average) of the lumped masses
 for the 1 K to 300 K.
 
 
@@ -5930,19 +5930,19 @@ Table 31. Control Architecture details
 ### Table TBL-004 (13×4)
 | Family | Line ID | Line Name | Main Function |
 | --- | --- | --- | --- |
-| Main 
+| Main
 cryogenics
 headers | A * | SHe Supply Line | Supplies user with SHe for main cryogeni |
-| Main 
+| Main
 cryogenics
 headers | B * | VLP Return Line | Returns from user (very-)low pressure GH |
-| Main 
+| Main
 cryogenics
 headers | D * | TS Supply Line | Supplies user with high-pressure GHe for |
-| Main 
+| Main
 cryogenics
 headers | E * | TS Return Line | Returns from user high-pressure GHe from |
-| Warm 
+| Warm
 distribution lines | U | Warm Supply Line | Supplies user with warm GHe for purging  |
 *... 7 more rows*
 
@@ -5957,7 +5957,7 @@ distribution lines | U | Warm Supply Line | Supplies user with warm GHe for purg
 *... 27 more rows*
 
 ### Table TBL-006 (8×3)
-| ID | Operational 
+| ID | Operational
 Scenario | Description |
 | --- | --- | --- |
 | WSTOP | Warm Stop | QPS is offline. |
@@ -6007,9 +6007,9 @@ Scenario | Description |
 [range | stability] | 4.5 | ±0.15 | 3.0-4.5 | ±0.25 | ~40 ‡ | ±2.5 | ~60 ‡ | ±5 | 300 † |
 | 4K-SB | p (bar)
 [range | stability] | Same as in
-2K-SB |  | Same as in 
-2K-SB | Same as in 
-2K-SB | Same as in 
+2K-SB |  | Same as in
+2K-SB | Same as in
+2K-SB | Same as in
 2K-SB |
 *... 5 more rows*
 
@@ -6022,20 +6022,20 @@ Scenario | Description |
 ### Table TBL-012 (7×8)
 | Condition type | Operational Scenario | Line ID | A | B | D | E | W |
 | --- | --- | --- | --- | --- | --- | --- | --- |
-| QPLANT 
-Design Point | 2K-OP 
+| QPLANT
+Design Point | 2K-OP
 (2 K Operation) | Pressure (bar) | ≥ 3.0 | ≤ 0.026 | ~14 ‡ | ~13 ‡ | ≤ 1.1 |
-| QPLANT 
-Design Point | 2K-OP 
+| QPLANT
+Design Point | 2K-OP
 (2 K Operation) | Temperature (K) | ≤ 4.5 | ≥ 3.5 | ~40 ‡ | ~60 ‡ | 300 † |
-| QPLANT 
-Design Point | 2K-OP 
+| QPLANT
+Design Point | 2K-OP
 (2 K Operation) | Mass Flow Rate (g/s) | ≥ 42 | ≥ 39 | ~77 ‡ | ~77 ‡ | ≥ 2.3 |
-| QPLANT 
-Standby Point | 2K-SB 
+| QPLANT
+Standby Point | 2K-SB
 (2 K Standby) | Pressure (bar) | ≥ 3.0 | ≤ 0.029 | ~14 ‡ | ~13 ‡ | ≤ 1.1 |
-| QPLANT 
-Standby Point | 2K-SB 
+| QPLANT
+Standby Point | 2K-SB
 (2 K Standby) | Temperature (K) | ≤ 4.5 | ≥ 4.2 | ~40 ‡ | ~60 ‡ | 300 † |
 *... 1 more rows*
 
@@ -6075,13 +6075,13 @@ Standby Point | 2K-SB
 ### Table TBL-017 (18×2)
 | Parameter | Measurement Location(s) |
 | --- | --- |
-| Helium Mass Flow Rate | - WCS.VLP 
+| Helium Mass Flow Rate | - WCS.VLP
 - WCS.LP
 - WCS.HP |
-| Helium Temperatures | - WCS.VLP 
+| Helium Temperatures | - WCS.VLP
 - WCS.LP
 - WCS.HP |
-| Helium Mass flow rate | - WCS.VLP 
+| Helium Mass flow rate | - WCS.VLP
 - WCS.LP
 - WCS.HP |
 | Helium Pressure | - Suction of each compressor (including  |
@@ -6132,13 +6132,13 @@ QLM ~ 9 k | 45 kg |
 | Outside Summer Conditions
 – Dry-bulb Tem | 33.4 °C
 39 % |
-| Wind Speed 
-(3 s. gust at 25 m height, N | 49 m/s 
+| Wind Speed
+(3 s. gust at 25 m height, N | 49 m/s
 (~176 km/h) |
 *... 4 more rows*
 
 ### Table TBL-022 (10×5)
-| Equipment Description | Supply Voltage (V) | Phases & 
+| Equipment Description | Supply Voltage (V) | Phases &
 Earthing | Rated Active Power (kW) | Load Type |
 | --- | --- | --- | --- | --- |
 | HP Compressor 1 | 400 | 3PH + N + PE | 356 | Motor (VFD) |
@@ -6223,13 +6223,13 @@ Earthing | Rated Active Power (kW) | Load Type |
 ### Table TBL-031 (5×5)
 | Heat load direction | Heat load type | Heat load equation (W) | LINAC_24 | LINAC_30 |
 | --- | --- | --- | --- | --- |
-| From the TS Mass 
+| From the TS Mass
 to the Cold Mass | Conduction |  | = -2.93 | = -3.60 |
-| From the TS Mass 
+| From the TS Mass
 to the Cold Mass | Radiation |  | = 1.82 E-05 | = 2.24 E-05 |
-| From ambient 
+| From ambient
 to the TS Mass | Conduction |  | = -1.13 | = -1.38 |
-| From ambient 
+| From ambient
 to the TS Mass | Radiation |  | = 5.40 E-07 | = 6.58 E-07 |
 
 ### Table TBL-032 (31×3)

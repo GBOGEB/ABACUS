@@ -214,7 +214,7 @@ configuration_files:
     - "orchestrator_config.yaml"    # Merge into HUMAN.yml
     - ".v22_handover.yaml"          # Archive
     - "config/dmaic.yaml"           # Integrate into DMAIC_V3/config.py
-  
+
   tracking:
     - "code_index.yaml"             # Generated artifact
     - "code_index.json"             # Generated artifact
@@ -222,7 +222,7 @@ configuration_files:
     - "INDEX_V3.1_2025-11-10.yaml" # Version-specific index
 ```
 
-**Action Required**: 
+**Action Required**:
 1. Consolidate all YAML configs into `HUMAN.yml` as single source of truth
 2. Create `config/canonical/` directory for generated configs
 3. Archive legacy configs to `docs_versioned/v2.2_archived/config/`
@@ -241,13 +241,13 @@ artifact_types:
       priority: "high"
       extensions: [".py"]
       maturity_gate: "linting + type checking + tests"
-    
+
   documentation:
     markdown:
       priority: "high"
       extensions: [".md"]
       maturity_gate: "version tracking + canonical links"
-    
+
   configuration:
     yaml:
       priority: "critical"
@@ -257,7 +257,7 @@ artifact_types:
       priority: "high"
       extensions: [".json"]
       maturity_gate: "schema validation"
-    
+
   data:
     reports:
       priority: "medium"
@@ -272,27 +272,27 @@ artifact_groups:
     description: "Orchestrator, KEB, GBOGEB, Temporal Scanner"
     priority: "critical"
     maturity_required: 3
-    
+
   agents:
     description: "12-cluster analysis/documentation/recursive agents"
     priority: "critical"
     maturity_required: 2
-    
+
   tools:
     description: "Indexing, tracking, generation utilities"
     priority: "high"
     maturity_required: 2
-    
+
   tests:
     description: "Unit, integration, smoke tests"
     priority: "high"
     maturity_required: 2
-    
+
   documentation:
     description: "READMEs, handovers, guides"
     priority: "medium"
     maturity_required: 1
-    
+
   legacy:
     description: "V2.2 and earlier artifacts"
     priority: "low"
@@ -305,19 +305,19 @@ artifact_functions:
   execution:
     description: "Code that runs workflows (orchestrators, agents, tools)"
     priority: "critical"
-    
+
   configuration:
     description: "YAML, JSON config files"
     priority: "critical"
-    
+
   validation:
     description: "Tests, smoke tests, validators"
     priority: "high"
-    
+
   documentation:
     description: "Markdown, TXT explanatory files"
     priority: "medium"
-    
+
   reporting:
     description: "Logs, execution summaries, dashboards"
     priority: "low"

@@ -1,5 +1,11 @@
 """QPS Line S — LOOP boil-off transient (SSOT Tables 27/28/29 + NIST 304).
 
+Lineage: the inputs come from ssot_tables.py, a copy of contract Addendum II
+rev 146 Appendix 11.2 Tables 27-29 (cryoplant-project W365 extraction). The
+cool-down direction of the same two-mass model (TS Mass / Cold Mass) is
+cryoplant-project triage/w366/codellm_cooldown_recovery/cooldown/model.py.
+This module is the warm-up direction: cooling stopped, LHe boils off.
+
 CONDUCTION_AL_CONSTANT is CLOSED. The Table 28 a_cond [m] values are the
 SSOT empirical lumped coefficients used directly in:
 

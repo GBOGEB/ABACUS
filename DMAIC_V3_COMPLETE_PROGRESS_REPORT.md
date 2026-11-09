@@ -164,7 +164,7 @@
 
 ### Iteration Loop
 ```
-Iteration 1 (IN PROGRESS) → Iteration 2 (Analyze) → Iteration 3 (Improve) → 
+Iteration 1 (IN PROGRESS) → Iteration 2 (Analyze) → Iteration 3 (Improve) →
 Iteration 4 (Control) → Iteration 5 (Full Pipeline) → PRODUCTION
 ```
 

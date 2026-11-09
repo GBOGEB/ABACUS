@@ -1,0 +1,389 @@
+<!doctype html>
+<html lang="en"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>MYRRHA WCS · QA Interactive</title>
+<link rel="icon" href="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><text y='26' font-size='26'>✅</text></svg>">
+<link rel="stylesheet" href="assets/style.css">
+<script src="https://cdn.plot.ly/plotly-2.27.0.min.js"></script>
+<script src="assets/common.js" defer></script>
+<style>
+.breadcrumb{font-size:12px;color:var(--fg2);margin-bottom:12px}.breadcrumb a{color:var(--accent2)}
+.qa-summary{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:12px;margin:14px 0}
+.qa-stat{text-align:center;padding:16px;background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius)}
+.qa-stat .big{font-size:32px;font-weight:700}
+.qa-stat .lbl{font-size:11px;color:var(--fg2);text-transform:uppercase;letter-spacing:.05em;margin-top:4px}
+.qa-stat.pass .big{color:#1D9E75}.qa-stat.partial .big{color:#E5A100}.qa-stat.fail .big{color:#D85A30}
+.qa-detail{padding:12px 18px;font-size:13px;line-height:1.6;background:var(--bg);border-radius:0 0 var(--radius) var(--radius);border:1px solid var(--border);border-top:0}
+.qa-detail p{margin:4px 0}
+.qa-detail strong{color:var(--fg)}
+.qa-item-wrap{margin:6px 0}
+.qa-item-wrap>summary{cursor:pointer;display:flex;align-items:center;gap:10px;padding:10px 14px;font-size:13px;background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);list-style:none;user-select:none;transition:background .15s}
+.qa-item-wrap>summary:hover{background:var(--bg)}
+.qa-item-wrap>summary::-webkit-details-marker{display:none}
+.qa-item-wrap[open]>summary{border-radius:var(--radius) var(--radius) 0 0;border-bottom:0}
+.qa-item-wrap .status-icon{font-size:16px;min-width:22px;text-align:center}
+.qa-item-wrap .qa-id{font-family:var(--mono);font-size:11px;color:var(--fg2);min-width:55px}
+.qa-item-wrap .qa-title{flex:1;font-weight:500}
+.qa-item-wrap .qa-rank{font-family:var(--mono);font-size:11px;color:var(--fg2);background:var(--bg);padding:2px 8px;border-radius:999px;border:1px solid var(--border)}
+.qa-item-wrap .qa-bt{font-family:var(--mono);font-size:11px;font-weight:700;color:var(--accent)}
+.qa-tag{font-size:10px;padding:1px 6px;border-radius:3px;background:var(--bg);border:1px solid var(--border);display:inline-block;margin:2px 2px}
+.qa-tag.blocker{background:#FFEBEE;color:#C62828;border-color:#FFCDD2}
+[data-theme=dark] .qa-tag.blocker{background:#3a1515;border-color:#5a2020}
+.qa-tag.version{background:#E3F2FD;color:#1565C0;border-color:#BBDEFB}
+[data-theme=dark] .qa-tag.version{background:#0d2a4a;border-color:#1a3d5c}
+.qa-cat{margin:18px 0}
+.qa-cat-header{display:flex;align-items:center;gap:12px;padding:10px 14px;background:var(--bg);border:1px solid var(--border);border-radius:var(--radius);cursor:pointer;user-select:none;font-weight:600;font-size:14px}
+.qa-cat-header:hover{background:var(--bg2)}
+.qa-cat-header .cat-name{flex:1}
+.qa-cat-header .cat-count{font-family:var(--mono);font-size:12px;color:var(--fg2)}
+.qa-cat-header .cat-bar{width:120px;height:8px;background:var(--border);border-radius:999px;overflow:hidden}
+.qa-cat-header .cat-bar-fill{height:100%;border-radius:999px;transition:width .3s}
+.version-toggle{display:flex;gap:6px;margin:14px 0;flex-wrap:wrap}
+.version-toggle button{background:var(--bg);color:var(--fg);border:1px solid var(--border);border-radius:6px;padding:6px 12px;font-size:12px;cursor:pointer;font-family:inherit}
+.version-toggle button.active{background:var(--accent2);color:#fff;border-color:var(--accent2)}
+.export-bar{display:flex;gap:8px;margin:14px 0;flex-wrap:wrap}
+.plotly-chart{width:100%;min-height:300px}
+.filter-bar{display:flex;gap:8px;flex-wrap:wrap;margin:14px 0}
+.filter-bar button{background:var(--bg);color:var(--fg);border:1px solid var(--border);border-radius:6px;padding:6px 12px;font-size:12px;cursor:pointer;font-family:inherit}
+.filter-bar button.active{background:var(--accent);color:#fff;border-color:var(--accent)}
+.sev-badge{display:inline-block;min-width:22px;text-align:center;padding:2px 7px;border-radius:4px;font-size:10px;font-weight:700;font-family:var(--mono);color:#fff}
+.sev-Critical{background:#C0392B}.sev-High{background:#D85A30}.sev-Medium{background:#E5A100;color:#1a1d23}.sev-Low{background:#378ADD}
+</style>
+</head><body>
+<div class="container">
+<p class="breadcrumb"><a href="index.html">Hub</a> › <a href="review-dmaic.html">DMAIC</a> › QA Interactive</p>
+<h1>✅ Interactive QA Checklist</h1>
+<p class="muted">38-item validation suite · BT ranking · collapsible details · persistent state · v0.4.5</p>
+
+<!-- VERSION TOGGLE -->
+<div class="version-toggle">
+  <button class="active" onclick="setVersion('v0.4.5',this)">v0.4.5 (current)</button>
+  <button onclick="setVersion('v0.4.4',this)">v0.4.4</button>
+  <button onclick="setVersion('v0.4.3',this)">v0.4.3</button>
+  <button onclick="setVersion('deployed',this)">Deployed</button>
+</div>
+
+<!-- SUMMARY -->
+<div class="qa-summary" id="qaSummary">
+  <div class="qa-stat pass"><div class="big" id="passCount">0</div><div class="lbl">🟢 Pass</div></div>
+  <div class="qa-stat partial"><div class="big" id="partialCount">0</div><div class="lbl">🟡 Partial</div></div>
+  <div class="qa-stat fail"><div class="big" id="failCount">0</div><div class="lbl">🔴 Fail</div></div>
+  <div class="qa-stat"><div class="big" id="naCount">0</div><div class="lbl">⚪ N/A</div></div>
+  <div class="qa-stat"><div class="big" id="pctComplete">0%</div><div class="lbl">Overall</div></div>
+</div>
+
+<!-- BT RANKING VIEW TOGGLE -->
+<h3>View</h3>
+<div class="filter-bar">
+  <button class="active" onclick="setView('category',this)">By Category</button>
+  <button onclick="setView('btrank',this)">By BT Rank</button>
+  <button onclick="setView('status',this)">By Status (Failures First)</button>
+</div>
+
+<!-- PROGRESS CHART -->
+<div class="card"><div id="plotProgress" class="plotly-chart"></div></div>
+
+<!-- EXPORT -->
+<div class="export-bar">
+  <button class="btn" onclick="exportReport('html')">📄 Export HTML Report</button>
+  <button class="btn alt" onclick="exportReport('json')">💾 Export JSON</button>
+  <button class="btn alt" onclick="resetAll()">🔄 Reset All</button>
+</div>
+
+<!-- QA ITEMS -->
+<div id="qaContainer"></div>
+
+<!-- BT RANKING TABLE -->
+<h2>BT Ranking — All 38 QA Items</h2>
+<div class="card" style="overflow-x:auto">
+<table id="btRankTable"><thead><tr>
+  <th>Rank</th><th>QA ID</th><th>Item</th><th>BT Score</th><th>Severity</th><th>Impact</th><th>Test Type</th><th>Status</th>
+</tr></thead><tbody></tbody></table>
+</div>
+
+<!-- HISTORY CHART -->
+<div class="card" style="margin-top:24px"><div id="plotHistory" class="plotly-chart"></div></div>
+
+</div><!-- /container -->
+
+<script>
+const QA_DATA = [
+  {cat:"Data Integrity",items:[
+    {id:"QA-001",text:"All calculations verified against hand calcs",type:"Manual Review",status:"partial",note:"4/6 verified",blocker:"Awaiting PVPS vendor data",ver:"v0.4.2",severity:"Critical",impact:"Blocks",bt:0.956},
+    {id:"QA-002",text:"data.json schema validated (all required keys present)",type:"GitHub CI/CD",status:"pass",ver:"v0.4.1",severity:"Critical",impact:"Blocks",bt:0.948},
+    {id:"QA-003",text:"Thermodynamic energy balance closes within 1%",type:"Manual Review",status:"pass",ver:"v0.4.0",severity:"Critical",impact:"Blocks",bt:0.940},
+    {id:"QA-004",text:"Config24/Config344 utility totals consistent with per-unit",type:"Local Polish",status:"fail",note:"Config24 needs recalc with corrected vendor data",ver:"v0.4.5",severity:"High",impact:"Affects",bt:0.932},
+    {id:"QA-005",text:"PVPS flow targets match baseline (corrected: included in total)",type:"Manual Review",status:"pass",ver:"v0.4.5",severity:"Critical",impact:"Blocks",bt:0.924},
+    {id:"QA-006",text:"RCW HX sizing consistent across views",type:"Manual Review",status:"partial",note:"hx-sizing vs thermo differ on margin",ver:"v0.4.2",severity:"High",impact:"Affects",bt:0.916},
+    {id:"QA-007",text:"Slide deck numbers match data.json",type:"GitHub CI/CD",status:"pass",ver:"v0.4.1",severity:"Medium",impact:"Affects",bt:0.908},
+    {id:"QA-008",text:"No hardcoded values — all from data.json or config.yaml",type:"Local Polish",status:"partial",note:"3 views still have hardcoded numbers",ver:"v0.4.2",severity:"Medium",impact:"Minor",bt:0.900}
+  ]},
+  {cat:"Functional Testing",items:[
+    {id:"QA-009",text:"All navigation links resolve (no 404s)",type:"GitHub CI/CD",status:"pass",ver:"v0.4.5",severity:"High",impact:"Blocks",bt:0.943},
+    {id:"QA-010",text:"Theme toggle works on all views",type:"Local Polish",status:"pass",ver:"v0.4.0",severity:"Medium",impact:"Minor",bt:0.892},
+    {id:"QA-011",text:"Font selector persists across navigation",type:"Local Polish",status:"pass",ver:"v0.4.0",severity:"Low",impact:"Minor",bt:0.820},
+    {id:"QA-012",text:"Search index finds terms in all views",type:"Local Polish",status:"pass",ver:"v0.4.1",severity:"Medium",impact:"Affects",bt:0.884},
+    {id:"QA-013",text:"CSV/JSON export produces valid output",type:"Manual Review",status:"pass",ver:"v0.4.1",severity:"Medium",impact:"Affects",bt:0.876},
+    {id:"QA-014",text:"Slide editor save/load cycle preserves content",type:"Manual Review",status:"pass",ver:"v0.4.0",severity:"Medium",impact:"Affects",bt:0.868},
+    {id:"QA-015",text:"Breadcrumb navigation on all views",type:"Local Polish",status:"pass",ver:"v0.4.5",severity:"High",impact:"Affects",bt:0.935},
+    {id:"QA-016",text:"Action tracker filters work correctly",type:"Local Polish",status:"pass",ver:"v0.4.2",severity:"Medium",impact:"Minor",bt:0.860},
+    {id:"QA-017",text:"Weighted priority sort matches manual calculation",type:"Manual Review",status:"pass",ver:"v0.4.2",severity:"Medium",impact:"Affects",bt:0.852},
+    {id:"QA-018",text:"Plotly charts render without JS errors",type:"GitHub CI/CD",status:"partial",note:"1 chart fails on Safari",ver:"v0.4.2",severity:"High",impact:"Affects",bt:0.928},
+    {id:"QA-019",text:"Print stylesheets produce clean output",type:"Local Polish",status:"fail",note:"Graphs clip on A4",ver:"v0.4.2",severity:"Medium",impact:"Minor",bt:0.844},
+    {id:"QA-020",text:"render_all.py produces consistent output",type:"GitHub CI/CD",status:"pass",ver:"v0.4.0",severity:"High",impact:"Blocks",bt:0.936}
+  ]},
+  {cat:"UI/UX Validation",items:[
+    {id:"QA-021",text:"Consistent typography across all views",type:"Local Polish",status:"pass",ver:"v0.4.0",severity:"Medium",impact:"Minor",bt:0.836},
+    {id:"QA-022",text:"Colour contrast meets WCAG AA (4.5:1)",type:"Manual Review",status:"partial",note:"Dark theme muted text at 3.8:1",ver:"v0.4.2",severity:"High",impact:"Affects",bt:0.920},
+    {id:"QA-023",text:"Card layouts consistent (padding, borders, radius)",type:"Local Polish",status:"pass",ver:"v0.4.1",severity:"Low",impact:"Minor",bt:0.812},
+    {id:"QA-024",text:"No horizontal scroll on any view (desktop)",type:"Local Polish",status:"pass",ver:"v0.4.1",severity:"Medium",impact:"Affects",bt:0.828},
+    {id:"QA-025",text:"Loading states for Plotly charts",type:"Local Polish",status:"pass",note:"Fixed in v0.4.5",ver:"v0.4.5",severity:"Low",impact:"Minor",bt:0.780},
+    {id:"QA-026",text:"Hover states on all interactive elements",type:"Local Polish",status:"pass",ver:"v0.4.1",severity:"Low",impact:"Minor",bt:0.772}
+  ]},
+  {cat:"Mobile Responsiveness",items:[
+    {id:"QA-027",text:"Mobile charts render correctly on iPhone Safari",type:"Manual Review",status:"fail",note:"Overflow on Safari · Fix in progress",ver:"v0.4.5",severity:"High",impact:"Affects",bt:0.912},
+    {id:"QA-028",text:"Tables scroll horizontally on narrow screens",type:"Local Polish",status:"pass",ver:"v0.4.1",severity:"Medium",impact:"Minor",bt:0.804},
+    {id:"QA-029",text:"Touch targets ≥ 44×44px",type:"Manual Review",status:"partial",note:"Some filter buttons too small",ver:"v0.4.2",severity:"Medium",impact:"Affects",bt:0.796},
+    {id:"QA-030",text:"Navigation menu collapses on mobile",type:"Local Polish",status:"fail",note:"Topbar wraps but doesn't collapse",ver:"v0.4.2",severity:"High",impact:"Affects",bt:0.904}
+  ]},
+  {cat:"Accessibility (WCAG 2.1 AA)",items:[
+    {id:"QA-031",text:"All images have alt text",type:"GitHub CI/CD",status:"pass",ver:"v0.4.1",severity:"Medium",impact:"Affects",bt:0.788},
+    {id:"QA-032",text:"Keyboard navigation works (tab order)",type:"Manual Review",status:"pass",note:"Fixed in v0.4.5",ver:"v0.4.5",severity:"Medium",impact:"Affects",bt:0.764},
+    {id:"QA-033",text:"ARIA labels on interactive widgets",type:"Manual Review",status:"fail",note:"Charts missing aria-label",ver:"v0.4.2",severity:"High",impact:"Affects",bt:0.896},
+    {id:"QA-034",text:"Screen reader announces dynamic content",type:"Vendor Validation",status:"na",note:"Needs JAWS/NVDA testing",ver:"v0.4.2",severity:"Medium",impact:"Minor",bt:0.756}
+  ]},
+  {cat:"Performance",items:[
+    {id:"QA-035",text:"All pages load < 3s on 4G",type:"GitHub CI/CD",status:"pass",note:"Largest: thermo-analysis 2.1s",ver:"v0.4.2",severity:"Medium",impact:"Affects",bt:0.748},
+    {id:"QA-036",text:"No memory leaks in Plotly charts",type:"Manual Review",status:"partial",note:"operations.html grows on resize",ver:"v0.4.2",severity:"Low",impact:"Minor",bt:0.740}
+  ]},
+  {cat:"Security",items:[
+    {id:"QA-037",text:"No sensitive data in committed files",type:"GitHub CI/CD",status:"pass",ver:"v0.4.1",severity:"High",impact:"Blocks",bt:0.888},
+    {id:"QA-038",text:"CSP headers configured for GitHub Pages",type:"Vendor Validation",status:"na",note:"GitHub Pages default CSP",ver:"v0.4.2",severity:"Low",impact:"Minor",bt:0.732}
+  ]}
+];
+
+let currentVersion = 'v0.4.5';
+let currentView = 'category';
+const STORAGE_KEY = 'myrrha-qa-';
+
+function getKey(id){ return STORAGE_KEY + currentVersion + '-' + id; }
+
+function setVersion(ver, btn){
+  currentVersion = ver;
+  document.querySelectorAll('.version-toggle button').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  renderAll();
+}
+
+function setView(v, btn){
+  currentView = v;
+  document.querySelectorAll('.filter-bar button').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  renderAll();
+}
+
+function getAllItems(){
+  const all = [];
+  QA_DATA.forEach(cat => cat.items.forEach(it => all.push({...it, cat: cat.cat})));
+  return all;
+}
+
+function getStatus(it){
+  if(it.status==='na') return 'N/A';
+  const checked = localStorage.getItem(getKey(it.id))==='1';
+  if(checked) return 'PASS';
+  if(it.status==='partial') return 'PARTIAL';
+  if(it.status==='fail') return 'FAIL';
+  return 'FAIL';
+}
+
+function getStatusIcon(st){
+  return st==='PASS'?'🟢':st==='PARTIAL'?'🟡':st==='N/A'?'⚪':'🔴';
+}
+
+function shouldBeOpen(it){
+  const st = getStatus(it);
+  // Open by default: failed, partial, top 10 by BT rank
+  if(st==='FAIL' || st==='PARTIAL') return true;
+  const allSorted = getAllItems().filter(i=>i.status!=='na').sort((a,b)=>b.bt-a.bt);
+  const rank = allSorted.findIndex(i=>i.id===it.id)+1;
+  return rank <= 10;
+}
+
+function renderAll(){
+  const container = document.getElementById('qaContainer');
+  container.innerHTML = '';
+
+  if(currentView === 'category'){
+    renderByCategory(container);
+  } else if(currentView === 'btrank'){
+    renderByBTRank(container);
+  } else {
+    renderByStatus(container);
+  }
+
+  updateSummary();
+  renderBTTable();
+}
+
+function renderByCategory(container){
+  QA_DATA.forEach((cat, ci)=>{
+    const catDiv = document.createElement('div');
+    catDiv.className = 'qa-cat';
+    const items = cat.items;
+    const checked = items.filter(it=> it.status!=='na' && localStorage.getItem(getKey(it.id))==='1').length;
+    const applicable = items.filter(it=>it.status!=='na').length;
+    const pct = applicable ? Math.round(checked/applicable*100) : 0;
+    const barColor = pct>=80?'#1D9E75':pct>=50?'#E5A100':'#D85A30';
+
+    catDiv.innerHTML = `<div class="qa-cat-header" onclick="this.nextElementSibling.style.display=this.nextElementSibling.style.display==='none'?'block':'none'">
+      <span class="cat-name">${cat.cat}</span>
+      <span class="cat-count">${checked}/${applicable}</span>
+      <div class="cat-bar"><div class="cat-bar-fill" style="width:${pct}%;background:${barColor}"></div></div>
+      <span style="font-size:12px">▼</span>
+    </div><div style="display:${ci===0?'block':'none'}"></div>`;
+
+    const body = catDiv.querySelector('div:last-child');
+    items.forEach(it => body.appendChild(renderItem(it)));
+    container.appendChild(catDiv);
+  });
+}
+
+function renderByBTRank(container){
+  const all = getAllItems().sort((a,b)=>b.bt-a.bt);
+  all.forEach(it => container.appendChild(renderItem(it)));
+}
+
+function renderByStatus(container){
+  const all = getAllItems();
+  const order = {FAIL:0, PARTIAL:1, PASS:2, 'N/A':3};
+  all.sort((a,b) => order[getStatus(a)] - order[getStatus(b)] || b.bt - a.bt);
+  all.forEach(it => container.appendChild(renderItem(it)));
+}
+
+function renderItem(it){
+  const st = getStatus(it);
+  const icon = getStatusIcon(st);
+  const isChecked = localStorage.getItem(getKey(it.id))==='1';
+  const isNA = it.status==='na';
+  const allSorted = getAllItems().filter(i=>i.status!=='na').sort((a,b)=>b.bt-a.bt);
+  const rank = allSorted.findIndex(i=>i.id===it.id)+1;
+  const openAttr = shouldBeOpen(it) ? ' open' : '';
+
+  const wrap = document.createElement('details');
+  wrap.className = 'qa-item-wrap';
+  if(shouldBeOpen(it)) wrap.setAttribute('open','');
+  wrap.innerHTML = `
+    <summary>
+      <input type="checkbox" ${isChecked?'checked':''} ${isNA?'disabled':''} onclick="event.stopPropagation();toggleItem('${it.id}',this.checked)" style="width:18px;height:18px;accent-color:var(--accent);cursor:pointer">
+      <span class="status-icon">${icon}</span>
+      <span class="qa-id">${it.id}</span>
+      <span class="qa-title">${it.text}</span>
+      <span class="qa-bt">${it.bt.toFixed(3)}</span>
+      <span class="qa-rank">#${rank}/38</span>
+    </summary>
+    <div class="qa-detail">
+      <p><strong>Status:</strong> ${st}</p>
+      <p><strong>Severity:</strong> <span class="sev-badge sev-${it.severity}">${it.severity}</span></p>
+      <p><strong>Impact:</strong> ${it.impact}</p>
+      <p><strong>Test Type:</strong> ${it.type}</p>
+      <p><strong>BT Score:</strong> ${it.bt.toFixed(3)} (Rank #${rank}/38)</p>
+      <p><strong>Version:</strong> <span class="qa-tag version">${it.ver}</span></p>
+      ${it.note?`<p><strong>Note:</strong> ${it.note}</p>`:''}
+      ${it.blocker?`<p><span class="qa-tag blocker">⛔ ${it.blocker}</span></p>`:''}
+    </div>`;
+  return wrap;
+}
+
+function toggleItem(id, checked){
+  localStorage.setItem(getKey(id), checked?'1':'0');
+  renderAll();
+}
+
+function updateSummary(){
+  let pass=0,partial=0,fail=0,na=0,total=0;
+  QA_DATA.forEach(cat=>cat.items.forEach(it=>{
+    total++;
+    if(it.status==='na'){na++;return;}
+    const checked = localStorage.getItem(getKey(it.id))==='1';
+    if(checked) pass++;
+    else if(it.status==='partial') partial++;
+    else fail++;
+  }));
+  document.getElementById('passCount').textContent=pass;
+  document.getElementById('partialCount').textContent=partial;
+  document.getElementById('failCount').textContent=fail;
+  document.getElementById('naCount').textContent=na;
+  const applicable = total-na;
+  document.getElementById('pctComplete').textContent = applicable?Math.round(pass/applicable*100)+'%':'—';
+
+  const cats=QA_DATA.map(c=>c.cat);
+  const catPass=QA_DATA.map(c=>c.items.filter(i=>i.status!=='na'&&localStorage.getItem(getKey(i.id))==='1').length);
+  const catTotal=QA_DATA.map(c=>c.items.filter(i=>i.status!=='na').length);
+  const catRemain=catTotal.map((t,i)=>t-catPass[i]);
+  Plotly.newPlot('plotProgress',[
+    {y:cats,x:catPass,type:'bar',orientation:'h',name:'Pass',marker:{color:'#1D9E75'}},
+    {y:cats,x:catRemain,type:'bar',orientation:'h',name:'Remaining',marker:{color:'#e3e6ec'}}
+  ],{barmode:'stack',margin:{l:160,r:30,t:30,b:30},height:250,
+    font:{family:'Aptos,sans-serif',size:11},
+    plot_bgcolor:'rgba(0,0,0,0)',paper_bgcolor:'rgba(0,0,0,0)',
+    xaxis:{title:'Items'},yaxis:{automargin:true},
+    legend:{x:0.7,y:1.1,orientation:'h'}},{responsive:true});
+
+  Plotly.newPlot('plotHistory',[
+    {x:['v0.4.0','v0.4.1','v0.4.2','v0.4.3','v0.4.4','v0.4.5'],y:[12,22,28,30,32,pass],name:'Pass',type:'scatter',mode:'lines+markers',line:{color:'#1D9E75',width:3},marker:{size:8}},
+    {x:['v0.4.0','v0.4.1','v0.4.2','v0.4.3','v0.4.4','v0.4.5'],y:[38,38,38,38,38,38],name:'Total',type:'scatter',mode:'lines',line:{color:'#e3e6ec',width:2,dash:'dot'}}
+  ],{margin:{l:40,r:30,t:40,b:40},height:250,
+    font:{family:'Aptos,sans-serif',size:11},
+    title:{text:'QA Pass Trend (v0.4.0 → v0.4.5)',font:{size:13}},
+    plot_bgcolor:'rgba(0,0,0,0)',paper_bgcolor:'rgba(0,0,0,0)',
+    yaxis:{title:'Items',range:[0,42]},legend:{x:0.7,y:0.2}},{responsive:true});
+}
+
+function renderBTTable(){
+  const all = getAllItems().sort((a,b)=>b.bt-a.bt);
+  const tbody = document.querySelector('#btRankTable tbody');
+  tbody.innerHTML = all.map((it,i)=>{
+    const st = getStatus(it);
+    const stCls = st==='PASS'?'color:#1D9E75':st==='PARTIAL'?'color:#E5A100':st==='FAIL'?'color:#D85A30':'color:var(--fg2)';
+    return `<tr>
+      <td style="font-family:var(--mono);font-weight:700">${i+1}</td>
+      <td style="font-family:var(--mono)">${it.id}</td>
+      <td>${it.text}</td>
+      <td style="font-family:var(--mono);font-weight:700">${it.bt.toFixed(3)}</td>
+      <td><span class="sev-badge sev-${it.severity}">${it.severity}</span></td>
+      <td>${it.impact}</td>
+      <td>${it.type}</td>
+      <td style="${stCls};font-weight:700">${st}</td>
+    </tr>`;
+  }).join('');
+}
+
+function resetAll(){
+  if(!confirm('Reset all QA checks for '+currentVersion+'?')) return;
+  QA_DATA.forEach(cat=>cat.items.forEach(it=>localStorage.removeItem(getKey(it.id))));
+  renderAll();
+}
+
+function exportReport(fmt){
+  let pass=0,fail=0,partial=0,na=0;
+  const all = getAllItems();
+  all.forEach(it=>{
+    const st=getStatus(it);
+    if(st==='PASS')pass++;else if(st==='PARTIAL')partial++;else if(st==='FAIL')fail++;else na++;
+  });
+  if(fmt==='json'){
+    const obj={version:currentVersion,date:new Date().toISOString(),summary:{pass,partial,fail,na},
+      items:all.map(it=>({...it,checked:localStorage.getItem(getKey(it.id))==='1',computedStatus:getStatus(it)}))};
+    const blob=new Blob([JSON.stringify(obj,null,2)],{type:'application/json'});
+    const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=`qa-report-${currentVersion}.json`;a.click();
+  } else {
+    const html=`<!doctype html><html><head><meta charset="utf-8"><title>QA Report ${currentVersion}</title><style>body{font-family:system-ui;max-width:800px;margin:40px auto;padding:20px;line-height:1.6}h1{color:#1a1d23}.pass{color:#1D9E75}.fail{color:#D85A30}.partial{color:#E5A100}</style></head><body><h1>MYRRHA WCS QA Report — ${currentVersion}</h1><p>Pass: <span class="pass">${pass}</span> · Partial: <span class="partial">${partial}</span> · Fail: <span class="fail">${fail}</span> · N/A: ${na}</p><table border="1" cellpadding="6" cellspacing="0" style="border-collapse:collapse;font-size:13px"><tr><th>Rank</th><th>ID</th><th>Item</th><th>BT</th><th>Status</th></tr>${all.sort((a,b)=>b.bt-a.bt).map((it,i)=>`<tr><td>${i+1}</td><td>${it.id}</td><td>${it.text}</td><td>${it.bt.toFixed(3)}</td><td class="${getStatus(it).toLowerCase()}">${getStatus(it)}</td></tr>`).join('')}</table></body></html>`;
+    const blob=new Blob([html],{type:'text/html'});
+    const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=`qa-report-${currentVersion}.html`;a.click();
+  }
+}
+
+renderAll();
+</script>
+</body></html>

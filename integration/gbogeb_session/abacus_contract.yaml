@@ -1,0 +1,52 @@
+# integration/gbogeb_session/abacus_contract.yaml
+#
+# Integration contract registering the GBOGEB session deliverables
+# (MCP Orchestration & Governance Framework, session 2026-05-22) into
+# GBOGEB/ABACUS, following the same convention as
+# integration/codespace_jyperter/ and integration/cryoplant_project/.
+#
+# This REPLACES the earlier failed approach of pushing the session work as an
+# orphan branch with no common history (feat/mcp-orchestration-session-
+# 2026-05-22-noworkflows). Here the work is assimilated on a branch cut from
+# origin/main into a non-colliding namespace, so it can be reviewed and merged
+# normally.
+#
+# Status: DRAFT -- the assimilated governance engines run standalone (79
+# pytest tests) and are provided for review/adoption. No upstream ABACUS phase
+# consumes them yet; no authoritative upstream file is mutated by this PR.
+
+contract:
+  version: "0.1.0-draft"
+  consumer: GBOGEB/ABACUS
+  provider: GBOGEB/session-2026-05-22
+  federation_moniker: DELTA_1
+  plane: runtime
+  supersedes_branch: feat/mcp-orchestration-session-2026-05-22-noworkflows
+
+  components:
+    - name: governance_engines
+      path: integration/gbogeb_session/governance/engines/
+      description: >
+        Deterministic publication governance engines: RENDER_LINTER,
+        WCAG_CONTRAST_CHECKER, SLIDE_ID_ENFORCER, verification_hook.
+      tests: integration/gbogeb_session/governance/tests/   # 79 passing
+    - name: mcp_server
+      path: integration/gbogeb_session/mcp_server/
+      description: >
+        GBOGEB MCP server (7 tools) for dual-repo (ABACUS+CODEX) context
+        sharing. Co-located here because ABACUS is the runtime plane and
+        already centralizes cross-repo integration stubs.
+      tests: integration/gbogeb_session/mcp_server/tests/    # 51 passing
+    - name: orchestration_docs
+      path: integration/gbogeb_session/orchestration_docs/
+      description: MCP orchestration suite (8 docs, 99 tuples).
+    - name: handover_suite
+      path: integration/gbogeb_session/handover/
+      description: Session handover + continuation protocol + build manifest.
+
+  consumed_from_abacus: []
+  produced_for_abacus: []
+
+  idempotency:
+    enabled: true
+    cache_key_fields: [manifest_sha256]

@@ -39,11 +39,11 @@ ABACUS is currently a mono-repo containing all versions, tools, and documentatio
 1. **`cryo-dashboard`** — Standalone visualization repo with GitHub Pages
    - Low coupling, high cohesion, self-contained HTML/JS
    - Could have its own GitHub Pages deployment
-   
+
 2. **`abacus-rtm`** — RTM integration tools
    - QPLANT-specific requirements tracking
    - Excel + Python, could serve other projects
-   
+
 3. **`abacus-dmaic-engine`** — Core DMAIC V3 engine
    - Only if engine stabilizes and API freezes
    - Currently too coupled to split safely
@@ -57,5 +57,5 @@ Split only when:
 5. Security/access isolation required
 
 ## Conclusion
-**Stay mono-repo for now.** The system is still maturing and splitting prematurely 
+**Stay mono-repo for now.** The system is still maturing and splitting prematurely
 would add coordination overhead without clear benefit. Revisit after P0 issues are resolved.

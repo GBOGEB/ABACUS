@@ -60,7 +60,7 @@ The QPLANT system is organized according to the following hierarchical structure
 **Type:** Performance  
 **Priority:** High  
 **Verification Method:** Test  
-**Acceptance Criteria:** Temperature condition: 2K; Value shall meet 90   
+**Acceptance Criteria:** Temperature condition: 2K; Value shall meet 90  
 **Rationale:** Required for proper system functionality
 
 **Child Requirements:** RTM-02, RTM-03, RTM-04  
@@ -101,7 +101,7 @@ The QPLANT system is organized according to the following hierarchical structure
 **Type:** Functional  
 **Priority:** High  
 **Verification Method:** Test  
-**Acceptance Criteria:** Value shall meet 6   
+**Acceptance Criteria:** Value shall meet 6  
 **Rationale:** Required for proper operational flexibility and system control
 
 **Child Requirements:** RTM-07, RTM-08, RTM-09, RTM-010, RTM-011, RTM-012  
@@ -110,7 +110,7 @@ The QPLANT system is organized according to the following hierarchical structure
 #### RTM-08
 **Description:** The QPLANT shall perform the cool-down of the QPLANT simultaneously with the cryogenic users (QCELL and QDIST static heat loads only)
 
-**SBS Assignment:** QSYS → QCELL → 
+**SBS Assignment:** QSYS → QCELL →
 
 **Type:** Functional  
 **Priority:** High  
@@ -124,7 +124,7 @@ The QPLANT system is organized according to the following hierarchical structure
 #### RTM-09
 **Description:** The QPLANT shall facilitate parallel cool down/warm up of all QCELLs. During cooldown and warm-up, cryomodules impose constraints: Magnetic shields must reach T < 70 K before cavities reach T < 10 K
 
-**SBS Assignment:** QSYS → QCELL → 
+**SBS Assignment:** QSYS → QCELL →
 
 **Type:** Functional  
 **Priority:** High  
@@ -138,7 +138,7 @@ The QPLANT system is organized according to the following hierarchical structure
 #### RTM-010
 **Description:** The QPLANT shall facilitate an alternative cooldown in which only the thermal-shield (TS) circuit is cooled until their average temperature reaches 50 K. Subsequently the headers A–B and D–E are simultaneous cooled down
 
-**SBS Assignment:** QSYS → QDIST → 
+**SBS Assignment:** QSYS → QDIST →
 
 **Type:** Functional  
 **Priority:** High  
@@ -157,7 +157,7 @@ The QPLANT system is organized according to the following hierarchical structure
 **Type:** Functional  
 **Priority:** High  
 **Verification Method:** Test  
-**Acceptance Criteria:** Temperature condition: 2K; Temperature condition: 300K; Value shall meet 5   
+**Acceptance Criteria:** Temperature condition: 2K; Temperature condition: 300K; Value shall meet 5  
 **Rationale:** Required for proper system functionality
 
 **Parent Requirements:** RTM-06  
@@ -166,12 +166,12 @@ The QPLANT system is organized according to the following hierarchical structure
 #### RTM-012
 **Description:** The QPLANT shall support the transition shown in Figure 6 for the warming-up of the cryogenic users, whether passively or actively (with QCELL heaters if available)
 
-**SBS Assignment:** QSYS → QCELL → 
+**SBS Assignment:** QSYS → QCELL →
 
 **Type:** Functional  
 **Priority:** High  
 **Verification Method:** Test  
-**Acceptance Criteria:** Value shall meet 6   
+**Acceptance Criteria:** Value shall meet 6  
 **Rationale:** Required for proper system functionality
 
 **Parent Requirements:** RTM-06  
@@ -217,7 +217,7 @@ The QPLANT system is organized according to the following hierarchical structure
 **Type:** Design  
 **Priority:** High  
 **Verification Method:** Test  
-**Acceptance Criteria:** Value shall meet 40   
+**Acceptance Criteria:** Value shall meet 40  
 **Rationale:** Required to meet project lifetime objectives
 
 **Parent Requirements:** RTM-01  
@@ -242,7 +242,7 @@ The QPLANT system is organized according to the following hierarchical structure
 #### RTM-015
 **Description:** The QPLANT shall facilitate an average retention rate of 0.8 g/s LHe per individual QCELL (24 g/s total) during the filling process
 
-**SBS Assignment:** QSYS → QCELL → 
+**SBS Assignment:** QSYS → QCELL →
 
 **Type:** Performance  
 **Priority:** High  
@@ -261,7 +261,7 @@ The QPLANT system is organized according to the following hierarchical structure
 **Type:** Functional  
 **Priority:** High  
 **Verification Method:** Test  
-**Acceptance Criteria:** Value shall meet 2 ; Value shall meet 900   
+**Acceptance Criteria:** Value shall meet 2 ; Value shall meet 900  
 **Rationale:** Required for proper system functionality
 
 **Parent Requirements:** RTM-013  

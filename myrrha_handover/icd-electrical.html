@@ -1,0 +1,105 @@
+<!doctype html>
+<html lang="en-GB"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>ICD-Bound Electrical · MYRRHA WCS</title>
+<link rel="stylesheet" href="assets/style.css">
+<style>
+ .wrap{max-width:1100px;margin:0 auto;padding:1rem}
+ table{border-collapse:collapse;width:100%;margin:.6rem 0;font-size:.92rem}
+ th,td{border:1px solid var(--border,#ccc);padding:.4rem .55rem;text-align:left}
+ th{background:var(--accent-bg,#eef)}
+ td.ok{color:#176117} td.bad{color:#a11;font-weight:600}
+ .chain{display:flex;flex-wrap:wrap;gap:.5rem;align-items:center;margin:.8rem 0}
+ .chain .box{border:1px solid var(--border,#ccc);border-radius:8px;padding:.5rem .7rem;background:var(--accent-bg,#f4f6ff)}
+ .chain .arr{font-size:1.3rem;opacity:.6}
+ .badge{padding:.1rem .45rem;border-radius:6px;font-size:.8rem}
+ .badge.open{background:#fde8c4;color:#7a4b00}
+ .src{font-size:.8rem;opacity:.8}
+ details{border:1px solid var(--border,#ccc);border-radius:8px;padding:.5rem .7rem;margin:.6rem 0}
+ summary{cursor:pointer;font-weight:600}
+ .note{background:var(--accent-bg,#f4f6ff);border-left:4px solid #3a6;padding:.5rem .7rem;border-radius:6px;margin:.6rem 0}
+</style></head>
+<body data-font="aptos">
+<script src="assets/common.js"></script>
+<script>window.MYRRHA&&MYRRHA.mountChrome&&MYRRHA.mountChrome('icd-electrical.html','ICD Electrical');</script>
+<main id="main-content" class="wrap" role="main">
+<h1>ICD-Bound Electrical, Cooling Water &amp; HVAC</h1>
+<p class="note"><b>Basis:</b> electricity is <b>consumed from the ICD</b> (not derived from isothermal work ÷ efficiency).
+Cooling water and HVAC are then <b>derived</b> from it. <b>HP flow and B flow are separate drivers and are never summed into one sizing flow</b>
+(binding rule, <code>QPS_WCS_HP_PVPS_THERMO_CONTROL_ICD_W52</code>).</p>
+
+<div class="chain">
+ <div class="box"><b>Electricity</b><br><span class="src">ICD package input power</span></div>
+ <span class="arr">→</span>
+ <div class="box"><b>Recoverable water heat</b><br><span class="src">229 kW/unit @ max</span></div>
+ <span class="arr">→</span>
+ <div class="box"><b>Cooling-water flow</b><br><span class="src">PG40, ΔT 10 K</span></div>
+ <span class="arr">→</span>
+ <div class="box"><b>HVAC</b><br><span class="src">residual non-water heat</span></div>
+</div>
+
+<h2>HP compressor at the ICD nominal anchor (326 g/s HP total)</h2>
+<p class="src">Source: <code>QPS_WCS_HP_PVPS_THERMO_CONTROL_ICD_W52</code> · KAESER FSD575 SFC, 4 installed, 357 kW/unit at 112 g/s design, linear scaling, 72 Hz cap.</p>
+<table>
+<tr><th>Configuration</th><th>Active units</th><th>Flow/unit (g/s)</th><th>Frequency (Hz)</th><th>Fleet input power (kW)</th><th>Recoverable heat (kW)</th><th>Cooling water (m³/h)</th><th>HVAC residual (kW)</th></tr>
+<tr><td>3-of-4</td><td>3</td><td>108.667</td><td>69.86</td><td><b>1039.1</b></td><td>666.6</td><td>65.3</td><td>372.6</td></tr>
+<tr><td>4-of-4</td><td>4</td><td>81.5</td><td>52.39</td><td><b>1039.1</b></td><td>666.6</td><td>65.3</td><td>372.6</td></tr>
+</table>
+<p class="note">Fleet input power is <b>config-invariant</b> at a given total (1039.1 kW for both 3-of-4 and 4-of-4) — a direct consequence of the linear per-unit power law. Both configurations are ICD candidates; neither is assumed.</p>
+
+<h2>HP flow → power scaling (72 Hz / 4-unit limits enforced)</h2>
+<table>
+<tr><th>HP total (g/s)</th><th>3 units</th><th>4 units</th></tr>
+<tr><td><b>25</b></td><td class='ok'>5.4 Hz · 80 kW</td><td class='ok'>4.0 Hz · 80 kW</td></tr>
+<tr><td><b>50</b></td><td class='ok'>10.7 Hz · 159 kW</td><td class='ok'>8.0 Hz · 159 kW</td></tr>
+<tr><td><b>100</b></td><td class='ok'>21.4 Hz · 319 kW</td><td class='ok'>16.1 Hz · 319 kW</td></tr>
+<tr><td><b>150</b></td><td class='ok'>32.1 Hz · 478 kW</td><td class='ok'>24.1 Hz · 478 kW</td></tr>
+<tr><td><b>200</b></td><td class='ok'>42.9 Hz · 638 kW</td><td class='ok'>32.1 Hz · 638 kW</td></tr>
+<tr><td><b>250</b></td><td class='ok'>53.6 Hz · 797 kW</td><td class='ok'>40.2 Hz · 797 kW</td></tr>
+<tr><td><b>300</b></td><td class='ok'>64.3 Hz · 956 kW</td><td class='ok'>48.2 Hz · 956 kW</td></tr>
+<tr><td><b>326</b></td><td class='ok'>69.9 Hz · 1039 kW</td><td class='ok'>52.4 Hz · 1039 kW</td></tr>
+<tr><td><b>350</b></td><td class='bad'>75.0 Hz · 1116 kW ✗</td><td class='ok'>56.2 Hz · 1116 kW</td></tr>
+</table>
+<p class="src">✗ = infeasible (would need &gt;72 Hz or &gt;4 units); not extrapolated. Note 350 g/s is infeasible on 3 units (75 Hz) — it requires 4 units.</p>
+
+<h2>PVPS (driver: B / VLP return flow — separate from HP)</h2>
+<p class="src">Source: <code>QPS_WCS_HP_PVPS_THERMO_CONTROL_ICD_W52</code> · LEYBOLD SOGEVAC SV750 BF, 18.5 kW each.</p>
+<table>
+<tr><th>Running count</th><th>Fleet motor power (kW)</th><th>Status</th></tr>
+<tr><td>4 (assumed)</td><td>74.0</td><td><span class="badge open">OPEN</span> running count not source-closed</td></tr>
+</table>
+<p class="src">Electrical ICD shows ~150 kW/station x4 vs ONE 150 kW Table 19 row -- conflict EL-R04 OPEN</p>
+
+<h2>QRB cold-compressor (CC) electrical — separate consumer</h2>
+<p class="src">Source: <code>QPS_W54_P02_QRB_CC_CW_ELEC_ICD_CARD_BRIDGE</code></p>
+<table>
+<tr><th>Contract envelope (kW)</th><th>LKT bidder (kW)</th><th>ALaT historic (kW)</th><th>Status</th></tr>
+<tr><td><b>135</b> (governs)</td><td>30</td><td>45</td><td><span class="badge open">OPEN</span> RTM locator pending</td></tr>
+</table>
+
+<h2>Indicative site electrical (separate consumers, not a single flow)</h2>
+<table>
+<tr><th>HP @ anchor (3-of-4)</th><th>PVPS (assumed)</th><th>QRB-CC (contract)</th></tr>
+<tr><td>1039.1 kW</td><td>74.0 kW</td><td>135 kW</td></tr>
+</table>
+<p class="src">HP + PVPS + QRB-CC as SEPARATE consumers; HVAC is a heat load, not added here.</p>
+
+<details open>
+<summary>⚠ Open items (carried from SSOT — not resolved here)</summary>
+<table>
+<tr><th>ID</th><th>Issue</th><th>Status</th><th>Source</th></tr>
+<tr><td><code>EL-R04</code></td><td>LKT SLD shows 4 PVPS stations each ~150 kW with own owner fuse vs ONE 150 kW Table 19 row.</td><td><span class='badge open'>OPEN</span></td><td><code>QPS_W363_ICD_EL_001_ELECTRICAL_INTERFACE_REV1_2</code></td></tr>
+<tr><td><code>CC-ENVELOPE</code></td><td>Contract 3x45 kW (135 kW) vs LKT bidder 3x10 kW (30 kW); exact RTM locator pending.</td><td><span class='badge open'>OPEN</span></td><td><code>QPS_W54_P02_QRB_CC_CW_ELEC_ICD_CARD_BRIDGE</code></td></tr>
+<tr><td><code>PVPS-RUN-COUNT</code></td><td>PVPS guaranteed capacity and normal running count per 2K mode not yet source-closed.</td><td><span class='badge open'>OPEN</span></td><td><code>QPS_WCS_HP_PVPS_THERMO_CONTROL_ICD_W52</code></td></tr>
+<tr><td><code>CC-CW-PER-BRANCH</code></td><td>CC CW per-branch design flow and heat rejection = null (pending source binding) -- null, not zero.</td><td><span class='badge open'>OPEN</span></td><td><code>QPS_W54_P02_QRB_CC_CW_ELEC_ICD_CARD_BRIDGE</code></td></tr>
+</table>
+</details>
+
+<details>
+<summary>Provenance &amp; governance</summary>
+<p>All anchors are a read-only projection of the private SSOT (<code>GBOGEB/cryoplant-project</code>) via
+<code>master/icd_inputs.yaml</code>. The SSOT is canonical and was not modified. PG40 density (1050 kg/m³) and
+cp (3.5 kJ/kg·K) are stated assumptions for the heat→flow conversion, not owner-bound values.</p>
+</details>
+</main>
+</body></html>

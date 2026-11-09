@@ -12,13 +12,13 @@ Phase 3: ANALYZE - Root cause analysis and pattern detection
 __version__ = "3.3.0"
 
 import json
-from pathlib import Path
-from typing import Dict, List, Tuple, Any
 from datetime import datetime
+from pathlib import Path
+from typing import Any, Dict, List, Tuple
 
+from ..config import DMAICConfig
 from ..core.state import StateManager
 from ..core.utils import ensure_directory, safe_write_json
-from ..config import DMAICConfig
 
 
 class Phase3Analyze:
@@ -292,7 +292,10 @@ class Phase3Analyze:
             }
 
         if isinstance(run_result, dict):
-            return bool(run_result.get("success", "error" not in run_result)), run_result
+            return (
+                bool(run_result.get("success", "error" not in run_result)),
+                run_result,
+            )
 
         return False, {
             "phase": "ANALYZE",
@@ -408,7 +411,7 @@ class Phase3Analyze:
         # Add output_file to the result
         analysis_result["output_file"] = str(output_file)
 
-        print(f"\n[*] Analysis Summary:")
+        print("\n[*] Analysis Summary:")
         print(f"   Total files: {len(metrics)}")
         print(f"   Critical issues: {analysis_result['summary']['critical_issues']}")
         print(f"   High issues: {analysis_result['summary']['high_issues']}")

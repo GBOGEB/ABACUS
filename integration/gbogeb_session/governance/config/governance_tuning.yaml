@@ -1,0 +1,84 @@
+# ============================================================================
+# governance_tuning.yaml — System Tuning Configuration
+# GBOGEB/ABACUS Governance Controls
+# Version: 1.0.0 | YAML 1.2 Strict
+# ============================================================================
+
+schema_version: "1.0.0"
+
+# ── Rendering Engine Tuning ──
+rendering:
+  html_first: true
+  component_assembly: "semantic"
+  template_engine: "jekyll"
+  output_formats:
+    - html
+    - pdf
+  deterministic_mode: true
+  seed_source: "git_commit_sha"
+
+# ── Publication Governance ──
+governance:
+  strict_mode: true
+  linter:
+    enabled: true
+    fail_on_error: true
+    fail_on_warning: false
+    rules:
+      no_overflow: { severity: "ERROR", enabled: true }
+      no_low_contrast: { severity: "INFO", enabled: true }
+      no_orphan_bullets: { severity: "WARNING", enabled: true }
+      stable_heading_hierarchy: { severity: "ERROR", enabled: true }
+      figure_reference_required: { severity: "WARNING", enabled: true }
+      speaker_notes_required: { severity: "WARNING", enabled: true }
+      semantic_card_required: { severity: "ERROR", enabled: true }
+
+  contrast:
+    wcag_level: "AA"
+    minimum_normal: 4.5
+    minimum_large: 3.0
+    minimum_ui: 3.0
+
+  slide_ids:
+    pattern: "^[a-zA-Z0-9]+-[a-zA-Z0-9]+-[0-9]+$"
+    enforce_uniqueness: true
+    immutable: true
+
+# ── Knowledge Lineage ──
+lineage:
+  hash_algorithm: "sha256"
+  manifest_path: "_data/lineage_manifest.json"
+  sidecar_extension: ".mock"
+  commit_tracking: true
+  timestamp_format: "iso-8601"
+
+# ── Jekyll Data Core ──
+jekyll:
+  data_directory: "_data"
+  layouts_directory: "_layouts"
+  includes_directory: "_includes"
+  strict_front_matter: true
+  yaml_version: "1.2"
+
+# ── Cross-Repository Dependencies ──
+dependencies:
+  codex:
+    repository: "GBOGEB/CODEX"
+    sync_method: "manual"
+    bridge_protocol: "Input_Master"
+    version_pinning: true
+
+# ── CI/CD Pipeline ──
+pipeline:
+  pre_merge_checks:
+    - "RENDER_LINTER"
+    - "WCAG_CONTRAST_CHECKER"
+    - "SLIDE_ID_ENFORCER"
+    - "unit_tests"
+  post_merge_actions:
+    - "jekyll_build"
+    - "lineage_update"
+  required_reviewers:
+    engines: ["governance-team"]
+    config: ["platform-team"]
+    docs: ["architecture-team"]

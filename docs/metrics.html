@@ -7,6 +7,9 @@
   <meta name="description" content="DMAIC metrics, test-suite growth, version artifact lineage and statistical analysis for ABACUS."/>
   <link rel="stylesheet" href="assets/style.css"/>
 
+  <!-- Shared accessible chart theme (colour-blind-safe palette + overlap-safe layout) -->
+  <script src="assets/abacus_chart_theme.js"></script>
+
   <!-- Plotly.js — interactive charts; falls back to static SVGs when offline -->
   <script>
     /* Define stub first so onload can call it even before the bottom script runs */
@@ -38,7 +41,7 @@
   <style>
     /* ── layout ── */
     .metrics-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:1rem;margin:1rem 0}
-    .chart-grid   {display:grid;grid-template-columns:repeat(auto-fit,minmax(380px,1fr));gap:1.5rem;margin:1rem 0}
+    .chart-grid   {display:grid;grid-template-columns:repeat(auto-fit,minmax(min(380px,100%),1fr));gap:1.5rem;margin:1rem 0}
     .chart-full   {grid-column:1/-1}
 
     /* ── KPI cards ── */
@@ -105,6 +108,7 @@
     .phase-stat .sv{font-weight:700}
 
     /* ── stat table ── */
+    .table-scroll{width:100%;overflow-x:auto;-webkit-overflow-scrolling:touch}
     .stat-table{width:100%;border-collapse:collapse;font-size:.88rem}
     .stat-table th{background:#f1f3f4;text-align:left;padding:.45rem .6rem;
                    border-bottom:2px solid var(--border)}
@@ -423,6 +427,7 @@
     <span class="topic-badge badge-dmaic">DMAIC</span>
   </div>
 
+  <div class="table-scroll">
   <table class="stat-table">
     <thead>
       <tr>
@@ -455,6 +460,7 @@
       </tr>
     </tbody>
   </table>
+  </div>
 
 </main>
 
@@ -470,23 +476,22 @@
 <script>
 /* Chart data — all inline so the page works without a back-end */
 
-var PALETTE = {
-  define:  '#1a73e8',
-  measure: '#34a853',
-  analyze: '#fbbc04',
-  improve: '#ea4335',
-  control: '#9c27b0',
-  infra:   '#00bcd4',
-  accent:  '#ff5722',
+/* Colour-blind-safe palette + overlap-safe layout come from the shared theme
+   (assets/abacus_chart_theme.js). Falls back to inline values if it failed to load. */
+var THEME = window.ABACUS_CHART_THEME;
+var PALETTE = THEME ? THEME.light : {
+  define:'#0051a2', measure:'#117733', analyze:'#8a6d00', improve:'#b2182b',
+  control:'#762a83', infra:'#006d77', accent:'#bf5b17'
 };
 
-var LAYOUT_BASE = {
-  paper_bgcolor: '#f8f9fa',
-  plot_bgcolor:  '#f8f9fa',
-  font: { family: "'Segoe UI', system-ui, sans-serif", size: 12 },
-  margin: { t: 20, b: 40, l: 50, r: 20 },
-};
-
+/* Build an accessible layout via the shared theme (bottom legend offset clear of
+   the x-axis labels/title, axis automargin). opts: {legend, tickangle}. */
+function L(overrides, opts){
+  if (THEME) return THEME.layout('light', overrides || {}, opts || {});
+  return Object.assign({ paper_bgcolor:PALETTE.bg||'#ffffff',
+    plot_bgcolor:PALETTE.bg||'#ffffff', margin:{t:48,b:120,l:64,r:24} }, overrides||{});
+}
+var PLOT_CONFIG = THEME ? THEME.config : { responsive:true, displayModeBar:false };
 function merge(a, b){ return Object.assign({}, a, b); }
 
 /* ── Test Growth ── */
@@ -498,12 +503,12 @@ function plotTestGrowth() {
     text: counts, textposition: 'top center',
     line: { width: 3, color: PALETTE.define },
     marker: { size: 10, color: PALETTE.define },
-    fill: 'tozeroy', fillcolor: 'rgba(26,115,232,.10)',
+    fill: 'tozeroy', fillcolor: 'rgba(0,81,162,.12)',
     hovertemplate: '%{x}<br>Tests: <b>%{y}</b><extra></extra>'
-  }], merge(LAYOUT_BASE, {
+  }], L({
     yaxis: { range: [50, 105], title: 'Test count' },
     xaxis: { title: 'Version' }
-  }), {responsive: true});
+  }, { legend: 'none' }), PLOT_CONFIG);
 }
 
 /* ── Tests per DMAIC Phase ── */
@@ -516,9 +521,10 @@ function plotPhaseTests() {
     marker: { color: [PALETTE.define, PALETTE.measure, PALETTE.analyze,
                       PALETTE.improve, PALETTE.control] },
     hovertemplate: '%{x}<br>Tests: <b>%{y}</b><extra></extra>'
-  }], merge(LAYOUT_BASE, {
+  }], L({
     yaxis: { range: [0, 16], title: 'Tests' },
-  }), {responsive: true});
+    xaxis: { title: 'DMAIC phase' }
+  }, { legend: 'none' }), PLOT_CONFIG);
 }
 
 /* ── Module Breakdown (horizontal bar) ── */
@@ -541,11 +547,11 @@ function plotModules() {
     text: counts, textposition: 'outside',
     marker: { color: colors },
     hovertemplate: '%{y}<br>Tests: <b>%{x}</b><extra></extra>'
-  }], merge(LAYOUT_BASE, {
+  }], L({
     xaxis: { range: [0, 15], title: 'Tests' },
     yaxis: { autorange: 'reversed' },
-    margin: { l: 180, t: 10, b: 40, r: 30 }
-  }), {responsive: true});
+    margin: { l: 200 }
+  }, { legend: 'none' }), PLOT_CONFIG);
 }
 
 /* ── Phase LOC ── */
@@ -558,9 +564,10 @@ function plotLoc() {
     marker: { color: [PALETTE.define, PALETTE.measure, PALETTE.analyze,
                       PALETTE.improve, PALETTE.control] },
     hovertemplate: '%{x}<br>LOC: <b>%{y}</b><extra></extra>'
-  }], merge(LAYOUT_BASE, {
-    yaxis: { range: [0, 1500], title: 'Lines of code (est.)' }
-  }), {responsive: true});
+  }], L({
+    yaxis: { range: [0, 1500], title: 'Lines of code (est.)' },
+    xaxis: { title: 'DMAIC phase' }
+  }, { legend: 'none' }), PLOT_CONFIG);
 }
 
 /* ── Version Lineage (stacked bar) ── */
@@ -576,11 +583,11 @@ function plotLineage() {
     { name: 'Removed', x: versions, y: [0,3,2,1],   type: 'bar',
       marker: { color: PALETTE.improve },
       hovertemplate: 'Removed: <b>%{y}</b><extra></extra>' },
-  ], merge(LAYOUT_BASE, {
+  ], L({
     barmode: 'stack',
     yaxis: { title: 'Artifact / config file count' },
-    legend: { orientation: 'h', y: 1.08, x: 0.5, xanchor: 'center' }
-  }), {responsive: true});
+    xaxis: { title: 'Version' }
+  }, { legend: 'bottom' }), PLOT_CONFIG);
 }
 
 /* ── Radar ── */
@@ -589,18 +596,20 @@ function plotRadar() {
   var values     = [92,88,90,95,90,92];
   Plotly.newPlot('plotly-radar', [{
     type: 'scatterpolar', r: values, theta: categories,
-    fill: 'toself', fillcolor: 'rgba(26,115,232,.18)',
+    fill: 'toself', fillcolor: 'rgba(0,81,162,.18)',
     line: { color: PALETTE.define, width: 2.5 },
     marker: { size: 8, color: PALETTE.define },
     hovertemplate: '%{theta}<br>Maturity: <b>%{r}%</b><extra></extra>'
-  }], merge(LAYOUT_BASE, {
+  }], L({
     polar: {
-      radialaxis: { visible: true, range: [0,100],
-                    ticksuffix: '%', gridcolor: '#dadce0' },
-      bgcolor: '#f8f9fa'
+      radialaxis: { visible: true, range: [0,100], ticksuffix: '%',
+                    gridcolor: (THEME?THEME.light.grid:'#c7ccd1'),
+                    tickfont: { color: (THEME?THEME.light.text:'#202124') } },
+      angularaxis: { tickfont: { color: (THEME?THEME.light.text:'#202124') } },
+      bgcolor: (THEME?THEME.light.bg:'#ffffff')
     },
-    margin: { t: 20, b: 20, l: 50, r: 50 }
-  }), {responsive: true});
+    margin: { t: 48, b: 48, l: 56, r: 56 }
+  }, { legend: 'none' }), PLOT_CONFIG);
 }
 
 /* ── render all charts once Plotly is ready ── */

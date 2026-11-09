@@ -19,7 +19,7 @@ pull_requests:
     closed_at: "2024-12-16T00:00:00Z"
     author: "gbonthuy"
     reviewers: []
-    
+
     # CI/CD Tracking
     ci_runs:
       - run_id: ""
@@ -31,7 +31,7 @@ pull_requests:
         tests_passed: 0
         tests_failed: 0
         artifacts: []
-    
+
     cd_deployments:
       - deployment_id: ""
         environment: ""  # staging, production
@@ -39,7 +39,7 @@ pull_requests:
         deployed_at: ""
         version: ""
         rollback_available: true
-    
+
     # Issue Management
     issues_created:
       - issue_number: 0
@@ -49,7 +49,7 @@ pull_requests:
         created_at: ""
         resolved_at: ""
         sub_issues: []
-    
+
     # Copilot & GitHub Feedback
     copilot_feedback:
       - timestamp: ""
@@ -60,7 +60,7 @@ pull_requests:
         line: 0
         action_taken: false
         action_details: ""
-    
+
     # Post-Merge Actions
     post_merge_actions:
       - action: ""
@@ -68,14 +68,14 @@ pull_requests:
         reason: ""
         created_at: ""
         completed_at: ""
-    
+
     # Lessons Learned
     lessons_learned:
       - category: ""  # ci, cd, code_quality, process
         lesson: ""
         action_item: ""
         priority: "medium"
-    
+
     tags:
       - "dmaic"
       - "dow-integration"
@@ -115,7 +115,7 @@ ci_cd_history:
       coverage_percent: 0.0
       artifacts: []
       logs_url: ""
-  
+
   cd_deployments:
     - deployment_id: ""
       pr_number: 0
@@ -126,7 +126,7 @@ ci_cd_history:
       commit_sha: ""
       rollback_available: true
       health_check_passed: true
-  
+
   missed_opportunities:
     - timestamp: ""
       type: ""  # ci_optimization, cd_automation, test_coverage, code_quality

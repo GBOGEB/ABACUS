@@ -6,8 +6,8 @@ Compiles Pandoc book from markdown sources with version validation
 
 import subprocess
 import sys
-from pathlib import Path
 from datetime import datetime
+from pathlib import Path
 
 __version__ = "3.3.0"
 
@@ -21,14 +21,14 @@ BOOK_SOURCES = [
     "DMAIC_V3_BOOK_STRUCTURE.md",
     "DMAIC_V3_3_IMPLEMENTATION_SUMMARY.md",
     "DMAIC_V3_EXECUTION_SUMMARY.md",
-    "DMAIC_TEMPORAL_MAPPING_COMPLETE.md",
+    "docs_versioned/status_reports/DMAIC_TEMPORAL_MAPPING_COMPLETE.md",
     "V2.2_RECURSIVE_HOOKS_VERSION_ALIGNMENT.md",
     "knowledge_packages/README.md",
     "DMAIC_V3_FINAL_REPORT.md",
     "DMAIC_V3_GIT_SETUP_GUIDE.md",
     "DMAIC_V3_GIT_GITHUB_STRATEGY.md",
     "DMAIC_V3_GIT_INTEGRATION_SUMMARY.md",
-    "HANDOVER_CLOSURE_COMPLETE_20241112.md",
+    "docs_versioned/handover/HANDOVER_CLOSURE_COMPLETE_20241112.md",
     "DMAIC_V3_DOCUMENTATION_INDEX.md",
 ]
 
@@ -56,7 +56,11 @@ def build_pdf():
     ] + BOOK_SOURCES
 
     result = subprocess.run(cmd, capture_output=True, text=True)
-    if result.returncode == 0 and Path("build/DMAIC_V3_BOOK.pdf").is_file() and Path("build/DMAIC_V3_BOOK.pdf").stat().st_size > 0:
+    if (
+        result.returncode == 0
+        and Path("build/DMAIC_V3_BOOK.pdf").is_file()
+        and Path("build/DMAIC_V3_BOOK.pdf").stat().st_size > 0
+    ):
         print("✅ PDF built successfully: build/DMAIC_V3_BOOK.pdf")
         return True
     else:
@@ -81,7 +85,11 @@ def build_html():
     ] + BOOK_SOURCES
 
     result = subprocess.run(cmd, capture_output=True, text=True)
-    if result.returncode == 0 and Path("build/DMAIC_V3_BOOK.html").is_file() and Path("build/DMAIC_V3_BOOK.html").stat().st_size > 0:
+    if (
+        result.returncode == 0
+        and Path("build/DMAIC_V3_BOOK.html").is_file()
+        and Path("build/DMAIC_V3_BOOK.html").stat().st_size > 0
+    ):
         print("✅ HTML built successfully: build/DMAIC_V3_BOOK.html")
         return True
     else:
@@ -103,7 +111,11 @@ def build_epub():
     ] + BOOK_SOURCES
 
     result = subprocess.run(cmd, capture_output=True, text=True)
-    if result.returncode == 0 and Path("build/DMAIC_V3_BOOK.epub").is_file() and Path("build/DMAIC_V3_BOOK.epub").stat().st_size > 0:
+    if (
+        result.returncode == 0
+        and Path("build/DMAIC_V3_BOOK.epub").is_file()
+        and Path("build/DMAIC_V3_BOOK.epub").stat().st_size > 0
+    ):
         print("✅ EPUB built successfully: build/DMAIC_V3_BOOK.epub")
         return True
     else:
@@ -146,6 +158,7 @@ def main():
     else:
         print(f"\n❌ Some builds failed. Check errors above.")
         sys.exit(1)
+
 
 if __name__ == "__main__":
     main()

@@ -4,7 +4,10 @@
 Implements mass flow, volumetric flow, and compressor capacity calculations
 using actual QPS parameters from SSOT. All equations include LaTeX derivation.
 """
-import json, math, os, sys
+import json
+import math
+import os
+import sys
 
 # ─── Load engineering baseline (from SSOT) ───────────────────────────────────
 BASELINE_PATH = os.path.join(os.path.dirname(__file__), "..", "engineering_baseline.json")

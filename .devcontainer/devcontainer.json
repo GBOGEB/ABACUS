@@ -1,6 +1,6 @@
 {
   "name": "ABACUS CI/CD Development Environment",
-  "image": "mcr.microsoft.com/devcontainers/python:3.11",
+  "image": "mcr.microsoft.com/devcontainers/python:3.14",
 
   "features": {
     "ghcr.io/devcontainers/features/github-cli:1": {

@@ -4,6 +4,7 @@ The original V2 producer accepted a symlinked capsule member with a correct
 digest. This is a local self-contained replay contract; it does not authorize
 merge, remote source authentication or admission.
 """
+
 from __future__ import annotations
 
 import importlib.util
@@ -80,7 +81,9 @@ class TestV2SelfContainedReplay(unittest.TestCase):
             ):
                 data, saved = core.capsule_verify(capsule)
             self.assertEqual(data, {})
-            self.assertEqual(saved["manifest_root_sha256"], manifest["manifest_root_sha256"])
+            self.assertEqual(
+                saved["manifest_root_sha256"], manifest["manifest_root_sha256"]
+            )
 
 
 if __name__ == "__main__":

@@ -449,15 +449,15 @@ class DocumentSpellChecker:
             'DMAIC', 'cryoplant', 'helium', 'cooldown',
             'canonical', 'temporal', 'lineage'
         ])
-    
+
     def check_document(self, text: str) -> dict:
         words = text.split()
         misspelled = self.spell.unknown(words)
-        
+
         corrections = {}
         for word in misspelled:
             corrections[word] = self.spell.correction(word)
-        
+
         return {
             'total_words': len(words),
             'misspelled': len(misspelled),
@@ -485,7 +485,7 @@ testpaths = tests
 python_files = test_*.py
 python_classes = Test*
 python_functions = test_*
-addopts = 
+addopts =
     -v
     --cov=master_document_system
     --cov-report=html

@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 """W83 exact outcome discrimination check for the harvested typed-basis probe."""
+
 from __future__ import annotations
 
 import argparse
@@ -39,11 +40,7 @@ def canonical_sha256(value: object) -> str:
 
 
 def _hypergeom_prob(a: int, r1: int, c1: int, n: int) -> float:
-    return (
-        math.comb(c1, a)
-        * math.comb(n - c1, r1 - a)
-        / math.comb(n, r1)
-    )
+    return math.comb(c1, a) * math.comb(n - c1, r1 - a) / math.comb(n, r1)
 
 
 def fisher_two_sided(a: int, b: int, c: int, d: int) -> float:
@@ -103,7 +100,9 @@ def validate(ledger: dict) -> list[dict]:
         expected = EXPECTED_LABELS[row["label"]]
         if row.get("outcome", {}).get("failure_label") != expected:
             raise ValueError(f"W83 outcome mismatch for {row['label']}")
-        if row.get("outcome", {}).get("conclusion") != ("failure" if expected else "success"):
+        if row.get("outcome", {}).get("conclusion") != (
+            "failure" if expected else "success"
+        ):
             raise ValueError(f"W83 conclusion mismatch for {row['label']}")
         vector = row.get("vector") or {}
         if set(vector) != {"keep_rules", "pr_domain_rules", "rule_count"}:
@@ -132,18 +131,20 @@ def evaluate(ledger: dict) -> dict:
     for key, group in ordered:
         fail = sum(int(row["outcome"]["failure_label"]) for row in group)
         passed = len(group) - fail
-        summaries.append({
-            "vector": {
-                "keep_rules": key[0],
-                "pr_domain_rules": key[1],
-                "rule_count": key[2],
-            },
-            "state_count": len(group),
-            "pass_count": passed,
-            "failure_count": fail,
-            "pass_fraction": passed / len(group),
-            "labels": sorted(row["label"] for row in group),
-        })
+        summaries.append(
+            {
+                "vector": {
+                    "keep_rules": key[0],
+                    "pr_domain_rules": key[1],
+                    "rule_count": key[2],
+                },
+                "state_count": len(group),
+                "pass_count": passed,
+                "failure_count": fail,
+                "pass_fraction": passed / len(group),
+                "labels": sorted(row["label"] for row in group),
+            }
+        )
         table.append([passed, fail])
 
     a, b = table[0]
@@ -159,8 +160,12 @@ def evaluate(ledger: dict) -> dict:
         "authority": "derived_operational_analysis_only",
         "measurement_basis": "typed_semantic_and_governance_composition_exact_source",
         "source_probe_run_id": EXPECTED_AGGREGATE["run_id"],
-        "source_probe_aggregate_artifact_id": EXPECTED_AGGREGATE["aggregate_artifact_id"],
-        "source_probe_aggregate_artifact_digest": EXPECTED_AGGREGATE["aggregate_artifact_digest"],
+        "source_probe_aggregate_artifact_id": EXPECTED_AGGREGATE[
+            "aggregate_artifact_id"
+        ],
+        "source_probe_aggregate_artifact_digest": EXPECTED_AGGREGATE[
+            "aggregate_artifact_digest"
+        ],
         "sample_geometry": {
             "state_count": 6,
             "outcome_pass": 3,
@@ -209,7 +214,9 @@ def main() -> None:
     args = parser.parse_args()
     ledger = json.loads(Path(args.ledger).read_text(encoding="utf-8"))
     result = evaluate(ledger)
-    Path(args.out).write_text(json.dumps(result, indent=2, sort_keys=True) + "\n", encoding="utf-8")
+    Path(args.out).write_text(
+        json.dumps(result, indent=2, sort_keys=True) + "\n", encoding="utf-8"
+    )
     print(json.dumps(result, sort_keys=True))
 
 

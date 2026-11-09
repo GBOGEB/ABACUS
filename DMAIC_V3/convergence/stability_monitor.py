@@ -9,15 +9,14 @@ Real-time stability monitoring with recursive hooks.
 Tracks file changes, test execution, metric variance, and generates alerts.
 """
 
-import json
 import hashlib
+import json
 import time
+from collections import defaultdict, deque
+from dataclasses import asdict, dataclass
 from datetime import datetime
 from pathlib import Path
-from typing import Dict, List, Optional, Any, Callable
-from dataclasses import dataclass, asdict
-from collections import defaultdict, deque
-
+from typing import Any, Callable, Dict, List, Optional
 
 VERSION = "3.2.0"
 
@@ -78,9 +77,15 @@ class StabilityMonitor:
         self.workspace_path = workspace_path or Path.cwd()
         self.window_size = window_size
 
-        self.file_snapshots: Dict[str, deque] = defaultdict(lambda: deque(maxlen=window_size))
-        self.test_results: Dict[str, deque] = defaultdict(lambda: deque(maxlen=window_size))
-        self.metric_history: Dict[str, deque] = defaultdict(lambda: deque(maxlen=window_size))
+        self.file_snapshots: Dict[str, deque] = defaultdict(
+            lambda: deque(maxlen=window_size)
+        )
+        self.test_results: Dict[str, deque] = defaultdict(
+            lambda: deque(maxlen=window_size)
+        )
+        self.metric_history: Dict[str, deque] = defaultdict(
+            lambda: deque(maxlen=window_size)
+        )
 
         self.alerts: List[StabilityAlert] = []
         self.start_time = time.time()
@@ -92,7 +97,7 @@ class StabilityMonitor:
         self.watch_patterns = [
             "DMAIC_V3/**/*.py",
             "config/**/*.yaml",
-            "scripts/**/*.py"
+            "scripts/**/*.py",
         ]
 
     def register_change_hook(self, hook: Callable) -> None:
@@ -113,7 +118,7 @@ class StabilityMonitor:
             return ""
 
         try:
-            with open(file_path, 'rb') as f:
+            with open(file_path, "rb") as f:
                 return hashlib.sha256(f.read()).hexdigest()
         except Exception:
             return ""
@@ -135,7 +140,7 @@ class StabilityMonitor:
             hash=hash_value,
             size=size,
             modified=modified,
-            timestamp=timestamp
+            timestamp=timestamp,
         )
 
     def track_file(self, file_path: Path) -> bool:
@@ -153,7 +158,11 @@ class StabilityMonitor:
                     alert_type="file_change",
                     severity="INFO",
                     message=f"File changed: {file_path.name}",
-                    details={"path": path_str, "old_hash": last_snapshot.hash[:8], "new_hash": snapshot.hash[:8]}
+                    details={
+                        "path": path_str,
+                        "old_hash": last_snapshot.hash[:8],
+                        "new_hash": snapshot.hash[:8],
+                    },
                 )
                 self._trigger_hooks(self.change_hooks, "file", snapshot)
 
@@ -178,7 +187,7 @@ class StabilityMonitor:
             status=status,
             duration=duration,
             timestamp=datetime.now().isoformat(),
-            iteration=self.iteration
+            iteration=self.iteration,
         )
 
         previous_results = self.test_results[test_id]
@@ -190,7 +199,11 @@ class StabilityMonitor:
                     alert_type="test_regression",
                     severity="HIGH",
                     message=f"Test regression detected: {test_id}",
-                    details={"test_id": test_id, "previous": "PASSED", "current": "FAILED"}
+                    details={
+                        "test_id": test_id,
+                        "previous": "PASSED",
+                        "current": "FAILED",
+                    },
                 )
 
         self.test_results[test_id].append(result)
@@ -201,7 +214,7 @@ class StabilityMonitor:
             metric_name=metric_name,
             value=value,
             timestamp=datetime.now().isoformat(),
-            iteration=self.iteration
+            iteration=self.iteration,
         )
 
         previous_metrics = self.metric_history[metric_name]
@@ -217,19 +230,26 @@ class StabilityMonitor:
                     alert_type="metric_variance",
                     severity="MEDIUM",
                     message=f"High variance in {metric_name}: {variance*100:.1f}%",
-                    details={"metric": metric_name, "current": value, "average": avg_value, "variance": variance}
+                    details={
+                        "metric": metric_name,
+                        "current": value,
+                        "average": avg_value,
+                        "variance": variance,
+                    },
                 )
 
         self.metric_history[metric_name].append(snapshot)
         self._trigger_hooks(self.change_hooks, "metric", snapshot)
 
-    def _create_alert(self, alert_type: str, severity: str, message: str, details: Dict[str, Any]) -> None:
+    def _create_alert(
+        self, alert_type: str, severity: str, message: str, details: Dict[str, Any]
+    ) -> None:
         alert = StabilityAlert(
             alert_type=alert_type,
             severity=severity,
             message=message,
             timestamp=datetime.now().isoformat(),
-            details=details
+            details=details,
         )
 
         self.alerts.append(alert)
@@ -304,13 +324,19 @@ class StabilityMonitor:
         metric_stab = self.calculate_metric_stability()
 
         if file_stab < 80:
-            recommendations.append(f"File stability low ({file_stab:.1f}%) - reduce code churn")
+            recommendations.append(
+                f"File stability low ({file_stab:.1f}%) - reduce code churn"
+            )
 
         if test_stab < 80:
-            recommendations.append(f"Test stability low ({test_stab:.1f}%) - fix flaky tests")
+            recommendations.append(
+                f"Test stability low ({test_stab:.1f}%) - fix flaky tests"
+            )
 
         if metric_stab < 80:
-            recommendations.append(f"Metric stability low ({metric_stab:.1f}%) - stabilize performance")
+            recommendations.append(
+                f"Metric stability low ({metric_stab:.1f}%) - stabilize performance"
+            )
 
         high_alerts = [a for a in self.alerts if a.severity == "HIGH"]
         if high_alerts:
@@ -336,7 +362,7 @@ class StabilityMonitor:
             overall_stability=self.calculate_overall_stability(),
             changes_detected=changes,
             alerts=self.alerts,
-            recommendations=self.generate_recommendations()
+            recommendations=self.generate_recommendations(),
         )
 
     def save_report(self, output_path: Optional[Path] = None) -> Path:
@@ -347,25 +373,25 @@ class StabilityMonitor:
             output_path = self.workspace_path / f"stability_report_{timestamp}.json"
 
         report_dict = {
-            'metadata': {
-                'version': report.version,
-                'timestamp': report.timestamp,
-                'iteration': report.iteration,
-                'generator': 'StabilityMonitor'
+            "metadata": {
+                "version": report.version,
+                "timestamp": report.timestamp,
+                "iteration": report.iteration,
+                "generator": "StabilityMonitor",
             },
-            'stability': {
-                'overall': report.overall_stability,
-                'file': report.file_stability,
-                'test': report.test_stability,
-                'metric': report.metric_stability,
-                'monitoring_duration': report.monitoring_duration,
-                'changes_detected': report.changes_detected
+            "stability": {
+                "overall": report.overall_stability,
+                "file": report.file_stability,
+                "test": report.test_stability,
+                "metric": report.metric_stability,
+                "monitoring_duration": report.monitoring_duration,
+                "changes_detected": report.changes_detected,
             },
-            'alerts': [asdict(alert) for alert in report.alerts],
-            'recommendations': report.recommendations
+            "alerts": [asdict(alert) for alert in report.alerts],
+            "recommendations": report.recommendations,
         }
 
-        with open(output_path, 'w', encoding='utf-8') as f:
+        with open(output_path, "w", encoding="utf-8") as f:
             json.dump(report_dict, f, indent=2, ensure_ascii=False)
 
         print(f"[OK] Stability report saved: {output_path}")
@@ -396,7 +422,11 @@ class StabilityMonitor:
             print("ALERTS")
             print("-" * 78)
             for alert in report.alerts[-10:]:
-                icon = "🔴" if alert.severity == "HIGH" else "🟡" if alert.severity == "MEDIUM" else "🔵"
+                icon = (
+                    "🔴"
+                    if alert.severity == "HIGH"
+                    else "🟡" if alert.severity == "MEDIUM" else "🔵"
+                )
                 print(f"{icon} [{alert.severity}] {alert.message}")
             if len(report.alerts) > 10:
                 print(f"... and {len(report.alerts) - 10} more alerts")
@@ -421,15 +451,15 @@ def main():
     changes = monitor.scan_workspace()
     print(f"Tracked {changes} file changes")
 
-    if len(sys.argv) > 1 and sys.argv[1] == '--json':
+    if len(sys.argv) > 1 and sys.argv[1] == "--json":
         output_path = monitor.save_report()
         print(f"Report saved to: {output_path}")
     else:
         monitor.print_summary()
 
-        if '--save' in sys.argv:
+        if "--save" in sys.argv:
             monitor.save_report()
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()

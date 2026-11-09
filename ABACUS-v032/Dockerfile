@@ -52,6 +52,12 @@ RUN chmod +x deploy.py || true
 RUN chmod +x execute_full_dmaic_phases_0_to_9_v033.py || true
 RUN chmod +x master_pipeline_orchestrator.py || true
 
+# Run as an unprivileged user; it owns /app so the engine can still write
+# STATS/, logs/, deployments/ and governance/ inside the image.
+RUN useradd --create-home --uid 10001 abacus \
+    && chown -R abacus:abacus /app
+USER abacus
+
 # Health check
 HEALTHCHECK --interval=30s --timeout=10s --start-period=5s --retries=3 \
     CMD python -c "import sys; sys.exit(0)"

@@ -1,5 +1,7 @@
 #!/usr/bin/env python3
-import datetime as dt, json, subprocess
+import datetime as dt
+import json
+import subprocess
 K = ["CG", "RR", "CR", "SR", "DR", "PB", "FE", "QH", "HK", "BG", "KR", "EX", "WD"]
 def git(*a): return subprocess.check_output(["git", *a], text=True).strip()
 

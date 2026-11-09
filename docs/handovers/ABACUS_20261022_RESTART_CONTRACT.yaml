@@ -1,0 +1,45 @@
+# Restart contract for the ABACUS CI-evidence recovery work.
+# A new session (human or agent) must perform these reads before claiming any KPI change.
+# All steps are read-only.
+version: 1
+retired: 2026-10-22
+mode: read_only          # no merge, approval, waiver, secret change or dispatch
+# NOTE (V2, 2026-10-23): main moved to 0138ef5193b20ef8a64132267444299074cd8beb and all five tracked PRs
+# are merged. expected_state below is the 2026-10-22 retirement snapshot; see handover section 9.
+expected_state:
+  repo: GBOGEB/ABACUS
+  main_sha: 44caccf716a7c20693a2911566289bfc75ea81d9
+  open_prs: 31
+  ruleset_id: 24494381
+  todo:
+    "GBOGEB/ABACUS#1860": "1/12"
+    "GBOGEB/CODEX#977": "0/7"
+  pr_heads:
+    2388: 76531e5a128cc926b8a076410d3a6667f706ba8b   # W88
+    2367: 301960e92b12e687d6fe0245bf550d6b8ebb7cae   # W76
+    2376: 08bbbea45fbd761ba68e6429d28b6d0cf2dcfec5   # W76 (cbd lane; second W76 PR)
+    2385: 95084b427bf7e488958da81aa66ace8d1d01ab88   # W77-L
+    2375: a38dd42e43e7d1c9d889498511f728012bd0518e   # governance
+steps:
+  - id: main
+    cmd: gh api repos/GBOGEB/ABACUS/commits/main --jq .sha
+    on_mismatch: mark all main-relative cohorts stale; re-baseline coverage
+  - id: pr_heads
+    cmd: gh pr view {pr} -R GBOGEB/ABACUS --json headRefOid --jq .headRefOid
+    on_mismatch: mark that PR's ledger rows stale; locate newest terminal runs at the new head
+  - id: runs
+    cmd: gh run list -R GBOGEB/ABACUS --commit {head} --json databaseId,attempt,workflowName,status,conclusion
+    rule: only status=completed counts; record attempt; for attempt>1 also read attempt 1 (D1)
+  - id: ruleset
+    cmd: gh api repos/GBOGEB/ABACUS/rulesets/24494381
+    check: [required_status_checks, require_last_push_approval, required_review_thread_resolution, bypass_actors]
+  - id: todos
+    cmd: gh issue view {n} -R {repo} --json body
+  - id: digests
+    optional: true
+    cmd: gh run download {run} -R GBOGEB/ABACUS -n {artifact_name} ; sha256sum
+    note: only path to clear D7; store download in an isolated directory
+credit_rules:
+  - no credit for non-terminal, action_required or same-SHA reruns
+  - no coverage credit across differing denominators or overlapping cohorts
+  - candidate evidence is never main credit until a correctly governed merge is verified

@@ -1,14 +1,10 @@
 """Synthetic MIP V3 advisory DAG, BT and budget guard tests."""
-import importlib.util
-from pathlib import Path
-import unittest
 
-FILE = (
-    Path(__file__).resolve().parents[1]
-    / "tools"
-    / "triage"
-    / "mip_v3_frontier.py"
-)
+import importlib.util
+import unittest
+from pathlib import Path
+
+FILE = Path(__file__).resolve().parents[1] / "tools" / "triage" / "mip_v3_frontier.py"
 SPEC = importlib.util.spec_from_file_location("mip_v3_frontier", FILE)
 mip = importlib.util.module_from_spec(SPEC)
 SPEC.loader.exec_module(mip)
@@ -136,22 +132,26 @@ class FrontierTest(unittest.TestCase):
     def test_bt_matched_cyclic_panel(self):
         rows = [task("a"), task("b"), task("c")]
         pairs = [
-            pair(1, "a", "b"), pair(2, "b", "a"),
-            pair(3, "b", "c"), pair(4, "c", "b"),
-            pair(5, "c", "a"), pair(6, "a", "c"),
+            pair(1, "a", "b"),
+            pair(2, "b", "a"),
+            pair(3, "b", "c"),
+            pair(4, "c", "b"),
+            pair(5, "c", "a"),
+            pair(6, "a", "c"),
         ]
         out = mip.plan(payload(rows, pairs=pairs))
-        self.assertEqual(
-            out["bt"]["status"], "BT_FITTED_DESCRIPTIVE_NOT_AUTHENTICATED"
-        )
+        self.assertEqual(out["bt"]["status"], "BT_FITTED_DESCRIPTIVE_NOT_AUTHENTICATED")
         self.assertEqual(set(out["rankings"]["bt"]), {"a", "b", "c"})
 
     def test_bt_separated_panel_stays_unknown(self):
         rows = [task("a"), task("b"), task("c")]
         pairs = [
-            pair(1, "a", "b"), pair(2, "a", "b"),
-            pair(3, "a", "c"), pair(4, "b", "c"),
-            pair(5, "a", "b"), pair(6, "b", "c"),
+            pair(1, "a", "b"),
+            pair(2, "a", "b"),
+            pair(3, "a", "c"),
+            pair(4, "b", "c"),
+            pair(5, "a", "b"),
+            pair(6, "b", "c"),
         ]
         out = mip.plan(payload(rows, pairs=pairs))
         self.assertEqual(out["bt"]["status"], "BT_UNIDENTIFIABLE_SEPARATION")
@@ -159,9 +159,12 @@ class FrontierTest(unittest.TestCase):
     def test_bt_mixed_cohort_rejected(self):
         rows = [task("a"), task("b"), task("c")]
         pairs = [
-            pair(1, "a", "b"), pair(2, "b", "a"),
-            pair(3, "b", "c"), pair(4, "c", "b", context="other"),
-            pair(5, "c", "a"), pair(6, "a", "c"),
+            pair(1, "a", "b"),
+            pair(2, "b", "a"),
+            pair(3, "b", "c"),
+            pair(4, "c", "b", context="other"),
+            pair(5, "c", "a"),
+            pair(6, "a", "c"),
         ]
         out = mip.plan(payload(rows, pairs=pairs))
         self.assertEqual(out["bt"]["status"], "BT_MIXED_OR_MISSING_CONTEXT")
@@ -219,10 +222,16 @@ class FrontierLeaseAdversarialTest(unittest.TestCase):
 
     def test_control_chars_cannot_inject_a_lease_name(self):
         candidates = (
-            "src/\x00bad.py", "src/\nnewline.py", "src/\rreturn.py",
-            "src/\tsecret.py", "src/\x7fdel.py",
-            "src/../outside.py", "C:/Windows/system32",
-            "src//alias", "src/./alias", "src\\windows.py",
+            "src/\x00bad.py",
+            "src/\nnewline.py",
+            "src/\rreturn.py",
+            "src/\tsecret.py",
+            "src/\x7fdel.py",
+            "src/../outside.py",
+            "C:/Windows/system32",
+            "src//alias",
+            "src/./alias",
+            "src\\windows.py",
         )
         for claim in candidates:
             with self.subTest(path=repr(claim)):
@@ -241,20 +250,26 @@ class FrontierLeaseAdversarialTest(unittest.TestCase):
         self.assertEqual(result["reasons"]["b"], "DISJOINT_LEASE_CONFLICT")
 
     def test_reverse_alias_changes_candidate_to_conflict(self):
-        control = mip.plan(payload([
-            task("a", paths=["src/one"]),
-            task("b", paths=["docs/two"]),
-        ]))
-        adversarial = mip.plan(payload([
-            task("a", paths=["src/one"]),
-            task("b", paths=["SRC"]),
-        ]))
+        control = mip.plan(
+            payload(
+                [
+                    task("a", paths=["src/one"]),
+                    task("b", paths=["docs/two"]),
+                ]
+            )
+        )
+        adversarial = mip.plan(
+            payload(
+                [
+                    task("a", paths=["src/one"]),
+                    task("b", paths=["SRC"]),
+                ]
+            )
+        )
         self.assertEqual(
             control["selected_read_only_proposals"]["selected"], ["a", "b"]
         )
-        self.assertEqual(
-            adversarial["selected_read_only_proposals"]["selected"], ["a"]
-        )
+        self.assertEqual(adversarial["selected_read_only_proposals"]["selected"], ["a"])
 
     def test_lexical_proposal_cannot_claim_actual_worker_dispatch(self):
         doc = payload([task("a"), task("b")])

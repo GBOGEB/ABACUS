@@ -210,15 +210,15 @@ If you already have the Code Editor bundle (v0.3.1) and want to upgrade:
    ```bash
    # Copy test suite
    cp -r dmaic_v3_github_enterprise_v0.4.0/DMAIC_V3/tests/ your-repo/DMAIC_V3/
-   
+
    # Copy CI/CD workflows
    cp -r dmaic_v3_github_enterprise_v0.4.0/.github/ your-repo/
-   
+
    # Copy configuration files
    cp dmaic_v3_github_enterprise_v0.4.0/pytest.ini your-repo/
    cp dmaic_v3_github_enterprise_v0.4.0/pyproject.toml your-repo/
    cp dmaic_v3_github_enterprise_v0.4.0/requirements-frozen.txt your-repo/
-   
+
    # Copy new handover docs
    cp dmaic_v3_github_enterprise_v0.4.0/handover/GITHUB_ENTERPRISE_* your-repo/handover/
    ```

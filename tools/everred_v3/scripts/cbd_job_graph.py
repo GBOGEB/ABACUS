@@ -3,6 +3,7 @@
 This is a review projection, not a root ledger, runner dispatcher or merger.
 Only the existing cbd_260 reader can fetch native GitHub data.
 """
+
 from __future__ import annotations
 
 import argparse
@@ -11,7 +12,6 @@ import html
 import json
 from collections import Counter, defaultdict
 from pathlib import Path
-
 
 TRUST = "GITHUB_API_METADATA_NOT_CAUSAL_CONFIRMATION"
 BOUND = "JOB_METADATA_BOUND"
@@ -67,14 +67,17 @@ def analyze(snapshot, native):
             pid = f"pr:{pr}"
             node(pid, "PR", pr=pr)
             edge(pid, run_node, "PR_HAS_RUN_ASSOCIATION")
-        require(observation.get("first_red_causal_root") is None,
-                "root confirmation claim forbidden")
-        require(observation.get("full_log_read") is False,
-                "full-log claim forbidden")
+        require(
+            observation.get("first_red_causal_root") is None,
+            "root confirmation claim forbidden",
+        )
+        require(observation.get("full_log_read") is False, "full-log claim forbidden")
         if status == WITHHELD:
-            require(observation.get("failed_jobs") is None
-                    and observation.get("failed_job_count") is None,
-                    "withheld readback carries jobs")
+            require(
+                observation.get("failed_jobs") is None
+                and observation.get("failed_job_count") is None,
+                "withheld readback carries jobs",
+            )
             metrics["runs_withheld"] += 1
             continue
 
@@ -87,9 +90,10 @@ def analyze(snapshot, native):
         attempt = observation.get("run_attempt")
         require(type(attempt) is int and attempt > 0, "invalid run attempt")
         jobs = observation.get("failed_jobs")
-        require(isinstance(jobs, list) and
-                observation.get("failed_job_count") == len(jobs),
-                "job denominator mismatch")
+        require(
+            isinstance(jobs, list) and observation.get("failed_job_count") == len(jobs),
+            "job denominator mismatch",
+        )
         metrics["runs_bound"] += 1
         attempt_histogram[str(attempt)] += 1
         if not jobs:
@@ -97,29 +101,32 @@ def analyze(snapshot, native):
         for job in jobs:
             require(isinstance(job, dict), "invalid failure job")
             jid = job.get("job_id")
-            require(type(jid) is int and jid > 0 and jid not in seen_job_ids,
-                    "missing or duplicate job ID")
+            require(
+                type(jid) is int and jid > 0 and jid not in seen_job_ids,
+                "missing or duplicate job ID",
+            )
             seen_job_ids.add(jid)
-            require(job.get("step_causality") == "UNATTRIBUTED",
-                    "forged causal attribution")
+            require(
+                job.get("step_causality") == "UNATTRIBUTED", "forged causal attribution"
+            )
             job_name = job.get("job_name")
-            require(isinstance(job_name, str) and job_name.strip(),
-                    "missing job name")
+            require(isinstance(job_name, str) and job_name.strip(), "missing job name")
             step = job.get("first_failed_step")
             if step is None:
                 step_name = "UNKNOWN_FIRST_FAILED_STEP"
                 metrics["jobs_without_failed_step"] += 1
             else:
-                require(isinstance(step, dict) and
-                        type(step.get("number")) is int and
-                        step["number"] > 0 and
-                        isinstance(step.get("name"), str) and
-                        step["name"].strip(), "malformed first failed step")
+                require(
+                    isinstance(step, dict)
+                    and type(step.get("number")) is int
+                    and step["number"] > 0
+                    and isinstance(step.get("name"), str)
+                    and step["name"].strip(),
+                    "malformed first failed step",
+                )
                 step_name = step["name"]
                 metrics["jobs_with_failed_step"] += 1
-            fingerprint = digest(
-                [expected["workflow"], job_name, step_name]
-            )[:16]
+            fingerprint = digest([expected["workflow"], job_name, step_name])[:16]
             signature_id = "sig:" + fingerprint
             if signature_id not in signatures:
                 signatures[signature_id] = {
@@ -132,42 +139,66 @@ def analyze(snapshot, native):
                     "run_ids": set(),
                     "causal_root_id": None,
                     "confirmed_closed": None,
-                    "treatment": "DOWNSTREAM_SUSPECT" if (
-                        "summary" in job_name.lower()
-                        or "feedback gate" in job_name.lower()
-                    ) else "REQUIRES_LOG_LEVEL_CAUSAL_REVIEW",
+                    "treatment": (
+                        "DOWNSTREAM_SUSPECT"
+                        if (
+                            "summary" in job_name.lower()
+                            or "feedback gate" in job_name.lower()
+                        )
+                        else "REQUIRES_LOG_LEVEL_CAUSAL_REVIEW"
+                    ),
                 }
             record = signatures[signature_id]
             record["manifestations"] += 1
             record["run_ids"].add(rid)
             record["affected_prs"].update(by_run_pr[rid])
             jid_node = f"job:{jid}"
-            node(jid_node, "FAILED_JOB", job_id=jid, attempt=attempt,
-                 source_sha=expected["sha"])
-            node(signature_id, "STEP_SIGNATURE_CANDIDATE",
-                 first_failed_step=step_name, root_confirmed=None)
+            node(
+                jid_node,
+                "FAILED_JOB",
+                job_id=jid,
+                attempt=attempt,
+                source_sha=expected["sha"],
+            )
+            node(
+                signature_id,
+                "STEP_SIGNATURE_CANDIDATE",
+                first_failed_step=step_name,
+                root_confirmed=None,
+            )
             edge(run_node, jid_node, "RUN_HAS_FAILED_JOB")
             edge(jid_node, signature_id, "FIRST_FAILED_STEP_SIGNATURE")
             metrics["failed_job_observations"] += 1
 
     ranked = []
     for record in signatures.values():
-        ranked.append({
-            **record,
-            "affected_prs": sorted(record["affected_prs"]),
-            "run_ids": sorted(record["run_ids"]),
-            "pr_reach_upper_bound": len(record["affected_prs"]),
-        })
-    ranked.sort(key=lambda x: (-x["manifestations"], -x["pr_reach_upper_bound"],
-                                x["candidate_id"]))
+        ranked.append(
+            {
+                **record,
+                "affected_prs": sorted(record["affected_prs"]),
+                "run_ids": sorted(record["run_ids"]),
+                "pr_reach_upper_bound": len(record["affected_prs"]),
+            }
+        )
+    ranked.sort(
+        key=lambda x: (
+            -x["manifestations"],
+            -x["pr_reach_upper_bound"],
+            x["candidate_id"],
+        )
+    )
     for rank, record in enumerate(ranked, 1):
         record["priority_rank_by_observation_frequency"] = rank
     counted = {
         key: metrics[key]
         for key in (
-            "runs_requested", "runs_bound", "runs_withheld",
-            "bound_runs_without_failure_job", "failed_job_observations",
-            "jobs_with_failed_step", "jobs_without_failed_step",
+            "runs_requested",
+            "runs_bound",
+            "runs_withheld",
+            "bound_runs_without_failure_job",
+            "failed_job_observations",
+            "jobs_with_failed_step",
+            "jobs_without_failed_step",
         )
     }
     counted["candidate_step_signatures"] = len(ranked)
@@ -226,17 +257,29 @@ def render_html(dag):
 
     rows = []
     for row in dag["candidate_signatures"]:
-        url = ("https://github.com/GBOGEB/ABACUS/actions/runs/"
-               + str(row["run_ids"][0])) if row["run_ids"] else "#"
+        url = (
+            ("https://github.com/GBOGEB/ABACUS/actions/runs/" + str(row["run_ids"][0]))
+            if row["run_ids"]
+            else "#"
+        )
         rows.append(
-            "<tr><td>" + esc(row["priority_rank_by_observation_frequency"])
-            + "</td><td>" + esc(row["manifestations"])
-            + "</td><td>" + esc(row["pr_reach_upper_bound"])
-            + "</td><td>" + esc(row["workflow"])
-            + "</td><td>" + esc(row["job"])
-            + "</td><td>" + esc(row["first_failed_step"])
-            + "</td><td>" + esc(row["treatment"])
-            + "</td><td><a href='" + esc(url) + "'>Run</a></td></tr>"
+            "<tr><td>"
+            + esc(row["priority_rank_by_observation_frequency"])
+            + "</td><td>"
+            + esc(row["manifestations"])
+            + "</td><td>"
+            + esc(row["pr_reach_upper_bound"])
+            + "</td><td>"
+            + esc(row["workflow"])
+            + "</td><td>"
+            + esc(row["job"])
+            + "</td><td>"
+            + esc(row["first_failed_step"])
+            + "</td><td>"
+            + esc(row["treatment"])
+            + "</td><td><a href='"
+            + esc(url)
+            + "'>Run</a></td></tr>"
         )
     return (
         "<!doctype html><html lang='en'><head><meta charset='utf-8'>"
@@ -254,7 +297,8 @@ def render_html(dag):
         "<table><thead><tr><th>Rank</th><th>Jobs</th><th>PR reach ceiling</th>"
         "<th>Workflow</th><th>Job</th><th>First failed step</th>"
         "<th>Classification</th><th>Evidence</th></tr></thead><tbody>"
-        + "".join(rows) + "</tbody></table></body></html>\n"
+        + "".join(rows)
+        + "</tbody></table></body></html>\n"
     )
 
 
@@ -270,10 +314,13 @@ def write(dag, directory):
     for name, data in outputs.items():
         (directory / name).write_text(data, encoding="utf-8")
     (directory / "sha256.json").write_text(
-        canonical({
-            k: hashlib.sha256(v.encode("utf-8")).hexdigest()
-            for k, v in sorted(outputs.items())
-        }) + "\n",
+        canonical(
+            {
+                k: hashlib.sha256(v.encode("utf-8")).hexdigest()
+                for k, v in sorted(outputs.items())
+            }
+        )
+        + "\n",
         encoding="utf-8",
     )
 
@@ -290,8 +337,16 @@ def main(argv=None):
     native = json.loads(args.native_jobs.read_text(encoding="utf-8"))
     graph = analyze(snapshot, native)
     write(graph, args.output_dir)
-    print(canonical({"scope": graph["scope"], "metrics": graph["metrics"],
-                     "root_confirmation": "UNKNOWN", "admission": "HOLD"}))
+    print(
+        canonical(
+            {
+                "scope": graph["scope"],
+                "metrics": graph["metrics"],
+                "root_confirmation": "UNKNOWN",
+                "admission": "HOLD",
+            }
+        )
+    )
 
 
 if __name__ == "__main__":

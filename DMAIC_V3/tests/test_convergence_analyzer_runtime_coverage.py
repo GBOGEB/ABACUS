@@ -20,10 +20,12 @@ def test_default_thresholds_and_score_bounds(analyzer):
     assert analyzer.calculate_convergence_score(100, 100, 100, 200, 0) == 100
     assert analyzer.calculate_convergence_score(100, 100, 100, 100, 1) == 90
     assert analyzer.calculate_convergence_score(0, 0, 0, 0, 1) == 0
-    assert [
-        analyzer.determine_maturity_level(value)
-        for value in (10, 70, 85, 95)
-    ] == [0, 1, 2, 3]
+    assert [analyzer.determine_maturity_level(value) for value in (10, 70, 85, 95)] == [
+        0,
+        1,
+        2,
+        3,
+    ]
 
 
 def test_custom_yaml_config_and_hashing(tmp_path, monkeypatch):
@@ -55,9 +57,7 @@ def test_custom_yaml_config_and_hashing(tmp_path, monkeypatch):
     assert len(initial_hash) == 64
     payload.write_bytes(b"print('b')\n")
     assert current.calculate_file_hash(payload) != initial_hash
-    assert current.calculate_file_hash(tmp_path / "missing.py").startswith(
-        "ERROR:"
-    )
+    assert current.calculate_file_hash(tmp_path / "missing.py").startswith("ERROR:")
 
 
 def test_workspace_history_three_sample_stability_contract(analyzer, tmp_path):
@@ -108,9 +108,12 @@ def test_analyze_writes_true_counts_scores_and_report(analyzer, monkeypatch):
     assert "**Overall Score:** 87.5%" in content
     assert "**Stable Files:** 2/2" in content
     assert analyzer.get_trend() is None
-    assert json.loads(
-        (analyzer.output_dir / ".convergence_history.json").read_text()
-    )[0]["iteration"] == 1
+    assert (
+        json.loads((analyzer.output_dir / ".convergence_history.json").read_text())[0][
+            "iteration"
+        ]
+        == 1
+    )
 
 
 def test_second_iteration_trend_and_degraded_scenario(analyzer, tmp_path):

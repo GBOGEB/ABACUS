@@ -303,6 +303,37 @@
 </table>
 
 <!-- Connections Graph -->
+<h2 class="section-title">🌐 Cross-Repo Federation (ABACUS · CODEX · cryoplant-project)</h2>
+<p style="color:var(--text-muted);font-size:0.9rem;margin-bottom:16px;">
+  Hub-and-spoke federation (not a monorepo). Smoke-verified 2026-10-25 — see
+  <a href="INTEGRATION_REPORT.md" style="color:var(--accent);">docs/INTEGRATION_REPORT.md</a>.
+</p>
+<table>
+  <thead>
+    <tr><th>Repo</th><th>Role</th><th>Smoke verdict</th><th>Integration / merge-prune points</th></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><strong>CODEX</strong></td>
+      <td>Governance plane + KEB semantic/provenance <em>canonical hub</em></td>
+      <td><span class="badge badge-green">PASS</span> pca_engine 16/16; JSON/YAML/PY/HTML clean</td>
+      <td>P1 canonical Bradley-Terry/PCA (<code>pca_engine</code>); P2 single-source <code>federation/</code>+<code>ssot/</code>+<code>governance/</code></td>
+    </tr>
+    <tr>
+      <td><strong>ABACUS</strong></td>
+      <td>DOW analytical runtime + TSX slide-reviewer app</td>
+      <td><span class="badge badge-green">PASS</span> 6254 passed / 37 skipped (only Docker-absent fails)</td>
+      <td>P1 converge <code>qps_slide_reviewer/lib/stats.ts</code> onto CODEX; P4 prune v031/v032/DELTA_1 snapshots &amp; stale <code>auto/update-docs-*</code> branches</td>
+    </tr>
+    <tr>
+      <td><strong>cryoplant-project</strong> <span class="badge badge-purple">private</span></td>
+      <td>QPS engineering child authority (SSOT, OCD/ADR)</td>
+      <td><span class="badge badge-yellow">PASS w/ caveats</span> 32 smoke passed; 31 live YAML parse errors</td>
+      <td>P3 fix live YAML; P4/P9 quarantine recovered-history artifacts; P2 consume CODEX federation</td>
+    </tr>
+  </tbody>
+</table>
+
 <h2 class="section-title">🌉 Bridge Connections</h2>
 <div class="connections">
   <div class="conn-row">

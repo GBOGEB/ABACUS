@@ -1,0 +1,224 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>QPS Line S Recovery</title>
+<style>
+  :root {
+    --bg: #f7f8fa; --panel: #ffffff; --ink: #1b1f24; --muted: #5b6470;
+    --line: #dde1e6; --accent: #0b5cad; --ok: #1d7a3d; --warn: #9a6200;
+    --open: #a3282b; --chip: #eef1f5; --code: #f1f3f6;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --bg: #12161b; --panel: #1a2027; --ink: #e6e9ed; --muted: #9aa4b0;
+      --line: #2c343e; --accent: #6cb2ff; --ok: #5fcf87; --warn: #e6b155;
+      --open: #ff8a8d; --chip: #232b34; --code: #20272f;
+    }
+  }
+  :root[data-theme="dark"] {
+    --bg: #12161b; --panel: #1a2027; --ink: #e6e9ed; --muted: #9aa4b0;
+    --line: #2c343e; --accent: #6cb2ff; --ok: #5fcf87; --warn: #e6b155;
+    --open: #ff8a8d; --chip: #232b34; --code: #20272f;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; background: var(--bg); color: var(--ink);
+    font: 15px/1.55 "Segoe UI", system-ui, -apple-system, sans-serif;
+  }
+  main { max-width: 1040px; margin: 0 auto; padding: 28px 16px 64px; }
+  h1 { font-size: 26px; margin: 0 0 4px; }
+  h2 { font-size: 18px; margin: 36px 0 10px; }
+  p.lede { color: var(--muted); margin: 0 0 20px; }
+  a { color: var(--accent); }
+  code, kbd {
+    font: 13px/1.4 Consolas, "Cascadia Mono", monospace;
+    background: var(--code); padding: 1px 5px; border-radius: 4px;
+  }
+  pre {
+    background: var(--code); padding: 10px 12px; border-radius: 6px;
+    overflow-x: auto; margin: 6px 0 14px;
+  }
+  pre code { padding: 0; background: none; }
+  .cards {
+    display: grid; gap: 12px;
+    grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+  }
+  .card {
+    background: var(--panel); border: 1px solid var(--line);
+    border-radius: 8px; padding: 14px 16px;
+  }
+  .card h3 { margin: 0 0 6px; font-size: 15px; }
+  .card p { margin: 0; color: var(--muted); font-size: 14px; }
+  .card code { word-break: break-all; }
+  .wrap { overflow-x: auto; }
+  table {
+    width: 100%; border-collapse: collapse; background: var(--panel);
+    border: 1px solid var(--line); border-radius: 8px; font-size: 14px;
+  }
+  th, td {
+    text-align: left; padding: 8px 10px; border-bottom: 1px solid var(--line);
+    vertical-align: top;
+  }
+  th { color: var(--muted); font-weight: 600; }
+  tr:last-child td { border-bottom: none; }
+  .chip {
+    display: inline-block; padding: 1px 8px; border-radius: 10px;
+    background: var(--chip); font: 12px/1.6 Consolas, monospace;
+    white-space: nowrap;
+  }
+  .ok { color: var(--ok); } .warn { color: var(--warn); }
+  .open { color: var(--open); }
+  .links a { white-space: nowrap; margin-right: 10px; }
+  ol li, ul li { margin: 4px 0; }
+  footer { margin-top: 40px; color: var(--muted); font-size: 13px; }
+</style>
+</head>
+<body>
+<main>
+<h1>QPS Line S Recovery</h1>
+<p class="lede">
+  Entry point for the Line S helium-recovery package in GBOGEB/ABACUS: the
+  reduced transient models, the contract source bindings, the RTM status and
+  how to run the checks. Contract basis: Addendum II rev&nbsp;146
+  (cryoplant-project W365 extraction, sha256 <code>16b56d57…</code>).
+</p>
+
+<h2>How to open this package</h2>
+<div class="cards">
+  <div class="card">
+    <h3>Local (File Explorer)</h3>
+    <p>Open the ABACUS checkout, then
+    <code>docs\qps_line_s_recovery\index.html</code> (this page). On the
+    work PC:<br>
+    <code>C:\Users\gbonthuy\Documents\Codex\2026-10-19\upd\work\ABACUS\docs\qps_line_s_recovery</code>.
+    Pull main first: <code>git pull</code>. The "Local" links below are
+    relative, so they open the files next to this page.</p>
+  </div>
+  <div class="card">
+    <h3>GitHub</h3>
+    <p>Folder:
+    <a href="https://github.com/GBOGEB/ABACUS/tree/main/docs/qps_line_s_recovery">docs/qps_line_s_recovery</a><br>
+    Models:
+    <a href="https://github.com/GBOGEB/ABACUS/tree/main/models/qps_line_s">models/qps_line_s</a><br>
+    CI:
+    <a href="https://github.com/GBOGEB/ABACUS/actions/workflows/qps_line_s.yml">qps-line-s-validation</a><br>
+    GitHub shows this page as source; open it locally to browse it.</p>
+  </div>
+  <div class="card">
+    <h3>Contract source (private)</h3>
+    <p><a href="https://github.com/GBOGEB/cryoplant-project/blob/main/triage/w365/qpsdeck_icd_family/inputs/contract/addendum2_rev146.json">cryoplant-project W365 addendum2_rev146.json</a>.
+    CI compares it with the vendored extracts on every run, using the
+    repository secret <code>CRYOPLANT_READ_TOKEN</code>.</p>
+  </div>
+</div>
+
+<p>Open from a terminal (PowerShell):</p>
+<pre><code>Start-Process "C:\Users\gbonthuy\Documents\Codex\2026-10-19\upd\work\ABACUS\docs\qps_line_s_recovery\index.html"</code></pre>
+
+<h2>RTM status</h2>
+<div class="wrap">
+<table>
+  <thead><tr><th>Item</th><th>What it requires</th><th>Status</th></tr></thead>
+  <tbody>
+    <tr><td>RTM-260</td><td>Credited abnormal recovery loses at most 1&nbsp;% helium inventory.</td>
+      <td><span class="chip warn">EVIDENCE_PENDING</span></td></tr>
+    <tr><td>RTM-261</td><td>QPS copes with Line S / QRB.S return flow (100, 112, 150, 200 g/s cases).</td>
+      <td><span class="chip warn">MDA_MODELLED_SOURCE_TRACE_PENDING</span></td></tr>
+    <tr><td>RTM-262</td><td>Normal circulation recovers after the abnormal event (Appendix 8.4 modes).</td>
+      <td><span class="chip warn">SOURCE_BOUND_PARTIAL</span></td></tr>
+    <tr><td>RTM-292</td><td>QRB.S flow conditions: 1.1 bar ±5 mbar nominal, 1.05 bar minimum; 0.1 / 100 (spikes 150, 6-8 h) / 200 g/s (~100 s). Rev 146 p.&nbsp;68.</td>
+      <td><span class="chip ok">SOURCE_BOUND</span></td></tr>
+    <tr><td>OFFER-22</td><td>Applicant recovery strategy and maximum accepted Line S flow.</td>
+      <td><span class="chip warn">MDA_PACKAGE_READY_EVIDENCE_PENDING</span></td></tr>
+    <tr><td>REQ-130 / 131</td><td>RTM-061 Class A/B: each QCELL stays at or below the Thermal Shield temperature limit (no number in rev 146).</td>
+      <td><span class="chip open">MODEL_LINKED_LIMIT_PENDING</span></td></tr>
+  </tbody>
+</table>
+</div>
+<p>Full text, evidence and the numbered gap list:
+<span class="links"><a href="rtm_traceability.md">Local</a>
+<a href="https://github.com/GBOGEB/ABACUS/blob/main/docs/qps_line_s_recovery/rtm_traceability.md">GitHub</a></span></p>
+
+<h2>Contract source bindings</h2>
+<div class="wrap">
+<table>
+  <thead><tr><th>Vendored extract</th><th>Bound to</th><th>Test</th><th>Open</th></tr></thead>
+  <tbody>
+    <tr>
+      <td>App. 11.2 Tables 27-29</td>
+      <td><code>ssot_tables.py</code> masses, Table 28 coefficients and equations, Table 29 enthalpy</td>
+      <td><code>tests/test_ssot_tables_contract.py</code></td>
+      <td class="links"><a href="addendum2_rev146_tables_27_29.json">Local</a>
+        <a href="https://github.com/GBOGEB/ABACUS/blob/main/docs/qps_line_s_recovery/addendum2_rev146_tables_27_29.json">GitHub</a></td>
+    </tr>
+    <tr>
+      <td>RTM-292, RTM-293, RTM-061, Table 7</td>
+      <td><code>ssot_heat_loads.yaml</code> RTM-292 envelope, ASSUM-PLIMIT sources, scenario inflows, qplant REQ-130/131</td>
+      <td><code>tests/test_rtm292_contract.py</code></td>
+      <td class="links"><a href="addendum2_rev146_rtm_292_293_061.json">Local</a>
+        <a href="https://github.com/GBOGEB/ABACUS/blob/main/docs/qps_line_s_recovery/addendum2_rev146_rtm_292_293_061.json">GitHub</a></td>
+    </tr>
+  </tbody>
+</table>
+</div>
+<p>Upstream drift check (also run in CI):</p>
+<pre><code>python -m models.qps_line_s.contract_tables --contract &lt;path to addendum2_rev146.json&gt;</code></pre>
+
+<h2>What the bindings found</h2>
+<ul>
+  <li>RTM-292 sets a nominal and a minimum pressure only. The 1.30 bar
+    ASSUM-PLIMIT ceiling comes from the He_line_safety sheet, not from
+    RTM-292.</li>
+  <li>112 g/s is not an RTM-292 use case. In the repository it appears only
+    as the HP compressor 72 Hz maximum reference, so its pedigree as
+    <code>MDOT_IN_PRE_HP_MAX</code> stays open (gap 2).</li>
+  <li>Rev 146 gives no number for the Thermal Shield temperature limit. The
+    closest data is Table 7 TS-SB: line D ~40 K ±5, line E ~60 K ±10
+    (gap 9, owner question).</li>
+</ul>
+
+<h2>Package map</h2>
+<div class="wrap">
+<table>
+  <thead><tr><th>File</th><th>Role</th><th>Open</th></tr></thead>
+  <tbody>
+    <tr><td><code>README.md</code></td><td>Package overview</td>
+      <td class="links"><a href="README.md">Local</a> <a href="https://github.com/GBOGEB/ABACUS/blob/main/docs/qps_line_s_recovery/README.md">GitHub</a></td></tr>
+    <tr><td><code>assumptions_register.yaml</code></td><td>Assumptions SSOT and MDA gates</td>
+      <td class="links"><a href="assumptions_register.yaml">Local</a> <a href="https://github.com/GBOGEB/ABACUS/blob/main/docs/qps_line_s_recovery/assumptions_register.yaml">GitHub</a></td></tr>
+    <tr><td><code>ssot_heat_loads.yaml</code></td><td>Heat loads, RTM-292 envelope, pressure ceilings</td>
+      <td class="links"><a href="ssot_heat_loads.yaml">Local</a> <a href="https://github.com/GBOGEB/ABACUS/blob/main/docs/qps_line_s_recovery/ssot_heat_loads.yaml">GitHub</a></td></tr>
+    <tr><td><code>p_limit_register.md</code></td><td>Pressure-limit register</td>
+      <td class="links"><a href="p_limit_register.md">Local</a> <a href="https://github.com/GBOGEB/ABACUS/blob/main/docs/qps_line_s_recovery/p_limit_register.md">GitHub</a></td></tr>
+    <tr><td><code>QPS_LineS_TechnicalNote_RTM292.md</code></td><td>Technical note on the Line S transient</td>
+      <td class="links"><a href="QPS_LineS_TechnicalNote_RTM292.md">Local</a> <a href="https://github.com/GBOGEB/ABACUS/blob/main/docs/qps_line_s_recovery/QPS_LineS_TechnicalNote_RTM292.md">GitHub</a></td></tr>
+    <tr><td><code>applicant_response_package.md</code></td><td>Applicant RFI / response package</td>
+      <td class="links"><a href="applicant_response_package.md">Local</a> <a href="https://github.com/GBOGEB/ABACUS/blob/main/docs/qps_line_s_recovery/applicant_response_package.md">GitHub</a></td></tr>
+    <tr><td><code>glossary.md</code></td><td>Terms and requirement IDs</td>
+      <td class="links"><a href="glossary.md">Local</a> <a href="https://github.com/GBOGEB/ABACUS/blob/main/docs/qps_line_s_recovery/glossary.md">GitHub</a></td></tr>
+    <tr><td><code>index.json</code></td><td>Machine-readable artefact index</td>
+      <td class="links"><a href="index.json">Local</a> <a href="https://github.com/GBOGEB/ABACUS/blob/main/docs/qps_line_s_recovery/index.json">GitHub</a></td></tr>
+    <tr><td><code>models/qps_line_s/</code></td><td>Buffer, recovery, LOOP transient, SSOT tables, drift check</td>
+      <td class="links"><a href="../../models/qps_line_s/">Local</a> <a href="https://github.com/GBOGEB/ABACUS/tree/main/models/qps_line_s">GitHub</a></td></tr>
+  </tbody>
+</table>
+</div>
+
+<h2>Run the checks</h2>
+<p>From the ABACUS checkout root (Python 3.11+, <code>pytest</code>,
+<code>pyyaml</code>):</p>
+<pre><code>python -m pytest -q tests/test_ssot_tables_contract.py tests/test_rtm292_contract.py tests/test_loop_transient.py
+python -m models.qps_line_s.loop_transient</code></pre>
+<p>Generated matrices (<code>generated/</code>) are not tracked; CI rebuilds
+them in <code>qps-line-s-validation</code>.</p>
+
+<footer>
+  Maintained in GBOGEB/ABACUS <code>docs/qps_line_s_recovery/</code>.
+  Status values mirror <code>rtm_traceability.md</code>; that file wins if
+  they differ. No status here is engineering acceptance.
+</footer>
+</main>
+</body>
+</html>

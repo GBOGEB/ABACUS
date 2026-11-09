@@ -7,6 +7,7 @@ from __future__ import annotations
 import copy
 import json
 import sys
+import unittest
 from pathlib import Path
 
 import pytest
@@ -530,4 +531,81 @@ def test_artifact_type_census_fails_closed_on_invalid_or_missing_scope(defect):
     else:
         doc["artifact_types"] = []
     with pytest.raises(g.GovernorError):
+        g.evaluate(doc)
+
+
+@pytest.mark.parametrize("attack", [
+    "/repo/absolute.py", "C:/repo/file.py", r"src\renamed.py",
+    "src//module.py", "src/./module.py", "src/../module.py",
+    "src/module.", "src/module ",
+    "src/", "src/\x00secret.py", "src/\x7fsecret.py",
+    "src:alternate.py", "", None, True,
+])
+def test_w78_unsafe_lease_path_fails_closed(attack):
+    doc = specimen()
+    family(doc, "W81")["paths"] = [attack]
+    with pytest.raises(g.GovernorError, match="invalid source path lease"):
+        g.evaluate(doc)
+
+
+@pytest.mark.parametrize("attack", [
+    "tools",
+    "TOOLS",
+    "tools/w82_semantic_diversity_diagnostic.py/child",
+    "TOOLS/W82_SEMANTIC_DIVERSITY_DIAGNOSTIC.PY",
+    "tools/w82_semantic_diversity_diagnostic.py",
+])
+def test_w78_nested_or_casefolded_cross_family_overlap_is_not_disjoint(attack):
+    doc = specimen()
+    family(doc, "W81")["paths"] = [attack]
+    with pytest.raises(g.GovernorError, match="non-disjoint source path"):
+        g.evaluate(doc)
+
+
+@pytest.mark.parametrize("paths", [
+    ["safe", "safe/module.py"],
+    ["safe/Module.py", "SAFE/module.py"],
+    ["safe", "SAFE"],
+])
+def test_w78_overlap_within_one_family_fails_closed(paths):
+    doc = specimen()
+    family(doc, "W81")["paths"] = paths
+    with pytest.raises(g.GovernorError, match="overlapping source path"):
+        g.evaluate(doc)
+
+
+@pytest.mark.parametrize("neighbor", [
+    "tools/w82_semantic_diversity_diagnostic.py-old",
+    "tools/w82_semantic_diversity_diagnostic2.py",
+    "src/sibling.py",
+])
+def test_w78_segment_distinct_siblings_are_not_false_conflicts(neighbor):
+    doc = specimen()
+    family(doc, "W81")["paths"] = [neighbor]
+    result = g.evaluate(doc)
+    checks = unittest.TestCase()
+    checks.assertIs(result["capacity"]["automatic_dispatch_permitted"], False)
+    checks.assertEqual(result["governed_merge_admission"], "HOLD")
+    checks.assertIs(result["programme"]["stop_entire_program"], False)
+
+
+def test_w78_aba_bad_lease_cannot_mutate_verified_baseline():
+    first = specimen()
+    unchanged = copy.deepcopy(first)
+    baseline = g.evaluate(first)
+    family(first, "W81")["paths"] = ["tools"]
+    with pytest.raises(g.GovernorError, match="non-disjoint"):
+        g.evaluate(first)
+    checks = unittest.TestCase()
+    checks.assertEqual(g.evaluate(unchanged), baseline)
+    checks.assertIs(baseline["formal_acceptance_claim"], False)
+
+
+def test_w78_alias_collision_cannot_buy_native_workers_from_queue_claims():
+    doc = specimen()
+    doc["capacity"]["available_runner_slots"] = 100
+    doc["capacity"]["ready_disjoint_source_leases"] = 100
+    doc["capacity"]["source_owner_slots"] = 100
+    family(doc, "W81")["paths"] = ["TOOLS/W82_SEMANTIC_DIVERSITY_DIAGNOSTIC.PY"]
+    with pytest.raises(g.GovernorError, match="non-disjoint"):
         g.evaluate(doc)

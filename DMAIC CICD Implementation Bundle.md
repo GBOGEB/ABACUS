@@ -578,7 +578,7 @@ def self_test():
     # Check DMAIC phases (placeholder)
     phase_files = [
         "run_phase0.py",
-        "run_phase1.py", 
+        "run_phase1.py",
         "run_phase2.py",
         "run_phase3.py",
         "run_phase4.py",
@@ -639,15 +639,15 @@ def self_optimize(metrics_history):
 if __name__ == "__main__":
     metrics_history = [
         {
-            "iteration": 1, 
-            "execution_time": 180, 
+            "iteration": 1,
+            "execution_time": 180,
             "issues_found": 12,
             "test_coverage": 75.0,
             "code_quality_score": 80.0
         },
         {
-            "iteration": 2, 
-            "execution_time": 210, 
+            "iteration": 2,
+            "execution_time": 210,
             "issues_found": 8,
             "test_coverage": 80.0,
             "code_quality_score": 85.0

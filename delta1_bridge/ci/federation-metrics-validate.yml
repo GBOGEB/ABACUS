@@ -1,0 +1,60 @@
+# Shared reusable DELTA_1 federation CI check.
+#
+# Validates this repo's DMAIC metrics feed against the single shared schema in
+# delta1_bridge, and prints the uniform federation status. Reusable via
+# workflow_call so CODEX, ABACUS and cryoplant-project can all invoke the same
+# gate instead of maintaining divergent metrics checks (opportunity O2).
+#
+# This workflow is ADDITIVE and non-blocking by default (continue-on-error:
+# false only on the bridge self-test). It does not publish or mutate SSOT.
+name: federation-metrics-validate
+
+on:
+  workflow_call:
+    inputs:
+      metrics_path:
+        description: "Path to this repo's DMAIC metrics JSON (auto-detected if empty)"
+        required: false
+        type: string
+        default: ""
+  workflow_dispatch:
+    inputs:
+      metrics_path:
+        required: false
+        type: string
+        default: ""
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Bridge self-test
+        run: |
+          python -m pytest delta1_bridge/tests -q
+
+      - name: Uniform federation status
+        run: |
+          python -m delta1_bridge status --repo-root . --json
+
+      - name: Validate DMAIC metrics feed (shared schema)
+        shell: bash
+        run: |
+          set -euo pipefail
+          MP="${{ inputs.metrics_path }}"
+          if [ -z "$MP" ]; then
+            for cand in docs/api/metrics.json docs/api/dmaic_metrics.json; do
+              if [ -f "$cand" ]; then MP="$cand"; break; fi
+            done
+          fi
+          if [ -z "$MP" ]; then
+            echo "::warning::no metrics feed found; repo has not joined the shared metrics feed (opportunity O3)"
+            exit 0
+          fi
+          echo "Validating $MP against shared federation schema"
+          python -m delta1_bridge validate-metrics "$MP"

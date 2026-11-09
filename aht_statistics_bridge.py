@@ -78,7 +78,11 @@ class AHTStatisticsBridge:
             near_expected = abs(mean - expected_value) <= boundary_tolerance
             if lower > expected_value:
                 result["status"] = "EXCEEDED"
-            elif mean >= expected_value or lower <= expected_value <= upper or near_expected:
+            elif (
+                mean >= expected_value
+                or lower <= expected_value <= upper
+                or near_expected
+            ):
                 result["status"] = "SUPPORTED"
             else:
                 result["status"] = "REJECTED"
@@ -134,9 +138,7 @@ class AHTStatisticsBridge:
             + requested_checks
         )
         non_decisive_checks = skipped_checks + neutral_checks + unobserved_checks
-        failure_rate = (
-            blocker_checks / total_decisive if total_decisive else None
-        )
+        failure_rate = blocker_checks / total_decisive if total_decisive else None
         threshold_reached = blocker_checks >= threshold_failed_checks
 
         if threshold_reached:

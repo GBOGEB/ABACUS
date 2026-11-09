@@ -1,0 +1,194 @@
+<!doctype html>
+<html lang="en"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>MYRRHA WCS · BT Scatter Visualisations</title>
+<link rel="icon" href="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><text y='26' font-size='26'>📈</text></svg>">
+<link rel="stylesheet" href="assets/style.css">
+<script src="https://cdn.plot.ly/plotly-2.27.0.min.js"></script>
+<script src="assets/common.js" defer></script>
+<style>
+.breadcrumb{font-size:12px;color:var(--fg2);margin-bottom:12px}.breadcrumb a{color:var(--accent2)}
+
+.plotly-chart{width:100%;min-height:500px;margin:14px 0}
+.filter-bar{display:flex;gap:8px;flex-wrap:wrap;margin:14px 0}
+.filter-bar button{background:var(--bg);color:var(--fg);border:1px solid var(--border);border-radius:6px;padding:6px 12px;font-size:12px;cursor:pointer;font-family:inherit}
+.filter-bar button.active{background:var(--accent);color:#fff;border-color:var(--accent)}
+.export-bar{display:flex;gap:8px;margin:14px 0;flex-wrap:wrap}
+.insight-box{background:#E8F5E9;border:1px solid #A5D6A7;border-radius:var(--radius);padding:14px 18px;margin:14px 0;font-size:13px}
+[data-theme=dark] .insight-box{background:#1a3a1a;border-color:#2a5a2a}
+
+</style>
+
+</head><body>
+<a href="#main-content" class="skip-link">Skip to main content</a>
+<div class="container" id="main-content" role="main">
+<p class="breadcrumb"><a href="index.html">Hub</a> › <a href="bt-artifacts.html">BT Artifacts</a> › Scatter Plots</p>
+<h1>📈 Interactive Scatter Visualisations</h1>
+<p class="muted">BT rankings across dimensions · hidden local top performers · quadrant analysis · v0.4.5</p>
+
+<h2>Scatter 1: Overall vs Category Rank</h2>
+<p class="muted">Colour = Type · Size = Interaction Score · Red border = hidden local top performers (high category, lower overall)</p>
+<div class="card"><div id="plotOverallVsCat" class="plotly-chart" role="img" aria-label="Interactive chart: plotOverallVsCat"></div></div>
+
+<div class="insight-box">
+  <strong>🔍 Hidden Local Top Performers:</strong> Artifacts with high BT Category score but lower BT Overall.
+  These are specialists — highly important within their type but not prominent globally. Examples: <code>render_all.py</code> (#1 in Code, #5 overall), <code>truth.md</code> (#1 in Docs, #46 overall).
+</div>
+
+<h2>Scatter 2: QA Items — Severity vs Impact</h2>
+<p class="muted">Colour = Test Type · Size = BT Score · Quadrant analysis</p>
+<div class="card"><div id="plotQASeverity" class="plotly-chart" role="img" aria-label="Interactive chart: plotQASeverity"></div></div>
+
+<h2>Scatter 3: Actions — Effort vs Priority</h2>
+<p class="muted">Colour = Category (Short/Medium/Long term) · Size = Severity · "Quick Wins" = low effort, high priority</p>
+<div class="card"><div id="plotEffortPriority" class="plotly-chart" role="img" aria-label="Interactive chart: plotEffortPriority"></div></div>
+
+<div class="export-bar">
+  <button class="btn" onclick="exportCharts()" aria-label="📸 Export All Charts as PNG">📸 Export All Charts as PNG</button>
+</div>
+</div><!-- /container -->
+<script>
+
+const TYPES = {HTML:'#2E7D32',Code:'#1565C0',Data:'#E65100',Docs:'#7B1FA2',Assets:'#C62828'};
+const pc={bg:'rgba(0,0,0,0)',paper:'rgba(0,0,0,0)'};
+const pl={font:{family:'Aptos,sans-serif',size:11},margin:{l:60,r:30,t:50,b:60},plot_bgcolor:pc.bg,paper_bgcolor:pc.paper};
+
+// === Scatter 1: Artifact BT Overall vs BT Type ===
+const artifacts = [
+  {n:'index.html',t:'HTML',btO:0.945,btT:0.982,int:65,rk:1,rkC:1},
+  {n:'data.json',t:'Data',btO:0.932,btT:0.976,int:60,rk:2,rkC:1},
+  {n:'common.js',t:'Assets',btO:0.921,btT:0.968,int:55,rk:3,rkC:1},
+  {n:'style.css',t:'Assets',btO:0.915,btT:0.954,int:52,rk:4,rkC:2},
+  {n:'render_all.py',t:'Code',btO:0.908,btT:0.987,int:48,rk:5,rkC:1},
+  {n:'vendor-kaeser.html',t:'HTML',btO:0.901,btT:0.971,int:62,rk:6,rkC:2},
+  {n:'slides.html',t:'HTML',btO:0.895,btT:0.958,int:58,rk:7,rkC:3},
+  {n:'bt-ranking.html',t:'HTML',btO:0.889,btT:0.944,int:56,rk:8,rkC:4},
+  {n:'qa-interactive.html',t:'HTML',btO:0.882,btT:0.936,int:54,rk:9,rkC:5},
+  {n:'thermo-analysis.html',t:'HTML',btO:0.876,btT:0.928,int:50,rk:10,rkC:6},
+  {n:'config.yaml',t:'Data',btO:0.831,btT:0.962,int:38,rk:17,rkC:2},
+  {n:'truth.md',t:'Docs',btO:0.643,btT:0.981,int:12,rk:46,rkC:1},
+  {n:'slides.md',t:'Docs',btO:0.636,btT:0.965,int:11,rk:47,rkC:2},
+  {n:'live-render.js',t:'Assets',btO:0.513,btT:0.920,int:10,rk:66,rkC:3},
+  {n:'slides.json',t:'Data',btO:0.519,btT:0.948,int:8,rk:65,rkC:3}
+];
+
+// Hidden local top performers: high btT (>0.95) but lower btO (<0.7)
+const hidden = artifacts.filter(a => a.btT > 0.94 && a.btO < 0.7);
+
+const byType = {};
+artifacts.forEach(a => { if(!byType[a.t]) byType[a.t]=[]; byType[a.t].push(a); });
+
+const traces1 = Object.entries(byType).map(([t,items]) => ({
+  x: items.map(a=>a.btO), y: items.map(a=>a.btT),
+  text: items.map(a=>`${a.n}<br>Rank: #${a.rk} overall, #${a.rkC} in ${a.t}<br>Interaction: ${a.int}`),
+  mode:'markers', name:t, type:'scatter', hoverinfo:'text',
+  marker:{
+    size: items.map(a=>Math.max(10,a.int/2.5)),
+    color: TYPES[t], opacity:0.85,
+    line:{width:items.map(a=>hidden.includes(a)?3:1),color:items.map(a=>hidden.includes(a)?'#C62828':'rgba(0,0,0,0.2)')}
+  }
+}));
+
+Plotly.newPlot('plotOverallVsCat', traces1, {
+  ...pl,
+  title:{text:'BT Overall vs BT Type Score (Colour = Type, Size = Interaction)',font:{size:13}},
+  xaxis:{title:'BT Overall Score',range:[0.4,1]},
+  yaxis:{title:'BT Type Score',range:[0.6,1]},
+  shapes:[
+    {type:'line',x0:0.7,x1:0.7,y0:0.6,y1:1,line:{color:'#D85A30',width:1,dash:'dot'}},
+    {type:'line',x0:0.4,x1:1,y0:0.94,y1:0.94,line:{color:'#D85A30',width:1,dash:'dot'}}
+  ],
+  annotations:[
+    {x:0.55,y:0.97,text:'Hidden Top<br>Performers',showarrow:false,font:{color:'#C62828',size:11}},
+    {x:0.85,y:0.97,text:'Global Stars',showarrow:false,font:{color:'#2E7D32',size:11}}
+  ],
+  legend:{x:0.02,y:0.02}
+},{responsive:true});
+
+// === Scatter 2: QA Severity vs Impact ===
+const qaItems = [
+  {id:'QA-001',sev:5,imp:5,bt:0.956,test:'Manual',nm:'Calcs verified'},
+  {id:'QA-004',sev:4,imp:5,bt:0.912,test:'Manual',nm:'Config24 consistency'},
+  {id:'QA-018',sev:3,imp:3,bt:0.875,test:'Auto',nm:'Plotly charts'},
+  {id:'QA-019',sev:3,imp:2,bt:0.845,test:'Auto',nm:'Print stylesheets'},
+  {id:'QA-022',sev:4,imp:3,bt:0.920,test:'Manual',nm:'Colour contrast'},
+  {id:'QA-025',sev:2,imp:2,bt:0.780,test:'Auto',nm:'Loading states'},
+  {id:'QA-027',sev:5,imp:4,bt:0.943,test:'Manual',nm:'Mobile charts'},
+  {id:'QA-029',sev:3,imp:3,bt:0.860,test:'Manual',nm:'Touch targets'},
+  {id:'QA-030',sev:4,imp:4,bt:0.900,test:'Auto',nm:'Nav collapse'},
+  {id:'QA-032',sev:3,imp:3,bt:0.850,test:'Manual',nm:'Keyboard nav'},
+  {id:'QA-033',sev:4,imp:4,bt:0.910,test:'Manual',nm:'ARIA labels'},
+  {id:'QA-036',sev:2,imp:2,bt:0.750,test:'Manual',nm:'Memory leaks'}
+];
+
+const testColours = {Auto:'#1D9E75',Manual:'#378ADD',Vendor:'#E65100'};
+const byTest = {};
+qaItems.forEach(q => { if(!byTest[q.test]) byTest[q.test]=[]; byTest[q.test].push(q); });
+
+const traces2 = Object.entries(byTest).map(([t,items]) => ({
+  x: items.map(q=>q.sev), y: items.map(q=>q.imp),
+  text: items.map(q=>`${q.id}: ${q.nm}<br>BT: ${q.bt}<br>Test: ${q.test}`),
+  mode:'markers', name:t, type:'scatter', hoverinfo:'text',
+  marker:{size:items.map(q=>q.bt*25), color:testColours[t], opacity:0.8}
+}));
+
+Plotly.newPlot('plotQASeverity', traces2, {
+  ...pl,
+  title:{text:'QA Items: Severity vs Impact (Colour = Test Type, Size = BT Score)',font:{size:13}},
+  xaxis:{title:'Severity (1=Low, 5=Critical)',range:[0.5,5.5],dtick:1},
+  yaxis:{title:'Impact (1=Minor, 5=Blocks)',range:[0.5,5.5],dtick:1},
+  shapes:[
+    {type:'rect',x0:3.5,x1:5.5,y0:3.5,y1:5.5,fillcolor:'rgba(216,90,48,0.08)',line:{width:0}},
+    {type:'rect',x0:0.5,x1:3.5,y0:0.5,y1:3.5,fillcolor:'rgba(29,158,117,0.05)',line:{width:0}}
+  ],
+  annotations:[
+    {x:4.5,y:4.8,text:'HIGH/HIGH',showarrow:false,font:{color:'#D85A30',size:10}},
+    {x:2,y:1.5,text:'LOW/LOW',showarrow:false,font:{color:'#1D9E75',size:10}}
+  ]
+},{responsive:true});
+
+// === Scatter 3: Actions Effort vs Priority ===
+const actions = [
+  {nm:'Kaeser vendor data',effort:4,pri:0.95,cat:'Short',sev:5},
+  {nm:'PVPS vendor scout',effort:8,pri:0.92,cat:'Short',sev:5},
+  {nm:'Mobile responsive',effort:12,pri:0.88,cat:'Medium',sev:4},
+  {nm:'BT model expansion',effort:6,pri:0.85,cat:'Short',sev:3},
+  {nm:'VFD harmonics',effort:16,pri:0.78,cat:'Long',sev:3},
+  {nm:'PCW hydraulic check',effort:8,pri:0.82,cat:'Medium',sev:4},
+  {nm:'Print stylesheet fix',effort:4,pri:0.72,cat:'Short',sev:2},
+  {nm:'ARIA labels',effort:6,pri:0.75,cat:'Medium',sev:3},
+  {nm:'Acoustic enclosure',effort:20,pri:0.65,cat:'Long',sev:2},
+  {nm:'Config30 parameters',effort:10,pri:0.80,cat:'Medium',sev:4},
+  {nm:'British English audit',effort:2,pri:0.70,cat:'Short',sev:2},
+  {nm:'N+1 layout drawing',effort:12,pri:0.76,cat:'Medium',sev:3}
+];
+
+const catColours = {Short:'#1D9E75',Medium:'#378ADD',Long:'#7F77DD'};
+const byCat = {};
+actions.forEach(a => { if(!byCat[a.cat]) byCat[a.cat]=[]; byCat[a.cat].push(a); });
+
+const traces3 = Object.entries(byCat).map(([c,items]) => ({
+  x: items.map(a=>a.effort), y: items.map(a=>a.pri),
+  text: items.map(a=>`${a.nm}<br>Effort: ${a.effort}h<br>Priority: ${a.pri}<br>Severity: ${a.sev}`),
+  mode:'markers+text', textposition:'top center',
+  textfont:{size:9}, name:c+' term', type:'scatter', hoverinfo:'text',
+  marker:{size:items.map(a=>a.sev*6), color:catColours[c], opacity:0.85}
+}));
+
+Plotly.newPlot('plotEffortPriority', traces3, {
+  ...pl,
+  title:{text:'Actions: Effort vs BT Priority (Colour = Term, Size = Severity)',font:{size:13}},
+  xaxis:{title:'Effort (hours)'},
+  yaxis:{title:'BT Priority Score'},
+  shapes:[{type:'rect',x0:0,x1:8,y0:0.8,y1:1,fillcolor:'rgba(29,158,117,0.08)',line:{width:0}}],
+  annotations:[{x:4,y:0.97,text:'⚡ Quick Wins',showarrow:false,font:{color:'#1D9E75',size:12,weight:700}}]
+},{responsive:true});
+
+function exportCharts(){
+  ['plotOverallVsCat','plotQASeverity','plotEffortPriority'].forEach(id=>{
+    Plotly.downloadImage(id,{format:'png',width:1200,height:700,filename:id});
+  });
+}
+
+</script>
+</body></html>

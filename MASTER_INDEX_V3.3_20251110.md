@@ -14,7 +14,8 @@
 3. **[Convergence Plan](CONVERGENCE_PLAN_V23_TO_V3.md)** ← 7-day roadmap
 
 ### For Returning Users
-1. **[Session Summary](SESSION_SUMMARY_V3.3_20251110.md)** ← What happened today
+1. **[Session Summary](docs_versioned/handover/SESSION_SUMMARY_V3.3_20251110.md)**
+   ← What happened today
 2. **[Changelog](CHANGELOG_V3.3_20251110.md)** ← Version history
 3. **[TODO](TODO_V3.1_2025-11-10.yaml)** ← Task tracking
 
@@ -29,7 +30,7 @@
 |----------|---------|-------|--------|
 | [Visual Dashboard](VISUAL_DASHBOARD_V3.3_20251110.md) | At-a-glance status with ASCII charts | 400+ | ✅ |
 | [User Progress Report](USER_PROGRESS_REPORT_V3.3_20251110.md) | Comprehensive progress with visuals | 500+ | ✅ |
-| [Session Summary](SESSION_SUMMARY_V3.3_20251110.md) | Today's accomplishments | 400+ | ✅ |
+| [Session Summary](docs_versioned/handover/SESSION_SUMMARY_V3.3_20251110.md) | Today's accomplishments | 400+ | ✅ |
 
 **Best For**: Project managers, stakeholders, executives  
 **Read Time**: 10-15 minutes  
@@ -44,7 +45,7 @@
 |----------|---------|-------|--------|
 | [Convergence Plan](CONVERGENCE_PLAN_V23_TO_V3.md) | V2.3 → V3 migration plan | 400+ | ✅ |
 | [TODO Tracking](TODO_V3.1_2025-11-10.yaml) | Task management | 659 | ✅ |
-| [Corrected Handover](CORRECTED_HANDOVER_PARALLEL_VERSIONS.md) | Error corrections | 200+ | ✅ |
+| [Corrected Handover](docs_versioned/handover/CORRECTED_HANDOVER_PARALLEL_VERSIONS.md) | Error corrections | 200+ | ✅ |
 
 **Best For**: Development team, technical leads  
 **Read Time**: 20-30 minutes  
@@ -207,7 +208,8 @@
 ### Convergence Planning
 - [Convergence Plan](CONVERGENCE_PLAN_V23_TO_V3.md) - Complete migration plan
 - [TODO Tracking](TODO_V3.1_2025-11-10.yaml) - Task breakdown
-- [Corrected Handover](CORRECTED_HANDOVER_PARALLEL_VERSIONS.md) - Parallel versions
+- [Corrected Handover](docs_versioned/handover/CORRECTED_HANDOVER_PARALLEL_VERSIONS.md)
+  — Parallel versions
 
 ### Execution Metrics
 - [User Progress Report](USER_PROGRESS_REPORT_V3.3_20251110.md) - Execution statistics
@@ -216,7 +218,8 @@
 
 ### Version History
 - [Changelog](CHANGELOG_V3.3_20251110.md) - Complete history
-- [Session Summary](SESSION_SUMMARY_V3.3_20251110.md) - Today's changes
+- [Session Summary](docs_versioned/handover/SESSION_SUMMARY_V3.3_20251110.md)
+  — Today's changes
 - [Comprehensive Status](DMAIC_COMPREHENSIVE_STATUS_V3.3_202501101800.md) - Historical data
 
 ### Code Implementation
@@ -413,7 +416,9 @@ V3.3.0:
 4. Check [TODO Tracking](TODO_V3.1_2025-11-10.yaml) for your tasks
 
 ### Returning to the Project?
-1. Read [Session Summary](SESSION_SUMMARY_V3.3_20251110.md) (5 min)
+1. Read
+   [Session Summary](docs_versioned/handover/SESSION_SUMMARY_V3.3_20251110.md)
+   (5 min)
 2. Check [Visual Dashboard](VISUAL_DASHBOARD_V3.3_20251110.md) (2 min)
 3. Review [TODO Tracking](TODO_V3.1_2025-11-10.yaml) (3 min)
 4. Start working on your assigned tasks

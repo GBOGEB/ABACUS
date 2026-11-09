@@ -1,0 +1,216 @@
+# ============================================================================
+# SEMANTIC_THEME.yaml — Theme-Specific Semantic Remapping
+# GBOGEB/ABACUS A6 Governance Engine
+# Version: 1.0.0 | YAML 1.2 Strict
+# ============================================================================
+#
+# PURPOSE: Defines semantic color tokens and their concrete values for each
+# theme mode. Components reference tokens (never raw hex), enabling
+# deterministic theme switching without layout side-effects.
+#
+# RULE REFS: RULE-070, RULE-071, RULE-072 (see RENDER_RULES.md)
+# ============================================================================
+
+schema_version: "1.0.0"
+yaml_version: "1.2"
+
+# ── Theme Metadata ──
+metadata:
+  name: "GBOGEB Engineering Theme"
+  author: "GBOGEB Governance Board"
+  wcag_target: "AA"
+  contrast_minimum: 4.5
+  contrast_minimum_large: 3.0
+
+# ── Light Mode ──
+themes:
+  light:
+    label: "Light Mode (Default)"
+    background_class: "light"
+
+    # Surface colors
+    surface:
+      primary: "#FFFFFF"
+      secondary: "#F8F9FA"
+      tertiary: "#E9ECEF"
+      elevated: "#FFFFFF"
+      overlay: "rgba(0, 0, 0, 0.5)"
+
+    # Text colors
+    text:
+      primary: "#212529"
+      secondary: "#495057"
+      tertiary: "#6C757D"
+      inverse: "#FFFFFF"
+      disabled: "#ADB5BD"
+      link: "#0D6EFD"
+      link_hover: "#0A58CA"
+
+    # Semantic intent colors
+    intent:
+      info: "#0DCAF0"
+      info_text: "#055160"
+      success: "#198754"
+      success_text: "#0F5132"
+      warning: "#FFC107"
+      warning_text: "#664D03"
+      danger: "#DC3545"
+      danger_text: "#842029"
+
+    # Brand colors
+    brand:
+      primary: "#0D6EFD"
+      primary_hover: "#0B5ED7"
+      secondary: "#6C757D"
+      accent: "#6610F2"
+
+    # Chart and data visualization
+    data_viz:
+      series_1: "#0D6EFD"
+      series_2: "#6610F2"
+      series_3: "#D63384"
+      series_4: "#FD7E14"
+      series_5: "#198754"
+      series_6: "#20C997"
+      grid_line: "#DEE2E6"
+      axis_label: "#495057"
+
+    # Border and divider
+    border:
+      default: "#DEE2E6"
+      strong: "#ADB5BD"
+      focus: "#86B7FE"
+
+    # Code blocks
+    code:
+      background: "#F8F9FA"
+      text: "#D63384"
+      comment: "#6C757D"
+      keyword: "#0D6EFD"
+      string: "#198754"
+
+  # ── Dark Mode ──
+  dark:
+    label: "Dark Mode"
+    background_class: "dark"
+
+    surface:
+      primary: "#212529"
+      secondary: "#2B3035"
+      tertiary: "#343A40"
+      elevated: "#2B3035"
+      overlay: "rgba(0, 0, 0, 0.75)"
+
+    text:
+      primary: "#F8F9FA"
+      secondary: "#CED4DA"
+      tertiary: "#ADB5BD"
+      inverse: "#212529"
+      disabled: "#6C757D"
+      link: "#6EA8FE"
+      link_hover: "#9EC5FE"
+
+    intent:
+      info: "#6EDFF6"
+      info_text: "#9EEAF9"
+      success: "#75B798"
+      success_text: "#A3CFBB"
+      warning: "#FFDA6A"
+      warning_text: "#FFE69C"
+      danger: "#EA868F"
+      danger_text: "#F1AEB5"
+
+    brand:
+      primary: "#6EA8FE"
+      primary_hover: "#9EC5FE"
+      secondary: "#A7ACB1"
+      accent: "#A370F7"
+
+    data_viz:
+      series_1: "#6EA8FE"
+      series_2: "#A370F7"
+      series_3: "#E685B5"
+      series_4: "#FEB272"
+      series_5: "#75B798"
+      series_6: "#79DFC1"
+      grid_line: "#495057"
+      axis_label: "#CED4DA"
+
+    border:
+      default: "#495057"
+      strong: "#6C757D"
+      focus: "#6EA8FE"
+
+    code:
+      background: "#2B3035"
+      text: "#E685B5"
+      comment: "#ADB5BD"
+      keyword: "#6EA8FE"
+      string: "#75B798"
+
+  # ── High Contrast Mode ──
+  high_contrast:
+    label: "High Contrast (Accessibility)"
+    background_class: "high-contrast"
+
+    surface:
+      primary: "#000000"
+      secondary: "#1A1A1A"
+      tertiary: "#333333"
+      elevated: "#1A1A1A"
+      overlay: "rgba(0, 0, 0, 0.9)"
+
+    text:
+      primary: "#FFFFFF"
+      secondary: "#E6E6E6"
+      tertiary: "#CCCCCC"
+      inverse: "#000000"
+      disabled: "#808080"
+      link: "#FFFF00"
+      link_hover: "#FFFF99"
+
+    intent:
+      info: "#00FFFF"
+      info_text: "#CCFFFF"
+      success: "#00FF00"
+      success_text: "#CCFFCC"
+      warning: "#FFFF00"
+      warning_text: "#FFFFCC"
+      danger: "#FF0000"
+      danger_text: "#FFCCCC"
+
+    brand:
+      primary: "#FFFF00"
+      primary_hover: "#FFFF99"
+      secondary: "#CCCCCC"
+      accent: "#FF00FF"
+
+    data_viz:
+      series_1: "#FFFF00"
+      series_2: "#00FFFF"
+      series_3: "#FF00FF"
+      series_4: "#FF8000"
+      series_5: "#00FF00"
+      series_6: "#8080FF"
+      grid_line: "#666666"
+      axis_label: "#E6E6E6"
+
+    border:
+      default: "#FFFFFF"
+      strong: "#FFFFFF"
+      focus: "#FFFF00"
+
+    code:
+      background: "#1A1A1A"
+      text: "#00FF00"
+      comment: "#CCCCCC"
+      keyword: "#FFFF00"
+      string: "#00FFFF"
+
+# ── Token Resolution Rules ──
+resolution:
+  fallback_theme: "light"
+  auto_detect: true
+  media_query: "(prefers-color-scheme: dark)"
+  storage_key: "gbogeb-theme-preference"
+  transition_duration: "200ms"

@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 """MIP2 canonical registry/corpus structural preflight; never attest scanner effectiveness."""
+
 from __future__ import annotations
 
 import json
@@ -27,28 +28,52 @@ def load(name: str) -> dict:
 def validate() -> dict:
     reg = load("method_qualification_registry.json")
     corpus = load("method_regression_corpus.json")
-    require(reg.get("schema") == "mip2.method-qualification.v1", "REGISTRY_SCHEMA_MISMATCH")
-    require(corpus.get("schema") == "mip2.method-regression-corpus.v1", "CORPUS_SCHEMA_MISMATCH")
-    require(isinstance(reg.get("levels"), dict) and set(reg["levels"]) == set(LEVELS),
-            "REGISTRY_MATURITY_LEVELS_INVALID")
+    require(
+        reg.get("schema") == "mip2.method-qualification.v1", "REGISTRY_SCHEMA_MISMATCH"
+    )
+    require(
+        corpus.get("schema") == "mip2.method-regression-corpus.v1",
+        "CORPUS_SCHEMA_MISMATCH",
+    )
+    require(
+        isinstance(reg.get("levels"), dict) and set(reg["levels"]) == set(LEVELS),
+        "REGISTRY_MATURITY_LEVELS_INVALID",
+    )
     methods = reg.get("methods")
-    require(isinstance(methods, list) and len(methods) >= 11, "REGISTRY_METHOD_COUNT_INVALID")
+    require(
+        isinstance(methods, list) and len(methods) >= 11,
+        "REGISTRY_METHOD_COUNT_INVALID",
+    )
     ids = []
     for index, method in enumerate(methods):
         require(isinstance(method, dict), f"METHOD_{index}_NOT_OBJECT")
         method_id = method.get("method_id")
-        require(isinstance(method_id, str) and bool(method_id), f"METHOD_{index}_ID_INVALID")
+        require(
+            isinstance(method_id, str) and bool(method_id), f"METHOD_{index}_ID_INVALID"
+        )
         ids.append(method_id)
-        require(method.get("maturity") == "M0_UNVERIFIED", f"METHOD_{method_id}_SELF_ATTESTED")
-        require(isinstance(method.get("tools"), list) and bool(method["tools"]) and
-                isinstance(method.get("metrics"), str) and bool(method["metrics"]) and
-                isinstance(method.get("acceptance"), str) and bool(method["acceptance"]),
-                f"METHOD_{method_id}_CONTRACT_INCOMPLETE")
+        require(
+            method.get("maturity") == "M0_UNVERIFIED",
+            f"METHOD_{method_id}_SELF_ATTESTED",
+        )
+        require(
+            isinstance(method.get("tools"), list)
+            and bool(method["tools"])
+            and isinstance(method.get("metrics"), str)
+            and bool(method["metrics"])
+            and isinstance(method.get("acceptance"), str)
+            and bool(method["acceptance"]),
+            f"METHOD_{method_id}_CONTRACT_INCOMPLETE",
+        )
         propagation = method.get("propagation")
-        require(isinstance(propagation, dict) and set(propagation) == set(REPOS),
-                f"METHOD_{method_id}_FEDERATION_SCOPE_INVALID")
-        require(all(value == "NOT_QUALIFIED" for value in propagation.values()),
-                f"METHOD_{method_id}_FEDERATION_FALSE_GREEN")
+        require(
+            isinstance(propagation, dict) and set(propagation) == set(REPOS),
+            f"METHOD_{method_id}_FEDERATION_SCOPE_INVALID",
+        )
+        require(
+            all(value == "NOT_QUALIFIED" for value in propagation.values()),
+            f"METHOD_{method_id}_FEDERATION_FALSE_GREEN",
+        )
     require(len(ids) == len(set(ids)), "REGISTRY_DUPLICATE_METHOD_ID")
     cases = corpus.get("cases")
     require(isinstance(cases, list) and bool(cases), "CORPUS_EMPTY_OR_INVALID")
@@ -61,13 +86,22 @@ def validate() -> dict:
         case_ids.append(case_id)
         kinds.add(case.get("kind"))
         require(case.get("family") in ids, f"CASE_{case_id}_UNKNOWN_FAMILY")
-        require(isinstance(case.get("expected"), str) and bool(case["expected"]) and
-                isinstance(case.get("input_class"), str) and bool(case["input_class"]),
-                f"CASE_{case_id}_CONTRACT_INCOMPLETE")
+        require(
+            isinstance(case.get("expected"), str)
+            and bool(case["expected"])
+            and isinstance(case.get("input_class"), str)
+            and bool(case["input_class"]),
+            f"CASE_{case_id}_CONTRACT_INCOMPLETE",
+        )
     require(len(case_ids) == len(set(case_ids)), "CORPUS_DUPLICATE_CASE_ID")
     require(kinds == {"positive", "negative"}, "CORPUS_CONTROLS_INCOMPLETE")
-    return {"status": "STRUCTURAL_PASS", "methods": len(methods), "cases": len(cases),
-            "qualified_methods": 0, "executed_seeded_tests": 0}
+    return {
+        "status": "STRUCTURAL_PASS",
+        "methods": len(methods),
+        "cases": len(cases),
+        "qualified_methods": 0,
+        "executed_seeded_tests": 0,
+    }
 
 
 if __name__ == "__main__":

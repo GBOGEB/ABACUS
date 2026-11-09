@@ -10,10 +10,10 @@ Open GitHub Issue Creation Pages with Pre-filled Content
 This script generates URLs that open GitHub with pre-filled issue forms
 """
 
-import webbrowser
-import urllib.parse
-from pathlib import Path
 import time
+import urllib.parse
+import webbrowser
+from pathlib import Path
 
 REPO = "GBOGEB/ABACUS"
 BASE_URL = f"https://github.com/{REPO}/issues/new"
@@ -90,7 +90,7 @@ from DMAIC_V3.dmaic import Idempotency, provenance, metrics as handover_metrics,
 
 - Workflow: https://github.com/GBOGEB/ABACUS/actions
 - Test file: `DMAIC_V3/tests/test_bridge_integration.py`
-"""
+""",
     },
     {
         "priority": "P1",
@@ -157,7 +157,7 @@ ruff>=0.1.0
 ## 🔗 References
 
 - Related issue: https://github.com/PyCQA/flake8/issues/1800
-"""
+""",
     },
     {
         "priority": "P1",
@@ -192,7 +192,7 @@ Based on the Bridge Smoke Tests failure, this workflow likely has similar import
 ## 🔗 References
 
 - Related: Bridge Smoke Tests issue
-"""
+""",
     },
     {
         "priority": "P1",
@@ -224,7 +224,7 @@ Apply fixes from Bridge Smoke Tests issue.
 - [ ] Apply dependency fixes
 - [ ] Test locally
 - [ ] Re-run checks
-"""
+""",
     },
     {
         "priority": "P2",
@@ -260,19 +260,17 @@ This is a comprehensive test that may fail due to:
 - [ ] Apply fixes from related issues
 - [ ] Test deployment locally if possible
 - [ ] Re-run checks
-"""
-    }
+""",
+    },
 ]
+
 
 def create_github_issue_url(title, body, labels):
     """Create a GitHub issue URL with pre-filled content"""
-    params = {
-        'title': title,
-        'body': body,
-        'labels': ','.join(labels)
-    }
+    params = {"title": title, "body": body, "labels": ",".join(labels)}
     query_string = urllib.parse.urlencode(params)
     return f"{BASE_URL}?{query_string}"
+
 
 def main():
     print("🚀 Opening GitHub Issue Creation Pages...\n")
@@ -283,7 +281,7 @@ def main():
         print(f"\n{i}. [{issue['priority']}] {issue['title']}")
         print(f"   Labels: {', '.join(issue['labels'])}")
 
-        url = create_github_issue_url(issue['title'], issue['body'], issue['labels'])
+        url = create_github_issue_url(issue["title"], issue["body"], issue["labels"])
 
         print(f"   Opening in browser...")
 
@@ -306,5 +304,6 @@ def main():
     print("   3. Click 'Submit new issue'")
     print("\n🎉 Done!")
 
-if __name__ == '__main__':
+
+if __name__ == "__main__":
     main()

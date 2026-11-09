@@ -22,37 +22,38 @@ This module provides:
 ========================================
 """
 
-import os
-import sys
 import json
 import logging
-from pathlib import Path
-from datetime import datetime
-from typing import Dict, List, Optional, Any
+import os
+import sys
 from dataclasses import dataclass, field
+from datetime import datetime
 from enum import Enum
+from pathlib import Path
+from typing import Any, Dict, List, Optional
 
 sys.path.append(str(Path(__file__).parent))
 from DOW.pipeline_runner import DOWPipelineRunner
 from DOW.sut_config import SUTConfig, SUTMode
 
 try:
-    from DMAIC_V3.pipeline_control import PipelineController
     from DMAIC_V3.full_pipeline_orchestrator import FullPipelineOrchestrator
+    from DMAIC_V3.pipeline_control import PipelineController
+
     DMAIC_AVAILABLE = True
 except ImportError:
     DMAIC_AVAILABLE = False
     logging.warning("DMAIC_V3 modules not available - running in limited mode")
 
 logging.basicConfig(
-    level=logging.INFO,
-    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
+    level=logging.INFO, format="%(asctime)s - %(name)s - %(levelname)s - %(message)s"
 )
 logger = logging.getLogger(__name__)
 
 
 class IntegrationMode(Enum):
     """Integration execution modes"""
+
     DOW_ONLY = "dow_only"
     DMAIC_ONLY = "dmaic_only"
     UNIFIED = "unified"
@@ -63,6 +64,7 @@ class IntegrationMode(Enum):
 @dataclass
 class IntegrationConfig:
     """Configuration for GBOGEB/ABACUS ↔ DOW integration"""
+
     mode: IntegrationMode = IntegrationMode.UNIFIED
     sut_mode: SUTMode = SUTMode.FULL
     dmaic_phases: List[int] = field(default_factory=lambda: list(range(5)))
@@ -77,7 +79,11 @@ class IntegrationConfig:
     def to_dict(self) -> Dict:
         return {
             "mode": self.mode.value,
-            "sut_mode": self.sut_mode.value if hasattr(self.sut_mode, 'value') else str(self.sut_mode),
+            "sut_mode": (
+                self.sut_mode.value
+                if hasattr(self.sut_mode, "value")
+                else str(self.sut_mode)
+            ),
             "dmaic_phases": self.dmaic_phases,
             "iterations": self.iterations,
             "enable_agents": self.enable_agents,
@@ -85,7 +91,7 @@ class IntegrationConfig:
             "enable_git_commits": self.enable_git_commits,
             "enable_idempotency": self.enable_idempotency,
             "output_dir": self.output_dir,
-            "handover_dir": self.handover_dir
+            "handover_dir": self.handover_dir,
         }
 
 
@@ -110,7 +116,7 @@ class GBOGEBAbacusDOWBridge:
             "successful_executions": 0,
             "failed_executions": 0,
             "total_artifacts_processed": 0,
-            "convergence_achieved": False
+            "convergence_achieved": False,
         }
 
         os.makedirs(self.config.output_dir, exist_ok=True)
@@ -121,7 +127,9 @@ class GBOGEBAbacusDOWBridge:
 
         self._initialize_components()
 
-        logger.info(f"GBOGEB/ABACUS ↔ DOW Bridge initialized in {self.config.mode.value} mode")
+        logger.info(
+            f"GBOGEB/ABACUS ↔ DOW Bridge initialized in {self.config.mode.value} mode"
+        )
 
     def _initialize_components(self):
         """Initialize DOW and DMAIC components"""
@@ -131,7 +139,7 @@ class GBOGEBAbacusDOWBridge:
             sut_config=sut_config,
             dmaic_phases=self.config.dmaic_phases,
             iterations=self.config.iterations,
-            output_dir=os.path.join(self.config.output_dir, "dow_outputs")
+            output_dir=os.path.join(self.config.output_dir, "dow_outputs"),
         )
 
         if DMAIC_AVAILABLE:
@@ -139,7 +147,7 @@ class GBOGEBAbacusDOWBridge:
             self.dmaic_orchestrator = FullPipelineOrchestrator(
                 enable_idempotency_flag=self.config.enable_idempotency,
                 enable_git_commits=self.config.enable_git_commits,
-                verbose=True
+                verbose=True,
             )
         else:
             logger.warning("DMAIC components not available - DOW-only mode")
@@ -166,7 +174,7 @@ class GBOGEBAbacusDOWBridge:
             "unified_results": None,
             "metrics": {},
             "artifacts": [],
-            "status": "running"
+            "status": "running",
         }
 
         try:
@@ -227,16 +235,18 @@ class GBOGEBAbacusDOWBridge:
         for iteration in range(self.config.iterations):
             logger.info(f"\nDMAIC Iteration {iteration + 1}/{self.config.iterations}")
             success = self.dmaic_orchestrator.execute_full_pipeline(iteration=iteration)
-            dmaic_results.append({
-                "iteration": iteration,
-                "success": success,
-                "timestamp": datetime.now().isoformat()
-            })
+            dmaic_results.append(
+                {
+                    "iteration": iteration,
+                    "success": success,
+                    "timestamp": datetime.now().isoformat(),
+                }
+            )
 
         return {
             "iterations": dmaic_results,
             "total_iterations": len(dmaic_results),
-            "successful_iterations": sum(1 for r in dmaic_results if r["success"])
+            "successful_iterations": sum(1 for r in dmaic_results if r["success"]),
         }
 
     def _execute_unified_pipeline(self) -> Dict:
@@ -246,7 +256,7 @@ class GBOGEBAbacusDOWBridge:
         unified_results = {
             "iterations": [],
             "convergence_history": [],
-            "artifacts_generated": []
+            "artifacts_generated": [],
         }
 
         for iteration in range(self.config.iterations):
@@ -259,7 +269,7 @@ class GBOGEBAbacusDOWBridge:
                 "dow_phase": None,
                 "dmaic_phase": None,
                 "convergence": None,
-                "artifacts": []
+                "artifacts": [],
             }
 
             logger.info("Phase 1: DOW Processing...")
@@ -268,10 +278,12 @@ class GBOGEBAbacusDOWBridge:
 
             if DMAIC_AVAILABLE:
                 logger.info("Phase 2: DMAIC Processing...")
-                dmaic_success = self.dmaic_orchestrator.execute_full_pipeline(iteration=iteration)
+                dmaic_success = self.dmaic_orchestrator.execute_full_pipeline(
+                    iteration=iteration
+                )
                 iteration_result["dmaic_phase"] = {
                     "success": dmaic_success,
-                    "timestamp": datetime.now().isoformat()
+                    "timestamp": datetime.now().isoformat(),
                 }
 
             if self.config.enable_convergence:
@@ -301,7 +313,11 @@ class GBOGEBAbacusDOWBridge:
 
         with concurrent.futures.ThreadPoolExecutor(max_workers=2) as executor:
             dow_future = executor.submit(self._execute_dow_pipeline)
-            dmaic_future = executor.submit(self._execute_dmaic_pipeline) if DMAIC_AVAILABLE else None
+            dmaic_future = (
+                executor.submit(self._execute_dmaic_pipeline)
+                if DMAIC_AVAILABLE
+                else None
+            )
 
             dow_results = dow_future.result()
             dmaic_results = dmaic_future.result() if dmaic_future else None
@@ -309,7 +325,7 @@ class GBOGEBAbacusDOWBridge:
         return {
             "dow_results": dow_results,
             "dmaic_results": dmaic_results,
-            "execution_mode": "parallel"
+            "execution_mode": "parallel",
         }
 
     def _execute_sequential_pipeline(self) -> Dict:
@@ -322,15 +338,21 @@ class GBOGEBAbacusDOWBridge:
         return {
             "dow_results": dow_results,
             "dmaic_results": dmaic_results,
-            "execution_mode": "sequential"
+            "execution_mode": "sequential",
         }
 
     def _check_convergence(self, iteration_history: List[Dict]) -> Dict:
         """Check convergence based on iteration history"""
         if len(iteration_history) < 2:
-            return {"converged": False, "confidence": 0.0, "reason": "insufficient_data"}
+            return {
+                "converged": False,
+                "confidence": 0.0,
+                "reason": "insufficient_data",
+            }
 
-        recent_iterations = iteration_history[-3:] if len(iteration_history) >= 3 else iteration_history
+        recent_iterations = (
+            iteration_history[-3:] if len(iteration_history) >= 3 else iteration_history
+        )
 
         convergence_score = len(recent_iterations) / self.config.iterations
         converged = convergence_score > 0.7 and len(iteration_history) >= 2
@@ -340,7 +362,7 @@ class GBOGEBAbacusDOWBridge:
             "confidence": convergence_score,
             "iterations_analyzed": len(recent_iterations),
             "total_iterations": len(iteration_history),
-            "reason": "convergence_threshold_met" if converged else "still_improving"
+            "reason": "convergence_threshold_met" if converged else "still_improving",
         }
 
     def _collect_iteration_artifacts(self, iteration: int) -> List[Dict]:
@@ -350,27 +372,33 @@ class GBOGEBAbacusDOWBridge:
         output_patterns = [
             f"{self.config.output_dir}/**/*iteration_{iteration}*",
             f"DMAIC_V3_OUTPUT/iteration_{iteration}/**/*",
-            f"DOW/outputs/**/*iteration_{iteration}*"
+            f"DOW/outputs/**/*iteration_{iteration}*",
         ]
 
         for pattern in output_patterns:
             for path in Path(".").glob(pattern):
                 if path.is_file():
-                    artifacts.append({
-                        "path": str(path),
-                        "size": path.stat().st_size,
-                        "modified": datetime.fromtimestamp(path.stat().st_mtime).isoformat(),
-                        "iteration": iteration
-                    })
+                    artifacts.append(
+                        {
+                            "path": str(path),
+                            "size": path.stat().st_size,
+                            "modified": datetime.fromtimestamp(
+                                path.stat().st_mtime
+                            ).isoformat(),
+                            "iteration": iteration,
+                        }
+                    )
 
         return artifacts
 
     def _save_results(self, results: Dict):
         """Save execution results to JSON"""
         timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-        output_file = Path(self.config.output_dir) / f"integration_results_{timestamp}.json"
+        output_file = (
+            Path(self.config.output_dir) / f"integration_results_{timestamp}.json"
+        )
 
-        with open(output_file, 'w') as f:
+        with open(output_file, "w") as f:
             json.dump(results, f, indent=2, default=str)
 
         logger.info(f"Results saved to: {output_file}")
@@ -378,7 +406,9 @@ class GBOGEBAbacusDOWBridge:
     def _generate_integration_report(self, results: Dict):
         """Generate comprehensive integration report"""
         timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-        report_file = Path(self.config.output_dir) / f"integration_report_{timestamp}.md"
+        report_file = (
+            Path(self.config.output_dir) / f"integration_report_{timestamp}.md"
+        )
 
         report = f"""# GBOGEB/ABACUS ↔ DOW Integration Report
 
@@ -451,7 +481,7 @@ Total artifacts: {len(results.get('artifacts', []))}
 *Generated by GBOGEB/ABACUS ↔ DOW Integration Bridge v1.0.0*
 """
 
-        with open(report_file, 'w') as f:
+        with open(report_file, "w") as f:
             f.write(report)
 
         logger.info(f"Integration report saved to: {report_file}")
@@ -470,7 +500,7 @@ Total artifacts: {len(results.get('artifacts', []))}
             "files_processed": 0,
             "chapters_integrated": [],
             "glob_config_merged": False,
-            "documentation_updated": False
+            "documentation_updated": False,
         }
 
         for chapter_file in handover_path.glob("Chapter_*.md"):
@@ -490,7 +520,9 @@ Total artifacts: {len(results.get('artifacts', []))}
 
         assimilation_results["status"] = "completed"
 
-        logger.info(f"Assimilation complete: {assimilation_results['files_processed']} files processed")
+        logger.info(
+            f"Assimilation complete: {assimilation_results['files_processed']} files processed"
+        )
 
         return assimilation_results
 
@@ -507,8 +539,8 @@ def create_unified_glob_config() -> Dict:
                 "DOW Pipeline",
                 "GBOGEB/ABACUS v3.3.0",
                 "DMAIC_V3",
-                "12-Cluster Architecture"
-            ]
+                "12-Cluster Architecture",
+            ],
         },
         "integration": {
             "bridge_module": "GBOGEB_ABACUS_DOW_INTEGRATION_BRIDGE.py",
@@ -518,8 +550,8 @@ def create_unified_glob_config() -> Dict:
                 "DMAIC methodology integration",
                 "Agent framework coordination",
                 "Convergence monitoring",
-                "CI/CD workflow assimilation"
-            ]
+                "CI/CD workflow assimilation",
+            ],
         },
         "directories": {
             "dow": "DOW/",
@@ -527,19 +559,20 @@ def create_unified_glob_config() -> Dict:
             "handover": "gbogeg_handover/",
             "integrated_output": "INTEGRATED_OUTPUT/",
             "artifacts": "INTEGRATED_OUTPUT/artifacts/",
-            "reports": "INTEGRATED_OUTPUT/reports/"
+            "reports": "INTEGRATED_OUTPUT/reports/",
         },
         "workflows": {
             "dow_pipeline": "DOW/pipeline_runner.py",
             "dmaic_pipeline": "DMAIC_V3/pipeline_control.py",
             "integration_bridge": "GBOGEB_ABACUS_DOW_INTEGRATION_BRIDGE.py",
-            "full_orchestrator": "DMAIC_V3/full_pipeline_orchestrator.py"
-        }
+            "full_orchestrator": "DMAIC_V3/full_pipeline_orchestrator.py",
+        },
     }
 
     output_file = Path("UNIFIED_GLOB_CONFIG.yaml")
     import yaml
-    with open(output_file, 'w') as f:
+
+    with open(output_file, "w") as f:
         yaml.dump(unified_glob, f, default_flow_style=False, sort_keys=False)
 
     logger.info(f"Unified glob configuration created: {output_file}")
@@ -551,27 +584,38 @@ def main():
     """Main execution function"""
     import argparse
 
-    parser = argparse.ArgumentParser(description="GBOGEB/ABACUS ↔ DOW Integration Bridge")
-    parser.add_argument("--mode", type=str, default="unified",
-                       choices=[m.value for m in IntegrationMode],
-                       help="Integration mode")
-    parser.add_argument("--iterations", type=int, default=3,
-                       help="Number of iterations")
-    parser.add_argument("--sut-mode", type=str, default="full",
-                       help="SUT mode (full/partial/minimal)")
-    parser.add_argument("--output-dir", type=str, default="INTEGRATED_OUTPUT",
-                       help="Output directory")
-    parser.add_argument("--assimilate", action="store_true",
-                       help="Assimilate handover package")
-    parser.add_argument("--create-glob", action="store_true",
-                       help="Create unified glob configuration")
+    parser = argparse.ArgumentParser(
+        description="GBOGEB/ABACUS ↔ DOW Integration Bridge"
+    )
+    parser.add_argument(
+        "--mode",
+        type=str,
+        default="unified",
+        choices=[m.value for m in IntegrationMode],
+        help="Integration mode",
+    )
+    parser.add_argument(
+        "--iterations", type=int, default=3, help="Number of iterations"
+    )
+    parser.add_argument(
+        "--sut-mode", type=str, default="full", help="SUT mode (full/partial/minimal)"
+    )
+    parser.add_argument(
+        "--output-dir", type=str, default="INTEGRATED_OUTPUT", help="Output directory"
+    )
+    parser.add_argument(
+        "--assimilate", action="store_true", help="Assimilate handover package"
+    )
+    parser.add_argument(
+        "--create-glob", action="store_true", help="Create unified glob configuration"
+    )
 
     args = parser.parse_args()
 
     config = IntegrationConfig(
         mode=IntegrationMode(args.mode),
         iterations=args.iterations,
-        output_dir=args.output_dir
+        output_dir=args.output_dir,
     )
 
     bridge = GBOGEBAbacusDOWBridge(config=config)

@@ -4,6 +4,7 @@ The ten N0 source slices are frozen GitHub observations, not a new BD SSOT.
 Native enrichment reuses EVERRED's exact-SHA, fully paginated job reader.
 A repeated workflow/failed step is a signature candidate, NEVER a causal root.
 """
+
 from __future__ import annotations
 
 import argparse
@@ -61,10 +62,16 @@ def read_n0(paths):
         d = json.loads(raw)
         fail(d.get("schema") == SCHEMA, "wrong N0 schema")
         fail(d.get("scope") == "PR_TRIGGERED_FIRST_PAGE_ASSOCIATION", "scope mismatch")
-        fail(d.get("job_logs_read") is False and d.get("run_attempts_covered") is None,
-             "unproved first-page completeness")
-        fail(d.get("authority_transfer") is False and d.get("security_waiver") is False
-             and d.get("merge_admission") == "HOLD", "authority promotion rejected")
+        fail(
+            d.get("job_logs_read") is False and d.get("run_attempts_covered") is None,
+            "unproved first-page completeness",
+        )
+        fail(
+            d.get("authority_transfer") is False
+            and d.get("security_waiver") is False
+            and d.get("merge_admission") == "HOLD",
+            "authority promotion rejected",
+        )
         r, m = d.get("repository"), d.get("main_sha_at_observation")
         fail(r == "GBOGEB/ABACUS" and sha(m), "invalid repo/main identity")
         if repo is None:
@@ -74,31 +81,45 @@ def read_n0(paths):
         source_hashes[raw_path.name] = hashlib.sha256(raw).hexdigest()
         for row in d["rows"]:
             fail(isinstance(row, dict), "bad PR row")
-            fail(type(row.get("pr")) is int and row["pr"] > 0
-                 and row.get("state") in ("open", "closed")
-                 and sha(row.get("head_sha")),
-                 "PR head/state not bound")
-            fail(isinstance(row.get("base"), str) and bool(row["base"]),
-                 "missing base ref")
+            fail(
+                type(row.get("pr")) is int
+                and row["pr"] > 0
+                and row.get("state") in ("open", "closed")
+                and sha(row.get("head_sha")),
+                "PR head/state not bound",
+            )
+            fail(
+                isinstance(row.get("base"), str) and bool(row["base"]),
+                "missing base ref",
+            )
             c, runs = row.get("counts"), row.get("failed_runs")
             fail(isinstance(c, dict) and set(c) == set(COUNTS), "bad count shape")
-            fail(all(type(c[k]) is int and c[k] >= 0 for k in COUNTS),
-                 "invalid count")
-            fail(isinstance(runs, list) and len(runs) == c["failure"],
-                 "failed-workflow denominator mismatch")
+            fail(all(type(c[k]) is int and c[k] >= 0 for k in COUNTS), "invalid count")
+            fail(
+                isinstance(runs, list) and len(runs) == c["failure"],
+                "failed-workflow denominator mismatch",
+            )
             ids = set()
             for run in runs:
                 fail(isinstance(run, dict), "bad failed run")
                 rid = run.get("run_id")
-                fail(type(rid) is int and rid > 0 and rid not in ids,
-                     "invalid or repeated PR run ID")
+                fail(
+                    type(rid) is int and rid > 0 and rid not in ids,
+                    "invalid or repeated PR run ID",
+                )
                 ids.add(rid)
-                fail(isinstance(run.get("workflow"), str)
-                     and bool(run["workflow"].strip()), "missing workflow")
-                fail(run.get("run_attempt") is None and
-                     run.get("first_red_job") is None and
-                     run.get("first_red_step") is None and
-                     run.get("root_id") is None, "forged first red or root")
+                fail(
+                    isinstance(run.get("workflow"), str)
+                    and bool(run["workflow"].strip()),
+                    "missing workflow",
+                )
+                fail(
+                    run.get("run_attempt") is None
+                    and run.get("first_red_job") is None
+                    and run.get("first_red_step") is None
+                    and run.get("root_id") is None,
+                    "forged first red or root",
+                )
             rows.append(row)
     numbers = [r["pr"] for r in rows]
     fail(len(set(numbers)) == len(numbers), "duplicate PR across N0 cohorts")
@@ -107,22 +128,34 @@ def read_n0(paths):
     for row in rows:
         for run in row["failed_runs"]:
             rid = run["run_id"]
-            entry = {"run_id": rid, "workflow": run["workflow"],
-                     "workflow_id": run.get("workflow_id"),
-                     "pr": row["pr"], "sha": row["head_sha"]}
+            entry = {
+                "run_id": rid,
+                "workflow": run["workflow"],
+                "workflow_id": run.get("workflow_id"),
+                "pr": row["pr"],
+                "sha": row["head_sha"],
+            }
             if rid in index:
                 old = index[rid]
-                fail(old["sha"] == entry["sha"]
-                     and old["workflow"] == entry["workflow"]
-                     and old["workflow_id"] == entry["workflow_id"],
-                     "conflicting duplicate run identity")
-                aliases.append({"run_id": rid, "pr": row["pr"],
-                                "original_pr": old["pr"]})
+                fail(
+                    old["sha"] == entry["sha"]
+                    and old["workflow"] == entry["workflow"]
+                    and old["workflow_id"] == entry["workflow_id"],
+                    "conflicting duplicate run identity",
+                )
+                aliases.append(
+                    {"run_id": rid, "pr": row["pr"], "original_pr": old["pr"]}
+                )
             else:
                 index[rid] = entry
-    return {"repository": repo, "main_sha_at_observation": main,
-            "source_sha256": source_hashes, "rows": rows,
-            "unique_failed_runs": index, "duplicate_associations": aliases}
+    return {
+        "repository": repo,
+        "main_sha_at_observation": main,
+        "source_sha256": source_hashes,
+        "rows": rows,
+        "unique_failed_runs": index,
+        "duplicate_associations": aliases,
+    }
 
 
 def project(snapshot, native=None):
@@ -134,19 +167,21 @@ def project(snapshot, native=None):
             grouped[run["workflow"]].append((row["pr"], run["run_id"]))
     for name, links in sorted(grouped.items(), key=lambda x: (-len(x[1]), x[0])):
         ids = sorted(set(run_id for _, run_id in links))
-        families.append({
-            "candidate_signature": "WFL-" + hashlib.sha256(
-                name.encode("utf-8")).hexdigest()[:16],
-            "workflow": name,
-            "failed_associations": len(links),
-            "distinct_failed_runs": len(ids),
-            "affected_prs": sorted(set(pr for pr, _ in links)),
-            "run_ids": ids,
-            "owner_scout_hint": OWNER_HINTS.get(name, "READER_SCOUT_UNALLOCATED"),
-            "causal_root_id": None,
-            "confirmed_causal_root_count": None,
-            "root_confirmation": "UNKNOWN_REQUIRES_JOB_LOG_AND_OWNER",
-        })
+        families.append(
+            {
+                "candidate_signature": "WFL-"
+                + hashlib.sha256(name.encode("utf-8")).hexdigest()[:16],
+                "workflow": name,
+                "failed_associations": len(links),
+                "distinct_failed_runs": len(ids),
+                "affected_prs": sorted(set(pr for pr, _ in links)),
+                "run_ids": ids,
+                "owner_scout_hint": OWNER_HINTS.get(name, "READER_SCOUT_UNALLOCATED"),
+                "causal_root_id": None,
+                "confirmed_causal_root_count": None,
+                "root_confirmation": "UNKNOWN_REQUIRES_JOB_LOG_AND_OWNER",
+            }
+        )
     if native is None:
         native = {}
     statuses = Counter(x.get("status") for x in native.values())
@@ -157,22 +192,22 @@ def project(snapshot, native=None):
         "input_sha256": snapshot["source_sha256"],
         "evidence_scope": "PR_TRIGGERED_RUNS_FIRST_PAGE_PER_HEAD",
         "native_job_readback_scope": (
-            "FULL_API_RUN_AND_PAGINATED_JOBS_PER_ID" if native
-            else "NOT_COLLECTED"
+            "FULL_API_RUN_AND_PAGINATED_JOBS_PER_ID" if native else "NOT_COLLECTED"
         ),
         "metrics": {
             "prs_observed": len(rows),
-            "prs_open_in_captured_readbacks": sum(
-                r["state"] == "open" for r in rows),
+            "prs_open_in_captured_readbacks": sum(r["state"] == "open" for r in rows),
             "prs_closed_in_captured_readbacks": sum(
-                r["state"] == "closed" for r in rows),
+                r["state"] == "closed" for r in rows
+            ),
             "snapshot_atomic": False,
             "distinct_pr_source_shas": len(set(r["head_sha"] for r in rows)),
             "workflow_associations": sum(totals.values()),
             "failed_workflow_associations": totals["failure"],
             "distinct_failed_run_ids": len(snapshot["unique_failed_runs"]),
             "duplicated_pr_failure_associations": len(
-                snapshot["duplicate_associations"]),
+                snapshot["duplicate_associations"]
+            ),
             "passed_associations": totals["success"],
             "cancelled_associations": totals["cancelled"],
             "nonterminal_associations": totals["nonterminal"],
@@ -191,9 +226,12 @@ def project(snapshot, native=None):
         "families": families,
         "duplicate_associations": snapshot["duplicate_associations"],
         "safety": {
-            "merge_admission": "HOLD", "authority_transfer": False,
-            "security_waiver": False, "dispatch": "STAGED_NOT_LAUNCHED",
-            "engineering_credit_delta": 0, "formal_root_closure_delta": 0,
+            "merge_admission": "HOLD",
+            "authority_transfer": False,
+            "security_waiver": False,
+            "dispatch": "STAGED_NOT_LAUNCHED",
+            "engineering_credit_delta": 0,
+            "formal_root_closure_delta": 0,
             "candidate_is_not_root": True,
         },
     }
@@ -209,37 +247,54 @@ def enrich_native(snapshot, reader, *, workers=4, limit=256):
     def one(entry):
         rid, src = entry
         try:
-            run, jobs = reader.run_and_jobs(
-                snapshot["repository"], rid, src["sha"])
-            fail(run.get("id") == rid and
-                 run.get("head_sha") == src["sha"] and
-                 run.get("name") == src["workflow"] and
-                 run.get("conclusion") == "failure" and
-                 type(run.get("run_attempt")) is int and
-                 run["run_attempt"] > 0, "unqualified native run")
+            run, jobs = reader.run_and_jobs(snapshot["repository"], rid, src["sha"])
+            fail(
+                run.get("id") == rid
+                and run.get("head_sha") == src["sha"]
+                and run.get("name") == src["workflow"]
+                and run.get("conclusion") == "failure"
+                and type(run.get("run_attempt")) is int
+                and run["run_attempt"] > 0,
+                "unqualified native run",
+            )
             failed = []
             for job in jobs:
                 if job.get("conclusion") != "failure":
                     continue
-                steps = [s for s in (job.get("steps") or [])
-                         if s.get("conclusion") in
-                         ("failure", "timed_out", "action_required")]
-                steps.sort(key=lambda s: s.get("number") if
-                           type(s.get("number")) is int else 10**9)
-                failed.append({
-                    "job_id": job["id"], "job_name": job.get("name"),
-                    "job_started_at": job.get("started_at"),
-                    "job_completed_at": job.get("completed_at"),
-                    "first_failed_step": (
-                        {"number": steps[0].get("number"),
-                         "name": steps[0].get("name")}
-                        if steps else None),
-                    "step_causality": "UNATTRIBUTED",
-                })
+                steps = [
+                    s
+                    for s in (job.get("steps") or [])
+                    if s.get("conclusion")
+                    in ("failure", "timed_out", "action_required")
+                ]
+                steps.sort(
+                    key=lambda s: (
+                        s.get("number") if type(s.get("number")) is int else 10**9
+                    )
+                )
+                failed.append(
+                    {
+                        "job_id": job["id"],
+                        "job_name": job.get("name"),
+                        "job_started_at": job.get("started_at"),
+                        "job_completed_at": job.get("completed_at"),
+                        "first_failed_step": (
+                            {
+                                "number": steps[0].get("number"),
+                                "name": steps[0].get("name"),
+                            }
+                            if steps
+                            else None
+                        ),
+                        "step_causality": "UNATTRIBUTED",
+                    }
+                )
             failed.sort(key=lambda x: x["job_id"])
             return rid, {
-                "status": "JOB_METADATA_BOUND", "run_attempt": run["run_attempt"],
-                "workflow": src["workflow"], "head_sha": src["sha"],
+                "status": "JOB_METADATA_BOUND",
+                "run_attempt": run["run_attempt"],
+                "workflow": src["workflow"],
+                "head_sha": src["sha"],
                 "run_created_at": run.get("created_at"),
                 "run_started_at": run.get("run_started_at"),
                 "updated_at": run.get("updated_at"),
@@ -252,11 +307,14 @@ def enrich_native(snapshot, reader, *, workers=4, limit=256):
         except Exception:
             # Missing/inconsistent source is an unknown readback, never a pass.
             return rid, {
-                "status": "READBACK_WITHHELD", "run_attempt": None,
-                "failed_jobs": None, "first_red_causal_root": None,
+                "status": "READBACK_WITHHELD",
+                "run_attempt": None,
+                "failed_jobs": None,
+                "first_red_causal_root": None,
                 "full_log_read": False,
                 "trust": "NO_NATIVE_CUSTODY",
             }
+
     with concurrent.futures.ThreadPoolExecutor(max_workers=workers) as pool:
         return dict(pool.map(one, sorted(index.items())))
 
@@ -331,19 +389,35 @@ def render_html(proj):
     for f in proj["families"]:
         cells = "".join(
             "<li><a href='https://github.com/GBOGEB/ABACUS/actions/runs/"
-            + str(n) + "'>Run " + str(n) + "</a></li>"
-            for n in f["run_ids"])
+            + str(n)
+            + "'>Run "
+            + str(n)
+            + "</a></li>"
+            for n in f["run_ids"]
+        )
         rows.append(
-            "<details><summary><b>" + esc(f["workflow"]) + "</b> · "
-            + str(f["failed_associations"]) + " associations / "
-            + str(f["distinct_failed_runs"]) + " distinct runs</summary>"
-            + "<p><b>Owner scout:</b> " + esc(f["owner_scout_hint"])
+            "<details><summary><b>"
+            + esc(f["workflow"])
+            + "</b> · "
+            + str(f["failed_associations"])
+            + " associations / "
+            + str(f["distinct_failed_runs"])
+            + " distinct runs</summary>"
+            + "<p><b>Owner scout:</b> "
+            + esc(f["owner_scout_hint"])
             + " · <b>Root confirmation:</b> UNKNOWN</p><p><b>PRs:</b> "
             + ", ".join(
                 "<a href='https://github.com/GBOGEB/ABACUS/pull/"
-                + str(n) + "'>#" + str(n) + "</a>"
+                + str(n)
+                + "'>#"
+                + str(n)
+                + "</a>"
                 for n in f["affected_prs"]
-            ) + "</p><ul>" + cells + "</ul></details>")
+            )
+            + "</p><ul>"
+            + cells
+            + "</ul></details>"
+        )
     m = proj["metrics"]
     return (
         "<!doctype html><html lang='en'><head><meta charset='utf-8'>"
@@ -366,16 +440,17 @@ def render_html(proj):
         "roots. Job-log attribution, security admission and main coverage remain "
         "UNKNOWN.</p><div class='grid'>"
         + "".join(
-            "<div class='metric'><b>" + esc(m[k])
-            + "</b>" + esc(label) + "</div>"
+            "<div class='metric'><b>" + esc(m[k]) + "</b>" + esc(label) + "</div>"
             for k, label in (
                 ("prs_observed", "PR heads"),
                 ("failed_workflow_associations", "Failure associations"),
                 ("distinct_failed_run_ids", "Distinct failed run IDs"),
                 ("workflow_name_buckets", "Workflow name buckets"),
                 ("job_readbacks_accepted", "Native jobs read"),
-            ))
-        + "</div><p>Scope: " + esc(proj["evidence_scope"])
+            )
+        )
+        + "</div><p>Scope: "
+        + esc(proj["evidence_scope"])
         + ". Linked runs below retain exact run identity; same workflow "
         "name is an analytic grouping, not source-cause proof.</p>"
         + "".join(rows)
@@ -401,9 +476,15 @@ def build(paths, output_dir, native=None):
     for name, value in output.items():
         (output_dir / name).write_text(value, encoding="utf-8")
     (output_dir / "sha256.json").write_text(
-        canonical({name: hashlib.sha256(data.encode("utf-8")).hexdigest()
-                   for name, data in sorted(output.items())}) + "\n",
-        encoding="utf-8")
+        canonical(
+            {
+                name: hashlib.sha256(data.encode("utf-8")).hexdigest()
+                for name, data in sorted(output.items())
+            }
+        )
+        + "\n",
+        encoding="utf-8",
+    )
     return proj
 
 
@@ -422,11 +503,21 @@ def main(argv=None):
 
         sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "src"))
         from native_ingest import GitHubReadOnly
-        native = enrich_native(snapshot, GitHubReadOnly(), workers=args.workers,
-                               limit=args.max_native_runs)
+
+        native = enrich_native(
+            snapshot, GitHubReadOnly(), workers=args.workers, limit=args.max_native_runs
+        )
     proj = build(args.inputs, args.output_dir, native)
-    print(canonical({"status": "READ_ONLY", "metrics": proj["metrics"],
-                     "root_closure_credit": 0, "admission": "HOLD"}))
+    print(
+        canonical(
+            {
+                "status": "READ_ONLY",
+                "metrics": proj["metrics"],
+                "root_closure_credit": 0,
+                "admission": "HOLD",
+            }
+        )
+    )
 
 
 if __name__ == "__main__":

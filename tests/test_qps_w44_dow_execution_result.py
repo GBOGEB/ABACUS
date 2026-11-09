@@ -1,7 +1,6 @@
 import json
 from pathlib import Path
 
-
 RESULT = Path("federation/triage/qps_w44_dow_execution_result.json")
 SOURCE_SHA = "29c2fb587403c5ccab690392026a51ecd8fd92d8"
 

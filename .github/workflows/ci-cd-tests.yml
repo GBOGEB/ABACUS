@@ -6,7 +6,6 @@ on:
     paths:
       - '**/*.py'
       - '**/*.pyi'
-      - '!ci/governance/**'
       - 'ci/governance/workflow_policy.json'
       - 'requirements*.txt'
       # Lint config anywhere in the tree (ci_pr_debt_ratchet.CONFIG_FILES).
@@ -27,7 +26,6 @@ on:
     paths:
       - '**/*.py'
       - '**/*.pyi'
-      - '!ci/governance/**'
       - 'ci/governance/workflow_policy.json'
       - 'requirements*.txt'
       # Lint config anywhere in the tree (ci_pr_debt_ratchet.CONFIG_FILES).
@@ -48,7 +46,7 @@ on:
   workflow_dispatch:
 
 env:
-  PYTHON_VERSION: '3.11'
+  PYTHON_VERSION: '3.14'
   COVERAGE_THRESHOLD: 75
 
 jobs:
@@ -137,28 +135,57 @@ jobs:
           path: test_reports/code-quality/
           if-no-files-found: warn
 
+      # Every event is governed by the new-debt ratchet. On main pushes,
+      # schedules and manual runs the baseline is the previous main tip, so
+      # only debt a push adds fails; the full scans above stay census.
       - name: Per-tool code-quality new-debt ratchet
         id: quality_ratchet
-        if: github.event_name == 'pull_request'
         shell: bash
         env:
+          EVENT: ${{ github.event_name }}
           BASE_SHA: ${{ github.event.pull_request.base.sha }}
+          BEFORE_SHA: ${{ github.event.before }}
+          FORCED: ${{ github.event.forced }}
         run: |
           set -euo pipefail
+          if [[ "$EVENT" == "push" ]]; then
+            if [[ "$FORCED" == "true" || "$BEFORE_SHA" =~ ^0+$ ]]; then
+              # New or forced refs have no reliable before-tip to compare.
+              base="$(git rev-parse 'HEAD^1')"
+            else
+              if [[ -z "$BEFORE_SHA" ]]; then
+                echo "::error::Push event is missing its before SHA."
+                exit 1
+              fi
+              base="$BEFORE_SHA"
+              if ! git cat-file -e "$base^{commit}" 2>/dev/null; then
+                git fetch --no-tags --depth=1 origin "$BEFORE_SHA"
+              fi
+            fi
+          elif [[ "$EVENT" != "pull_request" ]]; then
+            base="$(git rev-parse 'HEAD^1')"
+          # The event's base.sha goes stale once the base branch moves; the
+          # merge commit's first parent is the base tip the PR merges into.
+          elif git cat-file -e 'HEAD^2^{commit}' 2>/dev/null; then
+            base="$(git rev-parse 'HEAD^1')"
+          else
+            git fetch --no-tags --depth=1 origin "$BASE_SHA"
+            base="$BASE_SHA"
+          fi
           # Run the policy from the PR base rather than untrusted proposed code.
           ratchet="$RUNNER_TEMP/ci_pr_debt_ratchet.py"
           if ! git cat-file -e \
-            "$BASE_SHA:scripts/ci_pr_debt_ratchet.py" 2>/dev/null; then
+            "$base:scripts/ci_pr_debt_ratchet.py" 2>/dev/null; then
             for tool in black isort flake8; do
               echo "${tool}_full_scan=required" >> "$GITHUB_OUTPUT"
             done
             exit 0
           fi
-          git show "$BASE_SHA:scripts/ci_pr_debt_ratchet.py" > "$ratchet"
+          git show "$base:scripts/ci_pr_debt_ratchet.py" > "$ratchet"
           for tool in black isort flake8; do
             rc=0
             python -I "$ratchet" --root "$GITHUB_WORKSPACE" \
-              --base "$BASE_SHA" --tools "$tool" \
+              --base "$base" --tools "$tool" \
               --summary "$GITHUB_STEP_SUMMARY" || rc=$?
             if [[ "$rc" -eq 3 ]]; then
               # Config/tool changes require a successful full scan.
@@ -190,32 +217,26 @@ jobs:
             echo "- Flake8 critical: \`$FLAKE8\`"
             echo "- Pylint: telemetry / exit-zero"
           } >> "$GITHUB_STEP_SUMMARY"
-          if [[ "$EVENT" == "pull_request" ]]; then
-            failed=0
-            for tool in BLACK ISORT FLAKE8; do
-              flag_name="${tool}_FULL_SCAN"
-              actual="${!tool}"
-              fallback="${!flag_name}"
-              if [[ "$fallback" == "required" ]]; then
-                echo "- ${tool}: config changed; full scan=${actual}" \
-                  >> "$GITHUB_STEP_SUMMARY"
-                if [[ "$actual" != "success" ]]; then
-                  echo "::error::Required ${tool} full scan failed."
-                  failed=1
-                fi
-              else
-                echo "- ${tool}: per-tool new-debt ratchet governs" \
-                  >> "$GITHUB_STEP_SUMMARY"
+          echo "- Admission (${EVENT}): per-tool new-debt ratchet" \
+            >> "$GITHUB_STEP_SUMMARY"
+          failed=0
+          for tool in BLACK ISORT FLAKE8; do
+            flag_name="${tool}_FULL_SCAN"
+            actual="${!tool}"
+            fallback="${!flag_name}"
+            if [[ "$fallback" == "required" ]]; then
+              echo "- ${tool}: config changed; full scan=${actual}" \
+                >> "$GITHUB_STEP_SUMMARY"
+              if [[ "$actual" != "success" ]]; then
+                echo "::error::Required ${tool} full scan failed."
+                failed=1
               fi
-            done
-            exit "$failed"
-          fi
-          if [[ "$BLACK" != "success" ||
-                "$ISORT" != "success" ||
-                "$FLAKE8" != "success" ]]; then
-            echo "::error::One or more code-quality roots are red."
-            exit 1
-          fi
+            else
+              echo "- ${tool}: per-tool new-debt ratchet governs" \
+                >> "$GITHUB_STEP_SUMMARY"
+            fi
+          done
+          exit "$failed"
 
   ratchet-tool-backed:
     name: DAB T2 tool-installed ratchet detection
@@ -228,13 +249,14 @@ jobs:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
         with:
           persist-credentials: false
-      - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97
+      - uses: actions/setup-python@6d4fd22b20465ccc0f7354476588e8df7c9ca0e0
         with:
           python-version: '3.12'
       - name: Install pinned ratchet tools and safe evidence reader
         run: |
           python -m pip install pytest==8.4.2 black==26.10.1 \
-            isort==9.0.2 flake8==7.3.0 bandit==1.8.6 defusedxml==0.7.1 numpy==1.26.4
+            isort==9.0.2 flake8==7.3.0 bandit==1.8.6 \
+            defusedxml==0.7.1 numpy==1.26.4
       - name: Prove all four scanners exist and emit exact source
         run: |
           git rev-parse HEAD
@@ -248,7 +270,9 @@ jobs:
               print(name + "==" + im.version(name))
           PY
       - name: Run source-owned ratchet negative and positive tests
-        run: python -m pytest -q tests/test_ci_pr_debt_ratchet.py --junitxml=ratchet-proof.xml
+        run: >-
+          python -m pytest -q tests/test_ci_pr_debt_ratchet.py
+          --junitxml=ratchet-proof.xml
       - name: Fail closed on skipped, empty or failing tool-backed JUnit
         run: |
           python - <<'PY'
@@ -260,14 +284,19 @@ jobs:
           root = ET.parse(
               p, forbid_dtd=True, forbid_entities=True, forbid_external=True
           ).getroot()
-          suites = [root] if root.tag == "testsuite" else root.findall("testsuite")
+          suites = root.findall("testsuite")
+          if root.tag == "testsuite":
+              suites = [root]
           if not suites:
               raise SystemExit("no ratchet test suite observed")
           count = sum(int(s.get("tests", "0")) for s in suites)
           skipped = sum(int(s.get("skipped", "0")) for s in suites)
           failed = sum(int(s.get("failures", "0")) for s in suites)
           errors = sum(int(s.get("errors", "0")) for s in suites)
-          print(f"RATCHET_NATIVE: tests={count} skipped={skipped} failures={failed} errors={errors}")
+          print(
+              f"RATCHET_NATIVE: tests={count} skipped={skipped} "
+              f"failures={failed} errors={errors}"
+          )
           if not count or skipped or failed or errors:
               raise SystemExit("TEST_BLOCKED_DEPENDENCY_OR_FAILING_RATCHET")
           PY
@@ -286,7 +315,8 @@ jobs:
       fail-fast: false
       matrix:
         os: [ubuntu-latest, windows-latest, macos-latest]
-        python-version: ['3.10', '3.11', '3.12']
+        # pyproject.toml requires-python >=3.11; 3.10 is unsupported.
+        python-version: ['3.11', '3.15']
 
     steps:
       - uses: actions/checkout@v7
@@ -328,6 +358,10 @@ jobs:
 
     steps:
       - uses: actions/checkout@v7
+        with:
+          # Depth 2 keeps the PR merge commit's base parent for the
+          # new-line coverage diff.
+          fetch-depth: 2
 
       - name: Set up Python
         uses: actions/setup-python@v7
@@ -503,22 +537,27 @@ jobs:
             coverage.xml
             coverage-summary.json
 
-      - name: Fetch PR base for new-line coverage
-        if: always() && github.event_name == 'pull_request'
-        env:
-          BASE_SHA: ${{ github.event.pull_request.base.sha }}
-        run: git fetch --no-tags --depth=1 origin "$BASE_SHA"
-
       # On a pull request, coverage of the lines the PR adds or changes is
       # measured and reported next to the broad-suite percentage above. No
       # PR threshold is enforced until the owner approves one.
       - name: PR new-line coverage (report)
+        id: new_line_coverage
         if: always() && github.event_name == 'pull_request'
+        shell: bash
         env:
           BASE_SHA: ${{ github.event.pull_request.base.sha }}
         run: |
+          set -euo pipefail
+          # The event's base.sha goes stale once the base branch moves; the
+          # merge commit's first parent is the base tip the PR merges into.
+          if git cat-file -e 'HEAD^2^{commit}' 2>/dev/null; then
+            base="$(git rev-parse 'HEAD^1')"
+          else
+            git fetch --no-tags --depth=1 origin "$BASE_SHA"
+            base="$BASE_SHA"
+          fi
           pip install diff-cover
-          diff-cover coverage.xml --compare-branch="$BASE_SHA" \
+          diff-cover coverage.xml --compare-branch="$base" \
             --diff-range-notation=.. \
             --format "markdown:diff-coverage.md"
           cat diff-coverage.md >> "$GITHUB_STEP_SUMMARY"
@@ -726,14 +765,31 @@ jobs:
         run: |
           python -m pip install --upgrade pip
           python -m pip install --upgrade "setuptools>=83.0.0"
-          python -m pip install bandit safety
+          python -m pip install "bandit==1.9.4" safety
           python -m pip check
           python -m pip show setuptools nltk
 
       - name: Run Bandit
         id: bandit
         continue-on-error: true
-        run: bandit -r . -f json -o bandit-report.json
+        shell: bash
+        run: |
+          set +e
+          bandit -r . -f json -o bandit-report.json
+          bandit_status=$?
+          set -e
+          echo "exit_code=$bandit_status" >> "$GITHUB_OUTPUT"
+          report_valid=0
+          # Scanner errors are not valid coverage, even with a JSON report.
+          if python scripts/ci/bandit_report_guard.py bandit-report.json; then
+            report_valid=1
+          fi
+          if [[ "$bandit_status" -gt 1 || "$report_valid" -ne 1 ]]; then
+            echo "scan_error=true" >> "$GITHUB_OUTPUT"
+            echo "::error::Bandit scan failed or produced an invalid report."
+            exit 2
+          fi
+          exit "$bandit_status"
 
       - name: Run Safety Check
         id: safety
@@ -809,24 +865,44 @@ jobs:
             security-red-root-delta.json
           if-no-files-found: warn
 
-      - name: Fetch PR base for new-debt ratchet
-        if: github.event_name == 'pull_request'
-        env:
-          BASE_SHA: ${{ github.event.pull_request.base.sha }}
-        run: git fetch --no-tags --depth=1 origin "$BASE_SHA"
-
-      # On a pull request, Bandit admission is the new-debt ratchet: the
-      # PR's changed Python files must not gain Bandit findings. Safety is
-      # not relaxed: its outcome is enforced on every event.
-      - name: PR new-debt ratchet (Bandit)
+      # On every event, Bandit admission is the new-debt ratchet: changed
+      # Python files must not gain Bandit findings. On main pushes,
+      # schedules and manual runs the baseline is the previous main tip; the
+      # full Bandit scan stays census. Safety is not relaxed: its outcome is
+      # enforced on every event.
+      - name: New-debt ratchet (Bandit)
         id: bandit_ratchet
-        if: github.event_name == 'pull_request'
         env:
+          EVENT: ${{ github.event_name }}
           BASE_SHA: ${{ github.event.pull_request.base.sha }}
-        # The base revision's ratchet runs, as in Code Quality.
+          BEFORE_SHA: ${{ github.event.before }}
+          FORCED_PUSH: ${{ github.event.forced }}
+        # The base revision's ratchet runs, as in Code Quality, against the
+        # merge commit's first parent rather than the event's stale base.sha.
         run: |
+          if [[ "$EVENT" != "pull_request" ]]; then
+            base="$(git rev-parse 'HEAD^1')"
+            # New and rewritten refs use the first-parent fallback. A normal
+            # push must compare with its replaced tip, or fail closed.
+            if [[ "$EVENT" == "push" ]]; then
+              if [[ "$FORCED_PUSH" != "true" && -n "$BEFORE_SHA" &&
+                    ! "$BEFORE_SHA" =~ ^0+$ ]]; then
+                if git fetch --no-tags --depth=1 origin "$BEFORE_SHA"; then
+                  base="$BEFORE_SHA"
+                else
+                  echo "::error::Could not fetch previous push tip $BEFORE_SHA."
+                  exit 1
+                fi
+              fi
+            fi
+          elif git cat-file -e 'HEAD^2^{commit}' 2>/dev/null; then
+            base="$(git rev-parse 'HEAD^1')"
+          else
+            git fetch --no-tags --depth=1 origin "$BASE_SHA"
+            base="$BASE_SHA"
+          fi
           ratchet="$RUNNER_TEMP/ci_pr_debt_ratchet.py"
-          if ! git show "$BASE_SHA:scripts/ci_pr_debt_ratchet.py" \
+          if ! git show "$base:scripts/ci_pr_debt_ratchet.py" \
             > "$ratchet" 2>/dev/null; then
             echo "::notice::No ratchet at the base; the full scan decides."
             echo "full_scan=required" >> "$GITHUB_OUTPUT"
@@ -834,7 +910,7 @@ jobs:
           fi
           rc=0
           python -I "$ratchet" --root "$GITHUB_WORKSPACE" \
-            --base "$BASE_SHA" --tools bandit \
+            --base "$base" --tools bandit \
             --summary "$GITHUB_STEP_SUMMARY" || rc=$?
           # Exit 3: Bandit's config, install or invocation changed; the
           # full Bandit scan decides.
@@ -849,6 +925,7 @@ jobs:
         shell: bash
         env:
           BANDIT: ${{ steps.bandit.outcome }}
+          BANDIT_ERROR: ${{ steps.bandit.outputs.scan_error }}
           SAFETY: ${{ steps.safety.outcome }}
           EVENT: ${{ github.event_name }}
           FULL_SCAN: ${{ steps.bandit_ratchet.outputs.full_scan }}
@@ -859,9 +936,12 @@ jobs:
             echo "- Bandit: \`$BANDIT\`"
             echo "- Safety: \`$SAFETY\`"
           } >> "$GITHUB_STEP_SUMMARY"
-          if [[ "$EVENT" == "pull_request" &&
-                "$FULL_SCAN" != "required" ]]; then
-            echo "- PR admission: Bandit ratchet above; Safety enforced" \
+          if [[ "$BANDIT_ERROR" == "true" ]]; then
+            echo "::error::Bandit failed to execute or produce a valid report."
+            exit 1
+          fi
+          if [[ "$FULL_SCAN" != "required" ]]; then
+            echo "- Admission (${EVENT}): Bandit ratchet; Safety enforced" \
               >> "$GITHUB_STEP_SUMMARY"
             if [[ "$SAFETY" != "success" ]]; then
               echo "::error::Safety is red."
@@ -961,7 +1041,7 @@ jobs:
       - uses: actions/checkout@v7
 
       - name: Download Dashboard Artifact
-        uses: actions/download-artifact@v8.0.2
+        uses: actions/download-artifact@v8
         with:
           name: test-dashboard
           path: dashboard/

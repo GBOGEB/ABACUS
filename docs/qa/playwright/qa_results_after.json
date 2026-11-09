@@ -1,0 +1,369 @@
+{
+  "label": "after",
+  "pages": [
+    {
+      "page": "metrics.html",
+      "viewports": {
+        "desktop_1440x900": {
+          "size": "1440x900",
+          "checks": {
+            "K1_no_console_error": {
+              "pass": true,
+              "errors": [],
+              "bad_responses": []
+            },
+            "K2_no_page_error": {
+              "pass": true,
+              "errors": []
+            },
+            "K3_no_body_horizontal_overflow": {
+              "pass": true
+            },
+            "K4_navigation": {
+              "pass": true,
+              "nav_links": 8,
+              "note": ""
+            },
+            "K5_readable_content": {
+              "pass": true,
+              "text_len": 4693
+            },
+            "K6_deep_link": {
+              "pass": true
+            },
+            "K7_read_only_boundary": {
+              "pass": true,
+              "unexpected": []
+            },
+            "K8_chart_render": {
+              "pass": true,
+              "chart_count": 6
+            },
+            "K9_contrast": {
+              "pass": true,
+              "min_text_contrast": 16.1,
+              "min_graphic_contrast": 4.45,
+              "aa_text": 4.5,
+              "aa_graphic": 3.0,
+              "text_failures": [],
+              "graphic_failures": []
+            },
+            "K10_legend_axis_no_overlap": {
+              "pass": true,
+              "overlaps": []
+            }
+          },
+          "all_pass": true,
+          "screenshots": [
+            "after/metrics/desktop_1440x900/plotly-test-growth.png",
+            "after/metrics/desktop_1440x900/plotly-phase-tests.png",
+            "after/metrics/desktop_1440x900/plotly-modules.png",
+            "after/metrics/desktop_1440x900/plotly-radar.png",
+            "after/metrics/desktop_1440x900/plotly-loc.png",
+            "after/metrics/desktop_1440x900/plotly-lineage.png",
+            "after/metrics/desktop_1440x900/_full_page.png"
+          ]
+        },
+        "laptop_1280x720": {
+          "size": "1280x720",
+          "checks": {
+            "K1_no_console_error": {
+              "pass": true,
+              "errors": [],
+              "bad_responses": []
+            },
+            "K2_no_page_error": {
+              "pass": true,
+              "errors": []
+            },
+            "K3_no_body_horizontal_overflow": {
+              "pass": true
+            },
+            "K4_navigation": {
+              "pass": true,
+              "nav_links": 8,
+              "note": ""
+            },
+            "K5_readable_content": {
+              "pass": true,
+              "text_len": 4693
+            },
+            "K6_deep_link": {
+              "pass": true
+            },
+            "K7_read_only_boundary": {
+              "pass": true,
+              "unexpected": []
+            },
+            "K8_chart_render": {
+              "pass": true,
+              "chart_count": 6
+            },
+            "K9_contrast": {
+              "pass": true,
+              "min_text_contrast": 16.1,
+              "min_graphic_contrast": 4.45,
+              "aa_text": 4.5,
+              "aa_graphic": 3.0,
+              "text_failures": [],
+              "graphic_failures": []
+            },
+            "K10_legend_axis_no_overlap": {
+              "pass": true,
+              "overlaps": []
+            }
+          },
+          "all_pass": true,
+          "screenshots": [
+            "after/metrics/laptop_1280x720/plotly-test-growth.png",
+            "after/metrics/laptop_1280x720/plotly-phase-tests.png",
+            "after/metrics/laptop_1280x720/plotly-modules.png",
+            "after/metrics/laptop_1280x720/plotly-radar.png",
+            "after/metrics/laptop_1280x720/plotly-loc.png",
+            "after/metrics/laptop_1280x720/plotly-lineage.png",
+            "after/metrics/laptop_1280x720/_full_page.png"
+          ]
+        },
+        "mobile_390x844": {
+          "size": "390x844",
+          "checks": {
+            "K1_no_console_error": {
+              "pass": true,
+              "errors": [],
+              "bad_responses": []
+            },
+            "K2_no_page_error": {
+              "pass": true,
+              "errors": []
+            },
+            "K3_no_body_horizontal_overflow": {
+              "pass": true
+            },
+            "K4_navigation": {
+              "pass": true,
+              "nav_links": 8,
+              "note": ""
+            },
+            "K5_readable_content": {
+              "pass": true,
+              "text_len": 4693
+            },
+            "K6_deep_link": {
+              "pass": true
+            },
+            "K7_read_only_boundary": {
+              "pass": true,
+              "unexpected": []
+            },
+            "K8_chart_render": {
+              "pass": true,
+              "chart_count": 6
+            },
+            "K9_contrast": {
+              "pass": true,
+              "min_text_contrast": 16.1,
+              "min_graphic_contrast": 4.45,
+              "aa_text": 4.5,
+              "aa_graphic": 3.0,
+              "text_failures": [],
+              "graphic_failures": []
+            },
+            "K10_legend_axis_no_overlap": {
+              "pass": true,
+              "overlaps": []
+            }
+          },
+          "all_pass": true,
+          "screenshots": [
+            "after/metrics/mobile_390x844/plotly-test-growth.png",
+            "after/metrics/mobile_390x844/plotly-phase-tests.png",
+            "after/metrics/mobile_390x844/plotly-modules.png",
+            "after/metrics/mobile_390x844/plotly-radar.png",
+            "after/metrics/mobile_390x844/plotly-loc.png",
+            "after/metrics/mobile_390x844/plotly-lineage.png",
+            "after/metrics/mobile_390x844/_full_page.png"
+          ]
+        }
+      }
+    },
+    {
+      "page": "dmaic-metrics.html",
+      "viewports": {
+        "desktop_1440x900": {
+          "size": "1440x900",
+          "checks": {
+            "K1_no_console_error": {
+              "pass": true,
+              "errors": [],
+              "bad_responses": []
+            },
+            "K2_no_page_error": {
+              "pass": true,
+              "errors": []
+            },
+            "K3_no_body_horizontal_overflow": {
+              "pass": true
+            },
+            "K4_navigation": {
+              "pass": true,
+              "nav_links": 8,
+              "note": ""
+            },
+            "K5_readable_content": {
+              "pass": true,
+              "text_len": 896
+            },
+            "K6_deep_link": {
+              "pass": true
+            },
+            "K7_read_only_boundary": {
+              "pass": true,
+              "unexpected": []
+            },
+            "K8_chart_render": {
+              "pass": true,
+              "chart_count": 4
+            },
+            "K9_contrast": {
+              "pass": true,
+              "min_text_contrast": 16.02,
+              "min_graphic_contrast": 5.53,
+              "aa_text": 4.5,
+              "aa_graphic": 3.0,
+              "text_failures": [],
+              "graphic_failures": []
+            },
+            "K10_legend_axis_no_overlap": {
+              "pass": true,
+              "overlaps": []
+            }
+          },
+          "all_pass": true,
+          "screenshots": [
+            "after/dmaic-metrics/desktop_1440x900/chart-radar.png",
+            "after/dmaic-metrics/desktop_1440x900/chart-bar.png",
+            "after/dmaic-metrics/desktop_1440x900/chart-files.png",
+            "after/dmaic-metrics/desktop_1440x900/chart-snap.png",
+            "after/dmaic-metrics/desktop_1440x900/_full_page.png"
+          ]
+        },
+        "laptop_1280x720": {
+          "size": "1280x720",
+          "checks": {
+            "K1_no_console_error": {
+              "pass": true,
+              "errors": [],
+              "bad_responses": []
+            },
+            "K2_no_page_error": {
+              "pass": true,
+              "errors": []
+            },
+            "K3_no_body_horizontal_overflow": {
+              "pass": true
+            },
+            "K4_navigation": {
+              "pass": true,
+              "nav_links": 8,
+              "note": ""
+            },
+            "K5_readable_content": {
+              "pass": true,
+              "text_len": 896
+            },
+            "K6_deep_link": {
+              "pass": true
+            },
+            "K7_read_only_boundary": {
+              "pass": true,
+              "unexpected": []
+            },
+            "K8_chart_render": {
+              "pass": true,
+              "chart_count": 4
+            },
+            "K9_contrast": {
+              "pass": true,
+              "min_text_contrast": 16.02,
+              "min_graphic_contrast": 5.53,
+              "aa_text": 4.5,
+              "aa_graphic": 3.0,
+              "text_failures": [],
+              "graphic_failures": []
+            },
+            "K10_legend_axis_no_overlap": {
+              "pass": true,
+              "overlaps": []
+            }
+          },
+          "all_pass": true,
+          "screenshots": [
+            "after/dmaic-metrics/laptop_1280x720/chart-radar.png",
+            "after/dmaic-metrics/laptop_1280x720/chart-bar.png",
+            "after/dmaic-metrics/laptop_1280x720/chart-files.png",
+            "after/dmaic-metrics/laptop_1280x720/chart-snap.png",
+            "after/dmaic-metrics/laptop_1280x720/_full_page.png"
+          ]
+        },
+        "mobile_390x844": {
+          "size": "390x844",
+          "checks": {
+            "K1_no_console_error": {
+              "pass": true,
+              "errors": [],
+              "bad_responses": []
+            },
+            "K2_no_page_error": {
+              "pass": true,
+              "errors": []
+            },
+            "K3_no_body_horizontal_overflow": {
+              "pass": true
+            },
+            "K4_navigation": {
+              "pass": true,
+              "nav_links": 8,
+              "note": ""
+            },
+            "K5_readable_content": {
+              "pass": true,
+              "text_len": 896
+            },
+            "K6_deep_link": {
+              "pass": true
+            },
+            "K7_read_only_boundary": {
+              "pass": true,
+              "unexpected": []
+            },
+            "K8_chart_render": {
+              "pass": true,
+              "chart_count": 4
+            },
+            "K9_contrast": {
+              "pass": true,
+              "min_text_contrast": 16.02,
+              "min_graphic_contrast": 5.53,
+              "aa_text": 4.5,
+              "aa_graphic": 3.0,
+              "text_failures": [],
+              "graphic_failures": []
+            },
+            "K10_legend_axis_no_overlap": {
+              "pass": true,
+              "overlaps": []
+            }
+          },
+          "all_pass": true,
+          "screenshots": [
+            "after/dmaic-metrics/mobile_390x844/chart-radar.png",
+            "after/dmaic-metrics/mobile_390x844/chart-bar.png",
+            "after/dmaic-metrics/mobile_390x844/chart-files.png",
+            "after/dmaic-metrics/mobile_390x844/chart-snap.png",
+            "after/dmaic-metrics/mobile_390x844/_full_page.png"
+          ]
+        }
+      }
+    }
+  ]
+}

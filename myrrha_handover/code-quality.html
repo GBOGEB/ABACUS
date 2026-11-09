@@ -1,0 +1,197 @@
+<!doctype html>
+<html lang="en"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>MYRRHA WCS · Code Quality</title>
+<link rel="icon" href="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><text y='26' font-size='26'>🔧</text></svg>">
+<link rel="stylesheet" href="assets/style.css">
+<script src="https://cdn.plot.ly/plotly-2.27.0.min.js"></script>
+<script src="assets/common.js" defer></script>
+<style>
+.breadcrumb{font-size:12px;color:var(--fg2);margin-bottom:12px}.breadcrumb a{color:var(--accent2)}
+
+.bug-card{background:var(--bg2);border-left:4px solid;border-radius:0 var(--radius) var(--radius) 0;padding:16px;margin:12px 0}
+.bug-card.fixed{border-color:#2E7D32}.bug-card.open{border-color:#C0392B}.bug-card.dup{border-color:#E5A100}
+.bug-id{font-family:var(--mono);font-weight:700;margin-right:8px}
+.checklist{list-style:none;padding:0;margin:8px 0}.checklist li{padding:6px 0;border-bottom:1px solid var(--border);font-size:13px}
+.checklist li::before{content:'☐ ';font-size:16px;margin-right:4px}
+.checklist li.done::before{content:'☑ ';color:var(--accent)}
+.section-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:14px;margin:14px 0}
+.quality-meter{display:flex;align-items:center;gap:10px;margin:8px 0}
+.quality-meter .label{font-size:12px;min-width:120px;color:var(--fg2)}
+.quality-meter .bar{flex:1;height:10px;background:var(--border);border-radius:5px;overflow:hidden}
+.quality-meter .fill{height:100%;border-radius:5px}
+.quality-meter .val{font-family:var(--mono);font-size:12px;font-weight:700;min-width:40px;text-align:right}
+.plotly-chart{width:100%;min-height:350px;margin:14px 0}
+.stats-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px;margin:14px 0}
+.stats-card{text-align:center;padding:14px;background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius)}
+.stats-card .big{font-size:24px;font-weight:700;font-family:var(--mono)}
+.stats-card .lbl{font-size:11px;color:var(--fg2);text-transform:uppercase;margin-top:4px}
+
+</style>
+</head><body>
+<div class="container">
+<p class="breadcrumb"><a href="index.html">Hub</a> › <a href="artifact-tracker.html">Artifacts</a> › Code Quality</p>
+<h1>🔧 Code Quality Review & Modernization</h1>
+<p class="muted">Bug fixes · code review findings · modernisation roadmap · security · performance · v0.4.4</p>
+
+<div class="stats-grid">
+  <div class="stats-card"><div class="big">5</div><div class="lbl">Bugs Tracked</div></div>
+  <div class="stats-card"><div class="big">2</div><div class="lbl">Fixed</div></div>
+  <div class="stats-card"><div class="big">3</div><div class="lbl">Open</div></div>
+  <div class="stats-card"><div class="big">68%</div><div class="lbl">Quality Score</div></div>
+</div>
+
+<!-- BUG FIXES -->
+<h2>Bug Tracker</h2>
+
+<div class="bug-card fixed">
+  <span class="bug-id">BUG-004</span> <span class="tag ok">FIXED v0.4.4</span>
+  <h4 style="margin:6px 0">bt-ranking.html not rendering</h4>
+  <p class="muted">Root cause: Multiple issues — (1) no auto-seeding on first visit left all θ=1.0, (2) <code>converged</code> flag set true with 0 comparisons, (3) <code>Float64Array.flat()</code> not available in all browsers, (4) Plotly render error in <code>renderPlots()</code> prevented <code>renderYAML()</code> from executing.</p>
+  <p><strong>Fix:</strong> Auto-seed from severity×impact/effort on first load, guard convergence flag, replace <code>.flat()</code> with <code>Array.from()</code>, add try-catch around Plotly calls, reorder render calls (YAML before Plotly).</p>
+</div>
+
+<div class="bug-card open">
+  <span class="bug-id">BUG-005</span> <span class="tag warn">OPEN</span>
+  <h4 style="margin:6px 0">Mobile chart overflow on Safari</h4>
+  <p class="muted">Plotly charts overflow their container on Safari iOS below 780px. Related to BUG-002. Needs CSS <code>overflow:hidden</code> on <code>.card</code> containers + Plotly <code>responsive:true</code> config.</p>
+</div>
+
+<div class="bug-card open">
+  <span class="bug-id">BUG-006</span> <span class="tag warn">OPEN</span>
+  <h4 style="margin:6px 0">Dark theme missing on 6 new views</h4>
+  <p class="muted">bt-ranking, qa-interactive, vendor-kaeser, artifact-index, changelog-dev, stats-proofs have incomplete dark theme support. Custom CSS variables needed for chart-specific elements.</p>
+</div>
+
+<div class="bug-card open">
+  <span class="bug-id">BUG-007</span> <span class="tag warn">OPEN</span>
+  <h4 style="margin:6px 0">Navigation breadcrumbs missing on some views</h4>
+  <p class="muted">graphs.html, tables.html, operations.html missing breadcrumb navigation. Template should be applied consistently.</p>
+</div>
+
+<div class="bug-card fixed">
+  <span class="bug-id">BUG-008</span> <span class="tag ok">MITIGATED</span>
+  <h4 style="margin:6px 0">localStorage persistence in Safari private mode</h4>
+  <p class="muted">Safari private browsing throws on localStorage.setItem. Mitigated with try-catch in common.js theme/font persistence. BT ranking data also wrapped.</p>
+</div>
+
+<!-- CODE REVIEW -->
+<h2>Code Review Findings</h2>
+
+<div class="section-grid">
+  <div class="card">
+    <h3 style="margin-top:0">🟦 JavaScript Modernization</h3>
+    <ul class="checklist">
+      <li>Convert ES5 → ES6+ (arrow functions, const/let, template literals)</li>
+      <li>Remove jQuery dependencies (use vanilla JS)</li>
+      <li>Implement proper error handling (try-catch blocks)</li>
+      <li>Add JSDoc comments for functions</li>
+      <li>Modularize common.js → nav.js, theme.js, utils.js</li>
+      <li class="done">Fix Float64Array.flat() compatibility</li>
+    </ul>
+  </div>
+  <div class="card">
+    <h3 style="margin-top:0">🟩 CSS Improvements</h3>
+    <ul class="checklist">
+      <li class="done">CSS custom properties for colors/spacing</li>
+      <li>Implement CSS Grid/Flexbox consistently</li>
+      <li>Remove duplicate/unused styles (~400 lines)</li>
+      <li>Improve dark mode (CSS variable completeness)</li>
+      <li>Add container queries for responsive charts</li>
+      <li>Reduce specificity conflicts in inline styles</li>
+    </ul>
+  </div>
+  <div class="card">
+    <h3 style="margin-top:0">🟧 Python Code Quality</h3>
+    <ul class="checklist">
+      <li>Add type hints (Python 3.9+)</li>
+      <li>Implement proper logging (replace print)</li>
+      <li>Add docstrings (Google/NumPy style)</li>
+      <li>Error handling improvements</li>
+      <li>Unit tests for render_all.py</li>
+    </ul>
+  </div>
+  <div class="card">
+    <h3 style="margin-top:0">🔴 Security Improvements</h3>
+    <ul class="checklist">
+      <li>Sanitize localStorage data before use</li>
+      <li>Content Security Policy (CSP) headers</li>
+      <li class="done">Validate JSON data before parsing (BT ranking)</li>
+      <li>Prevent XSS in dynamic HTML generation</li>
+      <li>Audit innerHTML usage across all views</li>
+    </ul>
+  </div>
+</div>
+
+<!-- QUALITY METRICS -->
+<h2>Quality Metrics Dashboard</h2>
+<div class="card">
+  <div class="quality-meter"><span class="label">JS Coverage</span><div class="bar"><div class="fill" style="width:45%;background:#C0392B"></div></div><span class="val">45%</span></div>
+  <div class="quality-meter"><span class="label">CSS Consistency</span><div class="bar"><div class="fill" style="width:72%;background:#E5A100"></div></div><span class="val">72%</span></div>
+  <div class="quality-meter"><span class="label">Dark Mode</span><div class="bar"><div class="fill" style="width:65%;background:#E5A100"></div></div><span class="val">65%</span></div>
+  <div class="quality-meter"><span class="label">Accessibility</span><div class="bar"><div class="fill" style="width:40%;background:#C0392B"></div></div><span class="val">40%</span></div>
+  <div class="quality-meter"><span class="label">Mobile Support</span><div class="bar"><div class="fill" style="width:58%;background:#E5A100"></div></div><span class="val">58%</span></div>
+  <div class="quality-meter"><span class="label">Error Handling</span><div class="bar"><div class="fill" style="width:55%;background:#E5A100"></div></div><span class="val">55%</span></div>
+  <div class="quality-meter"><span class="label">Documentation</span><div class="bar"><div class="fill" style="width:70%;background:#E5A100"></div></div><span class="val">70%</span></div>
+  <div class="quality-meter"><span class="label">Security</span><div class="bar"><div class="fill" style="width:35%;background:#C0392B"></div></div><span class="val">35%</span></div>
+</div>
+
+<!-- PERFORMANCE -->
+<h2>Performance Optimisations</h2>
+<div class="card">
+<table>
+<thead><tr><th>Optimisation</th><th>Impact</th><th>Effort</th><th>Priority</th></tr></thead>
+<tbody>
+  <tr><td>Lazy load Plotly charts (IntersectionObserver)</td><td>High — reduce initial load by ~800KB for non-chart views</td><td>Medium</td><td class="risk-high">P1</td></tr>
+  <tr><td>Minify CSS/JS for production</td><td>Medium — ~30% size reduction</td><td>Low</td><td class="risk-high">P1</td></tr>
+  <tr><td>Optimize SVG assets (compression)</td><td>Low</td><td>Low</td><td class="risk-medium">P2</td></tr>
+  <tr><td>Service worker for offline caching</td><td>High — full offline support</td><td>High</td><td class="risk-medium">P2</td></tr>
+  <tr><td>Custom Plotly build (reduce bundle)</td><td>High — from 3.5MB to ~500KB</td><td>Medium</td><td class="risk-low">P3</td></tr>
+  <tr><td>Preload critical CSS/JS</td><td>Medium — faster first paint</td><td>Low</td><td class="risk-medium">P2</td></tr>
+</tbody>
+</table>
+</div>
+
+<div class="gridq">
+  <div class="card"><div id="qualityRadar" class="plotly-chart"></div></div>
+  <div class="card"><div id="bugTimeline" class="plotly-chart"></div></div>
+</div>
+
+<script>
+const pCfg={font:{family:'Aptos,sans-serif',size:11},margin:{l:50,r:50,t:50,b:50},
+  plot_bgcolor:'rgba(0,0,0,0)',paper_bgcolor:'rgba(0,0,0,0)'};
+
+// Quality Radar
+Plotly.newPlot('qualityRadar',[{
+  type:'scatterpolar', r:[45,72,65,40,58,55,70,35,45],
+  theta:['JS Coverage','CSS','Dark Mode','A11y','Mobile','Error Handling','Docs','Security','JS Coverage'],
+  fill:'toself', fillcolor:'rgba(29,158,117,0.15)',
+  line:{color:'#1D9E75',width:2}, marker:{size:5},
+  name:'Current'
+},{
+  type:'scatterpolar', r:[95,90,95,80,85,90,90,80,95],
+  theta:['JS Coverage','CSS','Dark Mode','A11y','Mobile','Error Handling','Docs','Security','JS Coverage'],
+  fill:'toself', fillcolor:'rgba(55,138,221,0.1)',
+  line:{color:'#378ADD',width:2,dash:'dash'}, marker:{size:3},
+  name:'Target (v0.5)'
+}],{...pCfg, title:{text:'Quality Radar: Current vs Target',font:{size:14}},
+  polar:{radialaxis:{visible:true,range:[0,100]}},
+  height:380,legend:{x:0.8,y:1}},{responsive:true});
+
+// Bug timeline
+Plotly.newPlot('bugTimeline',[{
+  x:['v0.3','v0.4','v0.4.1','v0.4.2','v0.4.3','v0.4.4'],
+  y:[2,5,4,3,5,3],
+  type:'bar', name:'Open',
+  marker:{color:'#C0392B'}
+},{
+  x:['v0.3','v0.4','v0.4.1','v0.4.2','v0.4.3','v0.4.4'],
+  y:[0,1,3,4,4,6],
+  type:'bar', name:'Fixed',
+  marker:{color:'#2E7D32'}
+}],{...pCfg, title:{text:'Bug History by Version',font:{size:14}},
+  barmode:'group', height:380,
+  xaxis:{title:'Version'}, yaxis:{title:'Count'}},{responsive:true});
+</script>
+</div>
+</body></html>

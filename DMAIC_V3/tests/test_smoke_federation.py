@@ -11,8 +11,9 @@ Marked @pytest.mark.smoke so they run in the fast pre-merge gate
 (pytest -m smoke) as well as the full suite.
 """
 
-import pytest
 from pathlib import Path
+
+import pytest
 
 # Repo root is three levels up from this file:
 # DMAIC_V3/tests/test_smoke_federation.py -> DMAIC_V3/tests -> DMAIC_V3 -> root
@@ -28,17 +29,17 @@ _INTEGRATION_MANIFEST = (
 @pytest.mark.smoke
 def test_federation_manifest_exists():
     """federation/manifest.yaml must be present."""
-    assert FEDERATION_MANIFEST.is_file(), (
-        f"Missing global federation manifest: {FEDERATION_MANIFEST}"
-    )
+    assert (
+        FEDERATION_MANIFEST.is_file()
+    ), f"Missing global federation manifest: {FEDERATION_MANIFEST}"
 
 
 @pytest.mark.smoke
 def test_federation_spec_exists():
     """runtime/federation/codex-abacus-federation.yaml must be present."""
-    assert FEDERATION_SPEC.is_file(), (
-        f"Missing DELTA_1 federation spec: {FEDERATION_SPEC}"
-    )
+    assert (
+        FEDERATION_SPEC.is_file()
+    ), f"Missing DELTA_1 federation spec: {FEDERATION_SPEC}"
 
 
 @pytest.mark.smoke
@@ -68,10 +69,7 @@ def test_codespace_jyperter_registered_in_manifest():
     assert (
         "GBOGEB/codespace_jyperter" in member_names
         or "GBOGEB/CODESPACES_jyperter" in member_names
-    ), (
-        "codespace member repo missing from member_repos. "
-        f"Found: {member_names}"
-    )
+    ), ("codespace member repo missing from member_repos. " f"Found: {member_names}")
 
 
 @pytest.mark.smoke
@@ -99,9 +97,9 @@ def test_codespace_jyperter_in_runtime_spec():
 @pytest.mark.smoke
 def test_codespace_jyperter_integration_manifest_exists():
     """integration/codespace_jyperter/federation/manifest.yaml must be present."""
-    assert _INTEGRATION_MANIFEST.is_file(), (
-        f"Missing codespace_jyperter integration manifest: {_INTEGRATION_MANIFEST}"
-    )
+    assert (
+        _INTEGRATION_MANIFEST.is_file()
+    ), f"Missing codespace_jyperter integration manifest: {_INTEGRATION_MANIFEST}"
 
 
 @pytest.mark.smoke

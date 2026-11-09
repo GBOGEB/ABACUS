@@ -2,7 +2,7 @@
 > *Reconstructed from code — 2026-05-16 22:34*
 
 ## ⚠️ IMPORTANT: v0.31 is ACTIVE, not archived
-v0.31 is the foundational layer for ALL subsequent versions. Its canonical indexes and DOW 
+v0.31 is the foundational layer for ALL subsequent versions. Its canonical indexes and DOW
 configuration are CRITICAL dependencies.
 
 ## Key Artifacts  

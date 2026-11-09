@@ -71,12 +71,8 @@ def test_write_outputs_and_print_table(tmp_path, capsys):
     recovery_model.write_outputs(rows, tmp_path)
     recovery_model.print_table(rows)
 
-    csv_text = (tmp_path / "recovery_matrix.csv").read_text(
-        encoding="utf-8"
-    )
-    md_text = (tmp_path / "recovery_matrix.md").read_text(
-        encoding="utf-8"
-    )
+    csv_text = (tmp_path / "recovery_matrix.csv").read_text(encoding="utf-8")
+    md_text = (tmp_path / "recovery_matrix.md").read_text(encoding="utf-8")
     stdout = capsys.readouterr().out
 
     assert "peak_g_s,mode,verdict" in csv_text

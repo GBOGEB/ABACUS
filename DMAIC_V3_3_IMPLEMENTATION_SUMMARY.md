@@ -24,10 +24,10 @@
    - Usage:
      ```python
      from DMAIC_V3.core.idempotency_wrapper import GLOBAL_IDEMPOTENCY, enable_idempotency
-     
+
      # Enable globally
      enable_idempotency(enabled=True)
-     
+
      # Use as decorator
      @GLOBAL_IDEMPOTENCY.idempotent(phase_name="phase1_define")
      def execute_phase1(iteration=1):
@@ -69,7 +69,7 @@
    - Usage:
      ```python
      from DMAIC_V3.core.planning_matrix_tracker import PlanningMatrixTracker
-     
+
      tracker = PlanningMatrixTracker(workspace_root=Path("."))
      tracker.load_from_todo_yaml()
      tracker.scan_actual_state(Path("DMAIC_V3_OUTPUT"))

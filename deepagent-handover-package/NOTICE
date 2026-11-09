@@ -1,0 +1,11 @@
+DeepAgent Handover Package
+Copyright 2025-2026 GBOGEB
+
+This package is licensed under the Apache License, Version 2.0 (see LICENSE).
+
+Third-party material not covered by that licence:
+
+- analysis/qsys_slide_dump.json holds text extracted from SCK CEN presentations,
+  including their "Copyright SCK CEN, all property rights and copyright are
+  reserved" notices. That text, and any other text taken from SCK CEN documents,
+  remains SCK CEN's and is not licensed under the Apache License.

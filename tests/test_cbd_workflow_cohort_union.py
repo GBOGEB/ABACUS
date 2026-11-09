@@ -48,7 +48,7 @@ class CohortUnionTests(unittest.TestCase):
 
         assert_marker_coverage(requirements)
         self.assertIn(
-            "pytest-asyncio>=1.4.0,<1.5; python_version >= '3.10'", requirements
+            "pytest-asyncio>=1.4.1,<1.5; python_version >= '3.10'", requirements
         )
         self.assertIn("pylint>=4.1.3,<5.0.0; python_version >= '3.10'", requirements)
         # Explicit A -> B -> A protection: neither old unconditional pin nor
@@ -71,10 +71,22 @@ class CohortUnionTests(unittest.TestCase):
             'test "$(git rev-parse HEAD)" = "$EXPECTED_PULL_HEAD"',
             "actual_head = subprocess.check_output(",
             '["git", "rev-parse", "HEAD"], text=True',
+            ").strip()",
             "if actual_head != pull_head:",
         )
-        receipt_guard = re.compile(
+        checkout_guard = re.compile(
             r"if actual_head != pull_head:\n\s+raise SystemExit\("
+        )
+        receipt_guard = re.compile(
+            r'"pull_head_sha":\s*pull_head,\s*'
+            r'"event_sha":\s*os\.getenv\("GITHUB_EVENT_SHA"\),\s*'
+            r'"checkout_sha":\s*actual_head'
+        )
+        test_run = "-m unittest discover"
+        guard_step = re.compile(
+            r"      - name: Verify exact pull-head checkout before tests\n"
+            r"(?:        .*\n)+?"
+            r"          " + re.escape(required[2]) + r"\n"
         )
 
         def assert_bound(source):
@@ -82,18 +94,35 @@ class CohortUnionTests(unittest.TestCase):
             # let a mutant that removes one copy pass undetected.
             for item in required:
                 self.assertEqual(source.count(item), 1, item)
+            self.assertEqual(len(checkout_guard.findall(source)), 1)
             self.assertEqual(len(receipt_guard.findall(source)), 1)
+            # The shell guard must fail fast before the tests run; the Python
+            # receipt check runs afterwards under always() and cannot.
+            self.assertEqual(source.count(test_run), 1, test_run)
+            self.assertLess(source.index(required[0]), source.index(required[2]))
+            self.assertLess(source.index(required[2]), source.index(test_run))
 
         assert_bound(workflow)
-        # Every mutant removes the single required binding; each must fail.
+        guard_block = guard_step.search(workflow)
+        self.assertIsNotNone(guard_block)
+        without_guard = workflow.replace(guard_block.group(0), "", 1)
+        receipt_step = "      - name: Materialize exact-head line and branch receipt\n"
+        guard_after_tests = without_guard.replace(
+            receipt_step, guard_block.group(0) + receipt_step, 1
+        )
         mutants = (
-            workflow.replace(required[0], "ref: github.sha"),
-            workflow.replace(required[1], "persist-credentials: true"),
-            workflow.replace(required[2], "echo skipped"),
-            workflow.replace(required[3], "actual_head = pull_head  # ("),
-            workflow.replace(required[5], "if False:"),
-            receipt_guard.sub("if actual_head != pull_head:\n    print(", workflow),
-            workflow + "\n# " + required[5] + "\n",
+            workflow.replace(required[0], "ref: github.sha", 1),
+            workflow.replace(required[1], "persist-credentials: true", 1),
+            workflow.replace(required[2], "echo skipped", 1),
+            workflow.replace(required[3], "actual_head = pull_head  #", 1),
+            workflow.replace(required[6], "if False:", 1),
+            checkout_guard.sub("if actual_head != pull_head:\n    print(", workflow),
+            workflow.replace(
+                '"checkout_sha": actual_head', '"checkout_sha": pull_head', 1
+            ),
+            workflow + "\n# " + required[6] + "\n",
+            without_guard,
+            guard_after_tests,
         )
         for mutant in mutants:
             self.assertNotEqual(mutant, workflow)
@@ -135,20 +164,17 @@ class CohortUnionTests(unittest.TestCase):
         self.assertEqual(
             result["cohort_reconciliation"]["declared_observation_rows"], 36
         )
-        # Declared run IDs are distinct, but native attempts are still unknown.
+        # All 12 run IDs have unknown attempts in the frozen snapshot.
+        # Identical duplicates do not manufacture authenticated attempts.
         self.assertIsNone(result["cohort_reconciliation"]["distinct_run_attempts"])
+        self.assertEqual(
+            result["cohort_reconciliation"]["unresolved_unknown_run_ids"], 12
+        )
         self.assertEqual(
             result["cohort_reconciliation"]["distinct_declared_run_ids"], 12
         )
-        known = copy.deepcopy(data[0])
-        for row in known["observations"]:
-            row["attempt"] = 1
-        proven_shape = produce_cohorts([known, copy.deepcopy(known)])
         self.assertEqual(
-            proven_shape["cohort_reconciliation"]["distinct_run_attempts"], 12
-        )
-        self.assertEqual(
-            proven_shape["cohort_reconciliation"]["source_attempt_verification"],
+            result["cohort_reconciliation"]["source_attempt_verification"],
             "NOT_LIVE_VERIFIED",
         )
         self.assertEqual(
@@ -156,9 +182,6 @@ class CohortUnionTests(unittest.TestCase):
         )
         self.assertEqual(
             result["cohort_reconciliation"]["unknown_attempt_associations"], 36
-        )
-        self.assertEqual(
-            result["cohort_reconciliation"]["unresolved_unknown_run_ids"], 12
         )
         self.assertIsNone(result["cohort_reconciliation"]["root_closure_credit"])
         self.assertEqual(
@@ -275,6 +298,8 @@ class CohortUnionTests(unittest.TestCase):
                 p["kind"] == "SOURCE_INGESTION_NOT_TEMPORAL_IMPROVEMENT" for p in pulses
             )
         )
+        # The two later frozen source snapshots carry 20 distinct declared
+        # PR-head manifests; these are non-atomic, not native live receipts.
         self.assertEqual(rec["distinct_manifested_pr_heads"], 20)
         self.assertEqual(rec["manifested_zero_failure_prs"], [2033])
         self.assertEqual(rec["non_atomic_manifest_workflow_associations"], 533)
@@ -356,6 +381,8 @@ class CohortUnionTests(unittest.TestCase):
         self.assertIn("sampled_pr_heads", source[1])
         self.assertIn("sampled_pr_heads", source[2])
         receipt = produce_cohorts(source)["cohort_reconciliation"]
+        # One older snapshot omits manifests; two later snapshots declare
+        # head summaries without proving native run/attempt identities.
         self.assertEqual(receipt["snapshots_without_head_manifests"], 1)
         self.assertEqual(receipt["distinct_manifested_pr_heads"], 20)
         self.assertEqual(receipt["non_atomic_manifest_workflow_associations"], 533)
@@ -371,8 +398,13 @@ class CohortUnionTests(unittest.TestCase):
         result = produce_cohorts(snapshots())
         self.assertIsNone(result["observed"]["run_attempt_count"])
         self.assertEqual(result["observed"]["run_association_count"], 66)
+        # Raw input has 78 unknown-attempt associations; deduplication
+        # yields 66 distinct run IDs but must not rewrite that raw count.
         self.assertEqual(
             result["cohort_reconciliation"]["unknown_attempt_associations"], 78
+        )
+        self.assertEqual(
+            result["cohort_reconciliation"]["unresolved_unknown_run_ids"], 66
         )
         self.assertEqual(
             result["cohort_reconciliation"]["distinct_declared_run_ids"], 66
@@ -419,4 +451,3 @@ class CohortUnionTests(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
-

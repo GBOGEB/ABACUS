@@ -1,0 +1,166 @@
+# ============================================================================
+# GBOGEB/ABACUS — Archive Generation & GitHub Pages Deployment
+# ============================================================================
+# Generates workspace_bundle.tar.gz containing key engineering outputs,
+# then deploys the web/ folder to GitHub Pages.
+# ============================================================================
+
+name: Archive & Deploy
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'examples/**'
+      - 'web/**'
+      - 'config/**'
+      - 'docs/**'
+  workflow_dispatch:
+    inputs:
+      theme:
+        description: 'PDF theme (userstyle, corporate, focus)'
+        required: false
+        default: 'userstyle'
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+# Allow only one concurrent deployment
+concurrency:
+  group: "pages"
+  cancel-in-progress: false
+
+jobs:
+  # ────────────────────────────────────────────────────────────────────
+  # Job 1: Generate workspace bundle archive
+  # ────────────────────────────────────────────────────────────────────
+  build-archive:
+    name: Build workspace_bundle.tar.gz
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python 3.11
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install dependencies
+        run: |
+          pip install pyyaml weasyprint markdown
+
+      - name: Generate PDF report (all themes)
+        run: |
+          THEME="${{ github.event.inputs.theme || 'userstyle' }}"
+          echo "Generating PDF with theme: ${THEME}"
+          python examples/multi_view_workspace/scripts/generate_pdf.py \
+            --theme "${THEME}" \
+            --input examples/multi_view_workspace/output/documents/report.md \
+            --output examples/multi_view_workspace/output/documents/report.pdf
+
+      - name: Run physics validator
+        run: |
+          cd examples/multi_view_workspace/output/context
+          python physics_validator.py
+
+      - name: Create workspace_bundle.tar.gz
+        run: |
+          echo "Assembling workspace bundle..."
+          mkdir -p _bundle_staging
+
+          # Core engineering data
+          cp examples/multi_view_workspace/output/context/engineering_data.yaml _bundle_staging/
+          cp examples/multi_view_workspace/output/context/physics_validator.py _bundle_staging/
+
+          # Generated documents
+          cp examples/multi_view_workspace/output/documents/index.html _bundle_staging/
+          cp examples/multi_view_workspace/output/documents/main_html_plaintext.txt _bundle_staging/
+          cp examples/multi_view_workspace/output/documents/report.md _bundle_staging/
+          cp examples/multi_view_workspace/output/documents/report.pdf _bundle_staging/
+
+          # Scripts
+          cp examples/multi_view_workspace/scripts/generate_pdf.py _bundle_staging/
+
+          # Configuration
+          cp config/knowledge_topology.json _bundle_staging/
+          cp config/stakeholder_registry.yaml _bundle_staging/
+          cp config/governance_tuning.yaml _bundle_staging/
+
+          # README
+          cp examples/multi_view_workspace/README.md _bundle_staging/WORKSPACE_README.md
+
+          # Create archive
+          tar -czf workspace_bundle.tar.gz -C _bundle_staging .
+
+          # Report contents
+          echo "── Bundle contents ──"
+          tar -tzf workspace_bundle.tar.gz
+          echo "── Bundle size ──"
+          ls -lh workspace_bundle.tar.gz
+
+      - name: Upload bundle artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: workspace-bundle
+          path: workspace_bundle.tar.gz
+          retention-days: 30
+
+      # ── Prepare GitHub Pages deployment directory ────────────────────
+      - name: Prepare Pages directory
+        run: |
+          mkdir -p _pages_deploy
+
+          # Copy web/ hub content
+          cp -r web/* _pages_deploy/
+
+          # Copy the bundle for download
+          cp workspace_bundle.tar.gz _pages_deploy/
+
+          # Copy config for topology JSON loading
+          mkdir -p _pages_deploy/config
+          cp config/knowledge_topology.json _pages_deploy/config/
+
+          # Copy example outputs for direct linking
+          mkdir -p _pages_deploy/examples/multi_view_workspace/output/documents
+          mkdir -p _pages_deploy/examples/multi_view_workspace/output/context
+          cp examples/multi_view_workspace/output/documents/index.html \
+             _pages_deploy/examples/multi_view_workspace/output/documents/
+          cp examples/multi_view_workspace/output/documents/report.pdf \
+             _pages_deploy/examples/multi_view_workspace/output/documents/
+          cp examples/multi_view_workspace/output/documents/report.md \
+             _pages_deploy/examples/multi_view_workspace/output/documents/
+          cp examples/multi_view_workspace/output/context/engineering_data.yaml \
+             _pages_deploy/examples/multi_view_workspace/output/context/
+
+          # Copy docs
+          mkdir -p _pages_deploy/docs
+          cp docs/*.md _pages_deploy/docs/
+
+          echo "── Pages directory ──"
+          find _pages_deploy -type f | sort
+
+      - name: Upload Pages artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: _pages_deploy
+
+  # ────────────────────────────────────────────────────────────────────
+  # Job 2: Deploy to GitHub Pages
+  # ────────────────────────────────────────────────────────────────────
+  deploy:
+    name: Deploy to GitHub Pages
+    needs: build-archive
+    runs-on: ubuntu-latest
+
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4

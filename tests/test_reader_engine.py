@@ -26,7 +26,7 @@ from rich_padding.markdown_reader_engine import (
     MarkdownElement,
     ElementType,
     LinkValidationResult,
-    ArtifactMetadata
+    ArtifactMetadata,
 )
 
 
@@ -165,7 +165,7 @@ def test_discover_artifacts_json(reader, workspace):
 def test_discover_artifacts_python(reader, workspace):
     """Test 10: Discover Python artifacts"""
     py_file = workspace / "script.py"
-    py_file.write_text('def test():\n    pass')
+    py_file.write_text("def test():\n    pass")
 
     artifacts = reader.discover_artifacts(workspace)
 
@@ -205,9 +205,7 @@ def test_export_results_json(reader, workspace):
     elements = reader.parse_markdown(test_file.read_text())
 
     output_path = reader.export_results(
-        elements=elements,
-        stats={"test": "data"},
-        format="json"
+        elements=elements, stats={"test": "data"}, format="json"
     )
 
     assert Path(output_path).exists()

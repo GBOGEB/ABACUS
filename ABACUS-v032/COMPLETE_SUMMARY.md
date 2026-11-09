@@ -189,7 +189,7 @@ c104823 - ci/cd: Docker and workflows update
    ```powershell
    # Dry run first
    python bulk_resolve_github_issues.py --repo GBOGEB/ABACUS --action close --dry-run
-   
+
    # Then for real
    python bulk_resolve_github_issues.py --repo GBOGEB/ABACUS --action close
    ```

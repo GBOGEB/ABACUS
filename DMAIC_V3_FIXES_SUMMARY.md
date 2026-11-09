@@ -25,7 +25,7 @@ Successfully fixed all critical issues in DMAIC V3 engine and implemented comple
 def add_iteration_result(self, result: 'IterationResult'):
     """
     Add an iteration result to the state
-    
+
     Args:
         result: IterationResult object containing iteration data
     """
@@ -40,10 +40,10 @@ def add_iteration_result(self, result: 'IterationResult'):
         "start_time": result.start_time.isoformat() if result.start_time else None,
         "end_time": result.end_time.isoformat() if result.end_time else None
     }
-    
+
     if not hasattr(self, 'iteration_results'):
         self.iteration_results = []
-    
+
     self.iteration_results.append(result_data)
     self._save_state()
 ```

@@ -1,6 +1,13 @@
+import contextlib
+import io
+import json
+import sys
+import tempfile
 import unittest
+from pathlib import Path
+from unittest.mock import patch
 
-from mission_control_lite.coverage_pulse import build, compare, render_summary
+from mission_control_lite.coverage_pulse import build, compare, main, render_summary
 
 SHA = "a" * 40
 OTHER = "b" * 40
@@ -83,6 +90,9 @@ class CoveragePulseTests(unittest.TestCase):
         new = coverage()
         new["totals"]["covered_lines"] = 45
         new["totals"]["covered_branches"] = 15
+        for item in new["files"].values():
+            item["summary"]["covered_lines"] += 1
+            item["summary"]["covered_branches"] += 1
         p = self.make(new, previous=old)
         self.assertEqual(p["comparison"]["status"], "COMPARABLE")
         self.assertEqual(p["comparison"]["line_delta_pp"], 10)
@@ -93,6 +103,7 @@ class CoveragePulseTests(unittest.TestCase):
         old = self.make()
         new = coverage()
         new["totals"]["num_statements"] = 60
+        new["files"]["mission_control_lite/core.py"]["summary"]["num_statements"] = 20
         self.assertEqual(self.make(new, previous=old)["comparison"]["status"],
                          "INCOMPARABLE")
         old["scope_id"] = "different"
@@ -114,6 +125,20 @@ class CoveragePulseTests(unittest.TestCase):
             "mission_control_lite/core.py")
         with self.assertRaises(ValueError):
             self.make(bad)
+
+    def test_forged_coverage_totals_fail_closed(self):
+        data = coverage()
+        data["totals"]["covered_lines"] += 1
+        with self.assertRaisesRegex(ValueError, "totals disagree"):
+            self.make(data)
+
+    def test_backlog_denominators_and_nonadmission(self):
+        pulse = self.make()
+        self.assertEqual(pulse["uncovered_lines"], 10)
+        self.assertEqual(pulse["uncovered_branches"], 10)
+        self.assertEqual(len(pulse["coverage_backlog"]), 5)
+        self.assertEqual(pulse["coverage_backlog"][0]["triage_score"], 6)
+        self.assertEqual(pulse["merge_admission"], "HOLD")
 
     def test_timed_phases_summary_and_unknown_queue(self):
         phases = [
@@ -145,6 +170,89 @@ class CoveragePulseTests(unittest.TestCase):
             with self.subTest(phases=phases), self.assertRaises(ValueError):
                 build(coverage(), {"core": OK}, SHA, OTHER, 123,
                       phases=phases)
+
+    def test_cli_exercises_all_optional_logs_and_produces_bound_receipt(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            (root / "coverage.json").write_text(json.dumps(coverage()), encoding="utf-8")
+            for suite in ("core", "rex", "metrics", "timing", "telemetry",
+                          "gate_census", "job_first_red"):
+                (root / (suite + ".log")).write_text(OK, encoding="utf-8")
+            (root / "phases.json").write_text(json.dumps([
+                {"phase": "core-tests", "duration_seconds": 2.0, "exit_code": 0},
+                {"phase": "gate-census-tests", "duration_seconds": 1.5, "exit_code": 0},
+            ]), encoding="utf-8")
+            (root / "baseline.json").write_text(json.dumps(self.make()), encoding="utf-8")
+            arguments = [
+                "coverage_pulse", "--coverage-json", str(root / "coverage.json"),
+                "--core-log", str(root / "core.log"),
+                "--rex-log", str(root / "rex.log"),
+                "--metrics-log", str(root / "metrics.log"),
+                "--timing-tests-log", str(root / "timing.log"),
+                "--telemetry-tests-log", str(root / "telemetry.log"),
+                "--gate-census-tests-log", str(root / "gate_census.log"),
+                "--job-first-red-tests-log", str(root / "job_first_red.log"),
+                "--timing-log", str(root / "phases.json"),
+                "--source-sha", SHA, "--event-sha", OTHER, "--run-id", "123",
+                "--baseline", str(root / "baseline.json"),
+                "--output", str(root / "pulse.json"),
+                "--summary", str(root / "summary.md"),
+            ]
+            output = io.StringIO()
+            with patch.object(sys, "argv", arguments), contextlib.redirect_stdout(output):
+                main()
+            payload = json.loads((root / "pulse.json").read_text(encoding="utf-8"))
+            self.assertEqual(payload["comparison"]["status"], "COMPARABLE")
+            self.assertEqual(payload["tests_passed"], 21)
+            self.assertEqual(len(payload["tests_by_suite"]), 7)
+            self.assertEqual(payload["timed_execution_seconds"], 3.5)
+            self.assertEqual(payload["merge_admission"], "HOLD")
+            self.assertIn("Merge admission | HOLD", (root / "summary.md").read_text())
+            self.assertEqual(json.loads(output.getvalue())["comparison"], "COMPARABLE")
+
+    def test_cli_rejects_failed_optional_suite_without_output(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            (root / "coverage.json").write_text(json.dumps(coverage()), encoding="utf-8")
+            for suite in ("core", "rex", "metrics"):
+                (root / (suite + ".log")).write_text(OK, encoding="utf-8")
+            (root / "telemetry.log").write_text("Ran 1 test in 0.001s\\nFAILED\\n")
+            arguments = [
+                "coverage_pulse", "--coverage-json", str(root / "coverage.json"),
+                "--core-log", str(root / "core.log"),
+                "--rex-log", str(root / "rex.log"),
+                "--metrics-log", str(root / "metrics.log"),
+                "--telemetry-tests-log", str(root / "telemetry.log"),
+                "--source-sha", SHA, "--event-sha", OTHER,
+                "--run-id", "123", "--output", str(root / "pulse.json"),
+            ]
+            with patch.object(sys, "argv", arguments), self.assertRaisesRegex(
+                ValueError, "missing native passing test summary"
+            ):
+                main()
+            self.assertFalse((root / "pulse.json").exists())
+
+    def test_pulse_report_renders_unknown_and_nonadmission(self):
+        report = self.make()
+        rendered = render_summary(report)
+        self.assertIn("Line delta | UNKNOWN", rendered)
+        self.assertIn("Branch delta | UNKNOWN", rendered)
+        self.assertIn("Timed native phases | UNKNOWN", rendered)
+        self.assertIn("Merge admission | HOLD", rendered)
+
+    def test_comparable_zero_branch_denominator_requires_unknown_branch_delta(self):
+        baseline = self.make()
+        self.assertEqual(baseline["comparison"]["status"], "UNKNOWN")
+        data = coverage()
+        for row in data["files"].values():
+            row["summary"]["num_branches"] = 0
+            row["summary"]["covered_branches"] = 0
+        data["totals"]["num_branches"] = 0
+        data["totals"]["covered_branches"] = 0
+        zero_branches = self.make(data)
+        compared = self.make(data, previous=zero_branches)
+        self.assertEqual(compared["comparison"]["status"], "COMPARABLE")
+        self.assertIsNone(compared["comparison"]["branch_delta_pp"])
 
     def test_verbose_unique_id_census_with_duplicate_execution(self):
         def result(*names):

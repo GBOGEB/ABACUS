@@ -1,0 +1,222 @@
+<!doctype html>
+<html lang="en"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>MYRRHA WCS · Diff Tracker</title>
+<link rel="icon" href="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><text y='26' font-size='26'>🔀</text></svg>">
+<link rel="stylesheet" href="assets/style.css">
+<script src="assets/common.js" defer></script>
+<style>
+.breadcrumb{font-size:12px;color:var(--fg2);margin-bottom:12px}.breadcrumb a{color:var(--accent2)}
+.diff-line{font-family:var(--mono);font-size:12px;padding:2px 10px;line-height:1.6;border-left:3px solid transparent}
+.diff-add{background:#1D9E7518;border-left-color:#1D9E75;color:#1D9E75}
+.diff-del{background:#C0392B18;border-left-color:#C0392B;color:#C0392B}
+.diff-mod{background:#E5A10018;border-left-color:#E5A100;color:#b38f00}
+.diff-ctx{color:var(--fg2);opacity:.6}
+.diff-header{font-family:var(--mono);font-size:11px;color:var(--accent2);padding:4px 10px;background:var(--bg);border-bottom:1px solid var(--border);font-weight:600}
+.diff-block{border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;margin:10px 0}
+.version-tag{display:inline-block;padding:3px 10px;border-radius:999px;font-size:12px;font-weight:700;font-family:var(--mono);border:1px solid var(--border);background:var(--bg2)}
+.version-tag.current{background:var(--accent);color:#fff;border-color:var(--accent)}
+.change-cat{display:inline-block;padding:2px 8px;border-radius:4px;font-size:10px;font-weight:600;text-transform:uppercase}
+.cat-data{background:#378ADD22;color:#378ADD}.cat-feat{background:#1D9E7522;color:#1D9E75}
+.cat-fix{background:#C0392B22;color:#C0392B}.cat-docs{background:#7F77DD22;color:#7F77DD}
+.cat-refactor{background:#E5A10022;color:#b38f00}
+.impact-tree{font-size:12px;padding-left:20px}
+.impact-tree li{margin:4px 0}
+.impact-tree .primary{font-weight:600;color:var(--fg)}
+.impact-tree .secondary{color:var(--fg2)}
+.risk-badge{display:inline-block;padding:1px 6px;border-radius:3px;font-size:10px;font-weight:600}
+.risk-high{background:#C0392B22;color:#C0392B}.risk-med{background:#E5A10022;color:#b38f00}.risk-low{background:#1D9E7522;color:#1D9E75}
+.timeline{position:relative;padding-left:30px;margin:14px 0}
+.timeline::before{content:'';position:absolute;left:12px;top:0;bottom:0;width:2px;background:var(--border)}
+.tl-item{position:relative;margin:16px 0}
+.tl-item::before{content:'';position:absolute;left:-22px;top:6px;width:10px;height:10px;border-radius:50%;background:var(--accent);border:2px solid var(--bg2)}
+.tl-item.current::before{background:var(--accent2);box-shadow:0 0 0 3px var(--accent2)33}
+.tl-item h4{margin:0 0 4px;font-size:14px;text-transform:none;color:var(--fg)}
+.tl-item p{margin:0;font-size:12px;color:var(--fg2)}
+.stats-row{display:flex;gap:20px;flex-wrap:wrap;margin:14px 0}
+.stat-pill{display:flex;align-items:center;gap:6px;font-size:13px}
+.stat-pill .num{font-weight:700;font-family:var(--mono)}
+</style>
+</head><body>
+<div class="container">
+<p class="breadcrumb"><a href="index.html">Hub</a> › <a href="review-dmaic.html">DMAIC</a> › Diff Tracker</p>
+<h1>🔀 Diff Tracker — Change Tracking Dashboard</h1>
+<p class="muted">Artifact diffs between versions · dependency impact · regression risk · v0.4.2</p>
+
+<!-- VERSION TIMELINE -->
+<h2>Version Timeline</h2>
+<div class="card">
+<div class="timeline">
+  <div class="tl-item"><h4><span class="version-tag">v0.1</span> Markdown Comparison Note</h4><p>Initial ALaT vs LKT markdown document</p></div>
+  <div class="tl-item"><h4><span class="version-tag">v0.2</span> Single-File Playground</h4><p>Interactive HTML artifact — all-in-one comparison</p></div>
+  <div class="tl-item"><h4><span class="version-tag">v0.3</span> Multi-File Ecosystem</h4><p>8 HTML views: slides, reports, tables, graphs, status, truth, utilities, pvps</p></div>
+  <div class="tl-item"><h4><span class="version-tag">v0.4.0</span> Master Sources + Editor</h4><p>Slide editor, master/ canonical sources, render_all.py, hx-sizing, thermo-analysis, operations, handover</p></div>
+  <div class="tl-item"><h4><span class="version-tag">v0.4.1</span> DMAIC Quality Review</h4><p>review-dmaic, missed-opportunities, action-tracker, xref-matrix, verification-checklist, qa-checklist, search-index, breadcrumbs</p></div>
+  <div class="tl-item current"><h4><span class="version-tag current">v0.4.2</span> Enhanced Tracking + CI/CD</h4><p>Severity rankings, vendor deep-scouts (MT-11/12/13), artifact tracker, diff tracker, CI/CD pipeline, weighted priority</p></div>
+</div>
+</div>
+
+<!-- v0.4.1 → v0.4.2 DIFF -->
+<h2>Changes: v0.4.1 → v0.4.2</h2>
+<div class="stats-row">
+  <div class="stat-pill"><span class="num" style="color:#1D9E75">+4</span> files added</div>
+  <div class="stat-pill"><span class="num" style="color:#E5A100">~3</span> files modified</div>
+  <div class="stat-pill"><span class="num" style="color:#C0392B">0</span> files deleted</div>
+  <div class="stat-pill"><span class="num" style="color:var(--accent2)">+3</span> actions added</div>
+  <div class="stat-pill"><span class="num">29</span> total actions</div>
+</div>
+
+<!-- NEW FILES -->
+<h3><span class="change-cat cat-feat">Feature</span> New Files Added</h3>
+<div class="diff-block">
+<div class="diff-header">+ artifact-tracker.html (NEW)</div>
+<div class="diff-line diff-add">+ Per-artifact DMAIC cycle tracking</div>
+<div class="diff-line diff-add">+ 35 artifacts tracked across 5 categories</div>
+<div class="diff-line diff-add">+ Stability indicators (Stable/Evolving/Unstable)</div>
+<div class="diff-line diff-add">+ Bug tracking per artifact (3 open bugs)</div>
+<div class="diff-line diff-add">+ Validation status and CI/CD readiness</div>
+</div>
+<div class="diff-block">
+<div class="diff-header">+ diff-tracker.html (NEW)</div>
+<div class="diff-line diff-add">+ Version timeline with all releases</div>
+<div class="diff-line diff-add">+ Git-style diff visualization</div>
+<div class="diff-line diff-add">+ Dependency impact analysis</div>
+<div class="diff-line diff-add">+ Regression risk assessment per change</div>
+</div>
+<div class="diff-block">
+<div class="diff-header">+ ci-cd-pipeline.html (NEW)</div>
+<div class="diff-line diff-add">+ 5-stage deployment pipeline design</div>
+<div class="diff-line diff-add">+ GitHub Actions CI/CD workflows</div>
+<div class="diff-line diff-add">+ Authentication strategy (3 options)</div>
+<div class="diff-line diff-add">+ Development login bypass</div>
+</div>
+<div class="diff-block">
+<div class="diff-header">+ weighted-priority.html (NEW)</div>
+<div class="diff-line diff-add">+ Weighted scoring dashboard</div>
+<div class="diff-line diff-add">+ Time allocation by category</div>
+<div class="diff-line diff-add">+ Execution strategy recommendations</div>
+</div>
+
+<!-- MODIFIED FILES -->
+<h3><span class="change-cat cat-data">Data Update</span> Modified Files</h3>
+<div class="diff-block">
+<div class="diff-header">~ action-tracker.html (MAJOR UPDATE)</div>
+<div class="diff-line diff-del">- Simple priority column (High/Medium/Low)</div>
+<div class="diff-line diff-add">+ Severity ranking system (1-5 scale with badges)</div>
+<div class="diff-line diff-add">+ Weighted priority score calculation</div>
+<div class="diff-line diff-add">+ Impact categories (Technical/Cost/Schedule/Quality)</div>
+<div class="diff-line diff-add">+ "Risk if Skipped" column</div>
+<div class="diff-line diff-add">+ MT-11: Kaeser HCC Deep-Scout (SEV 4, 4-6 hrs)</div>
+<div class="diff-line diff-add">+ MT-12: PVPS Vendor Deep-Scout (SEV 4, 3-5 hrs)</div>
+<div class="diff-line diff-add">+ MT-13: 400V Power Constraint (SEV 5, 2-3 hrs)</div>
+<div class="diff-line diff-add">+ Vendor deep-scout detail panels with expandable sections</div>
+<div class="diff-line diff-add">+ Sortable priority columns</div>
+<div class="diff-line diff-mod">~ Filter bar expanded: +Critical, +High severity filters</div>
+<div class="diff-line diff-mod">~ Progress rings: 26 → 29 total, 10 → 13 medium-term</div>
+</div>
+<div class="diff-block">
+<div class="diff-header">~ index.html (NAV UPDATE)</div>
+<div class="diff-line diff-add">+ artifact-tracker.html navigation card</div>
+<div class="diff-line diff-add">+ diff-tracker.html navigation card</div>
+<div class="diff-line diff-add">+ ci-cd-pipeline.html navigation card</div>
+<div class="diff-line diff-add">+ weighted-priority.html navigation card</div>
+<div class="diff-line diff-mod">~ Version bumped: v0.4.1 → v0.4.2</div>
+<div class="diff-line diff-mod">~ Changelog entry added for v0.4.2</div>
+</div>
+<div class="diff-block">
+<div class="diff-header">~ status.html (METRICS UPDATE)</div>
+<div class="diff-line diff-add">+ v0.4.2 version entry</div>
+<div class="diff-line diff-mod">~ Progress bar: 78% → 82%</div>
+<div class="diff-line diff-add">+ New completed items for v0.4.2</div>
+</div>
+<div class="diff-block">
+<div class="diff-header">~ assets/common.js (VERSION BUMP)</div>
+<div class="diff-line diff-mod">~ Version string: v0.4.1 → v0.4.2</div>
+<div class="diff-line diff-add">+ New nav entries in MYRRHA.nav array</div>
+</div>
+
+<!-- DEPENDENCY IMPACT ANALYSIS -->
+<h2>Dependency Impact Analysis</h2>
+<div class="card">
+<h3 style="margin-top:0">Change: Add MT-11/12/13 vendor deep-scout actions</h3>
+<ul class="impact-tree">
+  <li class="primary">→ action-tracker.html <span class="risk-badge risk-high">HIGH</span>
+    <ul>
+      <li class="secondary">→ Severity rankings added to all 29 actions</li>
+      <li class="secondary">→ Priority score calculation for each action</li>
+      <li class="secondary">→ Filter system expanded with severity filters</li>
+    </ul>
+  </li>
+  <li class="primary">→ weighted-priority.html <span class="risk-badge risk-med">MED</span>
+    <ul>
+      <li class="secondary">→ Time allocation percentages recalculated</li>
+      <li class="secondary">→ Medium-term effort increased: 28-42 hrs (was 16-24 hrs)</li>
+    </ul>
+  </li>
+  <li class="primary">→ status.html <span class="risk-badge risk-low">LOW</span>
+    <ul><li class="secondary">→ Progress metrics updated</li></ul>
+  </li>
+  <li class="primary">→ index.html <span class="risk-badge risk-low">LOW</span>
+    <ul><li class="secondary">→ Navigation cards added, changelog updated</li></ul>
+  </li>
+</ul>
+</div>
+
+<div class="card">
+<h3 style="margin-top:0">Change: New HTML views (artifact, diff, ci-cd, weighted)</h3>
+<ul class="impact-tree">
+  <li class="primary">→ assets/common.js <span class="risk-badge risk-low">LOW</span>
+    <ul><li class="secondary">→ Nav array expanded with new entries</li></ul>
+  </li>
+  <li class="primary">→ index.html <span class="risk-badge risk-low">LOW</span>
+    <ul><li class="secondary">→ 4 new navigation cards in grid</li></ul>
+  </li>
+  <li class="primary">→ No existing artifacts affected <span class="risk-badge risk-low">LOW</span>
+    <ul><li class="secondary">→ All new files — additive only, no regressions</li></ul>
+  </li>
+</ul>
+</div>
+
+<!-- REGRESSION RISK -->
+<h2>Regression Risk Assessment — v0.4.2</h2>
+<div class="card" style="overflow-x:auto">
+<table style="font-size:12.5px">
+<thead><tr><th>Change</th><th>Category</th><th>Files Affected</th><th>Risk</th><th>Mitigation</th></tr></thead>
+<tbody>
+<tr><td>Severity ranking system</td><td><span class="change-cat cat-feat">Feature</span></td><td>action-tracker.html</td><td><span class="risk-badge risk-low">LOW</span></td><td>Additive columns, existing data preserved</td></tr>
+<tr><td>MT-11/12/13 new actions</td><td><span class="change-cat cat-data">Data</span></td><td>action-tracker.html</td><td><span class="risk-badge risk-low">LOW</span></td><td>Additive rows, no existing rows modified</td></tr>
+<tr><td>Priority score formula</td><td><span class="change-cat cat-feat">Feature</span></td><td>action-tracker.html, weighted-priority.html</td><td><span class="risk-badge risk-med">MED</span></td><td>Formula documented, manually verified</td></tr>
+<tr><td>4 new HTML views</td><td><span class="change-cat cat-feat">Feature</span></td><td>New files only</td><td><span class="risk-badge risk-low">LOW</span></td><td>No changes to existing files</td></tr>
+<tr><td>common.js nav update</td><td><span class="change-cat cat-refactor">Refactor</span></td><td>All pages (topbar)</td><td><span class="risk-badge risk-med">MED</span></td><td>Test nav rendering on all pages</td></tr>
+<tr><td>index.html grid update</td><td><span class="change-cat cat-feat">Feature</span></td><td>index.html</td><td><span class="risk-badge risk-low">LOW</span></td><td>Grid auto-wraps, additive cards</td></tr>
+<tr><td>Version bump v0.4.2</td><td><span class="change-cat cat-docs">Docs</span></td><td>common.js, index, status</td><td><span class="risk-badge risk-low">LOW</span></td><td>String replacement only</td></tr>
+</tbody></table>
+</div>
+
+<!-- CHANGE HISTORY SUMMARY -->
+<h2>Full Change History</h2>
+<div class="card" style="overflow-x:auto">
+<table style="font-size:12px">
+<thead><tr><th>Version</th><th>Date</th><th>Added</th><th>Modified</th><th>Deleted</th><th>Summary</th></tr></thead>
+<tbody>
+<tr><td><span class="version-tag current">v0.4.2</span></td><td>2026-05-13</td><td style="color:#1D9E75;font-weight:700">+4</td><td style="color:#E5A100;font-weight:700">~4</td><td>0</td><td>Severity rankings, vendor deep-scouts, artifact/diff/ci-cd/priority trackers</td></tr>
+<tr><td><span class="version-tag">v0.4.1</span></td><td>2026-05-13</td><td style="color:#1D9E75;font-weight:700">+7</td><td style="color:#E5A100;font-weight:700">~2</td><td>0</td><td>DMAIC review, missed-opportunities, action-tracker, xref, verification, qa, search</td></tr>
+<tr><td><span class="version-tag">v0.4.0</span></td><td>2026-05-10</td><td style="color:#1D9E75;font-weight:700">+8</td><td style="color:#E5A100;font-weight:700">~3</td><td>0</td><td>Slide editor, master sources, render pipeline, HX sizing, thermo, operations, handover</td></tr>
+<tr><td><span class="version-tag">v0.3</span></td><td>2026-05-10</td><td style="color:#1D9E75;font-weight:700">+8</td><td>0</td><td>0</td><td>Multi-file HTML ecosystem — slides, reports, tables, graphs, status, truth, utilities, pvps</td></tr>
+<tr><td><span class="version-tag">v0.2</span></td><td>—</td><td style="color:#1D9E75;font-weight:700">+1</td><td>0</td><td>0</td><td>Single-file interactive playground</td></tr>
+<tr><td><span class="version-tag">v0.1</span></td><td>—</td><td style="color:#1D9E75;font-weight:700">+1</td><td>0</td><td>0</td><td>Initial markdown note</td></tr>
+</tbody></table>
+</div>
+
+<!-- NAV -->
+<div class="card">
+<h3 style="margin-top:0">Related Views</h3>
+<div class="grid4">
+<a class="card" href="action-tracker.html"><h4 style="margin-top:0">📌 Action Tracker</h4></a>
+<a class="card" href="artifact-tracker.html"><h4 style="margin-top:0">📦 Artifact Tracker</h4></a>
+<a class="card" href="ci-cd-pipeline.html"><h4 style="margin-top:0">🚀 CI/CD Pipeline</h4></a>
+<a class="card" href="weighted-priority.html"><h4 style="margin-top:0">⚖ Weighted Priority</h4></a>
+</div>
+</div>
+</div>
+</body></html>

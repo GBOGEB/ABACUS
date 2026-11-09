@@ -215,7 +215,7 @@ Integrate ALL existing DMAIC knowledge into `recursive_dmaic_engine_v2.py` witho
    def execute_file_with_tracking(self, file_path):
        tracker = get_tracker()
        tracker.start_tracking()
-       
+
        try:
            result = self.execute_python_file(file_path)
            result['runtime_dependencies'] = tracker.get_dependencies()

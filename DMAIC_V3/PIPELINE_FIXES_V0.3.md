@@ -41,11 +41,11 @@ def _generate_human_report(self, results: Dict[str, Any], report_file: Path):
         f.write(f"**Iteration:** {results.get('iteration', 'N/A')}\n")
         f.write(f"**Timestamp:** {results.get('timestamp', 'N/A')}\n")
         f.write(f"**Maturity Score:** {results.get('maturity_score', 0)}/100\n\n")
-        
+
         f.write("## Insights Generated\n\n")
         for insight in results.get('insights_generated', []):
             f.write(f"- **{insight.get('type', 'unknown')}** [{insight.get('priority', 'low')}]: {insight.get('message', '')}\n")
-        
+
         f.write("\n## Recommendations\n\n")
         for rec in results.get('recommendations', []):
             f.write(f"- {rec}\n")

@@ -33,7 +33,7 @@ This repository contains the complete DMAIC (Define-Measure-Analyze-Improve-Cont
 ┌─────────────────────────────────────────────────────────────────────┐
 │                    DMAIC SPRINT SYSTEM FLOW                          │
 └─────────────────────────────────────────────────────────────────────┘
-                                    
+
     ┌───────────┐
     │  Phase 0  │  Setup & Validation (3s)
     │   SETUP   │  ✓ Python 3.12.7  ✓ Disk Space  ✓ Git
@@ -358,31 +358,31 @@ We welcome contributions! This project follows sprint-based development with com
 ```
 1. Review Documentation
    └─→ Read PROJECT_BOOK.md + HANDOVER.md
-   
+
 2. Check Current Sprint
    └─→ Review sprints/active/SPRINT_*_PLAN.md
-   
+
 3. Create Feature Branch
    └─→ git checkout -b feature/sprint-N-description
-   
+
 4. Make Changes
    ├─→ Write clean, documented code
    ├─→ Follow existing patterns
    └─→ Add tests (Sprint 6+)
-   
+
 5. Test Changes
    ├─→ pytest (Sprint 6+)
    ├─→ Manual validation
    └─→ Check integration
-   
+
 6. Update Documentation
    ├─→ Update relevant .md files
    ├─→ Add to ARTIFACTS_INDEX.md
    └─→ Update ACTION_TRACKER.md
-   
+
 7. Commit with Clear Messages
    └─→ Follow commit message format (below)
-   
+
 8. Create Pull Request
    ├─→ Reference sprint/task
    ├─→ Link related issues

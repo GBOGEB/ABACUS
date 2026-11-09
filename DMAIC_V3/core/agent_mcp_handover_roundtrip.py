@@ -1,4 +1,5 @@
 """W63 P3 AgentManager -> MCP -> handover governed roundtrip."""
+
 from __future__ import annotations
 
 from typing import Any, Callable

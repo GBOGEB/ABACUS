@@ -12,7 +12,9 @@ from .validate import validate_runtime
 
 def _resolve_entrypoint_module() -> str:
     top_level_entry = (
-        Path(__file__).resolve().parents[2] / "qplant_presentation_engine" / "__main__.py"
+        Path(__file__).resolve().parents[2]
+        / "qplant_presentation_engine"
+        / "__main__.py"
     )
     if top_level_entry.exists():
         return "qplant_presentation_engine"
@@ -33,9 +35,7 @@ def _utc_timestamp() -> str:
 def _write_json_artifact(filename: str, payload: Dict[str, object]) -> None:
     target = Path.cwd().joinpath(filename)
     target.parent.mkdir(parents=True, exist_ok=True)
-    target.write_text(
-        json.dumps(payload, indent=2, sort_keys=True), encoding="utf-8"
-    )
+    target.write_text(json.dumps(payload, indent=2, sort_keys=True), encoding="utf-8")
 
 
 def load_runtime_metadata() -> Dict[str, str]:
@@ -53,8 +53,12 @@ def run_smoke_test() -> List[str]:
 
     report = ["[OK] Runtime Started"]
     report.append("[OK] Metrics Loaded" if metrics else "[FAIL] Metrics Loaded")
-    report.append("[OK] Truth Matrix Loaded" if rules_loaded else "[FAIL] Truth Matrix Loaded")
-    report.append("[OK] Validation Ready" if validation_ready else "[FAIL] Validation Ready")
+    report.append(
+        "[OK] Truth Matrix Loaded" if rules_loaded else "[FAIL] Truth Matrix Loaded"
+    )
+    report.append(
+        "[OK] Validation Ready" if validation_ready else "[FAIL] Validation Ready"
+    )
     return report
 
 
@@ -66,7 +70,9 @@ def generate_runtime_evidence(
 ) -> None:
     """Persist runtime evidence artifacts for CI and local verification."""
     generated_at = _utc_timestamp()
-    runtime_status = "ok" if all(line.startswith("[OK]") for line in report) else "failed"
+    runtime_status = (
+        "ok" if all(line.startswith("[OK]") for line in report) else "failed"
+    )
     validation_ready = all(validation.values())
     validation_status = "ready" if validation_ready else "failed"
 

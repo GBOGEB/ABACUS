@@ -26,4 +26,3 @@ In this existing MIP programme, **W = outcome wave**, **P = one verified DMAIC/M
 ## DoV
 
 MIP DoV is withheld until at least three distinct repo SHAs have receipts and one self-heal or produce candidate is proven by an executable check.
-

@@ -42,6 +42,14 @@
       "criticality": "USER_DIRECTED_HIGH",
       "source": "B10 target cluster"
     },
+    "models/qps_line_s/ssot_tables.py": {
+      "criticality": "USER_DIRECTED_HIGH",
+      "source": "Line S thermal lineage, user directed 2026-10-23"
+    },
+    "models/qps_line_s/loop_transient.py": {
+      "criticality": "USER_DIRECTED_HIGH",
+      "source": "Line S thermal lineage, user directed 2026-10-23"
+    },
     "scripts/mip_v2_federated_controller.py": {
       "criticality": "USER_DIRECTED_HIGH",
       "source": "B6 MIP self-improvement"

@@ -7,7 +7,6 @@ import tempfile
 import unittest
 from pathlib import Path
 
-
 ROOT = Path(__file__).resolve().parents[3]
 AUDIT_SCRIPT = ROOT / "ci/governance/audit_ci_workflows.py"
 SPEC = importlib.util.spec_from_file_location("audit_ci_workflows", AUDIT_SCRIPT)
@@ -19,13 +18,28 @@ SPEC.loader.exec_module(MODULE)
 
 class WorkflowPolicyTests(unittest.TestCase):
     def setUp(self):
-        self.policy = json.loads((ROOT / "ci/governance/workflow_policy.json").read_text())
+        self.policy = json.loads(
+            (ROOT / "ci/governance/workflow_policy.json").read_text()
+        )
 
     def test_repository_workflows_are_classified_once(self):
         report = MODULE.audit(ROOT / ".github/workflows", self.policy)
         self.assertEqual([], report["unclassified"])
         self.assertEqual({}, report["multiple_matches"])
         self.assertEqual([], report["missing_canonical"])
+
+    def test_bridge_federation_and_bt_workflows_have_unique_owners(self):
+        expected = {
+            "federation-bridge-contract.yml": "bridge_federation",
+            "qps-bt-admission.yml": "statistics",
+        }
+        for filename, cluster in expected.items():
+            with self.subTest(filename=filename):
+                rule, matches = MODULE.classify(filename, self.policy)
+                self.assertEqual(1, len(matches), "ambiguous workflow ownership")
+                self.assertEqual(cluster, rule["cluster"])
+                self.assertEqual("pr_domain", rule["lifecycle"])
+                self.assertEqual("keep", rule["disposition"])
 
     def test_code_purple_mip_rules_have_unique_domain_owners(self):
         expected = {
@@ -43,7 +57,6 @@ class WorkflowPolicyTests(unittest.TestCase):
         self.assertEqual(0, self.policy["quality_gates"]["allow_unclassified"])
         self.assertFalse(self.policy["quality_gates"]["allow_multiple_rule_matches"])
 
-
     def test_w39_bounded_pool_and_g3cs_have_disjoint_source_owners(self):
         expected = {
             "w33-backbone-pool.yml": "runtime_governance",
@@ -59,6 +72,13 @@ class WorkflowPolicyTests(unittest.TestCase):
                 self.assertEqual("keep", rule["disposition"])
         self.assertEqual(0, self.policy["quality_gates"]["allow_unclassified"])
         self.assertFalse(self.policy["quality_gates"]["allow_multiple_rule_matches"])
+
+    def test_nextjs_pages_deployment_is_owned_by_delivery(self):
+        rule, matches = MODULE.classify("nextjs.yml", self.policy)
+        self.assertEqual(1, len(matches))
+        self.assertEqual("delivery", rule["cluster"])
+        self.assertEqual("post_merge", rule["lifecycle"])
+        self.assertEqual("keep", rule["disposition"])
 
     def test_g3f_new_source_owned_workflows_are_explicit_and_read_only(self):
         """Eight new owners cannot be silently absorbed by broad patterns."""
@@ -77,7 +97,9 @@ class WorkflowPolicyTests(unittest.TestCase):
                 rule, matches = MODULE.classify(filename, self.policy)
                 self.assertEqual([rule], [self.policy["rules"][matches[0]]])
                 self.assertEqual(1, len(matches), "ambiguous ownership")
-                self.assertEqual(rule["pattern"], "^" + filename.replace(".", r"\.") + "$")
+                self.assertEqual(
+                    rule["pattern"], "^" + filename.replace(".", r"\.") + "$"
+                )
                 self.assertEqual(cluster, rule["cluster"])
                 self.assertEqual("pr_domain", rule["lifecycle"])
                 self.assertEqual("keep", rule["disposition"])
@@ -89,12 +111,21 @@ class WorkflowPolicyTests(unittest.TestCase):
         self.assertFalse(self.policy["quality_gates"]["allow_multiple_rule_matches"])
 
     def test_w26_matched_coverage_has_unique_statistics_owner(self):
-        rule, matches = MODULE.classify("w26-testpilot-matched-coverage.yml", self.policy)
+        rule, matches = MODULE.classify(
+            "w26-testpilot-matched-coverage.yml", self.policy
+        )
         self.assertEqual(1, len(matches))
         self.assertEqual("statistics", rule["cluster"])
         self.assertEqual("pr_domain", rule["lifecycle"])
         self.assertEqual("keep", rule["disposition"])
         self.assertEqual(0, self.policy["quality_gates"]["allow_unclassified"])
+
+    def test_config_surface_audit_has_unique_governance_owner(self):
+        rule, matches = MODULE.classify("config-surface-audit.yml", self.policy)
+        self.assertEqual(1, len(matches))
+        self.assertEqual("runtime_governance", rule["cluster"])
+        self.assertEqual("pr_domain", rule["lifecycle"])
+        self.assertEqual("keep", rule["disposition"])
 
     def test_parser_extracts_top_level_jobs_and_events(self):
         source = """name: Example\non:\n  push:\n  pull_request:\njobs:\n  test:\n    runs-on: ubuntu-latest\n    steps:\n      - run: pytest -q\n  lint:\n    runs-on: ubuntu-latest\n"""
@@ -135,7 +166,9 @@ class WorkflowPolicyTests(unittest.TestCase):
             self.assertEqual("stale report\n", report_path.read_text(encoding="utf-8"))
 
     def test_governance_runs_when_generated_inventory_changes(self):
-        workflow = (ROOT / ".github/workflows/ci-governance.yml").read_text(encoding="utf-8")
+        workflow = (ROOT / ".github/workflows/ci-governance.yml").read_text(
+            encoding="utf-8"
+        )
         governed_path = '- "docs/ci/WORKFLOW_RATIONALIZATION.md"'
         self.assertEqual(2, workflow.count(governed_path))
 
@@ -143,13 +176,20 @@ class WorkflowPolicyTests(unittest.TestCase):
         self.assertTrue(AUDIT_SCRIPT.exists())
         self.assertFalse((ROOT / "scripts/audit_ci_workflows.py").exists())
 
-    def test_full_regression_excludes_governance_only_python(self):
-        workflow = (ROOT / ".github/workflows/ci-cd-tests.yml").read_text(encoding="utf-8")
-        self.assertEqual(2, workflow.count("- '!ci/governance/**'"))
+    def test_full_regression_runs_on_governance_python(self):
+        # 77240202 (Bandit ratchet hardening) removed the "!ci/governance/**"
+        # path exclusions on purpose: governance Python is now admitted
+        # through the Bandit ratchet, so it must trigger this workflow.
+        workflow = (ROOT / ".github/workflows/ci-cd-tests.yml").read_text(
+            encoding="utf-8"
+        )
+        self.assertEqual(0, workflow.count("- '!ci/governance/**'"))
 
     def test_control_surface_declares_policy_authority(self):
         control_surface = (ROOT / "ci/governance/README.md").read_text(encoding="utf-8")
-        self.assertIn("`workflow_policy.json` is the workflow-policy SSOT", control_surface)
+        self.assertIn(
+            "`workflow_policy.json` is the workflow-policy SSOT", control_surface
+        )
         self.assertIn("Queued checks are not counted as pass evidence", control_surface)
 
     def test_rendered_report_documents_hash_basis_and_lifecycle_column(self):

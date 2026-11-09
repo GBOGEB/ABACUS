@@ -203,7 +203,7 @@ options:
 
 ### Iteration Loop
 ```
-Iteration 1 (RUNNING) → Iteration 2 (Analyze) → Iteration 3 (Improve) → 
+Iteration 1 (RUNNING) → Iteration 2 (Analyze) → Iteration 3 (Improve) →
 Iteration 4 (Control) → Iteration 5 (Full Pipeline) → PRODUCTION
 ```
 

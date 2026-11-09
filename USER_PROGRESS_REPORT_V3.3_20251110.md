@@ -413,17 +413,17 @@ CONVERGENCE TARGET (V3.2.0)
     ├─ ✅ V3.3 Documentation Complete
     ├─ ✅ Parallel Version Reality Documented
     └─ ✅ User Progress Report Generated
-    
+
 2025-11-11 (TOMORROW)
     │
     ├─ 🎯 Convergence Plan (3h)
     └─ 🎯 v1 Ranking Logic (6h)
-    
+
 2025-11-12
     │
     ├─ 🎯 Code Quality Checks (2h)
     └─ 🎯 Phase 2 Extraction Start (4h)
-    
+
 2025-11-17 (TARGET)
     │
     └─ 🎯 V3 Convergence Complete (100%)
@@ -465,6 +465,6 @@ CONVERGENCE TARGET (V3.2.0)
 - [Comprehensive Status](DMAIC_COMPREHENSIVE_STATUS_V3.3_202501101800.md)
 - [Quick Reference](DMAIC_QUICK_REFERENCE_V3.3_202501101800.md)
 - [TODO Tracking](TODO_V3.1_2025-11-10.yaml)
-- [Corrected Handover](CORRECTED_HANDOVER_PARALLEL_VERSIONS.md)
+- [Corrected Handover](docs_versioned/handover/CORRECTED_HANDOVER_PARALLEL_VERSIONS.md)
 - [Execution Reports](output/execution_reports/)
 - [DMAIC Metrics](output/dmaic_metrics/)

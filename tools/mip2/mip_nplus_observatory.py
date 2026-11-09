@@ -230,7 +230,8 @@ def as_markdown(r):
                      f"{c.get('cancelled', 0)} | {c.get('nonterminal', 0)} | "
                      f"{c.get('success', 0)}/{w['native_total_count']} | "
                      f"{c['terminal']}/{w['native_total_count']} |")
-    lines.extend(["", "Repeat-adjusted counts are diagnostic only; test cases, matched coverage and formal root closures remain UNKNOWN.",
+    lines.extend(["", "Repeat-adjusted counts are diagnostic only; test cases, "
+                  "matched coverage and formal root closures remain UNKNOWN.",
                   "", "## Sequential paired-family observations", "",
                   "A family is paired only when unique and terminal on both "
                   "different heads. Status changes **do not prove causation**.",

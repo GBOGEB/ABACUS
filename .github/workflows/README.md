@@ -301,7 +301,7 @@ If artifacts fail to upload:
 ## 📚 Additional Documentation
 
 - [Integration Plan](../../DOW_CICD_INTEGRATION_PLAN.md)
-- [Implementation Status](../../DOW_CICD_IMPLEMENTATION_STATUS.md)
+- [Implementation Status](../../docs_versioned/status_reports/DOW_CICD_IMPLEMENTATION_STATUS.md)
 - [CICD Setup Guide](../../CICD_SETUP_GUIDE.md)
 - [Quick Reference](../../CICD_QUICK_REFERENCE.md)
 

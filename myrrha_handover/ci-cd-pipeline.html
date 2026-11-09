@@ -1,0 +1,302 @@
+<!doctype html>
+<html lang="en"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>MYRRHA WCS · CI/CD Pipeline</title>
+<link rel="icon" href="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><text y='26' font-size='26'>🚀</text></svg>">
+<link rel="stylesheet" href="assets/style.css">
+<script src="assets/common.js" defer></script>
+<style>
+.breadcrumb{font-size:12px;color:var(--fg2);margin-bottom:12px}.breadcrumb a{color:var(--accent2)}
+.pipeline{display:flex;gap:0;margin:20px 0;flex-wrap:wrap}
+.pipe-stage{flex:1;min-width:140px;padding:16px 12px;text-align:center;position:relative;color:#fff;font-size:13px}
+.pipe-stage:first-child{border-radius:10px 0 0 10px}
+.pipe-stage:last-child{border-radius:0 10px 10px 0}
+.pipe-stage .num{font-size:28px;font-weight:700;display:block}
+.pipe-stage .sub{font-size:10px;opacity:.8;margin-top:2px}
+.pipe-stage::after{content:'→';position:absolute;right:-8px;top:50%;transform:translateY(-50%);font-size:18px;z-index:2;color:var(--fg2)}
+.pipe-stage:last-child::after{display:none}
+.yaml-block{background:#1a1d23;color:#e7eaf0;border-radius:var(--radius);padding:16px;font-family:var(--mono);font-size:12px;line-height:1.65;overflow-x:auto;margin:10px 0;white-space:pre}
+.yaml-block .comment{color:#6a737d}.yaml-block .key{color:#79b8ff}.yaml-block .str{color:#9ecbff}.yaml-block .bool{color:#f97583}
+.auth-option{border:1px solid var(--border);border-radius:var(--radius);padding:16px;margin:10px 0;background:var(--bg2)}
+.auth-option h4{margin-top:0;color:var(--fg);text-transform:none}
+.auth-option.recommended{border-color:var(--accent);border-width:2px}
+.auth-option.recommended::before{content:'★ RECOMMENDED';font-size:10px;font-weight:700;color:var(--accent);letter-spacing:.06em}
+.branch-diagram{font-family:var(--mono);font-size:12px;line-height:1.8;background:var(--bg);border:1px solid var(--border);border-radius:var(--radius);padding:16px;overflow-x:auto;white-space:pre}
+.url-tree{font-family:var(--mono);font-size:12px;line-height:1.8;background:var(--bg);border:1px solid var(--border);border-radius:var(--radius);padding:16px}
+.check-item{display:flex;align-items:flex-start;gap:8px;padding:6px 0;font-size:13px;border-bottom:1px solid var(--border)}
+.check-item:last-child{border-bottom:0}
+.check-icon{font-size:16px;flex-shrink:0}
+@media(max-width:780px){.pipeline{flex-direction:column}.pipe-stage{border-radius:0!important}.pipe-stage::after{display:none}}
+</style>
+</head><body>
+<div class="container">
+<p class="breadcrumb"><a href="index.html">Hub</a> › <a href="review-dmaic.html">DMAIC</a> › CI/CD Pipeline</p>
+<h1>🚀 CI/CD Pipeline — Deployment Strategy</h1>
+<p class="muted">GitHub Pages deployment with CI validation, authentication, and branch strategy · v0.4.2</p>
+
+<!-- PIPELINE OVERVIEW -->
+<h2>Pipeline Overview</h2>
+<div class="pipeline">
+  <div class="pipe-stage" style="background:#378ADD"><span class="num">1</span>Local Dev<div class="sub">Edit + Render</div></div>
+  <div class="pipe-stage" style="background:#7F77DD"><span class="num">2</span>Git VCS<div class="sub">Branch + Commit</div></div>
+  <div class="pipe-stage" style="background:#E5A100"><span class="num">3</span>CI Build<div class="sub">Test + Validate</div></div>
+  <div class="pipe-stage" style="background:#D85A30"><span class="num">4</span>Deploy<div class="sub">GitHub Pages</div></div>
+  <div class="pipe-stage" style="background:#1D9E75"><span class="num">5</span>Auth Gate<div class="sub">Access Control</div></div>
+</div>
+
+<!-- STAGE 1 -->
+<h2>Stage 1: Local Development</h2>
+<div class="card">
+<div class="check-item"><span class="check-icon">📝</span><div><b>Edit master sources</b> — <code>master/data.json</code>, <code>master/slides.md</code>, <code>master/truth.md</code></div></div>
+<div class="check-item"><span class="check-icon">⚙️</span><div><b>Run render pipeline</b> — <code>python3 master/render_all.py</code> → regenerate all HTML views</div></div>
+<div class="check-item"><span class="check-icon">🌐</span><div><b>Test locally</b> — Open <code>index.html</code> in browser, verify navigation + data</div></div>
+<div class="check-item"><span class="check-icon">✅</span><div><b>QA checklist</b> — Run through <a href="qa-checklist.html">38-item QA suite</a></div></div>
+<div class="check-item"><span class="check-icon">🔢</span><div><b>Verification</b> — Cross-check calculations via <a href="verification-checklist.html">verification checklist</a></div></div>
+</div>
+
+<!-- STAGE 2 -->
+<h2>Stage 2: Version Control (Git)</h2>
+<div class="card">
+<h3 style="margin-top:0">Repository Initialization</h3>
+<div class="yaml-block"><span class="comment"># Initialize Git repo</span>
+cd /home/ubuntu/myrrha_handover/
+git init
+git remote add origin https://github.com/[USER]/myrrha-wcs-handover.git
+
+<span class="comment"># Initial commit</span>
+git add -A
+git commit -m "feat: initial v0.4.2 release — full WCS handover ecosystem"
+git tag -a v0.4.2 -m "v0.4.2: severity rankings, vendor scouts, CI/CD"
+git push -u origin main --tags</div>
+
+<h3>Branch Strategy</h3>
+<div class="branch-diagram">  main ─────●────────●────────●────── (production stable)
+              \              /
+  develop ─────●──●──●──●──●──────── (active development)
+                  \     /
+  feature/* ───────●──●────────────── (feature branches)
+
+  <b>Branches:</b>
+  main       → production stable (protected, PR-only merges)
+  develop    → active development (daily work)
+  feature/*  → feature branches (e.g., feature/vendor-scout-mt11)
+  hotfix/*   → emergency fixes (merge to main + develop)</div>
+
+<h3>Commit Convention</h3>
+<table style="font-size:12.5px">
+<thead><tr><th>Prefix</th><th>Use</th><th>Example</th></tr></thead>
+<tbody>
+<tr><td><code>feat:</code></td><td>New feature/view</td><td><code>feat: add artifact-tracker.html</code></td></tr>
+<tr><td><code>fix:</code></td><td>Bug fix</td><td><code>fix: mobile breakpoint in style.css</code></td></tr>
+<tr><td><code>data:</code></td><td>Data update</td><td><code>data: update PVPS vendor specs in data.json</code></td></tr>
+<tr><td><code>docs:</code></td><td>Documentation</td><td><code>docs: update README for v0.4.2</code></td></tr>
+<tr><td><code>refactor:</code></td><td>No functional change</td><td><code>refactor: extract common filter logic</code></td></tr>
+<tr><td><code>ci:</code></td><td>CI/CD changes</td><td><code>ci: add HTML validation step</code></td></tr>
+</tbody></table>
+</div>
+
+<!-- STAGE 3 -->
+<h2>Stage 3: GitHub Actions CI</h2>
+<div class="card">
+<h3 style="margin-top:0"><code>.github/workflows/ci.yml</code></h3>
+<div class="yaml-block"><span class="key">name</span>: <span class="str">CI - Build and Test</span>
+<span class="key">on</span>: [<span class="str">push</span>, <span class="str">pull_request</span>]
+
+<span class="key">jobs</span>:
+  <span class="key">build</span>:
+    <span class="key">runs-on</span>: <span class="str">ubuntu-latest</span>
+    <span class="key">steps</span>:
+      - <span class="key">uses</span>: <span class="str">actions/checkout@v3</span>
+
+      - <span class="key">name</span>: <span class="str">Setup Python</span>
+        <span class="key">uses</span>: <span class="str">actions/setup-python@v4</span>
+        <span class="key">with</span>:
+          <span class="key">python-version</span>: <span class="str">'3.10'</span>
+
+      - <span class="key">name</span>: <span class="str">Install dependencies</span>
+        <span class="key">run</span>: <span class="str">pip install -r requirements.txt</span>
+
+      - <span class="key">name</span>: <span class="str">Run rendering pipeline</span>
+        <span class="key">run</span>: <span class="str">python3 master/render_all.py</span>
+
+      - <span class="key">name</span>: <span class="str">Validate HTML</span>
+        <span class="key">run</span>: <span class="str">python3 tests/validate_html.py</span>
+
+      - <span class="key">name</span>: <span class="str">Run QA checks</span>
+        <span class="key">run</span>: <span class="str">python3 tests/qa_suite.py</span>
+
+      - <span class="key">name</span>: <span class="str">Check data.json schema</span>
+        <span class="key">run</span>: <span class="str">python3 tests/validate_data.py</span>
+
+      - <span class="key">name</span>: <span class="str">Upload artifacts</span>
+        <span class="key">uses</span>: <span class="str">actions/upload-artifact@v3</span>
+        <span class="key">with</span>:
+          <span class="key">name</span>: <span class="str">rendered-html</span>
+          <span class="key">path</span>: <span class="str">./*.html</span></div>
+</div>
+
+<!-- STAGE 4 -->
+<h2>Stage 4: GitHub Pages Deployment</h2>
+<div class="card">
+<h3 style="margin-top:0"><code>.github/workflows/deploy.yml</code></h3>
+<div class="yaml-block"><span class="key">name</span>: <span class="str">CD - Deploy to GitHub Pages</span>
+<span class="key">on</span>:
+  <span class="key">push</span>:
+    <span class="key">branches</span>: [<span class="str">main</span>]
+
+<span class="key">permissions</span>:
+  <span class="key">contents</span>: <span class="str">read</span>
+  <span class="key">pages</span>: <span class="str">write</span>
+  <span class="key">id-token</span>: <span class="str">write</span>
+
+<span class="key">jobs</span>:
+  <span class="key">deploy</span>:
+    <span class="key">runs-on</span>: <span class="str">ubuntu-latest</span>
+    <span class="key">environment</span>:
+      <span class="key">name</span>: <span class="str">github-pages</span>
+    <span class="key">steps</span>:
+      - <span class="key">uses</span>: <span class="str">actions/checkout@v3</span>
+
+      - <span class="key">name</span>: <span class="str">Setup Python</span>
+        <span class="key">uses</span>: <span class="str">actions/setup-python@v4</span>
+        <span class="key">with</span>:
+          <span class="key">python-version</span>: <span class="str">'3.10'</span>
+
+      - <span class="key">name</span>: <span class="str">Build site</span>
+        <span class="key">run</span>: <span class="str">python3 master/render_all.py</span>
+
+      - <span class="key">name</span>: <span class="str">Deploy to GitHub Pages</span>
+        <span class="key">uses</span>: <span class="str">peaceiris/actions-gh-pages@v3</span>
+        <span class="key">with</span>:
+          <span class="key">github_token</span>: <span class="str">${{ secrets.GITHUB_TOKEN }}</span>
+          <span class="key">publish_dir</span>: <span class="str">./</span>
+          <span class="key">cname</span>: <span class="str">myrrha-wcs.engineering.example.com</span></div>
+</div>
+
+<!-- STAGE 5 -->
+<h2>Stage 5: Authentication Strategy</h2>
+
+<div class="auth-option recommended">
+<h4>Option A: Development Bypass (Quick Access) ★</h4>
+<p style="font-size:13px;color:var(--fg2)">Simple session-based auth gate for development/internal sharing. No server required.</p>
+<div class="yaml-block"><span class="comment">// Add to index.html &lt;head&gt; — Development quick-pass</span>
+<span class="comment">// Prompts for credentials on first visit, stores in sessionStorage</span>
+
+(<span class="key">function</span>() {
+  <span class="key">const</span> DEV_USERS = {
+    <span class="str">'admin'</span>:    <span class="str">'admin'</span>,
+    <span class="str">'dev'</span>:      <span class="str">'dev123'</span>,
+    <span class="str">'engineer'</span>: <span class="str">'myrrha2026'</span>
+  };
+
+  <span class="key">if</span> (!sessionStorage.getItem(<span class="str">'myrrha_auth'</span>)) {
+    <span class="key">const</span> user = prompt(<span class="str">'MYRRHA WCS — Username:'</span>);
+    <span class="key">const</span> pass = prompt(<span class="str">'Password:'</span>);
+
+    <span class="key">if</span> (DEV_USERS[user] === pass) {
+      sessionStorage.setItem(<span class="str">'myrrha_auth'</span>, <span class="str">'true'</span>);
+      sessionStorage.setItem(<span class="str">'myrrha_user'</span>, user);
+    } <span class="key">else</span> {
+      alert(<span class="str">'Access denied. Contact engineering team.'</span>);
+      document.body.innerHTML = <span class="str">''</span>;
+      window.location = <span class="str">'about:blank'</span>;
+    }
+  }
+})();</div>
+<table style="font-size:12px;margin-top:10px">
+<thead><tr><th>Username</th><th>Password</th><th>Role</th></tr></thead>
+<tbody>
+<tr><td><code>admin</code></td><td><code>admin</code></td><td>Full access</td></tr>
+<tr><td><code>dev</code></td><td><code>dev123</code></td><td>Developer</td></tr>
+<tr><td><code>engineer</code></td><td><code>myrrha2026</code></td><td>Engineering team</td></tr>
+</tbody></table>
+<p style="font-size:11px;color:var(--fg2);margin-top:8px">⚠ Not for production — credentials in client JS. Suitable for internal dev/review access only.</p>
+</div>
+
+<div class="auth-option">
+<h4>Option B: GitHub Pages + Cloudflare Access</h4>
+<p style="font-size:13px;color:var(--fg2)">Enterprise-grade zero-trust access via Cloudflare. SSO integration.</p>
+<div class="check-item"><span class="check-icon">1️⃣</span><div>Deploy to GitHub Pages (public repo, or org-level private pages)</div></div>
+<div class="check-item"><span class="check-icon">2️⃣</span><div>Add Cloudflare DNS in front of GitHub Pages</div></div>
+<div class="check-item"><span class="check-icon">3️⃣</span><div>Configure Cloudflare Access application for the domain</div></div>
+<div class="check-item"><span class="check-icon">4️⃣</span><div>Set access policy: allow specific email domains (e.g., <code>@sckcen.be</code>, <code>@myrrha.eu</code>)</div></div>
+<div class="check-item"><span class="check-icon">5️⃣</span><div>Enable SSO via Google Workspace or Microsoft Entra ID</div></div>
+<p style="font-size:11px;color:var(--fg2);margin-top:8px">✓ Server-side auth · ✓ SSO · ✓ Audit logs · ✓ IP restrictions · Cost: Cloudflare Zero Trust free tier (50 users)</p>
+</div>
+
+<div class="auth-option">
+<h4>Option C: Private GitHub Repo</h4>
+<p style="font-size:13px;color:var(--fg2)">Rely on GitHub's built-in authentication. Simplest setup.</p>
+<div class="check-item"><span class="check-icon">1️⃣</span><div>Keep repository <b>private</b></div></div>
+<div class="check-item"><span class="check-icon">2️⃣</span><div>Enable GitHub Pages for private repo (requires GitHub Pro/Team/Enterprise)</div></div>
+<div class="check-item"><span class="check-icon">3️⃣</span><div>Add collaborators via GitHub team management</div></div>
+<div class="check-item"><span class="check-icon">4️⃣</span><div>GitHub Pages serves only to authenticated collaborators</div></div>
+<p style="font-size:11px;color:var(--fg2);margin-top:8px">✓ Zero config · ✓ Native GitHub auth · ✗ No SSO · ✗ Requires GitHub account · Cost: GitHub Team ($4/user/mo)</p>
+</div>
+
+<!-- DEPLOYED URL STRUCTURE -->
+<h2>Deployed URL Structure</h2>
+<div class="card">
+<div class="url-tree">
+<b>https://[username].github.io/myrrha-wcs-handover/</b>
+├── <a href="index.html">index.html</a>          <span style="color:var(--fg2)">← Hub (with auth gate)</span>
+├── <a href="slides.html">slides.html</a>         <span style="color:var(--fg2)">← Interactive slide deck</span>
+├── <a href="slide-editor.html">slide-editor.html</a>   <span style="color:var(--fg2)">← Dual-pane editor</span>
+├── <a href="reports.html">reports.html</a>        <span style="color:var(--fg2)">← Rendered markdown reports</span>
+├── <a href="tables.html">tables.html</a>         <span style="color:var(--fg2)">← Copyable spec tables</span>
+├── <a href="graphs.html">graphs.html</a>         <span style="color:var(--fg2)">← Chart.js plots</span>
+├── <a href="status.html">status.html</a>         <span style="color:var(--fg2)">← Session status tracker</span>
+├── <a href="truth.html">truth.html</a>          <span style="color:var(--fg2)">← Source of truth</span>
+├── <a href="utilities.html">utilities.html</a>      <span style="color:var(--fg2)">← Math proofs + calcs</span>
+├── <a href="pvps.html">pvps.html</a>           <span style="color:var(--fg2)">← PVPS subsystem</span>
+├── <a href="hx-sizing.html">hx-sizing.html</a>      <span style="color:var(--fg2)">← RCW HX + COMBI</span>
+├── <a href="thermo-analysis.html">thermo-analysis.html</a> <span style="color:var(--fg2)">← Energy analysis</span>
+├── <a href="operations.html">operations.html</a>     <span style="color:var(--fg2)">← Operating window</span>
+├── <a href="handover.html">handover.html</a>       <span style="color:var(--fg2)">← Agent handover</span>
+├── <a href="review-dmaic.html">review-dmaic.html</a>   <span style="color:var(--fg2)">← DMAIC dashboard</span>
+├── <a href="missed-opportunities.html">missed-opportunities.html</a> <span style="color:var(--fg2)">← Gap analysis</span>
+├── <a href="action-tracker.html">action-tracker.html</a> <span style="color:var(--fg2)">← Enhanced action tracker</span>
+├── <a href="xref-matrix.html">xref-matrix.html</a>    <span style="color:var(--fg2)">← Cross-reference</span>
+├── <a href="verification-checklist.html">verification-checklist.html</a> <span style="color:var(--fg2)">← Calc verification</span>
+├── <a href="qa-checklist.html">qa-checklist.html</a>   <span style="color:var(--fg2)">← QA suite</span>
+├── <a href="search-index.html">search-index.html</a>   <span style="color:var(--fg2)">← Full-text search</span>
+├── <a href="artifact-tracker.html">artifact-tracker.html</a> <span style="color:var(--fg2)">← Artifact DMAIC</span>
+├── <a href="diff-tracker.html">diff-tracker.html</a>   <span style="color:var(--fg2)">← Change tracking</span>
+├── <a href="ci-cd-pipeline.html">ci-cd-pipeline.html</a> <span style="color:var(--fg2)">← This file</span>
+├── <a href="weighted-priority.html">weighted-priority.html</a> <span style="color:var(--fg2)">← Priority scoring</span>
+└── master/
+    ├── data.json       <span style="color:var(--fg2)">← Master data (protected)</span>
+    ├── config.yaml     <span style="color:var(--fg2)">← Render config</span>
+    ├── slides.md       <span style="color:var(--fg2)">← Slide source</span>
+    ├── truth.md        <span style="color:var(--fg2)">← Design decisions</span>
+    └── render_all.py   <span style="color:var(--fg2)">← Build script</span>
+</div>
+</div>
+
+<!-- PREREQUISITES -->
+<h2>Implementation Checklist</h2>
+<div class="card">
+<div class="check-item"><span class="check-icon">⬜</span><div><b>Create <code>requirements.txt</code></b> — Python dependencies for render pipeline</div></div>
+<div class="check-item"><span class="check-icon">⬜</span><div><b>Create <code>tests/validate_html.py</code></b> — HTML structure validation script</div></div>
+<div class="check-item"><span class="check-icon">⬜</span><div><b>Create <code>tests/qa_suite.py</code></b> — Automated QA check runner</div></div>
+<div class="check-item"><span class="check-icon">⬜</span><div><b>Create <code>tests/validate_data.py</code></b> — data.json schema validation</div></div>
+<div class="check-item"><span class="check-icon">⬜</span><div><b>Create <code>.github/workflows/ci.yml</code></b> — CI workflow</div></div>
+<div class="check-item"><span class="check-icon">⬜</span><div><b>Create <code>.github/workflows/deploy.yml</code></b> — CD workflow</div></div>
+<div class="check-item"><span class="check-icon">⬜</span><div><b>Create <code>.gitignore</code></b> — Exclude build artifacts, editor files</div></div>
+<div class="check-item"><span class="check-icon">⬜</span><div><b>Initialize Git repository</b> — <code>git init</code> + remote</div></div>
+<div class="check-item"><span class="check-icon">⬜</span><div><b>Choose auth strategy</b> — Option A (dev bypass) for immediate use</div></div>
+<div class="check-item"><span class="check-icon">⬜</span><div><b>First deployment</b> — Push to GitHub + enable Pages</div></div>
+</div>
+
+<!-- NAV -->
+<div class="card">
+<h3 style="margin-top:0">Related Views</h3>
+<div class="grid4">
+<a class="card" href="action-tracker.html"><h4 style="margin-top:0">📌 Action Tracker</h4></a>
+<a class="card" href="artifact-tracker.html"><h4 style="margin-top:0">📦 Artifact Tracker</h4></a>
+<a class="card" href="diff-tracker.html"><h4 style="margin-top:0">🔀 Diff Tracker</h4></a>
+<a class="card" href="weighted-priority.html"><h4 style="margin-top:0">⚖ Weighted Priority</h4></a>
+</div>
+</div>
+</div>
+</body></html>

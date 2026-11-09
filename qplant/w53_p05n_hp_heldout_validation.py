@@ -4,6 +4,7 @@ The target row (326 g/s, 814 kW) is excluded from model fitting. The predictor i
 fit only to the other source-bound SUPPLIER_B operating-mode HP flow/power rows. This is
 an internal cross-mode validation, not an independent OEM performance guarantee.
 """
+
 from __future__ import annotations
 
 import csv
@@ -12,7 +13,10 @@ from pathlib import Path
 
 import numpy as np
 
-DATA = Path(__file__).parent / "energy_exergy/rev1_7/data/operating_utility_scenarios_24_30_rev1_7.csv"
+DATA = (
+    Path(__file__).parent
+    / "energy_exergy/rev1_7/data/operating_utility_scenarios_24_30_rev1_7.csv"
+)
 TARGET_FLOW = 326.0
 TARGET_POWER = 814.0
 TOLERANCE_PERCENT = 1.0
@@ -24,7 +28,14 @@ def load_rows() -> list[dict]:
 
 
 def fit_predict(rows: list[dict], degree: int) -> dict:
-    training = [r for r in rows if not (float(r["hp_flow_g_s"]) == TARGET_FLOW and float(r["hp_kwe"]) == TARGET_POWER)]
+    training = [
+        r
+        for r in rows
+        if not (
+            float(r["hp_flow_g_s"]) == TARGET_FLOW
+            and float(r["hp_kwe"]) == TARGET_POWER
+        )
+    ]
     x = np.array([float(r["hp_flow_g_s"]) for r in training], dtype=float)
     y = np.array([float(r["hp_kwe"]) for r in training], dtype=float)
     coeff = np.polyfit(x, y, degree)
@@ -61,11 +72,19 @@ def report() -> dict:
             "excluded_from_fit": True,
         },
         "training_authority": "OTHER_SUPPLIER_B_SOURCE_BOUND_OPERATING_MODE_ROWS_FROM_REV1_7_SSOT",
-        "models": {"linear": linear, "quadratic": quadratic, "cubic_sensitivity": cubic},
+        "models": {
+            "linear": linear,
+            "quadratic": quadratic,
+            "cubic_sensitivity": cubic,
+        },
         "primary_model": "linear",
         "primary_reason": "lowest_complexity_cross_mode_predictor; avoids overfitting eight training rows",
         "strict_interpretation": {
-            "numeric_result": "CANDIDATE_PASS" if linear["within_1pct_engineering_tolerance"] else "FAIL_NUMERIC",
+            "numeric_result": (
+                "CANDIDATE_PASS"
+                if linear["within_1pct_engineering_tolerance"]
+                else "FAIL_NUMERIC"
+            ),
             "score_before": "1/5",
             "score_after": "1/5",
             "promotion_blocker": "CHILD_AUTHORITY_MUST_ACCEPT_CROSS_MODE_HELDOUT_PREDICTION_AS_SUFFICIENTLY_INDEPENDENT_FOR_R4",

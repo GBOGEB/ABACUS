@@ -65,4 +65,3 @@
 - **ValidatorAgent** (Score: 95.0)
 
 ---
-

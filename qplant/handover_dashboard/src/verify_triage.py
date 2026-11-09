@@ -9,6 +9,7 @@ Usage:
     python src/verify_triage.py --md     # also writes TRIAGE_GAP_ANALYSIS.md
     python src/verify_triage.py --all    # writes .md, .json, and .html
 """
+
 from __future__ import annotations
 
 import hashlib
@@ -75,7 +76,10 @@ ADDENDUM_SECTIONS = [
             {
                 "id": "REQ-01.7",
                 "text": "Quantified leak rates with explicit thresholds for diffusive losses",
-                "evidence_files": ["docs/calculations.html", "outputs/tables/conversion_table.json"],
+                "evidence_files": [
+                    "docs/calculations.html",
+                    "outputs/tables/conversion_table.json",
+                ],
                 "evidence_search": "mass_flow_g_year",
                 "status_logic": "search",
             },
@@ -95,7 +99,11 @@ ADDENDUM_SECTIONS = [
             {
                 "id": "REQ-02.1",
                 "text": "Helium recovery strategy for LOOP/LOCA events",
-                "evidence_files": ["source/handover.md", "docs/calculations.html", "data/scenarios.json"],
+                "evidence_files": [
+                    "source/handover.md",
+                    "docs/calculations.html",
+                    "data/scenarios.json",
+                ],
                 "evidence_search": "loss",
                 "status_logic": "search",
             },
@@ -138,7 +146,10 @@ ADDENDUM_SECTIONS = [
             {
                 "id": "REQ-03.2",
                 "text": "Warm valve derogation tracking (leak tightness concern)",
-                "evidence_files": ["data/source_anchors.json", "docs/executive_summary.html"],
+                "evidence_files": [
+                    "data/source_anchors.json",
+                    "docs/executive_summary.html",
+                ],
                 "evidence_search": "derogation",
                 "status_logic": "search",
             },
@@ -152,7 +163,10 @@ ADDENDUM_SECTIONS = [
             {
                 "id": "REQ-03.4",
                 "text": "Valve CAPEX vs. He-loss cost comparison",
-                "evidence_files": ["outputs/tables/cost_table.csv", "docs/plots/plot3_cost_vs_leaktightness.html"],
+                "evidence_files": [
+                    "outputs/tables/cost_table.csv",
+                    "docs/plots/plot3_cost_vs_leaktightness.html",
+                ],
                 "evidence_search": None,
                 "status_logic": "file_exists",
             },
@@ -301,7 +315,10 @@ ADDENDUM_SECTIONS = [
             {
                 "id": "REQ-07.1",
                 "text": "RTM-047 to RTM-067 requirement mapping",
-                "evidence_files": ["outputs/tables/rtm_traceability.csv", "traceability/RTM_047_067.csv"],
+                "evidence_files": [
+                    "outputs/tables/rtm_traceability.csv",
+                    "traceability/RTM_047_067.csv",
+                ],
                 "evidence_search": None,
                 "status_logic": "all_files_exist",
             },
@@ -383,7 +400,10 @@ ADDENDUM_SECTIONS = [
             {
                 "id": "REQ-09.4",
                 "text": "Unit tests (pytest)",
-                "evidence_files": ["tests/test_engineering.py", "tests/test_build_outputs.py"],
+                "evidence_files": [
+                    "tests/test_engineering.py",
+                    "tests/test_build_outputs.py",
+                ],
                 "evidence_search": None,
                 "status_logic": "all_files_exist",
             },
@@ -509,7 +529,14 @@ FEATURE_CATEGORIES = {
         "check_keys": ["1e-9", "1e-8", "1e-5", "1e-4"],
     },
     "Audience Views": {
-        "required": ["Executive summary", "Dashboard", "Calculations", "RTM traceability", "Handover HTML", "Handover PDF"],
+        "required": [
+            "Executive summary",
+            "Dashboard",
+            "Calculations",
+            "RTM traceability",
+            "Handover HTML",
+            "Handover PDF",
+        ],
         "check_files": [
             "docs/executive_summary.html",
             "docs/dashboard.html",
@@ -520,7 +547,13 @@ FEATURE_CATEGORIES = {
         ],
     },
     "Interactive Plots": {
-        "required": ["Leak vs loss", "Temp/pressure effects", "Cost vs leaktightness", "Fleet sensitivity", "Reliability"],
+        "required": [
+            "Leak vs loss",
+            "Temp/pressure effects",
+            "Cost vs leaktightness",
+            "Fleet sensitivity",
+            "Reliability",
+        ],
         "check_files": [
             "docs/plots/plot1_leak_vs_loss.html",
             "docs/plots/plot2_temp_pressure_effects.html",
@@ -530,7 +563,13 @@ FEATURE_CATEGORIES = {
         ],
     },
     "Data Tables": {
-        "required": ["Conversion table", "Scenario table", "Cost table", "Reliability table", "RTM traceability table"],
+        "required": [
+            "Conversion table",
+            "Scenario table",
+            "Cost table",
+            "Reliability table",
+            "RTM traceability table",
+        ],
         "check_files": [
             "outputs/tables/conversion_table.csv",
             "outputs/tables/scenario_table.csv",
@@ -540,7 +579,14 @@ FEATURE_CATEGORIES = {
         ],
     },
     "UI Features": {
-        "required": ["Mode switching", "Expand/collapse", "PDF export", "Status badges", "DMAIC notes", "Print CSS"],
+        "required": [
+            "Mode switching",
+            "Expand/collapse",
+            "PDF export",
+            "Status badges",
+            "DMAIC notes",
+            "Print CSS",
+        ],
         "check_patterns": [
             ("assets/triage.js", "setMode"),
             ("assets/triage.js", "expandAll"),
@@ -551,22 +597,41 @@ FEATURE_CATEGORIES = {
         ],
     },
     "Valve Candidates": {
-        "required": ["Meca Inox ball valve", "Swagelok SS-42GSE", "Metal-sealed cryogenic"],
+        "required": [
+            "Meca Inox ball valve",
+            "Swagelok SS-42GSE",
+            "Metal-sealed cryogenic",
+        ],
         "check_file": "data/valve_candidates.json",
         "check_keys": ["Meca Inox", "Swagelok", "metal-sealed"],
     },
     "Scenarios": {
-        "required": ["Baseline mixed fleet", "Uniform high-integrity", "RTM-048 cap reference"],
+        "required": [
+            "Baseline mixed fleet",
+            "Uniform high-integrity",
+            "RTM-048 cap reference",
+        ],
         "check_file": "data/scenarios.json",
         "check_keys": ["SCN-BASELINE-MIX", "SCN-ALL-1E8", "SCN-RTM048-CAP"],
     },
     "Source Anchors": {
-        "required": ["Warm valves slide ref", "RTM-048 system cap", "EN 13185 reference"],
+        "required": [
+            "Warm valves slide ref",
+            "RTM-048 system cap",
+            "EN 13185 reference",
+        ],
         "check_file": "data/source_anchors.json",
         "check_keys": ["SRC-WARM-VALVES", "SRC-RTM048", "SRC-EN13185"],
     },
     "Tests": {
-        "required": ["Dimensional chain test", "Temperature scaling test", "RTM-048 conversion test", "Baseline range test", "Build outputs test", "Manifest hashes test"],
+        "required": [
+            "Dimensional chain test",
+            "Temperature scaling test",
+            "RTM-048 conversion test",
+            "Baseline range test",
+            "Build outputs test",
+            "Manifest hashes test",
+        ],
         "check_patterns": [
             ("tests/test_engineering.py", "test_dimensional_chain"),
             ("tests/test_engineering.py", "test_temperature_pressure_scaling"),
@@ -577,7 +642,12 @@ FEATURE_CATEGORIES = {
         ],
     },
     "Build & Determinism": {
-        "required": ["Single build entry", "Idempotent writes", "SHA-256 manifest", "Version tracking"],
+        "required": [
+            "Single build entry",
+            "Idempotent writes",
+            "SHA-256 manifest",
+            "Version tracking",
+        ],
         "check_patterns": [
             ("src/build_all.py", "def run"),
             ("src/manifest.py", "write_text_if_changed"),
@@ -591,6 +661,7 @@ FEATURE_CATEGORIES = {
 # ─────────────────────────────────────────────────────────────────────
 # VERIFICATION ENGINE
 # ─────────────────────────────────────────────────────────────────────
+
 
 def sha256_file(path: Path) -> str:
     return hashlib.sha256(path.read_bytes()).hexdigest()
@@ -642,14 +713,18 @@ def verify_requirement(req: dict) -> dict:
             result["status"] = "COMPLETE"
             result["completion_pct"] = 100
             result["verification"] = "PASS"
-            result["evidence"].append({
-                "file": str(p.relative_to(ROOT)),
-                "size_bytes": p.stat().st_size,
-                "sha256": sha256_file(p),
-            })
+            result["evidence"].append(
+                {
+                    "file": str(p.relative_to(ROOT)),
+                    "size_bytes": p.stat().st_size,
+                    "sha256": sha256_file(p),
+                }
+            )
         else:
             result["status"] = "GAP"
-            result["gaps"].append(f"File missing: {evidence_files[0] if evidence_files else 'unknown'}")
+            result["gaps"].append(
+                f"File missing: {evidence_files[0] if evidence_files else 'unknown'}"
+            )
 
     elif logic == "all_files_exist":
         found = 0
@@ -657,11 +732,13 @@ def verify_requirement(req: dict) -> dict:
             p = ROOT / ef
             if p.exists():
                 found += 1
-                result["evidence"].append({
-                    "file": ef,
-                    "size_bytes": p.stat().st_size,
-                    "sha256": sha256_file(p),
-                })
+                result["evidence"].append(
+                    {
+                        "file": ef,
+                        "size_bytes": p.stat().st_size,
+                        "sha256": sha256_file(p),
+                    }
+                )
             else:
                 result["gaps"].append(f"Missing: {ef}")
         pct = int(100 * found / max(len(evidence_files), 1))
@@ -685,19 +762,23 @@ def verify_requirement(req: dict) -> dict:
             found, lines = _search_in_file(p, search_pattern)
             if found:
                 any_found = True
-                result["evidence"].append({
-                    "file": ef,
-                    "pattern": search_pattern,
-                    "matching_lines": lines[:5],
-                    "sha256": sha256_file(p) if p.exists() else None,
-                })
+                result["evidence"].append(
+                    {
+                        "file": ef,
+                        "pattern": search_pattern,
+                        "matching_lines": lines[:5],
+                        "sha256": sha256_file(p) if p.exists() else None,
+                    }
+                )
         if any_found:
             result["status"] = "COMPLETE"
             result["completion_pct"] = 100
             result["verification"] = "PASS"
         else:
             result["status"] = "GAP"
-            result["gaps"].append(f"Pattern '{search_pattern}' not found in {evidence_files}")
+            result["gaps"].append(
+                f"Pattern '{search_pattern}' not found in {evidence_files}"
+            )
 
     elif logic == "absent":
         # We want the pattern to NOT appear (e.g., removed bad factor)
@@ -706,12 +787,16 @@ def verify_requirement(req: dict) -> dict:
             found, lines = _search_in_file(p, search_pattern)
             if found:
                 result["status"] = "GAP"
-                result["gaps"].append(f"Pattern '{search_pattern}' still present in {ef} at lines {lines}")
+                result["gaps"].append(
+                    f"Pattern '{search_pattern}' still present in {ef} at lines {lines}"
+                )
                 return result
         result["status"] = "COMPLETE"
         result["completion_pct"] = 100
         result["verification"] = "PASS"
-        result["evidence"].append({"note": f"Pattern '{search_pattern}' correctly absent"})
+        result["evidence"].append(
+            {"note": f"Pattern '{search_pattern}' correctly absent"}
+        )
 
     return result
 
@@ -779,14 +864,16 @@ def verify_features() -> list[dict]:
                     missing.append(feat)
 
         pct = int(100 * len(implemented) / max(len(required), 1))
-        results.append({
-            "category": cat_name,
-            "total_required": len(required),
-            "implemented": len(implemented),
-            "implemented_list": implemented,
-            "completion_pct": pct,
-            "missing": missing,
-        })
+        results.append(
+            {
+                "category": cat_name,
+                "total_required": len(required),
+                "implemented": len(implemented),
+                "implemented_list": implemented,
+                "completion_pct": pct,
+                "missing": missing,
+            }
+        )
     return results
 
 
@@ -837,7 +924,8 @@ def run_verification() -> dict:
     feature_coverage_pct = int(100 * implemented_features / max(total_features, 1))
 
     score_10 = round(
-        (overall_pct * 0.4 + file_coverage_pct * 0.3 + feature_coverage_pct * 0.3) / 10, 1
+        (overall_pct * 0.4 + file_coverage_pct * 0.3 + feature_coverage_pct * 0.3) / 10,
+        1,
     )
 
     if overall_pct >= 95 and file_coverage_pct >= 95:
@@ -879,6 +967,7 @@ def run_verification() -> dict:
 # OUTPUT GENERATORS
 # ─────────────────────────────────────────────────────────────────────
 
+
 def generate_markdown(report: dict) -> str:
     """Generate TRIAGE_GAP_ANALYSIS.md from verification report."""
     es = report["executive_summary"]
@@ -916,9 +1005,17 @@ def generate_markdown(report: dict) -> str:
         lines.append(f"### {sec['id']}: {sec['title']}")
         lines.append("")
         for req in sec["requirements"]:
-            status_icon = {"COMPLETE": "✅", "PARTIAL": "🟡", "GAP": "❌", "NOT_IN_SCOPE": "⬜", "NOT_STARTED": "❌"}.get(req["status"], "❓")
+            status_icon = {
+                "COMPLETE": "✅",
+                "PARTIAL": "🟡",
+                "GAP": "❌",
+                "NOT_IN_SCOPE": "⬜",
+                "NOT_STARTED": "❌",
+            }.get(req["status"], "❓")
             lines.append(f"#### {req['id']}: {req['text']}")
-            lines.append(f"- **Status:** {status_icon} {req['status']} ({req['completion_pct']}%)")
+            lines.append(
+                f"- **Status:** {status_icon} {req['status']} ({req['completion_pct']}%)"
+            )
             lines.append(f"- **Verification:** {req['verification']}")
             if req["evidence"]:
                 lines.append(f"- **Evidence:**")
@@ -948,7 +1045,9 @@ def generate_markdown(report: dict) -> str:
         size = f"{f['size_bytes']}" if f["size_bytes"] is not None else "—"
         sha = f"`{f['sha256'][:16]}...`" if f["sha256"] else "—"
         status = "✅" if f["status"] == "OK" else "❌"
-        lines.append(f"| `{f['required_file']}` | {exists} | {size} | {sha} | {status} |")
+        lines.append(
+            f"| `{f['required_file']}` | {exists} | {size} | {sha} | {status} |"
+        )
     lines.append("")
 
     # Feature matrix
@@ -990,10 +1089,20 @@ def generate_markdown(report: dict) -> str:
         for req in sec["requirements"]:
             for ev in req["evidence"]:
                 if "file" in ev:
-                    detail = ", ".join(str(line_no) for line_no in ev.get("matching_lines", [])) if ev.get("matching_lines") else f"{ev.get('size_bytes', '—')} bytes"
-                    lines.append(f"| {req['id']} | `{ev['file']}` | {detail} | {req['verification']} |")
+                    detail = (
+                        ", ".join(
+                            str(line_no) for line_no in ev.get("matching_lines", [])
+                        )
+                        if ev.get("matching_lines")
+                        else f"{ev.get('size_bytes', '—')} bytes"
+                    )
+                    lines.append(
+                        f"| {req['id']} | `{ev['file']}` | {detail} | {req['verification']} |"
+                    )
                 elif "note" in ev:
-                    lines.append(f"| {req['id']} | — | {ev['note']} | {req['verification']} |")
+                    lines.append(
+                        f"| {req['id']} | — | {ev['note']} | {req['verification']} |"
+                    )
     lines.append("")
     lines.append(f"## Overall Compliance Score: {es['compliance_score']}/10.0")
     lines.append("")
@@ -1017,7 +1126,11 @@ def generate_html(report: dict) -> str:
     section_rows = ""
     for sec in report["section_analysis"]:
         sec_reqs_total = len(sec["requirements"])
-        sec_reqs_met = sum(1 for r in sec["requirements"] if r["status"] in ("COMPLETE", "NOT_IN_SCOPE"))
+        sec_reqs_met = sum(
+            1
+            for r in sec["requirements"]
+            if r["status"] in ("COMPLETE", "NOT_IN_SCOPE")
+        )
         sec_pct = int(100 * sec_reqs_met / max(sec_reqs_total, 1))
         req_rows = ""
         for req in sec["requirements"]:
@@ -1220,6 +1333,7 @@ function exportJSON() {{
 # MAIN
 # ─────────────────────────────────────────────────────────────────────
 
+
 def main():
     report = run_verification()
 
@@ -1236,7 +1350,9 @@ def main():
 
     if write_all:
         json_report = json.dumps(report, indent=2, default=str, sort_keys=True)
-        (ROOT / "TRIAGE_COMPLIANCE_REPORT.json").write_text(json_report + "\n", encoding="utf-8")
+        (ROOT / "TRIAGE_COMPLIANCE_REPORT.json").write_text(
+            json_report + "\n", encoding="utf-8"
+        )
         print(f"✅ Written: TRIAGE_COMPLIANCE_REPORT.json")
 
         html = generate_html(report)
@@ -1245,7 +1361,9 @@ def main():
 
     es = report["executive_summary"]
     passed = es["overall_completion_pct"] >= 80
-    print(f"\n{'PASS' if passed else 'FAIL'}: {es['overall_completion_pct']}% compliance ({es['overall_status']})")
+    print(
+        f"\n{'PASS' if passed else 'FAIL'}: {es['overall_completion_pct']}% compliance ({es['overall_status']})"
+    )
     return 0 if passed else 1
 
 

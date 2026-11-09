@@ -30,49 +30,46 @@ Victory Conditions:
     - JSON/YAML reports generated and linked
 """
 
-from pathlib import Path
-from typing import Dict, List, Optional, Any
 import json
-import yaml
 from datetime import datetime
+from pathlib import Path
+from typing import Any, Dict, List, Optional
 
-__version__ = '3.1.0'
-__dmaic_version__ = 'V3'
-__integration_mode__ = 'BIDIRECTIONAL'
+import yaml
 
-__all__ = [
-    'VERSION_INFO',
-    'get_version_info',
-    'check_victory_conditions'
-]
+__version__ = "3.1.0"
+__dmaic_version__ = "V3"
+__integration_mode__ = "BIDIRECTIONAL"
+
+__all__ = ["VERSION_INFO", "get_version_info", "check_victory_conditions"]
 
 VERSION_INFO = {
-    'version': __version__,
-    'dmaic_version': __dmaic_version__,
-    'integration_mode': __integration_mode__,
-    'created_date': '2025-11-10',
-    'last_updated': datetime.now().isoformat(),
-    'changelog': [
+    "version": __version__,
+    "dmaic_version": __dmaic_version__,
+    "integration_mode": __integration_mode__,
+    "created_date": "2025-11-10",
+    "last_updated": datetime.now().isoformat(),
+    "changelog": [
         {
-            'version': '3.1.0',
-            'date': '2025-11-10',
-            'changes': [
-                'Initial integration with DMAIC V3',
-                'Bidirectional pipeline support',
-                'Execution statistics tracking',
-                'Error type classification',
-                'Victory condition framework'
-            ]
+            "version": "3.1.0",
+            "date": "2025-11-10",
+            "changes": [
+                "Initial integration with DMAIC V3",
+                "Bidirectional pipeline support",
+                "Execution statistics tracking",
+                "Error type classification",
+                "Victory condition framework",
+            ],
         }
     ],
-    'victory_conditions': {
-        'python_execution': 'All Python files execute without errors',
-        'vba_validation': 'All VBA files validate successfully',
-        'statistics_tracking': 'Execution stats tracked per file',
-        'error_classification': 'Error types classified and reported',
-        'documentation_alignment': 'All markdown files version-aligned',
-        'report_generation': 'JSON/YAML reports generated and linked'
-    }
+    "victory_conditions": {
+        "python_execution": "All Python files execute without errors",
+        "vba_validation": "All VBA files validate successfully",
+        "statistics_tracking": "Execution stats tracked per file",
+        "error_classification": "Error types classified and reported",
+        "documentation_alignment": "All markdown files version-aligned",
+        "report_generation": "JSON/YAML reports generated and linked",
+    },
 }
 
 
@@ -85,5 +82,5 @@ def check_victory_conditions() -> Dict[str, bool]:
     """Check if all victory conditions are met"""
     return {
         condition: False  # Will be updated by ExecutionTracker
-        for condition in VERSION_INFO['victory_conditions'].keys()
+        for condition in VERSION_INFO["victory_conditions"].keys()
     }

@@ -1,0 +1,81 @@
+name: myrrha-handover-smoke
+
+# Scoped smoke test for the self-contained MYRRHA WCS handover snapshot.
+# Path-filtered: runs only when the handover package changes, so it never
+# interferes with the wider ABACUS CI governance gates.
+
+on:
+  push:
+    paths:
+      - 'myrrha_handover/**'
+  pull_request:
+    paths:
+      - 'myrrha_handover/**'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  smoke:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install PyYAML
+        run: python -m pip install --quiet pyyaml
+
+      - name: Validate JSON
+        run: |
+          fail=0
+          for f in $(find myrrha_handover -name '*.json'); do
+            python -c "import json,sys;json.load(open(sys.argv[1]))" "$f" \
+              && echo "OK   $f" || { echo "FAIL $f"; fail=1; }
+          done
+          exit $fail
+
+      - name: Validate YAML
+        run: |
+          fail=0
+          for f in $(find myrrha_handover -name '*.yaml' -o -name '*.yml'); do
+            python -c "import yaml,sys;list(yaml.safe_load_all(open(sys.argv[1])))" "$f" \
+              && echo "OK   $f" || { echo "FAIL $f"; fail=1; }
+          done
+          exit $fail
+
+      - name: Python syntax
+        run: |
+          fail=0
+          for f in $(find myrrha_handover -name '*.py'); do
+            python -m py_compile "$f" && echo "OK   $f" || { echo "FAIL $f"; fail=1; }
+          done
+          exit $fail
+
+      - name: Render check (render_all.py)
+        run: |
+          cd myrrha_handover/master && python render_all.py
+
+      - name: HTML internal link / asset check
+        run: |
+          python - <<'PY'
+          import re, os, glob, sys
+          root = 'myrrha_handover'
+          broken = []
+          for h in glob.glob(root + '/**/*.html', recursive=True):
+              d = os.path.dirname(h)
+              txt = open(h, encoding='utf-8', errors='ignore').read()
+              for m in re.findall(r'(?:href|src)="([^"#:]+)"', txt):
+                  if m.startswith(('http', '//', 'mailto', 'data:', 'javascript', '${')):
+                      continue
+                  tgt = os.path.normpath(os.path.join(d, m.split('?')[0]))
+                  if not os.path.exists(tgt):
+                      broken.append((os.path.relpath(h, root), m))
+          print(f"Broken local links/assets: {len(broken)}")
+          for b in broken:
+              print("  BROKEN:", b[0], "->", b[1])
+          sys.exit(1 if broken else 0)
+          PY

@@ -1,4 +1,5 @@
 """Read-only pagination, completeness and negative controls."""
+
 from __future__ import annotations
 
 import importlib.util
@@ -13,20 +14,31 @@ SHA = "a" * 40
 
 
 def record(n, head=SHA, event="workflow_run"):
-    return {"id": n, "name": "PR Feedback Gate Evaluator", "event": event,
-            "head_sha": head, "status": "queued", "created_at": "2026-10-15T08:29:00Z"}
+    return {
+        "id": n,
+        "name": "PR Feedback Gate Evaluator",
+        "event": event,
+        "head_sha": head,
+        "status": "queued",
+        "created_at": "2026-10-15T08:29:00Z",
+    }
 
 
 def api(rows, total=None, mutate=None, expected_sha=None):
     calls = []
+
     def get(url):
         calls.append(url)
         if expected_sha is not None and "head_sha=" + expected_sha not in url:
             raise RuntimeError("head query missing")
         page = int(url.rsplit("page=", 1)[-1])
-        part = rows[(page - 1) * 100:page * 100]
-        data = {"total_count": len(rows) if total is None else total, "workflow_runs": part}
+        part = rows[(page - 1) * 100 : page * 100]
+        data = {
+            "total_count": len(rows) if total is None else total,
+            "workflow_runs": part,
+        }
         return mutate(len(calls), data) if mutate else data
+
     return get, calls
 
 
@@ -57,6 +69,7 @@ class PaginationTests(unittest.TestCase):
             if n == 2:
                 d["total_count"] += 1
             return d
+
         get, _ = api([record(i) for i in range(1, 102)], mutate=change)
         r = mod.inspect(get)
         self.assertEqual(r["state"], "UNKNOWN")
@@ -67,6 +80,7 @@ class PaginationTests(unittest.TestCase):
             if n >= 3:
                 d["workflow_runs"] = [record(z["id"] + 500) for z in d["workflow_runs"]]
             return d
+
         get, _ = api([record(i) for i in range(1, 102)], mutate=change)
         r = mod.inspect(get)
         self.assertEqual(r["reason"], "DOUBLE_SWEEP_DRIFT")
@@ -76,6 +90,7 @@ class PaginationTests(unittest.TestCase):
             if n == 2:
                 d["workflow_runs"][0] = record(1)
             return d
+
         get, _ = api([record(i) for i in range(1, 102)], mutate=change)
         r = mod.inspect(get)
         self.assertEqual(r["state"], "UNKNOWN")
@@ -113,7 +128,9 @@ class PaginationTests(unittest.TestCase):
             mod.inspect(api([])[0], sha="123")
 
     def test_missing_total_unknown(self):
-        get, _ = api([record(1)], mutate=lambda n, d: {"workflow_runs": d["workflow_runs"]})
+        get, _ = api(
+            [record(1)], mutate=lambda n, d: {"workflow_runs": d["workflow_runs"]}
+        )
         r = mod.inspect(get)
         self.assertEqual(r["state"], "UNKNOWN")
 
@@ -157,10 +174,10 @@ class PaginationTests(unittest.TestCase):
     def test_request_failure_unknown(self):
         def get(_):
             raise RuntimeError("GitHub API unavailable")
+
         r = mod.inspect(get)
         self.assertEqual(r["state"], "UNKNOWN")
         self.assertFalse(r["authority_transfer"])
-
 
     def test_malformed_row_unknown(self):
         r = mod.inspect(api([None])[0])
@@ -171,8 +188,13 @@ class PaginationTests(unittest.TestCase):
         self.assertEqual(r["state"], "UNKNOWN")
 
     def test_oversized_page_unknown(self):
-        get, _ = api([record(1)], mutate=lambda n, d: {
-            **d, "workflow_runs": [record(i) for i in range(1, 102)]})
+        get, _ = api(
+            [record(1)],
+            mutate=lambda n, d: {
+                **d,
+                "workflow_runs": [record(i) for i in range(1, 102)],
+            },
+        )
         self.assertEqual(mod.inspect(get)["state"], "UNKNOWN")
 
     def test_empty_feedback_is_not_skip_authority(self):

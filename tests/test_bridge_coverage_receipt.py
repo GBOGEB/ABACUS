@@ -40,9 +40,10 @@ def test_receipt_binds_exact_source_and_coverage_bytes(measured):
     assert receipt["statements"] == {"covered": 6, "total": 10, "percent": 60.0}
     assert receipt["branches"] == {"covered": 3, "total": 6, "percent": 50.0}
     assert receipt["source_sha256"] == hashlib.sha256(source.read_bytes()).hexdigest()
-    assert receipt["coverage_report_sha256"] == hashlib.sha256(
-        path.read_bytes()
-    ).hexdigest()
+    assert (
+        receipt["coverage_report_sha256"]
+        == hashlib.sha256(path.read_bytes()).hexdigest()
+    )
 
 
 @pytest.mark.parametrize(
@@ -127,9 +128,7 @@ import scripts.bridge_coverage_receipt as bridge_receipt
     ["num_statements", "covered_lines", "num_branches", "covered_branches"],
 )
 @pytest.mark.parametrize("bad", [None, -1, False, "5"])
-def test_malformed_measurement_counts_are_rejected(
-    measured, origin, field, bad
-):
+def test_malformed_measurement_counts_are_rejected(measured, origin, field, bad):
     path, source, report = measured
     summary = (
         report["files"][source.as_posix()]["summary"]
@@ -144,8 +143,7 @@ def test_malformed_measurement_counts_are_rejected(
 
 @pytest.mark.parametrize("origin", ["module", "global"])
 @pytest.mark.parametrize(
-    "field", ["num_statements", "covered_lines", "num_branches",
-              "covered_branches"]
+    "field", ["num_statements", "covered_lines", "num_branches", "covered_branches"]
 )
 def test_missing_required_count_rejected(measured, origin, field):
     path, source, report = measured
@@ -201,13 +199,11 @@ def test_module_must_fit_within_global_measurement(
     path, source, report = measured
     if metric == "statements":
         report["totals"].update(
-            num_statements=total, covered_lines=covered,
-            missing_lines=missing
+            num_statements=total, covered_lines=covered, missing_lines=missing
         )
     else:
         report["totals"].update(
-            num_branches=total, covered_branches=covered,
-            missing_branches=missing
+            num_branches=total, covered_branches=covered, missing_branches=missing
         )
     # Two files suppress the stricter one-file equality check.
     report["files"]["other.py"] = {"summary": report["totals"].copy()}
@@ -220,14 +216,21 @@ def test_multiple_modules_do_not_inflate_single_module_receipt(measured):
     path, source, report = measured
     report["files"]["other.py"] = {
         "summary": {
-            "num_statements": 5, "covered_lines": 4,
-            "missing_lines": 1, "num_branches": 2,
-            "covered_branches": 1, "missing_branches": 1,
+            "num_statements": 5,
+            "covered_lines": 4,
+            "missing_lines": 1,
+            "num_branches": 2,
+            "covered_branches": 1,
+            "missing_branches": 1,
         }
     }
     report["totals"].update(
-        num_statements=15, covered_lines=10, missing_lines=5,
-        num_branches=8, covered_branches=4, missing_branches=4
+        num_statements=15,
+        covered_lines=10,
+        missing_lines=5,
+        num_branches=8,
+        covered_branches=4,
+        missing_branches=4,
     )
     path.write_text(json.dumps(report), encoding="utf-8")
     receipt = build_receipt(path, source, HEAD_SHA)
@@ -265,10 +268,19 @@ def test_cli_writes_structured_source_bound_receipt(
     path, source, _report = measured
     output = tmp_path / "receipt.json"
     monkeypatch.setattr(
-        sys, "argv",
-        ["bridge_coverage_receipt.py", "--coverage", str(path),
-         "--source", str(source), "--head", HEAD_SHA,
-         "--output", str(output)]
+        sys,
+        "argv",
+        [
+            "bridge_coverage_receipt.py",
+            "--coverage",
+            str(path),
+            "--source",
+            str(source),
+            "--head",
+            HEAD_SHA,
+            "--output",
+            str(output),
+        ],
     )
     bridge_receipt.main()
     receipt = json.loads(output.read_text(encoding="utf-8"))
@@ -285,10 +297,19 @@ def test_cli_failure_is_nonzero_and_does_not_publish(
     output = tmp_path / "must-not-exist.json"
     path.write_text("not json", encoding="utf-8")
     monkeypatch.setattr(
-        sys, "argv",
-        ["bridge_coverage_receipt.py", "--coverage", str(path),
-         "--source", str(source), "--head", HEAD_SHA,
-         "--output", str(output)]
+        sys,
+        "argv",
+        [
+            "bridge_coverage_receipt.py",
+            "--coverage",
+            str(path),
+            "--source",
+            str(source),
+            "--head",
+            HEAD_SHA,
+            "--output",
+            str(output),
+        ],
     )
     with pytest.raises(SystemExit) as exc:
         bridge_receipt.main()

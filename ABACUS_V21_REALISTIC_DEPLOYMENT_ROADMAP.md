@@ -178,10 +178,10 @@ class Config:
     BASE_DIR = Path(__file__).parent
     OUTPUT_DIR = BASE_DIR / "output"
     LOG_LEVEL = os.getenv("LOG_LEVEL", "INFO")
-    
+
 class DevelopmentConfig(Config):
     DEBUG = True
-    
+
 class ProductionConfig(Config):
     DEBUG = False
 ```
@@ -213,30 +213,30 @@ on:
 jobs:
   test:
     runs-on: ubuntu-latest
-    
+
     steps:
     - uses: actions/checkout@v3
-    
+
     - name: Set up Python
       uses: actions/setup-python@v4
       with:
         python-version: '3.11'
-    
+
     - name: Install dependencies
       run: |
         python -m pip install --upgrade pip
         pip install -r requirements.txt
         pip install pytest pytest-cov flake8
-    
+
     - name: Lint with flake8
       run: |
         flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics
         flake8 . --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
-    
+
     - name: Test with pytest
       run: |
         pytest tests/ --cov=./ --cov-report=xml
-    
+
     - name: Upload coverage
       uses: codecov/codecov-action@v3
       with:
@@ -246,14 +246,14 @@ jobs:
     needs: test
     runs-on: ubuntu-latest
     if: github.ref == 'refs/heads/main'
-    
+
     steps:
     - uses: actions/checkout@v3
-    
+
     - name: Build package
       run: |
         python setup.py sdist bdist_wheel
-    
+
     - name: Archive artifacts
       uses: actions/upload-artifact@v3
       with:
@@ -455,7 +455,7 @@ sudo nano /etc/nginx/sites-available/abacus
 server {
     listen 80;
     server_name your-domain.com;
-    
+
     location / {
         proxy_pass http://localhost:8000;
         proxy_set_header Host $host;

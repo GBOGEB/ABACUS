@@ -101,6 +101,10 @@ gates; no auto-merge, acceptance or security waiver.
     "statements": {"covered": 7779, "eligible": 22456},
     "branches": {"covered": 1651, "eligible": 5558}
   },
+  "terminal": true,
+  "tests": {
+    "executed": 4, "passed": 4, "failed": 0, "errors": 0, "skipped": 0
+  },
   "triage": null,
   "root_reds_open": null,
   "workers": [],

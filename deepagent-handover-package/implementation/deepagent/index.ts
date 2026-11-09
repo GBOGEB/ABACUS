@@ -89,7 +89,7 @@ import {
 export class DeepAgentFramework {
   private static instance: DeepAgentFramework;
   private initialized: boolean = false;
-  
+
   private constructor() {}
 
   public static getInstance(): DeepAgentFramework {

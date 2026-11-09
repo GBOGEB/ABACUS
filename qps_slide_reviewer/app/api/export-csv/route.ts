@@ -18,7 +18,8 @@ export async function GET() {
     ];
     const rows = data.slides.map((s) => [
       s.pageNumber, s.title, s.groupName, s.starred ? 'Yes' : 'No', s.votesUp, s.votesDown, s.votesNeutral, s.netVotes,
-      s.abWins, s.abLosses, s.abTies, s.winRate.toFixed(3), s.btStrength.toFixed(4), s.btLogStrength.toFixed(4),
+      s.abWins, s.abLosses, s.abTies, s.winRate?.toFixed(3) ?? '',
+      s.btStrength?.toFixed(4) ?? '', s.btLogStrength?.toFixed(4) ?? '',
       s.btStdError === null ? '' : s.btStdError.toFixed(4), s.btRank, s.pc1.toFixed(4), s.pc2.toFixed(4), s.pc3.toFixed(4),
     ].map(csvCell).join(','));
 

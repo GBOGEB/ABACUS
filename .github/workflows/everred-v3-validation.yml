@@ -32,7 +32,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        python-version: ['3.10', '3.12']
+        python-version: ['3.11', '3.12']
     steps:
       # Source-test checkout uses exact PR head, not a synthetic merge.
       # Full CI must independently verify merge admission.
@@ -41,7 +41,7 @@ jobs:
           ref: ${{ github.event.pull_request.head.sha || github.sha }}
           persist-credentials: false
       # actions/setup-python v5.6.0, immutable SHA pin
-      - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97
+      - uses: actions/setup-python@6d4fd22b20465ccc0f7354476588e8df7c9ca0e0
         with:
           python-version: ${{ matrix.python-version }}
       - name: Install XML entity-safe parser
@@ -330,9 +330,9 @@ jobs:
         with:
           persist-credentials: false
       # actions/setup-python v5.6.0, immutable SHA pin
-      - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97
+      - uses: actions/setup-python@6d4fd22b20465ccc0f7354476588e8df7c9ca0e0
         with:
-          python-version: '3.12'
+          python-version: '3.14'
       - name: Read existing run; reject SHA mismatch
         working-directory: tools/everred_v3
         env:
@@ -390,9 +390,9 @@ jobs:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
         with:
           persist-credentials: false
-      - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97
+      - uses: actions/setup-python@6d4fd22b20465ccc0f7354476588e8df7c9ca0e0
         with:
-          python-version: '3.12'
+          python-version: '3.14'
       - name: Install safe artifact XML parser
         run: python -m pip install defusedxml==0.7.1
       - name: Read and reconcile live GitHub heads and native evidence
@@ -426,9 +426,9 @@ jobs:
         with:
           ref: ${{ github.event.pull_request.head.sha || github.sha }}
           persist-credentials: false
-      - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97
+      - uses: actions/setup-python@6d4fd22b20465ccc0f7354476588e8df7c9ca0e0
         with:
-          python-version: '3.12'
+          python-version: '3.14'
       - name: Prove source checkout exact PR head
         env:
           EXPECTED_SHA: ${{ github.event.pull_request.head.sha || github.sha }}

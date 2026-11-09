@@ -1,0 +1,276 @@
+<!doctype html>
+<html lang="en"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>MYRRHA WCS · Interaction Analysis</title>
+<link rel="icon" href="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><text y='26' font-size='26'>🌪</text></svg>">
+<link rel="stylesheet" href="assets/style.css">
+<script src="https://cdn.plot.ly/plotly-2.27.0.min.js"></script>
+<script src="assets/common.js" defer></script>
+<style>
+.breadcrumb{font-size:12px;color:var(--fg2);margin-bottom:12px}.breadcrumb a{color:var(--accent2)}
+
+.tornado-chart{width:100%;min-height:500px;margin:14px 0}
+.network-graph{width:100%;min-height:500px;margin:14px 0;background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius)}
+.heatmap-chart{width:100%;min-height:500px;margin:14px 0}
+.dep-table td:first-child{font-family:var(--mono);font-weight:600}
+.score-pill{display:inline-block;padding:3px 10px;border-radius:999px;font-size:12px;font-weight:700;font-family:var(--mono);color:#fff}
+.score-crit{background:#C0392B}.score-high{background:#D85A30}.score-med{background:#E5A100;color:#1a1d23}.score-low{background:#378ADD}.score-min{background:#7F77DD}
+.top5-card{background:var(--bg2);border:2px solid var(--accent);border-radius:var(--radius);padding:18px;margin:10px 0}
+.top5-card h4{margin:0 0 6px;color:var(--accent)}
+.dep-type{display:inline-block;padding:2px 8px;border-radius:4px;font-size:11px;font-weight:600}
+.dep-code{background:#E3F2FD;color:#1565C0}.dep-html{background:#E8F5E9;color:#2E7D32}.dep-data{background:#FFF3E0;color:#E65100}
+.dep-config{background:#F3E5F5;color:#7B1FA2}.dep-doc{background:#ECEFF1;color:#455A64}.dep-asset{background:#FBE9E7;color:#BF360C}
+[data-theme=dark] .dep-code{background:#0D3059;color:#90CAF9}[data-theme=dark] .dep-html{background:#1B3A1B;color:#A5D6A7}
+[data-theme=dark] .dep-data{background:#3E2A10;color:#FFE0B2}[data-theme=dark] .dep-config{background:#2A1540;color:#CE93D8}
+[data-theme=dark] .dep-doc{background:#263238;color:#B0BEC5}[data-theme=dark] .dep-asset{background:#3E1010;color:#FFAB91}
+.stats-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px;margin:14px 0}
+.stats-card{text-align:center;padding:14px;background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius)}
+.stats-card .big{font-size:24px;font-weight:700;font-family:var(--mono)}
+.stats-card .lbl{font-size:11px;color:var(--fg2);text-transform:uppercase;margin-top:4px}
+
+</style>
+</head><body>
+<div class="container">
+<p class="breadcrumb"><a href="index.html">Hub</a> › <a href="artifact-tracker.html">Artifacts</a> › Interaction Analysis</p>
+<h1>🌪 Dependency Tornado & Interaction Analysis</h1>
+<p class="muted">35-artifact dependency matrix · interaction scoring · hub identification · v0.4.4</p>
+
+<div class="stats-grid">
+  <div class="stats-card"><div class="big">35</div><div class="lbl">Total Artifacts</div></div>
+  <div class="stats-card"><div class="big" id="totalEdges">0</div><div class="lbl">Dependencies</div></div>
+  <div class="stats-card"><div class="big" id="avgScore">0</div><div class="lbl">Avg Interaction Score</div></div>
+  <div class="stats-card"><div class="big" id="maxScore">0</div><div class="lbl">Max Score (Hub)</div></div>
+</div>
+
+<h2>Interaction Score Formula</h2>
+<div class="card">
+  <p><strong>Interaction Score</strong> = (Incoming Dependencies × 2) + (Outgoing Dependencies × 1)</p>
+  <p class="muted">Incoming dependencies are weighted 2× because breaking a hub artifact breaks all downstream consumers. Outgoing dependencies represent the artifact's own fragility.</p>
+</div>
+
+<!-- TOP 5 -->
+<h2>Top 5 High-Interaction Artifacts</h2>
+<div id="top5Cards"></div>
+
+<!-- TORNADO CHART -->
+<h2>Dependency Tornado</h2>
+<div class="card"><div id="tornadoChart" class="tornado-chart"></div></div>
+
+<!-- NETWORK GRAPH -->
+<h2>Dependency Network</h2>
+<div class="card"><div id="networkGraph" class="network-graph"><canvas id="netCanvas" style="width:100%;height:500px"></canvas></div></div>
+
+<!-- HEATMAP -->
+<h2>Dependency Heatmap (Top 15)</h2>
+<div class="card"><div id="heatmapChart" class="heatmap-chart"></div></div>
+
+<!-- FULL TABLE -->
+<h2>Complete Dependency Table</h2>
+<div class="card">
+<table class="dep-table" id="depTable">
+<thead><tr><th>Artifact</th><th>Type</th><th>Incoming</th><th>Outgoing</th><th>Score</th><th>Risk</th></tr></thead>
+<tbody id="depBody"></tbody>
+</table>
+</div>
+
+<script>
+/* ===== Artifact Dependency Data ===== */
+const ARTIFACTS = [
+  // Asset files
+  {name:"assets/style.css", type:"asset", incoming:28, outgoing:0, desc:"Global stylesheet loaded by 28 HTML views"},
+  {name:"assets/common.js", type:"code", incoming:25, outgoing:0, desc:"Navigation chrome, theme/font toggle, loaded by 25 views"},
+  {name:"assets/js/live-render.js", type:"code", incoming:1, outgoing:0, desc:"Live markdown render for slide-editor"},
+  // Master sources
+  {name:"master/data.json", type:"data", incoming:14, outgoing:0, desc:"Central data source for 14 HTML views"},
+  {name:"master/config.yaml", type:"config", incoming:1, outgoing:0, desc:"Render pipeline configuration"},
+  {name:"master/render_all.py", type:"code", incoming:0, outgoing:10, desc:"Generates 10 HTML views from master sources"},
+  {name:"master/slides.md", type:"doc", incoming:0, outgoing:2, desc:"Canonical slide deck source"},
+  {name:"master/truth.md", type:"doc", incoming:0, outgoing:2, desc:"Source of truth markdown"},
+  // HTML views (31 total)
+  {name:"index.html", type:"html", incoming:25, outgoing:30, desc:"Central hub linking to all 30 other views"},
+  {name:"slides.html", type:"html", incoming:5, outgoing:3, desc:"Interactive slide deck"},
+  {name:"slide-editor.html", type:"html", incoming:2, outgoing:3, desc:"Dual-view live editor"},
+  {name:"reports.html", type:"html", incoming:4, outgoing:7, desc:"Rendered markdown reports"},
+  {name:"tables.html", type:"html", incoming:5, outgoing:0, desc:"Copyable spec tables"},
+  {name:"graphs.html", type:"html", incoming:4, outgoing:0, desc:"Chart.js plots"},
+  {name:"status.html", type:"html", incoming:3, outgoing:4, desc:"Session status & progress"},
+  {name:"truth.html", type:"html", incoming:4, outgoing:1, desc:"Immutable design decisions"},
+  {name:"utilities.html", type:"html", incoming:3, outgoing:5, desc:"Math proofs & sample calcs"},
+  {name:"pvps.html", type:"html", incoming:2, outgoing:4, desc:"PVPS (WCS.LCC) array"},
+  {name:"hx-sizing.html", type:"html", incoming:3, outgoing:5, desc:"RCW HX & COMBI sizing"},
+  {name:"thermo-analysis.html", type:"html", incoming:2, outgoing:4, desc:"Energy waterfall & Sankey"},
+  {name:"operations.html", type:"html", incoming:3, outgoing:1, desc:"Operating scenarios β/γ"},
+  {name:"handover.html", type:"html", incoming:2, outgoing:1, desc:"Agent BIOS & protocol"},
+  {name:"review-dmaic.html", type:"html", incoming:4, outgoing:5, desc:"Six Sigma DMAIC review"},
+  {name:"missed-opportunities.html", type:"html", incoming:2, outgoing:3, desc:"30 technical gaps"},
+  {name:"action-tracker.html", type:"html", incoming:5, outgoing:11, desc:"29-item action tracker"},
+  {name:"artifact-tracker.html", type:"html", incoming:4, outgoing:6, desc:"Per-artifact DMAIC tracking"},
+  {name:"xref-matrix.html", type:"html", incoming:3, outgoing:11, desc:"B↔G↔T↔E traceability"},
+  {name:"verification-checklist.html", type:"html", incoming:2, outgoing:7, desc:"Hand-calc cross-checks"},
+  {name:"qa-checklist.html", type:"html", incoming:2, outgoing:3, desc:"38-item QA validation"},
+  {name:"qa-interactive.html", type:"html", incoming:2, outgoing:2, desc:"Interactive QA with state"},
+  {name:"search-index.html", type:"html", incoming:2, outgoing:2, desc:"Full-text search"},
+  {name:"diff-tracker.html", type:"html", incoming:2, outgoing:6, desc:"Version diffs"},
+  {name:"ci-cd-pipeline.html", type:"html", incoming:2, outgoing:25, desc:"CI/CD pipeline design"},
+  {name:"weighted-priority.html", type:"html", incoming:3, outgoing:6, desc:"Severity scoring"},
+  {name:"bt-ranking.html", type:"html", incoming:3, outgoing:2, desc:"Bradley-Terry pairwise ranking"},
+  {name:"vendor-kaeser.html", type:"html", incoming:3, outgoing:2, desc:"Kaeser vendor deep-dive"},
+  {name:"artifact-index.html", type:"html", incoming:2, outgoing:1, desc:"Repository & deps"},
+  {name:"changelog-dev.html", type:"html", incoming:2, outgoing:2, desc:"Development history"},
+  {name:"stats-proofs.html", type:"html", incoming:3, outgoing:2, desc:"Mathematical proofs"},
+];
+
+// Calculate scores
+ARTIFACTS.forEach(a => {
+  a.score = a.incoming * 2 + a.outgoing * 1;
+  if(a.score >= 50) a.risk = 'Critical';
+  else if(a.score >= 20) a.risk = 'High';
+  else if(a.score >= 10) a.risk = 'Medium';
+  else a.risk = 'Low';
+});
+ARTIFACTS.sort((a,b) => b.score - a.score);
+
+// Stats
+const totalEdges = ARTIFACTS.reduce((s,a) => s + a.incoming + a.outgoing, 0) / 2;
+const avgScore = (ARTIFACTS.reduce((s,a) => s + a.score, 0) / ARTIFACTS.length).toFixed(1);
+const maxScore = ARTIFACTS[0].score;
+document.getElementById('totalEdges').textContent = Math.round(totalEdges);
+document.getElementById('avgScore').textContent = avgScore;
+document.getElementById('maxScore').textContent = maxScore;
+
+// Top 5 cards
+const top5 = ARTIFACTS.slice(0, 5);
+const typeColors = {code:'dep-code',html:'dep-html',data:'dep-data',config:'dep-config',doc:'dep-doc',asset:'dep-asset'};
+const riskColors = {Critical:'score-crit',High:'score-high',Medium:'score-med',Low:'score-low'};
+document.getElementById('top5Cards').innerHTML = top5.map((a,i) => `
+  <div class="top5-card">
+    <h4>#${i+1} — ${a.name} <span class="dep-type ${typeColors[a.type]}">${a.type}</span> <span class="score-pill ${riskColors[a.risk]}">${a.score}</span></h4>
+    <p class="muted">${a.desc}</p>
+    <div style="display:flex;gap:24px;font-size:13px">
+      <span>📥 Incoming: <strong>${a.incoming}</strong></span>
+      <span>📤 Outgoing: <strong>${a.outgoing}</strong></span>
+      <span>⚠ Risk: <strong>${a.risk}</strong></span>
+    </div>
+  </div>`).join('');
+
+// Full table
+document.getElementById('depBody').innerHTML = ARTIFACTS.map(a => `
+  <tr>
+    <td>${a.name}</td>
+    <td><span class="dep-type ${typeColors[a.type]}">${a.type}</span></td>
+    <td style="text-align:center;font-weight:600">${a.incoming}</td>
+    <td style="text-align:center">${a.outgoing}</td>
+    <td><span class="score-pill ${riskColors[a.risk]}">${a.score}</span></td>
+    <td>${a.risk}</td>
+  </tr>`).join('');
+
+// Plotly config
+const pCfg = {font:{family:'Aptos,sans-serif',size:11},margin:{l:180,r:30,t:40,b:40},
+  plot_bgcolor:'rgba(0,0,0,0)',paper_bgcolor:'rgba(0,0,0,0)'};
+
+// 1. Tornado Chart
+const sorted = [...ARTIFACTS].sort((a,b) => a.score - b.score);
+const barColors = sorted.map(a => a.type==='asset'?'#BF360C':a.type==='code'?'#1565C0':a.type==='html'?'#2E7D32':a.type==='data'?'#E65100':a.type==='config'?'#7B1FA2':'#455A64');
+Plotly.newPlot('tornadoChart',[{
+  y: sorted.map(a=>a.name), x: sorted.map(a=>a.score),
+  type:'bar', orientation:'h',
+  marker:{color:barColors},
+  text: sorted.map(a=>`Score: ${a.score} (In:${a.incoming} Out:${a.outgoing})`),
+  textposition:'outside', textfont:{size:9},
+  hovertemplate:'%{y}<br>Score: %{x}<br>%{text}<extra></extra>'
+}],{...pCfg, title:{text:'Interaction Score Tornado',font:{size:14}},
+  height: Math.max(600, sorted.length * 20),
+  xaxis:{title:'Interaction Score'},
+  yaxis:{automargin:true}
+},{responsive:true});
+
+// 2. Network Graph (canvas-based force simulation)
+(function(){
+  const canvas = document.getElementById('netCanvas');
+  const ctx = canvas.getContext('2d');
+  canvas.width = canvas.offsetWidth || 900;
+  canvas.height = 500;
+  const W = canvas.width, H = canvas.height;
+  // Simplified positions using force-layout approximation
+  const nodes = ARTIFACTS.slice(0,20).map((a,i) => {
+    const angle = (i / 20) * Math.PI * 2;
+    const r = 150 + (a.score < 20 ? 80 : 0);
+    return {x: W/2 + r*Math.cos(angle), y: H/2 + r*Math.sin(angle), r: 5+Math.sqrt(a.score)*2, ...a, vx:0, vy:0};
+  });
+  // Edges (simplified: style.css/common.js connect to all HTML)
+  const edges = [];
+  const hub0 = nodes.findIndex(n=>n.name==='assets/style.css');
+  const hub1 = nodes.findIndex(n=>n.name==='assets/common.js');
+  const hub2 = nodes.findIndex(n=>n.name==='index.html');
+  const hub3 = nodes.findIndex(n=>n.name==='master/data.json');
+  nodes.forEach((n,i) => {
+    if(n.type==='html' && hub0>=0) edges.push([hub0,i]);
+    if(n.type==='html' && hub1>=0) edges.push([hub1,i]);
+    if(i!==hub2 && n.type==='html' && hub2>=0) edges.push([hub2,i]);
+  });
+  // Simple force simulation (10 steps)
+  for(let step=0;step<50;step++){
+    nodes.forEach((a,i)=>{
+      nodes.forEach((b,j)=>{
+        if(i>=j)return;
+        let dx=b.x-a.x, dy=b.y-a.y, d=Math.sqrt(dx*dx+dy*dy)||1;
+        const repel = 800/d;
+        a.vx -= dx/d*repel; a.vy -= dy/d*repel;
+        b.vx += dx/d*repel; b.vy += dy/d*repel;
+      });
+    });
+    edges.forEach(([i,j])=>{
+      let dx=nodes[j].x-nodes[i].x, dy=nodes[j].y-nodes[i].y, d=Math.sqrt(dx*dx+dy*dy)||1;
+      const attract = (d-100)*0.01;
+      nodes[i].vx += dx/d*attract; nodes[i].vy += dy/d*attract;
+      nodes[j].vx -= dx/d*attract; nodes[j].vy -= dy/d*attract;
+    });
+    nodes.forEach(n=>{
+      n.x += n.vx*0.3; n.y += n.vy*0.3;
+      n.vx *= 0.9; n.vy *= 0.9;
+      n.x = Math.max(40,Math.min(W-40,n.x)); n.y = Math.max(40,Math.min(H-40,n.y));
+    });
+  }
+  // Draw
+  const typeClr = {asset:'#BF360C',code:'#1565C0',html:'#2E7D32',data:'#E65100',config:'#7B1FA2',doc:'#455A64'};
+  ctx.clearRect(0,0,W,H);
+  // Edges
+  ctx.strokeStyle='#ddd'; ctx.lineWidth=0.5; ctx.globalAlpha=0.4;
+  edges.forEach(([i,j])=>{ctx.beginPath();ctx.moveTo(nodes[i].x,nodes[i].y);ctx.lineTo(nodes[j].x,nodes[j].y);ctx.stroke();});
+  ctx.globalAlpha=1;
+  // Nodes
+  nodes.forEach(n=>{
+    ctx.beginPath(); ctx.arc(n.x,n.y,n.r,0,Math.PI*2);
+    ctx.fillStyle=n.score>=50?'#C0392B':typeClr[n.type]||'#666';
+    ctx.fill(); ctx.strokeStyle='#fff'; ctx.lineWidth=1.5; ctx.stroke();
+  });
+  // Labels
+  ctx.fillStyle='#333'; ctx.font='10px Aptos,sans-serif'; ctx.textAlign='center';
+  nodes.forEach(n=>{ctx.fillText(n.name.split('/').pop(),n.x,n.y+n.r+12);});
+})();
+
+// 3. Heatmap (top 15)
+const top15 = ARTIFACTS.slice(0,15);
+const heatNames = top15.map(a=>a.name.split('/').pop());
+// Build simplified adjacency: 1 if they share a dependency relationship
+const heatZ = top15.map(a => top15.map(b => {
+  if(a.name===b.name) return 0;
+  // Both load style.css or common.js → shared dependency
+  let shared = 0;
+  if(a.type==='html' && b.type==='html') shared += 2; // both depend on style.css & common.js
+  if((a.type==='asset'||a.type==='code') && b.type==='html') shared += 1;
+  if(a.type==='html' && (b.type==='asset'||b.type==='code')) shared += 1;
+  if(a.name==='index.html' && b.type==='html') shared += 1;
+  if(b.name==='index.html' && a.type==='html') shared += 1;
+  return shared;
+}));
+Plotly.newPlot('heatmapChart',[{
+  z:heatZ, x:heatNames, y:heatNames,
+  type:'heatmap', colorscale:'YlOrRd', showscale:true
+}],{...pCfg, title:{text:'Dependency Adjacency (Top 15)',font:{size:14}},
+  height:500, margin:{l:140,r:30,t:50,b:100},
+  yaxis:{automargin:true}, xaxis:{automargin:true,tickangle:45}
+},{responsive:true});
+</script>
+</div>
+</body></html>

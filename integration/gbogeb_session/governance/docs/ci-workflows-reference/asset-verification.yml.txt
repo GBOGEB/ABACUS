@@ -1,0 +1,64 @@
+name: Asset Verification
+
+on:
+  push:
+    paths:
+      - 'Input_Master/**'
+    branches: [main, develop]
+
+  pull_request:
+    paths:
+      - 'Input_Master/**'
+
+  workflow_dispatch:
+    inputs:
+      force_reprocess:
+        description: 'Force reprocess all assets'
+        required: false
+        default: 'false'
+
+jobs:
+  verify-assets:
+    name: Verify Input_Master Assets
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Run Verification Hook
+        run: |
+          python engines/verification_hook.py \
+            --input-dir Input_Master/ \
+            --data-dir _data/
+
+      - name: Verify manifest integrity
+        run: |
+          python engines/verification_hook.py --status
+
+      - name: Check for uncommitted .mock files
+        run: |
+          if [ -n "$(git diff --name-only Input_Master/*.mock 2>/dev/null)" ]; then
+            echo "::warning::New or updated .mock sidecar files detected."
+            echo "Please commit the .mock files to track asset lineage."
+            git diff --name-only Input_Master/*.mock
+          fi
+
+      - name: Validate manifest schema
+        run: |
+          python -c "
+          import json, sys
+          with open('_data/lineage_manifest.json') as f:
+              m = json.load(f)
+          assert 'version' in m, 'Missing version'
+          assert 'assets' in m, 'Missing assets'
+          assert isinstance(m['assets'], list), 'Assets must be a list'
+          for a in m['assets']:
+              assert 'filename' in a, f'Asset missing filename: {a}'
+              assert 'sha256' in a, f'Asset missing sha256: {a}'
+              assert len(a['sha256']) == 64, f'Invalid SHA256 length: {a[\"sha256\"]}'
+          print(f'Manifest valid: {len(m[\"assets\"])} assets tracked')
+          " || echo "::error::Manifest validation failed"

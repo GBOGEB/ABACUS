@@ -30,14 +30,14 @@ jobs:
     timeout-minutes: 8
     steps:
       - name: Checkout exact source without persisted credentials
-        uses: actions/checkout@v7.0.1
+        uses: actions/checkout@v7
         with:
           ref: ${{ github.event.pull_request.head.sha || github.sha }}
           persist-credentials: false
       - name: Set up Python
         uses: actions/setup-python@v7
         with:
-          python-version: '3.12'
+          python-version: '3.14'
       - name: Native adversarial contract tests
         env:
           EXPECTED_HEAD: ${{ github.event.pull_request.head.sha || github.sha }}
@@ -57,7 +57,7 @@ jobs:
             --out "$RUNNER_TEMP/dependency-spine"
       - name: Retain source-head evidence (not an upgrade-coverage claim)
         if: always()
-        uses: actions/upload-artifact@v7.0.2
+        uses: actions/upload-artifact@v7
         with:
           name: dep-spine-abacus-${{ github.run_id }}-${{ github.run_attempt }}
           path: ${{ runner.temp }}/dependency-spine/

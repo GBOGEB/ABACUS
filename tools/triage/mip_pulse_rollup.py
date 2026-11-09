@@ -4,6 +4,7 @@
 Inputs are source-owned JSON receipts. Numbers lacking qualified, matching
 populations remain UNKNOWN; coverage gain is never inferred from deletion.
 """
+
 from __future__ import annotations
 
 import argparse
@@ -32,7 +33,10 @@ def read_pulse(path):
     data = json.loads(Path(path).read_text(encoding="utf-8"))
     require(isinstance(data, dict) and data.get("schema") == SCHEMA, "pulse schema")
     require(data.get("repository") == "GBOGEB/ABACUS", "repository mismatch")
-    require(isinstance(data.get("head_sha"), str) and SHA40.fullmatch(data["head_sha"]), "head SHA")
+    require(
+        isinstance(data.get("head_sha"), str) and SHA40.fullmatch(data["head_sha"]),
+        "head SHA",
+    )
     for key in ("population_sha256", "instrumentation_sha256"):
         require(isinstance(data.get(key), str) and SHA64.fullmatch(data[key]), key)
     when = data.get("observed_at")
@@ -46,6 +50,16 @@ def read_pulse(path):
         eligible = number(row.get("eligible"), key + " eligible")
         covered = number(row.get("covered"), key + " covered")
         require(covered <= eligible, "covered exceeds eligible")
+    tests = data.get("tests")
+    require(isinstance(tests, dict), "test outcomes missing")
+    require(type(data.get("terminal")) is bool, "test terminal state missing")
+    for key in ("executed", "passed", "failed", "errors", "skipped"):
+        number(tests.get(key), "tests " + key)
+    require(
+        tests["executed"]
+        == sum(tests[key] for key in ("passed", "failed", "errors", "skipped")),
+        "test outcomes do not reconcile",
+    )
     triage = data.get("triage")
     if triage is not None:
         require(isinstance(triage, dict), "triage shape")
@@ -60,20 +74,48 @@ def read_pulse(path):
     owners = set()
     claimed = set()
     for w in workers:
-        require(isinstance(w, dict) and isinstance(w.get("owner"), str) and w["owner"], "worker owner")
+        require(
+            isinstance(w, dict) and isinstance(w.get("owner"), str) and w["owner"],
+            "worker owner",
+        )
         require(w["owner"] not in owners, "duplicate worker owner")
         owners.add(w["owner"])
         paths = w.get("paths")
         require(isinstance(paths, list) and len(paths) > 0, "missing worker paths")
         for item in paths:
-            require(isinstance(item, str) and item and not item.startswith("/") and ".." not in item.split("/"), "unsafe path claim")
-            require(item not in claimed, "overlapping worker path: " + item)
+            require(
+                isinstance(item, str)
+                and item
+                and not item.startswith("/")
+                and "\\" not in item
+                and ":" not in item
+                and all(part not in ("", ".", "..") for part in item.split("/")),
+                "unsafe path claim",
+            )
+            require(
+                not any(
+                    item == held
+                    or item.startswith(held + "/")
+                    or held.startswith(item + "/")
+                    for held in claimed
+                ),
+                "overlapping worker path: " + item,
+            )
             claimed.add(item)
         for metric in ("queue_seconds", "execution_seconds"):
             if w.get(metric) is not None:
-                require(isinstance(w[metric], (int, float)) and not isinstance(w[metric], bool) and math.isfinite(w[metric]) and w[metric] >= 0, "invalid worker latency")
+                require(
+                    isinstance(w[metric], (int, float))
+                    and not isinstance(w[metric], bool)
+                    and math.isfinite(w[metric])
+                    and w[metric] >= 0,
+                    "invalid worker latency",
+                )
     gov = data.get("governance")
-    require(isinstance(gov, dict) and gov.get("merge_admission") in ("HOLD", "PASS"), "governance missing")
+    require(
+        isinstance(gov, dict) and gov.get("merge_admission") in ("HOLD", "PASS"),
+        "governance missing",
+    )
     require(gov.get("security_waiver") is False, "security waiver not supported")
     return data
 
@@ -87,6 +129,28 @@ def p95(values):
     return values[math.ceil(0.95 * len(values)) - 1] if values else None
 
 
+def test_outcome(pulse):
+    tests = pulse.get("tests")
+    if not isinstance(tests, dict) or pulse.get("terminal") is not True:
+        return "UNKNOWN"
+    if type(tests.get("executed")) is not int or tests["executed"] <= 0:
+        return "UNKNOWN"
+    if any(
+        type(tests.get(key)) is not int or tests[key] < 0
+        for key in ("passed", "failed", "errors", "skipped")
+    ):
+        return "UNKNOWN"
+    if tests["executed"] != sum(
+        tests[key] for key in ("passed", "failed", "errors", "skipped")
+    ):
+        return "UNKNOWN"
+    if tests["failed"] or tests["errors"]:
+        return "FAILED"
+    if tests["skipped"]:
+        return "SKIPPED"
+    return "GREEN" if tests["passed"] == tests["executed"] else "UNKNOWN"
+
+
 def snapshot(p):
     cov = p["coverage"]
     covered = sum(cov[k]["covered"] for k in ("statements", "branches"))
@@ -96,14 +160,29 @@ def snapshot(p):
     result = {
         "head_sha": p["head_sha"],
         "observed_at": p["observed_at"],
-        "covered": covered, "eligible": eligible,
-        "missing": eligible - covered, "combined_percent": percent(covered, eligible),
-        "statement_percent": percent(cov["statements"]["covered"], cov["statements"]["eligible"]),
-        "branch_percent": percent(cov["branches"]["covered"], cov["branches"]["eligible"]),
-        "triage": triage, "root_reds_open": p.get("root_reds_open"),
+        "covered": covered,
+        "eligible": eligible,
+        "missing": eligible - covered,
+        "combined_percent": percent(covered, eligible),
+        "statement_percent": percent(
+            cov["statements"]["covered"], cov["statements"]["eligible"]
+        ),
+        "branch_percent": percent(
+            cov["branches"]["covered"], cov["branches"]["eligible"]
+        ),
+        "triage": triage,
+        "root_reds_open": p.get("root_reds_open"),
         "disjoint_workers": len(workers),
-        "p95_queue_seconds": p95([w["queue_seconds"] for w in workers if w.get("queue_seconds") is not None]),
-        "p95_execution_seconds": p95([w["execution_seconds"] for w in workers if w.get("execution_seconds") is not None]),
+        "p95_queue_seconds": p95(
+            [w["queue_seconds"] for w in workers if w.get("queue_seconds") is not None]
+        ),
+        "p95_execution_seconds": p95(
+            [
+                w["execution_seconds"]
+                for w in workers
+                if w.get("execution_seconds") is not None
+            ]
+        ),
         "merge_admission": p["governance"]["merge_admission"],
     }
     return result
@@ -117,11 +196,18 @@ def transition(a, b):
         and a["instrumentation_sha256"] == b["instrumentation_sha256"]
         and x["eligible"] == y["eligible"]
         and x["eligible"] > 0
+        and all(
+            a["coverage"][k]["eligible"] == b["coverage"][k]["eligible"]
+            for k in ("statements", "branches")
+        )
     )
     item = {
-        "from_head": a["head_sha"], "to_head": b["head_sha"],
+        "from_head": a["head_sha"],
+        "to_head": b["head_sha"],
         "population_comparable": same,
         "coverage_gain_pp": None,
+        "statement_gain_pp": None,
+        "branch_gain_pp": None,
         "newly_covered_opportunities": None,
         "triage_resolved_delta": None,
         "root_reds_closed_net": None,
@@ -129,41 +215,143 @@ def transition(a, b):
     }
     if same:
         item["newly_covered_opportunities"] = y["covered"] - x["covered"]
-        item["coverage_gain_pp"] = round(y["combined_percent"] - x["combined_percent"], 6)
-    if a.get("triage") and b.get("triage") and a["population_sha256"] == b["population_sha256"]:
+        item["coverage_gain_pp"] = round(
+            y["combined_percent"] - x["combined_percent"], 6
+        )
+        item["statement_gain_pp"] = (
+            round(y["statement_percent"] - x["statement_percent"], 6)
+            if x["statement_percent"] is not None
+            else None
+        )
+        item["branch_gain_pp"] = (
+            round(y["branch_percent"] - x["branch_percent"], 6)
+            if x["branch_percent"] is not None
+            else None
+        )
+    if (
+        a.get("triage")
+        and b.get("triage")
+        and a["population_sha256"] == b["population_sha256"]
+    ):
+
         def resolved(t):
             return t["linked"] + t["orphan"] + t["other_disposed"]
+
         item["triage_resolved_delta"] = resolved(b["triage"]) - resolved(a["triage"])
-    if a.get("root_reds_open") is not None and b.get("root_reds_open") is not None and a.get("root_cohort_id") == b.get("root_cohort_id") and a.get("root_cohort_id"):
+    if (
+        a.get("root_reds_open") is not None
+        and b.get("root_reds_open") is not None
+        and a.get("root_cohort_id") == b.get("root_cohort_id")
+        and a.get("root_cohort_id")
+    ):
         item["root_reds_closed_net"] = a["root_reds_open"] - b["root_reds_open"]
     return item
 
 
 def rollup(pulses):
     require(isinstance(pulses, list) and len(pulses) > 0, "no pulses")
-    dates = [datetime.fromisoformat(p["observed_at"].replace("Z", "+00:00")) for p in pulses]
-    require(all(a < b for a, b in zip(dates, dates[1:])), "pulses not strictly chronological")
+    dates = [
+        datetime.fromisoformat(p["observed_at"].replace("Z", "+00:00")) for p in pulses
+    ]
+    require(
+        all(a < b for a, b in zip(dates, dates[1:])),
+        "pulses not strictly chronological",
+    )
     snaps = [snapshot(p) for p in pulses]
     moves = [transition(a, b) for a, b in zip(pulses, pulses[1:])]
     last = snaps[-1]
-    plateau = len(moves) >= 3 and all(
-        m["population_comparable"]
-        and m["coverage_gain_pp"] <= 0.05
-        and m["triage_resolved_delta"] is not None and m["triage_resolved_delta"] <= 0
-        and m["root_reds_closed_net"] is not None and m["root_reds_closed_net"] <= 0
+    matched = len(moves) >= 3 and all(m["population_comparable"] for m in moves[-3:])
+    regression = bool(
+        moves
+        and moves[-1]["population_comparable"]
+        and any(
+            moves[-1][key] is not None and moves[-1][key] < 0
+            for key in ("statement_gain_pp", "branch_gain_pp")
+        )
+    )
+    root_red_increase = matched and any(
+        move["root_reds_closed_net"] is not None and move["root_reds_closed_net"] < 0
+        for move in moves[-3:]
+    )
+    outcomes = [test_outcome(pulse) for pulse in pulses[-4:]]
+    plateau = matched and all(
+        m["statement_gain_pp"] is not None
+        and m["branch_gain_pp"] is not None
+        and 0 <= m["statement_gain_pp"] <= 0.05
+        and 0 <= m["branch_gain_pp"] <= 0.05
+        and m["triage_resolved_delta"] is not None
+        and m["triage_resolved_delta"] <= 0
+        and m["root_reds_closed_net"] is not None
+        and m["root_reds_closed_net"] <= 0
         for m in moves[-3:]
     )
-    control = ("STOP_LOCAL_PLATEAU" if plateau else
-               "MORE_COMPARABLE_PULSES_REQUIRED" if len(moves) < 3 or any(not m["population_comparable"] for m in moves[-3:]) else
-               "CONTINUE_MEASURED_CONVERGENCE")
+    saturated = last["statement_percent"] == 100 and last["branch_percent"] == 100
+    native_pairs = [
+        ((p.get("native") or {}).get("run_id"), (p.get("native") or {}).get("attempt"))
+        for p in pulses
+    ]
+    native_identified = all(
+        type(run_id) is int and run_id > 0 and type(attempt) is int and attempt > 0
+        for run_id, attempt in native_pairs
+    ) and len(set(native_pairs)) == len(native_pairs)
+    control = (
+        "RESTART_COVERAGE_REGRESSION"
+        if regression
+        else (
+            "RESTART_ROOT_RED_INCREASE"
+            if root_red_increase
+            else (
+                "RESTART_FAILED_TESTS"
+                if "FAILED" in outcomes
+                else (
+                    "RESTART_SKIPPED_TESTS"
+                    if "SKIPPED" in outcomes
+                    else (
+                        "HOLD_UNVERIFIED_TEST_OUTCOMES"
+                        if len(outcomes) < 4
+                        or any(result != "GREEN" for result in outcomes)
+                        else (
+                            "QUIET_WATCH_CANDIDATE"
+                            if plateau and saturated and native_identified
+                            else (
+                                "HOLD_UNVERIFIED_NATIVE_IDENTITIES"
+                                if plateau and saturated
+                                else (
+                                    "RERANK_UNCOVERED"
+                                    if plateau
+                                    else (
+                                        "MORE_COMPARABLE_PULSES_REQUIRED"
+                                        if not matched
+                                        else "CONTINUE_MEASURED_CONVERGENCE"
+                                    )
+                                )
+                            )
+                        )
+                    )
+                )
+            )
+        )
+    )
     return {
         "schema": "codepurple.mip.floating-rollup.v1",
         "pulse_count": len(snaps),
-        "latest": last, "history": snaps, "transitions": moves,
+        "latest": last,
+        "history": snaps,
+        "transitions": moves,
         "control": control,
+        "phase_two_authorized": False,
+        "native_identities_structurally_present": native_identified,
+        "native_identities_independently_verified": False,
+        "source_scope_saturated": saturated,
+        "test_outcomes_healthy": len(outcomes) == 4
+        and all(result == "GREEN" for result in outcomes),
         "release_ready": False,
         "formal_coverage_credit": False,
-        "note": "Read-only descriptive telemetry. Native receipts, source population identity and governed admission require independent validation.",
+        "note": (
+            "Read-only descriptive telemetry. Native receipts, source "
+            "population identity and governed admission require independent "
+            "validation."
+        ),
     }
 
 
@@ -174,7 +362,9 @@ def main(argv=None):
     args = p.parse_args(argv)
     output = rollup([read_pulse(p) for p in args.pulses])
     Path(args.out).parent.mkdir(parents=True, exist_ok=True)
-    Path(args.out).write_text(json.dumps(output, sort_keys=True, indent=2) + "\n", encoding="utf-8")
+    Path(args.out).write_text(
+        json.dumps(output, sort_keys=True, indent=2) + "\n", encoding="utf-8"
+    )
     return 0
 
 

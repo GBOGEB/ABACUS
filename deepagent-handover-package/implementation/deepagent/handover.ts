@@ -37,7 +37,7 @@ export class HandoverManager {
     parentId?: string
   ): IHandoverInstance {
     const id = this.generateHandoverId(level, name);
-    
+
     const handover: IHandoverInstance = {
       id,
       level,
@@ -282,7 +282,7 @@ export class HandoverManager {
   // Reporting and Analytics
   public async generateHandoverReport(handover: IHandoverInstance): Promise<IHandoverReport> {
     const childReports: IHandoverReport[] = [];
-    
+
     // Generate reports for child handovers
     for (const childId of handover.childHandovers) {
       const child = this.handoverInstances.get(childId);
@@ -319,7 +319,7 @@ export class HandoverManager {
 
   public getHandoverMetrics(): IHandoverMetrics {
     const allHandovers = Array.from(this.handoverInstances.values());
-    
+
     return {
       totalHandovers: allHandovers.length,
       completedHandovers: allHandovers.filter(h => h.status === 'completed').length,
@@ -350,7 +350,7 @@ export class HandoverManager {
   private initializeSections(level: HandoverLevel): IHandoverSectionInstance[] {
     const templateName = this.getTemplateNameForLevel(level);
     const template = this.templates.get(templateName);
-    
+
     if (!template) {
       return [];
     }
@@ -371,7 +371,7 @@ export class HandoverManager {
       'feature': 'featureHandover',
       'task': 'taskHandover'
     };
-    
+
     return templateMap[level] || 'projectHandover';
   }
 
@@ -455,16 +455,16 @@ export class HandoverManager {
 
   private calculateSectionCompletion(section: IHandoverSectionInstance): number {
     if (section.status === 'completed') return 100;
-    
+
     const totalFields = section.requiredFields.length;
     if (totalFields === 0) return 100;
-    
+
     const completedFields = this.getCompletedFields(section).length;
     return Math.round((completedFields / totalFields) * 100);
   }
 
   private getCompletedFields(section: IHandoverSectionInstance): string[] {
-    return section.requiredFields.filter(field => 
+    return section.requiredFields.filter(field =>
       section.data && section.data[field] !== undefined && section.data[field] !== ''
     );
   }
@@ -485,31 +485,31 @@ export class HandoverManager {
 
   private calculateAverageCompletionTime(handovers: IHandoverInstance[]): number {
     const completedHandovers = handovers.filter(h => h.status === 'completed' && h.completedAt);
-    
+
     if (completedHandovers.length === 0) return 0;
-    
+
     const totalTime = completedHandovers.reduce((sum, handover) => {
       const duration = handover.completedAt!.getTime() - handover.createdAt.getTime();
       return sum + duration;
     }, 0);
-    
+
     return totalTime / completedHandovers.length / (1000 * 60 * 60 * 24); // Convert to days
   }
 
   private calculateCompletionRate(handovers: IHandoverInstance[]): number {
     if (handovers.length === 0) return 0;
-    
+
     const completedCount = handovers.filter(h => h.status === 'completed').length;
     return Math.round((completedCount / handovers.length) * 100);
   }
 
   private getLevelBreakdown(handovers: IHandoverInstance[]): { [level: string]: number } {
     const breakdown: { [level: string]: number } = {};
-    
+
     handovers.forEach(handover => {
       breakdown[handover.level] = (breakdown[handover.level] || 0) + 1;
     });
-    
+
     return breakdown;
   }
 

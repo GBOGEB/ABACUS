@@ -1,0 +1,346 @@
+<!doctype html>
+<html lang="en"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>MYRRHA · RCW HX Sizing &amp; COMBI Analysis</title>
+<link rel="icon" href="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><text y='26' font-size='26'>♨</text></svg>">
+<link rel="stylesheet" href="assets/style.css">
+<script src="assets/common.js" defer></script>
+<script>MathJax={tex:{inlineMath:[['$','$'],['\\(','\\)']]}};</script>
+<script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js" async></script>
+<script src="https://cdn.plot.ly/plotly-2.35.2.min.js"></script>
+<style>
+.eq{background:var(--bg2);border:1px solid var(--border);border-radius:8px;padding:12px;margin:8px 0;font-size:14px;overflow-x:auto}
+.todo{background:#FFE9D6;border:1px solid #D85A30;color:#7a2f0e;border-radius:8px;padding:10px;margin:8px 0;font-size:13px}
+[data-theme=dark] .todo{background:#3a1d10;color:#ffb78a}
+.pin-detail{background:var(--bg);border:1px dashed var(--accent2);border-radius:8px;padding:12px;margin:8px 0;font-size:13px;font-family:var(--mono);min-height:48px}
+.plotwrap{background:var(--bg2);border:1px solid var(--border);border-radius:8px;padding:8px;margin:10px 0}
+.plotwrap .toolbar{display:flex;gap:6px;flex-wrap:wrap;margin:6px 4px 0}
+.plotwrap button{font-size:11px;padding:4px 10px;border:1px solid var(--border);background:var(--bg);border-radius:6px;cursor:pointer;color:var(--fg)}
+.plotwrap button:hover{border-color:var(--accent2)}
+.section-tag{display:inline-block;background:var(--accent2);color:#fff;font-family:var(--mono);font-size:11px;padding:2px 8px;border-radius:4px;margin-right:8px}
+</style>
+</head><body>
+<div class="container">
+<h1>RCW Heat Exchanger Sizing &amp; COMBI Unit Analysis</h1>
+<p class="muted">Recovery Cooling Water sizing for the HCC oil-cooler train · isothermal-baseline VFD scaling for 304 / 344 / 350 g/s · interactive Plotly graphs with drop-pin tool-tips. <span class="tag">v0.4</span> <span class="tag warn">vendor confirmation pending</span></p>
+
+<nav class="muted" style="margin:12px 0;font-size:13px">
+↩ <a href="index.html">Hub</a> · <a href="utilities.html">Utilities</a> · <a href="truth.html">Truth</a> · <a href="reports.html">Reports</a> · <a href="status.html">Status</a> · jump to:
+<a href="#s1">§1 Split</a> · <a href="#s2">§2 HX spec</a> · <a href="#s3">§3 N+1</a> · <a href="#s4">§4 COMBI</a> · <a href="#s5">§5 304/344</a> · <a href="#s6">§6 Plots</a>
+</nav>
+
+<!-- ============ SECTION 1 ============ -->
+<section id="s1" class="card">
+<h2 style="margin-top:0"><span class="section-tag">§1</span>HCC Cooling-Water Split — Oil vs Sensible Helium</h2>
+<p>Per-skid total cooling-water heat rejection (ALaT FSD&nbsp;575&nbsp;SFC, vendor sheet): <b>$\dot Q_\text{CW,tot} = 323.9~\text{kW}$</b> at $\dot m_\text{He} = 112.54$ g/s.
+The duty splits into the <b>oil-cooler train</b> (compressor oil 85 °C → 30 °C) and the <b>sensible helium after-cooler</b> (post oil-separator, returning compression-heated helium back to ambient for the isothermal design condition).</p>
+
+<h3>1.1 Sensible helium after-cooler</h3>
+<div class="eq">$\dot Q_\text{He} = \dot m_\text{He}\,c_{p,\text{He}}\,\Delta T$ &nbsp; with &nbsp; $c_{p,\text{He}} = 5.193~\text{kJ/(kg·K)}$, &nbsp; $\Delta T = T_\text{out}-T_\text{in}$</div>
+<p>Using the isothermal-design boundary stated in the WCS interface (helium handled across <b>$T_\text{in,He}=84~\text{K}$ → $T_\text{out,He}=300~\text{K}$</b> on the cooling-water side over the combined HX train, $\Delta T_\text{He}=216~\text{K}$):</p>
+<div class="eq">$\dot Q_\text{He} = 0.11254 \cdot 5.193 \cdot 216 \approx \mathbf{126.3~\text{kW per skid}}$</div>
+
+<h3>1.2 Oil-cooler duty (by difference)</h3>
+<div class="eq">$\dot Q_\text{oil} = \dot Q_\text{CW,tot} - \dot Q_\text{He} = 323.9 - 126.3 \approx \mathbf{197.6~\text{kW per skid}}$</div>
+<p>Oil-side energy balance, oil flow $\dot m_\text{oil}$, $c_{p,\text{oil}} \approx 2.10~\text{kJ/(kg·K)}$, $\Delta T_\text{oil} = 85-30 = 55~\text{K}$:</p>
+<div class="eq">$\dot m_\text{oil} = \dfrac{\dot Q_\text{oil}}{c_{p,\text{oil}}\,\Delta T_\text{oil}} = \dfrac{197.6}{2.10 \cdot 55} \approx \mathbf{1.71~\text{kg/s}} \approx 6.2~\text{t/h}$ &nbsp;(≈ 110 L/min @ ρ ≈ 870 kg/m³)</div>
+
+<h3>1.3 Mass &amp; energy balance summary (per skid)</h3>
+<table><thead><tr><th>Stream</th><th>$\dot m$</th><th>$T_\text{in}$</th><th>$T_\text{out}$</th><th>$\Delta T$</th><th>$\dot Q$</th></tr></thead><tbody>
+<tr><td>Compressor oil</td><td>≈ 1.71 kg/s</td><td>85 °C</td><td>30 °C</td><td>55 K</td><td><b>197.6 kW</b></td></tr>
+<tr><td>Process helium (sensible)</td><td>0.1125 kg/s</td><td>84 K *</td><td>300 K</td><td>216 K</td><td><b>126.3 kW</b></td></tr>
+<tr><td><b>Total CW reject</b></td><td>—</td><td>—</td><td>—</td><td>—</td><td><b>323.9 kW</b></td></tr>
+</tbody></table>
+<p class="muted" style="font-size:12px">* "84 K" is the upstream interface boundary for the isothermal design envelope (return-cold leg from QRB before the HCC after-cooler); the actual helium temperature at the warm-end after-cooler inlet is set by the upstream sub-cool / regen train. The split here treats the integrated HCC duty as a single rejection budget.</p>
+<div class="todo">TODO — replace oil $c_p$ and $\dot m_\text{oil}$ with the Kaeser/ALaT oil curve (provisional ISO VG-46 estimate).</div>
+</section>
+
+<!-- ============ SECTION 2 ============ -->
+<section id="s2" class="card">
+<h2 style="margin-top:0"><span class="section-tag">§2</span>RCW Heat Exchanger Specification</h2>
+<table><tbody>
+<tr><th>RCW inlet temperature</th><td><b>30 °C</b> nominal (design baseline, plant-side return)</td></tr>
+<tr><th>Design ΔT</th><td><b>25 K</b></td></tr>
+<tr><th>RCW outlet temperature</th><td><b>55 °C</b></td></tr>
+<tr><th>Heat removed (oil-cooler only)</th><td>197.6 kW per skid · <b>592.8 kW</b> for 3 skids · <b>790.4 kW</b> for 4 skids</td></tr>
+<tr><th>Heat removed (incl. He sensible)</th><td>323.9 kW per skid · 971.7 kW (3 skids) · 1295.6 kW (4 skids)</td></tr>
+</tbody></table>
+<p>RCW volumetric flow:</p>
+<div class="eq">$\dot V_\text{RCW} = \dfrac{3600\,\dot Q}{\rho_\text{w}\,c_{p,\text{w}}\,\Delta T} = \dfrac{3600\,\dot Q}{995 \cdot 4.186 \cdot 25}~\text{m}^3/\text{h} \approx 0.0346\,\dot Q$</div>
+
+<h3>2.1 Sizing per scenario</h3>
+<table><thead><tr><th>Scenario</th><th>Skids</th><th>$\dot Q_\text{oil,total}$ (kW)</th><th>$\dot V_\text{RCW}$ (m³/h)</th><th>HX units / skid</th><th>Plant HX count</th></tr></thead><tbody>
+<tr><td>Baseline 350 g/s (3 active)</td><td>3</td><td>592.8</td><td><b>20.5</b></td><td>1 duty + 1 std-by</td><td>3+3 = 6</td></tr>
+<tr><td>COMBI 4-skid (HP1..HP4)</td><td>4</td><td>790.4</td><td><b>27.3</b></td><td>1 duty + 1 std-by</td><td>4+4 = 8</td></tr>
+<tr><td>Combined train (oil + He)</td><td>3</td><td>971.7 *</td><td>33.6 *</td><td>2 duty + 1 std-by *</td><td>9 *</td></tr>
+</tbody></table>
+<p class="muted" style="font-size:12px">* If the helium after-cooler is also routed onto the RCW loop rather than the package PCW. Current baseline keeps sensible-He on PCW and reserves RCW for oil only.</p>
+
+<h3>2.2 Per-skid HX unit sizing (oil duty only)</h3>
+<div class="eq">$\dot V_\text{RCW,skid} = 0.0346 \cdot 197.6 \approx \mathbf{6.83~\text{m}^3/\text{h}}$ &nbsp;per skid</div>
+<p>One <b>plate-and-frame HX per skid</b> rated for 200 kW, ~7 m³/h water-side @ 30 °C / 55 °C, oil-side ~110 L/min @ 85 °C / 30 °C, fouling margin +20 %.</p>
+</section>
+
+<!-- ============ SECTION 3 ============ -->
+<section id="s3" class="card">
+<h2 style="margin-top:0"><span class="section-tag">§3</span>N+1 &amp; Redundancy Analysis</h2>
+<p><b>Strategy:</b> one HX per skid in active duty + one shared <b>plant-level standby HX</b> on a manifold, isolatable on each skid via two motor-operated valves. This gives plant N+1 without doubling installed area.</p>
+
+<h3>3.1 Operating-scenario impact table</h3>
+<table><thead><tr><th>Scenario</th><th>Active HX</th><th>Available cooling</th><th>Oil-loop ΔT impact</th><th>Helium-flow margin</th></tr></thead><tbody>
+<tr><td>Normal (3-skid baseline)</td><td>3 duty + 1 std-by</td><td>3 × 200 = 600 kW</td><td>30 °C (nominal)</td><td>+0 % (350 g/s OK)</td></tr>
+<tr><td>N+1 healthy (standby on)</td><td>4</td><td>800 kW</td><td>27–30 °C (slight subcool)</td><td>+0 %</td></tr>
+<tr><td>Loss of 1 HX (3-skid)</td><td>2</td><td>400 kW</td><td>oil hot-side limited</td><td>−15 to −20 % (~280–290 g/s)</td></tr>
+<tr><td>Loss of 1 HX with std-by ON</td><td>3</td><td>600 kW</td><td>nominal</td><td>+0 %</td></tr>
+<tr><td>4-skid COMBI normal</td><td>4 duty + 1 std-by</td><td>800 kW</td><td>nominal</td><td>+0 % (≤ 400 g/s)</td></tr>
+<tr><td>4-skid COMBI, lose 1</td><td>3 + std-by</td><td>800 kW</td><td>nominal</td><td>+0 %</td></tr>
+</tbody></table>
+
+<h3>3.2 Loss-of-unit math (3-skid case, no standby)</h3>
+<div class="eq">$\dot Q_\text{avail,2HX} = 2 \cdot 200 = 400~\text{kW}$ &nbsp; vs &nbsp; required 593 kW ⇒ deficit 193 kW</div>
+<div class="eq">$\dfrac{\Delta \dot m_\text{He}}{\dot m_\text{He}} \approx -\dfrac{\Delta \dot Q}{\dot Q} \approx -\dfrac{193}{593} \approx \mathbf{-32~\%}$ &nbsp; (oil load is dominant in $\dot Q_\text{oil}$ ∝ $\dot m_\text{He}$ at constant pressure ratio)</div>
+<p>Mitigation: raise oil-loop set-point from 30 → 35 °C (+ 5 K hot-end), regaining ~20 % of the deficit; remaining ~12 % met by helium-flow turndown (≈ 308 g/s).</p>
+</section>
+
+<!-- ============ SECTION 4 ============ -->
+<section id="s4" class="card">
+<h2 style="margin-top:0"><span class="section-tag">§4</span>COMBI Unit Concept — Fixed-speed + VFD</h2>
+<p>The <b>COMBI</b> configuration pairs one <b>fixed-speed</b> FSD&nbsp;575&nbsp;SFC (locked at 64 Hz for HP-flow trim margin) with one <b>VFD</b>-equipped sister unit that floats 50–72 Hz to cover the operational band.</p>
+
+<h3>4.1 Linear scaling from the 72 Hz vendor anchor</h3>
+<div class="eq">$\dot m(f) = \dot m_{72} \cdot \dfrac{f}{72} \quad\text{with}\quad \dot m_{72} = 112.54~\text{g/s}$ &nbsp;(per-skid)</div>
+<div class="eq">$P_\text{motor}(f) \approx P_{72} \cdot \dfrac{f}{72}, \quad \dot V_\text{CW}(f) \approx \dot V_{72} \cdot \dfrac{f}{72}$ &nbsp; with &nbsp; $P_{72}=315~\text{kW},\;\dot V_{72}=18.2~\text{m³/h}$</div>
+
+<h3>4.2 Per-unit operating points</h3>
+<table><thead><tr><th>Unit</th><th>$f$ (Hz)</th><th>$\dot m$ (g/s)</th><th>$P_\text{motor}$ (kW)</th><th>$\dot V_\text{CW}$ (m³/h)</th><th>$\dot Q_\text{CW}$ (kW)</th></tr></thead><tbody>
+<tr><td>Fixed @ 64 Hz</td><td>64</td><td><b>100.04</b></td><td><b>280.0</b></td><td>16.18</td><td>287.9</td></tr>
+<tr><td>VFD design @ 60 Hz</td><td>60</td><td><b>93.78</b></td><td><b>262.5</b></td><td>15.17</td><td>269.9</td></tr>
+<tr><td>VFD max @ 72 Hz</td><td>72</td><td>112.54</td><td>315.0</td><td>18.20</td><td>323.9</td></tr>
+<tr><td>VFD min @ 50 Hz</td><td>50</td><td>78.15</td><td>218.8</td><td>12.64</td><td>224.9</td></tr>
+</tbody></table>
+
+<h3>4.3 COMBI bundle totals</h3>
+<table><thead><tr><th>Bundle</th><th>$\dot m$ (g/s)</th><th>$P_\text{motor}$ (kW)</th><th>$\dot V_\text{CW}$ (m³/h)</th></tr></thead><tbody>
+<tr><td>2-unit COMBI · Fix 64 + VFD 60 (design)</td><td><b>193.82</b></td><td>542.5</td><td>31.35</td></tr>
+<tr><td>2-unit COMBI max · Fix 64 + VFD 72</td><td>212.58</td><td>595.0</td><td>34.38</td></tr>
+<tr><td>4-unit COMBI · 2× Fix 64 + 2× VFD 60</td><td><b>387.64</b></td><td>1085.0</td><td>62.70</td></tr>
+<tr><td>4-unit COMBI max · 2× Fix 64 + 2× VFD 72</td><td>425.16</td><td>1190.0</td><td>68.76</td></tr>
+</tbody></table>
+<div class="todo">TODO — confirm with Kaeser/ALaT that a fixed-speed FSD 575 frame can be supplied at a non-50/60 Hz line-locked speed (mechanical fixed at 64 Hz, e.g. via dedicated step-up gearbox or premium-VFD locked mode). Otherwise re-cast "fixed @ 64 Hz" as a VFD soft-locked at 64 Hz.</div>
+</section>
+
+<!-- ============ SECTION 5 ============ -->
+<section id="s5" class="card">
+<h2 style="margin-top:0"><span class="section-tag">§5</span>Actual utilities for 304 g/s &amp; 344 g/s</h2>
+<p>Methodology: VFD-linear scaling from the 72 Hz anchor (per §4.1), three- vs four-unit splits, isothermal η = 0.50 baseline cross-checked against the package electrical figure 315 kW / 112.54 g/s.</p>
+
+<h3>5.1 Config24 — 304 g/s (β = 304, γ = 50, total 354 g/s)</h3>
+<table><thead><tr><th>Option</th><th>Split</th><th>$f$ per VFD (Hz)</th><th>$\sum P_\text{motor}$ (kW)</th><th>$\sum \dot V_\text{CW}$ (m³/h)</th><th>$\sum \dot Q_\text{CW}$ (kW)</th><th>Notes</th></tr></thead><tbody>
+<tr><td><b>A · 3 VFD units</b></td><td>3 × 101.33 g/s</td><td><b>64.83</b></td><td><b>850.7</b></td><td>49.2</td><td>875.0</td><td>simplest; each VFD just below 65 Hz</td></tr>
+<tr><td>B · 4-unit COMBI</td><td>2 × Fix 64 + 2 × VFD</td><td>33.3 (2 ×)</td><td>791.0</td><td>45.7</td><td>813.0</td><td><span class="tag warn">VFD below 50 Hz min</span> — needs recycle/bypass</td></tr>
+<tr><td>B′ · 4-unit balanced VFD</td><td>4 × 76 g/s</td><td><b>48.6</b></td><td>851.4</td><td>49.2</td><td>875.4</td><td>marginal on VFD min — accept ~50 Hz floor</td></tr>
+</tbody></table>
+<div class="eq">$f_\text{A} = 72 \cdot \dfrac{101.33}{112.54} = 64.83~\text{Hz}$, &nbsp; $P_\text{A} = 3 \cdot 315 \cdot \dfrac{101.33}{112.54} = 850.7~\text{kW}$</div>
+<p><b>Recommendation (304 g/s):</b> Option A (3 VFD units @ ≈ 65 Hz). Slightly lower CW load than B′, no VFD-floor concern, free std-by skid for maintenance.</p>
+
+<h3>5.2 344 g/s (between Config30 = 336 and baseline 350)</h3>
+<table><thead><tr><th>Option</th><th>Split</th><th>$f$ per VFD (Hz)</th><th>$\sum P_\text{motor}$ (kW)</th><th>$\sum \dot V_\text{CW}$ (m³/h)</th><th>Notes</th></tr></thead><tbody>
+<tr><td>A · 3 VFD units</td><td>3 × 114.67 g/s</td><td><b>73.4</b></td><td>962.7</td><td>55.7</td><td><span class="tag warn">> 72 Hz</span> — vendor extrapolation</td></tr>
+<tr><td><b>B · 4 VFD units</b></td><td>4 × 86.0 g/s</td><td><b>55.0</b></td><td><b>962.7</b></td><td>55.7</td><td>preferred — all units in nominal band</td></tr>
+<tr><td>C · 4-unit COMBI</td><td>2 × Fix 64 + 2 × VFD</td><td>46.1 (2 ×)</td><td>945.0</td><td>54.6</td><td><span class="tag warn">VFD below 50 Hz min</span></td></tr>
+</tbody></table>
+<p><b>Recommendation (344 g/s):</b> Option B (4 VFD @ 55 Hz). Option A breaches the 72 Hz vendor envelope; Option C breaches the 50 Hz floor. The 4-skid HP1..HP4 layout already in the baseline absorbs this case as N-of-N (no live N+1).</p>
+
+<h3>5.3 Comparison summary</h3>
+<table><thead><tr><th>$\dot m_\text{β}$ (g/s)</th><th>Best config</th><th>$f$ (Hz)</th><th>$\sum P$ (kW)</th><th>$\sum \dot V_\text{RCW(oil)}$ (m³/h)</th><th>$\sum \dot V_\text{PCW}$ (m³/h)</th></tr></thead><tbody>
+<tr><td>304</td><td>3 VFD</td><td>64.8</td><td>851</td><td>20.5</td><td>49.2</td></tr>
+<tr><td>344</td><td>4 VFD</td><td>55.0</td><td>963</td><td>27.3</td><td>55.7</td></tr>
+<tr><td>350 (baseline)</td><td>3 VFD or 4-COMBI</td><td>72 / 56</td><td>945–981</td><td>20.5–27.3</td><td>54.6–56.7</td></tr>
+</tbody></table>
+</section>
+
+<!-- ============ SECTION 6 ============ -->
+<section id="s6" class="card">
+<h2 style="margin-top:0"><span class="section-tag">§6</span>Interactive Plotly Visualisations</h2>
+<p>Each plot supports <b>drop-pin</b> tool-tips. Click any visible <b>★ pin marker</b> (max three per graph) to expand a detail block below the graph. Use the toolbar buttons to export PNG / SVG / PDF.</p>
+
+<!-- Graph 1 -->
+<h3>6.1 Cooling-water flow vs helium mass flow</h3>
+<div class="plotwrap">
+<div id="g1" style="width:100%;height:420px"></div>
+<div class="toolbar">
+  <button onclick="dl('g1','png')">PNG</button>
+  <button onclick="dl('g1','svg')">SVG</button>
+  <button onclick="dl('g1','pdf')">PDF</button>
+  <span class="muted" style="font-size:12px;margin-left:8px">Click any ★ pin → details below</span>
+</div>
+<div id="g1pin" class="pin-detail">— click a pin —</div>
+</div>
+
+<!-- Graph 2 -->
+<h3>6.2 RCW flow vs number of HX units (oil duty)</h3>
+<div class="plotwrap">
+<div id="g2" style="width:100%;height:420px"></div>
+<div class="toolbar">
+  <button onclick="dl('g2','png')">PNG</button>
+  <button onclick="dl('g2','svg')">SVG</button>
+  <button onclick="dl('g2','pdf')">PDF</button>
+</div>
+<div id="g2pin" class="pin-detail">— click a pin —</div>
+</div>
+
+<!-- Graph 3 -->
+<h3>6.3 Oil-cooling vs sensible-helium load split</h3>
+<div class="plotwrap">
+<div id="g3" style="width:100%;height:420px"></div>
+<div class="toolbar">
+  <button onclick="dl('g3','png')">PNG</button>
+  <button onclick="dl('g3','svg')">SVG</button>
+  <button onclick="dl('g3','pdf')">PDF</button>
+</div>
+<div id="g3pin" class="pin-detail">— click a pin —</div>
+</div>
+</section>
+
+<p class="muted">↩ <a href="index.html">Hub</a> · <a href="utilities.html">Utilities</a> · <a href="reports.html">Reports</a> · <a href="status.html">Status</a></p>
+</div>
+
+<script>
+// --- helpers --------------------------------------------------------------
+function dl(id, fmt){
+  Plotly.downloadImage(document.getElementById(id), {format:fmt==='pdf'?'svg':fmt, filename:id, width:1200, height:600})
+    .then(()=>{ if(fmt==='pdf') alert('SVG exported — open in any browser/Inkscape and Print → Save as PDF.'); });
+}
+function pinDetail(div, html){ document.getElementById(div).innerHTML = html; }
+
+// --- common dataset -------------------------------------------------------
+const M72=112.54, P72=315.0, V72=18.2, Q72=323.9; // per-skid @ 72 Hz
+const oilFrac = 197.6/323.9; // fraction of CW that is oil-cooler
+function hzFromM(m){ return 72*m/M72; }
+
+// --- Graph 1: CW flow vs total He flow, curves for n=2,3,4 ----------------
+function curveG1(nUnits){
+  const xs=[], ys=[];
+  for(let m=200; m<=420; m+=2){
+    const mPer = m/nUnits;
+    const f = hzFromM(mPer);
+    if(f<48 || f>74) continue;
+    const v = nUnits * V72 * mPer/M72;
+    xs.push(m); ys.push(v);
+  }
+  return {x:xs,y:ys};
+}
+const g1traces=[];
+[2,3,4].forEach(n=>{
+  const c=curveG1(n);
+  g1traces.push({x:c.x,y:c.y,mode:'lines',name:n+' units',line:{width:2}});
+});
+// Pins: 304, 344, 350
+const pins1=[
+  {m:304,n:3,label:'304 g/s · 3 VFD',
+   detail:'<b>304 g/s · 3 VFD units</b><br>f = 64.83 Hz · P = 850.7 kW · V_CW = 49.2 m³/h · Q_CW = 875 kW · η free std-by'},
+  {m:344,n:4,label:'344 g/s · 4 VFD',
+   detail:'<b>344 g/s · 4 VFD units</b><br>f = 55.0 Hz · P = 962.7 kW · V_CW = 55.7 m³/h · Q_CW = 990 kW'},
+  {m:350,n:3,label:'350 g/s · baseline',
+   detail:'<b>350 g/s · 3 units (baseline)</b><br>f = 74.7 Hz (over-spec) · P = 980.6 kW · V_CW = 56.7 m³/h · Q_CW = 1008 kW'}
+];
+g1traces.push({
+  x:pins1.map(p=>p.m),
+  y:pins1.map(p=>p.n*V72*(p.m/p.n)/M72),
+  mode:'markers+text', name:'★ pins',
+  marker:{symbol:'star',size:18,color:'#D85A30',line:{color:'#fff',width:1}},
+  text:pins1.map(p=>p.label),textposition:'top center',
+  customdata:pins1.map(p=>p.detail), hovertemplate:'%{text}<extra></extra>'
+});
+Plotly.newPlot('g1', g1traces, {
+  margin:{t:20,r:10,l:60,b:50},
+  xaxis:{title:'Total helium flow ṁ_He [g/s]'},
+  yaxis:{title:'Total package CW flow V_CW [m³/h]'},
+  legend:{orientation:'h',y:-0.18},
+  paper_bgcolor:'rgba(0,0,0,0)', plot_bgcolor:'rgba(0,0,0,0)'
+}, {responsive:true, displaylogo:false}).then(()=>{
+  document.getElementById('g1').on('plotly_click', e=>{
+    const p=e.points[0]; if(p.customdata) pinDetail('g1pin',p.customdata);
+  });
+});
+
+// --- Graph 2: RCW flow vs # HX units, isolines for He flow ----------------
+const g2traces=[];
+[250,304,344,350,400].forEach(m=>{
+  const Qoil = m * (197.6/112.54);     // kW (linear in flow)
+  const xs=[1,2,3,4,5,6];
+  const ys=xs.map(n => (3600*Qoil/(995*4.186*25))/n ); // per-HX flow share
+  g2traces.push({x:xs,y:ys,mode:'lines+markers',name:m+' g/s'});
+});
+// N+1 line at 25% margin
+g2traces.push({x:[1,2,3,4,5,6], y:[0,0,0,0,0,0].map((_,i)=>i+1), visible:false}); // placeholder
+const pins2=[
+  {x:3,y:(3600*593/(995*4.186*25))/3, label:'3 HX · baseline',
+   detail:'<b>3 HX duty · baseline 350 g/s</b><br>per-HX V_RCW = 6.83 m³/h · Q_oil = 197.6 kW each<br>+1 std-by HX on plant manifold'},
+  {x:4,y:(3600*790/(995*4.186*25))/4, label:'4 HX · COMBI',
+   detail:'<b>4 HX duty · COMBI 4-skid</b><br>per-HX V_RCW = 6.83 m³/h · Q_oil = 197.6 kW each'},
+  {x:2,y:(3600*593/(995*4.186*25))/2, label:'2 HX · loss-of-1',
+   detail:'<b>2 HX active · degraded (no std-by)</b><br>per-HX V_RCW = 10.25 m³/h (overload) · need He turndown −32 % or oil-loop +5 K'}
+];
+g2traces.push({
+  x:pins2.map(p=>p.x), y:pins2.map(p=>p.y),
+  mode:'markers+text', name:'★ pins',
+  marker:{symbol:'star',size:18,color:'#D85A30',line:{color:'#fff',width:1}},
+  text:pins2.map(p=>p.label),textposition:'top right',
+  customdata:pins2.map(p=>p.detail), hovertemplate:'%{text}<extra></extra>'
+});
+Plotly.newPlot('g2', g2traces, {
+  margin:{t:20,r:10,l:60,b:50},
+  xaxis:{title:'Number of HX units in active duty', dtick:1},
+  yaxis:{title:'Per-HX RCW flow [m³/h]'},
+  legend:{orientation:'h',y:-0.18},
+  paper_bgcolor:'rgba(0,0,0,0)', plot_bgcolor:'rgba(0,0,0,0)'
+}, {responsive:true, displaylogo:false}).then(()=>{
+  document.getElementById('g2').on('plotly_click', e=>{
+    const p=e.points[0]; if(p.customdata) pinDetail('g2pin',p.customdata);
+  });
+});
+
+// --- Graph 3: Oil vs He sensible split ------------------------------------
+const xs3=[];
+for(let m=200;m<=420;m+=10) xs3.push(m);
+const yOil = xs3.map(m => m*(197.6/112.54));
+const yHe  = xs3.map(m => m*(126.3/112.54));
+const yTot = xs3.map((m,i)=> yOil[i]+yHe[i]);
+const g3traces=[
+  {x:xs3,y:yOil,mode:'lines',name:'Oil cooler (85→30 °C)',stackgroup:'a',line:{color:'#D85A30'}},
+  {x:xs3,y:yHe ,mode:'lines',name:'He sensible (84 K→300 K)',stackgroup:'a',line:{color:'#378ADD'}},
+  {x:xs3,y:yTot,mode:'lines',name:'Total CW',line:{dash:'dash',color:'#1D9E75'}}
+];
+const pins3=[
+  {m:304, label:'304 g/s',
+   detail:'<b>304 g/s</b><br>Q_oil = 533.7 kW · Q_He = 341.3 kW · Q_tot = 875.0 kW · V_RCW(oil) = 18.5 m³/h'},
+  {m:344, label:'344 g/s',
+   detail:'<b>344 g/s</b><br>Q_oil = 604.0 kW · Q_He = 386.2 kW · Q_tot = 990.2 kW · V_RCW(oil) = 20.9 m³/h'},
+  {m:350, label:'350 g/s · baseline',
+   detail:'<b>350 g/s baseline</b><br>Q_oil = 614.6 kW · Q_He = 392.9 kW · Q_tot = 1007.4 kW · V_RCW(oil) = 21.3 m³/h'}
+];
+g3traces.push({
+  x:pins3.map(p=>p.m), y:pins3.map(p=>p.m*323.9/112.54),
+  mode:'markers+text', name:'★ pins',
+  marker:{symbol:'star',size:18,color:'#7B4ECC',line:{color:'#fff',width:1}},
+  text:pins3.map(p=>p.label),textposition:'top center',
+  customdata:pins3.map(p=>p.detail), hovertemplate:'%{text}<extra></extra>'
+});
+Plotly.newPlot('g3', g3traces, {
+  margin:{t:30,r:10,l:60,b:50},
+  xaxis:{title:'Total helium flow ṁ_He [g/s]'},
+  yaxis:{title:'Heat duty [kW]'},
+  legend:{orientation:'h',y:-0.18},
+  annotations:[
+    {x:260,y:600,text:'Oil 85 °C → 30 °C',showarrow:false,font:{color:'#D85A30',size:11}},
+    {x:380,y:380,text:'He 84 K → 300 K (isothermal env.)',showarrow:false,font:{color:'#378ADD',size:11}}
+  ],
+  paper_bgcolor:'rgba(0,0,0,0)', plot_bgcolor:'rgba(0,0,0,0)'
+}, {responsive:true, displaylogo:false}).then(()=>{
+  document.getElementById('g3').on('plotly_click', e=>{
+    const p=e.points[0]; if(p.customdata) pinDetail('g3pin',p.customdata);
+  });
+});
+</script>
+</body></html>

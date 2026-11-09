@@ -8,8 +8,9 @@
   control-flow branch-coverage evidence
 - Toolkit: immutable Mission Control commit
   `dd606d8897c70fa797a3a585fa12850bacd1d9e1`
-- Entry points: approved `workflow_dispatch` or opt-in
-  `repository_dispatch` event `qps-metric-census-v1`
+- Entry point: approved `workflow_dispatch` only, sent by the hub's
+  Actions-only dispatcher token; `repository_dispatch` was retired on
+  2026-10-24 after the first live `workflow_dispatch` fan-out
 - DAG routes: `native_checks` and `coverage_catalog`; both read-only
 - Request identity: wave, lane, repository, expected SHA, selector and ID
 - Fail-closed rule: stale or mismatched source heads are rejected

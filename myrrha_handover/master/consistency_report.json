@@ -1,0 +1,93 @@
+{
+  "pass": true,
+  "failures": [],
+  "findings_count": 17,
+  "findings": [
+    {
+      "view": "handover.html",
+      "kind": "stale_anchor_350",
+      "detail": "350 g/s shown as design/baseline without a legacy/superseded label"
+    },
+    {
+      "view": "hx-sizing.html",
+      "kind": "stale_anchor_350",
+      "detail": "350 g/s shown as design/baseline without a legacy/superseded label"
+    },
+    {
+      "view": "icd-electrical.html",
+      "kind": "isothermal_basis",
+      "detail": "isothermal/efficiency electrical basis present (superseded by ICD-bound power)"
+    },
+    {
+      "view": "mt-11-kaeser-technical-requirements.html",
+      "kind": "stale_anchor_350",
+      "detail": "350 g/s shown as design/baseline without a legacy/superseded label"
+    },
+    {
+      "view": "mt-13-report.html",
+      "kind": "stale_anchor_350",
+      "detail": "350 g/s shown as design/baseline without a legacy/superseded label"
+    },
+    {
+      "view": "operations.html",
+      "kind": "stale_anchor_350",
+      "detail": "350 g/s shown as design/baseline without a legacy/superseded label"
+    },
+    {
+      "view": "qa-checklist.html",
+      "kind": "stale_anchor_350",
+      "detail": "350 g/s shown as design/baseline without a legacy/superseded label"
+    },
+    {
+      "view": "reports.html",
+      "kind": "stale_anchor_350",
+      "detail": "350 g/s shown as design/baseline without a legacy/superseded label"
+    },
+    {
+      "view": "search-index.html",
+      "kind": "stale_anchor_350",
+      "detail": "350 g/s shown as design/baseline without a legacy/superseded label"
+    },
+    {
+      "view": "slides.html",
+      "kind": "stale_anchor_350",
+      "detail": "350 g/s shown as design/baseline without a legacy/superseded label"
+    },
+    {
+      "view": "status.html",
+      "kind": "stale_anchor_350",
+      "detail": "350 g/s shown as design/baseline without a legacy/superseded label"
+    },
+    {
+      "view": "tables.html",
+      "kind": "stale_anchor_350",
+      "detail": "350 g/s shown as design/baseline without a legacy/superseded label"
+    },
+    {
+      "view": "thermo-analysis.html",
+      "kind": "stale_anchor_350",
+      "detail": "350 g/s shown as design/baseline without a legacy/superseded label"
+    },
+    {
+      "view": "utilities.html",
+      "kind": "stale_anchor_350",
+      "detail": "350 g/s shown as design/baseline without a legacy/superseded label"
+    },
+    {
+      "view": "vendor-kaeser.html",
+      "kind": "stale_anchor_350",
+      "detail": "350 g/s shown as design/baseline without a legacy/superseded label"
+    },
+    {
+      "view": "xref-matrix.html",
+      "kind": "stale_anchor_350",
+      "detail": "350 g/s shown as design/baseline without a legacy/superseded label"
+    },
+    {
+      "view": "xref-matrix.html",
+      "kind": "isothermal_basis",
+      "detail": "isothermal/efficiency electrical basis present (superseded by ICD-bound power)"
+    }
+  ],
+  "note": "findings are informational migration flags; failures are hard gates."
+}

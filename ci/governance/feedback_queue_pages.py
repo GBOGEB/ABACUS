@@ -4,6 +4,7 @@ No API pages are omitted silently. Two matching sweeps increase confidence in
 pagination completeness but are not an atomic GitHub transaction. Status
 changes between the sweeps return UNKNOWN, never an approval or skip decision.
 """
+
 from __future__ import annotations
 
 import hashlib
@@ -35,8 +36,13 @@ def parse_row(raw, sha):
     name, event = raw.get("name"), raw.get("event")
     if not isinstance(name, str) or not name or not isinstance(event, str) or not event:
         raise ValueError("run name or event missing")
-    return {"id": ident, "name": name, "event": event,
-            "head_sha": raw.get("head_sha"), "created_at": raw.get("created_at")}
+    return {
+        "id": ident,
+        "name": name,
+        "event": event,
+        "head_sha": raw.get("head_sha"),
+        "created_at": raw.get("created_at"),
+    }
 
 
 def one_sweep(get, repo, sha, max_pages):
@@ -85,18 +91,43 @@ def inspect(get, repository="GBOGEB/ABACUS", sha=None, max_pages=MAX_PAGES):
         before, pages1 = one_sweep(get, repository, sha, max_pages)
         after, pages2 = one_sweep(get, repository, sha, max_pages)
     except (ValueError, RuntimeError, OSError) as exc:
-        return {"schema": SCHEMA, "repository": repository, "head_sha": sha,
-                "state": "UNKNOWN", "reason": type(exc).__name__ + ": " + str(exc),
-                "count": None, "runs": None, "digest_sha256": None,
-                "authority_transfer": False, "skip_authorized": False}
+        return {
+            "schema": SCHEMA,
+            "repository": repository,
+            "head_sha": sha,
+            "state": "UNKNOWN",
+            "reason": type(exc).__name__ + ": " + str(exc),
+            "count": None,
+            "runs": None,
+            "digest_sha256": None,
+            "authority_transfer": False,
+            "skip_authorized": False,
+        }
     if before != after or pages1 != pages2:
-        return {"schema": SCHEMA, "repository": repository, "head_sha": sha,
-                "state": "UNKNOWN", "reason": "DOUBLE_SWEEP_DRIFT",
-                "count": None, "runs": None, "digest_sha256": None,
-                "authority_transfer": False, "skip_authorized": False}
+        return {
+            "schema": SCHEMA,
+            "repository": repository,
+            "head_sha": sha,
+            "state": "UNKNOWN",
+            "reason": "DOUBLE_SWEEP_DRIFT",
+            "count": None,
+            "runs": None,
+            "digest_sha256": None,
+            "authority_transfer": False,
+            "skip_authorized": False,
+        }
     digest = hashlib.sha256((canonical(after) + "\n").encode()).hexdigest()
-    return {"schema": SCHEMA, "repository": repository, "head_sha": sha,
-            "state": "CENSUS_CONSISTENT_NOT_ATOMIC", "reason": None,
-            "count": len(after), "runs": after, "pages_per_pass": pages1,
-            "digest_sha256": digest, "authority_transfer": False,
-            "skip_authorized": False, "open_pr_linkage": "NOT_CHECKED"}
+    return {
+        "schema": SCHEMA,
+        "repository": repository,
+        "head_sha": sha,
+        "state": "CENSUS_CONSISTENT_NOT_ATOMIC",
+        "reason": None,
+        "count": len(after),
+        "runs": after,
+        "pages_per_pass": pages1,
+        "digest_sha256": digest,
+        "authority_transfer": False,
+        "skip_authorized": False,
+        "open_pr_linkage": "NOT_CHECKED",
+    }

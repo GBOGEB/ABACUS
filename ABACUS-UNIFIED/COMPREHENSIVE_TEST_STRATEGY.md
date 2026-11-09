@@ -101,7 +101,7 @@ def test_all_modules_importable():
         'test_execution',
         'update_documentation_versions',
     ]
-    
+
     for module_name in modules:
         try:
             module = importlib.import_module(module_name)
@@ -113,11 +113,11 @@ def test_all_modules_importable():
 def test_syntax_validity():
     """Test all Python files have valid syntax"""
     python_files = Path('ABACUS-v032').glob('*.py')
-    
+
     for py_file in python_files:
         with open(py_file, 'r', encoding='utf-8') as f:
             code = f.read()
-        
+
         try:
             ast.parse(code)
         except SyntaxError as e:
@@ -131,7 +131,7 @@ def test_no_circular_imports():
 def test_version_strings():
     """Test all modules have version strings"""
     modules = [...]  # All modules
-    
+
     for module_name in modules:
         module = importlib.import_module(module_name)
         assert hasattr(module, '__version__')
@@ -236,20 +236,20 @@ def self_test() -> bool:
     try:
         # Test 1: Version exists
         assert __version__ is not None
-        
+
         # Test 2: Critical classes exist
         assert ArtifactRankingSystem is not None
-        
+
         # Test 3: Critical methods exist
         ars = ArtifactRankingSystem(Path('.'))
         assert hasattr(ars, 'rank_artifacts')
         assert hasattr(ars, 'calculate_quality_score')
-        
+
         # Test 4: Basic operation works
         test_artifact = {'name': 'test', 'type': 'code'}
         score = ars.calculate_quality_score(test_artifact)
         assert isinstance(score, (int, float))
-        
+
         return True
     except Exception as e:
         print(f"Self-test failed: {e}")
@@ -267,7 +267,7 @@ if __name__ == "__main__":
 def test_all_modules_self_test():
     """Test all modules pass their self-tests"""
     modules = [...]  # All modules
-    
+
     for module_name in modules:
         module = importlib.import_module(module_name)
         if hasattr(module, 'self_test'):
@@ -304,7 +304,7 @@ def test_agent_orchestrator_integration():
     orchestrator = MasterPipelineOrchestrator(workspace_root)
     agents = orchestrator.initialize_agents()
     orchestrators = orchestrator.initialize_orchestrators()
-    
+
     # Test orchestrator can manage agents
     for orch in orchestrators:
         assert orch.agents is not None
@@ -314,38 +314,38 @@ def test_dmaic_phase_transitions():
     """Test DMAIC phases transition correctly"""
     # Test Phase 0 → 1 → 2 → ... → 8
     orchestrator = MasterPipelineOrchestrator(workspace_root)
-    
+
     # Execute phases sequentially
     results = []
     for phase in range(9):
         result = orchestrator.execute_phase(phase)
         results.append(result)
         assert result.success
-    
+
     # Verify all phases completed
     assert len(results) == 9
 
 def test_artifact_flow():
     """Test artifacts flow between phases"""
     orchestrator = MasterPipelineOrchestrator(workspace_root)
-    
+
     # Phase 0 creates artifacts
     phase0_artifacts = orchestrator.execute_phase(0).artifacts
-    
+
     # Phase 1 receives artifacts
     phase1_artifacts = orchestrator.execute_phase(1).artifacts
-    
+
     # Verify artifact continuity
     assert len(phase1_artifacts) >= len(phase0_artifacts)
 
 def test_error_propagation():
     """Test errors propagate correctly"""
     orchestrator = MasterPipelineOrchestrator(workspace_root)
-    
+
     # Inject error in phase
     with pytest.raises(Exception):
         orchestrator.execute_phase_with_error(0)
-    
+
     # Verify error was logged
     assert orchestrator.has_errors()
 ```
@@ -378,13 +378,13 @@ def test_error_propagation():
 def test_knowledge_pack_ingestion():
     """Test DOW Engine ingests knowledge packs"""
     dow_engine = DOWEngine()
-    
+
     knowledge_pack = {
         'source': 'v032',
         'type': 'dmaic_pattern',
         'content': {...}
     }
-    
+
     result = dow_engine.ingest(knowledge_pack)
     assert result.success
     assert result.knowledge_id is not None
@@ -392,10 +392,10 @@ def test_knowledge_pack_ingestion():
 def test_knowledge_retrieval():
     """Test knowledge can be retrieved"""
     dow_engine = DOWEngine()
-    
+
     # Ingest knowledge
     knowledge_id = dow_engine.ingest(knowledge_pack).knowledge_id
-    
+
     # Retrieve knowledge
     retrieved = dow_engine.retrieve(knowledge_id)
     assert retrieved is not None
@@ -404,24 +404,24 @@ def test_knowledge_retrieval():
 def test_knowledge_deduplication():
     """Test duplicate knowledge is deduplicated"""
     dow_engine = DOWEngine()
-    
+
     # Ingest same knowledge twice
     id1 = dow_engine.ingest(knowledge_pack).knowledge_id
     id2 = dow_engine.ingest(knowledge_pack).knowledge_id
-    
+
     # Should be same ID (deduplicated)
     assert id1 == id2
 
 def test_cross_version_knowledge():
     """Test knowledge from v031 and v032 both ingest"""
     dow_engine = DOWEngine()
-    
+
     v031_knowledge = {'source': 'v031', ...}
     v032_knowledge = {'source': 'v032', ...}
-    
+
     id1 = dow_engine.ingest(v031_knowledge).knowledge_id
     id2 = dow_engine.ingest(v032_knowledge).knowledge_id
-    
+
     assert id1 != id2  # Different knowledge
     assert dow_engine.count() == 2
 ```
@@ -458,10 +458,10 @@ def test_v031_to_v032_artifact_bridge():
         'version': 'v031',
         'format': 'legacy'
     }
-    
+
     bridge = V031ToV032Bridge()
     v032_artifact = bridge.convert(v031_artifact)
-    
+
     assert v032_artifact['version'] == 'v032'
     assert v032_artifact['format'] == 'current'
     assert v032_artifact['name'] == v031_artifact['name']
@@ -473,23 +473,23 @@ def test_v032_to_v031_artifact_bridge():
         'version': 'v032',
         'format': 'current'
     }
-    
+
     bridge = V032ToV031Bridge()
     v031_artifact = bridge.convert(v032_artifact)
-    
+
     assert v031_artifact['version'] == 'v031'
     assert v031_artifact['format'] == 'legacy'
 
 def test_unified_integration():
     """Test UNIFIED layer integrates both versions"""
     unified = UnifiedLayer()
-    
+
     v031_data = {...}
     v032_data = {...}
-    
+
     unified.integrate(v031_data)
     unified.integrate(v032_data)
-    
+
     # Query unified layer
     results = unified.query('test_pattern')
     assert len(results) == 2  # Both versions
@@ -497,9 +497,9 @@ def test_unified_integration():
 def test_bridge_error_handling():
     """Test bridge handles incompatible data"""
     bridge = V031ToV032Bridge()
-    
+
     invalid_artifact = {'invalid': 'data'}
-    
+
     with pytest.raises(BridgeError):
         bridge.convert(invalid_artifact)
 ```
@@ -532,29 +532,29 @@ def test_bridge_error_handling():
 def test_single_knowledge_base():
     """Test all versions use single DOW knowledge base"""
     dow_engine = DOWEngine()
-    
+
     # v031 writes knowledge
     v031_agent = V031Agent(dow_engine)
     v031_agent.learn('pattern_1')
-    
+
     # v032 reads same knowledge
     v032_agent = V032Agent(dow_engine)
     knowledge = v032_agent.retrieve('pattern_1')
-    
+
     assert knowledge is not None
     assert knowledge.source == 'v031'
 
 def test_no_knowledge_duplication():
     """Test knowledge is not duplicated across versions"""
     dow_engine = DOWEngine()
-    
+
     # Both versions learn same pattern
     v031_agent = V031Agent(dow_engine)
     v032_agent = V032Agent(dow_engine)
-    
+
     v031_agent.learn('pattern_1')
     v032_agent.learn('pattern_1')
-    
+
     # Should only have one instance
     count = dow_engine.count_pattern('pattern_1')
     assert count == 1
@@ -562,23 +562,23 @@ def test_no_knowledge_duplication():
 def test_concurrent_knowledge_access():
     """Test concurrent access to knowledge base"""
     dow_engine = DOWEngine()
-    
+
     # Simulate concurrent access
     import threading
-    
+
     def access_knowledge(agent_id):
         agent = Agent(agent_id, dow_engine)
         agent.learn(f'pattern_{agent_id}')
         agent.retrieve(f'pattern_{agent_id}')
-    
-    threads = [threading.Thread(target=access_knowledge, args=(i,)) 
+
+    threads = [threading.Thread(target=access_knowledge, args=(i,))
                for i in range(10)]
-    
+
     for t in threads:
         t.start()
     for t in threads:
         t.join()
-    
+
     # Verify all knowledge stored
     assert dow_engine.count() == 10
 ```
@@ -611,32 +611,32 @@ def test_concurrent_knowledge_access():
 def test_parallel_execution():
     """Test v031 and v032 run in parallel without conflicts"""
     import multiprocessing
-    
+
     def run_v031():
         orchestrator = V031Orchestrator()
         return orchestrator.execute()
-    
+
     def run_v032():
         orchestrator = V032Orchestrator()
         return orchestrator.execute()
-    
+
     # Run both in parallel
     with multiprocessing.Pool(2) as pool:
         results = pool.map(lambda f: f(), [run_v031, run_v032])
-    
+
     assert all(r.success for r in results)
 
 def test_shared_dow_access():
     """Test both versions access DOW Engine without conflicts"""
     dow_engine = DOWEngine()
-    
+
     v031_orch = V031Orchestrator(dow_engine)
     v032_orch = V032Orchestrator(dow_engine)
-    
+
     # Both access DOW simultaneously
     v031_result = v031_orch.execute()
     v032_result = v032_orch.execute()
-    
+
     assert v031_result.success
     assert v032_result.success
     assert dow_engine.is_consistent()
@@ -645,10 +645,10 @@ def test_independent_artifacts():
     """Test versions create independent artifacts"""
     v031_orch = V031Orchestrator()
     v032_orch = V032Orchestrator()
-    
+
     v031_artifacts = v031_orch.execute().artifacts
     v032_artifacts = v032_orch.execute().artifacts
-    
+
     # Artifacts should be in separate directories
     assert not any(a in v032_artifacts for a in v031_artifacts)
 ```
@@ -681,10 +681,10 @@ def test_independent_artifacts():
 def test_graceful_degradation():
     """Test system degrades gracefully on component failure"""
     orchestrator = MasterPipelineOrchestrator(workspace_root)
-    
+
     # Simulate agent failure
     orchestrator.agents[0].fail()
-    
+
     # System should continue with remaining agents
     result = orchestrator.execute()
     assert result.partial_success
@@ -693,11 +693,11 @@ def test_graceful_degradation():
 def test_partial_results_usable():
     """Test partial results are usable"""
     orchestrator = MasterPipelineOrchestrator(workspace_root)
-    
+
     # Execute until phase 4, then fail
     orchestrator.execute_until_phase(4)
     orchestrator.fail_phase(5)
-    
+
     # Verify phases 0-4 results are usable
     artifacts = orchestrator.get_artifacts()
     assert len(artifacts) > 0
@@ -706,13 +706,13 @@ def test_partial_results_usable():
 def test_state_consistency_after_failure():
     """Test state remains consistent after failure"""
     orchestrator = MasterPipelineOrchestrator(workspace_root)
-    
+
     # Execute with failure
     try:
         orchestrator.execute_with_failure()
     except Exception:
         pass
-    
+
     # Verify state is consistent
     assert orchestrator.is_consistent()
     assert orchestrator.can_recover()
@@ -746,7 +746,7 @@ def test_state_consistency_after_failure():
 def test_deployment_health():
     """Test deployment is healthy"""
     health = check_deployment_health()
-    
+
     assert health.status == 'healthy'
     assert health.all_services_running
     assert health.no_errors
@@ -759,7 +759,7 @@ def test_all_services_running():
         'dow_engine',
         'artifact_system'
     ]
-    
+
     for service in services:
         assert is_service_running(service)
 
@@ -771,7 +771,7 @@ def test_endpoints_responsive():
         '/agents',
         '/orchestrators'
     ]
-    
+
     for endpoint in endpoints:
         response = requests.get(f'http://localhost:8000{endpoint}')
         assert response.status_code == 200
@@ -779,7 +779,7 @@ def test_endpoints_responsive():
 def test_configuration_correct():
     """Test deployment configuration is correct"""
     config = load_deployment_config()
-    
+
     assert config.environment == 'production'
     assert config.version == __version__
     assert config.all_required_settings_present()
@@ -813,15 +813,15 @@ def test_configuration_correct():
 def test_high_load():
     """Test system under high load"""
     orchestrator = MasterPipelineOrchestrator(workspace_root)
-    
+
     # Run 1000 concurrent pipelines
     import concurrent.futures
-    
+
     with concurrent.futures.ThreadPoolExecutor(max_workers=100) as executor:
-        futures = [executor.submit(orchestrator.execute) 
+        futures = [executor.submit(orchestrator.execute)
                    for _ in range(1000)]
         results = [f.result() for f in futures]
-    
+
     # Verify most succeeded
     success_rate = sum(r.success for r in results) / len(results)
     assert success_rate > 0.95
@@ -829,12 +829,12 @@ def test_high_load():
 def test_resource_exhaustion():
     """Test with limited resources"""
     import resource
-    
+
     # Limit memory to 100MB
     resource.setrlimit(resource.RLIMIT_AS, (100 * 1024 * 1024, -1))
-    
+
     orchestrator = MasterPipelineOrchestrator(workspace_root)
-    
+
     # Should handle gracefully
     result = orchestrator.execute()
     assert result.success or result.partial_success
@@ -842,13 +842,13 @@ def test_resource_exhaustion():
 def test_chaos_engineering():
     """Test random failures (chaos engineering)"""
     orchestrator = MasterPipelineOrchestrator(workspace_root)
-    
+
     # Inject random failures
     orchestrator.enable_chaos_mode(failure_rate=0.1)
-    
+
     # Execute multiple times
     results = [orchestrator.execute() for _ in range(100)]
-    
+
     # Should still have high success rate
     success_rate = sum(r.success for r in results) / len(results)
     assert success_rate > 0.80
@@ -934,24 +934,24 @@ jobs:
         uses: actions/setup-python@v2
         with:
           python-version: 3.9
-      
+
       - name: Install dependencies
         run: |
           pip install -r requirements.txt
           pip install pytest pytest-cov pytest-xdist
-      
+
       - name: Run Dry Run Tests
         run: pytest tests/test_dry_run.py -v
-      
+
       - name: Run Smoke Tests
         run: pytest tests/test_smoke.py -v
-      
+
       - name: Run Integration Tests
         run: pytest tests/test_integration.py -v
-      
+
       - name: Run All Tests with Coverage
         run: pytest --cov=. --cov-report=html --cov-report=term
-      
+
       - name: Upload Coverage
         uses: codecov/codecov-action@v2
 ```

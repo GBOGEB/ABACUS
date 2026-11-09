@@ -66,17 +66,17 @@ Actions:
 1. IDENTIFY truly similar functions
    - Same purpose, same algorithm, same domain
    - Differences are only in parameter names or minor variations
-   
+
 2. ANALYZE for canonicalization potential
    - Can all nuances be preserved in a single canonical version?
    - Are differences valuable (domain-specific) or redundant?
-   
+
 3. MERGE only if:
    - ✅ All functionality can be preserved
    - ✅ All edge cases can be handled
    - ✅ All domain knowledge can be documented
    - ✅ Tests exist to verify equivalence
-   
+
 4. PRESERVE if:
    - ❌ Functions serve different domains (even if similar code)
    - ❌ Nuances are domain-specific and valuable
@@ -625,22 +625,22 @@ SUCCESS CRITERIA:
 ```python
 def validate_knowledge_growth(iteration_n, iteration_n_minus_1):
     """Validate that knowledge grew and was not diluted"""
-    
+
     # Check 1: Documentation must not decrease
     assert iteration_n['documented_files'] >= iteration_n_minus_1['documented_files']
-    
+
     # Check 2: Test coverage must not decrease
     assert iteration_n['test_coverage'] >= iteration_n_minus_1['test_coverage']
-    
+
     # Check 3: Canonical files must not decrease
     assert iteration_n['canonical_files'] >= iteration_n_minus_1['canonical_files']
-    
+
     # Check 4: Technical debt should decrease or stay stable
     assert iteration_n['technical_debt'] <= iteration_n_minus_1['technical_debt'] * 1.1
-    
+
     # Check 5: Knowledge quality should improve
     assert iteration_n['knowledge_quality'] >= iteration_n_minus_1['knowledge_quality']
-    
+
     return {
         'knowledge_preserved': True,
         'knowledge_grew': True,

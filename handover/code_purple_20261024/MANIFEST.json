@@ -1,0 +1,81 @@
+{
+  "schema": "abacus.codepurple.20261024.snapshot-manifest.v1",
+  "captured_date": "2026-10-24",
+  "observed_main": {
+    "GBOGEB/ABACUS": "25940371d4750afa00be15f48c6b53963c9b534e",
+    "GBOGEB/CODEX": "58ee1520b0ed90265e4134be82f5580d60a30139"
+  },
+  "handover_pr": 2422,
+  "handover_first_cut": "f7659f26cc7f02dc33bcbd2b13aadde96c20e73b",
+  "canonical_owners": {
+    "coverage_cohorts": "telemetry/coverage_cohorts.jsonl",
+    "run_evidence": "telemetry/evidence_ledger.jsonl",
+    "issue_state": "GitHub (live)"
+  },
+  "ledger_rows_added": {
+    "evidence_ledger": [
+      "E21",
+      "E22",
+      "E23",
+      "E24",
+      "E25",
+      "E26",
+      "E27",
+      "E28"
+    ],
+    "coverage_cohorts": [
+      "C-BASE-7e9564f9",
+      "C-MAIN-44caccf7",
+      "C-W75-A",
+      "C-W53-GG",
+      "C-W53-ER",
+      "C-W53-BD",
+      "C-W53-RT",
+      "C-W77",
+      "C-W88-44caccf7",
+      "C-MAIN-25940371"
+    ],
+    "rules": [
+      "supersedes C-BASE",
+      "supersedes C-W88",
+      "noise_floor",
+      "no_accumulation"
+    ]
+  },
+  "files": [
+    {
+      "path": "handover/code_purple_20261024/issues_snapshot.csv",
+      "sha256": "c9cb64c631fa72e0940cf9814705d48390bcf4880193c7064a02a04c27b92346",
+      "bytes": 8615,
+      "role": "analyst issue register (as received)",
+      "received_as": "issues.csv",
+      "received_sha256": "88156b66a359424d9f8e3782936258418ee8f9aae2d4da8a36685e153660f9de",
+      "received_bytes": 8668,
+      "received_line_endings": "CRLF",
+      "normalisation": "CRLF -> LF by .gitattributes eol=lf; content otherwise byte-identical"
+    },
+    {
+      "path": "handover/code_purple_20261024/coverage_waves.csv",
+      "sha256": "29581e980d512ba32898238025af648860723d6a5b4c4e5f47b07c4042cf50b7",
+      "bytes": 4788,
+      "role": "analyst wave observations (as received)",
+      "received_as": "coverage_waves.csv",
+      "received_sha256": "9cef8db6ddf69abe800f7efb8fccbe4f751ed79702a1483f3a5edbb5b75bf8b1",
+      "received_bytes": 4800,
+      "received_line_endings": "CRLF",
+      "normalisation": "CRLF -> LF by .gitattributes eol=lf; content otherwise byte-identical"
+    },
+    {
+      "path": "handover/code_purple_20261024/README.md",
+      "sha256": "f7a26a4885fab8947406c97ba088c1ed43200af268048d7f8384f980009a9054",
+      "bytes": 1985,
+      "role": "navigation and corrections",
+      "received_as": null
+    }
+  ],
+  "claims": {
+    "merge_admission": "HOLD",
+    "engineering_credit_delta": 0,
+    "current_main_coverage": "UNKNOWN"
+  }
+}

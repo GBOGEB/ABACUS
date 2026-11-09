@@ -37,7 +37,7 @@ $versionMatch = $pythonVersion -match "Python (\d+)\.(\d+)\.(\d+)"
 if ($versionMatch) {
     $major = [int]$Matches[1]
     $minor = [int]$Matches[2]
-    
+
     if ($major -lt 3 -or ($major -eq 3 -and $minor -lt 8)) {
         Write-Error "  ✗ Python 3.8 or higher required. Found: $pythonVersion"
         exit 1
@@ -65,7 +65,7 @@ if (Test-Path $venvPath) {
 if (-not (Test-Path $venvPath)) {
     Write-Info "  Creating virtual environment: $venvPath"
     python -m venv $venvPath
-    
+
     if ($LASTEXITCODE -eq 0) {
         Write-Success "  ✓ Virtual environment created"
     } else {
@@ -107,13 +107,13 @@ if ($LASTEXITCODE -eq 0) {
 # Install dependencies
 if (-not $SkipDependencies) {
     Write-Info "[6/7] Installing dependencies..."
-    
+
     # Check for requirements.txt
     $requirementsFiles = @(
         "DMAIC_V3\requirements.txt",
         "requirements.txt"
     )
-    
+
     $requirementsFile = $null
     foreach ($file in $requirementsFiles) {
         $fullPath = Join-Path $PSScriptRoot $file
@@ -122,11 +122,11 @@ if (-not $SkipDependencies) {
             break
         }
     }
-    
+
     if ($requirementsFile) {
         Write-Info "  Installing from: $requirementsFile"
         python -m pip install -r $requirementsFile
-        
+
         if ($LASTEXITCODE -eq 0) {
             Write-Success "  ✓ Dependencies installed"
         } else {
@@ -186,7 +186,7 @@ Write-Host ""
 if ($Validate) {
     Write-Info "Running Phase 0 validation..."
     Write-Host ""
-    
+
     $phase0Script = Join-Path $PSScriptRoot "DMAIC_V3\phases\phase0_setup.py"
     if (Test-Path $phase0Script) {
         python $phase0Script

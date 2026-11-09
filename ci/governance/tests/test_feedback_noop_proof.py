@@ -1,4 +1,5 @@
 """Protect against accidentally suppressing real PR feedback invalidation."""
+
 from __future__ import annotations
 
 import importlib.util
@@ -13,8 +14,12 @@ SHA = "a" * 40
 
 
 def event(**overrides):
-    run = {"status": "completed", "head_sha": SHA, "head_branch": "main",
-           "pull_requests": []}
+    run = {
+        "status": "completed",
+        "head_sha": SHA,
+        "head_branch": "main",
+        "pull_requests": [],
+    }
     run.update(overrides)
     return {"action": "completed", "workflow_run": run}
 
@@ -36,8 +41,11 @@ class NoopTests(unittest.TestCase):
         self.assertEqual(d["classification"], "EVALUATE")
 
     def test_mixed_open_closed_is_evaluable(self):
-        d = m.classify(event(), SHA, [{"number": 1, "state": "closed"},
-                                         {"number": 2, "state": "open"}])
+        d = m.classify(
+            event(),
+            SHA,
+            [{"number": 1, "state": "closed"}, {"number": 2, "state": "open"}],
+        )
         self.assertEqual(d["classification"], "EVALUATE")
 
     def test_payload_pr_link_blocks_noop(self):
@@ -69,7 +77,8 @@ class NoopTests(unittest.TestCase):
         self.assertEqual(d["classification"], "UNKNOWN")
 
     def test_nonterminal_action_noop_not_inferred(self):
-        e = event(); e["action"] = "requested"
+        e = event()
+        e["action"] = "requested"
         self.assertEqual(m.classify(e, SHA, [])["classification"], "UNKNOWN")
 
     def test_missing_event_pull_array_unknown(self):
@@ -89,8 +98,11 @@ class NoopTests(unittest.TestCase):
         self.assertEqual(d["classification"], "UNKNOWN")
 
     def test_duplicate_pr_number_unknown(self):
-        d = m.classify(event(), SHA, [{"number": 1, "state": "closed"},
-                                         {"number": 1, "state": "closed"}])
+        d = m.classify(
+            event(),
+            SHA,
+            [{"number": 1, "state": "closed"}, {"number": 1, "state": "closed"}],
+        )
         self.assertEqual(d["classification"], "UNKNOWN")
 
     def test_bad_linked_row_unknown(self):
@@ -101,7 +113,8 @@ class NoopTests(unittest.TestCase):
         self.assertEqual(m.classify([], SHA, [])["classification"], "UNKNOWN")
 
     def test_mixed_pending_action_never_skips(self):
-        e = event();e["action"] = "edited"
+        e = event()
+        e["action"] = "edited"
         self.assertFalse(m.classify(e, SHA, [])["skip_authorized"])
 
 

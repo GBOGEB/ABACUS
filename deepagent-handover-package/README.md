@@ -133,7 +133,7 @@ deepagent_handover_package/
 3. Use the TypeScript library for programmatic access:
    ```typescript
    import { framework, dmaic, kpi } from './implementation/deepagent';
-   
+
    await framework.initialize();
    const project = framework.createProject({...});
    ```
@@ -335,7 +335,7 @@ See **[ROADMAP.md](./ROADMAP.md)** for the full scheduled plan. Summary:
 
 ## License
 
-This project is licensed under the **MIT License** — see the [LICENSE](./LICENSE) file for details.
+This project is licensed under the **Apache License 2.0** — see the [LICENSE](./LICENSE) file for details. Copyright 2025-2026 GBOGEB; see [NOTICE](./NOTICE), which also lists the third-party material the licence does not cover.
 
 ---
 

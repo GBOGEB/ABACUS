@@ -15,6 +15,7 @@ Independent engineering model:
 This script is fail-closed: it does not assume the 72 Hz boundary is the exact nominal 2K-OP boundary.
 A large residual diagnoses boundary/configuration mismatch rather than vendor non-compliance.
 """
+
 from __future__ import annotations
 
 import json
@@ -83,7 +84,11 @@ def main() -> None:
             "within_tolerance": abs(residual_pct) <= 5.0,
         },
         "strict_gate": {
-            "status": "DEFER_EXACT_NOMINAL_HP_BOUNDARY" if abs(residual_pct) > 5.0 else "CANDIDATE_PASS_REQUIRES_CHILD_DISPOSITION",
+            "status": (
+                "DEFER_EXACT_NOMINAL_HP_BOUNDARY"
+                if abs(residual_pct) > 5.0
+                else "CANDIDATE_PASS_REQUIRES_CHILD_DISPOSITION"
+            ),
             "score_before": "1/5",
             "score_after": "1/5",
             "reason": "72Hz maximum-reference boundary is not yet proven identical to nominal 326 g/s 2K-OP boundary",

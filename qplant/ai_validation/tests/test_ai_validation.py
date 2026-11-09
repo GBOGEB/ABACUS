@@ -9,7 +9,8 @@ import pytest
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent.parent))
 
-from ai_validation.test_generator import CodeAnalyser, TestGenerator
+from ai_validation.test_generator import CodeAnalyser
+from ai_validation.test_generator import TestGenerator as SuiteGenerator
 from ai_validation.code_quality import CodeQualityAnalyser
 from ai_validation.config_validator import ConfigValidator, ValidationResult
 from ai_validation.doc_quality import DocQualityAnalyser
@@ -63,7 +64,7 @@ def calculate(value: float) -> float:
     """Calculate something."""
     return value * 2
 ''')
-        gen = TestGenerator()
+        gen = SuiteGenerator()
         tests = gen.generate_for_file(str(py_file))
         assert len(tests) > 0
         assert any(t.category == "unit" for t in tests)
@@ -78,14 +79,14 @@ def _private():
 def public():
     pass
 ''')
-        gen = TestGenerator()
+        gen = SuiteGenerator()
         tests = gen.generate_for_file(str(py_file))
         assert all(t.function != "_private" for t in tests)
 
     def test_generate_for_directory(self, tmp_path):
         (tmp_path / "a.py").write_text("def func_a(): pass")
         (tmp_path / "b.py").write_text("def func_b(): pass")
-        gen = TestGenerator()
+        gen = SuiteGenerator()
         results = gen.generate_for_directory(str(tmp_path))
         assert len(results) >= 2
 

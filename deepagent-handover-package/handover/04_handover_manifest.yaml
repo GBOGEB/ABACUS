@@ -18,7 +18,7 @@ contact:
   technical_lead: "GBOGEB (https://github.com/GBOGEB)"
   product_owner: "GBOGEB (https://github.com/GBOGEB)"
   support_url: "https://github.com/GBOGEB/ABACUS/issues"
-  license: "MIT"
+  license: "Apache-2.0"
 
 # ARTIFACT COLLECTIONS WITH GLOB PATTERNS
 artifact_collections:

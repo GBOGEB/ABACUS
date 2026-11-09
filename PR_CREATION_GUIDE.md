@@ -27,7 +27,7 @@ https://github.com/GBOGEB/ABACUS/compare/main...cicd/recursive-dmaic-v0.4.0
 
 **Description**: Copy the content from `.github/PULL_REQUEST_TEMPLATE.md` (created in this directory)
 
-**Labels**: 
+**Labels**:
 - `enhancement`
 - `ci/cd`
 - `integration`

@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>K10 repro — naive bottom legend (DEFECT)</title>
+<script src="https://cdn.plot.ly/plotly-2.27.0.min.js" charset="utf-8"></script>
+<style>body{font-family:system-ui,sans-serif;margin:0}#plotly-lineage{width:100%;height:340px}</style>
+</head>
+<body>
+<!--
+  Regression fixture for QA check K10 (legend / x-axis non-overlap).
+  This reproduces the reported defect: a horizontal BOTTOM legend placed with
+  Plotly's default auto-position lands between the x-axis tick labels and the
+  x-axis title, so the legend box overlaps the x-axis title. Run:
+     python scripts/qa/dashboard_playwright_qa.py \
+        --html <served>/docs/qa/fixtures/naive_bottom_legend.html ...
+  K10 should FAIL here (measured overlap > 0). The theme-fixed sibling
+  (themed_bottom_legend.html) must PASS (0 overlap).
+-->
+<div id="plotly-lineage"></div>
+<script>
+var versions = ['v2.3.0','v3.0.0','v3.3.0','v3.3.1'];
+Plotly.newPlot('plotly-lineage', [
+  {name:'New',     x:versions, y:[6,12,8,5], type:'bar', marker:{color:'#1a73e8'}},
+  {name:'Changed', x:versions, y:[2,7,11,9], type:'bar', marker:{color:'#fbbc04'}},
+  {name:'Removed', x:versions, y:[0,3,2,1], type:'bar', marker:{color:'#ea4335'}}
+], {
+  barmode:'stack',
+  paper_bgcolor:'#ffffff', plot_bgcolor:'#ffffff',
+  margin:{t:30,r:20,l:50,b:60},
+  xaxis:{title:'Version', automargin:true},
+  yaxis:{title:'Artifact / config file count'},
+  // NAIVE: horizontal legend at bottom with Plotly default placement.
+  legend:{orientation:'h', x:0.5, xanchor:'center'}
+}, {responsive:true, displayModeBar:false});
+</script>
+</body>
+</html>

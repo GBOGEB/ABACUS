@@ -277,7 +277,7 @@ Total System Footprint | -        | 210MB   | ✅
 ## Version Mapping
 
 ```
-V1.0 (pre-2025) 
+V1.0 (pre-2025)
   ↓
 V2.0 (DMAIC V2)
   ↓  

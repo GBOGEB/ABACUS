@@ -56,7 +56,7 @@
        def __init__(self, sprint_number):
            self.sprint_number = sprint_number
            self.iterations = [1, 2, 3]  # Always 1-3
-       
+
        def run_sprint(self):
            for iteration in self.iterations:
                self.run_iteration(iteration)
@@ -146,7 +146,7 @@
            self.sprint_orchestrator = SprintOrchestrator()
            self.phase_orchestrator = PhaseOrchestrator()
            self.mcp_orchestrator = MCPOrchestrator()
-       
+
        def coordinate(self):
            # Coordinate all orchestrators
            # Maintain alignment

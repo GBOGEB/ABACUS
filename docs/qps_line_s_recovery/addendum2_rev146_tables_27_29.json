@@ -1,0 +1,251 @@
+{
+  "schema": "abacus.qps_line_s.contract_tables.v1",
+  "purpose": "Drift guard for models/qps_line_s/ssot_tables.py: verbatim copy of contract Addendum II rev 146 App. 11.2 Tables 27-29 as extracted by cryoplant-project W365. tests/test_ssot_tables_contract.py asserts every hand-typed SSOT_TABLE_27/28/29 value equals these rows.",
+  "source": {
+    "repository": "GBOGEB/cryoplant-project",
+    "commit": "b0dddd9b35cd952780c0f3ba3017c0100593d15b",
+    "path": "triage/w365/qpsdeck_icd_family/inputs/contract/addendum2_rev146.json",
+    "git_blob": "130a11899f56632296bd3434f25116e5414a6418",
+    "sha256": "16b56d57a70034614a8b95ddb92e47aafb0d3328d99a6d9b7e46aa8729ee2779",
+    "contract_docx_revision": 146,
+    "contract_docx_sha256": "8bd6c3db5452766526737da0af98a995068733be025b23f3d38b582c43531d4d",
+    "contract_pdf_sha256": "ed6be3349c5bcd94d71a7357e911f4d4f4c86a1ccf99b7aa7661889eb6d084a9"
+  },
+  "extraction": {
+    "date": "2026-10-24",
+    "commands": [
+      "git -C cryoplant-project show b0dddd9b35cd952780c0f3ba3017c0100593d15b:triage/w365/qpsdeck_icd_family/inputs/contract/addendum2_rev146.json > addendum2_rev146.json",
+      "python -c \"import json,hashlib; t=[x for x in json.load(open('addendum2_rev146.json',encoding='utf-8'))['tables'] if (x['caption'] or '').startswith(('Table 27.','Table 28.','Table 29.'))]; print(json.dumps(t,indent=2,ensure_ascii=True)); print(hashlib.sha256(json.dumps(t,sort_keys=True,separators=(',',':'),ensure_ascii=True).encode()).hexdigest())\""
+    ],
+    "tables_sha256_rule": "sha256 of json.dumps(tables, sort_keys=True, separators=(',', ':'), ensure_ascii=True)"
+  },
+  "tables_sha256": "bf8c72361691470d050c955190c8cb56aedc58c949b0773ffe941cbc6915ce09",
+  "tables": [
+    {
+      "index": 29,
+      "caption": "Table 27. Lumped cold mass composition for the Cryogenic User Transient Model.",
+      "section": "Appendix > Cryogenic User Transient Model \u2013 Input Data and Thermal Parameters",
+      "rows": [
+        [
+          "LINAC Configuration",
+          "Cold Mass",
+          "TS Mass"
+        ],
+        [
+          "LINAC_24",
+          "9 885 kg",
+          "8 602"
+        ],
+        [
+          "LINAC_30",
+          "12 356 kg",
+          "10 753 kg"
+        ]
+      ]
+    },
+    {
+      "index": 30,
+      "caption": "Table 28. Static heat loads for the Cryogenic User Transient Model",
+      "section": "Appendix > Cryogenic User Transient Model \u2013 Input Data and Thermal Parameters",
+      "rows": [
+        [
+          "Heat load direction",
+          "Heat load type",
+          "Heat load equation (W)",
+          "LINAC_24",
+          "LINAC_30"
+        ],
+        [
+          "From the TS Mass \nto the Cold Mass",
+          "Conduction",
+          "Q1cond=a\u2219T1T2\u03bbSSTdT",
+          "a = -2.93",
+          "a = -3.60"
+        ],
+        [
+          "From the TS Mass \nto the Cold Mass",
+          "Radiation",
+          "Q1rad=a\u2219T14-T24",
+          "a = 1.82 E-05",
+          "a = 2.24 E-05"
+        ],
+        [
+          "From ambient \nto the TS Mass",
+          "Conduction",
+          "Q2cond=a\u2219T1T2\u03bbSSTdT",
+          "a = -1.13",
+          "a = -1.38"
+        ],
+        [
+          "From ambient \nto the TS Mass",
+          "Radiation",
+          "Q2rad=a\u2219T14-T24",
+          "a = 5.40 E-07",
+          "a = 6.58 E-07"
+        ]
+      ]
+    },
+    {
+      "index": 31,
+      "caption": "Table 29. Specific enthalpy (weighted average) of the lumped masses \nfor the 1 K to 300 K.",
+      "section": "Appendix > Cryogenic User Transient Model \u2013 Input Data and Thermal Parameters",
+      "rows": [
+        [
+          "Temperature (K)",
+          "Cold Mass Enthalpy (J/kg)",
+          "TS Mass Enthalpy (J/kg)"
+        ],
+        [
+          "1",
+          "0.0",
+          "0.0"
+        ],
+        [
+          "2",
+          "0.6",
+          "0.1"
+        ],
+        [
+          "3",
+          "1.2",
+          "0.2"
+        ],
+        [
+          "4",
+          "2.2",
+          "0.4"
+        ],
+        [
+          "6",
+          "4.9",
+          "0.9"
+        ],
+        [
+          "8",
+          "9.9",
+          "2.7"
+        ],
+        [
+          "10",
+          "16.0",
+          "4.9"
+        ],
+        [
+          "15",
+          "40.3",
+          "17.6"
+        ],
+        [
+          "20",
+          "84.2",
+          "46.5"
+        ],
+        [
+          "25",
+          "159.2",
+          "107.9"
+        ],
+        [
+          "30",
+          "280.4",
+          "218.5"
+        ],
+        [
+          "35",
+          "465.4",
+          "401.0"
+        ],
+        [
+          "40",
+          "729.3",
+          "670.7"
+        ],
+        [
+          "50",
+          "1534.9",
+          "1518.9"
+        ],
+        [
+          "60",
+          "2685.0",
+          "2810.3"
+        ],
+        [
+          "70",
+          "4173.2",
+          "4547.0"
+        ],
+        [
+          "77",
+          "5409.5",
+          "6017.7"
+        ],
+        [
+          "80",
+          "5982.0",
+          "6710.4"
+        ],
+        [
+          "90",
+          "8073.3",
+          "9248.1"
+        ],
+        [
+          "100",
+          "10413.9",
+          "12096.5"
+        ],
+        [
+          "120",
+          "15695.1",
+          "18566.3"
+        ],
+        [
+          "140",
+          "21679.0",
+          "25911.4"
+        ],
+        [
+          "160",
+          "28262.6",
+          "33951.3"
+        ],
+        [
+          "180",
+          "35377.0",
+          "42530.5"
+        ],
+        [
+          "200",
+          "42937.0",
+          "51512.2"
+        ],
+        [
+          "220",
+          "50797.2",
+          "60789.0"
+        ],
+        [
+          "240",
+          "58829.0",
+          "70288.9"
+        ],
+        [
+          "260",
+          "66978.2",
+          "79970.8"
+        ],
+        [
+          "280",
+          "75256.0",
+          "89822.2"
+        ],
+        [
+          "300",
+          "83753.4",
+          "99870.3"
+        ]
+      ]
+    }
+  ]
+}

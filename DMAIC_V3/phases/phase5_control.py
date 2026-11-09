@@ -4,10 +4,9 @@ Quality gates and GBOGEB integration
 """
 
 import json
+from datetime import datetime
 from pathlib import Path
 from typing import Dict, List, Tuple
-from datetime import datetime
-
 
 try:
     import sys
@@ -91,13 +90,13 @@ class Phase5Control:
 
             phase4_file = iteration_dir / "phase4_improve" / "phase4_improve.json"
             if not phase4_file.exists():
-                print(f"  ⚠️ Phase 4 results not found, skipping control")
+                print("  ⚠️ Phase 4 results not found, skipping control")
                 return True, self._create_skip_result(iteration)
 
             with open(phase4_file, "r") as f:
                 phase4_data = json.load(f)
 
-            print(f"\n[5.1] Checking quality gates...")
+            print("\n[5.1] Checking quality gates...")
 
             quality_gates = {
                 "code_quality": self._check_code_quality(phase4_data),
@@ -120,7 +119,7 @@ class Phase5Control:
                         tags={"iteration": str(iteration)},
                     )
 
-            print(f"\n[5.2] Creating validation checkpoints...")
+            print("\n[5.2] Creating validation checkpoints...")
             validation_checkpoints = self._create_validation_checkpoints(
                 quality_gates, iteration
             )
@@ -129,7 +128,7 @@ class Phase5Control:
                 print(f"  {status} {checkpoint['name']}: {checkpoint['description']}")
 
             if self.use_gbogeb and self.gbogeb:
-                print(f"\n[5.3] Collecting GBOGEB metrics...")
+                print("\n[5.3] Collecting GBOGEB metrics...")
 
                 self.gbogeb.collect_metric(
                     agent="phase5_control",
@@ -160,7 +159,7 @@ class Phase5Control:
                 "success": True,
             }
 
-            print(f"\n[5.4] Saving results...")
+            print("\n[5.4] Saving results...")
             output_dir = iteration_dir / "phase5_control"
             output_dir.mkdir(parents=True, exist_ok=True)
 
@@ -285,6 +284,7 @@ class Phase5Control:
 def main():
     """Test Phase 5 - for manual testing only"""
     import sys
+
     from ..config import DMAICConfig
     from ..core.state import StateManager
 

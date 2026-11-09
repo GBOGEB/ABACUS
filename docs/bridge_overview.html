@@ -1,0 +1,375 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>DELTA_1 Federation — Bridge Overview</title>
+<style>
+  :root { --bg:#0b1020; --card:#131a2e; --ink:#e6ebf5; --muted:#9aa7c2; --line:#26304d; --accent:#6ea8fe; }
+  * { box-sizing:border-box; }
+  body { margin:0; font:15px/1.55 -apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif;
+         background:var(--bg); color:var(--ink); }
+  header { padding:28px 24px; background:linear-gradient(135deg,#132046,#0b1020);
+            border-bottom:1px solid var(--line); }
+  header h1 { margin:0 0 6px; font-size:24px; }
+  header p { margin:0; color:var(--muted); }
+  main { max-width:1100px; margin:0 auto; padding:24px; }
+  section { background:var(--card); border:1px solid var(--line); border-radius:12px;
+            padding:18px 20px; margin:18px 0; }
+  h2 { margin-top:0; font-size:18px; border-left:3px solid var(--accent); padding-left:10px; }
+  table { width:100%; border-collapse:collapse; font-size:13.5px; }
+  th,td { text-align:left; padding:8px 10px; border-bottom:1px solid var(--line);
+          vertical-align:top; }
+  th { color:var(--muted); font-weight:600; }
+  code { background:#0c1430; padding:1px 5px; border-radius:4px; color:#c7d2fe; }
+  .pill { color:#fff; padding:2px 8px; border-radius:999px; font-size:11.5px; font-weight:700; }
+  .greek { font-size:18px; font-weight:700; color:var(--accent); }
+  details { margin:8px 0; }
+  summary { cursor:pointer; font-weight:600; color:#c7d2fe; }
+  pre.tree { background:#070c1c; border:1px solid var(--line); border-radius:8px;
+             padding:12px; overflow:auto; font-size:12px; color:#b9c6e6; max-height:420px; }
+  .note { color:var(--muted); font-size:13px; }
+  footer { color:var(--muted); font-size:12.5px; padding:20px 24px; border-top:1px solid var(--line); }
+</style>
+</head>
+<body>
+<header>
+  <h1>DELTA_1 Federation — Bridge Overview</h1>
+  <p>GBOGEB/CODEX · GBOGEB/ABACUS · GBOGEB/cryoplant-project — managed bridge/adapter run (α → θ)</p>
+</header>
+<main>
+
+  <section>
+    <h2>Repo map</h2>
+    <table>
+      <thead><tr><th>Repo</th><th>Plane / role</th><th>Lang</th><th>Files</th><th>Package</th><th>Metrics feed</th></tr></thead>
+      <tbody><tr><td><b>GBOGEB/CODEX</b></td><td>governance + KEB semantic provenance</td><td>Python</td><td>~2,779</td><td><code>codex 1.4.0</code></td><td>docs/api/metrics.json ✓</td></tr>
+<tr><td><b>GBOGEB/ABACUS</b></td><td>DOW analytical runtime (12-Cluster)</td><td>Python</td><td>~4,154</td><td><code>abacus-dow 5.0.0</code></td><td>docs/api/dmaic_metrics.json ✓</td></tr>
+<tr><td><b>GBOGEB/cryoplant-project (private)</b></td><td>auxiliary — QPS engineering SSOT (OCD/ADR)</td><td>HTML/Python</td><td>~7,741</td><td><code>—</code></td><td>none (degraded)</td></tr></tbody>
+    </table>
+    <p class="note">The three repos form a declared DELTA_1 federation. A bridge surface already exists
+      (<code>CODEX/src/bridge_adapter.py</code>, <code>cryoplant/src/federation.py</code>,
+      <code>federation/manifest.yaml</code>). The delivered <code>delta1_bridge</code> package is
+      minimal and additive on top of it.</p>
+  </section>
+
+  <section>
+    <h2>Opportunity table (δ)</h2>
+    <table>
+      <thead><tr><th>#</th><th>Finding</th><th>Class</th><th>Recommended action</th><th>Status</th></tr></thead>
+      <tbody><tr><td>O1</td><td>Bradley-Terry ranking canonical in CODEX, re-derived in ABACUS + cryoplant</td><td><span class="pill" style="background:#2563eb">SHARE</span></td><td>Single call site to canonical engine</td><td><b>Done</b></td></tr>
+<tr><td>O2</td><td>DMAIC metrics schema shared by CODEX+ABACUS, no shared validator</td><td><span class="pill" style="background:#2563eb">SHARE</span></td><td>One schema validator + reusable CI</td><td><b>Done</b></td></tr>
+<tr><td>O3</td><td>cryoplant publishes no metrics feed</td><td><span class="pill" style="background:#059669">NEW</span></td><td>Add metrics publication</td><td>Recommended</td></tr>
+<tr><td>O4</td><td>&#x27;Federation status/assimilate&#x27; done 3 different ways</td><td><span class="pill" style="background:#7c3aed">SHARE/MERGE</span></td><td>Uniform status adapter</td><td><b>Done</b></td></tr>
+<tr><td>O5</td><td>bd-telemetry near-dup in all 3; branch-hygiene diverged in ABACUS</td><td><span class="pill" style="background:#2563eb">SHARE</span></td><td>Reusable workflow_call</td><td>Recommended</td></tr>
+<tr><td>O6</td><td>GREEK_TRACE_SEQUENCE only in CODEX</td><td><span class="pill" style="background:#2563eb">SHARE</span></td><td>Re-export from shared bridge</td><td><b>Done</b></td></tr>
+<tr><td>O7</td><td>Stray triage script breaks cryoplant pytest collection</td><td><span class="pill" style="background:#b45309">PRUNE</span></td><td>Exclude from collection</td><td>Recommended</td></tr>
+<tr><td>O8</td><td>Generational orchestrators orchestrate_g3..g10 retained</td><td><span class="pill" style="background:#b45309">PRUNE</span></td><td>Archive after review</td><td>Recommended</td></tr>
+<tr><td>O9</td><td>ABACUS-v031/v032 variants alongside DMAIC_V3</td><td><span class="pill" style="background:#b45309">PRUNE</span></td><td>Confirm canonical, archive legacy</td><td>Recommended</td></tr></tbody>
+    </table>
+    <p class="note">Classes: <b>SHARE</b> common lib/workflow/schema · <b>NEW</b> integration point ·
+      <b>MERGE</b> local/micro-merge · <b>PRUNE</b> dead/duplicate (recommendation only — no prune auto-applied).</p>
+  </section>
+
+  <section>
+    <h2>Managed trace (Greek steps)</h2>
+    <table>
+      <thead><tr><th>Step</th><th>Action</th><th>Repo(s)</th><th>Outcome</th></tr></thead>
+      <tbody><tr><td><span class="greek">α</span></td><td>READ — structured per-repo read</td><td>all</td><td>DONE</td></tr>
+<tr><td><span class="greek">β</span></td><td>ASCII — structure trees</td><td>all</td><td>DONE</td></tr>
+<tr><td><span class="greek">γ</span></td><td>SMOKE — run tests/entry points</td><td>all</td><td>DONE (partial, honest)</td></tr>
+<tr><td><span class="greek">δ</span></td><td>OVERLAP — opportunity table</td><td>all</td><td>DONE</td></tr>
+<tr><td><span class="greek">ε</span></td><td>BRIDGE — delta1_bridge + tests (14✓)</td><td>CODEX + vendored</td><td>DONE</td></tr>
+<tr><td><span class="greek">ζ</span></td><td>HTML + launchers</td><td>all</td><td>DONE</td></tr>
+<tr><td><span class="greek">η</span></td><td>PR — draft PRs, label in-review</td><td>changed repos</td><td>see PRs</td></tr>
+<tr><td><span class="greek">θ</span></td><td>REPORT — BRIDGE_REPORT + TRACE</td><td>n/a</td><td>DONE</td></tr></tbody>
+    </table>
+  </section>
+
+  <section>
+    <h2>ASCII structures (β)</h2>
+    <details open><summary>GBOGEB/CODEX</summary><pre class="tree">CODEX/
+├── .claude/
+    ├── skills/
+├── .codex/
+    ├── skills/
+    ├── tasks/
+├── .devcontainer/
+├── .mesh/
+├── .pytest_cache/
+    ├── v/
+├── 01_requirements/
+├── 02_design/
+    ├── 02A_PnID/
+├── 03_bom/
+├── 04_quality/
+├── 05_vendor/
+├── 06_arch/
+    ├── ADR/
+├── 07_ops/
+    ├── OCD/
+    ├── qps_roundtrip/
+├── 99_handover/
+├── AGENTIC/
+├── DELTA_1/
+├── EVIDENCE/
+├── GISTAU/
+    ├── sources/
+├── Input/
+├── KEB/
+    ├── governance/
+├── MANIFEST/
+├── MASTER_input/
+    ├── 00_ITT_RELEASE_BASELINE/
+    ├── 01_CONTRACT/
+    ├── 02_TECHNICAL_REQUIREMENTS/
+    ├── 03_RTM/
+    ├── 04_ADDENDA/
+    ├── 05_CLARIFICATIONS/
+    ├── 06_APPLICANT_RESPONSES/
+    ├── 07_EVALUATION/
+    ├── 08_NEGOTIATION/
+    ├── 09_BAFO/
+    ├── 10_AWARD/
+    ├── 11_EXECUTION/
+    ├── 99_ARCHIVE/
+    ├── Applicant/
+    ├── Compliance/
+    ├── Contracts/
+    ├── ITT/
+    ├── Interfaces/
+    ├── SoR/
+    ├── Traceability/
+    ├── change_requests/
+    ├── checkpoints/
+    ├── contracts/
+    ├── generated/
+    ├── schemas/
+├── METRICS/
+├── MIP/
+    ├── kit/
+├── OUTPUTS/
+├── PIPELINE/
+    ├── SESSION_OFFLOADS/
+├── SESSION_HISTORY/
+    ├── 2026/
+├── SSOT/
+├── TUPLES/
+├── _config/
+├── abacus_pid_pipeline/
+├── abacus_render_pipeline/
+    ├── A10_snapshot_publication/
+    ├── A6_renderer_governance/
+    ├── A7_executable_semantic_runtime/
+    ├── A8_renderer_execution_receipt/
+    ├── A9_multiformat_publication/
+├── abacus_runtime/
+    ├── debug_spine/
+├── agent_runtime/
+├── agents/
+    ├── abacus/
+    ├── codex/
+    ├── mcp/
+├── analytics/
+    ├── qps_thermo_dashboard/
+├── architecture/
+    ├── triage/
+    ├── w60/
+    ├── w61/
+    ├── w62/
+├── automation/
+    ├── bt-engine/
+</pre></details>
+<details><summary>GBOGEB/ABACUS</summary><pre class="tree">ABACUS/
+├── .codex/
+    ├── skills/
+├── .devcontainer/
+├── .dmaic/
+    ├── scripts/
+├── .dmaic_cache/
+├── .mesh/
+├── .vscode/
+├── 12_ORGANIZED_BY_CATEGORY/
+    ├── TRACKING/
+├── 13_CORE_SYSTEMS/
+    ├── CENTRAL_LIBRARY/
+├── ABACUS-UNIFIED/
+    ├── books/
+├── ABACUS-v031/
+├── ABACUS-v032/
+    ├── STATS/
+├── ABACUS_V21_DEPLOYMENT_PACKAGE/
+    ├── monitoring/
+├── ABACUS_V21_SMOKE_TEST_OUTPUT/
+├── CODE_MAROON/
+├── DELTA_1/
+├── DMAIC_V3/
+    ├── .dmaic_cache/
+    ├── CANONICAL_KNOWLEDGE/
+    ├── agents/
+    ├── convergence/
+    ├── core/
+    ├── generators/
+    ├── infrastructure/
+    ├── integrations/
+    ├── local_mcp/
+    ├── monitoring/
+    ├── orchestrators/
+    ├── phases/
+    ├── setup/
+    ├── tests/
+    ├── tools/
+├── DMAIC_V3_OUTPUT/
+    ├── iterations/
+    ├── knowledge_packs/
+    ├── logs/
+    ├── reports/
+    ├── state/
+├── DOW_LOGS/
+├── MINERVA_PID/
+    ├── ci/
+    ├── configs/
+    ├── data/
+    ├── docs/
+    ├── docs_v4/
+    ├── extracted/
+    ├── generator/
+    ├── output/
+    ├── output_v2/
+    ├── output_v3/
+    ├── output_v4/
+    ├── output_v5/
+    ├── reports/
+    ├── segmentation/
+    ├── src/
+    ├── standards/
+    ├── svg_source/
+    ├── tests/
+├── MIP/
+    ├── EVIDENCE_TO_ADMISSION_OBSERVATORY/
+    ├── G3CS_CONVERGENCE_V2/
+    ├── kit/
+    ├── receipts/
+    ├── statistics/
+├── abacus_render_pipeline/
+    ├── A6_renderer_governance/
+├── abacus_runtime/
+├── analyses/
+    ├── compressors/
+├── analysis/
+    ├── receipts/
+├── analytics/
+    ├── qps_cost_estimate_roundtrip/
+    ├── runtime_convergence/
+├── architecture/
+    ├── ctaxonomy/
+    ├── mc2/
+    ├── mesh/
+    ├── w107/
+    ├── w109/
+    ├── w112/
+    ├── w113/
+    ├── w117/
+    ├── w286/
+</pre></details>
+<details><summary>GBOGEB/cryoplant-project</summary><pre class="tree">cryoplant-project/
+├── .codex/
+    ├── skills/
+├── .devcontainer/
+├── .mesh/
+├── .qps-refresh/
+├── MIP/
+    ├── kit/
+├── OFFERS_ITT/
+    ├── QPS_Cost_Estimate/
+├── PVPS/
+    ├── canonical/
+├── architecture/
+    ├── mip/
+    ├── release/
+    ├── text_assimilation/
+    ├── triage/
+    ├── universal_layout/
+    ├── w59/
+    ├── w60/
+    ├── w61/
+    ├── w62/
+    ├── w63/
+    ├── w82/
+├── artifacts/
+    ├── w52_p2j/
+├── canonical/
+    ├── rtm_v5_2_1_git/
+├── canonical_set/
+    ├── binary_vault/
+    ├── v5.2.1/
+    ├── v5.3.0/
+├── config/
+├── contracts/
+    ├── n-type/
+├── controls/
+    ├── dsbt/
+    ├── federation/
+    ├── mesh/
+    ├── mip/
+    ├── nego1/
+    ├── prediction/
+    ├── qps_partial_relaxation/
+    ├── review/
+    ├── w109/
+    ├── w110/
+    ├── w112/
+    ├── w113/
+    ├── w116/
+    ├── w286/
+    ├── w98/
+├── ctaxonomy/
+├── docs/
+    ├── ci/
+    ├── data/
+    ├── federation/
+    ├── governance/
+    ├── handover/
+    ├── lkt_w19/
+    ├── n-type/
+    ├── offer_eval/
+    ├── presentation/
+    ├── qplant_wcs/
+    ├── qps_lineage/
+    ├── qps_recon/
+    ├── render-gallery/
+    ├── status/
+    ├── taxonomy/
+    ├── waves/
+├── evidence/
+    ├── w84/
+├── federation/
+    ├── acceptance_dashboard/
+    ├── delivery/
+    ├── golden_thread/
+    ├── mip/
+    ├── w190/
+├── gloob_dispatch/
+    ├── inbox/
+├── governance/
+    ├── branch_hygiene/
+    ├── triage/
+├── handover/
+    ├── history/
+    ├── pvps/
+    ├── qps_recursive/
+    ├── session/
+├── mission_control/
+    ├── master_input_cleanup/
+├── ocd-adr/
+    ├── 00_authority/
+</pre></details>
+  </section>
+
+</main>
+<footer>
+  Generated static overview — part of the GBOGEB bridge deliverable. Read-only view, not an SSOT.
+  See <code>BRIDGE_REPORT.md</code> and <code>TRACE.md</code> for full detail.
+</footer>
+</body>
+</html>

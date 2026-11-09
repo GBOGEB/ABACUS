@@ -1,0 +1,28 @@
+{
+  "schema_version": 1,
+  "mode": "CODE_PURPLE_MACH_LADDER_PROPOSED",
+  "default_action": "HOLD",
+  "unknown_evidence": "HOLD",
+  "solo_owner_waiver": {
+    "active": true,
+    "owners": ["GBOGEB"],
+    "reason": "Solo developer: no independent approver exists, so the approval count is waived by owner policy.",
+    "recorded_ruleset": {"id": 24494381, "required_approving_review_count": 0, "updated_at": "2026-10-23T07:57:58Z"},
+    "compensating_controls": ["required_checks_enforced", "required_lanes_green_at_exact_head", "automated_review_at_head"]
+  },
+  "required_lanes": [
+    "MIP B0 Test Admission and Coverage Evidence",
+    "CI/CD Test Suite",
+    "CI - ABACUS Matrix"
+  ],
+  "mach_iii": {"active": false, "max_duration_minutes": 60},
+  "merge_train": {
+    "active": false,
+    "max_steps": 5,
+    "post_train_lanes": [
+      "MIP B0 Test Admission and Coverage Evidence",
+      "CI - ABACUS Matrix"
+    ],
+    "notes": "CI/CD Test Suite joins post_train_lanes once its push-event security lane stops failing on whole-repo Bandit totals (root R11)."
+  }
+}

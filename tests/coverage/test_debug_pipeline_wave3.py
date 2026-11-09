@@ -15,12 +15,14 @@ def test_failed_iterations_reports_incomplete_iteration(tmp_path):
     result = debugger._check_failed_iterations()
 
     assert result["status"] == "warning"
-    assert result["failures"] == [{
-        "iteration": 3,
-        "completed_phases": 4,
-        "expected_phases": 9,
-        "status": "incomplete",
-    }]
+    assert result["failures"] == [
+        {
+            "iteration": 3,
+            "completed_phases": 4,
+            "expected_phases": 9,
+            "status": "incomplete",
+        }
+    ]
     assert any(issue["category"] == "failures" for issue in debugger.issues)
 
 
@@ -59,5 +61,6 @@ def test_analyze_logs_finds_error_and_failed_success_payloads(tmp_path):
 
     assert result["status"] == "warning"
     assert {item["error"] for item in result["recent_errors"]} == {"boom", "not good"}
+
 
 # Wave 4 exact-main broad coverage recensus trigger.

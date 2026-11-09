@@ -1,0 +1,192 @@
+<!doctype html>
+<html lang="en"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>MYRRHA · Tables</title>
+<link rel="icon" href="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><text y='26' font-size='26'>📊</text></svg>">
+<link rel="stylesheet" href="assets/style.css">
+<script src="assets/common.js" defer></script>
+<style>
+.tbl-card{position:relative}
+.tbl-tools{display:flex;gap:6px;margin-bottom:8px;align-items:center;flex-wrap:wrap}
+.tbl-tools input{background:var(--bg);color:var(--fg);border:1px solid var(--border);border-radius:6px;padding:5px 9px;font-size:12px;font-family:inherit}
+.sortable th{cursor:pointer;user-select:none}
+.sortable th::after{content:' ⇅';color:var(--fg2);font-size:10px}
+</style>
+</head><body>
+<div class="container">
+<h1>Interactive Tables</h1>
+<p class="muted">Click any table to copy its full content. Use the export buttons for CSV / JSON. Click column headers to sort, type to filter.</p>
+
+<div class="card tbl-card" data-table="t1">
+  <h2 style="margin-top:0">Table 1 — Compressor Specifications Comparison</h2>
+  <div class="tbl-tools">
+    <input placeholder="filter…" oninput="filter('t1',this.value)">
+    <button class="btn alt" onclick="copyTable('t1')">copy table</button>
+    <button class="btn alt" onclick="exportCSV('t1','specs')">CSV</button>
+    <button class="btn alt" onclick="exportJSON('t1','specs')">JSON</button>
+  </div>
+  <table class="sortable" id="t1"><thead><tr>
+    <th>Parameter</th><th>ALaT FSD 575</th><th>LKT FSD 475 nom</th><th>LKT FSD 475 max</th><th>Unit</th>
+  </tr></thead><tbody>
+    <tr><td>Per-skid flow</td><td>112.54</td><td>88</td><td>96.1</td><td>g/s</td></tr>
+    <tr><td>Frequency</td><td>72</td><td>57</td><td>62</td><td>Hz</td></tr>
+    <tr><td>Motor rated</td><td>315</td><td>250</td><td>250</td><td>kW</td></tr>
+    <tr><td>Package input</td><td>348.54</td><td>266</td><td>289</td><td>kW</td></tr>
+    <tr><td>Shaft power</td><td>314.05</td><td>—</td><td>—</td><td>kW</td></tr>
+    <tr><td>CW flow</td><td>18.2</td><td>15.5</td><td>15.5</td><td>m³/h</td></tr>
+    <tr><td>CW heat reject</td><td>323.9</td><td>230.9</td><td>230.9</td><td>kW</td></tr>
+    <tr><td>Cooling air enclosure</td><td>5000</td><td>5000</td><td>5000</td><td>m³/h</td></tr>
+    <tr><td>Cooling air VFD</td><td>4200</td><td>4200</td><td>4200</td><td>m³/h</td></tr>
+    <tr><td>Heat by air</td><td>17.4</td><td>13.1</td><td>13.1</td><td>kW</td></tr>
+    <tr><td>Waste to ambient</td><td>14.2</td><td>5.1</td><td>5.1</td><td>kW</td></tr>
+    <tr><td>Noise @ 1 m</td><td>75</td><td>74</td><td>74</td><td>dB(A)</td></tr>
+    <tr><td>Weight</td><td>6770</td><td>6400</td><td>6400</td><td>kg</td></tr>
+    <tr><td>Oil charge</td><td>173</td><td>180</td><td>180</td><td>L</td></tr>
+  </tbody></table>
+</div>
+
+<div class="card tbl-card" data-table="t2">
+  <h2 style="margin-top:0">Table 2 — Flow Targets vs Capacity Matrix</h2>
+  <div class="tbl-tools">
+    <input placeholder="filter…" oninput="filter('t2',this.value)">
+    <button class="btn alt" onclick="copyTable('t2')">copy</button>
+    <button class="btn alt" onclick="exportCSV('t2','capacity')">CSV</button>
+    <button class="btn alt" onclick="exportJSON('t2','capacity')">JSON</button>
+  </div>
+  <table class="sortable" id="t2"><thead><tr>
+    <th>Total (g/s)</th><th>Per-skid (g/s)</th><th>ALaT 575 Hz</th><th>ALaT 575 status</th><th>LKT 475 Hz</th><th>LKT 475 status</th>
+  </tr></thead><tbody>
+    <tr><td>200</td><td>66.67</td><td>42.65</td><td>OK</td><td>43.01</td><td>OK</td></tr>
+    <tr><td>250</td><td>83.33</td><td>53.31</td><td>OK</td><td>53.76</td><td>OK</td></tr>
+    <tr><td>275</td><td>91.67</td><td>58.65</td><td>OK</td><td>59.14</td><td>OK</td></tr>
+    <tr><td>304</td><td>101.33</td><td>64.83</td><td>OK</td><td>65.38</td><td>OVER</td></tr>
+    <tr><td>336</td><td>112.00</td><td>71.65</td><td>OK</td><td>72.26</td><td>OVER</td></tr>
+    <tr><td>344</td><td>114.67</td><td>73.36</td><td>OVER</td><td>73.98</td><td>OVER</td></tr>
+    <tr><td>350</td><td>116.67</td><td>74.64</td><td>OVER</td><td>75.27</td><td>OVER</td></tr>
+  </tbody></table>
+</div>
+
+<div class="card tbl-card" data-table="t3">
+  <h2 style="margin-top:0">Table 3 — Utilities per Skid</h2>
+  <div class="tbl-tools">
+    <button class="btn alt" onclick="copyTable('t3')">copy</button>
+    <button class="btn alt" onclick="exportCSV('t3','util_per_skid')">CSV</button>
+    <button class="btn alt" onclick="exportJSON('t3','util_per_skid')">JSON</button>
+  </div>
+  <table id="t3"><thead><tr><th>Utility</th><th>ALaT 575</th><th>LKT 475</th><th>Unit</th></tr></thead><tbody>
+    <tr><td>Electricity (motor)</td><td>315</td><td>250</td><td>kW</td></tr>
+    <tr><td>Electricity (package)</td><td>348.54</td><td>266 / 289</td><td>kW</td></tr>
+    <tr><td>PCW flow</td><td>18.2</td><td>15.5</td><td>m³/h</td></tr>
+    <tr><td>PCW heat</td><td>323.9</td><td>230.9</td><td>kW</td></tr>
+    <tr><td>Air enclosure</td><td>5000</td><td>5000</td><td>m³/h</td></tr>
+    <tr><td>Air VFD</td><td>4200</td><td>4200</td><td>m³/h</td></tr>
+  </tbody></table>
+</div>
+
+<div class="card tbl-card" data-table="t4">
+  <h2 style="margin-top:0">Table 4 — 3-Skid Totals</h2>
+  <div class="tbl-tools">
+    <button class="btn alt" onclick="copyTable('t4')">copy</button>
+    <button class="btn alt" onclick="exportCSV('t4','three_skid')">CSV</button>
+    <button class="btn alt" onclick="exportJSON('t4','three_skid')">JSON</button>
+  </div>
+  <table id="t4"><thead><tr><th>Quantity</th><th>ALaT 3×575</th><th>LKT 3×475 nom</th><th>LKT 3×475 max</th><th>Unit</th></tr></thead><tbody>
+    <tr><td>Total flow</td><td>337.62</td><td>264</td><td>288.3</td><td>g/s</td></tr>
+    <tr><td>Package power</td><td>1045.62</td><td>798</td><td>867</td><td>kW</td></tr>
+    <tr><td>CW flow</td><td>54.6</td><td>46.5</td><td>46.5</td><td>m³/h</td></tr>
+    <tr><td>CW heat</td><td>971.7</td><td>692.7</td><td>692.7</td><td>kW</td></tr>
+    <tr><td>Air enclosure</td><td>15000</td><td>15000</td><td>15000</td><td>m³/h</td></tr>
+    <tr><td>Air VFD</td><td>12600</td><td>12600</td><td>12600</td><td>m³/h</td></tr>
+  </tbody></table>
+</div>
+
+<div class="card tbl-card" data-table="t5">
+  <h2 style="margin-top:0">Table 5 — PVPS Unit Specifications (LP1–LP10) <span class="tag warn">v0.4.7 updated values</span></h2>
+  <div class="tbl-tools">
+    <input placeholder="filter…" oninput="filter('t5',this.value)">
+    <button class="btn alt" onclick="copyTable('t5')">copy</button>
+    <button class="btn alt" onclick="exportCSV('t5','pvps_units')">CSV</button>
+    <button class="btn alt" onclick="exportJSON('t5','pvps_units')">JSON</button>
+  </div>
+  <table class="sortable" id="t5"><thead><tr>
+    <th>Unit ID</th><th>Row</th><th>Position</th><th>Nominal flow (g/s)</th><th>Motor (kW)</th><th>HVAC (kW)</th><th>CW heat (kW)</th><th>CW flow (m³/h)</th>
+  </tr></thead><tbody>
+    <tr><td>LP1</td><td>A</td><td>1</td><td>5.0</td><td>15.00</td><td>1.50</td><td>13.50</td><td>0.78</td></tr>
+    <tr><td>LP2</td><td>A</td><td>2</td><td>5.0</td><td>15.00</td><td>1.50</td><td>13.50</td><td>0.78</td></tr>
+    <tr><td>LP3</td><td>A</td><td>3</td><td>5.0</td><td>15.00</td><td>1.50</td><td>13.50</td><td>0.78</td></tr>
+    <tr><td>LP4</td><td>A</td><td>4</td><td>5.0</td><td>15.00</td><td>1.50</td><td>13.50</td><td>0.78</td></tr>
+    <tr><td>LP5</td><td>A</td><td>5</td><td>5.0</td><td>15.00</td><td>1.50</td><td>13.50</td><td>0.78</td></tr>
+    <tr><td>LP6</td><td>B</td><td>1</td><td>5.0</td><td>15.00</td><td>1.50</td><td>13.50</td><td>0.78</td></tr>
+    <tr><td>LP7</td><td>B</td><td>2</td><td>5.0</td><td>15.00</td><td>1.50</td><td>13.50</td><td>0.78</td></tr>
+    <tr><td>LP8</td><td>B</td><td>3</td><td>5.0</td><td>15.00</td><td>1.50</td><td>13.50</td><td>0.78</td></tr>
+    <tr><td>LP9</td><td>B</td><td>4</td><td>5.0</td><td>15.00</td><td>1.50</td><td>13.50</td><td>0.78</td></tr>
+    <tr><td>LP10</td><td>B</td><td>5</td><td>5.0</td><td>15.00</td><td>1.50</td><td>13.50</td><td>0.78</td></tr>
+  </tbody></table>
+</div>
+
+<div class="card tbl-card" data-table="t6">
+  <h2 style="margin-top:0">Table 6 — PVPS Utilities Summary (10-unit baseline vs 9-unit N+1) <span class="tag warn">v0.4.7 updated values</span></h2>
+  <div class="tbl-tools">
+    <button class="btn alt" onclick="copyTable('t6')">copy</button>
+    <button class="btn alt" onclick="exportCSV('t6','pvps_summary')">CSV</button>
+    <button class="btn alt" onclick="exportJSON('t6','pvps_summary')">JSON</button>
+  </div>
+  <table id="t6"><caption>PVPS flow γ = 50 g/s (14.3% of 350 g/s total WCS baseline)</caption>
+  <thead><tr><th>Quantity</th><th>10-unit baseline</th><th>9-unit N+1 (1 standby)</th><th>Unit</th></tr></thead><tbody>
+    <tr><td>Per-unit flow</td><td>5.00</td><td>5.56</td><td>g/s</td></tr>
+    <tr><td>Total flow γ</td><td>50.00</td><td>50.00</td><td>g/s</td></tr>
+    <tr><td>γ as % of WCS total</td><td>14.3%</td><td>14.3%</td><td>—</td></tr>
+    <tr><td>Total motor power</td><td>150.00</td><td>150.00</td><td>kW</td></tr>
+    <tr><td>Total HVAC</td><td>15.00</td><td>15.00</td><td>kW</td></tr>
+    <tr><td>Total CW heat</td><td>135.00</td><td>135.00</td><td>kW</td></tr>
+    <tr><td>Total CW flow</td><td>7.80</td><td>7.80</td><td>m³/h</td></tr>
+    <tr><td>Per-unit motor</td><td>15.00</td><td>16.67</td><td>kW</td></tr>
+    <tr><td>Per-unit CW flow</td><td>0.78</td><td>0.87</td><td>m³/h</td></tr>
+  </tbody></table>
+  <p class="muted"><em>Note (v0.4.7):</em> PVPS flow γ = 50 g/s is PART OF the 350 g/s total WCS baseline (inclusive model), not additive to HP flow.</p>
+</div>
+
+</div>
+<script>
+function readTable(id){
+  const t=document.getElementById(id);
+  const head=[...t.querySelectorAll('thead th')].map(x=>x.innerText.trim());
+  const rows=[...t.querySelectorAll('tbody tr')].map(r=>[...r.children].map(c=>c.innerText.trim()));
+  return {head,rows};
+}
+function copyTable(id){
+  const {head,rows}=readTable(id);
+  const txt=[head.join('\t'),...rows.map(r=>r.join('\t'))].join('\n');
+  navigator.clipboard.writeText(txt);flash(id,'copied');
+}
+function exportCSV(id,name){
+  const {head,rows}=readTable(id);
+  const csv=[head,...rows].map(r=>r.map(x=>`"${x.replace(/"/g,'""')}"`).join(',')).join('\n');
+  download(name+'.csv',csv,'text/csv');
+}
+function exportJSON(id,name){
+  const {head,rows}=readTable(id);
+  const data=rows.map(r=>Object.fromEntries(head.map((h,i)=>[h,r[i]])));
+  download(name+'.json',JSON.stringify(data,null,2),'application/json');
+}
+function download(fn,data,type){
+  const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([data],{type}));a.download=fn;a.click();
+}
+function flash(id,msg){const c=document.querySelector(`[data-table="${id}"]`);const n=document.createElement('div');n.textContent=msg;n.style.cssText='position:absolute;top:8px;right:8px;background:var(--accent);color:#fff;padding:3px 9px;border-radius:6px;font-size:12px';c.appendChild(n);setTimeout(()=>n.remove(),900)}
+function filter(id,q){q=q.toLowerCase();document.querySelectorAll('#'+id+' tbody tr').forEach(r=>{r.style.display=r.innerText.toLowerCase().includes(q)?'':'none'})}
+/* sortable */
+document.querySelectorAll('table.sortable thead th').forEach((th,i)=>{
+  th.onclick=()=>{
+    const tbody=th.closest('table').querySelector('tbody');
+    const rows=[...tbody.querySelectorAll('tr')];
+    const dir=th.dataset.dir==='asc'?'desc':'asc';th.dataset.dir=dir;
+    rows.sort((a,b)=>{const av=a.children[i].innerText,bv=b.children[i].innerText;const an=parseFloat(av),bn=parseFloat(bv);
+      if(!isNaN(an)&&!isNaN(bn))return dir==='asc'?an-bn:bn-an;
+      return dir==='asc'?av.localeCompare(bv):bv.localeCompare(av);});
+    rows.forEach(r=>tbody.appendChild(r));
+  };
+});
+/* click-anywhere copy */
+document.querySelectorAll('.tbl-card table').forEach(t=>t.addEventListener('dblclick',()=>copyTable(t.id)));
+</script>
+</body></html>

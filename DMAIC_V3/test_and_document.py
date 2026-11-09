@@ -270,9 +270,9 @@ Generated: {datetime.now().isoformat()}
         )
 
         print(f"\n✓ Documentation saved to {docs_dir}/")
-        print(f"  - ARCHITECTURE_DIAGRAM.txt")
-        print(f"  - EXECUTION_REPORT.md")
-        print(f"  - test_results.json")
+        print("  - ARCHITECTURE_DIAGRAM.txt")
+        print("  - EXECUTION_REPORT.md")
+        print("  - test_results.json")
 
 
 def main():
@@ -288,7 +288,7 @@ def main():
     print(f"{'='*80}\n")
 
     analysis = runner.analyze_outputs(iteration=1)
-    print(f"\nOutput Analysis:")
+    print("\nOutput Analysis:")
     print(f"  Phases executed: {len(analysis['phases'])}")
     print(f"  Agents used: {len(analysis.get('agents_used', []))}")
 

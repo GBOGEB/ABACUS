@@ -1,20 +1,16 @@
 """W46 regression tests for unchanged W40 exact-head receipt contract."""
+
 import hashlib
 import json
 import os
-from pathlib import Path
 import subprocess
 import sys
 import tempfile
 import unittest
 import xml.etree.ElementTree as ET
+from pathlib import Path
 
-
-SCRIPT = (
-    Path(__file__).resolve().parents[1]
-    / "scripts"
-    / "cbd_w40_native_receipt.py"
-)
+SCRIPT = Path(__file__).resolve().parents[1] / "scripts" / "cbd_w40_native_receipt.py"
 
 
 class W40NativeReceiptTests(unittest.TestCase):

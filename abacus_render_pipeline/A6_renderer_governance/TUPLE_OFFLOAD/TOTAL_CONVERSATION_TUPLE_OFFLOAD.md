@@ -220,4 +220,3 @@ Transition objective:
 - `TUPLE-SEED-0002`: A6 renderer governance framing and lineage rationale.
 - `TUPLE-SEED-0003`: Runtime incompleteness assessment and nine-gap map.
 - `TUPLE-SEED-0004`: Transition requirement toward executable semantic runtime.
-

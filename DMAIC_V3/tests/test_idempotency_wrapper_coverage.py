@@ -13,7 +13,10 @@ def test_config_cache_path_and_hash_are_deterministic(tmp_path):
     wrapper = idem.IdempotentPhaseWrapper(config)
 
     assert config.cache_dir.exists()
-    assert config.get_cache_file("phase1", 3) == config.cache_dir / "phase1_iter3.cache.json"
+    assert (
+        config.get_cache_file("phase1", 3)
+        == config.cache_dir / "phase1_iter3.cache.json"
+    )
 
     first = wrapper._compute_input_hash("x", iteration=2, b=1, a=2)
     second = wrapper._compute_input_hash("x", a=2, b=1, iteration=2)
@@ -207,7 +210,9 @@ def test_temp_file_is_cleaned_when_cache_write_fails(tmp_path, monkeypatch):
     def failing_named_temporary_file(*args, **kwargs):
         return FailingWriter(real_named_temporary_file(*args, **kwargs))
 
-    monkeypatch.setattr(idem.tempfile, "NamedTemporaryFile", failing_named_temporary_file)
+    monkeypatch.setattr(
+        idem.tempfile, "NamedTemporaryFile", failing_named_temporary_file
+    )
 
     with pytest.raises(OSError, match="simulated cache write failure"):
         wrapper._save_cache(cache_file, {"value": 1}, "hash-write-failure")

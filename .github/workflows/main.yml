@@ -21,7 +21,7 @@ jobs:
       - name: Set up Python
         uses: actions/setup-python@v7
         with:
-          python-version: '3.12'
+          python-version: '3.14'
 
       - name: Install basic dependencies
         run: |
@@ -44,8 +44,8 @@ jobs:
     needs: quick-checks
     strategy:
       matrix:
-        python-version: ['3.11', '3.12']
-    
+        python-version: ['3.11', '3.15']
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v7
@@ -73,7 +73,7 @@ jobs:
 
       - name: Upload coverage
         uses: codecov/codecov-action@v7
-        if: matrix.python-version == '3.12'
+        if: matrix.python-version == '3.15'
         with:
           file: ./coverage.xml
           flags: unittests
@@ -84,7 +84,7 @@ jobs:
   build:
     runs-on: ubuntu-latest
     needs: test
-    
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v7
@@ -92,7 +92,7 @@ jobs:
       - name: Set up Python
         uses: actions/setup-python@v7
         with:
-          python-version: '3.12'
+          python-version: '3.14'
 
       - name: Install dependencies
         run: |
@@ -118,7 +118,7 @@ jobs:
   quality:
     runs-on: ubuntu-latest
     needs: quick-checks
-    
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v7
@@ -126,7 +126,7 @@ jobs:
       - name: Set up Python
         uses: actions/setup-python@v7
         with:
-          python-version: '3.12'
+          python-version: '3.14'
 
       - name: Install linting tools
         run: |
@@ -154,7 +154,7 @@ jobs:
     runs-on: ubuntu-latest
     needs: [test, build, quality]
     if: github.ref == 'refs/heads/main' || github.ref == 'refs/heads/develop'
-    
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v7
@@ -162,7 +162,7 @@ jobs:
       - name: Set up Python
         uses: actions/setup-python@v7
         with:
-          python-version: '3.12'
+          python-version: '3.14'
 
       - name: Check deployment readiness
         run: |
