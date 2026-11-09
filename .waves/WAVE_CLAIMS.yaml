@@ -10,3 +10,13 @@ owns: []
 participates:
   - key: QPS:W113
     role: receiver   # .mesh/MESH_DOCK.yaml current_focus W113_MESH_CLOSURE_CONTROLLER_DOW_RECEIVER
+  - key: QPS:W027
+    role: consumer   # testpilot native contract test; owner cryoplant
+  - key: QPS:W033
+    role: executor   # backbone pool run; owner cryoplant
+  - key: QPS:W048
+    role: executor   # CBD recurse fan-out scripts; owner cryoplant
+  - key: QPS:W102
+    role: receiver   # QPS MIP reconciliation receiver; owner cryoplant
+  - key: QPS:W334
+    role: receiver   # DOW receipt; owner cryoplant
