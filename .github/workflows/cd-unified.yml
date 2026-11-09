@@ -84,7 +84,7 @@ jobs:
           python -m pip install --upgrade pip
           if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
           pip install .
-          pip install pytest --benchmark-disable pytest-cov pytest-benchmark pyyaml
+          pip install pytest pytest-cov pytest-benchmark pyyaml
 
       - name: Run pytest --benchmark-disable
         run: |
