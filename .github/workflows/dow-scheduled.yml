@@ -36,13 +36,16 @@ jobs:
 
       - name: Run tests
         run: |
-          python -m pytest DMAIC_V3/tests/ || echo "Tests completed"
+          set -euo pipefail
+          python -m pytest DMAIC_V3/tests/
 
       - name: Run DMAIC Pipeline
         run: |
-          python DMAIC_V3/full_pipeline_orchestrator.py || echo "Pipeline execution completed"
+          set -euo pipefail
+          python DMAIC_V3/full_pipeline_orchestrator.py
 
       - name: Upload execution logs
+        if: always()
         uses: actions/upload-artifact@v7
         with:
           name: scheduled-execution-${{ github.run_id }}
@@ -55,5 +58,5 @@ jobs:
       - name: Notify on failure
         if: failure()
         run: |
-          echo "⚠️ Scheduled pipeline execution failed!" >> $GITHUB_STEP_SUMMARY
+          echo "Scheduled pipeline execution failed!" >> $GITHUB_STEP_SUMMARY
           echo "Check the logs for details." >> $GITHUB_STEP_SUMMARY
