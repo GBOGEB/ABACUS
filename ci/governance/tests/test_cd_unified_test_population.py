@@ -7,7 +7,8 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[3]
 WORKFLOW = ROOT / ".github" / "workflows" / "cd-unified.yml"
-TEST_DEPS = ROOT / "requirements-test.txt"
+DEV_DEPS = ROOT / "requirements-dev.txt"
+INSTALL = "python -m pip install -r requirements-dev.txt"
 
 
 def ubuntu_job() -> str:
@@ -24,13 +25,14 @@ def ubuntu_job() -> str:
 class UnifiedCdCollection(unittest.TestCase):
     def test_graph_test_ssot_precedes_pytest(self):
         body = ubuntu_job()
-        self.assertIn("pip install -r requirements-test.txt", body)
+        self.assertIn(INSTALL, body)
         self.assertIn("pytest --benchmark-disable -v --cov=. --cov-report=term-missing", body)
-        self.assertLess(body.index("pip install -r requirements-test.txt"),
+        self.assertLess(body.index(INSTALL),
                         body.index("pytest --benchmark-disable"))
 
     def test_networkx_is_source_owned_not_hardcoded(self):
-        deps = TEST_DEPS.read_text(encoding="utf-8")
+        deps = DEV_DEPS.read_text(encoding="utf-8")
+        self.assertIn("-r requirements.txt", deps)
         self.assertIn('networkx==3.6.1; python_version >= "3.11"', deps)
         self.assertNotIn("pip install networkx==", ubuntu_job())
 
