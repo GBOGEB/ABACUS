@@ -27,4 +27,10 @@ bandit>=1.7.5
 
 ruff==0.17.3
 pre-commit>=4.0.0
+# OSV BD-24 security floors for pre-commit's transitive tool chain
+# (pre-commit -> virtualenv -> filelock). virtualenv advisories (incl.
+# GHSA-vxj4-q4g9-crj7, GHSA-qmx5-4p3x-wvqf) are fixed by 21.14.9; filelock
+# PYSEC-2026-1374/1375, GHSA-69hj-f68j-2879, GHSA-8mx5-7m5m-r77g by 4.2.1.
+virtualenv>=21.14.9
+filelock>=4.2.1
 tomli>=2.0.1; python_version < "3.11"
