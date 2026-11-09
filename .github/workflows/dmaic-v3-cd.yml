@@ -9,15 +9,6 @@ on:
   release:
     types: [published]
   workflow_dispatch:
-    inputs:
-      environment:
-        description: 'Deployment environment'
-        required: true
-        default: 'staging'
-        type: choice
-        options:
-          - staging
-          - production
 
 env:
   PYTHON_VERSION: '3.14'
@@ -172,47 +163,10 @@ jobs:
           retention-days: 90
 
 
-  deploy-staging:
-    name: Deploy to Staging
+  integration-validation:
+    name: Integration Validation
     runs-on: ubuntu-latest
     needs: build-artifacts
-    if: github.ref == 'refs/heads/main' || github.event.inputs.environment == 'staging'
-    environment:
-      name: staging
-      url: https://staging.dmaic-v3.example.com
-    timeout-minutes: 15
-
-    steps:
-      - name: Download deployment artifacts
-        uses: actions/download-artifact@v8
-        with:
-          name: deployment-artifacts
-          path: ./artifacts
-
-      - name: Deploy to staging environment
-        run: |
-          echo "🚀 Deploying DMAIC V3 to staging..."
-          echo "Deployment package: ./artifacts/dmaic-v3-deployment.tar.gz"
-          echo "Manifest: ./artifacts/deployment-manifest.json"
-
-          cat ./artifacts/deployment-manifest.json
-
-          echo "✅ Deployment to staging completed"
-
-      - name: Run smoke tests on staging
-        run: |
-          echo "🧪 Running smoke tests on staging..."
-          echo "✅ Smoke tests passed"
-
-      - name: Notify deployment
-        run: |
-          echo "📢 DMAIC V3 deployed to staging successfully"
-
-
-  integration-validation:
-    name: Integration Validation (Staging)
-    runs-on: ubuntu-latest
-    needs: deploy-staging
     timeout-minutes: 20
 
     steps:
@@ -230,161 +184,12 @@ jobs:
           cd ${{ env.DMAIC_ROOT }}
           pip install -r requirements.txt
 
-      - name: Run integration tests against staging
+      - name: Run integration tests
         run: |
           cd ${{ env.DMAIC_ROOT }}
-          echo "Running integration tests against staging environment..."
           pytest DMAIC_V3/tests/ -v -m "integration" --tb=short
 
       - name: Validate DOW/ARIANA loop
         run: |
           cd ${{ env.DMAIC_ROOT }}
           pytest DMAIC_V3/tests/test_dow_ariana_integration_runtime_coverage.py -v
-
-      - name: Upload validation results
-        if: always()
-        uses: actions/upload-artifact@v7
-        with:
-          name: staging-validation-results
-          path: ${{ env.DMAIC_ROOT }}/test-results/
-          retention-days: 30
-
-
-  deploy-production:
-    name: Deploy to Production
-    runs-on: ubuntu-latest
-    needs: [integration-validation, quality-gate-check]
-    if: |
-      (github.ref == 'refs/heads/main' && github.event_name == 'push') ||
-      (github.event_name == 'release' && github.event.action == 'published') ||
-      (github.event.inputs.environment == 'production')
-    environment:
-      name: production
-      url: https://dmaic-v3.example.com
-    timeout-minutes: 20
-
-    steps:
-      - name: Download deployment artifacts
-        uses: actions/download-artifact@v8
-        with:
-          name: deployment-artifacts
-          path: ./artifacts
-
-      - name: Pre-deployment validation
-        run: |
-          echo "🔍 Pre-deployment validation..."
-          echo "Coverage: ${{ needs.quality-gate-check.outputs.coverage }}%"
-
-          if [ "${{ needs.quality-gate-check.outputs.coverage }}" -lt "75" ]; then
-            echo "❌ Coverage too low for production deployment"
-            exit 1
-          fi
-
-          echo "✅ Pre-deployment validation passed"
-
-      - name: Deploy to production environment
-        run: |
-          echo "🚀 Deploying DMAIC V3 to production..."
-          echo "Deployment package: ./artifacts/dmaic-v3-deployment.tar.gz"
-          echo "Manifest: ./artifacts/deployment-manifest.json"
-
-          cat ./artifacts/deployment-manifest.json
-
-          echo "✅ Deployment to production completed"
-
-      - name: Run smoke tests on production
-        run: |
-          echo "🧪 Running smoke tests on production..."
-          echo "✅ Smoke tests passed"
-
-      - name: Create deployment tag
-        run: |
-          echo "Creating deployment tag: deploy-$(date +%Y%m%d-%H%M%S)"
-
-      - name: Notify deployment
-        run: |
-          echo "📢 DMAIC V3 deployed to production successfully"
-
-
-  post-deployment-monitoring:
-    name: Post-Deployment Monitoring
-    runs-on: ubuntu-latest
-    needs: deploy-production
-    if: always()
-    timeout-minutes: 30
-
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v7
-
-      - name: Set up Python
-        uses: actions/setup-python@v7
-        with:
-          python-version: ${{ env.PYTHON_VERSION }}
-          cache: 'pip'
-
-      - name: Install dependencies
-        run: |
-          cd ${{ env.DMAIC_ROOT }}
-          pip install -r requirements.txt
-
-      - name: Monitor production health
-        run: |
-          echo "🔍 Monitoring production health..."
-          sleep 60
-          echo "✅ Production health check passed"
-
-      - name: Run DOW/ARIANA loop analysis
-        run: |
-          cd ${{ env.DMAIC_ROOT }}
-          pytest DMAIC_V3/tests/test_dow_ariana_integration_runtime_coverage.py -v
-
-      - name: Generate deployment report
-        run: |
-          cat > deployment-report.md <<EOF
-          # DMAIC V3 Deployment Report
-
-          **Deployment Date:** $(date -u +%Y-%m-%dT%H:%M:%SZ)
-          **Version:** ${{ github.sha }}
-          **Branch:** ${{ github.ref_name }}
-          **Coverage:** ${{ needs.quality-gate-check.outputs.coverage }}%
-
-          ## Deployment Status
-          - ✅ Quality gates passed
-          - ✅ Staging deployment successful
-          - ✅ Integration validation passed
-          - ✅ Production deployment successful
-          - ✅ Post-deployment monitoring active
-
-          ## Next Steps
-          - Monitor production metrics
-          - Review DOW cognitive loop insights
-          - Plan next iteration
-          EOF
-
-          cat deployment-report.md
-
-      - name: Upload deployment report
-        uses: actions/upload-artifact@v7
-        with:
-          name: deployment-report
-          path: deployment-report.md
-          retention-days: 365
-
-
-  rollback:
-    name: Rollback (Manual Trigger)
-    runs-on: ubuntu-latest
-    if: failure() && github.event_name == 'workflow_dispatch'
-    needs: [deploy-staging, deploy-production]
-
-    steps:
-      - name: Initiate rollback
-        run: |
-          echo "⚠️ Initiating rollback..."
-          echo "Rolling back to previous stable version"
-          echo "✅ Rollback completed"
-
-      - name: Notify rollback
-        run: |
-          echo "📢 DMAIC V3 rollback completed"
