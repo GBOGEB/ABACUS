@@ -1,0 +1,75 @@
+name: RED census (report-only)
+
+# Observer for the BD ledger control loop. Classifies every active workflow by
+# its last 10 completed default-branch runs (EVERRED / GREEN_TO_RED / FLAKY /
+# GREEN / NO_MAIN_RUNS, GHOST separately, STALE flag), annotates each with the
+# ledger root_ids that cover it, and verifies the ledger hash chain.
+# Report-only: never writes to the repository, never gates a PR.
+# Scope: GBOGEB/ABACUS only. Cross-repo (CODEX) needs a token the owner has
+# not provisioned; see docs/ci/RED_CENSUS_README.md.
+
+on:
+  schedule:
+    - cron: '17 5 * * *'
+  workflow_dispatch:
+
+permissions:
+  actions: read
+  contents: read
+
+concurrency:
+  group: red-census-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  census:
+    name: RED census + ledger verify
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+
+      - uses: actions/setup-python@v7
+        with:
+          python-version: '3.12'
+
+      - name: Verify BD ledger chain (report-only)
+        run: |
+          set +e
+          python scripts/red_census.py --verify-ledger ledger/bd_ledger.jsonl > ledger-verify.txt 2>&1
+          status=$?
+          cat ledger-verify.txt
+          {
+            echo "## BD ledger verify"
+            echo
+            echo '```'
+            cat ledger-verify.txt
+            echo '```'
+            echo
+            echo "exit=${status} (report-only; not enforced)"
+            echo
+          } >> "$GITHUB_STEP_SUMMARY"
+          exit 0
+
+      - name: Run census (GBOGEB/ABACUS)
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          python scripts/red_census.py "${{ github.repository }}" \
+            --ledger ledger/bd_ledger.jsonl \
+            --out red-census.json \
+            --summary "$GITHUB_STEP_SUMMARY"
+          sha256sum red-census.json
+
+      - name: Upload census JSON
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: red-census
+          path: |
+            red-census.json
+            ledger-verify.txt
+          if-no-files-found: warn
+          retention-days: 30
