@@ -130,4 +130,7 @@ jobs:
         with:
           name: testpilot-receipt-${{ github.sha }}
           path: .testpilot/
+          # .testpilot/ is a dot-directory; upload-artifact >=4.4 drops hidden
+          # files unless told otherwise, which made a written receipt invisible.
+          include-hidden-files: true
           if-no-files-found: error
