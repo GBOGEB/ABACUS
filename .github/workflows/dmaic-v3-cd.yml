@@ -4,7 +4,7 @@ on:
   push:
     branches: [ main ]
     paths:
-      - '13_CORE_SYSTEMS/DMAIC/**'
+      - 'DMAIC_V3/**'
       - 'ABACUS-UNIFIED/**'
   release:
     types: [published]
@@ -21,7 +21,8 @@ on:
 
 env:
   PYTHON_VERSION: '3.14'
-  DMAIC_ROOT: '13_CORE_SYSTEMS/DMAIC'
+  # DMAIC_V3/ lives at the repository root; every step addresses DMAIC_V3/... from here.
+  DMAIC_ROOT: '.'
 
 jobs:
 
@@ -235,10 +236,10 @@ jobs:
           echo "Running integration tests against staging environment..."
           pytest DMAIC_V3/tests/ -v -m "integration" --tb=short
 
-      - name: Validate DOW cognitive loop
+      - name: Validate DOW/ARIANA loop
         run: |
           cd ${{ env.DMAIC_ROOT }}
-          pytest DMAIC_V3/tests/test_dow_cognitive_loop.py -v
+          pytest DMAIC_V3/tests/test_dow_ariana_integration_runtime_coverage.py -v
 
       - name: Upload validation results
         if: always()
@@ -333,11 +334,10 @@ jobs:
           sleep 60
           echo "✅ Production health check passed"
 
-      - name: Run DOW cognitive loop analysis
+      - name: Run DOW/ARIANA loop analysis
         run: |
           cd ${{ env.DMAIC_ROOT }}
-          echo "Running DOW cognitive loop analysis on production..."
-          pytest DMAIC_V3/tests/test_dow_cognitive_loop.py -v -m "smoke"
+          pytest DMAIC_V3/tests/test_dow_ariana_integration_runtime_coverage.py -v
 
       - name: Generate deployment report
         run: |
