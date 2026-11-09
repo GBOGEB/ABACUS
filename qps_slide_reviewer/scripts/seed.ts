@@ -16,11 +16,10 @@ async function main(): Promise<void> {
     const imageFilename = `slide-${displayNumber}.png`;
     await prisma.slide.upsert({
       where: { pageNumber: page },
-      update: {
-        imageFilename,
-        title: `Slide ${displayNumber}`,
-        groupName: GROUP_NAME,
-      },
+      // A rerun may target a populated/shared review database. Only create
+      // missing slots; loaded metadata, custom image paths and votes belong
+      // to the existing records and must remain untouched.
+      update: {},
       create: {
         pageNumber: page,
         imageFilename,
@@ -33,7 +32,7 @@ async function main(): Promise<void> {
       },
     });
   }
-  console.log(`Seed complete: ${SLIDE_COUNT} identity-neutral records.`);
+  console.log(`Seed complete: ${SLIDE_COUNT} slots ensured; existing records preserved.`);
 }
 
 main()
