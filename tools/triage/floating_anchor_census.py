@@ -108,7 +108,11 @@ def build_report(root: Path, repo: str, anchor: str) -> dict:
             "engineering_credit": False,
             "compliance_credit": False,
             "negotiation_credit": False,
-            "next_gate": "review highest-count floating buckets and bind each retained feature to anchor receipt, deprecate list, or subrepo classification",
+            "next_gate": (
+                "review highest-count floating buckets and bind each retained "
+                "feature to anchor receipt, deprecate list, or subrepo "
+                "classification"
+            ),
         },
     }
 

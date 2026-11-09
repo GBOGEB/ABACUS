@@ -1,4 +1,5 @@
 """Negative and valid receipts for the BD E0-E3 telemetry contract."""
+
 import unittest
 
 from mission_control_lite.bd_telemetry import (
@@ -13,19 +14,27 @@ from mission_control_lite.bd_telemetry import (
 class BdTelemetryTests(unittest.TestCase):
     def record(self):
         return {
-            "schema": SCHEMA, "mode": "E3",
-            "source_sha": "a" * 40, "base_sha": "b" * 40,
-            "root_id": "DOCS-SELECTOR", "attempt": 1,
+            "schema": SCHEMA,
+            "mode": "E3",
+            "source_sha": "a" * 40,
+            "base_sha": "b" * 40,
+            "root_id": "DOCS-SELECTOR",
+            "attempt": 1,
             "artifact_digest": "sha256:" + "c" * 64,
-            "line_covered": 75, "line_total": 100,
-            "branch_covered": 13, "branch_total": 20,
-            "queue_seconds": 3.5, "result": "PASS",
+            "line_covered": 75,
+            "line_total": 100,
+            "branch_covered": 13,
+            "branch_total": 20,
+            "queue_seconds": 3.5,
+            "result": "PASS",
         }
 
     def test_native_receipt_is_deterministic(self):
         r = self.record()
         self.assertIs(validate(r), r)
-        self.assertEqual(evidence_digest(r), evidence_digest(dict(reversed(list(r.items())))))
+        self.assertEqual(
+            evidence_digest(r), evidence_digest(dict(reversed(list(r.items()))))
+        )
 
     def test_missing_provenance_rejected(self):
         r = self.record()
@@ -47,11 +56,17 @@ class BdTelemetryTests(unittest.TestCase):
 
     def test_replay_unknown_metrics_preserved(self):
         r = self.record()
-        r.update(mode="E0", result="UNKNOWN", artifact_digest=None,
-                 line_covered=None, line_total=None,
-                 branch_covered=None, branch_total=None, queue_seconds=None)
+        r.update(
+            mode="E0",
+            result="UNKNOWN",
+            artifact_digest=None,
+            line_covered=None,
+            line_total=None,
+            branch_covered=None,
+            branch_total=None,
+            queue_seconds=None,
+        )
         validate(r)
-
 
     def test_rejects_nonfinite_queue_seconds(self):
         for bad in (float("nan"), float("inf"), -float("inf")):
@@ -109,9 +124,15 @@ class BdTelemetryTests(unittest.TestCase):
         native_fail.update(attempt=2, result="FAIL", queue_seconds=7.5)
         scout = self.record()
         scout.update(
-            mode="E0", result="UNKNOWN", attempt=3,
-            artifact_digest=None, line_covered=None, line_total=None,
-            branch_covered=None, branch_total=None, queue_seconds=None,
+            mode="E0",
+            result="UNKNOWN",
+            attempt=3,
+            artifact_digest=None,
+            line_covered=None,
+            line_total=None,
+            branch_covered=None,
+            branch_total=None,
+            queue_seconds=None,
         )
         summary = summarize_series([native_pass, native_fail, scout])
         self.assertEqual(summary["observations"], 3)
@@ -149,15 +170,17 @@ class BdTelemetryTests(unittest.TestCase):
         previous = self.record()
         current = self.record()
         current.update(
-            source_sha="d" * 40, attempt=2, line_covered=120,
-            line_total=200, branch_covered=30, branch_total=40,
+            source_sha="d" * 40,
+            attempt=2,
+            line_covered=120,
+            line_total=200,
+            branch_covered=30,
+            branch_total=40,
         )
         summary = summarize_series([previous, current])
         self.assertEqual(len(summary["source_heads"]), 2)
         self.assertIsNone(summary["cross_head_coverage_delta_pp"])
-        self.assertEqual(
-            summary["declared_native_coverage"][1]["line_percent"], 60
-        )
+        self.assertEqual(summary["declared_native_coverage"][1]["line_percent"], 60)
 
     def test_series_order_does_not_change_aggregates(self):
         first = self.record()
@@ -175,7 +198,6 @@ class BdTelemetryTests(unittest.TestCase):
         record["queue_seconds"] = float("inf")
         with self.assertRaisesRegex(ValueError, "queue seconds"):
             summarize_series([record])
-
 
     def test_validator_rejects_remaining_invalid_contract_paths(self):
         with self.assertRaisesRegex(ValueError, "must be an object"):
@@ -197,7 +219,6 @@ class BdTelemetryTests(unittest.TestCase):
                 record.update(mutations)
                 with self.assertRaisesRegex(ValueError, message):
                     validate(record)
-
 
     def test_e3_fail_retains_line_when_branch_coverage_unknown(self):
         record = self.record()
@@ -222,8 +243,13 @@ class BdTelemetryTests(unittest.TestCase):
 
     def test_e3_both_dimensions_unknown_are_retained(self):
         record = self.record()
-        record.update(result="FAIL", line_covered=None, line_total=None,
-                      branch_covered=None, branch_total=None)
+        record.update(
+            result="FAIL",
+            line_covered=None,
+            line_total=None,
+            branch_covered=None,
+            branch_total=None,
+        )
         summary = summarize_series([record])
         observation = summary["declared_native_coverage"][0]
         self.assertIsNone(observation["line_percent"])
@@ -242,11 +268,11 @@ class BdTelemetryTests(unittest.TestCase):
         for field in ("mode", "result"):
             record = self.record()
             record[field] = ["PASS"]
-            with self.subTest(field=field), self.assertRaisesRegex(
-                ValueError, "unsupported"
+            with (
+                self.subTest(field=field),
+                self.assertRaisesRegex(ValueError, "unsupported"),
             ):
                 summarize_series([record])
-
 
 
 if __name__ == "__main__":

@@ -9,7 +9,7 @@ on:
 
 env:
   ABACUS_VERSION: v032
-  PYTHON_VERSION: '3.10'
+  PYTHON_VERSION: '3.14'
 
 jobs:
   lint-and-validate:
@@ -155,7 +155,7 @@ jobs:
       - uses: actions/checkout@v7
 
       - name: Download execution reports
-        uses: actions/download-artifact@v8.0.2
+        uses: actions/download-artifact@v8
         with:
           name: dmaic-execution-reports
           path: deploy/output/

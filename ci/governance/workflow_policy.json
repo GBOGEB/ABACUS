@@ -173,6 +173,24 @@
       "disposition": "keep"
     },
     {
+      "pattern": "^python-version-ssot-guard\\.yml$",
+      "cluster": "ci_governance",
+      "lifecycle": "pr_domain",
+      "disposition": "keep"
+    },
+    {
+      "pattern": "^python-next-canary\\.yml$",
+      "cluster": "ci_governance",
+      "lifecycle": "scheduled",
+      "disposition": "keep"
+    },
+    {
+      "pattern": "^coolprop-next-shadow\\.yml$",
+      "cluster": "specialised",
+      "lifecycle": "scheduled",
+      "disposition": "keep"
+    },
+    {
       "pattern": "^everred-v3-validation\\.yml$",
       "cluster": "runtime_governance",
       "lifecycle": "pr_domain",

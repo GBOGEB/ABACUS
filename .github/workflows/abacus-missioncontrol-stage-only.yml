@@ -20,7 +20,7 @@ jobs:
       - uses: actions/checkout@v7
       - uses: actions/setup-python@v7
         with:
-          python-version: '3.11'
+          python-version: '3.14'
       - name: Assert exact main GitHub-native context and emit stage receipt
         env:
           EXPECTED_SHA: ${{ inputs.expected_head_sha }}

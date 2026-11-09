@@ -4,6 +4,7 @@
 MAPPING_HEROES navigation with Monte Carlo cost analysis, supplier comparison,
 material specs, risk modeling, and enhanced Plotly visualizations.
 """
+
 from __future__ import annotations
 import json, math, shutil, os, sys
 from pathlib import Path
@@ -20,18 +21,35 @@ ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(ROOT))
 
 from src.calc_leak_rate import (
-    build_conversion_grid, leak_rate_to_mass_flow_g_year,
-    dimensional_proof, normal_m3_per_day_to_kg_per_year,
-    mbar_l_s_to_pa_m3_s, SECONDS_PER_YEAR, R_UNIVERSAL,
-    MOLAR_MASS_HE_G_PER_MOL, MOLAR_MASS_HE_KG_PER_MOL,
+    build_conversion_grid,
+    leak_rate_to_mass_flow_g_year,
+    dimensional_proof,
+    normal_m3_per_day_to_kg_per_year,
+    mbar_l_s_to_pa_m3_s,
+    SECONDS_PER_YEAR,
+    R_UNIVERSAL,
+    MOLAR_MASS_HE_G_PER_MOL,
+    MOLAR_MASS_HE_KG_PER_MOL,
 )
-from src.monte_carlo import run_all_scenarios, SCENARIOS, compute_statistics, sensitivity_tornado
+from src.monte_carlo import (
+    run_all_scenarios,
+    SCENARIOS,
+    compute_statistics,
+    sensitivity_tornado,
+)
 from src.materials_db import (
-    MATERIALS, WELDING_SPECS, CODES_STANDARDS, SUPPLIER_COMPARISON,
-    VALVE_CLASSES, RELIABILITY_DATA,
+    MATERIALS,
+    WELDING_SPECS,
+    CODES_STANDARDS,
+    SUPPLIER_COMPARISON,
+    VALVE_CLASSES,
+    RELIABILITY_DATA,
 )
 from src.risk_model import (
-    RISK_REGISTER, OPERATIONAL_SCENARIOS, risk_matrix_data, beam_impact_analysis,
+    RISK_REGISTER,
+    OPERATIONAL_SCENARIOS,
+    risk_matrix_data,
+    beam_impact_analysis,
 )
 
 VERSION = "2.1.0"
@@ -70,13 +88,48 @@ COLORS = {
 }
 
 HERO_TABS = [
-    {"id": "interface", "icon": "🔗", "label": "INTERFACE", "desc": "System boundaries, valve locations, flow diagrams"},
-    {"id": "control", "icon": "⚙️", "label": "CONTROL", "desc": "Actuation methods, automation, fail-safe logic"},
-    {"id": "design", "icon": "📐", "label": "DESIGN", "desc": "Engineering specs, leak rates, valve classes"},
-    {"id": "cost", "icon": "💰", "label": "COST", "desc": "Monte Carlo analysis, TCO, supplier comparison"},
-    {"id": "materials", "icon": "🧪", "label": "MATERIALS", "desc": "316 SS specs, electropolish, welding, ASME codes"},
-    {"id": "risk", "icon": "⚠️", "label": "RISK", "desc": "Geopolitical, operational, reliability scenarios"},
-    {"id": "operations", "icon": "🔧", "label": "OPERATIONS", "desc": "MTBF, MTTR, MDT, maintenance strategy"},
+    {
+        "id": "interface",
+        "icon": "🔗",
+        "label": "INTERFACE",
+        "desc": "System boundaries, valve locations, flow diagrams",
+    },
+    {
+        "id": "control",
+        "icon": "⚙️",
+        "label": "CONTROL",
+        "desc": "Actuation methods, automation, fail-safe logic",
+    },
+    {
+        "id": "design",
+        "icon": "📐",
+        "label": "DESIGN",
+        "desc": "Engineering specs, leak rates, valve classes",
+    },
+    {
+        "id": "cost",
+        "icon": "💰",
+        "label": "COST",
+        "desc": "Monte Carlo analysis, TCO, supplier comparison",
+    },
+    {
+        "id": "materials",
+        "icon": "🧪",
+        "label": "MATERIALS",
+        "desc": "316 SS specs, electropolish, welding, ASME codes",
+    },
+    {
+        "id": "risk",
+        "icon": "⚠️",
+        "label": "RISK",
+        "desc": "Geopolitical, operational, reliability scenarios",
+    },
+    {
+        "id": "operations",
+        "icon": "🔧",
+        "label": "OPERATIONS",
+        "desc": "MTBF, MTTR, MDT, maintenance strategy",
+    },
 ]
 
 # ═══════════════════════════════════════════════════════════
@@ -222,12 +275,15 @@ document.addEventListener('DOMContentLoaded', () => { setTier && setTier('1'); }
 # HTML Templating
 # ═══════════════════════════════════════════════════════════
 
+
 def _nav_html(active_hero: str = "", is_hero: bool = False) -> str:
     links = []
     for h in HERO_TABS:
         cls = ' class="active"' if h["id"] == active_hero else ""
         href = f"{h['id']}.html" if is_hero else f"heroes/{h['id']}.html"
-        links.append(f'<a href="{href}"{cls}><span class="icon">{h["icon"]}</span>{h["label"]}</a>')
+        links.append(
+            f'<a href="{href}"{cls}><span class="icon">{h["icon"]}</span>{h["label"]}</a>'
+        )
     hub_href = "../index.html" if is_hero else "index.html"
     return f"""<div class="top-bar">
   <div><h1>QPLANT Cryogenic Dashboard</h1><span class="version">v{VERSION} • {BUILD_ID}</span></div>
@@ -245,11 +301,15 @@ def _tier_nav(*tier_pairs, active: str = "1") -> str:
     links = []
     for tid, label in tier_pairs:
         cls = ' class="active"' if tid == active else ""
-        links.append(f'<a href="#" onclick="setTier(\'{tid}\');return false;" data-tier="{tid}"{cls}>{label}</a>')
-    return '<div class="tier-nav">' + ''.join(links) + '</div>'
+        links.append(
+            f'<a href="#" onclick="setTier(\'{tid}\');return false;" data-tier="{tid}"{cls}>{label}</a>'
+        )
+    return '<div class="tier-nav">' + "".join(links) + "</div>"
 
 
-def _page(title: str, body: str, hero: str = "", extra_head: str = "", is_hero: bool = False) -> str:
+def _page(
+    title: str, body: str, hero: str = "", extra_head: str = "", is_hero: bool = False
+) -> str:
     prefix = "../" if is_hero else ""
     return f"""<!DOCTYPE html>
 <html lang="en">
@@ -280,8 +340,13 @@ def _badge(status: str) -> str:
 
 
 def _df_to_html(df: pd.DataFrame, max_rows: int = 50) -> str:
-    return df.head(max_rows).to_html(index=False, classes="", border=0, escape=False,
-                                       float_format=lambda x: f"{x:,.4g}" if abs(x) < 1e6 else f"{x:,.0f}")
+    return df.head(max_rows).to_html(
+        index=False,
+        classes="",
+        border=0,
+        escape=False,
+        float_format=lambda x: f"{x:,.4g}" if abs(x) < 1e6 else f"{x:,.0f}",
+    )
 
 
 # ═══════════════════════════════════════════════════════════
@@ -316,33 +381,73 @@ def plot_leak_vs_loss_enhanced():
     fig = go.Figure()
     for t in temps:
         g_year = [leak_rate_to_mass_flow_g_year(lr, t, 5.0) for lr in leak_rates]
-        fig.add_trace(go.Scatter(
-            x=leak_rates, y=g_year, mode="lines",
-            name=f"{t} K", line=dict(color=temp_colors[t], width=2.5),
-            hovertemplate="Leak: %{x:.1e} mbar·L/s<br>Loss: %{y:.3g} g/yr<br>T=%{text} K<extra></extra>",
-            text=[str(t)] * len(leak_rates),
-        ))
+        fig.add_trace(
+            go.Scatter(
+                x=leak_rates,
+                y=g_year,
+                mode="lines",
+                name=f"{t} K",
+                line=dict(color=temp_colors[t], width=2.5),
+                hovertemplate="Leak: %{x:.1e} mbar·L/s<br>Loss: %{y:.3g} g/yr<br>T=%{text} K<extra></extra>",
+                text=[str(t)] * len(leak_rates),
+            )
+        )
 
     # Supplier zones
-    fig.add_vrect(x0=1e-10, x1=1e-9, fillcolor="#10B981", opacity=0.08, line_width=0,
-                  annotation_text="Ultra-tight\n(1e-9 spec)", annotation_position="top left",
-                  annotation=dict(font_size=10, font_color="#065F46"))
-    fig.add_vrect(x0=1e-6, x1=1e-4, fillcolor="#F59E0B", opacity=0.08, line_width=0,
-                  annotation_text="Derogation zone\n(Meca Inox)", annotation_position="top right",
-                  annotation=dict(font_size=10, font_color="#92400E"))
+    fig.add_vrect(
+        x0=1e-10,
+        x1=1e-9,
+        fillcolor="#10B981",
+        opacity=0.08,
+        line_width=0,
+        annotation_text="Ultra-tight\n(1e-9 spec)",
+        annotation_position="top left",
+        annotation=dict(font_size=10, font_color="#065F46"),
+    )
+    fig.add_vrect(
+        x0=1e-6,
+        x1=1e-4,
+        fillcolor="#F59E0B",
+        opacity=0.08,
+        line_width=0,
+        annotation_text="Derogation zone\n(Meca Inox)",
+        annotation_position="top right",
+        annotation=dict(font_size=10, font_color="#92400E"),
+    )
 
     # RTM limit
-    fig.add_hline(y=65000, line_dash="dash", line_color="#EF4444", line_width=1.5,
-                  annotation_text="RTM-048 Cap ≈ 65 kg/yr", annotation_position="bottom right",
-                  annotation=dict(font_size=11, font_color="#EF4444"))
+    fig.add_hline(
+        y=65000,
+        line_dash="dash",
+        line_color="#EF4444",
+        line_width=1.5,
+        annotation_text="RTM-048 Cap ≈ 65 kg/yr",
+        annotation_position="bottom right",
+        annotation=dict(font_size=11, font_color="#EF4444"),
+    )
 
-    fig.update_xaxes(type="log", title="Leak Rate (mbar·L/s)", gridcolor="#E5E7EB",
-                     showline=True, linecolor="#9CA3AF")
-    fig.update_yaxes(type="log", title="He Mass Loss (g/year)", gridcolor="#E5E7EB",
-                     showline=True, linecolor="#9CA3AF")
+    fig.update_xaxes(
+        type="log",
+        title="Leak Rate (mbar·L/s)",
+        gridcolor="#E5E7EB",
+        showline=True,
+        linecolor="#9CA3AF",
+    )
+    fig.update_yaxes(
+        type="log",
+        title="He Mass Loss (g/year)",
+        gridcolor="#E5E7EB",
+        showline=True,
+        linecolor="#9CA3AF",
+    )
     fig.update_layout(
-        title=dict(text="Leak Rate vs Helium Mass Loss — Temperature Sensitivity", font=dict(size=16)),
-        legend=dict(bgcolor="rgba(255,255,255,0.9)", bordercolor="#E5E7EB", borderwidth=1),
+        title=dict(
+            text="Leak Rate vs Helium Mass Loss — Temperature Sensitivity",
+            font=dict(size=16),
+        ),
+        legend=dict(
+            bgcolor="rgba(255,255,255,0.9)", bordercolor="#E5E7EB", borderwidth=1
+        ),
         height=550,
     )
     return _save_plot(fig, "enhanced_leak_rate_comparison")
@@ -352,34 +457,102 @@ def plot_monte_carlo_distribution(mc_results):
     """Cost distribution histogram from Monte Carlo."""
     df = mc_results["baseline"]["df"]
 
-    fig = make_subplots(rows=2, cols=2,
-        subplot_titles=("Total Annual Cost Distribution", "Helium Price Sampled",
-                        "Beam Availability", "He Loss vs Cost"),
-        vertical_spacing=0.12, horizontal_spacing=0.1)
+    fig = make_subplots(
+        rows=2,
+        cols=2,
+        subplot_titles=(
+            "Total Annual Cost Distribution",
+            "Helium Price Sampled",
+            "Beam Availability",
+            "He Loss vs Cost",
+        ),
+        vertical_spacing=0.12,
+        horizontal_spacing=0.1,
+    )
 
     # 1: Cost histogram
     stats = mc_results["baseline"]["stats"]["total_cost_eur"]
-    fig.add_trace(go.Histogram(x=df["total_cost_eur"], nbinsx=60, name="Total Cost",
-        marker_color="#1E3A8A", opacity=0.8), row=1, col=1)
-    for pct, val, color in [("P10", stats["p10"], "#10B981"), ("P50", stats["p50"], "#F59E0B"), ("P90", stats["p90"], "#EF4444")]:
-        fig.add_vline(x=val, line_dash="dash", line_color=color, row=1, col=1,
-                      annotation_text=f"{pct}: €{val:,.0f}", annotation=dict(font_size=10, font_color=color))
+    fig.add_trace(
+        go.Histogram(
+            x=df["total_cost_eur"],
+            nbinsx=60,
+            name="Total Cost",
+            marker_color="#1E3A8A",
+            opacity=0.8,
+        ),
+        row=1,
+        col=1,
+    )
+    for pct, val, color in [
+        ("P10", stats["p10"], "#10B981"),
+        ("P50", stats["p50"], "#F59E0B"),
+        ("P90", stats["p90"], "#EF4444"),
+    ]:
+        fig.add_vline(
+            x=val,
+            line_dash="dash",
+            line_color=color,
+            row=1,
+            col=1,
+            annotation_text=f"{pct}: €{val:,.0f}",
+            annotation=dict(font_size=10, font_color=color),
+        )
 
     # 2: He price
-    fig.add_trace(go.Histogram(x=df["he_price_eur_kg"], nbinsx=50, name="He Price",
-        marker_color="#7C3AED", opacity=0.8, showlegend=False), row=1, col=2)
+    fig.add_trace(
+        go.Histogram(
+            x=df["he_price_eur_kg"],
+            nbinsx=50,
+            name="He Price",
+            marker_color="#7C3AED",
+            opacity=0.8,
+            showlegend=False,
+        ),
+        row=1,
+        col=2,
+    )
 
     # 3: Availability
-    fig.add_trace(go.Histogram(x=df["beam_availability_pct"], nbinsx=40, name="Availability",
-        marker_color="#059669", opacity=0.8, showlegend=False), row=2, col=1)
+    fig.add_trace(
+        go.Histogram(
+            x=df["beam_availability_pct"],
+            nbinsx=40,
+            name="Availability",
+            marker_color="#059669",
+            opacity=0.8,
+            showlegend=False,
+        ),
+        row=2,
+        col=1,
+    )
 
     # 4: Scatter He loss vs cost
-    fig.add_trace(go.Scatter(x=df["total_he_loss_kg"], y=df["total_cost_eur"],
-        mode="markers", marker=dict(size=3, color=df["he_price_eur_kg"],
-        colorscale="Viridis", showscale=True, colorbar=dict(title="He €/kg", len=0.4, y=0.2)),
-        name="Runs", showlegend=False), row=2, col=2)
+    fig.add_trace(
+        go.Scatter(
+            x=df["total_he_loss_kg"],
+            y=df["total_cost_eur"],
+            mode="markers",
+            marker=dict(
+                size=3,
+                color=df["he_price_eur_kg"],
+                colorscale="Viridis",
+                showscale=True,
+                colorbar=dict(title="He €/kg", len=0.4, y=0.2),
+            ),
+            name="Runs",
+            showlegend=False,
+        ),
+        row=2,
+        col=2,
+    )
 
-    fig.update_layout(height=700, title=dict(text=f"Monte Carlo Cost Analysis — {len(df):,} Simulations", font=dict(size=16)))
+    fig.update_layout(
+        height=700,
+        title=dict(
+            text=f"Monte Carlo Cost Analysis — {len(df):,} Simulations",
+            font=dict(size=16),
+        ),
+    )
     return _save_plot(fig, "monte_carlo_cost_distribution")
 
 
@@ -389,18 +562,29 @@ def plot_tornado(mc_results):
     base = tornado["base"].iloc[0]
 
     fig = go.Figure()
-    fig.add_trace(go.Bar(
-        y=tornado["variable"], x=tornado["low"] - base,
-        orientation="h", name="Low (P10)", marker_color="#10B981",
-        hovertemplate="%{y}: €%{x:,.0f} from base<extra>Low</extra>",
-    ))
-    fig.add_trace(go.Bar(
-        y=tornado["variable"], x=tornado["high"] - base,
-        orientation="h", name="High (P90)", marker_color="#EF4444",
-        hovertemplate="%{y}: €%{x:,.0f} from base<extra>High</extra>",
-    ))
+    fig.add_trace(
+        go.Bar(
+            y=tornado["variable"],
+            x=tornado["low"] - base,
+            orientation="h",
+            name="Low (P10)",
+            marker_color="#10B981",
+            hovertemplate="%{y}: €%{x:,.0f} from base<extra>Low</extra>",
+        )
+    )
+    fig.add_trace(
+        go.Bar(
+            y=tornado["variable"],
+            x=tornado["high"] - base,
+            orientation="h",
+            name="High (P90)",
+            marker_color="#EF4444",
+            hovertemplate="%{y}: €%{x:,.0f} from base<extra>High</extra>",
+        )
+    )
     fig.update_layout(
-        barmode="overlay", height=400,
+        barmode="overlay",
+        height=400,
         title=dict(text="Sensitivity Tornado — Total Cost Drivers", font=dict(size=16)),
         xaxis_title="Deviation from Median Cost (€)",
         yaxis=dict(autorange="reversed"),
@@ -413,21 +597,55 @@ def plot_supplier_comparison():
     data = SUPPLIER_COMPARISON
     suppliers = [d["supplier"] for d in data]
 
-    fig = make_subplots(rows=1, cols=2, subplot_titles=("Cost Comparison (€)", "Leak Rate Comparison"))
+    fig = make_subplots(
+        rows=1, cols=2, subplot_titles=("Cost Comparison (€)", "Leak Rate Comparison")
+    )
 
-    fig.add_trace(go.Bar(x=suppliers, y=[d["cost_eur"] for d in data],
-        marker_color=["#1E3A8A", "#7C3AED"], text=[f"€{d['cost_eur']:,}" for d in data],
-        textposition="outside", name="CAPEX"), row=1, col=1)
+    fig.add_trace(
+        go.Bar(
+            x=suppliers,
+            y=[d["cost_eur"] for d in data],
+            marker_color=["#1E3A8A", "#7C3AED"],
+            text=[f"€{d['cost_eur']:,}" for d in data],
+            textposition="outside",
+            name="CAPEX",
+        ),
+        row=1,
+        col=1,
+    )
 
     # Leak rates
     lr_labels = ["To Ambient", "Across Restriction"]
-    fig.add_trace(go.Bar(x=lr_labels, y=[1e-5, 1e-4], name="Meca Inox",
-        marker_color="#1E3A8A", opacity=0.8), row=1, col=2)
-    fig.add_trace(go.Bar(x=lr_labels, y=[1e-9, 1e-4], name="Swagelok",
-        marker_color="#7C3AED", opacity=0.8), row=1, col=2)
+    fig.add_trace(
+        go.Bar(
+            x=lr_labels,
+            y=[1e-5, 1e-4],
+            name="Meca Inox",
+            marker_color="#1E3A8A",
+            opacity=0.8,
+        ),
+        row=1,
+        col=2,
+    )
+    fig.add_trace(
+        go.Bar(
+            x=lr_labels,
+            y=[1e-9, 1e-4],
+            name="Swagelok",
+            marker_color="#7C3AED",
+            opacity=0.8,
+        ),
+        row=1,
+        col=2,
+    )
 
     fig.update_yaxes(type="log", row=1, col=2, title="mbar·L/s")
-    fig.update_layout(height=400, title=dict(text="Supplier Comparison — Meca Inox vs Swagelok", font=dict(size=16)))
+    fig.update_layout(
+        height=400,
+        title=dict(
+            text="Supplier Comparison — Meca Inox vs Swagelok", font=dict(size=16)
+        ),
+    )
     return _save_plot(fig, "supplier_comparison")
 
 
@@ -443,16 +661,28 @@ def plot_risk_heatmap():
         matrix[li][im] += 1
         labels[li][im] += r["id"].split("-")[1] + " "
 
-    fig = go.Figure(go.Heatmap(
-        z=matrix, x=["1-Negligible", "2-Minor", "3-Moderate", "4-Major", "5-Critical"],
-        y=["1-Rare", "2-Unlikely", "3-Possible", "4-Likely", "5-Almost Certain"],
-        text=[[c.strip() for c in row] for row in labels],
-        texttemplate="%{text}", colorscale=[[0, "#ECFDF5"], [0.3, "#FEF3C7"], [0.6, "#FED7AA"], [1, "#FEE2E2"]],
-        showscale=False, hovertemplate="Likelihood: %{y}<br>Impact: %{x}<br>Count: %{z}<extra></extra>",
-    ))
+    fig = go.Figure(
+        go.Heatmap(
+            z=matrix,
+            x=["1-Negligible", "2-Minor", "3-Moderate", "4-Major", "5-Critical"],
+            y=["1-Rare", "2-Unlikely", "3-Possible", "4-Likely", "5-Almost Certain"],
+            text=[[c.strip() for c in row] for row in labels],
+            texttemplate="%{text}",
+            colorscale=[
+                [0, "#ECFDF5"],
+                [0.3, "#FEF3C7"],
+                [0.6, "#FED7AA"],
+                [1, "#FEE2E2"],
+            ],
+            showscale=False,
+            hovertemplate="Likelihood: %{y}<br>Impact: %{x}<br>Count: %{z}<extra></extra>",
+        )
+    )
     fig.update_layout(
         title=dict(text="Risk Matrix — Likelihood × Impact", font=dict(size=16)),
-        xaxis_title="Impact", yaxis_title="Likelihood", height=450,
+        xaxis_title="Impact",
+        yaxis_title="Likelihood",
+        height=450,
     )
     return _save_plot(fig, "risk_heatmap")
 
@@ -464,19 +694,22 @@ def plot_waterfall_cost(mc_results):
     repl_cost = stats["replacement_cost_eur"]["p50"]
     total = stats["total_cost_eur"]["p50"]
 
-    fig = go.Figure(go.Waterfall(
-        x=["Helium Loss", "Valve Replacements", "Total Annual Cost"],
-        y=[he_cost, repl_cost, total],
-        measure=["relative", "relative", "total"],
-        text=[f"€{he_cost:,.0f}", f"€{repl_cost:,.0f}", f"€{total:,.0f}"],
-        textposition="outside",
-        connector=dict(line=dict(color="#9CA3AF", width=1.5)),
-        increasing=dict(marker_color="#1E3A8A"),
-        totals=dict(marker_color="#059669"),
-    ))
+    fig = go.Figure(
+        go.Waterfall(
+            x=["Helium Loss", "Valve Replacements", "Total Annual Cost"],
+            y=[he_cost, repl_cost, total],
+            measure=["relative", "relative", "total"],
+            text=[f"€{he_cost:,.0f}", f"€{repl_cost:,.0f}", f"€{total:,.0f}"],
+            textposition="outside",
+            connector=dict(line=dict(color="#9CA3AF", width=1.5)),
+            increasing=dict(marker_color="#1E3A8A"),
+            totals=dict(marker_color="#059669"),
+        )
+    )
     fig.update_layout(
         title=dict(text="Annual Cost Breakdown (P50 Estimate)", font=dict(size=16)),
-        yaxis_title="Cost (€)", height=400,
+        yaxis_title="Cost (€)",
+        height=400,
     )
     return _save_plot(fig, "cost_waterfall")
 
@@ -491,16 +724,29 @@ def plot_scenario_comparison(mc_results):
     combined = pd.concat(dfs)
 
     fig = go.Figure()
-    colors = {"Baseline": "#1E3A8A", "Geopolitical Crisis": "#EF4444",
-              "Supply Chain Disruption": "#F59E0B", "Accelerated Failure": "#7C3AED"}
+    colors = {
+        "Baseline": "#1E3A8A",
+        "Geopolitical Crisis": "#EF4444",
+        "Supply Chain Disruption": "#F59E0B",
+        "Accelerated Failure": "#7C3AED",
+    }
     for scenario in combined["scenario"].unique():
         vals = combined[combined["scenario"] == scenario]["total_cost_eur"]
-        fig.add_trace(go.Box(y=vals, name=scenario, marker_color=colors.get(scenario, "#6B7280"),
-                             boxmean="sd"))
+        fig.add_trace(
+            go.Box(
+                y=vals,
+                name=scenario,
+                marker_color=colors.get(scenario, "#6B7280"),
+                boxmean="sd",
+            )
+        )
 
     fig.update_layout(
-        title=dict(text="Scenario Comparison — Total Cost Distribution", font=dict(size=16)),
-        yaxis_title="Total Annual Cost (€)", height=450,
+        title=dict(
+            text="Scenario Comparison — Total Cost Distribution", font=dict(size=16)
+        ),
+        yaxis_title="Total Annual Cost (€)",
+        height=450,
     )
     return _save_plot(fig, "scenario_comparison")
 
@@ -508,47 +754,122 @@ def plot_scenario_comparison(mc_results):
 def plot_gantt_maintenance():
     """Gantt chart for maintenance timeline."""
     tasks = [
-        dict(Task="Cold Valve PM", Start="2026-01-01", Finish="2026-01-15", Resource="Preventive"),
-        dict(Task="Warm Valve Inspection", Start="2026-03-01", Finish="2026-03-05", Resource="Preventive"),
-        dict(Task="Solenoid Pilot Replace", Start="2026-04-15", Finish="2026-04-16", Resource="Corrective"),
-        dict(Task="Annual Leak Test", Start="2026-06-01", Finish="2026-06-14", Resource="Inspection"),
-        dict(Task="Seal Replacement (Warm)", Start="2026-07-01", Finish="2026-07-03", Resource="Preventive"),
-        dict(Task="Cold Valve PM #2", Start="2026-09-01", Finish="2026-09-14", Resource="Preventive"),
-        dict(Task="LOOP Recovery Drill", Start="2026-10-01", Finish="2026-10-02", Resource="Drill"),
-        dict(Task="Year-End Inspection", Start="2026-12-01", Finish="2026-12-14", Resource="Inspection"),
+        dict(
+            Task="Cold Valve PM",
+            Start="2026-01-01",
+            Finish="2026-01-15",
+            Resource="Preventive",
+        ),
+        dict(
+            Task="Warm Valve Inspection",
+            Start="2026-03-01",
+            Finish="2026-03-05",
+            Resource="Preventive",
+        ),
+        dict(
+            Task="Solenoid Pilot Replace",
+            Start="2026-04-15",
+            Finish="2026-04-16",
+            Resource="Corrective",
+        ),
+        dict(
+            Task="Annual Leak Test",
+            Start="2026-06-01",
+            Finish="2026-06-14",
+            Resource="Inspection",
+        ),
+        dict(
+            Task="Seal Replacement (Warm)",
+            Start="2026-07-01",
+            Finish="2026-07-03",
+            Resource="Preventive",
+        ),
+        dict(
+            Task="Cold Valve PM #2",
+            Start="2026-09-01",
+            Finish="2026-09-14",
+            Resource="Preventive",
+        ),
+        dict(
+            Task="LOOP Recovery Drill",
+            Start="2026-10-01",
+            Finish="2026-10-02",
+            Resource="Drill",
+        ),
+        dict(
+            Task="Year-End Inspection",
+            Start="2026-12-01",
+            Finish="2026-12-14",
+            Resource="Inspection",
+        ),
     ]
     df = pd.DataFrame(tasks)
-    colors = {"Preventive": "#1E3A8A", "Corrective": "#EF4444", "Inspection": "#F59E0B", "Drill": "#7C3AED"}
+    colors = {
+        "Preventive": "#1E3A8A",
+        "Corrective": "#EF4444",
+        "Inspection": "#F59E0B",
+        "Drill": "#7C3AED",
+    }
 
-    fig = px.timeline(df, x_start="Start", x_end="Finish", y="Task", color="Resource",
-                      color_discrete_map=colors)
+    fig = px.timeline(
+        df,
+        x_start="Start",
+        x_end="Finish",
+        y="Task",
+        color="Resource",
+        color_discrete_map=colors,
+    )
     fig.update_layout(
         title=dict(text="Maintenance Schedule — 2026", font=dict(size=16)),
-        height=400, yaxis=dict(autorange="reversed"),
+        height=400,
+        yaxis=dict(autorange="reversed"),
     )
     return _save_plot(fig, "maintenance_gantt")
 
 
 def plot_helium_sankey():
     """Sankey diagram for helium flow & loss pathways."""
-    fig = go.Figure(go.Sankey(
-        node=dict(
-            pad=15, thickness=20, line=dict(color="#1E3A8A", width=0.5),
-            label=["He Supply\n(600 kg/yr)", "Cold System", "Warm System",
-                   "Process Use", "Cold Valve Leaks", "Warm Valve Leaks",
-                   "Recovery System", "Loss to Ambient", "Recovered He"],
-            color=["#1E3A8A", "#3B82F6", "#60A5FA", "#10B981",
-                   "#EF4444", "#F59E0B", "#8B5CF6", "#DC2626", "#059669"],
-        ),
-        link=dict(
-            source=[0, 0, 1, 2, 1, 2, 4, 5, 6],
-            target=[1, 2, 3, 3, 4, 5, 6, 7, 8],
-            value=[400, 200, 350, 180, 50, 20, 40, 30, 40],
-            color=["rgba(30,58,138,0.2)"] * 9,
-        ),
-    ))
+    fig = go.Figure(
+        go.Sankey(
+            node=dict(
+                pad=15,
+                thickness=20,
+                line=dict(color="#1E3A8A", width=0.5),
+                label=[
+                    "He Supply\n(600 kg/yr)",
+                    "Cold System",
+                    "Warm System",
+                    "Process Use",
+                    "Cold Valve Leaks",
+                    "Warm Valve Leaks",
+                    "Recovery System",
+                    "Loss to Ambient",
+                    "Recovered He",
+                ],
+                color=[
+                    "#1E3A8A",
+                    "#3B82F6",
+                    "#60A5FA",
+                    "#10B981",
+                    "#EF4444",
+                    "#F59E0B",
+                    "#8B5CF6",
+                    "#DC2626",
+                    "#059669",
+                ],
+            ),
+            link=dict(
+                source=[0, 0, 1, 2, 1, 2, 4, 5, 6],
+                target=[1, 2, 3, 3, 4, 5, 6, 7, 8],
+                value=[400, 200, 350, 180, 50, 20, 40, 30, 40],
+                color=["rgba(30,58,138,0.2)"] * 9,
+            ),
+        )
+    )
     fig.update_layout(
-        title=dict(text="Helium Flow & Loss Pathways (Estimated Annual)", font=dict(size=16)),
+        title=dict(
+            text="Helium Flow & Loss Pathways (Estimated Annual)", font=dict(size=16)
+        ),
         height=450,
     )
     return _save_plot(fig, "helium_sankey")
@@ -557,6 +878,7 @@ def plot_helium_sankey():
 # ═══════════════════════════════════════════════════════════
 # HERO PAGE BUILDERS
 # ═══════════════════════════════════════════════════════════
+
 
 def build_index(mc_results):
     """Hub page with hero navigation."""
@@ -650,7 +972,11 @@ def build_hero_interface():
 def build_hero_control():
     vc_html = ""
     for vc in VALVE_CLASSES:
-        note = f"<br><em style='color:{COLORS['danger']}'>{vc.get('note','')}</em>" if vc.get("note") else ""
+        note = (
+            f"<br><em style='color:{COLORS['danger']}'>{vc.get('note','')}</em>"
+            if vc.get("note")
+            else ""
+        )
         vc_html += f"<tr><td><strong>{vc['sub_class']}</strong></td><td>{vc['temp_range_k']} K</td>"
         vc_html += f"<td>{vc['actuation']}</td><td>{vc['electrical_valve']}</td>"
         vc_html += f"<td>{vc['position_control']}</td><td>{_badge('required') if vc.get('radiation_hardness')=='required' else _badge('review')}{note}</td></tr>"
@@ -719,9 +1045,15 @@ def build_hero_design(mc_results):
         temperatures_k=[4, 20, 80, 300],
         pressures_bar_abs=[1, 5, 12],
     )
-    grid_short = grid[["leak_rate_mbar_l_s", "temperature_K", "pressure_bar_abs",
-                        "mass_flow_g_year"]].copy()
-    grid_short.columns = ["Leak Rate (mbar·L/s)", "Temperature (K)", "Pressure (bar)", "Mass Loss (g/yr)"]
+    grid_short = grid[
+        ["leak_rate_mbar_l_s", "temperature_K", "pressure_bar_abs", "mass_flow_g_year"]
+    ].copy()
+    grid_short.columns = [
+        "Leak Rate (mbar·L/s)",
+        "Temperature (K)",
+        "Pressure (bar)",
+        "Mass Loss (g/yr)",
+    ]
 
     body = f"""
 {_breadcrumb("DESIGN")}
@@ -777,10 +1109,19 @@ def build_hero_design(mc_results):
   </details>
   <h3>Dimensional Proof (Reference Point)</h3>"""
     proof = dimensional_proof(1e-5, 4.0, 12.0)
-    body += "<table><thead><tr><th>Step</th><th>Value</th><th>Unit</th></tr></thead><tbody>"
-    units = {"q_input_mbar_l_s": "mbar·L/s", "q_si_pa_m3_s": "Pa·m³/s", "pressure_ratio": "—",
-             "temperature_k": "K", "n_dot_mol_s": "mol/s", "m_dot_g_s": "g/s",
-             "m_dot_g_day": "g/day", "m_dot_g_year": "g/year"}
+    body += (
+        "<table><thead><tr><th>Step</th><th>Value</th><th>Unit</th></tr></thead><tbody>"
+    )
+    units = {
+        "q_input_mbar_l_s": "mbar·L/s",
+        "q_si_pa_m3_s": "Pa·m³/s",
+        "pressure_ratio": "—",
+        "temperature_k": "K",
+        "n_dot_mol_s": "mol/s",
+        "m_dot_g_s": "g/s",
+        "m_dot_g_day": "g/day",
+        "m_dot_g_year": "g/year",
+    }
     for k, v in proof.items():
         body += f"<tr><td>{k}</td><td>{v:.6e}</td><td>{units.get(k,'')}</td></tr>"
     body += "</tbody></table></div></div>"
@@ -853,12 +1194,18 @@ def build_hero_cost(mc_results):
 
 def build_hero_materials():
     mat = MATERIALS["316L_SS"]
-    props_html = "".join(f"<tr><td>{k.replace('_',' ').title()}</td><td>{v}</td></tr>"
-                         for k, v in mat["properties"].items())
-    comp_html = "".join(f"<tr><td>{k}</td><td>{v}</td></tr>" for k, v in mat["composition"].items())
+    props_html = "".join(
+        f"<tr><td>{k.replace('_',' ').title()}</td><td>{v}</td></tr>"
+        for k, v in mat["properties"].items()
+    )
+    comp_html = "".join(
+        f"<tr><td>{k}</td><td>{v}</td></tr>" for k, v in mat["composition"].items()
+    )
 
-    codes_html = "".join(f"<tr><td><strong>{c['code']}</strong></td><td>{c['title']}</td><td>{c['scope']}</td></tr>"
-                         for c in CODES_STANDARDS)
+    codes_html = "".join(
+        f"<tr><td><strong>{c['code']}</strong></td><td>{c['title']}</td><td>{c['scope']}</td></tr>"
+        for c in CODES_STANDARDS
+    )
 
     weld = WELDING_SPECS["orbital_tig"]
 
@@ -1030,6 +1377,7 @@ def build_hero_operations():
 # SPEAKER NOTES GENERATOR
 # ═══════════════════════════════════════════════════════════
 
+
 def write_speaker_notes(mc_results):
     stats = mc_results["baseline"]["stats"]
 
@@ -1152,6 +1500,7 @@ def write_speaker_notes(mc_results):
 # MAIN BUILD
 # ═══════════════════════════════════════════════════════════
 
+
 def build():
     print(f"{'='*60}")
     print(f"  OUTPUT_2_DMAIC_REFINED v{VERSION}")
@@ -1170,8 +1519,12 @@ def build():
     # Save MC data
     for key, data in mc_results.items():
         data["df"].to_json(str(DATA_OUT / f"mc_{key}.json"), orient="records", indent=2)
-        pd.DataFrame([data["stats"]]).to_json(str(DATA_OUT / f"mc_{key}_stats.json"), indent=2)
-        data["tornado"].to_json(str(DATA_OUT / f"mc_{key}_tornado.json"), orient="records", indent=2)
+        pd.DataFrame([data["stats"]]).to_json(
+            str(DATA_OUT / f"mc_{key}_stats.json"), indent=2
+        )
+        data["tornado"].to_json(
+            str(DATA_OUT / f"mc_{key}_tornado.json"), orient="records", indent=2
+        )
     print(f"    ✓ Monte Carlo data saved to {DATA_OUT}")
 
     # Plots

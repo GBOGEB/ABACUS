@@ -20,7 +20,7 @@ jobs:
       - uses: actions/checkout@v7
       - uses: actions/setup-python@v7
         with:
-          python-version: '3.12'
+          python-version: '3.14'
       - name: Install scanner and test runner
         run: python -m pip install 'bandit[toml]' pytest pytest-cov numpy
       - name: Regression contracts

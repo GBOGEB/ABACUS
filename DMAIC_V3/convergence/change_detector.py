@@ -99,7 +99,7 @@ class ChangeDetector:
         total_files = len(files)
         processed = 0
 
-        print(f"\n[Change Detection] Analyzing file changes...")
+        print("\n[Change Detection] Analyzing file changes...")
 
         for file_path in files:
             if not file_path.exists():

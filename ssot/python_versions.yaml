@@ -1,0 +1,117 @@
+schema_version: "1.0.0"
+repository: GBOGEB/ABACUS
+authority_state: AUTHORITATIVE
+owner: ci-governance
+purpose: >
+  Single authority for which CPython versions ABACUS supports and tests.
+  Every setup-python version in .github/workflows and .github/actions, and the
+  files listed under derived_files, are DERIVED from this file.
+
+# How to bump (e.g. when 3.16.0 final ships):
+#   1. edit supported / default / experimental below
+#   2. python tools/ci/python_versions.py sync
+#   3. commit; the python-version-ssot-guard workflow fails on any drift
+#
+# Policy dates (python.org): 3.10 EOL 2026-10-01; 3.11 EOL 2027-10;
+# 3.15.0 final 2026-10-09; 3.16 is pre-release until ~2027-10.
+
+supported: ["3.11", "3.12", "3.13", "3.14", "3.15"]
+
+# Single-version jobs and .python-version use this. Kept one release behind the
+# newest so single-lane jobs run on a release with a mature wheel ecosystem;
+# the newest release is still a required cell in every full matrix.
+default: "3.14"
+
+# Pre-releases. Only the canary workflows may reference these, and they must
+# set allow-prereleases: true and be non-blocking.
+experimental: ["3.16"]
+canary_workflows:
+  - .github/workflows/python-next-canary.yml
+
+end_of_life: ["3.8", "3.9", "3.10"]
+
+# Workflows `sync` must not edit until a separate, owned step happens. `check`
+# reports them as HELD (not drift) and skips the end-of-life scan for them.
+held_workflows:
+  .github/workflows/qps-w05-bidder-eval-dow.yml: >
+    a10-guard re-reviews every edited version of tender-named files; bump its
+    pin in a separately reviewed change and add the new blob to
+    .a10_guard_allow.
+
+# Lanes whose dependencies cannot run on every supported version yet. A workflow
+# file matching any pattern is capped at `max` for all its jobs.
+caps:
+  coolprop-oracle:
+    max: "3.14"
+    reason: >
+      CoolProp==7.2.0 is the governed helium property oracle
+      (docs/qps_line_s_recovery/reference-registry.yaml) and publishes
+      wheels for cp39-cp314 only. Lifting this cap requires an oracle
+      change with physics sign-off, not a CI edit.
+    patterns:
+      - '(?i)coolprop'
+      - 'requirements-dev\.txt'
+      - '--group[ =]dev'
+      - '\buv sync\b'
+    # Named jobs that install a CoolProp other than the 7.2.0 oracle (and so
+    # are not limited by its wheels). `check` fails if an entry goes stale.
+    exempt_jobs:
+      - .github/workflows/coolprop-next-shadow.yml:replay-next
+      - .github/workflows/coolprop-next-shadow.yml:suite-next
+
+  # Exact evidence-tool pins inside workflows. The pins are left untouched
+  # (they are part of recorded evidence); the lane shrinks to what the pin
+  # can install.
+  # Bump the pin in the workflow and delete the cap to lift it.
+  numpy-1x-pin:
+    max: "3.12"
+    reason: numpy 1.26.x publishes wheels for cp39-cp312 only.
+    patterns:
+      - 'numpy==1\.'
+  numpy-2.2-pin:
+    max: "3.13"
+    reason: numpy 2.2.6 publishes wheels for cp310-cp313 only.
+    patterns:
+      - 'numpy==2\.[0-2]\.'
+  numpy-2.3-pin:
+    max: "3.14"
+    reason: numpy 2.3.x publishes wheels for cp311-cp314 only.
+    patterns:
+      - 'numpy==2\.3\.'
+  pyyaml-6.0.2-pin:
+    max: "3.13"
+    reason: PyYAML 6.0.2 publishes wheels up to cp313 (6.0.3 adds cp314).
+    patterns:
+      - '(?i)pyyaml==6\.0\.2\b'
+
+# Matrix mapping rules applied by `sync`
+# (lane = supported versions under the cap):
+#   flow list with >= 3 versions  -> every lane version (full matrix)
+#   flow list with 2 versions     -> [oldest, newest] of the lane (edges)
+#   flow list with 1 version      -> [default]
+#   include/exclude entries       -> role-preserving: lowest -> oldest,
+#                                    middle -> lane midpoint, highest -> newest
+#   single setup-python pins      -> default (capped by the lane)
+
+derived_files:
+  - path: .python-version
+    pattern: '^(3\.\d+)\s*$'
+    value: default
+    format: dotted
+    create: true
+  - path: pyproject.toml
+    pattern: 'requires-python = ">=(3\.\d+)"'
+    value: oldest
+    format: dotted
+  - path: Dockerfile
+    pattern: '(?m)^FROM python:(3\.\d+)-slim'
+    value: default
+    format: dotted
+  - path: .devcontainer/devcontainer.json
+    pattern: 'devcontainers/python:(3\.\d+)'
+    value: default
+    format: dotted
+  - path: .github/security/security.toml
+    pattern: 'target-version = "py(3\d+)"'
+    value: oldest
+    format: nodot

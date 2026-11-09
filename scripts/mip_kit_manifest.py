@@ -29,7 +29,7 @@ ROOT = Path(__file__).resolve().parents[1]
 MANIFEST = ROOT / "MIP" / "kit" / "KIT_MANIFEST.json"
 
 KIT_NAME = "mip-repo-self-index"
-KIT_VERSION = "1.1.0"
+KIT_VERSION = "1.2.3"
 KIT_SOURCE = "GBOGEB/CODEX"
 KIT_FILES = (
     ".codex/skills/mip-repo-self-index/SKILL.md",
@@ -40,6 +40,12 @@ KIT_FILES = (
     "scripts/mip_verify_self_index.py",
     "scripts/mip_kit_manifest.py",
     "scripts/mip_debug_diagnostic.py",
+    # 1.2.0: federation wave naming contract (validate a repo's .waves/WAVE_CLAIMS.yaml)
+    "scripts/wave_claims.py",
+    "federation/waves/WAVE_NAMING_RULES.yaml",
+    # 1.2.2: portable synthetic proofs for the validator (run by every consumer)
+    "tests/test_wave_claims_contract.py",
+    "tests/test_wave_claims_portable.py",
 )
 REPO_LOCAL_FILES = ("MIP/mip_surface.json",)
 

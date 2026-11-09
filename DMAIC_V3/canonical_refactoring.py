@@ -171,7 +171,7 @@ class CanonicalDocumentRefactorer:
 
     def create_canonical_structure(self, categorized_docs: Dict[str, List[Path]]):
         """Create canonical directory structure"""
-        print(f"\n[CANONICAL] Creating canonical structure...")
+        print("\n[CANONICAL] Creating canonical structure...")
 
         # Create directories for all standard categories
         for category in DocumentCategory.all_categories():
@@ -207,7 +207,7 @@ class CanonicalDocumentRefactorer:
         self, categorized_docs: Dict[str, List[Path]]
     ) -> Dict[str, Path]:
         """Create knowledge books from canonical document sets"""
-        print(f"\n[CANONICAL] Creating knowledge books...")
+        print("\n[CANONICAL] Creating knowledge books...")
 
         books_created = {}
 
@@ -222,7 +222,7 @@ class CanonicalDocumentRefactorer:
         # Create master index book
         master_book = self._create_master_index_book(categorized_docs)
         books_created["MASTER_INDEX"] = master_book
-        print(f"[CANONICAL] [OK] Created MASTER_INDEX book")
+        print("[CANONICAL] [OK] Created MASTER_INDEX book")
 
         return books_created
 

@@ -20,7 +20,7 @@ jobs:
           persist-credentials: false
       - uses: actions/setup-python@v7
         with:
-          python-version: '3.12'
+          python-version: '3.14'
       - name: Prove negative stage-only controls
         env:
           EXPECTED_HEAD: ${{ github.event.pull_request.head.sha || github.sha }}

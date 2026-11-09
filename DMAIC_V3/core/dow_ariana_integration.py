@@ -328,7 +328,13 @@ class DOWArianaIntegration:
         agents_registry = self._load_agents_registry()
         agents_dict = agents_registry.get('agents', {})
 
-        total_agents = len(agents_dict) if isinstance(agents_dict, dict) else len(agents_dict) if isinstance(agents_dict, list) else 0
+        total_agents = (
+            len(agents_dict)
+            if isinstance(agents_dict, dict)
+            else len(agents_dict)
+            if isinstance(agents_dict, list)
+            else 0
+        )
 
         orchestration_report = {
             'timestamp': datetime.now().isoformat(),
@@ -368,7 +374,7 @@ class DOWArianaIntegration:
 
             orchestration_report['agent_categories'][category] = category_agents
 
-        print(f"\n[ORCHESTRATION FLOW]")
+        print("\n[ORCHESTRATION FLOW]")
         orchestration_flow = [
             {
                 'step': 1,
@@ -409,7 +415,7 @@ class DOWArianaIntegration:
 
         orchestration_report['orchestration_flow'] = orchestration_flow
 
-        print(f"\n[INTEGRATION POINTS]")
+        print("\n[INTEGRATION POINTS]")
         integration_points = {
             'dow_pipeline': {
                 'status': 'active',

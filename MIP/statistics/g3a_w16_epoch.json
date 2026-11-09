@@ -4,13 +4,19 @@
     "DMAIC_V3/debug_pipeline.py": {
       "blob": "730cab72408ac473fb89123d9d76bb7a2edb075e",
       "branches": {
-        "3.10": 116,
-        "3.12": 116
+        "3.11": 116,
+        "3.12": 116,
+        "3.13": 116,
+        "3.14": 116,
+        "3.15": 116
       },
       "category": "carried",
       "covered": {
-        "3.10": 94,
-        "3.12": 94
+        "3.11": 94,
+        "3.12": 94,
+        "3.13": 94,
+        "3.14": 94,
+        "3.15": 94
       },
       "floor": 94,
       "role": "kpi"
@@ -18,27 +24,39 @@
     "DMAIC_V3/phases/phase4_improve.py": {
       "blob": "18bec722fef537aa74b85295954cf66a002695d0",
       "branches": {
-        "3.10": 132,
-        "3.12": 132
+        "3.11": 132,
+        "3.12": 132,
+        "3.13": 132,
+        "3.14": 132,
+        "3.15": 132
       },
       "category": "carried",
       "covered": {
-        "3.10": 51,
-        "3.12": 51
+        "3.11": 51,
+        "3.12": 51,
+        "3.13": 51,
+        "3.14": 51,
+        "3.15": 51
       },
-      "floor": 42,
+      "floor": 51,
       "role": "kpi"
     },
     "DMAIC_V3/phases/phase8_todo_management.py": {
       "blob": "d5ab3ea15a720c70b635910e5ced203e2c486353",
       "branches": {
-        "3.10": 118,
-        "3.12": 118
+        "3.11": 118,
+        "3.12": 118,
+        "3.13": 118,
+        "3.14": 118,
+        "3.15": 118
       },
       "category": "carried",
       "covered": {
-        "3.10": 63,
-        "3.12": 63
+        "3.11": 63,
+        "3.12": 63,
+        "3.13": 63,
+        "3.14": 63,
+        "3.15": 63
       },
       "floor": 63,
       "role": "kpi"
@@ -46,13 +64,19 @@
     "cicd_github_orchestrator.py": {
       "blob": "82a9a707115c58721a2c13c41a7b7baebde6b2c1",
       "branches": {
-        "3.10": 98,
-        "3.12": 98
+        "3.11": 98,
+        "3.12": 98,
+        "3.13": 98,
+        "3.14": 98,
+        "3.15": 98
       },
       "category": "carried",
       "covered": {
-        "3.10": 23,
-        "3.12": 23
+        "3.11": 23,
+        "3.12": 23,
+        "3.13": 23,
+        "3.14": 23,
+        "3.15": 23
       },
       "floor": 23,
       "role": "kpi"
@@ -60,58 +84,68 @@
     "scripts/g3a_bounded_mission.py": {
       "blob": "73742d3ad9ca5e791cfa294e01a083b20922580c",
       "branches": {
-        "3.10": 116,
-        "3.12": 116
+        "3.11": 116,
+        "3.12": 116,
+        "3.13": 116,
+        "3.14": 116,
+        "3.15": 116
       },
       "category": "control",
       "covered": {
-        "3.10": 105,
-        "3.12": 105
+        "3.11": 105,
+        "3.12": 105,
+        "3.13": 105,
+        "3.14": 105,
+        "3.15": 105
       },
       "floor": 105,
       "role": "control"
     }
   },
-  "kpi_python": "3.12",
+  "kpi_python": "3.14",
   "lineage": [
     "G3A_W16_V2_PHASE4_REPAIRED",
-    "G3A_W16_V3_MAIN_44CACCF7"
+    "G3A_W16_V3_MAIN_44CACCF7",
+    "G3A_W16_V4_MAIN_88F13A78"
   ],
   "min_tests": 121,
-  "pinned_main_sha": "88f13a7824066b2fce09160577052a765847a388",
+  "pinned_main_sha": "108614976a1eb798e0e218046b8001c0867b65e6",
   "pythons": [
-    "3.10",
-    "3.12"
+    "3.11",
+    "3.12",
+    "3.13",
+    "3.14",
+    "3.15"
   ],
   "schema": "code-purple.g3a.w16.epoch.v1",
-  "source_epoch": "G3A_W16_V4_MAIN_88F13A78",
+  "source_epoch": "G3A_W16_V5_MAIN_10861497",
   "status": "PINNED",
   "workflows": {
     "by_cluster": {
       "automation": 13,
-      "bridge_federation": 20,
-      "ci_governance": 2,
+      "bridge_federation": 21,
+      "ci_governance": 4,
       "core_test": 23,
-      "delivery": 9,
+      "delivery": 8,
       "dmaic": 9,
       "documentation": 7,
       "dow": 22,
       "full_regression": 1,
       "legacy": 2,
       "runtime_governance": 31,
-      "security": 13,
-      "specialised": 46,
-      "statistics": 19
+      "security": 14,
+      "specialised": 48,
+      "statistics": 20
     },
     "by_lifecycle": {
-      "manual": 5,
-      "post_merge": 15,
-      "pr_domain": 170,
+      "manual": 6,
+      "post_merge": 14,
+      "pr_domain": 174,
       "pr_fast": 13,
       "retire": 1,
-      "scheduled": 13
+      "scheduled": 15
     },
-    "population": 217,
+    "population": 223,
     "unclassified": []
   }
 }
