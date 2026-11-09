@@ -165,6 +165,116 @@ class FeedbackGateTests(unittest.TestCase):
         comment["performed_via_github_app"]["id"] = 1
         self.assertFalse(gate.codex_security_review_complete([comment], head))
 
+
+    @staticmethod
+    def structured_codex_summary(payload: dict, stamp="2026-11-04T10:56:06Z"):
+        body = (
+            "<!-- codex-pull-request-review-summary -->\n"
+            "<!-- codex-review-state:v1 "
+            + json.dumps(payload, sort_keys=True, separators=(",", ":"))
+            + " -->\n"
+        )
+        return FeedbackGateTests.trusted_codex_comment(body, stamp)
+
+    @staticmethod
+    def completed_lane(head: str):
+        return {
+            "commit_sha": head,
+            "status": "completed",
+            "has_any_findings": False,
+            "has_unresolved_findings": False,
+        }
+
+    def test_new_codex_state_binds_both_completed_lanes_to_exact_head(self):
+        head = "abcdef0123456789abcdef0123456789abcdef01"
+        payload = {
+            "code_review": self.completed_lane(head),
+            "security_review": self.completed_lane(head),
+        }
+        comments = [self.structured_codex_summary(payload)]
+        self.assertTrue(gate.codex_code_review_complete(comments, head))
+        self.assertTrue(gate.codex_security_review_complete(comments, head))
+        other = "abcdef0fffffffffffffffffffffffffffffffff"
+        self.assertFalse(gate.codex_code_review_complete(comments, other))
+        self.assertFalse(gate.codex_security_review_complete(comments, other))
+
+    def test_new_codex_state_never_accepts_running_or_unresolved(self):
+        head = "abcdef0123456789abcdef0123456789abcdef01"
+        valid = self.completed_lane(head)
+        for key, value in (
+            ("status", "running"),
+            ("status", None),
+            ("status", "failed"),
+            ("has_any_findings", True),
+            ("has_any_findings", None),
+            ("has_unresolved_findings", True),
+            ("has_unresolved_findings", None),
+            ("commit_sha", "abcdef0fffffffffffffffffffffffffffffffff"),
+            ("commit_sha", None),
+        ):
+            with self.subTest(key=key, value=value):
+                candidate = dict(valid, **{key: value})
+                payload = {"code_review": candidate, "security_review": candidate}
+                comments = [self.structured_codex_summary(payload)]
+                self.assertFalse(gate.codex_code_review_complete(comments, head))
+                self.assertFalse(gate.codex_security_review_complete(comments, head))
+
+    def test_new_codex_state_does_not_infer_missing_security_review(self):
+        head = "abcdef0123456789abcdef0123456789abcdef01"
+        comments = [self.structured_codex_summary({
+            "code_review": self.completed_lane(head), "security_review": None
+        })]
+        self.assertTrue(gate.codex_code_review_complete(comments, head))
+        self.assertFalse(gate.codex_security_review_complete(comments, head))
+
+    def test_new_codex_state_rejects_spoof_and_malformed_data(self):
+        head = "abcdef0123456789abcdef0123456789abcdef01"
+        payload = {
+            "code_review": self.completed_lane(head),
+            "security_review": self.completed_lane(head),
+        }
+        forged = self.structured_codex_summary(payload)
+        forged["performed_via_github_app"]["id"] = 1
+        self.assertFalse(gate.codex_code_review_complete([forged], head))
+        self.assertFalse(gate.codex_security_review_complete([forged], head))
+        malformed = self.trusted_codex_comment(
+            "<!-- codex-pull-request-review-summary -->\n"
+            "<!-- codex-review-state:v1 {invalid json} -->"
+        )
+        self.assertFalse(gate.codex_code_review_complete([malformed], head))
+        self.assertFalse(gate.codex_security_review_complete([malformed], head))
+
+    def test_latest_running_review_overrules_older_legacy_completion(self):
+        head = "abcdef0123456789abcdef0123456789abcdef01"
+        old = self.trusted_codex_comment(
+            "<!-- codex-pull-request-review-summary -->\n"
+            "<!-- codex-security-review:v1 "
+            '{"headSha":"' + head + '","status":"completed"} -->\n'
+            "| 📝 **Code Review** | ✅ **Completed** now | "
+            "`abcdef0` | Manual request |",
+            "2026-10-03T10:00:00Z",
+        )
+        self.assertTrue(gate.codex_code_review_complete([old], head))
+        current = self.structured_codex_summary({
+            "code_review": dict(self.completed_lane(head), status="running"),
+            "security_review": None,
+        }, "2026-11-04T10:56:06Z")
+        self.assertFalse(gate.codex_code_review_complete([old, current], head))
+        self.assertFalse(gate.codex_security_review_complete([old, current], head))
+
+    def test_newer_legacy_running_security_review_overrules_structured_completion(self):
+        head = "abcdef0123456789abcdef0123456789abcdef01"
+        old = self.structured_codex_summary({
+            "code_review": self.completed_lane(head),
+            "security_review": self.completed_lane(head),
+        }, "2026-10-03T10:00:00Z")
+        current = self.trusted_codex_comment(
+            "<!-- codex-security-review:v1 "
+            '{"headSha":"' + head + '","status":"running"} -->',
+            "2026-11-04T10:56:06Z",
+        )
+        self.assertFalse(gate.codex_security_review_complete([old, current], head))
+
     def blocking_runs(self, overrides=None):
         overrides = overrides or {}
         runs = []
@@ -1839,6 +1949,123 @@ class FeedbackGateTests(unittest.TestCase):
             [(head, "pending"), (before, "pending")],
         )
         self.assertEqual(len({stamp for _, _, stamp in published}), 1)
+
+
+class ReviewWaitExpiryTests(unittest.TestCase):
+    HEAD = "1234567890abcdef1234567890abcdef12345678"
+    SINCE = "2026-11-08T12:00:00Z"
+
+    @staticmethod
+    def at(hours: float):
+        return gate.dt.datetime(2026, 11, 8, 12, tzinfo=gate.dt.UTC) + (
+            gate.dt.timedelta(hours=hours)
+        )
+
+    def evidence(self, **overrides):
+        fields = {
+            "head_sha": self.HEAD,
+            "code_review_complete": True,
+            "security_review_complete": False,
+            "unresolved_threads": 0,
+            "ci_pending": (),
+            "ci_failed": (),
+            "ci_seen": 15,
+            "deferred_comments": (),
+            "security_sensitive": True,
+        }
+        fields.update(overrides)
+        return gate.Evidence(**fields)
+
+    def test_review_wait_stays_pending_inside_ceiling(self):
+        evidence = self.evidence()
+        self.assertEqual(evidence.state, "pending")
+        self.assertEqual(
+            gate.review_wait_expiry(evidence, self.SINCE, self.at(5.99)), ""
+        )
+
+    def test_review_wait_fails_after_ceiling(self):
+        evidence = self.evidence()
+        reason = gate.review_wait_expiry(evidence, self.SINCE, self.at(6))
+        self.assertIn("not received within 6h", reason)
+        self.assertIn(self.HEAD[:12], reason)
+        expired = gate.replace(evidence, review_wait_expired=reason)
+        self.assertEqual(expired.state, "failure")
+        self.assertEqual(expired.failure_reasons[0], reason)
+        # The review waits stay visible next to the failure.
+        self.assertIn(gate.SECURITY_REVIEW_MANDATORY, expired.pending_reasons)
+        title, _, text = gate.render(2665, expired)
+        self.assertEqual(title, "PR #2665 feedback gate: FAILURE")
+        self.assertIn(reason, text)
+
+    def test_ci_still_pending_never_expires(self):
+        for overrides in (
+            {"ci_pending": ("CI pending: smoke-test [pull_request]",)},
+            {"ci_pending": ("CI missing: smoke-test",)},
+            {"ci_seen": 0},
+        ):
+            with self.subTest(overrides=overrides):
+                evidence = self.evidence(**overrides)
+                self.assertEqual(
+                    gate.review_wait_expiry(evidence, self.SINCE, self.at(48)), ""
+                )
+
+    def test_success_and_failure_are_untouched(self):
+        green = self.evidence(security_review_complete=True)
+        red = self.evidence(ci_failed=("CI not green: x = failure",))
+        for evidence in (green, red):
+            self.assertEqual(
+                gate.review_wait_expiry(evidence, self.SINCE, self.at(48)), ""
+            )
+
+    def test_unknown_or_bad_head_time_never_expires(self):
+        evidence = self.evidence()
+        self.assertEqual(gate.review_wait_expiry(evidence, "", self.at(48)), "")
+        self.assertEqual(
+            gate.review_wait_expiry(evidence, "not-a-time", self.at(48)), ""
+        )
+
+    def test_evaluate_applies_ceiling_from_head_arrival(self):
+        head = self.HEAD
+
+        class FakeGitHub:
+            def issue_comments(self, number):
+                return []
+
+            def review_threads(self, number):
+                return []
+
+            def actions_runs(self, head_sha):
+                return [
+                    {
+                        "name": "Advisory lint",
+                        "event": "pull_request",
+                        "head_sha": head,
+                        "status": "completed",
+                        "conclusion": "success",
+                        "created_at": "2026-11-08T12:00:00Z",
+                        "pull_requests": [{"number": 1}],
+                    }
+                ]
+
+            def pull_file_records(self, number):
+                return [{"filename": "README.md"}]
+
+            def issue(self, number):
+                return {"state": "open"}
+
+        pull = {
+            "state": "open",
+            "base": {"ref": "main"},
+            "head": {"sha": head},
+            "changed_files": 1,
+        }
+        with mock.patch.object(gate, "classify_runs", return_value=((), (), 3)):
+            early = gate.evaluate(FakeGitHub(), 1, pull, now=self.at(1))
+            late = gate.evaluate(FakeGitHub(), 1, pull, now=self.at(7))
+        self.assertEqual(early.state, "pending")
+        self.assertEqual(early.review_wait_expired, "")
+        self.assertEqual(late.state, "failure")
+        self.assertIn("since 2026-11-08T12:00:00Z", late.review_wait_expired)
 
 
 if __name__ == "__main__":

@@ -120,7 +120,10 @@ def analyze(data):
         "authority_transfer": False,
         "remote_mutation_authorized": False,
         "security_waiver": False,
-        "note": "Queued counts are exact to the API query, breakdown is sample-only unless complete; no effect or causality is inferred from status.",
+        "note": (
+            "Queued counts are exact to the API query, breakdown is sample-only "
+            "unless complete; no effect or causality is inferred from status."
+        ),
     }
 
 

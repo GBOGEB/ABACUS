@@ -186,8 +186,9 @@ class WorkflowPolicyTests(unittest.TestCase):
         self.assertFalse((ROOT / "scripts/audit_ci_workflows.py").exists())
 
     def test_full_regression_runs_on_governance_python(self):
-        # Owner #2585: earlier Bandit ratchet hardening deliberately admitted
-        # governance Python into broad regression; do not rewrite production paths.
+        # 77240202 (Bandit ratchet hardening) removed the "!ci/governance/**"
+        # path exclusions on purpose: governance Python is now admitted
+        # through the Bandit ratchet, so it must trigger this workflow.
         workflow = (ROOT / ".github/workflows/ci-cd-tests.yml").read_text(
             encoding="utf-8"
         )

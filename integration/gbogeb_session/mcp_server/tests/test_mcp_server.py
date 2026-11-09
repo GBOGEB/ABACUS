@@ -29,10 +29,10 @@ from gbogeb_mcp.tools import (
     validate_physics,
 )
 
-
 # ============================================================================
 # Fixtures
 # ============================================================================
+
 
 @pytest.fixture
 def navigator():
@@ -45,6 +45,7 @@ def navigator():
 # ============================================================================
 # Topology Navigator unit tests
 # ============================================================================
+
 
 class TestTopologyNavigator:
     """Tests for the TopologyNavigator class."""
@@ -76,7 +77,10 @@ class TestTopologyNavigator:
         """Can retrieve a GBC node."""
         node = navigator.get_node("GBC-ASSET-001")
         assert node is not None
-        assert "cryomodule" in node.label.lower() or "cryomodule" in " ".join(node.tags).lower()
+        assert (
+            "cryomodule" in node.label.lower()
+            or "cryomodule" in " ".join(node.tags).lower()
+        )
 
     def test_search_returns_results(self, navigator: TopologyNavigator):
         """Search finds relevant nodes."""
@@ -86,8 +90,10 @@ class TestTopologyNavigator:
     def test_search_governance(self, navigator: TopologyNavigator):
         """Search for governance returns governance nodes."""
         results = navigator.search("governance")
-        assert any("governance" in n.category.lower() or "governance" in n.description.lower()
-                    for n in results)
+        assert any(
+            "governance" in n.category.lower() or "governance" in n.description.lower()
+            for n in results
+        )
 
     def test_get_edges_from(self, navigator: TopologyNavigator):
         """Get outgoing edges from a node."""
@@ -127,6 +133,7 @@ class TestTopologyNavigator:
 # Tool 1: get_topology
 # ============================================================================
 
+
 class TestGetTopology:
     """Tests for the get_topology tool."""
 
@@ -159,6 +166,7 @@ class TestGetTopology:
 # ============================================================================
 # Tool 2: query_node
 # ============================================================================
+
 
 class TestQueryNode:
     """Tests for the query_node tool."""
@@ -199,6 +207,7 @@ class TestQueryNode:
 # Tool 3: search_engineering_data
 # ============================================================================
 
+
 class TestSearchEngineeringData:
     """Tests for the search_engineering_data tool."""
 
@@ -231,12 +240,17 @@ class TestSearchEngineeringData:
 # Tool 4: get_asset_lineage
 # ============================================================================
 
+
 class TestGetAssetLineage:
     """Tests for the get_asset_lineage tool."""
 
     def test_by_id(self):
         result = get_asset_lineage("GBC-ASSET-001")
-        assert "error" not in result or "visual_registry" in result or "topology_node" in result
+        assert (
+            "error" not in result
+            or "visual_registry" in result
+            or "topology_node" in result
+        )
 
     def test_by_filename(self):
         result = get_asset_lineage("cryomodule_schematic.svg")
@@ -262,6 +276,7 @@ class TestGetAssetLineage:
 # Tool 5: validate_physics
 # ============================================================================
 
+
 class TestValidatePhysics:
     """Tests for the validate_physics tool."""
 
@@ -272,22 +287,26 @@ class TestValidatePhysics:
         assert "report" in result or "fallback" in result or "error" in result
 
     def test_custom_parameters(self):
-        result = validate_physics({
-            "temperature_K": 2.0,
-            "pressure_bar": 1.2,
-        })
+        result = validate_physics(
+            {
+                "temperature_K": 2.0,
+                "pressure_bar": 1.2,
+            }
+        )
         assert "validation_engine" in result
         # Should have enthalpy or fallback
         if "error" not in result:
             assert "enthalpy_J_g" in result or "fallback" in result
 
     def test_mass_balance_check(self):
-        result = validate_physics({
-            "temperature_K": 2.0,
-            "Q_static_W": 24.5,
-            "Q_dynamic_W": 47.8,
-            "return_temperature_K": 4.5,
-        })
+        result = validate_physics(
+            {
+                "temperature_K": 2.0,
+                "Q_static_W": 24.5,
+                "Q_dynamic_W": 47.8,
+                "return_temperature_K": 4.5,
+            }
+        )
         if "error" not in result:
             assert "mass_balance" in result
             assert result["mass_balance"]["Q_total_W"] == 72.3
@@ -308,6 +327,7 @@ class TestValidatePhysics:
 # ============================================================================
 # Tool 6: list_assets
 # ============================================================================
+
 
 class TestListAssets:
     """Tests for the list_assets tool."""
@@ -345,6 +365,7 @@ class TestListAssets:
 # Tool 7: get_test_status
 # ============================================================================
 
+
 class TestGetTestStatus:
     """Tests for the get_test_status tool."""
 
@@ -378,12 +399,14 @@ class TestGetTestStatus:
 # Integration: MCP server wiring
 # ============================================================================
 
+
 class TestServerWiring:
     """Verify the FastMCP server registers all tools."""
 
     def test_server_imports(self):
         """Server module imports without error."""
         from gbogeb_mcp.server import mcp
+
         assert mcp is not None
 
     def test_server_has_tools(self):
@@ -397,6 +420,7 @@ class TestServerWiring:
             tool_search_engineering_data,
             tool_validate_physics,
         )
+
         # Just verify they're callable
         assert callable(tool_get_topology)
         assert callable(tool_query_node)
@@ -409,4 +433,5 @@ class TestServerWiring:
     def test_version(self):
         """Package version is set."""
         from gbogeb_mcp import __version__
+
         assert __version__ == "1.0.0"

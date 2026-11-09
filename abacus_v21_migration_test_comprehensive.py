@@ -447,11 +447,11 @@ class ABACUSv21MigrationTest(unittest.TestCase):
         print(f"\n  📊 Deployment Readiness Score: {results['readiness_score']:.1f}%")
 
         if results["readiness_score"] >= 80:
-            print(f"  ✅ DEPLOYMENT APPROVED - Ready for v2.1 migration")
+            print("  ✅ DEPLOYMENT APPROVED - Ready for v2.1 migration")
         elif results["readiness_score"] >= 60:
-            print(f"  ⚠️  DEPLOYMENT CONDITIONAL - Review failed checks")
+            print("  ⚠️  DEPLOYMENT CONDITIONAL - Review failed checks")
         else:
-            print(f"  ❌ DEPLOYMENT BLOCKED - Critical issues must be resolved")
+            print("  ❌ DEPLOYMENT BLOCKED - Critical issues must be resolved")
 
         results["status"] = "completed"
         self.migration_results["phases"]["phase_8"] = results
@@ -465,7 +465,7 @@ class ABACUSv21MigrationTest(unittest.TestCase):
     def tearDownClass(cls):
         """Generate comprehensive migration report"""
         print(f"\n{'='*80}")
-        print(f"GENERATING MIGRATION REPORT")
+        print("GENERATING MIGRATION REPORT")
         print(f"{'='*80}\n")
 
         cls.migration_results["summary"] = {

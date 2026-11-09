@@ -19,7 +19,7 @@ on:
           - production
 
 env:
-  PYTHON_VERSION: '3.11'
+  PYTHON_VERSION: '3.14'
   WORKSPACE_ROOT: ${{ github.workspace }}
   ARIANA_PATH: '18_ARTIFACTS_ANALYSIS/artifacts/ARTEFACT_TYPE_GROUPING/PYTHON_code'
   DMAIC_PATH: '13_CORE_SYSTEMS/DMAIC/DMAIC_V3'

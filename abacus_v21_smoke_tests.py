@@ -540,8 +540,8 @@ class ABACUSv21SmokeTests:
 
         with open(md_report, "w", encoding="utf-8") as f:
             f.write("# ABACUS v2.1 Smoke Test Report\n\n")
-            f.write(f"**Stage:** 1.3 - Smoke Test Validation\n")
-            f.write(f"**Phase:** PRE-CD (Pre-Continuous Deployment)\n")
+            f.write("**Stage:** 1.3 - Smoke Test Validation\n")
+            f.write("**Phase:** PRE-CD (Pre-Continuous Deployment)\n")
             f.write(f"**Timestamp:** {summary['timestamp']}\n")
             f.write(f"**Duration:** {summary['duration_seconds']:.3f}s\n\n")
 

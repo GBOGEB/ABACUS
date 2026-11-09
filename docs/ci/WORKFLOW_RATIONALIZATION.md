@@ -4,11 +4,11 @@
 
 Policy: `ABACUS-CI-SSOT-001`
 
-Policy SHA-256 (canonical sorted JSON bytes of `ci/governance/workflow_policy.json`): `03ce17520cd91c4c0090138f19ad6f790be38b23bd7dd019a69e363988e8eca6`
+Policy SHA-256 (canonical sorted JSON bytes of `ci/governance/workflow_policy.json`): `524af5b2e89fc900a0a2289e5404deb219f842537668aba3690279072f8da4a8`
 
 ## Outcome
 
-The repository currently contains **221 workflow definitions**. All **221** are assigned to one primary functional cluster and lifecycle stage.
+The repository currently contains **224 workflow definitions**. All **224** are assigned to one primary functional cluster and lifecycle stage.
 
 The observed baseline that motivated this control was PR #681 with 119 check runs (111 queued, 8 skipped) and main with 122 check runs.
 
@@ -38,8 +38,8 @@ The observed baseline that motivated this control was PR #681 with 119 check run
 | `delivery` | `cd-pipeline.yml` | 8 | Build, release, deployment and publication. |
 | `documentation` | `docs-build.yml` | 7 | Documentation validation, rendering, export and Pages. |
 | `automation` | `post-merge-pr-summary.yml` | 13 | Repository maintenance, reporting, branch and PR automation. |
-| `specialised` | `qps-cost-roundtrip-contract.yml` | 47 | Bounded product or historical pipelines retained outside core CI. |
-| `ci_governance` | `ci-governance.yml` | 2 | This policy, inventory, overlap and staleness gate. |
+| `specialised` | `qps-cost-roundtrip-contract.yml` | 48 | Bounded product or historical pipelines retained outside core CI. |
+| `ci_governance` | `ci-governance.yml` | 4 | This policy, inventory, overlap and staleness gate. |
 | `legacy` | — | 2 | Superseded workflows kept temporarily for manual comparison before deletion. |
 
 ## Immediate consolidation decisions
@@ -82,7 +82,7 @@ Make PR-triggered workflows with write-class GitHub token scopes explicit and re
 | 20 | `pr_domain` | `bridge_federation` | `bridge-ci.yml` | push, pull_request, workflow_dispatch | 6 | `keep` | — |
 | 20 | `pr_domain` | `bridge_federation` | `codespace-federation.yml` | push, pull_request, workflow_dispatch, repository_dispatch | 1 | `keep` | — |
 | 20 | `pr_domain` | `bridge_federation` | `creq-federation-ci.yml` | pull_request, workflow_dispatch | 1 | `keep` | — |
-| 20 | `pr_domain` | `bridge_federation` | `cryoplant-federation.yml` | push, pull_request, schedule, workflow_dispatch | 2 | `keep` | — |
+| 20 | `pr_domain` | `bridge_federation` | `cryoplant-federation.yml` | push, pull_request, schedule, workflow_dispatch | 3 | `keep` | — |
 | 20 | `pr_domain` | `bridge_federation` | `dependency-spine-peer-census.yml` | pull_request, push, workflow_dispatch, schedule | 1 | `keep` | — |
 | 20 | `pr_domain` | `bridge_federation` | `dependency-spine-stage-only.yml` | pull_request, workflow_dispatch | 1 | `keep` | — |
 | 20 | `pr_domain` | `bridge_federation` | `federation-bridge-contract.yml` | pull_request, workflow_dispatch | 1 | `keep` | — |
@@ -98,6 +98,7 @@ Make PR-triggered workflows with write-class GitHub token scopes explicit and re
 | 20 | `pr_domain` | `bridge_federation` | `w189f-federation-sample4-exact.yml` | pull_request, push | 1 | `keep` | — |
 | 20 | `pr_domain` | `bridge_federation` | `w286-gloob-pandoc-p1.yml` | pull_request, workflow_dispatch | 1 | `keep` | — |
 | 20 | `pr_domain` | `ci_governance` | `bd-workflow-frequency-telemetry.yml` | workflow_dispatch, schedule, pull_request | 1 | `keep` | — |
+| 20 | `pr_domain` | `ci_governance` | `python-version-ssot-guard.yml` | pull_request, push, workflow_dispatch | 1 | `keep` | — |
 | 20 | `pr_domain` | `core_test` | `bd-w1-three-pulse-regression.yml` | pull_request | 1 | `keep` | — |
 | 20 | `pr_domain` | `core_test` | `cbd-cohort-union-testflight.yml` | pull_request, workflow_dispatch | 1 | `keep` | — |
 | 20 | `pr_domain` | `core_test` | `cbd-e2e-graph-contract.yml` | pull_request, workflow_dispatch | 1 | `keep` | — |
@@ -274,9 +275,11 @@ Make PR-triggered workflows with write-class GitHub token scopes explicit and re
 | 40 | `scheduled` | `automation` | `dashboard-health.yml` | schedule, workflow_dispatch | 1 | `keep` | — |
 | 40 | `scheduled` | `automation` | `missioncontrol-issue-burndown.yml` | workflow_dispatch, schedule, pull_request | 1 | `keep` | — |
 | 40 | `scheduled` | `automation` | `post-merge-pr-summary.yml` | pull_request | 1 | `keep` | — |
+| 40 | `scheduled` | `ci_governance` | `python-next-canary.yml` | schedule, workflow_dispatch, pull_request | 1 | `keep` | — |
 | 40 | `scheduled` | `runtime_governance` | `cbd-scheduled-gated-pulse.yml` | schedule, workflow_dispatch | 1 | `keep` | — |
 | 40 | `scheduled` | `security` | `bandit.yml` | schedule, workflow_dispatch | 1 | `keep` | — |
 | 40 | `scheduled` | `security` | `code-quality-pilot.yml` | workflow_dispatch, pull_request, schedule | 3 | `keep` | — |
+| 40 | `scheduled` | `specialised` | `coolprop-next-shadow.yml` | schedule, workflow_dispatch, pull_request | 4 | `keep` | — |
 | 50 | `manual` | `automation` | `branch-hygiene.yml` | workflow_dispatch, pull_request | 3 | `keep` | — |
 | 50 | `manual` | `bridge_federation` | `abacus-missioncontrol-stage-only.yml` | workflow_dispatch | 1 | `keep` | — |
 | 50 | `manual` | `bridge_federation` | `qps-metric-census-receiver.yml` | workflow_dispatch | 2 | `keep` | — |

@@ -167,6 +167,23 @@ CODEX_BOT_ID = 199175422
 CODEX_APP_ID = 1144995
 CODEX_APP_SLUG = "chatgpt-codex-connector"
 
+# Pending reasons that wait on an external reviewer rather than on CI. A
+# check run created through the API has no runner and no timeout-minutes, so
+# without a ceiling a PR whose review never arrives shows "in progress"
+# forever. Once only these reasons remain for longer than
+# REVIEW_WAIT_CEILING after the head became current, the census concludes
+# the gate as failure. This never admits anything; the next census after the
+# review is posted re-evaluates and can still publish success.
+CODE_REVIEW_PENDING = "Codex code review is not complete on current head"
+SECURITY_REVIEW_PENDING = "Codex security review is not complete on current head"
+SECURITY_REVIEW_MANDATORY = (
+    "Codex security review is mandatory pre-merge for security-sensitive changes"
+)
+REVIEW_WAIT_REASONS = frozenset(
+    {CODE_REVIEW_PENDING, SECURITY_REVIEW_PENDING, SECURITY_REVIEW_MANDATORY}
+)
+REVIEW_WAIT_CEILING = dt.timedelta(hours=6)
+
 
 @dataclass(frozen=True)
 class Evidence:
@@ -183,10 +200,13 @@ class Evidence:
     blocking_review_items: tuple[str, ...] = ()
     review_deferral_details: tuple[str, ...] = ()
     review_source: str = "codex"
+    review_wait_expired: str = ""
 
     @property
     def failure_reasons(self) -> tuple[str, ...]:
         reasons: list[str] = []
+        if self.review_wait_expired:
+            reasons.append(self.review_wait_expired)
         reasons.extend(self.blocking_review_items)
         if self.unresolved_threads and not self.review_deferral_valid:
             reasons.append(f"{self.unresolved_threads} unresolved review thread(s)")
@@ -203,14 +223,11 @@ class Evidence:
     def pending_reasons(self) -> tuple[str, ...]:
         reasons: list[str] = []
         if not self.code_review_complete and not self.review_deferral_valid:
-            reasons.append("Codex code review is not complete on current head")
+            reasons.append(CODE_REVIEW_PENDING)
         if not self.security_review_complete and not self.review_deferral_valid:
-            reasons.append("Codex security review is not complete on current head")
+            reasons.append(SECURITY_REVIEW_PENDING)
         if self.security_sensitive and not self.security_review_complete:
-            reasons.append(
-                "Codex security review is mandatory pre-merge for "
-                "security-sensitive changes"
-            )
+            reasons.append(SECURITY_REVIEW_MANDATORY)
         if not self.ci_seen:
             reasons.append("no current-head GitHub Actions evidence found")
         reasons.extend(self.ci_pending)
@@ -552,6 +569,41 @@ def latest_codex_summary(
     )
 
 
+
+# The trusted Codex app publishes per-lane state in its summary comment.
+# Do not infer success from the human-readable table or short SHA.
+CODEX_REVIEW_STATE_V1 = re.compile(
+    r"<!--\s*codex-review-state:v1\s+(\{[^\r\n]*\})\s*-->"
+)
+
+
+def codex_structured_lane_complete(
+    summary: dict[str, Any] | None, lane: str, head_sha: str
+) -> bool | None:
+    """None: legacy transport. False: v1 exists but is not accepted."""
+    if summary is None:
+        return None
+    body = summary.get("body") or ""
+    if "codex-review-state:v1" not in body:
+        return None
+    match = CODEX_REVIEW_STATE_V1.search(body)
+    if match is None:
+        return False
+    try:
+        data = json.loads(match.group(1))
+    except json.JSONDecodeError:
+        return False
+    detail = data.get(lane) if isinstance(data, dict) else None
+    return bool(
+        isinstance(detail, dict)
+        and detail.get("commit_sha") == head_sha
+        and detail.get("status") == "completed"
+        and detail.get("has_any_findings") is False
+        and detail.get("has_unresolved_findings") is False
+    )
+
+
+
 def codex_code_review_complete(
     comments: list[dict[str, Any]],
     head_sha: str,
@@ -559,6 +611,9 @@ def codex_code_review_complete(
     summary = latest_codex_summary(comments)
     if not summary:
         return False
+    structured = codex_structured_lane_complete(summary, "code_review", head_sha)
+    if structured is not None:
+        return structured
     body = summary.get("body", "")
     metadata_match = re.search(
         r"codex-security-review:v1\s+(\{.*?\})\s*-->",
@@ -593,7 +648,14 @@ def codex_security_review_complete(
     ):
         if not is_trusted_codex_comment(comment):
             continue
-        match = marker.search(comment.get("body", ""))
+        body = comment.get("body", "")
+        if "codex-pull-request-review-summary" in body:
+            structured = codex_structured_lane_complete(
+                comment, "security_review", head_sha
+            )
+            if structured is not None:
+                return structured
+        match = marker.search(body)
         if not match:
             continue
         try:
@@ -601,7 +663,9 @@ def codex_security_review_complete(
         except json.JSONDecodeError:
             continue
         return (
-            payload.get("headSha") == head_sha and payload.get("status") == "completed"
+            isinstance(payload, dict)
+            and payload.get("headSha") == head_sha
+            and payload.get("status") == "completed"
         )
     return False
 
@@ -1311,6 +1375,7 @@ def evaluate(
     github: GitHub,
     number: int,
     pull: dict[str, Any] | None = None,
+    now: dt.datetime | None = None,
 ) -> Evidence | None:
     pull = pull or github.pull(number)
     if pull.get("state") != "open":
@@ -1375,7 +1440,7 @@ def evaluate(
         code_review_complete,
         security_review_complete,
     )
-    return Evidence(
+    evidence = Evidence(
         head_sha=head_sha,
         code_review_complete=code_review_complete,
         security_review_complete=security_review_complete,
@@ -1393,6 +1458,47 @@ def evaluate(
         blocking_review_items=blocking_items,
         review_deferral_details=deferral_details,
         review_source="codex",
+    )
+    return replace(
+        evidence,
+        review_wait_expired=review_wait_expiry(
+            evidence,
+            head_current_since(runs, head_sha, number),
+            dt.datetime.now(dt.UTC) if now is None else now,
+        ),
+    )
+
+
+def review_wait_expiry(
+    evidence: Evidence,
+    head_since: str,
+    now: dt.datetime,
+    ceiling: dt.timedelta = REVIEW_WAIT_CEILING,
+) -> str:
+    """Failure reason once a review wait outlives ``ceiling``, else "".
+
+    Applies only when the gate would otherwise be pending and every pending
+    reason is a review wait: CI that is still running or missing keeps the
+    gate pending as before. The clock starts at ``head_since``, the
+    GitHub-server time the current head arrived on the PR, so a push
+    restarts it. With no such time the wait never expires (fail open to
+    pending, which still does not admit the PR).
+    """
+    if evidence.state != "pending" or not head_since:
+        return ""
+    if not set(evidence.pending_reasons) <= REVIEW_WAIT_REASONS:
+        return ""
+    try:
+        since = dt.datetime.fromisoformat(head_since)
+    except ValueError:
+        return ""
+    if now - since < ceiling:
+        return ""
+    hours = ceiling.total_seconds() / 3600
+    return (
+        f"Codex review not received within {hours:g}h of head "
+        f"{evidence.head_sha[:12]} becoming current (since {head_since}); "
+        "the gate re-evaluates when the review is posted"
     )
 
 
@@ -1465,6 +1571,10 @@ def render(number: int, evidence: Evidence) -> tuple[str, str, str]:
         "- no unresolved S0/S1 items; all other threads explicitly classified",
         "- current-head GitHub Actions terminal and green",
         "- S2/Codex deferrals linked to open exact-head issues",
+        (
+            "- a review wait with green CI concludes as failure after "
+            f"{REVIEW_WAIT_CEILING.total_seconds() / 3600:g}h on one head"
+        ),
     ]
     if not evidence.failure_reasons:
         lines[2] = "Failure reasons: none"

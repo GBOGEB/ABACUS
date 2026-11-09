@@ -1,0 +1,12 @@
+# GBOGEB/ABACUS wave claims -- this repository's prerogative.
+# Rules (must obey): GBOGEB/CODEX federation/waves/WAVE_NAMING_RULES.yaml
+# Roll-up: CODEX scripts/build_wave_register.py reads this file at the exact commit.
+#
+# Seed: participation only. Owned waves are promoted from
+# WAVE_CLAIMS.proposed.yaml after owner review (names are the owner's choice).
+schema: gbogeb.wave_claims/1
+repo: GBOGEB/ABACUS
+owns: []
+participates:
+  - key: QPS:W113
+    role: receiver   # .mesh/MESH_DOCK.yaml current_focus W113_MESH_CLOSURE_CONTROLLER_DOW_RECEIVER

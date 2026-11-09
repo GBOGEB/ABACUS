@@ -320,7 +320,10 @@ def rollup(bundle, artifact_root, previous=None):
         "active_runtime_workers": None,
         "merge_admission": "HOLD",
         "authority_transfer": False,
-        "note": "Graph links are declared only; file hashes are local matches, not authenticated GitHub artifacts or peer execution.",
+        "note": (
+            "Graph links are declared only; file hashes are local matches, "
+            "not authenticated GitHub artifacts or peer execution."
+        ),
     }
 
 

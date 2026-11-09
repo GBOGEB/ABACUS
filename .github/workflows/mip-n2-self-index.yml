@@ -14,6 +14,10 @@ on:
       - "tests/test_mip_kit*.py"
       - "tests/test_mip_ldab_telemetry.py"
       - ".github/workflows/mip-n2-self-index.yml"
+      - ".waves/**"
+      - "federation/waves/**"
+      - "scripts/wave_claims.py"
+      - "tests/test_wave_claims_*.py"
   workflow_dispatch:
 
 permissions:
@@ -24,7 +28,7 @@ jobs:
     runs-on: ubuntu-latest
     env:
       EXPECTED_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
-      CODEX_KIT_REF: 1aa40cdb081ada67b213f8e4a3d849d57c56fd0f
+      CODEX_KIT_REF: 79a5585f93d48efe1bc3e44d3135bcdad35eb9f0  # kit 1.2.3
     steps:
       - name: Check out exact evaluated SHA
         uses: actions/checkout@v7
@@ -35,9 +39,9 @@ jobs:
       - name: Set up Python
         uses: actions/setup-python@v7
         with:
-          python-version: "3.12"
+          python-version: "3.14"
 
-      # Canonical kit from GBOGEB/CODEX: the 7 shareable files must match
+      # Canonical kit from GBOGEB/CODEX: the shareable kit files must match
       # CODEX's manifest byte-for-byte (CRLF-normalised). The manifest is
       # fetched from CODEX at CODEX_KIT_REF, not read from this checkout, so a
       # PR that edits a kit file and regenerates the local manifest still
@@ -53,6 +57,26 @@ jobs:
           python scripts/mip_kit_manifest.py check \
             --canonical "${RUNNER_TEMP}/codex-kit-manifest.json" \
             --summary "${RUNNER_TEMP}/mip-kit-drift-summary.json"
+
+      # Kit 1.2.x: this repo's own wave claims must obey the federation
+      # naming ruleset (federation/waves/WAVE_NAMING_RULES.yaml).
+      - name: Install wave claims validator dependency
+        run: python -m pip install "pyyaml>=6.0"
+
+      - name: Validate this repo's wave claims
+        run: >-
+          python scripts/wave_claims.py validate .waves/WAVE_CLAIMS.yaml
+          --expected-repo GBOGEB/ABACUS
+
+      - name: Test wave claims validation negative controls
+        run: >-
+          python -m unittest discover -s tests
+          -p 'test_wave_claims_contract.py' -v
+
+      - name: Test wave claims kit portable proofs
+        run: >-
+          python -m unittest discover -s tests
+          -p 'test_wave_claims_portable.py' -v
 
       - name: Test LDAB telemetry fail-closed contracts
         run: |
@@ -117,7 +141,7 @@ jobs:
       - name: Set up Python
         uses: actions/setup-python@v7
         with:
-          python-version: "3.12"
+          python-version: "3.14"
 
       - name: Download sanitized self-index evidence
         uses: actions/download-artifact@v8

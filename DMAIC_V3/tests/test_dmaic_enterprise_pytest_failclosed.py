@@ -1,5 +1,6 @@
 """Guard Enterprise CI against false-green pytest verdicts."""
 
+import json
 from pathlib import Path
 
 import yaml
@@ -12,11 +13,12 @@ WORKFLOW = (
 def test_enterprise_pytest_is_required_on_all_supported_versions():
     workflow = yaml.safe_load(WORKFLOW.read_text(encoding="utf-8"))
     job = workflow["jobs"]["test"]
-    assert job["strategy"]["matrix"]["python-version"] == [
-        "3.10",
-        "3.11",
-        "3.12",
-    ]
+    # Full lane from ssot/python_versions.yaml (this workflow is on the
+    # coolprop-oracle lane because it installs requirements-dev.txt).
+    lanes = json.loads(
+        (WORKFLOW.parents[2] / "ssot/python_versions.lanes.json").read_text(encoding="utf-8")
+    )["lanes"]
+    assert job["strategy"]["matrix"]["python-version"] == lanes["coolprop-oracle"]["versions"]
     assert set(job["strategy"]["matrix"]["os"]) == {
         "ubuntu-latest",
         "windows-latest",

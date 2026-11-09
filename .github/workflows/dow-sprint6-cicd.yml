@@ -23,7 +23,7 @@ on:
           - control
 
 env:
-  PYTHON_VERSION: '3.10'
+  PYTHON_VERSION: '3.14'
   DOW_WORKSPACE: ${{ github.workspace }}
   ARIANA_PATH: ${{ github.workspace }}/ariana_trace_project
   RICH_PADDING_PATH: ${{ github.workspace }}/rich_padding

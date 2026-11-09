@@ -91,12 +91,28 @@ def repin(
     epoch: str,
     main_sha: str,
     remeasure_all: bool = False,
+    pythons: list[str] | None = None,
+    kpi_python: str | None = None,
 ) -> dict:
     if not re.fullmatch(r"[0-9a-f]{40}", main_sha):
         raise RepinError("main SHA must be a full 40-character id")
     if epoch == manifest["source_epoch"]:
         raise RepinError("a re-pin must name a new source epoch")
     out = json.loads(json.dumps(manifest))
+    interpreters_changed = False
+    if pythons is not None or kpi_python is not None:
+        new_pythons = list(pythons) if pythons is not None else list(out["pythons"])
+        if not new_pythons or len(set(new_pythons)) != len(new_pythons) or not all(
+            re.fullmatch(r"3\.\d{1,2}", p) for p in new_pythons
+        ):
+            raise RepinError("pythons must be distinct 3.X versions")
+        new_pythons.sort(key=lambda v: tuple(int(x) for x in v.split(".")))
+        new_kpi = kpi_python or out["kpi_python"]
+        if new_kpi not in new_pythons:
+            raise RepinError("kpi_python must be one of the pinned pythons")
+        interpreters_changed = new_pythons != out["pythons"]
+        out["pythons"] = new_pythons
+        out["kpi_python"] = new_kpi
     for path, entry in out["files"].items():
         source = root / path
         if not source.is_file():
@@ -109,7 +125,10 @@ def repin(
             entry["floor"] = None
         else:
             entry.pop("previous_blob", None)
-        if changed or remeasure_all:
+        if interpreters_changed:
+            # a floor measured on other interpreters does not bound these ones
+            entry["floor"] = None
+        if changed or remeasure_all or interpreters_changed:
             entry["branches"] = {python: None for python in out["pythons"]}
             entry["covered"] = {python: None for python in out["pythons"]}
         if entry["role"] == "control":
@@ -187,6 +206,12 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--main-sha")
     parser.add_argument("--remeasure-all", action="store_true")
     parser.add_argument(
+        "--pythons",
+        help="comma-separated interpreter set; changing it re-measures every "
+        "file and resets every floor",
+    )
+    parser.add_argument("--kpi-python", help="interpreter the KPI contract uses")
+    parser.add_argument(
         "--measured",
         type=Path,
         action="append",
@@ -203,7 +228,11 @@ def main(argv: list[str] | None = None) -> int:
             epoch=args.repin,
             main_sha=args.main_sha or "",
             remeasure_all=args.remeasure_all,
+            pythons=args.pythons.split(",") if args.pythons else None,
+            kpi_python=args.kpi_python,
         )
+    elif args.pythons or args.kpi_python:
+        raise RepinError("--pythons/--kpi-python require --repin")
     for path in args.measured:
         manifest = apply_measured(
             manifest, parse_measured(path.read_text(encoding="utf-8"))

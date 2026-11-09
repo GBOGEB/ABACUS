@@ -489,7 +489,7 @@ def main():
     agent = SelfImprovementAgent()
 
     print(f"\n{'='*80}")
-    print(f"DMAIC V4.0 SELF-IMPROVEMENT AGENT")
+    print("DMAIC V4.0 SELF-IMPROVEMENT AGENT")
     print(f"{'='*80}")
     print(f"Starting {args.cycles} improvement cycle(s)...")
     print(f"{'='*80}\n")
@@ -500,7 +500,7 @@ def main():
         results.append(result)
 
     print(f"\n{'='*80}")
-    print(f"ALL CYCLES COMPLETE")
+    print("ALL CYCLES COMPLETE")
     print(f"{'='*80}")
     print(f"Total Cycles: {len(results)}")
     print(f"Total Improvements: {sum(r['improvements_optimized'] for r in results)}")

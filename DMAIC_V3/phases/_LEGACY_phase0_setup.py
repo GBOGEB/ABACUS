@@ -145,7 +145,7 @@ class Phase0Setup:
             severity="info",
             details={"os": os_name, "architecture": arch},
         )
-        print(f"  [OK] System requirements checked")
+        print("  [OK] System requirements checked")
 
         self._add_result(result)
 
@@ -446,7 +446,7 @@ class Phase0Setup:
                 details={"state_file": str(state_file), "can_resume": True},
             )
             print(f"  [OK] {result.message}")
-            print(f"  [i] Use --resume to continue from previous execution")
+            print("  [i] Use --resume to continue from previous execution")
         else:
             result = CheckResult(
                 name="Previous State",

@@ -240,7 +240,10 @@ class TestSystemBridge:
 
         try:
             flake8_result = subprocess.run(
-                [sys.executable, '-m', 'flake8', 'DMAIC_V3', '--count', '--statistics'],
+                [
+                    sys.executable, '-m', 'flake8', 'DMAIC_V3',
+                    '--max-line-length=120', '--count', '--statistics',
+                ],
                 cwd=self.workspace_root,
                 capture_output=True,
                 text=True,

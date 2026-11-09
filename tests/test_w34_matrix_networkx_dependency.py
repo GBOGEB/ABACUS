@@ -2,10 +2,14 @@
 
 from __future__ import annotations
 
+import json
 import re
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
+# Interpreter edges come from the SSOT view (ssot/python_versions.yaml).
+_LANE = json.loads((ROOT / "ssot/python_versions.lanes.json").read_text(encoding="utf-8"))["lanes"]["default"]
+EDGE_MATRIX = f"python-version: ['{_LANE['oldest']}', '{_LANE['newest']}']"
 TEST_REQUIREMENTS = ROOT / "requirements-test.txt"
 DEV_REQUIREMENTS = ROOT / "requirements-dev.txt"
 BROAD_CI = ROOT / ".github/workflows/ci-cd-tests.yml"
@@ -44,7 +48,7 @@ def test_broad_native_matrix_really_installs_the_test_requirements():
     assert "pip install -r requirements-test.txt" in part
     assert 'pytest tests/ -m "not integration"' in part
     assert "os: [ubuntu-latest, windows-latest, macos-latest]" in part
-    assert "python-version: ['3.11', '3.12']" in part
+    assert EDGE_MATRIX in part
     assert "continue-on-error: true" not in part
 
 
