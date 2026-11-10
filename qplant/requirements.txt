@@ -5,6 +5,9 @@ scipy==1.10.1
 pytest==9.0.3
 pytest-cov==4.1.0
 PyYAML==6.0.2
+# OSV BD-24 security floor for pytest's transitive Pygments
+# (PYSEC-2023-117, PYSEC-2026-2987; fixed in 2.20.0).
+Pygments>=2.20.0
 
 # QPLANT API runtime and executable contract tests.
 # Keep these as bounded major-version ranges so the service gets compatible
