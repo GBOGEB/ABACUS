@@ -283,6 +283,14 @@ class LedgerTests(unittest.TestCase):
             errs = rc.verify_ledger(rows + [forged])
             self.assertTrue(any("different root_id" in e for e in errs), errs)
 
+    def test_overlap_scopes(self):
+        f = ".github/workflows/ci.yml"
+        self.assertTrue(rc.members_overlap(f, f + "#job/Step"))
+        self.assertTrue(rc.members_overlap(f + "#job", f + "#job/Step"))
+        self.assertFalse(rc.members_overlap(f + "#job", f + "#other/Step"))
+        self.assertFalse(rc.members_overlap(f + "#job/A", f + "#job/B"))
+        self.assertFalse(rc.members_overlap(f, ".github/workflows/cd.yml"))
+
     def test_state_transition_same_root_allowed(self):
         with tempfile.TemporaryDirectory() as d:
             path = self._ledger(d)

@@ -83,12 +83,20 @@ byte-for-byte.
 - Append-only: a state change is a new row with the same `root_id`; the
   latest row per root wins. Rows are never edited or deleted.
 
-**Step-scoped members.** When two roots need the same workflow file, each
-takes a step-scoped member `<path>#<job-id>/<step name>`. Seed example: BD-21
-owns `ci.yml#test-bridge-integration/Install dependencies` and
-`cd-unified.yml#ci-ubuntu/Install dependencies`; BD-17 owns
-`ci.yml#lint-and-static-analysis/Run mypy`. A whole-file member overlaps
-every step-scoped member of the same file.
+**Job- and step-scoped members.** When two roots need the same workflow
+file, each takes a scoped member: `<path>#<job-id>` (a whole job) or
+`<path>#<job-id>/<step name>` (one step; the step's `name:` as written, matrix
+legs not distinguished). Overlap rule: a whole-file member covers every job
+and step of the file, a job member covers every step of that job; two
+different steps, or two different jobs, do not overlap. Seed examples:
+
+- BD-21 owns `ci.yml#test-bridge-integration/Install dependencies` and
+  `cd-unified.yml#ci-ubuntu/Install dependencies`; BD-17 owns
+  `ci.yml#lint-and-static-analysis/Run mypy`.
+- BD-04 owns `ci-pipeline.yml#unit-tests/Run Tests` (the Windows capture
+  failure fixed by #2657); BD-25 owns
+  `ci-pipeline.yml#unit-tests/G family tests (ci_governance)` and
+  `ci-governance.yml#policy-and-inventory`.
 
 `--verify-ledger [PATH]` checks required fields and states, the hash chain,
 each `root_id` against its members, and that no member (with the overlap rule
@@ -99,12 +107,22 @@ hand; in CI the result is only written to the step summary.
 to an invalid ledger or to append a row that would invalidate it. It is a
 local tool for the owner-designated writer; no workflow calls it.
 
-Seed (2026-11-09, census head `9f17ded`): 12 open roots (BD-16, -22, -23, -17,
--24, -11, -12a, -12b in ABACUS; BD-15, -05, -18, -07b in CODEX) with the latest
-default-branch run of each member as evidence, plus 6 BURNED rows (BD-16 GHOST
-`dow-integration-ci-cd.yml`, BD-01/01b, BD-04, BD-21, CODEX BD-08, CODEX
-BD-06) with their PRs. BD-16 is HOLD with 6 members and the note
-"owner: no retirement; value assessment and bridge/prune in progress".
+Seed. The chain has two parts, which also shows how the ledger is meant
+to evolve:
+
+1. Rows 1-18, the baseline from the 2026-11-09 census (ABACUS head
+   `9f17ded`, CODEX head `78c4c6c`): 12 open roots (BD-16, -22, -23, -17,
+   -24, -11, -12a, -12b in ABACUS; BD-15, -05, -18, -07b in CODEX), each with
+   the latest default-branch run of each member as evidence, plus 6 BURNED
+   rows (BD-16 GHOST `dow-integration-ci-cd.yml`, BD-01/01b, BD-04, BD-21,
+   CODEX BD-08, CODEX BD-06) with their PRs. BD-16 is HOLD with 6 members.
+2. Appended rows, the 2026-11-10 refresh: BD-12a BURNED (#2689), BD-21
+   evidence adds #2688, BD-01/01b green-run evidence, BD-16 note "owner chose
+   bridge/prune/spec, no retirement" with #2693, #2694 (dmaic-v3-cd bridged and
+   pruned) and #2695 (gbogeb-abacus-integration bridged), both still waiting for
+   a fresh main run, BD-24 evidence adds #2690 (PyPI floors) and open #2691
+   (npm), and a new root BD-25 (ACTIVE): red since #2685 (20e144e0).
+
 Families not given for the BURNED rows are recorded as `UNASSIGNED`.
 
 ## 3. Launcher gate

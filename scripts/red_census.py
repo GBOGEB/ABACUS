@@ -459,13 +459,20 @@ def member_file(member: str) -> str:
 
 
 def members_overlap(a: str, b: str) -> bool:
-    """Same member, or a whole-file member covering a step-scoped member of that file."""
-    if a == b:
-        return True
-    fa, fb = member_file(a), member_file(b)
+    """Members overlap when they name the same file and one scope contains the other.
+
+    Scopes: whole file (no '#'), job ('#job-id') or step ('#job-id/Step name').
+    A whole-file member covers every job and step of the file; a job member
+    covers every step of that job.
+    """
+    fa, _, sa = a.partition("#")
+    fb, _, sb = b.partition("#")
     if fa != fb:
         return False
-    return "#" not in a or "#" not in b
+    if not sa or not sb or sa == sb:
+        return True
+    ja, jb = sa.split("/", 1)[0], sb.split("/", 1)[0]
+    return (sa == ja and ja == jb) or (sb == jb and ja == jb)
 
 
 def load_ledger(path: Path) -> list[dict]:
