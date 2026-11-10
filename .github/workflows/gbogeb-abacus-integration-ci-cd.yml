@@ -4,9 +4,9 @@ on:
   push:
     branches: [ main, develop, feature/*, integration/* ]
     paths:
-      - 'GBOGEB_ABACUS_DOW_INTEGRATION_BRIDGE.py'
-      - 'test_integration_bridge.py'
-      - 'UNIFIED_GLOB_CONFIG.yaml'
+      - 'staging/GBOGEB_ABACUS_DOW_INTEGRATION_BRIDGE.py'
+      - 'staging/test_integration_bridge.py'
+      - 'staging/UNIFIED_GLOB_CONFIG.yaml'
       - '.github/workflows/gbogeb-abacus-integration-ci-cd.yml'
   workflow_dispatch:
     inputs:
@@ -37,6 +37,12 @@ env:
   INTEGRATION_VERSION: '1.0.0'
   OUTPUT_DIR: 'INTEGRATED_OUTPUT'
 
+# The bridge, its test and its config live in staging/ and resolve their
+# inputs/outputs relative to the working directory.
+defaults:
+  run:
+    working-directory: staging
+
 jobs:
   validate-setup:
     name: 🔍 Validate Integration Setup
@@ -57,7 +63,6 @@ jobs:
           test -f GBOGEB_ABACUS_DOW_INTEGRATION_BRIDGE.py || exit 1
           test -f test_integration_bridge.py || exit 1
           test -f UNIFIED_GLOB_CONFIG.yaml || exit 1
-          test -f INTEGRATION_GUIDE.md || exit 1
           echo "✓ All required files present"
 
       - name: Validate YAML configuration
@@ -130,6 +135,13 @@ jobs:
           python -m pip install --upgrade pip
           pip install pyyaml pytest pytest-cov
 
+      - name: Require DOW package (DOW package not present -> spec, stays red)
+        run: |
+          python -c "import DOW.pipeline_runner, DOW.sut_config" || {
+            echo "::error title=DOW package not present::GBOGEB_ABACUS_DOW_INTEGRATION_BRIDGE.py imports DOW.pipeline_runner and DOW.sut_config; no DOW package exists in this checkout. This job is spec until the DOW package is provided."
+            exit 1
+          }
+
       - name: Create required directories
         run: |
           mkdir -p DOW/outputs
@@ -149,8 +161,8 @@ jobs:
         with:
           name: integration-test-report-py${{ matrix.python-version }}
           path: |
-            INTEGRATION_TEST_REPORT.md
-            INTEGRATED_OUTPUT/**/*.json
+            staging/INTEGRATION_TEST_REPORT.md
+            staging/INTEGRATED_OUTPUT/**/*.json
           retention-days: 30
 
   test-dow-only-mode:
@@ -171,6 +183,13 @@ jobs:
         run: |
           python -m pip install --upgrade pip
           pip install pyyaml
+
+      - name: Require DOW package (DOW package not present -> spec, stays red)
+        run: |
+          python -c "import DOW.pipeline_runner, DOW.sut_config" || {
+            echo "::error title=DOW package not present::GBOGEB_ABACUS_DOW_INTEGRATION_BRIDGE.py imports DOW.pipeline_runner and DOW.sut_config; no DOW package exists in this checkout. This job is spec until the DOW package is provided."
+            exit 1
+          }
 
       - name: Create required directories
         run: |
@@ -193,7 +212,7 @@ jobs:
         uses: actions/upload-artifact@v7
         with:
           name: dow-only-results
-          path: INTEGRATED_OUTPUT/**/*
+          path: staging/INTEGRATED_OUTPUT/**/*
           retention-days: 30
 
   test-unified-mode:
@@ -214,6 +233,13 @@ jobs:
         run: |
           python -m pip install --upgrade pip
           pip install pyyaml
+
+      - name: Require DOW package (DOW package not present -> spec, stays red)
+        run: |
+          python -c "import DOW.pipeline_runner, DOW.sut_config" || {
+            echo "::error title=DOW package not present::GBOGEB_ABACUS_DOW_INTEGRATION_BRIDGE.py imports DOW.pipeline_runner and DOW.sut_config; no DOW package exists in this checkout. This job is spec until the DOW package is provided."
+            exit 1
+          }
 
       - name: Create required directories
         run: |
@@ -242,7 +268,7 @@ jobs:
         uses: actions/upload-artifact@v7
         with:
           name: unified-mode-results
-          path: INTEGRATED_OUTPUT/**/*
+          path: staging/INTEGRATED_OUTPUT/**/*
           retention-days: 30
 
   test-handover-assimilation:
@@ -263,6 +289,13 @@ jobs:
         run: |
           python -m pip install --upgrade pip
           pip install pyyaml
+
+      - name: Require DOW package (DOW package not present -> spec, stays red)
+        run: |
+          python -c "import DOW.pipeline_runner, DOW.sut_config" || {
+            echo "::error title=DOW package not present::GBOGEB_ABACUS_DOW_INTEGRATION_BRIDGE.py imports DOW.pipeline_runner and DOW.sut_config; no DOW package exists in this checkout. This job is spec until the DOW package is provided."
+            exit 1
+          }
 
       - name: Create handover directory structure
         run: |
@@ -297,6 +330,13 @@ jobs:
         run: |
           python -m pip install --upgrade pip
           pip install pyyaml
+
+      - name: Require DOW package (DOW package not present -> spec, stays red)
+        run: |
+          python -c "import DOW.pipeline_runner, DOW.sut_config" || {
+            echo "::error title=DOW package not present::GBOGEB_ABACUS_DOW_INTEGRATION_BRIDGE.py imports DOW.pipeline_runner and DOW.sut_config; no DOW package exists in this checkout. This job is spec until the DOW package is provided."
+            exit 1
+          }
 
       - name: Create required directories
         run: |
@@ -360,61 +400,12 @@ jobs:
           echo "=== ROUNDTRIP TEST COMPLETE ==="
           echo "✓ All roundtrip tests passed"
 
-      - name: Generate roundtrip report
-        if: always()
-        run: |
-          cat > ROUNDTRIP_TEST_REPORT.md << 'EOF'
-          # Integration Roundtrip Test Report
-
-          **Date:** $(date -u +"%Y-%m-%d %H:%M:%S UTC")
-          **Workflow:** ${{ github.workflow }}
-          **Run ID:** ${{ github.run_id }}
-          **Commit:** ${{ github.sha }}
-
-          ## Test Results
-
-          | Test | Status |
-          |------|--------|
-          | DOW-only mode | ✅ PASSED |
-          | Unified mode | ✅ PASSED |
-          | Configuration validation | ✅ PASSED |
-          | Metrics tracking | ✅ PASSED |
-
-          ## Summary
-
-          - **Total Tests:** 4
-          - **Passed:** 4
-          - **Failed:** 0
-          - **Success Rate:** 100%
-
-          ## Integration Status
-
-          ✅ Integration bridge is fully operational
-          ✅ All execution modes working correctly
-          ✅ Configuration system validated
-          ✅ Metrics tracking functional
-
-          ## Next Steps
-
-          1. Review generated artifacts
-          2. Validate convergence metrics
-          3. Deploy to production
-
-          ---
-
-          *Generated by GBOGEB/ABACUS ↔ DOW Integration CI/CD*
-          EOF
-
-          cat ROUNDTRIP_TEST_REPORT.md
-
       - name: Upload roundtrip report
         if: always()
         uses: actions/upload-artifact@v7
         with:
           name: roundtrip-test-report
-          path: |
-            ROUNDTRIP_TEST_REPORT.md
-            INTEGRATED_OUTPUT/**/*
+          path: staging/INTEGRATED_OUTPUT/**/*
           retention-days: 30
 
   performance-benchmark:
@@ -435,6 +426,13 @@ jobs:
         run: |
           python -m pip install --upgrade pip
           pip install pyyaml
+
+      - name: Require DOW package (DOW package not present -> spec, stays red)
+        run: |
+          python -c "import DOW.pipeline_runner, DOW.sut_config" || {
+            echo "::error title=DOW package not present::GBOGEB_ABACUS_DOW_INTEGRATION_BRIDGE.py imports DOW.pipeline_runner and DOW.sut_config; no DOW package exists in this checkout. This job is spec until the DOW package is provided."
+            exit 1
+          }
 
       - name: Create required directories
         run: |
@@ -460,96 +458,3 @@ jobs:
           print(f'  Status: {results[\"status\"]}')
           print(f'  Metrics: {bridge.metrics}')
           "
-
-  deploy-integration:
-    name: 🚀 Deploy Integration
-    runs-on: ubuntu-latest
-    needs: [integration-roundtrip-test, performance-benchmark]
-    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
-
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v7
-
-      - name: Create deployment package
-        run: |
-          mkdir -p deployment
-          cp GBOGEB_ABACUS_DOW_INTEGRATION_BRIDGE.py deployment/
-          cp UNIFIED_GLOB_CONFIG.yaml deployment/
-          cp INTEGRATION_GUIDE.md deployment/
-          cp test_integration_bridge.py deployment/
-
-          cd deployment
-          tar -czf gbogeb-abacus-integration-v${{ env.INTEGRATION_VERSION }}.tar.gz *
-
-      - name: Upload deployment package
-        uses: actions/upload-artifact@v7
-        with:
-          name: integration-deployment-package
-          path: deployment/gbogeb-abacus-integration-v${{ env.INTEGRATION_VERSION }}.tar.gz
-          retention-days: 90
-
-      - name: Generate deployment report
-        run: |
-          cat > DEPLOYMENT_REPORT.md << 'EOF'
-          # Integration Deployment Report
-
-          **Version:** ${{ env.INTEGRATION_VERSION }}
-          **Date:** $(date -u +"%Y-%m-%d %H:%M:%S UTC")
-          **Commit:** ${{ github.sha }}
-
-          ## Deployment Package Contents
-
-          - GBOGEB_ABACUS_DOW_INTEGRATION_BRIDGE.py
-          - UNIFIED_GLOB_CONFIG.yaml
-          - INTEGRATION_GUIDE.md
-          - test_integration_bridge.py
-
-          ## Deployment Status
-
-          ✅ Package created successfully
-          ✅ All tests passed
-          ✅ Ready for production deployment
-
-          ## Installation Instructions
-
-          ```bash
-          # Extract package
-          tar -xzf gbogeb-abacus-integration-v${{ env.INTEGRATION_VERSION }}.tar.gz
-
-          # Run tests
-          python test_integration_bridge.py
-
-          # Execute integration
-          python GBOGEB_ABACUS_DOW_INTEGRATION_BRIDGE.py --mode unified --iterations 3
-          ```
-
-          ---
-
-          *Deployed by GBOGEB/ABACUS ↔ DOW Integration CI/CD*
-          EOF
-
-          cat DEPLOYMENT_REPORT.md
-
-      - name: Upload deployment report
-        uses: actions/upload-artifact@v7
-        with:
-          name: deployment-report
-          path: DEPLOYMENT_REPORT.md
-          retention-days: 90
-
-  notify-completion:
-    name: 📢 Notify Completion
-    runs-on: ubuntu-latest
-    needs: [deploy-integration]
-    if: always()
-
-    steps:
-      - name: Generate completion summary
-        run: |
-          echo "=== CI/CD PIPELINE COMPLETE ==="
-          echo "Workflow: ${{ github.workflow }}"
-          echo "Status: ${{ job.status }}"
-          echo "Run ID: ${{ github.run_id }}"
-          echo "Commit: ${{ github.sha }}"
-          echo "================================"

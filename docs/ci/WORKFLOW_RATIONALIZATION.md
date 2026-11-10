@@ -306,10 +306,10 @@ Make PR-triggered workflows with write-class GitHub token scopes explicit and re
 - `pip install pytest pytest-mock flake8 mypy pylint` — `bridge-ci.yml`, `ci.yml`
 - `pre-commit run --all-files` — `cd-unified.yml`, `ci-codex.yml`
 - `pylint **/*.py --exit-zero` — `ci-cd-tests.yml`, `ci-pipeline.yml`
-- `pytest --benchmark-disable -v --cov=. --cov-report=term-missing` — `cd-unified.yml`, `ci-codex.yml`
 - `pytest==9.1.1 pytest-cov==5.0.0 coverage==7.16.2 \` — `code-purple-w40-binary-penetration.yml`, `floating-reconnection-testflight.yml`
 - `python -m pip install 'pytest>=7.4,<10' 'numpy>=1.24,<3'` — `cbd-w6c-office-style-qa.yml`, `w4-dashboard-publication-qa.yml`
 - `python -m pip install flake8` — `ldab-scale-fanout.yml`, `reusable-ci.yml`
+- `python -m pip install pytest pyyaml` — `cryoplant-federation.yml`, `mip-qps-external-probe.yml`
 
 ## Control rule
 
