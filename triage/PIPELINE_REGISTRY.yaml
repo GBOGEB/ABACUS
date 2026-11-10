@@ -30,9 +30,12 @@ pipelines:
     state: CONTROL_CANDIDATE
     child_authority: GBOGEB/cryoplant-project
     keb_ingress: GBOGEB/CODEX
-    manifest: private:cryoplant-project/tender_library/abacus_phase_b_20261022/triage/W111_QPS_POWER_UTILITY_DOW_ANALYSIS.yaml
-    implementation: private:cryoplant-project/tender_library/abacus_phase_b_20261022/scripts/qps_w111_power_utility_analysis.py
-    workflow: private:cryoplant-project/tender_library/abacus_phase_b_20261022/workflows_reference/qps-w111-power-utility-dow.yml
+    manifest:
+      private:cryoplant-project/tender_library/abacus_phase_b_20261022/triage/W111_QPS_POWER_UTILITY_DOW_ANALYSIS.yaml
+    implementation:
+      private:cryoplant-project/tender_library/abacus_phase_b_20261022/scripts/qps_w111_power_utility_analysis.py
+    workflow:
+      private:cryoplant-project/tender_library/abacus_phase_b_20261022/workflows_reference/qps-w111-power-utility-dow.yml
     analyses:
       - isothermal
       - isentropic_reference

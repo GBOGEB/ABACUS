@@ -420,6 +420,7 @@ def _w111_inputs(tmp_path, monkeypatch, payload=None, keb=None, coolprop=None):
 
 
 @requires_w111
+@pytest.mark.TEST_BLOCKED_SOURCE_MISSING
 def test_w111_committed_payload_digest_drift():
     """production_defect: the committed W111 payload body no longer hashes to its
     declared payload_sha256 (and EXPECTED_PAYLOAD_SHA256), so analyze() on the
@@ -429,6 +430,7 @@ def test_w111_committed_payload_digest_drift():
 
 
 @requires_w111
+@pytest.mark.TEST_BLOCKED_SOURCE_MISSING
 def test_w111_analyze_and_validate(tmp_path, monkeypatch):
     body_sha, _ = _w111_inputs(tmp_path, monkeypatch)
     receipt = w111.analyze()
@@ -449,6 +451,7 @@ def test_w111_analyze_and_validate(tmp_path, monkeypatch):
 
 
 @requires_w111
+@pytest.mark.TEST_BLOCKED_SOURCE_MISSING
 def test_w111_physics_helpers():
     point = w111.CompressionPoint("p", 1.0, 300.0, 1.0, 1.0, 10.0, 50.0)
     assert w111.ideal_isothermal_power_kW(point) == 0.0
@@ -469,6 +472,7 @@ def test_w111_physics_helpers():
 
 
 @requires_w111
+@pytest.mark.TEST_BLOCKED_SOURCE_MISSING
 def test_w111_load_json_rejects_non_object(tmp_path):
     path = tmp_path / "x.json"
     path.write_text("[1]", encoding="utf-8")
@@ -503,6 +507,7 @@ def _payload_with(fn):
     ],
 )
 @requires_w111
+@pytest.mark.TEST_BLOCKED_SOURCE_MISSING
 def test_w111_load_payload_rejections(tmp_path, monkeypatch, envelope, match):
     path = tmp_path / "p.json"
     if isinstance(envelope["payload_body"], dict):
@@ -517,6 +522,7 @@ def test_w111_load_payload_rejections(tmp_path, monkeypatch, envelope, match):
 
 
 @requires_w111
+@pytest.mark.TEST_BLOCKED_SOURCE_MISSING
 def test_w111_load_payload_unexpected_digest(tmp_path, monkeypatch):
     _w111_inputs(tmp_path, monkeypatch)
     monkeypatch.setattr(w111, "EXPECTED_PAYLOAD_SHA256", "0" * 64)
@@ -540,6 +546,7 @@ KEB_CASES = [
 
 @pytest.mark.parametrize("keys, value, match", KEB_CASES)
 @requires_w111
+@pytest.mark.TEST_BLOCKED_SOURCE_MISSING
 def test_w111_keb_rejections(tmp_path, monkeypatch, keys, value, match):
     body_sha, paths = _w111_inputs(tmp_path, monkeypatch)
     env = json.loads(paths["KEB_RECEIPT_PATH"].read_text(encoding="utf-8"))
@@ -550,6 +557,7 @@ def test_w111_keb_rejections(tmp_path, monkeypatch, keys, value, match):
 
 
 @requires_w111
+@pytest.mark.TEST_BLOCKED_SOURCE_MISSING
 def test_w111_keb_missing_sections(tmp_path, monkeypatch):
     _, paths = _w111_inputs(tmp_path, monkeypatch)
     paths["KEB_RECEIPT_PATH"].write_text("{}", encoding="utf-8")
@@ -589,6 +597,7 @@ COOLPROP_CASES = [
 
 @pytest.mark.parametrize("keys, value, match", COOLPROP_CASES)
 @requires_w111
+@pytest.mark.TEST_BLOCKED_SOURCE_MISSING
 def test_w111_coolprop_rejections(tmp_path, monkeypatch, keys, value, match):
     env = copy.deepcopy(REAL_COOLPROP)
     _set(env, keys, value)
@@ -598,6 +607,7 @@ def test_w111_coolprop_rejections(tmp_path, monkeypatch, keys, value, match):
 
 
 @requires_w111
+@pytest.mark.TEST_BLOCKED_SOURCE_MISSING
 def test_w111_coolprop_missing_sections(tmp_path, monkeypatch):
     _, paths = _w111_inputs(tmp_path, monkeypatch)
     paths["COOLPROP_RECEIPT_PATH"].write_text("{}", encoding="utf-8")
@@ -612,6 +622,7 @@ def test_w111_coolprop_missing_sections(tmp_path, monkeypatch):
 
 
 @requires_w111
+@pytest.mark.TEST_BLOCKED_SOURCE_MISSING
 def test_w111_validate_receipt_rejects_drift(tmp_path, monkeypatch):
     _w111_inputs(tmp_path, monkeypatch)
     receipt = w111.analyze()
