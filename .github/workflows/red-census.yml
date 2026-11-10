@@ -9,6 +9,10 @@ name: RED census (report-only)
 # not provisioned; see docs/ci/RED_CENSUS_README.md.
 
 on:
+  # TEMPORARY (registration only, removed in the next commit)
+  push:
+    branches: [ctrl/red-census-ledger-seed]
+    paths: ['.github/workflows/red-census.yml']
   schedule:
     - cron: '17 5 * * *'
   workflow_dispatch:
