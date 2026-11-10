@@ -8,15 +8,6 @@ on:
       - '18_ARTIFACTS_ANALYSIS/artifacts/ARTEFACT_TYPE_GROUPING/PYTHON_code/**'
       - '.github/workflows/dmaic-v3-cognitive-cicd.yml'
   workflow_dispatch:
-    inputs:
-      deployment_target:
-        description: 'Deployment target'
-        required: true
-        default: 'staging'
-        type: choice
-        options:
-          - staging
-          - production
 
 env:
   PYTHON_VERSION: '3.14'
@@ -317,117 +308,12 @@ jobs:
             ${{ env.DMAIC_PATH }}/.dow_cognitive/deployment_plan.json
 
   # ============================================================================
-  # PHASE 6: Staging Deployment (HIGH - P1)
-  # ============================================================================
-  deploy-staging:
-    name: 'P1: Deploy to Staging'
-    runs-on: ubuntu-latest
-    needs: [test-suite, generate-registry]
-    if: github.ref == 'refs/heads/develop' || github.event.inputs.deployment_target == 'staging'
-    environment:
-      name: staging
-      url: https://staging.dmaic-v3.example.com
-
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v7
-
-      - name: Download registry artifacts
-        uses: actions/download-artifact@v8
-        with:
-          name: injection-registry
-          path: .dow_cognitive
-
-      - name: Deploy to staging
-        run: |
-          echo "::group::Staging Deployment"
-          echo "[DEPLOY] Deploying to staging environment..."
-          echo "[DEPLOY] Registry files:"
-          ls -la .dow_cognitive/
-          echo "[OK] Staging deployment complete"
-          echo "::endgroup::"
-
-      - name: Run smoke tests
-        run: |
-          echo "[TEST] Running staging smoke tests..."
-          echo "[OK] Smoke tests passed"
-
-  # ============================================================================
-  # PHASE 7: Production Deployment (CRITICAL - P0)
-  # ============================================================================
-  deploy-production:
-    name: 'P0: Deploy to Production'
-    runs-on: ubuntu-latest
-    needs: deploy-staging
-    if: github.ref == 'refs/heads/main' || github.event.inputs.deployment_target == 'production'
-    environment:
-      name: production
-      url: https://dmaic-v3.example.com
-
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v7
-
-      - name: Download registry artifacts
-        uses: actions/download-artifact@v8
-        with:
-          name: injection-registry
-          path: .dow_cognitive
-
-      - name: GOD-Level Validation
-        run: |
-          echo "::group::GOD-Level Production Validation"
-          python -c "
-          import json
-          from pathlib import Path
-
-          print('[GOD] Running production validation...')
-
-          # Load deployment plan
-          plan_path = Path('.dow_cognitive/deployment_plan.json')
-          if not plan_path.exists():
-              print('[ERROR] Deployment plan not found')
-              exit(1)
-
-          with open(plan_path) as f:
-              plan = json.load(f)
-
-          # Verify critical (P0) injection points
-          phase1 = plan['phases'][0]
-          if phase1['priority'] != 'P0':
-              print('[ERROR] Phase 1 is not P0 priority')
-              exit(1)
-
-          print(f'[OK] Found {phase1[\"count\"]} critical injection points')
-          print('[OK] GOD-level validation passed')
-          "
-          echo "::endgroup::"
-
-      - name: Deploy to production
-        run: |
-          echo "::group::Production Deployment"
-          echo "[DEPLOY] Deploying to production environment..."
-          echo "[DEPLOY] Registry files:"
-          ls -la .dow_cognitive/
-          echo "[OK] Production deployment complete"
-          echo "::endgroup::"
-
-      - name: Run production smoke tests
-        run: |
-          echo "[TEST] Running production smoke tests..."
-          echo "[OK] Production smoke tests passed"
-
-      - name: Notify deployment
-        run: |
-          echo "::notice::Production deployment successful - Cognitive Loop active"
-
-  # ============================================================================
   # PHASE 8: Update Tracking Systems (MEDIUM - P2)
   # ============================================================================
   update-tracking:
     name: 'P2: Update Tracking Systems'
     runs-on: ubuntu-latest
-    needs: [deploy-staging, deploy-production]
+    needs: generate-registry
     if: always()
 
     steps:
