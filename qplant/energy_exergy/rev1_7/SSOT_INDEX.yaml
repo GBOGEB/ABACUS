@@ -10,7 +10,11 @@ canonical_data:
   interfaces: data/interface_icd_register_rev1_7.csv
   operating_states: data/operating_utility_scenarios_24_30_rev1_7.csv
   deliverables: data/deliverable_evidence_matrix_rev1_7.csv
-  rfi_gaps: data/RFI_register_rev1_7.csv
+  # A10 F3 phase B: the RFI register is a controlled input and is no longer
+  # public. Byte-identical private copy (git blob 78869e99) in
+  # cryoplant-project main db3bfb9d; resolve it there, not in this repo.
+  rfi_gaps:
+    private:cryoplant-project/triage/w364/qpsdeck_pack/inputs/context/RFI_register_rev1_7.csv
   dmaic_metrics: data/DMAIC_KPI_metrics_rev1_7.csv
   not_for_use: data/not_for_use_rev1_7.csv
 project_hierarchy:
