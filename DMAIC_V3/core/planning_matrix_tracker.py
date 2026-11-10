@@ -13,11 +13,11 @@ Integrates: V2.3 time engine, Ranking systems, Self-validation
 =============================================================================
 """
 
-import json
-from dataclasses import dataclass
-from datetime import datetime
-from pathlib import Path
-from typing import Dict, List, Optional
+import json  # noqa: E402
+from dataclasses import dataclass  # noqa: E402
+from datetime import datetime  # noqa: E402
+from pathlib import Path  # noqa: E402
+from typing import Dict, List, Optional  # noqa: E402
 
 import yaml
 
