@@ -21,14 +21,25 @@ jobs:
       - name: Install dependencies
         run: |
           pip install -r requirements.txt || true
-      - name: Run sprint
+      # Bridge: runners/dmaic_runner.py -> DMAIC_V3/run_all_phases.py (phases 0-9 for one
+      # iteration, git commits disabled). Scheduled runs have no inputs, so they use the
+      # dispatch default sprint 5.
+      - name: Run sprint (DMAIC_V3/run_all_phases.py)
+        env:
+          SPRINT: ${{ github.event.inputs.sprint_number || '5' }}
         run: |
-          python runners/dmaic_runner.py --action run-sprint --sprint ${{ github.event.inputs.sprint_number }}
-      - name: Generate report
-        run: |
-          python scoring/iterative_scoring.py --iteration ${{ github.event.inputs.sprint_number }}
+          python runners/dmaic_runner.py --action run-sprint --sprint "$SPRINT"
       - name: Upload results
         uses: actions/upload-artifact@v7
         with:
           name: sprint-results
-          path: DMAIC_V3_OUTPUT/sprints/
+          path: DMAIC_V3_OUTPUT/iteration_${{ github.event.inputs.sprint_number || '5' }}/
+          if-no-files-found: error
+      # SPEC (never built): scoring/iterative_scoring.py does not exist in the repository.
+      # dmaic-sprint-system/code/compare_iterations.py is not a substitute: it compares two
+      # iterations under DMAIC_V3_OUTPUT/sprints/ with a different file layout. Stays red.
+      - name: "SPEC (never built): Generate report - scoring/iterative_scoring.py"
+        env:
+          SPRINT: ${{ github.event.inputs.sprint_number || '5' }}
+        run: |
+          python scoring/iterative_scoring.py --iteration "$SPRINT"
