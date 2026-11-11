@@ -1,0 +1,43 @@
+name: Ecosystem Worktree Sync Receiver
+
+# Receives repository_dispatch `ecosystem_worktree_sync` from GBOGEB/GEMINI
+# (.github/workflows/ecosystem_federated_dispatch.yml).
+# Stub: validates and records the handover. Downstream action is still to be defined.
+#
+# Safety rules for anyone extending this file:
+# - client_payload is untrusted input. Read it only through env: (toJson), never ${{ }} inside run:.
+# - commit_sha is a GEMINI SHA. Never pass it to actions/checkout of this repository.
+
+on:
+  repository_dispatch:
+    types: [ecosystem_worktree_sync]
+
+permissions: {}
+
+jobs:
+  receive:
+    name: Validate and record GEMINI handover
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Validate payload
+        env:
+          PAYLOAD: ${{ toJson(github.event.client_payload) }}
+        run: |
+          set -euo pipefail
+          printf '%s' "$PAYLOAD" > payload.json
+          src=$(jq -r '.source_repo // ""' payload.json)
+          sha=$(jq -r '.commit_sha // ""' payload.json)
+          if [ "$src" != "GBOGEB/GEMINI" ]; then
+            echo "::error::unexpected source_repo: $src"; exit 1
+          fi
+          if ! printf '%s' "$sha" | grep -Eq '^[0-9a-f]{40}$'; then
+            echo "::error::commit_sha is not a 40-hex SHA"; exit 1
+          fi
+          {
+            echo "### ecosystem_worktree_sync received"
+            echo
+            echo '```json'
+            jq . payload.json
+            echo '```'
+          } >> "$GITHUB_STEP_SUMMARY"
