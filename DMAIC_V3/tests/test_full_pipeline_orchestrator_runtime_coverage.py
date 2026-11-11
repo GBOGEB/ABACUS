@@ -248,9 +248,7 @@ def test_phase_plan_matches_cli_choices_in_order():
     assert [row[0] for row in plan if row[4]] == [0, 1, 2, 3, 4, 5]
 
 
-def test_noncritical_phase_failure_still_completes_full_pipeline(
-    tmp_path, monkeypatch
-):
+def test_noncritical_phase_failure_still_completes_full_pipeline(tmp_path, monkeypatch):
     monkeypatch.chdir(tmp_path)
     _patch_phases(monkeypatch, failing="Phase7ActionTracking")
     orch = _orchestrator()
@@ -293,9 +291,7 @@ def test_single_phase_runs_only_the_requested_phase(tmp_path, monkeypatch):
     assert not (iteration_dir / "orchestration_statistics.json").exists()
 
 
-def test_single_phase_failure_fails_even_for_noncritical_phase(
-    tmp_path, monkeypatch
-):
+def test_single_phase_failure_fails_even_for_noncritical_phase(tmp_path, monkeypatch):
     monkeypatch.chdir(tmp_path)
     _patch_phases(monkeypatch, failing="Phase7ActionTracking")
     orch = _orchestrator()
@@ -313,9 +309,7 @@ def test_single_phase_failure_fails_even_for_noncritical_phase(
     assert receipt["success"] is False
 
 
-def test_single_phase_construction_error_is_a_recorded_failure(
-    tmp_path, monkeypatch
-):
+def test_single_phase_construction_error_is_a_recorded_failure(tmp_path, monkeypatch):
     monkeypatch.chdir(tmp_path)
     _patch_phases(monkeypatch)
 
@@ -435,9 +429,7 @@ def test_phase_workflow_offers_exactly_the_cli_phases_through_env():
     doc = yaml.safe_load(path.read_text(encoding="utf-8"))
     phase_input = doc["on"]["workflow_dispatch"]["inputs"]["phase"]
     assert phase_input["type"] == "choice"
-    assert phase_input["options"] == [
-        str(n) for n in orchestrator_module.PHASE_CHOICES
-    ]
+    assert phase_input["options"] == [str(n) for n in orchestrator_module.PHASE_CHOICES]
 
     (step,) = [
         step
