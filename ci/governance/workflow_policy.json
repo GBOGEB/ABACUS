@@ -547,6 +547,12 @@
       "disposition": "keep"
     },
     {
+      "pattern": "^mip-b1b2-sphinx-native-resolver\\.yml$",
+      "cluster": "statistics",
+      "lifecycle": "pr_domain",
+      "disposition": "keep"
+    },
+    {
       "pattern": "^mip-py310-combined-head-probe\\.yml$",
       "cluster": "statistics",
       "lifecycle": "pr_domain",
