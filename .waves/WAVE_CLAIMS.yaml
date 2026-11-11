@@ -11,12 +11,30 @@ participates:
   - key: QPS:W113
     role: receiver   # .mesh/MESH_DOCK.yaml current_focus W113_MESH_CLOSURE_CONTROLLER_DOW_RECEIVER
   - key: QPS:W027
-    role: consumer   # testpilot native contract test; owner cryoplant
+    role: consumer   # testpilot native contract test; owner cryoplant-project (local)
   - key: QPS:W033
-    role: executor   # backbone pool run; owner cryoplant
+    role: executor   # backbone pool run; owner FEDERATION (elevated)
   - key: QPS:W048
-    role: executor   # CBD recurse fan-out scripts; owner cryoplant
+    role: executor   # CBD recurse fan-out scripts; owner FEDERATION (elevated)
   - key: QPS:W102
-    role: receiver   # QPS MIP reconciliation receiver; owner cryoplant
+    role: receiver   # QPS MIP reconciliation receiver; owner FEDERATION (elevated)
   - key: QPS:W334
-    role: receiver   # DOW receipt; owner cryoplant
+    role: receiver   # DOW receipt; owner FEDERATION (elevated)
+  - key: QPS:W060
+    role: receiver   # DOW receipt; elevated
+  - key: QPS:W068
+    role: executor   # MIP orchestration, measured PCA pulse; elevated
+  - key: QPS:W089
+    role: mirror   # census exact-head trigger copy; elevated
+  - key: QPS:W091
+    role: mirror   # runtime consolidation copy; elevated
+  - key: QPS:W092
+    role: mirror   # deployment runtime registry copy; elevated
+  - key: QPS:W093
+    role: receiver   # DOW gate, docker deployment proof; elevated
+  - key: QPS:W097
+    role: producer   # origin; healthy control baseline; elevated
+  - key: QPS:W112
+    role: receiver   # global hive GLOB DOW receiver; elevated
+  - key: QPS:W322
+    role: reviewer   # HEPAK MIP DOW review; elevated

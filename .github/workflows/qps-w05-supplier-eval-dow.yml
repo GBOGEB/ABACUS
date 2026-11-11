@@ -11,7 +11,7 @@ on:
       - 'federation/qps/snapshots/QPS_FED_W05_BIDDER_EVAL_SANITIZED_v0.1.yaml'
       - 'tools/run_qps_w05_bidder_eval_dow_return.py'
       - 'tests/test_qps_w05_bidder_eval_dow_return.py'
-      - '.github/workflows/qps-w05-bidder-eval-dow.yml'
+      - '.github/workflows/qps-w05-supplier-eval-dow.yml'
   push:
     branches: [main]
     paths:
@@ -20,7 +20,7 @@ on:
       - 'federation/qps/snapshots/QPS_FED_W05_BIDDER_EVAL_SANITIZED_v0.1.yaml'
       - 'tools/run_qps_w05_bidder_eval_dow_return.py'
       - 'tests/test_qps_w05_bidder_eval_dow_return.py'
-      - '.github/workflows/qps-w05-bidder-eval-dow.yml'
+      - '.github/workflows/qps-w05-supplier-eval-dow.yml'
 
 permissions:
   contents: read
@@ -70,6 +70,6 @@ jobs:
           PY
       - uses: actions/upload-artifact@v7
         with:
-          name: qps-w05-bidder-eval-dow-${{ github.run_id }}
+          name: qps-w05-supplier-eval-dow-${{ github.run_id }}
           path: federation/qps/runtime/QPS_FED_W05_BIDDER_EVAL_DOW_RUNTIME_RECEIPT.yaml
           if-no-files-found: error
