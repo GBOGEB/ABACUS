@@ -1,16 +1,3 @@
-jobs:
-  execute-phase:
-    runs-on: ubuntu-latest
-    steps:
-    - name: Checkout code
-      uses: actions/checkout@v7
-    - name: Set up Python
-      uses: actions/setup-python@v7
-      with:
-        python-version: '3.14'
-    - name: Execute DMAIC Phase
-      run: python DMAIC_V3/full_pipeline_orchestrator.py --phase ${{ github.event.inputs.phase
-        }}
 name: DMAIC Phase Execution
 'on':
   workflow_dispatch:
@@ -19,3 +6,44 @@ name: DMAIC Phase Execution
         default: '0'
         description: Phase to execute (0-9)
         required: true
+        type: choice
+        options:
+        - '0'
+        - '1'
+        - '2'
+        - '3'
+        - '4'
+        - '5'
+        - '6'
+        - '7'
+        - '8'
+        - '9'
+permissions:
+  contents: read
+jobs:
+  execute-phase:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+    - name: Set up Python
+      uses: actions/setup-python@6d4fd22b20465ccc0f7354476588e8df7c9ca0e0 # v7.1.0
+      with:
+        python-version: '3.14'
+    - name: Install canonical dependencies
+      run: |
+        python -m pip install --upgrade pip
+        python -m pip install -r DMAIC_V3/requirements.txt
+    - name: Execute DMAIC Phase
+      env:
+        PHASE: ${{ github.event.inputs.phase }}
+      run: python DMAIC_V3/full_pipeline_orchestrator.py --phase "$PHASE" --no-git
+    - name: Upload phase outputs
+      if: always()
+      uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+      with:
+        name: dmaic-phase-${{ github.event.inputs.phase }}-${{ github.run_number }}
+        path: DMAIC_V3_OUTPUT/
+        if-no-files-found: warn
+        retention-days: 30
