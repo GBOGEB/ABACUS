@@ -650,7 +650,7 @@ if __name__ == "__main__":
 
     root_dir = Path(__file__).parent.parent.parent
 
-    stats = tracker.scan_and_execute(
+    tracker.scan_and_execute(
         root_dir,
         patterns=["DMAIC_V3/generators/**/*.py", "DMAIC_V3/generators/**/*.bas"],
     )
