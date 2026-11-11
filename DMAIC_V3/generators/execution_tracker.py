@@ -33,7 +33,7 @@ import json
 import yaml
 
 sys.path.insert(0, str(Path(__file__).parent.parent.parent))
-from DMAIC_V3.core.metrics import MetricsTracker, MetricType  # noqa: E402
+from DMAIC_V3.core.metrics import MetricsTracker  # noqa: E402
 
 
 class ErrorType(Enum):
