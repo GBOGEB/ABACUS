@@ -33,10 +33,15 @@ end_of_life: ["3.8", "3.9", "3.10"]
 # Workflows `sync` must not edit until a separate, owned step happens. `check`
 # reports them as HELD (not drift) and skips the end-of-life scan for them.
 held_workflows:
-  .github/workflows/qps-w05-bidder-eval-dow.yml: >
+  .github/workflows/qps-w05-supplier-eval-dow.yml: >
     a10-guard re-reviews every edited version of tender-named files; bump its
     pin in a separately reviewed change and add the new blob to
     .a10_guard_allow.
+  .github/workflows/mip-b1b2-sphinx-native-resolver.yml: >
+    cohort probe: its matrix is exactly the two interpreters on either side of
+    the Sphinx 9.2.0 boundary (3.12 -> sphinx<9.2, 3.13 -> sphinx>=9.2) and its
+    case statement exits 2 on any other version. Re-point it only when the
+    DMAIC_V3/requirements.txt Sphinx cohorts change.
 
 # Lanes whose dependencies cannot run on every supported version yet. A workflow
 # file matching any pattern is capped at `max` for all its jobs.

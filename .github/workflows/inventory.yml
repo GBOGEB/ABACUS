@@ -16,11 +16,16 @@ jobs:
       - name: Install dependencies
         run: |
           pip install -r requirements.txt || true
-      - name: Run inventory scan
+      # Bridge: runners/dmaic_runner.py dispatches to tools/root_refactor/inventory.py
+      # (root-file family inventory). Writes ROOT_INVENTORY.csv + summary to
+      # DMAIC_V3_OUTPUT/inventory/; exits 1 while any root file is UNCLASSIFIED.
+      - name: Run inventory scan (tools/root_refactor/inventory.py)
         run: |
-          python runners/dmaic_runner.py --action inventory
+          python runners/dmaic_runner.py --action inventory --output-dir DMAIC_V3_OUTPUT/inventory
       - name: Upload results
+        if: always()
         uses: actions/upload-artifact@v7
         with:
           name: inventory-results
           path: DMAIC_V3_OUTPUT/inventory/
+          if-no-files-found: error
