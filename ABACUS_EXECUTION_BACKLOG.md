@@ -60,6 +60,7 @@ Date: 2026-06-11
 - **Owner:** CI owner / DMAIC runtime owner.
 - **Dependency:** P0-1 SSOT decision.
 - **Acceptance Criteria:** Workflow command targets an entrypoint that supports `--phase` or command arguments are corrected; validation command is documented; no new phase runner is created.
+- **Validation:** `full_pipeline_orchestrator.py` accepts `--phase {0..9}` and runs that one phase from the same phase table as the full pipeline (no new runner). Check with `python -m pytest DMAIC_V3/tests/test_full_pipeline_orchestrator_runtime_coverage.py -q`, which also parses every workflow invocation of the orchestrator with its real parser. Native check: `python DMAIC_V3/full_pipeline_orchestrator.py --phase 0 --no-git` exits 0 and writes `DMAIC_V3_OUTPUT/iteration_1/single_phase/phase0_init.json`.
 
 ## P2 — Dashboard generation and metrics collection
 
