@@ -1005,7 +1005,7 @@
         },
         {
           "id": 1745,
-          "title": "SOURCE-QPS-REVIEW: recover native ALAT-101..150 and OD15 review rows",
+          "title": "SOURCE-QPS-REVIEW: recover native SUPPLIER_A-101..150 and OD15 review rows",
           "url": "https://github.com/GBOGEB/cryoplant-project/issues/1745",
           "state": "open",
           "updated_at": "2026-10-04T07:30:36Z",
@@ -1015,7 +1015,7 @@
         },
         {
           "id": 1742,
-          "title": "RFI-LKT-CYBER: MIT access, CRA and system-owner security evidence return",
+          "title": "RFI-SUPPLIER_B-CYBER: MIT access, CRA and system-owner security evidence return",
           "url": "https://github.com/GBOGEB/cryoplant-project/issues/1742",
           "state": "open",
           "updated_at": "2026-09-24T12:51:17Z",
@@ -1025,7 +1025,7 @@
         },
         {
           "id": 1741,
-          "title": "RFI-ALAT-OFFER12: invCOP source, boundary and owner disposition",
+          "title": "RFI-SUPPLIER_A-OFFER12: invCOP source, boundary and owner disposition",
           "url": "https://github.com/GBOGEB/cryoplant-project/issues/1741",
           "state": "open",
           "updated_at": "2026-09-24T12:51:14Z",
@@ -1037,7 +1037,7 @@
         },
         {
           "id": 1738,
-          "title": "RFI-ALAT-MJA-P0: Controls/Cyber safety, CyFun and IAM closure return",
+          "title": "RFI-SUPPLIER_A-MJA-P0: Controls/Cyber safety, CyFun and IAM closure return",
           "url": "https://github.com/GBOGEB/cryoplant-project/issues/1738",
           "state": "open",
           "updated_at": "2026-09-24T12:41:16Z",
@@ -1049,7 +1049,7 @@
         },
         {
           "id": 1725,
-          "title": "RFI-ALAT-DEWAR-CIS-01: bind Dewar filling control-signal and interface boundary",
+          "title": "RFI-SUPPLIER_A-DEWAR-CIS-01: bind Dewar filling control-signal and interface boundary",
           "url": "https://github.com/GBOGEB/cryoplant-project/issues/1725",
           "state": "open",
           "updated_at": "2026-09-24T07:37:08Z",
@@ -1059,7 +1059,7 @@
         },
         {
           "id": 1724,
-          "title": "NEG-ALAT-SAT-01: member-level disposition of reduced FAT/SAT performance scope",
+          "title": "NEG-SUPPLIER_A-SAT-01: member-level disposition of reduced FAT/SAT performance scope",
           "url": "https://github.com/GBOGEB/cryoplant-project/issues/1724",
           "state": "open",
           "updated_at": "2026-10-04T07:30:47Z",
@@ -1069,7 +1069,7 @@
         },
         {
           "id": 1723,
-          "title": "RFI-ALAT-DRYER-01: bind single-dryer and maintenance-bypass architecture",
+          "title": "RFI-SUPPLIER_A-DRYER-01: bind single-dryer and maintenance-bypass architecture",
           "url": "https://github.com/GBOGEB/cryoplant-project/issues/1723",
           "state": "open",
           "updated_at": "2026-09-24T07:37:05Z",
@@ -1079,7 +1079,7 @@
         },
         {
           "id": 1722,
-          "title": "RFI-ALAT-WCS-SENS-01: bind Kaeser package sensor scope to exact RTM children",
+          "title": "RFI-SUPPLIER_A-WCS-SENS-01: bind Vendor_1 package sensor scope to exact RTM children",
           "url": "https://github.com/GBOGEB/cryoplant-project/issues/1722",
           "state": "open",
           "updated_at": "2026-09-24T07:37:03Z",
@@ -1194,7 +1194,7 @@
         },
         {
           "id": 1083,
-          "title": "W152 LKT L1: source return for RTM-661/664/680/681",
+          "title": "W152 SUPPLIER_B L1: source return for RTM-661/664/680/681",
           "url": "https://github.com/GBOGEB/cryoplant-project/issues/1083",
           "state": "open",
           "updated_at": "2026-09-13T17:55:46Z",
@@ -1239,7 +1239,7 @@
         },
         {
           "id": 1022,
-          "title": "RFI P0: LKT HP 2K-OP 56 Hz motor/VFD/auxiliary decomposition for baseload DoV",
+          "title": "RFI P0: SUPPLIER_B HP 2K-OP 56 Hz motor/VFD/auxiliary decomposition for baseload DoV",
           "url": "https://github.com/GBOGEB/cryoplant-project/issues/1022",
           "state": "open",
           "updated_at": "2026-09-23T16:14:02Z",
@@ -1252,7 +1252,7 @@
         },
         {
           "id": 1021,
-          "title": "RFI P0: LKT invCOP SAT E3 meter boundary, synchronized Qeq window and acceptance receipt",
+          "title": "RFI P0: SUPPLIER_B invCOP SAT E3 meter boundary, synchronized Qeq window and acceptance receipt",
           "url": "https://github.com/GBOGEB/cryoplant-project/issues/1021",
           "state": "open",
           "updated_at": "2026-09-15T14:58:55Z",
@@ -1274,7 +1274,7 @@
         },
         {
           "id": 981,
-          "title": "RFI: ALAT-S01 five-year operational spares and M&O basket",
+          "title": "RFI: SUPPLIER_A-S01 five-year operational spares and M&O basket",
           "url": "https://github.com/GBOGEB/cryoplant-project/issues/981",
           "state": "open",
           "updated_at": "2026-09-12T11:02:04Z",
@@ -1284,7 +1284,7 @@
         },
         {
           "id": 978,
-          "title": "RFI: ALAT RTM-435 reconcile 55.2 / 79.3 kW HVAC heat boundary",
+          "title": "RFI: SUPPLIER_A RTM-435 reconcile 55.2 / 79.3 kW HVAC heat boundary",
           "url": "https://github.com/GBOGEB/cryoplant-project/issues/978",
           "state": "open",
           "updated_at": "2026-09-12T09:22:13Z",
@@ -1296,7 +1296,7 @@
         },
         {
           "id": 974,
-          "title": "RFI-ALAT-S03: bind critical-spares stock, cost and total MDT by failure family",
+          "title": "RFI-SUPPLIER_A-S03: bind critical-spares stock, cost and total MDT by failure family",
           "url": "https://github.com/GBOGEB/cryoplant-project/issues/974",
           "state": "open",
           "updated_at": "2026-09-12T09:17:54Z",
@@ -1310,7 +1310,7 @@
         },
         {
           "id": 943,
-          "title": "HV06-DEC-001: disposition ALAT RTM-422 bypass-control deviation",
+          "title": "HV06-DEC-001: disposition SUPPLIER_A RTM-422 bypass-control deviation",
           "url": "https://github.com/GBOGEB/cryoplant-project/issues/943",
           "state": "open",
           "updated_at": "2026-10-04T07:30:21Z",
@@ -1327,7 +1327,7 @@
         },
         {
           "id": 704,
-          "title": "Offer-eval register: separate and combined LKT / ALAT RFI, clarification and negotiation views",
+          "title": "Offer-eval register: separate and combined SUPPLIER_B / SUPPLIER_A RFI, clarification and negotiation views",
           "url": "https://github.com/GBOGEB/cryoplant-project/issues/704",
           "state": "open",
           "updated_at": "2026-10-11T23:17:51Z",
@@ -1385,7 +1385,7 @@
         },
         {
           "id": 553,
-          "title": "RFI: LKT PVPS 2K-OP running count, VFD load and 83 kWe / 75 kWth boundary closure",
+          "title": "RFI: SUPPLIER_B PVPS 2K-OP running count, VFD load and 83 kWe / 75 kWth boundary closure",
           "url": "https://github.com/GBOGEB/cryoplant-project/issues/553",
           "state": "open",
           "updated_at": "2026-09-23T16:13:59Z",
@@ -1398,7 +1398,7 @@
         },
         {
           "id": 547,
-          "title": "RFI: ALAT PVPS 2K-OP electrical / cooling-water / HVAC boundary and Leybold performance receipt",
+          "title": "RFI: SUPPLIER_A PVPS 2K-OP electrical / cooling-water / HVAC boundary and Leybold performance receipt",
           "url": "https://github.com/GBOGEB/cryoplant-project/issues/547",
           "state": "open",
           "updated_at": "2026-09-06T09:02:32Z",
@@ -1501,7 +1501,7 @@
         },
         {
           "id": 248,
-          "title": "Review status + LKT/both-bidder negotiation agenda tracker",
+          "title": "Review status + SUPPLIER_B/both-bidder negotiation agenda tracker",
           "url": "https://github.com/GBOGEB/cryoplant-project/issues/248",
           "state": "open",
           "updated_at": "2026-10-11T22:57:55Z",
@@ -1519,7 +1519,7 @@
         },
         {
           "id": 242,
-          "title": "LKT L1: propagate configuration, utilities/lifecycle and spares/RCM closure",
+          "title": "SUPPLIER_B L1: propagate configuration, utilities/lifecycle and spares/RCM closure",
           "url": "https://github.com/GBOGEB/cryoplant-project/issues/242",
           "state": "open",
           "updated_at": "2026-09-15T14:58:35Z",
@@ -1535,13 +1535,13 @@
         },
         {
           "id": 235,
-          "title": "LKT W12 negotiation capture: OFFER-49 first closure candidate; RTM-514 post-award split",
+          "title": "SUPPLIER_B W12 negotiation capture: OFFER-49 first closure candidate; RTM-514 post-award split",
           "url": "https://github.com/GBOGEB/cryoplant-project/issues/235",
           "state": "open",
           "updated_at": "2026-09-03T16:33:08Z",
           "labels": [
             "negotiation",
-            "LKT",
+            "SUPPLIER_B",
             "W12",
             "QPS"
           ],
