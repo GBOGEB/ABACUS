@@ -116,7 +116,7 @@ Make PR-triggered workflows with write-class GitHub token scopes explicit and re
 | 20 | `pr_domain` | `dmaic` | `dmaic-phase-execution.yml` | none | 1 | `keep` | — |
 | 20 | `pr_domain` | `dmaic` | `dmaic-v3-cd.yml` | push, release, workflow_dispatch | 3 | `keep` | — |
 | 20 | `pr_domain` | `dmaic` | `dmaic-v3-ci.yml` | push, pull_request, schedule, workflow_dispatch | 9 | `keep` | — |
-| 20 | `pr_domain` | `dmaic` | `dmaic-v3-cognitive-cicd.yml` | push, workflow_dispatch | 9 | `keep` | — |
+| 20 | `pr_domain` | `dmaic` | `dmaic-v3-cognitive-cicd.yml` | push, workflow_dispatch | 7 | `keep` | — |
 | 20 | `pr_domain` | `dmaic` | `recursive-build.yml` | push, workflow_dispatch | 1 | `keep` | — |
 | 20 | `pr_domain` | `dmaic` | `w2-dmaic-phase-cache-qa.yml` | pull_request | 1 | `keep` | — |
 | 20 | `pr_domain` | `documentation` | `w4-dashboard-publication-qa.yml` | pull_request | 1 | `keep` | — |
