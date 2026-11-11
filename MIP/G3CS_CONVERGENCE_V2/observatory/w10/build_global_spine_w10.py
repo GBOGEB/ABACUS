@@ -197,7 +197,6 @@ def make_html(d, svg):
     lg = d["clocks"]["main_coverage"][1]
     scenario = d["next_scenario"]
     issue_next_open = issues["total_open"] - scenario["issues_closed_count"]
-    issue_next_closed = issues["total_closed"] + scenario["issues_closed_count"]
     rows = []
     for repo in issues["repos"]:
         o, c = repo["issue_open"], repo["issue_closed"]
