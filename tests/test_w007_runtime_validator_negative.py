@@ -3,6 +3,7 @@
 Synthetic fixtures exercise negative paths without mutating repository evidence,
 claiming a Pages publication, or granting engineering authority.
 """
+
 from __future__ import annotations
 
 from datetime import datetime, timezone
@@ -59,8 +60,16 @@ def runtime_tree(tmp_path: Path) -> Path:
     )
     (docs / "api" / "rtm_trace_matrix.json").write_text(
         json.dumps(
-            {"rows": [{"requirement_id": "R1", "evidence_id": "E1",
-                       "evidence_artifact": "docs/evidence.txt", "available": True}]}
+            {
+                "rows": [
+                    {
+                        "requirement_id": "R1",
+                        "evidence_id": "E1",
+                        "evidence_artifact": "docs/evidence.txt",
+                        "available": True,
+                    }
+                ]
+            }
         ),
         encoding="utf-8",
     )
@@ -85,7 +94,9 @@ def _errors(root: Path) -> str:
     return "\n".join(validate_runtime_foundation(root))
 
 
-def test_minimal_valid_runtime_and_unpublished_generated_artifact(runtime_tree: Path) -> None:
+def test_minimal_valid_runtime_and_unpublished_generated_artifact(
+    runtime_tree: Path,
+) -> None:
     assert validate_runtime_foundation(runtime_tree) == []
     # A run-generated artifact must not be forced into the published source tree.
     assert not (runtime_tree / "reports/runtime_status.json").exists()
@@ -144,7 +155,10 @@ def test_manifest_rejects_invalid_evidence(
         ("non_object_row", "RTM trace row #1 must be an object"),
         ("missing_fields", "RTM trace row #1 missing fields"),
         ("unavailable", "RTM trace matrix has unavailable or missing evidence: E1"),
-        ("not_boolean_true", "RTM trace matrix has unavailable or missing evidence: E1"),
+        (
+            "not_boolean_true",
+            "RTM trace matrix has unavailable or missing evidence: E1",
+        ),
         ("missing_file", "RTM trace matrix has unavailable or missing evidence: E1"),
         ("blank_path", "evidence_artifact must be a non-empty string"),
     ],
@@ -208,8 +222,11 @@ def test_runtime_portal_cannot_disappear_silently(
     if case == "missing":
         path.unlink()
     else:
-        path.write_text("W007 Runtime Foundation | SSOT Dashboard | "
-                        "runtime-artifact-manifest.json | Visualization Layer", encoding="utf-8")
+        path.write_text(
+            "W007 Runtime Foundation | SSOT Dashboard | "
+            "runtime-artifact-manifest.json | Visualization Layer",
+            encoding="utf-8",
+        )
     assert expected in _errors(runtime_tree)
 
 
@@ -248,13 +265,18 @@ def test_status_failure_never_calls_itself_validated(runtime_tree: Path) -> None
 
 @pytest.mark.parametrize("is_valid,expected_exit", [(True, 0), (False, 1)])
 def test_cli_preserves_status_json_and_exit_code(
-    tmp_path: Path, monkeypatch: pytest.MonkeyPatch,
-    capsys: pytest.CaptureFixture[str], is_valid: bool, expected_exit: int
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+    capsys: pytest.CaptureFixture[str],
+    is_valid: bool,
+    expected_exit: int,
 ) -> None:
     destination = tmp_path / "nested" / "run-bound.json"
-    status = {"validation_passed": is_valid, "runtime_status":
-              "validated" if is_valid else "validation_failed",
-              "authority": "RUNTIME_EVIDENCE_ONLY_ZERO_ENGINEERING_AUTHORITY"}
+    status = {
+        "validation_passed": is_valid,
+        "runtime_status": "validated" if is_valid else "validation_failed",
+        "authority": "RUNTIME_EVIDENCE_ONLY_ZERO_ENGINEERING_AUTHORITY",
+    }
     monkeypatch.setattr(runtime_status, "build_status", lambda: status)
     monkeypatch.setattr(sys, "argv", ["status", "--output", str(destination)])
     assert runtime_status.main() == expected_exit
@@ -285,8 +307,7 @@ def test_each_required_runtime_capability_is_nonoptional(
 ) -> None:
     path, manifest = _manifest(runtime_tree)
     manifest["artifacts"] = [
-        item for item in manifest["artifacts"]
-        if item["capability"] != capability
+        item for item in manifest["artifacts"] if item["capability"] != capability
     ]
     _write(path, manifest)
     assert f"runtime manifest missing capability: {capability}" in _errors(runtime_tree)
@@ -297,7 +318,10 @@ def test_each_required_runtime_capability_is_nonoptional(
     [
         ("non_string_active_path", "runtime manifest artifact #1 missing path"),
         ("blank_active_path", "runtime manifest artifact #1 missing path"),
-        ("non_string_generated_producer", "runtime-generated artifact missing producer"),
+        (
+            "non_string_generated_producer",
+            "runtime-generated artifact missing producer",
+        ),
         ("blank_generated_producer", "runtime-generated artifact missing producer"),
     ],
 )
@@ -307,8 +331,7 @@ def test_nonpath_or_blank_artifact_identity_is_not_accepted(
     path, manifest = _manifest(runtime_tree)
     active = next(item for item in manifest["artifacts"] if item["status"] == "active")
     generated = next(
-        item for item in manifest["artifacts"]
-        if item["status"] == "runtime_generated"
+        item for item in manifest["artifacts"] if item["status"] == "runtime_generated"
     )
     if kind == "non_string_active_path":
         active["path"] = 123

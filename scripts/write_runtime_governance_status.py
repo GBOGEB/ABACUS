@@ -11,7 +11,10 @@ from datetime import datetime, timezone
 from pathlib import Path
 
 try:
-    from scripts.validate_runtime_foundation import REPO_ROOT, validate_runtime_foundation
+    from scripts.validate_runtime_foundation import (
+        REPO_ROOT,
+        validate_runtime_foundation,
+    )
 except ModuleNotFoundError:  # direct `python scripts/...` execution
     from validate_runtime_foundation import REPO_ROOT, validate_runtime_foundation
 

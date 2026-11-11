@@ -1,4 +1,5 @@
 """Guard the DOW workflow-to-SUT source contract without faking green."""
+
 import json
 from pathlib import Path
 
@@ -48,10 +49,16 @@ def test_cli_report_only_and_required_source_exit_code(tmp_path: Path) -> None:
 
 def test_declared_workflow_inputs_and_outputs_are_retained() -> None:
     assert SOURCES["phase2"]["invocation"][-6:] == [
-        "--dow-root", "dow_output", "--alpha", "0.05", "--mode", "csv",
+        "--dow-root",
+        "dow_output",
+        "--alpha",
+        "0.05",
+        "--mode",
+        "csv",
     ]
     assert "dow_output/**/phase2_metadata.json" in EXPECTED_OUTPUTS["phase2"]
     assert SOURCES["phase3"]["invocation"][-2:] == [
-        "--phase2-metadata", "<phase2_metadata_path>",
+        "--phase2-metadata",
+        "<phase2_metadata_path>",
     ]
     assert "phase3_reports/**/*" in EXPECTED_OUTPUTS["upload_patterns"]

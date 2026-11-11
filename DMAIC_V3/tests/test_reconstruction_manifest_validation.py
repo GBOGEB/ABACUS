@@ -28,6 +28,8 @@ def test_reconstruction_manifest_in_repo_is_valid():
 
 def test_reconstruction_manifest_requires_all_components():
     payload = _load_reconstruction_manifest()
-    payload["component_map"] = [c for c in payload["component_map"] if c["name"] != "branch DAG"]
+    payload["component_map"] = [
+        c for c in payload["component_map"] if c["name"] != "branch DAG"
+    ]
     errors = validate_reconstruction_manifest(payload, ROOT_DIR)
     assert "component_map missing required component: branch DAG" in errors

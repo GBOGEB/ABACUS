@@ -87,9 +87,7 @@ def test_executed_clean_flake8_keeps_independent_deployment_semantics(bridge):
 
 def test_zero_tests_never_green_even_with_clean_static(bridge):
     bridge.test_results.clear()
-    bridge.run_static_analysis = lambda: {
-        "flake8": {"returncode": 0, "output": ""}
-    }
+    bridge.run_static_analysis = lambda: {"flake8": {"returncode": 0, "output": ""}}
     metrics = bridge.generate_deployment_metrics()
     assert metrics.tests_total == 0
     assert metrics.deployment_ready is False

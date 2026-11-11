@@ -1,4 +1,5 @@
 """Negative controls for the Bandit scanner-completeness contract."""
+
 from __future__ import annotations
 
 import contextlib
@@ -55,7 +56,10 @@ class BanditReceiptGuardTests(unittest.TestCase):
             with contextlib.redirect_stderr(io.StringIO()):
                 target.write_text("{not json", encoding="utf-8")
                 self.assertEqual(2, guard.main([str(target)]))
-                target.write_text(json.dumps({**sample(), "errors": [{"reason": "crash"}]}), encoding="utf-8")
+                target.write_text(
+                    json.dumps({**sample(), "errors": [{"reason": "crash"}]}),
+                    encoding="utf-8",
+                )
                 self.assertEqual(2, guard.main([str(target)]))
             with contextlib.redirect_stdout(io.StringIO()):
                 target.write_text(json.dumps(sample()), encoding="utf-8")

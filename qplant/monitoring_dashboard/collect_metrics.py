@@ -55,7 +55,9 @@ def collect_version_info() -> Dict[str, Any]:
     try:
         result = subprocess.run(
             ["git", "rev-parse", "--short", "HEAD"],
-            capture_output=True, text=True, cwd=str(PROJECT_ROOT)
+            capture_output=True,
+            text=True,
+            cwd=str(PROJECT_ROOT),
         )
         versions["git_commit"] = (
             result.stdout.strip() if result.returncode == 0 else "unknown"
@@ -72,7 +74,10 @@ def collect_test_results() -> Dict[str, Any]:
     try:
         result = subprocess.run(
             [sys.executable, "-m", "pytest", "tests/", "-v", "--tb=short", "-q"],
-            capture_output=True, text=True, cwd=str(PROJECT_ROOT), timeout=60
+            capture_output=True,
+            text=True,
+            cwd=str(PROJECT_ROOT),
+            timeout=60,
         )
         output = result.stdout
         # Parse test counts

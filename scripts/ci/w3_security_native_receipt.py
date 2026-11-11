@@ -17,7 +17,9 @@ VALID_OS = frozenset({"ubuntu-24.04", "windows-2022", "macos-14"})
 # Supported interpreters come from the SSOT view (ssot/python_versions.yaml).
 VALID_PY = frozenset(
     json.loads(
-        (Path(__file__).resolve().parents[2] / "ssot/python_versions.lanes.json").read_text(encoding="utf-8")
+        (
+            Path(__file__).resolve().parents[2] / "ssot/python_versions.lanes.json"
+        ).read_text(encoding="utf-8")
     )["supported"]
 )
 

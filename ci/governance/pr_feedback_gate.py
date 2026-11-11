@@ -569,7 +569,6 @@ def latest_codex_summary(
     )
 
 
-
 # The trusted Codex app publishes per-lane state in its summary comment.
 # Do not infer success from the human-readable table or short SHA.
 CODEX_REVIEW_STATE_V1 = re.compile(
@@ -601,7 +600,6 @@ def codex_structured_lane_complete(
         and detail.get("has_any_findings") is False
         and detail.get("has_unresolved_findings") is False
     )
-
 
 
 def codex_code_review_complete(

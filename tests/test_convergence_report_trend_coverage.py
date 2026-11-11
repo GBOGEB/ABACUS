@@ -9,7 +9,10 @@ from dataclasses import replace
 
 import pytest
 
-from DMAIC_V3.convergence.convergence_analyzer import ConvergenceAnalyzer, ConvergenceMetrics
+from DMAIC_V3.convergence.convergence_analyzer import (
+    ConvergenceAnalyzer,
+    ConvergenceMetrics,
+)
 
 
 @pytest.fixture
@@ -51,7 +54,9 @@ def metrics():
         (80.0, 80.0, "+0.0%"),
     ],
 )
-def test_report_includes_signed_measured_trend(analyzer, metrics, previous, current, expected):
+def test_report_includes_signed_measured_trend(
+    analyzer, metrics, previous, current, expected
+):
     (analyzer.output_dir / ".convergence_history.json").write_text(
         json.dumps(
             [
@@ -103,9 +108,7 @@ def test_converged_report_has_no_unnecessary_actions(analyzer, metrics):
     assert "3 - Production" in body
     assert "## Next Steps to Achieve Convergence" not in body
     history = json.loads(
-        (analyzer.output_dir / ".convergence_history.json").read_text(
-            encoding="utf-8"
-        )
+        (analyzer.output_dir / ".convergence_history.json").read_text(encoding="utf-8")
     )
     assert history[0]["converged"] is True
 

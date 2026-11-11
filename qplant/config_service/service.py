@@ -64,7 +64,11 @@ class ConfigService:
     ):
         self._config_path = Path(config_path).resolve()
         self._env = env
-        self._history_path = Path(history_path) if history_path else self._config_path.parent / "config_history.json"
+        self._history_path = (
+            Path(history_path)
+            if history_path
+            else self._config_path.parent / "config_history.json"
+        )
         self._auto_reload = auto_reload
         self._reload_interval = reload_interval
         self._lock = threading.RLock()
@@ -107,9 +111,13 @@ class ConfigService:
                     current = current[part]
                 else:
                     raise KeyError(f"Path not found: {path}")
-            return copy.deepcopy(current) if isinstance(current, (dict, list)) else current
+            return (
+                copy.deepcopy(current) if isinstance(current, (dict, list)) else current
+            )
 
-    def set_value(self, path: str, value: Any, user: str = "system", reason: str = "") -> ConfigChange:
+    def set_value(
+        self, path: str, value: Any, user: str = "system", reason: str = ""
+    ) -> ConfigChange:
         """Set a configuration value with audit trail."""
         with self._lock:
             old_value = None
@@ -244,7 +252,9 @@ class ConfigService:
 
         # Validate
         self._validate()
-        logger.info(f"Config loaded: v{self._config.get('version', '?')} ({self._env.value})")
+        logger.info(
+            f"Config loaded: v{self._config.get('version', '?')} ({self._env.value})"
+        )
 
     def _validate(self) -> None:
         """Validate config against Pydantic schema."""
@@ -336,6 +346,7 @@ class ConfigService:
 
     def _start_watcher(self) -> None:
         """Start file watcher thread for hot-reload."""
+
         def watch():
             while self._auto_reload:
                 try:
@@ -344,7 +355,9 @@ class ConfigService:
                     logger.error(f"Reload error: {e}")
                 time.sleep(self._reload_interval)
 
-        self._watcher_thread = threading.Thread(target=watch, daemon=True, name="config-watcher")
+        self._watcher_thread = threading.Thread(
+            target=watch, daemon=True, name="config-watcher"
+        )
         self._watcher_thread.start()
         logger.info(f"Config watcher started (interval={self._reload_interval}s)")
 

@@ -106,12 +106,36 @@ def _build_changelog() -> None:
 def _collect_classifications() -> dict[str, dict[str, str]]:
     classifications: dict[str, dict[str, str]] = {}
     mapping = {
-        "docs/executive_summary.html": {"purpose": "decision summary", "audience": "manager", "density": "low"},
-        "docs/dashboard.html": {"purpose": "interactive evidence", "audience": "engineer", "density": "medium"},
-        "docs/calculations.html": {"purpose": "formula proof", "audience": "specialist", "density": "high"},
-        "docs/rtm_traceability.html": {"purpose": "requirement mapping", "audience": "specialist", "density": "high"},
-        "docs/handover.html": {"purpose": "handover dossier", "audience": "manager", "density": "medium"},
-        "docs/handover.pdf": {"purpose": "formal export", "audience": "manager", "density": "medium"},
+        "docs/executive_summary.html": {
+            "purpose": "decision summary",
+            "audience": "manager",
+            "density": "low",
+        },
+        "docs/dashboard.html": {
+            "purpose": "interactive evidence",
+            "audience": "engineer",
+            "density": "medium",
+        },
+        "docs/calculations.html": {
+            "purpose": "formula proof",
+            "audience": "specialist",
+            "density": "high",
+        },
+        "docs/rtm_traceability.html": {
+            "purpose": "requirement mapping",
+            "audience": "specialist",
+            "density": "high",
+        },
+        "docs/handover.html": {
+            "purpose": "handover dossier",
+            "audience": "manager",
+            "density": "medium",
+        },
+        "docs/handover.pdf": {
+            "purpose": "formal export",
+            "audience": "manager",
+            "density": "medium",
+        },
     }
     classifications.update(mapping)
     return classifications
@@ -131,10 +155,17 @@ def run() -> None:
 
     docs_source = DOCS / "source"
     docs_source.mkdir(parents=True, exist_ok=True)
-    for md_name in ["handover.md", "assumptions.md", "developer_notes.md", "rtm_traceability.md"]:
+    for md_name in [
+        "handover.md",
+        "assumptions.md",
+        "developer_notes.md",
+        "rtm_traceability.md",
+    ]:
         src_md = ROOT / "source" / md_name
         if src_md.exists():
-            write_text_if_changed(docs_source / md_name, src_md.read_text(encoding="utf-8"))
+            write_text_if_changed(
+                docs_source / md_name, src_md.read_text(encoding="utf-8")
+            )
 
     _build_error_log(summary)
     _build_readme()
@@ -150,7 +181,11 @@ def run() -> None:
         "src/build_handover.py",
     ]
 
-    tracked = [p for p in ROOT.rglob("*") if p.is_file() and not any(part.startswith(".git") for part in p.parts)]
+    tracked = [
+        p
+        for p in ROOT.rglob("*")
+        if p.is_file() and not any(part.startswith(".git") for part in p.parts)
+    ]
     tracked = [p for p in tracked if "__pycache__" not in str(p)]
 
     manifest = build_output_manifest(
@@ -165,7 +200,9 @@ def run() -> None:
     write_json_if_changed(MANIFESTS / "latest_manifest.json", manifest)
 
     # compatibility alias requested by deliverable
-    write_text_if_changed(DOCS / "handover_link.txt", "Open handover.html or handover.pdf in docs/.\n")
+    write_text_if_changed(
+        DOCS / "handover_link.txt", "Open handover.html or handover.pdf in docs/.\n"
+    )
 
 
 if __name__ == "__main__":

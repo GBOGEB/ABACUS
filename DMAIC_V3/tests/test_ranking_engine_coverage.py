@@ -193,7 +193,9 @@ def test_update_ranks_top_ranked_history_and_percentiles(tmp_path):
     assert ranked[0].percentile == pytest.approx(100.0)
     assert ranked[1].percentile == pytest.approx(200 / 3)
     assert ranked[2].percentile == pytest.approx(100 / 3)
-    assert ranked[0].category_scores[RankingCategory.QUALITY.value].score == pytest.approx(0.9)
+    assert ranked[0].category_scores[
+        RankingCategory.QUALITY.value
+    ].score == pytest.approx(0.9)
 
     history = engine.get_ranking_history(ranked[0].entity_id, limit=5)
     assert len(history) == 1
@@ -270,7 +272,9 @@ def test_statistics_and_report_export(tmp_path):
     assert payload["metadata"]["total_entities"] == 3
     assert payload["statistics"]["count"] == 3
     assert [item["rank_position"] for item in payload["top_ranked"]] == [1, 2, 3]
-    assert payload["top_ranked"][0]["category_scores"]["quality"]["weighted_score"] == pytest.approx(0.8)
+    assert payload["top_ranked"][0]["category_scores"]["quality"][
+        "weighted_score"
+    ] == pytest.approx(0.8)
 
 
 @pytest.mark.unit

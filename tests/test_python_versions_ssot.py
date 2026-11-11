@@ -58,7 +58,9 @@ jobs:
 def make_repo(tmp_path: Path, workflows: dict[str, str]) -> Path:
     (tmp_path / "ssot").mkdir()
     (tmp_path / "ssot/python_versions.yaml").write_text(SSOT, encoding="utf-8")
-    (tmp_path / "pyproject.toml").write_text('requires-python = ">=3.19"\n', encoding="utf-8")
+    (tmp_path / "pyproject.toml").write_text(
+        'requires-python = ">=3.19"\n', encoding="utf-8"
+    )
     wf = tmp_path / ".github/workflows"
     wf.mkdir(parents=True)
     (wf / "canary.yml").write_text(CANARY, encoding="utf-8")
@@ -84,29 +86,40 @@ def lane():
 
 
 def test_list_rules(lane):
-    assert lane.for_list(4) == lane.versions          # >= 3 -> full lane
+    assert lane.for_list(4) == lane.versions  # >= 3 -> full lane
     assert lane.for_list(3) == lane.versions
-    assert lane.for_list(2) == ["3.20", "3.24"]       # edges
-    assert lane.for_list(1) == ["3.23"]               # default pin
+    assert lane.for_list(2) == ["3.20", "3.24"]  # edges
+    assert lane.for_list(1) == ["3.23"]  # default pin
 
 
 def test_role_rules_preserve_lowest_middle_highest(lane):
     assert lane.for_roles(["3.18"]) == {"3.18": "3.23"}
     assert lane.for_roles(["3.18", "3.19"]) == {"3.18": "3.20", "3.19": "3.24"}
     assert lane.for_roles(["3.18", "3.19", "3.20", "3.19"]) == {
-        "3.18": "3.20", "3.19": "3.22", "3.20": "3.24"}
+        "3.18": "3.20",
+        "3.19": "3.22",
+        "3.20": "3.24",
+    }
     with pytest.raises(pv.SyncError):
         lane.for_roles(["3.16", "3.17", "3.18", "3.19"])
 
 
 def test_narrow_lane_folds_middle_role_into_oldest():
     narrow = pv.Lane(["3.20", "3.21"], "3.21")
-    assert narrow.for_roles(["3.17", "3.18", "3.19"]) == {"3.17": "3.20", "3.18": "3.20", "3.19": "3.21"}
+    assert narrow.for_roles(["3.17", "3.18", "3.19"]) == {
+        "3.17": "3.20",
+        "3.18": "3.20",
+        "3.19": "3.21",
+    }
 
 
 def test_condition_role_map_tracks_matrix_position(lane):
     assert lane.role_map(["3.18", "3.19"]) == {"3.18": "3.20", "3.19": "3.24"}
-    assert lane.role_map(["3.17", "3.18", "3.19"]) == {"3.17": "3.20", "3.18": "3.22", "3.19": "3.24"}
+    assert lane.role_map(["3.17", "3.18", "3.19"]) == {
+        "3.17": "3.20",
+        "3.18": "3.22",
+        "3.19": "3.24",
+    }
 
 
 # --------------------------------------------------------------------------- sync
@@ -205,7 +218,9 @@ def test_sync_rewrites_every_site_kind_and_is_idempotent(tmp_path):
 
     # derived files
     assert (root / ".python-version").read_text(encoding="utf-8") == "3.23\n"
-    assert 'requires-python = ">=3.20"' in (root / "pyproject.toml").read_text(encoding="utf-8")
+    assert 'requires-python = ">=3.20"' in (root / "pyproject.toml").read_text(
+        encoding="utf-8"
+    )
     view = json.loads((root / pv.LANES_VIEW_PATH).read_text(encoding="utf-8"))
     assert view["lanes"]["oracle"]["versions"] == ["3.20", "3.21", "3.22", "3.23"]
     assert view["lanes"]["old-numpy"]["pin"] == "3.21"
@@ -302,21 +317,33 @@ def test_declared_lane_must_match_ssot(tmp_path):
     run(root, "sync")
     assert run(root, "check") == 0
     path = root / ".github/workflows/w.yml"
-    path.write_text(path.read_text().replace("PYTHON_LANE: oracle", "PYTHON_LANE: default"))
+    path.write_text(
+        path.read_text().replace("PYTHON_LANE: oracle", "PYTHON_LANE: default")
+    )
     assert run(root, "check") == 1
 
 
 def test_held_workflow_is_reported_not_rewritten(tmp_path, capsys):
-    root = make_repo(tmp_path, {"held.yml": "jobs:\n  j:\n    steps:\n"
-                                "      - uses: actions/setup-python@v7\n"
-                                "        with: {python-version: '3.21'}\n"})
+    root = make_repo(
+        tmp_path,
+        {
+            "held.yml": "jobs:\n  j:\n    steps:\n"
+            "      - uses: actions/setup-python@v7\n"
+            "        with: {python-version: '3.21'}\n"
+        },
+    )
     ssot = root / "ssot/python_versions.yaml"
-    ssot.write_text(ssot.read_text() + "held_workflows:\n  .github/workflows/held.yml: needs review\n")
+    ssot.write_text(
+        ssot.read_text()
+        + "held_workflows:\n  .github/workflows/held.yml: needs review\n"
+    )
     assert run(root, "sync") == 0
     assert "'3.21'" in wf(root, "held.yml")  # untouched
     capsys.readouterr()
     assert run(root, "check") == 0
-    assert "HELD      .github/workflows/held.yml: needs review" in capsys.readouterr().out
+    assert (
+        "HELD      .github/workflows/held.yml: needs review" in capsys.readouterr().out
+    )
 
 
 def test_cap_exemption_is_per_job_and_fails_closed_when_stale(tmp_path, capsys):
@@ -338,23 +365,36 @@ def test_cap_exemption_is_per_job_and_fails_closed_when_stale(tmp_path, capsys):
     """
     root = make_repo(tmp_path, {"shadow.yml": workflow})
     ssot = root / "ssot/python_versions.yaml"
-    ssot.write_text(ssot.read_text().replace(
-        "    patterns: ['(?i)oraclepkg']\n",
-        "    patterns: ['(?i)oraclepkg']\n"
-        "    exempt_jobs: [.github/workflows/shadow.yml:candidate]\n"))
+    ssot.write_text(
+        ssot.read_text().replace(
+            "    patterns: ['(?i)oraclepkg']\n",
+            "    patterns: ['(?i)oraclepkg']\n"
+            "    exempt_jobs: [.github/workflows/shadow.yml:candidate]\n",
+        )
+    )
     assert run(root, "sync") == 0
     text = wf(root, "shadow.yml")
     assert "python-version: '3.23'" in text  # oracle job capped at 3.23
-    assert "['3.20', '3.21', '3.22', '3.23', '3.24']" in text  # exempt job keeps the full lane
+    assert (
+        "['3.20', '3.21', '3.22', '3.23', '3.24']" in text
+    )  # exempt job keeps the full lane
     assert run(root, "check") == 0
-    ssot.write_text(ssot.read_text().replace("shadow.yml:candidate", "shadow.yml:renamed"))
+    ssot.write_text(
+        ssot.read_text().replace("shadow.yml:candidate", "shadow.yml:renamed")
+    )
     capsys.readouterr()
     assert run(root, "check") == 1
-    assert "exempt job .github/workflows/shadow.yml:renamed does not exist" in capsys.readouterr().out
+    assert (
+        "exempt job .github/workflows/shadow.yml:renamed does not exist"
+        in capsys.readouterr().out
+    )
 
 
 def test_sync_refuses_while_unhandled_sites_exist(tmp_path):
-    root = make_repo(tmp_path, {"w.yml": "jobs:\n  j:\n    steps:\n      - run: uv python install 3.19\n"})
+    root = make_repo(
+        tmp_path,
+        {"w.yml": "jobs:\n  j:\n    steps:\n      - run: uv python install 3.19\n"},
+    )
     assert run(root, "sync") == 2
 
 

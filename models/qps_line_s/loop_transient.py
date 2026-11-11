@@ -41,10 +41,10 @@ from models.qps_line_s.ssot_tables import (
     static_heat_loads_w,
 )
 
-T_AMB   = 300.0   # K, ambient (fixed)
-T_COLD  = 2.0     # K, cold-mass temperature while liquid present
-M_LHE_KG   = 391.5   # LHe inventory: 2700 L * 0.145 kg/L  (D2.1 §5.6.5)
-H_FG_2K    = 23300.0  # J/kg, latent heat of He-4 at 2 K
+T_AMB = 300.0  # K, ambient (fixed)
+T_COLD = 2.0  # K, cold-mass temperature while liquid present
+M_LHE_KG = 391.5  # LHe inventory: 2700 L * 0.145 kg/L  (D2.1 §5.6.5)
+H_FG_2K = 23300.0  # J/kg, latent heat of He-4 at 2 K
 
 
 def simulate(
@@ -60,12 +60,12 @@ def simulate(
     masses = SSOT_TABLE_27_MASS_KG[config]  # type: ignore[index]
     m_ts = masses.ts_mass_kg
 
-    t_ts  = t0_ts_k
-    h_ts  = specific_enthalpy_j_per_kg("ts", t_ts)   # J/kg (specific)
+    t_ts = t0_ts_k
+    h_ts = specific_enthalpy_j_per_kg("ts", t_ts)  # J/kg (specific)
     m_lhe = M_LHE_KG
-    t_s   = 0.0
+    t_s = 0.0
     series: list[tuple[float, float, float, float]] = []
-    peak   = 0.0
+    peak = 0.0
     boiled = 0.0
 
     n_steps = int(max_h * 3600 / dt_s)
@@ -77,31 +77,33 @@ def simulate(
         mdot_g_s = 1000.0 * q1 / H_FG_2K
         peak = max(peak, mdot_g_s)
 
-        h_ts  += (q2 - q1) * dt_s / m_ts   # specific enthalpy advance [J/kg]
-        t_ts   = inverse_ts_enthalpy_k(h_ts)
-        dm     = q1 * dt_s / H_FG_2K
+        h_ts += (q2 - q1) * dt_s / m_ts  # specific enthalpy advance [J/kg]
+        t_ts = inverse_ts_enthalpy_k(h_ts)
+        dm = q1 * dt_s / H_FG_2K
         m_lhe -= dm
         boiled += dm
-        t_s   += dt_s
+        t_s += dt_s
 
         if t_s % 600 < dt_s:
-            series.append((
-                round(t_s / 3600, 3),
-                round(mdot_g_s, 1),
-                round(t_ts, 1),
-                round(max(m_lhe, 0.0), 1),
-            ))
+            series.append(
+                (
+                    round(t_s / 3600, 3),
+                    round(mdot_g_s, 1),
+                    round(t_ts, 1),
+                    round(max(m_lhe, 0.0), 1),
+                )
+            )
         if m_lhe <= 0:
             break
 
     avg = 1000.0 * boiled / t_s if t_s else 0.0
     return {
         "config": config,
-        "dryout_h":     round(t_s / 3600, 2),
-        "peak_g_s":     round(peak, 1),
-        "avg_g_s":      round(avg, 1),
+        "dryout_h": round(t_s / 3600, 2),
+        "peak_g_s": round(peak, 1),
+        "avg_g_s": round(avg, 1),
         "ts_at_dryout_k": round(t_ts, 1),
-        "series":       series,
+        "series": series,
     }
 
 

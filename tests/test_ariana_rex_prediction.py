@@ -3,6 +3,7 @@
 Runs with the standard library: python -m unittest discover -s tests
 -p test_ariana_rex_prediction.py -v
 """
+
 from __future__ import annotations
 
 import copy
@@ -31,17 +32,21 @@ def source():
 class ArianaREXPredictionTests(unittest.TestCase):
     def test_original_exact_run_series_and_forecasts(self):
         result = evaluate(source())
-        self.assertEqual([p["label"] for p in result["series"]],
-                         ["N-1", "N", "N+1"])
-        self.assertEqual([p["run_id"] for p in result["series"]],
-                         [39046522554, 39046770415, 39046986905])
-        self.assertEqual([p["conclusion"] for p in result["series"]],
-                         ["failure", "failure", "success"])
+        self.assertEqual([p["label"] for p in result["series"]], ["N-1", "N", "N+1"])
+        self.assertEqual(
+            [p["run_id"] for p in result["series"]],
+            [39046522554, 39046770415, 39046986905],
+        )
+        self.assertEqual(
+            [p["conclusion"] for p in result["series"]],
+            ["failure", "failure", "success"],
+        )
         self.assertEqual(result["directional_forecasts"]["hits"], 3)
         self.assertEqual(result["directional_forecasts"]["n"], 3)
         self.assertEqual(result["directional_forecasts"]["brier"], None)
-        self.assertEqual(result["directional_forecasts"]["calibration"],
-                         "UNQUALIFIED_SMALL_N")
+        self.assertEqual(
+            result["directional_forecasts"]["calibration"], "UNQUALIFIED_SMALL_N"
+        )
         self.assertEqual(result["rex"]["observed_source_first_red_roots_in_series"], 2)
         self.assertEqual(result["rex"]["root_manifestations"], 5)
 
@@ -57,10 +62,8 @@ class ArianaREXPredictionTests(unittest.TestCase):
     def test_actual_scope_measured_without_unauthorized_credit(self):
         result = evaluate(source())
         n = result["series"][2]
-        self.assertEqual(n["focused_statement"],
-                         {"numerator": 208, "denominator": 209})
-        self.assertEqual(n["focused_branch"],
-                         {"numerator": 39, "denominator": 42})
+        self.assertEqual(n["focused_statement"], {"numerator": 208, "denominator": 209})
+        self.assertEqual(n["focused_branch"], {"numerator": 39, "denominator": 42})
         self.assertEqual(result["governance"]["merge_admission"], "HOLD")
         self.assertEqual(result["governance"]["accepted_N_delta"], 0)
         self.assertIsNone(result["governance"]["remote_keb_or_qps_acceptance"])
@@ -112,7 +115,8 @@ class ArianaREXPredictionTests(unittest.TestCase):
     def test_preserve_null_changed_line_denominator(self):
         d = source()
         d["checkpoints"][2]["focused_coverage"]["changed_line"] = {
-            "numerator": 0, "denominator": 0,
+            "numerator": 0,
+            "denominator": 0,
         }
         with self.assertRaisesRegex(ValueError, "changed-line"):
             evaluate(d)
@@ -168,17 +172,14 @@ class ArianaREXPredictionTests(unittest.TestCase):
                                 "combined": p["focused_coverage"]["combined"],
                             },
                         }
-                        z.writestr("ariana-dow-receipt.json",
-                                   json.dumps(receipt))
+                        z.writestr("ariana-dow-receipt.json", json.dumps(receipt))
                         z.writestr("coverage.json", "{}")
                         z.writestr("junit.xml", "<testsuite/>")
                 art["sha256"] = hashlib.sha256(name.read_bytes()).hexdigest()
             result = evaluate(d, folder)
             self.assertEqual(result["archive_byte_replay"]["state"], "VERIFIED")
             self.assertEqual(len(result["archive_byte_replay"]["artifact_ids"]), 3)
-            bad = folder / (
-                f"github-actions-artifact-{p['artifacts'][0]['id']}.zip"
-            )
+            bad = folder / (f"github-actions-artifact-{p['artifacts'][0]['id']}.zip")
             bad.write_bytes(bad.read_bytes() + b"tampered")
             with self.assertRaisesRegex(ValueError, "hash mismatch"):
                 verify_archives(d, folder)
@@ -191,16 +192,10 @@ class ArianaREXPredictionTests(unittest.TestCase):
 
     def test_recurring_same_root_deduplicates_across_pulses(self):
         d = source()
-        d["checkpoints"][1]["root"]["root_id"] = (
-            d["checkpoints"][0]["root"]["root_id"]
-        )
+        d["checkpoints"][1]["root"]["root_id"] = d["checkpoints"][0]["root"]["root_id"]
         result = evaluate(d)
-        self.assertEqual(
-            result["rex"]["observed_source_first_red_roots_in_series"], 1
-        )
-        self.assertEqual(
-            result["rex"]["repeat_observations_of_existing_root"], 1
-        )
+        self.assertEqual(result["rex"]["observed_source_first_red_roots_in_series"], 1)
+        self.assertEqual(result["rex"]["repeat_observations_of_existing_root"], 1)
         self.assertEqual(result["rex"]["root_manifestations"], 5)
 
 

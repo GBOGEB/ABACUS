@@ -46,9 +46,19 @@ LAMBDA_K = 2.1768
 HEPAK_MAX_K = 4.5
 ROUNDING = 1e-12
 DRIFT = 1e-6
-ORDER = ["SIGNIFICANT", "NEW_ERROR", "ERROR_RETYPED", "SHAPE_CHANGED", "DRIFT",
-         "FIXED_ERROR", "ERROR_REWORDED", "ROUNDING", "UNSTABLE", "UNREPLAYABLE",
-         "IDENTICAL"]
+ORDER = [
+    "SIGNIFICANT",
+    "NEW_ERROR",
+    "ERROR_RETYPED",
+    "SHAPE_CHANGED",
+    "DRIFT",
+    "FIXED_ERROR",
+    "ERROR_REWORDED",
+    "ROUNDING",
+    "UNSTABLE",
+    "UNREPLAYABLE",
+    "IDENTICAL",
+]
 
 
 def load_records(directory: Path) -> tuple[dict, list[dict]]:
@@ -64,8 +74,15 @@ def load_records(directory: Path) -> tuple[dict, list[dict]]:
             if "header" in rec:
                 headers.append(rec["header"])
             elif "key" in rec:
-                entry = calls.setdefault(rec["id"], {"key": rec["key"], "outcome": rec["outcome"],
-                                                    "sites": set(), "count": 0})
+                entry = calls.setdefault(
+                    rec["id"],
+                    {
+                        "key": rec["key"],
+                        "outcome": rec["outcome"],
+                        "sites": set(),
+                        "count": 0,
+                    },
+                )
                 if entry["outcome"] != rec["outcome"]:
                     unstable.add(rec["id"])
                 entry["sites"].add(rec.get("site", "?"))
@@ -148,7 +165,9 @@ def compare(old: list, new: list) -> tuple[str, float | None, str]:
     a, b = old[1], new[1]
     if a == b:
         return "IDENTICAL", 0.0, ""
-    if (a[0] == "ndarray") != (b[0] == "ndarray") or (a[0] == "ndarray" and a[2] != b[2]):
+    if (a[0] == "ndarray") != (b[0] == "ndarray") or (
+        a[0] == "ndarray" and a[2] != b[2]
+    ):
         return "SHAPE_CHANGED", None, f"{a[0]} -> {b[0]}"
     fa, fb = flatten(a), flatten(b)
     if fa is None or fb is None or len(fa) != len(fb):
@@ -170,62 +189,101 @@ def replay(calls: dict, propssi) -> list[dict]:
         try:
             args, kwargs = codec.decode_call(entry["key"])
         except codec.Unreplayable as exc:
-            rows.append({**row, "class": "UNREPLAYABLE", "detail": str(exc), "band": "?",
-                         "call": entry["key"][:200]})
+            rows.append(
+                {
+                    **row,
+                    "class": "UNREPLAYABLE",
+                    "detail": str(exc),
+                    "band": "?",
+                    "call": entry["key"][:200],
+                }
+            )
             continue
         row["call"] = "PropsSI(" + ", ".join(repr(a) for a in args) + ")"
         row["output"] = args[0] if args else "?"
         row["band"] = band(args)
         if entry.get("unstable"):
-            rows.append({**row, "class": "UNSTABLE", "detail": "nondeterministic while recording"})
+            rows.append(
+                {
+                    **row,
+                    "class": "UNSTABLE",
+                    "detail": "nondeterministic while recording",
+                }
+            )
             continue
         try:
             new = codec.outcome_of_result(propssi(*args, **kwargs))
         except Exception as exc:  # CoolProp raises ValueError; keep any type
             new = codec.outcome_of_error(exc)
         klass, worst, detail = compare(entry["outcome"], new)
-        rows.append({**row, "class": klass, "rel": worst, "detail": detail,
-                     "recorded": entry["outcome"], "replayed": new})
+        rows.append(
+            {
+                **row,
+                "class": klass,
+                "rel": worst,
+                "detail": detail,
+                "recorded": entry["outcome"],
+                "replayed": new,
+            }
+        )
     return rows
 
 
 def summarise(rows: list[dict], meta: dict) -> str:
     by_class = Counter(r["class"] for r in rows)
-    lines = [f"### CoolProp shadow replay: {meta['replay']['coolprop']} "
-             f"on Python {meta['replay']['python']}",
-             "",
-             f"Recorded under CoolProp {', '.join(meta['recorded_coolprop']) or '?'} "
-             f"on Python {', '.join(meta['recorded_python']) or '?'}: "
-             f"**{len(rows)} distinct calls**, {sum(r['count'] for r in rows)} total.",
-             "",
-             "| Class | Distinct calls |", "|---|---:|"]
+    lines = [
+        f"### CoolProp shadow replay: {meta['replay']['coolprop']} "
+        f"on Python {meta['replay']['python']}",
+        "",
+        f"Recorded under CoolProp {', '.join(meta['recorded_coolprop']) or '?'} "
+        f"on Python {', '.join(meta['recorded_python']) or '?'}: "
+        f"**{len(rows)} distinct calls**, {sum(r['count'] for r in rows)} total.",
+        "",
+        "| Class | Distinct calls |",
+        "|---|---:|",
+    ]
     lines += [f"| {k} | {by_class[k]} |" for k in ORDER if by_class.get(k)]
     bands: dict[str, Counter] = defaultdict(Counter)
     for r in rows:
         bands[r.get("band", "?")][r["class"]] += 1
-    lines += ["", "| Helium band | " + " | ".join(k for k in ORDER if by_class.get(k)) + " |",
-              "|---|" + "---:|" * sum(1 for k in ORDER if by_class.get(k))]
+    lines += [
+        "",
+        "| Helium band | " + " | ".join(k for k in ORDER if by_class.get(k)) + " |",
+        "|---|" + "---:|" * sum(1 for k in ORDER if by_class.get(k)),
+    ]
     for name in sorted(bands):
-        lines.append(f"| {name} | " + " | ".join(str(bands[name][k]) for k in ORDER
-                                                  if by_class.get(k)) + " |")
+        lines.append(
+            f"| {name} | "
+            + " | ".join(str(bands[name][k]) for k in ORDER if by_class.get(k))
+            + " |"
+        )
     worst_by_output: dict[str, float] = {}
     for r in rows:
         if r.get("rel") is not None:
-            worst_by_output[r["output"]] = max(worst_by_output.get(r["output"], 0.0), r["rel"])
+            worst_by_output[r["output"]] = max(
+                worst_by_output.get(r["output"], 0.0), r["rel"]
+            )
     if worst_by_output:
         lines += ["", "| Output | Worst relative difference |", "|---|---:|"]
         lines += [f"| `{k}` | {v:.3e} |" for k, v in sorted(worst_by_output.items())]
     notable = [r for r in rows if r["class"] not in ("IDENTICAL", "ROUNDING")]
     notable.sort(key=lambda r: (ORDER.index(r["class"]), -(r.get("rel") or 0.0)))
     if notable:
-        lines += ["", "<details><summary>Calls that are not identical "
-                  f"({len(notable)})</summary>", "",
-                  "| Class | rel | Band | Call | Detail | Call site |", "|---|---:|---|---|---|---|"]
+        lines += [
+            "",
+            "<details><summary>Calls that are not identical "
+            f"({len(notable)})</summary>",
+            "",
+            "| Class | rel | Band | Call | Detail | Call site |",
+            "|---|---:|---|---|---|---|",
+        ]
         for r in notable[:200]:
             value = f"{r['rel']:.2e}" if r.get("rel") is not None else ""
             detail = r.get("detail", "").replace("|", "\\|")
-            lines.append(f"| {r['class']} | {value} | {r.get('band', '?')} | `{r['call'][:110]}` "
-                         f"| {detail[:120]} | {', '.join(r['sites'][:2])} |")
+            lines.append(
+                f"| {r['class']} | {value} | {r.get('band', '?')} | `{r['call'][:110]}` "
+                f"| {detail[:120]} | {', '.join(r['sites'][:2])} |"
+            )
         lines += ["", "</details>"]
     return "\n".join(lines) + "\n"
 
@@ -254,22 +312,33 @@ def main(argv: list[str] | None = None) -> int:
         "schema": codec.SCHEMA,
         "recorded_coolprop": sorted({h.get("coolprop", "?") for h in headers}),
         "recorded_python": sorted({h.get("python", "?") for h in headers}),
-        "replay": {"coolprop": getattr(CoolProp, "__version__", "?"),
-                   "python": platform.python_version(), "platform": platform.platform()},
+        "replay": {
+            "coolprop": getattr(CoolProp, "__version__", "?"),
+            "python": platform.python_version(),
+            "platform": platform.platform(),
+        },
         "classes": dict(Counter(r["class"] for r in rows)),
     }
     args.out.parent.mkdir(parents=True, exist_ok=True)
-    args.out.write_text(json.dumps({"meta": meta, "calls": rows}, indent=1, default=str) + "\n",
-                        encoding="utf-8")
+    args.out.write_text(
+        json.dumps({"meta": meta, "calls": rows}, indent=1, default=str) + "\n",
+        encoding="utf-8",
+    )
     text = summarise(rows, meta)
     if args.summary:
         args.summary.write_text(text, encoding="utf-8")
     print(text)
 
     if args.require_identical:
-        bad = [r for r in rows if r["class"] not in ("IDENTICAL", "UNREPLAYABLE", "UNSTABLE")]
+        bad = [
+            r
+            for r in rows
+            if r["class"] not in ("IDENTICAL", "UNREPLAYABLE", "UNSTABLE")
+        ]
         if bad:
-            print(f"control replay is not identical for {len(bad)} calls", file=sys.stderr)
+            print(
+                f"control replay is not identical for {len(bad)} calls", file=sys.stderr
+            )
             return 1
     return 0
 

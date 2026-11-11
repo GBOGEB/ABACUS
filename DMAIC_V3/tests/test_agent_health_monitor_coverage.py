@@ -137,7 +137,10 @@ def test_monitor_report_trigger_and_adaptive_strategy(tmp_path):
     assert "stale" in reason.lower()
 
     assert monitor.get_adaptive_strategy("missing")["strategy"] == "aggressive"
-    assert monitor.get_adaptive_strategy("fresh")["strategy"] in {"aggressive", "moderate"}
+    assert monitor.get_adaptive_strategy("fresh")["strategy"] in {
+        "aggressive",
+        "moderate",
+    }
 
     missing_monitor = AgentHealthMonitor(tmp_path / "does-not-exist.json")
     assert missing_monitor.load_agent_age_data() == {}

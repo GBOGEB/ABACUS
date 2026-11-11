@@ -171,7 +171,9 @@ def test_generate_report_and_uniform_language_validation(tmp_path):
     assert isinstance(issues["missing_in_code"], list)
 
 
-def test_invalid_json_is_fail_soft_and_main_writes_report(tmp_path, monkeypatch, capsys):
+def test_invalid_json_is_fail_soft_and_main_writes_report(
+    tmp_path, monkeypatch, capsys
+):
     root = _workspace(tmp_path)
     broken = root / "broken.json"
     broken.write_text("{not-json", encoding="utf-8")

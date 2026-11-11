@@ -1,4 +1,5 @@
 """Synthetic pagination adversaries; no synthetic run is native closure evidence."""
+
 from __future__ import annotations
 
 import copy
@@ -12,9 +13,15 @@ ALT = "b" * 40
 
 
 def row(rid, wf=10, event="push", state="queued", conclusion=None, sha=SHA):
-    return {"id": rid, "workflow_id": wf, "run_attempt": 1,
-            "head_sha": sha, "event": event, "status": state,
-            "conclusion": conclusion}
+    return {
+        "id": rid,
+        "workflow_id": wf,
+        "run_attempt": 1,
+        "head_sha": sha,
+        "event": event,
+        "status": state,
+        "conclusion": conclusion,
+    }
 
 
 def build(rows, sha=SHA, total=None):
@@ -22,12 +29,21 @@ def build(rows, sha=SHA, total=None):
     pages = []
     for i in range(0, len(rows), PAGE_SIZE):
         page = i // PAGE_SIZE + 1
-        pages.append({"page": page, "total_count": count,
-                      "api_url": f"{API}?head_sha={sha}&per_page=100&page={page}",
-                      "runs": rows[i:i + PAGE_SIZE]})
-    return {"schema": SCHEMA, "repository": "GBOGEB/ABACUS",
-            "source_role": "OBSERVED_DEFAULT_BRANCH_HEAD",
-            "source_sha": sha, "pages": pages}
+        pages.append(
+            {
+                "page": page,
+                "total_count": count,
+                "api_url": f"{API}?head_sha={sha}&per_page=100&page={page}",
+                "runs": rows[i : i + PAGE_SIZE],
+            }
+        )
+    return {
+        "schema": SCHEMA,
+        "repository": "GBOGEB/ABACUS",
+        "source_role": "OBSERVED_DEFAULT_BRANCH_HEAD",
+        "source_sha": sha,
+        "pages": pages,
+    }
 
 
 def n23_shape():
@@ -48,16 +64,24 @@ def throws(doc, fragment):
 
 def test_positive_110_two_page_amplification_and_statuses():
     observed = analyze_head_pages(build(n23_shape()))
-    assert (observed["observed_run_count"], observed["distinct_workflow_ids"]) == (110, 31)
+    assert (observed["observed_run_count"], observed["distinct_workflow_ids"]) == (
+        110,
+        31,
+    )
     assert observed["repeat_run_excess"] == 79
     assert observed["pages_qualified_structurally"] == 2
     assert observed["event_counts"] == {
-        "issue_comment": 13, "push": 33,
-        "schedule": 1, "workflow_run": 63,
+        "issue_comment": 13,
+        "push": 33,
+        "schedule": 1,
+        "workflow_run": 63,
     }
     assert observed["status_counts"] == {"queued": 110}
     assert observed["manifest"][0]["event_counts"] == {
-        "issue_comment": 13, "schedule": 1, "workflow_run": 60}
+        "issue_comment": 13,
+        "schedule": 1,
+        "workflow_run": 60,
+    }
 
 
 def test_positive_201_requires_three_pages():
@@ -72,9 +96,11 @@ def test_positive_100_exact_one_page():
 
 
 def test_positive_terminal_rate_and_uncertainty_types():
-    rows = [row(1, state="completed", conclusion="success"),
-            row(2, state="completed", conclusion="failure"),
-            row(3)]
+    rows = [
+        row(1, state="completed", conclusion="success"),
+        row(2, state="completed", conclusion="failure"),
+        row(3),
+    ]
     x = analyze_head_pages(build(rows))
     assert x["terminal_run_count"] == 2
     assert x["terminal_success_fraction"] == 0.5
@@ -92,14 +118,21 @@ def test_reverse_shuffled_within_pages_same_counts():
     original = analyze_head_pages(build(rows))
     reversed_page_rows = list(reversed(rows[:100])) + list(reversed(rows[100:]))
     changed = analyze_head_pages(build(reversed_page_rows))
-    for key in ("event_counts", "status_counts", "repeat_run_excess",
-                "distinct_workflow_ids", "manifest"):
+    for key in (
+        "event_counts",
+        "status_counts",
+        "repeat_run_excess",
+        "distinct_workflow_ids",
+        "manifest",
+    ):
         assert original[key] == changed[key]
 
 
 def test_reverse_failure_in_repeated_family_not_clean_success():
-    rows = [row(1, state="completed", conclusion="success"),
-            row(2, state="completed", conclusion="failure")]
+    rows = [
+        row(1, state="completed", conclusion="success"),
+        row(2, state="completed", conclusion="failure"),
+    ]
     x = analyze_head_pages(build(rows))
     assert x["manifest"][0]["terminal_failure"] == 1
     assert x["manifest"][0]["terminal_success"] == 1
@@ -113,9 +146,16 @@ def test_negative_missing_last_page():
 
 
 def test_negative_empty_pages():
-    throws({"schema": SCHEMA, "repository": "GBOGEB/ABACUS",
-            "source_role": "OBSERVED_DEFAULT_BRANCH_HEAD", "source_sha": SHA,
-            "pages": []}, "missing API pages")
+    throws(
+        {
+            "schema": SCHEMA,
+            "repository": "GBOGEB/ABACUS",
+            "source_role": "OBSERVED_DEFAULT_BRANCH_HEAD",
+            "source_sha": SHA,
+            "pages": [],
+        },
+        "missing API pages",
+    )
 
 
 def test_negative_wrong_source_repository():

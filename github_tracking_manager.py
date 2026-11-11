@@ -24,7 +24,9 @@ try:
     from github import Github
 except ImportError:
     print("Installing PyGithub...")
-    subprocess.check_call([sys.executable, "-m", "pip", "install", "-q", "PyGithub", "PyYAML"])
+    subprocess.check_call(
+        [sys.executable, "-m", "pip", "install", "-q", "PyGithub", "PyYAML"]
+    )
     from github import Github
 
 
@@ -470,7 +472,9 @@ class GitHubTrackingManager:
 def get_github_token():
     """Get GitHub token from gh CLI or environment"""
     try:
-        result = subprocess.run(['gh', 'auth', 'token'], capture_output=True, text=True, check=True)
+        result = subprocess.run(
+            ["gh", "auth", "token"], capture_output=True, text=True, check=True
+        )
         token = result.stdout.strip()
         if token:
             return token, "GitHub CLI"
@@ -525,7 +529,9 @@ def main():
     repo_name = args.repo or os.environ.get("GITHUB_REPOSITORY")
     if not repo_name:
         try:
-            result = subprocess.run(['git', 'remote', 'get-url', 'origin'], capture_output=True, text=True)
+            result = subprocess.run(
+                ["git", "remote", "get-url", "origin"], capture_output=True, text=True
+            )
             if result.returncode == 0:
                 url = result.stdout.strip()
                 if "github.com" in url:

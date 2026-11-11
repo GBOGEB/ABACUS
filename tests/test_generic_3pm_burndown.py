@@ -6,8 +6,16 @@ from tools.generic_3pm_burndown import (
 
 
 def test_stable_item_id_is_order_independent_and_deduplicated():
-    a = {"scope": "GBOGEB/ABACUS", "type": "duplicate_family", "members": ["b.yml", "a.yml"]}
-    b = {"scope": "GBOGEB/ABACUS", "type": "duplicate_family", "members": ["a.yml", "b.yml"]}
+    a = {
+        "scope": "GBOGEB/ABACUS",
+        "type": "duplicate_family",
+        "members": ["b.yml", "a.yml"],
+    }
+    b = {
+        "scope": "GBOGEB/ABACUS",
+        "type": "duplicate_family",
+        "members": ["a.yml", "b.yml"],
+    }
     assert stable_item_id(a) == stable_item_id(b)
     plan = build_plan({"items": [a, b]})
     assert plan["item_count"] == 1
