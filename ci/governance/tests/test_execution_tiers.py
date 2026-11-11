@@ -17,6 +17,12 @@ WRITE_SCOPES = (
     "pull-requests: write",
     "security-events: write",
 )
+# Owner-approved immutable pin for the trusted-main SARIF publisher in
+# cd-pipeline.yml. Changing it is an explicit approval, not a Dependabot bump.
+# github/codeql-action v4.39.3, verified via ls-remote 2026-11-10
+APPROVED_UPLOAD_SARIF_PIN = "33d7b85da1a04171e211befe2c739303b9a4c066"
+# github/codeql-action v4.39.1 (previously approved; must now be rejected)
+SUPERSEDED_UPLOAD_SARIF_PIN = "9b3254085494b55a0f7c4c2b3d2d52cc712ce370"
 
 
 class ExecutionTierTests(unittest.TestCase):
@@ -130,7 +136,7 @@ class ExecutionTierTests(unittest.TestCase):
             and "security-events: write" in publisher
             and 'test "$GITHUB_REF" = refs/heads/main' in publisher
             and 'test "$(git rev-parse HEAD)" = "$GITHUB_SHA"' in publisher
-            and upload_pins == ["9b3254085494b55a0f7c4c2b3d2d52cc712ce370"]
+            and upload_pins == [APPROVED_UPLOAD_SARIF_PIN]
         )
 
     def test_path_scoped_pr_domain_preserves_actual_triggers(self):
@@ -191,8 +197,14 @@ class ExecutionTierTests(unittest.TestCase):
         pr = (WORKFLOWS / "ci-pipeline.yml").read_text(encoding="utf-8")
         cd = (WORKFLOWS / "cd-pipeline.yml").read_text(encoding="utf-8")
         self.assertTrue(self._sarif_trust_boundary(pr, cd))
-        approved = "9b3254085494b55a0f7c4c2b3d2d52cc712ce370"
-        for replacement in ("v4", "0" * 40, "6f2ac81f5cd81fe351a197ba0b00d91d03cd2aee"):
+        approved = APPROVED_UPLOAD_SARIF_PIN
+        for replacement in (
+            "v4",
+            "v4.39.3",
+            "0" * 40,
+            "6f2ac81f5cd81fe351a197ba0b00d91d03cd2aee",
+            SUPERSEDED_UPLOAD_SARIF_PIN,
+        ):
             with self.subTest(replacement=replacement):
                 changed = cd.replace(
                     "upload-sarif@" + approved, "upload-sarif@" + replacement, 1

@@ -169,8 +169,8 @@ def test_html_visibility_and_void_reverse_controls(
         (1, "QPS_HOT"),
         (1, "QPS_COLD"),
         (2, "AUX_LOOP"),
-        (2, "LKT_HELIUM"),
-        (3, "ALAT_COMPRESSION"),
+        (2, "SUPPLIER_B_HELIUM"),
+        (3, "SUPPLIER_A_COMPRESSION"),
         (4, "RECEIPT_W40"),
     ),
 )
