@@ -67,6 +67,12 @@ jobs:
       - name: Generate Prisma client
         run: yarn prisma generate
 
+      # Execute the real seed entrypoint against an in-memory Prisma boundary.
+      # It checks existing metadata preservation, missing slots and error
+      # cleanup without connecting to any review or production database.
+      - name: Non-destructive Prisma seed regression (Node 24)
+        run: node --test scripts/tests/seed.test.mjs
+
       - name: Build
         run: yarn build
 
