@@ -218,11 +218,6 @@ def make_html(d, svg):
         md.append(
             f'<tr><td><code>{x["id"]}</code></td><td><b>{esc(x["goal"])}</b><small class="minor">{esc(x["evidence"])}</small></td><td><span class="pill {name}">{esc(x["state"])}</span></td></tr>'
         )
-    names = {
-        "ABACUS": "ABACUS runtime",
-        "CODEX": "CODEX governance",
-        "cryoplant-project": "QPS engineering",
-    }
     mirror = json.dumps(d, ensure_ascii=False, separators=(",", ":")).replace(
         "</", "<\\/"
     )
