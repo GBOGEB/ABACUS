@@ -1,10 +1,11 @@
+# yamllint disable rule:line-length
 name: DOW-KEB-GBOGEB Background Orchestrator
 
 on:
   schedule:
     - cron: '0 */6 * * *'
   pull_request:
-    branches: [ main ]
+    branches: [main]
     paths:
       - '.github/workflows/background_orchestrator.yml'
   workflow_dispatch:
@@ -36,6 +37,12 @@ jobs:
   orchestrate:
     runs-on: ubuntu-latest
     timeout-minutes: 120
+    # Step outcomes feed the health_check job, which derives health from
+    # them instead of printing constants.
+    outputs:
+      init_outcome: ${{ steps.init_orchestrator.outcome }}
+      validation_outcome: ${{ steps.validation_suite.outcome }}
+      pipeline_outcome: ${{ steps.background_pipeline.outcome }}
 
     steps:
       - name: Checkout Repository
@@ -62,12 +69,14 @@ jobs:
           echo "orchestrator_initialized=true" >> $GITHUB_OUTPUT
 
       - name: Run Validation Suite
+        id: validation_suite
         if: github.event.inputs.task_type == 'validation' || github.event.inputs.task_type == 'full_orchestration'
         run: |
           python scripts/validate_test_performance.py
           echo "✅ Validation suite completed"
 
       - name: Execute Governed Background Pipeline
+        id: background_pipeline
         if: github.event.inputs.task_type == 'full_orchestration' || github.event_name == 'schedule'
         run: |
           python DMAIC_V3/full_pipeline_orchestrator.py --iteration 1 --no-git --quiet
@@ -102,7 +111,7 @@ jobs:
               'trigger': '${{ github.event_name }}',
               'priority': '${{ github.event.inputs.priority || 'MEDIUM' }}',
               'task_type': '${{ github.event.inputs.task_type || 'scheduled' }}',
-              'status': 'completed'
+              'status': '${{ job.status }}'
           }
 
           Path('status_report.json').write_text(json.dumps(report, indent=2))
@@ -132,25 +141,27 @@ jobs:
         with:
           python-version: '3.14'
 
-      - name: Check System Health
+      - name: Derive System Health From Upstream Results
+        id: health
+        env:
+          JOB_RESULT: ${{ needs.orchestrate.result }}
+          INIT_OUTCOME: ${{ needs.orchestrate.outputs.init_outcome }}
+          VALIDATION_OUTCOME: ${{ needs.orchestrate.outputs.validation_outcome }}
+          PIPELINE_OUTCOME: ${{ needs.orchestrate.outputs.pipeline_outcome }}
+          EXPECT_VALIDATION: ${{ github.event.inputs.task_type == 'validation' || github.event.inputs.task_type == 'full_orchestration' }}
+          EXPECT_PIPELINE: ${{ github.event.inputs.task_type == 'full_orchestration' || github.event_name == 'schedule' }}
+          RUN_ID: ${{ github.run_id }}
         run: |
-          python -c "
-          import json
-          from pathlib import Path
-          from datetime import datetime
-
-          health = {
-              'timestamp': datetime.now().isoformat(),
-              'orchestrator_status': 'healthy',
-              'dow_active': True,
-              'keb_active': True,
-              'gbogeb_active': True,
-              'last_run': '${{ github.run_id }}'
-          }
-
-          print('🏥 System Health Check')
-          print(json.dumps(health, indent=2))
-          "
+          set -euo pipefail
+          args=(--job-result "$JOB_RESULT" --run-id "$RUN_ID" --out health.json
+                --step "init=$INIT_OUTCOME" --expect init
+                --step "validation=$VALIDATION_OUTCOME"
+                --step "pipeline=$PIPELINE_OUTCOME")
+          if [ "$EXPECT_VALIDATION" = true ]; then args+=(--expect validation); fi
+          if [ "$EXPECT_PIPELINE" = true ]; then args+=(--expect pipeline); fi
+          echo "🏥 System Health Check (derived from orchestrate job)"
+          python scripts/ci/orchestrator_health.py "${args[@]}"
+          python -c "import json; print('status=' + json.load(open('health.json'))['orchestrator_status'])" >> "$GITHUB_OUTPUT"
 
       - name: Create GitHub Pages Index
         run: |
@@ -163,21 +174,21 @@ jobs:
           - **Last Run**: ${{ github.run_id }}
           - **Run Number**: ${{ github.run_number }}
           - **Trigger**: ${{ github.event_name }}
-          - **Status**: ✅ Active
+          - **Orchestrator health**: ${{ steps.health.outputs.status }} (derived from the orchestrate job; see health.json in the run)
 
           ## Components
 
           ### DOW (Deployment Orchestration Workspace)
           - Level 0 Workspace Root Controller
-          - Status: ✅ Active
+          - Status: not observed by this workflow
 
           ### KEB (Knowledge Execution Backend)
           - Agents, MCP, Tasks Management
-          - Status: ✅ Active
+          - Status: not observed by this workflow
 
           ### GBOGEB (God-Bot Orchestration)
           - Gods → Demigods → Minions → Agents
-          - Status: ✅ Active
+          - Status: not observed by this workflow
 
           ## Recent Runs
 
@@ -208,3 +219,10 @@ jobs:
           git add docs/ || true
           git commit -m "📚 Update GitHub Pages documentation" || echo "No changes to commit"
           git push || echo "Nothing to push"
+
+      - name: Fail Unless Healthy
+        env:
+          STATUS: ${{ steps.health.outputs.status }}
+        run: |
+          echo "orchestrator_status=$STATUS (causes are in the health step's output)"
+          test "$STATUS" = HEALTHY
