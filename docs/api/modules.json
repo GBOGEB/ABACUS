@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-11-09T20:12:57.820042",
+  "generated_at": "2026-11-11T07:45:26.280003",
   "module_count": 211,
   "modules": {
     "DMAIC_V3/temporal_phase_runner.py": {
@@ -465,7 +465,11 @@
         },
         {
           "name": "FullPipelineOrchestrator",
-          "doc": "Full Pipeline Orchestrator\n\nExecutes complete DMAIC V3.3 pipeline:\n- Phase 0: Initialization\n- Phases 1-5: DMAIC Core\n- Phase 6: Knowledge (Devour/Learn)\n- Phases 7-8: Future expansion stubs\n\nWith ful"
+          "doc": "Full Pipeline Orchestrator\n\nExecutes complete DMAIC V3.3 pipeline:\n- Phase 0: Initialization\n- Phases 1-5: DMAIC Core\n- Phase 6: Knowledge (Devour/Learn)\n- Phases 7-9: Action tracking, TODO management"
+        },
+        {
+          "name": "build_parser",
+          "doc": "Command-line parser (shared with the workflow-invocation tests)."
         },
         {
           "name": "main",
@@ -490,6 +494,14 @@
         {
           "name": "__init__",
           "doc": "Initialize the Full Pipeline Orchestrator"
+        },
+        {
+          "name": "_phase_plan",
+          "doc": "Ordered phase table shared by the full pipeline and ``--phase``.\n\nEach row is ``(number, key, label, factory, critical)``. Factories\nlook up the phase classes when called, so tests can patch them."
+        },
+        {
+          "name": "execute_single_phase",
+          "doc": "Execute exactly one phase of the pipeline (``--phase N``).\n\nThe phase is built and tracked exactly as in the full pipeline.\nAny failure of the requested phase fails the run, including\nphases 6-9 that "
         },
         {
           "name": "execute_full_pipeline",
@@ -4046,6 +4058,54 @@
           "doc": ""
         },
         {
+          "name": "test_phase_plan_matches_cli_choices_in_order",
+          "doc": ""
+        },
+        {
+          "name": "test_noncritical_phase_failure_still_completes_full_pipeline",
+          "doc": ""
+        },
+        {
+          "name": "test_single_phase_runs_only_the_requested_phase",
+          "doc": ""
+        },
+        {
+          "name": "test_single_phase_failure_fails_even_for_noncritical_phase",
+          "doc": ""
+        },
+        {
+          "name": "test_single_phase_construction_error_is_a_recorded_failure",
+          "doc": ""
+        },
+        {
+          "name": "test_single_phase_rejects_unknown_phase_number",
+          "doc": ""
+        },
+        {
+          "name": "_RecordingOrchestrator",
+          "doc": ""
+        },
+        {
+          "name": "test_cli_phase_flag_dispatches_single_phase",
+          "doc": ""
+        },
+        {
+          "name": "test_cli_rejects_out_of_range_phase",
+          "doc": ""
+        },
+        {
+          "name": "_workflow_invocations",
+          "doc": "Yield (workflow, step, argv) for every workflow step that runs the script."
+        },
+        {
+          "name": "test_every_workflow_invocation_is_accepted_by_the_parser",
+          "doc": ""
+        },
+        {
+          "name": "test_phase_workflow_offers_exactly_the_cli_phases_through_env",
+          "doc": ""
+        },
+        {
           "name": "__init__",
           "doc": ""
         },
@@ -4094,7 +4154,31 @@
           "doc": ""
         },
         {
+          "name": "Analyze",
+          "doc": ""
+        },
+        {
+          "name": "broken",
+          "doc": ""
+        },
+        {
+          "name": "__init__",
+          "doc": ""
+        },
+        {
+          "name": "execute_single_phase",
+          "doc": ""
+        },
+        {
+          "name": "execute_full_pipeline",
+          "doc": ""
+        },
+        {
           "name": "execute",
+          "doc": ""
+        },
+        {
+          "name": "__init__",
           "doc": ""
         }
       ]
