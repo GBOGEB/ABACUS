@@ -557,8 +557,13 @@ class PipelineDebugger:
                     json.JSONDecodeError,
                     TypeError,
                     ValueError,
-                ):
-                    pass
+                ) as e:
+                    result["recent_errors"].append(
+                        {
+                            "file": str(json_file.relative_to(self.output_root)),
+                            "error": f"Failed to read/parse log file: {e}",
+                        }
+                    )
 
         if result["recent_errors"]:
             result["status"] = "warning"
