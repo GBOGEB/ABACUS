@@ -22,11 +22,12 @@ Features:
 =============================================================================
 """
 
+import argparse
 import sys
 import json
 from pathlib import Path
 from datetime import datetime
-from typing import Dict, Any, List, Tuple
+from typing import Dict, Any, Callable, List, Optional, Tuple
 import subprocess
 
 # Add parent directory to path
@@ -99,6 +100,11 @@ class Phase8RecursiveOptimization:
         }
 
 
+# Phase numbers accepted by ``--phase``; the runtime tests assert that they
+# match the numbers in FullPipelineOrchestrator._phase_plan().
+PHASE_CHOICES = tuple(range(10))
+
+
 class FullPipelineOrchestrator:
     """
     Full Pipeline Orchestrator
@@ -107,9 +113,10 @@ class FullPipelineOrchestrator:
     - Phase 0: Initialization
     - Phases 1-5: DMAIC Core
     - Phase 6: Knowledge (Devour/Learn)
-    - Phases 7-8: Future expansion stubs
+    - Phases 7-9: Action tracking, TODO management, documentation
 
-    With full tracking, artifacts, and recursive hooks
+    With full tracking, artifacts, and recursive hooks.
+    ``--phase N`` runs a single phase instead (execute_single_phase).
     """
 
     def __init__(self,
@@ -155,6 +162,105 @@ class FullPipelineOrchestrator:
             print(f"[DEBUG] Debug port enabled: {self.debug_port}")
             self._setup_debug_monitoring()
 
+    def _phase_plan(self) -> List[Tuple[int, str, str, Callable[[], Any], bool]]:
+        """Ordered phase table shared by the full pipeline and ``--phase``.
+
+        Each row is ``(number, key, label, factory, critical)``. Factories
+        look up the phase classes when called, so tests can patch them.
+        """
+        cfg, state = self.config, self.state_mgr
+        return [
+            (0, 'phase0_init', "Phase 0: Initialization",
+             lambda: Phase0Init(cfg, state), True),
+            (1, 'phase1_define', "Phase 1: Define",
+             lambda: Phase1Define(cfg, state), True),
+            (2, 'phase2_measure', "Phase 2: Measure",
+             lambda: Phase2Measure(cfg, state), True),
+            (3, 'phase3_analyze', "Phase 3: Analyze",
+             lambda: Phase3Analyze(cfg, state), True),
+            (4, 'phase4_improve', "Phase 4: Improve",
+             lambda: Phase4Improve(cfg, state), True),
+            (5, 'phase5_control', "Phase 5: Control",
+             lambda: Phase5Control(cfg, state), True),
+            (6, 'phase6_knowledge', "Phase 6: Knowledge (Devour/Learn)",
+             lambda: Phase6Knowledge(cfg, state), False),
+            (7, 'phase7_action_tracking', "Phase 7: Action Tracking",
+             lambda: Phase7ActionTracking(cfg, state), False),
+            (8, 'phase8_todo_management', "Phase 8: TODO Management",
+             lambda: Phase8TODOManagement(cfg, state), False),
+            (9, 'phase9_documentation_generation',
+             "Phase 9: Documentation Generation",
+             lambda: Phase9DocumentationGeneration(state), False),
+        ]
+
+    def execute_single_phase(self, phase: int, iteration: int = 1) -> bool:
+        """Execute exactly one phase of the pipeline (``--phase N``).
+
+        The phase is built and tracked exactly as in the full pipeline.
+        Any failure of the requested phase fails the run, including
+        phases 6-9 that the full pipeline tolerates, because that phase's
+        result is the purpose of the invocation. The run writes a receipt
+        to ``DMAIC_V3_OUTPUT/iteration_<n>/single_phase/<key>.json``. It
+        does not update the planning matrix, overwrite the full-pipeline
+        summary or statistics, or make a git commit.
+
+        Returns:
+            bool: True only if the requested phase succeeded.
+        """
+        plan = {row[0]: row for row in self._phase_plan()}
+        if phase not in plan:
+            raise ValueError(
+                f"Unknown phase {phase}; expected one of {sorted(plan)}"
+            )
+        number, key, label, factory, _critical = plan[phase]
+
+        print("\n" + "="*80)
+        print("DMAIC V3.3 - SINGLE PHASE EXECUTION")
+        print("="*80)
+        print(f"Phase: {label}")
+        print(f"Iteration: {iteration}")
+        print("="*80)
+
+        try:
+            phase_obj = factory()
+        except Exception as e:
+            print(f"\n[FAIL] {label} could not be constructed: {e}")
+            import traceback
+            traceback.print_exc()
+            success, error = False, str(e)
+        else:
+            success, results = self._execute_phase_with_tracking(
+                phase_obj, label, iteration
+            )
+            error = results.get('error') if isinstance(results, dict) else None
+
+        entry = next(
+            (row for row in reversed(self.execution_log) if row.get('phase') == label),
+            None,
+        )
+        receipt = {
+            'mode': 'single_phase',
+            'phase_number': number,
+            'phase_key': key,
+            'phase': label,
+            'iteration': iteration,
+            'success': success,
+            'duration_seconds': entry['duration_seconds'] if entry else None,
+            'error': error,
+            'timestamp': datetime.now().isoformat(),
+        }
+        receipt_file = Path(
+            f"DMAIC_V3_OUTPUT/iteration_{iteration}/single_phase/{key}.json"
+        )
+        receipt_file.parent.mkdir(parents=True, exist_ok=True)
+        receipt_file.write_text(json.dumps(receipt, indent=2), encoding='utf-8')
+        print(f"\n[TRACKING] Single-phase receipt saved: {receipt_file}")
+
+        print("\n" + "="*80)
+        print(f"[{'SUCCESS' if success else 'FAILED'}] {label}")
+        print("="*80)
+        return success
+
     def execute_full_pipeline(self, iteration: int = 1) -> bool:
         """
         Execute full pipeline for one iteration
@@ -181,105 +287,17 @@ class FullPipelineOrchestrator:
         self.bg_change_detector.start()
 
         try:
-            # Phase 0: Initialization
-            success, results = self._execute_phase_with_tracking(
-                Phase0Init(self.config, self.state_mgr),
-                "Phase 0: Initialization",
-                iteration
-            )
-            if not success:
-                return False
-            phases_executed.append('phase0_init')
-
-            # Phase 1: Define
-            success, results = self._execute_phase_with_tracking(
-                Phase1Define(self.config, self.state_mgr),
-                "Phase 1: Define",
-                iteration
-            )
-            if not success:
-                return False
-            phases_executed.append('phase1_define')
-
-            # Phase 2: Measure
-            success, results = self._execute_phase_with_tracking(
-                Phase2Measure(self.config, self.state_mgr),
-                "Phase 2: Measure",
-                iteration
-            )
-            if not success:
-                return False
-            phases_executed.append('phase2_measure')
-
-            # Phase 3: Analyze
-            success, results = self._execute_phase_with_tracking(
-                Phase3Analyze(self.config, self.state_mgr),
-                "Phase 3: Analyze",
-                iteration
-            )
-            if not success:
-                return False
-            phases_executed.append('phase3_analyze')
-
-            # Phase 4: Improve
-            success, results = self._execute_phase_with_tracking(
-                Phase4Improve(self.config, self.state_mgr),
-                "Phase 4: Improve",
-                iteration
-            )
-            if not success:
-                return False
-            phases_executed.append('phase4_improve')
-
-            # Phase 5: Control
-            success, results = self._execute_phase_with_tracking(
-                Phase5Control(self.config, self.state_mgr),
-                "Phase 5: Control",
-                iteration
-            )
-            if not success:
-                return False
-            phases_executed.append('phase5_control')
-
-            # Phase 6: Knowledge (Devour/Learn)
-            success, results = self._execute_phase_with_tracking(
-                Phase6Knowledge(self.config, self.state_mgr),
-                "Phase 6: Knowledge (Devour/Learn)",
-                iteration
-            )
-            if not success:
-                print("[WARNING] Phase 6 failed but continuing...")
-            phases_executed.append('phase6_knowledge')
-
-            # Phase 7: Action Tracking
-            success, results = self._execute_phase_with_tracking(
-                Phase7ActionTracking(self.config, self.state_mgr),
-                "Phase 7: Action Tracking",
-                iteration
-            )
-            if not success:
-                print("[WARNING] Phase 7 failed but continuing...")
-            phases_executed.append('phase7_action_tracking')
-
-            # Phase 8: TODO Management
-            success, results = self._execute_phase_with_tracking(
-                Phase8TODOManagement(self.config, self.state_mgr),
-                "Phase 8: TODO Management",
-                iteration
-            )
-            if not success:
-                print("[WARNING] Phase 8 failed but continuing...")
-            phases_executed.append('phase8_todo_management')
-
-            # Phase 9: Documentation Generation
-            success, results = self._execute_phase_with_tracking(
-                Phase9DocumentationGeneration(self.state_mgr),
-                "Phase 9: Documentation Generation",
-                iteration
-            )
-            if not success:
-                print("[WARNING] Phase 9 failed but continuing...")
-            phases_executed.append('phase9_documentation_generation')
+            # Phases 0-5 are critical: a failure stops the pipeline.
+            # Phases 6-9 report a failure and the pipeline continues.
+            for number, key, label, factory, critical in self._phase_plan():
+                success, results = self._execute_phase_with_tracking(
+                    factory(), label, iteration
+                )
+                if not success:
+                    if critical:
+                        return False
+                    print(f"[WARNING] Phase {number} failed but continuing...")
+                phases_executed.append(key)
 
             # Update planning matrix
             print("\n[TRACKING] Updating planning matrix...")
@@ -521,11 +539,11 @@ class FullPipelineOrchestrator:
         print(f"  Total duration: {self.statistics['orchestration']['total_duration_seconds']:.2f}s")
 
 
-def main() -> Any:
-    """Main execution entry point"""
-    import argparse
-
+def build_parser() -> argparse.ArgumentParser:
+    """Command-line parser (shared with the workflow-invocation tests)."""
     parser = argparse.ArgumentParser(description='DMAIC V3.3 Full Pipeline Orchestrator')
+    parser.add_argument('--phase', type=int, choices=PHASE_CHOICES, default=None,
+                       help='Run only this phase (0-9) instead of the full pipeline')
     parser.add_argument('--iteration', type=int, default=1,
                        help='Iteration number (default: 1)')
     parser.add_argument('--no-idempotency', action='store_true',
@@ -536,8 +554,12 @@ def main() -> Any:
                        help='Reduce output verbosity')
     parser.add_argument('--debug-port', type=int, default=None,
                        help='Enable debug monitoring on specified port')
+    return parser
 
-    args = parser.parse_args()
+
+def main(argv: Optional[List[str]] = None) -> Any:
+    """Main execution entry point"""
+    args = build_parser().parse_args(argv)
 
     orchestrator = FullPipelineOrchestrator(
         enable_idempotency_flag=not args.no_idempotency,
@@ -546,7 +568,10 @@ def main() -> Any:
         debug_port=args.debug_port
     )
 
-    success = orchestrator.execute_full_pipeline(iteration=args.iteration)
+    if args.phase is not None:
+        success = orchestrator.execute_single_phase(args.phase, iteration=args.iteration)
+    else:
+        success = orchestrator.execute_full_pipeline(iteration=args.iteration)
 
     sys.exit(0 if success else 1)
 
