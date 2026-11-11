@@ -5126,7 +5126,7 @@
           "protected": false
         },
         {
-          "ref": "claude/consolidate-lkt-w19-binary-release",
+          "ref": "claude/consolidate-supplier-b-w19-binary-release",
           "sha": "a638e52a9589bf5720c3aad996ddb7ed857c9b27",
           "protected": false
         },
@@ -5438,7 +5438,7 @@
           "sha": "8f79e773d448cafb85c9c24844aae6747394598a"
         },
         {
-          "ref": "claude/consolidate-lkt-w19-binary-release",
+          "ref": "claude/consolidate-supplier-b-w19-binary-release",
           "sha": "a638e52a9589bf5720c3aad996ddb7ed857c9b27"
         },
         {

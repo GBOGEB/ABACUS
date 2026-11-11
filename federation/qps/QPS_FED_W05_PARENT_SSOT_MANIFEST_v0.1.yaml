@@ -21,7 +21,7 @@ authority_order:
 canonical_runtime:
   path: tools/run_qps_w05_bidder_eval_dow_return.py
   test: tests/test_qps_w05_bidder_eval_dow_return.py
-  workflow: .github/workflows/qps-w05-bidder-eval-dow.yml
+  workflow: .github/workflows/qps-w05-supplier-eval-dow.yml
 superseded_runtime_inputs:
   - path: federation/qps/snapshots/QPS_FED_W05_BIDDER_EVAL_SANITIZED_SNAPSHOT_v0.1.yaml
     reason: reduced duplicate snapshot without canonical RTM/OFFER priority graph
