@@ -38,7 +38,7 @@ class DryRunTestSuite:
             "SUCCESS": "\033[92m",
             "ERROR": "\033[91m",
             "WARNING": "\033[93m",
-            "TEST": "\033[96m"
+            "TEST": "\033[96m",
         }
         color = colors.get(level, "\033[0m")
         print(f"[{timestamp}] [{level}] {color}{message}\033[0m")
@@ -52,7 +52,7 @@ class DryRunTestSuite:
             if not tracker_file.exists():
                 raise FileNotFoundError("DOW tracker not found")
 
-            with open(tracker_file, 'r', encoding='utf-8') as f:
+            with open(tracker_file, "r", encoding="utf-8") as f:
                 json.load(f)
 
             workflows_tested = 0
@@ -62,7 +62,7 @@ class DryRunTestSuite:
                 "execute_full_pipeline_sprint_dow.py",
                 "dmaic_v3_orchestrator.py",
                 "recursive_knowledge_engine.py",
-                "temporal_session_analyzer.py"
+                "temporal_session_analyzer.py",
             ]
 
             for workflow in expected_workflows:
@@ -70,35 +70,46 @@ class DryRunTestSuite:
                 if workflow_path.exists():
                     workflows_tested += 1
                     try:
-                        spec = importlib.util.spec_from_file_location("test_module", workflow_path)
+                        spec = importlib.util.spec_from_file_location(
+                            "test_module", workflow_path
+                        )
                         if spec and spec.loader:
                             workflows_passed += 1
                     except Exception as e:
-                        self.log(f"  ⚠️  Workflow {workflow} import failed: {e}", "WARNING")
+                        self.log(
+                            f"  ⚠️  Workflow {workflow} import failed: {e}", "WARNING"
+                        )
 
-            self.results.append({
-                "test_id": "1.4.1",
-                "test_name": "test_dry_run_dow_workflows",
-                "status": "PASS",
-                "message": f"DOW workflows validated: {workflows_passed}/{workflows_tested}",
-                "workflows_tested": workflows_tested,
-                "workflows_passed": workflows_passed,
-                "duration_seconds": time.time() - self.start_time,
-                "timestamp": datetime.now().isoformat()
-            })
+            self.results.append(
+                {
+                    "test_id": "1.4.1",
+                    "test_name": "test_dry_run_dow_workflows",
+                    "status": "PASS",
+                    "message": f"DOW workflows validated: {workflows_passed}/{workflows_tested}",
+                    "workflows_tested": workflows_tested,
+                    "workflows_passed": workflows_passed,
+                    "duration_seconds": time.time() - self.start_time,
+                    "timestamp": datetime.now().isoformat(),
+                }
+            )
             self.passed += 1
-            self.log(f"  ✅ PASS: {workflows_passed}/{workflows_tested} workflows validated", "SUCCESS")
+            self.log(
+                f"  ✅ PASS: {workflows_passed}/{workflows_tested} workflows validated",
+                "SUCCESS",
+            )
             return True
 
         except Exception as e:
-            self.results.append({
-                "test_id": "1.4.1",
-                "test_name": "test_dry_run_dow_workflows",
-                "status": "FAIL",
-                "message": str(e),
-                "duration_seconds": time.time() - self.start_time,
-                "timestamp": datetime.now().isoformat()
-            })
+            self.results.append(
+                {
+                    "test_id": "1.4.1",
+                    "test_name": "test_dry_run_dow_workflows",
+                    "status": "FAIL",
+                    "message": str(e),
+                    "duration_seconds": time.time() - self.start_time,
+                    "timestamp": datetime.now().isoformat(),
+                }
+            )
             self.failed += 1
             self.log(f"  ❌ FAIL: {e}", "ERROR")
             return False
@@ -121,31 +132,41 @@ class DryRunTestSuite:
                     phases_validated += 1
 
             if phases_validated < len(phases):
-                self.log(f"  ℹ️  INFO: {phases_validated}/{len(phases)} DMAIC phases have output directories", "INFO")
+                self.log(
+                    f"  ℹ️  INFO: {phases_validated}/{len(phases)} DMAIC phases have output directories",
+                    "INFO",
+                )
 
-            self.results.append({
-                "test_id": "1.4.2",
-                "test_name": "test_dry_run_dmaic_phases",
-                "status": "PASS",
-                "message": f"DMAIC phases validated: {phases_validated}/{len(phases)}",
-                "phases_total": len(phases),
-                "phases_validated": phases_validated,
-                "duration_seconds": time.time() - self.start_time,
-                "timestamp": datetime.now().isoformat()
-            })
+            self.results.append(
+                {
+                    "test_id": "1.4.2",
+                    "test_name": "test_dry_run_dmaic_phases",
+                    "status": "PASS",
+                    "message": f"DMAIC phases validated: {phases_validated}/{len(phases)}",
+                    "phases_total": len(phases),
+                    "phases_validated": phases_validated,
+                    "duration_seconds": time.time() - self.start_time,
+                    "timestamp": datetime.now().isoformat(),
+                }
+            )
             self.passed += 1
-            self.log(f"  ✅ PASS: {phases_validated}/{len(phases)} DMAIC phases validated", "SUCCESS")
+            self.log(
+                f"  ✅ PASS: {phases_validated}/{len(phases)} DMAIC phases validated",
+                "SUCCESS",
+            )
             return True
 
         except Exception as e:
-            self.results.append({
-                "test_id": "1.4.2",
-                "test_name": "test_dry_run_dmaic_phases",
-                "status": "FAIL",
-                "message": str(e),
-                "duration_seconds": time.time() - self.start_time,
-                "timestamp": datetime.now().isoformat()
-            })
+            self.results.append(
+                {
+                    "test_id": "1.4.2",
+                    "test_name": "test_dry_run_dmaic_phases",
+                    "status": "FAIL",
+                    "message": str(e),
+                    "duration_seconds": time.time() - self.start_time,
+                    "timestamp": datetime.now().isoformat(),
+                }
+            )
             self.failed += 1
             self.log(f"  ❌ FAIL: {e}", "ERROR")
             return False
@@ -159,7 +180,7 @@ class DryRunTestSuite:
                 "DMAIC_V3_OUTPUT",
                 "ABACUS_V21_MIGRATION_OUTPUT",
                 "ABACUS_SESSION_ANALYSIS",
-                "SPRINT_EXECUTION"
+                "SPRINT_EXECUTION",
             ]
 
             dirs_exist = 0
@@ -169,30 +190,36 @@ class DryRunTestSuite:
 
             integration_score = (dirs_exist / len(required_dirs)) * 100
 
-            self.results.append({
-                "test_id": "1.4.3",
-                "test_name": "test_dry_run_integration",
-                "status": "PASS",
-                "message": f"Integration directories validated: {dirs_exist}/{len(required_dirs)}",
-                "integration_score": integration_score,
-                "directories_validated": dirs_exist,
-                "directories_total": len(required_dirs),
-                "duration_seconds": time.time() - self.start_time,
-                "timestamp": datetime.now().isoformat()
-            })
+            self.results.append(
+                {
+                    "test_id": "1.4.3",
+                    "test_name": "test_dry_run_integration",
+                    "status": "PASS",
+                    "message": f"Integration directories validated: {dirs_exist}/{len(required_dirs)}",
+                    "integration_score": integration_score,
+                    "directories_validated": dirs_exist,
+                    "directories_total": len(required_dirs),
+                    "duration_seconds": time.time() - self.start_time,
+                    "timestamp": datetime.now().isoformat(),
+                }
+            )
             self.passed += 1
-            self.log(f"  ✅ PASS: Integration score {integration_score:.1f}%", "SUCCESS")
+            self.log(
+                f"  ✅ PASS: Integration score {integration_score:.1f}%", "SUCCESS"
+            )
             return True
 
         except Exception as e:
-            self.results.append({
-                "test_id": "1.4.3",
-                "test_name": "test_dry_run_integration",
-                "status": "FAIL",
-                "message": str(e),
-                "duration_seconds": time.time() - self.start_time,
-                "timestamp": datetime.now().isoformat()
-            })
+            self.results.append(
+                {
+                    "test_id": "1.4.3",
+                    "test_name": "test_dry_run_integration",
+                    "status": "FAIL",
+                    "message": str(e),
+                    "duration_seconds": time.time() - self.start_time,
+                    "timestamp": datetime.now().isoformat(),
+                }
+            )
             self.failed += 1
             self.log(f"  ❌ FAIL: {e}", "ERROR")
             return False
@@ -210,35 +237,40 @@ class DryRunTestSuite:
 
             execution_time = time.time() - self.start_time
 
-            performance_ok = (
-                memory_mb < 500 and
-                execution_time < 300
-            )
+            performance_ok = memory_mb < 500 and execution_time < 300
 
-            self.results.append({
-                "test_id": "1.4.4",
-                "test_name": "test_performance_baseline",
-                "status": "PASS" if performance_ok else "WARNING",
-                "message": f"Performance baseline established",
-                "metrics": {
-                    "memory_mb": round(memory_mb, 2),
-                    "cpu_percent": round(cpu_percent, 2),
-                    "execution_time_seconds": round(execution_time, 2)
-                },
-                "thresholds": {
-                    "memory_mb_max": 500,
-                    "execution_time_max_seconds": 300
-                },
-                "duration_seconds": time.time() - self.start_time,
-                "timestamp": datetime.now().isoformat()
-            })
+            self.results.append(
+                {
+                    "test_id": "1.4.4",
+                    "test_name": "test_performance_baseline",
+                    "status": "PASS" if performance_ok else "WARNING",
+                    "message": f"Performance baseline established",
+                    "metrics": {
+                        "memory_mb": round(memory_mb, 2),
+                        "cpu_percent": round(cpu_percent, 2),
+                        "execution_time_seconds": round(execution_time, 2),
+                    },
+                    "thresholds": {
+                        "memory_mb_max": 500,
+                        "execution_time_max_seconds": 300,
+                    },
+                    "duration_seconds": time.time() - self.start_time,
+                    "timestamp": datetime.now().isoformat(),
+                }
+            )
 
             if performance_ok:
                 self.passed += 1
-                self.log(f"  ✅ PASS: Memory {memory_mb:.1f}MB, Time {execution_time:.2f}s", "SUCCESS")
+                self.log(
+                    f"  ✅ PASS: Memory {memory_mb:.1f}MB, Time {execution_time:.2f}s",
+                    "SUCCESS",
+                )
             else:
                 self.passed += 1
-                self.log(f"  ⚠️  WARNING: Performance baseline recorded (may exceed thresholds)", "WARNING")
+                self.log(
+                    f"  ⚠️  WARNING: Performance baseline recorded (may exceed thresholds)",
+                    "WARNING",
+                )
 
             return True
 
@@ -246,30 +278,32 @@ class DryRunTestSuite:
             self.log("  ℹ️  INFO: psutil not available, using basic metrics", "INFO")
             execution_time = time.time() - self.start_time
 
-            self.results.append({
-                "test_id": "1.4.4",
-                "test_name": "test_performance_baseline",
-                "status": "PASS",
-                "message": "Basic performance baseline established",
-                "metrics": {
-                    "execution_time_seconds": round(execution_time, 2)
-                },
-                "duration_seconds": time.time() - self.start_time,
-                "timestamp": datetime.now().isoformat()
-            })
+            self.results.append(
+                {
+                    "test_id": "1.4.4",
+                    "test_name": "test_performance_baseline",
+                    "status": "PASS",
+                    "message": "Basic performance baseline established",
+                    "metrics": {"execution_time_seconds": round(execution_time, 2)},
+                    "duration_seconds": time.time() - self.start_time,
+                    "timestamp": datetime.now().isoformat(),
+                }
+            )
             self.passed += 1
             self.log(f"  ✅ PASS: Execution time {execution_time:.2f}s", "SUCCESS")
             return True
 
         except Exception as e:
-            self.results.append({
-                "test_id": "1.4.4",
-                "test_name": "test_performance_baseline",
-                "status": "FAIL",
-                "message": str(e),
-                "duration_seconds": time.time() - self.start_time,
-                "timestamp": datetime.now().isoformat()
-            })
+            self.results.append(
+                {
+                    "test_id": "1.4.4",
+                    "test_name": "test_performance_baseline",
+                    "status": "FAIL",
+                    "message": str(e),
+                    "duration_seconds": time.time() - self.start_time,
+                    "timestamp": datetime.now().isoformat(),
+                }
+            )
             self.failed += 1
             self.log(f"  ❌ FAIL: {e}", "ERROR")
             return False
@@ -287,7 +321,11 @@ class DryRunTestSuite:
         self.test_performance_baseline()
 
         duration = time.time() - self.start_time
-        pass_rate = (self.passed / (self.passed + self.failed) * 100) if (self.passed + self.failed) > 0 else 0
+        pass_rate = (
+            (self.passed / (self.passed + self.failed) * 100)
+            if (self.passed + self.failed) > 0
+            else 0
+        )
 
         self.log("=" * 60, "INFO")
         self.log("DRY-RUN TEST SUMMARY", "INFO")
@@ -319,18 +357,19 @@ class DryRunTestSuite:
                 "passed": self.passed,
                 "failed": self.failed,
                 "pass_rate": pass_rate,
-                "status": "PASS" if self.failed == 0 else "FAIL"
+                "status": "PASS" if self.failed == 0 else "FAIL",
             },
-            "tests": self.results
+            "tests": self.results,
         }
 
         report_file = self.output_dir / "abacus_v21_dry_run_report.json"
-        with open(report_file, 'w', encoding='utf-8') as f:
+        with open(report_file, "w", encoding="utf-8") as f:
             json.dump(report, f, indent=2)
 
         self.log(f"Reports saved to: {self.output_dir}/", "INFO")
 
         return self.failed == 0
+
 
 if __name__ == "__main__":
     suite = DryRunTestSuite()

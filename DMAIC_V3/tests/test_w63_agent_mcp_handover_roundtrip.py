@@ -8,7 +8,9 @@ from DMAIC_V3.core.agent_mcp_handover_roundtrip import execute_agent_mcp_handove
 def test_representative_roundtrip_preserves_parent():
     payload = {"child": "QPS", "operating_point": "OP1", "value": 42}
     before = copy.deepcopy(payload)
-    receipt = execute_agent_mcp_handover("P3-REP", payload, lambda p: {"finding": p["value"] * 2})
+    receipt = execute_agent_mcp_handover(
+        "P3-REP", payload, lambda p: {"finding": p["value"] * 2}
+    )
     assert payload == before
     assert receipt["zero_delta"] is True
     assert receipt["parent_sha256"] == receipt["returned_parent_sha256"]

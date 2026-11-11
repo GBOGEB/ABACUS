@@ -7,9 +7,7 @@ from scripts.emit_execution_backbone_runtime_status import (
 
 class TestEmitExecutionBackboneRuntimeStatus(unittest.TestCase):
     def test_runtime_status_closes_bidirectional_feedback_loop(self):
-        report = build_execution_backbone_runtime_status(
-            timeout_seconds=2.0
-        )
+        report = build_execution_backbone_runtime_status(timeout_seconds=2.0)
 
         self.assertEqual("ok", report["status"])
         self.assertEqual("completed", report["completion_status"])
@@ -24,9 +22,7 @@ class TestEmitExecutionBackboneRuntimeStatus(unittest.TestCase):
         )
 
     def test_runtime_status_carries_dmaic_control_context(self):
-        report = build_execution_backbone_runtime_status(
-            timeout_seconds=2.0
-        )
+        report = build_execution_backbone_runtime_status(timeout_seconds=2.0)
 
         self.assertIn("define", report["dmaic"])
         self.assertIn("measure", report["dmaic"])

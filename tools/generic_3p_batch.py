@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 """Execute generic 3P scouting over all items for one subtask or all subtasks."""
+
 from __future__ import annotations
 
 import argparse
@@ -20,7 +21,9 @@ def load_items(path: Path) -> list[dict[str, object]]:
     return [item for item in items if isinstance(item, dict)]
 
 
-def aggregate(records: list[dict[str, object]], mode: str, subtask: str | None) -> dict[str, object]:
+def aggregate(
+    records: list[dict[str, object]], mode: str, subtask: str | None
+) -> dict[str, object]:
     durations: list[float] = []
     evidence_yield = 0.0
     edge_yield = 0.0
@@ -76,16 +79,20 @@ def main(argv: Iterable[str] | None = None) -> int:
     finished = time.perf_counter_ns()
     mode = "all" if args.all_subtasks else "single_subtask"
     summary = aggregate(records, mode, args.subtask)
-    summary.update({
-        "schema_version": "GENERIC-3P-BATCH-1.0.0",
-        "item_count": len(items),
-        "wall_time_ms": (finished - started) / 1_000_000,
-        "records": records,
-        "read_only": True,
-    })
+    summary.update(
+        {
+            "schema_version": "GENERIC-3P-BATCH-1.0.0",
+            "item_count": len(items),
+            "wall_time_ms": (finished - started) / 1_000_000,
+            "records": records,
+            "read_only": True,
+        }
+    )
     out = Path(args.out)
     out.parent.mkdir(parents=True, exist_ok=True)
-    out.write_text(json.dumps(summary, indent=2, sort_keys=True) + "\n", encoding="utf-8")
+    out.write_text(
+        json.dumps(summary, indent=2, sort_keys=True) + "\n", encoding="utf-8"
+    )
     print(
         json.dumps(
             {

@@ -71,14 +71,24 @@ def _install() -> None:
 
             seen[key] = {"count": 1, "outcome": outcome}
             if len(seen) == 1:
-                write({"header": {
-                    "schema": codec.SCHEMA,
-                    "coolprop": getattr(CoolProp, "__version__", "?"),
-                    "python": platform.python_version(),
-                    "platform": platform.platform(),
-                }})
-            write({"key": key, "id": codec.key_id(key), "outcome": outcome,
-                   "site": caller()})
+                write(
+                    {
+                        "header": {
+                            "schema": codec.SCHEMA,
+                            "coolprop": getattr(CoolProp, "__version__", "?"),
+                            "python": platform.python_version(),
+                            "platform": platform.platform(),
+                        }
+                    }
+                )
+            write(
+                {
+                    "key": key,
+                    "id": codec.key_id(key),
+                    "outcome": outcome,
+                    "site": caller(),
+                }
+            )
             return
         entry["count"] += 1
         if entry["outcome"] != outcome and not entry.get("unstable"):
@@ -86,7 +96,9 @@ def _install() -> None:
             write({"unstable": codec.key_id(key), "outcome": outcome})
 
     def flush_counts() -> None:
-        counts = {codec.key_id(k): v["count"] for k, v in seen.items() if v["count"] > 1}
+        counts = {
+            codec.key_id(k): v["count"] for k, v in seen.items() if v["count"] > 1
+        }
         if counts:
             write({"counts": counts})
         if state["handle"] is not None:

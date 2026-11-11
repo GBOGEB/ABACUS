@@ -9,7 +9,6 @@ import re
 from pathlib import Path
 from typing import Any
 
-
 PATTERNS = {
     "shell_or_true": re.compile(r"\|\|\s*true\b"),
     "shell_or_echo": re.compile(r"\|\|\s*echo\b"),
@@ -88,8 +87,7 @@ def main(argv: list[str] | None = None) -> int:
         key=lambda item: (-item["unguarded_count"], item["path"]),
     )
     ratchet_exceeded = (
-        args.max_unguarded is not None
-        and len(violations) > args.max_unguarded
+        args.max_unguarded is not None and len(violations) > args.max_unguarded
     )
     report = {
         "schema": "abacus-ci-false-green-census/1.1.0",

@@ -9,6 +9,7 @@ Project rule:
 
 This module intentionally does not alter the generic ABACUS helium provider.
 """
+
 from __future__ import annotations
 
 from dataclasses import dataclass
@@ -44,7 +45,9 @@ class QplantHeliumState:
 def governing_provider_for_temperature(temperature_K: float) -> str:
     t = float(temperature_K)
     if not t > 0.0:
-        raise ValueError(f"QPLANT_INVALID_TEMPERATURE: T={temperature_K} K must be positive")
+        raise ValueError(
+            f"QPLANT_INVALID_TEMPERATURE: T={temperature_K} K must be positive"
+        )
     return "HEPAK" if t <= HEPAK_T_MAX_K else "CoolProp"
 
 
@@ -52,10 +55,14 @@ def _close(a: float, b: float, *, rtol: float = 1e-9, atol: float = 1e-7) -> boo
     return abs(a - b) <= max(atol, rtol * max(abs(a), abs(b)))
 
 
-def _hepak_exact_state(receipt: HepakRuntimeReceipt, temperature_K: float, pressure_Pa: float) -> QplantHeliumState:
+def _hepak_exact_state(
+    receipt: HepakRuntimeReceipt, temperature_K: float, pressure_Pa: float
+) -> QplantHeliumState:
     matches: list[dict[str, Any]] = []
     for row in receipt.rows:
-        if _close(float(row["temperature_K"]), temperature_K) and _close(float(row["pressure_Pa_abs"]), pressure_Pa):
+        if _close(float(row["temperature_K"]), temperature_K) and _close(
+            float(row["pressure_Pa_abs"]), pressure_Pa
+        ):
             matches.append(row)
     if not matches:
         raise RuntimeError(
@@ -63,7 +70,9 @@ def _hepak_exact_state(receipt: HepakRuntimeReceipt, temperature_K: float, press
             "No interpolation or CoolProp fallback is permitted for governing T <= 4.5 K execution."
         )
     if len(matches) != 1:
-        raise RuntimeError(f"QPLANT_HEPAK_STATE_AMBIGUOUS: {len(matches)} rows match T/P")
+        raise RuntimeError(
+            f"QPLANT_HEPAK_STATE_AMBIGUOUS: {len(matches)} rows match T/P"
+        )
     row = matches[0]
     return QplantHeliumState(
         temperature_K=float(row["temperature_K"]),

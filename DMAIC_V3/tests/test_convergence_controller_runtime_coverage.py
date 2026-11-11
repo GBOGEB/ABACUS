@@ -9,7 +9,6 @@ from DMAIC_V3.convergence.iterative_controller import (
     IterativeController,
 )
 
-
 PHASES = [
     "phase0_init",
     "phase1_define",
@@ -54,7 +53,9 @@ def test_change_detector_lifecycle_preserves_added_modified_deleted_identity(tmp
     assert detector.get_changed_files() == []
 
 
-def test_change_detector_legacy_windows_snapshot_does_not_create_phantom_change(tmp_path):
+def test_change_detector_legacy_windows_snapshot_does_not_create_phantom_change(
+    tmp_path,
+):
     workspace = tmp_path / "repo"
     state = tmp_path / "state"
     tracked = workspace / "DMAIC_V3"
@@ -117,7 +118,9 @@ def test_file_change_auto_timestamp_and_explicit_timestamp():
 
 
 def test_iteration_recording_persists_runtime_fields_and_reload(tmp_path):
-    controller = IterativeController(tmp_path / "repo", tmp_path / "out", max_iterations=4)
+    controller = IterativeController(
+        tmp_path / "repo", tmp_path / "out", max_iterations=4
+    )
 
     controller.record_iteration(
         iteration=1,
@@ -146,7 +149,9 @@ def test_iteration_recording_persists_runtime_fields_and_reload(tmp_path):
     assert status["total_changes_detected"] == 22
     assert status["total_execution_time"] == 4.0
 
-    restored = IterativeController(tmp_path / "repo", tmp_path / "out", max_iterations=4)
+    restored = IterativeController(
+        tmp_path / "repo", tmp_path / "out", max_iterations=4
+    )
     restored.load_history()
     assert [row.iteration for row in restored.iteration_history] == [1, 2]
     assert restored.iteration_history[-1].execution_time_seconds == 1.5
@@ -156,7 +161,9 @@ def test_iteration_recording_persists_runtime_fields_and_reload(tmp_path):
 
 
 def test_iteration_continue_stop_and_convergence_paths(tmp_path, monkeypatch):
-    controller = IterativeController(tmp_path / "repo", tmp_path / "out", max_iterations=3)
+    controller = IterativeController(
+        tmp_path / "repo", tmp_path / "out", max_iterations=3
+    )
 
     assert controller.should_continue_iteration(1) == (True, "Initial iteration")
     assert controller.should_continue_iteration(3)[0] is False

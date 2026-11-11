@@ -3,6 +3,7 @@
 Plateaus are *descriptive candidates*, never certified main coverage, root
 closures, independence, inference or authorization.
 """
+
 import math
 
 import pytest
@@ -24,11 +25,14 @@ def pair(lines, branches):
     }
 
 
-@pytest.mark.parametrize("series,length", [
-    ([], 0),
-    ([pair(0, 0)], 1),
-    ([pair(0, 0), pair(0, 0)], 2),
-])
+@pytest.mark.parametrize(
+    "series,length",
+    [
+        ([], 0),
+        ([pair(0, 0)], 1),
+        ([pair(0, 0), pair(0, 0)], 2),
+    ],
+)
 def test_less_than_three_comparable_pulses_stays_unknown(series, length):
     result = coverage_convergence(series)
     assert result["state"] == "INSUFFICIENT_MATCHED_TRAILING_PAIRS"
@@ -36,10 +40,13 @@ def test_less_than_three_comparable_pulses_stays_unknown(series, length):
     assert result["accepted_main_coverage_improvement"] is None
 
 
-@pytest.mark.parametrize("series", [
-    [pair(0, 0), pair(0, 0), pair(0, 0)],
-    [pair(0.5, -0.5), pair(0.25, 0.1), pair(0, 0)],
-])
+@pytest.mark.parametrize(
+    "series",
+    [
+        [pair(0, 0), pair(0, 0), pair(0, 0)],
+        [pair(0.5, -0.5), pair(0.25, 0.1), pair(0, 0)],
+    ],
+)
 def test_matched_trailing_three_pulses_descriptive_plateau_only(series):
     result = coverage_convergence(series)
     assert result["state"] == "DESCRIPTIVE_PLATEAU_CANDIDATE"
@@ -58,15 +65,19 @@ def test_significant_positive_change_is_not_mislabelled_stable():
 @pytest.mark.parametrize("index,dimension", [(0, "lines"), (1, "branches")])
 def test_regression_in_either_dimension_blocks_plateau(index, dimension):
     series = [pair(0, 0) for _ in range(3)]
-    series[index]["line_coverage_candidate_delta_pp" if dimension == "lines"
-                  else "branch_coverage_candidate_delta_pp"] = -0.51
+    series[index][
+        (
+            "line_coverage_candidate_delta_pp"
+            if dimension == "lines"
+            else "branch_coverage_candidate_delta_pp"
+        )
+    ] = -0.51
     result = coverage_convergence(series)
     assert result["state"] == "REGRESSION_OBSERVED"
 
 
 def test_comparability_gap_resets_trailing_window():
-    series = [pair(0, 0), pair(0, 0),
-              pair(None, 0), pair(0, 0), pair(0, 0)]
+    series = [pair(0, 0), pair(0, 0), pair(None, 0), pair(0, 0), pair(0, 0)]
     result = coverage_convergence(series)
     assert result["matched_trailing_pairs"] == 2
     assert result["state"] == "INSUFFICIENT_MATCHED_TRAILING_PAIRS"
@@ -149,8 +160,9 @@ def test_temporal_rollup_emits_three_pair_plateau_without_promotion():
     assert result["coverage_convergence"]["state"] == "DESCRIPTIVE_PLATEAU_CANDIDATE"
     assert result["admission"] == "HOLD"
     assert result["accepted_bd_root_closures"] is None
-    assert all(c["accepted_main_coverage_delta_pp"] is None
-               for c in result["comparisons"])
+    assert all(
+        c["accepted_main_coverage_delta_pp"] is None for c in result["comparisons"]
+    )
 
 
 def test_temporal_rollup_rejects_scope_change_in_last_pair():

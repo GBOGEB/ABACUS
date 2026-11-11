@@ -11,7 +11,10 @@ import sys
 ROOT_DIR = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT_DIR / "src"))
 
-from dmaic.tuple_metadata import default_status_schema, validate_tracker_payload  # noqa: E402
+from dmaic.tuple_metadata import (
+    default_status_schema,
+    validate_tracker_payload,
+)  # noqa: E402
 
 
 def _load_phase2_manifest() -> dict:
@@ -40,7 +43,11 @@ def _current_branch() -> str:
 
 
 def _reviewed_branches(current_branch: str) -> list[str]:
-    reviewed = [b.strip() for b in os.getenv("ABACUS_REVIEWED_BRANCHES", "main,develop").split(",") if b.strip()]
+    reviewed = [
+        b.strip()
+        for b in os.getenv("ABACUS_REVIEWED_BRANCHES", "main,develop").split(",")
+        if b.strip()
+    ]
     if current_branch not in reviewed:
         reviewed.append(current_branch)
     return sorted(set(reviewed))
@@ -81,11 +88,21 @@ def build_payload() -> dict:
         },
         "modules": [
             {"name": "E6 Modules", "status": "in_progress", "link": "../README.md"},
-            {"name": "HTML Tools", "status": "validated", "link": "FINAL_HANDOVER.html"},
-            {"name": "Python Tools", "status": "in_progress", "link": "tools/index.html"},
+            {
+                "name": "HTML Tools",
+                "status": "validated",
+                "link": "FINAL_HANDOVER.html",
+            },
+            {
+                "name": "Python Tools",
+                "status": "in_progress",
+                "link": "tools/index.html",
+            },
             {
                 "name": "Phase-2 Reconstruction",
-                "status": "validated" if phase2.get("component_count", 0) else "in_progress",
+                "status": (
+                    "validated" if phase2.get("component_count", 0) else "in_progress"
+                ),
                 "link": "api/phase2_reconstruction_manifest.json",
             },
         ],
@@ -114,7 +131,9 @@ def build_payload() -> dict:
                 "source": "scripts/validate_reconstruction_manifest.py",
                 "validation_log": f"phase2 components: {phase2.get('component_count', 0)}",
                 "downstream_consumer": "DMAIC_V3_OUTPUT/reconstruction_manifest.validated.json",
-                "status": "validated" if phase2.get("component_count", 0) else "in_progress",
+                "status": (
+                    "validated" if phase2.get("component_count", 0) else "in_progress"
+                ),
                 "consumed_from": ["tuple-artifact-export"],
                 "feeds_into": ["tuple-ci-validation", "tuple-reconstruction-manifest"],
             },
@@ -135,7 +154,9 @@ def build_payload() -> dict:
 
 
 def main() -> int:
-    parser = argparse.ArgumentParser(description="Build FINAL_HANDOVER tracker metadata")
+    parser = argparse.ArgumentParser(
+        description="Build FINAL_HANDOVER tracker metadata"
+    )
     parser.add_argument("--output", default="docs/api/final_handover_tracker.json")
     args = parser.parse_args()
 
@@ -146,7 +167,11 @@ def main() -> int:
             print(f"ERROR: {error}")
         return 1
 
-    output = ROOT_DIR / args.output if not Path(args.output).is_absolute() else Path(args.output)
+    output = (
+        ROOT_DIR / args.output
+        if not Path(args.output).is_absolute()
+        else Path(args.output)
+    )
     output.parent.mkdir(parents=True, exist_ok=True)
     output.write_text(json.dumps(payload, indent=2), encoding="utf-8")
     print(f"[OK] Wrote tracker metadata: {output}")

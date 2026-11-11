@@ -55,16 +55,23 @@ class RecoveryCLIContractCoverageTests(unittest.TestCase):
         self.assertEqual(result["admission"], "HOLD")
 
     def test_comparable_coverage_cli_persists_provenance(self):
-        base = {"modules": {"m": {
-            "covered_lines": 1, "eligible_lines": 2,
-            "covered_branches": 0, "eligible_branches": 1,
-        }}}
+        base = {
+            "modules": {
+                "m": {
+                    "covered_lines": 1,
+                    "eligible_lines": 2,
+                    "covered_branches": 0,
+                    "eligible_branches": 1,
+                }
+            }
+        }
         head = json.loads(json.dumps(base))
         head["modules"]["m"]["covered_branches"] = 1
         with tempfile.TemporaryDirectory() as directory:
             folder = Path(directory)
             before, after, out = (
-                folder / "before.json", folder / "after.json",
+                folder / "before.json",
+                folder / "after.json",
                 folder / "result.json",
             )
             before.write_text(json.dumps(base))
@@ -87,7 +94,8 @@ class RecoveryCLIContractCoverageTests(unittest.TestCase):
             bd_ldab_evidence_join.join(roots, {"observations": []})
         with self.assertRaises(ValueError):
             bd_ldab_evidence_join.join(
-                {"roots": [{"root_id": 10}]}, {"observations": []},
+                {"roots": [{"root_id": 10}]},
+                {"observations": []},
             )
 
     def test_bd_ldab_rejects_nonobject_observation(self):
@@ -101,13 +109,16 @@ class RecoveryCLIContractCoverageTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as directory:
             folder = Path(directory)
             roots, observations, out = (
-                folder / "roots.json", folder / "observations.json",
+                folder / "roots.json",
+                folder / "observations.json",
                 folder / "result.json",
             )
             roots.write_text(json.dumps({"roots": [{"root_id": "R1"}]}))
-            observations.write_text(json.dumps({
-                "observations": [{"root_id": "UNKNOWN", "fingerprint": "f"}]
-            }))
+            observations.write_text(
+                json.dumps(
+                    {"observations": [{"root_id": "UNKNOWN", "fingerprint": "f"}]}
+                )
+            )
             self.run_main(
                 bd_ldab_evidence_join.main,
                 [str(roots), str(observations), "--out", str(out)],
@@ -119,11 +130,13 @@ class RecoveryCLIContractCoverageTests(unittest.TestCase):
 
     def test_safety_nonzero_findings_never_promote(self):
         receipt = safety_exit_census.classify(
-            0, {"vulnerabilities": [{"id": "CVE-test"}]},
+            0,
+            {"vulnerabilities": [{"id": "CVE-test"}]},
         )
         self.assertEqual(receipt["finding_count"], 1)
         self.assertEqual(
-            receipt["failure_class"], "NONTERMINAL_REVIEW_REQUIRED",
+            receipt["failure_class"],
+            "NONTERMINAL_REVIEW_REQUIRED",
         )
         self.assertEqual(receipt["admission"], "HOLD")
 

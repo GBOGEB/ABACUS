@@ -20,19 +20,29 @@ def write_manifest(root: Path, content: str = "manifest: true\n") -> str:
     return sha256_bytes(path.read_bytes())
 
 
-def write_index(root: Path, authorities, source="ssot/manifest.yaml", source_sha256=None):
+def write_index(
+    root: Path, authorities, source="ssot/manifest.yaml", source_sha256=None
+):
     (root / "ssot").mkdir(exist_ok=True)
     if source_sha256 is None:
         source_sha256 = write_manifest(root)
     (root / "ssot" / "index.json").write_text(
-        json.dumps({"source": source, "source_sha256": source_sha256, "authorities": authorities}),
+        json.dumps(
+            {
+                "source": source,
+                "source_sha256": source_sha256,
+                "authorities": authorities,
+            }
+        ),
         encoding="utf-8",
     )
 
 
 def test_resolves_exactly_one_existing_authority(tmp_path):
     write_manifest(tmp_path)
-    write_index(tmp_path, [{"logical_id": "A", "path": "ssot/a.yaml", "state": "AUTHORITATIVE"}])
+    write_index(
+        tmp_path, [{"logical_id": "A", "path": "ssot/a.yaml", "state": "AUTHORITATIVE"}]
+    )
     (tmp_path / "ssot" / "a.yaml").write_text("a: 1\n", encoding="utf-8")
     assert resolve_ssot(tmp_path, "A") == tmp_path / "ssot" / "a.yaml"
 

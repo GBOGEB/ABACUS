@@ -48,7 +48,9 @@ def pathset_sha256(paths: list[str]) -> str:
     return hashlib.sha256("\n".join(sorted(str(x) for x in paths)).encode()).hexdigest()
 
 
-def apply_duplicate_dispositions(findings: list[dict], registry: dict) -> tuple[list[dict], list[dict]]:
+def apply_duplicate_dispositions(
+    findings: list[dict], registry: dict
+) -> tuple[list[dict], list[dict]]:
     by_family = {
         str(item.get("family")): item
         for item in registry.get("families", [])
@@ -60,10 +62,9 @@ def apply_duplicate_dispositions(findings: list[dict], registry: dict) -> tuple[
         family = str(finding.get("family", ""))
         disposition = by_family.get(family)
         paths = list(finding.get("paths", []))
-        exact = (
-            (disposition or {}).get("pathset_sha256") == pathset_sha256(paths)
-            and int((disposition or {}).get("member_count", -1)) == len(paths)
-        )
+        exact = (disposition or {}).get("pathset_sha256") == pathset_sha256(
+            paths
+        ) and int((disposition or {}).get("member_count", -1)) == len(paths)
         if disposition and disposition.get("state") in RESOLVED_STATES and exact:
             resolved.append(
                 {
@@ -79,7 +80,9 @@ def apply_duplicate_dispositions(findings: list[dict], registry: dict) -> tuple[
     return keep, resolved
 
 
-def apply_unknown_dispositions(findings: list[dict], registry: dict) -> tuple[list[dict], list[dict]]:
+def apply_unknown_dispositions(
+    findings: list[dict], registry: dict
+) -> tuple[list[dict], list[dict]]:
     dispositions = {
         str(item.get("path")): item
         for item in registry.get("assets", [])
@@ -103,7 +106,9 @@ def apply_unknown_dispositions(findings: list[dict], registry: dict) -> tuple[li
     return keep, resolved
 
 
-def apply_generated_disposition(findings: list[dict], registry: dict) -> tuple[list[dict], list[dict]]:
+def apply_generated_disposition(
+    findings: list[dict], registry: dict
+) -> tuple[list[dict], list[dict]]:
     entries = {
         str(item.get("path")): item
         for item in registry.get("assets", [])
@@ -132,17 +137,23 @@ def apply_generated_disposition(findings: list[dict], registry: dict) -> tuple[l
     return keep, resolved
 
 
-def reverse_pressure_v2(census: dict, duplicate: dict, unknown: dict, generated: dict) -> dict:
+def reverse_pressure_v2(
+    census: dict, duplicate: dict, unknown: dict, generated: dict
+) -> dict:
     assets = as_assets(census)
     duplicate_raw = duplicate_authority_findings(assets)
-    duplicate_keep, duplicate_resolved = apply_duplicate_dispositions(duplicate_raw, duplicate)
+    duplicate_keep, duplicate_resolved = apply_duplicate_dispositions(
+        duplicate_raw, duplicate
+    )
 
     findings = []
     findings.extend(duplicate_keep)
     findings.extend(stale_tree_findings(assets))
 
     generated_raw = generated_inflation_findings(assets)
-    generated_keep, generated_resolved = apply_generated_disposition(generated_raw, generated)
+    generated_keep, generated_resolved = apply_generated_disposition(
+        generated_raw, generated
+    )
     findings.extend(generated_keep)
 
     unknown_raw = unknown_blocker_findings(assets)
@@ -194,9 +205,13 @@ def main() -> int:
             {
                 "blocker_count": report["blocker_count"],
                 "warning_count": report["warning_count"],
-                "resolved_duplicate_families": len(report["resolved"]["duplicate_authority_families"]),
+                "resolved_duplicate_families": len(
+                    report["resolved"]["duplicate_authority_families"]
+                ),
                 "resolved_unknown_assets": len(report["resolved"]["unknown_assets"]),
-                "resolved_generated_assets": len(report["resolved"]["generated_authority_assets"]),
+                "resolved_generated_assets": len(
+                    report["resolved"]["generated_authority_assets"]
+                ),
             },
             sort_keys=True,
         )

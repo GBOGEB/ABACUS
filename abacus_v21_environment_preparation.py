@@ -33,16 +33,12 @@ class EnvironmentPreparation:
             "timestamp": self.timestamp,
             "checks": [],
             "configurations": [],
-            "recommendations": []
+            "recommendations": [],
         }
 
     def check_python_environment(self) -> Dict[str, Any]:
         """Check Python version and environment"""
-        check = {
-            "name": "Python Environment",
-            "status": "PASS",
-            "details": {}
-        }
+        check = {"name": "Python Environment", "status": "PASS", "details": {}}
 
         check["details"]["python_version"] = sys.version
         check["details"]["python_executable"] = sys.executable
@@ -54,17 +50,15 @@ class EnvironmentPreparation:
             check["message"] = f"Python {major}.{minor} is compatible"
         else:
             check["status"] = "WARN"
-            check["message"] = f"Python {major}.{minor} may not be optimal (recommend 3.8+)"
+            check["message"] = (
+                f"Python {major}.{minor} may not be optimal (recommend 3.8+)"
+            )
 
         return check
 
     def check_required_directories(self) -> Dict[str, Any]:
         """Check and create required directories"""
-        check = {
-            "name": "Directory Structure",
-            "status": "PASS",
-            "details": {}
-        }
+        check = {"name": "Directory Structure", "status": "PASS", "details": {}}
 
         required_dirs = [
             "DMAIC_V3_OUTPUT",
@@ -75,7 +69,7 @@ class EnvironmentPreparation:
             "ABACUS_V21_SYSTEM_FEEDBACK",
             "logs",
             "backups",
-            "config"
+            "config",
         ]
 
         created = []
@@ -91,21 +85,19 @@ class EnvironmentPreparation:
 
         check["details"]["existing"] = existing
         check["details"]["created"] = created
-        check["message"] = f"Created {len(created)} directories, {len(existing)} already exist"
+        check["message"] = (
+            f"Created {len(created)} directories, {len(existing)} already exist"
+        )
 
         return check
 
     def check_configuration_files(self) -> Dict[str, Any]:
         """Check required configuration files"""
-        check = {
-            "name": "Configuration Files",
-            "status": "PASS",
-            "details": {}
-        }
+        check = {"name": "Configuration Files", "status": "PASS", "details": {}}
 
         required_configs = [
             "DOW_IMPLEMENTATION_TRACKER.json",
-            "ABACUS_V21_PROGRESS_TRACKER.yaml"
+            "ABACUS_V21_PROGRESS_TRACKER.yaml",
         ]
 
         found = []
@@ -130,17 +122,13 @@ class EnvironmentPreparation:
 
     def check_core_modules(self) -> Dict[str, Any]:
         """Check core ABACUS modules"""
-        check = {
-            "name": "Core Modules",
-            "status": "PASS",
-            "details": {}
-        }
+        check = {"name": "Core Modules", "status": "PASS", "details": {}}
 
         core_modules = [
             "execute_full_pipeline_sprint_dow.py",
             "dmaic_v3_orchestrator.py",
             "recursive_knowledge_engine.py",
-            "temporal_session_analyzer.py"
+            "temporal_session_analyzer.py",
         ]
 
         found = []
@@ -168,7 +156,7 @@ class EnvironmentPreparation:
         config = {
             "name": "Production Environment Config",
             "status": "CREATED",
-            "details": {}
+            "details": {},
         }
 
         env_config = {
@@ -181,36 +169,36 @@ class EnvironmentPreparation:
                     "format": "json",
                     "output": "logs/abacus_v21.log",
                     "rotation": "daily",
-                    "retention": "30 days"
+                    "retention": "30 days",
                 },
                 "performance": {
                     "max_memory_mb": 512,
                     "timeout_seconds": 300,
-                    "parallel_workers": 4
+                    "parallel_workers": 4,
                 },
                 "monitoring": {
                     "enabled": True,
                     "metrics_interval": 60,
-                    "health_check_interval": 300
+                    "health_check_interval": 300,
                 },
                 "backup": {
                     "enabled": True,
                     "interval": "daily",
                     "retention": "7 days",
-                    "location": "backups/"
-                }
+                    "location": "backups/",
+                },
             },
             "paths": {
                 "data": "data/",
                 "logs": "logs/",
                 "backups": "backups/",
                 "config": "config/",
-                "output": "output/"
-            }
+                "output": "output/",
+            },
         }
 
         config_path = self.output_dir / "production_environment_config.json"
-        with open(config_path, 'w') as f:
+        with open(config_path, "w") as f:
             json.dump(env_config, f, indent=2)
 
         config["details"]["config_file"] = str(config_path)
@@ -221,45 +209,94 @@ class EnvironmentPreparation:
 
     def create_deployment_checklist(self) -> Dict[str, Any]:
         """Create deployment checklist"""
-        checklist = {
-            "name": "Deployment Checklist",
-            "status": "CREATED",
-            "details": {}
-        }
+        checklist = {"name": "Deployment Checklist", "status": "CREATED", "details": {}}
 
         deployment_checklist = {
             "version": "2.1.0",
             "timestamp": self.timestamp,
             "pre_deployment": [
-                {"task": "Review PRE-CD test results", "status": "COMPLETE", "priority": "HIGH"},
-                {"task": "Backup existing system", "status": "PENDING", "priority": "HIGH"},
-                {"task": "Verify environment configuration", "status": "PENDING", "priority": "HIGH"},
-                {"task": "Check resource availability", "status": "PENDING", "priority": "MEDIUM"},
-                {"task": "Notify stakeholders", "status": "PENDING", "priority": "MEDIUM"}
+                {
+                    "task": "Review PRE-CD test results",
+                    "status": "COMPLETE",
+                    "priority": "HIGH",
+                },
+                {
+                    "task": "Backup existing system",
+                    "status": "PENDING",
+                    "priority": "HIGH",
+                },
+                {
+                    "task": "Verify environment configuration",
+                    "status": "PENDING",
+                    "priority": "HIGH",
+                },
+                {
+                    "task": "Check resource availability",
+                    "status": "PENDING",
+                    "priority": "MEDIUM",
+                },
+                {
+                    "task": "Notify stakeholders",
+                    "status": "PENDING",
+                    "priority": "MEDIUM",
+                },
             ],
             "deployment": [
-                {"task": "Deploy core modules", "status": "PENDING", "priority": "HIGH"},
+                {
+                    "task": "Deploy core modules",
+                    "status": "PENDING",
+                    "priority": "HIGH",
+                },
                 {"task": "Configure logging", "status": "PENDING", "priority": "HIGH"},
                 {"task": "Set up monitoring", "status": "PENDING", "priority": "HIGH"},
-                {"task": "Initialize databases", "status": "PENDING", "priority": "MEDIUM"},
-                {"task": "Configure CI/CD pipeline", "status": "PENDING", "priority": "MEDIUM"}
+                {
+                    "task": "Initialize databases",
+                    "status": "PENDING",
+                    "priority": "MEDIUM",
+                },
+                {
+                    "task": "Configure CI/CD pipeline",
+                    "status": "PENDING",
+                    "priority": "MEDIUM",
+                },
             ],
             "post_deployment": [
                 {"task": "Run smoke tests", "status": "PENDING", "priority": "HIGH"},
-                {"task": "Verify integrations", "status": "PENDING", "priority": "HIGH"},
-                {"task": "Monitor performance", "status": "PENDING", "priority": "HIGH"},
-                {"task": "Update documentation", "status": "PENDING", "priority": "MEDIUM"},
-                {"task": "Conduct team training", "status": "PENDING", "priority": "LOW"}
-            ]
+                {
+                    "task": "Verify integrations",
+                    "status": "PENDING",
+                    "priority": "HIGH",
+                },
+                {
+                    "task": "Monitor performance",
+                    "status": "PENDING",
+                    "priority": "HIGH",
+                },
+                {
+                    "task": "Update documentation",
+                    "status": "PENDING",
+                    "priority": "MEDIUM",
+                },
+                {
+                    "task": "Conduct team training",
+                    "status": "PENDING",
+                    "priority": "LOW",
+                },
+            ],
         }
 
         checklist_path = self.output_dir / "deployment_checklist.json"
-        with open(checklist_path, 'w') as f:
+        with open(checklist_path, "w") as f:
             json.dump(deployment_checklist, f, indent=2)
 
         checklist["details"]["checklist_file"] = str(checklist_path)
-        checklist["details"]["total_tasks"] = sum(len(deployment_checklist[phase]) for phase in ["pre_deployment", "deployment", "post_deployment"])
-        checklist["message"] = f"Deployment checklist created with {checklist['details']['total_tasks']} tasks"
+        checklist["details"]["total_tasks"] = sum(
+            len(deployment_checklist[phase])
+            for phase in ["pre_deployment", "deployment", "post_deployment"]
+        )
+        checklist["message"] = (
+            f"Deployment checklist created with {checklist['details']['total_tasks']} tasks"
+        )
 
         return checklist
 
@@ -268,7 +305,7 @@ class EnvironmentPreparation:
         config = {
             "name": "Monitoring Configuration",
             "status": "CREATED",
-            "details": {}
+            "details": {},
         }
 
         monitoring_config = {
@@ -278,18 +315,22 @@ class EnvironmentPreparation:
                 "system": {
                     "cpu_usage": {"enabled": True, "threshold": 80, "alert": True},
                     "memory_usage": {"enabled": True, "threshold": 512, "alert": True},
-                    "disk_usage": {"enabled": True, "threshold": 90, "alert": True}
+                    "disk_usage": {"enabled": True, "threshold": 90, "alert": True},
                 },
                 "application": {
-                    "execution_time": {"enabled": True, "threshold": 300, "alert": True},
+                    "execution_time": {
+                        "enabled": True,
+                        "threshold": 300,
+                        "alert": True,
+                    },
                     "error_rate": {"enabled": True, "threshold": 5, "alert": True},
-                    "success_rate": {"enabled": True, "threshold": 95, "alert": True}
+                    "success_rate": {"enabled": True, "threshold": 95, "alert": True},
                 },
                 "integration": {
                     "bridge_health": {"enabled": True, "check_interval": 300},
                     "artifact_count": {"enabled": True, "check_interval": 600},
-                    "knowledge_sync": {"enabled": True, "check_interval": 900}
-                }
+                    "knowledge_sync": {"enabled": True, "check_interval": 900},
+                },
             },
             "alerts": {
                 "channels": ["log", "email"],
@@ -298,8 +339,8 @@ class EnvironmentPreparation:
                     "INFO": {"enabled": True, "throttle": 3600},
                     "WARNING": {"enabled": True, "throttle": 1800},
                     "ERROR": {"enabled": True, "throttle": 300},
-                    "CRITICAL": {"enabled": True, "throttle": 0}
-                }
+                    "CRITICAL": {"enabled": True, "throttle": 0},
+                },
             },
             "health_checks": {
                 "interval": 300,
@@ -307,13 +348,13 @@ class EnvironmentPreparation:
                     {"name": "DMAIC Orchestrator", "check": "module_import"},
                     {"name": "Recursive Engine", "check": "module_import"},
                     {"name": "Temporal Analyzer", "check": "module_import"},
-                    {"name": "DOW Executor", "check": "module_import"}
-                ]
-            }
+                    {"name": "DOW Executor", "check": "module_import"},
+                ],
+            },
         }
 
         config_path = self.output_dir / "monitoring_config.json"
-        with open(config_path, 'w') as f:
+        with open(config_path, "w") as f:
             json.dump(monitoring_config, f, indent=2)
 
         config["details"]["config_file"] = str(config_path)
@@ -330,36 +371,36 @@ class EnvironmentPreparation:
                 "category": "SECURITY",
                 "title": "Implement Access Controls",
                 "description": "Set up proper access controls and authentication for production environment",
-                "action": "Configure user roles, permissions, and authentication mechanisms"
+                "action": "Configure user roles, permissions, and authentication mechanisms",
             },
             {
                 "priority": "HIGH",
                 "category": "BACKUP",
                 "title": "Establish Backup Strategy",
                 "description": "Implement automated backup and recovery procedures",
-                "action": "Configure daily backups with 7-day retention policy"
+                "action": "Configure daily backups with 7-day retention policy",
             },
             {
                 "priority": "HIGH",
                 "category": "MONITORING",
                 "title": "Deploy Monitoring System",
                 "description": "Set up comprehensive monitoring and alerting",
-                "action": "Implement metrics collection, logging, and alert notifications"
+                "action": "Implement metrics collection, logging, and alert notifications",
             },
             {
                 "priority": "MEDIUM",
                 "category": "PERFORMANCE",
                 "title": "Optimize Resource Allocation",
                 "description": "Configure optimal resource limits and scaling policies",
-                "action": "Set memory limits, timeout values, and parallel worker counts"
+                "action": "Set memory limits, timeout values, and parallel worker counts",
             },
             {
                 "priority": "MEDIUM",
                 "category": "DOCUMENTATION",
                 "title": "Update Operational Documentation",
                 "description": "Create runbooks and operational procedures",
-                "action": "Document deployment, monitoring, and troubleshooting procedures"
-            }
+                "action": "Document deployment, monitoring, and troubleshooting procedures",
+            },
         ]
 
         return recommendations
@@ -395,7 +436,7 @@ class EnvironmentPreparation:
     def save_results(self):
         """Save results to JSON"""
         results_path = self.output_dir / "environment_preparation_results.json"
-        with open(results_path, 'w', encoding='utf-8') as f:
+        with open(results_path, "w", encoding="utf-8") as f:
             json.dump(self.results, f, indent=2)
         print(f"\nResults saved to: {results_path}")
 
@@ -403,7 +444,7 @@ class EnvironmentPreparation:
         """Generate markdown report"""
         report_path = self.output_dir / "ENVIRONMENT_PREPARATION_REPORT.md"
 
-        with open(report_path, 'w', encoding='utf-8') as f:
+        with open(report_path, "w", encoding="utf-8") as f:
             f.write("# ABACUS v2.1 - Environment Preparation Report\n\n")
             f.write(f"**Stage**: 2.1 - Environment Preparation\n")
             f.write(f"**Timestamp**: {self.timestamp}\n")
@@ -412,7 +453,11 @@ class EnvironmentPreparation:
 
             f.write("## Environment Checks\n\n")
             for check in self.results["checks"]:
-                status_icon = "PASS" if check["status"] == "PASS" else "WARN" if check["status"] == "WARN" else "FAIL"
+                status_icon = (
+                    "PASS"
+                    if check["status"] == "PASS"
+                    else "WARN" if check["status"] == "WARN" else "FAIL"
+                )
                 f.write(f"### [{status_icon}] {check['name']}\n\n")
                 f.write(f"**Status**: {check['status']}\n")
                 f.write(f"**Message**: {check['message']}\n\n")
@@ -442,6 +487,7 @@ class EnvironmentPreparation:
             f.write(f"*Report generated on {self.timestamp}*\n")
 
         print(f"Report saved to: {report_path}")
+
 
 if __name__ == "__main__":
     prep = EnvironmentPreparation()

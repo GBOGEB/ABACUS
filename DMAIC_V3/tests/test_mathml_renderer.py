@@ -5,7 +5,6 @@ import pytest
 
 from renderers.mathml_renderer import MathMLRenderer, qplant_equation_definitions
 
-
 _MATHML_NS = "{http://www.w3.org/1998/Math/MathML}"
 
 
@@ -17,7 +16,9 @@ def test_mathml_generation_for_initial_qplant_examples():
     renderer = MathMLRenderer()
     examples = qplant_equation_definitions()
 
-    rendered = {name: ET.fromstring(renderer.render(defn)) for name, defn in examples.items()}
+    rendered = {
+        name: ET.fromstring(renderer.render(defn)) for name, defn in examples.items()
+    }
 
     for root in rendered.values():
         assert root.tag == f"{_MATHML_NS}math"
@@ -26,7 +27,9 @@ def test_mathml_generation_for_initial_qplant_examples():
     carnot = rendered["carnot_efficiency"]
     assert carnot.find(f".//{_MATHML_NS}mfrac") is not None
     assert carnot.find(f".//{_MATHML_NS}msub") is not None
-    assert "η" in [elem.text for elem in carnot.findall(f".//{_MATHML_NS}mi") if elem.text]
+    assert "η" in [
+        elem.text for elem in carnot.findall(f".//{_MATHML_NS}mi") if elem.text
+    ]
 
     cop = rendered["cop"]
     assert cop.find(f".//{_MATHML_NS}mfrac") is not None
@@ -34,8 +37,12 @@ def test_mathml_generation_for_initial_qplant_examples():
 
     heat_balance = rendered["heat_balance"]
     assert heat_balance.find(f".//{_MATHML_NS}msup") is None
-    assert "Δ" in [elem.text for elem in heat_balance.findall(f".//{_MATHML_NS}mi") if elem.text]
-    assert "cp" in [elem.text for elem in heat_balance.findall(f".//{_MATHML_NS}mi") if elem.text]
+    assert "Δ" in [
+        elem.text for elem in heat_balance.findall(f".//{_MATHML_NS}mi") if elem.text
+    ]
+    assert "cp" in [
+        elem.text for elem in heat_balance.findall(f".//{_MATHML_NS}mi") if elem.text
+    ]
 
 
 def test_superscript_and_subscript_nodes_render_to_mathml():
@@ -94,7 +101,9 @@ def test_invalid_equation_definitions_are_rejected():
         renderer.render({"expression": {"type": "identifier", "value": "x"}})
 
     with pytest.raises(ValueError, match="non-empty string"):
-        renderer.render({"name": "   ", "expression": {"type": "identifier", "value": "x"}})
+        renderer.render(
+            {"name": "   ", "expression": {"type": "identifier", "value": "x"}}
+        )
 
     with pytest.raises(ValueError, match="unsupported node type"):
         renderer.render(

@@ -16,7 +16,8 @@ OK = "Ran 3 tests in 0.002s\n\nOK\n"
 
 def coverage():
     files = {
-        "mission_control_lite/" + name: {
+        "mission_control_lite/"
+        + name: {
             "summary": {
                 "covered_lines": 8,
                 "num_statements": 10,
@@ -24,32 +25,39 @@ def coverage():
                 "num_branches": 4,
             }
         }
-        for name in ("core.py", "policy.py", "cli.py", "rex.py",
-                     "coverage_pulse.py")
+        for name in ("core.py", "policy.py", "cli.py", "rex.py", "coverage_pulse.py")
     }
     return {
         "meta": {"version": "7.10.7"},
         "files": files,
         "totals": {
-            "covered_lines": 40, "num_statements": 50,
-            "covered_branches": 10, "num_branches": 20,
+            "covered_lines": 40,
+            "num_statements": 50,
+            "covered_branches": 10,
+            "num_branches": 20,
         },
     }
 
 
 class CoveragePulseTests(unittest.TestCase):
     def make(self, report=None, logs=None, previous=None):
-        return build(report if report is not None else coverage(),
-                     logs if logs is not None else {
-                         "core": OK, "rex": OK, "metrics": OK
-                     }, SHA, OTHER, 123, previous)
+        return build(
+            report if report is not None else coverage(),
+            logs if logs is not None else {"core": OK, "rex": OK, "metrics": OK},
+            SHA,
+            OTHER,
+            123,
+            previous,
+        )
 
     def test_valid_zero_statement_module_is_reported_without_failing(self):
         data = coverage()
         data["files"]["mission_control_lite/__init__.py"] = {
             "summary": {
-                "covered_lines": 0, "num_statements": 0,
-                "covered_branches": 0, "num_branches": 0,
+                "covered_lines": 0,
+                "num_statements": 0,
+                "covered_branches": 0,
+                "num_branches": 0,
             }
         }
         pulse = self.make(data)
@@ -68,8 +76,10 @@ class CoveragePulseTests(unittest.TestCase):
         data = coverage()
         data["files"]["mission_control_lite/__init__.py"] = {
             "summary": {
-                "covered_lines": 0, "num_statements": 0,
-                "covered_branches": 0, "num_branches": 1,
+                "covered_lines": 0,
+                "num_statements": 0,
+                "covered_branches": 0,
+                "num_branches": 1,
             }
         }
         with self.assertRaisesRegex(ValueError, "empty module"):
@@ -104,11 +114,13 @@ class CoveragePulseTests(unittest.TestCase):
         new = coverage()
         new["totals"]["num_statements"] = 60
         new["files"]["mission_control_lite/core.py"]["summary"]["num_statements"] = 20
-        self.assertEqual(self.make(new, previous=old)["comparison"]["status"],
-                         "INCOMPARABLE")
+        self.assertEqual(
+            self.make(new, previous=old)["comparison"]["status"], "INCOMPARABLE"
+        )
         old["scope_id"] = "different"
-        self.assertEqual(self.make(previous=old)["comparison"]["status"],
-                         "INCOMPARABLE")
+        self.assertEqual(
+            self.make(previous=old)["comparison"]["status"], "INCOMPARABLE"
+        )
 
     def test_rejects_missing_logs_and_nonpassing_suites(self):
         for log in ("Ran 3 tests in 0.01s\nFAILED", "OK", "Ran 0 tests in 0.01s\nOK"):
@@ -122,7 +134,8 @@ class CoveragePulseTests(unittest.TestCase):
             self.make(bad)
         bad = coverage()
         bad["files"]["tests/untrusted.py"] = bad["files"].pop(
-            "mission_control_lite/core.py")
+            "mission_control_lite/core.py"
+        )
         with self.assertRaises(ValueError):
             self.make(bad)
 
@@ -142,12 +155,17 @@ class CoveragePulseTests(unittest.TestCase):
 
     def test_timed_phases_summary_and_unknown_queue(self):
         phases = [
-            {"phase": "coverage-install", "duration_seconds": 1.5,
-             "exit_code": 0},
+            {"phase": "coverage-install", "duration_seconds": 1.5, "exit_code": 0},
             {"phase": "tests", "duration_seconds": 2.5, "exit_code": 0},
         ]
-        report = build(coverage(), {"core": OK, "rex": OK, "metrics": OK},
-                       SHA, OTHER, 123, phases=phases)
+        report = build(
+            coverage(),
+            {"core": OK, "rex": OK, "metrics": OK},
+            SHA,
+            OTHER,
+            123,
+            phases=phases,
+        )
         self.assertEqual(report["timed_execution_seconds"], 4)
         self.assertEqual(report["job_queue_seconds"], None)
         self.assertEqual(report["wheel_unpack_seconds"], None)
@@ -158,8 +176,7 @@ class CoveragePulseTests(unittest.TestCase):
         self.assertIn("coverage-install", markdown)
 
     def test_timing_phase_fails_closed(self):
-        good = {"phase": "install", "duration_seconds": 1.0,
-                "exit_code": 0}
+        good = {"phase": "install", "duration_seconds": 1.0, "exit_code": 0}
         bad_cases = [
             [],
             [good, good],
@@ -168,38 +185,82 @@ class CoveragePulseTests(unittest.TestCase):
         ]
         for phases in bad_cases:
             with self.subTest(phases=phases), self.assertRaises(ValueError):
-                build(coverage(), {"core": OK}, SHA, OTHER, 123,
-                      phases=phases)
+                build(coverage(), {"core": OK}, SHA, OTHER, 123, phases=phases)
 
     def test_cli_exercises_all_optional_logs_and_produces_bound_receipt(self):
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp)
-            (root / "coverage.json").write_text(json.dumps(coverage()), encoding="utf-8")
-            for suite in ("core", "rex", "metrics", "timing", "telemetry",
-                          "gate_census", "job_first_red"):
+            (root / "coverage.json").write_text(
+                json.dumps(coverage()), encoding="utf-8"
+            )
+            for suite in (
+                "core",
+                "rex",
+                "metrics",
+                "timing",
+                "telemetry",
+                "gate_census",
+                "job_first_red",
+            ):
                 (root / (suite + ".log")).write_text(OK, encoding="utf-8")
-            (root / "phases.json").write_text(json.dumps([
-                {"phase": "core-tests", "duration_seconds": 2.0, "exit_code": 0},
-                {"phase": "gate-census-tests", "duration_seconds": 1.5, "exit_code": 0},
-            ]), encoding="utf-8")
-            (root / "baseline.json").write_text(json.dumps(self.make()), encoding="utf-8")
+            (root / "phases.json").write_text(
+                json.dumps(
+                    [
+                        {
+                            "phase": "core-tests",
+                            "duration_seconds": 2.0,
+                            "exit_code": 0,
+                        },
+                        {
+                            "phase": "gate-census-tests",
+                            "duration_seconds": 1.5,
+                            "exit_code": 0,
+                        },
+                    ]
+                ),
+                encoding="utf-8",
+            )
+            (root / "baseline.json").write_text(
+                json.dumps(self.make()), encoding="utf-8"
+            )
             arguments = [
-                "coverage_pulse", "--coverage-json", str(root / "coverage.json"),
-                "--core-log", str(root / "core.log"),
-                "--rex-log", str(root / "rex.log"),
-                "--metrics-log", str(root / "metrics.log"),
-                "--timing-tests-log", str(root / "timing.log"),
-                "--telemetry-tests-log", str(root / "telemetry.log"),
-                "--gate-census-tests-log", str(root / "gate_census.log"),
-                "--job-first-red-tests-log", str(root / "job_first_red.log"),
-                "--timing-log", str(root / "phases.json"),
-                "--source-sha", SHA, "--event-sha", OTHER, "--run-id", "123",
-                "--baseline", str(root / "baseline.json"),
-                "--output", str(root / "pulse.json"),
-                "--summary", str(root / "summary.md"),
+                "coverage_pulse",
+                "--coverage-json",
+                str(root / "coverage.json"),
+                "--core-log",
+                str(root / "core.log"),
+                "--rex-log",
+                str(root / "rex.log"),
+                "--metrics-log",
+                str(root / "metrics.log"),
+                "--timing-tests-log",
+                str(root / "timing.log"),
+                "--telemetry-tests-log",
+                str(root / "telemetry.log"),
+                "--gate-census-tests-log",
+                str(root / "gate_census.log"),
+                "--job-first-red-tests-log",
+                str(root / "job_first_red.log"),
+                "--timing-log",
+                str(root / "phases.json"),
+                "--source-sha",
+                SHA,
+                "--event-sha",
+                OTHER,
+                "--run-id",
+                "123",
+                "--baseline",
+                str(root / "baseline.json"),
+                "--output",
+                str(root / "pulse.json"),
+                "--summary",
+                str(root / "summary.md"),
             ]
             output = io.StringIO()
-            with patch.object(sys, "argv", arguments), contextlib.redirect_stdout(output):
+            with (
+                patch.object(sys, "argv", arguments),
+                contextlib.redirect_stdout(output),
+            ):
                 main()
             payload = json.loads((root / "pulse.json").read_text(encoding="utf-8"))
             self.assertEqual(payload["comparison"]["status"], "COMPARABLE")
@@ -213,21 +274,38 @@ class CoveragePulseTests(unittest.TestCase):
     def test_cli_rejects_failed_optional_suite_without_output(self):
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp)
-            (root / "coverage.json").write_text(json.dumps(coverage()), encoding="utf-8")
+            (root / "coverage.json").write_text(
+                json.dumps(coverage()), encoding="utf-8"
+            )
             for suite in ("core", "rex", "metrics"):
                 (root / (suite + ".log")).write_text(OK, encoding="utf-8")
             (root / "telemetry.log").write_text("Ran 1 test in 0.001s\\nFAILED\\n")
             arguments = [
-                "coverage_pulse", "--coverage-json", str(root / "coverage.json"),
-                "--core-log", str(root / "core.log"),
-                "--rex-log", str(root / "rex.log"),
-                "--metrics-log", str(root / "metrics.log"),
-                "--telemetry-tests-log", str(root / "telemetry.log"),
-                "--source-sha", SHA, "--event-sha", OTHER,
-                "--run-id", "123", "--output", str(root / "pulse.json"),
+                "coverage_pulse",
+                "--coverage-json",
+                str(root / "coverage.json"),
+                "--core-log",
+                str(root / "core.log"),
+                "--rex-log",
+                str(root / "rex.log"),
+                "--metrics-log",
+                str(root / "metrics.log"),
+                "--telemetry-tests-log",
+                str(root / "telemetry.log"),
+                "--source-sha",
+                SHA,
+                "--event-sha",
+                OTHER,
+                "--run-id",
+                "123",
+                "--output",
+                str(root / "pulse.json"),
             ]
-            with patch.object(sys, "argv", arguments), self.assertRaisesRegex(
-                ValueError, "missing native passing test summary"
+            with (
+                patch.object(sys, "argv", arguments),
+                self.assertRaisesRegex(
+                    ValueError, "missing native passing test summary"
+                ),
             ):
                 main()
             self.assertFalse((root / "pulse.json").exists())
@@ -256,14 +334,12 @@ class CoveragePulseTests(unittest.TestCase):
 
     def test_verbose_unique_id_census_with_duplicate_execution(self):
         def result(*names):
-            body = "".join(
-                f"{n.rsplit('.', 1)[-1]} ({n}) ... ok\n" for n in names
-            )
+            body = "".join(f"{n.rsplit('.', 1)[-1]} ({n}) ... ok\n" for n in names)
             return body + f"Ran {len(names)} tests in 0.001s\n\nOK\n"
+
         a = "test_core.Mod.test_case"
         b = "test_rex.Mod.test_other"
-        output = self.make(logs={"core": result(a, b),
-                                 "telemetry": result(a)})
+        output = self.make(logs={"core": result(a, b), "telemetry": result(a)})
         self.assertEqual(output["tests_passed"], 3)
         self.assertEqual(output["test_execution_count"], 3)
         self.assertEqual(output["unique_test_cases"], 2)
@@ -279,24 +355,30 @@ class CoveragePulseTests(unittest.TestCase):
         self.assertIsNone(result["duplicate_case_executions"])
 
     def test_partial_or_forged_case_identity_fails_closed(self):
-        partial = ("test_abc (pkg.Class.test_abc) ... ok\n"
-                   "Ran 2 tests in 0.001s\n\nOK\n")
+        partial = (
+            "test_abc (pkg.Class.test_abc) ... ok\n" "Ran 2 tests in 0.001s\n\nOK\n"
+        )
         with self.assertRaisesRegex(ValueError, "identity count differs"):
             self.make(logs={"telemetry": partial})
-        malformed = ("test_abc (pkg.Class.test_different) ... ok\n"
-                     "Ran 1 test in 0.001s\n\nOK\n")
+        malformed = (
+            "test_abc (pkg.Class.test_different) ... ok\n"
+            "Ran 1 test in 0.001s\n\nOK\n"
+        )
         with self.assertRaisesRegex(ValueError, "malformed case identity"):
             self.make(logs={"telemetry": malformed})
 
     def test_suite_population_change_blocks_test_delta(self):
         previous = self.make()
-        new = self.make(logs={"core": OK, "rex": OK, "metrics": OK,
-                              "telemetry": OK}, previous=previous)
+        new = self.make(
+            logs={"core": OK, "rex": OK, "metrics": OK, "telemetry": OK},
+            previous=previous,
+        )
         self.assertEqual(new["comparison"]["status"], "COMPARABLE")
         self.assertIsNone(new["comparison"]["test_delta"])
         self.assertIsNone(new["comparison"]["new_unique_case_ids"])
-        self.assertEqual(new["comparison"]["test_census_status"],
-                         "INCOMPARABLE_SUITE_POPULATION")
+        self.assertEqual(
+            new["comparison"]["test_census_status"], "INCOMPARABLE_SUITE_POPULATION"
+        )
 
     def test_rejects_invalid_sha_and_baseline(self):
         with self.assertRaises(ValueError):

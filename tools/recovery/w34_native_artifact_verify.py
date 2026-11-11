@@ -4,6 +4,7 @@ A caller-supplied expected tuple is a trust boundary requiring separate GitHub
 API readback. Successful verification establishes byte equality only; it does
 not authenticate a principal, approve a human review or admit a merge.
 """
+
 from __future__ import annotations
 
 import hashlib
@@ -44,21 +45,30 @@ def _parse_json(raw: bytes, label: str) -> dict:
 
 
 def _read_zip(blob: bytes) -> dict[str, bytes]:
-    _need(type(blob) is bytes and 0 < len(blob) <= _MAX_BUNDLE,
-          "missing or oversized artifact bytes")
+    _need(
+        type(blob) is bytes and 0 < len(blob) <= _MAX_BUNDLE,
+        "missing or oversized artifact bytes",
+    )
     try:
         with zipfile.ZipFile(io.BytesIO(blob), "r") as archive:
             infos = archive.infolist()
             names = [x.filename for x in infos]
-            _need(len(names) == len(_MEMBERS) and set(names) == _MEMBERS,
-                  "missing, duplicate or foreign ZIP member")
+            _need(
+                len(names) == len(_MEMBERS) and set(names) == _MEMBERS,
+                "missing, duplicate or foreign ZIP member",
+            )
             for x in infos:
-                _need(x.file_size > 0 and x.file_size <= _MAX_MEMBER,
-                      "empty or oversized archive member")
-                _need(x.file_size <= _MAX_RATIO * max(1, x.compress_size),
-                      "excessive archive expansion ratio")
-                _need(x.filename in _MEMBERS and not x.is_dir(),
-                      "unsafe archive member")
+                _need(
+                    x.file_size > 0 and x.file_size <= _MAX_MEMBER,
+                    "empty or oversized archive member",
+                )
+                _need(
+                    x.file_size <= _MAX_RATIO * max(1, x.compress_size),
+                    "excessive archive expansion ratio",
+                )
+                _need(
+                    x.filename in _MEMBERS and not x.is_dir(), "unsafe archive member"
+                )
                 mode = (x.external_attr >> 16) & 0o170000
                 _need(mode != 0o120000, "symlink archive member")
             return {name: archive.read(name) for name in names}
@@ -67,8 +77,10 @@ def _read_zip(blob: bytes) -> dict[str, bytes]:
 
 
 def _junit(data: bytes) -> int:
-    _need(b"<!DOCTYPE" not in data.upper() and b"<!ENTITY" not in data.upper(),
-          "unsafe JUnit declaration")
+    _need(
+        b"<!DOCTYPE" not in data.upper() and b"<!ENTITY" not in data.upper(),
+        "unsafe JUnit declaration",
+    )
     try:
         root = ElementTree.fromstring(data)
     except ElementTree.ParseError as exc:
@@ -91,35 +103,58 @@ def _junit(data: bytes) -> int:
         except (ValueError, KeyError, TypeError) as exc:
             raise ValueError("missing or invalid JUnit header") from exc
         _need(declared == actual, "JUnit header / element disagreement: " + attr)
-    _need(not any(c.find(k) is not None for c in cases
-                  for k in ("failure", "error", "skipped")),
-          "non-green native JUnit result")
+    _need(
+        not any(
+            c.find(k) is not None
+            for c in cases
+            for k in ("failure", "error", "skipped")
+        ),
+        "non-green native JUnit result",
+    )
     identities = [(c.attrib.get("classname"), c.attrib.get("name")) for c in cases]
-    _need(all(isinstance(a, str) and a and isinstance(b, str) and b
-              for a, b in identities), "missing JUnit case identity")
+    _need(
+        all(
+            isinstance(a, str) and a and isinstance(b, str) and b for a, b in identities
+        ),
+        "missing JUnit case identity",
+    )
     _need(len(identities) == len(set(identities)), "duplicate JUnit testcase identity")
     return len(cases)
 
 
 def _coverage(data: bytes, scope: list[str]) -> tuple[int, int]:
     report = _parse_json(data, "coverage JSON")
-    _need(report.get("meta", {}).get("branch_coverage") is True,
-          "branch coverage not measured")
+    _need(
+        report.get("meta", {}).get("branch_coverage") is True,
+        "branch coverage not measured",
+    )
     rows = report.get("files")
     _need(isinstance(rows, dict), "missing coverage file population")
-    _need(len(scope) == len(set(scope)) and len(scope) > 0,
-          "invalid coverage scope")
-    _need(all(isinstance(p, str) and p and ".." not in p and "\\" not in p
-              for p in scope), "unsafe coverage source path")
+    _need(len(scope) == len(set(scope)) and len(scope) > 0, "invalid coverage scope")
+    _need(
+        all(
+            isinstance(p, str) and p and ".." not in p and "\\" not in p for p in scope
+        ),
+        "unsafe coverage source path",
+    )
     covered = eligible = 0
     for name in scope:
         _need(name in rows, "missing exact coverage source: " + name)
         stats = rows[name].get("summary")
         _need(isinstance(stats, dict), "missing scope counters")
-        values = [stats.get(k) for k in (
-            "num_statements", "covered_lines", "num_branches", "covered_branches")]
-        _need(all(type(x) is int and x >= 0 for x in values),
-              "invalid statement/branch counters")
+        values = [
+            stats.get(k)
+            for k in (
+                "num_statements",
+                "covered_lines",
+                "num_branches",
+                "covered_branches",
+            )
+        ]
+        _need(
+            all(type(x) is int and x >= 0 for x in values),
+            "invalid statement/branch counters",
+        )
         s, c, b, d = values
         _need(c <= s and d <= b, "impossible covered opportunities")
         eligible += s + b
@@ -133,43 +168,66 @@ def verify(archive_bytes: bytes, *, expected: dict) -> dict:
     _need(isinstance(expected, dict), "missing external expected identity")
     head, expected_digest = expected.get("head_sha"), expected.get("zip_sha256")
     _need(isinstance(head, str) and bool(_SHA.fullmatch(head)), "invalid exact SHA")
-    _need(isinstance(expected_digest, str) and bool(_HASH.fullmatch(expected_digest)),
-          "missing external ZIP hash")
+    _need(
+        isinstance(expected_digest, str) and bool(_HASH.fullmatch(expected_digest)),
+        "missing external ZIP hash",
+    )
     for key in ("run_id", "run_attempt", "job_id"):
         _need(_positive(expected.get(key)), "invalid external " + key)
-    _need(type(archive_bytes) is bytes and _digest(archive_bytes) == expected_digest,
-          "archive SHA256 mismatch")
+    _need(
+        type(archive_bytes) is bytes and _digest(archive_bytes) == expected_digest,
+        "archive SHA256 mismatch",
+    )
     files = _read_zip(archive_bytes)
     receipt = _parse_json(files["receipt.json"], "receipt JSON")
     _need(receipt.get("schema") == "abacus.w34.native.v1", "foreign receipt schema")
-    for src, dst in (("head_sha", "head_sha"), ("run_id", "run_id"),
-                     ("run_attempt", "run_attempt"), ("job_id", "job_id")):
-        _need(type(receipt.get(src)) is type(expected[dst])
-              and receipt[src] == expected[dst], "foreign exact native identity: " + src)
+    for src, dst in (
+        ("head_sha", "head_sha"),
+        ("run_id", "run_id"),
+        ("run_attempt", "run_attempt"),
+        ("job_id", "job_id"),
+    ):
+        _need(
+            type(receipt.get(src)) is type(expected[dst])
+            and receipt[src] == expected[dst],
+            "foreign exact native identity: " + src,
+        )
     for name in ("junit.xml", "coverage.json"):
         value = receipt.get("member_sha256", {}).get(name)
-        _need(isinstance(value, str) and bool(_HASH.fullmatch(value))
-              and value == _digest(files[name]), "member SHA256 mismatch: " + name)
+        _need(
+            isinstance(value, str)
+            and bool(_HASH.fullmatch(value))
+            and value == _digest(files[name]),
+            "member SHA256 mismatch: " + name,
+        )
     scope = expected.get("scope_paths")
-    _need(isinstance(scope, list) and scope == receipt.get("scope_paths"),
-          "source scope / receipt mismatch")
+    _need(
+        isinstance(scope, list) and scope == receipt.get("scope_paths"),
+        "source scope / receipt mismatch",
+    )
     cases = _junit(files["junit.xml"])
     covered, eligible = _coverage(files["coverage.json"], scope)
     threshold = expected.get("coverage_floor_pct")
-    _need(type(threshold) in (int, float) and 0 <= threshold <= 100,
-          "invalid coverage threshold")
+    _need(
+        type(threshold) in (int, float) and 0 <= threshold <= 100,
+        "invalid coverage threshold",
+    )
     _need(covered * 100 >= threshold * eligible, "coverage below required floor")
     return {
         "schema": "abacus.w34.byte-verification.v1",
-        "head_sha": head, "run_id": expected["run_id"],
-        "run_attempt": expected["run_attempt"], "job_id": expected["job_id"],
+        "head_sha": head,
+        "run_id": expected["run_id"],
+        "run_attempt": expected["run_attempt"],
+        "job_id": expected["job_id"],
         "archive_sha256": expected_digest,
-        "executed_cases": cases, "covered_opportunities": covered,
+        "executed_cases": cases,
+        "covered_opportunities": covered,
         "eligible_opportunities": eligible,
         "scoped_coverage_pct": round(100 * covered / eligible, 6),
         "byte_integrity": "LOCAL_BYTE_MATCHED",
         "github_provider_authentication": None,
         "independent_human_review": None,
-        "admission": "HOLD", "security_waiver": False,
+        "admission": "HOLD",
+        "security_waiver": False,
         "formal_root_closed": None,
     }

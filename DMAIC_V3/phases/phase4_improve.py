@@ -196,11 +196,13 @@ class CodeImprover:
             tree = ast.parse(content)
             lines = content.splitlines(keepends=True)
             loaded_names = {
-                node.id for node in ast.walk(tree)
+                node.id
+                for node in ast.walk(tree)
                 if isinstance(node, ast.Name) and isinstance(node.ctx, ast.Load)
             }
             dynamic_access = any(
-                isinstance(node, ast.Call) and isinstance(node.func, ast.Name)
+                isinstance(node, ast.Call)
+                and isinstance(node.func, ast.Name)
                 and node.func.id in {"eval", "exec", "globals", "locals", "__import__"}
                 for node in ast.walk(tree)
             )
@@ -223,7 +225,9 @@ class CodeImprover:
                             alias.name == "*" for alias in node.names
                         ):
                             continue
-                        bound_names = [alias.asname or alias.name for alias in node.names]
+                        bound_names = [
+                            alias.asname or alias.name for alias in node.names
+                        ]
                     else:
                         bound_names = [
                             alias.asname or alias.name.split(".")[0]
@@ -259,6 +263,7 @@ class CodeImprover:
 
         except Exception as e:
             return {"success": False, "error": str(e)}
+
 
 class Phase4Improve:
     """
@@ -739,7 +744,10 @@ class Phase4Improve:
             and isinstance(execution_result[1][0], bool)
             and isinstance(execution_result[1][1], dict)
         ):
-            return execution_result[0] and execution_result[1][0], execution_result[1][1]
+            return (
+                execution_result[0] and execution_result[1][0],
+                execution_result[1][1],
+            )
 
         return False, {
             "phase": "IMPROVE",

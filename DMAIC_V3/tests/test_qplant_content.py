@@ -8,7 +8,6 @@ from renderers.mathml_renderer import MathMLRenderer
 from renderers.process_flow_renderer import ProcessFlowRenderer
 from src.qplant_presentation_engine.schema_validation import canonical_schema_path
 
-
 REPO_ROOT = Path(__file__).resolve().parents[2]
 CONTENT_DIR = REPO_ROOT / "content" / "qplant"
 SCHEMA_PATH = canonical_schema_path("yaml")
@@ -55,8 +54,13 @@ def _validate_common_envelope(document: dict) -> None:
     visualization = document["visualization"]
     assert isinstance(visualization, dict)
     assert isinstance(visualization.get("type"), str) and visualization["type"].strip()
-    assert isinstance(visualization.get("title"), str) and visualization["title"].strip()
-    assert isinstance(visualization.get("data_ref"), str) and visualization["data_ref"].strip()
+    assert (
+        isinstance(visualization.get("title"), str) and visualization["title"].strip()
+    )
+    assert (
+        isinstance(visualization.get("data_ref"), str)
+        and visualization["data_ref"].strip()
+    )
 
     validate(
         instance=document["lineage"],
@@ -150,7 +154,9 @@ def test_utilities_table_metrics_validity():
         "Instrument Air": (60, "m3/h"),
     }
 
-    observed = {item["name"]: (item["capacity"], item["unit"]) for item in content["utilities"]}
+    observed = {
+        item["name"]: (item["capacity"], item["unit"]) for item in content["utilities"]
+    }
     assert observed == expected
 
 
@@ -167,7 +173,9 @@ def test_thermodynamics_mathml_renderer_compatibility():
     renderer = MathMLRenderer()
     for equation in content["equations"]:
         assert equation["display"] == expected_displays[equation["name"]]
-        mathml = renderer.render({"name": equation["name"], "expression": equation["expression"]})
+        mathml = renderer.render(
+            {"name": equation["name"], "expression": equation["expression"]}
+        )
         root = ET.fromstring(mathml)
         assert root.tag.endswith("math")
 

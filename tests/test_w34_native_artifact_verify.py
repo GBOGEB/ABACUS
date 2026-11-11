@@ -1,4 +1,5 @@
 """Synthetic adversarial corpus for byte-verifier; no real GitHub admission."""
+
 import hashlib
 import io
 import json
@@ -12,13 +13,27 @@ HEAD = "a" * 40
 SCOPE = ["tools/recovery/w32_runner_telemetry.py"]
 
 
-def make_bundle(*, cases=2, header=None, fail=False, skip=False,
-                branch=True, covered=9, eligible=10, override=None,
-                other_members=None):
-    suite = ET.Element("testsuite", {
-        "tests": str(cases if header is None else header),
-        "failures": str(int(fail)), "errors": "0", "skipped": str(int(skip)),
-    })
+def make_bundle(
+    *,
+    cases=2,
+    header=None,
+    fail=False,
+    skip=False,
+    branch=True,
+    covered=9,
+    eligible=10,
+    override=None,
+    other_members=None,
+):
+    suite = ET.Element(
+        "testsuite",
+        {
+            "tests": str(cases if header is None else header),
+            "failures": str(int(fail)),
+            "errors": "0",
+            "skipped": str(int(skip)),
+        },
+    )
     for i in range(cases):
         case = ET.SubElement(suite, "testcase", classname="suite", name=f"test_{i}")
         if i == 0 and fail:
@@ -26,19 +41,40 @@ def make_bundle(*, cases=2, header=None, fail=False, skip=False,
         if i == 0 and skip:
             ET.SubElement(case, "skipped")
     junit = ET.tostring(suite)
-    coverage = json.dumps({"meta": {"branch_coverage": branch},
-      "files": {SCOPE[0]: {"summary": {
-          "num_statements": eligible - 2, "covered_lines": covered - 2,
-          "num_branches": 2, "covered_branches": 2}}}}).encode()
-    receipt = {"schema": "abacus.w34.native.v1", "head_sha": HEAD,
-               "run_id": 39123456789, "run_attempt": 1, "job_id": 117123456789,
-               "scope_paths": SCOPE,
-               "member_sha256": {"junit.xml": hashlib.sha256(junit).hexdigest(),
-                                 "coverage.json": hashlib.sha256(coverage).hexdigest()}}
+    coverage = json.dumps(
+        {
+            "meta": {"branch_coverage": branch},
+            "files": {
+                SCOPE[0]: {
+                    "summary": {
+                        "num_statements": eligible - 2,
+                        "covered_lines": covered - 2,
+                        "num_branches": 2,
+                        "covered_branches": 2,
+                    }
+                }
+            },
+        }
+    ).encode()
+    receipt = {
+        "schema": "abacus.w34.native.v1",
+        "head_sha": HEAD,
+        "run_id": 39123456789,
+        "run_attempt": 1,
+        "job_id": 117123456789,
+        "scope_paths": SCOPE,
+        "member_sha256": {
+            "junit.xml": hashlib.sha256(junit).hexdigest(),
+            "coverage.json": hashlib.sha256(coverage).hexdigest(),
+        },
+    }
     if override:
         receipt.update(override)
-    content = {"junit.xml": junit, "coverage.json": coverage,
-               "receipt.json": json.dumps(receipt).encode()}
+    content = {
+        "junit.xml": junit,
+        "coverage.json": coverage,
+        "receipt.json": json.dumps(receipt).encode(),
+    }
     if other_members:
         content.update(other_members)
     f = io.BytesIO()
@@ -46,10 +82,15 @@ def make_bundle(*, cases=2, header=None, fail=False, skip=False,
         for k, data in content.items():
             z.writestr(k, data)
     blob = f.getvalue()
-    expected = {"head_sha": HEAD, "run_id": 39123456789, "run_attempt": 1,
-                "job_id": 117123456789, "scope_paths": SCOPE,
-                "zip_sha256": hashlib.sha256(blob).hexdigest(),
-                "coverage_floor_pct": 80}
+    expected = {
+        "head_sha": HEAD,
+        "run_id": 39123456789,
+        "run_attempt": 1,
+        "job_id": 117123456789,
+        "scope_paths": SCOPE,
+        "zip_sha256": hashlib.sha256(blob).hexdigest(),
+        "coverage_floor_pct": 80,
+    }
     return blob, expected
 
 
@@ -63,13 +104,16 @@ def test_valid_synthetic_integrity_is_not_native_admission():
     assert r["github_provider_authentication"] is None
 
 
-@pytest.mark.parametrize("field,bad,match", [
-    ("head_sha", "b" * 40, "foreign exact"),
-    ("run_id", 2, "foreign exact"),
-    ("run_attempt", 3, "foreign exact"),
-    ("job_id", 999, "foreign exact"),
-    ("scope_paths", ["wrong.py"], "scope / receipt"),
-])
+@pytest.mark.parametrize(
+    "field,bad,match",
+    [
+        ("head_sha", "b" * 40, "foreign exact"),
+        ("run_id", 2, "foreign exact"),
+        ("run_attempt", 3, "foreign exact"),
+        ("job_id", 999, "foreign exact"),
+        ("scope_paths", ["wrong.py"], "scope / receipt"),
+    ],
+)
 def test_wrong_external_identity_denied(field, bad, match):
     z, meta = make_bundle()
     meta[field] = bad
@@ -134,8 +178,9 @@ def test_zero_cases_rejected():
 
 
 def test_receipt_self_claim_false_can_never_authorize_merge():
-    z, meta = make_bundle(override={"merged": True, "human_approved": True,
-                                    "security_waiver": True})
+    z, meta = make_bundle(
+        override={"merged": True, "human_approved": True, "security_waiver": True}
+    )
     r = v.verify(z, expected=meta)
     assert r["admission"] == "HOLD"
     assert r["independent_human_review"] is None

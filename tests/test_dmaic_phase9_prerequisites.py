@@ -44,9 +44,7 @@ def test_both_required_phase_receipts_allow_prerequisite(tmp_path: Path):
     for name, payload in receipts.items():
         directory = iteration_dir / name
         directory.mkdir(parents=True)
-        (directory / f"{name}.json").write_text(
-            json.dumps(payload), encoding="utf-8"
-        )
+        (directory / f"{name}.json").write_text(json.dumps(payload), encoding="utf-8")
 
     # Existing implementation checks presence only. This test deliberately
     # uses nonempty receipts; content validation is a separate production gate.

@@ -100,12 +100,19 @@ def test_inventory_writes_rows_to_output_dir(tmp_path):
     assert refs == ["abc123"]
     with (tmp_path / runner.INVENTORY_CSV).open(encoding="utf-8") as f:
         assert list(csv.DictReader(f)) == [{"path": "README.md", "family": "KEEP"}]
-    assert (tmp_path / runner.INVENTORY_SUMMARY).read_text(encoding="utf-8") == "root files: 1\n"
+    assert (tmp_path / runner.INVENTORY_SUMMARY).read_text(
+        encoding="utf-8"
+    ) == "root files: 1\n"
 
 
 def test_inventory_fails_on_unclassified_root_file(tmp_path, capsys):
-    rows = [{"path": "README.md", "family": "KEEP"}, {"path": ".odd", "family": "UNCLASSIFIED"}]
-    args = runner.build_parser().parse_args(["--action", "inventory", "--output-dir", str(tmp_path)])
+    rows = [
+        {"path": "README.md", "family": "KEEP"},
+        {"path": ".odd", "family": "UNCLASSIFIED"},
+    ]
+    args = runner.build_parser().parse_args(
+        ["--action", "inventory", "--output-dir", str(tmp_path)]
+    )
     assert runner.run_inventory(args, loader=lambda p, n: _fake_inventory(rows)) == 1
     assert ".odd" in capsys.readouterr().out
     assert (tmp_path / runner.INVENTORY_CSV).is_file()
@@ -113,7 +120,9 @@ def test_inventory_fails_on_unclassified_root_file(tmp_path, capsys):
 
 def test_main_routes_through_dispatch_table(monkeypatch):
     calls = []
-    monkeypatch.setitem(runner.ACTIONS, "inventory", lambda args: calls.append(args.action) or 7)
+    monkeypatch.setitem(
+        runner.ACTIONS, "inventory", lambda args: calls.append(args.action) or 7
+    )
     assert runner.main(["--action", "inventory"]) == 7
     assert calls == ["inventory"]
 

@@ -464,23 +464,11 @@ def test_workflow_ratchets_against_the_merge_base_tip(job, step_id):
 
     if step_id == "quality_ratchet":
         assert step["env"]["FORCED"] == "${{ github.event.forced }}"
-        assert (
-            'if [[ "$FORCED" == "true" || "$BEFORE_SHA" =~ ^0+$ ]]; then'
-            in run
-        )
+        assert 'if [[ "$FORCED" == "true" || "$BEFORE_SHA" =~ ^0+$ ]]; then' in run
         assert 'if [[ -z "$BEFORE_SHA" ]]; then' in run
-        assert (
-            'if ! git cat-file -e "$base^{commit}" 2>/dev/null; then'
-            in run
-        )
-        assert (
-            'git fetch --no-tags --depth=1 origin "$BEFORE_SHA"'
-            in run
-        )
-        assert (
-            'git fetch --no-tags --depth=1 origin "$BEFORE_SHA"; then'
-            not in run
-        )
+        assert 'if ! git cat-file -e "$base^{commit}" 2>/dev/null; then' in run
+        assert 'git fetch --no-tags --depth=1 origin "$BEFORE_SHA"' in run
+        assert 'git fetch --no-tags --depth=1 origin "$BEFORE_SHA"; then' not in run
 
 
 def test_security_push_baseline_fails_closed_for_unavailable_previous_tip():
@@ -505,8 +493,8 @@ def test_bandit_full_scan_is_pinned_and_report_errors_fail_closed():
     # The Python 3.14 security owner uses a compatible, pinned Bandit.
     # The separate Python 3.12 DAB T2 compatibility fixture stays at 1.8.6.
     assert 'python -m pip install "bandit==1.9.4" safety' in workflow
-    assert 'bandit==1.8.6' in workflow
-    assert 'python scripts/ci/bandit_report_guard.py bandit-report.json' in workflow
+    assert "bandit==1.8.6" in workflow
+    assert "python scripts/ci/bandit_report_guard.py bandit-report.json" in workflow
     assert 'if [[ "$bandit_status" -gt 1 || "$report_valid" -ne 1 ]]; then' in workflow
     assert "steps.bandit.outputs.scan_error" in workflow
 

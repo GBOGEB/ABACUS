@@ -16,9 +16,14 @@ def test_enterprise_pytest_is_required_on_all_supported_versions():
     # Full lane from ssot/python_versions.yaml (this workflow is on the
     # coolprop-oracle lane because it installs requirements-dev.txt).
     lanes = json.loads(
-        (WORKFLOW.parents[2] / "ssot/python_versions.lanes.json").read_text(encoding="utf-8")
+        (WORKFLOW.parents[2] / "ssot/python_versions.lanes.json").read_text(
+            encoding="utf-8"
+        )
     )["lanes"]
-    assert job["strategy"]["matrix"]["python-version"] == lanes["coolprop-oracle"]["versions"]
+    assert (
+        job["strategy"]["matrix"]["python-version"]
+        == lanes["coolprop-oracle"]["versions"]
+    )
     assert set(job["strategy"]["matrix"]["os"]) == {
         "ubuntu-latest",
         "windows-latest",

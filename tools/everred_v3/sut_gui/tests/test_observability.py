@@ -4,7 +4,9 @@ import unittest
 from datetime import datetime, timedelta, timezone
 
 ROOT = pathlib.Path(__file__).resolve().parents[1]
-spec = importlib.util.spec_from_file_location("test_observability_engine", ROOT / "test_observability.py")
+spec = importlib.util.spec_from_file_location(
+    "test_observability_engine", ROOT / "test_observability.py"
+)
 mod = importlib.util.module_from_spec(spec)
 spec.loader.exec_module(mod)
 SHA = "a" * 40
@@ -16,18 +18,31 @@ class Census(unittest.TestCase):
         def run(i, conclusion):
             return {
                 "id": i,
-                "name": ["Unit tests", "Bandit", "Docker deployment", "PR Feedback Gate Evaluator"][i - 1],
+                "name": [
+                    "Unit tests",
+                    "Bandit",
+                    "Docker deployment",
+                    "PR Feedback Gate Evaluator",
+                ][i - 1],
                 "status": "completed",
                 "conclusion": conclusion,
                 "head_sha": SHA,
                 "created_at": "2026-10-14T10:00:00Z",
             }
-        return [run(1, "success"), run(2, "failure"), run(3, "cancelled"), run(4, "success")]
+
+        return [
+            run(1, "success"),
+            run(2, "failure"),
+            run(3, "cancelled"),
+            run(4, "success"),
+        ]
 
     def test_taxonomy(self):
         cases = [
-            ("Bandit", "security"), ("RHEL 9 UBI", "runtime"),
-            ("LLDB session", "runtime"), ("DAB Flake8 Census", "static"),
+            ("Bandit", "security"),
+            ("RHEL 9 UBI", "runtime"),
+            ("LLDB session", "runtime"),
+            ("DAB Flake8 Census", "static"),
             ("CI - ABACUS Matrix", "unit_integration"),
             ("PR Feedback Gate Evaluator", "governance"),
         ]
@@ -36,8 +51,12 @@ class Census(unittest.TestCase):
 
     def test_not_merge_authority(self):
         data = mod.normalize(
-            REPO, SHA, [{"name": "pytest", "path": ".github/workflows/test.yml"}],
-            self.runs(), [], expected_runs=4,
+            REPO,
+            SHA,
+            [{"name": "pytest", "path": ".github/workflows/test.yml"}],
+            self.runs(),
+            [],
+            expected_runs=4,
         )
         self.assertFalse(data["merge_authorized"])
         self.assertFalse(data["authority_transfer"])
@@ -62,7 +81,10 @@ class Census(unittest.TestCase):
 
     def test_reject_cross_run_job(self):
         data = mod.normalize(
-            REPO, SHA, [], self.runs(),
+            REPO,
+            SHA,
+            [],
+            self.runs(),
             [{"id": 55, "run_id": 999, "head_sha": SHA, "conclusion": "failure"}],
         )
         self.assertEqual(data["jobs"]["observed"], 0)
@@ -74,7 +96,9 @@ class Census(unittest.TestCase):
     def test_pca_observational(self):
         jobs = []
         for i in range(40):
-            base = datetime(2026, 10, 14, 12, tzinfo=timezone.utc) + timedelta(minutes=i)
+            base = datetime(2026, 10, 14, 12, tzinfo=timezone.utc) + timedelta(
+                minutes=i
+            )
             q = base.isoformat()
             s = (base + timedelta(seconds=2 + i)).isoformat()
             e = (base + timedelta(seconds=2 + i + 3 * (i % 7 + 1))).isoformat()
@@ -91,9 +115,13 @@ class Census(unittest.TestCase):
     def test_bt_reject_incomplete_connected_graph(self):
         rows = [
             {
-                "candidate_a": "a", "candidate_b": "b", "winner": "a",
-                "trial_id": str(i), "test_contract_digest": "a" * 64,
-                "source_sha": SHA, "comparable": True,
+                "candidate_a": "a",
+                "candidate_b": "b",
+                "winner": "a",
+                "trial_id": str(i),
+                "test_contract_digest": "a" * 64,
+                "source_sha": SHA,
+                "comparable": True,
             }
             for i in range(30)
         ]
@@ -104,10 +132,13 @@ class Census(unittest.TestCase):
     def test_bt_matched_connected_trials(self):
         rows = [
             {
-                "candidate_a": "a", "candidate_b": "b",
+                "candidate_a": "a",
+                "candidate_b": "b",
                 "winner": "a" if i % 2 else "b",
-                "trial_id": str(i), "test_contract_digest": "a" * 64,
-                "source_sha": SHA, "comparable": True,
+                "trial_id": str(i),
+                "test_contract_digest": "a" * 64,
+                "source_sha": SHA,
+                "comparable": True,
             }
             for i in range(30)
         ]
@@ -119,9 +150,13 @@ class Census(unittest.TestCase):
     def test_bt_reject_duplicate_trial_and_mismatched_sha(self):
         rows = [
             {
-                "candidate_a": "a", "candidate_b": "b", "winner": "a",
-                "trial_id": "x", "test_contract_digest": "b" * 64,
-                "source_sha": SHA, "comparable": True,
+                "candidate_a": "a",
+                "candidate_b": "b",
+                "winner": "a",
+                "trial_id": "x",
+                "test_contract_digest": "b" * 64,
+                "source_sha": SHA,
+                "comparable": True,
             }
         ] * 30
         result = mod.bt_pairs(rows, sha=SHA)

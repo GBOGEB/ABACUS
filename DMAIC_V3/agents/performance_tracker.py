@@ -18,7 +18,9 @@ class PerformanceTrackerAgent:
     def __init__(self, workspace_root: Path):
         self.workspace_root = workspace_root
         self.version = __version__
-        self.perf_file = Path(workspace_root).resolve() / "DMAIC_V3_OUTPUT" / "performance.json"
+        self.perf_file = (
+            Path(workspace_root).resolve() / "DMAIC_V3_OUTPUT" / "performance.json"
+        )
         self.start_time = None
 
     def start_tracking(self):
@@ -28,25 +30,25 @@ class PerformanceTrackerAgent:
     def stop_tracking(self, phase_name: str) -> Dict[str, Any]:
         """Stop tracking and save results"""
         if self.start_time is None:
-            return {'error': 'Tracking not started'}
+            return {"error": "Tracking not started"}
 
         duration = time.time() - self.start_time
 
         perf_data = {
-            'phase': phase_name,
-            'duration_seconds': duration,
-            'timestamp': datetime.now().isoformat()
+            "phase": phase_name,
+            "duration_seconds": duration,
+            "timestamp": datetime.now().isoformat(),
         }
 
         history = []
         if self.perf_file.exists():
-            with open(self.perf_file, 'r') as f:
+            with open(self.perf_file, "r") as f:
                 history = json.load(f)
 
         history.append(perf_data)
 
         self.perf_file.parent.mkdir(parents=True, exist_ok=True)
-        with open(self.perf_file, 'w') as f:
+        with open(self.perf_file, "w") as f:
             json.dump(history, f, indent=2)
 
         self.start_time = None
@@ -55,7 +57,7 @@ class PerformanceTrackerAgent:
     def get_info(self) -> Dict[str, str]:
         """Get agent info"""
         return {
-            'name': 'performance_tracker',
-            'version': self.version,
-            'status': 'active'
+            "name": "performance_tracker",
+            "version": self.version,
+            "status": "active",
         }

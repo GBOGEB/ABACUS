@@ -37,10 +37,23 @@ def test_invalid_junit_rejected(tmp_path):
 
 
 def test_missing_receipts_fail_closed(tmp_path):
-    result = subprocess.run([sys.executable, str(ROOT / "tools/mip2/mip3_flight.py"),
-        "--phase", "postflight", "--junit", str(tmp_path / "absent.xml"),
-        "--receipt", str(tmp_path / "absent.json"),
-        "--output", str(tmp_path / "result.json")], cwd=ROOT, capture_output=True, text=True)
+    result = subprocess.run(
+        [
+            sys.executable,
+            str(ROOT / "tools/mip2/mip3_flight.py"),
+            "--phase",
+            "postflight",
+            "--junit",
+            str(tmp_path / "absent.xml"),
+            "--receipt",
+            str(tmp_path / "absent.json"),
+            "--output",
+            str(tmp_path / "result.json"),
+        ],
+        cwd=ROOT,
+        capture_output=True,
+        text=True,
+    )
     assert result.returncode != 0
     data = json.loads((tmp_path / "result.json").read_text(encoding="utf-8"))
     assert data["status"] == "HOLD"

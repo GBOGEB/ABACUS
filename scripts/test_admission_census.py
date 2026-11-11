@@ -12,7 +12,6 @@ import xml.etree.ElementTree as ET
 from pathlib import Path
 from typing import Any
 
-
 ROOT = Path(__file__).resolve().parents[1]
 DEFAULT_ROOTS = (ROOT / "DMAIC_V3" / "tests", ROOT / "integration")
 BLOCKING_TEST_STATES = (
@@ -128,7 +127,9 @@ def _estimated_candidates(test_file: Path) -> list[str]:
     return sorted(set(candidates))
 
 
-def _context_mapping(coverage_json: Path, test_files: list[Path]) -> dict[str, list[str]]:
+def _context_mapping(
+    coverage_json: Path, test_files: list[Path]
+) -> dict[str, list[str]]:
     result = {path.relative_to(ROOT).as_posix(): [] for path in test_files}
     if not coverage_json.exists():
         return result
@@ -258,7 +259,9 @@ def main(argv: list[str] | None = None) -> int:
             row["estimated_source_candidates"] = []
         else:
             row["existing_test_surface_evidence"] = "NAME_MATCH (ESTIMATED)"
-            row["estimated_source_candidates"] = _estimated_candidates(ROOT / row["path"])
+            row["estimated_source_candidates"] = _estimated_candidates(
+                ROOT / row["path"]
+            )
 
     report = {
         "schema": "abacus-test-admission-census/1.0.0",

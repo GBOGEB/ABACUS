@@ -62,7 +62,9 @@ def build_parser() -> argparse.ArgumentParser:
         type=int,
         help="sprint number, run as DMAIC iteration N (required for run-sprint)",
     )
-    parser.add_argument("--verbose", action="store_true", help="run-sprint: verbose pipeline")
+    parser.add_argument(
+        "--verbose", action="store_true", help="run-sprint: verbose pipeline"
+    )
     parser.add_argument(
         "--git", action="store_true", help="run-sprint: allow the pipeline's git commit"
     )
@@ -110,7 +112,9 @@ def run_inventory(args: argparse.Namespace, loader: Callable = _load_module) -> 
     print(f"wrote {out_dir / INVENTORY_CSV}")
     unclassified = [r["path"] for r in rows if r["family"] == "UNCLASSIFIED"]
     if unclassified:
-        print(f"UNCLASSIFIED root files (classify in {INVENTORY_GENERATOR.relative_to(REPO_ROOT)}):")
+        print(
+            f"UNCLASSIFIED root files (classify in {INVENTORY_GENERATOR.relative_to(REPO_ROOT)}):"
+        )
         for path in unclassified:
             print(f"  {path}")
         return 1

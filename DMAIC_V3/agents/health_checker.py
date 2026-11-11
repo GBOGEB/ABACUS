@@ -21,17 +21,13 @@ class HealthCheckerAgent:
     def check_health(self) -> Dict[str, Any]:
         """Check system health"""
         return {
-            'timestamp': datetime.now().isoformat(),
-            'cpu_percent': psutil.cpu_percent(interval=1),
-            'memory_percent': psutil.virtual_memory().percent,
-            'disk_percent': psutil.disk_usage('/').percent,
-            'status': 'healthy'
+            "timestamp": datetime.now().isoformat(),
+            "cpu_percent": psutil.cpu_percent(interval=1),
+            "memory_percent": psutil.virtual_memory().percent,
+            "disk_percent": psutil.disk_usage("/").percent,
+            "status": "healthy",
         }
 
     def get_info(self) -> Dict[str, str]:
         """Get agent info"""
-        return {
-            'name': 'health_checker',
-            'version': self.version,
-            'status': 'active'
-        }
+        return {"name": "health_checker", "version": self.version, "status": "active"}

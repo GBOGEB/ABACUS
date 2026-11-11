@@ -16,7 +16,7 @@ class GitHubDeploymentOrchestrator:
         self.results = {
             "timestamp": datetime.now().isoformat(),
             "steps": [],
-            "status": "in_progress"
+            "status": "in_progress",
         }
 
     def log_step(self, step: str, status: str, details: str = ""):
@@ -24,7 +24,7 @@ class GitHubDeploymentOrchestrator:
             "step": step,
             "status": status,
             "details": details,
-            "timestamp": datetime.now().isoformat()
+            "timestamp": datetime.now().isoformat(),
         }
         self.results["steps"].append(step_info)
         print(f"[{status.upper()}] {step}")
@@ -34,25 +34,28 @@ class GitHubDeploymentOrchestrator:
     def check_git_status(self) -> bool:
         try:
             subprocess.run(
-                ["git", "status"],
-                capture_output=True,
-                text=True,
-                check=True
+                ["git", "status"], capture_output=True, text=True, check=True
             )
             self.log_step("Git Status Check", "success", "Git repository detected")
             return True
         except subprocess.CalledProcessError:
-            self.log_step("Git Status Check", "warning", "Not a git repository - will initialize")
+            self.log_step(
+                "Git Status Check", "warning", "Not a git repository - will initialize"
+            )
             return False
 
     def initialize_git_repo(self):
         try:
             if not self.check_git_status():
                 subprocess.run(["git", "init"], check=True)
-                self.log_step("Git Initialization", "success", "Git repository initialized")
+                self.log_step(
+                    "Git Initialization", "success", "Git repository initialized"
+                )
 
             subprocess.run(["git", "config", "user.name", "ABACUS Team"], check=False)
-            subprocess.run(["git", "config", "user.email", "abacus@example.com"], check=False)
+            subprocess.run(
+                ["git", "config", "user.email", "abacus@example.com"], check=False
+            )
 
         except Exception as e:
             self.log_step("Git Initialization", "error", str(e))
@@ -67,7 +70,7 @@ class GitHubDeploymentOrchestrator:
             self.log_step(
                 "Deployment Structure",
                 "success",
-                f"Created {len(files_created)} deployment files"
+                f"Created {len(files_created)} deployment files",
             )
         except Exception as e:
             self.log_step("Deployment Structure", "error", str(e))
@@ -78,14 +81,18 @@ class GitHubDeploymentOrchestrator:
                 "abacus_v21_*.py",
                 "ABACUS_V21_*.md",
                 "ABACUS_V21_DEPLOYMENT_PACKAGE/",
-                ".gitignore"
+                ".gitignore",
             ]
 
             for pattern in files_to_add:
                 try:
                     subprocess.run(["git", "add", pattern], check=False)
                 except OSError as e:
-                    self.log_step("Stage Files", "warning", f"Failed to stage pattern '{pattern}': {e}")
+                    self.log_step(
+                        "Stage Files",
+                        "warning",
+                        f"Failed to stage pattern '{pattern}': {e}",
+                    )
 
             self.log_step("Stage Files", "success", "Files staged for commit")
         except Exception as e:
@@ -99,13 +106,15 @@ class GitHubDeploymentOrchestrator:
                 ["git", "commit", "-m", commit_message],
                 capture_output=True,
                 text=True,
-                check=False
+                check=False,
             )
 
             if result.returncode == 0:
                 self.log_step("Git Commit", "success", commit_message)
             else:
-                self.log_step("Git Commit", "info", "No changes to commit or already committed")
+                self.log_step(
+                    "Git Commit", "info", "No changes to commit or already committed"
+                )
         except Exception as e:
             self.log_step("Git Commit", "error", str(e))
 
@@ -222,24 +231,32 @@ git remote -v
 """
 
         instructions_file = self.project_root / "GITHUB_DEPLOYMENT_INSTRUCTIONS.txt"
-        with open(instructions_file, 'w', encoding='utf-8') as f:
+        with open(instructions_file, "w", encoding="utf-8") as f:
             f.write(instructions)
 
         print(instructions)
         self.log_step("GitHub Instructions", "success", f"Saved to {instructions_file}")
 
     def generate_deployment_report(self):
-        report_file = self.project_root / "ABACUS_V21_DEPLOYMENT_PACKAGE" / "DEPLOYMENT_REPORT.json"
+        report_file = (
+            self.project_root
+            / "ABACUS_V21_DEPLOYMENT_PACKAGE"
+            / "DEPLOYMENT_REPORT.json"
+        )
 
         self.results["status"] = "completed"
         self.results["summary"] = {
             "total_steps": len(self.results["steps"]),
-            "successful": len([s for s in self.results["steps"] if s["status"] == "success"]),
-            "warnings": len([s for s in self.results["steps"] if s["status"] == "warning"]),
-            "errors": len([s for s in self.results["steps"] if s["status"] == "error"])
+            "successful": len(
+                [s for s in self.results["steps"] if s["status"] == "success"]
+            ),
+            "warnings": len(
+                [s for s in self.results["steps"] if s["status"] == "warning"]
+            ),
+            "errors": len([s for s in self.results["steps"] if s["status"] == "error"]),
         }
 
-        with open(report_file, 'w', encoding='utf-8') as f:
+        with open(report_file, "w", encoding="utf-8") as f:
             json.dump(self.results, f, indent=2)
 
         print(f"\n📊 Deployment Report: {report_file}")
@@ -248,9 +265,15 @@ git remote -v
         print(f"   ❌ Errors: {self.results['summary']['errors']}")
 
     def run(self):
-        print("╔══════════════════════════════════════════════════════════════════════════════╗")
-        print("║          ABACUS v2.1 - GitHub Deployment Orchestrator                       ║")
-        print("╚══════════════════════════════════════════════════════════════════════════════╝\n")
+        print(
+            "╔══════════════════════════════════════════════════════════════════════════════╗"
+        )
+        print(
+            "║          ABACUS v2.1 - GitHub Deployment Orchestrator                       ║"
+        )
+        print(
+            "╚══════════════════════════════════════════════════════════════════════════════╝\n"
+        )
 
         self.initialize_git_repo()
         self.create_deployment_structure()
@@ -261,6 +284,7 @@ git remote -v
 
         print("\n✅ Deployment preparation completed!")
         print("📖 Follow the instructions in GITHUB_DEPLOYMENT_INSTRUCTIONS.txt")
+
 
 if __name__ == "__main__":
     orchestrator = GitHubDeploymentOrchestrator()

@@ -18,15 +18,14 @@ class LocalDeploymentRunner:
     def log(self, message: str, status: str = "INFO"):
         timestamp = datetime.now().strftime("%H:%M:%S")
         print(f"[{timestamp}] [{status}] {message}")
-        self.results.append({"timestamp": timestamp, "status": status, "message": message})
+        self.results.append(
+            {"timestamp": timestamp, "status": status, "message": message}
+        )
 
     def check_docker(self) -> bool:
         try:
             result = subprocess.run(
-                ["docker", "--version"],
-                capture_output=True,
-                text=True,
-                check=True
+                ["docker", "--version"], capture_output=True, text=True, check=True
             )
             self.log(f"Docker found: {result.stdout.strip()}", "SUCCESS")
             return True
@@ -40,7 +39,7 @@ class LocalDeploymentRunner:
                 ["docker-compose", "--version"],
                 capture_output=True,
                 text=True,
-                check=True
+                check=True,
             )
             self.log(f"Docker Compose found: {result.stdout.strip()}", "SUCCESS")
             return True
@@ -56,7 +55,7 @@ class LocalDeploymentRunner:
                 ["docker", "build", "-t", "abacus-v21:latest", "."],
                 capture_output=True,
                 text=True,
-                check=True
+                check=True,
             )
             self.log("Docker image built successfully", "SUCCESS")
             os.chdir(self.project_root)
@@ -72,7 +71,7 @@ class LocalDeploymentRunner:
                 ["docker-compose", "up", "-d"],
                 capture_output=True,
                 text=True,
-                check=True
+                check=True,
             )
             self.log("Docker Compose services started", "SUCCESS")
             self.log("Prometheus: http://localhost:9090", "INFO")
@@ -90,14 +89,16 @@ class LocalDeploymentRunner:
                 capture_output=True,
                 text=True,
                 timeout=30,
-                check=False
+                check=False,
             )
             if result.returncode == 0:
                 self.log("ABACUS v2.1 executed successfully", "SUCCESS")
             else:
                 self.log("ABACUS execution completed with warnings", "WARNING")
         except subprocess.TimeoutExpired:
-            self.log("ABACUS execution timeout (expected for long-running processes)", "INFO")
+            self.log(
+                "ABACUS execution timeout (expected for long-running processes)", "INFO"
+            )
         except Exception as e:
             self.log(f"Error running ABACUS: {str(e)}", "ERROR")
 
@@ -105,19 +106,25 @@ class LocalDeploymentRunner:
         report = {
             "timestamp": datetime.now().isoformat(),
             "deployment_type": "local",
-            "results": self.results
+            "results": self.results,
         }
 
         report_file = self.deployment_package / "LOCAL_DEPLOYMENT_REPORT.json"
-        with open(report_file, 'w', encoding='utf-8') as f:
+        with open(report_file, "w", encoding="utf-8") as f:
             json.dump(report, f, indent=2)
 
         self.log(f"Report saved: {report_file}", "SUCCESS")
 
     def run(self):
-        print("╔══════════════════════════════════════════════════════════════════════════════╗")
-        print("║              ABACUS v2.1 - Local Deployment Runner                          ║")
-        print("╚══════════════════════════════════════════════════════════════════════════════╝\n")
+        print(
+            "╔══════════════════════════════════════════════════════════════════════════════╗"
+        )
+        print(
+            "║              ABACUS v2.1 - Local Deployment Runner                          ║"
+        )
+        print(
+            "╚══════════════════════════════════════════════════════════════════════════════╝\n"
+        )
 
         docker_available = self.check_docker()
         compose_available = self.check_docker_compose()
@@ -133,6 +140,7 @@ class LocalDeploymentRunner:
 
         print("\n✅ Local deployment completed!")
         print("📊 Check LOCAL_DEPLOYMENT_REPORT.json for details")
+
 
 if __name__ == "__main__":
     runner = LocalDeploymentRunner()

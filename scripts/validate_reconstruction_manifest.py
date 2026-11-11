@@ -14,12 +14,20 @@ from dmaic.reconstruction_manifest import validate_reconstruction_manifest  # no
 
 
 def main() -> int:
-    parser = argparse.ArgumentParser(description="Validate reconstruction manifest payload")
-    parser.add_argument("--input", required=True, help="Path to reconstruction manifest JSON")
+    parser = argparse.ArgumentParser(
+        description="Validate reconstruction manifest payload"
+    )
+    parser.add_argument(
+        "--input", required=True, help="Path to reconstruction manifest JSON"
+    )
     parser.add_argument("--output", help="Optional validated artifact output path")
     args = parser.parse_args()
 
-    input_path = ROOT_DIR / args.input if not Path(args.input).is_absolute() else Path(args.input)
+    input_path = (
+        ROOT_DIR / args.input
+        if not Path(args.input).is_absolute()
+        else Path(args.input)
+    )
     try:
         payload = json.loads(input_path.read_text(encoding="utf-8"))
     except FileNotFoundError:
@@ -35,13 +43,19 @@ def main() -> int:
         return 1
 
     if args.output:
-        output = ROOT_DIR / args.output if not Path(args.output).is_absolute() else Path(args.output)
+        output = (
+            ROOT_DIR / args.output
+            if not Path(args.output).is_absolute()
+            else Path(args.output)
+        )
         output.parent.mkdir(parents=True, exist_ok=True)
         output.write_text(
             json.dumps(
                 {
                     "source": str(input_path),
-                    "validated_at": datetime.now(timezone.utc).isoformat().replace("+00:00", "Z"),
+                    "validated_at": datetime.now(timezone.utc)
+                    .isoformat()
+                    .replace("+00:00", "Z"),
                     "manifest_version": payload.get("manifest_version"),
                     "artifact_count": len(payload.get("artifacts", [])),
                     "component_count": len(payload.get("component_map", [])),

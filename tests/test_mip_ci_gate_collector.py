@@ -51,7 +51,12 @@ def enterprise_jobs():
     from tools.mip_ci_wave_telemetry import _ENTERPRISE_JOBS
 
     items = [
-        native_job(500 + count, 10, name, steps=["Run pytest --benchmark-disable with coverage"])
+        native_job(
+            500 + count,
+            10,
+            name,
+            steps=["Run pytest --benchmark-disable with coverage"],
+        )
         for count, name in enumerate(_ENTERPRISE_JOBS)
     ]
     items.append(native_job(500 + len(items) + 100, 10, "CI Summary"))

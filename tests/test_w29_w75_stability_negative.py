@@ -2,6 +2,7 @@
 invalid sample geometry, singular environment projection and forged identity.
 No change to W75 production logic or acceptance thresholds.
 """
+
 from __future__ import annotations
 
 import json
@@ -22,33 +23,46 @@ def runtime_rows() -> list[dict]:
         for i in range(5):
             executed = float(20 + 2 * i + repeat + (i % 2) * repeat)
             probe = float(5 + i + repeat / 10)
-            rows.append({
-                "source_sha": f"{i + 1:040x}", "repeat": repeat,
-                "steps_executed_total": float(10 + 3 * i + 2 * repeat),
-                "queue_seconds_mean": float(7 + i * i + repeat),
-                "execute_seconds_total": executed,
-                "probe_execute_seconds": probe,
-                "orchestration_overhead_seconds": executed - probe,
-                "evidence_emit_count": float(4 + i + 3 * repeat + i * repeat),
-                "runtime_pc1_frozen_score": float(i + 0.3 * repeat + .04 * i * repeat),
-            })
+            rows.append(
+                {
+                    "source_sha": f"{i + 1:040x}",
+                    "repeat": repeat,
+                    "steps_executed_total": float(10 + 3 * i + 2 * repeat),
+                    "queue_seconds_mean": float(7 + i * i + repeat),
+                    "execute_seconds_total": executed,
+                    "probe_execute_seconds": probe,
+                    "orchestration_overhead_seconds": executed - probe,
+                    "evidence_emit_count": float(4 + i + 3 * repeat + i * repeat),
+                    "runtime_pc1_frozen_score": float(
+                        i + 0.3 * repeat + 0.04 * i * repeat
+                    ),
+                }
+            )
     return rows
 
 
 def semantic_rows() -> list[dict]:
     return [
-        {"source_sha": f"{i + 1:040x}", "consumer_penetration_rate": .2 + .03 * i,
-         "consumer_edge_density": .8 + .07 * i + .01 * (i % 2),
-         "consumer_degree_concentration": .5 + .02 * i + .015 * (i % 3)}
+        {
+            "source_sha": f"{i + 1:040x}",
+            "consumer_penetration_rate": 0.2 + 0.03 * i,
+            "consumer_edge_density": 0.8 + 0.07 * i + 0.01 * (i % 2),
+            "consumer_degree_concentration": 0.5 + 0.02 * i + 0.015 * (i % 3),
+        }
         for i in range(5)
     ]
 
 
 def telemetry(features: list[str]) -> dict:
-    return {"components": [{
-        "pc": 1, "eigenvalue": float(len(features)),
-        "loadings": {key: 1.0 for key in features},
-    }]}
+    return {
+        "components": [
+            {
+                "pc": 1,
+                "eigenvalue": float(len(features)),
+                "loadings": {key: 1.0 for key in features},
+            }
+        ]
+    }
 
 
 def write(path: Path, value: object) -> Path:
@@ -69,21 +83,24 @@ def test_frozen_axis_does_not_refit_weights() -> None:
     assert vector == pytest.approx({"a": 1 / math.sqrt(2), "b": 1 / math.sqrt(2)})
 
 
-@pytest.mark.parametrize("matrix,vector", [
-    ([[1., 2.], [2., 4.]], [3., 6.]),
-    ([[0., 0.], [0., 1.]], [0., 3.]),
-])
+@pytest.mark.parametrize(
+    "matrix,vector",
+    [
+        ([[1.0, 2.0], [2.0, 4.0]], [3.0, 6.0]),
+        ([[0.0, 0.0], [0.0, 1.0]], [0.0, 3.0]),
+    ],
+)
 def test_singular_environment_design_rejected(matrix: list, vector: list) -> None:
     with pytest.raises(ValueError, match="singular deconfounding design matrix"):
         w75.solve_linear(matrix, vector)
 
 
 def test_gaussian_elimination_pivots_without_mutating_inputs() -> None:
-    matrix = [[0., 1.], [2., 3.]]
-    rhs = [2., 8.]
-    assert w75.solve_linear(matrix, rhs) == pytest.approx([1., 2.])
-    assert matrix == [[0., 1.], [2., 3.]]
-    assert rhs == [2., 8.]
+    matrix = [[0.0, 1.0], [2.0, 3.0]]
+    rhs = [2.0, 8.0]
+    assert w75.solve_linear(matrix, rhs) == pytest.approx([1.0, 2.0])
+    assert matrix == [[0.0, 1.0], [2.0, 3.0]]
+    assert rhs == [2.0, 8.0]
 
 
 def test_residuals_preserve_intrinsic_probe_and_remove_fitted_environment() -> None:
@@ -94,9 +111,11 @@ def test_residuals_preserve_intrinsic_probe_and_remove_fitted_environment() -> N
     assert metadata["causal_inference_authority"] is False
     assert "runtime_pc1_environment_residual" not in rows[0]
     residuals = [r["runtime_pc1_environment_residual"] for r in out]
-    assert sum(residuals) == pytest.approx(0., abs=1e-8)
+    assert sum(residuals) == pytest.approx(0.0, abs=1e-8)
     for feature in ("queue_seconds_mean", "orchestration_overhead_seconds"):
-        assert sum(r[feature] * r["runtime_pc1_environment_residual"] for r in out) == pytest.approx(0., abs=1e-7)
+        assert sum(
+            r[feature] * r["runtime_pc1_environment_residual"] for r in out
+        ) == pytest.approx(0.0, abs=1e-7)
 
 
 def test_environment_perfectly_confounded_inputs_are_withheld() -> None:
@@ -107,12 +126,15 @@ def test_environment_perfectly_confounded_inputs_are_withheld() -> None:
         w75.residualize(rows)
 
 
-@pytest.mark.parametrize("values,expect", [
-    ([0., 0., 0.], None),
-    ([-1., 1.], None),
-    ([2., 2., 2.], 0.),
-    ([2., 4.], math.sqrt(2) / 3),
-])
+@pytest.mark.parametrize(
+    "values,expect",
+    [
+        ([0.0, 0.0, 0.0], None),
+        ([-1.0, 1.0], None),
+        ([2.0, 2.0, 2.0], 0.0),
+        ([2.0, 4.0], math.sqrt(2) / 3),
+    ],
+)
 def test_cv_handles_zero_and_stable_means(values: list, expect: float | None) -> None:
     result = w75.cv(values)
     if expect is None:
@@ -122,29 +144,36 @@ def test_cv_handles_zero_and_stable_means(values: list, expect: float | None) ->
 
 
 @pytest.mark.parametrize("group_count,repeats", [(4, 3), (5, 2), (6, 3), (5, 4)])
-def test_icc_rejects_noncomparable_repeat_geometry(group_count: int, repeats: int) -> None:
-    rows = [{"source_sha": f"{i:040x}", "v": float(i + r)}
-            for i in range(group_count) for r in range(repeats)]
+def test_icc_rejects_noncomparable_repeat_geometry(
+    group_count: int, repeats: int
+) -> None:
+    rows = [
+        {"source_sha": f"{i:040x}", "v": float(i + r)}
+        for i in range(group_count)
+        for r in range(repeats)
+    ]
     with pytest.raises(ValueError, match="five source SHAs with three repeats"):
         w75.icc_one_way(rows, "v")
 
 
 def test_icc_no_variation_is_unknown_not_zero() -> None:
-    rows = [{"source_sha": f"{i:040x}", "v": 3.0}
-            for i in range(5) for _ in range(3)]
+    rows = [{"source_sha": f"{i:040x}", "v": 3.0} for i in range(5) for _ in range(3)]
     assert w75.icc_one_way(rows, "v") is None
 
 
 def test_icc_identical_repeats_reproduces_one() -> None:
-    rows = [{"source_sha": f"{i:040x}", "v": float(i)}
-            for _ in range(3) for i in range(5)]
+    rows = [
+        {"source_sha": f"{i:040x}", "v": float(i)} for _ in range(3) for i in range(5)
+    ]
     assert w75.icc_one_way(rows, "v") == pytest.approx(1.0)
 
 
 def test_pairwise_rank_reversal_is_detected_not_mislabeled_stable() -> None:
-    rows = [{"source_sha": f"{i:040x}", "repeat": r,
-             "v": float(i if r < 3 else 4 - i)}
-            for r in range(1, 4) for i in range(5)]
+    rows = [
+        {"source_sha": f"{i:040x}", "repeat": r, "v": float(i if r < 3 else 4 - i)}
+        for r in range(1, 4)
+        for i in range(5)
+    ]
     pairs = w75.pairwise_rank_stability(rows, "v")
     assert len(pairs["pairs"]) == 3
     assert pairs["median_spearman_rho"] == pytest.approx(-1.0)
@@ -171,8 +200,8 @@ def test_semantic_association_reports_three_independent_repeats() -> None:
 
 
 def test_nested_rounding_keeps_unknown_as_null() -> None:
-    assert w75.round_tree({"x": [1.23456789, None, {"n": .333333333}]}) == {
-        "x": [1.234568, None, {"n": .333333}],
+    assert w75.round_tree({"x": [1.23456789, None, {"n": 0.333333333}]}) == {
+        "x": [1.234568, None, {"n": 0.333333}],
     }
 
 
@@ -181,24 +210,40 @@ def test_per_source_repeatability_has_real_denominators() -> None:
     stats = w75.per_sha_stats(rows)
     assert len(stats) == 5
     assert all(row["repeat_count"] == 3 for row in stats)
-    assert all(row["queue_seconds_mean"]["min"] <= row["queue_seconds_mean"]["max"] for row in stats)
+    assert all(
+        row["queue_seconds_mean"]["min"] <= row["queue_seconds_mean"]["max"]
+        for row in stats
+    )
 
 
-def invoke_cli(tmp_path: Path, monkeypatch: pytest.MonkeyPatch,
-               runtime: list[dict], semantic: list[dict]) -> dict:
+def invoke_cli(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+    runtime: list[dict],
+    semantic: list[dict],
+) -> dict:
     files = {
         "runtime-rows": write(tmp_path / "runtime.json", runtime),
         "runtime-baseline-rows": write(
             tmp_path / "baseline.json",
-            [dict(row, observation_class="runtime", execution_state="PASS") for row in runtime],
+            [
+                dict(row, observation_class="runtime", execution_state="PASS")
+                for row in runtime
+            ],
         ),
-        "runtime-telemetry": write(tmp_path / "runtime-pca.json", {
-            "runtime_pca": telemetry(w75.RUNTIME_FEATURES),
-        }),
+        "runtime-telemetry": write(
+            tmp_path / "runtime-pca.json",
+            {
+                "runtime_pca": telemetry(w75.RUNTIME_FEATURES),
+            },
+        ),
         "semantic-rows": write(tmp_path / "semantic.json", semantic),
-        "semantic-telemetry": write(tmp_path / "semantic-pca.json", {
-            "semantic_pca": telemetry(w75.SEMANTIC_FEATURES),
-        }),
+        "semantic-telemetry": write(
+            tmp_path / "semantic-pca.json",
+            {
+                "semantic_pca": telemetry(w75.SEMANTIC_FEATURES),
+            },
+        ),
         "out": tmp_path / "w75-receipt.json",
     }
     args = ["w75"]
@@ -210,7 +255,8 @@ def invoke_cli(tmp_path: Path, monkeypatch: pytest.MonkeyPatch,
 
 
 def test_complete_w75_cli_keeps_nonpromotional_authority(
-    tmp_path: Path, monkeypatch: pytest.MonkeyPatch,
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
     capsys: pytest.CaptureFixture[str],
 ) -> None:
     result = invoke_cli(tmp_path, monkeypatch, runtime_rows(), semantic_rows())
@@ -227,14 +273,16 @@ def test_complete_w75_cli_keeps_nonpromotional_authority(
 
 
 def test_w75_cli_rejects_missing_fifteenth_observation(
-    tmp_path: Path, monkeypatch: pytest.MonkeyPatch,
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
 ) -> None:
     with pytest.raises(ValueError, match="exactly 15 measured runtime rows"):
         invoke_cli(tmp_path, monkeypatch, runtime_rows()[:-1], semantic_rows())
 
 
 def test_w75_cli_rejects_foreign_semantic_sha(
-    tmp_path: Path, monkeypatch: pytest.MonkeyPatch,
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
 ) -> None:
     semantic = semantic_rows()
     semantic[0]["source_sha"] = "f" * 40

@@ -40,7 +40,7 @@ class BridgeValidationSuite:
             "SUCCESS": "\033[92m",
             "ERROR": "\033[91m",
             "WARNING": "\033[93m",
-            "TEST": "\033[96m"
+            "TEST": "\033[96m",
         }
         color = colors.get(level, "\033[0m")
         print(f"[{timestamp}] [{level}] {color}{message}\033[0m")
@@ -58,7 +58,7 @@ class BridgeValidationSuite:
             if not dow_tracker.exists():
                 raise FileNotFoundError("DOW tracker not found")
 
-            with open(dow_tracker, 'r', encoding='utf-8') as f:
+            with open(dow_tracker, "r", encoding="utf-8") as f:
                 tracker = json.load(f)
 
             dmaic_phases = ["Define", "Measure", "Analyze", "Improve", "Control"]
@@ -72,31 +72,35 @@ class BridgeValidationSuite:
 
             bridge_score = (bridge_connections / len(dmaic_phases)) * 100
 
-            self.results.append({
-                "test_id": "1.5.1",
-                "test_name": "test_dmaic_dow_bridge",
-                "status": "PASS",
-                "message": f"DMAIC-DOW bridge validated: {bridge_connections}/{len(dmaic_phases)} connections",
-                "bridge_score": bridge_score,
-                "dmaic_phases": len(dmaic_phases),
-                "dow_stages": len(dow_stages),
-                "connections": bridge_connections,
-                "duration_seconds": time.time() - self.start_time,
-                "timestamp": datetime.now().isoformat()
-            })
+            self.results.append(
+                {
+                    "test_id": "1.5.1",
+                    "test_name": "test_dmaic_dow_bridge",
+                    "status": "PASS",
+                    "message": f"DMAIC-DOW bridge validated: {bridge_connections}/{len(dmaic_phases)} connections",
+                    "bridge_score": bridge_score,
+                    "dmaic_phases": len(dmaic_phases),
+                    "dow_stages": len(dow_stages),
+                    "connections": bridge_connections,
+                    "duration_seconds": time.time() - self.start_time,
+                    "timestamp": datetime.now().isoformat(),
+                }
+            )
             self.passed += 1
             self.log(f"  ✅ PASS: Bridge score {bridge_score:.1f}%", "SUCCESS")
             return True
 
         except Exception as e:
-            self.results.append({
-                "test_id": "1.5.1",
-                "test_name": "test_dmaic_dow_bridge",
-                "status": "FAIL",
-                "message": str(e),
-                "duration_seconds": time.time() - self.start_time,
-                "timestamp": datetime.now().isoformat()
-            })
+            self.results.append(
+                {
+                    "test_id": "1.5.1",
+                    "test_name": "test_dmaic_dow_bridge",
+                    "status": "FAIL",
+                    "message": str(e),
+                    "duration_seconds": time.time() - self.start_time,
+                    "timestamp": datetime.now().isoformat(),
+                }
+            )
             self.failed += 1
             self.log(f"  ❌ FAIL: {e}", "ERROR")
             return False
@@ -124,31 +128,37 @@ class BridgeValidationSuite:
 
             bridge_active = migration_output.exists() and session_analysis.exists()
 
-            self.results.append({
-                "test_id": "1.5.2",
-                "test_name": "test_recursive_temporal_bridge",
-                "status": "PASS",
-                "message": f"Recursive-Temporal bridge validated: {total_artifacts} artifacts",
-                "migration_artifacts": len(migration_artifacts),
-                "session_artifacts": len(session_artifacts),
-                "total_artifacts": total_artifacts,
-                "bridge_active": bridge_active,
-                "duration_seconds": time.time() - self.start_time,
-                "timestamp": datetime.now().isoformat()
-            })
+            self.results.append(
+                {
+                    "test_id": "1.5.2",
+                    "test_name": "test_recursive_temporal_bridge",
+                    "status": "PASS",
+                    "message": f"Recursive-Temporal bridge validated: {total_artifacts} artifacts",
+                    "migration_artifacts": len(migration_artifacts),
+                    "session_artifacts": len(session_artifacts),
+                    "total_artifacts": total_artifacts,
+                    "bridge_active": bridge_active,
+                    "duration_seconds": time.time() - self.start_time,
+                    "timestamp": datetime.now().isoformat(),
+                }
+            )
             self.passed += 1
-            self.log(f"  ✅ PASS: {total_artifacts} knowledge artifacts tracked", "SUCCESS")
+            self.log(
+                f"  ✅ PASS: {total_artifacts} knowledge artifacts tracked", "SUCCESS"
+            )
             return True
 
         except Exception as e:
-            self.results.append({
-                "test_id": "1.5.2",
-                "test_name": "test_recursive_temporal_bridge",
-                "status": "FAIL",
-                "message": str(e),
-                "duration_seconds": time.time() - self.start_time,
-                "timestamp": datetime.now().isoformat()
-            })
+            self.results.append(
+                {
+                    "test_id": "1.5.2",
+                    "test_name": "test_recursive_temporal_bridge",
+                    "status": "FAIL",
+                    "message": str(e),
+                    "duration_seconds": time.time() - self.start_time,
+                    "timestamp": datetime.now().isoformat(),
+                }
+            )
             self.failed += 1
             self.log(f"  ❌ FAIL: {e}", "ERROR")
             return False
@@ -160,7 +170,7 @@ class BridgeValidationSuite:
         try:
             config_files = [
                 "DOW_IMPLEMENTATION_TRACKER.json",
-                "ABACUS_V21_PROGRESS_TRACKER.yaml"
+                "ABACUS_V21_PROGRESS_TRACKER.yaml",
             ]
 
             configs_found = 0
@@ -171,42 +181,49 @@ class BridgeValidationSuite:
                 if config_path.exists():
                     configs_found += 1
                     try:
-                        if config_file.endswith('.json'):
-                            with open(config_path, 'r', encoding='utf-8') as f:
+                        if config_file.endswith(".json"):
+                            with open(config_path, "r", encoding="utf-8") as f:
                                 json.load(f)
                             configs_valid += 1
-                        elif config_file.endswith('.yaml'):
+                        elif config_file.endswith(".yaml"):
                             configs_valid += 1
                     except Exception as e:
-                        self.log(f"  ⚠️  WARNING: Config {config_file} invalid: {e}", "WARNING")
+                        self.log(
+                            f"  ⚠️  WARNING: Config {config_file} invalid: {e}",
+                            "WARNING",
+                        )
 
             bridge_score = (configs_valid / len(config_files)) * 100
 
-            self.results.append({
-                "test_id": "1.5.3",
-                "test_name": "test_state_configuration_bridge",
-                "status": "PASS",
-                "message": f"State-Configuration bridge validated: {configs_valid}/{len(config_files)} configs",
-                "bridge_score": bridge_score,
-                "configs_total": len(config_files),
-                "configs_found": configs_found,
-                "configs_valid": configs_valid,
-                "duration_seconds": time.time() - self.start_time,
-                "timestamp": datetime.now().isoformat()
-            })
+            self.results.append(
+                {
+                    "test_id": "1.5.3",
+                    "test_name": "test_state_configuration_bridge",
+                    "status": "PASS",
+                    "message": f"State-Configuration bridge validated: {configs_valid}/{len(config_files)} configs",
+                    "bridge_score": bridge_score,
+                    "configs_total": len(config_files),
+                    "configs_found": configs_found,
+                    "configs_valid": configs_valid,
+                    "duration_seconds": time.time() - self.start_time,
+                    "timestamp": datetime.now().isoformat(),
+                }
+            )
             self.passed += 1
             self.log(f"  ✅ PASS: Bridge score {bridge_score:.1f}%", "SUCCESS")
             return True
 
         except Exception as e:
-            self.results.append({
-                "test_id": "1.5.3",
-                "test_name": "test_state_configuration_bridge",
-                "status": "FAIL",
-                "message": str(e),
-                "duration_seconds": time.time() - self.start_time,
-                "timestamp": datetime.now().isoformat()
-            })
+            self.results.append(
+                {
+                    "test_id": "1.5.3",
+                    "test_name": "test_state_configuration_bridge",
+                    "status": "FAIL",
+                    "message": str(e),
+                    "duration_seconds": time.time() - self.start_time,
+                    "timestamp": datetime.now().isoformat(),
+                }
+            )
             self.failed += 1
             self.log(f"  ❌ FAIL: {e}", "ERROR")
             return False
@@ -222,7 +239,7 @@ class BridgeValidationSuite:
                 "ABACUS_SESSION_ANALYSIS",
                 "SPRINT_EXECUTION",
                 "ABACUS_V21_SMOKE_TEST_OUTPUT",
-                "ABACUS_V21_DRY_RUN_OUTPUT"
+                "ABACUS_V21_DRY_RUN_OUTPUT",
             ]
 
             dirs_exist = 0
@@ -237,31 +254,38 @@ class BridgeValidationSuite:
 
             bridge_score = (dirs_exist / len(output_dirs)) * 100
 
-            self.results.append({
-                "test_id": "1.5.4",
-                "test_name": "test_output_artifact_bridge",
-                "status": "PASS",
-                "message": f"Output-Artifact bridge validated: {dirs_exist}/{len(output_dirs)} directories",
-                "bridge_score": bridge_score,
-                "directories_total": len(output_dirs),
-                "directories_exist": dirs_exist,
-                "total_artifacts": total_artifacts,
-                "duration_seconds": time.time() - self.start_time,
-                "timestamp": datetime.now().isoformat()
-            })
+            self.results.append(
+                {
+                    "test_id": "1.5.4",
+                    "test_name": "test_output_artifact_bridge",
+                    "status": "PASS",
+                    "message": f"Output-Artifact bridge validated: {dirs_exist}/{len(output_dirs)} directories",
+                    "bridge_score": bridge_score,
+                    "directories_total": len(output_dirs),
+                    "directories_exist": dirs_exist,
+                    "total_artifacts": total_artifacts,
+                    "duration_seconds": time.time() - self.start_time,
+                    "timestamp": datetime.now().isoformat(),
+                }
+            )
             self.passed += 1
-            self.log(f"  ✅ PASS: {total_artifacts} artifacts across {dirs_exist} directories", "SUCCESS")
+            self.log(
+                f"  ✅ PASS: {total_artifacts} artifacts across {dirs_exist} directories",
+                "SUCCESS",
+            )
             return True
 
         except Exception as e:
-            self.results.append({
-                "test_id": "1.5.4",
-                "test_name": "test_output_artifact_bridge",
-                "status": "FAIL",
-                "message": str(e),
-                "duration_seconds": time.time() - self.start_time,
-                "timestamp": datetime.now().isoformat()
-            })
+            self.results.append(
+                {
+                    "test_id": "1.5.4",
+                    "test_name": "test_output_artifact_bridge",
+                    "status": "FAIL",
+                    "message": str(e),
+                    "duration_seconds": time.time() - self.start_time,
+                    "timestamp": datetime.now().isoformat(),
+                }
+            )
             self.failed += 1
             self.log(f"  ❌ FAIL: {e}", "ERROR")
             return False
@@ -279,7 +303,11 @@ class BridgeValidationSuite:
         self.test_output_artifact_bridge()
 
         duration = time.time() - self.start_time
-        pass_rate = (self.passed / (self.passed + self.failed) * 100) if (self.passed + self.failed) > 0 else 0
+        pass_rate = (
+            (self.passed / (self.passed + self.failed) * 100)
+            if (self.passed + self.failed) > 0
+            else 0
+        )
 
         self.log("=" * 60, "INFO")
         self.log("BRIDGE VALIDATION SUMMARY", "INFO")
@@ -311,18 +339,19 @@ class BridgeValidationSuite:
                 "passed": self.passed,
                 "failed": self.failed,
                 "pass_rate": pass_rate,
-                "status": "PASS" if self.failed == 0 else "FAIL"
+                "status": "PASS" if self.failed == 0 else "FAIL",
             },
-            "tests": self.results
+            "tests": self.results,
         }
 
         report_file = self.output_dir / "abacus_v21_bridge_validation_report.json"
-        with open(report_file, 'w', encoding='utf-8') as f:
+        with open(report_file, "w", encoding="utf-8") as f:
             json.dump(report, f, indent=2)
 
         self.log(f"Reports saved to: {self.output_dir}/", "INFO")
 
         return self.failed == 0
+
 
 if __name__ == "__main__":
     suite = BridgeValidationSuite()

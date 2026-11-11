@@ -3,6 +3,7 @@
 Separate production module from W31. The canonical observation is never changed;
 synthetic corruption and rank permutations are not new native outcome evidence.
 """
+
 from __future__ import annotations
 
 import copy
@@ -92,12 +93,27 @@ def corrupt(ledger, defect):
 @pytest.mark.parametrize(
     "defect",
     [
-        "schema", "foreign_repository", "authority_upgrade",
-        "probe_pr", "probe_head", "probe_run", "probe_state", "not_draft",
-        "missing_state", "duplicate_label", "state_pr", "state_sha",
-        "outcome_run", "reversed_outcome", "conclusion_mismatch",
-        "job_identity", "artifact_identity", "digest_missing",
-        "semantic_hash", "work_hash", "semantic_data_tamper",
+        "schema",
+        "foreign_repository",
+        "authority_upgrade",
+        "probe_pr",
+        "probe_head",
+        "probe_run",
+        "probe_state",
+        "not_draft",
+        "missing_state",
+        "duplicate_label",
+        "state_pr",
+        "state_sha",
+        "outcome_run",
+        "reversed_outcome",
+        "conclusion_mismatch",
+        "job_identity",
+        "artifact_identity",
+        "digest_missing",
+        "semantic_hash",
+        "work_hash",
+        "semantic_data_tamper",
         "work_data_tamper",
     ],
 )
@@ -154,7 +170,7 @@ def test_all_tied_permutations_withhold_predictive_claim():
 
 
 def test_frozen_pc1_basis_is_deterministic_and_no_retraining_required():
-    matrix = np.array([[1., 8.], [2., 6.], [3., 4.], [4., 2.]])
+    matrix = np.array([[1.0, 8.0], [2.0, 6.0], [3.0, 4.0], [4.0, 2.0]])
     m1, s1, v1, e1, explained1, scores1 = w82.frozen_pc1(matrix)
     m2, s2, v2, e2, explained2, scores2 = w82.frozen_pc1(matrix.copy())
     for lhs, rhs in ((m1, m2), (s1, s2), (v1, v2), (scores1, scores2)):
@@ -166,13 +182,15 @@ def test_frozen_pc1_basis_is_deterministic_and_no_retraining_required():
 
 
 def test_constant_training_feature_is_withheld():
-    matrix = np.array([[1., 4.], [1., 5.], [1., 6.], [1., 7.]])
+    matrix = np.array([[1.0, 4.0], [1.0, 5.0], [1.0, 6.0], [1.0, 7.0]])
     with pytest.raises(ValueError, match="varying training features"):
         w82.frozen_pc1(matrix)
 
 
 def test_w35_w82_real_cli_entrypoint_roundtrips_canonical_receipt(
-    tmp_path: Path, monkeypatch: pytest.MonkeyPatch, capsys: pytest.CaptureFixture[str],
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+    capsys: pytest.CaptureFixture[str],
 ) -> None:
     """Exercise the actual __main__ branch, not a mocked CLI or altered source."""
     import runpy
@@ -180,17 +198,26 @@ def test_w35_w82_real_cli_entrypoint_roundtrips_canonical_receipt(
 
     output = tmp_path / "w82-recomputed.json"
     script = ROOT / "tools/w82_semantic_diversity_diagnostic.py"
-    monkeypatch.setattr(sys, "argv", [
-        str(script),
-        "--w79-input", str(w82.W79_INPUT),
-        "--ledger", str(LEDGER),
-        "--out", str(output),
-    ])
+    monkeypatch.setattr(
+        sys,
+        "argv",
+        [
+            str(script),
+            "--w79-input",
+            str(w82.W79_INPUT),
+            "--ledger",
+            str(LEDGER),
+            "--out",
+            str(output),
+        ],
+    )
     runpy.run_path(str(script), run_name="__main__")
     observed = json.loads(output.read_text(encoding="utf-8"))
-    canonical = json.loads((
-        ROOT / "architecture/w82/W82_SEMANTIC_DIVERSITY_DIAGNOSTIC_v0.1.json"
-    ).read_text(encoding="utf-8"))
+    canonical = json.loads(
+        (
+            ROOT / "architecture/w82/W82_SEMANTIC_DIVERSITY_DIAGNOSTIC_v0.1.json"
+        ).read_text(encoding="utf-8")
+    )
     assert observed == canonical
     assert observed["formal_credit_delta"] == 0
     assert observed["global_allocation_authority"] is False
@@ -198,7 +225,8 @@ def test_w35_w82_real_cli_entrypoint_roundtrips_canonical_receipt(
 
 
 def test_w35_w82_cli_rejects_tampered_authority_without_output(
-    tmp_path: Path, monkeypatch: pytest.MonkeyPatch,
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
 ) -> None:
     """Invalid ledger never produces a forged canonical or admission artifact."""
     import runpy
@@ -210,10 +238,19 @@ def test_w35_w82_cli_rejects_tampered_authority_without_output(
     forged.write_text(json.dumps(data), encoding="utf-8")
     output = tmp_path / "must-not-exist.json"
     script = ROOT / "tools/w82_semantic_diversity_diagnostic.py"
-    monkeypatch.setattr(sys, "argv", [
-        str(script), "--w79-input", str(w82.W79_INPUT),
-        "--ledger", str(forged), "--out", str(output),
-    ])
+    monkeypatch.setattr(
+        sys,
+        "argv",
+        [
+            str(script),
+            "--w79-input",
+            str(w82.W79_INPUT),
+            "--ledger",
+            str(forged),
+            "--out",
+            str(output),
+        ],
+    )
     with pytest.raises(ValueError, match="authority transfer"):
         runpy.run_path(str(script), run_name="__main__")
     assert not output.exists()

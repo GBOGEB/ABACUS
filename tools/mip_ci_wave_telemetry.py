@@ -147,14 +147,18 @@ GATE_DOMAINS = (
     "safety",
     "independent_review",
 )
-_ENTERPRISE_WORKFLOW = Path(__file__).resolve().parents[1] / ".github/workflows/dmaic-enterprise-ci.yml"
+_ENTERPRISE_WORKFLOW = (
+    Path(__file__).resolve().parents[1] / ".github/workflows/dmaic-enterprise-ci.yml"
+)
 
 
 def _flow_list(text: str, key: str) -> list[str]:
     match = re.search(rf"^\s+{re.escape(key)}:\s*\[([^\]]*)\]", text, re.M)
     if match is None:
         raise ValueError(f"{_ENTERPRISE_WORKFLOW.name}: matrix {key} list not found")
-    return [item.strip().strip("'\"") for item in match.group(1).split(",") if item.strip()]
+    return [
+        item.strip().strip("'\"") for item in match.group(1).split(",") if item.strip()
+    ]
 
 
 def _enterprise_jobs() -> tuple[str, ...]:

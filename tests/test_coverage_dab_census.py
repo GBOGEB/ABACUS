@@ -78,8 +78,7 @@ def test_census_uses_directory_classification_and_measured_contexts():
 
     # Production modules named test_* are not misclassified by basename.
     assert (
-        rows["DMAIC_V3/core/test_system_bridge.py"]["source_class"]
-        == "ACTIVE_SOURCE"
+        rows["DMAIC_V3/core/test_system_bridge.py"]["source_class"] == "ACTIVE_SOURCE"
     )
     assert (
         rows["DMAIC_V3/core/test_system_bridge.py"]["disposition"]
@@ -87,7 +86,9 @@ def test_census_uses_directory_classification_and_measured_contexts():
     )
 
     assert rows["tests/test_contract.py"]["source_class"] == "TEST_SUPPORT"
-    assert rows["/tmp/pytest-of-runner/test_sample.py"]["source_class"] == "TEST_SUPPORT"
+    assert (
+        rows["/tmp/pytest-of-runner/test_sample.py"]["source_class"] == "TEST_SUPPORT"
+    )
 
 
 def test_pressure_order_is_deterministic_and_credit_stays_zero():
@@ -129,10 +130,7 @@ def test_census_joins_contexts_to_junit_outcomes():
         test_evidence=evidence,
         exact_sha="c" * 40,
     )
-    row = {
-        item["path"]: item
-        for item in result["rows"]
-    }["src/dmaic/contract.py"]
+    row = {item["path"]: item for item in result["rows"]}["src/dmaic/contract.py"]
 
     assert row["test_state"] == "TEST_GREEN"
     assert row["test_state_evidence"] == "JUNIT_CONTEXT_JOIN (MEASURED)"
@@ -150,10 +148,7 @@ def test_context_without_junit_join_does_not_claim_green():
         _coverage(),
         exact_sha="d" * 40,
     )
-    row = {
-        item["path"]: item
-        for item in result["rows"]
-    }["src/dmaic/contract.py"]
+    row = {item["path"]: item for item in result["rows"]}["src/dmaic/contract.py"]
 
     assert row["existing_test_surface_evidence"] == "DYNAMIC_CONTEXT (MEASURED)"
     assert row["test_state"] is None

@@ -31,7 +31,11 @@ class TestW189FederationSample4(unittest.TestCase):
 
     def test_sample4_is_candidate_not_accepted(self):
         self.assertEqual(sum(r["accepted_sample"] for r in self.matrix["rows"]), 3)
-        s4 = next(r for r in self.matrix["rows"] if r["sample_id"] == "FED-SAMPLE-004-W184F-N200-MIRROR")
+        s4 = next(
+            r
+            for r in self.matrix["rows"]
+            if r["sample_id"] == "FED-SAMPLE-004-W184F-N200-MIRROR"
+        )
         self.assertEqual(s4["accepted_sample"], 0)
         self.assertEqual(s4["depth_ratio"], 0.875)
 
@@ -50,7 +54,9 @@ class TestW189FederationSample4(unittest.TestCase):
 
     def test_global_bt_still_withheld(self):
         self.assertFalse(self.pairwise["bt_gate"]["global_connected_comparison_graph"])
-        self.assertTrue(self.pairwise["bt_gate"]["global_fit_state"].startswith("WITHHELD_"))
+        self.assertTrue(
+            self.pairwise["bt_gate"]["global_fit_state"].startswith("WITHHELD_")
+        )
 
     def test_fleet_denominators_remain_null(self):
         d = self.census["denominator_model"]
@@ -58,12 +64,27 @@ class TestW189FederationSample4(unittest.TestCase):
         self.assertIsNone(d["mission_relevant_governed_surface_universe"]["value"])
 
     def test_zero_formal_credit(self):
-        self.assertTrue(all(v == 0 for v in self.control["formal_credit_delta"].values()))
+        self.assertTrue(
+            all(v == 0 for v in self.control["formal_credit_delta"].values())
+        )
 
     def test_validator_and_pca(self):
-        v = subprocess.run([sys.executable, str(ROOT / "scripts/qps_w189_validate_federation_sample4.py")], cwd=ROOT, capture_output=True, text=True)
+        v = subprocess.run(
+            [
+                sys.executable,
+                str(ROOT / "scripts/qps_w189_validate_federation_sample4.py"),
+            ],
+            cwd=ROOT,
+            capture_output=True,
+            text=True,
+        )
         self.assertEqual(v.returncode, 0, v.stdout + v.stderr)
-        p = subprocess.run([sys.executable, str(ROOT / "scripts/qps_w189_compute_pca_stability.py")], cwd=ROOT, capture_output=True, text=True)
+        p = subprocess.run(
+            [sys.executable, str(ROOT / "scripts/qps_w189_compute_pca_stability.py")],
+            cwd=ROOT,
+            capture_output=True,
+            text=True,
+        )
         self.assertEqual(p.returncode, 0, p.stdout + p.stderr)
 
 

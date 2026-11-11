@@ -1,6 +1,11 @@
 """W53/P05D provenance-bound execution wrapper for the P05C sensitivity runner."""
+
 from dataclasses import dataclass
-from .bounded_sensitivity import diagnostic_population, worst_case, one_at_a_time_sensitivity
+from .bounded_sensitivity import (
+    diagnostic_population,
+    worst_case,
+    one_at_a_time_sensitivity,
+)
 
 
 @dataclass(frozen=True)
@@ -19,7 +24,14 @@ class PropertyReceipt:
             raise ValueError("positive thermodynamic state required")
         if self.density_kg_m3 <= 0 or self.viscosity_pa_s <= 0:
             raise ValueError("positive density and viscosity required")
-        if not all((self.provider_id, self.provider_version, self.validity_regime, self.source_sha)):
+        if not all(
+            (
+                self.provider_id,
+                self.provider_version,
+                self.validity_regime,
+                self.source_sha,
+            )
+        ):
             raise ValueError("complete provider provenance required")
 
 

@@ -4,19 +4,30 @@ The state is a NORMAL-FLUID diagnostic surrogate at 4.0 K / 27 mbar abs, chosen 
 exercise the controlled 27 mbar boundary without claiming 2 K He-II validity.
 CoolProp 7.2.0 is mandatory. Output remains DIAGNOSTIC_ONLY.
 """
+
 import json
 from pathlib import Path
 import CoolProp
 from CoolProp.CoolProp import PropsSI
 
-from .bounded_sensitivity import diagnostic_population, worst_case, one_at_a_time_sensitivity
+from .bounded_sensitivity import (
+    diagnostic_population,
+    worst_case,
+    one_at_a_time_sensitivity,
+)
 from .property_receipt import from_provider_state
 
 T_K = 4.0
 P_MBAR_ABS = 27.0
 P_PA = P_MBAR_ABS * 100.0
 FLUID = "Helium"
-OUT = Path(__file__).resolve().parents[2] / "docs" / "qps_line_b" / "generated" / "P05F_MEASURED_SENSITIVITY_RECEIPT.json"
+OUT = (
+    Path(__file__).resolve().parents[2]
+    / "docs"
+    / "qps_line_b"
+    / "generated"
+    / "P05F_MEASURED_SENSITIVITY_RECEIPT.json"
+)
 
 
 def main() -> int:
@@ -35,7 +46,9 @@ def main() -> int:
         validity_regime="NORMAL_FLUID_DIAGNOSTIC_SURROGATE",
         source_sha="W45_HELIUM_PROPERTY_PROVIDER_INTERFACE+P05E_PROPERTY_RECEIPT",
     )
-    rows = diagnostic_population(density_kg_m3=prop.density_kg_m3, viscosity_pa_s=prop.viscosity_Pa_s)
+    rows = diagnostic_population(
+        density_kg_m3=prop.density_kg_m3, viscosity_pa_s=prop.viscosity_Pa_s
+    )
     receipt = {
         "wave": "W53/P05F",
         "classification": "DIAGNOSTIC_ONLY",

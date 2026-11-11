@@ -24,7 +24,7 @@ Date: 2025-01-24
 import sys
 import os
 
-os.environ['PYTHONIOENCODING'] = 'utf-8'
+os.environ["PYTHONIOENCODING"] = "utf-8"
 
 import json
 import subprocess
@@ -39,6 +39,7 @@ from importlib import import_module
 @dataclass
 class MetricsSnapshot:
     """Snapshot of codebase metrics"""
+
     timestamp: str
     total_files: int
     total_lines: int
@@ -53,6 +54,7 @@ class MetricsSnapshot:
 @dataclass
 class RefactoringPlan:
     """Plan for code refactoring and reorganization"""
+
     moves: List[Dict[str, str]]
     renames: List[Dict[str, str]]
     consolidations: List[Dict[str, List[str]]]
@@ -82,12 +84,14 @@ class CICDGitHubOrchestrator:
         if config_path.exists():
             try:
                 import json
-                with open(config_path, 'r', encoding='utf-8') as f:
+
+                with open(config_path, "r", encoding="utf-8") as f:
                     settings = json.load(f)
                 return {
                     "enabled": settings.get("gitlens.plusFeatures.enabled", False),
                     "graph_enabled": settings.get("gitlens.graph.layout") == "editor",
-                    "ai_enabled": settings.get("gitlens.ai.experimental.provider") is not None
+                    "ai_enabled": settings.get("gitlens.ai.experimental.provider")
+                    is not None,
                 }
             except Exception as e:
                 print(f"[WARN] Failed to load GitLens config: {e}")
@@ -99,7 +103,8 @@ class CICDGitHubOrchestrator:
         if config_path.exists():
             try:
                 import json
-                with open(config_path, 'r', encoding='utf-8') as f:
+
+                with open(config_path, "r", encoding="utf-8") as f:
                     return json.load(f)
             except Exception as e:
                 print(f"[WARN] Failed to load GitKraken config: {e}")
@@ -113,23 +118,35 @@ class CICDGitHubOrchestrator:
             "gitlens": {
                 "configured": self.gitlens_config.get("enabled", False),
                 "graph_enabled": self.gitlens_config.get("graph_enabled", False),
-                "ai_enabled": self.gitlens_config.get("ai_enabled", False)
+                "ai_enabled": self.gitlens_config.get("ai_enabled", False),
             },
             "gitkraken": {
-                "configured": self.gitkraken_config.get("authentication", {}).get("gitlens", {}).get("enabled", False),
-                "pro_token_set": bool(self.gitkraken_config.get("authentication", {}).get("gitlens", {}).get("pro_token"))
+                "configured": self.gitkraken_config.get("authentication", {})
+                .get("gitlens", {})
+                .get("enabled", False),
+                "pro_token_set": bool(
+                    self.gitkraken_config.get("authentication", {})
+                    .get("gitlens", {})
+                    .get("pro_token")
+                ),
             },
             "vscode_extensions": {
-                "extensions_json_exists": (self.workspace / ".vscode" / "extensions.json").exists()
-            }
+                "extensions_json_exists": (
+                    self.workspace / ".vscode" / "extensions.json"
+                ).exists()
+            },
         }
 
         print(f"   GitLens configured: {verification['gitlens']['configured']}")
         print(f"   GitLens Graph enabled: {verification['gitlens']['graph_enabled']}")
         print(f"   GitLens AI enabled: {verification['gitlens']['ai_enabled']}")
         print(f"   GitKraken configured: {verification['gitkraken']['configured']}")
-        print(f"   GitKraken Pro token set: {verification['gitkraken']['pro_token_set']}")
-        print(f"   VS Code extensions configured: {verification['vscode_extensions']['extensions_json_exists']}")
+        print(
+            f"   GitKraken Pro token set: {verification['gitkraken']['pro_token_set']}"
+        )
+        print(
+            f"   VS Code extensions configured: {verification['vscode_extensions']['extensions_json_exists']}"
+        )
 
         return verification
 
@@ -140,7 +157,14 @@ class CICDGitHubOrchestrator:
         print(f"\n[METRICS] Collecting {label} metrics...")
 
         py_files = list(self.workspace.rglob("*.py"))
-        py_files = [f for f in py_files if not any(skip in str(f) for skip in ['.git', '__pycache__', 'venv', 'BACKUPS', 'node_modules'])]
+        py_files = [
+            f
+            for f in py_files
+            if not any(
+                skip in str(f)
+                for skip in [".git", "__pycache__", "venv", "BACKUPS", "node_modules"]
+            )
+        ]
 
         print(f"   Found {len(py_files)} Python files")
 
@@ -154,14 +178,16 @@ class CICDGitHubOrchestrator:
                 print(f"   Progress: {idx}/{len(py_files)} files...")
 
             try:
-                content = py_file.read_text(encoding='utf-8', errors='ignore')
-                lines = content.count('\n')
+                content = py_file.read_text(encoding="utf-8", errors="ignore")
+                lines = content.count("\n")
                 total_lines += lines
 
-                file_hash = hashlib.sha256(content.encode('utf-8', errors='ignore')).hexdigest()[:12]
+                file_hash = hashlib.sha256(
+                    content.encode("utf-8", errors="ignore")
+                ).hexdigest()[:12]
                 file_hashes[str(py_file.relative_to(self.workspace))] = file_hash
 
-                if '__version__' in content or 'Version:' in content:
+                if "__version__" in content or "Version:" in content:
                     version_headers += 1
             except Exception:
                 pass
@@ -176,11 +202,15 @@ class CICDGitHubOrchestrator:
 
         sample_size = min(300, len(py_files))
         random.seed(42)
-        sample_files = random.sample(py_files, sample_size) if len(py_files) > sample_size else py_files
+        sample_files = (
+            random.sample(py_files, sample_size)
+            if len(py_files) > sample_size
+            else py_files
+        )
 
         for py_file in sample_files:
             try:
-                content = py_file.read_text(encoding='utf-8', errors='ignore')
+                content = py_file.read_text(encoding="utf-8", errors="ignore")
                 if any(pattern in content for pattern in old_patterns):
                     import_issues += 1
             except Exception:
@@ -198,9 +228,16 @@ class CICDGitHubOrchestrator:
                 pass
 
         all_files = []
-        for ext in ['*.py', '*.md', '*.json', '*.txt', '*.yaml', '*.yml']:
+        for ext in ["*.py", "*.md", "*.json", "*.txt", "*.yaml", "*.yml"]:
             all_files.extend(self.workspace.rglob(ext))
-        all_files = [f for f in all_files if not any(skip in str(f) for skip in ['.git', '__pycache__', 'venv', 'BACKUPS', 'node_modules'])]
+        all_files = [
+            f
+            for f in all_files
+            if not any(
+                skip in str(f)
+                for skip in [".git", "__pycache__", "venv", "BACKUPS", "node_modules"]
+            )
+        ]
 
         metrics = MetricsSnapshot(
             timestamp=datetime.now().isoformat(),
@@ -211,7 +248,7 @@ class CICDGitHubOrchestrator:
             import_issues=import_issues,
             version_headers=version_headers,
             file_hashes=file_hashes,
-            directory_structure=dir_structure
+            directory_structure=dir_structure,
         )
 
         print(f"   [OK] Total files: {metrics.total_files}")
@@ -228,45 +265,52 @@ class CICDGitHubOrchestrator:
         output_file = self.output_dir / f"metrics_{label}_{self.execution_id}.json"
 
         metrics_dict = asdict(metrics)
-        if len(str(metrics_dict.get('file_hashes', {}))) > 100000:
-            metrics_dict['file_hashes'] = f"<{len(metrics.file_hashes)} files>"
+        if len(str(metrics_dict.get("file_hashes", {}))) > 100000:
+            metrics_dict["file_hashes"] = f"<{len(metrics.file_hashes)} files>"
 
-        output_file.write_text(json.dumps(metrics_dict, indent=2), encoding='utf-8')
+        output_file.write_text(json.dumps(metrics_dict, indent=2), encoding="utf-8")
         print(f"   [OK] Saved: {output_file.relative_to(self.workspace)}")
 
     def analyze_refactoring_needs(self) -> RefactoringPlan:
         """Analyze codebase and create refactoring plan"""
         print("\n[SCAN] Analyzing refactoring needs...")
 
-        plan = RefactoringPlan(
-            moves=[],
-            renames=[],
-            consolidations=[],
-            deletions=[]
-        )
+        plan = RefactoringPlan(moves=[], renames=[], consolidations=[], deletions=[])
 
         misc_dir = self.workspace / "12_ORGANIZED_BY_CATEGORY" / "MISC_SCRIPTS"
         if misc_dir.exists():
             misc_scripts = list(misc_dir.glob("*.py"))
             for script in misc_scripts:
                 if "test" in script.name.lower():
-                    plan.moves.append({
-                        "from": str(script.relative_to(self.workspace)),
-                        "to": f"12_ORGANIZED_BY_CATEGORY/TEST_SUITES/{script.name}",
-                        "reason": "Move test files to TEST_SUITES"
-                    })
+                    plan.moves.append(
+                        {
+                            "from": str(script.relative_to(self.workspace)),
+                            "to": f"12_ORGANIZED_BY_CATEGORY/TEST_SUITES/{script.name}",
+                            "reason": "Move test files to TEST_SUITES",
+                        }
+                    )
                 elif "validate" in script.name.lower():
-                    plan.moves.append({
-                        "from": str(script.relative_to(self.workspace)),
-                        "to": f"12_ORGANIZED_BY_CATEGORY/VALIDATION/{script.name}",
-                        "reason": "Move validation files to VALIDATION"
-                    })
+                    plan.moves.append(
+                        {
+                            "from": str(script.relative_to(self.workspace)),
+                            "to": f"12_ORGANIZED_BY_CATEGORY/VALIDATION/{script.name}",
+                            "reason": "Move validation files to VALIDATION",
+                        }
+                    )
 
         ranking_engines = list(self.workspace.rglob("ranking_engine.py"))
-        ranking_engines = [f for f in ranking_engines if "13_CORE_SYSTEMS" not in str(f) and ".git" not in str(f) and "BACKUPS" not in str(f)]
+        ranking_engines = [
+            f
+            for f in ranking_engines
+            if "13_CORE_SYSTEMS" not in str(f)
+            and ".git" not in str(f)
+            and "BACKUPS" not in str(f)
+        ]
 
         if len(ranking_engines) > 0:
-            primary = self.workspace / "13_CORE_SYSTEMS/DMAIC/DMAIC_V3/core/ranking_engine.py"
+            primary = (
+                self.workspace / "13_CORE_SYSTEMS/DMAIC/DMAIC_V3/core/ranking_engine.py"
+            )
             if primary.exists():
                 for dup in ranking_engines:
                     plan.deletions.append(str(dup.relative_to(self.workspace)))
@@ -280,14 +324,16 @@ class CICDGitHubOrchestrator:
 
     def execute_refactoring(self, plan: RefactoringPlan, dry_run: bool = False) -> Dict:
         """Execute refactoring plan"""
-        print(f"\n[REFACTOR] Executing refactoring {'(DRY RUN)' if dry_run else '(LIVE)'}...")
+        print(
+            f"\n[REFACTOR] Executing refactoring {'(DRY RUN)' if dry_run else '(LIVE)'}..."
+        )
 
         results = {
             "moves_executed": [],
             "renames_executed": [],
             "consolidations_executed": [],
             "deletions_executed": [],
-            "errors": []
+            "errors": [],
         }
 
         for move in plan.moves:
@@ -331,7 +377,7 @@ class CICDGitHubOrchestrator:
                 cwd=self.workspace,
                 capture_output=True,
                 text=True,
-                timeout=30
+                timeout=30,
             )
             if result.returncode != 0:
                 raise RuntimeError(
@@ -364,8 +410,11 @@ class CICDGitHubOrchestrator:
                     raise ValueError("Unsupported git porcelain status")
                 else:
                     for codes, key in (
-                        ("MT", "modified"), ("A", "added"),
-                        ("D", "deleted"), ("R", "renamed"), ("C", "copied"),
+                        ("MT", "modified"),
+                        ("A", "added"),
+                        ("D", "deleted"),
+                        ("R", "renamed"),
+                        ("C", "copied"),
                     ):
                         if any(code in xy for code in codes):
                             status[key].append(path)
@@ -379,14 +428,16 @@ class CICDGitHubOrchestrator:
         print(f"\n[PUSH] Committing and pushing to GitHub...")
 
         try:
-            subprocess.run(["git", "add", "."], cwd=self.workspace, check=True, timeout=30)
+            subprocess.run(
+                ["git", "add", "."], cwd=self.workspace, check=True, timeout=30
+            )
             print("   [OK] Staged changes")
 
             subprocess.run(
                 ["git", "commit", "-m", message],
                 cwd=self.workspace,
                 check=True,
-                timeout=30
+                timeout=30,
             )
             print("   [OK] Committed changes")
 
@@ -395,7 +446,7 @@ class CICDGitHubOrchestrator:
                 cwd=self.workspace,
                 capture_output=True,
                 text=True,
-                timeout=120
+                timeout=120,
             )
 
             if result.returncode == 0:
@@ -420,7 +471,7 @@ class CICDGitHubOrchestrator:
                 cwd=self.workspace,
                 capture_output=True,
                 text=True,
-                timeout=120
+                timeout=120,
             )
 
             if result.returncode == 0:
@@ -443,22 +494,33 @@ class CICDGitHubOrchestrator:
             return {"error": "Missing metrics"}
 
         comparison = {
-            "files_changed": self.post_metrics.total_files - self.pre_metrics.total_files,
-            "lines_changed": self.post_metrics.total_lines - self.pre_metrics.total_lines,
-            "duplicates_removed": self.pre_metrics.duplicate_files - self.post_metrics.duplicate_files,
-            "import_issues_fixed": self.pre_metrics.import_issues - self.post_metrics.import_issues,
-            "version_headers_added": self.post_metrics.version_headers - self.pre_metrics.version_headers,
-            "improvements": []
+            "files_changed": self.post_metrics.total_files
+            - self.pre_metrics.total_files,
+            "lines_changed": self.post_metrics.total_lines
+            - self.pre_metrics.total_lines,
+            "duplicates_removed": self.pre_metrics.duplicate_files
+            - self.post_metrics.duplicate_files,
+            "import_issues_fixed": self.pre_metrics.import_issues
+            - self.post_metrics.import_issues,
+            "version_headers_added": self.post_metrics.version_headers
+            - self.pre_metrics.version_headers,
+            "improvements": [],
         }
 
         if comparison["duplicates_removed"] > 0:
-            comparison["improvements"].append(f"Removed {comparison['duplicates_removed']} duplicate files")
+            comparison["improvements"].append(
+                f"Removed {comparison['duplicates_removed']} duplicate files"
+            )
 
         if comparison["import_issues_fixed"] > 0:
-            comparison["improvements"].append(f"Fixed {comparison['import_issues_fixed']} import issues")
+            comparison["improvements"].append(
+                f"Fixed {comparison['import_issues_fixed']} import issues"
+            )
 
         if comparison["version_headers_added"] > 0:
-            comparison["improvements"].append(f"Added {comparison['version_headers_added']} version headers")
+            comparison["improvements"].append(
+                f"Added {comparison['version_headers_added']} version headers"
+            )
 
         print(f"   Files: {comparison['files_changed']:+d}")
         print(f"   Lines: {comparison['lines_changed']:+d}")
@@ -476,12 +538,14 @@ class CICDGitHubOrchestrator:
             "imports_valid": False,
             "no_duplicates": False,
             "structure_intact": False,
-            "errors": []
+            "errors": [],
         }
 
         try:
-            ranking_module = import_module("13_CORE_SYSTEMS.DMAIC.DMAIC_V3.core.ranking_engine")
-            if hasattr(ranking_module, 'RankingEngine'):
+            ranking_module = import_module(
+                "13_CORE_SYSTEMS.DMAIC.DMAIC_V3.core.ranking_engine"
+            )
+            if hasattr(ranking_module, "RankingEngine"):
                 validations["imports_valid"] = True
                 print("   [OK] Imports valid")
         except Exception as e:
@@ -492,12 +556,14 @@ class CICDGitHubOrchestrator:
             validations["no_duplicates"] = True
             print("   [OK] No duplicates")
         else:
-            print(f"   [WARN] {self.post_metrics.duplicate_files if self.post_metrics else 0} duplicates found")
+            print(
+                f"   [WARN] {self.post_metrics.duplicate_files if self.post_metrics else 0} duplicates found"
+            )
 
         critical_dirs = [
             "13_CORE_SYSTEMS/DMAIC",
             "13_CORE_SYSTEMS/CENTRAL_LIBRARY",
-            "12_ORGANIZED_BY_CATEGORY"
+            "12_ORGANIZED_BY_CATEGORY",
         ]
 
         all_exist = all((self.workspace / d).exists() for d in critical_dirs)
@@ -523,7 +589,7 @@ class CICDGitHubOrchestrator:
             "execution_id": self.execution_id,
             "timestamp": datetime.now().isoformat(),
             "dry_run": dry_run,
-            "stages": {}
+            "stages": {},
         }
 
         git_tools_verification = self.verify_git_tools()
@@ -536,7 +602,7 @@ class CICDGitHubOrchestrator:
             "python_files": self.pre_metrics.python_files,
             "total_lines": self.pre_metrics.total_lines,
             "duplicates": self.pre_metrics.duplicate_files,
-            "import_issues": self.pre_metrics.import_issues
+            "import_issues": self.pre_metrics.import_issues,
         }
 
         git_status = self.git_status()
@@ -551,10 +617,12 @@ class CICDGitHubOrchestrator:
         refactoring_plan = self.analyze_refactoring_needs()
         pipeline_results["stages"]["refactoring_plan"] = asdict(refactoring_plan)
 
-        refactoring_results = self.execute_refactoring(refactoring_plan, dry_run=dry_run)
+        refactoring_results = self.execute_refactoring(
+            refactoring_plan, dry_run=dry_run
+        )
         pipeline_results["stages"]["refactoring_results"] = refactoring_results
 
-        if not dry_run and git_status.get('has_changes', False):
+        if not dry_run and git_status.get("has_changes", False):
             commit_msg = f"CI/CD: Refactoring and reconciliation - {self.execution_id}"
             push_result = self.git_commit_push(commit_msg)
             pipeline_results["stages"]["git_push"] = push_result
@@ -570,7 +638,7 @@ class CICDGitHubOrchestrator:
             "python_files": self.post_metrics.python_files,
             "total_lines": self.post_metrics.total_lines,
             "duplicates": self.post_metrics.duplicate_files,
-            "import_issues": self.post_metrics.import_issues
+            "import_issues": self.post_metrics.import_issues,
         }
 
         comparison = self.compare_metrics()
@@ -580,7 +648,7 @@ class CICDGitHubOrchestrator:
         pipeline_results["stages"]["post_validation"] = validation
 
         report_file = self.output_dir / f"cicd_pipeline_{self.execution_id}.json"
-        report_file.write_text(json.dumps(pipeline_results, indent=2), encoding='utf-8')
+        report_file.write_text(json.dumps(pipeline_results, indent=2), encoding="utf-8")
 
         print("\n" + "=" * 80)
         print("PIPELINE COMPLETE")
@@ -589,9 +657,9 @@ class CICDGitHubOrchestrator:
         print(f"Improvements: {len(comparison.get('improvements', []))}")
         print("=" * 80)
 
-        if comparison.get('improvements'):
+        if comparison.get("improvements"):
             print("\n[SUCCESS] IMPROVEMENTS DETECTED:")
-            for improvement in comparison['improvements']:
+            for improvement in comparison["improvements"]:
                 print(f"   - {improvement}")
 
         return pipeline_results

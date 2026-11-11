@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 """W75 deconfounded repeatability diagnostic over frozen W74/W73 PC1 axes."""
+
 from __future__ import annotations
 
 import argparse
@@ -49,8 +50,7 @@ def project_rows(
     projected = []
     for row in rows:
         score = sum(
-            ((float(row[feature]) - means[feature]) / sds[feature])
-            * vector[feature]
+            ((float(row[feature]) - means[feature]) / sds[feature]) * vector[feature]
             for feature in features
         )
         item = dict(row)
@@ -75,10 +75,7 @@ def solve_linear(matrix: list[list[float]], vector: list[float]) -> list[float]:
             factor = a[row][col]
             if factor == 0:
                 continue
-            a[row] = [
-                a[row][j] - factor * a[col][j]
-                for j in range(n + 1)
-            ]
+            a[row] = [a[row][j] - factor * a[col][j] for j in range(n + 1)]
     return [a[i][-1] for i in range(n)]
 
 
@@ -159,8 +156,7 @@ def icc_one_way(rows: list[dict], field: str) -> float | None:
 def repeat_vectors(rows: list[dict], field: str) -> dict[int, list[float]]:
     shas = sorted({str(row["source_sha"]) for row in rows})
     lookup = {
-        (int(row["repeat"]), str(row["source_sha"])): float(row[field])
-        for row in rows
+        (int(row["repeat"]), str(row["source_sha"])): float(row[field]) for row in rows
     }
     return {repeat: [lookup[(repeat, sha)] for sha in shas] for repeat in (1, 2, 3)}
 
@@ -209,8 +205,7 @@ def semantic_scores(rows: list[dict], block: dict) -> dict[str, float]:
     out = {}
     for row in rows:
         out[str(row["source_sha"])] = sum(
-            ((float(row[f]) - means[f]) / sds[f]) * vector[f]
-            for f in SEMANTIC_FEATURES
+            ((float(row[f]) - means[f]) / sds[f]) * vector[f] for f in SEMANTIC_FEATURES
         )
     return out
 
@@ -287,9 +282,7 @@ def main() -> None:
         raise ValueError("W75 runtime and semantic states must exact-pair on five SHAs")
 
     raw_icc = icc_one_way(residualized, "runtime_pc1_frozen_score")
-    residual_icc = icc_one_way(
-        residualized, "runtime_pc1_environment_residual"
-    )
+    residual_icc = icc_one_way(residualized, "runtime_pc1_environment_residual")
     raw_rank = pairwise_rank_stability(residualized, "runtime_pc1_frozen_score")
     residual_rank = pairwise_rank_stability(
         residualized, "runtime_pc1_environment_residual"
@@ -305,9 +298,7 @@ def main() -> None:
     receipt = {
         "schema_version": "MC2-W75-DECONFOUNDED-STABILITY-0.1.0",
         "status": (
-            "STABILITY_DIAGNOSTIC_PASS"
-            if stable
-            else "STABILITY_DIAGNOSTIC_WITHHELD"
+            "STABILITY_DIAGNOSTIC_PASS" if stable else "STABILITY_DIAGNOSTIC_WITHHELD"
         ),
         "authority": "derived_operational_analysis",
         "observation_count": len(residualized),

@@ -1,4 +1,5 @@
 """W32 queue/attempt/proof yield disjoint runner adversarial census."""
+
 import copy
 import pytest
 
@@ -9,17 +10,26 @@ STAMP = "2026-10-18T18:00:00+00:00"
 
 
 def proof():
-    return {"artifact_sha256_verified": True, "junit_identity_verified": True,
-            "executed_cases": 40, "eligible_opportunities": 200,
-            "covered_opportunities": 198}
+    return {
+        "artifact_sha256_verified": True,
+        "junit_identity_verified": True,
+        "executed_cases": 40,
+        "eligible_opportunities": 200,
+        "covered_opportunities": 198,
+    }
 
 
 def cell(n, *, status="completed", conclusion="success", family="ROOT"):
     return {
-        "head_sha": HEAD, "run_id": 39100000000 + n,
-        "attempt": 1, "job_id": 117000000000 + n,
-        "family": family, "os": "ubuntu-latest", "python": "3.10",
-        "status": status, "conclusion": conclusion,
+        "head_sha": HEAD,
+        "run_id": 39100000000 + n,
+        "attempt": 1,
+        "job_id": 117000000000 + n,
+        "family": family,
+        "os": "ubuntu-latest",
+        "python": "3.10",
+        "status": status,
+        "conclusion": conclusion,
         "created_at": "2026-10-18T18:00:00Z",
         "started_at": "2026-10-18T18:00:40Z",
         "completed_at": "2026-10-18T18:02:40Z",
@@ -28,10 +38,14 @@ def cell(n, *, status="completed", conclusion="success", family="ROOT"):
 
 
 def sample():
-    return {"exact_head": HEAD, "cells": [
-        cell(1, family="ROOT"), cell(2, family="RUNNER"),
-        cell(3, status="completed", conclusion="failure", family="CONTROL"),
-    ]}
+    return {
+        "exact_head": HEAD,
+        "cells": [
+            cell(1, family="ROOT"),
+            cell(2, family="RUNNER"),
+            cell(3, status="completed", conclusion="failure", family="CONTROL"),
+        ],
+    }
 
 
 def test_job_success_and_verified_proof_are_separate_metrics():
@@ -47,8 +61,7 @@ def test_job_success_and_verified_proof_are_separate_metrics():
     assert result["merge_admission"] == "HOLD"
 
 
-@pytest.mark.parametrize("key", ["artifact_sha256_verified",
-                                  "junit_identity_verified"])
+@pytest.mark.parametrize("key", ["artifact_sha256_verified", "junit_identity_verified"])
 def test_false_evidence_flag_refuses_proof(key):
     p = sample()
     p["cells"][0]["evidence"][key] = False
@@ -58,11 +71,17 @@ def test_false_evidence_flag_refuses_proof(key):
     assert result["verified_successful_evidence"] is None
 
 
-@pytest.mark.parametrize("key,mutant", [
-    ("executed_cases", 0), ("executed_cases", True),
-    ("eligible_opportunities", 0), ("covered_opportunities", -1),
-    ("covered_opportunities", 201), ("covered_opportunities", "198"),
-])
+@pytest.mark.parametrize(
+    "key,mutant",
+    [
+        ("executed_cases", 0),
+        ("executed_cases", True),
+        ("eligible_opportunities", 0),
+        ("covered_opportunities", -1),
+        ("covered_opportunities", 201),
+        ("covered_opportunities", "198"),
+    ],
+)
 def test_bad_case_or_coverage_denominator_cannot_gain_proof(key, mutant):
     p = sample()
     p["cells"][0]["evidence"][key] = mutant
@@ -109,17 +128,20 @@ def test_missing_native_timestamp_not_imputed():
     assert out["unknown_queue_n"] == 1
 
 
-@pytest.mark.parametrize("field,value,error", [
-    ("head_sha", "b" * 40, "foreign head"),
-    ("job_id", 0, "invalid native"),
-    ("attempt", False, "invalid native"),
-    ("family", "", "runner identity"),
-    ("status", "not_run", "runner state"),
-    ("conclusion", None, "terminal conclusion"),
-    ("created_at", "yesterday", "native timestamp"),
-    ("started_at", "2026-10-18T17:59:59Z", "negative queue"),
-    ("completed_at", "2026-10-18T18:00:39Z", "negative execution"),
-])
+@pytest.mark.parametrize(
+    "field,value,error",
+    [
+        ("head_sha", "b" * 40, "foreign head"),
+        ("job_id", 0, "invalid native"),
+        ("attempt", False, "invalid native"),
+        ("family", "", "runner identity"),
+        ("status", "not_run", "runner state"),
+        ("conclusion", None, "terminal conclusion"),
+        ("created_at", "yesterday", "native timestamp"),
+        ("started_at", "2026-10-18T17:59:59Z", "negative queue"),
+        ("completed_at", "2026-10-18T18:00:39Z", "negative execution"),
+    ],
+)
 def test_invalid_native_cell_fails_closed(field, value, error):
     p = sample()
     p["cells"][0][field] = value
