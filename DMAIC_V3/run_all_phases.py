@@ -13,7 +13,7 @@ from datetime import datetime
 # Add parent directory to path
 sys.path.insert(0, str(Path(__file__).parent.parent))
 
-from DMAIC_V3.full_pipeline_orchestrator import FullPipelineOrchestrator
+from DMAIC_V3.full_pipeline_orchestrator import FullPipelineOrchestrator  # noqa: E402
 
 
 def main():

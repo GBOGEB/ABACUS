@@ -10,13 +10,13 @@
 Maps DMAIC phases to 12 temporal clusters for parallel processing.
 """
 
-import json
-import sys
-import time
-from concurrent.futures import ThreadPoolExecutor, wait
-from datetime import datetime
-from pathlib import Path
-from typing import Any, Dict, List, Optional
+import json  # noqa: E402
+import sys  # noqa: E402
+import time  # noqa: E402
+from concurrent.futures import ThreadPoolExecutor, wait  # noqa: E402
+from datetime import datetime  # noqa: E402
+from pathlib import Path  # noqa: E402
+from typing import Any, Dict, List, Optional  # noqa: E402
 
 try:
     from core.execution_backbone import ExecutionBackbone
