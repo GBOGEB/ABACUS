@@ -23,6 +23,23 @@ from .handover_bridge import HandoverBridge
 from .static_analysis_diagnostics import summarize_static_analysis
 
 
+# Hash-pinned files (triage/W77_LEGACY12_SOURCE_BASELINE.json, MIP W16 epoch and
+# workflow blob pins): editing them breaks those pins, so the scan tolerates the
+# codes they carry today and nothing else. Any other code in these files, and
+# every finding elsewhere, still fails the gate. Remove an entry when the pin is
+# refreshed and the file is fixed.
+PINNED_FLAKE8_IGNORES: Dict[str, str] = {
+    'DMAIC_V3/agents/style_extractor.py': 'E128',
+    'DMAIC_V3/analyze_recent_files.py': 'E305,E501',
+    'DMAIC_V3/core/dow_ariana_integration.py': 'E128,E402',
+    'DMAIC_V3/generators/master_reconciliation.py': 'E128,E305,E501,F401',
+    'DMAIC_V3/phases/phase4_improve.py': 'E302,F541',
+    'DMAIC_V3/phases/phase8_todo_management.py': 'E501,F541',
+    'DMAIC_V3/quick_output_analysis.py': 'E305',
+    'DMAIC_V3/temporal_phase_runner.py': 'E305,E402',
+}
+
+
 @dataclass
 class TestExecutionResult:
     test_name: str

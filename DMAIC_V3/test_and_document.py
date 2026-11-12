@@ -13,8 +13,8 @@ from typing import Dict, Any
 
 sys.path.insert(0, str(Path(__file__).parent.parent))
 
-from DMAIC_V3.full_pipeline_orchestrator import FullPipelineOrchestrator
-from DMAIC_V3.config import DMAICConfig
+from DMAIC_V3.full_pipeline_orchestrator import FullPipelineOrchestrator  # noqa: E402
+from DMAIC_V3.config import DMAICConfig  # noqa: E402
 
 
 class TestAndDocumentRunner:
