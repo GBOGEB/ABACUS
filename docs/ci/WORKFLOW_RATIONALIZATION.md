@@ -4,11 +4,11 @@
 
 Policy: `ABACUS-CI-SSOT-001`
 
-Policy SHA-256 (canonical sorted JSON bytes of `ci/governance/workflow_policy.json`): `766aed2f2d94130a90a6f90b953261356c9b3d80c2698220bcebb706e25f6dce`
+Policy SHA-256 (canonical sorted JSON bytes of `ci/governance/workflow_policy.json`): `366a7587c1b33fc9431aa840f964c4179d5f1cb4ee5c01aff61ecdccc0c4d755`
 
 ## Outcome
 
-The repository currently contains **222 workflow definitions**. All **222** are assigned to one primary functional cluster and lifecycle stage.
+The repository currently contains **224 workflow definitions**. All **224** are assigned to one primary functional cluster and lifecycle stage.
 
 The observed baseline that motivated this control was PR #681 with 119 check runs (111 queued, 8 skipped) and main with 122 check runs.
 
@@ -29,8 +29,8 @@ The observed baseline that motivated this control was PR #681 with 119 check run
 |---|---|---:|---|
 | `core_test` | `ci-abacus.yml` | 23 | Fast cross-version unit, pre-commit and smoke evidence. |
 | `full_regression` | `ci-cd-tests.yml` | 1 | Broad OS/version/integration/coverage regression for code changes. |
-| `statistics` | `ci-cd.yml` | 20 | Bootstrap, AHT, performance and statistical validation. |
-| `bridge_federation` | `bridge-ci.yml` | 21 | CODEX/ABACUS bridge contract and federation smoke evidence. |
+| `statistics` | `ci-cd.yml` | 21 | Bootstrap, AHT, performance and statistical validation. |
+| `bridge_federation` | `bridge-ci.yml` | 22 | CODEX/ABACUS bridge contract and federation smoke evidence. |
 | `dmaic` | `dmaic-enterprise-ci.yml` | 9 | DMAIC phase, convergence and maturity execution. |
 | `dow` | `dow-integration.yml` | 22 | DOW parent mechanics, integration, monitoring and warm-up. |
 | `runtime_governance` | `governance.yml` | 31 | Runtime evidence, governance, review artifacts and schema validation. |
@@ -85,6 +85,7 @@ Make PR-triggered workflows with write-class GitHub token scopes explicit and re
 | 20 | `pr_domain` | `bridge_federation` | `cryoplant-federation.yml` | push, pull_request, schedule, workflow_dispatch | 3 | `keep` | — |
 | 20 | `pr_domain` | `bridge_federation` | `dependency-spine-peer-census.yml` | pull_request, push, workflow_dispatch, schedule | 1 | `keep` | — |
 | 20 | `pr_domain` | `bridge_federation` | `dependency-spine-stage-only.yml` | pull_request, workflow_dispatch | 1 | `keep` | — |
+| 20 | `pr_domain` | `bridge_federation` | `ecosystem_worktree_sync_receiver.yml` | repository_dispatch | 1 | `keep` | — |
 | 20 | `pr_domain` | `bridge_federation` | `federation-bridge-contract.yml` | pull_request, workflow_dispatch | 1 | `keep` | — |
 | 20 | `pr_domain` | `bridge_federation` | `federation-delivery-consumer.yml` | pull_request, push, workflow_dispatch | 2 | `keep` | — |
 | 20 | `pr_domain` | `bridge_federation` | `federation-notebook.yml` | push, workflow_dispatch | 1 | `keep` | — |
@@ -237,6 +238,7 @@ Make PR-triggered workflows with write-class GitHub token scopes explicit and re
 | 20 | `pr_domain` | `statistics` | `code-purple-w43-matched-proof.yml` | pull_request, workflow_dispatch | 1 | `keep` | — |
 | 20 | `pr_domain` | `statistics` | `code-purple-w44-matched-proof.yml` | pull_request, workflow_dispatch | 1 | `keep` | — |
 | 20 | `pr_domain` | `statistics` | `g3a-n14-matched-arc-flight.yml` | pull_request, workflow_dispatch | 1 | `keep` | — |
+| 20 | `pr_domain` | `statistics` | `mip-b1b2-sphinx-native-resolver.yml` | pull_request | 1 | `keep` | — |
 | 20 | `pr_domain` | `statistics` | `mip-py310-combined-head-probe.yml` | pull_request, workflow_dispatch | 1 | `keep` | — |
 | 20 | `pr_domain` | `statistics` | `mip2-method-qualification.yml` | pull_request, workflow_dispatch, push | 1 | `keep` | — |
 | 20 | `pr_domain` | `statistics` | `qps-bt-admission.yml` | pull_request, workflow_dispatch | 1 | `keep` | — |

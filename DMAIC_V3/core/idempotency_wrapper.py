@@ -10,14 +10,14 @@ Provides @idempotent decorator for phases with enable/disable option
 Bridges to existing ranking, self-ranking, and validation systems
 """
 
-import base64
-import functools
+import base64  # noqa: E402
+import functools  # noqa: E402
 import hashlib
-import json
+import json  # noqa: E402
 import tempfile
-from datetime import datetime
-from pathlib import Path
-from typing import Any, Callable, Dict, Optional
+from datetime import datetime  # noqa: E402
+from pathlib import Path  # noqa: E402
+from typing import Any, Callable, Dict, Optional  # noqa: E402
 
 
 class IdempotencyConfig:

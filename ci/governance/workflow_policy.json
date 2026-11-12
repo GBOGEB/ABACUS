@@ -277,7 +277,7 @@
       "disposition": "keep"
     },
     {
-      "pattern": "^(bridge-ci|codespace-federation|cryoplant-federation|federation-bridge-contract|federation-notebook|gbogeb-abacus-integration-ci-cd|creq-federation-ci|federation-delivery-consumer|gloob-causal-responder|w189f-federation-sample4-exact)\\.yml$",
+      "pattern": "^(bridge-ci|codespace-federation|cryoplant-federation|federation-bridge-contract|federation-notebook|gbogeb-abacus-integration-ci-cd|creq-federation-ci|federation-delivery-consumer|gloob-causal-responder|w189f-federation-sample4-exact|ecosystem_worktree_sync_receiver)\\.yml$",
       "cluster": "bridge_federation",
       "lifecycle": "pr_domain",
       "disposition": "keep"
@@ -543,6 +543,12 @@
     {
       "pattern": "^mcw-artifact-cold-build\\.yml$",
       "cluster": "bridge_federation",
+      "lifecycle": "pr_domain",
+      "disposition": "keep"
+    },
+    {
+      "pattern": "^mip-b1b2-sphinx-native-resolver\\.yml$",
+      "cluster": "statistics",
       "lifecycle": "pr_domain",
       "disposition": "keep"
     },
