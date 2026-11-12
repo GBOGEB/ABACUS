@@ -212,12 +212,12 @@ class CloneBasedValidator:
             file_path: node.checksum for file_path, node in dependency_graph.items()
         }
 
-        entry_points = [
-            f
-            for f in orphaned
-            if "__main__"
-            in open(clone_path / f, "r", encoding="utf-8", errors="ignore").read()
-        ]
+        entry_points = []
+        for f in orphaned:
+            file_path = clone_path / f
+            with open(file_path, "r", encoding="utf-8", errors="ignore") as fh:
+                if "__main__" in fh.read():
+                    entry_points.append(f)
 
         checksum = CodeChecksum(
             total_files=len(dependency_graph),
