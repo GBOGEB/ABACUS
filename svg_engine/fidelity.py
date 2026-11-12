@@ -24,7 +24,7 @@ import json
 import re
 from pathlib import Path
 
-from . import _env  # noqa: F401
+from ._env import bootstrap
 from .ingress import XINK, layer_items, sha, simple
 from .pdf_ocg import chain_of, preset_overrides
 
@@ -35,6 +35,7 @@ AUTHORED_SIMILARITY = 0.99
 
 
 def _deps():
+    bootstrap()
     import cairosvg
     import fitz
     import numpy as np

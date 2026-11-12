@@ -21,7 +21,7 @@ from __future__ import annotations
 import time
 from pathlib import Path
 
-from . import _env  # noqa: F401  (optional sys.path / cairo DLL bootstrap)
+from ._env import bootstrap
 from .ingress import layer_items, sha, sha_file
 from .paint_runs import ROOT_OWNER, isolated_svg, paint_atoms
 
@@ -29,6 +29,7 @@ DEFAULT_PRESETS = {1: {"title": "As authored", "skip_subtrees": [], "force_on": 
 
 
 def _deps():
+    bootstrap()
     import cairosvg
     import fitz
     from lxml import etree

@@ -15,7 +15,9 @@ import pytest
 
 def require(*modules):
     """Import ``modules`` or skip the calling module. CairoSVG raises OSError when libcairo is missing."""
-    import svg_engine._env  # noqa: F401  (honours SVG_ENGINE_DEPS / SVG_ENGINE_CAIRO_BIN on workstations)
+    from svg_engine._env import bootstrap
+
+    bootstrap()  # honours SVG_ENGINE_DEPS / SVG_ENGINE_CAIRO_BIN on workstations
 
     loaded = []
     for name in modules:

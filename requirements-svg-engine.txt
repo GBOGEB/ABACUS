@@ -1,6 +1,6 @@
 # SVG-ENGINE (svg_engine/) runtime dependencies. Installed by .github/workflows/svg-engine.yml.
 # CairoSVG needs the system cairo library (libcairo2 on Ubuntu; Inkscape's bin folder on Windows).
-lxml==6.0.2
+lxml==6.1.3
 PyMuPDF==1.26.5
 CairoSVG==2.9.1
 numpy==2.3.4
