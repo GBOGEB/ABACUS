@@ -56,7 +56,8 @@ def hash_pack():
     skipped = 0
     for p in files:
         try:
-            b = open(p, "rb").read()
+            with open(p, "rb") as f:
+                b = f.read()
             h.update(b)
             total += len(b)
         except OSError:
