@@ -10,13 +10,13 @@ import yaml
 
 # Ensure project root is importable
 import sys
+
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent.parent))
 
 from config_service.schemas import QplantConfig, export_json_schema
 from config_service.service import ConfigService
 from config_service.client import DirectConfigClient
 from config_service.migrate import ConfigMigration
-
 
 # ── Fixtures ─────────────────────────────────────────────────────────────────
 
@@ -46,13 +46,32 @@ SAMPLE_CONFIG = {
     },
     "pressure_parameters": {
         "wcs_hp_outlet": {"nominal_barg": 14, "max_barg": 15, "min_barg": 10},
-        "helium_inventory": {"storage_bar": 15, "vessel_count": 3, "vessel_volume_m3": 120},
+        "helium_inventory": {
+            "storage_bar": 15,
+            "vessel_count": 3,
+            "vessel_volume_m3": 120,
+        },
         "hcc_inlet": {"nominal_mbar": 1050},
-        "wcs_lcc_suction": {"nominal_mbar": 400, "min_mbar": 250, "max_mbar": 550, "control": "VFD"},
+        "wcs_lcc_suction": {
+            "nominal_mbar": 400,
+            "min_mbar": 250,
+            "max_mbar": 550,
+            "control": "VFD",
+        },
     },
     "monte_carlo_distributions": {
-        "vlp_pressure": {"min_mbar": 250, "expected_mbar": 400, "max_mbar": 500, "distribution": "PERT"},
-        "lp_outlet": {"min_mbar": 900, "expected_mbar": 1050, "max_mbar": 1200, "distribution": "PERT"},
+        "vlp_pressure": {
+            "min_mbar": 250,
+            "expected_mbar": 400,
+            "max_mbar": 500,
+            "distribution": "PERT",
+        },
+        "lp_outlet": {
+            "min_mbar": 900,
+            "expected_mbar": 1050,
+            "max_mbar": 1200,
+            "distribution": "PERT",
+        },
     },
     "compressor_specifications": {
         "hp_compressors": {
@@ -123,6 +142,7 @@ def config_svc(tmp_config):
 
 # ── Schema Tests ─────────────────────────────────────────────────────────────
 
+
 class TestSchema:
     def test_valid_config_parses(self):
         config = QplantConfig(**SAMPLE_CONFIG)
@@ -138,7 +158,10 @@ class TestSchema:
         bad = dict(SAMPLE_CONFIG)
         bad["flow_parameters"] = {
             **SAMPLE_CONFIG["flow_parameters"],
-            "wcs_hp": {**SAMPLE_CONFIG["flow_parameters"]["wcs_hp"], "design_flow_gs": -1},
+            "wcs_hp": {
+                **SAMPLE_CONFIG["flow_parameters"]["wcs_hp"],
+                "design_flow_gs": -1,
+            },
         }
         with pytest.raises(Exception):
             QplantConfig(**bad)
@@ -152,13 +175,17 @@ class TestSchema:
         bad = dict(SAMPLE_CONFIG)
         bad["compressor_specifications"] = {
             **SAMPLE_CONFIG["compressor_specifications"],
-            "hp_compressors": {**SAMPLE_CONFIG["compressor_specifications"]["hp_compressors"], "count": 99},
+            "hp_compressors": {
+                **SAMPLE_CONFIG["compressor_specifications"]["hp_compressors"],
+                "count": 99,
+            },
         }
         with pytest.raises(Exception):
             QplantConfig(**bad)
 
 
 # ── Service Tests ────────────────────────────────────────────────────────────
+
 
 class TestService:
     def test_get_all(self, config_svc):
@@ -183,8 +210,10 @@ class TestService:
 
     def test_set_value(self, config_svc):
         change = config_svc.set_value(
-            "financial.electricity_cost_eur_kwh", 0.20,
-            user="test", reason="price update"
+            "financial.electricity_cost_eur_kwh",
+            0.20,
+            user="test",
+            reason="price update",
         )
         assert change.old_value == 0.15
         assert change.new_value == 0.20
@@ -215,6 +244,7 @@ class TestService:
 
 # ── Client Tests ─────────────────────────────────────────────────────────────
 
+
 class TestDirectClient:
     def test_get_all(self, tmp_config):
         client = DirectConfigClient(str(tmp_config))
@@ -237,6 +267,7 @@ class TestDirectClient:
 
 
 # ── Migration Tests ──────────────────────────────────────────────────────────
+
 
 class TestMigration:
     def test_check(self, tmp_config):

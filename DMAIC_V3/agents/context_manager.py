@@ -16,26 +16,24 @@ class ContextManagerAgent:
     def __init__(self, workspace_root: Path):
         self.workspace_root = workspace_root
         self.version = __version__
-        self.context_file = Path(workspace_root).resolve() / "DMAIC_V3_OUTPUT" / "context.json"
+        self.context_file = (
+            Path(workspace_root).resolve() / "DMAIC_V3_OUTPUT" / "context.json"
+        )
 
     def save_context(self, context: Dict[str, Any]) -> Dict[str, Any]:
         """Save context"""
         self.context_file.parent.mkdir(parents=True, exist_ok=True)
-        with open(self.context_file, 'w') as f:
+        with open(self.context_file, "w") as f:
             json.dump(context, f, indent=2)
-        return {'success': True}
+        return {"success": True}
 
     def load_context(self) -> Dict[str, Any]:
         """Load context"""
         if self.context_file.exists():
-            with open(self.context_file, 'r') as f:
+            with open(self.context_file, "r") as f:
                 return json.load(f)
         return {}
 
     def get_info(self) -> Dict[str, str]:
         """Get agent info"""
-        return {
-            'name': 'context_manager',
-            'version': self.version,
-            'status': 'active'
-        }
+        return {"name": "context_manager", "version": self.version, "status": "active"}

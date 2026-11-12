@@ -3,6 +3,7 @@
 A green job without verified JUnit+coverage provenance is not proof. Missing
 time is UNKNOWN, never imputed as zero. No scheduler or merge side effects.
 """
+
 from __future__ import annotations
 
 import argparse
@@ -28,8 +29,9 @@ def timestamp(raw):
         value = datetime.fromisoformat(raw.replace("Z", "+00:00"))
     except ValueError as error:
         raise ValueError("invalid native timestamp") from error
-    need(value.tzinfo is not None and value.utcoffset() is not None,
-         "timezone not bound")
+    need(
+        value.tzinfo is not None and value.utcoffset() is not None, "timezone not bound"
+    )
     return value
 
 
@@ -53,16 +55,20 @@ def _proof(cell):
     cases = evidence.get("executed_cases")
     eligible = evidence.get("eligible_opportunities")
     covered = evidence.get("covered_opportunities")
-    return (type(cases) is int and cases > 0 and
-            type(eligible) is int and eligible > 0 and
-            type(covered) is int and 0 <= covered <= eligible)
+    return (
+        type(cases) is int
+        and cases > 0
+        and type(eligible) is int
+        and eligible > 0
+        and type(covered) is int
+        and 0 <= covered <= eligible
+    )
 
 
 def summarize(payload):
     need(isinstance(payload, dict), "invalid pulse")
     sha = payload.get("exact_head")
-    need(isinstance(sha, str) and bool(_SHA.fullmatch(sha)),
-         "invalid exact head")
+    need(isinstance(sha, str) and bool(_SHA.fullmatch(sha)), "invalid exact head")
     rows = payload.get("cells")
     need(isinstance(rows, list), "missing cell population")
     seen = set()
@@ -78,29 +84,44 @@ def summarize(payload):
     families = set()
     per_family = {}
     for cell in rows:
-        need(isinstance(cell, dict) and cell.get("head_sha") == sha,
-             "missing or foreign head")
+        need(
+            isinstance(cell, dict) and cell.get("head_sha") == sha,
+            "missing or foreign head",
+        )
         ids = (cell.get("run_id"), cell.get("attempt"), cell.get("job_id"))
         need(all(type(x) is int and x > 0 for x in ids), "invalid native identity")
         need(ids not in seen, "duplicate native attempt")
         seen.add(ids)
         family, platform, interpreter = (
-            cell.get("family"), cell.get("os"), cell.get("python")
+            cell.get("family"),
+            cell.get("os"),
+            cell.get("python"),
         )
-        need(all(isinstance(x, str) and bool(x.strip())
-                 for x in (family, platform, interpreter)),
-             "missing disjoint runner identity")
+        need(
+            all(
+                isinstance(x, str) and bool(x.strip())
+                for x in (family, platform, interpreter)
+            ),
+            "missing disjoint runner identity",
+        )
         families.add(family)
         if family not in per_family:
-            per_family[family] = {"jobs": 0, "successful": 0,
-                                  "failed": 0, "proof_verified": 0}
+            per_family[family] = {
+                "jobs": 0,
+                "successful": 0,
+                "failed": 0,
+                "proof_verified": 0,
+            }
         f = per_family[family]
         f["jobs"] += 1
         state, conclusion = cell.get("status"), cell.get("conclusion")
         need(state in {"queued", "in_progress", "completed"}, "invalid runner state")
         if state == "completed":
-            need(conclusion in {"success", "failure", "cancelled", "skipped",
-                                "timed_out"}, "missing terminal conclusion")
+            need(
+                conclusion
+                in {"success", "failure", "cancelled", "skipped", "timed_out"},
+                "missing terminal conclusion",
+            )
             terminal += 1
             if conclusion == "success":
                 successful += 1
@@ -169,8 +190,9 @@ def main(argv=None):
     args = p.parse_args(argv)
     result = summarize(json.loads(args.input.read_text(encoding="utf-8")))
     args.output.parent.mkdir(parents=True, exist_ok=True)
-    args.output.write_text(json.dumps(result, indent=2, sort_keys=True) + "\n",
-                           encoding="utf-8")
+    args.output.write_text(
+        json.dumps(result, indent=2, sort_keys=True) + "\n", encoding="utf-8"
+    )
     return 0
 
 

@@ -5,11 +5,17 @@ bounded geometry/flow assumptions and ranks pressure-margin sensitivity. Exact
 engineering acceptance still requires source-bound geometry and validated low-T
 properties.
 """
+
 from dataclasses import dataclass
 from itertools import product
 from typing import Iterable
 
-from .vlp_solver import Segment, pressure_drop_pa, qcell_pressure_mbar, pressure_margin_mbar
+from .vlp_solver import (
+    Segment,
+    pressure_drop_pa,
+    qcell_pressure_mbar,
+    pressure_margin_mbar,
+)
 
 
 @dataclass(frozen=True)
@@ -41,17 +47,19 @@ def diagnostic_population(
         dp_pa = pressure_drop_pa(segment, mass_flow_kg_s, density_kg_m3, viscosity_pa_s)
         local_p = qcell_pressure_mbar(boundary_mbar_abs, dp_pa)
         margin = pressure_margin_mbar(required_max_mbar_abs, local_p)
-        rows.append({
-            "distance_m": distance_m,
-            "diameter_m": diameter_m,
-            "roughness_m": roughness_m,
-            "k_local": k_local,
-            "mass_flow_kg_s": mass_flow_kg_s,
-            "delta_p_mbar": dp_pa / 100.0,
-            "predicted_local_pressure_mbar_abs": local_p,
-            "pressure_margin_mbar": margin,
-            "classification": "DIAGNOSTIC_ONLY",
-        })
+        rows.append(
+            {
+                "distance_m": distance_m,
+                "diameter_m": diameter_m,
+                "roughness_m": roughness_m,
+                "k_local": k_local,
+                "mass_flow_kg_s": mass_flow_kg_s,
+                "delta_p_mbar": dp_pa / 100.0,
+                "predicted_local_pressure_mbar_abs": local_p,
+                "pressure_margin_mbar": margin,
+                "classification": "DIAGNOSTIC_ONLY",
+            }
+        )
     return rows
 
 

@@ -32,16 +32,12 @@ class MonitoringIntegration:
             "monitoring_systems": [],
             "dashboards": [],
             "alerts": [],
-            "recommendations": []
+            "recommendations": [],
         }
 
     def create_logging_config(self) -> Dict[str, Any]:
         """Create comprehensive logging configuration"""
-        config = {
-            "name": "Logging Configuration",
-            "status": "CREATED",
-            "details": {}
-        }
+        config = {"name": "Logging Configuration", "status": "CREATED", "details": {}}
 
         logging_config = {
             "version": 1,
@@ -49,18 +45,18 @@ class MonitoringIntegration:
             "formatters": {
                 "json": {
                     "format": "%(asctime)s %(name)s %(levelname)s %(message)s",
-                    "class": "pythonjsonlogger.jsonlogger.JsonFormatter"
+                    "class": "pythonjsonlogger.jsonlogger.JsonFormatter",
                 },
                 "standard": {
                     "format": "%(asctime)s [%(levelname)s] %(name)s: %(message)s"
-                }
+                },
             },
             "handlers": {
                 "console": {
                     "class": "logging.StreamHandler",
                     "level": "INFO",
                     "formatter": "standard",
-                    "stream": "ext://sys.stdout"
+                    "stream": "ext://sys.stdout",
                 },
                 "file": {
                     "class": "logging.handlers.RotatingFileHandler",
@@ -68,7 +64,7 @@ class MonitoringIntegration:
                     "formatter": "json",
                     "filename": "logs/abacus_v21.log",
                     "maxBytes": 10485760,
-                    "backupCount": 10
+                    "backupCount": 10,
                 },
                 "error_file": {
                     "class": "logging.handlers.RotatingFileHandler",
@@ -76,120 +72,87 @@ class MonitoringIntegration:
                     "formatter": "json",
                     "filename": "logs/abacus_v21_errors.log",
                     "maxBytes": 10485760,
-                    "backupCount": 10
-                }
+                    "backupCount": 10,
+                },
             },
             "loggers": {
                 "abacus": {
                     "level": "DEBUG",
                     "handlers": ["console", "file", "error_file"],
-                    "propagate": False
+                    "propagate": False,
                 }
             },
-            "root": {
-                "level": "INFO",
-                "handlers": ["console", "file"]
-            }
+            "root": {"level": "INFO", "handlers": ["console", "file"]},
         }
 
         config_path = self.output_dir / "logging_config.json"
-        with open(config_path, 'w', encoding='utf-8') as f:
+        with open(config_path, "w", encoding="utf-8") as f:
             json.dump(logging_config, f, indent=2)
 
         config["details"]["config_file"] = str(config_path)
         config["details"]["handlers"] = list(logging_config["handlers"].keys())
-        config["message"] = f"Logging configuration created with {len(logging_config['handlers'])} handlers"
+        config["message"] = (
+            f"Logging configuration created with {len(logging_config['handlers'])} handlers"
+        )
 
         return config
 
     def create_metrics_config(self) -> Dict[str, Any]:
         """Create metrics collection configuration"""
-        config = {
-            "name": "Metrics Configuration",
-            "status": "CREATED",
-            "details": {}
-        }
+        config = {"name": "Metrics Configuration", "status": "CREATED", "details": {}}
 
         metrics_config = {
             "version": "2.1.0",
             "timestamp": self.timestamp,
-            "collection": {
-                "interval": 60,
-                "retention": "30d"
-            },
+            "collection": {"interval": 60, "retention": "30d"},
             "metrics": {
                 "system": {
-                    "cpu_usage": {
-                        "enabled": True,
-                        "unit": "percent",
-                        "threshold": 80
-                    },
+                    "cpu_usage": {"enabled": True, "unit": "percent", "threshold": 80},
                     "memory_usage": {
                         "enabled": True,
                         "unit": "megabytes",
-                        "threshold": 512
+                        "threshold": 512,
                     },
-                    "disk_usage": {
-                        "enabled": True,
-                        "unit": "percent",
-                        "threshold": 90
-                    }
+                    "disk_usage": {"enabled": True, "unit": "percent", "threshold": 90},
                 },
                 "application": {
                     "execution_time": {
                         "enabled": True,
                         "unit": "seconds",
-                        "threshold": 300
+                        "threshold": 300,
                     },
-                    "error_count": {
-                        "enabled": True,
-                        "unit": "count",
-                        "threshold": 10
-                    },
+                    "error_count": {"enabled": True, "unit": "count", "threshold": 10},
                     "success_rate": {
                         "enabled": True,
                         "unit": "percent",
-                        "threshold": 95
+                        "threshold": 95,
                     },
-                    "artifact_count": {
-                        "enabled": True,
-                        "unit": "count"
-                    }
+                    "artifact_count": {"enabled": True, "unit": "count"},
                 },
                 "integration": {
-                    "dmaic_dow_bridge": {
-                        "enabled": True,
-                        "metric": "coverage_percent"
-                    },
+                    "dmaic_dow_bridge": {"enabled": True, "metric": "coverage_percent"},
                     "recursive_temporal_bridge": {
                         "enabled": True,
-                        "metric": "artifact_count"
+                        "metric": "artifact_count",
                     },
                     "state_config_bridge": {
                         "enabled": True,
-                        "metric": "validity_percent"
+                        "metric": "validity_percent",
                     },
                     "output_artifact_bridge": {
                         "enabled": True,
-                        "metric": "artifact_count"
-                    }
-                }
+                        "metric": "artifact_count",
+                    },
+                },
             },
             "exporters": {
-                "prometheus": {
-                    "enabled": True,
-                    "port": 9090,
-                    "path": "/metrics"
-                },
-                "json": {
-                    "enabled": True,
-                    "output": "logs/metrics.json"
-                }
-            }
+                "prometheus": {"enabled": True, "port": 9090, "path": "/metrics"},
+                "json": {"enabled": True, "output": "logs/metrics.json"},
+            },
         }
 
         config_path = self.output_dir / "metrics_config.json"
-        with open(config_path, 'w', encoding='utf-8') as f:
+        with open(config_path, "w", encoding="utf-8") as f:
             json.dump(metrics_config, f, indent=2)
 
         config["details"]["config_file"] = str(config_path)
@@ -200,11 +163,7 @@ class MonitoringIntegration:
 
     def create_alert_rules(self) -> Dict[str, Any]:
         """Create alerting rules"""
-        config = {
-            "name": "Alert Rules",
-            "status": "CREATED",
-            "details": {}
-        }
+        config = {"name": "Alert Rules", "status": "CREATED", "details": {}}
 
         alert_rules = {
             "version": "2.1.0",
@@ -216,7 +175,7 @@ class MonitoringIntegration:
                     "severity": "WARNING",
                     "duration": "5m",
                     "action": "notify",
-                    "channels": ["email", "log"]
+                    "channels": ["email", "log"],
                 },
                 {
                     "name": "High Memory Usage",
@@ -224,7 +183,7 @@ class MonitoringIntegration:
                     "severity": "WARNING",
                     "duration": "5m",
                     "action": "notify",
-                    "channels": ["email", "log"]
+                    "channels": ["email", "log"],
                 },
                 {
                     "name": "High Error Rate",
@@ -232,7 +191,7 @@ class MonitoringIntegration:
                     "severity": "ERROR",
                     "duration": "1m",
                     "action": "notify",
-                    "channels": ["email", "log", "slack"]
+                    "channels": ["email", "log", "slack"],
                 },
                 {
                     "name": "Low Success Rate",
@@ -240,7 +199,7 @@ class MonitoringIntegration:
                     "severity": "WARNING",
                     "duration": "10m",
                     "action": "notify",
-                    "channels": ["email", "log"]
+                    "channels": ["email", "log"],
                 },
                 {
                     "name": "Execution Timeout",
@@ -248,7 +207,7 @@ class MonitoringIntegration:
                     "severity": "ERROR",
                     "duration": "1m",
                     "action": "notify",
-                    "channels": ["email", "log", "slack"]
+                    "channels": ["email", "log", "slack"],
                 },
                 {
                     "name": "Bridge Health Check Failed",
@@ -256,46 +215,38 @@ class MonitoringIntegration:
                     "severity": "CRITICAL",
                     "duration": "1m",
                     "action": "notify",
-                    "channels": ["email", "log", "slack", "pagerduty"]
-                }
+                    "channels": ["email", "log", "slack", "pagerduty"],
+                },
             ],
             "notification_channels": {
-                "email": {
-                    "enabled": True,
-                    "recipients": ["team@example.com"]
-                },
-                "log": {
-                    "enabled": True,
-                    "file": "logs/alerts.log"
-                },
+                "email": {"enabled": True, "recipients": ["team@example.com"]},
+                "log": {"enabled": True, "file": "logs/alerts.log"},
                 "slack": {
                     "enabled": False,
-                    "webhook_url": "https://hooks.slack.com/services/YOUR/WEBHOOK/URL"
+                    "webhook_url": "https://hooks.slack.com/services/YOUR/WEBHOOK/URL",
                 },
                 "pagerduty": {
                     "enabled": False,
-                    "integration_key": "YOUR_PAGERDUTY_KEY"
-                }
-            }
+                    "integration_key": "YOUR_PAGERDUTY_KEY",
+                },
+            },
         }
 
         config_path = self.output_dir / "alert_rules.json"
-        with open(config_path, 'w', encoding='utf-8') as f:
+        with open(config_path, "w", encoding="utf-8") as f:
             json.dump(alert_rules, f, indent=2)
 
         config["details"]["config_file"] = str(config_path)
         config["details"]["rule_count"] = len(alert_rules["rules"])
-        config["message"] = f"Alert rules created with {len(alert_rules['rules'])} rules"
+        config["message"] = (
+            f"Alert rules created with {len(alert_rules['rules'])} rules"
+        )
 
         return config
 
     def create_dashboard_config(self) -> Dict[str, Any]:
         """Create monitoring dashboard configuration"""
-        config = {
-            "name": "Dashboard Configuration",
-            "status": "CREATED",
-            "details": {}
-        }
+        config = {"name": "Dashboard Configuration", "status": "CREATED", "details": {}}
 
         dashboard = {
             "version": "2.1.0",
@@ -305,58 +256,116 @@ class MonitoringIntegration:
                     "name": "System Overview",
                     "panels": [
                         {"title": "CPU Usage", "type": "graph", "metric": "cpu_usage"},
-                        {"title": "Memory Usage", "type": "graph", "metric": "memory_usage"},
-                        {"title": "Disk Usage", "type": "gauge", "metric": "disk_usage"},
-                        {"title": "System Health", "type": "status", "metric": "health_status"}
-                    ]
+                        {
+                            "title": "Memory Usage",
+                            "type": "graph",
+                            "metric": "memory_usage",
+                        },
+                        {
+                            "title": "Disk Usage",
+                            "type": "gauge",
+                            "metric": "disk_usage",
+                        },
+                        {
+                            "title": "System Health",
+                            "type": "status",
+                            "metric": "health_status",
+                        },
+                    ],
                 },
                 {
                     "name": "Application Performance",
                     "panels": [
-                        {"title": "Execution Time", "type": "graph", "metric": "execution_time"},
-                        {"title": "Success Rate", "type": "gauge", "metric": "success_rate"},
-                        {"title": "Error Count", "type": "counter", "metric": "error_count"},
-                        {"title": "Throughput", "type": "graph", "metric": "throughput"}
-                    ]
+                        {
+                            "title": "Execution Time",
+                            "type": "graph",
+                            "metric": "execution_time",
+                        },
+                        {
+                            "title": "Success Rate",
+                            "type": "gauge",
+                            "metric": "success_rate",
+                        },
+                        {
+                            "title": "Error Count",
+                            "type": "counter",
+                            "metric": "error_count",
+                        },
+                        {
+                            "title": "Throughput",
+                            "type": "graph",
+                            "metric": "throughput",
+                        },
+                    ],
                 },
                 {
                     "name": "Integration Bridges",
                     "panels": [
-                        {"title": "DMAIC-DOW Bridge", "type": "status", "metric": "dmaic_dow_coverage"},
-                        {"title": "Recursive-Temporal Bridge", "type": "counter", "metric": "recursive_temporal_artifacts"},
-                        {"title": "State-Config Bridge", "type": "gauge", "metric": "state_config_validity"},
-                        {"title": "Output-Artifact Bridge", "type": "counter", "metric": "output_artifacts"}
-                    ]
+                        {
+                            "title": "DMAIC-DOW Bridge",
+                            "type": "status",
+                            "metric": "dmaic_dow_coverage",
+                        },
+                        {
+                            "title": "Recursive-Temporal Bridge",
+                            "type": "counter",
+                            "metric": "recursive_temporal_artifacts",
+                        },
+                        {
+                            "title": "State-Config Bridge",
+                            "type": "gauge",
+                            "metric": "state_config_validity",
+                        },
+                        {
+                            "title": "Output-Artifact Bridge",
+                            "type": "counter",
+                            "metric": "output_artifacts",
+                        },
+                    ],
                 },
                 {
                     "name": "Test Results",
                     "panels": [
-                        {"title": "Test Pass Rate", "type": "gauge", "metric": "test_pass_rate"},
-                        {"title": "Test Execution Time", "type": "graph", "metric": "test_execution_time"},
-                        {"title": "Failed Tests", "type": "counter", "metric": "failed_tests"},
-                        {"title": "Test Coverage", "type": "gauge", "metric": "test_coverage"}
-                    ]
-                }
-            ]
+                        {
+                            "title": "Test Pass Rate",
+                            "type": "gauge",
+                            "metric": "test_pass_rate",
+                        },
+                        {
+                            "title": "Test Execution Time",
+                            "type": "graph",
+                            "metric": "test_execution_time",
+                        },
+                        {
+                            "title": "Failed Tests",
+                            "type": "counter",
+                            "metric": "failed_tests",
+                        },
+                        {
+                            "title": "Test Coverage",
+                            "type": "gauge",
+                            "metric": "test_coverage",
+                        },
+                    ],
+                },
+            ],
         }
 
         config_path = self.output_dir / "dashboard_config.json"
-        with open(config_path, 'w', encoding='utf-8') as f:
+        with open(config_path, "w", encoding="utf-8") as f:
             json.dump(dashboard, f, indent=2)
 
         config["details"]["config_file"] = str(config_path)
         config["details"]["dashboard_count"] = len(dashboard["dashboards"])
-        config["message"] = f"Dashboard configuration created with {len(dashboard['dashboards'])} dashboards"
+        config["message"] = (
+            f"Dashboard configuration created with {len(dashboard['dashboards'])} dashboards"
+        )
 
         return config
 
     def create_health_check_script(self) -> Dict[str, Any]:
         """Create health check script"""
-        config = {
-            "name": "Health Check Script",
-            "status": "CREATED",
-            "details": {}
-        }
+        config = {"name": "Health Check Script", "status": "CREATED", "details": {}}
 
         health_check = """#!/usr/bin/env python3
 \"\"\"
@@ -456,7 +465,7 @@ if __name__ == "__main__":
 """
 
         script_path = self.output_dir / "health_check.py"
-        with open(script_path, 'w', encoding='utf-8') as f:
+        with open(script_path, "w", encoding="utf-8") as f:
             f.write(health_check)
 
         config["details"]["script_file"] = str(script_path)
@@ -472,36 +481,36 @@ if __name__ == "__main__":
                 "category": "OBSERVABILITY",
                 "title": "Implement Distributed Tracing",
                 "description": "Add distributed tracing for end-to-end visibility",
-                "action": "Integrate OpenTelemetry or Jaeger for request tracing"
+                "action": "Integrate OpenTelemetry or Jaeger for request tracing",
             },
             {
                 "priority": "HIGH",
                 "category": "ALERTING",
                 "title": "Configure Alert Escalation",
                 "description": "Set up alert escalation policies",
-                "action": "Define escalation paths for different severity levels"
+                "action": "Define escalation paths for different severity levels",
             },
             {
                 "priority": "HIGH",
                 "category": "MONITORING",
                 "title": "Deploy Monitoring Stack",
                 "description": "Deploy Prometheus, Grafana, or similar monitoring stack",
-                "action": "Set up monitoring infrastructure and dashboards"
+                "action": "Set up monitoring infrastructure and dashboards",
             },
             {
                 "priority": "MEDIUM",
                 "category": "LOGGING",
                 "title": "Centralize Log Aggregation",
                 "description": "Implement centralized log aggregation",
-                "action": "Deploy ELK stack or similar log aggregation solution"
+                "action": "Deploy ELK stack or similar log aggregation solution",
             },
             {
                 "priority": "MEDIUM",
                 "category": "PERFORMANCE",
                 "title": "Add Performance Profiling",
                 "description": "Implement performance profiling and APM",
-                "action": "Integrate application performance monitoring tools"
-            }
+                "action": "Integrate application performance monitoring tools",
+            },
         ]
 
         return recommendations
@@ -539,7 +548,7 @@ if __name__ == "__main__":
     def save_results(self):
         """Save results to JSON"""
         results_path = self.output_dir / "monitoring_integration_results.json"
-        with open(results_path, 'w', encoding='utf-8') as f:
+        with open(results_path, "w", encoding="utf-8") as f:
             json.dump(self.results, f, indent=2)
         print(f"\nResults saved to: {results_path}")
 
@@ -547,7 +556,7 @@ if __name__ == "__main__":
         """Generate markdown report"""
         report_path = self.output_dir / "MONITORING_INTEGRATION_REPORT.md"
 
-        with open(report_path, 'w', encoding='utf-8') as f:
+        with open(report_path, "w", encoding="utf-8") as f:
             f.write("# ABACUS v2.1 - Monitoring Integration Report\n\n")
             f.write(f"**Stage**: 2.3 - Monitoring Integration\n")
             f.write(f"**Timestamp**: {self.timestamp}\n")
@@ -591,6 +600,7 @@ if __name__ == "__main__":
             f.write(f"*Report generated on {self.timestamp}*\n")
 
         print(f"Report saved to: {report_path}")
+
 
 if __name__ == "__main__":
     monitoring = MonitoringIntegration()

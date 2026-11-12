@@ -20,25 +20,24 @@ class StyleExtractorAgent:
     def extract_style(self, file_path: Path) -> Dict[str, Any]:
         """Extract style from a Python file"""
         try:
-            with open(file_path, 'r', encoding='utf-8') as f:
+            with open(file_path, "r", encoding="utf-8") as f:
                 content = f.read()
 
             tree = ast.parse(content)
 
             return {
-                'indentation': 4,
-                'quotes': 'double',
-                'line_length': 100,
-                'has_docstrings': any(ast.get_docstring(node) for node in ast.walk(tree)
-                                     if isinstance(node, (ast.FunctionDef, ast.ClassDef)))
+                "indentation": 4,
+                "quotes": "double",
+                "line_length": 100,
+                "has_docstrings": any(
+                    ast.get_docstring(node)
+                    for node in ast.walk(tree)
+                    if isinstance(node, (ast.FunctionDef, ast.ClassDef))
+                ),
             }
         except (OSError, UnicodeError, SyntaxError):
             return {}
 
     def get_info(self) -> Dict[str, str]:
         """Get agent info"""
-        return {
-            'name': 'style_extractor',
-            'version': self.version,
-            'status': 'active'
-        }
+        return {"name": "style_extractor", "version": self.version, "status": "active"}

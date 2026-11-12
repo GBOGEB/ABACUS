@@ -18,28 +18,20 @@ class FrameworkAgent:
 
     def detect_frameworks(self) -> Dict[str, Any]:
         """Detect frameworks used in the project"""
-        frameworks = {
-            'python': [],
-            'javascript': [],
-            'build_tools': []
-        }
+        frameworks = {"python": [], "javascript": [], "build_tools": []}
 
-        if (self.workspace_root / 'requirements.txt').exists():
-            frameworks['python'].append('pip')
-        if (self.workspace_root / 'setup.py').exists():
-            frameworks['python'].append('setuptools')
-        if (self.workspace_root / 'pyproject.toml').exists():
-            frameworks['python'].append('poetry')
+        if (self.workspace_root / "requirements.txt").exists():
+            frameworks["python"].append("pip")
+        if (self.workspace_root / "setup.py").exists():
+            frameworks["python"].append("setuptools")
+        if (self.workspace_root / "pyproject.toml").exists():
+            frameworks["python"].append("poetry")
 
-        if (self.workspace_root / 'package.json').exists():
-            frameworks['javascript'].append('npm')
+        if (self.workspace_root / "package.json").exists():
+            frameworks["javascript"].append("npm")
 
         return frameworks
 
     def get_info(self) -> Dict[str, str]:
         """Get agent info"""
-        return {
-            'name': 'framework',
-            'version': self.version,
-            'status': 'active'
-        }
+        return {"name": "framework", "version": self.version, "status": "active"}

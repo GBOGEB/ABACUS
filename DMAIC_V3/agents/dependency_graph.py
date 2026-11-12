@@ -25,9 +25,9 @@ class DependencyGraphAgent:
         graph = {}
 
         for file_path in files:
-            if file_path.suffix == '.py':
+            if file_path.suffix == ".py":
                 try:
-                    with open(file_path, 'r', encoding='utf-8') as f:
+                    with open(file_path, "r", encoding="utf-8") as f:
                         tree = ast.parse(f.read())
 
                     imports = []
@@ -40,14 +40,12 @@ class DependencyGraphAgent:
 
                     graph[str(file_path)] = imports
                 except (OSError, UnicodeError, SyntaxError) as exc:
-                    logger.warning("Skipping dependency parsing for %s: %s", file_path, exc)
+                    logger.warning(
+                        "Skipping dependency parsing for %s: %s", file_path, exc
+                    )
 
         return graph
 
     def get_info(self) -> Dict[str, str]:
         """Get agent info"""
-        return {
-            'name': 'dependency_graph',
-            'version': self.version,
-            'status': 'active'
-        }
+        return {"name": "dependency_graph", "version": self.version, "status": "active"}

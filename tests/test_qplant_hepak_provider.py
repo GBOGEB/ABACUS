@@ -2,7 +2,10 @@ from pathlib import Path
 
 import pytest
 
-from models.helium_properties.qplant_provider import governing_provider_for_temperature, state_tp
+from models.helium_properties.qplant_provider import (
+    governing_provider_for_temperature,
+    state_tp,
+)
 
 
 def test_hepak_band_includes_both_boundaries():
@@ -17,7 +20,9 @@ def test_low_temperature_fails_closed_without_receipt():
 
 
 def test_missing_receipt_file_fails_closed(tmp_path: Path):
-    with pytest.raises(FileNotFoundError, match="QPLANT governing HEPAK CSV unavailable"):
+    with pytest.raises(
+        FileNotFoundError, match="QPLANT governing HEPAK CSV unavailable"
+    ):
         state_tp(3.8, 2600.0, hepak_csv=tmp_path / "missing.csv")
 
 

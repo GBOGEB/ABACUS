@@ -32,16 +32,12 @@ class BackupRecovery:
             "backup_strategies": [],
             "recovery_procedures": [],
             "disaster_recovery": [],
-            "recommendations": []
+            "recommendations": [],
         }
 
     def create_backup_strategy(self) -> Dict[str, Any]:
         """Create comprehensive backup strategy"""
-        config = {
-            "name": "Backup Strategy",
-            "status": "CREATED",
-            "details": {}
-        }
+        config = {"name": "Backup Strategy", "status": "CREATED", "details": {}}
 
         backup_strategy = {
             "version": "2.1.0",
@@ -52,29 +48,29 @@ class BackupRecovery:
                     "frequency": "weekly",
                     "schedule": "Sunday 02:00 AM",
                     "retention_days": 30,
-                    "priority": "HIGH"
+                    "priority": "HIGH",
                 },
                 "incremental_backup": {
                     "description": "Changes since last backup",
                     "frequency": "daily",
                     "schedule": "Every day 02:00 AM",
                     "retention_days": 7,
-                    "priority": "HIGH"
+                    "priority": "HIGH",
                 },
                 "differential_backup": {
                     "description": "Changes since last full backup",
                     "frequency": "daily",
                     "schedule": "Every day 14:00 PM",
                     "retention_days": 7,
-                    "priority": "MEDIUM"
+                    "priority": "MEDIUM",
                 },
                 "snapshot_backup": {
                     "description": "Point-in-time snapshots",
                     "frequency": "hourly",
                     "schedule": "Every hour",
                     "retention_hours": 24,
-                    "priority": "MEDIUM"
-                }
+                    "priority": "MEDIUM",
+                },
             },
             "backup_targets": {
                 "databases": {
@@ -82,102 +78,84 @@ class BackupRecovery:
                     "backup_type": "full_backup",
                     "compression": True,
                     "encryption": True,
-                    "paths": [
-                        "databases/*.db",
-                        "databases/*.sql"
-                    ]
+                    "paths": ["databases/*.db", "databases/*.sql"],
                 },
                 "configurations": {
                     "enabled": True,
                     "backup_type": "incremental_backup",
                     "compression": True,
                     "encryption": True,
-                    "paths": [
-                        "config/*.json",
-                        "config/*.yaml",
-                        "*.env"
-                    ]
+                    "paths": ["config/*.json", "config/*.yaml", "*.env"],
                 },
                 "knowledge_base": {
                     "enabled": True,
                     "backup_type": "incremental_backup",
                     "compression": True,
                     "encryption": True,
-                    "paths": [
-                        "ABACUS_V21_KNOWLEDGE_BASE/**/*",
-                        "DMAIC_V3_OUTPUT/**/*"
-                    ]
+                    "paths": ["ABACUS_V21_KNOWLEDGE_BASE/**/*", "DMAIC_V3_OUTPUT/**/*"],
                 },
                 "logs": {
                     "enabled": True,
                     "backup_type": "differential_backup",
                     "compression": True,
                     "encryption": False,
-                    "paths": [
-                        "logs/*.log",
-                        "logs/*.json"
-                    ]
+                    "paths": ["logs/*.log", "logs/*.json"],
                 },
                 "artifacts": {
                     "enabled": True,
                     "backup_type": "incremental_backup",
                     "compression": True,
                     "encryption": True,
-                    "paths": [
-                        "ABACUS_V21_*/**/*",
-                        "artifacts/**/*"
-                    ]
-                }
+                    "paths": ["ABACUS_V21_*/**/*", "artifacts/**/*"],
+                },
             },
             "storage_locations": {
                 "primary": {
                     "type": "local",
                     "path": "/backups/primary",
-                    "capacity_gb": 500
+                    "capacity_gb": 500,
                 },
                 "secondary": {
                     "type": "network",
                     "path": "//nas/backups/abacus",
-                    "capacity_gb": 1000
+                    "capacity_gb": 1000,
                 },
                 "cloud": {
                     "type": "s3",
                     "bucket": "abacus-v21-backups",
                     "region": "us-east-1",
-                    "storage_class": "STANDARD_IA"
+                    "storage_class": "STANDARD_IA",
                 },
                 "offsite": {
                     "type": "glacier",
                     "vault": "abacus-v21-archive",
-                    "region": "us-west-2"
-                }
+                    "region": "us-west-2",
+                },
             },
             "backup_verification": {
                 "enabled": True,
                 "verify_after_backup": True,
                 "test_restore_frequency": "monthly",
-                "integrity_check": "sha256"
-            }
+                "integrity_check": "sha256",
+            },
         }
 
         config_path = self.output_dir / "backup_strategy.json"
-        with open(config_path, 'w', encoding='utf-8') as f:
+        with open(config_path, "w", encoding="utf-8") as f:
             json.dump(backup_strategy, f, indent=2)
 
         config["details"]["config_file"] = str(config_path)
         config["details"]["backup_types"] = len(backup_strategy["backup_types"])
         config["details"]["backup_targets"] = len(backup_strategy["backup_targets"])
-        config["message"] = f"Backup strategy created with {len(backup_strategy['backup_types'])} backup types"
+        config["message"] = (
+            f"Backup strategy created with {len(backup_strategy['backup_types'])} backup types"
+        )
 
         return config
 
     def create_recovery_procedures(self) -> Dict[str, Any]:
         """Create recovery procedures"""
-        config = {
-            "name": "Recovery Procedures",
-            "status": "CREATED",
-            "details": {}
-        }
+        config = {"name": "Recovery Procedures", "status": "CREATED", "details": {}}
 
         recovery_procedures = {
             "version": "2.1.0",
@@ -186,13 +164,13 @@ class BackupRecovery:
                 "rto": {
                     "description": "Recovery Time Objective",
                     "target_hours": 4,
-                    "maximum_hours": 8
+                    "maximum_hours": 8,
                 },
                 "rpo": {
                     "description": "Recovery Point Objective",
                     "target_hours": 1,
-                    "maximum_hours": 24
-                }
+                    "maximum_hours": 24,
+                },
             },
             "recovery_scenarios": [
                 {
@@ -206,8 +184,8 @@ class BackupRecovery:
                         "3. Restore from latest backup",
                         "4. Verify data integrity",
                         "5. Restart application services",
-                        "6. Validate system functionality"
-                    ]
+                        "6. Validate system functionality",
+                    ],
                 },
                 {
                     "scenario": "Configuration Loss",
@@ -219,8 +197,8 @@ class BackupRecovery:
                         "2. Restore from backup",
                         "3. Verify configuration validity",
                         "4. Restart affected services",
-                        "5. Test system functionality"
-                    ]
+                        "5. Test system functionality",
+                    ],
                 },
                 {
                     "scenario": "Complete System Failure",
@@ -234,8 +212,8 @@ class BackupRecovery:
                         "4. Apply incremental backups",
                         "5. Verify all components",
                         "6. Switch DNS/traffic",
-                        "7. Monitor system health"
-                    ]
+                        "7. Monitor system health",
+                    ],
                 },
                 {
                     "scenario": "Data Deletion",
@@ -247,8 +225,8 @@ class BackupRecovery:
                         "2. Locate appropriate backup",
                         "3. Restore deleted data",
                         "4. Verify data integrity",
-                        "5. Update access logs"
-                    ]
+                        "5. Update access logs",
+                    ],
                 },
                 {
                     "scenario": "Ransomware Attack",
@@ -262,35 +240,33 @@ class BackupRecovery:
                         "4. Scan for malware",
                         "5. Update security measures",
                         "6. Restore operations",
-                        "7. Conduct post-incident review"
-                    ]
-                }
+                        "7. Conduct post-incident review",
+                    ],
+                },
             ],
             "recovery_tools": {
                 "backup_restore": "rsync, tar, aws s3 sync",
                 "database_restore": "pg_restore, mysql_restore",
                 "verification": "sha256sum, md5sum",
-                "monitoring": "nagios, prometheus"
-            }
+                "monitoring": "nagios, prometheus",
+            },
         }
 
         config_path = self.output_dir / "recovery_procedures.json"
-        with open(config_path, 'w', encoding='utf-8') as f:
+        with open(config_path, "w", encoding="utf-8") as f:
             json.dump(recovery_procedures, f, indent=2)
 
         config["details"]["config_file"] = str(config_path)
         config["details"]["scenarios"] = len(recovery_procedures["recovery_scenarios"])
-        config["message"] = f"Recovery procedures created with {len(recovery_procedures['recovery_scenarios'])} scenarios"
+        config["message"] = (
+            f"Recovery procedures created with {len(recovery_procedures['recovery_scenarios'])} scenarios"
+        )
 
         return config
 
     def create_disaster_recovery_plan(self) -> Dict[str, Any]:
         """Create disaster recovery plan"""
-        config = {
-            "name": "Disaster Recovery Plan",
-            "status": "CREATED",
-            "details": {}
-        }
+        config = {"name": "Disaster Recovery Plan", "status": "CREATED", "details": {}}
 
         dr_plan = {
             "version": "2.1.0",
@@ -299,20 +275,20 @@ class BackupRecovery:
                 "primary_site": {
                     "location": "Primary Data Center",
                     "status": "ACTIVE",
-                    "capacity": "100%"
+                    "capacity": "100%",
                 },
                 "dr_site": {
                     "location": "DR Data Center",
                     "status": "STANDBY",
                     "capacity": "100%",
-                    "sync_frequency": "real-time"
+                    "sync_frequency": "real-time",
                 },
                 "cloud_dr": {
                     "provider": "AWS",
                     "region": "us-west-2",
                     "status": "STANDBY",
-                    "capacity": "scalable"
-                }
+                    "capacity": "scalable",
+                },
             },
             "failover_procedures": {
                 "automatic_failover": {
@@ -320,36 +296,48 @@ class BackupRecovery:
                     "trigger_conditions": [
                         "Primary site unreachable > 5 minutes",
                         "Critical service failure",
-                        "Data center disaster"
+                        "Data center disaster",
                     ],
-                    "failover_time_minutes": 15
+                    "failover_time_minutes": 15,
                 },
                 "manual_failover": {
                     "enabled": True,
                     "approval_required": True,
                     "approvers": ["CTO", "Operations Manager"],
-                    "failover_time_minutes": 30
-                }
+                    "failover_time_minutes": 30,
+                },
             },
             "communication_plan": {
                 "stakeholders": [
-                    {"role": "CTO", "contact": "cto@example.com", "phone": "+1-xxx-xxx-xxxx"},
-                    {"role": "Operations Manager", "contact": "ops@example.com", "phone": "+1-xxx-xxx-xxxx"},
-                    {"role": "Security Team", "contact": "security@example.com", "phone": "+1-xxx-xxx-xxxx"}
+                    {
+                        "role": "CTO",
+                        "contact": "cto@example.com",
+                        "phone": "+1-xxx-xxx-xxxx",
+                    },
+                    {
+                        "role": "Operations Manager",
+                        "contact": "ops@example.com",
+                        "phone": "+1-xxx-xxx-xxxx",
+                    },
+                    {
+                        "role": "Security Team",
+                        "contact": "security@example.com",
+                        "phone": "+1-xxx-xxx-xxxx",
+                    },
                 ],
                 "notification_channels": ["email", "sms", "slack", "pagerduty"],
-                "escalation_time_minutes": 15
+                "escalation_time_minutes": 15,
             },
             "testing_schedule": {
                 "tabletop_exercise": "quarterly",
                 "partial_failover_test": "semi-annually",
                 "full_failover_test": "annually",
-                "backup_restore_test": "monthly"
-            }
+                "backup_restore_test": "monthly",
+            },
         }
 
         config_path = self.output_dir / "disaster_recovery_plan.json"
-        with open(config_path, 'w', encoding='utf-8') as f:
+        with open(config_path, "w", encoding="utf-8") as f:
             json.dump(dr_plan, f, indent=2)
 
         config["details"]["config_file"] = str(config_path)
@@ -360,11 +348,7 @@ class BackupRecovery:
 
     def create_backup_scripts(self) -> Dict[str, Any]:
         """Create backup automation scripts"""
-        config = {
-            "name": "Backup Scripts",
-            "status": "CREATED",
-            "details": {}
-        }
+        config = {"name": "Backup Scripts", "status": "CREATED", "details": {}}
 
         backup_script = """#!/bin/bash
 # ABACUS v2.1 Automated Backup Script
@@ -427,7 +411,7 @@ echo "========================================="
 """
 
         backup_script_path = self.output_dir / "backup.sh"
-        with open(backup_script_path, 'w', encoding='utf-8') as f:
+        with open(backup_script_path, "w", encoding="utf-8") as f:
             f.write(backup_script)
 
         restore_script = """#!/bin/bash
@@ -490,7 +474,7 @@ echo "========================================="
 """
 
         restore_script_path = self.output_dir / "restore.sh"
-        with open(restore_script_path, 'w', encoding='utf-8') as f:
+        with open(restore_script_path, "w", encoding="utf-8") as f:
             f.write(restore_script)
 
         # Make scripts executable
@@ -498,17 +482,19 @@ echo "========================================="
             os.chmod(backup_script_path, 0o755)
             os.chmod(restore_script_path, 0o755)
         except OSError as e:
-            config["details"]["chmod_warning"] = (
-                f"Could not set executable permissions on generated scripts: {e}"
+            config["details"][
+                "chmod_warning"
+            ] = f"Could not set executable permissions on generated scripts: {e}"
+            self.results["recommendations"].append(
+                {
+                    "priority": "MEDIUM",
+                    "category": "PERMISSIONS",
+                    "title": "Verify script execute permissions",
+                    "description": "Generated backup/restore scripts may not be executable.",
+                    "action": f"Run chmod +x on scripts manually. Error: {e}",
+                    "impact": "Prevents automation failures when invoking scripts directly",
+                }
             )
-            self.results["recommendations"].append({
-                "priority": "MEDIUM",
-                "category": "PERMISSIONS",
-                "title": "Verify script execute permissions",
-                "description": "Generated backup/restore scripts may not be executable.",
-                "action": f"Run chmod +x on scripts manually. Error: {e}",
-                "impact": "Prevents automation failures when invoking scripts directly"
-            })
 
         config["details"]["backup_script"] = str(backup_script_path)
         config["details"]["restore_script"] = str(restore_script_path)
@@ -525,7 +511,7 @@ echo "========================================="
                 "title": "Implement 3-2-1 Backup Rule",
                 "description": "3 copies, 2 different media, 1 offsite",
                 "action": "Configure local, network, and cloud backups",
-                "impact": "Ensures data survivability in multiple failure scenarios"
+                "impact": "Ensures data survivability in multiple failure scenarios",
             },
             {
                 "priority": "CRITICAL",
@@ -533,7 +519,7 @@ echo "========================================="
                 "title": "Regular Restore Testing",
                 "description": "Test backup restoration monthly",
                 "action": "Schedule automated restore tests",
-                "impact": "Validates backup integrity and recovery procedures"
+                "impact": "Validates backup integrity and recovery procedures",
             },
             {
                 "priority": "HIGH",
@@ -541,7 +527,7 @@ echo "========================================="
                 "title": "Automate Backup Process",
                 "description": "Fully automate backup execution",
                 "action": "Configure cron jobs or scheduled tasks",
-                "impact": "Eliminates human error and ensures consistency"
+                "impact": "Eliminates human error and ensures consistency",
             },
             {
                 "priority": "HIGH",
@@ -549,7 +535,7 @@ echo "========================================="
                 "title": "Encrypt All Backups",
                 "description": "Enable encryption for all backup data",
                 "action": "Configure AES-256 encryption for backups",
-                "impact": "Protects sensitive data in backups"
+                "impact": "Protects sensitive data in backups",
             },
             {
                 "priority": "HIGH",
@@ -557,7 +543,7 @@ echo "========================================="
                 "title": "Monitor Backup Success",
                 "description": "Alert on backup failures",
                 "action": "Integrate backup monitoring with alerting system",
-                "impact": "Ensures timely detection of backup issues"
+                "impact": "Ensures timely detection of backup issues",
             },
             {
                 "priority": "MEDIUM",
@@ -565,8 +551,8 @@ echo "========================================="
                 "title": "Document Recovery Procedures",
                 "description": "Create detailed recovery runbooks",
                 "action": "Document step-by-step recovery procedures",
-                "impact": "Enables faster recovery during incidents"
-            }
+                "impact": "Enables faster recovery during incidents",
+            },
         ]
 
         return recommendations
@@ -603,7 +589,7 @@ echo "========================================="
     def save_results(self):
         """Save results to JSON"""
         results_path = self.output_dir / "backup_recovery_results.json"
-        with open(results_path, 'w', encoding='utf-8') as f:
+        with open(results_path, "w", encoding="utf-8") as f:
             json.dump(self.results, f, indent=2)
         print(f"\nResults saved to: {results_path}")
 
@@ -611,7 +597,7 @@ echo "========================================="
         """Generate markdown report"""
         report_path = self.output_dir / "BACKUP_RECOVERY_REPORT.md"
 
-        with open(report_path, 'w', encoding='utf-8') as f:
+        with open(report_path, "w", encoding="utf-8") as f:
             f.write("# ABACUS v2.1 - Backup & Recovery Report\n\n")
             f.write(f"**Stage**: 2.5 - Backup & Recovery\n")
             f.write(f"**Timestamp**: {self.timestamp}\n")
@@ -657,6 +643,7 @@ echo "========================================="
             f.write(f"*Report generated on {self.timestamp}*\n")
 
         print(f"Report saved to: {report_path}")
+
 
 if __name__ == "__main__":
     backup = BackupRecovery()

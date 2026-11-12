@@ -38,14 +38,14 @@ from enum import Enum
 import logging
 
 logging.basicConfig(
-    level=logging.INFO,
-    format='%(asctime)s - %(levelname)s - %(message)s'
+    level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s"
 )
 logger = logging.getLogger(__name__)
 
 
 class ConversationIntent(Enum):
     """Conversation intent classification"""
+
     MIGRATION = "migration"
     DEPLOYMENT = "deployment"
     TESTING = "testing"
@@ -60,6 +60,7 @@ class ConversationIntent(Enum):
 
 class ConversationOutcome(Enum):
     """Conversation outcome classification"""
+
     SUCCESS = "success"
     PARTIAL_SUCCESS = "partial_success"
     IN_PROGRESS = "in_progress"
@@ -71,6 +72,7 @@ class ConversationOutcome(Enum):
 @dataclass
 class ConversationTuple:
     """Individual conversation tuple"""
+
     tuple_number: int
     timestamp: str
     user_input: str
@@ -86,6 +88,7 @@ class ConversationTuple:
 @dataclass
 class SessionMetadata:
     """Session-level metadata"""
+
     session_id: str
     start_time: str
     end_time: Optional[str] = None
@@ -108,7 +111,7 @@ class SessionTupleAnalyzer:
 
         self.session_metadata = SessionMetadata(
             session_id=f"session_{datetime.now().strftime('%Y%m%d_%H%M%S')}",
-            start_time=datetime.now().isoformat()
+            start_time=datetime.now().isoformat(),
         )
 
         self.conversation_tuples: List[ConversationTuple] = []
@@ -116,9 +119,9 @@ class SessionTupleAnalyzer:
 
     def analyze_session(self):
         """Analyze the current session"""
-        logger.info("="*80)
+        logger.info("=" * 80)
         logger.info("ABACUS v2.1 SESSION TUPLE ANALYSIS")
-        logger.info("="*80)
+        logger.info("=" * 80)
 
         self._extract_conversation_tuples()
         self._analyze_intents()
@@ -126,9 +129,9 @@ class SessionTupleAnalyzer:
         self._calculate_session_metrics()
         self._generate_reports()
 
-        logger.info("\n" + "="*80)
+        logger.info("\n" + "=" * 80)
         logger.info("SESSION ANALYSIS COMPLETE")
-        logger.info("="*80)
+        logger.info("=" * 80)
 
     def _extract_conversation_tuples(self):
         """Extract conversation tuples from session"""
@@ -144,13 +147,13 @@ class SessionTupleAnalyzer:
                     "ABACUS_V21_MIGRATION_GUIDE.md",
                     "ABACUS_V21_MIGRATION_COMPLETION_SUMMARY.md",
                     "ABACUS_V21_MIGRATION_OUTPUT/ABACUS_V21_MIGRATION_REPORT.json",
-                    "ABACUS_V21_MIGRATION_OUTPUT/ABACUS_V21_MIGRATION_REPORT.md"
+                    "ABACUS_V21_MIGRATION_OUTPUT/ABACUS_V21_MIGRATION_REPORT.md",
                 ],
                 "next_steps": [
                     "Execute deployment scripts",
                     "Monitor system health",
-                    "Validate production metrics"
-                ]
+                    "Validate production metrics",
+                ],
             },
             {
                 "input": "as per: ABACUS_V21_MIGRATION_COMPLETION_SUMMARY.md and next steps from: ABACUS_V21_MIGRATION_GUIDE.md",
@@ -159,13 +162,13 @@ class SessionTupleAnalyzer:
                 "output": [
                     "abacus_v21_deployment_execution.py",
                     "ABACUS_V21_DEPLOYMENT_OUTPUT/ABACUS_V21_DEPLOYMENT_REPORT.json",
-                    "ABACUS_V21_DEPLOYMENT_OUTPUT/ABACUS_V21_DEPLOYMENT_REPORT.md"
+                    "ABACUS_V21_DEPLOYMENT_OUTPUT/ABACUS_V21_DEPLOYMENT_REPORT.md",
                 ],
                 "next_steps": [
                     "Continue monitoring system performance",
                     "Track deprecated components",
-                    "Identify improvement opportunities"
-                ]
+                    "Identify improvement opportunities",
+                ],
             },
             {
                 "input": "procede - also full session tuple generation as pdf and analyzed conversation tuple analyst",
@@ -175,14 +178,14 @@ class SessionTupleAnalyzer:
                     "abacus_v21_session_tuple_analyzer.py",
                     "ABACUS_SESSION_ANALYSIS/session_analysis_report.json",
                     "ABACUS_SESSION_ANALYSIS/session_analysis_report.md",
-                    "ABACUS_SESSION_ANALYSIS/session_analysis_report.pdf"
+                    "ABACUS_SESSION_ANALYSIS/session_analysis_report.pdf",
                 ],
                 "next_steps": [
                     "Generate PDF report",
                     "Analyze conversation patterns",
-                    "Track recursive knowledge updates"
-                ]
-            }
+                    "Track recursive knowledge updates",
+                ],
+            },
         ]
 
         for idx, conv in enumerate(conversation_data, 1):
@@ -198,24 +201,32 @@ class SessionTupleAnalyzer:
                 recursive_updates=[],
                 metadata={
                     "files_created": len(conv["output"]),
-                    "next_steps_count": len(conv["next_steps"])
-                }
+                    "next_steps_count": len(conv["next_steps"]),
+                },
             )
 
             self.conversation_tuples.append(tuple_obj)
             self.session_metadata.total_user_input_chars += len(conv["input"])
             self.session_metadata.total_output_created += len(conv["output"])
 
-            logger.info(f"  ✅ Tuple {idx}: {conv['intent'].value} - {conv['outcome'].value}")
+            logger.info(
+                f"  ✅ Tuple {idx}: {conv['intent'].value} - {conv['outcome'].value}"
+            )
 
         self.session_metadata.total_tuples = len(self.conversation_tuples)
 
         if self.conversation_tuples:
-            self.session_metadata.t0_original_input = self.conversation_tuples[0].user_input
+            self.session_metadata.t0_original_input = self.conversation_tuples[
+                0
+            ].user_input
 
         logger.info(f"\n  📊 Total tuples extracted: {len(self.conversation_tuples)}")
-        logger.info(f"  📊 Total user input: {self.session_metadata.total_user_input_chars} chars")
-        logger.info(f"  📊 Total output created: {self.session_metadata.total_output_created} files")
+        logger.info(
+            f"  📊 Total user input: {self.session_metadata.total_user_input_chars} chars"
+        )
+        logger.info(
+            f"  📊 Total output created: {self.session_metadata.total_output_created} files"
+        )
 
     def _analyze_intents(self):
         """Analyze conversation intents"""
@@ -226,15 +237,21 @@ class SessionTupleAnalyzer:
             intent = tuple_obj.intent.value
             intent_counts[intent] = intent_counts.get(intent, 0) + 1
 
-        primary_intent = max(intent_counts.items(), key=lambda x: x[1])[0] if intent_counts else None
-        self.session_metadata.primary_intent = ConversationIntent(primary_intent) if primary_intent else None
+        primary_intent = (
+            max(intent_counts.items(), key=lambda x: x[1])[0] if intent_counts else None
+        )
+        self.session_metadata.primary_intent = (
+            ConversationIntent(primary_intent) if primary_intent else None
+        )
 
         logger.info(f"  📊 Intent distribution:")
         for intent, count in intent_counts.items():
             logger.info(f"    - {intent}: {count} occurrences")
 
         if self.session_metadata.primary_intent:
-            logger.info(f"  ✅ Primary intent: {self.session_metadata.primary_intent.value}")
+            logger.info(
+                f"  ✅ Primary intent: {self.session_metadata.primary_intent.value}"
+            )
 
     def _track_recursive_updates(self):
         """Track recursive knowledge updates across conversation"""
@@ -245,19 +262,19 @@ class SessionTupleAnalyzer:
                 "created_in_tuple": 1,
                 "updated_in_tuples": [1],
                 "current_status": "completed",
-                "files": ["abacus_v21_migration_test_comprehensive.py"]
+                "files": ["abacus_v21_migration_test_comprehensive.py"],
             },
             "deployment_execution": {
                 "created_in_tuple": 2,
                 "updated_in_tuples": [2],
                 "current_status": "completed",
-                "files": ["abacus_v21_deployment_execution.py"]
+                "files": ["abacus_v21_deployment_execution.py"],
             },
             "session_analysis": {
                 "created_in_tuple": 3,
                 "updated_in_tuples": [3],
                 "current_status": "in_progress",
-                "files": ["abacus_v21_session_tuple_analyzer.py"]
+                "files": ["abacus_v21_session_tuple_analyzer.py"],
             },
             "migration_documentation": {
                 "created_in_tuple": 1,
@@ -265,8 +282,8 @@ class SessionTupleAnalyzer:
                 "current_status": "completed",
                 "files": [
                     "ABACUS_V21_MIGRATION_GUIDE.md",
-                    "ABACUS_V21_MIGRATION_COMPLETION_SUMMARY.md"
-                ]
+                    "ABACUS_V21_MIGRATION_COMPLETION_SUMMARY.md",
+                ],
             },
             "deployment_reports": {
                 "created_in_tuple": 2,
@@ -274,9 +291,9 @@ class SessionTupleAnalyzer:
                 "current_status": "completed",
                 "files": [
                     "ABACUS_V21_DEPLOYMENT_OUTPUT/ABACUS_V21_DEPLOYMENT_REPORT.json",
-                    "ABACUS_V21_DEPLOYMENT_OUTPUT/ABACUS_V21_DEPLOYMENT_REPORT.md"
-                ]
-            }
+                    "ABACUS_V21_DEPLOYMENT_OUTPUT/ABACUS_V21_DEPLOYMENT_REPORT.md",
+                ],
+            },
         }
 
         self.recursive_knowledge_base = knowledge_items
@@ -289,9 +306,11 @@ class SessionTupleAnalyzer:
             logger.info(f"    - Status: {item_data['current_status']}")
             logger.info(f"    - Files: {len(item_data['files'])}")
 
-            for tuple_num in item_data['updated_in_tuples']:
+            for tuple_num in item_data["updated_in_tuples"]:
                 if tuple_num <= len(self.conversation_tuples):
-                    self.conversation_tuples[tuple_num - 1].recursive_updates.append(item_name)
+                    self.conversation_tuples[tuple_num - 1].recursive_updates.append(
+                        item_name
+                    )
 
         logger.info(f"\n  📊 Total knowledge items tracked: {len(knowledge_items)}")
 
@@ -304,7 +323,9 @@ class SessionTupleAnalyzer:
             outcome = tuple_obj.outcome.value
             outcome_counts[outcome] = outcome_counts.get(outcome, 0) + 1
 
-        if "success" in outcome_counts and outcome_counts["success"] == len(self.conversation_tuples):
+        if "success" in outcome_counts and outcome_counts["success"] == len(
+            self.conversation_tuples
+        ):
             self.session_metadata.overall_outcome = ConversationOutcome.SUCCESS
         elif "in_progress" in outcome_counts:
             self.session_metadata.overall_outcome = ConversationOutcome.IN_PROGRESS
@@ -316,11 +337,21 @@ class SessionTupleAnalyzer:
         logger.info(f"  📊 Session metrics:")
         logger.info(f"    - Session ID: {self.session_metadata.session_id}")
         logger.info(f"    - Total tuples: {self.session_metadata.total_tuples}")
-        logger.info(f"    - Total user input: {self.session_metadata.total_user_input_chars} chars")
-        logger.info(f"    - Total output created: {self.session_metadata.total_output_created} files")
-        logger.info(f"    - Primary intent: {self.session_metadata.primary_intent.value if self.session_metadata.primary_intent else 'N/A'}")
-        logger.info(f"    - Overall outcome: {self.session_metadata.overall_outcome.value if self.session_metadata.overall_outcome else 'N/A'}")
-        logger.info(f"    - Recursive knowledge items: {len(self.session_metadata.recursive_knowledge_items)}")
+        logger.info(
+            f"    - Total user input: {self.session_metadata.total_user_input_chars} chars"
+        )
+        logger.info(
+            f"    - Total output created: {self.session_metadata.total_output_created} files"
+        )
+        logger.info(
+            f"    - Primary intent: {self.session_metadata.primary_intent.value if self.session_metadata.primary_intent else 'N/A'}"
+        )
+        logger.info(
+            f"    - Overall outcome: {self.session_metadata.overall_outcome.value if self.session_metadata.overall_outcome else 'N/A'}"
+        )
+        logger.info(
+            f"    - Recursive knowledge items: {len(self.session_metadata.recursive_knowledge_items)}"
+        )
 
     def _generate_reports(self):
         """Generate comprehensive reports"""
@@ -340,14 +371,20 @@ class SessionTupleAnalyzer:
             "recursive_knowledge_base": self.recursive_knowledge_base,
             "summary": {
                 "total_tuples": len(self.conversation_tuples),
-                "total_files_created": sum(len(t.output_created) for t in self.conversation_tuples),
-                "total_next_steps": sum(len(t.next_steps) for t in self.conversation_tuples),
-                "total_recursive_updates": sum(len(t.recursive_updates) for t in self.conversation_tuples)
-            }
+                "total_files_created": sum(
+                    len(t.output_created) for t in self.conversation_tuples
+                ),
+                "total_next_steps": sum(
+                    len(t.next_steps) for t in self.conversation_tuples
+                ),
+                "total_recursive_updates": sum(
+                    len(t.recursive_updates) for t in self.conversation_tuples
+                ),
+            },
         }
 
         json_path = self.output_dir / "session_analysis_report.json"
-        with open(json_path, 'w', encoding='utf-8') as f:
+        with open(json_path, "w", encoding="utf-8") as f:
             json.dump(report_data, f, indent=2, default=str)
 
         logger.info(f"  ✅ JSON report: {json_path}")
@@ -407,7 +444,9 @@ This report provides comprehensive analysis of the ABACUS v2.1 session, includin
                 report += f"- {step}\n"
 
             if tuple_obj.recursive_updates:
-                report += f"\n**Recursive Updates ({len(tuple_obj.recursive_updates)}):**\n"
+                report += (
+                    f"\n**Recursive Updates ({len(tuple_obj.recursive_updates)}):**\n"
+                )
                 for update in tuple_obj.recursive_updates:
                     report += f"- {update}\n"
 
@@ -428,7 +467,7 @@ This report provides comprehensive analysis of the ABACUS v2.1 session, includin
 - **Current Status:** {item_data['current_status']}
 - **Files ({len(item_data['files'])}):**
 """
-            for file in item_data['files']:
+            for file in item_data["files"]:
                 report += f"  - `{file}`\n"
 
         report += f"""
@@ -442,7 +481,9 @@ This report provides comprehensive analysis of the ABACUS v2.1 session, includin
             intent = tuple_obj.intent.value
             intent_counts[intent] = intent_counts.get(intent, 0) + 1
 
-        for intent, count in sorted(intent_counts.items(), key=lambda x: x[1], reverse=True):
+        for intent, count in sorted(
+            intent_counts.items(), key=lambda x: x[1], reverse=True
+        ):
             percentage = (count / len(self.conversation_tuples)) * 100
             report += f"- **{intent}**: {count} occurrences ({percentage:.1f}%)\n"
 
@@ -457,7 +498,9 @@ This report provides comprehensive analysis of the ABACUS v2.1 session, includin
             outcome = tuple_obj.outcome.value
             outcome_counts[outcome] = outcome_counts.get(outcome, 0) + 1
 
-        for outcome, count in sorted(outcome_counts.items(), key=lambda x: x[1], reverse=True):
+        for outcome, count in sorted(
+            outcome_counts.items(), key=lambda x: x[1], reverse=True
+        ):
             percentage = (count / len(self.conversation_tuples)) * 100
             report += f"- **{outcome}**: {count} occurrences ({percentage:.1f}%)\n"
 
@@ -484,7 +527,7 @@ The ABACUS v2.1 session has been comprehensively analyzed with full tuple tracki
 """
 
         md_path = self.output_dir / "session_analysis_report.md"
-        with open(md_path, 'w', encoding='utf-8') as f:
+        with open(md_path, "w", encoding="utf-8") as f:
             f.write(report)
 
         logger.info(f"  ✅ Markdown report: {md_path}")
@@ -502,13 +545,15 @@ The ABACUS v2.1 session has been comprehensively analyzed with full tuple tracki
             result = subprocess.run(
                 ["pandoc", str(md_path), "-o", str(pdf_path), "--pdf-engine=xelatex"],
                 capture_output=True,
-                text=True
+                text=True,
             )
 
             if result.returncode == 0 and pdf_path.exists():
                 logger.info(f"  ✅ PDF report: {pdf_path}")
             else:
-                logger.warning(f"  ⚠️  PDF generation requires pandoc: pip install pandoc")
+                logger.warning(
+                    f"  ⚠️  PDF generation requires pandoc: pip install pandoc"
+                )
                 logger.info(f"  ℹ️  Markdown report available: {md_path}")
         except Exception as e:
             logger.warning(f"  ⚠️  PDF generation skipped: {e}")

@@ -64,13 +64,17 @@ def test_phase_cache_is_iteration_bound_and_resets_for_next_run():
     # The iteration actually received by the phase is a behavioral input.
     executor.execute(iteration=3, source="new-iteration")
     assert phase.calls == [2, 3]
-    assert [r["iteration"] for r in b.get_provenance_trail() if r["event"] == "phase"] == [2, 3]
+    assert [
+        r["iteration"] for r in b.get_provenance_trail() if r["event"] == "phase"
+    ] == [2, 3]
 
     # Reusing a bridge for a new run cannot replay a previous run's cached result.
     b.begin_run("second-input")
     executor.execute(iteration=2, source="new-run")
     assert phase.calls == [2, 3, 2]
-    assert [r["run_id"] for r in b.get_provenance_trail() if r["event"] == "phase"][-1] == b.run_id
+    assert [r["run_id"] for r in b.get_provenance_trail() if r["event"] == "phase"][
+        -1
+    ] == b.run_id
 
 
 def test_executor_records_failed_tuple_without_masking_status():
@@ -97,7 +101,10 @@ def test_plain_phase_result_records_success_and_empty_metrics():
         def execute(self, iteration):
             return "done"
 
-    assert IdempotentPhaseExecutor(PlainPhase(), b, "control").execute(iteration=1) == "done"
+    assert (
+        IdempotentPhaseExecutor(PlainPhase(), b, "control").execute(iteration=1)
+        == "done"
+    )
     phase = next(row for row in b.get_provenance_trail() if row["event"] == "phase")
     assert phase["status"] == "success"
     assert phase["metrics"] == {}

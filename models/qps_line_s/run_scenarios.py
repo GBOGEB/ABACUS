@@ -26,19 +26,25 @@ def make_rows(config):
             accumulation = max(net, 0.0)
             iso_rate = dpdt_bar_per_min(accumulation, volume, temp)
             energy_bound = iso_rate * GAMMA
-            rows.append({
-                "V_eff_m3": volume,
-                "case": item["case"],
-                "m_in_g_s": item["m_in_g_s"],
-                "m_rec_g_s": item["m_rec_g_s"],
-                "m_HP_g_s": item.get("m_hp_g_s", 0.0),
-                "m_net_g_s": net,
-                "dPdt_isothermal_bar_min": iso_rate,
-                "dPdt_energy_bar_min": energy_bound,
-                "energy_source": ENERGY_SOURCE,
-                "t_plus_1bar_isothermal_min": "" if iso_rate <= 0 else time_to_pressure_limit_min(1.0, accumulation, volume, temp),
-                "position": item["position"],
-            })
+            rows.append(
+                {
+                    "V_eff_m3": volume,
+                    "case": item["case"],
+                    "m_in_g_s": item["m_in_g_s"],
+                    "m_rec_g_s": item["m_rec_g_s"],
+                    "m_HP_g_s": item.get("m_hp_g_s", 0.0),
+                    "m_net_g_s": net,
+                    "dPdt_isothermal_bar_min": iso_rate,
+                    "dPdt_energy_bar_min": energy_bound,
+                    "energy_source": ENERGY_SOURCE,
+                    "t_plus_1bar_isothermal_min": (
+                        ""
+                        if iso_rate <= 0
+                        else time_to_pressure_limit_min(1.0, accumulation, volume, temp)
+                    ),
+                    "position": item["position"],
+                }
+            )
     return rows
 
 

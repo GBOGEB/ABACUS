@@ -3,7 +3,6 @@ import xml.etree.ElementTree as ET
 
 from renderers.process_flow_renderer import ProcessFlowRenderer
 
-
 VALID_SCHEMA = {
     "type": "process_flow",
     "title": "Example Process",

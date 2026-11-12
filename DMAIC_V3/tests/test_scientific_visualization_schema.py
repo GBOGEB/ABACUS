@@ -6,7 +6,6 @@ import yaml
 from src.qplant_presentation_engine.schema_validation import CANONICAL_SCHEMA_DIR
 from src.qplant_presentation_engine.truth_matrix import TRUTH_RULES
 
-
 REPO_ROOT = Path(__file__).resolve().parents[2]
 SCHEMA_DIR = CANONICAL_SCHEMA_DIR
 
@@ -70,7 +69,9 @@ def test_schema_supports_required_lineage_and_pca_metrics():
 
 def test_schema_truth_matrix_principles_align_with_runtime_truth_rules():
     schema = _load_yaml(SCHEMA_DIR / "schema.yaml")
-    principles = schema["properties"]["truth_matrix"]["properties"]["principles"]["items"]["enum"]
+    principles = schema["properties"]["truth_matrix"]["properties"]["principles"][
+        "items"
+    ]["enum"]
     assert set(principles) == set(TRUTH_RULES)
 
 
@@ -82,7 +83,9 @@ def test_validation_rules_and_lineage_include_truth_and_pca_bindings():
     assert "pca_metrics_required" in rule_ids
     assert "truth_matrix_principles_alignment" in rule_ids
 
-    truth_binding = set(lineage["lineage_schema"]["governance_bindings"]["truth_matrix_principles"])
+    truth_binding = set(
+        lineage["lineage_schema"]["governance_bindings"]["truth_matrix_principles"]
+    )
     assert truth_binding == set(TRUTH_RULES)
 
     pca_binding = lineage["lineage_schema"]["governance_bindings"]["metrics"]["pca"]

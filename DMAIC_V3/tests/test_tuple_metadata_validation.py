@@ -4,7 +4,10 @@ from pathlib import Path
 ROOT_DIR = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(ROOT_DIR / "src"))
 
-from dmaic.tuple_metadata import validate_tracker_payload, validate_tuple_metadata  # noqa: E402
+from dmaic.tuple_metadata import (
+    validate_tracker_payload,
+    validate_tuple_metadata,
+)  # noqa: E402
 
 
 def test_validate_tuple_metadata_accepts_required_bridge_keys():
@@ -53,7 +56,9 @@ def test_validate_tracker_payload_rejects_invalid_status_schema():
     }
 
     errors = validate_tracker_payload(payload)
-    assert errors == ["status_schema must equal ['blocked', 'in_progress', 'planned', 'released', 'validated']"]
+    assert errors == [
+        "status_schema must equal ['blocked', 'in_progress', 'planned', 'released', 'validated']"
+    ]
 
 
 def test_validate_tuple_metadata_accepts_recursive_tuple_chain():

@@ -26,21 +26,39 @@ def test_json_digest_rejects_non_finite_numbers():
 
 def test_git_identity_binds_head_and_tree(tmp_path):
     subprocess.run(["git", "init", "-q"], cwd=tmp_path, check=True)
-    subprocess.run(["git", "config", "user.email", "test@example.invalid"], cwd=tmp_path, check=True)
-    subprocess.run(["git", "config", "user.name", "ABACUS Test"], cwd=tmp_path, check=True)
+    subprocess.run(
+        ["git", "config", "user.email", "test@example.invalid"],
+        cwd=tmp_path,
+        check=True,
+    )
+    subprocess.run(
+        ["git", "config", "user.name", "ABACUS Test"], cwd=tmp_path, check=True
+    )
     (tmp_path / "payload.json").write_text("{}\n", encoding="utf-8")
     subprocess.run(["git", "add", "payload.json"], cwd=tmp_path, check=True)
     subprocess.run(["git", "commit", "-qm", "fixture"], cwd=tmp_path, check=True)
 
     identity = git_identity(tmp_path)
-    assert identity.commit_sha == subprocess.check_output(["git", "rev-parse", "HEAD"], cwd=tmp_path, text=True).strip()
-    assert identity.tree_sha == subprocess.check_output(["git", "rev-parse", "HEAD^{tree}"], cwd=tmp_path, text=True).strip()
+    head_commit_sha = subprocess.check_output(
+        ["git", "rev-parse", "HEAD"], cwd=tmp_path, text=True
+    ).strip()
+    head_tree_sha = subprocess.check_output(
+        ["git", "rev-parse", "HEAD^{tree}"], cwd=tmp_path, text=True
+    ).strip()
+    assert identity.commit_sha == head_commit_sha
+    assert identity.tree_sha == head_tree_sha
 
 
 def test_receipt_is_deterministic_for_same_payload(tmp_path):
     subprocess.run(["git", "init", "-q"], cwd=tmp_path, check=True)
-    subprocess.run(["git", "config", "user.email", "test@example.invalid"], cwd=tmp_path, check=True)
-    subprocess.run(["git", "config", "user.name", "ABACUS Test"], cwd=tmp_path, check=True)
+    subprocess.run(
+        ["git", "config", "user.email", "test@example.invalid"],
+        cwd=tmp_path,
+        check=True,
+    )
+    subprocess.run(
+        ["git", "config", "user.name", "ABACUS Test"], cwd=tmp_path, check=True
+    )
     (tmp_path / "seed").write_text("seed", encoding="utf-8")
     subprocess.run(["git", "add", "seed"], cwd=tmp_path, check=True)
     subprocess.run(["git", "commit", "-qm", "fixture"], cwd=tmp_path, check=True)

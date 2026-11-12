@@ -9,6 +9,7 @@ from models.qps_line_s.ssot_tables import (
 
 # --- NIST conductivity sanity ---
 
+
 def test_nist_k_at_4k():
     k = k_aisi304_w_m_k(4.0)
     assert 0.1 < k < 1.0, f"k(4K)={k:.4f} W/mK out of expected range"
@@ -27,6 +28,7 @@ def test_nist_k_monotonically_increasing():
 
 # --- conduction integral sign convention (matches SSOT negative a_cond) ---
 
+
 def test_conduction_integral_hot_to_cold_is_negative():
     # INT(T_hot -> T_cold) with T_hot > T_cold is negative
     assert integrate_k_signed_w_per_m(50.0, 2.0) < 0
@@ -43,6 +45,7 @@ def test_conduction_integral_antisymmetric():
 
 
 # --- SSOT Table 28 heat loads at nominal initial state ---
+
 
 def test_q1_positive_at_nominal_ts():
     # Q1 (TS->Cold): heat flows cold-ward -> must be positive
@@ -61,14 +64,14 @@ def test_q2_positive_at_nominal_ts():
 def test_q1_initial_magnitude():
     # Pin the SSOT-derived initial heat load against the computed value
     q = static_heat_loads_w("LINAC_30", t_cold_k=2.0, t_ts_k=50.0)
-    assert 550 < q["q1_total_w"] < 750, (
-        f"Q1(50K)={q['q1_total_w']:.0f} W outside expected 550-750 W range"
-    )
+    assert (
+        550 < q["q1_total_w"] < 750
+    ), f"Q1(50K)={q['q1_total_w']:.0f} W outside expected 550-750 W range"
 
 
 def test_conduction_grows_with_ts_temperature():
     # As T_TS warms, the conduction integral (TS->cold) grows
-    q50  = static_heat_loads_w("LINAC_30", 2.0, 50.0)
+    q50 = static_heat_loads_w("LINAC_30", 2.0, 50.0)
     q100 = static_heat_loads_w("LINAC_30", 2.0, 100.0)
     q200 = static_heat_loads_w("LINAC_30", 2.0, 200.0)
     assert q50["q1_cond_w"] < q100["q1_cond_w"] < q200["q1_cond_w"]
@@ -76,12 +79,13 @@ def test_conduction_grows_with_ts_temperature():
 
 # --- full simulation golden bounds ---
 
+
 def test_ssot_simulation_dryout_in_bracket():
     # SSOT result must fall between radiation-only (~4 h) and D2.1 baseline (~2 h)
     r = simulate("LINAC_30")
-    assert 1.0 < r["dryout_h"] < 4.0, (
-        f"dry-out {r['dryout_h']} h outside [1, 4] h bracket"
-    )
+    assert (
+        1.0 < r["dryout_h"] < 4.0
+    ), f"dry-out {r['dryout_h']} h outside [1, 4] h bracket"
 
 
 def test_ssot_simulation_peak_flow_nontrivial():

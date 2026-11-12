@@ -50,7 +50,9 @@ def test_compressor_availability():
 def test_vfd_savings():
     p_fixed_70 = fixed_speed_power_at_load(FSD575_PACKAGE_KW, 0.7)
     p_vfd_70 = vfd_power_at_load(FSD575_PACKAGE_KW, 0.7)
-    summary = annual_energy_savings_vfd(full_load_kw=FSD575_PACKAGE_KW, avg_load_fraction=0.7)
+    summary = annual_energy_savings_vfd(
+        full_load_kw=FSD575_PACKAGE_KW, avg_load_fraction=0.7
+    )
 
     assert p_vfd_70 < p_fixed_70
     assert summary["cost_savings_eur_yr"] > 0

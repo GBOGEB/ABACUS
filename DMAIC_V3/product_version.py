@@ -12,7 +12,6 @@ from importlib.metadata import PackageNotFoundError, version as package_version
 from pathlib import Path
 import tomllib
 
-
 PACKAGE_DISTRIBUTION = "abacus-dow"
 
 

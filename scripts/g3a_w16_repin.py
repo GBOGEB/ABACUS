@@ -102,8 +102,10 @@ def repin(
     interpreters_changed = False
     if pythons is not None or kpi_python is not None:
         new_pythons = list(pythons) if pythons is not None else list(out["pythons"])
-        if not new_pythons or len(set(new_pythons)) != len(new_pythons) or not all(
-            re.fullmatch(r"3\.\d{1,2}", p) for p in new_pythons
+        if (
+            not new_pythons
+            or len(set(new_pythons)) != len(new_pythons)
+            or not all(re.fullmatch(r"3\.\d{1,2}", p) for p in new_pythons)
         ):
             raise RepinError("pythons must be distinct 3.X versions")
         new_pythons.sort(key=lambda v: tuple(int(x) for x in v.split(".")))

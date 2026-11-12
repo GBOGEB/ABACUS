@@ -35,13 +35,17 @@ def test_reference_rtm048_nm3_day_to_kg_year():
 def test_baseline_scenario_total_range():
     import json
 
-    scenarios = json.loads((ROOT / "data" / "scenarios.json").read_text(encoding="utf-8"))
+    scenarios = json.loads(
+        (ROOT / "data" / "scenarios.json").read_text(encoding="utf-8")
+    )
     baseline = next(s for s in scenarios if s["id"] == "SCN-BASELINE-MIX")
     total_kg = 0.0
     for item in baseline["inventory"]:
         total_kg += (
             leak_rate_to_mass_flow_g_year(
-                item["leak_rate_mbar_l_s"], item["temperature_k"], item["pressure_bar_abs"]
+                item["leak_rate_mbar_l_s"],
+                item["temperature_k"],
+                item["pressure_bar_abs"],
             )
             * item["count"]
             / 1000.0

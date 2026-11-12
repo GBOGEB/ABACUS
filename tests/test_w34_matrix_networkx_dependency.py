@@ -8,7 +8,9 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 # Interpreter edges come from the SSOT view (ssot/python_versions.yaml).
-_LANE = json.loads((ROOT / "ssot/python_versions.lanes.json").read_text(encoding="utf-8"))["lanes"]["default"]
+_LANE = json.loads(
+    (ROOT / "ssot/python_versions.lanes.json").read_text(encoding="utf-8")
+)["lanes"]["default"]
 EDGE_MATRIX = f"python-version: ['{_LANE['oldest']}', '{_LANE['newest']}']"
 TEST_REQUIREMENTS = ROOT / "requirements-test.txt"
 DEV_REQUIREMENTS = ROOT / "requirements-dev.txt"

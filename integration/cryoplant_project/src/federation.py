@@ -34,7 +34,9 @@ _INTEGRATION_MANIFEST = _THIS_DIR.parent / "federation" / "manifest.yaml"
 
 # Authoritative DELTA_1 spec (lives in ABACUS repo root).
 _ABACUS_ROOT = _THIS_DIR.parent.parent.parent
-_FEDERATION_SPEC = _ABACUS_ROOT / "runtime" / "federation" / "codex-abacus-federation.yaml"
+_FEDERATION_SPEC = (
+    _ABACUS_ROOT / "runtime" / "federation" / "codex-abacus-federation.yaml"
+)
 
 
 def assimilate(context: Dict[str, Any] | None = None) -> Dict[str, Any]:

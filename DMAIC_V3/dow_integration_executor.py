@@ -31,22 +31,61 @@ class DOWIntegrationExecutor:
         self.logger = logging.getLogger(__name__)
         self.results: List[Dict[str, Any]] = []
 
-    def execute_pipeline(self, iteration: int, target_dir: str = "DMAIC_CANONICAL_OUTPUT") -> Dict[str, Any]:
+    def execute_pipeline(
+        self, iteration: int, target_dir: str = "DMAIC_CANONICAL_OUTPUT"
+    ) -> Dict[str, Any]:
         print(f"\n{'=' * 80}")
         print(f"DOW INTEGRATION PIPELINE - ITERATION {iteration}")
         print(f"{'=' * 80}\n")
 
         if not Path(target_dir).exists():
-            return {"status": "error", "error": "Target directory not found", "target": target_dir}
+            return {
+                "status": "error",
+                "error": "Target directory not found",
+                "target": target_dir,
+            }
 
         required = [
-            (1, "Metadata Injection", lambda: self._run_agent(
-                "dow_metadata_injector", ["--iteration", str(iteration), "--target", target_dir, "--verbose"])),
-            (2, "Recursive Hooks Injection", lambda: self._run_agent(
-                "dow_recursive_hooks_injector", ["--iteration", str(iteration), "--target", target_dir, "--verbose"])),
-            (3, "Convergence Calculation", lambda: self._run_convergence(iteration, target_dir)),
-            (4, "Knowledge Extraction", lambda: self._run_agent(
-                "dow_knowledge_extractor", ["--target", target_dir, "--verbose"])),
+            (
+                1,
+                "Metadata Injection",
+                lambda: self._run_agent(
+                    "dow_metadata_injector",
+                    [
+                        "--iteration",
+                        str(iteration),
+                        "--target",
+                        target_dir,
+                        "--verbose",
+                    ],
+                ),
+            ),
+            (
+                2,
+                "Recursive Hooks Injection",
+                lambda: self._run_agent(
+                    "dow_recursive_hooks_injector",
+                    [
+                        "--iteration",
+                        str(iteration),
+                        "--target",
+                        target_dir,
+                        "--verbose",
+                    ],
+                ),
+            ),
+            (
+                3,
+                "Convergence Calculation",
+                lambda: self._run_convergence(iteration, target_dir),
+            ),
+            (
+                4,
+                "Knowledge Extraction",
+                lambda: self._run_agent(
+                    "dow_knowledge_extractor", ["--target", target_dir, "--verbose"]
+                ),
+            ),
             (
                 5,
                 "Recursive Self-Ranking",
@@ -68,12 +107,16 @@ class DOWIntegrationExecutor:
             result["stage_name"] = stage_name
             self.results.append(result)
             if result.get("status") != "success":
-                print(f"[X] Required Stage {stage_number} did not execute successfully; pipeline is fail-closed.")
+                print(
+                    f"[X] Required Stage {stage_number} did not execute successfully; pipeline is fail-closed."
+                )
                 return {
                     "status": "error",
                     "stage": stage_number,
                     "stage_name": stage_name,
-                    "reason": result.get("reason") or result.get("error") or result.get("status"),
+                    "reason": result.get("reason")
+                    or result.get("error")
+                    or result.get("status"),
                     "results": self.results,
                     "summary": self._generate_summary(),
                 }
@@ -119,8 +162,7 @@ class DOWIntegrationExecutor:
 
     def _run_ranking(self, target_dir: str) -> Dict[str, Any]:
         ranking_path = Path(
-            "DMAIC_V3/local_mcp/agents/"
-            "recursive_self_ranking_v2.3_OPTIMIZED.py"
+            "DMAIC_V3/local_mcp/agents/" "recursive_self_ranking_v2.3_OPTIMIZED.py"
         )
         if not ranking_path.exists():
             print(f"[X] Required ranking mechanic not found: {ranking_path}")
@@ -180,7 +222,9 @@ class DOWIntegrationExecutor:
             "searched_paths": [str(p) for p in validation_candidates],
         }
 
-    def _run_script(self, agent_name: str, path: Path, args: List[str], timeout: int) -> Dict[str, Any]:
+    def _run_script(
+        self, agent_name: str, path: Path, args: List[str], timeout: int
+    ) -> Dict[str, Any]:
         cmd = [sys.executable, str(path)] + args
         print(f"[>] Running: {' '.join(cmd)}")
         repo_root = Path(__file__).resolve().parents[1]
@@ -202,7 +246,12 @@ class DOWIntegrationExecutor:
                 print(result.stdout)
             if result.returncode == 0:
                 print(f"[OK] {agent_name} completed successfully")
-                return {"status": "success", "agent": agent_name, "output": result.stdout, "path": str(path)}
+                return {
+                    "status": "success",
+                    "agent": agent_name,
+                    "output": result.stdout,
+                    "path": str(path),
+                }
             if result.stderr:
                 print(result.stderr)
             return {
@@ -213,9 +262,19 @@ class DOWIntegrationExecutor:
                 "path": str(path),
             }
         except subprocess.TimeoutExpired:
-            return {"status": "error", "agent": agent_name, "error": "Timeout", "path": str(path)}
+            return {
+                "status": "error",
+                "agent": agent_name,
+                "error": "Timeout",
+                "path": str(path),
+            }
         except Exception as exc:
-            return {"status": "error", "agent": agent_name, "error": str(exc), "path": str(path)}
+            return {
+                "status": "error",
+                "agent": agent_name,
+                "error": str(exc),
+                "path": str(path),
+            }
 
     def _generate_summary(self) -> str:
         total = len(self.results)
@@ -261,7 +320,9 @@ def main() -> None:
     if result["status"] == "success":
         print("\n[SUCCESS] DOW Integration Pipeline completed all six required stages.")
         raise SystemExit(0)
-    print(f"\n[FAILED] DOW Integration Pipeline blocked/failed at stage {result.get('stage', 'unknown')}")
+    print(
+        f"\n[FAILED] DOW Integration Pipeline blocked/failed at stage {result.get('stage', 'unknown')}"
+    )
     raise SystemExit(1)
 
 

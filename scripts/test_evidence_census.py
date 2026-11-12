@@ -59,9 +59,7 @@ def _outcome(case: ET.Element) -> str:
     return "pass"
 
 
-def build_census(
-    junit_xml: Path, *, exact_sha: str | None = None
-) -> dict[str, Any]:
+def build_census(junit_xml: Path, *, exact_sha: str | None = None) -> dict[str, Any]:
     root = ET.parse(junit_xml).getroot()
     rows: list[dict[str, Any]] = []
     outcomes: Counter[str] = Counter()
@@ -139,9 +137,7 @@ def main(argv: list[str] | None = None) -> int:
     census = build_census(args.junit, exact_sha=args.exact_sha)
     errors: list[str] = []
     if census["uncategorized_skips"]:
-        errors.append(
-            f"uncategorized skips: {len(census['uncategorized_skips'])}"
-        )
+        errors.append(f"uncategorized skips: {len(census['uncategorized_skips'])}")
     if args.max_skips is not None and census["skip_count"] > args.max_skips:
         errors.append(
             f"skip ratchet exceeded: {census['skip_count']} > {args.max_skips}"

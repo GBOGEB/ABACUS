@@ -44,7 +44,9 @@ def load_lane(lane: str = DEFAULT_LANE, view: Path = LANES_VIEW) -> dict[str, An
 
 
 def expected_checks(version: str, lane: str = DEFAULT_LANE) -> dict[str, str]:
-    return SENTINEL_CHECKS if version == load_lane(lane)["pin"] else COMPATIBILITY_CHECKS
+    return (
+        SENTINEL_CHECKS if version == load_lane(lane)["pin"] else COMPATIBILITY_CHECKS
+    )
 
 
 # Per-version view for the default lane (kept for existing callers).
@@ -157,8 +159,11 @@ def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--dir", type=Path, required=True)
     parser.add_argument("--mode", required=True)
-    parser.add_argument("--secondary", default=None,
-                        help="defaults to the lane's oldest supported version")
+    parser.add_argument(
+        "--secondary",
+        default=None,
+        help="defaults to the lane's oldest supported version",
+    )
     parser.add_argument("--lane", default=DEFAULT_LANE)
     parser.add_argument("--expected-sha", required=True)
     parser.add_argument("--out", type=Path, required=True)

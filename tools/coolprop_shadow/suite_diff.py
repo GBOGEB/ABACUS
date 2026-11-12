@@ -52,19 +52,36 @@ def classify(baseline: dict | None, candidate: dict) -> list[dict]:
     for test_id, (outcome, message) in sorted(candidate.items()):
         if baseline is None:
             if outcome in RED:
-                rows.append({"class": "UNBASELINED", "test": test_id, "message": message})
+                rows.append(
+                    {"class": "UNBASELINED", "test": test_id, "message": message}
+                )
             continue
         before, before_message = baseline.get(test_id, ("absent", ""))
         if outcome in RED and before not in RED:
-            rows.append({"class": "BROKEN", "test": test_id, "message": message, "was": before})
+            rows.append(
+                {"class": "BROKEN", "test": test_id, "message": message, "was": before}
+            )
         elif before in RED and outcome not in RED:
-            rows.append({"class": "FIXED", "test": test_id, "message": before_message,
-                         "now": outcome})
+            rows.append(
+                {
+                    "class": "FIXED",
+                    "test": test_id,
+                    "message": before_message,
+                    "now": outcome,
+                }
+            )
         elif before in RED and outcome in RED:
             rows.append({"class": "STILL_RED", "test": test_id, "message": message})
         elif (before == "skipped") != (outcome == "skipped") and before != "absent":
-            rows.append({"class": "SKIP_SHIFT", "test": test_id,
-                         "message": message or before_message, "was": before, "now": outcome})
+            rows.append(
+                {
+                    "class": "SKIP_SHIFT",
+                    "test": test_id,
+                    "message": message or before_message,
+                    "was": before,
+                    "now": outcome,
+                }
+            )
     return rows
 
 
@@ -80,8 +97,13 @@ def summarise(rows: list[dict], label: str, totals: dict) -> str:
         chosen = [r for r in rows if r["class"] == key]
         if not chosen:
             continue
-        lines += ["", f"<details><summary>{key} ({len(chosen)})</summary>", "",
-                  "| Test | First line of the message |", "|---|---|"]
+        lines += [
+            "",
+            f"<details><summary>{key} ({len(chosen)})</summary>",
+            "",
+            "| Test | First line of the message |",
+            "|---|---|",
+        ]
         for r in chosen[:150]:
             message = r["message"].replace("|", "\\|")
             lines.append(f"| `{r['test'][:140]}` | {message[:200]} |")

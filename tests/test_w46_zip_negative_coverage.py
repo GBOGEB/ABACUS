@@ -3,6 +3,7 @@
 These tests validate local synthetic bytes only: no authenticated GitHub
 artifact, reviewer, or merge-admission authority is introduced.
 """
+
 from __future__ import annotations
 
 import hashlib
@@ -58,7 +59,10 @@ def test_coverage_json_parser_rejects_invalid_or_foreign_type(malformed):
     assert_rejected(changed, old, "invalid coverage JSON")
 
 
-@pytest.mark.parametrize("invalid_xml", [b"<testsuite", b"<testsuite><testcase>", b"<testsuite><no></testsuite>"])
+@pytest.mark.parametrize(
+    "invalid_xml",
+    [b"<testsuite", b"<testsuite><testcase>", b"<testsuite><no></testsuite>"],
+)
 def test_malformed_xml_rejected_after_verified_sha(invalid_xml):
     blob, old = make_bundle()
     changed = rebuild(blob, {"junit.xml": invalid_xml})
@@ -93,7 +97,7 @@ def test_stored_member_corruption_hits_crc_guard():
         info = z.getinfo("junit.xml")
         assert info.compress_type == zipfile.ZIP_STORED
         i = info.header_offset
-        assert arr[i:i+4] == b"PK\x03\x04"
+        assert arr[i : i + 4] == b"PK\x03\x04"
         filename_len, extra_len = struct.unpack_from("<HH", arr, i + 26)
         off = i + 30 + filename_len + extra_len
         arr[off] ^= 1

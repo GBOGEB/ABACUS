@@ -32,41 +32,47 @@ class CICDPipelineSetup:
             "timestamp": self.timestamp,
             "pipelines": [],
             "configurations": [],
-            "recommendations": []
+            "recommendations": [],
         }
 
     def create_github_actions_workflow(self) -> Dict[str, Any]:
         """Create GitHub Actions workflow configuration"""
-        config = {
-            "name": "GitHub Actions Workflow",
-            "status": "CREATED",
-            "details": {}
-        }
+        config = {"name": "GitHub Actions Workflow", "status": "CREATED", "details": {}}
 
         workflow = {
             "name": "ABACUS v2.1 CI/CD Pipeline",
             "on": {
-                "push": {
-                    "branches": ["main", "develop"]
-                },
-                "pull_request": {
-                    "branches": ["main"]
-                },
-                "schedule": [
-                    {"cron": "0 0 * * 0"}
-                ]
+                "push": {"branches": ["main", "develop"]},
+                "pull_request": {"branches": ["main"]},
+                "schedule": [{"cron": "0 0 * * 0"}],
             },
             "jobs": {
                 "test": {
                     "runs-on": "ubuntu-latest",
                     "steps": [
                         {"name": "Checkout code", "uses": "actions/checkout@v3"},
-                        {"name": "Set up Python", "uses": "actions/setup-python@v4", "with": {"python-version": "3.12"}},
-                        {"name": "Install dependencies", "run": "pip install -r requirements.txt"},
-                        {"name": "Run smoke tests", "run": "python abacus_v21_smoke_tests.py"},
-                        {"name": "Run dry-run tests", "run": "python abacus_v21_dry_run_tests.py"},
-                        {"name": "Run bridge validation", "run": "python abacus_v21_bridge_validation_tests.py"}
-                    ]
+                        {
+                            "name": "Set up Python",
+                            "uses": "actions/setup-python@v4",
+                            "with": {"python-version": "3.12"},
+                        },
+                        {
+                            "name": "Install dependencies",
+                            "run": "pip install -r requirements.txt",
+                        },
+                        {
+                            "name": "Run smoke tests",
+                            "run": "python abacus_v21_smoke_tests.py",
+                        },
+                        {
+                            "name": "Run dry-run tests",
+                            "run": "python abacus_v21_dry_run_tests.py",
+                        },
+                        {
+                            "name": "Run bridge validation",
+                            "run": "python abacus_v21_bridge_validation_tests.py",
+                        },
+                    ],
                 },
                 "build": {
                     "needs": "test",
@@ -74,38 +80,46 @@ class CICDPipelineSetup:
                     "steps": [
                         {"name": "Checkout code", "uses": "actions/checkout@v3"},
                         {"name": "Build artifacts", "run": "python -m build"},
-                        {"name": "Upload artifacts", "uses": "actions/upload-artifact@v3", "with": {"name": "abacus-v21", "path": "dist/"}}
-                    ]
+                        {
+                            "name": "Upload artifacts",
+                            "uses": "actions/upload-artifact@v3",
+                            "with": {"name": "abacus-v21", "path": "dist/"},
+                        },
+                    ],
                 },
                 "deploy": {
                     "needs": "build",
                     "runs-on": "ubuntu-latest",
                     "if": "github.ref == 'refs/heads/main'",
                     "steps": [
-                        {"name": "Download artifacts", "uses": "actions/download-artifact@v3"},
-                        {"name": "Deploy to production", "run": "echo 'Deploying to production'"}
-                    ]
-                }
-            }
+                        {
+                            "name": "Download artifacts",
+                            "uses": "actions/download-artifact@v3",
+                        },
+                        {
+                            "name": "Deploy to production",
+                            "run": "echo 'Deploying to production'",
+                        },
+                    ],
+                },
+            },
         }
 
         workflow_path = self.output_dir / "github_actions_workflow.yml"
-        with open(workflow_path, 'w', encoding='utf-8') as f:
+        with open(workflow_path, "w", encoding="utf-8") as f:
             yaml.dump(workflow, f, default_flow_style=False, sort_keys=False)
 
         config["details"]["workflow_file"] = str(workflow_path)
         config["details"]["jobs"] = list(workflow["jobs"].keys())
-        config["message"] = f"GitHub Actions workflow created with {len(workflow['jobs'])} jobs"
+        config["message"] = (
+            f"GitHub Actions workflow created with {len(workflow['jobs'])} jobs"
+        )
 
         return config
 
     def create_jenkins_pipeline(self) -> Dict[str, Any]:
         """Create Jenkins pipeline configuration"""
-        config = {
-            "name": "Jenkins Pipeline",
-            "status": "CREATED",
-            "details": {}
-        }
+        config = {"name": "Jenkins Pipeline", "status": "CREATED", "details": {}}
 
         jenkinsfile = """pipeline {
     agent any
@@ -182,7 +196,7 @@ class CICDPipelineSetup:
 """
 
         jenkinsfile_path = self.output_dir / "Jenkinsfile"
-        with open(jenkinsfile_path, 'w', encoding='utf-8') as f:
+        with open(jenkinsfile_path, "w", encoding="utf-8") as f:
             f.write(jenkinsfile)
 
         config["details"]["jenkinsfile"] = str(jenkinsfile_path)
@@ -193,61 +207,45 @@ class CICDPipelineSetup:
 
     def create_gitlab_ci_config(self) -> Dict[str, Any]:
         """Create GitLab CI/CD configuration"""
-        config = {
-            "name": "GitLab CI/CD",
-            "status": "CREATED",
-            "details": {}
-        }
+        config = {"name": "GitLab CI/CD", "status": "CREATED", "details": {}}
 
         gitlab_ci = {
             "image": "python:3.12",
             "stages": ["test", "build", "deploy"],
-            "variables": {
-                "PIP_CACHE_DIR": "$CI_PROJECT_DIR/.cache/pip"
-            },
-            "cache": {
-                "paths": [".cache/pip"]
-            },
-            "before_script": [
-                "pip install -r requirements.txt"
-            ],
+            "variables": {"PIP_CACHE_DIR": "$CI_PROJECT_DIR/.cache/pip"},
+            "cache": {"paths": [".cache/pip"]},
+            "before_script": ["pip install -r requirements.txt"],
             "smoke_tests": {
                 "stage": "test",
                 "script": ["python abacus_v21_smoke_tests.py"],
-                "artifacts": {
-                    "reports": {"junit": "test-results/smoke-tests.xml"}
-                }
+                "artifacts": {"reports": {"junit": "test-results/smoke-tests.xml"}},
             },
             "dry_run_tests": {
                 "stage": "test",
                 "script": ["python abacus_v21_dry_run_tests.py"],
-                "artifacts": {
-                    "reports": {"junit": "test-results/dry-run-tests.xml"}
-                }
+                "artifacts": {"reports": {"junit": "test-results/dry-run-tests.xml"}},
             },
             "bridge_validation": {
                 "stage": "test",
                 "script": ["python abacus_v21_bridge_validation_tests.py"],
                 "artifacts": {
                     "reports": {"junit": "test-results/bridge-validation.xml"}
-                }
+                },
             },
             "build": {
                 "stage": "build",
                 "script": ["python -m build"],
-                "artifacts": {
-                    "paths": ["dist/"]
-                }
+                "artifacts": {"paths": ["dist/"]},
             },
             "deploy_production": {
                 "stage": "deploy",
                 "script": ["echo 'Deploying to production'"],
-                "only": ["main"]
-            }
+                "only": ["main"],
+            },
         }
 
         gitlab_ci_path = self.output_dir / ".gitlab-ci.yml"
-        with open(gitlab_ci_path, 'w', encoding='utf-8') as f:
+        with open(gitlab_ci_path, "w", encoding="utf-8") as f:
             yaml.dump(gitlab_ci, f, default_flow_style=False, sort_keys=False)
 
         config["details"]["config_file"] = str(gitlab_ci_path)
@@ -258,11 +256,7 @@ class CICDPipelineSetup:
 
     def create_deployment_script(self) -> Dict[str, Any]:
         """Create deployment script"""
-        config = {
-            "name": "Deployment Script",
-            "status": "CREATED",
-            "details": {}
-        }
+        config = {"name": "Deployment Script", "status": "CREATED", "details": {}}
 
         deploy_script = """#!/bin/bash
 # ABACUS v2.1 Deployment Script
@@ -312,7 +306,7 @@ echo "========================================="
 """
 
         deploy_script_path = self.output_dir / "deploy.sh"
-        with open(deploy_script_path, 'w', encoding='utf-8') as f:
+        with open(deploy_script_path, "w", encoding="utf-8") as f:
             f.write(deploy_script)
 
         # Make script executable (Unix-like systems)
@@ -333,11 +327,7 @@ echo "========================================="
 
     def create_requirements_file(self) -> Dict[str, Any]:
         """Create requirements.txt for dependencies"""
-        config = {
-            "name": "Requirements File",
-            "status": "CREATED",
-            "details": {}
-        }
+        config = {"name": "Requirements File", "status": "CREATED", "details": {}}
 
         requirements = """# ABACUS v2.1 Dependencies
 # Core dependencies
@@ -351,7 +341,7 @@ twine>=4.0.0
 """
 
         req_path = self.output_dir / "requirements.txt"
-        with open(req_path, 'w', encoding='utf-8') as f:
+        with open(req_path, "w", encoding="utf-8") as f:
             f.write(requirements)
 
         config["details"]["requirements_file"] = str(req_path)
@@ -367,36 +357,36 @@ twine>=4.0.0
                 "category": "AUTOMATION",
                 "title": "Implement Automated Testing",
                 "description": "Set up automated test execution on every commit",
-                "action": "Configure CI/CD to run all test suites automatically"
+                "action": "Configure CI/CD to run all test suites automatically",
             },
             {
                 "priority": "HIGH",
                 "category": "SECURITY",
                 "title": "Secure Secrets Management",
                 "description": "Use secure secret management for credentials",
-                "action": "Configure GitHub Secrets, Jenkins Credentials, or GitLab Variables"
+                "action": "Configure GitHub Secrets, Jenkins Credentials, or GitLab Variables",
             },
             {
                 "priority": "HIGH",
                 "category": "DEPLOYMENT",
                 "title": "Implement Blue-Green Deployment",
                 "description": "Use blue-green deployment strategy for zero-downtime",
-                "action": "Set up parallel environments and traffic switching"
+                "action": "Set up parallel environments and traffic switching",
             },
             {
                 "priority": "MEDIUM",
                 "category": "MONITORING",
                 "title": "Add Pipeline Monitoring",
                 "description": "Monitor pipeline execution and performance",
-                "action": "Integrate with monitoring tools and set up alerts"
+                "action": "Integrate with monitoring tools and set up alerts",
             },
             {
                 "priority": "MEDIUM",
                 "category": "QUALITY",
                 "title": "Enforce Code Quality Gates",
                 "description": "Add code quality checks to pipeline",
-                "action": "Integrate linting, code coverage, and security scanning"
-            }
+                "action": "Integrate linting, code coverage, and security scanning",
+            },
         ]
 
         return recommendations
@@ -430,7 +420,7 @@ twine>=4.0.0
     def save_results(self):
         """Save results to JSON"""
         results_path = self.output_dir / "cicd_pipeline_results.json"
-        with open(results_path, 'w', encoding='utf-8') as f:
+        with open(results_path, "w", encoding="utf-8") as f:
             json.dump(self.results, f, indent=2)
         print(f"\nResults saved to: {results_path}")
 
@@ -438,7 +428,7 @@ twine>=4.0.0
         """Generate markdown report"""
         report_path = self.output_dir / "CICD_PIPELINE_REPORT.md"
 
-        with open(report_path, 'w', encoding='utf-8') as f:
+        with open(report_path, "w", encoding="utf-8") as f:
             f.write("# ABACUS v2.1 - CI/CD Pipeline Setup Report\n\n")
             f.write(f"**Stage**: 2.2 - CI/CD Pipeline Setup\n")
             f.write(f"**Timestamp**: {self.timestamp}\n")
@@ -467,7 +457,9 @@ twine>=4.0.0
 
             f.write("---\n\n")
             f.write("## Next Steps\n\n")
-            f.write("1. Choose appropriate CI/CD platform (GitHub Actions, Jenkins, or GitLab)\n")
+            f.write(
+                "1. Choose appropriate CI/CD platform (GitHub Actions, Jenkins, or GitLab)\n"
+            )
             f.write("2. Configure secrets and credentials\n")
             f.write("3. Test pipeline execution\n")
             f.write("4. Proceed to Stage 2.3: Monitoring Integration\n")
@@ -476,6 +468,7 @@ twine>=4.0.0
             f.write(f"*Report generated on {self.timestamp}*\n")
 
         print(f"Report saved to: {report_path}")
+
 
 if __name__ == "__main__":
     cicd = CICDPipelineSetup()

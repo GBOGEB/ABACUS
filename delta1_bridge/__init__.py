@@ -24,6 +24,7 @@ Design rules (honour the federation's existing conventions):
   * Pure read / compute. No network, no writes to governed SSOT.
   * Additive. Nothing here deletes or restructures existing repo code.
 """
+
 from __future__ import annotations
 
 from .schema import (

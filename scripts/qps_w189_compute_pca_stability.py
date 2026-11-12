@@ -25,7 +25,7 @@ def decompose(rows, cols):
     U, S, Vt = np.linalg.svd(Z, full_matrices=False)
     scores = U * S
     loadings, scores = orient(Vt.T, scores)
-    eig = (S ** 2) / (len(rows) - 1)
+    eig = (S**2) / (len(rows) - 1)
     return eig / eig.sum(), loadings, scores
 
 
@@ -54,7 +54,9 @@ def main():
         raise SystemExit(f"W189 PCA REJECT: PC1 congruence mismatch {c1}")
     if not np.isclose(c2, ref["pc2_loading_congruence_abs"], atol=1e-8):
         raise SystemExit(f"W189 PCA REJECT: PC2 congruence mismatch {c2}")
-    if not np.allclose(angles, np.array(ref["pc12_subspace_principal_angles_deg"]), atol=1e-6):
+    if not np.allclose(
+        angles, np.array(ref["pc12_subspace_principal_angles_deg"]), atol=1e-6
+    ):
         raise SystemExit(f"W189 PCA REJECT: principal-angle mismatch {angles}")
     receipt = {
         "schema": "qps-w189-federation-pca-stability-runtime/v1",
@@ -69,11 +71,15 @@ def main():
         "pc12_subspace_principal_angles_deg": [float(x) for x in angles],
         "sample4_scores_candidate": [float(x) for x in s4[3, :3]],
         "disposition": "PC1_STABLE_PC2_ROTATES_MATERIALLY_CANDIDATE_ONLY",
-        "guard": "NO_MEASURED_N4_STABILITY_PROMOTION_BEFORE_SAMPLE4_ACCEPTANCE"
+        "guard": "NO_MEASURED_N4_STABILITY_PROMOTION_BEFORE_SAMPLE4_ACCEPTANCE",
     }
     out = ROOT / "triage/w189/QPS_W189_PCA_STABILITY_RUNTIME_RECEIPT.json"
-    out.write_text(json.dumps(receipt, indent=2, sort_keys=True) + "\n", encoding="utf-8")
-    print("W189 PCA PASS: n4 candidate reproduced; PC1 stable, PC2 materially rotating; promotion withheld")
+    out.write_text(
+        json.dumps(receipt, indent=2, sort_keys=True) + "\n", encoding="utf-8"
+    )
+    print(
+        "W189 PCA PASS: n4 candidate reproduced; PC1 stable, PC2 materially rotating; promotion withheld"
+    )
 
 
 if __name__ == "__main__":

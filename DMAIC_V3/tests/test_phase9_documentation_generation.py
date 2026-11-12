@@ -6,7 +6,9 @@ import pytest
 import json
 from pathlib import Path
 
-from DMAIC_V3.phases.phase9_documentation_generation import Phase9_DocumentationGeneration
+from DMAIC_V3.phases.phase9_documentation_generation import (
+    Phase9_DocumentationGeneration,
+)
 
 
 @pytest.fixture
@@ -28,22 +30,30 @@ def minimal_phase_outputs(tmp_path):
 
     phase1_dir = iteration_dir / "phase1_define"
     phase1_dir.mkdir(parents=True)
-    (phase1_dir / "phase1_define.json").write_text(json.dumps({
-        "phase": "DEFINE",
-        "iteration": 1,
-        "total_files": 100,
-        "python_files": ["a.py", "b.py"],
-        "markdown_files": ["README.md"],
-    }))
+    (phase1_dir / "phase1_define.json").write_text(
+        json.dumps(
+            {
+                "phase": "DEFINE",
+                "iteration": 1,
+                "total_files": 100,
+                "python_files": ["a.py", "b.py"],
+                "markdown_files": ["README.md"],
+            }
+        )
+    )
 
     phase2_dir = iteration_dir / "phase2_measure"
     phase2_dir.mkdir(parents=True)
-    (phase2_dir / "phase2_measure.json").write_text(json.dumps({
-        "phase": "MEASURE",
-        "iteration": 1,
-        "python_files_analyzed": 2,
-        "analysis_success_rate": 1.0,
-    }))
+    (phase2_dir / "phase2_measure.json").write_text(
+        json.dumps(
+            {
+                "phase": "MEASURE",
+                "iteration": 1,
+                "python_files_analyzed": 2,
+                "analysis_success_rate": 1.0,
+            }
+        )
+    )
 
     return tmp_path
 
@@ -70,75 +80,93 @@ class TestPhase9DocumentationGeneration:
         # Without phase1/phase2 output files, Phase 9 should skip gracefully
         success, result = phase9_in_tmp.execute(iteration=1)
         assert success is False
-        assert result.get('status') == 'skipped'
-        assert result.get('reason') == 'execution_not_successful'
+        assert result.get("status") == "skipped"
+        assert result.get("reason") == "execution_not_successful"
 
     def test_skip_result_has_phase_field(self, phase9_in_tmp):
         success, result = phase9_in_tmp.execute(iteration=1)
-        assert result.get('phase') == 'phase9_documentation_generation'
+        assert result.get("phase") == "phase9_documentation_generation"
 
     def test_skip_result_has_iteration(self, phase9_in_tmp):
         success, result = phase9_in_tmp.execute(iteration=7)
-        assert result.get('iteration') == 7
+        assert result.get("iteration") == 7
 
     def test_skip_result_saved_to_disk(self, phase9_in_tmp, tmp_path):
         phase9_in_tmp.execute(iteration=1)
         output_file = (
-            tmp_path / "DMAIC_V3_OUTPUT" / "iteration_1"
-            / "phase9_documentation_generation" / "phase9_documentation_generation.json"
+            tmp_path
+            / "DMAIC_V3_OUTPUT"
+            / "iteration_1"
+            / "phase9_documentation_generation"
+            / "phase9_documentation_generation.json"
         )
         assert output_file.exists()
 
-    def test_succeeds_when_prior_phases_present(self, monkeypatch, minimal_phase_outputs):
+    def test_succeeds_when_prior_phases_present(
+        self, monkeypatch, minimal_phase_outputs
+    ):
         monkeypatch.chdir(minimal_phase_outputs)
         phase9 = Phase9_DocumentationGeneration()
         success, result = phase9.execute(iteration=1)
         assert success is True
-        assert result.get('status') == 'success'
+        assert result.get("status") == "success"
 
     def test_generates_books_when_successful(self, monkeypatch, minimal_phase_outputs):
         monkeypatch.chdir(minimal_phase_outputs)
         phase9 = Phase9_DocumentationGeneration()
         success, result = phase9.execute(iteration=1)
         assert success is True
-        assert result.get('books_generated', 0) >= 4  # dmaic, 12cluster, execution, action_tracking
+        assert (
+            result.get("books_generated", 0) >= 4
+        )  # dmaic, 12cluster, execution, action_tracking
 
-    def test_success_result_has_discrepancies_field(self, monkeypatch, minimal_phase_outputs):
+    def test_success_result_has_discrepancies_field(
+        self, monkeypatch, minimal_phase_outputs
+    ):
         monkeypatch.chdir(minimal_phase_outputs)
         phase9 = Phase9_DocumentationGeneration()
         success, result = phase9.execute(iteration=1)
         assert success is True
-        assert 'discrepancies_found' in result
-        assert isinstance(result['discrepancies_found'], int)
+        assert "discrepancies_found" in result
+        assert isinstance(result["discrepancies_found"], int)
 
     def test_success_result_saved_to_disk(self, monkeypatch, minimal_phase_outputs):
         monkeypatch.chdir(minimal_phase_outputs)
         phase9 = Phase9_DocumentationGeneration()
         phase9.execute(iteration=1)
         output_file = (
-            minimal_phase_outputs / "DMAIC_V3_OUTPUT" / "iteration_1"
-            / "phase9_documentation_generation" / "phase9_documentation_generation.json"
+            minimal_phase_outputs
+            / "DMAIC_V3_OUTPUT"
+            / "iteration_1"
+            / "phase9_documentation_generation"
+            / "phase9_documentation_generation.json"
         )
         assert output_file.exists()
         data = json.loads(output_file.read_text())
-        assert data['phase'] == 'phase9_documentation_generation'
+        assert data["phase"] == "phase9_documentation_generation"
 
-    def test_multiple_iterations_are_independent(self, monkeypatch, minimal_phase_outputs):
+    def test_multiple_iterations_are_independent(
+        self, monkeypatch, minimal_phase_outputs
+    ):
         # Create outputs for iteration 2 as well
         iter2_dir = minimal_phase_outputs / "DMAIC_V3_OUTPUT" / "iteration_2"
         ph1 = iter2_dir / "phase1_define"
         ph1.mkdir(parents=True)
-        (ph1 / "phase1_define.json").write_text(json.dumps({"phase": "DEFINE", "iteration": 2}))
+        (ph1 / "phase1_define.json").write_text(
+            json.dumps({"phase": "DEFINE", "iteration": 2})
+        )
         ph2 = iter2_dir / "phase2_measure"
         ph2.mkdir(parents=True)
-        (ph2 / "phase2_measure.json").write_text(json.dumps({"phase": "MEASURE", "iteration": 2}))
+        (ph2 / "phase2_measure.json").write_text(
+            json.dumps({"phase": "MEASURE", "iteration": 2})
+        )
 
         monkeypatch.chdir(minimal_phase_outputs)
         for iteration in [1, 2]:
             phase9 = Phase9_DocumentationGeneration()
             success, result = phase9.execute(iteration=iteration)
             assert success is True
-            assert result.get('iteration') == iteration
+            assert result.get("iteration") == iteration
 
 
 @pytest.mark.unit
@@ -160,9 +188,7 @@ class TestPhase9EvidenceBoundaries:
         assert phase9._verify_execution_success(3) is False
         assert not (tmp_path / "CANONICAL_KNOWLEDGE").exists()
 
-    def test_valid_minimum_receipts_are_accepted(
-        self, tmp_path, monkeypatch
-    ):
+    def test_valid_minimum_receipts_are_accepted(self, tmp_path, monkeypatch):
         monkeypatch.chdir(tmp_path)
         for name in ("phase1_define", "phase2_measure"):
             folder = tmp_path / "DMAIC_V3_OUTPUT" / "iteration_4" / name
@@ -170,42 +196,48 @@ class TestPhase9EvidenceBoundaries:
             (folder / f"{name}.json").write_text("{}", encoding="utf-8")
         assert Phase9_DocumentationGeneration()._verify_execution_success(4)
 
-    def test_open_bugs_block_publication(
-        self, minimal_phase_outputs, monkeypatch
-    ):
+    def test_open_bugs_block_publication(self, minimal_phase_outputs, monkeypatch):
         monkeypatch.chdir(minimal_phase_outputs)
         phase5 = (
-            minimal_phase_outputs / "DMAIC_V3_OUTPUT" / "iteration_1"
-            / "phase5_control"
+            minimal_phase_outputs / "DMAIC_V3_OUTPUT" / "iteration_1" / "phase5_control"
         )
         phase5.mkdir()
-        (phase5 / "phase5_control.json").write_text(json.dumps({
-            "bugs": [{"id": "B-1", "status": "open"},
-                     {"id": "B-2", "status": "closed"}],
-            "quality_gates": {"safe": {"passed": True}},
-        }), encoding="utf-8")
+        (phase5 / "phase5_control.json").write_text(
+            json.dumps(
+                {
+                    "bugs": [
+                        {"id": "B-1", "status": "open"},
+                        {"id": "B-2", "status": "closed"},
+                    ],
+                    "quality_gates": {"safe": {"passed": True}},
+                }
+            ),
+            encoding="utf-8",
+        )
         ok, result = Phase9_DocumentationGeneration().execute(1)
         assert ok is False
         assert result["reason"] == "bugs_detected"
         assert [bug["id"] for bug in result["details"]] == ["B-1"]
         assert not (minimal_phase_outputs / "CANONICAL_KNOWLEDGE").exists()
 
-    def test_failed_quality_gate_blocks_books(
-        self, minimal_phase_outputs, monkeypatch
-    ):
+    def test_failed_quality_gate_blocks_books(self, minimal_phase_outputs, monkeypatch):
         monkeypatch.chdir(minimal_phase_outputs)
         phase5 = (
-            minimal_phase_outputs / "DMAIC_V3_OUTPUT" / "iteration_1"
-            / "phase5_control"
+            minimal_phase_outputs / "DMAIC_V3_OUTPUT" / "iteration_1" / "phase5_control"
         )
         phase5.mkdir()
-        (phase5 / "phase5_control.json").write_text(json.dumps({
-            "bugs": [{"status": "closed"}],
-            "quality_gates": {
-                "passed": {"passed": True},
-                "rejected": {"passed": False},
-            },
-        }), encoding="utf-8")
+        (phase5 / "phase5_control.json").write_text(
+            json.dumps(
+                {
+                    "bugs": [{"status": "closed"}],
+                    "quality_gates": {
+                        "passed": {"passed": True},
+                        "rejected": {"passed": False},
+                    },
+                }
+            ),
+            encoding="utf-8",
+        )
         ok, result = Phase9_DocumentationGeneration().execute(1)
         assert ok is False
         assert result["status"] == "skipped"
@@ -217,14 +249,18 @@ class TestPhase9EvidenceBoundaries:
     ):
         monkeypatch.chdir(minimal_phase_outputs)
         phase5 = (
-            minimal_phase_outputs / "DMAIC_V3_OUTPUT" / "iteration_1"
-            / "phase5_control"
+            minimal_phase_outputs / "DMAIC_V3_OUTPUT" / "iteration_1" / "phase5_control"
         )
         phase5.mkdir()
-        (phase5 / "phase5_control.json").write_text(json.dumps({
-            "bugs": [{"status": "closed"}],
-            "quality_gates": {"security": {"passed": True}},
-        }), encoding="utf-8")
+        (phase5 / "phase5_control.json").write_text(
+            json.dumps(
+                {
+                    "bugs": [{"status": "closed"}],
+                    "quality_gates": {"security": {"passed": True}},
+                }
+            ),
+            encoding="utf-8",
+        )
         ok, result = Phase9_DocumentationGeneration().execute(1)
         assert ok is True
         assert result["books_generated"] == 4
@@ -236,26 +272,31 @@ class TestPhase9EvidenceBoundaries:
         monkeypatch.chdir(minimal_phase_outputs)
         phase9 = Phase9_DocumentationGeneration()
         differences = phase9._detect_discrepancies(1)
-        assert {d["field"] for d in differences} == {
-            "total_files", "python_files"
-        }
+        assert {d["field"] for d in differences} == {"total_files", "python_files"}
         assert all(d["severity"] == "high" for d in differences)
         assert all(d["percentage"] < -10 for d in differences)
         assert phase9._detect_discrepancies(99) == []
 
-    @pytest.mark.parametrize(("phase", "data", "expected"), [
-        (0, {}, "**Status:**"),
-        (1, {"total_files": 12345, "python_files": ["a.py"],
-             "markdown_files": []}, "12,345"),
-        (2, {"python_files_analyzed": 5,
-             "analysis_success_rate": 0.8}, "80.0%"),
-        (4, {"modifications": [{"file": "a.py"}]}, "1"),
-        (5, {"quality_gates": {"a": {"passed": True}, "b": {"passed": False}}}, "1/2 passed"),
-        (6, {"books_loaded": 3, "maturity_score": 72}, "72/100"),
-    ])
-    def test_phase_summary_reporting_paths(
-        self, phase9, phase, data, expected
-    ):
+    @pytest.mark.parametrize(
+        ("phase", "data", "expected"),
+        [
+            (0, {}, "**Status:**"),
+            (
+                1,
+                {"total_files": 12345, "python_files": ["a.py"], "markdown_files": []},
+                "12,345",
+            ),
+            (2, {"python_files_analyzed": 5, "analysis_success_rate": 0.8}, "80.0%"),
+            (4, {"modifications": [{"file": "a.py"}]}, "1"),
+            (
+                5,
+                {"quality_gates": {"a": {"passed": True}, "b": {"passed": False}}},
+                "1/2 passed",
+            ),
+            (6, {"books_loaded": 3, "maturity_score": 72}, "72/100"),
+        ],
+    )
+    def test_phase_summary_reporting_paths(self, phase9, phase, data, expected):
         assert expected in phase9._format_phase_summary(phase, data)
 
     def test_phase_lookup_has_explicit_unknown_fallback(self, phase9):
@@ -270,26 +311,42 @@ class TestPhase9EvidenceBoundaries:
         iteration = minimal_phase_outputs / "DMAIC_V3_OUTPUT" / "iteration_1"
         phase4 = iteration / "phase4_improve"
         phase4.mkdir()
-        (phase4 / "phase4_improve.json").write_text(json.dumps({
-            "modifications": [
-                {"file": "one.py", "type": "docstring"},
-                {"file": "one.py", "type": "format"},
-                {"file": "two.py", "type": "docstring"},
-            ],
-        }), encoding="utf-8")
+        (phase4 / "phase4_improve.json").write_text(
+            json.dumps(
+                {
+                    "modifications": [
+                        {"file": "one.py", "type": "docstring"},
+                        {"file": "one.py", "type": "format"},
+                        {"file": "two.py", "type": "docstring"},
+                    ],
+                }
+            ),
+            encoding="utf-8",
+        )
         phase7 = iteration / "phase7_action_tracking"
         phase7.mkdir()
-        (phase7 / "phase7_action_tracking.json").write_text(json.dumps({
-            "local_actions": [
-                {"status": "completed"}, {"status": "pending"},
-                {"status": "completed"},
-            ]
-        }), encoding="utf-8")
+        (phase7 / "phase7_action_tracking.json").write_text(
+            json.dumps(
+                {
+                    "local_actions": [
+                        {"status": "completed"},
+                        {"status": "pending"},
+                        {"status": "completed"},
+                    ]
+                }
+            ),
+            encoding="utf-8",
+        )
         (phase7 / "feedback_for_next_iteration.json").write_text(
-            json.dumps({
-                "pending_actions": [{}], "completed_actions": [{}, {}],
-                "failed_actions": [], "recommendations": [{}],
-            }), encoding="utf-8"
+            json.dumps(
+                {
+                    "pending_actions": [{}],
+                    "completed_actions": [{}, {}],
+                    "failed_actions": [],
+                    "recommendations": [{}],
+                }
+            ),
+            encoding="utf-8",
         )
         ok, result = Phase9_DocumentationGeneration().execute(1)
         assert ok is True
@@ -309,17 +366,24 @@ class TestPhase9EvidenceBoundaries:
         assert "completed: 2" in actions
         assert "pending: 1" in actions
         assert "Completed Actions:** 2" in actions
-        adjustment = json.loads((
-            iteration / "phase9_documentation_generation"
-            / "canonical_adjustments.json"
-        ).read_text(encoding="utf-8"))
+        adjustment = json.loads(
+            (
+                iteration
+                / "phase9_documentation_generation"
+                / "canonical_adjustments.json"
+            ).read_text(encoding="utf-8")
+        )
         assert {v["field"] for v in adjustment["adjustments"]} == {
-            "total_files", "python_files"
+            "total_files",
+            "python_files",
         }
-        saved = json.loads((
-            iteration / "phase9_documentation_generation"
-            / "phase9_documentation_generation.json"
-        ).read_text(encoding="utf-8"))
+        saved = json.loads(
+            (
+                iteration
+                / "phase9_documentation_generation"
+                / "phase9_documentation_generation.json"
+            ).read_text(encoding="utf-8")
+        )
         assert saved["status"] == "success"
 
     def test_invalid_quality_json_cannot_be_reported_as_success(
@@ -327,13 +391,10 @@ class TestPhase9EvidenceBoundaries:
     ):
         monkeypatch.chdir(minimal_phase_outputs)
         phase5 = (
-            minimal_phase_outputs / "DMAIC_V3_OUTPUT" / "iteration_1"
-            / "phase5_control"
+            minimal_phase_outputs / "DMAIC_V3_OUTPUT" / "iteration_1" / "phase5_control"
         )
         phase5.mkdir()
-        (phase5 / "phase5_control.json").write_text(
-            "{invalid-json", encoding="utf-8"
-        )
+        (phase5 / "phase5_control.json").write_text("{invalid-json", encoding="utf-8")
         ok, result = Phase9_DocumentationGeneration().execute(1)
         assert ok is False
         assert "error" in result

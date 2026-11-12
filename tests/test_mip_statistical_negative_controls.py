@@ -242,8 +242,9 @@ class NativeSnapshotAndTelemetryControls(unittest.TestCase):
             r["evidence_url"] = (
                 "https://github.com/GBOGEB/ABACUS/actions/runs/" + suffix
             )
-            with self.subTest(suffix=suffix), self.assertRaisesRegex(
-                ValueError, "run identity"
+            with (
+                self.subTest(suffix=suffix),
+                self.assertRaisesRegex(ValueError, "run identity"),
             ):
                 MODULE.check(r)
 
@@ -251,8 +252,9 @@ class NativeSnapshotAndTelemetryControls(unittest.TestCase):
         for status, n, d in (("PASS", 1, 1), ("FAIL", 0, 1), ("FAIL", 1, 2)):
             r = self.receipt()
             r.update(status=status, numerator=n, denominator=d)
-            with self.subTest(status=status, n=n, d=d), self.assertRaisesRegex(
-                ValueError, "outcome/count"
+            with (
+                self.subTest(status=status, n=n, d=d),
+                self.assertRaisesRegex(ValueError, "outcome/count"),
             ):
                 MODULE.check(r)
 

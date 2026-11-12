@@ -45,5 +45,5 @@ class TestMaturityTracker(unittest.TestCase):
             self.assertLessEqual(level.completion_percentage, 100)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     unittest.main()

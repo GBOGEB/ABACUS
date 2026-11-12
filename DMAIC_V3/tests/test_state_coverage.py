@@ -33,7 +33,9 @@ def test_phase_and_iteration_defaults_are_isolated():
 
 @pytest.mark.unit
 def test_compute_hash_is_stable_for_dict_order_and_supports_other_values(manager):
-    assert manager.compute_hash({"b": 2, "a": 1}) == manager.compute_hash({"a": 1, "b": 2})
+    assert manager.compute_hash({"b": 2, "a": 1}) == manager.compute_hash(
+        {"a": 1, "b": 2}
+    )
     assert manager.compute_hash("hello") == manager.compute_hash("hello")
     assert manager.compute_hash(123) != manager.compute_hash(124)
 

@@ -13,8 +13,14 @@ def test_version_and_name_helpers_round_trip(tmp_path):
     version = CanonicalVersion.from_string("2.4.1-rc2+build9")
 
     assert str(version) == "2.4.1-rc2+build9"
-    assert system.generate_canonical_name("123 Demo / Artifact") == "artifact_123_demo_artifact"
-    assert system.generate_display_name("artifact_123_demo_artifact") == "Artifact 123 Demo Artifact"
+    assert (
+        system.generate_canonical_name("123 Demo / Artifact")
+        == "artifact_123_demo_artifact"
+    )
+    assert (
+        system.generate_display_name("artifact_123_demo_artifact")
+        == "Artifact 123 Demo Artifact"
+    )
     assert system._generate_canonical_id("demo", version) == "demo__v2.4.1-rc2+build9"
     assert system._calculate_checksum(tmp_path / "missing.bin") == ""
 
@@ -79,7 +85,11 @@ def test_version_history_uses_semantic_order(tmp_path):
     system = CanonicalIndexSystem(tmp_path)
 
     for idx, version in enumerate(
-        [CanonicalVersion(1, 0, 0), CanonicalVersion(2, 0, 0), CanonicalVersion(1, 5, 0)]
+        [
+            CanonicalVersion(1, 0, 0),
+            CanonicalVersion(2, 0, 0),
+            CanonicalVersion(1, 5, 0),
+        ]
     ):
         artifact = tmp_path / f"history-{idx}.txt"
         artifact.write_text(str(version), encoding="utf-8")

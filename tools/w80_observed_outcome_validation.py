@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 """W80 independent observed-outcome validation for W79 deterministic PC1."""
+
 from __future__ import annotations
 
 import argparse
@@ -20,7 +21,9 @@ EXPECTED_LEDGER_CANONICAL_SHA256 = (
 EXPECTED_W79_INPUT_CANONICAL_SHA256 = (
     "6a40340a96d45491e0f946bbfda5f62f883c80b0a6e91ca2406fc0716165aad4"
 )
-EXPECTED_RUN_RECEIPT_SHA256 = "1412820d9ccfb3eda94ce5deddfe0f25d68d3f7ba032b11a870490a4a0ecfb01"
+EXPECTED_RUN_RECEIPT_SHA256 = (
+    "1412820d9ccfb3eda94ce5deddfe0f25d68d3f7ba032b11a870490a4a0ecfb01"
+)
 CORE_WORKFLOWS = [
     "CI - ABACUS Matrix",
     "DELTA_1 CodeQL",
@@ -235,7 +238,9 @@ def validate_ledger(
     if outcome_block.get("cancelled_policy") != "missing_not_failure":
         raise ValueError("cancelled validation must remain missing, not failure")
     if outcome_block.get("missing_state_policy") != "missing_not_zero":
-        raise ValueError("missing source-state validation must remain missing, not zero")
+        raise ValueError(
+            "missing source-state validation must remain missing, not zero"
+        )
 
     receipt_runs = list(run_receipt.get("runs") or [])
     receipt_by_id = {int(run["run_id"]): run for run in receipt_runs}
@@ -256,7 +261,9 @@ def validate_ledger(
         if status != "OBSERVED":
             raise ValueError("unknown W80 outcome state")
         if len(runs) != len(CORE_WORKFLOWS):
-            raise ValueError("observed W80 state requires the complete seven-workflow core")
+            raise ValueError(
+                "observed W80 state requires the complete seven-workflow core"
+            )
         names = [run.get("name") for run in runs]
         if sorted(names) != sorted(CORE_WORKFLOWS) or len(set(names)) != len(names):
             raise ValueError("W80 observed workflow names must match the core exactly")
@@ -271,7 +278,9 @@ def validate_ledger(
                 raise ValueError("W80 validation conclusion outside governed classes")
             authoritative = receipt_by_id.get(run_id)
             if authoritative is None:
-                raise ValueError(f"W80 run {run_id} missing from Actions producer receipt")
+                raise ValueError(
+                    f"W80 run {run_id} missing from Actions producer receipt"
+                )
             expected_binding = {
                 "repository_id": 1054507184,
                 "repository_full_name": "GBOGEB/ABACUS",
@@ -294,7 +303,9 @@ def validate_ledger(
     if int(ledger.get("missing_state_count", 0)) != len(missing):
         raise ValueError("W80 missing-state count mismatch")
     if len(observed) != 11 or len(missing) != 4:
-        raise ValueError("W80 governed outcome ledger must preserve 11 observed / 4 missing")
+        raise ValueError(
+            "W80 governed outcome ledger must preserve 11 observed / 4 missing"
+        )
     if seen_run_ids != set(receipt_by_id):
         raise ValueError("W80 Actions producer receipt and ledger run sets differ")
     return normalized_w79
@@ -361,7 +372,9 @@ def evaluate(w79_source: dict, ledger: dict) -> dict:
         cancelled = sum(value == "cancelled" for value in conclusions.values())
         executed = success + failure
         if executed < 6:
-            raise ValueError("W80 observed state has insufficient executed core validators")
+            raise ValueError(
+                "W80 observed state has insufficient executed core validators"
+            )
         docs = conclusions[DOCS_WORKFLOW]
         if docs not in {"success", "failure"}:
             raise ValueError("W80 docs outcome must be an observed success/failure")
@@ -420,8 +433,7 @@ def evaluate(w79_source: dict, ledger: dict) -> dict:
         and cv_r2 > LOOCV_R2_MIN
     )
     secondary_gate = (
-        abs(docs_auc - 0.5) >= AUC_DISTANCE_FROM_CHANCE_MIN
-        and auc_p <= EXACT_P_MAX
+        abs(docs_auc - 0.5) >= AUC_DISTANCE_FROM_CHANCE_MIN and auc_p <= EXACT_P_MAX
     )
     predictive_validation = primary_gate and secondary_gate
 
@@ -439,9 +451,7 @@ def evaluate(w79_source: dict, ledger: dict) -> dict:
         "source_actions_run_receipt_sha256": EXPECTED_RUN_RECEIPT_SHA256,
         "semantic_pc1": {
             "eigenvalue": round(pc1["eigenvalue"], 6),
-            "explained_variance_ratio": round(
-                pc1["explained_variance_ratio"], 6
-            ),
+            "explained_variance_ratio": round(pc1["explained_variance_ratio"], 6),
             "role": "deterministic_complexity_axis",
         },
         "outcome_coverage": {
@@ -531,7 +541,9 @@ def main() -> None:
     result = evaluate(w79_source, ledger)
     out = Path(args.out)
     out.parent.mkdir(parents=True, exist_ok=True)
-    out.write_text(json.dumps(result, indent=2, sort_keys=True) + "\n", encoding="utf-8")
+    out.write_text(
+        json.dumps(result, indent=2, sort_keys=True) + "\n", encoding="utf-8"
+    )
     print(json.dumps(result, sort_keys=True))
 
 

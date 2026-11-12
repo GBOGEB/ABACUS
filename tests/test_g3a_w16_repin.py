@@ -128,14 +128,22 @@ class RepinTests(RepinCase):
 
     def test_new_interpreter_set_remeasures_everything_and_resets_floors(self):
         out = rp.repin(
-            self.manifest, self.root, epoch="NEW", main_sha=MAIN,
-            pythons=["3.15", "3.11", "3.14"], kpi_python="3.14",
+            self.manifest,
+            self.root,
+            epoch="NEW",
+            main_sha=MAIN,
+            pythons=["3.15", "3.11", "3.14"],
+            kpi_python="3.14",
         )
         self.assertEqual(out["pythons"], ["3.11", "3.14", "3.15"])
         self.assertEqual(out["kpi_python"], "3.14")
         for entry in out["files"].values():
-            self.assertEqual(entry["branches"], {"3.11": None, "3.14": None, "3.15": None})
-            self.assertEqual(entry["covered"], {"3.11": None, "3.14": None, "3.15": None})
+            self.assertEqual(
+                entry["branches"], {"3.11": None, "3.14": None, "3.15": None}
+            )
+            self.assertEqual(
+                entry["covered"], {"3.11": None, "3.14": None, "3.15": None}
+            )
             self.assertIsNone(entry["floor"])
         self.assertEqual(out["status"], rp.PENDING)
         self.assertEqual(self.manifest["pythons"], ["3.10", "3.12"])  # input untouched
@@ -147,7 +155,10 @@ class RepinTests(RepinCase):
             ({"pythons": ["2.7"]}, "distinct"),
             ({"pythons": []}, "distinct"),
         ):
-            with self.subTest(match=match), self.assertRaisesRegex(rp.RepinError, match):
+            with (
+                self.subTest(match=match),
+                self.assertRaisesRegex(rp.RepinError, match),
+            ):
                 rp.repin(self.manifest, self.root, epoch="NEW", main_sha=MAIN, **kwargs)
 
     def test_repin_refusals(self):

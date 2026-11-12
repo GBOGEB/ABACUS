@@ -69,7 +69,9 @@ class TemporalPhaseRunner:
 
         enable_idempotency(enabled=True)
 
-    def run_phase(self, phase_num: int, iteration: int = 1, task_filter: Optional[str] = None) -> Dict[str, Any]:
+    def run_phase(
+        self, phase_num: int, iteration: int = 1, task_filter: Optional[str] = None
+    ) -> Dict[str, Any]:
         """
         Run a specific phase with temporal tracking
 
@@ -102,14 +104,18 @@ class TemporalPhaseRunner:
         try:
             # Initialize phase - try different parameter names for compatibility
             try:
-                phase_obj = phase_class(config=self.config, state_manager=self.state_mgr)
+                phase_obj = phase_class(
+                    config=self.config, state_manager=self.state_mgr
+                )
             except TypeError:
                 try:
                     # Some phases use 'state' instead of 'state_manager'
                     phase_obj = phase_class(config=self.config, state=self.state_mgr)
                 except TypeError:
                     # Some phases use 'state_mgr'
-                    phase_obj = phase_class(config=self.config, state_mgr=self.state_mgr)
+                    phase_obj = phase_class(
+                        config=self.config, state_mgr=self.state_mgr
+                    )
 
             # Execute phase
             print(f"\n[EXECUTING] {phase_name}...")
@@ -121,7 +127,7 @@ class TemporalPhaseRunner:
             else:
                 # Assume dict return - success determined by presence of 'phase' field
                 result = exec_result
-                success = 'phase' in result
+                success = "phase" in result
 
             duration = time.time() - start_time
 
@@ -134,19 +140,21 @@ class TemporalPhaseRunner:
                 self._devour_phase_output(phase_num, iteration, result)
 
             execution_record = {
-                'phase': phase_num,
-                'phase_name': phase_name,
-                'iteration': iteration,
-                'success': success,
-                'duration_seconds': duration,
-                'timestamp': datetime.now().isoformat(),
-                'result': result
+                "phase": phase_num,
+                "phase_name": phase_name,
+                "iteration": iteration,
+                "success": success,
+                "duration_seconds": duration,
+                "timestamp": datetime.now().isoformat(),
+                "result": result,
             }
 
             self.execution_log.append(execution_record)
 
             print(f"\n{'='*80}")
-            print(f"PHASE {phase_num} RESULT: {'✅ SUCCESS' if success else '❌ FAILED'}")
+            print(
+                f"PHASE {phase_num} RESULT: {'✅ SUCCESS' if success else '❌ FAILED'}"
+            )
             print(f"Duration: {duration:.2f}s")
             print(f"{'='*80}\n")
 
@@ -160,13 +168,13 @@ class TemporalPhaseRunner:
             print(f"{'='*80}\n")
 
             execution_record = {
-                'phase': phase_num,
-                'phase_name': phase_name,
-                'iteration': iteration,
-                'success': False,
-                'duration_seconds': duration,
-                'timestamp': datetime.now().isoformat(),
-                'error': str(e)
+                "phase": phase_num,
+                "phase_name": phase_name,
+                "iteration": iteration,
+                "success": False,
+                "duration_seconds": duration,
+                "timestamp": datetime.now().isoformat(),
+                "error": str(e),
             }
 
             self.execution_log.append(execution_record)
@@ -183,18 +191,18 @@ class TemporalPhaseRunner:
             result = self.run_phase(phase_num, iteration)
             results.append(result)
 
-            if not result['success']:
+            if not result["success"]:
                 print(f"\n⚠️  Phase {phase_num} failed. Stopping execution.")
                 break
 
         summary = {
-            'iteration': iteration,
-            'total_phases': len(results),
-            'successful_phases': sum(1 for r in results if r['success']),
-            'failed_phases': sum(1 for r in results if not r['success']),
-            'total_duration': sum(r['duration_seconds'] for r in results),
-            'results': results,
-            'temporal_snapshots': self.temporal_snapshots
+            "iteration": iteration,
+            "total_phases": len(results),
+            "successful_phases": sum(1 for r in results if r["success"]),
+            "failed_phases": sum(1 for r in results if not r["success"]),
+            "total_duration": sum(r["duration_seconds"] for r in results),
+            "results": results,
+            "temporal_snapshots": self.temporal_snapshots,
         }
 
         self._save_execution_summary(summary)
@@ -204,18 +212,20 @@ class TemporalPhaseRunner:
     def _take_temporal_snapshot(self, stage: str, phase_num: int, iteration: int):
         """Take a temporal snapshot of the system state"""
         snapshot = {
-            'stage': stage,
-            'phase': phase_num,
-            'iteration': iteration,
-            'timestamp': datetime.now().isoformat(),
-            'output_dir_size': self._get_dir_size(self.config.paths.output_root),
-            'file_count': self._count_files(self.config.paths.output_root)
+            "stage": stage,
+            "phase": phase_num,
+            "iteration": iteration,
+            "timestamp": datetime.now().isoformat(),
+            "output_dir_size": self._get_dir_size(self.config.paths.output_root),
+            "file_count": self._count_files(self.config.paths.output_root),
         }
 
         self.temporal_snapshots.append(snapshot)
         print(f"  [TEMPORAL] Snapshot taken: {stage} - Phase {phase_num}")
 
-    def _devour_phase_output(self, phase_num: int, iteration: int, result: Dict[str, Any]):
+    def _devour_phase_output(
+        self, phase_num: int, iteration: int, result: Dict[str, Any]
+    ):
         """
         DOW Integration: Devour phase outputs for learning
 
@@ -224,28 +234,38 @@ class TemporalPhaseRunner:
         print(f"\n  [DOW] Devouring Phase {phase_num} outputs...")
 
         devour_data = {
-            'phase': phase_num,
-            'iteration': iteration,
-            'timestamp': datetime.now().isoformat(),
-            'insights': [],
-            'patterns': [],
-            'improvements': []
+            "phase": phase_num,
+            "iteration": iteration,
+            "timestamp": datetime.now().isoformat(),
+            "insights": [],
+            "patterns": [],
+            "improvements": [],
         }
 
         # Extract insights from result
         if isinstance(result, dict):
-            if 'metrics' in result:
-                devour_data['insights'].append(f"Metrics collected: {len(result['metrics'])} items")
-            if 'improvements' in result:
-                devour_data['insights'].append(f"Improvements identified: {len(result['improvements'])} items")
-            if 'quality_gates' in result:
-                devour_data['insights'].append(f"Quality gates: {len(result['quality_gates'])} gates")
+            if "metrics" in result:
+                devour_data["insights"].append(
+                    f"Metrics collected: {len(result['metrics'])} items"
+                )
+            if "improvements" in result:
+                devour_data["insights"].append(
+                    f"Improvements identified: {len(result['improvements'])} items"
+                )
+            if "quality_gates" in result:
+                devour_data["insights"].append(
+                    f"Quality gates: {len(result['quality_gates'])} gates"
+                )
 
         # Save devoured knowledge
-        devour_file = self.config.paths.output_root / f"iteration_{iteration}" / f"devoured_phase{phase_num}.json"
+        devour_file = (
+            self.config.paths.output_root
+            / f"iteration_{iteration}"
+            / f"devoured_phase{phase_num}.json"
+        )
         devour_file.parent.mkdir(parents=True, exist_ok=True)
 
-        with open(devour_file, 'w') as f:
+        with open(devour_file, "w") as f:
             json.dump(devour_data, f, indent=2)
 
         print(f"  [DOW] ✅ Devoured {len(devour_data['insights'])} insights")
@@ -254,19 +274,22 @@ class TemporalPhaseRunner:
         """Get total size of directory in bytes"""
         if not path.exists():
             return 0
-        return sum(f.stat().st_size for f in path.rglob('*') if f.is_file())
+        return sum(f.stat().st_size for f in path.rglob("*") if f.is_file())
 
     def _count_files(self, path: Path) -> int:
         """Count total files in directory"""
         if not path.exists():
             return 0
-        return len([f for f in path.rglob('*') if f.is_file()])
+        return len([f for f in path.rglob("*") if f.is_file()])
 
     def _save_execution_summary(self, summary: Dict[str, Any]):
         """Save execution summary to file"""
-        output_file = self.config.paths.output_root / f"temporal_execution_iteration_{summary['iteration']}.json"
+        output_file = (
+            self.config.paths.output_root
+            / f"temporal_execution_iteration_{summary['iteration']}.json"
+        )
 
-        with open(output_file, 'w') as f:
+        with open(output_file, "w") as f:
             json.dump(summary, f, indent=2)
 
         print(f"\n✅ Execution summary saved: {output_file}")
@@ -274,18 +297,21 @@ class TemporalPhaseRunner:
 
 def main():
     parser = argparse.ArgumentParser(description="DMAIC V4.0 Individual Phase Runner")
-    parser.add_argument('--phase', type=int, choices=range(9), help='Phase number to run (0-8)')
-    parser.add_argument('--iteration', type=int, default=1, help='Iteration number')
-    parser.add_argument('--all', action='store_true', help='Run all phases')
-    parser.add_argument('--no-temporal', action='store_true', help='Disable temporal tracking')
-    parser.add_argument('--no-dow', action='store_true', help='Disable DOW integration')
-    parser.add_argument('--task', type=str, help='Task filter (e.g., "1.1", "2.3")')
+    parser.add_argument(
+        "--phase", type=int, choices=range(9), help="Phase number to run (0-8)"
+    )
+    parser.add_argument("--iteration", type=int, default=1, help="Iteration number")
+    parser.add_argument("--all", action="store_true", help="Run all phases")
+    parser.add_argument(
+        "--no-temporal", action="store_true", help="Disable temporal tracking"
+    )
+    parser.add_argument("--no-dow", action="store_true", help="Disable DOW integration")
+    parser.add_argument("--task", type=str, help='Task filter (e.g., "1.1", "2.3")')
 
     args = parser.parse_args()
 
     runner = TemporalPhaseRunner(
-        enable_temporal=not args.no_temporal,
-        enable_dow=not args.no_dow
+        enable_temporal=not args.no_temporal, enable_dow=not args.no_dow
     )
 
     if args.all:
@@ -299,15 +325,16 @@ def main():
         print(f"Total Duration: {result['total_duration']:.2f}s")
         print(f"{'='*80}\n")
 
-        return 0 if result['failed_phases'] == 0 else 1
+        return 0 if result["failed_phases"] == 0 else 1
 
     elif args.phase is not None:
         result = runner.run_phase(args.phase, args.iteration, args.task)
-        return 0 if result['success'] else 1
+        return 0 if result["success"] else 1
 
     else:
         parser.print_help()
         return 1
+
 
 if __name__ == "__main__":
     sys.exit(main())

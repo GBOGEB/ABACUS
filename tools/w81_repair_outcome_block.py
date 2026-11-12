@@ -22,7 +22,9 @@ def load_module(name: str, path: Path):
     return module
 
 
-def frozen_semantic_basis(source: dict) -> tuple[list[str], np.ndarray, np.ndarray, np.ndarray]:
+def frozen_semantic_basis(
+    source: dict,
+) -> tuple[list[str], np.ndarray, np.ndarray, np.ndarray]:
     w79 = load_module("w79_for_w81", W79_TOOL)
     rows = w79.validate_input(source)
     features = list(source["semantic_work_features"])
@@ -42,12 +44,21 @@ def frozen_semantic_basis(source: dict) -> tuple[list[str], np.ndarray, np.ndarr
     return features, means, sds, vector
 
 
-def project(receipt: dict, features: list[str], means: np.ndarray, sds: np.ndarray, vector: np.ndarray) -> float:
+def project(
+    receipt: dict,
+    features: list[str],
+    means: np.ndarray,
+    sds: np.ndarray,
+    vector: np.ndarray,
+) -> float:
     if receipt.get("schema_version") != "MC2-W78-DETERMINISTIC-WORK-PROBE-0.1.0":
         raise ValueError("W81 requires W78-compatible exact-source work receipts")
     if receipt.get("repository") != "GBOGEB/ABACUS":
         raise ValueError("W81 work receipt repository mismatch")
-    if receipt.get("execution_state") != "PASS" or receipt.get("semantic_parity_with_w72") is not True:
+    if (
+        receipt.get("execution_state") != "PASS"
+        or receipt.get("semantic_parity_with_w72") is not True
+    ):
         raise ValueError("W81 work receipt did not pass exact-source semantic parity")
     vec = receipt.get("semantic_work_vector") or {}
     if set(vec) != set(features):
@@ -96,7 +107,9 @@ def main() -> int:
     if verification["primary_frontier"]["result"] != "EXHAUSTED_NO_ACTIONS_EVIDENCE":
         raise ValueError("W81 primary low-PC1 frontier is not exhausted as declared")
     if contract["source_w80"]["pc1_predictive_validation"] is not False:
-        raise ValueError("W81 contract must preserve W80 negative predictive validation")
+        raise ValueError(
+            "W81 contract must preserve W80 negative predictive validation"
+        )
 
     source = json.loads(W79_INPUT.read_text(encoding="utf-8"))
     features, means, sds, vector = frozen_semantic_basis(source)
@@ -107,14 +120,14 @@ def main() -> int:
         receipts[r["matrix_label"]] = r
 
     expected_labels = {
-        x[k]
-        for x in contract["episodes"]
-        for k in ("failure_label", "repair_label")
+        x[k] for x in contract["episodes"] for k in ("failure_label", "repair_label")
     }
     if set(receipts) != expected_labels:
         raise ValueError(f"W81 work receipt labels mismatch: {sorted(receipts)}")
 
-    scores = {label: project(r, features, means, sds, vector) for label, r in receipts.items()}
+    scores = {
+        label: project(r, features, means, sds, vector) for label, r in receipts.items()
+    }
     events = []
     pair_rows = []
     for episode in contract["episodes"]:
@@ -124,23 +137,29 @@ def main() -> int:
             raise ValueError(f"{fail} source SHA mismatch")
         if receipts[repair]["source_sha"] != episode["repair_source_sha"]:
             raise ValueError(f"{repair} source SHA mismatch")
-        pair_rows.append({
-            "episode_id": episode["episode_id"],
-            "failure_source_sha": episode["failure_source_sha"],
-            "repair_source_sha": episode["repair_source_sha"],
-            "failure_pc1": round(scores[fail], 6),
-            "repair_pc1": round(scores[repair], 6),
-            "delta_pc1_repair_minus_failure": round(scores[repair]-scores[fail], 6),
-            "machine_outcome": "NAMED_RED_TO_GREEN",
-            "causal_effect_claimed": False,
-        })
-        events.append({
-            "episode_id": episode["episode_id"],
-            "winner_source_sha": episode["repair_source_sha"],
-            "loser_source_sha": episode["failure_source_sha"],
-            "basis": "OBSERVED_NAMED_RED_TO_GREEN_REPAIR_EPISODE",
-            "bt_admitted": False,
-        })
+        pair_rows.append(
+            {
+                "episode_id": episode["episode_id"],
+                "failure_source_sha": episode["failure_source_sha"],
+                "repair_source_sha": episode["repair_source_sha"],
+                "failure_pc1": round(scores[fail], 6),
+                "repair_pc1": round(scores[repair], 6),
+                "delta_pc1_repair_minus_failure": round(
+                    scores[repair] - scores[fail], 6
+                ),
+                "machine_outcome": "NAMED_RED_TO_GREEN",
+                "causal_effect_claimed": False,
+            }
+        )
+        events.append(
+            {
+                "episode_id": episode["episode_id"],
+                "winner_source_sha": episode["repair_source_sha"],
+                "loser_source_sha": episode["failure_source_sha"],
+                "basis": "OBSERVED_NAMED_RED_TO_GREEN_REPAIR_EPISODE",
+                "bt_admitted": False,
+            }
+        )
 
     component_count = components(events)
     pair_count = len(events)
@@ -176,9 +195,12 @@ def main() -> int:
         "formal_credit_delta": 0,
         "next_step": "acquire additional independently observed repair episodes and/or new low-PC1 outcomes; do not fit BT until eligibility gates pass",
     }
-    Path(args.out).write_text(json.dumps(result, indent=2, sort_keys=True)+"\n", encoding="utf-8")
+    Path(args.out).write_text(
+        json.dumps(result, indent=2, sort_keys=True) + "\n", encoding="utf-8"
+    )
     print(json.dumps(result, sort_keys=True))
     return 0
+
 
 if __name__ == "__main__":
     raise SystemExit(main())

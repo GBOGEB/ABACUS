@@ -37,8 +37,14 @@ def test_reference_is_not_unconditional_acceptance() -> None:
 
 
 def test_limiting_position_overrides_positive_wording() -> None:
-    assert classify_bidder_position("Compliant", "Deviation: test is not standard") == "DEVIATION"
-    assert classify_bidder_position("Compliant", "Suggestion: modify to alternative") == "SUGGESTION"
+    assert (
+        classify_bidder_position("Compliant", "Deviation: test is not standard")
+        == "DEVIATION"
+    )
+    assert (
+        classify_bidder_position("Compliant", "Suggestion: modify to alternative")
+        == "SUGGESTION"
+    )
 
 
 @pytest.mark.parametrize(
@@ -56,15 +62,24 @@ def test_negative_compliance_wording_fails_closed(text: str) -> None:
 
 
 def test_unconditional_acceptance_requires_no_limiting_marker() -> None:
-    assert classify_bidder_position("Compliant", "RTM-230 accepted") == "ACCEPT_UNCONDITIONAL"
+    assert (
+        classify_bidder_position("Compliant", "RTM-230 accepted")
+        == "ACCEPT_UNCONDITIONAL"
+    )
 
 
 def test_without_exception_is_unconditional_acceptance() -> None:
-    assert classify_bidder_position("Compliant without exception", "RTM-230 accepted") == "ACCEPT_UNCONDITIONAL"
+    assert (
+        classify_bidder_position("Compliant without exception", "RTM-230 accepted")
+        == "ACCEPT_UNCONDITIONAL"
+    )
 
 
 def test_except_word_is_limiting_marker() -> None:
-    assert classify_bidder_position("Compliant", "accepted except for item 3") != "ACCEPT_UNCONDITIONAL"
+    assert (
+        classify_bidder_position("Compliant", "accepted except for item 3")
+        != "ACCEPT_UNCONDITIONAL"
+    )
 
 
 def test_missing_hash_and_locator_fail_closed() -> None:

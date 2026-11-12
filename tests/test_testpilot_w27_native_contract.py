@@ -15,7 +15,9 @@ WORKFLOW = (
 # The workflow pins numpy==2.2.6, so ssot/python_versions.yaml caps it to the
 # numpy-2.2-pin lane; cell versions are read from that lane, not literals.
 LANE = json.loads(
-    (Path(__file__).resolve().parents[1] / "ssot/python_versions.lanes.json").read_text(encoding="utf-8")
+    (Path(__file__).resolve().parents[1] / "ssot/python_versions.lanes.json").read_text(
+        encoding="utf-8"
+    )
 )["lanes"]["numpy-2.2-pin"]
 
 
