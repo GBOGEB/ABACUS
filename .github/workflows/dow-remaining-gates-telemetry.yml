@@ -16,6 +16,7 @@ on:
 permissions:
   contents: read
   actions: read
+  deployments: read
   pull-requests: read
 
 concurrency:
@@ -125,6 +126,18 @@ jobs:
               | join_pages jobs \
               > "$SNAPSHOT_DIR/dow-jobs.json"
           fi
+          # Latest deployment and its statuses per environment (#2719).
+          # Metadata only; no environment secret is read.
+          for env in staging production cryoplant-federation; do
+            deps="$(gh api               "repos/$GITHUB_REPOSITORY/deployments?environment=$env&per_page=1")"
+            dep_id="$(jq -r '.[0].id // empty' <<<"$deps")"
+            if [ -n "$dep_id" ]; then
+              stats="$(gh api                 "repos/$GITHUB_REPOSITORY/deployments/$dep_id/statuses?per_page=100")"
+            else
+              stats='[]'
+            fi
+            jq -n --arg env "$env" --argjson d "$deps" --argjson s "$stats"               '{($env): {deployments: $d, statuses: $s}}'
+          done | jq -s '{environments: add}' > "$SNAPSHOT_DIR/deployments.json"
       - name: Generate machine-readable receipt and operator report
         run: |
           set -euo pipefail

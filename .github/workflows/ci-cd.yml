@@ -52,7 +52,7 @@ env:
 jobs:
   lint:
     name: Code Quality & Linting
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
 
     steps:
       - name: Checkout code
@@ -107,7 +107,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [ubuntu-latest, windows-latest, macos-latest]
+        os: [ubuntu-24.04, windows-latest, macos-latest]
         python-version: ['3.11', '3.15']
 
     steps:
@@ -143,7 +143,7 @@ jobs:
         run: pytest tests/test_integration.py -v
 
       - name: Upload coverage to Codecov
-        if: matrix.os == 'ubuntu-latest' && matrix.python-version == '3.15'
+        if: matrix.os == 'ubuntu-24.04' && matrix.python-version == '3.15'
         uses: codecov/codecov-action@v7
         with:
           file: ./coverage.xml
@@ -152,7 +152,7 @@ jobs:
 
   dow-workflow:
     name: DOW Phase 2/3 Workflow Test
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     needs: test
 
     steps:
@@ -214,7 +214,7 @@ jobs:
 
   aht-hypothesis-tests:
     name: AHT Hypothesis Testing
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     needs: test
 
     steps:
@@ -246,7 +246,7 @@ jobs:
 
   security-scan:
     name: Security Scanning
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
 
     steps:
       - name: Checkout code
@@ -281,7 +281,7 @@ jobs:
 
   deploy-staging:
     name: Deploy to Staging
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     needs: [lint, test, dow-workflow, aht-hypothesis-tests]
     if: github.ref == 'refs/heads/develop' && github.event_name == 'push'
     environment: staging
@@ -315,7 +315,7 @@ jobs:
 
   deploy-production:
     name: Deploy to Production
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     needs: [lint, test, dow-workflow, aht-hypothesis-tests, security-scan]
     if: github.ref == 'refs/heads/main' && github.event_name == 'push'
     environment: production
@@ -366,7 +366,7 @@ jobs:
 
   performance-benchmarks:
     name: Performance Benchmarks
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     if: >-
       github.event_name == 'schedule' ||
       contains(github.event.head_commit.message, '[benchmark]')
