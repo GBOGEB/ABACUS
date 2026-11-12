@@ -20,12 +20,8 @@ BRIDGE_TEST = REPO_ROOT / "staging" / "test_integration_bridge.py"
 REASON = "G-AB-STAGING-DOW: external DOW package not installed in CI"
 
 
-@pytest.mark.skipif(
-    importlib.util.find_spec("DOW") is not None,
-    reason="DOW is installed; the bridge suite runs instead of skipping",
-)
-def test_staging_dow_bridge_skips_with_recorded_reason():
-    result = subprocess.run(
+def _run_bridge_suite() -> subprocess.CompletedProcess[str]:
+    return subprocess.run(
         [
             sys.executable,
             "-m",
@@ -44,8 +40,36 @@ def test_staging_dow_bridge_skips_with_recorded_reason():
         text=True,
         timeout=120,
     )
-    output = result.stdout + result.stderr
+
+
+def _check_bridge_outcome(dow_installed: bool, returncode: int, output: str) -> None:
+    if dow_installed:
+        # DOW importable: the bridge suite must actually run and pass.
+        assert returncode == 0, output
+        assert "passed" in output, output
+        assert "skipped" not in output, output
+        return
     # A module-level skip collects no items, so pytest exits 5 (NO_TESTS_COLLECTED).
-    assert result.returncode in (0, 5), output
+    assert returncode in (0, 5), output
     assert "1 skipped" in output, output
     assert REASON in output, output
+
+
+def test_staging_dow_bridge_skips_or_runs():
+    """Run the bridge file in both cases: skip with reason, or pass with DOW."""
+    result = _run_bridge_suite()
+    _check_bridge_outcome(
+        importlib.util.find_spec("DOW") is not None,
+        result.returncode,
+        result.stdout + result.stderr,
+    )
+
+
+def test_check_bridge_outcome_rejects_skip_when_dow_installed():
+    skipped = "1 skipped SKIPPED [1] " + REASON
+    with pytest.raises(AssertionError):
+        _check_bridge_outcome(True, 5, skipped)
+    _check_bridge_outcome(True, 0, "1 passed in 0.1s")
+    _check_bridge_outcome(False, 5, skipped)
+    with pytest.raises(AssertionError):
+        _check_bridge_outcome(False, 1, "1 failed")
