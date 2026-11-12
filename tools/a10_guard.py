@@ -8,6 +8,11 @@ not itself publish bidder names.
   python a10_guard.py --head       every tracked file at HEAD
   python a10_guard.py --diff BASE  CI mode: files added or changed since BASE; falls back to --head
 
+v3 (#2698): in --staged mode during a merge (MERGE_HEAD present) only the files whose staged content
+differs from the merged-in parent are checked (the PR side plus conflict resolutions), so a merge of
+main no longer re-checks files main already carries. Blobs are read through one streamed
+`git cat-file --batch` process instead of one `git cat-file -p` per file, and paths are read NUL-separated.
+
 v2 (5 Oct, review of PR ci/a10-guard):
   * Office/OpenDocument files (.docx .xlsx .pptx .odt ...) are unzipped and their XML text scanned;
     PDFs have their compressed streams inflated and scanned; other binary documents (.doc .xls .msg .zip ...)
@@ -24,6 +29,7 @@ import os
 import re
 import subprocess  # nosec B404
 import sys
+import threading
 import unicodedata
 import zipfile
 import zlib
@@ -119,6 +125,64 @@ SELF = ("tools/a10_guard.py", "a10_guard.py", ALLOW_FILE)
 
 def git(*a):
     return subprocess.run(["git", *a], capture_output=True).stdout  # nosec B603 B607
+
+
+def git_z(*a):
+    """Run a git command that takes -z and return its NUL-separated fields."""
+    out = git(a[0], "-z", *a[1:]).decode("utf-8", "replace")
+    return [f for f in out.split("\0") if f]
+
+
+def index_ids(*a):
+    """Map path -> blob id from `ls-files -s` or `ls-tree -r` output (-z)."""
+    ids = {}
+    for entry in git_z(*a):
+        meta, p = entry.split("\t", 1)
+        ids[p] = meta.split()[-2 if a[0] == "ls-files" else 2]
+    return ids
+
+
+def read_blobs(blob_ids):
+    """Yield (blob_id, bytes or None) for each id, streaming one `git cat-file --batch`.
+
+    A writer thread feeds stdin while this generator reads stdout, so neither pipe can fill
+    up and block the other, however many files a merge brings in.
+    """
+    if not blob_ids:
+        return
+    proc = subprocess.Popen(  # nosec B603 B607
+        ["git", "cat-file", "--batch"],
+        stdin=subprocess.PIPE,
+        stdout=subprocess.PIPE,
+    )
+
+    def feed():
+        try:
+            for bid in blob_ids:
+                proc.stdin.write(bid.encode("ascii") + b"\n")
+        except (BrokenPipeError, OSError):
+            pass
+        finally:
+            try:
+                proc.stdin.close()
+            except OSError:
+                pass
+
+    writer = threading.Thread(target=feed, daemon=True)
+    writer.start()
+    try:
+        for bid in blob_ids:
+            header = proc.stdout.readline().split()
+            if len(header) != 3:
+                yield bid, None
+                continue
+            data = proc.stdout.read(int(header[2]))
+            proc.stdout.read(1)
+            yield bid, data
+    finally:
+        proc.stdout.close()
+        writer.join()
+        proc.wait()
 
 
 def git_ok(*a):
@@ -250,38 +314,35 @@ def main():
                 line.strip() for line in f if line.strip() and not line.startswith("#")
             }
     if staged:
-        paths = (
-            git("diff", "--cached", "--name-only", "--diff-filter=ACMR")
-            .decode("utf-8", "replace")
-            .splitlines()
-        )
-        ids = {}
-        for line in git("ls-files", "-s").decode("utf-8", "replace").splitlines():
-            meta, p = line.split("\t", 1)
-            ids[p] = meta.split()[1]
-    else:
-        if base:
-            paths = (
-                git("diff", "--name-only", "--diff-filter=ACMR", base + "...HEAD")
-                .decode("utf-8", "replace")
-                .splitlines()
+        if git_ok("rev-parse", "-q", "--verify", "MERGE_HEAD"):
+            # Merge commit: check only what differs from the merged-in parent (#2698).
+            paths = git_z(
+                "diff", "--cached", "--name-only", "--diff-filter=ACMR", "MERGE_HEAD"
             )
         else:
-            paths = git("ls-files").decode("utf-8", "replace").splitlines()
-        ids = {}
-        for line in (
-            git("ls-tree", "-r", "HEAD").decode("utf-8", "replace").splitlines()
-        ):
-            meta, p = line.split("\t", 1)
-            ids[p] = meta.split()[2]
+            paths = git_z("diff", "--cached", "--name-only", "--diff-filter=ACMR")
+        ids = index_ids("ls-files", "-s")
+    else:
+        if base:
+            paths = git_z("diff", "--name-only", "--diff-filter=ACMR", base + "...HEAD")
+        else:
+            paths = git_z("ls-files")
+        ids = index_ids("ls-tree", "-r", "HEAD")
     bad = []
+    todo = []
     for p in paths:
         if p in SELF or p.startswith(".githooks/"):
             continue
         bid = ids.get(p, "")
         if (bid and blob_key(bid) in allow) or path_key(p) in allow:
             continue
-        data = git("cat-file", "-p", bid) if bid else None
+        if not bid:
+            why = reason(p, None)
+            if why:
+                bad.append((p, why))
+            continue
+        todo.append((p, bid))
+    for (p, _), (_, data) in zip(todo, read_blobs([b for _, b in todo])):
         why = reason(p, data)
         if why:
             bad.append((p, why))

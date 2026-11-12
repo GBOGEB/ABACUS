@@ -187,3 +187,87 @@ def test_main_head_and_diff_modes(repo, monkeypatch, capsys):
     assert _run(monkeypatch, "--diff", "0" * 40) == 1
     assert "not usable" in capsys.readouterr().out
     assert _run(monkeypatch, "--diff", "f" * 40) == 1
+
+
+# --- merge commits (#2698): only what differs from the merged-in parent ------
+
+
+def _branch(repo):
+    import subprocess  # nosec B404
+
+    return subprocess.run(  # nosec B603 B607
+        ["git", "-C", str(repo), "rev-parse", "--abbrev-ref", "HEAD"],
+        capture_output=True,
+        text=True,
+    ).stdout.strip()
+
+
+def _merge_no_commit(repo, other):
+    import subprocess  # nosec B404
+
+    return subprocess.run(  # nosec B603 B607
+        ["git", "-C", str(repo), "merge", "--no-commit", "--no-ff", other],
+        capture_output=True,
+    ).returncode
+
+
+def test_merge_bringing_main_only_file_commits_clean(repo, monkeypatch, capsys):
+    main = _branch(repo)
+    _git(repo, "checkout", "-qb", "pr")
+    (repo / "pr.md").write_text("pr work\n")
+    _git(repo, "add", "pr.md")
+    _git(repo, "commit", "-qm", "pr")
+    _git(repo, "checkout", "-q", main)
+    # Already on main (e.g. landed through a reviewed path); the PR never touched it.
+    (repo / "myrrha_handover").mkdir()
+    (repo / "myrrha_handover" / "render_all.py").write_text("print(1)\n")
+    _git(repo, "add", ".")
+    _git(repo, "commit", "-qm", "main moves on")
+    _git(repo, "checkout", "-q", "pr")
+    assert _merge_no_commit(repo, main) == 0
+    assert _run(monkeypatch, "--staged") == 0
+    assert "OK (1 files checked)" in capsys.readouterr().out
+
+
+def test_merge_conflict_resolution_with_term_is_blocked(repo, monkeypatch, capsys):
+    main = _branch(repo)
+    _git(repo, "checkout", "-qb", "pr")
+    (repo / "README.md").write_text("pr side\n")
+    _git(repo, "commit", "-qam", "pr")
+    _git(repo, "checkout", "-q", main)
+    (repo / "README.md").write_text("main side\n")
+    _git(repo, "commit", "-qam", "main")
+    _git(repo, "checkout", "-q", "pr")
+    assert _merge_no_commit(repo, main) != 0  # conflict
+    (repo / "README.md").write_text("resolved with zebra quokka\n")
+    _git(repo, "add", "README.md")
+    assert _run(monkeypatch, "--staged") == 1
+    assert "BLOCK  README.md" in capsys.readouterr().out
+
+
+def test_large_merge_finishes_quickly(repo, monkeypatch, capsys):
+    import time
+
+    main = _branch(repo)
+    _git(repo, "checkout", "-qb", "pr")
+    (repo / "pr").mkdir()
+    for i in range(1000):
+        (repo / "pr" / f"f{i}.md").write_text(f"pr file {i}\n")
+    _git(repo, "add", ".")
+    _git(repo, "commit", "-qm", "pr")
+    _git(repo, "checkout", "-q", main)
+    (repo / "main").mkdir()
+    for i in range(1000):
+        (repo / "main" / f"f{i}.md").write_text(f"main file {i}\n")
+    _git(repo, "add", ".")
+    _git(repo, "commit", "-qm", "main")
+    _git(repo, "checkout", "-q", "pr")
+    assert _merge_no_commit(repo, main) == 0
+    start = time.monotonic()
+    assert _run(monkeypatch, "--staged") == 0
+    assert time.monotonic() - start < 60
+    # The PR side (1000 files) is read through one cat-file batch; main's 1000 are skipped.
+    assert "OK (1000 files checked)" in capsys.readouterr().out
+    start = time.monotonic()
+    assert _run(monkeypatch, "--head") == 0
+    assert time.monotonic() - start < 60
