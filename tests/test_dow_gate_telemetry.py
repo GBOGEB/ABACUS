@@ -13,9 +13,11 @@ from unittest.mock import patch
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "scripts"))
 from dow_gate_telemetry import (
+    DEPLOY_ENVIRONMENTS,
     affected,
     build,
     coverage,
+    deployment_gate,
     job_census,
     load,
     main,
@@ -496,6 +498,123 @@ class RemainingGateTests(unittest.TestCase):
         self.assertEqual(result["jobs"]["lint-and-validate"]["status"], "FAIL")
         self.assertEqual(result["jobs"]["ci-rhel-8"]["status"], "SKIPPED")
         self.assertEqual(result["jobs"]["ci-rhel-9"]["status"], "UNKNOWN")
+
+
+def deployment(number, env, sha=MAIN, created="2026-11-12T01:00:00Z"):
+    return {
+        "id": number,
+        "environment": env,
+        "sha": sha,
+        "ref": "main",
+        "created_at": created,
+    }
+
+
+def dstatus(number, state, created="2026-11-12T01:05:00Z"):
+    return {
+        "id": number,
+        "state": state,
+        "created_at": created,
+        "log_url": f"https://github.com/GBOGEB/ABACUS/actions/runs/{number}",
+    }
+
+
+class DeploymentStatusTests(unittest.TestCase):
+    def test_absent_snapshot_is_unknown_for_every_environment(self):
+        result = inputs()
+        for env in DEPLOY_ENVIRONMENTS:
+            gate = result["gates"]["deployment_" + env]
+            self.assertEqual(gate["status"], "UNKNOWN")
+            self.assertIsNone(gate["deployment_id"])
+
+    def test_latest_status_of_latest_deployment_is_reported(self):
+        snapshot = {
+            "environments": {
+                "production": {
+                    "deployments": [
+                        deployment(1, "production", created="2026-11-11T00:00:00Z"),
+                        deployment(2, "production"),
+                    ],
+                    "statuses": [
+                        dstatus(10, "in_progress", "2026-11-12T01:01:00Z"),
+                        dstatus(11, "success", "2026-11-12T01:09:00Z"),
+                    ],
+                },
+                "staging": {
+                    "deployments": [deployment(3, "staging")],
+                    "statuses": [dstatus(12, "error")],
+                },
+                "cryoplant-federation": {"deployments": [], "statuses": []},
+            }
+        }
+        gates = inputs(deployments=snapshot)["gates"]
+        self.assertEqual(gates["deployment_production"]["status"], "PASS")
+        self.assertEqual(gates["deployment_production"]["deployment_id"], 2)
+        self.assertEqual(gates["deployment_production"]["state"], "success")
+        self.assertEqual(gates["deployment_staging"]["status"], "FAIL")
+        self.assertEqual(
+            gates["deployment_cryoplant-federation"]["status"], "NOT_OBSERVED"
+        )
+
+    def test_deployment_without_status_or_unknown_state_is_not_pass(self):
+        no_status = {
+            "environments": {
+                "staging": {"deployments": [deployment(4, "staging")], "statuses": []}
+            }
+        }
+        gate = deployment_gate(no_status, "staging")
+        self.assertEqual(gate["status"], "UNKNOWN")
+        self.assertEqual(gate["deployment_id"], 4)
+        odd = {
+            "environments": {
+                "staging": {
+                    "deployments": [deployment(5, "staging")],
+                    "statuses": [dstatus(13, "exotic")],
+                }
+            }
+        }
+        self.assertEqual(deployment_gate(odd, "staging")["status"], "UNKNOWN")
+        inactive = {
+            "environments": {
+                "staging": {
+                    "deployments": [deployment(6, "staging")],
+                    "statuses": [dstatus(14, "inactive")],
+                }
+            }
+        }
+        self.assertEqual(deployment_gate(inactive, "staging")["status"], "INACTIVE")
+        self.assertEqual(deployment_gate(odd, "production")["status"], "UNKNOWN")
+
+    def test_malformed_or_foreign_deployment_fails_closed(self):
+        with self.assertRaises(ValueError):
+            deployment_gate({"environments": []}, "staging")
+        with self.assertRaises(ValueError):
+            deployment_gate(
+                {"environments": {"staging": {"deployments": {}}}}, "staging"
+            )
+        foreign = {
+            "environments": {
+                "staging": {
+                    "deployments": [deployment(7, "production")],
+                    "statuses": [],
+                }
+            }
+        }
+        with self.assertRaises(ValueError):
+            deployment_gate(foreign, "staging")
+
+    def test_markdown_shows_deployment_identity(self):
+        snapshot = {
+            "environments": {
+                "production": {
+                    "deployments": [deployment(8, "production")],
+                    "statuses": [dstatus(15, "success")],
+                }
+            }
+        }
+        out = markdown(inputs(deployments=snapshot))
+        self.assertIn("deployment 8 @ " + MAIN[:12], out)
+        self.assertIn("| deployment_production | PASS |", out)
 
 
 if __name__ == "__main__":
