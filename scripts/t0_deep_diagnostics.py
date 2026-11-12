@@ -53,14 +53,20 @@ def hash_pack():
     files = files[:5000]
     h = hashlib.sha256()
     total = 0
+    skipped = 0
     for p in files:
         try:
             b = open(p, "rb").read()
             h.update(b)
             total += len(b)
         except OSError:
-            pass
-    return {"files": len(files), "bytes": total, "sha256": h.hexdigest()}
+            skipped += 1
+    return {
+        "files": len(files),
+        "bytes": total,
+        "sha256": h.hexdigest(),
+        "skipped_files": skipped,
+    }
 
 
 r = []
