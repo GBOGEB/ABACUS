@@ -89,6 +89,9 @@ watchdog>=6.0.0,<7.0.0
 # Governed PDF semantic extraction for the binary bridge
 pypdf>=6.21.2,<7.0.0
 
+# Safe XML parsing (scripts/ci/family_collect_guard.py, imported by DMAIC tests)
+defusedxml>=0.7.1,<1.0
+
 # ============================================================================
 # HASHING & CHECKSUMS (for idempotency)
 # ============================================================================
