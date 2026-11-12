@@ -259,3 +259,33 @@ def test_large_merge_finishes_quickly(repo, monkeypatch, capsys):
     start = time.monotonic()
     assert _run(monkeypatch, "--head") == 1
     assert time.monotonic() - start < 60
+
+
+def test_export_attributes_cannot_hide_content(repo, monkeypatch, capsys):
+    (repo / ".gitattributes").write_text(
+        "hidden.md export-ignore\nsubst.md export-subst\n"
+    )
+    (repo / "hidden.md").write_text("zebra quokka\n")
+    (repo / "subst.md").write_text("zebra $Format:%H$ quokka\n")
+    _git(repo, "add", ".")
+    assert _run(monkeypatch, "--staged") == 1
+    out = capsys.readouterr().out
+    assert "BLOCK  hidden.md" in out
+    assert "2 file(s) look like tender material" in out
+
+
+def test_octopus_merge_skips_files_from_any_parent(repo, monkeypatch, capsys):
+    _two_branches(repo)
+    (repo / "pr.md").write_text("pr work\n")
+    _git(repo, "add", "pr.md")
+    _git(repo, "commit", "-qm", "pr")
+    for name in ("one", "two"):
+        _git(repo, "checkout", "-qb", name, "trunk")
+        (repo / "offers_itt").mkdir(exist_ok=True)
+        (repo / "offers_itt" / f"{name}.md").write_text("reviewed\n")
+        _git(repo, "add", ".")
+        _git(repo, "commit", "-qm", name)
+    _git(repo, "checkout", "-q", "pr")
+    _git(repo, "merge", "--no-commit", "--no-ff", "one", "two")
+    assert _run(monkeypatch, "--staged") == 0
+    assert "OK (1 files checked)" in capsys.readouterr().out

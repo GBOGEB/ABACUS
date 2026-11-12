@@ -219,12 +219,6 @@ def _tar(files):
     return buf.getvalue()
 
 
-def test_blob_id_of_matches_git():
-    # `git hash-object` of an empty file and of "hello\n".
-    assert guard.blob_id_of(b"") == "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
-    assert guard.blob_id_of(b"hello\n") == "ce013625030ba8dba906f756967f9e9ca394464a"
-
-
 def test_chunks_split_on_count_and_length():
     items = [(f"p{i}", "x") for i in range(5)]
     assert [len(c) for c in guard.chunks(items, max_items=2)] == [2, 2, 1]
@@ -233,30 +227,72 @@ def test_chunks_split_on_count_and_length():
     assert list(guard.chunks([])) == []
 
 
-def test_read_blobs_uses_verified_archive_members(monkeypatch):
-    good = b"hello\n"
-    tampered = b"export-subst output"
-    archive = _tar({"a.md": good, "b.md": tampered})
+def test_read_blobs_uses_raw_archive_members(monkeypatch):
+    archive = _tar({"a.md": b"hello\n", "b.md": b"bee"})
     calls = []
 
     def fake_git(*args):
         calls.append(args)
         if "archive" in args:
-            assert args[:4] == ("--literal-pathspecs", "archive", "--format=tar", "T")
+            # No repository attributes and no eol conversion: members are the raw blobs.
+            assert args[:7] == (
+                "--attr-source=" + guard.EMPTY_TREE,
+                "-c",
+                "core.autocrlf=false",
+                "--literal-pathspecs",
+                "archive",
+                "--format=tar",
+                "T",
+            )
             return archive
         return b"exact blob"
 
     monkeypatch.setattr(guard, "git", fake_git)
     items = [
-        ("a.md", guard.blob_id_of(good)),
-        ("b.md", "1" * 40),  # member does not hash to the indexed blob
-        ("c.md", "2" * 40),  # member missing (e.g. export-ignore)
-    ]
-    assert list(guard.read_blobs("T", items)) == [good, b"exact blob", b"exact blob"]
-    assert [c for c in calls if c[0] == "cat-file"] == [
-        ("cat-file", "-p", "1" * 40),
-        ("cat-file", "-p", "2" * 40),
-    ]
+        ("a.md", "1"),
+        ("b.md", "2"),
+        ("c.md", "3"),
+    ]  # c.md missing from the archive
+    assert list(guard.read_blobs("T", items)) == [b"hello\n", b"bee", b"exact blob"]
+    assert [c for c in calls if c[0] == "cat-file"] == [("cat-file", "-p", "3")]
+
+
+def test_read_merge_heads(monkeypatch, tmp_path):
+    head_file = tmp_path / "MERGE_HEAD"
+    head_file.write_text("aaa\nbbb\n\n", encoding="ascii")
+    monkeypatch.setattr(guard, "git_ok", lambda *a: True)
+    monkeypatch.setattr(guard, "git", lambda *a: str(head_file).encode() + b"\n")
+    assert guard.read_merge_heads() == ["aaa", "bbb"]
+    monkeypatch.setattr(guard, "git", lambda *a: str(tmp_path / "missing").encode())
+    assert guard.read_merge_heads() == ["MERGE_HEAD"]
+    monkeypatch.setattr(guard, "git_ok", lambda *a: False)
+    assert guard.read_merge_heads() == []
+
+
+def test_main_staged_octopus_skips_files_from_any_parent(monkeypatch, tmp_path, capsys):
+    monkeypatch.chdir(tmp_path)
+    monkeypatch.setattr(guard.sys, "argv", ["a10_guard.py", "--staged"])
+    calls = _install_git(
+        monkeypatch,
+        {("ls-files", "-s"): b"100644 b1 0\tpr.md\n", ("cat-file", "-p"): b"ok"},
+    )
+    differs = {
+        "A": b"pr.md\0offers_itt/from_b.md\0",  # from_b.md is unchanged from parent B
+        "B": b"pr.md\0offers_itt/from_a.md\0",  # from_a.md is unchanged from parent A
+    }
+    inner = guard.git
+
+    def fake_git(*args):
+        if args[0] == "diff":
+            calls.append(args)
+            return differs[args[-1]]
+        return inner(*args)
+
+    monkeypatch.setattr(guard, "git", fake_git)
+    monkeypatch.setattr(guard, "read_merge_heads", lambda: ["A", "B"])
+    guard.main()
+    assert "OK (1 files checked)" in capsys.readouterr().out
+    assert [c[-1] for c in calls if c[0] == "diff"] == ["A", "B"]
 
 
 def test_read_blobs_falls_back_when_archive_fails(monkeypatch):

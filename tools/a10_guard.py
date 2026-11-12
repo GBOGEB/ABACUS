@@ -143,10 +143,9 @@ def index_ids(*a):
     return ids
 
 
-def blob_id_of(data):
-    """The git (SHA-1) blob id of ``data``, to prove an archive member is the indexed blob."""
-    head = b"blob %d\0" % len(data)
-    return hashlib.sha1(head + data, usedforsecurity=False).hexdigest()
+# Attributes are read from the empty tree, so export-ignore, export-subst, ident, eol and
+# filter attributes in the repository cannot hide or alter what the archive returns.
+EMPTY_TREE = "4b825dc642cb6eb9a060e54bf8d69288fbee4904"
 
 
 def chunks(items, max_chars=6000, max_items=200):
@@ -166,12 +165,15 @@ def read_blobs(tree, items):
     """Yield the content of each (path, blob id) pair, in order.
 
     One `git archive` per chunk replaces one `git cat-file -p` per file, which on a 1000-file
-    merge spent minutes spawning processes (#2698). An archive member is used only if it hashes
-    to the indexed blob id, so export-ignore, export-subst or eol/filter attributes can never
-    hide or alter content; anything else is read exactly with `git cat-file -p`.
+    merge spent minutes spawning processes (#2698). With no attributes and no eol conversion
+    the archive member is the raw blob; a path missing from the archive (or a git older than
+    2.40 without --attr-source) is read exactly with `git cat-file -p`.
     """
     for batch in chunks(items):
         raw = git(
+            "--attr-source=" + EMPTY_TREE,
+            "-c",
+            "core.autocrlf=false",
             "--literal-pathspecs",
             "archive",
             "--format=tar",
@@ -189,9 +191,24 @@ def read_blobs(tree, items):
             members = {}
         for p, bid in batch:
             data = members.get(p)
-            if data is None or blob_id_of(data) != bid:
+            if data is None:
                 data = git("cat-file", "-p", bid)
             yield data
+
+
+def read_merge_heads():
+    """Every commit in MERGE_HEAD (one per merged parent; several for an octopus merge)."""
+    if not git_ok("rev-parse", "-q", "--verify", "MERGE_HEAD"):
+        return []
+    path = (
+        git("rev-parse", "--git-path", "MERGE_HEAD").decode("utf-8", "replace").strip()
+    )
+    try:
+        with open(path, encoding="ascii") as f:
+            heads = [line.split()[0] for line in f if line.strip()]
+    except (OSError, UnicodeDecodeError, IndexError):
+        heads = []
+    return heads or ["MERGE_HEAD"]
 
 
 def git_ok(*a):
@@ -323,11 +340,18 @@ def main():
                 line.strip() for line in f if line.strip() and not line.startswith("#")
             }
     if staged:
-        if git_ok("rev-parse", "-q", "--verify", "MERGE_HEAD"):
-            # Merge commit: check only what differs from the merged-in parent (#2698).
-            paths = git_z(
-                "diff", "--cached", "--name-only", "--diff-filter=ACMR", "MERGE_HEAD"
-            )
+        merge_heads = read_merge_heads()
+        if merge_heads:
+            # Merge commit (#2698): check only what differs from every merged-in parent, i.e.
+            # the PR side and conflict resolutions. For an octopus merge a file inherited
+            # unchanged from any one parent is skipped.
+            changed = None
+            for head in merge_heads:
+                differs = set(
+                    git_z("diff", "--cached", "--name-only", "--diff-filter=ACMR", head)
+                )
+                changed = differs if changed is None else changed & differs
+            paths = sorted(changed)
         else:
             paths = git_z("diff", "--cached", "--name-only", "--diff-filter=ACMR")
         ids = index_ids("ls-files", "-s")
