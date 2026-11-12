@@ -364,6 +364,15 @@ def is_test_file(path: str) -> bool:
     return "/tests/" in f"/{path}"
 
 
+def normalise_source(text: str) -> str:
+    """Key text for a flagged range that ignores how the call is wrapped.
+
+    Black re-wraps a call over one or several lines and adds or drops the
+    magic trailing comma; neither changes the finding (#2712).
+    """
+    return re.sub(r",([)\]}])", r"\1", re.sub(r"\s+", "", text))
+
+
 def bandit_debt(root: Path, path: str) -> Counter:
     # --ignore-nosec: a PR cannot silence its own new finding with an inline
     # ``# nosec``; suppressed findings count on both sides alike.
@@ -387,8 +396,8 @@ def bandit_debt(root: Path, path: str) -> Counter:
         # The whole reported range: a multi-line call is flagged on its
         # first line, and its arguments are on the lines that follow.
         numbers = item.get("line_range") or [item.get("line_number") or 0]
-        source = " ".join(
-            lines[number - 1].strip() for number in numbers if 0 < number <= len(lines)
+        source = normalise_source(
+            "".join(lines[number - 1] for number in numbers if 0 < number <= len(lines))
         )
         findings[f"{item.get('test_id')}:{item.get('issue_severity')}:{source}"] += 1
     if payload.get("errors"):
