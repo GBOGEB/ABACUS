@@ -683,30 +683,6 @@ class FullPipelineOrchestrator:
         )
 
 
-def main() -> Any:
-    """Main execution entry point"""
-    import argparse
-
-    parser = argparse.ArgumentParser(
-        description="DMAIC V3.3 Full Pipeline Orchestrator"
-    )
-    parser.add_argument(
-        "--iteration", type=int, default=1, help="Iteration number (default: 1)"
-    )
-    parser.add_argument(
-        "--no-idempotency",
-        action="store_true",
-        help="Disable idempotency (force re-run)",
-    )
-    parser.add_argument("--no-git", action="store_true", help="Disable git commits")
-    parser.add_argument("--quiet", action="store_true", help="Reduce output verbosity")
-    parser.add_argument(
-        "--debug-port",
-        type=int,
-        default=None,
-        help="Enable debug monitoring on specified port",
-    )
-
 def main(argv: Optional[List[str]] = None) -> Any:
     """Main execution entry point"""
     args = build_parser().parse_args(argv)
