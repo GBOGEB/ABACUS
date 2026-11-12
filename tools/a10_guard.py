@@ -10,8 +10,9 @@ not itself publish bidder names.
 
 v3 (#2698): in --staged mode during a merge (MERGE_HEAD present) only the files whose staged content
 differs from the merged-in parent are checked (the PR side plus conflict resolutions), so a merge of
-main no longer re-checks files main already carries. Blobs are read through one streamed
-`git cat-file --batch` process instead of one `git cat-file -p` per file, and paths are read NUL-separated.
+main no longer re-checks files main already carries. Blobs are read with one `git archive` per chunk
+of paths (each member verified against its blob id) instead of one `git cat-file -p` per file, and
+paths are read NUL-separated.
 
 v2 (5 Oct, review of PR ci/a10-guard):
   * Office/OpenDocument files (.docx .xlsx .pptx .odt ...) are unzipped and their XML text scanned;
@@ -29,7 +30,7 @@ import os
 import re
 import subprocess  # nosec B404
 import sys
-import threading
+import tarfile
 import unicodedata
 import zipfile
 import zlib
@@ -142,47 +143,55 @@ def index_ids(*a):
     return ids
 
 
-def read_blobs(blob_ids):
-    """Yield (blob_id, bytes or None) for each id, streaming one `git cat-file --batch`.
+def blob_id_of(data):
+    """The git (SHA-1) blob id of ``data``, to prove an archive member is the indexed blob."""
+    head = b"blob %d\0" % len(data)
+    return hashlib.sha1(head + data, usedforsecurity=False).hexdigest()
 
-    A writer thread feeds stdin while this generator reads stdout, so neither pipe can fill
-    up and block the other, however many files a merge brings in.
+
+def chunks(items, max_chars=6000, max_items=200):
+    """Split (path, blob id) pairs so each git command line stays short (Windows limit)."""
+    batch, size = [], 0
+    for item in items:
+        if batch and (size + len(item[0]) > max_chars or len(batch) >= max_items):
+            yield batch
+            batch, size = [], 0
+        batch.append(item)
+        size += len(item[0]) + 3
+    if batch:
+        yield batch
+
+
+def read_blobs(tree, items):
+    """Yield the content of each (path, blob id) pair, in order.
+
+    One `git archive` per chunk replaces one `git cat-file -p` per file, which on a 1000-file
+    merge spent minutes spawning processes (#2698). An archive member is used only if it hashes
+    to the indexed blob id, so export-ignore, export-subst or eol/filter attributes can never
+    hide or alter content; anything else is read exactly with `git cat-file -p`.
     """
-    if not blob_ids:
-        return
-    proc = subprocess.Popen(  # nosec B603 B607
-        ["git", "cat-file", "--batch"],
-        stdin=subprocess.PIPE,
-        stdout=subprocess.PIPE,
-    )
-
-    def feed():
+    for batch in chunks(items):
+        raw = git(
+            "--literal-pathspecs",
+            "archive",
+            "--format=tar",
+            tree,
+            "--",
+            *[p for p, _ in batch],
+        )
+        members = {}
         try:
-            for bid in blob_ids:
-                proc.stdin.write(bid.encode("ascii") + b"\n")
-        except (BrokenPipeError, OSError):
-            pass
-        finally:
-            try:
-                proc.stdin.close()
-            except OSError:
-                pass
-
-    writer = threading.Thread(target=feed, daemon=True)
-    writer.start()
-    try:
-        for bid in blob_ids:
-            header = proc.stdout.readline().split()
-            if len(header) != 3:
-                yield bid, None
-                continue
-            data = proc.stdout.read(int(header[2]))
-            proc.stdout.read(1)
-            yield bid, data
-    finally:
-        proc.stdout.close()
-        writer.join()
-        proc.wait()
+            with tarfile.open(fileobj=io.BytesIO(raw)) as tar:
+                for member in tar:
+                    if member.isfile():
+                        members[member.name] = tar.extractfile(member).read()
+        except tarfile.TarError:
+            members = {}
+        for p, bid in batch:
+            data = members.get(p)
+            if data is None or blob_id_of(data) != bid:
+                data = git("cat-file", "-p", bid)
+            yield data
 
 
 def git_ok(*a):
@@ -342,7 +351,8 @@ def main():
                 bad.append((p, why))
             continue
         todo.append((p, bid))
-    for (p, _), (_, data) in zip(todo, read_blobs([b for _, b in todo])):
+    tree = git("write-tree").decode().strip() if staged else "HEAD"
+    for (p, _), data in zip(todo, read_blobs(tree, todo)):
         why = reason(p, data)
         if why:
             bad.append((p, why))

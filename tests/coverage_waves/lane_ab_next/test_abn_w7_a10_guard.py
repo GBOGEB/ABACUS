@@ -69,9 +69,9 @@ def _install_git(monkeypatch, outputs, ok=True):
                 return value.replace(b"\n", b"\0") if z else value
         return b""
 
-    def fake_read_blobs(blob_ids):
-        for bid in blob_ids:
-            yield bid, outputs.get(("cat-file", "-p"), b"")
+    def fake_read_blobs(tree, items):
+        for _ in items:
+            yield outputs.get(("cat-file", "-p"), b"")
 
     monkeypatch.setattr(guard, "git", fake_git)
     monkeypatch.setattr(guard, "git_ok", lambda *a: ok)
@@ -207,42 +207,61 @@ def test_git_z_and_index_ids(monkeypatch):
     assert seen[1] == ("ls-tree", "-z", "-r", "HEAD")
 
 
-class _FakeProc:
-    def __init__(self, stdout, stdin=None):
-        self.stdin = stdin if stdin is not None else io.BytesIO()
-        self.stdout = io.BytesIO(stdout)
-        self.waited = False
+def _tar(files):
+    import tarfile
 
-    def wait(self):
-        self.waited = True
-        return 0
-
-
-def test_read_blobs_streams_batch_output(monkeypatch):
-    payload = b"aaa blob 5\nhello\nbbb missing\nccc blob 0\n\n"
-    proc = _FakeProc(payload)
-    monkeypatch.setattr(guard.subprocess, "Popen", lambda *a, **k: proc)
-    got = list(guard.read_blobs(["aaa", "bbb", "ccc"]))
-    assert got == [("aaa", b"hello"), ("bbb", None), ("ccc", b"")]
-    assert proc.waited and proc.stdin.closed
+    buf = io.BytesIO()
+    with tarfile.open(fileobj=buf, mode="w") as tar:
+        for name, data in files.items():
+            info = tarfile.TarInfo(name)
+            info.size = len(data)
+            tar.addfile(info, io.BytesIO(data))
+    return buf.getvalue()
 
 
-def test_read_blobs_empty_spawns_nothing(monkeypatch):
-    def boom(*a, **k):
-        raise AssertionError("no process expected")
-
-    monkeypatch.setattr(guard.subprocess, "Popen", boom)
-    assert list(guard.read_blobs([])) == []
+def test_blob_id_of_matches_git():
+    # `git hash-object` of an empty file and of "hello\n".
+    assert guard.blob_id_of(b"") == "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
+    assert guard.blob_id_of(b"hello\n") == "ce013625030ba8dba906f756967f9e9ca394464a"
 
 
-def test_read_blobs_survives_broken_stdin(monkeypatch):
-    class Broken:
-        def write(self, data):
-            raise BrokenPipeError
+def test_chunks_split_on_count_and_length():
+    items = [(f"p{i}", "x") for i in range(5)]
+    assert [len(c) for c in guard.chunks(items, max_items=2)] == [2, 2, 1]
+    long = [("a" * 10, "x"), ("b" * 10, "y")]
+    assert [len(c) for c in guard.chunks(long, max_chars=15)] == [1, 1]
+    assert list(guard.chunks([])) == []
 
-        def close(self):
-            raise OSError
 
-    proc = _FakeProc(b"aaa missing\n", stdin=Broken())
-    monkeypatch.setattr(guard.subprocess, "Popen", lambda *a, **k: proc)
-    assert list(guard.read_blobs(["aaa"])) == [("aaa", None)]
+def test_read_blobs_uses_verified_archive_members(monkeypatch):
+    good = b"hello\n"
+    tampered = b"export-subst output"
+    archive = _tar({"a.md": good, "b.md": tampered})
+    calls = []
+
+    def fake_git(*args):
+        calls.append(args)
+        if "archive" in args:
+            assert args[:4] == ("--literal-pathspecs", "archive", "--format=tar", "T")
+            return archive
+        return b"exact blob"
+
+    monkeypatch.setattr(guard, "git", fake_git)
+    items = [
+        ("a.md", guard.blob_id_of(good)),
+        ("b.md", "1" * 40),  # member does not hash to the indexed blob
+        ("c.md", "2" * 40),  # member missing (e.g. export-ignore)
+    ]
+    assert list(guard.read_blobs("T", items)) == [good, b"exact blob", b"exact blob"]
+    assert [c for c in calls if c[0] == "cat-file"] == [
+        ("cat-file", "-p", "1" * 40),
+        ("cat-file", "-p", "2" * 40),
+    ]
+
+
+def test_read_blobs_falls_back_when_archive_fails(monkeypatch):
+    monkeypatch.setattr(
+        guard, "git", lambda *a: b"" if "archive" in a else b"blob " + a[-1].encode()
+    )
+    assert list(guard.read_blobs("T", [("a.md", "aaa")])) == [b"blob aaa"]
+    assert list(guard.read_blobs("T", [])) == []
