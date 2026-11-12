@@ -5,9 +5,9 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).parent.parent))
 
-from DMAIC_V3.config import DMAICConfig
-from DMAIC_V3.core.state import StateManager
-from DMAIC_V3.phases.phase1_define import Phase1Define
+from DMAIC_V3.config import DMAICConfig  # noqa: E402
+from DMAIC_V3.core.state import StateManager  # noqa: E402
+from DMAIC_V3.phases.phase1_define import Phase1Define  # noqa: E402
 
 
 def main():

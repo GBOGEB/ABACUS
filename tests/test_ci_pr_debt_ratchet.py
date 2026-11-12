@@ -304,6 +304,32 @@ def test_changing_the_lint_job_requirements_requires_the_full_scan(repo):
     assert ratchet_mod.changed_config_files(base) == ["requirements-test.txt"]
 
 
+def test_export_tree_keeps_export_ignore_paths(repo, tmp_path_factory):
+    # DMAIC_V3/.gitattributes marks tests/ export-ignore; git archive dropped
+    # those files from the base snapshot, so their debt looked new (#2718).
+    rev = commit(
+        repo,
+        {
+            "sub/.gitattributes": "tests/ export-ignore\n",
+            "sub/tests/x.py": CLEAN,
+            "sub/a.py": CLEAN,
+        },
+    )
+    target = tmp_path_factory.mktemp("export")
+    ratchet_mod.export_tree(rev, target)
+    assert (target / "sub" / "tests" / "x.py").read_text(encoding="utf-8") == CLEAN
+    assert (target / "sub" / "a.py").is_file()
+    assert not (target / ".git").exists()
+    # The checkout's own index is untouched.
+    assert git(repo, "status", "--porcelain") == ""
+
+
+def test_export_tree_of_an_unknown_revision_fails_closed(repo, tmp_path_factory):
+    commit(repo, {"pkg/a.py": CLEAN})
+    with pytest.raises(ratchet_mod.ToolError):
+        ratchet_mod.export_tree("no-such-rev", tmp_path_factory.mktemp("export"))
+
+
 @needs_tools
 def test_base_imports_are_classified_against_the_base_tree(repo):
     # localpkg is first-party at the base; deleting it makes the head's
