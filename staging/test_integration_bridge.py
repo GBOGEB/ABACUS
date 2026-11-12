@@ -19,6 +19,17 @@ import logging
 from pathlib import Path
 from datetime import datetime
 
+import pytest
+
+# G-AB-STAGING-DOW (#2721): the bridge imports the external DOW package
+# (DOW.pipeline_runner, DOW.sut_config), which is not in this repository and
+# is not installed in CI. Skip the module with a recorded reason instead of
+# failing collection with ImportError.
+pytest.importorskip(
+    "DOW",
+    reason="G-AB-STAGING-DOW: external DOW package not installed in CI",
+)
+
 sys.path.append(str(Path(__file__).parent))
 
 from GBOGEB_ABACUS_DOW_INTEGRATION_BRIDGE import (
@@ -221,6 +232,19 @@ class IntegrationTestSuite:
         self.generate_report()
 
         return self.passed == len(self.test_results)
+
+
+def test_integration_suite(tmp_path, monkeypatch):
+    """Pytest entry point: run the suite when DOW is importable.
+
+    IntegrationTestSuite is not collected by pytest (python_classes = Test*),
+    so without this wrapper the module would collect zero tests even with DOW
+    installed. The suite writes report and output folders to the working
+    directory, so run it inside tmp_path.
+    """
+    monkeypatch.chdir(tmp_path)
+    suite = IntegrationTestSuite()
+    assert suite.run_all_tests(), suite.test_results
 
 
 def main():
