@@ -1,6 +1,7 @@
 """Regression tests for the G-family result guard."""
 
 import pytest
+from defusedxml.common import EntitiesForbidden
 
 from scripts.ci.family_collect_guard import main, run_pytest, tally
 
@@ -68,3 +69,33 @@ def test_guard_rejects_non_strict_xpass(tmp_path, monkeypatch, capsys):
     assert "pytest exit code" not in report
     assert "| 1 | 1 | 0 | 0 | 0 | 0 | 0 | 1 |" in report
     assert summary.read_text(encoding="utf-8") in report
+
+
+@pytest.mark.unit
+def test_tally_rejects_entity_declarations(tmp_path):
+    junit = tmp_path / "evil.xml"
+    junit.write_text(
+        '<?xml version="1.0"?>\n'
+        '<!DOCTYPE lol [<!ENTITY lol "lol"><!ENTITY lol2 "&lol;&lol;">]>\n'
+        '<testsuites><testsuite><testcase name="&lol2;"/></testsuite></testsuites>\n',
+        encoding="utf-8",
+    )
+    with pytest.raises(EntitiesForbidden):
+        tally(junit)
+
+
+@pytest.mark.unit
+def test_tally_parses_plain_junit(tmp_path):
+    junit = tmp_path / "plain.xml"
+    junit.write_text(
+        '<?xml version="1.0"?>\n'
+        "<testsuites><testsuite>"
+        '<testcase name="ok"/>'
+        '<testcase name="bad"><failure message="boom"/></testcase>'
+        "</testsuite></testsuites>\n",
+        encoding="utf-8",
+    )
+    counts = tally(junit)
+    assert counts["collected"] == 2
+    assert counts["passed"] == 1
+    assert counts["failed"] == 1
