@@ -18,13 +18,13 @@ Features:
 """
 
 import hashlib
-import json
+import json  # noqa: E402
 import sqlite3
-from dataclasses import asdict, dataclass, field
-from datetime import datetime
-from enum import Enum
-from pathlib import Path
-from typing import Any, Dict, List, Optional, Tuple
+from dataclasses import asdict, dataclass, field  # noqa: E402
+from datetime import datetime  # noqa: E402
+from enum import Enum  # noqa: E402
+from pathlib import Path  # noqa: E402
+from typing import Any, Dict, List, Optional, Tuple  # noqa: E402
 
 
 class FileType(Enum):

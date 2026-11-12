@@ -13,9 +13,9 @@ import pytest
 
 sys.path.insert(0, str(Path(__file__).parent.parent.parent))
 
-from DMAIC_V3.config import VERSION, DMAICConfig
-from DMAIC_V3.core.handover_bridge import HandoverBridge
-from DMAIC_V3.core.state import StateManager
+from DMAIC_V3.config import VERSION, DMAICConfig  # noqa: E402
+from DMAIC_V3.core.handover_bridge import HandoverBridge  # noqa: E402
+from DMAIC_V3.core.state import StateManager  # noqa: E402
 
 
 @pytest.fixture

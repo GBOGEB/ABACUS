@@ -12,8 +12,8 @@ from typing import Any, Dict, List
 ROOT_DIR = Path(__file__).resolve().parents[3]
 sys.path.insert(0, str(ROOT_DIR))
 sys.path.insert(0, str(ROOT_DIR / "src"))
-from dmaic import idempotency
-from dmaic.contract import ensure_contract
+from dmaic import idempotency  # noqa: E402
+from dmaic.contract import ensure_contract  # noqa: E402
 
 
 class DOWMetadataInjector:
