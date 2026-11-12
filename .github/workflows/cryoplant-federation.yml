@@ -10,6 +10,11 @@ name: cryoplant-project Federation Check
 # the cryoplant-federation environment so its protection rules decide which
 # runs may use it. Without the token the probe fails, and an active
 # membership fails with it.
+#
+# Rotation record (#2719). Only the secret's metadata is read, never its value:
+#   gh api repos/GBOGEB/ABACUS/environments/cryoplant-federation/secrets/CRYOPLANT_FEDERATION_TOKEN --jq .updated_at
+# Created 2026-10-23T10:03:46Z; last set 2026-11-09T17:09:23Z (read 2026-11-12).
+# Update this line whenever the token is rotated.
 
 on:
   push:
@@ -42,7 +47,7 @@ jobs:
     # skipped, and !cancelled() still runs the smoke.
     needs: reciprocal-probe
     if: ${{ !cancelled() }}
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     permissions:
       contents: read
       # Read the receipt artifact of this run or of a trusted probe run.
@@ -236,7 +241,7 @@ jobs:
     if: >-
       github.event_name != 'pull_request'
       && github.ref == 'refs/heads/main'
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     environment: cryoplant-federation
     steps:
       - name: Checkout ABACUS
