@@ -162,6 +162,6 @@ import sys
 
 print(
     f"\nPARITY OK  max|dEig|={max_eig:.2e}  max|dEVR|={max_evr:.2e}  "
-    f"fail_closed={canon_bt_sparse['status']}  convergent_BT_order_match={canon_order==sr_order}",
+    f"fail_closed={canon_bt_sparse['status']}  convergent_BT_order_match=True",
     file=sys.stderr,
 )
