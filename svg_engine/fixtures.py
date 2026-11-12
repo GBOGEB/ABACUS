@@ -11,6 +11,7 @@
 
 ``synthetic_layered_svg``: an Inkscape-style SVG exercising every layer case the PDF builder must handle.
 """
+
 from __future__ import annotations
 
 import io
@@ -49,7 +50,9 @@ def make_group_font_fixture(out):
     inner.name = "G_inner"
     rect(inner.shapes, "R_in_a", 90, 70, 20, 10, text="inner a")
     rect(inner.shapes, "R_in_b", 115, 75, 12, 18, rot=-20, text="inner b")
-    rect(s1.shapes, "R_overflow", 300, 150, 60, 30, text="overflow")  # crosses the right and bottom edges
+    rect(
+        s1.shapes, "R_overflow", 300, 150, 60, 30, text="overflow"
+    )  # crosses the right and bottom edges
     rect(s1.shapes, "R_flipV", 200, 30, 30, 12, text="flipV")
 
     s2 = prs.slides.add_slide(prs.slide_layouts[1])  # title + content
@@ -63,7 +66,9 @@ def make_group_font_fixture(out):
     r = tb2.text_frame.paragraphs[0].add_run()
     r.text = "Explicit Courier"
     r.font.name = "Courier New"
-    auto = s2.shapes.add_shape(MSO_SHAPE.ROUNDED_RECTANGLE, Mm(250), Mm(40), Mm(60), Mm(30))
+    auto = s2.shapes.add_shape(
+        MSO_SHAPE.ROUNDED_RECTANGLE, Mm(250), Mm(40), Mm(60), Mm(30)
+    )
     auto.name = "AS_styled"
     auto.text_frame.text = "Autoshape fontRef"
 
@@ -78,10 +83,15 @@ def make_group_font_fixture(out):
                 x = etree.fromstring(data)
 
                 def grp(name):
-                    return next(g for g in x.iter(f"{{{P}}}grpSp") if g.find("./{*}nvGrpSpPr/{*}cNvPr").get("name") == name)
+                    return next(
+                        g
+                        for g in x.iter(f"{{{P}}}grpSp")
+                        if g.find("./{*}nvGrpSpPr/{*}cNvPr").get("name") == name
+                    )
 
                 def xf(g):
                     return g.find("./{*}grpSpPr/{%s}xfrm" % A)
+
                 o = xf(grp("G_outer"))
                 ext, off = o.find("{%s}ext" % A), o.find("{%s}off" % A)
                 ext.set("cx", str(int(int(ext.get("cx")) * 1.25)))
@@ -93,12 +103,16 @@ def make_group_font_fixture(out):
                 for sp in x.iter(f"{{{P}}}sp"):
                     if sp.find("./{*}nvSpPr/{*}cNvPr").get("name") == "R_flipV":
                         sp.find("./{*}spPr/{%s}xfrm" % A).set("flipV", "1")
-                data = etree.tostring(x, xml_declaration=True, encoding="UTF-8", standalone=True)
+                data = etree.tostring(
+                    x, xml_declaration=True, encoding="UTF-8", standalone=True
+                )
             if re.fullmatch(r"ppt/theme/theme\d+\.xml", item.filename):
                 x = etree.fromstring(data)
                 x.find(".//{%s}majorFont/{%s}latin" % (A, A)).set("typeface", "Georgia")
                 x.find(".//{%s}minorFont/{%s}latin" % (A, A)).set("typeface", "Verdana")
-                data = etree.tostring(x, xml_declaration=True, encoding="UTF-8", standalone=True)
+                data = etree.tostring(
+                    x, xml_declaration=True, encoding="UTF-8", standalone=True
+                )
             zout.writestr(item, data)
     return out
 
@@ -148,5 +162,9 @@ def synthetic_layered_svg() -> bytes:
 
 SYNTHETIC_PAGE_PRESETS = {
     1: {"title": "As authored", "skip_subtrees": [], "force_on": []},
-    2: {"title": "Alternative scope", "skip_subtrees": ["annot"], "force_on": ["alt_scope"]},
+    2: {
+        "title": "Alternative scope",
+        "skip_subtrees": ["annot"],
+        "force_on": ["alt_scope"],
+    },
 }

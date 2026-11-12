@@ -3,6 +3,7 @@
 The source drawing is parsed as XML: no OCR, no PDF-first extraction and no engineering inference.
 Layer identity is the native ``id``; labels repeat across sub-systems and are never used as keys.
 """
+
 from __future__ import annotations
 
 import hashlib
@@ -53,14 +54,18 @@ def validate_native_svg(root):
             value = str(val).strip().lower()
             if key.startswith("on") and len(key) > 2:
                 raise ValueError("SVG_EVENT_HANDLER:" + key)
-            if key in ("href", "src") and not (value.startswith("#") or value.startswith("data:image/") or not value):
+            if key in ("href", "src") and not (
+                value.startswith("#") or value.startswith("data:image/") or not value
+            ):
                 raise ValueError("SVG_EXTERNAL_RESOURCE:" + key)
     return {"unique_ids": len(ids), "safe_inline_svg": True}
 
 
 def parse_svg(data: bytes, *, validate: bool = True, huge_tree: bool = False):
     """Parse SVG bytes with entity resolution and network access disabled."""
-    parser = etree.XMLParser(resolve_entities=False, no_network=True, recover=False, huge_tree=huge_tree)
+    parser = etree.XMLParser(
+        resolve_entities=False, no_network=True, recover=False, huge_tree=huge_tree
+    )
     root = etree.fromstring(data, parser=parser)
     if validate:
         validate_native_svg(root)
@@ -76,7 +81,9 @@ def read_svg_bytes(path, member: str | None = None) -> bytes:
         if member is None:
             svgs = [n for n in z.namelist() if n.lower().endswith(".svg")]
             if len(svgs) != 1:
-                raise ValueError(f"SVG_MEMBER_AMBIGUOUS:{len(svgs)} svg members; pass member=")
+                raise ValueError(
+                    f"SVG_MEMBER_AMBIGUOUS:{len(svgs)} svg members; pass member="
+                )
             member = svgs[0]
         return z.read(member)
 
@@ -97,14 +104,20 @@ def layer_items(root):
     for x in root.iter():
         if is_layer(x):
             an = [a for a in x.iterancestors() if is_layer(a)]
-            result.append({
-                "id": x.get("id"),
-                "label": x.get(XINK + "label") or x.get("id"),
-                "parent_id": an[0].get("id") if an else None,
-                "level": len(an),
-                "path": list(reversed([a.get(XINK + "label") or a.get("id") for a in an])) + [x.get(XINK + "label") or x.get("id")],
-                "source_visible": "display:none" not in (x.get("style") or "").replace(" ", ""),
-            })
+            result.append(
+                {
+                    "id": x.get("id"),
+                    "label": x.get(XINK + "label") or x.get("id"),
+                    "parent_id": an[0].get("id") if an else None,
+                    "level": len(an),
+                    "path": list(
+                        reversed([a.get(XINK + "label") or a.get("id") for a in an])
+                    )
+                    + [x.get(XINK + "label") or x.get("id")],
+                    "source_visible": "display:none"
+                    not in (x.get("style") or "").replace(" ", ""),
+                }
+            )
     return result
 
 
@@ -124,6 +137,7 @@ def own_text_tokens(layer) -> Counter:
                 out.update(tokens(" ".join("".join(c.itertext()).split())))
             else:
                 walk(c)
+
     walk(layer)
     return out
 
@@ -139,17 +153,31 @@ def layer_tree_report(root, page_token_counters=()):
         if not is_layer(e):
             continue
         anc = [a for a in e.iterancestors() if is_layer(a)]
-        via_ordinary = [a for a in e.iterancestors()
-                        if simple(a) == "g" and not is_layer(a) and anc and a in set(anc[0].iterdescendants())]
+        via_ordinary = [
+            a
+            for a in e.iterancestors()
+            if simple(a) == "g"
+            and not is_layer(a)
+            and anc
+            and a in set(anc[0].iterdescendants())
+        ]
         t = own_text_tokens(e)
         n = sum(t.values())
-        rows.append({
-            "id": e.get("id"), "label": e.get(XINK + "label"), "depth": len(anc),
-            "source_visible": "display:none" not in (e.get("style") or "").replace(" ", ""),
-            "own_text_tokens": n,
-            "page_presence": [round(sum((t & pg).values()) / n, 2) if n else None for pg in page_token_counters],
-            "via_ordinary_groups": len(via_ordinary),
-        })
+        rows.append(
+            {
+                "id": e.get("id"),
+                "label": e.get(XINK + "label"),
+                "depth": len(anc),
+                "source_visible": "display:none"
+                not in (e.get("style") or "").replace(" ", ""),
+                "own_text_tokens": n,
+                "page_presence": [
+                    round(sum((t & pg).values()) / n, 2) if n else None
+                    for pg in page_token_counters
+                ],
+                "via_ordinary_groups": len(via_ordinary),
+            }
+        )
     return rows
 
 

@@ -14,6 +14,7 @@ SOURCE is an ``.svg`` or a ``.zip`` holding one (or name it with ``--member``).
 A presets file is JSON ``{"1": {"title": ..., "skip_subtrees": [...], "force_on": [...]}, "2": {...}}``.
 Exit status is 1 when a fidelity or OOXML QA receipt contains a FAIL.
 """
+
 from __future__ import annotations
 
 import argparse
@@ -23,7 +24,9 @@ from pathlib import Path
 
 
 def _dump(obj, path):
-    Path(path).write_text(json.dumps(obj, indent=1, ensure_ascii=False), encoding="utf-8")
+    Path(path).write_text(
+        json.dumps(obj, indent=1, ensure_ascii=False), encoding="utf-8"
+    )
 
 
 def _ids(s):
@@ -31,7 +34,11 @@ def _ids(s):
 
 
 def main(argv=None):
-    ap = argparse.ArgumentParser(prog="svg_engine", description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
+    ap = argparse.ArgumentParser(
+        prog="svg_engine",
+        description=__doc__,
+        formatter_class=argparse.RawDescriptionHelpFormatter,
+    )
     sub = ap.add_subparsers(dest="cmd", required=True)
     for name in ("nested-pdf", "flat-pdf"):
         p = sub.add_parser(name)
@@ -70,27 +77,48 @@ def main(argv=None):
     if a.cmd in ("nested-pdf", "flat-pdf"):
         from .ingress import load_svg
         from .pdf_ocg import build_flat_ocg_pdf, build_nested_ocg_pdf, save_previews
+
         root, raw = load_svg(a.source, a.member)
         out = Path(a.out)
         if a.cmd == "nested-pdf":
-            presets = json.loads(Path(a.presets).read_text(encoding="utf-8")) if a.presets else None
-            rep = build_nested_ocg_pdf(root, out, page_presets=presets, source_bytes=raw)
+            presets = (
+                json.loads(Path(a.presets).read_text(encoding="utf-8"))
+                if a.presets
+                else None
+            )
+            rep = build_nested_ocg_pdf(
+                root, out, page_presets=presets, source_bytes=raw
+            )
             if a.previews:
                 Path(a.previews).mkdir(parents=True, exist_ok=True)
                 rep["previews"] = save_previews(out, a.previews)
         else:
             rep = build_flat_ocg_pdf(root, out, source_bytes=raw)
         _dump(rep, out.with_suffix(".build.json"))
-        print(json.dumps({k: v for k, v in rep.items() if k != "ocg_xref_by_layer"}, indent=1))
+        print(
+            json.dumps(
+                {k: v for k, v in rep.items() if k != "ocg_xref_by_layer"}, indent=1
+            )
+        )
         return 0
     if a.cmd == "fidelity":
         from .fidelity import check_pdf_fidelity
         from .ingress import load_svg
+
         root, _ = load_svg(a.source, a.member)
-        build_path = Path(a.build) if a.build else Path(a.pdf).with_suffix(".build.json")
+        build_path = (
+            Path(a.build) if a.build else Path(a.pdf).with_suffix(".build.json")
+        )
         build = json.loads(build_path.read_text(encoding="utf-8"))
-        rec = check_pdf_fidelity(a.pdf, build, root, baseline_pdf=a.baseline_pdf, authored_pdf=a.authored_pdf,
-                                 cascade_ids=_ids(a.cascade_ids), hidden_parent_ids=_ids(a.hidden_parent_ids))
+        rec = check_pdf_fidelity(
+            a.pdf,
+            build,
+            root,
+            baseline_pdf=a.baseline_pdf,
+            authored_pdf=a.authored_pdf,
+            cascade_ids=_ids(a.cascade_ids),
+            hidden_parent_ids=_ids(a.hidden_parent_ids),
+        )
         _dump(rec, a.receipt)
         for c in rec["checks"]:
             print(c["result"], c["id"], c["title"], "|", c["evidence"][:200])
@@ -98,23 +126,38 @@ def main(argv=None):
         return 1 if rec["summary"]["FAIL"] else 0
     if a.cmd == "ooxml-geometry":
         from .ooxml_geometry import analyse
+
         res = analyse(a.deck)
         _dump(res, a.out)
-        print(json.dumps({k: v for k, v in res.items() if k != "slides"}, indent=1, ensure_ascii=False))
+        print(
+            json.dumps(
+                {k: v for k, v in res.items() if k != "slides"},
+                indent=1,
+                ensure_ascii=False,
+            )
+        )
         return 0
     if a.cmd == "ooxml-qa":
         from .ooxml_qa import compare_with_oracle
-        res = compare_with_oracle(json.loads(Path(a.adapter).read_text(encoding="utf-8")),
-                                  json.loads(Path(a.oracle).read_text(encoding="utf-8-sig")), a.tol_mm)
+
+        res = compare_with_oracle(
+            json.loads(Path(a.adapter).read_text(encoding="utf-8")),
+            json.loads(Path(a.oracle).read_text(encoding="utf-8-sig")),
+            a.tol_mm,
+        )
         _dump(res, a.out)
-        print(res["result"], "compared", res["compared"], "failures", len(res["failures"]))
+        print(
+            res["result"], "compared", res["compared"], "failures", len(res["failures"])
+        )
         return 0 if res["result"] == "PASS" else 1
     if a.cmd == "fixture":
         from .fixtures import make_group_font_fixture
+
         print("fixture written", make_group_font_fixture(a.out))
         return 0
     if a.cmd == "page-identity":
         from .page_identity import page_identity
+
         res = page_identity(a.pdf, a.svgs)
         _dump(res, a.out)
         for pg in res["pages"]:

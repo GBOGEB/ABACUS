@@ -15,6 +15,7 @@ no cascade). It is kept as the regression reference for "no default-visibility l
 Page presets reproduce authored multi-page exports of one SVG: per page, ``skip_subtrees`` are not drawn and
 ``force_on`` roots are drawn without their switch. Every other switch stays live on every page.
 """
+
 from __future__ import annotations
 
 import time
@@ -31,6 +32,7 @@ def _deps():
     import cairosvg
     import fitz
     from lxml import etree
+
     return cairosvg, fitz, etree
 
 
@@ -54,6 +56,7 @@ def order_array(layers, ocg):
         if lid in kids:
             s += " [ " + " ".join(node(c) for c in kids[lid]) + " ]"
         return s
+
     return "[ " + " ".join(node(r) for r in kids.get(None, [])) + " ]"
 
 
@@ -65,7 +68,14 @@ def preset_overrides(preset):
 
 
 def _validate_presets(presets, byid):
-    unknown = sorted({lid for p in presets.values() for lid in [*p.get("skip_subtrees", []), *p.get("force_on", [])]} - set(byid))
+    unknown = sorted(
+        {
+            lid
+            for p in presets.values()
+            for lid in [*p.get("skip_subtrees", []), *p.get("force_on", [])]
+        }
+        - set(byid)
+    )
     if unknown:
         raise ValueError(f"PRESET_UNKNOWN_LAYER_IDS:{unknown}")
 
@@ -91,7 +101,14 @@ def save_previews(pdf_path, out_dir, stem=None, dpi=50):
     return names
 
 
-def build_nested_ocg_pdf(root, dest, *, page_presets=None, order_name="SVG-ENGINE source hierarchy", source_bytes=None):
+def build_nested_ocg_pdf(
+    root,
+    dest,
+    *,
+    page_presets=None,
+    order_name="SVG-ENGINE source hierarchy",
+    source_bytes=None,
+):
     """Build the nested-OCG PDF of ``root`` at ``dest``. Returns a build report (JSON-serialisable).
 
     ``page_presets``: ``{page_no: {"title", "skip_subtrees": [layer ids], "force_on": [layer ids]}}``.
@@ -106,12 +123,19 @@ def build_nested_ocg_pdf(root, dest, *, page_presets=None, order_name="SVG-ENGIN
     _validate_presets(presets, byid)
     atoms, runs = paint_atoms(root)
     if any(r["owner"] == ROOT_OWNER for r in runs):
-        raise ValueError("PAINT_OUTSIDE_LAYERS: source has paint content outside every native layer")
+        raise ValueError(
+            "PAINT_OUTSIDE_LAYERS: source has paint content outside every native layer"
+        )
     w, h, _ = _page_size(root)
 
     pdf = fitz.open()
     # OCG default = the layer's OWN source visibility; ancestors are enforced by nesting.
-    ocg = {layer["id"]: pdf.add_ocg(f"{layer['label']} [{layer['id']}]", on=layer["source_visible"]) for layer in layers}
+    ocg = {
+        layer["id"]: pdf.add_ocg(
+            f"{layer['label']} [{layer['id']}]", on=layer["source_visible"]
+        )
+        for layer in layers
+    }
     run_pdfs = [cairosvg.svg2pdf(bytestring=isolated_svg(root, run)) for run in runs]
     page_report = {}
     for pno in sorted(presets):
@@ -126,7 +150,9 @@ def build_nested_ocg_pdf(root, dest, *, page_presets=None, order_name="SVG-ENGIN
                 continue
             chain = [c for c in chain if c not in preset.get("force_on", [])]
             with fitz.open(stream=run_pdfs[i], filetype="pdf") as src:
-                xo = page.show_pdf_page(page.rect, src, 0, keep_proportion=False, overlay=True)
+                xo = page.show_pdf_page(
+                    page.rect, src, 0, keep_proportion=False, overlay=True
+                )
             segments.append((f"R{i}", xo, chain))
             for c in chain:
                 props[f"L_{c}"] = ocg[c]
@@ -140,28 +166,46 @@ def build_nested_ocg_pdf(root, dest, *, page_presets=None, order_name="SVG-ENGIN
         xobjs = " ".join(f"/{n} {x} 0 R" for n, x, _ in segments)
         propd = " ".join(f"/{k} {v} 0 R" for k, v in sorted(props.items()))
         res_xref = pdf.get_new_xref()
-        pdf.update_object(res_xref, f"<< /XObject << {xobjs} >> /Properties << {propd} >> >>")
+        pdf.update_object(
+            res_xref, f"<< /XObject << {xobjs} >> /Properties << {propd} >> >>"
+        )
         pdf.xref_set_key(page.xref, "Resources", f"{res_xref} 0 R")
         cx = pdf.get_new_xref()
         pdf.update_object(cx, "<< >>")
         pdf.update_stream(cx, ("\n".join(lines) + "\n").encode("ascii"))
         pdf.xref_set_key(page.xref, "Contents", f"{cx} 0 R")
-        page_report[pno] = {"preset": preset, "runs_drawn": drawn, "runs_skipped": skipped,
-                            "max_nesting_depth": max((len(c) for _, _, c in segments), default=0)}
+        page_report[pno] = {
+            "preset": preset,
+            "runs_drawn": drawn,
+            "runs_skipped": skipped,
+            "max_nesting_depth": max((len(c) for _, _, c in segments), default=0),
+        }
 
     cat = pdf.pdf_catalog()
     pdf.xref_set_key(cat, "OCProperties/D/Order", order_array(layers, ocg))
-    pdf.xref_set_key(cat, "OCProperties/D/Name", "(" + order_name.replace("(", "").replace(")", "") + ")")
+    pdf.xref_set_key(
+        cat,
+        "OCProperties/D/Name",
+        "(" + order_name.replace("(", "").replace(")", "") + ")",
+    )
     pdf.xref_set_key(cat, "PageMode", "/UseOC")
     dest.parent.mkdir(parents=True, exist_ok=True)
     pdf.save(dest, garbage=4, deflate=True, no_new_id=True)
     pdf.close()
-    return {"schema": "svg-engine/nested-ocg-build-w2.0", "file": dest.name, "sha256": sha_file(dest),
-            "source_svg_sha256": sha(source_bytes) if source_bytes is not None else None,
-            "ocg_count": len(ocg), "paint_atoms": len(atoms), "paint_runs": len(runs), "pages": page_report,
-            "ocg_default_policy": "OWN_SOURCE_STYLE; ancestors enforced by nested BDC (ISO 32000 8.11.3.2)",
-            "order": "nested /Order mirrors native layer hierarchy",
-            "elapsed_seconds": round(time.monotonic() - t0, 2), "ocg_xref_by_layer": ocg}
+    return {
+        "schema": "svg-engine/nested-ocg-build-w2.0",
+        "file": dest.name,
+        "sha256": sha_file(dest),
+        "source_svg_sha256": sha(source_bytes) if source_bytes is not None else None,
+        "ocg_count": len(ocg),
+        "paint_atoms": len(atoms),
+        "paint_runs": len(runs),
+        "pages": page_report,
+        "ocg_default_policy": "OWN_SOURCE_STYLE; ancestors enforced by nested BDC (ISO 32000 8.11.3.2)",
+        "order": "nested /Order mirrors native layer hierarchy",
+        "elapsed_seconds": round(time.monotonic() - t0, 2),
+        "ocg_xref_by_layer": ocg,
+    }
 
 
 def build_flat_ocg_pdf(root, dest, *, source_bytes=None):
@@ -176,25 +220,47 @@ def build_flat_ocg_pdf(root, dest, *, source_bytes=None):
     byid = {layer["id"]: layer for layer in layers}
     atoms, runs = paint_atoms(root)
     if any(r["owner"] == ROOT_OWNER for r in runs):
-        raise ValueError("PAINT_OUTSIDE_LAYERS: source has paint content outside every native layer")
+        raise ValueError(
+            "PAINT_OUTSIDE_LAYERS: source has paint content outside every native layer"
+        )
     w, h, _ = _page_size(root)
     pdf = fitz.open()
     page = pdf.new_page(width=w, height=h)
     groups = {}
     for layer in layers:
         effective = all(byid[a]["source_visible"] for a in chain_of(layer["id"], byid))
-        groups[layer["id"]] = pdf.add_ocg("/".join(layer["path"]) + " [" + layer["id"] + "]", on=effective)
+        groups[layer["id"]] = pdf.add_ocg(
+            "/".join(layer["path"]) + " [" + layer["id"] + "]", on=effective
+        )
     for run in runs:
-        with fitz.open(stream=cairosvg.svg2pdf(bytestring=isolated_svg(root, run)), filetype="pdf") as src:
-            page.show_pdf_page(page.rect, src, 0, keep_proportion=False, overlay=True, oc=groups[run["owner"]])
+        with fitz.open(
+            stream=cairosvg.svg2pdf(bytestring=isolated_svg(root, run)), filetype="pdf"
+        ) as src:
+            page.show_pdf_page(
+                page.rect,
+                src,
+                0,
+                keep_proportion=False,
+                overlay=True,
+                oc=groups[run["owner"]],
+            )
     pdf.xref_set_key(pdf.pdf_catalog(), "PageMode", "/UseOC")
     dest.parent.mkdir(parents=True, exist_ok=True)
     pdf.save(dest, garbage=3, deflate=True, no_new_id=True)
     pdf.close()
-    return {"schema": "svg-engine/flat-ocg-build-w1.0", "file": dest.name, "sha256": sha_file(dest),
-            "source_svg_sha256": sha(source_bytes) if source_bytes is not None else None,
-            "ocg_count": len(groups), "paint_atoms": len(atoms), "paint_runs": len(runs),
-            "root_layer_count": sum(layer["level"] == 0 for layer in layers),
-            "default_hidden_root_ids": [x["id"] for x in layers if x["level"] == 0 and not x["source_visible"]],
-            "limitation": "Flat OCGs; a parent switch does not cascade to children",
-            "elapsed_seconds": round(time.monotonic() - t0, 2), "ocg_xref_by_layer": groups}
+    return {
+        "schema": "svg-engine/flat-ocg-build-w1.0",
+        "file": dest.name,
+        "sha256": sha_file(dest),
+        "source_svg_sha256": sha(source_bytes) if source_bytes is not None else None,
+        "ocg_count": len(groups),
+        "paint_atoms": len(atoms),
+        "paint_runs": len(runs),
+        "root_layer_count": sum(layer["level"] == 0 for layer in layers),
+        "default_hidden_root_ids": [
+            x["id"] for x in layers if x["level"] == 0 and not x["source_visible"]
+        ],
+        "limitation": "Flat OCGs; a parent switch does not cascade to children",
+        "elapsed_seconds": round(time.monotonic() - t0, 2),
+        "ocg_xref_by_layer": groups,
+    }

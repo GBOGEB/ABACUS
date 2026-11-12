@@ -4,6 +4,7 @@ Collects paint atoms in exact XML traversal order and splits subtrees at nested 
 contiguous run of atoms has exactly one owning native layer. Re-assembling the runs in order reproduces the
 source paint order; wrapping each run in its owner's optional-content group gives per-layer switches.
 """
+
 from __future__ import annotations
 
 import copy
@@ -19,12 +20,20 @@ ROOT_OWNER = "__ROOT__"
 
 def paint_atoms(root):
     """Return ``(atoms, runs)``. An atom is a paint subtree with no nested layer inside; a run is a maximal
-    sequence of consecutive atoms with the same owner layer. Content outside any layer is owned by ``__ROOT__``."""
+    sequence of consecutive atoms with the same owner layer. Content outside any layer is owned by ``__ROOT__``.
+    """
     atoms = []
-    layerids = {x.get("id") for x in root.iter() if simple(x) == "g" and x.get(XINK + "groupmode") == "layer"}
+    layerids = {
+        x.get("id")
+        for x in root.iter()
+        if simple(x) == "g" and x.get(XINK + "groupmode") == "layer"
+    }
 
     def has_nested_layer(e):
-        return any(z is not e and z.get("id") in layerids and simple(z) == "g" for z in e.iter())
+        return any(
+            z is not e and z.get("id") in layerids and simple(z) == "g"
+            for z in e.iter()
+        )
 
     def walk(e, path, owner, ancestor_ids):
         tag = simple(e)
@@ -40,20 +49,29 @@ def paint_atoms(root):
             for i, child in enumerate(e):
                 walk(child, path + (i,), owner, ancestor_ids)
             return
-        atoms.append({"owner": owner if owner is not None else ROOT_OWNER, "path": path, "ancestors": ancestor_ids})
+        atoms.append(
+            {
+                "owner": owner if owner is not None else ROOT_OWNER,
+                "path": path,
+                "ancestors": ancestor_ids,
+            }
+        )
 
     walk(root, (), None, [])
     runs = []
     for atom in atoms:
         if not runs or atom["owner"] != runs[-1]["owner"]:
-            runs.append({"owner": atom["owner"], "atoms": [], "ancestors": atom["ancestors"]})
+            runs.append(
+                {"owner": atom["owner"], "atoms": [], "ancestors": atom["ancestors"]}
+            )
         runs[-1]["atoms"].append(atom["path"])
     return atoms, runs
 
 
 def isolated_svg(root, run) -> bytes:
     """SVG bytes containing only this run's paint atoms plus their ancestor context (groups, transforms,
-    styles, ``defs``). Layers on the path are forced visible: visibility is applied later by optional content."""
+    styles, ``defs``). Layers on the path are forced visible: visibility is applied later by optional content.
+    """
     keep = set(run["atoms"])
     ancestors = set()
     for p in keep:
@@ -69,7 +87,11 @@ def isolated_svg(root, run) -> bytes:
         for i in reversed(range(len(e))):
             child = e[i]
             cp = p + (i,)
-            if cp not in ancestors and simple(child) not in ("defs", "metadata", "namedview"):
+            if cp not in ancestors and simple(child) not in (
+                "defs",
+                "metadata",
+                "namedview",
+            ):
                 e.remove(child)
             else:
                 prune(child, cp)
