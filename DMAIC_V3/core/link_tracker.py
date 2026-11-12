@@ -10,13 +10,13 @@ Tracks recursive documentation links, version history, and term frequency
 across markdown and Python files for uniform language validation.
 """
 
-import json
-import re
-from collections import Counter
-from dataclasses import dataclass, field
-from datetime import datetime
-from pathlib import Path
-from typing import Dict, List, Optional, Tuple
+import json  # noqa: E402
+import re  # noqa: E402
+from collections import Counter  # noqa: E402
+from dataclasses import dataclass, field  # noqa: E402
+from datetime import datetime  # noqa: E402
+from pathlib import Path  # noqa: E402
+from typing import Dict, List, Optional, Tuple  # noqa: E402
 
 
 @dataclass

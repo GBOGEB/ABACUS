@@ -10,14 +10,14 @@ Handles execution state, checkpoints, and resume capability
 """
 
 import hashlib
-import json
-from dataclasses import dataclass
-from datetime import datetime
-from enum import Enum
-from pathlib import Path
-from typing import Any, Dict, List, Optional
+import json  # noqa: E402
+from dataclasses import dataclass  # noqa: E402
+from datetime import datetime  # noqa: E402
+from enum import Enum  # noqa: E402
+from pathlib import Path  # noqa: E402
+from typing import Any, Dict, List, Optional  # noqa: E402
 
-from .models import IterationResult
+from .models import IterationResult  # noqa: E402
 
 
 class PhaseStatus(Enum):
