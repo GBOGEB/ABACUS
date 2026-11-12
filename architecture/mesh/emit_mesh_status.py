@@ -66,5 +66,6 @@ out = {
     "blocking_atom": "three_repo_vector_set_incomplete",
 }
 assert set(D) == set(K)
-open("mesh-status.json", "w").write(json.dumps(out, indent=2, sort_keys=True) + "\n")
+with open("mesh-status.json", "w") as f:
+    f.write(json.dumps(out, indent=2, sort_keys=True) + "\n")
 print(f"PASS emitted {len(D)} dimensions for GBOGEB/ABACUS at {sha}")
