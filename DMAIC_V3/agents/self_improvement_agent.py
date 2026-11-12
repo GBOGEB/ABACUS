@@ -15,8 +15,8 @@ import argparse
 # Fix path for direct execution
 sys.path.insert(0, str(Path(__file__).parent.parent.parent))
 
-from DMAIC_V3.config import DMAICConfig
-from DMAIC_V3.core.state import StateManager
+from DMAIC_V3.config import DMAICConfig  # noqa: E402
+from DMAIC_V3.core.state import StateManager  # noqa: E402
 
 
 class SelfImprovementAgent:

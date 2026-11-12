@@ -12,7 +12,7 @@ import pytest
 
 sys.path.insert(0, str(Path(__file__).parent.parent.parent))
 
-from DMAIC_V3.monitoring.log_monitor import LogMonitor
+from DMAIC_V3.monitoring.log_monitor import LogMonitor  # noqa: E402
 
 
 @pytest.fixture

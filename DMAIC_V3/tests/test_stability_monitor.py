@@ -11,7 +11,7 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).parent.parent.parent))
 
-from DMAIC_V3.convergence.stability_monitor import StabilityMonitor
+from DMAIC_V3.convergence.stability_monitor import StabilityMonitor  # noqa: E402
 
 
 class TestStabilityMonitor(unittest.TestCase):
