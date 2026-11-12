@@ -53,8 +53,7 @@ def test_skip_message_fallback_preserves_governed_state(tmp_path):
 
     assert states == {"TEST_BLOCKED_SOURCE_MISSING": 1}
     assert (
-        classify_report_only_state(counts, states, 0)
-        == "TEST_BLOCKED_SOURCE_MISSING"
+        classify_report_only_state(counts, states, 0) == "TEST_BLOCKED_SOURCE_MISSING"
     )
 
 

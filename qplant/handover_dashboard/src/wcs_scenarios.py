@@ -20,12 +20,12 @@ import pandas as pd
 # ── Load from SSoT ──────────────────────────────────────────────────
 from src.config_loader import cfg
 
-_PRESS = cfg.get('pressure_parameters', {})
-HP_OUTLET_BARG = cfg.get('pressure_parameters.wcs_hp_outlet.nominal_barg', 14)
-HP_MAX_BARG = cfg.get('pressure_parameters.wcs_hp_outlet.max_barg', 15)
-HP_MIN_BARG = cfg.get('pressure_parameters.wcs_hp_outlet.min_barg', 10)
-HCC_INLET_MBAR = cfg.get('pressure_parameters.hcc_inlet.nominal_mbar', 1050)
-VLP_NOMINAL_MBAR = cfg.get('pressure_parameters.wcs_lcc_suction.nominal_mbar', 400)
+_PRESS = cfg.get("pressure_parameters", {})
+HP_OUTLET_BARG = cfg.get("pressure_parameters.wcs_hp_outlet.nominal_barg", 14)
+HP_MAX_BARG = cfg.get("pressure_parameters.wcs_hp_outlet.max_barg", 15)
+HP_MIN_BARG = cfg.get("pressure_parameters.wcs_hp_outlet.min_barg", 10)
+HCC_INLET_MBAR = cfg.get("pressure_parameters.hcc_inlet.nominal_mbar", 1050)
+VLP_NOMINAL_MBAR = cfg.get("pressure_parameters.wcs_lcc_suction.nominal_mbar", 400)
 
 # ── Leak Budget Constants ──────────────────────────────────────────
 TOTAL_LEAK_BUDGET = 1e-5  # mbar·L/s (RTM-048 system max)
@@ -99,6 +99,7 @@ INTERLOCKS = [
 
 # ── Scenario Definitions (corrected for 3 compressors, 14 barg) ───
 
+
 @dataclass
 class WCSScenario:
     name: str
@@ -125,7 +126,7 @@ SCENARIOS = [
         total_leak_mbar_l_s=9e-6,
         status="NOMINAL",
         description=f"All 3 compressors available (2 running, 1 standby). "
-                    f"HP header at {HP_OUTLET_BARG} barg. Sidestreams open, full beam.",
+        f"HP header at {HP_OUTLET_BARG} barg. Sidestreams open, full beam.",
     ),
     WCSScenario(
         name="WCS — 1 Compressor Failed",
@@ -138,7 +139,7 @@ SCENARIOS = [
         total_leak_mbar_l_s=7e-6,
         status="WARNING",
         description="2 compressors running at 100% capacity, no standby. "
-                    "Sidestreams closed by interlock to protect main supply.",
+        "Sidestreams closed by interlock to protect main supply.",
     ),
     WCSScenario(
         name="Emergency — 2 Compressors Failed",
@@ -151,7 +152,7 @@ SCENARIOS = [
         total_leak_mbar_l_s=3.5e-6,
         status="ALARM",
         description="1 compressor running at 50% capacity. "
-                    "Beam reduced to 50%. Sidestreams closed.",
+        "Beam reduced to 50%. Sidestreams closed.",
     ),
     WCSScenario(
         name="Total Failure",
@@ -164,29 +165,34 @@ SCENARIOS = [
         total_leak_mbar_l_s=0.0,
         status="TRIP",
         description="All compressors failed. Emergency beam shutdown. "
-                    "Vent to recovery system.",
+        "Vent to recovery system.",
     ),
 ]
 
 
 # ── Table Builders ─────────────────────────────────────────────────
 
+
 def build_leak_budget_table() -> pd.DataFrame:
     """Leak budget allocation table."""
     rows = []
     for circuit, info in LEAK_ALLOCATIONS.items():
-        rows.append({
-            "circuit": circuit.replace("_", " ").title(),
-            "budget_mbar_l_s": info["budget_mbar_l_s"],
-            "fraction_pct": info["fraction_pct"],
-            "justification": info["description"],
-        })
-    rows.append({
-        "circuit": "TOTAL",
-        "budget_mbar_l_s": TOTAL_LEAK_BUDGET,
-        "fraction_pct": 100,
-        "justification": "RTM-048 system cap",
-    })
+        rows.append(
+            {
+                "circuit": circuit.replace("_", " ").title(),
+                "budget_mbar_l_s": info["budget_mbar_l_s"],
+                "fraction_pct": info["fraction_pct"],
+                "justification": info["description"],
+            }
+        )
+    rows.append(
+        {
+            "circuit": "TOTAL",
+            "budget_mbar_l_s": TOTAL_LEAK_BUDGET,
+            "fraction_pct": 100,
+            "justification": "RTM-048 system cap",
+        }
+    )
     return pd.DataFrame(rows)
 
 
@@ -199,18 +205,20 @@ def build_scenario_table() -> pd.DataFrame:
     """WCS scenario comparison table."""
     rows = []
     for s in SCENARIOS:
-        rows.append({
-            "scenario": s.name,
-            "compressors_available": s.compressors_available,
-            "compressors_running": s.compressors_running,
-            "capacity_pct": s.capacity_pct,
-            "hp_header_barg": s.hp_header_barg,
-            "sidestreams": "Open" if s.sidestreams_open else "Closed",
-            "beam_pct": s.beam_operation_pct,
-            "leak_budget_mbar_l_s": s.total_leak_mbar_l_s,
-            "status": s.status,
-            "description": s.description,
-        })
+        rows.append(
+            {
+                "scenario": s.name,
+                "compressors_available": s.compressors_available,
+                "compressors_running": s.compressors_running,
+                "capacity_pct": s.capacity_pct,
+                "hp_header_barg": s.hp_header_barg,
+                "sidestreams": "Open" if s.sidestreams_open else "Closed",
+                "beam_pct": s.beam_operation_pct,
+                "leak_budget_mbar_l_s": s.total_leak_mbar_l_s,
+                "status": s.status,
+                "description": s.description,
+            }
+        )
     return pd.DataFrame(rows)
 
 
@@ -225,9 +233,23 @@ if __name__ == "__main__":
     print(build_leak_budget_table().to_string(index=False))
 
     print("\n=== Interlock Logic ===\n")
-    print(build_interlock_table()[["condition", "setpoint", "action", "priority"]].to_string(index=False))
+    print(
+        build_interlock_table()[
+            ["condition", "setpoint", "action", "priority"]
+        ].to_string(index=False)
+    )
 
     print("\n=== WCS Scenarios ===\n")
     df = build_scenario_table()
-    print(df[["scenario", "capacity_pct", "hp_header_barg",
-              "sidestreams", "beam_pct", "status"]].to_string(index=False))
+    print(
+        df[
+            [
+                "scenario",
+                "capacity_pct",
+                "hp_header_barg",
+                "sidestreams",
+                "beam_pct",
+                "status",
+            ]
+        ].to_string(index=False)
+    )

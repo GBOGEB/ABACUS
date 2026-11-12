@@ -3,6 +3,7 @@
 Regression from exact-head native B0 #39056760386 and Python Matrix #39056760298,
 where collection died with ModuleNotFoundError: defusedxml on all three lanes.
 """
+
 from __future__ import annotations
 
 from pathlib import Path
@@ -17,18 +18,20 @@ def test_root_install_declares_secure_junit_parser() -> None:
     """The existing B0/CI install path uses requirements-dev -> root requirements."""
     root_lines = (ROOT / "requirements.txt").read_text(encoding="utf-8").splitlines()
     dev_lines = (ROOT / "requirements-dev.txt").read_text(encoding="utf-8").splitlines()
-    assert any(line.split("#", 1)[0].strip().startswith("defusedxml>=") for line in root_lines)
+    assert any(
+        line.split("#", 1)[0].strip().startswith("defusedxml>=") for line in root_lines
+    )
     assert "-r requirements.txt" in dev_lines
     assert "-r DMAIC_V3/requirements.txt" in root_lines
 
 
-
 def test_isolated_windows_test_install_declares_secure_parser() -> None:
     """The Windows test matrix installs requirements-test.txt independently."""
-    test_lines = (ROOT / "requirements-test.txt").read_text(encoding="utf-8").splitlines()
+    test_lines = (
+        (ROOT / "requirements-test.txt").read_text(encoding="utf-8").splitlines()
+    )
     secured = [line.split("#", 1)[0].strip() for line in test_lines]
     assert "defusedxml>=0.7.1,<0.8.0" in secured
-
 
 
 def test_junit_entity_expansion_is_rejected() -> None:

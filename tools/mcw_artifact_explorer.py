@@ -63,8 +63,12 @@ def relative(root, value):
 
 
 def git_head(root):
-    result = subprocess.run(["git", "-C", str(root), "rev-parse", "HEAD"],
-                            capture_output=True, text=True, check=True)
+    result = subprocess.run(
+        ["git", "-C", str(root), "rev-parse", "HEAD"],
+        capture_output=True,
+        text=True,
+        check=True,
+    )
     return result.stdout.strip()
 
 

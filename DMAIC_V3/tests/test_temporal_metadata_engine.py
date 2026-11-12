@@ -63,7 +63,9 @@ def test_file_type_hash_and_python_analysis_are_deterministic(temporal_workspace
     py_file = temporal_workspace / "src" / "sample.py"
 
     assert engine._determine_file_type(py_file) is FileType.PYTHON
-    assert engine._determine_file_type(temporal_workspace / "config.yaml") is FileType.YAML
+    assert (
+        engine._determine_file_type(temporal_workspace / "config.yaml") is FileType.YAML
+    )
     assert engine._determine_file_type(temporal_workspace / "README") is FileType.README
 
     digest_a = engine._compute_file_hash(py_file)
@@ -71,7 +73,9 @@ def test_file_type_hash_and_python_analysis_are_deterministic(temporal_workspace
     assert digest_a == digest_b
     assert len(digest_a) == 64
 
-    dependencies, imports, exports, functions, classes = engine._analyze_python_file(py_file)
+    dependencies, imports, exports, functions, classes = engine._analyze_python_file(
+        py_file
+    )
     assert {"json", "pathlib"}.issubset(set(dependencies))
     assert "import json" in imports
     assert "from pathlib import Path" in imports
@@ -123,9 +127,14 @@ def test_skip_and_folder_purpose_contract(temporal_workspace):
     assert engine._should_skip(temporal_workspace / "node_modules" / "pkg") is True
     assert engine._should_skip(temporal_workspace / "src" / "sample.py") is False
 
-    assert engine._determine_folder_purpose(temporal_workspace / "docs") == "Documentation"
+    assert (
+        engine._determine_folder_purpose(temporal_workspace / "docs") == "Documentation"
+    )
     assert engine._determine_folder_purpose(temporal_workspace / "src") == "Source Code"
-    assert engine._determine_folder_purpose(temporal_workspace / "unknown") == "General Purpose"
+    assert (
+        engine._determine_folder_purpose(temporal_workspace / "unknown")
+        == "General Purpose"
+    )
 
 
 @pytest.mark.unit
@@ -209,7 +218,9 @@ def test_hierarchy_report_contains_counts_and_dependency_graph(temporal_workspac
     assert report["summary"]["file_types"]["python"] >= 1
     assert report["summary"]["folder_purposes"]["Source Code"] >= 1
     assert "src/sample.py" in report["dependency_graph"]
-    assert {"json", "pathlib"}.issubset(set(report["dependency_graph"]["src/sample.py"]))
+    assert {"json", "pathlib"}.issubset(
+        set(report["dependency_graph"]["src/sample.py"])
+    )
 
     persisted = json.loads(output.read_text(encoding="utf-8"))
     assert persisted["workspace_root"] == str(temporal_workspace)

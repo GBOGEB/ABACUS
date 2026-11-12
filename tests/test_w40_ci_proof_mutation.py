@@ -120,7 +120,9 @@ class MatrixMutantSensitivity(unittest.TestCase):
                         killed += 1
                         target.write_text(json.dumps(original), encoding="utf-8")
             self.assertEqual(killed, sum(len(matrix.EXPECTED[v]) for v in versions))
-            self.assertEqual(matrix.audit(path, "full", SECONDARY, SHA)["status"], "PASS")
+            self.assertEqual(
+                matrix.audit(path, "full", SECONDARY, SHA)["status"], "PASS"
+            )
 
     def test_sentinel_and_sampled_interpreter_proof_roles(self):
         with tempfile.TemporaryDirectory() as d:

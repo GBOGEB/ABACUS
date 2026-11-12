@@ -72,7 +72,9 @@ from src.compressor_reliability import (
 )
 
 # ── Logging ─────────────────────────────────────────────────────────
-logging.basicConfig(level=logging.INFO, format="%(asctime)s [%(levelname)s] %(message)s")
+logging.basicConfig(
+    level=logging.INFO, format="%(asctime)s [%(levelname)s] %(message)s"
+)
 logger = logging.getLogger("qplant-api")
 
 # ── Constants ───────────────────────────────────────────────────────
@@ -100,8 +102,7 @@ app = FastAPI(
 
 # ── CORS for Next.js frontend ──────────────────────────────────────
 ALLOWED_ORIGINS = os.environ.get(
-    "CORS_ORIGINS",
-    "http://localhost:3000,http://localhost:3001,http://127.0.0.1:3000"
+    "CORS_ORIGINS", "http://localhost:3000,http://localhost:3001,http://127.0.0.1:3000"
 ).split(",")
 
 app.add_middleware(
@@ -171,6 +172,7 @@ async def health_check():
 # CONFIGURATION
 # ═══════════════════════════════════════════════════════════════════════
 
+
 @app.get("/api/v1/config", response_model=ConfigSummary, tags=["Configuration"])
 async def get_config_summary():
     """Get SSoT configuration summary with key engineering parameters."""
@@ -187,7 +189,9 @@ async def get_config_summary():
     return ConfigSummary(
         version=cfg.version,
         last_updated=cfg.get("last_updated", "unknown"),
-        hp_compressor_count=cfg.get("compressor_specifications.hp_compressors.count", 3),
+        hp_compressor_count=cfg.get(
+            "compressor_specifications.hp_compressors.count", 3
+        ),
         motor_power_kw=cfg.get("compressor_specifications.fsd575.motor_power_kW", 315),
         total_capex_eur=cfg.get("financial.compressor_capex.total_system_eur", 1420000),
         design_flow_gs=cfg.get("flow_parameters.wcs_hp.design_flow_gs", 350),
@@ -214,7 +218,9 @@ async def get_config_section(section: str):
     cfg.reload()
     value = cfg.get(section)
     if value is None:
-        raise HTTPException(status_code=404, detail=f"Config section '{section}' not found")
+        raise HTTPException(
+            status_code=404, detail=f"Config section '{section}' not found"
+        )
     return {"section": section, "value": value}
 
 
@@ -222,7 +228,10 @@ async def get_config_section(section: str):
 # LEAK-RATE CALCULATIONS
 # ═══════════════════════════════════════════════════════════════════════
 
-def _compute_leak_rate(req: LeakRateRequest, he_price: float = 120.0) -> LeakRateResponse:
+
+def _compute_leak_rate(
+    req: LeakRateRequest, he_price: float = 120.0
+) -> LeakRateResponse:
     """Core leak-rate calculation using the physics engine."""
     pa_m3_s = mbar_l_s_to_pa_m3_s(req.leak_rate_mbar_l_s)
     mol_s = leak_rate_to_molar_flow_mol_s(
@@ -265,7 +274,9 @@ async def calculate_leak_rate(request: LeakRateRequest):
 async def calculate_leak_rate_batch(request: BatchLeakRateRequest):
     """Batch leak-rate calculation for multiple valve segments."""
     try:
-        results = [_compute_leak_rate(item, request.he_price_eur_kg) for item in request.items]
+        results = [
+            _compute_leak_rate(item, request.he_price_eur_kg) for item in request.items
+        ]
         total_mass_kg_year = sum(r.mass_flow_kg_year for r in results)
         total_cost_year = sum(r.cost_eur_year or 0 for r in results)
         return {
@@ -284,6 +295,7 @@ async def calculate_leak_rate_batch(request: BatchLeakRateRequest):
 # ═══════════════════════════════════════════════════════════════════════
 # MONTE CARLO SIMULATIONS
 # ═══════════════════════════════════════════════════════════════════════
+
 
 @app.post("/api/v1/monte-carlo", response_model=MonteCarloResult, tags=["Monte Carlo"])
 async def run_monte_carlo(request: MonteCarloRequest):
@@ -313,7 +325,10 @@ async def run_monte_carlo(request: MonteCarloRequest):
         annual_costs = he_prices * baseline_leak_kg_year
 
         # Add maintenance and energy costs
-        maint_cost = cfg.get("compressor_specifications.fsd575.annual_maint_eur", 15000) * HP_COUNT
+        maint_cost = (
+            cfg.get("compressor_specifications.fsd575.annual_maint_eur", 15000)
+            * HP_COUNT
+        )
         energy_cost = cfg.get("financial.annual_energy.cost_3_units_eur", 504000)
         total_costs = annual_costs + maint_cost + energy_cost
 
@@ -331,7 +346,9 @@ async def run_monte_carlo(request: MonteCarloRequest):
             result.histogram_data = {
                 "counts": hist.tolist(),
                 "bin_edges": bin_edges.tolist(),
-                "bin_centers": [(bin_edges[i] + bin_edges[i + 1]) / 2 for i in range(len(hist))],
+                "bin_centers": [
+                    (bin_edges[i] + bin_edges[i + 1]) / 2 for i in range(len(hist))
+                ],
             }
 
         return result
@@ -345,7 +362,12 @@ async def run_monte_carlo(request: MonteCarloRequest):
 # COMPRESSOR RELIABILITY
 # ═══════════════════════════════════════════════════════════════════════
 
-@app.post("/api/v1/compressors/reliability", response_model=CompressorReliabilityResponse, tags=["Compressors"])
+
+@app.post(
+    "/api/v1/compressors/reliability",
+    response_model=CompressorReliabilityResponse,
+    tags=["Compressors"],
+)
 async def analyze_compressor_reliability(request: CompressorConfigRequest):
     """Analyze compressor configuration reliability and availability.
 
@@ -366,7 +388,7 @@ async def analyze_compressor_reliability(request: CompressorConfigRequest):
         availability = 0.0
         for i in range(k, n + 1):
             comb = math.comb(n, i)
-            availability += comb * (a_unit ** i) * ((1 - a_unit) ** (n - i))
+            availability += comb * (a_unit**i) * ((1 - a_unit) ** (n - i))
 
         # System MTBF (simplified for parallel)
         system_mtbf = mtbf * sum(1.0 / j for j in range(1, n - k + 2))
@@ -377,7 +399,9 @@ async def analyze_compressor_reliability(request: CompressorConfigRequest):
         # Energy cost
         power_per_unit = FSD575_PACKAGE_KW
         active_units = k  # minimum running at any time
-        annual_energy_kwh = power_per_unit * active_units * OPERATING_HOURS_YEAR * 0.35  # avg load
+        annual_energy_kwh = (
+            power_per_unit * active_units * OPERATING_HOURS_YEAR * 0.35
+        )  # avg load
         energy_cost = annual_energy_kwh * ELECTRICITY_COST_EUR_KWH
 
         # CAPEX
@@ -421,6 +445,7 @@ async def get_compressor_specs():
 # VISUALIZATIONS
 # ═══════════════════════════════════════════════════════════════════════
 
+
 @app.get("/api/v1/visualizations/catalog", tags=["Visualizations"])
 async def get_visualization_catalog():
     """List all available visualization files with metadata."""
@@ -432,16 +457,18 @@ async def get_visualization_catalog():
         vpath = docs_dir / vdir
         if vpath.exists():
             for f in sorted(vpath.glob("*.html")):
-                catalog.append({
-                    "id": f.stem,
-                    "name": f.stem.replace("_", " ").title(),
-                    "path": str(f.relative_to(PROJECT_ROOT)),
-                    "directory": vdir,
-                    "size_bytes": f.stat().st_size,
-                    "last_modified": datetime.fromtimestamp(
-                        f.stat().st_mtime, tz=timezone.utc
-                    ).isoformat(),
-                })
+                catalog.append(
+                    {
+                        "id": f.stem,
+                        "name": f.stem.replace("_", " ").title(),
+                        "path": str(f.relative_to(PROJECT_ROOT)),
+                        "directory": vdir,
+                        "size_bytes": f.stat().st_size,
+                        "last_modified": datetime.fromtimestamp(
+                            f.stat().st_mtime, tz=timezone.utc
+                        ).isoformat(),
+                    }
+                )
 
     return {"total": len(catalog), "visualizations": catalog}
 
@@ -469,7 +496,7 @@ async def get_compressor_availability_chart():
     for c in configs:
         n, k = c["n"], c["k"]
         avail = sum(
-            math.comb(n, i) * (a_unit ** i) * ((1 - a_unit) ** (n - i))
+            math.comb(n, i) * (a_unit**i) * ((1 - a_unit) ** (n - i))
             for i in range(k, n + 1)
         )
         names.append(c["name"])
@@ -504,6 +531,7 @@ async def get_compressor_availability_chart():
 # ═══════════════════════════════════════════════════════════════════════
 # BUILD & PIPELINE
 # ═══════════════════════════════════════════════════════════════════════
+
 
 @app.get("/api/v1/build/status", tags=["Build"])
 async def get_build_status():
@@ -566,6 +594,7 @@ async def trigger_build(skip_tests: bool = False):
 # ═══════════════════════════════════════════════════════════════════════
 # ROOT
 # ═══════════════════════════════════════════════════════════════════════
+
 
 @app.get("/", tags=["System"])
 async def root():

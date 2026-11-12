@@ -28,7 +28,11 @@ def validate_report(payload: object) -> tuple[int, int]:
         raise ValueError(f"Bandit left {len(errors)} source files unscanned")
     if not isinstance(metrics, dict) or not isinstance(metrics.get("_totals"), dict):
         raise ValueError("Bandit report is missing metrics totals")
-    inspected = [key for key, value in metrics.items() if key != "_totals" and isinstance(value, dict)]
+    inspected = [
+        key
+        for key, value in metrics.items()
+        if key != "_totals" and isinstance(value, dict)
+    ]
     if not inspected:
         raise ValueError("Bandit inspected zero source files")
     return len(inspected), len(findings)
@@ -45,7 +49,9 @@ def main(argv: list[str] | None = None) -> int:
     except (OSError, UnicodeError, json.JSONDecodeError, ValueError) as exc:
         print(f"BANDIT_RECEIPT_INVALID: {exc}", file=sys.stderr)
         return 2
-    print(f"BANDIT_RECEIPT_VALID inspected_files={inspected} findings={findings} scan_errors=0")
+    print(
+        f"BANDIT_RECEIPT_VALID inspected_files={inspected} findings={findings} scan_errors=0"
+    )
     return 0
 
 

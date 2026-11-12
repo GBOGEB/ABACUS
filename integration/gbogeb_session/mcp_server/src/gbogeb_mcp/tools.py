@@ -28,7 +28,6 @@ import yaml
 
 from .topology import TopologyNavigator
 
-
 # ============================================================================
 # Repository root paths (configurable via environment variables)
 # ============================================================================
@@ -65,6 +64,7 @@ def _load_json(path: str | Path) -> dict[str, Any]:
 # ============================================================================
 # Tool 1: get_topology
 # ============================================================================
+
 
 def get_topology() -> dict[str, Any]:
     """
@@ -107,6 +107,7 @@ def get_topology() -> dict[str, Any]:
 # ============================================================================
 # Tool 2: query_node
 # ============================================================================
+
 
 def query_node(node_id: str) -> dict[str, Any]:
     """
@@ -173,6 +174,7 @@ def query_node(node_id: str) -> dict[str, Any]:
 # Tool 3: search_engineering_data
 # ============================================================================
 
+
 def search_engineering_data(query: str) -> dict[str, Any]:
     """
     Full-text search across engineering data, topology, and configuration.
@@ -199,7 +201,10 @@ def search_engineering_data(query: str) -> dict[str, Any]:
         results["sources"]["topology_nodes"] = [n.to_dict() for n in matched_nodes[:10]]
 
     # 2. Engineering data YAML (GBA)
-    eng_path = Path(GBA_ROOT) / "examples/multi_view_workspace/output/context/engineering_data.yaml"
+    eng_path = (
+        Path(GBA_ROOT)
+        / "examples/multi_view_workspace/output/context/engineering_data.yaml"
+    )
     eng_matches = _search_yaml_file(eng_path, query)
     if eng_matches:
         results["sources"]["engineering_data"] = eng_matches
@@ -224,8 +229,7 @@ def search_engineering_data(query: str) -> dict[str, Any]:
         results["sources"]["lineage_manifest"] = manifest_matches
 
     results["total_matches"] = sum(
-        len(v) if isinstance(v, list) else 1
-        for v in results["sources"].values()
+        len(v) if isinstance(v, list) else 1 for v in results["sources"].values()
     )
 
     return results
@@ -244,11 +248,13 @@ def _search_yaml_file(path: Path, query: str) -> list[dict[str, Any]]:
     matches = []
     for i, line in enumerate(content.splitlines(), 1):
         if query_lower in line.lower():
-            matches.append({
-                "file": str(path),
-                "line": i,
-                "content": line.strip(),
-            })
+            matches.append(
+                {
+                    "file": str(path),
+                    "line": i,
+                    "content": line.strip(),
+                }
+            )
     return matches[:20]  # Cap at 20 matches
 
 
@@ -265,17 +271,20 @@ def _search_json_file(path: Path, query: str) -> list[dict[str, Any]]:
     matches = []
     for i, line in enumerate(content.splitlines(), 1):
         if query_lower in line.lower():
-            matches.append({
-                "file": str(path),
-                "line": i,
-                "content": line.strip(),
-            })
+            matches.append(
+                {
+                    "file": str(path),
+                    "line": i,
+                    "content": line.strip(),
+                }
+            )
     return matches[:20]
 
 
 # ============================================================================
 # Tool 4: get_asset_lineage
 # ============================================================================
+
 
 def get_asset_lineage(asset_id: str) -> dict[str, Any]:
     """
@@ -299,16 +308,20 @@ def get_asset_lineage(asset_id: str) -> dict[str, Any]:
     # Search by ID or filename in manifest
     manifest_entry = None
     for asset in manifest.get("assets", []):
-        if (asset.get("filename", "").lower() == asset_id.lower()
-                or asset_id.lower() in asset.get("canonical_path", "").lower()):
+        if (
+            asset.get("filename", "").lower() == asset_id.lower()
+            or asset_id.lower() in asset.get("canonical_path", "").lower()
+        ):
             manifest_entry = asset
             break
 
     # Search visual data registry
     visual_entry = None
     for asset in visual_data.get("assets", []):
-        if (asset.get("id", "").lower() == asset_id.lower()
-                or asset.get("filename", "").lower() == asset_id.lower()):
+        if (
+            asset.get("id", "").lower() == asset_id.lower()
+            or asset.get("filename", "").lower() == asset_id.lower()
+        ):
             visual_entry = asset
             break
 
@@ -352,6 +365,7 @@ def get_asset_lineage(asset_id: str) -> dict[str, Any]:
 # Tool 5: validate_physics
 # ============================================================================
 
+
 def validate_physics(data: dict[str, Any] | None = None) -> dict[str, Any]:
     """
     Run He-4 thermodynamic physics validation.
@@ -371,7 +385,10 @@ def validate_physics(data: dict[str, Any] | None = None) -> dict[str, Any]:
     physics_validator_dir = str(
         Path(GBA_ROOT) / "examples/multi_view_workspace/output/context"
     )
-    eng_data_path = Path(GBA_ROOT) / "examples/multi_view_workspace/output/context/engineering_data.yaml"
+    eng_data_path = (
+        Path(GBA_ROOT)
+        / "examples/multi_view_workspace/output/context/engineering_data.yaml"
+    )
 
     results: dict[str, Any] = {"validation_engine": "HeliumPropertyEngine (GBA)"}
 
@@ -404,7 +421,11 @@ def validate_physics(data: dict[str, Any] | None = None) -> dict[str, Any]:
             results["density_kg_m3"] = engine.density(temp_k)
             results["viscosity_Pa_s"] = engine.viscosity(temp_k)
             results["is_superfluid"] = engine.is_superfluid(temp_k)
-            results["phase"] = "He-II (superfluid)" if engine.is_superfluid(temp_k) else "He-I (normal)"
+            results["phase"] = (
+                "He-II (superfluid)"
+                if engine.is_superfluid(temp_k)
+                else "He-I (normal)"
+            )
 
             # Mass balance if Q values provided
             q_static = data.get("Q_static_W")
@@ -438,7 +459,10 @@ def _fallback_physics_check(data: dict[str, Any] | None) -> dict[str, Any]:
     """Basic physics sanity check without the full engine."""
     if data is None:
         # Load engineering data directly
-        eng_path = Path(GBA_ROOT) / "examples/multi_view_workspace/output/context/engineering_data.yaml"
+        eng_path = (
+            Path(GBA_ROOT)
+            / "examples/multi_view_workspace/output/context/engineering_data.yaml"
+        )
         if eng_path.exists():
             eng = _load_yaml(eng_path)
             cryo = eng.get("cryogenic", {})
@@ -450,8 +474,11 @@ def _fallback_physics_check(data: dict[str, Any] | None) -> dict[str, Any]:
                 "supply_temperature_K": cryo.get("supply_temperature_K"),
                 "return_temperature_K": cryo.get("return_temperature_K"),
                 "lambda_point_K": cryo.get("lambda_point_K"),
-                "is_below_lambda": cryo.get("supply_temperature_K", 0) < cryo.get("lambda_point_K", 2.1768),
-                "Q_total_W": metrics.get("heat_loads", {}).get("summary", {}).get("Q_total_W"),
+                "is_below_lambda": cryo.get("supply_temperature_K", 0)
+                < cryo.get("lambda_point_K", 2.1768),
+                "Q_total_W": metrics.get("heat_loads", {})
+                .get("summary", {})
+                .get("Q_total_W"),
                 "mass_balance_check": mass_balance.get("balance_check"),
                 "m_dot_design_g_s": mass_balance.get("m_dot_design_g_s"),
             }
@@ -461,6 +488,7 @@ def _fallback_physics_check(data: dict[str, Any] | None) -> dict[str, Any]:
 # ============================================================================
 # Tool 6: list_assets
 # ============================================================================
+
 
 def list_assets() -> dict[str, Any]:
     """
@@ -491,11 +519,13 @@ def list_assets() -> dict[str, Any]:
     if svg_dir.exists():
         for f in sorted(svg_dir.iterdir()):
             if f.suffix == ".svg":
-                svg_files.append({
-                    "filename": f.name,
-                    "size_bytes": f.stat().st_size,
-                    "path": str(f.relative_to(GBC_ROOT)),
-                })
+                svg_files.append(
+                    {
+                        "filename": f.name,
+                        "size_bytes": f.stat().st_size,
+                        "path": str(f.relative_to(GBC_ROOT)),
+                    }
+                )
 
     return {
         "manifest_version": manifest.get("version", "unknown"),
@@ -523,6 +553,7 @@ def list_assets() -> dict[str, Any]:
 # Tool 7: get_test_status
 # ============================================================================
 
+
 def get_test_status() -> dict[str, Any]:
     """
     Run and report test suite status for both GBA and GBC repositories.
@@ -548,7 +579,15 @@ def get_test_status() -> dict[str, Any]:
 
         try:
             proc = subprocess.run(
-                [sys.executable, "-m", "pytest", str(test_dir), "-v", "--tb=short", "--no-header"],
+                [
+                    sys.executable,
+                    "-m",
+                    "pytest",
+                    str(test_dir),
+                    "-v",
+                    "--tb=short",
+                    "--no-header",
+                ],
                 capture_output=True,
                 text=True,
                 timeout=120,
@@ -567,11 +606,19 @@ def get_test_status() -> dict[str, Any]:
             for line in lines:
                 if "PASSED" in line:
                     passed += 1
-                    test_name = line.split("::")[1].split(" ")[0] if "::" in line else line.strip()
+                    test_name = (
+                        line.split("::")[1].split(" ")[0]
+                        if "::" in line
+                        else line.strip()
+                    )
                     test_details.append({"test": test_name, "status": "PASSED"})
                 elif "FAILED" in line:
                     failed += 1
-                    test_name = line.split("::")[1].split(" ")[0] if "::" in line else line.strip()
+                    test_name = (
+                        line.split("::")[1].split(" ")[0]
+                        if "::" in line
+                        else line.strip()
+                    )
                     test_details.append({"test": test_name, "status": "FAILED"})
                 elif "ERROR" in line and "::" in line:
                     errors += 1

@@ -21,10 +21,10 @@ def run_pylint_check(file_path: Path) -> dict:
     """Run pylint on a Python file"""
     try:
         result = subprocess.run(
-            ['python', '-m', 'pylint', str(file_path), '--output-format=json'],
+            ["python", "-m", "pylint", str(file_path), "--output-format=json"],
             capture_output=True,
             text=True,
-            timeout=30
+            timeout=30,
         )
         if result.stdout:
             try:

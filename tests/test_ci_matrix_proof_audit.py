@@ -47,18 +47,24 @@ def passing_checks(version):
 def test_lane_view_shape_is_consistent():
     assert SENTINEL in LANE["versions"]
     assert SECONDARY == LANE["versions"][0]
-    assert SENTINEL != SECONDARY, "sentinel and compatibility sample must be distinct cells"
+    assert (
+        SENTINEL != SECONDARY
+    ), "sentinel and compatibility sample must be distinct cells"
 
 
 def test_full_matrix_accepts_classified_role_skips(tmp_path):
     for version in LANE["versions"]:
-        write_manifest(tmp_path / f"python-{version}-proof.json", version, passing_checks(version))
+        write_manifest(
+            tmp_path / f"python-{version}-proof.json", version, passing_checks(version)
+        )
     assert audit(tmp_path, "full", SECONDARY, EXPECTED_SHA)["status"] == "PASS"
 
 
 def test_full_matrix_requires_every_lane_version(tmp_path):
     for version in LANE["versions"][:-1]:
-        write_manifest(tmp_path / f"python-{version}-proof.json", version, passing_checks(version))
+        write_manifest(
+            tmp_path / f"python-{version}-proof.json", version, passing_checks(version)
+        )
     result = audit(tmp_path, "full", SECONDARY, EXPECTED_SHA)
     assert result["status"] == "FAIL"
     assert f"{LANE['versions'][-1]}:MISSING_SUMMARY" in result["errors"]
@@ -122,7 +128,9 @@ def test_invalid_manifest_payload_is_fail_closed(tmp_path):
         ("array_checks", json.dumps({"checks": []})),
         ("false_checks", json.dumps({"checks": False})),
     ):
-        (tmp_path / f"python-{SENTINEL}-proof.json").write_text(payload, encoding="utf-8")
+        (tmp_path / f"python-{SENTINEL}-proof.json").write_text(
+            payload, encoding="utf-8"
+        )
         receipt = audit(tmp_path, "sentinel", SECONDARY, EXPECTED_SHA)
         assert receipt["status"] == "FAIL", label
         assert receipt["errors"], label

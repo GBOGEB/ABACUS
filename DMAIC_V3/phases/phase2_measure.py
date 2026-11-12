@@ -22,6 +22,7 @@ from ..config import DMAICConfig
 
 try:
     from core.execution_backbone import ExecutionBackbone
+
     EXECUTION_BACKBONE_AVAILABLE = True
 except ImportError:
     EXECUTION_BACKBONE_AVAILABLE = False
@@ -32,6 +33,7 @@ except ImportError:
 
 try:
     from DMAIC_V3.core.twelve_cluster_orchestrator import TwelveClusterOrchestrator
+
     CLUSTER_AVAILABLE = True
 except ImportError:
     CLUSTER_AVAILABLE = False
@@ -46,8 +48,13 @@ class Phase2Measure:
     Supports parallel analysis via ExecutionBackbone and 12-Cluster orchestration.
     """
 
-    def __init__(self, config: DMAICConfig, state_manager: StateManager,
-                 use_keb: bool = False, use_12cluster: bool = True):
+    def __init__(
+        self,
+        config: DMAICConfig,
+        state_manager: StateManager,
+        use_keb: bool = False,
+        use_12cluster: bool = True,
+    ):
         """
         Initialize Phase 2: Measure
 
@@ -76,9 +83,7 @@ class Phase2Measure:
         if self.use_12cluster:
             print("[12-CLUSTER] Initializing distributed analysis...")
             self.cluster_orchestrator = TwelveClusterOrchestrator(
-                max_workers=2,
-                use_keb=False,
-                use_gbogeb=True
+                max_workers=2, use_keb=False, use_gbogeb=True
             )
 
     def analyze_python_file(self, file_path: str) -> dict:
@@ -92,14 +97,22 @@ class Phase2Measure:
             Dictionary with analysis results
         """
         try:
-            with open(file_path, 'r', encoding='utf-8', errors='ignore') as f:
+            with open(file_path, "r", encoding="utf-8", errors="ignore") as f:
                 content = f.read()
 
             # Basic metrics
-            lines = content.split('\n')
-            loc = len([line for line in lines if line.strip() and not line.strip().startswith('#')])
+            lines = content.split("\n")
+            loc = len(
+                [
+                    line
+                    for line in lines
+                    if line.strip() and not line.strip().startswith("#")
+                ]
+            )
             total_lines = len(lines)
-            comment_lines = len([line for line in lines if line.strip().startswith('#')])
+            comment_lines = len(
+                [line for line in lines if line.strip().startswith("#")]
+            )
 
             # AST analysis
             try:
@@ -110,66 +123,57 @@ class Phase2Measure:
 
                 for node in ast.walk(tree):
                     if isinstance(node, ast.FunctionDef):
-                        functions.append({
-                            'name': node.name,
-                            'line': node.lineno,
-                            'args': len(node.args.args)
-                        })
+                        functions.append(
+                            {
+                                "name": node.name,
+                                "line": node.lineno,
+                                "args": len(node.args.args),
+                            }
+                        )
                     elif isinstance(node, ast.ClassDef):
-                        classes.append({
-                            'name': node.name,
-                            'line': node.lineno
-                        })
+                        classes.append({"name": node.name, "line": node.lineno})
                     elif isinstance(node, (ast.Import, ast.ImportFrom)):
                         if isinstance(node, ast.Import):
                             for alias in node.names:
                                 imports.append(alias.name)
                         else:
-                            imports.append(node.module if node.module else '')
+                            imports.append(node.module if node.module else "")
 
                 # Calculate complexity score
-                complexity = (
-                    loc +
-                    len(functions) * 2 +
-                    len(classes) * 3 +
-                    len(imports)
-                )
+                complexity = loc + len(functions) * 2 + len(classes) * 3 + len(imports)
 
                 return {
-                    'success': True,
-                    'metrics': {
-                        'total_lines': total_lines,
-                        'lines_of_code': loc,
-                        'comment_lines': comment_lines,
-                        'functions': len(functions),
-                        'classes': len(classes),
-                        'imports': len(imports),
-                        'complexity_score': complexity,
+                    "success": True,
+                    "metrics": {
+                        "total_lines": total_lines,
+                        "lines_of_code": loc,
+                        "comment_lines": comment_lines,
+                        "functions": len(functions),
+                        "classes": len(classes),
+                        "imports": len(imports),
+                        "complexity_score": complexity,
                     },
-                    'details': {
-                        'functions': functions[:10],  # Limit to first 10
-                        'classes': classes[:10],
-                        'imports': list(set(imports))[:20]  # Unique, limit 20
+                    "details": {
+                        "functions": functions[:10],  # Limit to first 10
+                        "classes": classes[:10],
+                        "imports": list(set(imports))[:20],  # Unique, limit 20
                     },
-                    'error': None
+                    "error": None,
                 }
 
             except SyntaxError as e:
                 return {
-                    'success': False,
-                    'metrics': {
-                        'total_lines': total_lines,
-                        'lines_of_code': loc,
-                        'comment_lines': comment_lines,
+                    "success": False,
+                    "metrics": {
+                        "total_lines": total_lines,
+                        "lines_of_code": loc,
+                        "comment_lines": comment_lines,
                     },
-                    'error': f'Syntax error: {str(e)[:100]}'
+                    "error": f"Syntax error: {str(e)[:100]}",
                 }
 
         except Exception as e:
-            return {
-                'success': False,
-                'error': str(e)[:200]
-            }
+            return {"success": False, "error": str(e)[:200]}
 
     def execute(self, iteration: int) -> Tuple[bool, dict]:
         """
@@ -208,9 +212,9 @@ class Phase2Measure:
             Tuple of (success: bool, results: dict) with phase execution results
         """
         try:
-            print("="*80)
+            print("=" * 80)
             print(f"PHASE 2: MEASURE (Iteration {iteration})")
-            print("="*80)
+            print("=" * 80)
             print(f"Timestamp: {datetime.now().isoformat()}")
             print()
 
@@ -226,16 +230,16 @@ class Phase2Measure:
                 raise FileNotFoundError(f"Phase 1 results not found: {phase1_file}")
 
             print("[2.1] Loading Phase 1 results...")
-            with open(phase1_file, 'r', encoding='utf-8') as f:
+            with open(phase1_file, "r", encoding="utf-8") as f:
                 phase1_data = json.load(f)
 
-            all_files = phase1_data.get('files', [])
+            all_files = phase1_data.get("files", [])
             print(f"  Found {len(all_files)} files from Phase 1")
             print()
 
             # Filter Python files
             print("[2.2] Filtering Python files...")
-            python_files = [f for f in all_files if f.endswith('.py')]
+            python_files = [f for f in all_files if f.endswith(".py")]
             print(f"  Python files to analyze: {len(python_files)}")
             print()
 
@@ -268,20 +272,22 @@ class Phase2Measure:
                     {
                         "func": self.analyze_python_file,
                         "args": (file_path,),
-                        "file_path": file_path
+                        "file_path": file_path,
                     }
                     for file_path in python_files
                 ]
 
                 cluster_results = self.cluster_orchestrator.execute_phase_parallel(
-                    phase="phase2",
-                    tasks=tasks,
-                    iteration=iteration
+                    phase="phase2", tasks=tasks, iteration=iteration
                 )
 
-                executed = cluster_results.get("tasks_executed", len(cluster_results.get("results", [])))
+                executed = cluster_results.get(
+                    "tasks_executed", len(cluster_results.get("results", []))
+                )
                 failed = cluster_results.get("tasks_failed", 0)
-                print(f"  [12-CLUSTER] Analysis complete: {executed} files analyzed, {failed} failed")
+                print(
+                    f"  [12-CLUSTER] Analysis complete: {executed} files analyzed, {failed} failed"
+                )
 
                 # Cluster orchestrator may already return results; prefer those if available
                 results_map = cluster_results.get("results_map", {})
@@ -292,12 +298,9 @@ class Phase2Measure:
                         try:
                             result = self.analyze_python_file(file_path)
                         except Exception as e:
-                            result = {'success': False, 'error': str(e)[:200]}
-                    measurements.append({
-                        'file_path': file_path,
-                        'analysis': result
-                    })
-                    if result.get('success'):
+                            result = {"success": False, "error": str(e)[:200]}
+                    measurements.append({"file_path": file_path, "analysis": result})
+                    if result.get("success"):
                         analyzed_count += 1
                     else:
                         error_count += 1
@@ -315,16 +318,19 @@ class Phase2Measure:
                     )
 
                     for file_path in chunk_files:
-                        task_id = f"analyze_{chunk_idx}_{file_path.replace('/', '_')[-50:]}"
+                        task_id = (
+                            f"analyze_{chunk_idx}_{file_path.replace('/', '_')[-50:]}"
+                        )
                         self.execution_backbone.schedule_task(
                             task_id=task_id,
                             func=self.analyze_python_file,
                             priority=5,
-                            args=(file_path,)
+                            args=(file_path,),
                         )
 
                 print("  [EXEC-BACKBONE] Waiting for analysis to complete...")
                 import time
+
                 while not self.execution_backbone.task_queue.empty():
                     time.sleep(0.5)
 
@@ -339,11 +345,8 @@ class Phase2Measure:
 
                 for file_path in python_files:
                     result = self.analyze_python_file(file_path)
-                    measurements.append({
-                        'file_path': file_path,
-                        'analysis': result
-                    })
-                    if result.get('success'):
+                    measurements.append({"file_path": file_path, "analysis": result})
+                    if result.get("success"):
                         analyzed_count += 1
                     else:
                         error_count += 1
@@ -353,62 +356,80 @@ class Phase2Measure:
                     end_idx = min(start_idx + chunk_size, total_files)
                     chunk_files = python_files[start_idx:end_idx]
 
-                    print(f"  Processing chunk {chunk_idx + 1}/{num_chunks} ({len(chunk_files)} files)...")
+                    print(
+                        f"  Processing chunk {chunk_idx + 1}/{num_chunks} ({len(chunk_files)} files)..."
+                    )
 
                     for i, file_path in enumerate(chunk_files):
                         if i % 100 == 0 and i > 0:
-                            print(f"    Analyzed {i}/{len(chunk_files)} files in chunk...")
+                            print(
+                                f"    Analyzed {i}/{len(chunk_files)} files in chunk..."
+                            )
 
                         result = self.analyze_python_file(file_path)
 
-                        measurements.append({
-                            'file_path': file_path,
-                            'analysis': result
-                        })
+                        measurements.append(
+                            {"file_path": file_path, "analysis": result}
+                        )
 
-                        if result.get('success'):
+                        if result.get("success"):
                             analyzed_count += 1
                         else:
                             error_count += 1
 
-                    print(f"  Chunk {chunk_idx + 1} complete: {analyzed_count} successful, {error_count} errors so far")
+                    print(
+                        f"  Chunk {chunk_idx + 1} complete: {analyzed_count} successful, {error_count} errors so far"
+                    )
             print()
 
             # Calculate aggregate statistics
             print("[2.4] Calculating statistics...")
-            total_loc = sum(m['analysis'].get('metrics', {}).get('lines_of_code', 0)
-                          for m in measurements if m['analysis']['success'])
-            total_functions = sum(m['analysis'].get('metrics', {}).get('functions', 0)
-                                for m in measurements if m['analysis']['success'])
-            total_classes = sum(m['analysis'].get('metrics', {}).get('classes', 0)
-                              for m in measurements if m['analysis']['success'])
+            total_loc = sum(
+                m["analysis"].get("metrics", {}).get("lines_of_code", 0)
+                for m in measurements
+                if m["analysis"]["success"]
+            )
+            total_functions = sum(
+                m["analysis"].get("metrics", {}).get("functions", 0)
+                for m in measurements
+                if m["analysis"]["success"]
+            )
+            total_classes = sum(
+                m["analysis"].get("metrics", {}).get("classes", 0)
+                for m in measurements
+                if m["analysis"]["success"]
+            )
 
             # Prepare results - Convert measurements to file_metrics format for Phase 3
             file_metrics = {}
             for measurement in measurements:
-                file_path = measurement['file_path']
-                file_metrics[file_path] = measurement['analysis']
+                file_path = measurement["file_path"]
+                file_metrics[file_path] = measurement["analysis"]
 
             results = {
-                'phase': 'MEASURE',
-                'iteration': iteration,
-                'timestamp': datetime.now().isoformat(),
-                'input_source': str(phase1_file),
-                'statistics': {
-                    'total_files': len(python_files),
-                    'analyzed_successfully': analyzed_count,
-                    'analysis_errors': error_count,
-                    'total_lines_of_code': total_loc,
-                    'total_functions': total_functions,
-                    'total_classes': total_classes,
+                "phase": "MEASURE",
+                "iteration": iteration,
+                "timestamp": datetime.now().isoformat(),
+                "input_source": str(phase1_file),
+                "statistics": {
+                    "total_files": len(python_files),
+                    "analyzed_successfully": analyzed_count,
+                    "analysis_errors": error_count,
+                    "total_lines_of_code": total_loc,
+                    "total_functions": total_functions,
+                    "total_classes": total_classes,
                 },
-                'file_metrics': file_metrics,
-                'measurements': measurements,
+                "file_metrics": file_metrics,
+                "measurements": measurements,
             }
 
             # Save results
             print("[2.5] Saving results...")
-            output_dir = self.config.paths.output_root / f"iteration_{iteration}" / "phase2_measure"
+            output_dir = (
+                self.config.paths.output_root
+                / f"iteration_{iteration}"
+                / "phase2_measure"
+            )
             ensure_directory(output_dir)
 
             # Save to phase2_measure directory for backward compatibility
@@ -416,14 +437,18 @@ class Phase2Measure:
             safe_write_json(results, output_file)
 
             # Also save to phase2_metrics.json for Phase 3 compatibility
-            metrics_file = self.config.paths.output_root / f"iteration_{iteration}" / "phase2_metrics.json"
+            metrics_file = (
+                self.config.paths.output_root
+                / f"iteration_{iteration}"
+                / "phase2_metrics.json"
+            )
             safe_write_json(results, metrics_file)
 
             # Print summary
             print()
-            print("="*80)
+            print("=" * 80)
             print("PHASE 2 SUMMARY")
-            print("="*80)
+            print("=" * 80)
             print(f"[OK] Analyzed {analyzed_count} Python files")
             print(f"  Total LOC: {total_loc:,}")
             print(f"  Total Functions: {total_functions:,}")
@@ -432,7 +457,7 @@ class Phase2Measure:
             print(f"  Results saved: {output_file}")
             print()
             print("[OK] PHASE 2 PASSED")
-            print("="*80)
+            print("=" * 80)
             print()
 
             return True, results
@@ -440,14 +465,15 @@ class Phase2Measure:
         except Exception as e:
             print(f"\n[X] Phase 2 failed: {e}")
             import traceback
+
             traceback.print_exc()
             return False, {
-                'phase': 'MEASURE',
-                'iteration': iteration,
-                'timestamp': datetime.now().isoformat(),
-                'error': str(e),
-                'input_source': '',
-                'statistics': {},
-                'file_metrics': {},
-                'measurements': []
+                "phase": "MEASURE",
+                "iteration": iteration,
+                "timestamp": datetime.now().isoformat(),
+                "error": str(e),
+                "input_source": "",
+                "statistics": {},
+                "file_metrics": {},
+                "measurements": [],
             }

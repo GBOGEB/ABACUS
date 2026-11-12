@@ -1,8 +1,12 @@
 import json
 
 from DMAIC_V3.local_mcp.agents.dow_metadata_injector import DOWMetadataInjector
-from DMAIC_V3.local_mcp.agents.dow_recursive_hooks_injector import DOWRecursiveHooksInjector
-from DMAIC_V3.local_mcp.agents.dow_convergence_calculator import DOWConvergenceCalculator
+from DMAIC_V3.local_mcp.agents.dow_recursive_hooks_injector import (
+    DOWRecursiveHooksInjector,
+)
+from DMAIC_V3.local_mcp.agents.dow_convergence_calculator import (
+    DOWConvergenceCalculator,
+)
 from DMAIC_V3.local_mcp.agents.dow_knowledge_extractor import DOWKnowledgeExtractor
 
 
@@ -39,7 +43,11 @@ def test_dow_knowledge_extractor_emits_stable_typed_findings(tmp_path):
     sample.write_text(
         json.dumps(
             {
-                "metadata": {"iteration": 2, "phase": "phase3_analyze", "version": "3.3.0"},
+                "metadata": {
+                    "iteration": 2,
+                    "phase": "phase3_analyze",
+                    "version": "3.3.0",
+                },
                 "convergence_metrics": {
                     "quality_score": 0.45,
                     "convergence_status": "degrading",
@@ -90,7 +98,9 @@ def test_dow_knowledge_extractor_emits_stable_typed_findings(tmp_path):
     second = extractor.extract_knowledge(sample)
     assert second["status"] == "success"
     data2 = json.loads(sample.read_text(encoding="utf-8"))
-    ids2 = [finding["finding_id"] for finding in data2["knowledge_gain"]["typed_findings"]]
+    ids2 = [
+        finding["finding_id"] for finding in data2["knowledge_gain"]["typed_findings"]
+    ]
 
     assert ids2 == ids1
     assert data2["idempotency"]["input_hash"] == input_hash1

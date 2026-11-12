@@ -708,7 +708,9 @@ def plan_test_execution(
     return {
         "schema": "abacus-test-execution-plan/1.0",
         "mode": "thorough" if thorough else "fast-advisory",
-        "python_versions": _ssot_versions()["supported"] if thorough else [_ssot_versions()["default"]],
+        "python_versions": (
+            _ssot_versions()["supported"] if thorough else [_ssot_versions()["default"]]
+        ),
         "python_versions_authority": "ssot/python_versions.yaml",
         "triggered_categories": escalation,
         "required_checks_preserved": True,

@@ -30,7 +30,9 @@ def test_volume_scaling_is_inverse():
 
 def test_time_to_limit_inverse_of_rate():
     rate = dpdt_bar_per_min(12, 120, 300)
-    assert math.isclose(time_to_pressure_limit_min(1.0, 12, 120, 300), 1.0 / rate, rel_tol=1e-9)
+    assert math.isclose(
+        time_to_pressure_limit_min(1.0, 12, 120, 300), 1.0 / rate, rel_tol=1e-9
+    )
     assert time_to_pressure_limit_min(1.0, 0, 120, 300) is None
 
 

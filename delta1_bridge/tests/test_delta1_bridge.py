@@ -3,6 +3,7 @@
 Run from any repo that vendors delta1_bridge:
     pytest delta1_bridge/tests/test_delta1_bridge.py -q
 """
+
 from __future__ import annotations
 
 import json
@@ -20,7 +21,6 @@ from delta1_bridge import (
     rank_pairwise,
     DMAIC_METRICS_REQUIRED_KEYS,
 )
-
 
 # --------------------------------------------------------------------------- #
 # schema
@@ -88,9 +88,12 @@ def _make_fake_codex(root: Path):
     (root / "KEB" / "governance" / "GLOSSARY.yml").write_text("x: 1", encoding="utf-8")
     (root / "docs" / "api").mkdir(parents=True)
     (root / "docs" / "api" / "metrics.json").write_text(
-        json.dumps(VALID_METRICS), encoding="utf-8")
+        json.dumps(VALID_METRICS), encoding="utf-8"
+    )
     (root / "federation").mkdir()
-    (root / "federation" / "manifest.yaml").write_text("federation: DELTA_1", encoding="utf-8")
+    (root / "federation" / "manifest.yaml").write_text(
+        "federation: DELTA_1", encoding="utf-8"
+    )
 
 
 def test_detect_and_status_ok(tmp_path):

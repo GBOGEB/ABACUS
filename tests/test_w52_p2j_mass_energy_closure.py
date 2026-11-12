@@ -1,4 +1,8 @@
-from qplant.w52_p2j_mass_energy_closure import StreamState, qcell_mass_residual, power_residual
+from qplant.w52_p2j_mass_energy_closure import (
+    StreamState,
+    qcell_mass_residual,
+    power_residual,
+)
 
 
 def s(name, mdot):

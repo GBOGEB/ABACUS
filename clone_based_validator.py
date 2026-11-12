@@ -22,9 +22,9 @@ from dataclasses import dataclass, asdict
 import tempfile
 import shutil
 
-os.environ['PYTHONIOENCODING'] = 'utf-8'
-if hasattr(sys.stdout, 'reconfigure'):
-    sys.stdout.reconfigure(encoding='utf-8')
+os.environ["PYTHONIOENCODING"] = "utf-8"
+if hasattr(sys.stdout, "reconfigure"):
+    sys.stdout.reconfigure(encoding="utf-8")
 
 
 @dataclass
@@ -63,10 +63,19 @@ class CloneBasedValidator:
 
         try:
             subprocess.run(
-                ["git", "clone", "--branch", self.branch, "--depth", "1", self.repo_url, str(self.clone_dir)],
+                [
+                    "git",
+                    "clone",
+                    "--branch",
+                    self.branch,
+                    "--depth",
+                    "1",
+                    self.repo_url,
+                    str(self.clone_dir),
+                ],
                 check=True,
                 capture_output=True,
-                timeout=300
+                timeout=300,
             )
             print(f"[OK] Repository cloned to {self.clone_dir}")
             return self.clone_dir
@@ -81,8 +90,8 @@ class CloneBasedValidator:
         """Calculate SHA256 checksum of file"""
         sha256 = hashlib.sha256()
         try:
-            with open(file_path, 'rb') as f:
-                for chunk in iter(lambda: f.read(8192), b''):
+            with open(file_path, "rb") as f:
+                for chunk in iter(lambda: f.read(8192), b""):
                     sha256.update(chunk)
             return sha256.hexdigest()[:16]
         except Exception as e:
@@ -92,10 +101,10 @@ class CloneBasedValidator:
         """Extract import statements from Python file"""
         imports = []
         try:
-            with open(file_path, 'r', encoding='utf-8', errors='ignore') as f:
+            with open(file_path, "r", encoding="utf-8", errors="ignore") as f:
                 for line in f:
                     line = line.strip()
-                    if line.startswith('import ') or line.startswith('from '):
+                    if line.startswith("import ") or line.startswith("from "):
                         imports.append(line)
         except Exception:
             pass
@@ -131,27 +140,31 @@ class CloneBasedValidator:
                 imported_by=[],
                 checksum=checksum,
                 size_bytes=size,
-                last_modified=modified
+                last_modified=modified,
             )
 
         print(f"[OK] Dependency graph built: {len(dependency_graph)} nodes")
         return dependency_graph
 
-    def detect_circular_dependencies(self, graph: Dict[str, DependencyNode]) -> List[Tuple[str, str]]:
+    def detect_circular_dependencies(
+        self, graph: Dict[str, DependencyNode]
+    ) -> List[Tuple[str, str]]:
         """Detect circular dependencies in the graph"""
         print("\n[ANALYZE] Detecting circular dependencies...")
         circular = []
 
         for file_path, node in graph.items():
             for import_stmt in node.imports:
-                if 'from' in import_stmt:
+                if "from" in import_stmt:
                     parts = import_stmt.split()
                     if len(parts) >= 2:
-                        module = parts[1].replace('.', '/')
+                        module = parts[1].replace(".", "/")
                         potential_file = f"{module}.py"
 
                         if potential_file in graph:
-                            if file_path in [imp for imp in graph[potential_file].imports]:
+                            if file_path in [
+                                imp for imp in graph[potential_file].imports
+                            ]:
                                 circular.append((file_path, potential_file))
 
         print(f"[OK] Found {len(circular)} circular dependencies")
@@ -164,10 +177,10 @@ class CloneBasedValidator:
         imported_files = set()
         for node in graph.values():
             for import_stmt in node.imports:
-                if 'from' in import_stmt:
+                if "from" in import_stmt:
                     parts = import_stmt.split()
                     if len(parts) >= 2:
-                        module = parts[1].replace('.', '/')
+                        module = parts[1].replace(".", "/")
                         imported_files.add(f"{module}.py")
 
         all_files = set(graph.keys())
@@ -176,13 +189,15 @@ class CloneBasedValidator:
         entry_points = [
             f
             for f in orphaned
-            if '__main__'
+            if "__main__"
             in open(
-                Path(self.clone_dir) / f, 'r', encoding='utf-8', errors='ignore'
+                Path(self.clone_dir) / f, "r", encoding="utf-8", errors="ignore"
             ).read()
         ]
 
-        print(f"[OK] Found {len(orphaned)} orphaned files ({len(entry_points)} entry points)")
+        print(
+            f"[OK] Found {len(orphaned)} orphaned files ({len(entry_points)} entry points)"
+        )
         return orphaned
 
     def calculate_code_checksum(self, clone_path: Path) -> CodeChecksum:
@@ -194,14 +209,15 @@ class CloneBasedValidator:
         orphaned = self.find_orphaned_files(dependency_graph)
 
         total_checksums = {
-            file_path: node.checksum
-            for file_path, node in dependency_graph.items()
+            file_path: node.checksum for file_path, node in dependency_graph.items()
         }
 
-        entry_points = [
-            f for f in orphaned
-            if '__main__' in open(clone_path / f, 'r', encoding='utf-8', errors='ignore').read()
-        ]
+        entry_points = []
+        for f in orphaned:
+            file_path = clone_path / f
+            with open(file_path, "r", encoding="utf-8", errors="ignore") as fh:
+                if "__main__" in fh.read():
+                    entry_points.append(f)
 
         checksum = CodeChecksum(
             total_files=len(dependency_graph),
@@ -209,7 +225,7 @@ class CloneBasedValidator:
             dependency_graph=dependency_graph,
             circular_dependencies=circular_deps,
             orphaned_files=orphaned,
-            entry_points=entry_points
+            entry_points=entry_points,
         )
 
         print(f"[OK] Code checksum calculated: {len(total_checksums)} files")
@@ -231,7 +247,9 @@ class CloneBasedValidator:
             for file_path, node in self.dependency_graph.items()
         }
 
-        matching = sum(1 for f, cs in clone_checksums.items() if workspace_checksums.get(f) == cs)
+        matching = sum(
+            1 for f, cs in clone_checksums.items() if workspace_checksums.get(f) == cs
+        )
         different = sum(
             1
             for f, cs in clone_checksums.items()
@@ -246,7 +264,7 @@ class CloneBasedValidator:
             "clone_only": clone_only,
             "workspace_only": workspace_only,
             "total_clone_files": len(clone_checksums),
-            "total_workspace_files": len(workspace_checksums)
+            "total_workspace_files": len(workspace_checksums),
         }
 
         print(f"[OK] Comparison complete:")
@@ -271,12 +289,12 @@ class CloneBasedValidator:
                 "total_checksums": checksum.total_checksums,
                 "circular_dependencies": checksum.circular_dependencies,
                 "orphaned_files": checksum.orphaned_files,
-                "entry_points": checksum.entry_points
+                "entry_points": checksum.entry_points,
             },
-            "comparison": comparison
+            "comparison": comparison,
         }
 
-        with open(output_file, 'w', encoding='utf-8') as f:
+        with open(output_file, "w", encoding="utf-8") as f:
             json.dump(results, f, indent=2)
 
         print(f"\n[SAVE] Results saved to {output_file}")
@@ -290,13 +308,13 @@ class CloneBasedValidator:
 
     def execute_validation(self, workspace_path: Path):
         """Execute complete clone-based validation"""
-        print("\n" + "="*80)
+        print("\n" + "=" * 80)
         print("CLONE-BASED VALIDATION ORCHESTRATOR")
-        print("="*80)
+        print("=" * 80)
         print(f"Repository: {self.repo_url}")
         print(f"Branch: {self.branch}")
         print(f"Execution ID: {self.execution_id}")
-        print("="*80 + "\n")
+        print("=" * 80 + "\n")
 
         try:
             clone_path = self.clone_repository()
@@ -308,9 +326,9 @@ class CloneBasedValidator:
 
             self.save_results(checksum, comparison)
 
-            print("\n" + "="*80)
+            print("\n" + "=" * 80)
             print("VALIDATION COMPLETE")
-            print("="*80)
+            print("=" * 80)
 
         except Exception as e:
             print(f"\n[ERROR] Validation failed: {e}")
@@ -331,6 +349,7 @@ def main():
 
     validator = CloneBasedValidator(args.repo_url, args.branch)
     validator.execute_validation(Path(args.workspace))
+
 
 if __name__ == "__main__":
     main()

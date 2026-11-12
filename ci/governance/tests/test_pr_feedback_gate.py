@@ -165,7 +165,6 @@ class FeedbackGateTests(unittest.TestCase):
         comment["performed_via_github_app"]["id"] = 1
         self.assertFalse(gate.codex_security_review_complete([comment], head))
 
-
     @staticmethod
     def structured_codex_summary(payload: dict, stamp="2026-11-04T10:56:06Z"):
         body = (
@@ -221,9 +220,11 @@ class FeedbackGateTests(unittest.TestCase):
 
     def test_new_codex_state_does_not_infer_missing_security_review(self):
         head = "abcdef0123456789abcdef0123456789abcdef01"
-        comments = [self.structured_codex_summary({
-            "code_review": self.completed_lane(head), "security_review": None
-        })]
+        comments = [
+            self.structured_codex_summary(
+                {"code_review": self.completed_lane(head), "security_review": None}
+            )
+        ]
         self.assertTrue(gate.codex_code_review_complete(comments, head))
         self.assertFalse(gate.codex_security_review_complete(comments, head))
 
@@ -255,19 +256,25 @@ class FeedbackGateTests(unittest.TestCase):
             "2026-10-03T10:00:00Z",
         )
         self.assertTrue(gate.codex_code_review_complete([old], head))
-        current = self.structured_codex_summary({
-            "code_review": dict(self.completed_lane(head), status="running"),
-            "security_review": None,
-        }, "2026-11-04T10:56:06Z")
+        current = self.structured_codex_summary(
+            {
+                "code_review": dict(self.completed_lane(head), status="running"),
+                "security_review": None,
+            },
+            "2026-11-04T10:56:06Z",
+        )
         self.assertFalse(gate.codex_code_review_complete([old, current], head))
         self.assertFalse(gate.codex_security_review_complete([old, current], head))
 
     def test_newer_legacy_running_security_review_overrules_structured_completion(self):
         head = "abcdef0123456789abcdef0123456789abcdef01"
-        old = self.structured_codex_summary({
-            "code_review": self.completed_lane(head),
-            "security_review": self.completed_lane(head),
-        }, "2026-10-03T10:00:00Z")
+        old = self.structured_codex_summary(
+            {
+                "code_review": self.completed_lane(head),
+                "security_review": self.completed_lane(head),
+            },
+            "2026-10-03T10:00:00Z",
+        )
         current = self.trusted_codex_comment(
             "<!-- codex-security-review:v1 "
             '{"headSha":"' + head + '","status":"running"} -->',

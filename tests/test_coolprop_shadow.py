@@ -23,7 +23,7 @@ sys.path.insert(0, str(ROOT / "tools" / "coolprop_shadow"))
 import coolprop_shadow_codec as codec  # noqa: E402
 import replay  # noqa: E402
 
-FAKE_V7 = '''
+FAKE_V7 = """
 def PropsSI(*args):
     if len(args) == 2:
         return {"GAS_CONSTANT": 8.314462618, "MOLAR_MASS": 0.004002602}[args[0]]
@@ -36,7 +36,7 @@ def PropsSI(*args):
         return [float(v1) * x for x in v2]
     base = float(v1) * 1000.0 + float(v2)
     return base + (0.5 if type(v2) is int else 0.0)  # int and float args differ
-'''
+"""
 
 
 def make_fake(root: Path, version: str, body: str) -> Path:
@@ -47,7 +47,7 @@ def make_fake(root: Path, version: str, body: str) -> Path:
     return root
 
 
-CALLER = '''
+CALLER = """
 import subprocess, sys
 from CoolProp.CoolProp import PropsSI
 PropsSI("D", "T", 4.5, "P", 1.3e5, "Helium")
@@ -65,16 +65,18 @@ for bad in (("D", "T", 2.0, "P", 1e5, "Helium"), ("BAD", "T", 5.0, "P", 1e5, "He
 subprocess.run([sys.executable, "-c",
                 "from CoolProp.CoolProp import PropsSI; PropsSI('H', 'T', 300.0, 'P', 1e5, 'Helium')"],
                check=True)
-'''
+"""
 
 
 @pytest.fixture()
 def recorded(tmp_path):
     fake = make_fake(tmp_path / "v7", "7.2.0", FAKE_V7)
     records = tmp_path / "records"
-    env = {**os.environ,
-           "PYTHONPATH": os.pathsep.join([str(HOOK), str(fake)]),
-           "COOLPROP_SHADOW_RECORD_DIR": str(records)}
+    env = {
+        **os.environ,
+        "PYTHONPATH": os.pathsep.join([str(HOOK), str(fake)]),
+        "COOLPROP_SHADOW_RECORD_DIR": str(records),
+    }
     subprocess.run([sys.executable, "-c", CALLER], env=env, check=True, cwd=tmp_path)
     calls, headers = replay.load_records(records)
     return calls, headers, records, fake
@@ -82,7 +84,9 @@ def recorded(tmp_path):
 
 def load_fake(directory: Path):
     namespace: dict = {}
-    exec((directory / "CoolProp" / "CoolProp.py").read_text(encoding="utf-8"), namespace)
+    exec(
+        (directory / "CoolProp" / "CoolProp.py").read_text(encoding="utf-8"), namespace
+    )
     return namespace["PropsSI"]
 
 
@@ -96,13 +100,17 @@ def test_hook_records_every_distinct_call_including_subprocesses(recorded):
     decoded = {repr(codec.decode_call(c["key"])[0]): c for c in calls.values()}
     assert len(decoded) == 8
     assert decoded[repr(("D", "T", 4.5, "P", 1.3e5, "Helium"))]["count"] == 2
-    assert repr(("H", "T", 300.0, "P", 1e5, "Helium")) in decoded  # from the child process
+    assert (
+        repr(("H", "T", 300.0, "P", 1e5, "Helium")) in decoded
+    )  # from the child process
     int_call = decoded[repr(("P", "T", 4.2, "Q", 0, "Helium"))]
     float_call = decoded[repr(("P", "T", 4.2, "Q", 0.0, "Helium"))]
     assert int_call is not float_call  # type-distinct calls stay distinct
     assert json.loads(int_call["key"])["args"][4] == ["int", 0]
     assert decoded[repr(("D", "T", 2.0, "P", 1e5, "Helium"))]["outcome"][0] == "error"
-    assert all(site.startswith("__main__:") for c in calls.values() for site in c["sites"])
+    assert all(
+        site.startswith("__main__:") for c in calls.values() for site in c["sites"]
+    )
 
 
 def test_hook_is_inert_without_the_environment_switch(tmp_path):
@@ -110,17 +118,28 @@ def test_hook_is_inert_without_the_environment_switch(tmp_path):
     env = {k: v for k, v in os.environ.items() if k != "COOLPROP_SHADOW_RECORD_DIR"}
     env["PYTHONPATH"] = os.pathsep.join([str(HOOK), str(fake)])
     out = subprocess.run(
-        [sys.executable, "-c",
-         "from CoolProp.CoolProp import PropsSI; print(hasattr(PropsSI, '__coolprop_shadow__'))"],
-        env=env, check=True, capture_output=True, text=True, cwd=tmp_path)
+        [
+            sys.executable,
+            "-c",
+            "from CoolProp.CoolProp import PropsSI; print(hasattr(PropsSI, '__coolprop_shadow__'))",
+        ],
+        env=env,
+        check=True,
+        capture_output=True,
+        text=True,
+        cwd=tmp_path,
+    )
     assert out.stdout.strip() == "False"
 
 
 def test_wrapper_is_transparent(tmp_path):
     fake = make_fake(tmp_path / "v7", "7.2.0", FAKE_V7)
-    env = {**os.environ, "PYTHONPATH": os.pathsep.join([str(HOOK), str(fake)]),
-           "COOLPROP_SHADOW_RECORD_DIR": str(tmp_path / "r")}
-    script = textwrap.dedent('''
+    env = {
+        **os.environ,
+        "PYTHONPATH": os.pathsep.join([str(HOOK), str(fake)]),
+        "COOLPROP_SHADOW_RECORD_DIR": str(tmp_path / "r"),
+    }
+    script = textwrap.dedent("""
         import CoolProp.CoolProp as cp
         assert cp.PropsSI.__coolprop_shadow__ and cp.PropsSI.__name__ == "PropsSI"
         assert cp.PropsSI("D", "T", 5.0, "P", 2.0, "Helium") == 5002.0
@@ -131,9 +150,15 @@ def test_wrapper_is_transparent(tmp_path):
         else:
             raise AssertionError("error was swallowed")
         print("ok")
-    ''')
-    out = subprocess.run([sys.executable, "-c", script], env=env, check=True,
-                         capture_output=True, text=True, cwd=tmp_path)
+    """)
+    out = subprocess.run(
+        [sys.executable, "-c", script],
+        env=env,
+        check=True,
+        capture_output=True,
+        text=True,
+        cwd=tmp_path,
+    )
     assert out.stdout.strip() == "ok"
 
 
@@ -141,22 +166,29 @@ def test_wrapper_is_transparent(tmp_path):
 
 
 def test_control_replay_is_identical(recorded):
-    calls, *_ , fake = recorded
+    calls, *_, fake = recorded
     rows = replay.replay(calls, load_fake(fake))
     assert {r["class"] for r in rows} == {"IDENTICAL"}
 
 
-DRIFTED = FAKE_V7.replace(
-    '    base = float(v1) * 1000.0 + float(v2)\n',
-    '    base = float(v1) * 1000.0 + float(v2)\n'
-    '    if out == "D": base *= 1 + 1e-9\n'
-    '    if out == "P": base *= 1 + 1e-3\n'
-    '    if out == "H": raise ValueError("new limit check")\n'
-).replace('    if n1 == "T" and v1 < 2.1768:\n'
-          '        raise ValueError(f"Temperature to QT_flash [{v1} K] must be in range")\n',
-          '    if n1 == "T" and v1 < 2.1768:\n'
-          '        return 0.125\n'
-).replace('raise ValueError("unknown output BAD")', 'raise ValueError("Output BAD is not valid")')
+DRIFTED = (
+    FAKE_V7.replace(
+        "    base = float(v1) * 1000.0 + float(v2)\n",
+        "    base = float(v1) * 1000.0 + float(v2)\n"
+        '    if out == "D": base *= 1 + 1e-9\n'
+        '    if out == "P": base *= 1 + 1e-3\n'
+        '    if out == "H": raise ValueError("new limit check")\n',
+    )
+    .replace(
+        '    if n1 == "T" and v1 < 2.1768:\n'
+        '        raise ValueError(f"Temperature to QT_flash [{v1} K] must be in range")\n',
+        '    if n1 == "T" and v1 < 2.1768:\n' "        return 0.125\n",
+    )
+    .replace(
+        'raise ValueError("unknown output BAD")',
+        'raise ValueError("Output BAD is not valid")',
+    )
+)
 
 
 def test_replay_classifies_each_kind_of_change(recorded, tmp_path):
@@ -168,9 +200,13 @@ def test_replay_classifies_each_kind_of_change(recorded, tmp_path):
     assert klass["PropsSI('P', 'T', 4.2, 'Q', 0, 'Helium')"] == "SIGNIFICANT"
     assert klass["PropsSI('H', 'T', 300.0, 'P', 100000.0, 'Helium')"] == "NEW_ERROR"
     assert klass["PropsSI('D', 'T', 2.0, 'P', 100000.0, 'Helium')"] == "FIXED_ERROR"
-    assert klass["PropsSI('BAD', 'T', 5.0, 'P', 100000.0, 'Helium')"] == "ERROR_REWORDED"
+    assert (
+        klass["PropsSI('BAD', 'T', 5.0, 'P', 100000.0, 'Helium')"] == "ERROR_REWORDED"
+    )
     assert klass["PropsSI('GAS_CONSTANT', 'Helium')"] == "IDENTICAL"
-    assert rows["PropsSI('D', 'T', 2.0, 'P', 100000.0, 'Helium')"]["band"].startswith("below lambda")
+    assert rows["PropsSI('D', 'T', 2.0, 'P', 100000.0, 'Helium')"]["band"].startswith(
+        "below lambda"
+    )
 
 
 def test_cli_require_identical_gates_the_control(recorded, tmp_path):
@@ -181,10 +217,22 @@ def test_cli_require_identical_gates_the_control(recorded, tmp_path):
         env = {**os.environ, "PYTHONPATH": str(coolprop_dir)}
         env.pop("COOLPROP_SHADOW_RECORD_DIR", None)
         return subprocess.run(
-            [sys.executable, str(ROOT / "tools/coolprop_shadow/replay.py"), "--records", str(records),
-             "--out", str(tmp_path / f"{coolprop_dir.name}.json"),
-             "--summary", str(tmp_path / f"{coolprop_dir.name}.md"), "--require-identical"],
-            env=env, capture_output=True, text=True, cwd=tmp_path)
+            [
+                sys.executable,
+                str(ROOT / "tools/coolprop_shadow/replay.py"),
+                "--records",
+                str(records),
+                "--out",
+                str(tmp_path / f"{coolprop_dir.name}.json"),
+                "--summary",
+                str(tmp_path / f"{coolprop_dir.name}.md"),
+                "--require-identical",
+            ],
+            env=env,
+            capture_output=True,
+            text=True,
+            cwd=tmp_path,
+        )
 
     assert cli(fake).returncode == 0
     drifted = cli(new)
@@ -196,21 +244,33 @@ def test_cli_require_identical_gates_the_control(recorded, tmp_path):
 
 
 def test_cli_fails_closed_without_records(tmp_path):
-    out = subprocess.run([sys.executable, str(ROOT / "tools/coolprop_shadow/replay.py"),
-                          "--records", str(tmp_path), "--out", str(tmp_path / "r.json")],
-                         capture_output=True, text=True)
+    out = subprocess.run(
+        [
+            sys.executable,
+            str(ROOT / "tools/coolprop_shadow/replay.py"),
+            "--records",
+            str(tmp_path),
+            "--out",
+            str(tmp_path / "r.json"),
+        ],
+        capture_output=True,
+        text=True,
+    )
     assert out.returncode == 2
 
 
 # --------------------------------------------------------------------------- codec
 
 
-@pytest.mark.parametrize("value", [0, 1, True, 4.2, -0.0, 1e-300, math.inf, "Helium",
-                                   [1, 2.5], (3.0, "x")])
+@pytest.mark.parametrize(
+    "value", [0, 1, True, 4.2, -0.0, 1e-300, math.inf, "Helium", [1, 2.5], (3.0, "x")]
+)
 def test_codec_round_trip_preserves_value_and_type(value):
     back = codec.decode(json.loads(json.dumps(codec.encode(value))))
     assert type(back) is type(value)
-    assert back == value or (isinstance(value, float) and math.copysign(1, back) == math.copysign(1, value))
+    assert back == value or (
+        isinstance(value, float) and math.copysign(1, back) == math.copysign(1, value)
+    )
 
 
 def test_codec_round_trip_nan_and_numpy():
@@ -247,21 +307,48 @@ def junit(cases: dict[str, str]) -> str:
     body = []
     for name, outcome in cases.items():
         cls, _, test = name.partition("::")
-        inner = {"failed": '<failure message="RuntimeError: CoolProp 7.2.0 required, got 8.0.0">tb</failure>',
-                 "error": '<error message="fixture boom">tb</error>',
-                 "skipped": '<skipped message="needs CoolProp"/>'}.get(outcome, "")
+        inner = {
+            "failed": '<failure message="RuntimeError: CoolProp 7.2.0 required, got 8.0.0">tb</failure>',
+            "error": '<error message="fixture boom">tb</error>',
+            "skipped": '<skipped message="needs CoolProp"/>',
+        }.get(outcome, "")
         body.append(f'<testcase classname="{cls}" name="{test}">{inner}</testcase>')
-    return '<testsuites><testsuite name="pytest">' + "".join(body) + "</testsuite></testsuites>"
+    return (
+        '<testsuites><testsuite name="pytest">'
+        + "".join(body)
+        + "</testsuite></testsuites>"
+    )
 
 
 def test_suite_diff_attributes_outcome_changes(tmp_path):
     base = tmp_path / "oracle.xml"
     cand = tmp_path / "next.xml"
-    base.write_text(junit({"m::guard": "passed", "m::flaky": "failed", "m::red": "failed",
-                           "m::skip": "skipped", "m::same": "passed"}))
-    cand.write_text(junit({"m::guard": "failed", "m::flaky": "passed", "m::red": "error",
-                           "m::skip": "passed", "m::same": "passed"}))
-    rows = {r["test"]: r for r in suite_diff.classify(suite_diff.load(base), suite_diff.load(cand))}
+    base.write_text(
+        junit(
+            {
+                "m::guard": "passed",
+                "m::flaky": "failed",
+                "m::red": "failed",
+                "m::skip": "skipped",
+                "m::same": "passed",
+            }
+        )
+    )
+    cand.write_text(
+        junit(
+            {
+                "m::guard": "failed",
+                "m::flaky": "passed",
+                "m::red": "error",
+                "m::skip": "passed",
+                "m::same": "passed",
+            }
+        )
+    )
+    rows = {
+        r["test"]: r
+        for r in suite_diff.classify(suite_diff.load(base), suite_diff.load(cand))
+    }
     assert rows["m::guard"]["class"] == "BROKEN"
     assert "CoolProp 7.2.0 required" in rows["m::guard"]["message"]
     assert rows["m::flaky"]["class"] == "FIXED"
@@ -279,5 +366,10 @@ def test_suite_diff_without_baseline_and_fail_closed(tmp_path):
     (tmp_path / "empty.xml").write_text("<testsuites/>")
     assert suite_diff.main(["--candidate", str(tmp_path / "empty.xml")]) == 2
     out = tmp_path / "s.md"
-    assert suite_diff.main(["--candidate", str(cand), "--summary", str(out), "--label", "x"]) == 0
+    assert (
+        suite_diff.main(
+            ["--candidate", str(cand), "--summary", str(out), "--label", "x"]
+        )
+        == 0
+    )
     assert "UNBASELINED" in out.read_text()

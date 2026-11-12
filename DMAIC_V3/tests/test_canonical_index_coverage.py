@@ -154,7 +154,11 @@ def test_reload_preserves_registered_entry(tmp_path):
 @pytest.mark.unit
 def test_version_history_orders_newest_semantically(tmp_path):
     system = CanonicalIndexSystem(tmp_path)
-    versions = [CanonicalVersion(1, 0, 0), CanonicalVersion(2, 0, 0), CanonicalVersion(1, 5, 0)]
+    versions = [
+        CanonicalVersion(1, 0, 0),
+        CanonicalVersion(2, 0, 0),
+        CanonicalVersion(1, 5, 0),
+    ]
 
     for idx, version in enumerate(versions):
         artifact = tmp_path / f"history-{idx}.txt"
@@ -174,7 +178,11 @@ def test_version_history_orders_newest_semantically(tmp_path):
 @pytest.mark.unit
 def test_export_reports_sort_ranked_entries_and_support_both_formats(tmp_path):
     system = CanonicalIndexSystem(tmp_path)
-    for name, rank, score in [("later", 5, 80.0), ("first", 1, 95.0), ("unranked", 0, 10.0)]:
+    for name, rank, score in [
+        ("later", 5, 80.0),
+        ("first", 1, 95.0),
+        ("unranked", 0, 10.0),
+    ]:
         artifact = tmp_path / f"{name}.txt"
         artifact.write_text(name, encoding="utf-8")
         entry = system.register_artifact(
@@ -197,7 +205,9 @@ def test_export_reports_sort_ranked_entries_and_support_both_formats(tmp_path):
     json_report = json.loads(json_path.read_text(encoding="utf-8"))
     yaml_report = yaml.safe_load(yaml_path.read_text(encoding="utf-8"))
 
-    assert json_report["statistics"]["avg_quality_score"] == pytest.approx((80 + 95 + 10) / 3)
+    assert json_report["statistics"]["avg_quality_score"] == pytest.approx(
+        (80 + 95 + 10) / 3
+    )
     assert [entry["canonical_name"] for entry in json_report["entries"]] == [
         "first",
         "later",
