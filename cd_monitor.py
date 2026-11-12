@@ -17,6 +17,7 @@ import json
 import subprocess
 from datetime import datetime
 from typing import Dict, List, Optional
+from urllib.parse import urlparse
 
 try:
     from github import Github
@@ -228,8 +229,20 @@ def main():
             )
             if result.returncode == 0:
                 url = result.stdout.strip()
-                if "github.com" in url:
-                    parts = url.split("github.com")[-1].strip("/:").replace(".git", "")
+                parts = None
+
+                # Handle standard URL forms like:
+                # - https://github.com/owner/repo.git
+                # - ssh://git@github.com/owner/repo.git
+                parsed = urlparse(url)
+                if parsed.hostname == "github.com":
+                    parts = parsed.path.strip("/").replace(".git", "")
+                # Handle SCP-like git syntax:
+                # - git@github.com:owner/repo.git
+                elif url.startswith("git@github.com:"):
+                    parts = url[len("git@github.com:") :].strip("/").replace(".git", "")
+
+                if parts:
                     repo_name = parts
         except (subprocess.SubprocessError, OSError):
             pass
