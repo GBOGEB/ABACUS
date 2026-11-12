@@ -3,6 +3,12 @@ on:
   push:
     branches: [main]
   pull_request:
+# Part of #2722: cancel superseded PR runs (same PR, older head). Pushes to
+# main are keyed by SHA and never cancelled.
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.sha }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
 jobs:
   yaml-syntax:
     name: YAML syntax scaffold
