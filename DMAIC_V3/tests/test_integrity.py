@@ -39,18 +39,14 @@ def test_git_identity_binds_head_and_tree(tmp_path):
     subprocess.run(["git", "commit", "-qm", "fixture"], cwd=tmp_path, check=True)
 
     identity = git_identity(tmp_path)
-    assert (
-        identity.commit_sha
-        == subprocess.check_output(
-            ["git", "rev-parse", "HEAD"], cwd=tmp_path, text=True
-        ).strip()
-    )
-    assert (
-        identity.tree_sha
-        == subprocess.check_output(
-            ["git", "rev-parse", "HEAD^{tree}"], cwd=tmp_path, text=True
-        ).strip()
-    )
+    expected_commit_sha = subprocess.check_output(
+        ["git", "rev-parse", "HEAD"], cwd=tmp_path, text=True
+    ).strip()
+    expected_tree_sha = subprocess.check_output(
+        ["git", "rev-parse", "HEAD^{tree}"], cwd=tmp_path, text=True
+    ).strip()
+    assert identity.commit_sha == expected_commit_sha
+    assert identity.tree_sha == expected_tree_sha
 
 
 def test_receipt_is_deterministic_for_same_payload(tmp_path):
