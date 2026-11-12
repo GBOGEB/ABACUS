@@ -34,6 +34,7 @@ import argparse
 import json
 import os
 import re
+import shutil
 import subprocess  # nosec B404
 import sys
 import tempfile
@@ -167,19 +168,33 @@ def base_snapshot(base: str, paths: dict[str, str | None], target: Path) -> list
 
 
 def export_tree(rev: str, target: Path) -> None:
-    """Write the tree of ``rev`` into target (no .git, no untracked files)."""
-    archive = subprocess.Popen(  # nosec B603 B607
-        ["git", "archive", "--format=tar", rev], cwd=ROOT, stdout=subprocess.PIPE
-    )
-    extract = subprocess.run(  # nosec B603 B607
-        ["tar", "-x", "-f", "-", "-C", str(target)],
-        stdin=archive.stdout,
-        capture_output=True,
-        check=False,
-    )
-    archive.stdout.close()
-    if archive.wait() != 0 or extract.returncode != 0:
-        raise ToolError(f"could not export {rev}: {extract.stderr!r}")
+    """Write the tree of ``rev`` into target (no .git, no untracked files).
+
+    Every tracked file, whatever its ``export-ignore`` or ``export-subst``
+    attributes: ``git archive`` would drop paths such as
+    ``DMAIC_V3/tests`` and make their existing debt look new (#2718). The
+    tree is read into a throwaway index and checked out from there, so the
+    checkout's own index and work tree are untouched and no tar is needed.
+    The index lives under ``target/.git``, a path no tracked file can take,
+    and is removed afterwards; it is not a second temporary directory, which
+    Windows ``mkdtemp`` ACLs can make unwritable for git.
+    """
+    scratch = target / ".git"
+    scratch.mkdir()
+    env = {**os.environ, "GIT_INDEX_FILE": str((scratch / "index").resolve())}
+    prefix = target.resolve().as_posix().rstrip("/") + "/"
+    try:
+        for cmd in (
+            ["git", "read-tree", rev],
+            ["git", "checkout-index", "--all", "--force", f"--prefix={prefix}"],
+        ):
+            result = subprocess.run(  # nosec B603 B607
+                cmd, cwd=ROOT, env=env, capture_output=True, check=False
+            )
+            if result.returncode != 0:
+                raise ToolError(f"could not export {rev}: {result.stderr!r}")
+    finally:
+        shutil.rmtree(scratch, ignore_errors=True)
 
 
 class ToolError(RuntimeError):

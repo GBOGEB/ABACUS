@@ -33,6 +33,20 @@ enumerated specific window; it is **not** an assertion that no run exists
 historically. When the GitHub runs API has more than the first 100 results,
 the input is explicitly PARTIAL and missing workflows are UNKNOWN.
 
+## Deployment environment status
+
+The collector also reads, for `staging`, `production` and
+`cryoplant-federation`, the latest deployment
+(`repos/{repo}/deployments?environment=<env>&per_page=1`) and that
+deployment's statuses, into `deployments.json` (job permission
+`deployments: read`; metadata only, no environment secret is read). Each
+environment becomes a `deployment_<env>` gate carrying the deployment ID,
+SHA, ref and the newest status state. `success` is PASS, `failure`/`error`
+FAIL, `inactive` INACTIVE (superseded), `queued`/`pending` QUEUED and
+`in_progress` RUNNING. No snapshot, or a deployment with no status, is
+UNKNOWN; an environment with no deployment is NOT_OBSERVED. The deployment
+SHA is reported as-is and is not required to equal exact main.
+
 ## Counting / arithmetic
 
 - Dependency impact = number of distinct transitive descendant job IDs,
@@ -68,6 +82,7 @@ snapshot/
   head-runs.json    # actions/runs?head_sha=<exact_pr_head>
   dow-jobs.json     # optional jobs for exact-main DOW run
   coverage.json     # optional canonical native receipt index
+  deployments.json  # optional {environments: {<env>: {deployments, statuses}}}
 ```
 
 This control preserves the owner-deferred branch protection/reviewer decision.

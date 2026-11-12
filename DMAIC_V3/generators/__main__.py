@@ -25,9 +25,9 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).parent.parent.parent))
 
-from DMAIC_V3.generators import VERSION_INFO
-from DMAIC_V3.generators.documentation_aligner import DocumentationAligner
-from DMAIC_V3.generators.execution_tracker import ExecutionTracker
+from DMAIC_V3.generators import VERSION_INFO  # noqa: E402
+from DMAIC_V3.generators.documentation_aligner import DocumentationAligner  # noqa: E402
+from DMAIC_V3.generators.execution_tracker import ExecutionTracker  # noqa: E402
 
 
 def cmd_execute(args):

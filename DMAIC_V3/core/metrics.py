@@ -9,13 +9,13 @@ DMAIC V3.0 - Metrics Tracking and Aggregation
 Comprehensive metrics collection, aggregation, and export functionality
 """
 
-import json
-from collections import defaultdict
-from datetime import datetime
-from pathlib import Path
-from typing import Any, Dict, List, Optional
+import json  # noqa: E402
+from collections import defaultdict  # noqa: E402
+from datetime import datetime  # noqa: E402
+from pathlib import Path  # noqa: E402
+from typing import Any, Dict, List, Optional  # noqa: E402
 
-from .models import Metric, MetricType, PhaseMetrics, PhaseStatus
+from .models import Metric, MetricType, PhaseMetrics, PhaseStatus  # noqa: E402
 
 
 class MetricsTracker:
