@@ -62,13 +62,20 @@ def _install_git(monkeypatch, outputs, ok=True):
 
     def fake_git(*args):
         calls.append(args)
+        z = "-z" in args
+        args = tuple(a for a in args if a != "-z")
         for key, value in outputs.items():
             if args[: len(key)] == key:
-                return value
+                return value.replace(b"\n", b"\0") if z else value
         return b""
+
+    def fake_read_blobs(blob_ids):
+        for bid in blob_ids:
+            yield bid, outputs.get(("cat-file", "-p"), b"")
 
     monkeypatch.setattr(guard, "git", fake_git)
     monkeypatch.setattr(guard, "git_ok", lambda *a: ok)
+    monkeypatch.setattr(guard, "read_blobs", fake_read_blobs)
     return calls
 
 
@@ -119,7 +126,7 @@ def test_main_diff_mode_with_valid_base(monkeypatch, tmp_path, capsys):
     )
     guard.main()
     assert any(
-        c[:2] == ("diff", "--name-only") and "abcdef1...HEAD" in c for c in calls
+        c[0] == "diff" and "--name-only" in c and "abcdef1...HEAD" in c for c in calls
     )
     assert "OK (1 files checked)" in capsys.readouterr().out
 
@@ -141,3 +148,101 @@ def test_main_staged_mode_respects_allow_file(monkeypatch, tmp_path, capsys):
     )
     guard.main()
     assert "OK (2 files checked)" in capsys.readouterr().out
+
+
+# --- #2698: merge-aware --staged and the streamed cat-file batch -------------
+
+
+def test_main_staged_merge_diffs_against_merge_head(monkeypatch, tmp_path, capsys):
+    monkeypatch.chdir(tmp_path)
+    monkeypatch.setattr(guard.sys, "argv", ["a10_guard.py", "--staged"])
+    calls = _install_git(
+        monkeypatch,
+        {
+            ("diff", "--cached"): b"docs/pr.md\n",
+            ("ls-files", "-s"): b"100644 blobpr 0\tdocs/pr.md\n",
+            ("cat-file", "-p"): b"plain words",
+        },
+        ok=True,
+    )
+    guard.main()
+    diff = [c for c in calls if c[0] == "diff"]
+    assert diff and diff[0][-1] == "MERGE_HEAD"
+    assert "OK (1 files checked)" in capsys.readouterr().out
+
+
+def test_main_staged_without_merge_checks_all_staged(monkeypatch, tmp_path, capsys):
+    monkeypatch.chdir(tmp_path)
+    monkeypatch.setattr(guard.sys, "argv", ["a10_guard.py", "--staged"])
+    calls = _install_git(
+        monkeypatch,
+        {
+            ("diff", "--cached"): b"docs/a.md\n",
+            ("ls-files", "-s"): b"100644 blobA 0\tdocs/a.md\n",
+            ("cat-file", "-p"): b"plain words",
+        },
+        ok=False,
+    )
+    guard.main()
+    diff = [c for c in calls if c[0] == "diff"]
+    assert diff and "MERGE_HEAD" not in diff[0]
+    assert "OK (1 files checked)" in capsys.readouterr().out
+
+
+def test_git_z_and_index_ids(monkeypatch):
+    out = {
+        "ls-files": b"100644 aaa 0\tsp ace.md\x00100644 bbb 2\tb.md\x00",
+        "ls-tree": b"100644 blob ccc\tc.md\x00",
+    }
+    seen = []
+
+    def fake_git(*args):
+        seen.append(args)
+        return out[args[0]]
+
+    monkeypatch.setattr(guard, "git", fake_git)
+    assert guard.index_ids("ls-files", "-s") == {"sp ace.md": "aaa", "b.md": "bbb"}
+    assert guard.index_ids("ls-tree", "-r", "HEAD") == {"c.md": "ccc"}
+    assert seen[0] == ("ls-files", "-z", "-s")
+    assert seen[1] == ("ls-tree", "-z", "-r", "HEAD")
+
+
+class _FakeProc:
+    def __init__(self, stdout, stdin=None):
+        self.stdin = stdin if stdin is not None else io.BytesIO()
+        self.stdout = io.BytesIO(stdout)
+        self.waited = False
+
+    def wait(self):
+        self.waited = True
+        return 0
+
+
+def test_read_blobs_streams_batch_output(monkeypatch):
+    payload = b"aaa blob 5\nhello\nbbb missing\nccc blob 0\n\n"
+    proc = _FakeProc(payload)
+    monkeypatch.setattr(guard.subprocess, "Popen", lambda *a, **k: proc)
+    got = list(guard.read_blobs(["aaa", "bbb", "ccc"]))
+    assert got == [("aaa", b"hello"), ("bbb", None), ("ccc", b"")]
+    assert proc.waited and proc.stdin.closed
+
+
+def test_read_blobs_empty_spawns_nothing(monkeypatch):
+    def boom(*a, **k):
+        raise AssertionError("no process expected")
+
+    monkeypatch.setattr(guard.subprocess, "Popen", boom)
+    assert list(guard.read_blobs([])) == []
+
+
+def test_read_blobs_survives_broken_stdin(monkeypatch):
+    class Broken:
+        def write(self, data):
+            raise BrokenPipeError
+
+        def close(self):
+            raise OSError
+
+    proc = _FakeProc(b"aaa missing\n", stdin=Broken())
+    monkeypatch.setattr(guard.subprocess, "Popen", lambda *a, **k: proc)
+    assert list(guard.read_blobs(["aaa"])) == [("aaa", None)]
