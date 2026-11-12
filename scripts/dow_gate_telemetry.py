@@ -45,6 +45,17 @@ STATUS = {
     "pending": "QUEUED",
     "in_progress": "RUNNING",
 }
+# Deployment environments whose latest native deployment status is joined.
+DEPLOY_ENVIRONMENTS = ("staging", "production", "cryoplant-federation")
+DEPLOY_STATUS = {
+    "success": "PASS",
+    "failure": "FAIL",
+    "error": "FAIL",
+    "inactive": "INACTIVE",
+    "queued": "QUEUED",
+    "pending": "QUEUED",
+    "in_progress": "RUNNING",
+}
 DOW_JOB_LABELS = {
     "lint-and-validate": "Full repository lint / TestPilot",
     "ci-ubuntu": "DOW Ubuntu",
@@ -293,6 +304,54 @@ def coverage(
     }
 
 
+def deployment_gate(data: dict[str, Any] | None, environment: str) -> dict[str, Any]:
+    """Latest native deployment and its newest status; absence is never PASS."""
+    gate: dict[str, Any] = {
+        "status": "UNKNOWN",
+        "environment": environment,
+        "deployment_id": None,
+        "sha": None,
+        "ref": None,
+        "created_at": None,
+        "state": None,
+        "status_url": None,
+    }
+    if data is None:
+        return gate
+    envs = data.get("environments")
+    if not isinstance(envs, dict):
+        raise ValueError("Deployment snapshot environments must be an object")
+    entry = envs.get(environment)
+    if entry is None:
+        return gate
+    deployments = entry.get("deployments") if isinstance(entry, dict) else None
+    statuses = entry.get("statuses") if isinstance(entry, dict) else None
+    if not isinstance(deployments, list) or not isinstance(statuses, list):
+        raise ValueError("Deployment snapshot for " + environment + " is malformed")
+    if not deployments:
+        gate["status"] = "NOT_OBSERVED"
+        return gate
+    latest = max(deployments, key=lambda d: (d.get("created_at", ""), d.get("id", 0)))
+    if type(latest.get("id")) is not int or latest.get("environment") != environment:
+        raise ValueError("Deployment identity absent or foreign environment")
+    gate.update(
+        deployment_id=latest["id"],
+        sha=latest.get("sha"),
+        ref=latest.get("ref"),
+        created_at=latest.get("created_at"),
+    )
+    if not statuses:
+        return gate
+    newest = max(statuses, key=lambda r: (r.get("created_at", ""), r.get("id", 0)))
+    state = newest.get("state")
+    gate.update(
+        status=DEPLOY_STATUS.get(state, "UNKNOWN"),
+        state=state,
+        status_url=newest.get("log_url") or newest.get("target_url") or None,
+    )
+    return gate
+
+
 def build(
     *,
     main_sha: str,
@@ -303,6 +362,7 @@ def build(
     dow_jobs: dict | None,
     workflow: str,
     coverage_data: dict | None = None,
+    deployments: dict | None = None,
 ) -> dict[str, Any]:
     require_sha(main_sha)
     require_sha(head_sha)
@@ -324,6 +384,8 @@ def build(
         ("changed_line_coverage", head_sha, "diff", main_sha),
     ):
         gates[gate] = coverage(coverage_data, sha, kind, base)
+    for environment in DEPLOY_ENVIRONMENTS:
+        gates["deployment_" + environment] = deployment_gate(deployments, environment)
     gates["bd_distinct_roots"] = {
         "status": "UNKNOWN",
         "opened": None,
@@ -409,6 +471,13 @@ def markdown(report: dict[str, Any]) -> str:
             details.append("job " + str(gate["job_id"]))
         if gate.get("denominator") is not None:
             details.append(str(gate["numerator"]) + "/" + str(gate["denominator"]))
+        if gate.get("deployment_id") is not None:
+            details.append(
+                "deployment "
+                + str(gate["deployment_id"])
+                + " @ "
+                + str(gate.get("sha") or "?")[:12]
+            )
         if gate.get("closed") is not None:
             details.append("closed roots " + str(gate["closed"]))
         if gate.get("downstream_count"):
@@ -482,6 +551,7 @@ def main() -> int:
         dow_jobs=load(args.snapshot_dir, "dow-jobs.json"),
         workflow=args.workflow.read_text(encoding="utf-8"),
         coverage_data=load(args.snapshot_dir, "coverage.json"),
+        deployments=load(args.snapshot_dir, "deployments.json"),
     )
     args.output_dir.mkdir(parents=True, exist_ok=True)
     (args.output_dir / "remaining-gates.json").write_text(
