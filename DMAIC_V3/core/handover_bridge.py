@@ -9,14 +9,14 @@ DMAIC V3 - Handover Bridge Module
 Bridges handover pipeline with DMAIC V3 structure
 """
 
-import json
-from datetime import datetime
-from pathlib import Path
-from typing import Any, Dict, List, Optional, Tuple
+import json  # noqa: E402
+from datetime import datetime  # noqa: E402
+from pathlib import Path  # noqa: E402
+from typing import Any, Dict, List, Optional, Tuple  # noqa: E402
 
-from src.dmaic import idempotency
+from src.dmaic import idempotency  # noqa: E402
 
-from .state import StateManager
+from .state import StateManager  # noqa: E402
 
 
 class IdempotentPhase:

@@ -65,6 +65,9 @@ jobs:
     env:
       PYTEST_WORKERS: ${{ matrix.os == 'windows-latest' && '0' || 'auto' }}
     strategy:
+      # #2669: one cell's coverage failure must not cancel the other cell's
+      # evidence upload.
+      fail-fast: false
       matrix:
         os: [ubuntu-latest, windows-latest]
         python-version: ['3.14']
@@ -102,6 +105,19 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
+          # #2669: keep coverage data fragments outside the workspace that
+          # tests read and write.
+          mkdir -p "$RUNNER_TEMP/cov"
+          export COVERAGE_FILE="$RUNNER_TEMP/cov/.coverage"
+          # #2669: pyproject.toml sets dynamic_context = "test_function",
+          # which pytest-cov documents as unsafe under xdist (pytest-cov#604;
+          # pytest-cov 7 refuses it). Run with the same settings minus that.
+          cov_config="$RUNNER_TEMP/cov/coverage-xdist.toml"
+          sed '/^dynamic_context = /d' pyproject.toml > "$cov_config"
+          if grep -q '^dynamic_context' "$cov_config"; then
+            echo "::error::dynamic_context is still set for the xdist run"
+            exit 1
+          fi
           # A clean job-local coverage database must not mix branch data
           # with stale statement-only worker fragments.
           python -m coverage erase
@@ -109,6 +125,7 @@ jobs:
           pytest --benchmark-disable tests/ -v \
             --cov=. \
             --cov-branch \
+            --cov-config="$cov_config" \
             --cov-report=xml \
             --cov-report=json:ci-evidence/coverage.json \
             --junitxml=ci-evidence/junit.xml \

@@ -11,7 +11,7 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).parent.parent.parent))
 
-from DMAIC_V3.integrations.git_manager import GitManager
+from DMAIC_V3.integrations.git_manager import GitManager  # noqa: E402
 
 
 class TestGitManager(unittest.TestCase):
