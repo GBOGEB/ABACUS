@@ -19,6 +19,7 @@ import argparse
 import subprocess
 from datetime import datetime
 from typing import Dict, Optional
+from urllib.parse import urlparse
 
 try:
     from github import Github, GithubException
@@ -356,9 +357,14 @@ def main():
             )
             if result.returncode == 0:
                 url = result.stdout.strip()
-                # Parse GitHub URL
-                if "github.com" in url:
-                    parts = url.split("github.com")[-1].strip("/:").replace(".git", "")
+                # Parse GitHub URL safely
+                parsed = urlparse(url)
+                if parsed.hostname == "github.com":
+                    parts = parsed.path.strip("/").replace(".git", "")
+                    repo_name = parts
+                elif url.startswith("git@github.com:"):
+                    # Handle SCP-like SSH remotes, e.g. git@github.com:owner/repo.git
+                    parts = url.split(":", 1)[1].strip("/").replace(".git", "")
                     repo_name = parts
         except OSError as e:
             print(
