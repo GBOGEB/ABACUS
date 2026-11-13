@@ -1,0 +1,51 @@
+name: Launcher gate (report-only)
+
+# Reports workflow steps (push / schedule / workflow_run triggered) that launch
+# local paths missing from the checkout. Report-only: always exits 0; findings
+# go to the step summary and an artifact. Remedies are bridge / prune / spec,
+# see docs/ci/RED_CENSUS_README.md. Exceptions: ledger/launcher_exceptions.yaml.
+
+on:
+  pull_request:
+    paths:
+      - '.github/workflows/**'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: launcher-gate-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  gate:
+    name: Launcher gate (report-only)
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+
+      - uses: actions/setup-python@v7
+        with:
+          python-version: '3.12'
+
+      - name: Install PyYAML
+        run: python -m pip install PyYAML==6.0.3
+
+      - name: Scan workflow launchers
+        run: |
+          python scripts/launcher_gate.py --root . \
+            --out launcher-gate.json \
+            --summary "$GITHUB_STEP_SUMMARY"
+
+      - name: Upload findings
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: launcher-gate
+          path: launcher-gate.json
+          if-no-files-found: warn
+          retention-days: 30

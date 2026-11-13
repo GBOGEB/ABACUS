@@ -1,0 +1,16 @@
+# Launcher-gate exceptions (read by scripts/launcher_gate.py; report-only).
+#
+# An entry suppresses launcher-gate findings for one workflow while an
+# owner-approved remedy is in progress. It is NOT a retirement list: the
+# remedies are bridge (re-point to live code), prune (remove dead steps,
+# keep live ones) or spec (keep as a target for code still to be written;
+# made dispatch-only only with owner approval).
+#
+# Schema (one mapping per entry):
+#   - workflow: .github/workflows/<file>.yml   # path or bare file name
+#     reason: <why findings are tolerated for now>
+#     owner_decision_ref: <PR / issue / ledger root_id carrying the owner decision>
+#     expires: YYYY-MM-DD                      # after this date the exception no longer applies
+#
+# Writer: the owner (or an agent acting on a cited owner decision). Empty by default.
+exceptions: []
