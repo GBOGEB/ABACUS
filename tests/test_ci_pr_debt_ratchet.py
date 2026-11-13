@@ -664,3 +664,48 @@ def test_root_points_a_copied_ratchet_at_the_checkout(repo, monkeypatch):
         == 1
     )
     assert ratchet_mod.ROOT == repo.resolve()
+
+
+def test_normalise_source_ignores_wrapping_and_trailing_comma():
+    one = "subprocess.run(cmd, check=True)"
+    three = "subprocess.run(\n    cmd,\n    check=True,\n)"
+    assert ratchet_mod.normalise_source(one) == ratchet_mod.normalise_source(three)
+    assert ratchet_mod.normalise_source(one) != ratchet_mod.normalise_source(
+        "subprocess.run(other, check=True)"
+    )
+
+
+WRAP_HEAD = "import subprocess  # nosec B404\n\n\ndef run(cmd):\n"
+ONE_LINE = "    return subprocess.run(cmd, check=True)\n"
+THREE_LINES = "    return subprocess.run(\n        cmd,\n        check=True,\n    )\n"
+
+
+@needs_tools
+def test_rewrapped_bandit_call_counts_equal(repo):
+    commit(
+        repo, {"pkg/a.py": WRAP_HEAD + ONE_LINE, "pkg/b.py": WRAP_HEAD + THREE_LINES}
+    )
+    one = ratchet_mod.bandit_debt(repo, "pkg/a.py")
+    assert one and one == ratchet_mod.bandit_debt(repo, "pkg/b.py")
+    base = commit(repo, {"pkg/c.py": WRAP_HEAD + ONE_LINE})
+    commit(repo, {"pkg/c.py": WRAP_HEAD + THREE_LINES})
+    assert ratchet_mod.ratchet(base, ("bandit",))["added_debt"] == []
+
+
+@needs_tools
+def test_new_b603_after_rewrap_is_still_flagged(repo):
+    base = commit(repo, {"pkg/a.py": WRAP_HEAD + ONE_LINE})
+    extra = "    subprocess.run(cmd + ['x'], check=True)\n"
+    commit(repo, {"pkg/a.py": WRAP_HEAD + extra + THREE_LINES})
+    report = ratchet_mod.ratchet(base, ("bandit",))
+    [row] = report["added_debt"]
+    assert any(key.startswith("B603:") for key in row["new_findings"])
+
+
+def test_normalise_source_keeps_string_and_singleton_tuple_contents():
+    norm = ratchet_mod.normalise_source
+    assert norm('eval("a b")') != norm('eval("ab")')
+    assert norm('eval(("x",))') != norm('eval(("x"))')
+    assert norm('eval(("x",))') == norm('eval(\n    ("x",),\n)')
+    assert norm("f(a, b,)") == norm("f(a, b)")
+    assert norm("x[a,]") != norm("x[a]")
