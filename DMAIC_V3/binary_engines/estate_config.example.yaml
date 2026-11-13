@@ -1,0 +1,34 @@
+# Example configuration for the binary-estate engines. Copy to estate_config.yaml (keep that copy private) and edit.
+# The engines read ESTATE_CONFIG (env) if set, else estate_config.yaml in ESTATE_HOME, else this example.
+schema: gbogeb.estate.config/0.1
+
+roots:                      # path: "{estate_parent}" = the folder that holds the estate folder; "~" = home
+  MI:   {path: "{estate_parent}", depth: full}
+  DOCS: {path: "~/Documents", depth: standard}
+  DL:   {path: "~/Downloads", depth: light}
+
+epics:                      # at least four; filename and content tokens are scored with these weights
+  - {id: E1_PROJECT_ALPHA, short: E1_ALPHA, repo: private-project-repo, private: true, keywords: {ALPHA: 3, TENDER: 3, OFFER: 2, CONTRACT: 2}}
+  - {id: E2_ENGINEERING, short: E2_ENG, repo: private-project-repo, private: true, keywords: {PLANT: 3, PUMP: 2, VALVE: 2, PRESSURE: 2}}
+  - {id: E3_PIPELINE, short: E3_PIPE, repo: public-engine-repo, keywords: {PIPELINE: 3, DEPLOYMENT: 2, CICD: 2}}
+  - {id: E4_GOVERNANCE, short: E4_GOV, repo: public-hub-repo, keywords: {GOVERNANCE: 3, AGENT: 2, HANDOVER: 1}}
+  - {id: E5_REFERENCE, short: E5_REF, repo: public-math-repo, keywords: {HANDBOOK: 3, STANDARD: 2, DATASHEET: 3}}
+other_epic: {id: E0_OTHER, short: E0_OTHER}
+
+personal_tokens: [PAYSLIP, RESUME, CV, PASSPORT, TAX]
+og5: [public-engine-repo, public-hub-repo, public-math-repo, private-project-repo]
+private_markers: [EXAMPLE_PRIVATE_WORD]
+
+bound_external:
+  public_catalog: "<owner>/<hub-repo>:mission-control/registry/ENGINE_CATALOG.yaml"
+  private_registry: "<owner>/<private-repo>:<path>/engine-registry.yaml"
+  mission_control: "<owner>/<repo>:docs/data/missioncontrol_federated_dag_v1.json"
+  owner_actions: "<path to your action register>"
+private_ladder: {}
+binary_qa_tool: "external:<owner>/<private-repo>:<path>/binary_qa.py"
+
+pinned_repos: []            # local clones whose manifests pin sha256 values (truth status)
+survey_repos: []            # local clones for the bird's-eye survey
+
+reference: {}               # answer_key / crosswalk pairs from your own files
+pilot: []                   # hand-labelled pilot files: {role, root, file, page}

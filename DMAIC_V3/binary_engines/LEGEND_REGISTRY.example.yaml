@@ -1,0 +1,25 @@
+# TEMPLATE. Owner-accepted legend rules: drawing style -> meaning.
+# Copy to LEGEND_REGISTRY.yaml in ESTATE_HOME (or set ESTATE_LEGEND_REGISTRY) and keep that copy private:
+# accepted rules cite project documents. This template is never read as rules.
+# deep_graph.py applies an entry ONLY if it has an authority. Nothing is ever added here automatically.
+# Candidates found inside drawings are listed in deep/legend_candidates.json for review; copy one here to accept it.
+#
+# Without an accepted rule or an in-drawing legend, an edge's semantic_type stays DEFER.
+# A dashed line, a colour or an arrow means nothing by itself.
+#
+# Fields:
+#   file_regex  which files the rule covers (regex on the file name; "." = all)
+#   style       edge fields that must match exactly: colour, dash, drawn (arrow|line), kind
+#   meaning     the typed meaning (e.g. process_flow, signal, electrical_supply)
+#   authority   who accepted it (person or document), required
+#   evidence    where the convention is written (document, page, standard)
+#   accepted_on ISO date
+schema: gbogeb.estate.legend_registry/0.1
+accepted: []
+# example (inactive, because it is commented out):
+# - file_regex: "^PLANT_PID"
+#   style: {colour: "#000000", dash: "dash", drawn: "line"}
+#   meaning: instrument_signal
+#   authority: "<owner name>"
+#   evidence: "ISA-5.1 line symbols; P&ID legend sheet 0"
+#   accepted_on: 2026-11-13
