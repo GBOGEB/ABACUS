@@ -153,6 +153,7 @@ class Code(unittest.TestCase):
             "estate_probe",
             "estate_moveplan",
             "thread_promote",
+            "truth_status",
         ):
             with self.subTest(engine=name):
                 code, out = _env.run_main(name, "--help")

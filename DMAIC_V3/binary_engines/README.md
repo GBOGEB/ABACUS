@@ -19,6 +19,7 @@ folder outside the repository.
 | `deep_graph.py` | E4-E5 | Reads drawings (PPTX, SVG, VSDX, drawio, Mermaid, SVG inside HTML) into one graph format: nodes, edges with direction, legend, styles, QA. |
 | `slide_atlas.py` | E4-E6 | Compares every slide of every deck: exact copies, restyles, remakes (before/after), slide families, style flags. Writes a static compare page. |
 | `reference_test.py` | E8 | Scores the drawing reader: R1 answer key, R2 crosswalk, R3 adversarial (must not guess), R4 read-only, R5 hand-labelled pilot. |
+| `truth_status.py` | E6 | Matches inventory hashes against a pin map (`{sha256: ["repo:path", ...]}`, collected elsewhere from repository manifests): `AUTHORITATIVE` (pinned by a canonical manifest), `RECORDED` (pinned only under archive, incubator, history, receipt or triage paths), `SUPERSEDED` (unpinned older version), `STALE_RELEVANT` (unpinned newest version of a pinned family), `UNPINNED`. Pure matching: it never runs git. |
 | `thread_promote.py` | E9 | The only way a candidate link becomes accepted (see below). |
 | `html_shot.py` | E8 | Renders HTML pages in Chromium (Playwright) and reports console errors and overflow. |
 | `public_safety_scan.py` | gate | Checks files before they go to a public repository: private markers, user paths, secret-shaped strings, Python that only parses on 3.12+. |
@@ -66,10 +67,12 @@ A pathway is what a person asks for; it runs the stages it needs, in DAG order. 
 | every drawing as nodes and edges | `estate_probe.py`, then `deep_graph.py --root-id ID --redraw` |
 | copied, restyled or remade slides | `estate_scaffold.py`, then `slide_atlas.py` |
 | whether the drawing reader guesses | `reference_test.py` |
+| which files are authoritative, recorded, stale, superseded or unpinned | `estate_scaffold.py`, then `truth_status.py --pins <pin map>` |
 
 Run each one as `python -I -X utf8 DMAIC_V3/binary_engines/<engine>.py ...` (`-I` keeps the environment from
 changing what is imported; `-X utf8` keeps non-ASCII file names printable). The runner that chains them and writes
-receipts is not part of this folder.
+receipts is not part of this folder, and neither is the collection of pins from repository manifests: both need git
+and run outside DOW, which keeps these engines free of subprocesses.
 
 ## Configuration and data: ESTATE_CONFIG and ESTATE_HOME
 
