@@ -11,7 +11,7 @@ from tests.svg_engine.conftest import require
 require("lxml")
 from lxml import etree  # noqa: E402
 
-from svg_engine import fixtures, ingress, paint_runs  # noqa: E402
+from DMAIC_V3.svg_engine import fixtures, ingress, paint_runs  # noqa: E402
 
 
 def test_layer_items_keep_native_ids_hierarchy_and_own_visibility(synthetic_root):

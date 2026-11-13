@@ -3,14 +3,14 @@ name: svg-engine
 on:
   pull_request:
     paths:
-      - "svg_engine/**"
+      - "DMAIC_V3/svg_engine/**"
       - "tests/svg_engine/**"
       - "requirements-svg-engine.txt"
       - ".github/workflows/svg-engine.yml"
   push:
     branches: [main]
     paths:
-      - "svg_engine/**"
+      - "DMAIC_V3/svg_engine/**"
       - "tests/svg_engine/**"
       - "requirements-svg-engine.txt"
       - ".github/workflows/svg-engine.yml"

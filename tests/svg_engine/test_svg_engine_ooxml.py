@@ -1,8 +1,8 @@
 """SVG-ENGINE OOXML adapter: PowerPoint frame model, font chain and W1 inventory.
 
 ``data/powerpoint_com_oracle_fixture.json`` is PowerPoint 16.0's own answer (through COM) for the synthetic
-fixture built by ``svg_engine.fixtures.make_group_font_fixture``. CI has no PowerPoint, so this file is the
-oracle; regenerate it on Windows with ``svg_engine/oracles/ppt_com_oracle.ps1`` if the fixture changes.
+fixture built by ``DMAIC_V3.svg_engine.fixtures.make_group_font_fixture``. CI has no PowerPoint, so this file is the
+oracle; regenerate it on Windows with ``DMAIC_V3/svg_engine/oracles/ppt_com_oracle.ps1`` if the fixture changes.
 """
 
 from __future__ import annotations
@@ -16,7 +16,7 @@ import pytest
 from tests.svg_engine.conftest import require
 
 require("lxml", "pptx")
-from svg_engine import fixtures, ooxml_geometry, ooxml_inventory, ooxml_qa  # noqa: E402
+from DMAIC_V3.svg_engine import fixtures, ooxml_geometry, ooxml_inventory, ooxml_qa
 
 ORACLE = Path(__file__).parent / "data" / "powerpoint_com_oracle_fixture.json"
 

@@ -9,6 +9,11 @@ against an independent oracle.
 Evidence class of every output: `REVIEW_ONLY`. Nothing here grants
 engineering approval or release admission.
 
+Location: `DMAIC_V3/svg_engine/`, next to the DOW and KEB engines in
+`DMAIC_V3/tools/`. Import it as `DMAIC_V3.svg_engine` from a repository
+checkout on `sys.path`. The `abacus-dow` wheel packages only the top-level
+`DMAIC_V3` modules, not its subpackages.
+
 ## Modules
 
 - `ingress` (W1): parse SVG with no entities and no network, fail closed on
@@ -36,9 +41,9 @@ engineering approval or release admission.
 ## Use
 
 ```python
-from svg_engine.fidelity import check_pdf_fidelity
-from svg_engine.ingress import load_svg
-from svg_engine.pdf_ocg import build_nested_ocg_pdf
+from DMAIC_V3.svg_engine.fidelity import check_pdf_fidelity
+from DMAIC_V3.svg_engine.ingress import load_svg
+from DMAIC_V3.svg_engine.pdf_ocg import build_nested_ocg_pdf
 
 root, raw = load_svg("drawing.zip", member="drawing.svg")  # or an .svg
 presets = {
@@ -52,8 +57,8 @@ receipt = check_pdf_fidelity(pdf, build, root, authored_pdf="authored.pdf")
 assert receipt["summary"]["FAIL"] == 0
 ```
 
-CLI: `python -m svg_engine --help` (`nested-pdf`, `flat-pdf`, `fidelity`,
-`ooxml-geometry`, `ooxml-qa`, `fixture`, `page-identity`).
+CLI: `python -m DMAIC_V3.svg_engine --help` (`nested-pdf`, `flat-pdf`,
+`fidelity`, `ooxml-geometry`, `ooxml-qa`, `fixture`, `page-identity`).
 
 Project-specific inputs (layer IDs for presets and demonstrations, file
 names, anchor patterns) are parameters. They live with the owning project,

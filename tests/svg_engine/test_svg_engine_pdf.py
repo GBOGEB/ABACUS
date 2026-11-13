@@ -11,8 +11,8 @@ from tests.svg_engine.conftest import require
 require("lxml", "numpy", "fitz", "cairosvg")
 import fitz  # noqa: E402
 
-from svg_engine import fidelity, fixtures, ingress, pdf_ocg  # noqa: E402
-from svg_engine.__main__ import main as cli  # noqa: E402
+from DMAIC_V3.svg_engine import fidelity, fixtures, ingress, pdf_ocg  # noqa: E402
+from DMAIC_V3.svg_engine.__main__ import main as cli  # noqa: E402
 
 
 @pytest.fixture(scope="module")

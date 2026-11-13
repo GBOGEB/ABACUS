@@ -15,7 +15,7 @@ import pytest
 
 def require(*modules):
     """Import ``modules`` or skip the calling module. CairoSVG raises OSError when libcairo is missing."""
-    from svg_engine._env import bootstrap
+    from DMAIC_V3.svg_engine._env import bootstrap
 
     bootstrap()  # honours SVG_ENGINE_DEPS / SVG_ENGINE_CAIRO_BIN on workstations
 
@@ -40,7 +40,7 @@ def require(*modules):
 @pytest.fixture()
 def synthetic_root():
     require("lxml")
-    from svg_engine.fixtures import synthetic_layered_svg
-    from svg_engine.ingress import parse_svg
+    from DMAIC_V3.svg_engine.fixtures import synthetic_layered_svg
+    from DMAIC_V3.svg_engine.ingress import parse_svg
 
     return parse_svg(synthetic_layered_svg())

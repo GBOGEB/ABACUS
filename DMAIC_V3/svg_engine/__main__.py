@@ -1,4 +1,4 @@
-"""Command line: ``python -m svg_engine <command> ...``.
+"""Command line: ``python -m DMAIC_V3.svg_engine <command> ...``.
 
   nested-pdf  SOURCE OUT.pdf [--member M] [--presets presets.json] [--previews DIR]
               writes OUT.pdf and OUT.build.json (nested OCGs, true parent semantics)
@@ -35,7 +35,7 @@ def _ids(s):
 
 def main(argv=None):
     ap = argparse.ArgumentParser(
-        prog="svg_engine",
+        prog="python -m DMAIC_V3.svg_engine",
         description=__doc__,
         formatter_class=argparse.RawDescriptionHelpFormatter,
     )

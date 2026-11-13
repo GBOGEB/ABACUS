@@ -13,7 +13,7 @@ defaultTextStyle -> theme minor. '+mj-lt'/'+mn-lt' resolve to the master theme's
 Every resolved value records which level supplied it.
 
 Verified oracle: PowerPoint's own object model via ``oracles/ppt_com_oracle.ps1`` (Windows only).
-CLI: ``python -m svg_engine ooxml-geometry <deck.pptx> <out.json>``
+CLI: ``python -m DMAIC_V3.svg_engine ooxml-geometry <deck.pptx> <out.json>``
 """
 
 from __future__ import annotations
