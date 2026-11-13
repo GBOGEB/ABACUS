@@ -551,5 +551,55 @@ class CliTests(unittest.TestCase):
         self.assertEqual(json.loads(second), [])
 
 
+class CoverageFindingsTest(unittest.TestCase):
+    """Pins the three 2026-10-24 rule rows in telemetry/coverage_cohorts.jsonl."""
+
+    BASE_7E = {"source_sha": "7e9564f955dc00de23a7fba446d776e076758a8e",
+               "covered_statements": 33579}
+    MAIN_44 = {"source_sha": MAIN_0, "covered_statements": 33580}
+    W88 = {"checkout_kind": "synthetic_merge", "covered_statements": 34408}
+
+    def test_baseline_bound_to_other_sha_is_rejected(self):
+        verdict, delta = ev.candidate_delta(self.W88, self.BASE_7E, MAIN_0)
+        self.assertEqual(verdict, "REJECT_BASELINE_SHA_MISMATCH")
+        self.assertIsNone(delta)
+
+    def test_baseline_at_merge_base_is_admitted(self):
+        self.assertEqual(
+            ev.candidate_delta(self.W88, self.MAIN_44, MAIN_0), ("OK", 828)
+        )
+
+    def test_candidate_needs_its_own_synthetic_merge_baseline(self):
+        head_only = dict(self.W88, checkout_kind="head")
+        self.assertEqual(
+            ev.candidate_delta(head_only, self.MAIN_44, MAIN_0)[0],
+            "REJECT_NOT_SYNTHETIC_MERGE",
+        )
+        self.assertEqual(
+            ev.candidate_delta(self.W88, self.MAIN_44, None)[0],
+            "REJECT_BASELINE_UNBOUND",
+        )
+
+    def test_one_statement_without_py_change_is_noise(self):
+        self.assertEqual(
+            ev.baseline_drift(self.BASE_7E, self.MAIN_44, py_changed=False),
+            ("noise", 1),
+        )
+
+    def test_drift_with_py_change_or_above_floor_is_signal(self):
+        self.assertEqual(
+            ev.baseline_drift(self.BASE_7E, self.MAIN_44, py_changed=True)[0],
+            "signal",
+        )
+        big = dict(self.MAIN_44, covered_statements=33590)
+        self.assertEqual(ev.baseline_drift(self.BASE_7E, big, False)[0], "signal")
+
+    def test_unknown_py_change_stays_unknown(self):
+        self.assertEqual(
+            ev.baseline_drift(self.BASE_7E, self.MAIN_44, py_changed=None),
+            (None, 1),
+        )
+
+
 if __name__ == "__main__":
     unittest.main()

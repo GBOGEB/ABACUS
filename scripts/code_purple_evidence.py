@@ -319,6 +319,55 @@ def should_notify(previous, current, seen=frozenset()):
 
 
 # --------------------------------------------------------------------------- #
+# 4. Coverage deltas (2026-10-24 findings, telemetry/coverage_cohorts.jsonl)
+# --------------------------------------------------------------------------- #
+
+# ``noise_floor`` rule: two baselines with no ``.py`` change between them may
+# differ by this many covered statements without it meaning anything.
+NOISE_FLOOR_STATEMENTS = 1
+
+
+def baseline_drift(earlier, later, py_changed):
+    """Classify the covered-statement drift between two baselines.
+
+    ``py_changed`` is whether any ``.py`` file changed between the two source
+    SHAs; ``None`` means unknown. Returns ``(verdict, delta)``, ``verdict`` one
+    of ``"noise"``, ``"signal"`` or ``None`` (unknown).
+    """
+    a = _number(earlier.get("covered_statements"))
+    b = _number(later.get("covered_statements"))
+    if a is None or b is None:
+        return None, None
+    delta = b - a
+    if py_changed is False and abs(delta) <= NOISE_FLOOR_STATEMENTS:
+        return "noise", delta
+    if py_changed is None:
+        return None, delta
+    return "signal", delta
+
+
+def candidate_delta(candidate, baseline, merge_base_sha):
+    """Covered-statement delta of ``candidate`` over ``baseline``, or a refusal.
+
+    Returns ``(verdict, delta)``. The delta is admitted (``"OK"``) only when the
+    candidate was measured on a synthetic-merge checkout and the baseline is
+    bound to that candidate's own merge base ``merge_base_sha``. Otherwise the
+    delta is ``None`` and the verdict names the refusal.
+    """
+    if candidate.get("checkout_kind") != "synthetic_merge":
+        return "REJECT_NOT_SYNTHETIC_MERGE", None
+    if not merge_base_sha or not baseline.get("source_sha"):
+        return "REJECT_BASELINE_UNBOUND", None
+    if baseline["source_sha"] != merge_base_sha:
+        return "REJECT_BASELINE_SHA_MISMATCH", None
+    a = _number(baseline.get("covered_statements"))
+    b = _number(candidate.get("covered_statements"))
+    if a is None or b is None:
+        return "UNKNOWN", None
+    return "OK", b - a
+
+
+# --------------------------------------------------------------------------- #
 # CLI
 # --------------------------------------------------------------------------- #
 
