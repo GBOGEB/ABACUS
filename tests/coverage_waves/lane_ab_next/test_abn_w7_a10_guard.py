@@ -62,13 +62,20 @@ def _install_git(monkeypatch, outputs, ok=True):
 
     def fake_git(*args):
         calls.append(args)
+        z = "-z" in args
+        args = tuple(a for a in args if a != "-z")
         for key, value in outputs.items():
             if args[: len(key)] == key:
-                return value
+                return value.replace(b"\n", b"\0") if z else value
         return b""
+
+    def fake_read_blobs(tree, items):
+        for _ in items:
+            yield outputs.get(("cat-file", "-p"), b"")
 
     monkeypatch.setattr(guard, "git", fake_git)
     monkeypatch.setattr(guard, "git_ok", lambda *a: ok)
+    monkeypatch.setattr(guard, "read_blobs", fake_read_blobs)
     return calls
 
 
@@ -119,7 +126,7 @@ def test_main_diff_mode_with_valid_base(monkeypatch, tmp_path, capsys):
     )
     guard.main()
     assert any(
-        c[:2] == ("diff", "--name-only") and "abcdef1...HEAD" in c for c in calls
+        c[0] == "diff" and "--name-only" in c and "abcdef1...HEAD" in c for c in calls
     )
     assert "OK (1 files checked)" in capsys.readouterr().out
 
@@ -141,3 +148,156 @@ def test_main_staged_mode_respects_allow_file(monkeypatch, tmp_path, capsys):
     )
     guard.main()
     assert "OK (2 files checked)" in capsys.readouterr().out
+
+
+# --- #2698: merge-aware --staged and the streamed cat-file batch -------------
+
+
+def test_main_staged_merge_diffs_against_merge_head(monkeypatch, tmp_path, capsys):
+    monkeypatch.chdir(tmp_path)
+    monkeypatch.setattr(guard.sys, "argv", ["a10_guard.py", "--staged"])
+    calls = _install_git(
+        monkeypatch,
+        {
+            ("diff", "--cached"): b"docs/pr.md\n",
+            ("ls-files", "-s"): b"100644 blobpr 0\tdocs/pr.md\n",
+            ("cat-file", "-p"): b"plain words",
+        },
+        ok=True,
+    )
+    guard.main()
+    diff = [c for c in calls if c[0] == "diff"]
+    assert diff and diff[0][-1] == "MERGE_HEAD"
+    assert "OK (1 files checked)" in capsys.readouterr().out
+
+
+def test_main_staged_without_merge_checks_all_staged(monkeypatch, tmp_path, capsys):
+    monkeypatch.chdir(tmp_path)
+    monkeypatch.setattr(guard.sys, "argv", ["a10_guard.py", "--staged"])
+    calls = _install_git(
+        monkeypatch,
+        {
+            ("diff", "--cached"): b"docs/a.md\n",
+            ("ls-files", "-s"): b"100644 blobA 0\tdocs/a.md\n",
+            ("cat-file", "-p"): b"plain words",
+        },
+        ok=False,
+    )
+    guard.main()
+    diff = [c for c in calls if c[0] == "diff"]
+    assert diff and "MERGE_HEAD" not in diff[0]
+    assert "OK (1 files checked)" in capsys.readouterr().out
+
+
+def test_git_z_and_index_ids(monkeypatch):
+    out = {
+        "ls-files": b"100644 aaa 0\tsp ace.md\x00100644 bbb 2\tb.md\x00",
+        "ls-tree": b"100644 blob ccc\tc.md\x00",
+    }
+    seen = []
+
+    def fake_git(*args):
+        seen.append(args)
+        return out[args[0]]
+
+    monkeypatch.setattr(guard, "git", fake_git)
+    assert guard.index_ids("ls-files", "-s") == {"sp ace.md": "aaa", "b.md": "bbb"}
+    assert guard.index_ids("ls-tree", "-r", "HEAD") == {"c.md": "ccc"}
+    assert seen[0] == ("ls-files", "-z", "-s")
+    assert seen[1] == ("ls-tree", "-z", "-r", "HEAD")
+
+
+def _tar(files):
+    import tarfile
+
+    buf = io.BytesIO()
+    with tarfile.open(fileobj=buf, mode="w") as tar:
+        for name, data in files.items():
+            info = tarfile.TarInfo(name)
+            info.size = len(data)
+            tar.addfile(info, io.BytesIO(data))
+    return buf.getvalue()
+
+
+def test_chunks_split_on_count_and_length():
+    items = [(f"p{i}", "x") for i in range(5)]
+    assert [len(c) for c in guard.chunks(items, max_items=2)] == [2, 2, 1]
+    long = [("a" * 10, "x"), ("b" * 10, "y")]
+    assert [len(c) for c in guard.chunks(long, max_chars=15)] == [1, 1]
+    assert list(guard.chunks([])) == []
+
+
+def test_read_blobs_uses_raw_archive_members(monkeypatch):
+    archive = _tar({"a.md": b"hello\n", "b.md": b"bee"})
+    calls = []
+
+    def fake_git(*args):
+        calls.append(args)
+        if "archive" in args:
+            # No repository attributes and no eol conversion: members are the raw blobs.
+            assert args[:7] == (
+                "--attr-source=" + guard.EMPTY_TREE,
+                "-c",
+                "core.autocrlf=false",
+                "--literal-pathspecs",
+                "archive",
+                "--format=tar",
+                "T",
+            )
+            return archive
+        return b"exact blob"
+
+    monkeypatch.setattr(guard, "git", fake_git)
+    items = [
+        ("a.md", "1"),
+        ("b.md", "2"),
+        ("c.md", "3"),
+    ]  # c.md missing from the archive
+    assert list(guard.read_blobs("T", items)) == [b"hello\n", b"bee", b"exact blob"]
+    assert [c for c in calls if c[0] == "cat-file"] == [("cat-file", "-p", "3")]
+
+
+def test_read_merge_heads(monkeypatch, tmp_path):
+    head_file = tmp_path / "MERGE_HEAD"
+    head_file.write_text("aaa\nbbb\n\n", encoding="ascii")
+    monkeypatch.setattr(guard, "git_ok", lambda *a: True)
+    monkeypatch.setattr(guard, "git", lambda *a: str(head_file).encode() + b"\n")
+    assert guard.read_merge_heads() == ["aaa", "bbb"]
+    monkeypatch.setattr(guard, "git", lambda *a: str(tmp_path / "missing").encode())
+    assert guard.read_merge_heads() == ["MERGE_HEAD"]
+    monkeypatch.setattr(guard, "git_ok", lambda *a: False)
+    assert guard.read_merge_heads() == []
+
+
+def test_main_staged_octopus_skips_files_from_any_parent(monkeypatch, tmp_path, capsys):
+    monkeypatch.chdir(tmp_path)
+    monkeypatch.setattr(guard.sys, "argv", ["a10_guard.py", "--staged"])
+    calls = _install_git(
+        monkeypatch,
+        {("ls-files", "-s"): b"100644 b1 0\tpr.md\n", ("cat-file", "-p"): b"ok"},
+    )
+    differs = {
+        "A": b"pr.md\0offers_itt/from_b.md\0",  # from_b.md is unchanged from parent B
+        "B": b"pr.md\0offers_itt/from_a.md\0",  # from_a.md is unchanged from parent A
+    }
+    inner = guard.git
+
+    def fake_git(*args):
+        if args[0] == "diff":
+            calls.append(args)
+            return differs[args[-1]]
+        return inner(*args)
+
+    monkeypatch.setattr(guard, "git", fake_git)
+    monkeypatch.setattr(guard, "read_merge_heads", lambda: ["A", "B"])
+    guard.main()
+    assert "OK (1 files checked)" in capsys.readouterr().out
+    assert [c[-1] for c in calls if c[0] == "diff"] == ["A", "B"]
+
+
+def test_read_blobs_falls_back_when_archive_fails(monkeypatch):
+    monkeypatch.setattr(
+        guard, "git", lambda *a: b"" if "archive" in a else b"blob " + a[-1].encode()
+    )
+    assert list(guard.read_blobs("T", [("a.md", "aaa")])) == [b"blob aaa"]
+    assert list(guard.read_blobs("T", [])) == []
