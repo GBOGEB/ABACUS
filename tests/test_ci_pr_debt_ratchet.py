@@ -700,3 +700,12 @@ def test_new_b603_after_rewrap_is_still_flagged(repo):
     report = ratchet_mod.ratchet(base, ("bandit",))
     [row] = report["added_debt"]
     assert any(key.startswith("B603:") for key in row["new_findings"])
+
+
+def test_normalise_source_keeps_string_and_singleton_tuple_contents():
+    norm = ratchet_mod.normalise_source
+    assert norm('eval("a b")') != norm('eval("ab")')
+    assert norm('eval(("x",))') != norm('eval(("x"))')
+    assert norm('eval(("x",))') == norm('eval(\n    ("x",),\n)')
+    assert norm("f(a, b,)") == norm("f(a, b)")
+    assert norm("x[a,]") != norm("x[a]")
