@@ -32,7 +32,10 @@ env:
 jobs:
 
   step_1_define:
-    name: "Step 1: Define - Initialize & Validate Structure"
+    # SPEC: validates ariana_trace_project/ and rich_padding/DOW_test_orchestrator.py, which were
+    # never built. DMAIC_V3/validate_dow_structure.py is not a substitute (it checks DOW JSON
+    # keys in DMAIC_CANONICAL_OUTPUT/, not repository structure). Stays red until they exist.
+    name: "Step 1: Define [SPEC: ariana_trace_project/ + DOW_test_orchestrator.py never built]"
     runs-on: ubuntu-latest
     outputs:
       baseline_state: ${{ steps.baseline.outputs.state }}
@@ -63,10 +66,11 @@ jobs:
           pip install pytest pytest-cov pyyaml
           if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
 
-      - name: Define - Validate Repository Structure
+      - name: "SPEC (never built): Define - Validate Repository Structure"
         id: validate
         run: |
           echo "🎯 STEP 1: DEFINE - Validating DOW Framework Structure"
+          echo "SPEC: the components below were never built; this check stays red until they exist."
           echo "=================================================="
 
           VALID=true
@@ -145,7 +149,7 @@ jobs:
           retention-days: 30
 
   step_2_measure:
-    name: "Step 2: Measure - Execute Tests & Collect Metrics"
+    name: "Step 2: Measure [SPEC: needs rich_padding/DOW_test_orchestrator.py, ariana_trace_project/]"
     runs-on: ubuntu-latest
     needs: step_1_define
     if: needs.step_1_define.outputs.structure_valid == 'true'
@@ -335,7 +339,7 @@ jobs:
           retention-days: 30
 
   step_4_improve:
-    name: "Step 4: Improve - Apply Fixes & Optimizations"
+    name: "Step 4: Improve [SPEC: needs ariana_trace_project/, rich_padding/DOW_test_orchestrator.py]"
     runs-on: ubuntu-latest
     needs: [step_2_measure, step_3_analyze]
     outputs:
@@ -550,7 +554,8 @@ jobs:
             "rich_padding/docker-compose.yml up --build"
 
   integration_test_suite:
-    name: "Run Test Suite & 5-Iteration Demo"
+    # SPEC: TESTING_SUITE/RUN_ALL_TESTS.py was never built. Stays red until it exists.
+    name: "SPEC (never built): Run Test Suite - TESTING_SUITE/RUN_ALL_TESTS.py"
     runs-on: ubuntu-latest
     needs: step_5_control
 
@@ -572,15 +577,10 @@ jobs:
             echo "No requirements.txt"
           fi
 
-      - name: Run Test Suite
+      - name: "SPEC (never built): Run Test Suite"
         run: |
           echo "🧪 Running comprehensive test suite..."
           python TESTING_SUITE/RUN_ALL_TESTS.py
-
-      - name: Run 5-Iteration DMAIC+DOW Integration
-        run: |
-          echo "🔄 Running 5-iteration DMAIC+DOW integration demo..."
-          python demo_integrated_system.py
 
       - name: Upload Test Reports
         if: always()
@@ -590,6 +590,35 @@ jobs:
           path: TESTING_SUITE/05_TEST_REPORTS/
           retention-days: 30
 
+  integration_demo:
+    # Real: demo_integrated_system.py exists. Independent of the SPEC chain above: it consumes
+    # no artifact from steps 1-5, and step_5_control is a report (if: always()), not a gate.
+    name: "Run 5-Iteration DMAIC+DOW Integration (demo_integrated_system.py)"
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v7
+
+      - name: Set up Python ${{ env.PYTHON_VERSION }}
+        uses: actions/setup-python@v7
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+
+      - name: Install Dependencies
+        run: |
+          python -m pip install --upgrade pip
+          if [ -f requirements.txt ]; then
+            pip install -r requirements.txt
+          else
+            echo "No requirements.txt"
+          fi
+
+      - name: Run 5-Iteration DMAIC+DOW Integration
+        run: |
+          echo "🔄 Running 5-iteration DMAIC+DOW integration demo..."
+          python demo_integrated_system.py
+
       - name: Upload Integration Reports
         if: always()
         uses: actions/upload-artifact@v7
@@ -597,16 +626,3 @@ jobs:
           name: sprint6-demo-reports
           path: demo_workspace/integration_report_*.json
           retention-days: 30
-
-      - name: Integration Summary
-        run: |
-          echo "=================================================="
-          echo "✅ SPRINT 6 INTEGRATION TESTING COMPLETE"
-          echo "=================================================="
-          echo ""
-          echo "✓ Test Suite: PASSED"
-          echo "✓ 5-Iteration Demo: COMPLETE"
-          echo "✓ All Artifacts Uploaded"
-          echo ""
-          echo "Status: READY FOR DEPLOYMENT"
-          echo "=================================================="
