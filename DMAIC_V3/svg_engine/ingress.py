@@ -20,6 +20,7 @@ PNS = {
     "a": "http://schemas.openxmlformats.org/drawingml/2006/main",
 }
 TOKEN = re.compile(r"[A-Za-z0-9][A-Za-z0-9_.\-/+]{1,}")
+CSS_URL = re.compile(r"url\(\s*(['\"]?)(.*?)\1\s*\)", re.IGNORECASE | re.DOTALL)
 
 
 def sha(b: bytes) -> str:
@@ -35,6 +36,23 @@ def simple(x) -> str:
     return etree.QName(x).localname if isinstance(x.tag, str) else ""
 
 
+def _safe_ref(value: str) -> bool:
+    v = value.strip().lower()
+    return not v or v.startswith(("#", "data:image/"))
+
+
+def _check_css(text: str, where: str) -> None:
+    """Reject CSS that can fetch: ``@import`` or any ``url(...)`` that is not a fragment or inline image.
+
+    CSS escapes (``u\\72l(``) could hide either, so a backslash in a stylesheet or ``style`` fails closed.
+    """
+    if "@import" in text.lower() or (where == "style" and "\\" in text):
+        raise ValueError("SVG_EXTERNAL_RESOURCE:" + where)
+    for m in CSS_URL.finditer(text):
+        if not _safe_ref(m.group(2)):
+            raise ValueError("SVG_EXTERNAL_RESOURCE:" + where)
+
+
 def validate_native_svg(root):
     """Fail closed for duplicate IDs and active/external references in inline SVG viewer input."""
     ids = set()
@@ -44,6 +62,8 @@ def validate_native_svg(root):
         kind = simple(e).lower()
         if kind in ("script", "foreignobject", "iframe", "object", "embed"):
             raise ValueError("SVG_UNSAFE_ELEMENT:" + kind)
+        if kind == "style":
+            _check_css("".join(e.itertext()), "style")
         identifier = e.get("id")
         if identifier:
             if identifier in ids:
@@ -58,6 +78,7 @@ def validate_native_svg(root):
                 value.startswith("#") or value.startswith("data:image/") or not value
             ):
                 raise ValueError("SVG_EXTERNAL_RESOURCE:" + key)
+            _check_css(str(val), key)
     return {"unique_ids": len(ids), "safe_inline_svg": True}
 
 

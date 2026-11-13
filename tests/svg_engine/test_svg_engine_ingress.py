@@ -108,11 +108,34 @@ def test_load_svg_from_zip_and_hash(tmp_path):
             "SVG_EXTERNAL_RESOURCE",
         ),
         (b'<svg><rect onclick="alert(1)"/></svg>', "SVG_EVENT_HANDLER"),
+        (
+            b'<svg><rect style="fill:url(https://attacker.invalid/p.svg#g)"/></svg>',
+            "SVG_EXTERNAL_RESOURCE",
+        ),
+        (b"<svg><rect fill=\"url('file:///etc/passwd')\"/></svg>", "SVG_EXTERNAL_RESOURCE"),
+        (
+            b'<svg><style>@import url(https://attacker.invalid/x.css);</style></svg>',
+            "SVG_EXTERNAL_RESOURCE",
+        ),
+        (
+            b'<svg><style><![CDATA[rect{fill:url( "http://a.invalid/p" )}]]></style></svg>',
+            "SVG_EXTERNAL_RESOURCE",
+        ),
+        (b"<svg><style>rect{fill:u\\72l(http://a.invalid/p)}</style></svg>", "SVG_EXTERNAL_RESOURCE"),
+        (b'<svg><rect style="fill:u\\72l(http://a.invalid/p)"/></svg>', "SVG_EXTERNAL_RESOURCE"),
     ],
 )
 def test_unsafe_svg_fails_closed(svg, code):
     with pytest.raises(ValueError, match=code):
         ingress.validate_native_svg(etree.fromstring(svg))
+
+
+def test_local_css_references_stay_valid():
+    svg = (
+        b'<svg><defs><linearGradient id="g"/></defs><style>.a{fill:url(#g)}</style>'
+        b"<rect style=\"fill:url(#g);stroke:url('#g')\" mask=\"url(#g)\"/></svg>"
+    )
+    assert ingress.validate_native_svg(etree.fromstring(svg))["safe_inline_svg"] is True
 
 
 def test_entities_are_not_resolved():
