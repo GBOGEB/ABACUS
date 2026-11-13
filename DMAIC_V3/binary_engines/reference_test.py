@@ -468,13 +468,22 @@ def main() -> int:
         "changed": [k for k in before if before[k] != after[k]],
         "result": "PASS" if before == after else "FAIL",
     }
-    (PILOT / "PILOT_MANIFEST.yaml").write_text(
-        "schema: gbogeb.estate.pilot/0.1\nfiles:\n"
-        + "".join(
-            f"  - role: {pf['role']}\n    file: \"{pf['path'].name}\"\n    page: {pf['page']}\n    sha256: {before.get(str(pf['path']), sha(pf['path']))}\n"
+    import yaml  # a real serializer: a page-less file gets YAML null, never the string "None"
+
+    manifest = {
+        "schema": "gbogeb.estate.pilot/0.1",
+        "files": [
+            {
+                "role": pf["role"],
+                "file": pf["path"].name,
+                "page": pf["page"],
+                "sha256": before.get(str(pf["path"])) or sha(pf["path"]),
+            }
             for pf in pilot_files()
-        ),
-        "utf-8",
+        ],
+    }
+    (PILOT / "PILOT_MANIFEST.yaml").write_text(
+        yaml.safe_dump(manifest, sort_keys=False, allow_unicode=True), "utf-8"
     )
     OUT.mkdir(parents=True, exist_ok=True)
     (OUT / "REFERENCE_TESTS.json").write_text(

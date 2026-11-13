@@ -11,6 +11,7 @@ from __future__ import annotations
 import hashlib
 import json
 import unittest
+from unittest import mock
 
 from tests.binary_engines import _env, _fixtures
 
@@ -148,6 +149,36 @@ class Unconfigured(unittest.TestCase):
         self.assertEqual(report["R5_pilot"], [])
         self.assertEqual(report["R4_read_only"]["result"], "PASS")
         self.assertTrue(all(c["result"] == "PASS" for c in report["R3_adversarial"]))
+
+    def test_pilot_manifest_is_real_yaml(self):
+        # a pilot file without a page must give YAML null, never the string "None"
+        _env.require("yaml", "lxml")
+        _env.require_kernels()
+        import yaml
+
+        rt = _env.engine("reference_test")
+        folder = _env.HOME / "fixtures" / "pilot_probe"
+        folder.mkdir(parents=True, exist_ok=True)
+        raster = folder / "pilot #1 - page less.png"  # '#' and ' - ' need YAML quoting
+        raster.write_bytes(_fixtures_png())
+        pilot = [{"role": "control", "path": raster, "page": None}]
+        with mock.patch.object(rt, "pilot_files", return_value=pilot):
+            code, out = _env.run_main("reference_test")
+        self.assertEqual(code, 0, out[-2000:])
+        manifest = yaml.safe_load((rt.PILOT / "PILOT_MANIFEST.yaml").read_text("utf-8"))
+        self.assertEqual(manifest["schema"], "gbogeb.estate.pilot/0.1")
+        entry = manifest["files"][0]
+        self.assertIsNone(entry["page"])
+        self.assertEqual(entry["file"], raster.name)
+        self.assertEqual(entry["sha256"], _sha(raster))
+
+
+def _fixtures_png() -> bytes:
+    import base64
+
+    return base64.b64decode(
+        "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8z8BQDwAEhQGAhKmMIQAAAABJRU5ErkJggg=="
+    )
 
 
 class Promotion(unittest.TestCase):
