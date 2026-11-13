@@ -172,6 +172,56 @@ class Unconfigured(unittest.TestCase):
         self.assertEqual(entry["file"], raster.name)
         self.assertEqual(entry["sha256"], _sha(raster))
 
+    def test_reviewed_pilot_labels_are_scored_against_the_current_graph(self):
+        # reviewed labels must not keep passing once the input or the reader's graph has moved on
+        _env.require("yaml", "lxml")
+        _env.require_kernels()
+        rt, dg = _env.engine("reference_test"), _env.engine("deep_graph")
+        folder = _env.HOME / "fixtures" / "pilot_review"
+        folder.mkdir(parents=True, exist_ok=True)
+        svg = folder / "pilot_review.svg"
+        svg.write_text(HEAD + BOXES + HOST + "</svg>", "utf-8")
+        g = dg.read_svg(svg)
+        page = g["edges"][0]["page"]
+        pilot = [{"role": "pilot", "path": svg, "page": page}]
+        lab = rt.PILOT / "labels" / "pilot_review.labels.json"
+        lab.unlink(missing_ok=True)
+
+        def score(graph):
+            with mock.patch.object(rt, "pilot_files", return_value=pilot):
+                return rt.r5_pilot({svg: graph})[0]
+
+        self.assertEqual(score(g)["result"], "DEFER")
+        labels = json.loads(lab.read_text("utf-8"))
+        for o in labels["objects"]:
+            o["truth"] = "ACCEPT"
+        for e in labels["edges"]:
+            e["truth"], e["direction"] = "ACCEPT", e["drawn_direction"]
+        labels["status"] = "REVIEWED"
+        lab.write_text(json.dumps(labels), "utf-8")
+        self.assertEqual(score(g)["result"], "PASS")
+
+        dropped = dict(g, edges=[e for e in g["edges"] if e["page"] != page])
+        self.assertEqual(
+            score(dropped)["result"], "FAIL", "accepted edge gone from the graph"
+        )
+        turned = dict(
+            g,
+            edges=[
+                dict(
+                    e,
+                    direction="backward" if e["direction"] != "backward" else "forward",
+                )
+                for e in g["edges"]
+            ],
+        )
+        self.assertEqual(score(turned)["result"], "FAIL", "graph direction changed")
+
+        svg.write_text(HEAD + BOXES + "</svg>", "utf-8")
+        stale = score(dg.read_svg(svg))
+        self.assertEqual(stale["result"], "FAIL")
+        self.assertIn("sha256", stale["why"])
+
 
 def _fixtures_png() -> bytes:
     import base64

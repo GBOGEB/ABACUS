@@ -410,24 +410,61 @@ def r5_pilot(graphs: dict) -> list[dict]:
                 }
             )
             continue
+        # reviewed labels are scored against the graph read now, never against themselves: a label file
+        # for other input bytes, or accepted objects/edges the reader no longer produces, must FAIL
+        if L.get("sha256") != sha(p):
+            res.append(
+                {
+                    "file": p.name,
+                    "role": pf["role"],
+                    "result": "FAIL",
+                    "why": "labels were reviewed against other input bytes (sha256 mismatch); re-review",
+                    "labels": str(lab.relative_to(EST)),
+                }
+            )
+            continue
+        cur_nodes = {
+            n["locator"]
+            for n in (g["nodes"] if g else [])
+            if n["page"] == page and n["kind"] not in ("group",)
+        }
+        cur_edges = {
+            e["locator"]: e for e in (g["edges"] if g else []) if e["page"] == page
+        }
         objs = L["objects"]
         acc_edges = [e for e in L["edges"] if e["truth"] == "ACCEPT"]
         accounted = sum(o["truth"] in ("ACCEPT", "REJECT") for o in objs) / max(
             len(objs), 1
         )
-        dir_ok = sum(e["direction"] == e["drawn_direction"] for e in acc_edges) / max(
-            len(acc_edges), 1
-        )
+        dropped_objects = [
+            o["locator"]
+            for o in objs
+            if o["truth"] == "ACCEPT" and o["locator"] not in cur_nodes
+        ]
+        dropped_edges = [
+            e["locator"] for e in acc_edges if e["locator"] not in cur_edges
+        ]
+        dir_ok = sum(
+            e["locator"] in cur_edges
+            and e["direction"] == cur_edges[e["locator"]]["direction"]
+            for e in acc_edges
+        ) / max(len(acc_edges), 1)
         res.append(
             {
                 "file": p.name,
                 "role": pf["role"],
                 "objects_accounted_pct": round(100 * accounted, 1),
                 "accepted_edges_direction_pct": round(100 * dir_ok, 1),
+                "accepted_objects_not_in_graph": len(dropped_objects),
+                "accepted_edges_not_in_graph": len(dropped_edges),
                 "missing": len(L.get("missing", [])),
                 "result": (
                     "PASS"
-                    if accounted == 1 and dir_ok == 1 and not L.get("missing")
+                    if accounted == 1
+                    and dir_ok == 1
+                    and not dropped_objects
+                    and not dropped_edges
+                    and not L.get("missing")
                     else "FAIL"
                 ),
             }
