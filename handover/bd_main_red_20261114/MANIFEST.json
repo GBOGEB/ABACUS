@@ -1,0 +1,93 @@
+{
+ "schema": "handover-manifest/1.0",
+ "handover": "bd_main_red_20261114",
+ "repo_path": "GBOGEB/ABACUS:handover/bd_main_red_20261114/",
+ "start_here": "HANDOVER.md",
+ "machine_readable": "handover.json",
+ "files": [
+  {
+   "path": "HANDOVER.md",
+   "bytes": 15908,
+   "sha256": "421e4fd84b942bab22f4f57c92b680e3aeea29d9374377b0467fa2be5694d2ae"
+  },
+  {
+   "path": "census/launchers_20261109.json",
+   "bytes": 34682,
+   "sha256": "f5dc97d22120e75621b9937ea9147979eb1721eeb1c652ad0c182dfc2c9d6e40"
+  },
+  {
+   "path": "census/red_signatures_20261108.json",
+   "bytes": 26068,
+   "sha256": "36d36981c66f6b1109ffffa256a76cb0f601ac0c952cf01c192612778a626cf0"
+  },
+  {
+   "path": "census/red_signatures_20261114.json",
+   "bytes": 14152,
+   "sha256": "f4ed86b8a6966cee7cef3415c9dee2d391639663750dc3945137dfa0aba3b6e1"
+  },
+  {
+   "path": "census/stale_flags_20261114.tsv",
+   "bytes": 1193,
+   "sha256": "af22b2177432d53d0617845e424ddfd6fbff1b5b1e90e246716706745abb47a0"
+  },
+  {
+   "path": "census/wf_abacus_20261108.json",
+   "bytes": 62139,
+   "sha256": "634220648034c1b26c66513725da781f022bde61dfa60a8d3401e98bebc431d5"
+  },
+  {
+   "path": "census/wf_abacus_20261114.json",
+   "bytes": 62952,
+   "sha256": "f3510ffedc93f865e8b3b986dd1e0386d66d4f6f6c32bc7136c863f6f3078a1f"
+  },
+  {
+   "path": "census/wf_codex_20261108.json",
+   "bytes": 45941,
+   "sha256": "6ac826c775629e777550f8fe31981cb31acc9bb3b07a74406ddb38c4aed55b15"
+  },
+  {
+   "path": "census/wf_codex_20261114.json",
+   "bytes": 45954,
+   "sha256": "fc0e252f019b1deb86aec639d6b695072d837d912ce0a3a23975da3efd247d38"
+  },
+  {
+   "path": "handover.json",
+   "bytes": 9926,
+   "sha256": "93f8879414c0520311b9f9ef1ffe931f85a12a58f78bc2a62f1f0ccf8d400fb6"
+  },
+  {
+   "path": "tools/launchers.py",
+   "bytes": 1933,
+   "sha256": "293e84db204f2229581170ece2e9a973fe3c7d2dc012164b526b7997426b9bf4"
+  },
+  {
+   "path": "tools/sig.py",
+   "bytes": 1871,
+   "sha256": "571c5ef55460947117e251df94659d34927f68630d77f7ae21bd2a1b862f06bb"
+  },
+  {
+   "path": "tools/wf_hist.py",
+   "bytes": 1736,
+   "sha256": "460c7f1394030f003cf8a492e663ce41694748219169d5f64b18256debf96e41"
+  }
+ ],
+ "drive": {
+  "folder": "GBOGEB_BD_MAIN_RED_HANDOVER_20261114",
+  "folder_id": "1ljqtC1uEVC4vBNBkmbNAOaOBBkrJAljI",
+  "folder_url": "https://drive.google.com/drive/folders/1ljqtC1uEVC4vBNBkmbNAOaOBBkrJAljI",
+  "full_tree": {
+   "file": "BD_MAIN_RED_20261114_full.tar.gz",
+   "bytes": 4542261,
+   "sha256": "1a7d55cf8056159a3c7b0d7b57d63ff29cd1046be229f0be77606842df32b80c",
+   "unpacked_files": 262,
+   "unpacked_bytes": 87372605,
+   "inner_manifest": "BD_MAIN_RED_20261114/FULL_TREE_MANIFEST.json",
+   "verify": "sha256sum BD_MAIN_RED_20261114_full.tar.gz && tar -xzf BD_MAIN_RED_20261114_full.tar.gz"
+  },
+  "private_content": "private/keb/ inside the tarball only; not in this repo"
+ },
+ "excluded": {
+  "lintenv/": "reproducible Python venv",
+  "worker clones": "all work lives on GitHub branches/PRs"
+ }
+}

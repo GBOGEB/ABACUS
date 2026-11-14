@@ -1,0 +1,443 @@
+{
+ "schema": "bd-main-red-handover/1.0",
+ "as_of": "2026-11-14T17:30:00Z",
+ "owner": "GBOGEB",
+ "session": "https://claude.ai/code/session_01RiTqsUCce2vmEFgQcZaNhr",
+ "source_main_sha": {
+  "GBOGEB/ABACUS": "1b3a6a513d2a02ad46de7fe8c61a85bb5405f876",
+  "GBOGEB/CODEX": "38831761dcfb1999feeca9545814dca8ae5a66d0"
+ },
+ "scope": [
+  "GBOGEB/ABACUS",
+  "GBOGEB/CODEX"
+ ],
+ "out_of_scope": {
+  "GBOGEB/pipeline-automation-hub": "no API access this session"
+ },
+ "census_rule": {
+  "window": "last 10 completed main runs per active workflow",
+  "classes": [
+   "EVERRED",
+   "GREEN_TO_RED",
+   "FLAKY",
+   "GREEN",
+   "NO_MAIN_RUNS"
+  ],
+  "flags": [
+   "STALE",
+   "GHOST",
+   "STARTUP_FAILURE"
+  ]
+ },
+ "census_summary": {
+  "2026-11-08": {
+   "abacus": {
+    "EVERRED": 18,
+    "FLAKY": 14,
+    "GREEN": 80,
+    "GREEN_TO_RED": 5,
+    "NO_MAIN_RUNS": 131
+   },
+   "codex": {
+    "EVERRED": 8,
+    "FLAKY": 13,
+    "GREEN": 69,
+    "GREEN_TO_RED": 3,
+    "NO_MAIN_RUNS": 82
+   }
+  },
+  "2026-11-14": {
+   "abacus": {
+    "EVERRED": 11,
+    "FLAKY": 15,
+    "GREEN": 90,
+    "GREEN_TO_RED": 3,
+    "NO_MAIN_RUNS": 133
+   },
+   "codex": {
+    "EVERRED": 3,
+    "FLAKY": 17,
+    "GREEN": 72,
+    "GREEN_TO_RED": 1,
+    "NO_MAIN_RUNS": 83
+   }
+  }
+ },
+ "totals": {
+  "live_red_start": 34,
+  "live_red_now": 17,
+  "original_burned": 17,
+  "new_red_burned": 2,
+  "prs_merged_by_session_workers": 17
+ },
+ "live_red": [
+  {
+   "repo": "abacus",
+   "workflow": "bridge-ci.yml",
+   "root": "BD-17",
+   "family": "F4",
+   "state": "HOLD",
+   "failure": "flake8 Static Analysis FAILED after #2700",
+   "next": "owner: ratchet vs fix-all; other session owns Black lanes #2707/#2711"
+  },
+  {
+   "repo": "abacus",
+   "workflow": "ci.yml",
+   "root": "BD-17",
+   "family": "F4",
+   "state": "READY",
+   "failure": "mypy DMAIC_V3/core/state.py:403 union-attr",
+   "next": "re-baseline; None-guard if sole error"
+  },
+  {
+   "repo": "abacus",
+   "workflow": "ci-cd-tests.yml",
+   "root": "BD-10",
+   "family": "F2",
+   "state": "HOLD",
+   "failure": "github-actions[bot] push denied 403 on dashboard deploy",
+   "next": "owner: deploy-pages vs bot PR"
+  },
+  {
+   "repo": "abacus",
+   "workflow": "cd.yml",
+   "root": "BD-22",
+   "family": "F2",
+   "state": "HOLD",
+   "failure": "scripts/build_handover_book.sh missing (exit 127)",
+   "next": "owner: restore vs drop step"
+  },
+  {
+   "repo": "abacus",
+   "workflow": "code-purple-quality-ratchet-proof.yml",
+   "root": "BD-23",
+   "family": "F3",
+   "state": "READY",
+   "failure": "literal $BASE_SHA assertion vs producer $base; last run 2026-11-08",
+   "next": "re-baseline (#2726), then owner: behaviour check vs literal"
+  },
+  {
+   "repo": "abacus",
+   "workflow": "osv-scheduled.yml",
+   "root": "BD-24b",
+   "family": "SEC",
+   "state": "READY",
+   "failure": "OSV resolution impossible: DMAIC_V3/generators/requirements.txt",
+   "next": "fix unsatisfiable spec / lockfile; never lower fail-on-vuln"
+  },
+  {
+   "repo": "abacus",
+   "workflow": "security-dashboard.yml",
+   "root": "BD-11",
+   "family": "SEC",
+   "state": "HOLD",
+   "failure": "code-scanning API 403; default-setup not-configured",
+   "next": "owner: enable vs visible not-configured"
+  },
+  {
+   "repo": "abacus",
+   "workflow": "qps-w04-dow-receipt.yml",
+   "root": "BD-12b",
+   "family": "F6",
+   "state": "READY",
+   "failure": "private child pin ec12b098",
+   "next": "investigate with cryoplant read; no private data in public PRs"
+  },
+  {
+   "repo": "abacus",
+   "workflow": "dmaic-v3-cognitive-cicd.yml",
+   "root": "BD-16",
+   "family": "F1",
+   "state": "HOLD",
+   "failure": "spec job: Cognitive orchestrator not found (bridged #2705, pruned #2706)",
+   "next": "owner: spec mode"
+  },
+  {
+   "repo": "abacus",
+   "workflow": "dow-sprint6-cicd.yml",
+   "root": "BD-16",
+   "family": "F1",
+   "state": "ACTIVE",
+   "failure": "main pre-bridge; #2704 open",
+   "next": "owner merge #2704"
+  },
+  {
+   "repo": "abacus",
+   "workflow": "gbogeb-abacus-integration-ci-cd.yml",
+   "root": "BD-16",
+   "family": "F1",
+   "state": "HOLD",
+   "failure": "spec: No module named 'DOW' (bridged #2695)",
+   "next": "owner: DOW package location"
+  },
+  {
+   "repo": "abacus",
+   "workflow": "inventory.yml",
+   "root": "BD-16",
+   "family": "F1",
+   "state": "READY",
+   "failure": ".python-version UNCLASSIFIED in tools/root_refactor/inventory.py (bridged #2703)",
+   "next": "classify; owner confirm inventory=ROOT_INVENTORY.csv"
+  },
+  {
+   "repo": "abacus",
+   "workflow": "sprint-trigger.yml",
+   "root": "BD-16",
+   "family": "F1",
+   "state": "HOLD",
+   "failure": "spec: scoring/iterative_scoring.py never built (bridged #2703)",
+   "next": "owner: spec mode; default sprint 5"
+  },
+  {
+   "repo": "codex",
+   "workflow": "pages.yml",
+   "root": "BD-05",
+   "family": "F5",
+   "state": "HOLD",
+   "failure": "builds last gated push dffac5f3",
+   "next": "owner: commit selection policy"
+  },
+  {
+   "repo": "codex",
+   "workflow": "qps-keb-w43-triage.yml",
+   "root": "BD-15",
+   "family": "F6",
+   "state": "HOLD",
+   "failure": "adr_index empty since 525809af; fix proven locally (private data)",
+   "next": "owner: publish / private / drop"
+  },
+  {
+   "repo": "codex",
+   "workflow": "spine-gate.yml",
+   "root": "BD-18",
+   "family": "F5",
+   "state": "READY",
+   "failure": "latest: STAGE_RECEIPT.json missing; earlier BLOCKED private term in MATH_SSOT_BINDING.md:32",
+   "next": "re-read; owner: reword vs allowlist"
+  },
+  {
+   "repo": "codex",
+   "workflow": "release.yml",
+   "root": "BD-07b",
+   "family": "F7",
+   "state": "HOLD",
+   "failure": "zero-job runs from May only",
+   "next": "clears on next release"
+  }
+ ],
+ "ghosts": [
+  {
+   "repo": "abacus",
+   "workflow": "dow-integration-ci-cd.yml",
+   "evidence": "deleted #1375; successor dow-integration.yml green"
+  }
+ ],
+ "burned": [
+  {
+   "repo": "abacus",
+   "workflow": "cbd-e2e-graph-contract.yml",
+   "evidence": [
+    "#2656",
+    "#2662"
+   ]
+  },
+  {
+   "repo": "abacus",
+   "workflow": "ci-pipeline.yml",
+   "evidence": [
+    "#2657",
+    "#2702"
+   ],
+   "note": "relapsed on BD-25"
+  },
+  {
+   "repo": "abacus",
+   "workflow": "ci-governance.yml",
+   "evidence": [
+    "#2702",
+    "#2717",
+    "#2716"
+   ],
+   "note": "new red during burndown"
+  },
+  {
+   "repo": "abacus",
+   "workflow": "testpilot-preflight.yml",
+   "evidence": [
+    "#2689"
+   ]
+  },
+  {
+   "repo": "abacus",
+   "workflow": "cd-unified.yml",
+   "evidence": [
+    "#2672",
+    "#2678",
+    "#2688"
+   ]
+  },
+  {
+   "repo": "abacus",
+   "workflow": "dmaic-v3-cd.yml",
+   "evidence": [
+    "#2693",
+    "#2694"
+   ],
+   "note": "bridged, not retired"
+  },
+  {
+   "repo": "abacus",
+   "workflow": "ci-failure-debug-rerun.yml",
+   "evidence": [
+    "3fabf479"
+   ],
+   "note": "stale"
+  },
+  {
+   "repo": "abacus",
+   "workflow": "bandit-disjoint-census.yml",
+   "evidence": [
+    "re-baseline"
+   ]
+  },
+  {
+   "repo": "abacus",
+   "workflow": "qps-debug-dow-consumer.yml",
+   "evidence": [
+    "re-baseline"
+   ]
+  },
+  {
+   "repo": "abacus",
+   "workflow": "validate-setup.yml",
+   "evidence": [
+    "re-baseline"
+   ]
+  },
+  {
+   "repo": "abacus",
+   "workflow": "dow-integration-ci-cd.yml",
+   "evidence": [
+    "#1375"
+   ],
+   "note": "ghost"
+  },
+  {
+   "repo": "codex",
+   "workflow": "orchestration-ts.yml",
+   "evidence": [
+    "#1267"
+   ]
+  },
+  {
+   "repo": "codex",
+   "workflow": "master-contract-ssot-validation.yml",
+   "evidence": [
+    "#1268"
+   ]
+  },
+  {
+   "repo": "codex",
+   "workflow": "ci.yml",
+   "evidence": [
+    "aggregate"
+   ]
+  },
+  {
+   "repo": "codex",
+   "workflow": "qps-debug-federation-consumer.yml",
+   "evidence": [
+    "re-baseline"
+   ]
+  },
+  {
+   "repo": "codex",
+   "workflow": "qps-roundtrip-zero-delta.yml",
+   "evidence": [
+    "re-baseline"
+   ]
+  },
+  {
+   "repo": "codex",
+   "workflow": "w05-qps-roundtrip-regeneration-zero-delta.yml",
+   "evidence": [
+    "re-baseline"
+   ]
+  },
+  {
+   "repo": "codex",
+   "workflow": "w70-qps-zero-delta-diagnostic.yml",
+   "evidence": [
+    "re-baseline"
+   ]
+  }
+ ],
+ "prs_merged_by_session_workers": [
+  "CODEX#1267",
+  "CODEX#1268",
+  "ABACUS#2656",
+  "ABACUS#2657",
+  "ABACUS#2662",
+  "ABACUS#2663",
+  "ABACUS#2689",
+  "ABACUS#2690",
+  "ABACUS#2691",
+  "ABACUS#2693",
+  "ABACUS#2694",
+  "ABACUS#2695",
+  "ABACUS#2702",
+  "ABACUS#2703",
+  "ABACUS#2705",
+  "ABACUS#2706",
+  "ABACUS#2717"
+ ],
+ "prs_open": [
+  {
+   "pr": "ABACUS#2704",
+   "root": "BD-16",
+   "what": "dow-sprint6 bridge"
+  },
+  {
+   "pr": "ABACUS#2708",
+   "root": "CTRL-1",
+   "what": "census + ledger seed + launcher gate; merge = ledger home ABACUS; refresh seed first"
+  },
+  {
+   "pr": "ABACUS#2683",
+   "root": "BD-25 follow-up",
+   "what": "codeql-action bump; check SARIF trust boundary"
+  }
+ ],
+ "prs_closed_superseded": [
+  {
+   "pr": "ABACUS#2588",
+   "by": "ABACUS#2636"
+  }
+ ],
+ "owner_decisions": [
+  "BD-17 ratchet vs fix-all",
+  "BD-16 spec mode; DOW location; inventory meaning; default sprint",
+  "BD-15 publish/private/drop; 10 vs 3 ADRs",
+  "BD-10 deploy-pages vs bot PR",
+  "BD-23 behaviour vs literal",
+  "BD-22 restore vs drop",
+  "BD-11 enable vs visible not-configured",
+  "BD-05 Pages commit selection",
+  "BD-18 reword vs allowlist",
+  "Control: ledger home (#2708), gate mode, unattended Pass-A drafts, generator exclusion"
+ ],
+ "next_slice": "N+4: re-baseline ci.yml, code-purple, bridge-ci, spine-gate; BD-17a ci.yml None-guard; BD-16 inventory .python-version; BD-24b OSV requirements; BD-12b qps-w04; refresh #2708",
+ "artifacts": {
+  "bd_queue_page": "https://claude.ai/artifact/Va7umddC7czm6PTpDXuCfM",
+  "dmaic_doc": "https://claude.ai/artifact/MzKbbBTz82L5KTet62GGzw"
+ },
+ "private_items": {
+  "where": "Google Drive only (private/keb/)",
+  "what": [
+   "BD-15 W43 adr_index patch",
+   "filled knowledge_exchange_request.json",
+   "QPS_ADR_REGISTER_v0.3.md extract @ cryoplant-project 29c2fb58"
+  ],
+  "rule": "never commit to a public repo without owner decision"
+ }
+}
