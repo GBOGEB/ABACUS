@@ -8,7 +8,7 @@ import re
 import shutil
 import sys
 import unittest
-from unittest import mock
+import unittest.mock as mock
 
 from tests.binary_engines import _env
 
