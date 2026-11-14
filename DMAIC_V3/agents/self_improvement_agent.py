@@ -41,10 +41,10 @@ class SelfImprovementAgent:
 
         self.improvement_history = []
         self.knowledge_base = {
-            'patterns': [],
-            'anti_patterns': [],
-            'best_practices': [],
-            'metrics': {}
+            "patterns": [],
+            "anti_patterns": [],
+            "best_practices": [],
+            "metrics": {},
         }
 
     def execute_improvement_cycle(self, iteration: int = 1) -> Dict[str, Any]:
@@ -110,18 +110,18 @@ class SelfImprovementAgent:
         duration = time.time() - start_time
 
         cycle_result = {
-            'iteration': iteration,
-            'timestamp': datetime.now().isoformat(),
-            'duration_seconds': duration,
-            'devoured_insights': devoured_data['total_insights'],
-            'opportunities_found': len(opportunities),
-            'improvements_generated': len(improvements),
-            'improvements_validated': len(validated),
-            'improvements_optimized': len(optimized),
-            'success_rate': success_metrics['success_rate'],
-            'baseline_metrics': baseline_metrics,
-            'final_metrics': success_metrics,
-            'improvements': optimized
+            "iteration": iteration,
+            "timestamp": datetime.now().isoformat(),
+            "duration_seconds": duration,
+            "devoured_insights": devoured_data["total_insights"],
+            "opportunities_found": len(opportunities),
+            "improvements_generated": len(improvements),
+            "improvements_validated": len(validated),
+            "improvements_optimized": len(optimized),
+            "success_rate": success_metrics["success_rate"],
+            "baseline_metrics": baseline_metrics,
+            "final_metrics": success_metrics,
+            "improvements": optimized,
         }
 
         self.improvement_history.append(cycle_result)
@@ -138,89 +138,101 @@ class SelfImprovementAgent:
         output_dir = self.config.paths.output_root
 
         devoured = {
-            'total_insights': 0,
-            'phase_outputs': [],
-            'agent_data': [],
-            'rankings': [],
-            'knowledge_books': []
+            "total_insights": 0,
+            "phase_outputs": [],
+            "agent_data": [],
+            "rankings": [],
+            "knowledge_books": [],
         }
 
         # Devour phase outputs
-        for iter_dir in output_dir.glob('iteration_*'):
-            for phase_dir in iter_dir.glob('phase*'):
-                for json_file in phase_dir.glob('*.json'):
+        for iter_dir in output_dir.glob("iteration_*"):
+            for phase_dir in iter_dir.glob("phase*"):
+                for json_file in phase_dir.glob("*.json"):
                     try:
                         with open(json_file) as f:
                             data = json.load(f)
-                            devoured['phase_outputs'].append({
-                                'file': str(json_file),
-                                'size': json_file.stat().st_size,
-                                'data': data
-                            })
-                            devoured['total_insights'] += 1
+                            devoured["phase_outputs"].append(
+                                {
+                                    "file": str(json_file),
+                                    "size": json_file.stat().st_size,
+                                    "data": data,
+                                }
+                            )
+                            devoured["total_insights"] += 1
                     except (OSError, json.JSONDecodeError):
                         pass
 
         # Devour agent registry
-        agent_registry = output_dir / 'agent_registry.json'
+        agent_registry = output_dir / "agent_registry.json"
         if agent_registry.exists():
             with open(agent_registry) as f:
-                devoured['agent_data'] = json.load(f)
-                devoured['total_insights'] += len(devoured['agent_data'].get('agents', {}))
+                devoured["agent_data"] = json.load(f)
+                devoured["total_insights"] += len(
+                    devoured["agent_data"].get("agents", {})
+                )
 
         # Devour rankings
-        for ranking_file in output_dir.rglob('*RANKING*.json'):
+        for ranking_file in output_dir.rglob("*RANKING*.json"):
             try:
                 with open(ranking_file) as f:
-                    devoured['rankings'].append(json.load(f))
-                    devoured['total_insights'] += 1
+                    devoured["rankings"].append(json.load(f))
+                    devoured["total_insights"] += 1
             except (OSError, json.JSONDecodeError):
                 pass
 
         return devoured
 
-    def _define_opportunities(self, devoured_data: Dict[str, Any]) -> List[Dict[str, Any]]:
+    def _define_opportunities(
+        self, devoured_data: Dict[str, Any]
+    ) -> List[Dict[str, Any]]:
         """DEFINE: Identify improvement opportunities"""
         opportunities = []
 
         # Opportunity 1: Missing phase outputs
         phase_counts = {}
-        for output in devoured_data['phase_outputs']:
-            phase = Path(output['file']).parent.name
+        for output in devoured_data["phase_outputs"]:
+            phase = Path(output["file"]).parent.name
             phase_counts[phase] = phase_counts.get(phase, 0) + 1
 
         for phase_num in range(9):
             phase_name = f"phase{phase_num}_*"
             if phase_counts.get(phase_name, 0) == 0:
-                opportunities.append({
-                    'type': 'missing_output',
-                    'phase': phase_num,
-                    'priority': 'HIGH',
-                    'description': f'Phase {phase_num} produces no outputs'
-                })
+                opportunities.append(
+                    {
+                        "type": "missing_output",
+                        "phase": phase_num,
+                        "priority": "HIGH",
+                        "description": f"Phase {phase_num} produces no outputs",
+                    }
+                )
 
         # Opportunity 2: Small output files (potential incomplete execution)
-        for output in devoured_data['phase_outputs']:
-            if output['size'] < 1000:  # Less than 1KB
-                opportunities.append({
-                    'type': 'small_output',
-                    'file': output['file'],
-                    'size': output['size'],
-                    'priority': 'MEDIUM',
-                    'description': f'Suspiciously small output: {output["file"]}'
-                })
+        for output in devoured_data["phase_outputs"]:
+            if output["size"] < 1000:  # Less than 1KB
+                opportunities.append(
+                    {
+                        "type": "small_output",
+                        "file": output["file"],
+                        "size": output["size"],
+                        "priority": "MEDIUM",
+                        "description": f'Suspiciously small output: {output["file"]}',
+                    }
+                )
 
         # Opportunity 3: Agent underutilization
-        if devoured_data['agent_data']:
-            agents = devoured_data['agent_data'].get('agents', {})
+        if devoured_data["agent_data"]:
+            agents = devoured_data["agent_data"].get("agents", {})
             if len(agents) < 12:
-                opportunities.append({
-                    'type': 'agent_underutilization',
-                    'current_agents': len(agents),
-                    'expected_agents': 12,
-                    'priority': 'HIGH',
-                    'description': 'Not all agents are active'
-                })
+                opportunities.append(
+                    {
+                        "type": "agent_underutilization",
+                        "current_agents": len(agents),
+                        "expected_agents": 12,
+                        "priority": "HIGH",
+                        "description": "Not all agents are active",
+                    }
+                )
 
         return opportunities
 
@@ -229,58 +241,71 @@ class SelfImprovementAgent:
         output_dir = self.config.paths.output_root
 
         metrics = {
-            'total_iterations': len(list(output_dir.glob('iteration_*'))),
-            'total_files': len(list(output_dir.rglob('*.json'))),
-            'total_size_mb': sum(f.stat().st_size for f in output_dir.rglob('*') if f.is_file()) / (1024 * 1024),
-            'phases_with_output': {},
-            'agent_count': 0
+            "total_iterations": len(list(output_dir.glob("iteration_*"))),
+            "total_files": len(list(output_dir.rglob("*.json"))),
+            "total_size_mb": sum(
+                f.stat().st_size for f in output_dir.rglob("*") if f.is_file()
+            )
+            / (1024 * 1024),
+            "phases_with_output": {},
+            "agent_count": 0,
         }
 
         # Count phases with outputs
-        for iter_dir in output_dir.glob('iteration_*'):
+        for iter_dir in output_dir.glob("iteration_*"):
             for phase_num in range(9):
-                phase_dirs = list(iter_dir.glob(f'phase{phase_num}_*'))
+                phase_dirs = list(iter_dir.glob(f"phase{phase_num}_*"))
                 if phase_dirs:
-                    phase_name = f'phase{phase_num}'
-                    metrics['phases_with_output'][phase_name] = metrics['phases_with_output'].get(phase_name, 0) + 1
+                    phase_name = f"phase{phase_num}"
+                    metrics["phases_with_output"][phase_name] = (
+                        metrics["phases_with_output"].get(phase_name, 0) + 1
+                    )
 
         # Count agents
-        agent_registry = output_dir / 'agent_registry.json'
+        agent_registry = output_dir / "agent_registry.json"
         if agent_registry.exists():
             with open(agent_registry) as f:
                 data = json.load(f)
-                metrics['agent_count'] = len(data.get('agents', {}))
+                metrics["agent_count"] = len(data.get("agents", {}))
 
         return metrics
 
-    def _analyze_root_causes(self, opportunities: List[Dict], baseline: Dict) -> List[Dict[str, Any]]:
+    def _analyze_root_causes(
+        self, opportunities: List[Dict], baseline: Dict
+    ) -> List[Dict[str, Any]]:
         """ANALYZE: Root cause analysis"""
         root_causes = []
 
         for opp in opportunities:
-            if opp['type'] == 'missing_output':
-                root_causes.append({
-                    'opportunity': opp,
-                    'root_cause': 'Phase execution incomplete or failed',
-                    'evidence': f'Phase {opp["phase"]} has no output files',
-                    'impact': 'HIGH'
-                })
+            if opp["type"] == "missing_output":
+                root_causes.append(
+                    {
+                        "opportunity": opp,
+                        "root_cause": "Phase execution incomplete or failed",
+                        "evidence": f'Phase {opp["phase"]} has no output files',
+                        "impact": "HIGH",
+                    }
+                )
 
-            elif opp['type'] == 'small_output':
-                root_causes.append({
-                    'opportunity': opp,
-                    'root_cause': 'Insufficient data processing or early termination',
-                    'evidence': f'Output file only {opp["size"]} bytes',
-                    'impact': 'MEDIUM'
-                })
+            elif opp["type"] == "small_output":
+                root_causes.append(
+                    {
+                        "opportunity": opp,
+                        "root_cause": "Insufficient data processing or early termination",
+                        "evidence": f'Output file only {opp["size"]} bytes',
+                        "impact": "MEDIUM",
+                    }
+                )
 
-            elif opp['type'] == 'agent_underutilization':
-                root_causes.append({
-                    'opportunity': opp,
-                    'root_cause': 'Agent initialization failure or configuration issue',
-                    'evidence': f'Only {opp["current_agents"]}/12 agents active',
-                    'impact': 'HIGH'
-                })
+            elif opp["type"] == "agent_underutilization":
+                root_causes.append(
+                    {
+                        "opportunity": opp,
+                        "root_cause": "Agent initialization failure or configuration issue",
+                        "evidence": f'Only {opp["current_agents"]}/12 agents active',
+                        "impact": "HIGH",
+                    }
+                )
 
         return root_causes
 
@@ -289,40 +314,46 @@ class SelfImprovementAgent:
         improvements = []
 
         for rc in root_causes:
-            opp = rc['opportunity']
+            opp = rc["opportunity"]
 
-            if opp['type'] == 'missing_output':
-                improvements.append({
-                    'id': f'IMP-{len(improvements)+1:03d}',
-                    'type': 'fix_phase_execution',
-                    'target': f'Phase {opp["phase"]}',
-                    'action': f'Debug and fix Phase {opp["phase"]} execution',
-                    'expected_outcome': 'Phase produces valid output files',
-                    'priority': 'HIGH',
-                    'effort': 'MEDIUM'
-                })
+            if opp["type"] == "missing_output":
+                improvements.append(
+                    {
+                        "id": f"IMP-{len(improvements)+1:03d}",
+                        "type": "fix_phase_execution",
+                        "target": f'Phase {opp["phase"]}',
+                        "action": f'Debug and fix Phase {opp["phase"]} execution',
+                        "expected_outcome": "Phase produces valid output files",
+                        "priority": "HIGH",
+                        "effort": "MEDIUM",
+                    }
+                )
 
-            elif opp['type'] == 'small_output':
-                improvements.append({
-                    'id': f'IMP-{len(improvements)+1:03d}',
-                    'type': 'enhance_data_processing',
-                    'target': opp['file'],
-                    'action': 'Investigate and enhance data processing logic',
-                    'expected_outcome': 'Output files contain comprehensive data',
-                    'priority': 'MEDIUM',
-                    'effort': 'LOW'
-                })
+            elif opp["type"] == "small_output":
+                improvements.append(
+                    {
+                        "id": f"IMP-{len(improvements)+1:03d}",
+                        "type": "enhance_data_processing",
+                        "target": opp["file"],
+                        "action": "Investigate and enhance data processing logic",
+                        "expected_outcome": "Output files contain comprehensive data",
+                        "priority": "MEDIUM",
+                        "effort": "LOW",
+                    }
+                )
 
-            elif opp['type'] == 'agent_underutilization':
-                improvements.append({
-                    'id': f'IMP-{len(improvements)+1:03d}',
-                    'type': 'fix_agent_initialization',
-                    'target': 'Agent Manager',
-                    'action': 'Fix agent initialization and ensure all 12 agents start',
-                    'expected_outcome': 'All 12 agents operational',
-                    'priority': 'HIGH',
-                    'effort': 'HIGH'
-                })
+            elif opp["type"] == "agent_underutilization":
+                improvements.append(
+                    {
+                        "id": f"IMP-{len(improvements)+1:03d}",
+                        "type": "fix_agent_initialization",
+                        "target": "Agent Manager",
+                        "action": "Fix agent initialization and ensure all 12 agents start",
+                        "expected_outcome": "All 12 agents operational",
+                        "priority": "HIGH",
+                        "effort": "HIGH",
+                    }
+                )
 
         return improvements
 
@@ -336,29 +367,29 @@ class SelfImprovementAgent:
             validation_notes = []
 
             # Check priority
-            if imp['priority'] not in ['HIGH', 'MEDIUM', 'LOW']:
+            if imp["priority"] not in ["HIGH", "MEDIUM", "LOW"]:
                 is_valid = False
-                validation_notes.append('Invalid priority level')
+                validation_notes.append("Invalid priority level")
 
             # Check effort
-            if imp['effort'] not in ['HIGH', 'MEDIUM', 'LOW']:
+            if imp["effort"] not in ["HIGH", "MEDIUM", "LOW"]:
                 is_valid = False
-                validation_notes.append('Invalid effort level')
+                validation_notes.append("Invalid effort level")
 
             # Check completeness
-            required_fields = ['id', 'type', 'target', 'action', 'expected_outcome']
+            required_fields = ["id", "type", "target", "action", "expected_outcome"]
             for field in required_fields:
                 if field not in imp:
                     is_valid = False
-                    validation_notes.append(f'Missing field: {field}')
+                    validation_notes.append(f"Missing field: {field}")
 
             if is_valid:
-                imp['validated'] = True
-                imp['validation_notes'] = ['All checks passed']
+                imp["validated"] = True
+                imp["validation_notes"] = ["All checks passed"]
                 validated.append(imp)
             else:
-                imp['validated'] = False
-                imp['validation_notes'] = validation_notes
+                imp["validated"] = False
+                imp["validation_notes"] = validation_notes
 
         return validated
 
@@ -368,11 +399,11 @@ class SelfImprovementAgent:
 
         for imp in validated:
             # Optimize by adding implementation details
-            imp['implementation'] = {
-                'steps': self._generate_implementation_steps(imp),
-                'estimated_duration': self._estimate_duration(imp),
-                'dependencies': self._identify_dependencies(imp),
-                'success_criteria': self._define_success_criteria(imp)
+            imp["implementation"] = {
+                "steps": self._generate_implementation_steps(imp),
+                "estimated_duration": self._estimate_duration(imp),
+                "dependencies": self._identify_dependencies(imp),
+                "success_criteria": self._define_success_criteria(imp),
             }
 
             optimized.append(imp)
@@ -381,88 +412,83 @@ class SelfImprovementAgent:
 
     def _generate_implementation_steps(self, improvement: Dict) -> List[str]:
         """Generate implementation steps for improvement"""
-        if improvement['type'] == 'fix_phase_execution':
+        if improvement["type"] == "fix_phase_execution":
             return [
                 f"1. Review {improvement['target']} code",
                 "2. Identify execution failures",
                 "3. Add error handling and logging",
                 "4. Test phase execution",
-                "5. Validate output generation"
+                "5. Validate output generation",
             ]
-        elif improvement['type'] == 'enhance_data_processing':
+        elif improvement["type"] == "enhance_data_processing":
             return [
                 "1. Analyze current data processing logic",
                 "2. Identify data collection gaps",
                 "3. Enhance data extraction",
                 "4. Add data validation",
-                "5. Test with sample data"
+                "5. Test with sample data",
             ]
-        elif improvement['type'] == 'fix_agent_initialization':
+        elif improvement["type"] == "fix_agent_initialization":
             return [
                 "1. Review agent initialization code",
                 "2. Check agent dependencies",
                 "3. Fix initialization sequence",
                 "4. Add agent health checks",
-                "5. Validate all agents start"
+                "5. Validate all agents start",
             ]
         else:
             return ["1. Analyze issue", "2. Implement fix", "3. Test", "4. Validate"]
 
     def _estimate_duration(self, improvement: Dict) -> str:
         """Estimate implementation duration"""
-        effort_map = {
-            'LOW': '1-2 hours',
-            'MEDIUM': '4-8 hours',
-            'HIGH': '1-2 days'
-        }
-        return effort_map.get(improvement['effort'], 'Unknown')
+        effort_map = {"LOW": "1-2 hours", "MEDIUM": "4-8 hours", "HIGH": "1-2 days"}
+        return effort_map.get(improvement["effort"], "Unknown")
 
     def _identify_dependencies(self, improvement: Dict) -> List[str]:
         """Identify improvement dependencies"""
         deps = []
 
-        if 'phase' in improvement.get('target', '').lower():
-            deps.append('Phase execution framework')
-            deps.append('State management')
+        if "phase" in improvement.get("target", "").lower():
+            deps.append("Phase execution framework")
+            deps.append("State management")
 
-        if 'agent' in improvement.get('target', '').lower():
-            deps.append('Agent manager')
-            deps.append('Agent registry')
+        if "agent" in improvement.get("target", "").lower():
+            deps.append("Agent manager")
+            deps.append("Agent registry")
 
-        return deps if deps else ['None']
+        return deps if deps else ["None"]
 
     def _define_success_criteria(self, improvement: Dict) -> List[str]:
         """Define success criteria for improvement"""
         return [
-            improvement['expected_outcome'],
-            'No regression in existing functionality',
-            'All tests pass',
-            'Documentation updated'
+            improvement["expected_outcome"],
+            "No regression in existing functionality",
+            "All tests pass",
+            "Documentation updated",
         ]
 
     def _measure_success(self, baseline: Dict, optimized: List[Dict]) -> Dict[str, Any]:
         """WIN: Measure success"""
         success_metrics = {
-            'baseline_metrics': baseline,
-            'improvements_count': len(optimized),
-            'high_priority_count': sum(1 for i in optimized if i['priority'] == 'HIGH'),
-            'medium_priority_count': sum(1 for i in optimized if i['priority'] == 'MEDIUM'),
-            'low_priority_count': sum(1 for i in optimized if i['priority'] == 'LOW'),
-            'estimated_total_effort': self._calculate_total_effort(optimized),
-            'success_rate': (len(optimized) / max(len(optimized), 1)) * 100  # All validated = 100%
+            "baseline_metrics": baseline,
+            "improvements_count": len(optimized),
+            "high_priority_count": sum(1 for i in optimized if i["priority"] == "HIGH"),
+            "medium_priority_count": sum(
+                1 for i in optimized if i["priority"] == "MEDIUM"
+            ),
+            "low_priority_count": sum(1 for i in optimized if i["priority"] == "LOW"),
+            "estimated_total_effort": self._calculate_total_effort(optimized),
+            "success_rate": (len(optimized) / max(len(optimized), 1))
+            * 100,  # All validated = 100%
         }
 
         return success_metrics
 
     def _calculate_total_effort(self, improvements: List[Dict]) -> str:
         """Calculate total effort for all improvements"""
-        effort_hours = {
-            'LOW': 1.5,
-            'MEDIUM': 6,
-            'HIGH': 12
-        }
+        effort_hours = {"LOW": 1.5, "MEDIUM": 6, "HIGH": 12}
 
-        total_hours = sum(effort_hours.get(imp['effort'], 0) for imp in improvements)
+        total_hours = sum(effort_hours.get(imp["effort"], 0) for imp in improvements)
 
         if total_hours < 8:
             return f"{total_hours:.1f} hours"
@@ -471,9 +497,12 @@ class SelfImprovementAgent:
 
     def _save_cycle_result(self, result: Dict[str, Any]):
         """Save improvement cycle result"""
-        output_file = self.config.paths.output_root / f"self_improvement_iteration_{result['iteration']}.json"
+        output_file = (
+            self.config.paths.output_root
+            / f"self_improvement_iteration_{result['iteration']}.json"
+        )
 
-        with open(output_file, 'w') as f:
+        with open(output_file, "w") as f:
             json.dump(result, f, indent=2)
 
         print(f"\n✅ Self-improvement cycle saved: {output_file}")
@@ -481,8 +510,10 @@ class SelfImprovementAgent:
 
 def main():
     parser = argparse.ArgumentParser(description="DMAIC V4.0 Self-Improvement Agent")
-    parser.add_argument('--iteration', type=int, default=1, help='Iteration number')
-    parser.add_argument('--cycles', type=int, default=1, help='Number of improvement cycles')
+    parser.add_argument("--iteration", type=int, default=1, help="Iteration number")
+    parser.add_argument(
+        "--cycles", type=int, default=1, help="Number of improvement cycles"
+    )
 
     args = parser.parse_args()
 
@@ -504,10 +535,13 @@ def main():
     print(f"{'='*80}")
     print(f"Total Cycles: {len(results)}")
     print(f"Total Improvements: {sum(r['improvements_optimized'] for r in results)}")
-    print(f"Average Success Rate: {sum(r['success_rate'] for r in results) / len(results):.1f}%")
+    print(
+        f"Average Success Rate: {sum(r['success_rate'] for r in results) / len(results):.1f}%"
+    )
     print(f"{'='*80}\n")
 
     return 0
+
 
 if __name__ == "__main__":
     sys.exit(main())
