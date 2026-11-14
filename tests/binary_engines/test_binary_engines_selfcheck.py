@@ -119,7 +119,8 @@ class Structure(unittest.TestCase):
             "STALE_ARCHIVE",
             "ACTIVATE_ZIP",
         }
-        self.assertTrue(used <= set(self.spec.DECISIONS))
+        missing = used - set(self.spec.DECISIONS)
+        self.assertEqual(missing, set())
 
     def test_capability_matrix_is_complete(self):
         scaffold = _env.engine("estate_scaffold")
