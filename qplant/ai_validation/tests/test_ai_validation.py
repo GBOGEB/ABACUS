@@ -15,8 +15,8 @@ from ai_validation.code_quality import CodeQualityAnalyser
 from ai_validation.config_validator import ConfigValidator, ValidationResult
 from ai_validation.doc_quality import DocQualityAnalyser
 
-
 # ── Test Generator Tests ─────────────────────────────────────────────────────
+
 
 class TestCodeAnalyser:
     def test_analyse_python_file(self, tmp_path):
@@ -39,7 +39,7 @@ def greet(name: str = "world") -> str:
 
     def test_complexity_estimation(self, tmp_path):
         py_file = tmp_path / "complex.py"
-        py_file.write_text('''
+        py_file.write_text("""
 def complex_func(x):
     if x > 0:
         if x > 10:
@@ -50,7 +50,7 @@ def complex_func(x):
         return "negative"
     else:
         return "zero"
-''')
+""")
         analyser = CodeAnalyser()
         functions = analyser.analyse_file(str(py_file))
         assert functions[0].complexity >= 4
@@ -72,13 +72,13 @@ def calculate(value: float) -> float:
 
     def test_skip_private_functions(self, tmp_path):
         py_file = tmp_path / "private.py"
-        py_file.write_text('''
+        py_file.write_text("""
 def _private():
     pass
 
 def public():
     pass
-''')
+""")
         gen = SuiteGenerator()
         tests = gen.generate_for_file(str(py_file))
         assert all(t.function != "_private" for t in tests)
@@ -92,6 +92,7 @@ def public():
 
 
 # ── Code Quality Tests ───────────────────────────────────────────────────────
+
 
 class TestCodeQuality:
     def test_analyse_clean_file(self, tmp_path):
@@ -153,6 +154,7 @@ def mega_func(a, b, c, d, e):
 
 # ── Config Validator Tests ───────────────────────────────────────────────────
 
+
 class TestConfigValidator:
     SAMPLE_CONFIG = {
         "version": "4.2.0",
@@ -164,7 +166,13 @@ class TestConfigValidator:
                 "max_flow_gs": 336,
                 "redundancy_formula": "test",
             },
-            "pvps": {"total_flow_gs": 50, "units_total": 10, "units_active": 9, "flow_per_unit_gs": 5, "n_minus_1_capable": True},
+            "pvps": {
+                "total_flow_gs": 50,
+                "units_total": 10,
+                "units_active": 9,
+                "flow_per_unit_gs": 5,
+                "n_minus_1_capable": True,
+            },
         },
         "pressure_parameters": {
             "wcs_hp_outlet": {"nominal_barg": 14, "max_barg": 15, "min_barg": 10},
@@ -173,13 +181,38 @@ class TestConfigValidator:
             "wcs_lcc_suction": {"nominal_mbar": 400},
         },
         "compressor_specifications": {
-            "hp_compressors": {"count": 3, "model": "FSD575", "power_supply": "400V", "redundancy": "N+1", "configuration": "3 active"},
-            "fsd575": {"motor_power_kW": 315, "per_unit_flow_gs": 112.54, "capacity_nm3h": 575, "package_power_kW": 348.54,
-                        "frequency_hz": 72, "vfd_range_pct": [30, 100], "efficiency_percent": [70, 75],
-                        "cooling_water_m3h": 18.2, "heat_rejection_kW": 323.9, "noise_dba": 75,
-                        "dimensions_mm": "3240×2145×2360", "weight_kg": 6770, "oil_charge_L": 173,
-                        "mtbf_hours": 8760, "mttr_hours": 8, "capital_cost_eur": 200000, "annual_maint_eur": 15000},
-            "three_skid_totals": {"max_total_flow_gs": 337.62, "package_power_kW": 1045.62, "cooling_water_m3h": 54.6, "heat_rejection_kW": 971.7},
+            "hp_compressors": {
+                "count": 3,
+                "model": "FSD575",
+                "power_supply": "400V",
+                "redundancy": "N+1",
+                "configuration": "3 active",
+            },
+            "fsd575": {
+                "motor_power_kW": 315,
+                "per_unit_flow_gs": 112.54,
+                "capacity_nm3h": 575,
+                "package_power_kW": 348.54,
+                "frequency_hz": 72,
+                "vfd_range_pct": [30, 100],
+                "efficiency_percent": [70, 75],
+                "cooling_water_m3h": 18.2,
+                "heat_rejection_kW": 323.9,
+                "noise_dba": 75,
+                "dimensions_mm": "3240×2145×2360",
+                "weight_kg": 6770,
+                "oil_charge_L": 173,
+                "mtbf_hours": 8760,
+                "mttr_hours": 8,
+                "capital_cost_eur": 200000,
+                "annual_maint_eur": 15000,
+            },
+            "three_skid_totals": {
+                "max_total_flow_gs": 337.62,
+                "package_power_kW": 1045.62,
+                "cooling_water_m3h": 54.6,
+                "heat_rejection_kW": 971.7,
+            },
         },
         "financial": {
             "electricity_cost_eur_kwh": 0.15,
@@ -208,7 +241,9 @@ class TestConfigValidator:
 
     def test_out_of_range_value(self):
         bad = dict(self.SAMPLE_CONFIG)
-        bad["compressor_specifications"] = dict(self.SAMPLE_CONFIG["compressor_specifications"])
+        bad["compressor_specifications"] = dict(
+            self.SAMPLE_CONFIG["compressor_specifications"]
+        )
         bad["compressor_specifications"]["hp_compressors"] = {
             **self.SAMPLE_CONFIG["compressor_specifications"]["hp_compressors"],
             "count": 99,
@@ -216,7 +251,11 @@ class TestConfigValidator:
         v = ConfigValidator()
         v.load_dict(bad)
         result = v.validate_all()
-        errors = [r for r in result["results"] if r["level"] == "error" and "range" in r.get("check", "")]
+        errors = [
+            r
+            for r in result["results"]
+            if r["level"] == "error" and "range" in r.get("check", "")
+        ]
         assert len(errors) >= 1
 
     def test_dependency_check(self):
@@ -228,6 +267,7 @@ class TestConfigValidator:
 
 
 # ── Doc Quality Tests ────────────────────────────────────────────────────────
+
 
 class TestDocQuality:
     def test_analyse_markdown(self, tmp_path):
@@ -270,7 +310,9 @@ Use the tool like this.
 
     def test_readability_score(self, tmp_path):
         md_file = tmp_path / "simple.md"
-        md_file.write_text("# Simple\n\nThis is a simple document. It has short sentences. Easy to read.\n")
+        md_file.write_text(
+            "# Simple\n\nThis is a simple document. It has short sentences. Easy to read.\n"
+        )
         analyser = DocQualityAnalyser()
         report = analyser.analyse_file(str(md_file))
         assert report.readability_score > 0
