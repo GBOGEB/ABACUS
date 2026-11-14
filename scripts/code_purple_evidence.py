@@ -364,6 +364,10 @@ def candidate_delta(candidate, baseline, merge_base_sha):
     b = _number(candidate.get("covered_statements"))
     if a is None or b is None:
         return "UNKNOWN", None
+    # Same rule as ci/verify_handover.py: a delta is only comparable over one coverage population.
+    for denom in ("statements", "branches"):
+        if candidate.get(denom) != baseline.get(denom):
+            return "REJECT_DENOMINATOR_MISMATCH", None
     return "OK", b - a
 
 

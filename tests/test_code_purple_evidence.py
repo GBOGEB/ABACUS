@@ -569,6 +569,18 @@ class CoverageFindingsTest(unittest.TestCase):
             ev.candidate_delta(self.W88, self.MAIN_44, MAIN_0), ("OK", 828)
         )
 
+    def test_different_denominators_are_not_a_coverage_gain(self):
+        base = dict(self.MAIN_44, statements=50000, branches=9000)
+        same = dict(self.W88, statements=50000, branches=9000)
+        self.assertEqual(ev.candidate_delta(same, base, MAIN_0), ("OK", 828))
+        for denom in ("statements", "branches"):
+            grown = dict(same, **{denom: same[denom] + 900})
+            self.assertEqual(
+                ev.candidate_delta(grown, base, MAIN_0),
+                ("REJECT_DENOMINATOR_MISMATCH", None),
+                denom,
+            )
+
     def test_candidate_needs_its_own_synthetic_merge_baseline(self):
         head_only = dict(self.W88, checkout_kind="head")
         self.assertEqual(
