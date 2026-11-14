@@ -666,7 +666,7 @@ def main() -> int:
         f"Files at the top level: {total_files}. Grouped (human-facing types A-K): {len(rows)}. Excluded: {sum(other.values())}, by extension: "
         + ", ".join(f"{k} {v}" for k, v in other.most_common()),
         "Folders are never entered; links (junctions, symlinks) and sensitive folders (.ssh, .aws, .azure, .gnupg, _personal, "
-        "_canonical_private) are skipped without reading or listing them.",
+        + "_canonical_private) are skipped without reading or listing them.",
     ]
     lines += [
         "",
