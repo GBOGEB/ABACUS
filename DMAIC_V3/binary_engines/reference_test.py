@@ -319,6 +319,7 @@ def r2c_links(p: dict) -> dict:
             g = json.loads(gf.read_text("utf-8"))
             if g["file"] == name and g["format"] == fmt:
                 return g
+        return None
 
     def links(g):
         nodes = {n["id"]: n for n in g["nodes"]}
