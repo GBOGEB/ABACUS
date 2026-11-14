@@ -38,3 +38,75 @@ participates:
     role: receiver   # global hive GLOB DOW receiver; elevated
   - key: QPS:W322
     role: reviewer   # HEPAK MIP DOW review; elevated
+  - key: QPS:W028
+    role: reviewer   # request/review; elevated
+  - key: QPS:W042
+    role: receiver   # receipt/return; elevated
+  - key: QPS:W044
+    role: producer   # origin; elevated
+  - key: QPS:W045
+    role: receiver   # content reference; elevated
+  - key: QPS:W047
+    role: reviewer   # request/review; elevated
+  - key: QPS:W054
+    role: receiver   # receipt/return; elevated
+  - key: QPS:W055
+    role: receiver   # content reference; elevated
+  - key: QPS:W058
+    role: receiver   # receipt/return; elevated
+  - key: QPS:W061
+    role: receiver   # receipt/return; elevated
+  - key: QPS:W062
+    role: producer   # origin; elevated
+  - key: QPS:W063
+    role: producer   # origin; elevated
+  - key: QPS:W065
+    role: executor   # workflow/script; elevated
+  - key: QPS:W066
+    role: receiver   # receipt/return; elevated
+  - key: QPS:W071
+    role: executor   # workflow/script; elevated
+  - key: QPS:W084
+    role: executor   # workflow/script; elevated
+  - key: QPS:W088
+    role: reviewer   # request/review; elevated
+  - key: QPS:W104
+    role: receiver   # receipt/return; elevated
+  - key: QPS:W105
+    role: receiver   # receipt/return; elevated
+  - key: QPS:W107
+    role: producer   # origin; elevated
+  - key: QPS:W110
+    role: receiver   # receipt/return; elevated
+  - key: QPS:W116
+    role: reviewer   # request/review; elevated
+  - key: QPS:W126
+    role: receiver   # content reference; elevated
+  - key: QPS:W142
+    role: receiver   # content reference; elevated
+  - key: QPS:W145
+    role: receiver   # receipt/return; elevated
+  - key: QPS:W147
+    role: reviewer   # request/review; elevated
+  - key: QPS:W189
+    role: reviewer   # request/review; elevated
+  - key: QPS:W190
+    role: receiver   # receipt/return; elevated
+  - key: QPS:W232
+    role: receiver   # receipt/return; elevated
+  - key: QPS:W233
+    role: reviewer   # request/review; elevated
+  - key: QPS:W259
+    role: receiver   # receipt/return; elevated
+  - key: QPS:W266
+    role: receiver   # receipt/return; elevated
+  - key: QPS:W273
+    role: receiver   # receipt/return; elevated
+  - key: QPS:W274
+    role: reviewer   # request/review; elevated
+  - key: QPS:W285
+    role: receiver   # receipt/return; elevated
+  - key: QPS:W306
+    role: executor   # workflow/script; elevated
+  - key: QPS:W329
+    role: receiver   # receipt/return; elevated
