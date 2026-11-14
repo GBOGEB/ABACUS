@@ -199,6 +199,20 @@ def probe_pptx(p: Path) -> dict:
     }
 
 
+_SHEET_EL = re.compile(r"<sheet\b([^>]*)/?>")
+_ATTR = re.compile(r'([\w:]+)="([^"]*)"')
+
+
+def _sheet_entries(workbook_xml: str) -> list[tuple[str, str]]:
+    """``(name, state)`` per ``<sheet>``; attributes are parsed per element, so ``state`` is found in any order."""
+    out = []
+    for m in _SHEET_EL.finditer(workbook_xml):
+        attrs = dict(_ATTR.findall(m.group(1)))
+        if "name" in attrs:
+            out.append((attrs["name"], attrs.get("state", "")))
+    return out
+
+
 def probe_xlsx(p: Path) -> dict:
     if p.suffix.lower() == ".csv":
         head = p.read_text("utf-8", "replace")[:200_000].splitlines()
@@ -210,7 +224,7 @@ def probe_xlsx(p: Path) -> dict:
     with zipfile.ZipFile(p) as zf:
         names = zf.namelist()
         wb = _read(zf, "xl/workbook.xml")
-        sheets = re.findall(r'<sheet [^>]*name="([^"]+)"[^>]*?(?:state="(\w+)")?', wb)
+        sheets = _sheet_entries(wb)
         f_total, dims, cf, dv, merged = 0, {}, 0, 0, 0
         for sn in _parts(zf, r"xl/worksheets/sheet\d+\.xml"):
             s = _read(zf, sn)
