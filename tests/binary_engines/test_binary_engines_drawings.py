@@ -77,6 +77,26 @@ class DecksAndDrawings(unittest.TestCase):
         self.assertIn("T-201", atoms[0]["statement"])
         self.assertEqual(atoms[0]["validation_result"], "UNVALIDATED")
 
+    def test_same_basename_in_two_dirs_keeps_two_graphs(self):
+        """Same basename under two directories: outputs and locators stay root-qualified, nothing overwritten."""
+        twin_dir = self.root / "twin_dir"
+        twin_dir.mkdir(exist_ok=True)
+        twin = twin_dir / self.deck_a.name
+        shutil.copy(self.deck_a, twin)
+        dg = _env.engine("deep_graph")
+        before = set((_env.HOME / "deep").glob("loop_overview_a.*.pptx.graph.json"))
+        code, out = _env.run_main("deep_graph", str(self.deck_a), str(twin))
+        self.assertEqual(code, 0, out[-2000:])
+        made = set((_env.HOME / "deep").glob("loop_overview_a.*.pptx.graph.json"))
+        keys = {dg.source_key(self.deck_a), dg.source_key(twin)}
+        self.assertEqual(len(keys), 2)
+        self.assertGreaterEqual(len(made - before) + len(before & made), 2)
+        locs = set()
+        for gf in made:
+            g = json.loads(gf.read_text("utf-8"))
+            locs |= {n["locator"].split("#", 1)[0] for n in g["nodes"]}
+        self.assertTrue(keys <= locs, (keys, locs))
+
     def test_root_mode_writes_a_summary(self):
         code, out = _env.run_main("deep_graph", "--root-id", "MI")
         self.assertEqual(code, 0, out[-2000:])

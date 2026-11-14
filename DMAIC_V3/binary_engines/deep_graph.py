@@ -75,11 +75,22 @@ BLOCK_ARROWS = {
 
 
 # ============================================================ shared graph helpers
+def source_key(path: Path) -> str:
+    """Root-qualified identity of a drawing: basename plus a digest of its resolved path.
+
+    Two roots (or two subdirectories) can hold drawings with the same basename; outputs and locators
+    keyed by ``path.name`` alone would collide and silently overwrite each other.
+    """
+    digest = hashlib.sha256(str(Path(path).resolve()).encode("utf-8")).hexdigest()[:8]
+    return f"{Path(path).name}@{digest}"
+
+
 def new_graph(fmt: str, path: Path) -> dict:
     return {
         "schema": "gbogeb.estate.drawing_graph/0.1",
         "format": fmt,
         "file": path.name,
+        "source_key": source_key(path),
         "sha256": hashlib.sha256(path.read_bytes()).hexdigest(),
         "pages": [],
         "nodes": [],
@@ -341,7 +352,7 @@ def finish(g: dict) -> dict:
     # locators (file#page/id) are where an object sits in THIS file; they do not survive a revision.
     # stable-ID candidates (eq:P-101) come from tag-like text and are what a crosswalk joins on. Candidates only.
     for n in g["nodes"]:
-        n["locator"] = f"{g['file']}#{n['id']}"
+        n["locator"] = f"{g.get('source_key', g['file'])}#{n['id']}"
         tags = sorted(
             {re.sub(r"[-_ ]", "-", t) for t in TAG_RX.findall(n.get("text") or "")}
         )
@@ -349,7 +360,7 @@ def finish(g: dict) -> dict:
             n["eq_candidates"] = [f"eq:{t}" for t in tags[:6]]
     reg = [r for r in _registry() if re.search(r.get("file_regex", "."), g["file"])]
     for e in g["edges"]:
-        e["locator"] = f"{g['file']}#{e['id']}"
+        e["locator"] = f"{g.get('source_key', g['file'])}#{e['id']}"
         e["evidence"] = EVIDENCE.get(e["how"], "NONE")
         e["drawn"] = (
             "arrow" if e["direction"] != "none" else "line"
@@ -1562,7 +1573,11 @@ def main() -> int:
             continue
         summary.append({"file": f.name, "format": g["format"], **g["qa"]})
         g = READERS[f.suffix.lower()](f)
-        stem = re.sub(r"[^\w.-]+", "_", f.stem)[:60]
+        stem = (
+            re.sub(r"[^\w.-]+", "_", f.stem)[:60]
+            + "."
+            + g.get("source_key", source_key(f)).rsplit("@", 1)[-1]
+        )
         (OUT / f"{stem}{f.suffix.lower()}.graph.json").write_text(
             json.dumps(g, ensure_ascii=False, default=list), "utf-8"
         )
