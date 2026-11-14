@@ -193,3 +193,12 @@ def test_non_contiguous_preset_pages_fail_closed(synthetic_root, tmp_path):
             tmp_path / "x.pdf",
             page_presets={1: {"title": "a"}, 3: {"title": "b"}},
         )
+
+
+def test_k4106_is_na_when_source_requests_no_font_family():
+    ok, status, _ = fidelity.font_substitution_verdict(set(), ["ABCDEF+DejaVuSans"])
+    assert (ok, status) == (True, "NA")
+    ok, status, detail = fidelity.font_substitution_verdict({"arial"}, ["ABCDEF+DejaVuSans"])
+    assert (ok, status) == (False, None) and "DejaVuSans" in detail
+    assert fidelity.font_substitution_verdict({"arial"}, ["X+Arial-BoldMT"])[0] is True
+    assert fidelity.font_substitution_verdict(set(), []) [:2] == (True, None)

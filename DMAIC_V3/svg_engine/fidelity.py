@@ -149,6 +149,22 @@ def requested_font_families(root):
     return req
 
 
+def font_substitution_verdict(requested, embedded):
+    """K4106 verdict ``(passed, status_override, detail)``.
+
+    With no explicit ``font-family`` in the source there is no request to violate: the renderer's default
+    font is not a substitution, so the check is NA rather than a failure.
+    """
+    if not requested and embedded:
+        return True, "NA", f"no font-family requested by source; embedded={list(embedded)}"
+    alien = [e for e in embedded if font_family_of(e) not in requested]
+    return (
+        not alien,
+        None,
+        f"requested={sorted(requested)}; embedded={list(embedded)}; substituted={alien}",
+    )
+
+
 def font_family_of(embedded_name: str) -> str:
     """'ABCDEF+Arial-BoldMT' -> 'arial'."""
     n = embedded_name.split("+")[-1]
@@ -267,12 +283,13 @@ def check_pdf_fidelity(
         )
     req = requested_font_families(root)
     emb = sorted({f[3].split("+")[-1] for pg in doc for f in pg.get_fonts(full=True)})
-    alien = [e for e in emb if font_family_of(e) not in req]
+    ok, status, detail = font_substitution_verdict(req, emb)
     ck(
         "K4106",
         "Embedded fonts are source-requested families (no substitution)",
-        not alien,
-        f"requested={sorted(req)}; embedded={emb}; substituted={alien}",
+        ok,
+        detail,
+        status=status,
     )
 
     per = []
