@@ -6,7 +6,8 @@ on:
 # Part of #2722: cancel superseded PR runs (same PR, older head). Pushes to
 # main are keyed by SHA and never cancelled.
 concurrency:
-  group: ${{ github.workflow }}-${{ github.event_name }}-${{ github.event.pull_request.number || github.sha }}
+  # A re-run of an older attempt keeps its old head: give it its own group so it cannot cancel the current head.
+  group: ${{ github.workflow }}-${{ github.event_name }}-${{ github.event.pull_request.number || github.sha }}${{ github.run_attempt > 1 && format('-rerun-{0}', github.run_id) || '' }}
   cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 
 jobs:
