@@ -23,10 +23,10 @@ import argparse
 import os
 import subprocess
 import sys
-import xml.etree.ElementTree as ET
 from pathlib import Path
 
 import pytest
+from defusedxml import ElementTree as ET
 
 
 @pytest.hookimpl(hookwrapper=True)
