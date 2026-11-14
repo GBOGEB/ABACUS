@@ -562,7 +562,8 @@ def main():
     out.mkdir(parents=True, exist_ok=True)
     svg = (BASE / "CODE_PURPLE_W10_REPO_SPINE.svg").read_text(encoding="utf-8")
     # Strip XML declaration and DOCTYPE; inline SVG keeps linked nodes, no external assets.
-    svg = svg[svg.find("<svg") :]
+    svg_start = svg.find("<svg")
+    svg = svg[svg_start:]
     body = make_html(d, svg)
     if body.count("<footer>") != 1:
         raise ValueError("W10 HTML footer anchor missing or ambiguous")

@@ -108,7 +108,8 @@ class RefactoringExecutor:
         print(f"   Total duplicates to remove: {total_files}")
 
         for batch_num in range(0, total_files, self.batch_size):
-            batch = files_to_remove[batch_num : batch_num + self.batch_size]
+            batch_end = batch_num + self.batch_size
+            batch = files_to_remove[batch_num:batch_end]
             batch_id = batch_num // self.batch_size + 1
             total_batches = (total_files - 1) // self.batch_size + 1
 
@@ -219,7 +220,8 @@ class RefactoringExecutor:
 
         # Process in batches
         for batch_num in range(0, total_files, self.batch_size):
-            batch = files_to_update[batch_num : batch_num + self.batch_size]
+            batch_end = batch_num + self.batch_size
+            batch = files_to_update[batch_num:batch_end]
             batch_id = batch_num // self.batch_size + 1
             total_batches = (total_files - 1) // self.batch_size + 1
 
