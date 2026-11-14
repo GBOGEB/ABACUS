@@ -97,6 +97,23 @@ class DecksAndDrawings(unittest.TestCase):
             locs |= {n["locator"].split("#", 1)[0] for n in g["nodes"]}
         self.assertTrue(keys <= locs, (keys, locs))
 
+    def test_reader_runs_once_per_drawing(self):
+        dg = _env.engine("deep_graph")
+        calls = []
+        real = dg.READERS[".pptx"]
+
+        def counting(path):
+            calls.append(path)
+            return real(path)
+
+        dg.READERS[".pptx"] = counting
+        try:
+            code, out = _env.run_main("deep_graph", str(self.deck_a))
+        finally:
+            dg.READERS[".pptx"] = real
+        self.assertEqual(code, 0, out[-2000:])
+        self.assertEqual(len(calls), 1)
+
     def test_root_mode_writes_a_summary(self):
         code, out = _env.run_main("deep_graph", "--root-id", "MI")
         self.assertEqual(code, 0, out[-2000:])

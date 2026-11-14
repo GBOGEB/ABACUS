@@ -1572,7 +1572,6 @@ def main() -> int:
             )
             continue
         summary.append({"file": f.name, "format": g["format"], **g["qa"]})
-        g = READERS[f.suffix.lower()](f)
         stem = (
             re.sub(r"[^\w.-]+", "_", f.stem)[:60]
             + "."
