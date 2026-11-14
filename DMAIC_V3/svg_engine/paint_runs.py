@@ -98,6 +98,9 @@ def isolated_svg(root, run) -> bytes:
         if simple(e) == "g" and e.get(XINK + "groupmode") == "layer":
             st = e.get("style") or ""
             e.set("style", re.sub(r"display\s*:\s*none", "display:inline", st))
+            if e.get("display") == "none":
+                # A presentation attribute hides the layer too; visibility is applied by optional content.
+                del e.attrib["display"]
 
     prune(target)
     return etree.tostring(target, encoding="utf-8")

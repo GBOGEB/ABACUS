@@ -115,6 +115,21 @@ def load_svg(path, member: str | None = None, *, validate: bool = True):
     return parse_svg(data, validate=validate), data
 
 
+_STYLE_DISPLAY = re.compile(r"(?:^|;)\s*display\s*:\s*([A-Za-z-]+)")
+
+
+def effective_display(e) -> str:
+    """Effective ``display`` of an element: a ``style`` declaration overrides the presentation attribute."""
+    m = _STYLE_DISPLAY.search(e.get("style") or "")
+    if m:
+        return m.group(1).strip().lower()
+    return (e.get("display") or "inline").strip().lower()
+
+
+def is_source_visible(e) -> bool:
+    return effective_display(e) != "none"
+
+
 def is_layer(e) -> bool:
     return simple(e) == "g" and e.get(XINK + "groupmode") == "layer"
 
@@ -135,8 +150,7 @@ def layer_items(root):
                         reversed([a.get(XINK + "label") or a.get("id") for a in an])
                     )
                     + [x.get(XINK + "label") or x.get("id")],
-                    "source_visible": "display:none"
-                    not in (x.get("style") or "").replace(" ", ""),
+                    "source_visible": is_source_visible(x),
                 }
             )
     return result
@@ -189,8 +203,7 @@ def layer_tree_report(root, page_token_counters=()):
                 "id": e.get("id"),
                 "label": e.get(XINK + "label"),
                 "depth": len(anc),
-                "source_visible": "display:none"
-                not in (e.get("style") or "").replace(" ", ""),
+                "source_visible": is_source_visible(e),
                 "own_text_tokens": n,
                 "page_presence": [
                     round(sum((t & pg).values()) / n, 2) if n else None

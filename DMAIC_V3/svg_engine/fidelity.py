@@ -91,6 +91,7 @@ def svg_oracle(root, overrides, dpi=DPI):
                 "display:inline" if overrides[e.get("id")] else "display:none"
             )
             e.set("style", st)
+            e.attrib.pop("display", None)
     with fitz.open(
         stream=cairosvg.svg2pdf(bytestring=etree.tostring(r)), filetype="pdf"
     ) as d:

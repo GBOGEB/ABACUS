@@ -180,3 +180,29 @@ def test_layer_tree_report_flags_ordinary_group_nesting(synthetic_root):
     rows = {r["id"]: r for r in ingress.layer_tree_report(synthetic_root)}
     assert rows["annot_nested"]["via_ordinary_groups"] == 1
     assert rows["base_detail_on"]["via_ordinary_groups"] == 0
+
+
+_ATTR_SVG = b"""<svg xmlns="http://www.w3.org/2000/svg"
+ xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape" width="10" height="10">
+  <g inkscape:groupmode="layer" id="attr_hidden" inkscape:label="A" display="none"><rect width="1" height="1"/></g>
+  <g inkscape:groupmode="layer" id="style_wins" inkscape:label="B" display="none" style="display:inline">
+    <rect width="1" height="1"/></g>
+  <g inkscape:groupmode="layer" id="style_hidden" inkscape:label="C" style="fill:red; display : none">
+    <rect width="1" height="1"/></g>
+</svg>"""
+
+
+def test_layer_visibility_honours_display_presentation_attribute():
+    """A layer hidden by the ``display`` attribute is not source-visible; a ``style`` declaration overrides it."""
+    root = etree.fromstring(_ATTR_SVG)
+    vis = {x["id"]: x["source_visible"] for x in ingress.layer_items(root)}
+    assert vis == {"attr_hidden": False, "style_wins": True, "style_hidden": False}
+
+
+def test_isolated_svg_clears_display_attribute_on_layers():
+    root = etree.fromstring(_ATTR_SVG)
+    _, runs = paint_runs.paint_atoms(root)
+    run = next(r for r in runs if r["owner"] == "attr_hidden")
+    out = etree.fromstring(paint_runs.isolated_svg(root, run))
+    layer = next(e for e in out.iter() if e.get("id") == "attr_hidden")
+    assert layer.get("display") is None
