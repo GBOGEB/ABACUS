@@ -98,7 +98,7 @@ def main() -> int:
             }
         )
         print(
-            f"{'OK  ' if ok else 'HOLD'} {f.name:28} markers={sum(marks.values()):4} paths={paths:2} secrets={secrets} py312-only={f312[:6]} {dict(marks.most_common(4))}"
+            f"{'OK  ' if ok else 'HOLD'} {f.name:28} markers={sum(marks.values()):4} paths={paths:2} py312-only={f312[:6]} {dict(marks.most_common(4))}"
         )
     (EST / "deep").mkdir(parents=True, exist_ok=True)
     (EST / "deep" / "PUBLIC_SAFETY.json").write_text(
