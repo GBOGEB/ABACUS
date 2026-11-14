@@ -330,6 +330,10 @@ def reverse_kahn(zips: list[dict]) -> None:
             )  # |a & b| / min(|a|, |b|), 0 when either is empty
             if same_family or (overlap >= 0.6 and min(len(sa), len(sb)) >= 5):
                 succ[a["name"]].add(b["name"])
+                if a["mtime"] == b["mtime"]:
+                    # Equal timestamps carry no order: link both ways so Kahn leaves them in a cycle
+                    # (kahn_layer -1 -> CYCLE_REVIEW) instead of retiring one by input order.
+                    succ[b["name"]].add(a["name"])
     # transitive reduction-lite: keep only the nearest successor per family to keep chains readable
     for n, s in succ.items():
         if len(s) > 1:

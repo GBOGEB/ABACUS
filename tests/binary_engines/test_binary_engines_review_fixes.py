@@ -26,5 +26,49 @@ class SheetState(unittest.TestCase):
         )
 
 
+class EqualTimestamps(unittest.TestCase):
+    @classmethod
+    def setUpClass(cls):
+        _env.require_kernels()
+
+    def test_equal_mtime_relatives_go_to_cycle_review(self):
+        inv = _env.engine("estate_inventory")
+        zips = [
+            {
+                "name": n,
+                "mtime": 1000.0,
+                "family": "bundle",
+                "zip": {"names_sig": []},
+                "age_days": 1,
+            }
+            for n in ("bundle_v1.zip", "bundle_v2.zip")
+        ]
+        inv.reverse_kahn(zips)
+        self.assertEqual([z["kahn_layer"] for z in zips], [-1, -1])
+
+    def test_strictly_older_is_still_superseded(self):
+        inv = _env.engine("estate_inventory")
+        zips = [
+            {
+                "name": "a.zip",
+                "mtime": 1000.0,
+                "family": "f",
+                "zip": {"names_sig": []},
+                "age_days": 1,
+            },
+            {
+                "name": "b.zip",
+                "mtime": 2000.0,
+                "family": "f",
+                "zip": {"names_sig": []},
+                "age_days": 1,
+            },
+        ]
+        inv.reverse_kahn(zips)
+        self.assertEqual(
+            {z["name"]: z["kahn_layer"] for z in zips}, {"a.zip": 1, "b.zip": 0}
+        )
+
+
 if __name__ == "__main__":
     unittest.main()
