@@ -183,3 +183,13 @@ def test_cli_round_trip(tmp_path):
     )
     rec = json.loads((tmp_path / "receipt.json").read_text(encoding="utf-8"))
     assert rec["summary"]["FAIL"] == 0
+
+
+def test_non_contiguous_preset_pages_fail_closed(synthetic_root, tmp_path):
+    """Presets ``{1, 3}`` would build two physical pages labelled 1 and 3; reject before building."""
+    with pytest.raises(ValueError, match="PRESET_PAGES_NOT_CONTIGUOUS"):
+        pdf_ocg.build_nested_ocg_pdf(
+            synthetic_root,
+            tmp_path / "x.pdf",
+            page_presets={1: {"title": "a"}, 3: {"title": "b"}},
+        )

@@ -69,6 +69,10 @@ def preset_overrides(preset):
 
 
 def _validate_presets(presets, byid):
+    # Page numbers are physical PDF pages: they must run 1..N with no gaps, or reports index the wrong page.
+    pages = sorted(presets)
+    if pages != list(range(1, len(pages) + 1)):
+        raise ValueError(f"PRESET_PAGES_NOT_CONTIGUOUS:{pages}")
     unknown = sorted(
         {
             lid
