@@ -7,17 +7,14 @@ Both are optional; on Linux CI CairoSVG finds the system libcairo. ``bootstrap()
 called before the heavy dependencies are imported.
 """
 
+import functools
 import os
 import sys
 
-_done = False
 
-
+@functools.cache
 def bootstrap():
-    global _done
-    if _done:
-        return
-    _done = True
+    """Idempotent: ``functools.cache`` runs the body once per process."""
     deps = os.environ.get("SVG_ENGINE_DEPS")
     if deps and deps not in sys.path:
         sys.path.insert(0, deps)
