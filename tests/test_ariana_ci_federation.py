@@ -1,4 +1,5 @@
 """Native positive/negative Ariana/DOW bridge and nonpromotion receipt tests."""
+
 from __future__ import annotations
 
 import json
@@ -32,7 +33,7 @@ def _sha() -> str:
 
 
 def _junit(path: Path, cases: str = '<testcase name="ok"/>') -> Path:
-    path.write_text(f'<testsuite>{cases}</testsuite>', encoding="utf-8")
+    path.write_text(f"<testsuite>{cases}</testsuite>", encoding="utf-8")
     return path
 
 
@@ -69,15 +70,20 @@ def test_native_dow_real_parallel_bridge_and_disk_receipt(tmp_path):
     assert result["test_results"]["results_complete"] is True
     assert len(bridge.test_results) == 2
     assert all(r.success and r.returncode == 0 for r in bridge.test_results.values())
-    saved = json.loads((integration.dow_dir / "phase1_iteration1_result.json").read_text())
+    saved = json.loads(
+        (integration.dow_dir / "phase1_iteration1_result.json").read_text()
+    )
     assert saved["success"] is True
 
 
 def test_native_bridge_nonzero_command_remains_failed(tmp_path):
-    config = SimpleNamespace(paths=SimpleNamespace(workspace_root=tmp_path,
-                                                    output_root=tmp_path / "out"))
+    config = SimpleNamespace(
+        paths=SimpleNamespace(workspace_root=tmp_path, output_root=tmp_path / "out")
+    )
     bridge = TestSystemBridge(config, SimpleNamespace(state_dir=tmp_path), None)
-    result = bridge.run_test("forced_failure", [sys.executable, "-c", "raise SystemExit(7)"])
+    result = bridge.run_test(
+        "forced_failure", [sys.executable, "-c", "raise SystemExit(7)"]
+    )
     assert result.returncode == 7
     assert result.success is False
     assert bridge.test_results["forced_failure"].success is False
@@ -124,9 +130,11 @@ def test_junit_positive_and_negative_observations(tmp_path):
     junit = tmp_path / "junit.xml"
     good = read_junit(_junit(junit, '<testcase name="one"/><testcase name="two"/>'))
     assert (good["total"], good["passed"], good["failures"]) == (2, 2, 0)
-    failed = read_junit(_junit(
-        junit, '<testcase name="one"/><testcase name="two"><failure/></testcase>'
-    ))
+    failed = read_junit(
+        _junit(
+            junit, '<testcase name="one"/><testcase name="two"><failure/></testcase>'
+        )
+    )
     assert (failed["total"], failed["passed"], failed["failures"]) == (2, 1, 1)
     with pytest.raises(ValueError, match="empty"):
         read_junit(_junit(junit, ""))
@@ -187,16 +195,13 @@ def test_missing_native_and_changed_head_do_not_gain_acceptance(tmp_path):
 
 
 def test_native_artifact_roots_are_visible_and_upload_fail_closed():
-    workflow = (ROOT / ".github/workflows/ariana-cicd.yml").read_text(
-        encoding="utf-8"
-    )
+    workflow = (ROOT / ".github/workflows/ariana-cicd.yml").read_text(encoding="utf-8")
     assert "path: ariana-evidence/" in workflow
     assert "path: ariana-federation/two-lane-join.json" in workflow
     assert ".ariana-evidence/" not in workflow
     assert ".ariana-federation/" not in workflow
     assert "if-no-files-found: error" in workflow
     assert "include-hidden-files: true" not in workflow
-
 
 
 def test_ash_doctype_and_entity_junit_are_rejected(tmp_path):
@@ -239,9 +244,7 @@ def test_ash_receiver_must_not_promote_qps_contract(tmp_path):
     payload["3pc_consumption"]["authority"]["must_not"].remove(
         "promote_QPS_engineering_truth"
     )
-    (tmp_path / RECEIVER_PATH).write_text(
-        yaml.safe_dump(payload), encoding="utf-8"
-    )
+    (tmp_path / RECEIVER_PATH).write_text(yaml.safe_dump(payload), encoding="utf-8")
     with pytest.raises(ValueError, match="QPS receiver authority"):
         validate_local_contract(tmp_path)
 
@@ -249,9 +252,7 @@ def test_ash_receiver_must_not_promote_qps_contract(tmp_path):
 def test_ash_action_supply_chain_and_import_triggers_are_pinned():
     import re
 
-    workflow = (ROOT / ".github/workflows/ariana-cicd.yml").read_text(
-        encoding="utf-8"
-    )
+    workflow = (ROOT / ".github/workflows/ariana-cicd.yml").read_text(encoding="utf-8")
     refs = re.findall(r"uses: (actions/[\w-]+)@([^\s]+)", workflow)
     assert len(refs) >= 6
     assert all(re.fullmatch(r"[0-9a-f]{40}", sha) for _, sha in refs)
@@ -262,7 +263,6 @@ def test_ash_action_supply_chain_and_import_triggers_are_pinned():
         "src/dmaic/idempotency.py",
     ):
         assert workflow.count(f"'{dep}'") == 2
-
 
 
 @pytest.mark.parametrize(
@@ -290,7 +290,7 @@ def test_junit_declared_counts_valid_positive(tmp_path):
         '<testsuites tests="2" failures="1" errors="0" skipped="0">'
         '<testsuite tests="2" failures="1" errors="0" skipped="0">'
         '<testcase name="ok"/><testcase name="red"><failure/></testcase>'
-        '</testsuite></testsuites>',
+        "</testsuite></testsuites>",
         encoding="utf-8",
     )
     result = read_junit(path)
