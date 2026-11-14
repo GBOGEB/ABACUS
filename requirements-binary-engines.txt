@@ -1,0 +1,10 @@
+# DMAIC_V3/binary_engines runtime dependencies. Installed by .github/workflows/binary-engines.yml.
+# html_shot.py (render check) also needs playwright and Chromium; they are not installed here and no test runs it.
+# The gg_MATH kernels are not a pip package: ggmath_bridge.py loads them from GG_MATH_HOME at a pinned commit.
+PyYAML==6.0.3
+lxml==6.0.2
+python-docx==1.2.0
+python-pptx==1.0.2
+openpyxl==3.1.5
+PyMuPDF==1.26.5
+pillow==12.0.0
