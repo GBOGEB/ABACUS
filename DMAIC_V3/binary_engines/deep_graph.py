@@ -995,7 +995,12 @@ def read_html(path: Path) -> dict:
     g = new_graph("html", path)
     s = path.read_text("utf-8", "replace")
     blocks = re.findall(r"<svg\b.*?</svg>", s, re.S | re.I)
-    body = re.sub(r"<script.*?</script>|<style.*?</style>", "", s, flags=re.S | re.I)
+    body = re.sub(
+        r"<script\b[^>]*>.*?</script\b[^>]*>|<style\b[^>]*>.*?</style\b[^>]*>",
+        "",
+        s,
+        flags=re.S | re.I,
+    )
     in_body = re.findall(r"<svg\b.*?</svg>", body, re.S | re.I)
     g["notes"].append(
         f"{len(blocks)} <svg> block(s): {len(in_body)} in the page markup, {len(blocks) - len(in_body)} built inside script; "
