@@ -124,3 +124,28 @@ def test_w1_inventory_regression_against_w2_adapter(fixture_deck):
         "9"
     ]
     assert bridge["anchors"][0]["native_annotation_slides"] == [2]
+
+
+def test_rels_normalise_absolute_internal_targets(tmp_path):
+    """``Target="/ppt/..."`` is package-rooted and must map to the ZIP part name without a leading slash."""
+    import zipfile
+
+    pres = (
+        '<p:presentation xmlns:p="http://schemas.openxmlformats.org/presentationml/2006/main">'
+        '<p:sldSz cx="9144000" cy="6858000"/></p:presentation>'
+    )
+    rels = (
+        '<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships">'
+        '<Relationship Id="rId1" Type="http://x/slideLayout" Target="/ppt/slideLayouts/slideLayout1.xml"/>'
+        '<Relationship Id="rId2" Type="http://x/slideMaster" Target="../slideMasters/slideMaster1.xml"/>'
+        '<Relationship Id="rId3" Type="http://x/hyperlink" Target="https://e.x/a" TargetMode="External"/>'
+        "</Relationships>"
+    )
+    path = tmp_path / "abs.pptx"
+    with zipfile.ZipFile(path, "w") as z:
+        z.writestr("ppt/presentation.xml", pres)
+        z.writestr("ppt/slides/_rels/slide1.xml.rels", rels)
+    got = ooxml_geometry.Deck(path).rels("ppt/slides/slide1.xml")
+    assert got["rId1"] == ("slideLayout", "ppt/slideLayouts/slideLayout1.xml")
+    assert got["rId2"] == ("slideMaster", "ppt/slideMasters/slideMaster1.xml")
+    assert got["rId3"] == ("hyperlink", "https://e.x/a")

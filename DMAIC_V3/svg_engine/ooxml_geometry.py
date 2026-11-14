@@ -89,7 +89,14 @@ class Deck:
                 (
                     t
                     if r.get("TargetMode") == "External"
-                    else posixpath.normpath(posixpath.join(posixpath.dirname(part), t))
+                    else (
+                        # An absolute internal target is package-rooted; ZIP part names carry no leading slash.
+                        posixpath.normpath(t.lstrip("/"))
+                        if t.startswith("/")
+                        else posixpath.normpath(
+                            posixpath.join(posixpath.dirname(part), t)
+                        )
+                    )
                 ),
             )
         return out
