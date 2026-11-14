@@ -202,11 +202,10 @@ def slide_facts(root, W, H, deck_id, idx, layout, imgs) -> dict:
     sizes = [int(s) / 100 for s in re.findall(r'<a:rPr[^>]* sz="(\d+)"', xml)]
     srgb = sorted(set(re.findall(r'<a:srgbClr val="([0-9A-Fa-f]{6})"', xml)))
     scheme = len(re.findall(r"<a:schemeClr ", xml))
-    layout_fp = hashlib.sha1(
+    layout_fp = hashlib.sha256(
         json.dumps(
             sorted((s["k"], *(round(v * 10) for v in s["b"])) for s in shapes if s["b"])
-        ).encode(),
-        usedforsecurity=False,
+        ).encode()
     ).hexdigest()[:12]
     shingles = SS.shingles(words, 3)  # CRC-32 of each 3-word window
     flags = [
@@ -239,9 +238,7 @@ def slide_facts(root, W, H, deck_id, idx, layout, imgs) -> dict:
         "theme_refs": scheme,
         "images": imgs,
         "flags": flags,
-        "text_fp": hashlib.sha1(
-            " ".join(words).encode(), usedforsecurity=False
-        ).hexdigest()[:12],
+        "text_fp": hashlib.sha256(" ".join(words).encode()).hexdigest()[:12],
         "layout_fp": layout_fp,
         "_mh": minhash(shingles),
         "_words": words,
