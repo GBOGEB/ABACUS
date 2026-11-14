@@ -56,6 +56,8 @@ class KernelPinError(RuntimeError):
 
 def blob_id(data: bytes) -> str:
     """git's object id of a blob (SHA-1 object format). It names the bytes; the sha256 pin is the integrity check."""
+    # git object ids are defined as SHA-1 of the blob header + bytes; integrity rests on the sha256 pin.
+    # nosemgrep: python.lang.security.insecure-hash-algorithms.insecure-hash-algorithm-sha1
     return hashlib.sha1(
         b"blob %d\0" % len(data) + data, usedforsecurity=False
     ).hexdigest()
