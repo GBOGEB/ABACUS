@@ -11,7 +11,6 @@ from __future__ import annotations
 import hashlib
 import json
 import unittest
-from unittest import mock
 
 from tests.binary_engines import _env, _fixtures
 
