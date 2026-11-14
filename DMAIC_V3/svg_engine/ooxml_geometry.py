@@ -153,6 +153,11 @@ def resolve_font(deck, sp, run, plvl, slide_ctx):
     rp = run.find("a:rPr/a:latin", NS)
     if rp is not None:
         chain.append(("run.rPr", rp.get("typeface")))
+    para = run.getparent()
+    pd = para.find("a:pPr/a:defRPr/a:latin", NS) if para is not None else None
+    if pd is not None:
+        # Paragraph-level default run properties sit between the run and the list styles.
+        chain.append(("paragraph.pPr.defRPr", pd.get("typeface")))
     chain.append(
         ("shape.lstStyle", lvl_latin(sp.find("./p:txBody/a:lstStyle", NS), plvl))
     )

@@ -149,3 +149,25 @@ def test_rels_normalise_absolute_internal_targets(tmp_path):
     assert got["rId1"] == ("slideLayout", "ppt/slideLayouts/slideLayout1.xml")
     assert got["rId2"] == ("slideMaster", "ppt/slideMasters/slideMaster1.xml")
     assert got["rId3"] == ("hyperlink", "https://e.x/a")
+
+
+def test_resolve_font_uses_paragraph_default_run_properties():
+    """``a:pPr/a:defRPr/a:latin`` overrides list styles when the run has no ``a:rPr/a:latin``."""
+    from lxml import etree as _et
+
+    a = "http://schemas.openxmlformats.org/drawingml/2006/main"
+    p = "http://schemas.openxmlformats.org/presentationml/2006/main"
+    sp = _et.fromstring(
+        f'<p:sp xmlns:p="{p}" xmlns:a="{a}"><p:nvSpPr><p:nvPr/></p:nvSpPr><p:txBody>'
+        '<a:lstStyle><a:lvl1pPr><a:defRPr><a:latin typeface="ListFont"/></a:defRPr></a:lvl1pPr></a:lstStyle>'
+        '<a:p><a:pPr><a:defRPr><a:latin typeface="ParaFont"/></a:defRPr></a:pPr>'
+        "<a:r><a:rPr/><a:t>x</a:t></a:r></a:p></p:txBody></p:sp>"
+    )
+    run = sp.find(".//a:r", {"a": a})
+
+    class _Deck:
+        pres = _et.fromstring(f'<p:presentation xmlns:p="{p}"/>')
+
+    out = ooxml_geometry.resolve_font(_Deck(), sp, run, 1, {"theme": {}})
+    assert out["declared"] == "ParaFont"
+    assert out["resolved_by"] == "paragraph.pPr.defRPr"
