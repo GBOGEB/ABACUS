@@ -127,9 +127,9 @@ class Structure(unittest.TestCase):
             with self.subTest(type=code):
                 caps = scaffold.CAPS[code]
                 self.assertEqual(set(caps), set(self.spec.CAPABILITIES))
-                self.assertTrue(
-                    {status for status, _ in caps.values()} <= {"now", "planned", "na"}
-                )
+                statuses = {status for status, _ in caps.values()}
+                allowed = {"now", "planned", "na"}
+                self.assertEqual(statuses - allowed, set())
 
 
 class Code(unittest.TestCase):
