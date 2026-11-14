@@ -336,7 +336,7 @@ def probe_vsdx(p: Path) -> dict:
             "vertices": _count(r'vertex="1"', s),
             "edges": _count(r'edge="1"', s),
             "pages": _count(r"<diagram ", s),
-            "mermaid_edges": _count(r"-->|---", s) if ext == ".mmd" else 0,
+            "mermaid_edges": _count(r"--!?>|---", s) if ext == ".mmd" else 0,
             "text_sample": " ".join(re.findall(r'value="([^"]{2,80})"', s))[:3000],
         }
     with zipfile.ZipFile(p) as zf:
