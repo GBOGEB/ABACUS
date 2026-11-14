@@ -1,6 +1,6 @@
 {
-  "generated_at": "2026-11-12T06:04:54.529257",
-  "module_count": 211,
+  "generated_at": "2026-11-12T19:09:30.334082",
+  "module_count": 212,
   "modules": {
     "DMAIC_V3/temporal_phase_runner.py": {
       "docstring": "# Version: 1.0.0\n# Date: 2025-11-25\n# Description: Auto-generated version header",
@@ -2264,6 +2264,15 @@
         }
       ]
     },
+    "DMAIC_V3/tests/test_dmaic_requirements_defusedxml.py": {
+      "docstring": "DMAIC CI installs only DMAIC_V3/requirements.txt; it must carry defusedxml.",
+      "members": [
+        {
+          "name": "test_dmaic_requirements_declare_defusedxml",
+          "doc": ""
+        }
+      ]
+    },
     "DMAIC_V3/tests/test_phase4_improve.py": {
       "docstring": "",
       "members": [
@@ -3819,6 +3828,14 @@
         },
         {
           "name": "test_guard_rejects_non_strict_xpass",
+          "doc": ""
+        },
+        {
+          "name": "test_tally_rejects_entity_declarations",
+          "doc": ""
+        },
+        {
+          "name": "test_tally_parses_plain_junit",
           "doc": ""
         }
       ]
