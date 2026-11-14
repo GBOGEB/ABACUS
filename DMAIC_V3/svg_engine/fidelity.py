@@ -156,7 +156,11 @@ def font_substitution_verdict(requested, embedded):
     font is not a substitution, so the check is NA rather than a failure.
     """
     if not requested and embedded:
-        return True, "NA", f"no font-family requested by source; embedded={list(embedded)}"
+        return (
+            True,
+            "NA",
+            f"no font-family requested by source; embedded={list(embedded)}",
+        )
     alien = [e for e in embedded if font_family_of(e) not in requested]
     return (
         not alien,
