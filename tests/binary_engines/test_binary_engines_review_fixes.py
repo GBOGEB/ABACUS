@@ -70,5 +70,23 @@ class EqualTimestamps(unittest.TestCase):
         )
 
 
+class EmptyEstate(unittest.TestCase):
+    def test_empty_root_writes_header_only_move_plan(self):
+        mp = _env.engine("estate_moveplan")
+        with tempfile.TemporaryDirectory() as tmp:
+            inv = Path(tmp) / "inv"
+            inv.mkdir()
+            (inv / "root_inventory_final.json").write_text("[]", "utf-8")
+            with (
+                mock.patch.object(mp, "ROOTS", {"EMPTY": (Path(tmp) / "root",)}),
+                mock.patch.object(mp, "inv_dir", lambda rid: inv),
+            ):
+                code, out = _env.run_main("estate_moveplan", "--root-id", "EMPTY")
+            self.assertEqual(code, 0, out[-2000:])
+            with (inv / "MOVE_PLAN.csv").open(encoding="utf-8") as fh:
+                rows = list(csv.reader(fh))
+        self.assertEqual(rows, [mp.MOVE_PLAN_FIELDS])
+
+
 if __name__ == "__main__":
     unittest.main()

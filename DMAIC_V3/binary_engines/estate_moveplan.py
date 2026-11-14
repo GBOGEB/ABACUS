@@ -23,6 +23,19 @@ RETIRE = {"SUPERSEDED", "DUPLICATE", "STALE_ARCHIVE"}
 MAX_PATH = 250
 
 
+MOVE_PLAN_FIELDS = [
+    "action",
+    "src",
+    "dest",
+    "type",
+    "epic",
+    "epic_source",
+    "decision_hint",
+    "sha256",
+    "bytes",
+]
+
+
 def main() -> int:
     ap = argparse.ArgumentParser()
     ap.add_argument("--root-id", default="MI", choices=sorted(ROOTS))
@@ -71,7 +84,7 @@ def main() -> int:
             }
         )
     with (INV / "MOVE_PLAN.csv").open("w", newline="", encoding="utf-8") as fh:
-        w = csv.DictWriter(fh, fieldnames=list(plan[0]))
+        w = csv.DictWriter(fh, fieldnames=MOVE_PLAN_FIELDS)
         w.writeheader()
         w.writerows(plan)
     print(dict(stats))
