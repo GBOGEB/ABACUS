@@ -27,7 +27,6 @@ import argparse
 import datetime as _dt
 import glob
 import json
-import os
 import posixpath
 import re
 import shlex
