@@ -163,6 +163,15 @@ jobs:
           python scripts/ci/orchestrator_health.py "${args[@]}"
           python -c "import json; print('status=' + json.load(open('health.json'))['orchestrator_status'])" >> "$GITHUB_OUTPUT"
 
+      # actions/upload-artifact v7.0.2
+      - name: Upload Health Report
+        if: always()
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9
+        with:
+          name: orchestrator-health-${{ github.run_id }}
+          path: health.json
+          if-no-files-found: error
+
       - name: Create GitHub Pages Index
         run: |
           mkdir -p docs
@@ -174,7 +183,7 @@ jobs:
           - **Last Run**: ${{ github.run_id }}
           - **Run Number**: ${{ github.run_number }}
           - **Trigger**: ${{ github.event_name }}
-          - **Orchestrator health**: ${{ steps.health.outputs.status }} (derived from the orchestrate job; see health.json in the run)
+          - **Orchestrator health**: ${{ steps.health.outputs.status }} (derived from the orchestrate job; machine-readable causes in the run artifact orchestrator-health-${{ github.run_id }})
 
           ## Components
 
