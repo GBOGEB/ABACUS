@@ -1,708 +1,231 @@
-# ABACUS — 12-Cluster Analysis Framework
+# ABACUS — DOW analytical runtime, first-red diagnosis and CI
 
-<!-- markdownlint-disable MD001 MD013 MD022 MD029 MD031 MD032 MD040 MD060 -->
-
-> **CODE PURPLE P4 federation navigation (dated 16 Oct 2026):** This repository owns **first-red diagnosis, source-level repairs, CI and independent security**. [Mission Control](https://github.com/GBOGEB/pipeline-automation-hub) · [Local recursive SIPOC pilot](https://github.com/GBOGEB/pipeline-automation-hub/blob/master/mission-control/federation-atlas/flightdeck/pulses/federation_landing_p4.html) · [Current repository Actions](https://github.com/GBOGEB/ABACUS/actions) · [Open PRs](https://github.com/GBOGEB/ABACUS/pulls) · [Current source history](https://github.com/GBOGEB/ABACUS/commits). **Snapshot caution:** The README contains historical v4.4.0 completion/coverage badges; those are not present main admission evidence. This navigation link is not an assertion that the P4 pilot is merged or hosted; preserve UNKNOWN and independent owner gates.
-
-<!-- code-purple-federation-w0:begin -->
-## Federation landing / source-bound navigation (W0)
-
-> DOW / ANALYTICAL SOURCE REPAIR. This is a **navigation-only snapshot** of the 16 October 2026
-> architecture wave, not an assertion that GitHub Pages is deployed or CI has passed.
-> Historical release, readiness and coverage values elsewhere in this README
-> remain bound to their original versions and populations.
-
-| Open | Purpose / evidence boundary |
-|---|---|
-| [This repo: current commits](https://github.com/GBOGEB/ABACUS/commits/main) | Read exact head; dynamic navigation, not a cached pass |
-| [ABACUS Pages source](docs/index.html) | Existing repository-owned documentation/build surface |
-| [Native exact-head CI](https://github.com/GBOGEB/ABACUS/actions) | Owner-controlled verification and release gate |
-| [MissionControl federation W0](https://github.com/GBOGEB/pipeline-automation-hub/pull/579) | Draft one-to-three-hop SIPOC and wave view; not yet published |
-| [Canonical 10-lane SIPOC](https://github.com/GBOGEB/pipeline-automation-hub/blob/master/mission-control/federation-atlas/PROCESS_LANES_v1.json) | Process stages, supplier/input/output/customer roles |
-| [Canonical 10-beam DAG](https://github.com/GBOGEB/pipeline-automation-hub/blob/master/mission-control/federation-atlas/CODE_PURPLE_BEAMS_DAG_v1.json) | Feedforward within N; feedback into N+1 |
-| [Cross-repository actions](https://github.com/GBOGEB/pipeline-automation-hub/actions) | Native workflow identity; statuses require exact-head readback |
-
-**SIPOC recursion:** N consumes only authenticated, owner-admitted N−1 evidence;
-the next customer does not automatically become an authorized supplier.
-DOW, KEB, QPS and gg_MATH retain disjoint sources, branch protection,
-security controls and release acceptance. `UNKNOWN` is not `PASS` or zero.
-
-<!-- code-purple-federation-w0:end -->
-
-<!-- cross-repo-federation:begin -->
-## Cross-repo federation view (ABACUS · CODEX · cryoplant-project)
-
-> Smoke-verified 2026-10-25 by a cross-repo integration pass. This is a navigation + status
-> snapshot, **not** an assertion that any PR is merged or that CI passed on exact head.
-> Full evidence, integration matrix and merge/prune list: **[docs/INTEGRATION_REPORT.md](docs/INTEGRATION_REPORT.md)**.
-
-| Repo | Role | Smoke verdict | Key integration / merge-prune points |
-|------|------|---------------|--------------------------------------|
-| **[CODEX](https://github.com/GBOGEB/CODEX)** | Governance + KEB semantic/provenance **canonical hub** | ✅ PASS — `pca_engine` 16/16; JSON/YAML/PY/HTML clean | P1 canonical Bradley-Terry/PCA (`pca_engine`); P2 single-source `federation/`+`ssot/`+`governance/` |
-| **ABACUS** (this repo) | DOW analytical runtime + TSX slide-reviewer | ✅ PASS — 6254 passed / 37 skipped (only Docker-absent fails) | P1 converge `qps_slide_reviewer/lib/stats.ts` onto CODEX; P4 prune stale snapshots/branches |
-| **cryoplant-project** (private) | QPS engineering child authority (SSOT, OCD/ADR) | 🟡 PASS w/ caveats — 32 smoke passed; 31 live YAML parse errors | P3 fix live YAML; P4/P9 quarantine recovered-history artifacts; P2 consume CODEX federation |
-
-**Model:** hub-and-spoke federation (not a monorepo) — canonicalize shared logic into CODEX and
-reference it from spokes. Companion analysis: CODEX PR **#1188** (W59 cross-repo census).
-
-<!-- cross-repo-federation:end -->
+<!-- markdownlint-disable MD001 MD013 MD022 MD029 MD031 MD032 MD033 MD040 MD060 -->
 
 [![main version](https://img.shields.io/badge/dynamic/toml?url=https%3A%2F%2Fraw.githubusercontent.com%2FGBOGEB%2FABACUS%2Fmain%2Fpyproject.toml&query=%24.project.version&prefix=v&label=main%20version&color=blue&style=flat-square)](pyproject.toml)
 [![last release](https://img.shields.io/github/v/release/GBOGEB/ABACUS?label=last%20release&style=flat-square)](https://github.com/GBOGEB/ABACUS/releases/latest)
-[![v4.4.0 completion](https://img.shields.io/badge/v4.4.0%20completion-95%25-brightgreen?style=flat-square)](FINAL_COMPLETION_REPORT_v4.4.0.md)
-[![Build](https://img.shields.io/github/actions/workflow/status/GBOGEB/ABACUS/ci.yml?branch=main&style=flat-square&label=build)](https://github.com/GBOGEB/ABACUS/actions/workflows/ci.yml)
-[![Tests](https://img.shields.io/github/actions/workflow/status/GBOGEB/ABACUS/smoke-test.yml?branch=main&style=flat-square&label=tests)](https://github.com/GBOGEB/ABACUS/actions/workflows/smoke-test.yml)
-[![v4.4.0 coverage](https://img.shields.io/badge/v4.4.0%20coverage-90%25-brightgreen?style=flat-square)](docs/testing/index.html)
-[![GitHub Pages](https://img.shields.io/badge/docs-GitHub%20Pages-blue?logo=github)](https://gbogeb.github.io/ABACUS/)
-[![Dashboards](https://img.shields.io/badge/dashboards-6%20live-orange?style=flat-square)](https://gbogeb.github.io/ABACUS/)
-[![Tuple Validation](https://img.shields.io/badge/tuple--validation-passing-brightgreen?style=flat-square)](scripts/validate_tuple_metadata.py)
-[![Progress Tracker](https://img.shields.io/badge/progress--tracker-interactive-blueviolet?style=flat-square)](docs/progress_tracker.html)
-[![License](https://img.shields.io/badge/license-Apache--2.0-blue)](LICENSE)
-[![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](.github/CONTRIBUTING.md)
+[![Enhanced CI](https://img.shields.io/github/actions/workflow/status/GBOGEB/ABACUS/ci-enhanced.yml?branch=main&style=flat-square&label=Enhanced%20CI)](https://github.com/GBOGEB/ABACUS/actions/workflows/ci-enhanced.yml)
+[![Gating runtime: Python 3.14](https://img.shields.io/badge/gating%20runtime-Python%203.14-blue?style=flat-square)](.python-version)
+[![GitHub Pages](https://img.shields.io/badge/docs-GitHub%20Pages-blue?logo=github&style=flat-square)](https://gbogeb.github.io/ABACUS/)
+[![License: Apache-2.0](https://img.shields.io/badge/license-Apache--2.0-blue?style=flat-square)](LICENSE)
 
-**Live main metrics** (read from [`docs/api/dmaic_metrics.json`](docs/api/dmaic_metrics.json), regenerated by `dmaic-commit-metrics.yml`; CODEX publishes the same schema at [`GBOGEB/CODEX:docs/api/metrics.json`](https://github.com/GBOGEB/CODEX/blob/main/docs/api/metrics.json)):
+> **ABACUS runs the 12-cluster DMAIC analysis of cryogenic engineering data, and is where federation CI goes red-to-green at source: diagnose the first real failure, repair it, prove it on the exact head.**
+
+## At a glance
+
+| | |
+|---|---|
+| **Domain** | Multi-agent DMAIC analysis of cryogenic engineering data and documents (the DOW runtime) on the 12-cluster contract, plus first-red diagnosis, source-level CI repair and independent security for the federation |
+| **EPICs carried here** | **CODE PURPLE** evidence and coverage ([#2720](https://github.com/GBOGEB/ABACUS/issues/2720), [#2326](https://github.com/GBOGEB/ABACUS/issues/2326), [#1944](https://github.com/GBOGEB/ABACUS/issues/1944)) · **DAB** static-analysis burn-down ([#1609](https://github.com/GBOGEB/ABACUS/issues/1609), [#1866](https://github.com/GBOGEB/ABACUS/issues/1866)–[#1868](https://github.com/GBOGEB/ABACUS/issues/1868)) · **U-series** CI hardening ([#2669](https://github.com/GBOGEB/ABACUS/issues/2669), [#2721](https://github.com/GBOGEB/ABACUS/issues/2721), [#2722](https://github.com/GBOGEB/ABACUS/issues/2722)) · **GOV-001** QPS cost roundtrip ([#633](https://github.com/GBOGEB/ABACUS/issues/633)) · **QPS DOW coverage** ([#785](https://github.com/GBOGEB/ABACUS/issues/785)) |
+| **Owner and decision authority** | Repository owner **GBOGEB** ([CODEOWNERS](.github/CODEOWNERS)): admission to `main`, releases and every external grant. No agent, bot or CI verdict holds this authority. |
+| **Role in the federation** | The *runtime and repair shop*: it executes the DMAIC analysis and fixes red CI where it starts; it does not own QPS engineering acceptance or federation governance. |
+| **Owns** | `DMAIC_V3` runtime and the `abacus` CLI, the 12-cluster orchestrator, DOW/KEB bridges, the CI census and ratchets (TC0–TC4, DAB, Bandit, A10 guard), the `docs/` Pages site |
+| **Does not own** | QPS engineering SSOT, OCD/ADR and release identity (cryoplant-project) · semantic provenance, federation contracts and the canonical Bradley–Terry/PCA engine (CODEX) · Kahn scheduling and the JADE census (Hub) · numerical method ownership (gg_MATH) |
+| **Status snapshot** | `main@da5b6b7`, read 15 November 2026 — 50 open issues, 16 open PRs. [Details and closure proofs ↓](#6-status-and-open-gates) |
+
+**New here?** Read [§1](#1-why-abacus-exists--bios) (2 min), then the route that matches you:
+
+| I want to… | Open this first |
+|---|---|
+| Understand purpose, ownership and flow | [BIOS](#1-why-abacus-exists--bios) and [from source to decision](#2-from-source-to-decision) |
+| Find the code for a cluster or DMAIC phase | [What is inside](#3-what-is-inside) |
+| Browse the rendered docs and dashboards | [Documentation site](https://gbogeb.github.io/ABACUS/) and the [repository map page](docs/repo-structure/index.html) (finds files that used to sit at the root) |
+| Run the tests myself rather than trust CI badges | [Run it locally](#7-run-it-locally) |
+| Know what is red, open, or next | [Status and open gates](#6-status-and-open-gates) |
+| Add or change a workflow | [Workflow rationalization](docs/ci/WORKFLOW_RATIONALIZATION.md) and [workflow policy](ci/governance/workflow_policy.json) |
+| Read the release history (v2.2 → v4.4.0) | [Historical lineage](#historical-lineage) |
+
+## 1. Why ABACUS exists — BIOS
+
+**B — Baseline.** `pyproject.toml` `[project].version` is the release identity: `main` declares **v5.0.0**, and the last published release is **v4.4.0** (18 May 2026). The 12-cluster contract is the architecture baseline; everything else is lineage.
+
+**I — Identity and integrity.** A status claim names the `main` SHA it was read at. Release-era figures (v4.4.0's 95 % completion, 92.1 quality score, 90 % coverage) stay bound to that release and are never quoted as current-main health. New and changed files pass the A10 confidentiality guard before they land.
+
+**O — Orchestration with ownership.** One canonical orchestrator, [`DMAIC_V3/core/twelve_cluster_orchestrator.py`](DMAIC_V3/core/twelve_cluster_orchestrator.py), drives DMAIC phases 1–8 across the twelve clusters. Wave claims in [`.waves/WAVE_CLAIMS.yaml`](.waves/WAVE_CLAIMS.yaml) are rolled up by CODEX; the JADE pointer [`.jade/repo.yaml`](.jade/repo.yaml) names where each repository fact lives.
+
+**S — Safety and source-qualified status.** `UNKNOWN` is not `PASS` or zero. A test stage that collects nothing is a failure. Coverage, false-green and lint ratchets are never relaxed to turn a check green.
+
+**Who uses it:**
+
+| Reader | Comes for | Leaves with |
+|---|---|---|
+| External visitor | What ABACUS is and how it is governed | This page, the [docs site](https://gbogeb.github.io/ABACUS/), live [issues](https://github.com/GBOGEB/ABACUS/issues) |
+| Engineer / analyst | Run or extend the DMAIC analysis | A feature branch, native tests, a PR |
+| CI repair agent | The next measured red to fix | One root cause per PR, exact-head proof |
+| Federation peer (CODEX, Hub, cryoplant) | Runtime support receipts and QA | A pinned ABACUS SHA and its evidence |
+| Owner | Decide admission | A PR whose required checks are green on the final head |
+
+**Where authority lives:** [`pyproject.toml`](pyproject.toml) (release identity) · [`.jade/repo.yaml`](.jade/repo.yaml) (repo pointer) · [`ci/governance/workflow_policy.json`](ci/governance/workflow_policy.json) and [`docs/ci/WORKFLOW_RATIONALIZATION.md`](docs/ci/WORKFLOW_RATIONALIZATION.md) (which workflows are live) · [`governance/release_policy.yaml`](governance/release_policy.yaml) and [`governance/branching_model.yaml`](governance/branching_model.yaml) · [`.waves/WAVE_CLAIMS.yaml`](.waves/WAVE_CLAIMS.yaml).
+
+## 2. From source to decision
+
+Every change, CI repair or status update follows the same loop:
+
+1. **Refresh live `main`** and read the open and recently merged PR state.
+2. **Recover exact-head evidence** for the commit in question: tests, checks, coverage.
+3. **Re-census** (TC0–TC4 completeness plus the DAB residual) so work is chosen from measurement, not memory.
+4. **Repair the first material repo-local red only** — one root cause per PR.
+5. **Keep the ratchets**: test count, coverage, false-green and lint baselines may only improve.
+6. **Prove on the final head**: the required checks on `main` (§6) must pass on the PR's last commit.
+7. **Merge, read back `main`**, and re-census before promoting the next residual.
+
+## 3. What is inside
+
+| Block | Native source | Input → output | Boundary |
+|---|---|---|---|
+| Canonical orchestrator | [`DMAIC_V3/core/twelve_cluster_orchestrator.py`](DMAIC_V3/core/twelve_cluster_orchestrator.py), wrapper [`local_mcp/agent_orchestrator_v3.0.py`](local_mcp/agent_orchestrator_v3.0.py) | Repository and document inputs → phase-by-phase DMAIC run with temporal hooks | Orchestration evidence, not engineering acceptance |
+| DMAIC phases 1–8 | [`DMAIC_V3/phases/`](DMAIC_V3/phases/) | Intake → metrics → root cause → improvement → control → knowledge → actions → TODO | Each phase's output is input to the next, not a release claim |
+| CLI | [`DMAIC_V3/__main__.py`](DMAIC_V3/__main__.py) (`abacus` entry point in `pyproject.toml`) | Command line → orchestrated run | — |
+| E6 knowledge layer | [`phase6_knowledge.py`](DMAIC_V3/phases/phase6_knowledge.py), [`temporal_metadata_engine.py`](DMAIC_V3/core/temporal_metadata_engine.py), [`handover_bridge.py`](DMAIC_V3/core/handover_bridge.py) | Phase outputs → versioned knowledge references and handover state | Handover documents are views of execution state |
+| Tuple metadata | [`src/dmaic/tuple_metadata.py`](src/dmaic/tuple_metadata.py), [`scripts/validate_tuple_metadata.py`](scripts/validate_tuple_metadata.py) | Tuple entries → validated bridge keys and status | Schema validity ≠ content truth |
+| CI governance and ratchets | [`ci/governance/workflow_policy.json`](ci/governance/workflow_policy.json), [`tools/a10_guard.py`](tools/a10_guard.py), [`scripts/dab_formatter_lane.py`](scripts/dab_formatter_lane.py), [`governance/dab/`](governance/dab/) | Workflows, findings, diffs → classified census and fail-closed gates | A green census row is not a release |
+| Docs site and HTML exports | [`docs/`](docs/README.md), [`scripts/generate_docs_html.py`](scripts/generate_docs_html.py), [`deploy-docs.yml`](.github/workflows/deploy-docs.yml) | Markdown and data → Pages dashboards | Rendered pages are not source authority |
+| Federation and waves | [`federation/`](federation/), [`MIP/`](MIP/README.md), [`.waves/`](.waves/README.md) | Peer receipts and wave claims → roll-up inputs for CODEX | No transfer of another repo's ownership |
+
+### 12-cluster map
+
+| Cluster | Phase | Responsibility | Entry point |
+|---|---|---|---|
+| C1–C2 | 1 Define | Discovery and intake | `DMAIC_V3/phases/phase1_define.py` |
+| C3–C4 | 2 Measure | Static metrics and baselines | `DMAIC_V3/phases/phase2_measure.py` |
+| C5–C6 | 3–4 Analyze / Improve | Root cause and implementation changes | `phase3_analyze.py`, `phase4_improve.py` |
+| C7–C8 | 5–6 Control / Knowledge | Quality control and orchestration hub | `phase5_control.py`, `phase6_knowledge.py`, `core/twelve_cluster_orchestrator.py` |
+| C9–C10 | 7 Action tracking | KEB / GBOGEB runtime operations | `phase7_action_tracking.py`, `local_mcp/knowledge_integration_v2.3.py` |
+| C11–C12 | 8 TODO + temporal monitoring | Temporal hooks and task governance | `phase8_todo_management.py` |
+
+Architecture reading: [12-cluster vision](12_cluster_vision.md) · [tool ecosystem map](tool_ecosystem_map.md) · [bridges and connections](docs/BRIDGES_AND_CONNECTIONS.md).
+
+## 4. Where ABACUS sits in the federation
+
+ABACUS links to these repositories; it does not re-implement them.
+
+| Repository | Keeps authority for | ABACUS interface |
+|---|---|---|
+| [pipeline-automation-hub](https://github.com/GBOGEB/pipeline-automation-hub) (`master`) | Mission Control, Kahn scheduling, JADE census, merge-governance evidence | Census and readiness inputs; reusable workflows |
+| [CODEX](https://github.com/GBOGEB/CODEX) | Semantic provenance, federation contracts, MIP kit, Pages governance, canonical `pca_engine` | Wave-claims roll-up; MIP kit pin; metrics schema shared with [`docs/api/dmaic_metrics.json`](docs/api/dmaic_metrics.json) |
+| [cryoplant-project](https://github.com/GBOGEB/cryoplant-project) (private) | QPS engineering SSOT, OCD/ADR, release identity | Exact-pin runtime support receipts (validation support only) |
+| [gg_MATH](https://github.com/GBOGEB/gg_MATH) | Numerical kernels and uncertainty methods | Method source |
+| [GEMINI](https://github.com/GBOGEB/GEMINI) | Cross-agent handover contracts | Ecosystem dispatch target |
+
+Cross-repo hub map and public/private boundary: [`docs/integration/CROSS_REPO_MAP.md`](docs/integration/CROSS_REPO_MAP.md). Last cross-repo integration pass (25 Oct 2026): [`docs/INTEGRATION_REPORT.md`](docs/INTEGRATION_REPORT.md).
+
+## 5. Process diagrams
+
+Declared architecture, not an execution receipt.
+
+```mermaid
+flowchart LR
+    M["Live main"] --> E["Exact-head evidence"]
+    E --> C["TC0–TC4 + DAB census"]
+    C --> R["First material red"]
+    R --> F["One-cause repair PR"]
+    F --> G["Required checks on final head"]
+    G --> MG["Merge + main readback"]
+    MG --> C
+```
+
+```mermaid
+flowchart TB
+    A["Analysis tier · C1–C4"] --> D["Documentation tier · C5–C6"]
+    D --> RC["Recursive tier · C7–C8 (orchestration hub)"]
+    RC --> K["Knowledge and monitoring tier · C9–C12"]
+    K -. "feedback into next DMAIC pass" .-> A
+```
+
+## 6. Status and open gates
+
+**Snapshot: `main@da5b6b7`, read 15 November 2026.** Rows point at live owners; open the link for the current position.
+
+| Gate | Status | What would close it |
+|---|---|---|
+| Release identity | `main` declares **v5.0.0**; last published release **v4.4.0** (18 May 2026). No v5 tag yet. | A tagged release cut from an admitted `main` SHA under [`release_policy.yaml`](governance/release_policy.yaml) |
+| `main` protection | **Ruleset active**: pull request required; required checks *Python proof completeness*, *ABACUS compatibility gate*, *CodeQL*, *osv-scanner*. **0 required approvals**, so independent review is not enforced. | Owner decision on review requirements, read back from the ruleset |
+| Merge admission | [#1860](https://github.com/GBOGEB/ABACUS/issues/1860) admission **HOLD** with a resume queue | Exact-head findings dispositioned, manual review recorded |
+| Flaky test leg | [#2669](https://github.com/GBOGEB/ABACUS/issues/2669) coverage `DataError` under `-n auto --cov` | Deterministic coverage combine under xdist |
+| Workflow fan-in | [#2722](https://github.com/GBOGEB/ABACUS/issues/2722) PR Feedback Gate Evaluator triggered by 15 workflows | Fan-in collapsed; superseded-run cancellation already merged in [#2741](https://github.com/GBOGEB/ABACUS/pull/2741) |
+| Collection gaps | [#2721](https://github.com/GBOGEB/ABACUS/issues/2721) deselected tests; [#2733](https://github.com/GBOGEB/ABACUS/pull/2733) open | Each deselection collected or skipped with a recorded reason |
+| Dashboard deploy | [#2728](https://github.com/GBOGEB/ABACUS/issues/2728) gh-pages 403; [#2758](https://github.com/GBOGEB/ABACUS/pull/2758) removes the dead job | PR merged; Pages stays workflow-built |
+| Formatter burn-down | Black lanes **W00–W02 of 4** merged 15 Nov ([#2747](https://github.com/GBOGEB/ABACUS/pull/2747), [#2748](https://github.com/GBOGEB/ABACUS/pull/2748), [#2750](https://github.com/GBOGEB/ABACUS/pull/2750)); Bandit ratchet key fix [#2740](https://github.com/GBOGEB/ABACUS/pull/2740) open | Lane W03 merged; ratchet keyed wrap-insensitively ([#2712](https://github.com/GBOGEB/ABACUS/issues/2712)) |
+| Workflow estate | 224 workflow YAML files under `.github/workflows/` at this snapshot; which ones are live is decided by policy, not by count | [Workflow policy](ci/governance/workflow_policy.json) and [rationalization](docs/ci/WORKFLOW_RATIONALIZATION.md) kept current |
+
+**Live metrics** (self-updating, read from [`docs/api/dmaic_metrics.json`](docs/api/dmaic_metrics.json) on `main`):
 
 [![DMAIC quality](https://img.shields.io/badge/dynamic/json?url=https%3A%2F%2Fraw.githubusercontent.com%2FGBOGEB%2FABACUS%2Fmain%2Fdocs%2Fapi%2Fdmaic_metrics.json&query=%24.quality_score&label=DMAIC%20quality&color=blue&style=flat-square)](docs/api/dmaic_metrics.json)
 [![commits](https://img.shields.io/badge/dynamic/json?url=https%3A%2F%2Fraw.githubusercontent.com%2FGBOGEB%2FABACUS%2Fmain%2Fdocs%2Fapi%2Fdmaic_metrics.json&query=%24.total_commits&label=commits&color=blue&style=flat-square)](docs/api/dmaic_metrics.json)
-[![Python files](https://img.shields.io/badge/dynamic/json?url=https%3A%2F%2Fraw.githubusercontent.com%2FGBOGEB%2FABACUS%2Fmain%2Fdocs%2Fapi%2Fdmaic_metrics.json&query=%24.python_files&label=Python%20files&color=blue&style=flat-square)](docs/api/dmaic_metrics.json)
 [![test files](https://img.shields.io/badge/dynamic/json?url=https%3A%2F%2Fraw.githubusercontent.com%2FGBOGEB%2FABACUS%2Fmain%2Fdocs%2Fapi%2Fdmaic_metrics.json&query=%24.test_files&label=test%20files&color=blue&style=flat-square)](docs/api/dmaic_metrics.json)
-[![LOC](https://img.shields.io/badge/dynamic/json?url=https%3A%2F%2Fraw.githubusercontent.com%2FGBOGEB%2FABACUS%2Fmain%2Fdocs%2Fapi%2Fdmaic_metrics.json&query=%24.total_loc&label=LOC&color=blue&style=flat-square)](docs/api/dmaic_metrics.json)
 [![workflows](https://img.shields.io/badge/dynamic/json?url=https%3A%2F%2Fraw.githubusercontent.com%2FGBOGEB%2FABACUS%2Fmain%2Fdocs%2Fapi%2Fdmaic_metrics.json&query=%24.workflows&label=workflows&color=purple&style=flat-square)](docs/api/dmaic_metrics.json)
 [![metrics SHA](https://img.shields.io/badge/dynamic/json?url=https%3A%2F%2Fraw.githubusercontent.com%2FGBOGEB%2FABACUS%2Fmain%2Fdocs%2Fapi%2Fdmaic_metrics.json&query=%24.sha&label=metrics%20SHA&color=lightgrey&style=flat-square)](docs/api/dmaic_metrics.json)
 
-**Project:** Multi-Agent Cryogenic Engineering Analysis System  
-**Current Version:** main declares v5.0.0 in [`pyproject.toml`](pyproject.toml) (the release identity SSOT); the last published release is v4.4.0 — active mainline hardening and completeness-census evolution  
-**Historical v4.4.0 Quality Score:** 92.1/100 (release snapshot; not a current-main score)  
-**Live-State Reference:** `main@329562a6da8d8d6f724036ed11267f51a1855483`  
-**Last Updated:** 2026-10-02
+## 7. Run it locally
 
-> A recursive, self-improving multi-agent system applying DMAIC methodology to cryogenic engineering analysis, built around a 12-Cluster Architecture with DOW governance, KEB execution, and GBOGEB observability.
+PR checks run on **Python 3.14** ([`.python-version`](.python-version), *Enhanced CI*, *smoke-test*, *a10-guard*); `pyproject.toml` declares `>=3.11`. Test on 3.14 before calling a change verified.
 
-### 🎉 v4.4.0 Released — [Release Notes](https://github.com/GBOGEB/ABACUS/releases/tag/v4.4.0) | [Announcement](ANNOUNCEMENT_v4.4.0.md) | [Final Status Dashboard](docs/final_status_v4.4.0.html)
-
----
-
-## 🚦 CURRENT EXECUTION STATE — 2026-10-02
-
-The v4.4.0 release remains the published release baseline, but the repository has continued to evolve on `main`. Current work is governed by exact-head evidence rather than by the historical May completion percentages below.
-
-- **Current main:** `329562a6da8d8d6f724036ed11267f51a1855483` (`#1667`, root-state coherence refresh merged after `#1666`).
-- **Open execution PR:** `#1671` is the single authoritative rank-1 `ci-enhanced.yml` repair lane; overlapping `#1670` was closed as superseded.
-- **Current admission state:** `#1671` exact-head MIP B1 is green; B0 and Python 3.10/3.11/3.12 matrix proof are executing. The Enhanced CI lane is queued/executing and no engineering red is admitted until a real current-head failure completes.
-- **TC0–TC4 completeness census:** merged through `#1666`, combining inventory/completeness, source↔test dynamic context, workflow executability/trigger coverage, semantic false-green classification, coverage DAB and static-analysis debt into one ranked residual while retaining the raw syntactic TC4 count separately.
-- **Completed census repairs:** `#1661` removed parser false positives; `#1665` removed the measured `cd-unified.yml` false-green defect; `#1666` added semantic TC4 classification without erasing raw debt.
-- **Exact-head proof state:** `#1666` merged only after B0/B1, Python 3.10/3.11/3.12 and compatibility were green; changed-line coverage was 100% (55/55), raw TC4 remained 239, `TEST_EXISTS_UNCOLLECTED` remained 2, and the unified ranked residual improved 310 → 309.
-- **Current rank-1 measured residual:** `.github/workflows/ci-enhanced.yml` with 25 semantic false-green constructs; consume it only through bounded fail-closed repairs and exact-head proof.
-- **Root documentation:** this section supersedes stale “workflow activation pending” language and historical counts as the current operating pointer.
-
-### Execution invariant
-
-```text
-REFRESH LIVE MAIN
-→ READ OPEN/MERGED PR STATE
-→ RECOVER EXACT-HEAD TEST/CHECK EVIDENCE
-→ REGENERATE TC0–TC4 + DAB RESIDUAL
-→ REPAIR FIRST MATERIAL REPO-LOCAL RED ONLY
-→ PRESERVE TEST/COVERAGE/FALSE-GREEN RATCHETS
-→ FULL COMPATIBILITY / CI PROOF
-→ MERGE ONLY ON ADMISSIBLE EXACT-HEAD EVIDENCE
-→ POST-MERGE MAIN READBACK
-→ RE-CENSUS BEFORE PROMOTING THE NEXT RESIDUAL
-```
-
-### Next execution order
-
-1. Preserve exact-main parity at `329562a6da8d8d6f724036ed11267f51a1855483` and keep `#1671` as the only authoritative `ci-enhanced.yml` rank-1 lane.
-2. Complete `#1671` exact-head admission: B0/B1, canonical Python 3.10/3.11/3.12 compatibility and Enhanced CI. Repair only the first genuine material repo-local red, if one appears; otherwise merge and perform post-merge recensus.
-3. Consume **TEST_ADMISSION** gaps next; no uncollected or failing governed test surface may be silently treated as green.
-4. Consume **NO_TEST** source gaps, prioritizing `USER_DIRECTED_HIGH` and `HIGH` criticality.
-5. Consume measured **COVERAGE** residuals while preserving configured changed-line and canonical coverage ratchets.
-6. Continue measured **STATIC_ANALYSIS** debt reduction through the DAB queue; do not substitute raw bulk lint counts for ranked evidence.
-7. Keep root status, handover, workflow rationalization and release-facing documentation synchronized with the exact live state.
-8. Treat branch protection, folder refactoring, end-to-end deployment readiness and production-readiness claims as separate proof gates; promote them only when current evidence supports the claim.
-
-> Historical V2.2/V2.3 plans and the v4.4.0 release score remain useful lineage, but they are not the authority for current-main readiness.
-
----
-
-## 🧭 12-CLUSTER PRIMARY NAVIGATION
-
-ABACUS is organized first by the canonical **12-CLUSTER contract**.
-
-| Cluster | Phase | Primary Responsibility | Entry Points |
-|---------|-------|------------------------|--------------|
-| C1-C2 | Phase 1 (Define) | Discovery and intake | `DMAIC_V3/phases/phase1_define.py` |
-| C3-C4 | Phase 2 (Measure) | Static metrics and baselines | `DMAIC_V3/phases/phase2_measure.py` |
-| C5-C6 | Phase 3-4 (Analyze/Improve) | Root-cause and implementation changes | `DMAIC_V3/phases/phase3_analyze.py`, `DMAIC_V3/phases/phase4_improve.py` |
-| C7-C8 | Phase 5-6 (Control/Knowledge) | Quality control and orchestration hub | `DMAIC_V3/phases/phase5_control.py`, `DMAIC_V3/phases/phase6_knowledge.py`, `DMAIC_V3/core/twelve_cluster_orchestrator.py` |
-| C9-C10 | Phase 7 (Action Tracking) | KEB/GBOGEB runtime operations | `DMAIC_V3/phases/phase7_action_tracking.py`, `local_mcp/knowledge_integration_v2.3.py` |
-| C11-C12 | Phase 8 (TODO Management + Temporal Monitoring) | Temporal hooks and task governance | `DMAIC_V3/phases/phase8_todo_management.py`, `DMAIC_V3/core/twelve_cluster_orchestrator.py` |
-
-### Canonical Orchestrator
-
-- **Canonical path:** `DMAIC_V3/core/twelve_cluster_orchestrator.py`
-- **Compatibility wrapper:** `local_mcp/agent_orchestrator_v3.0.py`
-- **Temporal phase hooks:** emitted at phase start/end for phases 1-8 by the canonical orchestrator
-
----
-
-## 📖 Documentation
-
-| Resource | Description |
-|----------|-------------|
-| 🌐 **[Documentation Site](https://gbogeb.github.io/ABACUS/)** | Full documentation with landing pages, dashboards, and guides |
-| 📋 **[Release Notes](https://github.com/GBOGEB/ABACUS/releases/tag/v4.4.0)** | v4.4.0 changelog and release details |
-| 🏗️ **[12-Cluster Architecture](12_cluster_vision.md)** | Core architecture: 12 functional clusters across 4 tiers |
-| 🔧 **[Tool Ecosystem](tool_ecosystem_map.md)** | DOW/KEB/GBOGEB interconnections and tool catalog |
-| 📊 **[Analysis Dashboard](https://gbogeb.github.io/ABACUS/deep_analysis_dashboard.html)** | Interactive repository audit dashboard |
-| 📖 **[Handover Book](https://gbogeb.github.io/ABACUS/handover_book.html)** | 12-chapter comprehensive handover documentation |
-| 🖥️ **[Final Status Dashboard](docs/final_status_v4.4.0.html)** | v4.4.0 release dashboard with workflow staging status |
-| ⏱️ **[Timeout Guide](docs/TIMEOUT_HANDLING.md)** | KEB/GBOGEB timeout configuration |
-| 🏆 **[Completion Report](FINAL_COMPLETION_REPORT_v4.4.0.md)** | Final v4.4.0 completion report |
-| 🤝 **[Contributing](.github/CONTRIBUTING.md)** | How to contribute to ABACUS |
-
-### 12-Cluster Architecture Overview
-
-| Tier | Clusters | Purpose |
-|------|----------|---------|
-| **Analysis** | C1–C4 | Data ingestion, DMAIC phases, quality scoring |
-| **Documentation** | C5–C6 | Handover generation, knowledge management |
-| **Recursive** | C7–C8 | Self-improvement loops, orchestration hub |
-| **Knowledge & Monitoring** | C9–C12 | KEB execution, GBOGEB observability, DOW governance |
-
----
-
-## 🧩 E6 Modules — Modular Enhancements
-
-The **E6 (Phase 6 — Knowledge)** module layer provides modular enhancements for knowledge management, recursive processing, and metadata-driven pipelines across the ABACUS system.
-
-| Module | Location | Status | Description |
-|--------|----------|--------|-------------|
-| **Phase 6 Knowledge Engine** | [`DMAIC_V3/phases/phase6_knowledge.py`](DMAIC_V3/phases/phase6_knowledge.py) | ✅ Active | Temporal knowledge references, cross-phase learning integration |
-| **Temporal Metadata Engine** | [`DMAIC_V3/core/temporal_metadata_engine.py`](DMAIC_V3/core/temporal_metadata_engine.py) | ✅ Active | Metadata timeline tracking, versioned state management |
-| **Handover Bridge** | [`DMAIC_V3/core/handover_bridge.py`](DMAIC_V3/core/handover_bridge.py) | ✅ Active | Bridge between handover documents and execution state |
-| **Tuple Metadata Validator** | [`src/dmaic/tuple_metadata.py`](src/dmaic/tuple_metadata.py) | ✅ Active | Validates tuple entries with required bridge keys and status |
-| **Session Tuple Analyzer** | [`abacus_v21_session_tuple_analyzer.py`](abacus_v21_session_tuple_analyzer.py) | ✅ Active | Analyzes session tuples for coverage and completeness |
-| **Knowledge Preservation** | [`abacus_v21_knowledge_preservation.py`](abacus_v21_knowledge_preservation.py) | ✅ Active | Ensures knowledge continuity across versions |
-| **Knowledge Integration** | [`local_mcp/knowledge_integration_v2.3.py`](local_mcp/knowledge_integration_v2.3.py) | ✅ Active | KEB/GBOGEB integration layer for v2.3+ |
-
-#### E6 Module Architecture
-
-```
-E6 Knowledge Layer
-├── phase6_knowledge.py          → Knowledge reference extraction & cross-phase linkage
-├── temporal_metadata_engine.py  → Temporal tracking of metadata state changes
-├── handover_bridge.py           → Document-to-execution handover pipeline
-├── tuple_metadata.py            → Tuple validation (status, source, downstream)
-└── knowledge_integration_v2.3.py → KEB ↔ GBOGEB bidirectional integration
-```
-
-> **Cross-links:** E6 modules feed into [CI/CD workflows](.github/workflows/), [tuple validation](scripts/validate_tuple_metadata.py), and the [interactive progress tracker](docs/progress_tracker.html).
-
----
-
-## 🔧 HTML Export Tools
-
-HTML export tools generate interactive dashboards, handover visualizations, and status reports from repository data.
-
-| Tool | Location | Output | Description |
-|------|----------|--------|-------------|
-| **Docs HTML Generator** | [`scripts/generate_docs_html.py`](scripts/generate_docs_html.py) | `docs/*.html` | Converts markdown documentation to styled HTML pages |
-| **Export Docs** | [`scripts/export_docs.py`](scripts/export_docs.py) | Various HTML | Exports documentation summaries for GitHub Pages deployment |
-| **Final Status Dashboard** | [`docs/final_status_v4.4.0.html`](docs/final_status_v4.4.0.html) | Static HTML | v4.4.0 release status with active workflow indicators |
-| **Deep Analysis Dashboard** | [`docs/deep_analysis_dashboard.html`](docs/deep_analysis_dashboard.html) | Interactive HTML | Repository audit with metrics and health scores |
-| **Handover Book** | [`docs/handover_book.html`](docs/handover_book.html) | Interactive HTML | 12-chapter handover documentation viewer |
-| **Progress Tracker** | [`docs/progress_tracker.html`](docs/progress_tracker.html) | Interactive HTML | **NEW** — Development stages, branch status, and milestones |
-| **DMAIC Metrics** | [`docs/dmaic-metrics.html`](docs/dmaic-metrics.html) | Interactive HTML | DMAIC phase metrics visualization |
-| **Repository Structure** | [`docs/repository_structure.html`](docs/repository_structure.html) | Static HTML | Visual repo structure overview |
-| **Repository Map** | [`docs/repo-structure/index.html`](docs/repo-structure/index.html) | Static HTML | Find any file that used to sit at the root; open it on GitHub or in your local checkout ([refactor plan](docs/repo-structure/ROOT_REFACTOR_PLAN.md)) |
-
-> **Workflow integration:** HTML exports are triggered by [`export-docs.yml`](.github/workflows/export-docs.yml) and [`deploy-docs.yml`](.github/workflows/deploy-docs.yml). See also: [GitHub Pages deployment guide](github_pages_deployment_guide.md).
-
----
-
-## 🐍 Python Tools & Scripts
-
-Core Python tooling for CI/CD, validation, analysis, and automation.
-
-| Category | Tools | Description |
-|----------|-------|-------------|
-| **Validation** | [`validate_tuple_metadata.py`](scripts/validate_tuple_metadata.py), [`validate_docs_links.py`](scripts/validate_docs_links.py), [`validate_dmaic_contract.py`](scripts/validate_dmaic_contract.py) | Schema validation, link checking, contract verification |
-| **CI/CD** | [`cicd_github_orchestrator.py`](cicd_github_orchestrator.py), [`run_cicd_roundtrip_test.py`](run_cicd_roundtrip_test.py), [`ci_monitor_local.py`](ci_monitor_local.py) | Pipeline orchestration, roundtrip testing, local monitoring |
-| **Deployment** | [`deploy_full_integration.py`](deploy_full_integration.py), [`run_comprehensive_deployment.py`](run_comprehensive_deployment.py), [`run_streamlined_deployment.py`](run_streamlined_deployment.py) | Full deployment, comprehensive checks, streamlined deploy |
-| **Analysis** | [`workflow_analyzer.py`](workflow_analyzer.py), [`refactoring_executor.py`](refactoring_executor.py), [`fast_metrics_collector.py`](fast_metrics_collector.py) | Workflow analysis, code refactoring, metrics collection |
-| **Handover** | [`scripts/handover_generator.py`](scripts/handover_generator.py), [`scripts/archive_handover.py`](scripts/archive_handover.py), [`scripts/build_handover_from_glob_yaml.py`](scripts/build_handover_from_glob_yaml.py) | Generate, archive, and build handover packages |
-| **Code Health** | [`scripts/code_health_check.py`](scripts/code_health_check.py), [`scripts/cold_start_doctor.py`](scripts/cold_start_doctor.py), [`scripts/env_doctor.py`](scripts/env_doctor.py) | Code health audit, environment diagnostics |
-| **Documentation** | [`scripts/generate_docs_html.py`](scripts/generate_docs_html.py), [`scripts/export_docs.py`](scripts/export_docs.py), [`scripts/normalize_markdown.py`](scripts/normalize_markdown.py) | HTML generation, doc export, markdown normalization |
-
-> **Cross-links:** Python tools are invoked by [GitHub Actions workflows](.github/workflows/), validated via [CI pipelines](.github/workflows/ci.yml), and their outputs feed into the [progress tracker](docs/progress_tracker.html) and [bridges document](docs/BRIDGES_AND_CONNECTIONS.md).
-
----
-
-## 🌉 Bridges & Connections
-
-Explicit links between validated tuples, handoff logs, and metadata workflows. See the full [Bridges & Connections](docs/BRIDGES_AND_CONNECTIONS.md) document for details.
-
-| Bridge | Source | Target | Status |
-|--------|--------|--------|--------|
-| **Tuple → Handoff** | [`src/dmaic/tuple_metadata.py`](src/dmaic/tuple_metadata.py) | [`deepagent-handover-package/`](deepagent-handover-package/) | ✅ Connected |
-| **Handoff → CI** | [`scripts/validate_tuple_metadata.py`](scripts/validate_tuple_metadata.py) | [`.github/workflows/ci.yml`](.github/workflows/ci.yml) | ✅ Connected |
-| **Metadata → Knowledge** | [`DMAIC_V3/core/temporal_metadata_engine.py`](DMAIC_V3/core/temporal_metadata_engine.py) | [`DMAIC_V3/phases/phase6_knowledge.py`](DMAIC_V3/phases/phase6_knowledge.py) | ✅ Connected |
-| **Handover → Execution** | [`DMAIC_V3/core/handover_bridge.py`](DMAIC_V3/core/handover_bridge.py) | [`local_mcp/agent_orchestrator_v3.0.py`](local_mcp/agent_orchestrator_v3.0.py) | ✅ Connected |
-| **CI → Dashboard** | [`.github/workflows/`](.github/workflows/) | [`docs/progress_tracker.html`](docs/progress_tracker.html) | ✅ Connected |
-| **Tuple Tests → CI** | [`DMAIC_V3/tests/test_tuple_metadata_validation.py`](DMAIC_V3/tests/test_tuple_metadata_validation.py) | [`.github/workflows/smoke-test.yml`](.github/workflows/smoke-test.yml) | ✅ Connected |
-
----
-
-## 📊 Development Status Snapshot
-
-| Module | Status | Last Updated | Notes |
-|--------|--------|-------------|-------|
-| E6 Knowledge Engine | ✅ Completed | 2026-05-18 | Temporal references, cross-phase learning |
-| HTML Export Pipeline | ✅ Completed | 2026-05-18 | 8 dashboards live on GitHub Pages |
-| Python Tool Suite | ✅ Completed | 2026-05-18 | 30+ scripts for CI/CD, validation, analysis |
-| Tuple Validation | ✅ Completed | 2026-05-18 | Schema checks, bridge key enforcement |
-| CI/CD Workflows | ✅ Completed | 2026-05-20 | 37 active in `.github/workflows/` |
-| Progress Tracker | ✅ Completed | 2026-05-18 | Interactive HTML visualization |
-| Bridges & Connections | ✅ Completed | 2026-05-18 | 6 documented bridges with validation |
-| Recursive Tuples | 🚧 In Progress | 2026-05-18 | Self-referencing tuple chains in progress |
-| Branch Protection | ⏳ Pending | — | Awaiting repository admin action |
-
-> **Interactive view:** See the full [Progress Tracker](docs/progress_tracker.html) for a visual timeline with milestones and branch details.
-
----
-
-## 🚀 QUICK START (3 MINUTES)
-
-### What Is This Project?
-A recursive, DMAIC-driven multi-agent system for analyzing cryogenic engineering data, technical documents, and project artifacts. Built for the 12-cluster cryoplant analysis workflow.
-
-### Current Status
-- **v4.4.0:** ✅ Published release baseline; historical completion/quality figures remain release-only evidence
-- **Current mainline:** 🚧 Active MIP hardening, test/check completeness census and measured residual burn-down
-- **V2.2:** ✅ Archived historical baseline
-- **V2.3:** ✅ Historical implementation milestone (superseded by v4.4.0)
-- **Workflow authority:** use `.github/workflows/`, `ci/governance/workflow_policy.json` and `docs/ci/WORKFLOW_RATIONALIZATION.md`; do not rely on a frozen workflow count
-- **Next Milestones:** finish current exact-head census → consume ranked residuals → prove branch protection/refactor/deployment readiness separately
-
-### Get Started Now
-1. **Read:** [MASTER_HANDOVER_INDEX.md](docs_versioned/handover/MASTER_HANDOVER_INDEX.md) (5 min) ⭐
-2. **DMAIC V3 Handover:** [ABACUS_Handover_Book.md](DMAIC_V3/docs/handover/ABACUS_Handover_Book.md) (Complete reference) 📚
-3. **Status:** [Final Status Dashboard](docs/final_status_v4.4.0.html) + [TOTAL_PROGRESS_SUMMARY.md](docs_versioned/status_reports/TOTAL_PROGRESS_SUMMARY.md) (5 min)
-4. **Test:** `python local_mcp/agent_orchestrator_v3.0.py`
-5. **Explore:** [COMPREHENSIVE_VERSION_ANALYSIS](docs_versioned/handover/COMPREHENSIVE_VERSION_ANALYSIS_20251111.md) (Historical lineage) 📘
-
-> **Note:** The remaining V2.2/V2.3 sections below are preserved as historical lineage and handover context. Use the v4.4.0 links above for the current release state.
-
----
-
-## 📂 PROJECT STRUCTURE
-
-### New Versioned Documentation Structure ✅
-
-```
-Master_Input/
-├── README.md (THIS FILE) ⭐
-│
-├── DMAIC_V3/                          ← DMAIC V3 Integration ⭐
-│   ├── docs/
-│   │   └── handover/                  ← Complete ABACUS Handover Package
-│   │       ├── ABACUS_Handover_Book.md       (Complete 12-chapter reference)
-│   │       ├── Chapter_01.md                  (Executive Summary)
-│   │       ├── Chapter_02.md                  (Architecture & Design)
-│   │       ├── Chapter_03.md                  (Setup & Installation)
-│   │       ├── Chapter_04.md                  (DMAIC Methodology)
-│   │       ├── Chapter_05.md                  (Core Components)
-│   │       ├── Chapter_06.md                  (API Documentation)
-│   │       ├── Chapter_07.md                  (Usage Examples)
-│   │       ├── Chapter_08.md                  (CI/CD & Workflows)
-│   │       ├── Chapter_09.md                  (Testing & QA)
-│   │       ├── Chapter_10.md                  (Deployment Guide)
-│   │       ├── Chapter_11.md                  (Troubleshooting)
-│   │       ├── Chapter_12.md                  (Contributing)
-│   │       ├── README.md                      (Handover overview)
-│   │       └── glob.yaml                      (Project structure)
-│   ├── CANONICAL_KNOWLEDGE/
-│   │   └── gbogeg_abacus_analysis.md         (Repository analysis)
-│   └── integrations/
-│       └── ml_helpers/                        (ML utilities)
-│
-├── docs_versioned/
-│   ├── handover/                      ← START HERE ⭐
-│   │   ├── MASTER_HANDOVER_INDEX.md              (One-page overview)
-│   │   ├── COMPREHENSIVE_VERSION_ANALYSIS_20251111.md (Full analysis)
-│   │   └── V2.2_TO_V2.3_MIGRATION_GUIDE.md       (Migration guide - TBD)
-│   │
-│   ├── v2.2_archived/                 ← Historical reference
-│   │   ├── V2.2_FINAL_ARCHIVE_STATUS.md          (Archive summary)
-│   │   ├── V2.2_COMPLETE_SESSION_SUMMARY.md
-│   │   ├── V2.2_COMPREHENSIVE_TEST_RESULTS.md
-│   │   ├── V2.2_EXECUTION_PLAN.md
-│   │   ├── V2.2_IMPLEMENTATION_COMPLETE.md
-│   │   ├── V2.2_RECURSIVE_HOOKS_VERSION_ALIGNMENT.md
-│   │   ├── V2.2_SESSION_QUICK_REFERENCE.md
-│   │   ├── V2.2_TODO_HANDOVER_CHATREADY.md
-│   │   └── V2.2_USER_GUIDE.md
-│   │
-│   └── v2.3_active/                   ← Historical development snapshot ⭐
-│       ├── V2.3_CANONICAL_STATUS.md              (Current status)
-│       ├── V2.3_EVOLUTION_PLAN_20251111.md       (Full roadmap)
-│       ├── V2.3_IMMEDIATE_ACTION_PLAN_20251111.md
-│       └── V2.3_PROGRESS_SUMMARY_20251111.md
-│
-├── local_mcp/
-│   ├── agent_orchestrator_v3.0.py     ← Orchestrator v3.0 ✅
-│   ├── knowledge_integration_v2.3.py  ← KEB/GBOGEB Integration ✅ NEW!
-│   └── agents/                        ← V2.3 agents (6/6 upgraded) ✅
-│       ├── analysis_cryo_dm_v2.3_OPTIMIZED.py ✅
-│       ├── analysis_document_consumer_v2.3_OPTIMIZED.py ✅
-│       ├── analysis_artifact_analyzer_v2.3_OPTIMIZED.py ✅
-│       ├── analysis_smoke_test_v2.3_OPTIMIZED.py ✅
-│       ├── documentation_framework_v2.3_OPTIMIZED.py ✅
-│       └── recursive_framework_v2.3_OPTIMIZED.py ✅
-│
-├── tools_v2.3/                        ← V2.3 tools
-│   ├── task_tracker_v2.3_20251111.py ✅
-│   ├── create_chatready_code_v2.3_20251111.py ✅
-│   └── code_index_generator_v2.3.py ✅
-│
-├── tracking_v2.3/
-│   └── tasks/
-│       └── tasks.json                 ← Task tracking database
-│
-├── code_index.yaml                    ← Canonical component index
-├── code_index.json
-│
-├── .github/workflows/
-│   └── ...                            ← 37 active workflows
-├── workflows-to-install/
-│   └── *.yml                          ← Archived activation bundle retained for traceability
-│
-└── [Legacy files in root - to be refactored]
-```
-
----
-
-## 🎯 VERSION OVERVIEW (Historical Lineage Snapshot)
-
-### V2.2 (COMPLETE - ARCHIVED) ✅
-**Status:** 21/21 tasks (100%)  
-**Date:** November 2025  
-**Archive:** `docs_versioned/v2.2_archived/`
-
-**Delivered:**
-- ✅ Orchestrator framework (413 lines)
-- ✅ ExecutionBackbone task runtime - bounded scheduling/execution
-- ✅ KEB = Knowledge Exchange Bridge (federation semantics)
-- ✅ Execution tracking system
-- ✅ MCP controller (working)
-- ✅ Debug infrastructure (port 5678)
-- ✅ 8 comprehensive docs (4,294 lines)
-
-**Known Limitations:**
-- Agents are stubs (not fully functional)
-- No memory optimization
-- No DMAIC tracking
-- No CI/CD deployment
-
-### V2.3 (Historical Development Snapshot + Current Verification) 📚
-**Status:** Historical snapshot was 4/15 tasks (26.7%); runtime and CI/CD checks below are now verified operational.  
-**Date:** Started 2025-11-11  
-**Docs:** `docs_versioned/v2.3_active/`
-
-**Progress (current verification):**
-- ✅ 6/6 agents upgraded (memory-optimized)
-- ✅ Task tracking system operational
-- ✅ Code index automation working
-- ✅ CI/CD coverage active for core + integration paths (`v23-cicd.yml`, `gbogeb-abacus-integration-ci-cd.yml`, `bridge-ci.yml`, `federation-notebook.yml`)
-- ✅ Orchestrator v3.0 built and initializes successfully
-- ✅ KEB/GBOGEB integration active (`KEB Enabled: True`, `GBOGEB Enabled: True`)
-
-**Next Actions (remaining):**
-1. Maintain green core + integration pipelines (`v23-cicd.yml`, bridge/federation/integration workflows)
-2. Continue end-to-end validation for broader DMAIC pipelines
-3. Keep status docs synchronized with live runtime/CI evidence
----
-
-## 🔥 CRITICAL DOCUMENTS (READ THESE FIRST)
-
-### 1. ⭐ MASTER_HANDOVER_INDEX.md
-**Location:** `docs_versioned/handover/MASTER_HANDOVER_INDEX.md`  
-**Purpose:** One-page overview with links to all key documents  
-**Time:** 5 minutes  
-**Who:** Everyone - start here!
-
-### 2. COMPREHENSIVE_VERSION_ANALYSIS_20251111.md
-**Location:** `docs_versioned/handover/COMPREHENSIVE_VERSION_ANALYSIS_20251111.md`  
-**Purpose:** Complete version alignment, gaps, action plan  
-**Time:** 10 minutes  
-**Who:** Technical leads, project managers
-
-### 3. V2.3_CANONICAL_STATUS.md
-**Location:** `docs_versioned/v2.3_active/V2.3_CANONICAL_STATUS.md`  
-**Purpose:** Historical development status before the v4.4.0 release  
-**Time:** 5 minutes  
-**Who:** Developers, active contributors
-
-### 4. V2.2_FINAL_ARCHIVE_STATUS.md
-**Location:** `docs_versioned/v2.2_archived/V2.2_FINAL_ARCHIVE_STATUS.md`  
-**Purpose:** V2.2 completion record and archival summary  
-**Time:** 5 minutes  
-**Who:** Historical reference, new team members
-
-### 5. V2.3_EVOLUTION_PLAN_20251111.md
-**Location:** `docs_versioned/v2.3_active/V2.3_EVOLUTION_PLAN_20251111.md`  
-**Purpose:** Historical roadmap used to reach the v4.4.0 release  
-**Time:** 15 minutes  
-**Who:** Project planning, long-term contributors
-
----
-
-## 🧪 TESTING & VALIDATION
-
-### Quick Validation (2 minutes)
 ```bash
-# Test V2.3 agents
-python local_mcp/agents/analysis_smoke_test_v2.3_OPTIMIZED.py
-
-# Check task tracking
-python tools_v2.3/task_tracker_v2.3_20251111.py list
-
-# View code index
-cat code_index.yaml
+git clone https://github.com/GBOGEB/ABACUS.git
+cd ABACUS
+python -m pip install -r requirements.txt -r requirements-test.txt
+python -m pip install -e .
+make test                      # pytest DMAIC_V3/tests -q
+python -m pytest -q            # testpaths from pytest.ini: tests, DMAIC_V3/tests
+python tools/a10_guard.py --help
 ```
 
-### Component Testing
-```bash
-# Test individual V2.3 agents
-python local_mcp/agents/analysis_cryo_dm_v2.3_OPTIMIZED.py --test
-python local_mcp/agents/analysis_document_consumer_v2.3_OPTIMIZED.py --test
-python local_mcp/agents/analysis_artifact_analyzer_v2.3_OPTIMIZED.py --test
+Local runs are a development path, not native CI. Exact-head evidence lives in [Actions](https://github.com/GBOGEB/ABACUS/actions) on the PR's final commit.
 
-# Generate handover document
-python tools_v2.3/create_chatready_code_v2.3_20251111.py
+## 8. Evidence rules and non-compensation
 
-# Update code index
-python tools_v2.3/code_index_generator_v2.3.py --scan
-```
+- Source → validator → exact-head execution → owner admission → derived view. A later step never stands in for an earlier one.
+- `UNKNOWN` is not `PASS` or zero; zero collected tests is a failure.
+- Historical release figures are bound to their release; current-main health comes from the live census and Actions.
+- Raw debt counts are kept next to classified counts; classification never erases the raw number.
+- Runtime support to QPS is validation support only: it transfers no engineering, procurement or acceptance authority.
+- Deferred reviews follow [`ABACUS_DEFERRED_REVIEW_POLICY.md`](governance/ABACUS_DEFERRED_REVIEW_POLICY.md). Report vulnerabilities via [`SECURITY.md`](SECURITY.md).
 
----
+## 9. Repository map and next actions
 
-## ⚠️ HISTORICAL GAPS & BLOCKERS (V2.3 ERA)
+| Source | Why open it |
+|---|---|
+| [`DMAIC_V3/`](DMAIC_V3/) | Runtime package: core, phases, tests |
+| [`src/`](src/), [`tools/`](tools/), [`scripts/`](scripts/) | Libraries, guards, CI and analysis scripts |
+| [`tests/`](tests/) | Repository-level tests (plus `DMAIC_V3/tests`) |
+| [`ci/`](ci/), [`governance/`](governance/) | Workflow policy, ratchet baselines, release and branching policy |
+| [`docs/`](docs/README.md) | Pages site source, CI docs, integration reports |
+| [`docs/repo-structure/`](docs/repo-structure/ROOT_REFACTOR_PLAN.md) | Root refactor plan and the map of moved root files |
+| [`federation/`](federation/), [`MIP/`](MIP/README.md), [`.waves/`](.waves/README.md) | Federation inputs, MIP rollout, wave claims |
+| [`CODE_MAROON/`](CODE_MAROON/README.md) | Security check-and-fix programme notes |
+| [`docs_versioned/`](docs_versioned/handover/MASTER_HANDOVER_INDEX.md) | Versioned handover and release-era documentation |
+| [Issues](https://github.com/GBOGEB/ABACUS/issues), [pull requests](https://github.com/GBOGEB/ABACUS/pulls), [Actions](https://github.com/GBOGEB/ABACUS/actions) | Live queue, PR heads and CI evidence |
 
-These items are retained for lineage. They are **not** the current execution queue. Current work is governed by the exact-head TC0-TC4/DAB evidence above.
+**Next governed actions, in order:**
 
-### ✅ Historical gaps resolved by later baselines
-1. **No V3.0 Orchestrator** — resolved; the canonical V3 orchestrator is operational.
-2. **Incomplete Agent Upgrades** — resolved; 6/6 agent upgrades were previously verified.
-3. **No KEB/GBOGEB Integration** — resolved; runtime integration was previously verified.
-4. **Recursive Hooks Not Ported** — superseded by the current DMAIC/temporal orchestration architecture.
-5. **Dashboard generation** — resolved as a capability; multiple GitHub Pages/dashboard surfaces now exist.
-6. **DMAIC tracking and metrics/KPI collection** — implemented as capabilities; current correctness is governed by live census evidence rather than the V2.3 checklist.
+1. Land the open repair PRs one cause at a time: [#2758](https://github.com/GBOGEB/ABACUS/pull/2758) (dead deploy job), [#2740](https://github.com/GBOGEB/ABACUS/pull/2740) (Bandit key), [#2733](https://github.com/GBOGEB/ABACUS/pull/2733) (staging skip reason).
+2. Fix the flaky coverage leg ([#2669](https://github.com/GBOGEB/ABACUS/issues/2669)) so required checks stop needing reruns.
+3. Collapse the PR Feedback Gate fan-in ([#2722](https://github.com/GBOGEB/ABACUS/issues/2722)).
+4. Finish the formatter lanes (W03) and keep the flake8/Bandit ratchets moving down.
+5. Owner: decide whether `main` requires an independent approval, then read the ruleset back.
+6. Re-cut this status snapshot at the new `main` SHA when any of these moves.
 
-### 🚧 Historical items that remain current proof gates
-7. **Folder/refactor completion** — still unproven as a repository-wide closure claim. Do not infer completion from partial cleanup.
-8. **End-to-end deployment readiness** — CI/CD execution exists, but production/deployment readiness remains a separate evidence gate.
-9. **Production readiness** — not promoted from historical targets; requires current branch-protection, deployment, test/admission, coverage and release evidence.
+### Historical lineage
 
-### Current blocker interpretation
-- **Immediate blocker:** none admitted yet; `#1671` is waiting on exact-head workflow execution, not on a design decision.
-- **Rank-1 measured debt:** semantic false-green constructs in `.github/workflows/ci-enhanced.yml`.
-- **Next blocker classes after rank-1 closure:** `TEST_ADMISSION` → `NO_TEST` → `COVERAGE` → `STATIC_ANALYSIS`.
-- **Separate non-code gates:** branch protection, repository refactor closure, end-to-end deployment proof and production-readiness proof.
----
+<details>
+<summary>Release-era records (v2.2 → v4.4.0) and superseded status pointers</summary>
 
-## 📊 METRICS SNAPSHOT
+These records are kept for traceability. They describe the state at their own date, not current `main`.
 
-### V2.2 (Final - Archived)
-- **Files:** 12 code + 8 docs
-- **Code:** ~2,000 lines
-- **Docs:** 4,294 lines
-- **Test Coverage:** 90% (19/21)
-- **Status:** ✅ 100% complete
+| Record | What it was |
+|---|---|
+| [v4.4.0 release notes](https://github.com/GBOGEB/ABACUS/releases/tag/v4.4.0), [announcement](ANNOUNCEMENT_v4.4.0.md), [final status dashboard](docs/final_status_v4.4.0.html), [completion report](FINAL_COMPLETION_REPORT_v4.4.0.md) | Last published release (18 May 2026): 95 % completion, 92.1 quality score, 90 % coverage — release snapshot figures |
+| [Master handover index](docs_versioned/handover/MASTER_HANDOVER_INDEX.md) | V2.2/V2.3-era one-page overview |
+| [`docs_versioned/v2.2_archived/`](docs_versioned/v2.2_archived/) | V2.2 (Nov 2025): orchestrator framework, MCP controller, 21/21 tasks |
+| [`docs_versioned/v2.3_active/`](docs_versioned/v2.3_active/) | V2.3 development snapshot that led to v4.4.0 |
+| [Progress tracker](docs/progress_tracker.html) | Module status as of May 2026 |
+| Execution state of 2 Oct 2026 | Pointed at commit `329562a`, PR #1667 and the `ci-enhanced.yml` rank-1 lane (#1671). Superseded; see [commit history](https://github.com/GBOGEB/ABACUS/commits/main) |
+| Cross-repo smoke pass of 25 Oct 2026 | 6254 passed / 37 skipped at that time; full record in [`docs/INTEGRATION_REPORT.md`](docs/INTEGRATION_REPORT.md) |
 
-### V2.3 (Historical Snapshot)
-- **Files:** 7 code + 3 docs (+ 4 handover)
-- **Code:** ~50K characters
-- **Docs:** 1,036 lines (+ handover)
-- **Test Coverage:** 4/6 agents tested
-- **Status:** 🚧 26.7% complete
+Still-open proof gates carried from that era: repository-wide folder refactor closure, end-to-end deployment readiness and production readiness. None is claimed by this page.
 
-### Combined Project
-- **Total Files:** 30+ files
-- **Total Code:** ~52K characters
-- **Total Docs:** 5,330+ lines
-- **Workspace:** 14,127 files scanned
-- **Memory:** All V2.3 agents < 4M ✅
+</details>
 
 ---
 
-## 🎬 HISTORICAL ACTION PLAN (V2.3 SNAPSHOT)
-
-### Phase snapshot — day 1 (historical)
-- [ ] Review [MASTER_HANDOVER_INDEX.md](docs_versioned/handover/MASTER_HANDOVER_INDEX.md)
-- [ ] Read [V2.3_CANONICAL_STATUS.md](docs_versioned/v2.3_active/V2.3_CANONICAL_STATUS.md)
-- [ ] Run smoke test to validate environment
-- [ ] Identify next task from V2.3 action plan
-
-### Phase snapshot — week 1 (historical)
-- [x] Complete agent upgrades (2 remaining)
-- [x] Build orchestrator v3.0
-- [x] Integrate KEB/GBOGEB knowledge bases
-
-### Phase snapshot — week 2 (historical)
-- [x] Establish CI/CD execution and deployment-capable workflows (historical capability)
-- [x] Generate dashboard surfaces (later baseline capability)
-- [ ] Complete repository-wide folder/refactor closure (still a current proof gate)
-
----
-
-## 📞 SUPPORT & RESOURCES
-
-### Key Resources
-- **Documentation:** `docs_versioned/` (versioned, organized)
-- **Agents:** `local_mcp/agents/` (V2.3 agents)
-- **Tools:** `tools_v2.3/` (task tracker, code index, handover)
-- **Tracking:** `tracking_v2.3/tasks/` (task database)
-- **CI/CD:** `.github/workflows/v23-cicd.yml` + integration/federation/bridge workflows
-
-### Development Environment
-- **Python:** 3.8+
-- **Key Libraries:** psutil, pyyaml, debugpy
-- **Debug Port:** 5678 (debugpy)
-- **Memory Limit:** 4M per agent (V2.3 constraint)
-
-### Testing
-- **Smoke Test:** `analysis_smoke_test_v2.3_OPTIMIZED.py`
-- **Task Tracker:** `task_tracker_v2.3_20251111.py`
-- **Code Index:** `code_index_generator_v2.3.py`
-
----
-
-## 🏆 SUCCESS CRITERIA
-
-### V2.3 Completion (Historical target)
-- [ ] All 15 tasks complete
-- [x] All 6 agents upgraded to v2.3
-- [x] Orchestrator v3.0 operational
-- [x] KEB/GBOGEB integrated
-- [x] CI/CD deploying outputs
-- [ ] Folder structure refactored
-- [ ] End-to-end testing passed
-- [ ] Production ready
-
-### Current Verified Progress (for previously blocked items)
-- ✅ 6/6 agents upgraded
-- ✅ Task tracker operational
-- ✅ Code index automated
-- ✅ Memory optimization complete
-- 🚧 Folder refactoring started
-- ✅ Orchestrator v3.0 operational
-- ✅ KEB/GBOGEB integration operational
-
-### Historical Validation Snapshot (2026-05-29)
-- ✅ 6/6 agents upgraded and loading
-- ✅ Orchestrator v3.0 operational
-- ✅ KEB/GBOGEB runtime integration active
-- ✅ CI/CD run evidence captured (successful run IDs and artifact retention links recorded)
-- ❌ Folder refactor completion pending
-- ❌ End-to-end deployment readiness pending
-- ❌ Production readiness pending
-
-This snapshot remains historical evidence only. See `tracking_v2.3/V2.3_COMPLETION_EXECUTION_TRACKER_20260529.md` for its original dependency sequence; use the current exact-head queue above for present work.
-
----
-
-## 📚 DOCUMENTATION MAP
-
-### By Role
-
-**If you are a:**
-- **New Developer** → Start with [MASTER_HANDOVER_INDEX.md](docs_versioned/handover/MASTER_HANDOVER_INDEX.md)
-- **Project Manager** → Read [COMPREHENSIVE_VERSION_ANALYSIS](docs_versioned/handover/COMPREHENSIVE_VERSION_ANALYSIS_20251111.md)
-- **Active Developer** → Check [V2.3_CANONICAL_STATUS.md](docs_versioned/v2.3_active/V2.3_CANONICAL_STATUS.md)
-- **Researcher/Historian** → Browse [V2.2_FINAL_ARCHIVE_STATUS.md](docs_versioned/v2.2_archived/V2.2_FINAL_ARCHIVE_STATUS.md)
-- **Architect/Planner** → Study [V2.3_EVOLUTION_PLAN_20251111.md](docs_versioned/v2.3_active/V2.3_EVOLUTION_PLAN_20251111.md)
-
-### By Task
-
-**If you need to:**
-- **Understand project** → [MASTER_HANDOVER_INDEX.md](docs_versioned/handover/MASTER_HANDOVER_INDEX.md)
-- **See current status** → [V2.3_CANONICAL_STATUS.md](docs_versioned/v2.3_active/V2.3_CANONICAL_STATUS.md)
-- **Find gaps/issues** → [COMPREHENSIVE_VERSION_ANALYSIS](docs_versioned/handover/COMPREHENSIVE_VERSION_ANALYSIS_20251111.md)
-- **Plan next sprint** → [V2.3_IMMEDIATE_ACTION_PLAN](docs_versioned/v2.3_active/V2.3_IMMEDIATE_ACTION_PLAN_20251111.md)
-- **Check metrics** → [V2.3_PROGRESS_SUMMARY](docs_versioned/v2.3_active/V2.3_PROGRESS_SUMMARY_20251111.md)
-- **Learn V2.2 history** → [V2.2_COMPLETE_SESSION_SUMMARY](docs_versioned/v2.2_archived/V2.2_COMPLETE_SESSION_SUMMARY.md)
-
----
-
-## 🔄 VERSION CONTROL
-
-**Current Version:** v4.4.0 published baseline; `main` carries post-release hardening beyond the tag  
-**Previous Major Milestone:** V2.3.0 (archived in docs_versioned)  
-**Git Status:** Active exact-head MIP/CI hardening; `#1671` is the sole current rank-1 `ci-enhanced.yml` lane; workflow state is governed by live policy/census evidence; branch-protection proof remains separate  
-**Last Major Update:** 2026-10-02 (`#1667` merged; duplicate `#1670` superseded; `#1671` executing exact-head admission for the measured rank-1 false-green debt)
-
----
-
-## 🚦 STATUS INDICATORS
-
-| Icon | Meaning |
-|------|---------|
-| ⭐ | **START HERE** - Critical document |
-| ✅ | Complete / Operational |
-| 🚧 | In Progress / Active Development |
-| ⏳ | Pending / Planned |
-| ⚠️ | Warning / Needs Attention |
-| ❌ | Blocked / Not Started |
-| 🔴 | Critical Priority |
-| 🟡 | High Priority |
-| 🟢 | Medium/Low Priority |
-
----
-
-## 🎯 PROJECT PRINCIPLES
-
-This project follows **recursive, evolutionary, DMAIC-driven** principles:
-
-1. **Idempotency** - All operations can be repeated safely
-2. **Recursive** - Self-referential, hierarchical processing
-3. **DMAIC** - Define-Measure-Analyze-Improve-Control cycle
-4. **Iterative** - Continuous improvement through versioning
-5. **Evolutionary** - Build on previous versions, no rewrites
-6. **Data-driven** - Decisions based on metrics and testing
-7. **Version-controlled** - All changes tracked, documented
-8. **Deployed** - CI/CD ready, production-oriented
-
----
-
-## 💡 QUICK TIPS
-
-### First Time Here?
-1. Read [MASTER_HANDOVER_INDEX.md](docs_versioned/handover/MASTER_HANDOVER_INDEX.md) (5 min)
-2. Run smoke test: `python local_mcp/agents/analysis_smoke_test_v2.3_OPTIMIZED.py`
-3. Check tasks: `python tools_v2.3/task_tracker_v2.3_20251111.py list`
-4. Read [V2.3_CANONICAL_STATUS.md](docs_versioned/v2.3_active/V2.3_CANONICAL_STATUS.md) (5 min)
-
-### Returning Developer?
-1. Start with **CURRENT EXECUTION STATE** near the top of this README for the live main SHA and active PR edge.
-2. Treat V2.3 status/action-plan documents as historical lineage, not as the current sprint authority.
-3. Read the latest TC0-TC4/DAB evidence and current open PR before selecting work.
-4. Consume only the next measured residual; do not replay completed or superseded slices.
-
-### Need Help?
-- **Documentation issues?** Check [MASTER_HANDOVER_INDEX.md](docs_versioned/handover/MASTER_HANDOVER_INDEX.md)
-- **Code questions?** See `code_index.yaml` for component map
-- **Task confusion?** Run `python tools_v2.3/task_tracker_v2.3_20251111.py status`
-- **Testing problems?** Run smoke test for diagnostics
-
----
-
-**Project Status:** ✅ v4.4.0 published baseline / 🚧 current-main hardening continues under exact-head evidence  
-**Current Focus:** Admit and close `#1671`, the sole measured `ci-enhanced.yml` rank-1 INFRA/CHECK lane, without relaxing test, coverage or raw false-green controls  
-**Next Milestone:** `#1671` exact-head GREEN → merge → post-merge TC0-TC4/DAB recensus → consume the next measured `TEST_ADMISSION`/`NO_TEST`/`COVERAGE`/`STATIC_ANALYSIS` residual; prove branch-protection/refactor/deployment gates separately  
-**Last Updated:** 2026-10-02
-
----
-
-*Welcome to ABACUS. Start with the Quick Start section above for the current v4.4.0 release state, then use the historical sections below for lineage and handover context.*
+**BIOS:** 12-cluster DMAIC runtime + exact-head first-red repair. **Release authority:** repository owner; identity from `pyproject.toml`. **Source licence:** [Apache-2.0](LICENSE), GBOGEB as source generator and owner. **Landing:** R2 of the [shared skeleton](https://github.com/GBOGEB/GEMINI/blob/main/docs/landing/LANDING_SKELETON.md), cut at `main@da5b6b7` on 2026-11-15.
