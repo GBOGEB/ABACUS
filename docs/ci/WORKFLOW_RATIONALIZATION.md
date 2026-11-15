@@ -128,7 +128,7 @@ Make PR-triggered workflows with write-class GitHub token scopes explicit and re
 | 20 | `pr_domain` | `dow` | `dow-monitoring.yml` | push, schedule, workflow_dispatch | 1 | `keep` | — |
 | 20 | `pr_domain` | `dow` | `dow-remaining-gates-telemetry.yml` | pull_request, workflow_dispatch, schedule | 1 | `keep` | — |
 | 20 | `pr_domain` | `dow` | `dow-scheduled.yml` | schedule, workflow_dispatch | 1 | `keep` | — |
-| 20 | `pr_domain` | `dow` | `dow-sprint6-cicd.yml` | push, workflow_dispatch | 7 | `keep` | — |
+| 20 | `pr_domain` | `dow` | `dow-sprint6-cicd.yml` | push, workflow_dispatch | 8 | `keep` | — |
 | 20 | `pr_domain` | `dow` | `dow-w1-coverage-contract-qa.yml` | pull_request | 1 | `keep` | — |
 | 20 | `pr_domain` | `dow` | `gg-math-temporal-pca-exact-live-dow.yml` | pull_request, workflow_dispatch | 1 | `keep` | — |
 | 20 | `pr_domain` | `dow` | `qps-debug-dow-consumer.yml` | pull_request, workflow_dispatch, repository_dispatch | 2 | `keep` | — |
