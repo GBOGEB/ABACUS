@@ -234,8 +234,11 @@ class IntegrationTestSuite:
         return self.passed == len(self.test_results)
 
 
-def test_integration_suite(tmp_path, monkeypatch):
+def test_integration_suite(tmp_path, monkeypatch):  # pragma: no cover
     """Pytest entry point: run the suite when DOW is importable.
+
+    Excluded from coverage: it only executes with the external DOW package,
+    which CI never installs (the module is skipped by importorskip above).
 
     IntegrationTestSuite is not collected by pytest (python_classes = Test*),
     so without this wrapper the module would collect zero tests even with DOW
