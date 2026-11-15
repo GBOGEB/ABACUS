@@ -14,11 +14,19 @@ POLICY = json.loads(
 CFG = POLICY["batch_policy"]["FORMATTER_BULK"]
 
 
-def plan_for(files, hold=()):
+def plan_for(files, hold=(), counts=None):
+    files = list(files)
+    counts = counts or {}
     return {
         "exact_sha": "a" * 40,
         "hold_files": list(hold),
-        "lanes": [{"worker_id": "W00", "files": list(files)}],
+        "lanes": [
+            {
+                "worker_id": "W00",
+                "files": files,
+                "file_findings": {f: counts.get(f, 1) for f in files},
+            }
+        ],
     }
 
 
@@ -104,11 +112,14 @@ def test_eligible_excludes_prefix_pin_hold_and_non_python():
 
 def test_chunks_respect_cap_and_cover_every_file_once():
     files = [f"f{i}.py" for i in range(10)]
-    parts = F.chunks(files, 4)
-    assert [len(p) for p in parts] == [4, 4, 2]
+    ones = {f: 1 for f in files}
+    parts, over = F.chunks(files, 4, ones, 1500)
+    assert [len(p) for p in parts] == [4, 4, 2] and over == []
     assert [x for p in parts for x in p] == files
     with pytest.raises(ValueError):
-        F.chunks(files, 0)
+        F.chunks(files, 0, ones, 1500)
+    with pytest.raises(ValueError):
+        F.chunks(files, 4, ones, 0)
 
 
 def test_select_builds_chunks_from_the_plan(tmp_path):
@@ -307,3 +318,46 @@ def test_hash_key_words_without_a_digest_are_not_pins(tmp_path):
     pins = F.collect_pins(tmp_path)
     assert "lib/hashing.py" not in pins
     assert "real.py" in pins
+
+
+# --- max_findings_per_lane_pr (ABACUS #2634 review r4464619708) ---------------
+
+
+def test_chunks_respect_the_finding_cap_as_well_as_the_file_cap():
+    """Four files of 800 E225 findings each: no chunk may exceed 1,500 findings."""
+    files = [f"f{i}.py" for i in range(4)]
+    parts, over = F.chunks(files, 40, {f: 800 for f in files}, 1500)
+    assert parts == [["f0.py"], ["f1.py"], ["f2.py"], ["f3.py"]]
+    assert over == []
+    parts, _ = F.chunks(files, 3, {f: 100 for f in files}, 1500)
+    assert [len(p) for p in parts] == [3, 1]  # the file cap still applies
+
+
+def test_a_file_above_the_finding_cap_is_deferred_not_formatted():
+    files = ["big.py", "a.py", "b.py"]
+    parts, over = F.chunks(files, 40, {"big.py": 1600, "a.py": 10, "b.py": 10}, 1500)
+    assert over == ["big.py"]
+    assert parts == [["a.py", "b.py"]]
+
+
+def test_select_packs_by_findings_and_reports_deferred_files(tmp_path):
+    names = [f"pkg/m{i}.py" for i in range(4)]
+    for n in names:
+        write(tmp_path / n, "x = 1\n")
+    counts = {"pkg/m0.py": 800, "pkg/m1.py": 800, "pkg/m2.py": 800, "pkg/m3.py": 2000}
+    with_guard(tmp_path)
+    sel = F.select(
+        plan_for(names, counts=counts), "W00", POLICY, tmp_path, {"results": []}
+    )
+    assert [sum(counts[f] for f in c) for c in sel["chunks"]] == [800, 800, 800]
+    assert sel["excluded"]["over_finding_cap"] == ["pkg/m3.py"]
+    assert sel["chunk_findings"] == [800, 800, 800]
+
+
+def test_select_fails_closed_without_per_file_finding_counts(tmp_path):
+    write(tmp_path / "pkg/m0.py", "x = 1\n")
+    with_guard(tmp_path)
+    plan = plan_for(["pkg/m0.py"])
+    del plan["lanes"][0]["file_findings"]
+    with pytest.raises(ValueError, match="file_findings"):
+        F.select(plan, "W00", POLICY, tmp_path, {"results": []})
