@@ -317,3 +317,11 @@ def test_lane_scan_reconciles_with_global_scan(tmp_path):
     )
     assert rep["scanner_version_status"] == "MATCH"
     assert rep["sum_of_lanes"] == len(rows)
+
+
+def test_lanes_record_findings_per_file():
+    """The formatter lane packs chunks by findings, so each lane carries exact per-file counts."""
+    plan = plan_of()
+    for lane in plan["lanes"]:
+        assert sorted(lane["file_findings"]) == lane["files"]
+        assert sum(lane["file_findings"].values()) == lane["findings"]

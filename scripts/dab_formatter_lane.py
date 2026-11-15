@@ -5,8 +5,9 @@ exactly one lane. This script takes one lane of an existing plan and:
 
 ``select``  keeps only the files a formatter may touch (not under an excluded
             prefix, not named by a hash-bearing JSON manifest, not a protected
-            HOLD file) and cuts them into chunks that respect the policy cap
-            ``max_files_per_lane_pr``.
+            HOLD file) and cuts them into chunks that respect both policy caps,
+            ``max_files_per_lane_pr`` and ``max_findings_per_lane_pr``. A file
+            whose own finding count exceeds the cap is deferred, not formatted.
 ``apply``   runs the policy formatter (Black, AST-equivalence checked) on one
             chunk and writes a result file that ``ldab_scale_plan.py verify``
             accepts (``worker_id`` + ``changed_paths``).
@@ -180,14 +181,31 @@ def eligible(
     return keep, out
 
 
-def chunks(files: list[str], size: int) -> list[list[str]]:
-    if size < 1:
+def chunks(
+    files: list[str], max_files: int, counts: dict[str, int], max_findings: int
+) -> tuple[list[list[str]], list[str]]:
+    """Pack files in order under both caps; return (chunks, files over the finding cap)."""
+    if max_files < 1:
         raise ValueError("max_files_per_lane_pr must be >= 1")
-    out = []
-    for start in range(0, len(files), size):
-        end = start + size
-        out.append(files[start:end])
-    return out
+    if max_findings < 1:
+        raise ValueError("max_findings_per_lane_pr must be >= 1")
+    out: list[list[str]] = []
+    over: list[str] = []
+    cur: list[str] = []
+    load = 0
+    for path in files:
+        n = counts[path]
+        if n > max_findings:
+            over.append(path)
+            continue
+        if cur and (len(cur) >= max_files or load + n > max_findings):
+            out.append(cur)
+            cur, load = [], 0
+        cur.append(path)
+        load += n
+    if cur:
+        out.append(cur)
+    return out, over
 
 
 def select(
@@ -204,6 +222,14 @@ def select(
     lane = next((x for x in plan["lanes"] if x["worker_id"] == worker), None)
     if lane is None:
         raise ValueError(f"worker {worker} is not in the plan")
+    counts = lane.get("file_findings")
+    if not isinstance(counts, dict) or set(counts) != set(lane["files"]):
+        # missing evidence is null, never zero: without exact counts the
+        # finding cap cannot be enforced, so nothing is selected
+        raise ValueError(
+            f"lane {worker} has no file_findings for every file; "
+            "regenerate the plan with scripts/ldab_scale_plan.py"
+        )
     # Bandit ratchet scans --ignore-nosec; conservatively exclude # nosec files
     # even if a supplied report was generated with different suppression settings.
     has_bandit_report = True
@@ -218,6 +244,13 @@ def select(
         suppressed,
         tender_flagged(lane["files"], root),
     )
+    parts, over_cap = chunks(
+        keep,
+        int(cfg["max_files_per_lane_pr"]),
+        {p: int(counts[p]) for p in keep},
+        int(cfg["max_findings_per_lane_pr"]),
+    )
+    excluded["over_finding_cap"] = over_cap
     return {
         "schema": "dab.formatter.selection.v1",
         "worker_id": worker,
@@ -225,10 +258,11 @@ def select(
         "tool": cfg["tool"],
         "tool_args": cfg.get("tool_args", []),
         "lane_files": len(lane["files"]),
-        "eligible_files": len(keep),
         "bandit_report_used": has_bandit_report,
         "excluded": {k: v for k, v in excluded.items()},
-        "chunks": chunks(keep, int(cfg["max_files_per_lane_pr"])),
+        "eligible_files": len(keep) - len(over_cap),
+        "chunks": parts,
+        "chunk_findings": [sum(int(counts[p]) for p in c) for c in parts],
         "mutation_writer": 1,
         "engineering_credit_delta": 0,
     }
