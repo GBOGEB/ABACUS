@@ -14,7 +14,9 @@ from DMAIC_V3.core.metrics import MetricsAggregator, MetricsExporter, MetricsTra
 
 
 def test_models_serialize_complete_execution_state():
-    metric = Metric("throughput", 12.5, "items/s", MetricType.GAUGE, metadata={"source": "test"})
+    metric = Metric(
+        "throughput", 12.5, "items/s", MetricType.GAUGE, metadata={"source": "test"}
+    )
     phase = PhaseMetrics("measure", 2)
     phase.add_metric(metric)
     phase.start_time = datetime(2026, 1, 1, 12, 0, 0)
@@ -109,7 +111,9 @@ def test_metrics_aggregator_statistics_and_summary():
 
 
 def test_metrics_exporter_writes_all_formats(tmp_path):
-    phase = PhaseMetrics("control", 4, duration_seconds=1.25, status=PhaseStatus.COMPLETED)
+    phase = PhaseMetrics(
+        "control", 4, duration_seconds=1.25, status=PhaseStatus.COMPLETED
+    )
     phase.add_metric(Metric("quality", 99.0, "%", MetricType.GAUGE))
     agg = MetricsAggregator()
     agg.add_phase_metrics(phase)

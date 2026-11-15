@@ -1,3 +1,4 @@
+# yamllint disable rule:line-length
 name: G3A Governed Three-Advance Contract Proof
 on:
   pull_request:
@@ -62,8 +63,14 @@ jobs:
           path: test_reports/g3a/
           if-no-files-found: warn
 
+  # RETIRED from pull_request (manual replay only). Binds four fixed source
+  # blobs from the N13 branch, so it cannot pass on current sources; the W16
+  # epoch (g3a-n15-python-matrix.yml) now tracks these files. Replay only from
+  # a ref carrying those blobs; PyYAML 6.0.2 / Python 3.13 are part of the
+  # recorded evidence. The bounded-proof job above stays live on PRs.
   n13-four-source-canary:
     name: N13 four-source branch canary Python 3.13
+    if: github.event_name == 'workflow_dispatch'
     runs-on: ubuntu-latest
     steps:
       - name: Checkout exact PR head

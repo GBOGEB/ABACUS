@@ -1,10 +1,12 @@
+# yamllint disable rule:line-length
 name: G3A N14 Phase4 Alias-Safe Source Repair Proof
+# RETIRED from pull_request (manual replay only). This proof pins N14-era
+# branch denominators (e.g. cicd_github_orchestrator.py = 78) and fails on
+# current sources whatever the interpreter. The living ledger for the same
+# files is the W16 epoch (MIP/statistics/g3a_w16_epoch.json, measured by
+# g3a-n15-python-matrix.yml). Replay only from a ref that carries the N14
+# sources; its PyYAML 6.0.2 / Python 3.13 pins are part of that evidence.
 on:
-  pull_request:
-    paths:
-      - 'tests/test_g3a_n14_phase4_import.py'
-      - 'DMAIC_V3/phases/phase4_improve.py'
-      - '.github/workflows/g3a-n14-phase4-import.yml'
   workflow_dispatch:
 permissions:
   contents: read

@@ -1031,27 +1031,10 @@ jobs:
           path: test_reports/full-red/summary.json
           if-no-files-found: error
 
-  deploy-dashboard:
-    name: Deploy Test Dashboard
-    runs-on: ubuntu-latest
-    needs: [comprehensive-test-suite, coverage]
-    if: github.ref == 'refs/heads/main'
-
-    steps:
-      - uses: actions/checkout@v7
-
-      - name: Download Dashboard Artifact
-        uses: actions/download-artifact@v8
-        with:
-          name: test-dashboard
-          path: dashboard/
-
-      - name: Deploy to GitHub Pages
-        uses: peaceiris/actions-gh-pages@v4
-        with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: ./dashboard
-          publish_branch: gh-pages
+  # deploy-dashboard removed (#2728): it pushed to a gh-pages branch that does
+  # not exist while Pages is workflow-built from main:/docs, and the job token
+  # is read-only, so it 403'd on every main run. The dashboard still ships as
+  # the `test-dashboard` artifact from the Comprehensive Test Suite job.
 
   notification:
     name: Test Results Notification
