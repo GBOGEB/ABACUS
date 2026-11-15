@@ -213,6 +213,8 @@ def build_plan(
                 "files": files,
                 "file_count": len(files),
                 "findings": len(rows),
+                # exact per-file counts: the formatter lane packs by findings
+                "file_findings": {p: len(by_file[p]) for p in files},
                 "deferred_findings": len(rows) - batched,
                 "batches": batches,
                 "port_lease": lease_for(sha, wid),
