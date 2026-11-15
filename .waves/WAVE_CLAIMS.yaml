@@ -1,6 +1,7 @@
 # GBOGEB/ABACUS wave claims -- this repository's prerogative.
 # Rules (must obey): GBOGEB/CODEX federation/waves/WAVE_NAMING_RULES.yaml
-# Roll-up: CODEX scripts/build_wave_register.py reads this file at the exact commit.
+# Roll-up: CODEX scripts/build_wave_register.py reads this file
+# at the exact commit.
 #
 # Seed: participation only. Owned waves are promoted from
 # WAVE_CLAIMS.proposed.yaml after owner review (names are the owner's choice).
@@ -9,15 +10,16 @@ repo: GBOGEB/ABACUS
 owns: []
 participates:
   - key: QPS:W113
-    role: receiver   # .mesh/MESH_DOCK.yaml current_focus W113_MESH_CLOSURE_CONTROLLER_DOW_RECEIVER
+    # .mesh/MESH_DOCK.yaml current_focus (W113 DOW receiver)
+    role: receiver
   - key: QPS:W027
-    role: consumer   # testpilot native contract test; owner cryoplant-project (local)
+    role: consumer   # testpilot contract test; owner cryoplant (local)
   - key: QPS:W033
     role: executor   # backbone pool run; owner FEDERATION (elevated)
   - key: QPS:W048
     role: executor   # CBD recurse fan-out scripts; owner FEDERATION (elevated)
   - key: QPS:W102
-    role: receiver   # QPS MIP reconciliation receiver; owner FEDERATION (elevated)
+    role: receiver   # QPS MIP reconciliation receiver; elevated
   - key: QPS:W334
     role: receiver   # DOW receipt; owner FEDERATION (elevated)
   - key: QPS:W060
@@ -38,3 +40,75 @@ participates:
     role: receiver   # global hive GLOB DOW receiver; elevated
   - key: QPS:W322
     role: reviewer   # HEPAK MIP DOW review; elevated
+  - key: QPS:W028
+    role: reviewer   # request/review; elevated
+  - key: QPS:W042
+    role: receiver   # receipt/return; elevated
+  - key: QPS:W044
+    role: producer   # origin; elevated
+  - key: QPS:W045
+    role: producer   # W45 provider contract; elevated
+  - key: QPS:W047
+    role: reviewer   # request/review; elevated
+  - key: QPS:W054
+    role: receiver   # receipt/return; elevated
+  - key: QPS:W055
+    role: receiver   # content reference; elevated
+  - key: QPS:W058
+    role: receiver   # receipt/return; elevated
+  - key: QPS:W061
+    role: receiver   # receipt/return; elevated
+  - key: QPS:W062
+    role: producer   # origin; elevated
+  - key: QPS:W063
+    role: producer   # origin; elevated
+  - key: QPS:W065
+    role: executor   # workflow/script; elevated
+  - key: QPS:W066
+    role: receiver   # receipt/return; elevated
+  - key: QPS:W071
+    role: executor   # workflow/script; elevated
+  - key: QPS:W084
+    role: executor   # workflow/script; elevated
+  - key: QPS:W088
+    role: reviewer   # request/review; elevated
+  - key: QPS:W104
+    role: receiver   # receipt/return; elevated
+  - key: QPS:W105
+    role: receiver   # receipt/return; elevated
+  - key: QPS:W107
+    role: producer   # origin; elevated
+  - key: QPS:W110
+    role: receiver   # receipt/return; elevated
+  - key: QPS:W116
+    role: reviewer   # request/review; elevated
+  - key: QPS:W126
+    role: executor   # W126 release orchestration; elevated
+  - key: QPS:W142
+    role: receiver   # content reference; elevated
+  - key: QPS:W145
+    role: receiver   # receipt/return; elevated
+  - key: QPS:W147
+    role: reviewer   # request/review; elevated
+  - key: QPS:W189
+    role: executor   # w189f exact-head workflow; elevated
+  - key: QPS:W190
+    role: receiver   # receipt/return; elevated
+  - key: QPS:W232
+    role: receiver   # receipt/return; elevated
+  - key: QPS:W233
+    role: receiver   # W233 pointer-only receiver; elevated
+  - key: QPS:W259
+    role: receiver   # receipt/return; elevated
+  - key: QPS:W266
+    role: receiver   # receipt/return; elevated
+  - key: QPS:W273
+    role: receiver   # receipt/return; elevated
+  - key: QPS:W274
+    role: reviewer   # request/review; elevated
+  - key: QPS:W285
+    role: receiver   # receipt/return; elevated
+  - key: QPS:W306
+    role: executor   # workflow/script; elevated
+  - key: QPS:W329
+    role: receiver   # receipt/return; elevated
