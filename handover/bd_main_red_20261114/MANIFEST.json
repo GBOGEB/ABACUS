@@ -7,13 +7,23 @@
  "files": [
   {
    "path": "HANDOVER.md",
-   "bytes": 15908,
-   "sha256": "421e4fd84b942bab22f4f57c92b680e3aeea29d9374377b0467fa2be5694d2ae"
+   "bytes": 16196,
+   "sha256": "848ef78088156e3f5eb1f50db976cc4586c64bc85a17a7bae3c49e9c5f2159fb"
+  },
+  {
+   "path": "LEDGER_20261115.md",
+   "bytes": 7492,
+   "sha256": "8d9cd087d6ab47888f00c709422dad53bb97c4e1d9f69bcd4888fc152f6620a7"
   },
   {
    "path": "census/launchers_20261109.json",
    "bytes": 34682,
    "sha256": "f5dc97d22120e75621b9937ea9147979eb1721eeb1c652ad0c182dfc2c9d6e40"
+  },
+  {
+   "path": "census/launchers_20261115.json",
+   "bytes": 34915,
+   "sha256": "caa8508ee8cfdb496103f0ab784b7ed98addf734b9354d02bf2c6ac85df4c6a5"
   },
   {
    "path": "census/red_signatures_20261108.json",
@@ -24,6 +34,16 @@
    "path": "census/red_signatures_20261114.json",
    "bytes": 14152,
    "sha256": "f4ed86b8a6966cee7cef3415c9dee2d391639663750dc3945137dfa0aba3b6e1"
+  },
+  {
+   "path": "census/red_signatures_20261115.json",
+   "bytes": 16236,
+   "sha256": "087fb580a715ac93774f3a4ec859e247b800f12d3c35cceb2d734d885e4c2d80"
+  },
+  {
+   "path": "census/reds_enriched_20261115.json",
+   "bytes": 11781,
+   "sha256": "322719c0d6041655100a0a0dfb86285cba7a937c368df11c07bcdc94ccebc1f1"
   },
   {
    "path": "census/stale_flags_20261114.tsv",
@@ -41,6 +61,11 @@
    "sha256": "f3510ffedc93f865e8b3b986dd1e0386d66d4f6f6c32bc7136c863f6f3078a1f"
   },
   {
+   "path": "census/wf_abacus_20261115.json",
+   "bytes": 63135,
+   "sha256": "e7fa1c54bdd6eac0343de32b20847b178dce631a565e4e12aa0d707b3615be49"
+  },
+  {
    "path": "census/wf_codex_20261108.json",
    "bytes": 45941,
    "sha256": "6ac826c775629e777550f8fe31981cb31acc9bb3b07a74406ddb38c4aed55b15"
@@ -51,14 +76,39 @@
    "sha256": "fc0e252f019b1deb86aec639d6b695072d837d912ce0a3a23975da3efd247d38"
   },
   {
+   "path": "census/wf_codex_20261115.json",
+   "bytes": 46122,
+   "sha256": "a55a469f326dabb436a237a8637676431a6585276b26790d110d277d8165d0e5"
+  },
+  {
    "path": "handover.json",
-   "bytes": 9926,
-   "sha256": "93f8879414c0520311b9f9ef1ffe931f85a12a58f78bc2a62f1f0ccf8d400fb6"
+   "bytes": 10077,
+   "sha256": "35aadfc5610a4958a7f8a4a6bf7fffccb1e70b000de626c36be8af4cd641f493"
+  },
+  {
+   "path": "ledger_20261115.json",
+   "bytes": 13549,
+   "sha256": "7c978c5a739215c1bf0528dd1145c7946ad06980607de3c1b07bff89abc9237f"
+  },
+  {
+   "path": "tools/diff15.py",
+   "bytes": 2420,
+   "sha256": "027d3765aa812f474b291caef780e5e3d27800642a6e8cb939a3b3731d40a8f2"
   },
   {
    "path": "tools/launchers.py",
    "bytes": 1933,
    "sha256": "293e84db204f2229581170ece2e9a973fe3c7d2dc012164b526b7997426b9bf4"
+  },
+  {
+   "path": "tools/launchers15.py",
+   "bytes": 1923,
+   "sha256": "7ce25040e6f02c4ebaa60ac2bd900a56b8b0294e32a4c765ec2f08ac6323425c"
+  },
+  {
+   "path": "tools/ledger15.py",
+   "bytes": 5664,
+   "sha256": "51429ed96766b0f03779f4fe65bee2ac8427398c545069a8f6e8814d7255eeb8"
   },
   {
    "path": "tools/sig.py",

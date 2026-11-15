@@ -439,5 +439,13 @@
    "QPS_ADR_REGISTER_v0.3.md extract @ cryoplant-project 29c2fb58"
   ],
   "rule": "never commit to a public repo without owner decision"
+ },
+ "latest_delta": {
+  "file": "ledger_20261115.json",
+  "as_of": "2026-11-15T14:30:00Z",
+  "open": 17,
+  "new": 2,
+  "closed": 1,
+  "live_red": 19
  }
 }

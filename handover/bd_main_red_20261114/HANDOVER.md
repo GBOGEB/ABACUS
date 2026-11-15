@@ -1,5 +1,7 @@
 # Handover: Main-Red BD burndown (ABACUS + CODEX)
 
+> **Latest delta: [`LEDGER_20261115.md`](LEDGER_20261115.md) (2026-11-15 14:30 UTC)**: 17 open, 2 new (ci-governance BD-26a/b with PRs #2762/#2761; validate_docs BD-27), 1 closed (ghost launcher disabled), with red age and ledger age per row. Sections below are the 2026-11-14 snapshot.
+
 As of 2026-11-14 18:30 CET. Census source main SHAs: ABACUS `1b3a6a513d2a02ad46de7fe8c61a85bb5405f876`, CODEX `38831761dcfb1999feeca9545814dca8ae5a66d0`.
 Owner: GBOGEB. Executor: Claude (coordinator) with disjoint worker agents.
 Session: https://claude.ai/code/session_01RiTqsUCce2vmEFgQcZaNhr
