@@ -41,6 +41,8 @@ jobs:
         shell: bash
         run: |
           set -o pipefail
+          # test_orchestrator_health.py (#2724) parses background_orchestrator.yml.
+          python -m pip install --disable-pip-version-check "PyYAML==6.0.3"
           python -m unittest discover -s ci/governance/tests -p 'test_*.py' -v \
             2>&1 | tee ci-governance-unittest.log
 
