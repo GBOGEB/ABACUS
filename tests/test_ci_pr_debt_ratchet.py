@@ -186,7 +186,9 @@ def test_replacing_a_finding_under_the_same_rule_still_fails(repo):
     report = ratchet_mod.ratchet(base, ("bandit",))
     [row] = report["added_debt"]
     assert row["base"] == row["head"] == 1
-    assert any("eval(env[cmd])" in key for key in row["new_findings"])
+    # Keys are token-normalised (#2712), so match through the same normaliser.
+    replaced = ratchet_mod.normalise_source("eval(env[cmd])")
+    assert any(replaced in key for key in row["new_findings"])
     assert report["status"] == "FAIL"
 
 
