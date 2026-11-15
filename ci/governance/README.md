@@ -34,6 +34,42 @@ python ci/governance/audit_ci_workflows.py \
   --markdown-output docs/ci/WORKFLOW_RATIONALIZATION.md
 ```
 
+## Adding a workflow
+
+Every file in `.github/workflows/` must match exactly one rule in
+`workflow_policy.json`, or `policy-and-inventory` fails.
+
+1. Extend the regex of the rule whose cluster and lifecycle fit the new
+   workflow. Add a new rule only when none fits; two matching rules fail
+   the audit.
+2. Regenerate the report and commit it with the workflow:
+
+   ```bash
+   python ci/governance/audit_ci_workflows.py \
+     --markdown-output docs/ci/WORKFLOW_RATIONALIZATION.md
+   ```
+
+3. On Windows, convert the regenerated report to LF line endings before
+   committing; otherwise the whole file shows as changed.
+4. Run the local validation above. The report also records the policy
+   SHA-256, so any policy edit needs a regenerated report.
+5. Keep workflow YAML lines at 80 characters or fewer; `Changed docs lint`
+   runs yamllint on changed files.
+6. Re-pin `MIP/statistics/g3a_w16_epoch.json`. This is required, not
+   optional: `workflow_census()` records every `.github/workflows/*.y*ml`
+   file and the W16 preflight rejects any population drift, so every added
+   or removed workflow changes the census. Run the script with `--repin`
+   and the main SHA; without arguments it only rewrites the existing
+   manifest and leaves the census stale:
+
+   ```bash
+   python scripts/g3a_w16_repin.py \
+     --repin G3A_W16_V<n>_MAIN_<sha8> --main-sha <main-sha>
+   ```
+
+   The epoch then reads `PENDING_NATIVE_MEASUREMENT` until the native
+   workflows' `W16_MEASURED` lines are applied with `--measured <log>`.
+
 ## Fan-out control
 
 Governance-only changes belong under `ci/governance/**`. They are intentionally excluded

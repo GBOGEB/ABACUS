@@ -19,8 +19,12 @@ def _workspace(tmp_path: Path) -> Path:
         encoding="utf-8",
     )
     (tmp_path / "README.md").write_text("# Demo\n", encoding="utf-8")
-    (tmp_path / "src" / "helper.py").write_text("def helper():\n    return 1\n", encoding="utf-8")
-    (tmp_path / "tests" / "test_sample.py").write_text("def test_sample():\n    assert True\n", encoding="utf-8")
+    (tmp_path / "src" / "helper.py").write_text(
+        "def helper():\n    return 1\n", encoding="utf-8"
+    )
+    (tmp_path / "tests" / "test_sample.py").write_text(
+        "def test_sample():\n    assert True\n", encoding="utf-8"
+    )
     return tmp_path
 
 
@@ -93,8 +97,15 @@ def test_temporal_engine_execution_twin_and_report(tmp_path):
     assert json.loads(report_path.read_text())["workspace_root"] == str(root)
 
     with sqlite3.connect(db_path) as conn:
-        assert conn.execute("select status from execution_metadata where execution_id='exec-1'").fetchone()[0] == "success"
-        assert conn.execute("select count(*) from digital_twin_state").fetchone()[0] == 1
+        assert (
+            conn.execute(
+                "select status from execution_metadata where execution_id='exec-1'"
+            ).fetchone()[0]
+            == "success"
+        )
+        assert (
+            conn.execute("select count(*) from digital_twin_state").fetchone()[0] == 1
+        )
 
 
 def test_temporal_engine_count_helpers_and_error_paths(tmp_path, monkeypatch):
