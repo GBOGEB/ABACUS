@@ -11,6 +11,8 @@ boundaries inside a repo do not overlap.
 CLI (stdlib + PyYAML, ASCII output):
   python scripts/wave_claims.py validate [.waves/WAVE_CLAIMS.yaml] --expected-repo OWNER/NAME
       Validate a repo's own claims file (run in the member repo; exit 1 on errors).
+  python scripts/wave_claims.py validate-global [federation/waves/GLOBAL_WAVES.yaml]
+      Validate the federation's elevated waves (CODEX steward file).
   python scripts/wave_claims.py propose --repo GBOGEB/NAME [--register PATH]
       Draft a claims file from the observed census for the owner to review.
 """
@@ -31,6 +33,8 @@ import yaml
 ROOT = Path(__file__).resolve().parents[1]
 RULES_FILE = ROOT / "federation" / "waves" / "WAVE_NAMING_RULES.yaml"
 REGISTER_FILE = ROOT / "federation" / "waves" / "WAVE_REGISTER.yaml"
+GLOBAL_FILE = ROOT / "federation" / "waves" / "GLOBAL_WAVES.yaml"
+GLOBAL_PATH = "federation/waves/GLOBAL_WAVES.yaml"
 CLAIMS_PATH = ".waves/WAVE_CLAIMS.yaml"
 KEY_RE = re.compile(r"^(?P<ns>[A-Z]+):(?P<id>\S+)$")
 NUM_IN_TEXT = re.compile(r"(?<![0-9])[Ww]?(\d{3})(?![0-9])")
@@ -354,12 +358,81 @@ def validate_claims(
     return out
 
 
+REPO_RE = re.compile(r"^[A-Za-z0-9_.-]+/[A-Za-z0-9_.-]+$")
+
+
+def validate_global(doc: dict, rules: dict) -> list[dict]:
+    """Rule checks for the federation's elevated waves (GLOBAL_WAVES.yaml).
+
+    An elevated wave obeys every canonical-name and alias rule of an owned
+    wave, and additionally records its origin repo and naming maturity. It
+    has no path boundaries: paths belong to the repos that do the work.
+    """
+    el = rules["elevation"]
+    owner = el["owner"]
+    if not isinstance(doc, dict) or doc.get("schema") != el["schema"]:
+        return [violation("G0_SCHEMA", "-", owner, f"schema must be {el['schema']}")]
+    out: list[dict] = []
+    if doc.get("steward") != el["steward"]:
+        out.append(
+            violation("G0_STEWARD", "-", owner, f"steward must be {el['steward']}")
+        )
+    waves = as_list(doc.get("waves"))
+    as_claims = {
+        "schema": rules["claims_schema"],
+        "repo": owner,
+        "owns": [
+            {k: v for k, v in w.items() if k not in ("origin", "maturity")}
+            for w in waves
+            if isinstance(w, dict)
+        ],
+    }
+    out += validate_claims(as_claims, rules, owner)
+    maturities = set(el["maturity_enum"])
+    for w in waves:
+        if not isinstance(w, dict):
+            out.append(
+                violation("G0_SCHEMA", "-", owner, "each wave must be a mapping")
+            )
+            continue
+        key = str(w.get("key", "-"))
+        if w.get("maturity") not in maturities:
+            out.append(
+                violation(
+                    "G1_MATURITY",
+                    key,
+                    owner,
+                    f"maturity must be one of {sorted(maturities)}",
+                )
+            )
+        if not REPO_RE.match(str(w.get("origin", ""))):
+            out.append(
+                violation(
+                    "G2_ORIGIN",
+                    key,
+                    owner,
+                    "origin must be the OWNER/NAME repo that committed the id first",
+                )
+            )
+        if as_list(w.get("paths")):
+            out.append(
+                violation(
+                    "G3_GLOBAL_PATHS",
+                    key,
+                    owner,
+                    "an elevated wave has no path boundaries; each repo keeps its own",
+                )
+            )
+    return out
+
+
 def rollup(
     claim_sets: dict[str, tuple[dict, bool]],
     observed: dict[str, set[str]],
     lineage: set[tuple[str, str]],
     rules: dict,
     reserved: list[dict] | None = None,
+    global_doc: dict | None = None,
 ) -> tuple[dict, list[dict], dict]:
     """Merge every repo's claims; return (per-key claims, violations, census).
 
@@ -367,13 +440,24 @@ def rollup(
     ({"sha256", "key", "kind"}), normally the previous register's
     dedup.reserved. Retired names and aliases stay bound to their key forever;
     census["reserved"] returns the updated index.
+
+    global_doc: the federation's elevated waves (GLOBAL_WAVES.yaml). Each one
+    is owned by the FEDERATION; a member repo that also owns it is D1.
     """
     violations: list[dict] = []
     owners: dict[str, list[tuple[str, dict, bool]]] = collections.defaultdict(list)
     participants: dict[str, dict[str, str]] = collections.defaultdict(dict)
     lineage_parents: dict[str, set[str]] = collections.defaultdict(set)
+    elevated: dict[str, dict] = {}
     for child, parent in lineage:
         lineage_parents[child].add(parent)
+    if global_doc is not None:
+        fed = rules["elevation"]["owner"]
+        violations += validate_global(global_doc, rules)
+        for w in as_list((global_doc or {}).get("waves")):
+            if isinstance(w, dict) and w.get("key"):
+                owners[str(w["key"])].append((fed, w, False))
+                elevated[str(w["key"])] = w
     for repo, (doc, private) in sorted(claim_sets.items()):
         violations += validate_claims(
             doc, rules, repo, private, lineage_parents=lineage_parents
@@ -412,7 +496,11 @@ def rollup(
                     "D1_DUP_OWNER",
                     key,
                     claimants[key],
-                    "more than one repo owns this key",
+                    (
+                        "elevated to the federation; member repos participate, never own"
+                        if key in elevated
+                        else "more than one repo owns this key"
+                    ),
                 )
             )
             claims[key] = {
@@ -439,6 +527,10 @@ def rollup(
             norm = [normalize_path(p) for p in as_list(c.get("paths"))]
             if any(norm):
                 rec["paths"] = [n for n in norm if n]
+        if key in elevated:
+            rec["scope"] = "global"
+            rec["maturity"] = c.get("maturity")
+            rec["origin"] = c.get("origin")
         if as_list(c.get("parent")):
             rec["parent"] = [str(p) for p in as_list(c.get("parent"))]
         if participants.get(key):
@@ -578,6 +670,39 @@ def rollup(
                 )
             )
 
+    # Elevated waves: the origin repo stays on record and declares the origin role.
+    origin_role = (rules.get("elevation") or {}).get("origin_role", "producer")
+    for key, w in sorted(elevated.items()):
+        origin = str(w.get("origin", ""))
+        role = participants.get(key, {}).get(origin)
+        if origin in claim_sets and role is not None and role != origin_role:
+            violations.append(
+                violation(
+                    "G4_ORIGIN_ROLE",
+                    key,
+                    origin,
+                    f"the origin repo declares role {origin_role}, not {role}",
+                    "warning",
+                )
+            )
+    # Elevation queue: ids the wider federation already recognises.
+    min_reach = int((rules.get("elevation") or {}).get("candidate_min_reach", 3))
+    candidates = {
+        "min_reach": min_reach,
+        "unowned": sorted(
+            k
+            for k, repos in observed.items()
+            if k not in claims and len(repos) >= min_reach
+        ),
+        "locally_owned": sorted(
+            k
+            for k, rec in claims.items()
+            if k not in elevated
+            and rec["owner"] != "CONTESTED"
+            and len(observed.get(k, ())) >= min_reach
+        ),
+    }
+
     claimed_nums = [key_number(k) for k in claims if key_number(k) is not None]
     sev = collections.Counter(v["severity"] for v in violations)
     census = {
@@ -592,6 +717,17 @@ def rollup(
             sorted(collections.Counter(r["owner"] for r in claims.values()).items())
         ),
         "contested_keys": sum(1 for r in claims.values() if r["owner"] == "CONTESTED"),
+        "elevated_keys": {
+            "total": len(elevated),
+            "by_maturity": dict(
+                sorted(
+                    collections.Counter(
+                        str(w.get("maturity")) for w in elevated.values()
+                    ).items()
+                )
+            ),
+        },
+        "elevation_candidates": candidates,
         "next_free": {
             "QPS": f"W{max(claimed_nums + observed_nums, default=9) + 1:03d}"
         },
@@ -747,6 +883,9 @@ def main(argv: list[str] | None = None) -> int:
         help="independently supplied owner/name, never read from the claims file",
     )
     v.add_argument("--private", action="store_true", help="redact names in messages")
+    g = sub.add_parser("validate-global")
+    g.add_argument("path", nargs="?", default=str(GLOBAL_FILE))
+    g.add_argument("--rules", default=str(RULES_FILE))
     p = sub.add_parser("propose")
     p.add_argument("--repo", required=True)
     p.add_argument("--register", default=str(REGISTER_FILE))
@@ -764,6 +903,17 @@ def main(argv: list[str] | None = None) -> int:
         errors = sum(1 for f in found if f["severity"] == "error")
         print(
             f"wave claims: {len((doc or {}).get('owns') or [])} owned, {errors} errors"
+        )
+        return 1 if errors else 0
+    if a.cmd == "validate-global":
+        rules = load_naming_rules(Path(a.rules))
+        doc = yaml.safe_load(Path(a.path).read_text(encoding="utf-8"))
+        found = validate_global(doc, rules)
+        for f in found:
+            print(f"{f['severity'].upper()} {f['code']} {f['key']}: {f['detail']}")
+        errors = sum(1 for f in found if f["severity"] == "error")
+        print(
+            f"global waves: {len((doc or {}).get('waves') or [])} elevated, {errors} errors"
         )
         return 1 if errors else 0
     register = yaml.safe_load(Path(a.register).read_text(encoding="utf-8"))

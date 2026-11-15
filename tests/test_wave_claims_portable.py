@@ -460,6 +460,146 @@ class ReviewFindings(unittest.TestCase):
         )
 
 
+def gdoc(*waves, steward=None, schema=None):
+    el = RULES["elevation"]
+    return {
+        "schema": schema or el["schema"],
+        "steward": steward or el["steward"],
+        "waves": list(waves),
+    }
+
+
+def gwave(n=60, slug="DOV_PCA_PULSE", **extra):
+    base = {
+        "key": f"QPS:W{n:03d}",
+        "name": f"W{n:03d}_{slug}",
+        "status": "HOLD",
+        "maturity": "CONVERGED",
+        "origin": "ORG/origin",
+    }
+    base.update(extra)
+    return base
+
+
+class Elevation(unittest.TestCase):
+    """Federation-owned (elevated) waves: steward file rules and roll-up."""
+
+    def test_clean_steward_file(self):
+        self.assertEqual(wc.validate_global(gdoc(gwave(), gwave(61, "MIP")), RULES), [])
+
+    def test_steward_file_rules(self):
+        cases = [
+            (gdoc(gwave(), schema="other/1"), "G0_SCHEMA"),
+            ("not a mapping", "G0_SCHEMA"),
+            (gdoc(gwave(), steward="ORG/other"), "G0_STEWARD"),
+            (gdoc("not a mapping"), "G0_SCHEMA"),
+            (gdoc(gwave(maturity="SETTLED")), "G1_MATURITY"),
+            (gdoc(gwave(origin="origin")), "G2_ORIGIN"),
+            (gdoc(gwave(paths=["dir/"])), "G3_GLOBAL_PATHS"),
+            (gdoc(gwave(slug="FINAL")), "C4_RESERVED"),
+            (gdoc(gwave(), gwave()), "D1_DUP_OWNER"),
+        ]
+        for d, code in cases:
+            with self.subTest(code=code):
+                self.assertIn(code, codes(wc.validate_global(d, RULES)))
+
+    def test_rollup_records_federation_owner_origin_and_roles(self):
+        sets = {
+            "ORG/origin": (
+                doc(
+                    "ORG/origin", participates=[{"key": "QPS:W060", "role": "producer"}]
+                ),
+                True,
+            ),
+            "ORG/b": (
+                doc("ORG/b", participates=[{"key": "QPS:W060", "role": "receiver"}]),
+                False,
+            ),
+        }
+        observed = {"QPS:W060": {"ORG/origin", "ORG/b"}}
+        claims, found, census = wc.rollup(
+            sets, observed, set(), RULES, global_doc=gdoc(gwave())
+        )
+        rec = claims["QPS:W060"]
+        self.assertEqual(found, [])
+        self.assertEqual(rec["owner"], RULES["elevation"]["owner"])
+        self.assertEqual(
+            (rec["scope"], rec["origin"], rec["maturity"]),
+            ("global", "ORG/origin", "CONVERGED"),
+        )
+        self.assertEqual(
+            rec["participants"], {"ORG/b": "receiver", "ORG/origin": "producer"}
+        )
+        self.assertEqual(
+            census["elevated_keys"], {"total": 1, "by_maturity": {"CONVERGED": 1}}
+        )
+
+    def test_member_owning_an_elevated_wave_is_contested(self):
+        sets = {"ORG/b": (doc("ORG/b", owns=[claim(60, "LOCAL")]), False)}
+        claims, found, _ = wc.rollup(
+            sets, {"QPS:W060": {"ORG/b"}}, set(), RULES, global_doc=gdoc(gwave())
+        )
+        self.assertEqual(claims["QPS:W060"]["owner"], "CONTESTED")
+        d1 = [f for f in found if f["code"] == "D1_DUP_OWNER"]
+        self.assertTrue(d1 and "elevated" in d1[0]["detail"])
+
+    def test_origin_must_declare_the_origin_role(self):
+        sets = {
+            "ORG/origin": (
+                doc(
+                    "ORG/origin", participates=[{"key": "QPS:W060", "role": "receiver"}]
+                ),
+                True,
+            )
+        }
+        _, found, _ = wc.rollup(
+            sets, {"QPS:W060": {"ORG/origin"}}, set(), RULES, global_doc=gdoc(gwave())
+        )
+        self.assertEqual(codes(found), ["G4_ORIGIN_ROLE"])
+        self.assertEqual(found[0]["severity"], "warning")
+
+    def test_elevation_candidates(self):
+        observed = {
+            "QPS:W200": {"A/a", "B/b", "C/c"},
+            "QPS:W201": {"A/a", "B/b"},
+            "QPS:W202": {"A/a", "B/b", "C/c"},
+        }
+        sets = {"A/a": (doc("A/a", owns=[claim(202, "LOCAL")]), False)}
+        _, _, census = wc.rollup(sets, observed, set(), RULES)
+        cand = census["elevation_candidates"]
+        self.assertEqual(cand["unowned"], ["QPS:W200"])
+        self.assertEqual(cand["locally_owned"], ["QPS:W202"])
+        self.assertEqual(census["elevated_keys"]["total"], 0)
+
+    def test_validate_global_command(self):
+        script = ROOT / "scripts" / "wave_claims.py"
+        with tempfile.TemporaryDirectory() as tmp:
+            bad = Path(tmp) / "bad.yaml"
+            bad.write_text(yaml.safe_dump(gdoc(gwave(maturity="?"))), encoding="utf-8")
+            good = Path(tmp) / "good.yaml"
+            good.write_text(yaml.safe_dump(gdoc(gwave())), encoding="utf-8")
+            r = subprocess.run(
+                [sys.executable, str(script), "validate-global", str(bad)],
+                capture_output=True,
+                text=True,
+                check=False,
+            )
+            self.assertEqual(r.returncode, 1)
+            self.assertIn("G1_MATURITY", r.stdout)
+            self.assertTrue(r.stdout.isascii())
+            ok = subprocess.run(
+                [sys.executable, str(script), "validate-global", str(good)],
+                capture_output=True,
+                text=True,
+                check=False,
+            )
+            self.assertEqual(ok.returncode, 0, ok.stdout)
+            out = io.StringIO()
+            with contextlib.redirect_stdout(out):
+                code = wc.main(["validate-global", str(bad)])
+            self.assertEqual(code, 1)
+
+
 class Cli(unittest.TestCase):
     def test_validate_and_propose_commands(self):
         with tempfile.TemporaryDirectory() as d:

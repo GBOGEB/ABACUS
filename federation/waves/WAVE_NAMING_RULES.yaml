@@ -63,6 +63,28 @@ boundaries:
 
 participant_roles: [producer, consumer, receiver, mirror, reviewer, executor]
 
+elevation:
+  # A wave id that the wider federation recognises (the same id carried in
+  # several repos, often under the same name) is ELEVATED: no single member
+  # repo owns it. The FEDERATION owns it; CODEX stewards the file, as index
+  # keeper only. The repo that committed the id first stays on record as
+  # `origin` and declares role `producer`. Every other repo declares a role.
+  owner: FEDERATION
+  steward: GBOGEB/CODEX
+  file: federation/waves/GLOBAL_WAVES.yaml
+  schema: gbogeb.global_waves/1
+  # CONVERGED: the repos already use one name. DEVELOPING: the id is
+  # federation-wide but the repos name it differently; the global name is a
+  # working title the participants develop (it may still be renamed once,
+  # before status leaves HOLD).
+  maturity_enum: [CONVERGED, DEVELOPING]
+  origin_role: producer
+  # Unowned ids observed in at least this many repos are listed as elevation
+  # candidates in the register (dedup.census.elevation_candidates).
+  candidate_min_reach: 3
+  # CODEX is public: build global names and aliases from public evidence only.
+  public_names_only: true
+
 # Owner-set; OBSERVED is generator-only.
 status_enum: [ACTIVE, HOLD, CLOSED, SUPERSEDED]
 
