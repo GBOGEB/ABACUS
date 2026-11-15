@@ -3,11 +3,10 @@
 from __future__ import annotations
 
 import csv
-import json
 import tempfile
 import unittest
+import unittest.mock
 from pathlib import Path
-from unittest import mock
 
 from tests.binary_engines import _env
 
@@ -78,8 +77,10 @@ class EmptyEstate(unittest.TestCase):
             inv.mkdir()
             (inv / "root_inventory_final.json").write_text("[]", "utf-8")
             with (
-                mock.patch.object(mp, "ROOTS", {"EMPTY": (Path(tmp) / "root",)}),
-                mock.patch.object(mp, "inv_dir", lambda rid: inv),
+                unittest.mock.patch.object(
+                    mp, "ROOTS", {"EMPTY": (Path(tmp) / "root",)}
+                ),
+                unittest.mock.patch.object(mp, "inv_dir", lambda rid: inv),
             ):
                 code, out = _env.run_main("estate_moveplan", "--root-id", "EMPTY")
             self.assertEqual(code, 0, out[-2000:])

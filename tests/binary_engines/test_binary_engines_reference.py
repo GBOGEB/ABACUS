@@ -11,7 +11,7 @@ from __future__ import annotations
 import hashlib
 import json
 import unittest
-from unittest import mock
+import unittest.mock
 
 from tests.binary_engines import _env, _fixtures
 
@@ -162,7 +162,7 @@ class Unconfigured(unittest.TestCase):
         raster = folder / "pilot #1 - page less.png"  # '#' and ' - ' need YAML quoting
         raster.write_bytes(_fixtures_png())
         pilot = [{"role": "control", "path": raster, "page": None}]
-        with mock.patch.object(rt, "pilot_files", return_value=pilot):
+        with unittest.mock.patch.object(rt, "pilot_files", return_value=pilot):
             code, out = _env.run_main("reference_test")
         self.assertEqual(code, 0, out[-2000:])
         manifest = yaml.safe_load((rt.PILOT / "PILOT_MANIFEST.yaml").read_text("utf-8"))
@@ -188,7 +188,7 @@ class Unconfigured(unittest.TestCase):
         lab.unlink(missing_ok=True)
 
         def score(graph):
-            with mock.patch.object(rt, "pilot_files", return_value=pilot):
+            with unittest.mock.patch.object(rt, "pilot_files", return_value=pilot):
                 return rt.r5_pilot({svg: graph})[0]
 
         self.assertEqual(score(g)["result"], "DEFER")
