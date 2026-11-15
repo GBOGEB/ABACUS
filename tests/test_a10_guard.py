@@ -266,12 +266,39 @@ def test_export_attributes_cannot_hide_content(repo, monkeypatch, capsys):
         "hidden.md export-ignore\nsubst.md export-subst\n"
     )
     (repo / "hidden.md").write_text("zebra quokka\n")
-    (repo / "subst.md").write_text("zebra $Format:%H$ quokka\n")
+    # The raw blob carries the term; the guard scans the blob, not the export view.
+    (repo / "subst.md").write_text("zebra quokka $Format:%H$\n")
     _git(repo, "add", ".")
     assert _run(monkeypatch, "--staged") == 1
     out = capsys.readouterr().out
     assert "BLOCK  hidden.md" in out
+    assert "BLOCK  subst.md" in out
     assert "2 file(s) look like tender material" in out
+
+
+def test_read_blobs_returns_raw_blob_when_archive_rewrites_it(repo):
+    # git archive applies export-subst from the archived commit even with --attr-source
+    # (seen on git 2.43); the reader must hand back the exact staged blob, not the export.
+    (repo / ".gitattributes").write_text("subst.md export-subst\n")
+    raw = b"zebra $Format:%H$ quokka\n"
+    (repo / "subst.md").write_bytes(raw)
+    _git(repo, "add", ".")
+    _git(repo, "commit", "-qm", "subst")
+    import subprocess  # nosec B404
+
+    bid = subprocess.run(  # nosec B603 B607
+        ["git", "-C", str(repo), "rev-parse", "HEAD:subst.md"],
+        check=True,
+        capture_output=True,
+        text=True,
+    ).stdout.strip()
+    assert guard.blob_id(raw, bid) == bid
+    assert list(guard.read_blobs("HEAD", [("subst.md", bid)])) == [raw]
+
+
+def test_blob_id_follows_hash_family():
+    assert guard.blob_id(b"", "0" * 40) == "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
+    assert len(guard.blob_id(b"", "0" * 64)) == 64
 
 
 def test_octopus_merge_skips_files_from_any_parent(repo, monkeypatch, capsys):

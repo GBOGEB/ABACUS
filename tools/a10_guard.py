@@ -191,9 +191,18 @@ def read_blobs(tree, items):
             members = {}
         for p, bid in batch:
             data = members.get(p)
-            if data is None:
+            # git archive still applies export-subst/ident from the archived tree on some git
+            # versions despite --attr-source, which can split a restricted term apart. Only an
+            # archive member whose bytes hash to the staged blob id is trusted as-is.
+            if data is None or blob_id(data, bid) != bid:
                 data = git("cat-file", "-p", bid)
             yield data
+
+
+def blob_id(data, like):
+    """Git object id of `data` as a blob, in the hash family of `like` (SHA-1 or SHA-256)."""
+    algo = hashlib.sha256 if len(like) == 64 else hashlib.sha1
+    return algo(b"blob %d\0" % len(data) + data).hexdigest()
 
 
 def read_merge_heads():
