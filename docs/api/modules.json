@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-11-12T19:09:30.334082",
+  "generated_at": "2026-11-15T15:40:13.788726",
   "module_count": 212,
   "modules": {
     "DMAIC_V3/temporal_phase_runner.py": {
@@ -9606,6 +9606,10 @@
         {
           "name": "IntegrationTestSuite",
           "doc": "Comprehensive test suite for integration bridge"
+        },
+        {
+          "name": "test_integration_suite",
+          "doc": "Pytest entry point: run the suite when DOW is importable.\n\nExcluded from coverage: it only executes with the external DOW package,\nwhich CI never installs (the module is skipped by importorskip above)"
         },
         {
           "name": "main",
