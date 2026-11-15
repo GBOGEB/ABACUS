@@ -47,7 +47,7 @@ participates:
   - key: QPS:W044
     role: producer   # origin; elevated
   - key: QPS:W045
-    role: receiver   # content reference; elevated
+    role: producer   # W45 provider contract; elevated
   - key: QPS:W047
     role: reviewer   # request/review; elevated
   - key: QPS:W054
@@ -83,7 +83,7 @@ participates:
   - key: QPS:W116
     role: reviewer   # request/review; elevated
   - key: QPS:W126
-    role: receiver   # content reference; elevated
+    role: executor   # W126 release orchestration; elevated
   - key: QPS:W142
     role: receiver   # content reference; elevated
   - key: QPS:W145
@@ -91,13 +91,13 @@ participates:
   - key: QPS:W147
     role: reviewer   # request/review; elevated
   - key: QPS:W189
-    role: reviewer   # request/review; elevated
+    role: executor   # w189f exact-head workflow; elevated
   - key: QPS:W190
     role: receiver   # receipt/return; elevated
   - key: QPS:W232
     role: receiver   # receipt/return; elevated
   - key: QPS:W233
-    role: reviewer   # request/review; elevated
+    role: receiver   # W233 pointer-only receiver; elevated
   - key: QPS:W259
     role: receiver   # receipt/return; elevated
   - key: QPS:W266
