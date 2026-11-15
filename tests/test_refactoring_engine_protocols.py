@@ -24,7 +24,7 @@ from refactoring_engine_protocols import (
     BaseRefactoringEngine,
     DOWRefactorEngineAdapter,
     CanonicalRefactoringEngineAdapter,
-    RefactoringEngineFactory
+    RefactoringEngineFactory,
 )
 
 
@@ -41,7 +41,7 @@ class TestRefactoringResult:
             metrics={"count": 10},
             errors=[],
             warnings=["Warning 1"],
-            metadata={"version": "1.0"}
+            metadata={"version": "1.0"},
         )
 
         assert result.engine_name == "test_engine"
@@ -61,7 +61,7 @@ class TestRefactoringResult:
             metrics={},
             errors=[],
             warnings=[],
-            metadata={}
+            metadata={},
         )
 
         result_dict = result.to_dict()
@@ -128,7 +128,7 @@ class TestBaseRefactoringEngine:
 class TestDOWRefactorEngineAdapter:
     """Test DOWRefactorEngineAdapter"""
 
-    @patch('refactoring_engine_protocols.DOWRefactorMaster')
+    @patch("refactoring_engine_protocols.DOWRefactorMaster")
     def test_adapter_initialization(self, mock_dow):
         """Test adapter initialization"""
         adapter = DOWRefactorEngineAdapter()
@@ -136,7 +136,7 @@ class TestDOWRefactorEngineAdapter:
         assert adapter.name == "DOWRefactorEngine"
         assert adapter._dow_master is None
 
-    @patch('refactoring_engine_protocols.DOWRefactorMaster')
+    @patch("refactoring_engine_protocols.DOWRefactorMaster")
     def test_adapter_initialize(self, mock_dow):
         """Test adapter initialize method"""
         adapter = DOWRefactorEngineAdapter()
@@ -148,7 +148,7 @@ class TestDOWRefactorEngineAdapter:
         assert result is True
         assert adapter.workspace_root == workspace
 
-    @patch('refactoring_engine_protocols.DOWRefactorMaster')
+    @patch("refactoring_engine_protocols.DOWRefactorMaster")
     def test_adapter_execute(self, mock_dow):
         """Test adapter execute method"""
         mock_instance = MagicMock()
@@ -166,7 +166,7 @@ class TestDOWRefactorEngineAdapter:
         assert result.engine_name == "DOWRefactorEngine"
         mock_instance.execute_full_cycle.assert_called_once()
 
-    @patch('refactoring_engine_protocols.DOWRefactorMaster')
+    @patch("refactoring_engine_protocols.DOWRefactorMaster")
     def test_adapter_execute_error(self, mock_dow):
         """Test adapter execute with error"""
         mock_instance = MagicMock()
@@ -185,7 +185,7 @@ class TestDOWRefactorEngineAdapter:
 class TestCanonicalRefactoringEngineAdapter:
     """Test CanonicalRefactoringEngineAdapter"""
 
-    @patch('refactoring_engine_protocols.CanonicalDocumentRefactorer')
+    @patch("refactoring_engine_protocols.CanonicalDocumentRefactorer")
     def test_adapter_initialization(self, mock_canonical):
         """Test adapter initialization"""
         adapter = CanonicalRefactoringEngineAdapter()
@@ -193,7 +193,7 @@ class TestCanonicalRefactoringEngineAdapter:
         assert adapter.name == "CanonicalRefactoringEngine"
         assert adapter._canonical_refactorer is None
 
-    @patch('refactoring_engine_protocols.CanonicalDocumentRefactorer')
+    @patch("refactoring_engine_protocols.CanonicalDocumentRefactorer")
     def test_adapter_initialize(self, mock_canonical):
         """Test adapter initialize method"""
         adapter = CanonicalRefactoringEngineAdapter()
@@ -204,8 +204,8 @@ class TestCanonicalRefactoringEngineAdapter:
         assert result is True
         assert adapter.workspace_root == workspace
 
-    @patch('refactoring_engine_protocols.CanonicalDocumentRefactorer')
-    @patch('refactoring_engine_protocols.PathUtilities')
+    @patch("refactoring_engine_protocols.CanonicalDocumentRefactorer")
+    @patch("refactoring_engine_protocols.PathUtilities")
     def test_adapter_execute(self, mock_path_utils, mock_canonical):
         """Test adapter execute method"""
         mock_instance = MagicMock()
@@ -225,25 +225,21 @@ class TestCanonicalRefactoringEngineAdapter:
 class TestRefactoringEngineFactory:
     """Test RefactoringEngineFactory"""
 
-    @patch('refactoring_engine_protocols.DOWRefactorMaster')
+    @patch("refactoring_engine_protocols.DOWRefactorMaster")
     def test_factory_create_dow_engine(self, mock_dow):
         """Test creating DOW engine"""
         engine = RefactoringEngineFactory.create_engine(
-            engine_type="dow",
-            workspace_root=Path("."),
-            config={}
+            engine_type="dow", workspace_root=Path("."), config={}
         )
 
         assert isinstance(engine, DOWRefactorEngineAdapter)
         assert engine.workspace_root == Path(".")
 
-    @patch('refactoring_engine_protocols.CanonicalDocumentRefactorer')
+    @patch("refactoring_engine_protocols.CanonicalDocumentRefactorer")
     def test_factory_create_canonical_engine(self, mock_canonical):
         """Test creating canonical engine"""
         engine = RefactoringEngineFactory.create_engine(
-            engine_type="canonical",
-            workspace_root=Path("."),
-            config={}
+            engine_type="canonical", workspace_root=Path("."), config={}
         )
 
         assert isinstance(engine, CanonicalRefactoringEngineAdapter)
@@ -253,33 +249,28 @@ class TestRefactoringEngineFactory:
         """Test creating engine with invalid type"""
         with pytest.raises(ValueError):
             RefactoringEngineFactory.create_engine(
-                engine_type="invalid_type",
-                workspace_root=Path(".")
+                engine_type="invalid_type", workspace_root=Path(".")
             )
 
-    @patch('refactoring_engine_protocols.DOWRefactorMaster')
-    @patch('refactoring_engine_protocols.CanonicalDocumentRefactorer')
+    @patch("refactoring_engine_protocols.DOWRefactorMaster")
+    @patch("refactoring_engine_protocols.CanonicalDocumentRefactorer")
     def test_factory_create_multiple_engines(self, mock_canonical, mock_dow):
         """Test creating multiple engines"""
         engines = RefactoringEngineFactory.create_engines(
-            engine_types=["dow", "canonical"],
-            workspace_root=Path("."),
-            config={}
+            engine_types=["dow", "canonical"], workspace_root=Path("."), config={}
         )
 
         assert len(engines) == 2
         assert isinstance(engines[0], DOWRefactorEngineAdapter)
         assert isinstance(engines[1], CanonicalRefactoringEngineAdapter)
 
-    @patch('refactoring_engine_protocols.DOWRefactorMaster')
+    @patch("refactoring_engine_protocols.DOWRefactorMaster")
     def test_factory_with_logger(self, mock_dow):
         """Test factory with logger dependency injection"""
         mock_logger = Mock()
 
         engine = RefactoringEngineFactory.create_engine(
-            engine_type="dow",
-            workspace_root=Path("."),
-            logger=mock_logger
+            engine_type="dow", workspace_root=Path("."), logger=mock_logger
         )
 
         assert engine.logger == mock_logger
@@ -292,21 +283,21 @@ class TestProtocolCompliance:
         """Test DOW adapter implements RefactoringEngine protocol"""
         adapter = DOWRefactorEngineAdapter()
 
-        assert hasattr(adapter, 'initialize')
-        assert hasattr(adapter, 'execute')
-        assert hasattr(adapter, 'validate')
-        assert hasattr(adapter, 'get_status')
-        assert hasattr(adapter, 'cleanup')
+        assert hasattr(adapter, "initialize")
+        assert hasattr(adapter, "execute")
+        assert hasattr(adapter, "validate")
+        assert hasattr(adapter, "get_status")
+        assert hasattr(adapter, "cleanup")
 
     def test_canonical_adapter_implements_protocol(self):
         """Test canonical adapter implements RefactoringEngine protocol"""
         adapter = CanonicalRefactoringEngineAdapter()
 
-        assert hasattr(adapter, 'initialize')
-        assert hasattr(adapter, 'execute')
-        assert hasattr(adapter, 'validate')
-        assert hasattr(adapter, 'get_status')
-        assert hasattr(adapter, 'cleanup')
+        assert hasattr(adapter, "initialize")
+        assert hasattr(adapter, "execute")
+        assert hasattr(adapter, "validate")
+        assert hasattr(adapter, "get_status")
+        assert hasattr(adapter, "cleanup")
 
 
 if __name__ == "__main__":

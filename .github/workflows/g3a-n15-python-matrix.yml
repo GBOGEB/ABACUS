@@ -4,6 +4,10 @@ on:
   pull_request:
     paths:
       - 'tests/test_g3a_n15_alias_fault_matrix.py'
+      # N13/N14 regression tests: their own PR proofs are retired (#2749),
+      # so W16, which runs the whole test_g3a_*.py cohort, must pick them up.
+      - 'tests/test_g3a_n13_canary.py'
+      - 'tests/test_g3a_n14_phase4_import.py'
       - 'DMAIC_V3/debug_pipeline.py'
       - 'DMAIC_V3/phases/phase4_improve.py'
       - 'DMAIC_V3/phases/phase8_todo_management.py'
