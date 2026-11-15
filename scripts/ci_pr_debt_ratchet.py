@@ -31,13 +31,16 @@ enforced on those events; see docs/ci/DAB_FULL_RED_GATES_AND_PROOF_GROWTH.md.
 from __future__ import annotations
 
 import argparse
+import io
 import json
+import keyword
 import os
 import re
 import shutil
 import subprocess  # nosec B404
 import sys
 import tempfile
+import tokenize
 from collections import Counter
 from pathlib import Path
 
@@ -364,6 +367,64 @@ def is_test_file(path: str) -> bool:
     return "/tests/" in f"/{path}"
 
 
+def normalise_source(text: str) -> str:
+    """Key text for a flagged range that ignores how the call is wrapped.
+
+    Black re-wraps a call over one or several lines and adds or drops the
+    magic trailing comma; neither changes the finding (#2712). Only layout
+    between tokens is dropped: string contents stay as written, and a comma
+    is dropped only where it cannot change the value (a call's arguments, a
+    list/dict/set display, or a bracket that holds another top-level comma),
+    so ``("x",)`` and ``("x")`` keep different keys.
+    """
+    layout = {
+        tokenize.NL,
+        tokenize.NEWLINE,
+        tokenize.INDENT,
+        tokenize.DEDENT,
+        tokenize.ENDMARKER,
+    }
+    tokens = []
+    try:
+        for tok in tokenize.generate_tokens(io.StringIO(text).readline):
+            if tok.type not in layout:
+                tokens.append(tok)
+    except (tokenize.TokenError, SyntaxError):
+        if not tokens:
+            # Untokenisable range: keep the text, collapse only line layout.
+            return " ".join(line.strip() for line in text.splitlines())
+    # For each open bracket: [kind, top-level comma count, comma positions].
+    stack = []
+    drop = set()
+    for index, tok in enumerate(tokens):
+        if tok.type != tokenize.OP:
+            continue
+        if tok.string in "([{":
+            prev = tokens[index - 1] if index else None
+            follows_value = prev is not None and (
+                (prev.type == tokenize.NAME and not keyword.iskeyword(prev.string))
+                or prev.string in (")", "]", "}")
+                or prev.type in (tokenize.STRING, tokenize.NUMBER)
+            )
+            if tok.string == "(":
+                kind = "call" if follows_value else "group"
+            elif tok.string == "[":
+                kind = "subscript" if follows_value else "display"
+            else:
+                kind = "display"
+            stack.append([kind, 0, []])
+        elif tok.string == "," and stack:
+            stack[-1][1] += 1
+            stack[-1][2].append(index)
+        elif tok.string in ")]}" and stack:
+            kind, commas, positions = stack.pop()
+            last = index - 1
+            if positions and positions[-1] == last:
+                if kind in ("call", "display") or commas > 1:
+                    drop.add(last)
+    return " ".join(tok.string for i, tok in enumerate(tokens) if i not in drop)
+
+
 def bandit_debt(root: Path, path: str) -> Counter:
     # --ignore-nosec: a PR cannot silence its own new finding with an inline
     # ``# nosec``; suppressed findings count on both sides alike.
@@ -387,8 +448,10 @@ def bandit_debt(root: Path, path: str) -> Counter:
         # The whole reported range: a multi-line call is flagged on its
         # first line, and its arguments are on the lines that follow.
         numbers = item.get("line_range") or [item.get("line_number") or 0]
-        source = " ".join(
-            lines[number - 1].strip() for number in numbers if 0 < number <= len(lines)
+        source = normalise_source(
+            "\n".join(
+                lines[number - 1] for number in numbers if 0 < number <= len(lines)
+            )
         )
         findings[f"{item.get('test_id')}:{item.get('issue_severity')}:{source}"] += 1
     if payload.get("errors"):
