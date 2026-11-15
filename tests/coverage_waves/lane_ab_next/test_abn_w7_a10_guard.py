@@ -248,13 +248,23 @@ def test_read_blobs_uses_raw_archive_members(monkeypatch):
         return b"exact blob"
 
     monkeypatch.setattr(guard, "git", fake_git)
+    # Archive members are trusted only when they hash to the staged blob id.
     items = [
-        ("a.md", "1"),
-        ("b.md", "2"),
+        ("a.md", guard.blob_id(b"hello\n", "0" * 40)),
+        ("b.md", guard.blob_id(b"bee", "0" * 40)),
         ("c.md", "3"),
     ]  # c.md missing from the archive
     assert list(guard.read_blobs("T", items)) == [b"hello\n", b"bee", b"exact blob"]
     assert [c for c in calls if c[0] == "cat-file"] == [("cat-file", "-p", "3")]
+
+
+def test_read_blobs_rereads_member_that_differs_from_blob(monkeypatch):
+    archive = _tar({"a.md": b"rewritten by export-subst"})
+    monkeypatch.setattr(
+        guard, "git", lambda *args: archive if "archive" in args else b"raw"
+    )
+    bid = guard.blob_id(b"raw", "0" * 40)
+    assert list(guard.read_blobs("T", [("a.md", bid)])) == [b"raw"]
 
 
 def test_read_merge_heads(monkeypatch, tmp_path):
