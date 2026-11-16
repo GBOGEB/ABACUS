@@ -1,6 +1,4 @@
 """Adversarial QCELL source boundary cases, no controlled binary content."""
-import copy
-
 import pytest
 
 from DMAIC_V3.svg_engine.surface_guard import validate_surface_relation
