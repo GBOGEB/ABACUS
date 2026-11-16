@@ -85,7 +85,9 @@ caps:
       - 'numpy==2\.3\.'
   pyyaml-6.0.2-pin:
     max: "3.13"
-    reason: PyYAML 6.0.2 publishes wheels up to cp313 (6.0.3 adds cp314).
+    reason: >
+      PyYAML 6.0.2 publishes wheels up to cp313 (6.0.3 adds cp314). Only the
+      manual-replay G3A N13/N14 proofs still pin it, as recorded evidence.
     patterns:
       - '(?i)pyyaml==6\.0\.2\b'
 

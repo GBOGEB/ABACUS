@@ -2,6 +2,7 @@
 
 The tests run in unittest and cannot authenticate GitHub receipts by themselves.
 """
+
 from __future__ import annotations
 
 import json
@@ -38,13 +39,22 @@ def sample():
 
 
 def timing_records():
-    run = {"id": 13, "status": "completed", "head_sha": SHA,
-           "created_at": "2026-10-18T00:00:00Z",
-           "run_started_at": "2026-10-18T00:01:00Z",
-           "updated_at": "2026-10-18T00:02:00Z"}
-    job = {"id": 23, "run_id": 13, "status": "completed",
-           "started_at": "2026-10-18T00:01:10Z",
-           "completed_at": "2026-10-18T00:01:20Z", "steps": []}
+    run = {
+        "id": 13,
+        "status": "completed",
+        "head_sha": SHA,
+        "created_at": "2026-10-18T00:00:00Z",
+        "run_started_at": "2026-10-18T00:01:00Z",
+        "updated_at": "2026-10-18T00:02:00Z",
+    }
+    job = {
+        "id": 23,
+        "run_id": 13,
+        "status": "completed",
+        "started_at": "2026-10-18T00:01:10Z",
+        "completed_at": "2026-10-18T00:01:20Z",
+        "steps": [],
+    }
     return run, job
 
 
@@ -55,8 +65,16 @@ def timing_cli_reconcile(run=None, job=None):
         (folder / "run.json").write_text(json.dumps(left if run is None else run))
         (folder / "job.json").write_text(json.dumps(right if job is None else job))
         output = folder / "result.json"
-        argv = ["timing_pulse", "reconcile", "--run-json", str(folder / "run.json"),
-                "--job-json", str(folder / "job.json"), "--output", str(output)]
+        argv = [
+            "timing_pulse",
+            "reconcile",
+            "--run-json",
+            str(folder / "run.json"),
+            "--job-json",
+            str(folder / "job.json"),
+            "--output",
+            str(output),
+        ]
         with patch.object(sys, "argv", argv), redirect_stdout(StringIO()):
             timer.main()
         return json.loads(output.read_text())
@@ -75,14 +93,19 @@ class FamilyTests(unittest.TestCase):
     def test_positive_order_invariant_canonical_case_hash(self):
         base = audit_native_family_log(log_for(cases()), SHA, 42)
         reversed_log = audit_native_family_log(log_for(reversed(cases())), SHA, 42)
-        self.assertEqual(base["case_identity_sha256"], reversed_log["case_identity_sha256"])
+        self.assertEqual(
+            base["case_identity_sha256"], reversed_log["case_identity_sha256"]
+        )
 
     def test_positive_nonadmitting_and_noncalibrated_metrics(self):
         result = sample()
         self.assertEqual(result["merge_admission"], "HOLD")
         self.assertEqual(result["verified_root_closures"], 0)
-        for field in ("field_false_positive_rate", "field_false_negative_rate",
-                      "fault_injection_detection_rate"):
+        for field in (
+            "field_false_positive_rate",
+            "field_false_negative_rate",
+            "fault_injection_detection_rate",
+        ):
             self.assertIsNone(result[field])
 
     def test_positive_preserves_source_and_run_provenance(self):
@@ -121,7 +144,10 @@ class FamilyTests(unittest.TestCase):
 
     def test_negative_false_source_sha_rejected(self):
         for invalid in ("f" * 39, "G" * 40, True, None):
-            with self.subTest(invalid=invalid), self.assertRaisesRegex(ValueError, "source SHA"):
+            with (
+                self.subTest(invalid=invalid),
+                self.assertRaisesRegex(ValueError, "source SHA"),
+            ):
                 audit_native_family_log(log_for(), invalid, 42)
 
     def test_negative_bad_run_identity_rejected(self):
@@ -136,8 +162,12 @@ class FamilyTests(unittest.TestCase):
     def test_reverse_case_order_does_not_fabricate_coverage_uplift(self):
         ordered = sample()
         reversed_item = audit_native_family_log(log_for(reversed(cases())), SHA, 42)
-        self.assertEqual(ordered["case_counts_by_family"], reversed_item["case_counts_by_family"])
-        self.assertEqual(ordered["case_identity_sha256"], reversed_item["case_identity_sha256"])
+        self.assertEqual(
+            ordered["case_counts_by_family"], reversed_item["case_counts_by_family"]
+        )
+        self.assertEqual(
+            ordered["case_identity_sha256"], reversed_item["case_identity_sha256"]
+        )
 
     def test_reverse_valid_source_change_preserves_case_census_not_admission(self):
         a = sample()
@@ -152,7 +182,9 @@ class FamilyTests(unittest.TestCase):
         methods[4] = "test_positive_case_extra"
         result = audit_native_family_log(log_for(methods), SHA, 42)
         self.assertEqual(result["native_case_executions"], 16)
-        self.assertNotEqual(result["case_identity_sha256"], sample()["case_identity_sha256"])
+        self.assertNotEqual(
+            result["case_identity_sha256"], sample()["case_identity_sha256"]
+        )
 
     def test_reverse_dropped_negative_family_is_not_promoted(self):
         methods = [x for x in cases() if "_negative_" not in x]
@@ -176,7 +208,9 @@ class FamilyTests(unittest.TestCase):
     def test_force_trip_method_identity_swap_fails_closed(self):
         bad = log_for().replace(
             "(test_mcl_adversarial_family.FamilyTests.test_positive_case_0)",
-            "(test_mcl_adversarial_family.FamilyTests.test_negative_case_0)", 1)
+            "(test_mcl_adversarial_family.FamilyTests.test_negative_case_0)",
+            1,
+        )
         with self.assertRaisesRegex(ValueError, "method/qualified"):
             audit_native_family_log(bad, SHA, 42)
 
@@ -213,7 +247,6 @@ class FamilyTests(unittest.TestCase):
         with self.assertRaises(ValueError):
             audit_native_family_log("Ran 0 tests in 0.01s\n\nOK\n", SHA, 42)
 
-
     def test_positive_timing_cli_reconcile_writes_bound_result(self):
         result = timing_cli_reconcile()
         self.assertEqual(result["source_sha"], SHA)
@@ -222,32 +255,67 @@ class FamilyTests(unittest.TestCase):
         self.assertEqual(result["merge_admission"], "HOLD")
 
     def test_positive_timing_cli_measure_dispatch_strips_double_dash(self):
-        with patch.object(sys, "argv", ["timing_pulse", "measure", "--phase", "probe",
-                                        "--output", "times.json", "--", "fake-cmd"]), \
-             patch.object(timer, "measure", return_value=0) as measure:
+        with (
+            patch.object(
+                sys,
+                "argv",
+                [
+                    "timing_pulse",
+                    "measure",
+                    "--phase",
+                    "probe",
+                    "--output",
+                    "times.json",
+                    "--",
+                    "fake-cmd",
+                ],
+            ),
+            patch.object(timer, "measure", return_value=0) as measure,
+        ):
             with self.assertRaises(SystemExit) as e:
                 timer.main()
         self.assertEqual(e.exception.code, 0)
         measure.assert_called_once_with(Path("times.json"), "probe", ["fake-cmd"])
 
     def test_positive_timing_cli_measure_without_separator(self):
-        with patch.object(sys, "argv", ["timing_pulse", "measure", "--phase", "probe",
-                                        "--output", "times.json", "fake-cmd"]), \
-             patch.object(timer, "measure", return_value=0) as measure:
+        with (
+            patch.object(
+                sys,
+                "argv",
+                [
+                    "timing_pulse",
+                    "measure",
+                    "--phase",
+                    "probe",
+                    "--output",
+                    "times.json",
+                    "fake-cmd",
+                ],
+            ),
+            patch.object(timer, "measure", return_value=0) as measure,
+        ):
             with self.assertRaises(SystemExit) as e:
                 timer.main()
         self.assertEqual(e.exception.code, 0)
         measure.assert_called_once_with(Path("times.json"), "probe", ["fake-cmd"])
 
     def test_negative_timing_cli_missing_phase_refused(self):
-        with patch.object(sys, "argv", ["timing_pulse", "measure", "--output", "times.json"]), \
-             redirect_stderr(StringIO()), self.assertRaises(SystemExit) as e:
+        with (
+            patch.object(
+                sys, "argv", ["timing_pulse", "measure", "--output", "times.json"]
+            ),
+            redirect_stderr(StringIO()),
+            self.assertRaises(SystemExit) as e,
+        ):
             timer.main()
         self.assertEqual(e.exception.code, 2)
 
     def test_negative_timing_cli_unknown_subcommand_refused(self):
-        with patch.object(sys, "argv", ["timing_pulse", "dispatch"]), \
-             redirect_stderr(StringIO()), self.assertRaises(SystemExit) as e:
+        with (
+            patch.object(sys, "argv", ["timing_pulse", "dispatch"]),
+            redirect_stderr(StringIO()),
+            self.assertRaises(SystemExit) as e,
+        ):
             timer.main()
         self.assertEqual(e.exception.code, 2)
 
@@ -271,8 +339,14 @@ class FamilyTests(unittest.TestCase):
 
     def test_reverse_timing_missing_step_timestamps_not_invented(self):
         run, job = timing_records()
-        job["steps"] = [{"name": "unstarted", "started_at": None,
-                         "completed_at": None, "conclusion": None}]
+        job["steps"] = [
+            {
+                "name": "unstarted",
+                "started_at": None,
+                "completed_at": None,
+                "conclusion": None,
+            }
+        ]
         result = timer.completed_run_metrics(run, job)
         self.assertEqual(result["steps"], [])
         self.assertEqual(result["job_seconds"], 10)
@@ -286,9 +360,23 @@ class FamilyTests(unittest.TestCase):
         self.assertIsNone(result["runner_fraction"])
 
     def test_force_trip_timing_cli_failure_exit_propagated(self):
-        with patch.object(sys, "argv", ["timing_pulse", "measure", "--phase", "probe",
-                                        "--output", "times.json", "--", "fake-cmd"]), \
-             patch.object(timer, "measure", return_value=7):
+        with (
+            patch.object(
+                sys,
+                "argv",
+                [
+                    "timing_pulse",
+                    "measure",
+                    "--phase",
+                    "probe",
+                    "--output",
+                    "times.json",
+                    "--",
+                    "fake-cmd",
+                ],
+            ),
+            patch.object(timer, "measure", return_value=7),
+        ):
             with self.assertRaises(SystemExit) as e:
                 timer.main()
         self.assertEqual(e.exception.code, 7)
@@ -314,7 +402,6 @@ class FamilyTests(unittest.TestCase):
             data = json.loads(receipt.read_text())
             self.assertEqual(data[0]["exit_code"], 9)
             self.assertEqual(data[0]["phase"], "trip")
-
 
 
 if __name__ == "__main__":

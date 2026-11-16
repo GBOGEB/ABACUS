@@ -19,18 +19,28 @@ import logging
 from pathlib import Path
 from datetime import datetime
 
+import pytest
+
+# G-AB-STAGING-DOW (#2721): the bridge imports the external DOW package
+# (DOW.pipeline_runner, DOW.sut_config), which is not in this repository and
+# is not installed in CI. Skip the module with a recorded reason instead of
+# failing collection with ImportError.
+pytest.importorskip(
+    "DOW",
+    reason="G-AB-STAGING-DOW: external DOW package not installed in CI",
+)
+
 sys.path.append(str(Path(__file__).parent))
 
 from GBOGEB_ABACUS_DOW_INTEGRATION_BRIDGE import (
     GBOGEBAbacusDOWBridge,
     IntegrationConfig,
     IntegrationMode,
-    create_unified_glob_config
+    create_unified_glob_config,
 )
 
 logging.basicConfig(
-    level=logging.INFO,
-    format='%(asctime)s - %(levelname)s - %(message)s'
+    level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s"
 )
 logger = logging.getLogger(__name__)
 
@@ -60,21 +70,20 @@ class IntegrationTestSuite:
             result = {"error": str(e)}
             logger.error(f"✗ {test_name} FAILED: {e}")
 
-        self.test_results.append({
-            "test": test_name,
-            "status": status,
-            "result": result,
-            "timestamp": datetime.now().isoformat()
-        })
+        self.test_results.append(
+            {
+                "test": test_name,
+                "status": status,
+                "result": result,
+                "timestamp": datetime.now().isoformat(),
+            }
+        )
 
         return status == "PASSED"
 
     def test_1_bridge_initialization(self):
         """Test bridge initialization"""
-        config = IntegrationConfig(
-            mode=IntegrationMode.UNIFIED,
-            iterations=1
-        )
+        config = IntegrationConfig(mode=IntegrationMode.UNIFIED, iterations=1)
         bridge = GBOGEBAbacusDOWBridge(config=config)
 
         assert bridge is not None
@@ -104,10 +113,7 @@ class IntegrationTestSuite:
 
     def test_4_dow_only_mode(self):
         """Test DOW-only execution mode"""
-        config = IntegrationConfig(
-            mode=IntegrationMode.DOW_ONLY,
-            iterations=1
-        )
+        config = IntegrationConfig(mode=IntegrationMode.DOW_ONLY, iterations=1)
         bridge = GBOGEBAbacusDOWBridge(config=config)
         results = bridge.execute_integrated_pipeline()
 
@@ -116,7 +122,7 @@ class IntegrationTestSuite:
 
         return {
             "status": results["status"],
-            "duration": results.get("duration_seconds", 0)
+            "duration": results.get("duration_seconds", 0),
         }
 
     def test_5_configuration_validation(self):
@@ -125,7 +131,7 @@ class IntegrationTestSuite:
             mode=IntegrationMode.UNIFIED,
             iterations=3,
             enable_agents=True,
-            enable_convergence=True
+            enable_convergence=True,
         )
 
         config_dict = config.to_dict()
@@ -191,7 +197,7 @@ class IntegrationTestSuite:
 """
 
         report_file = Path("INTEGRATION_TEST_REPORT.md")
-        with open(report_file, 'w') as f:
+        with open(report_file, "w") as f:
             f.write(report)
 
         logger.info(f"\nTest report saved to: {report_file}")
@@ -200,27 +206,45 @@ class IntegrationTestSuite:
 
     def run_all_tests(self):
         """Run all tests"""
-        logger.info("\n" + "="*80)
+        logger.info("\n" + "=" * 80)
         logger.info("STARTING INTEGRATION TEST SUITE")
-        logger.info("="*80 + "\n")
+        logger.info("=" * 80 + "\n")
 
         self.run_test("Bridge Initialization", self.test_1_bridge_initialization)
         self.run_test("Handover Assimilation", self.test_2_handover_assimilation)
         self.run_test("Unified Glob Creation", self.test_3_unified_glob_creation)
         self.run_test("DOW-Only Mode", self.test_4_dow_only_mode)
         self.run_test("Configuration Validation", self.test_5_configuration_validation)
-        self.run_test("Output Directory Creation", self.test_6_output_directory_creation)
+        self.run_test(
+            "Output Directory Creation", self.test_6_output_directory_creation
+        )
         self.run_test("Metrics Tracking", self.test_7_metrics_tracking)
 
-        logger.info("\n" + "="*80)
+        logger.info("\n" + "=" * 80)
         logger.info("TEST SUITE COMPLETE")
         logger.info(f"Passed: {self.passed}/{len(self.test_results)}")
         logger.info(f"Failed: {self.failed}/{len(self.test_results)}")
-        logger.info("="*80 + "\n")
+        logger.info("=" * 80 + "\n")
 
         self.generate_report()
 
         return self.passed == len(self.test_results)
+
+
+def test_integration_suite(tmp_path, monkeypatch):  # pragma: no cover
+    """Pytest entry point: run the suite when DOW is importable.
+
+    Excluded from coverage: it only executes with the external DOW package,
+    which CI never installs (the module is skipped by importorskip above).
+
+    IntegrationTestSuite is not collected by pytest (python_classes = Test*),
+    so without this wrapper the module would collect zero tests even with DOW
+    installed. The suite writes report and output folders to the working
+    directory, so run it inside tmp_path.
+    """
+    monkeypatch.chdir(tmp_path)
+    suite = IntegrationTestSuite()
+    assert suite.run_all_tests(), suite.test_results
 
 
 def main():

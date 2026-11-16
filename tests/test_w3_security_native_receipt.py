@@ -1,4 +1,5 @@
 """Fail-closed receipt validation for W3 three-pulse security qualification."""
+
 from __future__ import annotations
 
 from pathlib import Path
@@ -8,7 +9,7 @@ from defusedxml.common import DefusedXmlException
 
 from scripts.ci.w3_security_native_receipt import VALID_PY, build_receipt
 
-SUPPORTED = sorted(VALID_PY, key=lambda v: tuple(map(int, v.split('.'))))
+SUPPORTED = sorted(VALID_PY, key=lambda v: tuple(map(int, v.split("."))))
 
 SHA = "a" * 40
 
@@ -22,9 +23,15 @@ def write_junit(tmp_path: Path, cases: str | None = None) -> Path:
 
 
 def good_args(path: Path) -> dict:
-    return dict(expected_head=SHA, observed_head=SHA,
-                run_id="39064371857", attempt=1,
-                os_cell="ubuntu-24.04", python_cell=SUPPORTED[0], junit_path=path)
+    return dict(
+        expected_head=SHA,
+        observed_head=SHA,
+        run_id="39064371857",
+        attempt=1,
+        os_cell="ubuntu-24.04",
+        python_cell=SUPPORTED[0],
+        junit_path=path,
+    )
 
 
 def test_exact_head_good_junit_preserves_nonpromotion(tmp_path):
@@ -40,17 +47,20 @@ def test_exact_head_good_junit_preserves_nonpromotion(tmp_path):
     assert value["merge_admission"] == "HOLD"
 
 
-@pytest.mark.parametrize(("name", "value"), [
-    ("expected_head", "a" * 39),
-    ("observed_head", "b" * 40),
-    ("run_id", "UNKNOWN"),
-    ("run_id", "0"),
-    ("attempt", 0),
-    ("attempt", False),
-    ("os_cell", "UNKNOWN"),
-    ("python_cell", "3.9"),
-    ("python_cell", "3.10"),
-])
+@pytest.mark.parametrize(
+    ("name", "value"),
+    [
+        ("expected_head", "a" * 39),
+        ("observed_head", "b" * 40),
+        ("run_id", "UNKNOWN"),
+        ("run_id", "0"),
+        ("attempt", 0),
+        ("attempt", False),
+        ("os_cell", "UNKNOWN"),
+        ("python_cell", "3.9"),
+        ("python_cell", "3.10"),
+    ],
+)
 def test_forged_or_stale_native_identity_fails_closed(tmp_path, name, value):
     args = good_args(write_junit(tmp_path))
     args[name] = value
@@ -58,15 +68,18 @@ def test_forged_or_stale_native_identity_fails_closed(tmp_path, name, value):
         build_receipt(**args)
 
 
-@pytest.mark.parametrize("cases", [
-    "<testcase name='too_few'/>",
-    "".join(f"<testcase name='t{i}'/>" for i in range(7)) +
-        "<testcase name='skipped'><skipped/></testcase>",
-    "".join(f"<testcase name='t{i}'/>" for i in range(7)) +
-        "<testcase name='failed'><failure/></testcase>",
-    "".join(f"<testcase name='t{i}'/>" for i in range(7)) +
-        "<testcase name='error'><error/></testcase>",
-])
+@pytest.mark.parametrize(
+    "cases",
+    [
+        "<testcase name='too_few'/>",
+        "".join(f"<testcase name='t{i}'/>" for i in range(7))
+        + "<testcase name='skipped'><skipped/></testcase>",
+        "".join(f"<testcase name='t{i}'/>" for i in range(7))
+        + "<testcase name='failed'><failure/></testcase>",
+        "".join(f"<testcase name='t{i}'/>" for i in range(7))
+        + "<testcase name='error'><error/></testcase>",
+    ],
+)
 def test_reduced_or_nonpassing_population_fails_closed(tmp_path, cases):
     with pytest.raises(ValueError):
         build_receipt(**good_args(write_junit(tmp_path, cases)))

@@ -537,8 +537,9 @@
     {
       "pattern": "^g3a-n14-phase4-import\\.yml$",
       "cluster": "core_test",
-      "lifecycle": "pr_domain",
-      "disposition": "keep"
+      "lifecycle": "manual",
+      "disposition": "keep",
+      "replacement": "W16 epoch via g3a-n15-python-matrix.yml (N14 is a source-bound manual replay)"
     },
     {
       "pattern": "^g3a-n15-python-matrix\\.yml$",
