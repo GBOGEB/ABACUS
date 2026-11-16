@@ -15,6 +15,7 @@ Generates:
 
 Version: v3.0.0
 """
+
 from __future__ import annotations
 
 import json
@@ -42,6 +43,7 @@ TABLE_DOCS = DOCS / "tables_v3"
 
 # ── import project modules ──
 import sys
+
 sys.path.insert(0, str(ROOT))
 from src.calc_leak_rate import (
     leak_rate_to_mass_flow_g_year,
@@ -73,6 +75,7 @@ COLORS = px.colors.qualitative.Set2
 # ════════════════════════════════════════════════════════════════
 # UTILITY HELPERS
 # ════════════════════════════════════════════════════════════════
+
 
 def _ensure(*dirs: Path):
     for d in dirs:
@@ -343,6 +346,7 @@ document.addEventListener('DOMContentLoaded', initSlides);
 # CHART GENERATORS (18 charts + extended)
 # ════════════════════════════════════════════════════════════════
 
+
 def make_chart_leak_vs_loss_extended():
     """Chart: Leak rate vs mass loss across 10⁻⁹ to 10⁻⁴ range."""
     leak_rates = np.logspace(-9, -4, 60)
@@ -352,15 +356,33 @@ def make_chart_leak_vs_loss_extended():
     for t in temps:
         for lr in leak_rates:
             g_yr = leak_rate_to_mass_flow_g_year(lr, t, pressure)
-            rows.append({"leak_rate": lr, "T (K)": t, "g/year": g_yr, "kg/year": g_yr / 1000})
+            rows.append(
+                {"leak_rate": lr, "T (K)": t, "g/year": g_yr, "kg/year": g_yr / 1000}
+            )
     df = pd.DataFrame(rows)
-    fig = px.line(df, x="leak_rate", y="g/year", color="T (K)",
-                  log_x=True, log_y=True,
-                  title="Leak Rate vs Helium Mass Loss (10⁻⁹ to 10⁻⁴ mbar·l/s)",
-                  labels={"leak_rate": "Leak Rate (mbar·l/s)", "g/year": "Mass Loss (g/year)"})
+    fig = px.line(
+        df,
+        x="leak_rate",
+        y="g/year",
+        color="T (K)",
+        log_x=True,
+        log_y=True,
+        title="Leak Rate vs Helium Mass Loss (10⁻⁹ to 10⁻⁴ mbar·l/s)",
+        labels={"leak_rate": "Leak Rate (mbar·l/s)", "g/year": "Mass Loss (g/year)"},
+    )
     # Add RTM reference lines
-    for val, label, clr in [(1e-9, "RTM-047 ambient", "red"), (1e-5, "RTM-048 system", "orange"), (1e-4, "Table 6 seat", "purple")]:
-        fig.add_vline(x=val, line_dash="dash", line_color=clr, annotation_text=label, annotation_position="top left")
+    for val, label, clr in [
+        (1e-9, "RTM-047 ambient", "red"),
+        (1e-5, "RTM-048 system", "orange"),
+        (1e-4, "Table 6 seat", "purple"),
+    ]:
+        fig.add_vline(
+            x=val,
+            line_dash="dash",
+            line_color=clr,
+            annotation_text=label,
+            annotation_position="top left",
+        )
     return fig, df
 
 
@@ -375,10 +397,15 @@ def make_chart_temp_effect_pressure():
             g_yr = leak_rate_to_mass_flow_g_year(lr, t, p)
             rows.append({"T (K)": t, "P (bar)": f"{p} bar", "g/year": g_yr})
     df = pd.DataFrame(rows)
-    fig = px.line(df, x="T (K)", y="g/year", color="P (bar)",
-                  log_y=True,
-                  title=f"Temperature Effect on He Loss at {lr:.0e} mbar·l/s",
-                  labels={"T (K)": "Temperature (K)", "g/year": "Mass Loss (g/year)"})
+    fig = px.line(
+        df,
+        x="T (K)",
+        y="g/year",
+        color="P (bar)",
+        log_y=True,
+        title=f"Temperature Effect on He Loss at {lr:.0e} mbar·l/s",
+        labels={"T (K)": "Temperature (K)", "g/year": "Mass Loss (g/year)"},
+    )
     return fig, df
 
 
@@ -390,17 +417,37 @@ def make_chart_choked_flow():
     rows = []
     for pu in p_ups:
         ratio = p_down / pu
-        rows.append({"P_upstream (bar)": pu, "Pressure Ratio": ratio,
-                      "Critical Ratio": critical, "Choked": ratio <= critical})
+        rows.append(
+            {
+                "P_upstream (bar)": pu,
+                "Pressure Ratio": ratio,
+                "Critical Ratio": critical,
+                "Choked": ratio <= critical,
+            }
+        )
     df = pd.DataFrame(rows)
     fig = go.Figure()
-    fig.add_trace(go.Scatter(x=df["P_upstream (bar)"], y=df["Pressure Ratio"],
-                             name="Actual P_down/P_up", mode="lines", line=dict(width=3)))
-    fig.add_hline(y=critical, line_dash="dash", line_color="red",
-                  annotation_text=f"Critical ratio = {critical:.3f} (γ=1.66)")
-    fig.update_layout(title="Choked Flow Regime Map (He, γ=1.66)",
-                      xaxis_title="Upstream Pressure (bar)", yaxis_title="P_down / P_up",
-                      yaxis=dict(range=[0, 1.1]))
+    fig.add_trace(
+        go.Scatter(
+            x=df["P_upstream (bar)"],
+            y=df["Pressure Ratio"],
+            name="Actual P_down/P_up",
+            mode="lines",
+            line=dict(width=3),
+        )
+    )
+    fig.add_hline(
+        y=critical,
+        line_dash="dash",
+        line_color="red",
+        annotation_text=f"Critical ratio = {critical:.3f} (γ=1.66)",
+    )
+    fig.update_layout(
+        title="Choked Flow Regime Map (He, γ=1.66)",
+        xaxis_title="Upstream Pressure (bar)",
+        yaxis_title="P_down / P_up",
+        yaxis=dict(range=[0, 1.1]),
+    )
     return fig, df
 
 
@@ -415,13 +462,26 @@ def make_chart_purity_dilution():
             air_ingress_mbar_L = lr * h * 3600
             # purity = He / (He + air), He partial pressure stays ~constant if system is topped up
             # simplified: dilution fraction
-            air_fraction = air_ingress_mbar_L / (system_vol_L * 1000 + air_ingress_mbar_L)  # mbar total ~ 1000 mbar * vol
+            air_fraction = air_ingress_mbar_L / (
+                system_vol_L * 1000 + air_ingress_mbar_L
+            )  # mbar total ~ 1000 mbar * vol
             purity = (1 - air_fraction) * 100
-            rows.append({"Hours": h, "Air leak (mbar·l/s)": f"{lr:.0e}", "Purity (%)": max(purity, 90)})
+            rows.append(
+                {
+                    "Hours": h,
+                    "Air leak (mbar·l/s)": f"{lr:.0e}",
+                    "Purity (%)": max(purity, 90),
+                }
+            )
     df = pd.DataFrame(rows)
-    fig = px.line(df, x="Hours", y="Purity (%)", color="Air leak (mbar·l/s)",
-                  title="Helium Purity Dilution Over Time (Air Ingress)",
-                  labels={"Hours": "Operating Hours", "Purity (%)": "He Purity (%)"})
+    fig = px.line(
+        df,
+        x="Hours",
+        y="Purity (%)",
+        color="Air leak (mbar·l/s)",
+        title="Helium Purity Dilution Over Time (Air Ingress)",
+        labels={"Hours": "Operating Hours", "Purity (%)": "He Purity (%)"},
+    )
     fig.update_layout(yaxis=dict(range=[90, 100.5]))
     return fig, df
 
@@ -435,11 +495,20 @@ def make_chart_internal_vs_external():
     for cat, lv in zip(categories, leak_vals):
         for t in temps:
             g_yr = leak_rate_to_mass_flow_g_year(lv, t, 5)
-            rows.append({"Category": cat, "T (K)": t, "g/year": g_yr, "Leak Rate": f"{lv:.0e}"})
+            rows.append(
+                {"Category": cat, "T (K)": t, "g/year": g_yr, "Leak Rate": f"{lv:.0e}"}
+            )
     df = pd.DataFrame(rows)
-    fig = px.bar(df, x="Category", y="g/year", color="T (K)", barmode="group",
-                 log_y=True, title="Internal vs External Leakage Comparison",
-                 text_auto=".2e")
+    fig = px.bar(
+        df,
+        x="Category",
+        y="g/year",
+        color="T (K)",
+        barmode="group",
+        log_y=True,
+        title="Internal vs External Leakage Comparison",
+        text_auto=".2e",
+    )
     return fig, df
 
 
@@ -448,24 +517,69 @@ def make_chart_helium_properties_vs_temp():
     he_data = _read_json(DATA / "helium_properties.json")
     df = pd.DataFrame(he_data["evaluation_points"])
     # Density vs T at different P
-    fig = make_subplots(rows=2, cols=2,
-                        subplot_titles=["Density (kg/m³)", "Viscosity (Pa·s)",
-                                        "Thermal Conductivity (W/m·K)", "Speed of Sound (m/s)"])
+    fig = make_subplots(
+        rows=2,
+        cols=2,
+        subplot_titles=[
+            "Density (kg/m³)",
+            "Viscosity (Pa·s)",
+            "Thermal Conductivity (W/m·K)",
+            "Speed of Sound (m/s)",
+        ],
+    )
     for p in [1, 5, 12]:
         sub = df[df["pressure_bar"] == p]
-        fig.add_trace(go.Scatter(x=sub["temperature_K"], y=sub["density_kg_m3"],
-                                 name=f"{p} bar", mode="lines+markers",
-                                 legendgroup=f"p{p}", showlegend=True), row=1, col=1)
-        fig.add_trace(go.Scatter(x=sub["temperature_K"], y=sub["viscosity_Pa_s"],
-                                 name=f"{p} bar", mode="lines+markers",
-                                 legendgroup=f"p{p}", showlegend=False), row=1, col=2)
-        fig.add_trace(go.Scatter(x=sub["temperature_K"], y=sub["thermal_conductivity_W_mK"],
-                                 name=f"{p} bar", mode="lines+markers",
-                                 legendgroup=f"p{p}", showlegend=False), row=2, col=1)
-        fig.add_trace(go.Scatter(x=sub["temperature_K"], y=sub["speed_of_sound_m_s"],
-                                 name=f"{p} bar", mode="lines+markers",
-                                 legendgroup=f"p{p}", showlegend=False), row=2, col=2)
-    fig.update_layout(title="Helium Thermophysical Properties vs Temperature", height=650)
+        fig.add_trace(
+            go.Scatter(
+                x=sub["temperature_K"],
+                y=sub["density_kg_m3"],
+                name=f"{p} bar",
+                mode="lines+markers",
+                legendgroup=f"p{p}",
+                showlegend=True,
+            ),
+            row=1,
+            col=1,
+        )
+        fig.add_trace(
+            go.Scatter(
+                x=sub["temperature_K"],
+                y=sub["viscosity_Pa_s"],
+                name=f"{p} bar",
+                mode="lines+markers",
+                legendgroup=f"p{p}",
+                showlegend=False,
+            ),
+            row=1,
+            col=2,
+        )
+        fig.add_trace(
+            go.Scatter(
+                x=sub["temperature_K"],
+                y=sub["thermal_conductivity_W_mK"],
+                name=f"{p} bar",
+                mode="lines+markers",
+                legendgroup=f"p{p}",
+                showlegend=False,
+            ),
+            row=2,
+            col=1,
+        )
+        fig.add_trace(
+            go.Scatter(
+                x=sub["temperature_K"],
+                y=sub["speed_of_sound_m_s"],
+                name=f"{p} bar",
+                mode="lines+markers",
+                legendgroup=f"p{p}",
+                showlegend=False,
+            ),
+            row=2,
+            col=2,
+        )
+    fig.update_layout(
+        title="Helium Thermophysical Properties vs Temperature", height=650
+    )
     fig.update_xaxes(title_text="T (K)")
     return fig, df
 
@@ -474,18 +588,29 @@ def make_chart_compressibility():
     """Chart: Compressibility factor Z vs temperature."""
     he_data = _read_json(DATA / "helium_properties.json")
     df = pd.DataFrame(he_data["evaluation_points"])
-    fig = px.line(df, x="temperature_K", y="compressibility_factor", color="pressure_bar",
-                  title="Helium Compressibility Factor (Z) vs Temperature",
-                  labels={"temperature_K": "Temperature (K)", "compressibility_factor": "Z",
-                          "pressure_bar": "P (bar)"},
-                  markers=True)
-    fig.add_hline(y=1.0, line_dash="dot", line_color="gray", annotation_text="Ideal Gas (Z=1)")
+    fig = px.line(
+        df,
+        x="temperature_K",
+        y="compressibility_factor",
+        color="pressure_bar",
+        title="Helium Compressibility Factor (Z) vs Temperature",
+        labels={
+            "temperature_K": "Temperature (K)",
+            "compressibility_factor": "Z",
+            "pressure_bar": "P (bar)",
+        },
+        markers=True,
+    )
+    fig.add_hline(
+        y=1.0, line_dash="dot", line_color="gray", annotation_text="Ideal Gas (Z=1)"
+    )
     return fig, df
 
 
 # ════════════════════════════════════════════════════════════════
 # STATISTICAL ANALYSIS
 # ════════════════════════════════════════════════════════════════
+
 
 def run_monte_carlo():
     """Enhanced Monte Carlo with covariance and Sobol-like sensitivity."""
@@ -509,10 +634,12 @@ def run_monte_carlo():
 
     # Compute annual costs
     # He loss cost
-    he_loss_g_yr = np.array([
-        leak_rate_to_mass_flow_g_year(lr, 80, 5) * vc
-        for lr, vc in zip(leak_rates, valve_count)
-    ])
+    he_loss_g_yr = np.array(
+        [
+            leak_rate_to_mass_flow_g_year(lr, 80, 5) * vc
+            for lr, vc in zip(leak_rates, valve_count)
+        ]
+    )
     he_loss_kg_yr = he_loss_g_yr / 1000
     he_loss_cost = he_loss_kg_yr * he_price
 
@@ -525,19 +652,21 @@ def run_monte_carlo():
     total_cost = he_loss_cost + maint_cost
 
     # Build DataFrame
-    mc_df = pd.DataFrame({
-        "he_price_eur_kg": he_price,
-        "valve_failure_rate": valve_fail_rate,
-        "mttr_hours": mttr,
-        "leak_rate_mbar_l_s": leak_rates,
-        "leak_class_idx": leak_class_idx,
-        "material_uhmwpe": material,
-        "valve_count": valve_count,
-        "he_loss_kg_yr": he_loss_kg_yr,
-        "he_loss_cost_eur": he_loss_cost,
-        "maint_cost_eur": maint_cost,
-        "total_cost_eur": total_cost,
-    })
+    mc_df = pd.DataFrame(
+        {
+            "he_price_eur_kg": he_price,
+            "valve_failure_rate": valve_fail_rate,
+            "mttr_hours": mttr,
+            "leak_rate_mbar_l_s": leak_rates,
+            "leak_class_idx": leak_class_idx,
+            "material_uhmwpe": material,
+            "valve_count": valve_count,
+            "he_loss_kg_yr": he_loss_kg_yr,
+            "he_loss_cost_eur": he_loss_cost,
+            "maint_cost_eur": maint_cost,
+            "total_cost_eur": total_cost,
+        }
+    )
 
     # Statistics
     stats = {
@@ -555,8 +684,14 @@ def run_monte_carlo():
     # Sobol-like sensitivity (variance-based)
     y = mc_df["total_cost_eur"]
     total_var = y.var(ddof=0)
-    input_cols = ["he_price_eur_kg", "valve_failure_rate", "mttr_hours",
-                  "leak_class_idx", "material_uhmwpe", "valve_count"]
+    input_cols = [
+        "he_price_eur_kg",
+        "valve_failure_rate",
+        "mttr_hours",
+        "leak_class_idx",
+        "material_uhmwpe",
+        "valve_count",
+    ]
     sensitivity = {}
     for col in input_cols:
         # First-order: Var(E[Y|Xi]) / Var(Y), with Var(E[Y|Xi]) the
@@ -589,8 +724,14 @@ def run_monte_carlo():
 
 def run_pca(mc_df: pd.DataFrame):
     """Principal Component Analysis on MC input/output space."""
-    cols = ["he_price_eur_kg", "valve_failure_rate", "mttr_hours",
-            "leak_class_idx", "material_uhmwpe", "valve_count"]
+    cols = [
+        "he_price_eur_kg",
+        "valve_failure_rate",
+        "mttr_hours",
+        "leak_class_idx",
+        "material_uhmwpe",
+        "valve_count",
+    ]
     X = mc_df[cols].values.copy()
 
     # Standardize
@@ -619,9 +760,7 @@ def run_pca(mc_df: pd.DataFrame):
 
     # Loadings
     loadings = pd.DataFrame(
-        eigenvectors[:, :3],
-        index=cols,
-        columns=["PC1", "PC2", "PC3"]
+        eigenvectors[:, :3], index=cols, columns=["PC1", "PC2", "PC3"]
     )
 
     pca_result = {
@@ -637,9 +776,17 @@ def run_pca(mc_df: pd.DataFrame):
 
 def compute_correlation_matrix(mc_df: pd.DataFrame):
     """Compute Pearson correlation matrix for all numeric inputs + output."""
-    cols = ["he_price_eur_kg", "valve_failure_rate", "mttr_hours",
-            "leak_class_idx", "material_uhmwpe", "valve_count",
-            "he_loss_cost_eur", "maint_cost_eur", "total_cost_eur"]
+    cols = [
+        "he_price_eur_kg",
+        "valve_failure_rate",
+        "mttr_hours",
+        "leak_class_idx",
+        "material_uhmwpe",
+        "valve_count",
+        "he_loss_cost_eur",
+        "maint_cost_eur",
+        "total_cost_eur",
+    ]
     corr = mc_df[cols].corr()
     return corr
 
@@ -648,19 +795,41 @@ def compute_correlation_matrix(mc_df: pd.DataFrame):
 # CHART GENERATORS (Statistical)
 # ════════════════════════════════════════════════════════════════
 
+
 def make_chart_mc_histogram(mc_df):
     """Monte Carlo cost distribution histogram."""
     fig = go.Figure()
-    fig.add_trace(go.Histogram(x=mc_df["total_cost_eur"], nbinsx=80,
-                               marker_color="steelblue", name="Total Annual Cost"))
+    fig.add_trace(
+        go.Histogram(
+            x=mc_df["total_cost_eur"],
+            nbinsx=80,
+            marker_color="steelblue",
+            name="Total Annual Cost",
+        )
+    )
     p5 = mc_df["total_cost_eur"].quantile(0.05)
     p95 = mc_df["total_cost_eur"].quantile(0.95)
     mean_v = mc_df["total_cost_eur"].mean()
-    fig.add_vline(x=mean_v, line_dash="solid", line_color="red", annotation_text=f"Mean: €{mean_v:,.0f}")
-    fig.add_vline(x=p5, line_dash="dash", line_color="green", annotation_text=f"P5: €{p5:,.0f}")
-    fig.add_vline(x=p95, line_dash="dash", line_color="orange", annotation_text=f"P95: €{p95:,.0f}")
-    fig.update_layout(title=f"Monte Carlo Total Annual Cost Distribution (n={N_MC}, seed={SEED})",
-                      xaxis_title="Total Annual Cost (€)", yaxis_title="Frequency")
+    fig.add_vline(
+        x=mean_v,
+        line_dash="solid",
+        line_color="red",
+        annotation_text=f"Mean: €{mean_v:,.0f}",
+    )
+    fig.add_vline(
+        x=p5, line_dash="dash", line_color="green", annotation_text=f"P5: €{p5:,.0f}"
+    )
+    fig.add_vline(
+        x=p95,
+        line_dash="dash",
+        line_color="orange",
+        annotation_text=f"P95: €{p95:,.0f}",
+    )
+    fig.update_layout(
+        title=f"Monte Carlo Total Annual Cost Distribution (n={N_MC}, seed={SEED})",
+        xaxis_title="Total Annual Cost (€)",
+        yaxis_title="Frequency",
+    )
     return fig
 
 
@@ -674,13 +843,21 @@ def make_chart_sensitivity_bar(sensitivity):
         "material_uhmwpe": "Material (UHMWPE)",
         "valve_count": "Valve Count",
     }
-    df = pd.DataFrame([
-        {"Variable": labels.get(k, k), "Sensitivity Index": v}
-        for k, v in sorted(sensitivity.items(), key=lambda x: -x[1])
-    ])
-    fig = px.bar(df, x="Sensitivity Index", y="Variable", orientation="h",
-                 title="Variance-Based Sensitivity Indices (First Order)",
-                 color="Sensitivity Index", color_continuous_scale="YlOrRd")
+    df = pd.DataFrame(
+        [
+            {"Variable": labels.get(k, k), "Sensitivity Index": v}
+            for k, v in sorted(sensitivity.items(), key=lambda x: -x[1])
+        ]
+    )
+    fig = px.bar(
+        df,
+        x="Sensitivity Index",
+        y="Variable",
+        orientation="h",
+        title="Variance-Based Sensitivity Indices (First Order)",
+        color="Sensitivity Index",
+        color_continuous_scale="YlOrRd",
+    )
     fig.update_layout(yaxis=dict(autorange="reversed"))
     return fig, df
 
@@ -688,18 +865,34 @@ def make_chart_sensitivity_bar(sensitivity):
 def make_chart_scree(pca_result):
     """Scree plot: explained variance by component."""
     n_comp = len(pca_result["eigenvalues"])
-    df = pd.DataFrame({
-        "Component": [f"PC{i+1}" for i in range(n_comp)],
-        "Eigenvalue": pca_result["eigenvalues"],
-        "Explained Var (%)": [v * 100 for v in pca_result["explained_variance"]],
-        "Cumulative (%)": [v * 100 for v in pca_result["cumulative_variance"]],
-    })
+    df = pd.DataFrame(
+        {
+            "Component": [f"PC{i+1}" for i in range(n_comp)],
+            "Eigenvalue": pca_result["eigenvalues"],
+            "Explained Var (%)": [v * 100 for v in pca_result["explained_variance"]],
+            "Cumulative (%)": [v * 100 for v in pca_result["cumulative_variance"]],
+        }
+    )
     fig = make_subplots(specs=[[{"secondary_y": True}]])
-    fig.add_trace(go.Bar(x=df["Component"], y=df["Explained Var (%)"],
-                         name="Individual", marker_color="steelblue"), secondary_y=False)
-    fig.add_trace(go.Scatter(x=df["Component"], y=df["Cumulative (%)"],
-                             name="Cumulative", mode="lines+markers",
-                             line=dict(color="red", width=2)), secondary_y=True)
+    fig.add_trace(
+        go.Bar(
+            x=df["Component"],
+            y=df["Explained Var (%)"],
+            name="Individual",
+            marker_color="steelblue",
+        ),
+        secondary_y=False,
+    )
+    fig.add_trace(
+        go.Scatter(
+            x=df["Component"],
+            y=df["Cumulative (%)"],
+            name="Cumulative",
+            mode="lines+markers",
+            line=dict(color="red", width=2),
+        ),
+        secondary_y=True,
+    )
     fig.update_layout(title="PCA Scree Plot — Explained Variance")
     fig.update_yaxes(title_text="Individual (%)", secondary_y=False)
     fig.update_yaxes(title_text="Cumulative (%)", secondary_y=True, range=[0, 105])
@@ -711,35 +904,65 @@ def make_chart_biplot(scores, loadings, mc_df):
     fig = go.Figure()
     # Sample points (subsample for performance)
     idx = RNG.choice(len(scores), min(2000, len(scores)), replace=False)
-    fig.add_trace(go.Scatter(
-        x=scores[idx, 0], y=scores[idx, 1],
-        mode="markers", marker=dict(size=3, opacity=0.3, color=mc_df["total_cost_eur"].iloc[idx],
-                                     colorscale="Viridis", colorbar=dict(title="Cost (€)")),
-        name="Observations"
-    ))
+    fig.add_trace(
+        go.Scatter(
+            x=scores[idx, 0],
+            y=scores[idx, 1],
+            mode="markers",
+            marker=dict(
+                size=3,
+                opacity=0.3,
+                color=mc_df["total_cost_eur"].iloc[idx],
+                colorscale="Viridis",
+                colorbar=dict(title="Cost (€)"),
+            ),
+            name="Observations",
+        )
+    )
     # Loading arrows
     scale = max(abs(scores[:, 0].max()), abs(scores[:, 1].max())) * 0.8
     for var_name in loadings.index:
         x_end = loadings.loc[var_name, "PC1"] * scale
         y_end = loadings.loc[var_name, "PC2"] * scale
-        fig.add_annotation(x=x_end, y=y_end, ax=0, ay=0,
-                          xref="x", yref="y", axref="x", ayref="y",
-                          showarrow=True, arrowhead=3, arrowsize=1.5, arrowwidth=2,
-                          arrowcolor="red")
-        fig.add_annotation(x=x_end * 1.15, y=y_end * 1.15,
-                          text=var_name.replace("_", " "), showarrow=False,
-                          font=dict(size=9, color="red"))
-    fig.update_layout(title="PCA Biplot — PC1 vs PC2",
-                      xaxis_title="PC1", yaxis_title="PC2")
+        fig.add_annotation(
+            x=x_end,
+            y=y_end,
+            ax=0,
+            ay=0,
+            xref="x",
+            yref="y",
+            axref="x",
+            ayref="y",
+            showarrow=True,
+            arrowhead=3,
+            arrowsize=1.5,
+            arrowwidth=2,
+            arrowcolor="red",
+        )
+        fig.add_annotation(
+            x=x_end * 1.15,
+            y=y_end * 1.15,
+            text=var_name.replace("_", " "),
+            showarrow=False,
+            font=dict(size=9, color="red"),
+        )
+    fig.update_layout(
+        title="PCA Biplot — PC1 vs PC2", xaxis_title="PC1", yaxis_title="PC2"
+    )
     return fig
 
 
 def make_chart_correlation_heatmap(corr_matrix):
     """Correlation heatmap with hierarchical clustering."""
-    fig = px.imshow(corr_matrix, text_auto=".2f",
-                    color_continuous_scale="RdBu_r", zmin=-1, zmax=1,
-                    title="Multi-Factor Correlation Heatmap",
-                    labels=dict(color="Pearson r"))
+    fig = px.imshow(
+        corr_matrix,
+        text_auto=".2f",
+        color_continuous_scale="RdBu_r",
+        zmin=-1,
+        zmax=1,
+        title="Multi-Factor Correlation Heatmap",
+        labels=dict(color="Pearson r"),
+    )
     fig.update_layout(height=600)
     return fig
 
@@ -748,25 +971,41 @@ def make_chart_mc_scatter(mc_df):
     """MC scatter: He loss cost vs maintenance cost colored by total."""
     idx = RNG.choice(len(mc_df), min(3000, len(mc_df)), replace=False)
     sub = mc_df.iloc[idx]
-    fig = px.scatter(sub, x="he_loss_cost_eur", y="maint_cost_eur",
-                     color="total_cost_eur", color_continuous_scale="Turbo",
-                     title="MC Scatter: Helium Loss Cost vs Maintenance Cost",
-                     labels={"he_loss_cost_eur": "He Loss Cost (€/yr)",
-                             "maint_cost_eur": "Maintenance Cost (€/yr)",
-                             "total_cost_eur": "Total (€/yr)"},
-                     opacity=0.4)
+    fig = px.scatter(
+        sub,
+        x="he_loss_cost_eur",
+        y="maint_cost_eur",
+        color="total_cost_eur",
+        color_continuous_scale="Turbo",
+        title="MC Scatter: Helium Loss Cost vs Maintenance Cost",
+        labels={
+            "he_loss_cost_eur": "He Loss Cost (€/yr)",
+            "maint_cost_eur": "Maintenance Cost (€/yr)",
+            "total_cost_eur": "Total (€/yr)",
+        },
+        opacity=0.4,
+    )
     return fig
 
 
 def make_chart_cost_breakdown_box(mc_df):
     """Box plot of cost components."""
     df_melt = mc_df[["he_loss_cost_eur", "maint_cost_eur", "total_cost_eur"]].melt(
-        var_name="Component", value_name="Cost (€/yr)")
-    labels = {"he_loss_cost_eur": "He Loss", "maint_cost_eur": "Maintenance", "total_cost_eur": "Total"}
+        var_name="Component", value_name="Cost (€/yr)"
+    )
+    labels = {
+        "he_loss_cost_eur": "He Loss",
+        "maint_cost_eur": "Maintenance",
+        "total_cost_eur": "Total",
+    }
     df_melt["Component"] = df_melt["Component"].map(labels)
-    fig = px.box(df_melt, x="Component", y="Cost (€/yr)",
-                 title="Annual Cost Component Distribution (MC)",
-                 color="Component")
+    fig = px.box(
+        df_melt,
+        x="Component",
+        y="Cost (€/yr)",
+        title="Annual Cost Component Distribution (MC)",
+        color="Component",
+    )
     return fig
 
 
@@ -777,17 +1016,34 @@ def make_chart_valve_fleet_sensitivity():
     t = 80
     p = 5
     g_per_valve = leak_rate_to_mass_flow_g_year(lr, t, p)
-    df = pd.DataFrame({
-        "Valve Count": counts,
-        "Total He Loss (kg/yr)": counts * g_per_valve / 1000,
-        "Cost at €120/kg (€/yr)": counts * g_per_valve / 1000 * 120,
-    })
+    df = pd.DataFrame(
+        {
+            "Valve Count": counts,
+            "Total He Loss (kg/yr)": counts * g_per_valve / 1000,
+            "Cost at €120/kg (€/yr)": counts * g_per_valve / 1000 * 120,
+        }
+    )
     fig = make_subplots(specs=[[{"secondary_y": True}]])
-    fig.add_trace(go.Scatter(x=df["Valve Count"], y=df["Total He Loss (kg/yr)"],
-                             name="He Loss", mode="lines", line=dict(width=3)), secondary_y=False)
-    fig.add_trace(go.Scatter(x=df["Valve Count"], y=df["Cost at €120/kg (€/yr)"],
-                             name="Cost (€120/kg)", mode="lines", line=dict(width=2, dash="dash")),
-                  secondary_y=True)
+    fig.add_trace(
+        go.Scatter(
+            x=df["Valve Count"],
+            y=df["Total He Loss (kg/yr)"],
+            name="He Loss",
+            mode="lines",
+            line=dict(width=3),
+        ),
+        secondary_y=False,
+    )
+    fig.add_trace(
+        go.Scatter(
+            x=df["Valve Count"],
+            y=df["Cost at €120/kg (€/yr)"],
+            name="Cost (€120/kg)",
+            mode="lines",
+            line=dict(width=2, dash="dash"),
+        ),
+        secondary_y=True,
+    )
     fig.update_layout(title="Fleet Size Sensitivity on Annual He Loss & Cost")
     fig.update_xaxes(title_text="Valve Count")
     fig.update_yaxes(title_text="He Loss (kg/yr)", secondary_y=False)
@@ -799,21 +1055,39 @@ def make_chart_lifecycle_standards():
     """Gantt-style chart: Standards activities across lifecycle phases."""
     stds = _read_json(DATA / "standards_compliance.json")
     mapping = stds.get("rtm_to_standards_mapping", [])
-    phases_order = ["Design", "Procurement", "Manufacture", "FAT", "FAT/SAT", "SAT", "Pre-delivery", "Commissioning", "Operation"]
+    phases_order = [
+        "Design",
+        "Procurement",
+        "Manufacture",
+        "FAT",
+        "FAT/SAT",
+        "SAT",
+        "Pre-delivery",
+        "Commissioning",
+        "Operation",
+    ]
     phase_idx = {p: i for i, p in enumerate(phases_order)}
 
     rows = []
     for m in mapping:
-        rows.append({
-            "RTM": m["rtm_id"],
-            "Standard": m["standard"],
-            "Phase": m["phase"],
-            "Phase_idx": phase_idx.get(m["phase"], 5),
-        })
+        rows.append(
+            {
+                "RTM": m["rtm_id"],
+                "Standard": m["standard"],
+                "Phase": m["phase"],
+                "Phase_idx": phase_idx.get(m["phase"], 5),
+            }
+        )
     df = pd.DataFrame(rows)
-    fig = px.scatter(df, x="Phase", y="Standard", color="RTM",
-                     title="Standards Activities Across Lifecycle Phases",
-                     symbol="RTM", size_max=15)
+    fig = px.scatter(
+        df,
+        x="Phase",
+        y="Standard",
+        color="RTM",
+        title="Standards Activities Across Lifecycle Phases",
+        symbol="RTM",
+        size_max=15,
+    )
     fig.update_traces(marker=dict(size=14))
     fig.update_layout(xaxis=dict(categoryorder="array", categoryarray=phases_order))
     return fig, df
@@ -822,6 +1096,7 @@ def make_chart_lifecycle_standards():
 # ════════════════════════════════════════════════════════════════
 # HTML SLIDE BUILDER
 # ════════════════════════════════════════════════════════════════
+
 
 def _slide(title: str, content: str, category: str = "") -> str:
     cat_class = f" cat-{category}" if category else ""
@@ -838,23 +1113,23 @@ def _iframe(src: str) -> str:
 
 def _table_html(df: pd.DataFrame, table_id: str = "", max_rows: int = 50) -> str:
     tid = f' id="{table_id}"' if table_id else ""
-    html = f'<table{tid}><thead><tr>'
+    html = f"<table{tid}><thead><tr>"
     for c in df.columns:
-        html += f'<th>{c}</th>'
-    html += '</tr></thead><tbody>'
+        html += f"<th>{c}</th>"
+    html += "</tr></thead><tbody>"
     for _, row in df.head(max_rows).iterrows():
-        html += '<tr>'
+        html += "<tr>"
         for c in df.columns:
             v = row[c]
             if isinstance(v, float):
                 if abs(v) < 0.001 or abs(v) > 1e6:
-                    html += f'<td>{v:.3e}</td>'
+                    html += f"<td>{v:.3e}</td>"
                 else:
-                    html += f'<td>{v:.3f}</td>'
+                    html += f"<td>{v:.3f}</td>"
             else:
-                html += f'<td>{v}</td>'
-        html += '</tr>'
-    html += '</tbody></table>'
+                html += f"<td>{v}</td>"
+        html += "</tr>"
+    html += "</tbody></table>"
     return html
 
 
@@ -862,12 +1137,17 @@ def _badge(text: str, cls: str = "trace") -> str:
     return f'<span class="badge badge-{cls}">{text}</span>'
 
 
-def build_all_slides(mc_df, mc_stats, sensitivity, pca_result, scores, loadings, corr_matrix):
+def build_all_slides(
+    mc_df, mc_stats, sensitivity, pca_result, scores, loadings, corr_matrix
+):
     """Build all 32 slides as HTML content."""
     slides = []
 
     # ── Slide 1: Title ──
-    slides.append(_slide("OUTPUT_3 — Standards & Statistical Framework v3.0.0", f"""
+    slides.append(
+        _slide(
+            "OUTPUT_3 — Standards & Statistical Framework v3.0.0",
+            f"""
     <div class="kpi-row">
         {_kpi("8", "Standards Covered")}
         {_kpi("9", "RTM Mappings")}
@@ -887,7 +1167,10 @@ def build_all_slides(mc_df, mc_stats, sensitivity, pca_result, scores, loadings,
     </ul>
     <p><strong>Version:</strong> {VERSION} &nbsp;|&nbsp; <strong>Build Date:</strong> 2026-05-08 &nbsp;|&nbsp;
     <strong>Author:</strong> QPLANT Engineering Team</p>
-    """, ""))
+    """,
+            "",
+        )
+    )
 
     # ── Slide 2: Codes & Standards Overview ──
     stds = _read_json(DATA / "standards_compliance.json")
@@ -895,13 +1178,19 @@ def build_all_slides(mc_df, mc_stats, sensitivity, pca_result, scores, loadings,
     for s in stds["standards"]:
         n_sections = len(s.get("sections", s.get("articles", [])))
         std_rows += f'<tr><td><strong>{s["code"]}</strong></td><td>{s["title"]}</td><td>{n_sections}</td><td>{s.get("scope","")[:80]}…</td></tr>'
-    slides.append(_slide("Codes & Standards Overview", f"""
+    slides.append(
+        _slide(
+            "Codes & Standards Overview",
+            f"""
     <p>Eight international codes and standards govern the QPLANT cryogenic helium system design, manufacture, testing, and operation.</p>
     <table><thead><tr><th>Code</th><th>Title</th><th>Sections</th><th>Scope</th></tr></thead>
     <tbody>{std_rows}</tbody></table>
     <h3>Lifecycle Integration</h3>
     <p>Standards requirements are mapped across 8 lifecycle phases: Design → Procurement → Manufacture → FAT → Transport → SAT → Commissioning → Operation</p>
-    """, "standards"))
+    """,
+            "standards",
+        )
+    )
 
     # ── Slides 3–8: Individual Standards ──
     for s in stds["standards"][:6]:
@@ -910,22 +1199,34 @@ def build_all_slides(mc_df, mc_stats, sensitivity, pca_result, scores, loadings,
         for sec in sections[:4]:
             sec_num = sec.get("section", sec.get("article", ""))
             sec_title = sec.get("title", "")
-            content += f'<h3>§{sec_num} — {sec_title}</h3>'
-            subs = sec.get("subsections", sec.get("requirements", sec.get("tables", [])))
+            content += f"<h3>§{sec_num} — {sec_title}</h3>"
+            subs = sec.get(
+                "subsections", sec.get("requirements", sec.get("tables", []))
+            )
             if isinstance(subs, list):
                 for sub in subs[:3]:
                     if isinstance(sub, dict):
-                        sub_num = sub.get("number", sub.get("table", sub.get("esr", "")))
+                        sub_num = sub.get(
+                            "number", sub.get("table", sub.get("esr", ""))
+                        )
                         sub_title = sub.get("title", sub.get("description", ""))
-                        content += f'<h4>{sub_num}: {sub_title}</h4>'
+                        content += f"<h4>{sub_num}: {sub_title}</h4>"
                         if "equation" in sub:
                             content += f'<div class="equation">{sub["equation"]}</div>'
                         acts = sub.get("activities", [])
                         if acts:
-                            content += '<p><strong>Activities:</strong></p><ul>' + "".join(f'<li>{a}</li>' for a in acts) + '</ul>'
+                            content += (
+                                "<p><strong>Activities:</strong></p><ul>"
+                                + "".join(f"<li>{a}</li>" for a in acts)
+                                + "</ul>"
+                            )
                         dels = sub.get("deliverables", [])
                         if dels:
-                            content += '<p><strong>Deliverables:</strong></p><ul>' + "".join(f'<li>{d}</li>' for d in dels) + '</ul>'
+                            content += (
+                                "<p><strong>Deliverables:</strong></p><ul>"
+                                + "".join(f"<li>{d}</li>" for d in dels)
+                                + "</ul>"
+                            )
                         phase = sub.get("lifecycle_phase", "")
                         if phase:
                             content += f'<p>{_badge(phase, "design")}</p>'
@@ -935,28 +1236,45 @@ def build_all_slides(mc_df, mc_stats, sensitivity, pca_result, scores, loadings,
     mapping = stds.get("rtm_to_standards_mapping", [])
     map_df = pd.DataFrame(mapping)
     if not map_df.empty:
-        map_df = map_df.rename(columns={"rtm_id": "RTM", "requirement": "Requirement",
-                                         "standard": "Standard", "section": "Section",
-                                         "test_method": "Test Method", "acceptance": "Acceptance",
-                                         "deliverable": "Deliverable", "phase": "Phase"})
-    slides.append(_slide("RTM → Standards Compliance Matrix", f"""
+        map_df = map_df.rename(
+            columns={
+                "rtm_id": "RTM",
+                "requirement": "Requirement",
+                "standard": "Standard",
+                "section": "Section",
+                "test_method": "Test Method",
+                "acceptance": "Acceptance",
+                "deliverable": "Deliverable",
+                "phase": "Phase",
+            }
+        )
+    slides.append(
+        _slide(
+            "RTM → Standards Compliance Matrix",
+            f"""
     <p>Mapping of each RTM requirement to the applicable code, section, test method, acceptance criteria, and deliverable.</p>
     {_table_html(map_df, "tblCompliance")}
     <div class="export-bar">
         <button class="export-btn" onclick="exportCSV('tblCompliance','compliance_matrix.csv')">📥 Export CSV</button>
     </div>
-    """, "standards"))
+    """,
+            "standards",
+        )
+    )
 
     # ── Slide 10: Lifecycle Phase Matrix ──
     phases_data = stds.get("lifecycle_phases", [])
     phase_df = pd.DataFrame(phases_data)
-    content_lc = '<p>Standards activities mapped to each project lifecycle phase.</p>'
+    content_lc = "<p>Standards activities mapped to each project lifecycle phase.</p>"
     content_lc += _table_html(phase_df, "tblLifecycle")
     content_lc += _iframe("visualizations_v3/chart_lifecycle_standards.html")
     slides.append(_slide("Lifecycle Phase Standards Mapping", content_lc, "standards"))
 
     # ── Slide 11: FAT Procedures (Valve Leak Testing) ──
-    slides.append(_slide("FAT Procedure — Valve Leak Testing (EN 13185 + ISO 5208)", f"""
+    slides.append(
+        _slide(
+            "FAT Procedure — Valve Leak Testing (EN 13185 + ISO 5208)",
+            f"""
     <h3>1. Preparation</h3>
     <ol class="procedure">
         <li>Install valve in test fixture with known volume calibration</li>
@@ -988,10 +1306,16 @@ def build_all_slides(mc_df, mc_stats, sensitivity, pca_result, scores, loadings,
         <li>Photo evidence of test setup</li>
         <li>Accept/Reject decision signed by QA inspector</li>
     </ul>
-    """, "procedures"))
+    """,
+            "procedures",
+        )
+    )
 
     # ── Slide 12: SAT Procedures ──
-    slides.append(_slide("SAT Procedure — System-Level Leak Test", f"""
+    slides.append(
+        _slide(
+            "SAT Procedure — System-Level Leak Test",
+            f"""
     <h3>Scope</h3>
     <p>Entire QPLANT cryogenic helium system after installation — validate RTM-048 and RTM-053.</p>
     <h3>Method: Pressure Hold Test (24-hour)</h3>
@@ -1020,10 +1344,16 @@ def build_all_slides(mc_df, mc_stats, sensitivity, pca_result, scores, loadings,
         <li>Acceptance sign-off (Project Manager + QA)</li>
         <li>Punch list of items requiring re-test (if any)</li>
     </ul>
-    """, "procedures"))
+    """,
+            "procedures",
+        )
+    )
 
     # ── Slide 13: PED Compliance Workflow ──
-    slides.append(_slide("PED 2014/68/EU — Compliance Workflow", f"""
+    slides.append(
+        _slide(
+            "PED 2014/68/EU — Compliance Workflow",
+            f"""
     <h3>Step 1: Classification (Article 4)</h3>
     <table>
         <tr><th>Component Example</th><th>PS (bar)</th><th>V (L)</th><th>PS×V</th><th>Category</th><th>Module</th></tr>
@@ -1060,66 +1390,137 @@ def build_all_slides(mc_df, mc_stats, sensitivity, pca_result, scores, loadings,
         <li>Issue EU Declaration of Conformity (DoC)</li>
         <li>Maintain Technical File for <strong>10 years</strong></li>
     </ul>
-    """, "standards"))
+    """,
+            "standards",
+        )
+    )
 
     # ── Slides 14–17: Leak Rate Charts ──
-    slides.append(_slide("Extended Leak Rate Analysis (10⁻⁹ to 10⁻⁴)", f"""
+    slides.append(
+        _slide(
+            "Extended Leak Rate Analysis (10⁻⁹ to 10⁻⁴)",
+            f"""
     <p>Full 5-order-of-magnitude leak rate range showing helium mass loss at different temperatures.</p>
     {_iframe("visualizations_v3/chart_leak_vs_loss_extended.html")}
     <p>Reference lines mark RTM-047 (ambient boundary), RTM-048 (system cap), and Table 6 (seat leakage).</p>
-    """, "leak"))
+    """,
+            "leak",
+        )
+    )
 
-    slides.append(_slide("Temperature Effect with Pressure Isolines", f"""
+    slides.append(
+        _slide(
+            "Temperature Effect with Pressure Isolines",
+            f"""
     {_iframe("visualizations_v3/chart_temp_effect_pressure.html")}
     <p>Lower temperatures dramatically increase helium loss per unit leak rate due to higher gas density.</p>
-    """, "leak"))
+    """,
+            "leak",
+        )
+    )
 
-    slides.append(_slide("Internal vs External Leakage Comparison", f"""
+    slides.append(
+        _slide(
+            "Internal vs External Leakage Comparison",
+            f"""
     {_iframe("visualizations_v3/chart_internal_vs_external.html")}
     <p>Internal (seat) leakage at 10⁻⁴ mbar·l/s produces ~100,000× more mass loss than external (ambient) leakage at 10⁻⁹ mbar·l/s.</p>
-    """, "leak"))
+    """,
+            "leak",
+        )
+    )
 
-    slides.append(_slide("Choked Flow Regime Map", f"""
+    slides.append(
+        _slide(
+            "Choked Flow Regime Map",
+            f"""
     {_iframe("visualizations_v3/chart_choked_flow.html")}
     <div class="equation">Critical pressure ratio for He (γ=1.66): P_down/P_up &lt; {choked_flow_critical_ratio():.4f}</div>
     <p>At pressure ratios below the critical value, flow becomes sonic and leak rate no longer increases with differential pressure.</p>
-    """, "leak"))
+    """,
+            "leak",
+        )
+    )
 
     # ── Slide 18: Purity Dilution ──
-    slides.append(_slide("Helium Purity Dilution Over Time", f"""
+    slides.append(
+        _slide(
+            "Helium Purity Dilution Over Time",
+            f"""
     {_iframe("visualizations_v3/chart_purity_dilution.html")}
     <p>Air ingress through leak paths dilutes helium purity. At 10⁻⁴ mbar·l/s total ingress, purity drops measurably within months.</p>
-    """, "leak"))
+    """,
+            "leak",
+        )
+    )
 
     # ── Slides 19–20: Helium Properties ──
-    slides.append(_slide("Helium Thermophysical Properties Database", f"""
+    slides.append(
+        _slide(
+            "Helium Thermophysical Properties Database",
+            f"""
     <p>Properties at 18 evaluation points (6 temperatures × 3 pressures). Source: NIST REFPROP correlations for He-4.</p>
     {_iframe("visualizations_v3/chart_helium_properties.html")}
-    """, "helium"))
+    """,
+            "helium",
+        )
+    )
 
-    slides.append(_slide("Helium Compressibility Factor", f"""
+    slides.append(
+        _slide(
+            "Helium Compressibility Factor",
+            f"""
     {_iframe("visualizations_v3/chart_compressibility.html")}
     <p>At high temperatures (≥50K) and moderate pressures, helium behaves very close to an ideal gas (Z≈1).
     At 4K and 12 bar (supercritical), Z drops to ~0.62 — significant deviation requiring real-gas corrections.</p>
-    """, "helium"))
+    """,
+            "helium",
+        )
+    )
 
     # ── Slide 21: Helium Properties Table ──
     he_data = _read_json(DATA / "helium_properties.json")
     he_df = pd.DataFrame(he_data["evaluation_points"])
-    he_display = he_df[["temperature_K", "pressure_bar", "density_kg_m3", "viscosity_Pa_s",
-                         "thermal_conductivity_W_mK", "specific_heat_J_kgK",
-                         "speed_of_sound_m_s", "compressibility_factor"]].copy()
-    he_display.columns = ["T (K)", "P (bar)", "ρ (kg/m³)", "μ (Pa·s)", "k (W/m·K)",
-                           "cp (J/kg·K)", "a (m/s)", "Z"]
-    slides.append(_slide("Helium Properties Data Table", f"""
+    he_display = he_df[
+        [
+            "temperature_K",
+            "pressure_bar",
+            "density_kg_m3",
+            "viscosity_Pa_s",
+            "thermal_conductivity_W_mK",
+            "specific_heat_J_kgK",
+            "speed_of_sound_m_s",
+            "compressibility_factor",
+        ]
+    ].copy()
+    he_display.columns = [
+        "T (K)",
+        "P (bar)",
+        "ρ (kg/m³)",
+        "μ (Pa·s)",
+        "k (W/m·K)",
+        "cp (J/kg·K)",
+        "a (m/s)",
+        "Z",
+    ]
+    slides.append(
+        _slide(
+            "Helium Properties Data Table",
+            f"""
     {_table_html(he_display, "tblHelium")}
     <div class="export-bar">
         <button class="export-btn" onclick="exportCSV('tblHelium','helium_properties.csv')">📥 Export CSV</button>
     </div>
-    """, "helium"))
+    """,
+            "helium",
+        )
+    )
 
     # ── Slides 22–24: Monte Carlo ──
-    slides.append(_slide(f"Monte Carlo Analysis (n={N_MC:,}, seed={SEED})", f"""
+    slides.append(
+        _slide(
+            f"Monte Carlo Analysis (n={N_MC:,}, seed={SEED})",
+            f"""
     <div class="kpi-row">
         {_kpi(f"€{mc_stats['mean']:,.0f}", "Mean Annual Cost")}
         {_kpi(f"€{mc_stats['median']:,.0f}", "Median")}
@@ -1138,14 +1539,26 @@ def build_all_slides(mc_df, mc_stats, sensitivity, pca_result, scores, loadings,
         <tr><td>Material</td><td>Bernoulli</td><td>p=0.5 (HDPE/UHMWPE)</td></tr>
         <tr><td>Valve Count</td><td>N(410, 30), clipped [300,520]</td><td></td></tr>
     </table>
-    """, "stats"))
+    """,
+            "stats",
+        )
+    )
 
-    slides.append(_slide("Monte Carlo — Cost Component Analysis", f"""
+    slides.append(
+        _slide(
+            "Monte Carlo — Cost Component Analysis",
+            f"""
     {_iframe("visualizations_v3/chart_mc_scatter.html")}
     {_iframe("visualizations_v3/chart_cost_breakdown_box.html")}
-    """, "stats"))
+    """,
+            "stats",
+        )
+    )
 
-    slides.append(_slide("Sensitivity Analysis (Variance-Based)", f"""
+    slides.append(
+        _slide(
+            "Sensitivity Analysis (Variance-Based)",
+            f"""
     {_iframe("visualizations_v3/chart_sensitivity_bar.html")}
     <h3>Interpretation</h3>
     <p>First-order sensitivity indices show which input parameters contribute most to the variance in total annual cost.
@@ -1156,33 +1569,58 @@ def build_all_slides(mc_df, mc_stats, sensitivity, pca_result, scores, loadings,
         <li>Leak rate class is the dominant technical driver — selecting tighter classes reduces cost variance</li>
         <li>Material choice has modest impact (~30% CAPEX difference HDPE vs UHMWPE)</li>
     </ul>
-    """, "stats"))
+    """,
+            "stats",
+        )
+    )
 
     # ── Slides 25–27: PCA ──
-    slides.append(_slide("PCA — Scree Plot & Explained Variance", f"""
+    slides.append(
+        _slide(
+            "PCA — Scree Plot & Explained Variance",
+            f"""
     {_iframe("visualizations_v3/chart_scree.html")}
     <h3>Component Summary</h3>
     <table>
         <tr><th>Component</th><th>Eigenvalue</th><th>Explained (%)</th><th>Cumulative (%)</th></tr>
-    """ + "".join(
-        f'<tr><td>PC{i+1}</td><td>{pca_result["eigenvalues"][i]:.3f}</td>'
-        f'<td>{pca_result["explained_variance"][i]*100:.1f}%</td>'
-        f'<td>{pca_result["cumulative_variance"][i]*100:.1f}%</td></tr>'
-        for i in range(len(pca_result["eigenvalues"]))
-    ) + """</table>
+    """
+            + "".join(
+                f'<tr><td>PC{i+1}</td><td>{pca_result["eigenvalues"][i]:.3f}</td>'
+                f'<td>{pca_result["explained_variance"][i]*100:.1f}%</td>'
+                f'<td>{pca_result["cumulative_variance"][i]*100:.1f}%</td></tr>'
+                for i in range(len(pca_result["eigenvalues"]))
+            )
+            + """</table>
     <p>The first 3 principal components explain the majority of variance in the 6-dimensional input space.</p>
-    """, "stats"))
+    """,
+            "stats",
+        )
+    )
 
-    slides.append(_slide("PCA — Biplot (PC1 vs PC2)", f"""
+    slides.append(
+        _slide(
+            "PCA — Biplot (PC1 vs PC2)",
+            f"""
     {_iframe("visualizations_v3/chart_biplot.html")}
     <h3>Variable Loadings</h3>
-    """ + _table_html(loadings.reset_index().rename(columns={"index": "Variable"}), "tblLoadings") + """
+    """
+            + _table_html(
+                loadings.reset_index().rename(columns={"index": "Variable"}),
+                "tblLoadings",
+            )
+            + """
     <p>Red arrows show how each input variable projects onto the first two principal components.
     Variables pointing in similar directions are correlated; orthogonal variables are independent.</p>
-    """, "stats"))
+    """,
+            "stats",
+        )
+    )
 
     # ── Slide 28: Correlation Heatmap ──
-    slides.append(_slide("Multi-Factor Correlation Heatmap", f"""
+    slides.append(
+        _slide(
+            "Multi-Factor Correlation Heatmap",
+            f"""
     {_iframe("visualizations_v3/chart_correlation_heatmap.html")}
     <p>Pearson correlation coefficients between all input parameters and cost outputs.
     Red = positive correlation, Blue = negative correlation.</p>
@@ -1192,34 +1630,63 @@ def build_all_slides(mc_df, mc_stats, sensitivity, pca_result, scores, loadings,
         <li>Valve count correlates positively with both He loss and maintenance costs</li>
         <li>Material choice has weak correlation with total cost (30% CAPEX difference is modest)</li>
     </ul>
-    """, "stats"))
+    """,
+            "stats",
+        )
+    )
 
     # ── Slide 29: Fleet Sensitivity ──
-    slides.append(_slide("Valve Fleet Size Sensitivity", f"""
+    slides.append(
+        _slide(
+            "Valve Fleet Size Sensitivity",
+            f"""
     {_iframe("visualizations_v3/chart_valve_fleet_sensitivity.html")}
     <p>Linear relationship between valve count and total helium loss / annual cost, at fixed leak rate class.</p>
-    """, "stats"))
+    """,
+            "stats",
+        )
+    )
 
     # ── Slide 30: Conversion Grid ──
     grid = build_conversion_grid(
-        [1e-9, 1e-8, 1e-7, 1e-6, 1e-5, 1e-4],
-        [4, 20, 80, 300],
-        [1, 5, 12]
+        [1e-9, 1e-8, 1e-7, 1e-6, 1e-5, 1e-4], [4, 20, 80, 300], [1, 5, 12]
     )
-    grid_display = grid[["leak_rate_mbar_l_s", "temperature_K", "pressure_bar_abs",
-                          "mass_flow_g_year", "is_choked"]].copy()
-    grid_display.columns = ["Leak Rate (mbar·l/s)", "T (K)", "P (bar)", "Mass Loss (g/yr)", "Choked?"]
+    grid_display = grid[
+        [
+            "leak_rate_mbar_l_s",
+            "temperature_K",
+            "pressure_bar_abs",
+            "mass_flow_g_year",
+            "is_choked",
+        ]
+    ].copy()
+    grid_display.columns = [
+        "Leak Rate (mbar·l/s)",
+        "T (K)",
+        "P (bar)",
+        "Mass Loss (g/yr)",
+        "Choked?",
+    ]
     grid_display["Choked?"] = grid_display["Choked?"].map({1.0: "Yes", 0.0: "No"})
-    slides.append(_slide("Full Conversion Grid (10⁻⁹ to 10⁻⁴)", f"""
+    slides.append(
+        _slide(
+            "Full Conversion Grid (10⁻⁹ to 10⁻⁴)",
+            f"""
     <p>72 evaluation points: 6 leak rates × 4 temperatures × 3 pressures</p>
     {_table_html(grid_display, "tblGrid", max_rows=72)}
     <div class="export-bar">
         <button class="export-btn" onclick="exportCSV('tblGrid','conversion_grid.csv')">📥 Export CSV</button>
     </div>
-    """, "leak"))
+    """,
+            "leak",
+        )
+    )
 
     # ── Slide 31: Statistical Summary ──
-    slides.append(_slide("Statistical Analysis Summary", f"""
+    slides.append(
+        _slide(
+            "Statistical Analysis Summary",
+            f"""
     <div class="kpi-row">
         {_kpi(f"{N_MC:,}", "MC Iterations")}
         {_kpi(str(SEED), "RNG Seed")}
@@ -1240,10 +1707,16 @@ def build_all_slides(mc_df, mc_stats, sensitivity, pca_result, scores, loadings,
     <h3>Reproducibility</h3>
     <p>All Monte Carlo runs use <code>numpy.random.default_rng(seed={SEED})</code>.
     Results are deterministic — re-running with same seed produces identical outputs.</p>
-    """, "stats"))
+    """,
+            "stats",
+        )
+    )
 
     # ── Slide 32: Documentation Architecture ──
-    slides.append(_slide("Documentation Architecture & Export Capabilities", f"""
+    slides.append(
+        _slide(
+            "Documentation Architecture & Export Capabilities",
+            f"""
     <h3>Output Structure</h3>
     <table>
         <tr><th>Directory</th><th>Contents</th><th>Format</th></tr>
@@ -1272,10 +1745,16 @@ def build_all_slides(mc_df, mc_stats, sensitivity, pca_result, scores, loadings,
         <li>PCA eigendecomposition from numpy.linalg.eigh</li>
         <li>Sensitivity indices: variance-based (Sobol first-order approximation)</li>
     </ul>
-    """, ""))
+    """,
+            "",
+        )
+    )
 
     # ── Slide 33: Conclusions ──
-    slides.append(_slide("Conclusions & Recommendations", f"""
+    slides.append(
+        _slide(
+            "Conclusions & Recommendations",
+            f"""
     <h3>Standards Compliance</h3>
     <ul>
         <li>8 codes/standards mapped with specific subsections, equations, activities, and deliverables</li>
@@ -1302,7 +1781,10 @@ def build_all_slides(mc_df, mc_stats, sensitivity, pca_result, scores, loadings,
         <li>Engage GBO for short calculation on acceptable leak tightness relaxation</li>
         <li>Review Cryoworld proposed variants against updated leak specifications</li>
     </ol>
-    """, ""))
+    """,
+            "",
+        )
+    )
 
     return slides
 
@@ -1310,6 +1792,7 @@ def build_all_slides(mc_df, mc_stats, sensitivity, pca_result, scores, loadings,
 # ════════════════════════════════════════════════════════════════
 # MASTER HTML BUILDER
 # ════════════════════════════════════════════════════════════════
+
 
 def build_master_index(slides: list[str]) -> str:
     """Build the master slide navigator HTML."""
@@ -1320,6 +1803,7 @@ def build_master_index(slides: list[str]) -> str:
     for i in range(n):
         # Extract title from data-title attribute
         import re
+
         m = re.search(r'data-title="([^"]*)"', slides[i])
         title = m.group(1) if m else f"Slide {i+1}"
         selector_opts += f'<option value="{i}">{i+1}. {title}</option>\n'
@@ -1372,6 +1856,7 @@ def build_master_index(slides: list[str]) -> str:
 # ════════════════════════════════════════════════════════════════
 # STANDALONE DOCUMENT GENERATORS
 # ════════════════════════════════════════════════════════════════
+
 
 def build_fat_sat_procedures_md() -> str:
     """Generate FAT/SAT Procedures as Markdown."""
@@ -1516,6 +2001,7 @@ Calculate PS × V for each vessel and PS × DN for each piping run.
 # MAIN BUILD
 # ════════════════════════════════════════════════════════════════
 
+
 def build():
     """Build all OUTPUT_3 deliverables."""
     print("=" * 60)
@@ -1523,8 +2009,7 @@ def build():
     print("=" * 60)
 
     # Ensure directories
-    _ensure(STD_DOCS, STAT_DOCS, VIZ_DOCS, HE_DOCS, TABLE_DOCS,
-            DOCS / "data_exports")
+    _ensure(STD_DOCS, STAT_DOCS, VIZ_DOCS, HE_DOCS, TABLE_DOCS, DOCS / "data_exports")
 
     # ── 1. Generate Charts ──
     print("\n[1/6] Generating charts...")
@@ -1601,7 +2086,9 @@ def build():
 
     loadings.to_csv(TABLE_DOCS / "pca_loadings.csv")
     _write_json(STAT_DOCS / "pca_result.json", pca_result)
-    print(f"  ✓ PCA: {pca_result['cumulative_variance'][2]*100:.1f}% explained by PC1-3")
+    print(
+        f"  ✓ PCA: {pca_result['cumulative_variance'][2]*100:.1f}% explained by PC1-3"
+    )
 
     # ── 4. Correlation Matrix ──
     print("\n[4/6] Computing correlation matrix...")
@@ -1614,7 +2101,9 @@ def build():
 
     # ── 5. Build Slide Navigator ──
     print("\n[5/6] Building master slide navigator...")
-    slides = build_all_slides(mc_df, mc_stats, sensitivity, pca_result, scores, loadings, corr_matrix)
+    slides = build_all_slides(
+        mc_df, mc_stats, sensitivity, pca_result, scores, loadings, corr_matrix
+    )
     master_html = build_master_index(slides)
     _write(DOCS / "index_v3.html", master_html)
     print(f"  ✓ Master navigator: {len(slides)} slides → docs/index_v3.html")
@@ -1638,12 +2127,12 @@ def build():
 
     # Conversion grid export
     grid = build_conversion_grid(
-        [1e-9, 1e-8, 1e-7, 1e-6, 1e-5, 1e-4],
-        [4, 10, 20, 50, 80, 300],
-        [1, 5, 12]
+        [1e-9, 1e-8, 1e-7, 1e-6, 1e-5, 1e-4], [4, 10, 20, 50, 80, 300], [1, 5, 12]
     )
     grid.to_csv(DOCS / "data_exports" / "full_conversion_grid.csv", index=False)
-    grid.to_json(DOCS / "data_exports" / "full_conversion_grid.json", orient="records", indent=2)
+    grid.to_json(
+        DOCS / "data_exports" / "full_conversion_grid.json", orient="records", indent=2
+    )
 
     # Helium properties export
     he_data = _read_json(DATA / "helium_properties.json")
