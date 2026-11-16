@@ -51,7 +51,7 @@ concurrency:
 
 jobs:
   ci:
-    uses: GBOGEB/pipeline-automation-hub/.github/workflows/jade-reusable-ci.yml@897298dc3ed1a45607121b205617d4c103e7b226  # yamllint disable-line rule:line-length
+    uses: GBOGEB/pipeline-automation-hub/.github/workflows/jade-reusable-ci.yml@c8690058b0d0db55b67e5fa639bff2e4ea368e16  # yamllint disable-line rule:line-length
     with:
       python-version: '3.14'
       install: python -m pip install --disable-pip-version-check pytest
