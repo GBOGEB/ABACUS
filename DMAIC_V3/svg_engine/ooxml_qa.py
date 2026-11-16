@@ -88,37 +88,78 @@ def compare_with_oracle(adapter, oracle, tol_mm=0.05, tol_deg=0.01):
 
 
 def compare_w1_w2(w1_deck, w2_geometry, tol_mm=0.01):
-    """Regression: every object W1 (``enhanced_pptx``) positioned must sit where W2 (``analyse``) puts it."""
-    m2 = {
-        (o["slide"], o["native_id"]): o
-        for s in w2_geometry["slides"]
-        for o in s["objects"]
-    }
-    diffs, missing_geom, missing_w2 = [], 0, []
-    for s in w1_deck["slides"]:
-        for o in s["shapes"]:
-            if "geometry_mm_off" not in o:
-                missing_geom += 1
+    """W1 local-geometry versus W2 resolved-geometry regression (NOT a COM oracle).
+
+    W1 child offsets are in their parent-group coordinate systems. W2 child
+    coordinates are slide-absolute, so raw comparison is invalid. For top-level
+    objects, compare the unrotated centre and size; the rotated AABB is not the
+    source geometry. Excluded child records remain explicit, not false PASS.
+    """
+    if not 0 <= tol_mm < float("inf"):
+        raise ValueError("K2501_INVALID_GEOMETRY_TOLERANCE")
+    indexed = {}
+    duplicate_w2 = []
+    for slide in w2_geometry["slides"]:
+        for obj in slide["objects"]:
+            key = (slide["slide"], str(obj.get("native_id")))
+            if key in indexed:
+                duplicate_w2.append(key)
+            indexed[key] = obj
+
+    compared = []
+    missing_w2 = []
+    grouped = []
+    missing_geometry = []
+    missing_id = []
+    duplicate_w1 = []
+    seen = set()
+    for slide in w1_deck["slides"]:
+        for obj in slide["shapes"]:
+            native_id = obj.get("native_id")
+            if native_id is None:
+                missing_id.append([slide["number"], obj.get("name")])
                 continue
-            b = m2.get((s["number"], o["native_id"]))
-            if b is None or "abs_aabb_mm" not in b:
-                missing_w2.append([s["number"], o["native_id"]])
+            key = (slide["number"], str(native_id))
+            if key in seen:
+                duplicate_w1.append(key)
+            seen.add(key)
+            resolved = indexed.get(key)
+            if resolved is None:
+                missing_w2.append(key)
                 continue
-            box = b["abs_aabb_mm"]
-            diffs.append(
-                max(
-                    abs(o["geometry_mm_off"]["x"] - box["left"]),
-                    abs(o["geometry_mm_off"]["y"] - box["top"]),
-                    abs(o["geometry_mm_ext"]["cx"] - (box["right"] - box["left"])),
-                )
+            if obj.get("parent_group_ids"):
+                grouped.append(key)
+                continue
+            xy = obj.get("geometry_mm_off") or {}
+            wh = obj.get("geometry_mm_ext") or {}
+            centre = resolved.get("abs_centre_mm")
+            size = resolved.get("abs_size_mm")
+            if not all(k in xy for k in ("x", "y")) or not all(k in wh for k in ("cx", "cy")) or centre is None or size is None:
+                missing_geometry.append(key)
+                continue
+            xcentre, ycentre = xy["x"] + wh["cx"] / 2, xy["y"] + wh["cy"] / 2
+            delta = max(
+                abs(xcentre - centre[0]), abs(ycentre - centre[1]),
+                abs(wh["cx"] - size[0]), abs(wh["cy"] - size[1]),
             )
-    worst = max(diffs, default=0.0)
+            compared.append({"slide": key[0], "native_id": key[1], "delta_mm": round(delta, 4)})
+
+    worst = max((r["delta_mm"] for r in compared), default=0.0)
+    failed = bool(missing_w2 or missing_id or duplicate_w1 or duplicate_w2 or worst > tol_mm)
     return {
         "w1_objects": sum(len(s["shapes"]) for s in w1_deck["slides"]),
         "w2_objects": w2_geometry["object_count"],
-        "compared": len(diffs),
+        "compared": len(compared),
         "max_abs_diff_mm": round(worst, 4),
-        "w1_objects_without_geometry": missing_geom,
+        "compared_objects": compared,
+        "w1_objects_without_geometry": len(missing_geometry),
+        "without_geometry_keys": missing_geometry,
+        "grouped_local_space_excluded": grouped,
         "missing_in_w2": missing_w2,
-        "result": "PASS" if worst <= tol_mm and not missing_w2 else "FAIL",
+        "missing_native_ids": missing_id,
+        "duplicate_w1_keys": duplicate_w1,
+        "duplicate_w2_keys": duplicate_w2,
+        "comparison_basis": "TOP_LEVEL_CENTRE_UNROTATED_SIZE",
+        "full_deck_parity": "DEFER_COM_ORACLE_REQUIRED" if grouped or missing_geometry else "TOP_LEVEL_ONLY",
+        "result": "FAIL" if failed else ("DEFER" if not compared else "PASS"),
     }
