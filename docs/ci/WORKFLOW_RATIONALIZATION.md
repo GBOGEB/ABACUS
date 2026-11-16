@@ -4,7 +4,7 @@
 
 Policy: `ABACUS-CI-SSOT-001`
 
-Policy SHA-256 (canonical sorted JSON bytes of `ci/governance/workflow_policy.json`): `366a7587c1b33fc9431aa840f964c4179d5f1cb4ee5c01aff61ecdccc0c4d755`
+Policy SHA-256 (canonical sorted JSON bytes of `ci/governance/workflow_policy.json`): `67e311721bf897fd937903af9a550ceaa9bbdd478d142aac8b0f26a387298228`
 
 ## Outcome
 
@@ -105,7 +105,6 @@ Make PR-triggered workflows with write-class GitHub token scopes explicit and re
 | 20 | `pr_domain` | `core_test` | `cbd-e2e-graph-contract.yml` | pull_request, workflow_dispatch | 1 | `keep` | — |
 | 20 | `pr_domain` | `core_test` | `cbd-w6c-office-style-qa.yml` | pull_request | 1 | `keep` | — |
 | 20 | `pr_domain` | `core_test` | `floating-reconnection-testflight.yml` | workflow_dispatch, push, pull_request, schedule | 1 | `keep` | — |
-| 20 | `pr_domain` | `core_test` | `g3a-n14-phase4-import.yml` | pull_request, workflow_dispatch | 1 | `keep` | — |
 | 20 | `pr_domain` | `core_test` | `g3a-n15-python-matrix.yml` | pull_request, workflow_dispatch | 1 | `keep` | — |
 | 20 | `pr_domain` | `core_test` | `mip-w1-python-dependency-qa.yml` | pull_request | 1 | `keep` | — |
 | 20 | `pr_domain` | `core_test` | `mip-wave-pulse-testflight.yml` | pull_request, workflow_dispatch | 1 | `keep` | — |
@@ -129,7 +128,7 @@ Make PR-triggered workflows with write-class GitHub token scopes explicit and re
 | 20 | `pr_domain` | `dow` | `dow-monitoring.yml` | push, schedule, workflow_dispatch | 1 | `keep` | — |
 | 20 | `pr_domain` | `dow` | `dow-remaining-gates-telemetry.yml` | pull_request, workflow_dispatch, schedule | 1 | `keep` | — |
 | 20 | `pr_domain` | `dow` | `dow-scheduled.yml` | schedule, workflow_dispatch | 1 | `keep` | — |
-| 20 | `pr_domain` | `dow` | `dow-sprint6-cicd.yml` | push, workflow_dispatch | 7 | `keep` | — |
+| 20 | `pr_domain` | `dow` | `dow-sprint6-cicd.yml` | push, workflow_dispatch | 8 | `keep` | — |
 | 20 | `pr_domain` | `dow` | `dow-w1-coverage-contract-qa.yml` | pull_request | 1 | `keep` | — |
 | 20 | `pr_domain` | `dow` | `gg-math-temporal-pca-exact-live-dow.yml` | pull_request, workflow_dispatch | 1 | `keep` | — |
 | 20 | `pr_domain` | `dow` | `qps-debug-dow-consumer.yml` | pull_request, workflow_dispatch, repository_dispatch | 2 | `keep` | — |
@@ -284,6 +283,7 @@ Make PR-triggered workflows with write-class GitHub token scopes explicit and re
 | 50 | `manual` | `bridge_federation` | `abacus-missioncontrol-stage-only.yml` | workflow_dispatch | 1 | `keep` | — |
 | 50 | `manual` | `bridge_federation` | `qps-metric-census-receiver.yml` | workflow_dispatch | 2 | `keep` | — |
 | 50 | `manual` | `core_test` | `code-purple-quality-ratchet-proof.yml` | push, workflow_dispatch | 1 | `keep` | — |
+| 50 | `manual` | `core_test` | `g3a-n14-phase4-import.yml` | workflow_dispatch | 1 | `keep` | `W16 epoch via g3a-n15-python-matrix.yml (N14 is a source-bound manual replay)` |
 | 50 | `manual` | `legacy` | `ci.yml` | workflow_dispatch | 3 | `consolidate` | `bridge-ci.yml` |
 | 50 | `manual` | `specialised` | `ldab-scale-fanout.yml` | workflow_dispatch | 3 | `keep` | — |
 | 90 | `retire` | `legacy` | `ci-codex.yml` | workflow_dispatch | 1 | `retire` | `CODEX/.github workflows via versioned manifest; no ABACUS-to-CODEX dispatch` |

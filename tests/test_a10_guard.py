@@ -187,3 +187,132 @@ def test_main_head_and_diff_modes(repo, monkeypatch, capsys):
     assert _run(monkeypatch, "--diff", "0" * 40) == 1
     assert "not usable" in capsys.readouterr().out
     assert _run(monkeypatch, "--diff", "f" * 40) == 1
+
+
+# --- merge commits (#2698): only what differs from the merged-in parent ------
+# Reuses _git (no new subprocess calls); a conflicting merge exits non-zero.
+
+
+def _two_branches(repo):
+    _git(repo, "branch", "-M", "trunk")
+    _git(repo, "checkout", "-qb", "pr")
+
+
+def test_merge_bringing_main_only_file_commits_clean(repo, monkeypatch, capsys):
+    _two_branches(repo)
+    (repo / "pr.md").write_text("pr work\n")
+    _git(repo, "add", "pr.md")
+    _git(repo, "commit", "-qm", "pr")
+    _git(repo, "checkout", "-q", "trunk")
+    # Already on main (e.g. landed through a reviewed path); the PR never touched it.
+    (repo / "myrrha_handover").mkdir()
+    (repo / "myrrha_handover" / "render_all.py").write_text("print(1)\n")
+    _git(repo, "add", ".")
+    _git(repo, "commit", "-qm", "main moves on")
+    _git(repo, "checkout", "-q", "pr")
+    _git(repo, "merge", "--no-commit", "--no-ff", "trunk")
+    assert _run(monkeypatch, "--staged") == 0
+    assert "OK (1 files checked)" in capsys.readouterr().out
+
+
+def test_merge_conflict_resolution_with_term_is_blocked(repo, monkeypatch, capsys):
+    _two_branches(repo)
+    (repo / "README.md").write_text("pr side\n")
+    _git(repo, "commit", "-qam", "pr")
+    _git(repo, "checkout", "-q", "trunk")
+    (repo / "README.md").write_text("main side\n")
+    _git(repo, "commit", "-qam", "main")
+    _git(repo, "checkout", "-q", "pr")
+    with pytest.raises(guard.subprocess.CalledProcessError):
+        _git(repo, "merge", "--no-commit", "--no-ff", "trunk")  # conflict
+    (repo / "README.md").write_text("resolved with zebra quokka\n")
+    _git(repo, "add", "README.md")
+    assert _run(monkeypatch, "--staged") == 1
+    assert "BLOCK  README.md" in capsys.readouterr().out
+
+
+def test_large_merge_finishes_quickly(repo, monkeypatch, capsys):
+    import time
+
+    _two_branches(repo)
+    (repo / "pr").mkdir()
+    for i in range(1000):
+        (repo / "pr" / f"f{i}.md").write_text(f"pr file {i}\n")
+    (repo / "pr" / "f999.md").write_text("zebra quokka\n")
+    _git(repo, "add", ".")
+    _git(repo, "commit", "-qm", "pr")
+    _git(repo, "checkout", "-q", "trunk")
+    (repo / "main").mkdir()
+    for i in range(1000):
+        (repo / "main" / f"f{i}.md").write_text(f"main file {i}\n")
+    _git(repo, "add", ".")
+    _git(repo, "commit", "-qm", "main")
+    _git(repo, "checkout", "-q", "pr")
+    _git(repo, "merge", "--no-commit", "--no-ff", "trunk")
+    start = time.monotonic()
+    # The PR side (1000 files) is read in archive chunks; main's 1000 are skipped.
+    assert _run(monkeypatch, "--staged") == 1
+    assert time.monotonic() - start < 60
+    out = capsys.readouterr().out
+    assert "BLOCK  pr/f999.md" in out
+    assert "1 file(s) look like tender material" in out
+    start = time.monotonic()
+    assert _run(monkeypatch, "--head") == 1
+    assert time.monotonic() - start < 60
+
+
+def test_export_attributes_cannot_hide_content(repo, monkeypatch, capsys):
+    (repo / ".gitattributes").write_text(
+        "hidden.md export-ignore\nsubst.md export-subst\n"
+    )
+    (repo / "hidden.md").write_text("zebra quokka\n")
+    # The raw blob carries the term; the guard scans the blob, not the export view.
+    (repo / "subst.md").write_text("zebra quokka $Format:%H$\n")
+    _git(repo, "add", ".")
+    assert _run(monkeypatch, "--staged") == 1
+    out = capsys.readouterr().out
+    assert "BLOCK  hidden.md" in out
+    assert "BLOCK  subst.md" in out
+    assert "2 file(s) look like tender material" in out
+
+
+def test_read_blobs_returns_raw_blob_when_archive_rewrites_it(repo):
+    # git archive applies export-subst from the archived commit even with --attr-source
+    # (seen on git 2.43); the reader must hand back the exact staged blob, not the export.
+    (repo / ".gitattributes").write_text("subst.md export-subst\n")
+    raw = b"zebra $Format:%H$ quokka\n"
+    (repo / "subst.md").write_bytes(raw)
+    _git(repo, "add", ".")
+    _git(repo, "commit", "-qm", "subst")
+    import subprocess  # nosec B404
+
+    bid = subprocess.run(  # nosec B603 B607
+        ["git", "-C", str(repo), "rev-parse", "HEAD:subst.md"],
+        check=True,
+        capture_output=True,
+        text=True,
+    ).stdout.strip()
+    assert guard.blob_id(raw, bid) == bid
+    assert list(guard.read_blobs("HEAD", [("subst.md", bid)])) == [raw]
+
+
+def test_blob_id_follows_hash_family():
+    assert guard.blob_id(b"", "0" * 40) == "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
+    assert len(guard.blob_id(b"", "0" * 64)) == 64
+
+
+def test_octopus_merge_skips_files_from_any_parent(repo, monkeypatch, capsys):
+    _two_branches(repo)
+    (repo / "pr.md").write_text("pr work\n")
+    _git(repo, "add", "pr.md")
+    _git(repo, "commit", "-qm", "pr")
+    for name in ("one", "two"):
+        _git(repo, "checkout", "-qb", name, "trunk")
+        (repo / "offers_itt").mkdir(exist_ok=True)
+        (repo / "offers_itt" / f"{name}.md").write_text("reviewed\n")
+        _git(repo, "add", ".")
+        _git(repo, "commit", "-qm", name)
+    _git(repo, "checkout", "-q", "pr")
+    _git(repo, "merge", "--no-commit", "--no-ff", "one", "two")
+    assert _run(monkeypatch, "--staged") == 0
+    assert "OK (1 files checked)" in capsys.readouterr().out
