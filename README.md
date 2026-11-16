@@ -163,14 +163,15 @@ PR checks run on **Python 3.14** ([`.python-version`](.python-version), *Enhance
 ```bash
 git clone https://github.com/GBOGEB/ABACUS.git
 cd ABACUS
-python -m pip install -r requirements.txt -r requirements-test.txt
+python -m pip install -r requirements-dev.txt   # as the Enhanced CI test job does
 python -m pip install -e .
+python -m pip install pytest pytest-cov pytest-benchmark pytest-xdist
 make test                      # pytest DMAIC_V3/tests -q
 python -m pytest -q            # testpaths from pytest.ini: tests, DMAIC_V3/tests
-python tools/a10_guard.py --help
+python tools/a10_guard.py --staged    # pre-commit mode: checks staged files only
 ```
 
-Local runs are a development path, not native CI. Exact-head evidence lives in [Actions](https://github.com/GBOGEB/ABACUS/actions) on the PR's final commit.
+Do not combine `requirements.txt` with `requirements-test.txt`: their `pytest-asyncio` pins conflict on Python ≥ 3.10. `a10_guard.py` has no `--help`; without `--staged` or `--diff BASE` it scans every tracked blob. Local runs are a development path, not native CI. Exact-head evidence lives in [Actions](https://github.com/GBOGEB/ABACUS/actions) on the PR's final commit.
 
 ## 8. Evidence rules and non-compensation
 
