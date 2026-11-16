@@ -17,6 +17,7 @@ from pathlib import Path
 _SHA_RX = re.compile(r"[0-9a-f]{40}|[0-9a-f]{64}")
 _BUNDLE_SIGNATURES = (b"# v2 git bundle\n", b"# v3 git bundle\n")
 _MAX_HEADER_LINES = 100_000
+_MAX_HEADER_BYTES = 1 << 20  # a real header is a few KiB; never scan more than 1 MiB of one
 
 
 def find_repo(start: Path) -> tuple[Path, Path] | None:
@@ -167,18 +168,27 @@ def tracked_paths(start: Path) -> set[str] | None:
 
 
 def bundle_heads(path: Path, limit: int = 20) -> list[str]:
-    """The ref lines ("<id> <refname>") of a git bundle header, like ``git bundle list-heads``; [] if not a bundle."""
+    """The ref lines ("<id> <refname>") of a git bundle header, like ``git bundle list-heads``; [] if not a bundle.
+
+    Reading stops once ``limit`` heads are found. A header that runs past _MAX_HEADER_BYTES before its terminating
+    blank line is not understood and gives [] (unknown), so an arbitrary file costs at most about 1 MiB of reading.
+    """
     out: list[str] = []
     with Path(path).open("rb") as fh:
         if fh.readline(64) not in _BUNDLE_SIGNATURES:
             return out
+        budget = _MAX_HEADER_BYTES
         for _ in range(_MAX_HEADER_LINES):
-            line = fh.readline(4096)
+            line = fh.readline(min(4096, budget))
             if line in (b"\n", b""):
-                break  # the blank line ends the header; the pack follows
+                return out  # the blank line ends the header; the pack follows
+            budget -= len(line)
+            if budget <= 0:
+                return []
             text = line.decode("utf-8", "replace").rstrip("\n")
             if text.startswith(("-", "@")):
                 continue  # prerequisites (-) and v3 capabilities (@) are not heads
-            if len(out) < limit:
-                out.append(text)
-    return out
+            out.append(text)
+            if len(out) >= limit:
+                return out
+    return []

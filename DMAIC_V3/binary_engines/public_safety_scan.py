@@ -22,12 +22,16 @@ from estate_spec import CODE_DIR, CONFIG, CONFIG_IS_EXAMPLE, ESTATE  # noqa: E40
 
 EST = ESTATE
 # The marker list is private: it comes from the configuration, so this scanner names nothing itself.
-_words = [str(w) for w in CONFIG.get("private_markers") or []]
-MARKERS = (
-    re.compile(r"(?i)\b(" + "|".join(_words) + r")\b")
-    if _words
-    else re.compile(r"(?!x)x")
-)
+def marker_pattern(markers) -> re.Pattern:
+    """Whole-word, case-blind match of the private markers. Markers are literal words, never patterns: each is
+    escaped, and blanks are dropped (an empty alternative would match everywhere). No markers matches nothing."""
+    words = [str(w) for w in markers or [] if str(w).strip()]
+    if not words:
+        return re.compile(r"(?!x)x")
+    return re.compile(r"(?i)\b(" + "|".join(re.escape(w) for w in words) + r")\b")
+
+
+MARKERS = marker_pattern(CONFIG.get("private_markers"))
 USER_PATH = re.compile(
     r"(?i)[A-Z]:[\\/]+Users[\\/]+\w+|One"
     r"Drive -[ ]|C:[\\/]+DEV[\\/]+REPOS|C:[\\/]+repos[\\/]"
@@ -38,12 +42,18 @@ SECRET = re.compile(
 
 
 def fstring_312_only(src: str) -> list[int]:
-    """Lines whose f-string replacement fields contain a backslash: valid on 3.12+, a SyntaxError on 3.11."""
+    """Lines whose f-string replacement fields contain a backslash: valid on 3.12+, a SyntaxError on 3.11.
+
+    Source that does not tokenize cannot be cleared: its failing line (or line 1) is reported, so the scan HOLDs.
+    """
     bad = []
     try:
         toks = list(tokenize.generate_tokens(io.StringIO(src).readline))
-    except (tokenize.TokenError, SyntaxError):
-        return bad
+    except tokenize.TokenError as exc:
+        pos = exc.args[1] if len(exc.args) > 1 else None
+        return [max(1, pos[0]) if isinstance(pos, tuple) and pos else 1]
+    except SyntaxError as exc:
+        return [max(1, exc.lineno or 1)]
     for t in toks:
         name = tokenize.tok_name.get(t.type, "")
         if name == "FSTRING_MIDDLE":

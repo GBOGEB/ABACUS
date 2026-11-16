@@ -85,14 +85,16 @@ def classify(
     each row's own ``family_tip``; a row without either counts as a tip.
     """
     rows = list(rows)
+
+    def sha(r: Mapping) -> str:
+        return str(r.get("sha256") or "").lower()  # load_pins keys are lower case
+
     pinned_families = {
-        (r["type"], r["family"])
-        for r in rows
-        if r.get("sha256") and r["sha256"] in pins
+        (r["type"], r["family"]) for r in rows if sha(r) and sha(r) in pins
     }
     out = []
     for r in rows:
-        where = list(pins.get(r["sha256"], [])) if r.get("sha256") else []
+        where = list(pins.get(sha(r), [])) if sha(r) else []
         canonical = [w for w in where if not CUSTODY_RX.search(w)]
         tip = (
             row_key(r) in family_tips

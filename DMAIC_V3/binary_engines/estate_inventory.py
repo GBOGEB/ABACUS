@@ -15,6 +15,7 @@ import hashlib
 import json
 import os
 import re
+import stat
 import sys
 import tarfile
 import zipfile
@@ -102,6 +103,17 @@ def _is_link(e: os.DirEntry) -> bool:
     )  # FILE_ATTRIBUTE_REPARSE_POINT
 
 
+def _path_is_link(path: str | os.PathLike) -> bool:
+    """_is_link for a path inside a walk: symlinks and directory junctions; unreadable entries count as links."""
+    try:
+        st = os.lstat(path)
+    except OSError:
+        return True
+    return stat.S_ISLNK(st.st_mode) or bool(
+        stat.S_ISDIR(st.st_mode) and getattr(st, "st_file_attributes", 0) & 0x400
+    )
+
+
 def estate_files(root: Path, entries: list):
     """Files the estate owns: every file at the top level, plus files inside the GG_* folders the estate itself created when
     it grouped them (so grouped files keep their identity, family and truth status). Other folders are never entered; links
@@ -118,12 +130,17 @@ def estate_files(root: Path, entries: list):
         ):
             for dp, dns, fns in os.walk(e.path, followlinks=False):
                 dns[:] = sorted(
-                    d for d in dns if not os.path.islink(os.path.join(dp, d))
+                    d for d in dns if not _path_is_link(os.path.join(dp, d))
                 )
                 for fn in sorted(fns):
                     ap = Path(dp) / fn
-                    if not ap.is_symlink():
-                        yield ap.relative_to(root).as_posix(), ap, ap.stat(), "grouped"
+                    if not _path_is_link(ap):
+                        yield (
+                            ap.relative_to(root).as_posix(),
+                            ap,
+                            ap.stat(follow_symlinks=False),
+                            "grouped",
+                        )
 
 
 def family_stem(name: str) -> str:
