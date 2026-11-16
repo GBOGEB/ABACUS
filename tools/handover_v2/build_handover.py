@@ -854,7 +854,7 @@ def build(args):
     out = Path(args.out).resolve()
     script_dir = Path(__file__).resolve().parent
     s = json.loads(input_path.read_bytes())
-    parent_s = None
+    parent_s = parent_m = None
     if args.previous:
         parent_s, parent_m = capsule_verify(Path(args.previous))
         if (
