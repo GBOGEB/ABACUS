@@ -11,7 +11,7 @@ markdown>=3.3.0,<3.11; python_version < '3.11'
 markdown>=3.11; python_version >= '3.11'
 
 # PDF handling
-PyPDF2>=3.9.0  # OSV BD-24: PYSEC-2026-1835 fixed in 3.9.0
+pypdf>=3.9.0  # OSV BD-24: migrated from PyPDF2; PYSEC-2026-1835 fixed
 reportlab>=5.0.1
 
 # Image handling (transitive via python-docx / python-pptx / reportlab).
