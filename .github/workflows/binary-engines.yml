@@ -24,7 +24,7 @@ concurrency:
   cancel-in-progress: true
 
 env:
-  # The gg_MATH commit the kernel pins come from (DMAIC_V3/binary_engines/ggmath_bridge.py PINS).
+  # gg_MATH source commit pinned in ggmath_bridge.py PINS.
   # test_binary_engines_ggmath_bridge keeps this value and the pins equal.
   GG_MATH_COMMIT: 198ec510dc0b929c28fee41c29ab3f9da8affada
 
@@ -45,12 +45,12 @@ jobs:
           path: _gg_math
           persist-credentials: false
       # yamllint disable-line rule:line-length
-      - uses: actions/setup-python@6d4fd22b20465ccc0f7354476588e8df7c9ca0e0  # v7
+      - uses: actions/setup-python@6d4fd22b20465ccc0f7354476588e8df7c9ca0e0 # v7
         with:
           python-version: "3.14"
       - name: Install engine dependencies
         run: python -m pip install -r requirements-binary-engines.txt
-      - name: Run engine tests (missing dependencies and skips are failures here)
+      - name: Run engine tests (missing deps or skips fail)
         env:
           BINARY_ENGINES_REQUIRE_DEPS: "1"
           BINARY_ENGINES_TEST_HOME: ${{ runner.temp }}/estate_test
@@ -65,5 +65,8 @@ jobs:
           $out = & ./DMAIC_V3/binary_engines/Invoke-EstateMove.ps1 -RootId SMOKE
           $out
           if (-not ($out -match '^DRY RUN: ')) { throw 'no dry-run summary' }
-          $files = (Get-ChildItem -File (Join-Path $env:ESTATE_HOME 'fixtures/smoke_root')).Count
-          if ($files -ne 12) { throw "the dry run changed the fixture: $files files" }
+          $fixture = Join-Path $env:ESTATE_HOME 'fixtures/smoke_root'
+          $files = (Get-ChildItem -File $fixture).Count
+          if ($files -ne 12) {
+            throw "the dry run changed the fixture: $files files"
+          }
