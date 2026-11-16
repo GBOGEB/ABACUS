@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import hashlib
+import json
 import os
 import shutil
 import struct
@@ -121,6 +122,22 @@ class Synthetic(unittest.TestCase):
         self.assertEqual(self.gr.bundle_heads(not_bundle), [])
 
 
+def _event_shas() -> set[str]:
+    """The commits this Actions run may legitimately have checked out.
+
+    GITHUB_SHA is the test merge commit on pull_request events, while exact-head workflows check out the PR head
+    (pull_request.head.sha in the event payload). Either is a valid checkout; any other HEAD is not.
+    """
+    shas = {os.environ["GITHUB_SHA"]}
+    event = os.environ.get("GITHUB_EVENT_PATH")
+    if os.environ.get("GITHUB_EVENT_NAME", "").startswith("pull_request") and event:
+        with open(event, encoding="utf-8") as handle:
+            head = json.load(handle).get("pull_request", {}).get("head", {}).get("sha")
+        if head:
+            shas.add(head)
+    return shas
+
+
 class ThisCheckout(unittest.TestCase):
     def test_reads_the_repository_under_test(self):
         gr = _env.engine("git_readonly")
@@ -129,7 +146,7 @@ class ThisCheckout(unittest.TestCase):
         head = gr.head(_env.REPO)
         self.assertRegex(head, r"^([0-9a-f]{40}|[0-9a-f]{64})$")
         if os.environ.get("GITHUB_ACTIONS") == "true" and os.environ.get("GITHUB_SHA"):
-            self.assertEqual(head, os.environ["GITHUB_SHA"])
+            self.assertIn(head, _event_shas())
         tracked = gr.tracked_paths(_env.REPO)
         self.assertIn("pytest.ini", tracked)
         self.assertIn("DMAIC_V3/tools/dow_engine.py", tracked)

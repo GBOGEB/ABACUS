@@ -25,6 +25,7 @@ class SheetState(unittest.TestCase):
         )
 
 
+@_env.gated(kernels=True)
 class EqualTimestamps(unittest.TestCase):
     @classmethod
     def setUpClass(cls):

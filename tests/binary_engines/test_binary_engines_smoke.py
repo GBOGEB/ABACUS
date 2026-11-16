@@ -36,6 +36,7 @@ def _jsonl(path):
     ]
 
 
+@_env.gated(*_env.DEPS, kernels=True)
 class Smoke(unittest.TestCase):
     @classmethod
     def setUpClass(cls):

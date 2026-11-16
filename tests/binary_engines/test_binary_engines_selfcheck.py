@@ -17,6 +17,7 @@ from pathlib import Path
 from tests.binary_engines import _env
 
 
+@_env.gated("yaml")
 class CodeAndData(unittest.TestCase):
     def setUp(self):
         _env.require("yaml")
@@ -72,6 +73,7 @@ class CodeAndData(unittest.TestCase):
         )
 
 
+@_env.gated("yaml")
 class Structure(unittest.TestCase):
     def setUp(self):
         _env.require("yaml")
@@ -133,6 +135,7 @@ class Structure(unittest.TestCase):
                 self.assertEqual(statuses - allowed, set())
 
 
+@_env.gated("yaml")
 class Code(unittest.TestCase):
     def test_every_engine_compiles_and_is_311_safe(self):
         _env.require("yaml")
@@ -185,6 +188,7 @@ class Code(unittest.TestCase):
         self.assertEqual(template["accepted"], [])
 
 
+@_env.gated("yaml")
 class PublicSafetyScan(unittest.TestCase):
     def setUp(self):
         _env.require("yaml")

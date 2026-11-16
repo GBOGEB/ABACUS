@@ -160,6 +160,7 @@ class PinMap(unittest.TestCase):
         )
 
 
+@_env.gated("yaml")
 class Cli(unittest.TestCase):
     def setUp(self):
         _env.require("yaml")

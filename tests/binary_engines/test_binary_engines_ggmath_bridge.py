@@ -24,6 +24,7 @@ def _pin(data: bytes, bridge) -> dict:
     }
 
 
+@_env.gated("yaml")
 class Pins(unittest.TestCase):
     def setUp(self):
         _env.require("yaml")
@@ -54,6 +55,7 @@ class Pins(unittest.TestCase):
         )
 
 
+@_env.gated("yaml")
 class Loading(unittest.TestCase):
     def setUp(self):
         _env.require("yaml")
@@ -126,6 +128,7 @@ class Loading(unittest.TestCase):
             self.bridge.kernel_bytes("not_a_kernel")
 
 
+@_env.gated(kernels=True)
 class RealKernels(unittest.TestCase):
     def test_pinned_kernels_load_and_compute(self):
         _env.require_kernels()

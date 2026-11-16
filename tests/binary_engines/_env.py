@@ -73,6 +73,46 @@ def require_kernels() -> None:
             _gate(str(exc))
 
 
+def blocker(*modules: str, kernels: bool = False) -> str | None:
+    """The governed blocking state that would skip a test needing these modules (and kernels), or None.
+
+    Probes only; never skips or fails. A missing module wins over missing kernels, so the result is exactly one state.
+    """
+    if any(importlib.util.find_spec(m) is None for m in modules):
+        return "TEST_BLOCKED_DEPENDENCY"
+    if kernels:
+        if importlib.util.find_spec("yaml") is None:
+            return "TEST_BLOCKED_DEPENDENCY"
+        import ggmath_bridge
+
+        for name in ggmath_bridge.PINS:
+            try:
+                ggmath_bridge.kernel_bytes(name)
+            except ggmath_bridge.KernelPinError:
+                return "TEST_BLOCKED_SOURCE_MISSING"
+    return None
+
+
+def gated(*modules: str, kernels: bool = False):
+    """Class decorator: give a gated test class the governed marker of its *actual* blocker.
+
+    The canonical pytest run (--govern-test-states) fails any skip without exactly one blocking marker. A class whose
+    requirements are all available is left unmarked, so an available test is never reported as blocked.
+    """
+
+    def apply(cls):
+        state = blocker(*modules, kernels=kernels)
+        if state is None:
+            return cls
+        try:
+            import pytest
+        except ImportError:
+            return cls
+        return getattr(pytest.mark, state)(cls)
+
+    return apply
+
+
 def engine(name: str):
     """Import an engine module by name (they are scripts in CODE that import each other by bare name)."""
     return importlib.import_module(name)

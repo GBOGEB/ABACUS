@@ -198,35 +198,30 @@ probes, `light` hashes but does not probe.
 
 The readers report what is drawn, not what it means.
 
-*  An edge is `bound` when the file attaches both ends, `geometric` when each
-  end lands on a shape, `half` or
-  `unresolved` otherwise. Its evidence is `FILE_CONNECTED`, `GEOMETRIC_TOUCH`,
-  `PARTIAL` or `NONE`.
-*  An arrowhead gives a drawn direction, not a flow. A short arrow drawn on a
-  line (a flow marker) gives that line its
-  direction.
-*  An edge's `semantic_type` stays `DEFER` unless an in-drawing legend or an
-  owner-accepted rule types its style. A
-  dashed line or a colour means nothing by itself. A legend entry must be a
-  short label next to a symbol; a style
-  that a legend maps to two meanings stays `DEFER`.
-*  An end floating inside a large container is not attached; it must touch the
+- An edge is `bound` when the file attaches both ends, `geometric` when each end
+  lands on a shape, `half` or `unresolved` otherwise. Its evidence is
+  `FILE_CONNECTED`, `GEOMETRIC_TOUCH`, `PARTIAL` or `NONE`.
+- An arrowhead gives a drawn direction, not a flow. A short arrow drawn on a
+  line (a flow marker) gives that line its direction.
+- An edge's `semantic_type` stays `DEFER` unless an in-drawing legend or an
+  owner-accepted rule types its style. A dashed line or a colour means nothing
+  by itself. A legend entry must be a short label next to a symbol; a style that
+  a legend maps to two meanings stays `DEFER`.
+- An end floating inside a large container is not attached; it must touch the
   container's border.
-*  A raster image wrapped in SVG is flagged, not read as vectors. Unsupported
+- A raster image wrapped in SVG is flagged, not read as vectors. Unsupported
   files are reported, never guessed.
-*  `UNKNOWN` is never `PASS`. Reference tests without an answer key, crosswalk
-  or reviewed pilot labels report `DEFER`.
+- `UNKNOWN` is never `PASS`. Reference tests without an answer key, crosswalk or
+  reviewed pilot labels report `DEFER`.
 
 ## Mycelium and golden thread
 
 Two levels of links, and one rule for moving up:
 
-*  **Mycelium**: `deep/keb_candidates.jsonl`, every candidate link with its
-  evidence. Regenerated on each read.
-  Nothing in it is accepted.
-*  **Golden thread**: `GOLDEN_THREAD.jsonl` in `ESTATE_HOME`, accepted links
-  only. Append-only, never regenerated,
-  never written by a reader.
+- **Mycelium**: `deep/keb_candidates.jsonl`, every candidate link with its
+  evidence. Regenerated on each read. Nothing in it is accepted.
+- **Golden thread**: `GOLDEN_THREAD.jsonl` in `ESTATE_HOME`, accepted links
+  only. Append-only, never regenerated, never written by a reader.
 
 `thread_promote.py promote <locator> --authority <who> --evidence <where>
 --relation <type>` moves a candidate up.

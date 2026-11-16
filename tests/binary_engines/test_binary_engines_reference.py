@@ -30,6 +30,7 @@ def _sha(path):
     return hashlib.sha256(path.read_bytes()).hexdigest()
 
 
+@_env.gated("yaml", "lxml", kernels=True)
 class Adversarial(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
@@ -105,6 +106,7 @@ class Adversarial(unittest.TestCase):
         self.assertEqual(len(attached), 1, "an end on the container border is attached")
 
 
+@_env.gated(*_env.DEPS, kernels=True)
 class ReadOnly(unittest.TestCase):
     def test_r4_readers_and_probes_change_nothing(self):
         _env.require(*_env.DEPS)
@@ -135,6 +137,7 @@ class ReadOnly(unittest.TestCase):
         self.assertEqual(before, after)
 
 
+@_env.gated("yaml", "lxml", kernels=True)
 class Unconfigured(unittest.TestCase):
     def test_r1_r2_r5_defer_without_references(self):
         _env.require("yaml", "lxml")
@@ -231,6 +234,7 @@ def _fixtures_png() -> bytes:
     )
 
 
+@_env.gated("yaml")
 class Promotion(unittest.TestCase):
     """thread_promote: a mycelium candidate reaches the golden thread only with authority, evidence and a typed relation."""
 

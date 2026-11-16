@@ -18,6 +18,7 @@ WORDS = (
 )
 
 
+@_env.gated(*_env.DEPS, kernels=True)
 class DecksAndDrawings(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
@@ -120,32 +121,8 @@ class DecksAndDrawings(unittest.TestCase):
         self.assertTrue((_env.HOME / "deep" / "DEEP_SUMMARY_MI.json").is_file())
 
 
-# Canonical pytest has a fail-closed skipped-test taxonomy.  Under the
-# standalone unittest binary-engines workflow, missing prerequisites are
-# failures (BINARY_ENGINES_REQUIRE_DEPS=1); no pytest dependency is required.
-# When pytest collects the shared corpus without all optional binary-engine
-# dependencies or source-pinned gg_MATH kernels, report the *actual* blocker
-# rather than an unclassified skip.  Do not mark available tests as blocked.
-def _classify_pytest_setup_blocker() -> None:
-    try:
-        import pytest
-    except ImportError:
-        return
-    import importlib.util
-
-    missing = [name for name in _env.DEPS if importlib.util.find_spec(name) is None]
-    global DecksAndDrawings
-    if missing:
-        DecksAndDrawings = pytest.mark.TEST_BLOCKED_DEPENDENCY(DecksAndDrawings)
-        return
-    try:
-        _env.require_kernels()
-    except unittest.SkipTest:
-        DecksAndDrawings = pytest.mark.TEST_BLOCKED_SOURCE_MISSING(DecksAndDrawings)
-
-
-_classify_pytest_setup_blocker()
-
-
+# Canonical pytest has a fail-closed skipped-test taxonomy (_env.gated marks the
+# actual blocker).  Under the standalone unittest binary-engines workflow, missing
+# prerequisites are failures (BINARY_ENGINES_REQUIRE_DEPS=1); no pytest is required.
 if __name__ == "__main__":
     unittest.main()
