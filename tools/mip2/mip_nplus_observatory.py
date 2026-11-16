@@ -272,7 +272,7 @@ def as_markdown(r):
     lines = [
         "# CODE PURPLE N+i — native CI cohort observatory",
         "",
-        "Distinct main-SHA push-run populations; **not matched coverage or "
+        "Distinct main-SHA push-run populations; **not matched coverage or " +
         "engineering-root closures**.",
         "",
         "| Wave | SHA | Runs | Families | Repeat extras | Extra green repeats | Green families | Success | Failed | Cancelled | Open | Success/all | Terminal/all |",
