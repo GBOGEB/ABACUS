@@ -328,7 +328,7 @@ def as_markdown(r):
             f"Read-only lane proposal: "
             f"{r['scaling']['read_only_diagnostic_lanes_proposed']}; "
             "not authenticated launches or approved mutation slots.",
-            "Main/diff coverage, source-owned root closures and admission "
+            "Main/diff coverage, source-owned root closures and admission " +
             "are UNKNOWN/HOLD unless separately matched and independently verified.",
             "",
         ]
