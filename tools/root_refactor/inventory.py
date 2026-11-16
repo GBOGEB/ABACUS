@@ -40,6 +40,7 @@ KEEP = {
     "SECURITY.md",
     "CHANGELOG.md",
     "pyproject.toml",
+    ".python-version",
     "pytest.ini",
     "requirements.txt",
     "requirements-dev.txt",
