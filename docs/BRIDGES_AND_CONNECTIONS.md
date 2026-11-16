@@ -162,7 +162,7 @@ The metadata workflow connects the following components into a unified pipeline:
 
 | Document | Relevance |
 |----------|-----------|
-| [README.md](../README.md#-bridges--connections) | Bridges summary table in main README |
+| [README.md](../README.md#3-what-is-inside) | Main README: block map and architecture reading list, including this page |
 | [Progress Tracker](progress_tracker.html) | Visual bridge connections graph |
 | [Tool Ecosystem Map](../tool_ecosystem_map.md) | DOW/KEB/GBOGEB tool interconnections |
 | [CI/CD Automation README](../CI_CD_AUTOMATION_README.md) | Workflow details and CI pipeline docs |
