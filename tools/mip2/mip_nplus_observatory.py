@@ -300,7 +300,7 @@ def as_markdown(r):
             "",
             "## Sequential paired-family observations",
             "",
-            "A family is paired only when unique and terminal on both "
+            "A family is paired only when unique and terminal on both " +
             "different heads. Status changes **do not prove causation**.",
             "",
         ]
