@@ -295,7 +295,7 @@ def as_markdown(r):
     lines.extend(
         [
             "",
-            "Repeat-adjusted counts are diagnostic only; test cases, "
+            "Repeat-adjusted counts are diagnostic only; test cases, " +
             "matched coverage and formal root closures remain UNKNOWN.",
             "",
             "## Sequential paired-family observations",
