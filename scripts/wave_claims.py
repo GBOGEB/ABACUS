@@ -156,6 +156,11 @@ def validate_claims(
     seen_keys: collections.Counter = collections.Counter()
     owned = []
     for c in as_list(doc.get("owns")):
+        if not isinstance(c, dict):
+            out.append(
+                violation("C0_ENTRY", "-", repo, "each owns entry must be a mapping")
+            )
+            continue
         key = str(c.get("key", ""))
         seen_keys[key] += 1
         km = KEY_RE.match(key)
@@ -293,6 +298,13 @@ def validate_claims(
 
     roles = set(rules["participant_roles"])
     for p in as_list(doc.get("participates")):
+        if not isinstance(p, dict):
+            out.append(
+                violation(
+                    "C0_ENTRY", "-", repo, "each participates entry must be a mapping"
+                )
+            )
+            continue
         key = str(p.get("key", ""))
         if not KEY_RE.match(key):
             out.append(
@@ -454,7 +466,10 @@ def rollup(
     if global_doc is not None:
         fed = rules["elevation"]["owner"]
         violations += validate_global(global_doc, rules)
-        for w in as_list((global_doc or {}).get("waves")):
+        # A malformed steward file (scalar or sequence) is already G0_SCHEMA;
+        # never call .get on it.
+        gwaves = global_doc.get("waves") if isinstance(global_doc, dict) else None
+        for w in as_list(gwaves):
             if isinstance(w, dict) and w.get("key"):
                 owners[str(w["key"])].append((fed, w, False))
                 elevated[str(w["key"])] = w
@@ -464,9 +479,13 @@ def rollup(
         )
         if not isinstance(doc, dict):
             continue
+        # non-mapping entries were reported as C0_ENTRY by validate_claims
         for c in as_list(doc.get("owns")):
-            owners[str(c.get("key"))].append((repo, c, private))
+            if isinstance(c, dict):
+                owners[str(c.get("key"))].append((repo, c, private))
         for p in as_list(doc.get("participates")):
+            if not isinstance(p, dict):
+                continue
             participants[str(p.get("key"))][repo] = str(p.get("role"))
     parents = collections.defaultdict(set)
     for child, parent in lineage:
@@ -532,7 +551,10 @@ def rollup(
             rec["maturity"] = c.get("maturity")
             rec["origin"] = c.get("origin")
         if as_list(c.get("parent")):
-            rec["parent"] = [str(p) for p in as_list(c.get("parent"))]
+            if private:  # a private owner's declared lineage stays a count
+                rec["parent_count"] = len(as_list(c.get("parent")))
+            else:
+                rec["parent"] = [str(p) for p in as_list(c.get("parent"))]
         if participants.get(key):
             rec["participants"] = dict(sorted(participants[key].items()))
         claims[key] = rec
@@ -675,13 +697,21 @@ def rollup(
     for key, w in sorted(elevated.items()):
         origin = str(w.get("origin", ""))
         role = participants.get(key, {}).get(origin)
-        if origin in claim_sets and role is not None and role != origin_role:
+        # An origin that omits the wave from `participates` is flagged too:
+        # silence is not the origin role. "Included in the roll-up" means
+        # scanned: a claims file, or observed using the key without one.
+        in_rollup = origin in claim_sets or origin in observed.get(key, ())
+        if in_rollup and role != origin_role:
             violations.append(
                 violation(
                     "G4_ORIGIN_ROLE",
                     key,
                     origin,
-                    f"the origin repo declares role {origin_role}, not {role}",
+                    (
+                        f"the origin repo declares role {origin_role}, not {role}"
+                        if role is not None
+                        else f"the origin repo does not declare role {origin_role}"
+                    ),
                     "warning",
                 )
             )
@@ -858,6 +888,16 @@ def propose(
         if ws:
             claim["paths"] = [ws[0]]
         owns.append(claim)
+    # D5: proposals never set lineage, so a boundary nested inside another proposed
+    # boundary is deferred to the owner instead of drafted as an overlap.
+    conflicts = set()
+    for i, a in enumerate(owns):
+        for b in owns[i + 1 :]:
+            for pa in a.get("paths", []):
+                for pb in b.get("paths", []):
+                    if _overlaps(normalize_path(pa) or pa, normalize_path(pb) or pb):
+                        conflicts.add(b["key"] if len(pb) >= len(pa) else a["key"])
+    owns = [c for c in owns if c["key"] not in conflicts]
     return {
         "schema": rules["claims_schema"],
         "repo": repo,
@@ -866,6 +906,9 @@ def propose(
         "_proposal": {
             "contested_ties": contested,
             "needs_name": needs_name,
+            "boundary_conflicts": sorted(
+                conflicts, key=lambda k: (key_number(k) or 0, k)
+            ),
             "note": "Draft from the observed census. The owner confirms names, status, paths, parents.",
         },
     }
