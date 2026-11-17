@@ -30,5 +30,6 @@ def one(w):
         last_run=runs[0]["id"],last_sha=runs[0]["head_sha"][:8],last_at=runs[0]["created_at"],
         first_red_sha=(first_red or {}).get("head_sha","")[:8],first_red_run=(first_red or {}).get("id"),first_red_title=(first_red or {}).get("display_title"))
 with ThreadPoolExecutor(8) as ex: rows=[x for x in ex.map(one,wfs) if x]
-json.dump(rows,open(f"{S}/wf_{repo}.json","w"),indent=1)
+with open(f"{S}/wf_{repo}.json","w") as f:
+    json.dump(rows,f,indent=1)
 print(repo,len(wfs),"active",Counter(x["cls"] for x in rows))
